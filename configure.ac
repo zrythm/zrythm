@@ -1,0 +1,28 @@
+# Initialize autoconf: package name, version, bug report address
+AC_INIT([zrythm], [0.1], [contact@alextee.website])
+
+# initialize automake. turn on all automake warnings and report them as errors
+# this is a foreign package
+AM_INIT_AUTOMAKE([foreign -Wall -Werror])
+
+# Check for a C++ compiler
+AC_PROG_CXX
+
+#Checks for libraries.
+#Checks for header files.
+#Checks for typedefs, structures, and compiler characteristics.
+#Checks for library functions.
+PKG_CHECK_MODULES([GTK], [gtk+-3.0])
+#PKG_CHECK_MODULES([glib-2.0], [glib])
+
+AC_SUBST(GTK_LIBS)
+AC_SUBST(GTK_CFLAGS)
+
+# Declare config.h as output header
+AC_CONFIG_HEADERS([config.h])
+
+# Declare Makefile and src/Makefile as output files
+AC_CONFIG_FILES([Makefile src/Makefile])
+
+# Actually output all declared files
+AC_OUTPUT
