@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/online/alextee/zrythm">
+    <file preprocess="xml-stripblanks">main-window.ui</file>
+  </gresource>
+</gresources>
