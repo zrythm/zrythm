@@ -1,0 +1,10 @@
+@define-color bg_color #080808;
+
+* {
+  background-color: @bg_color;
+  /*color: green;*/
+}
+
+button {
+  background-image: image(url("fancy.svg"), url("plain.png"), @bg_color);
+}

@@ -1,5 +1,6 @@
 /*
- * main.c - main
+ * gui/instrument_timeline_view.h - The view of an instrument left of its
+ *   timeline counterpart
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -16,34 +17,14 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <gtk/gtk.h>
-#include "init.h"
+struct GtkWidget;
 
 /**
- * main
+ * Adds an instrument timeline view based on the given instrument
+ * TODO: implement instrument struct
  */
-int
-main (int    argc,
-      char **argv)
-{
-  GtkApplication *app;
-  int status;
-
-  // create GTK application
-  app = gtk_application_new ("online.alextee.zrythm", G_APPLICATION_FLAGS_NONE);
-
-  // setup signals
-  g_signal_connect (app, "startup", G_CALLBACK (startup), NULL);
-  g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
-
-  // sends activate signal
-  status = g_application_run (G_APPLICATION (app), argc, argv);
-
-  // free memory
-  g_object_unref (app);
-
-  return status;
-}
+void
+set_instrument_timeline_view (GtkWidget * container);

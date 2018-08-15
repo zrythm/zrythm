@@ -2,37 +2,7 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <object class="GtkAboutDialog" id="about_dialog">
-    <property name="can_focus">False</property>
-    <property name="type_hint">dialog</property>
-    <property name="program_name">Zrythm</property>
-    <property name="logo_icon_name">image-missing</property>
-    <child>
-      <placeholder/>
-    </child>
-    <child internal-child="vbox">
-      <object class="GtkBox">
-        <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">2</property>
-        <child internal-child="action_area">
-          <object class="GtkButtonBox">
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-      </object>
-    </child>
-  </object>
-  <object class="GtkApplicationWindow" id="main_window">
+  <object class="GtkApplicationWindow" id="gapplicationwindow-main">
     <property name="can_focus">False</property>
     <property name="window_position">center</property>
     <property name="default_width">1287</property>
@@ -43,12 +13,12 @@
       <placeholder/>
     </child>
     <child>
-      <object class="GtkBox" id="main_vbox">
+      <object class="GtkBox" id="gbox-v-main">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkMenuBar" id="menu_bar">
+          <object class="GtkMenuBar" id="gmenubar">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
@@ -205,7 +175,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkToolbar" id="toolbar">
+          <object class="GtkToolbar" id="gtoolbar">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="icon_size">2</property>
@@ -268,16 +238,16 @@
           <placeholder/>
         </child>
         <child>
-          <object class="GtkBox" id="center_hbox">
+          <object class="GtkBox" id="gbox-h-center">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkBox" id="inspector">
+              <object class="GtkBox" id="gbox-v-inspector">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkToolPalette" id="tool_palette">
+                  <object class="GtkToolPalette" id="gtoolpalette">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="orientation">vertical</property>
@@ -289,7 +259,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton">
+                  <object class="GtkButton" id="gbutton-inspector-test">
                     <property name="label" translatable="yes">Inspector</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -312,122 +282,86 @@
               </packing>
             </child>
             <child>
-              <object class="GtkPaned" id="editor_and_instrument_chooser_pane">
+              <object class="GtkPaned" id="gpaned-h-editor-plus-instrument-chooser">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="wide_handle">True</property>
                 <child>
-                  <object class="GtkPaned" id="editor_pane">
+                  <object class="GtkPaned" id="gpaned-v-editor">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="orientation">vertical</property>
                     <property name="wide_handle">True</property>
                     <child>
-                      <object class="GtkBox" id="ins-timeline-vbox">
+                      <object class="GtkBox" id="gbox-v-instruments-timeline-toolbar">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="vexpand">True</property>
                         <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkBox">
+                          <object class="GtkPaned" id="gpaned-h-instruments-plus-top-pane-timeline-plus-ruler">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can_focus">True</property>
                             <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <object class="GtkViewport">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkBox" id="ins-timeline-hbox">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <child>
-                              <object class="GtkBox" id="instruments-vbox">
+                              <object class="GtkBox" id="gbox-v-instruments-plus-top-panel">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="orientation">vertical</property>
                                 <child>
-                                  <object class="GtkFlowBox" id="instrument-flowbox3">
-                                    <property name="width_request">96</property>
+                                  <object class="GtkFlowBox" id="gflowbox-instrument-top-panel">
+                                    <property name="height_request">60</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="halign">start</property>
-                                    <property name="valign">start</property>
-                                    <property name="hexpand">False</property>
-                                    <property name="vexpand">False</property>
-                                    <property name="min_children_per_line">3</property>
                                     <child>
-                                      <object class="GtkFlowBoxChild" id="ins-name-fbc5">
+                                      <object class="GtkFlowBoxChild" id="gflowboxchild-test">
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <child>
-                                          <object class="GtkLabel" id="instrument_name_label5">
+                                          <object class="GtkLabel" id="instrument_name_label4">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label" translatable="yes">My Synthesizer1</property>
+                                            <property name="valign">center</property>
+                                            <property name="label" translatable="yes">lbl</property>
                                           </object>
                                         </child>
                                       </object>
                                     </child>
                                     <child>
-                                      <object class="GtkFlowBoxChild" id="ins-name-fbc6">
+                                      <object class="GtkFlowBoxChild" id="gflowboxchild-test2">
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="hexpand">False</property>
                                         <property name="vexpand">False</property>
                                         <child>
-                                          <object class="GtkToggleButton" id="record-button4">
+                                          <object class="GtkToggleButton" id="record-button1">
                                             <property name="label">gtk-media-record</property>
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">True</property>
+                                            <property name="halign">center</property>
+                                            <property name="valign">center</property>
                                             <property name="use_stock">True</property>
                                           </object>
                                         </child>
                                       </object>
                                     </child>
                                     <child>
-                                      <object class="GtkFlowBoxChild" id="ins-name-fbc7">
+                                      <object class="GtkFlowBoxChild" id="gflowboxchild-test3">
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
+                                        <property name="halign">center</property>
+                                        <property name="valign">center</property>
+                                        <property name="hexpand">False</property>
+                                        <property name="vexpand">False</property>
                                         <child>
-                                          <object class="GtkToggleButton" id="solo-button4">
-                                            <property name="label" translatable="yes">S</property>
+                                          <object class="GtkToggleButton" id="record-button2">
+                                            <property name="label">gtk-media-record</property>
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">True</property>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkFlowBoxChild" id="ins-name-fbc12">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <child>
-                                          <object class="GtkToggleButton" id="mute-button4">
-                                            <property name="label" translatable="yes">M</property>
-                                            <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="receives_default">True</property>
+                                            <property name="halign">center</property>
+                                            <property name="valign">center</property>
+                                            <property name="use_stock">True</property>
                                           </object>
                                         </child>
                                       </object>
@@ -440,69 +374,33 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkFlowBox" id="instrument-flowbox1">
-                                    <property name="width_request">96</property>
+                                  <placeholder/>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="resize">False</property>
+                                <property name="shrink">False</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkBox" id="gbox-v-ruler-plus-timeline">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="orientation">vertical</property>
+                                <child>
+                                  <object class="GtkScrolledWindow" id="gscrolledwindow-ruler">
+                                    <property name="height_request">60</property>
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="halign">start</property>
-                                    <property name="valign">start</property>
-                                    <property name="hexpand">False</property>
-                                    <property name="vexpand">False</property>
-                                    <property name="min_children_per_line">3</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="shadow_type">in</property>
                                     <child>
-                                      <object class="GtkFlowBoxChild" id="ins-name-fbc1">
+                                      <object class="GtkViewport" id="gviewport-ruler">
                                         <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
+                                        <property name="can_focus">False</property>
                                         <child>
-                                          <object class="GtkLabel" id="instrument_name_label1">
+                                          <object class="GtkDrawingArea" id="gdrawingarea-ruler">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label" translatable="yes">My Synthesizer1</property>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkFlowBoxChild" id="ins-name-fbc2">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="hexpand">False</property>
-                                        <property name="vexpand">False</property>
-                                        <child>
-                                          <object class="GtkToggleButton" id="record-button1">
-                                            <property name="label">gtk-media-record</property>
-                                            <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="receives_default">True</property>
-                                            <property name="use_stock">True</property>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkFlowBoxChild" id="ins-name-fbc3">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <child>
-                                          <object class="GtkToggleButton" id="solo-button1">
-                                            <property name="label" translatable="yes">S</property>
-                                            <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="receives_default">True</property>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkFlowBoxChild" id="ins-name-fbc4">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <child>
-                                          <object class="GtkToggleButton" id="mute-button1">
-                                            <property name="label" translatable="yes">M</property>
-                                            <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="receives_default">True</property>
                                           </object>
                                         </child>
                                       </object>
@@ -510,214 +408,60 @@
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkScrolledWindow" id="gscrolledwindow-timeline">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="shadow_type">in</property>
+                                    <child>
+                                      <object class="GtkViewport" id="gviewport-timeline">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="hscroll_policy">natural</property>
+                                        <property name="vscroll_policy">natural</property>
+                                        <child>
+                                          <object class="GtkOverlay" id="goverlay-timeline">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <child type="overlay">
+                                              <object class="GtkDrawingArea" id="gdrawingarea-timeline">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">False</property>
+                                              </object>
+                                              <packing>
+                                                <property name="index">-1</property>
+                                              </packing>
+                                            </child>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">True</property>
                                     <property name="fill">True</property>
                                     <property name="position">1</property>
                                   </packing>
                                 </child>
-                                <child>
-                                  <object class="GtkFlowBox" id="instrument-flowbox2">
-                                    <property name="width_request">96</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="halign">start</property>
-                                    <property name="valign">start</property>
-                                    <property name="hexpand">False</property>
-                                    <property name="vexpand">False</property>
-                                    <property name="min_children_per_line">3</property>
-                                    <child>
-                                      <object class="GtkFlowBoxChild" id="ins-name-fbc8">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <child>
-                                          <object class="GtkLabel" id="instrument_name_label2">
-                                            <property name="visible">True</property>
-                                            <property name="can_focus">False</property>
-                                            <property name="label" translatable="yes">My Synthesizer1</property>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkFlowBoxChild" id="ins-name-fbc9">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="hexpand">False</property>
-                                        <property name="vexpand">False</property>
-                                        <child>
-                                          <object class="GtkToggleButton" id="record-button2">
-                                            <property name="label">gtk-media-record</property>
-                                            <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="receives_default">True</property>
-                                            <property name="use_stock">True</property>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkFlowBoxChild" id="ins-name-fbc10">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <child>
-                                          <object class="GtkToggleButton" id="solo-button2">
-                                            <property name="label" translatable="yes">S</property>
-                                            <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="receives_default">True</property>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkFlowBoxChild" id="ins-name-fbc11">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <child>
-                                          <object class="GtkToggleButton" id="mute-button2">
-                                            <property name="label" translatable="yes">M</property>
-                                            <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="receives_default">True</property>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">2</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkFlowBox" id="instrument-flowbox4">
-                                    <property name="width_request">96</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="halign">start</property>
-                                    <property name="valign">start</property>
-                                    <property name="hexpand">False</property>
-                                    <property name="vexpand">False</property>
-                                    <property name="min_children_per_line">3</property>
-                                    <child>
-                                      <object class="GtkFlowBoxChild" id="ins-name-fbc13">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <child>
-                                          <object class="GtkLabel" id="instrument_name_label3">
-                                            <property name="visible">True</property>
-                                            <property name="can_focus">False</property>
-                                            <property name="label" translatable="yes">My Synthesizer1</property>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkFlowBoxChild" id="ins-name-fbc14">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="hexpand">False</property>
-                                        <property name="vexpand">False</property>
-                                        <child>
-                                          <object class="GtkToggleButton" id="record-button3">
-                                            <property name="label">gtk-media-record</property>
-                                            <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="receives_default">True</property>
-                                            <property name="use_stock">True</property>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkFlowBoxChild" id="ins-name-fbc15">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <child>
-                                          <object class="GtkToggleButton" id="solo-button3">
-                                            <property name="label" translatable="yes">S</property>
-                                            <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="receives_default">True</property>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkFlowBoxChild" id="ins-name-fbc16">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <child>
-                                          <object class="GtkToggleButton" id="mute-button3">
-                                            <property name="label" translatable="yes">M</property>
-                                            <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="receives_default">True</property>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">3</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
                               </object>
                               <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkScrolledWindow" id="ins-timeline-scrolled-window">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="shadow_type">in</property>
-                                <child>
-                                  <object class="GtkViewport" id="ins-timeline-viewport">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="hscroll_policy">natural</property>
-                                    <property name="vscroll_policy">natural</property>
-                                    <child>
-                                      <object class="GtkDrawingArea">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
-                                <property name="position">1</property>
+                                <property name="resize">True</property>
+                                <property name="shrink">False</property>
                               </packing>
                             </child>
                           </object>
                           <packing>
                             <property name="expand">True</property>
                             <property name="fill">True</property>
-                            <property name="position">1</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkToolbar" id="toolbar1">
+                          <object class="GtkToolbar" id="gtoolbar-timeline-bot">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="icon_size">2</property>
@@ -772,7 +516,7 @@
                           </object>
                           <packing>
                             <property name="expand">False</property>
-                            <property name="fill">True</property>
+                            <property name="fill">False</property>
                             <property name="position">2</property>
                           </packing>
                         </child>
@@ -783,7 +527,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkNotebook" id="bottom-notebook">
+                      <object class="GtkNotebook" id="gnotebook-bot">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="tab_pos">bottom</property>
@@ -795,7 +539,7 @@
                           </object>
                         </child>
                         <child type="tab">
-                          <object class="GtkLabel" id="midi-tab">
+                          <object class="GtkLabel" id="gtablabel-midi">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="label" translatable="yes">MIDI</property>
@@ -815,7 +559,7 @@
                           </packing>
                         </child>
                         <child type="tab">
-                          <object class="GtkLabel" id="automation-tab">
+                          <object class="GtkLabel" id="gtablabel-automation">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="label" translatable="yes">Automation</property>
@@ -836,7 +580,7 @@
                           </packing>
                         </child>
                         <child type="tab">
-                          <object class="GtkLabel" id="rack-tab">
+                          <object class="GtkLabel" id="gtablabel-rack">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="label" translatable="yes">Rack</property>
@@ -857,7 +601,7 @@
                           </packing>
                         </child>
                         <child type="tab">
-                          <object class="GtkLabel" id="mixer-tab">
+                          <object class="GtkLabel" id="gtablabel-mixer">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="label" translatable="yes">Mixer</property>
@@ -880,7 +624,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkNotebook" id="instrument_chooser_pane">
+                  <object class="GtkNotebook" id="gnotebook-instrument-chooser">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="tab_pos">right</property>
@@ -985,9 +729,21 @@
           <placeholder/>
         </child>
         <child>
-          <object class="GtkToolbar" id="bot_toolbar">
+          <object class="GtkToolbar" id="gtoolbar-bot">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <child>
+              <object class="GtkToolButton" id="toolbutton8">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">New</property>
+                <property name="stock_id">gtk-index</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>

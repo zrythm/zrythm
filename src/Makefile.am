@@ -3,16 +3,19 @@
 #EXTRA_DIST = resources.c
 bin_PROGRAMS = zrythm
 
-AM_CFLAGS = -rdynamic -I$(top_srcdir)/inc $(GTK_CFLAGS)
-
 # sources for zrythm
-zrythm_SOURCES = main.c init.c gui/main_window.c
+zrythm_SOURCES = main.c \
+                 init.c \
+				 gui/main_window.c \
+				 gui/widgets/instrument_timeline_view.c \
+				 gui/widgets/ruler.c
 nodist_zrythm_SOURCES = resources.c
 zrythm.$(OBJEXT): resources.c # manually declare dependency
 
 BUILT_SOURCES = resources.c
 
-zrythm_LDADD = $(GTK_LIBS)
+AM_CFLAGS = -rdynamic -I$(top_srcdir)/inc $(GTK_CFLAGS) $(DAZZLE_CFLAGS)
+zrythm_LDADD = $(GTK_LIBS) $(DAZZLE_LIBS)
 
 # resources is a built source that should be cleaned
 CLEANFILES = resources.c

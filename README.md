@@ -1,4 +1,7 @@
-Configure with
+Zrythm is a free modern music production system, also known as DAW.
+It uses the GTK+3 toolkit.
+
+To compile
 ```
 autoreconf --install
 mkdir build
@@ -6,4 +9,8 @@ cd build
 ../configure
 make
 ```
-Will get executable in build/src
+
+To install
+```
+sudo make install
+```

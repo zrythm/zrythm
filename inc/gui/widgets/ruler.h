@@ -1,5 +1,7 @@
+#ifndef _RULER_H_
+#define _RULER_H_
 /*
- * main.c - main
+ * inc/gui/widgets/ruler.h - Ruler
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,31 +21,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <gtk/gtk.h>
-#include "init.h"
+typedef int gboolean;
+typedef void* gpointer;
+struct GtkWidget;
+struct cairo_t;
 
 /**
- * main
+ * Sets the ruler on the given blank drawing area
  */
-int
-main (int    argc,
-      char **argv)
-{
-  GtkApplication *app;
-  int status;
+void
+set_ruler (GtkWidget * drawing_area);
 
-  // create GTK application
-  app = gtk_application_new ("online.alextee.zrythm", G_APPLICATION_FLAGS_NONE);
+gboolean
+draw_callback (GtkWidget *, cairo_t *, gpointer data);
 
-  // setup signals
-  g_signal_connect (app, "startup", G_CALLBACK (startup), NULL);
-  g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
-
-  // sends activate signal
-  status = g_application_run (G_APPLICATION (app), argc, argv);
-
-  // free memory
-  g_object_unref (app);
-
-  return status;
-}
+#endif

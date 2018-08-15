@@ -23,6 +23,27 @@
 #include "gui/main_window.h"
 
 /**
+ * performs shutdown tasks
+ */
+static void
+shutdown (GtkApplication* app,
+          gpointer        user_data)
+{
+
+}
+
+/**
+ * opens files and shows them in a new window.
+ * This corresponds to someone trying to open a document (or documents)
+ * using the application from the file browser, or similar.
+ */
+static void
+open (GtkApplication* app,
+      gpointer        user_data)
+{
+
+}
+/**
  * creates a window and shows it
  */
 void
@@ -33,7 +54,7 @@ activate (GtkApplication* app,
 
   window = create_main_window();
 
-  gtk_widget_show (window);
+  gtk_widget_show_all (window);
   gtk_main ();
 }
 
