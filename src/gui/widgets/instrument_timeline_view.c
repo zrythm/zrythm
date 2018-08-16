@@ -33,7 +33,7 @@ set_instrument_timeline_view (GtkWidget * container)
 {
   GtkWidget * flowbox = gtk_flow_box_new ();
   GtkWidget * spinbutton = gtk_button_new_with_label ("test");
-  gtk_flow_box_insert (flowbox,
+  gtk_flow_box_insert (GTK_FLOW_BOX (flowbox),
                        spinbutton,
                        -1);
   gtk_container_add (GTK_CONTAINER (container),

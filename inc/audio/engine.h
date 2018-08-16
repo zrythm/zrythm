@@ -19,6 +19,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#define BLOCK_LENGTH 4096 // should be set by backend
+#define MIDI_BUF_SIZE 1024 // should be set by backend
+
 typedef struct _Audio_Engine
 {
   int a;

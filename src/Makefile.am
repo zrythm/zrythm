@@ -10,7 +10,8 @@ zrythm_SOURCES = main.c \
 				 audio/engine.c \
 				 gui/main_window.c \
 				 gui/widgets/instrument_timeline_view.c \
-				 gui/widgets/ruler.c
+				 gui/widgets/ruler.c \
+				 plugins/plugin_manager.c
 nodist_zrythm_SOURCES = resources.c
 zrythm.$(OBJEXT): resources.c # manually declare dependency
 
@@ -20,11 +21,13 @@ AM_CFLAGS = -rdynamic -I$(top_srcdir)/inc \
 			$(GTK_CFLAGS) \
 			$(DAZZLE_CFLAGS) \
 			$(JACK_CFLAGS) \
-			$(LV2_CFLAGS)
+			$(LV2_CFLAGS) \
+			$(LILV_CFLAGS)
 zrythm_LDADD = $(GTK_LIBS) \
 			   $(DAZZLE_LIBS) \
 			   $(JACK_LIBS) \
 			   $(LV2_LIBS) \
+			   $(LILV_LIBS) \
 			   -lm
 
 # resources is a built source that should be cleaned

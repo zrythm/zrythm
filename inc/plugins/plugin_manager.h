@@ -19,9 +19,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <lilv/lilv.h>
+
 typedef struct _Plugin_Manager
 {
-
+  const LilvPlugins * plugins;
+  LilvWorld * world;
 } Plugin_Manager;
 
 extern Plugin_Manager * plugin_manager;

@@ -36,6 +36,12 @@ typedef struct _Project
 extern Project * project;
 
 /**
+ * The project global variable, containing all the information that
+ * should be available to all files.
+ */
+Project * project;
+
+/**
  * Creates a project with default or given variables
  */
 void

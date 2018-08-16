@@ -28,10 +28,62 @@
 #define GET_WIDGET(object_name) GTK_WIDGET ( \
         gtk_builder_get_object (builder, object_name))
 
+gboolean is_maximized = 0;
+
 void
-on_main_window_destroy(GtkWidget *widget, gpointer user_data)
+on_main_window_destroy (GtkWidget *widget,
+                        gpointer user_data)
 {
-    gtk_main_quit();
+    gtk_main_quit ();
+}
+
+void
+on_state_changed (GtkWidget * widget,
+                  GdkEventWindowState  * event,
+                  gpointer    user_data)
+{
+    if (event->new_window_state &
+            GDK_WINDOW_STATE_MAXIMIZED)
+        is_maximized = 1;
+}
+
+/**
+ * close button event
+ */
+void
+close_clicked (GtkButton * button,
+                      gpointer user_data)
+{
+    gtk_main_quit ();
+}
+
+/**
+ * minimize button event
+ */
+void
+minimize_clicked (GtkButton * button,
+                      gpointer user_data)
+{
+    GtkWindow * window = GTK_WINDOW (user_data);
+    gtk_window_iconify (window);
+}
+
+/**
+ * maximize button event
+ */
+void
+maximize_clicked (GtkButton * button,
+                      gpointer user_data)
+{
+    GtkWindow * window = GTK_WINDOW (user_data);
+
+    if (is_maximized)
+    {
+        gtk_window_unmaximize (window);
+        is_maximized = 0;
+    }
+    else
+        gtk_window_maximize (window);
 }
 
 /**
@@ -62,6 +114,21 @@ create_main_window()
 
   // set title to the package string from config.h
   gtk_window_set_title (GTK_WINDOW (window), PACKAGE_STRING);
+
+  // set icons
+  GtkWidget * image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/close.svg");
+  GtkWidget * button = GET_WIDGET ("gbutton-close-window");
+  gtk_button_set_image( GTK_BUTTON (button), image);
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/minimize.svg");
+  button = GET_WIDGET ("gbutton-minimize-window");
+  gtk_button_set_image( GTK_BUTTON (button), image);
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/maximize.svg");
+  button = GET_WIDGET ("gbutton-maximize-window");
+  gtk_button_set_image( GTK_BUTTON (button), image);
+
 
   // set css
   GtkCssProvider * css_provider = gtk_css_provider_new();
@@ -110,6 +177,9 @@ create_main_window()
   // set signals
   g_signal_connect (window, "destroy",
                     G_CALLBACK (gtk_main_quit), NULL);
+  g_signal_connect (window, "window_state_event",
+                    G_CALLBACK (on_state_changed), NULL);
+  gtk_builder_connect_signals( builder, NULL );
 
   g_object_unref(builder);
 

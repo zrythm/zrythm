@@ -3,5 +3,8 @@
   <gresource prefix="/online/alextee/zrythm">
     <file preprocess="xml-stripblanks">main-window.ui</file>
     <file>theme.css</file>
+    <file>maximize.svg</file>
+    <file>minimize.svg</file>
+    <file>close.svg</file>
   </gresource>
 </gresources>

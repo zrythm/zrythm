@@ -25,12 +25,6 @@
 #include <gtk/gtk.h>
 
 /**
- * Called on exit signal
- */
-void on_main_window_destroy (GtkWidget *widget,
-                             gpointer user_data);
-
-/**
  * Generates main window and returns it
  */
 GtkWidget*

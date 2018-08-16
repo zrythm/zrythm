@@ -19,11 +19,26 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdlib.h>
+
 #include "plugins/plugin_manager.h"
+
+#include <gtk/gtk.h>
+
+/**
+ * Global variable
+ */
+Plugin_Manager * plugin_manager;
 
 void
 init_plugin_manager ()
 {
+    g_message ("Initializing plugin manager...");
+    plugin_manager = malloc (sizeof (Plugin_Manager));
 
-
+	/* Find all installed plugins */
+	plugin_manager->world = lilv_world_new();
+	lilv_world_load_all (plugin_manager->world);
+	plugin_manager->plugins = lilv_world_get_all_plugins (
+            plugin_manager->world);
 }

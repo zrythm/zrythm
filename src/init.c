@@ -23,6 +23,7 @@
 #include "project.h"
 #include "audio/engine.h"
 #include "gui/main_window.h"
+#include "plugins/plugin_manager.h"
 
 /**
  * performs shutdown tasks
@@ -73,4 +74,7 @@ startup (GtkApplication* app,
 
   // init audio engine
   init_audio_engine ();
+
+  // init plugin manager
+  init_plugin_manager ();
 }

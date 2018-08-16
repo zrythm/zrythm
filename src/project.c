@@ -22,11 +22,6 @@
 #include "project.h"
 #include <gtk/gtk.h>
 
-/**
- * The project global variable, containing all the information that
- * should be available to all files.
- */
-Project * project;
 
 void
 create_project (char * filename)
