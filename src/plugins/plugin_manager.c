@@ -1,6 +1,5 @@
 /*
- * gui/instrument_timeline_view.cpp - The view of an instrument left of its
- *   timeline counterpart
+ * plugins/plugin_manager.c - Manages plugins
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -20,24 +19,11 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <dazzle.h>
-#include <gtk/gtk.h>
+#include "plugins/plugin_manager.h"
 
-/**
- * Adds an instrument timeline view based on the given instrument
- * TODO: implement instrument struct
- * FIXME: should be a widget
- */
 void
-set_instrument_timeline_view (GtkWidget * container)
+init_plugin_manager ()
 {
-  GtkWidget * flowbox = gtk_flow_box_new ();
-  GtkWidget * spinbutton = gtk_button_new_with_label ("test");
-  gtk_flow_box_insert (flowbox,
-                       spinbutton,
-                       -1);
-  gtk_container_add (GTK_CONTAINER (container),
-                     flowbox);
-  gtk_widget_set_valign( GTK_WIDGET (spinbutton),
-                         GTK_ALIGN_START);
+
+
 }

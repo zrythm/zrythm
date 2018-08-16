@@ -47,7 +47,7 @@ draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
   gtk_render_background (context, cr, 0, 0, width, height);
 
 
-  for (int i = 0; i < width; i++)
+  for (int i = 0; i < width * 2; i++)
   {
       if (i % 100 == 0)
       {

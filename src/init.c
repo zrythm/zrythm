@@ -20,6 +20,8 @@
  */
 
 #include "init.h"
+#include "project.h"
+#include "audio/engine.h"
 #include "gui/main_window.h"
 
 /**
@@ -50,11 +52,12 @@ void
 activate (GtkApplication* app,
           gpointer        user_data)
 {
-  GtkWidget  *window;
-
-  window = create_main_window();
-
+  // create main window and show it
+  g_message ("Creating main window...");
+  GtkWidget * window = create_main_window();
   gtk_widget_show_all (window);
+
+  // start main loop
   gtk_main ();
 }
 
@@ -65,5 +68,9 @@ void
 startup (GtkApplication* app,
          gpointer        user_data)
 {
-  // init logic
+  // create project
+  create_project ("project.xml");
+
+  // init audio engine
+  init_audio_engine ();
 }

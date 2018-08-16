@@ -1,6 +1,5 @@
 /*
- * gui/instrument_timeline_view.cpp - The view of an instrument left of its
- *   timeline counterpart
+ * project.c - A project (or song), containing all the project data
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -20,24 +19,23 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <dazzle.h>
+#include "project.h"
 #include <gtk/gtk.h>
 
 /**
- * Adds an instrument timeline view based on the given instrument
- * TODO: implement instrument struct
- * FIXME: should be a widget
+ * The project global variable, containing all the information that
+ * should be available to all files.
  */
+Project * project;
+
 void
-set_instrument_timeline_view (GtkWidget * container)
+create_project (char * filename)
 {
-  GtkWidget * flowbox = gtk_flow_box_new ();
-  GtkWidget * spinbutton = gtk_button_new_with_label ("test");
-  gtk_flow_box_insert (flowbox,
-                       spinbutton,
-                       -1);
-  gtk_container_add (GTK_CONTAINER (container),
-                     flowbox);
-  gtk_widget_set_valign( GTK_WIDGET (spinbutton),
-                         GTK_ALIGN_START);
+    GString * title = g_string_new (filename);
+  g_message ("Creating project %s...", title->str);
+    project = malloc( sizeof( Project));
+    project->bpm = 140;
+    project->time_sig_numerator = 4;
+    project->time_sig_denominator = 4;
+    project->title = title;
 }
