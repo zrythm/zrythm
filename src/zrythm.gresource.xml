@@ -6,5 +6,6 @@
     <file>maximize.svg</file>
     <file>minimize.svg</file>
     <file>close.svg</file>
+    <file>z.svg</file>
   </gresource>
 </gresources>

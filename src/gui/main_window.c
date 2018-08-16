@@ -115,6 +115,13 @@ create_main_window()
   // set title to the package string from config.h
   gtk_window_set_title (GTK_WINDOW (window), PACKAGE_STRING);
 
+  // set icon
+  gtk_window_set_icon (
+          GTK_WINDOW (window),
+          gtk_image_get_pixbuf (
+              GTK_IMAGE (gtk_image_new_from_resource (
+                  "/online/alextee/zrythm/z.svg"))));
+
   // set icons
   GtkWidget * image = gtk_image_new_from_resource (
           "/online/alextee/zrythm/close.svg");
