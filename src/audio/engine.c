@@ -79,7 +79,7 @@ void
 init_audio_engine()
 {
     g_message ("Initializing audio engine...");
-    project->audio_engine = malloc (sizeof (Audio_Engine));
+    Audio_Engine * engine = malloc (sizeof (Audio_Engine));
 
 	const char **ports;
 	const char *client_name = "zrythm";
@@ -167,6 +167,8 @@ init_audio_engine()
 	}
 
     jack_free (ports);
+
+    project->audio_engine = engine;
 }
 
 void

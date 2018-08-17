@@ -1,5 +1,5 @@
 /*
- * project.c - A project (or song), containing all the project data
+ * settings.h - Settings
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,29 +19,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "project.h"
-#include "settings.h"
-#include "audio/engine.h"
-#include "audio/timeline.h"
-#include "plugins/plugin_manager.h"
-#include <gtk/gtk.h>
-
+#ifndef __SETTINGS_H__
+#define __SETTINGS_H__
 
 void
-create_project (char * filename)
-{
-  project = malloc( sizeof( Project));
+init_settings ();
 
-  // set title
-  GString * title = g_string_new (filename);
-  g_message ("Creating project %s...", title->str);
-  project->title = title;
-
-  init_audio_engine ();
-
-  init_plugin_manager ();
-
-  init_timeline ();
-
-  init_settings ();
-}
+#endif

@@ -1,5 +1,3 @@
-#ifndef _RULER_H_
-#define _RULER_H_
 /*
  * inc/gui/widgets/ruler.h - Ruler
  *
@@ -21,6 +19,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef __GUI_WIDGETS_RULER_H__
+#define __GUI_WIDGETS_RULER_H__
+
 typedef int gboolean;
 typedef void* gpointer;
 struct GtkWidget;
@@ -30,7 +31,7 @@ struct cairo_t;
  * Sets the ruler on the given blank drawing area
  */
 void
-set_ruler (GtkWidget * drawing_area);
+set_ruler (GtkWidget * scrolled_window);
 
 gboolean
 draw_callback (GtkWidget *, cairo_t *, gpointer data);

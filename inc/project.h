@@ -23,14 +23,16 @@
 #include <gtk/gtk.h>
 
 typedef struct _Audio_Engine Audio_Engine;
+typedef struct _Plugin_Manager Plugin_Manager;
+typedef struct _Timeline Timeline;
 
 typedef struct _Project
 {
-  float          bpm;
-  int            time_sig_numerator;
-  int            time_sig_denominator;
-  GString *       title;
-  Audio_Engine *  audio_engine;
+  GString *         title;
+  Audio_Engine *    audio_engine;
+  Plugin_Manager *  plugin_manager;
+  Timeline *        timeline;
+  GSettings *       settings;
 } Project;
 
 extern Project * project;

@@ -22,10 +22,17 @@ PKG_CHECK_MODULES([LILV], [lilv-0])
 AC_CONFIG_HEADERS([config.h])
 
 # Declare Makefile and src/Makefile as output files
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([
+  Makefile
+  src/Makefile
+  data/Makefile
+])
 
 # Set default prefix
 AC_PREFIX_PROGRAM(gcc)
+
+# Add GSettings support
+GLIB_GSETTINGS
 
 # Actually output all declared files
 AC_OUTPUT

@@ -1,5 +1,5 @@
 /*
- * project.c - A project (or song), containing all the project data
+ * inc/gui/widgets/timeline.h - Timeline
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -16,32 +16,27 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "project.h"
-#include "settings.h"
-#include "audio/engine.h"
-#include "audio/timeline.h"
-#include "plugins/plugin_manager.h"
-#include <gtk/gtk.h>
+#ifndef __GUI_WIDGETS_TIMELINE_H__
+#define __GUI_WIDGETS_TIMELINE_H__
 
+typedef int gboolean;
+typedef void* gpointer;
+struct GtkWidget;
+struct cairo_t;
 
+/**
+ * Sets the timeline on the given blank drawing area
+ */
 void
-create_project (char * filename)
-{
-  project = malloc( sizeof( Project));
+set_timeline (GtkWidget * _multi_paned,
+              GtkWidget * overlay,
+              GtkWidget * drawing_area);
 
-  // set title
-  GString * title = g_string_new (filename);
-  g_message ("Creating project %s...", title->str);
-  project->title = title;
+gboolean
+draw_callback (GtkWidget *, cairo_t *, gpointer data);
 
-  init_audio_engine ();
+#endif
 
-  init_plugin_manager ();
-
-  init_timeline ();
-
-  init_settings ();
-}

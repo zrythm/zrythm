@@ -1,5 +1,5 @@
 /*
- * init.cpp - initialization logic
+ * init.c - initialization logic
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -22,6 +22,7 @@
 #include "init.h"
 #include "project.h"
 #include "audio/engine.h"
+#include "audio/timeline.h"
 #include "gui/main_window.h"
 #include "plugins/plugin_manager.h"
 
@@ -72,9 +73,4 @@ startup (GtkApplication* app,
   // create project
   create_project ("project.xml");
 
-  // init audio engine
-  init_audio_engine ();
-
-  // init plugin manager
-  init_plugin_manager ();
 }

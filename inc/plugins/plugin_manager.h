@@ -27,7 +27,5 @@ typedef struct _Plugin_Manager
   LilvWorld * world;
 } Plugin_Manager;
 
-extern Plugin_Manager * plugin_manager;
-
 void
 init_plugin_manager ();

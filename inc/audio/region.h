@@ -1,5 +1,6 @@
 /*
- * project.c - A project (or song), containing all the project data
+ * audio/region.h - A region in the timeline having a start
+ *   and an end
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,29 +20,29 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "project.h"
-#include "settings.h"
-#include "audio/engine.h"
-#include "audio/timeline.h"
-#include "plugins/plugin_manager.h"
-#include <gtk/gtk.h>
-
-
-void
-create_project (char * filename)
+typedef struct _Position
 {
-  project = malloc( sizeof( Project));
+  int       bar;
+  int       beat;
+  int       subbeat;
+  int       tick;
+} Position;
 
-  // set title
-  GString * title = g_string_new (filename);
-  g_message ("Creating project %s...", title->str);
-  project->title = title;
+typedef struct _Region
+{
+  Position     start_pos;
+  Position     end_pos;
+} Region;
 
-  init_audio_engine ();
+/**
+ * Initializes given position to all 0
+ */
+void
+init_position_to_zero (Position * position);
 
-  init_plugin_manager ();
-
-  init_timeline ();
-
-  init_settings ();
-}
+/**
+ * Sets position to given bar
+ */
+void
+set_position_to_bar (Position * position,
+                      int        bar_no);

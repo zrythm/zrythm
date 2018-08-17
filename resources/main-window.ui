@@ -512,6 +512,7 @@
                                     <property name="height_request">60</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="hexpand">True</property>
                                     <property name="hscrollbar_policy">external</property>
                                     <property name="vscrollbar_policy">never</property>
                                     <property name="shadow_type">in</property>
@@ -519,9 +520,9 @@
                                       <object class="GtkViewport" id="gviewport-ruler">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
+                                        <property name="hexpand">True</property>
                                         <child>
                                           <object class="GtkDrawingArea" id="gdrawingarea-ruler">
-                                            <property name="width_request">1200</property>
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
                                             <property name="hexpand">True</property>
@@ -546,13 +547,14 @@
                                       <object class="GtkViewport" id="gviewport-timeline">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
+                                        <property name="hexpand">True</property>
                                         <property name="hscroll_policy">natural</property>
                                         <property name="vscroll_policy">natural</property>
                                         <child>
                                           <object class="GtkOverlay" id="goverlay-timeline">
-                                            <property name="width_request">1200</property>
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
+                                            <property name="hexpand">True</property>
                                             <child type="overlay">
                                               <object class="GtkDrawingArea" id="gdrawingarea-timeline">
                                                 <property name="visible">True</property>

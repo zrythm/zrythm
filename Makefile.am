@@ -1,2 +1,2 @@
-# Build recursively in src/
-SUBDIRS = src
+SUBDIRS = src \
+					data

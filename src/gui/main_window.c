@@ -23,6 +23,7 @@
 #include "gui/main_window.h"
 #include "gui/widgets/instrument_timeline_view.h"
 #include "gui/widgets/ruler.h"
+#include "gui/widgets/timeline.h"
 #include "config.h"
 
 #define GET_WIDGET(object_name) GTK_WIDGET ( \
@@ -169,6 +170,9 @@ create_main_window()
   GtkWidget * ruler_drawing_area = GET_WIDGET ("gdrawingarea-ruler");
   GtkWidget * timeline_drawing_area = GET_WIDGET ("gdrawingarea-timeline");
   GtkWidget * scrollwindow_ruler = GET_WIDGET ("gscrolledwindow-ruler");
+  GtkWidget * ruler_viewport = GET_WIDGET ("gviewport-ruler");
+  GtkWidget * timeline_viewport = GET_WIDGET ("gviewport-timeline");
+  GtkWidget * timeline_overlay = GET_WIDGET ("goverlay-timeline");
   GtkWidget * scrollwindow_timeline = GET_WIDGET ("gscrolledwindow-timeline");
   set_ruler (ruler_drawing_area);
   gtk_scrolled_window_set_hadjustment (GTK_SCROLLED_WINDOW (scrollwindow_ruler),
@@ -176,10 +180,18 @@ create_main_window()
                                            GTK_SCROLLED_WINDOW (
                                                scrollwindow_timeline)));
 
-  // set timeline FIXME
-  set_ruler (timeline_drawing_area);
+  /* set timeline */
+  set_timeline (multi_paned,
+                timeline_overlay,
+                timeline_drawing_area);
   gtk_scrolled_window_set_min_content_width (GTK_SCROLLED_WINDOW (scrollwindow_timeline),
                                              400);
+  GtkWidget * gscrollwindow_instruments =
+    GET_WIDGET ("gscrolledwindow-instruments");
+  gtk_scrolled_window_set_vadjustment (
+    GTK_SCROLLED_WINDOW (scrollwindow_timeline),
+    gtk_scrolled_window_get_vadjustment (
+      GTK_SCROLLED_WINDOW (gscrollwindow_instruments)));
 
   // set signals
   g_signal_connect (window, "destroy",

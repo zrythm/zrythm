@@ -1,21 +1,18 @@
-# We are building some programs to be installed in bin dir
-# There is only one program to build, zrythm
-#EXTRA_DIST = resources.c
 bin_PROGRAMS = zrythm
 
 # sources for zrythm
 zrythm_SOURCES = main.c \
                  init.c \
-				 project.c \
-				 audio/engine.c \
-				 gui/main_window.c \
-				 gui/widgets/instrument_timeline_view.c \
-				 gui/widgets/ruler.c \
-				 plugins/plugin_manager.c
-nodist_zrythm_SOURCES = resources.c
-zrythm.$(OBJEXT): resources.c # manually declare dependency
-
-BUILT_SOURCES = resources.c
+								 project.c \
+								 settings.c \
+								 audio/engine.c \
+								 audio/timeline.c \
+								 audio/region.c \
+								 gui/main_window.c \
+								 gui/widgets/instrument_timeline_view.c \
+								 gui/widgets/ruler.c \
+								 gui/widgets/timeline.c \
+								 plugins/plugin_manager.c
 
 AM_CFLAGS = -rdynamic -I$(top_srcdir)/inc \
 			$(GTK_CFLAGS) \
@@ -30,16 +27,13 @@ zrythm_LDADD = $(GTK_LIBS) \
 			   $(LILV_LIBS) \
 			   -lm
 
+nodist_zrythm_SOURCES = resources.c
+zrythm.$(OBJEXT): resources.c # manually declare dependency
+
+BUILT_SOURCES = resources.c
+
 # resources is a built source that should be cleaned
 CLEANFILES = resources.c
-
-# desktop file
-desktopdir = $(datadir)/applications
-desktop_DATA = $(top_srcdir)/resources/zrythm.desktop
-
-#the application icon
-appicondir=$(datadir)/icons/hicolor/scalable/apps
-appicon_DATA = $(top_srcdir)/resources/z.svg
 
 # build rule for resources.c
 resources.c:

@@ -1,5 +1,5 @@
 /*
- * project.c - A project (or song), containing all the project data
+ * settings.c - application settings
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -20,28 +20,13 @@
  */
 
 #include "project.h"
-#include "settings.h"
-#include "audio/engine.h"
-#include "audio/timeline.h"
-#include "plugins/plugin_manager.h"
-#include <gtk/gtk.h>
-
 
 void
-create_project (char * filename)
+init_settings ()
 {
-  project = malloc( sizeof( Project));
+  g_message ("Initializing settings...");
+  GSettings * gsettings =
+    g_settings_new ("online.alextee.zrythm");
 
-  // set title
-  GString * title = g_string_new (filename);
-  g_message ("Creating project %s...", title->str);
-  project->title = title;
-
-  init_audio_engine ();
-
-  init_plugin_manager ();
-
-  init_timeline ();
-
-  init_settings ();
+  project->settings = gsettings;
 }
