@@ -26,5 +26,12 @@ struct GtkWidget;
  * Adds an instrument timeline view based on the given instrument
  * TODO: implement instrument struct
  */
+GtkWidget *
+add_instrument (GtkWidget * container);
+
+/**
+ * Initializes the instrument timeline view for the first
+ * time
+ */
 void
-set_instrument_timeline_view (GtkWidget * container);
+init_ins_timeline_view (GtkWidget * container);

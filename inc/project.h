@@ -19,20 +19,54 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef __PROJECT_H__
+#define __PROJECT_H__
 
 #include <gtk/gtk.h>
 
 typedef struct _Audio_Engine Audio_Engine;
 typedef struct _Plugin_Manager Plugin_Manager;
 typedef struct _Timeline Timeline;
+typedef struct _Channel_Manager Channel_Manager;
+typedef struct _Widget_Manager Widget_Manager;
+typedef struct _Settings_Manager Settings_Manager;
 
 typedef struct _Project
 {
+  /**
+   * Project title
+   */
   GString *         title;
+
+  /**
+   * The audio backend
+   */
   Audio_Engine *    audio_engine;
+
+  /**
+   * Manages plugins (loading, instantiating, etc.)
+   */
   Plugin_Manager *  plugin_manager;
+
+  /**
+   * Manages channel slots, like instruments/audio/effects
+   */
+  Channel_Manager * channel_manager;
+
+  /**
+   * Manages GUI widgets
+   */
+  Widget_Manager * widget_manager;
+
+  /**
+   * Timeline metadata like BPM, time signature, etc.
+   */
   Timeline *        timeline;
-  GSettings *       settings;
+
+  /**
+   * Application settings
+   */
+  Settings_Manager *       settings_manager;
 } Project;
 
 extern Project * project;
@@ -60,3 +94,5 @@ open_project (GString * filename);
  */
 void
 save_project (GString * filename);
+
+#endif

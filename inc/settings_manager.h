@@ -22,7 +22,38 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
+#include <gtk/gtk.h>
+
+typedef struct _Settings_Manager
+{
+  GSettings * gsettings;
+} Settings_Manager;
+
+/**
+ * Initializes the settings manager
+ */
 void
-init_settings ();
+init_settings_manager ();
+
+/**
+ * @brief Returns the value for the given key
+ *
+ * @param key       they key
+ */
+GVariant *
+get_value (const char      * key);
+
+int
+get_int (const char *key);
+
+const char *
+get_string (const char * key);
+
+/**
+ * Stores given value in given key
+ */
+void
+store_value (char     * key,
+             GVariant * value);
 
 #endif

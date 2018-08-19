@@ -19,15 +19,14 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <dazzle.h>
 #include "gui/main_window.h"
+#include "gui/widget_manager.h"
 #include "gui/widgets/instrument_timeline_view.h"
+#include "gui/widgets/browser.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline.h"
 #include "config.h"
 
-#define GET_WIDGET(object_name) GTK_WIDGET ( \
-        gtk_builder_get_object (builder, object_name))
 
 gboolean is_maximized = 0;
 
@@ -93,11 +92,10 @@ maximize_clicked (GtkButton * button,
 GtkWidget*
 create_main_window()
 {
-  GtkWidget  *window;
   GtkBuilder *builder;
   GError     *err = NULL;
 
-  // get window from ui file
+  g_message ("Reading UI file...");
   builder = gtk_builder_new ();
   gtk_builder_add_from_resource (builder,
                                  "/online/alextee/zrythm/main-window.ui",
@@ -107,7 +105,11 @@ create_main_window()
         g_error_free(err);
         return NULL;
   }
-  window = GET_WIDGET ("gapplicationwindow-main");
+
+  g_message ("Registering widgets...");
+  register_widgets (builder);
+
+  GtkWidget * window = GET_WIDGET ("gapplicationwindow-main");
   if (window == NULL || !GTK_IS_WINDOW(window)) {
         g_error ("Unable to get window. (window == NULL || window != GtkWindow)");
         return NULL;
@@ -136,6 +138,24 @@ create_main_window()
           "/online/alextee/zrythm/maximize.svg");
   button = GET_WIDGET ("gbutton-maximize-window");
   gtk_button_set_image( GTK_BUTTON (button), image);
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/play.svg");
+  button = GET_WIDGET ("gbutton-play");
+  gtk_button_set_image( GTK_BUTTON (button), image);
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/stop.svg");
+  button = GET_WIDGET ("gbutton-stop");
+  gtk_button_set_image( GTK_BUTTON (button), image);
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/plus.svg");
+  button = GET_WIDGET ("gtoolbutton-add-instrument");
+  gtk_tool_button_set_icon_widget(
+            GTK_TOOL_BUTTON (button),
+            image);
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/record.svg");
+  button = GET_WIDGET ("gtogglebutton-record");
+  gtk_button_set_image( GTK_BUTTON (button), image);
 
 
   // set css
@@ -147,24 +167,12 @@ create_main_window()
           800);
   g_object_unref (css_provider);
 
-  // add the instruments GtkPaned
-  GtkWidget * gviewport_instruments = GET_WIDGET ("gviewport-instruments");
-  GtkWidget * multi_paned = dzl_multi_paned_new ();
-  gtk_container_add (GTK_CONTAINER (gviewport_instruments),
-                     multi_paned);
-  gtk_widget_set_size_request (multi_paned, -1, 5000);
-
-
   // add a few test instruments
-  set_instrument_timeline_view (multi_paned);
-  set_instrument_timeline_view (multi_paned);
-  set_instrument_timeline_view (multi_paned);
-  set_instrument_timeline_view (multi_paned);
-  set_instrument_timeline_view (multi_paned);
-  set_instrument_timeline_view (multi_paned);
-  set_instrument_timeline_view (multi_paned);
-  set_instrument_timeline_view (multi_paned);
-  set_instrument_timeline_view (multi_paned);
+  GtkWidget * gpaned_instruments = GET_WIDGET ("gpaned-instruments");
+  init_ins_timeline_view (gpaned_instruments);
+  GtkWidget * paned1 = add_instrument (gpaned_instruments);
+  GtkWidget * paned2 = add_instrument (paned1);
+  GtkWidget * paned3 = add_instrument (paned2);
 
   // set ruler
   GtkWidget * ruler_drawing_area = GET_WIDGET ("gdrawingarea-ruler");
@@ -181,7 +189,7 @@ create_main_window()
                                                scrollwindow_timeline)));
 
   /* set timeline */
-  set_timeline (multi_paned,
+  set_timeline (gpaned_instruments,
                 timeline_overlay,
                 timeline_drawing_area);
   gtk_scrolled_window_set_min_content_width (GTK_SCROLLED_WINDOW (scrollwindow_timeline),
@@ -192,6 +200,9 @@ create_main_window()
     GTK_SCROLLED_WINDOW (scrollwindow_timeline),
     gtk_scrolled_window_get_vadjustment (
       GTK_SCROLLED_WINDOW (gscrollwindow_instruments)));
+
+  /* set browser */
+  setup_browser ();
 
   // set signals
   g_signal_connect (window, "destroy",

@@ -20,12 +20,14 @@
  */
 
 #include "project.h"
+#include "settings_manager.h"
 #include "audio/timeline.h"
+#include "gui/widget_manager.h"
 
 #include <gtk/gtk.h>
 
 #define Y_SPACING 9
-#define FONT "Unifont"
+#define FONT "Monospace"
 #define FONT_SIZE 16
 
 static int px_per_beat;
@@ -74,9 +76,10 @@ draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
           cairo_move_to (cr, i, 0);
           cairo_line_to (cr, i, height / 3);
           cairo_stroke (cr);
+          cairo_set_source_rgb (cr, 0.8, 0.8, 0.8);
           cairo_select_font_face(cr, FONT,
               CAIRO_FONT_SLANT_NORMAL,
-              CAIRO_FONT_WEIGHT_BOLD);
+              CAIRO_FONT_WEIGHT_NORMAL);
           cairo_set_font_size(cr, FONT_SIZE);
           gchar * label = g_strdup_printf ("%d", bar_count);
           static cairo_text_extents_t extents;
@@ -149,10 +152,7 @@ reset_ruler ()
 void
 set_ruler (GtkWidget * drawing_area)
 {
-  int default_px_per_beat =
-    g_variant_get_int32 (
-      g_settings_get_value (project->settings,
-                            "pixels-per-beat"));
+  int default_px_per_beat = PX_PER_BEAT;
 
   /* adjust for zoom level */
   px_per_beat = (int) ((float) default_px_per_beat *

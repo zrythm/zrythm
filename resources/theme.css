@@ -1,10 +1,58 @@
-@define-color bg_color #080808;
+@define-color bg_color #090909;
+@define-color bg_color_light #0B0B0B;
+@define-color bg_color_lighter #0D0D0D;
+@define-color bg_color_entry #181818;
+@define-color selection_color #202530;
+@define-color selection_color_lighter #405060;
 
-* {
+menubar,
+toolbar {
   background-color: @bg_color;
-  /*color: green;*/
+}
+
+paned,
+box,
+notebook stack,
+notebook header,
+treeview.view * {
+  background-color: @bg_color_light;
+}
+
+treeview.view:selected {
+  background-color: @selection_color_lighter;
+}
+
+#gdrawingarea-ruler {
+  background-color: @bg_color_lighter;
+}
+
+entry {
+  background-color: @bg_color_entry;
 }
 
 button {
   background-image: image(url("fancy.svg"), url("plain.png"), @bg_color);
 }
+
+paned separator {
+  background-color: alpha(white, 0.80);
+}
+
+paned separator:hover {
+  background-color: alpha (white, 0.40);
+}
+
+paned#gpaned-instruments separator {
+  background-color: alpha(white, 0.22);
+}
+
+#gpaned-instruments separator:hover {
+  background-color: alpha (white, 0.40);
+}
+
+#gdrawingarea-timeline,
+flowbox.timeline-instrument {
+  background-color: alpha (white, 0.12);
+}
+
+

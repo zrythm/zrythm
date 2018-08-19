@@ -20,34 +20,29 @@
  */
 
 #include "project.h"
+#include "settings_manager.h"
 #include "audio/timeline.h"
+#include "gui/widget_manager.h"
 
 #include <gtk/gtk.h>
-
-#define DEFAULT_PX_PER_BEAT 60.0f
 
 static int px_per_beat;
 static int px_per_bar;
 static int total_px;
-static GtkWidget * multi_paned;
+static GtkWidget * gpaned_instruments;
 
 static void
 draw_borders (GtkWidget * widget,
-              gpointer data)
+              cairo_t * cr,
+              int y_offset)
 {
-  static int y_offset = 0;
-
-  cairo_t *cr = (cairo_t *) data;
   guint height = gtk_widget_get_allocated_height (widget);
-  g_message ("%d", height);
 
   cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
   cairo_set_line_width (cr, 0.5);
-  cairo_move_to (cr, 0, y_offset + height);
-  cairo_line_to (cr, 300, y_offset + height);
+  cairo_move_to (cr, 0, y_offset);
+  cairo_line_to (cr, total_px, y_offset);
   cairo_stroke (cr);
-
-  y_offset += height;
 }
 
 static gboolean
@@ -92,10 +87,10 @@ draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
       }
       else if (i % px_per_beat == 0)
       {
-          cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
+          cairo_set_source_rgb (cr, 0.25, 0.25, 0.25);
           cairo_set_line_width (cr, 0.5);
           cairo_move_to (cr, i, 0);
-          cairo_line_to (cr, i, height / 4);
+          cairo_line_to (cr, i, height);
           cairo_stroke (cr);
       }
       else if (0)
@@ -105,28 +100,50 @@ draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
   }
 
   /* handle horizontal drawing */
-  gtk_container_forall (
-    GTK_CONTAINER (multi_paned),
-    draw_borders,
-    cr);
+  GtkWidget * inner_paned = gpaned_instruments;
+  int y_offset = 0;
+  do
+    {
+      GtkWidget * flowbox = gtk_paned_get_child1 (
+              GTK_PANED (inner_paned));
+
+      gint wx, wy;
+      gtk_widget_translate_coordinates(
+                flowbox,
+                widget,
+                0,
+                0,
+                &wx,
+                &wy);
+      draw_borders (flowbox, cr, wy);
+      inner_paned = gtk_paned_get_child2 (
+            GTK_PANED (inner_paned));
+  } while (GTK_IS_PANED (inner_paned));
+
+  gint wx, wy;
+  gtk_widget_translate_coordinates(
+            inner_paned,
+            widget,
+            0,
+            0,
+            &wx,
+            &wy);
+  draw_borders (inner_paned, cr, wy);
 
 
- return FALSE;
+  return FALSE;
 }
 
 /**
  * adds callbacks to the drawing area given
  */
 void
-set_timeline (GtkWidget * _multi_paned,
+set_timeline (GtkWidget * _gpaned_instruments,
               GtkWidget * overlay,
               GtkWidget * drawing_area)
 {
-  multi_paned = _multi_paned;
-  int default_px_per_beat =
-    g_variant_get_int32 (
-      g_settings_get_value (project->settings,
-                            "pixels-per-beat"));
+  gpaned_instruments = _gpaned_instruments;
+  int default_px_per_beat = PX_PER_BEAT;
 
   /* adjust for zoom level */
   px_per_beat = (int) ((float) default_px_per_beat *
@@ -140,10 +157,15 @@ set_timeline (GtkWidget * _multi_paned,
 
 
   // set the size
+  int ww, hh;
+  gtk_widget_get_size_request (
+    GTK_WIDGET (gpaned_instruments),
+    &ww,
+    &hh);
   gtk_widget_set_size_request (
     GTK_WIDGET (overlay),
     total_px,
-    gtk_widget_get_allocated_height (multi_paned));
+    hh);
 
   g_signal_connect (G_OBJECT (drawing_area), "draw",
                     G_CALLBACK (draw_callback), NULL);

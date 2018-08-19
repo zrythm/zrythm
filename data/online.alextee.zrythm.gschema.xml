@@ -3,35 +3,18 @@
 <schemalist>
   <schema id="online.alextee.zrythm"
           path="/online/alextee/zrythm/">
-    <key name='test' type='b'>
-      <default>true</default>
-      <summary>Summary of test</summary>
+    <key name='browser-divider-position' type='i'>
+      <default>220</default>
+      <summary>Divider position</summary>
       <description>
-        Some description
+        Height of the instrument browser on the top side of
+        the GtkPaned
       </description>
     </key>
 
-    <key name="pixels-per-beat" type='i'>
-      <default>20</default>
-      <summary>Pixels per beat</summary>
-      <description>
-        The number of pixels to draw between each beat,
-        before being adjusted for zoom.
-        Used by the ruler and timeline.
-      </description>
-    </key>
   </schema>
 
   <schema id="online.alextee.zrythm.gui">
-    <key name="pixels-per-beat" type='i'>
-      <default>20</default>
-      <summary>Pixels per beat</summary>
-      <description>
-        The number of pixels to draw between each beat,
-        before being adjusted for zoom.
-        Used by the ruler and timeline.
-      </description>
-    </key>
   </schema>
 
 </schemalist>

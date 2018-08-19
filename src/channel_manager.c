@@ -1,5 +1,5 @@
 /*
- * settings.c - application settings
+ * channel_manager.c - Manages channel slots
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,14 +19,16 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "project.h"
-
-void
-init_settings ()
+// TODO
+typedef struct _Channel_Manager
 {
-  g_message ("Initializing settings...");
-  GSettings * gsettings =
-    g_settings_new ("online.alextee.zrythm");
+  /**
+   * Number of channels currently in the project
+   */
+  int          num_of_chs;
 
-  project->settings = gsettings;
-}
+  /**
+   * Number of instruments, things that can be edited like synths or audio
+   */
+  int          num_of_ins;
+} Channel_Manager;

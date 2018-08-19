@@ -1,5 +1,5 @@
 /*
- * project.c - A project (or song), containing all the project data
+ * gui/widgets/browser.h - The plugin, etc., browser on the right
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,32 +19,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "project.h"
-#include "settings_manager.h"
-#include "audio/engine.h"
-#include "audio/timeline.h"
-#include "gui/widget_manager.h"
-#include "plugins/plugin_manager.h"
-#include <gtk/gtk.h>
-
+#ifndef __GUI_WIDGETS_BROWSER_H__
+#define __GUI_WIDGETS_BROWSER_H__
+struct GtkListStore;
 
 void
-create_project (char * filename)
-{
-  project = malloc( sizeof( Project));
+setup_browser ();
 
-  // set title
-  GString * title = g_string_new (filename);
-  g_message ("Creating project %s...", title->str);
-  project->title = title;
 
-  init_audio_engine ();
-
-  init_plugin_manager ();
-
-  init_timeline ();
-
-  init_settings_manager ();
-
-  init_widget_manager ();
-}
+#endif

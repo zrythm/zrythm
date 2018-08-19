@@ -3,9 +3,16 @@
   <gresource prefix="/online/alextee/zrythm">
     <file preprocess="xml-stripblanks">main-window.ui</file>
     <file>theme.css</file>
+
+    <!-- icons -->
+    <file>close.svg</file>
+    <file>instrument.svg</file>
     <file>maximize.svg</file>
     <file>minimize.svg</file>
-    <file>close.svg</file>
+    <file>play.svg</file>
+    <file>plus.svg</file>
+    <file>record.svg</file>
+    <file>stop.svg</file>
     <file>z.svg</file>
   </gresource>
 </gresources>
