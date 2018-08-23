@@ -26,6 +26,7 @@ typedef struct Widget_Manager Widget_Manager;
 typedef struct Settings_Manager Settings_Manager;
 typedef struct Audio_Engine Audio_Engine;
 typedef struct Plugin_Manager Plugin_Manager;
+typedef struct Project Project;
 
 typedef struct Zrythm_System
 {
@@ -49,6 +50,12 @@ typedef struct Zrythm_System
    * Application settings
    */
   Settings_Manager *       settings_manager;
+
+  /**
+   * The project global variable, containing all the information that
+   * should be available to all files.
+   */
+  Project * project;
 
 } Zrythm_System;
 

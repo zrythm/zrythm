@@ -20,6 +20,7 @@
  */
 
 #include "zrythm_system.h"
+#include "audio/mixer.h" /* FIXME delete */
 #include "gui/main_window.h"
 #include "gui/widget_manager.h"
 #include "gui/widgets/instrument_timeline_view.h"

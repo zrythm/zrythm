@@ -33,7 +33,7 @@
  * adds given channel to mixer and updates count
  **/
 #define ADD_CHANNEL(channel) MIXER->channels[ \
-                                  MIXER->num_channels++] = channel;
+                                  MIXER->num_channels] = channel;
 
 
 typedef jack_default_audio_sample_t   sample_t;
@@ -42,17 +42,6 @@ typedef jack_nframes_t                nframes_t;
 typedef struct Channel Channel;
 typedef struct Port Port;
 
-/**
- * The mixer begins the audio processing process.
- * For each channel, it calls the process function of each plugin in order,
- * and keeps the final signal for each channel.
- *
- * When every channel has finished processing, the signals are summed
- * and sent to Jack.
- */
-typedef void (*process_func) (nframes_t,    ///< sample count
-                              sample_t *,   ///< sample buffer L
-                              sample_t *);   ///< sample buffer R
 
 typedef struct Mixer
 {
@@ -61,7 +50,6 @@ typedef struct Mixer
   Port           * ports[600];        ///< all ports FIXME necessary?
   int            num_ports;           ///< # of ports registered with plugins
   Channel        * master;                  ///< master output
-  process_func   process;                   ///< the process func
 
 } Mixer;
 
@@ -70,5 +58,19 @@ typedef struct Mixer
  */
 void
 mixer_init ();
+
+/**
+ * The mixer begins the audio processing process.
+ *
+ * For each channel, it calls the process function of each plugin in order,
+ * and keeps the final signal for each channel.
+ *
+ * When every channel has finished processing, the signals are summed
+ * and sent to Jack.
+ */
+void
+mixer_process (nframes_t     _nframes,       ///< number of frames to fill in
+              sample_t      * _l_buf,            ///< left buffer
+              sample_t      * _r_buf);            ///< right buffer
 
 #endif

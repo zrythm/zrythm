@@ -19,6 +19,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "zrythm_system.h"
 #include "project.h"
 #include "audio/timeline.h"
 #include <gtk/gtk.h>
@@ -27,13 +28,12 @@
 void
 create_project (char * filename)
 {
-  project = malloc( sizeof( Project));
+  PROJECT = malloc( sizeof( Project));
 
   // set title
   GString * title = g_string_new (filename);
   g_message ("Creating project %s...", title->str);
-  project->title = title;
+  PROJECT->title = title;
 
   init_timeline ();
-
 }

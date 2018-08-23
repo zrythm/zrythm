@@ -53,7 +53,7 @@ Plugin *
 plugin_new_dummy (Channel * channel    ///< channel it belongs to
             )
 {
-  Plugin * plugin = plugin_new (channel);
+  Plugin * plugin = plugin_new ();
 
   plugin->descr.author = "Zrythm";
   plugin->descr.name = DUMMY_PLUGIN;
@@ -64,11 +64,22 @@ plugin_new_dummy (Channel * channel    ///< channel it belongs to
   plugin->descr.num_audio_outs = 2;
   plugin->descr.num_midi_outs = 1;
 
+  plugin->num_in_ports = 0;
   plugin->in_ports[plugin->num_in_ports++] = port_new ();
   plugin->in_ports[plugin->num_in_ports++] = port_new ();
 
+  plugin->num_out_ports = 0;
   plugin->out_ports[plugin->num_out_ports++] = port_new ();
   plugin->out_ports[plugin->num_out_ports++] = port_new ();
+
+  /* FIXME is this really needed */
+  plugin->num_unknown_ports = 0;
+
+  plugin->processed = 0;
+
+  plugin->original_plugin = NULL;
+
+  plugin->channel = channel;
 
   return plugin;
 }
@@ -107,7 +118,7 @@ plugin_process (Plugin * plugin)
 int
 plugin_is_dummy (Plugin *plugin)
 {
-  return (strcmp (plugin->descr.name, DUMMY_PLUGIN));
+  return (!strcmp (plugin->descr.name, DUMMY_PLUGIN));
 }
 
 /**

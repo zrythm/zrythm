@@ -23,6 +23,9 @@
 #include <stdlib.h>
 
 #include "audio/channel.h"
+#include "audio/mixer.h"
+
+#include <gtk/gtk.h>
 
 /**
  * For each plugin
@@ -79,6 +82,7 @@ channel_process (Channel * channel,  ///< slots
 Channel *
 channel_create (int     type)             ///< the channel type (AUDIO/INS)
 {
+  g_message ("Creating channel of type %i", type);
   Channel * channel = malloc (sizeof (Channel));
 
   /* init plugins */
@@ -99,6 +103,10 @@ channel_create (int     type)             ///< the channel type (AUDIO/INS)
   channel->volume = 0.0;
   channel->muted = 0;
   channel->soloed = 0;
+
+  if (type != CT_MASTER) MIXER->num_channels++;
+
+  return channel;
 }
 
 /**

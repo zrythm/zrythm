@@ -30,7 +30,7 @@
 
 #include <gtk/gtk.h>
 
-#define AUDIO_TIMELINE project->timeline
+#define AUDIO_TIMELINE PROJECT->timeline
 
 struct Project;
 
@@ -40,7 +40,7 @@ typedef enum {
 	PLAYSTATE_PAUSED
 } Play_State;
 
-typedef struct _Timeline
+typedef struct Timeline
 {
   int           total_bars;             ///< total bars in the song
   Position      playhead_pos;           ///< playhead position

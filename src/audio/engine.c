@@ -43,20 +43,23 @@ jack_client_t *client;
 static int
 jack_buffer_size_cb(jack_nframes_t nframes, void* data)
 {
-	AUDIO_ENGINE->block_length = nframes;
-	AUDIO_ENGINE->buf_size_set = true;
+  AUDIO_ENGINE->block_length = nframes;
+  AUDIO_ENGINE->buf_size_set = true;
 #ifdef HAVE_JACK_PORT_TYPE_GET_BUFFER_SIZE
-	AUDIO_ENGINE->midi_buf_size = jack_port_type_get_buffer_size(
-		AUDIO_ENGINE->client, JACK_DEFAULT_MIDI_TYPE);
+  AUDIO_ENGINE->midi_buf_size = jack_port_type_get_buffer_size(
+          AUDIO_ENGINE->client, JACK_DEFAULT_MIDI_TYPE);
 #endif
-        for (int i = 0; i< PLUGIN_MANAGER->num_plugins; i++)
-          {
-            if (PLUGIN_MANAGER->plugins[i]->descr.protocol = PROT_LV2)
-              {
-                lv2_allocate_port_buffers ((LV2_Plugin *)PLUGIN_MANAGER->plugins[i]->original_plugin);
-              }
-          }
-	return 0;
+  for (int i = 0; i< PLUGIN_MANAGER->num_plugins; i++)
+    {
+      if (PLUGIN_MANAGER->plugins[i]->descr.protocol = PROT_LV2)
+        {
+          lv2_allocate_port_buffers ((LV2_Plugin *)PLUGIN_MANAGER->plugins[i]->original_plugin);
+        }
+    }
+  g_message ("JACK: Block length changed to %d, midi buf size to %f",
+             AUDIO_ENGINE->block_length,
+             AUDIO_ENGINE->midi_buf_size);
+  return 0;
 }
 
 /**
@@ -71,31 +74,31 @@ static int
 jack_process_cb (jack_nframes_t    nframes,     ///< the number of frames to fill
          void              * data)       ///< user data
 {
-	jack_default_audio_sample_t *out1, *out2;
-	int i;
+  jack_default_audio_sample_t *out1, *out2;
+  int i;
 
-        /**
-         * get jack's buffers with nframes frames for left & right
-         */
-	out1 = (jack_default_audio_sample_t*)
-          jack_port_get_buffer (output_port1, nframes);
-	out2 = (jack_default_audio_sample_t*)
-          jack_port_get_buffer (output_port2, nframes);
+  /**
+   * get jack's buffers with nframes frames for left & right
+   */
+  out1 = (jack_default_audio_sample_t*)
+    jack_port_get_buffer (output_port1, nframes);
+  out2 = (jack_default_audio_sample_t*)
+    jack_port_get_buffer (output_port2, nframes);
 
-        /*
-         * process
-         */
-        MIXER->process (nframes, out1, out2);
-	for( i=0; i<nframes; i++ )
-	{
-		out1[i] = 0.1f;  /* left */
-		out2[i] = 0.2f;  /* right */
-	}
+  /*
+   * process
+   */
+  mixer_process (nframes, out1, out2);
+  /*for( i=0; i<nframes; i++ )*/
+  /*{*/
+          /*out1[i] = 0.1f;  [> left <]*/
+          /*out2[i] = 0.2f;  [> right <]*/
+  /*}*/
 
-        /*
-         * processing finished, return 0
-         */
-	return 0;
+  /*
+   * processing finished, return 0
+   */
+  return 0;
 }
 
 /**
@@ -105,8 +108,8 @@ jack_process_cb (jack_nframes_t    nframes,     ///< the number of frames to fil
 void
 jack_shutdown_cb (void *arg)
 {
-    // TODO
-    g_error ("Jack shutting down...");
+  // TODO
+  g_error ("Jack shutting down...");
 }
 
 /**
@@ -116,7 +119,8 @@ void
 init_audio_engine()
 {
     g_message ("Initializing audio engine...");
-    Audio_Engine * engine = malloc (sizeof (Audio_Engine));
+    AUDIO_ENGINE = malloc (sizeof (Audio_Engine));
+    Audio_Engine * engine = AUDIO_ENGINE;
 
     const char **ports;
     const char *client_name = "zrythm";
@@ -168,7 +172,6 @@ init_audio_engine()
 #endif
 
     /* create two ports */
-
     output_port1 = jack_port_register (client, "output1",
                                       JACK_DEFAULT_AUDIO_TYPE,
                                       JackPortIsOutput, 0);
@@ -188,7 +191,9 @@ init_audio_engine()
      * process() callback will start running now. */
     if (jack_activate (client)) {
             g_error ("cannot activate client");
+            return;
     }
+    g_message ("Jack activated");
 
     /* Connect the ports.  You can't do this before the client is
      * activated, because we can't make connections to clients
@@ -215,7 +220,6 @@ init_audio_engine()
 
     jack_free (ports);
 
-    zrythm_system->audio_engine = engine;
 }
 
 void

@@ -22,6 +22,7 @@
 #include "settings_manager.h"
 #include "zrythm_system.h"
 #include "audio/engine.h"
+#include "audio/mixer.h"
 #include "gui/widget_manager.h"
 #include "plugins/plugin_manager.h"
 

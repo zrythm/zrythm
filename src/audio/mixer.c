@@ -30,6 +30,8 @@
 #include "audio/engine.h"
 #include "audio/mixer.h"
 
+#include <gtk/gtk.h>
+
 static nframes_t   nframes;
 static sample_t     * l_buf;
 static sample_t     * r_buf;
@@ -68,7 +70,7 @@ perform_work (void * argument)
  * process callback
  */
 void
-process_impl (nframes_t     _nframes,           ///< number of frames to fill in
+mixer_process (nframes_t     _nframes,           ///< number of frames to fill in
               sample_t      * _l_buf,            ///< left buffer
               sample_t      * _r_buf)            ///< right buffer
 {
@@ -103,12 +105,12 @@ process_impl (nframes_t     _nframes,           ///< number of frames to fill in
     {
       result_code = pthread_join(threads[i], NULL);
     }
-
 }
 
 void
 mixer_init ()
 {
+  g_message ("Initializing mixer...");
   /* allocate size */
   MIXER = malloc (sizeof (Mixer));
 
@@ -120,8 +122,5 @@ mixer_init ()
   ADD_CHANNEL (channel_create (CT_AUDIO));
 
   /* create master channel */
-  MIXER->master = channel_create (CT_AUDIO);
-
-  /* add callback */
-  MIXER->process = process_impl;
+  MIXER->master = channel_create (CT_MASTER);
 }

@@ -19,10 +19,11 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "zrythm_system.h"
 #include "init.h"
 #include "project.h"
-#include "zrythm_system.h"
 #include "audio/engine.h"
+#include "audio/mixer.h"
 #include "audio/timeline.h"
 #include "gui/main_window.h"
 #include "plugins/plugin_manager.h"

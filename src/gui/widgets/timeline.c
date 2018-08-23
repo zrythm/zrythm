@@ -19,6 +19,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "zrythm_system.h"
 #include "project.h"
 #include "settings_manager.h"
 #include "audio/timeline.h"
@@ -59,7 +60,7 @@ draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
 
   static int playhead_pos_in_px;
   playhead_pos_in_px =
-    project->timeline->playhead_pos.bar * px_per_bar;
+    AUDIO_TIMELINE->playhead_pos.bar * px_per_bar;
 
   gtk_render_background (context, cr, 0, 0, total_px, height);
 
@@ -147,13 +148,13 @@ set_timeline (GtkWidget * _gpaned_instruments,
 
   /* adjust for zoom level */
   px_per_beat = (int) ((float) default_px_per_beat *
-                           project->timeline->zoom_level);
+                           AUDIO_TIMELINE->zoom_level);
 
   px_per_bar = px_per_beat *
-                  project->timeline->time_sig_denominator;
+                  AUDIO_TIMELINE->time_sig_denominator;
 
   total_px = px_per_bar *
-    project->timeline->total_bars;
+    AUDIO_TIMELINE->total_bars;
 
 
   // set the size

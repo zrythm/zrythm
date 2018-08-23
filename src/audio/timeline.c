@@ -20,6 +20,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "zrythm_system.h"
 #include "project.h"
 #include "audio/timeline.h"
 
@@ -32,7 +33,7 @@
 void
 init_timeline ()
 {
-  timeline = malloc (sizeof (Timeline));
+  Timeline * timeline = malloc (sizeof (Timeline));
 
   // set inital total number of beats
   // this is applied to the ruler
@@ -65,5 +66,5 @@ init_timeline ()
   /* set zoom level */
   timeline->zoom_level = DEFAULT_ZOOM_LEVEL;
 
-  project->timeline = timeline;
+  PROJECT->timeline = timeline;
 }

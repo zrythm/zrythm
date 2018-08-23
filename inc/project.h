@@ -26,11 +26,11 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _Timeline Timeline;
-typedef struct _Channel_Manager Channel_Manager;
+#define PROJECT zrythm_system->project
 
+typedef struct Timeline Timeline;
 
-typedef struct _Project
+typedef struct Project
 {
   /**
    * Project title
@@ -38,24 +38,11 @@ typedef struct _Project
   GString *         title;
 
   /**
-   * Manages channel slots, like instruments/audio/effects
-   * FIXME what's this
-   */
-  Channel_Manager * channel_manager;
-
-  /**
    * Timeline metadata like BPM, time signature, etc.
    */
   Timeline *        timeline;
 } Project;
 
-extern Project * project;
-
-/**
- * The project global variable, containing all the information that
- * should be available to all files.
- */
-Project * project;
 
 /**
  * Creates a project with default or given variables
