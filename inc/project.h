@@ -1,5 +1,7 @@
 /*
- * project.c - A project (or song), containing all the project data
+ * project.h - A project (or song), containing all the project data
+ *   as opposed to zrythm_system.h which manages things not project-dependent
+ *   like plugins and overall settings
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -24,12 +26,9 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _Audio_Engine Audio_Engine;
-typedef struct _Plugin_Manager Plugin_Manager;
 typedef struct _Timeline Timeline;
 typedef struct _Channel_Manager Channel_Manager;
-typedef struct _Widget_Manager Widget_Manager;
-typedef struct _Settings_Manager Settings_Manager;
+
 
 typedef struct _Project
 {
@@ -39,34 +38,15 @@ typedef struct _Project
   GString *         title;
 
   /**
-   * The audio backend
-   */
-  Audio_Engine *    audio_engine;
-
-  /**
-   * Manages plugins (loading, instantiating, etc.)
-   */
-  Plugin_Manager *  plugin_manager;
-
-  /**
    * Manages channel slots, like instruments/audio/effects
+   * FIXME what's this
    */
   Channel_Manager * channel_manager;
-
-  /**
-   * Manages GUI widgets
-   */
-  Widget_Manager * widget_manager;
 
   /**
    * Timeline metadata like BPM, time signature, etc.
    */
   Timeline *        timeline;
-
-  /**
-   * Application settings
-   */
-  Settings_Manager *       settings_manager;
 } Project;
 
 extern Project * project;

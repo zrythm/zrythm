@@ -23,68 +23,39 @@
 #ifndef __AUDIO_TIMELINE_H__
 #define __AUDIO_TIMELINE_H__
 
+#include <stdint.h>
+
+#include "project.h"
 #include "audio/region.h"
 
 #include <gtk/gtk.h>
 
+#define AUDIO_TIMELINE project->timeline
+
 struct Project;
+
+typedef enum {
+	PLAYSTATE_RUNNING,
+	PLAYSTATE_PAUSE_REQUESTED,
+	PLAYSTATE_PAUSED
+} Play_State;
 
 typedef struct _Timeline
 {
-  /**
-  * The total number of bars making up the song
-  */
-  int           total_bars;
-
-  /**
-   * The position of the playhead
-   */
-  Position      playhead_pos;
-
-  /**
-   * Loop start pos
-   */
-  Position      loop_start_pos;
-
-  /**
-   * Loop end pos
-   */
-  Position      loop_end_pos;
-
-  /**
-   * Start marker pos
-   */
-  Position      start_marker_pos;
-
-  /**
-   * End marker pos
-   */
-  Position      end_marker_pos;
-
-  /**
-   * An array containing all the regions in the timeline
-   */
-  GArray *      regions_array;
-
-  /**
-   * BPM
-   */
-  float           bpm;
-
-  /**
-   * Numerator of time signature (e.g. 4/4)
-   */
-  int             time_sig_numerator;
-
-  /**
-   * Denominator of time signature (e.g. 4/4)
-   */
-  int             time_sig_denominator;
-
-  /**
-   * Zoom level, used in ruler/timeline widget calculations
-   */
-  float           zoom_level;
+  int           total_bars;             ///< total bars in the song
+  Position      playhead_pos;           ///< playhead position
+  Position      loop_start_pos;         ///< loop marker start position
+  Position      loop_end_pos;           ///< loop marker end position
+  Position      start_marker_pos;       ///< start marker position
+  Position      end_marker_pos;         ///< end marker position
+  GArray *      regions_array;          ///< array containing all regions
+  int           time_sig_numerator;     ///< time signature numerator (eg 4)
+  int           time_sig_denominator;   ///< time singature denominator (eg 4)
+  float         zoom_level;             ///< zoom level used in ruler/timeline widget calculations FIXME move to gui
+  uint32_t           position;       ///< Transport position in frames
+	float              bpm;            ///< Transport tempo in beats per minute
+	int               rolling;        ///< Transport speed (0=stop, 1=play)
+  Play_State         play_state;     ///< play state
 } Timeline;
 
 extern Timeline * timeline;

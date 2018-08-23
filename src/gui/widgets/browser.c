@@ -20,6 +20,7 @@
  */
 
 #include "settings_manager.h"
+#include "zrythm_system.h"
 #include "gui/widget_manager.h"
 
 #include <gtk/gtk.h>

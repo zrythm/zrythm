@@ -1,5 +1,5 @@
 /*
- * project.c - A project (or song), containing all the project data
+ * audio/ports_manager.h - manages all ports created for/by plugins
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,21 +19,20 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "project.h"
-#include "audio/timeline.h"
-#include <gtk/gtk.h>
+#ifndef __AUDIO_PORT_MANAGER_H__
+#define __AUDIO_PORT_MANAGER_H__
 
+struct Port;
+
+typedef struct _Port_Manager
+{
+  Port          * ports;             ///< ports array
+  int        pcount;          ///< ports counter
+
+} Port_Manager;
 
 void
-create_project (char * filename)
-{
-  project = malloc( sizeof( Project));
+init_port_manager ();
 
-  // set title
-  GString * title = g_string_new (filename);
-  g_message ("Creating project %s...", title->str);
-  project->title = title;
 
-  init_timeline ();
-
-}
+#endif

@@ -53,10 +53,14 @@ init_timeline ()
   set_position_to_bar (&timeline->loop_end_pos,
                         8);
 
-  // set BPM related defaults
+  /* set BPM related defaults */
   timeline->bpm = DEFAULT_BPM;
   timeline->time_sig_numerator = DEFAULT_TIME_SIG_NUM;
   timeline->time_sig_denominator = DEFAULT_TIME_SIG_DEN;
+
+  /* set playstate */
+  timeline->play_state = PLAYSTATE_PAUSED;
+
 
   /* set zoom level */
   timeline->zoom_level = DEFAULT_ZOOM_LEVEL;

@@ -21,6 +21,7 @@
 
 #include "init.h"
 #include "project.h"
+#include "zrythm_system.h"
 #include "audio/engine.h"
 #include "audio/timeline.h"
 #include "gui/main_window.h"
@@ -70,6 +71,9 @@ void
 startup (GtkApplication* app,
          gpointer        user_data)
 {
+  /* init system */
+  zrythm_system_init ();
+
   // create project
   create_project ("project.xml");
 

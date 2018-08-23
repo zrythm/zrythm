@@ -19,8 +19,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <gtk/gtk.h>
 #include "init.h"
+
+#include <gtk/gtk.h>
+
+#include <suil/suil.h>
 
 /**
  * main
@@ -31,6 +34,9 @@ main (int    argc,
 {
   GtkApplication *app;
   int status;
+
+  /* init suil */
+  suil_init(&argc, &argv, SUIL_ARG_NONE);
 
   // create GTK application
   app = gtk_application_new ("online.alextee.zrythm", G_APPLICATION_FLAGS_NONE);

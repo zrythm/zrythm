@@ -1,6 +1,4 @@
 /*
- * project.c - A project (or song), containing all the project data
- *
  * Copyright (C) 2018 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -19,21 +17,11 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "project.h"
-#include "audio/timeline.h"
-#include <gtk/gtk.h>
+/** \file
+ * Backend implementation of LV2 Plugin. */
+
+#include "plugins/lv2_plugin.h"
+#include "plugins/lv2/worker.h"
+#include "plugins/lv2/control.h"
 
 
-void
-create_project (char * filename)
-{
-  project = malloc( sizeof( Project));
-
-  // set title
-  GString * title = g_string_new (filename);
-  g_message ("Creating project %s...", title->str);
-  project->title = title;
-
-  init_timeline ();
-
-}

@@ -19,21 +19,22 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "project.h"
-#include "audio/timeline.h"
-#include <gtk/gtk.h>
-
+#include "settings_manager.h"
+#include "zrythm_system.h"
+#include "audio/engine.h"
+#include "gui/widget_manager.h"
+#include "plugins/plugin_manager.h"
 
 void
-create_project (char * filename)
+zrythm_system_init ()
 {
-  project = malloc( sizeof( Project));
+  zrythm_system = malloc (sizeof (Zrythm_System));
 
-  // set title
-  GString * title = g_string_new (filename);
-  g_message ("Creating project %s...", title->str);
-  project->title = title;
+  init_settings_manager ();
 
-  init_timeline ();
+  init_widget_manager ();
 
+  plugin_manager_init ();
+
+  init_audio_engine ();
 }

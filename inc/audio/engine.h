@@ -19,13 +19,32 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef __AUDIO_ENGINE_H__
+#define __AUDIO_ENGINE_H__
+
 #define BLOCK_LENGTH 4096 // should be set by backend
 #define MIDI_BUF_SIZE 1024 // should be set by backend
 
-typedef struct _Audio_Engine
+#include "zrythm_system.h"
+
+#include <jack/jack.h>
+
+#define AUDIO_ENGINE zrythm_system->audio_engine
+
+typedef struct Mixer Mixer;
+
+typedef struct Audio_Engine
 {
-  int a;
+  jack_client_t     * client;     ///< jack client
+	uint32_t           block_length;   ///< Audio buffer size (block length)
+	size_t             midi_buf_size;  ///< Size of MIDI port buffers
+	uint32_t           sample_rate;    ///< Sample rate
+	int               buf_size_set;   ///< True iff buffer size callback fired
+  Mixer              * mixer;        ///< the mixer
+  //Port_Manager      * port_manager;  ///< manages all ports created for/by plugins
 } Audio_Engine;
 
 void
 init_audio_engine();
+
+#endif

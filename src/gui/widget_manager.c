@@ -19,7 +19,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "project.h"
+#include "zrythm_system.h"
 #include "gui/widget_manager.h"
 
 #define GET_WIDGET_FROM_BUILDER(object_name) GTK_WIDGET ( \
@@ -28,6 +28,8 @@
 #define REGISTER_WIDGET(object_name) \
   register_widget_from_builder (builder, \
                                 object_name)
+
+static Widget_Manager * widget_manager;
 
 void
 register_widgets (GtkBuilder * builder)
@@ -61,10 +63,11 @@ register_widgets (GtkBuilder * builder)
 void
 init_widget_manager ()
 {
-  project->widget_manager = malloc (sizeof (Widget_Manager));
-  project->widget_manager->widgets =
-    g_hash_table_new (g_str_hash,
-                      g_str_equal);
+  widget_manager = malloc (sizeof (Widget_Manager));
+  widget_manager->widgets = g_hash_table_new (g_str_hash,
+                         g_str_equal);
+
+  zrythm_system->widget_manager = widget_manager;
 }
 
 void
@@ -73,7 +76,7 @@ register_widget_from_builder (GtkBuilder * builder,
 {
   GtkWidget * widget = GET_WIDGET_FROM_BUILDER (key);
   gboolean result = g_hash_table_insert (
-      project->widget_manager->widgets,
+      widget_manager->widgets,
       key,
       widget);
   if (!result)

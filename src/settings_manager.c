@@ -19,8 +19,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "project.h"
 #include "settings_manager.h"
+#include "zrythm_system.h"
 
 static GSettings * gsettings;
 
@@ -36,7 +36,7 @@ init_settings_manager ()
 
   settings_manager->gsettings = gsettings;
 
-  project->settings_manager = settings_manager;
+  zrythm_system->settings_manager = settings_manager;
 }
 
 /**

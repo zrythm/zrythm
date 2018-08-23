@@ -1,5 +1,5 @@
 /*
- * settings.h - Settings
+ * audio/slot.c - a slot on a channel
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,41 +19,38 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __SETTINGS_H__
-#define __SETTINGS_H__
+#include "audio/plugin.h"
+#include "audio/slot.h"
 
-#include <gtk/gtk.h>
-
-typedef struct Settings_Manager
+/**
+ * Normally, the channel will call the process func on each of its plugins
+ * in order.
+ */
+void
+process_impl (Slot * slot,  ///< slot
+              nframes_t)    ///< sample count
 {
-  GSettings * gsettings;
-} Settings_Manager;
+  /* loop through each port of the plugin */
+  for (int i = 0; i < MAX_IN_PORTS; i++)
+    {
+      Ports * incoming_ports
+      while (
+      Plugin * bp = slots[i].plugin;
+      if (bp != NULL)
+        {
+          get_input_ports (
+          /* TODO connect ports, but for now assume everything uses 2 channels */
+          bp->process (
 
-/**
- * Initializes the settings manager
+
+}
+
+/*
+ * Initializes a slot with default values
  */
 void
-init_settings_manager ();
-
-/**
- * @brief Returns the value for the given key
- *
- * @param key       they key
- */
-GVariant *
-get_value (const char      * key);
-
-int
-get_int (const char *key);
-
-const char *
-get_string (const char * key);
-
-/**
- * Stores given value in given key
- */
-void
-store_value (char     * key,
-             GVariant * value);
-
-#endif
+init_slot (Slot * slot)
+{
+  slot->plugin = NULL;
+  slot->process = process_impl;
+}

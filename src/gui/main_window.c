@@ -19,6 +19,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "zrythm_system.h"
 #include "gui/main_window.h"
 #include "gui/widget_manager.h"
 #include "gui/widgets/instrument_timeline_view.h"
@@ -26,7 +27,6 @@
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline.h"
 #include "config.h"
-
 
 gboolean is_maximized = 0;
 

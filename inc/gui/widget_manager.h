@@ -38,10 +38,10 @@
  * The widgets must first be registered
  */
 #define GET_WIDGET(key) g_hash_table_lookup ( \
-                      project->widget_manager->widgets, \
+                      zrythm_system->widget_manager->widgets, \
                       key)
 
-typedef struct _Widget_Manager
+typedef struct Widget_Manager
 {
   GHashTable   * widgets;
 } Widget_Manager;

@@ -13,10 +13,10 @@ AC_PROG_CC([gcc])
 #Checks for typedefs, structures, and compiler characteristics.
 #Checks for library functions.
 PKG_CHECK_MODULES([GTK], [gtk+-3.0])
-#PKG_CHECK_MODULES([DAZZLE], [libdazzle-1.0])
 PKG_CHECK_MODULES([JACK], [jack])
 PKG_CHECK_MODULES([LV2], [lv2])
 PKG_CHECK_MODULES([LILV], [lilv-0])
+PKG_CHECK_MODULES([SUIL], [suil-0])
 
 # Declare config.h as output header
 AC_CONFIG_HEADERS([config.h])
