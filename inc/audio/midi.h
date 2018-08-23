@@ -1,5 +1,5 @@
 /*
- * inc/gui/widgets/ruler.h - Ruler
+ * audio/midi.h - MIDI related
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -16,24 +16,24 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_RULER_H__
-#define __GUI_WIDGETS_RULER_H__
-
-typedef int gboolean;
-typedef void* gpointer;
-struct GtkWidget;
-struct cairo_t;
-
-/**
- * Sets the ruler on the given blank drawing area
+/** \file
  */
-void
-set_ruler (GtkWidget * drawing_area);
 
-gboolean
-draw_callback (GtkWidget *, cairo_t *, gpointer data);
+#ifndef __AUDIO_MIDI_H__
+#define __AUDIO_MIDI_H__
+
+/* see http://www.onicos.com/staff/iz/formats/midi-event.html */
+#define MIDI_CH1_NOTE_ON 0x90
+#define MIDI_CH2_NOTE_ON 0x91
+#define MIDI_CH1_NOTE_OFF 0x80
+#define MIDI_CH2_NOTE_OFF 0x81
+#define MIDI_CH1_POLY_AFTERTOUCH 0xA0
+#define MIDI_CH1_CTRL_CHGE 0xB0
+#define MIDI_CH1_PROG_CHANGE 0xC0
+#define MIDI_CH1_CHAN_AFTERTOUCH 0xD0
+#define MIDI_CH1_PITCH_WHEEL_RANGE 0xE0
 
 #endif

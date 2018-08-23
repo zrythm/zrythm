@@ -28,10 +28,17 @@
 #include "zrythm_system.h"
 
 #include <jack/jack.h>
+#include <jack/midiport.h>
 
 #define AUDIO_ENGINE zrythm_system->audio_engine
 
 typedef struct Mixer Mixer;
+
+typedef struct MIDI_Controller
+{
+  jack_midi_event_t    in_event[30];
+  int                  num_events;
+} MIDI_Controller;
 
 typedef struct Audio_Engine
 {
@@ -41,6 +48,7 @@ typedef struct Audio_Engine
 	uint32_t           sample_rate;    ///< Sample rate
 	int               buf_size_set;   ///< True iff buffer size callback fired
   Mixer              * mixer;        ///< the mixer
+  MIDI_Controller    * midi_controller; ///< the midi input on JACK
   //Port_Manager      * port_manager;  ///< manages all ports created for/by plugins
 } Audio_Engine;
 

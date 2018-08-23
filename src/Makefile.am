@@ -16,6 +16,7 @@ zrythm_SOURCES = main.c \
 								 gui/widget_manager.c \
 								 gui/widgets/instrument_timeline_view.c \
 								 gui/widgets/browser.c \
+								 gui/widgets/knob.c \
 								 gui/widgets/ruler.c \
 								 gui/widgets/timeline.c \
 								 plugins/lv2_gtk.c \

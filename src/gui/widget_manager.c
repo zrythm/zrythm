@@ -58,6 +58,7 @@ register_widgets (GtkBuilder * builder)
   REGISTER_WIDGET ("gexpander-categories");
   REGISTER_WIDGET ("ggrid-browser");
   REGISTER_WIDGET ("gpaned-browser");
+  REGISTER_WIDGET ("gdrawingarea-knob");
 }
 
 void

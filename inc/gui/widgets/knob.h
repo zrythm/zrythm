@@ -1,5 +1,5 @@
 /*
- * inc/gui/widgets/ruler.h - Ruler
+ * gui/widgets/knob.h - knob
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -16,24 +16,23 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_RULER_H__
-#define __GUI_WIDGETS_RULER_H__
+/** \file
+ */
 
-typedef int gboolean;
-typedef void* gpointer;
-struct GtkWidget;
-struct cairo_t;
+#include <gtk/gtk.h>
 
 /**
- * Sets the ruler on the given blank drawing area
+ * Draws the knob.
+ */
+int
+draw_cb (GtkWidget *, cairo_t *, void* data);
+
+/**
+ * Creates a knob.
  */
 void
-set_ruler (GtkWidget * drawing_area);
+knob_set (GtkWidget * drawing_area);
 
-gboolean
-draw_callback (GtkWidget *, cairo_t *, gpointer data);
-
-#endif

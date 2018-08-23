@@ -25,6 +25,7 @@
 #include "gui/widget_manager.h"
 #include "gui/widgets/instrument_timeline_view.h"
 #include "gui/widgets/browser.h"
+#include "gui/widgets/knob.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline.h"
 #include "config.h"
@@ -204,6 +205,9 @@ create_main_window()
 
   /* set browser */
   setup_browser ();
+
+  /* set knob */
+  knob_set (GET_WIDGET ("gdrawingarea-knob"));
 
   // set signals
   g_signal_connect (window, "destroy",

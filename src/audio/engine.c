@@ -26,6 +26,7 @@
 
 #include "zrythm_system.h"
 #include "audio/engine.h"
+#include "audio/midi.h"
 #include "audio/mixer.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
@@ -34,14 +35,30 @@
 #include <gtk/gtk.h>
 
 #include <jack/jack.h>
+#include <jack/midiport.h>
 
-jack_port_t *output_port1, *output_port2;
+typedef jack_default_audio_sample_t   sample_t;
+typedef jack_nframes_t                nframes_t;
+
+jack_port_t *output_port1, *output_port2, *midi_in_port;
 jack_client_t *client;
 
+/* FIXME */
+sample_t note_on;
+unsigned char note = 0;
+
+/** Jack sample rate callback. */
+static int
+jack_sample_rate_cb(nframes_t nframes, void* data)
+{
+  AUDIO_ENGINE->sample_rate = nframes;
+  g_message ("JACK: Sample rate changed to %d", nframes);
+  return 0;
+}
 
 /** Jack buffer size callback. */
 static int
-jack_buffer_size_cb(jack_nframes_t nframes, void* data)
+jack_buffer_size_cb(nframes_t nframes, void* data)
 {
   AUDIO_ENGINE->block_length = nframes;
   AUDIO_ENGINE->buf_size_set = true;
@@ -71,29 +88,71 @@ jack_buffer_size_cb(jack_nframes_t nframes, void* data)
  *
  */
 static int
-jack_process_cb (jack_nframes_t    nframes,     ///< the number of frames to fill
+jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
          void              * data)       ///< user data
 {
-  jack_default_audio_sample_t *out1, *out2;
+  sample_t *out1, *out2;
   int i;
 
   /**
    * get jack's buffers with nframes frames for left & right
    */
-  out1 = (jack_default_audio_sample_t*)
+  out1 = (sample_t *)
     jack_port_get_buffer (output_port1, nframes);
-  out2 = (jack_default_audio_sample_t*)
+  out2 = (sample_t *)
     jack_port_get_buffer (output_port2, nframes);
 
+  /* set midi events from midi input */
+  void* port_buf = jack_port_get_buffer(midi_in_port, nframes);
+  jack_midi_event_t in_event;
+  jack_nframes_t event_index = 0;
+  jack_nframes_t event_count = jack_midi_get_event_count(port_buf);
+  if(event_count > 1)
+    {
+      g_message ("JACK: have %d events", event_count);
+      for(i=0; i<event_count; i++)
+        {
+          jack_midi_event_get(&in_event, port_buf, i);
+          g_message ("    event %d time is %d. 1st byte is 0x%x", i, in_event.time, *(in_event.buffer));
+        }
+    }
+  jack_midi_event_get(&in_event, port_buf, 0);
+  for(i = 0; i < nframes; i++)
+    {
+      if ((in_event.time == i) && (event_index < event_count))
+        {
+          if (((*(in_event.buffer) & 0xf0)) == MIDI_CH1_NOTE_ON)
+            {
+              /* note on */
+              note = *(in_event.buffer + 1);
+              if (*(in_event.buffer + 2) == 0)
+                {
+                  note_on = 0.0;
+                }
+              else
+                {
+                  note_on = (float)(*(in_event.buffer + 2)) / 127.f;
+                }
+            }
+          else if (((*(in_event.buffer)) & 0xf0) == MIDI_CH1_NOTE_OFF)
+            {
+              /* note off */
+              note = *(in_event.buffer + 1);
+              note_on = 0.0;
+            }
+          event_index++;
+          if(event_index < event_count)
+                  jack_midi_event_get(&in_event, port_buf, event_index);
+        }
+      /*ramp += note_frqs[note];*/
+      /*ramp = (ramp > 1.0) ? ramp - 2.0 : ramp;*/
+      /*out[i] = note_on*sin(2*M_PI*ramp);*/
+    }
+  return 0;
   /*
    * process
    */
   mixer_process (nframes, out1, out2);
-  /*for( i=0; i<nframes; i++ )*/
-  /*{*/
-          /*out1[i] = 0.1f;  [> left <]*/
-          /*out2[i] = 0.2f;  [> right <]*/
-  /*}*/
 
   /*
    * processing finished, return 0
@@ -165,13 +224,14 @@ init_audio_engine()
     /* set jack callbacks */
     jack_set_process_callback (client, &jack_process_cb, NULL);
     jack_set_buffer_size_callback(client, &jack_buffer_size_cb, NULL);
+    jack_set_sample_rate_callback(client, &jack_sample_rate_cb, NULL);
     jack_on_shutdown(client, &jack_shutdown_cb, NULL);
     /*jack_set_latency_callback(client, &jack_latency_cb, arg);*/
 #ifdef JALV_JACK_SESSION
     /*jack_set_session_callback(client, &jack_session_cb, arg);*/
 #endif
 
-    /* create two ports */
+    /* create ports */
     output_port1 = jack_port_register (client, "output1",
                                       JACK_DEFAULT_AUDIO_TYPE,
                                       JackPortIsOutput, 0);
@@ -179,6 +239,9 @@ init_audio_engine()
     output_port2 = jack_port_register (client, "output2",
                                       JACK_DEFAULT_AUDIO_TYPE,
                                       JackPortIsOutput, 0);
+    midi_in_port = jack_port_register (client, "midi_in",
+                                       JACK_DEFAULT_MIDI_TYPE,
+                                       JackPortIsInput, 0);
 
     if ((output_port1 == NULL) || (output_port2 == NULL)) {
             g_error ("no more JACK ports available\n");
