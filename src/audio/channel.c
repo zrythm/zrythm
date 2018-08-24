@@ -100,11 +100,22 @@ channel_create (int     type)             ///< the channel type (AUDIO/INS)
         }
     }
   channel->type = type;
-  channel->volume = 0.0;
+  channel->volume = 0.7f;
+  channel->phase = 0.4f;
   channel->muted = 0;
   channel->soloed = 0;
 
-  if (type != CT_MASTER) MIXER->num_channels++;
+  if (type == CT_MASTER)
+    {
+      gdk_rgba_parse (&channel->color, "red");
+    }
+  else
+    {
+      channel->color.red = 0.2;
+      channel->color.green = 0.6;
+      channel->color.blue = 0.045;
+      MIXER->num_channels++;
+    }
 
   return channel;
 }

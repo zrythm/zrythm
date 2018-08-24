@@ -17,6 +17,7 @@ zrythm_SOURCES = main.c \
 								 gui/widgets/instrument_timeline_view.c \
 								 gui/widgets/browser.c \
 								 gui/widgets/channel.c \
+								 gui/widgets/channel_color.c \
 								 gui/widgets/fader.c \
 								 gui/widgets/knob.c \
 								 gui/widgets/ruler.c \

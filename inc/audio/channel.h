@@ -32,6 +32,8 @@
 
 #include "plugins/plugin.h"
 
+#include <gdk/gdk.h>
+
 #include <jack/jack.h>
 
 #define MAX_PLUGINS 9
@@ -53,6 +55,8 @@ typedef struct Channel
   sample_t          volume;           ///< value of the volume fader
   int               muted;            ///< muted or not
   int               soloed;           ///< soloed or not
+  GdkRGBA           color;          ///< see https://ometer.com/gtk-colors.html
+  float             phase;        ///< used by the phase knob (0.0-360.0 value)
 } Channel;
 
 /**

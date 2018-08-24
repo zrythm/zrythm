@@ -20,6 +20,7 @@
  */
 
 #include "zrythm_system.h"
+#include "audio/mixer.h"
 #include "gui/main_window.h"
 #include "gui/widget_manager.h"
 #include "gui/widgets/instrument_timeline_view.h"
@@ -158,38 +159,6 @@ create_main_window()
           "/online/alextee/zrythm/record.svg");
   button = GET_WIDGET ("gtogglebutton-record");
   gtk_button_set_image( GTK_BUTTON (button), image);
-  image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/phase-invert.svg");
-  button = GET_WIDGET ("gbutton-phase-invert");
-  gtk_button_set_image( GTK_BUTTON (button), image);
-  image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/slot-on.svg");
-  button = GET_WIDGET ("gtogglebutton-slot1");
-  gtk_button_set_image( GTK_BUTTON (button), image);
-  image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/slot-off.svg");
-  button = GET_WIDGET ("gtogglebutton-slot2");
-  gtk_button_set_image( GTK_BUTTON (button), image);
-  image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/record.svg");
-  button = GET_WIDGET ("gtogglebutton-record-channel");
-  gtk_button_set_image( GTK_BUTTON (button), image);
-  image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/mute.svg");
-  button = GET_WIDGET ("gtogglebutton-mute-channel");
-  gtk_button_set_image( GTK_BUTTON (button), image);
-  image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/solo.svg");
-  button = GET_WIDGET ("gtogglebutton-solo-channel");
-  gtk_button_set_image( GTK_BUTTON (button), image);
-  image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/listen.svg");
-  button = GET_WIDGET ("gtogglebutton-listen-channel");
-  gtk_button_set_image( GTK_BUTTON (button), image);
-  image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/plus.svg");
-  button = GET_WIDGET ("gbutton-add-slot");
-  gtk_button_set_image( GTK_BUTTON (button), image);
 
 
   // set css
@@ -239,7 +208,9 @@ create_main_window()
   setup_browser ();
 
   /* set master channel */
-  setup_master_channel_gui ();
+  gtk_box_pack_end (GTK_BOX (GET_WIDGET ("gbox-mixer")),
+                    GTK_WIDGET (channel_widget_new (MIXER->master)),
+                    0, 0, 0);
 
   // set signals
   g_signal_connect (window, "destroy",

@@ -22,10 +22,37 @@
 /** \file
  */
 
+#ifndef __GUI_WIDGETS_FADER_H__
+#define __GUI_WIDGETS_FADER_H__
+
 #include <gtk/gtk.h>
 
+#define FADER_WIDGET_TYPE                  (fader_widget_get_type ())
+#define FADER_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), FADER_WIDGET_TYPE, FaderWidget))
+#define FADER_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), FADER_WIDGET, FaderWidgetClass))
+#define IS_FADER_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FADER_WIDGET_TYPE))
+#define IS_FADER_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), FADER_WIDGET_TYPE))
+#define FADER_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), FADER_WIDGET_TYPE, FaderWidgetClass))
+
+typedef struct FaderWidget
+{
+  GtkDrawingArea         parent_instance;
+  GtkGestureDrag         * drag;
+  double                 last_x;
+  double                 last_y;
+  float                  * val;
+  int                    hover;
+} FaderWidget;
+
+typedef struct FaderWidgetClass
+{
+  GtkDrawingAreaClass    parent_class;
+} FaderWidgetClass;
+
 /**
- * Sets up a fader in the given drawing area.
+ * Creates a new Fader widget and binds it to the given value.
  */
-void
-fader_set (GtkWidget * drawing_area);
+FaderWidget *
+fader_widget_new (float * value, int width);
+
+#endif

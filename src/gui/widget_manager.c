@@ -73,6 +73,7 @@ register_widgets (GtkBuilder * builder)
   REGISTER_WIDGET ("gdrawingarea-meter");
   REGISTER_WIDGET ("glabel-meter-reading");
   REGISTER_WIDGET ("gdrawingarea-master-color");
+  REGISTER_WIDGET ("gbox-mixer");
 }
 
 void

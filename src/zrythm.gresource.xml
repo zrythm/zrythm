@@ -2,9 +2,11 @@
 <gresources>
   <gresource prefix="/online/alextee/zrythm">
     <file preprocess="xml-stripblanks">main-window.ui</file>
+    <file preprocess="xml-stripblanks">ui/channel.ui</file>
     <file>theme.css</file>
 
     <!-- icons -->
+    <file>audio.svg</file>
     <file>close.svg</file>
     <file>delete.svg</file>
     <file>instrument.svg</file>

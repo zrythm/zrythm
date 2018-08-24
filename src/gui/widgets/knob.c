@@ -29,18 +29,7 @@
 
 #include <gtk/gtk.h>
 
-static int size = 30;
-static int hover = 0;
-static float zero = 0.5f; /* zero point 0.0-1.0 */
-static float val = 0.6f; /* value 0.0-1.0 */
-static int arc = 1; /* draw arc around the knob */
-static int bevel = 1; /* ?? */
-static int flat = 1; /* add 3D shade if 0 */
-static double red_start = 0.8, green_start = 0.8, blue_start = 0.8; /* away from zero */
-static double red_end = 0.7, green_end = 0.7, blue_end = 0.7; /* close to zero */
-
-static GtkGestureDrag * gdrag;
-static double last_x, last_y;
+G_DEFINE_TYPE (KnobWidget, knob_widget, GTK_TYPE_DRAWING_AREA)
 
 /**
  * Draws the knob.
@@ -51,6 +40,7 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   guint width, height;
   GdkRGBA color;
   GtkStyleContext *context;
+  KnobWidget * self = (KnobWidget *) data;
 
   context = gtk_widget_get_style_context (widget);
 
@@ -66,8 +56,8 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   const float start_angle = ((180 - 65) * G_PI) / 180;
   const float end_angle = ((360 + 65) * G_PI) / 180;
 
-  const float value_angle = start_angle + (val * (end_angle - start_angle));
-  const float zero_angle = start_angle + (zero * (end_angle - start_angle));
+  const float value_angle = start_angle + (*self->value * (end_angle - start_angle));
+  const float zero_angle = start_angle + (self->zero * (end_angle - start_angle));
 
   float value_x = cos (value_angle);
   float value_y = sin (value_angle);
@@ -83,121 +73,133 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   float border_width = 0.8;
 
 
-  if ( arc ) {
-          center_radius = scale*0.33;
+  if (self->arc)
+    {
+      center_radius = scale*0.33;
 
-          float inner_progress_radius = scale*0.38;
-          float outer_progress_radius = scale*0.48;
-          float progress_width = (outer_progress_radius-inner_progress_radius);
-          float progress_radius = inner_progress_radius + progress_width/2.0;
+      float inner_progress_radius = scale*0.38;
+      float outer_progress_radius = scale*0.48;
+      float progress_width = (outer_progress_radius-inner_progress_radius);
+      float progress_radius = inner_progress_radius + progress_width/2.0;
 
-          /* dark surrounding arc background */
-          cairo_set_source_rgb (cr, 0.3, 0.3, 0.3 );
-          cairo_set_line_width (cr, progress_width);
-          cairo_arc (cr, 0, 0, progress_radius, start_angle, end_angle);
-          cairo_stroke (cr);
+      /* dark surrounding arc background */
+      cairo_set_source_rgb (cr, 0.3, 0.3, 0.3 );
+      cairo_set_line_width (cr, progress_width);
+      cairo_arc (cr, 0, 0, progress_radius, start_angle, end_angle);
+      cairo_stroke (cr);
 
-          //look up the surrounding arc colors from the config
-          // TODO
+      //look up the surrounding arc colors from the config
+      // TODO
 
-          //vary the arc color over the travel of the knob
-          float intensity = fabsf (val - zero) / MAX(zero, (1.f - zero));
-          const float intensity_inv = 1.0 - intensity;
-          float r = intensity_inv * red_end   + intensity * red_start;
-          float g = intensity_inv * green_end + intensity * green_start;
-          float b = intensity_inv * blue_end  + intensity * blue_start;
+      //vary the arc color over the travel of the knob
+      float intensity = fabsf (*self->value - self->zero) / MAX(self->zero, (1.f - self->zero));
+      const float intensity_inv = 1.0 - intensity;
+      float r = intensity_inv * self->end_color.red   +
+                intensity * self->start_color.red;
+      float g = intensity_inv * self->end_color.green +
+                intensity * self->start_color.green;
+      float b = intensity_inv * self->end_color.blue  +
+                intensity * self->start_color.blue;
 
-          //draw the arc
-          cairo_set_source_rgb (cr, r,g,b);
-          cairo_set_line_width (cr, progress_width);
-          if (zero_angle > value_angle) {
-                  cairo_arc (cr, 0, 0, progress_radius, value_angle, zero_angle);
-          } else {
-                  cairo_arc (cr, 0, 0, progress_radius, zero_angle, value_angle);
-          }
-          cairo_stroke (cr);
+      //draw the arc
+      cairo_set_source_rgb (cr, r,g,b);
+      cairo_set_line_width (cr, progress_width);
+      if (zero_angle > value_angle)
+        {
+          cairo_arc (cr, 0, 0, progress_radius, value_angle, zero_angle);
+        }
+      else
+        {
+          cairo_arc (cr, 0, 0, progress_radius, zero_angle, value_angle);
+        }
+      cairo_stroke (cr);
 
-          //shade the arc
-          if (!flat)
-            {
-              shade_pattern = cairo_pattern_create_linear (0.0, -yc, 0.0,  yc);  //note we have to offset the pattern from our centerpoint
-              cairo_pattern_add_color_stop_rgba (shade_pattern, 0.0, 1,1,1, 0.15);
-              cairo_pattern_add_color_stop_rgba (shade_pattern, 0.5, 1,1,1, 0.0);
-              cairo_pattern_add_color_stop_rgba (shade_pattern, 1.0, 1,1,1, 0.0);
-              cairo_set_source (cr, shade_pattern);
-              cairo_arc (cr, 0, 0, outer_progress_radius-1, 0, 2.0*G_PI);
-              cairo_fill (cr);
-              cairo_pattern_destroy (shade_pattern);
-            }
+      //shade the arc
+      if (!self->flat)
+        {
+          shade_pattern = cairo_pattern_create_linear (0.0, -yc, 0.0,  yc);  //note we have to offset the pattern from our centerpoint
+          cairo_pattern_add_color_stop_rgba (shade_pattern, 0.0, 1,1,1, 0.15);
+          cairo_pattern_add_color_stop_rgba (shade_pattern, 0.5, 1,1,1, 0.0);
+          cairo_pattern_add_color_stop_rgba (shade_pattern, 1.0, 1,1,1, 0.0);
+          cairo_set_source (cr, shade_pattern);
+          cairo_arc (cr, 0, 0, outer_progress_radius-1, 0, 2.0*G_PI);
+          cairo_fill (cr);
+          cairo_pattern_destroy (shade_pattern);
+        }
 
 #if 0 //black border
-          const float start_angle_x = cos (start_angle);
-          const float start_angle_y = sin (start_angle);
-          const float end_angle_x = cos (end_angle);
-          const float end_angle_y = sin (end_angle);
+      const float start_angle_x = cos (start_angle);
+      const float start_angle_y = sin (start_angle);
+      const float end_angle_x = cos (end_angle);
+      const float end_angle_y = sin (end_angle);
 
-          cairo_set_source_rgb (cr, 0, 0, 0 );
-          cairo_set_line_width (cr, border_width);
-          cairo_move_to (cr, (outer_progress_radius * start_angle_x), (outer_progress_radius * start_angle_y));
-          cairo_line_to (cr, (inner_progress_radius * start_angle_x), (inner_progress_radius * start_angle_y));
-          cairo_stroke (cr);
-          cairo_move_to (cr, (outer_progress_radius * end_angle_x), (outer_progress_radius * end_angle_y));
-          cairo_line_to (cr, (inner_progress_radius * end_angle_x), (inner_progress_radius * end_angle_y));
-          cairo_stroke (cr);
-          cairo_arc (cr, 0, 0, outer_progress_radius, start_angle, end_angle);
-          cairo_stroke (cr);
+      cairo_set_source_rgb (cr, 0, 0, 0 );
+      cairo_set_line_width (cr, border_width);
+      cairo_move_to (cr, (outer_progress_radius * start_angle_x), (outer_progress_radius * start_angle_y));
+      cairo_line_to (cr, (inner_progress_radius * start_angle_x), (inner_progress_radius * start_angle_y));
+      cairo_stroke (cr);
+      cairo_move_to (cr, (outer_progress_radius * end_angle_x), (outer_progress_radius * end_angle_y));
+      cairo_line_to (cr, (inner_progress_radius * end_angle_x), (inner_progress_radius * end_angle_y));
+      cairo_stroke (cr);
+      cairo_arc (cr, 0, 0, outer_progress_radius, start_angle, end_angle);
+      cairo_stroke (cr);
 #endif
-  }
+    }
 
-  if (!flat) {
-          //knob shadow
-          cairo_save(cr);
-          cairo_translate(cr, pointer_thickness+1, pointer_thickness+1 );
-          cairo_set_source_rgba (cr, 0, 0, 0, 0.1 );
-          cairo_arc (cr, 0, 0, center_radius-1, 0, 2.0*G_PI);
-          cairo_fill (cr);
-          cairo_restore(cr);
+  if (!self->flat)
+    {
+      //knob shadow
+      cairo_save(cr);
+      cairo_translate(cr, pointer_thickness+1, pointer_thickness+1 );
+      cairo_set_source_rgba (cr, 0, 0, 0, 0.1 );
+      cairo_arc (cr, 0, 0, center_radius-1, 0, 2.0*G_PI);
+      cairo_fill (cr);
+      cairo_restore(cr);
 
-          //inner circle
+      //inner circle
 #define KNOB_COLOR 0, 90, 0, 0
-          cairo_set_source_rgba(cr, KNOB_COLOR); /* knob color */
+      cairo_set_source_rgba(cr, KNOB_COLOR); /* knob color */
+      cairo_arc (cr, 0, 0, center_radius, 0, 2.0*G_PI);
+      cairo_fill (cr);
+
+      //gradient
+      if (self->bevel)
+        {
+          //knob gradient
+          shade_pattern = cairo_pattern_create_linear (0.0, -yc, 0.0,  yc);  //note we have to offset the gradient from our centerpoint
+          cairo_pattern_add_color_stop_rgba (shade_pattern, 0.0, 1,1,1, 0.2);
+          cairo_pattern_add_color_stop_rgba (shade_pattern, 0.2, 1,1,1, 0.2);
+          cairo_pattern_add_color_stop_rgba (shade_pattern, 0.8, 0,0,0, 0.2);
+          cairo_pattern_add_color_stop_rgba (shade_pattern, 1.0, 0,0,0, 0.2);
+          cairo_set_source (cr, shade_pattern);
           cairo_arc (cr, 0, 0, center_radius, 0, 2.0*G_PI);
           cairo_fill (cr);
+          cairo_pattern_destroy (shade_pattern);
 
-          //gradient
-          if (bevel) {
-                  //knob gradient
-                  shade_pattern = cairo_pattern_create_linear (0.0, -yc, 0.0,  yc);  //note we have to offset the gradient from our centerpoint
-                  cairo_pattern_add_color_stop_rgba (shade_pattern, 0.0, 1,1,1, 0.2);
-                  cairo_pattern_add_color_stop_rgba (shade_pattern, 0.2, 1,1,1, 0.2);
-                  cairo_pattern_add_color_stop_rgba (shade_pattern, 0.8, 0,0,0, 0.2);
-                  cairo_pattern_add_color_stop_rgba (shade_pattern, 1.0, 0,0,0, 0.2);
-                  cairo_set_source (cr, shade_pattern);
-                  cairo_arc (cr, 0, 0, center_radius, 0, 2.0*G_PI);
-                  cairo_fill (cr);
-                  cairo_pattern_destroy (shade_pattern);
-
-                  //flat top over beveled edge
-                  cairo_set_source_rgba (cr, 90, 0, 0, 0.5 );
-                  cairo_arc (cr, 0, 0, center_radius-pointer_thickness, 0, 2.0*G_PI);
-                  cairo_fill (cr);
-          } else {
-                  //radial gradient
-                  shade_pattern = cairo_pattern_create_radial ( -center_radius, -center_radius, 1, -center_radius, -center_radius, center_radius*2.5  );  //note we have to offset the gradient from our centerpoint
-                  cairo_pattern_add_color_stop_rgba (shade_pattern, 0.0, 1,1,1, 0.2);
-                  cairo_pattern_add_color_stop_rgba (shade_pattern, 1.0, 0,0,0, 0.3);
-                  cairo_set_source (cr, shade_pattern);
-                  cairo_arc (cr, 0, 0, center_radius, 0, 2.0*G_PI);
-                  cairo_fill (cr);
-                  cairo_pattern_destroy (shade_pattern);
-          }
-
-  } else {
-          /* color inner circle */
-          cairo_set_source_rgba(cr, 70, 70, 70, 0.2);
+          //flat top over beveled edge
+          cairo_set_source_rgba (cr, 90, 0, 0, 0.5 );
+          cairo_arc (cr, 0, 0, center_radius-pointer_thickness, 0, 2.0*G_PI);
+          cairo_fill (cr);
+        }
+      else
+        {
+          //radial gradient
+          shade_pattern = cairo_pattern_create_radial ( -center_radius, -center_radius, 1, -center_radius, -center_radius, center_radius*2.5  );  //note we have to offset the gradient from our centerpoint
+          cairo_pattern_add_color_stop_rgba (shade_pattern, 0.0, 1,1,1, 0.2);
+          cairo_pattern_add_color_stop_rgba (shade_pattern, 1.0, 0,0,0, 0.3);
+          cairo_set_source (cr, shade_pattern);
           cairo_arc (cr, 0, 0, center_radius, 0, 2.0*G_PI);
           cairo_fill (cr);
-  }
+          cairo_pattern_destroy (shade_pattern);
+        }
+    }
+  else
+    {
+        /* color inner circle */
+        cairo_set_source_rgba(cr, 70, 70, 70, 0.2);
+        cairo_arc (cr, 0, 0, center_radius, 0, 2.0*G_PI);
+        cairo_fill (cr);
+    }
 
 
   //black knob border
@@ -207,7 +209,7 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   cairo_stroke (cr);
 
   //line shadow
-  if (!flat) {
+  if (!self->flat) {
           cairo_save(cr);
           cairo_translate(cr, 1, 1 );
           cairo_set_source_rgba (cr, 0,0,0,0.3 );
@@ -228,7 +230,7 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   cairo_stroke (cr);
 
   //highlight if grabbed or if mouse is hovering over me
-  if (hover)
+  if (self->hover)
     {
       cairo_set_source_rgba (cr, 1,1,1, 0.12 );
       cairo_arc (cr, 0, 0, center_radius, 0, 2.0*G_PI);
@@ -239,19 +241,20 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 }
 
 static void
-on_crossing (GtkWidget * widget, GdkEvent *event)
+on_crossing (GtkWidget * widget, GdkEvent *event, void * data)
 {
+  KnobWidget * self = (KnobWidget *) data;
    switch (gdk_event_get_event_type (event))
     {
     case GDK_ENTER_NOTIFY:
-      hover = 1;
+      self->hover = 1;
       break;
 
     case GDK_LEAVE_NOTIFY:
-      if (!gtk_gesture_drag_get_offset (gdrag,
+      if (!gtk_gesture_drag_get_offset (self->drag,
                                        NULL,
                                        NULL))
-        hover = 0;
+        self->hover = 0;
       break;
     }
   gtk_widget_queue_draw(widget);
@@ -269,12 +272,13 @@ drag_update (GtkGestureDrag * gesture,
                gdouble         offset_y,
                gpointer        user_data)
 {
+  KnobWidget * self = (KnobWidget *) user_data;
   offset_y = - offset_y;
-  int use_y = abs(offset_y - last_y) > abs(offset_x - last_x);
-  val = clamp (val + 0.004 * (use_y ? offset_y - last_y : offset_x - last_x),
+  int use_y = abs(offset_y - self->last_y) > abs(offset_x - self->last_x);
+  *self->value = clamp (*self->value + 0.004 * (use_y ? offset_y - self->last_y : offset_x - self->last_x),
                1.0f, 0.0f);
-  last_x = offset_x;
-  last_y = offset_y;
+  self->last_x = offset_x;
+  self->last_y = offset_y;
   gtk_widget_queue_draw ((GtkWidget *)user_data);
 }
 
@@ -284,37 +288,66 @@ drag_end (GtkGestureDrag *gesture,
                gdouble         offset_y,
                gpointer        user_data)
 {
-  last_x = 0;
-  last_y = 0;
+  KnobWidget * self = (KnobWidget *) user_data;
+  self->last_x = 0;
+  self->last_y = 0;
 }
 
 
 /**
- * sets knob.
+ * Creates a knob widget with the given options and binds it to the given value.
  */
-void
-knob_set (GtkWidget * da)
+KnobWidget *
+knob_widget_new (float      * value,
+                    int         size,
+                    float       zero)
 {
-  gtk_widget_set_size_request (da, size, size);
+  KnobWidget * self = g_object_new (KNOB_WIDGET_TYPE, NULL);
+  self->value = value;
+  self->size = size; /* default 30 */
+  self->hover = 0;
+  self->zero = zero; /* default 0.05f */
+  self->value = value;
+  self->arc = 1;
+  self->bevel = 1;
+  self->flat = 1;
+  self->start_color.red = 0.8;
+  self->start_color.green = 0.8;
+  self->start_color.blue = 0.8;
+  self->end_color.red = 0.7;
+  self->end_color.red = 0.7;
+  self->end_color.red = 0.7;
+  self->last_x = 0;
+  self->last_y = 0;
 
-  /* make it able to notify */
-  gtk_widget_set_has_window (GTK_WIDGET (da), TRUE);
-  int crossing_mask = GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;
-  gtk_widget_add_events (GTK_WIDGET (da), crossing_mask);
+  /* set size */
+  gtk_widget_set_size_request (GTK_WIDGET (self), size, size);
 
-  gdrag = GTK_GESTURE_DRAG (gtk_gesture_drag_new (GTK_WIDGET (da)));
-
-  g_signal_connect (G_OBJECT (da), "draw",
-                    G_CALLBACK (draw_cb), NULL);
-  g_signal_connect (G_OBJECT (da), "enter-notify-event",
-                    G_CALLBACK (on_crossing),  NULL);
-  g_signal_connect (G_OBJECT(da), "leave-notify-event",
-                    G_CALLBACK (on_crossing),  NULL);
-  /*g_signal_connect (G_OBJECT(gdrag), "drag-begin",*/
-                    /*G_CALLBACK (drag_begin),  NULL);*/
-  g_signal_connect (G_OBJECT(gdrag), "drag-update",
-                    G_CALLBACK (drag_update),  da);
-  g_signal_connect (G_OBJECT(gdrag), "drag-end",
-                    G_CALLBACK (drag_end),  da);
+  /* connect signals */
+  g_signal_connect (G_OBJECT (self), "draw",
+                    G_CALLBACK (draw_cb), self);
+  g_signal_connect (G_OBJECT (self), "enter-notify-event",
+                    G_CALLBACK (on_crossing),  self);
+  g_signal_connect (G_OBJECT(self), "leave-notify-event",
+                    G_CALLBACK (on_crossing),  self);
+  g_signal_connect (G_OBJECT(self->drag), "drag-update",
+                    G_CALLBACK (drag_update),  self);
+  g_signal_connect (G_OBJECT(self->drag), "drag-end",
+                    G_CALLBACK (drag_end),  self);
+  return self;
 }
 
+static void
+knob_widget_init (KnobWidget * self)
+{
+  /* make it able to notify */
+  gtk_widget_set_has_window (GTK_WIDGET (self), TRUE);
+  int crossing_mask = GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;
+  gtk_widget_add_events (GTK_WIDGET (self), crossing_mask);
+  self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new (GTK_WIDGET (&self->parent_instance)));
+}
+
+static void
+knob_widget_class_init (KnobWidgetClass * klass)
+{
+}

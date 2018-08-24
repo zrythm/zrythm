@@ -24,16 +24,14 @@
 
 #include "gui/widgets/fader.h"
 
-static GtkGestureDrag * gdrag;
-static double last_x, last_y;
-static float val = 0.6f;
-static int hover = 0;
+G_DEFINE_TYPE (FaderWidget, fader_widget, GTK_TYPE_DRAWING_AREA)
 
 static int
 draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 {
   guint width, height;
   GtkStyleContext *context;
+  FaderWidget * self = (FaderWidget *) widget;
   context = gtk_widget_get_style_context (widget);
 
   width = gtk_widget_get_allocated_width (widget);
@@ -45,13 +43,13 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   double x         = 0,        /* parameters like cairo_rectangle */
          y         = 0,
          aspect        = 1.0,     /* aspect ratio */
-         corner_radius = height / 20.0;   /* and corner curvature radius */
+         corner_radius = height / 90.0;   /* and corner curvature radius */
 
   double radius = corner_radius / aspect;
   double degrees = G_PI / 180.0;
   /* value in pixels = total pixels * val
    * val is percentage */
-  double value_px = height * val;
+  double value_px = height * * self->val;
 
   /* draw background bar */
   cairo_new_sub_path (cr);
@@ -95,7 +93,7 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   cairo_stroke(cr);
 
   //highlight if grabbed or if mouse is hovering over me
-  if (hover)
+  if (self->hover)
     {
       cairo_set_source_rgba (cr, 0.8, 0.8, 0.8, 0.12 );
       cairo_new_sub_path (cr);
@@ -126,17 +124,18 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 static void
 on_crossing (GtkWidget * widget, GdkEvent *event)
 {
+  FaderWidget * self = FADER_WIDGET (widget);
    switch (gdk_event_get_event_type (event))
     {
     case GDK_ENTER_NOTIFY:
-      hover = 1;
+      self->hover = 1;
       break;
 
     case GDK_LEAVE_NOTIFY:
-      if (!gtk_gesture_drag_get_offset (gdrag,
+      if (!gtk_gesture_drag_get_offset (self->drag,
                                        NULL,
                                        NULL))
-        hover = 0;
+        self->hover = 0;
       break;
     }
   gtk_widget_queue_draw(widget);
@@ -154,13 +153,14 @@ drag_update (GtkGestureDrag * gesture,
                gdouble         offset_y,
                gpointer        user_data)
 {
+  FaderWidget * self = (FaderWidget *) user_data;
   offset_y = - offset_y;
-  int use_y = abs(offset_y - last_y) > abs(offset_x - last_x);
-  val = clamp (val + 0.005 * (use_y ? offset_y - last_y : offset_x - last_x),
+  int use_y = abs(offset_y - self->last_y) > abs(offset_x - self->last_x);
+  * self->val = clamp (* self->val + 0.005 * (use_y ? offset_y - self->last_y : offset_x - self->last_x),
                1.0f, 0.0f);
-  last_x = offset_x;
-  last_y = offset_y;
-  gtk_widget_queue_draw ((GtkWidget *)user_data);
+  self->last_x = offset_x;
+  self->last_y = offset_y;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 static void
@@ -169,33 +169,50 @@ drag_end (GtkGestureDrag *gesture,
                gdouble         offset_y,
                gpointer        user_data)
 {
-  last_x = 0;
-  last_y = 0;
+  FaderWidget * self = (FaderWidget *) user_data;
+  self->last_x = 0;
+  self->last_y = 0;
 }
+
 /**
- * sets up the fader.
+ * Creates a new Fader widget and binds it to the given value.
  */
-void
-fader_set (GtkWidget * da)
+FaderWidget *
+fader_widget_new (float * value, int width)
+{
+  FaderWidget * self = g_object_new (FADER_WIDGET_TYPE, NULL);
+  self->val = value;
+
+  /* set size */
+  gtk_widget_set_size_request (GTK_WIDGET (self), width, -1);
+
+  /* connect signals */
+  g_signal_connect (G_OBJECT (self), "draw",
+                    G_CALLBACK (draw_cb), self);
+  g_signal_connect (G_OBJECT (self), "enter-notify-event",
+                    G_CALLBACK (on_crossing),  self);
+  g_signal_connect (G_OBJECT(self), "leave-notify-event",
+                    G_CALLBACK (on_crossing),  self);
+  g_signal_connect (G_OBJECT(self->drag), "drag-update",
+                    G_CALLBACK (drag_update),  self);
+  g_signal_connect (G_OBJECT(self->drag), "drag-end",
+                    G_CALLBACK (drag_end),  self);
+
+  return self;
+}
+
+static void
+fader_widget_init (FaderWidget * self)
 {
   /* make it able to notify */
-  gtk_widget_set_has_window (GTK_WIDGET (da), TRUE);
+  gtk_widget_set_has_window (GTK_WIDGET (self), TRUE);
   int crossing_mask = GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;
-  gtk_widget_add_events (GTK_WIDGET (da), crossing_mask);
+  gtk_widget_add_events (GTK_WIDGET (self), crossing_mask);
 
-  gdrag = GTK_GESTURE_DRAG (gtk_gesture_drag_new (GTK_WIDGET (da)));
-
-  g_signal_connect (G_OBJECT (da), "draw",
-                    G_CALLBACK (draw_cb), NULL);
-  g_signal_connect (G_OBJECT (da), "enter-notify-event",
-                    G_CALLBACK (on_crossing),  NULL);
-  g_signal_connect (G_OBJECT(da), "leave-notify-event",
-                    G_CALLBACK (on_crossing),  NULL);
-  /*g_signal_connect (G_OBJECT(gdrag), "drag-begin",*/
-                    /*G_CALLBACK (drag_begin),  NULL);*/
-  g_signal_connect (G_OBJECT(gdrag), "drag-update",
-                    G_CALLBACK (drag_update),  da);
-  g_signal_connect (G_OBJECT(gdrag), "drag-end",
-                    G_CALLBACK (drag_end),  da);
+  self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new (GTK_WIDGET (self)));
 }
 
+static void
+fader_widget_class_init (FaderWidgetClass * klass)
+{
+}
