@@ -58,7 +58,21 @@ register_widgets (GtkBuilder * builder)
   REGISTER_WIDGET ("gexpander-categories");
   REGISTER_WIDGET ("ggrid-browser");
   REGISTER_WIDGET ("gpaned-browser");
-  REGISTER_WIDGET ("gdrawingarea-knob");
+  REGISTER_WIDGET ("gdrawingarea-phase-knob");
+  REGISTER_WIDGET ("gbutton-phase-invert");
+  REGISTER_WIDGET ("gtogglebutton-slot1");
+  REGISTER_WIDGET ("gtogglebutton-slot2");
+  REGISTER_WIDGET ("gbutton-add-slot");
+  REGISTER_WIDGET ("gdrawingarea-pan");
+  REGISTER_WIDGET ("gtogglebutton-record-channel");
+  REGISTER_WIDGET ("gtogglebutton-mute-channel");
+  REGISTER_WIDGET ("gtogglebutton-solo-channel");
+  REGISTER_WIDGET ("gtogglebutton-listen-channel");
+  REGISTER_WIDGET ("gbutton-e-channel");
+  REGISTER_WIDGET ("gdrawingarea-fader");
+  REGISTER_WIDGET ("gdrawingarea-meter");
+  REGISTER_WIDGET ("glabel-meter-reading");
+  REGISTER_WIDGET ("gdrawingarea-master-color");
 }
 
 void

@@ -1,5 +1,5 @@
 /*
- * gui/widgets/knob.h - knob
+ * gui/widgets/fader.h - fader
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -25,14 +25,7 @@
 #include <gtk/gtk.h>
 
 /**
- * Draws the knob.
- */
-//int
-//draw_cb (GtkWidget *, cairo_t *, void* data);
-
-/**
- * Creates a knob.
+ * Sets up a fader in the given drawing area.
  */
 void
-knob_set (GtkWidget * drawing_area);
-
+fader_set (GtkWidget * drawing_area);

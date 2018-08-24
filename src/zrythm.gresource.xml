@@ -6,12 +6,19 @@
 
     <!-- icons -->
     <file>close.svg</file>
+    <file>delete.svg</file>
     <file>instrument.svg</file>
+    <file>listen.svg</file>
     <file>maximize.svg</file>
     <file>minimize.svg</file>
+    <file>mute.svg</file>
+    <file>phase-invert.svg</file>
     <file>play.svg</file>
     <file>plus.svg</file>
     <file>record.svg</file>
+    <file>slot-off.svg</file>
+    <file>slot-on.svg</file>
+    <file>solo.svg</file>
     <file>stop.svg</file>
     <file>z.svg</file>
   </gresource>

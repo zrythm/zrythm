@@ -9,9 +9,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="32"
-   height="32"
-   viewBox="0 0 8.4666666 8.4666666"
+   width="16"
+   height="16"
+   viewBox="0 0 4.2333333 4.2333333"
    version="1.1"
    id="svg8"
    inkscape:version="0.92.2 2405546, 2018-03-11"
@@ -26,7 +26,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="11.2"
-     inkscape:cx="14.410608"
+     inkscape:cx="-19.964392"
      inkscape:cy="19.389098"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
@@ -53,20 +53,17 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-288.53334)">
-    <flowRoot
-       xml:space="preserve"
-       id="flowRoot815"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#b3b3b3;fill-opacity:1;stroke:none;"
-       transform="matrix(0.28288536,0,0,0.28288536,-70.215242,158.87736)"><flowRegion
-         id="flowRegion817"
-         style="fill:#b3b3b3;"><rect
-           id="rect819"
-           width="348.57144"
-           height="285.71429"
-           x="251.42857"
-           y="451.09113"
-           style="fill:#b3b3b3;" /></flowRegion><flowPara
-         id="flowPara821"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Liberation Mono';-inkscape-font-specification:'Liberation Mono Bold';fill:#b3b3b3;">S</flowPara></flowRoot>  </g>
+     transform="translate(0,-292.76667)">
+    <g
+       aria-label="S"
+       transform="matrix(0.14144268,0,0,0.14144268,-35.107621,227.93868)"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#b3b3b3;fill-opacity:1;stroke:none"
+       id="flowRoot815">
+      <path
+         d="m 274.18164,478.8457 q 0,3.75 -2.87109,5.89844 -2.85157,2.12891 -7.94922,2.12891 -4.58985,0 -7.48047,-1.9336 -2.89063,-1.93359 -3.71094,-5.625 l 5.56641,-0.72265 q 0.44922,1.83593 1.875,2.91015 1.42578,1.05469 3.90625,1.05469 2.57812,0 3.80859,-0.82031 1.25,-0.82031 1.25,-2.5586 0,-1.28906 -1.09375,-2.16796 -1.09375,-0.89844 -3.18359,-1.40625 -4.19922,-1.01563 -5.9375,-1.75782 -1.71875,-0.76172 -2.75391,-1.69922 -1.03515,-0.9375 -1.60156,-2.1875 -0.54688,-1.26953 -0.54688,-2.83203 0,-3.41797 2.73438,-5.41015 2.75391,-1.99219 7.24609,-1.99219 4.375,0 6.83594,1.73828 2.46094,1.71875 3.18359,5.35156 l -5.58593,0.56641 q -0.85938,-3.57422 -4.55078,-3.57422 -2.07032,0 -3.16407,0.78125 -1.09375,0.76172 -1.09375,2.20703 0,0.95703 0.52735,1.60156 0.52734,0.625 1.42578,1.07422 0.91797,0.42969 3.71094,1.15235 3.67187,0.89843 5.64453,2.01172 1.97265,1.09375 2.89062,2.65625 0.91797,1.5625 0.91797,3.55468 z"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Liberation Mono';-inkscape-font-specification:'Liberation Mono Bold';fill:#b3b3b3"
+         id="path2530"
+         inkscape:connector-curvature="0" />
+    </g>
+  </g>
 </svg>

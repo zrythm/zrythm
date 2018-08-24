@@ -1,5 +1,5 @@
 /*
- * gui/widgets/knob.h - knob
+ * gui/widgets/channel.h - A channel widget
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,20 +19,5 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
- */
-
-#include <gtk/gtk.h>
-
-/**
- * Draws the knob.
- */
-//int
-//draw_cb (GtkWidget *, cairo_t *, void* data);
-
-/**
- * Creates a knob.
- */
 void
-knob_set (GtkWidget * drawing_area);
-
+setup_master_channel_gui ();

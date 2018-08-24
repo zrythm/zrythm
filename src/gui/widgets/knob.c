@@ -2,6 +2,7 @@
  * gui/widgets/knob.c - knob
  *
  * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2010 Paul Davis
  *
  * This file is part of Zrythm
  *
@@ -28,23 +29,23 @@
 
 #include <gtk/gtk.h>
 
-int size = 60;
-int hover = 0;
-float zero = 0.5f; /* zero point 0.0-1.0 */
-float val = 0.6f; /* value 0.0-1.0 */
-int arc = 1; /* draw arc around the knob */
-int bevel = 1; /* ?? */
-int flat = 1; /* add 3D shade if 0 */
-double red_start = 0.8, green_start = 0.8, blue_start = 0.8; /* away from zero */
-double red_end = 0.7, green_end = 0.7, blue_end = 0.7; /* close to zero */
+static int size = 30;
+static int hover = 0;
+static float zero = 0.5f; /* zero point 0.0-1.0 */
+static float val = 0.6f; /* value 0.0-1.0 */
+static int arc = 1; /* draw arc around the knob */
+static int bevel = 1; /* ?? */
+static int flat = 1; /* add 3D shade if 0 */
+static double red_start = 0.8, green_start = 0.8, blue_start = 0.8; /* away from zero */
+static double red_end = 0.7, green_end = 0.7, blue_end = 0.7; /* close to zero */
 
-GtkGestureDrag * gdrag;
+static GtkGestureDrag * gdrag;
 static double last_x, last_y;
 
 /**
  * Draws the knob.
  */
-int
+static int
 draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 {
   guint width, height;
@@ -113,8 +114,6 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
                   cairo_arc (cr, 0, 0, progress_radius, value_angle, zero_angle);
           } else {
                   cairo_arc (cr, 0, 0, progress_radius, zero_angle, value_angle);
-            g_message ("value angle = %f, zero_angle = %f",
-                       value_angle, zero_angle);
           }
           cairo_stroke (cr);
 
@@ -258,7 +257,8 @@ on_crossing (GtkWidget * widget, GdkEvent *event)
   gtk_widget_queue_draw(widget);
 }
 
-double clamp(double x, double upper, double lower)
+static double clamp
+(double x, double upper, double lower)
 {
     return MIN(upper, MAX(x, lower));
 }

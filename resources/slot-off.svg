@@ -14,7 +14,7 @@
    viewBox="0 0 4.2333333 4.2333333"
    version="1.1"
    id="svg8"
-   sodipodi:docname="mute.svg"
+   sodipodi:docname="slot-off.svg"
    inkscape:version="0.92.2 2405546, 2018-03-11">
   <defs
      id="defs2" />
@@ -26,7 +26,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="11.2"
-     inkscape:cx="-19.875106"
+     inkscape:cx="-2.7322491"
      inkscape:cy="19.389098"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
@@ -45,7 +45,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -54,16 +54,11 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-292.76667)">
-    <g
-       aria-label="M"
-       transform="matrix(0.14144268,0,0,0.14144268,-35.143535,227.9373)"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#b3b3b3;fill-opacity:1;stroke:none"
-       id="flowRoot815">
-      <path
-         d="M 269.16211,486.48242 V 469.5293 q 0,-2.05078 0.3125,-5.87891 -1.15234,5.66406 -1.46484,6.66016 l -2.42188,9.14062 h -4.25781 l -2.46094,-9.14062 q -0.56641,-2.10938 -1.48437,-6.66016 l 0.13671,1.95313 q 0.13672,2.05078 0.13672,3.92578 v 16.95312 h -4.29687 v -26.34765 h 6.77734 l 2.63672,9.74609 q 0.29297,0.91797 0.74219,4.51172 0.39062,-3.02735 0.78125,-4.49219 l 2.65625,-9.76562 h 6.54297 v 26.34765 z"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Liberation Mono';-inkscape-font-specification:'Liberation Mono Bold';fill:#b3b3b3"
-         id="path1975"
-         inkscape:connector-curvature="0" />
-    </g>
+    <circle
+       style="opacity:0.39800002;fill:none;fill-opacity:1;stroke:#999999;stroke-width:0.22867933;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:1.60000002;stroke-dasharray:none;paint-order:fill markers stroke"
+       id="path861"
+       cx="2.1166666"
+       cy="294.88333"
+       r="1.2370908" />
   </g>
 </svg>
