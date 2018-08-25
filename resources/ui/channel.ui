@@ -233,20 +233,12 @@
           <placeholder/>
         </child>
         <child>
-          <object class="GtkBox" id="gbox-meter">
+          <object class="GtkBox" id="meter_area">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkDrawingArea" id="meter">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
+              <placeholder/>
             </child>
             <child>
               <placeholder/>
@@ -255,11 +247,12 @@
               <object class="GtkLabel" id="meter_reading">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">-22.9</property>
+                <property name="label" translatable="yes">-2</property>
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="fill">True</property>
+                <property name="fill">False</property>
+                <property name="pack_type">end</property>
                 <property name="position">2</property>
               </packing>
             </child>

@@ -59,6 +59,13 @@ typedef struct Channel
   GdkRGBA           color;          ///< see https://ometer.com/gtk-colors.html
   float             phase;        ///< used by the phase knob (0.0-360.0 value)
   char *            name;        ///< channel name
+  Port              * l_in_port;    ///< left channel input port
+  Port              * r_in_port;    ///< right channel input port
+  Port              * l_out_port;    ///< left channel output port
+  Port              * r_out_port;    ///< right channel output port
+  float             l_port_db;   ///< current db after processing l port
+  float             r_port_db;   ///< current db after processing r port
+  Channel *         output;     ///< output channel to route signal to
   ChannelWidget     *widget;
 } Channel;
 
@@ -73,6 +80,12 @@ channel_set_volume (void * channel, float volume);
 
 float
 channel_get_volume (void * channel);
+
+float
+channel_get_current_l_db (void * _channel);
+
+float
+channel_get_current_r_db (void * _channel);
 
 /**
  * Creates a channel using the given params

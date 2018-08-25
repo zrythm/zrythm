@@ -23,6 +23,7 @@
 #include "audio/channel.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/channel_color.h"
+#include "gui/widgets/channel_meter.h"
 #include "gui/widgets/fader.h"
 #include "gui/widgets/knob.h"
 #include "gui/widget_manager.h"
@@ -77,7 +78,7 @@ channel_widget_class_init (ChannelWidgetClass * klass)
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 ChannelWidget, fader_area);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                ChannelWidget, meter);
+                                                ChannelWidget, meter_area);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 ChannelWidget, meter_reading);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
@@ -132,6 +133,18 @@ setup_fader (ChannelWidget * self)
                        0, 1, 0);
 }
 
+static void
+setup_meter (ChannelWidget * self)
+{
+  self->cm = channel_meter_widget_new (channel_get_current_l_db,
+                                       channel_get_current_r_db,
+                                  self->channel,
+                                  12);
+  gtk_box_pack_start (self->meter_area,
+                       GTK_WIDGET (self->cm),
+                       1, 1, 0);
+}
+
 ChannelWidget *
 channel_widget_new (Channel * channel)
 {
@@ -143,6 +156,7 @@ channel_widget_new (Channel * channel)
   setup_phase_panel (self);
   /*setup_pan (self);*/
   setup_fader (self);
+  setup_meter (self);
 
   GtkWidget * image = gtk_image_new_from_resource (
           "/online/alextee/zrythm/plus.svg");

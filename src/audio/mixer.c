@@ -117,10 +117,10 @@ mixer_init ()
   MIXER->num_channels = 0;
   MIXER->num_ports = 0;
 
+  /* create master channel */
+  MIXER->master = channel_create (CT_MASTER);
+
   /* init channel strips array and add one of each */
   ADD_CHANNEL (channel_create (CT_MIDI));
   ADD_CHANNEL (channel_create (CT_AUDIO));
-
-  /* create master channel */
-  MIXER->master = channel_create (CT_MASTER);
 }

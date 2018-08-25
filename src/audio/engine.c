@@ -148,7 +148,7 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
       /*ramp = (ramp > 1.0) ? ramp - 2.0 : ramp;*/
       /*out[i] = note_on*sin(2*M_PI*ramp);*/
     }
-  return 0;
+
   /*
    * process
    */

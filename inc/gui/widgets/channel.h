@@ -34,6 +34,7 @@
 typedef struct ChannelColorWidget ChannelColorWidget;
 typedef struct KnobWidget KnobWidget;
 typedef struct FaderWidget FaderWidget;
+typedef struct ChannelMeterWidget ChannelMeterWidget;
 typedef struct Channel Channel;
 
 typedef struct ChannelWidget
@@ -57,8 +58,9 @@ typedef struct ChannelWidget
   GtkButton           * mute;
   GtkToggleButton     * record;
   GtkBox              * fader_area;
+  GtkBox              * meter_area;
   FaderWidget         * fader;
-  GtkDrawingArea      * meter;
+  ChannelMeterWidget  * cm;
   GtkDrawingArea      * meter_reading;
   GtkImage            * icon;
 

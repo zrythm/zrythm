@@ -19,6 +19,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <math.h>
 #include <unistd.h>
 #include <stdlib.h>
 
@@ -27,6 +28,68 @@
 #include "gui/widgets/channel.h"
 
 #include <gtk/gtk.h>
+
+/**
+ * Calculate decibels using RMS method.
+ */
+static double
+calculate_rms_db (sample_t * buf, nframes_t nframes)
+{
+  double sum = 0;
+  for (int i = 0; i < nframes; i += 2)
+  {
+      double sample = buf[i] / 32768.0;
+      sum += (sample * sample);
+  }
+  double rms = sqrt (sum / (nframes / 2));
+  return 20 * log10(rms);
+}
+
+static void
+reallocate_port_buf_if_necessary (Port *port, nframes_t nframes)
+{
+      /* if port buf size changed, reallocate */
+      if (port->nframes != nframes ||
+          port->nframes == 0)
+        {
+          if (port->nframes > 0)
+            free (port->buf);
+          port->buf = calloc (nframes, sizeof (sample_t));
+          port->nframes = nframes;
+        }
+      else /* otherwise memset to 0 */
+        {
+          memset (port->buf, '\0', nframes);
+        }
+}
+
+
+static void
+sum_port_signal_from_inputs (Port * port, nframes_t nframes,
+                             int is_plugin) ///< plugin or not (channel)
+{
+  /* for any output port pointing to it */
+  for (int k = 0; k < port->num_srcs; k++)
+    {
+      Port * src_port = port->srcs[k];
+
+      /* wait for owner plugin to finish processing */
+      if (is_plugin)
+        while (!src_port->owner->processed)
+          {
+            sleep (5);
+          }
+
+      reallocate_port_buf_if_necessary (port, nframes);
+      reallocate_port_buf_if_necessary (src_port, nframes);
+
+      /* sum the signals */
+      for (int l = 0; l < nframes; l++)
+        {
+          port->buf[l] += src_port->buf[l];
+        }
+    }
+}
 
 /**
  * For each plugin
@@ -38,7 +101,7 @@
  */
 void
 channel_process (Channel * channel,  ///< slots
-              nframes_t   samples,    ///< sample count
+              nframes_t   nframes,    ///< sample count
               sample_t *  l_buf,   ///< sample buffer L
               sample_t *  r_buf)   ///< sample buffer R
 {
@@ -56,25 +119,20 @@ channel_process (Channel * channel,  ///< slots
             {
               Port * port = plugin->in_ports[j];
 
-              /* for any output port pointing to it */
-              for (int k = 0; k < port->num_srcs; k++)
-                {
-
-                  /* wait for owner plugin to finish processing */
-                  while (!port->srcs[k]->owner->processed)
-                    {
-                      sleep (5);
-                    }
-
-                  /* sum the signals */
-                  for (int l = 0; l < port->nframes; l++)
-                    {
-                      port->buf[l] += port->srcs[k]->buf[l];
-                    }
-                }
+              sum_port_signal_from_inputs (port, nframes, 1);
             }
         }
     }
+
+  /* same for channel ports */
+  sum_port_signal_from_inputs (channel->l_out_port, nframes, 0);
+  sum_port_signal_from_inputs (channel->r_out_port, nframes, 0);
+
+  /* calc decibels */
+  channel->l_port_db = calculate_rms_db (channel->l_out_port->buf,
+                                         channel->l_out_port->nframes);
+  channel->r_port_db = calculate_rms_db (channel->r_out_port->buf,
+                                         channel->r_out_port->nframes);
 }
 
 /**
@@ -106,15 +164,33 @@ channel_create (int     type)             ///< the channel type (AUDIO/INS)
   channel->muted = 0;
   channel->soloed = 0;
 
+  /* connect output ports of last plugin to channel ports */
+  channel->l_in_port = port_new ();
+  channel->r_in_port = port_new ();
+  channel->l_out_port = port_new ();
+  channel->r_out_port = port_new ();
+  port_connect (channel->strip[MAX_PLUGINS - 1]->out_ports[0],
+                channel->l_out_port);
+  port_connect (channel->strip[MAX_PLUGINS - 1]->out_ports[1],
+                channel->r_out_port);
+
   if (type == CT_MASTER)
     {
       gdk_rgba_parse (&channel->color, "red");
       channel->name = "Master";
+      channel->output = NULL;
     }
   else
     {
       gdk_rgba_parse (&channel->color, "rgb(20%,60%,4%)");
       channel-> name = g_strdup_printf ("Ch %d", MIXER->num_channels++);
+      channel->output = MIXER->master;
+
+      /* connect channel out ports to master */
+      port_connect (channel->l_out_port,
+                    MIXER->master->l_in_port);
+      port_connect (channel->r_out_port,
+                    MIXER->master->r_in_port);
     }
 
   return channel;
@@ -151,6 +227,20 @@ channel_get_volume (void * _channel)
 {
   Channel * channel = (Channel *) _channel;
   return channel->volume;
+}
+
+float
+channel_get_current_l_db (void * _channel)
+{
+  Channel * channel = (Channel *) _channel;
+  return channel->l_port_db;
+}
+
+float
+channel_get_current_r_db (void * _channel)
+{
+  Channel * channel = (Channel *) _channel;
+  return channel->r_port_db;
 }
 
 /**

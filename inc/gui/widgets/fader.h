@@ -27,6 +27,29 @@
 
 #include <gtk/gtk.h>
 
+#define FADER_DIFF_1 0.16
+#define FADER_STEP_1 0.84
+#define FADER_DIFF_2 0.18
+#define FADER_STEP_2 0.66
+#define FADER_DIFF_3 0.23
+#define FADER_STEP_3 0.43
+#define FADER_DIFF_4 0.2
+#define FADER_STEP_4 0.23
+#define FADER_DIFF_5 0.23
+#define FADER_STEP_5 0.0
+
+#define REAL_STEP_0 3.0
+#define REAL_DIFF_1 3.0
+#define REAL_STEP_1 0.0
+#define REAL_DIFF_2 3.0
+#define REAL_STEP_2 -3.0
+#define REAL_DIFF_3 9.0
+#define REAL_STEP_3 -12.0
+#define REAL_DIFF_4 12.0
+#define REAL_STEP_4 -24.0
+#define REAL_DIFF_5 104.0
+#define REAL_STEP_5 -128.0
+
 #define FADER_WIDGET_TYPE                  (fader_widget_get_type ())
 #define FADER_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), FADER_WIDGET_TYPE, FaderWidget))
 #define FADER_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), FADER_WIDGET, FaderWidgetClass))

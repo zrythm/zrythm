@@ -42,6 +42,7 @@ port_new ()
   MIXER->ports[MIXER->num_ports] = port;
   port->id = MIXER->num_ports++;
   port->num_dests = 0;
+  port->nframes = 0;
 
   return port;
 }
