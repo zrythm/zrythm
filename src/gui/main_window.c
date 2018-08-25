@@ -207,10 +207,16 @@ create_main_window()
   /* set browser */
   setup_browser ();
 
-  /* set master channel */
+  /* set channels */
   gtk_box_pack_end (GTK_BOX (GET_WIDGET ("gbox-mixer")),
                     GTK_WIDGET (channel_widget_new (MIXER->master)),
                     0, 0, 0);
+  for (int i = 0; i < MIXER->num_channels; i++)
+    {
+      gtk_box_pack_start (GTK_BOX (GET_WIDGET ("mixer-channels")),
+                        GTK_WIDGET (channel_widget_new (MIXER->channels[i])),
+                        0, 0, 0);
+    }
 
   // set signals
   g_signal_connect (window, "destroy",

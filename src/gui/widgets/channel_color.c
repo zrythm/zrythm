@@ -31,7 +31,7 @@ G_DEFINE_TYPE (ChannelColorWidget, channel_color_widget, GTK_TYPE_DRAWING_AREA)
 static int
 draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 {
-  GdkColor * color = (GdkColor *) data;
+  GdkRGBA * color = (GdkColor *) data;
   guint width, height;
   GtkStyleContext *context;
   context = gtk_widget_get_style_context (widget);
@@ -57,7 +57,7 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   cairo_arc (cr, x + radius, y + radius, radius, 180 * degrees, 270 * degrees);
   cairo_close_path (cr);
 
-  cairo_set_source_rgb (cr, color->red, color->green, color->blue);
+  gdk_cairo_set_source_rgba (cr, color);
   cairo_fill_preserve (cr);
 }
 /**

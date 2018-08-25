@@ -31,6 +31,28 @@
 
 G_DEFINE_TYPE (KnobWidget, knob_widget, GTK_TYPE_DRAWING_AREA)
 
+#define ARC_CUT_ANGLE 60
+
+/**
+ * Macro to get real value.
+ */
+#define GET_REAL_VAL ((*self->getter) (self->object))
+
+/**
+ * MAcro to get real value from knob value.
+ */
+#define REAL_VAL_FROM_KNOB(knob) (self->min + knob * (self->max - self-> min))
+
+/**
+ * Converts from real value to knob value
+ */
+#define KNOB_VAL_FROM_REAL(real) ((real - self->min) / (self->max - self->min))
+
+/**
+ * Sets real val
+ */
+#define SET_REAL_VAL(real) ((*self->setter)(self->object, real))
+
 /**
  * Draws the knob.
  */
@@ -53,10 +75,12 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   const float scale = width;
   const float pointer_thickness = 3.0 * (scale/80);  //(if the knob is 80 pixels wide, we want a 3-pix line on it)
 
-  const float start_angle = ((180 - 65) * G_PI) / 180;
-  const float end_angle = ((360 + 65) * G_PI) / 180;
+  const float start_angle = ((180 - ARC_CUT_ANGLE) * G_PI) / 180;
+  const float end_angle = ((360 + ARC_CUT_ANGLE) * G_PI) / 180;
 
-  const float value_angle = start_angle + (*self->value * (end_angle - start_angle));
+  const float value = KNOB_VAL_FROM_REAL (GET_REAL_VAL);
+  const float value_angle = start_angle
+    + value * (end_angle - start_angle);
   const float zero_angle = start_angle + (self->zero * (end_angle - start_angle));
 
   float value_x = cos (value_angle);
@@ -92,7 +116,7 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
       // TODO
 
       //vary the arc color over the travel of the knob
-      float intensity = fabsf (*self->value - self->zero) / MAX(self->zero, (1.f - self->zero));
+      float intensity = fabsf (value - self->zero) / MAX(self->zero, (1.f - self->zero));
       const float intensity_inv = 1.0 - intensity;
       float r = intensity_inv * self->end_color.red   +
                 intensity * self->start_color.red;
@@ -275,8 +299,8 @@ drag_update (GtkGestureDrag * gesture,
   KnobWidget * self = (KnobWidget *) user_data;
   offset_y = - offset_y;
   int use_y = abs(offset_y - self->last_y) > abs(offset_x - self->last_x);
-  *self->value = clamp (*self->value + 0.004 * (use_y ? offset_y - self->last_y : offset_x - self->last_x),
-               1.0f, 0.0f);
+  SET_REAL_VAL (REAL_VAL_FROM_KNOB (clamp (KNOB_VAL_FROM_REAL (GET_REAL_VAL) + 0.004 * (use_y ? offset_y - self->last_y : offset_x - self->last_x),
+               1.0f, 0.0f)));
   self->last_x = offset_x;
   self->last_y = offset_y;
   gtk_widget_queue_draw ((GtkWidget *)user_data);
@@ -298,25 +322,30 @@ drag_end (GtkGestureDrag *gesture,
  * Creates a knob widget with the given options and binds it to the given value.
  */
 KnobWidget *
-knob_widget_new (float      * value,
+knob_widget_new (float (*get_val)(void *),    ///< getter function
+                  void (*set_val)(void *, float),    ///< setter function
+                  void * object,              ///< object to call get/set with
+                  float min,       ///< min value
+                  float max,       ///< max value
                     int         size,
                     float       zero)
 {
   KnobWidget * self = g_object_new (KNOB_WIDGET_TYPE, NULL);
-  self->value = value;
+  /*self->value = value;*/
+  self->getter = get_val;
+  self->setter = set_val;
+  self->object = object;
+  self->min = min;
+  self->max = max;
+  /*self->cur = get_knob_val (self)*/
   self->size = size; /* default 30 */
   self->hover = 0;
   self->zero = zero; /* default 0.05f */
-  self->value = value;
   self->arc = 1;
   self->bevel = 1;
   self->flat = 1;
-  self->start_color.red = 0.8;
-  self->start_color.green = 0.8;
-  self->start_color.blue = 0.8;
-  self->end_color.red = 0.7;
-  self->end_color.red = 0.7;
-  self->end_color.red = 0.7;
+  gdk_rgba_parse (&self->start_color, "rgb(78%,78%,78%)");
+  gdk_rgba_parse (&self->end_color, "rgb(66%,66%,66%)");
   self->last_x = 0;
   self->last_y = 0;
 

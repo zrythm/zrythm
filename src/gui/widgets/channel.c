@@ -80,6 +80,8 @@ channel_widget_class_init (ChannelWidgetClass * klass)
                                                 ChannelWidget, meter);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 ChannelWidget, meter_reading);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                                ChannelWidget, icon);
   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
                                            phase_invert_button_clicked);
 
@@ -102,20 +104,29 @@ setup_color (ChannelWidget * self)
 }
 
 static void
-setup_phase_knob (ChannelWidget * self)
+setup_phase_panel (ChannelWidget * self)
 {
-  self->phase_knob = knob_widget_new (&self->channel->phase,
+  self->phase_knob = knob_widget_new (channel_get_phase,
+                                      channel_set_phase,
+                                      self->channel,
+                                      0,
+                                      180,
                                          30,
-                                         0.5f);
+                                         0.0f);
   gtk_box_pack_end (self->phase_controls,
                        GTK_WIDGET (self->phase_knob),
                        0, 1, 0);
+  gtk_label_set_text (self->phase_reading,
+                      g_strdup_printf ("%.1f", self->channel->phase));
 }
 
 static void
 setup_fader (ChannelWidget * self)
 {
-  self->fader = fader_widget_new (&self->channel->volume, 44);
+  self->fader = fader_widget_new (channel_get_volume,
+                                  channel_set_volume,
+                                  self->channel,
+                                  40);
   gtk_box_pack_start (self->fader_area,
                        GTK_WIDGET (self->fader),
                        0, 1, 0);
@@ -126,9 +137,10 @@ channel_widget_new (Channel * channel)
 {
   ChannelWidget * self = g_object_new (CHANNEL_WIDGET_TYPE, NULL);
   self->channel = channel;
+  channel->widget = self;
 
   setup_color (self);
-  setup_phase_knob (self);
+  setup_phase_panel (self);
   /*setup_pan (self);*/
   setup_fader (self);
 
@@ -161,15 +173,24 @@ channel_widget_new (Channel * channel)
     case CT_MIDI:
       gtk_image_set_from_resource (self->icon,
                   "/online/alextee/zrythm/instrument.svg");
+      gtk_label_set_text (self->output,
+                          "Master");
       break;
     case CT_MASTER:
+      gtk_image_set_from_resource (self->icon,
+                  "/online/alextee/zrythm/audio.svg");
+      gtk_label_set_text (self->output,
+                          "Stereo out");
       break;
     case CT_AUDIO:
       gtk_image_set_from_resource (self->icon,
                   "/online/alextee/zrythm/audio.svg");
+      gtk_label_set_text (self->output,
+                          "Master");
       break;
     }
-
+    gtk_label_set_text (self->name,
+                        channel->name);
 
   return self;
 }

@@ -38,10 +38,14 @@ typedef struct FaderWidget
 {
   GtkDrawingArea         parent_instance;
   GtkGestureDrag         * drag;
+  float (*getter)(void*);       ///< getter
+  void (*setter)(void*, float);       ///< getter
+  void *                object;
   double                 last_x;
   double                 last_y;
-  float                  * val;
   int                    hover;
+  GdkRGBA                start_color;
+  GdkRGBA                end_color;
 } FaderWidget;
 
 typedef struct FaderWidgetClass
@@ -53,6 +57,9 @@ typedef struct FaderWidgetClass
  * Creates a new Fader widget and binds it to the given value.
  */
 FaderWidget *
-fader_widget_new (float * value, int width);
+fader_widget_new (float (*get_val)(void *),    ///< getter function
+                  void (*set_val)(void *, float),    ///< setter function
+                  void * object,              ///< object to call get/set with
+int width);
 
 #endif

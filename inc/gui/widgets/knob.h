@@ -37,16 +37,19 @@
 typedef struct KnobWidget
 {
   GtkDrawingArea        parent_instance;
-  float                 * value;       ///< value to bind to.
-                              ///< this value will get updated as the knob turns
+  float (*getter)(void*);       ///< getter
+  void (*setter)(void*, float);       ///< getter
+  void *                object;
   int                   size;  ///< size in px
   int                   hover;   ///< used to detect if hovering or not
   float                 zero;   ///<   zero point 0.0-1.0 */
   int                   arc;    ///< draw arc around the knob or not
   int                   bevel;  ///< bevel
   int                   flat;    ///< flat or 3D
-  GdkColor              start_color;    ///< color away from zero point
-  GdkColor              end_color;     ///< color close to zero point
+  float                 min;    ///< min value (eg. 1)
+  float                 max;    ///< max value (eg. 180)
+  GdkRGBA              start_color;    ///< color away from zero point
+  GdkRGBA              end_color;     ///< color close to zero point
   GtkGestureDrag        *drag;     ///< used for drag gesture
   double                last_x;    ///< used in gesture drag
   double                last_y;    ///< used in gesture drag
@@ -61,7 +64,11 @@ typedef struct KnobWidgetClass
  * Creates a knob widget with the given options and binds it to the given value.
  */
 KnobWidget *
-knob_widget_new (float      * value,
+knob_widget_new (float (*get_val)(void *),    ///< getter function
+                  void (*set_val)(void *, float),    ///< setter function
+                  void * object,              ///< object to call get/set with
+                  float min,
+                  float max,
                     int         size,
                     float       zero);
 

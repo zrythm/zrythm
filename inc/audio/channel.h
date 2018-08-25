@@ -40,6 +40,7 @@
 
 typedef jack_default_audio_sample_t   sample_t;
 typedef jack_nframes_t                nframes_t;
+typedef struct ChannelWidget ChannelWidget;
 
 enum ChannelType
 {
@@ -57,7 +58,21 @@ typedef struct Channel
   int               soloed;           ///< soloed or not
   GdkRGBA           color;          ///< see https://ometer.com/gtk-colors.html
   float             phase;        ///< used by the phase knob (0.0-360.0 value)
+  char *            name;        ///< channel name
+  ChannelWidget     *widget;
 } Channel;
+
+void
+channel_set_phase (void * channel, float phase);
+
+float
+channel_get_phase (void * channel);
+
+void
+channel_set_volume (void * channel, float volume);
+
+float
+channel_get_volume (void * channel);
 
 /**
  * Creates a channel using the given params

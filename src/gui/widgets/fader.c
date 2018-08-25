@@ -26,6 +26,63 @@
 
 G_DEFINE_TYPE (FaderWidget, fader_widget, GTK_TYPE_DRAWING_AREA)
 
+#define GET_REAL_VAL ((*self->getter) (self->object))
+#define SET_REAL_VAL(real) ((*self->setter)(self->object, real))
+
+#define FADER_DIFF_1 0.16
+#define FADER_STEP_1 0.84
+#define FADER_DIFF_2 0.18
+#define FADER_STEP_2 0.66
+#define FADER_DIFF_3 0.23
+#define FADER_STEP_3 0.43
+#define FADER_DIFF_4 0.2
+#define FADER_STEP_4 0.23
+#define FADER_DIFF_5 0.23
+#define FADER_STEP_5 0.0
+
+#define REAL_STEP_0 3.0
+#define REAL_DIFF_1 3.0
+#define REAL_STEP_1 0.0
+#define REAL_DIFF_2 3.0
+#define REAL_STEP_2 -3.0
+#define REAL_DIFF_3 9.0
+#define REAL_STEP_3 -12.0
+#define REAL_DIFF_4 12.0
+#define REAL_STEP_4 -24.0
+#define REAL_DIFF_5 104.0
+#define REAL_STEP_5 -128.0
+
+static double
+fader_val_from_real (FaderWidget * self)
+{
+  double real = GET_REAL_VAL;
+  if (real > REAL_STEP_1)
+      return FADER_STEP_1 + (((real - REAL_STEP_1) / REAL_DIFF_1) * FADER_DIFF_1);
+  else if (real > REAL_STEP_2)
+      return FADER_STEP_2 + (((real - REAL_STEP_2) / REAL_DIFF_2) * FADER_DIFF_2);
+  else if (real > REAL_STEP_3)
+      return FADER_STEP_3 + (((real - REAL_STEP_3) / REAL_DIFF_3) * FADER_DIFF_3);
+  else if (real > REAL_STEP_4)
+      return FADER_STEP_4 + (((real - REAL_STEP_4) / REAL_DIFF_4) * FADER_DIFF_4);
+  else
+      return FADER_STEP_5 + (((real - REAL_STEP_5) / REAL_DIFF_5) * FADER_DIFF_5);
+}
+
+static double
+real_val_from_fader (FaderWidget * self, double fader)
+{
+  if (fader > FADER_STEP_1)
+    return REAL_STEP_1 + ((fader - FADER_STEP_1) / FADER_DIFF_1) * REAL_DIFF_1;
+  else if (fader > FADER_STEP_2)
+    return REAL_STEP_2 + ((fader - FADER_STEP_2) / FADER_DIFF_2) * REAL_DIFF_2;
+  else if (fader > FADER_STEP_3)
+    return REAL_STEP_3 + ((fader - FADER_STEP_3) / FADER_DIFF_3) * REAL_DIFF_3;
+  else if (fader > FADER_STEP_4)
+    return REAL_STEP_4 + ((fader - FADER_STEP_4) / FADER_DIFF_4) * REAL_DIFF_4;
+  else
+    return REAL_STEP_5 + ((fader - FADER_STEP_5) / FADER_DIFF_5) * REAL_DIFF_5;
+}
+
 static int
 draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 {
@@ -49,7 +106,8 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   double degrees = G_PI / 180.0;
   /* value in pixels = total pixels * val
    * val is percentage */
-  double value_px = height * * self->val;
+  double fader_val = fader_val_from_real (self);
+  double value_px = height * fader_val;
 
   /* draw background bar */
   cairo_new_sub_path (cr);
@@ -65,7 +123,18 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   cairo_fill(cr);
 
   /* draw filled in bar */
-  cairo_set_source_rgba (cr, 0.4, 0.2, 0.05, 0.9);
+  float intensity = fader_val;
+  const float intensity_inv = 1.0 - intensity;
+  float r = intensity_inv * self->end_color.red   +
+            intensity * self->start_color.red;
+  float g = intensity_inv * self->end_color.green +
+            intensity * self->start_color.green;
+  float b = intensity_inv * self->end_color.blue  +
+            intensity * self->start_color.blue;
+  float a = intensity_inv * self->end_color.alpha  +
+            intensity * self->start_color.alpha;
+
+  cairo_set_source_rgba (cr, r,g,b,a);
   cairo_new_sub_path (cr);
   cairo_line_to (cr, x + width, y + (height - value_px));
   /*cairo_arc (cr, x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);*/
@@ -156,8 +225,8 @@ drag_update (GtkGestureDrag * gesture,
   FaderWidget * self = (FaderWidget *) user_data;
   offset_y = - offset_y;
   int use_y = abs(offset_y - self->last_y) > abs(offset_x - self->last_x);
-  * self->val = clamp (* self->val + 0.005 * (use_y ? offset_y - self->last_y : offset_x - self->last_x),
-               1.0f, 0.0f);
+  SET_REAL_VAL (real_val_from_fader (self, clamp (fader_val_from_real (self) + 0.005 * (use_y ? offset_y - self->last_y : offset_x - self->last_x),
+               1.0f, 0.0f)));
   self->last_x = offset_x;
   self->last_y = offset_y;
   gtk_widget_queue_draw (GTK_WIDGET (self));
@@ -178,10 +247,15 @@ drag_end (GtkGestureDrag *gesture,
  * Creates a new Fader widget and binds it to the given value.
  */
 FaderWidget *
-fader_widget_new (float * value, int width)
+fader_widget_new (float (*get_val)(void *),    ///< getter function
+                  void (*set_val)(void *, float),    ///< setter function
+                  void * object,              ///< object to call get/set with
+                  int width)
 {
   FaderWidget * self = g_object_new (FADER_WIDGET_TYPE, NULL);
-  self->val = value;
+  self->getter = get_val;
+  self->setter = set_val;
+  self->object = object;
 
   /* set size */
   gtk_widget_set_size_request (GTK_WIDGET (self), width, -1);
@@ -204,6 +278,9 @@ fader_widget_new (float * value, int width)
 static void
 fader_widget_init (FaderWidget * self)
 {
+  gdk_rgba_parse (&self->start_color, "rgba(40%,20%,5%,1.0)");
+  gdk_rgba_parse (&self->end_color, "rgba(30%,17%,3%,0.8)");
+
   /* make it able to notify */
   gtk_widget_set_has_window (GTK_WIDGET (self), TRUE);
   int crossing_mask = GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;

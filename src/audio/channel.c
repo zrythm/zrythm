@@ -24,6 +24,7 @@
 
 #include "audio/channel.h"
 #include "audio/mixer.h"
+#include "gui/widgets/channel.h"
 
 #include <gtk/gtk.h>
 
@@ -100,24 +101,56 @@ channel_create (int     type)             ///< the channel type (AUDIO/INS)
         }
     }
   channel->type = type;
-  channel->volume = 0.7f;
-  channel->phase = 0.4f;
+  channel->volume = 0.0f;
+  channel->phase = 0.0f;
   channel->muted = 0;
   channel->soloed = 0;
 
   if (type == CT_MASTER)
     {
       gdk_rgba_parse (&channel->color, "red");
+      channel->name = "Master";
     }
   else
     {
-      channel->color.red = 0.2;
-      channel->color.green = 0.6;
-      channel->color.blue = 0.045;
-      MIXER->num_channels++;
+      gdk_rgba_parse (&channel->color, "rgb(20%,60%,4%)");
+      channel-> name = g_strdup_printf ("Ch %d", MIXER->num_channels++);
     }
 
   return channel;
+}
+
+void
+channel_set_phase (void * _channel, float phase)
+{
+  Channel * channel = (Channel *) _channel;
+  channel->phase = phase;
+  gtk_label_set_text (channel->widget->phase_reading,
+                      g_strdup_printf ("%.1f", phase));
+}
+
+float
+channel_get_phase (void * _channel)
+{
+  Channel * channel = (Channel *) _channel;
+  return channel->phase;
+}
+
+void
+channel_set_volume (void * _channel, float volume)
+{
+  Channel * channel = (Channel *) _channel;
+  channel->volume = volume;
+  /* TODO update tooltip */
+  gtk_label_set_text (channel->widget->phase_reading,
+                      g_strdup_printf ("%.1f", volume));
+}
+
+float
+channel_get_volume (void * _channel)
+{
+  Channel * channel = (Channel *) _channel;
+  return channel->volume;
 }
 
 /**

@@ -74,6 +74,8 @@ register_widgets (GtkBuilder * builder)
   REGISTER_WIDGET ("glabel-meter-reading");
   REGISTER_WIDGET ("gdrawingarea-master-color");
   REGISTER_WIDGET ("gbox-mixer");
+  REGISTER_WIDGET ("mixer-channels");
+  REGISTER_WIDGET ("add_slot_left_mixer");
 }
 
 void
