@@ -26,7 +26,7 @@
 #include "lv2/lv2plug.in/ns/ext/patch/patch.h"
 #include "lv2/lv2plug.in/ns/ext/port-props/port-props.h"
 
-#include "zrythm_system.h"
+#include "zrythm_app.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_manager.h"
 

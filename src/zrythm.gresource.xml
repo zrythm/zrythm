@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/online/alextee/zrythm">
-    <file preprocess="xml-stripblanks">main-window.ui</file>
+    <file preprocess="xml-stripblanks">ui/main-window.ui</file>
+    <file preprocess="xml-stripblanks">ui/main-window2.ui</file>
     <file preprocess="xml-stripblanks">ui/channel.ui</file>
     <file>theme.css</file>
 

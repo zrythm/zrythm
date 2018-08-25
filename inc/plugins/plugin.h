@@ -70,18 +70,18 @@ enum PluginArchitecture
  */
 typedef struct Plugin_Descriptor
 {
-  const char           * author;
-  const char           * name;
-  const char           * website;
+  char  *           author;
+  char   *         name;
+  char    *        website;
   //int                  category;           ///< one of the above
-  const char *                  category;           ///< one of the above
+  char     *              category;           ///< one of the above
   uint8_t              num_audio_ins;             ///< # of input ports
   uint8_t              num_midi_ins;             ///< # of input ports
   uint8_t              num_audio_outs;            ///< # of output ports
   uint8_t              num_midi_outs;            ///< # of output ports
   int                  arch;               ///< architecture 32/64bit
   int                  protocol;           ///< VST/LV2/DSSI/LADSPA...
-  const char           * path;
+  char      *     path;
 } Plugin_Descriptor;
 
 /**

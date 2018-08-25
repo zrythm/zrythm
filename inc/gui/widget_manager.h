@@ -26,12 +26,6 @@
 
 #include <gtk/gtk.h>
 
-/**
- * pixels to draw between each beat,
- * before being adjusted for zoom.
- * used by the ruler and timeline
- */
-#define PX_PER_BEAT 20
 
 /**
  * Convenience macro to get any registered widget by ID.

@@ -2,17 +2,16 @@ bin_PROGRAMS = zrythm
 
 # sources for zrythm
 zrythm_SOURCES = main.c \
-                 init.c \
 								 project.c \
 								 settings_manager.c \
 								 zrythm_system.c \
+								 zrythm_app.c \
 								 audio/channel.c \
 								 audio/engine.c \
 								 audio/mixer.c \
 								 audio/port.c \
 								 audio/timeline.c \
 								 audio/region.c \
-								 gui/main_window.c \
 								 gui/widget_manager.c \
 								 gui/widgets/instrument_timeline_view.c \
 								 gui/widgets/browser.c \
@@ -21,6 +20,7 @@ zrythm_SOURCES = main.c \
 								 gui/widgets/channel_meter.c \
 								 gui/widgets/fader.c \
 								 gui/widgets/knob.c \
+								 gui/widgets/main_window.c \
 								 gui/widgets/ruler.c \
 								 gui/widgets/timeline.c \
 								 plugins/lv2_gtk.c \
@@ -60,6 +60,6 @@ BUILT_SOURCES = resources.c
 CLEANFILES = resources.c
 
 # build rule for resources.c
-resources.c:
+resources.c: $(srcdir)/zrythm.gresource.xml $(top_srcdir)/resources/ui/main-window.ui $(top_srcdir)/resources/theme.css $(top_srcdir)/resources/ui/channel.ui
 	glib-compile-resources $(srcdir)/zrythm.gresource.xml --target=resources.c \
 	--generate-source --sourcedir=${top_srcdir}/resources

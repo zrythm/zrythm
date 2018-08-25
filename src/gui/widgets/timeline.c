@@ -19,13 +19,22 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "zrythm_system.h"
+#include "zrythm_app.h"
 #include "project.h"
 #include "settings_manager.h"
 #include "audio/timeline.h"
-#include "gui/widget_manager.h"
+#include "gui/widgets/timeline.h"
 
 #include <gtk/gtk.h>
+
+G_DEFINE_TYPE (TimelineWidget, timeline_widget, GTK_TYPE_DRAWING_AREA)
+
+/**
+ * pixels to draw between each beat,
+ * before being adjusted for zoom.
+ * used by the ruler and timeline
+ */
+#define PX_PER_BEAT 20
 
 static int px_per_beat;
 static int px_per_bar;
@@ -47,7 +56,7 @@ draw_borders (GtkWidget * widget,
 }
 
 static gboolean
-draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
+draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
 {
   guint width, height;
   GdkRGBA color;
@@ -131,19 +140,16 @@ draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
             &wy);
   draw_borders (inner_paned, cr, wy);
 
-
-  return FALSE;
+  return 0;
 }
 
-/**
- * adds callbacks to the drawing area given
- */
-void
-set_timeline (GtkWidget * _gpaned_instruments,
-              GtkWidget * overlay,
-              GtkWidget * drawing_area)
+TimelineWidget *
+timeline_widget_new (GtkWidget * _paned,
+                     GtkWidget * overlay)
 {
-  gpaned_instruments = _gpaned_instruments;
+  TimelineWidget * self = g_object_new (TIMELINE_WIDGET_TYPE, NULL);
+
+  gpaned_instruments = _paned;
   int default_px_per_beat = PX_PER_BEAT;
 
   /* adjust for zoom level */
@@ -168,6 +174,22 @@ set_timeline (GtkWidget * _gpaned_instruments,
     total_px,
     hh);
 
-  g_signal_connect (G_OBJECT (drawing_area), "draw",
-                    G_CALLBACK (draw_callback), NULL);
+  gtk_container_add (GTK_CONTAINER (overlay),
+                     GTK_WIDGET (self));
+
+  g_signal_connect (G_OBJECT (self), "draw",
+                    G_CALLBACK (draw_cb), NULL);
+
+  return self;
+}
+
+static void
+timeline_widget_class_init (TimelineWidgetClass * klass)
+{
+}
+
+static void
+timeline_widget_init (TimelineWidget *self )
+{
+  gtk_widget_show (GTK_WIDGET (self));
 }

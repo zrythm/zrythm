@@ -20,8 +20,10 @@
  */
 
 #include "settings_manager.h"
-#include "zrythm_system.h"
+#include "zrythm_app.h"
 #include "gui/widget_manager.h"
+#include "plugins/plugin.h"
+#include "plugins/plugin_manager.h"
 
 #include <gtk/gtk.h>
 
@@ -33,25 +35,77 @@ create_model_for_types ()
   GtkTreeIter iter;
   gint i;
 
-  list_store = gtk_list_store_new (1,
-                                   G_TYPE_STRING);
+  /* plugin name, index */
+  list_store = gtk_list_store_new (2,
+                                   G_TYPE_STRING, G_TYPE_INT);
 
-  for (i = 0; i < 10; i++)
+  for (i = 0; i < PLUGIN_MANAGER->num_plugins; i++)
     {
-      gchar *some_data;
-
-      some_data = g_strdup_printf ("test %d",
-                                   i);
+      const gchar * name = PLUGIN_MANAGER->plugins[i]->descr.name;
 
       // Add a new row to the model
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (list_store, &iter,
-                          0, some_data,
+                          0, name,
                           -1);
+      gtk_list_store_set (list_store, &iter,
+                          1, i,
+                          -1);
+    }
 
-      // As the store will keep a copy of the string internally,
-      // we free some_data.
-      g_free (some_data);
+  return GTK_TREE_MODEL (list_store);
+}
+
+static GtkTreeModel *
+create_model_for_categories ()
+{
+  GtkListStore *list_store;
+  GtkTreePath *path;
+  GtkTreeIter iter;
+  gint i;
+
+  /* plugin name, index */
+  list_store = gtk_list_store_new (1,
+                                   G_TYPE_STRING);
+
+  for (i = 0; i < PLUGIN_MANAGER->num_plugin_categories; i++)
+    {
+      const gchar * name = PLUGIN_MANAGER->plugin_categories[i];
+
+      // Add a new row to the model
+      gtk_list_store_append (list_store, &iter);
+      gtk_list_store_set (list_store, &iter,
+                          0, name,
+                          -1);
+    }
+
+  return GTK_TREE_MODEL (list_store);
+}
+
+static GtkTreeModel *
+create_model_for_plugins ()
+{
+  GtkListStore *list_store;
+  GtkTreePath *path;
+  GtkTreeIter iter;
+  gint i;
+
+  /* plugin name, index */
+  list_store = gtk_list_store_new (2,
+                                   G_TYPE_STRING, G_TYPE_INT);
+
+  for (i = 0; i < PLUGIN_MANAGER->num_plugins; i++)
+    {
+      const gchar * name = PLUGIN_MANAGER->plugins[i]->descr.name;
+
+      // Add a new row to the model
+      gtk_list_store_append (list_store, &iter);
+      gtk_list_store_set (list_store, &iter,
+                          0, name,
+                          -1);
+      gtk_list_store_set (list_store, &iter,
+                          1, i,
+                          -1);
     }
 
   return GTK_TREE_MODEL (list_store);
@@ -79,15 +133,10 @@ expander_callback (GObject    *object,
     }
 }
 
-/**
- * Creates a GtkTreeView using the given model,
- * and puts it in the given expander in a GtkScrolledWindow
- *
- * @return the scroll window
- */
-static GtkScrolledWindow *
-create_tree_view (GtkTreeModel * model,
-                  GtkExpander  * expander)
+static GtkWidget *
+tree_view_create (GtkTreeModel * model,
+                  int          allow_multi,
+                  int          dnd)
 {
   /* instantiate tree view using model */
   GtkWidget * tree_view = gtk_tree_view_new_with_model (
@@ -109,15 +158,50 @@ create_tree_view (GtkTreeModel * model,
   gtk_tree_view_set_headers_visible (
             GTK_TREE_VIEW (tree_view),
             FALSE);
-  gtk_tree_selection_set_mode (
-      gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view)),
-      GTK_SELECTION_MULTIPLE);
 
+  if (allow_multi)
+    gtk_tree_selection_set_mode (
+        gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view)),
+        GTK_SELECTION_MULTIPLE);
+
+  if (dnd)
+    gtk_tree_view_enable_model_drag_source (GTK_TREE_VIEW (tree_view),
+                                  GDK_BUTTON1_MASK,
+                                  gtk_target_entry_new ("target",
+                                                        GTK_TARGET_SAME_APP,
+                                                        12),
+                                  1,
+                                  GDK_ACTION_COPY);
+
+  return tree_view;
+}
+
+static GtkWidget *
+add_scroll_window (GtkTreeView * tree_view)
+{
   /* add treeview to scroll window */
   GtkWidget * scrolled_window =
     gtk_scrolled_window_new (NULL, NULL);
   gtk_container_add (GTK_CONTAINER (scrolled_window),
                      GTK_WIDGET (tree_view));
+  return scrolled_window;
+}
+
+
+/**
+ * Creates a GtkTreeView using the given model,
+ * and puts it in the given expander in a GtkScrolledWindow
+ *
+ * @return the scroll window
+ * TODO FIXME
+ */
+static GtkScrolledWindow *
+create_tree_view_add_to_expander (GtkTreeModel * model,
+                  GtkExpander  * expander)
+{
+  GtkWidget * scrolled_window = add_scroll_window
+                  (GTK_TREE_VIEW (tree_view_create (model,
+                                                    1,0)));
 
   /* add scroll window to expander */
   gtk_container_add (
@@ -133,30 +217,26 @@ create_tree_view (GtkTreeModel * model,
 }
 
 void
-setup_browser ()
+setup_browser (GtkWidget * paned,
+               GtkWidget * collections,
+               GtkWidget * types,
+               GtkWidget * categories,
+               GtkWidget * plugins_box)
 {
   g_message ("Setting up library browser...");
-
-  /* get the paned window */
-  GtkWidget * paned = GET_WIDGET ("gpaned-browser");
 
   /* set divider position */
   int divider_pos = get_int ("browser-divider-position");
   gtk_paned_set_position (GTK_PANED (paned),
                           divider_pos);
 
-  /* get each expander */
-  GtkWidget * collections = GET_WIDGET ("gexpander-collections");
-  GtkWidget * types = GET_WIDGET ("gexpander-types");
-  GtkWidget * categories = GET_WIDGET ("gexpander-categories");
-
   /* create each tree */
-  create_tree_view (create_model_for_types (),
+  create_tree_view_add_to_expander (create_model_for_types (),
                     GTK_EXPANDER (collections));
-  create_tree_view (create_model_for_types (),
+  create_tree_view_add_to_expander (create_model_for_types (),
                     GTK_EXPANDER (types));
   GtkScrolledWindow * scrolled_window =
-    create_tree_view (create_model_for_types (),
+  create_tree_view_add_to_expander (create_model_for_categories (),
                       GTK_EXPANDER (categories));
 
   /* expand category by default */
@@ -164,5 +244,11 @@ setup_browser ()
                              TRUE);
   gtk_widget_set_vexpand (GTK_WIDGET (scrolled_window),
                           TRUE);
+
+  /* populate plugins */
+  GtkWidget * plugin_scroll_window = add_scroll_window (GTK_TREE_VIEW (tree_view_create (create_model_for_plugins (), 0, 1)));
+  gtk_box_pack_start (GTK_BOX (plugins_box),
+                      plugin_scroll_window,
+                      1, 1, 0);
 }
 

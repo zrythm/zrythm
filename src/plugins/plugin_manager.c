@@ -2,6 +2,8 @@
  * plugins/plugin_manager.c - Manages plugins
  *
  * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2008-2012 Paul Davis
+ * Author: David Robillard
  *
  * This file is part of Zrythm
  *
@@ -20,13 +22,57 @@
  */
 
 #include <stdlib.h>
+#include <ctype.h>
 
-#include "zrythm_system.h"
+#include "zrythm_app.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2_plugin.h"
 
 #include <gtk/gtk.h>
+
+/**
+ * If category not already set in the categories, add it.
+ */
+static void
+add_category (Plugin * plugin)
+{
+  for (int i = 0; i < PLUGIN_MANAGER->num_plugin_categories; i++)
+    {
+      char * category = PLUGIN_MANAGER->plugin_categories[i];
+      if (!strcmp (category, plugin->descr.category))
+        {
+          return;
+        }
+    }
+    PLUGIN_MANAGER->plugin_categories[
+      PLUGIN_MANAGER->num_plugin_categories++] =
+        g_strdup (plugin->descr.category);
+}
+
+int sort_category_func (const void *a, const void *b) {
+    char * pa = *(char * const *) a, * pb = *(char * const *) b;
+    if (strcasecmp)
+      {
+        int r = strcasecmp(pa, pb);
+        if (r) return r;
+      }
+    /* if equal ignoring case, use opposite of strcmp() result to get
+     * lower before upper */
+    return -strcmp(pa, pb); /* aka: return strcmp(b, a); */
+}
+
+int sort_plugin_func (const void *a, const void *b) {
+    Plugin * pa = *(Plugin * const *) a, * pb = *(Plugin * const *) b;
+    if (strcasecmp)
+      {
+        int r = strcasecmp(pa->descr.name, pb->descr.name);
+        if (r) return r;
+      }
+    /* if equal ignoring case, use opposite of strcmp() result to get
+     * lower before upper */
+    return -strcmp(pa->descr.name, pb->descr.name); /* aka: return strcmp(b, a); */
+}
 
 /**
  * scans for plugins.
@@ -56,8 +102,20 @@ scan_plugins ()
       if (lv2_plugin)
         {
           PLUGIN_MANAGER->plugins[PLUGIN_MANAGER->num_plugins++] = lv2_plugin->plugin;
+          add_category (lv2_plugin->plugin);
         }
     }
+
+  /* sort alphabetically */
+  qsort (PLUGIN_MANAGER->plugins,
+         PLUGIN_MANAGER->num_plugins,
+         sizeof (Plugin *),
+         sort_plugin_func);
+  qsort (PLUGIN_MANAGER->plugin_categories,
+         PLUGIN_MANAGER->num_plugin_categories,
+         sizeof (char *),
+         sort_category_func);
+
   g_message ("%d Plugins scanned.", PLUGIN_MANAGER->num_plugins);
 }
 
@@ -69,6 +127,7 @@ plugin_manager_init ()
       malloc (sizeof (Plugin_Manager));
 
     plugin_manager->num_plugins = 0;
+    plugin_manager->num_plugin_categories = 0;
 
     /* set plugin manager to the project */
     zrythm_system->plugin_manager = plugin_manager;
@@ -159,22 +218,3 @@ plugin_manager_init ()
 #endif
     scan_plugins ();
 }
-
-/*
-    Copyright (C) 2008-2012 Paul Davis
-    Author: David Robillard
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/

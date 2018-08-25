@@ -19,7 +19,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "zrythm_system.h"
+#include "zrythm_app.h"
 #include "project.h"
 #include "audio/timeline.h"
 #include <gtk/gtk.h>

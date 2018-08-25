@@ -14,7 +14,7 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include "zrythm_system.h"
+#include "zrythm_app.h"
 #include "audio/engine.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_manager.h"

@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <signal.h>
 
-#include "zrythm_system.h"
+#include "zrythm_app.h"
 #include "audio/engine.h"
 #include "audio/midi.h"
 #include "audio/mixer.h"
@@ -73,7 +73,7 @@ jack_buffer_size_cb(nframes_t nframes, void* data)
           lv2_allocate_port_buffers ((LV2_Plugin *)PLUGIN_MANAGER->plugins[i]->original_plugin);
         }
     }
-  g_message ("JACK: Block length changed to %d, midi buf size to %f",
+  g_message ("JACK: Block length changed to %d, midi buf size to %lu",
              AUDIO_ENGINE->block_length,
              AUDIO_ENGINE->midi_buf_size);
   return 0;

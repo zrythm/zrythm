@@ -20,7 +20,7 @@
  */
 
 #include "settings_manager.h"
-#include "zrythm_system.h"
+#include "zrythm_app.h"
 
 static GSettings * gsettings;
 

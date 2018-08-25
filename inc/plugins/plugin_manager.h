@@ -120,6 +120,8 @@ typedef struct LV2_Settings
 typedef struct Plugin_Manager
 {
   Plugin         * plugins[400];
+  char *         plugin_categories[50];
+  int            num_plugin_categories;
   int            num_plugins;
   LV2_Settings   lv2_settings;
 } Plugin_Manager;

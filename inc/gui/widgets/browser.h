@@ -21,10 +21,15 @@
 
 #ifndef __GUI_WIDGETS_BROWSER_H__
 #define __GUI_WIDGETS_BROWSER_H__
-struct GtkListStore;
+
+struct GtkWidget;
 
 void
-setup_browser ();
+setup_browser (GtkWidget * paned,
+               GtkWidget * collections,
+               GtkWidget * types,
+               GtkWidget * categories,
+               GtkWidget * plugins_box);
 
 
 #endif

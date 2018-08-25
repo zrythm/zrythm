@@ -1,5 +1,5 @@
 /*
- * zrythm_system.h - Manages the whole application
+ * inc/zrythm_app.h - The GTK application
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -16,11 +16,17 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __ZRYTHM_SYSTEM_H__
-#define __ZRYTHM_SYSTEM_H__
+#ifndef __ZRYTHM_APP_H__
+#define __ZRYTHM_APP_H__
+
+#include <gtk/gtk.h>
+
+
+#define ZRYTHM_APP_TYPE (zrythm_app_get_type ())
+G_DECLARE_FINAL_TYPE (ZrythmApp, zrythm_app, ZRYTHM, APP, GtkApplication)
 
 typedef struct Widget_Manager Widget_Manager;
 typedef struct Settings_Manager Settings_Manager;
@@ -66,7 +72,8 @@ extern Zrythm_System * zrythm_system;
  */
 Zrythm_System * zrythm_system;
 
-void
-zrythm_system_init ();
+ZrythmApp     *zrythm_app_new         (void);
 
-#endif
+
+#endif /* __ZRYTHM_APP_H__ */
+

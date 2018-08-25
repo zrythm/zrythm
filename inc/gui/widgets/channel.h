@@ -25,7 +25,7 @@
 #include <gtk/gtk.h>
 
 #define CHANNEL_WIDGET_TYPE                  (channel_widget_get_type ())
-#define CHANNEL_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), CHANNEL_WIDGET_TYPE, Channel))
+#define CHANNEL_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), CHANNEL_WIDGET_TYPE, ChannelWidget))
 #define CHANNEL_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), CHANNEL_WIDGET, ChannelWidgetClass))
 #define IS_CHANNEL_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), CHANNEL_WIDGET_TYPE))
 #define IS_CHANNEL_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), CHANNEL_WIDGET_TYPE))

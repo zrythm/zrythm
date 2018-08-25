@@ -31,7 +31,7 @@ G_DEFINE_TYPE (ChannelColorWidget, channel_color_widget, GTK_TYPE_DRAWING_AREA)
 static int
 draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 {
-  GdkRGBA * color = (GdkColor *) data;
+  GdkRGBA * color = (GdkRGBA *) data;
   guint width, height;
   GtkStyleContext *context;
   context = gtk_widget_get_style_context (widget);

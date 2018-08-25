@@ -1,5 +1,5 @@
 /*
- * project.c - A project (or song), containing all the project data
+ * gui/widgets/mixer.h - Mixer widget
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,23 +19,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "settings_manager.h"
-#include "zrythm_system.h"
-#include "audio/engine.h"
-#include "audio/mixer.h"
-#include "gui/widget_manager.h"
-#include "plugins/plugin_manager.h"
+#ifndef __GUI_WIDGETS_MIXER_H__
+#define __GUI_WIDGETS_MIXER_H__
 
-void
-zrythm_system_init ()
-{
-  zrythm_system = malloc (sizeof (Zrythm_System));
 
-  init_settings_manager ();
+#endif
 
-  init_widget_manager ();
 
-  plugin_manager_init ();
-
-  init_audio_engine ();
-}

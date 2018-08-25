@@ -19,14 +19,22 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "zrythm_system.h"
+#include "zrythm_app.h"
 #include "project.h"
 #include "settings_manager.h"
 #include "audio/timeline.h"
-#include "gui/widget_manager.h"
+#include "gui/widgets/ruler.h"
 
 #include <gtk/gtk.h>
 
+G_DEFINE_TYPE (RulerWidget, ruler_widget, GTK_TYPE_DRAWING_AREA)
+
+/**
+ * pixels to draw between each beat,
+ * before being adjusted for zoom.
+ * used by the ruler and timeline
+ */
+#define PX_PER_BEAT 20
 #define Y_SPACING 9
 #define FONT "Monospace"
 #define FONT_SIZE 16
@@ -36,16 +44,16 @@ static int px_per_bar;
 static int total_px;
 
 static gboolean
-draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
+draw_cb (RulerWidget * self, cairo_t *cr, gpointer data)
 {
   guint width, height;
   GdkRGBA color;
   GtkStyleContext *context;
 
-  context = gtk_widget_get_style_context (widget);
+  context = gtk_widget_get_style_context (GTK_WIDGET (self));
 
   /*width = gtk_widget_get_allocated_width (widget);*/
-  height = gtk_widget_get_allocated_height (widget);
+  height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
 
   static int playhead_pos_in_px;
   playhead_pos_in_px =
@@ -147,12 +155,12 @@ reset_ruler ()
 
 }
 
-/**
- * adds callbacks to the drawing area given
- */
-void
-set_ruler (GtkWidget * drawing_area)
+RulerWidget *
+ruler_widget_new ()
 {
+  g_message ("Creating ruler...");
+  RulerWidget * self = g_object_new (RULER_WIDGET_TYPE, NULL);
+
   int default_px_per_beat = PX_PER_BEAT;
 
   /* adjust for zoom level */
@@ -168,10 +176,23 @@ set_ruler (GtkWidget * drawing_area)
 
   // set the size
   gtk_widget_set_size_request (
-    GTK_WIDGET (drawing_area),
+    GTK_WIDGET (self),
     total_px,
     -1);
 
-  g_signal_connect (G_OBJECT (drawing_area), "draw",
-                    G_CALLBACK (draw_callback), NULL);
+  g_signal_connect (G_OBJECT (self), "draw",
+                    G_CALLBACK (draw_cb), NULL);
+
+  return self;
+}
+
+static void
+ruler_widget_class_init (RulerWidgetClass * klass)
+{
+}
+
+static void
+ruler_widget_init (RulerWidget * self)
+{
+  gtk_widget_show (GTK_WIDGET (self));
 }

@@ -28,7 +28,7 @@
 
 #include "lilv/lilv.h"
 
-#include "zrythm_system.h"
+#include "zrythm_app.h"
 #include "audio/timeline.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_manager.h"

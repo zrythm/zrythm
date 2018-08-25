@@ -22,21 +22,31 @@
 #ifndef __GUI_WIDGETS_TIMELINE_H__
 #define __GUI_WIDGETS_TIMELINE_H__
 
-typedef int gboolean;
-typedef void* gpointer;
-struct GtkWidget;
-struct cairo_t;
+#include <gtk/gtk.h>
+
+#define TIMELINE_WIDGET_TYPE                  (timeline_widget_get_type ())
+#define TIMELINE_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), TIMELINE_WIDGET_TYPE, Timeline))
+#define TIMELINE_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), TIMELINE_WIDGET, TimelineWidgetClass))
+#define IS_TIMELINE_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TIMELINE_WIDGET_TYPE))
+#define IS_TIMELINE_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), TIMELINE_WIDGET_TYPE))
+#define TIMELINE_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), TIMELINE_WIDGET_TYPE, TimelineWidgetClass))
+
+typedef struct TimelineWidget
+{
+  GtkDrawingArea           parent_instance;
+} TimelineWidget;
+
+typedef struct TimelineWidgetClass
+{
+  GtkDrawingAreaClass       parent_class;
+} TimelineWidgetClass;
 
 /**
- * Sets the timeline on the given blank drawing area
+ * Creates a timeline widget using the given timeline data.
  */
-void
-set_timeline (GtkWidget * _multi_paned,
-              GtkWidget * overlay,
-              GtkWidget * drawing_area);
-
-gboolean
-draw_callback (GtkWidget *, cairo_t *, gpointer data);
+TimelineWidget *
+timeline_widget_new (GtkWidget * _multi_paned,
+              GtkWidget * overlay);
 
 #endif
 

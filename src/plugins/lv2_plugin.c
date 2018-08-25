@@ -865,14 +865,14 @@ set_descriptor (LV2_Plugin * lv2_plugin)
   Plugin_Descriptor * pd = &plugin->descr;
   pd->protocol = PROT_LV2;
   LilvNode * name = lilv_plugin_get_name (lp);
-  pd->name = lilv_node_as_string (name);
+  pd->name = g_strdup (lilv_node_as_string (name));
   lilv_node_free (name);
   LilvNode * author = lilv_plugin_get_author_name (lp);
-  pd->author = lilv_node_as_string (author);
+  pd->author = g_strdup (lilv_node_as_string (author));
   lilv_node_free (author);
   const LilvPluginClass* pclass = lilv_plugin_get_class(lp);
   const LilvNode * label  = lilv_plugin_class_get_label(pclass);
-  pd->category = lilv_node_as_string(label);
+  pd->category = g_strdup (lilv_node_as_string (label));
 
   /* count atom-event-ports that feature
    * atom:supports <http://lv2plug.in/ns/ext/midi#MidiEvent>

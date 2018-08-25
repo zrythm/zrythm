@@ -19,11 +19,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "init.h"
+#include "zrythm_app.h"
+#include "settings_manager.h"
+#include "audio/engine.h"
+#include "audio/mixer.h"
+#include "gui/widget_manager.h"
+#include "gui/widgets/main_window.h"
+#include "plugins/plugin_manager.h"
 
 #include <gtk/gtk.h>
 
 #include <suil/suil.h>
+
 
 /**
  * main
@@ -32,24 +39,10 @@ int
 main (int    argc,
       char **argv)
 {
-  GtkApplication *app;
-  int status;
-
   /* init suil */
   suil_init(&argc, &argv, SUIL_ARG_NONE);
 
-  // create GTK application
-  app = gtk_application_new ("online.alextee.zrythm", G_APPLICATION_FLAGS_NONE);
-
-  // setup signals
-  g_signal_connect (app, "startup", G_CALLBACK (startup), NULL);
-  g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
 
   // sends activate signal
-  status = g_application_run (G_APPLICATION (app), argc, argv);
-
-  // free memory
-  g_object_unref (app);
-
-  return status;
+  return g_application_run (G_APPLICATION (zrythm_app_new ()), argc, argv);
 }

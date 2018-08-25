@@ -25,7 +25,7 @@
 #define BLOCK_LENGTH 4096 // should be set by backend
 #define MIDI_BUF_SIZE 1024 // should be set by backend
 
-#include "zrythm_system.h"
+#include "zrythm_app.h"
 
 #include <jack/jack.h>
 #include <jack/midiport.h>

@@ -22,18 +22,29 @@
 #ifndef __GUI_WIDGETS_RULER_H__
 #define __GUI_WIDGETS_RULER_H__
 
-typedef int gboolean;
-typedef void* gpointer;
-struct GtkWidget;
-struct cairo_t;
+#include <gtk/gtk.h>
+
+#define RULER_WIDGET_TYPE                  (ruler_widget_get_type ())
+#define RULER_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), RULER_WIDGET_TYPE, Ruler))
+#define RULER_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), RULER_WIDGET, RulerWidgetClass))
+#define IS_RULER_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), RULER_WIDGET_TYPE))
+#define IS_RULER_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), RULER_WIDGET_TYPE))
+#define RULER_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), RULER_WIDGET_TYPE, RulerWidgetClass))
+
+typedef struct RulerWidget
+{
+  GtkDrawingArea           parent_instance;
+} RulerWidget;
+
+typedef struct RulerWidgetClass
+{
+  GtkDrawingAreaClass       parent_class;
+} RulerWidgetClass;
 
 /**
- * Sets the ruler on the given blank drawing area
+ * Creates a ruler widget using the given ruler data.
  */
-void
-set_ruler (GtkWidget * drawing_area);
-
-gboolean
-draw_callback (GtkWidget *, cairo_t *, gpointer data);
+RulerWidget *
+ruler_widget_new ();
 
 #endif

@@ -1,6 +1,6 @@
 /*
  * project.h - A project (or song), containing all the project data
- *   as opposed to zrythm_system.h which manages things not project-dependent
+ *   as opposed to zrythm_app.h which manages things not project-dependent
  *   like plugins and overall settings
  *
  * Copyright (C) 2018 Alexandros Theodotou
