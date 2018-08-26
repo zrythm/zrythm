@@ -24,6 +24,7 @@
 #include "gui/widgets/browser.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/mixer.h"
 #include "gui/widgets/instrument_timeline_view.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline.h"
@@ -316,17 +317,8 @@ main_window_widget_new (ZrythmApp * _app)
                  GTK_WIDGET (self->browser_bot));
   gtk_widget_show_all (GTK_WIDGET (self->browser_notebook));
 
-  /* set channels */
-  gtk_box_pack_end (self->mixer,
-                    GTK_WIDGET (channel_widget_new (MIXER->master)),
-                    0, 0, 0);
-  for (int i = 0; i < MIXER->num_channels; i++)
-    {
-      gtk_box_pack_start (self->channels,
-                        GTK_WIDGET (channel_widget_new (MIXER->channels[i])),
-                        0, 0, 0);
-    }
-  gtk_widget_show_all (GTK_WIDGET (self->mixer));
+  /* setup mixer */
+  mixer_setup (self->mixer, self->channels);
 
   return self;
 }

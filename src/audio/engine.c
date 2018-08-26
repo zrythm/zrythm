@@ -92,7 +92,7 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
          void              * data)       ///< user data
 {
   sample_t *out1, *out2;
-  int i;
+  int i = 0;
 
   /**
    * get jack's buffers with nframes frames for left & right
@@ -110,7 +110,7 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
   if(event_count > 1)
     {
       g_message ("JACK: have %d events", event_count);
-      for(i=0; i<event_count; i++)
+      for(int i=0; i<event_count; i++)
         {
           jack_midi_event_get(&in_event, port_buf, i);
           g_message ("    event %d time is %d. 1st byte is 0x%x", i, in_event.time, *(in_event.buffer));

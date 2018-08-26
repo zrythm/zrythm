@@ -23,6 +23,7 @@
 #define __GUI_WIDGETS_BROWSER_H__
 
 struct GtkWidget;
+struct GtkTargetEntry;
 
 void
 setup_browser (GtkWidget * paned,

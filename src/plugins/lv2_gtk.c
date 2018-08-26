@@ -100,7 +100,6 @@ static void
 on_window_destroy(GtkWidget* widget,
                   gpointer   data)
 {
-	gtk_main_quit();
 }
 
 const char*
@@ -1119,85 +1118,85 @@ build_menu(LV2_Plugin* plugin, GtkWidget* window, GtkWidget* vbox)
 bool
 lv2_discover_ui(LV2_Plugin* plugin)
 {
-	return TRUE;
+  return TRUE;
 }
 
 int
 lv2_open_ui(LV2_Plugin* plugin)
 {
-	GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	plugin->window = window;
+  GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  plugin->window = window;
 
-	g_signal_connect(window, "destroy",
-	                 G_CALLBACK(on_window_destroy), plugin);
+  g_signal_connect(window, "destroy",
+                   G_CALLBACK(on_window_destroy), plugin);
 
-	set_window_title(plugin);
+  set_window_title(plugin);
 
-	GtkWidget* vbox = new_box(false, 0);
-	gtk_window_set_role(GTK_WINDOW(window), "plugin_ui");
-	gtk_container_add(GTK_CONTAINER(window), vbox);
+  GtkWidget* vbox = new_box(false, 0);
+  gtk_window_set_role(GTK_WINDOW(window), "plugin_ui");
+  gtk_container_add(GTK_CONTAINER(window), vbox);
 
-	if (!no_menu) {
-		build_menu(plugin, window, vbox);
-	}
+  if (!no_menu) {
+          build_menu(plugin, window, vbox);
+  }
 
-	/* Create/show alignment to contain UI (whether custom or generic) */
-	GtkWidget* alignment = gtk_alignment_new(0.5, 0.5, 1.0, 1.0);
-	gtk_box_pack_start(GTK_BOX(vbox), alignment, TRUE, TRUE, 0);
-	gtk_widget_show(alignment);
+  /* Create/show alignment to contain UI (whether custom or generic) */
+  GtkWidget* alignment = gtk_alignment_new(0.5, 0.5, 1.0, 1.0);
+  gtk_box_pack_start(GTK_BOX(vbox), alignment, TRUE, TRUE, 0);
+  gtk_widget_show(alignment);
 
-	/* Attempt to instantiate custom UI if necessary */
-	if (plugin->ui && !generic_ui) {
-		lv2_ui_instantiate(plugin, lv2_native_ui_type(plugin), alignment);
-	}
+  /* Attempt to instantiate custom UI if necessary */
+  if (plugin->ui && !generic_ui)
+    {
+      g_message ("Instantiating UI...");
+      lv2_ui_instantiate(plugin, lv2_native_ui_type(plugin), alignment);
+  }
 
-	if (plugin->ui_instance) {
-		GtkWidget* widget = (GtkWidget*)suil_instance_get_widget(
-			plugin->ui_instance);
+  if (plugin->ui_instance)
+    {
+      g_message ("Creating window for UI...");
+      GtkWidget* widget = (GtkWidget*)suil_instance_get_widget(
+              plugin->ui_instance);
 
-		gtk_container_add(GTK_CONTAINER(alignment), widget);
-		gtk_window_set_resizable(GTK_WINDOW(window), lv2_ui_is_resizable(plugin));
-		gtk_widget_show_all(vbox);
-		gtk_widget_grab_focus(widget);
-	} else {
-		GtkWidget* controls   = build_control_widget(plugin, window);
-		GtkWidget* scroll_win = gtk_scrolled_window_new(NULL, NULL);
-		gtk_scrolled_window_add_with_viewport(
-			GTK_SCROLLED_WINDOW(scroll_win), controls);
-		gtk_scrolled_window_set_policy(
-			GTK_SCROLLED_WINDOW(scroll_win),
-			GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-		gtk_container_add(GTK_CONTAINER(alignment), scroll_win);
-		gtk_widget_show_all(vbox);
+      gtk_container_add(GTK_CONTAINER(alignment), widget);
+      gtk_window_set_resizable(GTK_WINDOW(window), lv2_ui_is_resizable(plugin));
+      gtk_widget_show_all(vbox);
+      gtk_widget_grab_focus(widget);
+    }
+  else
+    {
+      g_message ("No UI found, building native..");
+      GtkWidget* controls   = build_control_widget(plugin, window);
+      GtkWidget* scroll_win = gtk_scrolled_window_new(NULL, NULL);
+      gtk_scrolled_window_add_with_viewport(
+              GTK_SCROLLED_WINDOW(scroll_win), controls);
+      gtk_scrolled_window_set_policy(
+              GTK_SCROLLED_WINDOW(scroll_win),
+              GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+      gtk_container_add(GTK_CONTAINER(alignment), scroll_win);
+      gtk_widget_show_all(vbox);
 
-		GtkRequisition controls_size, box_size;
-		size_request(GTK_WIDGET(controls), &controls_size);
-		size_request(GTK_WIDGET(vbox), &box_size);
+      GtkRequisition controls_size, box_size;
+      size_request(GTK_WIDGET(controls), &controls_size);
+      size_request(GTK_WIDGET(vbox), &box_size);
 
-		gtk_window_set_default_size(
-			GTK_WINDOW(window),
-			MAX(MAX(box_size.width, controls_size.width) + 24, 640),
-			box_size.height + controls_size.height);
-	}
+      gtk_window_set_default_size(
+              GTK_WINDOW(window),
+              MAX(MAX(box_size.width, controls_size.width) + 24, 640),
+              box_size.height + controls_size.height);
+  }
 
-	lv2_init_ui(plugin);
+  lv2_init_ui(plugin);
 
-	g_timeout_add(1000 / plugin->ui_update_hz, (GSourceFunc)lv2_update, plugin);
+  g_timeout_add(1000 / plugin->ui_update_hz, (GSourceFunc)lv2_update, plugin);
 
-	gtk_window_present(GTK_WINDOW(window));
-
-	gtk_main();
-	suil_instance_free(plugin->ui_instance);
-	plugin->ui_instance = NULL;
-	zix_sem_post(plugin->done);
-	return 0;
+  gtk_window_present(GTK_WINDOW(window));
 }
 
 int
 lv2_close_ui(LV2_Plugin* plugin)
 {
-	gtk_main_quit();
-	return 0;
+  return 0;
 }
 
 #if GTK_MAJOR_VERSION == 3

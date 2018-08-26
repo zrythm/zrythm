@@ -1,4 +1,5 @@
 /*
+  Copyright 2018 Alexandros Theodotou
   Copyright 2012-2014 David Robillard <http://drobilla.net>
 
   Permission to use, copy, modify, and/or distribute this software for any
@@ -57,7 +58,7 @@ extern "C" {
    does not block and will not be interrupted.  If you need to signal from
    a realtime thread, this is the most appropriate primitive to use.
 */
-typedef struct ZixSemImpl ZixSem;
+typedef struct ZixSem ZixSem;
 
 /**
    Create and initialize `sem` to `initial`.
@@ -180,7 +181,7 @@ zix_sem_try_wait(ZixSem* sem)
 
 #else  /* !defined(__APPLE__) && !defined(_WIN32) */
 
-struct ZixSemImpl {
+struct ZixSem {
 	sem_t sem;
 };
 

@@ -22,7 +22,20 @@
 #ifndef __GUI_WIDGETS_MIXER_H__
 #define __GUI_WIDGETS_MIXER_H__
 
+#include "zrythm_app.h"
+#include "gui/widget_manager.h"
+
+#include <gtk/gtk.h>
+
+void
+view_onDragDrop (GtkWidget *wgt, GdkDragContext *context,
+                      int x, int y, guint time,gpointer userdata);
+
+void view_onDragDataReceived(GtkWidget *wgt, GdkDragContext *context, int x, int y, GtkSelectionData *seldata, guint info, guint time,gpointer userdata);
+
+void
+mixer_setup (GtkBox * mixer,
+             GtkBox * channels);
+
 
 #endif
-
-

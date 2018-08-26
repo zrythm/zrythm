@@ -23,12 +23,12 @@
 int
 scale_point_cmp(const Lv2ScalePoint* a, const Lv2ScalePoint* b)
 {
-	if (a->value < b->value) {
-		return -1;
-	} else if (a->value == b->value) {
-		return 0;
-	}
-	return 1;
+  if (a->value < b->value) {
+          return -1;
+  } else if (a->value == b->value) {
+          return 0;
+  }
+  return 1;
 }
 
 Lv2ControlID*
@@ -156,9 +156,9 @@ lv2_new_property_control(LV2_Plugin* plugin, const LilvNode* property)
 void
 lv2_add_control(Lv2Controls* controls, Lv2ControlID* control)
 {
-	controls->controls = (Lv2ControlID**)realloc(
-		controls->controls, (controls->n_controls + 1) * sizeof(Lv2ControlID*));
-	controls->controls[controls->n_controls++] = control;
+  controls->controls = (Lv2ControlID**)realloc(
+          controls->controls, (controls->n_controls + 1) * sizeof(Lv2ControlID*));
+  controls->controls[controls->n_controls++] = control;
 }
 
 Lv2ControlID*

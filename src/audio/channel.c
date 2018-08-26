@@ -142,7 +142,7 @@ Channel *
 channel_create (int     type)             ///< the channel type (AUDIO/INS)
 {
   g_message ("Creating channel of type %i", type);
-  Channel * channel = malloc (sizeof (Channel));
+  Channel * channel = calloc (1, sizeof (Channel));
 
   /* init plugins */
   for (int i = 0; i < MAX_PLUGINS; i++)

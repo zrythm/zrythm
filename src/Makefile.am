@@ -4,7 +4,6 @@ bin_PROGRAMS = zrythm
 zrythm_SOURCES = main.c \
 								 project.c \
 								 settings_manager.c \
-								 zrythm_system.c \
 								 zrythm_app.c \
 								 audio/channel.c \
 								 audio/engine.c \
@@ -21,6 +20,7 @@ zrythm_SOURCES = main.c \
 								 gui/widgets/fader.c \
 								 gui/widgets/knob.c \
 								 gui/widgets/main_window.c \
+								 gui/widgets/mixer.c \
 								 gui/widgets/ruler.c \
 								 gui/widgets/timeline.c \
 								 plugins/lv2_gtk.c \

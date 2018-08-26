@@ -26,18 +26,21 @@
 
 #include <gtk/gtk.h>
 
+#define WIDGET_MANAGER zrythm_system->widget_manager
 
 /**
  * Convenience macro to get any registered widget by ID.
  * The widgets must first be registered
  */
-#define GET_WIDGET(key) g_hash_table_lookup ( \
-                      zrythm_system->widget_manager->widgets, \
-                      key)
+//#define GET_WIDGET(key) g_hash_table_lookup ( \
+                      //zrythm_system->widget_manager->widgets, \
+                      //key)
 
 typedef struct Widget_Manager
 {
-  GHashTable   * widgets;
+  //GHashTable   * widgets;
+  GtkTargetEntry        entries[10];        ///< dnd entries
+  int                   num_entries;        ///< count
 } Widget_Manager;
 
 /**
@@ -49,14 +52,14 @@ init_widget_manager ();
 /**
  * Registers widgets to the widget manager
  */
-void
-register_widgets ();
+//void
+//register_widgets ();
 
 /**
  * Registers a widget
  */
-void
-register_widget_from_builder (GtkBuilder * builder,
-                              gchar      * key);
+//void
+//register_widget_from_builder (GtkBuilder * builder,
+                              //gchar      * key);
 
 #endif

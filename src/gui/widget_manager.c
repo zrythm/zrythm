@@ -22,44 +22,48 @@
 #include "zrythm_app.h"
 #include "gui/widget_manager.h"
 
-#define GET_WIDGET_FROM_BUILDER(object_name) GTK_WIDGET ( \
-        gtk_builder_get_object (builder, object_name))
+/*#define GET_WIDGET_FROM_BUILDER(object_name) GTK_WIDGET ( \*/
+        /*gtk_builder_get_object (builder, object_name))*/
 
-#define REGISTER_WIDGET(object_name) \
-  register_widget_from_builder (builder, \
-                                object_name)
+/*#define REGISTER_WIDGET(object_name) \*/
+  /*register_widget_from_builder (builder, \*/
+                                /*object_name)*/
 
-static Widget_Manager * widget_manager;
 
-void
-register_widgets (GtkBuilder * builder)
-{
-  /*REGISTER_WIDGET ("gapplicationwindow-main");*/
-}
+/*void*/
+/*register_widgets (GtkBuilder * builder)*/
+/*{*/
+  /*[>REGISTER_WIDGET ("gapplicationwindow-main");<]*/
+/*}*/
 
 void
 init_widget_manager ()
 {
-  widget_manager = malloc (sizeof (Widget_Manager));
-  widget_manager->widgets = g_hash_table_new (g_str_hash,
-                         g_str_equal);
+  Widget_Manager * widget_manager = malloc (sizeof (Widget_Manager));
+  /*widget_manager->widgets = g_hash_table_new (g_str_hash,*/
+                         /*g_str_equal);*/
 
   zrythm_system->widget_manager = widget_manager;
+
+  widget_manager->entries[0].target = "PLUGIN";
+  widget_manager->entries[0].flags = GTK_TARGET_SAME_APP;
+  widget_manager->entries[0].info = 0;
+  widget_manager->num_entries = 1;
 }
 
-void
-register_widget_from_builder (GtkBuilder * builder,
-                              gchar       * key)
-{
-  GtkWidget * widget = GET_WIDGET_FROM_BUILDER (key);
-  gboolean result = g_hash_table_insert (
-      widget_manager->widgets,
-      key,
-      widget);
-  if (!result)
-    {
-      g_error ("Failed registering widget for %s",
-               key);
-    }
-}
+/*void*/
+/*register_widget_from_builder (GtkBuilder * builder,*/
+                              /*gchar       * key)*/
+/*{*/
+  /*GtkWidget * widget = GET_WIDGET_FROM_BUILDER (key);*/
+  /*gboolean result = g_hash_table_insert (*/
+      /*widget_manager->widgets,*/
+      /*key,*/
+      /*widget);*/
+  /*if (!result)*/
+    /*{*/
+      /*g_error ("Failed registering widget for %s",*/
+               /*key);*/
+    /*}*/
+/*}*/
 

@@ -216,7 +216,7 @@ typedef struct LV2_Plugin
 	LilvInstance*      instance;       ///< Plugin instance (shared library)
 	SuilHost*          ui_host;        ///< Plugin UI host support
 	SuilInstance*      ui_instance;    ///< Plugin UI instance (shared library)
-	void*              window;         ///< Window (if applicable)
+	void*              window;         ///< Window (if applicable) (GtkWindow)
 	LV2_Port*       ports;          ///< Port array of size num_ports
 	Lv2Controls           controls;       ///< Available plugin controls
 	uint32_t           num_ports;      ///< Size of the two following arrays:
@@ -462,5 +462,15 @@ lv2_instantiate (LV2_Plugin      * plugin,   ///< plugin to instantiate
 LV2_Plugin *
 lv2_new (Plugin *plugin ///< a newly allocated plugin instance
          );
+
+/** TODO */
+void
+lv2_cleanup (LV2_Plugin *plugin);
+
+/**
+ * Frees memory
+ */
+void
+lv2_free (LV2_Plugin * plugin);
 
 #endif

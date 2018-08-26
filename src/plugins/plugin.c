@@ -27,6 +27,9 @@
 #include <string.h>
 
 #include "plugins/plugin.h"
+#include "plugins/lv2_plugin.h"
+
+#include <gtk/gtk.h>
 
 /**
  * Creates an empty plugin.
@@ -91,10 +94,13 @@ int
 plugin_instantiate (Plugin * plugin ///< the plugin
                    )
 {
+  g_message ("Instantiating %s...", plugin->descr.name);
   /* TODO */
-
-  return 1;
-
+  if (plugin->descr.protocol == PROT_LV2)
+    {
+      LV2_Plugin *lv2 = (LV2_Plugin *) plugin->original_plugin;
+      lv2_instantiate (lv2, NULL);
+    }
 }
 
 

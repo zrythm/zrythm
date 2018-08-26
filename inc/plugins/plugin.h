@@ -79,6 +79,8 @@ typedef struct Plugin_Descriptor
   uint8_t              num_midi_ins;             ///< # of input ports
   uint8_t              num_audio_outs;            ///< # of output ports
   uint8_t              num_midi_outs;            ///< # of output ports
+  uint8_t              num_ctrl_ins;            ///< # of input ctrls
+  uint8_t              num_ctrl_outs;            ///< # of output ctrls
   int                  arch;               ///< architecture 32/64bit
   int                  protocol;           ///< VST/LV2/DSSI/LADSPA...
   char      *     path;

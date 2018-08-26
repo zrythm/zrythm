@@ -27,6 +27,41 @@
 
 #include <gtk/gtk.h>
 
+static GtkTreeModel * plugins_tree_model;
+
+void
+on_drag_data_get (GtkWidget        *widget,
+               GdkDragContext   *context,
+               GtkSelectionData *data,
+               guint             info,
+               guint             time,
+               gpointer          user_data)
+{
+  GtkTreeSelection * ts = (GtkTreeSelection *) user_data;
+  GList * selected_rows = gtk_tree_selection_get_selected_rows (ts,
+                                                                NULL);
+  GtkTreePath * tp = (GtkTreePath *)g_list_first (selected_rows)->data;
+  gint * indices = gtk_tree_path_get_indices (tp);
+  GtkTreeRowReference *rr = gtk_tree_row_reference_new (plugins_tree_model,
+                                                        tp);
+  GtkTreeIter iter;
+  gtk_tree_model_get_iter (plugins_tree_model,
+                           &iter,
+                           tp);
+  GValue value = G_VALUE_INIT;
+  gtk_tree_model_get_value (plugins_tree_model,
+                            &iter,
+                            1,
+                            &value);
+  Plugin * plugin = g_value_get_pointer (&value);
+
+  gtk_selection_data_set (data,
+        gdk_atom_intern_static_string ("PLUGIN"),
+        32,
+        (const guchar *)&plugin,
+        sizeof (Plugin));
+}
+
 static GtkTreeModel *
 create_model_for_types ()
 {
@@ -92,7 +127,7 @@ create_model_for_plugins ()
 
   /* plugin name, index */
   list_store = gtk_list_store_new (2,
-                                   G_TYPE_STRING, G_TYPE_INT);
+                                   G_TYPE_STRING, G_TYPE_POINTER);
 
   for (i = 0; i < PLUGIN_MANAGER->num_plugins; i++)
     {
@@ -104,7 +139,7 @@ create_model_for_plugins ()
                           0, name,
                           -1);
       gtk_list_store_set (list_store, &iter,
-                          1, i,
+                          1, PLUGIN_MANAGER->plugins[i],
                           -1);
     }
 
@@ -165,13 +200,18 @@ tree_view_create (GtkTreeModel * model,
         GTK_SELECTION_MULTIPLE);
 
   if (dnd)
-    gtk_tree_view_enable_model_drag_source (GTK_TREE_VIEW (tree_view),
-                                  GDK_BUTTON1_MASK,
-                                  gtk_target_entry_new ("target",
-                                                        GTK_TARGET_SAME_APP,
-                                                        12),
-                                  1,
-                                  GDK_ACTION_COPY);
+    {
+      gtk_tree_view_enable_model_drag_source (GTK_TREE_VIEW (tree_view),
+                                    GDK_BUTTON1_MASK,
+                                    WIDGET_MANAGER->entries,
+                                    WIDGET_MANAGER->num_entries,
+                                    GDK_ACTION_COPY);
+      g_signal_connect (GTK_WIDGET (tree_view),
+                        "drag-data-get",
+                        G_CALLBACK (on_drag_data_get),
+                        gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view)));
+    }
+
 
   return tree_view;
 }
@@ -246,7 +286,8 @@ setup_browser (GtkWidget * paned,
                           TRUE);
 
   /* populate plugins */
-  GtkWidget * plugin_scroll_window = add_scroll_window (GTK_TREE_VIEW (tree_view_create (create_model_for_plugins (), 0, 1)));
+  plugins_tree_model = create_model_for_plugins ();
+  GtkWidget * plugin_scroll_window = add_scroll_window (GTK_TREE_VIEW (tree_view_create (plugins_tree_model, 0, 1)));
   gtk_box_pack_start (GTK_BOX (plugins_box),
                       plugin_scroll_window,
                       1, 1, 0);

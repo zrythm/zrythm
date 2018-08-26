@@ -67,7 +67,7 @@ zrythm_app_startup (GApplication* app)
 
   init_settings_manager ();
 
-  /*init_widget_manager ();*/
+  init_widget_manager ();
 
   plugin_manager_init ();
 
