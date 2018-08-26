@@ -1,0 +1,18 @@
+# Dependencies
+- Suil with GTK3 support is needed. Some repos don't have it yet so first install latest Suil
+- Other dependencies should show up when `configure` is run if they are missing. Install using a package manager
+
+# Compile
+
+```
+autoreconf --install
+mkdir build
+cd build
+../configure
+make
+```
+
+# Install
+```
+sudo make install
+```
