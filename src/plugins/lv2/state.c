@@ -57,7 +57,8 @@ get_port_value(const char* port_symbol,
 {
 	LV2_Plugin*        plugin = (LV2_Plugin*)user_data;
 	LV2_Port* port = lv2_port_by_symbol(plugin, port_symbol);
-	if (port && port->flow == FLOW_INPUT && port->type == TYPE_CONTROL) {
+	if (port && port->port->flow == FLOW_INPUT &&
+            port->port->type == TYPE_CONTROL) {
 		*size = sizeof(float);
 		*type = plugin->forge.Float;
 		return &port->control;

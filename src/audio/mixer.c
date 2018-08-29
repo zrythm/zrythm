@@ -32,57 +32,29 @@
 
 #include <gtk/gtk.h>
 
-static nframes_t   nframes;
-static sample_t     * l_buf;
-static sample_t     * r_buf;
+static nframes_t      nframes;
 
 /**
  * Thread work
  * Pass the L/R to each channel strip and let them handle it
  */
 static void *
-perform_work (void * argument)
+process_channel_work (void * argument)
 {
-  /* prepare empty L & R buffers for the channel strip */
-  sample_t * cl_buf, * cr_buf;
-  cl_buf = (sample_t *) calloc (nframes, sizeof (sample_t));
-  cr_buf = (sample_t *) calloc (nframes, sizeof (sample_t));
-
   channel_process (MIXER->channels[*((int*) argument)],
-                   nframes,
-                   cl_buf,
-                   cr_buf);
-
-  /* add the channel bufs to the mixer bufs */
-  for (int j = 0; j < nframes; j++)
-    {
-      l_buf[j] += cl_buf[j];
-      r_buf[j] += cr_buf[j];
-    }
-
-  free (cl_buf);
-  free (cr_buf);
-
-  return NULL;
+                   nframes);
+  return 0;
 }
 
 /**
  * process callback
  */
 void
-mixer_process (nframes_t     _nframes,           ///< number of frames to fill in
-              sample_t      * _l_buf,            ///< left buffer
-              sample_t      * _r_buf)            ///< right buffer
+mixer_process (nframes_t     _nframes)           ///< number of frames to fill in
 {
   static int i, j;
 
   nframes = _nframes;
-  l_buf = _l_buf;
-  r_buf = _r_buf;
-
-  /* set buffers to 0 */
-  memset (l_buf, 0, sizeof (sample_t) * nframes);
-  memset (r_buf, 0, sizeof (sample_t) * nframes);
 
   /* prepare threads */
   pthread_t threads[MIXER->num_channels];
@@ -97,7 +69,7 @@ mixer_process (nframes_t     _nframes,           ///< number of frames to fill i
     {
       thread_args[ i ] = i;
       result_code = pthread_create (
-                &threads[i], NULL, perform_work, &thread_args[i]);
+                &threads[i], NULL, process_channel_work, &thread_args[i]);
 
     }
    // wait for each thread to complete
@@ -105,6 +77,10 @@ mixer_process (nframes_t     _nframes,           ///< number of frames to fill i
     {
       result_code = pthread_join(threads[i], NULL);
     }
+
+  /* process master channel */
+  channel_process (MIXER->master,
+                   nframes);
 }
 
 void
@@ -112,13 +88,12 @@ mixer_init ()
 {
   g_message ("Initializing mixer...");
   /* allocate size */
-  MIXER = malloc (sizeof (Mixer));
+  MIXER = calloc (1, sizeof (Mixer));
 
-  MIXER->num_channels = 0;
-  MIXER->num_ports = 0;
+  /*MIXER->num_ports = 0;*/
 
   /* create master channel */
-  MIXER->master = channel_create (CT_MASTER);
+  MIXER->master = channel_create_master ();
 
   /* init channel strips array and add one of each */
   ADD_CHANNEL (channel_create (CT_MIDI));

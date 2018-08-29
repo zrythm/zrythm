@@ -41,7 +41,8 @@ AM_CFLAGS = -rdynamic -I$(top_srcdir)/inc \
 						$(JACK_CFLAGS) \
 						$(LV2_CFLAGS) \
 						$(LILV_CFLAGS) \
-						$(SUIL_CFLAGS)
+						$(SUIL_CFLAGS) \
+						-O3
 zrythm_LDADD = $(GTK_LIBS) \
 			   $(JACK_LIBS) \
 			   $(LV2_LIBS) \

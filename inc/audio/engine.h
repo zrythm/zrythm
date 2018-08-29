@@ -34,11 +34,13 @@
 
 typedef struct Mixer Mixer;
 
-typedef struct MIDI_Controller
-{
-  jack_midi_event_t    in_event[30];
-  int                  num_events;
-} MIDI_Controller;
+//typedef struct MIDI_Controller
+//{
+  //jack_midi_event_t    in_event[30];
+  //int                  num_events;
+//} MIDI_Controller;
+typedef struct StereoPorts StereoPorts;
+typedef struct Port Port;
 
 typedef struct Audio_Engine
 {
@@ -48,7 +50,12 @@ typedef struct Audio_Engine
 	uint32_t           sample_rate;    ///< Sample rate
 	int               buf_size_set;   ///< True iff buffer size callback fired
   Mixer              * mixer;        ///< the mixer
-  MIDI_Controller    * midi_controller; ///< the midi input on JACK
+  StereoPorts       * stereo_in;  ///< stereo in ports from JACK
+  StereoPorts       * stereo_out;  ///< stereo out ports to JACK
+  Port              * midi_in;     ///< MIDI in port from JACK
+  Port              * ports[600];   ///< all ports have a reference here for easy access
+  int               num_ports;
+  //MIDI_Controller    * midi_controller; ///< the midi input on JACK
   //Port_Manager      * port_manager;  ///< manages all ports created for/by plugins
 } Audio_Engine;
 

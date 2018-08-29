@@ -36,4 +36,16 @@
 #define MIDI_CH1_CHAN_AFTERTOUCH 0xD0
 #define MIDI_CH1_PITCH_WHEEL_RANGE 0xE0
 
+#include <jack/midiport.h>
+
+/**
+ * Container for passing midi events through ports.
+ * This should be passed in the data field of MIDI Ports
+ */
+typedef struct Midi_Events
+{
+  int        num_events;       ///< number of events
+  jack_midi_event_t     jack_midi_events[10];       ///< jack midi events
+} Midi_Events;
+
 #endif

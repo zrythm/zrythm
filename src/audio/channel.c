@@ -45,52 +45,6 @@ calculate_rms_db (sample_t * buf, nframes_t nframes)
   return 20 * log10(rms);
 }
 
-static void
-reallocate_port_buf_if_necessary (Port *port, nframes_t nframes)
-{
-      /* if port buf size changed, reallocate */
-      if (port->nframes != nframes ||
-          port->nframes == 0)
-        {
-          if (port->nframes > 0)
-            free (port->buf);
-          port->buf = calloc (nframes, sizeof (sample_t));
-          port->nframes = nframes;
-        }
-      else /* otherwise memset to 0 */
-        {
-          memset (port->buf, '\0', nframes);
-        }
-}
-
-
-static void
-sum_port_signal_from_inputs (Port * port, nframes_t nframes,
-                             int is_plugin) ///< plugin or not (channel)
-{
-  /* for any output port pointing to it */
-  for (int k = 0; k < port->num_srcs; k++)
-    {
-      Port * src_port = port->srcs[k];
-
-      /* wait for owner plugin to finish processing */
-      if (is_plugin)
-        while (!src_port->owner->processed)
-          {
-            sleep (5);
-          }
-
-      reallocate_port_buf_if_necessary (port, nframes);
-      reallocate_port_buf_if_necessary (src_port, nframes);
-
-      /* sum the signals */
-      for (int l = 0; l < nframes; l++)
-        {
-          port->buf[l] += src_port->buf[l];
-        }
-    }
-}
-
 /**
  * For each plugin
  *   -> for each input port it owns
@@ -101,38 +55,105 @@ sum_port_signal_from_inputs (Port * port, nframes_t nframes,
  */
 void
 channel_process (Channel * channel,  ///< slots
-              nframes_t   nframes,    ///< sample count
-              sample_t *  l_buf,   ///< sample buffer L
-              sample_t *  r_buf)   ///< sample buffer R
+              nframes_t   nframes)    ///< sample count
 {
+  /* sum AUDIO IN coming to the channel */
+  port_sum_signal_from_inputs (channel->stereo_in->l, nframes);
+  port_sum_signal_from_inputs (channel->stereo_in->r, nframes);
+
   /* go through each slot (plugin) on the channel strip */
-  for (int i = 0; i < MAX_PLUGINS; i++)
+  for (int i = 0; i < channel->num_plugins; i++)
     {
       Plugin * plugin = channel->strip[i];
-
-      /* if current slot has a plugin */
-      if (!plugin_is_dummy (plugin))
+      if (plugin)
         {
 
-          /* for each input port */
+          /* sum incoming signals for each input port */
           for (int j = 0; j < plugin->num_in_ports; j++)
             {
               Port * port = plugin->in_ports[j];
 
-              sum_port_signal_from_inputs (port, nframes, 1);
+              port_sum_signal_from_inputs (port, nframes);
             }
+
+            /* run plugin processing
+             * this should put the appropriate result in the plugin's audio out */
+            plugin_process (plugin, nframes);
         }
     }
 
   /* same for channel ports */
-  sum_port_signal_from_inputs (channel->l_out_port, nframes, 0);
-  sum_port_signal_from_inputs (channel->r_out_port, nframes, 0);
+  port_sum_signal_from_inputs (channel->stereo_out->l, nframes);
+  port_sum_signal_from_inputs (channel->stereo_out->r, nframes);
 
   /* calc decibels */
-  channel->l_port_db = calculate_rms_db (channel->l_out_port->buf,
-                                         channel->l_out_port->nframes);
-  channel->r_port_db = calculate_rms_db (channel->r_out_port->buf,
-                                         channel->r_out_port->nframes);
+  channel->l_port_db = calculate_rms_db (channel->stereo_out->l->buf,
+                                         channel->stereo_out->l->nframes);
+  channel->r_port_db = calculate_rms_db (channel->stereo_out->r->buf,
+                                         channel->stereo_out->r->nframes);
+}
+
+static Channel *
+_create_channel ()
+{
+  Channel * channel = calloc (1, sizeof (Channel));
+
+  /* create ports */
+  channel->stereo_in = stereo_ports_new (
+              port_new_with_type (AUDIO_ENGINE->block_length,
+                                  TYPE_AUDIO, FLOW_INPUT),
+              port_new_with_type (AUDIO_ENGINE->block_length,
+                                  TYPE_AUDIO, FLOW_INPUT));
+  channel->midi_in = port_new_with_type (AUDIO_ENGINE->block_length,
+                                         TYPE_EVENT, FLOW_INPUT);
+  channel->stereo_out = stereo_ports_new (
+              port_new_with_type (AUDIO_ENGINE->block_length,
+                                  TYPE_AUDIO, FLOW_OUTPUT),
+              port_new_with_type (AUDIO_ENGINE->block_length,
+                                  TYPE_AUDIO, FLOW_OUTPUT));
+
+/* init plugins */
+for (int i = 0; i < MAX_PLUGINS; i++)
+  {
+    channel->strip[i] = NULL;
+  }
+
+  channel->volume = 0.0f;
+  channel->phase = 0.0f;
+
+  /* connect MIDI in port from engine's jack port */
+  g_message ("connecting engine MIDI IN port to %s MIDI IN",
+             channel->name);
+  port_connect (AUDIO_ENGINE->midi_in, channel->midi_in);
+
+  return channel;
+}
+
+/**
+ * Creates master channel
+ */
+Channel *
+channel_create_master ()
+{
+  g_message ("Creating Master channel");
+
+  Channel * channel = _create_channel();
+
+  channel->type = CT_MASTER;
+
+  /* default settings */
+  gdk_rgba_parse (&channel->color, "red");
+  channel->name = "Master";
+  channel->output = NULL;
+
+  /* connect stereo out ports to engine's jack ports */
+  /* TODO connect to monitor, and then from monitor to engine */
+  /*g_message ("Connecting %s stereo outs to engine stereo outs",*/
+
+  /*port_connect (channel->stereo_out->l, AUDIO_ENGINE->stereo_out->l);*/
+  /*port_connect (channel->stereo_out->r, AUDIO_ENGINE->stereo_out->r);*/
+
+  return channel;
 }
 
 /**
@@ -142,56 +163,22 @@ Channel *
 channel_create (int     type)             ///< the channel type (AUDIO/INS)
 {
   g_message ("Creating channel of type %i", type);
-  Channel * channel = calloc (1, sizeof (Channel));
 
-  /* init plugins */
-  for (int i = 0; i < MAX_PLUGINS; i++)
-    {
-      channel->strip[i] = plugin_new_dummy (channel);
-      if (i > 0)
-        {
-          /* connect output ports of previous plugin to input ports
-           * of this plugin */
-          port_connect (channel->strip[i - 1]->out_ports[0],
-                        channel->strip[i]->in_ports[0]);
-          port_connect (channel->strip[i - 1]->out_ports[1],
-                        channel->strip[i]->in_ports[1]);
-        }
-    }
+  Channel * channel = _create_channel();
+
   channel->type = type;
-  channel->volume = 0.0f;
-  channel->phase = 0.0f;
-  channel->muted = 0;
-  channel->soloed = 0;
 
-  /* connect output ports of last plugin to channel ports */
-  channel->l_in_port = port_new ();
-  channel->r_in_port = port_new ();
-  channel->l_out_port = port_new ();
-  channel->r_out_port = port_new ();
-  port_connect (channel->strip[MAX_PLUGINS - 1]->out_ports[0],
-                channel->l_out_port);
-  port_connect (channel->strip[MAX_PLUGINS - 1]->out_ports[1],
-                channel->r_out_port);
+  gdk_rgba_parse (&channel->color, "rgb(20%,60%,4%)");
+  channel-> name = g_strdup_printf ("Ch %d", ++MIXER->num_channels);
+  channel->output = MIXER->master;
 
-  if (type == CT_MASTER)
-    {
-      gdk_rgba_parse (&channel->color, "red");
-      channel->name = "Master";
-      channel->output = NULL;
-    }
-  else
-    {
-      gdk_rgba_parse (&channel->color, "rgb(20%,60%,4%)");
-      channel-> name = g_strdup_printf ("Ch %d", MIXER->num_channels++);
-      channel->output = MIXER->master;
-
-      /* connect channel out ports to master */
-      port_connect (channel->l_out_port,
-                    MIXER->master->l_in_port);
-      port_connect (channel->r_out_port,
-                    MIXER->master->r_in_port);
-    }
+  /* connect channel out ports to master */
+  g_message ("Connecting %s stereo out ports to Master",
+             channel->name);
+  port_connect (channel->stereo_out->l,
+                MIXER->master->stereo_in->l);
+  port_connect (channel->stereo_out->r,
+                MIXER->master->stereo_in->r);
 
   return channel;
 }
@@ -246,18 +233,25 @@ channel_get_current_r_db (void * _channel)
 /**
  * Adds given plugin to given position in the strip.
  *
- * The plugin must be already initialized (but not instantiated) at this point.
+ * The plugin must be already instantiated at this point.
  */
 void
-channel_add_initialized_plugin (Channel * channel,    ///< the channel
+channel_add_plugin (Channel * channel,    ///< the channel
                     int         pos,     ///< the position in the strip
                                         ///< (starting from 0)
                     Plugin      * plugin  ///< the plugin to add
                     )
 {
   /* free current plugin */
-  plugin_free (channel->strip[pos]);
+  if (channel->strip[pos])
+    {
+      g_message ("Removing %s from %s:%d", channel->strip[pos]->descr->name,
+                 channel->name, pos);
+      plugin_free (channel->strip[pos]);
+    }
 
+  g_message ("Inserting %s at %s:%d", plugin->descr->name,
+             channel->name, pos);
   channel->strip[pos] = plugin;
 
   /* ------------------------------------------------------
@@ -291,6 +285,9 @@ channel_add_initialized_plugin (Channel * channel,    ///< the channel
           /* if nth output port exists on prev plugin, connect them */
           if (prev_plugin->num_out_ports > i)
             {
+              g_message ("Connecting %s output port %d to %s input port %d",
+                         prev_plugin->descr->name, i,
+                         plugin->descr->name, i);
               port_connect (prev_plugin->out_ports[i],
                             plugin->in_ports[i]);
             }
@@ -307,26 +304,39 @@ channel_add_initialized_plugin (Channel * channel,    ///< the channel
    * connect output ports
    * ------------------------------------------------------*/
 
-  Plugin * next_plugin = channel->strip[pos + 1];
+  Plugin * next_plugin;
+  for (int i = 1; i < MAX_PLUGINS; i++)
+    {
+      next_plugin = channel->strip[pos + i];
+      if (next_plugin)
+        break;
+    }
 
   /* automatically connect the output ports of the plugin
    * to the input ports of the next plugin sequentially */
 
   /* for each output port of the plugin */
-  for (int i = 0; i < plugin->num_out_ports; i++)
+  if (next_plugin)
     {
-      /* if nth input port exists on next plugin, connect them */
-      if (next_plugin->num_in_ports > i)
+      for (int i = 0; i < plugin->num_out_ports; i++)
         {
-          port_connect (plugin->out_ports[i],
-                        next_plugin->in_ports[i]);
-        }
-      /* otherwise break, no more input ports on next plugin */
-      else
-        {
-          break;
+          /* if nth input port exists on next plugin, connect them */
+          if (next_plugin->num_in_ports > i)
+            {
+              port_connect (plugin->out_ports[i],
+                            next_plugin->in_ports[i]);
+            }
+          /* otherwise break, no more input ports on next plugin */
+          else
+            {
+              break;
+            }
         }
     }
+
+  /* if last plugin, connect to AUDIO_OUT */
+
+  channel->num_plugins++;
 }
 
 

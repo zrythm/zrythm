@@ -70,11 +70,11 @@ enum PluginArchitecture
  */
 typedef struct Plugin_Descriptor
 {
-  char  *           author;
-  char   *         name;
-  char    *        website;
+  char                 * author;
+  char                 * name;
+  char                 * website;
   //int                  category;           ///< one of the above
-  char     *              category;           ///< one of the above
+  char                 * category;           ///< one of the above
   uint8_t              num_audio_ins;             ///< # of input ports
   uint8_t              num_midi_ins;             ///< # of input ports
   uint8_t              num_audio_outs;            ///< # of output ports
@@ -83,7 +83,8 @@ typedef struct Plugin_Descriptor
   uint8_t              num_ctrl_outs;            ///< # of output ctrls
   int                  arch;               ///< architecture 32/64bit
   int                  protocol;           ///< VST/LV2/DSSI/LADSPA...
-  char      *     path;
+  char                 * path;
+  char                 * uri;            ///< for LV2 plugins
 } Plugin_Descriptor;
 
 /**
@@ -93,7 +94,7 @@ typedef struct Plugin_Descriptor
 typedef struct Plugin
 {
   void                 * original_plugin;     ///< pointer to original plugin inheriting this base plugin
-  Plugin_Descriptor     descr;                 ///< descriptor
+  Plugin_Descriptor    * descr;                 ///< descriptor
   Port                 * in_ports[MAX_IN_PORTS];           ///< ports coming in as input
   int                  num_in_ports;    ///< counter
   Port                 * out_ports[MAX_OUT_PORTS];           ///< ports going out as output
@@ -132,7 +133,7 @@ plugin_instantiate (Plugin * plugin);
  * Process plugin
  */
 void
-plugin_process (Plugin * plugin);
+plugin_process (Plugin * plugin, nframes_t nframes);
 
 /**
  * Returns whether given plugin is a dummy plugin or not.

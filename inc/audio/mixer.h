@@ -47,7 +47,7 @@ typedef struct Mixer
 {
   Channel        * channels[100];      ///< array of channel strips
   int            num_channels;           ///< # of channels EXCLUDING master
-  Port           * ports[600];        ///< all ports FIXME necessary?
+  //Port           * ports[600];        ///< all ports FIXME necessary?
   int            num_ports;           ///< # of ports registered with plugins
   Channel        * master;                  ///< master output
 
@@ -69,8 +69,6 @@ mixer_init ();
  * and sent to Jack.
  */
 void
-mixer_process (nframes_t     _nframes,       ///< number of frames to fill in
-              sample_t      * _l_buf,            ///< left buffer
-              sample_t      * _r_buf);            ///< right buffer
+mixer_process (nframes_t     _nframes);       ///< number of frames to fill in
 
 #endif

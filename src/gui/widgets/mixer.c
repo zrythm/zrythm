@@ -19,8 +19,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/channel.h"
 #include "audio/mixer.h"
 #include "plugins/plugin.h"
+#include "plugins/lv2_plugin.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/mixer.h"
 
@@ -34,8 +36,19 @@ on_drag_data_received (GtkWidget        *widget,
                guint             time,
                gpointer          user_data)
 {
-  Plugin * plugin = *(gpointer *) gtk_selection_data_get_data (data);
+  Plugin_Descriptor * descr = *(gpointer *) gtk_selection_data_get_data (data);
+
+  /* FIXME if lv2... */
+  Plugin * plugin = plugin_new ();
+  plugin->descr = descr;
+  LV2_Plugin * lv2_plugin = lv2_create_from_uri (plugin, descr->uri);
+
   plugin_instantiate (plugin);
+
+  /* TODO add to specific channel */
+  channel_add_plugin (MIXER->channels[0],
+                                  0,
+                                  plugin);
 }
 
 void

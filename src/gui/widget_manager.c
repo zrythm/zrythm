@@ -45,7 +45,7 @@ init_widget_manager ()
 
   zrythm_system->widget_manager = widget_manager;
 
-  widget_manager->entries[0].target = "PLUGIN";
+  widget_manager->entries[0].target = "PLUGIN_DESCR";
   widget_manager->entries[0].flags = GTK_TARGET_SAME_APP;
   widget_manager->entries[0].info = 0;
   widget_manager->num_entries = 1;

@@ -155,11 +155,10 @@ typedef struct {
 
 typedef struct LV2_Port
 {
+  Port            * port;     ///< pointer back to parent port
 	const LilvPort* lilv_port;  ///< LV2 port
-	void*           sys_port;   ///< For audio/MIDI ports, otherwise NULL
+  void*           sys_port;   ///< For audio/MIDI ports, otherwise NULL
 	LV2_Evbuf*      evbuf;      ///< For MIDI ports, otherwise NULL
-  enum PortFlow   flow;
-  enum PortType   type;
 	void*           widget;     ///< Control widget, if applicable
 	size_t          buf_size;   ///< Custom buffer size, or 0
 	uint32_t        index;      ///< Port index
@@ -425,14 +424,21 @@ void
 lv2_backend_activate_port(LV2_Plugin* plugin, uint32_t port_index);
 
 /**
+ * Returns a newly allocated plugin descriptor for the given LilvPlugin
+ * if it can be hosted, otherwise NULL.
+ */
+Plugin_Descriptor *
+lv2_create_descriptor_from_lilv (const LilvPlugin * lp);
+
+/**
  * Creates an LV2 plugin from given uri.
  *
  * Used when populating the plugin browser.
  */
 LV2_Plugin *
-lv2_create_from_lilv (Plugin    * plugin,  ///< a newly created plugin
-                     const LilvPlugin * lilv_plugin ///< the lilv plugin
-                    );
+lv2_create_from_uri (Plugin    * plugin,  ///< a newly created plugin, with its descriptor filled in
+                     const char * uri ///< the uri
+                     );
 
 /**
  * Creates an LV2 plugin from state.

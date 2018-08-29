@@ -42,29 +42,44 @@ typedef jack_default_audio_sample_t   sample_t;
 typedef jack_nframes_t                nframes_t;
 typedef struct ChannelWidget ChannelWidget;
 
-enum ChannelType
+typedef enum ChannelType
 {
   CT_AUDIO,
   CT_MIDI,
   CT_MASTER
-};
+} ChannelType;
 
 typedef struct Channel
 {
-  Plugin    * strip[MAX_PLUGINS]; ///< the channel strip (array of plugins)
-  int               type;             ///< MIDI / Audio / Master
+  /* note: the first plugin is special, it is the "main" plugin of the channel
+   * where processing starts */
+  Plugin            * strip[MAX_PLUGINS]; ///< the channel strip
+  int               num_plugins;
+  ChannelType       type;             ///< MIDI / Audio / Master
   sample_t          volume;           ///< value of the volume fader
   int               muted;            ///< muted or not
   int               soloed;           ///< soloed or not
   GdkRGBA           color;          ///< see https://ometer.com/gtk-colors.html
   float             phase;        ///< used by the phase knob (0.0-360.0 value)
   char *            name;        ///< channel name
-  Port              * l_in_port;    ///< left channel input port
-  Port              * r_in_port;    ///< right channel input port
-  Port              * l_out_port;    ///< left channel output port
-  Port              * r_out_port;    ///< right channel output port
+
+  /* these are for plugins to connect to if they want
+   * processing starts at the first plugin with a clean buffer,
+   * and if any ports are connected as that plugin's input,
+   * their buffers are added to the first plugin
+   */
+  StereoPorts       * stereo_in;  ///< l & r input ports
+  Port              * midi_in;   ///< MIDI in
+
+  /* connecting to this is also optional
+   * plugins are processed slot-by-slot, and if nothing is connected here
+   * it will simply remain an empty buffer, i.e., channel will produce no sound */
+  StereoPorts       * stereo_out;  ///< l & r output ports
+
   float             l_port_db;   ///< current db after processing l port
   float             r_port_db;   ///< current db after processing r port
+  int               processed;   ///< processed in this cycle or not
+  int               recording;  ///< recording mode or not
   Channel *         output;     ///< output channel to route signal to
   ChannelWidget     *widget;
 } Channel;
@@ -88,10 +103,16 @@ float
 channel_get_current_r_db (void * _channel);
 
 /**
- * Creates a channel using the given params
+ * Creates a channel using the given params.
  */
 Channel *
 channel_create (int     type);             ///< the channel type (AUDIO/INS)
+
+/**
+ * Creates master channel.
+ */
+Channel *
+channel_create_master ();
 
 /**
  * The process function prototype.
@@ -103,17 +124,15 @@ channel_create (int     type);             ///< the channel type (AUDIO/INS)
  */
 void
 channel_process (Channel * channel, ///< the channel
-                 nframes_t   samples,    ///< sample count
-                 sample_t *  l_buf,   ///< sample buffer L
-                 sample_t *  r_buf);   ///< sample buffer R
+                 nframes_t   samples);    ///< sample count
 
 /**
  * Adds given plugin to given position in the strip.
  *
- * The plugin must be already initialized (but not instantiated) at this point.
+ * The plugin must be already instantiated at this point.
  */
 void
-channel_add_initialized_plugin (Channel * channel,    ///< the channel
+channel_add_plugin (Channel * channel,    ///< the channel
                     int         pos,     ///< the position in the strip
                                         ///< (starting from 0)
                     Plugin      * plugin  ///< the plugin to add

@@ -25,6 +25,7 @@
 #include <signal.h>
 
 #include "zrythm_app.h"
+#include "audio/channel.h"
 #include "audio/engine.h"
 #include "audio/midi.h"
 #include "audio/mixer.h"
@@ -37,11 +38,12 @@
 #include <jack/jack.h>
 #include <jack/midiport.h>
 
+#define JACK_PORT_T(exp) ((jack_port_t *) exp)
+#define MIDI_IN_EVENT(i) (AUDIO_ENGINE->midi_in->midi_events.jack_midi_events[i])
+#define MIDI_IN_NUM_EVENTS AUDIO_ENGINE->midi_in->midi_events.num_events
+
 typedef jack_default_audio_sample_t   sample_t;
 typedef jack_nframes_t                nframes_t;
-
-jack_port_t *output_port1, *output_port2, *midi_in_port;
-jack_client_t *client;
 
 /* FIXME */
 sample_t note_on;
@@ -66,16 +68,34 @@ jack_buffer_size_cb(nframes_t nframes, void* data)
   AUDIO_ENGINE->midi_buf_size = jack_port_type_get_buffer_size(
           AUDIO_ENGINE->client, JACK_DEFAULT_MIDI_TYPE);
 #endif
-  for (int i = 0; i< PLUGIN_MANAGER->num_plugins; i++)
-    {
-      if (PLUGIN_MANAGER->plugins[i]->descr.protocol = PROT_LV2)
-        {
-          lv2_allocate_port_buffers ((LV2_Plugin *)PLUGIN_MANAGER->plugins[i]->original_plugin);
-        }
-    }
   g_message ("JACK: Block length changed to %d, midi buf size to %lu",
              AUDIO_ENGINE->block_length,
              AUDIO_ENGINE->midi_buf_size);
+
+  /** reallocate port buffers to new size */
+  g_message ("Reallocating port buffers to %d", nframes);
+  for (int i = 0; i < AUDIO_ENGINE->num_ports; i++)
+    {
+      Port * port = AUDIO_ENGINE->ports[i];
+      port->nframes = nframes;
+      port->buf = realloc (port->buf, nframes * sizeof (sample_t));
+    }
+  for (int i = 0; i < MIXER->num_channels; i++)
+    {
+      Channel * channel = MIXER->channels[i];
+      for (int j = 0; j < MAX_PLUGINS; j++)
+        {
+          if (channel->strip[j])
+            {
+              Plugin * plugin = channel->strip[j];
+              if (plugin->descr->protocol = PROT_LV2)
+                {
+                  lv2_allocate_port_buffers (
+                                (LV2_Plugin *)plugin->original_plugin);
+                }
+            }
+        }
+    }
   return 0;
 }
 
@@ -91,68 +111,61 @@ static int
 jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
          void              * data)       ///< user data
 {
-  sample_t *out1, *out2;
+  sample_t * stereo_out_l, * stereo_out_r;
   int i = 0;
 
-  /**
-   * get jack's buffers with nframes frames for left & right
-   */
-  out1 = (sample_t *)
-    jack_port_get_buffer (output_port1, nframes);
-  out2 = (sample_t *)
-    jack_port_get_buffer (output_port2, nframes);
 
-  /* set midi events from midi input */
-  void* port_buf = jack_port_get_buffer(midi_in_port, nframes);
-  jack_midi_event_t in_event;
-  jack_nframes_t event_index = 0;
-  jack_nframes_t event_count = jack_midi_get_event_count(port_buf);
-  if(event_count > 1)
+  /* get MIDI events from JACK and store to engine MIDI in port
+   * FIXME referencing  AUDIO ENGINE all the time is expensive,
+   * use local vars where possible */
+  void* port_buf = jack_port_get_buffer (
+        JACK_PORT_T (AUDIO_ENGINE->midi_in->internal), nframes);
+  MIDI_IN_NUM_EVENTS = jack_midi_get_event_count(port_buf);
+  if(MIDI_IN_NUM_EVENTS > 0)
     {
-      g_message ("JACK: have %d events", event_count);
-      for(int i=0; i<event_count; i++)
+      g_message ("JACK: have %d events", MIDI_IN_NUM_EVENTS);
+      for(int i=0; i < MIDI_IN_NUM_EVENTS; i++)
         {
-          jack_midi_event_get(&in_event, port_buf, i);
-          g_message ("    event %d time is %d. 1st byte is 0x%x", i, in_event.time, *(in_event.buffer));
+          jack_midi_event_get(&MIDI_IN_EVENT(i), port_buf, i);
+          g_message ("    event %d time is %d. 1st byte is 0x%x", i,
+                     MIDI_IN_EVENT(i).time, *(MIDI_IN_EVENT(i).buffer));
         }
     }
-  jack_midi_event_get(&in_event, port_buf, 0);
-  for(i = 0; i < nframes; i++)
+
+  /* set all to unprocessed for this cycle */
+  for (int i = 0; i < MIXER->num_channels; i++)
     {
-      if ((in_event.time == i) && (event_index < event_count))
+      Channel * channel = MIXER->channels[i];
+      channel->processed = 0;
+      for (int j = 0; j < channel->num_plugins; j++)
         {
-          if (((*(in_event.buffer) & 0xf0)) == MIDI_CH1_NOTE_ON)
-            {
-              /* note on */
-              note = *(in_event.buffer + 1);
-              if (*(in_event.buffer + 2) == 0)
-                {
-                  note_on = 0.0;
-                }
-              else
-                {
-                  note_on = (float)(*(in_event.buffer + 2)) / 127.f;
-                }
-            }
-          else if (((*(in_event.buffer)) & 0xf0) == MIDI_CH1_NOTE_OFF)
-            {
-              /* note off */
-              note = *(in_event.buffer + 1);
-              note_on = 0.0;
-            }
-          event_index++;
-          if(event_index < event_count)
-                  jack_midi_event_get(&in_event, port_buf, event_index);
+          channel->strip[i]->processed = 0;
         }
-      /*ramp += note_frqs[note];*/
-      /*ramp = (ramp > 1.0) ? ramp - 2.0 : ramp;*/
-      /*out[i] = note_on*sin(2*M_PI*ramp);*/
     }
 
   /*
    * process
    */
-  mixer_process (nframes, out1, out2);
+  mixer_process (nframes);
+
+  /**
+   * get jack's buffers with nframes frames for left & right
+   */
+  stereo_out_l = (sample_t *)
+    jack_port_get_buffer (JACK_PORT_T (AUDIO_ENGINE->stereo_out->l->data),
+                          nframes);
+  stereo_out_r = (sample_t *)
+    jack_port_get_buffer (JACK_PORT_T (AUDIO_ENGINE->stereo_out->r->data),
+                           nframes);
+
+  /* by this time, the Master channel should have its Stereo Out ports filled.
+   * pass their buffers to jack's buffers */
+  for (i = 0; i < nframes; i++)
+    {
+      stereo_out_l[nframes] = MIXER->master->stereo_out->l->buf[i];
+      stereo_out_r[nframes] = MIXER->master->stereo_out->r->buf[i];
+    }
+
 
   /*
    * processing finished, return 0
@@ -182,20 +195,17 @@ init_audio_engine()
     Audio_Engine * engine = AUDIO_ENGINE;
 
     const char **ports;
-    const char *client_name = "zrythm";
+    const char *client_name = "Zrythm";
     const char *server_name = NULL;
     jack_options_t options = JackNullOption;
     jack_status_t status;
     int i;
 
     engine->buf_size_set = false;
-    /*engine->block_length  = 4096;  [> Should be set by backend <]*/
-    /*engine->midi_buf_size = 1024;  [> Should be set by backend <]*/
-    /*engine->sample_rate = 96000; [> FIXME <]*/
 
     // open a client connection to the JACK server
-    client = jack_client_open (client_name, options, &status, server_name);
-    if (client == NULL) {
+    engine->client = jack_client_open (client_name, options, &status, server_name);
+    if (engine->client == NULL) {
             g_error ("jack_client_open() failed, "
                      "status = 0x%2.0x", status);
             if (status & JackServerFailed) {
@@ -208,54 +218,92 @@ init_audio_engine()
             g_message ("JACK server started\n");
     }
     if (status & JackNameNotUnique) {
-            client_name = jack_get_client_name(client);
+            client_name = jack_get_client_name(engine->client);
             g_error ("unique name `%s' assigned\n", client_name);
     }
 
     /* Set audio engine properties */
-    engine->sample_rate   = jack_get_sample_rate(client);
-    engine->block_length  = jack_get_buffer_size(client);
+    engine->sample_rate   = jack_get_sample_rate (engine->client);
+    engine->block_length  = jack_get_buffer_size (engine->client);
     engine->midi_buf_size = 4096;
 #ifdef HAVE_JACK_PORT_TYPE_GET_BUFFER_SIZE
-    engine->midi_buf_size = jack_port_type_get_buffer_size(
-          client, JACK_DEFAULT_MIDI_TYPE);
+    engine->midi_buf_size = jack_port_type_get_buffer_size (
+          engine->client, JACK_DEFAULT_MIDI_TYPE);
 #endif
 
     /* set jack callbacks */
-    jack_set_process_callback (client, &jack_process_cb, NULL);
-    jack_set_buffer_size_callback(client, &jack_buffer_size_cb, NULL);
-    jack_set_sample_rate_callback(client, &jack_sample_rate_cb, NULL);
-    jack_on_shutdown(client, &jack_shutdown_cb, NULL);
+    jack_set_process_callback (engine->client, &jack_process_cb, NULL);
+    jack_set_buffer_size_callback(engine->client, &jack_buffer_size_cb, NULL);
+    jack_set_sample_rate_callback(engine->client, &jack_sample_rate_cb, NULL);
+    jack_on_shutdown(engine->client, &jack_shutdown_cb, NULL);
     /*jack_set_latency_callback(client, &jack_latency_cb, arg);*/
 #ifdef JALV_JACK_SESSION
     /*jack_set_session_callback(client, &jack_session_cb, arg);*/
 #endif
 
     /* create ports */
-    output_port1 = jack_port_register (client, "output1",
+    Port * stereo_out_l = port_new_with_data (
+          engine->block_length,
+          INTERNAL_JACK_PORT,
+          TYPE_AUDIO,
+          FLOW_OUTPUT,
+          (void *) jack_port_register (engine->client, "Stereo_out_L",
                                       JACK_DEFAULT_AUDIO_TYPE,
-                                      JackPortIsOutput, 0);
-
-    output_port2 = jack_port_register (client, "output2",
+                                      JackPortIsOutput, 0));
+    Port * stereo_out_r = port_new_with_data (
+          engine->block_length,
+          INTERNAL_JACK_PORT,
+          TYPE_AUDIO,
+          FLOW_OUTPUT,
+          (void *) jack_port_register (engine->client, "Stereo_out_R",
                                       JACK_DEFAULT_AUDIO_TYPE,
-                                      JackPortIsOutput, 0);
-    midi_in_port = jack_port_register (client, "midi_in",
+                                      JackPortIsOutput, 0));
+    Port * stereo_in_l = port_new_with_data (
+          engine->block_length,
+          INTERNAL_JACK_PORT,
+          TYPE_AUDIO,
+          FLOW_INPUT,
+          (void *) jack_port_register (engine->client, "Stereo_in_L",
+                                      JACK_DEFAULT_AUDIO_TYPE,
+                                      JackPortIsInput, 0));
+    Port * stereo_in_r = port_new_with_data (
+          engine->block_length,
+          INTERNAL_JACK_PORT,
+          TYPE_AUDIO,
+          FLOW_INPUT,
+          (void *) jack_port_register (engine->client, "Stereo_in_R",
+                                      JACK_DEFAULT_AUDIO_TYPE,
+                                      JackPortIsInput, 0));
+    Port * midi_in = port_new_with_data (
+          engine->block_length,
+          INTERNAL_JACK_PORT,
+          TYPE_EVENT,
+          FLOW_INPUT,
+          (void *) jack_port_register (engine->client, "MIDI_in",
                                        JACK_DEFAULT_MIDI_TYPE,
-                                       JackPortIsInput, 0);
+                                       JackPortIsInput, 0));
 
-    if ((output_port1 == NULL) || (output_port2 == NULL)) {
-            g_error ("no more JACK ports available\n");
-    }
+    engine->stereo_in  = stereo_ports_new (stereo_in_l, stereo_in_r);
+    engine->stereo_out = stereo_ports_new (stereo_out_l, stereo_out_r);
+    engine->midi_in    = midi_in;
+
+    if (!engine->stereo_in->l->internal || !engine->stereo_in->r->internal ||
+        !engine->stereo_out->l->internal || !engine->stereo_out->r->internal ||
+        !engine->midi_in->internal)
+      {
+        g_error ("no more JACK ports available");
+      }
 
     /* initialize mixer, which handles the processing */
     mixer_init ();
 
     /* Tell the JACK server that we are ready to roll.  Our
      * process() callback will start running now. */
-    if (jack_activate (client)) {
-            g_error ("cannot activate client");
-            return;
-    }
+    if (jack_activate (engine->client))
+      {
+        g_error ("cannot activate client");
+        return;
+      }
     g_message ("Jack activated");
 
     /* Connect the ports.  You can't do this before the client is
@@ -266,18 +314,20 @@ init_audio_engine()
      * it.
      */
 
-    ports = jack_get_ports (client, NULL, NULL,
+    ports = jack_get_ports (engine->client, NULL, NULL,
                             JackPortIsPhysical|JackPortIsInput);
     if (ports == NULL) {
             g_error ("no physical playback ports\n");
             exit (1);
     }
 
-    if (jack_connect (client, jack_port_name (output_port1), ports[0])) {
+    if (jack_connect (engine->client, jack_port_name (
+                JACK_PORT_T(engine->stereo_out->l->data)), ports[0])) {
             g_error ("cannot connect output ports\n");
     }
 
-    if (jack_connect (client, jack_port_name (output_port2), ports[1])) {
+    if (jack_connect (engine->client, jack_port_name (
+                JACK_PORT_T (engine->stereo_out->r->data)), ports[1])) {
             g_error ("cannot connect output ports\n");
     }
 
@@ -290,5 +340,5 @@ close_audio_engine ()
 {
     g_message ("closing audio engine...");
 
-    jack_client_close (client);
+    jack_client_close (AUDIO_ENGINE->client);
 }

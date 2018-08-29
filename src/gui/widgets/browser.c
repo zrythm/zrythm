@@ -53,13 +53,13 @@ on_drag_data_get (GtkWidget        *widget,
                             &iter,
                             1,
                             &value);
-  Plugin * plugin = g_value_get_pointer (&value);
+  Plugin_Descriptor * descr = g_value_get_pointer (&value);
 
   gtk_selection_data_set (data,
-        gdk_atom_intern_static_string ("PLUGIN"),
+        gdk_atom_intern_static_string ("PLUGIN_DESCR"),
         32,
-        (const guchar *)&plugin,
-        sizeof (Plugin));
+        (const guchar *)&descr,
+        sizeof (Plugin_Descriptor));
 }
 
 static GtkTreeModel *
@@ -76,7 +76,7 @@ create_model_for_types ()
 
   for (i = 0; i < PLUGIN_MANAGER->num_plugins; i++)
     {
-      const gchar * name = PLUGIN_MANAGER->plugins[i]->descr.name;
+      const gchar * name = PLUGIN_MANAGER->plugin_descriptors[i]->name;
 
       // Add a new row to the model
       gtk_list_store_append (list_store, &iter);
@@ -131,7 +131,7 @@ create_model_for_plugins ()
 
   for (i = 0; i < PLUGIN_MANAGER->num_plugins; i++)
     {
-      const gchar * name = PLUGIN_MANAGER->plugins[i]->descr.name;
+      const gchar * name = PLUGIN_MANAGER->plugin_descriptors[i]->name;
 
       // Add a new row to the model
       gtk_list_store_append (list_store, &iter);
@@ -139,7 +139,7 @@ create_model_for_plugins ()
                           0, name,
                           -1);
       gtk_list_store_set (list_store, &iter,
-                          1, PLUGIN_MANAGER->plugins[i],
+                          1, PLUGIN_MANAGER->plugin_descriptors[i],
                           -1);
     }
 

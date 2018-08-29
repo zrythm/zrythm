@@ -35,19 +35,19 @@
  * If category not already set in the categories, add it.
  */
 static void
-add_category (Plugin * plugin)
+add_category (char * _category)
 {
   for (int i = 0; i < PLUGIN_MANAGER->num_plugin_categories; i++)
     {
       char * category = PLUGIN_MANAGER->plugin_categories[i];
-      if (!strcmp (category, plugin->descr.category))
+      if (!strcmp (category, _category))
         {
           return;
         }
     }
     PLUGIN_MANAGER->plugin_categories[
       PLUGIN_MANAGER->num_plugin_categories++] =
-        g_strdup (plugin->descr.category);
+        g_strdup (_category);
 }
 
 int sort_category_func (const void *a, const void *b) {
@@ -63,15 +63,16 @@ int sort_category_func (const void *a, const void *b) {
 }
 
 int sort_plugin_func (const void *a, const void *b) {
-    Plugin * pa = *(Plugin * const *) a, * pb = *(Plugin * const *) b;
+    Plugin_Descriptor * pa = *(Plugin_Descriptor * const *) a,
+                      * pb = *(Plugin_Descriptor * const *) b;
     if (strcasecmp)
       {
-        int r = strcasecmp(pa->descr.name, pb->descr.name);
+        int r = strcasecmp(pa->name, pb->name);
         if (r) return r;
       }
     /* if equal ignoring case, use opposite of strcmp() result to get
      * lower before upper */
-    return -strcmp(pa->descr.name, pb->descr.name); /* aka: return strcmp(b, a); */
+    return -strcmp(pa->name, pb->name); /* aka: return strcmp(b, a); */
 }
 
 /**
@@ -95,19 +96,19 @@ scan_plugins ()
     {
       const LilvPlugin* p = lilv_plugins_get(plugins, i);
 
-      LV2_Plugin * lv2_plugin =
-        lv2_create_from_lilv (plugin_new (),
-                              p);
+      Plugin_Descriptor * descriptor =
+        lv2_create_descriptor_from_lilv (p);
 
-      if (lv2_plugin)
+      if (descriptor)
         {
-          PLUGIN_MANAGER->plugins[PLUGIN_MANAGER->num_plugins++] = lv2_plugin->plugin;
-          add_category (lv2_plugin->plugin);
+          PLUGIN_MANAGER->plugin_descriptors[PLUGIN_MANAGER->num_plugins++] =
+            descriptor;
+          add_category (descriptor->category);
         }
     }
 
   /* sort alphabetically */
-  qsort (PLUGIN_MANAGER->plugins,
+  qsort (PLUGIN_MANAGER->plugin_descriptors,
          PLUGIN_MANAGER->num_plugins,
          sizeof (Plugin *),
          sort_plugin_func);
