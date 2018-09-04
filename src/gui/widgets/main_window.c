@@ -239,37 +239,9 @@ main_window_widget_new (ZrythmApp * _app)
                                           "application",
                                           app,
                                           NULL);
-
+  WIDGET_MANAGER->main_window = self;
   gtk_window_set_title (GTK_WINDOW (self), PACKAGE_STRING);
 
-  // set icons
-  GtkWidget * image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/z.svg");
-  gtk_window_set_icon (
-          GTK_WINDOW (self),
-          gtk_image_get_pixbuf (GTK_IMAGE (image)));
-  image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/close.svg");
-  gtk_button_set_image (self->close, image);
-  image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/minimize.svg");
-  gtk_button_set_image (self->minimize, image);
-  image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/maximize.svg");
-  gtk_button_set_image (self->maximize, image);
-  image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/play.svg");
-  gtk_button_set_image (self->play, image);
-  image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/stop.svg");
-  gtk_button_set_image (self->stop, image);
-  image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/plus.svg");
-  gtk_tool_button_set_icon_widget (self->instrument_add,
-                                   GTK_WIDGET (image));
-  image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/record.svg");
-  gtk_button_set_image (GTK_BUTTON (self->trans_record), image);
 
   // set default css provider
   GtkCssProvider * css_provider = gtk_css_provider_new();
@@ -319,6 +291,38 @@ main_window_widget_new (ZrythmApp * _app)
 
   /* setup mixer */
   mixer_setup (self->mixer, self->channels);
+
+  // set icons
+  GtkWidget * image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/z.svg");
+  gtk_window_set_icon (
+          GTK_WINDOW (self),
+          gtk_image_get_pixbuf (GTK_IMAGE (image)));
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/close.svg");
+  gtk_button_set_image (self->close, image);
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/minimize.svg");
+  gtk_button_set_image (self->minimize, image);
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/maximize.svg");
+  gtk_button_set_image (self->maximize, image);
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/play.svg");
+  gtk_button_set_image (self->play, image);
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/stop.svg");
+  gtk_button_set_image (self->stop, image);
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/plus.svg");
+  gtk_tool_button_set_icon_widget (self->instrument_add,
+                                   GTK_WIDGET (image));
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/record.svg");
+  gtk_button_set_image (GTK_BUTTON (self->trans_record), image);
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/plus.svg");
+  gtk_button_set_image (GTK_BUTTON (self->channels_add), image);
 
   return self;
 }

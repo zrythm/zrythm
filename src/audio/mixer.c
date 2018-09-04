@@ -34,49 +34,29 @@
 
 static nframes_t      nframes;
 
-/**
- * Thread work
- * Pass the L/R to each channel strip and let them handle it
- */
-static void *
-process_channel_work (void * argument)
-{
-  channel_process (MIXER->channels[*((int*) argument)],
-                   nframes);
-  return 0;
-}
 
 /**
  * process callback
  */
 void
-mixer_process (nframes_t     _nframes)           ///< number of frames to fill in
+mixer_process (nframes_t     nframes)           ///< number of frames to fill in
 {
-  static int i, j;
+  static int i, loop = 1;
 
-  nframes = _nframes;
-
-  /* prepare threads */
-  pthread_t threads[MIXER->num_channels];
-  int thread_args[MIXER->num_channels];
-  int result_code;
-  unsigned index;
-
-  /* loop through each channel strip.
-   * the output at each stage should be 2 ports,
-   * and they are added to the buffers */
-  for (i = 0; i < MIXER->num_channels; i++)
+  /* wait for channels to finish processing */
+  while (loop)
     {
-      thread_args[ i ] = i;
-      result_code = pthread_create (
-                &threads[i], NULL, process_channel_work, &thread_args[i]);
+      loop = 0;
+      for (i = 0; i < MIXER->num_channels; i++)
+        {
+          if (!MIXER->channels[i]->processed)
+            {
+              loop = 1;
+              break;
+            }
+        }
+    }
 
-    }
-   // wait for each thread to complete
-  for (i = 0; i < MIXER->num_channels; ++i)
-    {
-      result_code = pthread_join(threads[i], NULL);
-    }
 
   /* process master channel */
   channel_process (MIXER->master,
@@ -90,12 +70,12 @@ mixer_init ()
   /* allocate size */
   MIXER = calloc (1, sizeof (Mixer));
 
-  /*MIXER->num_ports = 0;*/
+  MIXER->num_channels = 0;
 
   /* create master channel */
   MIXER->master = channel_create_master ();
 
   /* init channel strips array and add one of each */
-  ADD_CHANNEL (channel_create (CT_MIDI));
-  ADD_CHANNEL (channel_create (CT_AUDIO));
+  ADD_CHANNEL (channel_create (CT_MIDI, "Ch 1"));
+  /*ADD_CHANNEL (channel_create (CT_AUDIO));*/
 }

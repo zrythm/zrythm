@@ -79,6 +79,7 @@ jack_buffer_size_cb(nframes_t nframes, void* data)
       Port * port = AUDIO_ENGINE->ports[i];
       port->nframes = nframes;
       port->buf = realloc (port->buf, nframes * sizeof (sample_t));
+      /* TODO memset */
     }
   for (int i = 0; i < MIXER->num_channels; i++)
     {
@@ -96,6 +97,8 @@ jack_buffer_size_cb(nframes_t nframes, void* data)
             }
         }
     }
+  /* FIXME this is the same as block_length */
+  AUDIO_ENGINE->nframes = nframes;
   return 0;
 }
 
@@ -114,6 +117,7 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
   sample_t * stereo_out_l, * stereo_out_r;
   int i = 0;
 
+  /*g_message ("jack start");*/
 
   /* get MIDI events from JACK and store to engine MIDI in port
    * FIXME referencing  AUDIO ENGINE all the time is expensive,
@@ -137,9 +141,12 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
     {
       Channel * channel = MIXER->channels[i];
       channel->processed = 0;
-      for (int j = 0; j < channel->num_plugins; j++)
+      for (int j = 0; j < MAX_PLUGINS; j++)
         {
-          channel->strip[i]->processed = 0;
+          if (channel->strip[i])
+            {
+              channel->strip[i]->processed = 0;
+            }
         }
     }
 
@@ -163,10 +170,12 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
   for (i = 0; i < nframes; i++)
     {
       stereo_out_l[nframes] = MIXER->master->stereo_out->l->buf[i];
+      /*g_message ("%d:%f", i, MIXER->master->stereo_out->l->buf[i]);*/
       stereo_out_r[nframes] = MIXER->master->stereo_out->r->buf[i];
     }
 
 
+  /*g_message ("jack end");*/
   /*
    * processing finished, return 0
    */
@@ -191,7 +200,7 @@ void
 init_audio_engine()
 {
     g_message ("Initializing audio engine...");
-    AUDIO_ENGINE = malloc (sizeof (Audio_Engine));
+    AUDIO_ENGINE = calloc (1, sizeof (Audio_Engine));
     Audio_Engine * engine = AUDIO_ENGINE;
 
     const char **ports;
@@ -247,6 +256,7 @@ init_audio_engine()
           INTERNAL_JACK_PORT,
           TYPE_AUDIO,
           FLOW_OUTPUT,
+          "JACK Stereo Out / L",
           (void *) jack_port_register (engine->client, "Stereo_out_L",
                                       JACK_DEFAULT_AUDIO_TYPE,
                                       JackPortIsOutput, 0));
@@ -255,6 +265,7 @@ init_audio_engine()
           INTERNAL_JACK_PORT,
           TYPE_AUDIO,
           FLOW_OUTPUT,
+          "JACK Stereo Out / R",
           (void *) jack_port_register (engine->client, "Stereo_out_R",
                                       JACK_DEFAULT_AUDIO_TYPE,
                                       JackPortIsOutput, 0));
@@ -263,6 +274,7 @@ init_audio_engine()
           INTERNAL_JACK_PORT,
           TYPE_AUDIO,
           FLOW_INPUT,
+          "JACK Stereo In / L",
           (void *) jack_port_register (engine->client, "Stereo_in_L",
                                       JACK_DEFAULT_AUDIO_TYPE,
                                       JackPortIsInput, 0));
@@ -271,6 +283,7 @@ init_audio_engine()
           INTERNAL_JACK_PORT,
           TYPE_AUDIO,
           FLOW_INPUT,
+          "JACK Stereo In / R",
           (void *) jack_port_register (engine->client, "Stereo_in_R",
                                       JACK_DEFAULT_AUDIO_TYPE,
                                       JackPortIsInput, 0));
@@ -279,9 +292,16 @@ init_audio_engine()
           INTERNAL_JACK_PORT,
           TYPE_EVENT,
           FLOW_INPUT,
+          "JACK MIDI In",
           (void *) jack_port_register (engine->client, "MIDI_in",
                                        JACK_DEFAULT_MIDI_TYPE,
                                        JackPortIsInput, 0));
+
+    stereo_in_l->owner_jack = 1;
+    stereo_in_r->owner_jack = 1;
+    stereo_out_l->owner_jack = 1;
+    stereo_out_r->owner_jack = 1;
+    midi_in->owner_jack = 1;
 
     engine->stereo_in  = stereo_ports_new (stereo_in_l, stereo_in_r);
     engine->stereo_out = stereo_ports_new (stereo_out_l, stereo_out_r);
@@ -341,4 +361,14 @@ close_audio_engine ()
     g_message ("closing audio engine...");
 
     jack_client_close (AUDIO_ENGINE->client);
+}
+
+void
+engine_delete_port (Port * port)
+{
+  for (int i = port->id; i < AUDIO_ENGINE->num_ports - 1; i++)
+    {
+      AUDIO_ENGINE->ports[i] = AUDIO_ENGINE->ports[i + 1];
+    }
+  AUDIO_ENGINE->num_ports--;
 }

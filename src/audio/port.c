@@ -25,13 +25,22 @@
  * with data */
 
 #include <stdlib.h>
+#if _POSIX_C_SOURCE >= 199309L
+#include <time.h>   // for nanosleep
+#else
+#include <unistd.h> // for usleep
+#endif
 
 #include "audio/channel.h"
 #include "audio/mixer.h"
 #include "audio/port.h"
 #include "plugins/plugin.h"
 
+#include <gtk/gtk.h>
+
 #include <jack/jack.h>
+
+#define SLEEPTIME 1
 
 typedef jack_default_audio_sample_t   sample_t;
 typedef jack_nframes_t                nframes_t;
@@ -42,16 +51,19 @@ typedef jack_nframes_t                nframes_t;
  * Sets id and updates appropriate counters.
  */
 Port *
-port_new (nframes_t nframes)
+port_new (nframes_t nframes, char * label)
 {
   Port * port = calloc (1, sizeof (Port));
 
+  port->id = AUDIO_ENGINE->num_ports;
   AUDIO_ENGINE->ports[AUDIO_ENGINE->num_ports++] = port;
-  /*port->id = MIXER->num_ports++;*/
   port->num_dests = 0;
   port->nframes = nframes;
   port->buf = calloc (nframes, sizeof (sample_t));
   port->flow = FLOW_UNKNOWN;
+  port->label = g_strdup (label);
+
+  g_message ("Creating port %s", port->label);
 
   return port;
 }
@@ -62,9 +74,10 @@ port_new (nframes_t nframes)
 Port *
 port_new_with_type (nframes_t    nframes,
                     PortType     type,
-                    PortFlow     flow)
+                    PortFlow     flow,
+                    char         * label)
 {
-  Port * port = port_new (nframes);
+  Port * port = port_new (nframes, label);
 
   port->type = type;
   port->flow = flow;
@@ -93,11 +106,16 @@ port_new_with_data (nframes_t    nframes,
                     PortInternal internal, ///< the internal data format
                     PortType     type,
                     PortFlow     flow,
+                    char         * label,
                     void         * data)   ///< the data
 {
-  Port * port = port_new_with_type (nframes, type, flow);
+  Port * port = port_new_with_type (nframes, type, flow, label);
+
+  /** TODO semaphore **/
   port->data = data;
   port->internal = internal;
+
+  /** TODO end semaphore */
 
   return port;
 }
@@ -108,7 +126,10 @@ port_new_with_data (nframes_t    nframes,
 void
 port_delete (Port * port)
 {
-  /* TODO delete from mixer */
+  engine_delete_port (port);
+
+  if (port->label)
+    free (port->label);
   if (port->buf)
     free (port->buf);
 
@@ -157,6 +178,8 @@ array_delete (Port ** array, int * size, Port * element)
 int
 port_disconnect (Port * src, Port * dest)
 {
+  g_assert (src);
+  g_assert (dest);
   /* disconnect dest from src */
   array_delete (src->dests, &src->num_dests, dest);
   array_delete (dest->srcs, &dest->num_srcs, src);
@@ -165,23 +188,23 @@ port_disconnect (Port * src, Port * dest)
 /**
  * if port buffer size changed, reallocate port buffer, otherwise memset to 0.
  */
-void
-port_init_buf (Port *port, nframes_t nframes)
-{
-    /* if port buf size changed, reallocate */
-    if (port->nframes != nframes ||
-        port->nframes == 0)
-      {
-        if (port->nframes > 0)
-          free (port->buf);
-        port->buf = calloc (nframes, sizeof (sample_t));
-        port->nframes = nframes;
-      }
-    else /* otherwise memset to 0 */
-      {
-        memset (port->buf, '\0', nframes);
-      }
-}
+/*void*/
+/*port_init_buf (Port *port, nframes_t nframes)*/
+/*{*/
+    /*[> if port buf size changed, reallocate <]*/
+    /*if (port->nframes != nframes ||*/
+        /*port->nframes == 0)*/
+      /*{*/
+        /*if (port->nframes > 0)*/
+          /*free (port->buf);*/
+        /*port->buf = calloc (nframes, sizeof (sample_t));*/
+        /*port->nframes = nframes;*/
+      /*}*/
+    /*else [> otherwise memset to 0 <]*/
+      /*{*/
+        /*memset (port->buf, '\0', nframes);*/
+      /*}*/
+/*}*/
 
 
 /**
@@ -190,7 +213,12 @@ port_init_buf (Port *port, nframes_t nframes)
 void
 port_sum_signal_from_inputs (Port * port, nframes_t nframes)
 {
-  port_init_buf (port, nframes);
+  /*port_init_buf (port, nframes);*/
+#if _POSIX_C_SOURCE >= 199309L
+  struct timespec ts;
+  ts.tv_sec = SLEEPTIME / 1000;
+  ts.tv_nsec = (SLEEPTIME % 1000) * 1000000;
+#endif
 
   /* for any output port pointing to it */
   for (int k = 0; k < port->num_srcs; k++)
@@ -201,18 +229,50 @@ port_sum_signal_from_inputs (Port * port, nframes_t nframes)
       if (src_port->owner_pl)
         while (!src_port->owner_pl->processed)
           {
-            sleep (5);
+#if _POSIX_C_SOURCE >= 199309L
+            nanosleep(&ts, NULL);
+#else
+            usleep (SLEEPTIME * 1000);
+#endif
           }
       else if (src_port->owner_ch)
-        while (!src_port->owner_ch->processed)
-          {
-            sleep (5);
-          }
+        {
+          while (!src_port->owner_ch->processed)
+            {
+#if _POSIX_C_SOURCE >= 199309L
+              nanosleep(&ts, NULL);
+#else
+              usleep (SLEEPTIME * 1000);
+#endif
+            }
+        }
 
       /* sum the signals */
       for (int l = 0; l < nframes; l++)
         {
           port->buf[l] += src_port->buf[l];
+        }
+    }
+}
+
+/**
+ * Prints all connections.
+ */
+void
+port_print_connections_all ()
+{
+  for (int i = 0; i < AUDIO_ENGINE->num_ports; i++)
+    {
+      Port * src = AUDIO_ENGINE->ports[i];
+      if (!src->owner_pl && !src->owner_ch && !src->owner_jack)
+        {
+          g_warning ("Port %s has no owner", src->label);
+        }
+      for (int j = 0; j < src->num_dests; j++)
+        {
+          Port * dest = src->dests[j];
+          g_assert (dest);
+          g_message ("%s connected to %s", src->label, dest->label);
         }
     }
 }

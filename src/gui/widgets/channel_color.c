@@ -59,6 +59,8 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 
   gdk_cairo_set_source_rgba (cr, color);
   cairo_fill_preserve (cr);
+
+  return FALSE;
 }
 /**
  * Creates a channel color widget using the given color pointer.

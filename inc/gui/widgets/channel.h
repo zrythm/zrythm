@@ -22,6 +22,8 @@
 #ifndef __GUI_WIDGETS_CHANNEL_H__
 #define __GUI_WIDGETS_CHANNEL_H__
 
+#include "audio/channel.h"
+
 #include <gtk/gtk.h>
 
 #define CHANNEL_WIDGET_TYPE                  (channel_widget_get_type ())
@@ -47,7 +49,12 @@ typedef struct ChannelWidget
   GtkButton           * phase_invert;
   GtkLabel            * phase_reading;
   KnobWidget          * phase_knob;
-  GtkBox              * slots;
+  GtkBox              * slots_box;
+  GtkBox              * slots[MAX_PLUGINS];      ///< array of slot boxes (1 per plugin)
+  GtkToggleButton     * toggles[MAX_PLUGINS];   ///< toggle buttons (per slot)
+  GtkLabel            * labels[MAX_PLUGINS];     ///< labels (per slot)
+  //int                 num_slots;        ///< counter
+  GtkBox              * dummy_slot_box;    ///< for dnd
   GtkToggleButton     * slot1b;
   GtkToggleButton     * slot2b;
   GtkButton           * add_slot;
@@ -60,8 +67,8 @@ typedef struct ChannelWidget
   GtkBox              * fader_area;
   GtkBox              * meter_area;
   FaderWidget         * fader;
-  ChannelMeterWidget  * cm;
-  GtkDrawingArea      * meter_reading;
+  ChannelMeterWidget  * cm;          ///< the little green channel meter
+  GtkLabel            * meter_reading;
   GtkImage            * icon;
 
   Channel             * channel;    ///< pointer to data

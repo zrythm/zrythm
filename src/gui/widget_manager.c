@@ -39,7 +39,7 @@
 void
 init_widget_manager ()
 {
-  Widget_Manager * widget_manager = malloc (sizeof (Widget_Manager));
+  Widget_Manager * widget_manager = calloc (1, sizeof (Widget_Manager));
   /*widget_manager->widgets = g_hash_table_new (g_str_hash,*/
                          /*g_str_equal);*/
 

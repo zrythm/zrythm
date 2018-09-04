@@ -54,7 +54,7 @@ typedef struct Channel
   /* note: the first plugin is special, it is the "main" plugin of the channel
    * where processing starts */
   Plugin            * strip[MAX_PLUGINS]; ///< the channel strip
-  int               num_plugins;
+  //int               num_plugins;
   ChannelType       type;             ///< MIDI / Audio / Master
   sample_t          volume;           ///< value of the volume fader
   int               muted;            ///< muted or not
@@ -80,6 +80,9 @@ typedef struct Channel
   float             r_port_db;   ///< current db after processing r port
   int               processed;   ///< processed in this cycle or not
   int               recording;  ///< recording mode or not
+  pthread_t         thread;     ///< the channel processing thread.
+                          ///< each channel does processing on a separate thread
+  int               stop_thread;    ///< flag to stop the thread
   Channel *         output;     ///< output channel to route signal to
   ChannelWidget     *widget;
 } Channel;
@@ -102,11 +105,17 @@ channel_get_current_l_db (void * _channel);
 float
 channel_get_current_r_db (void * _channel);
 
+void
+channel_set_current_l_db (Channel * channel, float val);
+
+void
+channel_set_current_r_db (Channel * channel, float val);
+
 /**
  * Creates a channel using the given params.
  */
 Channel *
-channel_create (int     type);             ///< the channel type (AUDIO/INS)
+channel_create (int     type, char * label);             ///< the channel type (AUDIO/INS)
 
 /**
  * Creates master channel.
@@ -124,7 +133,7 @@ channel_create_master ();
  */
 void
 channel_process (Channel * channel, ///< the channel
-                 nframes_t   samples);    ///< sample count
+                 nframes_t   nframes);    ///< sample count
 
 /**
  * Adds given plugin to given position in the strip.
@@ -137,5 +146,11 @@ channel_add_plugin (Channel * channel,    ///< the channel
                                         ///< (starting from 0)
                     Plugin      * plugin  ///< the plugin to add
                     );
+
+/**
+ * Returns the index of the last active slot.
+ */
+int
+channel_get_last_active_slot_index (Channel * channel);
 
 #endif

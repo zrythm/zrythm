@@ -41,7 +41,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkBox" id="slots">
+              <object class="GtkBox" id="slots_box">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
@@ -365,18 +365,6 @@
         <property name="top_attach">2</property>
         <property name="width">2</property>
       </packing>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
     </child>
   </template>
 </interface>

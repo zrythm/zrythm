@@ -35,12 +35,15 @@
 //#define GET_WIDGET(key) g_hash_table_lookup ( \
                       //zrythm_system->widget_manager->widgets, \
                       //key)
+                      //
+typedef struct _MainWindowWidget MainWindowWidget;
 
 typedef struct Widget_Manager
 {
   //GHashTable   * widgets;
   GtkTargetEntry        entries[10];        ///< dnd entries
   int                   num_entries;        ///< count
+  MainWindowWidget      * main_window;      ///< main window
 } Widget_Manager;
 
 /**

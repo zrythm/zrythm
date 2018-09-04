@@ -26,6 +26,8 @@
 
 #include <gtk/gtk.h>
 
+#define MAIN_WINDOW WIDGET_MANAGER->main_window
+
 #define MAIN_WINDOW_WIDGET_TYPE                  (main_window_widget_get_type ())
 G_DECLARE_FINAL_TYPE (MainWindowWidget, main_window_widget, MAIN, WINDOW_WIDGET, GtkApplicationWindow)
 
@@ -71,6 +73,7 @@ typedef struct _MainWindowWidget
   GtkToolButton            * instrument_add;
   GtkNotebook              * editor_bot;
   GtkBox                   * mixer;
+  GtkBox                   * dummy_mixer_box;  ///< dummy box for dnd
   GtkScrolledWindow        * channels_scroll;
   GtkViewport              * channels_viewport;
   GtkBox                   * channels;

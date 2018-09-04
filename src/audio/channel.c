@@ -22,6 +22,11 @@
 #include <math.h>
 #include <unistd.h>
 #include <stdlib.h>
+#if _POSIX_C_SOURCE >= 199309L
+#include <time.h>   // for nanosleep
+#else
+#include <unistd.h> // for usleep
+#endif
 
 #include "audio/channel.h"
 #include "audio/mixer.h"
@@ -29,20 +34,59 @@
 
 #include <gtk/gtk.h>
 
+#define SLEEPTIME 1
+
 /**
  * Calculate decibels using RMS method.
  */
 static double
 calculate_rms_db (sample_t * buf, nframes_t nframes)
 {
-  double sum = 0;
+  double sum = 0, sample = 0;
   for (int i = 0; i < nframes; i += 2)
   {
-      double sample = buf[i] / 32768.0;
+    if (i >= nframes)
+      g_message ("wat");
+      sample = buf[i] / 32768.0;
       sum += (sample * sample);
   }
-  double rms = sqrt (sum / (nframes / 2));
-  return 20 * log10(rms);
+  return 20 * log10 (sqrt (sum / (nframes / 2)));
+}
+
+/**
+ * Thread work
+ * Pass the L/R to each channel strip and let them handle it
+ */
+static void *
+process_channel_work (void * argument)
+{
+  Channel * channel = (Channel *) argument;
+
+#if _POSIX_C_SOURCE >= 199309L
+  struct timespec ts;
+  ts.tv_sec = SLEEPTIME / 1000;
+  ts.tv_nsec = (SLEEPTIME % 1000) * 1000000;
+#endif
+
+  while (!channel->stop_thread)
+    {
+      if (!channel->processed)
+        {
+          if (AUDIO_ENGINE->nframes > 0)
+            {
+              channel_process (channel, AUDIO_ENGINE->nframes);
+              channel->processed = 1;
+            }
+        }
+
+#if _POSIX_C_SOURCE >= 199309L
+      nanosleep(&ts, NULL);
+#else
+      usleep (SLEEPTIME * 1000);
+#endif
+    }
+
+  return 0;
 }
 
 /**
@@ -62,7 +106,7 @@ channel_process (Channel * channel,  ///< slots
   port_sum_signal_from_inputs (channel->stereo_in->r, nframes);
 
   /* go through each slot (plugin) on the channel strip */
-  for (int i = 0; i < channel->num_plugins; i++)
+  for (int i = 0; i < MAX_PLUGINS; i++)
     {
       Plugin * plugin = channel->strip[i];
       if (plugin)
@@ -87,47 +131,91 @@ channel_process (Channel * channel,  ///< slots
   port_sum_signal_from_inputs (channel->stereo_out->r, nframes);
 
   /* calc decibels */
-  channel->l_port_db = calculate_rms_db (channel->stereo_out->l->buf,
-                                         channel->stereo_out->l->nframes);
-  channel->r_port_db = calculate_rms_db (channel->stereo_out->r->buf,
-                                         channel->stereo_out->r->nframes);
+  channel_set_current_l_db (channel,
+                            calculate_rms_db (channel->stereo_out->l->buf,
+                                         channel->stereo_out->l->nframes));
+  channel_set_current_r_db (channel,
+                            calculate_rms_db (channel->stereo_out->r->buf,
+                                         channel->stereo_out->r->nframes));
+
+  /* mark as processed */
+  channel->processed = 1;
 }
 
+/**
+ * Creates, inits, and returns a new channel with given info.
+ */
 static Channel *
-_create_channel ()
+_create_channel (char * name)
 {
   Channel * channel = calloc (1, sizeof (Channel));
+  channel->name = g_strdup (name);
 
   /* create ports */
+  char * pll = g_strdup_printf ("%s stereo in L", channel->name);
+  char * plr = g_strdup_printf ("%s stereo in R", channel->name);
   channel->stereo_in = stereo_ports_new (
               port_new_with_type (AUDIO_ENGINE->block_length,
-                                  TYPE_AUDIO, FLOW_INPUT),
+                                  TYPE_AUDIO, FLOW_INPUT,
+                                  pll),
               port_new_with_type (AUDIO_ENGINE->block_length,
-                                  TYPE_AUDIO, FLOW_INPUT));
+                                  TYPE_AUDIO, FLOW_INPUT,
+                                  plr));
+  g_free (pll);
+  g_free (plr);
+  pll = g_strdup_printf ("%s MIDI in", channel->name);
   channel->midi_in = port_new_with_type (AUDIO_ENGINE->block_length,
-                                         TYPE_EVENT, FLOW_INPUT);
+                                         TYPE_EVENT, FLOW_INPUT,
+                                         pll);
+  g_free (pll);
+  pll = g_strdup_printf ("%s Stereo out L", channel->name);
+  plr = g_strdup_printf ("%s Stereo out R", channel->name);
   channel->stereo_out = stereo_ports_new (
               port_new_with_type (AUDIO_ENGINE->block_length,
-                                  TYPE_AUDIO, FLOW_OUTPUT),
+                                  TYPE_AUDIO, FLOW_OUTPUT,
+                                  pll),
               port_new_with_type (AUDIO_ENGINE->block_length,
-                                  TYPE_AUDIO, FLOW_OUTPUT));
+                                  TYPE_AUDIO, FLOW_OUTPUT,
+                                  plr));
+  g_message ("Created stereo out ports");
+  g_free (pll);
+  g_free (plr);
+  channel->stereo_in->l->owner_ch = channel;
+  channel->stereo_in->r->owner_ch = channel;
+  channel->stereo_out->l->owner_ch = channel;
+  channel->stereo_out->r->owner_ch = channel;
+  channel->midi_in->owner_ch = channel;
 
-/* init plugins */
-for (int i = 0; i < MAX_PLUGINS; i++)
-  {
-    channel->strip[i] = NULL;
+  /* init plugins */
+  for (int i = 0; i < MAX_PLUGINS; i++)
+    {
+      channel->strip[i] = NULL;
+    }
+
+    channel->volume = 0.0f;
+    channel->phase = 0.0f;
+
+    /* connect MIDI in port from engine's jack port */
+    /*g_message ("connecting engine MIDI IN port to %s MIDI IN",*/
+               /*channel->name);*/
+    port_connect (AUDIO_ENGINE->midi_in, channel->midi_in);
+
+    /* thread related */
+    channel->stop_thread = 0;
+    channel->processed = 1;
+    int result_code = pthread_create (&channel->thread,
+                                      NULL,
+                                      process_channel_work,
+                                      channel);
+    if (result_code != 0)
+      {
+        g_error ("%d: Failed creating thread for channel %s",
+                 result_code, channel->name);
+      }
+
+
+    return channel;
   }
-
-  channel->volume = 0.0f;
-  channel->phase = 0.0f;
-
-  /* connect MIDI in port from engine's jack port */
-  g_message ("connecting engine MIDI IN port to %s MIDI IN",
-             channel->name);
-  port_connect (AUDIO_ENGINE->midi_in, channel->midi_in);
-
-  return channel;
-}
 
 /**
  * Creates master channel
@@ -137,13 +225,12 @@ channel_create_master ()
 {
   g_message ("Creating Master channel");
 
-  Channel * channel = _create_channel();
+  Channel * channel = _create_channel("Master");
 
   channel->type = CT_MASTER;
 
   /* default settings */
   gdk_rgba_parse (&channel->color, "red");
-  channel->name = "Master";
   channel->output = NULL;
 
   /* connect stereo out ports to engine's jack ports */
@@ -153,6 +240,9 @@ channel_create_master ()
   /*port_connect (channel->stereo_out->l, AUDIO_ENGINE->stereo_out->l);*/
   /*port_connect (channel->stereo_out->r, AUDIO_ENGINE->stereo_out->r);*/
 
+  /* create widget */
+  channel->widget = channel_widget_new (channel);
+
   return channel;
 }
 
@@ -160,16 +250,14 @@ channel_create_master ()
  * Creates a channel using the given params
  */
 Channel *
-channel_create (int     type)             ///< the channel type (AUDIO/INS)
+channel_create (int     type, char * label)             ///< the channel type (AUDIO/INS)
 {
-  g_message ("Creating channel of type %i", type);
 
-  Channel * channel = _create_channel();
+  Channel * channel = _create_channel (label);
 
   channel->type = type;
 
   gdk_rgba_parse (&channel->color, "rgb(20%,60%,4%)");
-  channel-> name = g_strdup_printf ("Ch %d", ++MIXER->num_channels);
   channel->output = MIXER->master;
 
   /* connect channel out ports to master */
@@ -179,6 +267,11 @@ channel_create (int     type)             ///< the channel type (AUDIO/INS)
                 MIXER->master->stereo_in->l);
   port_connect (channel->stereo_out->r,
                 MIXER->master->stereo_in->r);
+
+  g_message ("Created channel %s of type %i", label, type);
+
+  /* create widget */
+  channel->widget = channel_widget_new (channel);
 
   return channel;
 }
@@ -228,6 +321,25 @@ channel_get_current_r_db (void * _channel)
 {
   Channel * channel = (Channel *) _channel;
   return channel->r_port_db;
+}
+
+void
+channel_set_current_l_db (Channel * channel, float val)
+{
+  channel->l_port_db = val;
+   if (val > 0.1f)
+     {
+       g_message (" Value is %f",val);
+     }
+  /*gtk_label_set_text (channel->widget->meter_reading,*/
+                      /*g_strdup_printf ("%.1f", val));*/
+}
+
+void
+channel_set_current_r_db (Channel * channel, float val)
+{
+  channel->r_port_db = val;
+  /* FIXME this should be average of the two */
 }
 
 /**
@@ -334,9 +446,22 @@ channel_add_plugin (Channel * channel,    ///< the channel
         }
     }
 
-  /* if last plugin, connect to AUDIO_OUT */
+  /* TODO if last plugin, connect to AUDIO_OUT */
 
-  channel->num_plugins++;
 }
 
+/**
+ * Returns the index of the last active slot.
+ */
+int
+channel_get_last_active_slot_index (Channel * channel)
+{
+  int index = -1;
+  for (int i = 0; i < MAX_PLUGINS; i++)
+    {
+      if (channel->strip[i])
+        index = i;
+    }
+  return index;
+}
 

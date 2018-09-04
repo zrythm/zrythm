@@ -20,7 +20,8 @@
  */
 
 #include "zrythm_app.h"
-#include "audio/channel.h"
+#include "audio/mixer.h"
+#include "plugins/lv2_plugin.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/channel_color.h"
 #include "gui/widgets/channel_meter.h"
@@ -31,6 +32,75 @@
 #include <gtk/gtk.h>
 
 G_DEFINE_TYPE (ChannelWidget, channel_widget, GTK_TYPE_GRID)
+
+/**
+ * Tick function.
+ *
+ * usually, the way to do that is via g_idle_add() or g_main_context_invoke()
+ * the other option is to use polling and have the GTK thread check if the
+ * value changed every monitor refresh
+ * that would be done via gtk_widget_set_tick_functions()
+ * gtk_widget_set_tick_function()
+ */
+static gboolean
+tick_callback (GtkWidget * widget, GdkFrameClock * frame_clock,
+               gpointer user_data)
+{
+  Channel * channel = (Channel *) user_data;
+  gtk_label_set_text (GTK_LABEL (widget),
+                      g_strdup_printf ("%.1f", channel->r_port_db));
+  gtk_widget_queue_draw (GTK_WIDGET (channel->widget->cm));
+  return G_SOURCE_CONTINUE;
+}
+
+/**
+ * Adds a plugin to the given channel widget at the last slot
+ */
+static void
+channel_widget_add_plugin (ChannelWidget * self,    ///< channel
+                           Plugin        * plugin,   ///< plugin to add
+                           int           slot)    ///< slot to add it to
+{
+  gtk_label_set_text (self->labels[slot], g_strdup (plugin->descr->name));
+
+  /* set on/off icon */
+  GtkWidget * image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/slot-on.svg");
+  gtk_button_set_image (GTK_BUTTON (self->toggles[slot]), image);
+}
+
+static void
+on_drag_data_received (GtkWidget        *widget,
+               GdkDragContext   *context,
+               gint              x,
+               gint              y,
+               GtkSelectionData *data,
+               guint             info,
+               guint             time,
+               gpointer          user_data)
+{
+  Channel * channel = CHANNEL_WIDGET (user_data)->channel;
+  int index = channel_get_last_active_slot_index (channel);
+  if (index == MAX_PLUGINS - 1)
+    {
+      /* TODO */
+      g_error ("Channel is full");
+      return;
+    }
+
+  Plugin_Descriptor * descr = *(gpointer *) gtk_selection_data_get_data (data);
+
+  /* FIXME if lv2... */
+  Plugin * plugin = plugin_new ();
+  plugin->descr = descr;
+  LV2_Plugin * lv2_plugin = lv2_create_from_uri (plugin, descr->uri);
+
+  plugin_instantiate (plugin);
+
+  /* TODO add to specific channel */
+  channel_add_plugin (channel, index, plugin);
+  channel_widget_add_plugin (CHANNEL_WIDGET (user_data), plugin, index);
+}
 
 static void
 phase_invert_button_clicked (ChannelWidget * self,
@@ -56,7 +126,7 @@ channel_widget_class_init (ChannelWidgetClass * klass)
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 ChannelWidget, phase_controls);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                ChannelWidget, slots);
+                                                ChannelWidget, slots_box);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 ChannelWidget, slot1b);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
@@ -99,7 +169,7 @@ static void
 setup_color (ChannelWidget * self)
 {
   self->color = channel_color_widget_new (&self->channel->color);
-  gtk_grid_attach (&self->parent_instance,
+  gtk_grid_attach (GTK_GRID (self),
                    GTK_WIDGET (self->color),
                    0, 1, 2, 1);
 }
@@ -145,6 +215,38 @@ setup_meter (ChannelWidget * self)
                        1, 1, 0);
 }
 
+static void
+create_slots (ChannelWidget * self)
+{
+  gtk_container_remove (GTK_CONTAINER (self->slots_box),
+                        GTK_WIDGET (self->add_slot));
+  for (int i = 0; i < MAX_PLUGINS; i++)
+    {
+      self->slots[i] = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+      self->toggles[i]= GTK_TOGGLE_BUTTON (gtk_toggle_button_new ());
+      self->labels[i]= GTK_LABEL (gtk_label_new (""));
+
+      /* set on/off icon */
+      GtkWidget * image = gtk_image_new_from_resource (
+              "/online/alextee/zrythm/slot-off.svg");
+      gtk_button_set_image (GTK_BUTTON (self->toggles[i]), image);
+
+      gtk_box_pack_start (self->slots[i],
+                          GTK_WIDGET (self->toggles[i]),
+                          0, 1, 0);
+      gtk_box_pack_start (self->slots[i],
+                          GTK_WIDGET (self->labels[i]),
+                          1, 1, 0);
+      gtk_box_pack_start (self->slots_box,
+                          GTK_WIDGET (self->slots[i]),
+                          0, 1, 0);
+    }
+  gtk_box_pack_start (self->slots_box,
+                      GTK_WIDGET (self->add_slot),
+                      0, 1, 0);
+}
+
+
 ChannelWidget *
 channel_widget_new (Channel * channel)
 {
@@ -174,12 +276,6 @@ channel_widget_new (Channel * channel)
           "/online/alextee/zrythm/record.svg");
   gtk_button_set_image (GTK_BUTTON (self->record), image);
   image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/slot-on.svg");
-  gtk_button_set_image (GTK_BUTTON (self->slot1b), image);
-  image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/slot-off.svg");
-  gtk_button_set_image (GTK_BUTTON (self->slot2b), image);
-  image = gtk_image_new_from_resource (
           "/online/alextee/zrythm/phase-invert.svg");
   gtk_button_set_image (self->phase_invert, image);
   switch (channel->type)
@@ -203,8 +299,29 @@ channel_widget_new (Channel * channel)
                           "Master");
       break;
     }
-    gtk_label_set_text (self->name,
-                        channel->name);
+
+  gtk_label_set_text (self->name,
+                      g_strdup (channel->name));
+
+  /* add dummy box for dnd */
+  self->dummy_slot_box = GTK_BOX (
+                            gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+  gtk_box_pack_start (self->slots_box,
+                      GTK_WIDGET (self->dummy_slot_box),
+                      1, 1, 0);
+  gtk_drag_dest_set (GTK_WIDGET (self->dummy_slot_box),
+                            GTK_DEST_DEFAULT_ALL,
+                            WIDGET_MANAGER->entries,
+                            WIDGET_MANAGER->num_entries,
+                            GDK_ACTION_COPY);
+
+  g_signal_connect (GTK_WIDGET (self->dummy_slot_box),
+                    "drag-data-received",
+                    G_CALLBACK(on_drag_data_received), self);
+  gtk_widget_add_tick_callback (GTK_WIDGET (self->meter_reading),
+                                tick_callback,
+                                channel,
+                                NULL);
 
   return self;
 }

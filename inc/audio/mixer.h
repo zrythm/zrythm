@@ -33,7 +33,7 @@
  * adds given channel to mixer and updates count
  **/
 #define ADD_CHANNEL(channel) MIXER->channels[ \
-                                  MIXER->num_channels] = channel;
+                                  MIXER->num_channels++] = channel;
 
 
 typedef jack_default_audio_sample_t   sample_t;
@@ -47,8 +47,6 @@ typedef struct Mixer
 {
   Channel        * channels[100];      ///< array of channel strips
   int            num_channels;           ///< # of channels EXCLUDING master
-  //Port           * ports[600];        ///< all ports FIXME necessary?
-  int            num_ports;           ///< # of ports registered with plugins
   Channel        * master;                  ///< master output
 
 } Mixer;
