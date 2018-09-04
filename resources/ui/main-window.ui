@@ -685,11 +685,13 @@
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">True</property>
                                             <property name="relief">none</property>
+                                            <child>
+                                              <placeholder/>
+                                            </child>
                                           </object>
                                           <packing>
                                             <property name="expand">False</property>
                                             <property name="fill">True</property>
-                                            <property name="pack_type">end</property>
                                             <property name="position">0</property>
                                           </packing>
                                         </child>

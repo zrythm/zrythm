@@ -25,6 +25,7 @@
 #include "audio/mixer.h"
 #include "gui/widget_manager.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/splash.h"
 #include "plugins/plugin_manager.h"
 
 #include <gtk/gtk.h>
@@ -44,26 +45,11 @@ zrythm_app_init (ZrythmApp *app)
 static void
 zrythm_app_activate (GApplication *app)
 {
-  MainWindowWidget * win;
-
-  g_message ("Creating main window...");
-  win = main_window_widget_new (ZRYTHM_APP (app));
-  /*gtk_widget_show_all (GTK_WIDGET (win));*/
-  /*gtk_window_present (GTK_WINDOW (win));*/
-}
-
-/**
- * initialization logic
- */
-static void
-zrythm_app_startup (GApplication* app)
-{
+  SplashWindowWidget * splash = splash_window_widget_new (ZRYTHM_APP (app));
+  gtk_window_present (GTK_WINDOW (splash));
   g_message ("Starting up...");
 
-  /* init system */
-  zrythm_system = malloc (sizeof (Zrythm_System));
-
-  G_APPLICATION_CLASS (zrythm_app_parent_class)->startup (app);
+  /* TODO move the rest in signal handler (on window shown) */
 
   init_settings_manager ();
 
@@ -75,6 +61,22 @@ zrythm_app_startup (GApplication* app)
 
   // create project
   create_project ("project.xml");
+
+  g_message ("Creating main window...");
+  gtk_window_close (GTK_WINDOW (splash));
+  main_window_widget_new (ZRYTHM_APP (app));
+}
+
+/**
+ * initialization logic
+ */
+static void
+zrythm_app_startup (GApplication* app)
+{
+  /* init system */
+  zrythm_system = calloc (1, sizeof (Zrythm_System));
+
+  G_APPLICATION_CLASS (zrythm_app_parent_class)->startup (app);
 }
 
 static void

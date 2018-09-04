@@ -32,6 +32,7 @@
 
 #define AUDIO_ENGINE zrythm_system->audio_engine
 
+typedef jack_nframes_t                nframes_t;
 typedef struct Mixer Mixer;
 
 //typedef struct MIDI_Controller
@@ -55,11 +56,15 @@ typedef struct Audio_Engine
   Port              * midi_in;     ///< MIDI in port from JACK
   Port              * ports[600];   ///< all ports have a reference here for easy access
   int               num_ports;
+  nframes_t         nframes;     ///< nframes for current cycle
   //MIDI_Controller    * midi_controller; ///< the midi input on JACK
   //Port_Manager      * port_manager;  ///< manages all ports created for/by plugins
 } Audio_Engine;
 
 void
 init_audio_engine();
+
+void
+engine_delete_port (Port * port);
 
 #endif

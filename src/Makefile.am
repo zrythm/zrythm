@@ -22,6 +22,7 @@ zrythm_SOURCES = main.c \
 								 gui/widgets/main_window.c \
 								 gui/widgets/mixer.c \
 								 gui/widgets/ruler.c \
+								 gui/widgets/splash.c \
 								 gui/widgets/timeline.c \
 								 plugins/lv2_gtk.c \
 								 plugins/lv2_plugin.c \
@@ -41,8 +42,7 @@ AM_CFLAGS = -rdynamic -I$(top_srcdir)/inc \
 						$(JACK_CFLAGS) \
 						$(LV2_CFLAGS) \
 						$(LILV_CFLAGS) \
-						$(SUIL_CFLAGS) \
-						-O3
+						$(SUIL_CFLAGS)
 zrythm_LDADD = $(GTK_LIBS) \
 			   $(JACK_LIBS) \
 			   $(LV2_LIBS) \
@@ -61,6 +61,7 @@ BUILT_SOURCES = resources.c
 CLEANFILES = resources.c
 
 # build rule for resources.c
-resources.c: $(srcdir)/zrythm.gresource.xml $(top_srcdir)/resources/ui/main-window.ui $(top_srcdir)/resources/theme.css $(top_srcdir)/resources/ui/channel.ui
+# TODO add resources dir variable
+resources.c: $(srcdir)/zrythm.gresource.xml $(top_srcdir)/resources/ui/main-window.ui $(top_srcdir)/resources/theme.css $(top_srcdir)/resources/ui/channel.ui $(top_srcdir)/resources/ui/splash.ui
 	glib-compile-resources $(srcdir)/zrythm.gresource.xml --target=resources.c \
 	--generate-source --sourcedir=${top_srcdir}/resources

@@ -67,22 +67,24 @@ typedef struct Channel Channel;
  */
 typedef struct Port
 {
-  sample_t        * buf;      ///< buffer to be allocated with malloc, for AUDIO
-  Midi_Events      midi_events;   ///< contains the raw MIDI packets, for MIDI ports
+  sample_t            * buf;      ///< buffer to be allocated with malloc, for AUDIO
+  Midi_Events         midi_events;   ///< contains the raw MIDI packets, for MIDI ports
   /* FIXME necessary? */
-  nframes_t       nframes;        ///< number of frames (size of samples array)
-  //uint8_t         id;             ///< each port has an ID so that they can get connected
-	PortType   type;       ///< Data type
-	PortFlow   flow;       ///< Data flow direction
-  struct Port *  srcs[MAX_DESTINATIONS];  ///< ports coming in
-  struct Port *  dests[MAX_DESTINATIONS];  ///< destination ports
-  int         num_srcs; ///< counter
-  int         num_dests; ///< counter
-  LV2_Port        * lv2_port;    ///< used for LV2
+  nframes_t           nframes;        ///< number of frames (size of samples array)
+  int                 id;             ///< each port has an ID so that they can get connected
+	PortType            type;       ///< Data type
+	PortFlow            flow;       ///< Data flow direction
+  struct Port         * srcs[MAX_DESTINATIONS];  ///< ports coming in
+  struct Port         * dests[MAX_DESTINATIONS];  ///< destination ports
+  int                 num_srcs; ///< counter
+  int                 num_dests; ///< counter
+  LV2_Port            * lv2_port;    ///< used for LV2
   PortInternal   internal;
-  void            * data;    ///< pointer to arbitrary data. use internal to check what data it is
-  Plugin            * owner_pl;           ///< owner plugin, for plugins
-  Channel           * owner_ch;           ///< owner channel, for channels
+  char                * label;     ///< human readable label
+  void                * data;    ///< pointer to arbitrary data. use internal to check what data it is
+  int                 owner_jack;        ///< 1 if owner is JACK
+  Plugin              * owner_pl;           ///< owner plugin, for plugins
+  Channel             * owner_ch;           ///< owner channel, for channels
 } Port;
 
 /**
@@ -100,24 +102,26 @@ typedef struct StereoPorts
  * Creates port.
  */
 Port *
-port_new (nframes_t nframes);
+port_new (nframes_t nframes, char * label);
 
 /**
  * Creates port.
  */
 Port *
-port_new_with_type (nframes_t   nframes,
+port_new_with_type (nframes_t    nframes,
                     PortType     type,
-                    PortFlow     flow);
+                    PortFlow     flow,
+                    char         * label);
 
 /**
  * Creates port and adds given data to it
  */
 Port *
-port_new_with_data (nframes_t   nframes,
+port_new_with_data (nframes_t    nframes,
                     PortInternal internal, ///< the internal data format
                     PortType     type,
                     PortFlow     flow,
+                    char         * label,
                     void         * data);   ///< the data
 
 /**
@@ -153,6 +157,13 @@ port_sum_signal_from_inputs (Port * port, nframes_t nframes);
 /**
  * if port buffer size changed, reallocate port buffer, otherwise memset to 0.
  */
+//void
+//port_init_buf (Port *port, nframes_t nframes);
+
+/**
+ * Prints all connections.
+ */
 void
-port_init_buf (Port *port, nframes_t nframes);
+port_print_connections_all ();
+
 #endif

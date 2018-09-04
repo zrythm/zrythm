@@ -177,7 +177,7 @@ _create_port(LV2_Plugin*   lv2_plugin,
 
 	lv2_port->lilv_port = lilv_plugin_get_port_by_index(lv2_plugin->lilv_plugin, lv2_port_index);
 	lv2_port->sys_port  = NULL;
-        lv2_port->port      = port_new(AUDIO_ENGINE->block_length);
+        lv2_port->port      = port_new(AUDIO_ENGINE->block_length, "LV2 Port");
         lv2_port->port->lv2_port = lv2_port;
 	lv2_port->evbuf     = NULL;
 	lv2_port->buf_size  = 0;
@@ -1012,17 +1012,17 @@ lv2_create_descriptor_from_lilv (const LilvPlugin * lp)
     lilv_plugin_get_num_ports_of_class (lp, LV2_SETTINGS.lv2_InputPort,
                                         LV2_SETTINGS.lv2_ControlPort);
 
-  g_message ("Found:  %s | %s | %s | AUDIO %d:%d | MIDI %d:%d | CTRL %d:%d",
-             pd->name,
-             pd->author,
-             pd->category,
-             pd->num_audio_ins,
-             pd->num_audio_outs,
-             pd->num_midi_ins,
-             pd->num_midi_outs,
-             pd->num_ctrl_ins,
-             pd->num_ctrl_outs
-             );
+  /*g_message ("Found:  %s | %s | %s | AUDIO %d:%d | MIDI %d:%d | CTRL %d:%d",*/
+             /*pd->name,*/
+             /*pd->author,*/
+             /*pd->category,*/
+             /*pd->num_audio_ins,*/
+             /*pd->num_audio_outs,*/
+             /*pd->num_midi_ins,*/
+             /*pd->num_midi_outs,*/
+             /*pd->num_ctrl_ins,*/
+             /*pd->num_ctrl_outs*/
+             /*);*/
 
   const char * uri_str = lilv_node_as_string (lv2_uri);
   pd->uri = g_strdup (uri_str);

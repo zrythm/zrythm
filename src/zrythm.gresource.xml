@@ -3,6 +3,7 @@
   <gresource prefix="/online/alextee/zrythm">
     <file preprocess="xml-stripblanks">ui/main-window.ui</file>
     <file preprocess="xml-stripblanks">ui/channel.ui</file>
+    <file preprocess="xml-stripblanks">ui/splash.ui</file>
     <file>theme.css</file>
 
     <!-- icons -->
@@ -23,5 +24,6 @@
     <file>solo.svg</file>
     <file>stop.svg</file>
     <file>z.svg</file>
+    <file>z-splash.svg</file>
   </gresource>
 </gresources>

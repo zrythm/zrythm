@@ -1,5 +1,5 @@
 /*
- * gui/widgets/mixer.h - Mixer widget
+ * gui/widgets/splash.h - Splash window
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,17 +19,28 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_MIXER_H__
-#define __GUI_WIDGETS_MIXER_H__
+#ifndef __GUI_WIDGETS_SPLASH_H__
+#define __GUI_WIDGETS_SPLASH_H__
 
 #include "zrythm_app.h"
-#include "gui/widget_manager.h"
 
 #include <gtk/gtk.h>
 
-void
-mixer_setup (GtkBox * mixer,
-             GtkBox * channels);
+#define SPLASH_WINDOW_WIDGET_TYPE                  (splash_window_widget_get_type ())
+G_DECLARE_FINAL_TYPE (SplashWindowWidget, splash_window_widget, SPLASH, WINDOW_WIDGET, GtkWindow)
 
+typedef struct _SplashWindowWidget
+{
+  GtkApplicationWindow     parent_instance;
+  GtkLabel                 * label;
+  GtkProgressBar           * progress_bar;
+} SplashWindowWidget;
+
+/**
+ * Creates a splash_window widget using the given splash_window data.
+ */
+SplashWindowWidget *
+splash_window_widget_new (ZrythmApp * app);
 
 #endif
+
