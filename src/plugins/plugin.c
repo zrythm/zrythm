@@ -43,7 +43,7 @@ plugin_new ()
 {
   Plugin * plugin = calloc (1, sizeof (Plugin));
 
-  plugin->processed = 0;
+  plugin->processed = 1;
 
   return plugin;
 }
