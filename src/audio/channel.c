@@ -45,10 +45,8 @@ calculate_rms_db (sample_t * buf, nframes_t nframes)
   double sum = 0, sample = 0;
   for (int i = 0; i < nframes; i += 2)
   {
-    if (i >= nframes)
-      g_message ("wat");
-      sample = buf[i] / 32768.0;
-      sum += (sample * sample);
+    sample = buf[i] / 32768.0;
+    sum += (sample * sample);
   }
   return 20 * log10 (sqrt (sum / (nframes / 2)));
 }
@@ -261,8 +259,6 @@ channel_create (int     type, char * label)             ///< the channel type (A
   channel->output = MIXER->master;
 
   /* connect channel out ports to master */
-  g_message ("Connecting %s stereo out ports to Master",
-             channel->name);
   port_connect (channel->stereo_out->l,
                 MIXER->master->stereo_in->l);
   port_connect (channel->stereo_out->r,
@@ -377,10 +373,17 @@ channel_add_plugin (Channel * channel,    ///< the channel
         }
       else if (channel->type == CT_MIDI)
         {
-          /* TODO connect MIDI port to the plugin
-           * the plugin must already be initialized at this point
-           * with its ports set up, so we should know where to connect
-           * the MIDI signal */
+          /* Connect MIDI port to the plugin */
+          for (int i = 0; i < plugin->num_in_ports; i++)
+            {
+              Port * port = plugin->in_ports[i];
+              if (port->type == TYPE_EVENT &&
+                  port->flow == FLOW_INPUT)
+                {
+                  g_message ("%d MIDI In port: %s", i, port->label);
+                  port_connect (AUDIO_ENGINE->midi_in, port);
+                }
+            }
         }
     }
   else
@@ -388,25 +391,24 @@ channel_add_plugin (Channel * channel,    ///< the channel
       /* connect each input port from the previous plugin sequentially */
       Plugin * prev_plugin = channel->strip[pos - 1];
 
-      /* automatically connect the output ports of the plugin
-       * to the input ports of the next plugin sequentially */
-
-      /* for each input port of the plugin */
+      /* connect output AUDIO ports of prev plugin to AUDIO input ports of
+       * plugin */
+      int last_index = 0;
       for (int i = 0; i < plugin->num_in_ports; i++)
         {
-          /* if nth output port exists on prev plugin, connect them */
-          if (prev_plugin->num_out_ports > i)
+          if (plugin->in_ports[i]->type == TYPE_AUDIO)
             {
-              g_message ("Connecting %s output port %d to %s input port %d",
-                         prev_plugin->descr->name, i,
-                         plugin->descr->name, i);
-              port_connect (prev_plugin->out_ports[i],
-                            plugin->in_ports[i]);
-            }
-          /* otherwise break, no more input ports on next plugin */
-          else
-            {
-              break;
+              for (int j = last_index; j < prev_plugin->num_out_ports; j++)
+                {
+                  if (prev_plugin->out_ports[j]->type == TYPE_AUDIO)
+                    {
+                      port_connect (prev_plugin->out_ports[j],
+                                    plugin->in_ports[j]);
+                    }
+                  last_index = j;
+                  if (last_index == prev_plugin->num_out_ports - 1)
+                    break;
+                }
             }
         }
     }
@@ -416,7 +418,7 @@ channel_add_plugin (Channel * channel,    ///< the channel
    * connect output ports
    * ------------------------------------------------------*/
 
-  Plugin * next_plugin;
+  Plugin * next_plugin = NULL;
   for (int i = 1; i < MAX_PLUGINS; i++)
     {
       next_plugin = channel->strip[pos + i];
@@ -424,30 +426,50 @@ channel_add_plugin (Channel * channel,    ///< the channel
         break;
     }
 
-  /* automatically connect the output ports of the plugin
-   * to the input ports of the next plugin sequentially */
-
-  /* for each output port of the plugin */
+  /* connect output AUDIO ports of plugin to AUDIO input ports of
+   * next plugin */
   if (next_plugin)
     {
+      int last_index = 0;
       for (int i = 0; i < plugin->num_out_ports; i++)
         {
-          /* if nth input port exists on next plugin, connect them */
-          if (next_plugin->num_in_ports > i)
+          if (plugin->out_ports[i]->type == TYPE_AUDIO)
             {
-              port_connect (plugin->out_ports[i],
-                            next_plugin->in_ports[i]);
-            }
-          /* otherwise break, no more input ports on next plugin */
-          else
-            {
-              break;
+              for (int j = last_index; j < next_plugin->num_in_ports; j++)
+                {
+                  if (next_plugin->in_ports[j]->type == TYPE_AUDIO)
+                    {
+                      port_connect (plugin->out_ports[i],
+                                    next_plugin->in_ports[j]);
+                    }
+                  last_index = j;
+                  if (last_index == next_plugin->num_in_ports - 1)
+                    break;
+                }
             }
         }
     }
+  /* if last plugin, connect to channel's AUDIO_OUT */
+  else
+    {
+      for (int i = 0; i < plugin->num_out_ports; i++)
+        {
+          /* prepare destinations */
+          int count = 0;
+          Port * dests[2];
+          dests[0] = channel->stereo_out->l;
+          dests[1] = channel->stereo_out->r;
 
-  /* TODO if last plugin, connect to AUDIO_OUT */
-
+          /* connect to destinations one by one */
+          Port * port = plugin->out_ports[i];
+          if (port->type == TYPE_AUDIO)
+            {
+              port_connect (port, dests[count++]);
+            }
+          if (count == 2)
+            break;
+        }
+    }
 }
 
 /**

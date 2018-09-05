@@ -206,7 +206,7 @@ plugin_process (Plugin * plugin, nframes_t nframes)
                       lv2_plugin->instance, p,
                       port->buf);
 #ifdef HAVE_JACK_METADATA
-          } else if (port->type == TYPE_CV && port->sys_port) {
+          } else if (port->type == TYPE_CV && lv2_port->sys_port) {
                   /* Connect plugin port directly to Jack port buffer */
                   lilv_instance_connect_port(
                           lv2_plugin->instance, p,
@@ -239,12 +239,10 @@ plugin_process (Plugin * plugin, nframes_t nframes)
 
                   if (port->midi_events.num_events > 0)
                     {
+                      g_message ("Lv2 plugin port midi events %d",
+                                 port->midi_events.num_events);
                       /* Write Jack MIDI input */
-                      void* buf = jack_port_get_buffer(lv2_port->sys_port,
-                                                       nframes);
-                      for (uint32_t i = 0; i < jack_midi_get_event_count(buf); ++i)
-                        for (uint32_t i = 0; i < port->midi_events.num_events;
-                             i++)
+                      for (uint32_t i = 0; i < port->midi_events.num_events; ++i)
                         {
                           jack_midi_event_t * ev = &port->midi_events.jack_midi_events[i];
                           lv2_evbuf_write(&iter,
@@ -253,6 +251,7 @@ plugin_process (Plugin * plugin, nframes_t nframes)
                                           ev->size, ev->buffer);
                         }
                     }
+                  midi_events_clear (&port->midi_events);
           } else if (port->type == TYPE_EVENT) {
                   /* Clear event output for plugin to write to */
                   lv2_evbuf_reset(lv2_port->evbuf, false);

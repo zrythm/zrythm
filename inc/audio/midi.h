@@ -45,7 +45,19 @@
 typedef struct Midi_Events
 {
   int        num_events;       ///< number of events
-  jack_midi_event_t     jack_midi_events[10];       ///< jack midi events
+  jack_midi_event_t     jack_midi_events[40];       ///< jack midi events
 } Midi_Events;
+
+/**
+ * Appends the events from src to dest
+ */
+void
+midi_events_append (Midi_Events * src, Midi_Events * dest);
+
+/**
+ * Clears midi events.
+ */
+void
+midi_events_clear (Midi_Events * midi_events);
 
 #endif

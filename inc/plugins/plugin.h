@@ -28,8 +28,8 @@
 #include <jack/jack.h>
 
 /* TODO set reasonable values */
-#define MAX_IN_PORTS 80
-#define MAX_OUT_PORTS 80
+#define MAX_IN_PORTS 260
+#define MAX_OUT_PORTS 260
 #define MAX_UNKNOWN_PORTS 80
 
 #define DUMMY_PLUGIN "Dummy Plugin"

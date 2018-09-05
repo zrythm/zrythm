@@ -63,7 +63,7 @@ port_new (nframes_t nframes, char * label)
   port->flow = FLOW_UNKNOWN;
   port->label = g_strdup (label);
 
-  g_message ("Creating port %s", port->label);
+  g_message ("[port_new] Creating port %s", port->label);
 
   return port;
 }
@@ -151,6 +151,12 @@ port_delete (Port * port)
 int
 port_connect (Port * src, Port * dest)
 {
+  g_message ("Connecting port %s to %s", src->label, dest->label);
+  if (src->type != dest->type)
+    {
+      g_error ("Cannot connect ports, incompatible types");
+      return 0;
+    }
   src->dests[src->num_dests++] = dest;
   dest->srcs[dest->num_srcs++] = src;
 }
@@ -248,9 +254,17 @@ port_sum_signal_from_inputs (Port * port, nframes_t nframes)
         }
 
       /* sum the signals */
-      for (int l = 0; l < nframes; l++)
+      if (port->type == TYPE_AUDIO)
         {
-          port->buf[l] += src_port->buf[l];
+          for (int l = 0; l < nframes; l++)
+            {
+              port->buf[l] += src_port->buf[l];
+            }
+        }
+      else if (port->type == TYPE_EVENT)
+        {
+          midi_events_append (&src_port->midi_events,
+                              &port->midi_events);
         }
     }
 }
@@ -276,3 +290,4 @@ port_print_connections_all ()
         }
     }
 }
+

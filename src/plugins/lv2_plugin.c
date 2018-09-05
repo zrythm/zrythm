@@ -173,74 +173,110 @@ _create_port(LV2_Plugin*   lv2_plugin,
             uint32_t lv2_port_index,
             float    default_value)
 {
-	LV2_Port* const lv2_port = &lv2_plugin->ports[lv2_port_index];
+  LV2_Port* const lv2_port = &lv2_plugin->ports[lv2_port_index];
 
-	lv2_port->lilv_port = lilv_plugin_get_port_by_index(lv2_plugin->lilv_plugin, lv2_port_index);
-	lv2_port->sys_port  = NULL;
-        lv2_port->port      = port_new(AUDIO_ENGINE->block_length, "LV2 Port");
-        lv2_port->port->lv2_port = lv2_port;
-	lv2_port->evbuf     = NULL;
-	lv2_port->buf_size  = 0;
-	lv2_port->index     = lv2_port_index;
-	lv2_port->control   = 0.0f;
+  lv2_port->lilv_port = lilv_plugin_get_port_by_index(lv2_plugin->lilv_plugin, lv2_port_index);
+  lv2_port->sys_port  = NULL;
+  const LilvNode* sym = lilv_port_get_symbol(lv2_plugin->lilv_plugin, lv2_port->lilv_port);
+  char * port_name = g_strdup_printf ("LV2: %s",
+                                           lilv_node_as_string (sym));
+  lv2_port->port      = port_new(AUDIO_ENGINE->block_length, port_name);
+  g_free (port_name);
+  lv2_port->port->lv2_port = lv2_port;
+  lv2_port->evbuf     = NULL;
+  lv2_port->buf_size  = 0;
+  lv2_port->index     = lv2_port_index;
+  lv2_port->control   = 0.0f;
 
-	const bool optional = lilv_port_has_property(
-		lv2_plugin->lilv_plugin, lv2_port->lilv_port, lv2_plugin->nodes.lv2_connectionOptional);
+  const bool optional = lilv_port_has_property(
+          lv2_plugin->lilv_plugin, lv2_port->lilv_port, lv2_plugin->nodes.lv2_connectionOptional);
 
-	/* Set the lv2_port flow (input or output) */
-	if (lilv_port_is_a(lv2_plugin->lilv_plugin, lv2_port->lilv_port, lv2_plugin->nodes.lv2_InputPort)) {
-            lv2_port->port->flow = FLOW_INPUT;
-	} else if (lilv_port_is_a(lv2_plugin->lilv_plugin, lv2_port->lilv_port,
-	                          lv2_plugin->nodes.lv2_OutputPort)) {
-            lv2_port->port->flow = FLOW_OUTPUT;
-	} else if (!optional) {
-            g_error ("Mandatory lv2_port has unknown type (neither input nor output)");
-	}
+  /* Set the lv2_port flow (input or output) */
+  if (lilv_port_is_a(lv2_plugin->lilv_plugin, lv2_port->lilv_port, lv2_plugin->nodes.lv2_InputPort))
+    {
+      lv2_port->port->flow = FLOW_INPUT;
+    }
+  else if (lilv_port_is_a(lv2_plugin->lilv_plugin, lv2_port->lilv_port,
+                            lv2_plugin->nodes.lv2_OutputPort))
+    {
+      lv2_port->port->flow = FLOW_OUTPUT;
+    }
+  else if (!optional)
+    {
+      g_error ("Mandatory lv2_port has unknown type (neither input nor output)");
+    }
 
-	/* Set control values */
-	if (lilv_port_is_a(lv2_plugin->lilv_plugin, lv2_port->lilv_port, lv2_plugin->nodes.lv2_ControlPort))
-          {
-            lv2_port->port->type    = TYPE_CONTROL;
-            lv2_port->control = isnan(default_value) ? 0.0f : default_value;
-            if (show_hidden ||
-                !lilv_port_has_property(lv2_plugin->lilv_plugin, lv2_port->lilv_port, lv2_plugin->nodes.pprops_notOnGUI)) {
-                    lv2_add_control(&lv2_plugin->controls, lv2_new_port_control(lv2_plugin, lv2_port->index));
-          }
-	} else if (lilv_port_is_a(lv2_plugin->lilv_plugin, lv2_port->lilv_port,
-	                          lv2_plugin->nodes.lv2_AudioPort)) {
-		lv2_port->port->type = TYPE_AUDIO;
+  /* Set control values */
+  if (lilv_port_is_a (lv2_plugin->lilv_plugin,
+                      lv2_port->lilv_port,
+                      lv2_plugin->nodes.lv2_ControlPort))
+    {
+      lv2_port->port->type    = TYPE_CONTROL;
+      lv2_port->control = isnan(default_value) ? 0.0f : default_value;
+      if (show_hidden ||
+          !lilv_port_has_property(lv2_plugin->lilv_plugin, lv2_port->lilv_port, lv2_plugin->nodes.pprops_notOnGUI))
+        {
+          lv2_add_control (&lv2_plugin->controls,
+                          lv2_new_port_control(lv2_plugin,
+                                               lv2_port->index));
+        }
+    }
+  else if (lilv_port_is_a (lv2_plugin->lilv_plugin,
+                           lv2_port->lilv_port,
+                           lv2_plugin->nodes.lv2_AudioPort))
+    {
+      lv2_port->port->type = TYPE_AUDIO;
 #ifdef HAVE_JACK_METADATA
-	} else if (lilv_port_is_a(lv2_plugin->lilv_plugin, lv2_port->lilv_port,
-	                          lv2_plugin->nodes.lv2_CVPort)) {
-		lv2_port->port->type = TYPE_CV;
+    }
+  else if (lilv_port_is_a (lv2_plugin->lilv_plugin,
+                           lv2_port->lilv_port,
+                           lv2_plugin->nodes.lv2_CVPort))
+    {
+      lv2_port->port->type = TYPE_CV;
 #endif
-	} else if (lilv_port_is_a(lv2_plugin->lilv_plugin, lv2_port->lilv_port,
-	                          lv2_plugin->nodes.ev_EventPort)) {
-		lv2_port->port->type = TYPE_EVENT;
-		lv2_port->old_api = true;
-	} else if (lilv_port_is_a(lv2_plugin->lilv_plugin, lv2_port->lilv_port,
-	                          lv2_plugin->nodes.atom_AtomPort)) {
-		lv2_port->port->type = TYPE_EVENT;
-		lv2_port->old_api = false;
-	} else if (!optional) {
-		g_error("Mandatory lv2_port has unknown data type");
-	}
+    }
+  else if (lilv_port_is_a (lv2_plugin->lilv_plugin,
+                           lv2_port->lilv_port,
+                           lv2_plugin->nodes.ev_EventPort))
+    {
+      lv2_port->port->type = TYPE_EVENT;
+      lv2_port->old_api = true;
+    }
+  else if (lilv_port_is_a (lv2_plugin->lilv_plugin,
+                           lv2_port->lilv_port,
+                           lv2_plugin->nodes.atom_AtomPort))
+    {
+      lv2_port->port->type = TYPE_EVENT;
+      /*if (lv2_port->port->flow == FLOW_INPUT)*/
+        /*{*/
+          /*g_message ("input MIDI port created");*/
+        /*}*/
+      lv2_port->old_api = false;
+    }
+  else if (!optional)
+    {
+      g_error("Mandatory lv2_port has unknown data type");
+    }
 
-	LilvNode* min_size = lilv_port_get(
-		lv2_plugin->lilv_plugin, lv2_port->lilv_port, lv2_plugin->nodes.rsz_minimumSize);
-	if (min_size && lilv_node_is_int(min_size)) {
-		lv2_port->buf_size = lilv_node_as_int(min_size);
-		buffer_size = MAX(
-			buffer_size, lv2_port->buf_size * N_BUFFER_CYCLES);
-	}
-	lilv_node_free(min_size);
+  LilvNode* min_size = lilv_port_get(
+            lv2_plugin->lilv_plugin,
+            lv2_port->lilv_port,
+            lv2_plugin->nodes.rsz_minimumSize);
+  if (min_size && lilv_node_is_int(min_size))
+    {
+      lv2_port->buf_size = lilv_node_as_int(min_size);
+      buffer_size = MAX (
+              buffer_size,
+              lv2_port->buf_size * N_BUFFER_CYCLES);
+    }
+  lilv_node_free(min_size);
 
-	/* Update longest symbol for aligned console printing */
-	const LilvNode* sym = lilv_port_get_symbol(lv2_plugin->lilv_plugin, lv2_port->lilv_port);
-	const size_t    len = strlen(lilv_node_as_string(sym));
-	if (len > lv2_plugin->longest_sym) {
-		lv2_plugin->longest_sym = len;
-	}
+  /* Update longest symbol for aligned console printing */
+  const size_t    len = strlen(lilv_node_as_string(sym));
+  if (len > lv2_plugin->longest_sym)
+    {
+      lv2_plugin->longest_sym = len;
+    }
 }
 
 /**
@@ -1200,21 +1236,20 @@ lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
     {
       LV2_Port * lv2_port = &lv2_plugin->ports[i];
       Port * port = lv2_port->port;
-      if (port->type == TYPE_AUDIO)
-        {
+      port->owner_pl = plugin;
+      /*if (port->type == TYPE_AUDIO)*/
+        /*{*/
           if (port->flow == FLOW_INPUT)
             {
               plugin->in_ports[plugin->num_in_ports] = port;
-              plugin->in_ports[plugin->num_in_ports]->owner_pl = plugin;
               plugin->num_in_ports++;
             }
           else if (port->flow == FLOW_OUTPUT)
             {
               plugin->out_ports[plugin->num_out_ports] = port;
-              plugin->out_ports[plugin->num_out_ports]->owner_pl = plugin;
               plugin->num_out_ports++;
             }
-        }
+        /*}*/
     }
 
   lv2_plugin->control_in = (uint32_t)-1;

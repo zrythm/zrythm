@@ -7,6 +7,7 @@ zrythm_SOURCES = main.c \
 								 zrythm_app.c \
 								 audio/channel.c \
 								 audio/engine.c \
+								 audio/midi.c \
 								 audio/mixer.c \
 								 audio/port.c \
 								 audio/timeline.c \
