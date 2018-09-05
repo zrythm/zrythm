@@ -103,7 +103,7 @@ stereo_ports_new (Port * l, Port * r)
  */
 Port *
 port_new_with_data (nframes_t    nframes,
-                    PortInternal internal, ///< the internal data format
+                    PortInternalType internal_type, ///< the internal data format
                     PortType     type,
                     PortFlow     flow,
                     char         * label,
@@ -113,7 +113,7 @@ port_new_with_data (nframes_t    nframes,
 
   /** TODO semaphore **/
   port->data = data;
-  port->internal = internal;
+  port->internal_type = internal_type;
 
   /** TODO end semaphore */
 

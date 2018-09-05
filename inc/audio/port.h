@@ -50,11 +50,11 @@ typedef enum PortType {
 /**
  * What the internal data is
  */
-typedef enum PortInternal
+typedef enum PortInternalType
 {
   INTERNAL_LV2_PORT,                ///< LV2_Port (see lv2_plugin.c)
   INTERNAL_JACK_PORT                ///< jack_port_t
-} PortInternal;
+} PortInternalType;
 
 typedef jack_default_audio_sample_t   sample_t;
 typedef jack_nframes_t                nframes_t;
@@ -79,7 +79,7 @@ typedef struct Port
   int                 num_srcs; ///< counter
   int                 num_dests; ///< counter
   LV2_Port            * lv2_port;    ///< used for LV2
-  PortInternal   internal;
+  PortInternalType   internal_type;
   char                * label;     ///< human readable label
   void                * data;    ///< pointer to arbitrary data. use internal to check what data it is
   int                 owner_jack;        ///< 1 if owner is JACK
@@ -118,7 +118,7 @@ port_new_with_type (nframes_t    nframes,
  */
 Port *
 port_new_with_data (nframes_t    nframes,
-                    PortInternal internal, ///< the internal data format
+                    PortInternalType internal_type, ///< the internal data format
                     PortType     type,
                     PortFlow     flow,
                     char         * label,

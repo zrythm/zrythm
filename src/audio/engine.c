@@ -123,16 +123,36 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
    * FIXME referencing  AUDIO ENGINE all the time is expensive,
    * use local vars where possible */
   void* port_buf = jack_port_get_buffer (
-        JACK_PORT_T (AUDIO_ENGINE->midi_in->internal), nframes);
+        JACK_PORT_T (AUDIO_ENGINE->midi_in->data), nframes);
   MIDI_IN_NUM_EVENTS = jack_midi_get_event_count(port_buf);
   if(MIDI_IN_NUM_EVENTS > 0)
     {
       g_message ("JACK: have %d events", MIDI_IN_NUM_EVENTS);
       for(int i=0; i < MIDI_IN_NUM_EVENTS; i++)
         {
-          jack_midi_event_get(&MIDI_IN_EVENT(i), port_buf, i);
-          g_message ("    event %d time is %d. 1st byte is 0x%x", i,
-                     MIDI_IN_EVENT(i).time, *(MIDI_IN_EVENT(i).buffer));
+          jack_midi_event_t * event = &MIDI_IN_EVENT(i);
+          jack_midi_event_get(event, port_buf, i);
+          uint8_t type = event->buffer[0] & 0xf0;
+          uint8_t channel = event->buffer[0] & 0xf;
+          switch (type)
+            {
+              case 0x90:
+                assert (event->size == 3);
+                g_message (" note on  (channel %2d): pitch %3d, velocity %3d", channel, event->buffer[1], event->buffer[2]);
+                break;
+              case 0x80:
+                assert (event->size == 3);
+                g_message (" note off (channel %2d): pitch %3d, velocity %3d", channel, event->buffer[1], event->buffer[2]);
+                break;
+              case 0xb0:
+                assert (event->size == 3);
+                g_message (" control change (channel %2d): controller %3d, value %3d", channel, event->buffer[1], event->buffer[2]);
+                break;
+              default:
+                      break;
+            }
+          /*g_message ("    event %d time is %d. 1st byte is 0x%x", i,*/
+                     /*MIDI_IN_EVENT(i).time, *(MIDI_IN_EVENT(i).buffer));*/
         }
     }
 
@@ -307,9 +327,9 @@ init_audio_engine()
     engine->stereo_out = stereo_ports_new (stereo_out_l, stereo_out_r);
     engine->midi_in    = midi_in;
 
-    if (!engine->stereo_in->l->internal || !engine->stereo_in->r->internal ||
-        !engine->stereo_out->l->internal || !engine->stereo_out->r->internal ||
-        !engine->midi_in->internal)
+    if (!engine->stereo_in->l->data || !engine->stereo_in->r->data ||
+        !engine->stereo_out->l->data || !engine->stereo_out->r->data ||
+        !engine->midi_in->data)
       {
         g_error ("no more JACK ports available");
       }
