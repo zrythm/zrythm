@@ -166,4 +166,10 @@ port_sum_signal_from_inputs (Port * port, nframes_t nframes);
 void
 port_print_connections_all ();
 
+/**
+ * Clears the port buffer.
+ */
+void
+port_clear_buffer (Port * port);
+
 #endif

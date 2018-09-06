@@ -31,10 +31,10 @@ G_DEFINE_TYPE (ChannelMeterWidget, channel_meter_widget, GTK_TYPE_DRAWING_AREA)
 
 #define GET_REAL_VAL_R ((*self->getter_r) (self->object))
 
-static double
+static float
 channel_meter_val_from_real (ChannelMeterWidget * self, int left)
 {
-  double real = left ? GET_REAL_VAL_L : GET_REAL_VAL_R;
+  float real = left ? GET_REAL_VAL_L : GET_REAL_VAL_R;
   if (real > REAL_STEP_1)
       return FADER_STEP_1 + (((real - REAL_STEP_1) / REAL_DIFF_1) * FADER_DIFF_1);
   else if (real > REAL_STEP_2)
@@ -47,8 +47,8 @@ channel_meter_val_from_real (ChannelMeterWidget * self, int left)
       return FADER_STEP_5 + (((real - REAL_STEP_5) / REAL_DIFF_5) * FADER_DIFF_5);
 }
 
-static double
-real_val_from_channel_meter (ChannelMeterWidget * self, double channel_meter)
+static float
+real_val_from_channel_meter (ChannelMeterWidget * self, float channel_meter)
 {
   if (channel_meter > FADER_STEP_1)
     return REAL_STEP_1 + ((channel_meter - FADER_STEP_1) / FADER_DIFF_1) * REAL_DIFF_1;
@@ -85,11 +85,10 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   double degrees = G_PI / 180.0;
   /* value in pixels = total pixels * val
    * val is percentage */
-  double l_channel_meter_val = channel_meter_val_from_real (self, 1);
-  double r_channel_meter_val = channel_meter_val_from_real (self, 0);
-  /*g_message ("%f %f", l_channel_meter_val, r_channel_meter_val);*/
-  double l_value_px = height * l_channel_meter_val;
-  double r_value_px = height * r_channel_meter_val;
+  float l_channel_meter_val = channel_meter_val_from_real (self, 1);
+  float r_channel_meter_val = channel_meter_val_from_real (self, 0);
+  double l_value_px = height * (double) l_channel_meter_val;
+  double r_value_px = height * (double) r_channel_meter_val;
 
   /* draw background bar */
   /*cairo_new_sub_path (cr);*/

@@ -39,16 +39,20 @@
 /**
  * Calculate decibels using RMS method.
  */
-static double
+static float
 calculate_rms_db (sample_t * buf, nframes_t nframes)
 {
-  double sum = 0, sample = 0;
-  for (int i = 0; i < nframes; i += 2)
+  float sum = 0, sample = 0;
+  for (int i = 0; i < nframes; i += 32)
   {
-    sample = buf[i] / 32768.0;
+    /*sample = buf[i] / 32768.0;*/
+    sample = buf[i];
+    /*if (sample > 0.f)*/
+    /*g_message ("sample is  %f", sample);*/
     sum += (sample * sample);
   }
-  return 20 * log10 (sqrt (sum / (nframes / 2)));
+  return 20 * log10 (sqrt (sum / (nframes / 32)));
+  /*return sqrt (sum / (nframes / 2));*/
 }
 
 /**
@@ -127,6 +131,8 @@ channel_process (Channel * channel,  ///< slots
   /* same for channel ports */
   port_sum_signal_from_inputs (channel->stereo_out->l, nframes);
   port_sum_signal_from_inputs (channel->stereo_out->r, nframes);
+
+  /* apply faders TODO */
 
   /* calc decibels */
   channel_set_current_l_db (channel,
@@ -327,8 +333,6 @@ channel_set_current_l_db (Channel * channel, float val)
      {
        g_message (" Value is %f",val);
      }
-  /*gtk_label_set_text (channel->widget->meter_reading,*/
-                      /*g_strdup_printf ("%.1f", val));*/
 }
 
 void

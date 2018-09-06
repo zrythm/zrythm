@@ -47,8 +47,9 @@ tick_callback (GtkWidget * widget, GdkFrameClock * frame_clock,
                gpointer user_data)
 {
   Channel * channel = (Channel *) user_data;
+  float db = (channel->l_port_db + channel->r_port_db) / 2;
   gtk_label_set_text (GTK_LABEL (widget),
-                      g_strdup_printf ("%.1f", channel->l_port_db));
+                      g_strdup_printf ("%.1f", db));
   /*gtk_widget_queue_draw (GTK_WIDGET (channel->widget->cm));*/
   return G_SOURCE_CONTINUE;
 }

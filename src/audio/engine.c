@@ -45,10 +45,6 @@
 typedef jack_default_audio_sample_t   sample_t;
 typedef jack_nframes_t                nframes_t;
 
-/* FIXME */
-sample_t note_on;
-unsigned char note = 0;
-
 /** Jack sample rate callback. */
 static int
 jack_sample_rate_cb(nframes_t nframes, void* data)
@@ -116,6 +112,12 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
 {
   sample_t * stereo_out_l, * stereo_out_r;
   int i = 0;
+
+  /* reset all buffers */
+  for (i = 0; i < AUDIO_ENGINE->num_ports; i++)
+    {
+      port_clear_buffer (AUDIO_ENGINE->ports[i]);
+    }
 
   /*g_message ("jack start");*/
 

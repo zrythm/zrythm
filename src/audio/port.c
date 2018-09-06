@@ -291,3 +291,11 @@ port_print_connections_all ()
     }
 }
 
+/**
+ * Clears the port buffer.
+ */
+void
+port_clear_buffer (Port * port)
+{
+  memset (port->buf, 0, port->nframes * sizeof (sample_t));
+}
