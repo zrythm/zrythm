@@ -191,9 +191,8 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
    * pass their buffers to jack's buffers */
   for (i = 0; i < nframes; i++)
     {
-      stereo_out_l[nframes] = MIXER->master->stereo_out->l->buf[i];
-      /*g_message ("%d:%f", i, MIXER->master->stereo_out->l->buf[i]);*/
-      stereo_out_r[nframes] = MIXER->master->stereo_out->r->buf[i];
+      stereo_out_l[i] = MIXER->master->stereo_out->l->buf[i];
+      stereo_out_r[i] = MIXER->master->stereo_out->r->buf[i];
     }
 
 

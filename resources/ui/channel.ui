@@ -248,6 +248,9 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">-2</property>
+                <attributes>
+                  <attribute name="font-desc" value="KacstTitle Bold 6"/>
+                </attributes>
               </object>
               <packing>
                 <property name="expand">False</property>

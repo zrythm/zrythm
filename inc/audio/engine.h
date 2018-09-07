@@ -54,7 +54,7 @@ typedef struct Audio_Engine
   StereoPorts       * stereo_in;  ///< stereo in ports from JACK
   StereoPorts       * stereo_out;  ///< stereo out ports to JACK
   Port              * midi_in;     ///< MIDI in port from JACK
-  Port              * ports[600];   ///< all ports have a reference here for easy access
+  Port              * ports[60000];   ///< all ports have a reference here for easy access
   int               num_ports;
   nframes_t         nframes;     ///< nframes for current cycle
   //MIDI_Controller    * midi_controller; ///< the midi input on JACK

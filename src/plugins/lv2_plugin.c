@@ -1241,13 +1241,11 @@ lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
         /*{*/
           if (port->flow == FLOW_INPUT)
             {
-              plugin->in_ports[plugin->num_in_ports] = port;
-              plugin->num_in_ports++;
+              plugin->in_ports[plugin->num_in_ports++] = port;
             }
           else if (port->flow == FLOW_OUTPUT)
             {
-              plugin->out_ports[plugin->num_out_ports] = port;
-              plugin->num_out_ports++;
+              plugin->out_ports[plugin->num_out_ports++] = port;
             }
         /*}*/
     }

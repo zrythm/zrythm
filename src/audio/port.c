@@ -30,6 +30,7 @@
 #else
 #include <unistd.h> // for usleep
 #endif
+#include <math.h>
 
 #include "audio/channel.h"
 #include "audio/mixer.h"
@@ -211,6 +212,28 @@ port_disconnect (Port * src, Port * dest)
         /*memset (port->buf, '\0', nframes);*/
       /*}*/
 /*}*/
+
+/**
+ * Get amplitude from db.
+ */
+static float
+get_amp_from_dbfs (float dbfs)
+{
+  float amp = (float) pow (10.0, dbfs / 20.0);
+  return amp;
+}
+
+/**
+ * Apply given fader value to port.
+ */
+float
+port_apply_fader (Port * port, float dbfs)
+{
+  for (int i = 0; i < port->nframes; i++)
+    {
+      port->buf[i] *= get_amp_from_dbfs (dbfs);
+    }
+}
 
 
 /**

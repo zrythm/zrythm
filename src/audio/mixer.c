@@ -41,13 +41,13 @@ static nframes_t      nframes;
 void
 mixer_process (nframes_t     nframes)           ///< number of frames to fill in
 {
-  static int i, loop = 1;
+  int loop = 1;
 
   /* wait for channels to finish processing */
   while (loop)
     {
       loop = 0;
-      for (i = 0; i < MIXER->num_channels; i++)
+      for (int i = 0; i < MIXER->num_channels; i++)
         {
           if (!MIXER->channels[i]->processed)
             {

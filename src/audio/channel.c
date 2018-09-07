@@ -45,14 +45,10 @@ calculate_rms_db (sample_t * buf, nframes_t nframes)
   float sum = 0, sample = 0;
   for (int i = 0; i < nframes; i += 32)
   {
-    /*sample = buf[i] / 32768.0;*/
     sample = buf[i];
-    /*if (sample > 0.f)*/
-    /*g_message ("sample is  %f", sample);*/
     sum += (sample * sample);
   }
   return 20 * log10 (sqrt (sum / (nframes / 32)));
-  /*return sqrt (sum / (nframes / 2));*/
 }
 
 /**
@@ -132,7 +128,9 @@ channel_process (Channel * channel,  ///< slots
   port_sum_signal_from_inputs (channel->stereo_out->l, nframes);
   port_sum_signal_from_inputs (channel->stereo_out->r, nframes);
 
-  /* apply faders TODO */
+  /* apply faders */
+  port_apply_fader (channel->stereo_out->l, channel->volume);
+  port_apply_fader (channel->stereo_out->r, channel->volume);
 
   /* calc decibels */
   channel_set_current_l_db (channel,
@@ -237,12 +235,12 @@ channel_create_master ()
   gdk_rgba_parse (&channel->color, "red");
   channel->output = NULL;
 
-  /* connect stereo out ports to engine's jack ports */
-  /* TODO connect to monitor, and then from monitor to engine */
-  /*g_message ("Connecting %s stereo outs to engine stereo outs",*/
+  /* connect stereo in to stereo out */
+  port_connect (channel->stereo_in->l, channel->stereo_out->l);
+  port_connect (channel->stereo_in->r, channel->stereo_out->r);
 
-  /*port_connect (channel->stereo_out->l, AUDIO_ENGINE->stereo_out->l);*/
-  /*port_connect (channel->stereo_out->r, AUDIO_ENGINE->stereo_out->r);*/
+
+  /* connect stereo out ports to monitor TODO */
 
   /* create widget */
   channel->widget = channel_widget_new (channel);
@@ -329,17 +327,12 @@ void
 channel_set_current_l_db (Channel * channel, float val)
 {
   channel->l_port_db = val;
-   if (val > 0.1f)
-     {
-       g_message (" Value is %f",val);
-     }
 }
 
 void
 channel_set_current_r_db (Channel * channel, float val)
 {
   channel->r_port_db = val;
-  /* FIXME this should be average of the two */
 }
 
 /**
@@ -456,10 +449,10 @@ channel_add_plugin (Channel * channel,    ///< the channel
   /* if last plugin, connect to channel's AUDIO_OUT */
   else
     {
+      int count = 0;
       for (int i = 0; i < plugin->num_out_ports; i++)
         {
           /* prepare destinations */
-          int count = 0;
           Port * dests[2];
           dests[0] = channel->stereo_out->l;
           dests[1] = channel->stereo_out->r;
