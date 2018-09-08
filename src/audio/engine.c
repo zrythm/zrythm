@@ -113,10 +113,13 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
   sample_t * stereo_out_l, * stereo_out_r;
   int i = 0;
 
+  zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
+
   /* reset all buffers */
   for (i = 0; i < AUDIO_ENGINE->num_ports; i++)
     {
-      port_clear_buffer (AUDIO_ENGINE->ports[i]);
+      if (AUDIO_ENGINE->ports[i])
+        port_clear_buffer (AUDIO_ENGINE->ports[i]);
     }
 
   /*g_message ("jack start");*/
@@ -194,6 +197,8 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
       stereo_out_l[i] = MIXER->master->stereo_out->l->buf[i];
       stereo_out_r[i] = MIXER->master->stereo_out->r->buf[i];
     }
+
+  zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
 
 
   /*g_message ("jack end");*/
@@ -337,6 +342,9 @@ init_audio_engine()
 
     /* initialize mixer, which handles the processing */
     mixer_init ();
+
+    /* init semaphore */
+    zix_sem_init (&AUDIO_ENGINE->port_operation_lock, 1);
 
     /* Tell the JACK server that we are ready to roll.  Our
      * process() callback will start running now. */

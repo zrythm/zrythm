@@ -26,6 +26,7 @@
 #define MIDI_BUF_SIZE 1024 // should be set by backend
 
 #include "zrythm_app.h"
+#include "sem.h"
 
 #include <jack/jack.h>
 #include <jack/midiport.h>
@@ -59,6 +60,7 @@ typedef struct Audio_Engine
   nframes_t         nframes;     ///< nframes for current cycle
   //MIDI_Controller    * midi_controller; ///< the midi input on JACK
   //Port_Manager      * port_manager;  ///< manages all ports created for/by plugins
+  ZixSem            port_operation_lock;  ///< semaphore for blocking DSP while plugin and its ports are deleted
 } Audio_Engine;
 
 void

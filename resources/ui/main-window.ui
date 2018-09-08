@@ -918,7 +918,7 @@
                       </object>
                       <packing>
                         <property name="resize">False</property>
-                        <property name="shrink">False</property>
+                        <property name="shrink">True</property>
                       </packing>
                     </child>
                   </object>

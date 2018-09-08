@@ -51,6 +51,7 @@ typedef struct ChannelWidget
   KnobWidget          * phase_knob;
   GtkBox              * slots_box;
   GtkBox              * slots[MAX_PLUGINS];      ///< array of slot boxes (1 per plugin)
+  //GtkWidget           * slot_on_off_images[MAX_PLUGINS][2];   ///< 0 is off, 1 is on
   GtkToggleButton     * toggles[MAX_PLUGINS];   ///< toggle buttons (per slot)
   GtkLabel            * labels[MAX_PLUGINS];     ///< labels (per slot)
   //int                 num_slots;        ///< counter
@@ -78,6 +79,13 @@ typedef struct ChannelWidgetClass
 {
   GtkGridClass       parent_class;
 } ChannelWidgetClass;
+
+
+/**
+ * Updates the slots.
+ */
+void
+channel_update_slots (ChannelWidget * self);
 
 /**
  * Creates a channel widget using the given channel data.

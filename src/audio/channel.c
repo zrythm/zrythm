@@ -347,6 +347,7 @@ channel_add_plugin (Channel * channel,    ///< the channel
                     Plugin      * plugin  ///< the plugin to add
                     )
 {
+  zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
   /* free current plugin */
   if (channel->strip[pos])
     {
@@ -416,9 +417,9 @@ channel_add_plugin (Channel * channel,    ///< the channel
    * ------------------------------------------------------*/
 
   Plugin * next_plugin = NULL;
-  for (int i = 1; i < MAX_PLUGINS; i++)
+  for (int i = pos + 1; i < MAX_PLUGINS; i++)
     {
-      next_plugin = channel->strip[pos + i];
+      next_plugin = channel->strip[i];
       if (next_plugin)
         break;
     }
@@ -467,6 +468,7 @@ channel_add_plugin (Channel * channel,    ///< the channel
             break;
         }
     }
+  zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
 }
 
 /**

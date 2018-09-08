@@ -6,10 +6,10 @@ It is written in C and it uses the GTK+3 toolkit.
 ## Currently supported protocols:
 - LV2
 
-Some code and ideas come from Ardour so big thanks to them.
+Some code, ideas and help come from Ardour so big thanks to them.
 
 ## Why another DAW?
-Hard to answer. Partly because of curiosity, partly because I want to work with GTK/C, partly because I wanted an easily customizable UI, and also because current Free, GNU/Linux DAWs don't offer usability features I got used to from proprietary programs like Bitwig/Cubase.
+Partly because of curiosity, partly because I want to work with GTK/C, partly because I wanted an easily customizable UI, and also because current Free, GNU/Linux DAWs don't offer usability features I got used to from proprietary programs like Bitwig/Cubase.
 
 ## Contributing
 For installation instructions see INSTALL

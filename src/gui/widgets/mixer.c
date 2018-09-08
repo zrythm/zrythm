@@ -73,7 +73,10 @@ on_drag_data_received (GtkWidget        *widget,
                       GTK_WIDGET (MAIN_WINDOW->channels_add),
                       0, 0, 0);
 
-  /* readd dummy box for dnd */
+  /* update the slots on the channel to show correct names */
+  channel_update_slots (new_channel->widget);
+
+  /* re-add dummy box for dnd */
   gtk_box_pack_start (MAIN_WINDOW->channels,
                       GTK_WIDGET (MAIN_WINDOW->dummy_mixer_box),
                       1, 1, 0);

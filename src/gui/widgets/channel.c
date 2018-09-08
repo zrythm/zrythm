@@ -98,8 +98,9 @@ on_drag_data_received (GtkWidget        *widget,
   plugin_instantiate (plugin);
 
   /* TODO add to specific channel */
-  channel_add_plugin (channel, index, plugin);
+  channel_add_plugin (channel, index + 1, plugin);
   channel_widget_add_plugin (CHANNEL_WIDGET (user_data), plugin, index);
+  channel_update_slots (CHANNEL_WIDGET (user_data));
 }
 
 static void
@@ -127,10 +128,6 @@ channel_widget_class_init (ChannelWidgetClass * klass)
                                                 ChannelWidget, phase_controls);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 ChannelWidget, slots_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                ChannelWidget, slot1b);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                ChannelWidget, slot2b);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 ChannelWidget, add_slot);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
@@ -215,8 +212,41 @@ setup_meter (ChannelWidget * self)
                        1, 1, 0);
 }
 
+/**
+ * Updates the slots.
+ */
+void
+channel_update_slots (ChannelWidget * self)
+{
+  for (int i = 0; i < MAX_PLUGINS; i++)
+    {
+      if (self->channel->strip[i])
+        {
+          gtk_label_set_text (self->labels[i],
+                              self->channel->strip[i]->descr->name);
+          gtk_button_set_image (GTK_BUTTON (self->toggles[i]),
+                                gtk_image_new_from_resource (
+                                    "/online/alextee/zrythm/slot-on.svg"));
+        }
+      else
+        {
+          gtk_label_set_text (self->labels[i],
+                              "");
+          gtk_button_set_image (GTK_BUTTON (self->toggles[i]),
+                                gtk_image_new_from_resource (
+                                    "/online/alextee/zrythm/slot-off.svg"));
+        }
+    }
+}
+
+
+/**
+ * Sets up the slots.
+ *
+ * First removes the add button, then creates each slot.
+ */
 static void
-create_slots (ChannelWidget * self)
+setup_slots (ChannelWidget * self)
 {
   gtk_container_remove (GTK_CONTAINER (self->slots_box),
                         GTK_WIDGET (self->add_slot));
@@ -226,10 +256,10 @@ create_slots (ChannelWidget * self)
       self->toggles[i]= GTK_TOGGLE_BUTTON (gtk_toggle_button_new ());
       self->labels[i]= GTK_LABEL (gtk_label_new (""));
 
-      /* set on/off icon */
-      GtkWidget * image = gtk_image_new_from_resource (
-              "/online/alextee/zrythm/slot-off.svg");
-      gtk_button_set_image (GTK_BUTTON (self->toggles[i]), image);
+      /* set on/off icons */
+      gtk_button_set_image (GTK_BUTTON (self->toggles[i]),
+                            gtk_image_new_from_resource (
+                                "/online/alextee/zrythm/slot-off.svg"));
 
       gtk_box_pack_start (self->slots[i],
                           GTK_WIDGET (self->toggles[i]),
@@ -257,6 +287,7 @@ channel_widget_new (Channel * channel)
   setup_color (self);
   setup_phase_panel (self);
   /*setup_pan (self);*/
+  setup_slots (self);
   setup_fader (self);
   setup_meter (self);
 
@@ -306,6 +337,8 @@ channel_widget_new (Channel * channel)
   /* add dummy box for dnd */
   self->dummy_slot_box = GTK_BOX (
                             gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+  gtk_widget_set_size_request (GTK_WIDGET (self->dummy_slot_box),
+                               -1, 20);
   gtk_box_pack_start (self->slots_box,
                       GTK_WIDGET (self->dummy_slot_box),
                       1, 1, 0);
