@@ -121,6 +121,7 @@ typedef struct {
 	LilvNode* end;  ///< NULL terminator for easy freeing of entire structure
 } LV2_Nodes;
 
+/* FIXME these should go to manager */
 typedef struct {
 	LV2_URID atom_Float;
 	LV2_URID atom_Int;
@@ -232,7 +233,7 @@ typedef struct LV2_Plugin
   ZixSem exit_sem;  /**< Exit semaphore */
 
   /* not sure if the following belong to each plugin or are supposed to be global */
-  LV2_URIDs          urids;        ///< URIDs
+  LV2_URIDs          urids;        ///< URIDs  FIXME should be global
 	LV2_URID_Map       map;            ///< URI => Int map
 	LV2_URID_Unmap     unmap;          ///< Int => URI map
 	SerdEnv*           env;            ///< Environment for RDF printing

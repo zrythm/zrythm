@@ -22,7 +22,7 @@
 #include "zrythm_app.h"
 #include "project.h"
 #include "settings_manager.h"
-#include "audio/timeline.h"
+#include "audio/transport.h"
 #include "gui/widgets/timeline.h"
 
 #include <gtk/gtk.h>
@@ -69,7 +69,7 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
 
   static int playhead_pos_in_px;
   playhead_pos_in_px =
-    AUDIO_TIMELINE->playhead_pos.bar * px_per_bar;
+    TRANSPORT->playhead_pos.bars * px_per_bar;
 
   gtk_render_background (context, cr, 0, 0, total_px, height);
 
@@ -143,6 +143,14 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   return 0;
 }
 
+static gboolean
+tick_callback (GtkWidget * widget, GdkFrameClock * frame_clock,
+               gpointer user_data)
+{
+  gtk_widget_queue_draw (widget);
+  return G_SOURCE_CONTINUE;
+}
+
 TimelineWidget *
 timeline_widget_new (GtkWidget * _paned,
                      GtkWidget * overlay)
@@ -154,13 +162,13 @@ timeline_widget_new (GtkWidget * _paned,
 
   /* adjust for zoom level */
   px_per_beat = (int) ((float) default_px_per_beat *
-                           AUDIO_TIMELINE->zoom_level);
+                           TRANSPORT->zoom_level);
 
   px_per_bar = px_per_beat *
-                  AUDIO_TIMELINE->time_sig_denominator;
+                  TRANSPORT->beats_per_bar;
 
   total_px = px_per_bar *
-    AUDIO_TIMELINE->total_bars;
+    TRANSPORT->total_bars;
 
 
   // set the size
@@ -179,6 +187,11 @@ timeline_widget_new (GtkWidget * _paned,
 
   g_signal_connect (G_OBJECT (self), "draw",
                     G_CALLBACK (draw_cb), NULL);
+
+  gtk_widget_add_tick_callback (GTK_WIDGET (self),
+                                tick_callback,
+                                NULL,
+                                NULL);
 
   return self;
 }

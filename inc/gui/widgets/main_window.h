@@ -23,6 +23,7 @@
 #define __GUI_WIDGETS_MAIN_WINDOW_H__
 
 #include "zrythm_app.h"
+#include "gui/widget_manager.h"
 
 #include <gtk/gtk.h>
 
@@ -33,6 +34,7 @@ G_DECLARE_FINAL_TYPE (MainWindowWidget, main_window_widget, MAIN, WINDOW_WIDGET,
 
 typedef struct RulerWidget RulerWidget;
 typedef struct TimelineWidget TimelineWidget;
+typedef struct BpmWidget BpmWidget;
 
 typedef struct _MainWindowWidget
 {
@@ -64,7 +66,7 @@ typedef struct _MainWindowWidget
   GtkBox                   * timeline_ruler;
   GtkScrolledWindow        * ruler_scroll;
   GtkViewport              * ruler_viewport;
-  RulerWidget              * ruler;
+  RulerWidget              * ruler;     ///< created in code
   GtkScrolledWindow        * timeline_scroll;
   GtkViewport              * timeline_viewport;
   GtkOverlay               * timeline_overlay;
@@ -89,7 +91,8 @@ typedef struct _MainWindowWidget
   GtkBox                   * bot_bar;
   GtkToolbar               * bot_bar_left;
   GtkBox                   * transport;
-  GtkSpinButton            * bpm;
+  GtkBox                   * bpm_box;
+  BpmWidget                * bpm;    ///< created in code
   GtkButton                * play;
   GtkButton                * stop;
   GtkButton                * backward;

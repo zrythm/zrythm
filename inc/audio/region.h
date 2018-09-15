@@ -20,29 +20,11 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-typedef struct _Position
-{
-  int       bar;
-  int       beat;
-  int       subbeat;
-  int       tick;
-} Position;
+#include "audio/position.h"
 
-typedef struct _Region
+typedef struct Region
 {
   Position     start_pos;
   Position     end_pos;
 } Region;
 
-/**
- * Initializes given position to all 0
- */
-void
-init_position_to_zero (Position * position);
-
-/**
- * Sets position to given bar
- */
-void
-set_position_to_bar (Position * position,
-                      int        bar_no);

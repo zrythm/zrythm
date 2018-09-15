@@ -50,6 +50,7 @@ typedef struct Audio_Engine
 	uint32_t           block_length;   ///< Audio buffer size (block length)
 	size_t             midi_buf_size;  ///< Size of MIDI port buffers
 	uint32_t           sample_rate;    ///< Sample rate
+  int               frames_per_tick;  ///< number of frames per tick
 	int               buf_size_set;   ///< True iff buffer size callback fired
   Mixer              * mixer;        ///< the mixer
   StereoPorts       * stereo_in;  ///< stereo in ports from JACK
@@ -61,10 +62,20 @@ typedef struct Audio_Engine
   //MIDI_Controller    * midi_controller; ///< the midi input on JACK
   //Port_Manager      * port_manager;  ///< manages all ports created for/by plugins
   ZixSem            port_operation_lock;  ///< semaphore for blocking DSP while plugin and its ports are deleted
+  int               run;    ///< ok to process or not
 } Audio_Engine;
 
 void
 init_audio_engine();
+
+/**
+ * Updates frames per tick based on the time sig, the BPM,
+ * and the sample rate
+ */
+void
+engine_update_frames_per_tick (int beats_per_bar,
+                               int bpm,
+                               int sample_rate);
 
 void
 engine_delete_port (Port * port);

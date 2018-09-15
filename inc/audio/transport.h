@@ -1,6 +1,6 @@
 /*
- * audio/timeline.h - The timeline struct containing all objects in
- *  the timeline and their metadata
+ * audio/transport.h - The transport struct containing all objects in
+ *  the transport and their metadata
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -20,8 +20,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __AUDIO_TIMELINE_H__
-#define __AUDIO_TIMELINE_H__
+#ifndef __AUDIO_TRANSPORT_H__
+#define __AUDIO_TRANSPORT_H__
 
 #include <stdint.h>
 
@@ -30,7 +30,12 @@
 
 #include <gtk/gtk.h>
 
-#define AUDIO_TIMELINE PROJECT->timeline
+#define TRANSPORT PROJECT->transport
+#define DEFAULT_TOTAL_BARS 128
+#define DEFAULT_BPM 140.f
+#define DEFAULT_BEATS_PER_BAR 4
+#define DEFAULT_BEAT_UNIT 4
+#define DEFAULT_ZOOM_LEVEL 1.0f
 
 struct Project;
 
@@ -40,7 +45,7 @@ typedef enum {
 	PLAYSTATE_PAUSED
 } Play_State;
 
-typedef struct Timeline
+typedef struct Transport
 {
   int           total_bars;             ///< total bars in the song
   Position      playhead_pos;           ///< playhead position
@@ -49,23 +54,32 @@ typedef struct Timeline
   Position      start_marker_pos;       ///< start marker position
   Position      end_marker_pos;         ///< end marker position
   GArray *      regions_array;          ///< array containing all regions
-  int           time_sig_numerator;     ///< time signature numerator (eg 4)
-  int           time_sig_denominator;   ///< time singature denominator (eg 4)
-  float         zoom_level;             ///< zoom level used in ruler/timeline widget calculations FIXME move to gui
+  int           beats_per_bar;     ///< top part of time signature
+  int           beat_unit;   ///< bottom part of time signature, power of 2
+  float         zoom_level;             ///< zoom level used in ruler/transport widget calculations FIXME move to gui
   uint32_t           position;       ///< Transport position in frames
 	float              bpm;            ///< Transport tempo in beats per minute
 	int               rolling;        ///< Transport speed (0=stop, 1=play)
   Play_State         play_state;     ///< play state
-} Timeline;
-
-extern Timeline * timeline;
-
-Timeline * timeline;
+} Transport;
 
 /**
- * Initialize timeline
+ * Initialize transport
  */
 void
-init_timeline ();
+transport_init ();
+
+/**
+ * Sets BPM and does any necessary processing (like notifying interested
+ * parties).
+ */
+void
+transport_set_bpm (float bpm);
+
+/**
+ * Moves the playhead by the time corresponding to given samples.
+ */
+void
+transport_update_playhead (int nframes);
 
 #endif

@@ -29,7 +29,7 @@
 #include "lilv/lilv.h"
 
 #include "zrythm_app.h"
-#include "audio/timeline.h"
+#include "audio/transport.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_manager.h"
 
@@ -136,101 +136,114 @@ set_port_value(const char* port_symbol,
                uint32_t    size,
                uint32_t    type)
 {
-	LV2_Plugin*        plugin = (LV2_Plugin*)user_data;
-	LV2_Port* port = lv2_port_by_symbol(plugin, port_symbol);
-	if (!port) {
-		fprintf(stderr, "error: Preset port `%s' is missing\n", port_symbol);
-		return;
-	}
+  LV2_Plugin*        plugin = (LV2_Plugin*)user_data;
+  LV2_Port* port = lv2_port_by_symbol(plugin, port_symbol);
+  if (!port) {
+          fprintf(stderr, "error: Preset port `%s' is missing\n", port_symbol);
+          return;
+  }
 
-	float fvalue;
-	if (type == plugin->forge.Float) {
-		fvalue = *(const float*)value;
-	} else if (type == plugin->forge.Double) {
-		fvalue = *(const double*)value;
-	} else if (type == plugin->forge.Int) {
-		fvalue = *(const int32_t*)value;
-	} else if (type == plugin->forge.Long) {
-		fvalue = *(const int64_t*)value;
-	} else {
-		fprintf(stderr, "error: Preset `%s' value has bad type <%s>\n",
-		        port_symbol, plugin->unmap.unmap(plugin->unmap.handle, type));
-		return;
-	}
+  float fvalue;
+  if (type == plugin->forge.Float) {
+          fvalue = *(const float*)value;
+  } else if (type == plugin->forge.Double) {
+          fvalue = *(const double*)value;
+  } else if (type == plugin->forge.Int) {
+          fvalue = *(const int32_t*)value;
+  } else if (type == plugin->forge.Long) {
+          fvalue = *(const int64_t*)value;
+  } else {
+          g_error ("error: Preset `%s' value has bad type <%s>\n",
+                   port_symbol,
+                   plugin->unmap.unmap(plugin->unmap.handle, type));
+          return;
+  }
 
-	if (AUDIO_TIMELINE->play_state != PLAYSTATE_RUNNING) {
-		// Set value on port struct directly
-		port->control = fvalue;
-	} else {
-		// Send value to running plugin
-		lv2_ui_write(plugin, port->index, sizeof(fvalue), 0, &fvalue);
-	}
+  if (TRANSPORT->play_state != PLAYSTATE_RUNNING)
+    {
+      // Set value on port struct directly
+      port->control = fvalue;
+    } else {
+      // Send value to running plugin
+      lv2_ui_write(plugin, port->index,
+                   sizeof(fvalue), 0, &fvalue);
+    }
 
-	if (plugin->has_ui) {
-		// Update UI
-		char buf[sizeof(Lv2ControlChange) + sizeof(fvalue)];
-		Lv2ControlChange* ev = (Lv2ControlChange*)buf;
-		ev->index    = port->index;
-		ev->protocol = 0;
-		ev->size     = sizeof(fvalue);
-		*(float*)ev->body = fvalue;
-		zix_ring_write(plugin->plugin_events, buf, sizeof(buf));
-	}
+  if (plugin->has_ui)
+    {
+      // Update UI
+      char buf[sizeof(Lv2ControlChange) + sizeof(fvalue)];
+      Lv2ControlChange* ev = (Lv2ControlChange*)buf;
+      ev->index    = port->index;
+      ev->protocol = 0;
+      ev->size     = sizeof(fvalue);
+      *(float*)ev->body = fvalue;
+      zix_ring_write(plugin->plugin_events, buf, sizeof(buf));
+    }
 }
 
 void
 lv2_apply_state(LV2_Plugin* plugin, LilvState* state)
 {
-	bool must_pause = !plugin->safe_restore && AUDIO_TIMELINE->play_state == PLAYSTATE_RUNNING;
-	if (state) {
-		if (must_pause) {
-			AUDIO_TIMELINE->play_state = PLAYSTATE_PAUSE_REQUESTED;
-			zix_sem_wait(&plugin->paused);
-		}
+  bool must_pause = !plugin->safe_restore && TRANSPORT->play_state == PLAYSTATE_RUNNING;
+  if (state)
+    {
+      if (must_pause)
+        {
+          TRANSPORT->play_state = PLAYSTATE_PAUSE_REQUESTED;
+          zix_sem_wait(&plugin->paused);
+        }
 
-		lilv_state_restore(
-			state, plugin->instance, set_port_value, plugin, 0, plugin->state_features);
+      lilv_state_restore (state,
+                          plugin->instance,
+                          set_port_value, plugin,
+                          0,
+                          plugin->state_features);
 
-		if (must_pause) {
-			plugin->request_update = true;
-			AUDIO_TIMELINE->play_state     = PLAYSTATE_RUNNING;
-		}
-	}
+      if (must_pause)
+        {
+          plugin->request_update = true;
+          TRANSPORT->play_state     = PLAYSTATE_RUNNING;
+        }
+    }
 }
 
 int
 lv2_apply_preset(LV2_Plugin* plugin, const LilvNode* preset)
 {
-	lilv_state_free(plugin->preset);
-	plugin->preset = lilv_state_new_from_world(LILV_WORLD, &plugin->map, preset);
-	lv2_apply_state(plugin, plugin->preset);
-	return 0;
+  lilv_state_free (plugin->preset);
+  plugin->preset = lilv_state_new_from_world (LILV_WORLD,
+                                              &plugin->map,
+                                              preset);
+  lv2_apply_state (plugin, plugin->preset);
+  return 0;
 }
 
 int
 lv2_save_preset(LV2_Plugin*       plugin,
-                 const char* dir,
-                 const char* uri,
-                 const char* label,
-                 const char* filename)
+                const char* dir,
+                const char* uri,
+                const char* label,
+                const char* filename)
 {
-	LilvState* const state = lilv_state_new_from_instance(
-		plugin->lilv_plugin, plugin->instance, &plugin->map,
-		plugin->temp_dir, dir, dir, dir,
-		get_port_value, plugin,
-		LV2_STATE_IS_POD|LV2_STATE_IS_PORTABLE, NULL);
+  LilvState* const state = lilv_state_new_from_instance(
+          plugin->lilv_plugin, plugin->instance, &plugin->map,
+          plugin->temp_dir, dir, dir, dir,
+          get_port_value, plugin,
+          LV2_STATE_IS_POD|LV2_STATE_IS_PORTABLE, NULL);
 
-	if (label) {
-		lilv_state_set_label(state, label);
-	}
+  if (label)
+    {
+      lilv_state_set_label(state, label);
+    }
 
-	int ret = lilv_state_save(
-		LILV_WORLD, &plugin->map, &plugin->unmap, state, uri, dir, filename);
+  int ret = lilv_state_save(
+          LILV_WORLD, &plugin->map, &plugin->unmap, state, uri, dir, filename);
 
-	lilv_state_free(plugin->preset);
-	plugin->preset = state;
+  lilv_state_free(plugin->preset);
+  plugin->preset = state;
 
-	return ret;
+  return ret;
 }
 
 int

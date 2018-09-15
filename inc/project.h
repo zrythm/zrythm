@@ -24,23 +24,26 @@
 #ifndef __PROJECT_H__
 #define __PROJECT_H__
 
+#include "zrythm_app.h"
+
 #include <gtk/gtk.h>
 
 #define PROJECT zrythm_system->project
 
 typedef struct Timeline Timeline;
+typedef struct Transport Transport;
 
 typedef struct Project
 {
   /**
    * Project title
    */
-  GString *         title;
+  GString               * title;
 
   /**
    * Timeline metadata like BPM, time signature, etc.
    */
-  Timeline *        timeline;
+  Transport             * transport;
 } Project;
 
 

@@ -1,5 +1,5 @@
 /*
- * project.c - A project (or song), containing all the project data
+ * audio/postition.h - A position on the timeline
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,24 +19,36 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "zrythm_app.h"
-#include "project.h"
-#include "audio/engine.h"
-#include "audio/transport.h"
+#ifndef __AUDIO_POSITION_H__
+#define __AUDIO_POSITION_H__
 
-#include <gtk/gtk.h>
+#define TICKS_PER_BAR 3840
+#define TICKS_PER_BEAT 960
+#define TICKS_PER_QUARTER_BEAT 240
 
+typedef struct Position
+{
+  int       bars;
+  int       beats;
+  int       quarter_beats;
+  int       ticks;              ///< for now 240 ticks per quarter beat
+  int       frames;            ///< position in frames
+} Position;
+
+/**
+ * Initializes given position to all 0
+ */
+void
+position_init (Position * position);
+
+/**
+ * Sets position to given bar
+ */
+void
+position_set_to_bar (Position * position,
+                      int        bar_no);
 
 void
-create_project (char * filename)
-{
-  PROJECT = calloc(1, sizeof( Project));
-
-  // set title
-  GString * title = g_string_new (filename);
-  g_message ("Creating project %s...", title->str);
-  PROJECT->title = title;
-
-  transport_init ();
-  AUDIO_ENGINE->run = 1;
-}
+position_add_frames (Position * position,
+                     int      frames);
+#endif

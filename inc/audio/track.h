@@ -1,6 +1,5 @@
 /*
- * audio/region.c - A region in the timeline having a start
- *   and an end
+ * audio/track.h - the back end for a timeline track
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -20,5 +19,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+typedef struct Region Region;
 
+/**
+ * The track struct.
+ */
+typedef struct Track {
+  Region          * regions[200];     ///< array of region pointers
 
+} Track;

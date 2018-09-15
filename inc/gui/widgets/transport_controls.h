@@ -1,6 +1,5 @@
 /*
- * audio/region.c - A region in the timeline having a start
- *   and an end
+ * gui/widgets/transport_controls.h - transport controls (play/pause/stop...)
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -20,5 +19,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+typedef struct _MainWindowWidget MainWindowWidget;
 
-
+/**
+ * Initializes the transport controls in the main window.
+ */
+void
+transport_controls_init (MainWindowWidget * main_window);

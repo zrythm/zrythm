@@ -1,6 +1,5 @@
 /*
- * audio/region.c - A region in the timeline having a start
- *   and an end
+ * audio/track.c - the back end for a timeline track
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,6 +18,4 @@
  * You should have received a copy of the GNU General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-
 

@@ -33,8 +33,10 @@
 #include "gui/widgets/channel.h"
 
 #include <gtk/gtk.h>
+#include <jack/thread.h>
 
-#define SLEEPTIME 1
+/* milliseconds */
+#define SLEEPTIME_MS 100
 
 /**
  * Calculate decibels using RMS method.
@@ -62,8 +64,8 @@ process_channel_work (void * argument)
 
 #if _POSIX_C_SOURCE >= 199309L
   struct timespec ts;
-  ts.tv_sec = SLEEPTIME / 1000;
-  ts.tv_nsec = (SLEEPTIME % 1000) * 1000000;
+  ts.tv_sec = SLEEPTIME_MS / 1000000;
+  ts.tv_nsec = (SLEEPTIME_MS % 1000) * 1000;
 #endif
 
   while (!channel->stop_thread)
@@ -80,7 +82,7 @@ process_channel_work (void * argument)
 #if _POSIX_C_SOURCE >= 199309L
       nanosleep(&ts, NULL);
 #else
-      usleep (SLEEPTIME * 1000);
+      usleep (SLEEPTIME_MS);
 #endif
     }
 
@@ -205,14 +207,21 @@ _create_channel (char * name)
     /* thread related */
     channel->stop_thread = 0;
     channel->processed = 1;
-    int result_code = pthread_create (&channel->thread,
-                                      NULL,
-                                      process_channel_work,
-                                      channel);
-    if (result_code != 0)
+    /*int result_code = pthread_create (&channel->thread,*/
+                                      /*NULL,*/
+                                      /*process_channel_work,*/
+                                      /*channel);*/
+    jack_client_create_thread (AUDIO_ENGINE->client,
+                               &channel->thread,
+                               jack_client_real_time_priority (AUDIO_ENGINE->client),
+                               jack_is_realtime (AUDIO_ENGINE->client),
+                               process_channel_work,
+                               channel);
+
+    if (channel->thread == -1)
       {
         g_error ("%d: Failed creating thread for channel %s",
-                 result_code, channel->name);
+                 channel->thread, channel->name);
       }
 
 

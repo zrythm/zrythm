@@ -37,9 +37,10 @@
  * Creates an empty plugin.
  *
  * To be filled in by the caller.
+ * FIXME should be static?
  */
-Plugin *
-plugin_new ()
+static Plugin *
+_plugin_new ()
 {
   Plugin * plugin = calloc (1, sizeof (Plugin));
 
@@ -49,45 +50,21 @@ plugin_new ()
 }
 
 /**
- * Creates a dummy plugin.
- *
- * Used when filling up channel slots. A dummy plugin has 2 output ports
- * and 2 input ports and a MIDI input.
- * FIXME delete this
+ * Creates/initializes a plugin and its internal plugin (LV2, etc.)
+ * using the given descriptor.
  */
 Plugin *
-plugin_new_dummy (Channel * channel    ///< channel it belongs to
-            )
+plugin_create_from_descr (Plugin_Descriptor * descr)
 {
-  /*Plugin * plugin = plugin_new ();*/
-
-  /*plugin->descr.author = "Zrythm";*/
-  /*plugin->descr.name = DUMMY_PLUGIN;*/
-  /*plugin->descr.website = "http://alextee.online/zrythm";*/
-  /*plugin->descr.category = "PC_UTILITY";*/
-  /*plugin->descr.num_audio_ins = 2;*/
-  /*plugin->descr.num_midi_ins = 1;*/
-  /*plugin->descr.num_audio_outs = 2;*/
-  /*plugin->descr.num_midi_outs = 1;*/
-
-  /*plugin->num_in_ports = 0;*/
-  /*plugin->in_ports[plugin->num_in_ports++] = port_new ();*/
-  /*plugin->in_ports[plugin->num_in_ports++] = port_new ();*/
-
-  /*plugin->num_out_ports = 0;*/
-  /*plugin->out_ports[plugin->num_out_ports++] = port_new ();*/
-  /*plugin->out_ports[plugin->num_out_ports++] = port_new ();*/
-
-  /*[> FIXME is this really needed <]*/
-  /*plugin->num_unknown_ports = 0;*/
-
-  /*plugin->processed = 0;*/
-
-  /*plugin->original_plugin = NULL;*/
-
-  /*plugin->channel = channel;*/
-
-  /*return plugin;*/
+  Plugin * plugin = _plugin_new ();
+  plugin->descr = descr;
+  switch (plugin->descr->protocol)
+    {
+    case PROT_LV2:
+      lv2_create_from_uri (plugin, descr->uri);
+      break;
+    }
+  return plugin;
 }
 
 /**
@@ -321,15 +298,6 @@ plugin_process (Plugin * plugin, nframes_t nframes)
     }
 
   plugin->processed = 1;
-}
-
-/**
- * Returns whether given plugin is a dummy plugin or not.
- */
-int
-plugin_is_dummy (Plugin *plugin)
-{
-  return (!strcmp (plugin->descr->name, DUMMY_PLUGIN));
 }
 
 /**

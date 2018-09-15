@@ -10,10 +10,14 @@ zrythm_SOURCES = main.c \
 								 audio/midi.c \
 								 audio/mixer.c \
 								 audio/port.c \
-								 audio/timeline.c \
+								 audio/position.c \
+								 audio/region.c \
+								 audio/track.c \
+								 audio/transport.c \
 								 audio/region.c \
 								 gui/widget_manager.c \
 								 gui/widgets/instrument_timeline_view.c \
+								 gui/widgets/bpm.c \
 								 gui/widgets/browser.c \
 								 gui/widgets/channel.c \
 								 gui/widgets/channel_color.c \
@@ -25,6 +29,7 @@ zrythm_SOURCES = main.c \
 								 gui/widgets/ruler.c \
 								 gui/widgets/splash.c \
 								 gui/widgets/timeline.c \
+								 gui/widgets/transport_controls.c \
 								 plugins/lv2_gtk.c \
 								 plugins/lv2_plugin.c \
 								 plugins/plugin.c \

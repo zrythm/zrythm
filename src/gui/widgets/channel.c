@@ -90,14 +90,11 @@ on_drag_data_received (GtkWidget        *widget,
 
   Plugin_Descriptor * descr = *(gpointer *) gtk_selection_data_get_data (data);
 
-  /* FIXME if lv2... */
-  Plugin * plugin = plugin_new ();
-  plugin->descr = descr;
-  LV2_Plugin * lv2_plugin = lv2_create_from_uri (plugin, descr->uri);
+  Plugin * plugin = plugin_create_from_descr (descr);
 
   plugin_instantiate (plugin);
 
-  /* TODO add to specific channel */
+  /* add to specific channel */
   channel_add_plugin (channel, index + 1, plugin);
   channel_widget_add_plugin (CHANNEL_WIDGET (user_data), plugin, index);
   channel_update_slots (CHANNEL_WIDGET (user_data));

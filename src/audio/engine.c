@@ -29,6 +29,7 @@
 #include "audio/engine.h"
 #include "audio/midi.h"
 #include "audio/mixer.h"
+#include "audio/transport.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2_plugin.h"
@@ -45,11 +46,29 @@
 typedef jack_default_audio_sample_t   sample_t;
 typedef jack_nframes_t                nframes_t;
 
+ void
+engine_update_frames_per_tick (int beats_per_bar,
+                               int bpm,
+                               int sample_rate)
+{
+  AUDIO_ENGINE->frames_per_tick =
+    (sample_rate * 60.f * beats_per_bar) /
+    (bpm * TICKS_PER_BAR);
+}
+
 /** Jack sample rate callback. */
 static int
 jack_sample_rate_cb(nframes_t nframes, void* data)
 {
   AUDIO_ENGINE->sample_rate = nframes;
+
+  if (PROJECT)
+    engine_update_frames_per_tick (TRANSPORT->beats_per_bar,
+                                   TRANSPORT->bpm,
+                                   AUDIO_ENGINE->sample_rate);
+  else
+    engine_update_frames_per_tick (4, 120, 44000);
+
   g_message ("JACK: Sample rate changed to %d", nframes);
   return 0;
 }
@@ -110,6 +129,10 @@ static int
 jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
          void              * data)       ///< user data
 {
+  int * run = (int *) data;
+  if (!(* run))
+    return 0;
+
   sample_t * stereo_out_l, * stereo_out_r;
   int i = 0;
 
@@ -168,9 +191,9 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
       channel->processed = 0;
       for (int j = 0; j < MAX_PLUGINS; j++)
         {
-          if (channel->strip[i])
+          if (channel->strip[j])
             {
-              channel->strip[i]->processed = 0;
+              channel->strip[j]->processed = 0;
             }
         }
     }
@@ -200,6 +223,8 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
 
   zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
 
+  /* move playhead as many samples as processed */
+  transport_update_playhead (nframes);
 
   /*g_message ("jack end");*/
   /*
@@ -267,7 +292,7 @@ init_audio_engine()
 #endif
 
     /* set jack callbacks */
-    jack_set_process_callback (engine->client, &jack_process_cb, NULL);
+    jack_set_process_callback (engine->client, &jack_process_cb, &engine->run);
     jack_set_buffer_size_callback(engine->client, &jack_buffer_size_cb, NULL);
     jack_set_sample_rate_callback(engine->client, &jack_sample_rate_cb, NULL);
     jack_on_shutdown(engine->client, &jack_shutdown_cb, NULL);

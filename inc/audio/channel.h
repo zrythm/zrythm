@@ -40,7 +40,9 @@
 
 typedef jack_default_audio_sample_t   sample_t;
 typedef jack_nframes_t                nframes_t;
+
 typedef struct ChannelWidget ChannelWidget;
+typedef struct Track Track;
 
 typedef enum ChannelType
 {
@@ -80,10 +82,12 @@ typedef struct Channel
   float             r_port_db;   ///< current db after processing r port
   int               processed;   ///< processed in this cycle or not
   int               recording;  ///< recording mode or not
-  pthread_t         thread;     ///< the channel processing thread.
+  //pthread_t         thread;     ///< the channel processing thread.
                           ///< each channel does processing on a separate thread
+  jack_native_thread_t    thread;
   int               stop_thread;    ///< flag to stop the thread
-  Channel *         output;     ///< output channel to route signal to
+  struct Channel *         output;     ///< output channel to route signal to
+  Track             * track;   ///< the track associated with this channel
   ChannelWidget     *widget;
 } Channel;
 

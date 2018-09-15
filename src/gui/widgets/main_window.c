@@ -21,6 +21,8 @@
 
 #include "config.h"
 #include "audio/mixer.h"
+#include "audio/transport.h"
+#include "gui/widgets/bpm.h"
 #include "gui/widgets/browser.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/main_window.h"
@@ -28,6 +30,7 @@
 #include "gui/widgets/instrument_timeline_view.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline.h"
+#include "gui/widgets/transport_controls.h"
 
 #include <gtk/gtk.h>
 
@@ -194,7 +197,7 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 MainWindowWidget, transport);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, bpm);
+                                                MainWindowWidget, bpm_box);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 MainWindowWidget, play);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
@@ -308,21 +311,20 @@ main_window_widget_new (ZrythmApp * _app)
           "/online/alextee/zrythm/maximize.svg");
   gtk_button_set_image (self->maximize, image);
   image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/play.svg");
-  gtk_button_set_image (self->play, image);
-  image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/stop.svg");
-  gtk_button_set_image (self->stop, image);
-  image = gtk_image_new_from_resource (
           "/online/alextee/zrythm/plus.svg");
   gtk_tool_button_set_icon_widget (self->instrument_add,
                                    GTK_WIDGET (image));
   image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/record.svg");
-  gtk_button_set_image (GTK_BUTTON (self->trans_record), image);
-  image = gtk_image_new_from_resource (
           "/online/alextee/zrythm/plus.svg");
   gtk_button_set_image (GTK_BUTTON (self->channels_add), image);
+
+  /* set transport controls */
+  transport_controls_init (self);
+
+  /* set bpm */
+  self->bpm = bpm_widget_new ();
+  gtk_container_add (GTK_CONTAINER (self->bpm_box),
+                     GTK_WIDGET (self->bpm));
 
   return self;
 }

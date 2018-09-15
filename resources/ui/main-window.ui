@@ -6,10 +6,11 @@
     <property name="visible">True</property>
     <property name="can_focus">True</property>
     <property name="window_position">center</property>
-    <property name="default_width">1287</property>
-    <property name="default_height">785</property>
+    <property name="default_width">1700</property>
+    <property name="default_height">980</property>
     <property name="decorated">False</property>
     <property name="gravity">center</property>
+    <property name="has_resize_grip">True</property>
     <property name="show_menubar">False</property>
     <signal name="destroy" handler="on_main_window_destroy" swapped="no"/>
     <signal name="window-state-event" handler="on_state_changed" swapped="no"/>
@@ -1197,18 +1198,14 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkSpinButton" id="bpm">
+                  <object class="GtkBox" id="bpm_box">
+                    <property name="name">bpm_box</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="max_length">6</property>
-                    <property name="width_chars">6</property>
-                    <property name="text" translatable="yes">0.00</property>
-                    <property name="input_purpose">number</property>
-                    <property name="climb_rate">0.23000000000000001</property>
-                    <property name="digits">2</property>
-                    <property name="snap_to_ticks">True</property>
-                    <property name="numeric">True</property>
-                    <property name="wrap">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <placeholder/>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>

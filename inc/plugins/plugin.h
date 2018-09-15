@@ -106,22 +106,11 @@ typedef struct Plugin
 } Plugin;
 
 /**
- * Creates a empty plugin.
- *
- * To be filled in by the caller.
+ * Creates/initializes a plugin and its internal plugin (LV2, etc.)
+ * using the given descriptor.
  */
 Plugin *
-plugin_new ();
-
-/**
- * Creates a dummy plugin.
- *
- * Used when filling up channel slots. A dummy plugin has 2 output ports
- * and 2 input ports and a MIDI input.
- */
-Plugin *
-plugin_new_dummy (Channel * channel    ///< channel it belongs to
-            );
+plugin_create_from_descr (Plugin_Descriptor * descr);
 
 /**
  * Instantiates the plugin (e.g. when adding to a channel)
@@ -134,12 +123,6 @@ plugin_instantiate (Plugin * plugin);
  */
 void
 plugin_process (Plugin * plugin, nframes_t nframes);
-
-/**
- * Returns whether given plugin is a dummy plugin or not.
- */
-int
-plugin_is_dummy (Plugin *plugin);
 
 /**
  * Frees given plugin, breaks all its port connections, and frees its ports

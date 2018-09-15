@@ -42,14 +42,10 @@ on_drag_data_received (GtkWidget        *widget,
 {
   Plugin_Descriptor * descr = *(gpointer *) gtk_selection_data_get_data (data);
 
-  /* FIXME if lv2... */
-  Plugin * plugin = plugin_new ();
-  plugin->descr = descr;
-  LV2_Plugin * lv2_plugin = lv2_create_from_uri (plugin, descr->uri);
+  Plugin * plugin = plugin_create_from_descr (descr);
 
   plugin_instantiate (plugin);
 
-  /* TODO add to specific channel */
   Channel * new_channel = channel_create (CT_MIDI,
                                           g_strdup_printf ("%s %d",
                                                            descr->name,
