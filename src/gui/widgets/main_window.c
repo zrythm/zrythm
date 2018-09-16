@@ -30,6 +30,7 @@
 #include "gui/widgets/instrument_timeline_view.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline.h"
+#include "gui/widgets/tracks.h"
 #include "gui/widgets/transport_controls.h"
 
 #include <gtk/gtk.h>
@@ -142,8 +143,8 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
                                                 MainWindowWidget, tracks_scroll);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 MainWindowWidget, tracks_viewport);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, tracks_paned);
+  /*gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),*/
+                                                /*MainWindowWidget, tracks_paned);*/
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 MainWindowWidget, tracks_header);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
@@ -256,17 +257,16 @@ main_window_widget_new (ZrythmApp * _app)
           800);
   g_object_unref (css_provider);
 
-  // add a few test instruments
-  init_ins_timeline_view (GTK_WIDGET (self->tracks_paned));
-  GtkWidget * paned1 = add_instrument (GTK_WIDGET (self->tracks_paned));
-  GtkWidget * paned2 = add_instrument (paned1);
-  GtkWidget * paned3 = add_instrument (paned2);
+  /* setup tracks */
+  tracks_widget_setup ();
+  gtk_container_add (GTK_CONTAINER (self->tracks_viewport),
+                     GTK_WIDGET (self->tracks));
   gtk_widget_set_size_request (GTK_WIDGET (self->tracks_header),
                                -1,
                                60);
   gtk_widget_show_all (GTK_WIDGET (self->editor_top));
 
-  // set ruler
+  /* setup ruler */
   self->ruler = ruler_widget_new ();
   gtk_container_add (GTK_CONTAINER (self->ruler_viewport),
                      GTK_WIDGET (self->ruler));
@@ -277,8 +277,8 @@ main_window_widget_new (ZrythmApp * _app)
   gtk_widget_show_all (GTK_WIDGET (self->ruler_viewport));
 
   /* set timeline */
-  self->timeline = timeline_widget_new (GTK_WIDGET (self->tracks_paned),
-                                        GTK_WIDGET (self->timeline_overlay));
+  self->timeline = timeline_widget_new (
+                      GTK_WIDGET (self->timeline_overlay));
   gtk_scrolled_window_set_min_content_width (self->timeline_scroll, 400);
   gtk_scrolled_window_set_vadjustment (self->timeline_scroll,
             gtk_scrolled_window_get_vadjustment (self->tracks_scroll));

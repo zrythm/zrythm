@@ -22,9 +22,6 @@
 #ifndef __GUI_WIDGETS_MIXER_H__
 #define __GUI_WIDGETS_MIXER_H__
 
-#include "zrythm_app.h"
-#include "gui/widget_manager.h"
-
 #include <gtk/gtk.h>
 
 void

@@ -31,6 +31,9 @@
 #include "audio/channel.h"
 #include "audio/mixer.h"
 #include "gui/widgets/channel.h"
+#include "gui/widgets/main_window.h"
+#include "gui/widgets/track.h"
+#include "gui/widgets/tracks.h"
 
 #include <gtk/gtk.h>
 #include <jack/thread.h>
@@ -148,7 +151,7 @@ channel_process (Channel * channel,  ///< slots
   channel->processed = 1;
 
   g_idle_add ((GSourceFunc) channel_widget_update_meter_reading,
-              channel->widget);
+              channel->channel_widget);
 }
 
 /**
@@ -257,7 +260,8 @@ channel_create_master ()
   /* connect stereo out ports to monitor TODO */
 
   /* create widget */
-  channel->widget = channel_widget_new (channel);
+  channel->channel_widget = channel_widget_new (channel);
+  channel->track_widget = track_widget_new (channel);
 
   return channel;
 }
@@ -285,7 +289,8 @@ channel_create (int     type, char * label)             ///< the channel type (A
   g_message ("Created channel %s of type %i", label, type);
 
   /* create widget */
-  channel->widget = channel_widget_new (channel);
+  channel->channel_widget = channel_widget_new (channel);
+  channel->track_widget = track_widget_new (channel);
 
   return channel;
 }
@@ -295,7 +300,7 @@ channel_set_phase (void * _channel, float phase)
 {
   Channel * channel = (Channel *) _channel;
   channel->phase = phase;
-  gtk_label_set_text (channel->widget->phase_reading,
+  gtk_label_set_text (channel->channel_widget->phase_reading,
                       g_strdup_printf ("%.1f", phase));
 }
 
@@ -312,7 +317,7 @@ channel_set_volume (void * _channel, float volume)
   Channel * channel = (Channel *) _channel;
   channel->volume = volume;
   /* TODO update tooltip */
-  gtk_label_set_text (channel->widget->phase_reading,
+  gtk_label_set_text (channel->channel_widget->phase_reading,
                       g_strdup_printf ("%.1f", volume));
 }
 
@@ -361,7 +366,6 @@ channel_add_plugin (Channel * channel,    ///< the channel
                     Plugin      * plugin  ///< the plugin to add
                     )
 {
-  zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
   /* free current plugin */
   if (channel->strip[pos])
     {
@@ -370,14 +374,33 @@ channel_add_plugin (Channel * channel,    ///< the channel
       plugin_free (channel->strip[pos]);
     }
 
+  zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
+
   g_message ("Inserting %s at %s:%d", plugin->descr->name,
              channel->name, pos);
   channel->strip[pos] = plugin;
 
+  Plugin * next_plugin = NULL;
+  for (int i = pos + 1; i < MAX_PLUGINS; i++)
+    {
+      next_plugin = channel->strip[i];
+      if (next_plugin)
+        break;
+    }
+
+  Plugin * prev_plugin = NULL;
+  for (int i = pos - 1; i >= 0; i--)
+    {
+      prev_plugin = channel->strip[i];
+      if (prev_plugin)
+        break;
+    }
+
   /* ------------------------------------------------------
    * connect input ports
    * ------------------------------------------------------*/
-  if (pos == 0) /* if main plugin */
+  /* if main plugin or no other plugin before it */
+  if (pos == 0 || !prev_plugin)
     {
       if (channel->type == CT_AUDIO)
         {
@@ -398,10 +421,9 @@ channel_add_plugin (Channel * channel,    ///< the channel
             }
         }
     }
-  else
+  else if (prev_plugin)
     {
       /* connect each input port from the previous plugin sequentially */
-      Plugin * prev_plugin = channel->strip[pos - 1];
 
       /* connect output AUDIO ports of prev plugin to AUDIO input ports of
        * plugin */
@@ -430,13 +452,6 @@ channel_add_plugin (Channel * channel,    ///< the channel
    * connect output ports
    * ------------------------------------------------------*/
 
-  Plugin * next_plugin = NULL;
-  for (int i = pos + 1; i < MAX_PLUGINS; i++)
-    {
-      next_plugin = channel->strip[i];
-      if (next_plugin)
-        break;
-    }
 
   /* connect output AUDIO ports of plugin to AUDIO input ports of
    * next plugin */
@@ -498,5 +513,19 @@ channel_get_last_active_slot_index (Channel * channel)
         index = i;
     }
   return index;
+}
+
+/**
+ * Returns the index on the mixer.
+ */
+int
+channel_get_index (Channel * channel)
+{
+  for (int i = 0; i < MIXER->num_channels; i++)
+    {
+      if (MIXER->channels[i] == channel)
+        return i;
+    }
+  g_error ("Channel index for %s not found", channel->name);
 }
 

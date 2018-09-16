@@ -45,8 +45,7 @@ typedef struct TimelineWidgetClass
  * Creates a timeline widget using the given timeline data.
  */
 TimelineWidget *
-timeline_widget_new (GtkWidget * _multi_paned,
-              GtkWidget * overlay);
+timeline_widget_new (GtkWidget * overlay);
 
 #endif
 

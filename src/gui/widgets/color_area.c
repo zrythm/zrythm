@@ -1,5 +1,5 @@
 /*
- * gui/widgets/channel_color.c - A channel color widget
+ * gui/widgets/color_area.c - A channel color widget
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,11 +19,11 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "gui/widgets/channel_color.h"
+#include "gui/widgets/color_area.h"
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (ChannelColorWidget, channel_color_widget, GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (ColorAreaWidget, color_area_widget, GTK_TYPE_DRAWING_AREA)
 
 /**
  * Draws the color picker.
@@ -65,10 +65,10 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 /**
  * Creates a channel color widget using the given color pointer.
  */
-ChannelColorWidget *
-channel_color_widget_new (GdkRGBA * color)
+ColorAreaWidget *
+color_area_widget_new (GdkRGBA * color)
 {
-  ChannelColorWidget * self = g_object_new (CHANNEL_COLOR_WIDGET_TYPE, NULL);
+  ColorAreaWidget * self = g_object_new (COLOR_AREA_WIDGET_TYPE, NULL);
   gtk_widget_set_size_request (GTK_WIDGET (self), -1, 10);
   self->color = color;
   g_signal_connect (G_OBJECT (self), "draw",
@@ -77,11 +77,11 @@ channel_color_widget_new (GdkRGBA * color)
 }
 
 static void
-channel_color_widget_init (ChannelColorWidget * self)
+color_area_widget_init (ColorAreaWidget * self)
 {
 }
 
 static void
-channel_color_widget_class_init (ChannelColorWidgetClass * klass)
+color_area_widget_class_init (ColorAreaWidgetClass * klass)
 {
 }

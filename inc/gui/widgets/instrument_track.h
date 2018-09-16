@@ -1,5 +1,5 @@
 /*
- * gui/widgets/channel.h - A channel widget
+ * gui/widgets/instrument_track.h - Instrument track widget
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,20 +19,17 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_CHANNEL_H__
-#define __GUI_WIDGETS_CHANNEL_H__
-
-#include "audio/channel.h"
-#include "gui/widgets/meter.h"
+#ifndef __GUI_WIDGETS_INSTRUMENT_TRACK_H__
+#define __GUI_WIDGETS_INSTRUMENT_TRACK_H__
 
 #include <gtk/gtk.h>
 
-#define CHANNEL_WIDGET_TYPE                  (channel_widget_get_type ())
-#define CHANNEL_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), CHANNEL_WIDGET_TYPE, ChannelWidget))
-#define CHANNEL_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), CHANNEL_WIDGET, ChannelWidgetClass))
-#define IS_CHANNEL_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), CHANNEL_WIDGET_TYPE))
-#define IS_CHANNEL_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), CHANNEL_WIDGET_TYPE))
-#define CHANNEL_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), CHANNEL_WIDGET_TYPE, ChannelWidgetClass))
+#define INSTRUMENT_TRACK_WIDGET_TYPE                  (instrument_track_widget_get_type ())
+#define INSTRUMENT_TRACK_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), INSTRUMENT_TRACK_WIDGET_TYPE, InstrumentTrackWidget))
+#define INSTRUMENT_TRACK_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), INSTRUMENT_TRACK_WIDGET, InstrumentTrackWidgetClass))
+#define IS_INSTRUMENT_TRACK_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), INSTRUMENT_TRACK_WIDGET_TYPE))
+#define IS_INSTRUMENT_TRACK_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), INSTRUMENT_TRACK_WIDGET_TYPE))
+#define INSTRUMENT_TRACK_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), INSTRUMENT_TRACK_WIDGET_TYPE, InstrumentTrackWidgetClass))
 
 typedef struct ColorAreaWidget ColorAreaWidget;
 typedef struct KnobWidget KnobWidget;
@@ -41,12 +38,11 @@ typedef struct ChannelMeterWidget ChannelMeterWidget;
 typedef struct Channel Channel;
 typedef struct ChannelSlotWidget ChannelSlotWidget;
 
-typedef struct ChannelWidget
+typedef struct InstrumentTrackWidget
 {
   GtkGrid            parent_instance;
-  GtkLabel            * output;
-  ColorAreaWidget     * color;
   GtkLabel            * name;
+  ColorAreaWidget     * color;
   GtkBox              * phase_controls;
   GtkButton           * phase_invert;
   GtkLabel            * phase_reading;
@@ -68,38 +64,32 @@ typedef struct ChannelWidget
   GtkButton           * mute;
   GtkToggleButton     * record;
   GtkBox              * fader_area;
-  GtkBox              * meter_area;  ///< vertical including reading
-  GtkBox              * meters_box;  ///< box for l/r meters
+  GtkBox              * meter_area;
   FaderWidget         * fader;
-  MeterWidget         * meters[2];    ///< meter widgets (l/r)
+  ChannelMeterWidget  * cm;          ///< the little green channel meter
   GtkLabel            * meter_reading;
   GtkImage            * icon;
+  int                 selected;  ///< selected or not
 
   Channel             * channel;    ///< pointer to data
-} ChannelWidget;
+} InstrumentTrackWidget;
 
-typedef struct ChannelWidgetClass
+typedef struct InstrumentTrackWidgetClass
 {
   GtkGridClass       parent_class;
-} ChannelWidgetClass;
-
-
-/**
- * Updates the slots.
- */
-void
-channel_update_slots (ChannelWidget * self);
+} InstrumentTrackWidgetClass;
 
 /**
- * Creates a channel widget using the given channel data.
+ * Creates an instrument track widget using the given channel data.
  */
-ChannelWidget *
-channel_widget_new (Channel * channel);
+InstrumentTrackWidget *
+instrument_track_widget_new (Channel * channel);
 
 /**
  * Updates the meter reading
  */
 gboolean
-channel_widget_update_meter_reading (ChannelWidget * widget);
+instrument_track_widget_update_meter_reading (InstrumentTrackWidget * widget);
 
 #endif
+

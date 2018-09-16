@@ -16,12 +16,11 @@ zrythm_SOURCES = main.c \
 								 audio/transport.c \
 								 audio/region.c \
 								 gui/widget_manager.c \
-								 gui/widgets/instrument_timeline_view.c \
 								 gui/widgets/bpm.c \
 								 gui/widgets/browser.c \
 								 gui/widgets/channel.c \
-								 gui/widgets/channel_color.c \
-								 gui/widgets/channel_meter.c \
+								 gui/widgets/color_area.c \
+								 gui/widgets/meter.c \
 								 gui/widgets/channel_slot.c \
 								 gui/widgets/fader.c \
 								 gui/widgets/knob.c \
@@ -30,6 +29,8 @@ zrythm_SOURCES = main.c \
 								 gui/widgets/ruler.c \
 								 gui/widgets/splash.c \
 								 gui/widgets/timeline.c \
+								 gui/widgets/track.c \
+								 gui/widgets/tracks.c \
 								 gui/widgets/transport_controls.c \
 								 plugins/lv2_gtk.c \
 								 plugins/lv2_plugin.c \
@@ -69,6 +70,11 @@ CLEANFILES = resources.c
 
 # build rule for resources.c
 # TODO add resources dir variable
-resources.c: $(srcdir)/zrythm.gresource.xml $(top_srcdir)/resources/ui/main-window.ui $(top_srcdir)/resources/theme.css $(top_srcdir)/resources/ui/channel.ui $(top_srcdir)/resources/ui/splash.ui
+resources.c: $(srcdir)/zrythm.gresource.xml \
+	$(top_srcdir)/resources/ui/main-window.ui \
+	$(top_srcdir)/resources/theme.css \
+	$(top_srcdir)/resources/ui/channel.ui \
+	$(top_srcdir)/resources/ui/splash.ui \
+	$(top_srcdir)/resources/ui/instrument_track.ui
 	glib-compile-resources $(srcdir)/zrythm.gresource.xml --target=resources.c \
 	--generate-source --sourcedir=${top_srcdir}/resources

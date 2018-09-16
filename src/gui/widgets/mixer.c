@@ -27,6 +27,7 @@
 #include "gui/widgets/channel.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
+#include "gui/widgets/tracks.h"
 
 static int counter = 0;
 
@@ -63,22 +64,26 @@ on_drag_data_received (GtkWidget        *widget,
   gtk_container_remove (GTK_CONTAINER (MAIN_WINDOW->channels),
                         GTK_WIDGET (MAIN_WINDOW->channels_add));
   gtk_box_pack_start (MAIN_WINDOW->channels,
-                    GTK_WIDGET (new_channel->widget),
+                    GTK_WIDGET (new_channel->channel_widget),
                     0, 0, 0);
   gtk_box_pack_start (MAIN_WINDOW->channels,
                       GTK_WIDGET (MAIN_WINDOW->channels_add),
                       0, 0, 0);
 
   /* update the slots on the channel to show correct names */
-  channel_update_slots (new_channel->widget);
+  channel_update_slots (new_channel->channel_widget);
 
   /* re-add dummy box for dnd */
   gtk_box_pack_start (MAIN_WINDOW->channels,
                       GTK_WIDGET (MAIN_WINDOW->dummy_mixer_box),
                       1, 1, 0);
 
-  gtk_widget_show_all (GTK_WIDGET (new_channel->widget));
-  gtk_widget_queue_draw (GTK_WIDGET (new_channel->widget));
+  /* create track widget */
+  tracks_widget_add_channel (MAIN_WINDOW->tracks, new_channel);
+
+  gtk_widget_show_all (GTK_WIDGET (new_channel->channel_widget));
+  gtk_widget_show_all (GTK_WIDGET (new_channel->track_widget));
+  gtk_widget_queue_draw (GTK_WIDGET (new_channel->channel_widget));
 }
 
 void
@@ -86,11 +91,11 @@ mixer_setup (GtkBox * mixer,
              GtkBox * channels)
 {
   gtk_box_pack_end (mixer,
-                    GTK_WIDGET (MIXER->master->widget),
+                    GTK_WIDGET (MIXER->master->channel_widget),
                     0, 0, 0);
   for (int i = 0; i < MIXER->num_channels; i++)
     {
-      ChannelWidget * chw = MIXER->channels[i]->widget;
+      ChannelWidget * chw = MIXER->channels[i]->channel_widget;
       gtk_container_remove (GTK_CONTAINER (channels),
                             GTK_WIDGET (WIDGET_MANAGER->main_window->channels_add));
       gtk_box_pack_start (channels,

@@ -23,7 +23,9 @@
 #include "project.h"
 #include "settings_manager.h"
 #include "audio/transport.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/timeline.h"
+#include "gui/widgets/tracks.h"
 
 #include <gtk/gtk.h>
 
@@ -39,7 +41,6 @@ G_DEFINE_TYPE (TimelineWidget, timeline_widget, GTK_TYPE_DRAWING_AREA)
 static int px_per_beat;
 static int px_per_bar;
 static int total_px;
-static GtkWidget * gpaned_instruments;
 
 static void
 draw_borders (GtkWidget * widget,
@@ -110,35 +111,35 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   }
 
   /* handle horizontal drawing */
-  GtkWidget * inner_paned = gpaned_instruments;
+  GtkWidget * tracks = GTK_WIDGET (MAIN_WINDOW->tracks);
   int y_offset = 0;
   do
     {
-      GtkWidget * flowbox = gtk_paned_get_child1 (
-              GTK_PANED (inner_paned));
+      GtkWidget * track_widget = gtk_paned_get_child1 (
+              GTK_PANED (tracks));
 
       gint wx, wy;
       gtk_widget_translate_coordinates(
-                flowbox,
+                track_widget,
                 widget,
                 0,
                 0,
                 &wx,
                 &wy);
-      draw_borders (flowbox, cr, wy);
-      inner_paned = gtk_paned_get_child2 (
-            GTK_PANED (inner_paned));
-  } while (GTK_IS_PANED (inner_paned));
+      draw_borders (track_widget, cr, wy - 2);
+      tracks = gtk_paned_get_child2 (
+                      GTK_PANED (tracks));
+  } while (GTK_IS_PANED (tracks));
 
   gint wx, wy;
   gtk_widget_translate_coordinates(
-            inner_paned,
+            GTK_WIDGET (tracks),
             widget,
             0,
             0,
             &wx,
             &wy);
-  draw_borders (inner_paned, cr, wy);
+  draw_borders (GTK_WIDGET (tracks), cr, wy - 2);
 
   return 0;
 }
@@ -152,12 +153,10 @@ tick_callback (GtkWidget * widget, GdkFrameClock * frame_clock,
 }
 
 TimelineWidget *
-timeline_widget_new (GtkWidget * _paned,
-                     GtkWidget * overlay)
+timeline_widget_new (GtkWidget * overlay)
 {
   TimelineWidget * self = g_object_new (TIMELINE_WIDGET_TYPE, NULL);
 
-  gpaned_instruments = _paned;
   int default_px_per_beat = PX_PER_BEAT;
 
   /* adjust for zoom level */
@@ -173,8 +172,9 @@ timeline_widget_new (GtkWidget * _paned,
 
   // set the size
   int ww, hh;
+  TracksWidget * tracks = MAIN_WINDOW->tracks;
   gtk_widget_get_size_request (
-    GTK_WIDGET (gpaned_instruments),
+    GTK_WIDGET (tracks),
     &ww,
     &hh);
   gtk_widget_set_size_request (

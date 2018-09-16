@@ -43,6 +43,7 @@ typedef jack_nframes_t                nframes_t;
 
 typedef struct ChannelWidget ChannelWidget;
 typedef struct Track Track;
+typedef struct TrackWidget TrackWidget;
 
 typedef enum ChannelType
 {
@@ -88,7 +89,8 @@ typedef struct Channel
   int               stop_thread;    ///< flag to stop the thread
   struct Channel *         output;     ///< output channel to route signal to
   Track             * track;   ///< the track associated with this channel
-  ChannelWidget     *widget;
+  ChannelWidget     * channel_widget; ///< the channel widget
+  TrackWidget       * track_widget; ///< the track widget
 } Channel;
 
 void
@@ -156,5 +158,11 @@ channel_add_plugin (Channel * channel,    ///< the channel
  */
 int
 channel_get_last_active_slot_index (Channel * channel);
+
+/**
+ * Returns the index on the mixer.
+ */
+int
+channel_get_index (Channel * channel);
 
 #endif

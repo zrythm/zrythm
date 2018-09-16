@@ -23,8 +23,8 @@
 #include "audio/mixer.h"
 #include "plugins/lv2_plugin.h"
 #include "gui/widgets/channel.h"
-#include "gui/widgets/channel_color.h"
-#include "gui/widgets/channel_meter.h"
+#include "gui/widgets/color_area.h"
+#include "gui/widgets/meter.h"
 #include "gui/widgets/channel_slot.h"
 #include "gui/widgets/fader.h"
 #include "gui/widgets/knob.h"
@@ -50,10 +50,12 @@ gboolean
 channel_widget_update_meter_reading (ChannelWidget * widget)
 {
   Channel * channel = widget->channel;
-  float db = (channel->l_port_db + channel->r_port_db) / 2;
+  float db = MAX (channel->l_port_db, channel->r_port_db);
   /* FIXME use drawing area */
   /*gtk_label_set_text (GTK_LABEL (widget->meter_reading),*/
                       /*g_strdup_printf ("%.1f", db));*/
+  gtk_widget_queue_draw (GTK_WIDGET (widget->meters[0]));
+  gtk_widget_queue_draw (GTK_WIDGET (widget->meters[1]));
 }
 
 static void
@@ -100,6 +102,8 @@ channel_widget_class_init (ChannelWidgetClass * klass)
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 ChannelWidget, meter_area);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                                ChannelWidget, meters_box);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 ChannelWidget, meter_reading);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 ChannelWidget, icon);
@@ -118,7 +122,7 @@ channel_widget_init (ChannelWidget * self)
 static void
 setup_color (ChannelWidget * self)
 {
-  self->color = channel_color_widget_new (&self->channel->color);
+  self->color = color_area_widget_new (&self->channel->color);
   gtk_grid_attach (GTK_GRID (self),
                    GTK_WIDGET (self->color),
                    0, 1, 2, 1);
@@ -156,12 +160,21 @@ setup_fader (ChannelWidget * self)
 static void
 setup_meter (ChannelWidget * self)
 {
-  self->cm = channel_meter_widget_new (channel_get_current_l_db,
-                                       channel_get_current_r_db,
-                                  self->channel,
-                                  12);
-  gtk_box_pack_start (self->meter_area,
-                       GTK_WIDGET (self->cm),
+  self->meters[0] = meter_widget_new (
+                          channel_get_current_l_db,
+                          self->channel,
+                          METER_TYPE_DB,
+                          12);
+  self->meters[1] = meter_widget_new (
+                          channel_get_current_r_db,
+                          self->channel,
+                          METER_TYPE_DB,
+                          12);
+  gtk_box_pack_start (self->meters_box,
+                       GTK_WIDGET (self->meters[0]),
+                       1, 1, 0);
+  gtk_box_pack_start (self->meters_box,
+                       GTK_WIDGET (self->meters[1]),
                        1, 1, 0);
 }
 
@@ -214,7 +227,7 @@ channel_widget_new (Channel * channel)
 {
   ChannelWidget * self = g_object_new (CHANNEL_WIDGET_TYPE, NULL);
   self->channel = channel;
-  channel->widget = self;
+  channel->channel_widget = self;
 
   setup_color (self);
   setup_phase_panel (self);
