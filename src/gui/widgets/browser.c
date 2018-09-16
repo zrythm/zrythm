@@ -22,12 +22,46 @@
 #include "settings_manager.h"
 #include "zrythm_app.h"
 #include "gui/widget_manager.h"
+#include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 
 #include <gtk/gtk.h>
 
 static GtkTreeModel * plugins_tree_model;
+
+static void
+on_selection_changed (GtkTreeSelection * ts,
+                      gpointer         user_data)
+{
+  GList * selected_rows = gtk_tree_selection_get_selected_rows (ts,
+                                                                NULL);
+  GtkTreePath * tp = (GtkTreePath *)g_list_first (selected_rows)->data;
+  gint * indices = gtk_tree_path_get_indices (tp);
+  GtkTreeRowReference *rr = gtk_tree_row_reference_new (plugins_tree_model,
+                                                        tp);
+  GtkTreeIter iter;
+  gtk_tree_model_get_iter (plugins_tree_model,
+                           &iter,
+                           tp);
+  GValue value = G_VALUE_INIT;
+  gtk_tree_model_get_value (plugins_tree_model,
+                            &iter,
+                            1,
+                            &value);
+  Plugin_Descriptor * descr = g_value_get_pointer (&value);
+  char * label = g_strdup_printf ("%s\n%s, %d\nAudio: %d, %d\nMidi: %d, %d\nControls: %d, %d",
+                                  descr->author,
+                                  descr->category,
+                                  descr->protocol,
+                                  descr->num_audio_ins,
+                                  descr->num_audio_outs,
+                                  descr->num_midi_ins,
+                                  descr->num_midi_outs,
+                                  descr->num_ctrl_ins,
+                                  descr->num_ctrl_outs);
+  gtk_label_set_text (MAIN_WINDOW->plugin_info, label);
+}
 
 void
 on_drag_data_get (GtkWidget        *widget,
@@ -210,6 +244,10 @@ tree_view_create (GtkTreeModel * model,
                         "drag-data-get",
                         G_CALLBACK (on_drag_data_get),
                         gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view)));
+      g_signal_connect (G_OBJECT (gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view))),
+                        "changed",
+                        G_CALLBACK (on_selection_changed),
+                        NULL);
     }
 
 

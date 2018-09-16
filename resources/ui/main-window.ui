@@ -1034,10 +1034,13 @@
                               <placeholder/>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="glabel-plugin-info">
+                              <object class="GtkLabel" id="plugin_info">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">labela</property>
+                                <attributes>
+                                  <attribute name="variant" value="small-caps"/>
+                                  <attribute name="stretch" value="condensed"/>
+                                </attributes>
                               </object>
                               <packing>
                                 <property name="expand">False</property>

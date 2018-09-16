@@ -90,6 +90,7 @@ typedef struct _MainWindowWidget
   GtkExpander              * types_exp;
   GtkExpander              * cat_exp;
   GtkBox                   * browser_bot;
+  GtkLabel                 * plugin_info;
   GtkBox                   * bot_bar;
   GtkToolbar               * bot_bar_left;
   GtkBox                   * transport;

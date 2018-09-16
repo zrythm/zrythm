@@ -192,6 +192,8 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 MainWindowWidget, browser_bot);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                                MainWindowWidget, plugin_info);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 MainWindowWidget, bot_bar);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 MainWindowWidget, bot_bar_left);
@@ -276,7 +278,7 @@ main_window_widget_new (ZrythmApp * _app)
                                                self->timeline_scroll)));
   gtk_widget_show_all (GTK_WIDGET (self->ruler_viewport));
 
-  /* set timeline */
+  /* setup timeline */
   self->timeline = timeline_widget_new (
                       GTK_WIDGET (self->timeline_overlay));
   gtk_scrolled_window_set_min_content_width (self->timeline_scroll, 400);
@@ -284,12 +286,13 @@ main_window_widget_new (ZrythmApp * _app)
             gtk_scrolled_window_get_vadjustment (self->tracks_scroll));
   gtk_widget_show_all (GTK_WIDGET (self->timeline_viewport));
 
-  /* set browser  pass it */
+  /* setup browser */
   setup_browser (GTK_WIDGET (self->browser),
                  GTK_WIDGET (self->collections_exp),
                  GTK_WIDGET (self->types_exp),
                  GTK_WIDGET (self->cat_exp),
                  GTK_WIDGET (self->browser_bot));
+  gtk_label_set_xalign (self->plugin_info, 0);
   gtk_widget_show_all (GTK_WIDGET (self->browser_notebook));
 
   /* setup mixer */
