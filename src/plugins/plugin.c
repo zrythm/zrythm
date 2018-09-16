@@ -81,6 +81,7 @@ plugin_instantiate (Plugin * plugin ///< the plugin
       LV2_Plugin *lv2 = (LV2_Plugin *) plugin->original_plugin;
       lv2_instantiate (lv2, NULL);
     }
+  plugin->enabled = 1;
 }
 
 

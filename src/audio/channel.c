@@ -38,6 +38,8 @@
 /* milliseconds */
 #define SLEEPTIME_MS 100
 
+#define RMS_FRAMES 32
+
 /**
  * Calculate decibels using RMS method.
  */
@@ -45,12 +47,12 @@ static float
 calculate_rms_db (sample_t * buf, nframes_t nframes)
 {
   float sum = 0, sample = 0;
-  for (int i = 0; i < nframes; i += 32)
+  for (int i = 0; i < nframes; i += RMS_FRAMES)
   {
     sample = buf[i];
     sum += (sample * sample);
   }
-  return 20 * log10 (sqrt (sum / (nframes / 32)));
+  return 20.f * log10 (sqrt (sum / (nframes / (float) RMS_FRAMES)));
 }
 
 /**
@@ -144,6 +146,9 @@ channel_process (Channel * channel,  ///< slots
 
   /* mark as processed */
   channel->processed = 1;
+
+  g_idle_add ((GSourceFunc) channel_widget_update_meter_reading,
+              channel->widget);
 }
 
 /**
@@ -211,19 +216,19 @@ _create_channel (char * name)
                                       /*NULL,*/
                                       /*process_channel_work,*/
                                       /*channel);*/
-    jack_client_create_thread (AUDIO_ENGINE->client,
-                               &channel->thread,
-                               jack_client_real_time_priority (AUDIO_ENGINE->client),
-                               jack_is_realtime (AUDIO_ENGINE->client),
-                               process_channel_work,
-                               channel);
+    jack_client_create_thread (
+           AUDIO_ENGINE->client,
+           &channel->thread,
+           jack_client_real_time_priority (AUDIO_ENGINE->client),
+           jack_is_realtime (AUDIO_ENGINE->client),
+           process_channel_work,
+           channel);
 
     if (channel->thread == -1)
       {
-        g_error ("%d: Failed creating thread for channel %s",
+        g_error ("%lu: Failed creating thread for channel %s",
                  channel->thread, channel->name);
       }
-
 
     return channel;
   }
@@ -410,7 +415,7 @@ channel_add_plugin (Channel * channel,    ///< the channel
                   if (prev_plugin->out_ports[j]->type == TYPE_AUDIO)
                     {
                       port_connect (prev_plugin->out_ports[j],
-                                    plugin->in_ports[j]);
+                                    plugin->in_ports[i]);
                     }
                   last_index = j;
                   if (last_index == prev_plugin->num_out_ports - 1)

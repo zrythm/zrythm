@@ -38,6 +38,7 @@ typedef struct KnobWidget KnobWidget;
 typedef struct FaderWidget FaderWidget;
 typedef struct ChannelMeterWidget ChannelMeterWidget;
 typedef struct Channel Channel;
+typedef struct ChannelSlotWidget ChannelSlotWidget;
 
 typedef struct ChannelWidget
 {
@@ -50,15 +51,15 @@ typedef struct ChannelWidget
   GtkLabel            * phase_reading;
   KnobWidget          * phase_knob;
   GtkBox              * slots_box;
-  GtkBox              * slots[MAX_PLUGINS];      ///< array of slot boxes (1 per plugin)
-  //GtkWidget           * slot_on_off_images[MAX_PLUGINS][2];   ///< 0 is off, 1 is on
+  GtkBox              * slot_boxes[MAX_PLUGINS];      ///< array of slot boxes (1 per plugin)
+  ChannelSlotWidget   * slots[MAX_PLUGINS];
   GtkToggleButton     * toggles[MAX_PLUGINS];   ///< toggle buttons (per slot)
   GtkLabel            * labels[MAX_PLUGINS];     ///< labels (per slot)
   //int                 num_slots;        ///< counter
-  GtkBox              * dummy_slot_box;    ///< for dnd
+  //GtkBox              * dummy_slot_box;    ///< for dnd
   GtkToggleButton     * slot1b;
   GtkToggleButton     * slot2b;
-  GtkButton           * add_slot;
+  //GtkButton           * add_slot;
   GtkDrawingArea      * pan;
   GtkButton           * e;
   GtkButton           * solo;
@@ -92,5 +93,11 @@ channel_update_slots (ChannelWidget * self);
  */
 ChannelWidget *
 channel_widget_new (Channel * channel);
+
+/**
+ * Updates the meter reading
+ */
+gboolean
+channel_widget_update_meter_reading (ChannelWidget * widget);
 
 #endif

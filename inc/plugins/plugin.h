@@ -103,6 +103,7 @@ typedef struct Plugin
   int                  num_unknown_ports;    ///< counter
   Channel              * channel;        ///< pointer to channel it belongs to
   int                  processed;  ///< processed or not yet
+  int                  enabled;     ///< enabled or not
 } Plugin;
 
 /**
