@@ -49,6 +49,36 @@ position_set_to_bar (Position * position,
                       int        bar_no);
 
 void
+position_set_bar (Position * position,
+                  int      bar);
+
+void
+position_set_beat (Position * position,
+                  int      beat);
+
+void
+position_set_quarter_beat (Position * position,
+                  int      quarter_beat);
+
+void
+position_set_tick (Position * position,
+                   int      tick);
+
+/**
+ * Sets position to target position
+ */
+void
+position_set_to_pos (Position * position,
+                     Position * target);
+
+void
 position_add_frames (Position * position,
                      int      frames);
+
+/**
+ * Notifies other parts.
+ */
+void
+position_updated (Position * position);
+
 #endif

@@ -20,6 +20,7 @@ zrythm_SOURCES = main.c \
 								 gui/widgets/browser.c \
 								 gui/widgets/channel.c \
 								 gui/widgets/color_area.c \
+								 gui/widgets/digital_meter.c \
 								 gui/widgets/meter.c \
 								 gui/widgets/channel_slot.c \
 								 gui/widgets/fader.c \

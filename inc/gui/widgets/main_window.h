@@ -36,6 +36,7 @@ typedef struct RulerWidget RulerWidget;
 typedef struct TimelineWidget TimelineWidget;
 typedef struct BpmWidget BpmWidget;
 typedef struct TracksWidget TracksWidget;
+typedef struct DigitalMeterWidget DigitalMeterWidget;
 
 typedef struct _MainWindowWidget
 {
@@ -93,8 +94,10 @@ typedef struct _MainWindowWidget
   GtkLabel                 * plugin_info;
   GtkBox                   * bot_bar;
   GtkToolbar               * bot_bar_left;
+  GtkBox                   * digital_meters;
+  DigitalMeterWidget       * digital_bpm;
+  DigitalMeterWidget       * digital_transport;
   GtkBox                   * transport;
-  GtkBox                   * bpm_box;
   BpmWidget                * bpm;    ///< created in code
   GtkButton                * play;
   GtkButton                * stop;

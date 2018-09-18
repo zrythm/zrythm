@@ -22,6 +22,7 @@
 #include "zrythm_app.h"
 #include "project.h"
 #include "settings_manager.h"
+#include "audio/position.h"
 #include "audio/transport.h"
 #include "gui/widgets/ruler.h"
 
@@ -34,13 +35,22 @@ G_DEFINE_TYPE (RulerWidget, ruler_widget, GTK_TYPE_DRAWING_AREA)
  * before being adjusted for zoom.
  * used by the ruler and timeline
  */
-#define PX_PER_BEAT 20
-#define Y_SPACING 9
+#define DEFAULT_PX_PER_TICK 0.03f
+#define Y_SPACING 5
 #define FONT "Monospace"
-#define FONT_SIZE 16
+#define FONT_SIZE 14
+
+#define PLAYHEAD_TRIANGLE_HALF_WIDTH 6
+#define PLAYHEAD_TRIANGLE_HEIGHT 8
+#define START_MARKER_TRIANGLE_HEIGHT 8
+#define START_MARKER_TRIANGLE_WIDTH 8
+#define Q_HEIGHT 12
+#define Q_WIDTH 7
 
 static int px_per_beat;
 static int px_per_bar;
+static int px_per_quarter_beat;
+static float px_per_tick;
 static int total_px;
 
 static gboolean
@@ -55,27 +65,36 @@ draw_cb (RulerWidget * self, cairo_t *cr, gpointer data)
   /*width = gtk_widget_get_allocated_width (widget);*/
   height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
 
+  /* get positions in px */
   static int playhead_pos_in_px;
   playhead_pos_in_px =
-    TRANSPORT->playhead_pos.bars * px_per_bar;
-
+    (TRANSPORT->playhead_pos.bars - 1) * px_per_bar +
+    (TRANSPORT->playhead_pos.beats - 1) * px_per_beat +
+    (TRANSPORT->playhead_pos.quarter_beats - 1) * px_per_quarter_beat +
+    TRANSPORT->playhead_pos.ticks * px_per_tick;
+  static int q_pos_in_px;
+  q_pos_in_px =
+    (TRANSPORT->q_pos.bars - 1) * px_per_bar +
+    (TRANSPORT->q_pos.beats - 1) * px_per_beat +
+    (TRANSPORT->q_pos.quarter_beats - 1) * px_per_quarter_beat +
+    TRANSPORT->q_pos.ticks * px_per_tick;
   static int start_marker_pos_px;
   start_marker_pos_px =
-    TRANSPORT->start_marker_pos.bars * px_per_bar;
+    (TRANSPORT->start_marker_pos.bars - 1) * px_per_bar;
   static int end_marker_pos_px;
   end_marker_pos_px =
-    TRANSPORT->end_marker_pos.bars * px_per_bar;
+    (TRANSPORT->end_marker_pos.bars - 1) * px_per_bar;
   static int loop_start_pos_px;
   loop_start_pos_px =
-    TRANSPORT->loop_start_pos.bars * px_per_bar;
+    (TRANSPORT->loop_start_pos.bars - 1 ) * px_per_bar;
   static int loop_end_pos_px;
   loop_end_pos_px =
-    TRANSPORT->loop_end_pos.bars * px_per_bar;
+    (TRANSPORT->loop_end_pos.bars - 1) * px_per_bar;
 
   gtk_render_background (context, cr, 0, 0, total_px, height);
 
-  /* used for ruler numbers */
-  int bar_count = 0;
+  /* draw lines */
+  int bar_count = 1;
   for (int i = 0; i < total_px; i++)
   {
       if (i % px_per_bar == 0)
@@ -112,32 +131,75 @@ draw_cb (RulerWidget * self, cairo_t *cr, gpointer data)
         }
     if (i == playhead_pos_in_px)
       {
+          cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
+          cairo_set_line_width (cr, 2);
+          cairo_move_to (cr,
+                         i - PLAYHEAD_TRIANGLE_HALF_WIDTH,
+                         height - PLAYHEAD_TRIANGLE_HEIGHT);
+          cairo_line_to (cr, i, height);
+          cairo_line_to (cr,
+                         i + PLAYHEAD_TRIANGLE_HALF_WIDTH,
+                         height - PLAYHEAD_TRIANGLE_HEIGHT);
+          cairo_fill (cr);
+      }
+    if (i == q_pos_in_px)
+      {
+          cairo_set_source_rgb (cr, 0, 0.6, 0.9);
+          cairo_set_line_width (cr, 2);
+          cairo_move_to (
+            cr,
+            i,
+            ((height - PLAYHEAD_TRIANGLE_HEIGHT) - Q_HEIGHT) - 1);
+          cairo_line_to (
+            cr,
+            i + Q_WIDTH,
+            ((height - PLAYHEAD_TRIANGLE_HEIGHT) - Q_HEIGHT / 2) - 1);
+          cairo_line_to (
+            cr,
+            i,
+            (height - PLAYHEAD_TRIANGLE_HEIGHT) - 1);
+          cairo_fill (cr);
+      }
+    if (i == start_marker_pos_px)
+      {
           cairo_set_source_rgb (cr, 1, 0, 0);
           cairo_set_line_width (cr, 2);
           cairo_move_to (cr, i, 0);
-          cairo_arc (cr, i, 3.0, 3.0, 0, 2*G_PI);
+          cairo_line_to (cr, i + START_MARKER_TRIANGLE_WIDTH,
+                         0);
+          cairo_line_to (cr, i,
+                         START_MARKER_TRIANGLE_HEIGHT);
           cairo_fill (cr);
-          cairo_move_to (cr, i, 0);
-          cairo_line_to (cr, i, height);
-          cairo_stroke (cr);
       }
-    if (i == start_marker_pos_px ||
-        i == end_marker_pos_px)
+    if (i == end_marker_pos_px)
       {
           cairo_set_source_rgb (cr, 1, 0, 0);
-          cairo_set_line_width (cr, 14);
-          cairo_move_to (cr, i, 0);
-          cairo_line_to (cr, i, 8);
-          cairo_stroke (cr);
+          cairo_set_line_width (cr, 2);
+          cairo_move_to (cr, i - START_MARKER_TRIANGLE_WIDTH, 0);
+          cairo_line_to (cr, i, 0);
+          cairo_line_to (cr, i, START_MARKER_TRIANGLE_HEIGHT);
+          cairo_fill (cr);
       }
-    if (i == loop_start_pos_px ||
-        i == loop_end_pos_px)
+    if (i == loop_start_pos_px)
       {
-          cairo_set_source_rgb (cr, 0, 1, 0);
-          cairo_set_line_width (cr, 7);
-          cairo_move_to (cr, i, 0);
-          cairo_line_to (cr, i, 5);
-          cairo_stroke (cr);
+          cairo_set_source_rgb (cr, 0, 0.9, 0.7);
+          cairo_set_line_width (cr, 2);
+          cairo_move_to (cr, i, START_MARKER_TRIANGLE_HEIGHT + 1);
+          cairo_line_to (cr, i, START_MARKER_TRIANGLE_HEIGHT * 2 + 1);
+          cairo_line_to (cr, i + START_MARKER_TRIANGLE_WIDTH,
+                         START_MARKER_TRIANGLE_HEIGHT + 1);
+          cairo_fill (cr);
+      }
+    if (i == loop_end_pos_px)
+      {
+          cairo_set_source_rgb (cr, 0, 0.9, 0.7);
+          cairo_set_line_width (cr, 2);
+          cairo_move_to (cr, i, START_MARKER_TRIANGLE_HEIGHT + 1);
+          cairo_line_to (cr, i - START_MARKER_TRIANGLE_WIDTH,
+                         START_MARKER_TRIANGLE_HEIGHT + 1);
+          cairo_line_to (cr, i,
+                         START_MARKER_TRIANGLE_HEIGHT * 2 + 1);
+          cairo_fill (cr);
       }
 
   }
@@ -169,17 +231,14 @@ ruler_widget_new ()
   g_message ("Creating ruler...");
   RulerWidget * self = g_object_new (RULER_WIDGET_TYPE, NULL);
 
-  int default_px_per_beat = PX_PER_BEAT;
-
   /* adjust for zoom level */
-  px_per_beat = (int) ((float) default_px_per_beat *
-                           TRANSPORT->zoom_level);
-
-  px_per_bar = px_per_beat *
-                  TRANSPORT->beats_per_bar;
+  px_per_tick = (DEFAULT_PX_PER_TICK * TRANSPORT->zoom_level);
+  px_per_quarter_beat = (int) (px_per_tick * TICKS_PER_QUARTER_BEAT);
+  px_per_beat = (int) (px_per_tick * TICKS_PER_BEAT);
+  px_per_bar = px_per_beat * TRANSPORT->beats_per_bar;
 
   total_px = px_per_bar *
-    TRANSPORT->total_bars;
+    (TRANSPORT->total_bars);
 
 
   // set the size

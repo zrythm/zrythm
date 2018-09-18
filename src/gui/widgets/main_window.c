@@ -25,6 +25,7 @@
 #include "gui/widgets/bpm.h"
 #include "gui/widgets/browser.h"
 #include "gui/widgets/channel.h"
+#include "gui/widgets/digital_meter.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/instrument_timeline_view.h"
@@ -198,9 +199,9 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 MainWindowWidget, bot_bar_left);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, transport);
+                                                MainWindowWidget, digital_meters);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, bpm_box);
+                                                MainWindowWidget, transport);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 MainWindowWidget, play);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
@@ -321,13 +322,17 @@ main_window_widget_new (ZrythmApp * _app)
           "/online/alextee/zrythm/plus.svg");
   gtk_button_set_image (GTK_BUTTON (self->channels_add), image);
 
+  /* setup digital meters */
+  self->digital_bpm = digital_meter_widget_new (DIGITAL_METER_TYPE_BPM);
+  self->digital_transport = digital_meter_widget_new (DIGITAL_METER_TYPE_POSITION);
+  gtk_container_add (GTK_CONTAINER (self->digital_meters),
+                     GTK_WIDGET (self->digital_bpm));
+  gtk_container_add (GTK_CONTAINER (self->digital_meters),
+                     GTK_WIDGET (self->digital_transport));
+  gtk_widget_show_all (GTK_WIDGET (self->digital_meters));
+
   /* set transport controls */
   transport_controls_init (self);
-
-  /* set bpm */
-  self->bpm = bpm_widget_new ();
-  gtk_container_add (GTK_CONTAINER (self->bpm_box),
-                     GTK_WIDGET (self->bpm));
 
   return self;
 }

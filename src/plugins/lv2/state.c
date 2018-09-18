@@ -159,7 +159,7 @@ set_port_value(const char* port_symbol,
           return;
   }
 
-  if (TRANSPORT->play_state != PLAYSTATE_RUNNING)
+  if (TRANSPORT->play_state != PLAYSTATE_ROLLING)
     {
       // Set value on port struct directly
       port->control = fvalue;
@@ -185,7 +185,7 @@ set_port_value(const char* port_symbol,
 void
 lv2_apply_state(LV2_Plugin* plugin, LilvState* state)
 {
-  bool must_pause = !plugin->safe_restore && TRANSPORT->play_state == PLAYSTATE_RUNNING;
+  bool must_pause = !plugin->safe_restore && TRANSPORT->play_state == PLAYSTATE_ROLLING;
   if (state)
     {
       if (must_pause)
@@ -203,7 +203,7 @@ lv2_apply_state(LV2_Plugin* plugin, LilvState* state)
       if (must_pause)
         {
           plugin->request_update = true;
-          TRANSPORT->play_state     = PLAYSTATE_RUNNING;
+          TRANSPORT->play_state     = PLAYSTATE_ROLLING;
         }
     }
 }

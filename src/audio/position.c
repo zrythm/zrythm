@@ -22,6 +22,9 @@
 #include "audio/engine.h"
 #include "audio/position.h"
 #include "audio/transport.h"
+#include "gui/widgets/main_window.h"
+
+#include <gtk/gtk.h>
 
 /**
  * Initializes given position to all 0
@@ -29,17 +32,29 @@
 void
 position_init (Position * position)
 {
-  position->bars = 0;
-  position->beats = 0;
-  position->quarter_beats = 0;
+  position->bars = 1;
+  position->beats = 1;
+  position->quarter_beats = 1;
   position->ticks = 0;
 }
 
+/**
+ * Converts position bars/beats/quarter beats/ticks to frames
+ */
 static int
-bar_to_frames (int bar_no)
+position_to_frames (Position * position)
 {
-  return AUDIO_ENGINE->frames_per_tick * bar_no *
+  int frames = AUDIO_ENGINE->frames_per_tick * position->bars *
     TRANSPORT->beats_per_bar * 4 * TICKS_PER_QUARTER_BEAT;
+  if (position->beats)
+    frames += AUDIO_ENGINE->frames_per_tick * position->beats *
+      4 * TICKS_PER_QUARTER_BEAT;
+  if (position->quarter_beats)
+    frames += AUDIO_ENGINE->frames_per_tick * position->quarter_beats *
+      TICKS_PER_QUARTER_BEAT;
+  if (position->ticks)
+    frames += AUDIO_ENGINE->frames_per_tick * position->ticks;
+  return frames;
 }
 
 /**
@@ -47,33 +62,163 @@ bar_to_frames (int bar_no)
  */
 void
 position_set_to_bar (Position * position,
-                      int        bar_no)
+                      int        bar)
 {
-  position->bars = bar_no;
-  position->beats = 0;
-  position->quarter_beats = 0;
+  if (bar < 1)
+    bar = 1;
+  position->bars = bar;
+  position->beats = 1;
+  position->quarter_beats = 1;
   position->ticks = 0;
-  position->frames = bar_to_frames (bar_no);
+  position->frames = position_to_frames (position);
+  position_updated (position);
 }
 
+void
+position_set_bar (Position * position,
+                  int      bar)
+{
+  if (bar < 1)
+    bar = 1;
+  position->bars = bar;
+  position->frames = position_to_frames (position);
+  position_updated (position);
+}
+
+void
+position_set_beat (Position * position,
+                  int      beat)
+{
+  while (beat < 1 || beat > 4)
+    {
+      if (beat < 1)
+        {
+          if (position->bars == 1)
+            {
+              beat = 1;
+              break;
+            }
+          beat += 4;
+          position_set_bar (position,
+                            position->bars - 1);
+        }
+      else if (beat > 4)
+        {
+          beat -= 4;
+          position_set_bar (position,
+                            position->bars + 1);
+        }
+    }
+  position->beats = beat;
+  position->frames = position_to_frames (position);
+  position_updated (position);
+}
+
+void
+position_set_quarter_beat (Position * position,
+                  int      quarter_beat)
+{
+  while (quarter_beat < 1 || quarter_beat > 4)
+    {
+      if (quarter_beat < 1)
+        {
+          if (position->bars == 1 && position->beats == 1)
+            {
+              quarter_beat = 1;
+              break;
+            }
+          quarter_beat += 4;
+          position_set_beat (position,
+                             position->beats - 1);
+        }
+      else if (quarter_beat > 4)
+        {
+          quarter_beat -= 4;
+          position_set_beat (position,
+                             position->beats + 1);
+        }
+    }
+  position->quarter_beats = quarter_beat;
+  position->frames = position_to_frames (position);
+  position_updated (position);
+}
+
+
+void
+position_set_tick (Position * position,
+                  int      tick)
+{
+  while (tick < 0 || tick > TICKS_PER_QUARTER_BEAT - 1)
+    {
+      if (tick < 0)
+        {
+          if (position->bars == 1 && position->beats == 1 &&
+              position->quarter_beats == 1)
+            {
+              tick = 0;
+              break;
+            }
+          tick += TICKS_PER_QUARTER_BEAT;
+          position_set_quarter_beat (position,
+                                     position->quarter_beats - 1);
+        }
+      else if (tick > TICKS_PER_QUARTER_BEAT - 1)
+        {
+          tick -= TICKS_PER_QUARTER_BEAT;
+          position_set_quarter_beat (position,
+                                     position->quarter_beats + 1);
+        }
+    }
+  position->ticks = tick;
+  position->frames = position_to_frames (position);
+  position_updated (position);
+}
+
+/**
+ * Sets position to target position
+ */
+void
+position_set_to_pos (Position * position,
+                     Position * target)
+{
+  position->bars = target->bars;
+  position->beats = target->beats;
+  position->quarter_beats = target->quarter_beats;
+  position->ticks = target->ticks;
+  position->frames = target->frames;
+  position_updated (position);
+}
 
 void
 position_add_frames (Position * position,
                      int      frames)
 {
   position->frames += frames;
-  position->ticks += frames / AUDIO_ENGINE->frames_per_tick;
-  if (position->ticks > TICKS_PER_QUARTER_BEAT)
-    {
-      position->ticks %= TICKS_PER_QUARTER_BEAT;
-      if (++position->quarter_beats > 4)
-        {
-          position->quarter_beats = 0;
-          if (++position->beats > TRANSPORT->beats_per_bar)
-            {
-              position->beats = 0;
-              position->bars++;
-            }
-        }
-    }
+  position_set_tick (position,
+                     position->ticks +
+                       frames / AUDIO_ENGINE->frames_per_tick);
+  /*if (position->ticks > TICKS_PER_QUARTER_BEAT)*/
+    /*{*/
+      /*position->ticks %= TICKS_PER_QUARTER_BEAT;*/
+      /*if (++position->quarter_beats > 4)*/
+        /*{*/
+          /*position->quarter_beats = 0;*/
+          /*if (++position->beats > TRANSPORT->beats_per_bar)*/
+            /*{*/
+              /*position->beats = 0;*/
+              /*position->bars++;*/
+            /*}*/
+        /*}*/
+    /*}*/
+  position_updated (position);
+}
+
+/**
+ * Notifies other parts.
+ */
+void
+position_updated (Position * position)
+{
+  if (MAIN_WINDOW && MAIN_WINDOW->digital_transport)
+    gtk_widget_queue_draw (GTK_WIDGET (MAIN_WINDOW->digital_transport));
 }

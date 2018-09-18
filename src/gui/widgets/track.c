@@ -38,6 +38,35 @@ track_widget_new (Channel * channel)
   self->channel = channel;
   gtk_label_set_text (self->track_name, channel->name);
 
+  GtkWidget * image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/solo.svg");
+  gtk_button_set_image (self->solo, image);
+  gtk_button_set_label (self->solo,
+                        "");
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/mute.svg");
+  gtk_button_set_image (self->mute, image);
+  gtk_button_set_label (self->mute,
+                        "");
+  /*image = gtk_image_new_from_resource (*/
+          /*"/online/alextee/zrythm/record.svg");*/
+  gtk_button_set_image (GTK_BUTTON (self->record),
+                        gtk_image_new_from_icon_name ("gtk-media-record",
+                                                      GTK_ICON_SIZE_BUTTON));
+  gtk_widget_set_size_request (GTK_WIDGET (self->record),
+                               16,
+                               16);
+  gtk_button_set_label (self->record,
+                        "");
+  gtk_button_set_image (
+            self->show_automation,
+            gtk_image_new_from_icon_name ("gtk-justify-fill",
+                                          GTK_ICON_SIZE_BUTTON));
+  gtk_button_set_label (self->show_automation,
+                        "");
+  gtk_image_set_from_resource (self->icon,
+                               "/online/alextee/zrythm/instrument.svg");
+
   return self;
 }
 

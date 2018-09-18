@@ -32,6 +32,8 @@
 
 #define TRANSPORT PROJECT->transport
 #define DEFAULT_TOTAL_BARS 128
+#define MAX_BPM 360.f
+#define MIN_BPM 60.f
 #define DEFAULT_BPM 140.f
 #define DEFAULT_BEATS_PER_BAR 4
 #define DEFAULT_BEAT_UNIT 4
@@ -40,7 +42,7 @@
 struct Project;
 
 typedef enum {
-	PLAYSTATE_RUNNING,
+	PLAYSTATE_ROLLING,
 	PLAYSTATE_PAUSE_REQUESTED,
 	PLAYSTATE_PAUSED
 } Play_State;
@@ -49,6 +51,7 @@ typedef struct Transport
 {
   int           total_bars;             ///< total bars in the song
   Position      playhead_pos;           ///< playhead position
+  Position      q_pos;            ///< position to use when stopped
   Position      loop_start_pos;         ///< loop marker start position
   Position      loop_end_pos;           ///< loop marker end position
   Position      start_marker_pos;       ///< start marker position

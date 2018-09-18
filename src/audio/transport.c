@@ -22,7 +22,6 @@
 #include "audio/engine.h"
 #include "audio/transport.h"
 
-
 /**
  * Sets BPM and does any necessary processing (like notifying interested
  * parties).
@@ -30,7 +29,14 @@
 void
 transport_set_bpm (float bpm)
 {
+  if (bpm < MIN_BPM)
+    bpm = MIN_BPM;
+  else if (bpm > MAX_BPM)
+    bpm = MAX_BPM;
   TRANSPORT->bpm = bpm;
+  engine_update_frames_per_tick (TRANSPORT->beats_per_bar,
+                                 bpm,
+                                 AUDIO_ENGINE->sample_rate);
 }
 
 void
@@ -50,22 +56,17 @@ transport_init ()
                  sizeof (Region));
 
   /* set BPM related defaults */
-  transport->bpm = DEFAULT_BPM;
   transport->beats_per_bar = DEFAULT_BEATS_PER_BAR;
   transport->beat_unit = DEFAULT_BEAT_UNIT;
-
-  engine_update_frames_per_tick (transport->beats_per_bar,
-                                 transport->bpm,
-                                 AUDIO_ENGINE->sample_rate);
+  transport_set_bpm (DEFAULT_BPM);
 
   // set positions of playhead, start/end markers
-  position_set_to_bar (&transport->playhead_pos, 3);
-  position_init (&transport->start_marker_pos);
-  position_set_to_bar (&transport->end_marker_pos,
-                        32);
-  position_init (&transport->loop_start_pos);
-  position_set_to_bar (&transport->loop_end_pos,
-                        8);
+  position_set_to_bar (&transport->playhead_pos, 1);
+  position_set_to_bar (&transport->q_pos, 1);
+  position_set_to_bar (&transport->start_marker_pos, 1);
+  position_set_to_bar (&transport->end_marker_pos, 128);
+  position_set_to_bar (&transport->loop_start_pos, 1);
+  position_set_to_bar (&transport->loop_end_pos, 8);
 
   /* set playstate */
   transport->play_state = PLAYSTATE_PAUSED;
@@ -81,6 +82,9 @@ transport_init ()
 void
 transport_update_playhead (int frames)
 {
-  position_add_frames (&TRANSPORT->playhead_pos,
-                       frames);
+  if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
+    {
+      position_add_frames (&TRANSPORT->playhead_pos,
+                           frames);
+    }
 }

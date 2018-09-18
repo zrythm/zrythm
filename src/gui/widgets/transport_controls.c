@@ -29,14 +29,20 @@ static void
 play_clicked_cb (GtkButton *button,
                gpointer       user_data)
 {
-  PROJECT->transport->play_state = PLAYSTATE_RUNNING;
+  TRANSPORT->play_state = PLAYSTATE_ROLLING;
 }
 
 static void
 stop_clicked_cb (GtkButton *button,
                gpointer       user_data)
 {
-  PROJECT->transport->play_state = PLAYSTATE_PAUSED;
+  if (TRANSPORT->play_state == PLAYSTATE_PAUSED)
+    {
+      position_set_to_pos (&TRANSPORT->playhead_pos,
+                           &TRANSPORT->q_pos);
+    }
+  else
+    TRANSPORT->play_state = PLAYSTATE_PAUSED;
 }
 
 static void
