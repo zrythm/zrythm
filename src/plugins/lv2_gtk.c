@@ -40,8 +40,6 @@
 #endif
 #endif
 
-static GtkCheckMenuItem* active_preset_item = NULL;
-static bool              updating           = false;
 
 bool no_menu = false;
 bool generic_ui = false; /* FIXME */
@@ -100,6 +98,8 @@ static void
 on_window_destroy(GtkWidget* widget,
                   gpointer   data)
 {
+  LV2_Plugin * plugin = (LV2_Plugin *) data;
+  lv2_close_ui (plugin);
 }
 
 const char*
@@ -183,17 +183,17 @@ set_window_title(LV2_Plugin* plugin)
 static void
 on_preset_activate(GtkWidget* widget, gpointer data)
 {
-	if (GTK_CHECK_MENU_ITEM(widget) != active_preset_item) {
-		PresetRecord* record = (PresetRecord*)data;
-		lv2_apply_preset(record->plugin, record->preset);
-		if (active_preset_item) {
-			gtk_check_menu_item_set_active(active_preset_item, FALSE);
-		}
+  PresetRecord* record = (PresetRecord*)data;
+  if (GTK_CHECK_MENU_ITEM(widget) != record->plugin->active_preset_item) {
+          lv2_apply_preset(record->plugin, record->preset);
+          if (record->plugin->active_preset_item) {
+                  gtk_check_menu_item_set_active(record->plugin->active_preset_item, FALSE);
+          }
 
-		active_preset_item = GTK_CHECK_MENU_ITEM(widget);
-		gtk_check_menu_item_set_active(active_preset_item, TRUE);
-		set_window_title(record->plugin);
-	}
+          record->plugin->active_preset_item = GTK_CHECK_MENU_ITEM(widget);
+          gtk_check_menu_item_set_active(record->plugin->active_preset_item, TRUE);
+          set_window_title(record->plugin);
+  }
 }
 
 static void
@@ -277,7 +277,7 @@ add_preset_to_menu(LV2_Plugin*           plugin,
 	if (plugin->preset &&
 	    lilv_node_equals(lilv_state_get_uri(plugin->preset), node)) {
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), TRUE);
-		active_preset_item = GTK_CHECK_MENU_ITEM(item);
+		plugin->active_preset_item = GTK_CHECK_MENU_ITEM(item);
 	}
 
 	LilvNode* bank = lilv_world_get(
@@ -319,7 +319,7 @@ static void
 rebuild_preset_menu(LV2_Plugin* plugin, GtkContainer* pset_menu)
 {
 	// Clear current menu
-	active_preset_item = NULL;
+	plugin->active_preset_item = NULL;
 	for (GList* items = g_list_nth(gtk_container_get_children(pset_menu), 3);
 	     items;
 	     items = items->next) {
@@ -457,7 +457,8 @@ set_control(const Lv2ControlID* control,
             LV2_URID         type,
             const void*      body)
 {
-	if (!updating) {
+  g_message ("set control");
+	if (!control->plugin->updating) {
 		lv2_set_control(control, size, type, body);
 	}
 }
@@ -486,6 +487,11 @@ set_float_control(const Lv2ControlID* control, float value)
 		const int32_t ival = value;
 		set_control(control, sizeof(ival), control->plugin->forge.Bool, &ival);
 	}
+        else
+          {
+            /* FIXME ? */
+            set_control(control, sizeof(value), control->plugin->forge.Float, &value);
+          }
 
 	Controller* controller = (Controller*)control->widget;
 	if (controller && controller->spin &&
@@ -638,7 +644,7 @@ lv2_ui_port_event(LV2_Plugin*       plugin,
 
 	const LV2_Atom* atom = (const LV2_Atom*)buffer;
 	if (lv2_atom_forge_is_object_type(&plugin->forge, atom->type)) {
-		updating = true;
+		plugin->updating = true;
 		const LV2_Atom_Object* obj = (const LV2_Atom_Object*)buffer;
 		if (obj->body.otype == plugin->urids.patch_Set) {
 			const LV2_Atom_URID* property = NULL;
@@ -656,7 +662,7 @@ lv2_ui_port_event(LV2_Plugin*       plugin,
 		} else {
 			printf("Unknown object type?\n");
 		}
-		updating = false;
+		plugin->updating = false;
 	}
 }
 
@@ -824,43 +830,43 @@ make_log_slider(Lv2ControlID* record, float value)
 static Controller*
 make_slider(Lv2ControlID* record, float value)
 {
-	const float  min   = get_float(record->min, 0.0f);
-	const float  max   = get_float(record->max, 1.0f);
-	const double step  = record->is_integer ? 1.0 : ((max - min) / 100.0);
-	GtkWidget*   scale = new_hscale(min, max, step);
-	GtkWidget*   spin  = gtk_spin_button_new_with_range(min, max, step);
+  const float  min   = get_float(record->min, 0.0f);
+  const float  max   = get_float(record->max, 1.0f);
+  const double step  = record->is_integer ? 1.0 : ((max - min) / 100.0);
+  GtkWidget*   scale = new_hscale(min, max, step);
+  GtkWidget*   spin  = gtk_spin_button_new_with_range(min, max, step);
 
-	gtk_widget_set_sensitive(scale, record->is_writable);
-	gtk_widget_set_sensitive(spin, record->is_writable);
+  gtk_widget_set_sensitive(scale, record->is_writable);
+  gtk_widget_set_sensitive(spin, record->is_writable);
 
-	if (record->is_integer) {
-		gtk_spin_button_set_digits(GTK_SPIN_BUTTON(spin), 0);
-	} else {
-		gtk_spin_button_set_digits(GTK_SPIN_BUTTON(spin), 7);
-	}
+  if (record->is_integer) {
+          gtk_spin_button_set_digits(GTK_SPIN_BUTTON(spin), 0);
+  } else {
+          gtk_spin_button_set_digits(GTK_SPIN_BUTTON(spin), 7);
+  }
 
-	gtk_scale_set_draw_value(GTK_SCALE(scale), FALSE);
-	gtk_range_set_value(GTK_RANGE(scale), value);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin), value);
-	if (record->points) {
-		for (size_t i = 0; i < record->n_points; ++i) {
-			const Lv2ScalePoint* point = &record->points[i];
+  gtk_scale_set_draw_value(GTK_SCALE(scale), FALSE);
+  gtk_range_set_value(GTK_RANGE(scale), value);
+  gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin), value);
+  if (record->points) {
+          for (size_t i = 0; i < record->n_points; ++i) {
+                  const Lv2ScalePoint* point = &record->points[i];
 
-			gchar* str = g_markup_printf_escaped(
-				"<span font_size=\"small\">%s</span>", point->label);
-			gtk_scale_add_mark(
-				GTK_SCALE(scale), point->value, GTK_POS_TOP, str);
-		}
-	}
+                  gchar* str = g_markup_printf_escaped(
+                          "<span font_size=\"small\">%s</span>", point->label);
+                  gtk_scale_add_mark(
+                          GTK_SCALE(scale), point->value, GTK_POS_TOP, str);
+          }
+  }
 
-	if (record->is_writable) {
-		g_signal_connect(G_OBJECT(scale), "value-changed",
-		                 G_CALLBACK(scale_changed), record);
-		g_signal_connect(G_OBJECT(spin), "value-changed",
-		                 G_CALLBACK(spin_changed), record);
-	}
+  if (record->is_writable) {
+          g_signal_connect(G_OBJECT(scale), "value-changed",
+                           G_CALLBACK(scale_changed), record);
+          g_signal_connect(G_OBJECT(spin), "value-changed",
+                           G_CALLBACK(spin_changed), record);
+  }
 
-	return new_controller(GTK_SPIN_BUTTON(spin), scale);
+  return new_controller(GTK_SPIN_BUTTON(spin), scale);
 }
 
 static Controller*
@@ -1224,7 +1230,8 @@ lv2_open_ui(LV2_Plugin* plugin)
 int
 lv2_close_ui(LV2_Plugin* plugin)
 {
-  return 0;
+  plugin->window = NULL;
+  return TRUE;
 }
 
 #if GTK_MAJOR_VERSION == 3

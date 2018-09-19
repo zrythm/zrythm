@@ -700,55 +700,57 @@ lv2_send_to_ui(LV2_Plugin*       plugin,
                 uint32_t    size,
                 const void* body)
 {
-	/* TODO: Be more disciminate about what to send */
-	char evbuf[sizeof(Lv2ControlChange) + sizeof(LV2_Atom)];
-	Lv2ControlChange* ev = (Lv2ControlChange*)evbuf;
-	ev->index    = port_index;
-	ev->protocol = plugin->urids.atom_eventTransfer;
-	ev->size     = sizeof(LV2_Atom) + size;
+  /* TODO: Be more disciminate about what to send */
+  char evbuf[sizeof(Lv2ControlChange) + sizeof(LV2_Atom)];
+  Lv2ControlChange* ev = (Lv2ControlChange*)evbuf;
+  ev->index    = port_index;
+  ev->protocol = plugin->urids.atom_eventTransfer;
+  ev->size     = sizeof(LV2_Atom) + size;
 
-	LV2_Atom* atom = (LV2_Atom*)ev->body;
-	atom->type = type;
-	atom->size = size;
+  LV2_Atom* atom = (LV2_Atom*)ev->body;
+  atom->type = type;
+  atom->size = size;
 
-	if (zix_ring_write_space(plugin->plugin_events) >= sizeof(evbuf) + size) {
-		zix_ring_write(plugin->plugin_events, evbuf, sizeof(evbuf));
-		zix_ring_write(plugin->plugin_events, (const char*)body, size);
-		return true;
-	} else {
-		fprintf(stderr, "Plugin => UI buffer overflow!\n");
-		return false;
-	}
+  if (zix_ring_write_space(plugin->plugin_events) >= sizeof(evbuf) + size) {
+          zix_ring_write(plugin->plugin_events, evbuf, sizeof(evbuf));
+          zix_ring_write(plugin->plugin_events, (const char*)body, size);
+          return true;
+  } else {
+          fprintf(stderr, "Plugin => UI buffer overflow!\n");
+          return false;
+  }
 }
 
 bool
 lv2_run(LV2_Plugin* plugin, uint32_t nframes)
 {
     /* Read and apply control change events from UI */
+  if (plugin->window)
     lv2_apply_ui_events(plugin, nframes);
 
-    /* Run plugin for this cycle */
-    lilv_instance_run(plugin->instance, nframes);
+  /* Run plugin for this cycle */
+  lilv_instance_run(plugin->instance, nframes);
 
-    /* Process any worker replies. */
-    lv2_worker_emit_responses(&plugin->state_worker, plugin->instance);
-    lv2_worker_emit_responses(&plugin->worker, plugin->instance);
+  /* Process any worker replies. */
+  lv2_worker_emit_responses(&plugin->state_worker, plugin->instance);
+  lv2_worker_emit_responses(&plugin->worker, plugin->instance);
 
-    /* Notify the plugin the run() cycle is finished */
-    if (plugin->worker.iface && plugin->worker.iface->end_run) {
-            plugin->worker.iface->end_run(plugin->instance->lv2_handle);
+  /* Notify the plugin the run() cycle is finished */
+  if (plugin->worker.iface && plugin->worker.iface->end_run) {
+          plugin->worker.iface->end_run(plugin->instance->lv2_handle);
+  }
+
+  /* Check if it's time to send updates to the UI */
+  plugin->event_delta_t += nframes;
+  bool     send_ui_updates = false;
+  uint32_t update_frames   = AUDIO_ENGINE->sample_rate / plugin->ui_update_hz;
+  if (plugin->has_ui && plugin->window && (plugin->event_delta_t > update_frames))
+    {
+      send_ui_updates = true;
+      plugin->event_delta_t = 0;
     }
 
-    /* Check if it's time to send updates to the UI */
-    plugin->event_delta_t += nframes;
-    bool     send_ui_updates = false;
-    uint32_t update_frames   = AUDIO_ENGINE->sample_rate / plugin->ui_update_hz;
-    if (plugin->has_ui && (plugin->event_delta_t > update_frames)) {
-            send_ui_updates = true;
-            plugin->event_delta_t = 0;
-    }
-
-    return send_ui_updates;
+  return send_ui_updates;
 }
 
 bool
@@ -762,11 +764,14 @@ lv2_update(LV2_Plugin* plugin)
     }
 
   /* Emit UI events. */
-  Lv2ControlChange ev;
-  const size_t  space = zix_ring_read_space(plugin->plugin_events);
-  for (size_t i = 0;
-       i + sizeof(ev) < space;
-       i += sizeof(ev) + ev.size) {
+  if (plugin->window)
+    {
+      Lv2ControlChange ev;
+      const size_t  space = zix_ring_read_space(plugin->plugin_events);
+      for (size_t i = 0;
+           i + sizeof(ev) < space;
+           i += sizeof(ev) + ev.size)
+        {
           /* Read event header to get the size */
           zix_ring_read(plugin->plugin_events, (char*)&ev, sizeof(ev));
 
@@ -799,11 +804,12 @@ lv2_update(LV2_Plugin* plugin)
           if (ev.protocol == 0 && print_controls) {
                   _print_control_value(plugin, &plugin->ports[ev.index], *(float*)buf);
           }
-  }
+      }
 
-  if (plugin->externalui && plugin->extuiptr) {
-          LV2_EXTERNAL_UI_RUN(plugin->extuiptr);
-  }
+      if (plugin->externalui && plugin->extuiptr) {
+              LV2_EXTERNAL_UI_RUN(plugin->extuiptr);
+      }
+    }
 
   return true;
 }
@@ -811,23 +817,23 @@ lv2_update(LV2_Plugin* plugin)
 static bool
 _apply_control_arg(LV2_Plugin* plugin, const char* s)
 {
-	char  sym[256];
-	float val = 0.0f;
-	if (sscanf(s, "%[^=]=%f", sym, &val) != 2) {
-		fprintf(stderr, "warning: Ignoring invalid value `%s'\n", s);
-		return false;
-	}
+  char  sym[256];
+  float val = 0.0f;
+  if (sscanf(s, "%[^=]=%f", sym, &val) != 2) {
+          fprintf(stderr, "warning: Ignoring invalid value `%s'\n", s);
+          return false;
+  }
 
-	Lv2ControlID* control = lv2_control_by_symbol(plugin, sym);
-	if (!control) {
-		fprintf(stderr, "warning: Ignoring value for unknown control `%s'\n", sym);
-		return false;
-	}
+  Lv2ControlID* control = lv2_control_by_symbol(plugin, sym);
+  if (!control) {
+          fprintf(stderr, "warning: Ignoring value for unknown control `%s'\n", sym);
+          return false;
+  }
 
-	lv2_set_control(control, sizeof(float), plugin->urids.atom_Float, &val);
-	printf("%-*s = %f\n", plugin->longest_sym, sym, val);
+  lv2_set_control(control, sizeof(float), plugin->urids.atom_Float, &val);
+  printf("%-*s = %f\n", plugin->longest_sym, sym, val);
 
-	return true;
+  return true;
 }
 
 void
@@ -1658,8 +1664,6 @@ lv2_cleanup (LV2_Plugin *lv2_plugin)
   /* Wait for finish signal from UI or signal handler */
   zix_sem_wait(&lv2_plugin->exit_sem);
   lv2_plugin->exit = true;
-
-  fprintf(stderr, "Exiting...\n");
 
   /* Terminate the worker */
   lv2_worker_finish(&lv2_plugin->worker);

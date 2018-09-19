@@ -23,7 +23,9 @@
  */
 
 #include "audio/channel.h"
+#include "plugins/lv2_plugin.h"
 #include "gui/widget_manager.h"
+#include "gui/widgets/channel.h"
 #include "gui/widgets/channel_slot.h"
 
 G_DEFINE_TYPE (ChannelSlotWidget, channel_slot_widget, GTK_TYPE_DRAWING_AREA)
@@ -136,6 +138,41 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 
 }
 
+static gboolean
+button_press_cb (GtkWidget      * widget,
+                 GdkEventButton * event,
+                 gpointer       data)
+{
+  if (event->type == GDK_2BUTTON_PRESS)
+    {
+      ChannelSlotWidget * self = (ChannelSlotWidget *) data;
+      Plugin * plugin = self->channel->strip[self->slot_index];
+      if (plugin)
+        {
+          if (plugin->descr->protocol == PROT_LV2)
+            {
+              LV2_Plugin * lv2_plugin = (LV2_Plugin *) plugin->original_plugin;
+              if (lv2_plugin->window)
+                gtk_window_present (GTK_WINDOW (lv2_plugin->window));
+              else
+                lv2_open_ui (lv2_plugin);
+            }
+        }
+    }
+}
+
+static void
+on_drag_data_get (GtkWidget        *widget,
+               GdkDragContext   *context,
+               GtkSelectionData *data,
+               guint             info,
+               guint             time,
+               gpointer          user_data)
+{
+  g_message ("aaaaaaaaa");
+}
+
+
 /**
  * Creates a new ChannelSlot widget and binds it to the given value.
  */
@@ -148,13 +185,27 @@ channel_slot_widget_new (int slot_index, Channel * channel)
 
   gtk_widget_set_size_request (GTK_WIDGET (self), -1, 24);
 
+  /* make it able to notify */
+  gtk_widget_add_events (GTK_WIDGET (self), GDK_BUTTON_PRESS_MASK);
+
   /* connect signals */
   g_signal_connect (G_OBJECT (self), "draw",
                     G_CALLBACK (draw_cb), self);
   g_signal_connect (GTK_WIDGET (self),
                     "drag-data-received",
                     G_CALLBACK(on_drag_data_received), NULL);
+  g_signal_connect (G_OBJECT(self), "button_press_event",
+                    G_CALLBACK (button_press_cb),  self);
+  g_signal_connect (GTK_WIDGET (channel->channel_widget->slot_boxes[slot_index]),
+                    "drag-data-get",
+                    G_CALLBACK (on_drag_data_get),
+                    self);
 
+  gtk_drag_source_set (GTK_WIDGET (channel->channel_widget->slot_boxes[slot_index]),
+                       GDK_MODIFIER_MASK,
+                       WIDGET_MANAGER->entries,
+                       WIDGET_MANAGER->num_entries,
+                       GDK_ACTION_COPY);
   gtk_drag_dest_set (GTK_WIDGET (self),
                             GTK_DEST_DEFAULT_ALL,
                             WIDGET_MANAGER->entries,

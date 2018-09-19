@@ -20,6 +20,8 @@
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2/control.h"
 
+#include <gtk/gtk.h>
+
 int
 scale_point_cmp(const Lv2ScalePoint* a, const Lv2ScalePoint* b)
 {
@@ -34,79 +36,79 @@ scale_point_cmp(const Lv2ScalePoint* a, const Lv2ScalePoint* b)
 Lv2ControlID*
 lv2_new_port_control(LV2_Plugin* plugin, uint32_t index)
 {
-	LV2_Port*      port  = &plugin->ports[index];
-	const LilvPort*   lport = port->lilv_port;
-	const LilvPlugin* plug  = plugin->lilv_plugin;
-	const LV2_Nodes*  nodes = &plugin->nodes;
+  LV2_Port*      port  = &plugin->ports[index];
+  const LilvPort*   lport = port->lilv_port;
+  const LilvPlugin* plug  = plugin->lilv_plugin;
+  const LV2_Nodes*  nodes = &plugin->nodes;
 
-	Lv2ControlID* id = (Lv2ControlID*)calloc(1, sizeof(Lv2ControlID));
-	id->plugin           = plugin;
-	id->type           = PORT;
-	id->node           = lilv_node_duplicate(lilv_port_get_node(plug, lport));
-	id->symbol         = lilv_node_duplicate(lilv_port_get_symbol(plug, lport));
-	id->label          = lilv_port_get_name(plug, lport);
-	id->index          = index;
-	id->group          = lilv_port_get(plug, lport, plugin->nodes.pg_group);
-	id->value_type     = plugin->forge.Float;
-	id->is_writable    = lilv_port_is_a(plug, lport, nodes->lv2_InputPort);
-	id->is_readable    = lilv_port_is_a(plug, lport, nodes->lv2_OutputPort);
-	id->is_toggle      = lilv_port_has_property(plug, lport, nodes->lv2_toggled);
-	id->is_integer     = lilv_port_has_property(plug, lport, nodes->lv2_integer);
-	id->is_enumeration = lilv_port_has_property(plug, lport, nodes->lv2_enumeration);
-	id->is_logarithmic = lilv_port_has_property(plug, lport, nodes->pprops_logarithmic);
+  Lv2ControlID* id = (Lv2ControlID*)calloc(1, sizeof(Lv2ControlID));
+  id->plugin           = plugin;
+  id->type           = PORT;
+  id->node           = lilv_node_duplicate(lilv_port_get_node(plug, lport));
+  id->symbol         = lilv_node_duplicate(lilv_port_get_symbol(plug, lport));
+  id->label          = lilv_port_get_name(plug, lport);
+  id->index          = index;
+  id->group          = lilv_port_get(plug, lport, plugin->nodes.pg_group);
+  id->value_type     = plugin->forge.Float;
+  id->is_writable    = lilv_port_is_a(plug, lport, nodes->lv2_InputPort);
+  id->is_readable    = lilv_port_is_a(plug, lport, nodes->lv2_OutputPort);
+  id->is_toggle      = lilv_port_has_property(plug, lport, nodes->lv2_toggled);
+  id->is_integer     = lilv_port_has_property(plug, lport, nodes->lv2_integer);
+  id->is_enumeration = lilv_port_has_property(plug, lport, nodes->lv2_enumeration);
+  id->is_logarithmic = lilv_port_has_property(plug, lport, nodes->pprops_logarithmic);
 
-	lilv_port_get_range(plug, lport, &id->def, &id->min, &id->max);
-	if (lilv_port_has_property(plug, lport, plugin->nodes.lv2_sampleRate)) {
-		/* Adjust range for lv2:sampleRate controls */
-		if (lilv_node_is_float(id->min) || lilv_node_is_int(id->min)) {
-			const float min = lilv_node_as_float(id->min) * AUDIO_ENGINE->sample_rate;
-			lilv_node_free(id->min);
-			id->min = lilv_new_float(LILV_WORLD, min);
-		}
-		if (lilv_node_is_float(id->max) || lilv_node_is_int(id->max)) {
-			const float max = lilv_node_as_float(id->max) * AUDIO_ENGINE->sample_rate;
-			lilv_node_free(id->max);
-			id->max = lilv_new_float(LILV_WORLD, max);
-		}
-	}
+  lilv_port_get_range(plug, lport, &id->def, &id->min, &id->max);
+  if (lilv_port_has_property(plug, lport, plugin->nodes.lv2_sampleRate)) {
+          /* Adjust range for lv2:sampleRate controls */
+          if (lilv_node_is_float(id->min) || lilv_node_is_int(id->min)) {
+                  const float min = lilv_node_as_float(id->min) * AUDIO_ENGINE->sample_rate;
+                  lilv_node_free(id->min);
+                  id->min = lilv_new_float(LILV_WORLD, min);
+          }
+          if (lilv_node_is_float(id->max) || lilv_node_is_int(id->max)) {
+                  const float max = lilv_node_as_float(id->max) * AUDIO_ENGINE->sample_rate;
+                  lilv_node_free(id->max);
+                  id->max = lilv_new_float(LILV_WORLD, max);
+          }
+  }
 
-	/* Get scale points */
-	LilvScalePoints* sp = lilv_port_get_scale_points(plug, lport);
-	if (sp) {
-		id->points = (Lv2ScalePoint*)malloc(
-			lilv_scale_points_size(sp) * sizeof(Lv2ScalePoint));
-		size_t np = 0;
-		LILV_FOREACH(scale_points, s, sp) {
-			const LilvScalePoint* p = lilv_scale_points_get(sp, s);
-			if (lilv_node_is_float(lilv_scale_point_get_value(p)) ||
-			    lilv_node_is_int(lilv_scale_point_get_value(p))) {
-				id->points[np].value = lilv_node_as_float(
-					lilv_scale_point_get_value(p));
-				id->points[np].label = strdup(
-					lilv_node_as_string(lilv_scale_point_get_label(p)));
-				++np;
-			}
-			/* TODO: Non-float scale points? */
-		}
+  /* Get scale points */
+  LilvScalePoints* sp = lilv_port_get_scale_points(plug, lport);
+  if (sp) {
+          id->points = (Lv2ScalePoint*)malloc(
+                  lilv_scale_points_size(sp) * sizeof(Lv2ScalePoint));
+          size_t np = 0;
+          LILV_FOREACH(scale_points, s, sp) {
+                  const LilvScalePoint* p = lilv_scale_points_get(sp, s);
+                  if (lilv_node_is_float(lilv_scale_point_get_value(p)) ||
+                      lilv_node_is_int(lilv_scale_point_get_value(p))) {
+                          id->points[np].value = lilv_node_as_float(
+                                  lilv_scale_point_get_value(p));
+                          id->points[np].label = strdup(
+                                  lilv_node_as_string(lilv_scale_point_get_label(p)));
+                          ++np;
+                  }
+                  /* TODO: Non-float scale points? */
+          }
 
-		qsort(id->points, np, sizeof(Lv2ScalePoint),
-		      (int (*)(const void*, const void*))scale_point_cmp);
-		id->n_points = np;
+          qsort(id->points, np, sizeof(Lv2ScalePoint),
+                (int (*)(const void*, const void*))scale_point_cmp);
+          id->n_points = np;
 
-		lilv_scale_points_free(sp);
-	}
+          lilv_scale_points_free(sp);
+  }
 
-	return id;
+  return id;
 }
 
 static bool
 has_range(LV2_Plugin* plugin, const LilvNode* subject, const char* range_uri)
 {
-	LilvNode*  range  = lilv_new_uri(LILV_WORLD, range_uri);
-	const bool result = lilv_world_ask(
-		LILV_WORLD, subject, plugin->nodes.rdfs_range, range);
-	lilv_node_free(range);
-	return result;
+  LilvNode*  range  = lilv_new_uri(LILV_WORLD, range_uri);
+  const bool result = lilv_world_ask(
+          LILV_WORLD, subject, plugin->nodes.rdfs_range, range);
+  lilv_node_free(range);
+  return result;
 }
 
 Lv2ControlID*

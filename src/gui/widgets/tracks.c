@@ -29,6 +29,13 @@
 
 G_DEFINE_TYPE (TracksWidget, tracks_widget, GTK_TYPE_PANED)
 
+static void
+move_handle (GtkPaned * widget,
+              gpointer     user_data)
+{
+  g_message ("check resize");
+}
+
 /**
  * Creates a new Fader widget and binds it to the given value.
  */
@@ -40,6 +47,8 @@ tracks_widget_setup ()
                             "orientation",
                             GTK_ORIENTATION_VERTICAL,
                             NULL);
+  g_signal_connect (GTK_WIDGET (self), "toggle-handle-focus",
+                    G_CALLBACK (move_handle), NULL);
   MAIN_WINDOW->tracks = self;
 
   gtk_widget_set_size_request (GTK_WIDGET (self),
@@ -68,6 +77,7 @@ tracks_widget_setup ()
 
   gtk_widget_show_all (GTK_WIDGET (self));
 }
+
 
 void
 tracks_widget_add_channel (TracksWidget * self, Channel * channel)
@@ -108,6 +118,9 @@ tracks_widget_add_channel (TracksWidget * self, Channel * channel)
                    new_paned,
                    TRUE,
                    FALSE);
+
+  g_signal_connect (GTK_WIDGET (new_paned), "toggle-handle-focus",
+                    G_CALLBACK (move_handle), NULL);
 
   gtk_widget_show_all (GTK_WIDGET (self));
 }

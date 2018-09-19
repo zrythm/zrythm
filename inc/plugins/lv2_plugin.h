@@ -71,9 +71,7 @@
 #include "lv2/lv2plug.in/ns/ext/options/options.h"
 #endif
 
-
 #include <sratom/sratom.h>
-
 
 #ifdef __clang__
 #    define REALTIME __attribute__((annotate("realtime")))
@@ -82,6 +80,8 @@
 #endif
 
 typedef struct LV2_Plugin LV2_Plugin;
+typedef struct _GtkWidget GtkWidget;
+typedef struct _GtkCheckMenuItem GtkCheckMenuItem;
 
 typedef struct {
 	LilvNode* atom_AtomPort;
@@ -236,6 +236,8 @@ typedef struct LV2_Plugin
   ZixSem exit_sem;  /**< Exit semaphore */
 	bool               externalui;     ///< True iff plugin has an external-ui
   LV2_External_UI_Widget* extuiptr;  ///< data structure used for external-ui
+  GtkCheckMenuItem* active_preset_item;
+  bool              updating;
 
   LV2_URIDs          urids;        ///< URIDs
 	LV2_URID_Map       map;            ///< URI => Int map
