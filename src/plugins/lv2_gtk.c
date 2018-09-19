@@ -1115,6 +1115,13 @@ build_menu(LV2_Plugin* plugin, GtkWidget* window, GtkWidget* vbox)
 	gtk_box_pack_start(GTK_BOX(vbox), menu_bar, FALSE, FALSE, 0);
 }
 
+void
+on_external_ui_closed(void* controller)
+{
+  LV2_Plugin* jalv = (LV2_Plugin *) controller;
+  lv2_close_ui(jalv);
+}
+
 bool
 lv2_discover_ui(LV2_Plugin* plugin)
 {
@@ -1124,8 +1131,13 @@ lv2_discover_ui(LV2_Plugin* plugin)
 int
 lv2_open_ui(LV2_Plugin* plugin)
 {
+  LV2_External_UI_Host extui;
   GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   plugin->window = window;
+  extui.ui_closed = on_external_ui_closed;
+  LilvNode* name = lilv_plugin_get_name(plugin->lilv_plugin);
+  extui.plugin_human_id = lv2_strdup(lilv_node_as_string(name));
+  lilv_node_free (name);
 
   g_signal_connect(window, "destroy",
                    G_CALLBACK(on_window_destroy), plugin);
@@ -1148,11 +1160,27 @@ lv2_open_ui(LV2_Plugin* plugin)
   /* Attempt to instantiate custom UI if necessary */
   if (plugin->ui && !generic_ui)
     {
-      g_message ("Instantiating UI...");
-      lv2_ui_instantiate(plugin, lv2_native_ui_type(plugin), alignment);
-  }
+      if (plugin->externalui)
+        {
+          g_message ("Instantiating external UI...");
+          lv2_ui_instantiate(plugin,
+                             lilv_node_as_uri(plugin->ui_type),
+                             &extui);
+        }
+      else
+        {
+          g_message ("Instantiating native UI...");
+          lv2_ui_instantiate(plugin,
+                             lv2_native_ui_type(plugin),
+                             alignment);
+        }
+    }
 
-  if (plugin->ui_instance)
+  if (plugin->externalui && plugin->extuiptr)
+    {
+      LV2_EXTERNAL_UI_SHOW(plugin->extuiptr);
+    }
+  else if (plugin->ui_instance)
     {
       g_message ("Creating window for UI...");
       GtkWidget* widget = (GtkWidget*)suil_instance_get_widget(
@@ -1162,6 +1190,7 @@ lv2_open_ui(LV2_Plugin* plugin)
       gtk_window_set_resizable(GTK_WINDOW(window), lv2_ui_is_resizable(plugin));
       gtk_widget_show_all(vbox);
       gtk_widget_grab_focus(widget);
+      gtk_window_present(GTK_WINDOW(window));
     }
   else
     {
@@ -1184,13 +1213,12 @@ lv2_open_ui(LV2_Plugin* plugin)
               GTK_WINDOW(window),
               MAX(MAX(box_size.width, controls_size.width) + 24, 640),
               box_size.height + controls_size.height);
+      gtk_window_present(GTK_WINDOW(window));
   }
 
   lv2_init_ui(plugin);
 
   g_timeout_add(1000 / plugin->ui_update_hz, (GSourceFunc)lv2_update, plugin);
-
-  gtk_window_present(GTK_WINDOW(window));
 }
 
 int

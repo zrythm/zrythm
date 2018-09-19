@@ -453,49 +453,100 @@ lv2_create_controls(LV2_Plugin* lv2_plugin, bool writable)
 void
 lv2_ui_instantiate(LV2_Plugin* plugin, const char* native_ui_type, void* parent)
 {
-	plugin->ui_host = suil_host_new(lv2_ui_write, lv2_ui_port_index, NULL, NULL);
+  plugin->ui_host = suil_host_new(lv2_ui_write, lv2_ui_port_index, NULL, NULL);
+  plugin->extuiptr = NULL;
 
-	const LV2_Feature parent_feature = {
-		LV2_UI__parent, parent
-	};
-	const LV2_Feature instance_feature = {
-		NS_EXT "instance-access", lilv_instance_get_handle(plugin->instance)
-	};
-	const LV2_Feature data_feature = {
-		LV2_DATA_ACCESS_URI, &plugin->ext_data
-	};
-	const LV2_Feature idle_feature = {
-		LV2_UI__idleInterface, NULL
-	};
-	const LV2_Feature* ui_features[] = {
-		&plugin->uri_map_feature, &plugin->map_feature, &plugin->unmap_feature,
-		&instance_feature,
-		&data_feature,
-		&plugin->log_feature,
-		&parent_feature,
-		&plugin->options_feature,
-		&idle_feature,
-		NULL
-	};
+  const char* bundle_uri  = lilv_node_as_uri(lilv_ui_get_bundle_uri(plugin->ui));
+  const char* binary_uri  = lilv_node_as_uri(lilv_ui_get_binary_uri(plugin->ui));
+  char*       bundle_path = lilv_file_uri_parse(bundle_uri, NULL);
+  char*       binary_path = lilv_file_uri_parse(binary_uri, NULL);
 
-	const char* bundle_uri  = lilv_node_as_uri(lilv_ui_get_bundle_uri(plugin->ui));
-	const char* binary_uri  = lilv_node_as_uri(lilv_ui_get_binary_uri(plugin->ui));
-	char*       bundle_path = lilv_file_uri_parse(bundle_uri, NULL);
-	char*       binary_path = lilv_file_uri_parse(binary_uri, NULL);
+  const LV2_Feature data_feature = {
+          LV2_DATA_ACCESS_URI, &plugin->ext_data
+  };
+  const LV2_Feature idle_feature = {
+          LV2_UI__idleInterface, NULL
+  };
 
-	plugin->ui_instance = suil_instance_new(
-		plugin->ui_host,
-		plugin,
-		native_ui_type,
-		lilv_node_as_uri(lilv_plugin_get_uri(plugin->lilv_plugin)),
-		lilv_node_as_uri(lilv_ui_get_uri(plugin->ui)),
-		lilv_node_as_uri(plugin->ui_type),
-		bundle_path,
-		binary_path,
-		ui_features);
+  if (plugin->externalui)
+    {
+      const LV2_Feature external_lv_feature = {
+        LV2_EXTERNAL_UI_DEPRECATED_URI, parent
+      };
+      const LV2_Feature external_kx_feature = {
+        LV2_EXTERNAL_UI__Host, parent
+      };
+      const LV2_Feature instance_feature = {
+        NS_EXT "instance-access",
+        lilv_instance_get_handle(plugin->instance)
+      };
+      const LV2_Feature* ui_features[] = {
+        &plugin->uri_map_feature, &plugin->map_feature, &plugin->unmap_feature,
+        &instance_feature,
+        &data_feature,
+        &idle_feature,
+        &plugin->log_feature,
+        &external_lv_feature,
+        &external_kx_feature,
+        &plugin->options_feature,
+        NULL
+      };
 
-	lilv_free(binary_path);
-	lilv_free(bundle_path);
+      plugin->ui_instance = suil_instance_new(
+        plugin->ui_host,
+        plugin,
+        native_ui_type,
+        lilv_node_as_uri(lilv_plugin_get_uri(plugin->lilv_plugin)),
+        lilv_node_as_uri(lilv_ui_get_uri(plugin->ui)),
+        lilv_node_as_uri(plugin->ui_type),
+        bundle_path,
+        binary_path,
+        ui_features);
+
+      if (plugin->ui_instance)
+        {
+          plugin->extuiptr =
+            suil_instance_get_widget((SuilInstance*)plugin->ui_instance);
+      }
+      else
+        {
+          plugin->externalui = false;
+        }
+    }
+  else
+    {
+
+      const LV2_Feature parent_feature = {
+              LV2_UI__parent, parent
+      };
+      const LV2_Feature instance_feature = {
+              NS_EXT "instance-access", lilv_instance_get_handle(plugin->instance)
+      };
+      const LV2_Feature* ui_features[] = {
+              &plugin->uri_map_feature, &plugin->map_feature, &plugin->unmap_feature,
+              &instance_feature,
+              &data_feature,
+              &idle_feature,
+              &plugin->log_feature,
+              &parent_feature,
+              &plugin->options_feature,
+              NULL
+      };
+
+      plugin->ui_instance = suil_instance_new(
+              plugin->ui_host,
+              plugin,
+              native_ui_type,
+              lilv_node_as_uri(lilv_plugin_get_uri(plugin->lilv_plugin)),
+              lilv_node_as_uri(lilv_ui_get_uri(plugin->ui)),
+              lilv_node_as_uri(plugin->ui_type),
+              bundle_path,
+              binary_path,
+              ui_features);
+    }
+
+  lilv_free(binary_path);
+  lilv_free(bundle_path);
 
   if (!plugin->ui_instance)
     {
@@ -507,25 +558,25 @@ lv2_ui_instantiate(LV2_Plugin* plugin, const char* native_ui_type, void* parent)
 bool
 lv2_ui_is_resizable(LV2_Plugin* plugin)
 {
-	if (!plugin->ui) {
-		return false;
-	}
+  if (!plugin->ui) {
+          return false;
+  }
 
-	const LilvNode* s   = lilv_ui_get_uri(plugin->ui);
-	LilvNode*       p   = lilv_new_uri(LILV_WORLD, LV2_CORE__optionalFeature);
-	LilvNode*       fs  = lilv_new_uri(LILV_WORLD, LV2_UI__fixedSize);
-	LilvNode*       nrs = lilv_new_uri(LILV_WORLD, LV2_UI__noUserResize);
+  const LilvNode* s   = lilv_ui_get_uri(plugin->ui);
+  LilvNode*       p   = lilv_new_uri(LILV_WORLD, LV2_CORE__optionalFeature);
+  LilvNode*       fs  = lilv_new_uri(LILV_WORLD, LV2_UI__fixedSize);
+  LilvNode*       nrs = lilv_new_uri(LILV_WORLD, LV2_UI__noUserResize);
 
-	LilvNodes* fs_matches = lilv_world_find_nodes(LILV_WORLD, s, p, fs);
-	LilvNodes* nrs_matches = lilv_world_find_nodes(LILV_WORLD, s, p, nrs);
+  LilvNodes* fs_matches = lilv_world_find_nodes(LILV_WORLD, s, p, fs);
+  LilvNodes* nrs_matches = lilv_world_find_nodes(LILV_WORLD, s, p, nrs);
 
-	lilv_nodes_free(nrs_matches);
-	lilv_nodes_free(fs_matches);
-	lilv_node_free(nrs);
-	lilv_node_free(fs);
-	lilv_node_free(p);
+  lilv_nodes_free(nrs_matches);
+  lilv_nodes_free(fs_matches);
+  lilv_node_free(nrs);
+  lilv_node_free(fs);
+  lilv_node_free(p);
 
-	return !fs_matches && !nrs_matches;
+  return !fs_matches && !nrs_matches;
 }
 
 void
@@ -572,34 +623,34 @@ lv2_ui_write(SuilController controller,
 void
 lv2_apply_ui_events(LV2_Plugin* plugin, uint32_t nframes)
 {
-	if (!plugin->has_ui) {
-		return;
-	}
+  if (!plugin->has_ui) {
+          return;
+  }
 
-	Lv2ControlChange ev;
-	const size_t  space = zix_ring_read_space(plugin->ui_events);
-	for (size_t i = 0; i < space; i += sizeof(ev) + ev.size) {
-		zix_ring_read(plugin->ui_events, (char*)&ev, sizeof(ev));
-		char body[ev.size];
-		if (zix_ring_read(plugin->ui_events, body, ev.size) != ev.size) {
-			fprintf(stderr, "error: Error reading from UI ring buffer\n");
-			break;
-		}
-		assert(ev.index < plugin->num_ports);
-		LV2_Port* const port = &plugin->ports[ev.index];
-		if (ev.protocol == 0) {
-			assert(ev.size == sizeof(float));
-			port->control = *(float*)body;
-		} else if (ev.protocol == plugin->urids.atom_eventTransfer) {
-			LV2_Evbuf_Iterator    e    = lv2_evbuf_end(port->evbuf);
-			const LV2_Atom* const atom = (const LV2_Atom*)body;
-			lv2_evbuf_write(&e, nframes, 0, atom->type, atom->size,
-			                (const uint8_t*)LV2_ATOM_BODY_CONST(atom));
-		} else {
-			fprintf(stderr, "error: Unknown control change protocol %d\n",
-			        ev.protocol);
-		}
-	}
+  Lv2ControlChange ev;
+  const size_t  space = zix_ring_read_space(plugin->ui_events);
+  for (size_t i = 0; i < space; i += sizeof(ev) + ev.size) {
+          zix_ring_read(plugin->ui_events, (char*)&ev, sizeof(ev));
+          char body[ev.size];
+          if (zix_ring_read(plugin->ui_events, body, ev.size) != ev.size) {
+                  fprintf(stderr, "error: Error reading from UI ring buffer\n");
+                  break;
+          }
+          assert(ev.index < plugin->num_ports);
+          LV2_Port* const port = &plugin->ports[ev.index];
+          if (ev.protocol == 0) {
+                  assert(ev.size == sizeof(float));
+                  port->control = *(float*)body;
+          } else if (ev.protocol == plugin->urids.atom_eventTransfer) {
+                  LV2_Evbuf_Iterator    e    = lv2_evbuf_end(port->evbuf);
+                  const LV2_Atom* const atom = (const LV2_Atom*)body;
+                  lv2_evbuf_write(&e, nframes, 0, atom->type, atom->size,
+                                  (const uint8_t*)LV2_ATOM_BODY_CONST(atom));
+          } else {
+                  fprintf(stderr, "error: Unknown control change protocol %d\n",
+                          ev.protocol);
+          }
+  }
 }
 
 uint32_t
@@ -748,6 +799,10 @@ lv2_update(LV2_Plugin* plugin)
           if (ev.protocol == 0 && print_controls) {
                   _print_control_value(plugin, &plugin->ports[ev.index], *(float*)buf);
           }
+  }
+
+  if (plugin->externalui && plugin->extuiptr) {
+          LV2_EXTERNAL_UI_RUN(plugin->extuiptr);
   }
 
   return true;
@@ -1225,6 +1280,8 @@ lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
   lv2_plugin->nodes.rsz_minimumSize        = lilv_new_uri(world, LV2_RESIZE_PORT__minimumSize);
   lv2_plugin->nodes.work_interface         = lilv_new_uri(world, LV2_WORKER__interface);
   lv2_plugin->nodes.work_schedule          = lilv_new_uri(world, LV2_WORKER__schedule);
+  lv2_plugin->nodes.ui_externallv          = lilv_new_uri(world, "http://lv2plug.in/ns/extensions/ui#external");
+  lv2_plugin->nodes.ui_externalkx          = lilv_new_uri(world, "http://kxstudio.sf.net/ns/lv2ext/external-ui#Widget");
   lv2_plugin->nodes.end                    = NULL;
 
   /* Set default values for all ports */
@@ -1418,6 +1475,33 @@ lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
   else if (!LV2_SETTINGS.opts.generic_ui && LV2_SETTINGS.opts.show_ui)
     {
       lv2_plugin->ui = lilv_uis_get(lv2_plugin->uis, lilv_uis_begin(lv2_plugin->uis));
+    }
+
+  if (!lv2_plugin->ui)
+    {
+      LILV_FOREACH(uis, u, lv2_plugin->uis)
+        {
+          const LilvUI* ui = lilv_uis_get(lv2_plugin->uis, u);
+          const LilvNodes* types = lilv_ui_get_classes(ui);
+          LILV_FOREACH(nodes, t, types)
+            {
+              const char * pt = lilv_node_as_uri (
+                              lilv_nodes_get(types, t));
+              g_message ("UI: %s", pt);
+              if (!strcmp (pt, "http://kxstudio.sf.net/ns/lv2ext/external-ui#Widget"))
+                {
+                  lv2_plugin->externalui = true;
+                  lv2_plugin->ui = ui;
+                  lv2_plugin->ui_type = lv2_plugin->nodes.ui_externalkx;
+                }
+              else if (!strcmp (pt, "http://lv2plug.in/ns/extensions/ui#external"))
+                {
+                  lv2_plugin->externalui = true;
+                  lv2_plugin->ui_type = lv2_plugin->nodes.ui_externallv;
+                  lv2_plugin->ui = ui;
+                }
+            }
+        }
     }
 
   /* Create ringbuffers for UI if necessary */

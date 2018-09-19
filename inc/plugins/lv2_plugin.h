@@ -42,6 +42,7 @@
 #include "plugins/lv2/zix/ring.h"
 #include "sem.h"
 #include "plugins/lv2/zix/thread.h"
+#include "plugins/lv2/lv2_external_ui.h"
 
 #include <lilv/lilv.h>
 #include <serd/serd.h>
@@ -119,6 +120,8 @@ typedef struct {
 	LilvNode* rsz_minimumSize;
 	LilvNode* work_interface;
 	LilvNode* work_schedule;
+	LilvNode* ui_externallv;
+	LilvNode* ui_externalkx;
 	LilvNode* end;  ///< NULL terminator for easy freeing of entire structure
 } LV2_Nodes;
 
@@ -231,6 +234,8 @@ typedef struct LV2_Plugin
 	bool               safe_restore;   ///< Plugin restore() is thread-safe
 	uint32_t           control_in;     ///< Index of control input port
   ZixSem exit_sem;  /**< Exit semaphore */
+	bool               externalui;     ///< True iff plugin has an external-ui
+  LV2_External_UI_Widget* extuiptr;  ///< data structure used for external-ui
 
   LV2_URIDs          urids;        ///< URIDs
 	LV2_URID_Map       map;            ///< URI => Int map
