@@ -203,9 +203,9 @@ meter_widget_init (MeterWidget * self)
   gdk_rgba_parse (&self->end_color, "#00FFCC");
 
   /* make it able to notify */
-  gtk_widget_set_has_window (GTK_WIDGET (self), TRUE);
-  int crossing_mask = GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;
-  gtk_widget_add_events (GTK_WIDGET (self), crossing_mask);
+  /*gtk_widget_set_has_window (GTK_WIDGET (self), TRUE);*/
+  /*int crossing_mask = GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;*/
+  /*gtk_widget_add_events (GTK_WIDGET (self), crossing_mask);*/
 }
 
 static void

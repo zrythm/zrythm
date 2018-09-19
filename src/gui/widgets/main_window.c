@@ -78,6 +78,22 @@ minimize_clicked (MainWindowWidget * self,
     gtk_window_iconify (GTK_WINDOW (user_data));
 }
 
+static gboolean
+key_release_cb (GtkWidget      * widget,
+                 GdkEventKey * event,
+                 gpointer       data)
+{
+  if (event && event->keyval == GDK_KEY_space)
+    {
+      if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
+        transport_request_pause ();
+      else if (TRANSPORT->play_state == PLAYSTATE_PAUSED)
+        transport_request_roll ();
+    }
+
+  return FALSE;
+}
+
 /**
  * maximize button event
  */
@@ -333,6 +349,13 @@ main_window_widget_new (ZrythmApp * _app)
 
   /* set transport controls */
   transport_controls_init (self);
+
+  /*gtk_widget_add_events (GTK_WIDGET (self->main_box),*/
+                         /*GDK_KEY_PRESS_MASK);*/
+  g_signal_connect (G_OBJECT (self->main_box), "key_release_event",
+                    G_CALLBACK (key_release_cb), self);
+  /*g_signal_connect (G_OBJECT (self), "grab-notify",*/
+                    /*G_CALLBACK (key_press_cb), NULL);*/
 
   return self;
 }

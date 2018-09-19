@@ -1,5 +1,5 @@
 /*
- * gui/widgets/ruler.c- The ruler on top of the timeline
+ * gui/widgets/region.c- Region
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,30 +19,13 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "zrythm_app.h"
-#include "project.h"
-#include "settings_manager.h"
-#include "audio/position.h"
-#include "audio/transport.h"
+#include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
 
-#include <gtk/gtk.h>
-
-G_DEFINE_TYPE (RulerWidget, ruler_widget, GTK_TYPE_DRAWING_AREA)
-
-#define Y_SPACING 5
-#define FONT "Monospace"
-#define FONT_SIZE 14
-
-#define PLAYHEAD_TRIANGLE_HALF_WIDTH 6
-#define PLAYHEAD_TRIANGLE_HEIGHT 8
-#define START_MARKER_TRIANGLE_HEIGHT 8
-#define START_MARKER_TRIANGLE_WIDTH 8
-#define Q_HEIGHT 12
-#define Q_WIDTH 7
+G_DEFINE_TYPE (RegionWidget, region_widget, GTK_TYPE_DRAWING_AREA)
 
 static gboolean
-draw_cb (RulerWidget * self, cairo_t *cr, gpointer data)
+draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
 {
   guint width, height;
   GdkRGBA color;
@@ -50,17 +33,17 @@ draw_cb (RulerWidget * self, cairo_t *cr, gpointer data)
 
   context = gtk_widget_get_style_context (GTK_WIDGET (self));
 
-  /*width = gtk_widget_get_allocated_width (widget);*/
+  width = gtk_widget_get_allocated_width (widget);
   height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
 
   /* get positions in px */
-  static int playhead_pos_in_px;
+  static int region_start_in_px;
   playhead_pos_in_px =
     (TRANSPORT->playhead_pos.bars - 1) * self->px_per_bar +
     (TRANSPORT->playhead_pos.beats - 1) * self->px_per_beat +
     (TRANSPORT->playhead_pos.quarter_beats - 1) * self->px_per_quarter_beat +
     TRANSPORT->playhead_pos.ticks * self->px_per_tick;
-  static int q_pos_in_px;
+  static int region_end_in_px;
   q_pos_in_px =
     (TRANSPORT->q_pos.bars - 1) * self->px_per_bar +
     (TRANSPORT->q_pos.beats - 1) * self->px_per_beat +
@@ -79,11 +62,11 @@ draw_cb (RulerWidget * self, cairo_t *cr, gpointer data)
   loop_end_pos_px =
     (TRANSPORT->loop_end_pos.bars - 1) * self->px_per_bar;
 
-  gtk_render_background (context, cr, 0, 0, self->total_px, height);
+  gtk_render_background (context, cr, 0, 0, total_px, height);
 
   /* draw lines */
   int bar_count = 1;
-  for (int i = 0; i < self->total_px; i++)
+  for (int i = 0; i < total_px; i++)
   {
       if (i % self->px_per_bar == 0)
       {
@@ -208,16 +191,16 @@ tick_callback (GtkWidget * widget, GdkFrameClock * frame_clock,
  * when needed
  */
 void
-reset_ruler ()
+reset_region ()
 {
 
 }
 
-RulerWidget *
-ruler_widget_new ()
+RegionWidget *
+region_widget_new ()
 {
-  g_message ("Creating ruler...");
-  RulerWidget * self = g_object_new (RULER_WIDGET_TYPE, NULL);
+  g_message ("Creating region...");
+  RegionWidget * self = g_object_new (REGION_WIDGET_TYPE, NULL);
 
   /* adjust for zoom level */
   self->px_per_tick = (DEFAULT_PX_PER_TICK * TRANSPORT->zoom_level);
@@ -225,34 +208,35 @@ ruler_widget_new ()
   self->px_per_beat = (int) (self->px_per_tick * TICKS_PER_BEAT);
   self->px_per_bar = self->px_per_beat * TRANSPORT->beats_per_bar;
 
-  self->total_px = self->px_per_bar *
+  total_px = self->px_per_bar *
     (TRANSPORT->total_bars);
 
 
   // set the size
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
-    self->total_px,
+    total_px,
     -1);
 
   g_signal_connect (G_OBJECT (self), "draw",
                     G_CALLBACK (draw_cb), NULL);
 
-  /*gtk_widget_add_tick_callback (GTK_WIDGET (self),*/
-                                /*tick_callback,*/
-                                /*NULL,*/
-                                /*NULL);*/
+  gtk_widget_add_tick_callback (GTK_WIDGET (self),
+                                tick_callback,
+                                NULL,
+                                NULL);
 
   return self;
 }
 
 static void
-ruler_widget_class_init (RulerWidgetClass * klass)
+region_widget_class_init (RegionWidgetClass * klass)
 {
 }
 
 static void
-ruler_widget_init (RulerWidget * self)
+region_widget_init (RegionWidget * self)
 {
   gtk_widget_show (GTK_WIDGET (self));
 }
+

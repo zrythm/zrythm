@@ -29,7 +29,7 @@ static void
 play_clicked_cb (GtkButton *button,
                gpointer       user_data)
 {
-  TRANSPORT->play_state = PLAYSTATE_ROLLING;
+  transport_request_roll ();
 }
 
 static void
@@ -42,7 +42,7 @@ stop_clicked_cb (GtkButton *button,
                            &TRANSPORT->q_pos);
     }
   else
-    TRANSPORT->play_state = PLAYSTATE_PAUSED;
+    transport_request_pause ();
 }
 
 static void

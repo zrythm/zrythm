@@ -33,6 +33,7 @@
 #endif
 
 #include "audio/port.h"
+#include "audio/position.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2/control.h"
 #include "plugins/lv2/lv2_evbuf.h"
@@ -204,7 +205,6 @@ typedef struct LV2_Plugin
 	LV2_Worker  state_worker;   ///< Synchronous worker for state restore
 	ZixSem             work_lock;      ///< Lock for plugin work() method
 	ZixSem*            done;           ///< Exit semaphore
-	ZixSem             paused;         ///< Paused signal from process thread
 	char*              temp_dir;       ///< Temporary plugin state directory
 	char*              save_dir;       ///< Plugin save directory
 	const LilvPlugin*  lilv_plugin;         ///< Plugin class (RDF data)
@@ -232,11 +232,15 @@ typedef struct LV2_Plugin
 	uint32_t           control_in;     ///< Index of control input port
   ZixSem exit_sem;  /**< Exit semaphore */
 
-  /* not sure if the following belong to each plugin or are supposed to be global */
-  LV2_URIDs          urids;        ///< URIDs  FIXME should be global
+  LV2_URIDs          urids;        ///< URIDs
 	LV2_URID_Map       map;            ///< URI => Int map
 	LV2_URID_Unmap     unmap;          ///< Int => URI map
 	SerdEnv*           env;            ///< Environment for RDF printing
+
+  /* transport related */
+  int                rolling;
+  Position           pos;
+  int                bpm;
 
   Plugin        * plugin;           ///< base plugin instance (parent)
 } LV2_Plugin;

@@ -136,6 +136,16 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
   sample_t * stereo_out_l, * stereo_out_r;
   int i = 0;
 
+  if (TRANSPORT->play_state == PLAYSTATE_PAUSE_REQUESTED)
+    {
+      TRANSPORT->play_state = PLAYSTATE_PAUSED;
+      zix_sem_post (&TRANSPORT->paused);
+    }
+  else if (TRANSPORT->play_state == PLAYSTATE_ROLL_REQUESTED)
+    {
+      TRANSPORT->play_state = PLAYSTATE_ROLLING;
+    }
+
   zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
 
   /* reset all buffers */

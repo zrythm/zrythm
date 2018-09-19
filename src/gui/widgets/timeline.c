@@ -24,6 +24,7 @@
 #include "settings_manager.h"
 #include "audio/transport.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline.h"
 #include "gui/widgets/tracks.h"
 
@@ -31,16 +32,7 @@
 
 G_DEFINE_TYPE (TimelineWidget, timeline_widget, GTK_TYPE_DRAWING_AREA)
 
-/**
- * pixels to draw between each beat,
- * before being adjusted for zoom.
- * used by the ruler and timeline
- */
-#define PX_PER_BEAT 20
-
-static int px_per_beat;
-static int px_per_bar;
-static int total_px;
+#define MW_RULER MAIN_WINDOW->ruler
 
 static void
 draw_borders (GtkWidget * widget,
@@ -52,7 +44,7 @@ draw_borders (GtkWidget * widget,
   cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
   cairo_set_line_width (cr, 0.5);
   cairo_move_to (cr, 0, y_offset);
-  cairo_line_to (cr, total_px, y_offset);
+  cairo_line_to (cr, MW_RULER->total_px, y_offset);
   cairo_stroke (cr);
 }
 
@@ -68,17 +60,18 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   width = gtk_widget_get_allocated_width (widget);
   height = gtk_widget_get_allocated_height (widget);
 
+  /* get positions in px */
   static int playhead_pos_in_px;
   playhead_pos_in_px =
-    TRANSPORT->playhead_pos.bars * px_per_bar;
+    (TRANSPORT->playhead_pos.bars - 1) * MW_RULER->px_per_bar +
+    (TRANSPORT->playhead_pos.beats - 1) * MW_RULER->px_per_beat +
+    (TRANSPORT->playhead_pos.quarter_beats - 1) * MW_RULER->px_per_quarter_beat +
+    TRANSPORT->playhead_pos.ticks * MW_RULER->px_per_tick;
 
-  gtk_render_background (context, cr, 0, 0, total_px, height);
-
-  /* used for ruler numbers */
-  int count = 0;
+  gtk_render_background (context, cr, 0, 0, MW_RULER->total_px, height);
 
   /* handle vertical drawing */
-  for (int i = 0; i < total_px; i++)
+  for (int i = 0; i < MW_RULER->total_px; i++)
   {
     if (i == playhead_pos_in_px)
       {
@@ -88,7 +81,7 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
           cairo_line_to (cr, i, height);
           cairo_stroke (cr);
       }
-      if (i % px_per_bar == 0)
+      if (i % MW_RULER->px_per_bar == 0)
       {
           cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);
           cairo_set_line_width (cr, 1);
@@ -96,7 +89,7 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
           cairo_line_to (cr, i, height);
           cairo_stroke (cr);
       }
-      else if (i % px_per_beat == 0)
+      else if (i % MW_RULER->px_per_beat == 0)
       {
           cairo_set_source_rgb (cr, 0.25, 0.25, 0.25);
           cairo_set_line_width (cr, 0.5);
@@ -104,10 +97,6 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
           cairo_line_to (cr, i, height);
           cairo_stroke (cr);
       }
-      else if (0)
-        {
-
-        }
   }
 
   /* handle horizontal drawing */
@@ -155,20 +144,8 @@ tick_callback (GtkWidget * widget, GdkFrameClock * frame_clock,
 TimelineWidget *
 timeline_widget_new (GtkWidget * overlay)
 {
+  g_message ("Creating timeline...");
   TimelineWidget * self = g_object_new (TIMELINE_WIDGET_TYPE, NULL);
-
-  int default_px_per_beat = PX_PER_BEAT;
-
-  /* adjust for zoom level */
-  px_per_beat = (int) ((float) default_px_per_beat *
-                           TRANSPORT->zoom_level);
-
-  px_per_bar = px_per_beat *
-                  TRANSPORT->beats_per_bar;
-
-  total_px = px_per_bar *
-    TRANSPORT->total_bars;
-
 
   // set the size
   int ww, hh;
@@ -179,7 +156,7 @@ timeline_widget_new (GtkWidget * overlay)
     &hh);
   gtk_widget_set_size_request (
     GTK_WIDGET (overlay),
-    total_px,
+    MW_RULER->total_px,
     hh);
 
   gtk_container_add (GTK_CONTAINER (overlay),
@@ -188,10 +165,10 @@ timeline_widget_new (GtkWidget * overlay)
   g_signal_connect (G_OBJECT (self), "draw",
                     G_CALLBACK (draw_cb), NULL);
 
-  gtk_widget_add_tick_callback (GTK_WIDGET (self),
-                                tick_callback,
-                                NULL,
-                                NULL);
+  /*gtk_widget_add_tick_callback (GTK_WIDGET (self),*/
+                                /*tick_callback,*/
+                                /*NULL,*/
+                                /*NULL);*/
 
   return self;
 }

@@ -1341,7 +1341,6 @@ lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
   zix_sem_init(&lv2_plugin->exit_sem, 0);
   lv2_plugin->done = &lv2_plugin->exit_sem;
 
-  zix_sem_init(&lv2_plugin->paused, 0);
   zix_sem_init(&lv2_plugin->worker.sem, 0);
 
 
@@ -1527,7 +1526,7 @@ lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
 
   /* Apply loaded state to lv2_plugin->instance if necessary */
   if (lv2_plugin->state) {
-          lv2_apply_state(lv2_plugin, lv2_plugin->state);
+      lv2_apply_state(lv2_plugin, lv2_plugin->state);
   }
 
   if (LV2_SETTINGS.opts.controls) {

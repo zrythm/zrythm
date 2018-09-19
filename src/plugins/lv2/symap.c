@@ -43,8 +43,8 @@
 Symap*
 symap_new(void)
 {
-	Symap* map = (Symap*)calloc(1, sizeof(Symap));
-	return map;
+  Symap* map = (Symap*)calloc(1, sizeof(Symap));
+  return map;
 }
 
 void

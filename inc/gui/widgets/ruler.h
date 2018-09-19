@@ -31,9 +31,22 @@
 #define IS_RULER_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), RULER_WIDGET_TYPE))
 #define RULER_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), RULER_WIDGET_TYPE, RulerWidgetClass))
 
+/**
+ * pixels to draw between each beat,
+ * before being adjusted for zoom.
+ * used by the ruler and timeline
+ */
+#define DEFAULT_PX_PER_TICK 0.03f
+
 typedef struct RulerWidget
 {
   GtkDrawingArea           parent_instance;
+  int                      px_per_beat;
+  int                      px_per_bar;
+  int                      px_per_quarter_beat;
+  float                    px_per_tick;
+  int                      total_px;
+
 } RulerWidget;
 
 typedef struct RulerWidgetClass

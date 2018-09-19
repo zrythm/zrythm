@@ -74,6 +74,20 @@ transport_init ()
 
   /* set zoom level */
   transport->zoom_level = DEFAULT_ZOOM_LEVEL;
+
+  zix_sem_init(&transport->paused, 0);
+}
+
+void
+transport_request_pause ()
+{
+  TRANSPORT->play_state = PLAYSTATE_PAUSE_REQUESTED;
+}
+
+void
+transport_request_roll ()
+{
+  TRANSPORT->play_state = PLAYSTATE_ROLL_REQUESTED;
 }
 
 /**

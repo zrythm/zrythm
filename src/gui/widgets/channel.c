@@ -51,9 +51,6 @@ channel_widget_update_meter_reading (ChannelWidget * widget)
 {
   Channel * channel = widget->channel;
   float db = MAX (channel->l_port_db, channel->r_port_db);
-  /* FIXME use drawing area */
-  /*gtk_label_set_text (GTK_LABEL (widget->meter_reading),*/
-                      /*g_strdup_printf ("%.1f", db));*/
   gtk_widget_queue_draw (GTK_WIDGET (widget->meters[0]));
   gtk_widget_queue_draw (GTK_WIDGET (widget->meters[1]));
 }

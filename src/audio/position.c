@@ -71,7 +71,8 @@ position_set_to_bar (Position * position,
   position->quarter_beats = 1;
   position->ticks = 0;
   position->frames = position_to_frames (position);
-  position_updated (position);
+  g_idle_add ((GSourceFunc) position_updated,
+              position);
 }
 
 void
@@ -82,7 +83,8 @@ position_set_bar (Position * position,
     bar = 1;
   position->bars = bar;
   position->frames = position_to_frames (position);
-  position_updated (position);
+  g_idle_add ((GSourceFunc) position_updated,
+              position);
 }
 
 void
@@ -111,7 +113,8 @@ position_set_beat (Position * position,
     }
   position->beats = beat;
   position->frames = position_to_frames (position);
-  position_updated (position);
+  g_idle_add ((GSourceFunc) position_updated,
+              position);
 }
 
 void
@@ -140,7 +143,8 @@ position_set_quarter_beat (Position * position,
     }
   position->quarter_beats = quarter_beat;
   position->frames = position_to_frames (position);
-  position_updated (position);
+  g_idle_add ((GSourceFunc) position_updated,
+              position);
 }
 
 
@@ -171,7 +175,8 @@ position_set_tick (Position * position,
     }
   position->ticks = tick;
   position->frames = position_to_frames (position);
-  position_updated (position);
+  g_idle_add ((GSourceFunc) position_updated,
+              position);
 }
 
 /**
@@ -186,7 +191,8 @@ position_set_to_pos (Position * position,
   position->quarter_beats = target->quarter_beats;
   position->ticks = target->ticks;
   position->frames = target->frames;
-  position_updated (position);
+  g_idle_add ((GSourceFunc) position_updated,
+              position);
 }
 
 void
@@ -210,7 +216,8 @@ position_add_frames (Position * position,
             /*}*/
         /*}*/
     /*}*/
-  position_updated (position);
+  g_idle_add ((GSourceFunc) position_updated,
+              position);
 }
 
 /**
@@ -219,6 +226,22 @@ position_add_frames (Position * position,
 void
 position_updated (Position * position)
 {
-  if (MAIN_WINDOW && MAIN_WINDOW->digital_transport)
-    gtk_widget_queue_draw (GTK_WIDGET (MAIN_WINDOW->digital_transport));
-}
+  if (MAIN_WINDOW)
+    {
+      if (MAIN_WINDOW->digital_transport)
+        {
+          gtk_widget_queue_draw (
+                  GTK_WIDGET (MAIN_WINDOW->digital_transport));
+        }
+      if (MAIN_WINDOW->ruler)
+        {
+          gtk_widget_queue_draw (
+                  GTK_WIDGET (MAIN_WINDOW->ruler));
+        }
+      if (MAIN_WINDOW->timeline)
+        {
+          gtk_widget_queue_draw (
+                  GTK_WIDGET (MAIN_WINDOW->timeline));
+        }
+    }
+  }

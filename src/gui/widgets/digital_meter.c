@@ -92,6 +92,7 @@ draw_cb (DigitalMeterWidget * self, cairo_t *cr, gpointer data)
                      self->num_part_start_pos,
                      self->height_end_pos);
       cairo_show_text (cr, text);
+      g_free (text);
 
       /* draw decimal part */
       if (dec_part < 10)
@@ -102,6 +103,7 @@ draw_cb (DigitalMeterWidget * self, cairo_t *cr, gpointer data)
                      self->dec_part_start_pos,
                      self->height_end_pos);
       cairo_show_text (cr, text);
+      g_free (text);
 
       /* draw line */
       cairo_move_to (cr, 0, 0);
@@ -148,18 +150,21 @@ draw_cb (DigitalMeterWidget * self, cairo_t *cr, gpointer data)
                      self->bars_start_pos,
                      self->height_end_pos);
       cairo_show_text (cr, text);
+      g_free (text);
 
       text = g_strdup_printf ("%d", beats);
       cairo_move_to (cr,
                      self->beats_start_pos,
                      self->height_end_pos);
       cairo_show_text (cr, text);
+      g_free (text);
 
       text = g_strdup_printf ("%d", quarter_beats);
       cairo_move_to (cr,
                      self->quarter_beats_start_pos,
                      self->height_end_pos);
       cairo_show_text (cr, text);
+      g_free (text);
 
       if (ticks < 10)
         text = g_strdup_printf ("00%d", ticks);
@@ -171,6 +176,7 @@ draw_cb (DigitalMeterWidget * self, cairo_t *cr, gpointer data)
                      self->ticks_start_pos,
                      self->height_end_pos);
       cairo_show_text (cr, text);
+      g_free (text);
 
       cairo_move_to (cr, 0, 0);
       cairo_line_to (cr, width, 0);

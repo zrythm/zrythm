@@ -27,6 +27,7 @@
 
 #include "project.h"
 #include "audio/region.h"
+#include "sem.h"
 
 #include <gtk/gtk.h>
 
@@ -39,9 +40,12 @@
 #define DEFAULT_BEAT_UNIT 4
 #define DEFAULT_ZOOM_LEVEL 1.0f
 
+#define PLAYHEAD TRANSPORT->playhead_pos
+
 struct Project;
 
 typedef enum {
+  PLAYSTATE_ROLL_REQUESTED,
 	PLAYSTATE_ROLLING,
 	PLAYSTATE_PAUSE_REQUESTED,
 	PLAYSTATE_PAUSED
@@ -63,6 +67,7 @@ typedef struct Transport
   uint32_t           position;       ///< Transport position in frames
 	float              bpm;            ///< Transport tempo in beats per minute
 	int               rolling;        ///< Transport speed (0=stop, 1=play)
+	ZixSem             paused;         ///< Paused signal from process thread
   Play_State         play_state;     ///< play state
 } Transport;
 
@@ -84,5 +89,11 @@ transport_set_bpm (float bpm);
  */
 void
 transport_update_playhead (int nframes);
+
+void
+transport_request_pause ();
+
+void
+transport_request_roll ();
 
 #endif

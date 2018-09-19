@@ -27,6 +27,7 @@
 #include <string.h>
 
 #include "audio/engine.h"
+#include "audio/transport.h"
 #include "plugins/plugin.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/control.h"
@@ -98,79 +99,81 @@ plugin_process (Plugin * plugin, nframes_t nframes)
         {
       LV2_Plugin * lv2_plugin = (LV2_Plugin *) plugin->original_plugin;
 
-	/* Get Jack transport position */
-	/*jack_position_t pos;*/
-	/*const bool rolling = (jack_transport_query(client, &pos)*/
-			      /*== JackTransportRolling);*/
-
-	/*[> If transport state is not as expected, then something has changed <]*/
-	/*const bool xport_changed = (rolling != jalv->rolling ||*/
-				    /*pos.frame != jalv->position ||*/
-				    /*pos.beats_per_minute != jalv->bpm);*/
+        /* If transport state is not as expected, then something has changed */
+        const bool xport_changed = (
+          lv2_plugin->rolling != (TRANSPORT->play_state == PLAYSTATE_ROLLING) ||
+          lv2_plugin->pos.frames != PLAYHEAD.frames ||
+          lv2_plugin->bpm != TRANSPORT->bpm);
 
 	uint8_t   pos_buf[256];
 	LV2_Atom* lv2_pos = (LV2_Atom*)pos_buf;
-	/*if (xport_changed) {*/
-		/*[> Build an LV2 position object to report change to plugin <]*/
-		/*lv2_atom_forge_set_buffer(&jalv->forge, pos_buf, sizeof(pos_buf));*/
-		/*LV2_Atom_Forge*      forge = &jalv->forge;*/
-		/*LV2_Atom_Forge_Frame frame;*/
-		/*lv2_atom_forge_object(forge, &frame, 0, jalv->urids.time_Position);*/
-		/*lv2_atom_forge_key(forge, jalv->urids.time_frame);*/
-		/*lv2_atom_forge_long(forge, pos.frame);*/
-		/*lv2_atom_forge_key(forge, jalv->urids.time_speed);*/
-		/*lv2_atom_forge_float(forge, rolling ? 1.0 : 0.0);*/
-		/*if (pos.valid & JackPositionBBT) {*/
-			/*lv2_atom_forge_key(forge, jalv->urids.time_barBeat);*/
-			/*lv2_atom_forge_float(*/
-				/*forge, pos.beat - 1 + (pos.tick / pos.ticks_per_beat));*/
-			/*lv2_atom_forge_key(forge, jalv->urids.time_bar);*/
-			/*lv2_atom_forge_long(forge, pos.bar - 1);*/
-			/*lv2_atom_forge_key(forge, jalv->urids.time_beatUnit);*/
-			/*lv2_atom_forge_int(forge, pos.beat_type);*/
-			/*lv2_atom_forge_key(forge, jalv->urids.time_beatsPerBar);*/
-			/*lv2_atom_forge_float(forge, pos.beats_per_bar);*/
-			/*lv2_atom_forge_key(forge, jalv->urids.time_beatsPerMinute);*/
-			/*lv2_atom_forge_float(forge, pos.beats_per_minute);*/
-		/*}*/
+        if (xport_changed)
+          {
+            /* Build an LV2 position object to report change to plugin */
+            lv2_atom_forge_set_buffer(&lv2_plugin->forge, pos_buf, sizeof(pos_buf));
+            LV2_Atom_Forge*      forge = &lv2_plugin->forge;
+            LV2_Atom_Forge_Frame frame;
+            lv2_atom_forge_object(forge, &frame, 0, lv2_plugin->urids.time_Position);
+            lv2_atom_forge_key(forge, lv2_plugin->urids.time_frame);
+            lv2_atom_forge_long(forge, PLAYHEAD.frames);
+            lv2_atom_forge_key(forge, lv2_plugin->urids.time_speed);
+            lv2_atom_forge_float(forge, TRANSPORT->play_state == PLAYSTATE_ROLLING ? 1.0 : 0.0);
+            lv2_atom_forge_key(forge, lv2_plugin->urids.time_barBeat);
+            lv2_atom_forge_float(
+                    forge, (float) PLAYHEAD.beats - 1 + ((float) PLAYHEAD.ticks / (float) TICKS_PER_BEAT));
+            lv2_atom_forge_key(forge, lv2_plugin->urids.time_bar);
+            lv2_atom_forge_long(forge, PLAYHEAD.bars - 1);
+            lv2_atom_forge_key(forge, lv2_plugin->urids.time_beatUnit);
+            lv2_atom_forge_int(forge, TRANSPORT->beat_unit);
+            lv2_atom_forge_key(forge, lv2_plugin->urids.time_beatsPerBar);
+            lv2_atom_forge_float(forge, TRANSPORT->beats_per_bar);
+            lv2_atom_forge_key(forge, lv2_plugin->urids.time_beatsPerMinute);
+            lv2_atom_forge_float(forge, TRANSPORT->bpm);
 
-		/*if (jalv->opts.dump) {*/
-			/*char* str = sratom_to_turtle(*/
-				/*jalv->sratom, &jalv->unmap, "time:", NULL, NULL,*/
-				/*lv2_pos->type, lv2_pos->size, LV2_ATOM_BODY(lv2_pos));*/
-			/*jalv_ansi_start(stdout, 36);*/
-			/*printf("\n## Position ##\n%s\n", str);*/
-			/*jalv_ansi_reset(stdout);*/
-			/*free(str);*/
-		/*}*/
-	/*}*/
+            if (1)
+              {
+                /*char* str = sratom_to_turtle(*/
+                        /*lv2_plugin->sratom, &lv2_plugin->unmap, "time:", NULL, NULL,*/
+                        /*lv2_pos->type, lv2_pos->size,*/
+                        /*LV2_ATOM_BODY(lv2_pos));*/
+                /*lv2_ansi_start(stdout, 36);*/
+                /*printf("\n## Position ##\n%s\n", str);*/
+                /*lv2_ansi_reset(stdout);*/
+                /*free(str);*/
+              }
+          }
 
-	/*[> Update transport state to expected values for next cycle <]*/
-	/*jalv->position = rolling ? pos.frame + nframes : pos.frame;*/
-	/*jalv->bpm      = pos.beats_per_minute;*/
-	/*jalv->rolling  = rolling;*/
+        /* Update transport state to expected values for next cycle */
+        lv2_plugin->pos.frames =
+          TRANSPORT->play_state == PLAYSTATE_ROLLING ?
+          PLAYHEAD.frames + nframes :
+          lv2_plugin->pos.frames;
+        lv2_plugin->bpm      = TRANSPORT->bpm;
+        lv2_plugin->rolling  = TRANSPORT->play_state == PLAYSTATE_ROLLING;
 
-	/*switch (jalv->play_state) {*/
-	/*case JALV_PAUSE_REQUESTED:*/
-		/*jalv->play_state = JALV_PAUSED;*/
-		/*zix_sem_post(&jalv->paused);*/
-		/*break;*/
-	/*case JALV_PAUSED:*/
-		/*for (uint32_t p = 0; p < jalv->num_ports; ++p) {*/
-			/*jack_port_t* jport = jalv->ports[p].sys_port;*/
-			/*if (jport && jalv->ports[p].flow == FLOW_OUTPUT) {*/
-				/*void* buf = jack_port_get_buffer(jport, nframes);*/
-				/*if (jalv->ports[p].type == TYPE_EVENT) {*/
-					/*jack_midi_clear_buffer(buf);*/
-				/*} else {*/
-					/*memset(buf, '\0', nframes * sizeof(float));*/
-				/*}*/
-			/*}*/
-		/*}*/
-		/*return 0;*/
-	/*default:*/
-		/*break;*/
-	/*}*/
+        /*switch (TRANSPORT->play_state) {*/
+        /*case PLAYSTATE_PAUSE_REQUESTED:*/
+                /*[>jalv->play_state = JALV_PAUSED;<]*/
+                /*[>zix_sem_post(&jalv->paused);<]*/
+                /*break;*/
+        /*case JALV_PAUSED:*/
+          /*for (uint32_t p = 0; p < lv2_plugin->num_ports; ++p)*/
+            /*{*/
+              /*jack_port_t* jport = jalv->ports[p].sys_port;*/
+              /*if (jport && jalv->ports[p].flow == FLOW_OUTPUT)*/
+                /*{*/
+                  /*void* buf = jack_port_get_buffer(jport, nframes);*/
+                  /*if (jalv->ports[p].type == TYPE_EVENT) {*/
+                      /*jack_midi_clear_buffer(buf);*/
+                  /*} else {*/
+                      /*memset(buf, '\0', nframes * sizeof(float));*/
+                  /*}*/
+                /*}*/
+            /*}*/
+          /*return 0;*/
+        /*default:*/
+                /*break;*/
+        /*}*/
       /* Prepare port buffers */
       for (uint32_t p = 0; p < lv2_plugin->num_ports; ++p)
         {
@@ -195,7 +198,6 @@ plugin_process (Plugin * plugin, nframes_t nframes)
 
                   /* Write transport change event if applicable */
                   LV2_Evbuf_Iterator iter = lv2_evbuf_begin(lv2_port->evbuf);
-                  int xport_changed = 0;
                   if (xport_changed)
                     {
                       lv2_evbuf_write(&iter, 0, 0,
