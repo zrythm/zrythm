@@ -1,5 +1,5 @@
 /*
- * audio/slot.c - a slot on a channel
+ * utils/string.h - string utils
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,38 +19,23 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/plugin.h"
-#include "audio/slot.h"
+#include <string.h>
 
-/**
- * Normally, the channel will call the process func on each of its plugins
- * in order.
- */
-void
-process_impl (Slot * slot,  ///< slot
-              nframes_t)    ///< sample count
+#include "utils/string.h"
+
+int
+is_ascii (const char * string)
 {
-  /* loop through each port of the plugin */
-  for (int i = 0; i < MAX_IN_PORTS; i++)
+  int i;
+  if (strlen (string) == 0)
+    return 0;
+  for (i = 0; i < strlen (string); i++)
     {
-      Ports * incoming_ports
-      while (
-      Plugin * bp = slots[i].plugin;
-      if (bp != NULL)
+      if (string[i] < 32 ||
+          string[i] > 126)
         {
-          get_input_ports (
-          /* TODO connect ports, but for now assume everything uses 2 channels */
-          bp->process (
-
-
-}
-
-/*
- * Initializes a slot with default values
- */
-void
-init_slot (Slot * slot)
-{
-  slot->plugin = NULL;
-  slot->process = process_impl;
+          return 0;
+        }
+    }
+  return 1;
 }

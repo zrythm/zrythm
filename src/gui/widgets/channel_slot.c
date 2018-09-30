@@ -27,6 +27,7 @@
 #include "gui/widget_manager.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/channel_slot.h"
+#include "gui/widgets/main_window.h"
 
 G_DEFINE_TYPE (ChannelSlotWidget, channel_slot_widget, GTK_TYPE_DRAWING_AREA)
 
@@ -42,19 +43,25 @@ on_drag_data_received (GtkWidget        *widget,
 {
   ChannelSlotWidget * channel_slot = CHANNEL_SLOT_WIDGET (widget);
   Channel * channel = channel_slot->channel;
-  /*int index = channel_get_last_active_slot_index (channel);*/
-  /*if (index == MAX_PLUGINS - 1)*/
-    /*{*/
-      /*[> TODO <]*/
-      /*g_error ("Channel is full");*/
-      /*return;*/
-    /*}*/
 
   Plugin_Descriptor * descr = *(gpointer *) gtk_selection_data_get_data (data);
 
   Plugin * plugin = plugin_create_from_descr (descr);
 
-  plugin_instantiate (plugin);
+  if (plugin_instantiate (plugin) < 0)
+    {
+      GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
+      GtkWidget * dialog = gtk_message_dialog_new (GTK_WIDGET (MAIN_WINDOW),
+                                       flags,
+                                       GTK_MESSAGE_ERROR,
+                                       GTK_BUTTONS_CLOSE,
+                                       "Error instantiating plugin “%s”. Please see log for details.",
+                                       plugin->descr->name);
+      gtk_dialog_run (GTK_DIALOG (dialog));
+      gtk_widget_destroy (dialog);
+      plugin_free (plugin);
+      return;
+    }
 
   /* add to specific channel */
   channel_add_plugin (channel, channel_slot->slot_index, plugin);

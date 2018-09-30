@@ -25,6 +25,7 @@
  * with data */
 
 #include <stdlib.h>
+#include <string.h>
 #if _POSIX_C_SOURCE >= 199309L
 #include <time.h>   // for nanosleep
 #else

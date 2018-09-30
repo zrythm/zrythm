@@ -80,7 +80,10 @@ plugin_instantiate (Plugin * plugin ///< the plugin
   if (plugin->descr->protocol == PROT_LV2)
     {
       LV2_Plugin *lv2 = (LV2_Plugin *) plugin->original_plugin;
-      lv2_instantiate (lv2, NULL);
+      if (lv2_instantiate (lv2, NULL) < 0)
+        {
+          return -1;
+        }
     }
   plugin->enabled = 1;
 }

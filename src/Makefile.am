@@ -43,7 +43,8 @@ zrythm_SOURCES = main.c \
 								 plugins/lv2/state.c \
 								 plugins/lv2/symap.c \
 								 plugins/lv2/worker.c \
-								 plugins/lv2/zix/ring.c
+								 plugins/lv2/zix/ring.c \
+								 utils/string.c
 
 AM_CFLAGS = -rdynamic -I$(top_srcdir)/inc \
 						-I$(src_dir) \

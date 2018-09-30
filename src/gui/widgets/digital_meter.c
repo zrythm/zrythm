@@ -19,6 +19,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdlib.h>
 #include <math.h>
 
 #include "zrythm_app.h"

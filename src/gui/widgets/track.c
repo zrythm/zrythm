@@ -22,9 +22,16 @@
 /** \file
  */
 
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 
 G_DEFINE_TYPE (TrackWidget, track_widget, GTK_TYPE_GRID)
+
+static void
+size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
+{
+  gtk_widget_queue_draw (GTK_WIDGET (MAIN_WINDOW->timeline));
+}
 
 /**
  * Creates a new Fader widget and binds it to the given value.
@@ -66,6 +73,9 @@ track_widget_new (Channel * channel)
                         "");
   gtk_image_set_from_resource (self->icon,
                                "/online/alextee/zrythm/instrument.svg");
+
+  g_signal_connect (self, "size-allocate",
+                    G_CALLBACK (size_allocate_cb), NULL);
 
   return self;
 }

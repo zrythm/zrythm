@@ -19,6 +19,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdlib.h>
+
 #include "settings_manager.h"
 #include "zrythm_app.h"
 
@@ -32,7 +34,7 @@ init_settings_manager ()
     g_settings_new ("online.alextee.zrythm");
 
   Settings_Manager * settings_manager =
-    malloc (sizeof (Settings_Manager));
+    calloc (1, sizeof (Settings_Manager));
 
   settings_manager->gsettings = gsettings;
 

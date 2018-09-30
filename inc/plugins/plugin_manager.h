@@ -120,7 +120,7 @@ typedef struct Plugin_Descriptor Plugin_Descriptor;
 
 typedef struct Plugin_Manager
 {
-  Plugin_Descriptor      * plugin_descriptors[400];
+  Plugin_Descriptor      * plugin_descriptors[10000];
   char *                 plugin_categories[50];
   int                    num_plugin_categories;
   int                    num_plugins;

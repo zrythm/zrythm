@@ -28,6 +28,7 @@
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2_plugin.h"
+#include "utils/string.h"
 
 #include <gtk/gtk.h>
 
@@ -37,6 +38,10 @@
 static void
 add_category (char * _category)
 {
+  if (!is_ascii (_category))
+    {
+      g_warning ("Invalid LV2 category name, skipping...");
+    }
   for (int i = 0; i < PLUGIN_MANAGER->num_plugin_categories; i++)
     {
       char * category = PLUGIN_MANAGER->plugin_categories[i];

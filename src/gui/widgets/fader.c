@@ -22,6 +22,8 @@
 /** \file
  */
 
+#include <stdlib.h>
+
 #include "gui/widgets/fader.h"
 
 G_DEFINE_TYPE (FaderWidget, fader_widget, GTK_TYPE_DRAWING_AREA)

@@ -20,6 +20,8 @@
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2/control.h"
 
+#include <lilv/lilv.h>
+
 #include <gtk/gtk.h>
 
 int

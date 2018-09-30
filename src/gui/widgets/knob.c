@@ -23,6 +23,7 @@
 /** \file
  */
 #include <stdint.h>
+#include <stdlib.h>
 #include <math.h>
 
 #include "gui/widgets/knob.h"

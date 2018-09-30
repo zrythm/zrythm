@@ -1,0 +1,164 @@
+# -----------------------
+#  dirs/names/files
+#  ----------------------
+ifdef RELEASE
+	BUILD_DIR = build/release
+else
+	BUILD_DIR = build/debug
+endif
+OBJ_DIR = $(BUILD_DIR)/obj
+BIN_NAME = zstudio
+SRC_DIR = src
+INC_DIR = inc
+
+AWK = @AWK@
+CC = @CC@
+DEFS = @DEFS@
+GTK_CFLAGS = @GTK_CFLAGS@
+GTK_LIBS = @GTK_LIBS@
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+JACK_CFLAGS = @JACK_CFLAGS@
+JACK_LIBS = @JACK_LIBS@
+LDFLAGS = @LDFLAGS@
+LILV_CFLAGS = @LILV_CFLAGS@
+LILV_LIBS = @LILV_LIBS@
+LV2_CFLAGS = @LV2_CFLAGS@
+LV2_LIBS = @LV2_LIBS@
+MKDIR_P = @MKDIR_P@
+OBJEXT = @OBJEXT@
+PACKAGE = @PACKAGE@
+PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
+PACKAGE_NAME = @PACKAGE_NAME@
+PACKAGE_STRING = @PACKAGE_STRING@
+PACKAGE_TARNAME = @PACKAGE_TARNAME@
+PACKAGE_URL = @PACKAGE_URL@
+PACKAGE_VERSION = @PACKAGE_VERSION@
+PATH_SEPARATOR = @PATH_SEPARATOR@
+PKG_CONFIG = @PKG_CONFIG@
+SHELL = @SHELL@
+SUIL_CFLAGS = @SUIL_CFLAGS@
+SUIL_LIBS = @SUIL_LIBS@
+VERSION = @VERSION@
+datarootdir = @datarootdir@ # eg. /usr/share
+docdir = @docdir@ # eg. /usr/doc/package tar name
+includedir = @includedir@
+install_sh = @install_sh@
+mandir = @mandir@
+prefix = @prefix@
+
+DEFAULT_INCLUDES = -I. -I./$(INC_DIR) -I./$(SRC_DIR)
+
+ifdef RELEASE
+	DEFAULT_CFLAGS = -O3
+else
+	DEFAULT_CFLAGS = -g -O0
+endif
+
+CFLAGS = -Wall -rdynamic \
+						$(DEFAULT_INCLUDES) \
+						$(GTK_CFLAGS) \
+						$(JACK_CFLAGS) \
+						$(LV2_CFLAGS) \
+						$(LILV_CFLAGS) \
+						$(SUIL_CFLAGS) \
+						$(DEFAULT_CFLAGS)
+
+LDFLAGS =	$(GTK_LIBS) \
+			    $(JACK_LIBS) \
+			    $(LV2_LIBS) \
+			    $(LILV_LIBS) \
+				  $(SUIL_LIBS) \
+			    -lm \
+					-pthread
+
+built_src = $(BUILD_DIR)/resources.c
+
+built_obj = $(foreach src_file,$(built_src),$(OBJ_DIR)/$(subst .c,.$(OBJEXT),$(subst $(BUILD_DIR)/,,$(src_file))))
+
+src = $(wildcard src/*.c) \
+			$(wildcard src/audio/*.c) \
+			$(wildcard src/gui/*.c) \
+			$(wildcard src/gui/widgets/*.c) \
+			$(wildcard src/plugins/*.c) \
+			$(wildcard src/plugins/lv2/*.c) \
+			$(wildcard src/plugins/lv2/zix/*.c) \
+			$(wildcard src/utils/*.c)
+
+obj = $(foreach src_file,$(src),$(OBJ_DIR)/$(subst .c,.$(OBJEXT),$(subst $(SRC_DIR)/,,$(src_file))))
+
+#dep = $(obj:.$(OBJEXT)=.d)  # one dependency file for each source
+
+# FIXME g settings related stuff
+gsettings_SCHEMAS = online.alextee.zrythm.gschema.xml
+EXTRA_DIST = $(gsettings_SCHEMAS)
+
+# desktop file
+desktopdir = $(datadir)/applications
+desktop_DATA = zrythm.desktop
+
+#the application icon
+appicondir=$(datadir)/icons/hicolor/scalable/apps
+appicon_DATA = $(top_srcdir)/resources/z.svg
+
+@GSETTINGS_RULES@
+
+# -----------------------------
+#  rules
+#  ----------------------------
+
+all: directories $(BUILD_DIR)/$(BIN_NAME)
+
+$(BUILD_DIR)/resources.c: $(SRC_DIR)/zrythm.gresource.xml \
+	resources/ui/*.ui \
+	resources/theme.css
+	mkdir -p $(BUILD_DIR)
+	glib-compile-resources $(SRC_DIR)/zrythm.gresource.xml --target=$(BUILD_DIR)/resources.c \
+	--generate-source --sourcedir=resources
+
+#-include $(dep)   # include all dep files in the makefile
+
+# rule to generate a dep file by using the C preprocessor
+# (see man cpp for details on the -MM and -MT options)
+#$(OBJ_DIR)/%.d: %.c
+	#$(eval TMP_FILE := $(subst $(SRC_DIR)/,,$@))
+	#$(eval TMP_DIR := $(dir $(TMP_FILE)))
+	#$(MKDIR_P) $(TMP_DIR)
+	#@$(CPP) $(CFLAGS) $< -MM -MT $(subst $(SRC_DIR)/,,$(@:.d=.$(OBJEXT))) >$(TMP_FILE)
+
+$(BUILD_DIR)/$(BIN_NAME): $(obj) $(built_obj)
+	$(CC) -o $@ $^ $(LDFLAGS)
+
+$(OBJ_DIR)/%.$(OBJEXT): $(SRC_DIR)/%.c
+	$(MKDIR_P) $(dir $@)
+	$(CC) -c -o $@ $^ $(LDFLAGS) $(CFLAGS)
+
+# built sources
+$(OBJ_DIR)/%.$(OBJEXT): $(BUILD_DIR)/%.c
+	$(MKDIR_P) $(dir $@)
+	$(CC) -c -o $@ $^ $(LDFLAGS) $(CFLAGS)
+	rm -f @^
+
+.PHONY: directories
+
+
+directories: ${BUILD_DIR} $(OBJ_DIR)
+
+${BUILD_DIR}:
+	${MKDIR_P} ${BUILD_DIR}
+
+$(OBJ_DIR):
+	$(MKDIR_P) $(OBJ_DIR)
+
+.PHONY: clean
+clean:
+	rm -rf $(BUILD_DIR)/*
+
+.PHONY: install
+install: $(BUILD_DIR)/$(BIN_NAME)
+	mkdir -p $(DESTDIR)@PREFIX@/bin
+	cp $< $(DESTDIR)$(PREFIX)/bin/$(BIN_NAME)
+
+.PHONY: uninstall
+uninstall:
+	rm -f $(DESTDIR)$(PREFIX)/bin/$(BIN_NAME)

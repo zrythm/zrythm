@@ -133,14 +133,6 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   return 0;
 }
 
-static gboolean
-tick_callback (GtkWidget * widget, GdkFrameClock * frame_clock,
-               gpointer user_data)
-{
-  gtk_widget_queue_draw (widget);
-  return G_SOURCE_CONTINUE;
-}
-
 TimelineWidget *
 timeline_widget_new (GtkWidget * overlay)
 {
@@ -164,11 +156,6 @@ timeline_widget_new (GtkWidget * overlay)
 
   g_signal_connect (G_OBJECT (self), "draw",
                     G_CALLBACK (draw_cb), NULL);
-
-  /*gtk_widget_add_tick_callback (GTK_WIDGET (self),*/
-                                /*tick_callback,*/
-                                /*NULL,*/
-                                /*NULL);*/
 
   return self;
 }

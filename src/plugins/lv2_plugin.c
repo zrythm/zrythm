@@ -54,6 +54,7 @@
 #include "plugins/lv2/control.h"
 #include "plugins/lv2/symap.h"
 #include "plugins/plugin.h"
+#include "utils/string.h"
 
 #include <gtk/gtk.h>
 
@@ -75,7 +76,7 @@
 #include <lv2/lv2plug.in/ns/extensions/ui/ui.h>
 
 #include <lilv/lilv.h>
-
+#include <sratom/sratom.h>
 #include <suil/suil.h>
 
 #include "plugins/lv2/lv2_evbuf.h"
@@ -168,7 +169,7 @@ _uri_to_id (LV2_URI_Map_Callback_Data callback_data,
    and Jack instantiation.  The remaining instance-specific setup
    (e.g. buffers) is done later in activate_port().
 */
-static void
+static int
 _create_port(LV2_Plugin*   lv2_plugin,
             uint32_t lv2_port_index,
             float    default_value)
@@ -203,7 +204,10 @@ _create_port(LV2_Plugin*   lv2_plugin,
     }
   else if (!optional)
     {
-      g_error ("Mandatory lv2_port has unknown type (neither input nor output)");
+      /* FIXME why g_error doesnt work */
+      g_warning ("Mandatory lv2_port at %d has unknown type (neither input nor output)",
+               lv2_port_index);
+      return -1;
     }
 
   /* Set control values */
@@ -255,7 +259,9 @@ _create_port(LV2_Plugin*   lv2_plugin,
     }
   else if (!optional)
     {
-      g_error("Mandatory lv2_port has unknown data type");
+      g_warning ("Mandatory lv2_port at %d has unknown data type",
+               lv2_port_index);
+      return -1;
     }
 
   LilvNode* min_size = lilv_port_get(
@@ -282,7 +288,7 @@ _create_port(LV2_Plugin*   lv2_plugin,
 /**
    Create port structures from data (via create_port()) for all ports.
 */
-void
+int
 lv2_create_ports(LV2_Plugin* lv2_plugin)
 {
   Plugin * plugin = lv2_plugin->plugin;
@@ -299,7 +305,10 @@ lv2_create_ports(LV2_Plugin* lv2_plugin)
 
   for (uint32_t i = 0; i < lv2_plugin->num_ports; ++i)
     {
-      _create_port(lv2_plugin, i, default_values[i]);
+      if (_create_port(lv2_plugin, i, default_values[i]) < 0)
+        {
+          return -1;
+        }
     }
 
   const LilvPort* control_input = lilv_plugin_get_port_by_designation (
@@ -312,6 +321,8 @@ lv2_create_ports(LV2_Plugin* lv2_plugin)
   }
 
   free(default_values);
+
+  return 0;
 }
 
 /**
@@ -853,11 +864,6 @@ lv2_backend_activate_port(LV2_Plugin * lv2_plugin, uint32_t port_index)
       return;
     }
 
-  /* Build Jack flags for port */
-  /*enum JackPortFlags jack_flags = (port->flow == FLOW_INPUT)*/
-          /*? JackPortIsInput*/
-          /*: JackPortIsOutput;*/
-
   /* Connect the port based on its type */
   switch (port->type) {
   case TYPE_CONTROL:
@@ -984,6 +990,12 @@ Plugin_Descriptor *
 lv2_create_descriptor_from_lilv (const LilvPlugin * lp)
 {
   const LilvNode*  lv2_uri = lilv_plugin_get_uri (lp);
+  const char * uri_str = lilv_node_as_string (lv2_uri);
+  if (!is_ascii (uri_str))
+    {
+      g_error ("Invalid plugin URI, skipping");
+      return NULL;
+    }
 
   LilvNode* name = lilv_plugin_get_name(lp);
 
@@ -1104,24 +1116,13 @@ lv2_create_descriptor_from_lilv (const LilvPlugin * lp)
           + count_midi_out;
   pd->num_ctrl_ins =
     lilv_plugin_get_num_ports_of_class (lp, LV2_SETTINGS.lv2_InputPort,
-                                        LV2_SETTINGS.lv2_ControlPort);
+                                        LV2_SETTINGS.lv2_ControlPort,
+                                        NULL);
   pd->num_ctrl_outs =
     lilv_plugin_get_num_ports_of_class (lp, LV2_SETTINGS.lv2_InputPort,
-                                        LV2_SETTINGS.lv2_ControlPort);
+                                        LV2_SETTINGS.lv2_ControlPort,
+                                        NULL);
 
-  /*g_message ("Found:  %s | %s | %s | AUDIO %d:%d | MIDI %d:%d | CTRL %d:%d",*/
-             /*pd->name,*/
-             /*pd->author,*/
-             /*pd->category,*/
-             /*pd->num_audio_ins,*/
-             /*pd->num_audio_outs,*/
-             /*pd->num_midi_ins,*/
-             /*pd->num_midi_outs,*/
-             /*pd->num_ctrl_ins,*/
-             /*pd->num_ctrl_outs*/
-             /*);*/
-
-  const char * uri_str = lilv_node_as_string (lv2_uri);
   pd->uri = g_strdup (uri_str);
 
   return pd;
@@ -1291,7 +1292,10 @@ lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
   lv2_plugin->nodes.end                    = NULL;
 
   /* Set default values for all ports */
-  lv2_create_ports (lv2_plugin);
+  if (lv2_create_ports (lv2_plugin) < 0)
+    {
+      return -1;
+    }
 
   /* Set the zrythm plugin ports */
   int count = 0;
@@ -1656,6 +1660,7 @@ lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
   lv2_open_ui(lv2_plugin);
   g_message ("UI opened");
 
+  return 1;
 }
 
 void

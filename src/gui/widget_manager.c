@@ -19,6 +19,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdlib.h>
+
 #include "zrythm_app.h"
 #include "gui/widget_manager.h"
 

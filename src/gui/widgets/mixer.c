@@ -45,7 +45,20 @@ on_drag_data_received (GtkWidget        *widget,
 
   Plugin * plugin = plugin_create_from_descr (descr);
 
-  plugin_instantiate (plugin);
+  if (plugin_instantiate (plugin) < 0)
+    {
+      GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
+      GtkWidget * dialog = gtk_message_dialog_new (GTK_WIDGET (MAIN_WINDOW),
+                                       flags,
+                                       GTK_MESSAGE_ERROR,
+                                       GTK_BUTTONS_CLOSE,
+                                       "Error instantiating plugin “%s”. Please see log for details.",
+                                       plugin->descr->name);
+      gtk_dialog_run (GTK_DIALOG (dialog));
+      gtk_widget_destroy (dialog);
+      plugin_free (plugin);
+      return;
+    }
 
   Channel * new_channel = channel_create (CT_MIDI,
                                           g_strdup_printf ("%s %d",
