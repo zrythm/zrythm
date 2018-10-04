@@ -71,9 +71,10 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   gtk_render_background (context, cr, 0, 0, MW_RULER->total_px, height);
 
   /* handle vertical drawing */
-  for (int i = 0; i < MW_RULER->total_px; i++)
+  for (int i = SPACE_BEFORE_START; i < MW_RULER->total_px; i++)
   {
-    if (i == playhead_pos_in_px)
+    int actual_pos = i - SPACE_BEFORE_START;
+    if (actual_pos == playhead_pos_in_px)
       {
           cairo_set_source_rgb (cr, 1, 0, 0);
           cairo_set_line_width (cr, 2);
@@ -81,7 +82,7 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
           cairo_line_to (cr, i, height);
           cairo_stroke (cr);
       }
-      if (i % MW_RULER->px_per_bar == 0)
+      if (actual_pos % MW_RULER->px_per_bar == 0)
       {
           cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);
           cairo_set_line_width (cr, 1);
@@ -89,7 +90,7 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
           cairo_line_to (cr, i, height);
           cairo_stroke (cr);
       }
-      else if (i % MW_RULER->px_per_beat == 0)
+      else if (actual_pos % MW_RULER->px_per_beat == 0)
       {
           cairo_set_source_rgb (cr, 0.25, 0.25, 0.25);
           cairo_set_line_width (cr, 0.5);

@@ -234,6 +234,7 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
   zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
 
   if (TRANSPORT->loop && /* if looping */
+      TRANSPORT->play_state == PLAYSTATE_ROLLING && /* if rolling */
       TRANSPORT->playhead_pos.frames <=  /* if current pos is inside loop */
           TRANSPORT->loop_end_pos.frames &&
       TRANSPORT->playhead_pos.frames + nframes > /* if next pos will be outside loop */

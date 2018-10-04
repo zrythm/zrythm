@@ -38,6 +38,8 @@
  */
 #define DEFAULT_PX_PER_TICK 0.03f
 
+#define SPACE_BEFORE_START 10 /* pixels to put before 1st bar */
+
 typedef struct RulerWidget
 {
   GtkDrawingArea           parent_instance;
@@ -47,8 +49,8 @@ typedef struct RulerWidget
   float                    px_per_tick;
   int                      total_px;
   double                   start_x; ///< for dragging
-  double                   last_x; ///< for dragging
   GtkGestureDrag           * drag;
+  GtkGestureMultiPress     * multipress;
 } RulerWidget;
 
 typedef struct RulerWidgetClass

@@ -186,13 +186,10 @@ void
 position_set_to_pos (Position * position,
                      Position * target)
 {
-  position->bars = target->bars;
-  position->beats = target->beats;
-  position->quarter_beats = target->quarter_beats;
-  position->ticks = target->ticks;
-  position->frames = target->frames;
-  g_idle_add ((GSourceFunc) position_updated,
-              position);
+  position_set_bar (position, target->bars);
+  position_set_beat (position, target->beats);
+  position_set_quarter_beat (position, target->quarter_beats);
+  position_set_tick (position, target->ticks);
 }
 
 void
