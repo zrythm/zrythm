@@ -52,6 +52,8 @@ Session.vim
 .netrwhist
 *~
 *.ui#
+**/.deps
+
 # Auto-generated tag files
 tags
 # Persistent undo

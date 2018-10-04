@@ -7,9 +7,10 @@ else
 	BUILD_DIR = build/debug
 endif
 OBJ_DIR = $(BUILD_DIR)/obj
-BIN_NAME = zstudio
+BIN_NAME = zrythm
 SRC_DIR = src
 INC_DIR = inc
+DATA_DIR = data
 
 AWK = @AWK@
 CC = @CC@
@@ -26,6 +27,8 @@ LILV_LIBS = @LILV_LIBS@
 LV2_CFLAGS = @LV2_CFLAGS@
 LV2_LIBS = @LV2_LIBS@
 MKDIR_P = @MKDIR_P@
+GLIB_COMPILE_SCHEMAS = @GLIB_COMPILE_SCHEMAS@
+gsettingsschemadir = @gsettingsschemadir@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -40,8 +43,9 @@ SHELL = @SHELL@
 SUIL_CFLAGS = @SUIL_CFLAGS@
 SUIL_LIBS = @SUIL_LIBS@
 VERSION = @VERSION@
-datarootdir = @datarootdir@ # eg. /usr/share
-docdir = @docdir@ # eg. /usr/doc/package tar name
+datarootdir = @datarootdir@
+datadir = @datadir@
+docdir = @docdir@
 includedir = @includedir@
 install_sh = @install_sh@
 mandir = @mandir@
@@ -90,18 +94,17 @@ obj = $(foreach src_file,$(src),$(OBJ_DIR)/$(subst .c,.$(OBJEXT),$(subst $(SRC_D
 #dep = $(obj:.$(OBJEXT)=.d)  # one dependency file for each source
 
 # FIXME g settings related stuff
-gsettings_SCHEMAS = online.alextee.zrythm.gschema.xml
-EXTRA_DIST = $(gsettings_SCHEMAS)
+gsettings_SCHEMAS = $(DATA_DIR)/online.alextee.zrythm.gschema.xml
+#EXTRA_DIST = $(gsettings_SCHEMAS)
 
 # desktop file
 desktopdir = $(datadir)/applications
-desktop_DATA = zrythm.desktop
+desktop_DATA = $(DATA_DIR)/zrythm.desktop
 
 #the application icon
 appicondir=$(datadir)/icons/hicolor/scalable/apps
-appicon_DATA = $(top_srcdir)/resources/z.svg
+appicon_DATA = resources/z.svg
 
-@GSETTINGS_RULES@
 
 # -----------------------------
 #  rules
@@ -155,10 +158,24 @@ clean:
 	rm -rf $(BUILD_DIR)/*
 
 .PHONY: install
-install: $(BUILD_DIR)/$(BIN_NAME)
+install: $(BUILD_DIR)/$(BIN_NAME) install-appicon-data install-desktop-data install-gschemas
 	mkdir -p $(DESTDIR)@PREFIX@/bin
 	cp $< $(DESTDIR)$(PREFIX)/bin/$(BIN_NAME)
 
 .PHONY: uninstall
 uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/bin/$(BIN_NAME)
+
+.PHONY: install-appicon-data
+install-appicon-data: $(appicon_DATA)
+	$(INSTALL_DATA) $< "$(DESTDIR)$(appicondir)"
+
+.PHONY: install-gschemas
+install-gschemas: $(gsettings_SCHEMAS)
+	cp $< $(gsettingsschemadir)/
+	$(GLIB_COMPILE_SCHEMAS) $(gsettingsschemadir)
+
+.PHONY: install-desktop
+install-desktop-data: $(desktop_DATA)
+	$(INSTALL_DATA) $< "$(DESTDIR)$(desktopdir)"
+
