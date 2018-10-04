@@ -29,7 +29,15 @@ static void
 play_clicked_cb (GtkButton *button,
                gpointer       user_data)
 {
-  transport_request_roll ();
+  if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
+    {
+      position_set_to_pos (&TRANSPORT->playhead_pos,
+                           &TRANSPORT->cue_pos);
+    }
+  else
+    {
+      transport_request_roll ();
+    }
 }
 
 static void
@@ -39,7 +47,7 @@ stop_clicked_cb (GtkButton *button,
   if (TRANSPORT->play_state == PLAYSTATE_PAUSED)
     {
       position_set_to_pos (&TRANSPORT->playhead_pos,
-                           &TRANSPORT->q_pos);
+                           &TRANSPORT->cue_pos);
     }
   else
     transport_request_pause ();
@@ -64,6 +72,20 @@ record_toggled_cb (GtkToggleButton * tg,
       gtk_button_set_image (GTK_BUTTON (MAIN_WINDOW->trans_record),
                             image);
 
+    }
+}
+
+static void
+loop_toggled_cb (GtkToggleButton * loop,
+                 gpointer        user_data)
+{
+  if (gtk_toggle_button_get_active (loop))
+    {
+      TRANSPORT->loop = 1;
+    }
+  else
+    {
+      TRANSPORT->loop = 0;
     }
 }
 
@@ -95,6 +117,10 @@ transport_controls_init (MainWindowWidget * mw)
   g_signal_connect (GTK_WIDGET (mw->trans_record),
                       "toggled",
                       G_CALLBACK (record_toggled_cb),
+                      NULL);
+  g_signal_connect (GTK_WIDGET (mw->loop),
+                      "toggled",
+                      G_CALLBACK (loop_toggled_cb),
                       NULL);
 }
 

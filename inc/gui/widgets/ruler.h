@@ -46,7 +46,9 @@ typedef struct RulerWidget
   int                      px_per_quarter_beat;
   float                    px_per_tick;
   int                      total_px;
-
+  double                   start_x; ///< for dragging
+  double                   last_x; ///< for dragging
+  GtkGestureDrag           * drag;
 } RulerWidget;
 
 typedef struct RulerWidgetClass

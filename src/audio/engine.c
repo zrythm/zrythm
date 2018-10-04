@@ -233,8 +233,21 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
 
   zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
 
-  /* move playhead as many samples as processed */
-  transport_update_playhead (nframes);
+  if (TRANSPORT->loop && /* if looping */
+      TRANSPORT->playhead_pos.frames <=  /* if current pos is inside loop */
+          TRANSPORT->loop_end_pos.frames &&
+      TRANSPORT->playhead_pos.frames + nframes > /* if next pos will be outside loop */
+          TRANSPORT->loop_end_pos.frames)
+    {
+      position_set_to_pos (&TRANSPORT->playhead_pos,
+                           &TRANSPORT->loop_start_pos);
+    }
+  else
+    {
+      /* move playhead as many samples as processed */
+      transport_add_to_playhead (nframes);
+    }
+
 
   /*g_message ("jack end");*/
   /*

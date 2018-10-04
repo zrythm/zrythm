@@ -228,6 +228,8 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
                                                 MainWindowWidget, forward);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 MainWindowWidget, trans_record);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                                MainWindowWidget, loop);
   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
                                            on_main_window_destroy);
   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),

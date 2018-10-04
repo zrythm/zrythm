@@ -55,7 +55,7 @@ typedef struct Transport
 {
   int           total_bars;             ///< total bars in the song
   Position      playhead_pos;           ///< playhead position
-  Position      q_pos;            ///< position to use when stopped
+  Position      cue_pos;            ///< position to use when stopped
   Position      loop_start_pos;         ///< loop marker start position
   Position      loop_end_pos;           ///< loop marker end position
   Position      start_marker_pos;       ///< start marker position
@@ -67,6 +67,7 @@ typedef struct Transport
   uint32_t           position;       ///< Transport position in frames
 	float              bpm;            ///< Transport tempo in beats per minute
 	int               rolling;        ///< Transport speed (0=stop, 1=play)
+  int               loop;        ///< loop or not
 	ZixSem             paused;         ///< Paused signal from process thread
   Play_State         play_state;     ///< play state
 } Transport;
@@ -88,7 +89,7 @@ transport_set_bpm (float bpm);
  * Moves the playhead by the time corresponding to given samples.
  */
 void
-transport_update_playhead (int nframes);
+transport_add_to_playhead (int nframes);
 
 void
 transport_request_pause ();

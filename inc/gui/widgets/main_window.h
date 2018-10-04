@@ -104,6 +104,7 @@ typedef struct _MainWindowWidget
   GtkButton                * backward;
   GtkButton                * forward;
   GtkToggleButton          * trans_record;
+  GtkToggleButton          * loop;
 } MainWindowWidget;
 
 /**

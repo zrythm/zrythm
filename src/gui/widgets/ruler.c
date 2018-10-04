@@ -41,6 +41,26 @@ G_DEFINE_TYPE (RulerWidget, ruler_widget, GTK_TYPE_DRAWING_AREA)
 #define Q_HEIGHT 12
 #define Q_WIDTH 7
 
+static void
+px_to_pos (RulerWidget *self,
+           Position * pos, ///< position to fill in
+           int      px) ///< pixels
+{
+  /*g_message ("%d", px);*/
+  pos->bars = px / self->px_per_bar + 1;
+  px = px % self->px_per_bar;
+  pos->beats = px / self->px_per_beat + 1;
+  px = px % self->px_per_beat;
+  pos->quarter_beats = px / self->px_per_quarter_beat + 1;
+  px = px % self->px_per_quarter_beat;
+  pos->ticks = px / self->px_per_tick;
+  /*g_message ("%d %d %d %d",*/
+             /*pos->bars,*/
+             /*pos->beats,*/
+             /*pos->quarter_beats,*/
+             /*pos->ticks);*/
+}
+
 static gboolean
 draw_cb (RulerWidget * self, cairo_t *cr, gpointer data)
 {
@@ -60,12 +80,12 @@ draw_cb (RulerWidget * self, cairo_t *cr, gpointer data)
     (TRANSPORT->playhead_pos.beats - 1) * self->px_per_beat +
     (TRANSPORT->playhead_pos.quarter_beats - 1) * self->px_per_quarter_beat +
     TRANSPORT->playhead_pos.ticks * self->px_per_tick;
-  static int q_pos_in_px;
-  q_pos_in_px =
-    (TRANSPORT->q_pos.bars - 1) * self->px_per_bar +
-    (TRANSPORT->q_pos.beats - 1) * self->px_per_beat +
-    (TRANSPORT->q_pos.quarter_beats - 1) * self->px_per_quarter_beat +
-    TRANSPORT->q_pos.ticks * self->px_per_tick;
+  static int cue_pos_in_px;
+  cue_pos_in_px =
+    (TRANSPORT->cue_pos.bars - 1) * self->px_per_bar +
+    (TRANSPORT->cue_pos.beats - 1) * self->px_per_beat +
+    (TRANSPORT->cue_pos.quarter_beats - 1) * self->px_per_quarter_beat +
+    TRANSPORT->cue_pos.ticks * self->px_per_tick;
   static int start_marker_pos_px;
   start_marker_pos_px =
     (TRANSPORT->start_marker_pos.bars - 1) * self->px_per_bar;
@@ -130,7 +150,7 @@ draw_cb (RulerWidget * self, cairo_t *cr, gpointer data)
                          height - PLAYHEAD_TRIANGLE_HEIGHT);
           cairo_fill (cr);
       }
-    if (i == q_pos_in_px)
+    if (i == cue_pos_in_px)
       {
           cairo_set_source_rgb (cr, 0, 0.6, 0.9);
           cairo_set_line_width (cr, 2);
@@ -213,6 +233,64 @@ reset_ruler ()
 
 }
 
+static gboolean
+button_press_cb (GtkWidget      * widget,
+                 GdkEventButton * event,
+                 gpointer       data)
+{
+  if (event->type == GDK_2BUTTON_PRESS)
+    {
+      Position pos;
+      px_to_pos ((RulerWidget *) widget, &pos, event->x);
+      position_set_to_pos (&TRANSPORT->cue_pos,
+                           &pos);
+    }
+  else if (event->type == GDK_BUTTON_PRESS)
+    {
+      Position pos;
+      px_to_pos ((RulerWidget *) widget, &pos, event->x);
+      position_set_to_pos (&TRANSPORT->playhead_pos,
+                           &pos);
+    }
+}
+
+static void
+drag_begin (GtkGestureDrag * gesture,
+               gdouble         start_x,
+               gdouble         start_y,
+               gpointer        user_data)
+{
+  g_message ("drag");
+  RulerWidget * self = (RulerWidget *) user_data;
+  self->start_x = start_x;
+}
+
+static void
+drag_update (GtkGestureDrag * gesture,
+               gdouble         offset_x,
+               gdouble         offset_y,
+               gpointer        user_data)
+{
+  RulerWidget * self = (RulerWidget *) user_data;
+  self->last_x = offset_x;
+  Position pos;
+  px_to_pos (self, &pos,
+             self->start_x + (offset_x - self->last_x));
+  position_set_to_pos (&TRANSPORT->playhead_pos,
+                       &pos);
+}
+
+static void
+drag_end (GtkGestureDrag *gesture,
+               gdouble         offset_x,
+               gdouble         offset_y,
+               gpointer        user_data)
+{
+  RulerWidget * self = (RulerWidget *) user_data;
+  self->last_x = 0;
+  self->start_x = 0;
+}
+
 RulerWidget *
 ruler_widget_new ()
 {
@@ -235,13 +313,17 @@ ruler_widget_new ()
     self->total_px,
     -1);
 
+  /* FIXME drags */
   g_signal_connect (G_OBJECT (self), "draw",
                     G_CALLBACK (draw_cb), NULL);
-
-  /*gtk_widget_add_tick_callback (GTK_WIDGET (self),*/
-                                /*tick_callback,*/
-                                /*NULL,*/
-                                /*NULL);*/
+  g_signal_connect (G_OBJECT(self), "button_press_event",
+                    G_CALLBACK (button_press_cb),  self);
+  g_signal_connect (G_OBJECT(self->drag), "drag-begin",
+                    G_CALLBACK (drag_begin),  self);
+  g_signal_connect (G_OBJECT(self->drag), "drag-update",
+                    G_CALLBACK (drag_update),  self);
+  g_signal_connect (G_OBJECT(self->drag), "drag-end",
+                    G_CALLBACK (drag_end),  self);
 
   return self;
 }
@@ -254,5 +336,11 @@ ruler_widget_class_init (RulerWidgetClass * klass)
 static void
 ruler_widget_init (RulerWidget * self)
 {
-  gtk_widget_show (GTK_WIDGET (self));
+  /* make it able to notify */
+  gtk_widget_add_events (GTK_WIDGET (self),
+                         GDK_ALL_EVENTS_MASK);
+  /*gtk_widget_set_has_window (GTK_WIDGET (self), TRUE);*/
+
+  self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new (GTK_WIDGET (self)));
+
 }
