@@ -3,13 +3,13 @@ It aims to be highly modular, meaning everything should be automatable and inter
 
 It is written in C and it uses the GTK+3 toolkit.
 
+Bits and pieces are taken from other programs like Ardour and Jalv.
+
+## Current state
+![screenshot](https://alextee.website/wp-content/uploads/2018/10/Screenshot_20181006_225254.png)
+
 ## Currently supported protocols:
 - LV2
-
-Some code, ideas and help come from Ardour so big thanks to them.
-
-## Why another DAW?
-Partly because of curiosity, partly because I want to work with GTK/C, partly because I wanted an easily customizable UI, and also because current Free, GNU/Linux DAWs don't offer usability features I got used to from proprietary programs like Bitwig/Cubase.
 
 ## Contributing
 For installation instructions see INSTALL
@@ -21,4 +21,4 @@ For any bugs please raise an issue
 Come discuss in IRC at #zrythm @ freenode, or zrythm @ matrix.org for Matrix
 
 ## Support
-You can show your support by donating through my artist website http://www.onenightalive.online/support (and also check out my music!)
+paypal.me/alextee90
