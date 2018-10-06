@@ -157,10 +157,11 @@ port_connect (Port * src, Port * dest)
   if (src->type != dest->type)
     {
       g_error ("Cannot connect ports, incompatible types");
-      return 0;
+      return -1;
     }
   src->dests[src->num_dests++] = dest;
   dest->srcs[dest->num_srcs++] = src;
+  return 0;
 }
 
 static void
@@ -191,6 +192,7 @@ port_disconnect (Port * src, Port * dest)
   /* disconnect dest from src */
   array_delete (src->dests, &src->num_dests, dest);
   array_delete (dest->srcs, &dest->num_srcs, src);
+  return 0;
 }
 
 /**
@@ -227,7 +229,7 @@ get_amp_from_dbfs (float dbfs)
 /**
  * Apply given fader value to port.
  */
-float
+void
 port_apply_fader (Port * port, float dbfs)
 {
   for (int i = 0; i < port->nframes; i++)

@@ -151,7 +151,7 @@ port_disconnect (Port * src, Port * dest);
 /**
  * Apply given fader value to port.
  */
-float
+void
 port_apply_fader (Port * port, float dbfs);
 
 /**

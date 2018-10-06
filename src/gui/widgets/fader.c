@@ -62,7 +62,7 @@ real_val_from_fader (FaderWidget * self, double fader)
     return REAL_STEP_5 + ((fader - FADER_STEP_5) / FADER_DIFF_5) * REAL_DIFF_5;
 }
 
-static int
+static void
 draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 {
   guint width, height;
@@ -173,18 +173,14 @@ static void
 on_crossing (GtkWidget * widget, GdkEvent *event)
 {
   FaderWidget * self = FADER_WIDGET (widget);
-   switch (gdk_event_get_event_type (event))
+  if (gdk_event_get_event_type (event) == GDK_ENTER_NOTIFY)
+    self->hover = 1;
+  else if (gdk_event_get_event_type (event) == GDK_LEAVE_NOTIFY)
     {
-    case GDK_ENTER_NOTIFY:
-      self->hover = 1;
-      break;
-
-    case GDK_LEAVE_NOTIFY:
       if (!gtk_gesture_drag_get_offset (self->drag,
                                        NULL,
                                        NULL))
         self->hover = 0;
-      break;
     }
   gtk_widget_queue_draw(widget);
 }

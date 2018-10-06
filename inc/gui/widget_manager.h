@@ -28,14 +28,6 @@
 
 #define WIDGET_MANAGER zrythm_system->widget_manager
 
-/**
- * Convenience macro to get any registered widget by ID.
- * The widgets must first be registered
- */
-//#define GET_WIDGET(key) g_hash_table_lookup ( \
-                      //zrythm_system->widget_manager->widgets, \
-                      //key)
-                      //
 typedef struct _MainWindowWidget MainWindowWidget;
 
 typedef struct Widget_Manager
@@ -51,18 +43,5 @@ typedef struct Widget_Manager
  */
 void
 init_widget_manager ();
-
-/**
- * Registers widgets to the widget manager
- */
-//void
-//register_widgets ();
-
-/**
- * Registers a widget
- */
-//void
-//register_widget_from_builder (GtkBuilder * builder,
-                              //gchar      * key);
 
 #endif

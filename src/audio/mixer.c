@@ -32,9 +32,6 @@
 
 #include <gtk/gtk.h>
 
-static nframes_t      nframes;
-
-
 /**
  * process callback
  */

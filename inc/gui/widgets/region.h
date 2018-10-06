@@ -59,5 +59,7 @@ typedef struct RegionWidgetClass
 RegionWidget *
 region_widget_new (Region * region);
 
+GType region_widget_get_type(void);
+
 #endif
 

@@ -150,21 +150,6 @@ _unmap_uri(LV2_URID_Unmap_Handle handle,
 }
 
 /**
-   Map function for URI map extension.
-*/
-static uint32_t
-_uri_to_id (LV2_URI_Map_Callback_Data callback_data,
-            const char*               map,
-            const char*               uri)
-{
-  LV2_Plugin* plugin = (LV2_Plugin*)callback_data;
-  zix_sem_wait(&plugin->symap_lock);
-  const LV2_URID id = symap_map(plugin->symap, uri);
-  zix_sem_post(&plugin->symap_lock);
-  return id;
-}
-
-/**
    Create a port structure from data description.  This is called before plugin
    and Jack instantiation.  The remaining instance-specific setup
    (e.g. buffers) is done later in activate_port().
@@ -292,7 +277,6 @@ _create_port(LV2_Plugin*   lv2_plugin,
 int
 lv2_create_ports(LV2_Plugin* lv2_plugin)
 {
-  Plugin * plugin = lv2_plugin->plugin;
   lv2_plugin->num_ports = lilv_plugin_get_num_ports(lv2_plugin->lilv_plugin);
   lv2_plugin->ports     = (LV2_Port*) calloc (lv2_plugin->num_ports,
                                            sizeof (LV2_Port));
@@ -493,7 +477,7 @@ lv2_ui_instantiate(LV2_Plugin* plugin, const char* native_ui_type, void* parent)
         lilv_instance_get_handle(plugin->instance)
       };
       const LV2_Feature* ui_features[] = {
-        &plugin->uri_map_feature, &plugin->map_feature, &plugin->unmap_feature,
+        &plugin->map_feature, &plugin->unmap_feature,
         &instance_feature,
         &data_feature,
         &idle_feature,
@@ -535,7 +519,7 @@ lv2_ui_instantiate(LV2_Plugin* plugin, const char* native_ui_type, void* parent)
               NS_EXT "instance-access", lilv_instance_get_handle(plugin->instance)
       };
       const LV2_Feature* ui_features[] = {
-              &plugin->uri_map_feature, &plugin->map_feature, &plugin->unmap_feature,
+              &plugin->map_feature, &plugin->unmap_feature,
               &instance_feature,
               &data_feature,
               &idle_feature,
@@ -927,13 +911,8 @@ lv2_backend_activate_port(LV2_Plugin * lv2_plugin, uint32_t port_index)
 void
 lv2_set_feature_data (LV2_Plugin * plugin)
 {
-  plugin->uri_map.callback_data = NULL;
-  plugin->uri_map.uri_to_id = &_uri_to_id;
-
   plugin->ext_data.data_access = NULL;
 
-  plugin->uri_map_feature.URI = NS_EXT "uri-map";
-  plugin->uri_map_feature.data = NULL;
   plugin->map_feature.URI = LV2_URID__map;
   plugin->map_feature.data = NULL;
   plugin->unmap_feature.URI = LV2_URID__unmap;
@@ -961,28 +940,26 @@ lv2_set_feature_data (LV2_Plugin * plugin)
   plugin->buf_size_features[2].URI = LV2_BUF_SIZE__boundedBlockLength;
   plugin->buf_size_features[2].data = NULL;;
 
-  plugin->features[0] = &plugin->uri_map_feature;
-  plugin->features[1] = &plugin->map_feature;
-  plugin->features[2] = &plugin->unmap_feature;
-  plugin->features[3] = &plugin->sched_feature;
-  plugin->features[4] = &plugin->log_feature;
-  plugin->features[5] = &plugin->options_feature;
-  plugin->features[6] = &plugin->def_state_feature;
-  plugin->features[7] = &plugin->safe_restore_feature;
-  plugin->features[8] = &plugin->buf_size_features[0];
-  plugin->features[9] = &plugin->buf_size_features[1];
-  plugin->features[10] = &plugin->buf_size_features[2];
-  plugin->features[11] = NULL;
+  plugin->features[0] = &plugin->map_feature;
+  plugin->features[1] = &plugin->unmap_feature;
+  plugin->features[2] = &plugin->sched_feature;
+  plugin->features[3] = &plugin->log_feature;
+  plugin->features[4] = &plugin->options_feature;
+  plugin->features[5] = &plugin->def_state_feature;
+  plugin->features[6] = &plugin->safe_restore_feature;
+  plugin->features[7] = &plugin->buf_size_features[0];
+  plugin->features[8] = &plugin->buf_size_features[1];
+  plugin->features[9] = &plugin->buf_size_features[2];
+  plugin->features[10] = NULL;
 
-  plugin->state_features[0] = &plugin->uri_map_feature;
-  plugin->state_features[1] = &plugin->map_feature;
-  plugin->state_features[2] = &plugin->unmap_feature;
-  plugin->state_features[3] = &plugin->make_path_feature;
-  plugin->state_features[4] = &plugin->state_sched_feature;
-  plugin->state_features[5] = &plugin->safe_restore_feature;
-  plugin->state_features[6] = &plugin->log_feature;
-  plugin->state_features[7] = &plugin->options_feature;
-  plugin->state_features[8] = NULL;
+  plugin->state_features[0] = &plugin->map_feature;
+  plugin->state_features[1] = &plugin->unmap_feature;
+  plugin->state_features[2] = &plugin->make_path_feature;
+  plugin->state_features[3] = &plugin->state_sched_feature;
+  plugin->state_features[4] = &plugin->safe_restore_feature;
+  plugin->state_features[5] = &plugin->log_feature;
+  plugin->state_features[6] = &plugin->options_feature;
+  plugin->state_features[7] = NULL;
 }
 
 /**
@@ -1325,8 +1302,6 @@ lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
   lv2_plugin->symap = symap_new();
   zix_sem_init(&lv2_plugin->symap_lock, 1);
   zix_sem_init(&lv2_plugin->work_lock, 1);
-  lv2_plugin->uri_map_feature.data  = &lv2_plugin->uri_map;
-  lv2_plugin->uri_map.callback_data = &lv2_plugin;
 
   lv2_plugin->map.handle  = lv2_plugin;
   lv2_plugin->map.map     = _map_uri;
@@ -1353,9 +1328,6 @@ lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
   lv2_plugin->ui_sratom = sratom_new(&lv2_plugin->map);
   sratom_set_env(lv2_plugin->sratom, lv2_plugin->env);
   sratom_set_env(lv2_plugin->ui_sratom, lv2_plugin->env);
-
-  lv2_plugin->midi_event_id = _uri_to_id(
-          lv2_plugin, "http://lv2plug.in/ns/ext/event", LV2_MIDI__MidiEvent);
 
   lv2_plugin->urids.atom_Float           = symap_map(lv2_plugin->symap, LV2_ATOM__Float);
   lv2_plugin->urids.atom_Int             = symap_map(lv2_plugin->symap, LV2_ATOM__Int);

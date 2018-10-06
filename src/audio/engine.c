@@ -104,7 +104,7 @@ jack_buffer_size_cb(nframes_t nframes, void* data)
           if (channel->strip[j])
             {
               Plugin * plugin = channel->strip[j];
-              if (plugin->descr->protocol = PROT_LV2)
+              if (plugin->descr->protocol == PROT_LV2)
                 {
                   lv2_allocate_port_buffers (
                                 (LV2_Plugin *)plugin->original_plugin);
@@ -283,7 +283,6 @@ init_audio_engine()
     const char *server_name = NULL;
     jack_options_t options = JackNullOption;
     jack_status_t status;
-    int i;
 
     engine->buf_size_set = false;
 

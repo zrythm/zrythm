@@ -173,11 +173,8 @@ typedef struct LV2_Port
 
 typedef struct LV2_Plugin
 {
-  LV2_URI_Map_Feature uri_map;
-
   LV2_Extension_Data_Feature ext_data;
 
-  LV2_Feature uri_map_feature;
   LV2_Feature map_feature;
   LV2_Feature unmap_feature;
   LV2_Feature make_path_feature;
@@ -191,9 +188,9 @@ typedef struct LV2_Plugin
   /** These features have no data */
   LV2_Feature buf_size_features[3];
 
-  const LV2_Feature* features[12];
+  const LV2_Feature* features[11];
 
-  const LV2_Feature* state_features[9];
+  const LV2_Feature* state_features[8];
 
   LV2_Nodes          nodes;          ///< nodes
 	LV2_Atom_Forge     forge;          ///< Atom forge
