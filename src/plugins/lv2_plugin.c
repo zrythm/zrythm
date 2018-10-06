@@ -283,6 +283,7 @@ _create_port(LV2_Plugin*   lv2_plugin,
     {
       lv2_plugin->longest_sym = len;
     }
+  return 0;
 }
 
 /**
@@ -590,6 +591,7 @@ lv2_ui_is_resizable(LV2_Plugin* plugin)
   return !fs_matches && !nrs_matches;
 }
 
+
 void
 lv2_ui_write(SuilController controller,
               uint32_t       port_index,
@@ -597,6 +599,7 @@ lv2_ui_write(SuilController controller,
               uint32_t       protocol,
               const void*    buffer)
 {
+
 	LV2_Plugin* const plugin = (LV2_Plugin*)controller;
 
 	if (protocol != 0 && protocol != plugin->urids.atom_eventTransfer) {
@@ -1639,13 +1642,15 @@ lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
 
   /* Print initial control values */
   if (print_controls)
-    for (size_t i = 0; i < lv2_plugin->controls.n_controls; ++i) {
-            Lv2ControlID* control = lv2_plugin->controls.controls[i];
-            if (control->type == PORT) {// && control->value_type == lv2_plugin->>forge.Float) {
-                    LV2_Port* port = &lv2_plugin->ports[control->index];
-                    _print_control_value(lv2_plugin, port, port->control);
-            }
-    }
+    for (size_t i = 0; i < lv2_plugin->controls.n_controls; ++i)
+      {
+        Lv2ControlID* control = lv2_plugin->controls.controls[i];
+        if (control->type == PORT)
+          {// && control->value_type == lv2_plugin->>forge.Float) {
+                LV2_Port* port = &lv2_plugin->ports[control->index];
+                _print_control_value(lv2_plugin, port, port->control);
+          }
+      }
 
   /* Activate lv2_plugin->*/
   g_message ("Activating instance...");
@@ -1660,7 +1665,7 @@ lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
   lv2_open_ui(lv2_plugin);
   g_message ("UI opened");
 
-  return 1;
+  return 0;
 }
 
 void

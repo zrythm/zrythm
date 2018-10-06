@@ -72,7 +72,6 @@ typedef struct _MainWindowWidget
   RulerWidget              * ruler;     ///< created in code
   GtkScrolledWindow        * timeline_scroll;
   GtkViewport              * timeline_viewport;
-  GtkOverlay               * timeline_overlay;
   TimelineWidget           * timeline;
   GtkToolbar               * instruments_toolbar;
   GtkToolButton            * instrument_add;

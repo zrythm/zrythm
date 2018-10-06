@@ -23,6 +23,9 @@
 /** \file
  * Implementation of Plugin. */
 
+#define _GNU_SOURCE 1  /* To pick up REG_RIP */
+
+#include <signal.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -33,6 +36,17 @@
 #include "plugins/lv2/control.h"
 
 #include <gtk/gtk.h>
+
+/**
+ * Handler for plugin crashes.
+ */
+void handler(int nSignum, siginfo_t* si, void* vcontext)
+{
+  g_message ("handler");
+
+  ucontext_t* context = (ucontext_t*)vcontext;
+  context->uc_mcontext.gregs[REG_RIP]++;
+}
 
 /**
  * Creates an empty plugin.
@@ -59,9 +73,15 @@ plugin_create_from_descr (Plugin_Descriptor * descr)
 {
   Plugin * plugin = _plugin_new ();
   plugin->descr = descr;
+  struct sigaction action;
+  memset(&action, 0, sizeof(struct sigaction));
+  action.sa_flags = SA_SIGINFO;
+  action.sa_sigaction = handler;
+  sigaction(SIGSEGV, &action, NULL);
   switch (plugin->descr->protocol)
     {
     case PROT_LV2:
+
       lv2_create_from_uri (plugin, descr->uri);
       break;
     }
@@ -86,6 +106,7 @@ plugin_instantiate (Plugin * plugin ///< the plugin
         }
     }
   plugin->enabled = 1;
+  return 0;
 }
 
 

@@ -19,12 +19,24 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef __AUDIO_TRACK_H__
+#define __AUDIO_TRACK_H__
+
 typedef struct Region Region;
+typedef struct TrackWidget TrackWidget;
+typedef struct Channel Channel;
 
 /**
  * The track struct.
  */
 typedef struct Track {
   Region          * regions[200];     ///< array of region pointers
-
+  int             num_regions;
+  TrackWidget     * widget;
+  Channel         * channel;  ///< owner
 } Track;
+
+Track *
+track_new (Channel * channel);
+
+#endif // __AUDIO_TRACK_H__

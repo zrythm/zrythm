@@ -20,11 +20,26 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef __AUDIO_REGION_H__
+#define __AUDIO_REGION_H__
+
 #include "audio/position.h"
+
+typedef struct RegionWidget RegionWidget;
+typedef struct Channel Channel;
+typedef struct Track Track;
 
 typedef struct Region
 {
   Position     start_pos;
   Position     end_pos;
+  RegionWidget * widget;
+  Track        * track; ///< pointer back to channel
 } Region;
 
+Region *
+region_new (Track * track,
+            Position * start_pos,
+            Position * end_pos);
+
+#endif // __AUDIO_POSITION_H__

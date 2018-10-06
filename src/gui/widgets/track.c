@@ -22,6 +22,7 @@
 /** \file
  */
 
+#include "audio/track.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 
@@ -37,13 +38,13 @@ size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
  * Creates a new Fader widget and binds it to the given value.
  */
 TrackWidget *
-track_widget_new (Channel * channel)
+track_widget_new (Track * track)
 {
   TrackWidget * self = g_object_new (
                             TRACK_WIDGET_TYPE,
                             NULL);
-  self->channel = channel;
-  gtk_label_set_text (self->track_name, channel->name);
+  self->track = track;
+  gtk_label_set_text (self->track_name, track->channel->name);
 
   GtkWidget * image = gtk_image_new_from_resource (
           "/online/alextee/zrythm/solo.svg");

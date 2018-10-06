@@ -42,7 +42,7 @@ typedef struct TrackWidget
   GtkButton               * mute;
   GtkButton               * show_automation;
   GtkImage                * icon;
-  Channel                 * channel;
+  Track                   * track;
 } TrackWidget;
 
 typedef struct TrackWidgetClass
@@ -51,10 +51,10 @@ typedef struct TrackWidgetClass
 } TrackWidgetClass;
 
 /**
- * Creates a new track widget from the given channel.
+ * Creates a new track widget from the given track.
  */
 TrackWidget *
-track_widget_new (Channel * channel);
+track_widget_new (Track * track);
 
 #endif
 

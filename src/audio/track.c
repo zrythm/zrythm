@@ -19,3 +19,26 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdlib.h>
+
+#include "audio/position.h"
+#include "audio/region.h"
+#include "audio/track.h"
+#include "gui/widgets/track.h"
+
+Track *
+track_new (Channel * channel)
+{
+  Track * track = calloc (1, sizeof (Track));
+
+  track->channel = channel;
+  track->widget = track_widget_new (track);
+  Position start = { 1, 1, 1, 0, 0 };
+  Position end = { 1, 1, 1, 9, 123456 };
+  track->regions[0] = region_new (track,
+                                  &start,
+                                  &end);
+  track->num_regions++;
+
+  return track;
+}

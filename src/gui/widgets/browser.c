@@ -30,6 +30,16 @@
 
 static GtkTreeModel * plugins_tree_model;
 
+static int
+update_plugin_info_label (gpointer user_data)
+{
+  char * label = (char *) user_data;
+
+  gtk_label_set_text (MAIN_WINDOW->plugin_info, label);
+
+  return G_SOURCE_REMOVE;
+}
+
 static void
 on_selection_changed (GtkTreeSelection * ts,
                       gpointer         user_data)
@@ -62,7 +72,8 @@ on_selection_changed (GtkTreeSelection * ts,
                                       descr->num_midi_outs,
                                       descr->num_ctrl_ins,
                                       descr->num_ctrl_outs);
-      gtk_label_set_text (MAIN_WINDOW->plugin_info, label);
+      g_main_context_invoke (NULL, update_plugin_info_label,
+                             label);
     }
 }
 

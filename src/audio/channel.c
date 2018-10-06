@@ -30,6 +30,7 @@
 
 #include "audio/channel.h"
 #include "audio/mixer.h"
+#include "audio/track.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
@@ -151,7 +152,7 @@ channel_process (Channel * channel,  ///< slots
   channel->processed = 1;
 
   g_idle_add ((GSourceFunc) channel_widget_update_meter_reading,
-              channel->channel_widget);
+              channel->widget);
 }
 
 /**
@@ -260,8 +261,8 @@ channel_create_master ()
   /* connect stereo out ports to monitor TODO */
 
   /* create widget */
-  channel->channel_widget = channel_widget_new (channel);
-  channel->track_widget = track_widget_new (channel);
+  channel->widget = channel_widget_new (channel);
+  channel->track= track_new (channel);
 
   return channel;
 }
@@ -289,8 +290,8 @@ channel_create (int     type, char * label)             ///< the channel type (A
   g_message ("Created channel %s of type %i", label, type);
 
   /* create widget */
-  channel->channel_widget = channel_widget_new (channel);
-  channel->track_widget = track_widget_new (channel);
+  channel->widget = channel_widget_new (channel);
+  channel->track = track_new (channel);
 
   return channel;
 }
@@ -300,7 +301,7 @@ channel_set_phase (void * _channel, float phase)
 {
   Channel * channel = (Channel *) _channel;
   channel->phase = phase;
-  gtk_label_set_text (channel->channel_widget->phase_reading,
+  gtk_label_set_text (channel->widget->phase_reading,
                       g_strdup_printf ("%.1f", phase));
 }
 
@@ -317,7 +318,7 @@ channel_set_volume (void * _channel, float volume)
   Channel * channel = (Channel *) _channel;
   channel->volume = volume;
   /* TODO update tooltip */
-  gtk_label_set_text (channel->channel_widget->phase_reading,
+  gtk_label_set_text (channel->widget->phase_reading,
                       g_strdup_printf ("%.1f", volume));
 }
 

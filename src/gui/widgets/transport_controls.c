@@ -118,6 +118,7 @@ transport_controls_init (MainWindowWidget * mw)
                       "toggled",
                       G_CALLBACK (record_toggled_cb),
                       NULL);
+  GTK_WIDGET (mw->loop);
   g_signal_connect (GTK_WIDGET (mw->loop),
                       "toggled",
                       G_CALLBACK (loop_toggled_cb),

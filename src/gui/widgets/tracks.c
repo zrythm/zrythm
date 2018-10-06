@@ -24,6 +24,7 @@
 
 #include "audio/channel.h"
 #include "audio/mixer.h"
+#include "audio/track.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/tracks.h"
 
@@ -59,7 +60,7 @@ tracks_widget_setup ()
   gtk_widget_set_valign (GTK_WIDGET (self),
                          GTK_ALIGN_FILL);
   gtk_paned_pack1 (GTK_PANED (self),
-                   GTK_WIDGET (MIXER->master->track_widget),
+                   GTK_WIDGET (MIXER->master->track->widget),
                    FALSE,
                    FALSE);
   GtkWidget * last_box =
@@ -97,7 +98,7 @@ tracks_widget_add_channel (TracksWidget * self, Channel * channel)
 
   /* add track widget to new paned */
   gtk_paned_pack1 (GTK_PANED (new_paned),
-                   GTK_WIDGET (channel->track_widget),
+                   GTK_WIDGET (channel->track->widget),
                    FALSE,
                    FALSE);
 

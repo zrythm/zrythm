@@ -224,7 +224,7 @@ channel_widget_new (Channel * channel)
 {
   ChannelWidget * self = g_object_new (CHANNEL_WIDGET_TYPE, NULL);
   self->channel = channel;
-  channel->channel_widget = self;
+  channel->widget = self;
 
   setup_color (self);
   setup_phase_panel (self);

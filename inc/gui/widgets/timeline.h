@@ -31,24 +31,27 @@
 #define IS_TIMELINE_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), TIMELINE_WIDGET_TYPE))
 #define TIMELINE_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), TIMELINE_WIDGET_TYPE, TimelineWidgetClass))
 
+typedef struct TimelineBgWidget TimelineBgWidget;
+
 /**
  * TODO rename to arranger
  */
 typedef struct TimelineWidget
 {
-  GtkDrawingArea           parent_instance;
+  GtkOverlay               parent_instance;
+  TimelineBgWidget         * bg;
 } TimelineWidget;
 
 typedef struct TimelineWidgetClass
 {
-  GtkDrawingAreaClass       parent_class;
+  GtkOverlayClass       parent_class;
 } TimelineWidgetClass;
 
 /**
  * Creates a timeline widget using the given timeline data.
  */
 TimelineWidget *
-timeline_widget_new (GtkWidget * overlay);
+timeline_widget_new ();
 
 #endif
 

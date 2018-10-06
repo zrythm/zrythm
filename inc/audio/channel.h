@@ -89,8 +89,7 @@ typedef struct Channel
   int               stop_thread;    ///< flag to stop the thread
   struct Channel *         output;     ///< output channel to route signal to
   Track             * track;   ///< the track associated with this channel
-  ChannelWidget     * channel_widget; ///< the channel widget
-  TrackWidget       * track_widget; ///< the track widget
+  ChannelWidget     * widget; ///< the channel widget
 } Channel;
 
 void

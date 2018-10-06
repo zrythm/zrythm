@@ -33,8 +33,10 @@ draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
 
   context = gtk_widget_get_style_context (GTK_WIDGET (self));
 
-  /*width = gtk_widget_get_allocated_width (self);*/
-  /*height = gtk_widget_get_allocated_height (GTK_WIDGET (self));*/
+  width = gtk_widget_get_allocated_width (GTK_WIDGET (self));
+  height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
+
+  gtk_render_background (context, cr, 0, 0, width, height);
 
   /*[> get positions in px <]*/
   /*static int region_start_in_px;*/
@@ -90,11 +92,11 @@ draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
       /*}*/
       /*else if (i % self->px_per_beat == 0)*/
       /*{*/
-          /*cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);*/
-          /*cairo_set_line_width (cr, 0.5);*/
-          /*cairo_move_to (cr, i, 0);*/
-          /*cairo_line_to (cr, i, height / 4);*/
-          /*cairo_stroke (cr);*/
+          cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
+          cairo_set_line_width (cr, 0.5);
+          cairo_move_to (cr, 3, 0);
+          cairo_line_to (cr, 3, height / 4);
+          cairo_stroke (cr);
       /*}*/
       /*else if (0)*/
         /*{*/
@@ -191,27 +193,19 @@ reset_region ()
 RegionWidget *
 region_widget_new (Region * region)
 {
-  g_message ("Creating region...");
+  g_message ("Creating region widget...");
   RegionWidget * self = g_object_new (REGION_WIDGET_TYPE, NULL);
 
-  /* adjust for zoom level */
-  /*self->px_per_tick = (DEFAULT_PX_PER_TICK * TRANSPORT->zoom_level);*/
-  /*self->px_per_quarter_beat = (int) (self->px_per_tick * TICKS_PER_QUARTER_BEAT);*/
-  /*self->px_per_beat = (int) (self->px_per_tick * TICKS_PER_BEAT);*/
-  /*self->px_per_bar = self->px_per_beat * TRANSPORT->beats_per_bar;*/
+  self->region = region;
 
-  /*total_px = self->px_per_bar **/
-    /*(TRANSPORT->total_bars);*/
+  gtk_widget_set_size_request (GTK_WIDGET (self), 10, 24);
 
+  /* make it able to notify */
+  gtk_widget_add_events (GTK_WIDGET (self), GDK_BUTTON_PRESS_MASK);
 
-  /*// set the size*/
-  /*gtk_widget_set_size_request (*/
-    /*GTK_WIDGET (self),*/
-    /*total_px,*/
-    /*-1);*/
-
-  /*g_signal_connect (G_OBJECT (self), "draw",*/
-                    /*G_CALLBACK (draw_cb), NULL);*/
+  /* connect signals */
+  g_signal_connect (G_OBJECT (self), "draw",
+                    G_CALLBACK (draw_cb), self);
 
   return self;
 }
@@ -224,6 +218,5 @@ region_widget_class_init (RegionWidgetClass * klass)
 static void
 region_widget_init (RegionWidget * self)
 {
-  gtk_widget_show (GTK_WIDGET (self));
 }
 

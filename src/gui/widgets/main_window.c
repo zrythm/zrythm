@@ -31,6 +31,7 @@
 #include "gui/widgets/instrument_timeline_view.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline.h"
+#include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/tracks.h"
 #include "gui/widgets/transport_controls.h"
 
@@ -175,8 +176,6 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 MainWindowWidget, timeline_viewport);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, timeline_overlay);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 MainWindowWidget, instruments_toolbar);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 MainWindowWidget, instrument_add);
@@ -255,6 +254,12 @@ main_window_widget_open (MainWindowWidget *win,
 {
 }
 
+void
+popup_menu(GtkAction *action, GtkMenu *menu)
+{
+    gtk_menu_popup(menu, NULL, NULL, NULL, NULL, 1, gtk_get_current_event_time());
+}
+
 
 MainWindowWidget *
 main_window_widget_new (ZrythmApp * _app)
@@ -278,6 +283,7 @@ main_window_widget_new (ZrythmApp * _app)
           800);
   g_object_unref (css_provider);
 
+
   /* setup tracks */
   tracks_widget_setup ();
   gtk_container_add (GTK_CONTAINER (self->tracks_viewport),
@@ -298,20 +304,24 @@ main_window_widget_new (ZrythmApp * _app)
   gtk_widget_show_all (GTK_WIDGET (self->ruler_viewport));
 
   /* setup timeline */
-  self->timeline = timeline_widget_new (
-                      GTK_WIDGET (self->timeline_overlay));
+  self->timeline = timeline_widget_new ();
+  gtk_container_add (GTK_CONTAINER (self->timeline_viewport),
+                     GTK_WIDGET (self->timeline));
   gtk_scrolled_window_set_min_content_width (self->timeline_scroll, 400);
   gtk_scrolled_window_set_vadjustment (self->timeline_scroll,
             gtk_scrolled_window_get_vadjustment (self->tracks_scroll));
   gtk_widget_show_all (GTK_WIDGET (self->timeline_viewport));
+  gtk_widget_show_all (GTK_WIDGET (self->timeline));
+  gtk_widget_show_all (GTK_WIDGET (self->timeline->bg));
 
   /* setup browser */
+  gtk_label_set_xalign (self->plugin_info, 0);
+  GTK_LABEL (self->plugin_info);
   setup_browser (GTK_WIDGET (self->browser),
                  GTK_WIDGET (self->collections_exp),
                  GTK_WIDGET (self->types_exp),
                  GTK_WIDGET (self->cat_exp),
                  GTK_WIDGET (self->browser_bot));
-  gtk_label_set_xalign (self->plugin_info, 0);
   gtk_widget_show_all (GTK_WIDGET (self->browser_notebook));
 
   /* setup mixer */

@@ -23,6 +23,7 @@
 #include "audio/position.h"
 #include "audio/transport.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/timeline.h"
 
 #include <gtk/gtk.h>
 
@@ -238,7 +239,7 @@ position_updated (Position * position)
       if (MAIN_WINDOW->timeline)
         {
           gtk_widget_queue_draw (
-                  GTK_WIDGET (MAIN_WINDOW->timeline));
+                  GTK_WIDGET (MAIN_WINDOW->timeline->bg));
         }
     }
   }

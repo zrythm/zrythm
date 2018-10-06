@@ -20,5 +20,24 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/region.h"
+#include "audio/track.h"
+#include "gui/widgets/main_window.h"
+#include "gui/widgets/region.h"
 
+Region *
+region_new (Track * track,
+            Position * start_pos,
+            Position * end_pos)
+{
+  Region * region = calloc (1, sizeof (Region));
+
+  g_message ("creating region");
+  region->start_pos.frames = start_pos->frames;
+  region->end_pos.frames = end_pos->frames;
+  region->track = track;
+  region->widget = region_widget_new (region);
+
+  return region;
+}
 
