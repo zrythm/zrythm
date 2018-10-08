@@ -22,20 +22,21 @@
 #include "settings_manager.h"
 #include "zrythm_app.h"
 #include "gui/widget_manager.h"
+#include "gui/widgets/browser.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 
 #include <gtk/gtk.h>
 
-static GtkTreeModel * plugins_tree_model;
+G_DEFINE_TYPE (BrowserWidget, browser_widget, GTK_TYPE_PANED)
 
 static int
 update_plugin_info_label (gpointer user_data)
 {
   char * label = (char *) user_data;
 
-  gtk_label_set_text (MAIN_WINDOW->plugin_info, label);
+  gtk_label_set_text (MAIN_WINDOW->browser->plugin_info, label);
 
   return G_SOURCE_REMOVE;
 }
@@ -49,15 +50,16 @@ on_selection_changed (GtkTreeSelection * ts,
   if (selected_rows)
     {
       GtkTreePath * tp = (GtkTreePath *)g_list_first (selected_rows)->data;
-      gint * indices = gtk_tree_path_get_indices (tp);
-      GtkTreeRowReference *rr = gtk_tree_row_reference_new (plugins_tree_model,
-                                                            tp);
+      /*gint * indices = gtk_tree_path_get_indices (tp);*/
+      /*GtkTreeRowReference *rr =*/
+        /*gtk_tree_row_reference_new (MAIN_WINDOW->browser->plugins_tree_model,*/
+                                    /*tp);*/
       GtkTreeIter iter;
-      gtk_tree_model_get_iter (plugins_tree_model,
+      gtk_tree_model_get_iter (MAIN_WINDOW->browser->plugins_tree_model,
                                &iter,
                                tp);
       GValue value = G_VALUE_INIT;
-      gtk_tree_model_get_value (plugins_tree_model,
+      gtk_tree_model_get_value (MAIN_WINDOW->browser->plugins_tree_model,
                                 &iter,
                                 1,
                                 &value);
@@ -89,15 +91,16 @@ on_drag_data_get (GtkWidget        *widget,
   GList * selected_rows = gtk_tree_selection_get_selected_rows (ts,
                                                                 NULL);
   GtkTreePath * tp = (GtkTreePath *)g_list_first (selected_rows)->data;
-  gint * indices = gtk_tree_path_get_indices (tp);
-  GtkTreeRowReference *rr = gtk_tree_row_reference_new (plugins_tree_model,
-                                                        tp);
+  /*gint * indices = gtk_tree_path_get_indices (tp);*/
+  /*GtkTreeRowReference *rr =*/
+    /*gtk_tree_row_reference_new (MAIN_WINDOW->browser->plugins_tree_model,*/
+                                /*tp);*/
   GtkTreeIter iter;
-  gtk_tree_model_get_iter (plugins_tree_model,
+  gtk_tree_model_get_iter (MAIN_WINDOW->browser->plugins_tree_model,
                            &iter,
                            tp);
   GValue value = G_VALUE_INIT;
-  gtk_tree_model_get_value (plugins_tree_model,
+  gtk_tree_model_get_value (MAIN_WINDOW->browser->plugins_tree_model,
                             &iter,
                             1,
                             &value);
@@ -114,7 +117,7 @@ static GtkTreeModel *
 create_model_for_types ()
 {
   GtkListStore *list_store;
-  GtkTreePath *path;
+  /*GtkTreePath *path;*/
   GtkTreeIter iter;
   gint i;
 
@@ -143,7 +146,7 @@ static GtkTreeModel *
 create_model_for_categories ()
 {
   GtkListStore *list_store;
-  GtkTreePath *path;
+  /*GtkTreePath *path;*/
   GtkTreeIter iter;
   gint i;
 
@@ -169,7 +172,7 @@ static GtkTreeModel *
 create_model_for_plugins ()
 {
   GtkListStore *list_store;
-  GtkTreePath *path;
+  /*GtkTreePath *path;*/
   GtkTreeIter iter;
   gint i;
 
@@ -308,40 +311,71 @@ create_tree_view_add_to_expander (GtkTreeModel * model,
   return GTK_SCROLLED_WINDOW (scrolled_window);
 }
 
-void
-setup_browser (GtkWidget * paned,
-               GtkWidget * collections,
-               GtkWidget * types,
-               GtkWidget * categories,
-               GtkWidget * plugins_box)
+BrowserWidget *
+browser_widget_new ()
 {
-  g_message ("Setting up library browser...");
+  BrowserWidget * self = g_object_new (BROWSER_WIDGET_TYPE, NULL);
+  MAIN_WINDOW->browser = self;
+
+  g_message ("Instantiating browser widget...");
+
+  gtk_label_set_xalign (self->plugin_info, 0);
 
   /* set divider position */
   int divider_pos = get_int ("browser-divider-position");
-  gtk_paned_set_position (GTK_PANED (paned),
+  gtk_paned_set_position (GTK_PANED (self),
                           divider_pos);
 
   /* create each tree */
   create_tree_view_add_to_expander (create_model_for_types (),
-                    GTK_EXPANDER (collections));
+                    GTK_EXPANDER (self->collections_exp));
   create_tree_view_add_to_expander (create_model_for_types (),
-                    GTK_EXPANDER (types));
+                    GTK_EXPANDER (self->types_exp));
   GtkScrolledWindow * scrolled_window =
   create_tree_view_add_to_expander (create_model_for_categories (),
-                      GTK_EXPANDER (categories));
+                      GTK_EXPANDER (self->cat_exp));
 
   /* expand category by default */
-  gtk_expander_set_expanded (GTK_EXPANDER (categories),
+  gtk_expander_set_expanded (GTK_EXPANDER (self->cat_exp),
                              TRUE);
   gtk_widget_set_vexpand (GTK_WIDGET (scrolled_window),
                           TRUE);
 
   /* populate plugins */
-  plugins_tree_model = create_model_for_plugins ();
-  GtkWidget * plugin_scroll_window = add_scroll_window (GTK_TREE_VIEW (tree_view_create (plugins_tree_model, 0, 1)));
-  gtk_box_pack_start (GTK_BOX (plugins_box),
+  self->plugins_tree_model = create_model_for_plugins ();
+  GtkWidget * plugin_scroll_window = add_scroll_window (GTK_TREE_VIEW (tree_view_create (self->plugins_tree_model, 0, 1)));
+  gtk_box_pack_start (GTK_BOX (self->browser_bot),
                       plugin_scroll_window,
                       1, 1, 0);
+
+  return self;
 }
 
+static void
+browser_widget_class_init (BrowserWidgetClass * klass)
+{
+  gtk_widget_class_set_template_from_resource (
+                        GTK_WIDGET_CLASS (klass),
+                        "/online/alextee/zrythm/ui/browser.ui");
+
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                                BrowserWidget, browser_top);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                                BrowserWidget, browser_search);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                                BrowserWidget, collections_exp);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                                BrowserWidget, types_exp);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                                BrowserWidget, cat_exp);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                                BrowserWidget, browser_bot);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                                BrowserWidget, plugin_info);
+}
+
+static void
+browser_widget_init (BrowserWidget * self)
+{
+  gtk_widget_init_template (GTK_WIDGET (self));
+}

@@ -4,7 +4,8 @@
     <file preprocess="xml-stripblanks">ui/main-window.ui</file>
     <file preprocess="xml-stripblanks">ui/channel.ui</file>
     <file preprocess="xml-stripblanks">ui/midi_box.ui</file>
-    <file preprocess="xml-stripblanks">ui/mixer_box.ui</file>
+    <file preprocess="xml-stripblanks">ui/mixer.ui</file>
+    <file preprocess="xml-stripblanks">ui/browser.ui</file>
     <file preprocess="xml-stripblanks">ui/instrument_track.ui</file>
     <file preprocess="xml-stripblanks">ui/splash.ui</file>
     <file>theme.css</file>

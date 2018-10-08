@@ -40,6 +40,7 @@ typedef struct DigitalMeterWidget DigitalMeterWidget;
 typedef struct ColorAreaWidget ColorAreaWidget;
 typedef struct MixerWidget MixerWidget;
 typedef struct MidiEditorWidget MidiEditorWidget;
+typedef struct BrowserWidget BrowserWidget;
 typedef struct Region Region;
 
 typedef struct _MainWindowWidget
@@ -82,15 +83,8 @@ typedef struct _MainWindowWidget
   GtkNotebook              * bot_notebook;
   MidiEditorWidget         * midi_editor;
   MixerWidget              * mixer;
-  GtkNotebook              * browser_notebook;
-  GtkPaned                 * browser;
-  GtkGrid                  * browser_top;
-  GtkSearchEntry           * browser_search;
-  GtkExpander              * collections_exp;
-  GtkExpander              * types_exp;
-  GtkExpander              * cat_exp;
-  GtkBox                   * browser_bot;
-  GtkLabel                 * plugin_info;
+  GtkNotebook              * right_notebook;
+  BrowserWidget            * browser;
   GtkBox                   * bot_bar;
   GtkToolbar               * bot_bar_left;
   GtkBox                   * digital_meters;

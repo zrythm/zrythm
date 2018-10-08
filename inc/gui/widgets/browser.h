@@ -22,15 +22,34 @@
 #ifndef __GUI_WIDGETS_BROWSER_H__
 #define __GUI_WIDGETS_BROWSER_H__
 
-struct GtkWidget;
-struct GtkTargetEntry;
+#include <gtk/gtk.h>
 
-void
-setup_browser (GtkWidget * paned,
-               GtkWidget * collections,
-               GtkWidget * types,
-               GtkWidget * categories,
-               GtkWidget * plugins_box);
+#define BROWSER_WIDGET_TYPE                  (browser_widget_get_type ())
+#define BROWSER_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), BROWSER_WIDGET_TYPE, BrowserWidget))
+#define BROWSER_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), BROWSER_WIDGET, BrowserWidgetClass))
+#define IS_BROWSER_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), BROWSER_WIDGET_TYPE))
+#define IS_BROWSER_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), BROWSER_WIDGET_TYPE))
+#define BROWSER_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), BROWSER_WIDGET_TYPE, BrowserWidgetClass))
 
+typedef struct BrowserWidget
+{
+  GtkPaned                 parent_instance;
+  GtkGrid                  * browser_top;
+  GtkSearchEntry           * browser_search;
+  GtkExpander              * collections_exp;
+  GtkExpander              * types_exp;
+  GtkExpander              * cat_exp;
+  GtkBox                   * browser_bot;
+  GtkLabel                 * plugin_info;
+  GtkTreeModel             * plugins_tree_model;
+} BrowserWidget;
+
+typedef struct BrowserWidgetClass
+{
+  GtkPanedClass               parent_class;
+} BrowserWidgetClass;
+
+BrowserWidget *
+browser_widget_new ();
 
 #endif

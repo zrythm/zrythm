@@ -150,7 +150,7 @@ mixer_widget_class_init (MixerWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (
                         GTK_WIDGET_CLASS (klass),
-                        "/online/alextee/zrythm/ui/mixer_box.ui");
+                        "/online/alextee/zrythm/ui/mixer.ui");
 
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 MixerWidget, channels_scroll);

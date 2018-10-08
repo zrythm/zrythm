@@ -187,23 +187,7 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 MainWindowWidget, bot_notebook);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, browser_notebook);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, browser);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, browser_top);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, browser_search);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, collections_exp);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, types_exp);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, cat_exp);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, browser_bot);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, plugin_info);
+                                                MainWindowWidget, right_notebook);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 MainWindowWidget, bot_bar);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
@@ -304,16 +288,13 @@ main_window_widget_new (ZrythmApp * _app)
   gtk_widget_show_all (GTK_WIDGET (self->timeline->bg));
 
   /* setup browser */
-  gtk_label_set_xalign (self->plugin_info, 0);
-  GTK_LABEL (self->plugin_info);
-  setup_browser (GTK_WIDGET (self->browser),
-                 GTK_WIDGET (self->collections_exp),
-                 GTK_WIDGET (self->types_exp),
-                 GTK_WIDGET (self->cat_exp),
-                 GTK_WIDGET (self->browser_bot));
-  gtk_widget_show_all (GTK_WIDGET (self->browser_notebook));
+  self->browser = browser_widget_new ();
+  gtk_notebook_prepend_page (self->right_notebook,
+                             GTK_WIDGET (self->browser),
+                             gtk_label_new ("Plugins"));
+  gtk_widget_show_all (GTK_WIDGET (self->right_notebook));
 
-  /* setup bot region */
+  /* setup bot half region */
   self->mixer = mixer_widget_new ();
   self->midi_editor = midi_editor_widget_new ();
   gtk_notebook_prepend_page (self->bot_notebook,
