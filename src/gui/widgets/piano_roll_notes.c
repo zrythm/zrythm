@@ -20,6 +20,7 @@
  */
 
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/midi_editor.h"
 #include "gui/widgets/piano_roll_labels.h"
 #include "gui/widgets/piano_roll_notes.h"
 
@@ -27,7 +28,7 @@
 
 G_DEFINE_TYPE (PianoRollNotesWidget, piano_roll_notes_widget, GTK_TYPE_DRAWING_AREA)
 
-#define LABELS_WIDGET MAIN_WINDOW->piano_roll_labels
+#define LABELS_WIDGET MIDI_EDITOR->piano_roll_labels
 
 /* 1 = black */
 static int notes[12] = {
@@ -64,7 +65,7 @@ draw_cb (PianoRollNotesWidget * self, cairo_t *cr, gpointer data)
   /* draw note notes with bot lines */
   for (int i = 0; i < 128; i++)
     {
-      int bot_line_px = LABELS_WIDGET->total_px - LABELS_WIDGET->px_per_note * i;
+      int top_line_px = LABELS_WIDGET->total_px - LABELS_WIDGET->px_per_note * (i + 1);
       if (notes [i % 12] == 1)
         {
           cairo_set_source_rgb (cr, 0, 0, 0);
@@ -73,7 +74,7 @@ draw_cb (PianoRollNotesWidget * self, cairo_t *cr, gpointer data)
         {
           cairo_set_source_rgb (cr, 1, 1, 1);
         }
-      cairo_rectangle (cr, 0, bot_line_px,
+      cairo_rectangle (cr, 0, top_line_px,
                        width, LABELS_WIDGET->px_per_note);
       cairo_fill (cr);
     }
@@ -82,9 +83,11 @@ draw_cb (PianoRollNotesWidget * self, cairo_t *cr, gpointer data)
   for (int i = 0; i < 128; i++)
     {
       int bot_line_px = LABELS_WIDGET->total_px - LABELS_WIDGET->px_per_note * i;
-      cairo_set_source_rgba (cr, 0, 0, 0, 1);
+      cairo_set_source_rgba (cr, 0, 0, 0, 0.8);
+      cairo_set_line_width (cr, 1.0);
       cairo_move_to (cr, 0, bot_line_px);
       cairo_line_to (cr, width, bot_line_px);
+      cairo_stroke (cr);
     }
 
 

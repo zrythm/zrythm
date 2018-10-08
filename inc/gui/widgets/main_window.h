@@ -38,9 +38,9 @@ typedef struct BpmWidget BpmWidget;
 typedef struct TracksWidget TracksWidget;
 typedef struct DigitalMeterWidget DigitalMeterWidget;
 typedef struct ColorAreaWidget ColorAreaWidget;
-typedef struct PianoRollLabelsWidget PianoRollLabelsWidget;
-typedef struct PianoRollNotesWidget PianoRollNotesWidget;
-typedef struct PianoRollArrangerWidget PianoRollArrangerWidget;
+typedef struct MixerWidget MixerWidget;
+typedef struct MidiEditorWidget MidiEditorWidget;
+typedef struct Region Region;
 
 typedef struct _MainWindowWidget
 {
@@ -79,35 +79,9 @@ typedef struct _MainWindowWidget
   TimelineWidget           * timeline;
   GtkToolbar               * instruments_toolbar;
   GtkToolButton            * instrument_add;
-  GtkNotebook              * editor_bot;
-  GtkBox                   * mixer;
-  GtkBox                   * dummy_mixer_box;  ///< dummy box for dnd
-  GtkBox                   * midi_track_color_box;
-  ColorAreaWidget          * midi_track_color;
-  GtkToolbar               * midi_bot_toolbar;
-  GtkLabel                 * midi_name_label;
-  GtkBox                   * midi_controls_above_notes_box;
-  GtkBox                   * midi_ruler_box;
-  GtkScrolledWindow        * midi_ruler_scroll;
-  GtkViewport              * midi_ruler_viewport;
-  RulerWidget              * midi_ruler;
-  GtkBox                   * midi_notes_labels_box; ///< shows note labels C, C#, etc.
-  GtkScrolledWindow        * piano_roll_labels_scroll;
-  GtkViewport              * piano_roll_labels_viewport;
-  PianoRollLabelsWidget    * piano_roll_labels;
-  GtkBox                   * midi_notes_draw_box; ///< shows piano roll
-  GtkScrolledWindow        * piano_roll_notes_scroll;
-  GtkViewport              * piano_roll_notes_viewport;
-  PianoRollNotesWidget     * piano_roll_notes;
-  GtkBox                   * midi_arranger_box; ///< piano roll
-  GtkScrolledWindow        * piano_roll_arranger_scroll;
-  GtkViewport              * piano_roll_arranger_viewport;
-  PianoRollArrangerWidget  * piano_roll_arranger;
-
-  GtkScrolledWindow        * channels_scroll;
-  GtkViewport              * channels_viewport;
-  GtkBox                   * channels;
-  GtkButton                * channels_add;
+  GtkNotebook              * bot_notebook;
+  MidiEditorWidget         * midi_editor;
+  MixerWidget              * mixer;
   GtkNotebook              * browser_notebook;
   GtkPaned                 * browser;
   GtkGrid                  * browser_top;
@@ -130,6 +104,7 @@ typedef struct _MainWindowWidget
   GtkButton                * forward;
   GtkToggleButton          * trans_record;
   GtkToggleButton          * loop;
+  Region                   * selected_region;  ///< FIXME move to a new class "Selections" or something in zrythm_system
 } MainWindowWidget;
 
 /**

@@ -185,65 +185,7 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 MainWindowWidget, instrument_add);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, editor_bot);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, mixer);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget,
-                                        midi_track_color_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget,
-                                        midi_bot_toolbar);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget,
-                                        midi_name_label);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget,
-                                        midi_controls_above_notes_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget,
-                                        midi_ruler_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget,
-                                        midi_ruler_scroll);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget,
-                                        midi_ruler_viewport);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget,
-                                        midi_notes_labels_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget,
-                                        piano_roll_labels_scroll);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget,
-                                        piano_roll_labels_viewport);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget,
-                                        midi_notes_draw_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget,
-                                        piano_roll_notes_scroll);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget,
-                                        piano_roll_notes_viewport);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget,
-                                        midi_arranger_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget,
-                                        piano_roll_arranger_scroll);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget,
-                                        piano_roll_arranger_viewport);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, channels_scroll);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, channels_viewport);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, channels);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, channels_add);
+                                                MainWindowWidget, bot_notebook);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 MainWindowWidget, browser_notebook);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
@@ -372,8 +314,15 @@ main_window_widget_new (ZrythmApp * _app)
   gtk_widget_show_all (GTK_WIDGET (self->browser_notebook));
 
   /* setup bot region */
-  mixer_setup (self->mixer, self->channels);
-  midi_editor_setup ();
+  self->mixer = mixer_widget_new ();
+  self->midi_editor = midi_editor_widget_new ();
+  gtk_notebook_prepend_page (self->bot_notebook,
+                            GTK_WIDGET (self->midi_editor),
+                            gtk_label_new ("MIDI Editor"));
+  gtk_notebook_append_page (self->bot_notebook,
+                            GTK_WIDGET (self->mixer),
+                            gtk_label_new ("Mixer"));
+  gtk_widget_show_all (GTK_WIDGET (MAIN_WINDOW->bot_notebook));
 
   // set icons
   GtkWidget * image = gtk_image_new_from_resource (
@@ -396,7 +345,7 @@ main_window_widget_new (ZrythmApp * _app)
                                    GTK_WIDGET (image));
   image = gtk_image_new_from_resource (
           "/online/alextee/zrythm/plus.svg");
-  gtk_button_set_image (GTK_BUTTON (self->channels_add), image);
+  gtk_button_set_image (GTK_BUTTON (self->mixer->channels_add), image);
 
   /* setup digital meters */
   self->digital_bpm = digital_meter_widget_new (DIGITAL_METER_TYPE_BPM);

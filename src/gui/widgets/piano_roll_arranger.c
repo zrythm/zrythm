@@ -257,7 +257,7 @@ piano_roll_arranger_widget_new ()
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
     MAIN_WINDOW->ruler->total_px,
-    MAIN_WINDOW->piano_roll_labels->total_px);
+    MIDI_EDITOR->piano_roll_labels->total_px);
 
   /* make it able to notify */
   gtk_widget_add_events (GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);

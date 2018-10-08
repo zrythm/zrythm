@@ -22,11 +22,34 @@
 #ifndef __GUI_WIDGETS_MIXER_H__
 #define __GUI_WIDGETS_MIXER_H__
 
+#include "gui/widgets/main_window.h"
+
 #include <gtk/gtk.h>
 
-void
-mixer_setup (GtkBox * mixer,
-             GtkBox * channels);
+#define MIXER_WIDGET_TYPE                  (mixer_widget_get_type ())
+#define MIXER_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), MIXER_WIDGET_TYPE, MixerWidget))
+#define MIXER_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), MIXER_WIDGET, MixerWidgetClass))
+#define IS_MIXER_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), MIXER_WIDGET_TYPE))
+#define IS_MIXER_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), MIXER_WIDGET_TYPE))
+#define MIXER_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), MIXER_WIDGET_TYPE, MixerWidgetClass))
 
+typedef struct MixerWidget
+{
+  GtkBox                   parent_instance;
+  GtkBox                   * dummy_mixer_box;  ///< dummy box for dnd
+  MixerWidget              * mixer;
+  GtkScrolledWindow        * channels_scroll;
+  GtkViewport              * channels_viewport;
+  GtkBox                   * channels_box;
+  GtkButton                * channels_add;
+} MixerWidget;
+
+typedef struct MixerWidgetClass
+{
+  GtkBoxClass               parent_class;
+} MixerWidgetClass;
+
+MixerWidget *
+mixer_widget_new ();
 
 #endif

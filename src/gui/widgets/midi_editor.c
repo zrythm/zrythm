@@ -30,77 +30,142 @@
 #include "gui/widgets/piano_roll_notes.h"
 #include "gui/widgets/ruler.h"
 
+G_DEFINE_TYPE (MidiEditorWidget, midi_editor_widget, GTK_TYPE_BOX)
+
 /**
  * Sets up the MIDI editor for the given region.
  */
 void
 midi_editor_set_region (Region * region)
 {
-  gtk_notebook_set_current_page (MAIN_WINDOW->editor_bot, 0);
+  gtk_notebook_set_current_page (MAIN_WINDOW->bot_notebook, 0);
 
   char * label = g_strdup_printf ("%s - %s",
                                        region->track->channel->name,
                                        region->name);
-  gtk_label_set_text (MAIN_WINDOW->midi_name_label,
+  gtk_label_set_text (MIDI_EDITOR->midi_name_label,
                       label);
   g_free (label);
 
-  color_area_widget_set_color (MAIN_WINDOW->midi_track_color,
+  color_area_widget_set_color (MIDI_EDITOR->midi_track_color,
                                &region->track->channel->color);
 }
 
 /**
  * Sets up the MIDI editor.
  */
-void
-midi_editor_setup ()
+MidiEditorWidget *
+midi_editor_widget_new ()
 {
-  gtk_notebook_set_current_page (MAIN_WINDOW->editor_bot, 0);
+  MidiEditorWidget * self = g_object_new (MIDI_EDITOR_WIDGET_TYPE, NULL);
+  MAIN_WINDOW->midi_editor = self;
 
-  gtk_label_set_text (MAIN_WINDOW->midi_name_label,
+  gtk_label_set_text (self->midi_name_label,
                       "Select a region...");
 
   GdkRGBA * color = calloc (1, sizeof (GdkRGBA));
   gdk_rgba_parse (color, "gray");
-  MAIN_WINDOW->midi_track_color = color_area_widget_new (color, 5, -1);
-  gtk_box_pack_start (MAIN_WINDOW->midi_track_color_box,
-                      GTK_WIDGET (MAIN_WINDOW->midi_track_color),
+  self->midi_track_color = color_area_widget_new (color, 5, -1);
+  gtk_box_pack_start (self->midi_track_color_box,
+                      GTK_WIDGET (self->midi_track_color),
                       1,
                       1,
                       0);
 
-  MAIN_WINDOW->midi_ruler = ruler_widget_new ();
-  gtk_container_add (GTK_CONTAINER (MAIN_WINDOW->midi_ruler_viewport),
-                     GTK_WIDGET (MAIN_WINDOW->midi_ruler));
-  gtk_scrolled_window_set_hadjustment (MAIN_WINDOW->midi_ruler_scroll,
+  self->midi_ruler = ruler_widget_new ();
+  gtk_container_add (GTK_CONTAINER (self->midi_ruler_viewport),
+                     GTK_WIDGET (self->midi_ruler));
+  gtk_scrolled_window_set_hadjustment (self->midi_ruler_scroll,
                                        gtk_scrolled_window_get_hadjustment (
                                            GTK_SCROLLED_WINDOW (
                                                MAIN_WINDOW->timeline_scroll)));
 
-  MAIN_WINDOW->piano_roll_labels = piano_roll_labels_widget_new ();
-  gtk_container_add (GTK_CONTAINER (MAIN_WINDOW->piano_roll_labels_viewport),
-                     GTK_WIDGET (MAIN_WINDOW->piano_roll_labels));
+  self->piano_roll_labels = piano_roll_labels_widget_new ();
+  gtk_container_add (GTK_CONTAINER (self->piano_roll_labels_viewport),
+                     GTK_WIDGET (self->piano_roll_labels));
 
-  MAIN_WINDOW->piano_roll_notes = piano_roll_notes_widget_new ();
-  gtk_container_add (GTK_CONTAINER (MAIN_WINDOW->piano_roll_notes_viewport),
-                     GTK_WIDGET (MAIN_WINDOW->piano_roll_notes));
-  MAIN_WINDOW->piano_roll_arranger = piano_roll_arranger_widget_new ();
-  gtk_container_add (GTK_CONTAINER (MAIN_WINDOW->piano_roll_arranger_viewport),
-                     GTK_WIDGET (MAIN_WINDOW->piano_roll_arranger));
+  self->piano_roll_notes = piano_roll_notes_widget_new ();
+  gtk_container_add (GTK_CONTAINER (self->piano_roll_notes_viewport),
+                     GTK_WIDGET (self->piano_roll_notes));
+  self->piano_roll_arranger = piano_roll_arranger_widget_new ();
+  gtk_container_add (GTK_CONTAINER (self->piano_roll_arranger_viewport),
+                     GTK_WIDGET (self->piano_roll_arranger));
 
   /* link scrolls */
   gtk_scrolled_window_set_vadjustment (
-            MAIN_WINDOW->piano_roll_labels_scroll,
+            self->piano_roll_labels_scroll,
             gtk_scrolled_window_get_vadjustment (
-               GTK_SCROLLED_WINDOW (MAIN_WINDOW->piano_roll_arranger_scroll)));
+               GTK_SCROLLED_WINDOW (self->piano_roll_arranger_scroll)));
   gtk_scrolled_window_set_vadjustment (
-            MAIN_WINDOW->piano_roll_notes_scroll,
+            self->piano_roll_notes_scroll,
             gtk_scrolled_window_get_vadjustment (
-               GTK_SCROLLED_WINDOW (MAIN_WINDOW->piano_roll_arranger_scroll)));
-  gtk_scrolled_window_set_hadjustment (MAIN_WINDOW->piano_roll_arranger_scroll,
+               GTK_SCROLLED_WINDOW (self->piano_roll_arranger_scroll)));
+  gtk_scrolled_window_set_hadjustment (self->piano_roll_arranger_scroll,
             gtk_scrolled_window_get_hadjustment (
                GTK_SCROLLED_WINDOW (MAIN_WINDOW->timeline_scroll)));
 
+  return self;
+}
 
-  gtk_widget_show_all (GTK_WIDGET (MAIN_WINDOW->editor_bot));
+static void
+midi_editor_widget_class_init (MidiEditorWidgetClass * klass)
+{
+  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
+                                               "/online/alextee/zrythm/ui/midi_box.ui");
+
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MidiEditorWidget,
+                                        midi_track_color_box);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MidiEditorWidget,
+                                        midi_bot_toolbar);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MidiEditorWidget,
+                                        midi_name_label);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MidiEditorWidget,
+                                        midi_controls_above_notes_box);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MidiEditorWidget,
+                                        midi_ruler_box);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MidiEditorWidget,
+                                        midi_ruler_scroll);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MidiEditorWidget,
+                                        midi_ruler_viewport);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MidiEditorWidget,
+                                        midi_notes_labels_box);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MidiEditorWidget,
+                                        piano_roll_labels_scroll);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MidiEditorWidget,
+                                        piano_roll_labels_viewport);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MidiEditorWidget,
+                                        midi_notes_draw_box);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MidiEditorWidget,
+                                        piano_roll_notes_scroll);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MidiEditorWidget,
+                                        piano_roll_notes_viewport);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MidiEditorWidget,
+                                        midi_arranger_box);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MidiEditorWidget,
+                                        piano_roll_arranger_scroll);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MidiEditorWidget,
+                                        piano_roll_arranger_viewport);
+
+}
+
+static void
+midi_editor_widget_init (MidiEditorWidget * self)
+{
+  gtk_widget_init_template (GTK_WIDGET (self));
 }
