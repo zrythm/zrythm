@@ -64,4 +64,15 @@ typedef struct RulerWidgetClass
 RulerWidget *
 ruler_widget_new ();
 
+/**
+ * Turns px position into position.
+ */
+void
+ruler_widget_px_to_pos (
+           Position * pos, ///< position to fill in
+           int      px); ///< pixels
+
+int
+ruler_widget_pos_to_px (Position * pos);
+
 #endif

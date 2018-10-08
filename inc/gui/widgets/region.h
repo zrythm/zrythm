@@ -27,25 +27,34 @@
 #include <gtk/gtk.h>
 
 #define REGION_WIDGET_TYPE                  (region_widget_get_type ())
-#define REGION_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), REGION_WIDGET_TYPE, Region))
+#define REGION_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), REGION_WIDGET_TYPE, RegionWidget))
 #define REGION_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), REGION_WIDGET, RegionWidgetClass))
 #define IS_REGION_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), REGION_WIDGET_TYPE))
 #define IS_REGION_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), REGION_WIDGET_TYPE))
 #define REGION_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), REGION_WIDGET_TYPE, RegionWidgetClass))
 
+/**
+ * ???? delete? FIXME
+ */
 typedef enum RegionType
 {
   REGION_TYPE_BPM,
   REGION_TYPE_POSITION
 } RegionType;
 
+typedef enum RegionHoverState
+{
+  REGION_HOVER_STATE_NONE,
+  REGION_HOVER_STATE_EDGE_L,
+  REGION_HOVER_STATE_EDGE_R,
+  REGION_HOVER_STATE_MIDDLE
+} RegionHoverState;
+
 typedef struct RegionWidget
 {
   GtkBox                   parent_instance;
   Region                   * region;   ///< the region associated with this
-  GtkDrawingArea           drawing_area;
-  GtkGestureDrag           * drag;
-  double                   last_y;
+  RegionHoverState         hover_state;
 } RegionWidget;
 
 typedef struct RegionWidgetClass

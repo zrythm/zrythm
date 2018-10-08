@@ -99,7 +99,7 @@ channel_widget_new (Channel * channel);
 /**
  * Updates the meter reading
  */
-gboolean
+void
 channel_widget_update_meter_reading (ChannelWidget * widget);
 
 #endif

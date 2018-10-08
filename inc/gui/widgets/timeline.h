@@ -25,13 +25,22 @@
 #include <gtk/gtk.h>
 
 #define TIMELINE_WIDGET_TYPE                  (timeline_widget_get_type ())
-#define TIMELINE_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), TIMELINE_WIDGET_TYPE, Timeline))
+#define TIMELINE_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), TIMELINE_WIDGET_TYPE, TimelineWidget))
 #define TIMELINE_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), TIMELINE_WIDGET, TimelineWidgetClass))
 #define IS_TIMELINE_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TIMELINE_WIDGET_TYPE))
 #define IS_TIMELINE_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), TIMELINE_WIDGET_TYPE))
 #define TIMELINE_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), TIMELINE_WIDGET_TYPE, TimelineWidgetClass))
 
 typedef struct TimelineBgWidget TimelineBgWidget;
+
+typedef enum TimelineWidgetAction
+{
+  TIMELINE_WIDGET_ACTION_NONE,
+  TIMELINE_WIDGET_ACTION_RESIZING_REGION_L,
+  TIMELINE_WIDGET_ACTION_RESIZING_REGION_R,
+  TIMELINE_WIDGET_ACTION_MOVING_REGION,
+  TIMELINE_WIDGET_ACTION_SELECTING_AREA
+} TimelineWidgetAction;
 
 /**
  * TODO rename to arranger
@@ -40,6 +49,14 @@ typedef struct TimelineWidget
 {
   GtkOverlay               parent_instance;
   TimelineBgWidget         * bg;
+  GtkDrawingArea           drawing_area;
+  GtkGestureDrag           * drag;
+  GtkGestureMultiPress     * multipress;
+  double                   last_y;
+  double                   last_offset_x;  ///< for dragging regions
+  TimelineWidgetAction     action;
+  Region                   * region;  ///< region doing action upon, if any
+  double                   start_x; ///< for dragging
 } TimelineWidget;
 
 typedef struct TimelineWidgetClass

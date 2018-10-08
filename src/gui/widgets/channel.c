@@ -46,11 +46,10 @@ G_DEFINE_TYPE (ChannelWidget, channel_widget, GTK_TYPE_GRID)
  * that would be done via gtk_widget_set_tick_functions()
  * gtk_widget_set_tick_function()
  */
-gboolean
+void
 channel_widget_update_meter_reading (ChannelWidget * widget)
 {
   Channel * channel = widget->channel;
-  float db = MAX (channel->l_port_db, channel->r_port_db);
   gtk_widget_queue_draw (GTK_WIDGET (widget->meters[0]));
   gtk_widget_queue_draw (GTK_WIDGET (widget->meters[1]));
 }
@@ -119,7 +118,7 @@ channel_widget_init (ChannelWidget * self)
 static void
 setup_color (ChannelWidget * self)
 {
-  self->color = color_area_widget_new (&self->channel->color);
+  self->color = color_area_widget_new (&self->channel->color, -1, 10);
   gtk_grid_attach (GTK_GRID (self),
                    GTK_WIDGET (self->color),
                    0, 1, 2, 1);
@@ -201,7 +200,6 @@ setup_slots (ChannelWidget * self)
       self->slot_boxes[i] =
         GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
 
-      Plugin * plugin = channel->strip[i];
       self->slots[i] = channel_slot_widget_new (i, channel);
       /* FIXME set to channel widget width */
       /*gtk_widget_set_size_request (GTK_WIDGET (self->slot_boxes[i]),*/
@@ -213,9 +211,6 @@ setup_slots (ChannelWidget * self)
                           GTK_WIDGET (self->slot_boxes[i]),
                           0, 1, 0);
     }
-  /*gtk_box_pack_start (self->slots_box,*/
-                      /*GTK_WIDGET (self->add_slot),*/
-                      /*0, 1, 0);*/
 }
 
 

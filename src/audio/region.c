@@ -33,11 +33,41 @@ region_new (Track * track,
   Region * region = calloc (1, sizeof (Region));
 
   g_message ("creating region");
-  region->start_pos.frames = start_pos->frames;
-  region->end_pos.frames = end_pos->frames;
+  region->start_pos.bars = start_pos->bars;
+  region->start_pos.beats = start_pos->beats;
+  region->start_pos.quarter_beats = start_pos->quarter_beats;
+  region->start_pos.ticks = start_pos->ticks;
+  region->end_pos.bars = end_pos->bars;
+  region->end_pos.beats = end_pos->beats;
+  region->end_pos.quarter_beats = end_pos->quarter_beats;
+  region->end_pos.ticks = end_pos->ticks;
   region->track = track;
   region->widget = region_widget_new (region);
+  region->name = g_strdup ("Region 1");
 
   return region;
+}
+
+/**
+ * Clamps position then sets it.
+ * TODO
+ */
+void
+region_set_start_pos (Region * region,
+                      Position * pos)
+{
+  position_set_to_pos (&region->start_pos,
+                       pos);
+}
+
+/**
+ * Clamps position then sets it.
+ */
+void
+region_set_end_pos (Region * region,
+                    Position * pos)
+{
+  position_set_to_pos (&region->end_pos,
+                       pos);
 }
 

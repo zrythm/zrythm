@@ -329,7 +329,6 @@ lv2_allocate_port_buffers(LV2_Plugin* plugin)
                       : AUDIO_ENGINE->midi_buf_size;
               lv2_port->evbuf = lv2_evbuf_new(
                       buf_size,
-                      lv2_port->old_api ? LV2_EVBUF_EVENT : LV2_EVBUF_ATOM,
                       plugin->map.map(plugin->map.handle,
                                     lilv_node_as_string(plugin->nodes.atom_Chunk)),
                       plugin->map.map(plugin->map.handle,
@@ -837,12 +836,10 @@ _apply_control_arg(LV2_Plugin* plugin, const char* s)
 void
 lv2_backend_activate_port(LV2_Plugin * lv2_plugin, uint32_t port_index)
 {
-  jack_client_t*     client = AUDIO_ENGINE->client;
-  Plugin * plugin = lv2_plugin->plugin;
   LV2_Port* const lv2_port   = &lv2_plugin->ports[port_index];
   Port * port = lv2_port->port;
 
-  const LilvNode* sym = lilv_port_get_symbol(lv2_plugin->lilv_plugin, lv2_port->lilv_port);
+  /*const LilvNode* sym = lilv_port_get_symbol(lv2_plugin->lilv_plugin, lv2_port->lilv_port);*/
 
   /* Connect unsupported ports to NULL (known to be optional by this point) */
   if (port->flow == FLOW_UNKNOWN || port->type == TYPE_UNKNOWN)
@@ -1190,6 +1187,8 @@ lv2_create_from_state (Plugin    * plugin,  ///< a newly created plugin
 
   /*[> set plugin descriptor <]*/
   /*set_descriptor (lv2_plugin);*/
+
+  return NULL;
 }
 
 /**
@@ -1278,7 +1277,6 @@ lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
     }
 
   /* Set the zrythm plugin ports */
-  int count = 0;
   for (uint32_t i = 0; i < lv2_plugin->num_ports; ++i)
     {
       LV2_Port * lv2_port = &lv2_plugin->ports[i];
@@ -1539,7 +1537,7 @@ lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
   g_message ("Comm buffers: %d bytes", LV2_SETTINGS.opts.buffer_size);
   g_message ("Update rate:  %.01f Hz", lv2_plugin->ui_update_hz);
 
-  /* Build options array to pass to lv2_plugin->*/
+  /* Build options array to pass to plugin */
   const LV2_Options_Option options[] = {
           { LV2_OPTIONS_INSTANCE,
             0,

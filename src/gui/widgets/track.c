@@ -23,6 +23,7 @@
  */
 
 #include "audio/track.h"
+#include "audio/region.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 
@@ -32,6 +33,12 @@ static void
 size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
 {
   gtk_widget_queue_draw (GTK_WIDGET (MAIN_WINDOW->timeline));
+  /*TrackWidget * track_widget = TRACK_WIDGET (widget);*/
+  /*for (int i = 0; i < track_widget->track->num_regions; i++)*/
+    /*{*/
+      /*gtk_widget_queue_resize (GTK_WIDGET (track_widget->track->regions[i]->widget));*/
+    /*}*/
+  gtk_widget_queue_allocate (GTK_WIDGET (MAIN_WINDOW->timeline));
 }
 
 /**

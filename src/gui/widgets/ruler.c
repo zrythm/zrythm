@@ -24,6 +24,7 @@
 #include "settings_manager.h"
 #include "audio/position.h"
 #include "audio/transport.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/ruler.h"
 
 #include <gtk/gtk.h>
@@ -41,12 +42,13 @@ G_DEFINE_TYPE (RulerWidget, ruler_widget, GTK_TYPE_DRAWING_AREA)
 #define Q_HEIGHT 12
 #define Q_WIDTH 7
 
-static void
-px_to_pos (RulerWidget *self,
+void
+ruler_widget_px_to_pos (
            Position * pos, ///< position to fill in
            int      px) ///< pixels
 {
   /*g_message ("%d", px);*/
+  RulerWidget * self = MAIN_WINDOW->ruler;
   pos->bars = px / self->px_per_bar + 1;
   px = px % self->px_per_bar;
   pos->beats = px / self->px_per_beat + 1;
@@ -59,6 +61,16 @@ px_to_pos (RulerWidget *self,
              /*pos->beats,*/
              /*pos->quarter_beats,*/
              /*pos->ticks);*/
+}
+
+int
+ruler_widget_pos_to_px (Position * pos)
+{
+  RulerWidget * self = MAIN_WINDOW->ruler;
+  return  (pos->bars - 1) * self->px_per_bar +
+    (pos->beats - 1) * self->px_per_beat +
+    (pos->quarter_beats - 1) * self->px_per_quarter_beat +
+    pos->ticks * self->px_per_tick;
 }
 
 static gboolean
@@ -75,29 +87,17 @@ draw_cb (RulerWidget * self, cairo_t *cr, gpointer data)
 
   /* get positions in px */
   static int playhead_pos_in_px;
-  playhead_pos_in_px =
-    (TRANSPORT->playhead_pos.bars - 1) * self->px_per_bar +
-    (TRANSPORT->playhead_pos.beats - 1) * self->px_per_beat +
-    (TRANSPORT->playhead_pos.quarter_beats - 1) * self->px_per_quarter_beat +
-    TRANSPORT->playhead_pos.ticks * self->px_per_tick;
+  playhead_pos_in_px = ruler_widget_pos_to_px (&TRANSPORT->playhead_pos);
   static int cue_pos_in_px;
-  cue_pos_in_px =
-    (TRANSPORT->cue_pos.bars - 1) * self->px_per_bar +
-    (TRANSPORT->cue_pos.beats - 1) * self->px_per_beat +
-    (TRANSPORT->cue_pos.quarter_beats - 1) * self->px_per_quarter_beat +
-    TRANSPORT->cue_pos.ticks * self->px_per_tick;
+  cue_pos_in_px = ruler_widget_pos_to_px (&TRANSPORT->cue_pos);
   static int start_marker_pos_px;
-  start_marker_pos_px =
-    (TRANSPORT->start_marker_pos.bars - 1) * self->px_per_bar;
+  start_marker_pos_px = ruler_widget_pos_to_px (&TRANSPORT->start_marker_pos);
   static int end_marker_pos_px;
-  end_marker_pos_px =
-    (TRANSPORT->end_marker_pos.bars - 1) * self->px_per_bar;
+  end_marker_pos_px = ruler_widget_pos_to_px (&TRANSPORT->end_marker_pos);
   static int loop_start_pos_px;
-  loop_start_pos_px =
-    (TRANSPORT->loop_start_pos.bars - 1 ) * self->px_per_bar;
+  loop_start_pos_px = ruler_widget_pos_to_px (&TRANSPORT->loop_start_pos);
   static int loop_end_pos_px;
-  loop_end_pos_px =
-    (TRANSPORT->loop_end_pos.bars - 1) * self->px_per_bar;
+  loop_end_pos_px = ruler_widget_pos_to_px (&TRANSPORT->loop_end_pos);
 
   gtk_render_background (context, cr, 0, 0, self->total_px, height);
 
@@ -238,7 +238,7 @@ multipress_pressed (GtkGestureMultiPress *gesture,
   if (n_press == 2)
     {
       Position pos;
-      px_to_pos ((RulerWidget *) user_data, &pos,
+      ruler_widget_px_to_pos (&pos,
                  x - SPACE_BEFORE_START);
       position_set_to_pos (&TRANSPORT->cue_pos,
                            &pos);
@@ -254,7 +254,7 @@ drag_begin (GtkGestureDrag * gesture,
   RulerWidget * self = (RulerWidget *) user_data;
   self->start_x = start_x;
   Position pos;
-  px_to_pos (self, &pos,
+  ruler_widget_px_to_pos (&pos,
              start_x - SPACE_BEFORE_START);
   position_set_to_pos (&TRANSPORT->playhead_pos,
                        &pos);
@@ -268,7 +268,7 @@ drag_update (GtkGestureDrag * gesture,
 {
   RulerWidget * self = (RulerWidget *) user_data;
   Position pos;
-  px_to_pos (self, &pos,
+  ruler_widget_px_to_pos (&pos,
              (self->start_x + offset_x) - SPACE_BEFORE_START);
   position_set_to_pos (&TRANSPORT->playhead_pos,
                        &pos);

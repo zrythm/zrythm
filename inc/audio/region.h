@@ -34,12 +34,27 @@ typedef struct Region
   Position     start_pos;
   Position     end_pos;
   RegionWidget * widget;
-  Track        * track; ///< pointer back to channel
+  Track        * track; ///< pointer back to track
+  char         * name; ///< region name
 } Region;
 
 Region *
 region_new (Track * track,
             Position * start_pos,
             Position * end_pos);
+
+/**
+ * Checks if position is valid then sets it.
+ */
+void
+region_set_start_pos (Region * region,
+                      Position * start_pos);
+
+/**
+ * Checks if position is valid then sets it.
+ */
+void
+region_set_end_pos (Region * region,
+                    Position * end_pos);
 
 #endif // __AUDIO_POSITION_H__

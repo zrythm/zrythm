@@ -21,12 +21,14 @@
 
 #include "config.h"
 #include "audio/mixer.h"
+#include "audio/track.h"
 #include "audio/transport.h"
 #include "gui/widgets/bpm.h"
 #include "gui/widgets/browser.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/midi_editor.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/instrument_timeline_view.h"
 #include "gui/widgets/ruler.h"
@@ -79,6 +81,9 @@ minimize_clicked (MainWindowWidget * self,
     gtk_window_iconify (GTK_WINDOW (user_data));
 }
 
+/**
+ * FIXME move to timeline
+ */
 static gboolean
 key_release_cb (GtkWidget      * widget,
                  GdkEventKey * event,
@@ -184,6 +189,54 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 MainWindowWidget, mixer);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget,
+                                        midi_track_color_box);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget,
+                                        midi_bot_toolbar);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget,
+                                        midi_name_label);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget,
+                                        midi_controls_above_notes_box);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget,
+                                        midi_ruler_box);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget,
+                                        midi_ruler_scroll);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget,
+                                        midi_ruler_viewport);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget,
+                                        midi_notes_labels_box);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget,
+                                        piano_roll_labels_scroll);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget,
+                                        piano_roll_labels_viewport);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget,
+                                        midi_notes_draw_box);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget,
+                                        piano_roll_notes_scroll);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget,
+                                        piano_roll_notes_viewport);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget,
+                                        midi_arranger_box);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget,
+                                        piano_roll_arranger_scroll);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget,
+                                        piano_roll_arranger_viewport);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 MainWindowWidget, channels_scroll);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 MainWindowWidget, channels_viewport);
@@ -254,12 +307,6 @@ main_window_widget_open (MainWindowWidget *win,
 {
 }
 
-void
-popup_menu(GtkAction *action, GtkMenu *menu)
-{
-    gtk_menu_popup(menu, NULL, NULL, NULL, NULL, 1, gtk_get_current_event_time());
-}
-
 
 MainWindowWidget *
 main_window_widget_new (ZrythmApp * _app)
@@ -324,8 +371,9 @@ main_window_widget_new (ZrythmApp * _app)
                  GTK_WIDGET (self->browser_bot));
   gtk_widget_show_all (GTK_WIDGET (self->browser_notebook));
 
-  /* setup mixer */
+  /* setup bot region */
   mixer_setup (self->mixer, self->channels);
+  midi_editor_setup ();
 
   // set icons
   GtkWidget * image = gtk_image_new_from_resource (
@@ -368,6 +416,23 @@ main_window_widget_new (ZrythmApp * _app)
                     G_CALLBACK (key_release_cb), self);
   /*g_signal_connect (G_OBJECT (self), "grab-notify",*/
                     /*G_CALLBACK (key_press_cb), NULL);*/
+
+  /* show regions */
+  for (int i = 0; i < MIXER->num_channels; i++)
+    {
+      Channel * channel = MIXER->channels[i];
+      for (int j = 0; j < channel->track->num_regions; j++)
+        {
+          gtk_overlay_add_overlay (GTK_OVERLAY (self->timeline),
+                                   GTK_WIDGET (channel->track->regions[j]->widget));
+        }
+    }
+  for (int j = 0; j < MIXER->master->track->num_regions; j++)
+    {
+      gtk_overlay_add_overlay (GTK_OVERLAY (self->timeline),
+                               GTK_WIDGET (MIXER->master->track->regions[j]->widget));
+    }
+  gtk_widget_show_all (GTK_WIDGET (self->timeline));
 
   return self;
 }

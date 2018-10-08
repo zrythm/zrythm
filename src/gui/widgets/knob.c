@@ -61,7 +61,6 @@ static int
 draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 {
   guint width, height;
-  GdkRGBA color;
   GtkStyleContext *context;
   KnobWidget * self = (KnobWidget *) data;
 
@@ -263,24 +262,24 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
     }
 
   cairo_identity_matrix(cr);
+
+  return FALSE;
 }
 
 static void
 on_crossing (GtkWidget * widget, GdkEvent *event, void * data)
 {
   KnobWidget * self = (KnobWidget *) data;
-   switch (gdk_event_get_event_type (event))
+  if (event->type == GDK_ENTER_NOTIFY)
     {
-    case GDK_ENTER_NOTIFY:
       self->hover = 1;
-      break;
-
-    case GDK_LEAVE_NOTIFY:
+    }
+  else if (event->type == GDK_LEAVE_NOTIFY)
+    {
       if (!gtk_gesture_drag_get_offset (self->drag,
                                        NULL,
                                        NULL))
         self->hover = 0;
-      break;
     }
   gtk_widget_queue_draw(widget);
 }

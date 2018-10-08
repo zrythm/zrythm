@@ -31,7 +31,7 @@
 #include <gtk/gtk.h>
 
 #define COLOR_AREA_WIDGET_TYPE          (color_area_widget_get_type ())
-#define COLOR_AREA_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), COLOR_AREA_WIDGET_TYPE, ColorArea))
+#define COLOR_AREA_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), COLOR_AREA_WIDGET_TYPE, ColorAreaWidget))
 #define COLOR_AREA_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), COLOR_AREA_WIDGET, ColorAreaWidgetClass))
 #define IS_COLOR_AREA_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), COLOR_AREA_WIDGET_TYPE))
 #define IS_COLOR_AREA_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), COLOR_AREA_WIDGET_TYPE))
@@ -52,7 +52,13 @@ typedef struct ColorAreaWidgetClass
  * Creates a channel color widget using the given color pointer.
  */
 ColorAreaWidget *
-color_area_widget_new (GdkRGBA * color);
+color_area_widget_new (GdkRGBA * color, int width, int height);
 
+/**
+ * Changes the color.
+ */
+void
+color_area_widget_set_color (ColorAreaWidget * widget,
+                             GdkRGBA * color);
 
 #endif

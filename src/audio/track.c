@@ -34,11 +34,15 @@ track_new (Channel * channel)
   track->channel = channel;
   track->widget = track_widget_new (track);
   Position start = { 1, 1, 1, 0, 0 };
-  Position end = { 1, 1, 1, 9, 123456 };
-  track->regions[0] = region_new (track,
+  Position end = { 1, 3, 1, 9, 123456 };
+  track->regions[track->num_regions++] = region_new (track,
                                   &start,
                                   &end);
-  track->num_regions++;
+  start.bars = 2;
+  end.bars = 6;
+  track->regions[track->num_regions++] = region_new (track,
+                                  &start,
+                                  &end);
 
   return track;
 }

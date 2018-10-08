@@ -89,6 +89,8 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
     case METER_TYPE_DB:
       meter_val = meter_val_from_real (self);
       break;
+    case METER_TYPE_MIDI:
+      break;
     }
   double value_px = height * (double) meter_val;
 
@@ -116,8 +118,8 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
             intensity * self->start_color.green;
   float b = intensity_inv * self->end_color.blue  +
             intensity * self->start_color.blue;
-  float a = intensity_inv * self->end_color.alpha  +
-            intensity * self->start_color.alpha;
+  /*float a = intensity_inv * self->end_color.alpha  +*/
+            /*intensity * self->start_color.alpha;*/
   cairo_set_source_rgba (cr, r,g,b, 1.0);
   float x = 2;
   cairo_new_sub_path (cr);
