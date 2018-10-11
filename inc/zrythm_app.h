@@ -22,6 +22,8 @@
 #ifndef __ZRYTHM_APP_H__
 #define __ZRYTHM_APP_H__
 
+#include "utils/selections.h"
+
 #include <gtk/gtk.h>
 
 
@@ -56,6 +58,14 @@ typedef struct Zrythm_System
    * Application settings
    */
   Settings_Manager *       settings_manager;
+
+  /**
+   * Currently selected items.
+   *
+   * Currently selected track, selected channel, selected region, selected
+   * note, etc.
+   */
+  Selections           selections;
 
   /**
    * The project global variable, containing all the information that

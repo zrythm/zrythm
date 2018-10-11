@@ -229,7 +229,10 @@ drag_end (GtkGestureDrag *gesture,
   self->start_x = 0;
   self->last_offset_x = 0;
   self->action = MIDI_ARRANGER_WIDGET_ACTION_NONE;
-  ui_set_cursor (GTK_WIDGET (self->midi_note->widget), "default");
+  if (self->midi_note)
+    {
+      ui_set_cursor (GTK_WIDGET (self->midi_note->widget), "default");
+    }
   self->midi_note = NULL;
 }
 

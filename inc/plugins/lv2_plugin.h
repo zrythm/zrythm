@@ -483,6 +483,12 @@ void
 lv2_cleanup (LV2_Plugin *plugin);
 
 /**
+ * Processes the plugin for this cycle.
+ */
+void
+lv2_plugin_process (LV2_Plugin * lv2_plugin, nframes_t nframes);
+
+/**
  * Frees memory
  */
 void

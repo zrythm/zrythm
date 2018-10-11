@@ -214,7 +214,7 @@ typedef struct {
 static PresetMenu*
 pset_menu_new(const char* label)
 {
-	PresetMenu* menu = (PresetMenu*)malloc(sizeof(PresetMenu));
+	PresetMenu* menu = (PresetMenu*)calloc (1, sizeof(PresetMenu));
 	menu->label = g_strdup(label);
 	menu->item  = GTK_MENU_ITEM(gtk_menu_item_new_with_label(menu->label));
 	menu->menu  = GTK_MENU(gtk_menu_new());
@@ -290,7 +290,7 @@ add_preset_to_menu(LV2_Plugin*           plugin,
 		gtk_menu_shell_append(GTK_MENU_SHELL(menu->menu), item);
 	}
 
-	PresetRecord* record = (PresetRecord*)malloc(sizeof(PresetRecord));
+	PresetRecord* record = (PresetRecord*)calloc(1, sizeof(PresetRecord));
 	record->plugin   = plugin;
 	record->preset = lilv_node_duplicate(node);
 
@@ -756,7 +756,7 @@ file_changed(GtkFileChooserButton* widget,
 static Controller*
 new_controller(GtkSpinButton* spin, GtkWidget* control)
 {
-	Controller* controller = (Controller*)malloc(sizeof(Controller));
+	Controller* controller = (Controller*)calloc(1, sizeof(Controller));
 	controller->spin    = spin;
 	controller->control = control;
 	return controller;

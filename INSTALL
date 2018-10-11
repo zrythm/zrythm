@@ -1,16 +1,17 @@
 # Dependencies
-- Suil with GTK3 support is needed. Some repos don't have it yet so first install latest Suil
-- Other dependencies should show up when `configure` is run if they are missing. Install using a package manager
+- Suil with GTK3 support is needed. Some distros don't have the latest versions so might have to manually install
+- Other dependencies should show up when `configure` is run if they are missing. Install using the distro's package manager
 
 # Compile
-
 ```
 autoreconf --install
-mkdir build
-cd build
-../configure
-make
+./configure
+make -j8
 ```
+
+# Run
+```
+build/debug/zrythm
 
 # Install
 ```

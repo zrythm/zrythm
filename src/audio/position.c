@@ -23,6 +23,8 @@
 #include "audio/position.h"
 #include "audio/transport.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_editor.h"
 #include "gui/widgets/timeline.h"
 
 #include <gtk/gtk.h>
@@ -240,6 +242,19 @@ position_updated (Position * position)
         {
           gtk_widget_queue_draw (
                   GTK_WIDGET (MAIN_WINDOW->timeline->bg));
+        }
+      if (MAIN_WINDOW->midi_editor)
+        {
+          if (MAIN_WINDOW->midi_editor->midi_ruler)
+            {
+              gtk_widget_queue_draw (
+                      GTK_WIDGET (MAIN_WINDOW->midi_editor->midi_ruler));
+            }
+          if (MAIN_WINDOW->midi_editor->midi_arranger)
+            {
+              gtk_widget_queue_draw (
+                      GTK_WIDGET (MAIN_WINDOW->midi_editor->midi_arranger->bg));
+            }
         }
     }
   }

@@ -130,7 +130,7 @@ plugin_manager_init ()
 {
     g_message ("Initializing plugin manager...");
     Plugin_Manager * plugin_manager =
-      malloc (sizeof (Plugin_Manager));
+      calloc (1, sizeof (Plugin_Manager));
 
     plugin_manager->num_plugins = 0;
     plugin_manager->num_plugin_categories = 0;
