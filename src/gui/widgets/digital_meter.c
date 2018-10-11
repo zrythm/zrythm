@@ -31,6 +31,8 @@
 
 #include <gtk/gtk.h>
 
+#include <pango/pangofc-fontmap.h>
+
 
 G_DEFINE_TYPE (DigitalMeterWidget, digital_meter_widget, GTK_TYPE_DRAWING_AREA)
 
@@ -44,7 +46,7 @@ static gboolean
 draw_cb (DigitalMeterWidget * self, cairo_t *cr, gpointer data)
 {
   guint width, height;
-  GdkRGBA color;
+  /*GdkRGBA color;*/
   GtkStyleContext *context;
 
   context = gtk_widget_get_style_context (GTK_WIDGET (self));
@@ -54,10 +56,10 @@ draw_cb (DigitalMeterWidget * self, cairo_t *cr, gpointer data)
 
   gtk_render_background (context, cr, 0, 0, width, height);
 
-  double bg_txt_alpha = 0.08;
+  /*double bg_txt_alpha = 0.08;*/
 
   cairo_text_extents_t te10, te5, te1, te3, te2;
-  char * test_text = "8";
+  /*char * test_text = "8";*/
   char * text;
   int num_part, dec_part, bars, beats, quarter_beats, ticks;
   switch (self->type)
@@ -409,4 +411,35 @@ digital_meter_widget_class_init (DigitalMeterWidgetClass * klass)
 static void
 digital_meter_widget_init (DigitalMeterWidget * self)
 {
+  /* FIXME doesn't work */
+  /*FcConfig * font_config;*/
+
+  /*PangoFontMap *font_map;*/
+  /*PangoFontDescription *font_desc;*/
+
+  /*if (g_once_init_enter (&font_config))*/
+    /*{*/
+      /*FcConfig *config = FcInitLoadConfigAndFonts ();*/
+
+      /*const gchar * font_path = "resources/fonts/Segment7Standard/Segment7Standard.ttf";*/
+
+      /*if (!g_file_test (font_path, G_FILE_TEST_IS_REGULAR))*/
+        /*g_warning ("Failed to locate \"%s\"", font_path);*/
+
+
+      /*FcConfigAppFontAddFile (config, (const FcChar8 *)font_path);*/
+      /*g_message ("aa");*/
+
+      /*g_once_init_leave (&font_config, config);*/
+    /*}*/
+
+  /*font_map = pango_cairo_font_map_new_for_font_type (CAIRO_FONT_TYPE_FT);*/
+  /*pango_fc_font_map_set_config (PANGO_FC_FONT_MAP (font_map), font_config);*/
+  /*gtk_widget_set_font_map (GTK_WIDGET (self), font_map);*/
+
+  /*g_assert (font_config != NULL);*/
+  /*g_assert (font_map != NULL);*/
+
+  /*g_object_unref (font_map);*/
+
 }

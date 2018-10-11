@@ -131,6 +131,7 @@ symap_map(Symap* map, const char* sym)
           return map->index[index];
   }
 
+  g_message ("mapping %d", map->size);
   const uint32_t id  = ++map->size;
   char* const    str = symap_strdup(sym);
 

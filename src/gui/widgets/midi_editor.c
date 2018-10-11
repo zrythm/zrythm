@@ -24,8 +24,8 @@
 #include "audio/track.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor.h"
-#include "gui/widgets/piano_roll_arranger.h"
 #include "gui/widgets/piano_roll_labels.h"
 #include "gui/widgets/piano_roll_notes.h"
 #include "gui/widgets/ruler.h"
@@ -87,9 +87,9 @@ midi_editor_widget_new ()
   self->piano_roll_notes = piano_roll_notes_widget_new ();
   gtk_container_add (GTK_CONTAINER (self->piano_roll_notes_viewport),
                      GTK_WIDGET (self->piano_roll_notes));
-  self->piano_roll_arranger = piano_roll_arranger_widget_new ();
+  self->midi_arranger = midi_arranger_widget_new ();
   gtk_container_add (GTK_CONTAINER (self->piano_roll_arranger_viewport),
-                     GTK_WIDGET (self->piano_roll_arranger));
+                     GTK_WIDGET (self->midi_arranger));
 
   /* link scrolls */
   gtk_scrolled_window_set_vadjustment (

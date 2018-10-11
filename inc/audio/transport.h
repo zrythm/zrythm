@@ -27,7 +27,7 @@
 
 #include "project.h"
 #include "audio/region.h"
-#include "sem.h"
+#include "utils/sem.h"
 
 #include <gtk/gtk.h>
 

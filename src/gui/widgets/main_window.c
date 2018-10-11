@@ -28,6 +28,7 @@
 #include "gui/widgets/channel.h"
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/instrument_timeline_view.h"

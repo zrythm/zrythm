@@ -40,7 +40,7 @@
 #include "plugins/lv2/symap.h"
 #include "plugins/lv2/worker.h"
 #include "plugins/lv2/zix/ring.h"
-#include "sem.h"
+#include "utils/sem.h"
 #include "plugins/lv2/zix/thread.h"
 #include "plugins/lv2/lv2_external_ui.h"
 

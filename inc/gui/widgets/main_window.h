@@ -41,6 +41,7 @@ typedef struct ColorAreaWidget ColorAreaWidget;
 typedef struct MixerWidget MixerWidget;
 typedef struct MidiEditorWidget MidiEditorWidget;
 typedef struct BrowserWidget BrowserWidget;
+typedef struct MidiArrangerWidget MidiArrangerWidget;
 typedef struct Region Region;
 
 typedef struct _MainWindowWidget

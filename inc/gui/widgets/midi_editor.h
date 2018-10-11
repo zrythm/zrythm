@@ -37,7 +37,7 @@
 
 typedef struct PianoRollLabelsWidget PianoRollLabelsWidget;
 typedef struct PianoRollNotesWidget PianoRollNotesWidget;
-typedef struct PianoRollArrangerWidget PianoRollArrangerWidget;
+typedef struct MidiArranger MidiArranger;
 
 typedef struct MidiEditorWidget
 {
@@ -62,7 +62,7 @@ typedef struct MidiEditorWidget
   GtkBox                   * midi_arranger_box; ///< piano roll
   GtkScrolledWindow        * piano_roll_arranger_scroll;
   GtkViewport              * piano_roll_arranger_viewport;
-  PianoRollArrangerWidget  * piano_roll_arranger;
+  MidiArrangerWidget       * midi_arranger;
 } MidiEditorWidget;
 
 typedef struct MidiEditorWidgetClass

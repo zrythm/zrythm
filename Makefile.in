@@ -12,25 +12,16 @@ SRC_DIR = src
 INC_DIR = inc
 DATA_DIR = data
 
-AWK = @AWK@
 CC = @CC@
 DEFS = @DEFS@
-GTK_CFLAGS = @GTK_CFLAGS@
-GTK_LIBS = @GTK_LIBS@
-INSTALL = @INSTALL@
-INSTALL_DATA = @INSTALL_DATA@
-JACK_CFLAGS = @JACK_CFLAGS@
-JACK_LIBS = @JACK_LIBS@
+INSTALL = install
+INSTALL_DATA = ${INSTALL} -m 644
+INSTALL_PROGRAM = ${INSTALL}
 LDFLAGS = @LDFLAGS@
-LILV_CFLAGS = @LILV_CFLAGS@
-LILV_LIBS = @LILV_LIBS@
-LV2_CFLAGS = @LV2_CFLAGS@
-LV2_LIBS = @LV2_LIBS@
-MKDIR_P = @MKDIR_P@
+MKDIR_P = mkdir -p
 GLIB_COMPILE_SCHEMAS = @GLIB_COMPILE_SCHEMAS@
 gsettingsschemadir = @gsettingsschemadir@
 OBJEXT = @OBJEXT@
-PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
@@ -40,16 +31,44 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
 SHELL = @SHELL@
-SUIL_CFLAGS = @SUIL_CFLAGS@
-SUIL_LIBS = @SUIL_LIBS@
-VERSION = @VERSION@
-datarootdir = @datarootdir@
+srcdir = @srcdir@
+
+# test
+
+# Installation directory variables
+bindir = @bindir@
 datadir = @datadir@
+datarootdir = @datarootdir@
 docdir = @docdir@
+htmldir = @htmldir@
 includedir = @includedir@
-install_sh = @install_sh@
+libdir = @libdir@
+libexecdir = @libexecdir@
+localedir = @localedir@
+localstatedir = @localstatedir@
 mandir = @mandir@
+pdfdir = @pdfdir@
 prefix = @prefix@
+sharedstatedir = @sharedstatedir@
+sysconfdir = @sysconfdir@
+
+
+# library CFLAGS
+GTK_CFLAGS = @GTK_CFLAGS@
+JACK_CFLAGS = @JACK_CFLAGS@
+LILV_CFLAGS = @LILV_CFLAGS@
+LV2_CFLAGS = @LV2_CFLAGS@
+PANGOFT2_CFLAGS = @PANGOFT2_CFLAGS@
+SUIL_CFLAGS = @SUIL_CFLAGS@
+
+# library LIBS
+GTK_LIBS = @GTK_LIBS@
+JACK_LIBS = @JACK_LIBS@
+LILV_LIBS = @LILV_LIBS@
+LV2_LIBS = @LV2_LIBS@
+PANGO_LIBS = @PANGO_LIBS@
+PANGOFT2_LIBS = @PANGOFT2_LIBS@
+SUIL_LIBS = @SUIL_LIBS@
 
 DEFAULT_INCLUDES = -I. -I./$(INC_DIR) -I./$(SRC_DIR)
 
@@ -66,6 +85,8 @@ CFLAGS = -Wall -rdynamic \
 						$(LV2_CFLAGS) \
 						$(LILV_CFLAGS) \
 						$(SUIL_CFLAGS) \
+						$(PANGO_CFLAGS) \
+						$(PANGOFT2_CFLAGS) \
 						$(DEFAULT_CFLAGS)
 
 LDFLAGS =	$(GTK_LIBS) \
@@ -73,8 +94,10 @@ LDFLAGS =	$(GTK_LIBS) \
 			    $(LV2_LIBS) \
 			    $(LILV_LIBS) \
 				  $(SUIL_LIBS) \
+				  $(PANGO_LIBS) \
+				  $(PANGOFT2_LIBS) \
 			    -lm \
-					-pthread
+					-lpthread
 
 built_src = $(BUILD_DIR)/resources.c
 
@@ -114,8 +137,9 @@ all: directories $(BUILD_DIR)/$(BIN_NAME)
 
 $(BUILD_DIR)/resources.c: $(SRC_DIR)/zrythm.gresource.xml \
 	resources/ui/*.ui \
-	resources/theme.css
-	mkdir -p $(BUILD_DIR)
+	resources/theme.css \
+	resources/*.svg
+	$(MKDIR_P) $(BUILD_DIR)
 	glib-compile-resources $(SRC_DIR)/zrythm.gresource.xml --target=$(BUILD_DIR)/resources.c \
 	--generate-source --sourcedir=resources
 
@@ -159,8 +183,8 @@ clean:
 
 .PHONY: install
 install: $(BUILD_DIR)/$(BIN_NAME) install-appicon-data install-desktop-data install-gschemas
-	mkdir -p $(DESTDIR)@PREFIX@/bin
-	cp $< $(DESTDIR)$(PREFIX)/bin/$(BIN_NAME)
+	mkdir -p $(DESTDIR)$(bindir)
+	$(INSTALL) $< $(DESTDIR)$(bindir)/$(BIN_NAME)
 
 .PHONY: uninstall
 uninstall:
@@ -172,7 +196,7 @@ install-appicon-data: $(appicon_DATA)
 
 .PHONY: install-gschemas
 install-gschemas: $(gsettings_SCHEMAS)
-	cp $< $(gsettingsschemadir)/
+	$(INSTALL) $< $(gsettingsschemadir)/
 	$(GLIB_COMPILE_SCHEMAS) $(gsettingsschemadir)
 
 .PHONY: install-desktop
