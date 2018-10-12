@@ -76,6 +76,12 @@ position_add_frames (Position * position,
                      int      frames);
 
 /**
+ * Converts position bars/beats/quarter beats/ticks to frames
+ */
+int
+position_to_frames (Position * position);
+
+/**
  * Notifies other parts.
  */
 void

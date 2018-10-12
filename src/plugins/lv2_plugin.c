@@ -1767,8 +1767,8 @@ lv2_plugin_process (LV2_Plugin * lv2_plugin, nframes_t nframes)
 
               if (port->midi_events.num_events > 0)
                 {
-                  g_message ("Lv2 plugin port midi events %d",
-                             port->midi_events.num_events);
+                  /*g_message ("Lv2 plugin port midi events %d",*/
+                             /*port->midi_events.num_events);*/
                   /* Write Jack MIDI input */
                   for (uint32_t i = 0; i < port->midi_events.num_events; ++i)
                     {

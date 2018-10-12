@@ -49,14 +49,14 @@ enum PluginCategory
   PC_AUDIO
 };
 
-enum PluginProtocol
+typedef enum PluginProtocol
 {
  PROT_LV2,
  PROT_DSSI,
  PROT_LADSPA,
  PROT_VST,
  PROT_VST3
-};
+} PluginProtocol;
 
 enum PluginArchitecture
 {
@@ -82,7 +82,7 @@ typedef struct Plugin_Descriptor
   uint8_t              num_ctrl_ins;            ///< # of input ctrls
   uint8_t              num_ctrl_outs;            ///< # of output ctrls
   int                  arch;               ///< architecture 32/64bit
-  int                  protocol;           ///< VST/LV2/DSSI/LADSPA...
+  PluginProtocol       protocol;           ///< VST/LV2/DSSI/LADSPA...
   char                 * path;
   char                 * uri;            ///< for LV2 plugins
 } Plugin_Descriptor;

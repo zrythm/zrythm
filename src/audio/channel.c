@@ -31,6 +31,8 @@
 #include "audio/channel.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
+#include "audio/transport.h"
+#include "plugins/lv2_plugin.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
@@ -95,6 +97,7 @@ process_channel_work (void * argument)
   return 0;
 }
 
+
 /**
  * For each plugin
  *   -> for each input port it owns
@@ -110,6 +113,12 @@ channel_process (Channel * channel,  ///< slots
   /* sum AUDIO IN coming to the channel */
   port_sum_signal_from_inputs (channel->stereo_in->l, nframes);
   port_sum_signal_from_inputs (channel->stereo_in->r, nframes);
+
+  track_fill_midi_events (channel->track,
+                          &PLAYHEAD,
+                          nframes,
+                          &channel->piano_roll->midi_events);
+  midi_events_dequeue (&channel->piano_roll->midi_events);
 
   /* go through each slot (plugin) on the channel strip */
   for (int i = 0; i < MAX_PLUGINS; i++)
@@ -234,6 +243,15 @@ _create_channel (char * name)
                  channel->thread, channel->name);
       }
 
+    /* set up piano roll port */
+    channel->piano_roll = port_new_with_type (
+          AUDIO_ENGINE->block_length,
+          TYPE_EVENT,
+          FLOW_INPUT,
+          "Piano Roll");
+    channel->piano_roll->owner_jack = 0;
+    channel->piano_roll->midi_events.queue = calloc (1, sizeof (Midi_Events));
+
     return channel;
   }
 
@@ -286,6 +304,7 @@ channel_create (int     type, char * label)             ///< the channel type (A
                 MIXER->master->stereo_in->l);
   port_connect (channel->stereo_out->r,
                 MIXER->master->stereo_in->r);
+
 
   g_message ("Created channel %s of type %i", label, type);
 
@@ -367,15 +386,20 @@ channel_add_plugin (Channel * channel,    ///< the channel
                     Plugin      * plugin  ///< the plugin to add
                     )
 {
+  int prev_enabled = channel->enabled;
+  channel->enabled = 0;
   /* free current plugin */
-  if (channel->strip[pos])
+  Plugin * old = channel->strip[pos];
+  if (old)
     {
-      g_message ("Removing %s from %s:%d", channel->strip[pos]->descr->name,
+      g_message ("Removing %s from %s:%d", old->descr->name,
                  channel->name, pos);
+      if (old->descr->protocol == PROT_LV2)
+        {
+          lv2_close_ui ((LV2_Plugin *) old->original_plugin);
+        }
       plugin_free (channel->strip[pos]);
     }
-
-  zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
 
   g_message ("Inserting %s at %s:%d", plugin->descr->name,
              channel->name, pos);
@@ -409,7 +433,7 @@ channel_add_plugin (Channel * channel,    ///< the channel
         }
       else if (channel->type == CT_MIDI)
         {
-          /* Connect MIDI port to the plugin */
+          /* Connect MIDI port and piano roll to the plugin */
           for (int i = 0; i < plugin->num_in_ports; i++)
             {
               Port * port = plugin->in_ports[i];
@@ -418,6 +442,7 @@ channel_add_plugin (Channel * channel,    ///< the channel
                 {
                   /*if (channel->recording)*/
                     port_connect (AUDIO_ENGINE->midi_in, port);
+                    port_connect (channel->piano_roll, port);
                 }
             }
         }
@@ -498,7 +523,7 @@ channel_add_plugin (Channel * channel,    ///< the channel
             break;
         }
     }
-  zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
+  channel->enabled = prev_enabled;
 }
 
 /**

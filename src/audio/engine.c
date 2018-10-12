@@ -149,11 +149,11 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
   zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
 
   /* reset all buffers */
-  for (i = 0; i < AUDIO_ENGINE->num_ports; i++)
-    {
-      if (AUDIO_ENGINE->ports[i])
-        port_clear_buffer (AUDIO_ENGINE->ports[i]);
-    }
+  /*for (i = 0; i < AUDIO_ENGINE->num_ports; i++)*/
+    /*{*/
+      /*if (AUDIO_ENGINE->ports[i])*/
+        /*port_clear_buffer (AUDIO_ENGINE->ports[i]);*/
+    /*}*/
 
   /*g_message ("jack start");*/
 
@@ -393,7 +393,7 @@ init_audio_engine()
     engine->midi_in    = midi_in;
     engine->midi_editor_manual_press = midi_editor_manual_press;
 
-    /* init MIDI queue for manual presses */
+    /* init MIDI queues for manual presse/piano roll */
     engine->midi_editor_manual_press->midi_events.queue = calloc (1, sizeof (Midi_Events));
 
     if (!engine->stereo_in->l->data || !engine->stereo_in->r->data ||

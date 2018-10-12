@@ -179,8 +179,6 @@ clean_ports (Port ** array, int * size)
 void
 plugin_free (Plugin *plugin)
 {
-  zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
-
   /* disconnect all ports and free them */
   clean_ports (plugin->in_ports, &plugin->num_in_ports);
   clean_ports (plugin->out_ports, &plugin->num_out_ports);
@@ -188,5 +186,4 @@ plugin_free (Plugin *plugin)
   /* TODO other cleanup work */
 
   free (plugin);
-  zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
 }

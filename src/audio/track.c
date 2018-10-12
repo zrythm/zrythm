@@ -21,6 +21,7 @@
 
 #include <stdlib.h>
 
+#include "audio/midi_note.h"
 #include "audio/position.h"
 #include "audio/region.h"
 #include "audio/track.h"
@@ -45,4 +46,66 @@ track_new (Channel * channel)
                                   &end);
 
   return track;
+}
+
+/**
+ * NOTE: real time func
+ */
+void
+track_fill_midi_events (Track      * track,
+                        Position   * pos, ///< start position to check
+                        nframes_t  nframes, ///< n of frames from start pos
+                        Midi_Events * midi_events) ///< midi events to fill
+{
+  Position end_pos;
+  position_set_to_pos (&end_pos, pos);
+  position_add_frames (&end_pos, nframes);
+
+  midi_events->queue->num_events = 0;
+  for (int i = 0; i < track->num_regions; i++)
+    {
+      Region * region = track->regions[i];
+      for (int j = 0; j < region->num_midi_notes; j++)
+        {
+          MidiNote * midi_note = region->midi_notes[j];
+
+          /* note on event */
+          if (position_compare (&midi_note->start_pos,
+                                pos) >= 0 &&
+              position_compare (&midi_note->start_pos,
+                                &end_pos) <= 0)
+            {
+              jack_midi_event_t * ev =
+                &midi_events->queue->jack_midi_events[
+                  midi_events->queue->num_events++];
+              ev->time = position_to_frames (&midi_note->start_pos) -
+                position_to_frames (pos);
+              ev->size = 3;
+              if (!ev->buffer)
+                ev->buffer = calloc (3, sizeof (jack_midi_data_t));
+              ev->buffer[0] = 0x90; /* status byte, 0x90 is note on */
+              ev->buffer[1] = midi_note->val; /* note number 0-127 */
+              ev->buffer[2] = midi_note->vel; /* velocity 0-127 */
+            }
+
+          /* note off event */
+          if (position_compare (&midi_note->end_pos,
+                                pos) >= 0 &&
+              position_compare (&midi_note->end_pos,
+                                &end_pos) <= 0)
+            {
+              jack_midi_event_t * ev =
+                &midi_events->queue->jack_midi_events[
+                  midi_events->queue->num_events++];
+              ev->time = position_to_frames (&midi_note->end_pos) -
+                position_to_frames (pos);
+              ev->size = 3;
+              if (!ev->buffer)
+                ev->buffer = calloc (3, sizeof (jack_midi_data_t));
+              ev->buffer[0] = 0x80; /* status byte, 0x80 is note off */
+              ev->buffer[1] = midi_note->val; /* note number 0-127 */
+              ev->buffer[2] = midi_note->vel; /* velocity 0-127 */
+            }
+        }
+    }
 }

@@ -23,6 +23,7 @@
  */
 
 #include "audio/channel.h"
+#include "audio/engine.h"
 #include "plugins/lv2_plugin.h"
 #include "gui/widget_manager.h"
 #include "gui/widgets/channel.h"
@@ -64,7 +65,9 @@ on_drag_data_received (GtkWidget        *widget,
     }
 
   /* add to specific channel */
+  zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
   channel_add_plugin (channel, channel_slot->slot_index, plugin);
+  zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
   gtk_widget_queue_draw (widget);
 }
 

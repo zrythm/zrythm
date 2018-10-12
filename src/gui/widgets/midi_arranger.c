@@ -111,7 +111,7 @@ get_child_position (GtkOverlay   *overlay,
         midi_note_widget->midi_note->start_pos.ticks * MW_RULER->px_per_tick +
         SPACE_BEFORE_START;
       allocation->y = MAIN_WINDOW->midi_editor->piano_roll_labels->px_per_note *
-        midi_note_widget->midi_note->val;
+        (127 - midi_note_widget->midi_note->val);
       allocation->width =
         ((midi_note_widget->midi_note->end_pos.bars - 1) * MW_RULER->px_per_bar +
         (midi_note_widget->midi_note->end_pos.beats - 1) * MW_RULER->px_per_beat +
@@ -229,7 +229,7 @@ drag_begin (GtkGestureDrag * gesture,
           ruler_widget_px_to_pos (
                                &pos,
                                start_x - SPACE_BEFORE_START);
-          int note = (start_y) /
+          int note = (MIDI_EDITOR->piano_roll_labels->total_px - start_y) /
             MIDI_EDITOR->piano_roll_labels->px_per_note;
 
           /* if inside a region */

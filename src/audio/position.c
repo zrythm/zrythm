@@ -44,7 +44,7 @@ position_init (Position * position)
 /**
  * Converts position bars/beats/quarter beats/ticks to frames
  */
-static int
+int
 position_to_frames (Position * position)
 {
   int frames = AUDIO_ENGINE->frames_per_tick * position->bars *

@@ -99,7 +99,7 @@ on_window_destroy(GtkWidget* widget,
                   gpointer   data)
 {
   LV2_Plugin * plugin = (LV2_Plugin *) data;
-  lv2_close_ui (plugin);
+  plugin->window = NULL;
 }
 
 const char*
@@ -1230,6 +1230,11 @@ lv2_open_ui(LV2_Plugin* plugin)
 int
 lv2_close_ui(LV2_Plugin* plugin)
 {
+  if (plugin->window)
+    {
+      g_idle_add ((GSourceFunc) gtk_window_close,
+                  plugin->window);
+    }
   plugin->window = NULL;
   return TRUE;
 }

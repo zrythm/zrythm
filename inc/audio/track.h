@@ -22,9 +22,15 @@
 #ifndef __AUDIO_TRACK_H__
 #define __AUDIO_TRACK_H__
 
+#include <jack/jack.h>
+
 typedef struct Region Region;
+typedef struct Position Position;
 typedef struct TrackWidget TrackWidget;
 typedef struct Channel Channel;
+typedef struct Midi_Events Midi_Events;
+typedef jack_nframes_t nframes_t;
+
 
 /**
  * The track struct.
@@ -38,5 +44,14 @@ typedef struct Track {
 
 Track *
 track_new (Channel * channel);
+
+/**
+ * NOTE: real time func
+ */
+void
+track_fill_midi_events (Track      * track,
+                        Position   * pos, ///< start position to check
+                        nframes_t  nframes, ///< n of frames from start pos
+                        Midi_Events * midi_events); ///< midi events to fill
 
 #endif // __AUDIO_TRACK_H__

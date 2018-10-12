@@ -73,6 +73,7 @@ typedef struct Channel
    */
   StereoPorts       * stereo_in;  ///< l & r input ports
   Port              * midi_in;   ///< MIDI in
+  Port              * piano_roll;  ///< MIDI piano roll input
 
   /* connecting to this is also optional
    * plugins are processed slot-by-slot, and if nothing is connected here
@@ -89,6 +90,7 @@ typedef struct Channel
   int               stop_thread;    ///< flag to stop the thread
   struct Channel *         output;     ///< output channel to route signal to
   Track             * track;   ///< the track associated with this channel
+  int               enabled; ///< enabled or not
   ChannelWidget     * widget; ///< the channel widget
 } Channel;
 

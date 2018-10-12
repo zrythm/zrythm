@@ -1,3 +1,6 @@
+# Add .d to Make's recognized suffixes.
+SUFFIXES += .d
+
 # -----------------------
 #  dirs/names/files
 #  ----------------------
@@ -7,7 +10,8 @@ else
 	BUILD_DIR = build/debug
 endif
 OBJ_DIR = $(BUILD_DIR)/obj
-BIN_NAME = zrythm
+DEP_DIR = $(BUILD_DIR)/dep
+BIN = zrythm
 SRC_DIR = src
 INC_DIR = inc
 DATA_DIR = data
@@ -100,23 +104,16 @@ LDFLAGS =	$(GTK_LIBS) \
 					-lpthread
 
 built_src = $(BUILD_DIR)/resources.c
+built_obj = $(built_src:%.c=$(BUILD_DIR/%.o))
+built_dep = $(built_obj:%.o=%.d))
 
-built_obj = $(foreach src_file,$(built_src),$(OBJ_DIR)/$(subst .c,.$(OBJEXT),$(subst $(BUILD_DIR)/,,$(src_file))))
+#Find all the C++ files in the src/ directory
+SRCS = $(shell find src/ -name "*.c")
+# All .o files go to build dir.
+OBJ = $(SRCS:%.c=$(BUILD_DIR)/%.o)
+# Gcc/Clang will create these .d files containing dependencies.
+DEP = $(OBJ:%.o=%.d)
 
-src = $(wildcard src/*.c) \
-			$(wildcard src/audio/*.c) \
-			$(wildcard src/gui/*.c) \
-			$(wildcard src/gui/widgets/*.c) \
-			$(wildcard src/plugins/*.c) \
-			$(wildcard src/plugins/lv2/*.c) \
-			$(wildcard src/plugins/lv2/zix/*.c) \
-			$(wildcard src/utils/*.c)
-
-obj = $(foreach src_file,$(src),$(OBJ_DIR)/$(subst .c,.$(OBJEXT),$(subst $(SRC_DIR)/,,$(src_file))))
-
-#dep = $(obj:.$(OBJEXT)=.d)  # one dependency file for each source
-
-# FIXME g settings related stuff
 gsettings_SCHEMAS = $(DATA_DIR)/online.alextee.zrythm.gschema.xml
 #EXTRA_DIST = $(gsettings_SCHEMAS)
 
@@ -133,7 +130,25 @@ appicon_DATA = resources/z.svg
 #  rules
 #  ----------------------------
 
-all: directories $(BUILD_DIR)/$(BIN_NAME)
+# Default target named after the binary.
+$(BIN) : $(BUILD_DIR)/$(BIN)
+
+# Actual target of the binary - depends on all .o files.
+$(BUILD_DIR)/$(BIN): $(OBJ) $(BUILD_DIR)/resources.o
+	# Create build directories - same structure as sources.
+	$(MKDIR_P) $(@D)
+	# Just link all the object files.
+	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
+
+# Include all dep files
+-include $(DEP)
+
+$(BUILD_DIR)/resources.o: $(BUILD_DIR)/resources.c
+	$(MKDIR_P) $(dir $@)
+	# The -MMD flags additionaly creates a .d file with
+	# the same name as the .o file.
+	$(CC) $(CFLAGS) -MMD -c $< -o $@ $(LDFLAGS)
+
 
 $(BUILD_DIR)/resources.c: $(SRC_DIR)/zrythm.gresource.xml \
 	resources/ui/*.ui \
@@ -143,52 +158,29 @@ $(BUILD_DIR)/resources.c: $(SRC_DIR)/zrythm.gresource.xml \
 	glib-compile-resources $(SRC_DIR)/zrythm.gresource.xml --target=$(BUILD_DIR)/resources.c \
 	--generate-source --sourcedir=resources
 
-#-include $(dep)   # include all dep files in the makefile
-
-# rule to generate a dep file by using the C preprocessor
-# (see man cpp for details on the -MM and -MT options)
-#$(OBJ_DIR)/%.d: %.c
-	#$(eval TMP_FILE := $(subst $(SRC_DIR)/,,$@))
-	#$(eval TMP_DIR := $(dir $(TMP_FILE)))
-	#$(MKDIR_P) $(TMP_DIR)
-	#@$(CPP) $(CFLAGS) $< -MM -MT $(subst $(SRC_DIR)/,,$(@:.d=.$(OBJEXT))) >$(TMP_FILE)
-
-$(BUILD_DIR)/$(BIN_NAME): $(obj) $(built_obj)
-	$(CC) -o $@ $^ $(LDFLAGS)
-
-$(OBJ_DIR)/%.$(OBJEXT): $(SRC_DIR)/%.c
+# Build target for every single object file.
+# The potential dependency on header files is covered
+# by calling `-include $(DEP)`.
+$(BUILD_DIR)/%.$(OBJEXT): %.c
 	$(MKDIR_P) $(dir $@)
-	$(CC) -c -o $@ $^ $(LDFLAGS) $(CFLAGS)
-
-# built sources
-$(OBJ_DIR)/%.$(OBJEXT): $(BUILD_DIR)/%.c
-	$(MKDIR_P) $(dir $@)
-	$(CC) -c -o $@ $^ $(LDFLAGS) $(CFLAGS)
-	rm -f @^
-
-.PHONY: directories
-
-
-directories: ${BUILD_DIR} $(OBJ_DIR)
-
-${BUILD_DIR}:
-	${MKDIR_P} ${BUILD_DIR}
-
-$(OBJ_DIR):
-	$(MKDIR_P) $(OBJ_DIR)
+	# The -MMD flags additionaly creates a .d file with
+	# the same name as the .o file.
+	$(CC) $(CFLAGS) -MMD -c $< -o $@ $(LDFLAGS)
 
 .PHONY: clean
 clean:
-	rm -rf $(BUILD_DIR)/*
+	#rm -rf $(BUILD_DIR)/*
+	# This should remove all generated files.
+	-rm $(BUILD_DIR)/$(BIN) $(OBJ) $(DEP)
 
 .PHONY: install
-install: $(BUILD_DIR)/$(BIN_NAME) install-appicon-data install-desktop-data install-gschemas
-	mkdir -p $(DESTDIR)$(bindir)
-	$(INSTALL) $< $(DESTDIR)$(bindir)/$(BIN_NAME)
+install: $(BUILD_DIR)/$(BIN) install-appicon-data install-desktop-data install-gschemas
+	$(MKDIR_P) $(DESTDIR)$(bindir)
+	$(INSTALL) $< $(DESTDIR)$(bindir)/$(BIN)
 
 .PHONY: uninstall
 uninstall:
-	rm -f $(DESTDIR)$(PREFIX)/bin/$(BIN_NAME)
+	rm -f $(DESTDIR)$(bindir)/$(BIN)
 
 .PHONY: install-appicon-data
 install-appicon-data: $(appicon_DATA)

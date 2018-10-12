@@ -57,6 +57,7 @@ port_new (nframes_t nframes, char * label)
 {
   Port * port = calloc (1, sizeof (Port));
 
+  /* FIXME remove the storing in audio engine */
   port->id = AUDIO_ENGINE->num_ports;
   AUDIO_ENGINE->ports[AUDIO_ENGINE->num_ports++] = port;
   port->num_dests = 0;
@@ -325,7 +326,9 @@ port_clear_buffer (Port * port)
 {
   if (port->type == TYPE_AUDIO)
     {
-      memset (port->buf, 0, port->nframes * sizeof (sample_t));
+      /* FIXME sometimes this fails */
+      if (port->buf)
+        memset (port->buf, 0, port->nframes * sizeof (sample_t));
     }
   else if (port->type == TYPE_EVENT)
     {
