@@ -38,6 +38,8 @@
 
 #include <jack/midiport.h>
 
+typedef struct Midi_Events Midi_Events;
+
 /**
  * Container for passing midi events through ports.
  * This should be passed in the data field of MIDI Ports
@@ -46,6 +48,8 @@ typedef struct Midi_Events
 {
   int        num_events;       ///< number of events
   jack_midi_event_t     jack_midi_events[40];       ///< jack midi events
+  Midi_Events           * queue; ///< for queing events. engine will copy them to the
+                              ///< original MIDI events when ready to be processed
 } Midi_Events;
 
 /**
@@ -59,5 +63,11 @@ midi_events_append (Midi_Events * src, Midi_Events * dest);
  */
 void
 midi_events_clear (Midi_Events * midi_events);
+
+/**
+ * Copies the queue contents to the original struct
+ */
+void
+midi_events_dequeue (Midi_Events * midi_events);
 
 #endif

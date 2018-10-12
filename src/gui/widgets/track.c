@@ -24,6 +24,7 @@
 
 #include "audio/track.h"
 #include "audio/region.h"
+#include "gui/widgets/color_area.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 
@@ -51,6 +52,16 @@ track_widget_new (Track * track)
                             TRACK_WIDGET_TYPE,
                             NULL);
   self->track = track;
+
+  self->color = color_area_widget_new (&track->channel->color,
+                                       5,
+                                       -1);
+  gtk_box_pack_start (self->color_box,
+                      GTK_WIDGET (self->color),
+                      1,
+                      1,
+                      0);
+
   gtk_label_set_text (self->track_name, track->channel->name);
 
   GtkWidget * image = gtk_image_new_from_resource (
@@ -98,8 +109,10 @@ static void
 track_widget_class_init (TrackWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
-                                               "/online/alextee/zrythm/ui/instrument_track.ui");
+                                               "/online/alextee/zrythm/ui/track.ui");
 
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                                TrackWidget, color_box);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 TrackWidget, track_name);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),

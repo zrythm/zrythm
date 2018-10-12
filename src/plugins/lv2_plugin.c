@@ -1732,13 +1732,16 @@ lv2_plugin_process (LV2_Plugin * lv2_plugin, nframes_t nframes)
                   lv2_plugin->instance, p,
                   port->buf);
 #ifdef HAVE_JACK_METADATA
-      } else if (port->type == TYPE_CV && lv2_port->sys_port) {
+      }
+    else if (port->type == TYPE_CV && lv2_port->sys_port)
+      {
               /* Connect plugin port directly to Jack port buffer */
               lilv_instance_connect_port(
                       lv2_plugin->instance, p,
                       jack_port_get_buffer(lv2_port->sys_port, nframes));
 #endif
-      } else if (port->type == TYPE_EVENT && port->flow == FLOW_INPUT) {
+      }
+    else if (port->type == TYPE_EVENT && port->flow == FLOW_INPUT) {
               lv2_evbuf_reset(lv2_port->evbuf, true);
 
               /* Write transport change event if applicable */
@@ -1764,8 +1767,8 @@ lv2_plugin_process (LV2_Plugin * lv2_plugin, nframes_t nframes)
 
               if (port->midi_events.num_events > 0)
                 {
-                  /*g_message ("Lv2 plugin port midi events %d",*/
-                             /*port->midi_events.num_events);*/
+                  g_message ("Lv2 plugin port midi events %d",
+                             port->midi_events.num_events);
                   /* Write Jack MIDI input */
                   for (uint32_t i = 0; i < port->midi_events.num_events; ++i)
                     {

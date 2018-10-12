@@ -19,6 +19,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/engine.h"
+#include "audio/midi.h"
+#include "audio/port.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_editor.h"
 #include "gui/widgets/piano_roll_labels.h"
@@ -59,14 +62,13 @@ draw_cb (PianoRollNotesWidget * self, cairo_t *cr, gpointer data)
 
   gtk_render_background (context, cr, 0, 0, LABELS_WIDGET->total_px, height);
 
-  /* draw top line */
-
-
   /* draw note notes with bot lines */
   for (int i = 0; i < 128; i++)
     {
       int top_line_px = LABELS_WIDGET->total_px - LABELS_WIDGET->px_per_note * (i + 1);
-      if (notes [i % 12] == 1)
+      int black_note = notes [i % 12] == 1;
+
+      if (black_note)
         {
           cairo_set_source_rgb (cr, 0, 0, 0);
         }
@@ -77,6 +79,18 @@ draw_cb (PianoRollNotesWidget * self, cairo_t *cr, gpointer data)
       cairo_rectangle (cr, 0, top_line_px,
                        width, LABELS_WIDGET->px_per_note);
       cairo_fill (cr);
+
+      /* add shade if currently pressed note */
+      if (i == self->note)
+        {
+          if (black_note)
+            cairo_set_source_rgba (cr, 1, 1, 1, 0.1);
+          else
+            cairo_set_source_rgba (cr, 0, 0, 0, 0.3);
+          cairo_rectangle (cr, 0, top_line_px,
+                           width, LABELS_WIDGET->px_per_note);
+          cairo_fill (cr);
+        }
     }
 
   /* draw dividing lines */
@@ -208,7 +222,7 @@ draw_cb (PianoRollNotesWidget * self, cairo_t *cr, gpointer data)
  return FALSE;
 }
 
-static gboolean
+static void
 multipress_pressed (GtkGestureMultiPress *gesture,
                gint                  n_press,
                gdouble               x,
@@ -223,6 +237,28 @@ drag_begin (GtkGestureDrag * gesture,
                gdouble         start_y,
                gpointer        user_data)
 {
+  PianoRollNotesWidget * self = (PianoRollNotesWidget *) user_data;
+#define MANUAL_PRESS_QUEUE AUDIO_ENGINE->midi_editor_manual_press->midi_events.queue
+
+  /* add midi event to engine midi_editor_manual_press port */
+
+  jack_midi_event_t * ev = &MANUAL_PRESS_QUEUE->jack_midi_events[0];
+  ev->time = 0;
+  ev->size = 3;
+  start_y = MIDI_EDITOR->piano_roll_labels->total_px - start_y;
+  self->note = start_y / MIDI_EDITOR->piano_roll_labels->px_per_note;
+  int vel = 90;
+  if (!ev->buffer)
+    ev->buffer = calloc (3, sizeof (jack_midi_data_t));
+  ev->buffer[0] = 0x90; /* status byte, 0x90 is note on */
+  ev->buffer[1] = self->note; /* note number 0-127 */
+  ev->buffer[2] = vel; /* velocity 0-127 */
+  MANUAL_PRESS_QUEUE->num_events = 1;
+
+  self->start_y = start_y;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
+
+#undef MANUAL_PRESS_QUEUE
 }
 
 static void
@@ -231,6 +267,30 @@ drag_update (GtkGestureDrag * gesture,
                gdouble         offset_y,
                gpointer        user_data)
 {
+  PianoRollNotesWidget * self = (PianoRollNotesWidget *) user_data;
+#define MANUAL_PRESS_QUEUE AUDIO_ENGINE->midi_editor_manual_press->midi_events.queue
+
+  jack_midi_event_t * ev = &MANUAL_PRESS_QUEUE->jack_midi_events[0];
+  int prev_note = self->note;
+  self->note = (self->start_y - offset_y) / MIDI_EDITOR->piano_roll_labels->px_per_note;
+  int vel = 90;
+
+  /* if note changed, create new event */
+  if (prev_note != self->note)
+    {
+      ev->time = 0;
+      ev->size = 3;
+      if (!ev->buffer)
+        ev->buffer = calloc (3, sizeof (jack_midi_data_t));
+      ev->buffer[0] = 0x90; /* status byte, 0x90 is note on */
+      ev->buffer[1] = self->note; /* note number 0-127 */
+      ev->buffer[2] = vel; /* velocity 0-127 */
+      MANUAL_PRESS_QUEUE->num_events = 1;
+    }
+
+  gtk_widget_queue_draw (GTK_WIDGET (self));
+
+#undef MANUAL_PRESS_QUEUE
 }
 
 static void
@@ -239,6 +299,25 @@ drag_end (GtkGestureDrag *gesture,
                gdouble         offset_y,
                gpointer        user_data)
 {
+  PianoRollNotesWidget * self = (PianoRollNotesWidget *) user_data;
+#define MANUAL_PRESS_QUEUE AUDIO_ENGINE->midi_editor_manual_press->midi_events.queue
+
+  /* add midi event to engine midi_editor_manual_press port */
+  MANUAL_PRESS_QUEUE->num_events = 1;
+
+  jack_midi_event_t * ev = &MANUAL_PRESS_QUEUE->jack_midi_events[0];
+  ev->time = 0;
+  ev->size = 3;
+  if (!ev->buffer)
+    ev->buffer = calloc (3, sizeof (jack_midi_data_t));
+  ev->buffer[0] = 0x80; /* status byte, 0x80 is note off */
+
+
+  self->start_y = 0;
+  self->note = -1;
+
+  gtk_widget_queue_draw (GTK_WIDGET (self));
+#undef MANUAL_PRESS_QUEUE
 }
 
 PianoRollNotesWidget *

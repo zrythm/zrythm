@@ -193,6 +193,8 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
                      /*MIDI_IN_EVENT(i).time, *(MIDI_IN_EVENT(i).buffer));*/
         }
     }
+  /* get MIDI events from other sources */
+  midi_events_dequeue (&AUDIO_ENGINE->midi_editor_manual_press->midi_events);
 
   /* set all to unprocessed for this cycle */
   for (int i = 0; i < MIXER->num_channels; i++)
@@ -314,6 +316,7 @@ init_audio_engine()
           engine->client, JACK_DEFAULT_MIDI_TYPE);
 #endif
 
+
     /* set jack callbacks */
     jack_set_process_callback (engine->client, &jack_process_cb, &engine->run);
     jack_set_buffer_size_callback(engine->client, &jack_buffer_size_cb, NULL);
@@ -371,15 +374,27 @@ init_audio_engine()
                                        JACK_DEFAULT_MIDI_TYPE,
                                        JackPortIsInput, 0));
 
+    Port * midi_editor_manual_press = port_new_with_type (
+          engine->block_length,
+          TYPE_EVENT,
+          FLOW_INPUT,
+          "MIDI Editor Manual Press");
+
+
     stereo_in_l->owner_jack = 1;
     stereo_in_r->owner_jack = 1;
     stereo_out_l->owner_jack = 1;
     stereo_out_r->owner_jack = 1;
     midi_in->owner_jack = 1;
+    midi_editor_manual_press->owner_jack = 0;
 
     engine->stereo_in  = stereo_ports_new (stereo_in_l, stereo_in_r);
     engine->stereo_out = stereo_ports_new (stereo_out_l, stereo_out_r);
     engine->midi_in    = midi_in;
+    engine->midi_editor_manual_press = midi_editor_manual_press;
+
+    /* init MIDI queue for manual presses */
+    engine->midi_editor_manual_press->midi_events.queue = calloc (1, sizeof (Midi_Events));
 
     if (!engine->stereo_in->l->data || !engine->stereo_in->r->data ||
         !engine->stereo_out->l->data || !engine->stereo_out->r->data ||

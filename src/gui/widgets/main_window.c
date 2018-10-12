@@ -31,7 +31,6 @@
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor.h"
 #include "gui/widgets/mixer.h"
-#include "gui/widgets/instrument_timeline_view.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline.h"
 #include "gui/widgets/timeline_bg.h"

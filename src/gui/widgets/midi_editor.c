@@ -36,19 +36,18 @@ G_DEFINE_TYPE (MidiEditorWidget, midi_editor_widget, GTK_TYPE_BOX)
  * Sets up the MIDI editor for the given region.
  */
 void
-midi_editor_set_region (Region * region)
+midi_editor_set_channel (Channel * channel)
 {
   gtk_notebook_set_current_page (MAIN_WINDOW->bot_notebook, 0);
 
-  char * label = g_strdup_printf ("%s - %s",
-                                       region->track->channel->name,
-                                       region->name);
+  char * label = g_strdup_printf ("%s",
+                                  channel->name);
   gtk_label_set_text (MIDI_EDITOR->midi_name_label,
                       label);
   g_free (label);
 
   color_area_widget_set_color (MIDI_EDITOR->midi_track_color,
-                               &region->track->channel->color);
+                               &channel->color);
 }
 
 /**

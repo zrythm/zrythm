@@ -38,6 +38,8 @@ typedef struct PianoRollNotesWidget
   GtkDrawingArea          parent_instance;
   GtkGestureDrag          * drag;
   GtkGestureMultiPress    * multipress;
+  int                     start_y; ///< for dragging
+  int                     note; ///< current note
 } PianoRollNotesWidget;
 
 typedef struct PianoRollNotesWidgetClass

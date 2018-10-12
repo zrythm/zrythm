@@ -116,6 +116,15 @@ plugin_instantiate (Plugin * plugin ///< the plugin
 void
 plugin_process (Plugin * plugin, nframes_t nframes)
 {
+  /* if has MIDI input port */
+  if (plugin->descr->num_midi_ins > 0)
+    {
+      /* if recording, write MIDI events to the region TODO */
+
+        /* if there is a midi note in this buffer range TODO */
+          /* add midi events to input port */
+    }
+
   switch (plugin->descr->protocol)
     {
     case PROT_LV2:

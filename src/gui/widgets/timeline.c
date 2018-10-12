@@ -140,9 +140,9 @@ multipress_pressed (GtkGestureMultiPress *gesture,
 
   /* open MIDI editor if double clicked on a region */
   RegionWidget * region_widget = get_hit_region (x, y);
-  if (region_widget && n_press == 2)
+  if (region_widget && n_press > 0)
     {
-      midi_editor_set_region (region_widget->region);
+      selections_set_channel (region_widget->region->track->channel);
     }
 }
 
@@ -236,7 +236,10 @@ drag_end (GtkGestureDrag *gesture,
   self->start_x = 0;
   self->last_offset_x = 0;
   self->action = TIMELINE_WIDGET_ACTION_NONE;
-  ui_set_cursor (GTK_WIDGET (self->region->widget), "default");
+  if (self->region)
+    {
+      ui_set_cursor (GTK_WIDGET (self->region->widget), "default");
+    }
   self->region = NULL;
 }
 

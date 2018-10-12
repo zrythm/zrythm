@@ -416,8 +416,8 @@ channel_add_plugin (Channel * channel,    ///< the channel
               if (port->type == TYPE_EVENT &&
                   port->flow == FLOW_INPUT)
                 {
-                  g_message ("%d MIDI In port: %s", i, port->label);
-                  port_connect (AUDIO_ENGINE->midi_in, port);
+                  /*if (channel->recording)*/
+                    port_connect (AUDIO_ENGINE->midi_in, port);
                 }
             }
         }
@@ -528,5 +528,100 @@ channel_get_index (Channel * channel)
         return i;
     }
   g_error ("Channel index for %s not found", channel->name);
+}
+
+/**
+ * Convenience method to get the first active plugin in the channel
+ */
+Plugin *
+channel_get_first_plugin (Channel * channel)
+{
+  /* find first plugin */
+  Plugin * plugin = NULL;
+  for (int i = 0; i < MAX_PLUGINS; i++)
+    {
+      if (channel->strip[i])
+        {
+          plugin = channel->strip[i];
+          break;
+        }
+    }
+  return plugin;
+}
+
+/**
+ * Toggles the recording state of the channel.
+ *
+ * To be called when the record buttin is toggled.
+ * TODO actually call this.
+ */
+void
+channel_toggle_recording (Channel * channel)
+{
+  channel->recording = channel->recording == 0 ? 1 : 0;
+
+  /* find first plugin */
+  Plugin * plugin = channel_get_first_plugin (channel);
+
+  if (plugin)
+    {
+      if (channel->type == CT_AUDIO)
+        {
+          /* TODO connect L and R audio ports for recording */
+        }
+      else if (channel->type == CT_MIDI)
+        {
+          /* Connect/Disconnect MIDI port to the plugin */
+          for (int i = 0; i < plugin->num_in_ports; i++)
+            {
+              Port * port = plugin->in_ports[i];
+              if (port->type == TYPE_EVENT &&
+                  port->flow == FLOW_INPUT)
+                {
+                  g_message ("%d MIDI In port: %s", i, port->label);
+                  if (channel->recording)
+                    port_connect (AUDIO_ENGINE->midi_in, port);
+                  else
+                    port_disconnect (AUDIO_ENGINE->midi_in, port);
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Connects or disconnects the MIDI editor key press port to the channel's
+ * first plugin
+ */
+void
+channel_reattach_midi_editor_manual_press_port (Channel * channel,
+                                                int     connect)
+{
+  /* find first plugin */
+  Plugin * plugin = channel_get_first_plugin (channel);
+
+  if (plugin)
+    {
+      if (channel->type == CT_MIDI)
+        {
+          /* Connect/Disconnect MIDI editor manual press port to the plugin */
+          for (int i = 0; i < plugin->num_in_ports; i++)
+            {
+              Port * port = plugin->in_ports[i];
+              if (port->type == TYPE_EVENT &&
+                  port->flow == FLOW_INPUT)
+                {
+                  if (connect)
+                    {
+                      port_connect (AUDIO_ENGINE->midi_editor_manual_press, port);
+                    }
+                  else
+                    {
+                    port_disconnect (AUDIO_ENGINE->midi_editor_manual_press, port);
+                    }
+                }
+            }
+        }
+    }
 }
 

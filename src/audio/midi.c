@@ -52,3 +52,18 @@ midi_events_clear (Midi_Events * midi_events)
 {
   midi_events->num_events = 0;
 }
+
+/**
+ * Copies the queue contents to the original struct
+ */
+void
+midi_events_dequeue (Midi_Events * midi_events)
+{
+  midi_events->num_events = midi_events->queue->num_events;
+  for (int i = 0; i < midi_events->num_events; i++)
+    {
+      midi_events->jack_midi_events[i] = midi_events->queue->jack_midi_events[i];
+    }
+
+  midi_events->queue->num_events = 0;
+}

@@ -164,4 +164,18 @@ channel_get_last_active_slot_index (Channel * channel);
 int
 channel_get_index (Channel * channel);
 
+/**
+ * Connects or disconnects the MIDI editor key press port to the channel's
+ * first plugin
+ */
+void
+channel_reattach_midi_editor_manual_press_port (Channel * channel,
+                                                int     connect);
+
+/**
+ * Convenience method to get the first active plugin in the channel
+ */
+Plugin *
+channel_get_first_plugin (Channel * channel);
+
 #endif

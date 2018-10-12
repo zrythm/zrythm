@@ -33,9 +33,13 @@
 #define IS_TRACK_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), TRACK_WIDGET_TYPE))
 #define TRACK_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), TRACK_WIDGET_TYPE, TrackWidgetClass))
 
+typedef struct ColorAreaWidget ColorAreaWidget;
+
 typedef struct TrackWidget
 {
   GtkGrid                 parent_instance;
+  GtkBox                  * color_box;
+  ColorAreaWidget         * color;
   GtkLabel                * track_name;
   GtkButton               * record;
   GtkButton               * solo;

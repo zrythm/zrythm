@@ -26,8 +26,14 @@ typedef struct Region Region;
 typedef struct Channel Channel;
 typedef struct MidiNote MidiNote;
 
+#define SELECTIONS zrythm_system->selections
+
 /**
  * Stores current Selections.
+ *
+ * For controls that only use 1 selection, the last element should be used, and these
+ * arrays should be filled in order of events, so the last element is the last one
+ * selected
  */
 typedef struct Selections
 {
@@ -44,6 +50,12 @@ typedef struct Selections
  */
 int
 selections_is_channel_selected (Channel * channel);
+
+/**
+ * Sets selection and notifies insterested parties.
+ */
+void
+selections_set_channel (Channel * channel);
 
 #endif /* __UTILS_SELECTIONS_H__ */
 

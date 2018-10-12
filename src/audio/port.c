@@ -323,5 +323,12 @@ port_print_connections_all ()
 void
 port_clear_buffer (Port * port)
 {
-  memset (port->buf, 0, port->nframes * sizeof (sample_t));
+  if (port->type == TYPE_AUDIO)
+    {
+      memset (port->buf, 0, port->nframes * sizeof (sample_t));
+    }
+  else if (port->type == TYPE_EVENT)
+    {
+      port->midi_events.num_events = 0;
+    }
 }
