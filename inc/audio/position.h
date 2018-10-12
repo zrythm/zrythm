@@ -81,4 +81,15 @@ position_add_frames (Position * position,
 void
 position_updated (Position * position);
 
+/**
+ * Compares 2 positions.
+ *
+ * negative = p1 is earlier
+ * 0 = equal
+ * positive = p2 is earlier
+ */
+int
+position_compare (Position * p1,
+                  Position * p2);
+
 #endif

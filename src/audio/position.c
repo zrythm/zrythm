@@ -258,3 +258,28 @@ position_updated (Position * position)
         }
     }
   }
+
+/**
+ * Compares 2 positions.
+ *
+ * negative = p1 < p2
+ * 0 = equal
+ * positive = p1 > p2
+ */
+int
+position_compare (Position * p1,
+                  Position * p2)
+{
+  if (p1->bars == p2->bars &&
+      p1->beats == p2->beats &&
+      p1->quarter_beats == p2->quarter_beats &&
+      p1->ticks == p2->ticks)
+    return 0;
+  else if ((p1->bars < p2->bars) ||
+           (p1->bars == p2->bars && p1->beats < p2->beats) ||
+           (p1->bars == p2->bars && p1->beats == p2->beats && p1->quarter_beats < p2->quarter_beats) ||
+           (p1->bars == p2->bars && p1->beats == p2->beats && p1->quarter_beats == p2->quarter_beats && p1->ticks < p2->ticks))
+    return -1;
+  else
+    return 1;
+}

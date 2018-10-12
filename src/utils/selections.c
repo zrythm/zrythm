@@ -46,7 +46,6 @@ selections_set_channel (Channel * channel)
     }
   SELECTIONS.channels[0] = channel;
   SELECTIONS.num_channels = 1;
-  midi_editor_set_channel (channel);
   channel_reattach_midi_editor_manual_press_port (
                   channel, 1);
 }

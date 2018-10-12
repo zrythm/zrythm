@@ -28,6 +28,7 @@
 #include "audio/track.h"
 #include "audio/transport.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline.h"
@@ -128,7 +129,7 @@ get_hit_region (double x, double y)
 }
 
 
-static gboolean
+static void
 multipress_pressed (GtkGestureMultiPress *gesture,
                gint                  n_press,
                gdouble               x,
@@ -142,7 +143,8 @@ multipress_pressed (GtkGestureMultiPress *gesture,
   RegionWidget * region_widget = get_hit_region (x, y);
   if (region_widget && n_press > 0)
     {
-      selections_set_channel (region_widget->region->track->channel);
+      midi_arranger_widget_set_channel(
+                  region_widget->region->track->channel);
     }
 }
 
@@ -166,13 +168,13 @@ drag_begin (GtkGestureDrag * gesture,
           g_warning ("hitting region but region hover state is none, should be fixed");
           break;
         case REGION_HOVER_STATE_EDGE_L:
-          self->action = TIMELINE_WIDGET_ACTION_RESIZING_REGION_L;
+          self->action = TA_RESIZING_REGION_L;
           break;
         case REGION_HOVER_STATE_EDGE_R:
-          self->action = TIMELINE_WIDGET_ACTION_RESIZING_REGION_R;
+          self->action = TA_RESIZING_REGION_R;
           break;
         case REGION_HOVER_STATE_MIDDLE:
-          self->action = TIMELINE_WIDGET_ACTION_MOVING_REGION;
+          self->action = TA_MOVING_REGION;
           ui_set_cursor (GTK_WIDGET (region_widget), "grabbing");
           break;
         }
@@ -187,25 +189,23 @@ drag_update (GtkGestureDrag * gesture,
 {
   TimelineWidget * self = TIMELINE_WIDGET (user_data);
 
-  if (self->action == TIMELINE_WIDGET_ACTION_RESIZING_REGION_L)
+  if (self->action == TA_RESIZING_REGION_L)
     {
       Position pos;
       ruler_widget_px_to_pos (&pos,
                  (self->start_x + offset_x) - SPACE_BEFORE_START);
       region_set_start_pos (self->region,
                             &pos);
-      gtk_widget_queue_allocate (GTK_WIDGET (self));
     }
-  else if (self->action == TIMELINE_WIDGET_ACTION_RESIZING_REGION_R)
+  else if (self->action == TA_RESIZING_REGION_R)
     {
       Position pos;
       ruler_widget_px_to_pos (&pos,
                  (self->start_x + offset_x) - SPACE_BEFORE_START);
       region_set_end_pos (self->region,
                             &pos);
-      gtk_widget_queue_allocate (GTK_WIDGET (self));
     }
-  else if (self->action == TIMELINE_WIDGET_ACTION_MOVING_REGION)
+  else if (self->action == TA_MOVING_REGION)
     {
       Position pos;
 
@@ -221,9 +221,10 @@ drag_update (GtkGestureDrag * gesture,
       region_set_end_pos (self->region,
                           &pos);
 
-      gtk_widget_queue_allocate (GTK_WIDGET (self));
     }
+  gtk_widget_queue_allocate(GTK_WIDGET (self));
   self->last_offset_x = offset_x;
+  gtk_widget_queue_allocate (GTK_WIDGET (MIDI_EDITOR->midi_arranger));
 }
 
 static void
@@ -235,7 +236,7 @@ drag_end (GtkGestureDrag *gesture,
   TimelineWidget * self = (TimelineWidget *) user_data;
   self->start_x = 0;
   self->last_offset_x = 0;
-  self->action = TIMELINE_WIDGET_ACTION_NONE;
+  self->action = TA_NONE;
   if (self->region)
     {
       ui_set_cursor (GTK_WIDGET (self->region->widget), "default");

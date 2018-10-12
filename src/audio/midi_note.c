@@ -33,11 +33,12 @@
 MidiNote *
 midi_note_new (Region * region,
             Position * start_pos,
-            Position * end_pos)
+            Position * end_pos,
+            int      val,
+            int      vel)
 {
   MidiNote * midi_note = calloc (1, sizeof (MidiNote));
 
-  g_message ("creating midi_note");
   midi_note->start_pos.bars = start_pos->bars;
   midi_note->start_pos.beats = start_pos->beats;
   midi_note->start_pos.quarter_beats = start_pos->quarter_beats;
@@ -47,10 +48,19 @@ midi_note_new (Region * region,
   midi_note->end_pos.quarter_beats = end_pos->quarter_beats;
   midi_note->end_pos.ticks = end_pos->ticks;
   midi_note->region = region;
-  midi_note->vel = DEFAULT_VEL;
+  midi_note->val = val;
+  midi_note->vel = vel > -1 ? vel : DEFAULT_VEL;
   midi_note->widget = midi_note_widget_new (midi_note);
+  g_object_ref (midi_note->widget);
 
   return midi_note;
+}
+
+void
+midi_note_delete (MidiNote * midi_note)
+{
+  g_object_unref (midi_note->widget);
+  free (midi_note);
 }
 
 /**

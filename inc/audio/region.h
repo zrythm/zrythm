@@ -38,7 +38,7 @@ typedef struct Region
   Track        * track; ///< owner track
   char         * name; ///< region name
   MidiNote     * midi_notes[200]; /// midi notes (if MIDI region)
-  int          * num_midi_notes;
+  int          num_midi_notes;
 } Region;
 
 Region *
@@ -60,4 +60,18 @@ void
 region_set_end_pos (Region * region,
                     Position * end_pos);
 
-#endif // __AUDIO_POSITION_H__
+/**
+ * Returns the region at the given position in the given channel
+ */
+Region *
+region_at_position (Track    * track, ///< the track to look in
+                    Position * pos); ///< the position
+
+/**
+ * Adds midi note to region
+ */
+void
+region_add_midi_note (Region * region,
+                      MidiNote * midi_note);
+
+#endif // __AUDIO_REGION_H__

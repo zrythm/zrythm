@@ -121,11 +121,11 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
         {
           self->hover_state = MIDI_NOTE_HOVER_STATE_MIDDLE;
           if (MAIN_WINDOW->midi_editor->midi_arranger->action !=
-              MIDI_ARRANGER_WIDGET_ACTION_MOVING_NOTE &&
+              MAA_MOVING_NOTE &&
               MAIN_WINDOW->midi_editor->midi_arranger->action !=
-              MIDI_ARRANGER_WIDGET_ACTION_RESIZING_NOTE_L &&
+              MAA_RESIZING_NOTE_L &&
               MAIN_WINDOW->midi_editor->midi_arranger->action !=
-              MIDI_ARRANGER_WIDGET_ACTION_RESIZING_NOTE_R)
+              MAA_RESIZING_NOTE_R)
             {
               ui_set_cursor (widget, "default");
             }
@@ -135,11 +135,11 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
     {
       self->hover_state = MIDI_NOTE_HOVER_STATE_NONE;
       if (MAIN_WINDOW->midi_editor->midi_arranger->action !=
-          MIDI_ARRANGER_WIDGET_ACTION_MOVING_NOTE &&
+          MAA_MOVING_NOTE &&
           MAIN_WINDOW->midi_editor->midi_arranger->action !=
-          MIDI_ARRANGER_WIDGET_ACTION_RESIZING_NOTE_L &&
+          MAA_RESIZING_NOTE_L &&
           MAIN_WINDOW->midi_editor->midi_arranger->action !=
-          MIDI_ARRANGER_WIDGET_ACTION_RESIZING_NOTE_R)
+          MAA_RESIZING_NOTE_R)
         {
           ui_set_cursor (widget, "default");
         }

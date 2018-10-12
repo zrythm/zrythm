@@ -27,6 +27,7 @@
 #include "audio/mixer.h"
 #include "audio/track.h"
 #include "audio/transport.h"
+#include "gui/widgets/color_area.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_arranger_bg.h"
@@ -44,6 +45,50 @@ G_DEFINE_TYPE (MidiArrangerWidget, midi_arranger_widget, GTK_TYPE_OVERLAY)
 
 #define MW_RULER MAIN_WINDOW->ruler
 
+/**
+ * Sets up the MIDI editor for the given region.
+ */
+void
+midi_arranger_widget_set_channel (Channel * channel)
+{
+  /*if (SELECTIONS.num_channels > 0 &&*/
+      /*SELECTIONS.channels[SELECTIONS.num_channels - 1] == channel)*/
+
+  selections_set_channel (channel);
+
+  gtk_notebook_set_current_page (MAIN_WINDOW->bot_notebook, 0);
+
+  char * label = g_strdup_printf ("%s",
+                                  channel->name);
+  gtk_label_set_text (MIDI_EDITOR->midi_name_label,
+                      label);
+  g_free (label);
+
+  color_area_widget_set_color (MIDI_EDITOR->midi_track_color,
+                               &channel->color);
+
+  /* remove all previous children and add new */
+  GList *children, *iter;
+  children = gtk_container_get_children(GTK_CONTAINER(MIDI_EDITOR->midi_arranger));
+  for(iter = children; iter != NULL; iter = g_list_next(iter))
+    {
+      if (iter->data !=  MIDI_EDITOR->midi_arranger->bg)
+        gtk_container_remove (GTK_CONTAINER (MIDI_EDITOR->midi_arranger),
+                              GTK_WIDGET (iter->data));
+    }
+  g_list_free(children);
+  for (int i = 0; i < channel->track->num_regions; i++)
+    {
+      Region * region = channel->track->regions[i];
+      for (int j = 0; j < region->num_midi_notes; j++)
+        {
+          gtk_overlay_add_overlay (GTK_OVERLAY (MIDI_EDITOR->midi_arranger),
+                                   GTK_WIDGET (region->midi_notes[j]->widget));
+        }
+    }
+  gtk_widget_queue_allocate (GTK_WIDGET (MIDI_EDITOR->midi_arranger));
+  gtk_widget_show_all (GTK_WIDGET (MIDI_EDITOR->midi_arranger));
+}
 
 /**
  * Gets called to set the position/size of each overlayed widget.
@@ -129,6 +174,7 @@ multipress_pressed (GtkGestureMultiPress *gesture,
 {
   MidiArrangerWidget * self = (MidiArrangerWidget *) user_data;
   gtk_widget_grab_focus (GTK_WIDGET (self));
+  self->n_press = n_press;
 
   /* open MIDI editor if double clicked on a region */
   MidiNoteWidget * midi_note_widget = get_hit_midi_note_widget (x, y);
@@ -159,15 +205,51 @@ drag_begin (GtkGestureDrag * gesture,
           g_warning ("hitting midi note but midi note hover state is none, should be fixed");
           break;
         case MIDI_NOTE_HOVER_STATE_EDGE_L:
-          self->action = MIDI_ARRANGER_WIDGET_ACTION_RESIZING_NOTE_L;
+          self->action = MAA_RESIZING_NOTE_L;
           break;
         case MIDI_NOTE_HOVER_STATE_EDGE_R:
-          self->action = MIDI_ARRANGER_WIDGET_ACTION_RESIZING_NOTE_R;
+          self->action = MAA_RESIZING_NOTE_R;
           break;
         case MIDI_NOTE_HOVER_STATE_MIDDLE:
-          self->action = MIDI_ARRANGER_WIDGET_ACTION_MOVING_NOTE;
+          self->action = MAA_MOVING_NOTE;
           ui_set_cursor (GTK_WIDGET (midi_note_widget), "grabbing");
           break;
+        }
+    }
+  else /* no note hit */
+    {
+      if (self->n_press == 1)
+        {
+          /* area selection */
+
+        }
+      else if (self->n_press == 2)
+        {
+          Position pos;
+          ruler_widget_px_to_pos (
+                               &pos,
+                               start_x - SPACE_BEFORE_START);
+          int note = (start_y) /
+            MIDI_EDITOR->piano_roll_labels->px_per_note;
+
+          /* if inside a region */
+          Region * region = region_at_position (
+                      SELECTIONS.channels[SELECTIONS.num_channels - 1]->track,
+                      &pos);
+          if (region)
+            {
+              self->midi_note = midi_note_new (region,
+                                               &pos,
+                                               &pos,
+                                               note,
+                                               -1);
+              region_add_midi_note (region,
+                                    self->midi_note);
+              gtk_overlay_add_overlay (GTK_OVERLAY (self),
+                                       GTK_WIDGET (self->midi_note->widget));
+              gtk_widget_queue_allocate (GTK_WIDGET (self));
+              self->action = MAA_RESIZING_NOTE_R;
+            }
         }
     }
 }
@@ -180,25 +262,23 @@ drag_update (GtkGestureDrag * gesture,
 {
   MidiArrangerWidget * self = MIDI_ARRANGER_WIDGET (user_data);
 
-  if (self->action == MIDI_ARRANGER_WIDGET_ACTION_RESIZING_NOTE_L)
+  if (self->action == MAA_RESIZING_NOTE_L)
     {
       Position pos;
       ruler_widget_px_to_pos (&pos,
                  (self->start_x + offset_x) - SPACE_BEFORE_START);
       midi_note_set_start_pos (self->midi_note,
                             &pos);
-      gtk_widget_queue_allocate (GTK_WIDGET (self));
     }
-  else if (self->action == MIDI_ARRANGER_WIDGET_ACTION_RESIZING_NOTE_R)
+  else if (self->action == MAA_RESIZING_NOTE_R)
     {
       Position pos;
       ruler_widget_px_to_pos (&pos,
                  (self->start_x + offset_x) - SPACE_BEFORE_START);
       midi_note_set_end_pos (self->midi_note,
                             &pos);
-      gtk_widget_queue_allocate (GTK_WIDGET (self));
     }
-  else if (self->action == MIDI_ARRANGER_WIDGET_ACTION_MOVING_NOTE)
+  else if (self->action == MAA_MOVING_NOTE)
     {
       Position pos;
 
@@ -214,8 +294,11 @@ drag_update (GtkGestureDrag * gesture,
       midi_note_set_end_pos (self->midi_note,
                           &pos);
 
-      gtk_widget_queue_allocate (GTK_WIDGET (self));
     }
+  gtk_widget_queue_allocate(
+              GTK_WIDGET (self));
+  gtk_widget_queue_draw (GTK_WIDGET (self));
+  gtk_widget_show_all (GTK_WIDGET (self));
   self->last_offset_x = offset_x;
 }
 
@@ -228,7 +311,7 @@ drag_end (GtkGestureDrag *gesture,
   MidiArrangerWidget * self = (MidiArrangerWidget *) user_data;
   self->start_x = 0;
   self->last_offset_x = 0;
-  self->action = MIDI_ARRANGER_WIDGET_ACTION_NONE;
+  self->action = MAA_NONE;
   if (self->midi_note)
     {
       ui_set_cursor (GTK_WIDGET (self->midi_note->widget), "default");

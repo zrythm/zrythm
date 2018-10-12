@@ -73,10 +73,4 @@ typedef struct MidiEditorWidgetClass
 MidiEditorWidget *
 midi_editor_widget_new ();
 
-/**
- * Sets up the MIDI editor for the given region.
- */
-void
-midi_editor_set_channel (Channel * channel);
-
 #endif

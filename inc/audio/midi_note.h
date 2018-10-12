@@ -43,7 +43,12 @@ typedef struct MidiNote
 MidiNote *
 midi_note_new (Region * track,
                Position * start_pos,
-               Position * end_pos);
+               Position * end_pos,
+               int      val,
+               int      vel);
+
+void
+midi_note_delete (MidiNote * midi_note);
 
 /**
  * Checks if position is valid then sets it.

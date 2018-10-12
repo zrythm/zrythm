@@ -117,9 +117,9 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
       else
         {
           self->hover_state = REGION_HOVER_STATE_MIDDLE;
-          if (MAIN_WINDOW->timeline->action != TIMELINE_WIDGET_ACTION_MOVING_REGION &&
-              MAIN_WINDOW->timeline->action != TIMELINE_WIDGET_ACTION_RESIZING_REGION_L &&
-              MAIN_WINDOW->timeline->action != TIMELINE_WIDGET_ACTION_RESIZING_REGION_R)
+          if (MAIN_WINDOW->timeline->action != TA_MOVING_REGION &&
+              MAIN_WINDOW->timeline->action != TA_RESIZING_REGION_L &&
+              MAIN_WINDOW->timeline->action != TA_RESIZING_REGION_R)
             {
               ui_set_cursor (widget, "default");
             }
@@ -128,9 +128,9 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
       self->hover_state = REGION_HOVER_STATE_NONE;
-      if (MAIN_WINDOW->timeline->action != TIMELINE_WIDGET_ACTION_MOVING_REGION &&
-          MAIN_WINDOW->timeline->action != TIMELINE_WIDGET_ACTION_RESIZING_REGION_L &&
-          MAIN_WINDOW->timeline->action != TIMELINE_WIDGET_ACTION_RESIZING_REGION_R)
+      if (MAIN_WINDOW->timeline->action != TA_MOVING_REGION &&
+          MAIN_WINDOW->timeline->action != TA_RESIZING_REGION_L &&
+          MAIN_WINDOW->timeline->action != TA_RESIZING_REGION_R)
         {
           ui_set_cursor (widget, "default");
         }

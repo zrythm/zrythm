@@ -36,11 +36,12 @@ typedef struct MidiNote MidiNote;
 
 typedef enum MidiArrangerWidgetAction
 {
-  MIDI_ARRANGER_WIDGET_ACTION_NONE,
-  MIDI_ARRANGER_WIDGET_ACTION_RESIZING_NOTE_L,
-  MIDI_ARRANGER_WIDGET_ACTION_RESIZING_NOTE_R,
-  MIDI_ARRANGER_WIDGET_ACTION_MOVING_NOTE,
-  MIDI_ARRANGER_WIDGET_ACTION_SELECTING_AREA
+  MAA_NONE,
+  MAA_RESIZING_NOTE_L,
+  MAA_RESIZING_NOTE_R,
+  MAA_MOVING_NOTE,
+  MAA_SELECTING_AREA
+  //MAA_CREATING_NOTE
 } MidiArrangerWidgetAction;
 
 /**
@@ -58,6 +59,7 @@ typedef struct MidiArrangerWidget
   MidiArrangerWidgetAction     action;
   MidiNote                 * midi_note;  ///< MIDI note doing action upon, if any
   double                   start_x; ///< for dragging
+  int                      n_press; ///< for multipress
 } MidiArrangerWidget;
 
 typedef struct MidiArrangerWidgetClass
@@ -70,6 +72,12 @@ typedef struct MidiArrangerWidgetClass
  */
 MidiArrangerWidget *
 midi_arranger_widget_new ();
+
+/**
+ * Sets up the MIDI editor for the given region.
+ */
+void
+midi_arranger_widget_set_channel (Channel * channel);
 
 #endif
 

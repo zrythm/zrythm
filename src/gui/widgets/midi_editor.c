@@ -26,29 +26,13 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor.h"
+#include "gui/widgets/midi_note.h"
 #include "gui/widgets/piano_roll_labels.h"
 #include "gui/widgets/piano_roll_notes.h"
 #include "gui/widgets/ruler.h"
 
 G_DEFINE_TYPE (MidiEditorWidget, midi_editor_widget, GTK_TYPE_BOX)
 
-/**
- * Sets up the MIDI editor for the given region.
- */
-void
-midi_editor_set_channel (Channel * channel)
-{
-  gtk_notebook_set_current_page (MAIN_WINDOW->bot_notebook, 0);
-
-  char * label = g_strdup_printf ("%s",
-                                  channel->name);
-  gtk_label_set_text (MIDI_EDITOR->midi_name_label,
-                      label);
-  g_free (label);
-
-  color_area_widget_set_color (MIDI_EDITOR->midi_track_color,
-                               &channel->color);
-}
 
 /**
  * Sets up the MIDI editor.

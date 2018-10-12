@@ -71,3 +71,33 @@ region_set_end_pos (Region * region,
                        pos);
 }
 
+/**
+ * Returns the region at the given position in the given channel
+ */
+Region *
+region_at_position (Track    * track, ///< the track to look in
+                    Position * pos) ///< the position
+{
+  for (int i = 0; i < track->num_regions; i++)
+    {
+      if (position_compare (pos,
+                            &track->regions[i]->start_pos) >= 0 &&
+          position_compare (pos,
+                            &track->regions[i]->end_pos) <= 0)
+        {
+          return track->regions[i];
+        }
+    }
+  return NULL;
+}
+
+/**
+ * Adds midi note to region
+ */
+void
+region_add_midi_note (Region * region,
+                      MidiNote * midi_note)
+{
+  region->midi_notes[region->num_midi_notes++] = midi_note;
+}
+
