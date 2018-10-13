@@ -149,11 +149,8 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
   zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
 
   /* reset all buffers */
-  /*for (i = 0; i < AUDIO_ENGINE->num_ports; i++)*/
-    /*{*/
-      /*if (AUDIO_ENGINE->ports[i])*/
-        /*port_clear_buffer (AUDIO_ENGINE->ports[i]);*/
-    /*}*/
+  port_clear_buffer (AUDIO_ENGINE->midi_in);
+  port_clear_buffer (AUDIO_ENGINE->midi_editor_manual_press);
 
   /*g_message ("jack start");*/
 

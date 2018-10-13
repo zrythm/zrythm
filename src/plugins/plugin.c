@@ -116,6 +116,7 @@ plugin_instantiate (Plugin * plugin ///< the plugin
 void
 plugin_process (Plugin * plugin, nframes_t nframes)
 {
+
   /* if has MIDI input port */
   if (plugin->descr->num_midi_ins > 0)
     {

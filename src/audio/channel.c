@@ -110,6 +110,32 @@ void
 channel_process (Channel * channel,  ///< slots
               nframes_t   nframes)    ///< sample count
 {
+  port_clear_buffer (channel->stereo_in->l);
+  port_clear_buffer (channel->stereo_in->r);
+  port_clear_buffer (channel->midi_in);
+  port_clear_buffer (channel->piano_roll);
+  port_clear_buffer (channel->stereo_out->l);
+  port_clear_buffer (channel->stereo_out->r);
+  for (int j = 0; j < MAX_PLUGINS; j++)
+    {
+      Plugin * plugin = channel->strip[j];
+      if (plugin)
+        {
+          for (int i = 0; i < plugin->num_in_ports; i++)
+            {
+              port_clear_buffer (plugin->in_ports[i]);
+            }
+          for (int i = 0; i < plugin->num_out_ports; i++)
+            {
+              port_clear_buffer (plugin->out_ports[i]);
+            }
+          for (int i = 0; i < plugin->num_unknown_ports; i++)
+            {
+              port_clear_buffer (plugin->unknown_ports[i]);
+            }
+        }
+    }
+
   /* sum AUDIO IN coming to the channel */
   port_sum_signal_from_inputs (channel->stereo_in->l, nframes);
   port_sum_signal_from_inputs (channel->stereo_in->r, nframes);
