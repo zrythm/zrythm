@@ -88,6 +88,13 @@ midi_arranger_widget_set_channel (Channel * channel)
     }
   gtk_widget_queue_allocate (GTK_WIDGET (MIDI_EDITOR->midi_arranger));
   gtk_widget_show_all (GTK_WIDGET (MIDI_EDITOR->midi_arranger));
+
+  GtkAdjustment * adj = gtk_scrolled_window_get_vadjustment (
+                                  MIDI_EDITOR->piano_roll_arranger_scroll);
+  gtk_adjustment_set_value (adj,
+                            gtk_adjustment_get_upper (adj) / 2);
+  gtk_scrolled_window_set_vadjustment (MIDI_EDITOR->piano_roll_arranger_scroll,
+                                       adj);
 }
 
 /**

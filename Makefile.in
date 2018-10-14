@@ -37,6 +37,10 @@ PKG_CONFIG = @PKG_CONFIG@
 SHELL = @SHELL@
 srcdir = @srcdir@
 
+WINDOWS=@WINDOWS@
+LINUX=@LINUX@
+OSX=@OSX@
+
 # test
 
 # Installation directory variables
@@ -82,26 +86,41 @@ else
 	DEFAULT_CFLAGS = -g -O0
 endif
 
-CFLAGS = -Wall -rdynamic \
-						$(DEFAULT_INCLUDES) \
-						$(GTK_CFLAGS) \
-						$(JACK_CFLAGS) \
-						$(LV2_CFLAGS) \
-						$(LILV_CFLAGS) \
-						$(SUIL_CFLAGS) \
-						$(PANGO_CFLAGS) \
-						$(PANGOFT2_CFLAGS) \
-						$(DEFAULT_CFLAGS)
+# -rdynamic gcc flag
+ifeq ($(CC),gcc)
+	R_DYNAMIC = -rdynamic
+else ifeq ($(CC),x86_64-w64-mingw32-gcc)
+	#R_DYNAMIC = -export-all-symbols
+endif
+
+ifeq (@WINDOWS@,1)
+	EXT = .exe
+	EXTRA_LD_FLAGS += -fno-stack-protector -mwindows
+endif
+
+CFLAGS = -Wall \
+ 	$(R_DYNAMIC) \
+	$(DEFAULT_INCLUDES) \
+	$(GTK_CFLAGS) \
+	$(JACK_CFLAGS) \
+	$(LV2_CFLAGS) \
+	$(LILV_CFLAGS) \
+	$(SUIL_CFLAGS) \
+	$(PANGO_CFLAGS) \
+	$(PANGOFT2_CFLAGS) \
+	$(DEFAULT_CFLAGS) \
+	$(EXTRA_LD_FLAGS)
+
 
 LDFLAGS =	$(GTK_LIBS) \
-			    $(JACK_LIBS) \
-			    $(LV2_LIBS) \
-			    $(LILV_LIBS) \
-				  $(SUIL_LIBS) \
-				  $(PANGO_LIBS) \
-				  $(PANGOFT2_LIBS) \
-			    -lm \
-					-lpthread
+	$(JACK_LIBS) \
+	$(LV2_LIBS) \
+	$(LILV_LIBS) \
+	$(SUIL_LIBS) \
+	$(PANGO_LIBS) \
+	$(PANGOFT2_LIBS) \
+	-lm \
+	-lpthread
 
 built_src = $(BUILD_DIR)/resources.c
 built_obj = $(built_src:%.c=$(BUILD_DIR/%.o))
@@ -131,10 +150,10 @@ appicon_DATA = resources/z.svg
 #  ----------------------------
 
 # Default target named after the binary.
-$(BIN) : $(BUILD_DIR)/$(BIN)
+$(BIN) : $(BUILD_DIR)/$(BIN)$(EXT)
 
 # Actual target of the binary - depends on all .o files.
-$(BUILD_DIR)/$(BIN): $(OBJ) $(BUILD_DIR)/resources.o
+$(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(BUILD_DIR)/resources.o
 	# Create build directories - same structure as sources.
 	$(MKDIR_P) $(@D)
 	# Just link all the object files.
@@ -142,13 +161,6 @@ $(BUILD_DIR)/$(BIN): $(OBJ) $(BUILD_DIR)/resources.o
 
 # Include all dep files
 -include $(DEP)
-
-$(BUILD_DIR)/resources.o: $(BUILD_DIR)/resources.c
-	$(MKDIR_P) $(dir $@)
-	# The -MMD flags additionaly creates a .d file with
-	# the same name as the .o file.
-	$(CC) $(CFLAGS) -MMD -c $< -o $@ $(LDFLAGS)
-
 
 $(BUILD_DIR)/resources.c: $(SRC_DIR)/zrythm.gresource.xml \
 	resources/ui/*.ui \
@@ -171,16 +183,16 @@ $(BUILD_DIR)/%.$(OBJEXT): %.c
 clean:
 	#rm -rf $(BUILD_DIR)/*
 	# This should remove all generated files.
-	-rm $(BUILD_DIR)/$(BIN) $(OBJ) $(DEP)
+	-rm $(BUILD_DIR)/$(BIN)$(EXT) $(OBJ) $(DEP)
 
 .PHONY: install
-install: $(BUILD_DIR)/$(BIN) install-appicon-data install-desktop-data install-gschemas
+install: $(BUILD_DIR)/$(BIN)$(EXT) install-appicon-data install-desktop-data install-gschemas
 	$(MKDIR_P) $(DESTDIR)$(bindir)
-	$(INSTALL) $< $(DESTDIR)$(bindir)/$(BIN)
+	$(INSTALL) $< $(DESTDIR)$(bindir)/$(BIN)$(EXT)
 
 .PHONY: uninstall
 uninstall:
-	rm -f $(DESTDIR)$(bindir)/$(BIN)
+	rm -f $(DESTDIR)$(bindir)/$(BIN)$(EXT)
 
 .PHONY: install-appicon-data
 install-appicon-data: $(appicon_DATA)

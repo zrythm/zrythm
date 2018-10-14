@@ -4,9 +4,39 @@ AC_INIT([zrythm], [0.1], [alex@alextee.website])
 # Declare config.h as output header
 AC_CONFIG_HEADERS([config.h])
 
-# initialize automake. turn on all automake warnings and report them as errors
-# this is a foreign package
-#AM_INIT_AUTOMAKE([foreign -Wall -Werror subdir-objects])
+# AC_CANONICAL_HOST is needed to access the 'host_os' variable
+AC_CANONICAL_HOST
+
+build_linux=no
+build_windows=no
+build_mac=no
+
+# Detect the target system
+case "${host_os}" in
+  linux*)
+    build_linux=yes
+    ;;
+  cygwin*|mingw*)
+    build_windows=yes
+    ;;
+  darwin*)
+    build_mac=yes
+    ;;
+  *)
+    AC_MSG_ERROR(["OS $host_os is not supported"])
+    ;;
+esac
+
+# Pass the conditionals to automake
+AM_CONDITIONAL([LINUX], [test "$build_linux" = "yes"])
+AM_COND_IF([LINUX],
+           [AC_SUBST([LINUX], [1])])
+AM_CONDITIONAL([WINDOWS], [test "$build_windows" = "yes"])
+AM_COND_IF([WINDOWS],
+           [AC_SUBST([WINDOWS], [1])])
+AM_CONDITIONAL([OSX], [test "$build_mac" = "yes"])
+AM_COND_IF([OSX],
+           [AC_SUBST([OSX], [1])])
 
 # Check for a C compiler
 AC_PROG_CC([gcc])
@@ -14,20 +44,26 @@ AC_PROG_CC([gcc])
 AC_PREFIX_DEFAULT([/usr])
 
 #Checks for libraries.
-#Checks for header files.
-#Checks for typedefs, structures, and compiler characteristics.
-#Checks for library functions.
 PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= 3.20])
 PKG_CHECK_MODULES([JACK], [jack >= 1.8.17])
-PKG_CHECK_MODULES([LV2], [lv2 >= 1.15.3])
 PKG_CHECK_MODULES([LILV], [lilv-0 >= 0.24.2])
 PKG_CHECK_MODULES([SUIL], [suil-0 >= 0.10.0])
 PKG_CHECK_MODULES([PANGO], [pango >= 1.0])
 PKG_CHECK_MODULES([PANGOFT2], [pangoft2 >= 1.0])
+AM_COND_IF([LINUX],
+           [PKG_CHECK_MODULES([LV2], [lv2 >= 1.15.3])])
+AM_COND_IF([WINDOWS],
+           [PKG_CHECK_MODULES([LV2], [lv2 >= 1.14.0])])
 
+#Checks for header files.
+#Checks for typedefs, structures, and compiler characteristics.
+#Checks for library functions.
+AM_COND_IF([WINDOWS],
+           [AC_CHECK_HEADERS([windows.h])])
 AC_CHECK_HEADERS([unistd.h])
 
-LDFLAGS="$LDFLAGS -L/usr/lib"
+AM_COND_IF([LINUX],
+           [LDFLAGS="$LDFLAGS -L/usr/lib"])
 
 # Add GSettings support
 GLIB_GSETTINGS

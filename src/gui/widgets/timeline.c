@@ -88,6 +88,34 @@ get_child_position (GtkOverlay   *overlay,
   return TRUE;
 }
 
+static Track *
+get_track_at_y (double y)
+{
+  for (int i = 0; i < MIXER->num_channels; i++)
+    {
+      Track * track = MIXER->channels[i]->track;
+
+      GtkAllocation allocation;
+      gtk_widget_get_allocation (GTK_WIDGET (track->widget),
+                                 &allocation);
+
+      gint wx, wy;
+      gtk_widget_translate_coordinates(
+                GTK_WIDGET (MW_TIMELINE),
+                GTK_WIDGET (track->widget),
+                0,
+                0,
+                &wx,
+                &wy);
+
+      if (y > -wy && y < ((-wy) + allocation.height))
+        {
+          return track;
+        }
+    }
+  return NULL;
+}
+
 static RegionWidget *
 get_hit_region (double x, double y)
 {
@@ -137,6 +165,7 @@ multipress_pressed (GtkGestureMultiPress *gesture,
                gpointer              user_data)
 {
   TimelineWidget * self = (TimelineWidget *) user_data;
+  self->n_press = n_press;
   gtk_widget_grab_focus (GTK_WIDGET (self));
 
   /* open MIDI editor if double clicked on a region */
@@ -179,6 +208,37 @@ drag_begin (GtkGestureDrag * gesture,
           break;
         }
     }
+  else
+    {
+      if (self->n_press == 1)
+        {
+          /* area selection */
+
+        }
+      else if (self->n_press == 2)
+        {
+          Position pos;
+          ruler_widget_px_to_pos (
+                               &pos,
+                               start_x - SPACE_BEFORE_START);
+          Track * track = get_track_at_y (start_y);
+
+          if (track)
+            {
+              self->region = region_new (track,
+                                         &pos,
+                                         &pos);
+              track_add_region (track,
+                                self->region);
+              gtk_overlay_add_overlay (GTK_OVERLAY (self),
+                                       GTK_WIDGET (self->region->widget));
+              gtk_widget_queue_allocate (GTK_WIDGET (self));
+              gtk_widget_show (GTK_WIDGET (self->region->widget));
+              self->action = TA_RESIZING_REGION_R;
+            }
+        }
+    }
+
 }
 
 static void

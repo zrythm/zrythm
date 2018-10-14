@@ -19,6 +19,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdio.h>
+
 #include "zrythm_app.h"
 #include "settings_manager.h"
 #include "audio/engine.h"
@@ -38,6 +40,7 @@ int
 main (int    argc,
       char **argv)
 {
+  printf ("hello");
   /* init suil */
   suil_init(&argc, &argv, SUIL_ARG_NONE);
 

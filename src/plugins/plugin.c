@@ -40,13 +40,13 @@
 /**
  * Handler for plugin crashes.
  */
-void handler(int nSignum, siginfo_t* si, void* vcontext)
-{
-  g_message ("handler");
+/*void handler(int nSignum, siginfo_t* si, void* vcontext)*/
+/*{*/
+  /*g_message ("handler");*/
 
-  ucontext_t* context = (ucontext_t*)vcontext;
-  context->uc_mcontext.gregs[REG_RIP]++;
-}
+  /*ucontext_t* context = (ucontext_t*)vcontext;*/
+  /*context->uc_mcontext.gregs[REG_RIP]++;*/
+/*}*/
 
 /**
  * Creates an empty plugin.
@@ -73,10 +73,10 @@ plugin_create_from_descr (Plugin_Descriptor * descr)
 {
   Plugin * plugin = _plugin_new ();
   plugin->descr = descr;
-  struct sigaction action;
-  memset(&action, 0, sizeof(struct sigaction));
-  action.sa_flags = SA_SIGINFO;
-  action.sa_sigaction = handler;
+  /*struct sigaction action;*/
+  /*memset(&action, 0, sizeof(struct sigaction));*/
+  /*action.sa_flags = SA_SIGINFO;*/
+  /*action.sa_sigaction = handler;*/
   /*sigaction(SIGSEGV, &action, NULL);*/
   switch (plugin->descr->protocol)
     {

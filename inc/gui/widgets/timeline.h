@@ -31,6 +31,8 @@
 #define IS_TIMELINE_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), TIMELINE_WIDGET_TYPE))
 #define TIMELINE_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), TIMELINE_WIDGET_TYPE, TimelineWidgetClass))
 
+#define MW_TIMELINE MAIN_WINDOW->timeline
+
 typedef struct TimelineBgWidget TimelineBgWidget;
 
 typedef enum TimelineWidgetAction
@@ -57,6 +59,7 @@ typedef struct TimelineWidget
   TimelineWidgetAction     action;
   Region                   * region;  ///< region doing action upon, if any
   double                   start_x; ///< for dragging
+  int                      n_press; ///< for multipress
 } TimelineWidget;
 
 typedef struct TimelineWidgetClass

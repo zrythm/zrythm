@@ -22,6 +22,7 @@
 #    include <mach/mach.h>
 #elif defined(_WIN32)
 #    include <limits.h>
+#    include <winsock2.h>
 #    include <windows.h>
 #else
 #    include <semaphore.h>
@@ -141,7 +142,7 @@ zix_sem_try_wait(ZixSem* sem)
 
 #elif defined(_WIN32)
 
-struct ZixSemImpl {
+struct ZixSem {
 	HANDLE sem;
 };
 

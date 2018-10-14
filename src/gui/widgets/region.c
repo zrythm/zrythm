@@ -106,20 +106,22 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
       if (event->x < RESIZE_CURSOR_SPACE)
         {
           self->hover_state = REGION_HOVER_STATE_EDGE_L;
-          ui_set_cursor (widget, "w-resize");
+          if (MW_TIMELINE->action != TA_MOVING_REGION)
+            ui_set_cursor (widget, "w-resize");
         }
 
       else if (event->x > allocation.width - RESIZE_CURSOR_SPACE)
         {
           self->hover_state = REGION_HOVER_STATE_EDGE_R;
-          ui_set_cursor (widget, "e-resize");
+          if (MW_TIMELINE->action != TA_MOVING_REGION)
+            ui_set_cursor (widget, "e-resize");
         }
       else
         {
           self->hover_state = REGION_HOVER_STATE_MIDDLE;
-          if (MAIN_WINDOW->timeline->action != TA_MOVING_REGION &&
-              MAIN_WINDOW->timeline->action != TA_RESIZING_REGION_L &&
-              MAIN_WINDOW->timeline->action != TA_RESIZING_REGION_R)
+          if (MW_TIMELINE->action != TA_MOVING_REGION &&
+              MW_TIMELINE->action != TA_RESIZING_REGION_L &&
+              MW_TIMELINE->action != TA_RESIZING_REGION_R)
             {
               ui_set_cursor (widget, "default");
             }

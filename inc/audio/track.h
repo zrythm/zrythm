@@ -54,4 +54,8 @@ track_fill_midi_events (Track      * track,
                         nframes_t  nframes, ///< n of frames from start pos
                         Midi_Events * midi_events); ///< midi events to fill
 
+void
+track_add_region (Track      * track,
+                  Region     * region);
+
 #endif // __AUDIO_TRACK_H__
