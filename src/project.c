@@ -23,20 +23,38 @@
 #include "project.h"
 #include "audio/engine.h"
 #include "audio/transport.h"
+#include "utils/xml.h"
 
 #include <gtk/gtk.h>
 
 
 void
-create_project (char * filename)
+project_create (char * filename)
 {
   PROJECT = calloc(1, sizeof( Project));
 
   // set title
-  GString * title = g_string_new (filename);
-  g_message ("Creating project %s...", title->str);
-  PROJECT->title = title;
+  g_message ("Creating project %s...", filename);
+  PROJECT->title = g_strdup (filename);
 
   transport_init ();
   AUDIO_ENGINE->run = 1;
+}
+
+void
+project_save (char * filename)
+{
+  /* write XML */
+  xml_write_project (filename);
+
+  /* TODO write plugin states */
+
+  /* TODO write MIDI */
+
+}
+
+void
+project_load (char * filename)
+{
+
 }

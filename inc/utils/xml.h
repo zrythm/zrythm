@@ -1,5 +1,5 @@
 /*
- * main.c - main
+ * utils/xml.c - XML serializer for parsing/writing project file
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -16,34 +16,21 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
+/** \file
+ */
+#ifndef __UTILS_XML_H__
+#define __UTILS_XML_H__
 
-#include "zrythm_app.h"
-#include "settings_manager.h"
-#include "audio/engine.h"
-#include "audio/mixer.h"
-#include "gui/widget_manager.h"
-#include "gui/widgets/main_window.h"
-#include "plugins/plugin_manager.h"
+#include <libxml/xmlwriter.h>
 
-#include <gtk/gtk.h>
-
-#include <suil/suil.h>
 
 /**
- * main
+ * Writes the project to an XML file.
  */
-int
-main (int    argc,
-      char **argv)
-{
-  /* init suil */
-  suil_init(&argc, &argv, SUIL_ARG_NONE);
+void
+xml_write_project (const char * file);
 
-
-  // sends activate signal
-  return g_application_run (G_APPLICATION (zrythm_app_new ()), argc, argv);
-}
+#endif

@@ -51,9 +51,15 @@ typedef struct _MainWindowWidget
   GtkBox                   * top_bar;
   GtkBox                   * top_menubar;
   GtkMenuItem              * file;
+  GtkImageMenuItem         * file_new;
+  GtkImageMenuItem         * file_open;
+  GtkImageMenuItem         * file_save;
+  GtkImageMenuItem         * file_save_as;
+  GtkImageMenuItem         * file_quit;
   GtkMenuItem              * edit;
   GtkMenuItem              * view;
   GtkMenuItem              * help;
+  GtkImageMenuItem         * help_about;
   GtkBox                   * window_buttons;
   GtkButton                * minimize;
   GtkButton                * maximize;

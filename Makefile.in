@@ -44,6 +44,8 @@ OSX=@OSX@
 # test
 
 # Installation directory variables
+prefix = @prefix@
+exec_prefix = @exec_prefix@
 bindir = @bindir@
 datadir = @datadir@
 datarootdir = @datarootdir@
@@ -56,7 +58,6 @@ localedir = @localedir@
 localstatedir = @localstatedir@
 mandir = @mandir@
 pdfdir = @pdfdir@
-prefix = @prefix@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 
@@ -68,6 +69,7 @@ LILV_CFLAGS = @LILV_CFLAGS@
 LV2_CFLAGS = @LV2_CFLAGS@
 PANGOFT2_CFLAGS = @PANGOFT2_CFLAGS@
 SUIL_CFLAGS = @SUIL_CFLAGS@
+LIBXML_CFLAGS = @LIBXML_CFLAGS@
 
 # library LIBS
 GTK_LIBS = @GTK_LIBS@
@@ -77,6 +79,7 @@ LV2_LIBS = @LV2_LIBS@
 PANGO_LIBS = @PANGO_LIBS@
 PANGOFT2_LIBS = @PANGOFT2_LIBS@
 SUIL_LIBS = @SUIL_LIBS@
+LIBXML_LIBS = @LIBXML_LIBS@
 
 DEFAULT_INCLUDES = -I. -I./$(INC_DIR) -I./$(SRC_DIR)
 
@@ -103,8 +106,9 @@ CFLAGS = -Wall \
 	$(DEFAULT_INCLUDES) \
 	$(GTK_CFLAGS) \
 	$(JACK_CFLAGS) \
-	$(LV2_CFLAGS) \
+	$(LIBXML_CFLAGS) \
 	$(LILV_CFLAGS) \
+	$(LV2_CFLAGS) \
 	$(SUIL_CFLAGS) \
 	$(PANGO_CFLAGS) \
 	$(PANGOFT2_CFLAGS) \
@@ -114,8 +118,9 @@ CFLAGS = -Wall \
 
 LDFLAGS =	$(GTK_LIBS) \
 	$(JACK_LIBS) \
-	$(LV2_LIBS) \
+	$(LIBXML_LIBS) \
 	$(LILV_LIBS) \
+	$(LV2_LIBS) \
 	$(SUIL_LIBS) \
 	$(PANGO_LIBS) \
 	$(PANGOFT2_LIBS) \

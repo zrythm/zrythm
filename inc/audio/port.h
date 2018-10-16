@@ -67,11 +67,12 @@ typedef struct Channel Channel;
  */
 typedef struct Port
 {
+  int                 id;             ///< each port has an ID so that they can get connected
+  char                * label;     ///< human readable label
   sample_t            * buf;      ///< buffer to be allocated with malloc, for AUDIO
   Midi_Events         midi_events;   ///< contains the raw MIDI packets, for MIDI ports
   /* FIXME necessary? */
   nframes_t           nframes;        ///< number of frames (size of samples array)
-  int                 id;             ///< each port has an ID so that they can get connected
 	PortType            type;       ///< Data type
 	PortFlow            flow;       ///< Data flow direction
   struct Port         * srcs[MAX_DESTINATIONS];  ///< ports coming in
@@ -80,7 +81,6 @@ typedef struct Port
   int                 num_dests; ///< counter
   LV2_Port            * lv2_port;    ///< used for LV2
   PortInternalType   internal_type;
-  char                * label;     ///< human readable label
   void                * data;    ///< pointer to arbitrary data. use internal to check what data it is
   int                 owner_jack;        ///< 1 if owner is JACK
   Plugin              * owner_pl;           ///< owner plugin, for plugins

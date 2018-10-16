@@ -41,7 +41,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
-                          <object class="GtkImageMenuItem" id="fmi1">
+                          <object class="GtkImageMenuItem" id="file_new">
                             <property name="label">gtk-new</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
@@ -50,7 +50,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkImageMenuItem" id="fmi2">
+                          <object class="GtkImageMenuItem" id="file_open">
                             <property name="label">gtk-open</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
@@ -59,7 +59,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkImageMenuItem" id="fmi3">
+                          <object class="GtkImageMenuItem" id="file_save">
                             <property name="label">gtk-save</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
@@ -68,11 +68,10 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkImageMenuItem" id="fmi4">
+                          <object class="GtkImageMenuItem" id="file_save_as">
                             <property name="label">gtk-save-as</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="use_underline">True</property>
                             <property name="use_stock">True</property>
                           </object>
                         </child>
@@ -83,7 +82,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkImageMenuItem" id="fmi6">
+                          <object class="GtkImageMenuItem" id="file_quit">
                             <property name="label">gtk-quit</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
@@ -164,7 +163,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
-                          <object class="GtkImageMenuItem" id="about">
+                          <object class="GtkImageMenuItem" id="help_about">
                             <property name="label">gtk-about</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>

@@ -54,6 +54,8 @@ typedef enum ChannelType
 
 typedef struct Channel
 {
+  int               id;  ///< position in mixer/tracks, useful in serialization
+  char *            name;        ///< channel name
   /* note: the first plugin is special, it is the "main" plugin of the channel
    * where processing starts */
   Plugin            * strip[MAX_PLUGINS]; ///< the channel strip
@@ -64,7 +66,6 @@ typedef struct Channel
   int               soloed;           ///< soloed or not
   GdkRGBA           color;          ///< see https://ometer.com/gtk-colors.html
   float             phase;        ///< used by the phase knob (0.0-360.0 value)
-  char *            name;        ///< channel name
 
   /* these are for plugins to connect to if they want
    * processing starts at the first plugin with a clean buffer,

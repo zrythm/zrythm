@@ -50,6 +50,7 @@ PKG_CHECK_MODULES([LILV], [lilv-0 >= 0.24.2])
 PKG_CHECK_MODULES([SUIL], [suil-0 >= 0.10.0])
 PKG_CHECK_MODULES([PANGO], [pango >= 1.0])
 PKG_CHECK_MODULES([PANGOFT2], [pangoft2 >= 1.0])
+PKG_CHECK_MODULES([LIBXML], [libxml-2.0 >= 2.9.8])
 AM_COND_IF([LINUX],
            [PKG_CHECK_MODULES([LV2], [lv2 >= 1.15.3])])
 AM_COND_IF([WINDOWS],

@@ -60,7 +60,7 @@ zrythm_app_activate (GApplication *app)
   init_audio_engine ();
 
   // create project
-  create_project ("project.xml");
+  project_create ("project.xml");
 
   g_message ("Creating main window...");
   gtk_window_close (GTK_WINDOW (splash));

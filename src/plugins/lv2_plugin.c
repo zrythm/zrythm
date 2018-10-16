@@ -106,7 +106,7 @@
 
 bool show_hidden = 1;
 uint32_t buffer_size = 0;
-bool dump = true;
+bool dump = false;
 bool print_controls = 0;
 
 /** Return true iff Zrythm supports the given feature. */
@@ -576,46 +576,51 @@ lv2_ui_is_resizable(LV2_Plugin* plugin)
 }
 
 
+/**
+ * Write from ui
+ */
 void
 lv2_ui_write(SuilController controller,
               uint32_t       port_index,
               uint32_t       buffer_size,
-              uint32_t       protocol,
+              uint32_t       protocol, ///< format
               const void*    buffer)
 {
+  LV2_Plugin* const plugin = (LV2_Plugin*)controller;
 
-	LV2_Plugin* const plugin = (LV2_Plugin*)controller;
+  if (protocol != 0 && protocol != plugin->urids.atom_eventTransfer)
+    {
+      fprintf(stderr, "UI write with unsupported protocol %d (%s)\n",
+              protocol, _unmap_uri(plugin, protocol));
+      return;
+    }
 
-	if (protocol != 0 && protocol != plugin->urids.atom_eventTransfer) {
-		fprintf(stderr, "UI write with unsupported protocol %d (%s)\n",
-		        protocol, _unmap_uri(plugin, protocol));
-		return;
-	}
+  if (port_index >= plugin->num_ports)
+    {
+      fprintf(stderr, "UI write to out of range port index %d\n",
+              port_index);
+      return;
+    }
 
-	if (port_index >= plugin->num_ports) {
-		fprintf(stderr, "UI write to out of range port index %d\n",
-		        port_index);
-		return;
-	}
+  if (dump && protocol == plugin->urids.atom_eventTransfer)
+    {
+      const LV2_Atom* atom = (const LV2_Atom*)buffer;
+      char*           str  = sratom_to_turtle(
+              plugin->sratom, &plugin->unmap, "plugin:", NULL, NULL,
+              atom->type, atom->size, LV2_ATOM_BODY_CONST(atom));
+      lv2_ansi_start(stdout, 36);
+      printf("\n## UI => Plugin (%u bytes) ##\n%s\n", atom->size, str);
+      lv2_ansi_reset(stdout);
+      free(str);
+    }
 
-	if (dump && protocol == plugin->urids.atom_eventTransfer) {
-		const LV2_Atom* atom = (const LV2_Atom*)buffer;
-		char*           str  = sratom_to_turtle(
-			plugin->sratom, &plugin->unmap, "plugin:", NULL, NULL,
-			atom->type, atom->size, LV2_ATOM_BODY_CONST(atom));
-		lv2_ansi_start(stdout, 36);
-		printf("\n## UI => Plugin (%u bytes) ##\n%s\n", atom->size, str);
-		lv2_ansi_reset(stdout);
-		free(str);
-	}
-
-	char buf[sizeof(Lv2ControlChange) + buffer_size];
-	Lv2ControlChange* ev = (Lv2ControlChange*)buf;
-	ev->index    = port_index;
-	ev->protocol = protocol;
-	ev->size     = buffer_size;
-	memcpy(ev->body, buffer, buffer_size);
-	zix_ring_write(plugin->ui_events, buf, sizeof(buf));
+  char buf[sizeof(Lv2ControlChange) + buffer_size];
+  Lv2ControlChange* ev = (Lv2ControlChange*)buf;
+  ev->index    = port_index;
+  ev->protocol = protocol;
+  ev->size     = buffer_size;
+  memcpy(ev->body, buffer, buffer_size);
+  zix_ring_write(plugin->ui_events, buf, sizeof(buf));
 }
 
 void

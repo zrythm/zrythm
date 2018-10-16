@@ -20,6 +20,7 @@
  */
 
 #include "config.h"
+#include "project.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
 #include "audio/transport.h"
@@ -123,91 +124,101 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
                                                "/online/alextee/zrythm/ui/main-window.ui");
 
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, main_box);
+                                        MainWindowWidget, main_box);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, top_bar);
+                                        MainWindowWidget, top_bar);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, top_menubar);
+                                        MainWindowWidget, top_menubar);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, file);
+                                        MainWindowWidget, file);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, edit);
+                                        MainWindowWidget, file_new);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, view);
+                                        MainWindowWidget, file_open);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, help);
+                                        MainWindowWidget, file_save);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, window_buttons);
+                                        MainWindowWidget, file_save_as);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, minimize);
+                                        MainWindowWidget, file_quit);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, maximize);
+                                        MainWindowWidget, edit);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, close);
+                                        MainWindowWidget, view);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, top_toolbar);
+                                        MainWindowWidget, help);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, center_box);
+                                        MainWindowWidget, window_buttons);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, inspector);
+                                        MainWindowWidget, minimize);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, inspector_button);
+                                        MainWindowWidget, maximize);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, editor_plus_browser);
+                                        MainWindowWidget, close);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, editor);
+                                        MainWindowWidget, top_toolbar);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, editor_top);
+                                        MainWindowWidget, center_box);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, tracks_timeline);
+                                        MainWindowWidget, inspector);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, tracks_top);
+                                        MainWindowWidget, inspector_button);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, tracks_scroll);
+                                        MainWindowWidget, editor_plus_browser);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, tracks_viewport);
+                                        MainWindowWidget, editor);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget, editor_top);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget, tracks_timeline);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget, tracks_top);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget, tracks_scroll);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget, tracks_viewport);
   /*gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),*/
                                                 /*MainWindowWidget, tracks_paned);*/
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, tracks_header);
+                                        MainWindowWidget, tracks_header);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, timeline_ruler);
+                                        MainWindowWidget, timeline_ruler);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, ruler_scroll);
+                                        MainWindowWidget, ruler_scroll);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, ruler_viewport);
+                                        MainWindowWidget, ruler_viewport);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, timeline_scroll);
+                                        MainWindowWidget, timeline_scroll);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, timeline_viewport);
+                                        MainWindowWidget, timeline_viewport);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, instruments_toolbar);
+                                        MainWindowWidget, instruments_toolbar);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, instrument_add);
+                                        MainWindowWidget, instrument_add);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, bot_notebook);
+                                        MainWindowWidget, bot_notebook);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, right_notebook);
+                                        MainWindowWidget, right_notebook);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, bot_bar);
+                                        MainWindowWidget, bot_bar);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, bot_bar_left);
+                                        MainWindowWidget, bot_bar_left);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, digital_meters);
+                                        MainWindowWidget, digital_meters);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, transport);
+                                        MainWindowWidget, transport);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, play);
+                                        MainWindowWidget, play);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, stop);
+                                        MainWindowWidget, stop);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, backward);
+                                        MainWindowWidget, backward);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, forward);
+                                        MainWindowWidget, forward);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, trans_record);
+                                        MainWindowWidget, trans_record);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MainWindowWidget, loop);
+                                        MainWindowWidget, loop);
   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
                                            on_main_window_destroy);
   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
@@ -233,6 +244,47 @@ main_window_widget_open (MainWindowWidget *win,
 {
 }
 
+static void
+on_save_as (GtkMenuItem   * menu_item,
+            gpointer      user_data)
+{
+  GtkWidget *dialog;
+  GtkFileChooser *chooser;
+  GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
+  gint res;
+
+  dialog = gtk_file_chooser_dialog_new ("Save Project",
+                                        GTK_WINDOW (MAIN_WINDOW),
+                                        action,
+                                        "_Cancel",
+                                        GTK_RESPONSE_CANCEL,
+                                        "_Save",
+                                        GTK_RESPONSE_ACCEPT,
+                                        NULL);
+  chooser = GTK_FILE_CHOOSER (dialog);
+
+  gtk_file_chooser_set_do_overwrite_confirmation (chooser, TRUE);
+
+  if (PROJECT->title)
+    gtk_file_chooser_set_current_name (chooser,
+                                       PROJECT->title);
+  else
+    gtk_file_chooser_set_filename (chooser,
+                                   "Untitled project");
+
+  res = gtk_dialog_run (GTK_DIALOG (dialog));
+  if (res == GTK_RESPONSE_ACCEPT)
+    {
+      char *filename;
+
+      filename = gtk_file_chooser_get_filename (chooser);
+      project_save (filename);
+      g_free (filename);
+    }
+
+  gtk_widget_destroy (dialog);
+}
+
 
 MainWindowWidget *
 main_window_widget_new (ZrythmApp * _app)
@@ -256,6 +308,11 @@ main_window_widget_new (ZrythmApp * _app)
           800);
   g_object_unref (css_provider);
 
+  /* setup menus */
+  g_signal_connect (G_OBJECT (GTK_MENU_ITEM (self->file_save_as)),
+                    "activate",
+                    G_CALLBACK (on_save_as),
+                    NULL);
 
   /* setup tracks */
   tracks_widget_setup ();

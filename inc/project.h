@@ -30,6 +30,9 @@
 
 #define PROJECT zrythm_system->project
 
+/* project xml version */
+#define PROJECT_XML_VER "0.1"
+
 typedef struct Timeline Timeline;
 typedef struct Transport Transport;
 
@@ -38,7 +41,7 @@ typedef struct Project
   /**
    * Project title
    */
-  GString               * title;
+  char                  * title;
 
   /**
    * Timeline metadata like BPM, time signature, etc.
@@ -51,18 +54,18 @@ typedef struct Project
  * Creates a project with default or given variables
  */
 void
-create_project (char * filename);
+project_create (char * filename);
 
 /**
- * Loads project from a file TODO
+ * Loads project from a file.
  */
 void
-open_project (GString * filename);
+project_load (char * filename);
 
 /**
- * Saves project to a file TODO
+ * Saves project to a file.
  */
 void
-save_project (GString * filename);
+project_save (char * filename);
 
 #endif
