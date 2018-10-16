@@ -33,4 +33,7 @@
 void
 xml_write_project (const char * file);
 
+void
+xml_write_ports (const char * file);
+
 #endif

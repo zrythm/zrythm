@@ -27,8 +27,9 @@
 
 #include <jack/jack.h>
 
-#define MAX_IN_PORTS 600
-#define MAX_OUT_PORTS 600
+/* FIXME allocate dynamically */
+#define MAX_IN_PORTS 400000
+#define MAX_OUT_PORTS 1400
 #define MAX_UNKNOWN_PORTS 400
 
 #define DUMMY_PLUGIN "Dummy Plugin"

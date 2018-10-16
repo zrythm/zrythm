@@ -43,6 +43,8 @@ typedef struct Mixer Mixer;
 //} MIDI_Controller;
 typedef struct StereoPorts StereoPorts;
 typedef struct Port Port;
+typedef struct Channel Channel;
+typedef struct Plugin Plugin;
 
 typedef struct Audio_Engine
 {
@@ -57,8 +59,6 @@ typedef struct Audio_Engine
   StereoPorts       * stereo_out;  ///< stereo out ports to JACK
   Port              * midi_in;     ///< MIDI in port from JACK
   Port              * midi_editor_manual_press; ///< manual note press in editor
-  Port              * ports[60000];   ///< all ports have a reference here for easy access
-  int               num_ports;
   nframes_t         nframes;     ///< nframes for current cycle
   //MIDI_Controller    * midi_controller; ///< the midi input on JACK
   //Port_Manager      * port_manager;  ///< manages all ports created for/by plugins

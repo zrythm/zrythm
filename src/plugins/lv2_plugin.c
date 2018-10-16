@@ -1405,8 +1405,9 @@ lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
       lilv_node_free(preset);
       if (!lv2_plugin->state)
         {
-          g_error ("Failed to find preset <%s>\n",
+          g_warning ("Failed to find preset <%s>\n",
                   preset_uri);
+          return -1;
         }
   }
 
@@ -1417,7 +1418,9 @@ lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
       const char* uri = lilv_node_as_uri(lilv_nodes_get(req_feats, f));
       if (!_feature_is_supported(lv2_plugin, uri))
         {
-          g_error ("Feature %s is not supported\n", uri);
+          g_warning ("Feature %s is not supported\n", uri);
+          lilv_nodes_free(req_feats);
+          return -1;
         }
     }
   lilv_nodes_free(req_feats);
@@ -1574,9 +1577,11 @@ lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
   lv2_plugin->instance = lilv_plugin_instantiate(
           lv2_plugin->lilv_plugin, AUDIO_ENGINE->sample_rate,
           lv2_plugin->features);
-  if (!lv2_plugin->instance) {
-          g_error("Failed to instantiate lv2_plugin->\n");
-  }
+  if (!lv2_plugin->instance)
+    {
+      g_warning("Failed to instantiate lv2_plugin->\n");
+      return -1;
+    }
   g_message ("Lilv plugin instantiated");
 
   lv2_plugin->ext_data.data_access =

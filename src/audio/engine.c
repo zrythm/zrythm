@@ -89,9 +89,9 @@ jack_buffer_size_cb(nframes_t nframes, void* data)
 
   /** reallocate port buffers to new size */
   g_message ("Reallocating port buffers to %d", nframes);
-  for (int i = 0; i < AUDIO_ENGINE->num_ports; i++)
+  for (int i = 0; i < PROJECT->num_ports; i++)
     {
-      Port * port = AUDIO_ENGINE->ports[i];
+      Port * port = PROJECT->ports[i];
       port->nframes = nframes;
       port->buf = realloc (port->buf, nframes * sizeof (sample_t));
       /* TODO memset */
@@ -274,7 +274,6 @@ void
 init_audio_engine()
 {
     g_message ("Initializing audio engine...");
-    AUDIO_ENGINE = calloc (1, sizeof (Audio_Engine));
     Audio_Engine * engine = AUDIO_ENGINE;
 
     const char **ports;
@@ -452,12 +451,15 @@ close_audio_engine ()
     jack_client_close (AUDIO_ENGINE->client);
 }
 
+/**
+ * FIXME move to project
+ */
 void
 engine_delete_port (Port * port)
 {
-  for (int i = port->id; i < AUDIO_ENGINE->num_ports - 1; i++)
+  for (int i = port->id; i < PROJECT->num_ports - 1; i++)
     {
-      AUDIO_ENGINE->ports[i] = AUDIO_ENGINE->ports[i + 1];
+      PROJECT->ports[i] = PROJECT->ports[i + 1];
     }
-  AUDIO_ENGINE->num_ports--;
+  PROJECT->num_ports--;
 }

@@ -35,6 +35,11 @@
 
 typedef struct Timeline Timeline;
 typedef struct Transport Transport;
+typedef struct Port Port;
+typedef struct Channel Channel;
+typedef struct Plugin Plugin;
+typedef struct Track Track;
+typedef struct Region Region;
 
 typedef struct Project
 {
@@ -47,6 +52,18 @@ typedef struct Project
    * Timeline metadata like BPM, time signature, etc.
    */
   Transport             * transport;
+
+  /* for bookkeeping */
+  Port              * ports[600000];   ///< all ports have a reference here for easy access
+  int               num_ports;
+  Channel           * channels[3000];
+  int               num_channels;
+  Plugin            * plugins[30000];
+  int               num_plugins;
+  Track             * tracks [3000];
+  int               num_tracks;
+  Region            * regions [30000];
+  int               num_regions;
 } Project;
 
 
@@ -54,7 +71,7 @@ typedef struct Project
  * Creates a project with default or given variables
  */
 void
-project_create (char * filename);
+project_setup (char * filename);
 
 /**
  * Loads project from a file.

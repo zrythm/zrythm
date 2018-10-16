@@ -85,6 +85,7 @@ typedef struct Port
   int                 owner_jack;        ///< 1 if owner is JACK
   Plugin              * owner_pl;           ///< owner plugin, for plugins
   Channel             * owner_ch;           ///< owner channel, for channels
+  int                 exported;   ///< used in xml project file export
 } Port;
 
 /**

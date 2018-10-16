@@ -44,6 +44,8 @@ region_new (Track * track,
   region->track = track;
   region->widget = region_widget_new (region);
   region->name = g_strdup ("Region 1");
+  region->id = PROJECT->num_regions;
+  PROJECT->regions[PROJECT->num_regions++] = region;
 
   return region;
 }

@@ -278,6 +278,9 @@ _create_channel (char * name)
     channel->piano_roll->owner_jack = 0;
     channel->piano_roll->midi_events.queue = calloc (1, sizeof (Midi_Events));
 
+    channel->id = PROJECT->num_channels;
+    PROJECT->channels[PROJECT->num_channels++] = channel;
+
     return channel;
   }
 

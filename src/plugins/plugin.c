@@ -61,6 +61,9 @@ _plugin_new ()
 
   plugin->processed = 1;
 
+  plugin->id = PROJECT->num_plugins;
+  PROJECT->plugins[PROJECT->num_plugins++] = plugin;
+
   return plugin;
 }
 

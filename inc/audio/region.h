@@ -32,11 +32,16 @@ typedef struct MidiNote MidiNote;
 
 typedef struct Region
 {
+  int          id;
+  char         * name; ///< region name
   Position     start_pos;
   Position     end_pos;
   RegionWidget * widget;
   Track        * track; ///< owner track
-  char         * name; ///< region name
+
+  /* either the midi notes from this region, or the midi notes from the
+   * linked region are used */
+  struct Region       * linked_region; ///< linked parent region
   MidiNote     * midi_notes[200]; /// midi notes (if MIDI region)
   int          num_midi_notes;
 } Region;

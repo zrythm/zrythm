@@ -29,12 +29,11 @@
 
 
 void
-project_create (char * filename)
+project_setup (char * filename)
 {
-  PROJECT = calloc(1, sizeof( Project));
 
   // set title
-  g_message ("Creating project %s...", filename);
+  g_message ("Setting up project %s...", filename);
   PROJECT->title = g_strdup (filename);
 
   transport_init ();
@@ -45,11 +44,20 @@ void
 project_save (char * filename)
 {
   /* write XML */
-  xml_write_project (filename);
+  char ** parts = g_strsplit (filename, ".", 2);
+  char * file_part = parts[0];
+  char * ext_part = parts[1];
+  char * tmp = g_strdup_printf ("%s_ports.%s", file_part, ext_part);
+  xml_write_ports (tmp);
+  g_free (tmp);
+
+  /* TODO write regions & their corresponding MIDI */
 
   /* TODO write plugin states */
 
-  /* TODO write MIDI */
+  tmp = g_strdup_printf ("%s.%s", file_part, ext_part);
+  xml_write_project (tmp);
+  g_free (tmp);
 
 }
 

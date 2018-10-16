@@ -49,6 +49,12 @@ zrythm_app_activate (GApplication *app)
   gtk_window_present (GTK_WINDOW (splash));
   g_message ("Starting up...");
 
+  AUDIO_ENGINE = calloc (1, sizeof (Audio_Engine));
+  PROJECT = calloc (1, sizeof (Project));
+
+  // create project
+  project_setup ("project.xml");
+
   /* TODO move the rest in signal handler (on window shown) */
 
   init_settings_manager ();
@@ -59,8 +65,6 @@ zrythm_app_activate (GApplication *app)
 
   init_audio_engine ();
 
-  // create project
-  project_create ("project.xml");
 
   g_message ("Creating main window...");
   gtk_window_close (GTK_WINDOW (splash));

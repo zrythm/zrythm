@@ -33,6 +33,7 @@
 #endif
 #include <math.h>
 
+#include "project.h"
 #include "audio/channel.h"
 #include "audio/mixer.h"
 #include "audio/port.h"
@@ -58,8 +59,8 @@ port_new (nframes_t nframes, char * label)
   Port * port = calloc (1, sizeof (Port));
 
   /* FIXME remove the storing in audio engine */
-  port->id = AUDIO_ENGINE->num_ports;
-  AUDIO_ENGINE->ports[AUDIO_ENGINE->num_ports++] = port;
+  port->id = PROJECT->num_ports;
+  PROJECT->ports[PROJECT->num_ports++] = port;
   port->num_dests = 0;
   port->nframes = nframes;
   port->buf = calloc (nframes, sizeof (sample_t));
@@ -302,9 +303,9 @@ port_sum_signal_from_inputs (Port * port, nframes_t nframes)
 void
 port_print_connections_all ()
 {
-  for (int i = 0; i < AUDIO_ENGINE->num_ports; i++)
+  for (int i = 0; i < PROJECT->num_ports; i++)
     {
-      Port * src = AUDIO_ENGINE->ports[i];
+      Port * src = PROJECT->ports[i];
       if (!src->owner_pl && !src->owner_ch && !src->owner_jack)
         {
           g_warning ("Port %s has no owner", src->label);
