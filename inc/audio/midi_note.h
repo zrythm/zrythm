@@ -26,9 +26,13 @@
 #include "audio/position.h"
 #include "audio/region.h"
 
+/* TODO merge with midi.h */
+
 typedef struct MidiNoteWidget MidiNoteWidget;
 typedef struct Channel Channel;
 typedef struct Track Track;
+typedef struct MidiEvents MidiEvents;
+typedef struct Position Position;
 
 typedef struct MidiNote
 {
@@ -63,6 +67,16 @@ midi_note_set_start_pos (MidiNote * midi_note,
 void
 midi_note_set_end_pos (MidiNote * midi_note,
                        Position * end_pos);
+
+/**
+ * Converts an array of MIDI notes to MidiEvents.
+ */
+void
+midi_note_notes_to_events (MidiNote     ** midi_notes, ///< array
+                           int          num_notes, ///< number of events in array
+                           Position     * pos, ///< position to offset time from
+                           MidiEvents   * events);  ///< preallocated struct to fill
+
 
 #endif // __AUDIO_POSITION_H__
 

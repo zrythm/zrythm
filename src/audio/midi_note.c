@@ -20,7 +20,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/midi.h"
 #include "audio/midi_note.h"
+#include "audio/position.h"
 #include "audio/track.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_note.h"
@@ -84,5 +86,44 @@ midi_note_set_end_pos (MidiNote * midi_note,
 {
   position_set_to_pos (&midi_note->end_pos,
                        pos);
+}
+
+/**
+ * Converts an array of MIDI notes to MidiEvents.
+ */
+void
+midi_note_notes_to_events (MidiNote     ** midi_notes, ///< array
+                           int          num_notes, ///< number of events in array
+                           Position     * pos, ///< position to offset time from
+                           MidiEvents   * events)  ///< preallocated struct to fill
+{
+  for (int i = 0; i < num_notes; i++)
+    {
+      MidiNote * note = midi_notes[i];
+
+      /* note on */
+      jack_midi_event_t * ev = &events->jack_midi_events[events->num_events];
+      ev->time = position_to_frames (&note->start_pos) -
+        position_to_frames (pos);
+      ev->size = 3;
+      if (!ev->buffer)
+        ev->buffer = calloc (3, sizeof (jack_midi_data_t));
+      ev->buffer[0] = 0x90; /* status byte, 0x90 is note on */
+      ev->buffer[1] = note->val; /* note number 0-127 */
+      ev->buffer[2] = note->vel; /* velocity 0-127 */
+      events->num_events++;
+
+      /* note off */
+      ev = &events->jack_midi_events[events->num_events];
+      ev->time = position_to_frames (&note->end_pos) -
+        position_to_frames (pos);
+      ev->size = 3;
+      if (!ev->buffer)
+        ev->buffer = calloc (3, sizeof (jack_midi_data_t));
+      ev->buffer[0] = 0x80; /* status byte, 0x80 is note off */
+      ev->buffer[1] = note->val; /* note number 0-127 */
+      ev->buffer[2] = note->vel; /* velocity 0-127 */
+      events->num_events++;
+    }
 }
 

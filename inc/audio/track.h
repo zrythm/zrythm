@@ -28,7 +28,7 @@ typedef struct Region Region;
 typedef struct Position Position;
 typedef struct TrackWidget TrackWidget;
 typedef struct Channel Channel;
-typedef struct Midi_Events Midi_Events;
+typedef struct MidiEvents MidiEvents;
 typedef jack_nframes_t nframes_t;
 
 
@@ -52,7 +52,7 @@ void
 track_fill_midi_events (Track      * track,
                         Position   * pos, ///< start position to check
                         nframes_t  nframes, ///< n of frames from start pos
-                        Midi_Events * midi_events); ///< midi events to fill
+                        MidiEvents * midi_events); ///< midi events to fill
 
 void
 track_add_region (Track      * track,

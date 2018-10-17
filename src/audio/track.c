@@ -45,7 +45,7 @@ void
 track_fill_midi_events (Track      * track,
                         Position   * pos, ///< start position to check
                         nframes_t  nframes, ///< n of frames from start pos
-                        Midi_Events * midi_events) ///< midi events to fill
+                        MidiEvents * midi_events) ///< midi events to fill
 {
   Position end_pos;
   position_set_to_pos (&end_pos, pos);

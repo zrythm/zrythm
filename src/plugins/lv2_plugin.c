@@ -132,22 +132,22 @@ static LV2_URID
 _map_uri(LV2_URID_Map_Handle handle,
         const char*         uri)
 {
-    LV2_Plugin* plugin = (LV2_Plugin*)handle;
-    zix_sem_wait(&plugin->symap_lock);
-    const LV2_URID id = symap_map(plugin->symap, uri);
-    zix_sem_post(&plugin->symap_lock);
-    return id;
+  LV2_Plugin* plugin = (LV2_Plugin*)handle;
+  zix_sem_wait(&plugin->symap_lock);
+  const LV2_URID id = symap_map(plugin->symap, uri);
+  zix_sem_post(&plugin->symap_lock);
+  return id;
 }
 
 static const char*
 _unmap_uri(LV2_URID_Unmap_Handle handle,
           LV2_URID              urid)
 {
-	LV2_Plugin* plugin = (LV2_Plugin*)handle;
-	zix_sem_wait(&plugin->symap_lock);
-	const char* uri = symap_unmap(plugin->symap, urid);
-	zix_sem_post(&plugin->symap_lock);
-	return uri;
+  LV2_Plugin* plugin = (LV2_Plugin*)handle;
+  zix_sem_wait(&plugin->symap_lock);
+  const char* uri = symap_unmap(plugin->symap, urid);
+  zix_sem_post(&plugin->symap_lock);
+  return uri;
 }
 
 /**
@@ -340,6 +340,50 @@ lv2_allocate_port_buffers(LV2_Plugin* plugin)
       default: break;
       }
     }
+}
+
+/**
+ * Function to get a port value.
+ *
+ * Used when saving the state.
+ * This function MUST set size and type appropriately.
+ */
+static const void *
+lv2_get_port_value (const char * port_sym,
+                    void       * user_data,
+                    uint32_t   * size,
+                    uint32_t   * type)
+{
+  LV2_Plugin * lv2_plugin = (LV2_Plugin *) user_data;
+
+  LV2_Port * port = lv2_port_by_symbol (lv2_plugin,
+                                        port_sym);
+  *size = 0;
+  *type = 0;
+
+  if (port)
+    {
+      *size = sizeof (float);
+      *type = lv2_plugin->urids.atom_Float;
+      return (const void *) &port->control;
+    }
+
+  return NULL;
+}
+
+/**
+ * Function to set a port value. TODO
+ *
+ * Used when retrieving the state.
+ */
+static void
+lv2_set_port_value (const char * port_sym,
+                    void       * user_data,
+                    const void * value,
+                    uint32_t   * size,
+                    uint32_t   * type)
+{
+
 }
 
 /**
@@ -822,19 +866,21 @@ _apply_control_arg(LV2_Plugin* plugin, const char* s)
 {
   char  sym[256];
   float val = 0.0f;
-  if (sscanf(s, "%[^=]=%f", sym, &val) != 2) {
-          fprintf(stderr, "warning: Ignoring invalid value `%s'\n", s);
-          return false;
-  }
+  if (sscanf(s, "%[^=]=%f", sym, &val) != 2)
+    {
+      g_warning ("Ignoring invalid value `%s'\n", s);
+      return false;
+    }
 
   Lv2ControlID* control = lv2_control_by_symbol(plugin, sym);
-  if (!control) {
-          fprintf(stderr, "warning: Ignoring value for unknown control `%s'\n", sym);
-          return false;
-  }
+  if (!control)
+    {
+      g_warning ("warning: Ignoring value for unknown control `%s'\n", sym);
+      return false;
+    }
 
   lv2_set_control(control, sizeof(float), plugin->urids.atom_Float, &val);
-  printf("%-*s = %f\n", plugin->longest_sym, sym, val);
+  g_message ("%-*s = %f\n", plugin->longest_sym, sym, val);
 
   return true;
 }
@@ -1314,7 +1360,7 @@ lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
   lv2_plugin->worker.plugin      = lv2_plugin;
   lv2_plugin->state_worker.plugin = lv2_plugin;
 
-  lv2_plugin->unmap.handle  = &lv2_plugin;
+  lv2_plugin->unmap.handle  = lv2_plugin;
   lv2_plugin->unmap.unmap   = _unmap_uri;
   lv2_plugin->unmap_feature.data = &lv2_plugin->unmap;
 
@@ -1897,4 +1943,47 @@ lv2_cleanup (LV2_Plugin *lv2_plugin)
   remove(lv2_plugin->temp_dir);
   free(lv2_plugin->temp_dir);
   free(lv2_plugin->ui_event_buf);
+}
+
+int
+lv2_save_state (LV2_Plugin * lv2_plugin, const char * dir)
+{
+  LilvState * state = lilv_state_new_from_instance (
+    lv2_plugin->lilv_plugin,
+    lv2_plugin->instance,
+    &lv2_plugin->map,
+    NULL,
+    dir,
+    dir,
+    /*dir, [> FIXME use lv2_plugin->save_dir when opening a project <]*/
+    dir, /* FIXME use lv2_plugin->save_dir when opening a project */
+    lv2_get_port_value,
+    (void *) lv2_plugin,
+    LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE,
+    lv2_plugin->state_features);
+
+  if (state)
+    {
+      char * label = g_strdup_printf ("%s.ttl",
+                                      lv2_plugin->plugin->descr->name);
+      g_message ("before save state %d",
+                 lv2_plugin->symap->size);
+      int rc = lilv_state_save (LILV_WORLD,
+                                &lv2_plugin->map,
+                                &lv2_plugin->unmap,
+                                state,
+                                NULL,
+                                dir,
+                                label);
+      g_free (label);
+      lilv_state_free (state);
+
+      return 0;
+    }
+  else
+    {
+      g_warning ("Could create state");
+    }
+
+  return -1;
 }

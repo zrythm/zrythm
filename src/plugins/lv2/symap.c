@@ -131,7 +131,6 @@ symap_map(Symap* map, const char* sym)
           return map->index[index];
   }
 
-  g_message ("mapping %d", map->size);
   const uint32_t id  = ++map->size;
   char* const    str = symap_strdup(sym);
 
@@ -155,11 +154,14 @@ symap_map(Symap* map, const char* sym)
 const char*
 symap_unmap(Symap* map, uint32_t id)
 {
-  if (id == 0) {
-          return NULL;
-  } else if (id <= map->size) {
-          return map->symbols[id - 1];
-  }
+  if (id == 0)
+    {
+      return NULL;
+    }
+  else if (id <= map->size)
+    {
+      return map->symbols[id - 1];
+    }
   return NULL;
 }
 
@@ -170,45 +172,46 @@ symap_unmap(Symap* map, uint32_t id)
 static void
 symap_dump(Symap* map)
 {
-	fprintf(stderr, "{\n");
-	for (uint32_t i = 0; i < map->size; ++i) {
-		fprintf(stderr, "\t%u = %s\n",
-		        map->index[i], map->symbols[map->index[i] - 1]);
-	}
-	fprintf(stderr, "}\n");
+  g_message("{");
+  for (uint32_t i = 0; i < map->size; ++i)
+    {
+      g_message ("\t%u = %s",
+              map->index[i], map->symbols[map->index[i] - 1]);
+    }
+  g_message ("}");
 }
 
 int
 main()
 {
-	#define N_SYMS 5
-	char* syms[N_SYMS] = {
-		"hello", "bonjour", "goodbye", "aloha", "salut"
-	};
+  #define N_SYMS 5
+  char* syms[N_SYMS] = {
+          "hello", "bonjour", "goodbye", "aloha", "salut"
+  };
 
-	Symap* map = symap_new();
-	for (int i = 0; i < N_SYMS; ++i) {
-		if (symap_try_map(map, syms[i])) {
-			g_error ("error: Symbol already mapped\n");
-			return 1;
-		}
+  Symap* map = symap_new();
+  for (int i = 0; i < N_SYMS; ++i) {
+          if (symap_try_map(map, syms[i])) {
+                  g_error ("error: Symbol already mapped\n");
+                  return 1;
+          }
 
-		const uint32_t id = symap_map(map, syms[i]);
-		if (strcmp(map->symbols[id - 1], syms[i])) {
-			g_error ("error: Corrupt symbol table\n");
-			return 1;
-		}
+          const uint32_t id = symap_map(map, syms[i]);
+          if (strcmp(map->symbols[id - 1], syms[i])) {
+                  g_error ("error: Corrupt symbol table\n");
+                  return 1;
+          }
 
-		if (symap_map(map, syms[i]) != id) {
-			g_error ("error: Remapped symbol to a different ID\n");
-			return 1;
-		}
+          if (symap_map(map, syms[i]) != id) {
+                  g_error ("error: Remapped symbol to a different ID\n");
+                  return 1;
+          }
 
-		symap_dump(map);
-	}
+          symap_dump(map);
+  }
 
-	symap_free(map);
-	return 0;
+  symap_free(map);
+  return 0;
 }
 
 #endif /* STANDALONE */

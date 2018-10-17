@@ -390,7 +390,7 @@ init_audio_engine()
     engine->midi_editor_manual_press = midi_editor_manual_press;
 
     /* init MIDI queues for manual presse/piano roll */
-    engine->midi_editor_manual_press->midi_events.queue = calloc (1, sizeof (Midi_Events));
+    engine->midi_editor_manual_press->midi_events.queue = calloc (1, sizeof (MidiEvents));
 
     if (!engine->stereo_in->l->data || !engine->stereo_in->r->data ||
         !engine->stereo_out->l->data || !engine->stereo_out->r->data ||

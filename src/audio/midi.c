@@ -30,7 +30,7 @@
  * Appends the events from src to dest
  */
 void
-midi_events_append (Midi_Events * src, Midi_Events * dest)
+midi_events_append (MidiEvents * src, MidiEvents * dest)
 {
   int dest_index = dest->num_events;
   for (int i = 0; i < src->num_events; i++)
@@ -48,7 +48,7 @@ midi_events_append (Midi_Events * src, Midi_Events * dest)
  * Clears midi events.
  */
 void
-midi_events_clear (Midi_Events * midi_events)
+midi_events_clear (MidiEvents * midi_events)
 {
   midi_events->num_events = 0;
 }
@@ -57,7 +57,7 @@ midi_events_clear (Midi_Events * midi_events)
  * Copies the queue contents to the original struct
  */
 void
-midi_events_dequeue (Midi_Events * midi_events)
+midi_events_dequeue (MidiEvents * midi_events)
 {
   midi_events->num_events = midi_events->queue->num_events;
   for (int i = 0; i < midi_events->num_events; i++)

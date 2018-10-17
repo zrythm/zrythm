@@ -45,7 +45,7 @@ on_drag_data_received (GtkWidget        *widget,
                guint             time,
                gpointer          user_data)
 {
-  MixerWidget * self = MAIN_WINDOW->mixer;
+  MixerWidget * mixer = MAIN_WINDOW->mixer;
   Plugin_Descriptor * descr = *(gpointer *) gtk_selection_data_get_data (data);
   Plugin * plugin = plugin_create_from_descr (descr);
 
@@ -74,26 +74,28 @@ on_drag_data_received (GtkWidget        *widget,
   MIXER->channels[MIXER->num_channels++] = new_channel;
 
   /* remove dummy box for dnd */
-  gtk_container_remove (GTK_CONTAINER (self->channels_box),
-                        GTK_WIDGET (self->dummy_mixer_box));
+  g_object_ref (mixer->dummy_mixer_box);
+  gtk_container_remove (GTK_CONTAINER (mixer->channels_box),
+                        GTK_WIDGET (mixer->dummy_mixer_box));
 
   /* add widget */
-  gtk_container_remove (GTK_CONTAINER (self->channels_box),
-                        GTK_WIDGET (self->channels_add));
-  gtk_box_pack_start (self->channels_box,
+  gtk_container_remove (GTK_CONTAINER (mixer->channels_box),
+                        GTK_WIDGET (mixer->channels_add));
+  gtk_box_pack_start (mixer->channels_box,
                     GTK_WIDGET (new_channel->widget),
                     0, 0, 0);
-  gtk_box_pack_start (self->channels_box,
-                      GTK_WIDGET (self->channels_add),
+  gtk_box_pack_start (mixer->channels_box,
+                      GTK_WIDGET (mixer->channels_add),
                       0, 0, 0);
 
   /* update the slots on the channel to show correct names */
   channel_update_slots (new_channel->widget);
 
   /* re-add dummy box for dnd */
-  gtk_box_pack_start (self->channels_box,
-                      GTK_WIDGET (self->dummy_mixer_box),
+  gtk_box_pack_start (mixer->channels_box,
+                      GTK_WIDGET (mixer->dummy_mixer_box),
                       1, 1, 0);
+  g_object_unref (mixer->dummy_mixer_box);
 
   /* create track widget */
   tracks_widget_add_channel (MAIN_WINDOW->tracks, new_channel);

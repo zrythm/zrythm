@@ -34,13 +34,14 @@
 #include "audio/region.h"
 #include "audio/track.h"
 #include "plugins/lv2_plugin.h"
+#include "utils/io.h"
 #include "utils/xml.h"
 
 #include <gtk/gtk.h>
 
 #include <libxml/encoding.h>
 
-#define MY_ENCODING "ISO-8859-1"
+#define MY_ENCODING "UTF-8"
 
 /**
  * Already serialized/deserialized ports
@@ -391,16 +392,13 @@ write_region_id (xmlTextWriterPtr writer, Region * region)
 {
   int rc;
   rc = xmlTextWriterWriteFormatElement (writer,
-                                        BAD_CAST "Region",
-                                        "",
-                                        NULL);
-  rc = xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "id",
-                                         "%d", region->id);
-  rc = xmlTextWriterEndElement(writer);
+                                        BAD_CAST "region_id",
+                                        "%d",
+                                        region->id);
 }
 
 static void
-write_region (xmlTextWriterPtr writer, Region * region)
+write_region (xmlTextWriterPtr writer, Region * region, const char * file)
 {
   int rc;
   rc = xmlTextWriterStartElement (writer, BAD_CAST "Region");
@@ -409,7 +407,7 @@ write_region (xmlTextWriterPtr writer, Region * region)
                                         "%s",
                                         region->name);
   write_position (writer, &region->start_pos, "start_pos");
-  write_position (writer, &region->start_pos, "end_pos");
+  write_position (writer, &region->end_pos, "end_pos");
   if (region->track->channel->type == CT_AUDIO)
     {
       //
@@ -417,13 +415,29 @@ write_region (xmlTextWriterPtr writer, Region * region)
   else if (region->track->channel->type == CT_MIDI)
     {
       if (region->linked_region)
-        write_region_id (writer, region->linked_region);
+        {
+          rc = xmlTextWriterStartElement (writer, BAD_CAST "LinkedRegion");
+          write_region_id (writer, region->linked_region);
+          rc = xmlTextWriterEndElement(writer);
+        }
       else
         {
+          char * dir = io_get_dir (file);
+          char * separator = io_get_separator ();
+          char * filename = g_strdup_printf (REGION_PRINTF_FILENAME,
+                                             dir,
+                                             separator,
+                                             separator,
+                                             region->id,
+                                             region->track->channel->name,
+                                             region->name);
           rc = xmlTextWriterWriteFormatElement (writer,
-                                                BAD_CAST "num_midi_notes",
-                                                "%d",
-                                                region->num_midi_notes);
+                                                BAD_CAST "filename",
+                                                "%s",
+                                                filename);
+          g_free (dir);
+          g_free (separator);
+          g_free (filename);
 
           rc = xmlTextWriterStartElement (writer, BAD_CAST "MidiNotes");
           /* TODO write midi notes */
@@ -432,6 +446,72 @@ write_region (xmlTextWriterPtr writer, Region * region)
     }
 
   rc = xmlTextWriterEndElement(writer);
+
+}
+
+void
+xml_write_regions (const char * file)
+{
+  g_message ("Writing %s...", file);
+
+  /*
+   * this initialize the library and check potential ABI mismatches
+   * between the version it was compiled for and the actual shared
+   * library used.
+   */
+  LIBXML_TEST_VERSION
+
+  int rc;
+  xmlTextWriterPtr writer;
+  xmlChar *tmp;
+
+  /* Create a new XmlWriter for uri, with no compression. */
+  writer = xmlNewTextWriterFilename(file, 0);
+  if (writer == NULL) {
+      g_warning ("Error creating the xml writer\n");
+      return;
+  }
+
+  /* prettify */
+  xmlTextWriterSetIndent (writer, 1);
+
+  /* Start the document with the xml default for the version,
+   * encoding ISO 8859-1 and the default for the standalone
+   * declaration. */
+  rc = xmlTextWriterStartDocument(writer, NULL, MY_ENCODING, NULL);
+  if (rc < 0)
+    {
+      g_warning ("Error at xmlTextWriterStartDocument\n");
+      return;
+    }
+
+  /* write regions */
+  rc = xmlTextWriterStartElement(writer, BAD_CAST "Regions");
+  rc = xmlTextWriterWriteAttribute(writer, BAD_CAST "ver",
+                                   BAD_CAST PROJECT_XML_VER);
+
+  /* write regions */
+  for (int i = 0; i < PROJECT->num_regions; i++)
+    {
+      write_region (writer, PROJECT->regions[i], file);
+    }
+
+  /* Here we could close the elements ORDER and EXAMPLE using the
+   * function xmlTextWriterEndElement, but since we do not want to
+   * write any other elements, we simply call xmlTextWriterEndDocument,
+   * which will do all the work. */
+  rc = xmlTextWriterEndDocument(writer);
+  if (rc < 0) {
+      g_warning ("Error at xmlTextWriterEndDocument\n");
+      return;
+  }
+
+  xmlFreeTextWriter(writer);
+
+  /*
+   * Cleanup function for the XML library.
+   */
+  xmlCleanupParser();
 
 }
 
@@ -447,7 +527,7 @@ write_track (xmlTextWriterPtr writer, Track * track)
   rc = xmlTextWriterStartElement (writer, BAD_CAST "Regions");
   for (int i = 0; i < track->num_regions; i++)
     {
-      write_region (writer, track->regions[i]);
+      write_region_id (writer, track->regions[i]);
     }
   rc = xmlTextWriterEndElement(writer);
 

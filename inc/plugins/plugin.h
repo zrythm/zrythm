@@ -29,8 +29,8 @@
 
 /* FIXME allocate dynamically */
 #define MAX_IN_PORTS 400000
-#define MAX_OUT_PORTS 1400
-#define MAX_UNKNOWN_PORTS 400
+#define MAX_OUT_PORTS 14000
+#define MAX_UNKNOWN_PORTS 4000
 
 #define DUMMY_PLUGIN "Dummy Plugin"
 

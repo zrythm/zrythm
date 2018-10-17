@@ -1,5 +1,5 @@
 /*
- * utils/xml.c - XML serializer for parsing/writing project file
+ * utils/smf.h - SMF file writer/reader
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,24 +19,14 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
- */
-#ifndef __UTILS_XML_H__
-#define __UTILS_XML_H__
-
-#include <libxml/xmlwriter.h>
+#ifndef __UTILS_SMF_H__
+#define __UTILS_SMF_H__
 
 
 /**
- * Writes the project to an XML file.
+ * Saves regions into MIDI files (.smf)
  */
 void
-xml_write_project (const char * file);
-
-void
-xml_write_ports (const char * file);
-
-void
-xml_write_regions (const char * filename);
+smf_save_regions ();
 
 #endif

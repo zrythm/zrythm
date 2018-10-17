@@ -25,6 +25,8 @@
 
 #include "audio/position.h"
 
+#define REGION_PRINTF_FILENAME "%s%sregions%s%d_%s_%s.mid"
+
 typedef struct RegionWidget RegionWidget;
 typedef struct Channel Channel;
 typedef struct Track Track;

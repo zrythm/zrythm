@@ -1,5 +1,5 @@
 /*
- * utils/xml.c - XML serializer for parsing/writing project file
+ * utils/io.h - IO utils
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -21,22 +21,27 @@
 
 /** \file
  */
-#ifndef __UTILS_XML_H__
-#define __UTILS_XML_H__
-
-#include <libxml/xmlwriter.h>
+#ifndef __UTILS_IO_H__
+#define __UTILS_IO_H__
 
 
 /**
- * Writes the project to an XML file.
+ * Gets system file separator. MUST be freed.
+ */
+char *
+io_get_separator (); ///< string to write to
+
+/**
+ * Gets directory part of filename. MUST be freed.
+ */
+char *
+io_get_dir (const char * filename); ///< filename containing directory
+
+/**
+ * Makes directory if doesn't exist.
  */
 void
-xml_write_project (const char * file);
-
-void
-xml_write_ports (const char * file);
-
-void
-xml_write_regions (const char * filename);
+io_mkdir (const char * dir);
 
 #endif
+

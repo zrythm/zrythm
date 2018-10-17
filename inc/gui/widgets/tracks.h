@@ -40,6 +40,7 @@ typedef struct TracksWidget
 {
   GtkPaned               parent_instance;  ///< parent paned with master
   GtkPaned               * tracks[100]; ///< paned stacks
+  GtkBox                 * dummy_box;
 } TracksWidget;
 
 typedef struct TracksWidgetClass

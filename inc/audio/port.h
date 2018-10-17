@@ -70,7 +70,7 @@ typedef struct Port
   int                 id;             ///< each port has an ID so that they can get connected
   char                * label;     ///< human readable label
   sample_t            * buf;      ///< buffer to be allocated with malloc, for AUDIO
-  Midi_Events         midi_events;   ///< contains the raw MIDI packets, for MIDI ports
+  MidiEvents         midi_events;   ///< contains the raw MIDI packets, for MIDI ports
   /* FIXME necessary? */
   nframes_t           nframes;        ///< number of frames (size of samples array)
 	PortType            type;       ///< Data type

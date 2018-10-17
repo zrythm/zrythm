@@ -489,6 +489,14 @@ void
 lv2_plugin_process (LV2_Plugin * lv2_plugin, nframes_t nframes);
 
 /**
+ * Saves the current state in given dir.
+ *
+ * Used when saving the project.
+ */
+int
+lv2_save_state (LV2_Plugin * lv2_plugin, const char * dir);
+
+/**
  * Frees memory
  */
 void
