@@ -47,13 +47,15 @@ zrythm_app_activate (GApplication *app)
 {
   SplashWindowWidget * splash = splash_window_widget_new (ZRYTHM_APP (app));
   gtk_window_present (GTK_WINDOW (splash));
+  gtk_widget_show_all (GTK_WIDGET (splash));
+
   g_message ("Starting up...");
 
   AUDIO_ENGINE = calloc (1, sizeof (Audio_Engine));
   PROJECT = calloc (1, sizeof (Project));
 
   // create project
-  project_setup ("project.xml");
+  project_create ("Untitled Project");
 
   /* TODO move the rest in signal handler (on window shown) */
 
@@ -64,7 +66,6 @@ zrythm_app_activate (GApplication *app)
   plugin_manager_init ();
 
   init_audio_engine ();
-
 
   g_message ("Creating main window...");
   gtk_window_close (GTK_WINDOW (splash));

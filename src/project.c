@@ -25,6 +25,7 @@
 #include "audio/engine.h"
 #include "audio/mixer.h"
 #include "audio/transport.h"
+#include "gui/widgets/main_window.h"
 #include "plugins/lv2_plugin.h"
 #include "utils/io.h"
 #include "utils/smf.h"
@@ -34,12 +35,25 @@
 
 
 void
-project_setup (char * filename)
+project_create (char * filename)
 {
 
   // set title
-  g_message ("Setting up project %s...", filename);
+  g_message ("Creating project %s...", filename);
   PROJECT->title = g_strdup (filename);
+
+  PROJECT->snap_grid_timeline.grid_auto = 1;
+  /*PROJECT->snap_grid_timeline.grid_density = 3;*/
+  PROJECT->snap_grid_timeline.grid_density = 1;
+  PROJECT->snap_grid_timeline.snap_to_grid = 1;
+  PROJECT->snap_grid_timeline.snap_to_edges = 1;
+  PROJECT->snap_grid_timeline.type = SNAP_GRID_TIMELINE;
+  PROJECT->snap_grid_midi.grid_auto = 1;
+  /*PROJECT->snap_grid_midi.grid_density = 4;*/
+  PROJECT->snap_grid_midi.grid_density = 1;
+  PROJECT->snap_grid_midi.snap_to_grid = 1;
+  PROJECT->snap_grid_midi.snap_to_edges = 1;
+  PROJECT->snap_grid_midi.type = SNAP_GRID_MIDI;
 
   transport_init ();
   AUDIO_ENGINE->run = 1;
@@ -52,20 +66,34 @@ project_save (char * filename)
   char ** parts = g_strsplit (filename, ".", 2);
   char * file_part = parts[0];
   char * ext_part = parts[1];
-  char * tmp = g_strdup_printf ("%s_ports.%s", file_part, ext_part);
+  g_strfreev (parts);
+  char * separator = io_get_separator ();
+  char ** path_file = g_strsplit (file_part, separator, -1);
+  int i = 0;
+  while (path_file[i] != NULL)
+    i++;
+  char * path = "";
+  for (int j = 0; j < i - 1; j++)
+    {
+      char * tmp = path;
+      path = g_strconcat (tmp, path_file[j]);
+      g_free (tmp);
+    }
+  g_strfreev (path_file);
+
+  char * tmp = g_strdup_printf ("%s_ports.xml", filename);
   xml_write_ports (tmp);
   g_free (tmp);
 
   /*  write regions & their corresponding MIDI */
   smf_save_regions (filename);
-  tmp = g_strdup_printf ("%s_regions.%s", file_part, ext_part);
+  tmp = g_strdup_printf ("%s_regions.xml", filename);
   xml_write_regions (tmp);
   g_free (tmp);
 
   /* write plugin states */
   char * dir = io_get_dir (filename);
   io_mkdir (dir);
-  char * separator = io_get_separator ();
   char * state_dir = g_strdup_printf ("%s%sstates",
                                       dir,
                                       separator);
@@ -104,14 +132,32 @@ project_save (char * filename)
       g_free (state_dir_channel);
     }
 
-  tmp = g_strdup_printf ("%s.%s", file_part, ext_part);
+  tmp = g_strdup_printf ("%s.xml", filename);
   xml_write_project (tmp);
   g_free (tmp);
+
+  PROJECT->path = path;
+  project_set_title (filename);
 
   g_free (dir);
   g_free (separator);
   g_free (state_dir);
-  g_strfreev (parts);
+}
+
+/**
+ * Sets title to project and main window
+ */
+void
+project_set_title (char * title)
+{
+  PROJECT->title = title;
+
+  if (MAIN_WINDOW)
+    {
+      char * title = g_strdup_printf ("Zrythm - %s", PROJECT->title);
+      gtk_label_set_text (MAIN_WINDOW->title, title);
+      g_free (title);
+    }
 }
 
 void

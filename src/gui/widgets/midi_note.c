@@ -21,8 +21,8 @@
 
 #include "audio/channel.h"
 #include "audio/track.h"
+#include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/ruler.h"
@@ -121,11 +121,11 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
         {
           self->hover_state = MIDI_NOTE_HOVER_STATE_MIDDLE;
           if (MAIN_WINDOW->midi_editor->midi_arranger->action !=
-              MAA_MOVING_NOTE &&
+              ARRANGER_ACTION_MOVING &&
               MAIN_WINDOW->midi_editor->midi_arranger->action !=
-              MAA_RESIZING_NOTE_L &&
+              ARRANGER_ACTION_RESIZING_L &&
               MAIN_WINDOW->midi_editor->midi_arranger->action !=
-              MAA_RESIZING_NOTE_R)
+              ARRANGER_ACTION_RESIZING_R)
             {
               ui_set_cursor (widget, "default");
             }
@@ -135,11 +135,11 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
     {
       self->hover_state = MIDI_NOTE_HOVER_STATE_NONE;
       if (MAIN_WINDOW->midi_editor->midi_arranger->action !=
-          MAA_MOVING_NOTE &&
+          ARRANGER_ACTION_MOVING &&
           MAIN_WINDOW->midi_editor->midi_arranger->action !=
-          MAA_RESIZING_NOTE_L &&
+          ARRANGER_ACTION_RESIZING_L &&
           MAIN_WINDOW->midi_editor->midi_arranger->action !=
-          MAA_RESIZING_NOTE_R)
+          ARRANGER_ACTION_RESIZING_R)
         {
           ui_set_cursor (widget, "default");
         }

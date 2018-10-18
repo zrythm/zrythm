@@ -27,6 +27,8 @@
 #include "audio/track.h"
 #include "gui/widgets/track.h"
 
+#include <gtk/gtk.h>
+
 Track *
 track_new (Channel * channel)
 {
@@ -105,4 +107,26 @@ track_add_region (Track      * track,
                   Region     * region)
 {
   track->regions[track->num_regions++] = region;
+  region->track = track;
 }
+
+void
+track_remove_region (Track    * track,
+                     Region   * region)
+{
+  for (int i = 0; i < track->num_regions; i++)
+    {
+      if (track->regions[i] == region)
+        {
+          for (int j = i; j < track->num_regions - 1; j++)
+            {
+              track->regions[j] = track->regions[j + 1];
+            }
+          track->num_regions--;
+          region->track = 0;
+          return;
+        }
+    }
+  g_warning ("region not found in track");
+}
+

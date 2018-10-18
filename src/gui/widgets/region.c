@@ -21,10 +21,10 @@
 
 #include "audio/channel.h"
 #include "audio/track.h"
+#include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
-#include "gui/widgets/timeline.h"
 #include "utils/ui.h"
 
 G_DEFINE_TYPE (RegionWidget, region_widget, GTK_TYPE_DRAWING_AREA)
@@ -106,22 +106,22 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
       if (event->x < RESIZE_CURSOR_SPACE)
         {
           self->hover_state = REGION_HOVER_STATE_EDGE_L;
-          if (MW_TIMELINE->action != TA_MOVING_REGION)
+          if (MW_TIMELINE->action != ARRANGER_ACTION_MOVING)
             ui_set_cursor (widget, "w-resize");
         }
 
       else if (event->x > allocation.width - RESIZE_CURSOR_SPACE)
         {
           self->hover_state = REGION_HOVER_STATE_EDGE_R;
-          if (MW_TIMELINE->action != TA_MOVING_REGION)
+          if (MW_TIMELINE->action != ARRANGER_ACTION_MOVING)
             ui_set_cursor (widget, "e-resize");
         }
       else
         {
           self->hover_state = REGION_HOVER_STATE_MIDDLE;
-          if (MW_TIMELINE->action != TA_MOVING_REGION &&
-              MW_TIMELINE->action != TA_RESIZING_REGION_L &&
-              MW_TIMELINE->action != TA_RESIZING_REGION_R)
+          if (MW_TIMELINE->action != ARRANGER_ACTION_MOVING &&
+              MW_TIMELINE->action != ARRANGER_ACTION_RESIZING_L &&
+              MW_TIMELINE->action != ARRANGER_ACTION_RESIZING_R)
             {
               ui_set_cursor (widget, "default");
             }
@@ -130,9 +130,9 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
       self->hover_state = REGION_HOVER_STATE_NONE;
-      if (MAIN_WINDOW->timeline->action != TA_MOVING_REGION &&
-          MAIN_WINDOW->timeline->action != TA_RESIZING_REGION_L &&
-          MAIN_WINDOW->timeline->action != TA_RESIZING_REGION_R)
+      if (MAIN_WINDOW->timeline->action != ARRANGER_ACTION_MOVING &&
+          MAIN_WINDOW->timeline->action != ARRANGER_ACTION_RESIZING_L &&
+          MAIN_WINDOW->timeline->action != ARRANGER_ACTION_RESIZING_R)
         {
           ui_set_cursor (widget, "default");
         }

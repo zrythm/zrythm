@@ -24,6 +24,7 @@
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkBox" id="top_bar">
+            <property name="name">top_bar</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
@@ -72,6 +73,7 @@
                             <property name="label">gtk-save-as</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="use_underline">True</property>
                             <property name="use_stock">True</property>
                           </object>
                         </child>
@@ -175,11 +177,30 @@
                     </child>
                   </object>
                 </child>
+                <style>
+                  <class name="window_dragging_class"/>
+                </style>
               </object>
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">0</property>
+              </packing>
+            </child>
+            <child type="center">
+              <object class="GtkLabel" id="title">
+                <property name="name">title</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">label</property>
+                <style>
+                  <class name="window_dragging_class"/>
+                </style>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
               </packing>
             </child>
             <child>
@@ -238,6 +259,9 @@
                 <property name="position">2</property>
               </packing>
             </child>
+            <style>
+              <class name="window_dragging_class"/>
+            </style>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -314,21 +338,25 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkComboBoxText" id="note-region-length">
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <object class="GtkBox" id="snap_grid_timeline_box">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <placeholder/>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">0</property>
+                    <property name="position">2</property>
                   </packing>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
                 </child>
               </object>
               <packing>
@@ -336,6 +364,9 @@
                 <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
+            </child>
+            <child>
+              <placeholder/>
             </child>
           </object>
           <packing>
@@ -549,63 +580,92 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkToolbar" id="instruments_toolbar">
+                          <object class="GtkBox" id="below_timeline_box">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="icon_size">2</property>
                             <child>
-                              <object class="GtkToolButton" id="instrument_add">
+                              <object class="GtkToolbar" id="instruments_toolbar">
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="is_important">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="icon_size">2</property>
+                                <child>
+                                  <object class="GtkToolButton" id="instrument_add">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="is_important">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkToolButton" id="toolbutton5">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="label" translatable="yes">New</property>
+                                    <property name="stock_id">gtk-goto-last</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkToolButton" id="toolbutton6">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="label" translatable="yes">New</property>
+                                    <property name="stock_id">gtk-floppy</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkToolButton" id="toolbutton7">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="label" translatable="yes">New</property>
+                                    <property name="stock_id">gtk-help</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="homogeneous">True</property>
+                                  </packing>
+                                </child>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
+                                <property name="fill">False</property>
+                                <property name="position">0</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkToolButton" id="toolbutton5">
+                              <object class="GtkBox" id="snap_grid_midi_box">
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="label" translatable="yes">New</property>
-                                <property name="stock_id">gtk-goto-last</property>
+                                <property name="can_focus">False</property>
+                                <property name="orientation">vertical</property>
+                                <child>
+                                  <placeholder/>
+                                </child>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="toolbutton6">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="label" translatable="yes">New</property>
-                                <property name="stock_id">gtk-floppy</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolButton" id="toolbutton7">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="label" translatable="yes">New</property>
-                                <property name="stock_id">gtk-help</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="homogeneous">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
                               </packing>
                             </child>
                           </object>
                           <packing>
                             <property name="expand">False</property>
-                            <property name="fill">False</property>
-                            <property name="position">2</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
                           </packing>
+                        </child>
+                        <child>
+                          <placeholder/>
                         </child>
                       </object>
                       <packing>
@@ -678,6 +738,9 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label">Effex</property>
+                        <style>
+                          <class name="window_dragging_class"/>
+                        </style>
                       </object>
                     </child>
                     <child type="tab">

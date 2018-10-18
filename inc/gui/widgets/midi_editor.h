@@ -62,7 +62,7 @@ typedef struct MidiEditorWidget
   GtkBox                   * midi_arranger_box; ///< piano roll
   GtkScrolledWindow        * piano_roll_arranger_scroll;
   GtkViewport              * piano_roll_arranger_viewport;
-  MidiArrangerWidget       * midi_arranger;
+  ArrangerWidget           * midi_arranger;
 } MidiEditorWidget;
 
 typedef struct MidiEditorWidgetClass

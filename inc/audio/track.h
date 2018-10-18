@@ -58,4 +58,8 @@ void
 track_add_region (Track      * track,
                   Region     * region);
 
+void
+track_remove_region (Track    * track,
+                     Region   * region);
+
 #endif // __AUDIO_TRACK_H__

@@ -24,19 +24,20 @@
 #include "audio/mixer.h"
 #include "audio/track.h"
 #include "audio/transport.h"
+#include "gui/widgets/arranger.h"
 #include "gui/widgets/bpm.h"
 #include "gui/widgets/browser.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/ruler.h"
-#include "gui/widgets/timeline.h"
+#include "gui/widgets/snap_grid.h"
 #include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/tracks.h"
 #include "gui/widgets/transport_controls.h"
+#include "utils/io.h"
 
 #include <gtk/gtk.h>
 
@@ -124,6 +125,9 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
                                                "/online/alextee/zrythm/ui/main-window.ui");
 
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget,
+                                        title);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         MainWindowWidget, main_box);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         MainWindowWidget, top_bar);
@@ -157,6 +161,9 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
                                         MainWindowWidget, close);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         MainWindowWidget, top_toolbar);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget,
+                                        snap_grid_timeline_box);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         MainWindowWidget, center_box);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
@@ -193,6 +200,9 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
                                         MainWindowWidget, timeline_viewport);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         MainWindowWidget, instruments_toolbar);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget,
+                                        snap_grid_midi_box);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         MainWindowWidget, instrument_add);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
@@ -245,6 +255,36 @@ main_window_widget_open (MainWindowWidget *win,
 }
 
 static void
+on_open (GtkMenuItem   * menu_item,
+            gpointer      user_data)
+{
+  GtkWidget *dialog;
+  GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
+  gint res;
+
+  dialog = gtk_file_chooser_dialog_new ("Open Project",
+                                        GTK_WINDOW (MAIN_WINDOW),
+                                        action,
+                                        "_Cancel",
+                                        GTK_RESPONSE_CANCEL,
+                                        "_Open",
+                                        GTK_RESPONSE_ACCEPT,
+                                        NULL);
+
+  res = gtk_dialog_run (GTK_DIALOG (dialog));
+  if (res == GTK_RESPONSE_ACCEPT)
+    {
+      char *filename;
+      GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
+      filename = gtk_file_chooser_get_filename (chooser);
+      project_load (filename);
+      g_free (filename);
+    }
+
+  gtk_widget_destroy (dialog);
+}
+
+static void
 on_save_as (GtkMenuItem   * menu_item,
             gpointer      user_data)
 {
@@ -285,6 +325,24 @@ on_save_as (GtkMenuItem   * menu_item,
   gtk_widget_destroy (dialog);
 }
 
+static void
+on_save(GtkMenuItem   * menu_item,
+            gpointer      user_data)
+{
+   if (!PROJECT->path ||
+       !PROJECT->title)
+     {
+       on_save_as (menu_item, user_data);
+       return;
+     }
+
+   char * separator = io_get_separator ();
+   char * full_path = g_strconcat (PROJECT->path, separator, PROJECT->title, NULL);
+   project_save (full_path);
+   g_free (separator);
+   g_free (full_path);
+}
+
 
 MainWindowWidget *
 main_window_widget_new (ZrythmApp * _app)
@@ -295,7 +353,8 @@ main_window_widget_new (ZrythmApp * _app)
                                           app,
                                           NULL);
   WIDGET_MANAGER->main_window = self;
-  gtk_window_set_title (GTK_WINDOW (self), PACKAGE_STRING);
+  project_set_title ("Untitled Project");
+  gtk_window_set_title (GTK_WINDOW (self), "Zrythm");
 
 
   // set default css provider
@@ -313,6 +372,21 @@ main_window_widget_new (ZrythmApp * _app)
                     "activate",
                     G_CALLBACK (on_save_as),
                     NULL);
+  g_signal_connect (G_OBJECT (GTK_MENU_ITEM (self->file_save)),
+                    "activate",
+                    G_CALLBACK (on_save),
+                    NULL);
+  g_signal_connect (G_OBJECT (GTK_MENU_ITEM (self->file_open)),
+                    "activate",
+                    G_CALLBACK (on_open),
+                    NULL);
+
+  /* setup top toolbar */
+  self->snap_grid_timeline = snap_grid_widget_new (&PROJECT->snap_grid_timeline);
+  gtk_box_pack_start (GTK_BOX (self->snap_grid_timeline_box),
+                      GTK_WIDGET (self->snap_grid_timeline),
+                      1, 1, 0);
+
 
   /* setup tracks */
   tracks_widget_setup ();
@@ -334,7 +408,8 @@ main_window_widget_new (ZrythmApp * _app)
   gtk_widget_show_all (GTK_WIDGET (self->ruler_viewport));
 
   /* setup timeline */
-  self->timeline = timeline_widget_new ();
+  self->timeline = arranger_widget_new (ARRANGER_TYPE_TIMELINE,
+                                        &PROJECT->snap_grid_timeline);
   gtk_container_add (GTK_CONTAINER (self->timeline_viewport),
                      GTK_WIDGET (self->timeline));
   gtk_scrolled_window_set_min_content_width (self->timeline_scroll, 400);
@@ -350,6 +425,12 @@ main_window_widget_new (ZrythmApp * _app)
                              GTK_WIDGET (self->browser),
                              gtk_label_new ("Plugins"));
   gtk_widget_show_all (GTK_WIDGET (self->right_notebook));
+
+  /* setup bot toolbar */
+  self->snap_grid_midi = snap_grid_widget_new (&PROJECT->snap_grid_midi);
+  gtk_box_pack_start (GTK_BOX (self->snap_grid_midi_box),
+                      GTK_WIDGET (self->snap_grid_midi),
+                      1, 1, 0);
 
   /* setup bot half region */
   self->mixer = mixer_widget_new ();

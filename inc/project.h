@@ -25,6 +25,7 @@
 #define __PROJECT_H__
 
 #include "zrythm_app.h"
+#include "project/snap_grid.h"
 
 #include <gtk/gtk.h>
 
@@ -46,12 +47,15 @@ typedef struct Project
   /**
    * Project title
    */
-  char                  * title;
+  char              * title;
+  char              * path; ///< path to save the project
 
   /**
    * Timeline metadata like BPM, time signature, etc.
    */
-  Transport             * transport;
+  Transport         * transport;
+  SnapGrid          snap_grid_timeline; ///< snap/grid info for timeline
+  SnapGrid          snap_grid_midi; ///< snap/grid info for midi editor
 
   /* for bookkeeping */
   Port              * ports[600000];   ///< all ports have a reference here for easy access
@@ -71,7 +75,7 @@ typedef struct Project
  * Creates a project with default or given variables
  */
 void
-project_setup (char * filename);
+project_create (char * filename);
 
 /**
  * Loads project from a file.
@@ -84,5 +88,11 @@ project_load (char * filename);
  */
 void
 project_save (char * filename);
+
+/**
+ * Sets title to project and main window
+ */
+void
+project_set_title (char * title);
 
 #endif

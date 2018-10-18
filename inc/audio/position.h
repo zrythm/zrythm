@@ -26,6 +26,10 @@
 #define TICKS_PER_BEAT 960
 #define TICKS_PER_QUARTER_BEAT 240
 
+typedef struct SnapGrid SnapGrid;
+typedef struct Track Track;
+typedef struct Region Region;
+
 typedef struct Position
 {
   int       bars;
@@ -98,4 +102,25 @@ int
 position_compare (Position * p1,
                   Position * p2);
 
+/**
+ * Returns difference in position.
+ *
+ * 1 if pos > comp_pos,
+ * -1 if pos < comp_pos,
+ * 0 if equal
+ */
+//int
+//position_get_diff (Position * pos, ///< Position
+                   //Position * comp_pos, ///< pos to compare to
+                   //Position * diff); ///< (OUT) difference in Position)
+
+/**
+ * Snaps position using given options.
+ */
+void
+position_snap (Position * prev_pos, ///< prev pos
+               Position * pos, ///< position moved to
+               Track    * track, ///< track at new pos (for region moving)
+               Region   * region, ///< region at new pos (for midi moving)
+               SnapGrid * sg); ///< options
 #endif

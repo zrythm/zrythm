@@ -33,7 +33,6 @@
 G_DECLARE_FINAL_TYPE (MainWindowWidget, main_window_widget, MAIN, WINDOW_WIDGET, GtkApplicationWindow)
 
 typedef struct RulerWidget RulerWidget;
-typedef struct TimelineWidget TimelineWidget;
 typedef struct BpmWidget BpmWidget;
 typedef struct TracksWidget TracksWidget;
 typedef struct DigitalMeterWidget DigitalMeterWidget;
@@ -41,12 +40,14 @@ typedef struct ColorAreaWidget ColorAreaWidget;
 typedef struct MixerWidget MixerWidget;
 typedef struct MidiEditorWidget MidiEditorWidget;
 typedef struct BrowserWidget BrowserWidget;
-typedef struct MidiArrangerWidget MidiArrangerWidget;
 typedef struct Region Region;
+typedef struct SnapGridWidget SnapGridWidget;
+typedef struct ArrangerWidget ArrangerWidget;
 
 typedef struct _MainWindowWidget
 {
   GtkApplicationWindow     parent_instance;
+  GtkLabel                 * title;
   GtkBox                   * main_box;
   GtkBox                   * top_bar;
   GtkBox                   * top_menubar;
@@ -65,6 +66,8 @@ typedef struct _MainWindowWidget
   GtkButton                * maximize;
   GtkButton                * close;
   GtkToolbar               * top_toolbar;
+  GtkBox                   * snap_grid_timeline_box;
+  SnapGridWidget           * snap_grid_timeline;
   GtkBox                   * center_box;
   GtkBox                   * inspector;
   GtkButton                * inspector_button;
@@ -84,8 +87,10 @@ typedef struct _MainWindowWidget
   RulerWidget              * ruler;     ///< created in code
   GtkScrolledWindow        * timeline_scroll;
   GtkViewport              * timeline_viewport;
-  TimelineWidget           * timeline;
+  ArrangerWidget           * timeline;
   GtkToolbar               * instruments_toolbar;
+  GtkBox                   * snap_grid_midi_box;
+  SnapGridWidget           * snap_grid_midi;
   GtkToolButton            * instrument_add;
   GtkNotebook              * bot_notebook;
   MidiEditorWidget         * midi_editor;

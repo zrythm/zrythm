@@ -5,6 +5,11 @@
 /*@define-color selection_color #202530;*/
 /*@define-color selection_color_lighter #405060;*/
 
+/* enables drag on every widget to move the main window */
+/** {*/
+  /*-GtkWidget-window-dragging: true;*/
+/*}*/
+
 /*menubar,*/
 /*toolbar {*/
   /*background-color: @bg_color;*/

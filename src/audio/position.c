@@ -19,13 +19,16 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <math.h>
+
 #include "audio/engine.h"
 #include "audio/position.h"
 #include "audio/transport.h"
+#include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor.h"
 #include "gui/widgets/timeline.h"
+#include "project/snap_grid.h"
 
 #include <gtk/gtk.h>
 
@@ -47,13 +50,13 @@ position_init (Position * position)
 int
 position_to_frames (Position * position)
 {
-  int frames = AUDIO_ENGINE->frames_per_tick * position->bars *
+  int frames = AUDIO_ENGINE->frames_per_tick * (position->bars - 1) *
     TRANSPORT->beats_per_bar * 4 * TICKS_PER_QUARTER_BEAT;
   if (position->beats)
-    frames += AUDIO_ENGINE->frames_per_tick * position->beats *
+    frames += AUDIO_ENGINE->frames_per_tick * (position->beats - 1) *
       4 * TICKS_PER_QUARTER_BEAT;
   if (position->quarter_beats)
-    frames += AUDIO_ENGINE->frames_per_tick * position->quarter_beats *
+    frames += AUDIO_ENGINE->frames_per_tick * (position->quarter_beats - 1) *
       TICKS_PER_QUARTER_BEAT;
   if (position->ticks)
     frames += AUDIO_ENGINE->frames_per_tick * position->ticks;
@@ -203,25 +206,13 @@ position_add_frames (Position * position,
   position_set_tick (position,
                      position->ticks +
                        frames / AUDIO_ENGINE->frames_per_tick);
-  /*if (position->ticks > TICKS_PER_QUARTER_BEAT)*/
-    /*{*/
-      /*position->ticks %= TICKS_PER_QUARTER_BEAT;*/
-      /*if (++position->quarter_beats > 4)*/
-        /*{*/
-          /*position->quarter_beats = 0;*/
-          /*if (++position->beats > TRANSPORT->beats_per_bar)*/
-            /*{*/
-              /*position->beats = 0;*/
-              /*position->bars++;*/
-            /*}*/
-        /*}*/
-    /*}*/
   g_idle_add ((GSourceFunc) position_updated,
               position);
 }
 
 /**
  * Notifies other parts.
+ * FIXME check what the position is first
  */
 void
 position_updated (Position * position)
@@ -257,7 +248,7 @@ position_updated (Position * position)
             }
         }
     }
-  }
+}
 
 /**
  * Compares 2 positions.
@@ -282,4 +273,148 @@ position_compare (Position * p1,
     return -1;
   else
     return 1;
+}
+
+/**
+ * Returns difference in position.
+ *
+ * 1 if pos > comp_pos,
+ * -1 if pos < comp_pos,
+ * 0 if equal
+ */
+/*int*/
+/*position_get_diff (Position * pos, ///< Position*/
+                   /*Position * comp_pos, ///< pos to compare to*/
+                   /*Position * diff) ///< (OUT) difference in Position)*/
+/*{*/
+  /*int ret = position_compare (pos, comp_pos);*/
+  /*diff->bars = 0;*/
+  /*diff->beats = 0;*/
+  /*diff->quarter_beats = 0;*/
+  /*diff->ticks = 0;*/
+  /*if (ret < 0)*/
+    /*{*/
+      /*int frames_diff = position_to_frames (comp_pos) - position_to_frames (pos);*/
+      /*position_add_frames (diff, frames_diff);*/
+    /*}*/
+  /*else if (ret > 0)*/
+    /*{*/
+      /*int frames_diff = position_to_frames (pos) - position_to_frames (comp_pos);*/
+      /*position_add_frames (diff, frames_diff);*/
+    /*}*/
+  /*return ret;*/
+/*}*/
+
+/**
+ * Returns closest snap point.
+ */
+static Position *
+closest_snap_point (Position * pos, ///< position
+                    Position * p1, ///< snap point 1
+                    Position * p2) ///< snap point 2
+{
+  int frames = position_to_frames (pos);
+  if (frames - position_to_frames (p1) <=
+      position_to_frames (p2) - frames)
+    {
+      return p1;
+    }
+  else
+    {
+      return p2;
+    }
+}
+
+static void
+snap_pos (Position * pos,
+          SnapGrid * sg)
+{
+  Position prev_snap_point;
+  Position next_snap_point;
+  prev_snap_point.bars = 1;
+  prev_snap_point.beats = 1;
+  prev_snap_point.quarter_beats = 1;
+  prev_snap_point.ticks = 0;
+  next_snap_point.bars = 1;
+  next_snap_point.beats = 1;
+  next_snap_point.quarter_beats = 1;
+  next_snap_point.ticks = 0;
+  if (sg->grid_density == 0) /* 1/1 */
+    {
+      prev_snap_point.bars = pos->bars;
+      next_snap_point.bars = pos->bars + 1;
+    }
+  else if (sg->grid_density == 1) /* 1/2 */
+    {
+      prev_snap_point.bars = pos->bars;
+      if (pos->beats >= 3)
+        {
+          prev_snap_point.beats = 3;
+          next_snap_point.bars = pos->bars + 1;
+          next_snap_point.beats = 1;
+        }
+      else
+        {
+          prev_snap_point.beats = 1;
+          next_snap_point.bars = pos->bars;
+          next_snap_point.beats = 3;
+        }
+    }
+  else if (sg->grid_density == 2) /* 1/4 */
+    {
+      prev_snap_point.bars = pos->bars;
+      prev_snap_point.beats = pos->beats;
+      position_set_beat (&next_snap_point,
+                         pos->beats + 1);
+    }
+  /*g_message ("pos %d.%d.%d.%d",*/
+         /*pos->bars, pos->beats,*/
+         /*pos->quarter_beats, pos->ticks);*/
+  /*g_message ("prev snap %d.%d.%d.%d",*/
+         /*prev_snap_point.bars, prev_snap_point.beats,*/
+         /*prev_snap_point.quarter_beats, prev_snap_point.ticks);*/
+  /*g_message ("next snap %d.%d.%d.%d",*/
+         /*next_snap_point.bars, next_snap_point.beats,*/
+         /*next_snap_point.quarter_beats, next_snap_point.ticks);*/
+  Position * csp = closest_snap_point (pos,
+                                                      &prev_snap_point,
+                                                      &next_snap_point);
+  /*g_message ("csp %d.%d.%d.%d",*/
+         /*csp->bars, csp->beats,*/
+         /*csp->quarter_beats, csp->ticks);*/
+  position_set_to_pos (pos,
+                       csp);
+}
+
+/**
+ * Snaps position using given options.
+ */
+void
+position_snap (Position * prev_pos, ///< prev pos
+               Position * pos, ///< position moved to
+               Track    * track, ///< track at new pos (for region moving)
+               Region   * region, ///< region at new pos (for midi moving)
+               SnapGrid * sg) ///< options
+{
+  if (sg->snap_to_grid)
+    {
+      if (sg->snap_keep_offset && prev_pos)
+        {
+          /* get closest snap point to prev_pos */
+
+          /* get diff from closest snap point */
+
+          /* snap pos*/
+
+          /* add diff */
+
+        }
+      else
+        {
+          /* just snap pos */
+          snap_pos (pos, sg);
+        }
+
+    }
+
 }
