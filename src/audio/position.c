@@ -27,7 +27,6 @@
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_editor.h"
-#include "gui/widgets/timeline.h"
 #include "project/snap_grid.h"
 
 #include <gtk/gtk.h>

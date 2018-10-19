@@ -38,7 +38,7 @@
 static void
 add_category (char * _category)
 {
-  if (!is_ascii (_category))
+  if (!string_is_ascii (_category))
     {
       g_warning ("Invalid LV2 category name, skipping...");
     }
@@ -136,7 +136,7 @@ plugin_manager_init ()
     plugin_manager->num_plugin_categories = 0;
 
     /* set plugin manager to the project */
-    zrythm_system->plugin_manager = plugin_manager;
+    PLUGIN_MANAGER = plugin_manager;
 
     /* init lv2 settings */
     g_message ("Creating Lilv World...");

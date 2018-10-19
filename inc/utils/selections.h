@@ -26,7 +26,7 @@ typedef struct Region Region;
 typedef struct Channel Channel;
 typedef struct MidiNote MidiNote;
 
-#define SELECTIONS zrythm_system->selections
+#define SELECTIONS G_ZRYTHM_APP->selections
 
 /**
  * Stores current Selections.

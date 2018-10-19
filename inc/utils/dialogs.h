@@ -1,5 +1,5 @@
 /*
- * gui/widget_manager.c - Manages GUI widgets
+ * utils/dialogs.h - Dialogs
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -16,26 +16,18 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
+#ifndef __UTILS_DIALOGS_H__
+#define __UTILS_DIALOGS_H__
 
-#include "zrythm_app.h"
-#include "gui/widget_manager.h"
+#include <gtk/gtk.h>
 
-void
-init_widget_manager ()
-{
-  Widget_Manager * widget_manager = calloc (1, sizeof (Widget_Manager));
-  /*widget_manager->widgets = g_hash_table_new (g_str_hash,*/
-                         /*g_str_equal);*/
+/**
+ * Creates and returns an open project dialog.
+ */
+GtkDialog * dialogs_get_open_project_dialog (GtkWindow * parent);
 
-  zrythm_app->widget_manager = widget_manager;
-
-  widget_manager->entries[0].target = "PLUGIN_DESCR";
-  widget_manager->entries[0].flags = GTK_TARGET_SAME_APP;
-  widget_manager->entries[0].info = 0;
-  widget_manager->num_entries = 1;
-}
+#endif
 

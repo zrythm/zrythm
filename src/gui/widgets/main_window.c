@@ -258,20 +258,9 @@ static void
 on_open (GtkMenuItem   * menu_item,
             gpointer      user_data)
 {
-  GtkWidget *dialog;
-  GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
-  gint res;
+  GtkDialog * dialog = dialogs_get_open_project_dialog (GTK_WINDOW (MAIN_WINDOW));
 
-  dialog = gtk_file_chooser_dialog_new ("Open Project",
-                                        GTK_WINDOW (MAIN_WINDOW),
-                                        action,
-                                        "_Cancel",
-                                        GTK_RESPONSE_CANCEL,
-                                        "_Open",
-                                        GTK_RESPONSE_ACCEPT,
-                                        NULL);
-
-  res = gtk_dialog_run (GTK_DIALOG (dialog));
+  int res = gtk_dialog_run (GTK_DIALOG (dialog));
   if (res == GTK_RESPONSE_ACCEPT)
     {
       char *filename;

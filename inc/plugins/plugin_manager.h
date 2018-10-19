@@ -24,7 +24,7 @@
 
 #include <lilv/lilv.h>
 
-#define PLUGIN_MANAGER zrythm_system->plugin_manager
+#define PLUGIN_MANAGER G_ZRYTHM_APP->plugin_manager
 #define LV2_SETTINGS PLUGIN_MANAGER->lv2_settings
 #define LILV_WORLD LV2_SETTINGS.lilv_world
 

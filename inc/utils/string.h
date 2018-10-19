@@ -23,6 +23,6 @@
 #define __UTILS_STRING_H__
 
 int
-is_ascii (const char * string);
+string_is_ascii (const char * string);
 
 #endif

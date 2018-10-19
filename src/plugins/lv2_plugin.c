@@ -1020,7 +1020,7 @@ lv2_create_descriptor_from_lilv (const LilvPlugin * lp)
 {
   const LilvNode*  lv2_uri = lilv_plugin_get_uri (lp);
   const char * uri_str = lilv_node_as_string (lv2_uri);
-  if (!is_ascii (uri_str))
+  if (!string_is_ascii (uri_str))
     {
       g_warning ("Invalid plugin URI, skipping");
       return NULL;

@@ -38,7 +38,7 @@ init_settings_manager ()
 
   settings_manager->gsettings = gsettings;
 
-  zrythm_system->settings_manager = settings_manager;
+  zrythm_app->settings_manager = settings_manager;
 }
 
 /**

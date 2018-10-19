@@ -26,6 +26,7 @@
 
 #include <gtk/gtk.h>
 
+#define G_ZRYTHM_APP zrythm_app
 
 #define ZRYTHM_APP_TYPE (zrythm_app_get_type ())
 G_DECLARE_FINAL_TYPE (ZrythmApp, zrythm_app, ZRYTHM, APP, GtkApplication)
@@ -36,8 +37,9 @@ typedef struct Audio_Engine Audio_Engine;
 typedef struct Plugin_Manager Plugin_Manager;
 typedef struct Project Project;
 
-typedef struct Zrythm_System
+struct _ZrythmApp
 {
+  GtkApplication parent;
 
   /**
    * The audio backend
@@ -73,17 +75,22 @@ typedef struct Zrythm_System
    */
   Project * project;
 
-} Zrythm_System;
+  char                * zrythm_dir;
+  char                * projects_dir;
+  char                * recent_projects_file;
+  char                * recent_projects[3000];
+  int                 num_recent_projects;
+};
 
-extern Zrythm_System * zrythm_system;
+extern ZrythmApp * zrythm_app;
 
 /**
  * Global variable, should be available to all files.
  */
-Zrythm_System * zrythm_system;
+ZrythmApp * zrythm_app;
 
-ZrythmApp     *zrythm_app_new         (void);
-
+ZrythmApp *
+zrythm_app_new ();
 
 #endif /* __ZRYTHM_APP_H__ */
 

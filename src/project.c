@@ -60,6 +60,12 @@ project_create (char * filename)
 }
 
 void
+project_create_default ()
+{
+  project_create (DEFAULT_PROJECT_NAME);
+}
+
+void
 project_save (char * filename)
 {
   /* write XML */
@@ -67,8 +73,7 @@ project_save (char * filename)
   char * file_part = parts[0];
   char * ext_part = parts[1];
   g_strfreev (parts);
-  char * separator = io_get_separator ();
-  char ** path_file = g_strsplit (file_part, separator, -1);
+  char ** path_file = g_strsplit (file_part, io_get_separator (), -1);
   int i = 0;
   while (path_file[i] != NULL)
     i++;
@@ -96,13 +101,13 @@ project_save (char * filename)
   io_mkdir (dir);
   char * state_dir = g_strdup_printf ("%s%sstates",
                                       dir,
-                                      separator);
+                                      io_get_separator ());
   for (int i = 0; i < MIXER->num_channels; i++)
     {
       Channel * channel = MIXER->channels[i];
       char * state_dir_channel = g_strdup_printf ("%s%s%d",
                                           state_dir,
-                                          separator,
+                                          io_get_separator (),
                                           channel->id);
       for (int j = 0; j < MAX_PLUGINS; j++)
         {
@@ -114,7 +119,7 @@ project_save (char * filename)
                 {
                   char * state_dir_plugin = g_strdup_printf ("%s%s%d",
                                               state_dir_channel,
-                                              separator,
+                                              io_get_separator (),
                                               j);
                   LV2_Plugin * lv2_plugin = (LV2_Plugin *) plugin->original_plugin;
                   g_message ("symap size before saving state %d",
@@ -134,13 +139,13 @@ project_save (char * filename)
 
   tmp = g_strdup_printf ("%s.xml", filename);
   xml_write_project (tmp);
-  g_free (tmp);
 
   PROJECT->path = path;
+  /*zrythm_app_add_to_recent_projects (tmp);*/
   project_set_title (filename);
 
+  g_free (tmp);
   g_free (dir);
-  g_free (separator);
   g_free (state_dir);
 }
 

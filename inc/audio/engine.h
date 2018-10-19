@@ -31,7 +31,7 @@
 #include <jack/jack.h>
 #include <jack/midiport.h>
 
-#define AUDIO_ENGINE zrythm_system->audio_engine
+#define AUDIO_ENGINE zrythm_app->audio_engine
 
 typedef jack_nframes_t                nframes_t;
 typedef struct Mixer Mixer;

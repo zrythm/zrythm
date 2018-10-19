@@ -29,7 +29,8 @@
 
 #include <gtk/gtk.h>
 
-#define PROJECT zrythm_system->project
+#define PROJECT zrythm_app->project
+#define DEFAULT_PROJECT_NAME "Untitled Project"
 
 /* project xml version */
 #define PROJECT_XML_VER "0.1"
@@ -76,6 +77,12 @@ typedef struct Project
  */
 void
 project_create (char * filename);
+
+/**
+ * Creates a project with default or given variables
+ */
+void
+project_create_default ();
 
 /**
  * Loads project from a file.

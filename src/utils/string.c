@@ -24,7 +24,7 @@
 #include "utils/string.h"
 
 int
-is_ascii (const char * string)
+string_is_ascii (const char * string)
 {
   int i;
   if (!string || strlen (string) == 0)

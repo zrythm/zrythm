@@ -22,22 +22,27 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <pwd.h>
 
 #include "utils/io.h"
 
 #include <gtk/gtk.h>
 
+#ifdef _WIN32
+static const char * separator = "\\"
+#else
+static const char * separator = "/";
+#endif
+
+static char * home_dir;
+
 /**
- * Gets system file separator. MUST be freed.
+ * Gets system file separator.
  */
 char *
 io_get_separator () ///< string to write to
 {
-#ifdef _WIN32
-  return g_strdup ("\\");
-#else
-  return g_strdup ("/");
-#endif
+  return separator;
 }
 
 /**
@@ -74,4 +79,75 @@ io_mkdir (const char * dir)
     {
       mkdir(dir, 0700);
     }
+}
+
+static void
+setup_home_dir ()
+{
+  if ((home_dir = getenv ("XDG_CONFIG_HOME")) == NULL)
+    {
+      if ((home_dir = getenv ("HOME")) == NULL)
+        {
+          home_dir = getpwuid (getuid ())->pw_dir;
+        }
+    }
+}
+
+/**
+ * Gets home dir. MUST be freed.
+ */
+char *
+io_get_home_dir ()
+{
+  if (home_dir == NULL)
+    {
+      setup_home_dir ();
+    }
+
+  return home_dir;
+}
+
+/**
+ * Creates the file if doesn't exist
+ */
+FILE *
+io_touch_file (const char * filename)
+{
+  return fopen(filename, "ab+");
+}
+
+/**
+ * Strips extensions from given filename.
+ *
+ * MUST be freed.
+ */
+char *
+io_file_strip_ext (const char * filename)
+{
+  char ** parts = g_strsplit (filename, ".", 2);
+  char * file_part = parts[0];
+  char * ext_part = parts[1];
+
+  g_free (ext_part);
+  return file_part;
+}
+
+/**
+ * Strips path from given filename.
+ *
+ * MUST be freed.
+ */
+char *
+io_file_strip_path (const char * filename)
+{
+  char ** path_file = g_strsplit (filename, io_get_separator (), -1);
+  int i = 0;
+  while (path_file[i] != NULL)
+    i++;
+  for (int j = 0; j < i - 1; j++)
+    {
+      g_free (path_file[j]);
+    }
+
+  return path_file[i - 1];
 }

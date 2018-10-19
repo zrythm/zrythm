@@ -24,6 +24,7 @@
 #ifndef __UTILS_IO_H__
 #define __UTILS_IO_H__
 
+#include <stdio.h>
 
 /**
  * Gets system file separator. MUST be freed.
@@ -42,6 +43,32 @@ io_get_dir (const char * filename); ///< filename containing directory
  */
 void
 io_mkdir (const char * dir);
+
+/**
+ * Gets home dir. MUST be freed.
+ */
+char *
+io_get_home_dir ();
+
+/**
+ * Creates the file if doesn't exist
+ */
+FILE *
+io_touch_file (const char * filename);
+
+/**
+ * Strips extensions from given filename.
+ */
+char *
+io_file_strip_ext (const char * filename);
+
+/**
+ * Strips path from given filename.
+ *
+ * MUST be freed.
+ */
+char *
+io_file_strip_path (const char * filename);
 
 #endif
 

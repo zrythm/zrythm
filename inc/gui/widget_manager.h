@@ -26,7 +26,7 @@
 
 #include <gtk/gtk.h>
 
-#define WIDGET_MANAGER zrythm_system->widget_manager
+#define WIDGET_MANAGER zrythm_app->widget_manager
 
 typedef struct _MainWindowWidget MainWindowWidget;
 
