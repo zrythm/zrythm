@@ -151,3 +151,28 @@ io_file_strip_path (const char * filename)
 
   return path_file[i - 1];
 }
+
+char *
+io_file_get_creation_datetime (const char * filename)
+{
+  /* TODO */
+  return NULL;
+}
+
+char *
+io_file_get_last_modified_datetime (const char * filename)
+{
+  struct stat result;
+  struct tm *nowtm;
+  char tmbuf[64];
+  if (stat (filename, &result)==0)
+    {
+      struct timespec * ts = &result.st_mtime;
+      nowtm = localtime(&ts->tv_sec);
+      strftime(tmbuf, sizeof (tmbuf), "%Y-%m-%d %H:%M:%S", nowtm);
+      char * mod = g_strdup (tmbuf);
+      return mod;
+    }
+  g_warning ("Failed to get last modified");
+  return NULL;
+}

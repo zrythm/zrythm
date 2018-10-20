@@ -26,6 +26,68 @@
 G_DEFINE_TYPE (StartAssistantWidget, start_assistant_widget, GTK_TYPE_ASSISTANT)
 
 static void
+on_projects_selection_changed (GtkTreeSelection * ts,
+                      gpointer         user_data)
+{
+  GtkTreeIter iter;
+  StartAssistantWidget * self = START_ASSISTANT_WIDGET (user_data);
+
+  GList * selected_rows =
+    gtk_tree_selection_get_selected_rows (self->projects_selection,
+                                          NULL);
+  if (selected_rows)
+    {
+      GtkTreePath * tp = (GtkTreePath *)g_list_first (selected_rows)->data;
+      gtk_tree_model_get_iter (self->model,
+                               &iter,
+                               tp);
+      GValue value = G_VALUE_INIT;
+      gtk_tree_model_get_value (self->model,
+                                &iter,
+                                COLUMN_PROJECT_INFO,
+                                &value);
+      self->selection = g_value_get_pointer (&value);
+      if (self->selection)
+        {
+          gtk_assistant_set_page_complete (
+            GTK_ASSISTANT (self),
+            gtk_assistant_get_nth_page (GTK_ASSISTANT (self), 0),
+            1);
+          gtk_assistant_set_page_complete (
+            GTK_ASSISTANT (self),
+            gtk_assistant_get_nth_page (GTK_ASSISTANT (self), 1),
+            1);
+        }
+    }
+}
+
+void
+on_create_new_project_toggled (GtkToggleButton *togglebutton,
+               gpointer         user_data)
+{
+  StartAssistantWidget * self = START_ASSISTANT_WIDGET (user_data);
+
+  if (gtk_toggle_button_get_active (togglebutton))
+    {
+      /*gtk_tree_selection_unselect_all (self->projects_selection);*/
+      gtk_widget_set_sensitive (GTK_WIDGET (self->projects), 0);
+      gtk_assistant_set_page_complete (
+        GTK_ASSISTANT (self),
+        gtk_assistant_get_nth_page (GTK_ASSISTANT (self), 0),
+        1);
+      gtk_assistant_set_page_complete (
+        GTK_ASSISTANT (self),
+        gtk_assistant_get_nth_page (GTK_ASSISTANT (self), 1),
+        1);
+    }
+  else
+    {
+      gtk_widget_set_sensitive (GTK_WIDGET (self->projects), 1);
+      self->selection = NULL;
+    }
+}
+
+static void
 start_assistant_widget_class_init (StartAssistantWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
@@ -36,7 +98,14 @@ start_assistant_widget_class_init (StartAssistantWidgetClass * klass)
                                                 projects);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 StartAssistantWidget,
+                                                projects_selection);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                                StartAssistantWidget,
                                                 create_new_project);
+  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
+                                           on_create_new_project_toggled);
+  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
+                                           on_projects_selection_changed);
 }
 
 static void
@@ -44,6 +113,7 @@ start_assistant_widget_init (StartAssistantWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 }
+
 
 static GtkTreeModel *
 create_model (StartAssistantWidget * self)
@@ -55,18 +125,19 @@ create_model (StartAssistantWidget * self)
   /* create list store */
   store = gtk_list_store_new (NUM_COLUMNS,
                               G_TYPE_STRING,
-                              G_TYPE_STRING);
+                              G_TYPE_STRING,
+                              G_TYPE_STRING,
+                              G_TYPE_POINTER);
 
   /* add data to the list store */
   for (i = 0; i < self->num_project_infos; i++)
     {
-      gchar *icon_name;
-      gboolean sensitive;
-
       gtk_list_store_append (store, &iter);
       gtk_list_store_set (store, &iter,
                           COLUMN_NAME, self->project_infos[i].name,
                           COLUMN_FILENAME, self->project_infos[i].filename,
+                          COLUMN_MODIFIED, self->project_infos[i].modified,
+                          COLUMN_PROJECT_INFO, &self->project_infos[i],
                           -1);
     }
 
@@ -99,6 +170,16 @@ add_columns (GtkTreeView *treeview)
                                                      NULL);
   gtk_tree_view_column_set_sort_column_id (column, COLUMN_FILENAME);
   gtk_tree_view_append_column (treeview, column);
+
+  /* column for modified */
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("Last Modified",
+                                                     renderer,
+                                                     "text",
+                                                     COLUMN_MODIFIED,
+                                                     NULL);
+  gtk_tree_view_column_set_sort_column_id (column, COLUMN_MODIFIED);
+  gtk_tree_view_append_column (treeview, column);
 }
 
 StartAssistantWidget *
@@ -116,15 +197,16 @@ start_assistant_widget_new (GtkWindow * parent,
       char * strip_path = io_file_strip_path (strip_ext);
       self->project_infos[i].name = strip_path;
       self->project_infos[i].filename = G_ZRYTHM_APP->recent_projects[i];
+      self->project_infos[i].modified =
+        io_file_get_last_modified_datetime (G_ZRYTHM_APP->recent_projects[i]);
     }
 
   /* set model to tree view */
-  GtkTreeModel *model = create_model (self);
+  self->model = create_model (self);
   gtk_tree_view_set_model (GTK_TREE_VIEW (self->projects),
-                           model);
+                           self->model);
   gtk_tree_view_set_search_column (GTK_TREE_VIEW (self->projects),
                                    COLUMN_NAME);
-  g_object_unref (model);
 
   /* add columns to the tree view */
   add_columns (GTK_TREE_VIEW (self->projects));

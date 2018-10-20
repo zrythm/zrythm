@@ -45,7 +45,7 @@ splash_window_widget_new (ZrythmApp * app);
 void
 splash_widget_update (SplashWindowWidget * self,
                       const char         * message,
-                      int                progress);
+                      gdouble            progress);
 
 #endif
 

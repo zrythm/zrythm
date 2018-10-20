@@ -107,3 +107,6 @@ m4/lt~obsolete.m4
 
 # Backup files
 *.bak
+
+# Valgrind
+vgcore.*

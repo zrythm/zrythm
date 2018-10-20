@@ -37,14 +37,21 @@ G_DEFINE_TYPE(ZrythmApp, zrythm_app, GTK_TYPE_APPLICATION);
 
 static SplashWindowWidget * splash;
 static GApplication * app;
+static StartAssistantWidget * assistant;
+
+typedef struct UpdateSplashData
+{
+  const char * message;
+  gdouble progress;
+} UpdateSplashData;
 
 static void
-zrythm_app_update_splash (const char * message,
-                          int        progress)
+zrythm_app_update_splash (UpdateSplashData *data)
 {
+
   splash_widget_update (splash,
-                        message,
-                        progress);
+                        data->message,
+                        data->progress);
 }
 
 static void
@@ -118,6 +125,9 @@ load_or_create_project (GtkWindow * parent)
 
 }
 
+/**
+ * Initializes/creates the default dirs/files.
+ */
 static void
 init_dirs_and_files ()
 {
@@ -136,6 +146,9 @@ init_dirs_and_files ()
                                                         io_get_separator ());
 }
 
+/**
+ * Initializes the array of recent projects in Zrythm app
+ */
 static void
 init_recent_projects ()
 {
@@ -146,38 +159,188 @@ init_recent_projects ()
     {
       char * tmp = g_strdup_printf ("%s", line);
       char * project_filename = g_strstrip (tmp);
-      /*g_free (tmp);*/
       G_ZRYTHM_APP->recent_projects [G_ZRYTHM_APP->num_recent_projects++] =
         project_filename;
   }
-  g_message (G_ZRYTHM_APP->recent_projects_file);
 
   fclose(file);
 }
 
+static int finished[6] = { 0, 0, 0, 0 ,0 ,0 };
+
 static void
-init_after_setting_project ()
+task_func (GTask *task,
+                    gpointer source_object,
+                    gpointer task_data,
+                    GCancellable *cancellable)
 {
-  init_settings_manager ();
+  int td = task_data;
+  g_message ("running task func %d", td);
 
-  init_widget_manager ();
+  switch (td)
+    {
+    case 0:
+      project_create_default ();
+      finished[0] = 1;
+      break;
+    case 1:
+      while (finished[0] == 0)
+        {
+        }
+      init_settings_manager ();
+      finished[1] = 1;
+      break;
+    case 2:
+      while (finished[1] == 0)
+        {
+        }
+      init_widget_manager ();
+      finished[2] = 1;
+      break;
+    case 3:
+      while (finished[2] == 0)
+        {
+        }
+      plugin_manager_init ();
+      finished[3] = 1;
+      break;
+    case 4:
+      while (finished[3] == 0)
+        {
+        }
+      init_audio_engine ();
+      finished[4] = 1;
+      break;
+    case 5:
+      while (finished[4] == 0)
+        {
+        }
+      finished[5] = 1;
+      break;
+    }
+}
 
-  plugin_manager_init ();
+void
+task_completed_cb (GObject *source_object,
+                        GAsyncResult *res,
+                        gpointer user_data)
+{
+  int td = user_data;
+  g_message ("task completed %d", td);
 
-  init_audio_engine ();
+  UpdateSplashData * data = calloc (1, sizeof (UpdateSplashData));
+  switch (td)
+    {
+    case 0:
+      data->message = "Initializing settings manager";
+      data->progress = 0.3;
+      zrythm_app_update_splash (data);
+      break;
+    case 1:
+      data->message = "Initializing widget manager";
+      data->progress = 0.4;
+      zrythm_app_update_splash (data);
+      break;
+    case 2:
+      data->message = "Initializing plugin manager";
+      data->progress = 0.5;
+      zrythm_app_update_splash (data);
+      break;
+    case 3:
+      data->message = "Initializing audio engine";
+      data->progress = 0.7;
+      zrythm_app_update_splash (data);
+      break;
+    case 4:
+      data->message = "Creating main window";
+      data->progress = 0.9;
+      zrythm_app_update_splash (data);
+      break;
+    case 5:
+      gtk_widget_destroy (GTK_WINDOW (splash));
+      main_window_widget_new (ZRYTHM_APP (app));
+      break;
+    }
 
-  g_message ("Creating main window...");
-  gtk_window_close (GTK_WINDOW (splash));
-  main_window_widget_new (ZRYTHM_APP (app));
+  free (data);
 }
 
 static void
 on_apply (GtkAssistant * assistant,
           gpointer       user_data)
 {
-  /* TODO create/load project here */
+  StartAssistantWidget * sa = START_ASSISTANT_WIDGET (assistant);
 
-  init_after_setting_project ();
+  /* TODO create/load project here */
+  if (sa->selection)
+    {
+      /*zrythm_app_update_splash ("Initializing settings manager", 0.3);*/
+      project_load (sa->selection->filename);
+    }
+
+  /*init_after_setting_project ();*/
+}
+
+static void
+on_cancel (GtkAssistant * assistant,
+          gpointer       user_data)
+{
+  gtk_widget_destroy (GTK_WIDGET (assistant));
+  GTask * task = g_task_new (G_ZRYTHM_APP,
+                             NULL,
+                             task_completed_cb,
+                             0);
+  g_task_set_task_data (task,
+                        0,
+                        NULL);
+  g_task_run_in_thread (task, task_func);
+  task = g_task_new (G_ZRYTHM_APP,
+                     NULL,
+                     task_completed_cb,
+                     1);
+  g_task_set_task_data (task,
+                        1,
+                        NULL);
+  g_task_run_in_thread (task, task_func);
+  task = g_task_new (G_ZRYTHM_APP,
+                     NULL,
+                     task_completed_cb,
+                     2);
+  g_task_set_task_data (task,
+                        2,
+                        NULL);
+  g_task_run_in_thread (task, task_func);
+  task = g_task_new (G_ZRYTHM_APP,
+                     NULL,
+                     task_completed_cb,
+                     3);
+  g_task_set_task_data (task,
+                        3,
+                        NULL);
+  g_task_run_in_thread (task, task_func);
+  task = g_task_new (G_ZRYTHM_APP,
+                     NULL,
+                     task_completed_cb,
+                     4);
+  g_task_set_task_data (task,
+                        4,
+                        NULL);
+  g_task_run_in_thread (task, task_func);
+  task = g_task_new (G_ZRYTHM_APP,
+                     NULL,
+                     task_completed_cb,
+                     5);
+  g_task_set_task_data (task,
+                        5,
+                        NULL);
+  g_task_run_in_thread (task, task_func);
+
+  g_message ("tasks scheduled");
+
+  UpdateSplashData * data = calloc (1, sizeof (UpdateSplashData));
+  data->message = "Creating project";
+  data->progress = 0.3;
+  zrythm_app_update_splash (data);
 }
 
 static void
@@ -187,26 +350,32 @@ zrythm_app_activate (GApplication * _app)
   splash = splash_window_widget_new (ZRYTHM_APP (app));
   gtk_window_present (GTK_WINDOW (splash));
 
-  zrythm_app_update_splash ("Starting up", 0);
+  UpdateSplashData * data = calloc (1, sizeof (UpdateSplashData));
 
   AUDIO_ENGINE = calloc (1, sizeof (Audio_Engine));
   PROJECT = calloc (1, sizeof (Project));
 
   /* init zrythm folders ~/Zrythm */
-  zrythm_app_update_splash ("Initializing files and folders", 0);
   init_dirs_and_files ();
   init_recent_projects ();
 
   /* show the assistant */
-  zrythm_app_update_splash ("Waiting for project...", 0);
-  StartAssistantWidget * assistant =
+  assistant =
     start_assistant_widget_new (GTK_WINDOW(splash),
                                 1);
   g_signal_connect (G_OBJECT (assistant),
                     "apply",
                     G_CALLBACK (on_apply),
-                    app);
+                    assistant);
+  g_signal_connect (G_OBJECT (assistant),
+                    "cancel",
+                    G_CALLBACK (on_cancel),
+                    assistant);
   gtk_window_present (assistant);
+
+  data->message = "Initializing...";
+  data->progress = 0.01;
+  zrythm_app_update_splash (data);
 }
 
 /**

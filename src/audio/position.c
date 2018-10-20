@@ -216,7 +216,7 @@ position_add_frames (Position * position,
 void
 position_updated (Position * position)
 {
-  if (MAIN_WINDOW)
+  if (WIDGET_MANAGER && MAIN_WINDOW)
     {
       if (MAIN_WINDOW->digital_transport)
         {

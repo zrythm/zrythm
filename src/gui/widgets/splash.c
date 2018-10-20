@@ -55,16 +55,20 @@ splash_window_widget_new (ZrythmApp * app)
                                             "application",
                                             app,
                                             NULL);
+  gtk_progress_bar_set_fraction (self->progress_bar,
+                                 0.0);
   return self;
 }
 
 void
 splash_widget_update (SplashWindowWidget * self,
                       const char         * message,
-                      int                progress)
+                      gdouble            progress)
 {
   gtk_label_set_text (self->label,
                       message);
+  gtk_progress_bar_set_fraction (self->progress_bar,
+                                 progress);
 }
 
 

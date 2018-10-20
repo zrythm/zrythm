@@ -70,5 +70,10 @@ io_file_strip_ext (const char * filename);
 char *
 io_file_strip_path (const char * filename);
 
+char *
+io_file_get_creation_datetime (const char * filename);
+
+char *
+io_file_get_last_modified_datetime (const char * filename);
 #endif
 

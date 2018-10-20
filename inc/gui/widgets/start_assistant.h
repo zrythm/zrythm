@@ -38,12 +38,15 @@ typedef struct ProjectInfo
 {
   const char *   name;
   const char *   filename;
+  const char *   modified;
 } ProjectInfo;
 
 enum
 {
   COLUMN_NAME,
   COLUMN_FILENAME,
+  COLUMN_MODIFIED,
+  COLUMN_PROJECT_INFO,
   NUM_COLUMNS
 };
 
@@ -51,8 +54,11 @@ typedef struct StartAssistantWidget
 {
   GtkAssistant        parent_instance;
   GtkTreeView         * projects;
+  GtkTreeSelection    * projects_selection;
+  GtkTreeModel        * model;
   GtkCheckButton      * create_new_project;
-  ProjectInfo         project_infos[3000];
+  ProjectInfo         project_infos[300];
+  ProjectInfo         * selection;
   int                 num_project_infos;
 } StartAssistantWidget;
 
