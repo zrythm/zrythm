@@ -29,8 +29,13 @@
 
 #include <gtk/gtk.h>
 
-#define PROJECT zrythm_app->project
-#define DEFAULT_PROJECT_NAME "Untitled Project"
+#define PROJECT                 zrythm_app->project
+#define DEFAULT_PROJECT_NAME    "Untitled Project"
+#define PROJECT_FILE            "project.xml"
+#define PROJECT_REGIONS_FILE    "regions.xml"
+#define PROJECT_PORTS_FILE      "ports.xml"
+#define PROJECT_REGIONS_DIR     "Regions"
+#define PROJECT_STATES_DIR      "states"
 
 /* project xml version */
 #define PROJECT_XML_VER "0.1"
@@ -45,11 +50,13 @@ typedef struct Region Region;
 
 typedef struct Project
 {
-  /**
-   * Project title
-   */
-  char              * title;
-  char              * path; ///< path to save the project
+  char              * title; ///< project title
+  char              * dir; ///< path to save the project
+  char              * project_file_path; ///< for convenience
+  char              * regions_file_path;
+  char              * ports_file_path;
+  char              * regions_dir;
+  char              * states_dir;
 
   /**
    * Timeline metadata like BPM, time signature, etc.

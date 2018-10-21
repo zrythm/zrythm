@@ -100,6 +100,12 @@ typedef struct StereoPorts
 } StereoPorts;
 
 /**
+ * Creates port (used when loading projects).
+ */
+Port *
+port_get_or_create_blank (int id);
+
+/**
  * Creates port.
  */
 Port *

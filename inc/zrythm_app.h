@@ -92,5 +92,8 @@ ZrythmApp * zrythm_app;
 ZrythmApp *
 zrythm_app_new ();
 
+void
+zrythm_app_add_to_recent_projects (const char * filepath);
+
 #endif /* __ZRYTHM_APP_H__ */
 

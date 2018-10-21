@@ -49,6 +49,32 @@ typedef jack_default_audio_sample_t   sample_t;
 typedef jack_nframes_t                nframes_t;
 
 /**
+ * Creates port (used when loading projects).
+ */
+Port *
+port_get_or_create_blank (int id)
+{
+  if (PROJECT->ports[id])
+    {
+      return PROJECT->ports[id];
+    }
+  else
+    {
+      Port * port = calloc (1, sizeof (Port));
+
+      port->id = id;
+      PROJECT->ports[id] = port;
+      PROJECT->num_ports++;
+      port->num_dests = 0;
+      port->flow = FLOW_UNKNOWN;
+
+      g_message ("[port_new] Creating blank port %d", id);
+
+      return port;
+    }
+}
+
+/**
  * Creates port.
  *
  * Sets id and updates appropriate counters.
@@ -58,7 +84,6 @@ port_new (nframes_t nframes, char * label)
 {
   Port * port = calloc (1, sizeof (Port));
 
-  /* FIXME remove the storing in audio engine */
   port->id = PROJECT->num_ports;
   PROJECT->ports[PROJECT->num_ports++] = port;
   port->num_dests = 0;
@@ -155,7 +180,12 @@ port_delete (Port * port)
 int
 port_connect (Port * src, Port * dest)
 {
-  g_message ("Connecting port %s to %s", src->label, dest->label);
+  g_message ("Connecting port %d(%s) to %d(%s)",
+             src->id,
+             src->label,
+             dest->id,
+             dest->label);
+  port_disconnect (src, dest);
   if (src->type != dest->type)
     {
       g_error ("Cannot connect ports, incompatible types");

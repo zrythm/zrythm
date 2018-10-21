@@ -315,21 +315,18 @@ on_save_as (GtkMenuItem   * menu_item,
 }
 
 static void
-on_save(GtkMenuItem   * menu_item,
-            gpointer      user_data)
+on_save (GtkMenuItem   * menu_item,
+         gpointer      user_data)
 {
-   if (!PROJECT->path ||
+   if (!PROJECT->dir ||
        !PROJECT->title)
      {
        on_save_as (menu_item, user_data);
        return;
      }
+   g_message ("%s project dir ", PROJECT->dir);
 
-   char * separator = io_get_separator ();
-   char * full_path = g_strconcat (PROJECT->path, separator, PROJECT->title, NULL);
-   project_save (full_path);
-   g_free (separator);
-   g_free (full_path);
+   project_save (PROJECT->dir);
 }
 
 

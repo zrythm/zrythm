@@ -70,9 +70,9 @@ mixer_init ()
   MIXER->num_channels = 0;
 
   /* create master channel */
-  MIXER->master = channel_create_master ();
+  /*MIXER->master = channel_create_master ();*/
 
   /* init channel strips array and add one of each */
-  ADD_CHANNEL (channel_create (CT_MIDI, "Ch 1"));
+  /*ADD_CHANNEL (channel_create (CT_MIDI, "Ch 1"));*/
   /*ADD_CHANNEL (channel_create (CT_AUDIO));*/
 }

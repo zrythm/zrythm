@@ -31,12 +31,18 @@
  * Writes the project to an XML file.
  */
 void
-xml_write_project (const char * file);
+xml_write_project ();
 
 void
-xml_write_ports (const char * file);
+xml_write_ports ();
 
 void
-xml_write_regions (const char * filename);
+xml_write_regions ();
+
+void
+xml_load_ports ();
+
+void
+xml_load_regions ();
 
 #endif

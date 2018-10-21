@@ -246,7 +246,9 @@ typedef struct LV2_Plugin
   Position           pos;
   int                bpm;
 
-  Plugin        * plugin;           ///< base plugin instance (parent)
+  Plugin             * plugin;           ///< base plugin instance (parent)
+
+  char               * state_file; ///< for saving/loading state
 } LV2_Plugin;
 
 int

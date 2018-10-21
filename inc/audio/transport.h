@@ -60,7 +60,6 @@ typedef struct Transport
   Position      loop_end_pos;           ///< loop marker end position
   Position      start_marker_pos;       ///< start marker position
   Position      end_marker_pos;         ///< end marker position
-  GArray *      regions_array;          ///< array containing all regions
   int           beats_per_bar;     ///< top part of time signature
   int           beat_unit;   ///< bottom part of time signature, power of 2
   float         zoom_level;             ///< zoom level used in ruler/transport widget calculations FIXME move to gui

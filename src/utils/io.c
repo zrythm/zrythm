@@ -63,7 +63,6 @@ io_get_dir (const char * filename) ///< filename containing directory
   parts[k - 1] = NULL;
   char * directory = g_strjoinv (separator, parts);
 
-  g_free (separator);
   g_strfreev (parts);
   return directory;
 }

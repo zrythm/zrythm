@@ -25,7 +25,7 @@
 
 #include "audio/position.h"
 
-#define REGION_PRINTF_FILENAME "%s%sregions%s%d_%s_%s.mid"
+#define REGION_PRINTF_FILENAME "%d_%s_%s.mid"
 
 typedef struct RegionWidget RegionWidget;
 typedef struct Channel Channel;
@@ -54,6 +54,12 @@ region_new (Track * track,
             Position * end_pos);
 
 /**
+ * Creates region (used when loading projects).
+ */
+Region *
+region_get_or_create_blank (int id);
+
+/**
  * Checks if position is valid then sets it.
  */
 void
@@ -80,5 +86,13 @@ region_at_position (Track    * track, ///< the track to look in
 void
 region_add_midi_note (Region * region,
                       MidiNote * midi_note);
+
+/**
+ * Generates the filename for this region.
+ *
+ * MUST be free'd.
+ */
+char *
+region_generate_filename (Region * region);
 
 #endif // __AUDIO_REGION_H__

@@ -49,12 +49,6 @@ transport_init ()
   // this is applied to the ruler
   transport->total_bars = DEFAULT_TOTAL_BARS;
 
-  // init regions array
-  transport->regions_array =
-    g_array_new (TRUE,
-                 TRUE,
-                 sizeof (Region));
-
   /* set BPM related defaults */
   transport->beats_per_bar = DEFAULT_BEATS_PER_BAR;
   transport->beat_unit = DEFAULT_BEAT_UNIT;

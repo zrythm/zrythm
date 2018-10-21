@@ -20,10 +20,42 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/channel.h"
 #include "audio/region.h"
 #include "audio/track.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/region.h"
+
+static Region *
+_create_region ()
+{
+
+}
+
+/**
+ * Creates region (used when loading projects).
+ */
+Region *
+region_get_or_create_blank (int id)
+{
+  if (PROJECT->regions[id])
+    {
+      return PROJECT->regions[id];
+    }
+  else
+    {
+      Region * region = calloc (1, sizeof (Region));
+
+      region->id = id;
+      PROJECT->regions[id] = region;
+      PROJECT->num_regions++;
+      region->widget = region_widget_new (region);
+
+      g_message ("[region_new] Creating blank region %d", id);
+
+      return region;
+    }
+}
 
 Region *
 region_new (Track * track,
@@ -43,8 +75,8 @@ region_new (Track * track,
   region->end_pos.ticks = end_pos->ticks;
   region->track = track;
   region->widget = region_widget_new (region);
-  region->name = g_strdup ("Region 1");
   region->id = PROJECT->num_regions;
+  region->name = g_strdup_printf ("Region %d", region->id);
   PROJECT->regions[PROJECT->num_regions++] = region;
 
   return region;
@@ -103,3 +135,16 @@ region_add_midi_note (Region * region,
   region->midi_notes[region->num_midi_notes++] = midi_note;
 }
 
+/**
+ * Generates the filename for this region.
+ *
+ * MUST be free'd.
+ */
+char *
+region_generate_filename (Region * region)
+{
+  return g_strdup_printf (REGION_PRINTF_FILENAME,
+                          region->id,
+                          region->track->channel->name,
+                          region->name);
+}

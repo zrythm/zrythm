@@ -270,12 +270,14 @@ _create_channel (char * name)
       }
 
     /* set up piano roll port */
+    char * tmp =g_strdup_printf ("%s Piano Roll", channel->name);
     channel->piano_roll = port_new_with_type (
           AUDIO_ENGINE->block_length,
           TYPE_EVENT,
           FLOW_INPUT,
-          "Piano Roll");
+          tmp);
     channel->piano_roll->owner_jack = 0;
+    channel->piano_roll->owner_ch = channel->id;
     channel->piano_roll->midi_events.queue = calloc (1, sizeof (MidiEvents));
 
     channel->id = PROJECT->num_channels;

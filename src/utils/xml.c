@@ -33,6 +33,7 @@
 #include "audio/mixer.h"
 #include "audio/region.h"
 #include "audio/track.h"
+#include "audio/transport.h"
 #include "plugins/lv2_plugin.h"
 #include "utils/io.h"
 #include "utils/xml.h"
@@ -40,8 +41,11 @@
 #include <gtk/gtk.h>
 
 #include <libxml/encoding.h>
+#include <libxml/xmlreader.h>
 
 #define MY_ENCODING "UTF-8"
+#define NAME_IS(x) strcmp ((const char *) name, x) == 0
+#define TO_INT(x) (int) g_ascii_strtoll((const char *) x, NULL, 10)
 
 /**
  * Already serialized/deserialized ports
@@ -113,10 +117,12 @@ static void
 write_port_id (xmlTextWriterPtr writer, Port * port)
 {
   int rc;
-  rc = xmlTextWriterWriteFormatElement (writer,
-                                        BAD_CAST "port_id",
+  rc = xmlTextWriterStartElement (writer, BAD_CAST "Port");
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "id",
                                         "%d",
                                         port->id);
+  rc = xmlTextWriterEndElement(writer);
 }
 
 static void
@@ -124,19 +130,19 @@ write_gdk_rgba (xmlTextWriterPtr writer, GdkRGBA * color)
 {
   int rc;
   rc = xmlTextWriterStartElement (writer, BAD_CAST "Color");
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "red",
                                         "%f",
                                         color->red);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "green",
                                         "%f",
                                         color->green);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "blue",
                                         "%f",
                                         color->blue);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "alpha",
                                         "%f",
                                         color->alpha);
@@ -152,18 +158,48 @@ write_port (xmlTextWriterPtr writer, Port * port)
                                         BAD_CAST "id",
                                         "%d",
                                         port->id);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "label",
                                         "%s",
                                         port->label);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "type",
                                         "%d",
                                         port->type);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "flow",
                                         "%d",
                                         port->flow);
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "internal_type",
+                                        "%d",
+                                        port->internal_type);
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "owner_jack",
+                                        "%d",
+                                        port->owner_jack);
+  if (port->owner_pl)
+    {
+      rc = xmlTextWriterWriteFormatAttribute (writer,
+                                            BAD_CAST "owner_pl_id",
+                                            "%d",
+                                            port->owner_pl->id);
+    }
+  if (port->owner_ch)
+    {
+      rc = xmlTextWriterWriteFormatAttribute (writer,
+                                            BAD_CAST "owner_ch_id",
+                                            "%d",
+                                            port->owner_ch->id);
+    }
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "num_srcs",
+                                        "%d",
+                                        port->num_srcs);
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "num_dests",
+                                        "%d",
+                                        port->num_dests);
 
   /* write source port ids */
   rc = xmlTextWriterStartElement (writer, BAD_CAST "Srcs");
@@ -187,28 +223,18 @@ write_port (xmlTextWriterPtr writer, Port * port)
     }
   rc = xmlTextWriterEndElement(writer);
 
-  rc = xmlTextWriterWriteFormatElement (writer,
-                                        BAD_CAST "internal_type",
-                                        "%d",
-                                        port->internal_type);
-  rc = xmlTextWriterWriteFormatElement (writer,
-                                        BAD_CAST "owner_jack",
-                                        "%d",
-                                        port->owner_jack);
-  if (port->owner_pl)
+  /* write lv2 port */
+  if (port->owner_pl &&
+      port->owner_pl->descr->protocol == PROT_LV2)
     {
-      rc = xmlTextWriterWriteFormatElement (writer,
-                                            BAD_CAST "owner_pl_id",
+      rc = xmlTextWriterStartElement (writer, BAD_CAST "Lv2Port");
+      rc = xmlTextWriterWriteFormatAttribute (writer,
+                                            BAD_CAST "index",
                                             "%d",
-                                            port->owner_pl->id);
+                                            port->lv2_port->index);
+      rc = xmlTextWriterEndElement(writer);
     }
-  if (port->owner_ch)
-    {
-      rc = xmlTextWriterWriteFormatElement (writer,
-                                            BAD_CAST "owner_ch_id",
-                                            "%d",
-                                            port->owner_ch->id);
-    }
+
 
   rc = xmlTextWriterEndElement(writer);
 }
@@ -219,59 +245,59 @@ write_plugin_descr (xmlTextWriterPtr writer, Plugin * plugin)
   int rc;
   Plugin_Descriptor * descr = plugin->descr;
   rc = xmlTextWriterStartElement (writer, BAD_CAST "Desriptor");
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "author",
                                         "%s",
                                         descr->author);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "name",
                                         "%s",
                                         descr->name);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "website",
                                         "%s",
                                         descr->website);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "category",
                                         "%s",
                                         descr->category);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "num_audio_ins",
                                         "%d",
                                         descr->num_audio_ins);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "num_midi_ins",
                                         "%d",
                                         descr->num_midi_ins);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "num_audio_outs",
                                         "%d",
                                         descr->num_audio_outs);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "num_midi_outs",
                                         "%d",
                                         descr->num_midi_outs);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "num_ctrl_ins",
                                         "%d",
                                         descr->num_ctrl_ins);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "num_ctrl_outs",
                                         "%d",
                                         descr->num_ctrl_outs);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "arch",
                                         "%d",
                                         descr->arch);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "protocol",
                                         "%d",
                                         descr->protocol);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "path",
                                         "%s",
                                         descr->path);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "uri",
                                         "%s",
                                         descr->uri);
@@ -301,6 +327,10 @@ write_lv2_plugin (xmlTextWriterPtr writer, LV2_Plugin * plugin)
 {
   int rc;
   rc = xmlTextWriterStartElement (writer, BAD_CAST "LV2Plugin");
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "state_file",
+                                        "%s",
+                                        plugin->state_file);
   rc = xmlTextWriterStartElement (writer, BAD_CAST "LV2Ports");
   for (int i = 0; i < plugin->num_ports; i++)
     {
@@ -324,6 +354,22 @@ write_plugin (xmlTextWriterPtr writer, Plugin * plugin, int pos)
                                          BAD_CAST "id",
                                          "%d",
                                          plugin->id);
+  rc = xmlTextWriterWriteFormatAttribute(writer,
+                                         BAD_CAST "num_in_ports",
+                                         "%d",
+                                         plugin->num_in_ports);
+  rc = xmlTextWriterWriteFormatAttribute(writer,
+                                         BAD_CAST "num_out_ports",
+                                         "%d",
+                                         plugin->num_out_ports);
+  rc = xmlTextWriterWriteFormatAttribute(writer,
+                                         BAD_CAST "num_unknown_ports",
+                                         "%d",
+                                         plugin->num_unknown_ports);
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "enabled",
+                                        "%d",
+                                        plugin->enabled);
   write_plugin_descr (writer, plugin);
   rc = xmlTextWriterStartElement (writer, BAD_CAST "in_ports");
   for (int i = 0; i < plugin->num_in_ports; i++)
@@ -343,10 +389,6 @@ write_plugin (xmlTextWriterPtr writer, Plugin * plugin, int pos)
       write_port_id (writer, plugin->unknown_ports[i]);
     }
   rc = xmlTextWriterEndElement(writer);
-  rc = xmlTextWriterWriteFormatElement (writer,
-                                        BAD_CAST "enabled",
-                                        "%d",
-                                        plugin->enabled);
   if (plugin->descr->protocol == PROT_LV2)
     {
       write_lv2_plugin (writer, (LV2_Plugin *) plugin->original_plugin);
@@ -362,23 +404,23 @@ write_position (xmlTextWriterPtr writer, Position * pos, char * name)
   rc = xmlTextWriterStartElement (writer, BAD_CAST "Position");
   rc = xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "id",
                                          "%s", name);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "bars",
                                         "%d",
                                         pos->bars);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "beats",
                                         "%d",
                                         pos->beats);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "quarter_beats",
                                         "%d",
                                         pos->quarter_beats);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "ticks",
                                         "%d",
                                         pos->ticks);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "frames",
                                         "%d",
                                         pos->frames);
@@ -391,23 +433,27 @@ static void
 write_region_id (xmlTextWriterPtr writer, Region * region)
 {
   int rc;
-  rc = xmlTextWriterWriteFormatElement (writer,
-                                        BAD_CAST "region_id",
+  rc = xmlTextWriterStartElement (writer, BAD_CAST "Region");
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "id",
                                         "%d",
                                         region->id);
+  rc = xmlTextWriterEndElement(writer);
 }
 
 static void
-write_region (xmlTextWriterPtr writer, Region * region, const char * file)
+write_region (xmlTextWriterPtr writer, Region * region)
 {
   int rc;
   rc = xmlTextWriterStartElement (writer, BAD_CAST "Region");
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "id",
+                                        "%d",
+                                        region->id);
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "name",
                                         "%s",
                                         region->name);
-  write_position (writer, &region->start_pos, "start_pos");
-  write_position (writer, &region->end_pos, "end_pos");
   if (region->track->channel->type == CT_AUDIO)
     {
       //
@@ -416,43 +462,31 @@ write_region (xmlTextWriterPtr writer, Region * region, const char * file)
     {
       if (region->linked_region)
         {
-          rc = xmlTextWriterStartElement (writer, BAD_CAST "LinkedRegion");
-          write_region_id (writer, region->linked_region);
-          rc = xmlTextWriterEndElement(writer);
+          rc = xmlTextWriterWriteFormatAttribute (writer,
+                                                BAD_CAST "linked_region_id",
+                                                "%d",
+                                                region->linked_region->id);
         }
       else
         {
-          char * dir = io_get_dir (file);
-          char * separator = io_get_separator ();
-          char * filename = g_strdup_printf (REGION_PRINTF_FILENAME,
-                                             dir,
-                                             separator,
-                                             separator,
-                                             region->id,
-                                             region->track->channel->name,
-                                             region->name);
-          rc = xmlTextWriterWriteFormatElement (writer,
+          char * filename = region_generate_filename (region);
+          rc = xmlTextWriterWriteFormatAttribute (writer,
                                                 BAD_CAST "filename",
                                                 "%s",
                                                 filename);
-          g_free (dir);
-          g_free (separator);
           g_free (filename);
-
-          rc = xmlTextWriterStartElement (writer, BAD_CAST "MidiNotes");
-          /* TODO write midi notes */
-          rc = xmlTextWriterEndElement(writer);
         }
     }
+  write_position (writer, &region->start_pos, "start_pos");
+  write_position (writer, &region->end_pos, "end_pos");
 
   rc = xmlTextWriterEndElement(writer);
-
 }
 
 void
-xml_write_regions (const char * file)
+xml_write_regions ()
 {
-  g_message ("Writing %s...", file);
+  g_message ("Writing %s...", PROJECT->regions_file_path);
 
   /*
    * this initialize the library and check potential ABI mismatches
@@ -466,7 +500,7 @@ xml_write_regions (const char * file)
   xmlChar *tmp;
 
   /* Create a new XmlWriter for uri, with no compression. */
-  writer = xmlNewTextWriterFilename(file, 0);
+  writer = xmlNewTextWriterFilename (PROJECT->regions_file_path, 0);
   if (writer == NULL) {
       g_warning ("Error creating the xml writer\n");
       return;
@@ -486,14 +520,14 @@ xml_write_regions (const char * file)
     }
 
   /* write regions */
-  rc = xmlTextWriterStartElement(writer, BAD_CAST "Regions");
-  rc = xmlTextWriterWriteAttribute(writer, BAD_CAST "ver",
-                                   BAD_CAST PROJECT_XML_VER);
+  rc = xmlTextWriterStartElement (writer, BAD_CAST "Regions");
+  rc = xmlTextWriterWriteAttribute (writer, BAD_CAST "ver",
+                                    BAD_CAST PROJECT_XML_VER);
 
   /* write regions */
   for (int i = 0; i < PROJECT->num_regions; i++)
     {
-      write_region (writer, PROJECT->regions[i], file);
+      write_region (writer, PROJECT->regions[i]);
     }
 
   /* Here we could close the elements ORDER and EXAMPLE using the
@@ -520,7 +554,7 @@ write_track (xmlTextWriterPtr writer, Track * track)
 {
   int rc;
   rc = xmlTextWriterStartElement (writer, BAD_CAST "Track");
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "num_regions",
                                         "%d",
                                         track->num_regions);
@@ -543,10 +577,43 @@ write_channel (xmlTextWriterPtr writer, Channel * channel)
   rc = xmlTextWriterStartElement (writer, BAD_CAST "Channel");
   rc = xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "id",
                                          "%d", channel->id);
-  rc = xmlTextWriterWriteFormatElement (writer,
+  rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "name",
                                         "%s",
                                         channel->name);
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "type",
+                                        "%d",
+                                        channel->type);
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "volume",
+                                        "%f",
+                                        channel->volume);
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "muted",
+                                        "%d",
+                                        channel->muted);
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "soloed",
+                                        "%d",
+                                        channel->soloed);
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "phase",
+                                        "%f",
+                                        channel->phase);
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "recording",
+                                        "%d",
+                                        channel->recording);
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "output",
+                                        "%d",
+                                        channel->output->id);
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "enabled",
+                                        "%d",
+                                        channel->enabled);
+
   rc = xmlTextWriterStartElement (writer, BAD_CAST "Plugins");
   for (int i = 0; i < MAX_PLUGINS; i++)
    {
@@ -555,27 +622,8 @@ write_channel (xmlTextWriterPtr writer, Channel * channel)
     }
   rc = xmlTextWriterEndElement(writer);
 
-  rc = xmlTextWriterWriteFormatElement (writer,
-                                        BAD_CAST "type",
-                                        "%d",
-                                        channel->type);
-  rc = xmlTextWriterWriteFormatElement (writer,
-                                        BAD_CAST "volume",
-                                        "%f",
-                                        channel->volume);
-  rc = xmlTextWriterWriteFormatElement (writer,
-                                        BAD_CAST "muted",
-                                        "%d",
-                                        channel->muted);
-  rc = xmlTextWriterWriteFormatElement (writer,
-                                        BAD_CAST "soloed",
-                                        "%d",
-                                        channel->soloed);
   write_gdk_rgba (writer, &channel->color);
-  rc = xmlTextWriterWriteFormatElement (writer,
-                                        BAD_CAST "phase",
-                                        "%f",
-                                        channel->phase);
+
   rc = xmlTextWriterStartElement (writer, BAD_CAST "StereoIn");
   write_port_id (writer, channel->stereo_in->l);
   write_port_id (writer, channel->stereo_in->r);
@@ -590,26 +638,15 @@ write_channel (xmlTextWriterPtr writer, Channel * channel)
   write_port_id (writer, channel->stereo_in->l);
   write_port_id (writer, channel->stereo_in->r);
   rc = xmlTextWriterEndElement(writer);
-  rc = xmlTextWriterWriteFormatElement (writer,
-                                        BAD_CAST "recording",
-                                        "%d",
-                                        channel->recording);
-  rc = xmlTextWriterWriteFormatElement (writer,
-                                        BAD_CAST "output",
-                                        "%d",
-                                        channel->output->id);
   write_track (writer, channel->track);
-  rc = xmlTextWriterWriteFormatElement (writer,
-                                        BAD_CAST "enabled",
-                                        "%d",
-                                        channel->enabled);
 
   rc = xmlTextWriterEndElement(writer);
 }
 
 void
-xml_write_ports (const char * file)
+xml_write_ports ()
 {
+  const char * file = PROJECT->ports_file_path;
   g_message ("Writing %s...", file);
 
   /*
@@ -680,13 +717,46 @@ xml_write_ports (const char * file)
 
 }
 
+void
+write_transport (xmlTextWriterPtr writer)
+{
+  int rc;
+  rc = xmlTextWriterStartElement(writer, BAD_CAST "Transport");
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "total_bars",
+                                        "%d",
+                                        TRANSPORT->total_bars);
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "time_sig",
+                                        "%d/%d",
+                                        TRANSPORT->beats_per_bar,
+                                        TRANSPORT->beat_unit);
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "bpm",
+                                        "%f",
+                                        TRANSPORT->bpm);
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "loop",
+                                        "%d",
+                                        TRANSPORT->loop);
+  write_position (writer, &TRANSPORT->playhead_pos, "playhead_pos");
+  write_position (writer, &TRANSPORT->cue_pos, "cue_pos");
+  write_position (writer, &TRANSPORT->loop_start_pos, "loop_start_pos");
+  write_position (writer, &TRANSPORT->loop_end_pos, "loop_end_pos");
+  write_position (writer, &TRANSPORT->start_marker_pos, "start_marker_pos");
+  write_position (writer, &TRANSPORT->end_marker_pos, "end_marker_pos");
+  rc = xmlTextWriterEndElement (writer);
+
+}
+
 /**
  * Writes the project to an XML file.
  */
 void
-xml_write_project (const char * file)
+xml_write_project ()
 {
-  g_message ("Writing %s...", file);
+  const char * file = PROJECT->project_file_path;
+  g_message ("Writing %s...", PROJECT->project_file_path);
 
   /*
    * this initialize the library and check potential ABI mismatches
@@ -701,10 +771,11 @@ xml_write_project (const char * file)
 
   /* Create a new XmlWriter for uri, with no compression. */
   writer = xmlNewTextWriterFilename(file, 0);
-  if (writer == NULL) {
+  if (writer == NULL)
+    {
       g_warning ("Error creating the xml writer\n");
       return;
-  }
+    }
 
   /* prettify */
   xmlTextWriterSetIndent (writer, 1);
@@ -720,10 +791,12 @@ xml_write_project (const char * file)
     }
 
   /* write project */
-  rc = xmlTextWriterWriteComment(writer, BAD_CAST "The project");
   rc = xmlTextWriterStartElement(writer, BAD_CAST "Project");
   rc = xmlTextWriterWriteAttribute(writer, BAD_CAST "ver",
                                    BAD_CAST PROJECT_XML_VER);
+
+  /* write transport */
+  write_transport (writer);
 
   /* write channels */
   rc = xmlTextWriterStartElement(writer, BAD_CAST "Channels");
@@ -751,4 +824,265 @@ xml_write_project (const char * file)
   xmlCleanupParser();
 }
 
+
+xml_load_ports ()
+{
+  xmlTextReaderPtr reader;
+  int ret;
+  const char * filename = PROJECT->ports_file_path;
+  Port * port = NULL;
+  /*
+   * this initialize the library and check potential ABI mismatches
+   * between the version it was compiled for and the actual shared
+   * library used.
+   */
+  LIBXML_TEST_VERSION
+
+  /*
+     * Pass some special parsing options to activate DTD attribute defaulting,
+     * entities substitution and DTD validation
+     */
+    reader = xmlReaderForFile(filename, NULL, 0);
+    if (reader != NULL)
+      {
+        ret = xmlTextReaderRead(reader);
+        while (ret == 1)
+          {
+            const xmlChar *name, *value, *attr;
+            int type;
+
+            name = xmlTextReaderConstName(reader);
+            if (name == NULL)
+                name = BAD_CAST "--";
+
+            type = xmlTextReaderNodeType (reader);
+            value = xmlTextReaderConstValue(reader);
+
+            /*g_message ("%d %d %s %d %d",*/
+                    /*xmlTextReaderDepth(reader),*/
+                    /*type,*/
+                    /*name,*/
+                    /*xmlTextReaderIsEmptyElement(reader),*/
+                    /*xmlTextReaderHasValue(reader));*/
+            if (type == XML_READER_TYPE_ELEMENT)
+              {
+                if (NAME_IS ("Port"))
+                  {
+                    attr =  xmlTextReaderGetAttribute (reader,
+						       "id");
+                    if (TO_INT (attr) > 5) /* first 5 are standard ports */
+                      {
+                        port = port_get_or_create_blank (TO_INT (attr));
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "label");
+                        port->label = g_strdup (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "type");
+                        port->type = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "flow");
+                        port->flow = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "num_srcs");
+                        port->num_srcs = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "num_dests");
+                        port->num_dests = TO_INT (attr);
+                      }
+                  }
+                else if (NAME_IS ("Srcs") && port && port->id > 5)
+                  {
+                    for (int i = 0; i < port->num_srcs; i++)
+                      {
+                        do
+                          {
+                            ret = xmlTextReaderRead(reader);
+                            type = xmlTextReaderNodeType (reader);
+                            value = xmlTextReaderConstValue(reader);
+                            name = xmlTextReaderConstName(reader);
+                          } while (!NAME_IS ("id") ||
+                                   type != XML_READER_TYPE_ELEMENT);
+                        ret = xmlTextReaderRead(reader);
+                        type = xmlTextReaderNodeType (reader);
+                        value = xmlTextReaderConstValue(reader);
+                        name = xmlTextReaderConstName(reader);
+                        port->srcs[i] = port_get_or_create_blank (TO_INT (value));
+
+                        /* if port has no label it means it's still uninitialized */
+                        if (port->srcs[i]->label)
+                          {
+                            port_connect (port->srcs[i], port);
+                          }
+                      }
+                  }
+                else if (NAME_IS ("Dests") && port && port->id > 5)
+                  {
+                    for (int i = 0; i < port->num_dests; i++)
+                      {
+                        do
+                          {
+                            ret = xmlTextReaderRead(reader);
+                            type = xmlTextReaderNodeType (reader);
+                            value = xmlTextReaderConstValue(reader);
+                            name = xmlTextReaderConstName(reader);
+                          } while (!NAME_IS ("id") ||
+                                   type != XML_READER_TYPE_ELEMENT);
+                        ret = xmlTextReaderRead(reader);
+                        type = xmlTextReaderNodeType (reader);
+                        value = xmlTextReaderConstValue(reader);
+                        port->dests[i] = port_get_or_create_blank (TO_INT (value));
+
+                        /* if port has no label it means it's still uninitialized */
+                        if (port->dests[i]->label)
+                          {
+                            port_connect (port, port->dests[i]);
+                          }
+                      }
+                  }
+              }
+            ret = xmlTextReaderRead(reader);
+          }
+        xmlFreeTextReader(reader);
+        if (ret != 0)
+          {
+            g_warning("%s : failed to parse\n", filename);
+          }
+      }
+    else
+      {
+        g_warning ("Unable to open %s\n", filename);
+      }
+
+  /*
+   * Cleanup function for the XML library.
+   */
+  xmlCleanupParser();
+}
+
+xml_load_regions ()
+{
+  xmlTextReaderPtr reader;
+  int ret;
+  const char * file          = PROJECT->regions_file_path;
+  Region * region            = NULL;
+  /*
+   * this initialize the library and check potential ABI mismatches
+   * between the version it was compiled for and the actual shared
+   * library used.
+   */
+  LIBXML_TEST_VERSION
+
+  /*
+     * Pass some special parsing options to activate DTD attribute defaulting,
+     * entities substitution and DTD validation
+     */
+    reader = xmlReaderForFile(file, NULL, 0);
+    if (reader != NULL)
+      {
+        ret = xmlTextReaderRead(reader);
+        while (ret == 1)
+          {
+            const xmlChar *name, *value, *attr;
+            int type;
+
+            name = xmlTextReaderConstName(reader);
+            if (name == NULL)
+                name = BAD_CAST "--";
+
+            type = xmlTextReaderNodeType (reader);
+            value = xmlTextReaderConstValue(reader);
+
+            if (type == XML_READER_TYPE_ELEMENT)
+              {
+                if (NAME_IS ("Region"))
+                  {
+                    attr =  xmlTextReaderGetAttribute (reader,
+						       "id");
+                    region = region_get_or_create_blank (TO_INT (attr));
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "name");
+                    region->name = g_strdup (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "linked_region");
+                    if (attr)
+                      {
+                        /* linked region stuff */
+
+                      }
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "filename");
+                    if (attr)
+                      {
+                        /* load midi file */
+
+                      }
+                  }
+                /*else if (NAME_IS ("Srcs") && port && port->id > 5)*/
+                  /*{*/
+                    /*for (int i = 0; i < port->num_srcs; i++)*/
+                      /*{*/
+                        /*do*/
+                          /*{*/
+                            /*ret = xmlTextReaderRead(reader);*/
+                            /*type = xmlTextReaderNodeType (reader);*/
+                            /*value = xmlTextReaderConstValue(reader);*/
+                            /*name = xmlTextReaderConstName(reader);*/
+                          /*} while (!NAME_IS ("id") ||*/
+                                   /*type != XML_READER_TYPE_ELEMENT);*/
+                        /*ret = xmlTextReaderRead(reader);*/
+                        /*type = xmlTextReaderNodeType (reader);*/
+                        /*value = xmlTextReaderConstValue(reader);*/
+                        /*name = xmlTextReaderConstName(reader);*/
+                        /*port->srcs[i] = port_get_or_create_blank (TO_INT (value));*/
+
+                        /*[> if port has no label it means it's still uninitialized <]*/
+                        /*if (port->srcs[i]->label)*/
+                          /*{*/
+                            /*port_connect (port->srcs[i], port);*/
+                          /*}*/
+                      /*}*/
+                  /*}*/
+                /*else if (NAME_IS ("Dests") && port && port->id > 5)*/
+                  /*{*/
+                    /*for (int i = 0; i < port->num_dests; i++)*/
+                      /*{*/
+                        /*do*/
+                          /*{*/
+                            /*ret = xmlTextReaderRead(reader);*/
+                            /*type = xmlTextReaderNodeType (reader);*/
+                            /*value = xmlTextReaderConstValue(reader);*/
+                            /*name = xmlTextReaderConstName(reader);*/
+                          /*} while (!NAME_IS ("id") ||*/
+                                   /*type != XML_READER_TYPE_ELEMENT);*/
+                        /*ret = xmlTextReaderRead(reader);*/
+                        /*type = xmlTextReaderNodeType (reader);*/
+                        /*value = xmlTextReaderConstValue(reader);*/
+                        /*port->dests[i] = port_get_or_create_blank (TO_INT (value));*/
+
+                        /*[> if port has no label it means it's still uninitialized <]*/
+                        /*if (port->dests[i]->label)*/
+                          /*{*/
+                            /*port_connect (port, port->dests[i]);*/
+                          /*}*/
+                      /*}*/
+                  /*}*/
+              }
+            ret = xmlTextReaderRead(reader);
+          }
+        xmlFreeTextReader(reader);
+        if (ret != 0)
+          {
+            g_warning("%s : failed to parse\n", file);
+          }
+      }
+    else
+      {
+        g_warning ("Unable to open %s\n", file);
+      }
+
+  /*
+   * Cleanup function for the XML library.
+   */
+  xmlCleanupParser();
+}
 

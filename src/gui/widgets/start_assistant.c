@@ -79,11 +79,11 @@ on_create_new_project_toggled (GtkToggleButton *togglebutton,
         GTK_ASSISTANT (self),
         gtk_assistant_get_nth_page (GTK_ASSISTANT (self), 1),
         1);
+        self->selection = NULL;
     }
   else
     {
       gtk_widget_set_sensitive (GTK_WIDGET (self->projects), 1);
-      self->selection = NULL;
     }
 }
 
@@ -193,12 +193,13 @@ start_assistant_widget_new (GtkWindow * parent,
        self->num_project_infos++)
     {
       int i = self->num_project_infos;
-      char * strip_ext = io_file_strip_ext (G_ZRYTHM_APP->recent_projects[i]);
-      char * strip_path = io_file_strip_path (strip_ext);
-      self->project_infos[i].name = strip_path;
+      char * dir = io_get_dir (G_ZRYTHM_APP->recent_projects[i]);
+      char * project_name = io_file_strip_path (dir);
+      self->project_infos[i].name = project_name;
       self->project_infos[i].filename = G_ZRYTHM_APP->recent_projects[i];
       self->project_infos[i].modified =
         io_file_get_last_modified_datetime (G_ZRYTHM_APP->recent_projects[i]);
+      g_free (dir);
     }
 
   /* set model to tree view */

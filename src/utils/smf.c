@@ -39,11 +39,9 @@
  * Saves regions into MIDI files (.smf)
  */
 void
-smf_save_regions (char * filename)
+smf_save_regions ()
 {
-  char * dir = io_get_dir (filename);
-  io_mkdir (dir);
-  char * separator = io_get_separator ();
+  io_mkdir (PROJECT->regions_dir);
 
   for (int i = 0; i < PROJECT->num_regions; i++)
     {
@@ -118,19 +116,19 @@ smf_save_regions (char * filename)
 
           free (events);
 
-          char * filename = g_strdup_printf (REGION_PRINTF_FILENAME,
-                                             dir,
-                                             separator,
-                                             separator,
-                                             region->id,
-                                             region->track->channel->name,
-                                             region->name);
-          g_message ("filename %s", filename);
+          char * region_filename = region_generate_filename (region);
+
+          char * full_path = g_strdup_printf ("%s%s%s",
+                                              PROJECT->regions_dir,
+                                              io_get_separator (),
+                                              region_filename);
+          g_message ("Writing region %s", full_path);
 
 
           /* save the midi file */
-          int ret = smf_save(smf, filename);
-          g_free (filename);
+          int ret = smf_save(smf, full_path);
+          g_free (full_path);
+          g_free (region_filename);
           if (ret)
             {
               g_warning ("smf_save failed");
@@ -140,9 +138,35 @@ smf_save_regions (char * filename)
           smf_delete(smf);
         }
     }
-
-  /* cleanup */
-  g_free (dir);
-  g_free (separator);
 }
 
+/**
+ * Loads midi notes from region MIDI files.
+ */
+void
+smf_load_region (const char    * file,   ///< file to load
+                 MidiNote      ** midi_notes,  ///< place to put extracted notes
+                 int           * num_midi_notes) ///< counter pointer
+{
+  smf_t *smf;
+  smf_event_t *event;
+
+  smf = smf_load (file);
+  if (smf == NULL)
+    {
+      g_warning ("Failed loading %s", file);
+      return;
+    }
+
+  while ((event = smf_get_next_event(smf)) != NULL)
+    {
+      if (smf_event_is_metadata(event))
+        continue;
+
+          /*wait until event->time_seconds.*/
+          /*feed_to_midi_output(event->midi_buffer, event->midi_buffer_length);*/
+    }
+
+  smf_delete(smf);
+
+}

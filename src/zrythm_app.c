@@ -38,6 +38,7 @@ G_DEFINE_TYPE(ZrythmApp, zrythm_app, GTK_TYPE_APPLICATION);
 static SplashWindowWidget * splash;
 static GApplication * app;
 static StartAssistantWidget * assistant;
+static char * selected_filename;
 
 typedef struct UpdateSplashData
 {
@@ -48,7 +49,6 @@ typedef struct UpdateSplashData
 static void
 zrythm_app_update_splash (UpdateSplashData *data)
 {
-
   splash_widget_update (splash,
                         data->message,
                         data->progress);
@@ -159,14 +159,19 @@ init_recent_projects ()
     {
       char * tmp = g_strdup_printf ("%s", line);
       char * project_filename = g_strstrip (tmp);
-      G_ZRYTHM_APP->recent_projects [G_ZRYTHM_APP->num_recent_projects++] =
-        project_filename;
+      FILE * project_file = fopen (project_filename, "r");
+      if (project_file)
+        {
+          G_ZRYTHM_APP->recent_projects [G_ZRYTHM_APP->num_recent_projects++] =
+            project_filename;
+          fclose (project_file);
+        }
   }
 
   fclose(file);
 }
 
-static int finished[6] = { 0, 0, 0, 0 ,0 ,0 };
+static int finished[7] = { 0, 0, 0, 0, 0, 0, 0 };
 
 static void
 task_func (GTask *task,
@@ -215,7 +220,20 @@ task_func (GTask *task,
       while (finished[4] == 0)
         {
         }
+      if (selected_filename)
+        {
+          project_load (selected_filename);
+        }
+      else
+        {
+          project_load (NULL);
+        }
       finished[5] = 1;
+      break;
+    case 6:
+      while (finished[5] == 0)
+        {
+        }
       break;
     }
 }
@@ -235,6 +253,8 @@ task_completed_cb (GObject *source_object,
       data->message = "Initializing settings manager";
       data->progress = 0.3;
       zrythm_app_update_splash (data);
+      if (GTK_IS_WIDGET (assistant))
+        gtk_widget_destroy (GTK_WIDGET (assistant));
       break;
     case 1:
       data->message = "Initializing widget manager";
@@ -252,13 +272,19 @@ task_completed_cb (GObject *source_object,
       zrythm_app_update_splash (data);
       break;
     case 4:
-      data->message = "Creating main window";
+      data->message = "Loading project";
       data->progress = 0.9;
       zrythm_app_update_splash (data);
       break;
     case 5:
+      data->message = "Creating main window";
+      data->progress = 0.9;
+      zrythm_app_update_splash (data);
+      break;
+    case 6:
       gtk_widget_destroy (GTK_WINDOW (splash));
       main_window_widget_new (ZRYTHM_APP (app));
+      AUDIO_ENGINE->run = 1;
       break;
     }
 
@@ -266,75 +292,24 @@ task_completed_cb (GObject *source_object,
 }
 
 static void
-on_apply (GtkAssistant * assistant,
+on_finish (GtkAssistant * _assistant,
           gpointer       user_data)
 {
-  StartAssistantWidget * sa = START_ASSISTANT_WIDGET (assistant);
-
-  /* TODO create/load project here */
-  if (sa->selection)
+  if (user_data) /* if cancel */
     {
-      /*zrythm_app_update_splash ("Initializing settings manager", 0.3);*/
-      project_load (sa->selection->filename);
+      gtk_widget_destroy (GTK_WIDGET (assistant));
     }
-
-  /*init_after_setting_project ();*/
-}
-
-static void
-on_cancel (GtkAssistant * assistant,
-          gpointer       user_data)
-{
-  gtk_widget_destroy (GTK_WIDGET (assistant));
-  GTask * task = g_task_new (G_ZRYTHM_APP,
-                             NULL,
-                             task_completed_cb,
-                             0);
-  g_task_set_task_data (task,
-                        0,
-                        NULL);
-  g_task_run_in_thread (task, task_func);
-  task = g_task_new (G_ZRYTHM_APP,
-                     NULL,
-                     task_completed_cb,
-                     1);
-  g_task_set_task_data (task,
-                        1,
-                        NULL);
-  g_task_run_in_thread (task, task_func);
-  task = g_task_new (G_ZRYTHM_APP,
-                     NULL,
-                     task_completed_cb,
-                     2);
-  g_task_set_task_data (task,
-                        2,
-                        NULL);
-  g_task_run_in_thread (task, task_func);
-  task = g_task_new (G_ZRYTHM_APP,
-                     NULL,
-                     task_completed_cb,
-                     3);
-  g_task_set_task_data (task,
-                        3,
-                        NULL);
-  g_task_run_in_thread (task, task_func);
-  task = g_task_new (G_ZRYTHM_APP,
-                     NULL,
-                     task_completed_cb,
-                     4);
-  g_task_set_task_data (task,
-                        4,
-                        NULL);
-  g_task_run_in_thread (task, task_func);
-  task = g_task_new (G_ZRYTHM_APP,
-                     NULL,
-                     task_completed_cb,
-                     5);
-  g_task_set_task_data (task,
-                        5,
-                        NULL);
-  g_task_run_in_thread (task, task_func);
-
+  for (int i = 0; i < 7; i++)
+    {
+      GTask * task = g_task_new (G_ZRYTHM_APP,
+                                 NULL,
+                                 task_completed_cb,
+                                 i);
+      g_task_set_task_data (task,
+                            i,
+                            NULL);
+      g_task_run_in_thread (task, task_func);
+    }
   g_message ("tasks scheduled");
 
   UpdateSplashData * data = calloc (1, sizeof (UpdateSplashData));
@@ -365,12 +340,12 @@ zrythm_app_activate (GApplication * _app)
                                 1);
   g_signal_connect (G_OBJECT (assistant),
                     "apply",
-                    G_CALLBACK (on_apply),
-                    assistant);
+                    G_CALLBACK (on_finish),
+                    NULL);
   g_signal_connect (G_OBJECT (assistant),
                     "cancel",
-                    G_CALLBACK (on_cancel),
-                    assistant);
+                    G_CALLBACK (on_finish),
+                    1);
   gtk_window_present (assistant);
 
   data->message = "Initializing...";
@@ -427,3 +402,12 @@ zrythm_app_new (void)
   return G_ZRYTHM_APP;
 }
 
+void
+zrythm_app_add_to_recent_projects (const char * filepath)
+{
+  FILE * file = fopen (G_ZRYTHM_APP->recent_projects_file, "a");
+
+  fprintf (file, "%s\n", filepath);
+
+  fclose(file);
+}

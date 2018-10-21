@@ -55,6 +55,7 @@
 #include "plugins/lv2/control.h"
 #include "plugins/lv2/symap.h"
 #include "plugins/plugin.h"
+#include "utils/io.h"
 #include "utils/string.h"
 
 #include <gtk/gtk.h>
@@ -169,6 +170,7 @@ _create_port(LV2_Plugin*   lv2_plugin,
                                            lilv_node_as_string (sym));
   lv2_port->port      = port_new(AUDIO_ENGINE->block_length, port_name);
   g_free (port_name);
+  lv2_port->port->owner_pl = lv2_plugin->plugin;
   lv2_port->port->lv2_port = lv2_port;
   lv2_port->evbuf     = NULL;
   lv2_port->buf_size  = 0;
@@ -1975,7 +1977,13 @@ lv2_save_state (LV2_Plugin * lv2_plugin, const char * dir)
                                 NULL,
                                 dir,
                                 label);
+      char * tmp = io_file_strip_path (dir);
+      lv2_plugin->state_file = g_strdup_printf ("%s%s%s",
+                                             tmp,
+                                             io_get_separator (),
+                                             label);
       g_free (label);
+      g_free (tmp);
       lilv_state_free (state);
 
       return 0;
