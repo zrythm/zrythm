@@ -109,7 +109,7 @@ project_save (char * dir)
   for (int i = 0; i < MIXER->num_channels; i++)
     {
       Channel * channel = MIXER->channels[i];
-      for (int j = 0; j < MAX_PLUGINS; j++)
+      for (int j = 0; j < STRIP_SIZE; j++)
         {
           Plugin * plugin = channel->strip[j];
 
@@ -170,6 +170,7 @@ project_load (char * filepath) ///< this is the xml file
       xml_load_ports ();
       xml_load_regions ();
       xml_load_project ();
+      mixer_load_plugins ();
 
       char * filepath_noext = io_file_strip_path (dir);
       project_set_title (filepath_noext);

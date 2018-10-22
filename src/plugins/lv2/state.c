@@ -33,6 +33,8 @@
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_manager.h"
 
+#include <gtk/gtk.h>
+
 #define NS_ZRYTHM "http://alextee.online/ns/zrythm#"
 #define NS_RDF  "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 #define NS_RDFS "http://www.w3.org/2000/01/rdf-schema#"
@@ -194,6 +196,7 @@ lv2_apply_state(LV2_Plugin* plugin, LilvState* state)
           zix_sem_wait(&TRANSPORT->paused);
         }
 
+      g_message ("applying state...");
       lilv_state_restore (state,
                           plugin->instance,
                           set_port_value, plugin,

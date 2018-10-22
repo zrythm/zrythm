@@ -69,4 +69,10 @@ mixer_init ();
 void
 mixer_process (nframes_t     _nframes);       ///< number of frames to fill in
 
+/**
+ * Loads plugins from state files. Used when loading projects.
+ */
+void
+mixer_load_plugins ();
+
 #endif

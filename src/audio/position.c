@@ -428,3 +428,19 @@ position_from_seconds (Position * position, double secs)
   AUDIO_ENGINE->sample_rate;
 
 }
+
+int
+position_to_ticks (Position * pos)
+{
+  int ticks = (pos->bars - 1) *
+    TRANSPORT->beats_per_bar * 4 * TICKS_PER_QUARTER_BEAT;
+  if (pos->beats)
+    ticks += (pos->beats - 1) *
+      4 * TICKS_PER_QUARTER_BEAT;
+  if (pos->quarter_beats)
+    ticks += (pos->quarter_beats - 1) *
+      TICKS_PER_QUARTER_BEAT;
+  if (pos->ticks)
+    ticks += pos->ticks;
+  return ticks;
+}

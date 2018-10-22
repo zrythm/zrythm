@@ -62,7 +62,7 @@ track_widget_new (Track * track)
                       1,
                       0);
 
-  gtk_label_set_text (self->track_name, track->channel->name);
+  track_widget_update_all (self);
 
   GtkWidget * image = gtk_image_new_from_resource (
           "/online/alextee/zrythm/solo.svg");
@@ -125,4 +125,10 @@ track_widget_class_init (TrackWidgetClass * klass)
                                                 TrackWidget, show_automation);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 TrackWidget, icon);
+}
+
+void
+track_widget_update_all (TrackWidget * self)
+{
+  gtk_label_set_text (self->track_name, self->track->channel->name);
 }

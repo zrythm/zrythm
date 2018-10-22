@@ -116,7 +116,7 @@ channel_process (Channel * channel,  ///< slots
   port_clear_buffer (channel->piano_roll);
   port_clear_buffer (channel->stereo_out->l);
   port_clear_buffer (channel->stereo_out->r);
-  for (int j = 0; j < MAX_PLUGINS; j++)
+  for (int j = 0; j < STRIP_SIZE; j++)
     {
       Plugin * plugin = channel->strip[j];
       if (plugin)
@@ -147,7 +147,7 @@ channel_process (Channel * channel,  ///< slots
   midi_events_dequeue (&channel->piano_roll->midi_events);
 
   /* go through each slot (plugin) on the channel strip */
-  for (int i = 0; i < MAX_PLUGINS; i++)
+  for (int i = 0; i < STRIP_SIZE; i++)
     {
       Plugin * plugin = channel->strip[i];
       if (plugin)
@@ -255,7 +255,7 @@ _create_channel (char * name)
   channel->midi_in->owner_ch = channel;
 
   /* init plugins */
-  for (int i = 0; i < MAX_PLUGINS; i++)
+  for (int i = 0; i < STRIP_SIZE; i++)
     {
       channel->strip[i] = NULL;
     }
@@ -467,7 +467,7 @@ channel_add_plugin (Channel * channel,    ///< the channel
   channel->strip[pos] = plugin;
 
   Plugin * next_plugin = NULL;
-  for (int i = pos + 1; i < MAX_PLUGINS; i++)
+  for (int i = pos + 1; i < STRIP_SIZE; i++)
     {
       next_plugin = channel->strip[i];
       if (next_plugin)
@@ -594,7 +594,7 @@ int
 channel_get_last_active_slot_index (Channel * channel)
 {
   int index = -1;
-  for (int i = 0; i < MAX_PLUGINS; i++)
+  for (int i = 0; i < STRIP_SIZE; i++)
     {
       if (channel->strip[i])
         index = i;
@@ -624,7 +624,7 @@ channel_get_first_plugin (Channel * channel)
 {
   /* find first plugin */
   Plugin * plugin = NULL;
-  for (int i = 0; i < MAX_PLUGINS; i++)
+  for (int i = 0; i < STRIP_SIZE; i++)
     {
       if (channel->strip[i])
         {

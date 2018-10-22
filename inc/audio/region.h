@@ -60,11 +60,13 @@ Region *
 region_get_or_create_blank (int id);
 
 /**
- * Checks if position is valid then sets it.
+ * Clamps position then sets it.
  */
 void
 region_set_start_pos (Region * region,
-                      Position * start_pos);
+                      Position * pos,
+                      int      moved); ///< region moved or not (to move notes as
+                                          ///< well)
 
 /**
  * Checks if position is valid then sets it.

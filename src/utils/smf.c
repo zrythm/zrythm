@@ -28,6 +28,7 @@
 #include "audio/region.h"
 #include "audio/track.h"
 #include "audio/transport.h"
+#include "utils/arrays.h"
 #include "utils/io.h"
 #include "utils/smf.h"
 
@@ -59,6 +60,9 @@ smf_save_regions ()
               g_warning ("smf_new failed");
               return;
             }
+          smf_set_ppqn (smf,
+		        TICKS_PER_QUARTER_BEAT);
+
 
           track = smf_track_new();
           if (track == NULL)
@@ -85,16 +89,18 @@ smf_save_regions ()
           ev.buffer[5] = tempo & 0xFF;
           event = smf_event_new_from_pointer (ev.buffer,
                                               ev.size);
-          smf_track_add_event_seconds(
+          smf_track_add_event_pulses (
             track,
             event,
             0);
           free (ev.buffer);
 
           MidiEvents * events = calloc (1, sizeof (MidiEvents));
+          Position abs_start_pos;
+          position_init (&abs_start_pos);
           midi_note_notes_to_events (region->midi_notes,
                                      region->num_midi_notes,
-                                     &region->start_pos,
+                                     &abs_start_pos,
                                      events);
 
           for (int j = 0; j < events->num_events; j++)
@@ -108,10 +114,11 @@ smf_save_regions ()
                   return;
                 }
 
-              smf_track_add_event_seconds(
+              smf_track_add_event_pulses (
                 track,
                 event,
-                (double) ev->time / (double) AUDIO_ENGINE->sample_rate);
+                ev->time / AUDIO_ENGINE->frames_per_tick);
+              /*g_message ("event at %d", ev->time / AUDIO_ENGINE->frames_per_tick);*/
             }
 
           free (events);
@@ -160,7 +167,7 @@ smf_load_region (const char    * file,   ///< file to load
   g_message ("Loading smf %s", file);
 
   MidiNote notes[400];
-  int      num_notes = 0;
+  int      num_notes = 0; /* started notes */
   float bpm;
 
   while ((event = smf_get_next_event(smf)) != NULL)
@@ -175,7 +182,7 @@ smf_load_region (const char    * file,   ///< file to load
             (event->midi_buffer[4] << 8) |
             (event->midi_buffer[5]);
           bpm = 60000000.f / tempo;
-          transport_set_bpm (bpm);
+          /*transport_set_bpm (bpm);*/
           continue;
         }
 
@@ -189,29 +196,33 @@ smf_load_region (const char    * file,   ///< file to load
 
       uint8_t type = event->midi_buffer[0] & 0xf0;
       uint8_t channel = event->midi_buffer[0] & 0xf;
-      int frames = AUDIO_ENGINE->sample_rate *
-        event->time_seconds;
+      int ticks = event->time_pulses;
       if (type == 0x90) /* note on */
         {
+          g_message ("note on at %d ticks", ticks);
           /*position_set_to_pos (&notes[num_notes].start_pos,*/
                                /*region->start_pos)*/
           position_init (&notes[num_notes].start_pos);
-          position_add_frames (&notes[num_notes].start_pos,
-                               frames);
+          /*position_add_frames (&notes[num_notes].start_pos,*/
+                               /*frames);*/
+          position_set_tick (&notes[num_notes].start_pos, ticks);
           notes[num_notes].val = event->midi_buffer[1];
           notes[num_notes].vel = event->midi_buffer[2];
           num_notes++;
         }
       else if (type == 0x80) /* note off */
         {
+          g_message ("note off at %d ticks", ticks);
           /* find note and set its end pos */
           for (int i = 0; i < num_notes; i++)
             {
               if (notes[i].val == event->midi_buffer[1])
                 {
-                  position_init (&notes[num_notes].end_pos);
-                  position_add_frames (&notes[i].end_pos,
-                                       frames);
+                  position_init (&notes[i].end_pos);
+                  /*position_add_frames (&notes[i].end_pos,*/
+                                       /*frames);*/
+                  position_set_tick (&notes[i].end_pos, ticks);
+                  arrays_delete (notes, &num_notes, &notes[i]);
                   break;
                 }
             }

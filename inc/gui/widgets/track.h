@@ -60,5 +60,11 @@ typedef struct TrackWidgetClass
 TrackWidget *
 track_widget_new (Track * track);
 
+/**
+ * Updates changes in the backend to the ui
+ */
+void
+track_widget_update_all (TrackWidget * self);
+
 #endif
 

@@ -36,7 +36,7 @@
 
 #include <jack/jack.h>
 
-#define MAX_PLUGINS 9
+#define STRIP_SIZE 9
 
 typedef jack_default_audio_sample_t   sample_t;
 typedef jack_nframes_t                nframes_t;
@@ -58,7 +58,7 @@ typedef struct Channel
   char *            name;        ///< channel name
   /* note: the first plugin is special, it is the "main" plugin of the channel
    * where processing starts */
-  Plugin            * strip[MAX_PLUGINS]; ///< the channel strip
+  Plugin            * strip[STRIP_SIZE]; ///< the channel strip
   //int               num_plugins;
   ChannelType       type;             ///< MIDI / Audio / Master
   sample_t          volume;           ///< value of the volume fader

@@ -120,6 +120,12 @@ Plugin *
 plugin_create_from_descr (Plugin_Descriptor * descr);
 
 /**
+ * Loads the plugin from its state file.
+ */
+void
+plugin_load (Plugin * plugin);
+
+/**
  * Instantiates the plugin (e.g. when adding to a channel)
  */
 int

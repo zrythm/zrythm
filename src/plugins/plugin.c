@@ -81,12 +81,9 @@ plugin_create_from_descr (Plugin_Descriptor * descr)
   /*action.sa_flags = SA_SIGINFO;*/
   /*action.sa_sigaction = handler;*/
   /*sigaction(SIGSEGV, &action, NULL);*/
-  switch (plugin->descr->protocol)
+  if (plugin->descr->protocol == PROT_LV2)
     {
-    case PROT_LV2:
-
       lv2_create_from_uri (plugin, descr->uri);
-      break;
     }
   return plugin;
 }
@@ -116,6 +113,24 @@ plugin_get_or_create_blank (int id)
       return plugin;
     }
 }
+
+
+/**
+ * Loads the plugin from its state file.
+ */
+/*void*/
+/*plugin_load (Plugin * plugin)*/
+/*{*/
+  /*switch (plugin->descr->protocol)*/
+    /*{*/
+    /*case PROT_LV2:*/
+
+      /*lv2_load_from_state (plugin, descr->uri);*/
+      /*break;*/
+    /*}*/
+  /*return plugin;*/
+
+/*}*/
 
 /**
  * Instantiates the plugin (e.g. when adding to a channel).

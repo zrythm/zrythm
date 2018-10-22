@@ -76,3 +76,33 @@ mixer_init ()
   /*ADD_CHANNEL (channel_create (CT_MIDI, "Ch 1"));*/
   /*ADD_CHANNEL (channel_create (CT_AUDIO));*/
 }
+
+/**
+ * Loads plugins from state files. Used when loading projects.
+ */
+void
+mixer_load_plugins ()
+{
+  for (int i = 0; i < MIXER->num_channels; i++)
+    {
+      Channel * channel = MIXER->channels[i];
+      for (int j = 0; j < STRIP_SIZE; j++)
+        {
+          Plugin * plugin = channel->strip[j];
+          if (plugin)
+            {
+              plugin_instantiate (plugin);
+            }
+        }
+    }
+
+  /* do master too  */
+  for (int j = 0; j < STRIP_SIZE; j++)
+    {
+      Plugin * plugin = MIXER->master->strip[j];
+      if (plugin)
+        {
+          plugin_instantiate (plugin);
+        }
+    }
+}

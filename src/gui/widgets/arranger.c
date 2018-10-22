@@ -507,7 +507,8 @@ drag_update (GtkGestureDrag * gesture,
                          NULL,
                          self->snap_grid);
           region_set_start_pos (self->region,
-                                &pos);
+                                &pos,
+                                0);
         }
       else if (T_MIDI)
         {
@@ -560,7 +561,8 @@ drag_update (GtkGestureDrag * gesture,
                          NULL,
                          self->snap_grid);
           region_set_start_pos (self->region,
-                                &pos);
+                                &pos,
+                                1);
         }
       else if (T_MIDI)
         {

@@ -38,6 +38,7 @@
 #include "audio/mixer.h"
 #include "audio/port.h"
 #include "plugins/plugin.h"
+#include "utils/arrays.h"
 
 #include <gtk/gtk.h>
 
@@ -65,6 +66,8 @@ port_get_or_create_blank (int id)
       port->id = id;
       PROJECT->ports[id] = port;
       PROJECT->num_ports++;
+      port->buf = calloc (AUDIO_ENGINE->block_length, sizeof (sample_t));
+      port->nframes = AUDIO_ENGINE->block_length;
       port->num_dests = 0;
       port->flow = FLOW_UNKNOWN;
 
@@ -180,11 +183,6 @@ port_delete (Port * port)
 int
 port_connect (Port * src, Port * dest)
 {
-  g_message ("Connecting port %d(%s) to %d(%s)",
-             src->id,
-             src->label,
-             dest->id,
-             dest->label);
   port_disconnect (src, dest);
   if (src->type != dest->type)
     {
@@ -193,25 +191,30 @@ port_connect (Port * src, Port * dest)
     }
   src->dests[src->num_dests++] = dest;
   dest->srcs[dest->num_srcs++] = src;
+  g_message ("Connected port %d(%s) to %d(%s)",
+             src->id,
+             src->label,
+             dest->id,
+             dest->label);
   return 0;
 }
 
-static void
-array_delete (Port ** array, int * size, Port * element)
-{
-  for (int i = 0; i < (* size); i++)
-    {
-      if (array[i] == element)
-        {
-          --(* size);
-          for (int j = i; j < (* size); j++)
-            {
-              array[j] = array[j + 1];
-            }
-          break;
-        }
-    }
-}
+/*static void*/
+/*array_delete (Port ** array, int * size, Port * element)*/
+/*{*/
+  /*for (int i = 0; i < (* size); i++)*/
+    /*{*/
+      /*if (array[i] == element)*/
+        /*{*/
+          /*--(* size);*/
+          /*for (int j = i; j < (* size); j++)*/
+            /*{*/
+              /*array[j] = array[j + 1];*/
+            /*}*/
+          /*break;*/
+        /*}*/
+    /*}*/
+/*}*/
 
 /**
  * Disconnects src from dest.
@@ -222,8 +225,8 @@ port_disconnect (Port * src, Port * dest)
   g_assert (src);
   g_assert (dest);
   /* disconnect dest from src */
-  array_delete (src->dests, &src->num_dests, dest);
-  array_delete (dest->srcs, &dest->num_srcs, src);
+  arrays_delete (src->dests, &src->num_dests, dest);
+  arrays_delete (dest->srcs, &dest->num_srcs, src);
   return 0;
 }
 

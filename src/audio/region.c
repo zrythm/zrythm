@@ -21,16 +21,11 @@
  */
 
 #include "audio/channel.h"
+#include "audio/midi_note.h"
 #include "audio/region.h"
 #include "audio/track.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/region.h"
-
-static Region *
-_create_region ()
-{
-
-}
 
 /**
  * Creates region (used when loading projects).
@@ -84,14 +79,30 @@ region_new (Track * track,
 
 /**
  * Clamps position then sets it.
- * TODO
  */
 void
 region_set_start_pos (Region * region,
-                      Position * pos)
+                      Position * pos,
+                      int      moved) ///< region moved or not (to move notes as
+                                          ///< well)
 {
+  Position prev;
+  position_set_to_pos (&prev, &region->start_pos);
+
   position_set_to_pos (&region->start_pos,
                        pos);
+  if (moved)
+    {
+      int prev_frames = position_to_frames (&prev);
+      int now_frames = position_to_frames (pos);
+      int frames = now_frames - prev_frames;
+      for (int i = 0; i < region->num_midi_notes; i++)
+        {
+          MidiNote * note = region->midi_notes[i];
+          position_add_frames (&note->start_pos, frames);
+          position_add_frames (&note->end_pos, frames);
+        }
+    }
 }
 
 /**

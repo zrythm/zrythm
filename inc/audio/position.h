@@ -120,6 +120,9 @@ position_compare (Position * p1,
                    //Position * comp_pos, ///< pos to compare to
                    //Position * diff); ///< (OUT) difference in Position)
 
+int
+position_to_ticks (Position * pos);
+
 /**
  * Snaps position using given options.
  */

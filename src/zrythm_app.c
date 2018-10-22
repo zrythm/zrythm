@@ -300,7 +300,11 @@ on_finish (GtkAssistant * _assistant,
       gtk_widget_destroy (GTK_WIDGET (assistant));
       filename = NULL;
     }
-  else
+  else if (!assistant->selection) /* if apply to create new project */
+    {
+      filename = NULL;
+    }
+  else /* if apply to load project */
     {
       filename = assistant->selection->filename;
     }

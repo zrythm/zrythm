@@ -49,7 +49,6 @@ G_DEFINE_TYPE (ChannelWidget, channel_widget, GTK_TYPE_GRID)
 void
 channel_widget_update_meter_reading (ChannelWidget * widget)
 {
-  Channel * channel = widget->channel;
   gtk_widget_queue_draw (GTK_WIDGET (widget->meters[0]));
   gtk_widget_queue_draw (GTK_WIDGET (widget->meters[1]));
 }
@@ -118,6 +117,11 @@ channel_widget_init (ChannelWidget * self)
 static void
 setup_color (ChannelWidget * self)
 {
+  if (self->color)
+    {
+      /*gtk_container_remove (GTK_CONTAINER (self),*/
+                            /*GTK_WIDGET (self->color));*/
+    }
   self->color = color_area_widget_new (&self->channel->color, -1, 10);
   gtk_grid_attach (GTK_GRID (self),
                    GTK_WIDGET (self->color),
@@ -195,7 +199,7 @@ setup_slots (ChannelWidget * self)
   /*gtk_container_remove (GTK_CONTAINER (self->slots_box),*/
                         /*GTK_WIDGET (self->add_slot));*/
   Channel * channel = self->channel;
-  for (int i = 0; i < MAX_PLUGINS; i++)
+  for (int i = 0; i < STRIP_SIZE; i++)
     {
       self->slot_boxes[i] =
         GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
@@ -213,6 +217,75 @@ setup_slots (ChannelWidget * self)
     }
 }
 
+static void
+setup_channel_icon (ChannelWidget * self)
+{
+  switch (self->channel->type)
+    {
+    case CT_MIDI:
+      gtk_image_set_from_resource (self->icon,
+                  "/online/alextee/zrythm/instrument.svg");
+      break;
+    case CT_MASTER:
+      gtk_image_set_from_resource (self->icon,
+                  "/online/alextee/zrythm/audio.svg");
+      break;
+    case CT_AUDIO:
+      gtk_image_set_from_resource (self->icon,
+                  "/online/alextee/zrythm/audio.svg");
+      break;
+    }
+}
+
+static void
+setup_output (ChannelWidget * self)
+{
+  switch (self->channel->type)
+    {
+    case CT_MIDI:
+      gtk_label_set_text (self->output,
+                          "Master");
+      break;
+    case CT_MASTER:
+      gtk_label_set_text (self->output,
+                          "Stereo out");
+      break;
+    case CT_AUDIO:
+      gtk_label_set_text (self->output,
+                          "Master");
+      break;
+    }
+  if (self->channel->output)
+    {
+      gtk_label_set_text (self->output,
+                          self->channel->output->name);
+    }
+}
+
+static void
+setup_name (ChannelWidget * self)
+{
+  if (self->channel->name )
+    {
+      gtk_label_set_text (self->name,
+                          self->channel->name);
+    }
+}
+
+/**
+ * Updates everything on the widget.
+ *
+ * It is reduntant but keeps code organized. Should fix if it causes lags.
+ */
+void
+channel_widget_update_all (ChannelWidget * self)
+{
+  setup_channel_icon (self);
+  setup_name (self);
+  setup_output (self);
+  setup_color (self);
+}
+
 
 ChannelWidget *
 channel_widget_new (Channel * channel)
@@ -221,12 +294,12 @@ channel_widget_new (Channel * channel)
   self->channel = channel;
   channel->widget = self;
 
-  setup_color (self);
   setup_phase_panel (self);
   /*setup_pan (self);*/
   setup_slots (self);
   setup_fader (self);
   setup_meter (self);
+  channel_widget_update_all (self);
 
   GtkWidget * image = gtk_image_new_from_resource (
           "/online/alextee/zrythm/plus.svg");
@@ -246,44 +319,6 @@ channel_widget_new (Channel * channel)
   image = gtk_image_new_from_resource (
           "/online/alextee/zrythm/phase-invert.svg");
   gtk_button_set_image (self->phase_invert, image);
-  switch (channel->type)
-    {
-    case CT_MIDI:
-      gtk_image_set_from_resource (self->icon,
-                  "/online/alextee/zrythm/instrument.svg");
-      gtk_label_set_text (self->output,
-                          "Master");
-      break;
-    case CT_MASTER:
-      gtk_image_set_from_resource (self->icon,
-                  "/online/alextee/zrythm/audio.svg");
-      gtk_label_set_text (self->output,
-                          "Stereo out");
-      break;
-    case CT_AUDIO:
-      gtk_image_set_from_resource (self->icon,
-                  "/online/alextee/zrythm/audio.svg");
-      gtk_label_set_text (self->output,
-                          "Master");
-      break;
-    }
-
-  gtk_label_set_text (self->name,
-                      g_strdup (channel->name));
-
-  /* add dummy box for dnd */
-  /*self->dummy_slot_box = GTK_BOX (*/
-                            /*gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));*/
-  /*gtk_widget_set_size_request (GTK_WIDGET (self->dummy_slot_box),*/
-                               /*-1, 20);*/
-  /*gtk_box_pack_start (self->slots_box,*/
-                      /*GTK_WIDGET (self->dummy_slot_box),*/
-                      /*1, 1, 0);*/
-
-  /*gtk_widget_add_tick_callback (GTK_WIDGET (self->meter_reading),*/
-                                /*tick_callback,*/
-                                /*channel,*/
-                                /*NULL);*/
 
   return self;
 }

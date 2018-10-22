@@ -99,7 +99,7 @@ jack_buffer_size_cb(nframes_t nframes, void* data)
   for (int i = 0; i < MIXER->num_channels; i++)
     {
       Channel * channel = MIXER->channels[i];
-      for (int j = 0; j < MAX_PLUGINS; j++)
+      for (int j = 0; j < STRIP_SIZE; j++)
         {
           if (channel->strip[j])
             {
@@ -198,7 +198,7 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
     {
       Channel * channel = MIXER->channels[i];
       channel->processed = 0;
-      for (int j = 0; j < MAX_PLUGINS; j++)
+      for (int j = 0; j < STRIP_SIZE; j++)
         {
           if (channel->strip[j])
             {

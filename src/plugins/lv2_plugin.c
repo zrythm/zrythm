@@ -159,17 +159,27 @@ _unmap_uri(LV2_URID_Unmap_Handle handle,
 static int
 _create_port(LV2_Plugin*   lv2_plugin,
             uint32_t lv2_port_index,
-            float    default_value)
+            float    default_value,
+            int            port_exists) ///< if zrythm port exists (when loading)
 {
   LV2_Port* const lv2_port = &lv2_plugin->ports[lv2_port_index];
 
   lv2_port->lilv_port = lilv_plugin_get_port_by_index(lv2_plugin->lilv_plugin, lv2_port_index);
   lv2_port->sys_port  = NULL;
   const LilvNode* sym = lilv_port_get_symbol(lv2_plugin->lilv_plugin, lv2_port->lilv_port);
-  char * port_name = g_strdup_printf ("LV2: %s",
-                                           lilv_node_as_string (sym));
-  lv2_port->port      = port_new(AUDIO_ENGINE->block_length, port_name);
-  g_free (port_name);
+  if (port_exists)
+    {
+      /*lv2_port->port->nframes = AUDIO_ENGINE->block_length;*/
+      /*lv2_port->port->buf = calloc (AUDIO_ENGINE->block_length,*/
+                                    /*sizeof (sample_t));*/
+    }
+  else
+    {
+      char * port_name = g_strdup_printf ("LV2: %s",
+                                               lilv_node_as_string (sym));
+      lv2_port->port      = port_new(AUDIO_ENGINE->block_length, port_name);
+      g_free (port_name);
+    }
   lv2_port->port->owner_pl = lv2_plugin->plugin;
   lv2_port->port->lv2_port = lv2_port;
   lv2_port->evbuf     = NULL;
@@ -275,6 +285,44 @@ _create_port(LV2_Plugin*   lv2_plugin,
 }
 
 /**
+ * Set port structures from data (via create_port()) for all ports.
+ *
+ * Used when loading a project.
+*/
+int
+lv2_set_ports(LV2_Plugin* lv2_plugin)
+{
+  float* default_values = (float*)calloc(
+                    lilv_plugin_get_num_ports(lv2_plugin->lilv_plugin),
+                    sizeof(float));
+  lilv_plugin_get_port_ranges_float(lv2_plugin->lilv_plugin,
+                                    NULL,
+                                    NULL,
+                                    default_values);
+
+  for (uint32_t i = 0; i < lv2_plugin->num_ports; ++i)
+    {
+      if (_create_port(lv2_plugin, i, default_values[i], 1) < 0)
+        {
+          return -1;
+        }
+    }
+
+  const LilvPort* control_input = lilv_plugin_get_port_by_designation (
+          lv2_plugin->lilv_plugin,
+          lv2_plugin->nodes.lv2_InputPort,
+          lv2_plugin->nodes.lv2_control);
+  if (control_input) {
+          lv2_plugin->control_in = lilv_port_get_index (lv2_plugin->lilv_plugin,
+                                                    control_input);
+  }
+
+  free(default_values);
+
+  return 0;
+}
+
+/**
    Create port structures from data (via create_port()) for all ports.
 */
 int
@@ -293,7 +341,7 @@ lv2_create_ports(LV2_Plugin* lv2_plugin)
 
   for (uint32_t i = 0; i < lv2_plugin->num_ports; ++i)
     {
-      if (_create_port(lv2_plugin, i, default_values[i]) < 0)
+      if (_create_port(lv2_plugin, i, default_values[i], 0) < 0)
         {
           return -1;
         }
@@ -426,7 +474,7 @@ static void
 _print_control_value(LV2_Plugin* plugin, const LV2_Port* port, float value)
 {
   const LilvNode* sym = lilv_port_get_symbol(plugin->lilv_plugin, port->lilv_port);
-  printf("%-*s = %f\n", plugin->longest_sym, lilv_node_as_string(sym), value);
+  g_message ("%-*s = %f\n", plugin->longest_sym, lilv_node_as_string(sym), value);
 }
 
 void
@@ -1269,7 +1317,6 @@ lv2_free (LV2_Plugin * plugin)
   free (plugin);
 }
 
-
 /**
  * Instantiate the plugin.
  * TODO
@@ -1280,8 +1327,9 @@ lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
                 )
 {
   LilvWorld * world = LILV_WORLD;
-  lv2_set_feature_data (lv2_plugin);
   Plugin * plugin = lv2_plugin->plugin;
+
+  lv2_set_feature_data (lv2_plugin);
 
   /* Cache URIs for concepts we'll use */
   lv2_plugin->nodes.atom_AtomPort          = lilv_new_uri(world, LV2_ATOM__AtomPort);
@@ -1324,32 +1372,6 @@ lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
   lv2_plugin->nodes.ui_externalkx          = lilv_new_uri(world, "http://kxstudio.sf.net/ns/lv2ext/external-ui#Widget");
   lv2_plugin->nodes.end                    = NULL;
 
-  /* Set default values for all ports */
-  if (lv2_create_ports (lv2_plugin) < 0)
-    {
-      return -1;
-    }
-
-  /* Set the zrythm plugin ports */
-  for (uint32_t i = 0; i < lv2_plugin->num_ports; ++i)
-    {
-      LV2_Port * lv2_port = &lv2_plugin->ports[i];
-      Port * port = lv2_port->port;
-      port->owner_pl = plugin;
-      /*if (port->type == TYPE_AUDIO)*/
-        /*{*/
-          if (port->flow == FLOW_INPUT)
-            {
-              plugin->in_ports[plugin->num_in_ports++] = port;
-            }
-          else if (port->flow == FLOW_OUTPUT)
-            {
-              plugin->out_ports[plugin->num_out_ports++] = port;
-            }
-        /*}*/
-    }
-
-  lv2_plugin->control_in = (uint32_t)-1;
 
   lv2_plugin->symap = symap_new();
   zix_sem_init(&lv2_plugin->symap_lock, 1);
@@ -1458,6 +1480,76 @@ lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
           return -1;
         }
   }
+  else if (lv2_plugin->state_file)
+    {
+      char * state_file_path = g_strdup_printf ("%s%s%s",
+                                                PROJECT->states_dir,
+                                                io_get_separator (),
+                                                lv2_plugin->state_file);
+      lv2_plugin->state = lilv_state_new_from_file (LILV_WORLD,
+                                                    &lv2_plugin->map,
+                                                    NULL,
+                                                    state_file_path);
+      if (!lv2_plugin->state)
+        {
+          g_error ("Failed to load state from %s\n", state_file_path);
+        }
+
+      LilvNode * lv2_uri =
+        lilv_node_duplicate(lilv_state_get_plugin_uri(lv2_plugin->state));
+
+      if (!lv2_uri)
+        {
+          g_error ("Missing plugin URI, try lv2ls to list plugins\n");
+        }
+
+      /* Find plugin */
+      g_message ("Plugin:       %s\n", lilv_node_as_string(lv2_uri));
+      lv2_plugin->lilv_plugin = lilv_plugins_get_by_uri(LV2_SETTINGS.lilv_plugins,
+                                               lv2_uri);
+      lilv_node_free(lv2_uri);
+      if (!lv2_plugin->lilv_plugin)
+        {
+          g_error("Failed to find plugin\n");
+        }
+
+      /* Set default values for all ports */
+      if (lv2_set_ports (lv2_plugin) < 0)
+        {
+          return -1;
+        }
+
+      lv2_plugin->control_in = (uint32_t)-1;
+    }
+  else
+    {
+      /* Set default values for all ports */
+      if (lv2_create_ports (lv2_plugin) < 0)
+        {
+          return -1;
+        }
+
+      /* Set the zrythm plugin ports */
+      for (uint32_t i = 0; i < lv2_plugin->num_ports; ++i)
+        {
+          LV2_Port * lv2_port = &lv2_plugin->ports[i];
+          Port * port = lv2_port->port;
+          port->owner_pl = plugin;
+          /*if (port->type == TYPE_AUDIO)*/
+            /*{*/
+              if (port->flow == FLOW_INPUT)
+                {
+                  plugin->in_ports[plugin->num_in_ports++] = port;
+                }
+              else if (port->flow == FLOW_OUTPUT)
+                {
+                  plugin->out_ports[plugin->num_out_ports++] = port;
+                }
+            /*}*/
+        }
+
+      lv2_plugin->control_in = (uint32_t)-1;
+    }
 
   /* Check that any required features are supported */
   LilvNodes* req_feats = lilv_plugin_get_required_features(lv2_plugin->lilv_plugin);

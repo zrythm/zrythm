@@ -52,10 +52,10 @@ typedef struct ChannelWidget
   GtkLabel            * phase_reading;
   KnobWidget          * phase_knob;
   GtkBox              * slots_box;
-  GtkBox              * slot_boxes[MAX_PLUGINS];      ///< array of slot boxes (1 per plugin)
-  ChannelSlotWidget   * slots[MAX_PLUGINS];
-  GtkToggleButton     * toggles[MAX_PLUGINS];   ///< toggle buttons (per slot)
-  GtkLabel            * labels[MAX_PLUGINS];     ///< labels (per slot)
+  GtkBox              * slot_boxes[STRIP_SIZE];      ///< array of slot boxes (1 per plugin)
+  ChannelSlotWidget   * slots[STRIP_SIZE];
+  GtkToggleButton     * toggles[STRIP_SIZE];   ///< toggle buttons (per slot)
+  GtkLabel            * labels[STRIP_SIZE];     ///< labels (per slot)
   //int                 num_slots;        ///< counter
   //GtkBox              * dummy_slot_box;    ///< for dnd
   GtkToggleButton     * slot1b;
@@ -101,5 +101,14 @@ channel_widget_new (Channel * channel);
  */
 void
 channel_widget_update_meter_reading (ChannelWidget * widget);
+
+/**
+ * Updates everything on the widget.
+ *
+ * It is reduntant but keeps code organized. Should fix if it causes lags.
+ */
+void
+channel_widget_update_all (ChannelWidget * self);
+
 
 #endif

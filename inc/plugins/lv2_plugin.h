@@ -452,14 +452,20 @@ lv2_create_from_uri (Plugin    * plugin,  ///< a newly created plugin, with its 
                      );
 
 /**
- * Creates an LV2 plugin from state.
- *
- * Used when loading project files.
+ * Creates an LV2 plugin from a state file.
  */
 LV2_Plugin *
 lv2_create_from_state (Plugin    * plugin,  ///< a newly created plugin
                        const char * _path    ///< path for state to load
                        );
+
+/**
+ * Loads an LV2 plugin from its state file.
+ *
+ * Used when loading project files.
+ */
+LV2_Plugin *
+lv2_load_from_state (Plugin    * plugin);  ///< a newly created plugin
 
 /**
  * Instantiate the LV2 plugin.
