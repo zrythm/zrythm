@@ -190,6 +190,26 @@ channel_process (Channel * channel,  ///< slots
               channel->widget);
 }
 
+static void
+setup_thread (Channel * channel)
+{
+  channel->stop_thread = 0;
+  channel->processed = 1;
+  jack_client_create_thread (
+         AUDIO_ENGINE->client,
+         &channel->thread,
+         jack_client_real_time_priority (AUDIO_ENGINE->client),
+         jack_is_realtime (AUDIO_ENGINE->client),
+         process_channel_work,
+         channel);
+
+  if (channel->thread == -1)
+    {
+      g_error ("%lu: Failed creating thread for channel %d",
+               channel->thread, channel->id);
+    }
+}
+
 /**
  * Creates, inits, and returns a new channel with given info.
  */
@@ -240,51 +260,61 @@ _create_channel (char * name)
       channel->strip[i] = NULL;
     }
 
-    channel->volume = 0.0f;
-    channel->phase = 0.0f;
+  channel->volume = 0.0f;
+  channel->phase = 0.0f;
 
-    /* connect MIDI in port from engine's jack port */
-    /*g_message ("connecting engine MIDI IN port to %s MIDI IN",*/
-               /*channel->name);*/
-    port_connect (AUDIO_ENGINE->midi_in, channel->midi_in);
+  /* connect MIDI in port from engine's jack port */
+  port_connect (AUDIO_ENGINE->midi_in, channel->midi_in);
 
-    /* thread related */
-    channel->stop_thread = 0;
-    channel->processed = 1;
-    /*int result_code = pthread_create (&channel->thread,*/
-                                      /*NULL,*/
-                                      /*process_channel_work,*/
-                                      /*channel);*/
-    jack_client_create_thread (
-           AUDIO_ENGINE->client,
-           &channel->thread,
-           jack_client_real_time_priority (AUDIO_ENGINE->client),
-           jack_is_realtime (AUDIO_ENGINE->client),
-           process_channel_work,
-           channel);
+  /* thread related */
+  setup_thread (channel);
 
-    if (channel->thread == -1)
-      {
-        g_error ("%lu: Failed creating thread for channel %s",
-                 channel->thread, channel->name);
-      }
+  /* set up piano roll port */
+  char * tmp =g_strdup_printf ("%s Piano Roll", channel->name);
+  channel->piano_roll = port_new_with_type (
+        AUDIO_ENGINE->block_length,
+        TYPE_EVENT,
+        FLOW_INPUT,
+        tmp);
+  channel->piano_roll->owner_jack = 0;
+  channel->piano_roll->owner_ch = channel->id;
+  channel->piano_roll->midi_events.queue = calloc (1, sizeof (MidiEvents));
 
-    /* set up piano roll port */
-    char * tmp =g_strdup_printf ("%s Piano Roll", channel->name);
-    channel->piano_roll = port_new_with_type (
-          AUDIO_ENGINE->block_length,
-          TYPE_EVENT,
-          FLOW_INPUT,
-          tmp);
-    channel->piano_roll->owner_jack = 0;
-    channel->piano_roll->owner_ch = channel->id;
-    channel->piano_roll->midi_events.queue = calloc (1, sizeof (MidiEvents));
+  channel->id = PROJECT->num_channels;
+  PROJECT->channels[PROJECT->num_channels++] = channel;
 
-    channel->id = PROJECT->num_channels;
-    PROJECT->channels[PROJECT->num_channels++] = channel;
+  return channel;
+}
 
-    return channel;
-  }
+/**
+ * Used when loading projects.
+ */
+Channel *
+channel_get_or_create_blank (int id)
+{
+  if (PROJECT->channels[id])
+    {
+      return PROJECT->channels[id];
+    }
+
+  Channel * channel = calloc (1, sizeof (Channel));
+
+  channel->id = id;
+
+  /* thread related */
+  setup_thread (channel);
+
+  /* create widget */
+  channel->widget = channel_widget_new (channel);
+  channel->track = track_new (channel);
+
+  PROJECT->channels[id] = channel;
+  PROJECT->num_channels++;
+
+  g_message ("[channel_new] Creating blank channel %d", id);
+
+  return channel;
+}
 
 /**
  * Creates master channel

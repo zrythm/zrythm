@@ -417,3 +417,14 @@ position_snap (Position * prev_pos, ///< prev pos
     }
 
 }
+
+/**
+ * Converts seconds to position and puts the result in the given Position.
+ */
+void
+position_from_seconds (Position * position, double secs)
+{
+  AUDIO_ENGINE->frames_per_tick;
+  AUDIO_ENGINE->sample_rate;
+
+}

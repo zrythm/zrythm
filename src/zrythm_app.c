@@ -38,7 +38,7 @@ G_DEFINE_TYPE(ZrythmApp, zrythm_app, GTK_TYPE_APPLICATION);
 static SplashWindowWidget * splash;
 static GApplication * app;
 static StartAssistantWidget * assistant;
-static char * selected_filename;
+static char * filename = NULL;
 
 typedef struct UpdateSplashData
 {
@@ -220,9 +220,9 @@ task_func (GTask *task,
       while (finished[4] == 0)
         {
         }
-      if (selected_filename)
+      if (filename)
         {
-          project_load (selected_filename);
+          project_load (filename);
         }
       else
         {
@@ -298,6 +298,11 @@ on_finish (GtkAssistant * _assistant,
   if (user_data) /* if cancel */
     {
       gtk_widget_destroy (GTK_WIDGET (assistant));
+      filename = NULL;
+    }
+  else
+    {
+      filename = assistant->selection->filename;
     }
   for (int i = 0; i < 7; i++)
     {

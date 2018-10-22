@@ -120,6 +120,12 @@ void
 channel_set_current_r_db (Channel * channel, float val);
 
 /**
+ * Used when loading projects.
+ */
+Channel *
+channel_get_or_create_blank (int id);
+
+/**
  * Creates a channel using the given params.
  */
 Channel *

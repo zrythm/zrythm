@@ -92,6 +92,32 @@ plugin_create_from_descr (Plugin_Descriptor * descr)
 }
 
 /**
+ * Used when loading projects.
+ */
+Plugin *
+plugin_get_or_create_blank (int id)
+{
+  if (PROJECT->plugins[id])
+    {
+      return PROJECT->plugins[id];
+    }
+  else
+    {
+      Plugin * plugin = calloc (1, sizeof (Plugin));
+
+      plugin->processed = 1;
+
+      plugin->id = id;
+      PROJECT->plugins[id] = plugin;
+      PROJECT->num_plugins++;
+
+      g_message ("[plugin_new] Creating blank plugin %d", id);
+
+      return plugin;
+    }
+}
+
+/**
  * Instantiates the plugin (e.g. when adding to a channel).
  */
 int

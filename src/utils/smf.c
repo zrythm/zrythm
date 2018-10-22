@@ -145,8 +145,7 @@ smf_save_regions ()
  */
 void
 smf_load_region (const char    * file,   ///< file to load
-                 MidiNote      ** midi_notes,  ///< place to put extracted notes
-                 int           * num_midi_notes) ///< counter pointer
+                 Region        * region)  ///< region to save midi notes in
 {
   smf_t *smf;
   smf_event_t *event;
@@ -158,14 +157,78 @@ smf_load_region (const char    * file,   ///< file to load
       return;
     }
 
+  g_message ("Loading smf %s", file);
+
+  MidiNote notes[400];
+  int      num_notes = 0;
+  float bpm;
+
   while ((event = smf_get_next_event(smf)) != NULL)
     {
+      /* get bpm */
+      if (event->midi_buffer_length == 6 &&
+          event->midi_buffer[0] == 0xFF &&
+          event->midi_buffer[1] == 0x51 &&
+          event->midi_buffer[2] == 0x03)
+        {
+          int tempo = (event->midi_buffer[3] << 16) |
+            (event->midi_buffer[4] << 8) |
+            (event->midi_buffer[5]);
+          bpm = 60000000.f / tempo;
+          transport_set_bpm (bpm);
+          continue;
+        }
+
       if (smf_event_is_metadata(event))
         continue;
 
-          /*wait until event->time_seconds.*/
-          /*feed_to_midi_output(event->midi_buffer, event->midi_buffer_length);*/
+      if (event->midi_buffer_length != 3)
+        {
+          continue;
+        }
+
+      uint8_t type = event->midi_buffer[0] & 0xf0;
+      uint8_t channel = event->midi_buffer[0] & 0xf;
+      int frames = AUDIO_ENGINE->sample_rate *
+        event->time_seconds;
+      if (type == 0x90) /* note on */
+        {
+          /*position_set_to_pos (&notes[num_notes].start_pos,*/
+                               /*region->start_pos)*/
+          position_init (&notes[num_notes].start_pos);
+          position_add_frames (&notes[num_notes].start_pos,
+                               frames);
+          notes[num_notes].val = event->midi_buffer[1];
+          notes[num_notes].vel = event->midi_buffer[2];
+          num_notes++;
+        }
+      else if (type == 0x80) /* note off */
+        {
+          /* find note and set its end pos */
+          for (int i = 0; i < num_notes; i++)
+            {
+              if (notes[i].val == event->midi_buffer[1])
+                {
+                  position_init (&notes[num_notes].end_pos);
+                  position_add_frames (&notes[i].end_pos,
+                                       frames);
+                  break;
+                }
+            }
+        }
     }
+
+  for (int i = 0; i < num_notes; i++)
+    {
+      MidiNote * midi_note = midi_note_new (region,
+                                            &notes[i].start_pos,
+                                            &notes[i].end_pos,
+                                            notes[i].val,
+                                            notes[i].vel);
+      region_add_midi_note (region,
+                            midi_note);
+    }
+
 
   smf_delete(smf);
 

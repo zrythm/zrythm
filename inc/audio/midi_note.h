@@ -45,7 +45,7 @@ typedef struct MidiNote
 } MidiNote;
 
 MidiNote *
-midi_note_new (Region * track,
+midi_note_new (Region * region,
                Position * start_pos,
                Position * end_pos,
                int      val,

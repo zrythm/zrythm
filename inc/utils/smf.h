@@ -22,7 +22,7 @@
 #ifndef __UTILS_SMF_H__
 #define __UTILS_SMF_H__
 
-typedef struct MidiNote MidiNote;
+typedef struct Region Region;
 
 /**
  * Saves regions into MIDI files (.smf)
@@ -35,7 +35,6 @@ smf_save_regions ();
  */
 void
 smf_load_region (const char    * file,   ///< file to load
-                 MidiNote      ** midi_notes,  ///< place to put extracted notes
-                 int           * num_midi_notes); ///< counter pointer
+                 Region        * region); ///< region to save midi notes in
 
 #endif

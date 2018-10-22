@@ -58,11 +58,11 @@ typedef enum PluginProtocol
  PROT_VST3
 } PluginProtocol;
 
-enum PluginArchitecture
+typedef enum PluginArchitecture
 {
   ARCH_32,
   ARCH_64
-};
+} PluginArchitecture;
 
 /***
  * A descriptor to be implemented by all plugins
@@ -73,7 +73,6 @@ typedef struct Plugin_Descriptor
   char                 * author;
   char                 * name;
   char                 * website;
-  //int                  category;           ///< one of the above
   char                 * category;           ///< one of the above
   uint8_t              num_audio_ins;             ///< # of input ports
   uint8_t              num_midi_ins;             ///< # of input ports
@@ -81,7 +80,7 @@ typedef struct Plugin_Descriptor
   uint8_t              num_midi_outs;            ///< # of output ports
   uint8_t              num_ctrl_ins;            ///< # of input ctrls
   uint8_t              num_ctrl_outs;            ///< # of output ctrls
-  int                  arch;               ///< architecture 32/64bit
+  PluginArchitecture   arch;               ///< architecture 32/64bit
   PluginProtocol       protocol;           ///< VST/LV2/DSSI/LADSPA...
   char                 * path;
   char                 * uri;            ///< for LV2 plugins
@@ -106,6 +105,12 @@ typedef struct Plugin
   int                  processed;  ///< processed or not yet
   int                  enabled;     ///< enabled or not
 } Plugin;
+
+/**
+ * Used when loading projects.
+ */
+Plugin *
+plugin_get_or_create_blank (int id);
 
 /**
  * Creates/initializes a plugin and its internal plugin (LV2, etc.)

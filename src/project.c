@@ -149,7 +149,7 @@ project_save (char * dir)
 void
 project_set_title (char * _title)
 {
-  PROJECT->title = _title;
+  PROJECT->title = g_strdup (_title);
 
   if (MAIN_WINDOW)
     {
@@ -160,67 +160,22 @@ project_set_title (char * _title)
 }
 
 void
-project_load (char * filepath)
+project_load (char * filepath) ///< this is the xml file
 {
   if (filepath)
     {
-      project_update_paths (filepath);
+      char * dir = io_get_dir (filepath);
+      project_update_paths (dir);
 
       xml_load_ports ();
-
-      /* load regions */
       xml_load_regions ();
-      /*smf_load_regions ();*/
+      xml_load_project ();
 
-      /*[> write plugin states <]*/
-      /*char * state_dir = g_strdup_printf ("%s%sstates",*/
-                                          /*dir,*/
-                                          /*io_get_separator ());*/
-      /*for (int i = 0; i < MIXER->num_channels; i++)*/
-        /*{*/
-          /*Channel * channel = MIXER->channels[i];*/
-          /*char * state_dir_channel = g_strdup_printf ("%s%s%d",*/
-                                              /*state_dir,*/
-                                              /*io_get_separator (),*/
-                                              /*channel->id);*/
-          /*for (int j = 0; j < MAX_PLUGINS; j++)*/
-            /*{*/
-              /*Plugin * plugin = channel->strip[j];*/
+      char * filepath_noext = io_file_strip_path (dir);
+      project_set_title (filepath_noext);
+      g_free (filepath_noext);
 
-              /*if (plugin)*/
-                /*{*/
-                  /*if (plugin->descr->protocol == PROT_LV2)*/
-                    /*{*/
-                      /*char * state_dir_plugin = g_strdup_printf ("%s%s%d",*/
-                                                  /*state_dir_channel,*/
-                                                  /*io_get_separator (),*/
-                                                  /*j);*/
-                      /*LV2_Plugin * lv2_plugin = (LV2_Plugin *) plugin->original_plugin;*/
-                      /*g_message ("symap size before saving state %d",*/
-                                 /*lv2_plugin->symap->size);*/
-                      /*lv2_save_state (lv2_plugin,*/
-                                      /*state_dir_plugin);*/
-                      /*g_free (state_dir_plugin);*/
-                    /*}*/
-                  /*else*/
-                    /*{*/
-                      /*//*/
-                    /*}*/
-                /*}*/
-            /*}*/
-          /*g_free (state_dir_channel);*/
-        /*}*/
-
-      /*tmp = g_strdup_printf ("%s.xml", filename);*/
-      /*xml_write_project (tmp);*/
-
-      /*PROJECT->path = path;*/
-      /*[>zrythm_app_add_to_recent_projects (tmp);<]*/
-      /*project_set_title (filepath_noext);*/
-
-      /*g_free (tmp);*/
-      /*g_free (dir);*/
-      /*g_free (state_dir);*/
+      g_free (dir);
     }
   else
     {

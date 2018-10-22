@@ -36,6 +36,7 @@
 #include "audio/transport.h"
 #include "plugins/lv2_plugin.h"
 #include "utils/io.h"
+#include "utils/smf.h"
 #include "utils/xml.h"
 
 #include <gtk/gtk.h>
@@ -46,6 +47,7 @@
 #define MY_ENCODING "UTF-8"
 #define NAME_IS(x) strcmp ((const char *) name, x) == 0
 #define TO_INT(x) (int) g_ascii_strtoll((const char *) x, NULL, 10)
+#define TO_FLOAT(x) (int) strtof((const char *) x, NULL)
 
 /**
  * Already serialized/deserialized ports
@@ -244,7 +246,7 @@ write_plugin_descr (xmlTextWriterPtr writer, Plugin * plugin)
 {
   int rc;
   Plugin_Descriptor * descr = plugin->descr;
-  rc = xmlTextWriterStartElement (writer, BAD_CAST "Desriptor");
+  rc = xmlTextWriterStartElement (writer, BAD_CAST "Descriptor");
   rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "author",
                                         "%s",
@@ -316,7 +318,10 @@ write_lv2_port (xmlTextWriterPtr writer, LV2_Port * port)
                                         port->index);
   if (port->port)
     {
-      write_port_id (writer, port->port);
+      rc = xmlTextWriterWriteFormatAttribute (writer,
+                                            BAD_CAST "port_id",
+                                            "%d",
+                                            port->port->id);
     }
 
   rc = xmlTextWriterEndElement(writer);
@@ -331,6 +336,10 @@ write_lv2_plugin (xmlTextWriterPtr writer, LV2_Plugin * plugin)
                                         BAD_CAST "state_file",
                                         "%s",
                                         plugin->state_file);
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "num_ports",
+                                        "%d",
+                                        plugin->num_ports);
   rc = xmlTextWriterStartElement (writer, BAD_CAST "LV2Ports");
   for (int i = 0; i < plugin->num_ports; i++)
     {
@@ -605,10 +614,13 @@ write_channel (xmlTextWriterPtr writer, Channel * channel)
                                         BAD_CAST "recording",
                                         "%d",
                                         channel->recording);
-  rc = xmlTextWriterWriteFormatAttribute (writer,
-                                        BAD_CAST "output",
-                                        "%d",
-                                        channel->output->id);
+  if (channel->output)
+    {
+      rc = xmlTextWriterWriteFormatAttribute (writer,
+                                            BAD_CAST "output",
+                                            "%d",
+                                            channel->output->id);
+    }
   rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "enabled",
                                         "%d",
@@ -746,7 +758,6 @@ write_transport (xmlTextWriterPtr writer)
   write_position (writer, &TRANSPORT->start_marker_pos, "start_marker_pos");
   write_position (writer, &TRANSPORT->end_marker_pos, "end_marker_pos");
   rc = xmlTextWriterEndElement (writer);
-
 }
 
 /**
@@ -799,7 +810,12 @@ xml_write_project ()
   write_transport (writer);
 
   /* write channels */
-  rc = xmlTextWriterStartElement(writer, BAD_CAST "Channels");
+  rc = xmlTextWriterStartElement(writer, BAD_CAST "Mixer");
+  rc = xmlTextWriterWriteFormatAttribute (writer,
+                                        BAD_CAST "num_channels",
+                                        "%d",
+                                        MIXER->num_channels);
+  write_channel (writer, MIXER->master);
   for (int i = 0; i < MIXER->num_channels; i++)
     {
       write_channel (writer, MIXER->channels[i]);
@@ -983,6 +999,7 @@ xml_load_regions ()
         while (ret == 1)
           {
             const xmlChar *name, *value, *attr;
+            const char * c_name, * c_value, * c_attr;
             int type;
 
             name = xmlTextReaderConstName(reader);
@@ -1001,7 +1018,7 @@ xml_load_regions ()
                     region = region_get_or_create_blank (TO_INT (attr));
                     attr =  xmlTextReaderGetAttribute (reader,
                                                        "name");
-                    region->name = g_strdup (attr);
+                    region->name = g_strdup ((char *) attr);
                     attr =  xmlTextReaderGetAttribute (reader,
                                                        "linked_region");
                     if (attr)
@@ -1013,59 +1030,600 @@ xml_load_regions ()
                                                        "filename");
                     if (attr)
                       {
-                        /* load midi file */
+                        char * filepath = g_strdup_printf ("%s%s%s%s%s",
+                                                           PROJECT->dir,
+                                                           io_get_separator (),
+                                                           PROJECT_REGIONS_DIR,
+                                                           io_get_separator (),
+                                                           (char *) attr);
 
+                        /* load midi file */
+                        smf_load_region (filepath, region);
                       }
                   }
-                /*else if (NAME_IS ("Srcs") && port && port->id > 5)*/
-                  /*{*/
-                    /*for (int i = 0; i < port->num_srcs; i++)*/
-                      /*{*/
-                        /*do*/
-                          /*{*/
-                            /*ret = xmlTextReaderRead(reader);*/
-                            /*type = xmlTextReaderNodeType (reader);*/
-                            /*value = xmlTextReaderConstValue(reader);*/
-                            /*name = xmlTextReaderConstName(reader);*/
-                          /*} while (!NAME_IS ("id") ||*/
-                                   /*type != XML_READER_TYPE_ELEMENT);*/
-                        /*ret = xmlTextReaderRead(reader);*/
-                        /*type = xmlTextReaderNodeType (reader);*/
-                        /*value = xmlTextReaderConstValue(reader);*/
-                        /*name = xmlTextReaderConstName(reader);*/
-                        /*port->srcs[i] = port_get_or_create_blank (TO_INT (value));*/
+                else if (NAME_IS ("Position"))
+                  {
+                    attr =  xmlTextReaderGetAttribute (reader,
+						       "id");
+                    if (strcmp ((char *) attr, "start_pos") == 0)
+                      {
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "bars");
+                        region->start_pos.bars = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "beats");
+                        region->start_pos.beats = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "quarter_beats");
+                        region->start_pos.quarter_beats = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "ticks");
+                        region->start_pos.ticks = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "frames");
+                        region->start_pos.frames = TO_INT (attr);
+                      }
+                    else
+                      {
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "bars");
+                        region->end_pos.bars = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "beats");
+                        region->end_pos.beats = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "quarter_beats");
+                        region->end_pos.quarter_beats = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "ticks");
+                        region->end_pos.ticks = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "frames");
+                        region->end_pos.frames = TO_INT (attr);
+                      }
+                  }
+              }
+            ret = xmlTextReaderRead(reader);
+          }
+        xmlFreeTextReader(reader);
+        if (ret != 0)
+          {
+            g_warning("%s : failed to parse\n", file);
+          }
+      }
+    else
+      {
+        g_warning ("Unable to open %s\n", file);
+      }
 
-                        /*[> if port has no label it means it's still uninitialized <]*/
-                        /*if (port->srcs[i]->label)*/
-                          /*{*/
-                            /*port_connect (port->srcs[i], port);*/
-                          /*}*/
-                      /*}*/
-                  /*}*/
-                /*else if (NAME_IS ("Dests") && port && port->id > 5)*/
-                  /*{*/
-                    /*for (int i = 0; i < port->num_dests; i++)*/
-                      /*{*/
-                        /*do*/
-                          /*{*/
-                            /*ret = xmlTextReaderRead(reader);*/
-                            /*type = xmlTextReaderNodeType (reader);*/
-                            /*value = xmlTextReaderConstValue(reader);*/
-                            /*name = xmlTextReaderConstName(reader);*/
-                          /*} while (!NAME_IS ("id") ||*/
-                                   /*type != XML_READER_TYPE_ELEMENT);*/
-                        /*ret = xmlTextReaderRead(reader);*/
-                        /*type = xmlTextReaderNodeType (reader);*/
-                        /*value = xmlTextReaderConstValue(reader);*/
-                        /*port->dests[i] = port_get_or_create_blank (TO_INT (value));*/
+  /*
+   * Cleanup function for the XML library.
+   */
+  xmlCleanupParser();
+}
 
-                        /*[> if port has no label it means it's still uninitialized <]*/
-                        /*if (port->dests[i]->label)*/
-                          /*{*/
-                            /*port_connect (port, port->dests[i]);*/
-                          /*}*/
-                      /*}*/
-                  /*}*/
+/**
+ * Loads the project data.
+ */
+void
+xml_load_project ()
+{
+  xmlTextReaderPtr reader;
+  int ret, reading_transport = 0, reading_channels = 0;
+  const char * file          = PROJECT->project_file_path;
+  LV2_Plugin * lv2_plugin    = NULL;
+  Channel * channel          = NULL;
+  Plugin * plugin            = NULL;
+
+  /*
+   * this initialize the library and check potential ABI mismatches
+   * between the version it was compiled for and the actual shared
+   * library used.
+   */
+  LIBXML_TEST_VERSION
+
+  /*
+     * Pass some special parsing options to activate DTD attribute defaulting,
+     * entities substitution and DTD validation
+     */
+    reader = xmlReaderForFile(file, NULL, 0);
+    if (reader != NULL)
+      {
+        ret = xmlTextReaderRead(reader);
+        while (ret == 1)
+          {
+            const xmlChar *name, *value, *attr;
+            const char * c_name, * c_value, * c_attr;
+            int type;
+
+            name = xmlTextReaderConstName(reader);
+            if (name == NULL)
+                name = BAD_CAST "--";
+
+            type = xmlTextReaderNodeType (reader);
+            value = xmlTextReaderConstValue(reader);
+
+            if (type == XML_READER_TYPE_ELEMENT)
+              {
+                if (NAME_IS ("Transport"))
+                  {
+                    reading_transport = 1;
+                    attr =  xmlTextReaderGetAttribute (reader,
+						       "total_bars");
+                    TRANSPORT->total_bars = TO_INT (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "time_sig");
+                    char ** time_sig = g_strsplit ((char *) attr, "/", 2);
+                    TRANSPORT->beats_per_bar = TO_INT (time_sig[0]);
+                    TRANSPORT->beat_unit = TO_INT (time_sig[1]);
+                    g_free (time_sig[0]);
+                    g_free (time_sig[1]);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "bpm");
+                    TRANSPORT->bpm = TO_FLOAT (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "loop");
+                    TRANSPORT->loop = TO_INT (attr);
+                  }
+                else if (NAME_IS ("Position") && reading_transport)
+                  {
+                    attr =  xmlTextReaderGetAttribute (reader,
+						       "id");
+                    if (strcmp ((char *) attr, "playhead_pos") == 0)
+                      {
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "bars");
+                        TRANSPORT->playhead_pos.bars = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "beats");
+                        TRANSPORT->playhead_pos.beats = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "quarter_beats");
+                        TRANSPORT->playhead_pos.quarter_beats = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "ticks");
+                        TRANSPORT->playhead_pos.ticks = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "frames");
+                        TRANSPORT->playhead_pos.frames = TO_INT (attr);
+                      }
+                    else if (strcmp ((char *) attr, "cue_pos") == 0)
+                      {
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "bars");
+                        TRANSPORT->cue_pos.bars = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "beats");
+                        TRANSPORT->cue_pos.beats = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "quarter_beats");
+                        TRANSPORT->cue_pos.quarter_beats = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "ticks");
+                        TRANSPORT->cue_pos.ticks = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "frames");
+                        TRANSPORT->cue_pos.frames = TO_INT (attr);
+                      }
+                    else if (strcmp ((char *) attr, "loop_start_pos") == 0)
+                      {
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "bars");
+                        TRANSPORT->loop_start_pos.bars = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "beats");
+                        TRANSPORT->loop_start_pos.beats = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "quarter_beats");
+                        TRANSPORT->loop_start_pos.quarter_beats = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "ticks");
+                        TRANSPORT->loop_start_pos.ticks = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "frames");
+                        TRANSPORT->loop_start_pos.frames = TO_INT (attr);
+                      }
+                    else if (strcmp ((char *) attr, "loop_end_pos") == 0)
+                      {
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "bars");
+                        TRANSPORT->loop_end_pos.bars = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "beats");
+                        TRANSPORT->loop_end_pos.beats = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "quarter_beats");
+                        TRANSPORT->loop_end_pos.quarter_beats = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "ticks");
+                        TRANSPORT->loop_end_pos.ticks = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "frames");
+                        TRANSPORT->loop_end_pos.frames = TO_INT (attr);
+                      }
+                    else if (strcmp ((char *) attr, "start_marker_pos") == 0)
+                      {
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "bars");
+                        TRANSPORT->start_marker_pos.bars = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "beats");
+                        TRANSPORT->start_marker_pos.beats = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "quarter_beats");
+                        TRANSPORT->start_marker_pos.quarter_beats = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "ticks");
+                        TRANSPORT->start_marker_pos.ticks = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "frames");
+                        TRANSPORT->start_marker_pos.frames = TO_INT (attr);
+                      }
+                    else if (strcmp ((char *) attr, "end_marker_pos") == 0)
+                      {
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "bars");
+                        TRANSPORT->end_marker_pos.bars = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "beats");
+                        TRANSPORT->end_marker_pos.beats = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "quarter_beats");
+                        TRANSPORT->end_marker_pos.quarter_beats = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "ticks");
+                        TRANSPORT->end_marker_pos.ticks = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "frames");
+                        TRANSPORT->end_marker_pos.frames = TO_INT (attr);
+                      }
+                  }
+                else if (NAME_IS ("Mixer"))
+                  {
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "num_channels");
+                    /*MIXER->num_channels = TO_INT (attr);*/
+                  }
+                else if (NAME_IS ("Channel"))
+                  {
+                    reading_transport = 0;
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "id");
+                    channel = channel_get_or_create_blank (TO_INT (attr));
+                    if (channel->id == 0)
+                      {
+                        MIXER->master = channel;
+                      }
+                    else
+                      {
+                        ADD_CHANNEL (channel);
+                      }
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "name");
+                    channel->name = g_strdup ((char *) attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "type");
+                    channel->type = TO_INT (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "volume");
+                    channel->volume = TO_FLOAT (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "muted");
+                    channel->muted = TO_INT (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "soloed");
+                    channel->soloed = TO_INT (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "phase");
+                    channel->phase = TO_FLOAT (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "recording");
+                    channel->recording = TO_INT (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "output");
+                    if (attr)
+                      {
+                        channel->output = channel_get_or_create_blank (TO_INT (attr));
+                      }
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                     "enabled");
+                    channel->enabled = TO_INT (attr);
+                  }
+                else if (NAME_IS ("Plugin"))
+                  {
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "id");
+                    plugin = plugin_get_or_create_blank (TO_INT (attr));
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "pos");
+                    channel->strip[TO_INT (attr)] = plugin;
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "num_in_ports");
+                    plugin->num_in_ports = TO_INT (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "num_out_ports");
+                    plugin->num_out_ports = TO_INT (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "num_unknown_ports");
+                    plugin->num_unknown_ports = TO_INT (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "enabled");
+                    plugin->enabled = TO_INT (attr);
+                  }
+                else if (NAME_IS ("Descriptor"))
+                  {
+                    Plugin_Descriptor * descr =
+                      calloc (1, sizeof (Plugin_Descriptor));
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "author");
+                    descr->author = g_strdup ((char *)attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "name");
+                    descr->name = g_strdup ((char *)attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "website");
+                    if (strcmp ((char *) attr, "(null)") != 0)
+                      {
+                        descr->website = g_strdup ((char *)attr);
+                      }
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "category");
+                    descr->category = g_strdup ((char *)attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "num_audio_ins");
+                    descr->num_audio_ins = TO_INT (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "num_midi_ins");
+                    descr->num_midi_ins = TO_INT (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "num_audio_outs");
+                    descr->num_audio_outs = TO_INT (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "num_midi_outs");
+                    descr->num_midi_outs = TO_INT (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "num_ctrl_ins");
+                    descr->num_ctrl_ins = TO_INT (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "num_ctrl_outs");
+                    descr->num_ctrl_outs = TO_INT (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "arch");
+                    descr->arch = TO_INT (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "protocol");
+                    descr->protocol = TO_INT (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "path");
+                    if (strcmp ((char *) attr, "(null)") != 0)
+                      {
+                        descr->path = g_strdup ((char *)attr);
+                      }
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "uri");
+                    if (strcmp ((char *) attr, "(null)") != 0)
+                      {
+                        descr->uri = g_strdup ((char *)attr);
+                      }
+                    plugin->descr = descr;
+                  }
+                else if (NAME_IS ("in_ports"))
+                  {
+                    for (int i = 0; i < plugin->num_in_ports; i++)
+                      {
+                        do
+                          {
+                            ret = xmlTextReaderRead(reader);
+                            type = xmlTextReaderNodeType (reader);
+                            value = xmlTextReaderConstValue(reader);
+                            name = xmlTextReaderConstName(reader);
+                          } while (!NAME_IS ("Port") ||
+                                   type != XML_READER_TYPE_ELEMENT);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "id");
+                        Port * port = port_get_or_create_blank (
+                                                    TO_INT (attr));
+                        port->owner_pl = plugin;
+                        plugin->in_ports[i] = port;
+                      }
+                  }
+                else if (NAME_IS ("out_ports"))
+                  {
+                    for (int i = 0; i < plugin->num_out_ports; i++)
+                      {
+                        do
+                          {
+                            ret = xmlTextReaderRead(reader);
+                            type = xmlTextReaderNodeType (reader);
+                            value = xmlTextReaderConstValue(reader);
+                            name = xmlTextReaderConstName(reader);
+                          } while (!NAME_IS ("Port") ||
+                                   type != XML_READER_TYPE_ELEMENT);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "id");
+                        Port * port = port_get_or_create_blank (
+                                                    TO_INT (attr));
+                        port->owner_pl = plugin;
+                        plugin->out_ports[i] = port;
+                      }
+                  }
+                else if (NAME_IS ("LV2Plugin"))
+                  {
+                    lv2_plugin = lv2_new (plugin);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "state_file");
+                    lv2_plugin->state_file = g_strdup ((char *)attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "num_ports");
+                    lv2_plugin->num_ports = TO_INT (attr);
+                    lv2_plugin->ports = (LV2_Port *) calloc (lv2_plugin->num_ports,
+                                                             sizeof (LV2_Port));
+                  }
+                else if (NAME_IS ("LV2Ports"))
+                  {
+                    for (int i = 0; i < lv2_plugin->num_ports; i++)
+                      {
+                        do
+                          {
+                            ret = xmlTextReaderRead(reader);
+                            type = xmlTextReaderNodeType (reader);
+                            value = xmlTextReaderConstValue(reader);
+                            name = xmlTextReaderConstName(reader);
+                          } while (!NAME_IS ("LV2Port") ||
+                                   type != XML_READER_TYPE_ELEMENT);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "index");
+                        lv2_plugin->ports[i].index = TO_INT (attr);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "port_id");
+                        lv2_plugin->ports[i].port =
+                          port_get_or_create_blank (TO_INT (attr));
+                      }
+                  }
+                else if (NAME_IS ("Color"))
+                  {
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "red");
+                    channel->color.red = TO_FLOAT (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "green");
+                    channel->color.green = TO_FLOAT (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "blue");
+                    channel->color.blue = TO_FLOAT (attr);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "alpha");
+                    channel->color.alpha = TO_FLOAT (attr);
+                  }
+                else if (NAME_IS ("StereoIn"))
+                  {
+                    do
+                      {
+                        ret = xmlTextReaderRead(reader);
+                        type = xmlTextReaderNodeType (reader);
+                        value = xmlTextReaderConstValue(reader);
+                        name = xmlTextReaderConstName(reader);
+                      } while (!NAME_IS ("Port") ||
+                               type != XML_READER_TYPE_ELEMENT);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "id");
+                    Port * port_l =
+                      port_get_or_create_blank (TO_INT (attr));
+                    port_l->owner_ch = channel;
+                    do
+                      {
+                        ret = xmlTextReaderRead(reader);
+                        type = xmlTextReaderNodeType (reader);
+                        value = xmlTextReaderConstValue(reader);
+                        name = xmlTextReaderConstName(reader);
+                      } while (!NAME_IS ("Port") ||
+                               type != XML_READER_TYPE_ELEMENT);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "id");
+                    Port * port_r =
+                      port_get_or_create_blank (TO_INT (attr));
+                    port_r->owner_ch = channel;
+
+                    channel->stereo_in = stereo_ports_new (port_l,
+                                                           port_r);
+                  }
+                else if (NAME_IS ("MidiIn"))
+                  {
+                    do
+                      {
+                        ret = xmlTextReaderRead(reader);
+                        type = xmlTextReaderNodeType (reader);
+                        value = xmlTextReaderConstValue(reader);
+                        name = xmlTextReaderConstName(reader);
+                      } while (!NAME_IS ("Port") ||
+                               type != XML_READER_TYPE_ELEMENT);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "id");
+                    channel->midi_in =
+                      port_get_or_create_blank (TO_INT (attr));
+                    channel->midi_in->owner_ch = channel;
+                  }
+                else if (NAME_IS ("PianoRoll"))
+                  {
+                    do
+                      {
+                        ret = xmlTextReaderRead(reader);
+                        type = xmlTextReaderNodeType (reader);
+                        value = xmlTextReaderConstValue(reader);
+                        name = xmlTextReaderConstName(reader);
+                      } while (!NAME_IS ("Port") ||
+                               type != XML_READER_TYPE_ELEMENT);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "id");
+                    channel->piano_roll =
+                      port_get_or_create_blank (TO_INT (attr));
+                    channel->piano_roll->owner_ch = channel;
+                    channel->piano_roll->midi_events.queue =
+                      calloc (1, sizeof (MidiEvents));
+                  }
+                else if (NAME_IS ("StereoOut"))
+                  {
+                    do
+                      {
+                        ret = xmlTextReaderRead(reader);
+                        type = xmlTextReaderNodeType (reader);
+                        value = xmlTextReaderConstValue(reader);
+                        name = xmlTextReaderConstName(reader);
+                      } while (!NAME_IS ("Port") ||
+                               type != XML_READER_TYPE_ELEMENT);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "id");
+                    Port * port_l =
+                      port_get_or_create_blank (TO_INT (attr));
+                    port_l->owner_ch = channel;
+                    do
+                      {
+                        ret = xmlTextReaderRead(reader);
+                        type = xmlTextReaderNodeType (reader);
+                        value = xmlTextReaderConstValue(reader);
+                        name = xmlTextReaderConstName(reader);
+                      } while (!NAME_IS ("Port") ||
+                               type != XML_READER_TYPE_ELEMENT);
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "id");
+                    Port * port_r =
+                      port_get_or_create_blank (TO_INT (attr));
+                    port_r->owner_ch = channel;
+
+                    channel->stereo_out = stereo_ports_new (port_l,
+                                                           port_r);
+                  }
+                else if (NAME_IS ("Track"))
+                  {
+                    attr =  xmlTextReaderGetAttribute (reader,
+                                                       "num_regions");
+                    channel->track->num_regions = TO_INT (attr);
+                    do
+                      {
+                        ret = xmlTextReaderRead(reader);
+                        type = xmlTextReaderNodeType (reader);
+                        value = xmlTextReaderConstValue(reader);
+                        name = xmlTextReaderConstName(reader);
+                      } while (!NAME_IS ("Regions") ||
+                               type != XML_READER_TYPE_ELEMENT);
+                    for (int i = 0; i < channel->track->num_regions; i++)
+                      {
+                        do
+                          {
+                            ret = xmlTextReaderRead(reader);
+                            type = xmlTextReaderNodeType (reader);
+                            value = xmlTextReaderConstValue(reader);
+                            name = xmlTextReaderConstName(reader);
+                          } while (!NAME_IS ("Region") ||
+                                   type != XML_READER_TYPE_ELEMENT);
+                        attr =  xmlTextReaderGetAttribute (reader,
+                                                           "id");
+                        Region * region =
+                          region_get_or_create_blank (TO_INT (attr));
+                        region->track = channel->track;
+                        channel->track->regions[i] = region;
+                      }
+                  }
               }
             ret = xmlTextReaderRead(reader);
           }

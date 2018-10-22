@@ -92,6 +92,12 @@ void
 position_updated (Position * position);
 
 /**
+ * Converts seconds to position and puts the result in the given Position.
+ */
+void
+position_from_seconds (Position * position, double secs);
+
+/**
  * Compares 2 positions.
  *
  * negative = p1 is earlier

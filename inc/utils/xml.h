@@ -45,4 +45,10 @@ xml_load_ports ();
 void
 xml_load_regions ();
 
+/**
+ * Loads the project data.
+ */
+void
+xml_load_project ();
+
 #endif
