@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/online/alextee/zrythm">
-    <file preprocess="xml-stripblanks">ui/main-window.ui</file>
+    <file preprocess="xml-stripblanks">ui/browser.ui</file>
     <file preprocess="xml-stripblanks">ui/channel.ui</file>
+    <file preprocess="xml-stripblanks">ui/export_dialog.ui</file>
+    <file preprocess="xml-stripblanks">ui/main_window.ui</file>
     <file preprocess="xml-stripblanks">ui/midi_box.ui</file>
     <file preprocess="xml-stripblanks">ui/mixer.ui</file>
-    <file preprocess="xml-stripblanks">ui/browser.ui</file>
     <file preprocess="xml-stripblanks">ui/track.ui</file>
     <file preprocess="xml-stripblanks">ui/splash.ui</file>
     <file preprocess="xml-stripblanks">ui/start_assistant.ui</file>

@@ -57,6 +57,7 @@
                             <property name="can_focus">False</property>
                             <property name="use_underline">True</property>
                             <property name="use_stock">True</property>
+                            <signal name="activate" handler="on_open" swapped="no"/>
                           </object>
                         </child>
                         <child>
@@ -66,6 +67,7 @@
                             <property name="can_focus">False</property>
                             <property name="use_underline">True</property>
                             <property name="use_stock">True</property>
+                            <signal name="activate" handler="on_save" swapped="no"/>
                           </object>
                         </child>
                         <child>
@@ -75,10 +77,26 @@
                             <property name="can_focus">False</property>
                             <property name="use_underline">True</property>
                             <property name="use_stock">True</property>
+                            <signal name="activate" handler="on_save_as" swapped="no"/>
                           </object>
                         </child>
                         <child>
                           <object class="GtkSeparatorMenuItem" id="fmi5">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="file_export">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label">_Export audio</property>
+                            <property name="use_underline">True</property>
+                            <signal name="activate" handler="on_export" swapped="no"/>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparatorMenuItem" id="fmi1">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                           </object>

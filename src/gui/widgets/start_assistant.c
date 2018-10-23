@@ -87,33 +87,6 @@ on_create_new_project_toggled (GtkToggleButton *togglebutton,
     }
 }
 
-static void
-start_assistant_widget_class_init (StartAssistantWidgetClass * klass)
-{
-  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
-                                               "/online/alextee/zrythm/ui/start_assistant.ui");
-
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                StartAssistantWidget,
-                                                projects);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                StartAssistantWidget,
-                                                projects_selection);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                StartAssistantWidget,
-                                                create_new_project);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
-                                           on_create_new_project_toggled);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
-                                           on_projects_selection_changed);
-}
-
-static void
-start_assistant_widget_init (StartAssistantWidget * self)
-{
-  gtk_widget_init_template (GTK_WIDGET (self));
-}
-
 
 static GtkTreeModel *
 create_model (StartAssistantWidget * self)
@@ -220,4 +193,29 @@ start_assistant_widget_new (GtkWindow * parent,
   return self;
 }
 
+static void
+start_assistant_widget_class_init (StartAssistantWidgetClass * klass)
+{
+  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
+                                               "/online/alextee/zrythm/ui/start_assistant.ui");
 
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                                StartAssistantWidget,
+                                                projects);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                                StartAssistantWidget,
+                                                projects_selection);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                                StartAssistantWidget,
+                                                create_new_project);
+  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
+                                           on_create_new_project_toggled);
+  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
+                                           on_projects_selection_changed);
+}
+
+static void
+start_assistant_widget_init (StartAssistantWidget * self)
+{
+  gtk_widget_init_template (GTK_WIDGET (self));
+}

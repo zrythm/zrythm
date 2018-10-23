@@ -29,6 +29,7 @@
 #include "gui/widgets/browser.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/digital_meter.h"
+#include "gui/widgets/export_dialog.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_editor.h"
 #include "gui/widgets/mixer.h"
@@ -119,10 +120,94 @@ maximize_clicked (MainWindowWidget * self,
 }
 
 static void
+on_open (GtkMenuItem   * menu_item,
+            gpointer      user_data)
+{
+  GtkDialog * dialog = dialogs_get_open_project_dialog (GTK_WINDOW (MAIN_WINDOW));
+
+  int res = gtk_dialog_run (GTK_DIALOG (dialog));
+  if (res == GTK_RESPONSE_ACCEPT)
+    {
+      char *filename;
+      GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
+      filename = gtk_file_chooser_get_filename (chooser);
+      project_load (filename);
+      g_free (filename);
+    }
+
+  gtk_widget_destroy (dialog);
+}
+
+static void
+on_export (GtkMenuItem   * menu_item,
+           gpointer      user_data)
+{
+  ExportDialogWidget * export = export_dialog_widget_new ();
+  gtk_dialog_run (GTK_DIALOG (export));
+}
+
+static void
+on_save_as (GtkMenuItem   * menu_item,
+            gpointer      user_data)
+{
+  GtkWidget *dialog;
+  GtkFileChooser *chooser;
+  GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
+  gint res;
+
+  dialog = gtk_file_chooser_dialog_new ("Save Project",
+                                        GTK_WINDOW (MAIN_WINDOW),
+                                        action,
+                                        "_Cancel",
+                                        GTK_RESPONSE_CANCEL,
+                                        "_Save",
+                                        GTK_RESPONSE_ACCEPT,
+                                        NULL);
+  chooser = GTK_FILE_CHOOSER (dialog);
+
+  gtk_file_chooser_set_do_overwrite_confirmation (chooser, TRUE);
+
+  if (PROJECT->title)
+    gtk_file_chooser_set_current_name (chooser,
+                                       PROJECT->title);
+  else
+    gtk_file_chooser_set_filename (chooser,
+                                   "Untitled project");
+
+  res = gtk_dialog_run (GTK_DIALOG (dialog));
+  if (res == GTK_RESPONSE_ACCEPT)
+    {
+      char *filename;
+
+      filename = gtk_file_chooser_get_filename (chooser);
+      project_save (filename);
+      g_free (filename);
+    }
+
+  gtk_widget_destroy (dialog);
+}
+
+static void
+on_save (GtkMenuItem   * menu_item,
+         gpointer      user_data)
+{
+   if (!PROJECT->dir ||
+       !PROJECT->title)
+     {
+       on_save_as (menu_item, user_data);
+       return;
+     }
+   g_message ("%s project dir ", PROJECT->dir);
+
+   project_save (PROJECT->dir);
+}
+
+static void
 main_window_widget_class_init (MainWindowWidgetClass * klass)
 {
-  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
-                                               "/online/alextee/zrythm/ui/main-window.ui");
+  gtk_widget_class_set_template_from_resource (
+    GTK_WIDGET_CLASS (klass),
+    "/online/alextee/zrythm/ui/main_window.ui");
 
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         MainWindowWidget,
@@ -143,6 +228,8 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
                                         MainWindowWidget, file_save);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         MainWindowWidget, file_save_as);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget, file_export);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         MainWindowWidget, file_quit);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
@@ -239,6 +326,14 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
                                            close_clicked);
   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
                                            maximize_clicked);
+  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
+                                           on_open);
+  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
+                                           on_save);
+  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
+                                           on_save_as);
+  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
+                                           on_export);
 
 }
 
@@ -254,80 +349,6 @@ main_window_widget_open (MainWindowWidget *win,
 {
 }
 
-static void
-on_open (GtkMenuItem   * menu_item,
-            gpointer      user_data)
-{
-  GtkDialog * dialog = dialogs_get_open_project_dialog (GTK_WINDOW (MAIN_WINDOW));
-
-  int res = gtk_dialog_run (GTK_DIALOG (dialog));
-  if (res == GTK_RESPONSE_ACCEPT)
-    {
-      char *filename;
-      GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
-      filename = gtk_file_chooser_get_filename (chooser);
-      project_load (filename);
-      g_free (filename);
-    }
-
-  gtk_widget_destroy (dialog);
-}
-
-static void
-on_save_as (GtkMenuItem   * menu_item,
-            gpointer      user_data)
-{
-  GtkWidget *dialog;
-  GtkFileChooser *chooser;
-  GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
-  gint res;
-
-  dialog = gtk_file_chooser_dialog_new ("Save Project",
-                                        GTK_WINDOW (MAIN_WINDOW),
-                                        action,
-                                        "_Cancel",
-                                        GTK_RESPONSE_CANCEL,
-                                        "_Save",
-                                        GTK_RESPONSE_ACCEPT,
-                                        NULL);
-  chooser = GTK_FILE_CHOOSER (dialog);
-
-  gtk_file_chooser_set_do_overwrite_confirmation (chooser, TRUE);
-
-  if (PROJECT->title)
-    gtk_file_chooser_set_current_name (chooser,
-                                       PROJECT->title);
-  else
-    gtk_file_chooser_set_filename (chooser,
-                                   "Untitled project");
-
-  res = gtk_dialog_run (GTK_DIALOG (dialog));
-  if (res == GTK_RESPONSE_ACCEPT)
-    {
-      char *filename;
-
-      filename = gtk_file_chooser_get_filename (chooser);
-      project_save (filename);
-      g_free (filename);
-    }
-
-  gtk_widget_destroy (dialog);
-}
-
-static void
-on_save (GtkMenuItem   * menu_item,
-         gpointer      user_data)
-{
-   if (!PROJECT->dir ||
-       !PROJECT->title)
-     {
-       on_save_as (menu_item, user_data);
-       return;
-     }
-   g_message ("%s project dir ", PROJECT->dir);
-
-   project_save (PROJECT->dir);
-}
 
 
 MainWindowWidget *
@@ -353,19 +374,36 @@ main_window_widget_new (ZrythmApp * _app)
           800);
   g_object_unref (css_provider);
 
-  /* setup menus */
-  g_signal_connect (G_OBJECT (GTK_MENU_ITEM (self->file_save_as)),
-                    "activate",
-                    G_CALLBACK (on_save_as),
-                    NULL);
-  g_signal_connect (G_OBJECT (GTK_MENU_ITEM (self->file_save)),
-                    "activate",
-                    G_CALLBACK (on_save),
-                    NULL);
-  g_signal_connect (G_OBJECT (GTK_MENU_ITEM (self->file_open)),
-                    "activate",
-                    G_CALLBACK (on_open),
-                    NULL);
+  /* setup menu items */
+  GtkWidget *box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
+  GtkWidget *icon = gtk_image_new_from_icon_name ("document-send",
+                                                  GTK_ICON_SIZE_MENU);
+  GtkWidget *label = gtk_accel_label_new ("_Export Audio");
+  GtkWidget *menu_item = gtk_menu_item_new ();
+  GtkAccelGroup *accel_group = gtk_accel_group_new ();
+
+  gtk_container_add (GTK_CONTAINER (box), icon);
+
+  gtk_label_set_use_underline (GTK_LABEL (label), TRUE);
+  gtk_label_set_xalign (GTK_LABEL (label), 0.0);
+
+  gtk_widget_add_accelerator (GTK_WIDGET (self->file_export),
+                              "activate", accel_group,
+                              GDK_KEY_e, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+  gtk_accel_label_set_accel_widget (GTK_ACCEL_LABEL (label), menu_item);
+
+  gtk_box_pack_end (GTK_BOX (box), label, TRUE, TRUE, 0);
+
+  GList *children, *iter;
+
+  children = gtk_container_get_children(GTK_CONTAINER(self->file_export));
+  for(iter = children; iter != NULL; iter = g_list_next(iter))
+    gtk_widget_destroy(GTK_WIDGET(iter->data));
+  g_list_free(children);
+  gtk_container_add (GTK_CONTAINER (self->file_export), box);
+
+  gtk_widget_show_all (GTK_WIDGET (self->file_export));
+
 
   /* setup top toolbar */
   self->snap_grid_timeline = snap_grid_widget_new (&PROJECT->snap_grid_timeline);

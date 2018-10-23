@@ -56,6 +56,7 @@ typedef struct _MainWindowWidget
   GtkImageMenuItem         * file_open;
   GtkImageMenuItem         * file_save;
   GtkImageMenuItem         * file_save_as;
+  GtkImageMenuItem         * file_export;
   GtkImageMenuItem         * file_quit;
   GtkMenuItem              * edit;
   GtkMenuItem              * view;

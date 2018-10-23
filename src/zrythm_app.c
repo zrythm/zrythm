@@ -148,6 +148,7 @@ init_dirs_and_files ()
 
 /**
  * Initializes the array of recent projects in Zrythm app
+ * FIXME use GtkRecentManager
  */
 static void
 init_recent_projects ()
