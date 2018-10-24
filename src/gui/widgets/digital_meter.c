@@ -186,6 +186,43 @@ draw_cb (DigitalMeterWidget * self, cairo_t *cr, gpointer data)
       cairo_stroke (cr);
 
       break;
+    case DIGITAL_METER_TYPE_TIMESIG:
+
+      /* fill text */
+      cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);
+      /*cairo_select_font_face (cr, "Segment7",*/
+                              /*CAIRO_FONT_SLANT_NORMAL,*/
+                              /*CAIRO_FONT_WEIGHT_BOLD);*/
+      cairo_set_font_size (cr, 16.0);
+      cairo_text_extents (cr, "8", &te1);
+      cairo_text_extents (cr, "88", &te2);
+      cairo_text_extents (cr, "888", &te3);
+
+      /*self->num_part_start_pos = ((width / 2) - te5.width / 2) - HALF_SPACE_BETWEEN;*/
+      /*self->num_part_end_pos = self->num_part_start_pos + te3.width;*/
+      /*self->dec_part_start_pos = self->num_part_end_pos + SPACE_BETWEEN;*/
+      /*self->dec_part_end_pos = self->dec_part_start_pos + te2.width;*/
+      self->height_start_pos = (height / 2 - te1.height / 2);
+      self->height_end_pos = self->height_start_pos + te1.height;
+
+      /* draw integer part */
+      /*if (num_part < 100)*/
+        /*text = g_strdup_printf (" %d", num_part);*/
+      /*else*/
+        /*text = g_strdup_printf ("%d", num_part);*/
+      text = snap_grid_stringize (self->snap_grid);
+      cairo_move_to (cr,
+                     0,
+                     self->height_end_pos);
+      cairo_show_text (cr, text);
+      g_free (text);
+
+      /* draw line */
+      cairo_move_to (cr, 0, 0);
+      cairo_line_to (cr, width, 0);
+      cairo_stroke (cr);
+
+      break;
     }
 
  return FALSE;
@@ -277,6 +314,36 @@ drag_update (GtkGestureDrag * gesture,
         }
 
       break;
+    case DIGITAL_METER_TYPE_TIMESIG:
+      if (self->update_dens)
+        {
+          num = (int) diff / 4;
+          /*g_message ("updating num with %d", num);*/
+          if (num > 0)
+            {
+              for (int i = 0; i < 7; i++)
+                {
+                  if (self->snap_grid->grid_density == i)
+                    {
+                      self->snap_grid->grid_density++;
+                      break;
+                    }
+                }
+            }
+          else if (num < 0)
+            {
+              for (int i = 1; i < 8; i++)
+                {
+                  if (self->snap_grid->grid_density == i)
+                    {
+                      self->snap_grid->grid_density--;
+                      break;
+                    }
+                }
+            }
+            self->last_y = offset_y;
+        }
+      break;
     }
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
@@ -295,6 +362,7 @@ drag_end (GtkGestureDrag *gesture,
   self->update_beats = 0;
   self->update_quarter_beats = 0;
   self->update_ticks = 0;
+  self->update_dens = 0;
 }
 
 static gboolean
@@ -303,7 +371,6 @@ button_press_cb (GtkWidget      * event_box,
                  gpointer       data)
 {
   DigitalMeterWidget * self = (DigitalMeterWidget *) data;
-  /*g_message ("%f, %f", event->x, event->y);*/
   /*g_message ("%d, %d", self->height_start_pos, self->height_end_pos);*/
   switch (self->type)
     {
@@ -353,15 +420,20 @@ button_press_cb (GtkWidget      * event_box,
         }
 
       break;
+    case DIGITAL_METER_TYPE_TIMESIG:
+      self->update_dens = 1;
+
+      break;
     }
-  g_message ("event: %d, update bars: %d", event->type, self->update_bars);
+  return 0;
 }
 
 /**
  * Creates a digital meter with the given type (bpm or position).
  */
 DigitalMeterWidget *
-digital_meter_widget_new (DigitalMeterType      type)
+digital_meter_widget_new (DigitalMeterType      type,
+                          SnapGrid *            sg)
 {
   g_message ("Creating digital meter...");
   DigitalMeterWidget * self = g_object_new (DIGITAL_METER_WIDGET_TYPE, NULL);
@@ -384,6 +456,14 @@ digital_meter_widget_new (DigitalMeterType      type)
         160,
         -1);
 
+      break;
+    case DIGITAL_METER_TYPE_TIMESIG:
+      // set the size
+      gtk_widget_set_size_request (
+        GTK_WIDGET (self),
+        -1,
+        30);
+      self->snap_grid = sg;
       break;
     }
 

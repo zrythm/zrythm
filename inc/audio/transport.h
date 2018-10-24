@@ -41,6 +41,7 @@
 #define DEFAULT_ZOOM_LEVEL 1.0f
 
 #define PLAYHEAD TRANSPORT->playhead_pos
+#define IS_TRANSPORT_ROLLING TRANSPORT->play_state == PLAYSTATE_ROLLING
 
 struct Project;
 
@@ -95,5 +96,18 @@ transport_request_pause ();
 
 void
 transport_request_roll ();
+
+/**
+ * Moves playhead to given pos
+ */
+void
+transport_move_playhead (Position * target, ///< position to set to
+                         int      panic); ///< send MIDI panic or not
+
+/**
+ * Updates the frames in all transport positions
+ */
+void
+transport_update_position_frames ();
 
 #endif

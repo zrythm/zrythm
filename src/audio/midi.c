@@ -24,7 +24,10 @@
 #include <stdlib.h>
 #include <signal.h>
 
+#include "audio/channel.h"
+#include "audio/mixer.h"
 #include "audio/midi.h"
+#include "audio/transport.h"
 
 /**
  * Appends the events from src to dest
@@ -66,4 +69,27 @@ midi_events_dequeue (MidiEvents * midi_events)
     }
 
   midi_events->queue->num_events = 0;
+}
+
+/**
+ * Queues MIDI note off to event queue.
+ */
+void
+midi_panic (MidiEvents * events)
+{
+  MidiEvents * queue = events->queue;
+  queue->num_events = 0;
+  for (int j = 0; j < 1; j++)
+    {
+      jack_midi_event_t * ev = &queue->jack_midi_events[j];
+      /*ev->time = position_to_frames (&TRANSPORT->playhead_pos);*/
+      ev->time = j * 2;
+      ev->size = 3;
+      if (!ev->buffer)
+        ev->buffer = calloc (3, sizeof (jack_midi_data_t));
+      ev->buffer[0] = 0xB0; /* All sounds off */
+      ev->buffer[1] = 0x7B;
+      ev->buffer[2] = 0x00;
+      queue->num_events++;
+    }
 }

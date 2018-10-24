@@ -56,7 +56,6 @@ project_create (char * filename)
   PROJECT->snap_grid_midi.type = SNAP_GRID_MIDI;
 
   transport_init ();
-
 }
 
 void

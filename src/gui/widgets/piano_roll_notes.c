@@ -238,7 +238,6 @@ drag_begin (GtkGestureDrag * gesture,
                gpointer        user_data)
 {
   PianoRollNotesWidget * self = (PianoRollNotesWidget *) user_data;
-#define MANUAL_PRESS_QUEUE AUDIO_ENGINE->midi_editor_manual_press->midi_events.queue
 
   /* add midi event to engine midi_editor_manual_press port */
 
@@ -258,7 +257,6 @@ drag_begin (GtkGestureDrag * gesture,
   self->start_y = start_y;
   gtk_widget_queue_draw (GTK_WIDGET (self));
 
-#undef MANUAL_PRESS_QUEUE
 }
 
 static void
@@ -268,7 +266,6 @@ drag_update (GtkGestureDrag * gesture,
                gpointer        user_data)
 {
   PianoRollNotesWidget * self = (PianoRollNotesWidget *) user_data;
-#define MANUAL_PRESS_QUEUE AUDIO_ENGINE->midi_editor_manual_press->midi_events.queue
 
   jack_midi_event_t * ev = &MANUAL_PRESS_QUEUE->jack_midi_events[0];
   int prev_note = self->note;
@@ -290,7 +287,6 @@ drag_update (GtkGestureDrag * gesture,
 
   gtk_widget_queue_draw (GTK_WIDGET (self));
 
-#undef MANUAL_PRESS_QUEUE
 }
 
 static void
@@ -300,7 +296,6 @@ drag_end (GtkGestureDrag *gesture,
                gpointer        user_data)
 {
   PianoRollNotesWidget * self = (PianoRollNotesWidget *) user_data;
-#define MANUAL_PRESS_QUEUE AUDIO_ENGINE->midi_editor_manual_press->midi_events.queue
 
   /* add midi event to engine midi_editor_manual_press port */
   MANUAL_PRESS_QUEUE->num_events = 1;
@@ -317,7 +312,6 @@ drag_end (GtkGestureDrag *gesture,
   self->note = -1;
 
   gtk_widget_queue_draw (GTK_WIDGET (self));
-#undef MANUAL_PRESS_QUEUE
 }
 
 PianoRollNotesWidget *

@@ -54,6 +54,9 @@ engine_update_frames_per_tick (int beats_per_bar,
   AUDIO_ENGINE->frames_per_tick =
     (sample_rate * 60.f * beats_per_bar) /
     (bpm * TICKS_PER_BAR);
+
+  /* update positions */
+  transport_update_position_frames ();
 }
 
 /** Jack sample rate callback. */
@@ -191,6 +194,10 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
         }
     }
   /* get MIDI events from other sources */
+  /*if (AUDIO_ENGINE->panic)*/
+    /*{*/
+      /*midi_panic (&AUDIO_ENGINE->midi_editor_manual_press->midi_events);*/
+    /*}*/
   midi_events_dequeue (&AUDIO_ENGINE->midi_editor_manual_press->midi_events);
 
   /* set all to unprocessed for this cycle */
@@ -232,17 +239,23 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
 
   zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
 
-  if (TRANSPORT->loop && /* if looping */
-      TRANSPORT->play_state == PLAYSTATE_ROLLING && /* if rolling */
-      TRANSPORT->playhead_pos.frames <=  /* if current pos is inside loop */
-          TRANSPORT->loop_end_pos.frames &&
-      TRANSPORT->playhead_pos.frames + nframes > /* if next pos will be outside loop */
-          TRANSPORT->loop_end_pos.frames)
+  /* stop panicking */
+  if (AUDIO_ENGINE->panic)
     {
-      position_set_to_pos (&TRANSPORT->playhead_pos,
-                           &TRANSPORT->loop_start_pos);
+      AUDIO_ENGINE->panic = 0;
     }
-  else
+
+  /* loop position back if about to exit loop */
+  if (TRANSPORT->loop && /* if looping */
+      IS_TRANSPORT_ROLLING && /* if rolling */
+      (TRANSPORT->playhead_pos.frames <=  /* if current pos is inside loop */
+          TRANSPORT->loop_end_pos.frames) &&
+      ((TRANSPORT->playhead_pos.frames + nframes) > /* if next pos will be outside loop */
+          TRANSPORT->loop_end_pos.frames))
+    {
+      transport_move_playhead (&TRANSPORT->loop_start_pos, 1);
+    }
+  else if (IS_TRANSPORT_ROLLING)
     {
       /* move playhead as many samples as processed */
       transport_add_to_playhead (nframes);

@@ -21,6 +21,7 @@
 
 #include "project/snap_grid.h"
 #include "gui/widgets/snap_grid.h"
+#include "gui/widgets/snap_grid_popover.h"
 
 #include <gtk/gtk.h>
 
@@ -43,16 +44,14 @@ snap_grid_widget_new (SnapGrid * snap_grid)
   SnapGridWidget * self = g_object_new (SNAP_GRID_WIDGET_TYPE, NULL);
 
   self->snap_grid = snap_grid;
-  self->popover = GTK_POPOVER (gtk_popover_new (GTK_WIDGET (self)));
+  self->popover = snap_grid_popover_widget_new (self);
 
   char * string = snap_grid_stringize (snap_grid);
   g_message (string);
   self->label = GTK_LABEL (gtk_label_new (string));
-  g_free (string);
   gtk_container_add (GTK_CONTAINER (self),
                      GTK_WIDGET (self->label));
-  gtk_container_add (GTK_CONTAINER (self->popover),
-                     gtk_label_new ("aa"));
+  g_free (string);
   gtk_menu_button_set_popover (GTK_MENU_BUTTON (self),
                                GTK_WIDGET (self->popover));
   g_signal_connect (G_OBJECT (self),

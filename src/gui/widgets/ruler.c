@@ -256,8 +256,7 @@ drag_begin (GtkGestureDrag * gesture,
   Position pos;
   ruler_widget_px_to_pos (&pos,
              start_x - SPACE_BEFORE_START);
-  position_set_to_pos (&TRANSPORT->playhead_pos,
-                       &pos);
+  transport_move_playhead (&pos, 1);
 }
 
 static void
@@ -270,8 +269,7 @@ drag_update (GtkGestureDrag * gesture,
   Position pos;
   ruler_widget_px_to_pos (&pos,
              (self->start_x + offset_x) - SPACE_BEFORE_START);
-  position_set_to_pos (&TRANSPORT->playhead_pos,
-                       &pos);
+  transport_move_playhead (&pos, 1);
 }
 
 static void

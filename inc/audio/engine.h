@@ -32,6 +32,7 @@
 #include <jack/midiport.h>
 
 #define AUDIO_ENGINE zrythm_app->audio_engine
+#define MANUAL_PRESS_QUEUE AUDIO_ENGINE->midi_editor_manual_press->midi_events.queue
 
 typedef jack_nframes_t                nframes_t;
 typedef struct Mixer Mixer;
@@ -64,6 +65,7 @@ typedef struct Audio_Engine
   //Port_Manager      * port_manager;  ///< manages all ports created for/by plugins
   ZixSem            port_operation_lock;  ///< semaphore for blocking DSP while plugin and its ports are deleted
   int               run;    ///< ok to process or not
+  int               panic; ///< send note off MIDI everywhere
 } Audio_Engine;
 
 void

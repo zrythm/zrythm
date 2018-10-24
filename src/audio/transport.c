@@ -42,6 +42,7 @@ transport_set_bpm (float bpm)
 void
 transport_init ()
 {
+  g_message ("initializing transport...");
   Transport * transport = calloc (1, sizeof (Transport));
   TRANSPORT = transport;
 
@@ -88,7 +89,6 @@ transport_request_roll ()
 
 /**
  * Moves the playhead by the time corresponding to given samples.
- * FIXME: needed? have position_set_to_pos
  */
 void
 transport_add_to_playhead (int frames)
@@ -100,3 +100,31 @@ transport_add_to_playhead (int frames)
     }
 }
 
+/**
+ * Moves playhead to given pos
+ */
+void
+transport_move_playhead (Position * target, ///< position to set to
+                         int      panic) ///< send MIDI panic or not
+{
+  position_set_to_pos (&TRANSPORT->playhead_pos,
+                       target);
+  if (panic)
+    {
+      AUDIO_ENGINE->panic = 1;
+    }
+}
+
+/**
+ * Updates the frames in all transport positions
+ */
+void
+transport_update_position_frames ()
+{
+  position_update_frames (&TRANSPORT->playhead_pos);
+  position_update_frames (&TRANSPORT->cue_pos);
+  position_update_frames (&TRANSPORT->start_marker_pos);
+  position_update_frames (&TRANSPORT->end_marker_pos);
+  position_update_frames (&TRANSPORT->loop_start_pos);
+  position_update_frames (&TRANSPORT->loop_end_pos);
+}

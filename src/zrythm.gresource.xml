@@ -8,6 +8,7 @@
     <file preprocess="xml-stripblanks">ui/midi_box.ui</file>
     <file preprocess="xml-stripblanks">ui/mixer.ui</file>
     <file preprocess="xml-stripblanks">ui/track.ui</file>
+    <file preprocess="xml-stripblanks">ui/snap_grid_popover.ui</file>
     <file preprocess="xml-stripblanks">ui/splash.ui</file>
     <file preprocess="xml-stripblanks">ui/start_assistant.ui</file>
     <file>theme.css</file>

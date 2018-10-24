@@ -123,19 +123,19 @@ static void
 on_open (GtkMenuItem   * menu_item,
             gpointer      user_data)
 {
-  GtkDialog * dialog = dialogs_get_open_project_dialog (GTK_WINDOW (MAIN_WINDOW));
+  /*GtkDialog * dialog = dialogs_get_open_project_dialog (GTK_WINDOW (MAIN_WINDOW));*/
 
-  int res = gtk_dialog_run (GTK_DIALOG (dialog));
-  if (res == GTK_RESPONSE_ACCEPT)
-    {
-      char *filename;
-      GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
-      filename = gtk_file_chooser_get_filename (chooser);
-      project_load (filename);
-      g_free (filename);
-    }
+  /*int res = gtk_dialog_run (GTK_DIALOG (dialog));*/
+  /*if (res == GTK_RESPONSE_ACCEPT)*/
+    /*{*/
+      /*char *filename;*/
+      /*GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);*/
+      /*filename = gtk_file_chooser_get_filename (chooser);*/
+      /*project_load (filename);*/
+      /*g_free (filename);*/
+    /*}*/
 
-  gtk_widget_destroy (dialog);
+  /*gtk_widget_destroy (dialog);*/
 }
 
 static void
@@ -491,8 +491,9 @@ main_window_widget_new (ZrythmApp * _app)
   gtk_button_set_image (GTK_BUTTON (self->mixer->channels_add), image);
 
   /* setup digital meters */
-  self->digital_bpm = digital_meter_widget_new (DIGITAL_METER_TYPE_BPM);
-  self->digital_transport = digital_meter_widget_new (DIGITAL_METER_TYPE_POSITION);
+  self->digital_bpm = digital_meter_widget_new (DIGITAL_METER_TYPE_BPM, NULL);
+  self->digital_transport = digital_meter_widget_new (DIGITAL_METER_TYPE_POSITION,
+                                                      NULL);
   gtk_container_add (GTK_CONTAINER (self->digital_meters),
                      GTK_WIDGET (self->digital_bpm));
   gtk_container_add (GTK_CONTAINER (self->digital_meters),

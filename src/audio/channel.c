@@ -140,10 +140,17 @@ channel_process (Channel * channel,  ///< slots
   port_sum_signal_from_inputs (channel->stereo_in->l, nframes);
   port_sum_signal_from_inputs (channel->stereo_in->r, nframes);
 
-  track_fill_midi_events (channel->track,
-                          &PLAYHEAD,
-                          nframes,
-                          &channel->piano_roll->midi_events);
+  if (AUDIO_ENGINE->panic)
+    {
+      midi_panic (&channel->piano_roll->midi_events);
+    }
+  else if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
+    {
+      track_fill_midi_events (channel->track,
+                              &PLAYHEAD,
+                              nframes,
+                              &channel->piano_roll->midi_events);
+    }
   midi_events_dequeue (&channel->piano_roll->midi_events);
 
   /* go through each slot (plugin) on the channel strip */

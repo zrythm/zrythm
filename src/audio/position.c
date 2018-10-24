@@ -63,6 +63,14 @@ position_to_frames (Position * position)
 }
 
 /**
+ * Updates frames
+ */
+position_update_frames (Position * position)
+{
+  position->frames = position_to_frames (position);
+}
+
+/**
  * Sets position to given bar
  */
 void
@@ -76,6 +84,7 @@ position_set_to_bar (Position * position,
   position->quarter_beats = 1;
   position->ticks = 0;
   position->frames = position_to_frames (position);
+  g_message ("%d frames", position->frames);
   g_idle_add ((GSourceFunc) position_updated,
               position);
 }

@@ -34,6 +34,5 @@ char *
 snap_grid_stringize (SnapGrid * snap_grid)
 {
   int power = pow (2, snap_grid->grid_density);
-  g_message ("power %d", power);
   return g_strdup_printf ("1/%d", power);
 }

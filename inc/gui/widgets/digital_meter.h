@@ -34,7 +34,8 @@
 typedef enum DigitalMeterType
 {
   DIGITAL_METER_TYPE_BPM,
-  DIGITAL_METER_TYPE_POSITION
+  DIGITAL_METER_TYPE_POSITION,
+  DIGITAL_METER_TYPE_TIMESIG
 } DigitalMeterType;
 
 typedef struct DigitalMeterWidget
@@ -68,6 +69,9 @@ typedef struct DigitalMeterWidget
   int                      update_quarter_beats; ///< flag to update beats
   int                      update_ticks; ///< flag to update beats
 
+  /* for time sig */
+  SnapGrid *               snap_grid;
+  int                      update_dens; ///< flag to update density
 } DigitalMeterWidget;
 
 typedef struct DigitalMeterWidgetClass
@@ -79,7 +83,8 @@ typedef struct DigitalMeterWidgetClass
  * Creates a digital meter with the given type (bpm or position).
  */
 DigitalMeterWidget *
-digital_meter_widget_new (DigitalMeterType      type);
+digital_meter_widget_new (DigitalMeterType      type,
+                          SnapGrid *            snap_grid); ///< for timesig
 
 #endif
 

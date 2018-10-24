@@ -142,4 +142,11 @@ void
 position_set_min_size (Position * start_pos,  ///< start position
                        Position * end_pos, ///< position to set
                        SnapGrid * snap); ///< the snap grid
+
+/**
+ * Updates frames
+ */
+void
+position_update_frames (Position * position);
+
 #endif

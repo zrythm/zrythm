@@ -41,6 +41,8 @@ track_new (Channel * channel)
 }
 
 /**
+ * Fills MIDI events from track.
+ *
  * NOTE: real time func
  */
 void

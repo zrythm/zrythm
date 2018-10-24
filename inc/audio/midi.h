@@ -47,7 +47,7 @@ typedef struct MidiEvents MidiEvents;
 typedef struct MidiEvents
 {
   int        num_events;       ///< number of events
-  jack_midi_event_t     jack_midi_events[40];       ///< jack midi events
+  jack_midi_event_t     jack_midi_events[128];       ///< jack midi events
   MidiEvents           * queue; ///< for queing events. engine will copy them to the
                               ///< original MIDI events when ready to be processed
 } MidiEvents;
@@ -69,5 +69,11 @@ midi_events_clear (MidiEvents * midi_events);
  */
 void
 midi_events_dequeue (MidiEvents * midi_events);
+
+/**
+ * Queues MIDI note off to event queue.
+ */
+void
+midi_panic (MidiEvents * events);
 
 #endif

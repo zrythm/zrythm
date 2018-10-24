@@ -174,7 +174,7 @@ tracks_widget_add_channel (TracksWidget * self, Channel * channel)
   /* add track widget to new paned */
   gtk_paned_pack1 (GTK_PANED (new_paned),
                    GTK_WIDGET (channel->track->widget),
-                   FALSE,
+                   0,
                    FALSE);
 
   /* add new last box to new gpaned */
