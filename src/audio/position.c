@@ -325,64 +325,96 @@ closest_snap_point (Position * pos, ///< position
 }
 
 static void
-snap_pos (Position * pos,
-          SnapGrid * sg)
+get_prev_snap_point (Position * pos, ///< the position
+                     SnapGrid * sg, ///< snap grid options
+                     Position * prev_snap_point) ///< position to set
 {
-  Position prev_snap_point;
-  Position next_snap_point;
-  prev_snap_point.bars = 1;
-  prev_snap_point.beats = 1;
-  prev_snap_point.quarter_beats = 1;
-  prev_snap_point.ticks = 0;
-  next_snap_point.bars = 1;
-  next_snap_point.beats = 1;
-  next_snap_point.quarter_beats = 1;
-  next_snap_point.ticks = 0;
+  prev_snap_point->bars = 1;
+  prev_snap_point->beats = 1;
+  prev_snap_point->quarter_beats = 1;
+  prev_snap_point->ticks = 0;
   if (sg->grid_density == 0) /* 1/1 */
     {
-      prev_snap_point.bars = pos->bars;
-      next_snap_point.bars = pos->bars + 1;
+      prev_snap_point->bars = pos->bars;
     }
   else if (sg->grid_density == 1) /* 1/2 */
     {
-      prev_snap_point.bars = pos->bars;
+      prev_snap_point->bars = pos->bars;
       if (pos->beats >= 3)
         {
-          prev_snap_point.beats = 3;
-          next_snap_point.bars = pos->bars + 1;
-          next_snap_point.beats = 1;
+          prev_snap_point->beats = 3;
         }
       else
         {
-          prev_snap_point.beats = 1;
-          next_snap_point.bars = pos->bars;
-          next_snap_point.beats = 3;
+          prev_snap_point->beats = 1;
         }
     }
   else if (sg->grid_density == 2) /* 1/4 */
     {
-      prev_snap_point.bars = pos->bars;
-      prev_snap_point.beats = pos->beats;
+      prev_snap_point->bars = pos->bars;
+      prev_snap_point->beats = pos->beats;
+    }
+}
+
+static void
+get_next_snap_point (Position * pos,
+                     SnapGrid *sg,
+                     Position * next_snap_point)
+{
+  next_snap_point->bars = 1;
+  next_snap_point->beats = 1;
+  next_snap_point->quarter_beats = 1;
+  next_snap_point->ticks = 0;
+  if (sg->grid_density == 0) /* 1/1 */
+    {
+      next_snap_point->bars = pos->bars + 1;
+    }
+  else if (sg->grid_density == 1) /* 1/2 */
+    {
+      if (pos->beats >= 3)
+        {
+          next_snap_point->bars = pos->bars + 1;
+          next_snap_point->beats = 1;
+        }
+      else
+        {
+          next_snap_point->bars = pos->bars;
+          next_snap_point->beats = 3;
+        }
+    }
+  else if (sg->grid_density == 2) /* 1/4 */
+    {
       position_set_beat (&next_snap_point,
                          pos->beats + 1);
     }
-  /*g_message ("pos %d.%d.%d.%d",*/
-         /*pos->bars, pos->beats,*/
-         /*pos->quarter_beats, pos->ticks);*/
-  /*g_message ("prev snap %d.%d.%d.%d",*/
-         /*prev_snap_point.bars, prev_snap_point.beats,*/
-         /*prev_snap_point.quarter_beats, prev_snap_point.ticks);*/
-  /*g_message ("next snap %d.%d.%d.%d",*/
-         /*next_snap_point.bars, next_snap_point.beats,*/
-         /*next_snap_point.quarter_beats, next_snap_point.ticks);*/
+}
+
+static void
+snap_pos (Position * pos,
+          SnapGrid * sg)
+{
+  Position prev_snap_point;
+  get_prev_snap_point (pos, sg, &prev_snap_point);
+  Position next_snap_point;
+  get_next_snap_point (pos, sg, &next_snap_point);
   Position * csp = closest_snap_point (pos,
-                                                      &prev_snap_point,
-                                                      &next_snap_point);
-  /*g_message ("csp %d.%d.%d.%d",*/
-         /*csp->bars, csp->beats,*/
-         /*csp->quarter_beats, csp->ticks);*/
+                                       &prev_snap_point,
+                                       &next_snap_point);
   position_set_to_pos (pos,
                        csp);
+}
+
+/**
+ * Sets the end position to be 1 snap point away from the start pos.
+ *
+ * FIXME rename to something more meaningful.
+ */
+void
+position_set_min_size (Position * start_pos,  ///< start position
+                       Position * end_pos, ///< position to set
+                       SnapGrid * snap) ///< the snap grid
+{
+  get_next_snap_point (start_pos, snap, end_pos);
 }
 
 /**

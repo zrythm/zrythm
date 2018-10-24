@@ -443,9 +443,9 @@ drag_begin (GtkGestureDrag * gesture,
                               &pos);
                 }
             }
-          if (track || region)
+          if ((T_TIMELINE && track) || (T_MIDI && region))
             {
-              if (track)
+              if (T_TIMELINE && track)
                 {
                   position_snap (NULL,
                                  &pos,
@@ -455,13 +455,16 @@ drag_begin (GtkGestureDrag * gesture,
                   self->region = region_new (track,
                                              &pos,
                                              &pos);
+                  position_set_min_size (&self->region->start_pos,
+                                         &self->region->end_pos,
+                                         self->snap_grid);
                   track_add_region (track,
                                     self->region);
                   gtk_overlay_add_overlay (GTK_OVERLAY (self),
                                            GTK_WIDGET (self->region->widget));
                   gtk_widget_show (GTK_WIDGET (self->region->widget));
                 }
-              else if (region)
+              else if (T_MIDI && region)
                 {
                   position_snap (NULL,
                                  &pos,
@@ -473,6 +476,9 @@ drag_begin (GtkGestureDrag * gesture,
                                                    &pos,
                                                    note,
                                                    -1);
+                  position_set_min_size (&self->midi_note->start_pos,
+                                         &self->midi_note->end_pos,
+                                         self->snap_grid);
                   region_add_midi_note (region,
                                         self->midi_note);
                   gtk_overlay_add_overlay (GTK_OVERLAY (self),
@@ -533,8 +539,11 @@ drag_update (GtkGestureDrag * gesture,
                          self->region->track,
                          NULL,
                          self->snap_grid);
-          region_set_end_pos (self->region,
-                                &pos);
+          if (position_compare (&pos, &self->region->start_pos) > 0)
+            {
+              region_set_end_pos (self->region,
+                                    &pos);
+            }
         }
       else if (T_MIDI)
         {
@@ -543,8 +552,11 @@ drag_update (GtkGestureDrag * gesture,
                          NULL,
                          self->midi_note->region,
                          self->snap_grid);
-          midi_note_set_end_pos (self->midi_note,
-                                &pos);
+          if (position_compare (&pos, &self->midi_note->start_pos) > 0)
+            {
+              midi_note_set_end_pos (self->midi_note,
+                                    &pos);
+            }
         }
     }
   else if (self->action == ARRANGER_ACTION_MOVING)

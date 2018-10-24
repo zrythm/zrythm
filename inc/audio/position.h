@@ -132,4 +132,14 @@ position_snap (Position * prev_pos, ///< prev pos
                Track    * track, ///< track at new pos (for region moving)
                Region   * region, ///< region at new pos (for midi moving)
                SnapGrid * sg); ///< options
+
+/**
+ * Sets the end position to be 1 snap point away from the start pos.
+ *
+ * FIXME rename to something more meaningful.
+ */
+void
+position_set_min_size (Position * start_pos,  ///< start position
+                       Position * end_pos, ///< position to set
+                       SnapGrid * snap); ///< the snap grid
 #endif
