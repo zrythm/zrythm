@@ -21,10 +21,13 @@
 
 #include <stdlib.h>
 
+#include "audio/automatable.h"
 #include "audio/midi_note.h"
 #include "audio/position.h"
 #include "audio/region.h"
 #include "audio/track.h"
+#include "plugins/lv2/control.h"
+#include "plugins/lv2_plugin.h"
 #include "gui/widgets/track.h"
 
 #include <gtk/gtk.h>
@@ -38,6 +41,34 @@ track_new (Channel * channel)
   track->widget = track_widget_new (track);
 
   return track;
+}
+
+/**
+ * (re)Generates automatables for the track.
+ */
+void
+track_generate_automatables (Track * track)
+{
+  /* clean previous automatables */
+  for (int i = 0; i < track->num_automatables; i++)
+    {
+      automatable_free (track->automatables[i]);
+    }
+  track->num_automatables = 0;
+
+  /* generate channel automatables */
+  track->automatables[track->num_automatables++] =
+    automatable_create_fader (track);
+
+  /* generate plugin automatables */
+  for (int i = 0; i < STRIP_SIZE; i++)
+    {
+      Plugin * plugin = track->channel->strip[i];
+      if (plugin)
+        {
+          plugin_generate_automatables (plugin);
+        }
+    }
 }
 
 /**
@@ -130,5 +161,23 @@ track_remove_region (Track    * track,
         }
     }
   g_warning ("region not found in track");
+}
+
+/**
+ * Convenience function to get the fader automatable of the track.
+ */
+Automatable *
+track_get_fader_automatable (Track * track)
+{
+  for (int i = 0; i < track->num_automatables; i++)
+    {
+      Automatable * automatable = track->automatables[i];
+
+      if (IS_AUTOMATABLE_CH_FADER (automatable))
+        return automatable;
+    }
+  g_warning ("fader automatable not found for %s",
+             track->channel->name);
+  return NULL;
 }
 

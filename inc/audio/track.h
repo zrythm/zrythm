@@ -30,6 +30,7 @@ typedef struct TrackWidget TrackWidget;
 typedef struct Channel Channel;
 typedef struct MidiEvents MidiEvents;
 typedef struct AutomationTrack AutomationTrack;
+typedef struct Automatable Automatable;
 typedef jack_nframes_t nframes_t;
 
 
@@ -41,11 +42,20 @@ typedef struct Track {
   int             num_regions;
   TrackWidget     * widget;
   Channel         * channel;  ///< owner
-  AutomationTrack * automation_tracks[200];
+  AutomationTrack * automation_tracks[400];
+  int             num_automation_tracks;
+  Automatable     * automatables[4000];
+  int             num_automatables;
 } Track;
 
 Track *
 track_new (Channel * channel);
+
+/**
+ * (re)Generates automatables for the track.
+ */
+void
+track_generate_automatables (Track * track);
 
 /**
  * NOTE: real time func
@@ -63,5 +73,11 @@ track_add_region (Track      * track,
 void
 track_remove_region (Track    * track,
                      Region   * region);
+
+/**
+ * Convenience function to get the fader automatable of the track.
+ */
+Automatable *
+track_get_fader_automatable (Track * track);
 
 #endif // __AUDIO_TRACK_H__

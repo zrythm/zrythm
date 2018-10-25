@@ -185,6 +185,31 @@ plugin_process (Plugin * plugin, nframes_t nframes)
 }
 
 /**
+ * (re)Generates automatables for the plugin.
+ */
+void
+plugin_generate_automatables (Plugin * plugin)
+{
+  /* clean previous automatables */
+  for (int i = 0; i < plugin->num_automatables; i++)
+    {
+      automatable_free (&plugin->automatables[i]);
+    }
+  plugin->num_automatables = 0;
+
+  if (plugin->descr->protocol == PROT_LV2)
+    {
+      LV2_Plugin * lv2_plugin = (LV2_Plugin *) plugin->original_plugin;
+      for (int j = 0; j < lv2_plugin->controls.n_controls; j++)
+        {
+          Lv2ControlID * control = lv2_plugin->controls.controls[j];
+          plugin->automatables[plugin->num_automatables++] =
+            automatable_create_lv2_control (plugin, control);
+        }
+    }
+}
+
+/**
  * Disconnects all connected ports from each port in the given array and
  * frees them.
  */

@@ -174,6 +174,13 @@ int
 channel_get_index (Channel * channel);
 
 /**
+ * Returns the plugin's strip index on the channel
+ */
+int
+channel_get_plugin_index (Channel * channel,
+                          Plugin *  plugin);
+
+/**
  * Connects or disconnects the MIDI editor key press port to the channel's
  * first plugin
  */

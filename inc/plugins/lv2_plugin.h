@@ -217,8 +217,8 @@ typedef struct LV2_Plugin
 	SuilHost*          ui_host;        ///< Plugin UI host support
 	SuilInstance*      ui_instance;    ///< Plugin UI instance (shared library)
 	void*              window;         ///< Window (if applicable) (GtkWindow)
-	LV2_Port*       ports;          ///< Port array of size num_ports
-	Lv2Controls           controls;       ///< Available plugin controls
+	LV2_Port*          ports;          ///< Port array of size num_ports
+	Lv2Controls        controls;       ///< Available plugin controls
 	uint32_t           num_ports;      ///< Size of the two following arrays:
 	uint32_t           longest_sym;    ///< Longest port symbol (used for aligned console printing)
 	uint32_t           plugin_latency; ///< Latency reported by plugin (if any)

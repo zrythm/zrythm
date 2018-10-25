@@ -22,6 +22,8 @@
 /** \file
  */
 
+#include "audio/automatable.h"
+#include "audio/automation_track.h"
 #include "audio/track.h"
 #include "audio/region.h"
 #include "gui/widgets/automation_track.h"
@@ -50,7 +52,12 @@ on_show_automation (GtkWidget * widget, void * data)
   if (!self->automation_paned)
     {
       self->automation_paned = GTK_PANED (gtk_paned_new (GTK_ORIENTATION_VERTICAL));
-      AutomationTrackWidget * automation_lane = automation_track_widget_new ();
+
+      AutomationTrack * at =
+        automation_track_new (self->track,
+                              track_get_fader_automatable (self->track));
+      AutomationTrackWidget * automation_lane =
+        automation_track_widget_new (at);
       gtk_paned_pack1 (self->automation_paned,
                       GTK_WIDGET (automation_lane),
                       1,

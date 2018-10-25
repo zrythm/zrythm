@@ -461,7 +461,7 @@ main_window_widget_new (ZrythmApp * _app)
   self->midi_editor = midi_editor_widget_new ();
   gtk_notebook_prepend_page (self->bot_notebook,
                             GTK_WIDGET (self->midi_editor),
-                            gtk_label_new ("MIDI Editor"));
+                            gtk_label_new ("Piano Roll"));
   gtk_notebook_append_page (self->bot_notebook,
                             GTK_WIDGET (self->mixer),
                             gtk_label_new ("Mixer"));

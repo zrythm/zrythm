@@ -1,6 +1,5 @@
 /*
  * audio/automation_track.h - Automation track
- *   and an end
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -24,23 +23,27 @@
 #define __AUDIO_AUTOMATION_TRACK_H__
 
 #include "audio/position.h"
+#include "audio/automation_point.h"
 
+#define MAX_AUTOMATION_POINTS 1200
 
 typedef struct Port Port;
 typedef struct AutomationTrackWidget AutomationTrackWidget;
 typedef struct Track Track;
-typedef struct AutomationPoint AutomationPoint;
+typedef struct Automatable Automatable;
 
 typedef struct AutomationTrack
 {
-  Port *                    port; ///< the port it automates
+  Automatable *             automatable; ///< the automatable
   AutomationTrackWidget *   widget;
-  Track                     * track; ///< owner track
-  AutomationPoint *         automation_points[200]; /// automation points
+  Track *                   track; ///< owner track
+  AutomationPoint           automation_points[MAX_AUTOMATION_POINTS];
+                                      ///< automation points
   int                       num_automation_points;
 } AutomationTrack;
 
 AutomationTrack *
-automation_track_new_new ();
+automation_track_new(Track *        track,
+                     Automatable *  automatable);
 
 #endif // __AUDIO_AUTOMATION_TRACK_H__

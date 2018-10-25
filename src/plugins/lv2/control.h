@@ -20,10 +20,12 @@
 #ifndef __PLUGINS_LV2_CONTROL_H__
 #define __PLUGINS_LV2_CONTROL_H__
 
+#include <stdint.h>
+
+#include <lilv/lilv.h>
+
 /** \file
  * Internal API for LV2 controls */
-
-#include "plugins/lv2_plugin.h"
 
 typedef struct LV2_Plugin LV2_Plugin;
 

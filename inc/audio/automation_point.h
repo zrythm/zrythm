@@ -25,11 +25,13 @@
 
 #include "audio/position.h"
 
+typedef struct AutomationTrack AutomationTrack;
+
 typedef enum AutomationPointType
 {
   AUTOMATION_POINT_VALUE, ///< point that changes the point value when you move it
   AUTOMATION_POINT_CURVE ///< point that changes the curve when you move it
-}
+} AutomationPointType;
 
 typedef struct AutomationPoint
 {
@@ -37,7 +39,7 @@ typedef struct AutomationPoint
   float                 value;
   AutomationPointType   type;
   AutomationTrack *     automation_track; ///< pointer back to parent
-} Region;
+} AutomationPoint;
 
 AutomationPoint *
 automation_point_new (Track * track,

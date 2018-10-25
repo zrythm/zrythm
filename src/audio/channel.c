@@ -472,6 +472,7 @@ channel_add_plugin (Channel * channel,    ///< the channel
   g_message ("Inserting %s at %s:%d", plugin->descr->name,
              channel->name, pos);
   channel->strip[pos] = plugin;
+  plugin->channel = channel;
 
   Plugin * next_plugin = NULL;
   for (int i = pos + 1; i < STRIP_SIZE; i++)
@@ -592,6 +593,8 @@ channel_add_plugin (Channel * channel,    ///< the channel
         }
     }
   channel->enabled = prev_enabled;
+
+  track_generate_automatables (channel->track);
 }
 
 /**
@@ -718,3 +721,20 @@ channel_reattach_midi_editor_manual_press_port (Channel * channel,
     }
 }
 
+/**
+ * Returns the plugin's strip index on the channel
+ */
+int
+channel_get_plugin_index (Channel * channel,
+                          Plugin *  plugin)
+{
+  for (int i = 0; i < STRIP_SIZE; i++)
+    {
+      if (channel->strip[i] == plugin)
+        {
+          return i;
+        }
+    }
+  g_warning ("channel_get_plugin_index: plugin not found");
+  return -1;
+}

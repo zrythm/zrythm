@@ -23,6 +23,7 @@
 #ifndef __PLUGINS_BASE_PLUGIN_H__
 #define __PLUGINS_BASE_PLUGIN_H__
 
+#include "audio/automatable.h"
 #include "audio/port.h"
 
 #include <jack/jack.h>
@@ -104,6 +105,8 @@ typedef struct Plugin
   Channel              * channel;        ///< pointer to channel it belongs to
   int                  processed;  ///< processed or not yet
   int                  enabled;     ///< enabled or not
+  Automatable *        automatables[900]; ///< automatables
+  int                  num_automatables;
 } Plugin;
 
 /**
@@ -136,6 +139,12 @@ plugin_instantiate (Plugin * plugin);
  */
 void
 plugin_process (Plugin * plugin, nframes_t nframes);
+
+/**
+ * (re)Generates automatables for the plugin.
+ */
+void
+plugin_generate_automatables (Plugin * plugin);
 
 /**
  * Frees given plugin, breaks all its port connections, and frees its ports
