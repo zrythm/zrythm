@@ -44,6 +44,21 @@ on_add_lane_clicked (GtkWidget * widget, void * data)
 
 }
 
+void
+on_selector_changed (GtkComboBox * widget,
+               gpointer     user_data)
+{
+  AutomationTrackWidget * self = AUTOMATION_TRACK_WIDGET (user_data);
+
+  GtkTreeIter iter;
+  gtk_combo_box_get_active_iter (widget, &iter);
+  GtkTreeModel * model = gtk_combo_box_get_model (widget);
+  GValue value = G_VALUE_INIT;
+  gtk_tree_model_get_value (model, &iter, 1, &value);
+  Automatable * a = g_value_get_pointer (&value);
+  automation_track_set_automatable (self->automation_track, a);
+}
+
 static GtkTreeModel *
 create_automatables_store (Track * track)
 {
@@ -80,7 +95,6 @@ create_automatables_store (Track * track)
                                   0, a->label,
                                   1, a,
                                   -1);
-
             }
         }
     }
@@ -104,30 +118,16 @@ automation_track_widget_new (AutomationTrack * automation_track)
   gtk_combo_box_set_model (self->selector,
                            model);
   GtkCellRenderer* renderer = gtk_cell_renderer_text_new ();
-    gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (self->selector), renderer, TRUE);
-    gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (self->selector), renderer,
-                                    "text", 0,
-                                    NULL);
-    /*gtk_cell_layout_set_cell_data_func (GTK_CELL_LAYOUT (combo)*/
-                                        /*renderer,*/
-                                        /*is_capital_sensitive,*/
-                                        /*NULL, NULL);*/
+  gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (self->selector), renderer, TRUE);
+  gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (self->selector), renderer,
+                                  "text", 0,
+                                  NULL);
 
-    GtkTreeIter iter;
-    GtkTreePath * path = gtk_tree_path_new_from_indices (0, -1);
-    gtk_tree_model_get_iter (model, &iter, path);
-    gtk_tree_path_free (path);
-    gtk_combo_box_set_active_iter (GTK_COMBO_BOX (self->selector), &iter);
-  /*self->value = digital_meter_widget_new (DIGITAL_METER_TYPE_VALUE,*/
-                                          /*NULL,*/
-
-  /*gtk_box_pack_start (self->value_box,*/
-                      /*GTK_WIDGET (self->color),*/
-                      /*1,*/
-                      /*1,*/
-                      /*0);*/
-
-
+  GtkTreeIter iter;
+  GtkTreePath * path = gtk_tree_path_new_from_indices (0, -1);
+  gtk_tree_model_get_iter (model, &iter, path);
+  gtk_tree_path_free (path);
+  gtk_combo_box_set_active_iter (GTK_COMBO_BOX (self->selector), &iter);
 
   GtkWidget *image = gtk_image_new_from_resource (
           "/online/alextee/zrythm/mute.svg");

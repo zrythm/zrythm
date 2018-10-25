@@ -19,19 +19,42 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/automatable.h"
 #include "audio/automation_track.h"
+#include "audio/automation_point.h"
 #include "gui/widgets/automation_track.h"
 
 AutomationTrack *
 automation_track_new (Track *         track,
-                      Automatable *   automatable)
+                      Automatable *   a)
 {
   AutomationTrack * at = calloc (1, sizeof (AutomationTrack));
 
   at->track = track;
-  at->automatable = automatable;
+  automation_track_set_automatable (at, a);
   at->widget = automation_track_widget_new (at);
 
+  /* create some test automation points TODO */
+  AutomationPoint * ap = &at->automation_points[0];
+  position_init (&ap->pos);
+  ap->type = AUTOMATION_POINT_VALUE;
+  if (IS_AUTOMATABLE_LV2_CONTROL (a))
+    {
+    }
+
   return at;
+}
+
+/**
+ * Sets the automatable to the automation track and updates the GUI
+ */
+void
+automation_track_set_automatable (AutomationTrack * automation_track,
+                                  Automatable *     a)
+{
+  automation_track->automatable = a;
+
+  /* TODO update GUI */
+
 }
 

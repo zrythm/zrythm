@@ -40,10 +40,18 @@ typedef struct AutomationTrack
   AutomationPoint           automation_points[MAX_AUTOMATION_POINTS];
                                       ///< automation points
   int                       num_automation_points;
+  int                       visible;
 } AutomationTrack;
 
 AutomationTrack *
 automation_track_new(Track *        track,
                      Automatable *  automatable);
+
+/**
+ * Sets the automatable to the automation track and updates the GUI
+ */
+void
+automation_track_set_automatable (AutomationTrack * automation_track,
+                                  Automatable *     a);
 
 #endif // __AUDIO_AUTOMATION_TRACK_H__

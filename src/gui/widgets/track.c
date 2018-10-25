@@ -153,6 +153,12 @@ track_widget_class_init (TrackWidgetClass * klass)
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 TrackWidget, color_box);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        TrackWidget,
+                                        track_box);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        TrackWidget,
+                                        track_grid);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 TrackWidget, track_name);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 TrackWidget, record);

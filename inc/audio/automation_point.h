@@ -36,7 +36,9 @@ typedef enum AutomationPointType
 typedef struct AutomationPoint
 {
   Position              pos;
-  float                 value;
+  float                 fvalue; ///< float value
+  int                   bvalue; ///< boolean value
+  int                   svalue; ///< step value
   AutomationPointType   type;
   AutomationTrack *     automation_track; ///< pointer back to parent
 } AutomationPoint;

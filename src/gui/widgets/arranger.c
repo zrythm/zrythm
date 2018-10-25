@@ -23,6 +23,7 @@
 #include "project.h"
 #include "settings_manager.h"
 #include "gui/widgets/region.h"
+#include "audio/automation_track.h"
 #include "audio/channel.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
@@ -36,6 +37,7 @@
 #include "gui/widgets/piano_roll_labels.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_bg.h"
+#include "gui/widgets/track.h"
 #include "gui/widgets/tracks.h"
 #include "utils/ui.h"
 
@@ -145,7 +147,7 @@ get_child_position (GtkOverlay   *overlay,
 
           gint wx, wy;
           gtk_widget_translate_coordinates(
-                    GTK_WIDGET (rw->region->track->widget),
+                    GTK_WIDGET (rw->region->track->widget->track_box),
                     GTK_WIDGET (overlay),
                     0,
                     0,
@@ -169,8 +171,16 @@ get_child_position (GtkOverlay   *overlay,
           gtk_widget_get_size_request (GTK_WIDGET (rw->region->track->widget),
                                  &w,
                                  &h);
-          allocation->height = gtk_widget_get_allocated_height (GTK_WIDGET (rw->region->track->widget));
+          allocation->height =
+            gtk_widget_get_allocated_height (
+              GTK_WIDGET (rw->region->track->widget)) -
+            gtk_widget_get_allocated_height (
+              GTK_WIDGET (rw->region->track->widget->automation_box));
         }
+      /*else if (IS_AUTOMATION_POINT_WIDGET (widget))*/
+        /*{*/
+
+        /*}*/
     }
 
 
@@ -205,6 +215,42 @@ get_track_at_y (double y)
           return track;
         }
     }
+  return NULL;
+}
+
+/**
+ * For timeline use only.
+ */
+static AutomationTrack *
+get_automation_track_at_y (double y)
+{
+  for (int i = 0; i < MIXER->num_channels; i++)
+    {
+      Track * track = MIXER->channels[i]->track;
+
+      for (int j = 0; j < track->num_automation_tracks; j++)
+        {
+          AutomationTrack * at = track->automation_tracks[j];
+          GtkAllocation allocation;
+          gtk_widget_get_allocation (GTK_WIDGET (at->widget),
+                                     &allocation);
+
+          gint wx, wy;
+          gtk_widget_translate_coordinates(
+                    GTK_WIDGET (MW_TIMELINE),
+                    GTK_WIDGET (track->widget),
+                    0,
+                    0,
+                    &wx,
+                    &wy);
+
+          if (y > -wy && y < ((-wy) + allocation.height))
+            {
+              return at;
+            }
+        }
+    }
+
   return NULL;
 }
 
@@ -422,12 +468,14 @@ drag_begin (GtkGestureDrag * gesture,
                                start_x - SPACE_BEFORE_START);
 
           Track * track;
+          AutomationTrack * at;
           int note;
           Region * region;
           if (T_TIMELINE)
             {
-              track = get_track_at_y (start_y);
-
+              at = get_automation_track_at_y (start_y);
+              if (!at)
+                track = get_track_at_y (start_y);
             }
           else if (T_MIDI)
             {
@@ -443,9 +491,29 @@ drag_begin (GtkGestureDrag * gesture,
                               &pos);
                 }
             }
-          if ((T_TIMELINE && track) || (T_MIDI && region))
+          if (((T_TIMELINE && track) || (T_TIMELINE && at)) ||
+              (T_MIDI && region))
             {
-              if (T_TIMELINE && track)
+              if (T_TIMELINE && at)
+                {
+                  /*position_snap (NULL,*/
+                                 /*&pos,*/
+                                 /*track,*/
+                                 /*NULL,*/
+                                 /*self->snap_grid);*/
+                  /*self->ap = automation_point_new (track,*/
+                                             /*&pos,*/
+                                             /*&pos);*/
+                  /*position_set_min_size (&self->region->start_pos,*/
+                                         /*&self->region->end_pos,*/
+                                         /*self->snap_grid);*/
+                  /*track_add_region (track,*/
+                                    /*self->region);*/
+                  /*gtk_overlay_add_overlay (GTK_OVERLAY (self),*/
+                                           /*GTK_WIDGET (self->region->widget));*/
+                  /*gtk_widget_show (GTK_WIDGET (self->region->widget));*/
+                }
+              else if (T_TIMELINE && track)
                 {
                   position_snap (NULL,
                                  &pos,

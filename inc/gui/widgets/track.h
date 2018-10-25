@@ -38,6 +38,8 @@ typedef struct ColorAreaWidget ColorAreaWidget;
 typedef struct TrackWidget
 {
   GtkGrid                 parent_instance;
+  GtkBox *                track_box;
+  GtkGrid *               track_grid;
   GtkBox                  * color_box;
   ColorAreaWidget         * color;
   GtkLabel                * track_name;

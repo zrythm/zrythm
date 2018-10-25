@@ -19,8 +19,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_MIDI_ARRANGER_H__
-#define __GUI_WIDGETS_MIDI_ARRANGER_H__
+#ifndef __GUI_WIDGETS_ARRANGER_H__
+#define __GUI_WIDGETS_ARRANGER_H__
 
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_editor.h"
@@ -41,6 +41,7 @@
 typedef struct ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote MidiNote;
 typedef struct SnapGrid SnapGrid;
+typedef struct AutomationPoint AutomationPoint;
 
 typedef enum ArrangerWidgetType
 {
@@ -68,6 +69,7 @@ typedef struct ArrangerWidget
   double                   last_offset_x;  ///< for dragging regions
   ArrangerWidgetAction     action;
   Region                   * region;  ///< region doing action upon (timeline)
+  AutomationPoint *        ap;  ///< automation point doing action upon (timeline)
   MidiNote                 * midi_note;  ///< MIDI note doing action upon (midi)
   double                   start_x; ///< for dragging
   double                   start_y; ///< for dragging
