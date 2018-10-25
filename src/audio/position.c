@@ -84,7 +84,6 @@ position_set_to_bar (Position * position,
   position->quarter_beats = 1;
   position->ticks = 0;
   position->frames = position_to_frames (position);
-  g_message ("%d frames", position->frames);
   g_idle_add ((GSourceFunc) position_updated,
               position);
 }

@@ -36,9 +36,9 @@
 
 typedef struct ProjectInfo
 {
-  const char *   name;
-  const char *   filename;
-  const char *   modified;
+  char *   name;
+  char *   filename;
+  char *   modified;
 } ProjectInfo;
 
 enum

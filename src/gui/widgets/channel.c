@@ -49,6 +49,17 @@ G_DEFINE_TYPE (ChannelWidget, channel_widget, GTK_TYPE_GRID)
 void
 channel_widget_update_meter_reading (ChannelWidget * widget)
 {
+  double val = (channel_get_current_l_db (widget->channel) +
+                channel_get_current_r_db (widget->channel)) / 2;
+  char * string;
+  if (val < -100.)
+    gtk_label_set_text (widget->meter_reading, "-∞");
+  else
+    {
+      string = g_strdup_printf ("%.1f", val);
+      gtk_label_set_text (widget->meter_reading, string);
+      g_free (string);
+    }
   gtk_widget_queue_draw (GTK_WIDGET (widget->meters[0]));
   gtk_widget_queue_draw (GTK_WIDGET (widget->meters[1]));
 }

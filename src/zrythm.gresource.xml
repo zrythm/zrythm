@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/online/alextee/zrythm">
+    <file preprocess="xml-stripblanks">ui/automation_track.ui</file>
     <file preprocess="xml-stripblanks">ui/browser.ui</file>
     <file preprocess="xml-stripblanks">ui/channel.ui</file>
     <file preprocess="xml-stripblanks">ui/export_dialog.ui</file>

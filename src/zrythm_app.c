@@ -59,71 +59,71 @@ zrythm_app_init (ZrythmApp *app)
 {
 }
 
-static char *
-load_or_create_project (GtkWindow * parent)
-{
-  GtkWidget *dialog, *label, *content_area;
- GtkDialogFlags flags;
+/*static char **/
+/*load_or_create_project (GtkWindow * parent)*/
+/*{*/
+  /*GtkWidget *dialog, *label, *content_area;*/
+ /*GtkDialogFlags flags;*/
 
- // Create the widgets
- flags = GTK_DIALOG_DESTROY_WITH_PARENT;
- dialog = gtk_dialog_new_with_buttons ("Load existing project",
-                                       parent,
-                                       flags,
-                                       "_Load",
-                                       GTK_RESPONSE_YES,
-                                       "_New",
-                                       GTK_RESPONSE_NO,
-                                       NULL);
- content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
- label = gtk_label_new ("message");
+ /*// Create the widgets*/
+ /*flags = GTK_DIALOG_DESTROY_WITH_PARENT;*/
+ /*dialog = gtk_dialog_new_with_buttons ("Load existing project",*/
+                                       /*parent,*/
+                                       /*flags,*/
+                                       /*"_Load",*/
+                                       /*GTK_RESPONSE_YES,*/
+                                       /*"_New",*/
+                                       /*GTK_RESPONSE_NO,*/
+                                       /*NULL);*/
+ /*content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));*/
+ /*label = gtk_label_new ("message");*/
 
- // Ensure that the dialog box is destroyed when the user responds
+ /*// Ensure that the dialog box is destroyed when the user responds*/
 
- g_signal_connect_swapped (dialog,
-                           "response",
-                           G_CALLBACK (gtk_widget_destroy),
-                           dialog);
+ /*g_signal_connect_swapped (dialog,*/
+                           /*"response",*/
+                           /*G_CALLBACK (gtk_widget_destroy),*/
+                           /*dialog);*/
 
- // Add the label, and show everything we’ve added
+ /*// Add the label, and show everything we’ve added*/
 
- gtk_container_add (GTK_CONTAINER (content_area), label);
- gtk_widget_show_all (dialog);
+ /*gtk_container_add (GTK_CONTAINER (content_area), label);*/
+ /*gtk_widget_show_all (dialog);*/
 
-  int result = gtk_dialog_run (GTK_DIALOG (dialog));
-  switch (result)
-    {
-      case GTK_RESPONSE_YES:
-          {
-        GtkDialog * open_dialog = dialogs_get_open_project_dialog (parent);
+  /*int result = gtk_dialog_run (GTK_DIALOG (dialog));*/
+  /*switch (result)*/
+    /*{*/
+      /*case GTK_RESPONSE_YES:*/
+          /*{*/
+        /*GtkDialog * open_dialog = dialogs_get_open_project_dialog (parent);*/
 
-        int res = gtk_dialog_run (open_dialog);
-        if (res == GTK_RESPONSE_ACCEPT)
-          {
-            char *filename;
-            GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
-            filename = gtk_file_chooser_get_filename (chooser);
-            project_load (filename);
-            g_free (filename);
-          }
-        else
-          {
-            project_create_default ();
-          }
+        /*int res = gtk_dialog_run (open_dialog);*/
+        /*if (res == GTK_RESPONSE_ACCEPT)*/
+          /*{*/
+            /*char *filename;*/
+            /*GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);*/
+            /*filename = gtk_file_chooser_get_filename (chooser);*/
+            /*project_load (filename);*/
+            /*g_free (filename);*/
+          /*}*/
+        /*else*/
+          /*{*/
+            /*project_create_default ();*/
+          /*}*/
 
-        gtk_widget_destroy (open_dialog);
-          }
-        break;
-      case GTK_RESPONSE_NO:
+        /*gtk_widget_destroy (open_dialog);*/
+          /*}*/
+        /*break;*/
+      /*case GTK_RESPONSE_NO:*/
 
-        break;
-      default:
-        project_create_default();
-        break;
-    }
-  gtk_widget_destroy (dialog);
+        /*break;*/
+      /*default:*/
+        /*project_create_default();*/
+        /*break;*/
+    /*}*/
+  /*gtk_widget_destroy (dialog);*/
 
-}
+/*}*/
 
 /**
  * Initializes/creates the default dirs/files.
@@ -181,7 +181,6 @@ task_func (GTask *task,
                     GCancellable *cancellable)
 {
   int td = task_data;
-  g_message ("running task func %d", td);
 
   switch (td)
     {
@@ -245,7 +244,6 @@ task_completed_cb (GObject *source_object,
                         gpointer user_data)
 {
   int td = user_data;
-  g_message ("task completed %d", td);
 
   UpdateSplashData * data = calloc (1, sizeof (UpdateSplashData));
   switch (td)
@@ -355,8 +353,8 @@ zrythm_app_activate (GApplication * _app)
   g_signal_connect (G_OBJECT (assistant),
                     "cancel",
                     G_CALLBACK (on_finish),
-                    1);
-  gtk_window_present (assistant);
+                    (void *) 1);
+  gtk_window_present (GTK_WINDOW (assistant));
 
   data->message = "Initializing...";
   data->progress = 0.01;

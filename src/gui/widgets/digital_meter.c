@@ -229,6 +229,16 @@ draw_cb (DigitalMeterWidget * self, cairo_t *cr, gpointer data)
 }
 
 static void
+drag_start (GtkGestureDrag * gesture,
+               gdouble         offset_x,
+               gdouble         offset_y,
+               gpointer        user_data)
+{
+  DigitalMeterWidget * self = (DigitalMeterWidget *) user_data;
+  self->start_dens = self->snap_grid->grid_density;
+}
+
+static void
 drag_update (GtkGestureDrag * gesture,
                gdouble         offset_x,
                gdouble         offset_y,
@@ -317,31 +327,11 @@ drag_update (GtkGestureDrag * gesture,
     case DIGITAL_METER_TYPE_TIMESIG:
       if (self->update_dens)
         {
-          num = (int) diff / 4;
-          /*g_message ("updating num with %d", num);*/
-          if (num > 0)
-            {
-              for (int i = 0; i < 7; i++)
-                {
-                  if (self->snap_grid->grid_density == i)
-                    {
-                      self->snap_grid->grid_density++;
-                      break;
-                    }
-                }
-            }
-          else if (num < 0)
-            {
-              for (int i = 1; i < 8; i++)
-                {
-                  if (self->snap_grid->grid_density == i)
-                    {
-                      self->snap_grid->grid_density--;
-                      break;
-                    }
-                }
-            }
-            self->last_y = offset_y;
+          num = self->start_dens + (int) offset_y / 24;
+          if (num < 0)
+            self->snap_grid->grid_density = 0;
+          else
+            self->snap_grid->grid_density = num > 7 ? 7 : num;
         }
       break;
     }
@@ -473,6 +463,8 @@ digital_meter_widget_new (DigitalMeterType      type,
 
   g_signal_connect (G_OBJECT (self), "draw",
                     G_CALLBACK (draw_cb), NULL);
+  g_signal_connect (G_OBJECT(self->drag), "drag-begin",
+                    G_CALLBACK (drag_start),  self);
   g_signal_connect (G_OBJECT(self->drag), "drag-update",
                     G_CALLBACK (drag_update),  self);
   g_signal_connect (G_OBJECT(self->drag), "drag-end",

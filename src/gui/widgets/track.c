@@ -24,6 +24,7 @@
 
 #include "audio/track.h"
 #include "audio/region.h"
+#include "gui/widgets/automation_track.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
@@ -40,6 +41,35 @@ size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
       /*gtk_widget_queue_resize (GTK_WIDGET (track_widget->track->regions[i]->widget));*/
     /*}*/
   gtk_widget_queue_allocate (GTK_WIDGET (MAIN_WINDOW->timeline));
+}
+
+static void
+on_show_automation (GtkWidget * widget, void * data)
+{
+  TrackWidget * self = (TrackWidget *) data;
+  if (!self->automation_paned)
+    {
+      self->automation_paned = GTK_PANED (gtk_paned_new (GTK_ORIENTATION_VERTICAL));
+      AutomationTrackWidget * automation_lane = automation_track_widget_new ();
+      gtk_paned_pack1 (self->automation_paned,
+                      GTK_WIDGET (automation_lane),
+                      1,
+                      0);
+      gtk_box_pack_start (self->automation_box,
+                          GTK_WIDGET (self->automation_paned),
+                          0,
+                          0,
+                          0);
+      gtk_widget_show_all (GTK_WIDGET (self->automation_box));
+    }
+  else if (gtk_widget_get_visible (GTK_WIDGET (self->automation_paned)))
+    {
+      gtk_widget_set_visible (GTK_WIDGET (self->automation_paned), 0);
+    }
+  else
+    {
+      gtk_widget_set_visible (GTK_WIDGET (self->automation_paned), 1);
+    }
 }
 
 /**
@@ -95,6 +125,8 @@ track_widget_new (Track * track)
 
   g_signal_connect (self, "size-allocate",
                     G_CALLBACK (size_allocate_cb), NULL);
+  g_signal_connect (self->show_automation, "clicked",
+                    G_CALLBACK (on_show_automation), self);
 
   return self;
 }
@@ -122,7 +154,11 @@ track_widget_class_init (TrackWidgetClass * klass)
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 TrackWidget, mute);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                TrackWidget, show_automation);
+                                        TrackWidget,
+                                        show_automation);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        TrackWidget,
+                                        automation_box);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 TrackWidget, icon);
 }

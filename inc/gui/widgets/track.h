@@ -46,6 +46,8 @@ typedef struct TrackWidget
   GtkButton               * mute;
   GtkButton               * show_automation;
   GtkImage                * icon;
+  GtkBox *                automation_box;
+  GtkPaned *              automation_paned;
   Track                   * track;
 } TrackWidget;
 

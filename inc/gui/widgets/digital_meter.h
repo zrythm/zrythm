@@ -72,6 +72,7 @@ typedef struct DigitalMeterWidget
   /* for time sig */
   SnapGrid *               snap_grid;
   int                      update_dens; ///< flag to update density
+  int                      start_dens; ///< start density
 } DigitalMeterWidget;
 
 typedef struct DigitalMeterWidgetClass

@@ -6,7 +6,7 @@ It is written in C and it uses the GTK+3 toolkit.
 Bits and pieces are taken from other programs like Ardour and Jalv.
 
 ## Current state
-![screenshot](https://alextee.website/wp-content/uploads/2018/10/Screenshot_20181006_225254.png)
+![screenshot](https://alextee.website/wp-content/uploads/2018/10/Screenshot_20181025_024515.png)
 
 ## Currently supported protocols:
 - LV2

@@ -29,6 +29,7 @@ typedef struct Position Position;
 typedef struct TrackWidget TrackWidget;
 typedef struct Channel Channel;
 typedef struct MidiEvents MidiEvents;
+typedef struct AutomationTrack AutomationTrack;
 typedef jack_nframes_t nframes_t;
 
 
@@ -40,6 +41,7 @@ typedef struct Track {
   int             num_regions;
   TrackWidget     * widget;
   Channel         * channel;  ///< owner
+  AutomationTrack * automation_tracks[200];
 } Track;
 
 Track *

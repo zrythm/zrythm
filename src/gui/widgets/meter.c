@@ -93,6 +93,8 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
       break;
     }
   double value_px = height * (double) meter_val;
+  if (value_px < 0)
+    value_px = 0;
 
   /* draw background bar */
   /*cairo_new_sub_path (cr);*/
