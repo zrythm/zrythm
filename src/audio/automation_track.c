@@ -22,6 +22,7 @@
 #include "audio/automatable.h"
 #include "audio/automation_track.h"
 #include "audio/automation_point.h"
+#include "audio/track.h"
 #include "gui/widgets/automation_track.h"
 
 AutomationTrack *
@@ -32,14 +33,23 @@ automation_track_new (Track *         track,
 
   at->track = track;
   automation_track_set_automatable (at, a);
-  at->widget = automation_track_widget_new (at);
 
   /* create some test automation points TODO */
-  AutomationPoint * ap = &at->automation_points[0];
-  position_init (&ap->pos);
-  ap->type = AUTOMATION_POINT_VALUE;
-  if (IS_AUTOMATABLE_LV2_CONTROL (a))
+  for (int i = 0; i < 7; i++)
     {
+      if (automatable_is_float (a))
+        {
+          AutomationPoint * ap = &at->automation_points[i];
+          position_init (&ap->pos);
+          ap->pos.bars = i + 2;
+          ap->type = AUTOMATION_POINT_VALUE;
+          float max = automatable_get_maxf (a);
+          float min = automatable_get_minf (a);
+          ap->fvalue = max - ((max - min) / 2);
+          at->num_automation_points++;
+          g_message ("created automation point with val %f",
+                     ap->fvalue);
+        }
     }
 
   return at;
@@ -58,3 +68,37 @@ automation_track_set_automatable (AutomationTrack * automation_track,
 
 }
 
+/**
+ * Updates automation track & its GUI
+ */
+void
+automation_track_update (AutomationTrack * at)
+{
+  automation_track_widget_update (at->widget);
+}
+
+/**
+ * Gets automation track for given automatable, if any.
+ */
+AutomationTrack *
+automation_track_get_for_automatable (Automatable * automatable)
+{
+  Track * track = automatable->track;
+
+  for (int i = 0; i < track->num_automation_tracks; i++)
+    {
+      AutomationTrack * at = track->automation_tracks[i];
+      if (at->automatable == automatable)
+        {
+          return at;
+        }
+    }
+  return NULL;
+}
+
+void
+automation_track_free (AutomationTrack * at)
+{
+  /* FIXME free allocated members too */
+  free (at);
+}

@@ -334,3 +334,13 @@ channel_widget_new (Channel * channel)
   return self;
 }
 
+/**
+ * Displays the widget.
+ */
+void
+channel_widget_show (ChannelWidget * self)
+{
+  gtk_widget_show_all (GTK_WIDGET (self));
+  gtk_widget_queue_draw (GTK_WIDGET (self));
+}
+

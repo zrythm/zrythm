@@ -30,3 +30,20 @@ ui_set_cursor (GtkWidget * widget, char * name)
                                 name);
   gdk_window_set_cursor(win, cursor);
 }
+
+/**
+ * Shows error popup.
+ */
+void
+ui_show_error_message (GtkWindow * parent_window,
+                       const char * message)
+{
+  GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
+  GtkWidget * dialog = gtk_message_dialog_new (parent_window,
+                                   flags,
+                                   GTK_MESSAGE_ERROR,
+                                   GTK_BUTTONS_CLOSE,
+                                   message);
+  gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_destroy (dialog);
+}

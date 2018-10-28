@@ -1225,6 +1225,8 @@ lv2_open_ui(LV2_Plugin* plugin)
   lv2_init_ui(plugin);
 
   g_timeout_add(1000 / plugin->ui_update_hz, (GSourceFunc)lv2_update, plugin);
+
+  return 0;
 }
 
 int

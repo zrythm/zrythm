@@ -25,5 +25,10 @@
 void
 arrays_delete (void ** array, int * size, void * element);
 
+/**
+ * Inserts element in array at pos and increases the size.
+ */
+void
+arrays_insert (void ** array, int * size, int pos, void * element);
 
 #endif /* __UTILS_ARRAYS_H__ */

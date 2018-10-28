@@ -39,6 +39,8 @@ typedef enum AutomatableType
 
 typedef struct Port Port;
 typedef struct Track Track;
+typedef struct Channel Channel;
+typedef struct AutomatableTrack AutomatableTrack;
 typedef struct Plugin Plugin;
 
 typedef struct Automatable
@@ -46,6 +48,7 @@ typedef struct Automatable
   Port *               port; ///< port, if plugin port
   Lv2ControlID *       control; ///< control, if LV2 plugin
   Track *              track; ///< associated track
+  //AutomatableTrack *   at; ///< automatable track, if any
   int                  slot_index; ///< slot index in channel, if plugin automation
                                     ///< eg. automating enabled/disabled
   char *               label; ///< human friendly label
@@ -53,7 +56,7 @@ typedef struct Automatable
 } Automatable;
 
 Automatable *
-automatable_create_fader (Track * track);
+automatable_create_fader (Channel * channel);
 
 Automatable *
 automatable_create_mute (Track * track);
@@ -70,6 +73,12 @@ automatable_is_bool (Automatable * automatable);
 
 int
 automatable_is_float (Automatable * automatable);
+
+const float
+automatable_get_minf (Automatable * automatable);
+
+const float
+automatable_get_maxf (Automatable * automatable);
 
 void
 automatable_free (Automatable * automatable);

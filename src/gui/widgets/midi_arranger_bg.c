@@ -28,7 +28,7 @@
 #include "gui/widgets/midi_arranger_bg.h"
 #include "gui/widgets/midi_editor.h"
 #include "gui/widgets/piano_roll_labels.h"
-#include "gui/widgets/tracks.h"
+#include "gui/widgets/tracklist.h"
 
 #include <gtk/gtk.h>
 

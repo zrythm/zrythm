@@ -35,11 +35,11 @@ _create_blank ()
 }
 
 Automatable *
-automatable_create_fader (Track * track)
+automatable_create_fader (Channel * channel)
 {
   Automatable * automatable = _create_blank ();
 
-  automatable->track = track;
+  automatable->track = channel->track;
   automatable->label = g_strdup ("Volume");
   automatable->type = AUTOMATABLE_TYPE_CHANNEL_FADER;
 
@@ -90,12 +90,41 @@ automatable_is_bool (Automatable * automatable)
 int
 automatable_is_float (Automatable * automatable)
 {
-  return 1;
+  if (IS_AUTOMATABLE_LV2_CONTROL (automatable) &&
+      automatable->control->is_logarithmic)
+    {
+      return 1;
+    }
+  return 0;
+}
+
+const float
+automatable_get_minf (Automatable * automatable)
+{
+  if (automatable_is_float (automatable))
+    {
+      return lilv_node_as_float (automatable->control->min);
+    }
+  g_warning ("automatable %s is not float", automatable->label);
+  return -1;
+}
+
+const float
+automatable_get_maxf (Automatable * automatable)
+{
+  if (automatable_is_float (automatable))
+    {
+      return lilv_node_as_float (automatable->control->max);
+    }
+  g_warning ("automatable %s is not float", automatable->label);
+  return -1;
 }
 
 void
 automatable_free (Automatable * automatable)
 {
+  /* TODO go through every track and plugins
+   * and set associated automatables to NULL */
 
 }
 

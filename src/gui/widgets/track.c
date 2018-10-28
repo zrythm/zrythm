@@ -27,11 +27,14 @@
 #include "audio/track.h"
 #include "audio/region.h"
 #include "gui/widgets/automation_track.h"
+#include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
+#include "gui/widgets/tracklist.h"
+#include "utils/gtk.h"
 
-G_DEFINE_TYPE (TrackWidget, track_widget, GTK_TYPE_GRID)
+G_DEFINE_TYPE (TrackWidget, track_widget, GTK_TYPE_PANED)
 
 static void
 size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
@@ -48,39 +51,20 @@ size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
 static void
 on_show_automation (GtkWidget * widget, void * data)
 {
-  TrackWidget * self = (TrackWidget *) data;
-  if (!self->automation_paned)
-    {
-      self->automation_paned = GTK_PANED (gtk_paned_new (GTK_ORIENTATION_VERTICAL));
+  TrackWidget * self = TRACK_WIDGET (data);
 
-      AutomationTrack * at =
-        automation_track_new (self->track,
-                              track_get_fader_automatable (self->track));
-      AutomationTrackWidget * automation_lane =
-        automation_track_widget_new (at);
-      gtk_paned_pack1 (self->automation_paned,
-                      GTK_WIDGET (automation_lane),
-                      1,
-                      0);
-      gtk_box_pack_start (self->automation_box,
-                          GTK_WIDGET (self->automation_paned),
-                          0,
-                          0,
-                          0);
-      gtk_widget_show_all (GTK_WIDGET (self->automation_box));
-    }
-  else if (gtk_widget_get_visible (GTK_WIDGET (self->automation_paned)))
-    {
-      gtk_widget_set_visible (GTK_WIDGET (self->automation_paned), 0);
-    }
-  else
-    {
-      gtk_widget_set_visible (GTK_WIDGET (self->automation_paned), 1);
-    }
+  /* toggle visibility flag */
+  self->track->automations_visible = self->track->automations_visible ? 0 : 1;
+
+  tracklist_widget_show (MAIN_WINDOW->tracklist);
 }
 
 /**
- * Creates a new Fader widget and binds it to the given value.
+ * Creates a new track widget using the given track.
+ *
+ * 1 track has 1 track widget.
+ * The track widget must always have at least 1 automation track in the automation
+ * paned.
  */
 TrackWidget *
 track_widget_new (Track * track)
@@ -98,6 +82,8 @@ track_widget_new (Track * track)
                       1,
                       1,
                       0);
+
+  self->automation_tracklist_widget = automation_tracklist_widget_new (self);
 
   track_widget_update_all (self);
 
@@ -171,7 +157,7 @@ track_widget_class_init (TrackWidgetClass * klass)
                                         show_automation);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         TrackWidget,
-                                        automation_box);
+                                        track_automation_paned);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 TrackWidget, icon);
 }
@@ -180,4 +166,27 @@ void
 track_widget_update_all (TrackWidget * self)
 {
   gtk_label_set_text (self->track_name, self->track->channel->name);
+
+  for (int i = 0; i < self->track->num_automation_tracks; i++)
+    {
+      AutomationTrack * at = self->track->automation_tracks[i];
+      if (at->widget)
+        {
+          automation_track_widget_update (at->widget);
+        }
+    }
 }
+
+/**
+ * Makes sure the track widget and its elements have the visibility they should.
+ */
+void
+track_widget_show (TrackWidget * self)
+{
+  g_message ("showing track widget for %s", self->track->channel->name);
+  gtk_widget_show (GTK_WIDGET (self));
+  gtk_widget_show_all (GTK_WIDGET (self->color_box));
+  gtk_widget_show_all (GTK_WIDGET (self->track_box));
+  automation_tracklist_widget_show (self->automation_tracklist_widget);
+}
+

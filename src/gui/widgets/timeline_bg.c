@@ -22,11 +22,17 @@
 #include "zrythm_app.h"
 #include "project.h"
 #include "settings_manager.h"
+#include "audio/automation_track.h"
+#include "audio/channel.h"
+#include "audio/mixer.h"
+#include "audio/track.h"
 #include "audio/transport.h"
+#include "gui/widgets/automation_track.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_bg.h"
-#include "gui/widgets/tracks.h"
+#include "gui/widgets/track.h"
+#include "gui/widgets/tracklist.h"
 
 #include <gtk/gtk.h>
 
@@ -35,12 +41,20 @@ G_DEFINE_TYPE (TimelineBgWidget, timeline_bg_widget, GTK_TYPE_DRAWING_AREA)
 #define MW_RULER MAIN_WINDOW->ruler
 
 static void
-draw_borders (GtkWidget * widget,
-              cairo_t * cr,
-              int y_offset)
+draw_automation_line (cairo_t * cr,
+                      int     y_offset)
 {
-  guint height = gtk_widget_get_allocated_height (widget);
+  cairo_set_source_rgb (cr, 0.7, 0, 0);
+  cairo_set_line_width (cr, 0.5);
+  cairo_move_to (cr, 0, y_offset);
+  cairo_line_to (cr, MW_RULER->total_px, y_offset);
+  cairo_stroke (cr);
+}
 
+static void
+draw_horizontal_line (cairo_t * cr,
+                      int       y_offset)
+{
   cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
   cairo_set_line_width (cr, 0.5);
   cairo_move_to (cr, 0, y_offset);
@@ -100,36 +114,71 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
       }
   }
 
-  /* handle horizontal drawing */
-  GtkWidget * tracks = GTK_WIDGET (MAIN_WINDOW->tracks);
+  /* handle horizontal drawing for tracks */
   int y_offset = 0;
-  do
+  for (int i = 0; i < MAIN_WINDOW->tracklist->num_track_widgets; i++)
     {
-      GtkWidget * track_widget = gtk_paned_get_child1 (
-              GTK_PANED (tracks));
+      TrackWidget * track_widget = MAIN_WINDOW->tracklist->track_widgets[i];
 
       gint wx, wy;
       gtk_widget_translate_coordinates(
-                track_widget,
-                widget,
+                GTK_WIDGET (track_widget),
+                GTK_WIDGET (MAIN_WINDOW->tracklist),
                 0,
                 0,
                 &wx,
                 &wy);
-      draw_borders (track_widget, cr, wy - 2);
-      tracks = gtk_paned_get_child2 (
-                      GTK_PANED (tracks));
-  } while (GTK_IS_PANED (tracks));
+      draw_horizontal_line (cr, wy - 2);
 
-  gint wx, wy;
-  gtk_widget_translate_coordinates(
-            GTK_WIDGET (tracks),
-            widget,
-            0,
-            0,
-            &wx,
-            &wy);
-  draw_borders (GTK_WIDGET (tracks), cr, wy - 2);
+      /* draw last line */
+      if (i == MAIN_WINDOW->tracklist->num_track_widgets - 1)
+        {
+          wy += gtk_widget_get_allocated_height (GTK_WIDGET (
+                                track_widget->track_automation_paned));
+          draw_horizontal_line (cr, wy + 2);
+        }
+    }
+
+  /* horizontal drawing for automation lines */
+  for (int i = 0; i < MIXER->num_channels; i++)
+    {
+      Track * track = MIXER->channels[i]->track;
+      if (track->automations_visible)
+        {
+          for (int j = 0; j < track->num_automation_tracks; j++)
+            {
+              AutomationTrack * at = track->automation_tracks[j];
+              if (at->widget)
+                {
+                  gint wx, wy;
+                  gtk_widget_translate_coordinates(
+                            GTK_WIDGET (track->widget->automation_tracklist_widget),
+                            GTK_WIDGET (MAIN_WINDOW->tracklist),
+                            0,
+                            0,
+                            &wx,
+                            &wy);
+                  gint wx2, wy2;
+                  gtk_widget_translate_coordinates(
+                            GTK_WIDGET (at->widget),
+                            GTK_WIDGET (track->widget->automation_tracklist_widget),
+                            0,
+                            0,
+                            &wx,
+                            &wy);
+
+                  int y_pos = wy + wy2;
+
+                  draw_automation_line (cr, y_pos);
+
+                  guint height = gtk_widget_get_allocated_height (GTK_WIDGET (at->widget));
+                  /*g_message ("y_pos %d, height %d", wy2, height);*/
+
+                  draw_automation_line (cr, y_pos + height);
+                }
+            }
+        }
+    }
 
   return 0;
 }
@@ -180,9 +229,9 @@ timeline_bg_widget_new ()
 
   // set the size
   int ww, hh;
-  TracksWidget * tracks = MAIN_WINDOW->tracks;
+  TracklistWidget * tracklist = MAIN_WINDOW->tracklist;
   gtk_widget_get_size_request (
-    GTK_WIDGET (tracks),
+    GTK_WIDGET (tracklist),
     &ww,
     &hh);
   gtk_widget_set_size_request (

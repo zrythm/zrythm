@@ -30,13 +30,14 @@
  * Detailed description.
  */
 
+#include "audio/mixer.h"
 #include "plugins/plugin.h"
 
 #include <gdk/gdk.h>
 
 #include <jack/jack.h>
 
-#define STRIP_SIZE 9
+#define MASTER_POS -1 /* master channel special position */
 
 typedef jack_default_audio_sample_t   sample_t;
 typedef jack_nframes_t                nframes_t;
@@ -54,45 +55,54 @@ typedef enum ChannelType
 
 typedef struct Channel
 {
-  int               id;  ///< position in mixer/tracks, useful in serialization
-  char *            name;        ///< channel name
+  int                     id;  ///< position in mixer/tracks, useful in serialization
+                              ///< MASTER must always be id 0, and the rest of
+                              ///< the channels must be the nth position in the
+                              ///< mixer, either visible or not.
+                              ///< this means that the id can change if we reorder
+                              ///< channels, so nothing should depend on this being
+                              ///< static.
+  char *                  name;        ///< channel name
   /* note: the first plugin is special, it is the "main" plugin of the channel
    * where processing starts */
-  Plugin            * strip[STRIP_SIZE]; ///< the channel strip
-  //int               num_plugins;
-  ChannelType       type;             ///< MIDI / Audio / Master
-  sample_t          volume;           ///< value of the volume fader
-  int               muted;            ///< muted or not
-  int               soloed;           ///< soloed or not
-  GdkRGBA           color;          ///< see https://ometer.com/gtk-colors.html
-  float             phase;        ///< used by the phase knob (0.0-360.0 value)
+  Plugin *                strip[STRIP_SIZE]; ///< the channel strip
+  ChannelType             type;             ///< MIDI / Audio / Master
+  sample_t                volume;           ///< value of the volume fader
+  int                     muted;            ///< muted or not
+  int                     soloed;           ///< soloed or not
+  GdkRGBA                 color;          ///< see https://ometer.com/gtk-colors.html
+  float                   phase;        ///< used by the phase knob (0.0-360.0 value)
 
   /* these are for plugins to connect to if they want
    * processing starts at the first plugin with a clean buffer,
    * and if any ports are connected as that plugin's input,
    * their buffers are added to the first plugin
    */
-  StereoPorts       * stereo_in;  ///< l & r input ports
-  Port              * midi_in;   ///< MIDI in
-  Port              * piano_roll;  ///< MIDI piano roll input
+  StereoPorts *           stereo_in;  ///< l & r input ports
+  Port *                  midi_in;   ///< MIDI in
+  Port *                  piano_roll;  ///< MIDI piano roll input
 
   /* connecting to this is also optional
    * plugins are processed slot-by-slot, and if nothing is connected here
    * it will simply remain an empty buffer, i.e., channel will produce no sound */
-  StereoPorts       * stereo_out;  ///< l & r output ports
+  StereoPorts *           stereo_out;  ///< l & r output ports
 
-  float             l_port_db;   ///< current db after processing l port
-  float             r_port_db;   ///< current db after processing r port
-  int               processed;   ///< processed in this cycle or not
-  int               recording;  ///< recording mode or not
+  float                   l_port_db;   ///< current db after processing l port
+  float                   r_port_db;   ///< current db after processing r port
+  int                     processed;   ///< processed in this cycle or not
+  int                     recording;  ///< recording mode or not
   //pthread_t         thread;     ///< the channel processing thread.
                           ///< each channel does processing on a separate thread
   jack_native_thread_t    thread;
-  int               stop_thread;    ///< flag to stop the thread
-  struct Channel *         output;     ///< output channel to route signal to
-  Track             * track;   ///< the track associated with this channel
-  int               enabled; ///< enabled or not
-  ChannelWidget     * widget; ///< the channel widget
+  int                     stop_thread;    ///< flag to stop the thread
+  struct Channel *        output;     ///< output channel to route signal to
+  Track *                 track;   ///< the track associated with this channel
+  int                     enabled; ///< enabled or not
+  Automatable *           automatables[40]; ///< automatables for this channel,
+                      ///< eg. volume (fader), pan, mute, etc.
+  int                     num_automatables;  ///< counter
+  int                     visible; ///< whether visible or not
+  ChannelWidget *         widget; ///< the channel widget
 } Channel;
 
 void
@@ -124,6 +134,15 @@ channel_set_current_r_db (Channel * channel, float val);
  */
 Channel *
 channel_get_or_create_blank (int id);
+
+/**
+ * Generates automatables for the channel.
+ *
+ * Should be called as soon as it is created
+ * Note: called by mixer_add_channel ()
+ */
+void
+channel_generate_automatables (Channel * channel);
 
 /**
  * Creates a channel using the given params.
@@ -193,5 +212,14 @@ channel_reattach_midi_editor_manual_press_port (Channel * channel,
  */
 Plugin *
 channel_get_first_plugin (Channel * channel);
+
+/**
+ * Convenience function to get the fader automatable of the channel.
+ */
+Automatable *
+channel_get_fader_automatable (Channel * channel);
+
+void
+channel_remove_plugin (Channel * channel, int pos);
 
 #endif

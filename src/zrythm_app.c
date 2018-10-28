@@ -180,7 +180,7 @@ task_func (GTask *task,
                     gpointer task_data,
                     GCancellable *cancellable)
 {
-  int td = task_data;
+  int td = (int) task_data;
 
   switch (td)
     {
@@ -243,7 +243,7 @@ task_completed_cb (GObject *source_object,
                         GAsyncResult *res,
                         gpointer user_data)
 {
-  int td = user_data;
+  int td = (int) user_data;
 
   UpdateSplashData * data = calloc (1, sizeof (UpdateSplashData));
   switch (td)
@@ -281,7 +281,7 @@ task_completed_cb (GObject *source_object,
       zrythm_app_update_splash (data);
       break;
     case 6:
-      gtk_widget_destroy (GTK_WINDOW (splash));
+      gtk_widget_destroy (GTK_WIDGET (splash));
       main_window_widget_new (ZRYTHM_APP (app));
       AUDIO_ENGINE->run = 1;
       break;
@@ -312,9 +312,9 @@ on_finish (GtkAssistant * _assistant,
       GTask * task = g_task_new (G_ZRYTHM_APP,
                                  NULL,
                                  task_completed_cb,
-                                 i);
+                                 (gpointer) i);
       g_task_set_task_data (task,
-                            i,
+                            (gpointer) i,
                             NULL);
       g_task_run_in_thread (task, task_func);
     }

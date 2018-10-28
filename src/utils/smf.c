@@ -42,6 +42,7 @@
 void
 smf_save_regions ()
 {
+  int ret;
   io_mkdir (PROJECT->regions_dir);
 
   for (int i = 0; i < PROJECT->num_regions; i++)
@@ -60,8 +61,8 @@ smf_save_regions ()
               g_warning ("smf_new failed");
               return;
             }
-          smf_set_ppqn (smf,
-		        TICKS_PER_QUARTER_BEAT);
+          ret = smf_set_ppqn (smf,
+                              TICKS_PER_QUARTER_BEAT);
 
 
           track = smf_track_new();

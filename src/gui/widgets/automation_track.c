@@ -27,9 +27,11 @@
 #include "audio/channel.h"
 #include "audio/track.h"
 #include "gui/widgets/automation_track.h"
+#include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/track.h"
 
-G_DEFINE_TYPE (AutomationTrackWidget, automation_track_widget, GTK_TYPE_GRID)
+G_DEFINE_TYPE (AutomationTrackWidget, automation_track_widget, GTK_TYPE_PANED)
 
 static void
 size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
@@ -41,8 +43,37 @@ size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
 static void
 on_add_lane_clicked (GtkWidget * widget, void * data)
 {
+  AutomationTrackWidget * self = AUTOMATION_TRACK_WIDGET (data);
 
+  /* get next non visible automation track and add its widget via
+   * track_widget_add_automatoin_track_widget */
+  for (int i = 0; i < self->automation_track->track->num_automation_tracks; i++)
+    {
+      AutomationTrack * at = self->automation_track->track->automation_tracks[i];
+      if (!at->widget)
+        {
+          automation_tracklist_widget_add_automation_track (
+            self->automation_track->track->widget->automation_tracklist_widget,
+            at,
+            automation_tracklist_widget_get_automation_track_widget_index (
+              self->automation_track->track->widget->automation_tracklist_widget,
+              self) + 1);
+          break;
+        }
+    }
 }
+
+/**
+ * For testing.
+ */
+void
+on_show (GtkWidget *widget,
+         gpointer   user_data)
+{
+  AutomationTrackWidget * self = AUTOMATION_TRACK_WIDGET (user_data);
+  g_message ("showing");
+}
+
 
 void
 on_selector_changed (GtkComboBox * widget,
@@ -68,9 +99,9 @@ create_automatables_store (Track * track)
 
   store = gtk_tree_store_new (2, G_TYPE_STRING, G_TYPE_POINTER);
 
-  for (int i = 0; i < track->num_automatables; i++)
+  for (int i = 0; i < track->channel->num_automatables; i++)
     {
-      Automatable * a = track->automatables[i];
+      Automatable * a = track->channel->automatables[i];
       gtk_tree_store_append (store, &iter, NULL);
       gtk_tree_store_set (store, &iter,
                           0, a->label,
@@ -102,6 +133,34 @@ create_automatables_store (Track * track)
   return GTK_TREE_MODEL (store);
 }
 
+static void
+setup_combo_box (AutomationTrackWidget * self)
+{
+  GtkTreeModel * model = create_automatables_store (self->automation_track->track);
+  gtk_combo_box_set_model (self->selector,
+                           model);
+  gtk_cell_layout_clear (GTK_CELL_LAYOUT (self->selector));
+  GtkCellRenderer* renderer = gtk_cell_renderer_text_new ();
+  gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (self->selector), renderer, TRUE);
+  gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (self->selector), renderer,
+                                  "text", 0,
+                                  NULL);
+
+  GtkTreeIter iter;
+  /* FIXME find the associated automatable */
+  GtkTreePath * path = gtk_tree_path_new_from_indices (0, -1);
+  gtk_tree_model_get_iter (model, &iter, path);
+  gtk_tree_path_free (path);
+  gtk_combo_box_set_active_iter (GTK_COMBO_BOX (self->selector), &iter);
+}
+
+void
+automation_track_widget_update (AutomationTrackWidget * self)
+{
+  g_message ("updating automation track widget");
+  setup_combo_box (self);
+}
+
 /**
  * Creates a new Fader widget and binds it to the given value.
  */
@@ -113,29 +172,21 @@ automation_track_widget_new (AutomationTrack * automation_track)
                             NULL);
 
   self->automation_track = automation_track;
+  automation_track->widget = self;
 
-  GtkTreeModel * model = create_automatables_store (automation_track->track);
-  gtk_combo_box_set_model (self->selector,
-                           model);
-  GtkCellRenderer* renderer = gtk_cell_renderer_text_new ();
-  gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (self->selector), renderer, TRUE);
-  gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (self->selector), renderer,
-                                  "text", 0,
-                                  NULL);
-
-  GtkTreeIter iter;
-  GtkTreePath * path = gtk_tree_path_new_from_indices (0, -1);
-  gtk_tree_model_get_iter (model, &iter, path);
-  gtk_tree_path_free (path);
-  gtk_combo_box_set_active_iter (GTK_COMBO_BOX (self->selector), &iter);
+  setup_combo_box (self);
 
   GtkWidget *image = gtk_image_new_from_resource (
           "/online/alextee/zrythm/mute.svg");
   gtk_button_set_image (GTK_BUTTON (self->mute_toggle), image);
   gtk_button_set_label (GTK_BUTTON (self->mute_toggle),
                         "");
+
+  /* connect signals */
   g_signal_connect (self, "size-allocate",
                     G_CALLBACK (size_allocate_cb), NULL);
+  g_signal_connect (self, "show",
+                    G_CALLBACK (on_show), self);
 
   return self;
 }
@@ -164,6 +215,4 @@ automation_track_widget_class_init (AutomationTrackWidgetClass * klass)
   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
                                         on_add_lane_clicked);
 }
-
-
 

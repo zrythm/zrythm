@@ -43,6 +43,9 @@ typedef struct AutomationTrack
   int                       visible;
 } AutomationTrack;
 
+/**
+ * Creates an automation track for the given automatable
+ */
 AutomationTrack *
 automation_track_new(Track *        track,
                      Automatable *  automatable);
@@ -53,5 +56,20 @@ automation_track_new(Track *        track,
 void
 automation_track_set_automatable (AutomationTrack * automation_track,
                                   Automatable *     a);
+
+/**
+ * Gets automation track for given automatable, if any.
+ */
+AutomationTrack *
+automation_track_get_for_automatable (Automatable * automatable);
+
+void
+automation_track_free (AutomationTrack * at);
+
+/**
+ * Updates automation track & its GUI
+ */
+//void
+//automation_track_update (AutomationTrack * at);
 
 #endif // __AUDIO_AUTOMATION_TRACK_H__

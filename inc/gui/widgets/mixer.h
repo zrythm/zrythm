@@ -33,15 +33,17 @@
 #define IS_MIXER_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), MIXER_WIDGET_TYPE))
 #define MIXER_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), MIXER_WIDGET_TYPE, MixerWidgetClass))
 
+typedef struct DragDestBoxWidget DragDestBoxWidget;
+
 typedef struct MixerWidget
 {
   GtkBox                   parent_instance;
-  GtkBox                   * dummy_mixer_box;  ///< dummy box for dnd
-  MixerWidget              * mixer;
-  GtkScrolledWindow        * channels_scroll;
-  GtkViewport              * channels_viewport;
-  GtkBox                   * channels_box;
-  GtkButton                * channels_add;
+  DragDestBoxWidget *      ddbox;  ///< box for DNDing plugins
+  MixerWidget *            mixer;
+  GtkScrolledWindow *      channels_scroll;
+  GtkViewport *            channels_viewport;
+  GtkBox *                 channels_box;
+  GtkButton *              channels_add;
 } MixerWidget;
 
 typedef struct MixerWidgetClass
@@ -51,5 +53,11 @@ typedef struct MixerWidgetClass
 
 MixerWidget *
 mixer_widget_new ();
+
+/**
+ * Adds channel to mixer widget.
+ */
+void
+mixer_widget_add_channel (MixerWidget * self, Channel * channel);
 
 #endif

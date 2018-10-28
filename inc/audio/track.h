@@ -38,24 +38,29 @@ typedef jack_nframes_t nframes_t;
  * The track struct.
  */
 typedef struct Track {
-  Region          * regions[200];     ///< array of region pointers
-  int             num_regions;
-  TrackWidget     * widget;
-  Channel         * channel;  ///< owner
-  AutomationTrack * automation_tracks[400];
+  Region          * regions[200];     ///< regions in this track
+  int             num_regions;  ///< counter
+  TrackWidget     * widget; ///< track widget, 1 track has 1 widget
+  Channel         * channel;  ///< owner channel, 1 channel has 1 track
+  AutomationTrack * automation_tracks[4000]; ///< automation tracks for this track
+                          ///< these should be updated with ALL of the automatables
+                          ///< available in the channel and its plugins, every time
+                          ///< there is an update
   int             num_automation_tracks;
-  Automatable     * automatables[4000];
-  int             num_automatables;
+  int             automations_visible; ///< flag to set automations visible or not
 } Track;
+
+/**
+ * Updates the automation tracks in the track. (adds missing)
+ *
+ * Builds an automation track for each automatable in the channel and its plugins,
+ * unless it already exists.
+ */
+void
+track_update_automation_tracks (Track * track);
 
 Track *
 track_new (Channel * channel);
-
-/**
- * (re)Generates automatables for the track.
- */
-void
-track_generate_automatables (Track * track);
 
 /**
  * NOTE: real time func
@@ -79,5 +84,9 @@ track_remove_region (Track    * track,
  */
 Automatable *
 track_get_fader_automatable (Track * track);
+
+void
+track_delete_automation_track (Track *           track,
+                               AutomationTrack * at);
 
 #endif // __AUDIO_TRACK_H__

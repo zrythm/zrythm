@@ -22,6 +22,7 @@
 #include <stdlib.h>
 
 #include "audio/automatable.h"
+#include "audio/automation_track.h"
 #include "audio/midi_note.h"
 #include "audio/position.h"
 #include "audio/region.h"
@@ -29,8 +30,67 @@
 #include "plugins/lv2/control.h"
 #include "plugins/lv2_plugin.h"
 #include "gui/widgets/track.h"
+#include "gui/widgets/automation_track.h"
+#include "utils/arrays.h"
 
 #include <gtk/gtk.h>
+
+/**
+ * Updates the automation tracks in the track. (adds missing)
+ *
+ * Builds an automation track for each automatable in the channel and its plugins,
+ * unless it already exists.
+ */
+void
+track_update_automation_tracks (Track * track)
+{
+  g_message ("ch %d d", track->channel->num_automatables);
+  /* channel automatables */
+  for (int i = 0; i < track->channel->num_automatables; i++)
+    {
+      g_message ("%d %s",i, track->channel->automatables[i]->label);
+      AutomationTrack * at = automation_track_get_for_automatable (
+                            track->channel->automatables[i]);
+      if (!at)
+        {
+          g_message ("adding automation track to track, channel");
+          at = automation_track_new (track,
+                                     track->channel->automatables[i]);
+          track->automation_tracks[track->num_automation_tracks++] = at;
+        }
+    }
+
+  /* plugin automatables */
+  for (int j = 0; j < STRIP_SIZE; j++)
+    {
+      Plugin * plugin = track->channel->strip[j];
+      if (plugin)
+        {
+          for (int i = 0; i < plugin->num_automatables; i++)
+            {
+              AutomationTrack * at = automation_track_get_for_automatable (
+                                          plugin->automatables[i]);
+              if (!at)
+                {
+                  g_message ("adding automation track to track, plugin");
+                  at = automation_track_new (track,
+                                             plugin->automatables[i]);
+                  track->automation_tracks[track->num_automation_tracks++] = at;
+                }
+            }
+        }
+    }
+}
+
+void
+track_delete_automation_track (Track *           track,
+                               AutomationTrack * at)
+{
+  arrays_delete ((gpointer) track->automation_tracks,
+                 &track->num_automation_tracks,
+                 at);
+  automation_track_free (at);
+}
 
 Track *
 track_new (Channel * channel)
@@ -38,37 +98,8 @@ track_new (Channel * channel)
   Track * track = calloc (1, sizeof (Track));
 
   track->channel = channel;
-  track->widget = track_widget_new (track);
 
   return track;
-}
-
-/**
- * (re)Generates automatables for the track.
- */
-void
-track_generate_automatables (Track * track)
-{
-  /* clean previous automatables */
-  for (int i = 0; i < track->num_automatables; i++)
-    {
-      automatable_free (track->automatables[i]);
-    }
-  track->num_automatables = 0;
-
-  /* generate channel automatables */
-  track->automatables[track->num_automatables++] =
-    automatable_create_fader (track);
-
-  /* generate plugin automatables */
-  for (int i = 0; i < STRIP_SIZE; i++)
-    {
-      Plugin * plugin = track->channel->strip[i];
-      if (plugin)
-        {
-          plugin_generate_automatables (plugin);
-        }
-    }
 }
 
 /**
@@ -163,21 +194,6 @@ track_remove_region (Track    * track,
   g_warning ("region not found in track");
 }
 
-/**
- * Convenience function to get the fader automatable of the track.
- */
-Automatable *
-track_get_fader_automatable (Track * track)
-{
-  for (int i = 0; i < track->num_automatables; i++)
-    {
-      Automatable * automatable = track->automatables[i];
 
-      if (IS_AUTOMATABLE_CH_FADER (automatable))
-        return automatable;
-    }
-  g_warning ("fader automatable not found for %s",
-             track->channel->name);
-  return NULL;
-}
+
 

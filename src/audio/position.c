@@ -65,6 +65,7 @@ position_to_frames (Position * position)
 /**
  * Updates frames
  */
+void
 position_update_frames (Position * position)
 {
   position->frames = position_to_frames (position);
@@ -392,7 +393,7 @@ get_next_snap_point (Position * pos,
     }
   else if (sg->grid_density == 2) /* 1/4 */
     {
-      position_set_beat (&next_snap_point,
+      position_set_beat (next_snap_point,
                          pos->beats + 1);
     }
 }
@@ -460,12 +461,13 @@ position_snap (Position * prev_pos, ///< prev pos
 
 /**
  * Converts seconds to position and puts the result in the given Position.
+ * TODO
  */
 void
 position_from_seconds (Position * position, double secs)
 {
-  AUDIO_ENGINE->frames_per_tick;
-  AUDIO_ENGINE->sample_rate;
+  /*AUDIO_ENGINE->frames_per_tick;*/
+  /*AUDIO_ENGINE->sample_rate;*/
 
 }
 

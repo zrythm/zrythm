@@ -20,5 +20,8 @@ For any bugs please raise an issue
 
 Come discuss in IRC at #zrythm @ freenode, or zrythm @ matrix.org for Matrix
 
+## License
+GPLv3+
+
 ## Support
 paypal.me/alextee90

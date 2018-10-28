@@ -38,7 +38,7 @@
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/track.h"
-#include "gui/widgets/tracks.h"
+#include "gui/widgets/tracklist.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
@@ -171,11 +171,10 @@ get_child_position (GtkOverlay   *overlay,
           gtk_widget_get_size_request (GTK_WIDGET (rw->region->track->widget),
                                  &w,
                                  &h);
+
           allocation->height =
             gtk_widget_get_allocated_height (
-              GTK_WIDGET (rw->region->track->widget)) -
-            gtk_widget_get_allocated_height (
-              GTK_WIDGET (rw->region->track->widget->automation_box));
+              GTK_WIDGET (rw->region->track->widget->track_box));
         }
       /*else if (IS_AUTOMATION_POINT_WIDGET (widget))*/
         /*{*/
@@ -198,13 +197,13 @@ get_track_at_y (double y)
       Track * track = MIXER->channels[i]->track;
 
       GtkAllocation allocation;
-      gtk_widget_get_allocation (GTK_WIDGET (track->widget),
+      gtk_widget_get_allocation (GTK_WIDGET (track->widget->track_automation_paned),
                                  &allocation);
 
       gint wx, wy;
       gtk_widget_translate_coordinates(
                 GTK_WIDGET (MW_TIMELINE),
-                GTK_WIDGET (track->widget),
+                GTK_WIDGET (track->widget->track_automation_paned),
                 0,
                 0,
                 &wx,
@@ -231,22 +230,25 @@ get_automation_track_at_y (double y)
       for (int j = 0; j < track->num_automation_tracks; j++)
         {
           AutomationTrack * at = track->automation_tracks[j];
-          GtkAllocation allocation;
-          gtk_widget_get_allocation (GTK_WIDGET (at->widget),
-                                     &allocation);
-
-          gint wx, wy;
-          gtk_widget_translate_coordinates(
-                    GTK_WIDGET (MW_TIMELINE),
-                    GTK_WIDGET (track->widget),
-                    0,
-                    0,
-                    &wx,
-                    &wy);
-
-          if (y > -wy && y < ((-wy) + allocation.height))
+          if (at->widget)
             {
-              return at;
+              GtkAllocation allocation;
+              gtk_widget_get_allocation (GTK_WIDGET (at->widget),
+                                         &allocation);
+
+              gint wx, wy;
+              gtk_widget_translate_coordinates(
+                        GTK_WIDGET (MW_TIMELINE),
+                        GTK_WIDGET (at->widget),
+                        0,
+                        0,
+                        &wx,
+                        &wy);
+
+              if (y > -wy && y < ((-wy) + allocation.height))
+                {
+                  return at;
+                }
             }
         }
     }
@@ -531,6 +533,7 @@ drag_begin (GtkGestureDrag * gesture,
                   gtk_overlay_add_overlay (GTK_OVERLAY (self),
                                            GTK_WIDGET (self->region->widget));
                   gtk_widget_show (GTK_WIDGET (self->region->widget));
+                  self->action = ARRANGER_ACTION_RESIZING_R;
                 }
               else if (T_MIDI && region)
                 {
@@ -552,8 +555,8 @@ drag_begin (GtkGestureDrag * gesture,
                   gtk_overlay_add_overlay (GTK_OVERLAY (self),
                                            GTK_WIDGET (self->midi_note->widget));
                   gtk_widget_show (GTK_WIDGET (self->midi_note->widget));
+                  self->action = ARRANGER_ACTION_RESIZING_R;
                 }
-              self->action = ARRANGER_ACTION_RESIZING_R;
               gtk_widget_queue_allocate (GTK_WIDGET (self));
             }
         }

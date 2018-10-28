@@ -34,7 +34,7 @@ G_DECLARE_FINAL_TYPE (MainWindowWidget, main_window_widget, MAIN, WINDOW_WIDGET,
 
 typedef struct RulerWidget RulerWidget;
 typedef struct BpmWidget BpmWidget;
-typedef struct TracksWidget TracksWidget;
+typedef struct TracklistWidget TracklistWidget;
 typedef struct DigitalMeterWidget DigitalMeterWidget;
 typedef struct ColorAreaWidget ColorAreaWidget;
 typedef struct MixerWidget MixerWidget;
@@ -75,13 +75,12 @@ typedef struct _MainWindowWidget
   GtkPaned                 * editor_plus_browser;
   GtkPaned                 * editor;
   GtkBox                   * editor_top;
-  GtkPaned                 * tracks_timeline;
-  GtkBox                   * tracks_top;
-  GtkScrolledWindow        * tracks_scroll;
-  GtkViewport              * tracks_viewport;
-  //GtkPaned                 * tracks_paned;
-  TracksWidget             * tracks;
-  GtkGrid                  * tracks_header;
+  GtkPaned                 * tracklist_timeline;
+  GtkBox                   * tracklist_top;
+  GtkScrolledWindow        * tracklist_scroll;
+  GtkViewport              * tracklist_viewport;
+  TracklistWidget          * tracklist;
+  GtkGrid                  * tracklist_header;
   GtkBox                   * timeline_ruler;
   GtkScrolledWindow        * ruler_scroll;
   GtkViewport              * ruler_viewport;

@@ -110,5 +110,11 @@ channel_widget_update_meter_reading (ChannelWidget * widget);
 void
 channel_widget_update_all (ChannelWidget * self);
 
+/**
+ * Displays the widget.
+ */
+void
+channel_widget_show (ChannelWidget * self);
+
 
 #endif

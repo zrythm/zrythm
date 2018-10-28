@@ -1264,7 +1264,7 @@ xml_load_project ()
                       }
                     else
                       {
-                        ADD_CHANNEL (channel);
+                        mixer_add_channel_and_init_track (channel);
                       }
                     attr =  GET_ATTRIBUTE ("name");
                     channel->name = g_strdup ((char *) attr);

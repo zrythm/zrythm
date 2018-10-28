@@ -34,28 +34,30 @@
 #define TRACK_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), TRACK_WIDGET_TYPE, TrackWidgetClass))
 
 typedef struct ColorAreaWidget ColorAreaWidget;
+typedef struct AutomationTracklistWidget AutomationTracklistWidget;
 
 typedef struct TrackWidget
 {
-  GtkGrid                 parent_instance;
-  GtkBox *                track_box;
-  GtkGrid *               track_grid;
-  GtkBox                  * color_box;
-  ColorAreaWidget         * color;
-  GtkLabel                * track_name;
-  GtkButton               * record;
-  GtkButton               * solo;
-  GtkButton               * mute;
-  GtkButton               * show_automation;
-  GtkImage                * icon;
-  GtkBox *                automation_box;
-  GtkPaned *              automation_paned;
-  Track                   * track;
+  GtkPaned                      parent_instance;
+  GtkBox *                      track_box;
+  GtkGrid *                     track_grid;
+  GtkBox *                      color_box;
+  ColorAreaWidget *             color;
+  GtkLabel *                    track_name;
+  GtkButton *                   record;
+  GtkButton *                   solo;
+  GtkButton *                   mute;
+  GtkButton *                   show_automation;
+  GtkImage *                    icon;
+  GtkPaned *                    track_automation_paned; ///< top is the track part,
+                                                      ///< bot is the automation part
+  AutomationTracklistWidget *   automation_tracklist_widget;
+  Track *                       track; ///< associated track
 } TrackWidget;
 
 typedef struct TrackWidgetClass
 {
-  GtkGridClass    parent_class;
+  GtkPanedClass    parent_class;
 } TrackWidgetClass;
 
 /**
@@ -69,6 +71,12 @@ track_widget_new (Track * track);
  */
 void
 track_widget_update_all (TrackWidget * self);
+
+/**
+ * Makes sure the track widget and its elements have the visibility they should.
+ */
+void
+track_widget_show (TrackWidget * self);
 
 #endif
 

@@ -29,6 +29,10 @@
 #include "audio/channel.h"
 #include "audio/engine.h"
 #include "audio/mixer.h"
+#include "audio/track.h"
+#include "gui/widgets/main_window.h"
+#include "gui/widgets/track.h"
+#include "gui/widgets/tracklist.h"
 
 #include <gtk/gtk.h>
 
@@ -103,6 +107,51 @@ mixer_load_plugins ()
       if (plugin)
         {
           plugin_instantiate (plugin);
+        }
+    }
+}
+
+static void
+generate_track (Channel * channel)
+{
+  channel->track = track_new (channel);
+  channel_generate_automatables (channel);
+  track_update_automation_tracks (channel->track);
+  channel->track->widget = track_widget_new (channel->track);
+  /*track_widget_show (channel->track->widget);*/
+}
+
+/**
+ * Adds channel to mixer.
+ */
+void
+mixer_add_channel_and_init_track (Channel * channel)
+{
+  generate_track (channel);
+  MIXER->channels[MIXER->num_channels++] = channel;
+}
+
+void
+mixer_add_master_and_init_track (Channel * channel)
+{
+  generate_track (channel);
+  MIXER->master = channel;
+}
+
+/**
+ * Returns channel at given position (order)
+ *
+ * Channel order in the mixer is reflected in the track list
+ */
+Channel *
+mixer_get_channel_at_pos (int pos)
+{
+  for (int i = 0; i < MIXER->num_channels; i++)
+    {
+      Channel * channel = MIXER->channels[i];
+      if (channel->id == pos)
+        {
+          return channel;
         }
     }
 }

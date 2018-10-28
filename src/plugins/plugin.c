@@ -29,11 +29,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "audio/channel.h"
 #include "audio/engine.h"
+#include "audio/track.h"
 #include "audio/transport.h"
 #include "plugins/plugin.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/control.h"
+#include "utils/arrays.h"
 
 #include <gtk/gtk.h>
 
@@ -133,6 +136,34 @@ plugin_get_or_create_blank (int id)
 /*}*/
 
 /**
+ * Generates automatables for the plugin.
+ *
+ *
+ * Plugin must be instantiated already.
+ */
+void
+plugin_generate_automatables (Plugin * plugin)
+{
+  g_message ("generating automatables for %s...",
+             plugin->descr->name);
+  if (plugin->descr->protocol == PROT_LV2)
+    {
+      LV2_Plugin * lv2_plugin = (LV2_Plugin *) plugin->original_plugin;
+      for (int j = 0; j < lv2_plugin->controls.n_controls; j++)
+        {
+          Lv2ControlID * control = lv2_plugin->controls.controls[j];
+          plugin->automatables[plugin->num_automatables++] =
+            automatable_create_lv2_control (plugin, control);
+        }
+    }
+  else
+    {
+      g_warning ("Plugin protocol not supported yet (gen automatables)");
+    }
+}
+
+
+/**
  * Instantiates the plugin (e.g. when adding to a channel).
  */
 int
@@ -170,43 +201,12 @@ plugin_process (Plugin * plugin, nframes_t nframes)
           /* add midi events to input port */
     }
 
-  switch (plugin->descr->protocol)
+  if (plugin->descr->protocol == PROT_LV2)
     {
-    case PROT_LV2:
       lv2_plugin_process ((LV2_Plugin *) plugin->original_plugin, nframes);
-      break;
-    case PROT_VST:
-
-      break;
-
     }
 
   plugin->processed = 1;
-}
-
-/**
- * (re)Generates automatables for the plugin.
- */
-void
-plugin_generate_automatables (Plugin * plugin)
-{
-  /* clean previous automatables */
-  for (int i = 0; i < plugin->num_automatables; i++)
-    {
-      automatable_free (&plugin->automatables[i]);
-    }
-  plugin->num_automatables = 0;
-
-  if (plugin->descr->protocol == PROT_LV2)
-    {
-      LV2_Plugin * lv2_plugin = (LV2_Plugin *) plugin->original_plugin;
-      for (int j = 0; j < lv2_plugin->controls.n_controls; j++)
-        {
-          Lv2ControlID * control = lv2_plugin->controls.controls[j];
-          plugin->automatables[plugin->num_automatables++] =
-            automatable_create_lv2_control (plugin, control);
-        }
-    }
 }
 
 /**
@@ -253,7 +253,12 @@ plugin_free (Plugin *plugin)
   clean_ports (plugin->in_ports, &plugin->num_in_ports);
   clean_ports (plugin->out_ports, &plugin->num_out_ports);
 
-  /* TODO other cleanup work */
+  /* delete automatables */
+  for (int i = 0; i < plugin->num_automatables; i++)
+    {
+      Automatable * automatable = plugin->automatables[i];
+      automatable_free (automatable);
+    }
 
   free (plugin);
 }

@@ -110,6 +110,15 @@ typedef struct Plugin
 } Plugin;
 
 /**
+ * Generates automatables for the plugin.
+ *
+ *
+ * Plugin must be instantiated already.
+ */
+void
+plugin_generate_automatables (Plugin * plugin);
+
+/**
  * Used when loading projects.
  */
 Plugin *
@@ -144,7 +153,7 @@ plugin_process (Plugin * plugin, nframes_t nframes);
  * (re)Generates automatables for the plugin.
  */
 void
-plugin_generate_automatables (Plugin * plugin);
+plugin_update_automatables (Plugin * plugin);
 
 /**
  * Frees given plugin, breaks all its port connections, and frees its ports

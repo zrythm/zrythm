@@ -27,6 +27,7 @@
 #include "audio/track.h"
 #include "audio/transport.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/track.h"
 #include "plugins/lv2_plugin.h"
 #include "utils/io.h"
 #include "utils/smf.h"
@@ -180,16 +181,8 @@ project_load (char * filepath) ///< this is the xml file
     }
   else
     {
-      MIXER->master = channel_create_master ();
-      ADD_CHANNEL (channel_create (CT_MIDI, "Ch 1"));
+      mixer_add_master_and_init_track (channel_create_master ());
+      mixer_add_channel_and_init_track (channel_create (CT_MIDI, "Ch 1"));
     }
-
-  /* generate automatables */
-  for (int i = 0; i < MIXER->num_channels; i++)
-    {
-      track_generate_automatables (MIXER->channels[i]->track);
-    }
-  track_generate_automatables (MIXER->master->track);
-
 }
 

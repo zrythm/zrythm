@@ -36,7 +36,7 @@
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/timeline_bg.h"
-#include "gui/widgets/tracks.h"
+#include "gui/widgets/tracklist.h"
 #include "gui/widgets/transport_controls.h"
 #include "utils/io.h"
 
@@ -254,27 +254,23 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         MainWindowWidget, center_box);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, inspector);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, inspector_button);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         MainWindowWidget, editor_plus_browser);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         MainWindowWidget, editor);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         MainWindowWidget, editor_top);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, tracks_timeline);
+                                        MainWindowWidget, tracklist_timeline);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, tracks_top);
+                                        MainWindowWidget, tracklist_top);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, tracks_scroll);
+                                        MainWindowWidget, tracklist_scroll);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, tracks_viewport);
+                                        MainWindowWidget, tracklist_viewport);
   /*gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),*/
                                                 /*MainWindowWidget, tracks_paned);*/
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, tracks_header);
+                                        MainWindowWidget, tracklist_header);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         MainWindowWidget, timeline_ruler);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
@@ -412,14 +408,14 @@ main_window_widget_new (ZrythmApp * _app)
                       1, 1, 0);
 
 
-  /* setup tracks */
-  tracks_widget_setup ();
-  gtk_container_add (GTK_CONTAINER (self->tracks_viewport),
-                     GTK_WIDGET (self->tracks));
-  gtk_widget_set_size_request (GTK_WIDGET (self->tracks_header),
+  /* setup tracklist */
+  tracklist_widget_new ();
+  gtk_container_add (GTK_CONTAINER (self->tracklist_viewport),
+                     GTK_WIDGET (self->tracklist));
+  gtk_widget_set_size_request (GTK_WIDGET (self->tracklist_header),
                                -1,
                                60);
-  gtk_widget_show_all (GTK_WIDGET (self->editor_top));
+  tracklist_widget_show (self->tracklist);
 
   /* setup ruler */
   self->ruler = ruler_widget_new ();
@@ -438,7 +434,7 @@ main_window_widget_new (ZrythmApp * _app)
                      GTK_WIDGET (self->timeline));
   gtk_scrolled_window_set_min_content_width (self->timeline_scroll, 400);
   gtk_scrolled_window_set_vadjustment (self->timeline_scroll,
-            gtk_scrolled_window_get_vadjustment (self->tracks_scroll));
+            gtk_scrolled_window_get_vadjustment (self->tracklist_scroll));
   gtk_widget_show_all (GTK_WIDGET (self->timeline_viewport));
   gtk_widget_show_all (GTK_WIDGET (self->timeline));
   gtk_widget_show_all (GTK_WIDGET (self->timeline->bg));

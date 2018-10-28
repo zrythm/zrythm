@@ -28,6 +28,7 @@
 #include <unistd.h> // for usleep
 #endif
 
+#include "audio/automation_track.h"
 #include "audio/channel.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
@@ -36,7 +37,7 @@
 #include "gui/widgets/channel.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
-#include "gui/widgets/tracks.h"
+#include "gui/widgets/tracklist.h"
 
 #include <gtk/gtk.h>
 #include <jack/thread.h>
@@ -284,13 +285,34 @@ _create_channel (char * name)
         FLOW_INPUT,
         tmp);
   channel->piano_roll->owner_jack = 0;
-  channel->piano_roll->owner_ch = channel->id;
+  channel->piano_roll->owner_ch = channel;
   channel->piano_roll->midi_events.queue = calloc (1, sizeof (MidiEvents));
 
   channel->id = PROJECT->num_channels;
   PROJECT->channels[PROJECT->num_channels++] = channel;
+  channel->visible = 1;
 
   return channel;
+}
+
+/**
+ * Generates automatables for the channel.
+ *
+ * Should be called as soon as it is created
+ * Note: called by mixer_add_channel ()
+ */
+void
+channel_generate_automatables (Channel * channel)
+{
+  g_message ("Generating automatables for channel %s",
+             channel->name);
+
+  /* generate channel automatables if necessary */
+  if (!channel_get_fader_automatable (channel))
+    {
+      channel->automatables[channel->num_automatables++] =
+        automatable_create_fader (channel);
+    }
 }
 
 /**
@@ -313,7 +335,6 @@ channel_get_or_create_blank (int id)
 
   /* create widget */
   channel->widget = channel_widget_new (channel);
-  channel->track = track_new (channel);
 
   PROJECT->channels[id] = channel;
   PROJECT->num_channels++;
@@ -348,7 +369,6 @@ channel_create_master ()
 
   /* create widget */
   channel->widget = channel_widget_new (channel);
-  channel->track= track_new (channel);
 
   return channel;
 }
@@ -378,7 +398,6 @@ channel_create (int     type, char * label)             ///< the channel type (A
 
   /* create widget */
   channel->widget = channel_widget_new (channel);
-  channel->track = track_new (channel);
 
   return channel;
 }
@@ -442,6 +461,30 @@ channel_set_current_r_db (Channel * channel, float val)
   channel->r_port_db = val;
 }
 
+void
+channel_remove_plugin (Channel * channel, int pos)
+{
+  Plugin * plugin = channel->strip[pos];
+  if (plugin)
+    {
+      g_message ("Removing %s from %s:%d", plugin->descr->name,
+                 channel->name, pos);
+      if (plugin->descr->protocol == PROT_LV2)
+        {
+          lv2_close_ui ((LV2_Plugin *) plugin->original_plugin);
+
+          /* remove automation tracks associated with plugin automatables */
+          for (int i = 0; i < plugin->num_automatables; i++)
+            {
+              Automatable * a = plugin->automatables[i];
+              AutomationTrack * at = automation_track_get_for_automatable (a);
+              track_delete_automation_track (channel->track, at);
+            }
+        }
+      plugin_free (channel->strip[pos]);
+    }
+}
+
 /**
  * Adds given plugin to given position in the strip.
  *
@@ -456,18 +499,10 @@ channel_add_plugin (Channel * channel,    ///< the channel
 {
   int prev_enabled = channel->enabled;
   channel->enabled = 0;
+
   /* free current plugin */
   Plugin * old = channel->strip[pos];
-  if (old)
-    {
-      g_message ("Removing %s from %s:%d", old->descr->name,
-                 channel->name, pos);
-      if (old->descr->protocol == PROT_LV2)
-        {
-          lv2_close_ui ((LV2_Plugin *) old->original_plugin);
-        }
-      plugin_free (channel->strip[pos]);
-    }
+  channel_remove_plugin (channel, pos);
 
   g_message ("Inserting %s at %s:%d", plugin->descr->name,
              channel->name, pos);
@@ -594,7 +629,9 @@ channel_add_plugin (Channel * channel,    ///< the channel
     }
   channel->enabled = prev_enabled;
 
-  track_generate_automatables (channel->track);
+  plugin_generate_automatables (plugin);
+  track_update_automation_tracks (channel->track);
+  track_widget_update_all (channel->track->widget);
 }
 
 /**
@@ -737,4 +774,20 @@ channel_get_plugin_index (Channel * channel,
     }
   g_warning ("channel_get_plugin_index: plugin not found");
   return -1;
+}
+
+/**
+ * Convenience function to get the fader automatable of the channel.
+ */
+Automatable *
+channel_get_fader_automatable (Channel * channel)
+{
+  for (int i = 0; i < channel->num_automatables; i++)
+    {
+      Automatable * automatable = channel->automatables[i];
+
+      if (IS_AUTOMATABLE_CH_FADER (automatable))
+        return automatable;
+    }
+  return NULL;
 }

@@ -1,5 +1,5 @@
 /*
- * utils/arrays.c - Array helpers
+ * utils/gtk.h - GTK utils
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,36 +19,34 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "utils/arrays.h"
-
-void
-arrays_delete (void ** array, int * size, void * element)
-{
-  for (int i = 0; i < (* size); i++)
-    {
-      if (array[i] == element)
-        {
-          --(* size);
-          for (int j = i; j < (* size); j++)
-            {
-              array[j] = array[j + 1];
-            }
-          break;
-        }
-    }
-}
+#ifndef __UTILS_GTK_H__
+#define __UTILS_GTK_H__
 
 /**
- * Inserts element in array at pos and increases the size.
+ * For readability, instead of using 0s and 1s.
  */
-void
-arrays_insert (void ** array, int * size, int pos, void * element)
+enum ZGtkFill
 {
-  for (int i = pos; i < (* size); i++)
-    {
-      array[i + 1] = array[i];
-    }
-  array[pos] = element;
-  (* size)++;
-}
+  Z_GTK_NO_FILL,
+  Z_GTK_FILL
+};
 
+enum ZGtkResize
+{
+  Z_GTK_NO_RESIZE,
+  Z_GTK_RESIZE
+};
+
+enum ZGtkExpand
+{
+  Z_GTK_NO_EXPAND,
+  Z_GTK_EXPAND
+};
+
+enum ZGtkShrink
+{
+  Z_GTK_NO_SHRINK,
+  Z_GTK_SHRINK
+};
+
+#endif

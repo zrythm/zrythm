@@ -27,5 +27,9 @@
 void
 ui_set_cursor (GtkWidget * widget, char * name);
 
+void
+ui_show_error_message (GtkWindow * parent_window,
+                       const char * message);
+
 #endif
 

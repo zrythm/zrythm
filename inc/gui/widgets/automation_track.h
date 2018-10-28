@@ -38,17 +38,17 @@ typedef struct Track Track;
 
 typedef struct AutomationTrackWidget
 {
-  GtkGrid                 parent_instance;
+  GtkPaned                parent_instance;
   GtkComboBox *           selector;
   GtkBox *                value_box;
   DigitalMeterWidget *    value;
   GtkToggleButton *       mute_toggle;
-  AutomationTrack *       automation_track;
+  AutomationTrack *       automation_track; ///< associated automation track
 } AutomationTrackWidget;
 
 typedef struct AutomationTrackWidgetClass
 {
-  GtkGridClass    parent_class;
+  GtkPanedClass    parent_class;
 } AutomationTrackWidgetClass;
 
 /**
@@ -57,6 +57,11 @@ typedef struct AutomationTrackWidgetClass
 AutomationTrackWidget *
 automation_track_widget_new ();
 
+/**
+ * Updates GUI.
+ */
+void
+automation_track_widget_update (AutomationTrackWidget * self);
 
 #endif
 

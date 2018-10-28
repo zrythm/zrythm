@@ -28,27 +28,18 @@
 #include <jack/jack.h>
 
 #define MIXER AUDIO_ENGINE->mixer
-
-/**
- * adds given channel to mixer and updates count
- **/
-#define ADD_CHANNEL(channel) MIXER->channels[ \
-                                  MIXER->num_channels++] = channel;
-
+#define STRIP_SIZE 9 /* mixer strip size (number of plugin slots) */
 
 typedef jack_default_audio_sample_t   sample_t;
 typedef jack_nframes_t                nframes_t;
 
 typedef struct Channel Channel;
-typedef struct Port Port;
-
 
 typedef struct Mixer
 {
   Channel        * channels[100];      ///< array of channel strips
   int            num_channels;           ///< # of channels EXCLUDING master
   Channel        * master;                  ///< master output
-
 } Mixer;
 
 /**
@@ -74,5 +65,22 @@ mixer_process (nframes_t     _nframes);       ///< number of frames to fill in
  */
 void
 mixer_load_plugins ();
+
+/**
+ * Returns channel at given position (order)
+ *
+ * Channel order in the mixer is reflected in the track list
+ */
+Channel *
+mixer_get_channel_at_pos (int pos);
+
+/**
+ * Adds channel to mixer and initializes track.
+ */
+void
+mixer_add_channel_and_init_track (Channel * channel);
+
+void
+mixer_add_master_and_init_track (Channel * channel);
 
 #endif
