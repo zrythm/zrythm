@@ -34,24 +34,6 @@ automation_track_new (Track *         track,
   at->track = track;
   automation_track_set_automatable (at, a);
 
-  /* create some test automation points TODO */
-  for (int i = 0; i < 7; i++)
-    {
-      if (automatable_is_float (a))
-        {
-          AutomationPoint * ap = &at->automation_points[i];
-          position_init (&ap->pos);
-          ap->pos.bars = i + 2;
-          ap->type = AUTOMATION_POINT_VALUE;
-          float max = automatable_get_maxf (a);
-          float min = automatable_get_minf (a);
-          ap->fvalue = max - ((max - min) / 2);
-          at->num_automation_points++;
-          g_message ("created automation point with val %f",
-                     ap->fvalue);
-        }
-    }
-
   return at;
 }
 
@@ -94,6 +76,13 @@ automation_track_get_for_automatable (Automatable * automatable)
         }
     }
   return NULL;
+}
+
+void
+automation_track_add_automation_point (AutomationTrack * at,
+                                       AutomationPoint * ap)
+{
+  at->automation_points[at->num_automation_points++] = ap;
 }
 
 void

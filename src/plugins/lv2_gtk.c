@@ -458,9 +458,9 @@ set_control(const Lv2ControlID* control,
             const void*      body)
 {
   g_message ("set control");
-	if (!control->plugin->updating) {
-		lv2_set_control(control, size, type, body);
-	}
+  if (!control->plugin->updating) {
+          lv2_set_control(control, size, type, body);
+  }
 }
 
 static bool
@@ -472,32 +472,32 @@ differ_enough(float a, float b)
 static void
 set_float_control(const Lv2ControlID* control, float value)
 {
-	if (control->value_type == control->plugin->forge.Int) {
-		const int32_t ival = lrint(value);
-		set_control(control, sizeof(ival), control->plugin->forge.Int, &ival);
-	} else if (control->value_type == control->plugin->forge.Long) {
-		const int64_t lval = lrint(value);
-		set_control(control, sizeof(lval), control->plugin->forge.Long, &lval);
-	} else if (control->value_type == control->plugin->forge.Float) {
-		set_control(control, sizeof(value), control->plugin->forge.Float, &value);
-	} else if (control->value_type == control->plugin->forge.Double) {
-		const double dval = value;
-		set_control(control, sizeof(dval), control->plugin->forge.Double, &dval);
-	} else if (control->value_type == control->plugin->forge.Bool) {
-		const int32_t ival = value;
-		set_control(control, sizeof(ival), control->plugin->forge.Bool, &ival);
-	}
-        else
-          {
-            /* FIXME ? */
-            set_control(control, sizeof(value), control->plugin->forge.Float, &value);
-          }
+  if (control->value_type == control->plugin->forge.Int) {
+          const int32_t ival = lrint(value);
+          set_control(control, sizeof(ival), control->plugin->forge.Int, &ival);
+  } else if (control->value_type == control->plugin->forge.Long) {
+          const int64_t lval = lrint(value);
+          set_control(control, sizeof(lval), control->plugin->forge.Long, &lval);
+  } else if (control->value_type == control->plugin->forge.Float) {
+          set_control(control, sizeof(value), control->plugin->forge.Float, &value);
+  } else if (control->value_type == control->plugin->forge.Double) {
+          const double dval = value;
+          set_control(control, sizeof(dval), control->plugin->forge.Double, &dval);
+  } else if (control->value_type == control->plugin->forge.Bool) {
+          const int32_t ival = value;
+          set_control(control, sizeof(ival), control->plugin->forge.Bool, &ival);
+  }
+  else
+    {
+      /* FIXME ? */
+      set_control(control, sizeof(value), control->plugin->forge.Float, &value);
+    }
 
-	Controller* controller = (Controller*)control->widget;
-	if (controller && controller->spin &&
-	    differ_enough(gtk_spin_button_get_value(controller->spin), value)) {
-		gtk_spin_button_set_value(controller->spin, value);
-	}
+  Controller* controller = (Controller*)control->widget;
+  if (controller && controller->spin &&
+      differ_enough(gtk_spin_button_get_value(controller->spin), value)) {
+          gtk_spin_button_set_value(controller->spin, value);
+  }
 }
 
 static double

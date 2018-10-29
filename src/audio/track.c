@@ -44,7 +44,6 @@
 void
 track_update_automation_tracks (Track * track)
 {
-  g_message ("ch %d d", track->channel->num_automatables);
   /* channel automatables */
   for (int i = 0; i < track->channel->num_automatables; i++)
     {
@@ -53,9 +52,11 @@ track_update_automation_tracks (Track * track)
                             track->channel->automatables[i]);
       if (!at)
         {
-          g_message ("adding automation track to track, channel");
           at = automation_track_new (track,
                                      track->channel->automatables[i]);
+          g_message ("adding automation track %s to %s",
+                     at->automatable->label,
+                     track->channel->name);
           track->automation_tracks[track->num_automation_tracks++] = at;
         }
     }
@@ -72,9 +73,11 @@ track_update_automation_tracks (Track * track)
                                           plugin->automatables[i]);
               if (!at)
                 {
-                  g_message ("adding automation track to track, plugin");
                   at = automation_track_new (track,
                                              plugin->automatables[i]);
+                  g_message ("adding automation track %s to %s",
+                             at->automatable->label,
+                             track->channel->name);
                   track->automation_tracks[track->num_automation_tracks++] = at;
                 }
             }

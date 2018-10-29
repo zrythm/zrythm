@@ -183,29 +183,32 @@ lv2_set_control(const Lv2ControlID* control,
                  LV2_URID         type,
                  const void*      body)
 {
-	LV2_Plugin* plugin = control->plugin;
-	if (control->type == PORT && type == plugin->forge.Float) {
-		LV2_Port* port = &control->plugin->ports[control->index];
-		port->control = *(float*)body;
-	} else if (control->type == PROPERTY) {
-		// Copy forge since it is used by process thread
-		LV2_Atom_Forge       forge = plugin->forge;
-		LV2_Atom_Forge_Frame frame;
-		uint8_t              buf[1024];
-		lv2_atom_forge_set_buffer(&forge, buf, sizeof(buf));
+  LV2_Plugin* plugin = control->plugin;
+  if (control->type == PORT && type == plugin->forge.Float)
+    {
+      LV2_Port* port = &control->plugin->ports[control->index];
+      port->control = *(float*)body;
+    }
+  else if (control->type == PROPERTY)
+    {
+      // Copy forge since it is used by process thread
+      LV2_Atom_Forge       forge = plugin->forge;
+      LV2_Atom_Forge_Frame frame;
+      uint8_t              buf[1024];
+      lv2_atom_forge_set_buffer(&forge, buf, sizeof(buf));
 
-		lv2_atom_forge_object(&forge, &frame, 0, plugin->urids.patch_Set);
-		lv2_atom_forge_key(&forge, plugin->urids.patch_property);
-		lv2_atom_forge_urid(&forge, control->property);
-		lv2_atom_forge_key(&forge, plugin->urids.patch_value);
-		lv2_atom_forge_atom(&forge, size, type);
-		lv2_atom_forge_write(&forge, body, size);
+      lv2_atom_forge_object(&forge, &frame, 0, plugin->urids.patch_Set);
+      lv2_atom_forge_key(&forge, plugin->urids.patch_property);
+      lv2_atom_forge_urid(&forge, control->property);
+      lv2_atom_forge_key(&forge, plugin->urids.patch_value);
+      lv2_atom_forge_atom(&forge, size, type);
+      lv2_atom_forge_write(&forge, body, size);
 
-		const LV2_Atom* atom = lv2_atom_forge_deref(&forge, frame.ref);
-		lv2_ui_write(plugin,
-		              plugin->control_in,
-		              lv2_atom_total_size(atom),
-		              plugin->urids.atom_eventTransfer,
-		              atom);
-	}
+      const LV2_Atom* atom = lv2_atom_forge_deref(&forge, frame.ref);
+      lv2_ui_write(plugin,
+                    plugin->control_in,
+                    lv2_atom_total_size(atom),
+                    plugin->urids.atom_eventTransfer,
+                    atom);
+    }
 }

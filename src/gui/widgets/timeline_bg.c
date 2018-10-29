@@ -27,6 +27,8 @@
 #include "audio/mixer.h"
 #include "audio/track.h"
 #include "audio/transport.h"
+#include "gui/widgets/arranger.h"
+#include "gui/widgets/automation_point.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/ruler.h"
@@ -41,21 +43,11 @@ G_DEFINE_TYPE (TimelineBgWidget, timeline_bg_widget, GTK_TYPE_DRAWING_AREA)
 #define MW_RULER MAIN_WINDOW->ruler
 
 static void
-draw_automation_line (cairo_t * cr,
-                      int     y_offset)
-{
-  cairo_set_source_rgb (cr, 0.7, 0, 0);
-  cairo_set_line_width (cr, 0.5);
-  cairo_move_to (cr, 0, y_offset);
-  cairo_line_to (cr, MW_RULER->total_px, y_offset);
-  cairo_stroke (cr);
-}
-
-static void
 draw_horizontal_line (cairo_t * cr,
-                      int       y_offset)
+                      int       y_offset,
+                      double    alpha)
 {
-  cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
+  cairo_set_source_rgba (cr, 0.7, 0.7, 0.7, alpha);
   cairo_set_line_width (cr, 0.5);
   cairo_move_to (cr, 0, y_offset);
   cairo_line_to (cr, MW_RULER->total_px, y_offset);
@@ -128,53 +120,84 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
                 0,
                 &wx,
                 &wy);
-      draw_horizontal_line (cr, wy - 2);
+      draw_horizontal_line (cr, wy - 2, 1.0);
 
       /* draw last line */
       if (i == MAIN_WINDOW->tracklist->num_track_widgets - 1)
         {
           wy += gtk_widget_get_allocated_height (GTK_WIDGET (
                                 track_widget->track_automation_paned));
-          draw_horizontal_line (cr, wy + 2);
+          draw_horizontal_line (cr, wy + 2, 1.0);
         }
     }
 
-  /* horizontal drawing for automation lines */
   for (int i = 0; i < MIXER->num_channels; i++)
     {
       Track * track = MIXER->channels[i]->track;
+
       if (track->automations_visible)
         {
           for (int j = 0; j < track->num_automation_tracks; j++)
             {
               AutomationTrack * at = track->automation_tracks[j];
+
               if (at->widget)
                 {
+                  /* horizontal automation track lines */
                   gint wx, wy;
                   gtk_widget_translate_coordinates(
-                            GTK_WIDGET (track->widget->automation_tracklist_widget),
+                            GTK_WIDGET (at->widget->at_grid),
                             GTK_WIDGET (MAIN_WINDOW->tracklist),
                             0,
                             0,
                             &wx,
                             &wy);
-                  gint wx2, wy2;
-                  gtk_widget_translate_coordinates(
-                            GTK_WIDGET (at->widget),
-                            GTK_WIDGET (track->widget->automation_tracklist_widget),
-                            0,
-                            0,
-                            &wx,
-                            &wy);
+                  draw_horizontal_line (cr, wy, 0.2);
 
-                  int y_pos = wy + wy2;
+                  /* automation point connecting lines */
+                  for (int k = 0; k < at->num_automation_points; k++)
+                    {
+                      AutomationPoint * ap = at->automation_points[k];
+                      gtk_widget_translate_coordinates(
+                                GTK_WIDGET (ap->widget),
+                                GTK_WIDGET (MAIN_WINDOW->tracklist),
+                                0,
+                                0,
+                                &wx,
+                                &wy);
+                      wx = arranger_get_x_pos_in_px (&ap->pos);
 
-                  draw_automation_line (cr, y_pos);
+                      /*g_message ("wx %d wy %d", wx, wy);*/
 
-                  guint height = gtk_widget_get_allocated_height (GTK_WIDGET (at->widget));
-                  /*g_message ("y_pos %d, height %d", wy2, height);*/
+                      /* if not first AP */
+                      if (k > 0)
+                        {
+                          gint prev_wx, prev_wy;
+                          AutomationPoint * prev_ap = at->automation_points[k - 1];
+                          gtk_widget_translate_coordinates(
+                                    GTK_WIDGET (prev_ap->widget),
+                                    GTK_WIDGET (MAIN_WINDOW->tracklist),
+                                    0,
+                                    0,
+                                    &prev_wx,
+                                    &prev_wy);
+                          prev_wx = arranger_get_x_pos_in_px (&prev_ap->pos);
 
-                  draw_automation_line (cr, y_pos + height);
+                          /* connect to previous AP */
+                          cairo_set_source_rgb (cr,
+                                                track->channel->color.red,
+                                                track->channel->color.green,
+                                                track->channel->color.blue);
+                          cairo_set_line_width (cr, 2);
+                          cairo_move_to (cr, prev_wx, prev_wy + AP_WIDGET_SIZE / 2);
+                          cairo_line_to (cr, wx, wy + AP_WIDGET_SIZE / 2);
+                          /*g_message ("%d to %d, %d to %d",*/
+                                     /*prev_wx, wx,*/
+                                     /*prev_wy + AP_WIDGET_SIZE / 2,*/
+                                     /*wy + AP_WIDGET_SIZE / 2);*/
+                          cairo_stroke (cr);
+                        }
+                    }
                 }
             }
         }

@@ -43,7 +43,8 @@ typedef struct AutomationTrackWidget
   GtkBox *                value_box;
   DigitalMeterWidget *    value;
   GtkToggleButton *       mute_toggle;
-  AutomationTrack *       automation_track; ///< associated automation track
+  GtkGrid *               at_grid;
+  AutomationTrack *       at; ///< associated automation track
 } AutomationTrackWidget;
 
 typedef struct AutomationTrackWidgetClass
@@ -63,7 +64,8 @@ automation_track_widget_new ();
 void
 automation_track_widget_update (AutomationTrackWidget * self);
 
+float
+automation_track_widget_get_fvalue_at_y (AutomationTrackWidget * at_widget,
+                                         double                  _start_y);
+
 #endif
-
-
-

@@ -29,6 +29,8 @@
 #include "audio/track.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/automation_point.h"
+#include "gui/widgets/automation_track.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger_bg.h"
@@ -105,6 +107,19 @@ arranger_widget_set_channel (ArrangerWidget * arranger, Channel * channel)
 }
 
 /**
+ * Gets x position in pixels
+ */
+int
+arranger_get_x_pos_in_px (Position * pos)
+{
+  return (pos->bars - 1) * MW_RULER->px_per_bar +
+  (pos->beats - 1) * MW_RULER->px_per_beat +
+  (pos->quarter_beats - 1) * MW_RULER->px_per_quarter_beat +
+  pos->ticks * MW_RULER->px_per_tick +
+  SPACE_BEFORE_START;
+}
+
+/**
  * Gets called to set the position/size of each overlayed widget.
  */
 static gboolean
@@ -121,21 +136,12 @@ get_child_position (GtkOverlay   *overlay,
         {
           MidiNoteWidget * midi_note_widget = MIDI_NOTE_WIDGET (widget);
 
-
-          allocation->x =
-            (midi_note_widget->midi_note->start_pos.bars - 1) * MW_RULER->px_per_bar +
-            (midi_note_widget->midi_note->start_pos.beats - 1) * MW_RULER->px_per_beat +
-            (midi_note_widget->midi_note->start_pos.quarter_beats - 1) * MW_RULER->px_per_quarter_beat +
-            midi_note_widget->midi_note->start_pos.ticks * MW_RULER->px_per_tick +
-            SPACE_BEFORE_START;
+          allocation->x = arranger_get_x_pos_in_px (&midi_note_widget->midi_note->start_pos);
           allocation->y = MAIN_WINDOW->midi_editor->piano_roll_labels->px_per_note *
             (127 - midi_note_widget->midi_note->val);
           allocation->width =
-            ((midi_note_widget->midi_note->end_pos.bars - 1) * MW_RULER->px_per_bar +
-            (midi_note_widget->midi_note->end_pos.beats - 1) * MW_RULER->px_per_beat +
-            (midi_note_widget->midi_note->end_pos.quarter_beats - 1) * MW_RULER->px_per_quarter_beat +
-            midi_note_widget->midi_note->end_pos.ticks * MW_RULER->px_per_tick +
-            SPACE_BEFORE_START) - allocation->x;
+            arranger_get_x_pos_in_px (&midi_note_widget->midi_note->end_pos) -
+            allocation->x;
           allocation->height = MAIN_WINDOW->midi_editor->piano_roll_labels->px_per_note;
         }
     }
@@ -154,32 +160,35 @@ get_child_position (GtkOverlay   *overlay,
                     &wx,
                     &wy);
 
-          allocation->x =
-            (rw->region->start_pos.bars - 1) * MW_RULER->px_per_bar +
-            (rw->region->start_pos.beats - 1) * MW_RULER->px_per_beat +
-            (rw->region->start_pos.quarter_beats - 1) * MW_RULER->px_per_quarter_beat +
-            rw->region->start_pos.ticks * MW_RULER->px_per_tick +
-            SPACE_BEFORE_START;
+          allocation->x = arranger_get_x_pos_in_px (&rw->region->start_pos);
           allocation->y = wy;
-          allocation->width =
-            ((rw->region->end_pos.bars - 1) * MW_RULER->px_per_bar +
-            (rw->region->end_pos.beats - 1) * MW_RULER->px_per_beat +
-            (rw->region->end_pos.quarter_beats - 1) * MW_RULER->px_per_quarter_beat +
-            rw->region->end_pos.ticks * MW_RULER->px_per_tick +
-            SPACE_BEFORE_START) - allocation->x;
-          gint w, h;
-          gtk_widget_get_size_request (GTK_WIDGET (rw->region->track->widget),
-                                 &w,
-                                 &h);
-
+          allocation->width = arranger_get_x_pos_in_px (&rw->region->end_pos) -
+            allocation->x;
           allocation->height =
             gtk_widget_get_allocated_height (
               GTK_WIDGET (rw->region->track->widget->track_box));
         }
-      /*else if (IS_AUTOMATION_POINT_WIDGET (widget))*/
-        /*{*/
+      else if (IS_AUTOMATION_POINT_WIDGET (widget))
+        {
+          AutomationPointWidget * ap_widget = AUTOMATION_POINT_WIDGET (widget);
+          AutomationPoint * ap = ap_widget->ap;
+          Automatable * a = ap->at->automatable;
 
-        /*}*/
+          gint wx, wy;
+          gtk_widget_translate_coordinates(
+                    GTK_WIDGET (ap->at->widget->at_grid),
+                    GTK_WIDGET (overlay),
+                    0,
+                    0,
+                    &wx,
+                    &wy);
+
+          allocation->x = arranger_get_x_pos_in_px (&ap->pos) - AP_WIDGET_SIZE / 2;
+          allocation->y = (wy + automation_point_get_y_in_px (ap)) -
+            AP_WIDGET_SIZE / 2;
+          allocation->width = AP_WIDGET_SIZE;
+          allocation->height = AP_WIDGET_SIZE;
+        }
     }
 
 
@@ -229,23 +238,25 @@ get_automation_track_at_y (double y)
 
       for (int j = 0; j < track->num_automation_tracks; j++)
         {
+          /*g_message ("at %d of %d", j, i);*/
           AutomationTrack * at = track->automation_tracks[j];
           if (at->widget)
             {
               GtkAllocation allocation;
-              gtk_widget_get_allocation (GTK_WIDGET (at->widget),
+              gtk_widget_get_allocation (GTK_WIDGET (at->widget->at_grid),
                                          &allocation);
 
               gint wx, wy;
               gtk_widget_translate_coordinates(
                         GTK_WIDGET (MW_TIMELINE),
-                        GTK_WIDGET (at->widget),
+                        GTK_WIDGET (at->widget->at_grid),
                         0,
-                        0,
+                        y,
                         &wx,
                         &wy);
 
-              if (y > -wy && y < ((-wy) + allocation.height))
+              /*g_message ("wy %d, allocation height %d", wy, allocation.height);*/
+              if (wy >= 0 && wy <= allocation.height)
                 {
                   return at;
                 }
@@ -498,22 +509,29 @@ drag_begin (GtkGestureDrag * gesture,
             {
               if (T_TIMELINE && at)
                 {
-                  /*position_snap (NULL,*/
-                                 /*&pos,*/
-                                 /*track,*/
-                                 /*NULL,*/
-                                 /*self->snap_grid);*/
-                  /*self->ap = automation_point_new (track,*/
-                                             /*&pos,*/
-                                             /*&pos);*/
-                  /*position_set_min_size (&self->region->start_pos,*/
-                                         /*&self->region->end_pos,*/
-                                         /*self->snap_grid);*/
-                  /*track_add_region (track,*/
-                                    /*self->region);*/
-                  /*gtk_overlay_add_overlay (GTK_OVERLAY (self),*/
-                                           /*GTK_WIDGET (self->region->widget));*/
-                  /*gtk_widget_show (GTK_WIDGET (self->region->widget));*/
+                  position_snap (NULL,
+                                 &pos,
+                                 track,
+                                 NULL,
+                                 self->snap_grid);
+
+                  /* if the automatable is float in this automation track */
+                  if (automatable_is_float (at->automatable))
+                    {
+                      /* add automation point to automation track */
+                      float value = automation_track_widget_get_fvalue_at_y (
+                                                      at->widget,
+                                                      start_y);
+
+                      self->ap = automation_point_new_float (at,
+                                                             AUTOMATION_POINT_VALUE,
+                                                             value,
+                                                             &pos);
+                      automation_track_add_automation_point (at, self->ap);
+                      gtk_overlay_add_overlay (GTK_OVERLAY (self),
+                                               GTK_WIDGET (self->ap->widget));
+                      gtk_widget_show (GTK_WIDGET (self->ap->widget));
+                    }
                 }
               else if (T_TIMELINE && track)
                 {

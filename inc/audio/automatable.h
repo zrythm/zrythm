@@ -80,6 +80,12 @@ automatable_get_minf (Automatable * automatable);
 const float
 automatable_get_maxf (Automatable * automatable);
 
+/**
+ * Returns max - min for the float automatable
+ */
+const float
+automatable_get_sizef (Automatable * automatable);
+
 void
 automatable_free (Automatable * automatable);
 

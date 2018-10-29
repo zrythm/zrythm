@@ -26,6 +26,7 @@
 #include "audio/position.h"
 
 typedef struct AutomationTrack AutomationTrack;
+typedef struct AutomationPointWidget AutomationPointWidget;
 
 typedef enum AutomationPointType
 {
@@ -35,18 +36,26 @@ typedef enum AutomationPointType
 
 typedef struct AutomationPoint
 {
-  Position              pos;
-  float                 fvalue; ///< float value
-  int                   bvalue; ///< boolean value
-  int                   svalue; ///< step value
-  AutomationPointType   type;
-  AutomationTrack *     automation_track; ///< pointer back to parent
+  Position                 pos;
+  float                    fvalue; ///< float value
+  int                      bvalue; ///< boolean value
+  int                      svalue; ///< step value
+  AutomationPointType      type;
+  AutomationTrack *        at; ///< pointer back to parent
+  AutomationPointWidget *  widget;
 } AutomationPoint;
 
+/**
+ * Creates automation point in given track at given Position
+ */
 AutomationPoint *
-automation_point_new (Track * track,
-            Position * start_pos,
-            Position * end_pos);
+automation_point_new_float (AutomationTrack *   at,
+                            AutomationPointType type,
+                            float               value,
+                            Position *          pos);
+
+int
+automation_point_get_y_in_px (AutomationPoint * ap);
 
 #endif // __AUDIO_AUTOMATION_POINT_H__
 

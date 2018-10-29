@@ -83,15 +83,19 @@ automatable_create_lv2_control (Plugin *       plugin,
 int
 automatable_is_bool (Automatable * automatable)
 {
-
-  return 1;
 }
 
 int
-automatable_is_float (Automatable * automatable)
+automatable_is_float (Automatable * a)
 {
-  if (IS_AUTOMATABLE_LV2_CONTROL (automatable) &&
-      automatable->control->is_logarithmic)
+  if (IS_AUTOMATABLE_LV2_CONTROL (a))
+    {
+      if (a->control->value_type == a->control->plugin->forge.Float)
+        {
+          return 1;
+        }
+    }
+  else if (IS_AUTOMATABLE_CH_FADER (a))
     {
       return 1;
     }
@@ -99,25 +103,49 @@ automatable_is_float (Automatable * automatable)
 }
 
 const float
-automatable_get_minf (Automatable * automatable)
+automatable_get_minf (Automatable * a)
 {
-  if (automatable_is_float (automatable))
+  if (automatable_is_float (a))
     {
-      return lilv_node_as_float (automatable->control->min);
+      if (IS_AUTOMATABLE_CH_FADER (a))
+        {
+          return -128.f;
+        }
+      else if (IS_AUTOMATABLE_LV2_CONTROL (a))
+        {
+          return lilv_node_as_float (a->control->min);
+        }
     }
-  g_warning ("automatable %s is not float", automatable->label);
+  g_warning ("automatable %s is not float", a->label);
   return -1;
 }
 
 const float
-automatable_get_maxf (Automatable * automatable)
+automatable_get_maxf (Automatable * a)
 {
-  if (automatable_is_float (automatable))
+  if (automatable_is_float (a))
     {
-      return lilv_node_as_float (automatable->control->max);
+      if (IS_AUTOMATABLE_CH_FADER (a))
+        {
+          return 3.f;
+        }
+      else if (IS_AUTOMATABLE_LV2_CONTROL (a))
+        {
+          return lilv_node_as_float (a->control->max);
+        }
     }
-  g_warning ("automatable %s is not float", automatable->label);
+  g_warning ("automatable %s is not float", a->label);
   return -1;
+}
+
+/**
+ * Returns max - min for the float automatable
+ */
+const float
+automatable_get_sizef (Automatable * automatable)
+{
+  return (automatable_get_maxf (automatable) -
+          automatable_get_minf (automatable));
 }
 
 void

@@ -97,6 +97,12 @@ arranger_widget_new (ArrangerWidgetType type, SnapGrid * snap_grid);
 void
 arranger_widget_set_channel (ArrangerWidget * arranger, Channel * channel);
 
+/**
+ * Gets x position in pixels
+ */
+int
+arranger_get_x_pos_in_px (Position * pos);
+
 #endif
 
 

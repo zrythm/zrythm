@@ -26,6 +26,7 @@
 #include "audio/automation_track.h"
 #include "audio/channel.h"
 #include "audio/track.h"
+#include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/main_window.h"
@@ -47,16 +48,16 @@ on_add_lane_clicked (GtkWidget * widget, void * data)
 
   /* get next non visible automation track and add its widget via
    * track_widget_add_automatoin_track_widget */
-  for (int i = 0; i < self->automation_track->track->num_automation_tracks; i++)
+  for (int i = 0; i < self->at->track->num_automation_tracks; i++)
     {
-      AutomationTrack * at = self->automation_track->track->automation_tracks[i];
+      AutomationTrack * at = self->at->track->automation_tracks[i];
       if (!at->widget)
         {
           automation_tracklist_widget_add_automation_track (
-            self->automation_track->track->widget->automation_tracklist_widget,
+            self->at->track->widget->automation_tracklist_widget,
             at,
             automation_tracklist_widget_get_automation_track_widget_index (
-              self->automation_track->track->widget->automation_tracklist_widget,
+              self->at->track->widget->automation_tracklist_widget,
               self) + 1);
           break;
         }
@@ -87,7 +88,7 @@ on_selector_changed (GtkComboBox * widget,
   GValue value = G_VALUE_INIT;
   gtk_tree_model_get_value (model, &iter, 1, &value);
   Automatable * a = g_value_get_pointer (&value);
-  automation_track_set_automatable (self->automation_track, a);
+  automation_track_set_automatable (self->at, a);
 }
 
 static GtkTreeModel *
@@ -136,7 +137,7 @@ create_automatables_store (Track * track)
 static void
 setup_combo_box (AutomationTrackWidget * self)
 {
-  GtkTreeModel * model = create_automatables_store (self->automation_track->track);
+  GtkTreeModel * model = create_automatables_store (self->at->track);
   gtk_combo_box_set_model (self->selector,
                            model);
   gtk_cell_layout_clear (GTK_CELL_LAYOUT (self->selector));
@@ -171,7 +172,7 @@ automation_track_widget_new (AutomationTrack * automation_track)
                             AUTOMATION_TRACK_WIDGET_TYPE,
                             NULL);
 
-  self->automation_track = automation_track;
+  self->at = automation_track;
   automation_track->widget = self;
 
   setup_combo_box (self);
@@ -212,7 +213,47 @@ automation_track_widget_class_init (AutomationTrackWidgetClass * klass)
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         AutomationTrackWidget,
                                         mute_toggle);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        AutomationTrackWidget,
+                                        at_grid);
   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
                                         on_add_lane_clicked);
 }
 
+float
+automation_track_widget_get_fvalue_at_y (AutomationTrackWidget * at_widget,
+                                         double                  _start_y)
+{
+  Automatable * a = at_widget->at->automatable;
+
+  GtkAllocation allocation;
+  gtk_widget_get_allocation (GTK_WIDGET (at_widget->at_grid),
+                             &allocation);
+
+  gint wx, valy;
+  gtk_widget_translate_coordinates(
+            GTK_WIDGET (MW_TIMELINE),
+            GTK_WIDGET (at_widget->at_grid),
+            0,
+            _start_y,
+            &wx,
+            &valy);
+  /*int miny = allocation.height;*/
+
+  /* get ratio from widget */
+  int widget_size = allocation.height;
+  /*int widget_value = widget_size - (_start_y - maxy);*/
+  int widget_value = widget_size - valy;
+  /*g_message ("widget_size %d value %d", widget_size, widget_value);*/
+  float widget_ratio = (float) widget_value / widget_size;
+  /*g_message ("widget_ratio %f", widget_ratio);*/
+
+  float max = automatable_get_maxf (a);
+  float min = automatable_get_minf (a);
+  /*g_message ("automatable max %f min %f", max, min);*/
+  float automatable_size = automatable_get_sizef (a);
+  float automatable_value = min + widget_ratio * automatable_size;
+  g_message ("automatable value %f", automatable_value);
+
+  return automatable_value;
+}

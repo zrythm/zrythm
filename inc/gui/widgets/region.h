@@ -52,14 +52,14 @@ typedef enum RegionHoverState
 
 typedef struct RegionWidget
 {
-  GtkBox                   parent_instance;
+  GtkDrawingArea           parent_instance;
   Region                   * region;   ///< the region associated with this
   RegionHoverState         hover_state;
 } RegionWidget;
 
 typedef struct RegionWidgetClass
 {
-  GtkBoxClass       parent_class;
+  GtkDrawingAreaClass       parent_class;
 } RegionWidgetClass;
 
 /**
