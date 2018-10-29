@@ -284,34 +284,17 @@ position_compare (Position * p1,
 }
 
 /**
- * Returns difference in position.
- *
- * 1 if pos > comp_pos,
- * -1 if pos < comp_pos,
- * 0 if equal
+ * For debugging
  */
-/*int*/
-/*position_get_diff (Position * pos, ///< Position*/
-                   /*Position * comp_pos, ///< pos to compare to*/
-                   /*Position * diff) ///< (OUT) difference in Position)*/
-/*{*/
-  /*int ret = position_compare (pos, comp_pos);*/
-  /*diff->bars = 0;*/
-  /*diff->beats = 0;*/
-  /*diff->quarter_beats = 0;*/
-  /*diff->ticks = 0;*/
-  /*if (ret < 0)*/
-    /*{*/
-      /*int frames_diff = position_to_frames (comp_pos) - position_to_frames (pos);*/
-      /*position_add_frames (diff, frames_diff);*/
-    /*}*/
-  /*else if (ret > 0)*/
-    /*{*/
-      /*int frames_diff = position_to_frames (pos) - position_to_frames (comp_pos);*/
-      /*position_add_frames (diff, frames_diff);*/
-    /*}*/
-  /*return ret;*/
-/*}*/
+void
+position_print (Position * pos)
+{
+  g_message ("Pos: %d.%d.%d.%d",
+             pos->bars,
+             pos->beats,
+             pos->quarter_beats,
+             pos->ticks);
+}
 
 /**
  * Returns closest snap point.
@@ -485,4 +468,18 @@ position_to_ticks (Position * pos)
   if (pos->ticks)
     ticks += pos->ticks;
   return ticks;
+}
+
+/**
+ * Calculates the midway point between the two positions and sets it on pos.
+ */
+void
+position_get_midway_pos (Position * start_pos,
+                         Position * end_pos,
+                         Position * pos) ///< position to set to
+{
+  int ticks_diff = position_to_ticks (end_pos) -
+    position_to_ticks (start_pos);
+  position_set_to_pos (pos, start_pos);
+  position_set_tick (pos, ticks_diff / 2);
 }

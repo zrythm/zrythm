@@ -183,11 +183,24 @@ get_child_position (GtkOverlay   *overlay,
                     &wx,
                     &wy);
 
-          allocation->x = arranger_get_x_pos_in_px (&ap->pos) - AP_WIDGET_SIZE / 2;
-          allocation->y = (wy + automation_point_get_y_in_px (ap)) -
-            AP_WIDGET_SIZE / 2;
-          allocation->width = AP_WIDGET_SIZE;
-          allocation->height = AP_WIDGET_SIZE;
+          if (ap->type == AUTOMATION_POINT_VALUE)
+            {
+              allocation->x = arranger_get_x_pos_in_px (&ap->pos) -
+                AP_WIDGET_POINT_SIZE / 2;
+              allocation->y = (wy + automation_point_get_y_in_px (ap)) -
+                AP_WIDGET_POINT_SIZE / 2;
+              allocation->width = AP_WIDGET_POINT_SIZE;
+              allocation->height = AP_WIDGET_POINT_SIZE;
+            }
+          else
+            {
+              allocation->x = arranger_get_x_pos_in_px (&ap->pos) -
+                AP_WIDGET_CURVE_W / 2;
+              allocation->y = (wy + automation_point_get_y_in_px (ap)) -
+                AP_WIDGET_CURVE_H / 2;
+              allocation->width = AP_WIDGET_CURVE_W;
+              allocation->height = AP_WIDGET_CURVE_H;
+            }
         }
     }
 
@@ -527,10 +540,13 @@ drag_begin (GtkGestureDrag * gesture,
                                                              AUTOMATION_POINT_VALUE,
                                                              value,
                                                              &pos);
-                      automation_track_add_automation_point (at, self->ap);
+                      automation_track_add_automation_point (at,
+                                                             self->ap,
+                                                             GENERATE_CURVE_POINTS);
                       gtk_overlay_add_overlay (GTK_OVERLAY (self),
                                                GTK_WIDGET (self->ap->widget));
                       gtk_widget_show (GTK_WIDGET (self->ap->widget));
+
                     }
                 }
               else if (T_TIMELINE && track)

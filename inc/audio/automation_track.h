@@ -27,6 +27,12 @@
 
 #define MAX_AUTOMATION_POINTS 1200
 
+enum GenerateCurvePoints
+{
+  NO_GENERATE_CURVE_POINTS,
+  GENERATE_CURVE_POINTS
+};
+
 typedef struct Port Port;
 typedef struct AutomationTrackWidget AutomationTrackWidget;
 typedef struct Track Track;
@@ -38,7 +44,7 @@ typedef struct AutomationTrack
   AutomationTrackWidget *   widget;
   Track *                   track; ///< owner track
   AutomationPoint *         automation_points[MAX_AUTOMATION_POINTS];
-                                      ///< automation points
+                                      ///< automation points TODO sort every time
   int                       num_automation_points;
   int                       visible;
 } AutomationTrack;
@@ -66,9 +72,41 @@ automation_track_get_for_automatable (Automatable * automatable);
 void
 automation_track_free (AutomationTrack * at);
 
+/**
+ * Adds automation point and optionally generates curve points accordingly.
+ */
 void
 automation_track_add_automation_point (AutomationTrack * at,
-                                       AutomationPoint * ap);
+                                       AutomationPoint * ap,
+                                       int               generate_curve_points);
+
+/**
+ * Returns the automation point before the position.
+ */
+AutomationPoint *
+automation_track_get_prev_ap (AutomationTrack * at,
+                              Position        * pos);
+
+/**
+ * Returns the automation point after the position.
+ */
+AutomationPoint *
+automation_track_get_next_ap (AutomationTrack * at,
+                              Position        * pos);
+
+/**
+ * Returns the curve point right after the given ap
+ */
+AutomationPoint *
+automation_track_get_next_curve_ap (AutomationTrack * at,
+                                    AutomationPoint * _ap);
+
+/**
+ * Removes automation point from automation track.
+ */
+void
+automation_track_remove_ap (AutomationTrack * at,
+                            AutomationPoint * ap);
 
 /**
  * Updates automation track & its GUI

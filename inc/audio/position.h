@@ -109,16 +109,10 @@ position_compare (Position * p1,
                   Position * p2);
 
 /**
- * Returns difference in position.
- *
- * 1 if pos > comp_pos,
- * -1 if pos < comp_pos,
- * 0 if equal
+ * For debugging
  */
-//int
-//position_get_diff (Position * pos, ///< Position
-                   //Position * comp_pos, ///< pos to compare to
-                   //Position * diff); ///< (OUT) difference in Position)
+void
+position_print (Position * pos);
 
 int
 position_to_ticks (Position * pos);
@@ -148,5 +142,13 @@ position_set_min_size (Position * start_pos,  ///< start position
  */
 void
 position_update_frames (Position * position);
+
+/**
+ * Calculates the midway point between the two positions and sets it on pos.
+ */
+void
+position_get_midway_pos (Position * start_pos,
+                         Position * end_pos,
+                         Position * pos); ///< position to set to
 
 #endif

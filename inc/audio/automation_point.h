@@ -25,6 +25,10 @@
 
 #include "audio/position.h"
 
+#define MAX_CURVINESS 6.f
+static const float min_curviness = 1.f / MAX_CURVINESS;
+#define MIN_CURVINESS min_curviness
+
 typedef struct AutomationTrack AutomationTrack;
 typedef struct AutomationPointWidget AutomationPointWidget;
 
@@ -40,6 +44,7 @@ typedef struct AutomationPoint
   float                    fvalue; ///< float value
   int                      bvalue; ///< boolean value
   int                      svalue; ///< step value
+  float                    curviness; ///< curviness, default 1
   AutomationPointType      type;
   AutomationTrack *        at; ///< pointer back to parent
   AutomationPointWidget *  widget;
@@ -54,8 +59,21 @@ automation_point_new_float (AutomationTrack *   at,
                             float               value,
                             Position *          pos);
 
+/**
+ * Creates curviness point in given track at given Position
+ */
+AutomationPoint *
+automation_point_new_curve (AutomationTrack *   at,
+                            Position *          pos);
+
 int
 automation_point_get_y_in_px (AutomationPoint * ap);
+
+/**
+ * Frees the automation point.
+ */
+void
+automation_point_free (AutomationPoint * ap);
 
 #endif // __AUDIO_AUTOMATION_POINT_H__
 

@@ -158,6 +158,8 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
                   for (int k = 0; k < at->num_automation_points; k++)
                     {
                       AutomationPoint * ap = at->automation_points[k];
+                      if (ap->type == AUTOMATION_POINT_CURVE)
+                        continue;
                       gtk_widget_translate_coordinates(
                                 GTK_WIDGET (ap->widget),
                                 GTK_WIDGET (MAIN_WINDOW->tracklist),
@@ -173,7 +175,12 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
                       if (k > 0)
                         {
                           gint prev_wx, prev_wy;
-                          AutomationPoint * prev_ap = at->automation_points[k - 1];
+                          AutomationPoint * prev_ap;
+                          int count = k - 1;
+                          do
+                            {
+                              prev_ap = at->automation_points[count--];
+                            } while (prev_ap->type == AUTOMATION_POINT_CURVE);
                           gtk_widget_translate_coordinates(
                                     GTK_WIDGET (prev_ap->widget),
                                     GTK_WIDGET (MAIN_WINDOW->tracklist),
@@ -189,8 +196,8 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
                                                 track->channel->color.green,
                                                 track->channel->color.blue);
                           cairo_set_line_width (cr, 2);
-                          cairo_move_to (cr, prev_wx, prev_wy + AP_WIDGET_SIZE / 2);
-                          cairo_line_to (cr, wx, wy + AP_WIDGET_SIZE / 2);
+                          cairo_move_to (cr, prev_wx, prev_wy + AP_WIDGET_POINT_SIZE / 2);
+                          cairo_line_to (cr, wx, wy + AP_WIDGET_POINT_SIZE / 2);
                           /*g_message ("%d to %d, %d to %d",*/
                                      /*prev_wx, wx,*/
                                      /*prev_wy + AP_WIDGET_SIZE / 2,*/

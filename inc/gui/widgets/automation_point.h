@@ -33,7 +33,9 @@
 #define IS_AUTOMATION_POINT_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), AUTOMATION_POINT_WIDGET_TYPE))
 #define AUTOMATION_POINT_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), AUTOMATION_POINT_WIDGET_TYPE, AutomationPointWidgetClass))
 
-#define AP_WIDGET_SIZE 4
+#define AP_WIDGET_POINT_SIZE 4
+#define AP_WIDGET_CURVE_H 2
+#define AP_WIDGET_CURVE_W 8
 
 typedef struct AutomationPointWidget
 {

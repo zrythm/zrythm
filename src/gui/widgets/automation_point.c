@@ -44,7 +44,14 @@ draw_cb (AutomationPointWidget * self, cairo_t *cr, gpointer data)
   gtk_render_background (context, cr, 0, 0, width, height);
 
   GdkRGBA * color = &self->ap->at->track->channel->color;
-  cairo_set_source_rgba (cr, color->red, color->green, color->blue, 0.7);
+  if (self->ap->type == AUTOMATION_POINT_CURVE)
+    {
+      cairo_set_source_rgba (cr, 0.7, 0.7, 0.7, 0.7);
+    }
+  else
+    {
+      cairo_set_source_rgba (cr, color->red, color->green, color->blue, 0.7);
+    }
   /* TODO circle */
   cairo_rectangle(cr, 0, 0, width, height);
   cairo_stroke_preserve(cr);

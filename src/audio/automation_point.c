@@ -44,6 +44,26 @@ automation_point_new_float (AutomationTrack *   at,
   position_set_to_pos (&ap->pos,
                        pos);
   ap->fvalue = value;
+  ap->type = AUTOMATION_POINT_VALUE;
+  ap->widget = automation_point_widget_new (ap);
+
+  return ap;
+}
+
+/**
+ * Creates curviness point in given track at given Position
+ */
+AutomationPoint *
+automation_point_new_curve (AutomationTrack *   at,
+                            Position *          pos)
+{
+  AutomationPoint * ap = calloc (1, sizeof (AutomationPoint));
+
+  ap->at = at;
+  position_set_to_pos (&ap->pos,
+                       pos);
+  ap->curviness = 1.f;
+  ap->type = AUTOMATION_POINT_CURVE;
   ap->widget = automation_point_widget_new (ap);
 
   return ap;
@@ -65,4 +85,14 @@ automation_point_get_y_in_px (AutomationPoint * ap)
       GTK_WIDGET (ap->at->widget->at_grid));
   int point = allocated_h - ap_ratio * allocated_h;
   return point;
+}
+
+/**
+ * Destroys the widget and frees memory.
+ */
+void
+automation_point_free (AutomationPoint * ap)
+{
+  gtk_widget_destroy (GTK_WIDGET (ap->widget));
+  free (ap);
 }
