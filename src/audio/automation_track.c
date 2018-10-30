@@ -228,7 +228,7 @@ automation_track_get_prev_ap (AutomationTrack * at,
  * Returns the curve point right after the given ap
  */
 AutomationPoint *
-automation_track_get_next_curve_ap (AutomationTrack * at,
+automation_track_get_next_curve_ap (AutomationTrack * at, /* FIXME don't need at */
                                     AutomationPoint * _ap)
 {
   for (int i = 0; i < at->num_automation_points; i++)

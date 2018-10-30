@@ -22,6 +22,8 @@
 /** \file
  */
 
+#include <math.h>
+
 #include "audio/automatable.h"
 #include "audio/automation_point.h"
 #include "audio/automation_track.h"
@@ -62,7 +64,7 @@ automation_point_new_curve (AutomationTrack *   at,
   ap->at = at;
   position_set_to_pos (&ap->pos,
                        pos);
-  ap->curviness = 1.f;
+  ap->curviness = 2.f;
   ap->type = AUTOMATION_POINT_CURVE;
   ap->widget = automation_point_widget_new (ap);
 
@@ -76,15 +78,116 @@ automation_point_new_curve (AutomationTrack *   at,
 int
 automation_point_get_y_in_px (AutomationPoint * ap)
 {
-  Automatable * a = ap->at->automatable;
-  float ap_max = automatable_get_maxf (a);
-  float ap_range = ap_max - automatable_get_minf (a);
-  float ap_ratio = (ap_range - (ap_max - ap->fvalue)) / ap_range;
-  int allocated_h =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (ap->at->widget->at_grid));
-  int point = allocated_h - ap_ratio * allocated_h;
-  return point;
+  if (ap->type == AUTOMATION_POINT_VALUE)
+    {
+      Automatable * a = ap->at->automatable;
+      float ap_max = automatable_get_maxf (a);
+      float ap_range = ap_max - automatable_get_minf (a);
+
+      /* ratio of current value in the range */
+      float ap_ratio = (ap_range - (ap_max - ap->fvalue)) / ap_range;
+
+      int allocated_h =
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (ap->at->widget->at_grid));
+      int point = allocated_h - ap_ratio * allocated_h;
+      return point;
+    }
+  else
+    {
+      AutomationPoint * prev_ap = automation_track_get_prev_ap (ap->at,
+                                                                &ap->pos);
+      AutomationPoint * next_ap = automation_track_get_next_ap (ap->at,
+                                                                &ap->pos);
+      /* ratio of current value in the range */
+      float ap_ratio;
+      if (ap->curviness >= AP_MID_CURVINESS)
+        {
+          float ap_curviness_range = AP_MAX_CURVINESS - AP_MID_CURVINESS;
+          ap_ratio = (ap->curviness - AP_MID_CURVINESS) / ap_curviness_range;
+          ap_ratio *= 0.5f; /* ratio is only for half */
+          ap_ratio += 0.5f; /* add the missing half */
+        }
+      else
+        {
+          float ap_curviness_range = AP_MID_CURVINESS - AP_MIN_CURVINESS;
+          ap_ratio = (ap->curviness - AP_MIN_CURVINESS) / ap_curviness_range;
+          ap_ratio *= 0.5f; /* ratio is only for half */
+        }
+      int prev_ap_y_pos = automation_point_get_y_in_px (prev_ap);
+      int next_ap_y_pos = automation_point_get_y_in_px (next_ap);
+      int ap_max = MAX (prev_ap_y_pos, next_ap_y_pos);
+      int ap_min = MIN (prev_ap_y_pos, next_ap_y_pos);
+      int allocated_h = ap_max - ap_min;
+      int point = ap_max - ap_ratio * allocated_h;
+      return point;
+    }
+}
+
+/**
+ * The function.
+ *
+ * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
+ */
+static double
+get_y_normalized (double x, double curviness, int start_at_1)
+{
+  if (start_at_1)
+    {
+      double val = pow (1.0 - pow (x, curviness), (1.0 / curviness));
+      return val;
+    }
+  else
+    {
+      double val = pow (1.0 - pow (x, 1.0 / curviness), (1.0 / (1.0 / curviness)));
+      return 1.0 - val;
+    }
+}
+
+/**
+ * The function to return a point on the curve.
+ *
+ * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
+ */
+int
+automation_point_get_y_px (AutomationPoint * start_ap, ///< start point (0, 0)
+                           int               x, ///< x coordinate in px
+                           int               width, ///< total width in px
+                           int               height) ///< total height in px
+{
+  if (start_ap->type != AUTOMATION_POINT_VALUE)
+    {
+      g_error ("start ap must be a value");
+    }
+
+  /* find next curve ap & next value ap */
+  AutomationPoint * curve_ap = automation_track_get_next_curve_ap (start_ap->at,
+                                                                   start_ap);
+  AutomationPoint * next_ap = automation_track_get_next_ap (start_ap->at,
+                                                            &start_ap->pos);
+
+  double dx = (double) x / width; /* normalized x */
+  double dy;
+  int ret;
+  if (automation_point_get_y_in_px (next_ap) > /* if next point is lower */
+      automation_point_get_y_in_px (start_ap))
+    {
+      g_message ("start higher");
+      dy = get_y_normalized (dx, curve_ap->curviness, 1); /* start higher */
+      g_message ("%f", dy);
+      ret = dy * height;
+      return height - ret; /* reverse the value because in pixels higher y values
+                              are actually lower */
+    }
+  else
+    {
+      g_message ("start lower");
+      dy = get_y_normalized (dx, curve_ap->curviness, 0);
+      g_message ("%f", dy);
+      ret = dy * height;
+      return (height - ret) - height;
+    }
+
 }
 
 /**

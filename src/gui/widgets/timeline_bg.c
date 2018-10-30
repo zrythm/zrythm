@@ -175,12 +175,8 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
                       if (k > 0)
                         {
                           gint prev_wx, prev_wy;
-                          AutomationPoint * prev_ap;
-                          int count = k - 1;
-                          do
-                            {
-                              prev_ap = at->automation_points[count--];
-                            } while (prev_ap->type == AUTOMATION_POINT_CURVE);
+                          AutomationPoint * prev_ap =
+                            automation_track_get_prev_ap (at, &ap->pos);
                           gtk_widget_translate_coordinates(
                                     GTK_WIDGET (prev_ap->widget),
                                     GTK_WIDGET (MAIN_WINDOW->tracklist),
@@ -189,20 +185,58 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
                                     &prev_wx,
                                     &prev_wy);
                           prev_wx = arranger_get_x_pos_in_px (&prev_ap->pos);
-
-                          /* connect to previous AP */
+                          int ww = wx - prev_wx;
+                          int automation_point_y;
+                          int new_x = prev_wx;
+                          int new_y = prev_wy;
+                          int prev_y_px = automation_point_get_y_in_px (prev_ap);
+                          int curr_y_px = automation_point_get_y_in_px (ap);
+                          int height = prev_y_px > curr_y_px ?
+                            prev_y_px - curr_y_px :
+                            curr_y_px - prev_y_px;
                           cairo_set_source_rgb (cr,
                                                 track->channel->color.red,
                                                 track->channel->color.green,
                                                 track->channel->color.blue);
-                          cairo_set_line_width (cr, 2);
-                          cairo_move_to (cr, prev_wx, prev_wy + AP_WIDGET_POINT_SIZE / 2);
-                          cairo_line_to (cr, wx, wy + AP_WIDGET_POINT_SIZE / 2);
-                          /*g_message ("%d to %d, %d to %d",*/
-                                     /*prev_wx, wx,*/
-                                     /*prev_wy + AP_WIDGET_SIZE / 2,*/
-                                     /*wy + AP_WIDGET_SIZE / 2);*/
-                          cairo_stroke (cr);
+                          cairo_set_line_width (cr, 1);
+                          cairo_move_to (cr,
+                                         new_x,
+                                         new_y);
+                          for (int l = 0; l < ww; l++)
+                            {
+                              cairo_line_to (cr,
+                                             new_x,
+                                             new_y);
+                              automation_point_y =
+                                automation_point_get_y_px (prev_ap,
+                                                           l,
+                                                           ww,
+                                                           height);
+                              new_x = prev_wx + l;
+                              new_y = prev_wy + automation_point_y;
+                              cairo_line_to (cr,
+                                             new_x,
+                                             new_y);
+                              cairo_stroke (cr);
+                            }
+
+
+
+
+
+                          /* connect to previous AP */
+                          /*cairo_set_source_rgb (cr,*/
+                                                /*track->channel->color.red,*/
+                                                /*track->channel->color.green,*/
+                                                /*track->channel->color.blue);*/
+                          /*cairo_set_line_width (cr, 2);*/
+                          /*cairo_move_to (cr, prev_wx, prev_wy + AP_WIDGET_POINT_SIZE / 2);*/
+                          /*cairo_line_to (cr, wx, wy + AP_WIDGET_POINT_SIZE / 2);*/
+                          /*[>g_message ("%d to %d, %d to %d",<]*/
+                                     /*[>prev_wx, wx,<]*/
+                                     /*[>prev_wy + AP_WIDGET_SIZE / 2,<]*/
+                                     /*[>wy + AP_WIDGET_SIZE / 2);<]*/
+                          /*cairo_stroke (cr);*/
                         }
                     }
                 }

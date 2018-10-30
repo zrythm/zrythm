@@ -25,9 +25,12 @@
 
 #include "audio/position.h"
 
-#define MAX_CURVINESS 6.f
-static const float min_curviness = 1.f / MAX_CURVINESS;
-#define MIN_CURVINESS min_curviness
+#define AP_MAX_CURVINESS 6.f
+static const float _ap_min_curviness = 1.f / AP_MAX_CURVINESS;
+#define AP_MIN_CURVINESS _ap_min_curviness
+static const float _ap_curviness_range = AP_MAX_CURVINESS - AP_MIN_CURVINESS;
+#define AP_CURVINESS_RANGE _ap_curviness_range
+#define AP_MID_CURVINESS 1.f
 
 typedef struct AutomationTrack AutomationTrack;
 typedef struct AutomationPointWidget AutomationPointWidget;
@@ -74,6 +77,17 @@ automation_point_get_y_in_px (AutomationPoint * ap);
  */
 void
 automation_point_free (AutomationPoint * ap);
+
+/**
+ * The function to return a point on the curve.
+ *
+ * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
+ */
+int
+automation_point_get_y_px (AutomationPoint * start_ap, ///< start point (0, 0)
+                           int               x, ///< x coordinate in px
+                           int               width, ///< total width in px
+                           int               height); ///< total height in px
 
 #endif // __AUDIO_AUTOMATION_POINT_H__
 
