@@ -27,9 +27,14 @@
 #include "audio/automatable.h"
 #include "audio/automation_point.h"
 #include "audio/automation_track.h"
+#include "audio/channel.h"
+#include "audio/port.h"
 #include "audio/position.h"
+#include "audio/track.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/automation_track.h"
+#include "plugins/lv2_plugin.h"
+#include "plugins/plugin.h"
 
 /**
  * Creates automation point in given track at given Position
@@ -183,7 +188,46 @@ automation_point_curve_get_y_px (AutomationPoint * start_ap, ///< start point (0
       ret = dy * height;
       return (height - ret) - height;
     }
+}
 
+/**
+ * Updates the value and notifies interested parties.
+ */
+void
+automation_point_update_fvalue (AutomationPoint * ap,
+                                float             fval)
+{
+  if (ap->type != AUTOMATION_POINT_VALUE)
+    {
+      g_error ("Cannot update fvalue: automation point not type value");
+    }
+
+  ap->fvalue = fval;
+
+  Automatable * a = ap->at->automatable;
+  if (a->type == AUTOMATABLE_TYPE_PLUGIN_CONTROL)
+    {
+      Plugin * plugin = a->port->owner_pl;
+      if (plugin->descr->protocol == PROT_LV2)
+        {
+          LV2_Plugin * lv2_plugin = (LV2_Plugin *) plugin->original_plugin;
+          if (lv2_plugin->ui_instance)
+            {
+              Lv2ControlID * control = a->control;
+              LV2_Port* port = &control->plugin->ports[control->index];
+              port->control = fval;
+            }
+          else
+            {
+              lv2_gtk_set_float_control (a->control, ap->fvalue);
+            }
+        }
+    }
+  else if (a->type == AUTOMATABLE_TYPE_CHANNEL_FADER)
+    {
+      Channel * ch = a->track->channel;
+      channel_set_volume (ch, ap->fvalue);
+    }
 }
 
 /**

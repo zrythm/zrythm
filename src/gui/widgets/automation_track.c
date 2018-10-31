@@ -253,6 +253,8 @@ automation_track_widget_get_fvalue_at_y (AutomationTrackWidget * at_widget,
   /*g_message ("automatable max %f min %f", max, min);*/
   float automatable_size = automatable_get_sizef (a);
   float automatable_value = min + widget_ratio * automatable_size;
+  automatable_value = MIN (automatable_value, max);
+  automatable_value = MAX (automatable_value, min);
   g_message ("automatable value %f", automatable_value);
 
   return automatable_value;

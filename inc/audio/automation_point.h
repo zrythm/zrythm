@@ -73,6 +73,13 @@ int
 automation_point_get_y_in_px (AutomationPoint * ap);
 
 /**
+ * Updates the value and notifies interested parties.
+ */
+void
+automation_point_update_fvalue (AutomationPoint * ap,
+                                float             fval);
+
+/**
  * Frees the automation point.
  */
 void

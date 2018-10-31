@@ -83,6 +83,7 @@ typedef struct Port
   PortInternalType   internal_type;
   void                * data;    ///< pointer to arbitrary data. use internal to check what data it is
   int                 owner_jack;        ///< 1 if owner is JACK
+  int                 is_piano_roll; ///< 1 if piano roll
   Plugin              * owner_pl;           ///< owner plugin, for plugins
   Channel             * owner_ch;           ///< owner channel, for channels
   int                 exported;   ///< used in xml project file export

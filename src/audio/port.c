@@ -225,8 +225,8 @@ port_disconnect (Port * src, Port * dest)
   g_assert (src);
   g_assert (dest);
   /* disconnect dest from src */
-  arrays_delete (src->dests, &src->num_dests, dest);
-  arrays_delete (dest->srcs, &dest->num_srcs, src);
+  arrays_delete ((void **)src->dests, &src->num_dests, dest);
+  arrays_delete ((void **)dest->srcs, &dest->num_srcs, src);
   return 0;
 }
 
@@ -293,7 +293,10 @@ port_sum_signal_from_inputs (Port * port, nframes_t nframes)
       Port * src_port = port->srcs[k];
 
       /* wait for owner to finish processing */
-      if (src_port->owner_pl)
+      if (src_port->is_piano_roll)
+        {
+        }
+      else if (src_port->owner_pl)
         while (!src_port->owner_pl->processed)
           {
 #if _POSIX_C_SOURCE >= 199309L

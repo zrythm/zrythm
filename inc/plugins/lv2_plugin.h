@@ -414,6 +414,11 @@ lv2_send_to_ui(LV2_Plugin*       plugin,
                 uint32_t    type,
                 uint32_t    size,
                 const void* body);
+
+/* FIXME make separate header for UI stuff */
+void
+lv2_gtk_set_float_control(const Lv2ControlID* control, float value);
+
 bool
 lv2_run(LV2_Plugin* plugin, uint32_t nframes);
 

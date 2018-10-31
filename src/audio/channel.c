@@ -284,6 +284,7 @@ _create_channel (char * name)
         TYPE_EVENT,
         FLOW_INPUT,
         tmp);
+  channel->piano_roll->is_piano_roll = 1;
   channel->piano_roll->owner_jack = 0;
   channel->piano_roll->owner_ch = channel;
   channel->piano_roll->midi_events.queue = calloc (1, sizeof (MidiEvents));
@@ -426,6 +427,8 @@ channel_set_volume (void * _channel, float volume)
   /* TODO update tooltip */
   gtk_label_set_text (channel->widget->phase_reading,
                       g_strdup_printf ("%.1f", volume));
+  g_idle_add ((GSourceFunc) gtk_widget_queue_draw,
+              GTK_WIDGET (channel->widget->fader));
 }
 
 float

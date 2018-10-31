@@ -370,8 +370,8 @@ get_hit_curve (double x, double y)
                     &prev_wx,
                     &prev_wy);
 
-          g_message ("x %d y %d prev wx %d prev wy %d",
-                     x, y, prev_wx, prev_wy);
+          /*g_message ("x %d y %d prev wx %d prev wy %d",*/
+                     /*x, y, prev_wx, prev_wy);*/
           /* if after prev */
           if (x >= prev_wx &&
               y >= prev_wy)
@@ -761,6 +761,7 @@ drag_update (GtkGestureDrag * gesture,
 {
   ArrangerWidget * self = ARRANGER_WIDGET (user_data);
 
+  /* handle x */
   if (self->action == ARRANGER_ACTION_RESIZING_L)
     {
       Position pos;
@@ -849,11 +850,11 @@ drag_update (GtkGestureDrag * gesture,
                                                                     self->ap);
           Position mid_pos;
           AutomationPoint * curve_ap;
-          /*position_snap (NULL,*/
-                         /*&pos,*/
-                         /*self->ap->at->track,*/
-                         /*NULL,*/
-                         /*self->snap_grid);*/
+          position_snap (NULL,
+                         &pos,
+                         self->ap->at->track,
+                         NULL,
+                         self->snap_grid);
           if (prev_ap && position_compare (&pos, &prev_ap->pos) >= 0)
             {
               /* set prev curve point to new midway pos */
@@ -899,6 +900,8 @@ drag_update (GtkGestureDrag * gesture,
       position_set_to_pos (&pos, &self->end_pos);
       position_add_frames (&pos,
                            diff);
+
+      /* handle y */
       if (T_TIMELINE && self->region)
         {
           region_set_end_pos (self->region,
@@ -912,6 +915,13 @@ drag_update (GtkGestureDrag * gesture,
               track_remove_region (old_track, self->region);
               track_add_region (track, self->region);
             }
+        }
+      else if (T_TIMELINE && self->ap && self->ap->type == AUTOMATION_POINT_VALUE)
+        {
+          float fval =
+            automation_track_widget_get_fvalue_at_y (self->ap->at->widget,
+                                                     self->start_y + offset_y);
+          automation_point_update_fvalue (self->ap, fval);
         }
       else if (T_MIDI)
         {

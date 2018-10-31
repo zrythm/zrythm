@@ -684,14 +684,14 @@ lv2_ui_write(SuilController controller,
 
   if (protocol != 0 && protocol != plugin->urids.atom_eventTransfer)
     {
-      fprintf(stderr, "UI write with unsupported protocol %d (%s)\n",
+      g_warning ("UI write with unsupported protocol %d (%s)",
               protocol, _unmap_uri(plugin, protocol));
       return;
     }
 
   if (port_index >= plugin->num_ports)
     {
-      fprintf(stderr, "UI write to out of range port index %d\n",
+      g_warning ("UI write to out of range port index %d",
               port_index);
       return;
     }
@@ -703,7 +703,7 @@ lv2_ui_write(SuilController controller,
               plugin->sratom, &plugin->unmap, "plugin:", NULL, NULL,
               atom->type, atom->size, LV2_ATOM_BODY_CONST(atom));
       lv2_ansi_start(stdout, 36);
-      printf("\n## UI => Plugin (%u bytes) ##\n%s\n", atom->size, str);
+      g_message ("## UI => Plugin (%u bytes) ##\n%s", atom->size, str);
       lv2_ansi_reset(stdout);
       free(str);
     }
@@ -720,34 +720,40 @@ lv2_ui_write(SuilController controller,
 void
 lv2_apply_ui_events(LV2_Plugin* plugin, uint32_t nframes)
 {
-  if (!plugin->has_ui) {
-          return;
-  }
+  if (!plugin->has_ui)
+    {
+      return;
+    }
 
   Lv2ControlChange ev;
   const size_t  space = zix_ring_read_space(plugin->ui_events);
-  for (size_t i = 0; i < space; i += sizeof(ev) + ev.size) {
-          zix_ring_read(plugin->ui_events, (char*)&ev, sizeof(ev));
-          char body[ev.size];
-          if (zix_ring_read(plugin->ui_events, body, ev.size) != ev.size) {
-                  fprintf(stderr, "error: Error reading from UI ring buffer\n");
-                  break;
-          }
-          assert(ev.index < plugin->num_ports);
-          LV2_Port* const port = &plugin->ports[ev.index];
-          if (ev.protocol == 0) {
-                  assert(ev.size == sizeof(float));
-                  port->control = *(float*)body;
-          } else if (ev.protocol == plugin->urids.atom_eventTransfer) {
-                  LV2_Evbuf_Iterator    e    = lv2_evbuf_end(port->evbuf);
-                  const LV2_Atom* const atom = (const LV2_Atom*)body;
-                  lv2_evbuf_write(&e, nframes, 0, atom->type, atom->size,
-                                  (const uint8_t*)LV2_ATOM_BODY_CONST(atom));
-          } else {
-                  fprintf(stderr, "error: Unknown control change protocol %d\n",
-                          ev.protocol);
-          }
-  }
+  for (size_t i = 0; i < space; i += sizeof(ev) + ev.size)
+    {
+      zix_ring_read(plugin->ui_events, (char*)&ev, sizeof(ev));
+      char body[ev.size];
+      if (zix_ring_read(plugin->ui_events, body, ev.size) != ev.size) {
+              fprintf(stderr, "error: Error reading from UI ring buffer\n");
+              break;
+      }
+      assert(ev.index < plugin->num_ports);
+      LV2_Port* const port = &plugin->ports[ev.index];
+      if (ev.protocol == 0) {
+              assert(ev.size == sizeof(float));
+              port->control = *(float*)body;
+        }
+      else if (ev.protocol == plugin->urids.atom_eventTransfer)
+        {
+          LV2_Evbuf_Iterator    e    = lv2_evbuf_end(port->evbuf);
+          const LV2_Atom* const atom = (const LV2_Atom*)body;
+          lv2_evbuf_write(&e, nframes, 0, atom->type, atom->size,
+                          (const uint8_t*)LV2_ATOM_BODY_CONST(atom));
+        }
+      else
+        {
+          g_warning ("error: Unknown control change protocol %d",
+                     ev.protocol);
+        }
+    }
 }
 
 uint32_t
@@ -812,10 +818,11 @@ lv2_send_to_ui(LV2_Plugin*       plugin,
           zix_ring_write(plugin->plugin_events, evbuf, sizeof(evbuf));
           zix_ring_write(plugin->plugin_events, (const char*)body, size);
           return true;
-  } else {
-          fprintf(stderr, "Plugin => UI buffer overflow!\n");
-          return false;
-  }
+  } else
+    {
+      g_warning ("Plugin => UI buffer overflow!");
+      return false;
+    }
 }
 
 bool
@@ -891,16 +898,20 @@ lv2_update(LV2_Plugin* plugin)
                   free(str);
           }
 
-          if (plugin->ui_instance) {
-                  suil_instance_port_event(plugin->ui_instance, ev.index,
-                                           ev.size, ev.protocol, buf);
-          } else {
-                  lv2_ui_port_event(plugin, ev.index, ev.size, ev.protocol, buf);
-          }
+          if (plugin->ui_instance)
+            {
+              suil_instance_port_event(plugin->ui_instance, ev.index,
+                                       ev.size, ev.protocol, buf);
+            }
+          else
+            {
+              lv2_ui_port_event(plugin, ev.index, ev.size, ev.protocol, buf);
+            }
 
-          if (ev.protocol == 0 && print_controls) {
-                  _print_control_value(plugin, &plugin->ports[ev.index], *(float*)buf);
-          }
+          if (ev.protocol == 0 && print_controls)
+            {
+              _print_control_value(plugin, &plugin->ports[ev.index], *(float*)buf);
+            }
       }
 
       if (plugin->externalui && plugin->extuiptr) {
@@ -1978,18 +1989,21 @@ lv2_plugin_process (LV2_Plugin * lv2_plugin, nframes_t nframes)
                       lv2_send_to_ui(lv2_plugin, p, type, size, body);
                     }
             }
-        } else if (send_ui_updates &&
-                   port->flow == FLOW_OUTPUT && port->type == TYPE_CONTROL) {
-                char buf[sizeof(Lv2ControlChange) + sizeof(float)];
-                Lv2ControlChange* ev = (Lv2ControlChange*)buf;
-                ev->index    = p;
-                ev->protocol = 0;
-                ev->size     = sizeof(float);
-                *(float*)ev->body = lv2_port->control;
-                if (zix_ring_write(lv2_plugin->plugin_events, buf, sizeof(buf))
-                    < sizeof(buf)) {
-                        fprintf(stderr, "Plugin => UI buffer overflow!\n");
-                }
+          }
+        else if (send_ui_updates &&
+                 port->type == TYPE_CONTROL)
+          {
+            char buf[sizeof(Lv2ControlChange) + sizeof(float)];
+            Lv2ControlChange* ev = (Lv2ControlChange*)buf;
+            ev->index    = p;
+            ev->protocol = 0;
+            ev->size     = sizeof(float);
+            *(float*)ev->body = lv2_port->control;
+            if (zix_ring_write(lv2_plugin->plugin_events, buf, sizeof(buf))
+                < sizeof(buf))
+              {
+                g_warning ("Plugin => UI buffer overflow!");
+              }
           }
   }
 

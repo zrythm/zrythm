@@ -457,10 +457,10 @@ set_control(const Lv2ControlID* control,
             LV2_URID         type,
             const void*      body)
 {
-  g_message ("set control");
-  if (!control->plugin->updating) {
-          lv2_set_control(control, size, type, body);
-  }
+  if (!control->plugin->updating)
+    {
+      lv2_set_control(control, size, type, body);
+    }
 }
 
 static bool
@@ -469,8 +469,8 @@ differ_enough(float a, float b)
 	return fabsf(a - b) >= FLT_EPSILON;
 }
 
-static void
-set_float_control(const Lv2ControlID* control, float value)
+void
+lv2_gtk_set_float_control(const Lv2ControlID* control, float value)
 {
   if (control->value_type == control->plugin->forge.Int) {
           const int32_t ival = lrint(value);
@@ -669,7 +669,7 @@ lv2_ui_port_event(LV2_Plugin*       plugin,
 static gboolean
 scale_changed(GtkRange* range, gpointer data)
 {
-	set_float_control((const Lv2ControlID*)data, gtk_range_get_value(range));
+	lv2_gtk_set_float_control((const Lv2ControlID*)data, gtk_range_get_value(range));
 	return FALSE;
 }
 
@@ -689,7 +689,7 @@ spin_changed(GtkSpinButton* spin, gpointer data)
 static gboolean
 log_scale_changed(GtkRange* range, gpointer data)
 {
-	set_float_control((const Lv2ControlID*)data, expf(gtk_range_get_value(range)));
+	lv2_gtk_set_float_control((const Lv2ControlID*)data, expf(gtk_range_get_value(range)));
 	return FALSE;
 }
 
@@ -720,14 +720,14 @@ combo_changed(GtkComboBox* box, gpointer data)
 		const double v = g_value_get_float(&value);
 		g_value_unset(&value);
 
-		set_float_control(control, v);
+		lv2_gtk_set_float_control(control, v);
 	}
 }
 
 static gboolean
 toggle_changed(GtkToggleButton* button, gpointer data)
 {
-	set_float_control((const Lv2ControlID*)data,
+	lv2_gtk_set_float_control((const Lv2ControlID*)data,
 	                  gtk_toggle_button_get_active(button) ? 1.0f : 0.0f);
 	return FALSE;
 }
