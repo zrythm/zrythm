@@ -59,6 +59,16 @@ typedef enum ArrangerWidgetAction
   ARRANGER_ACTION_SELECTING
 } ArrangerWidgetAction;
 
+/**
+ * Used internally.
+ */
+typedef enum ArrangerChildType
+{
+  ARRANGER_CHILD_TYPE_MIDI_NOTE,
+  ARRANGER_CHILD_TYPE_REGION,
+  ARRANGER_CHILD_TYPE_AP
+} ArrangerChildType;
+
 typedef struct ArrangerWidget
 {
   GtkOverlay               parent_instance;

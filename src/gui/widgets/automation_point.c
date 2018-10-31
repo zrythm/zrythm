@@ -64,7 +64,11 @@ draw_cb (AutomationPointWidget * self, cairo_t *cr, gpointer data)
         }
     }
   /* TODO circle */
-  cairo_rectangle(cr, 0, 0, width, height);
+  cairo_rectangle(cr,
+                  AP_WIDGET_PADDING,
+                  AP_WIDGET_PADDING,
+                  width - AP_WIDGET_PADDING * 2,
+                  height - AP_WIDGET_PADDING * 2);
   cairo_stroke_preserve(cr);
   cairo_fill(cr);
 

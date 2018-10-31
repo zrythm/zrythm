@@ -268,7 +268,6 @@ get_automation_track_at_y (double y)
                         &wx,
                         &wy);
 
-              /*g_message ("wy %d, allocation height %d", wy, allocation.height);*/
               if (wy >= 0 && wy <= allocation.height)
                 {
                   return at;
@@ -287,54 +286,11 @@ get_note_at_y (double y)
 }
 
 /**
- * For timeline use only.
- */
-static RegionWidget *
-get_hit_region (double x, double y)
-{
-  GList *children, *iter;
-
-  /* go through each overlay child */
-  children = gtk_container_get_children(GTK_CONTAINER(MAIN_WINDOW->timeline));
-  for(iter = children; iter != NULL; iter = g_list_next(iter))
-    {
-      GtkWidget * widget = GTK_WIDGET (iter->data);
-
-      /* if region */
-      if (IS_REGION_WIDGET (widget))
-        {
-          GtkAllocation allocation;
-          gtk_widget_get_allocation (widget,
-                                     &allocation);
-
-          gint wx, wy;
-          gtk_widget_translate_coordinates(
-                    GTK_WIDGET (widget),
-                    GTK_WIDGET (MAIN_WINDOW->timeline),
-                    0,
-                    0,
-                    &wx,
-                    &wy);
-
-          /* if hit */
-          if (x >= wx &&
-              x <= (wx + allocation.width) &&
-              y >= wy &&
-              y <= (wy + allocation.height))
-            {
-              return REGION_WIDGET (widget);
-            }
-        }
-    }
-  return NULL;
-}
-
-/**
  * Returns the curve automation point associated with the curve, if (x,y) falls on
  * the curve, otherwise NULL.
  */
 static AutomationPoint *
-get_hit_curve (double x, double y)
+get_hit_curve (ArrangerWidget * self, double x, double y)
 {
   GList *children, *iter;
 
@@ -409,92 +365,109 @@ get_hit_curve (double x, double y)
 
 }
 
-/**
- * Returns the automation point at (x,y)
- */
-static AutomationPointWidget *
-get_hit_automation_point (double x, double y)
+
+
+static GtkWidget *
+get_hit_widget (ArrangerWidget *  self,
+                ArrangerChildType type,
+                double            x,
+                double            y)
 {
   GList *children, *iter;
 
   /* go through each overlay child */
-  children = gtk_container_get_children(GTK_CONTAINER(MAIN_WINDOW->timeline));
-  for(iter = children; iter != NULL; iter = g_list_next(iter))
+  children = gtk_container_get_children (GTK_CONTAINER (self));
+  for(iter = children; iter != NULL; iter = g_list_next (iter))
     {
       GtkWidget * widget = GTK_WIDGET (iter->data);
 
-      /* if region */
-      if (IS_AUTOMATION_POINT_WIDGET (widget))
+      GtkAllocation allocation;
+      gtk_widget_get_allocation (widget,
+                                 &allocation);
+
+      gint wx, wy;
+      gtk_widget_translate_coordinates(
+                GTK_WIDGET (self),
+                GTK_WIDGET (widget),
+                x,
+                y,
+                &wx,
+                &wy);
+
+      /* if hit */
+      if (wx >= 0 &&
+          wx <= allocation.width &&
+          wy >= 0 &&
+          wy <= allocation.height)
         {
-          GtkAllocation allocation;
-          gtk_widget_get_allocation (widget,
-                                     &allocation);
-
-          gint wx, wy;
-          gtk_widget_translate_coordinates(
-                    GTK_WIDGET (widget),
-                    GTK_WIDGET (MAIN_WINDOW->timeline),
-                    0,
-                    0,
-                    &wx,
-                    &wy);
-
-          /* if hit */
-          if (x >= wx &&
-              x <= (wx + allocation.width) &&
-              y >= wy &&
-              y <= (wy + allocation.height))
+          if (type == ARRANGER_CHILD_TYPE_MIDI_NOTE &&
+              IS_MIDI_NOTE_WIDGET (widget))
             {
-              return AUTOMATION_POINT_WIDGET (widget);
+              return widget;
+            }
+          else if (type == ARRANGER_CHILD_TYPE_REGION &&
+                   IS_REGION_WIDGET (widget))
+            {
+              return widget;
+            }
+          else if (type == ARRANGER_CHILD_TYPE_AP &&
+                   IS_AUTOMATION_POINT_WIDGET (widget))
+            {
+              g_message ("wx %d wy %d", wx, wy);
+              return widget;
             }
         }
     }
   return NULL;
 }
 
-/**
- * For MIDI use only.
- */
+static RegionWidget *
+get_hit_region (ArrangerWidget *  self,
+                double            x,
+                double            y)
+{
+  GtkWidget * widget = get_hit_widget (self,
+                                       ARRANGER_CHILD_TYPE_REGION,
+                                       x,
+                                       y);
+  if (widget)
+    {
+      return REGION_WIDGET (widget);
+    }
+  return NULL;
+}
+
 static MidiNoteWidget *
-get_hit_midi_note_widget (double x, double y)
+get_hit_midi_note (ArrangerWidget *  self,
+                   double            x,
+                   double            y)
 {
-  GList *children, *iter;
-
-  /* go through each overlay child */
-  children = gtk_container_get_children(GTK_CONTAINER(MAIN_WINDOW->midi_editor->midi_arranger));
-  for(iter = children; iter != NULL; iter = g_list_next(iter))
+  GtkWidget * widget = get_hit_widget (self,
+                                       ARRANGER_CHILD_TYPE_MIDI_NOTE,
+                                       x,
+                                       y);
+  if (widget)
     {
-      GtkWidget * widget = GTK_WIDGET (iter->data);
-
-      /* if region */
-      if (IS_MIDI_NOTE_WIDGET (widget))
-        {
-          GtkAllocation allocation;
-          gtk_widget_get_allocation (widget,
-                                     &allocation);
-
-          gint wx, wy;
-          gtk_widget_translate_coordinates(
-                    GTK_WIDGET (widget),
-                    GTK_WIDGET (MAIN_WINDOW->midi_editor->midi_arranger),
-                    0,
-                    0,
-                    &wx,
-                    &wy);
-
-          /* if hit */
-          if (x >= wx &&
-              x <= (wx + allocation.width) &&
-              y >= wy &&
-              y <= (wy + allocation.height))
-            {
-              return MIDI_NOTE_WIDGET (widget);
-            }
-        }
+      return MIDI_NOTE_WIDGET (widget);
     }
   return NULL;
 }
 
+static AutomationPointWidget *
+get_hit_automation_point (ArrangerWidget *  self,
+                          double            x,
+                          double            y)
+{
+  GtkWidget * widget = get_hit_widget (self,
+                                       ARRANGER_CHILD_TYPE_AP,
+                                       x,
+                                       y);
+  if (widget)
+    {
+      return AUTOMATION_POINT_WIDGET (widget);
+    }
+  return NULL;
+}
 
 static void
 multipress_pressed (GtkGestureMultiPress *gesture,
@@ -510,7 +483,7 @@ multipress_pressed (GtkGestureMultiPress *gesture,
   /* open MIDI editor if double clicked on a region */
   if (T_TIMELINE)
     {
-      RegionWidget * region_widget = get_hit_region (x, y);
+      RegionWidget * region_widget = get_hit_region (self, x, y);
       if (region_widget && n_press > 0)
         {
           arranger_widget_set_channel(
@@ -520,7 +493,7 @@ multipress_pressed (GtkGestureMultiPress *gesture,
     }
   else if (T_MIDI)
     {
-      MidiNoteWidget * midi_note_widget = get_hit_midi_note_widget (x, y);
+      MidiNoteWidget * midi_note_widget = get_hit_midi_note (self, x, y);
       if (midi_note_widget && n_press == 2)
         {
           /* TODO */
@@ -540,16 +513,16 @@ drag_begin (GtkGestureDrag * gesture,
   self->start_y = start_y;
 
   MidiNoteWidget * midi_note_widget = T_MIDI ?
-    get_hit_midi_note_widget (start_x, start_y) :
+    get_hit_midi_note (self, start_x, start_y) :
     NULL;
   RegionWidget * region_widget = T_TIMELINE ?
-    get_hit_region (start_x, start_y) :
+    get_hit_region (self, start_x, start_y) :
     NULL;
   AutomationPoint * curve_ap = T_TIMELINE ?
-    get_hit_curve (start_x, start_y) :
+    get_hit_curve (self, start_x, start_y) :
     NULL;
   AutomationPointWidget * ap_widget = T_TIMELINE ?
-    get_hit_automation_point (start_x, start_y) :
+    get_hit_automation_point (self, start_x, start_y) :
     NULL;
   int is_hit = midi_note_widget || region_widget || curve_ap || ap_widget;
   if (is_hit)
@@ -626,7 +599,7 @@ drag_begin (GtkGestureDrag * gesture,
               break;
             case AP_HOVER_STATE_MIDDLE:
               self->action = ARRANGER_ACTION_MOVING;
-              ui_set_cursor (GTK_WIDGET (region_widget), "grabbing");
+              ui_set_cursor (GTK_WIDGET (ap_widget), "grabbing");
               break;
             }
         }

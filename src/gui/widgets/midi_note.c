@@ -117,13 +117,15 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
 
   if (event->type == GDK_MOTION_NOTIFY)
     {
-      if (event->x < RESIZE_CURSOR_SPACE)
+      if (event->x < RESIZE_CURSOR_SPACE &&
+          MIDI_ARRANGER->action != ARRANGER_ACTION_MOVING)
         {
           self->hover_state = MIDI_NOTE_HOVER_STATE_EDGE_L;
           ui_set_cursor (widget, "w-resize");
         }
 
-      else if (event->x > allocation.width - RESIZE_CURSOR_SPACE)
+      else if (event->x > allocation.width - RESIZE_CURSOR_SPACE &&
+          MIDI_ARRANGER->action != ARRANGER_ACTION_MOVING)
         {
           self->hover_state = MIDI_NOTE_HOVER_STATE_EDGE_R;
           ui_set_cursor (widget, "e-resize");
@@ -155,7 +157,7 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
           ui_set_cursor (widget, "default");
         }
     }
-  g_idle_add (gtk_widget_queue_draw, GTK_WIDGET (self));
+  g_idle_add ((GSourceFunc) gtk_widget_queue_draw, GTK_WIDGET (self));
 }
 
 MidiNoteWidget *
@@ -178,6 +180,10 @@ midi_note_widget_new (MidiNote * midi_note)
                     G_CALLBACK (on_motion),  self);
   g_signal_connect (G_OBJECT(self), "motion-notify-event",
                     G_CALLBACK (on_motion),  self);
+
+  /* set tooltip */
+  gtk_widget_set_tooltip_text (GTK_WIDGET (self),
+                               "Midi note");
 
   return self;
 }
