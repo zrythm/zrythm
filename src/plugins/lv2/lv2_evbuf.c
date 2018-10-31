@@ -23,6 +23,8 @@
 
 #include "lv2_evbuf.h"
 
+#include <gtk/gtk.h>
+
 struct LV2_Evbuf_Impl {
 	uint32_t       capacity;
 	uint32_t       atom_Chunk;
@@ -135,26 +137,26 @@ lv2_evbuf_get(LV2_Evbuf_Iterator iter,
               uint32_t*          size,
               uint8_t**          data)
 {
-	*frames = *subframes = *type = *size = 0;
-	*data = NULL;
+  *frames = *subframes = *type = *size = 0;
+  *data = NULL;
 
-	if (!lv2_evbuf_is_valid(iter)) {
-		return false;
-	}
+  if (!lv2_evbuf_is_valid(iter)) {
+          return false;
+  }
 
-	LV2_Atom_Sequence* aseq;
-	LV2_Atom_Event*    aev;
-        aseq = &iter.evbuf->atom;
-        aev = (LV2_Atom_Event*)(
-                (char*)LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq)
-                + iter.offset);
-        *frames    = aev->time.frames;
-        *subframes = 0;
-        *type      = aev->body.type;
-        *size      = aev->body.size;
-        *data      = (uint8_t*)LV2_ATOM_BODY(&aev->body);
+  LV2_Atom_Sequence* aseq;
+  LV2_Atom_Event*    aev;
+  aseq = &iter.evbuf->atom;
+  aev = (LV2_Atom_Event*)(
+          (char*)LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq)
+          + iter.offset);
+  *frames    = aev->time.frames;
+  *subframes = 0;
+  *type      = aev->body.type;
+  *size      = aev->body.size;
+  *data      = (uint8_t*)LV2_ATOM_BODY(&aev->body);
 
-	return true;
+  return true;
 }
 
 bool
@@ -169,9 +171,10 @@ lv2_evbuf_write(LV2_Evbuf_Iterator* iter,
   LV2_Atom_Event*    aev;
   aseq = &iter->evbuf->atom;
   if (iter->evbuf->capacity - sizeof(LV2_Atom) - aseq->atom.size
-      < sizeof(LV2_Atom_Event) + size) {
-          return false;
-  }
+      < sizeof(LV2_Atom_Event) + size)
+    {
+      return false;
+    }
 
   aev = (LV2_Atom_Event*)(
           (char*)LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq)

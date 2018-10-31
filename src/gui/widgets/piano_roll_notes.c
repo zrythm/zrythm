@@ -104,121 +104,6 @@ draw_cb (PianoRollNotesWidget * self, cairo_t *cr, gpointer data)
       cairo_stroke (cr);
     }
 
-
-  /* draw lines */
-  /*int bar_count = 1;*/
-  /*for (int i = 0; i < self->total_px - SPACE_BEFORE_START; i++)*/
-    /*{*/
-      /*int draw_pos = i + SPACE_BEFORE_START;*/
-
-      /*if (i % self->px_per_bar == 0)*/
-      /*{*/
-          /*cairo_set_source_rgb (cr, 1, 1, 1);*/
-          /*cairo_set_line_width (cr, 1);*/
-          /*cairo_move_to (cr, draw_pos, 0);*/
-          /*cairo_line_to (cr, draw_pos, height / 3);*/
-          /*cairo_stroke (cr);*/
-          /*cairo_set_source_rgb (cr, 0.8, 0.8, 0.8);*/
-          /*cairo_select_font_face(cr, FONT,*/
-              /*CAIRO_FONT_SLANT_NORMAL,*/
-              /*CAIRO_FONT_WEIGHT_NORMAL);*/
-          /*cairo_set_font_size(cr, FONT_SIZE);*/
-          /*gchar * label = g_strdup_printf ("%d", bar_count);*/
-          /*static cairo_text_extents_t extents;*/
-          /*cairo_text_extents(cr, label, &extents);*/
-          /*cairo_move_to (cr,*/
-                         /*(draw_pos ) - extents.width / 2,*/
-                         /*(height / 2) + Y_SPACING);*/
-          /*cairo_show_text(cr, label);*/
-          /*bar_count++;*/
-      /*}*/
-      /*else if (i % self->px_per_beat == 0)*/
-      /*{*/
-          /*cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);*/
-          /*cairo_set_line_width (cr, 0.5);*/
-          /*cairo_move_to (cr, draw_pos, 0);*/
-          /*cairo_line_to (cr, draw_pos, height / 4);*/
-          /*cairo_stroke (cr);*/
-      /*}*/
-      /*else if (0)*/
-        /*{*/
-
-        /*}*/
-    /*if (i == playhead_pos_in_px)*/
-      /*{*/
-          /*cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);*/
-          /*cairo_set_line_width (cr, 2);*/
-          /*cairo_move_to (cr,*/
-                         /*draw_pos - PLAYHEAD_TRIANGLE_HALF_WIDTH,*/
-                         /*height - PLAYHEAD_TRIANGLE_HEIGHT);*/
-          /*cairo_line_to (cr, draw_pos, height);*/
-          /*cairo_line_to (cr,*/
-                         /*draw_pos + PLAYHEAD_TRIANGLE_HALF_WIDTH,*/
-                         /*height - PLAYHEAD_TRIANGLE_HEIGHT);*/
-          /*cairo_fill (cr);*/
-      /*}*/
-    /*if (i == cue_pos_in_px)*/
-      /*{*/
-          /*cairo_set_source_rgb (cr, 0, 0.6, 0.9);*/
-          /*cairo_set_line_width (cr, 2);*/
-          /*cairo_move_to (*/
-            /*cr,*/
-            /*draw_pos,*/
-            /*((height - PLAYHEAD_TRIANGLE_HEIGHT) - Q_HEIGHT) - 1);*/
-          /*cairo_line_to (*/
-            /*cr,*/
-            /*draw_pos + Q_WIDTH,*/
-            /*((height - PLAYHEAD_TRIANGLE_HEIGHT) - Q_HEIGHT / 2) - 1);*/
-          /*cairo_line_to (*/
-            /*cr,*/
-            /*draw_pos,*/
-            /*(height - PLAYHEAD_TRIANGLE_HEIGHT) - 1);*/
-          /*cairo_fill (cr);*/
-      /*}*/
-    /*if (i == start_marker_pos_px)*/
-      /*{*/
-          /*cairo_set_source_rgb (cr, 1, 0, 0);*/
-          /*cairo_set_line_width (cr, 2);*/
-          /*cairo_move_to (cr, draw_pos, 0);*/
-          /*cairo_line_to (cr, draw_pos + START_MARKER_TRIANGLE_WIDTH,*/
-                         /*0);*/
-          /*cairo_line_to (cr, draw_pos,*/
-                         /*START_MARKER_TRIANGLE_HEIGHT);*/
-          /*cairo_fill (cr);*/
-      /*}*/
-    /*if (i == end_marker_pos_px)*/
-      /*{*/
-          /*cairo_set_source_rgb (cr, 1, 0, 0);*/
-          /*cairo_set_line_width (cr, 2);*/
-          /*cairo_move_to (cr, draw_pos - START_MARKER_TRIANGLE_WIDTH, 0);*/
-          /*cairo_line_to (cr, draw_pos, 0);*/
-          /*cairo_line_to (cr, draw_pos, START_MARKER_TRIANGLE_HEIGHT);*/
-          /*cairo_fill (cr);*/
-      /*}*/
-    /*if (i == loop_start_pos_px)*/
-      /*{*/
-          /*cairo_set_source_rgb (cr, 0, 0.9, 0.7);*/
-          /*cairo_set_line_width (cr, 2);*/
-          /*cairo_move_to (cr, draw_pos, START_MARKER_TRIANGLE_HEIGHT + 1);*/
-          /*cairo_line_to (cr, draw_pos, START_MARKER_TRIANGLE_HEIGHT * 2 + 1);*/
-          /*cairo_line_to (cr, draw_pos + START_MARKER_TRIANGLE_WIDTH,*/
-                         /*START_MARKER_TRIANGLE_HEIGHT + 1);*/
-          /*cairo_fill (cr);*/
-      /*}*/
-    /*if (i == loop_end_pos_px)*/
-      /*{*/
-          /*cairo_set_source_rgb (cr, 0, 0.9, 0.7);*/
-          /*cairo_set_line_width (cr, 2);*/
-          /*cairo_move_to (cr, draw_pos, START_MARKER_TRIANGLE_HEIGHT + 1);*/
-          /*cairo_line_to (cr, draw_pos - START_MARKER_TRIANGLE_WIDTH,*/
-                         /*START_MARKER_TRIANGLE_HEIGHT + 1);*/
-          /*cairo_line_to (cr, draw_pos,*/
-                         /*START_MARKER_TRIANGLE_HEIGHT * 2 + 1);*/
-          /*cairo_fill (cr);*/
-      /*}*/
-
-  /*}*/
-
  return FALSE;
 }
 
@@ -267,14 +152,17 @@ drag_update (GtkGestureDrag * gesture,
 {
   PianoRollNotesWidget * self = (PianoRollNotesWidget *) user_data;
 
-  jack_midi_event_t * ev = &MANUAL_PRESS_QUEUE->jack_midi_events[0];
   int prev_note = self->note;
   self->note = (self->start_y - offset_y) / MIDI_EDITOR->piano_roll_labels->px_per_note;
   int vel = 90;
 
-  /* if note changed, create new event */
+  /* if note changed */
   if (prev_note != self->note)
     {
+      jack_midi_event_t * ev;
+
+      /* add note on event for new note */
+      ev = &MANUAL_PRESS_QUEUE->jack_midi_events[MANUAL_PRESS_QUEUE->num_events];
       ev->time = 0;
       ev->size = 3;
       if (!ev->buffer)
@@ -282,7 +170,18 @@ drag_update (GtkGestureDrag * gesture,
       ev->buffer[0] = 0x90; /* status byte, 0x90 is note on */
       ev->buffer[1] = self->note; /* note number 0-127 */
       ev->buffer[2] = vel; /* velocity 0-127 */
-      MANUAL_PRESS_QUEUE->num_events = 1;
+      MANUAL_PRESS_QUEUE->num_events++;
+
+      /* add note off event for prev note */
+      ev = &MANUAL_PRESS_QUEUE->jack_midi_events[MANUAL_PRESS_QUEUE->num_events];
+      ev->time = 0;
+      ev->size = 3;
+      if (!ev->buffer)
+        ev->buffer = calloc (3, sizeof (jack_midi_data_t));
+      ev->buffer[0] = 0x80; /* status byte, 0x90 is note on */
+      ev->buffer[1] = prev_note; /* note number 0-127 */
+      ev->buffer[2] = vel; /* velocity 0-127 */
+      MANUAL_PRESS_QUEUE->num_events++;
     }
 
   gtk_widget_queue_draw (GTK_WIDGET (self));
@@ -296,17 +195,18 @@ drag_end (GtkGestureDrag *gesture,
                gpointer        user_data)
 {
   PianoRollNotesWidget * self = (PianoRollNotesWidget *) user_data;
+  jack_midi_event_t * ev;
 
-  /* add midi event to engine midi_editor_manual_press port */
-  MANUAL_PRESS_QUEUE->num_events = 1;
-
-  jack_midi_event_t * ev = &MANUAL_PRESS_QUEUE->jack_midi_events[0];
+  /* add note off event for prev note */
+  ev = &MANUAL_PRESS_QUEUE->jack_midi_events[MANUAL_PRESS_QUEUE->num_events];
   ev->time = 0;
   ev->size = 3;
   if (!ev->buffer)
     ev->buffer = calloc (3, sizeof (jack_midi_data_t));
-  ev->buffer[0] = 0x80; /* status byte, 0x80 is note off */
-
+  ev->buffer[0] = 0x80; /* status byte, 0x90 is note on */
+  ev->buffer[1] = self->note; /* note number 0-127 */
+  ev->buffer[2] = 0; /* velocity 0-127 */
+  MANUAL_PRESS_QUEUE->num_events++;
 
   self->start_y = 0;
   self->note = -1;

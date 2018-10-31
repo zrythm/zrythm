@@ -33,6 +33,7 @@
 
 #define AUDIO_ENGINE zrythm_app->audio_engine
 #define MANUAL_PRESS_QUEUE AUDIO_ENGINE->midi_editor_manual_press->midi_events.queue
+#define MANUAL_PRESS_EVENTS AUDIO_ENGINE->midi_editor_manual_press->midi_events
 
 typedef jack_nframes_t                nframes_t;
 typedef struct Mixer Mixer;
