@@ -81,7 +81,18 @@ draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
   gtk_render_background (context, cr, 0, 0, width, height);
 
   GdkRGBA * color = &self->region->track->channel->color;
-  cairo_set_source_rgba (cr, color->red, color->green, color->blue, 0.7);
+  if (self->hover_state != REGION_HOVER_STATE_NONE)
+    {
+      cairo_set_source_rgba (cr,
+                             color->red + 0.1,
+                             color->green + 0.1,
+                             color->blue + 0.1,
+                             0.7);
+    }
+  else
+    {
+      cairo_set_source_rgba (cr, color->red, color->green, color->blue, 0.7);
+    }
   cairo_rectangle(cr, 0, 0, width, height);
   cairo_stroke_preserve(cr);
   cairo_fill(cr);
@@ -137,6 +148,7 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
           ui_set_cursor (widget, "default");
         }
     }
+  g_idle_add ((GSourceFunc) gtk_widget_queue_draw, GTK_WIDGET (self));
 }
 
 RegionWidget *

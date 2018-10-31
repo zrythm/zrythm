@@ -72,6 +72,15 @@ automation_track_get_for_automatable (Automatable * automatable);
 void
 automation_track_free (AutomationTrack * at);
 
+void
+automation_track_print_automation_points (AutomationTrack * at);
+
+/**
+ * Forces sort of the automation points.
+ */
+void
+automation_track_force_sort (AutomationTrack * at);
+
 /**
  * Adds automation point and optionally generates curve points accordingly.
  */
@@ -85,14 +94,14 @@ automation_track_add_automation_point (AutomationTrack * at,
  */
 AutomationPoint *
 automation_track_get_prev_ap (AutomationTrack * at,
-                              Position        * pos);
+                              AutomationPoint * _ap);
 
 /**
  * Returns the automation point after the position.
  */
 AutomationPoint *
 automation_track_get_next_ap (AutomationTrack * at,
-                              Position        * pos);
+                              AutomationPoint * _ap);
 
 /**
  * Returns the curve point right after the given ap
@@ -106,6 +115,10 @@ automation_track_get_next_curve_ap (AutomationTrack * at,
  */
 void
 automation_track_remove_ap (AutomationTrack * at,
+                            AutomationPoint * ap);
+
+int
+automation_track_get_index (AutomationTrack * at,
                             AutomationPoint * ap);
 
 /**

@@ -81,10 +81,22 @@ automation_track_get_for_automatable (Automatable * automatable)
 }
 
 static int
-cmpfunc (const void * a, const void * b)
+cmpfunc (const void * _a, const void * _b)
 {
-  return position_compare (&(*(AutomationPoint **)a)->pos,
-                           &(*(AutomationPoint **)b)->pos);
+  AutomationPoint * a = *(AutomationPoint **)_a;
+  AutomationPoint * b = *(AutomationPoint **)_b;
+  int ret = position_compare (&a->pos,
+                              &b->pos);
+  if (ret == 0 &&
+      automation_track_get_index (a->at,
+                                  a) <
+      automation_track_get_index (a->at,
+                                  b))
+    {
+      return -1;
+    }
+
+  return ret;
 }
 
 /**
@@ -145,6 +157,16 @@ automation_track_print_automation_points (AutomationTrack * at)
     }
 }
 
+void
+automation_track_force_sort (AutomationTrack * at)
+{
+  /* sort by position */
+  qsort (at->automation_points,
+         at->num_automation_points,
+         sizeof (AutomationPoint *),
+         cmpfunc);
+}
+
 /**
  * Adds automation point and optionally generates curve points accordingly.
  */
@@ -166,9 +188,9 @@ automation_track_add_automation_point (AutomationTrack * at,
     {
       /* add midway automation point to control curviness */
       AutomationPoint * prev_ap = automation_track_get_prev_ap (at,
-                                                            &ap->pos);
+                                                                ap);
       AutomationPoint * next_ap = automation_track_get_next_ap (at,
-                                                            &ap->pos);
+                                                                ap);
       /* 4 cases */
       if (!prev_ap && !next_ap) /* only ap */
         {
@@ -209,14 +231,15 @@ automation_track_add_automation_point (AutomationTrack * at,
  */
 AutomationPoint *
 automation_track_get_prev_ap (AutomationTrack * at,
-                              Position        * pos)
+                              AutomationPoint * _ap)
 {
-  for (int i = at->num_automation_points - 1; i > -1; i--)
+  int index = automation_track_get_index (at, _ap);
+  for (int i = index - 1; i >= 0; i--)
     {
       AutomationPoint * ap = at->automation_points[i];
       if (ap->type == AUTOMATION_POINT_VALUE &&
-          position_compare (pos,
-                            &ap->pos) > 0)
+          position_compare (&_ap->pos,
+                            &ap->pos) >= 0)
         {
           return ap;
         }
@@ -270,19 +293,34 @@ automation_track_remove_ap (AutomationTrack * at,
  */
 AutomationPoint *
 automation_track_get_next_ap (AutomationTrack * at,
-                              Position        * pos)
+                              AutomationPoint * _ap)
 {
-  for (int i = 0; i < at->num_automation_points; i++)
+  int index = automation_track_get_index (at, _ap);
+  for (int i = index + 1; i < at->num_automation_points; i++)
     {
       AutomationPoint * ap = at->automation_points[i];
       if (ap->type == AUTOMATION_POINT_VALUE &&
           position_compare (&ap->pos,
-                            pos) > 0)
+                            &_ap->pos) >= 0)
         {
           return ap;
         }
     }
   return NULL;
+}
+
+int
+automation_track_get_index (AutomationTrack * at,
+                            AutomationPoint * ap)
+{
+  for (int i = 0; i < at->num_automation_points; i++)
+    {
+      if (at->automation_points[i] == ap)
+        {
+          return i;
+        }
+    }
+  return -1;
 }
 
 void

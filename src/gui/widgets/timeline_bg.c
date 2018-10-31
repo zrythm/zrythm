@@ -176,7 +176,7 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
                         {
                           gint prev_wx, prev_wy;
                           AutomationPoint * prev_ap =
-                            automation_track_get_prev_ap (at, &ap->pos);
+                            automation_track_get_prev_ap (at, ap);
                           gtk_widget_translate_coordinates(
                                     GTK_WIDGET (prev_ap->widget),
                                     GTK_WIDGET (MAIN_WINDOW->tracklist),
@@ -208,10 +208,10 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
                                              new_x,
                                              new_y);
                               automation_point_y =
-                                automation_point_get_y_px (prev_ap,
-                                                           l,
-                                                           ww,
-                                                           height);
+                                automation_point_curve_get_y_px (prev_ap,
+                                                                 l,
+                                                                 ww,
+                                                                 height);
                               new_x = prev_wx + l;
                               new_y = prev_wy + automation_point_y;
                               cairo_line_to (cr,

@@ -50,7 +50,18 @@ draw_cb (AutomationPointWidget * self, cairo_t *cr, gpointer data)
     }
   else
     {
-      cairo_set_source_rgba (cr, color->red, color->green, color->blue, 0.7);
+      if (self->hover_state != AP_HOVER_STATE_NONE)
+        {
+          cairo_set_source_rgba (cr,
+                                 color->red + 0.1,
+                                 color->green + 0.1,
+                                 color->blue + 0.1,
+                                 0.7);
+        }
+      else
+        {
+          cairo_set_source_rgba (cr, color->red, color->green, color->blue, 0.7);
+        }
     }
   /* TODO circle */
   cairo_rectangle(cr, 0, 0, width, height);
@@ -64,6 +75,22 @@ static void
 on_motion (GtkWidget * widget, GdkEventMotion *event)
 {
   AutomationPointWidget * self = AUTOMATION_POINT_WIDGET (widget);
+
+  GtkAllocation allocation;
+  gtk_widget_get_allocation (widget,
+                             &allocation);
+
+  self->hover_state = AP_HOVER_STATE_NONE;
+
+  if (event->type == GDK_MOTION_NOTIFY)
+    {
+      self->hover_state = AP_HOVER_STATE_MIDDLE;
+    }
+  else if (event->type == GDK_LEAVE_NOTIFY)
+    {
+      self->hover_state = AP_HOVER_STATE_NONE;
+    }
+  g_idle_add ((GSourceFunc) gtk_widget_queue_draw, GTK_WIDGET (self));
 }
 
 AutomationPointWidget *

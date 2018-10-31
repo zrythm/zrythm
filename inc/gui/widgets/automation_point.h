@@ -37,10 +37,17 @@
 #define AP_WIDGET_CURVE_H 2
 #define AP_WIDGET_CURVE_W 8
 
+typedef enum AutomationPointHoverState
+{
+  AP_HOVER_STATE_NONE,
+  AP_HOVER_STATE_MIDDLE
+} AutomationPointHoverState;
+
 typedef struct AutomationPointWidget
 {
-  GtkBox                   parent_instance;
-  AutomationPoint *        ap;   ///< the automation_point associated with this
+  GtkBox                    parent_instance;
+  AutomationPoint *         ap;   ///< the automation_point associated with this
+  AutomationPointHoverState hover_state;
 } AutomationPointWidget;
 
 typedef struct AutomationPointWidgetClass

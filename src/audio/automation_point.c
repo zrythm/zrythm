@@ -96,9 +96,9 @@ automation_point_get_y_in_px (AutomationPoint * ap)
   else
     {
       AutomationPoint * prev_ap = automation_track_get_prev_ap (ap->at,
-                                                                &ap->pos);
+                                                                ap);
       AutomationPoint * next_ap = automation_track_get_next_ap (ap->at,
-                                                                &ap->pos);
+                                                                ap);
       /* ratio of current value in the range */
       float ap_ratio;
       if (ap->curviness >= AP_MID_CURVINESS)
@@ -150,7 +150,7 @@ get_y_normalized (double x, double curviness, int start_at_1)
  * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
  */
 int
-automation_point_get_y_px (AutomationPoint * start_ap, ///< start point (0, 0)
+automation_point_curve_get_y_px (AutomationPoint * start_ap, ///< start point (0, 0)
                            int               x, ///< x coordinate in px
                            int               width, ///< total width in px
                            int               height) ///< total height in px
@@ -164,7 +164,7 @@ automation_point_get_y_px (AutomationPoint * start_ap, ///< start point (0, 0)
   AutomationPoint * curve_ap = automation_track_get_next_curve_ap (start_ap->at,
                                                                    start_ap);
   AutomationPoint * next_ap = automation_track_get_next_ap (start_ap->at,
-                                                            &start_ap->pos);
+                                                            start_ap);
 
   double dx = (double) x / width; /* normalized x */
   double dy;
@@ -172,18 +172,14 @@ automation_point_get_y_px (AutomationPoint * start_ap, ///< start point (0, 0)
   if (automation_point_get_y_in_px (next_ap) > /* if next point is lower */
       automation_point_get_y_in_px (start_ap))
     {
-      g_message ("start higher");
       dy = get_y_normalized (dx, curve_ap->curviness, 1); /* start higher */
-      g_message ("%f", dy);
       ret = dy * height;
       return height - ret; /* reverse the value because in pixels higher y values
                               are actually lower */
     }
   else
     {
-      g_message ("start lower");
       dy = get_y_normalized (dx, curve_ap->curviness, 0);
-      g_message ("%f", dy);
       ret = dy * height;
       return (height - ret) - height;
     }

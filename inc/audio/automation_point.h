@@ -84,7 +84,7 @@ automation_point_free (AutomationPoint * ap);
  * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
  */
 int
-automation_point_get_y_px (AutomationPoint * start_ap, ///< start point (0, 0)
+automation_point_curve_get_y_px (AutomationPoint * start_ap, ///< start point (0, 0)
                            int               x, ///< x coordinate in px
                            int               width, ///< total width in px
                            int               height); ///< total height in px

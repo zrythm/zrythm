@@ -194,12 +194,12 @@ get_child_position (GtkOverlay   *overlay,
             }
           else
             {
-              allocation->x = arranger_get_x_pos_in_px (&ap->pos) -
-                AP_WIDGET_CURVE_W / 2;
-              allocation->y = (wy + automation_point_get_y_in_px (ap)) -
-                AP_WIDGET_CURVE_H / 2;
-              allocation->width = AP_WIDGET_CURVE_W;
-              allocation->height = AP_WIDGET_CURVE_H;
+              /*allocation->x = arranger_get_x_pos_in_px (&ap->pos) -*/
+                /*AP_WIDGET_CURVE_W / 2;*/
+              /*allocation->y = (wy + automation_point_get_y_in_px (ap)) -*/
+                /*AP_WIDGET_CURVE_H / 2;*/
+              /*allocation->width = AP_WIDGET_CURVE_W;*/
+              /*allocation->height = AP_WIDGET_CURVE_H;*/
             }
         }
     }
@@ -330,6 +330,129 @@ get_hit_region (double x, double y)
 }
 
 /**
+ * Returns the curve automation point associated with the curve, if (x,y) falls on
+ * the curve, otherwise NULL.
+ */
+static AutomationPoint *
+get_hit_curve (double x, double y)
+{
+  GList *children, *iter;
+
+  /* go through each overlay child */
+  children = gtk_container_get_children(GTK_CONTAINER(MAIN_WINDOW->timeline));
+  for(iter = children; iter != NULL; iter = g_list_next(iter))
+    {
+      GtkWidget * widget = GTK_WIDGET (iter->data);
+
+      /* if automation point */
+      if (IS_AUTOMATION_POINT_WIDGET (widget))
+        {
+          AutomationPoint * ap = (AUTOMATION_POINT_WIDGET (widget))->ap;
+          if (ap->type != AUTOMATION_POINT_CURVE)
+            continue;
+
+          AutomationPoint * prev_ap, * next_ap;
+          prev_ap = automation_track_get_prev_ap (ap->at,
+                                                  ap);
+          next_ap = automation_track_get_next_ap (ap->at,
+                                                  ap);
+
+          GtkAllocation allocation;
+          gtk_widget_get_allocation (widget,
+                                     &allocation);
+
+          gint prev_wx, prev_wy;
+          gtk_widget_translate_coordinates(
+                    GTK_WIDGET (prev_ap->widget),
+                    GTK_WIDGET (MAIN_WINDOW->timeline),
+                    0,
+                    0,
+                    &prev_wx,
+                    &prev_wy);
+
+          g_message ("x %d y %d prev wx %d prev wy %d",
+                     x, y, prev_wx, prev_wy);
+          /* if after prev */
+          if (x >= prev_wx &&
+              y >= prev_wy)
+            {
+              gint wx, wy;
+              gtk_widget_translate_coordinates(
+                        GTK_WIDGET (next_ap->widget),
+                        GTK_WIDGET (MAIN_WINDOW->timeline),
+                        0,
+                        0,
+                        &wx,
+                        &wy);
+              /* if before next */
+              if (x <= wx &&
+                  y <= wy)
+                {
+                  int ww = wx - prev_wx;
+                  int prev_y_px = automation_point_get_y_in_px (prev_ap);
+                  int curr_y_px = automation_point_get_y_in_px (next_ap);
+                  int height = prev_y_px > curr_y_px ?
+                    prev_y_px - curr_y_px :
+                    curr_y_px - prev_y_px;
+                  if (automation_point_curve_get_y_px (prev_ap,
+                                                       x,
+                                                       ww,
+                                                       height) == (int) y)
+                    {
+                      g_message ("YES");
+                    }
+                }
+            }
+        }
+    }
+  return NULL;
+
+}
+
+/**
+ * Returns the automation point at (x,y)
+ */
+static AutomationPointWidget *
+get_hit_automation_point (double x, double y)
+{
+  GList *children, *iter;
+
+  /* go through each overlay child */
+  children = gtk_container_get_children(GTK_CONTAINER(MAIN_WINDOW->timeline));
+  for(iter = children; iter != NULL; iter = g_list_next(iter))
+    {
+      GtkWidget * widget = GTK_WIDGET (iter->data);
+
+      /* if region */
+      if (IS_AUTOMATION_POINT_WIDGET (widget))
+        {
+          GtkAllocation allocation;
+          gtk_widget_get_allocation (widget,
+                                     &allocation);
+
+          gint wx, wy;
+          gtk_widget_translate_coordinates(
+                    GTK_WIDGET (widget),
+                    GTK_WIDGET (MAIN_WINDOW->timeline),
+                    0,
+                    0,
+                    &wx,
+                    &wy);
+
+          /* if hit */
+          if (x >= wx &&
+              x <= (wx + allocation.width) &&
+              y >= wy &&
+              y <= (wy + allocation.height))
+            {
+              return AUTOMATION_POINT_WIDGET (widget);
+            }
+        }
+    }
+  return NULL;
+}
+
+/**
  * For MIDI use only.
  */
 static MidiNoteWidget *
@@ -422,7 +545,13 @@ drag_begin (GtkGestureDrag * gesture,
   RegionWidget * region_widget = T_TIMELINE ?
     get_hit_region (start_x, start_y) :
     NULL;
-  int is_hit = midi_note_widget || region_widget;
+  AutomationPoint * curve_ap = T_TIMELINE ?
+    get_hit_curve (start_x, start_y) :
+    NULL;
+  AutomationPointWidget * ap_widget = T_TIMELINE ?
+    get_hit_automation_point (start_x, start_y) :
+    NULL;
+  int is_hit = midi_note_widget || region_widget || curve_ap || ap_widget;
   if (is_hit)
     {
       if (midi_note_widget)
@@ -438,6 +567,16 @@ drag_begin (GtkGestureDrag * gesture,
           self->start_pos_px = ruler_widget_pos_to_px (&self->region->start_pos);
           position_set_to_pos (&self->start_pos, &self->region->start_pos);
           position_set_to_pos (&self->end_pos, &self->region->end_pos);
+        }
+      else if (ap_widget)
+        {
+          self->ap = ap_widget->ap;
+          self->start_pos_px = start_x;
+        }
+      else if (curve_ap)
+        {
+          self->ap = curve_ap;
+          self->start_pos_px = start_x;
         }
 
       if (midi_note_widget)
@@ -477,6 +616,23 @@ drag_begin (GtkGestureDrag * gesture,
               ui_set_cursor (GTK_WIDGET (region_widget), "grabbing");
               break;
             }
+        }
+      else if (ap_widget)
+        {
+          switch (ap_widget->hover_state)
+            {
+            case AP_HOVER_STATE_NONE:
+              g_warning ("hitting AP but AP hover state is none, should be fixed");
+              break;
+            case AP_HOVER_STATE_MIDDLE:
+              self->action = ARRANGER_ACTION_MOVING;
+              ui_set_cursor (GTK_WIDGET (region_widget), "grabbing");
+              break;
+            }
+        }
+      else if (curve_ap)
+        {
+          /* TODO */
         }
     }
   else /* no note hit */
@@ -670,7 +826,7 @@ drag_update (GtkGestureDrag * gesture,
       ruler_widget_px_to_pos (&pos,
                               self->start_pos_px + offset_x);
 
-      if (T_TIMELINE)
+      if (T_TIMELINE && self->region)
         {
           position_snap (NULL,
                          &pos,
@@ -680,6 +836,54 @@ drag_update (GtkGestureDrag * gesture,
           region_set_start_pos (self->region,
                                 &pos,
                                 1);
+        }
+      else if (T_TIMELINE && self->ap && self->ap->type == AUTOMATION_POINT_VALUE)
+        {
+          ruler_widget_px_to_pos (&pos,
+                                  (self->start_pos_px + offset_x) -
+                                    SPACE_BEFORE_START);
+          /* get prev and next value APs */
+          AutomationPoint * prev_ap = automation_track_get_prev_ap (self->ap->at,
+                                                                    self->ap);
+          AutomationPoint * next_ap = automation_track_get_next_ap (self->ap->at,
+                                                                    self->ap);
+          Position mid_pos;
+          AutomationPoint * curve_ap;
+          /*position_snap (NULL,*/
+                         /*&pos,*/
+                         /*self->ap->at->track,*/
+                         /*NULL,*/
+                         /*self->snap_grid);*/
+          if (prev_ap && position_compare (&pos, &prev_ap->pos) >= 0)
+            {
+              /* set prev curve point to new midway pos */
+              position_get_midway_pos (&prev_ap->pos,
+                                       &pos,
+                                       &mid_pos);
+              curve_ap = automation_track_get_next_curve_ap (self->ap->at,
+                                                             prev_ap);
+              position_set_to_pos (&curve_ap->pos, &mid_pos);
+
+              /* set pos for ap */
+              position_set_to_pos (&self->ap->pos, &pos);
+            }
+          if (next_ap && position_compare (&pos, &next_ap->pos) <= 0)
+            {
+              /* set next curve point to new midway pos */
+              position_get_midway_pos (&pos,
+                                       &next_ap->pos,
+                                       &mid_pos);
+              curve_ap = automation_track_get_next_curve_ap (self->ap->at,
+                                                             self->ap);
+              position_set_to_pos (&curve_ap->pos, &mid_pos);
+
+              /* set pos for ap */
+              position_set_to_pos (&self->ap->pos, &pos);
+            }
+        }
+      else if (T_TIMELINE && self->ap && self->ap->type == AUTOMATION_POINT_CURVE)
+        {
+          /* TODO */
         }
       else if (T_MIDI)
         {
@@ -695,7 +899,7 @@ drag_update (GtkGestureDrag * gesture,
       position_set_to_pos (&pos, &self->end_pos);
       position_add_frames (&pos,
                            diff);
-      if (T_TIMELINE)
+      if (T_TIMELINE && self->region)
         {
           region_set_end_pos (self->region,
                               &pos);
@@ -751,6 +955,7 @@ drag_end (GtkGestureDrag *gesture,
       ui_set_cursor (GTK_WIDGET (self->region->widget), "default");
     }
   self->region = NULL;
+  self->ap = NULL;
 }
 
 
