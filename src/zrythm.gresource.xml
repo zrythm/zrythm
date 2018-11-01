@@ -4,6 +4,7 @@
     <file preprocess="xml-stripblanks">ui/automation_track.ui</file>
     <file preprocess="xml-stripblanks">ui/browser.ui</file>
     <file preprocess="xml-stripblanks">ui/channel.ui</file>
+    <file preprocess="xml-stripblanks">ui/connections.ui</file>
     <file preprocess="xml-stripblanks">ui/export_dialog.ui</file>
     <file preprocess="xml-stripblanks">ui/main_window.ui</file>
     <file preprocess="xml-stripblanks">ui/midi_box.ui</file>

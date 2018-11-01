@@ -613,6 +613,7 @@ drag_begin (GtkGestureDrag * gesture,
       if (self->n_press == 1)
         {
           /* area selection */
+          self->action = ARRANGER_ACTION_SELECTING;
 
         }
       else if (self->n_press == 2)
@@ -734,8 +735,12 @@ drag_update (GtkGestureDrag * gesture,
 {
   ArrangerWidget * self = ARRANGER_WIDGET (user_data);
 
+  if (self->action == ARRANGER_ACTION_SELECTING)
+    {
+    }
+
   /* handle x */
-  if (self->action == ARRANGER_ACTION_RESIZING_L)
+  else if (self->action == ARRANGER_ACTION_RESIZING_L)
     {
       Position pos;
       ruler_widget_px_to_pos (&pos,
@@ -915,6 +920,7 @@ drag_update (GtkGestureDrag * gesture,
       gtk_widget_queue_allocate (GTK_WIDGET (MIDI_EDITOR->midi_arranger));
     }
   self->last_offset_x = offset_x;
+  self->last_offset_y = offset_y;
 }
 
 static void
@@ -927,6 +933,7 @@ drag_end (GtkGestureDrag *gesture,
   self->start_x = 0;
   self->start_y = 0;
   self->last_offset_x = 0;
+  self->last_offset_y = 0;
   self->action = ARRANGER_ACTION_NONE;
   if (self->midi_note)
     {
@@ -939,6 +946,7 @@ drag_end (GtkGestureDrag *gesture,
     }
   self->region = NULL;
   self->ap = NULL;
+  gtk_widget_queue_draw (GTK_WIDGET (self->bg));
 }
 
 
@@ -1001,3 +1009,37 @@ arranger_widget_init (ArrangerWidget *self )
                 gtk_gesture_multi_press_new (GTK_WIDGET (self)));
 }
 
+/**
+ * Draws the selection in its background.
+ *
+ * Should only be called by the bg widgets when drawing.
+ */
+void
+arranger_bg_draw_selections (ArrangerWidget * self,
+                             cairo_t *        cr)
+{
+  double offset_x, offset_y;
+  offset_x = self->start_x + self->last_offset_x > 0 ?
+    self->last_offset_x :
+    1 - self->start_x;
+  offset_y = self->start_y + self->last_offset_y > 0 ?
+    self->last_offset_y :
+    1 - self->start_y;
+  if (self->action == ARRANGER_ACTION_SELECTING)
+    {
+      cairo_set_source_rgba (cr, 0.9, 0.9, 0.9, 1.0);
+      cairo_rectangle (cr,
+                       self->start_x,
+                       self->start_y,
+                       offset_x,
+                       offset_y);
+      cairo_stroke (cr);
+      cairo_set_source_rgba (cr, 0.3, 0.3, 0.3, 0.3);
+      cairo_rectangle (cr,
+                       self->start_x,
+                       self->start_y,
+                       offset_x,
+                       offset_y);
+      cairo_fill (cr);
+    }
+}

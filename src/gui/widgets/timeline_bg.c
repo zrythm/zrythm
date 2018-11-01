@@ -131,6 +131,7 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
         }
     }
 
+  /* draw automation related stuff */
   for (int i = 0; i < MIXER->num_channels; i++)
     {
       Track * track = MIXER->channels[i]->track;
@@ -194,10 +195,11 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
                           int height = prev_y_px > curr_y_px ?
                             prev_y_px - curr_y_px :
                             curr_y_px - prev_y_px;
-                          cairo_set_source_rgb (cr,
+                          cairo_set_source_rgba (cr,
                                                 track->channel->color.red,
                                                 track->channel->color.green,
-                                                track->channel->color.blue);
+                                                track->channel->color.blue,
+                                                1.0);
                           cairo_set_line_width (cr, 1);
                           cairo_move_to (cr,
                                          new_x,
@@ -219,30 +221,16 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
                                              new_y);
                               cairo_stroke (cr);
                             }
-
-
-
-
-
-                          /* connect to previous AP */
-                          /*cairo_set_source_rgb (cr,*/
-                                                /*track->channel->color.red,*/
-                                                /*track->channel->color.green,*/
-                                                /*track->channel->color.blue);*/
-                          /*cairo_set_line_width (cr, 2);*/
-                          /*cairo_move_to (cr, prev_wx, prev_wy + AP_WIDGET_POINT_SIZE / 2);*/
-                          /*cairo_line_to (cr, wx, wy + AP_WIDGET_POINT_SIZE / 2);*/
-                          /*[>g_message ("%d to %d, %d to %d",<]*/
-                                     /*[>prev_wx, wx,<]*/
-                                     /*[>prev_wy + AP_WIDGET_SIZE / 2,<]*/
-                                     /*[>wy + AP_WIDGET_SIZE / 2);<]*/
-                          /*cairo_stroke (cr);*/
                         }
                     }
                 }
             }
         }
     }
+
+  /* draw selections */
+  arranger_bg_draw_selections (MW->timeline,
+                               cr);
 
   return 0;
 }

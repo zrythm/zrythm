@@ -28,6 +28,7 @@
 #include "gui/widgets/bpm.h"
 #include "gui/widgets/browser.h"
 #include "gui/widgets/channel.h"
+#include "gui/widgets/connections.h"
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/export_dialog.h"
 #include "gui/widgets/main_window.h"
@@ -455,9 +456,13 @@ main_window_widget_new (ZrythmApp * _app)
   /* setup bot half region */
   self->mixer = mixer_widget_new ();
   self->midi_editor = midi_editor_widget_new ();
+  self->connections = connections_widget_new ();
   gtk_notebook_prepend_page (self->bot_notebook,
                             GTK_WIDGET (self->midi_editor),
                             gtk_label_new ("Piano Roll"));
+  gtk_notebook_append_page (self->bot_notebook,
+                            GTK_WIDGET (self->connections),
+                            gtk_label_new ("Automation"));
   gtk_notebook_append_page (self->bot_notebook,
                             GTK_WIDGET (self->mixer),
                             gtk_label_new ("Mixer"));

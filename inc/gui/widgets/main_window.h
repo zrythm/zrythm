@@ -28,6 +28,7 @@
 #include <gtk/gtk.h>
 
 #define MAIN_WINDOW WIDGET_MANAGER->main_window
+#define MW MAIN_WINDOW
 
 #define MAIN_WINDOW_WIDGET_TYPE                  (main_window_widget_get_type ())
 G_DECLARE_FINAL_TYPE (MainWindowWidget, main_window_widget, MAIN, WINDOW_WIDGET, GtkApplicationWindow)
@@ -43,6 +44,7 @@ typedef struct BrowserWidget BrowserWidget;
 typedef struct Region Region;
 typedef struct SnapGridWidget SnapGridWidget;
 typedef struct ArrangerWidget ArrangerWidget;
+typedef struct ConnectionsWidget ConnectionsWidget;
 
 typedef struct _MainWindowWidget
 {
@@ -93,6 +95,7 @@ typedef struct _MainWindowWidget
   SnapGridWidget           * snap_grid_midi;
   GtkToolButton            * instrument_add;
   GtkNotebook              * bot_notebook;
+  ConnectionsWidget        * connections;
   MidiEditorWidget         * midi_editor;
   MixerWidget              * mixer;
   GtkNotebook              * right_notebook;

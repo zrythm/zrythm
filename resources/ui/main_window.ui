@@ -737,32 +737,17 @@
                           <object class="GtkLabel" id="gtablabel-automation">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Automation</property>
+                            <property name="label" translatable="yes">Rack</property>
                           </object>
                           <packing>
                             <property name="tab_fill">False</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkLabel" id="rack-content">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label">Rack</property>
-                          </object>
-                          <packing>
-                            <property name="position">1</property>
-                          </packing>
+                          <placeholder/>
                         </child>
                         <child type="tab">
-                          <object class="GtkLabel" id="gtablabel-rack">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Rack</property>
-                          </object>
-                          <packing>
-                            <property name="position">1</property>
-                            <property name="tab_fill">False</property>
-                          </packing>
+                          <placeholder/>
                         </child>
                       </object>
                       <packing>

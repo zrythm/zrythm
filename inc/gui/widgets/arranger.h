@@ -76,8 +76,8 @@ typedef struct ArrangerWidget
   GtkDrawingArea           * bg;
   GtkGestureDrag           * drag;
   GtkGestureMultiPress     * multipress;
-  double                   last_y;
-  double                   last_offset_x;  ///< for dragging regions
+  double                   last_offset_x;  ///< for dragging regions, selections
+  double                   last_offset_y;  ///< for selections
   ArrangerWidgetAction     action;
   Region                   * region;  ///< region doing action upon (timeline)
   AutomationPoint *        ap;  ///< automation point doing action upon (timeline)
@@ -113,6 +113,17 @@ arranger_widget_set_channel (ArrangerWidget * arranger, Channel * channel);
  */
 int
 arranger_get_x_pos_in_px (Position * pos);
+
+/**
+ * Draws the selection in its background.
+ *
+ * Should only be called by the bg widgets when drawing.
+ */
+void
+arranger_bg_draw_selections (ArrangerWidget * arranger,
+                             cairo_t *        cr);
+
+GType arranger_widget_get_type(void);
 
 #endif
 

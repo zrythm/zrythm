@@ -23,6 +23,7 @@
 #include "project.h"
 #include "settings_manager.h"
 #include "audio/transport.h"
+#include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/midi_arranger_bg.h"
@@ -104,6 +105,10 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
       draw_borders (cr,
                     MAIN_WINDOW->midi_editor->piano_roll_labels->px_per_note * i);
     }
+
+  /* draw selections */
+  arranger_bg_draw_selections (MIDI_ARRANGER,
+                               cr);
 
   return 0;
 }
