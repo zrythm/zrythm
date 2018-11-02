@@ -33,19 +33,20 @@
 #define IS_MIDI_NOTE_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), MIDI_NOTE_WIDGET_TYPE))
 #define MIDI_NOTE_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), MIDI_NOTE_WIDGET_TYPE, MidiNoteWidgetClass))
 
-typedef enum MidiNoteHoverState
+typedef enum MidiNoteWidgetState
 {
-  MIDI_NOTE_HOVER_STATE_NONE,
-  MIDI_NOTE_HOVER_STATE_EDGE_L,
-  MIDI_NOTE_HOVER_STATE_EDGE_R,
-  MIDI_NOTE_HOVER_STATE_MIDDLE
-} MidiNoteHoverState;
+  MNW_STATE_NONE,
+  MNW_STATE_SELECTED,
+  MNW_STATE_RESIZE_L,
+  MNW_STATE_RESIZE_R,
+  MNW_STATE_HOVER
+} MidiNoteWidgetState;
 
 typedef struct MidiNoteWidget
 {
   GtkBox                   parent_instance;
-  MidiNote                   * midi_note;   ///< the midi_note associated with this
-  MidiNoteHoverState         hover_state;
+  MidiNote *               midi_note;   ///< the midi_note associated with this
+  MidiNoteWidgetState      state;
 } MidiNoteWidget;
 
 typedef struct MidiNoteWidgetClass
@@ -58,6 +59,13 @@ typedef struct MidiNoteWidgetClass
  */
 MidiNoteWidget *
 midi_note_widget_new (MidiNote * midi_note);
+
+/**
+ * Sets hover state and queues draw.
+ */
+void
+midi_note_widget_set_state_and_queue_draw (MidiNoteWidget *    self,
+                                           MidiNoteWidgetState state);
 
 GType midi_note_widget_get_type(void);
 

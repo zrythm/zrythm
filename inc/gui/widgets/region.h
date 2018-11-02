@@ -33,28 +33,20 @@
 #define IS_REGION_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), REGION_WIDGET_TYPE))
 #define REGION_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), REGION_WIDGET_TYPE, RegionWidgetClass))
 
-/**
- * ???? delete? FIXME
- */
-typedef enum RegionType
+typedef enum RegionWidgetState
 {
-  REGION_TYPE_BPM,
-  REGION_TYPE_POSITION
-} RegionType;
-
-typedef enum RegionHoverState
-{
-  REGION_HOVER_STATE_NONE,
-  REGION_HOVER_STATE_EDGE_L,
-  REGION_HOVER_STATE_EDGE_R,
-  REGION_HOVER_STATE_MIDDLE
-} RegionHoverState;
+  RW_STATE_NONE,
+  RW_STATE_SELECTED,
+  RW_STATE_RESIZE_L,
+  RW_STATE_RESIZE_R,
+  RW_STATE_HOVER
+} RegionWidgetState;
 
 typedef struct RegionWidget
 {
   GtkDrawingArea           parent_instance;
   Region                   * region;   ///< the region associated with this
-  RegionHoverState         hover_state;
+  RegionWidgetState        state;
 } RegionWidget;
 
 typedef struct RegionWidgetClass
@@ -67,6 +59,13 @@ typedef struct RegionWidgetClass
  */
 RegionWidget *
 region_widget_new (Region * region);
+
+/**
+ * Sets hover state and queues draw.
+ */
+void
+region_widget_set_state_and_queue_draw (RegionWidget *    self,
+                                        RegionWidgetState state);
 
 GType region_widget_get_type(void);
 

@@ -53,7 +53,9 @@ midi_note_new (Region * region,
   midi_note->val = val;
   midi_note->vel = vel > -1 ? vel : DEFAULT_VEL;
   midi_note->widget = midi_note_widget_new (midi_note);
+  midi_note->id = PROJECT->num_midi_notes;
   g_object_ref (midi_note->widget);
+  PROJECT->midi_notes[PROJECT->num_midi_notes++] = midi_note;
 
   return midi_note;
 }

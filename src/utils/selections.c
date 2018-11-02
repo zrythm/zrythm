@@ -33,24 +33,6 @@ selections_is_channel_selected (Channel * channel)
 }
 
 /**
- * Sets selection and notifies insterested parties.
- */
-void
-selections_set_channel (Channel * channel)
-{
-  /* if selection exists */
-  if (SELECTIONS.num_channels > 0)
-    {
-      channel_reattach_midi_editor_manual_press_port (
-                      SELECTIONS.channels[SELECTIONS.num_channels - 1], 0);
-    }
-  SELECTIONS.channels[0] = channel;
-  SELECTIONS.num_channels = 1;
-  channel_reattach_midi_editor_manual_press_port (
-                  channel, 1);
-}
-
-/**
  * Adds channel to selections (eg. when shift/ctrl clicking)
  */
 void

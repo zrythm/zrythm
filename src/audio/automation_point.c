@@ -35,6 +35,22 @@
 #include "gui/widgets/automation_track.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin.h"
+#include "project.h"
+
+static AutomationPoint *
+_create_new (AutomationTrack * at,
+             Position *        pos)
+{
+  AutomationPoint * ap = calloc (1, sizeof (AutomationPoint));
+
+  ap->at = at;
+  position_set_to_pos (&ap->pos,
+                       pos);
+  ap->id = PROJECT->num_automation_points;
+  PROJECT->automation_points[PROJECT->num_automation_points++] = ap;
+
+  return ap;
+}
 
 /**
  * Creates automation point in given track at given Position
@@ -45,11 +61,8 @@ automation_point_new_float (AutomationTrack *   at,
                             float               value,
                             Position *          pos)
 {
-  AutomationPoint * ap = calloc (1, sizeof (AutomationPoint));
+  AutomationPoint * ap = _create_new (at, pos);
 
-  ap->at = at;
-  position_set_to_pos (&ap->pos,
-                       pos);
   ap->fvalue = value;
   ap->type = AUTOMATION_POINT_VALUE;
   ap->widget = automation_point_widget_new (ap);
@@ -64,11 +77,8 @@ AutomationPoint *
 automation_point_new_curve (AutomationTrack *   at,
                             Position *          pos)
 {
-  AutomationPoint * ap = calloc (1, sizeof (AutomationPoint));
+  AutomationPoint * ap = _create_new (at, pos);
 
-  ap->at = at;
-  position_set_to_pos (&ap->pos,
-                       pos);
   ap->curviness = 2.f;
   ap->type = AUTOMATION_POINT_CURVE;
   ap->widget = automation_point_widget_new (ap);

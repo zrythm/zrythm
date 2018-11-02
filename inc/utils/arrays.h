@@ -31,4 +31,12 @@ arrays_delete (void ** array, int * size, void * element);
 void
 arrays_insert (void ** array, int * size, int pos, void * element);
 
+/**
+ * Returns 1 if element exists in array, 0 if not.
+ *
+ * TODO rename arrays to array
+ */
+int
+arrays_includes (void ** array, int * size, void * element);
+
 #endif /* __UTILS_ARRAYS_H__ */

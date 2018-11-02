@@ -36,6 +36,7 @@ typedef struct Position Position;
 
 typedef struct MidiNote
 {
+  int             id;
   Position        start_pos;
   Position        end_pos;
   MidiNoteWidget  * widget;

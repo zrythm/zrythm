@@ -29,6 +29,7 @@
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_tracklist.h"
+#include "gui/widgets/automation_point.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 
@@ -258,4 +259,21 @@ automation_track_widget_get_fvalue_at_y (AutomationTrackWidget * at_widget,
   g_message ("automatable value %f", automatable_value);
 
   return automatable_value;
+}
+
+double
+automation_track_widget_get_y (AutomationTrackWidget * at_widget,
+                               AutomationPointWidget * ap_widget)
+{
+  gint wx, wy;
+  gtk_widget_translate_coordinates(
+            GTK_WIDGET (ap_widget),
+            GTK_WIDGET (at_widget),
+            0,
+            0,
+            &wx,
+            &wy);
+  g_message ("%d", wy);
+
+  return wy;
 }

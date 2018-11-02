@@ -52,3 +52,19 @@ arrays_insert (void ** array, int * size, int pos, void * element)
   (* size)++;
 }
 
+/**
+ * Returns 1 if element exists in array, 0 if not.
+ *
+ * TODO rename arrays to array
+ */
+int
+arrays_includes (void ** array, int * size, void * element)
+{
+  for (int i = 0; i < (* size); i++)
+    {
+      if (array[i] == element)
+        return 1;
+    }
+  return 0;
+}
+

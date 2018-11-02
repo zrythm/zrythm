@@ -43,6 +43,7 @@ typedef enum AutomationPointType
 
 typedef struct AutomationPoint
 {
+  int                      id;
   Position                 pos;
   float                    fvalue; ///< float value
   int                      bvalue; ///< boolean value

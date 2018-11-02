@@ -35,6 +35,7 @@ typedef struct TrackWidget TrackWidget;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct DigitalMeterWidget DigitalMeterWidget;
 typedef struct Track Track;
+typedef struct AutomationPointWidget AutomationPointWidget;
 
 typedef struct AutomationTrackWidget
 {
@@ -64,8 +65,15 @@ automation_track_widget_new ();
 void
 automation_track_widget_update (AutomationTrackWidget * self);
 
+/**
+ * Gets the float value at the y-point of the automation track.
+ */
 float
 automation_track_widget_get_fvalue_at_y (AutomationTrackWidget * at_widget,
                                          double                  _start_y);
+
+double
+automation_track_widget_get_y (AutomationTrackWidget * at_widget,
+                               AutomationPointWidget * ap);
 
 #endif

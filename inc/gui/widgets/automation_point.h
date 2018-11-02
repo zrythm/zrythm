@@ -38,17 +38,18 @@
 #define AP_WIDGET_CURVE_W 8
 #define AP_WIDGET_PADDING 1
 
-typedef enum AutomationPointHoverState
+typedef enum AutomationPointWidgetState
 {
-  AP_HOVER_STATE_NONE,
-  AP_HOVER_STATE_MIDDLE
-} AutomationPointHoverState;
+  APW_STATE_NONE,
+  APW_STATE_SELECTED,
+  APW_STATE_HOVER
+} AutomationPointWidgetState;
 
 typedef struct AutomationPointWidget
 {
-  GtkBox                    parent_instance;
-  AutomationPoint *         ap;   ///< the automation_point associated with this
-  AutomationPointHoverState hover_state;
+  GtkBox                      parent_instance;
+  AutomationPoint *           ap;   ///< the automation_point associated with this
+  AutomationPointWidgetState  state;
 } AutomationPointWidget;
 
 typedef struct AutomationPointWidgetClass
@@ -61,6 +62,13 @@ typedef struct AutomationPointWidgetClass
  */
 AutomationPointWidget *
 automation_point_widget_new (AutomationPoint * automation_point);
+
+/**
+ * Sets hover state and queues draw.
+ */
+void
+automation_point_widget_set_state_and_queue_draw (AutomationPointWidget *    self,
+                                                  AutomationPointWidgetState state);
 
 GType automation_point_widget_get_type(void);
 

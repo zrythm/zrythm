@@ -41,6 +41,7 @@
 #include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
+#include "utils/arrays.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
@@ -55,14 +56,20 @@ G_DEFINE_TYPE (ArrangerWidget, arranger_widget, GTK_TYPE_OVERLAY)
  * Sets up the MIDI editor for the given region.
  */
 void
-arranger_widget_set_channel (ArrangerWidget * arranger, Channel * channel)
+arranger_widget_set_channel (ArrangerWidget * self, Channel * channel)
 {
-  if (arranger->type == ARRANGER_TYPE_MIDI)
+  if (self->type == ARRANGER_TYPE_MIDI)
     {
-      /*if (SELECTIONS.num_channels > 0 &&*/
-          /*SELECTIONS.channels[SELECTIONS.num_channels - 1] == channel)*/
-
-      selections_set_channel (channel);
+      if (self->me_selected_channel)
+        {
+          channel_reattach_midi_editor_manual_press_port (
+            self->me_selected_channel,
+            0);
+        }
+      channel_reattach_midi_editor_manual_press_port (
+        channel,
+        1);
+      self->me_selected_channel = channel;
 
       gtk_notebook_set_current_page (MAIN_WINDOW->bot_notebook, 0);
 
@@ -77,11 +84,11 @@ arranger_widget_set_channel (ArrangerWidget * arranger, Channel * channel)
 
       /* remove all previous children and add new */
       GList *children, *iter;
-      children = gtk_container_get_children(GTK_CONTAINER(MIDI_EDITOR->midi_arranger));
+      children = gtk_container_get_children(GTK_CONTAINER(self));
       for(iter = children; iter != NULL; iter = g_list_next(iter))
         {
-          if (iter->data !=  MIDI_EDITOR->midi_arranger->bg)
-            gtk_container_remove (GTK_CONTAINER (MIDI_EDITOR->midi_arranger),
+          if (iter->data !=  self->bg)
+            gtk_container_remove (GTK_CONTAINER (self),
                                   GTK_WIDGET (iter->data));
         }
       g_list_free(children);
@@ -90,12 +97,12 @@ arranger_widget_set_channel (ArrangerWidget * arranger, Channel * channel)
           Region * region = channel->track->regions[i];
           for (int j = 0; j < region->num_midi_notes; j++)
             {
-              gtk_overlay_add_overlay (GTK_OVERLAY (MIDI_EDITOR->midi_arranger),
+              gtk_overlay_add_overlay (GTK_OVERLAY (self),
                                        GTK_WIDGET (region->midi_notes[j]->widget));
             }
         }
-      gtk_widget_queue_allocate (GTK_WIDGET (MIDI_EDITOR->midi_arranger));
-      gtk_widget_show_all (GTK_WIDGET (MIDI_EDITOR->midi_arranger));
+      gtk_widget_queue_allocate (GTK_WIDGET (self));
+      gtk_widget_show_all (GTK_WIDGET (self));
 
       GtkAdjustment * adj = gtk_scrolled_window_get_vadjustment (
                                       MIDI_EDITOR->piano_roll_arranger_scroll);
@@ -365,7 +372,78 @@ get_hit_curve (ArrangerWidget * self, double x, double y)
 
 }
 
+static void
+get_hit_widgets_in_range (ArrangerWidget *  self,
+                          ArrangerChildType type,
+                          double            start_x,
+                          double            start_y,
+                          double            offset_x,
+                          double            offset_y,
+                          GtkWidget **      array, ///< array to fill
+                          int *             array_size) ///< array_size to fill
+{
+  GList *children, *iter;
 
+  /* go through each overlay child */
+  children = gtk_container_get_children (GTK_CONTAINER (self));
+  for(iter = children; iter != NULL; iter = g_list_next (iter))
+    {
+      GtkWidget * widget = GTK_WIDGET (iter->data);
+
+      GtkAllocation allocation;
+      gtk_widget_get_allocation (widget,
+                                 &allocation);
+
+      gint wx, wy;
+      gtk_widget_translate_coordinates(
+                GTK_WIDGET (self),
+                GTK_WIDGET (widget),
+                start_x,
+                start_y,
+                &wx,
+                &wy);
+
+      int x_hit, y_hit;
+      if (offset_x < 0)
+        {
+          x_hit = wx + offset_x <= allocation.width &&
+            wx > 0;
+        }
+      else
+        {
+          x_hit = wx <= allocation.width &&
+            wx + offset_x > 0;
+        }
+      if (!x_hit) continue;
+      if (offset_y < 0)
+        {
+          y_hit = wy + offset_y <= allocation.height &&
+            wy > 0;
+        }
+      else
+        {
+          y_hit = wy <= allocation.height &&
+            wy + offset_y > 0;
+        }
+      if (!y_hit) continue;
+
+      if (type == ARRANGER_CHILD_TYPE_MIDI_NOTE &&
+          IS_MIDI_NOTE_WIDGET (widget))
+        {
+          array[(*array_size)++] = widget;
+        }
+      else if (type == ARRANGER_CHILD_TYPE_REGION &&
+               IS_REGION_WIDGET (widget))
+        {
+          array[(*array_size)++] = widget;
+        }
+      else if (type == ARRANGER_CHILD_TYPE_AP &&
+               IS_AUTOMATION_POINT_WIDGET (widget))
+        {
+          array[(*array_size)++] = widget;
+        }
+    }
+}
 
 static GtkWidget *
 get_hit_widget (ArrangerWidget *  self,
@@ -469,6 +547,57 @@ get_hit_automation_point (ArrangerWidget *  self,
   return NULL;
 }
 
+/**
+ * Queues redraw on selected/deselected regions.
+ */
+static void
+set_state_and_redraw_tl_regions (ArrangerWidget *       self,
+                                 RegionWidgetState  state)
+{
+  FOREACH_TL_R
+    {
+      Region * region = self->tl_regions[i];
+      region_widget_set_state_and_queue_draw (region->widget,
+                                              state);
+    }
+}
+
+/**
+ * Queues redraw on selected/deselected automation points.
+ */
+static void
+set_state_and_redraw_tl_automation_points (ArrangerWidget *           self,
+                                           AutomationPointWidgetState state)
+{
+  FOREACH_TL_AP
+    {
+      AutomationPoint * ap = self->tl_automation_points[i];
+      automation_point_widget_set_state_and_queue_draw (ap->widget,
+                                                        state);
+    }
+}
+
+/**
+ * Queues redraw on selected/deselected midi_notes.
+ */
+static void
+set_state_and_redraw_me_midi_notes (ArrangerWidget *    self,
+                                    MidiNoteWidgetState state)
+{
+  FOREACH_ME_MN
+    {
+      MidiNote * midi_note = self->me_midi_notes[i];
+      midi_note_widget_set_state_and_queue_draw (midi_note->widget,
+                                                 state);
+    }
+}
+
+/**
+ * On button press.
+ *
+ * This merely sets the number of clicks. It is always called
+ * before drag_begin, so the logic is done in drag_begin.
+ */
 static void
 multipress_pressed (GtkGestureMultiPress *gesture,
                gint                  n_press,
@@ -478,28 +607,6 @@ multipress_pressed (GtkGestureMultiPress *gesture,
 {
   ArrangerWidget * self = (ArrangerWidget *) user_data;
   self->n_press = n_press;
-  gtk_widget_grab_focus (GTK_WIDGET (self));
-
-  /* open MIDI editor if double clicked on a region */
-  if (T_TIMELINE)
-    {
-      RegionWidget * region_widget = get_hit_region (self, x, y);
-      if (region_widget && n_press > 0)
-        {
-          arranger_widget_set_channel(
-                      MIDI_EDITOR->midi_arranger,
-                      region_widget->region->track->channel);
-        }
-    }
-  else if (T_MIDI)
-    {
-      MidiNoteWidget * midi_note_widget = get_hit_midi_note (self, x, y);
-      if (midi_note_widget && n_press == 2)
-        {
-          /* TODO */
-          g_message ("note double clicked ");
-        }
-    }
 }
 
 static void
@@ -511,6 +618,7 @@ drag_begin (GtkGestureDrag * gesture,
   ArrangerWidget * self = (ArrangerWidget *) user_data;
   self->start_x = start_x;
   self->start_y = start_y;
+  gtk_widget_grab_focus (GTK_WIDGET (self));
 
   MidiNoteWidget * midi_note_widget = T_MIDI ?
     get_hit_midi_note (self, start_x, start_y) :
@@ -527,85 +635,118 @@ drag_begin (GtkGestureDrag * gesture,
   int is_hit = midi_note_widget || region_widget || curve_ap || ap_widget;
   if (is_hit)
     {
+      /* set selections, positions, actions, cursor */
       if (midi_note_widget)
         {
-          self->midi_note = midi_note_widget->midi_note;
-          self->start_pos_px = ruler_widget_pos_to_px (&self->midi_note->start_pos);
-          position_set_to_pos (&self->start_pos, &self->midi_note->start_pos);
-          position_set_to_pos (&self->end_pos, &self->midi_note->end_pos);
-        }
-      else if (region_widget)
-        {
-          self->region= region_widget->region;
-          self->start_pos_px = ruler_widget_pos_to_px (&self->region->start_pos);
-          position_set_to_pos (&self->start_pos, &self->region->start_pos);
-          position_set_to_pos (&self->end_pos, &self->region->end_pos);
-        }
-      else if (ap_widget)
-        {
-          self->ap = ap_widget->ap;
-          self->start_pos_px = start_x;
-        }
-      else if (curve_ap)
-        {
-          self->ap = curve_ap;
-          self->start_pos_px = start_x;
-        }
+          MidiNote * midi_note = midi_note_widget->midi_note;
+          self->start_pos_px = ruler_widget_pos_to_px (&midi_note->start_pos);
+          position_set_to_pos (&self->start_pos, &midi_note->start_pos);
+          position_set_to_pos (&self->end_pos, &midi_note->end_pos);
 
-      if (midi_note_widget)
-        {
-          switch (midi_note_widget->hover_state)
+          /* if already in selected notes, prepare to do action on all of them,
+           * otherwise change selection to just this note */
+          self->me_start_midi_note = midi_note;
+          if (!arrays_includes ((void **) self->me_midi_notes,
+                               &self->num_me_midi_notes,
+                               (void *) midi_note))
             {
-            case MIDI_NOTE_HOVER_STATE_NONE:
+              self->me_midi_notes[0] = midi_note;
+              self->num_me_midi_notes = 1;
+            }
+          switch (midi_note_widget->state)
+            {
+            case MNW_STATE_NONE:
               g_warning ("hitting midi note but midi note hover state is none, should be fixed");
               break;
-            case MIDI_NOTE_HOVER_STATE_EDGE_L:
+            case MNW_STATE_RESIZE_L:
               self->action = ARRANGER_ACTION_RESIZING_L;
               break;
-            case MIDI_NOTE_HOVER_STATE_EDGE_R:
+            case MNW_STATE_RESIZE_R:
               self->action = ARRANGER_ACTION_RESIZING_R;
               break;
-            case MIDI_NOTE_HOVER_STATE_MIDDLE:
-              self->action = ARRANGER_ACTION_MOVING;
+            case MNW_STATE_HOVER:
+            case MNW_STATE_SELECTED:
+              self->action = ARRANGER_ACTION_STARTING_MOVING;
               ui_set_cursor (GTK_WIDGET (midi_note_widget), "grabbing");
               break;
             }
         }
       else if (region_widget)
         {
-          switch (region_widget->hover_state)
+          /* open MIDI editor */
+          if (self->n_press > 0)
             {
-            case REGION_HOVER_STATE_NONE:
+              arranger_widget_set_channel(
+                          MIDI_EDITOR->midi_arranger,
+                          region_widget->region->track->channel);
+            }
+
+          Region * region = region_widget->region;
+          MIDI_ARRANGER->me_selected_region = region;
+          self->start_pos_px = ruler_widget_pos_to_px (&region->start_pos);
+          position_set_to_pos (&self->start_pos, &region->start_pos);
+          position_set_to_pos (&self->end_pos, &region->end_pos);
+          self->tl_start_region = region;
+          if (!arrays_includes ((void **) self->tl_regions,
+                               &self->num_tl_regions,
+                               (void *) region))
+            {
+              self->tl_regions[0] = region;
+              self->num_tl_regions = 1;
+            }
+          switch (region_widget->state)
+            {
+            case RW_STATE_NONE:
               g_warning ("hitting region but region hover state is none, should be fixed");
               break;
-            case REGION_HOVER_STATE_EDGE_L:
+            case RW_STATE_RESIZE_L:
               self->action = ARRANGER_ACTION_RESIZING_L;
               break;
-            case REGION_HOVER_STATE_EDGE_R:
+            case RW_STATE_RESIZE_R:
               self->action = ARRANGER_ACTION_RESIZING_R;
               break;
-            case REGION_HOVER_STATE_MIDDLE:
-              self->action = ARRANGER_ACTION_MOVING;
+            case RW_STATE_HOVER:
+            case RW_STATE_SELECTED:
+              self->action = ARRANGER_ACTION_STARTING_MOVING;
               ui_set_cursor (GTK_WIDGET (region_widget), "grabbing");
               break;
             }
         }
       else if (ap_widget)
         {
-          switch (ap_widget->hover_state)
+          AutomationPoint * ap = ap_widget->ap;
+          self->start_pos_px = start_x;
+          self->tl_start_ap = ap;
+          if (!arrays_includes ((void **) self->tl_automation_points,
+                               &self->num_tl_automation_points,
+                               (void *) ap))
             {
-            case AP_HOVER_STATE_NONE:
+              self->tl_automation_points[0] = ap;
+              self->num_tl_automation_points = 1;
+            }
+          switch (ap_widget->state)
+            {
+            case APW_STATE_NONE:
               g_warning ("hitting AP but AP hover state is none, should be fixed");
               break;
-            case AP_HOVER_STATE_MIDDLE:
-              self->action = ARRANGER_ACTION_MOVING;
+            case APW_STATE_HOVER:
+            case APW_STATE_SELECTED:
+              self->action = ARRANGER_ACTION_STARTING_MOVING;
               ui_set_cursor (GTK_WIDGET (ap_widget), "grabbing");
               break;
             }
         }
       else if (curve_ap)
         {
-          /* TODO */
+          self->tl_start_ap = curve_ap;
+          if (!arrays_includes ((void **) self->tl_automation_points,
+                               &self->num_tl_automation_points,
+                               (void *) curve_ap))
+            {
+              self->tl_automation_points[0] = curve_ap;
+              self->num_tl_automation_points = 1;
+            }
+          self->start_pos_px = start_x;
         }
     }
   else /* no note hit */
@@ -613,8 +754,7 @@ drag_begin (GtkGestureDrag * gesture,
       if (self->n_press == 1)
         {
           /* area selection */
-          self->action = ARRANGER_ACTION_SELECTING;
-
+          self->action = ARRANGER_ACTION_STARTING_SELECTION;
         }
       else if (self->n_press == 2)
         {
@@ -623,10 +763,10 @@ drag_begin (GtkGestureDrag * gesture,
                                &pos,
                                start_x - SPACE_BEFORE_START);
 
-          Track * track;
-          AutomationTrack * at;
+          Track * track = NULL;
+          AutomationTrack * at = NULL;
           int note;
-          Region * region;
+          Region * region = NULL;
           if (T_TIMELINE)
             {
               at = get_automation_track_at_y (start_y);
@@ -639,12 +779,11 @@ drag_begin (GtkGestureDrag * gesture,
                 MIDI_EDITOR->piano_roll_labels->px_per_note;
 
               /* if inside a region */
-              if (SELECTIONS.num_channels > 0)
+              if (self->me_selected_channel)
                 {
                   region = region_at_position (
-                              SELECTIONS.channels[
-                                SELECTIONS.num_channels - 1]->track,
-                              &pos);
+                    self->me_selected_channel->track,
+                    &pos);
                 }
             }
           if (((T_TIMELINE && track) || (T_TIMELINE && at)) ||
@@ -666,17 +805,18 @@ drag_begin (GtkGestureDrag * gesture,
                                                       at->widget,
                                                       start_y);
 
-                      self->ap = automation_point_new_float (at,
+                      AutomationPoint * ap = automation_point_new_float (at,
                                                              AUTOMATION_POINT_VALUE,
                                                              value,
                                                              &pos);
                       automation_track_add_automation_point (at,
-                                                             self->ap,
+                                                             ap,
                                                              GENERATE_CURVE_POINTS);
                       gtk_overlay_add_overlay (GTK_OVERLAY (self),
-                                               GTK_WIDGET (self->ap->widget));
-                      gtk_widget_show (GTK_WIDGET (self->ap->widget));
-
+                                               GTK_WIDGET (ap->widget));
+                      gtk_widget_show (GTK_WIDGET (ap->widget));
+                      self->tl_automation_points[0] = ap;
+                      self->num_tl_automation_points = 1;
                     }
                 }
               else if (T_TIMELINE && track)
@@ -686,18 +826,20 @@ drag_begin (GtkGestureDrag * gesture,
                                  track,
                                  NULL,
                                  self->snap_grid);
-                  self->region = region_new (track,
+                  Region * region = region_new (track,
                                              &pos,
                                              &pos);
-                  position_set_min_size (&self->region->start_pos,
-                                         &self->region->end_pos,
+                  position_set_min_size (&region->start_pos,
+                                         &region->end_pos,
                                          self->snap_grid);
                   track_add_region (track,
-                                    self->region);
+                                    region);
                   gtk_overlay_add_overlay (GTK_OVERLAY (self),
-                                           GTK_WIDGET (self->region->widget));
-                  gtk_widget_show (GTK_WIDGET (self->region->widget));
+                                           GTK_WIDGET (region->widget));
+                  gtk_widget_show (GTK_WIDGET (region->widget));
                   self->action = ARRANGER_ACTION_RESIZING_R;
+                  self->tl_regions[0] = region;
+                  self->num_tl_regions = 1;
                 }
               else if (T_MIDI && region)
                 {
@@ -706,20 +848,22 @@ drag_begin (GtkGestureDrag * gesture,
                                  NULL,
                                  region,
                                  self->snap_grid);
-                  self->midi_note = midi_note_new (region,
+                  MidiNote * midi_note = midi_note_new (region,
                                                    &pos,
                                                    &pos,
                                                    note,
                                                    -1);
-                  position_set_min_size (&self->midi_note->start_pos,
-                                         &self->midi_note->end_pos,
+                  position_set_min_size (&midi_note->start_pos,
+                                         &midi_note->end_pos,
                                          self->snap_grid);
                   region_add_midi_note (region,
-                                        self->midi_note);
+                                        midi_note);
                   gtk_overlay_add_overlay (GTK_OVERLAY (self),
-                                           GTK_WIDGET (self->midi_note->widget));
-                  gtk_widget_show (GTK_WIDGET (self->midi_note->widget));
+                                           GTK_WIDGET (midi_note->widget));
+                  gtk_widget_show (GTK_WIDGET (midi_note->widget));
                   self->action = ARRANGER_ACTION_RESIZING_R;
+                  self->me_midi_notes[0] = midi_note;
+                  self->num_me_midi_notes = 1;
                 }
               gtk_widget_queue_allocate (GTK_WIDGET (self));
             }
@@ -735,9 +879,115 @@ drag_update (GtkGestureDrag * gesture,
 {
   ArrangerWidget * self = ARRANGER_WIDGET (user_data);
 
+  /* set action to selecting if starting selection. this is because
+   * drag_update never gets called if it's just a click, so we can check at
+   * drag_end and see if anything was selected */
+  if (self->action == ARRANGER_ACTION_STARTING_SELECTION)
+    {
+      self->action = ARRANGER_ACTION_SELECTING;
+    }
+  else if (self->action == ARRANGER_ACTION_STARTING_MOVING)
+    {
+      self->action = ARRANGER_ACTION_MOVING;
+    }
+
+  /* if drawing a selection */
   if (self->action == ARRANGER_ACTION_SELECTING)
     {
-    }
+      if (T_TIMELINE)
+        {
+          /* find enclosed regions */
+          GtkWidget *    region_widgets[800];
+          int            num_region_widgets = 0;
+          get_hit_widgets_in_range (self,
+                                    ARRANGER_CHILD_TYPE_REGION,
+                                    self->start_x,
+                                    self->start_y,
+                                    offset_x,
+                                    offset_y,
+                                    region_widgets,
+                                    &num_region_widgets);
+
+          /* deselect all regions */
+          set_state_and_redraw_tl_regions (self,
+                                           RW_STATE_NONE);
+          self->num_tl_regions = 0;
+
+          /* select the enclosed regions */
+          for (int i = 0; i < num_region_widgets; i++)
+            {
+              RegionWidget * rw = REGION_WIDGET (region_widgets[i]);
+              Region * region = rw->region;
+              self->tl_regions[self->num_tl_regions++] = region;
+              region_widget_set_state_and_queue_draw (rw,
+                                                      RW_STATE_SELECTED);
+            }
+          g_message ("selected %d regions",
+                     num_region_widgets);
+
+          /* find enclosed automation_points */
+          GtkWidget *    ap_widgets[800];
+          int            num_ap_widgets = 0;
+          get_hit_widgets_in_range (self,
+                                    ARRANGER_CHILD_TYPE_AP,
+                                    self->start_x,
+                                    self->start_y,
+                                    offset_x,
+                                    offset_y,
+                                    ap_widgets,
+                                    &num_ap_widgets);
+
+          /* deselect all automation points */
+          set_state_and_redraw_tl_automation_points (self,
+                                                     APW_STATE_NONE);
+          self->num_tl_automation_points = 0;
+
+          /* select the enclosed automation_points */
+          for (int i = 0; i < num_ap_widgets; i++)
+            {
+              AutomationPointWidget * ap_widget =
+                AUTOMATION_POINT_WIDGET (ap_widgets[i]);
+              AutomationPoint * ap = ap_widget->ap;
+              self->tl_automation_points[self->num_tl_automation_points++] = ap;
+              automation_point_widget_set_state_and_queue_draw (ap_widget,
+                                                                APW_STATE_SELECTED);
+            }
+          g_message ("selected %d automation points",
+                     num_ap_widgets);
+        }
+      else if (T_MIDI)
+        {
+          /* find enclosed midi notes */
+          GtkWidget *    midi_note_widgets[800];
+          int            num_midi_note_widgets = 0;
+          get_hit_widgets_in_range (self,
+                                    ARRANGER_CHILD_TYPE_MIDI_NOTE,
+                                    self->start_x,
+                                    self->start_y,
+                                    offset_x,
+                                    offset_y,
+                                    midi_note_widgets,
+                                    &num_midi_note_widgets);
+
+          /* deselect all midi_notes */
+          set_state_and_redraw_me_midi_notes (self,
+                                              MNW_STATE_NONE);
+          self->num_me_midi_notes = 0;
+
+          /* select the enclosed midi_notes */
+          for (int i = 0; i < num_midi_note_widgets; i++)
+            {
+              MidiNoteWidget * midi_note_widget =
+                MIDI_NOTE_WIDGET (midi_note_widgets[i]);
+              MidiNote * midi_note = midi_note_widget->midi_note;
+              self->me_midi_notes[self->num_me_midi_notes++] = midi_note;
+              midi_note_widget_set_state_and_queue_draw (midi_note_widget,
+                                                         MNW_STATE_SELECTED);
+            }
+          g_message ("selected %d midi notes",
+                     num_midi_note_widgets);
+        }
+    } /* endif ARRANGER_ACTION_SELECTING */
 
   /* handle x */
   else if (self->action == ARRANGER_ACTION_RESIZING_L)
@@ -747,24 +997,32 @@ drag_update (GtkGestureDrag * gesture,
                  (self->start_x + offset_x) - SPACE_BEFORE_START);
       if (T_TIMELINE)
         {
-          position_snap (NULL,
-                         &pos,
-                         self->region->track,
-                         NULL,
-                         self->snap_grid);
-          region_set_start_pos (self->region,
-                                &pos,
-                                0);
+          for (int i = 0; i < self->num_tl_regions; i++)
+            {
+              Region * region = self->tl_regions[i];
+              position_snap (NULL,
+                             &pos,
+                             region->track,
+                             NULL,
+                             self->snap_grid);
+              region_set_start_pos (region,
+                                    &pos,
+                                    0);
+            }
         }
       else if (T_MIDI)
         {
-          position_snap (NULL,
-                         &pos,
-                         NULL,
-                         self->midi_note->region,
-                         self->snap_grid);
-          midi_note_set_start_pos (self->midi_note,
-                                &pos);
+          for (int i = 0; i < self->num_me_midi_notes; i++)
+            {
+              MidiNote * midi_note = self->me_midi_notes[i];
+              position_snap (NULL,
+                             &pos,
+                             NULL,
+                             midi_note->region,
+                             self->snap_grid);
+              midi_note_set_start_pos (midi_note,
+                                    &pos);
+            }
         }
     }
   else if (self->action == ARRANGER_ACTION_RESIZING_R)
@@ -774,105 +1032,155 @@ drag_update (GtkGestureDrag * gesture,
                  (self->start_x + offset_x) - SPACE_BEFORE_START);
       if (T_TIMELINE)
         {
-          position_snap (NULL,
-                         &pos,
-                         self->region->track,
-                         NULL,
-                         self->snap_grid);
-          if (position_compare (&pos, &self->region->start_pos) > 0)
+          for (int i = 0; i < self->num_tl_regions; i++)
             {
-              region_set_end_pos (self->region,
-                                    &pos);
+              Region * region = self->tl_regions[i];
+              position_snap (NULL,
+                             &pos,
+                             region->track,
+                             NULL,
+                             self->snap_grid);
+              if (position_compare (&pos, &region->start_pos) > 0)
+                {
+                  region_set_end_pos (region,
+                                      &pos);
+                }
             }
         }
       else if (T_MIDI)
         {
-          position_snap (NULL,
-                         &pos,
-                         NULL,
-                         self->midi_note->region,
-                         self->snap_grid);
-          if (position_compare (&pos, &self->midi_note->start_pos) > 0)
+          for (int i = 0; i < self->num_me_midi_notes; i++)
             {
-              midi_note_set_end_pos (self->midi_note,
-                                    &pos);
+              MidiNote * midi_note = self->me_midi_notes[i];
+              position_snap (NULL,
+                             &pos,
+                             NULL,
+                             midi_note->region,
+                             self->snap_grid);
+              if (position_compare (&pos, &midi_note->start_pos) > 0)
+                {
+                  midi_note_set_end_pos (midi_note,
+                                        &pos);
+                }
             }
         }
-    }
+    } /*endif RESIZING_R */
+
+  /* if moving the selection */
   else if (self->action == ARRANGER_ACTION_MOVING)
     {
       Position pos;
       ruler_widget_px_to_pos (&pos,
                               self->start_pos_px + offset_x);
 
-      if (T_TIMELINE && self->region)
+      if (T_TIMELINE && self->tl_start_region)
         {
           position_snap (NULL,
                          &pos,
-                         self->region->track,
+                         self->tl_start_region->track,
                          NULL,
                          self->snap_grid);
-          region_set_start_pos (self->region,
-                                &pos,
-                                1);
+          for (int i = 0; i < self->num_tl_regions; i++)
+            {
+              Region * region = self->tl_regions[i];
+              Position region_pos;
+              position_set_to_pos (&region_pos,
+                                   &pos);
+              int diff = position_to_frames (&region->start_pos) -
+                position_to_frames (&self->tl_start_region->start_pos);
+              position_add_frames (&region_pos, diff);
+              region_set_start_pos (region,
+                                    &region_pos,
+                                    1);
+            }
         }
-      else if (T_TIMELINE && self->ap && self->ap->type == AUTOMATION_POINT_VALUE)
+      else if (T_TIMELINE && self->tl_start_ap &&
+               self->tl_start_ap->type == AUTOMATION_POINT_VALUE)
         {
           ruler_widget_px_to_pos (&pos,
                                   (self->start_pos_px + offset_x) -
                                     SPACE_BEFORE_START);
-          /* get prev and next value APs */
-          AutomationPoint * prev_ap = automation_track_get_prev_ap (self->ap->at,
-                                                                    self->ap);
-          AutomationPoint * next_ap = automation_track_get_next_ap (self->ap->at,
-                                                                    self->ap);
-          Position mid_pos;
-          AutomationPoint * curve_ap;
+
           position_snap (NULL,
                          &pos,
-                         self->ap->at->track,
+                         self->tl_start_ap->at->track,
                          NULL,
                          self->snap_grid);
-          if (prev_ap && position_compare (&pos, &prev_ap->pos) >= 0)
+          for (int i = 0; i < self->num_tl_automation_points; i++)
             {
-              /* set prev curve point to new midway pos */
-              position_get_midway_pos (&prev_ap->pos,
-                                       &pos,
-                                       &mid_pos);
-              curve_ap = automation_track_get_next_curve_ap (self->ap->at,
-                                                             prev_ap);
-              position_set_to_pos (&curve_ap->pos, &mid_pos);
+              AutomationPoint * ap = self->tl_automation_points[i];
 
-              /* set pos for ap */
-              position_set_to_pos (&self->ap->pos, &pos);
-            }
-          if (next_ap && position_compare (&pos, &next_ap->pos) <= 0)
-            {
-              /* set next curve point to new midway pos */
-              position_get_midway_pos (&pos,
-                                       &next_ap->pos,
-                                       &mid_pos);
-              curve_ap = automation_track_get_next_curve_ap (self->ap->at,
-                                                             self->ap);
-              position_set_to_pos (&curve_ap->pos, &mid_pos);
+              /* get prev and next value APs */
+              AutomationPoint * prev_ap = automation_track_get_prev_ap (ap->at,
+                                                                        ap);
+              AutomationPoint * next_ap = automation_track_get_next_ap (ap->at,
+                                                                        ap);
+              /* get adjusted pos for this automation point */
+              Position ap_pos;
+              position_set_to_pos (&ap_pos,
+                                   &pos);
+              int diff = position_to_frames (&ap->pos) -
+                position_to_frames (&self->tl_start_ap->pos);
+              position_add_frames (&ap_pos, diff);
 
-              /* set pos for ap */
-              position_set_to_pos (&self->ap->pos, &pos);
+              Position mid_pos;
+              AutomationPoint * curve_ap;
+              if (prev_ap && position_compare (&ap_pos, &prev_ap->pos) >= 0)
+                {
+                  /* set prev curve point to new midway pos */
+                  position_get_midway_pos (&prev_ap->pos,
+                                           &ap_pos,
+                                           &mid_pos);
+                  curve_ap = automation_track_get_next_curve_ap (ap->at,
+                                                                 prev_ap);
+                  position_set_to_pos (&curve_ap->pos, &mid_pos);
+
+                  /* set pos for ap */
+                  position_set_to_pos (&ap->pos, &ap_pos);
+                }
+              if (next_ap && position_compare (&ap_pos, &next_ap->pos) <= 0)
+                {
+                  /* set next curve point to new midway pos */
+                  position_get_midway_pos (&ap_pos,
+                                           &next_ap->pos,
+                                           &mid_pos);
+                  curve_ap = automation_track_get_next_curve_ap (ap->at,
+                                                                 ap);
+                  position_set_to_pos (&curve_ap->pos, &mid_pos);
+
+                  /* set pos for ap */
+                  position_set_to_pos (&ap->pos, &ap_pos);
+                }
             }
         }
-      else if (T_TIMELINE && self->ap && self->ap->type == AUTOMATION_POINT_CURVE)
+      else if (T_TIMELINE && self->tl_start_ap &&
+               self->tl_start_ap->type == AUTOMATION_POINT_CURVE)
         {
           /* TODO */
         }
-      else if (T_MIDI)
+      else if (T_MIDI && self->me_start_midi_note)
         {
+          /* snap first selected midi note's pos */
           position_snap (NULL,
                          &pos,
                          NULL,
-                         self->midi_note->region,
+                         self->me_start_midi_note->region,
                          self->snap_grid);
-          midi_note_set_start_pos (self->midi_note,
-                                &pos);
+          for (int i = 0; i < self->num_me_midi_notes; i++)
+            {
+              MidiNote * midi_note = self->me_midi_notes[i];
+
+              /* get adjusted pos for this midi note */
+              Position midi_note_pos;
+              position_set_to_pos (&midi_note_pos,
+                                   &pos);
+              int diff = position_to_frames (&midi_note->start_pos) -
+                position_to_frames (&self->me_start_midi_note->start_pos);
+              position_add_frames (&midi_note_pos, diff);
+
+              midi_note_set_start_pos (midi_note,
+                                    &midi_note_pos);
+            }
         }
       int diff = position_to_frames (&pos) - position_to_frames (&self->start_pos);
       position_set_to_pos (&pos, &self->end_pos);
@@ -880,33 +1188,71 @@ drag_update (GtkGestureDrag * gesture,
                            diff);
 
       /* handle y */
-      if (T_TIMELINE && self->region)
+      if (T_TIMELINE && self->tl_start_region)
         {
-          region_set_end_pos (self->region,
-                              &pos);
-
-          /* check if should be moved to new track */
-          Track * track = get_track_at_y (self->start_y + offset_y);
-          if (track && self->region->track != track)
+          for (int i = 0; i < self->num_tl_regions; i++)
             {
-              Track * old_track = self->region->track;
-              track_remove_region (old_track, self->region);
-              track_add_region (track, self->region);
+              Region * region = self->tl_regions[i];
+
+              /* get adjusted pos for this region */
+              Position region_pos;
+              position_set_to_pos (&region_pos,
+                                   &pos);
+              int diff = position_to_frames (&region->start_pos) -
+                position_to_frames (&self->tl_start_region->start_pos);
+              position_add_frames (&region_pos, diff);
+
+              region_set_end_pos (region,
+                                  &region_pos);
+
+              /* check if should be moved to new track */
+              Track * track = get_track_at_y (self->start_y + offset_y);
+              if (track && region->track != track)
+                {
+                  Track * old_track = region->track;
+                  track_remove_region (old_track, region);
+                  track_add_region (track, region);
+                }
             }
         }
-      else if (T_TIMELINE && self->ap && self->ap->type == AUTOMATION_POINT_VALUE)
+      else if (T_TIMELINE && self->tl_start_ap &&
+               self->tl_start_ap->type == AUTOMATION_POINT_VALUE)
         {
-          float fval =
-            automation_track_widget_get_fvalue_at_y (self->ap->at->widget,
-                                                     self->start_y + offset_y);
-          automation_point_update_fvalue (self->ap, fval);
+          for (int i = 0; i < self->num_tl_automation_points; i++)
+            {
+              AutomationPoint * ap = self->tl_automation_points[i];
+
+              /* get adjusted y for this ap */
+              /*Position region_pos;*/
+              /*position_set_to_pos (&region_pos,*/
+                                   /*&pos);*/
+              /*int diff = position_to_frames (&region->start_pos) -*/
+                /*position_to_frames (&self->tl_start_region->start_pos);*/
+              /*position_add_frames (&region_pos, diff);*/
+              int this_y =
+                automation_track_widget_get_y (ap->at->widget,
+                                               ap->widget);
+              int start_ap_y =
+                automation_track_widget_get_y (self->tl_start_ap->at->widget,
+                                               self->tl_start_ap->widget);
+              int diff = this_y - start_ap_y;
+
+              float fval =
+                automation_track_widget_get_fvalue_at_y (ap->at->widget,
+                                                         self->start_y + offset_y + diff);
+              automation_point_update_fvalue (ap, fval);
+            }
         }
       else if (T_MIDI)
         {
-          midi_note_set_end_pos (self->midi_note,
-                                 &pos);
-          /* check if should be moved to new note  */
-          self->midi_note->val = get_note_at_y (self->start_y + offset_y);
+          for (int i = 0; i < self->num_me_midi_notes; i++)
+            {
+              MidiNote * midi_note = self->me_midi_notes[i];
+              midi_note_set_end_pos (midi_note,
+                                     &pos);
+              /* check if should be moved to new note  */
+              midi_note->val = get_note_at_y (self->start_y + offset_y);
+            }
         }
     }
   gtk_widget_queue_allocate(GTK_WIDGET (self));
@@ -934,18 +1280,55 @@ drag_end (GtkGestureDrag *gesture,
   self->start_y = 0;
   self->last_offset_x = 0;
   self->last_offset_y = 0;
+  for (int i = 0; i < self->num_me_midi_notes; i++)
+    {
+      MidiNote * midi_note = self->me_midi_notes[i];
+      ui_set_cursor (GTK_WIDGET (midi_note->widget), "default");
+    }
+  self->me_start_midi_note = NULL;
+  for (int i = 0; i < self->num_tl_regions; i++)
+    {
+      Region * region = self->tl_regions[i];
+      ui_set_cursor (GTK_WIDGET (region->widget), "default");
+    }
+
+  /* if clicked on something, or clicked or nothing */
+  if (self->action == ARRANGER_ACTION_STARTING_SELECTION ||
+      self->action == ARRANGER_ACTION_STARTING_MOVING)
+    {
+      /* if clicked on something */
+      if (self->action == ARRANGER_ACTION_STARTING_MOVING)
+        {
+          set_state_and_redraw_tl_regions (self, RW_STATE_SELECTED);
+          set_state_and_redraw_tl_automation_points (self,
+            APW_STATE_SELECTED);
+          set_state_and_redraw_me_midi_notes (self,
+            MNW_STATE_SELECTED);
+        }
+
+      /* else if clicked on nothing */
+      else if (self->action == ARRANGER_ACTION_STARTING_SELECTION)
+        {
+          set_state_and_redraw_tl_regions (self, RW_STATE_NONE);
+          set_state_and_redraw_tl_automation_points (self,
+            APW_STATE_NONE);
+          set_state_and_redraw_me_midi_notes (self,
+            MNW_STATE_NONE);
+          self->num_tl_regions = 0;
+          self->num_me_midi_notes = 0;
+          self->num_tl_automation_points = 0;
+        }
+    }
+
+  /* if didn't click on something */
+  if (self->action != ARRANGER_ACTION_STARTING_MOVING)
+    {
+      self->tl_start_region = NULL;
+      self->tl_start_ap = NULL;
+      self->me_start_midi_note = NULL;
+    }
+
   self->action = ARRANGER_ACTION_NONE;
-  if (self->midi_note)
-    {
-      ui_set_cursor (GTK_WIDGET (self->midi_note->widget), "default");
-    }
-  self->midi_note = NULL;
-  if (self->region)
-    {
-      ui_set_cursor (GTK_WIDGET (self->region->widget), "default");
-    }
-  self->region = NULL;
-  self->ap = NULL;
   gtk_widget_queue_draw (GTK_WIDGET (self->bg));
 }
 
@@ -1043,3 +1426,4 @@ arranger_bg_draw_selections (ArrangerWidget * self,
       cairo_fill (cr);
     }
 }
+

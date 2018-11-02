@@ -385,7 +385,11 @@ channel_create (int     type, char * label)             ///< the channel type (A
 
   channel->type = type;
 
-  gdk_rgba_parse (&channel->color, "rgb(20%,60%,4%)");
+  /*gdk_rgba_parse (&channel->color, "rgb(20%,60%,4%)");*/
+  channel->color.red = rand () % 11 / 10.0;
+  channel->color.green = rand () % 11 / 10.0;
+  channel->color.blue = rand () % 11 / 10.0;
+  channel->color.alpha = 1.0;
   channel->output = MIXER->master;
 
   /* connect channel out ports to master */
