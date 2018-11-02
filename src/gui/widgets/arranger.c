@@ -32,6 +32,7 @@
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/color_area.h"
+#include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger_bg.h"
 #include "gui/widgets/midi_editor.h"
@@ -592,6 +593,17 @@ set_state_and_redraw_me_midi_notes (ArrangerWidget *    self,
     }
 }
 
+static void
+update_inspector (ArrangerWidget *self)
+{
+  inspector_widget_show_selections (INSPECTOR_CHILD_REGION,
+                                    (void **) self->tl_regions,
+                                 self->num_tl_regions);
+  inspector_widget_show_selections (INSPECTOR_CHILD_AP,
+                                    (void **) self->tl_automation_points,
+                                 self->num_tl_automation_points);
+}
+
 /**
  * On button press.
  *
@@ -694,6 +706,8 @@ drag_begin (GtkGestureDrag * gesture,
               self->tl_regions[0] = region;
               self->num_tl_regions = 1;
             }
+
+          /* update arranger action */
           switch (region_widget->state)
             {
             case RW_STATE_NONE:
@@ -711,6 +725,11 @@ drag_begin (GtkGestureDrag * gesture,
               ui_set_cursor (GTK_WIDGET (region_widget), "grabbing");
               break;
             }
+
+          /* deselect automations */
+          set_state_and_redraw_tl_automation_points (self,
+                                                     APW_STATE_NONE);
+          self->num_tl_automation_points = 0;
         }
       else if (ap_widget)
         {
@@ -735,6 +754,11 @@ drag_begin (GtkGestureDrag * gesture,
               ui_set_cursor (GTK_WIDGET (ap_widget), "grabbing");
               break;
             }
+
+          /* deselect regions & automation curves */
+          set_state_and_redraw_tl_regions (self,
+                                           RW_STATE_NONE);
+          self->num_tl_regions = 0;
         }
       else if (curve_ap)
         {
@@ -747,6 +771,11 @@ drag_begin (GtkGestureDrag * gesture,
               self->num_tl_automation_points = 1;
             }
           self->start_pos_px = start_x;
+
+          /* deselect regions & automation curves */
+          set_state_and_redraw_tl_regions (self,
+                                           RW_STATE_NONE);
+          self->num_tl_regions = 0;
         }
     }
   else /* no note hit */
@@ -755,6 +784,17 @@ drag_begin (GtkGestureDrag * gesture,
         {
           /* area selection */
           self->action = ARRANGER_ACTION_STARTING_SELECTION;
+
+          /* deselect regions & automation curves */
+          set_state_and_redraw_tl_regions (self,
+                                           RW_STATE_NONE);
+          self->num_tl_regions = 0;
+          set_state_and_redraw_tl_automation_points (self,
+                                                     APW_STATE_NONE);
+          self->num_tl_automation_points = 0;
+          set_state_and_redraw_me_midi_notes (self,
+                                              MNW_STATE_NONE);
+          self->num_me_midi_notes = 0;
         }
       else if (self->n_press == 2)
         {
@@ -869,6 +909,9 @@ drag_begin (GtkGestureDrag * gesture,
             }
         }
     }
+
+  /* update inspector */
+  update_inspector (self);
 }
 
 static void
@@ -1267,6 +1310,9 @@ drag_update (GtkGestureDrag * gesture,
     }
   self->last_offset_x = offset_x;
   self->last_offset_y = offset_y;
+
+  /* update inspector */
+  update_inspector (self);
 }
 
 static void

@@ -31,6 +31,8 @@
 #include "gui/widgets/connections.h"
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/export_dialog.h"
+#include "gui/widgets/inspector.h"
+#include "gui/widgets/inspector_region.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_editor.h"
 #include "gui/widgets/mixer.h"
@@ -39,6 +41,7 @@
 #include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/tracklist.h"
 #include "gui/widgets/transport_controls.h"
+#include "utils/gtk.h"
 #include "utils/io.h"
 
 #include <gtk/gtk.h>
@@ -253,7 +256,11 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
                                         MainWindowWidget,
                                         snap_grid_timeline_box);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, center_box);
+                                        MainWindowWidget,
+                                        center_box);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        MainWindowWidget,
+                                        inspector_notebook);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         MainWindowWidget, editor_plus_browser);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
@@ -428,6 +435,14 @@ main_window_widget_new (ZrythmApp * _app)
                                                self->timeline_scroll)));
   gtk_widget_show_all (GTK_WIDGET (self->ruler_viewport));
 
+  /* setup inspector */
+  self->inspector = inspector_widget_new ();
+  GtkWidget * inspector_img = gtk_image_new_from_icon_name ("list-add",
+                                                          GTK_ICON_SIZE_BUTTON);
+  gtk_notebook_prepend_page (self->inspector_notebook,
+                             GTK_WIDGET (self->inspector),
+                             inspector_img);
+
   /* setup timeline */
   self->timeline = arranger_widget_new (ARRANGER_TYPE_TIMELINE,
                                         &PROJECT->snap_grid_timeline);
@@ -442,9 +457,11 @@ main_window_widget_new (ZrythmApp * _app)
 
   /* setup browser */
   self->browser = browser_widget_new ();
+  GtkWidget * plugins_img = gtk_image_new_from_icon_name ("list-add",
+                                                          GTK_ICON_SIZE_BUTTON);
   gtk_notebook_prepend_page (self->right_notebook,
                              GTK_WIDGET (self->browser),
-                             gtk_label_new ("Plugins"));
+                             plugins_img);
   gtk_widget_show_all (GTK_WIDGET (self->right_notebook));
 
   /* setup bot toolbar */

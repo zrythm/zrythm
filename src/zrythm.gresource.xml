@@ -6,6 +6,11 @@
     <file preprocess="xml-stripblanks">ui/channel.ui</file>
     <file preprocess="xml-stripblanks">ui/connections.ui</file>
     <file preprocess="xml-stripblanks">ui/export_dialog.ui</file>
+    <file preprocess="xml-stripblanks">ui/inspector.ui</file>
+    <file preprocess="xml-stripblanks">ui/inspector_ap.ui</file>
+    <file preprocess="xml-stripblanks">ui/inspector_midi.ui</file>
+    <file preprocess="xml-stripblanks">ui/inspector_region.ui</file>
+    <file preprocess="xml-stripblanks">ui/inspector_track.ui</file>
     <file preprocess="xml-stripblanks">ui/main_window.ui</file>
     <file preprocess="xml-stripblanks">ui/midi_box.ui</file>
     <file preprocess="xml-stripblanks">ui/mixer.ui</file>

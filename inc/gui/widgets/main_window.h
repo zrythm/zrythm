@@ -45,6 +45,7 @@ typedef struct Region Region;
 typedef struct SnapGridWidget SnapGridWidget;
 typedef struct ArrangerWidget ArrangerWidget;
 typedef struct ConnectionsWidget ConnectionsWidget;
+typedef struct InspectorWidget InspectorWidget;
 
 typedef struct _MainWindowWidget
 {
@@ -72,8 +73,8 @@ typedef struct _MainWindowWidget
   GtkBox                   * snap_grid_timeline_box;
   SnapGridWidget           * snap_grid_timeline;
   GtkBox                   * center_box;
-  GtkBox                   * inspector;
-  GtkButton                * inspector_button;
+  GtkNotebook *            inspector_notebook;
+  InspectorWidget          * inspector;
   GtkPaned                 * editor_plus_browser;
   GtkPaned                 * editor;
   GtkBox                   * editor_top;
