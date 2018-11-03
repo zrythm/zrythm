@@ -39,13 +39,18 @@ typedef struct DragDestBoxWidget DragDestBoxWidget;
 
 typedef struct TracklistWidget
 {
-  GtkBox                 parent_instance;  ///< parent paned with master
-  TrackWidget *          master_track_widget;
-  TrackWidget *          track_widgets[100]; ///< track paneds, in the order they appear.
+  GtkBox                        parent_instance;  ///< parent paned with master
+  GtkGestureDrag *              drag;
+  GtkGestureMultiPress *        multipress;
+  GtkGestureMultiPress *        right_mouse_mp;
+  TrackWidget *                 master_track_widget;
+  TrackWidget *                 track_widgets[100]; ///< track paneds, in the order they appear.
                                       ///< invisible tracks do not get stored here,
                                       ///< track widgets are created dynamically
-  int                    num_track_widgets;
-  DragDestBoxWidget *    ddbox; ///< drag destination box for dropping
+  int                           num_track_widgets;
+  Track *                       selected_tracks[100];
+  int                           num_selected_tracks;
+  DragDestBoxWidget *           ddbox; ///< drag destination box for dropping
                                     ///< plugins in
 } TracklistWidget;
 
@@ -76,6 +81,10 @@ tracklist_widget_add_track (TracklistWidget * self,
                             Track *           track,
                             int               pos); ///< position to insert at,
                                                   ///< starting from 0 after master
+
+void
+tracklist_widget_select_track (TracklistWidget * self,
+                               Track *           track);
 
 /**
  * Makes sure all the tracks for channels marked as visible are visible.

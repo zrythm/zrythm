@@ -5,7 +5,6 @@
   <template class="InspectorRegionWidget" parent="GtkGrid">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="hexpand">True</property>
     <child>
       <object class="GtkLabel" id="header">
         <property name="visible">True</property>
@@ -22,7 +21,6 @@
       <object class="GtkEntry">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
-        <property name="hexpand">True</property>
         <property name="text" translatable="yes">region_name</property>
         <property name="placeholder_text" translatable="yes">Enter region name...</property>
       </object>

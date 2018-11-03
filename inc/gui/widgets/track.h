@@ -52,6 +52,7 @@ typedef struct TrackWidget
   GtkPaned *                    track_automation_paned; ///< top is the track part,
                                                       ///< bot is the automation part
   AutomationTracklistWidget *   automation_tracklist_widget;
+  int                           selected; ///< selected or not
   Track *                       track; ///< associated track
 } TrackWidget;
 
@@ -71,6 +72,10 @@ track_widget_new (Track * track);
  */
 void
 track_widget_update_all (TrackWidget * self);
+
+void
+track_widget_select (TrackWidget * self,
+                     int           select); ///< 1 = select, 0 = unselect
 
 /**
  * Makes sure the track widget and its elements have the visibility they should.

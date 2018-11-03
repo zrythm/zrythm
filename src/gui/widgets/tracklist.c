@@ -27,6 +27,7 @@
 #include "audio/track.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/drag_dest_box.h"
+#include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/tracklist.h"
@@ -39,6 +40,148 @@
 static int counter = 0;
 
 G_DEFINE_TYPE (TracklistWidget, tracklist_widget, GTK_TYPE_BOX)
+
+static TrackWidget *
+get_hit_track (TracklistWidget *  self,
+               double            x,
+               double            y)
+{
+  /* go through each child */
+  for(int i = -1; i < self->num_track_widgets; i++)
+    {
+      TrackWidget * tw;
+      if (i == -1)
+        {
+          tw = self->master_track_widget;
+        }
+      else
+        {
+          tw = self->track_widgets[i];
+        }
+
+      GtkAllocation allocation;
+      gtk_widget_get_allocation (GTK_WIDGET (tw->track_automation_paned),
+                                 &allocation);
+
+      gint wx, wy;
+      gtk_widget_translate_coordinates(
+                GTK_WIDGET (self),
+                GTK_WIDGET (tw->track_automation_paned),
+                x,
+                y,
+                &wx,
+                &wy);
+
+      /* if hit */
+      if (wx >= 0 &&
+          wx <= allocation.width &&
+          wy >= 0 &&
+          wy <= allocation.height)
+        {
+          return tw;
+        }
+    }
+  return NULL;
+}
+
+static void
+drag_begin (GtkGestureDrag * gesture,
+               gdouble         start_x,
+               gdouble         start_y,
+               gpointer        user_data)
+{
+
+}
+
+static void
+drag_update (GtkGestureDrag * gesture,
+               gdouble         offset_x,
+               gdouble         offset_y,
+               gpointer        user_data)
+{
+
+}
+
+static void
+drag_end (GtkGestureDrag *gesture,
+               gdouble         offset_x,
+               gdouble         offset_y,
+               gpointer        user_data)
+{
+
+
+}
+
+static void
+show_context_menu ()
+{
+  GtkWidget *menu, *menuitem;
+
+  menu = gtk_menu_new();
+
+  menuitem = gtk_menu_item_new_with_label("Do something");
+
+  /*g_signal_connect(menuitem, "activate",*/
+                   /*(GCallback) view_popup_menu_onDoSomething, treeview);*/
+
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
+
+  gtk_widget_show_all(menu);
+
+  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
+}
+
+static void
+on_right_click (GtkGestureMultiPress *gesture,
+               gint                  n_press,
+               gdouble               x,
+               gdouble               y,
+               gpointer              user_data)
+{
+  TrackWidget * self = (TrackWidget *) user_data;
+
+  if (n_press == 1)
+    {
+      show_context_menu ();
+
+    }
+}
+
+static void
+multipress_pressed (GtkGestureMultiPress *gesture,
+               gint                  n_press,
+               gdouble               x,
+               gdouble               y,
+               gpointer              user_data)
+{
+  TracklistWidget * self = (TracklistWidget *) user_data;
+
+  TrackWidget * hit_tw = get_hit_track (self, x, y);
+  if (hit_tw)
+    {
+      tracklist_widget_select_track (self, hit_tw->track);
+    }
+}
+
+void
+tracklist_widget_select_track (TracklistWidget * self,
+                               Track *           track)
+{
+  /* deselect existing selections */
+  for (int i = 0; i < self->num_selected_tracks; i++)
+    {
+      Track * t = self->selected_tracks[i];
+      track_widget_select (t->widget, 0);
+    }
+
+  /* select track */
+  self->selected_tracks[0] = track;
+  self->num_selected_tracks = 1;
+  track_widget_select (track->widget, 1);
+  inspector_widget_show_selections (INSPECTOR_CHILD_TRACK,
+                                    (void **) self->selected_tracks,
+                                     self->num_selected_tracks);
+}
 
 /**
  * Adds master track.
@@ -176,6 +319,26 @@ tracklist_widget_new ()
       tracklist_widget_add_track (self, channel->track, i);
     }
 
+  /* make widget able to notify */
+  gtk_widget_add_events (GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
+
+  /* make widget focusable */
+  gtk_widget_set_can_focus (GTK_WIDGET (self),
+                           1);
+  gtk_widget_set_focus_on_click (GTK_WIDGET (self),
+                                 1);
+
+  g_signal_connect (G_OBJECT(self->drag), "drag-begin",
+                    G_CALLBACK (drag_begin),  self);
+  g_signal_connect (G_OBJECT(self->drag), "drag-update",
+                    G_CALLBACK (drag_update),  self);
+  g_signal_connect (G_OBJECT(self->drag), "drag-end",
+                    G_CALLBACK (drag_end),  self);
+  g_signal_connect (G_OBJECT (self->multipress), "pressed",
+                    G_CALLBACK (multipress_pressed), self);
+  g_signal_connect (G_OBJECT (self->right_mouse_mp), "pressed",
+                    G_CALLBACK (on_right_click), self);
+
   return self; /* cosmetic */
 }
 
@@ -199,6 +362,14 @@ tracklist_widget_show (TracklistWidget *self)
 static void
 tracklist_widget_init (TracklistWidget * self)
 {
+  self->drag = GTK_GESTURE_DRAG (
+                gtk_gesture_drag_new (GTK_WIDGET (self)));
+  self->multipress = GTK_GESTURE_MULTI_PRESS (
+                gtk_gesture_multi_press_new (GTK_WIDGET (self)));
+  self->right_mouse_mp = GTK_GESTURE_MULTI_PRESS (
+                gtk_gesture_multi_press_new (GTK_WIDGET (self)));
+  gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (self->right_mouse_mp),
+                                 GDK_BUTTON_SECONDARY);
 }
 
 static void

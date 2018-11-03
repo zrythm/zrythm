@@ -596,12 +596,56 @@ set_state_and_redraw_me_midi_notes (ArrangerWidget *    self,
 static void
 update_inspector (ArrangerWidget *self)
 {
-  inspector_widget_show_selections (INSPECTOR_CHILD_REGION,
-                                    (void **) self->tl_regions,
-                                 self->num_tl_regions);
-  inspector_widget_show_selections (INSPECTOR_CHILD_AP,
-                                    (void **) self->tl_automation_points,
-                                 self->num_tl_automation_points);
+  if (T_MIDI)
+    {
+      inspector_widget_show_selections (INSPECTOR_CHILD_MIDI,
+                                        (void **) self->me_midi_notes,
+                                     self->num_me_midi_notes);
+    }
+  else if (T_TIMELINE)
+    {
+      inspector_widget_show_selections (INSPECTOR_CHILD_REGION,
+                                        (void **) self->tl_regions,
+                                     self->num_tl_regions);
+      inspector_widget_show_selections (INSPECTOR_CHILD_AP,
+                                        (void **) self->tl_automation_points,
+                                     self->num_tl_automation_points);
+    }
+}
+
+static void
+show_context_menu ()
+{
+  GtkWidget *menu, *menuitem;
+
+  menu = gtk_menu_new();
+
+  menuitem = gtk_menu_item_new_with_label("Do something");
+
+  /*g_signal_connect(menuitem, "activate",*/
+                   /*(GCallback) view_popup_menu_onDoSomething, treeview);*/
+
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
+
+  gtk_widget_show_all(menu);
+
+  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
+}
+
+static void
+on_right_click (GtkGestureMultiPress *gesture,
+               gint                  n_press,
+               gdouble               x,
+               gdouble               y,
+               gpointer              user_data)
+{
+  ArrangerWidget * self = (ArrangerWidget *) user_data;
+
+  if (n_press == 1)
+    {
+      show_context_menu ();
+
+    }
 }
 
 /**
@@ -1419,6 +1463,8 @@ arranger_widget_new (ArrangerWidgetType type, SnapGrid * snap_grid)
                     G_CALLBACK (drag_end),  self);
   g_signal_connect (G_OBJECT (self->multipress), "pressed",
                     G_CALLBACK (multipress_pressed), self);
+  g_signal_connect (G_OBJECT (self->right_mouse_mp), "pressed",
+                    G_CALLBACK (on_right_click), self);
 
 
   return self;
@@ -1436,6 +1482,10 @@ arranger_widget_init (ArrangerWidget *self )
                 gtk_gesture_drag_new (GTK_WIDGET (self)));
   self->multipress = GTK_GESTURE_MULTI_PRESS (
                 gtk_gesture_multi_press_new (GTK_WIDGET (self)));
+  self->right_mouse_mp = GTK_GESTURE_MULTI_PRESS (
+                gtk_gesture_multi_press_new (GTK_WIDGET (self)));
+  gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (self->right_mouse_mp),
+                                 GDK_BUTTON_SECONDARY);
 }
 
 /**

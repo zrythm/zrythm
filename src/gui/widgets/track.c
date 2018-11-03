@@ -34,6 +34,8 @@
 #include "gui/widgets/tracklist.h"
 #include "utils/gtk.h"
 
+#include <gtk/gtk.h>
+
 G_DEFINE_TYPE (TrackWidget, track_widget, GTK_TYPE_PANED)
 
 static void
@@ -57,6 +59,32 @@ on_show_automation (GtkWidget * widget, void * data)
   self->track->automations_visible = self->track->automations_visible ? 0 : 1;
 
   tracklist_widget_show (MAIN_WINDOW->tracklist);
+}
+
+gboolean
+on_draw (GtkWidget    * widget,
+         cairo_t        *cr,
+         gpointer      user_data)
+{
+  TrackWidget * self = TRACK_WIDGET (user_data);
+
+  guint width, height;
+  GtkStyleContext *context;
+  context = gtk_widget_get_style_context (widget);
+
+  width = gtk_widget_get_allocated_width (widget);
+  height = gtk_widget_get_allocated_height (widget);
+
+  gtk_render_background (context, cr, 0, 0, width, height);
+
+  if (self->selected)
+    {
+      cairo_set_source_rgba (cr, 1, 1, 1, 0.1);
+      cairo_rectangle (cr, 0, 0, width, height);
+      cairo_fill (cr);
+    }
+
+  return FALSE;
 }
 
 /**
@@ -120,6 +148,8 @@ track_widget_new (Track * track)
                     G_CALLBACK (size_allocate_cb), NULL);
   g_signal_connect (self->show_automation, "clicked",
                     G_CALLBACK (on_show_automation), self);
+  g_signal_connect (self->track_automation_paned, "draw",
+                    G_CALLBACK (on_draw), self);
 
   return self;
 }
@@ -160,6 +190,14 @@ track_widget_class_init (TrackWidgetClass * klass)
                                         track_automation_paned);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 TrackWidget, icon);
+}
+
+void
+track_widget_select (TrackWidget * self,
+                     int           select) ///< 1 = select, 0 = unselect
+{
+  self->selected = select;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 void

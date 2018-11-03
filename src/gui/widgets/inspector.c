@@ -55,6 +55,9 @@ inspector_widget_class_init (InspectorWidgetClass * klass)
                                         bot_box);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         InspectorWidget,
+                                        midi_box);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        InspectorWidget,
                                         no_item_label);
 }
 
@@ -73,6 +76,7 @@ inspector_widget_new ()
   self->track = inspector_track_widget_new ();
   self->region = inspector_region_widget_new ();
   self->ap = inspector_ap_widget_new ();
+  self->midi = inspector_midi_widget_new ();
   gtk_box_pack_start (GTK_BOX (self->track_box),
                       GTK_WIDGET (self->track),
                       Z_GTK_NO_EXPAND,
@@ -85,6 +89,11 @@ inspector_widget_new ()
                       0);
   gtk_box_pack_start (GTK_BOX (self->ap_box),
                       GTK_WIDGET (self->ap),
+                      Z_GTK_NO_EXPAND,
+                      Z_GTK_FILL,
+                      0);
+  gtk_box_pack_start (GTK_BOX (self->midi_box),
+                      GTK_WIDGET (self->midi),
                       Z_GTK_NO_EXPAND,
                       Z_GTK_FILL,
                       0);
@@ -105,6 +114,7 @@ inspector_widget_new ()
   gtk_widget_set_visible (GTK_WIDGET (self->region), 0);
   gtk_widget_set_visible (GTK_WIDGET (self->ap), 0);
   gtk_widget_set_visible (GTK_WIDGET (self->track), 0);
+  gtk_widget_set_visible (GTK_WIDGET (self->midi), 0);
   gtk_widget_set_visible (GTK_WIDGET (self->no_item_label), 1);
 
   return self;
@@ -125,6 +135,10 @@ inspector_widget_show_selections (InspectorWidgetChildType type,
     gtk_widget_set_visible (GTK_WIDGET (self->region), 0);
   else if (type == INSPECTOR_CHILD_AP)
     gtk_widget_set_visible (GTK_WIDGET (self->ap), 0);
+  else if (type == INSPECTOR_CHILD_TRACK)
+    gtk_widget_set_visible (GTK_WIDGET (self->track), 0);
+  else if (type == INSPECTOR_CHILD_MIDI)
+    gtk_widget_set_visible (GTK_WIDGET (self->midi), 0);
   gtk_widget_set_visible (GTK_WIDGET (self->no_item_label), 0);
   if (num_selections > 0)
     {
@@ -161,6 +175,8 @@ inspector_widget_show_selections (InspectorWidgetChildType type,
 
   /* if nothing is visible, show "no item selected" */
   if (!gtk_widget_get_visible (GTK_WIDGET (self->region)) &&
-      !gtk_widget_get_visible (GTK_WIDGET (self->region)))
+      !gtk_widget_get_visible (GTK_WIDGET (self->midi)) &&
+      !gtk_widget_get_visible (GTK_WIDGET (self->track)) &&
+      !gtk_widget_get_visible (GTK_WIDGET (self->ap)))
     gtk_widget_set_visible (GTK_WIDGET (self->no_item_label), 1);
 }

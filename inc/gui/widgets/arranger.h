@@ -82,6 +82,7 @@ typedef struct ArrangerWidget
   GtkDrawingArea           * bg;
   GtkGestureDrag           * drag;
   GtkGestureMultiPress     * multipress;
+  GtkGestureMultiPress     * right_mouse_mp;
   double                   last_offset_x;  ///< for dragging regions, selections
   double                   last_offset_y;  ///< for selections
   ArrangerWidgetAction     action;
