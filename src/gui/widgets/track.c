@@ -26,6 +26,7 @@
 #include "audio/automation_track.h"
 #include "audio/track.h"
 #include "audio/region.h"
+#include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/color_area.h"
@@ -198,6 +199,9 @@ track_widget_select (TrackWidget * self,
 {
   self->selected = select;
   gtk_widget_queue_draw (GTK_WIDGET (self));
+  arranger_widget_set_channel(
+              MIDI_EDITOR->midi_arranger,
+              self->track->channel);
 }
 
 void

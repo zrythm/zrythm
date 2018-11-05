@@ -156,15 +156,16 @@ port_new_with_data (nframes_t    nframes,
  * Deletes port, doing required cleanup and updating counters.
  */
 void
-port_delete (Port * port)
+port_free (Port * port)
 {
-  engine_delete_port (port);
+  port_disconnect_all (port);
 
   if (port->label)
-    free (port->label);
+    g_free (port->label);
   if (port->buf)
     free (port->buf);
 
+  array_delete ((void **) PROJECT->ports, &PROJECT->num_ports, port);
   free (port);
 }
 
@@ -225,8 +226,31 @@ port_disconnect (Port * src, Port * dest)
   g_assert (src);
   g_assert (dest);
   /* disconnect dest from src */
-  arrays_delete ((void **)src->dests, &src->num_dests, dest);
-  arrays_delete ((void **)dest->srcs, &dest->num_srcs, src);
+  array_delete ((void **)src->dests, &src->num_dests, dest);
+  array_delete ((void **)dest->srcs, &dest->num_srcs, src);
+  return 0;
+}
+
+/**
+ * Disconnects all srcs and dests from port.
+ */
+int
+port_disconnect_all (Port * port)
+{
+  g_assert (port);
+
+  FOREACH_SRCS (port)
+    {
+      Port * src = port->srcs[i];
+      port_disconnect (src, port);
+    }
+
+  FOREACH_DESTS (port)
+    {
+      Port * dest = port->dests[i];
+      port_disconnect (port, dest);
+    }
+
   return 0;
 }
 

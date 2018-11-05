@@ -30,6 +30,8 @@
 #include <jack/jack.h>
 
 #define MAX_DESTINATIONS 23
+#define FOREACH_SRCS(port) for (int i = 0; i < port->num_srcs; i++)
+#define FOREACH_DESTS(port) for (int i = 0; i < port->num_dests; i++)
 
 typedef struct Plugin Plugin;
 
@@ -142,7 +144,7 @@ stereo_ports_new (Port * l, Port * r);
  * Deletes port, doing required cleanup and updating counters.
  */
 void
-port_delete (Port * port);
+port_free (Port * port);
 
 /**
  * Connets src to dest.
@@ -185,5 +187,11 @@ port_print_connections_all ();
  */
 void
 port_clear_buffer (Port * port);
+
+/**
+ * Disconnects all srcs and dests from port.
+ */
+int
+port_disconnect_all (Port * port);
 
 #endif

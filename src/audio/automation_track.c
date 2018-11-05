@@ -282,7 +282,7 @@ void
 automation_track_remove_ap (AutomationTrack * at,
                             AutomationPoint * ap)
 {
-  arrays_delete ((void **) at->automation_points,
+  array_delete ((void **) at->automation_points,
                  &at->num_automation_points,
                  ap);
   automation_point_free (ap);

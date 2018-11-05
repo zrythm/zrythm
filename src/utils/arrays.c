@@ -22,7 +22,7 @@
 #include "utils/arrays.h"
 
 void
-arrays_delete (void ** array, int * size, void * element)
+array_delete (void ** array, int * size, void * element)
 {
   for (int i = 0; i < (* size); i++)
     {
@@ -39,10 +39,20 @@ arrays_delete (void ** array, int * size, void * element)
 }
 
 /**
+ * Appends element to the end of array array and increases the size.
+ */
+void
+array_append (void ** array, int * size, void * element)
+{
+  array[(* size)] = element;
+  (* size)++;
+}
+
+/**
  * Inserts element in array at pos and increases the size.
  */
 void
-arrays_insert (void ** array, int * size, int pos, void * element)
+array_insert (void ** array, int * size, int pos, void * element)
 {
   for (int i = pos; i < (* size); i++)
     {
@@ -58,9 +68,9 @@ arrays_insert (void ** array, int * size, int pos, void * element)
  * TODO rename arrays to array
  */
 int
-arrays_includes (void ** array, int * size, void * element)
+array_contains (void ** array, int size, void * element)
 {
-  for (int i = 0; i < (* size); i++)
+  for (int i = 0; i < size; i++)
     {
       if (array[i] == element)
         return 1;

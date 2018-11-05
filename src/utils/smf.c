@@ -223,7 +223,7 @@ smf_load_region (const char    * file,   ///< file to load
                   /*position_add_frames (&notes[i].end_pos,*/
                                        /*frames);*/
                   position_set_tick (&notes[i].end_pos, ticks);
-                  arrays_delete (notes, &num_notes, &notes[i]);
+                  array_delete (notes, &num_notes, &notes[i]);
                   break;
                 }
             }

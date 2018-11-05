@@ -195,7 +195,7 @@ automation_tracklist_widget_add_automation_track (AutomationTracklistWidget * se
     }
 
   /* insert into array */
-  arrays_insert ((void **) self->automation_track_widgets,
+  array_insert ((void **) self->automation_track_widgets,
                  &self->num_automation_track_widgets,
                  pos,
                  at_widget);

@@ -21,6 +21,7 @@
 
 #include "project.h"
 #include "audio/transport.h"
+#include "audio/midi.h"
 #include "gui/widgets/main_window.h"
 
 #include <gtk/gtk.h>
@@ -51,6 +52,8 @@ stop_clicked_cb (GtkButton *button,
     }
   else
     transport_request_pause ();
+
+  midi_panic_all ();
 }
 
 static void

@@ -31,6 +31,7 @@
 #include "audio/mixer.h"
 #include "audio/track.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/mixer.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 
@@ -154,4 +155,28 @@ mixer_get_channel_at_pos (int pos)
           return channel;
         }
     }
+  g_warning ("No channel found at pos %d", pos);
+  return NULL;
 }
+
+/**
+ * Removes the given channel.
+ */
+void
+mixer_remove_channel (Channel * channel)
+{
+  AUDIO_ENGINE->run = 0;
+  channel->enabled = 0;
+  channel->stop_thread = 1;
+  mixer_widget_remove_channel (channel);
+  tracklist_widget_remove_track (channel->track);
+  for (int i = channel->id; i < MIXER->num_channels - 1; i++)
+    {
+      MIXER->channels[i] = MIXER->channels[i + 1];
+      MIXER->channels[i]->id = i;
+    }
+  MIXER->num_channels--;
+  channel_free (channel);
+  g_message ("removed channel");
+}
+

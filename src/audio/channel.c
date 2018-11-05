@@ -386,9 +386,9 @@ channel_create (int     type, char * label)             ///< the channel type (A
   channel->type = type;
 
   /*gdk_rgba_parse (&channel->color, "rgb(20%,60%,4%)");*/
-  channel->color.red = rand () % 11 / 10.0;
-  channel->color.green = rand () % 11 / 10.0;
-  channel->color.blue = rand () % 11 / 10.0;
+  channel->color.red = rand () % 9 / 10.0;
+  channel->color.green = rand () % 9 / 10.0;
+  channel->color.blue = rand () % 9 / 10.0;
   channel->color.alpha = 1.0;
   channel->output = MIXER->master;
 
@@ -798,3 +798,37 @@ channel_get_fader_automatable (Channel * channel)
     }
   return NULL;
 }
+
+/**
+ * Frees the channel.
+ */
+void
+channel_free (Channel * channel)
+{
+  g_assert (channel);
+
+  g_free (channel->name);
+  FOREACH_STRIP
+    {
+      Plugin * pl = channel->strip[i];
+      if (pl)
+        {
+          plugin_free (pl);
+        }
+    }
+  port_free (channel->stereo_in->l);
+  port_free (channel->stereo_in->r);
+  port_free (channel->midi_in);
+  port_free (channel->piano_roll);
+  port_free (channel->stereo_out->l);
+  port_free (channel->stereo_out->r);
+
+  track_free (channel->track);
+
+  FOREACH_AUTOMATABLE (channel)
+    {
+      Automatable * a = channel->automatables[i];
+      automatable_free (a);
+    }
+}
+

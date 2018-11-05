@@ -93,3 +93,18 @@ midi_panic (MidiEvents * events)
   ev->buffer[1] = 0x7B;
   ev->buffer[2] = 0x00;
 }
+
+/**
+ * Queues MIDI note off to event queue.
+ */
+void
+midi_panic_all ()
+{
+  midi_panic (&AUDIO_ENGINE->midi_editor_manual_press->midi_events);
+
+  for (int i = 0; i < MIXER->num_channels; i++)
+    {
+      Channel * channel = MIXER->channels[i];
+      midi_panic (&channel->piano_roll->midi_events);
+    }
+}

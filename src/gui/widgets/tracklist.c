@@ -36,9 +36,6 @@
 #include "utils/gtk.h"
 #include "utils/ui.h"
 
-/* FIXME find an algorithm to name new channels */
-static int counter = 0;
-
 G_DEFINE_TYPE (TracklistWidget, tracklist_widget, GTK_TYPE_BOX)
 
 static TrackWidget *
@@ -52,7 +49,7 @@ get_hit_track (TracklistWidget *  self,
       TrackWidget * tw;
       if (i == -1)
         {
-          tw = self->master_track_widget;
+          tw = self->master_tw;
         }
       else
         {
@@ -112,22 +109,142 @@ drag_end (GtkGestureDrag *gesture,
 
 }
 
+/**
+ * Removes the given track from the tracklist.
+ */
+void
+tracklist_widget_remove_track (Track * track)
+{
+  TracklistWidget * self = MW_TRACKLIST;
+
+  FOREACH_TW
+    {
+      Track * t = self->track_widgets[i]->track;
+      if (t == track)
+        {
+          int pos = i;
+          TrackWidget * tw = t->widget;
+
+          /* get parent track widget */
+          TrackWidget * parent_tw = pos == 0 ?
+                                              self->master_tw :
+                                              self->track_widgets[pos - 1];
+
+          /* if track to delete is last widget */
+          if (pos == self->num_track_widgets - 1)
+            {
+              /* remove ddbox from track, remove track from parent
+               * and add ddbox to parent track widget */
+              g_object_ref (self->ddbox);
+              gtk_container_remove (GTK_CONTAINER (tw),
+                                    GTK_WIDGET (self->ddbox));
+              gtk_container_remove (GTK_CONTAINER (parent_tw),
+                                    GTK_WIDGET (tw));
+              gtk_paned_pack2 (GTK_PANED (parent_tw),
+                               GTK_WIDGET (self->ddbox),
+                               Z_GTK_RESIZE,
+                               Z_GTK_SHRINK);
+              g_object_unref (self->ddbox);
+            }
+          else /* if parent is not last widget */
+            {
+              /* remove child track from track, remove track from parent
+               * and add child track to parent */
+              TrackWidget * child_tw;
+              if (parent_tw == self->master_tw)
+                {
+                  child_tw = self->master_tw;
+                }
+              else
+                {
+                  child_tw = self->track_widgets[pos];
+                }
+              g_object_ref (child_tw);
+              gtk_container_remove (GTK_CONTAINER (tw),
+                                    GTK_WIDGET (child_tw));
+              gtk_container_remove (GTK_CONTAINER (parent_tw),
+                                    GTK_WIDGET (tw));
+              gtk_paned_pack2 (GTK_PANED (parent_tw),
+                               GTK_WIDGET (child_tw),
+                               Z_GTK_RESIZE,
+                               Z_GTK_SHRINK);
+              g_object_unref (child_tw);
+            }
+
+          /* delete from array */
+          array_delete ((void **) self->track_widgets,
+                         &self->num_track_widgets,
+                         tw);
+
+        }
+    }
+  gtk_widget_destroy (GTK_WIDGET (track->widget));
+}
+
+/**
+ * Delete track(s) action handler.
+ */
+static void
+on_delete_tracks ()
+{
+  TracklistWidget * self = MW_TRACKLIST;
+
+  FOREACH_SELECTED_TRACKS
+    {
+      Track * track = self->selected_tracks[i];
+      mixer_remove_channel (track->channel);
+    }
+}
+
+static void
+on_add_ins_track ()
+{
+  TracklistWidget * self = MW_TRACKLIST;
+
+  Channel * chan = channel_create (CT_MIDI, "Instrument Track");
+  mixer_add_channel_and_init_track (chan);
+  mixer_widget_add_channel (MIXERW, chan);
+  tracklist_widget_add_track (self, chan->track, self->num_track_widgets);
+}
+
 static void
 show_context_menu ()
 {
-  GtkWidget *menu, *menuitem;
+  TracklistWidget * self = MW_TRACKLIST;
 
+  GtkWidget *menu, *menuitem;
   menu = gtk_menu_new();
 
-  menuitem = gtk_menu_item_new_with_label("Do something");
-
-  /*g_signal_connect(menuitem, "activate",*/
-                   /*(GCallback) view_popup_menu_onDoSomething, treeview);*/
-
-  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
+  if (self->num_selected_tracks > 0)
+    {
+      char * str;
+      if (self->num_selected_tracks == 1)
+        str = g_strdup_printf ("Delete Track");
+      else
+        str = g_strdup_printf ("Delete %d Tracks", self->num_selected_tracks);
+      menuitem = gtk_menu_item_new_with_label(str);
+      g_free (str);
+      g_signal_connect(menuitem, "activate",
+                       (GCallback) on_delete_tracks, NULL);
+      gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
+    }
+  else
+    {
+      menuitem = gtk_menu_item_new_with_label("Add Instrument Track");
+      g_signal_connect(menuitem, "activate",
+                       (GCallback) on_add_ins_track, NULL);
+      gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
+      menuitem = gtk_menu_item_new_with_label("Add Audio Track");
+      /*g_signal_connect(menuitem, "activate",*/
+                       /*(GCallback) on_delete_tracks, NULL);*/
+      gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
+      menuitem = gtk_menu_item_new_with_label("Add Bus");
+      /*g_signal_connect(menuitem, "activate",*/
+                       /*(GCallback) on_delete_tracks, NULL);*/
+      gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
+    }
 
   gtk_widget_show_all(menu);
-
   gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
 }
 
@@ -138,12 +255,46 @@ on_right_click (GtkGestureMultiPress *gesture,
                gdouble               y,
                gpointer              user_data)
 {
-  TrackWidget * self = (TrackWidget *) user_data;
+  TracklistWidget * self = (TracklistWidget *) user_data;
+
+  if (!gtk_widget_has_focus (GTK_WIDGET (self)))
+    gtk_widget_grab_focus (GTK_WIDGET (self));
+
+  GdkEventSequence *sequence =
+    gtk_gesture_single_get_current_sequence (GTK_GESTURE_SINGLE (gesture));
+  guint button =
+    gtk_gesture_single_get_current_button (GTK_GESTURE_SINGLE (gesture));
+  const GdkEvent * event =
+    gtk_gesture_get_last_event (GTK_GESTURE (gesture), sequence);
+  GdkModifierType state_mask;
+  gdk_event_get_state (event, &state_mask);
+
+  TrackWidget * hit_tw = get_hit_track (self, x, y);
+  if (hit_tw)
+    {
+      if (!array_contains ((void **)self->selected_tracks,
+                          self->num_selected_tracks,
+                          hit_tw->track))
+        {
+          if (state_mask & GDK_SHIFT_MASK ||
+              state_mask & GDK_CONTROL_MASK)
+            {
+              tracklist_widget_toggle_select_track (self, hit_tw->track, 1);
+            }
+          else
+            {
+              tracklist_widget_toggle_select_track (self, hit_tw->track, 0);
+            }
+        }
+    }
+  else
+    {
+      tracklist_widget_toggle_select_all_tracks (self, 0);
+    }
 
   if (n_press == 1)
     {
       show_context_menu ();
-
     }
 }
 
@@ -156,31 +307,193 @@ multipress_pressed (GtkGestureMultiPress *gesture,
 {
   TracklistWidget * self = (TracklistWidget *) user_data;
 
+  if (!gtk_widget_has_focus (GTK_WIDGET (self)))
+    gtk_widget_grab_focus (GTK_WIDGET (self));
+
+  GdkEventSequence *sequence =
+    gtk_gesture_single_get_current_sequence (GTK_GESTURE_SINGLE (gesture));
+  guint button =
+    gtk_gesture_single_get_current_button (GTK_GESTURE_SINGLE (gesture));
+  const GdkEvent * event =
+    gtk_gesture_get_last_event (GTK_GESTURE (gesture), sequence);
+  GdkModifierType state_mask;
+  gdk_event_get_state (event, &state_mask);
+
   TrackWidget * hit_tw = get_hit_track (self, x, y);
   if (hit_tw)
     {
-      tracklist_widget_select_track (self, hit_tw->track);
+      if (state_mask & GDK_SHIFT_MASK ||
+          state_mask & GDK_CONTROL_MASK)
+        {
+          tracklist_widget_toggle_select_track (self, hit_tw->track, 1);
+        }
+      else
+        {
+          tracklist_widget_toggle_select_track (self, hit_tw->track, 0);
+        }
+    }
+  else
+    {
+      if (!(state_mask & GDK_SHIFT_MASK ||
+          state_mask & GDK_CONTROL_MASK))
+        tracklist_widget_toggle_select_all_tracks (self, 0);
     }
 }
 
-void
-tracklist_widget_select_track (TracklistWidget * self,
-                               Track *           track)
+static gboolean
+on_key_action (GtkWidget *widget,
+               GdkEventKey  *event,
+               gpointer   user_data)
 {
-  /* deselect existing selections */
-  for (int i = 0; i < self->num_selected_tracks; i++)
+  TracklistWidget * self = (TracklistWidget *) user_data;
+
+  if (event->state & GDK_CONTROL_MASK &&
+      event->type == GDK_KEY_PRESS &&
+      event->keyval == GDK_KEY_a)
     {
-      Track * t = self->selected_tracks[i];
-      track_widget_select (t->widget, 0);
+      tracklist_widget_toggle_select_all_tracks (self, 1);
     }
 
-  /* select track */
-  self->selected_tracks[0] = track;
-  self->num_selected_tracks = 1;
-  track_widget_select (track->widget, 1);
+  return FALSE;
+}
+
+/**
+ * Selects or deselects all tracks.
+ */
+void
+tracklist_widget_toggle_select_all_tracks (TracklistWidget *self,
+                                           int              select)
+{
+  self->num_selected_tracks = 0;
+
+  FOREACH_TW
+    {
+      TrackWidget *tw;
+      tw = self->track_widgets[i];
+
+      track_widget_select (tw, select);
+
+      if (select)
+        {
+          /* select track */
+          array_append ((void **) self->selected_tracks,
+                        &self->num_selected_tracks,
+                        tw->track);
+        }
+    }
+
+  /* same for master */
+  TrackWidget *tw;
+  tw = self->master_tw;
+  track_widget_select (tw, select);
+
+  if (select)
+    {
+      /* select track */
+      array_append ((void **) self->selected_tracks,
+                    &self->num_selected_tracks,
+                    tw->track);
+    }
+
+
+  /* show the selected tracks in the inspector */
   inspector_widget_show_selections (INSPECTOR_CHILD_TRACK,
                                     (void **) self->selected_tracks,
                                      self->num_selected_tracks);
+}
+
+void
+tracklist_widget_toggle_select_track (TracklistWidget * self,
+                               Track *           track,
+                               int               append) ///< append to selections
+{
+  if (!append)
+    {
+      /* deselect existing selections */
+      for (int i = 0; i < self->num_selected_tracks; i++)
+        {
+          Track * t = self->selected_tracks[i];
+          track_widget_select (t->widget, 0);
+        }
+      self->num_selected_tracks = 0;
+    }
+
+  /* if already selected */
+  if (array_contains ((void **) self->selected_tracks,
+                       self->num_selected_tracks,
+                       track))
+    {
+      /* deselect track */
+      array_delete ((void **) self->selected_tracks,
+                    &self->num_selected_tracks,
+                    track);
+      track_widget_select (track->widget, 0);
+    }
+  else /* not selected */
+    {
+      /* select track */
+      array_append ((void **) self->selected_tracks,
+                    &self->num_selected_tracks,
+                    track);
+      track_widget_select (track->widget, 1);
+    }
+
+  /* show the selected tracks in the inspector */
+  inspector_widget_show_selections (INSPECTOR_CHILD_TRACK,
+                                    (void **) self->selected_tracks,
+                                     self->num_selected_tracks);
+}
+
+Track *
+tracklist_widget_get_prev_visible_track (Track * track)
+{
+  TracklistWidget * self = MW_TRACKLIST;
+  FOREACH_TW
+    {
+      TrackWidget * tw = self->track_widgets[i];
+      if (tw == track->widget &&
+          i != 0)
+        {
+          return self->track_widgets[i - 1]->track;
+        }
+    }
+  return NULL;
+}
+
+Track *
+tracklist_widget_get_next_visible_track (Track * track)
+{
+  TracklistWidget * self = MW_TRACKLIST;
+  FOREACH_TW
+    {
+      TrackWidget * tw = self->track_widgets[i];
+      if (tw == track->widget &&
+          i != self->num_track_widgets - 1)
+        {
+          return self->track_widgets[i + 1]->track;
+        }
+    }
+  return NULL;
+}
+
+Track *
+tracklist_widget_get_bot_track ()
+{
+  TracklistWidget * self = MW_TRACKLIST;
+  if (self->num_track_widgets > 0)
+    return self->track_widgets[self->num_track_widgets - 1]->track;
+  else
+    return NULL;
+}
+
+Track *
+tracklist_widget_get_top_track ()
+{
+  TracklistWidget * self = MW_TRACKLIST;
+  if (self->num_track_widgets > 0)
+    return self->track_widgets[0]->track;
+  else
+    return NULL;
 }
 
 /**
@@ -189,7 +502,7 @@ tracklist_widget_select_track (TracklistWidget * self,
 void
 tracklist_widget_add_master_track (TracklistWidget * self)
 {
-  if (self->master_track_widget)
+  if (self->master_tw)
     {
       g_error ("Master track already added to tracklist");
       return;
@@ -219,7 +532,7 @@ tracklist_widget_add_master_track (TracklistWidget * self)
                       0);
 
 
-  self->master_track_widget = track_widget;
+  self->master_tw = track_widget;
 }
 
 /**
@@ -246,7 +559,7 @@ tracklist_widget_add_track (TracklistWidget * self,
 
   /* get parent track widget */
   TrackWidget * parent_track_widget = pos == 0 ?
-                                      self->master_track_widget :
+                                      self->master_tw :
                                       self->track_widgets[pos - 1];
 
   /* if parent is last widget */
@@ -284,7 +597,7 @@ tracklist_widget_add_track (TracklistWidget * self,
                    Z_GTK_NO_SHRINK);
 
   /* insert into array */
-  arrays_insert ((void **) self->track_widgets,
+  array_insert ((void **) self->track_widgets,
                  &self->num_track_widgets,
                  pos,
                  track_widget);
@@ -338,6 +651,10 @@ tracklist_widget_new ()
                     G_CALLBACK (multipress_pressed), self);
   g_signal_connect (G_OBJECT (self->right_mouse_mp), "pressed",
                     G_CALLBACK (on_right_click), self);
+  g_signal_connect (G_OBJECT (self), "key-press-event",
+                    G_CALLBACK (on_key_action), self);
+  g_signal_connect (G_OBJECT (self), "key-release-event",
+                    G_CALLBACK (on_key_action), self);
 
   return self; /* cosmetic */
 }
@@ -356,7 +673,6 @@ tracklist_widget_show (TracklistWidget *self)
     }
   gtk_widget_show (GTK_WIDGET (self->ddbox));
 }
-
 
 
 static void

@@ -23,20 +23,24 @@
 #define __UTILS_ARRAYS_H__
 
 void
-arrays_delete (void ** array, int * size, void * element);
+array_delete (void ** array, int * size, void * element);
+
+/**
+ * Appends element to the end of array array and increases the size.
+ */
+void
+array_append (void ** array, int * size, void * element);
 
 /**
  * Inserts element in array at pos and increases the size.
  */
 void
-arrays_insert (void ** array, int * size, int pos, void * element);
+array_insert (void ** array, int * size, int pos, void * element);
 
 /**
  * Returns 1 if element exists in array, 0 if not.
- *
- * TODO rename arrays to array
  */
 int
-arrays_includes (void ** array, int * size, void * element);
+array_contains (void ** array, int size, void * element);
 
 #endif /* __UTILS_ARRAYS_H__ */

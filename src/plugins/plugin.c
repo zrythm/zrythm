@@ -236,7 +236,7 @@ clean_ports (Port ** array, int * size)
                 port_disconnect (port, port->dests[j]);
               }
           }
-      port_delete (port);
+      port_free (port);
     }
   (* size) = 0;
 }

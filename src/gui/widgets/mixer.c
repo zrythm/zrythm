@@ -34,8 +34,6 @@
 
 G_DEFINE_TYPE (MixerWidget, mixer_widget, GTK_TYPE_BOX)
 
-static int counter = 0;
-
 MixerWidget *
 mixer_widget_new ()
 {
@@ -125,3 +123,52 @@ mixer_widget_init (MixerWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 }
+
+/**
+ * Removes channel from mixer widget.
+ */
+void
+mixer_widget_remove_channel (Channel * channel)
+{
+  MixerWidget * self = MIXERW;
+
+  /* remove all channels starting from channel */
+  for (int i = channel->id; i < MIXER->num_channels; i++)
+    {
+      Channel * c = MIXER->channels[i];
+
+      gtk_container_remove (GTK_CONTAINER (self->channels_box),
+                            GTK_WIDGET (c->widget));
+    }
+
+  /* remove dnd box & channels add button */
+  g_object_ref (self->ddbox);
+  g_object_ref (self->channels_add);
+  gtk_container_remove (GTK_CONTAINER (self->channels_box),
+                        GTK_WIDGET (self->ddbox));
+  gtk_container_remove (GTK_CONTAINER (self->channels_box),
+                        GTK_WIDGET (self->channels_add));
+
+  /* re-add all channels after channel */
+  for (int i = channel->id; i < MIXER->num_channels; i++)
+    {
+      Channel * c = MIXER->channels[i];
+
+      gtk_box_pack_start (self->channels_box,
+                        GTK_WIDGET (c->widget),
+                        0, 0, 0);
+    }
+
+  /* re-add dnd box & channels add button */
+  gtk_box_pack_start (self->channels_box,
+                      GTK_WIDGET (self->channels_add),
+                      0, 0, 0);
+  gtk_box_pack_start (self->channels_box,
+                      GTK_WIDGET (self->ddbox),
+                      1, 1, 0);
+  g_object_unref (self->ddbox);
+  g_object_unref (self->channels_add);
+
+  gtk_widget_destroy (GTK_WIDGET (channel->widget));
+}
+

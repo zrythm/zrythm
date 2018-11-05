@@ -59,6 +59,7 @@ typedef enum ArrangerWidgetAction
   ARRANGER_ACTION_RESIZING_R,
   ARRANGER_ACTION_STARTING_MOVING, ///< in drag_start
   ARRANGER_ACTION_MOVING,
+  ARRANGER_ACTION_STARTING_CHANGING_CURVE,
   ARRANGER_ACTION_CHANGING_CURVE,
   ARRANGER_ACTION_STARTING_SELECTION, ///< used in drag_start, useful to check If
                                     ///< nothing was clicked
@@ -86,15 +87,17 @@ typedef struct ArrangerWidget
   double                   last_offset_x;  ///< for dragging regions, selections
   double                   last_offset_y;  ///< for selections
   ArrangerWidgetAction     action;
-  Region *                 tl_regions[800];  ///< regions doing action upon (timeline)
-  Region *                 tl_start_region;
+  Region *                 tl_regions[600];  ///< regions doing action upon (timeline)
+  Region *                 tl_start_region; ///< clicked region
+  Region *                 tl_top_region; ///< highest selected region
+  Region *                 tl_bot_region; ///< lowest selected region
   int                      num_tl_regions;
-  AutomationPoint *        tl_automation_points[800];  ///< automation points doing action upon (timeline)
+  AutomationPoint *        tl_automation_points[600];  ///< automation points doing action upon (timeline)
   AutomationPoint *        tl_start_ap;
   int                      num_tl_automation_points;
   Region                   * me_selected_region; ///< selected region for editing MIDI
   Channel                  * me_selected_channel; ///< Midi EDitor selected chan
-  MidiNote *               me_midi_notes[800];  ///< MIDI notes doing action upon (midi)
+  MidiNote *               me_midi_notes[600];  ///< MIDI notes doing action upon (midi)
   MidiNote *               me_start_midi_note; ///< original MIdi note doing action
                                               ///< upon. this is the note that was
                                               ///< clicked, even though there could
@@ -102,9 +105,15 @@ typedef struct ArrangerWidget
   int                      num_me_midi_notes;
   double                   start_x; ///< for dragging
   double                   start_y; ///< for dragging
+
   double                   start_pos_px; ///< for moving regions
-  Position                 start_pos; ///< for moving regions
+  Position                 tl_region_start_poses[600]; ///< region initial start positions, for moving regions
+  Position                 tl_ap_poses[600]; ///< for moving regions
+  Position                 me_midi_note_start_poses[600]; ///< for moving regions
+  Position                 start_pos; ///< useful for moving
   Position                 end_pos; ///< for moving regions
+  /* end */
+
   int                      n_press; ///< for multipress
   SnapGrid                 * snap_grid; ///< associated snap grid
 } ArrangerWidget;
@@ -140,6 +149,30 @@ arranger_get_x_pos_in_px (Position * pos);
 void
 arranger_bg_draw_selections (ArrangerWidget * arranger,
                              cairo_t *        cr);
+
+/**
+ * Selects the region.
+ *
+ * NOTE for timeline.
+ */
+void
+arranger_widget_toggle_select_region (ArrangerWidget * self,
+                                      Region         * region,
+                                      int              append);
+
+void
+arranger_widget_toggle_select_automation_point (ArrangerWidget * self,
+                                      AutomationPoint         * ap,
+                                      int              append);
+
+void
+arranger_widget_toggle_select_midi_note (ArrangerWidget * self,
+                                      MidiNote         * midi_note,
+                                      int              append);
+
+void
+arranger_widget_select_all (ArrangerWidget *  self,
+                                   int               select);
 
 GType arranger_widget_get_type(void);
 

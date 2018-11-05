@@ -81,7 +81,4 @@ engine_update_frames_per_tick (int beats_per_bar,
                                int bpm,
                                int sample_rate);
 
-void
-engine_delete_port (Port * port);
-
 #endif

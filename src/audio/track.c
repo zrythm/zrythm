@@ -89,7 +89,7 @@ void
 track_delete_automation_track (Track *           track,
                                AutomationTrack * at)
 {
-  arrays_delete ((gpointer) track->automation_tracks,
+  array_delete ((gpointer) track->automation_tracks,
                  &track->num_automation_tracks,
                  at);
   automation_track_free (at);
@@ -197,6 +197,14 @@ track_remove_region (Track    * track,
   g_warning ("region not found in track");
 }
 
+/**
+ * Frees the track.
+ *
+ * TODO
+ */
+void
+track_free (Track * track)
+{
 
-
+}
 

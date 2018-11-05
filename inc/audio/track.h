@@ -89,4 +89,12 @@ void
 track_delete_automation_track (Track *           track,
                                AutomationTrack * at);
 
+/**
+ * Frees the track.
+ *
+ * TODO
+ */
+void
+track_free (Track * track);
+
 #endif // __AUDIO_TRACK_H__

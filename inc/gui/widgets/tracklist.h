@@ -34,6 +34,11 @@
 #define IS_TRACKLIST_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), TRACKLIST_WIDGET_TYPE))
 #define TRACKLIST_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), TRACKLIST_WIDGET_TYPE, TracklistWidgetClass))
 
+#define FOREACH_SELECTED_TRACKS for (int i = 0; i < self->num_selected_tracks; \
+                                     i++)
+#define FOREACH_TW for (int i = 0; i < self->num_track_widgets; i++)
+#define MW_TRACKLIST MAIN_WINDOW->tracklist
+
 typedef struct TrackWidget TrackWidget;
 typedef struct DragDestBoxWidget DragDestBoxWidget;
 
@@ -42,8 +47,8 @@ typedef struct TracklistWidget
   GtkBox                        parent_instance;  ///< parent paned with master
   GtkGestureDrag *              drag;
   GtkGestureMultiPress *        multipress;
-  GtkGestureMultiPress *        right_mouse_mp;
-  TrackWidget *                 master_track_widget;
+  GtkGestureMultiPress *        right_mouse_mp; ///< right mouse multipress
+  TrackWidget *                 master_tw; ///< master track widget
   TrackWidget *                 track_widgets[100]; ///< track paneds, in the order they appear.
                                       ///< invisible tracks do not get stored here,
                                       ///< track widgets are created dynamically
@@ -81,15 +86,41 @@ tracklist_widget_add_track (TracklistWidget * self,
                             Track *           track,
                             int               pos); ///< position to insert at,
                                                   ///< starting from 0 after master
+/**
+ * Removes the given track from the tracklist.
+ */
+void
+tracklist_widget_remove_track (Track * track);
 
 void
-tracklist_widget_select_track (TracklistWidget * self,
-                               Track *           track);
+tracklist_widget_toggle_select_track (TracklistWidget * self,
+                               Track *           track,
+                               int               append); ///< append to selections
+
+/**
+ * Selects or deselects all tracks.
+ */
+void
+tracklist_widget_toggle_select_all_tracks (TracklistWidget *self,
+                                           int              select);
 
 /**
  * Makes sure all the tracks for channels marked as visible are visible.
  */
 void
 tracklist_widget_show (TracklistWidget *self);
+
+
+Track *
+tracklist_widget_get_top_track ();
+
+Track *
+tracklist_widget_get_prev_visible_track (Track * track);
+
+Track *
+tracklist_widget_get_next_visible_track (Track * track);
+
+Track *
+tracklist_widget_get_bot_track ();
 
 #endif

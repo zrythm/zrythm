@@ -52,7 +52,7 @@ on_drag_data_received (GtkWidget        *widget,
   if (plugin_instantiate (plugin) < 0)
     {
       GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
-      GtkWidget * dialog = gtk_message_dialog_new (GTK_WIDGET (MAIN_WINDOW),
+      GtkWidget * dialog = gtk_message_dialog_new (GTK_WINDOW (MAIN_WINDOW),
                                        flags,
                                        GTK_MESSAGE_ERROR,
                                        GTK_BUTTONS_CLOSE,
@@ -145,7 +145,7 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
       /*cairo_close_path (cr);*/
       /*cairo_fill (cr);*/
     /*}*/
-
+  return FALSE;
 }
 
 static gboolean
@@ -169,6 +169,7 @@ button_press_cb (GtkWidget      * widget,
             }
         }
     }
+  return FALSE;
 }
 
 static void

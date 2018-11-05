@@ -83,6 +83,8 @@ automatable_create_lv2_control (Plugin *       plugin,
 int
 automatable_is_bool (Automatable * automatable)
 {
+
+  return 0;
 }
 
 int

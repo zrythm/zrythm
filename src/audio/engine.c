@@ -463,16 +463,3 @@ close_audio_engine ()
 
     jack_client_close (AUDIO_ENGINE->client);
 }
-
-/**
- * FIXME move to project
- */
-void
-engine_delete_port (Port * port)
-{
-  for (int i = port->id; i < PROJECT->num_ports - 1; i++)
-    {
-      PROJECT->ports[i] = PROJECT->ports[i + 1];
-    }
-  PROJECT->num_ports--;
-}

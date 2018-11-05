@@ -29,6 +29,7 @@
 
 #define MIXER AUDIO_ENGINE->mixer
 #define STRIP_SIZE 9 /* mixer strip size (number of plugin slots) */
+#define FOREACH_CH for (int i = 0; i < MIXER->num_channels; i++)
 
 typedef jack_default_audio_sample_t   sample_t;
 typedef jack_nframes_t                nframes_t;
@@ -82,5 +83,11 @@ mixer_add_channel_and_init_track (Channel * channel);
 
 void
 mixer_add_master_and_init_track (Channel * channel);
+
+/**
+ * Removes the given channel.
+ */
+void
+mixer_remove_channel (Channel * channel);
 
 #endif

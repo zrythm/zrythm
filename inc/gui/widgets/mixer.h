@@ -33,6 +33,8 @@
 #define IS_MIXER_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), MIXER_WIDGET_TYPE))
 #define MIXER_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), MIXER_WIDGET_TYPE, MixerWidgetClass))
 
+#define MIXERW MAIN_WINDOW->mixer
+
 typedef struct DragDestBoxWidget DragDestBoxWidget;
 
 typedef struct MixerWidget
@@ -59,5 +61,11 @@ mixer_widget_new ();
  */
 void
 mixer_widget_add_channel (MixerWidget * self, Channel * channel);
+
+/**
+ * Removes channel from mixer widget.
+ */
+void
+mixer_widget_remove_channel (Channel * channel);
 
 #endif

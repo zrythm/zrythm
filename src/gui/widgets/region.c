@@ -81,13 +81,21 @@ draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
   gtk_render_background (context, cr, 0, 0, width, height);
 
   GdkRGBA * color = &self->region->track->channel->color;
-  if (self->state != RW_STATE_NONE)
+  if (self->hover)
     {
       cairo_set_source_rgba (cr,
-                             color->red + 0.1,
-                             color->green + 0.1,
-                             color->blue + 0.1,
-                             0.7);
+                             color->red + 0.2,
+                             color->green + 0.2,
+                             color->blue + 0.2,
+                             0.8);
+    }
+  else if (self->selected)
+    {
+      cairo_set_source_rgba (cr,
+                             color->red + 0.4,
+                             color->green + 0.4,
+                             color->blue + 0.4,
+                             0.8);
     }
   else
     {
@@ -112,23 +120,26 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
 
   if (event->type == GDK_MOTION_NOTIFY)
     {
+      /* set hover state */
+      self->hover = 1;
+
+      /* set cursor state */
       if (event->x < RESIZE_CURSOR_SPACE)
         {
-          self->state = RW_STATE_RESIZE_L;
+          self->cursor_state = RWS_CURSOR_RESIZE_L;
           if (MW_TIMELINE->action != ARRANGER_ACTION_MOVING)
             ui_set_cursor (widget, "w-resize");
         }
 
       else if (event->x > allocation.width - RESIZE_CURSOR_SPACE)
         {
-          self->state = RW_STATE_RESIZE_R;
+          self->cursor_state = RWS_CURSOR_RESIZE_R;
           if (MW_TIMELINE->action != ARRANGER_ACTION_MOVING)
             ui_set_cursor (widget, "e-resize");
         }
       else
         {
-          if (self->state != RW_STATE_SELECTED)
-            self->state = RW_STATE_HOVER;
+          self->cursor_state = RWS_CURSOR_DEFAULT;
           if (MW_TIMELINE->action != ARRANGER_ACTION_MOVING &&
               MW_TIMELINE->action != ARRANGER_ACTION_RESIZING_L &&
               MW_TIMELINE->action != ARRANGER_ACTION_RESIZING_R)
@@ -137,10 +148,10 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
             }
         }
     }
+  /* if leaving */
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
-      if (self->state != RW_STATE_SELECTED)
-        self->state = RW_STATE_NONE;
+      self->hover = 0;
       if (MAIN_WINDOW->timeline->action != ARRANGER_ACTION_MOVING &&
           MAIN_WINDOW->timeline->action != ARRANGER_ACTION_RESIZING_L &&
           MAIN_WINDOW->timeline->action != ARRANGER_ACTION_RESIZING_R)
@@ -175,18 +186,12 @@ region_widget_new (Region * region)
   return self;
 }
 
-/**
- * Sets hover state and queues draw.
- */
 void
-region_widget_set_state_and_queue_draw (RegionWidget *    self,
-                                        RegionWidgetState      state)
+region_widget_select (RegionWidget * self,
+                      int            select)
 {
-  if (self->state != state)
-    {
-      self->state = state;
-      gtk_widget_queue_draw (GTK_WIDGET (self));
-    }
+  self->selected = select;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 static void

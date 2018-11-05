@@ -76,4 +76,10 @@ midi_events_dequeue (MidiEvents * midi_events);
 void
 midi_panic (MidiEvents * events);
 
+/**
+ * Queues MIDI note off to event queue.
+ */
+void
+midi_panic_all ();
+
 #endif
