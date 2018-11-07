@@ -31,14 +31,20 @@
 #define IS_CONNECTIONS_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), CONNECTIONS_WIDGET_TYPE))
 #define CONNECTIONS_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), CONNECTIONS_WIDGET_TYPE, ConnectionsWidgetClass))
 
+#define CONNECTIONSW MAIN_WINDOW->connections
+
+typedef struct AudioUnitWidget AudioUnitWidget;
+
 typedef struct ConnectionsWidget
 {
   GtkGrid                  parent_instance;
   GtkDrawingArea *         bg;  ///< overlay background
-  GtkComboBoxText *        select_src_combobox;
-  GtkComboBoxText *        select_dest_combobox;
-  GtkViewport *            src_plugin_viewport;
-  GtkViewport *            dest_plugin_viewport;
+  GtkComboBoxText *        select_src_cb;
+  GtkComboBoxText *        select_dest_cb;
+  GtkViewport *            src_au_viewport;
+  AudioUnitWidget *        src_au;
+  GtkViewport *            dest_au_viewport;
+  AudioUnitWidget *        dest_au;
 } ConnectionsWidget;
 
 typedef struct ConnectionsWidgetClass
@@ -48,6 +54,14 @@ typedef struct ConnectionsWidgetClass
 
 ConnectionsWidget *
 connections_widget_new ();
+
+/**
+ * Updates the connections widget.
+ *
+ * Updates the combo boxes.
+ */
+void
+connections_widget_update (ConnectionsWidget * self);
 
 #endif
 

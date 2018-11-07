@@ -141,6 +141,7 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
         {
           self->cursor_state = RWS_CURSOR_DEFAULT;
           if (MW_TIMELINE->action != ARRANGER_ACTION_MOVING &&
+              MW_TIMELINE->action != ARRANGER_ACTION_STARTING_MOVING &&
               MW_TIMELINE->action != ARRANGER_ACTION_RESIZING_L &&
               MW_TIMELINE->action != ARRANGER_ACTION_RESIZING_R)
             {

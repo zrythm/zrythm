@@ -68,7 +68,7 @@ on_add_lane_clicked (GtkWidget * widget, void * data)
 /**
  * For testing.
  */
-void
+static void
 on_show (GtkWidget *widget,
          gpointer   user_data)
 {
@@ -77,7 +77,7 @@ on_show (GtkWidget *widget,
 }
 
 
-void
+static void
 on_selector_changed (GtkComboBox * widget,
                gpointer     user_data)
 {

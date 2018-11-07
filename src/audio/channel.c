@@ -35,6 +35,7 @@
 #include "audio/transport.h"
 #include "plugins/lv2_plugin.h"
 #include "gui/widgets/channel.h"
+#include "gui/widgets/connections.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
@@ -639,6 +640,7 @@ channel_add_plugin (Channel * channel,    ///< the channel
   plugin_generate_automatables (plugin);
   track_update_automation_tracks (channel->track);
   track_widget_update_all (channel->track->widget);
+  connections_widget_update (CONNECTIONSW);
 }
 
 /**
