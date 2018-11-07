@@ -45,6 +45,7 @@ typedef struct Plugin Plugin;
 typedef struct Channel Channel;
 typedef struct RackController RackController;
 typedef struct AudioUnitLabelWidget AudioUnitLabelWidget;
+typedef enum AULType AULType;
 
 typedef struct AudioUnitWidget
 {
@@ -53,6 +54,7 @@ typedef struct AudioUnitWidget
   int                      num_l_labels;
   AudioUnitLabelWidget *   r_labels[400];
   int                      num_r_labels;
+  int                      is_right; ///< 0 for left, 1 for rigth
   GtkLabel *               label;
   GtkBox *                 l_box;
   GtkBox *                 r_box;
@@ -68,19 +70,36 @@ typedef struct AudioUnitWidgetClass
 } AudioUnitWidgetClass;
 
 AudioUnitWidget *
-audio_unit_widget_new ();
+audio_unit_widget_new (int is_right);
 
 void
-audio_unit_widget_set_from_channel (Channel * chan);
+audio_unit_widget_set_from_channel (AudioUnitWidget * self,
+                                    Channel * chan);
 
 void
-audio_unit_widget_set_from_plugin (Plugin * plugin);
+audio_unit_widget_set_from_plugin (AudioUnitWidget *self,
+                                   Plugin * plugin);
 
 void
-audio_unit_widget_set_audio_engine ();
+audio_unit_widget_set_audio_engine (AudioUnitWidget * self);
 
 void
-audio_unit_widget_set_rack_controller (RackController * rc);
+audio_unit_widget_set_rack_controller (AudioUnitWidget * self,
+                                       RackController * rc);
+
+/**
+ * Clears the boxes.
+ */
+void
+audio_unit_widget_clear_ports (AudioUnitWidget * self);
+
+/**
+ * Adds a port to the corresponding box.
+ */
+void
+audio_unit_widget_add_port (AudioUnitWidget * self,
+                            AULType           type,
+                            Port *            port);
 
 #endif
 

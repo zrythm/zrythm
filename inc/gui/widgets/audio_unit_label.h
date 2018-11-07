@@ -41,10 +41,14 @@ typedef enum AULType
 } AULType;
 
 typedef struct Port Port;
+typedef struct AudioUnitWidget AudioUnitWidget;
 
 typedef struct AudioUnitLabelWidget
 {
-  GtkDrawingArea         parent_instance;
+  GtkBox                 parent_instance;
+  GtkDrawingArea *       da;
+  GtkBox *               drag_box;
+  AudioUnitWidget *      parent; ///< the parent audio unit widget
   Port *                 port; ///< the port it corresponds to
   AULType                type;
   int                    hover; ///< hovered or not
@@ -52,7 +56,7 @@ typedef struct AudioUnitLabelWidget
 
 typedef struct AudioUnitLabelWidgetClass
 {
-  GtkDrawingAreaClass    parent_class;
+  GtkBoxClass    parent_class;
 } AudioUnitLabelWidgetClass;
 
 /**
@@ -60,7 +64,8 @@ typedef struct AudioUnitLabelWidgetClass
  */
 AudioUnitLabelWidget *
 audio_unit_label_widget_new (AULType type,
-                             Port *  port);
+                             Port *  port,
+                             AudioUnitWidget * parent);
 
 #endif
 

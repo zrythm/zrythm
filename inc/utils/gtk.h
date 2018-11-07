@@ -22,6 +22,8 @@
 #ifndef __UTILS_GTK_H__
 #define __UTILS_GTK_H__
 
+#include <gtk/gtk.h>
+
 /**
  * For readability, instead of using 0s and 1s.
  */
@@ -48,5 +50,8 @@ enum ZGtkShrink
   Z_GTK_NO_SHRINK,
   Z_GTK_SHRINK
 };
+
+void
+z_gtk_container_remove_all_children (GtkContainer * container);
 
 #endif

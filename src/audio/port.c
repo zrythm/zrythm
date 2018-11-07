@@ -231,6 +231,16 @@ port_disconnect (Port * src, Port * dest)
   return 0;
 }
 
+int
+ports_connected (Port * src, Port * dest)
+{
+  if (array_contains ((void **)src->dests,
+                      src->num_dests,
+                      dest))
+    return 1;
+  return 0;
+}
+
 /**
  * Disconnects all srcs and dests from port.
  */

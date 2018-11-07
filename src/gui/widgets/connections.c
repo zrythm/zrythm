@@ -23,9 +23,98 @@
 #include "audio/mixer.h"
 #include "plugins/plugin.h"
 #include "gui/widgets/audio_unit.h"
+#include "gui/widgets/audio_unit_label.h"
 #include "gui/widgets/connections.h"
 
+#include <gtk/gtk.h>
+
 G_DEFINE_TYPE (ConnectionsWidget, connections_widget, GTK_TYPE_GRID)
+
+static int
+draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
+{
+  guint width, height;
+  GtkStyleContext *context;
+  ConnectionsWidget * self = (ConnectionsWidget *) widget;
+  context = gtk_widget_get_style_context (widget);
+
+  width = gtk_widget_get_allocated_width (widget);
+  height = gtk_widget_get_allocated_height (widget);
+
+  gtk_render_background (context, cr, 0, 0, width, height);
+
+  AudioUnitWidget * src_au = self->src_au;
+  AudioUnitWidget * dest_au = self->dest_au;
+  for (int i = 0; i < src_au->num_r_labels; i++)
+    {
+      AudioUnitLabelWidget * src_aul = src_au->r_labels[i];
+      Port * src_port = src_aul->port;
+      for (int j = 0; j < dest_au->num_l_labels; j++)
+        {
+          AudioUnitLabelWidget * dest_aul = dest_au->l_labels[i];
+          Port * dest_port = dest_aul->port;
+
+          /*g_message ("%s %s", src_port->label, dest_port->label);*/
+
+          if (ports_connected (src_port, dest_port))
+            {
+              /*GtkAllocation allocation;*/
+              /*gtk_widget_get_allocation (GTK_WIDGET (track->widget->track_automation_paned),*/
+                                         /*&allocation);*/
+
+              gint wx, wy;
+              gtk_widget_translate_coordinates(
+                        GTK_WIDGET (self),
+                        GTK_WIDGET (src_aul->drag_box),
+                        0,
+                        0,
+                        &wx,
+                        &wy);
+              g_message ("src x y %d %d", wx, wy);
+              cairo_move_to (cr, wx, wy);
+              gtk_widget_translate_coordinates(
+                        GTK_WIDGET (self),
+                        GTK_WIDGET (dest_aul->drag_box),
+                        0,
+                        0,
+                        &wx,
+                        &wy);
+              g_message ("dest x y %d %d", wx, wy);
+              cairo_line_to (cr, wx, wy);
+              cairo_stroke (cr);
+
+            }
+
+        }
+
+    }
+
+  /*Port * port = self->port;*/
+  /*if ((!self->parent->is_right && self->type == AUL_TYPE_LEFT) ||*/
+      /*(self->parent->is_right && self->type == AUL_TYPE_RIGHT))*/
+    /*{*/
+      /*cairo_set_source_rgba (cr, 0, 0, 0, 1);*/
+    /*}*/
+  /*else if (port->type == TYPE_AUDIO)*/
+    /*{*/
+      /*cairo_set_source_rgba (cr, 1, 0, 0, 1);*/
+    /*}*/
+  /*else if (port->type == TYPE_EVENT)*/
+    /*{*/
+      /*cairo_set_source_rgba (cr, 0, 0, 1, 1);*/
+    /*}*/
+  /*else if (port->type == TYPE_CONTROL)*/
+    /*{*/
+      /*cairo_set_source_rgba (cr, 0, 1, 0, 1);*/
+    /*}*/
+  /*else*/
+    /*{*/
+      /*cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 1);*/
+    /*}*/
+  /*draw_text (cr, self->port->label);*/
+
+  return FALSE;
+}
 
 static void
 on_selector_changed (GtkComboBox * widget,
@@ -36,10 +125,55 @@ on_selector_changed (GtkComboBox * widget,
   GtkTreeIter iter;
   gtk_combo_box_get_active_iter (widget, &iter);
   GtkTreeModel * model = gtk_combo_box_get_model (widget);
-  /*GValue value = G_VALUE_INIT;*/
-  /*gtk_tree_model_get_value (model, &iter, 1, &value);*/
-  /*Automatable * a = g_value_get_pointer (&value);*/
-  /*automation_track_set_automatable (self->at, a);*/
+  GValue value1 = G_VALUE_INIT;
+  gtk_tree_model_get_value (model, &iter, 1, &value1);
+  AUWidgetType type = g_value_get_int (&value1);
+
+  switch (type)
+    {
+    case AUWT_NONE:
+      break;
+    case AUWT_CHANNEL:
+        {
+          GValue value = G_VALUE_INIT;
+          gtk_tree_model_get_value (model, &iter, 2, &value);
+          Channel * chan = g_value_get_pointer (&value);
+          if (GTK_COMBO_BOX (self->select_src_cb) == widget)
+            {
+              audio_unit_widget_set_from_channel (self->src_au,
+                                                  chan);
+            }
+          else
+            {
+              audio_unit_widget_set_from_channel (self->dest_au,
+                                                  chan);
+            }
+        }
+      break;
+    case AUWT_MASTER:
+      break;
+    case AUWT_PLUGIN:
+        {
+          GValue value = G_VALUE_INIT;
+          gtk_tree_model_get_value (model, &iter, 2, &value);
+          Plugin * plugin = g_value_get_pointer (&value);
+          if (GTK_COMBO_BOX (self->select_src_cb) == widget)
+            {
+              audio_unit_widget_set_from_plugin (self->src_au,
+                                                  plugin);
+            }
+          else
+            {
+              audio_unit_widget_set_from_plugin (self->dest_au,
+                                                  plugin);
+            }
+        }
+      break;
+    case AUWT_RACK_CONTROLLER:
+      break;
+    case AUWT_ENGINE:
+      break;
+    }
 }
 
 static GtkTreeModel *
@@ -173,12 +307,20 @@ connections_widget_new ()
   ConnectionsWidget * self = g_object_new (CONNECTIONS_WIDGET_TYPE, NULL);
   setup_combo_box (self->select_src_cb);
   setup_combo_box (self->select_dest_cb);
-  self->src_au = audio_unit_widget_new ();
+  self->src_au = audio_unit_widget_new (0);
   gtk_container_add (GTK_CONTAINER (self->src_au_viewport),
                      GTK_WIDGET (self->src_au));
-  self->dest_au = audio_unit_widget_new ();
+  self->dest_au = audio_unit_widget_new (1);
   gtk_container_add (GTK_CONTAINER (self->dest_au_viewport),
                      GTK_WIDGET (self->dest_au));
+
+  /* connect signals */
+  g_signal_connect (G_OBJECT (self->select_src_cb), "changed",
+                    G_CALLBACK (on_selector_changed), self);
+  g_signal_connect (G_OBJECT (self->select_dest_cb), "changed",
+                    G_CALLBACK (on_selector_changed), self);
+  g_signal_connect (G_OBJECT (self), "draw",
+                    G_CALLBACK (draw_cb), self);
 
   return self;
 }

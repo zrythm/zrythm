@@ -175,6 +175,10 @@ port_sum_signal_from_inputs (Port * port, nframes_t nframes);
  */
 //void
 //port_init_buf (Port *port, nframes_t nframes);
+//
+
+int
+ports_connected (Port * src, Port * dest);
 
 /**
  * Prints all connections.

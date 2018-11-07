@@ -77,12 +77,13 @@ on_show (GtkWidget *widget,
 }
 
 
-static void
-on_selector_changed (GtkComboBox * widget,
+void
+on_at_selector_changed (GtkComboBox * widget,
                gpointer     user_data)
 {
   AutomationTrackWidget * self = AUTOMATION_TRACK_WIDGET (user_data);
 
+  g_message ("selector changed");
   GtkTreeIter iter;
   gtk_combo_box_get_active_iter (widget, &iter);
   GtkTreeModel * model = gtk_combo_box_get_model (widget);
