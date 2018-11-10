@@ -167,10 +167,14 @@ mixer_widget_remove_channel (Channel * channel)
   /* re-add dnd box & channels add button */
   gtk_box_pack_start (self->channels_box,
                       GTK_WIDGET (self->channels_add),
-                      0, 0, 0);
+                      Z_GTK_NO_EXPAND,
+                      Z_GTK_NO_FILL,
+                      0);
   gtk_box_pack_start (self->channels_box,
                       GTK_WIDGET (self->ddbox),
-                      1, 1, 0);
+                      Z_GTK_EXPAND,
+                      Z_GTK_FILL,
+                      0);
   g_object_unref (self->ddbox);
   g_object_unref (self->channels_add);
 

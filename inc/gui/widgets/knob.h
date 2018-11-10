@@ -65,12 +65,12 @@ typedef struct KnobWidgetClass
  */
 KnobWidget *
 knob_widget_new (float (*get_val)(void *),    ///< getter function
-                  void (*set_val)(void *, float),    ///< setter function
-                  void * object,              ///< object to call get/set with
-                  float min,
-                  float max,
-                    int         size,
-                    float       zero);
+                 void (*set_val)(void *, float),    ///< setter function
+                 void * object,              ///< object to call get/set with
+                 float  min,
+                 float  max,
+                 int    size,
+                 float  zero);
 
 
 

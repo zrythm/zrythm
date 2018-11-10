@@ -23,21 +23,22 @@
 #include "gui/widgets/rack_row.h"
 #include "utils/gtk.h"
 
-G_DEFINE_TYPE (RackWidget, rack_widget, GTK_TYPE_BOX)
+G_DEFINE_TYPE (RackWidget, rack_widget, GTK_TYPE_SCROLLED_WINDOW)
 
 RackWidget *
 rack_widget_new ()
 {
   RackWidget * self = g_object_new (RACK_WIDGET_TYPE,
-                                    "orientation",
-                                    GTK_ORIENTATION_VERTICAL,
                                     NULL);
-  gtk_widget_set_valign (GTK_WIDGET (self), GTK_ALIGN_START);
+  self->main_box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  gtk_widget_set_valign (GTK_WIDGET (self->main_box), GTK_ALIGN_START);
+  gtk_container_add (GTK_CONTAINER (self),
+                     GTK_WIDGET (self->main_box));
 
   /* pack the automators row */
   self->rack_rows[0] = rack_row_widget_new (RRW_TYPE_AUTOMATORS,
                                             NULL);
-  gtk_box_pack_start (GTK_BOX (self),
+  gtk_box_pack_start (GTK_BOX (self->main_box),
                       GTK_WIDGET (self->rack_rows[0]),
                       Z_GTK_NO_EXPAND,
                       Z_GTK_NO_FILL,
@@ -45,7 +46,15 @@ rack_widget_new ()
   self->rack_rows[1] = rack_row_widget_new (RRW_TYPE_AUTOMATORS,
                                             NULL);
   self->num_rack_rows = 2;
-  gtk_box_pack_start (GTK_BOX (self),
+  gtk_box_pack_start (GTK_BOX (self->main_box),
+                      GTK_WIDGET (self->rack_rows[1]),
+                      Z_GTK_EXPAND,
+                      Z_GTK_NO_FILL,
+                      0);
+  self->rack_rows[1] = rack_row_widget_new (RRW_TYPE_AUTOMATORS,
+                                            NULL);
+  self->num_rack_rows = 2;
+  gtk_box_pack_start (GTK_BOX (self->main_box),
                       GTK_WIDGET (self->rack_rows[1]),
                       Z_GTK_EXPAND,
                       Z_GTK_NO_FILL,
@@ -56,7 +65,7 @@ rack_widget_new ()
 
   /* pack dummy box */
   self->dummy_box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  gtk_box_pack_end (GTK_BOX (self),
+  gtk_box_pack_end (GTK_BOX (self->main_box),
                     GTK_WIDGET (self->dummy_box),
                     Z_GTK_EXPAND,
                     Z_GTK_FILL,

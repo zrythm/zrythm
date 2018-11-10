@@ -19,8 +19,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/channel.h"
+#include "audio/mixer.h"
 #include "audio/port.h"
 #include "gui/widgets/control.h"
+#include "gui/widgets/knob.h"
+#include "utils/gtk.h"
 
 #include <gtk/gtk.h>
 
@@ -56,6 +60,19 @@ control_widget_new (Port * port)
   ControlWidget * self = g_object_new (CONTROL_WIDGET_TYPE, NULL);
 
   self->port = port;
+
+  self->knob = knob_widget_new (channel_get_phase,
+                                channel_set_phase,
+                                MIXER->master,
+                                0,
+                                100,
+                                18,
+                                0);
+  gtk_box_pack_start (self->knob_box,
+                      GTK_WIDGET (self->knob),
+                      Z_GTK_EXPAND,
+                      Z_GTK_FILL,
+                      0);
 
   return self;
 }

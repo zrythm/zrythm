@@ -35,7 +35,8 @@ typedef struct RackRowWidget RackRowWidget;
 
 typedef struct RackWidget
 {
-  GtkBox                   parent_instance;
+  GtkScrolledWindow        parent_instance;
+  GtkBox *                 main_box;
   RackRowWidget *          rack_rows[120];
   int                      num_rack_rows;
   GtkBox *                 dummy_box; ///< box at the end
@@ -43,7 +44,7 @@ typedef struct RackWidget
 
 typedef struct RackWidgetClass
 {
-  GtkBoxClass               parent_class;
+  GtkScrolledWindowClass     parent_class;
 } RackWidgetClass;
 
 RackWidget *

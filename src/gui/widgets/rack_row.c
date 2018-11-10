@@ -98,6 +98,10 @@ rack_row_widget_new (RRWType              type,
         }
     }
 
+  gtk_widget_set_size_request (GTK_WIDGET (self->box),
+                                -1,
+                                160);
+
   return self;
 }
 

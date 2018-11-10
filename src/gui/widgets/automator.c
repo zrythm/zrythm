@@ -20,6 +20,8 @@
  */
 
 #include "gui/widgets/automator.h"
+#include "gui/widgets/control.h"
+#include "utils/gtk.h"
 
 #include <gtk/gtk.h>
 
@@ -59,6 +61,25 @@ AutomatorWidget *
 automator_widget_new ()
 {
   AutomatorWidget * self = g_object_new (AUTOMATOR_WIDGET_TYPE, NULL);
+
+  self->controls[0] = control_widget_new (NULL);
+  self->controls[1] = control_widget_new (NULL);
+  self->controls[2] = control_widget_new (NULL);
+  gtk_box_pack_start (self->controls_box,
+                      GTK_WIDGET (self->controls[0]),
+                      Z_GTK_NO_EXPAND,
+                      Z_GTK_NO_FILL,
+                      0);
+  gtk_box_pack_start (self->controls_box,
+                      GTK_WIDGET (self->controls[1]),
+                      Z_GTK_NO_EXPAND,
+                      Z_GTK_NO_FILL,
+                      0);
+  gtk_box_pack_start (self->controls_box,
+                      GTK_WIDGET (self->controls[2]),
+                      Z_GTK_NO_EXPAND,
+                      Z_GTK_NO_FILL,
+                      0);
 
   return self;
 }
