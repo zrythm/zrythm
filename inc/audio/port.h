@@ -63,6 +63,8 @@ typedef jack_nframes_t                nframes_t;
 
 typedef struct LV2_Port LV2_Port;
 typedef struct Channel Channel;
+typedef enum PanAlgorithm PanAlgorithm;
+typedef enum PanLaw PanLaw;
 
 /**
  * Must ONLY be created via port_new()
@@ -197,5 +199,15 @@ port_clear_buffer (Port * port);
  */
 int
 port_disconnect_all (Port * port);
+
+/**
+ * Applies the pan to the given L/R ports.
+ */
+void
+port_apply_pan_stereo (Port *       l,
+                       Port *       r,
+                       float        pan,
+                       PanLaw       pan_law,
+                       PanAlgorithm pan_algo);
 
 #endif

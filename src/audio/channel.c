@@ -31,6 +31,7 @@
 #include "audio/automation_track.h"
 #include "audio/channel.h"
 #include "audio/mixer.h"
+#include "audio/pan.h"
 #include "audio/track.h"
 #include "audio/transport.h"
 #include "plugins/lv2_plugin.h"
@@ -112,6 +113,7 @@ void
 channel_process (Channel * channel,  ///< slots
               nframes_t   nframes)    ///< sample count
 {
+  /* clear buffers */
   port_clear_buffer (channel->stereo_in->l);
   port_clear_buffer (channel->stereo_in->r);
   port_clear_buffer (channel->midi_in);
@@ -142,10 +144,12 @@ channel_process (Channel * channel,  ///< slots
   port_sum_signal_from_inputs (channel->stereo_in->l, nframes);
   port_sum_signal_from_inputs (channel->stereo_in->r, nframes);
 
+  /* panic MIDI if necessary */
   if (AUDIO_ENGINE->panic)
     {
       midi_panic (&channel->piano_roll->midi_events);
     }
+  /* get events from track if playing */
   else if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
     {
       track_fill_midi_events (channel->track,
@@ -179,6 +183,13 @@ channel_process (Channel * channel,  ///< slots
   /* same for channel ports */
   port_sum_signal_from_inputs (channel->stereo_out->l, nframes);
   port_sum_signal_from_inputs (channel->stereo_out->r, nframes);
+
+  /* apply pan */
+  port_apply_pan_stereo (channel->stereo_out->l,
+                         channel->stereo_out->r,
+                         channel->pan,
+                         PAN_LAW_MINUS_3DB,
+                         PAN_ALGORITHM_SINE_LAW);
 
   /* apply faders */
   port_apply_fader (channel->stereo_out->l, channel->volume);
@@ -269,8 +280,10 @@ _create_channel (char * name)
       channel->strip[i] = NULL;
     }
 
+  /* set volume, phase, pan */
   channel->volume = 0.0f;
   channel->phase = 0.0f;
+  channel->pan = 0.5f;
 
   /* connect MIDI in port from engine's jack port */
   port_connect (AUDIO_ENGINE->midi_in, channel->midi_in);
@@ -441,6 +454,22 @@ channel_get_volume (void * _channel)
 {
   Channel * channel = (Channel *) _channel;
   return channel->volume;
+}
+
+void
+channel_set_pan (void * _channel, float pan)
+{
+  Channel * channel = (Channel *) _channel;
+  channel->pan = pan;
+  g_idle_add ((GSourceFunc) gtk_widget_queue_draw,
+              GTK_WIDGET (channel->widget->pan));
+}
+
+float
+channel_get_pan (void * _channel)
+{
+  Channel * channel = (Channel *) _channel;
+  return channel->pan;
 }
 
 float

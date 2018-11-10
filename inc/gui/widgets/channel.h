@@ -40,6 +40,7 @@ typedef struct FaderWidget FaderWidget;
 typedef struct ChannelMeterWidget ChannelMeterWidget;
 typedef struct Channel Channel;
 typedef struct ChannelSlotWidget ChannelSlotWidget;
+typedef struct PanWidget PanWidget;
 
 typedef struct ChannelWidget
 {
@@ -61,7 +62,6 @@ typedef struct ChannelWidget
   GtkToggleButton     * slot1b;
   GtkToggleButton     * slot2b;
   //GtkButton           * add_slot;
-  GtkDrawingArea      * pan;
   GtkButton           * e;
   GtkButton           * solo;
   GtkButton           * listen;
@@ -70,6 +70,8 @@ typedef struct ChannelWidget
   GtkBox              * fader_area;
   GtkBox              * meter_area;  ///< vertical including reading
   GtkBox              * meters_box;  ///< box for l/r meters
+  GtkBox *            pan_box;
+  PanWidget *         pan;
   FaderWidget         * fader;
   MeterWidget         * meters[2];    ///< meter widgets (l/r)
   GtkLabel            * meter_reading;

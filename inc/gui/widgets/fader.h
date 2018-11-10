@@ -61,8 +61,8 @@ typedef struct FaderWidget
 {
   GtkDrawingArea         parent_instance;
   GtkGestureDrag         * drag;
-  float (*getter)(void*);       ///< getter
-  void (*setter)(void*, float);       ///< getter
+  float (*getter)(void*); ///< getter
+  void (*setter)(void*, float); ///< setter
   void *                object;
   double                 last_x;
   double                 last_y;

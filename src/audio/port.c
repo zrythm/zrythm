@@ -24,6 +24,8 @@
  * Ports are passed when processing audio signals. They carry buffers
  * with data */
 
+#define M_PIF 3.14159265358979323846f
+
 #include <stdlib.h>
 #include <string.h>
 #if _POSIX_C_SOURCE >= 199309L
@@ -36,6 +38,7 @@
 #include "project.h"
 #include "audio/channel.h"
 #include "audio/mixer.h"
+#include "audio/pan.h"
 #include "audio/port.h"
 #include "plugins/plugin.h"
 #include "utils/arrays.h"
@@ -406,3 +409,25 @@ port_clear_buffer (Port * port)
       port->midi_events.num_events = 0;
     }
 }
+
+/**
+ * Applies the pan to the given L/R ports.
+ */
+void
+port_apply_pan_stereo (Port *       l,
+                       Port *       r,
+                       float        pan,
+                       PanLaw       pan_law,
+                       PanAlgorithm pan_algo)
+{
+  if (pan_algo == PAN_ALGORITHM_SINE_LAW)
+    {
+      for (int i = 0; i < l->nframes; i++)
+        {
+          r->buf[i] *= sinf (pan * (M_PIF / 2.f));
+          l->buf[i] *= sinf ((1.f - pan) * (M_PIF / 2.f));
+        }
+
+    }
+}
+

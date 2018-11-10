@@ -28,7 +28,9 @@
 #include "gui/widgets/channel_slot.h"
 #include "gui/widgets/fader.h"
 #include "gui/widgets/knob.h"
+#include "gui/widgets/pan.h"
 #include "gui/widget_manager.h"
+#include "utils/gtk.h"
 
 #include <gtk/gtk.h>
 
@@ -82,37 +84,53 @@ channel_widget_class_init (ChannelWidgetClass * klass)
                                         ChannelWidget,
                                         output);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ChannelWidget, name);
+                                        ChannelWidget,
+                                        name);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ChannelWidget, phase_invert);
+                                        ChannelWidget,
+                                        phase_invert);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ChannelWidget, phase_reading);
+                                        ChannelWidget,
+                                        phase_reading);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ChannelWidget, phase_controls);
+                                        ChannelWidget,
+                                        phase_controls);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ChannelWidget, slots_box);
+                                        ChannelWidget,
+                                        slots_box);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ChannelWidget, pan);
+                                        ChannelWidget,
+                                        e);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ChannelWidget, e);
+                                        ChannelWidget,
+                                        solo);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ChannelWidget, solo);
+                                        ChannelWidget,
+                                        listen);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ChannelWidget, listen);
+                                        ChannelWidget,
+                                        mute);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ChannelWidget, mute);
+                                        ChannelWidget,
+                                        record);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ChannelWidget, record);
+                                        ChannelWidget,
+                                        fader_area);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ChannelWidget, fader_area);
+                                        ChannelWidget,
+                                        meter_area);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ChannelWidget, meter_area);
+                                        ChannelWidget,
+                                        meters_box);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ChannelWidget, meters_box);
+                                        ChannelWidget,
+                                        meter_reading);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ChannelWidget, meter_reading);
+                                        ChannelWidget,
+                                        icon);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ChannelWidget, icon);
+                                        ChannelWidget,
+                                        pan_box);
   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
                                            phase_invert_button_clicked);
 
@@ -283,6 +301,20 @@ setup_name (ChannelWidget * self)
     }
 }
 
+static void
+setup_pan (ChannelWidget * self)
+{
+  self->pan = pan_widget_new (channel_get_pan,
+                              channel_set_pan,
+                              self->channel,
+                              10);
+  gtk_box_pack_start (self->pan_box,
+                       GTK_WIDGET (self->pan),
+                       Z_GTK_NO_EXPAND,
+                       Z_GTK_FILL,
+                       0);
+}
+
 /**
  * Updates everything on the widget.
  *
@@ -310,6 +342,7 @@ channel_widget_new (Channel * channel)
   setup_slots (self);
   setup_fader (self);
   setup_meter (self);
+  setup_pan (self);
   channel_widget_update_all (self);
 
   GtkWidget * image = gtk_image_new_from_resource (

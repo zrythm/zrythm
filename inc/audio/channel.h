@@ -75,6 +75,7 @@ typedef struct Channel
   int                     soloed;           ///< soloed or not
   GdkRGBA                 color;          ///< see https://ometer.com/gtk-colors.html
   float                   phase;        ///< used by the phase knob (0.0-360.0 value)
+  float                   pan; ///< (0~1) 0.5 is center
 
   /* these are for plugins to connect to if they want
    * processing starts at the first plugin with a clean buffer,
@@ -119,6 +120,12 @@ channel_set_volume (void * channel, float volume);
 
 float
 channel_get_volume (void * channel);
+
+void
+channel_set_pan (void * _channel, float pan);
+
+float
+channel_get_pan (void * _channel);
 
 float
 channel_get_current_l_db (void * _channel);
