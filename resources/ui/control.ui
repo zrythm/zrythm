@@ -37,10 +37,12 @@
     </child>
     <child>
       <object class="GtkToggleButton" id="toggle">
-        <property name="label" translatable="yes">o-&gt;</property>
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
+        <child>
+          <placeholder/>
+        </child>
       </object>
       <packing>
         <property name="expand">False</property>

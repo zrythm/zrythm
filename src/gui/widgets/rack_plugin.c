@@ -38,7 +38,7 @@ rack_plugin_widget_class_init (RackPluginWidgetClass * klass)
                                         name);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         RackPluginWidget,
-                                        power_button);
+                                        power);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         RackPluginWidget,
                                         search_entry);
@@ -56,7 +56,7 @@ rack_plugin_widget_class_init (RackPluginWidgetClass * klass)
                                         out_box);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         RackPluginWidget,
-                                        toggle);
+                                        automate);
 }
 
 static void
@@ -69,6 +69,16 @@ RackPluginWidget *
 rack_plugin_widget_new (Plugin * plugin)
 {
   RackPluginWidget * self = g_object_new (RACK_PLUGIN_WIDGET_TYPE, NULL);
+
+  GtkWidget * image;
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/power.svg");
+  gtk_button_set_image (GTK_BUTTON (self->power),
+                        image);
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/automate.svg");
+  gtk_button_set_image (GTK_BUTTON (self->automate),
+                        image);
 
   return self;
 }

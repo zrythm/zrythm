@@ -74,6 +74,12 @@ control_widget_new (Port * port)
                       Z_GTK_FILL,
                       0);
 
+  GtkWidget * image;
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/automate.svg");
+  gtk_button_set_image (GTK_BUTTON (self->toggle),
+                        image);
+
   return self;
 }
 

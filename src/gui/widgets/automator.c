@@ -39,7 +39,7 @@ automator_widget_class_init (AutomatorWidgetClass * klass)
                                         name);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         AutomatorWidget,
-                                        power_button);
+                                        power);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         AutomatorWidget,
                                         controls_viewport);
@@ -48,7 +48,7 @@ automator_widget_class_init (AutomatorWidgetClass * klass)
                                         controls_box);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         AutomatorWidget,
-                                        toggle);
+                                        automate);
 }
 
 static void
@@ -80,6 +80,16 @@ automator_widget_new ()
                       Z_GTK_NO_EXPAND,
                       Z_GTK_NO_FILL,
                       0);
+
+  GtkWidget * image;
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/power.svg");
+  gtk_button_set_image (GTK_BUTTON (self->power),
+                        image);
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/automate.svg");
+  gtk_button_set_image (GTK_BUTTON (self->automate),
+                        image);
 
   return self;
 }

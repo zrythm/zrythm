@@ -40,7 +40,7 @@ typedef struct RackPluginWidget
 {
   GtkGrid                   parent_instance;
   GtkLabel *                name;
-  GtkButton *               power_button;
+  GtkToggleButton *         power;
   GtkSearchEntry *          search_entry;
   GtkViewport *             in_viewport;
   GtkBox *                  in_box;
@@ -50,7 +50,7 @@ typedef struct RackPluginWidget
   GtkBox *                  out_box;
   ControlWidget *           out_controls[800];
   int                       num_out_controls;
-  GtkToggleButton *         toggle;
+  GtkToggleButton *         automate;
   Plugin *                  plugin; ///< the plugin
 } RackPluginWidget;
 

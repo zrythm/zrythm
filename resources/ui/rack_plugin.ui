@@ -19,26 +19,16 @@
       </packing>
     </child>
     <child>
-      <object class="GtkButton" id="toggle">
-        <property name="label" translatable="yes">o-&gt;</property>
+      <object class="GtkButton" id="automate">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
+        <child>
+          <placeholder/>
+        </child>
       </object>
       <packing>
         <property name="left_attach">3</property>
-        <property name="top_attach">0</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkButton" id="power_button">
-        <property name="label" translatable="yes">Pwr</property>
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="receives_default">True</property>
-      </object>
-      <packing>
-        <property name="left_attach">0</property>
         <property name="top_attach">0</property>
       </packing>
     </child>
@@ -147,6 +137,20 @@
       <packing>
         <property name="left_attach">1</property>
         <property name="top_attach">3</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToggleButton" id="power">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+      <packing>
+        <property name="left_attach">0</property>
+        <property name="top_attach">0</property>
       </packing>
     </child>
     <child>

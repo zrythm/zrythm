@@ -44,9 +44,13 @@
         </child>
         <child type="label">
           <object class="GtkLabel" id="label">
+            <property name="width_request">388</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="margin_left">4</property>
+            <property name="hexpand">True</property>
             <property name="label" translatable="yes">expander</property>
+            <property name="xalign">0</property>
           </object>
         </child>
       </object>

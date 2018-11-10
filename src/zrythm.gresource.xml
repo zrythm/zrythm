@@ -27,16 +27,20 @@
 
     <!-- icons -->
     <file>audio.svg</file>
+    <file>automate.svg</file>
     <file>close.svg</file>
     <file>delete.svg</file>
     <file>instrument.svg</file>
+    <file>inspector.svg</file>
     <file>listen.svg</file>
     <file>maximize.svg</file>
     <file>minimize.svg</file>
     <file>mute.svg</file>
     <file>phase-invert.svg</file>
     <file>play.svg</file>
+    <file>plugins.svg</file>
     <file>plus.svg</file>
+    <file>power.svg</file>
     <file>record.svg</file>
     <file>record-on.svg</file>
     <file>slot-off.svg</file>

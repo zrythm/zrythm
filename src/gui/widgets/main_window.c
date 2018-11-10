@@ -359,6 +359,8 @@ main_window_widget_open (MainWindowWidget *win,
 MainWindowWidget *
 main_window_widget_new (ZrythmApp * _app)
 {
+  GtkWidget * img;
+
   app = G_APPLICATION (_app);
   MainWindowWidget * self = g_object_new (MAIN_WINDOW_WIDGET_TYPE,
                                           "application",
@@ -438,11 +440,11 @@ main_window_widget_new (ZrythmApp * _app)
 
   /* setup inspector */
   self->inspector = inspector_widget_new ();
-  GtkWidget * inspector_img = gtk_image_new_from_icon_name ("list-add",
-                                                          GTK_ICON_SIZE_BUTTON);
+  img = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/inspector.svg");
   gtk_notebook_prepend_page (self->inspector_notebook,
                              GTK_WIDGET (self->inspector),
-                             inspector_img);
+                             img);
 
   /* setup timeline */
   self->timeline = arranger_widget_new (ARRANGER_TYPE_TIMELINE,
@@ -458,11 +460,11 @@ main_window_widget_new (ZrythmApp * _app)
 
   /* setup browser */
   self->browser = browser_widget_new ();
-  GtkWidget * plugins_img = gtk_image_new_from_icon_name ("list-add",
-                                                          GTK_ICON_SIZE_BUTTON);
+  img = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/plugins.svg");
   gtk_notebook_prepend_page (self->right_notebook,
                              GTK_WIDGET (self->browser),
-                             plugins_img);
+                             img);
   gtk_widget_show_all (GTK_WIDGET (self->right_notebook));
 
   /* setup bot toolbar */

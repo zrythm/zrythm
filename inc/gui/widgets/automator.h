@@ -39,12 +39,12 @@ typedef struct AutomatorWidget
 {
   GtkGrid                   parent_instance;
   GtkLabel *                name;
-  GtkButton *               power_button;
+  GtkToggleButton *         power;
   GtkViewport *             controls_viewport;
   GtkBox *                  controls_box;
   ControlWidget *           controls[800];
   int                       num_controls;
-  GtkToggleButton *         toggle;
+  GtkToggleButton *         automate;
 } AutomatorWidget;
 
 typedef struct AutomatorWidgetClass
