@@ -46,6 +46,7 @@ typedef struct SnapGridWidget SnapGridWidget;
 typedef struct ArrangerWidget ArrangerWidget;
 typedef struct ConnectionsWidget ConnectionsWidget;
 typedef struct InspectorWidget InspectorWidget;
+typedef struct RackWidget RackWidget;
 
 typedef struct _MainWindowWidget
 {
@@ -96,6 +97,7 @@ typedef struct _MainWindowWidget
   SnapGridWidget           * snap_grid_midi;
   GtkToolButton            * instrument_add;
   GtkNotebook              * bot_notebook;
+  RackWidget *               rack;
   ConnectionsWidget        * connections;
   MidiEditorWidget         * midi_editor;
   MixerWidget              * mixer;

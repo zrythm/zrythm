@@ -31,6 +31,7 @@
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/tracklist.h"
 #include "gui/widgets/track.h"
+#include "utils/gtk.h"
 
 G_DEFINE_TYPE (MixerWidget, mixer_widget, GTK_TYPE_BOX)
 
@@ -102,10 +103,14 @@ mixer_widget_add_channel (MixerWidget * self, Channel * channel)
                         GTK_WIDGET (self->channels_add));
   gtk_box_pack_start (self->channels_box,
                     GTK_WIDGET (channel->widget),
-                    0, 0, 0);
+                    Z_GTK_NO_EXPAND,
+                    Z_GTK_NO_FILL,
+                    0);
   gtk_box_pack_start (self->channels_box,
                       GTK_WIDGET (self->channels_add),
-                      0, 0, 0);
+                      Z_GTK_NO_EXPAND,
+                      Z_GTK_NO_FILL,
+                      0);
 
   /* update the slots on the channel to show correct names */
   channel_update_slots (channel->widget);

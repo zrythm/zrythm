@@ -36,6 +36,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_editor.h"
 #include "gui/widgets/mixer.h"
+#include "gui/widgets/rack.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/timeline_bg.h"
@@ -474,12 +475,16 @@ main_window_widget_new (ZrythmApp * _app)
   self->mixer = mixer_widget_new ();
   self->midi_editor = midi_editor_widget_new ();
   self->connections = connections_widget_new ();
+  self->rack = rack_widget_new ();
   gtk_notebook_prepend_page (self->bot_notebook,
                             GTK_WIDGET (self->midi_editor),
                             gtk_label_new ("Piano Roll"));
   gtk_notebook_append_page (self->bot_notebook,
+                            GTK_WIDGET (self->rack),
+                            gtk_label_new ("Rack"));
+  gtk_notebook_append_page (self->bot_notebook,
                             GTK_WIDGET (self->connections),
-                            gtk_label_new ("Automation"));
+                            gtk_label_new ("Connections"));
   gtk_notebook_append_page (self->bot_notebook,
                             GTK_WIDGET (self->mixer),
                             gtk_label_new ("Mixer"));

@@ -700,21 +700,10 @@
                         <property name="can_focus">True</property>
                         <property name="tab_pos">bottom</property>
                         <child>
-                          <object class="GtkLabel" id="automation-content">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label">Automation</property>
-                          </object>
+                          <placeholder/>
                         </child>
                         <child type="tab">
-                          <object class="GtkLabel" id="gtablabel-automation">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Rack</property>
-                          </object>
-                          <packing>
-                            <property name="tab_fill">False</property>
-                          </packing>
+                          <placeholder/>
                         </child>
                         <child>
                           <placeholder/>

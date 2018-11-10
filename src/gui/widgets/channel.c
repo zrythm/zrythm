@@ -74,45 +74,45 @@ phase_invert_button_clicked (ChannelWidget * self,
 static void
 channel_widget_class_init (ChannelWidgetClass * klass)
 {
-  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
-                                               "/online/alextee/zrythm/ui/channel.ui");
+  gtk_widget_class_set_template_from_resource (
+    GTK_WIDGET_CLASS (klass),
+    "/online/alextee/zrythm/ui/channel.ui");
 
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                ChannelWidget, output);
+                                        ChannelWidget,
+                                        output);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                ChannelWidget, name);
+                                        ChannelWidget, name);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                ChannelWidget, phase_invert);
+                                        ChannelWidget, phase_invert);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                ChannelWidget, phase_reading);
+                                        ChannelWidget, phase_reading);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                ChannelWidget, phase_controls);
+                                        ChannelWidget, phase_controls);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                ChannelWidget, slots_box);
-  /*gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),*/
-                                                /*ChannelWidget, add_slot);*/
+                                        ChannelWidget, slots_box);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                ChannelWidget, pan);
+                                        ChannelWidget, pan);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                ChannelWidget, e);
+                                        ChannelWidget, e);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                ChannelWidget, solo);
+                                        ChannelWidget, solo);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                ChannelWidget, listen);
+                                        ChannelWidget, listen);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                ChannelWidget, mute);
+                                        ChannelWidget, mute);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                ChannelWidget, record);
+                                        ChannelWidget, record);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                ChannelWidget, fader_area);
+                                        ChannelWidget, fader_area);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                ChannelWidget, meter_area);
+                                        ChannelWidget, meter_area);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                ChannelWidget, meters_box);
+                                        ChannelWidget, meters_box);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                ChannelWidget, meter_reading);
+                                        ChannelWidget, meter_reading);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                ChannelWidget, icon);
+                                        ChannelWidget, icon);
   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
                                            phase_invert_button_clicked);
 
