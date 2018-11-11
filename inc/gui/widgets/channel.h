@@ -76,7 +76,7 @@ typedef struct ChannelWidget
   MeterWidget         * meters[2];    ///< meter widgets (l/r)
   GtkLabel            * meter_reading;
   GtkImage            * icon;
-
+  GtkImage *          output_img;
   Channel             * channel;    ///< pointer to data
 } ChannelWidget;
 

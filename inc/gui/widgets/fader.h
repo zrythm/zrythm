@@ -27,28 +27,36 @@
 
 #include <gtk/gtk.h>
 
-#define FADER_DIFF_1 0.16
-#define FADER_STEP_1 0.84
-#define FADER_DIFF_2 0.18
-#define FADER_STEP_2 0.66
-#define FADER_DIFF_3 0.23
-#define FADER_STEP_3 0.43
-#define FADER_DIFF_4 0.2
-#define FADER_STEP_4 0.23
-#define FADER_DIFF_5 0.23
-#define FADER_STEP_5 0.0
+/* differences in fader pixels (0~1) */
+#define FADER_DIFF_1 (1.f - FADER_STEP_1)
+#define FADER_STEP_1 0.84f /* 0 db */
+#define FADER_DIFF_2 (FADER_STEP_1 - FADER_STEP_2)
+#define FADER_STEP_2 0.68f /* -3 db */
+#define FADER_DIFF_3 (FADER_STEP_2 - FADER_STEP_3)
+#define FADER_STEP_3 0.5f /* -6 db */
+#define FADER_DIFF_4 (FADER_STEP_3 - FADER_STEP_4)
+#define FADER_STEP_4 0.35f /* -inf db */
+//#define FADER_STEP_4 0.23f
+#define FADER_DIFF_5 (FADER_STEP_4 - FADER_STEP_5)
+#define FADER_STEP_5 0.2f
+#define FADER_DIFF_6 (FADER_STEP_5 - FADER_STEP_6)
+#define FADER_STEP_6 0.0f
 
-#define REAL_STEP_0 3.0
-#define REAL_DIFF_1 3.0
-#define REAL_STEP_1 0.0
-#define REAL_DIFF_2 3.0
-#define REAL_STEP_2 -3.0
-#define REAL_DIFF_3 9.0
-#define REAL_STEP_3 -12.0
-#define REAL_DIFF_4 12.0
-#define REAL_STEP_4 -24.0
-#define REAL_DIFF_5 104.0
-#define REAL_STEP_5 -128.0
+/* differences in amplitude (0~MAX_FADER_AMP) */
+/* should be +3, 0, -3, -6, -inf in db */
+#define REAL_STEP_0 MAX_FADER_AMP
+#define REAL_DIFF_1 (MAX_FADER_AMP - 1.0f)
+#define REAL_STEP_1 1.0f
+#define REAL_DIFF_2 (REAL_STEP_1 - REAL_STEP_2)
+#define REAL_STEP_2 0.64f
+#define REAL_DIFF_3 (REAL_STEP_2 - REAL_STEP_3)
+#define REAL_STEP_3 0.3f
+#define REAL_DIFF_4 (REAL_STEP_3 - REAL_STEP_4)
+#define REAL_STEP_4 0.05f
+#define REAL_DIFF_5 (REAL_STEP_4 - REAL_STEP_5)
+#define REAL_STEP_5 0.01f
+#define REAL_DIFF_6 (REAL_STEP_5 - REAL_STEP_6)
+#define REAL_STEP_6 0.0f
 
 #define FADER_WIDGET_TYPE                  (fader_widget_get_type ())
 #define FADER_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), FADER_WIDGET_TYPE, FaderWidget))

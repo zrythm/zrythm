@@ -22,6 +22,7 @@
 /** \file
  */
 
+#include "audio/channel.h"
 #include "gui/widgets/meter.h"
 #include "gui/widgets/fader.h"
 

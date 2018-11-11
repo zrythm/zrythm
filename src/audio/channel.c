@@ -192,8 +192,8 @@ channel_process (Channel * channel,  ///< slots
                          PAN_ALGORITHM_SINE_LAW);
 
   /* apply faders */
-  port_apply_fader (channel->stereo_out->l, channel->volume);
-  port_apply_fader (channel->stereo_out->r, channel->volume);
+  port_apply_fader (channel->stereo_out->l, channel->fader_amp);
+  port_apply_fader (channel->stereo_out->r, channel->fader_amp);
 
   /* calc decibels */
   channel_set_current_l_db (channel,
@@ -282,6 +282,7 @@ _create_channel (char * name)
 
   /* set volume, phase, pan */
   channel->volume = 0.0f;
+  channel->fader_amp = 1.0f;
   channel->phase = 0.0f;
   channel->pan = 0.5f;
 
@@ -437,23 +438,46 @@ channel_get_phase (void * _channel)
   return channel->phase;
 }
 
+/*void*/
+/*channel_set_volume (void * _channel, float volume)*/
+/*{*/
+  /*Channel * channel = (Channel *) _channel;*/
+  /*channel->volume = volume;*/
+  /*[> TODO update tooltip <]*/
+  /*gtk_label_set_text (channel->widget->phase_reading,*/
+                      /*g_strdup_printf ("%.1f", volume));*/
+  /*g_idle_add ((GSourceFunc) gtk_widget_queue_draw,*/
+              /*GTK_WIDGET (channel->widget->fader));*/
+/*}*/
+
+/*float*/
+/*channel_get_volume (void * _channel)*/
+/*{*/
+  /*Channel * channel = (Channel *) _channel;*/
+  /*return channel->volume;*/
+/*}*/
+
 void
-channel_set_volume (void * _channel, float volume)
+channel_set_fader_amp (void * _channel, float amp)
 {
   Channel * channel = (Channel *) _channel;
-  channel->volume = volume;
+  channel->fader_amp = amp;
+
+  /* calculate volume */
+  channel->volume = 20.f * log10f (amp);
+
   /* TODO update tooltip */
   gtk_label_set_text (channel->widget->phase_reading,
-                      g_strdup_printf ("%.1f", volume));
+                      g_strdup_printf ("%.1f", channel->volume));
   g_idle_add ((GSourceFunc) gtk_widget_queue_draw,
               GTK_WIDGET (channel->widget->fader));
 }
 
 float
-channel_get_volume (void * _channel)
+channel_get_fader_amp (void * _channel)
 {
   Channel * channel = (Channel *) _channel;
-  return channel->volume;
+  return channel->fader_amp;
 }
 
 void

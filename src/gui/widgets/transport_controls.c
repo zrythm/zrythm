@@ -108,6 +108,15 @@ transport_controls_init (MainWindowWidget * mw)
   image = gtk_image_new_from_resource (
           "/online/alextee/zrythm/record.svg");
   gtk_button_set_image (GTK_BUTTON (mw->trans_record), image);
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/loop.svg");
+  gtk_button_set_image (GTK_BUTTON (mw->loop), image);
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/forward.svg");
+  gtk_button_set_image (GTK_BUTTON (mw->forward), image);
+  image = gtk_image_new_from_resource (
+          "/online/alextee/zrythm/rewind.svg");
+  gtk_button_set_image (GTK_BUTTON (mw->backward), image);
 
   g_signal_connect (GTK_WIDGET (mw->play),
                       "clicked",

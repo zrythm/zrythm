@@ -28,14 +28,18 @@
     <!-- icons -->
     <file>audio.svg</file>
     <file>automate.svg</file>
+    <file>bus.svg</file>
     <file>close.svg</file>
     <file>delete.svg</file>
+    <file>forward.svg</file>
     <file>instrument.svg</file>
     <file>inspector.svg</file>
     <file>listen.svg</file>
+    <file>loop.svg</file>
     <file>maximize.svg</file>
     <file>minimize.svg</file>
     <file>mute.svg</file>
+    <file>output.svg</file>
     <file>phase-invert.svg</file>
     <file>play.svg</file>
     <file>plugins.svg</file>
@@ -43,6 +47,7 @@
     <file>power.svg</file>
     <file>record.svg</file>
     <file>record-on.svg</file>
+    <file>rewind.svg</file>
     <file>slot-off.svg</file>
     <file>slot-on.svg</file>
     <file>solo.svg</file>

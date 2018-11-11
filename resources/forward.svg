@@ -15,7 +15,7 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.2 2405546, 2018-03-11"
-   sodipodi:docname="audio.svg">
+   sodipodi:docname="forward.svg">
   <defs
      id="defs2">
     <marker
@@ -227,8 +227,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="31.678384"
-     inkscape:cx="9.1057318"
-     inkscape:cy="3.3817768"
+     inkscape:cx="7.1866222"
+     inkscape:cy="10.381382"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -267,53 +267,20 @@
        id="path7274"
        inkscape:connector-curvature="0" />
     <g
-       id="g2386"
-       transform="translate(-0.07559526,-0.13229833)">
+       id="g2007"
+       transform="translate(-0.08172065,-3.3333333e-6)">
       <path
+         sodipodi:nodetypes="cc"
          inkscape:connector-curvature="0"
-         id="path2307"
-         d="m 0.52916666,294.35417 v 1.05833"
-         style="fill:#b3b3b3;stroke:#b3b3b3;stroke-width:0.26499999;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         id="path1956"
+         d="M 0.52916667,294.88334 H 1.0583333"
+         style="fill:none;stroke:#b3b3b3;stroke-width:0.97399998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker1963)" />
       <path
+         sodipodi:nodetypes="cc"
          inkscape:connector-curvature="0"
-         id="path2309"
-         d="m 0.94494045,293.825 v 2.38125"
-         style="fill:#b3b3b3;stroke:#b3b3b3;stroke-width:0.26499999;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path2311"
-         d="m 1.3607143,293.29584 v 3.43959"
-         style="fill:#b3b3b3;stroke:#b3b3b3;stroke-width:0.26499999;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path2313"
-         d="m 1.7764881,293.82499 v 2.11667"
-         style="fill:#b3b3b3;stroke:#b3b3b3;stroke-width:0.26499999;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path2315"
-         d="m 3.0238095,293.29584 v 3.175"
-         style="fill:#b3b3b3;stroke:#b3b3b3;stroke-width:0.26499999;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path2307-5"
-         d="m 2.1922619,294.35417 v 1.05833"
-         style="fill:#b3b3b3;stroke:#b3b3b3;stroke-width:0.26499999;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path2313-9"
-         d="m 2.6080357,293.825 v 1.85209"
-         style="fill:#b3b3b3;stroke:#b3b3b3;stroke-width:0.26499999;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path2307-5-2"
-         d="m 3.4395833,293.825 v 2.11668"
-         style="fill:#b3b3b3;stroke:#b3b3b3;stroke-width:0.26499999;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path2307-5-28"
-         d="m 3.8553572,294.35417 v 1.05833"
-         style="fill:#b3b3b3;stroke:#b3b3b3;stroke-width:0.26499999;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         id="path1956-2"
+         d="M 2.1166667,294.88334 H 2.6458333"
+         style="fill:none;stroke:#b3b3b3;stroke-width:0.97399998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker1963-0)" />
     </g>
   </g>
 </svg>

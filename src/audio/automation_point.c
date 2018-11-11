@@ -236,7 +236,7 @@ automation_point_update_fvalue (AutomationPoint * ap,
   else if (a->type == AUTOMATABLE_TYPE_CHANNEL_FADER)
     {
       Channel * ch = a->track->channel;
-      channel_set_volume (ch, ap->fvalue);
+      channel_set_fader_amp (ch, ap->fvalue);
     }
 }
 

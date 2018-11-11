@@ -289,24 +289,14 @@ port_disconnect_all (Port * port)
 /*}*/
 
 /**
- * Get amplitude from db.
- */
-static float
-get_amp_from_dbfs (float dbfs)
-{
-  float amp = (float) pow (10.0, dbfs / 20.0);
-  return amp;
-}
-
-/**
  * Apply given fader value to port.
  */
 void
-port_apply_fader (Port * port, float dbfs)
+port_apply_fader (Port * port, float amp)
 {
   for (int i = 0; i < port->nframes; i++)
     {
-      port->buf[i] *= get_amp_from_dbfs (dbfs);
+      port->buf[i] *= amp;
     }
 }
 

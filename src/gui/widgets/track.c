@@ -142,8 +142,23 @@ track_widget_new (Track * track)
                                           GTK_ICON_SIZE_BUTTON));
   gtk_button_set_label (self->show_automation,
                         "");
-  gtk_image_set_from_resource (self->icon,
-                               "/online/alextee/zrythm/instrument.svg");
+
+  switch (track->channel->type)
+    {
+    case CT_MIDI:
+      gtk_image_set_from_resource (self->icon,
+                                   "/online/alextee/zrythm/instrument.svg");
+      break;
+    case CT_AUDIO:
+    case CT_MASTER:
+      gtk_image_set_from_resource (self->icon,
+                                   "/online/alextee/zrythm/audio.svg");
+      break;
+    case CT_BUS:
+      gtk_image_set_from_resource (self->icon,
+                                   "/online/alextee/zrythm/bus.svg");
+      break;
+    }
 
   g_signal_connect (self, "size-allocate",
                     G_CALLBACK (size_allocate_cb), NULL);

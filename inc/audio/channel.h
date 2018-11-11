@@ -40,6 +40,7 @@
 #define MASTER_POS -1 /* master channel special position */
 #define FOREACH_STRIP for (int i = 0; i < STRIP_SIZE; i++)
 #define FOREACH_AUTOMATABLE(ch) for (int i = 0; i < ch->num_automatables; i++)
+#define MAX_FADER_AMP 1.42f
 
 typedef jack_default_audio_sample_t   sample_t;
 typedef jack_nframes_t                nframes_t;
@@ -70,7 +71,8 @@ typedef struct Channel
    * where processing starts */
   Plugin *                strip[STRIP_SIZE]; ///< the channel strip
   ChannelType             type;             ///< MIDI / Audio / Master
-  sample_t                volume;           ///< value of the volume fader
+  float                   volume; ///< value of the volume fader in db
+  float                   fader_amp; ///< fader value amplitude (0.0 ~ 1.5)
   int                     muted;            ///< muted or not
   int                     soloed;           ///< soloed or not
   GdkRGBA                 color;          ///< see https://ometer.com/gtk-colors.html
@@ -115,11 +117,29 @@ channel_set_phase (void * channel, float phase);
 float
 channel_get_phase (void * channel);
 
-void
-channel_set_volume (void * channel, float volume);
+/**
+ * TODO delete
+ */
+//void
+//channel_set_volume (void * channel, float volume);
 
+/**
+ * TODO delete
+ */
+//float
+//channel_get_volume (void * channel);
+
+/**
+ * Sets the fader amplitude (not db)
+ */
+void
+channel_set_fader_amp (void * _channel, float amp);
+
+/**
+ * Gets the fader amplitude (not db)
+ */
 float
-channel_get_volume (void * channel);
+channel_get_fader_amp (void * _channel);
 
 void
 channel_set_pan (void * _channel, float pan);

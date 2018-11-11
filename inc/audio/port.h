@@ -164,7 +164,7 @@ port_disconnect (Port * src, Port * dest);
  * Apply given fader value to port.
  */
 void
-port_apply_fader (Port * port, float dbfs);
+port_apply_fader (Port * port, float amp);
 
 /**
  * First sets port buf to 0, then sums the given port signal from its inputs.

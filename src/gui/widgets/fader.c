@@ -24,32 +24,37 @@
 
 #include <stdlib.h>
 
+#include "audio/channel.h"
 #include "gui/widgets/fader.h"
 
 G_DEFINE_TYPE (FaderWidget, fader_widget, GTK_TYPE_DRAWING_AREA)
 
-#define GET_REAL_VAL ((*self->getter) (self->object))
-#define SET_REAL_VAL(real) ((*self->setter)(self->object, real))
+#define GET_VAL ((*self->getter) (self->object))
+#define SET_VAL(real) ((*self->setter)(self->object, real))
 
 static double
 fader_val_from_real (FaderWidget * self)
 {
-  double real = GET_REAL_VAL;
+  double real = GET_VAL;
+  /*return real / MAX_FADER_AMP;*/
   if (real > REAL_STEP_1)
-      return FADER_STEP_1 + (((real - REAL_STEP_1) / REAL_DIFF_1) * FADER_DIFF_1);
+    return FADER_STEP_1 + (((real - REAL_STEP_1) / REAL_DIFF_1) * FADER_DIFF_1);
   else if (real > REAL_STEP_2)
-      return FADER_STEP_2 + (((real - REAL_STEP_2) / REAL_DIFF_2) * FADER_DIFF_2);
+    return FADER_STEP_2 + (((real - REAL_STEP_2) / REAL_DIFF_2) * FADER_DIFF_2);
   else if (real > REAL_STEP_3)
-      return FADER_STEP_3 + (((real - REAL_STEP_3) / REAL_DIFF_3) * FADER_DIFF_3);
+    return FADER_STEP_3 + (((real - REAL_STEP_3) / REAL_DIFF_3) * FADER_DIFF_3);
   else if (real > REAL_STEP_4)
-      return FADER_STEP_4 + (((real - REAL_STEP_4) / REAL_DIFF_4) * FADER_DIFF_4);
+    return FADER_STEP_4 + (((real - REAL_STEP_4) / REAL_DIFF_4) * FADER_DIFF_4);
+  else if (real > REAL_STEP_5)
+    return FADER_STEP_5 + (((real - REAL_STEP_5) / REAL_DIFF_5) * FADER_DIFF_5);
   else
-      return FADER_STEP_5 + (((real - REAL_STEP_5) / REAL_DIFF_5) * FADER_DIFF_5);
+    return FADER_STEP_6 + (((real - REAL_STEP_6) / REAL_DIFF_6) * FADER_DIFF_6);
 }
 
 static double
 real_val_from_fader (FaderWidget * self, double fader)
 {
+  /*return fader * MAX_FADER_AMP;*/
   if (fader > FADER_STEP_1)
     return REAL_STEP_1 + ((fader - FADER_STEP_1) / FADER_DIFF_1) * REAL_DIFF_1;
   else if (fader > FADER_STEP_2)
@@ -58,8 +63,10 @@ real_val_from_fader (FaderWidget * self, double fader)
     return REAL_STEP_3 + ((fader - FADER_STEP_3) / FADER_DIFF_3) * REAL_DIFF_3;
   else if (fader > FADER_STEP_4)
     return REAL_STEP_4 + ((fader - FADER_STEP_4) / FADER_DIFF_4) * REAL_DIFF_4;
-  else
+  else if (fader > FADER_STEP_5)
     return REAL_STEP_5 + ((fader - FADER_STEP_5) / FADER_DIFF_5) * REAL_DIFF_5;
+  else
+    return REAL_STEP_6 + ((fader - FADER_STEP_6) / FADER_DIFF_6) * REAL_DIFF_6;
 }
 
 static void
@@ -200,8 +207,14 @@ drag_update (GtkGestureDrag * gesture,
   FaderWidget * self = (FaderWidget *) user_data;
   offset_y = - offset_y;
   int use_y = abs(offset_y - self->last_y) > abs(offset_x - self->last_x);
-  SET_REAL_VAL (real_val_from_fader (self, clamp (fader_val_from_real (self) + 0.005 * (use_y ? offset_y - self->last_y : offset_x - self->last_x),
-               1.0f, 0.0f)));
+  /*double multiplier = 0.005;*/
+  double diff = use_y ? offset_y - self->last_y : offset_x - self->last_x;
+  double height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  double adjusted_diff = diff / height;
+  double new_fader_val = clamp (fader_val_from_real (self) + adjusted_diff,
+                                1.0,
+                                0.0);
+  SET_VAL (real_val_from_fader (self, new_fader_val));
   self->last_x = offset_x;
   self->last_y = offset_y;
   gtk_widget_queue_draw (GTK_WIDGET (self));

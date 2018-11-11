@@ -729,47 +729,16 @@
                     <property name="can_focus">True</property>
                     <property name="tab_pos">right</property>
                     <child>
-                      <object class="GtkLabel" id="effects-content">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label">Effex</property>
-                        <style>
-                          <class name="window_dragging_class"/>
-                        </style>
-                      </object>
+                      <placeholder/>
                     </child>
                     <child type="tab">
-                      <object class="GtkImage">
-                        <property name="name">gimage-presets</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="stock">gtk-info</property>
-                      </object>
-                      <packing>
-                        <property name="tab_fill">False</property>
-                      </packing>
+                      <placeholder/>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="samples-content">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label">Samples</property>
-                      </object>
-                      <packing>
-                        <property name="position">1</property>
-                      </packing>
+                      <placeholder/>
                     </child>
                     <child type="tab">
-                      <object class="GtkImage">
-                        <property name="name">gimage-samples</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="stock">gtk-sort-descending</property>
-                      </object>
-                      <packing>
-                        <property name="position">1</property>
-                        <property name="tab_fill">False</property>
-                      </packing>
+                      <placeholder/>
                     </child>
                     <child>
                       <placeholder/>
@@ -905,13 +874,14 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="forward">
-                    <property name="label">gtk-media-forward</property>
+                  <object class="GtkButton" id="backward">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="relief">none</property>
-                    <property name="use_stock">True</property>
+                    <child>
+                      <placeholder/>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -920,13 +890,14 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="backward">
-                    <property name="label">gtk-media-rewind</property>
+                  <object class="GtkButton" id="forward">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="relief">none</property>
-                    <property name="use_stock">True</property>
+                    <child>
+                      <placeholder/>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -936,11 +907,12 @@
                 </child>
                 <child>
                   <object class="GtkToggleButton" id="loop">
-                    <property name="label">gtk-yes</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="use_stock">True</property>
+                    <child>
+                      <placeholder/>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>

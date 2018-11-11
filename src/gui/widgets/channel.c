@@ -131,6 +131,9 @@ channel_widget_class_init (ChannelWidgetClass * klass)
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         ChannelWidget,
                                         pan_box);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
+                                        ChannelWidget,
+                                        output_img);
   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
                                            phase_invert_button_clicked);
 
@@ -165,8 +168,8 @@ setup_phase_panel (ChannelWidget * self)
                                       self->channel,
                                       0,
                                       180,
-                                         30,
-                                         0.0f);
+                                      30,
+                                      0.0f);
   gtk_box_pack_end (self->phase_controls,
                        GTK_WIDGET (self->phase_knob),
                        0, 1, 0);
@@ -177,8 +180,8 @@ setup_phase_panel (ChannelWidget * self)
 static void
 setup_fader (ChannelWidget * self)
 {
-  self->fader = fader_widget_new (channel_get_volume,
-                                  channel_set_volume,
+  self->fader = fader_widget_new (channel_get_fader_amp,
+                                  channel_set_fader_amp,
                                   self->channel,
                                   40);
   gtk_box_pack_start (self->fader_area,
@@ -262,6 +265,9 @@ setup_channel_icon (ChannelWidget * self)
     case CT_AUDIO:
       gtk_image_set_from_resource (self->icon,
                   "/online/alextee/zrythm/audio.svg");
+    case CT_BUS:
+      gtk_image_set_from_resource (self->icon,
+                  "/online/alextee/zrythm/bus.svg");
       break;
     }
 }
@@ -307,7 +313,7 @@ setup_pan (ChannelWidget * self)
   self->pan = pan_widget_new (channel_get_pan,
                               channel_set_pan,
                               self->channel,
-                              10);
+                              12);
   gtk_box_pack_start (self->pan_box,
                        GTK_WIDGET (self->pan),
                        Z_GTK_NO_EXPAND,
@@ -363,6 +369,8 @@ channel_widget_new (Channel * channel)
   image = gtk_image_new_from_resource (
           "/online/alextee/zrythm/phase-invert.svg");
   gtk_button_set_image (self->phase_invert, image);
+  gtk_image_set_from_resource (self->output_img,
+                               "/online/alextee/zrythm/output.svg");
 
   return self;
 }
