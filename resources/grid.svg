@@ -15,7 +15,7 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.2 2405546, 2018-03-11"
-   sodipodi:docname="rewind.svg">
+   sodipodi:docname="grid.svg">
   <defs
      id="defs2">
     <marker
@@ -29,7 +29,7 @@
       <path
          id="path1714"
          d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z "
-         style="fill-rule:evenodd;stroke:#cccccc;stroke-width:1pt;stroke-opacity:1;fill:#cccccc;fill-opacity:1"
+         style="fill-rule:evenodd;stroke:#b3b3b3;stroke-width:1pt;stroke-opacity:1;fill:#b3b3b3;fill-opacity:1"
          transform="scale(0.2)" />
     </marker>
     <marker
@@ -71,7 +71,7 @@
       <path
          id="path1711"
          d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z "
-         style="fill-rule:evenodd;stroke:#b3b3b3;stroke-width:1pt;stroke-opacity:1;fill:#b3b3b3;fill-opacity:1"
+         style="fill-rule:evenodd;stroke:#cccccc;stroke-width:1pt;stroke-opacity:1;fill:#cccccc;fill-opacity:1"
          transform="scale(0.4)" />
     </marker>
     <marker
@@ -215,7 +215,7 @@
          inkscape:connector-curvature="0"
          id="path1714-6"
          d="M 5.77,0 -2.88,5 V -5 Z"
-         style="fill:#cccccc;fill-opacity:1;fill-rule:evenodd;stroke:#cccccc;stroke-width:1.00000003pt;stroke-opacity:1"
+         style="fill:#b3b3b3;fill-opacity:1;fill-rule:evenodd;stroke:#b3b3b3;stroke-width:1.00000003pt;stroke-opacity:1"
          transform="scale(0.2)" />
     </marker>
   </defs>
@@ -227,8 +227,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="31.678384"
-     inkscape:cx="1.6307832"
-     inkscape:cy="10.381382"
+     inkscape:cx="-2.0059462"
+     inkscape:cy="3.3817768"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -267,16 +267,24 @@
        id="path7274"
        inkscape:connector-curvature="0" />
     <path
-       style="fill:#cccccc;stroke:#cccccc;stroke-width:0.97399998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker1963)"
-       d="M 3.7858873,294.88334 H 3.2567207"
-       id="path1956"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cc" />
+       style="fill:#cccccc;stroke:#cccccc;stroke-width:0.26458332px;stroke-linecap:round;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 0.52916666,293.42813 v 2.91041"
+       id="path3304"
+       inkscape:connector-curvature="0" />
     <path
-       style="fill:#cccccc;stroke:#cccccc;stroke-width:0.97399998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker1963-0)"
-       d="M 2.1983873,294.88334 H 1.6692207"
-       id="path1956-2"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cc" />
+       style="fill:#cccccc;stroke:#cccccc;stroke-width:0.26499999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:0.26499999, 0.26499999000000002;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 2.6458333,293.42813 v 2.91041"
+       id="path3306"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:#cccccc;stroke:#cccccc;stroke-width:0.26458332px;stroke-linecap:round;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 3.7041666,293.42813 v 2.91041"
+       id="path3308"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:#cccccc;stroke:#cccccc;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#TriangleOutM)"
+       d="M 0.52916649,294.88334 H 1.5875"
+       id="path3310"
+       inkscape:connector-curvature="0" />
   </g>
 </svg>

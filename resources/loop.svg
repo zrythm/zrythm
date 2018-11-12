@@ -29,7 +29,7 @@
       <path
          id="path1711"
          d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z "
-         style="fill-rule:evenodd;stroke:#b3b3b3;stroke-width:1pt;stroke-opacity:1;fill:#b3b3b3;fill-opacity:1"
+         style="fill-rule:evenodd;stroke:#cccccc;stroke-width:1pt;stroke-opacity:1;fill:#cccccc;fill-opacity:1"
          transform="scale(0.4)" />
     </marker>
     <marker
@@ -128,7 +128,7 @@
          inkscape:connector-curvature="0"
          id="path1711-2"
          d="M 5.77,0 -2.88,5 V -5 Z"
-         style="fill:#b3b3b3;fill-opacity:1;fill-rule:evenodd;stroke:#b3b3b3;stroke-width:1.00000003pt;stroke-opacity:1"
+         style="fill:#cccccc;fill-opacity:1;fill-rule:evenodd;stroke:#cccccc;stroke-width:1.00000003pt;stroke-opacity:1"
          transform="scale(0.4)" />
     </marker>
     <marker
@@ -170,7 +170,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="31.678384"
-     inkscape:cx="7.1866222"
+     inkscape:cx="1.6307832"
      inkscape:cy="10.381382"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
@@ -195,7 +195,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -210,25 +210,25 @@
        id="path7274"
        inkscape:connector-curvature="0" />
     <path
-       style="fill:none;stroke:#b3b3b3;stroke-width:0.26499999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:3.79999995;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleOutM)"
+       style="fill:none;stroke:#cccccc;stroke-width:0.26499999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:3.79999995;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleOutM)"
        d="m 0.52916671,294.35417 c 0.79375009,-1.31231 2.38125009,-1.32291 3.17499999,0"
        id="path1564"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
     <path
-       style="fill:none;stroke:#b3b3b3;stroke-width:0.26499999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleOutM-6)"
+       style="fill:none;stroke:#cccccc;stroke-width:0.26499999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleOutM-6)"
        d="m 3.7041667,295.41251 c -0.79375,1.31231 -2.3812499,1.32291 -3.17499998,0"
        id="path1564-9"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
     <path
-       style="fill:none;stroke:#b3b3b3;stroke-width:0.565;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:3.79999995;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;stroke:#cccccc;stroke-width:0.565;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:3.79999995;stroke-dasharray:none;stroke-opacity:1"
        d="m 0.5291667,294.35417 c 0.7937501,-1.31231 2.3812501,-1.32291 3.175,0"
        id="path1564-0"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
     <path
-       style="fill:none;stroke:#b3b3b3;stroke-width:0.565;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;stroke:#cccccc;stroke-width:0.565;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 3.7041669,295.4125 c -0.79375,1.31231 -2.38125,1.32291 -3.17500023,0"
        id="path1564-9-6"
        inkscape:connector-curvature="0"

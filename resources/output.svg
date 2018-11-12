@@ -29,7 +29,7 @@
       <path
          id="path1714"
          d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z "
-         style="fill-rule:evenodd;stroke:#b3b3b3;stroke-width:1pt;stroke-opacity:1;fill:#b3b3b3;fill-opacity:1"
+         style="fill-rule:evenodd;stroke:#cccccc;stroke-width:1pt;stroke-opacity:1;fill:#cccccc;fill-opacity:1"
          transform="scale(0.2)" />
     </marker>
     <marker
@@ -212,7 +212,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="31.678384"
-     inkscape:cx="7.1866222"
+     inkscape:cx="1.6307832"
      inkscape:cy="10.381382"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
@@ -237,7 +237,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -252,8 +252,8 @@
        id="path7274"
        inkscape:connector-curvature="0" />
     <path
-       style="fill:none;stroke:#b3b3b3;stroke-width:0.71200007;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker1963)"
-       d="m 0.77748205,293.34439 v 2.20137 H 2.8005051"
+       style="fill:none;stroke:#cccccc;stroke-width:0.71200007;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker1963)"
+       d="m 0.79619668,293.85171 -0.0162679,1.19159 H 2.8029518"
        id="path1956"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccc" />

@@ -29,7 +29,7 @@
       <path
          id="path1714"
          d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z "
-         style="fill-rule:evenodd;stroke:#b3b3b3;stroke-width:1pt;stroke-opacity:1;fill:#b3b3b3;fill-opacity:1"
+         style="fill-rule:evenodd;stroke:#cccccc;stroke-width:1pt;stroke-opacity:1;fill:#cccccc;fill-opacity:1"
          transform="scale(0.2)" />
     </marker>
     <marker
@@ -215,7 +215,7 @@
          inkscape:connector-curvature="0"
          id="path1714-6"
          d="M 5.77,0 -2.88,5 V -5 Z"
-         style="fill:#b3b3b3;fill-opacity:1;fill-rule:evenodd;stroke:#b3b3b3;stroke-width:1.00000003pt;stroke-opacity:1"
+         style="fill:#cccccc;fill-opacity:1;fill-rule:evenodd;stroke:#cccccc;stroke-width:1.00000003pt;stroke-opacity:1"
          transform="scale(0.2)" />
     </marker>
   </defs>
@@ -227,7 +227,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="31.678384"
-     inkscape:cx="7.1866222"
+     inkscape:cx="1.6307832"
      inkscape:cy="10.381382"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
@@ -252,7 +252,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -266,21 +266,17 @@
        d="m -1.9109945,293.347 v 0.47697 c 0.4359062,0.16393 0.7544769,0.60702 0.7544759,1.14722 1.3e-6,0.68348 -0.5071153,1.21904 -1.1208618,1.21904 -0.6137465,0 -1.12293,-0.53556 -1.1229288,-1.21904 -10e-7,-0.53945 0.3189972,-0.9817 0.7544759,-1.14619 v -0.47749 c -0.6956077,0.17773 -1.2076796,0.84411 -1.2076782,1.62368 -1.6e-6,0.91206 0.7001722,1.67018 1.5761311,1.67018 0.8759589,0 1.57406575,-0.75812 1.57406417,-1.67018 1.32e-6,-0.78034 -0.51142797,-1.44727 -1.20767827,-1.62419 z"
        id="path7274"
        inkscape:connector-curvature="0" />
-    <g
-       id="g2007"
-       transform="translate(-0.08172065,-3.3333333e-6)">
-      <path
-         sodipodi:nodetypes="cc"
-         inkscape:connector-curvature="0"
-         id="path1956"
-         d="M 0.52916667,294.88334 H 1.0583333"
-         style="fill:none;stroke:#b3b3b3;stroke-width:0.97399998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker1963)" />
-      <path
-         sodipodi:nodetypes="cc"
-         inkscape:connector-curvature="0"
-         id="path1956-2"
-         d="M 2.1166667,294.88334 H 2.6458333"
-         style="fill:none;stroke:#b3b3b3;stroke-width:0.97399998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker1963-0)" />
-    </g>
+    <path
+       style="fill:#cccccc;stroke:#cccccc;stroke-width:0.97399998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker1963)"
+       d="M 0.44744602,294.88334 H 0.97661265"
+       id="path1956"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:#cccccc;stroke:#cccccc;stroke-width:0.97399998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker1963-0)"
+       d="M 2.0349461,294.88334 H 2.5641127"
+       id="path1956-2"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
   </g>
 </svg>

@@ -36,6 +36,8 @@ typedef struct SnapGridPopoverWidget SnapGridPopoverWidget;
 typedef struct SnapGridWidget
 {
   GtkMenuButton           parent_instance;
+  GtkBox *                box; ///< the box
+  GtkImage *              img; ///< img to show next to the label
   GtkLabel                * label; ///< label to show
   SnapGridPopoverWidget   * popover; ///< the popover to show
   GtkBox                  * content; ///< popover content holder

@@ -478,18 +478,42 @@ main_window_widget_new (ZrythmApp * _app)
   self->midi_editor = midi_editor_widget_new ();
   self->connections = connections_widget_new ();
   self->rack = rack_widget_new ();
+  box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_box_pack_start (GTK_BOX (box),
+                      gtk_image_new_from_resource ("/online/alextee/zrythm/piano_roll.svg"),
+                      Z_GTK_NO_EXPAND,
+                      Z_GTK_NO_FILL,
+                      2);
+  gtk_box_pack_end (GTK_BOX (box),
+                    gtk_label_new ("Piano Roll"),
+                    Z_GTK_NO_EXPAND,
+                    Z_GTK_NO_FILL,
+                    2);
+  gtk_widget_show_all (box);
   gtk_notebook_prepend_page (self->bot_notebook,
                             GTK_WIDGET (self->midi_editor),
-                            gtk_label_new ("Piano Roll"));
+                            box);
   gtk_notebook_append_page (self->bot_notebook,
                             GTK_WIDGET (self->rack),
                             gtk_label_new ("Rack"));
   gtk_notebook_append_page (self->bot_notebook,
                             GTK_WIDGET (self->connections),
                             gtk_label_new ("Connections"));
+  box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_box_pack_start (GTK_BOX (box),
+                      gtk_image_new_from_resource ("/online/alextee/zrythm/mixer.svg"),
+                      Z_GTK_NO_EXPAND,
+                      Z_GTK_NO_FILL,
+                      2);
+  gtk_box_pack_end (GTK_BOX (box),
+                    gtk_label_new ("Mixer"),
+                    Z_GTK_NO_EXPAND,
+                    Z_GTK_NO_FILL,
+                    2);
+  gtk_widget_show_all (box);
   gtk_notebook_append_page (self->bot_notebook,
                             GTK_WIDGET (self->mixer),
-                            gtk_label_new ("Mixer"));
+                            box);
   gtk_widget_show_all (GTK_WIDGET (MAIN_WINDOW->bot_notebook));
 
   // set icons

@@ -22,6 +22,7 @@
 #include "project/snap_grid.h"
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/snap_grid_popover.h"
+#include "utils/gtk.h"
 
 #include <gtk/gtk.h>
 
@@ -48,9 +49,21 @@ snap_grid_widget_new (SnapGrid * snap_grid)
 
   char * string = snap_grid_stringize (snap_grid);
   g_message (string);
+  self->box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+  self->img = GTK_IMAGE (gtk_image_new_from_resource ("/online/alextee/zrythm/grid.svg"));
   self->label = GTK_LABEL (gtk_label_new (string));
+  gtk_box_pack_start (self->box,
+                      GTK_WIDGET (self->img),
+                      Z_GTK_NO_EXPAND,
+                      Z_GTK_NO_FILL,
+                      1);
+  gtk_box_pack_end (self->box,
+                    GTK_WIDGET (self->label),
+                    Z_GTK_NO_EXPAND,
+                    Z_GTK_NO_FILL,
+                    1);
   gtk_container_add (GTK_CONTAINER (self),
-                     GTK_WIDGET (self->label));
+                     GTK_WIDGET (self->box));
   g_free (string);
   gtk_menu_button_set_popover (GTK_MENU_BUTTON (self),
                                GTK_WIDGET (self->popover));
