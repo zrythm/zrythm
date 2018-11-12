@@ -31,6 +31,8 @@
 #define IS_BROWSER_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), BROWSER_WIDGET_TYPE))
 #define BROWSER_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), BROWSER_WIDGET_TYPE, BrowserWidgetClass))
 
+#define MW_BROWSER MAIN_WINDOW->browser
+
 typedef struct BrowserWidget
 {
   GtkPaned                 parent_instance;
@@ -41,7 +43,11 @@ typedef struct BrowserWidget
   GtkExpander              * cat_exp;
   GtkBox                   * browser_bot;
   GtkLabel                 * plugin_info;
-  GtkTreeModel             * plugins_tree_model;
+  const char *             selected_category; ///< selected category
+  GtkTreeModel             * category_tree_model;
+  GtkTreeModelFilter       * plugins_tree_model;
+  GtkTreeView *            plugins_tree_view;
+  GtkScrolledWindow *      plugin_scroll_window;
 } BrowserWidget;
 
 typedef struct BrowserWidgetClass

@@ -15,6 +15,7 @@ BIN = zrythm
 SRC_DIR = src
 INC_DIR = inc
 DATA_DIR = data
+FONTS_DIR = resources/fonts
 
 CC = @CC@
 DEFS = @DEFS@
@@ -50,6 +51,7 @@ bindir = @bindir@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
+fontdir = @datarootdir@/fonts
 htmldir = @htmldir@
 includedir = @includedir@
 libdir = @libdir@
@@ -199,24 +201,29 @@ clean:
 	-rm $(BUILD_DIR)/$(BIN)$(EXT) $(OBJ) $(DEP)
 
 .PHONY: install
-install: $(BUILD_DIR)/$(BIN)$(EXT) install-appicon-data install-desktop-data install-gschemas
-	$(MKDIR_P) $(DESTDIR)$(bindir)
-	$(INSTALL) $< $(DESTDIR)$(bindir)/$(BIN)$(EXT)
+install: $(BUILD_DIR)/$(BIN)$(EXT) install-appicon-data install-desktop-data install-gschemas install-fonts
+	$(MKDIR_P) $(bindir)
+	$(INSTALL) $< $(bindir)/$(BIN)$(EXT)
 
 .PHONY: uninstall
 uninstall:
-	rm -f $(DESTDIR)$(bindir)/$(BIN)$(EXT)
+	rm -f $(bindir)/$(BIN)$(EXT)
 
 .PHONY: install-appicon-data
 install-appicon-data: $(appicon_DATA)
-	$(INSTALL_DATA) $< "$(DESTDIR)$(appicondir)"
+	$(INSTALL_DATA) $< "$(appicondir)"
 
 .PHONY: install-gschemas
 install-gschemas: $(gsettings_SCHEMAS)
 	$(INSTALL) $< $(gsettingsschemadir)/
 	$(GLIB_COMPILE_SCHEMAS) $(gsettingsschemadir)
 
+.PHONY: install-fonts
+install-fonts: $(FONTS_DIR)/Segment7Standard
+	cp -r $< $(fontdir)
+	sudo chmod -R 755 /usr/share/fonts/Segment7Standard
+
 .PHONY: install-desktop
 install-desktop-data: $(desktop_DATA)
-	$(INSTALL_DATA) $< "$(DESTDIR)$(desktopdir)"
+	$(INSTALL_DATA) $< "$(desktopdir)"
 
