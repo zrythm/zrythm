@@ -73,7 +73,8 @@ typedef enum ArrangerChildType
 {
   ARRANGER_CHILD_TYPE_MIDI_NOTE,
   ARRANGER_CHILD_TYPE_REGION,
-  ARRANGER_CHILD_TYPE_AP
+  ARRANGER_CHILD_TYPE_AP,
+  ARRANGER_CHILD_TYPE_AC
 } ArrangerChildType;
 
 typedef struct ArrangerWidget
@@ -95,6 +96,7 @@ typedef struct ArrangerWidget
   AutomationPoint *        tl_automation_points[600];  ///< automation points doing action upon (timeline)
   AutomationPoint *        tl_start_ap;
   int                      num_tl_automation_points;
+  AutomationCurve *        tl_start_ac;
   Region                   * me_selected_region; ///< selected region for editing MIDI
   Channel                  * me_selected_channel; ///< Midi EDitor selected chan
   MidiNote *               me_midi_notes[600];  ///< MIDI notes doing action upon (midi)
@@ -107,6 +109,9 @@ typedef struct ArrangerWidget
   double                   start_y; ///< for dragging
 
   double                   start_pos_px; ///< for moving regions
+
+  /* temporary start positions, set on drag_begin, and used in drag_update
+   * to move the objects accordingly */
   Position                 tl_region_start_poses[600]; ///< region initial start positions, for moving regions
   Position                 tl_ap_poses[600]; ///< for moving regions
   Position                 me_midi_note_start_poses[600]; ///< for moving regions

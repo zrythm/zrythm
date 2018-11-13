@@ -29,6 +29,7 @@
 #include "audio/track.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/automation_curve.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/color_area.h"
@@ -180,7 +181,7 @@ get_child_position (GtkOverlay   *overlay,
         {
           AutomationPointWidget * ap_widget = AUTOMATION_POINT_WIDGET (widget);
           AutomationPoint * ap = ap_widget->ap;
-          Automatable * a = ap->at->automatable;
+          /*Automatable * a = ap->at->automatable;*/
 
           gint wx, wy;
           gtk_widget_translate_coordinates(
@@ -191,24 +192,39 @@ get_child_position (GtkOverlay   *overlay,
                     &wx,
                     &wy);
 
-          if (ap->type == AUTOMATION_POINT_VALUE)
-            {
-              allocation->x = arranger_get_x_pos_in_px (&ap->pos) -
-                AP_WIDGET_POINT_SIZE / 2;
-              allocation->y = (wy + automation_point_get_y_in_px (ap)) -
-                AP_WIDGET_POINT_SIZE / 2;
-              allocation->width = AP_WIDGET_POINT_SIZE;
-              allocation->height = AP_WIDGET_POINT_SIZE;
-            }
-          else
-            {
-              /*allocation->x = arranger_get_x_pos_in_px (&ap->pos) -*/
-                /*AP_WIDGET_CURVE_W / 2;*/
-              /*allocation->y = (wy + automation_point_get_y_in_px (ap)) -*/
-                /*AP_WIDGET_CURVE_H / 2;*/
-              /*allocation->width = AP_WIDGET_CURVE_W;*/
-              /*allocation->height = AP_WIDGET_CURVE_H;*/
-            }
+          allocation->x = arranger_get_x_pos_in_px (&ap->pos) -
+            AP_WIDGET_POINT_SIZE / 2;
+          allocation->y = (wy + automation_point_get_y_in_px (ap)) -
+            AP_WIDGET_POINT_SIZE / 2;
+          allocation->width = AP_WIDGET_POINT_SIZE;
+          allocation->height = AP_WIDGET_POINT_SIZE;
+        }
+      else if (IS_AUTOMATION_CURVE_WIDGET (widget))
+        {
+          AutomationCurveWidget * acw = AUTOMATION_CURVE_WIDGET (widget);
+          AutomationCurve * ac = acw->ac;
+          /*Automatable * a = ap->at->automatable;*/
+
+          gint wx, wy;
+          gtk_widget_translate_coordinates(
+                    GTK_WIDGET (ac->at->widget->at_grid),
+                    GTK_WIDGET (overlay),
+                    0,
+                    0,
+                    &wx,
+                    &wy);
+          AutomationPoint * prev_ap =
+            automation_track_get_ap_before_curve (ac->at, ac);
+          AutomationPoint * next_ap =
+            automation_track_get_ap_after_curve (ac->at, ac);
+
+          allocation->x = arranger_get_x_pos_in_px (&prev_ap->pos);
+          int prev_y = automation_point_get_y_in_px (prev_ap);
+          int next_y = automation_point_get_y_in_px (next_ap);
+          allocation->y = wy + (prev_y > next_y ? next_y : prev_y);
+          allocation->width =
+            arranger_get_x_pos_in_px (&next_ap->pos) - allocation->x;
+          allocation->height = prev_y > next_y ? prev_y - next_y : next_y - prev_y;
         }
     }
 
@@ -293,85 +309,6 @@ get_note_at_y (double y)
   return 128 - y / PIANO_ROLL_LABELS->px_per_note;
 }
 
-/**
- * Returns the curve automation point associated with the curve, if (x,y) falls on
- * the curve, otherwise NULL.
- */
-static AutomationPoint *
-get_hit_curve (ArrangerWidget * self, double x, double y)
-{
-  GList *children, *iter;
-
-  /* go through each overlay child */
-  children = gtk_container_get_children(GTK_CONTAINER(MAIN_WINDOW->timeline));
-  for(iter = children; iter != NULL; iter = g_list_next(iter))
-    {
-      GtkWidget * widget = GTK_WIDGET (iter->data);
-
-      /* if automation point */
-      if (IS_AUTOMATION_POINT_WIDGET (widget))
-        {
-          AutomationPoint * ap = (AUTOMATION_POINT_WIDGET (widget))->ap;
-          if (ap->type != AUTOMATION_POINT_CURVE)
-            continue;
-
-          AutomationPoint * prev_ap, * next_ap;
-          prev_ap = automation_track_get_prev_ap (ap->at,
-                                                  ap);
-          next_ap = automation_track_get_next_ap (ap->at,
-                                                  ap);
-
-          GtkAllocation allocation;
-          gtk_widget_get_allocation (widget,
-                                     &allocation);
-
-          gint prev_wx, prev_wy;
-          gtk_widget_translate_coordinates(
-                    GTK_WIDGET (prev_ap->widget),
-                    GTK_WIDGET (MAIN_WINDOW->timeline),
-                    0,
-                    0,
-                    &prev_wx,
-                    &prev_wy);
-
-          /*g_message ("x %d y %d prev wx %d prev wy %d",*/
-                     /*x, y, prev_wx, prev_wy);*/
-          /* if after prev */
-          if (x >= prev_wx &&
-              y >= prev_wy)
-            {
-              gint wx, wy;
-              gtk_widget_translate_coordinates(
-                        GTK_WIDGET (next_ap->widget),
-                        GTK_WIDGET (MAIN_WINDOW->timeline),
-                        0,
-                        0,
-                        &wx,
-                        &wy);
-              /* if before next */
-              if (x <= wx &&
-                  y <= wy)
-                {
-                  int ww = wx - prev_wx;
-                  int prev_y_px = automation_point_get_y_in_px (prev_ap);
-                  int curr_y_px = automation_point_get_y_in_px (next_ap);
-                  int height = prev_y_px > curr_y_px ?
-                    prev_y_px - curr_y_px :
-                    curr_y_px - prev_y_px;
-                  if (automation_point_curve_get_y_px (prev_ap,
-                                                       x,
-                                                       ww,
-                                                       height) == (int) y)
-                    {
-                      g_message ("YES");
-                    }
-                }
-            }
-        }
-    }
-  return NULL;
-
-}
 
 static void
 get_hit_widgets_in_range (ArrangerWidget *  self,
@@ -495,6 +432,12 @@ get_hit_widget (ArrangerWidget *  self,
               g_message ("wx %d wy %d", wx, wy);
               return widget;
             }
+          else if (type == ARRANGER_CHILD_TYPE_AC &&
+                   IS_AUTOMATION_CURVE_WIDGET (widget))
+            {
+              g_message ("wx %d wy %d", wx, wy);
+              return widget;
+            }
         }
     }
   return NULL;
@@ -548,34 +491,18 @@ get_hit_automation_point (ArrangerWidget *  self,
   return NULL;
 }
 
-/**
- * Queues redraw on selected/deselected automation points.
- */
-static void
-set_state_and_redraw_tl_automation_points (ArrangerWidget *           self,
-                                           AutomationPointWidgetState state)
+static AutomationCurveWidget *
+get_hit_curve (ArrangerWidget * self, double x, double y)
 {
-  FOREACH_TL_AP
+  GtkWidget * widget = get_hit_widget (self,
+                                       ARRANGER_CHILD_TYPE_AC,
+                                       x,
+                                       y);
+  if (widget)
     {
-      AutomationPoint * ap = self->tl_automation_points[i];
-      automation_point_widget_set_state_and_queue_draw (ap->widget,
-                                                        state);
+      return AUTOMATION_CURVE_WIDGET (widget);
     }
-}
-
-/**
- * Queues redraw on selected/deselected midi_notes.
- */
-static void
-set_state_and_redraw_me_midi_notes (ArrangerWidget *    self,
-                                    MidiNoteWidgetState state)
-{
-  FOREACH_ME_MN
-    {
-      MidiNote * midi_note = self->me_midi_notes[i];
-      midi_note_widget_set_state_and_queue_draw (midi_note->widget,
-                                                 state);
-    }
+  return NULL;
 }
 
 static void
@@ -708,7 +635,7 @@ arranger_widget_select_all (ArrangerWidget *  self,
                         {
                           for (int k = 0; k < at->num_automation_points; k++)
                             {
-                              AutomationPoint * ap = at->automation_points[k];
+                              /*AutomationPoint * ap = at->automation_points[k];*/
 
                               /*ap_widget_select (ap->widget, select);*/
 
@@ -791,7 +718,7 @@ on_right_click (GtkGestureMultiPress *gesture,
                gdouble               y,
                gpointer              user_data)
 {
-  ArrangerWidget * self = (ArrangerWidget *) user_data;
+  /*ArrangerWidget * self = (ArrangerWidget *) user_data;*/
 
   if (n_press == 1)
     {
@@ -849,8 +776,8 @@ drag_begin (GtkGestureDrag * gesture,
 
   GdkEventSequence *sequence =
     gtk_gesture_single_get_current_sequence (GTK_GESTURE_SINGLE (gesture));
-  guint button =
-    gtk_gesture_single_get_current_button (GTK_GESTURE_SINGLE (gesture));
+  /*guint button =*/
+    /*gtk_gesture_single_get_current_button (GTK_GESTURE_SINGLE (gesture));*/
   const GdkEvent * event =
     gtk_gesture_get_last_event (GTK_GESTURE (gesture), sequence);
   GdkModifierType state_mask;
@@ -862,13 +789,13 @@ drag_begin (GtkGestureDrag * gesture,
   RegionWidget * rw = T_TIMELINE ?
     get_hit_region (self, start_x, start_y) :
     NULL;
-  AutomationPoint * curve_ap = T_TIMELINE ?
+  AutomationCurveWidget * ac_widget = T_TIMELINE ?
     get_hit_curve (self, start_x, start_y) :
     NULL;
   AutomationPointWidget * ap_widget = T_TIMELINE ?
     get_hit_automation_point (self, start_x, start_y) :
     NULL;
-  int is_hit = midi_note_widget || rw || curve_ap || ap_widget;
+  int is_hit = midi_note_widget || rw || ac_widget || ap_widget;
   if (is_hit)
     {
       /* set selections, positions, actions, cursor */
@@ -1005,22 +932,9 @@ drag_begin (GtkGestureDrag * gesture,
               arranger_widget_toggle_select_automation_point (self, ap, 0);
             }
         }
-      else if (curve_ap)
+      else if (ac_widget)
         {
-          self->tl_start_ap = curve_ap;
-          if (!array_contains ((void **) self->tl_automation_points,
-                               self->num_tl_automation_points,
-                               (void *) curve_ap))
-            {
-              self->tl_automation_points[0] = curve_ap;
-              self->num_tl_automation_points = 1;
-            }
-          self->start_pos_px = start_x;
-
-          /* deselect regions & automation curves */
-          /*set_state_and_redraw_tl_regions (self,*/
-                                           /*RW_STATE_NONE);*/
-          /*self->num_tl_regions = 0;*/
+          self->tl_start_ac = ac_widget->ac;
         }
 
       /* find start pos */
@@ -1028,32 +942,33 @@ drag_begin (GtkGestureDrag * gesture,
       position_set_bar (&self->start_pos, 2000);
       if (T_TIMELINE)
         {
-          Region * start_r = NULL;
           FOREACH_TL_R
             {
               Region * r = self->tl_regions[i];
               if (position_compare (&r->start_pos,
                                     &self->start_pos) <= 0)
                 {
-                  start_r = r;
                   position_set_to_pos (&self->start_pos,
                                        &r->start_pos);
                 }
+
+              /* set start poses fo regions */
               position_set_to_pos (&self->tl_region_start_poses[i],
                                    &r->start_pos);
             }
-          if (!start_r)
+          FOREACH_TL_AP
             {
-              FOREACH_TL_AP
+              AutomationPoint * ap = self->tl_automation_points[i];
+              if (position_compare (&ap->pos,
+                                    &self->start_pos) <= 0)
                 {
-                  AutomationPoint * ap = self->tl_automation_points[i];
-                  if (position_compare (&ap->pos,
-                                        &self->start_pos) <= 0)
-                    {
-                      position_set_to_pos (&self->start_pos,
-                                           &ap->pos);
-                    }
+                  position_set_to_pos (&self->start_pos,
+                                       &ap->pos);
                 }
+
+              /* set start poses for APs */
+              position_set_to_pos (&self->tl_ap_poses[i],
+                                   &ap->pos);
             }
         }
 
@@ -1119,7 +1034,6 @@ drag_begin (GtkGestureDrag * gesture,
                                                       start_y);
 
                       AutomationPoint * ap = automation_point_new_float (at,
-                                                             AUTOMATION_POINT_VALUE,
                                                              value,
                                                              &pos);
                       automation_track_add_automation_point (at,
@@ -1402,70 +1316,72 @@ drag_update (GtkGestureDrag * gesture,
               position_add_frames (&tmp, frames_diff);
               region_set_start_pos (r, &tmp, 1);
             }
-          /*else if (T_TIMELINE && self->tl_start_ap &&*/
-                   /*self->tl_start_ap->type == AUTOMATION_POINT_VALUE)*/
-            /*{*/
-              /*ruler_widget_px_to_pos (&pos,*/
-                                      /*(self->start_pos_px + offset_x) -*/
-                                        /*SPACE_BEFORE_START);*/
 
-              /*position_snap (NULL,*/
-                             /*&pos,*/
-                             /*self->tl_start_ap->at->track,*/
-                             /*NULL,*/
-                             /*self->snap_grid);*/
-              /*for (int i = 0; i < self->num_tl_automation_points; i++)*/
-                /*{*/
-                  /*AutomationPoint * ap = self->tl_automation_points[i];*/
+          /* update ap positions */
+          FOREACH_TL_AP
+            {
+              for (int i = 0; i < self->num_tl_automation_points; i++)
+                {
+                  AutomationPoint * ap = self->tl_automation_points[i];
 
-                  /*[> get prev and next value APs <]*/
-                  /*AutomationPoint * prev_ap = automation_track_get_prev_ap (ap->at,*/
-                                                                            /*ap);*/
-                  /*AutomationPoint * next_ap = automation_track_get_next_ap (ap->at,*/
-                                                                            /*ap);*/
-                  /*[> get adjusted pos for this automation point <]*/
-                  /*Position ap_pos;*/
-                  /*position_set_to_pos (&ap_pos,*/
-                                       /*&pos);*/
-                  /*int diff = position_to_frames (&ap->pos) -*/
-                    /*position_to_frames (&self->tl_start_ap->pos);*/
-                  /*position_add_frames (&ap_pos, diff);*/
+                  /* get prev and next value APs */
+                  AutomationPoint * prev_ap = automation_track_get_prev_ap (ap->at,
+                                                                            ap);
+                  AutomationPoint * next_ap = automation_track_get_next_ap (ap->at,
+                                                                            ap);
+                  /* get adjusted pos for this automation point */
+                  Position ap_pos;
+                  Position * prev_pos = &self->tl_ap_poses[i];
+                  position_set_to_pos (&ap_pos,
+                                       prev_pos);
+                  position_add_frames (&ap_pos, frames_diff);
 
-                  /*Position mid_pos;*/
-                  /*AutomationPoint * curve_ap;*/
-                  /*if (prev_ap && position_compare (&ap_pos, &prev_ap->pos) >= 0)*/
-                    /*{*/
-                      /*[> set prev curve point to new midway pos <]*/
-                      /*position_get_midway_pos (&prev_ap->pos,*/
-                                               /*&ap_pos,*/
-                                               /*&mid_pos);*/
-                      /*curve_ap = automation_track_get_next_curve_ap (ap->at,*/
-                                                                     /*prev_ap);*/
-                      /*position_set_to_pos (&curve_ap->pos, &mid_pos);*/
+                  Position mid_pos;
+                  AutomationCurve * ac;
 
-                      /*[> set pos for ap <]*/
-                      /*position_set_to_pos (&ap->pos, &ap_pos);*/
-                    /*}*/
-                  /*if (next_ap && position_compare (&ap_pos, &next_ap->pos) <= 0)*/
-                    /*{*/
-                      /*[> set next curve point to new midway pos <]*/
-                      /*position_get_midway_pos (&ap_pos,*/
-                                               /*&next_ap->pos,*/
-                                               /*&mid_pos);*/
-                      /*curve_ap = automation_track_get_next_curve_ap (ap->at,*/
-                                                                     /*ap);*/
-                      /*position_set_to_pos (&curve_ap->pos, &mid_pos);*/
+                  /* update midway points */
+                  if (prev_ap && position_compare (&ap_pos, &prev_ap->pos) >= 0)
+                    {
+                      /* set prev curve point to new midway pos */
+                      position_get_midway_pos (&prev_ap->pos,
+                                               &ap_pos,
+                                               &mid_pos);
+                      ac = automation_track_get_next_curve_ac (ap->at,
+                                                               prev_ap);
+                      position_set_to_pos (&ac->pos, &mid_pos);
 
-                      /*[> set pos for ap <]*/
-                      /*position_set_to_pos (&ap->pos, &ap_pos);*/
-                    /*}*/
-                /*}*/
-            /*}*/
-          /*else if (T_TIMELINE && self->tl_start_ap &&*/
-                   /*self->tl_start_ap->type == AUTOMATION_POINT_CURVE)*/
-            /*{*/
-              /*[> TODO <]*/
-            /*}*/
+                      /* set pos for ap */
+                      if (!next_ap)
+                        {
+                          position_set_to_pos (&ap->pos, &ap_pos);
+                        }
+                    }
+                  if (next_ap && position_compare (&ap_pos, &next_ap->pos) <= 0)
+                    {
+                      /* set next curve point to new midway pos */
+                      position_get_midway_pos (&ap_pos,
+                                               &next_ap->pos,
+                                               &mid_pos);
+                      ac = automation_track_get_next_curve_ac (ap->at,
+                                                               ap);
+                      position_set_to_pos (&ac->pos, &mid_pos);
+
+                      /* set pos for ap - if no prev ap exists or if the position
+                       * is also after the prev ap */
+                      if ((prev_ap &&
+                            position_compare (&ap_pos, &prev_ap->pos) >= 0) ||
+                          (!prev_ap))
+                        {
+                          position_set_to_pos (&ap->pos, &ap_pos);
+                        }
+                    }
+                  else if (!prev_ap && !next_ap)
+                    {
+                      /* set pos for ap */
+                      position_set_to_pos (&ap->pos, &ap_pos);
+                    }
+                }
+            }
         }
       else if (T_MIDI)
         {
@@ -1499,77 +1415,79 @@ drag_update (GtkGestureDrag * gesture,
       /* handle y */
       if (T_TIMELINE)
         {
-          /* check if should be moved to new track */
-          Track * track = get_track_at_y (self->start_y + offset_y);
-          Track * old_track = self->tl_start_region->track;
-          if (track)
+          if (self->tl_start_region)
             {
-              Track * pt = tracklist_widget_get_prev_visible_track (old_track);
-              Track * nt = tracklist_widget_get_next_visible_track (old_track);
-              Track * tt = tracklist_widget_get_top_track ();
-              Track * bt = tracklist_widget_get_bot_track ();
-              if (self->tl_start_region->track != track)
+              /* check if should be moved to new track */
+              Track * track = get_track_at_y (self->start_y + offset_y);
+              Track * old_track = self->tl_start_region->track;
+              if (track)
                 {
-                  /* if new track is lower and bot region is not at the lowest track */
-                  if (track == nt &&
-                      self->tl_bot_region->track != bt)
+                  Track * pt = tracklist_widget_get_prev_visible_track (old_track);
+                  Track * nt = tracklist_widget_get_next_visible_track (old_track);
+                  Track * tt = tracklist_widget_get_top_track ();
+                  Track * bt = tracklist_widget_get_bot_track ();
+                  if (self->tl_start_region->track != track)
                     {
-                      /* shift all selected regions to their next track */
-                      FOREACH_TL_R
+                      /* if new track is lower and bot region is not at the lowest track */
+                      if (track == nt &&
+                          self->tl_bot_region->track != bt)
                         {
-                          Region * region = self->tl_regions[i];
-                          nt = tracklist_widget_get_next_visible_track (region->track);
-                          old_track = region->track;
-                          track_remove_region (old_track, region);
-                          track_add_region (nt, region);
+                          /* shift all selected regions to their next track */
+                          FOREACH_TL_R
+                            {
+                              Region * region = self->tl_regions[i];
+                              nt = tracklist_widget_get_next_visible_track (region->track);
+                              old_track = region->track;
+                              track_remove_region (old_track, region);
+                              track_add_region (nt, region);
+                            }
                         }
-                    }
-                  else if (track == pt &&
-                           self->tl_top_region->track != tt)
-                    {
-                      g_message ("track %s top region track %s tt %s",
-                                 track->channel->name,
-                                 self->tl_top_region->track->channel->name,
-                                 tt->channel->name);
-                      /* shift all selected regions to their prev track */
-                      FOREACH_TL_R
+                      else if (track == pt &&
+                               self->tl_top_region->track != tt)
                         {
-                          Region * region = self->tl_regions[i];
-                          pt = tracklist_widget_get_prev_visible_track (region->track);
-                          old_track = region->track;
-                          track_remove_region (old_track, region);
-                          track_add_region (pt, region);
+                          g_message ("track %s top region track %s tt %s",
+                                     track->channel->name,
+                                     self->tl_top_region->track->channel->name,
+                                     tt->channel->name);
+                          /* shift all selected regions to their prev track */
+                          FOREACH_TL_R
+                            {
+                              Region * region = self->tl_regions[i];
+                              pt = tracklist_widget_get_prev_visible_track (region->track);
+                              old_track = region->track;
+                              track_remove_region (old_track, region);
+                              track_add_region (pt, region);
+                            }
                         }
                     }
                 }
             }
-        }
-      else if (T_TIMELINE && self->tl_start_ap &&
-               self->tl_start_ap->type == AUTOMATION_POINT_VALUE)
-        {
-          for (int i = 0; i < self->num_tl_automation_points; i++)
+          else if (self->tl_start_ap)
             {
-              AutomationPoint * ap = self->tl_automation_points[i];
+              for (int i = 0; i < self->num_tl_automation_points; i++)
+                {
+                  AutomationPoint * ap = self->tl_automation_points[i];
 
-              /* get adjusted y for this ap */
-              /*Position region_pos;*/
-              /*position_set_to_pos (&region_pos,*/
-                                   /*&pos);*/
-              /*int diff = position_to_frames (&region->start_pos) -*/
-                /*position_to_frames (&self->tl_start_region->start_pos);*/
-              /*position_add_frames (&region_pos, diff);*/
-              int this_y =
-                automation_track_widget_get_y (ap->at->widget,
-                                               ap->widget);
-              int start_ap_y =
-                automation_track_widget_get_y (self->tl_start_ap->at->widget,
-                                               self->tl_start_ap->widget);
-              int diff = this_y - start_ap_y;
+                  /* get adjusted y for this ap */
+                  /*Position region_pos;*/
+                  /*position_set_to_pos (&region_pos,*/
+                                       /*&pos);*/
+                  /*int diff = position_to_frames (&region->start_pos) -*/
+                    /*position_to_frames (&self->tl_start_region->start_pos);*/
+                  /*position_add_frames (&region_pos, diff);*/
+                  int this_y =
+                    automation_track_widget_get_y (ap->at->widget,
+                                                   ap->widget);
+                  int start_ap_y =
+                    automation_track_widget_get_y (self->tl_start_ap->at->widget,
+                                                   self->tl_start_ap->widget);
+                  int diff = this_y - start_ap_y;
 
-              float fval =
-                automation_track_widget_get_fvalue_at_y (ap->at->widget,
-                                                         self->start_y + offset_y + diff);
-              automation_point_update_fvalue (ap, fval);
+                  float fval =
+                    automation_track_widget_get_fvalue_at_y (ap->at->widget,
+                                                             self->start_y + offset_y + diff);
+                  automation_point_update_fvalue (ap, fval);
+                }
             }
         }
       else if (T_MIDI)

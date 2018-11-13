@@ -72,7 +72,7 @@ static void
 on_show (GtkWidget *widget,
          gpointer   user_data)
 {
-  AutomationTrackWidget * self = AUTOMATION_TRACK_WIDGET (user_data);
+  /*AutomationTrackWidget * self = AUTOMATION_TRACK_WIDGET (user_data);*/
   g_message ("showing");
 }
 
@@ -98,7 +98,7 @@ create_automatables_store (Track * track)
 {
   GtkTreeIter iter, iter2;
   GtkTreeStore *store;
-  gint i;
+  /*gint i;*/
 
   store = gtk_tree_store_new (2, G_TYPE_STRING, G_TYPE_POINTER);
 
@@ -274,7 +274,6 @@ automation_track_widget_get_y (AutomationTrackWidget * at_widget,
             0,
             &wx,
             &wy);
-  g_message ("%d", wy);
 
   return wy;
 }

@@ -23,6 +23,7 @@
 #define __AUDIO_AUTOMATION_TRACK_H__
 
 #include "audio/position.h"
+#include "audio/automation_curve.h"
 #include "audio/automation_point.h"
 
 #define MAX_AUTOMATION_POINTS 1200
@@ -46,6 +47,8 @@ typedef struct AutomationTrack
   AutomationPoint *         automation_points[MAX_AUTOMATION_POINTS];
                                       ///< automation points TODO sort every time
   int                       num_automation_points;
+  AutomationCurve *         automation_curves[MAX_AUTOMATION_POINTS];
+  int                       num_automation_curves;
   int                       visible;
 } AutomationTrack;
 
@@ -90,6 +93,13 @@ automation_track_add_automation_point (AutomationTrack * at,
                                        int               generate_curve_points);
 
 /**
+ * Adds automation curve.
+ */
+void
+automation_track_add_automation_curve (AutomationTrack * at,
+                                       AutomationCurve * ac);
+
+/**
  * Returns the automation point before the position.
  */
 AutomationPoint *
@@ -103,12 +113,23 @@ AutomationPoint *
 automation_track_get_next_ap (AutomationTrack * at,
                               AutomationPoint * _ap);
 
+AutomationPoint *
+automation_track_get_ap_before_curve (AutomationTrack * at,
+                                      AutomationCurve * ac);
+
+/**
+ * Returns the ap after the curve point.
+ */
+AutomationPoint *
+automation_track_get_ap_after_curve (AutomationTrack * at,
+                                     AutomationCurve * ac);
+
 /**
  * Returns the curve point right after the given ap
  */
-AutomationPoint *
-automation_track_get_next_curve_ap (AutomationTrack * at,
-                                    AutomationPoint * _ap);
+AutomationCurve *
+automation_track_get_next_curve_ac (AutomationTrack * at,
+                                    AutomationPoint * ap);
 
 /**
  * Removes automation point from automation track.
@@ -117,9 +138,20 @@ void
 automation_track_remove_ap (AutomationTrack * at,
                             AutomationPoint * ap);
 
+/**
+ * Removes automation curve from automation track.
+ */
+void
+automation_track_remove_ac (AutomationTrack * at,
+                            AutomationCurve * ac);
+
 int
-automation_track_get_index (AutomationTrack * at,
+automation_track_get_ap_index (AutomationTrack * at,
                             AutomationPoint * ap);
+
+int
+automation_track_get_curve_index (AutomationTrack * at,
+                                  AutomationCurve * ac);
 
 /**
  * Updates automation track & its GUI

@@ -63,7 +63,8 @@ automation_tracklist_widget_show (AutomationTracklistWidget *self)
     {
       /* if automation tracklist is hidden */
       if (gtk_paned_get_child2 (GTK_PANED (
-            self->track_widget->track_automation_paned)) != self)
+            self->track_widget->track_automation_paned)) !=
+          GTK_WIDGET (self))
         {
           /* pack the automation tracklist in the track */
           gtk_paned_pack2 (self->track_widget->track_automation_paned,
@@ -91,7 +92,8 @@ automation_tracklist_widget_show (AutomationTracklistWidget *self)
     {
       /* if automation tracklist is visible */
       if (gtk_paned_get_child2 (GTK_PANED (
-            self->track_widget->track_automation_paned)) == self)
+            self->track_widget->track_automation_paned)) ==
+          GTK_WIDGET (self))
         {
           /* remove the automation tracklist from the track */
           g_object_ref (self);

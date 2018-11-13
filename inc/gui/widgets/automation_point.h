@@ -52,6 +52,7 @@ typedef struct AutomationPointWidget
   AutomationPointWidgetState  state;
 } AutomationPointWidget;
 
+
 typedef struct AutomationPointWidgetClass
 {
   GtkBoxClass       parent_class;

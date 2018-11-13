@@ -76,14 +76,12 @@ ruler_widget_pos_to_px (Position * pos)
 static gboolean
 draw_cb (RulerWidget * self, cairo_t *cr, gpointer data)
 {
-  guint width, height;
-  GdkRGBA color;
   GtkStyleContext *context;
 
   context = gtk_widget_get_style_context (GTK_WIDGET (self));
 
   /*width = gtk_widget_get_allocated_width (widget);*/
-  height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  guint height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
 
   /* get positions in px */
   static int playhead_pos_in_px;
@@ -243,6 +241,7 @@ multipress_pressed (GtkGestureMultiPress *gesture,
       position_set_to_pos (&TRANSPORT->cue_pos,
                            &pos);
     }
+  return FALSE;
 }
 
 static void

@@ -35,41 +35,6 @@ G_DEFINE_TYPE (MidiNoteWidget, midi_note_widget, GTK_TYPE_DRAWING_AREA)
  */
 #define RESIZE_CURSOR_SPACE 9
 
-/**
- * TODO for displaying info when hovering
- */
-static void
-draw_text (cairo_t *cr, char * text)
-{
-#define FONT "Sans Bold 9"
-
-  PangoLayout *layout;
-  PangoFontDescription *desc;
-
-  cairo_translate (cr, 2, 2);
-
-  /* Create a PangoLayout, set the font and text */
-  layout = pango_cairo_create_layout (cr);
-
-  pango_layout_set_text (layout, text, -1);
-  desc = pango_font_description_from_string (FONT);
-  pango_layout_set_font_description (layout, desc);
-  pango_font_description_free (desc);
-
-  cairo_set_source_rgb (cr, 0, 0, 0);
-
-  /* Inform Pango to re-layout the text with the new transformation */
-  /*pango_cairo_update_layout (cr, layout);*/
-
-  /*pango_layout_get_size (layout, &width, &height);*/
-  /*cairo_move_to (cr, - ((double)width / PANGO_SCALE) / 2, - RADIUS);*/
-  pango_cairo_show_layout (cr, layout);
-
-
-  /* free the layout object */
-  g_object_unref (layout);
-}
-
 static gboolean
 draw_cb (MidiNoteWidget * self, cairo_t *cr, gpointer data)
 {

@@ -262,8 +262,8 @@ on_right_click (GtkGestureMultiPress *gesture,
 
   GdkEventSequence *sequence =
     gtk_gesture_single_get_current_sequence (GTK_GESTURE_SINGLE (gesture));
-  guint button =
-    gtk_gesture_single_get_current_button (GTK_GESTURE_SINGLE (gesture));
+  /*guint button =*/
+    /*gtk_gesture_single_get_current_button (GTK_GESTURE_SINGLE (gesture));*/
   const GdkEvent * event =
     gtk_gesture_get_last_event (GTK_GESTURE (gesture), sequence);
   GdkModifierType state_mask;
@@ -312,8 +312,8 @@ multipress_pressed (GtkGestureMultiPress *gesture,
 
   GdkEventSequence *sequence =
     gtk_gesture_single_get_current_sequence (GTK_GESTURE_SINGLE (gesture));
-  guint button =
-    gtk_gesture_single_get_current_button (GTK_GESTURE_SINGLE (gesture));
+  /*guint button =*/
+    /*gtk_gesture_single_get_current_button (GTK_GESTURE_SINGLE (gesture));*/
   const GdkEvent * event =
     gtk_gesture_get_last_event (GTK_GESTURE (gesture), sequence);
   GdkModifierType state_mask;

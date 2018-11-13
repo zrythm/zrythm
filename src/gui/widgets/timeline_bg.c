@@ -57,14 +57,12 @@ draw_horizontal_line (cairo_t * cr,
 static gboolean
 draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
 {
-  guint width, height;
-  GdkRGBA color;
   GtkStyleContext *context;
 
   context = gtk_widget_get_style_context (widget);
 
-  width = gtk_widget_get_allocated_width (widget);
-  height = gtk_widget_get_allocated_height (widget);
+  /*width = gtk_widget_get_allocated_width (widget);*/
+  guint height = gtk_widget_get_allocated_height (widget);
 
   /* get positions in px */
   static int playhead_pos_in_px;
@@ -107,7 +105,7 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   }
 
   /* handle horizontal drawing for tracks */
-  int y_offset = 0;
+  /*int y_offset = 0;*/
   for (int i = 0; i < MAIN_WINDOW->tracklist->num_track_widgets; i++)
     {
       TrackWidget * track_widget = MAIN_WINDOW->tracklist->track_widgets[i];
@@ -155,74 +153,6 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
                             &wy);
                   draw_horizontal_line (cr, wy, 0.2);
 
-                  /* automation point connecting lines */
-                  for (int k = 0; k < at->num_automation_points; k++)
-                    {
-                      AutomationPoint * ap = at->automation_points[k];
-                      if (ap->type == AUTOMATION_POINT_CURVE)
-                        continue;
-                      gtk_widget_translate_coordinates(
-                                GTK_WIDGET (ap->widget),
-                                GTK_WIDGET (MAIN_WINDOW->tracklist),
-                                0,
-                                0,
-                                &wx,
-                                &wy);
-                      wx = arranger_get_x_pos_in_px (&ap->pos);
-
-                      /*g_message ("wx %d wy %d", wx, wy);*/
-
-                      /* if not first AP */
-                      if (k > 0)
-                        {
-                          gint prev_wx, prev_wy;
-                          AutomationPoint * prev_ap =
-                            automation_track_get_prev_ap (at, ap);
-                          gtk_widget_translate_coordinates(
-                                    GTK_WIDGET (prev_ap->widget),
-                                    GTK_WIDGET (MAIN_WINDOW->tracklist),
-                                    0,
-                                    0,
-                                    &prev_wx,
-                                    &prev_wy);
-                          prev_wx = arranger_get_x_pos_in_px (&prev_ap->pos);
-                          int ww = wx - prev_wx;
-                          int automation_point_y;
-                          int new_x = prev_wx;
-                          int new_y = prev_wy;
-                          int prev_y_px = automation_point_get_y_in_px (prev_ap);
-                          int curr_y_px = automation_point_get_y_in_px (ap);
-                          int height = prev_y_px > curr_y_px ?
-                            prev_y_px - curr_y_px :
-                            curr_y_px - prev_y_px;
-                          cairo_set_source_rgba (cr,
-                                                track->channel->color.red,
-                                                track->channel->color.green,
-                                                track->channel->color.blue,
-                                                1.0);
-                          cairo_set_line_width (cr, 1);
-                          cairo_move_to (cr,
-                                         new_x,
-                                         new_y);
-                          for (int l = 0; l < ww; l++)
-                            {
-                              cairo_line_to (cr,
-                                             new_x,
-                                             new_y);
-                              automation_point_y =
-                                automation_point_curve_get_y_px (prev_ap,
-                                                                 l,
-                                                                 ww,
-                                                                 height);
-                              new_x = prev_wx + l;
-                              new_y = prev_wy + automation_point_y;
-                              cairo_line_to (cr,
-                                             new_x,
-                                             new_y);
-                              cairo_stroke (cr);
-                            }
-                        }
-                    }
                 }
             }
         }
@@ -244,6 +174,7 @@ multipress_pressed (GtkGestureMultiPress *gesture,
 {
   RulerWidget * self = (RulerWidget *) user_data;
   gtk_widget_grab_focus (GTK_WIDGET (self));
+  return FALSE;
 }
 
 static void

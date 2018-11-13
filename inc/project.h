@@ -48,6 +48,7 @@ typedef struct Plugin Plugin;
 typedef struct Track Track;
 typedef struct Region Region;
 typedef struct AutomationPoint AutomationPoint;
+typedef struct AutomationCurve AutomationCurve;
 typedef struct MidiNote MidiNote;
 
 typedef struct Project
@@ -80,6 +81,8 @@ typedef struct Project
   int               num_regions;
   AutomationPoint * automation_points[30000];
   int               num_automation_points;
+  AutomationCurve * automation_curves[30000];
+  int               num_automation_curves;
   MidiNote *        midi_notes[30000];
   int               num_midi_notes;
 } Project;

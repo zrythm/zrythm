@@ -41,7 +41,7 @@ draw_text (cairo_t *cr, char * name)
 
   PangoLayout *layout;
   PangoFontDescription *desc;
-  int i;
+  /*int i;*/
 
   cairo_translate (cr, 2, 2);
 

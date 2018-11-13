@@ -235,7 +235,8 @@ drag_start (GtkGestureDrag * gesture,
                gpointer        user_data)
 {
   DigitalMeterWidget * self = (DigitalMeterWidget *) user_data;
-  self->start_dens = self->snap_grid->grid_density;
+  if (self->type == DIGITAL_METER_TYPE_TIMESIG)
+    self->start_dens = self->snap_grid->grid_density;
 }
 
 static void

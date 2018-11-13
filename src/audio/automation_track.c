@@ -20,6 +20,7 @@
  */
 
 #include "audio/automatable.h"
+#include "audio/automation_curve.h"
 #include "audio/automation_track.h"
 #include "audio/automation_point.h"
 #include "audio/track.h"
@@ -88,10 +89,29 @@ cmpfunc (const void * _a, const void * _b)
   int ret = position_compare (&a->pos,
                               &b->pos);
   if (ret == 0 &&
-      automation_track_get_index (a->at,
+      automation_track_get_ap_index (a->at,
                                   a) <
-      automation_track_get_index (a->at,
+      automation_track_get_ap_index (a->at,
                                   b))
+    {
+      return -1;
+    }
+
+  return ret;
+}
+
+static int
+cmpfunc_curve (const void * _a, const void * _b)
+{
+  AutomationCurve * a = *(AutomationCurve **)_a;
+  AutomationCurve * b = *(AutomationCurve **)_b;
+  int ret = position_compare (&a->pos,
+                              &b->pos);
+  if (ret == 0 &&
+      automation_track_get_curve_index (a->at,
+                                        a) <
+      automation_track_get_curve_index (a->at,
+                                        b))
     {
       return -1;
     }
@@ -107,8 +127,8 @@ add_and_show_curve_point (AutomationTrack * at,
                           Position        * pos)
 {
   /* create curve point at mid pos */
-  AutomationPoint * curve = automation_point_new_curve (at, pos);
-  automation_track_add_automation_point (at, curve, NO_GENERATE_CURVE_POINTS);
+  AutomationCurve * curve = automation_curve_new (at, pos);
+  automation_track_add_automation_curve (at, curve);
 
   /* FIXME these should be in gui code */
   gtk_overlay_add_overlay (GTK_OVERLAY (MW_TIMELINE),
@@ -152,7 +172,7 @@ automation_track_print_automation_points (AutomationTrack * at)
   for (int i = 0; i < at->num_automation_points; i++)
     {
       AutomationPoint * ap = at->automation_points[i];
-      g_message ("%d: type %d", i, ap->type);
+      g_message ("%d", i);
       position_print (&ap->pos);
     }
 }
@@ -165,6 +185,27 @@ automation_track_force_sort (AutomationTrack * at)
          at->num_automation_points,
          sizeof (AutomationPoint *),
          cmpfunc);
+  qsort (at->automation_curves,
+         at->num_automation_curves,
+         sizeof (AutomationCurve *),
+         cmpfunc_curve);
+}
+
+/**
+ * Adds automation curve.
+ */
+void
+automation_track_add_automation_curve (AutomationTrack * at,
+                                       AutomationCurve * ac)
+{
+  /* add point */
+  at->automation_curves[at->num_automation_curves++] = ac;
+
+  /* sort by position */
+  qsort (at->automation_curves,
+         at->num_automation_curves,
+         sizeof (AutomationCurve *),
+         cmpfunc_curve);
 }
 
 /**
@@ -184,7 +225,7 @@ automation_track_add_automation_point (AutomationTrack * at,
          sizeof (AutomationPoint *),
          cmpfunc);
 
-  if (ap->type == AUTOMATION_POINT_VALUE && generate_curve_points)
+  if (generate_curve_points)
     {
       /* add midway automation point to control curviness */
       AutomationPoint * prev_ap = automation_track_get_prev_ap (at,
@@ -211,10 +252,10 @@ automation_track_add_automation_point (AutomationTrack * at,
       else  /* has next & prev */
         {
           /* remove existing curve ap */
-          AutomationPoint * prev_curve =
-            automation_track_get_next_curve_ap (at,
+          AutomationCurve * prev_curve =
+            automation_track_get_next_curve_ac (at,
                                                 prev_ap);
-          automation_track_remove_ap (at, prev_curve);
+          automation_track_remove_ac (at, prev_curve);
 
           create_curve_point_before (at,
                                      prev_ap,
@@ -226,6 +267,41 @@ automation_track_add_automation_point (AutomationTrack * at,
     }
 }
 
+AutomationPoint *
+automation_track_get_ap_before_curve (AutomationTrack * at,
+                                      AutomationCurve * ac)
+{
+  for (int i = at->num_automation_points - 1; i >= 0; i--)
+    {
+      AutomationPoint * ap = at->automation_points[i];
+      if (position_compare (&ac->pos,
+                            &ap->pos) >= 0)
+        {
+          return ap;
+        }
+    }
+  return NULL;
+}
+
+/**
+ * Returns the ap after the curve point.
+ */
+AutomationPoint *
+automation_track_get_ap_after_curve (AutomationTrack * at,
+                                     AutomationCurve * ac)
+{
+  for (int i = 0; i < at->num_automation_points; i++)
+    {
+      AutomationPoint * ap = at->automation_points[i];
+      if (position_compare (&ap->pos,
+                            &ac->pos) >= 0)
+        {
+          return ap;
+        }
+    }
+  return NULL;
+}
+
 /**
  * Returns the automation point before the position.
  */
@@ -233,13 +309,32 @@ AutomationPoint *
 automation_track_get_prev_ap (AutomationTrack * at,
                               AutomationPoint * _ap)
 {
-  int index = automation_track_get_index (at, _ap);
+  int index = automation_track_get_ap_index (at, _ap);
   for (int i = index - 1; i >= 0; i--)
     {
       AutomationPoint * ap = at->automation_points[i];
-      if (ap->type == AUTOMATION_POINT_VALUE &&
-          position_compare (&_ap->pos,
+      if (position_compare (&_ap->pos,
                             &ap->pos) >= 0)
+        {
+          return ap;
+        }
+    }
+  return NULL;
+}
+
+/**
+ * Returns the automation point after the position.
+ */
+AutomationPoint *
+automation_track_get_next_ap (AutomationTrack * at,
+                              AutomationPoint * _ap)
+{
+  int index = automation_track_get_ap_index (at, _ap);
+  for (int i = index + 1; i < at->num_automation_points; i++)
+    {
+      AutomationPoint * ap = at->automation_points[i];
+      if (position_compare (&ap->pos,
+                            &_ap->pos) >= 0)
         {
           return ap;
         }
@@ -250,28 +345,16 @@ automation_track_get_prev_ap (AutomationTrack * at,
 /**
  * Returns the curve point right after the given ap
  */
-AutomationPoint *
-automation_track_get_next_curve_ap (AutomationTrack * at, /* FIXME don't need at */
-                                    AutomationPoint * _ap)
+AutomationCurve *
+automation_track_get_next_curve_ac (AutomationTrack * at,
+                                    AutomationPoint * ap)
 {
-  for (int i = 0; i < at->num_automation_points; i++)
-    {
-      AutomationPoint * ap = at->automation_points[i];
-      if (ap == _ap)
-        {
-          if (i < (at->num_automation_points - 1) &&
-              at->automation_points[i + 1]->type == AUTOMATION_POINT_CURVE)
-            {
-              return at->automation_points[i + 1];
-            }
-          else if (i < (at->num_automation_points - 2) &&
-                   at->automation_points [i + 2]->type == AUTOMATION_POINT_CURVE)
-            {
-              return at->automation_points [i + 2];
-            }
-        }
-    }
-  g_error ("get next curve ap: no next curve AP point found");
+  int index = automation_track_get_ap_index (at, ap);
+
+  /* if not last or only AP */
+  if (!(index == at->num_automation_points - 1))
+    return at->automation_curves[index];
+
   return NULL;
 }
 
@@ -289,33 +372,40 @@ automation_track_remove_ap (AutomationTrack * at,
 }
 
 /**
- * Returns the automation point after the position.
+ * Removes automation point from automation track.
  */
-AutomationPoint *
-automation_track_get_next_ap (AutomationTrack * at,
-                              AutomationPoint * _ap)
+void
+automation_track_remove_ac (AutomationTrack * at,
+                            AutomationCurve * ac)
 {
-  int index = automation_track_get_index (at, _ap);
-  for (int i = index + 1; i < at->num_automation_points; i++)
-    {
-      AutomationPoint * ap = at->automation_points[i];
-      if (ap->type == AUTOMATION_POINT_VALUE &&
-          position_compare (&ap->pos,
-                            &_ap->pos) >= 0)
-        {
-          return ap;
-        }
-    }
-  return NULL;
+  array_delete ((void **) at->automation_curves,
+                 &at->num_automation_curves,
+                 ac);
+  automation_curve_free (ac);
 }
 
+
 int
-automation_track_get_index (AutomationTrack * at,
-                            AutomationPoint * ap)
+automation_track_get_ap_index (AutomationTrack * at,
+                               AutomationPoint * ap)
 {
   for (int i = 0; i < at->num_automation_points; i++)
     {
       if (at->automation_points[i] == ap)
+        {
+          return i;
+        }
+    }
+  return -1;
+}
+
+int
+automation_track_get_curve_index (AutomationTrack * at,
+                                  AutomationCurve * ac)
+{
+  for (int i = 0; i < at->num_automation_curves; i++)
+    {
+      if (at->automation_curves[i] == ac)
         {
           return i;
         }
