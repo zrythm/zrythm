@@ -74,15 +74,15 @@ autom4te.cache
 /autoscan-*.log
 /aclocal.m4
 /compile
-/config.guess
+#/config.guess
 /config.h.in
 /config.log
 /config.status
-/config.sub
-#/configure
+#/config.sub
+/configure
 /configure.scan
 /depcomp
-/install-sh
+#/install-sh
 /missing
 /stamp-h1
 

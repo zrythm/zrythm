@@ -12,6 +12,11 @@ Bits and pieces are taken from other programs like Ardour and Jalv.
 ## Currently supported protocols:
 - LV2
 
+## Installation
+Arch Linux (AUR):
+
+You can install it via AUR using your favorite package manager. For yaourt: `yaourt -S zrythm-git`
+
 ## Contributing
 For installation instructions see INSTALL
 

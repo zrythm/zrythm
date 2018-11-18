@@ -51,7 +51,7 @@ AC_PREFIX_DEFAULT([/usr])
 
 #Checks for libraries.
 PKG_CHECK_MODULES([GTK3], [gtk+-3.0 >= 3.20])
-PKG_CHECK_MODULES([JACK], [jack >= 1.8.17])
+PKG_CHECK_MODULES([JACK], [jack])
 PKG_CHECK_MODULES([LILV], [lilv-0 >= 0.24.2])
 PKG_CHECK_MODULES([SUIL], [suil-0 >= 0.10.0])
 PKG_CHECK_MODULES([PANGO], [pango >= 1.0])
