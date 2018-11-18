@@ -38,13 +38,19 @@ AM_CONDITIONAL([OSX], [test "$build_mac" = "yes"])
 AM_COND_IF([OSX],
            [AC_SUBST([OSX], [1])])
 
+# options
+AC_ARG_ENABLE(aur-build,
+              AS_HELP_STRING([--enable-aur-build], [Used for packaging for AUR]),
+              [AC_SUBST([AUR_BUILD], [1])],
+              [AC_SUBST([AUR_BUILD], [0])])
+
 # Check for a C compiler
 AC_PROG_CC([gcc])
 
 AC_PREFIX_DEFAULT([/usr])
 
 #Checks for libraries.
-PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= 3.20])
+PKG_CHECK_MODULES([GTK3], [gtk+-3.0 >= 3.20])
 PKG_CHECK_MODULES([JACK], [jack >= 1.8.17])
 PKG_CHECK_MODULES([LILV], [lilv-0 >= 0.24.2])
 PKG_CHECK_MODULES([SUIL], [suil-0 >= 0.10.0])

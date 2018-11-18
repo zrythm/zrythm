@@ -22,6 +22,7 @@ DEFS = @DEFS@
 INSTALL = install
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
+INSTALL_FONT = ${INSTALL} -m 755
 LDFLAGS = @LDFLAGS@
 MKDIR_P = mkdir -p
 GLIB_COMPILE_SCHEMAS = @GLIB_COMPILE_SCHEMAS@
@@ -41,6 +42,7 @@ srcdir = @srcdir@
 WINDOWS=@WINDOWS@
 LINUX=@LINUX@
 OSX=@OSX@
+AUR_BUILD=@AUR_BUILD@
 
 # test
 
@@ -65,7 +67,7 @@ sysconfdir = @sysconfdir@
 
 
 # library CFLAGS
-GTK_CFLAGS = @GTK_CFLAGS@
+GTK3_CFLAGS = @GTK3_CFLAGS@
 JACK_CFLAGS = @JACK_CFLAGS@
 LILV_CFLAGS = @LILV_CFLAGS@
 LV2_CFLAGS = @LV2_CFLAGS@
@@ -76,7 +78,7 @@ LIBSMF_CFLAGS = @LIBSMF_CFLAGS@
 SNDFILE_CFLAGS = @SNDFILE_CFLAGS@
 
 # library LIBS
-GTK_LIBS = @GTK_LIBS@
+GTK3_LIBS = @GTK3_LIBS@
 JACK_LIBS = @JACK_LIBS@
 LILV_LIBS = @LILV_LIBS@
 LV2_LIBS = @LV2_LIBS@
@@ -102,7 +104,7 @@ else ifeq ($(CC),x86_64-w64-mingw32-gcc)
 	#R_DYNAMIC = -export-all-symbols
 endif
 
-ifeq (@WINDOWS@,1)
+ifeq ($(WINDOWS),1)
 	EXT = .exe
 	EXTRA_LD_FLAGS += -fno-stack-protector -mwindows
 endif
@@ -110,7 +112,7 @@ endif
 CFLAGS = -Wall \
  	$(R_DYNAMIC) \
 	$(DEFAULT_INCLUDES) \
-	$(GTK_CFLAGS) \
+	$(GTK3_CFLAGS) \
 	$(JACK_CFLAGS) \
 	$(LIBSMF_CFLAGS) \
 	$(LIBXML_CFLAGS) \
@@ -124,7 +126,7 @@ CFLAGS = -Wall \
 	$(EXTRA_LD_FLAGS)
 
 
-LDFLAGS =	$(GTK_LIBS) \
+LDFLAGS =	$(GTK3_LIBS) \
 	$(JACK_LIBS) \
 	$(LIBSMF_LIBS) \
 	$(LIBXML_LIBS) \
@@ -202,8 +204,8 @@ clean:
 
 .PHONY: install
 install: $(BUILD_DIR)/$(BIN)$(EXT) install-appicon-data install-desktop-data install-gschemas install-fonts
-	$(MKDIR_P) $(bindir)
-	$(INSTALL) $< $(bindir)/$(BIN)$(EXT)
+	$(MKDIR_P) $(DESTDIR)$(bindir)
+	$(INSTALL) $< $(DESTDIR)$(bindir)/$(BIN)$(EXT)
 
 .PHONY: uninstall
 uninstall:
@@ -211,19 +213,24 @@ uninstall:
 
 .PHONY: install-appicon-data
 install-appicon-data: $(appicon_DATA)
-	$(INSTALL_DATA) $< "$(appicondir)"
+	$(MKDIR_P) "$(DESTDIR)$(appicondir)"
+	$(INSTALL_DATA) $< "$(DESTDIR)$(appicondir)/"
 
 .PHONY: install-gschemas
 install-gschemas: $(gsettings_SCHEMAS)
-	$(INSTALL) $< $(gsettingsschemadir)/
-	$(GLIB_COMPILE_SCHEMAS) $(gsettingsschemadir)
+	$(MKDIR_P) "$(DESTDIR)$(gsettingsschemadir)"
+	$(INSTALL) $< "$(DESTDIR)$(gsettingsschemadir)/"
+ifneq ($(AUR_BUILD),1)
+	$(GLIB_COMPILE_SCHEMAS) "$(DESTDIR)$(gsettingsschemadir)"
+endif
 
 .PHONY: install-fonts
-install-fonts: $(FONTS_DIR)/Segment7Standard
-	cp -r $< $(fontdir)
-	sudo chmod -R 755 /usr/share/fonts/Segment7Standard
+install-fonts: $(FONTS_DIR)/Segment7Standard/*
+	$(MKDIR_P) "$(DESTDIR)$(fontdir)/$(BIN)/Segment7Standard"
+	$(INSTALL_FONT) $< "$(DESTDIR)$(fontdir)/$(BIN)/Segment7Standard/"
 
 .PHONY: install-desktop
 install-desktop-data: $(desktop_DATA)
-	$(INSTALL_DATA) $< "$(desktopdir)"
+	$(MKDIR_P) "$(DESTDIR)$(desktopdir)"
+	$(INSTALL_DATA) $< "$(DESTDIR)$(desktopdir)/"
 
