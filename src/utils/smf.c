@@ -198,7 +198,7 @@ smf_load_region (const char    * file,   ///< file to load
       uint8_t type = event->midi_buffer[0] & 0xf0;
       uint8_t channel = event->midi_buffer[0] & 0xf;
       int ticks = event->time_pulses;
-      if (type == 0x90) /* note on */
+      if (type == MIDI_CH1_NOTE_ON) /* note on */
         {
           g_message ("note on at %d ticks", ticks);
           /*position_set_to_pos (&notes[num_notes].start_pos,*/
@@ -211,7 +211,7 @@ smf_load_region (const char    * file,   ///< file to load
           notes[num_notes].vel = event->midi_buffer[2];
           num_notes++;
         }
-      else if (type == 0x80) /* note off */
+      else if (type == MIDI_CH1_NOTE_OFF) /* note off */
         {
           g_message ("note off at %d ticks", ticks);
           /* find note and set its end pos */

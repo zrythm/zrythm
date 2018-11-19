@@ -110,7 +110,7 @@ midi_note_notes_to_events (MidiNote     ** midi_notes, ///< array
       ev->size = 3;
       if (!ev->buffer)
         ev->buffer = calloc (3, sizeof (jack_midi_data_t));
-      ev->buffer[0] = 0x90; /* status byte, 0x90 is note on */
+      ev->buffer[0] = MIDI_CH1_NOTE_ON; /* status byte */
       ev->buffer[1] = note->val; /* note number 0-127 */
       ev->buffer[2] = note->vel; /* velocity 0-127 */
       events->num_events++;
@@ -122,7 +122,7 @@ midi_note_notes_to_events (MidiNote     ** midi_notes, ///< array
       ev->size = 3;
       if (!ev->buffer)
         ev->buffer = calloc (3, sizeof (jack_midi_data_t));
-      ev->buffer[0] = 0x80; /* status byte, 0x80 is note off */
+      ev->buffer[0] = MIDI_CH1_NOTE_OFF; /* status byte */
       ev->buffer[1] = note->val; /* note number 0-127 */
       ev->buffer[2] = note->vel; /* velocity 0-127 */
       events->num_events++;

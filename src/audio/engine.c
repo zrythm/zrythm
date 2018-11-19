@@ -174,15 +174,15 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
           uint8_t channel = event->buffer[0] & 0xf;
           switch (type)
             {
-              case 0x90:
+              case MIDI_CH1_NOTE_ON:
                 assert (event->size == 3);
                 g_message (" note on  (channel %2d): pitch %3d, velocity %3d", channel, event->buffer[1], event->buffer[2]);
                 break;
-              case 0x80:
+              case MIDI_CH1_NOTE_OFF:
                 assert (event->size == 3);
                 g_message (" note off (channel %2d): pitch %3d, velocity %3d", channel, event->buffer[1], event->buffer[2]);
                 break;
-              case 0xb0:
+              case MIDI_CH1_CTRL_CHANGE:
                 assert (event->size == 3);
                 g_message (" control change (channel %2d): controller %3d, value %3d", channel, event->buffer[1], event->buffer[2]);
                 break;

@@ -26,8 +26,6 @@
 #include "audio/position.h"
 #include "audio/region.h"
 
-/* TODO merge with midi.h */
-
 typedef struct MidiNoteWidget MidiNoteWidget;
 typedef struct Channel Channel;
 typedef struct Track Track;

@@ -142,7 +142,7 @@ track_fill_midi_events (Track      * track,
               ev->size = 3;
               if (!ev->buffer)
                 ev->buffer = calloc (3, sizeof (jack_midi_data_t));
-              ev->buffer[0] = 0x90; /* status byte, 0x90 is note on */
+              ev->buffer[0] = MIDI_CH1_NOTE_ON; /* status byte */
               ev->buffer[1] = midi_note->val; /* note number 0-127 */
               ev->buffer[2] = midi_note->vel; /* velocity 0-127 */
             }
@@ -161,7 +161,7 @@ track_fill_midi_events (Track      * track,
               ev->size = 3;
               if (!ev->buffer)
                 ev->buffer = calloc (3, sizeof (jack_midi_data_t));
-              ev->buffer[0] = 0x80; /* status byte, 0x80 is note off */
+              ev->buffer[0] = MIDI_CH1_NOTE_OFF; /* status byte */
               ev->buffer[1] = midi_note->val; /* note number 0-127 */
               ev->buffer[2] = midi_note->vel; /* velocity 0-127 */
             }
