@@ -7,24 +7,18 @@ pkgdesc="Free GNU/Linux music production system (DAW)"
 arch=('x86_64')
 url="https://gitlab.com/alextee/zrythm"
 license=('GPL')
-depends=('gtk3' 'lilv-git' 'suil-git' 'jack2' 'libsndfile' 'libsmf')
+depends=('gtk3' 'lv2' 'lilv-git' 'suil-git' 'jack' 'libsndfile' 'libsmf')
 makedepends=('git')
-source=("$pkgname-$pkgver::git+https://gitlab.com/alextee/zrythm.git")
+source=(sources.tar.gz)
 md5sums=('SKIP')
 
-prepare() {
-	cd "$pkgname-$pkgver"
-}
-
 build() {
-	cd "$pkgname-$pkgver"
-  autoreconf -fi
+  ./autogen.sh
 	./configure --prefix=/usr --enable-aur-build
-	make
+	make -j14
 }
 
 package() {
-	cd "$pkgname-$pkgver"
 	make DESTDIR="$pkgdir/" install
 }
 

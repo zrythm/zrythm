@@ -1,4 +1,5 @@
 #! /bin/sh
 
-aclocal \
-&& autoconf
+#aclocal \
+#&& autoconf
+autoreconf -fi

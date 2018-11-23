@@ -1,8 +1,79 @@
 # Official language image. Look for the different tagged releases at:
-image: "debian"
+image: "debian:buster"
 
-before_script:
-  - apt-get update -qq && apt-get install -y -qq libxml2-dev
-  - ./autoregen.sh
-  - ./configure
-  - make -j14
+variables:
+  _USER: "builduser"
+  _PATH: /home/$_USER/$CI_PROJECT_NAME
+
+stages:
+  #- test
+  - build
+
+# test if it builds
+#test_build:
+  #stage: test
+  #script:
+    #- apt-get update -qq && apt-get install -y -qq libxml2-dev libgtk-3-dev
+      #libjack-dev liblilv-dev libsuil-dev libsmf-dev libsndfile1-dev
+      #lv2-dev
+    #- ./autogen.sh
+    #- ./configure
+    #- make -j14
+
+build_src_tarball:
+  stage: build
+  script:
+    - tar -zcvf sources.tar.gz autogen.sh config.guess config.sub
+      configure.ac CONTRIBUTING data Doxyfile inc INSTALL install-sh
+      LICENSE Makefile.in README.md resources src
+  artifacts:
+    paths:
+    - ./*.tar.gz
+    expire_in: 1 week
+  only:
+    - tags
+    - master
+
+
+build_deb_64:
+  stage: build
+  script:
+    - echo "xelatex mycv.tex"
+  artifacts:
+    paths:
+    - PKGBUILD
+    expire_in: 1 week
+  only:
+    - tags
+    - master
+
+build_pkg_64:
+  #  image: heichblatt/archlinux-yaourt
+  image: base/archlinux
+  stage: build
+  script:
+    - pacman -Sy --noconfirm git sudo base-devel
+    - useradd -m $_USER
+    - mkdir -p $_PATH
+    - pushd $_PATH
+    - git clone https://aur.archlinux.org/yay.git &&
+      chown -R $_USER yay &&
+      cd yay &&
+      su -c "makepkg -si" $_USER
+    - tar -zcvf sources.tar.gz autogen.sh config.guess config.sub
+      configure.ac CONTRIBUTING data Doxyfile inc INSTALL install-sh
+      LICENSE Makefile.in README.md resources src
+    - yay -Sy --noconfirm gtk3 lv2 lilv-git suil-git jack libsndfile libsmf
+    - mkdir -p $_PATH
+    - mv * $_PATH
+    - pushd $_PATH
+    - su -c "makepkg" $_USER
+    - popd
+    - mv $_PATH/*.pkg.tar.xz .
+  artifacts:
+    paths:
+    - ./*.pkg.tar.xz
+    expire_in: 1 week
+  only:
+    - tags
+    - master
