@@ -1,0 +1,8 @@
+# Official language image. Look for the different tagged releases at:
+image: "debian"
+
+before_script:
+  - apt-get update -qq && apt-get install -y -qq libxml2-dev
+  - ./autoregen.sh
+  - ./configure
+  - make -j14
