@@ -31,7 +31,7 @@ G_DECLARE_FINAL_TYPE (SplashWindowWidget, splash_window_widget, SPLASH, WINDOW_W
 
 typedef struct _SplashWindowWidget
 {
-  GtkApplicationWindow     parent_instance;
+  GtkWindow     parent_instance;
   GtkLabel                 * label;
   GtkProgressBar           * progress_bar;
 } SplashWindowWidget;

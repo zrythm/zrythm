@@ -2,11 +2,9 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <template class="TrackWidget" parent="GtkPaned">
+  <template class="ChordTrackWidget" parent="GtkPaned">
     <property name="visible">True</property>
     <property name="can_focus">True</property>
-    <property name="orientation">vertical</property>
-    <property name="wide_handle">True</property>
     <child>
       <object class="GtkGrid">
         <property name="visible">True</property>
@@ -48,9 +46,8 @@
                       <object class="GtkLabel" id="track_name">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="margin_left">6</property>
                         <property name="hexpand">True</property>
-                        <property name="label" translatable="yes">label</property>
+                        <property name="label" translatable="yes">Chord</property>
                         <property name="width_chars">14</property>
                         <property name="max_width_chars">14</property>
                         <property name="xalign">0</property>
@@ -102,23 +99,11 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="halign">start</property>
-                        <property name="margin_left">4</property>
                         <property name="stock">gtk-missing-image</property>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
                         <property name="top_attach">1</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkDrawingArea" id="fader">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">1</property>
-                        <property name="width">3</property>
                       </packing>
                     </child>
                     <child>
@@ -131,17 +116,6 @@
                       <packing>
                         <property name="left_attach">4</property>
                         <property name="top_attach">1</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkDrawingArea" id="midi_activity">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">5</property>
-                        <property name="top_attach">0</property>
-                        <property name="height">2</property>
                       </packing>
                     </child>
                     <child>
@@ -167,6 +141,12 @@
                         <property name="left_attach">2</property>
                         <property name="top_attach">2</property>
                       </packing>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
                     </child>
                     <child>
                       <placeholder/>

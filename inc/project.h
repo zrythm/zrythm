@@ -50,6 +50,7 @@ typedef struct Region Region;
 typedef struct AutomationPoint AutomationPoint;
 typedef struct AutomationCurve AutomationCurve;
 typedef struct MidiNote MidiNote;
+typedef struct ChordTrack ChordTrack;
 
 typedef struct Project
 {
@@ -85,6 +86,9 @@ typedef struct Project
   int               num_automation_curves;
   MidiNote *        midi_notes[30000];
   int               num_midi_notes;
+
+  /* chord track info */
+  ChordTrack *      chord_track;
 } Project;
 
 

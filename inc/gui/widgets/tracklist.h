@@ -41,6 +41,7 @@
 
 typedef struct TrackWidget TrackWidget;
 typedef struct DragDestBoxWidget DragDestBoxWidget;
+typedef struct ChordTrackWidget ChordTrackWidget;
 
 typedef struct TracklistWidget
 {
@@ -49,6 +50,7 @@ typedef struct TracklistWidget
   GtkGestureMultiPress *        multipress;
   GtkGestureMultiPress *        right_mouse_mp; ///< right mouse multipress
   TrackWidget *                 master_tw; ///< master track widget
+  ChordTrackWidget *            chord_tw; ///< chord track widget
   TrackWidget *                 track_widgets[100]; ///< track paneds, in the order they appear.
                                       ///< invisible tracks do not get stored here,
                                       ///< track widgets are created dynamically
