@@ -8,22 +8,11 @@ variables:
   _ARCH_PATH: /home/$_ARCH_USER/$CI_PROJECT_NAME
 
 stages:
-  #- test
+  - src_tar
   - build
 
-# test if it builds
-#test_build:
-  #stage: test
-  #script:
-    #- apt-get update -qq && apt-get install -y -qq libxml2-dev libgtk-3-dev
-      #libjack-dev liblilv-dev libsuil-dev libsmf-dev libsndfile1-dev
-      #lv2-dev
-    #- ./autogen.sh
-    #- ./configure
-    #- make -j14
-
 build_src_tarball:
-  stage: build
+  stage: src_tar
   script:
     - tar -zcvf sources.tar.gz autogen.sh config.guess config.sub
       configure.ac CONTRIBUTING data Doxyfile inc INSTALL install-sh
@@ -36,11 +25,16 @@ build_src_tarball:
     - tags
     - master
 
-
 build_deb_64:
+  image: "debian:buster"
   stage: build
   script:
-    - echo "xelatex mycv.tex"
+    - apt-get update -qq && apt-get install -y -qq libxml2-dev libgtk-3-dev
+      libjack-dev liblilv-dev libsuil-dev libsmf-dev libsndfile1-dev
+      lv2-dev
+    - ./autogen.sh
+    - ./configure
+    - make -j14
   artifacts:
     paths:
     - PKGBUILD
@@ -51,37 +45,15 @@ build_deb_64:
 
 build_pkg_64:
   image: heichblatt/archlinux-yaourt
-  #image: base/archlinux
   stage: build
   script:
-    #- pacman -Sy --noconfirm git sudo base-devel
-    #- useradd -m $_USER
-    #- mkdir -p $_PATH
-    #- pushd $_PATH
-    #- git clone https://aur.archlinux.org/yay.git &&
-      #chown -R $_USER yay &&
-      #cd yay &&
-      #su -c "makepkg -si" $_USER
-    #- tar -zcvf sources.tar.gz autogen.sh config.guess config.sub
-      #configure.ac CONTRIBUTING data Doxyfile inc INSTALL install-sh
-      #LICENSE Makefile.in README.md resources src
-    #- yay -Sy --noconfirm gtk3 lv2 lilv-git suil-git jack libsndfile libsmf
-    #- mkdir -p $_PATH
-    #- mv * $_PATH
-    #- pushd $_PATH
-    #- su -c "makepkg" $_USER
-    #- popd
-    #- mv $_PATH/*.pkg.tar.xz .
-    - tar -zcvf sources.tar.gz autogen.sh config.guess config.sub
-      configure.ac CONTRIBUTING data Doxyfile inc INSTALL install-sh
-      LICENSE Makefile.in README.md resources src
-    - sudo yaourt -Sy --noconfirm gtk3 lv2 lilv-git suil-git jack libsndfile libsmf
-    - sudo mkdir -p $_PATH
-    - sudo mv * $_PATH
-    - sudo pushd $_PATH
-    - su -c "makepkg" $_USER
-    - sudo popd
-    - sudo mv $_PATH/*.pkg.tar.xz .
+    - yaourt -Sy --noconfirm gtk3 lv2 lilv-git suil-git jack libsndfile libsmf
+    - mkdir -p $_ARCH_PATH
+    - mv * $_ARCH_PATH
+    - pushd $_ARCH_PATH
+    - makepkg
+    - popd
+    - sudo mv $_ARCH_PATH/*.pkg.tar.xz .
   artifacts:
     paths:
     - ./*.pkg.tar.xz
