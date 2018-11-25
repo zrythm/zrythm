@@ -40,29 +40,13 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
+#include "utils/math.h"
 
 #include <gtk/gtk.h>
 #include <jack/thread.h>
 
 /* milliseconds */
 #define SLEEPTIME_MS 100
-
-#define RMS_FRAMES 32
-
-/**
- * Calculate decibels using RMS method.
- */
-static float
-calculate_rms_db (sample_t * buf, nframes_t nframes)
-{
-  float sum = 0, sample = 0;
-  for (int i = 0; i < nframes; i += RMS_FRAMES)
-  {
-    sample = buf[i];
-    sum += (sample * sample);
-  }
-  return 20.f * log10 (sqrt (sum / (nframes / (float) RMS_FRAMES)));
-}
 
 /**
  * Thread work
@@ -197,10 +181,10 @@ channel_process (Channel * channel,  ///< slots
 
   /* calc decibels */
   channel_set_current_l_db (channel,
-                            calculate_rms_db (channel->stereo_out->l->buf,
+                            math_calculate_rms_db (channel->stereo_out->l->buf,
                                          channel->stereo_out->l->nframes));
   channel_set_current_r_db (channel,
-                            calculate_rms_db (channel->stereo_out->r->buf,
+                            math_calculate_rms_db (channel->stereo_out->r->buf,
                                          channel->stereo_out->r->nframes));
 
   /* mark as processed */
@@ -464,7 +448,7 @@ channel_set_fader_amp (void * _channel, float amp)
   channel->fader_amp = amp;
 
   /* calculate volume */
-  channel->volume = 20.f * log10f (amp);
+  channel->volume = math_amp_to_dbfs (amp);
 
   /* TODO update tooltip */
   gtk_label_set_text (channel->widget->phase_reading,
@@ -562,7 +546,7 @@ channel_add_plugin (Channel * channel,    ///< the channel
   channel->enabled = 0;
 
   /* free current plugin */
-  Plugin * old = channel->strip[pos];
+  /*Plugin * old = channel->strip[pos];*/
   channel_remove_plugin (channel, pos);
 
   g_message ("Inserting %s at %s:%d", plugin->descr->name,

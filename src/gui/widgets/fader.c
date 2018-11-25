@@ -26,6 +26,7 @@
 
 #include "audio/channel.h"
 #include "gui/widgets/fader.h"
+#include "utils/math.h"
 
 G_DEFINE_TYPE (FaderWidget, fader_widget, GTK_TYPE_DRAWING_AREA)
 
@@ -35,38 +36,14 @@ G_DEFINE_TYPE (FaderWidget, fader_widget, GTK_TYPE_DRAWING_AREA)
 static double
 fader_val_from_real (FaderWidget * self)
 {
-  double real = GET_VAL;
-  /*return real / MAX_FADER_AMP;*/
-  if (real > REAL_STEP_1)
-    return FADER_STEP_1 + (((real - REAL_STEP_1) / REAL_DIFF_1) * FADER_DIFF_1);
-  else if (real > REAL_STEP_2)
-    return FADER_STEP_2 + (((real - REAL_STEP_2) / REAL_DIFF_2) * FADER_DIFF_2);
-  else if (real > REAL_STEP_3)
-    return FADER_STEP_3 + (((real - REAL_STEP_3) / REAL_DIFF_3) * FADER_DIFF_3);
-  else if (real > REAL_STEP_4)
-    return FADER_STEP_4 + (((real - REAL_STEP_4) / REAL_DIFF_4) * FADER_DIFF_4);
-  else if (real > REAL_STEP_5)
-    return FADER_STEP_5 + (((real - REAL_STEP_5) / REAL_DIFF_5) * FADER_DIFF_5);
-  else
-    return FADER_STEP_6 + (((real - REAL_STEP_6) / REAL_DIFF_6) * FADER_DIFF_6);
+  double amp = GET_VAL;
+  return math_get_fader_val_from_amp (amp);
 }
 
 static double
 real_val_from_fader (FaderWidget * self, double fader)
 {
-  /*return fader * MAX_FADER_AMP;*/
-  if (fader > FADER_STEP_1)
-    return REAL_STEP_1 + ((fader - FADER_STEP_1) / FADER_DIFF_1) * REAL_DIFF_1;
-  else if (fader > FADER_STEP_2)
-    return REAL_STEP_2 + ((fader - FADER_STEP_2) / FADER_DIFF_2) * REAL_DIFF_2;
-  else if (fader > FADER_STEP_3)
-    return REAL_STEP_3 + ((fader - FADER_STEP_3) / FADER_DIFF_3) * REAL_DIFF_3;
-  else if (fader > FADER_STEP_4)
-    return REAL_STEP_4 + ((fader - FADER_STEP_4) / FADER_DIFF_4) * REAL_DIFF_4;
-  else if (fader > FADER_STEP_5)
-    return REAL_STEP_5 + ((fader - FADER_STEP_5) / FADER_DIFF_5) * REAL_DIFF_5;
-  else
-    return REAL_STEP_6 + ((fader - FADER_STEP_6) / FADER_DIFF_6) * REAL_DIFF_6;
+  return math_get_amp_val_from_fader (fader);
 }
 
 static void

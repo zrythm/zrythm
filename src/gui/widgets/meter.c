@@ -25,6 +25,7 @@
 #include "audio/channel.h"
 #include "gui/widgets/meter.h"
 #include "gui/widgets/fader.h"
+#include "utils/math.h"
 
 G_DEFINE_TYPE (MeterWidget, meter_widget, GTK_TYPE_DRAWING_AREA)
 
@@ -33,32 +34,8 @@ G_DEFINE_TYPE (MeterWidget, meter_widget, GTK_TYPE_DRAWING_AREA)
 static float
 meter_val_from_real (MeterWidget * self)
 {
-  float real = GET_REAL_VAL;
-  if (real > REAL_STEP_1)
-      return FADER_STEP_1 + (((real - REAL_STEP_1) / REAL_DIFF_1) * FADER_DIFF_1);
-  else if (real > REAL_STEP_2)
-      return FADER_STEP_2 + (((real - REAL_STEP_2) / REAL_DIFF_2) * FADER_DIFF_2);
-  else if (real > REAL_STEP_3)
-      return FADER_STEP_3 + (((real - REAL_STEP_3) / REAL_DIFF_3) * FADER_DIFF_3);
-  else if (real > REAL_STEP_4)
-      return FADER_STEP_4 + (((real - REAL_STEP_4) / REAL_DIFF_4) * FADER_DIFF_4);
-  else
-      return FADER_STEP_5 + (((real - REAL_STEP_5) / REAL_DIFF_5) * FADER_DIFF_5);
-}
-
-static float
-real_val_from_meter (MeterWidget * self, float meter)
-{
-  if (meter > FADER_STEP_1)
-    return REAL_STEP_1 + ((meter - FADER_STEP_1) / FADER_DIFF_1) * REAL_DIFF_1;
-  else if (meter > FADER_STEP_2)
-    return REAL_STEP_2 + ((meter - FADER_STEP_2) / FADER_DIFF_2) * REAL_DIFF_2;
-  else if (meter > FADER_STEP_3)
-    return REAL_STEP_3 + ((meter - FADER_STEP_3) / FADER_DIFF_3) * REAL_DIFF_3;
-  else if (meter > FADER_STEP_4)
-    return REAL_STEP_4 + ((meter - FADER_STEP_4) / FADER_DIFF_4) * REAL_DIFF_4;
-  else
-    return REAL_STEP_5 + ((meter - FADER_STEP_5) / FADER_DIFF_5) * REAL_DIFF_5;
+  double amp = GET_REAL_VAL;
+  return math_get_fader_val_from_amp (amp);
 }
 
 static int
@@ -75,7 +52,7 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   gtk_render_background (context, cr, 0, 0, width, height);
 
   /* a custom shape that could be wrapped in a function */
-  double arc_x         = 0,        /* parameters like cairo_rectangle */
+  double
          arc_y         = 0,
          aspect        = 1.0,     /* aspect ratio */
          corner_radius = height / 90.0;   /* and corner curvature radius */
@@ -153,6 +130,8 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   cairo_move_to (cr, x, arc_y + (height - value_px));
   cairo_line_to (cr, x + width_without_padding, arc_y + (height - value_px));
   cairo_stroke (cr);
+
+  return FALSE;
 }
 
 
@@ -160,15 +139,14 @@ static void
 on_crossing (GtkWidget * widget, GdkEvent *event)
 {
   MeterWidget * self = METER_WIDGET (widget);
-   switch (gdk_event_get_event_type (event))
+  GdkEventType type = gdk_event_get_event_type (event);
+  if (type == GDK_ENTER_NOTIFY)
     {
-    case GDK_ENTER_NOTIFY:
       self->hover = 1;
-      break;
-
-    case GDK_LEAVE_NOTIFY:
+    }
+  else if (type == GDK_LEAVE_NOTIFY)
+    {
         self->hover = 0;
-      break;
     }
   gtk_widget_queue_draw(widget);
 }
