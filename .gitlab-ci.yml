@@ -4,6 +4,8 @@ image: "debian:buster"
 variables:
   _USER: "builduser"
   _PATH: /home/$_USER/$CI_PROJECT_NAME
+  _ARCH_USER: "user"
+  _ARCH_PATH: /home/$_ARCH_USER/$CI_PROJECT_NAME
 
 stages:
   #- test
@@ -48,28 +50,38 @@ build_deb_64:
     - master
 
 build_pkg_64:
-  #  image: heichblatt/archlinux-yaourt
-  image: base/archlinux
+  image: heichblatt/archlinux-yaourt
+  #image: base/archlinux
   stage: build
   script:
-    - pacman -Sy --noconfirm git sudo base-devel
-    - useradd -m $_USER
-    - mkdir -p $_PATH
-    - pushd $_PATH
-    - git clone https://aur.archlinux.org/yay.git &&
-      chown -R $_USER yay &&
-      cd yay &&
-      su -c "makepkg -si" $_USER
+    #- pacman -Sy --noconfirm git sudo base-devel
+    #- useradd -m $_USER
+    #- mkdir -p $_PATH
+    #- pushd $_PATH
+    #- git clone https://aur.archlinux.org/yay.git &&
+      #chown -R $_USER yay &&
+      #cd yay &&
+      #su -c "makepkg -si" $_USER
+    #- tar -zcvf sources.tar.gz autogen.sh config.guess config.sub
+      #configure.ac CONTRIBUTING data Doxyfile inc INSTALL install-sh
+      #LICENSE Makefile.in README.md resources src
+    #- yay -Sy --noconfirm gtk3 lv2 lilv-git suil-git jack libsndfile libsmf
+    #- mkdir -p $_PATH
+    #- mv * $_PATH
+    #- pushd $_PATH
+    #- su -c "makepkg" $_USER
+    #- popd
+    #- mv $_PATH/*.pkg.tar.xz .
     - tar -zcvf sources.tar.gz autogen.sh config.guess config.sub
       configure.ac CONTRIBUTING data Doxyfile inc INSTALL install-sh
       LICENSE Makefile.in README.md resources src
-    - yay -Sy --noconfirm gtk3 lv2 lilv-git suil-git jack libsndfile libsmf
-    - mkdir -p $_PATH
-    - mv * $_PATH
-    - pushd $_PATH
+    - sudo yaourt -Sy --noconfirm gtk3 lv2 lilv-git suil-git jack libsndfile libsmf
+    - sudo mkdir -p $_PATH
+    - sudo mv * $_PATH
+    - sudo pushd $_PATH
     - su -c "makepkg" $_USER
-    - popd
-    - mv $_PATH/*.pkg.tar.xz .
+    - sudo popd
+    - sudo mv $_PATH/*.pkg.tar.xz .
   artifacts:
     paths:
     - ./*.pkg.tar.xz
