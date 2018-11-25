@@ -13,9 +13,10 @@ Bits and pieces are taken from other programs like Ardour and Jalv.
 - LV2
 
 ## Installation
-Arch Linux (AUR):
+### Arch Linux (AUR)
+https://aur.archlinux.org/packages/zrythm-git/
 
-You can install it via AUR using your favorite package manager. For yaourt: `yaourt -S zrythm-git`
+(for yaourt: `yaourt -S zrythm-git`)
 
 ## Contributing
 For installation instructions see INSTALL
@@ -30,4 +31,4 @@ Come discuss in IRC at #zrythm @ freenode, or zrythm @ matrix.org for Matrix
 GPLv3+
 
 ## Support
-paypal.me/alextee90
+https://liberapay.com/alextee/
