@@ -88,6 +88,13 @@ tracklist_widget_add_track (TracklistWidget * self,
                             Track *           track,
                             int               pos); ///< position to insert at,
                                                   ///< starting from 0 after master
+
+/**
+ * Adds the chord track.
+ */
+void
+tracklist_widget_add_chord_track (TracklistWidget * self);
+
 /**
  * Removes the given track from the tracklist.
  */

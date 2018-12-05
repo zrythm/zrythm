@@ -1,5 +1,5 @@
 /*
- * audio/chord_track.h - Chord track
+ * audio/chord_track.c - Chord track
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -27,31 +27,31 @@
  * Contains project scale, chord markers, etc.
  */
 
-#ifndef __AUDIO_CHORD_TRACK_H__
-#define __AUDIO_CHORD_TRACK_H__
-
-#include <stdint.h>
-
-typedef struct Chord Chord;
-typedef struct MusicalScale MusicalScale;
-
-typedef struct ChordTrack
-{
-  MusicalScale *          scale;
-  Chord *                 chords[600];
-  uint8_t                 num_chords;
-} ChordTrack;
+#include "audio/chord_track.h"
 
 /**
  * Creates a new chord track using the given scale.
  */
 ChordTrack *
-chord_track_new (MusicalScale * scale);
+chord_track_new (MusicalScale * scale)
+{
+  ChordTrack * self = calloc (1, sizeof (ChordTrack));
+
+  self->scale = scale;
+
+  return self;
+}
 
 /**
  * Creates chord track using default scale.
  */
 ChordTrack *
-chord_track_default ();
+chord_track_default ()
+{
+  ChordTrack * self = calloc (1, sizeof (ChordTrack));
 
-#endif
+  self->scale = musical_scale_new (SCALE_AEOLIAN, // natural minor
+                                   NOTE_A);
+
+  return self;
+}

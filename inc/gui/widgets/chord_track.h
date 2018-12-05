@@ -49,10 +49,9 @@ typedef struct ChordTrackWidget
   GtkButton *                   record;
   GtkButton *                   solo;
   GtkButton *                   mute;
-  GtkButton *                   show_automation;
   GtkImage *                    icon;
   int                           selected; ///< selected or not
-  ChordTrack *                  chord_track; ///< associated chord_track
+  ChordTrack *                  track; ///< associated chord_track
 } ChordTrackWidget;
 
 typedef struct ChordTrackWidgetClass

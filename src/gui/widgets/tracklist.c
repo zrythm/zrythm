@@ -26,6 +26,7 @@
 #include "audio/mixer.h"
 #include "audio/track.h"
 #include "gui/widgets/channel.h"
+#include "gui/widgets/chord_track.h"
 #include "gui/widgets/drag_dest_box.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
@@ -545,6 +546,69 @@ tracklist_widget_add_track (TracklistWidget * self,
                             Track *           track,
                             int               pos) ///< position to insert at,
                                                   ///< starting from 0 after master
+{
+  g_message ("adding track %s to tracklist widget", track->channel->name);
+  if (pos > self->num_track_widgets)
+    {
+      g_error ("Invalid position %d to add track in tracklist", pos);
+      return;
+    }
+
+  /* create track */
+  TrackWidget * track_widget = track_widget_new (track);
+  track->widget = track_widget;
+
+  /* get parent track widget */
+  TrackWidget * parent_track_widget = pos == 0 ?
+                                      self->master_tw :
+                                      self->track_widgets[pos - 1];
+
+  /* if parent is last widget */
+  if (pos == self->num_track_widgets)
+    {
+      /* remove ddbox and add to new track_widget */
+      g_object_ref (self->ddbox);
+      gtk_container_remove (GTK_CONTAINER (parent_track_widget),
+                            gtk_paned_get_child2 (
+                                    GTK_PANED (parent_track_widget)));
+      gtk_paned_pack2 (GTK_PANED (track_widget),
+                       GTK_WIDGET (self->ddbox),
+                       Z_GTK_RESIZE,
+                       Z_GTK_SHRINK);
+      g_object_unref (self->ddbox);
+    }
+  else /* if parent is not last widget */
+    {
+      /* remove current track widget and add to new track_widget */
+      TrackWidget * current_widget = self->track_widgets[pos];
+      g_object_ref (current_widget);
+      gtk_container_remove (GTK_CONTAINER (parent_track_widget),
+                            GTK_WIDGET (current_widget));
+      gtk_paned_pack2 (GTK_PANED (track_widget),
+                       GTK_WIDGET (current_widget),
+                       Z_GTK_RESIZE,
+                       Z_GTK_SHRINK);
+      g_object_unref (current_widget);
+    }
+
+  /* put new track widget where the box/prev track widget was in the parent */
+  gtk_paned_pack2 (GTK_PANED (parent_track_widget),
+                   GTK_WIDGET (track_widget),
+                   Z_GTK_RESIZE,
+                   Z_GTK_NO_SHRINK);
+
+  /* insert into array */
+  array_insert ((void **) self->track_widgets,
+                 &self->num_track_widgets,
+                 pos,
+                 track_widget);
+}
+
+/**
+ * Adds the chord track.
+ */
+void
+tracklist_widget_add_chord_track (TracklistWidget * self)
 {
   g_message ("adding track %s to tracklist widget", track->channel->name);
   if (pos > self->num_track_widgets)

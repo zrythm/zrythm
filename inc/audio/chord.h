@@ -23,6 +23,8 @@
  * \file
  *
  * Chord related code.
+ * See https://www.scales-chords.com
+ * https://www.basicmusictheory.com/c-harmonic-minor-triad-chords
  */
 
 #ifndef __AUDIO_CHORD_H__
@@ -82,14 +84,25 @@ typedef enum ChordType
 typedef struct Chord
 {
   Position              pos; ///< chord object position (if used in chord track)
+  uint8_t               has_bass; ///< has base note or not
   MusicalNote           root_note; ///< root note
   MusicalNote           bass_note; ///< bass note 1 octave below
   ChordType             type;
   const unsigned char   notes[36]; ///< 3 octaves, 1st octave is for base note
+                                  ///< starts at C always
   int                   inversion; ///< == 0 no inversion,
                                    ///< < 0 means highest note(s) drop an octave
                                    ///< > 0 means lowest note(s) receive an octave
 } Chord;
+
+/**
+ * Creates a chord.
+ */
+chord_new (MusicalNote            root,
+           uint8_t                has_bass,
+           MusicalNote            bass,
+           ChordType              type,
+           int                    inversion);
 
 /**
  * Returns the chord in human readable string.

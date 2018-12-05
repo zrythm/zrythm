@@ -30,6 +30,8 @@
 #ifndef __AUDIO_SCALE_H__
 #define __AUDIO_SCALE_H__
 
+#include <stdint.h>
+
 typedef enum MusicalScaleType
 {
   SCALE_ACOUSTIC,
@@ -88,40 +90,9 @@ typedef enum MusicalScaleType
   SCALE_YO
 } MusicalScaleType;
 
-/**
- * Major.
- */
-const unsigned char scale_ionian[12] =
-{
-  1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1
-};
-
 const unsigned char scale_lydian[12] =
 {
   1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1
-};
-
-const unsigned char scale_melodic_minor_ascending[12] =
-{
-  1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1
-};
-
-const unsigned char scale_melodic_minor_descending[12] =
-{
-  1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0
-};
-
-/**
- * Natural minor.
- */
-const unsigned char scale_aeolian[12] =
-{
-  1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0
-};
-
-const unsigned char scale_harmonic_minor[12] =
-{
-  1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1
 };
 
 const unsigned char scale_chromatic[12] =
@@ -289,17 +260,27 @@ typedef struct MusicalScale
 {
   MusicalScaleType           type; ///< enum identification of scale
   MusicalNote                root_key;
-  int                        has_asc_desc; ///< flag if scale has different notes
+
+  /* TODO maybe remove this functionality */
+  uint8_t                    has_asc_desc; ///< flag if scale has different notes
                                           ///< when ascending and descending
-  const unsigned char        notes[12]; ///< notes in scale, not used if flag above
+
+  uint8_t                    notes[12]; ///< notes in scale, not used if flag above
                                         ///< is 1
-  const unsigned char        notes_asc[12]; ///< notes when ascending
-  const unsigned char        notes_desc[12]; ///< notes when descending
+  uint8_t                    notes_asc[12]; ///< notes when ascending
+  uint8_t                    notes_desc[12]; ///< notes when descending
   Chord *                    default_chords[12]; ///< default chords, as many as
                                                   ///< the notes in the scale
                                                   ///< triads with base note
-  int                        num_notes;
+  int                        num_notes; ///< number of notes (1s)
 } MusicalScale;
+
+/**
+ * Creates new scale using type and root note.
+ */
+MusicalScale *
+musical_scale_new (MusicalScaleType      type,
+                   MusicalNote           root);
 
 /**
  * Returns the scale in human readable string.
