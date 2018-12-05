@@ -7,7 +7,6 @@
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
     <property name="urgency_hint">True</property>
-    <property name="has_resize_grip">True</property>
     <property name="use_header_bar">0</property>
     <child>
       <object class="GtkBox" id="select_project_box">
@@ -89,6 +88,9 @@ Frame rate: 44000</property>
       </packing>
     </child>
     <child type="titlebar">
+      <placeholder/>
+    </child>
+    <child>
       <placeholder/>
     </child>
     <child>

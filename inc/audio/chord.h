@@ -30,6 +30,8 @@
 #ifndef __AUDIO_CHORD_H__
 #define __AUDIO_CHORD_H__
 
+#include <stdint.h>
+
 #include "audio/position.h"
 
 typedef enum MusicalNote
@@ -88,7 +90,7 @@ typedef struct Chord
   MusicalNote           root_note; ///< root note
   MusicalNote           bass_note; ///< bass note 1 octave below
   ChordType             type;
-  const unsigned char   notes[36]; ///< 3 octaves, 1st octave is for base note
+  unsigned char   notes[36]; ///< 3 octaves, 1st octave is for base note
                                   ///< starts at C always
   int                   inversion; ///< == 0 no inversion,
                                    ///< < 0 means highest note(s) drop an octave
@@ -98,6 +100,7 @@ typedef struct Chord
 /**
  * Creates a chord.
  */
+Chord *
 chord_new (MusicalNote            root,
            uint8_t                has_bass,
            MusicalNote            bass,

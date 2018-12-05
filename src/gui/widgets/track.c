@@ -116,32 +116,25 @@ track_widget_new (Track * track)
 
   track_widget_update_all (self);
 
-  GtkWidget * image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/solo.svg");
-  gtk_button_set_image (self->solo, image);
-  gtk_button_set_label (self->solo,
-                        "");
-  image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/mute.svg");
-  gtk_button_set_image (self->mute, image);
-  gtk_button_set_label (self->mute,
-                        "");
-  /*image = gtk_image_new_from_resource (*/
-          /*"/online/alextee/zrythm/record.svg");*/
-  gtk_button_set_image (GTK_BUTTON (self->record),
-                        gtk_image_new_from_icon_name ("gtk-media-record",
-                                                      GTK_ICON_SIZE_BUTTON));
+  gtk_container_add (
+    GTK_CONTAINER (self->solo),
+    gtk_image_new_from_resource (
+     "/online/alextee/zrythm/solo.svg"));
+  gtk_container_add (
+    GTK_CONTAINER (self->mute),
+    gtk_image_new_from_resource (
+     "/online/alextee/zrythm/mute.svg"));
+  gtk_container_add (
+    GTK_CONTAINER (self->record),
+    gtk_image_new_from_icon_name ("gtk-media-record",
+                                  GTK_ICON_SIZE_BUTTON));
   gtk_widget_set_size_request (GTK_WIDGET (self->record),
                                16,
                                16);
-  gtk_button_set_label (self->record,
-                        "");
-  gtk_button_set_image (
-            self->show_automation,
-            gtk_image_new_from_icon_name ("gtk-justify-fill",
-                                          GTK_ICON_SIZE_BUTTON));
-  gtk_button_set_label (self->show_automation,
-                        "");
+  gtk_container_add (
+    GTK_CONTAINER (self->show_automation),
+    gtk_image_new_from_icon_name ("gtk-justify-fill",
+                                  GTK_ICON_SIZE_BUTTON));
 
   switch (track->channel->type)
     {
@@ -214,9 +207,9 @@ track_widget_select (TrackWidget * self,
 {
   self->selected = select;
   gtk_widget_queue_draw (GTK_WIDGET (self));
-  arranger_widget_set_channel(
-              MIDI_EDITOR->midi_arranger,
-              self->track->channel);
+  /*arranger_widget_set_channel(*/
+              /*MIDI_EDITOR->midi_arranger,*/
+              /*self->track->channel);*/
 }
 
 void

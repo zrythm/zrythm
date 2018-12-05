@@ -32,6 +32,8 @@
 
 #include <stdint.h>
 
+#include "audio/chord.h"
+
 typedef enum MusicalScaleType
 {
   SCALE_ACOUSTIC,
@@ -90,168 +92,165 @@ typedef enum MusicalScaleType
   SCALE_YO
 } MusicalScaleType;
 
-const unsigned char scale_lydian[12] =
-{
-  1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1
-};
+//const unsigned char scale_lydian[12] =
+//{
+  //1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1
+//};
 
-const unsigned char scale_chromatic[12] =
-{
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-};
+//const unsigned char scale_chromatic[12] =
+//{
+  //1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+//};
 
-const unsigned char scale_dorian[12] =
-{
-  1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0
-};
+//const unsigned char scale_dorian[12] =
+//{
+  //1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0
+//};
 
-const unsigned char scale_harmonic_major[12] =
-{
-  1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1
-};
+//const unsigned char scale_harmonic_major[12] =
+//{
+  //1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1
+//};
 
-const unsigned char scale_major_pentatonic[12] =
-{
-  1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0
-};
+//const unsigned char scale_major_pentatonic[12] =
+//{
+  //1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0
+//};
 
-const unsigned char scale_minor_pentatonic[12] =
-{
-  1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0
-};
+//const unsigned char scale_minor_pentatonic[12] =
+//{
+  //1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0
+//};
 
-const unsigned char scale_algerian[12] =
-{
-  1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1
-};
+//const unsigned char scale_algerian[12] =
+//{
+  //1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1
+//};
 
-const unsigned char scale_major_locrian[12] =
-{
-  1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0
-};
+//const unsigned char scale_major_locrian[12] =
+//{
+  //1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0
+//};
 
-const unsigned char scale_augmented[12] =
-{
-  1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1
-};
+//const unsigned char scale_augmented[12] =
+//{
+  //1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1
+//};
 
-const unsigned char scale_double_harmonic[12] =
-{
-  1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1
-};
+//const unsigned char scale_double_harmonic[12] =
+//{
+  //1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1
+//};
 
-const unsigned char scale_chinese[12] =
-{
-  1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1
-};
+//const unsigned char scale_chinese[12] =
+//{
+  //1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1
+//};
 
-const unsigned char scale_diminished[12] =
-{
-  1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1
-};
+//const unsigned char scale_diminished[12] =
+//{
+  //1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1
+//};
 
-const unsigned char scale_dominant_diminished[12] =
-{
-  1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0
-};
+//const unsigned char scale_dominant_diminished[12] =
+//{
+  //1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0
+//};
 
-const unsigned char scale_egyptian[12] =
-{
-  1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0
-};
+//const unsigned char scale_egyptian[12] =
+//{
+  //1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0
+//};
 
-const unsigned char scale_eight_tone_spanish[12] =
-{
-  1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0
-};
+//const unsigned char scale_eight_tone_spanish[12] =
+//{
+  //1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0
+//};
 
-const unsigned char scale_enigmatic[12] =
-{
-  1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1
-};
+//const unsigned char scale_enigmatic[12] =
+//{
+  //1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1
+//};
 
-const unsigned char scale_geez[12] =
-{
-  1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0
-};
+//const unsigned char scale_geez[12] =
+//{
+  //1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0
+//};
 
-const unsigned char scale_hindu[12] =
-{
-  1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0
-};
+//const unsigned char scale_hindu[12] =
+//{
+  //1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0
+//};
 
-const unsigned char scale_hirajoshi[12] =
-{
-  1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0
-};
+//const unsigned char scale_hirajoshi[12] =
+//{
+  //1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0
+//};
 
-const unsigned char scale_hungarian_gypsy[12] =
-{
-  1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1
-};
+//const unsigned char scale_hungarian_gypsy[12] =
+//{
+  //1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1
+//};
 
-const unsigned char scale_insen[12] =
-{
-  1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0
-};
+//const unsigned char scale_insen[12] =
+//{
+  //1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0
+//};
 
-const unsigned char scale_neapolitan_minor[12] =
-{
-  1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1
-};
+//const unsigned char scale_neapolitan_minor[12] =
+//{
+  //1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1
+//};
 
-const unsigned char scale_neapolitan_major[12] =
-{
-  1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1
-};
+//const unsigned char scale_neapolitan_major[12] =
+//{
+  //1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1
+//};
 
-const unsigned char scale_octatonic_half_whole[12] =
-{
-  1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0
-};
+//const unsigned char scale_octatonic_half_whole[12] =
+//{
+  //1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0
+//};
 
-const unsigned char scale_octatonic_whole_half[12] =
-{
-  1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1
-};
+//const unsigned char scale_octatonic_whole_half[12] =
+//{
+  //1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1
+//};
 
-const unsigned char scale_oriental[12] =
-{
-  1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0
-};
+//const unsigned char scale_oriental[12] =
+//{
+  //1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0
+//};
 
-const unsigned char scale_whole_tone[12] =
-{
-  1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0
-};
+//const unsigned char scale_whole_tone[12] =
+//{
+  //1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0
+//};
 
-const unsigned char scale_romanian_minor[12] =
-{
-  1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0
-};
+//const unsigned char scale_romanian_minor[12] =
+//{
+  //1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0
+//};
 
-const unsigned char scale_phrygian_dominant[12] =
-{
-  1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0
-};
+//const unsigned char scale_phrygian_dominant[12] =
+//{
+  //1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0
+//};
 
-const unsigned char scale_altered[12] =
-{
-  1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0
-};
+//const unsigned char scale_altered[12] =
+//{
+  //1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0
+//};
 
-const unsigned char scale_maqam[12] =
-{
-  1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1
-};
+//const unsigned char scale_maqam[12] =
+//{
+  //1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1
+//};
 
-const unsigned char scale_yo[12] =
-{
-  1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0
-};
-
-typedef enum MusicalNote MusicalNote;
-typedef struct Chord Chord;
+//const unsigned char scale_yo[12] =
+//{
+  //1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0
+//};
 
 /**
  * To be generated at the beginning, and then copied and reused.

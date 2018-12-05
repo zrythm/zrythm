@@ -153,8 +153,6 @@
         <property name="name">phase_controls</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="margin_left">1</property>
-        <property name="margin_right">5</property>
         <child>
           <object class="GtkButton" id="phase_invert">
             <property name="visible">True</property>
@@ -195,8 +193,6 @@
       <object class="GtkBox" id="gbox-chan-name">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="margin_left">3</property>
-        <property name="margin_right">3</property>
         <child>
           <object class="GtkImage" id="icon">
             <property name="visible">True</property>
@@ -276,7 +272,6 @@
           <object class="GtkImage" id="output_img">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="stock">gtk-missing-image</property>
           </object>
           <packing>
             <property name="expand">False</property>

@@ -52,6 +52,9 @@ typedef struct InspectorWidget
   GtkBox                    parent_instance;
   GtkSizeGroup *            size_group;
   GtkBox *                  top_box;
+  // TODO
+  //GtkBox *                  chord_track_box;
+  //InspectorChordTrackWidget * chord_track;
   GtkBox *                  track_box;
   InspectorTrackWidget *    track;
   GtkBox *                  region_box;

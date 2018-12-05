@@ -46,7 +46,6 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="use_underline">True</property>
-                            <property name="use_stock">True</property>
                           </object>
                         </child>
                         <child>
@@ -55,7 +54,6 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="use_underline">True</property>
-                            <property name="use_stock">True</property>
                             <signal name="activate" handler="on_open" swapped="no"/>
                           </object>
                         </child>
@@ -65,7 +63,6 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="use_underline">True</property>
-                            <property name="use_stock">True</property>
                             <signal name="activate" handler="on_save" swapped="no"/>
                           </object>
                         </child>
@@ -75,7 +72,6 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="use_underline">True</property>
-                            <property name="use_stock">True</property>
                             <signal name="activate" handler="on_save_as" swapped="no"/>
                           </object>
                         </child>
@@ -106,7 +102,6 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="use_underline">True</property>
-                            <property name="use_stock">True</property>
                           </object>
                         </child>
                       </object>
@@ -129,7 +124,6 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="use_underline">True</property>
-                            <property name="use_stock">True</property>
                           </object>
                         </child>
                         <child>
@@ -138,7 +132,6 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="use_underline">True</property>
-                            <property name="use_stock">True</property>
                           </object>
                         </child>
                         <child>
@@ -147,7 +140,6 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="use_underline">True</property>
-                            <property name="use_stock">True</property>
                           </object>
                         </child>
                         <child>
@@ -156,7 +148,6 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="use_underline">True</property>
-                            <property name="use_stock">True</property>
                           </object>
                         </child>
                       </object>
@@ -187,7 +178,6 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="use_underline">True</property>
-                            <property name="use_stock">True</property>
                           </object>
                         </child>
                       </object>
@@ -303,7 +293,6 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">New</property>
-                    <property name="stock_id">gtk-new</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -315,7 +304,6 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">New</property>
-                    <property name="stock_id">gtk-goto-last</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -327,7 +315,6 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">New</property>
-                    <property name="stock_id">gtk-dialog-error</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -339,7 +326,6 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">New</property>
-                    <property name="stock_id">gtk-select-color</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -636,7 +622,6 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="label" translatable="yes">New</property>
-                                    <property name="stock_id">gtk-goto-last</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -648,7 +633,6 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="label" translatable="yes">New</property>
-                                    <property name="stock_id">gtk-floppy</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -660,7 +644,6 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="label" translatable="yes">New</property>
-                                    <property name="stock_id">gtk-help</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -805,7 +788,6 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">New</property>
-                    <property name="stock_id">gtk-select-color</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>

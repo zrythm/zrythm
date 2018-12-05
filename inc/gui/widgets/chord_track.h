@@ -33,6 +33,7 @@
 #define IS_CHORD_TRACK_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), CHORD_TRACK_WIDGET_TYPE))
 #define CHORD_TRACK_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), CHORD_TRACK_WIDGET_TYPE, ChordTrackWidgetClass))
 
+typedef struct ChordTrack ChordTrack;
 typedef struct ColorAreaWidget ColorAreaWidget;
 
 /**
@@ -41,11 +42,12 @@ typedef struct ColorAreaWidget ColorAreaWidget;
 typedef struct ChordTrackWidget
 {
   GtkPaned                      parent_instance;
-  GtkBox *                      chord_track_box;
-  GtkGrid *                     chord_track_grid;
+  GtkBox *                      track_box;
+  GtkGrid *                     track_grid;
+  GtkPaned *                    track_automation_paned; ///< top is the track part,
   GtkBox *                      color_box;
   ColorAreaWidget *             color;
-  GtkLabel *                    chord_track_name;
+  GtkLabel *                    track_name;
   GtkButton *                   record;
   GtkButton *                   solo;
   GtkButton *                   mute;

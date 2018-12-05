@@ -32,6 +32,7 @@
 /**
  * Creates a chord.
  */
+Chord *
 chord_new (MusicalNote            root,
            uint8_t                has_bass,
            MusicalNote            bass,

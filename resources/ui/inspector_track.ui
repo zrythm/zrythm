@@ -45,7 +45,6 @@
       <object class="GtkLabel">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="margin_right">4</property>
         <property name="label" translatable="yes">Color</property>
         <property name="xalign">1</property>
       </object>
@@ -58,7 +57,6 @@
       <object class="GtkLabel">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="margin_right">4</property>
         <property name="label" translatable="yes">Type</property>
         <property name="xalign">1</property>
       </object>
@@ -85,7 +83,6 @@
       <object class="GtkLabel">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="margin_right">5</property>
         <property name="label" translatable="yes">Length</property>
         <property name="xalign">1</property>
       </object>
@@ -98,7 +95,6 @@
       <object class="GtkLabel">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="margin_right">5</property>
         <property name="label" translatable="yes">Muted</property>
         <property name="xalign">1</property>
       </object>

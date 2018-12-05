@@ -27,7 +27,10 @@
  * Contains project scale, chord markers, etc.
  */
 
+#include <stdlib.h>
+
 #include "audio/chord_track.h"
+#include "audio/scale.h"
 
 /**
  * Creates a new chord track using the given scale.

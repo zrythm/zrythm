@@ -23,7 +23,9 @@
  */
 
 #include "audio/channel.h"
+#include "audio/chord_track.h"
 #include "audio/mixer.h"
+#include "audio/scale.h"
 #include "audio/track.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/chord_track.h"
@@ -127,9 +129,11 @@ tracklist_widget_remove_track (Track * track)
           TrackWidget * tw = t->widget;
 
           /* get parent track widget */
-          TrackWidget * parent_tw = pos == 0 ?
-                                              self->master_tw :
-                                              self->track_widgets[pos - 1];
+          TrackWidget * parent_tw;
+          if (pos != 0)
+            {
+              parent_tw = self->track_widgets[pos - 1];
+            }
 
           /* if track to delete is last widget */
           if (pos == self->num_track_widgets - 1)
@@ -139,12 +143,24 @@ tracklist_widget_remove_track (Track * track)
               g_object_ref (self->ddbox);
               gtk_container_remove (GTK_CONTAINER (tw),
                                     GTK_WIDGET (self->ddbox));
-              gtk_container_remove (GTK_CONTAINER (parent_tw),
-                                    GTK_WIDGET (tw));
-              gtk_paned_pack2 (GTK_PANED (parent_tw),
-                               GTK_WIDGET (self->ddbox),
-                               Z_GTK_RESIZE,
-                               Z_GTK_SHRINK);
+              if (pos == 0)
+                {
+                  gtk_container_remove (GTK_CONTAINER (self->chord_tw),
+                                        GTK_WIDGET (tw));
+                  gtk_paned_pack2 (GTK_PANED (self->chord_tw),
+                                   GTK_WIDGET (self->ddbox),
+                                   Z_GTK_RESIZE,
+                                   Z_GTK_SHRINK);
+                }
+              else
+                {
+                  gtk_container_remove (GTK_CONTAINER (parent_tw),
+                                        GTK_WIDGET (tw));
+                  gtk_paned_pack2 (GTK_PANED (parent_tw),
+                                   GTK_WIDGET (self->ddbox),
+                                   Z_GTK_RESIZE,
+                                   Z_GTK_SHRINK);
+                }
               g_object_unref (self->ddbox);
             }
           else /* if parent is not last widget */
@@ -152,24 +168,38 @@ tracklist_widget_remove_track (Track * track)
               /* remove child track from track, remove track from parent
                * and add child track to parent */
               TrackWidget * child_tw;
-              if (parent_tw == self->master_tw)
+              if (pos != 0)
                 {
-                  child_tw = self->master_tw;
+                  child_tw = self->track_widgets[pos];
+                  g_object_ref (child_tw);
                 }
               else
                 {
-                  child_tw = self->track_widgets[pos];
+                  g_object_ref (self->chord_tw);
                 }
-              g_object_ref (child_tw);
+
               gtk_container_remove (GTK_CONTAINER (tw),
                                     GTK_WIDGET (child_tw));
-              gtk_container_remove (GTK_CONTAINER (parent_tw),
-                                    GTK_WIDGET (tw));
-              gtk_paned_pack2 (GTK_PANED (parent_tw),
-                               GTK_WIDGET (child_tw),
-                               Z_GTK_RESIZE,
-                               Z_GTK_SHRINK);
-              g_object_unref (child_tw);
+              if (pos == 0)
+                {
+                  gtk_container_remove (GTK_CONTAINER (parent_tw),
+                                        GTK_WIDGET (tw));
+                  gtk_paned_pack2 (GTK_PANED (parent_tw),
+                                   GTK_WIDGET (child_tw),
+                                   Z_GTK_RESIZE,
+                                   Z_GTK_SHRINK);
+                  g_object_unref (child_tw);
+                }
+              else
+                {
+                  gtk_container_remove (GTK_CONTAINER (parent_tw),
+                                        GTK_WIDGET (tw));
+                  gtk_paned_pack2 (GTK_PANED (parent_tw),
+                                   GTK_WIDGET (child_tw),
+                                   Z_GTK_RESIZE,
+                                   Z_GTK_SHRINK);
+                  g_object_unref (child_tw);
+                }
             }
 
           /* delete from array */
@@ -517,9 +547,11 @@ tracklist_widget_add_master_track (TracklistWidget * self)
 
 
   /* add last box to new track widget */
-  self->ddbox = drag_dest_box_widget_new (GTK_ORIENTATION_VERTICAL,
-                                          0,
-                                          DRAG_DEST_BOX_TYPE_TRACKLIST);
+  self->ddbox =
+    drag_dest_box_widget_new (
+      GTK_ORIENTATION_VERTICAL,
+      0,
+      DRAG_DEST_BOX_TYPE_TRACKLIST);
   gtk_paned_pack2 (GTK_PANED (track_widget),
                    GTK_WIDGET (self->ddbox),
                    Z_GTK_NO_RESIZE,
@@ -545,7 +577,7 @@ void
 tracklist_widget_add_track (TracklistWidget * self,
                             Track *           track,
                             int               pos) ///< position to insert at,
-                                                  ///< starting from 0 after master
+                                                  ///< starting from 0 after chord track
 {
   g_message ("adding track %s to tracklist widget", track->channel->name);
   if (pos > self->num_track_widgets)
@@ -559,12 +591,26 @@ tracklist_widget_add_track (TracklistWidget * self,
   track->widget = track_widget;
 
   /* get parent track widget */
-  TrackWidget * parent_track_widget = pos == 0 ?
-                                      self->master_tw :
-                                      self->track_widgets[pos - 1];
+  TrackWidget * parent_track_widget;
+  if (pos != 0)
+    parent_track_widget = self->track_widgets[pos - 1];
 
+  /* if parent is chord track */
+  if (pos == 0)
+    {
+      /* remove ddbox and add to new track_widget */
+      g_object_ref (self->ddbox);
+      gtk_container_remove (GTK_CONTAINER (self->chord_tw),
+                            gtk_paned_get_child2 (
+                                    GTK_PANED (self->chord_tw)));
+      gtk_paned_pack2 (GTK_PANED (track_widget),
+                       GTK_WIDGET (self->ddbox),
+                       Z_GTK_RESIZE,
+                       Z_GTK_SHRINK);
+      g_object_unref (self->ddbox);
+    }
   /* if parent is last widget */
-  if (pos == self->num_track_widgets)
+  else if (pos == self->num_track_widgets)
     {
       /* remove ddbox and add to new track_widget */
       g_object_ref (self->ddbox);
@@ -592,10 +638,20 @@ tracklist_widget_add_track (TracklistWidget * self,
     }
 
   /* put new track widget where the box/prev track widget was in the parent */
-  gtk_paned_pack2 (GTK_PANED (parent_track_widget),
-                   GTK_WIDGET (track_widget),
-                   Z_GTK_RESIZE,
-                   Z_GTK_NO_SHRINK);
+  if (pos == 0)
+    {
+      gtk_paned_pack2 (GTK_PANED (self->chord_tw),
+                       GTK_WIDGET (track_widget),
+                       Z_GTK_RESIZE,
+                       Z_GTK_NO_SHRINK);
+    }
+  else
+    {
+      gtk_paned_pack2 (GTK_PANED (parent_track_widget),
+                       GTK_WIDGET (track_widget),
+                       Z_GTK_RESIZE,
+                       Z_GTK_NO_SHRINK);
+    }
 
   /* insert into array */
   array_insert ((void **) self->track_widgets,
@@ -610,61 +666,34 @@ tracklist_widget_add_track (TracklistWidget * self,
 void
 tracklist_widget_add_chord_track (TracklistWidget * self)
 {
-  g_message ("adding track %s to tracklist widget", track->channel->name);
-  if (pos > self->num_track_widgets)
-    {
-      g_error ("Invalid position %d to add track in tracklist", pos);
-      return;
-    }
+  ChordTrack * track = chord_track_default ();
+
+  g_message ("adding Chord Track to tracklist widget");
 
   /* create track */
-  TrackWidget * track_widget = track_widget_new (track);
+  ChordTrackWidget * track_widget = chord_track_widget_new (track);
+  self->chord_tw = track_widget;
   track->widget = track_widget;
 
   /* get parent track widget */
-  TrackWidget * parent_track_widget = pos == 0 ?
-                                      self->master_tw :
-                                      self->track_widgets[pos - 1];
+  TrackWidget * parent_track_widget = self->master_tw;
 
-  /* if parent is last widget */
-  if (pos == self->num_track_widgets)
-    {
-      /* remove ddbox and add to new track_widget */
-      g_object_ref (self->ddbox);
-      gtk_container_remove (GTK_CONTAINER (parent_track_widget),
-                            gtk_paned_get_child2 (
-                                    GTK_PANED (parent_track_widget)));
-      gtk_paned_pack2 (GTK_PANED (track_widget),
-                       GTK_WIDGET (self->ddbox),
-                       Z_GTK_RESIZE,
-                       Z_GTK_SHRINK);
-      g_object_unref (self->ddbox);
-    }
-  else /* if parent is not last widget */
-    {
-      /* remove current track widget and add to new track_widget */
-      TrackWidget * current_widget = self->track_widgets[pos];
-      g_object_ref (current_widget);
-      gtk_container_remove (GTK_CONTAINER (parent_track_widget),
-                            GTK_WIDGET (current_widget));
-      gtk_paned_pack2 (GTK_PANED (track_widget),
-                       GTK_WIDGET (current_widget),
-                       Z_GTK_RESIZE,
-                       Z_GTK_SHRINK);
-      g_object_unref (current_widget);
-    }
+  /* remove ddbox and add to new track_widget */
+  g_object_ref (self->ddbox);
+  gtk_container_remove (GTK_CONTAINER (parent_track_widget),
+                        gtk_paned_get_child2 (
+                                GTK_PANED (parent_track_widget)));
+  gtk_paned_pack2 (GTK_PANED (track_widget),
+                   GTK_WIDGET (self->ddbox),
+                   Z_GTK_RESIZE,
+                   Z_GTK_SHRINK);
+  g_object_unref (self->ddbox);
 
   /* put new track widget where the box/prev track widget was in the parent */
   gtk_paned_pack2 (GTK_PANED (parent_track_widget),
                    GTK_WIDGET (track_widget),
                    Z_GTK_RESIZE,
                    Z_GTK_NO_SHRINK);
-
-  /* insert into array */
-  array_insert ((void **) self->track_widgets,
-                 &self->num_track_widgets,
-                 pos,
-                 track_widget);
 }
 
 /**
@@ -688,8 +717,13 @@ tracklist_widget_new ()
                                -1,
                                6000);
 
-  /* add each channel */
+  /* add master */
   tracklist_widget_add_master_track (self);
+
+  /* add chord track */
+  tracklist_widget_add_chord_track (self);
+
+  /* add each channel */
   for (int i = 0; i < MIXER->num_channels; i++)
     {
       Channel * channel = MIXER->channels[i];
