@@ -30,6 +30,7 @@
 
 #include "audio/automation_track.h"
 #include "audio/channel.h"
+#include "audio/instrument_track.h"
 #include "audio/mixer.h"
 #include "audio/pan.h"
 #include "audio/track.h"
@@ -136,10 +137,14 @@ channel_process (Channel * channel,  ///< slots
   /* get events from track if playing */
   else if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
     {
-      track_fill_midi_events (channel->track,
-                              &PLAYHEAD,
-                              nframes,
-                              &channel->piano_roll->midi_events);
+      if (channel->track->type == TRACK_TYPE_INSTRUMENT)
+        {
+          instrument_track_fill_midi_events (
+            (InstrumentTrack *)channel->track,
+            &PLAYHEAD,
+            nframes,
+            &channel->piano_roll->midi_events);
+        }
     }
   midi_events_dequeue (&channel->piano_roll->midi_events);
 
@@ -523,7 +528,20 @@ channel_remove_plugin (Channel * channel, int pos)
             {
               Automatable * a = plugin->automatables[i];
               AutomationTrack * at = automation_track_get_for_automatable (a);
-              track_delete_automation_track (channel->track, at);
+
+              switch (channel->track->type)
+                {
+                case TRACK_TYPE_INSTRUMENT:
+                  instrument_track_delete_automation_track (
+                                                                               (InstrumentTrack *) channel->track,
+                                                                               at);
+                  break;
+                case TRACK_TYPE_MASTER:
+                case TRACK_TYPE_AUDIO:
+                case TRACK_TYPE_CHORD:
+                case TRACK_TYPE_BUS:
+                  break;
+                }
             }
         }
       plugin_free (channel->strip[pos]);

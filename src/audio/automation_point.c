@@ -28,6 +28,7 @@
 #include "audio/automation_point.h"
 #include "audio/automation_track.h"
 #include "audio/channel.h"
+#include "audio/instrument_track.h"
 #include "audio/port.h"
 #include "audio/position.h"
 #include "audio/track.h"
@@ -120,7 +121,11 @@ automation_point_update_fvalue (AutomationPoint * ap,
     }
   else if (a->type == AUTOMATABLE_TYPE_CHANNEL_FADER)
     {
-      Channel * ch = a->track->channel;
+      Channel * ch;
+      if (a->track->type == TRACK_TYPE_INSTRUMENT)
+        {
+          ch = ((InstrumentTrack *)a->track)->channel;
+        }
       channel_set_fader_amp (ch, ap->fvalue);
     }
 }

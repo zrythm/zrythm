@@ -25,11 +25,13 @@
 #include "audio/automatable.h"
 #include "audio/automation_track.h"
 #include "audio/channel.h"
+#include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/automation_point.h"
+#include "gui/widgets/instrument_track.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 
@@ -43,25 +45,47 @@ size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
 }
 
 static void
+add_automation_track (AutomationTracklistWidget * atlw,
+                      AutomationTrack *       at)
+{
+  automation_tracklist_widget_add_automation_track (
+    atlw,
+    at,
+    automation_tracklist_widget_get_automation_track_widget_index (
+      atlw,
+      at->widget) + 1);
+}
+
+static void
 on_add_lane_clicked (GtkWidget * widget, void * data)
 {
   AutomationTrackWidget * self = AUTOMATION_TRACK_WIDGET (data);
 
   /* get next non visible automation track and add its widget via
    * track_widget_add_automatoin_track_widget */
-  for (int i = 0; i < self->at->track->num_automation_tracks; i++)
+  InstrumentTrack * it;
+  switch (self->at->track->type)
     {
-      AutomationTrack * at = self->at->track->automation_tracks[i];
-      if (!at->widget)
+    case TRACK_TYPE_INSTRUMENT:
+      it = (InstrumentTrack *) self->at->track;
+      for (int i = 0; i < it->num_automation_tracks; i++)
         {
-          automation_tracklist_widget_add_automation_track (
-            self->at->track->widget->automation_tracklist_widget,
-            at,
-            automation_tracklist_widget_get_automation_track_widget_index (
-              self->at->track->widget->automation_tracklist_widget,
-              self) + 1);
-          break;
+          AutomationTrack * at =
+            it->automation_tracks[i];
+          if (!at->widget)
+            {
+              add_automation_track (self->at->track->widget->ins_tw->automation_tracklist_widget,
+                                    at);
+              break;
+            }
         }
+      break;
+    case TRACK_TYPE_MASTER:
+      /* TODO */
+    case TRACK_TYPE_AUDIO:
+    case TRACK_TYPE_CHORD:
+    case TRACK_TYPE_BUS:
+      break;
     }
 }
 
@@ -102,9 +126,25 @@ create_automatables_store (Track * track)
 
   store = gtk_tree_store_new (2, G_TYPE_STRING, G_TYPE_POINTER);
 
-  for (int i = 0; i < track->channel->num_automatables; i++)
+  int num_automatables;
+  Automatable ** automatables;
+  InstrumentTrack * it;
+  switch (track->type)
     {
-      Automatable * a = track->channel->automatables[i];
+    case TRACK_TYPE_INSTRUMENT:
+      it = (InstrumentTrack *) track;
+      num_automatables = it->channel->num_automatables;
+      automatables = it->channel->automatables;
+      break;
+    case TRACK_TYPE_MASTER:
+    case TRACK_TYPE_AUDIO:
+    case TRACK_TYPE_CHORD:
+    case TRACK_TYPE_BUS:
+      break;
+    }
+  for (int i = 0; i < num_automatables; i++)
+    {
+      Automatable * a = automatables[i];
       gtk_tree_store_append (store, &iter, NULL);
       gtk_tree_store_set (store, &iter,
                           0, a->label,
@@ -114,7 +154,21 @@ create_automatables_store (Track * track)
 
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      Plugin * plugin = track->channel->strip[i];
+      Plugin * plugin = NULL;
+      InstrumentTrack * it;
+      switch (track->type)
+        {
+        case TRACK_TYPE_INSTRUMENT:
+          it = (InstrumentTrack *) track;
+          plugin = it->channel->strip[i];
+          break;
+        case TRACK_TYPE_MASTER:
+        case TRACK_TYPE_AUDIO:
+        case TRACK_TYPE_CHORD:
+        case TRACK_TYPE_BUS:
+          break;
+        }
+
       if (plugin)
         {
           gtk_tree_store_append (store, &iter, NULL);

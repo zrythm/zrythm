@@ -23,6 +23,7 @@
 #include "audio/automation_curve.h"
 #include "audio/automation_track.h"
 #include "audio/automation_point.h"
+#include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/arranger.h"
@@ -70,9 +71,25 @@ automation_track_get_for_automatable (Automatable * automatable)
 {
   Track * track = automatable->track;
 
-  for (int i = 0; i < track->num_automation_tracks; i++)
+  int num_automation_tracks = 0;
+  AutomationTrack ** automation_tracks;
+  switch (track->type)
     {
-      AutomationTrack * at = track->automation_tracks[i];
+    case TRACK_TYPE_INSTRUMENT:
+      num_automation_tracks = ((InstrumentTrack *)track)->num_automation_tracks;
+      automation_tracks =
+        ((InstrumentTrack *)track)->automation_tracks;
+      break;
+    case TRACK_TYPE_MASTER:
+    case TRACK_TYPE_AUDIO:
+    case TRACK_TYPE_CHORD:
+    case TRACK_TYPE_BUS:
+      break;
+    }
+
+  for (int i = 0; i < num_automation_tracks; i++)
+    {
+      AutomationTrack * at = automation_tracks[i];
       if (at->automatable == automatable)
         {
           return at;

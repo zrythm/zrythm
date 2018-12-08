@@ -19,27 +19,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_MIDI_EDITOR_H__
-#define __GUI_WIDGETS_MIDI_EDITOR_H__
+#ifndef __GUI_WIDGETS_PIANO_ROLL_PAGE_H__
+#define __GUI_WIDGETS_PIANO_ROLL_PAGE_H__
 
 #include "gui/widgets/main_window.h"
 
 #include <gtk/gtk.h>
 
-#define MIDI_EDITOR_WIDGET_TYPE                  (midi_editor_widget_get_type ())
-#define MIDI_EDITOR_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), MIDI_EDITOR_WIDGET_TYPE, MidiEditorWidget))
-#define MIDI_EDITOR_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), MIDI_EDITOR_WIDGET, MidiEditorWidgetClass))
-#define IS_MIDI_EDITOR_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), MIDI_EDITOR_WIDGET_TYPE))
-#define IS_MIDI_EDITOR_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), MIDI_EDITOR_WIDGET_TYPE))
-#define MIDI_EDITOR_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), MIDI_EDITOR_WIDGET_TYPE, MidiEditorWidgetClass))
+#define PIANO_ROLL_PAGE_WIDGET_TYPE                  (piano_roll_page_widget_get_type ())
+G_DECLARE_FINAL_TYPE (PianoRollPageWidget,
+                      piano_roll_page,
+                      PIANO_ROLL_PAGE,
+                      WIDGET,
+                      GtkBox)
 
-#define MIDI_EDITOR MAIN_WINDOW->midi_editor
+#define PIANO_ROLL_PAGE MAIN_WINDOW->piano_roll_page
 
 typedef struct PianoRollLabelsWidget PianoRollLabelsWidget;
 typedef struct PianoRollNotesWidget PianoRollNotesWidget;
-typedef struct MidiArranger MidiArranger;
+typedef struct _MidiArrangerWidget MidiArrangerWidget;
 
-typedef struct MidiEditorWidget
+typedef struct _PianoRollPageWidget
 {
   GtkBox                   parent_instance;
   GtkBox                   * midi_track_color_box;
@@ -62,15 +62,10 @@ typedef struct MidiEditorWidget
   GtkBox                   * midi_arranger_box; ///< piano roll
   GtkScrolledWindow        * piano_roll_arranger_scroll;
   GtkViewport              * piano_roll_arranger_viewport;
-  ArrangerWidget           * midi_arranger;
+  MidiArrangerWidget *     midi_arranger;
 } MidiEditorWidget;
 
-typedef struct MidiEditorWidgetClass
-{
-  GtkBoxClass       parent_class;
-} MidiEditorWidgetClass;
-
-MidiEditorWidget *
-midi_editor_widget_new ();
+PianoRollPageWidget *
+piano_roll_page_widget_new ();
 
 #endif

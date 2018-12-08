@@ -33,7 +33,7 @@
 #define DEFAULT_VEL 90
 
 MidiNote *
-midi_note_new (Region * region,
+midi_note_new (MidiRegion * midi_region,
             Position * start_pos,
             Position * end_pos,
             int      val,
@@ -49,7 +49,7 @@ midi_note_new (Region * region,
   midi_note->end_pos.beats = end_pos->beats;
   midi_note->end_pos.quarter_beats = end_pos->quarter_beats;
   midi_note->end_pos.ticks = end_pos->ticks;
-  midi_note->region = region;
+  midi_note->midi_region = midi_region;
   midi_note->val = val;
   midi_note->vel = vel > -1 ? vel : DEFAULT_VEL;
   midi_note->widget = midi_note_widget_new (midi_note);

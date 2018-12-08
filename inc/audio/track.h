@@ -26,73 +26,57 @@
 
 typedef struct Region Region;
 typedef struct Position Position;
-typedef struct TrackWidget TrackWidget;
+typedef struct _TrackWidget TrackWidget;
 typedef struct Channel Channel;
 typedef struct MidiEvents MidiEvents;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct Automatable Automatable;
 typedef jack_nframes_t nframes_t;
 
+typedef enum TrackType
+{
+  TRACK_TYPE_INSTRUMENT,
+  TRACK_TYPE_AUDIO,
+  TRACK_TYPE_MASTER,
+  TRACK_TYPE_CHORD,
+  TRACK_TYPE_BUS
+} TrackType;
 
 /**
- * The track struct.
+ * Base track struct.
  */
-typedef struct Track {
-  Region          * regions[200];     ///< regions in this track
-  int             num_regions;  ///< counter
-  TrackWidget     * widget; ///< track widget, 1 track has 1 widget
-  Channel         * channel;  ///< owner channel, 1 channel has 1 track
-  AutomationTrack * automation_tracks[4000]; ///< automation tracks for this track
-                          ///< these should be updated with ALL of the automatables
-                          ///< available in the channel and its plugins, every time
-                          ///< there is an update
-  int             num_automation_tracks;
-  int             automations_visible; ///< flag to set automations visible or not
+typedef struct Track
+{
+  TrackType           type; ///< the type of track this is
+  TrackWidget *       widget; ///< track widget, 1 track has 1 widget
+  int                 bot_paned_visible; ///< flag to set automations visible or not
+  int                 visible;
+  int                 selected;
 } Track;
 
 /**
- * Updates the automation tracks in the track. (adds missing)
+ * Only to be used by implementing structs.
  *
- * Builds an automation track for each automatable in the channel and its plugins,
- * unless it already exists.
+ * Sets member variables to default values.
  */
 void
-track_update_automation_tracks (Track * track);
+track_init (Track * track);
 
+
+/**
+ * Wrapper.
+ */
 Track *
 track_new (Channel * channel);
 
 /**
- * NOTE: real time func
+ * Wrapper for each track type.
  */
 void
-track_fill_midi_events (Track      * track,
-                        Position   * pos, ///< start position to check
-                        nframes_t  nframes, ///< n of frames from start pos
-                        MidiEvents * midi_events); ///< midi events to fill
-
-void
-track_add_region (Track      * track,
-                  Region     * region);
-
-void
-track_remove_region (Track    * track,
-                     Region   * region);
+track_update_automation_tracks (Track * track);
 
 /**
- * Convenience function to get the fader automatable of the track.
- */
-Automatable *
-track_get_fader_automatable (Track * track);
-
-void
-track_delete_automation_track (Track *           track,
-                               AutomationTrack * at);
-
-/**
- * Frees the track.
- *
- * TODO
+ * Wrapper for each track type.
  */
 void
 track_free (Track * track);

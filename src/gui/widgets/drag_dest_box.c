@@ -82,7 +82,7 @@ on_drag_data_received (GtkWidget        *widget,
       /* create track widget */
       tracklist_widget_add_track (MAIN_WINDOW->tracklist,
                                   new_channel->track,
-                                  MAIN_WINDOW->tracklist->num_track_widgets); /* FIXME  rename to tracklist_widget*/
+                                  MAIN_WINDOW->tracklist->num_visible);
 
       track_widget_show (new_channel->track->widget);
       channel_widget_show (new_channel->widget);

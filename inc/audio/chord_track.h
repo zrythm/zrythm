@@ -33,7 +33,7 @@
 #include <stdint.h>
 
 typedef struct Chord Chord;
-typedef struct ChordTrackWidget ChordTrackWidget;
+typedef struct _ChordTrackWidget ChordTrackWidget;
 typedef struct MusicalScale MusicalScale;
 
 typedef struct ChordTrack

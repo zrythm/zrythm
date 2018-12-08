@@ -25,6 +25,7 @@
 #include "audio/engine.h"
 #include "audio/midi.h"
 #include "audio/midi_note.h"
+#include "audio/midi_region.h"
 #include "audio/region.h"
 #include "audio/track.h"
 #include "audio/transport.h"
@@ -49,102 +50,109 @@ smf_save_regions ()
     {
       Region * region = PROJECT->regions[i];
 
-      if (!region->linked_region)
+      if (region->linked_region ||
+          region->track->type != TRACK_TYPE_INSTRUMENT)
+        continue;
+
+      smf_t *smf;
+      smf_track_t *track;
+      smf_event_t *event;
+
+      smf = smf_new();
+      if (smf == NULL)
         {
-          smf_t *smf;
-          smf_track_t *track;
-          smf_event_t *event;
+          g_warning ("smf_new failed");
+          return;
+        }
+      ret = smf_set_ppqn (smf,
+                          TICKS_PER_QUARTER_BEAT);
+      if (ret)
+        {
+          g_warning ("Setting PPQN failed");
+          return;
+        }
 
-          smf = smf_new();
-          if (smf == NULL)
+
+      track = smf_track_new();
+      if (track == NULL)
+        {
+          g_warning ("smf_track_new failed");
+          return;
+        }
+
+      /* add tempo event */
+      smf_add_track(smf, track);
+      jack_midi_event_t ev;
+      /* see
+       * http://www.mixagesoftware.com/en/midikit/help/HTML/meta_events.html
+       */
+      ev.size = 6;
+      ev.buffer = calloc (6, sizeof (jack_midi_data_t));
+      ev.buffer[0] = 0xFF;
+      ev.buffer[1]= 0x51;
+      ev.buffer[2] = 0x03;
+      /* convert bpm to tempo value */
+      int tempo = 60000000 / TRANSPORT->bpm;
+      ev.buffer[3] = (tempo >> 16) & 0xFF;
+      ev.buffer[4] = (tempo >> 8) & 0xFF;
+      ev.buffer[5] = tempo & 0xFF;
+      event = smf_event_new_from_pointer (ev.buffer,
+                                          ev.size);
+      smf_track_add_event_pulses (
+        track,
+        event,
+        0);
+      free (ev.buffer);
+
+      MidiEvents * events = calloc (1, sizeof (MidiEvents));
+      Position abs_start_pos;
+      position_init (&abs_start_pos);
+      MidiRegion * midi_region = (MidiRegion *) region;
+      midi_note_notes_to_events (midi_region->midi_notes,
+                                 midi_region->num_midi_notes,
+                                 &abs_start_pos,
+                                 events);
+
+      for (int j = 0; j < events->num_events; j++)
+        {
+          jack_midi_event_t * ev = &events->jack_midi_events[j];
+          event = smf_event_new_from_pointer (ev->buffer,
+                                              ev->size);
+          if (event == NULL)
             {
-              g_warning ("smf_new failed");
+              g_warning ("smf event is NULL");
               return;
             }
-          ret = smf_set_ppqn (smf,
-                              TICKS_PER_QUARTER_BEAT);
 
-
-          track = smf_track_new();
-          if (track == NULL)
-            {
-              g_warning ("smf_track_new failed");
-              return;
-            }
-
-          /* add tempo event */
-          smf_add_track(smf, track);
-          jack_midi_event_t ev;
-          /* see
-           * http://www.mixagesoftware.com/en/midikit/help/HTML/meta_events.html
-           */
-          ev.size = 6;
-          ev.buffer = calloc (6, sizeof (jack_midi_data_t));
-          ev.buffer[0] = 0xFF;
-          ev.buffer[1]= 0x51;
-          ev.buffer[2] = 0x03;
-          /* convert bpm to tempo value */
-          int tempo = 60000000 / TRANSPORT->bpm;
-          ev.buffer[3] = (tempo >> 16) & 0xFF;
-          ev.buffer[4] = (tempo >> 8) & 0xFF;
-          ev.buffer[5] = tempo & 0xFF;
-          event = smf_event_new_from_pointer (ev.buffer,
-                                              ev.size);
           smf_track_add_event_pulses (
             track,
             event,
-            0);
-          free (ev.buffer);
-
-          MidiEvents * events = calloc (1, sizeof (MidiEvents));
-          Position abs_start_pos;
-          position_init (&abs_start_pos);
-          midi_note_notes_to_events (region->midi_notes,
-                                     region->num_midi_notes,
-                                     &abs_start_pos,
-                                     events);
-
-          for (int j = 0; j < events->num_events; j++)
-            {
-              jack_midi_event_t * ev = &events->jack_midi_events[j];
-              event = smf_event_new_from_pointer (ev->buffer,
-                                                  ev->size);
-              if (event == NULL)
-                {
-                  g_warning ("smf event is NULL");
-                  return;
-                }
-
-              smf_track_add_event_pulses (
-                track,
-                event,
-                ev->time / AUDIO_ENGINE->frames_per_tick);
-              /*g_message ("event at %d", ev->time / AUDIO_ENGINE->frames_per_tick);*/
-            }
-
-          free (events);
-
-          char * region_filename = region_generate_filename (region);
-
-          char * full_path = g_strdup_printf ("%s%s%s",
-                                              PROJECT->regions_dir,
-                                              io_get_separator (),
-                                              region_filename);
-          g_message ("Writing region %s", full_path);
-
-
-          /* save the midi file */
-          int ret = smf_save(smf, full_path);
-          g_free (full_path);
-          g_free (region_filename);
-          if (ret)
-            {
-              g_warning ("smf_save failed");
-              return;
-            }
-
-          smf_delete(smf);
+            ev->time / AUDIO_ENGINE->frames_per_tick);
+          /*g_message ("event at %d", ev->time / AUDIO_ENGINE->frames_per_tick);*/
         }
+
+      free (events);
+
+      char * region_filename = region_generate_filename (region);
+
+      char * full_path = g_strdup_printf ("%s%s%s",
+                                          PROJECT->regions_dir,
+                                          io_get_separator (),
+                                          region_filename);
+      g_message ("Writing region %s", full_path);
+
+
+      /* save the midi file */
+      int ret = smf_save(smf, full_path);
+      g_free (full_path);
+      g_free (region_filename);
+      if (ret)
+        {
+          g_warning ("smf_save failed");
+          return;
+        }
+
+      smf_delete(smf);
     }
 }
 
@@ -152,8 +160,8 @@ smf_save_regions ()
  * Loads midi notes from region MIDI files.
  */
 void
-smf_load_region (const char    * file,   ///< file to load
-                 Region        * region)  ///< region to save midi notes in
+smf_load_region (const char *   file,   ///< file to load
+                 MidiRegion *   midi_region)  ///< region to save midi notes in
 {
   smf_t *smf;
   smf_event_t *event;
@@ -169,23 +177,23 @@ smf_load_region (const char    * file,   ///< file to load
 
   MidiNote notes[400];
   int      num_notes = 0; /* started notes */
-  float bpm;
+  /*float bpm;*/
 
   while ((event = smf_get_next_event(smf)) != NULL)
     {
       /* get bpm */
-      if (event->midi_buffer_length == 6 &&
-          event->midi_buffer[0] == 0xFF &&
-          event->midi_buffer[1] == 0x51 &&
-          event->midi_buffer[2] == 0x03)
-        {
-          int tempo = (event->midi_buffer[3] << 16) |
-            (event->midi_buffer[4] << 8) |
-            (event->midi_buffer[5]);
-          bpm = 60000000.f / tempo;
-          /*transport_set_bpm (bpm);*/
-          continue;
-        }
+      /*if (event->midi_buffer_length == 6 &&*/
+          /*event->midi_buffer[0] == 0xFF &&*/
+          /*event->midi_buffer[1] == 0x51 &&*/
+          /*event->midi_buffer[2] == 0x03)*/
+        /*{*/
+          /*int tempo = (event->midi_buffer[3] << 16) |*/
+            /*(event->midi_buffer[4] << 8) |*/
+            /*(event->midi_buffer[5]);*/
+          /*bpm = 60000000.f / tempo;*/
+          /*[>transport_set_bpm (bpm);<]*/
+          /*continue;*/
+        /*}*/
 
       if (smf_event_is_metadata(event))
         continue;
@@ -196,7 +204,7 @@ smf_load_region (const char    * file,   ///< file to load
         }
 
       uint8_t type = event->midi_buffer[0] & 0xf0;
-      uint8_t channel = event->midi_buffer[0] & 0xf;
+      /*uint8_t channel = event->midi_buffer[0] & 0xf;*/
       int ticks = event->time_pulses;
       if (type == MIDI_CH1_NOTE_ON) /* note on */
         {
@@ -223,7 +231,9 @@ smf_load_region (const char    * file,   ///< file to load
                   /*position_add_frames (&notes[i].end_pos,*/
                                        /*frames);*/
                   position_set_tick (&notes[i].end_pos, ticks);
-                  array_delete (notes, &num_notes, &notes[i]);
+                  array_delete ((void **) notes,
+                                &num_notes,
+                                (void *) &notes[i]);
                   break;
                 }
             }
@@ -232,13 +242,13 @@ smf_load_region (const char    * file,   ///< file to load
 
   for (int i = 0; i < num_notes; i++)
     {
-      MidiNote * midi_note = midi_note_new (region,
+      MidiNote * midi_note = midi_note_new (midi_region,
                                             &notes[i].start_pos,
                                             &notes[i].end_pos,
                                             notes[i].val,
                                             notes[i].vel);
-      region_add_midi_note (region,
-                            midi_note);
+      midi_region_add_midi_note (midi_region,
+                                 midi_note);
     }
 
 

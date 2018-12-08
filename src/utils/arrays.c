@@ -78,3 +78,17 @@ array_contains (void ** array, int size, void * element)
   return 0;
 }
 
+/**
+ * Returns the index ofthe element exists in array,
+ * -1 if not.
+ */
+int
+array_index_of (void ** array, int size, void * element)
+{
+  for (int i = 0; i < size; i++)
+    {
+      if (array[i] == element)
+        return i;
+    }
+  return -1;
+}

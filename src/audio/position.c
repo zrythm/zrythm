@@ -26,7 +26,8 @@
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/midi_editor.h"
+#include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/piano_roll_page.h"
 #include "project/snap_grid.h"
 
 #include <gtk/gtk.h>
@@ -239,20 +240,22 @@ position_updated (Position * position)
         }
       if (MAIN_WINDOW->timeline)
         {
+          ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);
           gtk_widget_queue_draw (
-                  GTK_WIDGET (MAIN_WINDOW->timeline->bg));
+            GTK_WIDGET (prv->bg));
         }
-      if (MAIN_WINDOW->midi_editor)
+      if (PIANO_ROLL_PAGE)
         {
-          if (MAIN_WINDOW->midi_editor->midi_ruler)
+          if (PIANO_ROLL_PAGE->midi_ruler)
             {
               gtk_widget_queue_draw (
-                      GTK_WIDGET (MAIN_WINDOW->midi_editor->midi_ruler));
+                      GTK_WIDGET (PIANO_ROLL_PAGE->midi_ruler));
             }
-          if (MAIN_WINDOW->midi_editor->midi_arranger)
+          if (PIANO_ROLL_PAGE->midi_arranger)
             {
+              ARRANGER_WIDGET_GET_PRIVATE (MIDI_ARRANGER);
               gtk_widget_queue_draw (
-                      GTK_WIDGET (MAIN_WINDOW->midi_editor->midi_arranger->bg));
+                      GTK_WIDGET (prv->bg));
             }
         }
     }

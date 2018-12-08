@@ -31,7 +31,7 @@
 #define IS_AUTOMATION_TRACK_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), AUTOMATION_TRACK_WIDGET_TYPE))
 #define AUTOMATION_TRACK_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), AUTOMATION_TRACK_WIDGET_TYPE, AutomationTrackWidgetClass))
 
-typedef struct TrackWidget TrackWidget;
+typedef struct _TrackWidget TrackWidget;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct DigitalMeterWidget DigitalMeterWidget;
 typedef struct Track Track;

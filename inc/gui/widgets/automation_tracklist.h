@@ -25,16 +25,16 @@
 #include <gtk/gtk.h>
 
 #define AUTOMATION_TRACKLIST_WIDGET_TYPE                  (automation_tracklist_widget_get_type ())
-#define AUTOMATION_TRACKLIST_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), AUTOMATION_TRACKLIST_WIDGET_TYPE, AutomationTracklistWidget))
-#define AUTOMATION_TRACKLIST_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), AUTOMATION_TRACKLIST_WIDGET, AutomationTracklistWidgetClass))
-#define IS_AUTOMATION_TRACKLIST_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AUTOMATION_TRACKLIST_WIDGET_TYPE))
-#define IS_AUTOMATION_TRACKLIST_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), AUTOMATION_TRACKLIST_WIDGET_TYPE))
-#define AUTOMATION_TRACKLIST_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), AUTOMATION_TRACKLIST_WIDGET_TYPE, AutomationTracklistWidgetClass))
+G_DECLARE_FINAL_TYPE (AutomationTracklistWidget,
+                      automation_tracklist_widget,
+                      AUTOMATION_TRACKLIST,
+                      WIDGET,
+                      GtkBox)
 
 typedef struct AutomationTrackWidget AutomationTrackWidget;
-typedef struct TrackWidget TrackWidget;
+typedef struct _TrackWidget TrackWidget;
 
-typedef struct AutomationTracklistWidget
+typedef struct _AutomationTracklistWidget
 {
   GtkBox                  parent_instance;
   AutomationTrackWidget * automation_track_widgets[400]; ///< the automation track will
@@ -42,14 +42,14 @@ typedef struct AutomationTracklistWidget
                                           ///< corresponding paned
                                           ///< these stay when they are hidden
   int                     num_automation_track_widgets; ///< counter
-  TrackWidget *           track_widget; ///< parent track widget
+
+  /**
+   * Parent track widget. Can be anything but chord.
+   */
+  TrackWidget *           track_widget;
+
   int                     has_g_object_ref; ///< flag
 } AutomationTracklistWidget;
-
-typedef struct AutomationTracklistWidgetClass
-{
-  GtkBoxClass             parent_class;
-} AutomationTracklistWidgetClass;
 
 /**
  * Creates a new tracks widget and sets it to main window.

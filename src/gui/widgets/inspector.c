@@ -121,9 +121,9 @@ inspector_widget_new ()
 }
 
 /**
- * Displays info about the regions.
+ * Displays info about the regions/tracks/etc.
  *
- * If num_regions < 1, it hides the regions box.
+ * If num_regions < 1, it hides the regions box, etc.
  */
 void
 inspector_widget_show_selections (InspectorWidgetChildType type,

@@ -21,6 +21,7 @@
 
 #include "audio/automation_track.h"
 #include "audio/channel.h"
+#include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
@@ -99,7 +100,21 @@ draw_cb (AutomationCurveWidget * self, cairo_t *cr, gpointer data)
   /*cairo_rectangle (cr, 0, 0, width, height);*/
   /*cairo_fill (cr);*/
 
-  GdkRGBA * color = &self->ac->at->track->channel->color;
+  GdkRGBA * color;
+  Track * track = self->ac->at->track;
+  InstrumentTrack * it;
+  switch (track->type)
+    {
+    case TRACK_TYPE_INSTRUMENT:
+      it = (InstrumentTrack *) track;
+      color = &it->channel->color;
+      break;
+    case TRACK_TYPE_MASTER:
+    case TRACK_TYPE_AUDIO:
+    case TRACK_TYPE_CHORD:
+    case TRACK_TYPE_BUS:
+      break;
+    }
   if (self->hover)
     {
       cairo_set_source_rgba (cr,

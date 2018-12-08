@@ -26,43 +26,40 @@
 
 #include <gtk/gtk.h>
 
-#define REGION_WIDGET_TYPE                  (region_widget_get_type ())
-#define REGION_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), REGION_WIDGET_TYPE, RegionWidget))
-#define REGION_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), REGION_WIDGET, RegionWidgetClass))
-#define IS_REGION_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), REGION_WIDGET_TYPE))
-#define IS_REGION_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), REGION_WIDGET_TYPE))
-#define REGION_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), REGION_WIDGET_TYPE, RegionWidgetClass))
+#define REGION_WIDGET_TYPE (region_widget_get_type ())
+G_DECLARE_DERIVABLE_TYPE (RegionWidget,
+                          region_widget,
+                          REGION,
+                          WIDGET,
+                          GtkDrawingArea)
+#define IS_REGION_WIDGET(obj) \
+  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), REGION_WIDGET_TYPE))
+#define REGION_WIDGET_GET_PRIVATE(self) \
+  RegionWidgetPrivate * rw_prv = \
+    region_widget_get_private (REGION_WIDGET (self));
 
-typedef enum RWCursorState
+typedef struct _RegionWidgetPrivate
 {
-  RWS_CURSOR_DEFAULT,
-  RWS_CURSOR_RESIZE_L,
-  RWS_CURSOR_RESIZE_R
-} RWCursorState;
-
-typedef struct RegionWidget
-{
-  GtkDrawingArea           parent_instance;
   Region                   * region;   ///< the region associated with this
   int                      hover;
   int                      selected;
-  RWCursorState            cursor_state;
-} RegionWidget;
+} RegionWidgetPrivate;
 
-typedef struct RegionWidgetClass
+typedef struct _RegionWidgetClass
 {
-  GtkDrawingAreaClass       parent_class;
+  GtkDrawingAreaClass parent_class;
 } RegionWidgetClass;
 
-/**
- * Creates a region.
- */
-RegionWidget *
-region_widget_new (Region * region);
+void
+region_widget_setup (RegionWidget * self,
+                     Region *       region);
 
 void
 region_widget_select (RegionWidget * self,
                       int            select);
+
+RegionWidgetPrivate *
+region_widget_get_private (RegionWidget * self);
 
 GType region_widget_get_type(void);
 

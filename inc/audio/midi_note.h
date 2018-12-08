@@ -24,7 +24,7 @@
 #define __AUDIO_MIDI_NOTE_H__
 
 #include "audio/position.h"
-#include "audio/region.h"
+#include "audio/midi_region.h"
 
 typedef struct MidiNoteWidget MidiNoteWidget;
 typedef struct Channel Channel;
@@ -38,13 +38,13 @@ typedef struct MidiNote
   Position        start_pos;
   Position        end_pos;
   MidiNoteWidget  * widget;
-  Region          * region; ///< owner region
+  MidiRegion *    midi_region; ///< owner region
   int             vel;  ///< velocity
   int             val; ///< note
 } MidiNote;
 
 MidiNote *
-midi_note_new (Region * region,
+midi_note_new (MidiRegion * region,
                Position * start_pos,
                Position * end_pos,
                int      val,

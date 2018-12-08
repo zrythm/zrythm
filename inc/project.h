@@ -51,6 +51,7 @@ typedef struct AutomationPoint AutomationPoint;
 typedef struct AutomationCurve AutomationCurve;
 typedef struct MidiNote MidiNote;
 typedef struct ChordTrack ChordTrack;
+typedef struct Tracklist Tracklist;
 
 typedef struct Project
 {
@@ -76,8 +77,6 @@ typedef struct Project
   int               num_channels;
   Plugin            * plugins[30000];
   int               num_plugins;
-  Track             * tracks [3000];
-  int               num_tracks;
   Region            * regions [30000];
   int               num_regions;
   AutomationPoint * automation_points[30000];
@@ -87,8 +86,7 @@ typedef struct Project
   MidiNote *        midi_notes[30000];
   int               num_midi_notes;
 
-  /* chord track info */
-  ChordTrack *      chord_track;
+  Tracklist *       tracklist;
 } Project;
 
 

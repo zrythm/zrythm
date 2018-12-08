@@ -25,18 +25,18 @@
 #include <gtk/gtk.h>
 
 #define INSPECTOR_WIDGET_TYPE                  (inspector_widget_get_type ())
-#define INSPECTOR_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), INSPECTOR_WIDGET_TYPE, InspectorWidget))
-#define INSPECTOR_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), INSPECTOR_WIDGET, InspectorWidgetClass))
-#define IS_INSPECTOR_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), INSPECTOR_WIDGET_TYPE))
-#define IS_INSPECTOR_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), INSPECTOR_WIDGET_TYPE))
-#define INSPECTOR_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), INSPECTOR_WIDGET_TYPE, InspectorWidgetClass))
+G_DECLARE_FINAL_TYPE (InspectorWidget,
+                      inspector_widget,
+                      INSPECTOR,
+                      WIDGET,
+                      GtkBox)
 
 #define MW_INSPECTOR MAIN_WINDOW->inspector
 
 typedef struct Region Region;
 typedef struct InspectorRegionWidget InspectorRegionWidget;
 typedef struct InspectorApWidget InspectorApWidget;
-typedef struct InspectorTrackWidget InspectorTrackWidget;
+typedef struct _InspectorTrackWidget InspectorTrackWidget;
 typedef struct InspectorMidiWidget InspectorMidiWidget;
 
 typedef enum InspectorWidgetChildType
@@ -47,7 +47,7 @@ typedef enum InspectorWidgetChildType
   INSPECTOR_CHILD_AP
 } InspectorWidgetChildType;
 
-typedef struct InspectorWidget
+typedef struct _InspectorWidget
 {
   GtkBox                    parent_instance;
   GtkSizeGroup *            size_group;
@@ -66,11 +66,6 @@ typedef struct InspectorWidget
   GtkBox *                  bot_box;
   GtkLabel *                no_item_label; ///< no item selected label
 } InspectorWidget;
-
-typedef struct InspectorWidgetClass
-{
-  GtkBoxClass       parent_class;
-} InspectorWidgetClass;
 
 /**
  * Creates the inspector widget.

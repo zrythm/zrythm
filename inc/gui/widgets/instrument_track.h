@@ -1,5 +1,5 @@
 /*
- * gui/widgets/chord_track.h - ChordTrack view
+ * gui/widgets/track.h - Track view
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,24 +19,28 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_CHORD_TRACK_H__
-#define __GUI_WIDGETS_CHORD_TRACK_H__
+#ifndef __GUI_WIDGETS_INSTRUMENT_TRACK_H__
+#define __GUI_WIDGETS_INSTRUMENT_TRACK_H__
 
 #include "audio/channel.h"
+#include "gui/widgets/track.h"
 
 #include <gtk/gtk.h>
 
-#define CHORD_TRACK_WIDGET_TYPE                  (chord_track_widget_get_type ())
-G_DECLARE_FINAL_TYPE (ChordTrackWidget,
-                      chord_track_widget,
-                      CHORD_TRACK,
+#define INSTRUMENT_TRACK_WIDGET_TYPE (instrument_track_widget_get_type ())
+G_DECLARE_FINAL_TYPE (InstrumentTrackWidget,
+                      instrument_track_widget,
+                      INSTRUMENT_TRACK,
                       WIDGET,
                       GtkPaned)
 
-typedef struct ChordTrack ChordTrack;
-typedef struct ChordTracklistWidget ChordTracklistWidget;
+typedef struct _AutomationTracklistWidget AutomationTracklistWidget;
+typedef struct InstrumentTrack InstrumentTrack;
 
-typedef struct _ChordTrackWidget
+/**
+ * Top is the track part and bot is the automation part
+ */
+typedef struct _InstrumentTrackWidget
 {
   GtkPaned                      parent_instance;
   TrackWidget *                 parent;
@@ -46,33 +50,28 @@ typedef struct _ChordTrackWidget
   GtkButton *                   record;
   GtkButton *                   solo;
   GtkButton *                   mute;
+  GtkButton *                   show_automation;
   GtkImage *                    icon;
-
-  /**
-   * For showing/hiding additional sub-tracks relating to
-   * chords.
-   */
-  ChordTracklistWidget *        chord_tracklist_widget;
-} ChordTrackWidget;
+  AutomationTracklistWidget *   automation_tracklist_widget;
+} InstrumentTrackWidget;
 
 /**
- * Creates a new chord_track widget from the given chord_track.
+ * Creates a new track widget from the given track.
  */
-ChordTrackWidget *
-chord_track_widget_new (ChordTrack * chord_track,
-                        TrackWidget * parent);
+InstrumentTrackWidget *
+instrument_track_widget_new (InstrumentTrack * track,
+                             TrackWidget *     parent);
 
 /**
  * Updates changes in the backend to the ui
  */
 void
-chord_track_widget_update_all (ChordTrackWidget * self);
+instrument_track_widget_update_all (InstrumentTrackWidget * self);
 
 /**
- * Makes sure the chord_track widget and its elements have the visibility they should.
+ * Makes sure the track widget and its elements have the visibility they should.
  */
 void
-chord_track_widget_show (ChordTrackWidget * self);
+instrument_track_widget_show (InstrumentTrackWidget * self);
 
 #endif
-

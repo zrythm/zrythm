@@ -30,7 +30,8 @@ rack_widget_new ()
 {
   RackWidget * self = g_object_new (RACK_WIDGET_TYPE,
                                     NULL);
-  self->main_box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  self->main_box = GTK_BOX (
+    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_widget_set_valign (GTK_WIDGET (self->main_box), GTK_ALIGN_START);
   gtk_container_add (GTK_CONTAINER (self),
                      GTK_WIDGET (self->main_box));

@@ -5,7 +5,7 @@ It is written in C and it uses the GTK+3 toolkit.
 
 Bits and pieces are taken from other programs like Ardour and Jalv.
 
-More info at https://zrythm.org (coming soon)
+More info at https://www.zrythm.org
 
 ## Current state
 ![screenshot](https://alextee.website/wp-content/uploads/2018/11/Screenshot_20181112_002843.png)
@@ -25,7 +25,14 @@ For contributing see CONTRIBUTING
 
 For any bugs please raise an issue
 
-Come discuss in IRC at #zrythm @ freenode, or zrythm @ matrix.org for Matrix
+## Connect
+Come discuss about Zrythm
+### IRC (Freenode)
+`#zrythm`
+### Matrix
+`zrythm` (https://matrix.to/#/!aPVJxKGBLLAIRygQYD:matrix.org)
+### Discord
+`zrythm` (https://discord.gg/AbHb3eD)
 
 ## License
 GPLv3+
@@ -35,4 +42,9 @@ Zrythm is and always will be a free and open-source project. Donations help ensu
 
 Monthly donations of any amount are accepted (and appreciated) below:
 
+### Patreon
+https://www.patreon.com/alextee
+### Liberapay
 https://liberapay.com/alextee/
+### Paypal
+https://www.paypal.me/alextee90

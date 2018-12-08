@@ -22,7 +22,7 @@
 #ifndef __GUI_WIDGETS_PIANO_ROLL_LABELS_H__
 #define __GUI_WIDGETS_PIANO_ROLL_LABELS_H__
 
-#include "gui/widgets/midi_editor.h"
+#include "gui/widgets/piano_roll_page.h"
 
 #include <gtk/gtk.h>
 
@@ -34,7 +34,7 @@
 #define PIANO_ROLL_LABELS_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), PIANO_ROLL_LABELS_WIDGET_TYPE, PianoRollLabelsWidgetClass))
 
 #define DEFAULT_PX_PER_NOTE 8
-#define PIANO_ROLL_LABELS MIDI_EDITOR->piano_roll_labels
+#define PIANO_ROLL_LABELS PIANO_ROLL_PAGE->piano_roll_labels
 
 typedef struct PianoRollLabelsWidget
 {

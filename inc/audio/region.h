@@ -27,37 +27,69 @@
 
 #define REGION_PRINTF_FILENAME "%d_%s_%s.mid"
 
-typedef struct RegionWidget RegionWidget;
+typedef struct _RegionWidget RegionWidget;
 typedef struct Channel Channel;
 typedef struct Track Track;
 typedef struct MidiNote MidiNote;
 
+typedef enum RegionType
+{
+  REGION_TYPE_MIDI,
+  REGION_TYPE_AUDIO
+} RegionType;
+
 typedef struct Region
 {
+  /**
+   * ID for saving/loading projects
+   */
   int          id;
-  char         * name; ///< region name
-  Position     start_pos;
-  Position     end_pos;
-  RegionWidget * widget;
-  Track        * track; ///< owner track
 
-  /* either the midi notes from this region, or the midi notes from the
-   * linked region are used */
-  struct Region       * linked_region; ///< linked parent region
-  MidiNote     * midi_notes[200]; /// midi notes (if MIDI region)
-  int          num_midi_notes;
+  /**
+   * Region name to be shown on the region.
+   */
+  char         * name;
+
+  RegionType   type;
+
+  /**
+   * Start position.
+   */
+  Position     start_pos;
+
+  /**
+   * End position.
+   */
+  Position     end_pos;
+
+  /**
+   * Region widget.
+   */
+  RegionWidget * widget;
+
+  /**
+   * Owner track.
+   */
+  Track        * track;
+
+  /**
+   * Linked parent region.
+   *
+   * Either the midi notes from this region, or the midi
+   * notes from the linked region are used
+   */
+  struct Region       * linked_region;
 } Region;
 
-Region *
-region_new (Track * track,
-            Position * start_pos,
-            Position * end_pos);
-
 /**
- * Creates region (used when loading projects).
+ * Only to be used by implementing structs.
  */
-Region *
-region_get_or_create_blank (int id);
+void
+region_init (Region *   region,
+             RegionType type,
+             Track *    track,
+             Position * start_pos,
+             Position * end_pos);
 
 /**
  * Clamps position then sets it.
@@ -81,13 +113,6 @@ region_set_end_pos (Region * region,
 Region *
 region_at_position (Track    * track, ///< the track to look in
                     Position * pos); ///< the position
-
-/**
- * Adds midi note to region
- */
-void
-region_add_midi_note (Region * region,
-                      MidiNote * midi_note);
 
 /**
  * Generates the filename for this region.

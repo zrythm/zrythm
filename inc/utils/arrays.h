@@ -43,4 +43,11 @@ array_insert (void ** array, int * size, int pos, void * element);
 int
 array_contains (void ** array, int size, void * element);
 
+/**
+ * Returns the index ofthe element exists in array,
+ * -1 if not.
+ */
+int
+array_index_of (void ** array, int size, void * element);
+
 #endif /* __UTILS_ARRAYS_H__ */

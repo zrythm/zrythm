@@ -181,7 +181,6 @@ create_audio_units_store ()
 {
   GtkTreeIter iter, iter2, iter3;
   GtkTreeStore *store;
-  gint i;
 
   store = gtk_tree_store_new (3, G_TYPE_STRING, G_TYPE_INT, G_TYPE_POINTER);
 

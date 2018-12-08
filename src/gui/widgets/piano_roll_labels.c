@@ -46,7 +46,6 @@ draw_text (cairo_t *cr, int x, int y, char * text)
 
   PangoLayout *layout;
   PangoFontDescription *desc;
-  int i;
 
   cairo_move_to (cr, x, y);
 
@@ -76,7 +75,6 @@ static gboolean
 draw_cb (PianoRollLabelsWidget * self, cairo_t *cr, gpointer data)
 {
   guint width, height;
-  GdkRGBA color;
   GtkStyleContext *context;
 
   context = gtk_widget_get_style_context (GTK_WIDGET (self));
@@ -230,6 +228,7 @@ multipress_pressed (GtkGestureMultiPress *gesture,
                gdouble               y,
                gpointer              user_data)
 {
+  return FALSE;
 }
 
 static void

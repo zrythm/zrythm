@@ -25,15 +25,15 @@
 #include <gtk/gtk.h>
 
 #define INSPECTOR_TRACK_WIDGET_TYPE                  (inspector_track_widget_get_type ())
-#define INSPECTOR_TRACK_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), INSPECTOR_TRACK_WIDGET_TYPE, InspectorTrackWidget))
-#define INSPECTOR_TRACK_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), INSPECTOR_TRACK_WIDGET, InspectorTrackWidgetClass))
-#define IS_INSPECTOR_TRACK_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), INSPECTOR_TRACK_WIDGET_TYPE))
-#define IS_INSPECTOR_TRACK_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), INSPECTOR_TRACK_WIDGET_TYPE))
-#define INSPECTOR_TRACK_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), INSPECTOR_TRACK_WIDGET_TYPE, InspectorTrackWidgetClass))
+G_DECLARE_FINAL_TYPE (InspectorTrackWidget,
+                      inspector_track_widget,
+                      INSPECTOR_TRACK,
+                      WIDGET,
+                      GtkGrid)
 
 typedef struct Track Track;
 
-typedef struct InspectorTrackWidget
+typedef struct _InspectorTrackWidget
 {
   GtkGrid             parent_instance;
   GtkLabel *          header;
@@ -42,11 +42,6 @@ typedef struct InspectorTrackWidget
   GtkColorButton *    color;
   GtkToggleButton *   muted_toggle;
 } InspectorTrackWidget;
-
-typedef struct InspectorTrackWidgetClass
-{
-  GtkGridClass       parent_class;
-} InspectorTrackWidgetClass;
 
 /**
  * Creates the inspector_track widget.

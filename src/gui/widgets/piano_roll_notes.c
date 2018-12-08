@@ -23,7 +23,7 @@
 #include "audio/midi.h"
 #include "audio/port.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/midi_editor.h"
+#include "gui/widgets/piano_roll_page.h"
 #include "gui/widgets/piano_roll_labels.h"
 #include "gui/widgets/piano_roll_notes.h"
 
@@ -31,7 +31,7 @@
 
 G_DEFINE_TYPE (PianoRollNotesWidget, piano_roll_notes_widget, GTK_TYPE_DRAWING_AREA)
 
-#define LABELS_WIDGET MIDI_EDITOR->piano_roll_labels
+#define LABELS_WIDGET PIANO_ROLL_PAGE->piano_roll_labels
 
 /* 1 = black */
 static int notes[12] = {
@@ -129,8 +129,8 @@ drag_begin (GtkGestureDrag * gesture,
   jack_midi_event_t * ev = &MANUAL_PRESS_QUEUE->jack_midi_events[0];
   ev->time = 0;
   ev->size = 3;
-  start_y = MIDI_EDITOR->piano_roll_labels->total_px - start_y;
-  self->note = start_y / MIDI_EDITOR->piano_roll_labels->px_per_note;
+  start_y = PIANO_ROLL_PAGE->piano_roll_labels->total_px - start_y;
+  self->note = start_y / PIANO_ROLL_PAGE->piano_roll_labels->px_per_note;
   int vel = 90;
   if (!ev->buffer)
     ev->buffer = calloc (3, sizeof (jack_midi_data_t));
@@ -153,7 +153,7 @@ drag_update (GtkGestureDrag * gesture,
   PianoRollNotesWidget * self = (PianoRollNotesWidget *) user_data;
 
   int prev_note = self->note;
-  self->note = (self->start_y - offset_y) / MIDI_EDITOR->piano_roll_labels->px_per_note;
+  self->note = (self->start_y - offset_y) / PIANO_ROLL_PAGE->piano_roll_labels->px_per_note;
   int vel = 90;
 
   /* if note changed */

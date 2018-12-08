@@ -28,6 +28,7 @@
 
 #include "audio/channel.h"
 #include "audio/engine.h"
+#include "audio/instrument_track.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
 #include "gui/widgets/main_window.h"
@@ -115,7 +116,19 @@ mixer_load_plugins ()
 static void
 generate_track (Channel * channel)
 {
-  channel->track = track_new (channel);
+  switch (channel->type)
+    {
+    case CT_MIDI:
+      channel->track = (Track *) instrument_track_new (channel);
+      break;
+    case CT_AUDIO:
+    case CT_BUS:
+    case CT_MASTER:
+      channel->track = (Track *) instrument_track_new (
+        channel);
+      break;
+    }
+
   channel_generate_automatables (channel);
   track_update_automation_tracks (channel->track);
   channel->track->widget = track_widget_new (channel->track);

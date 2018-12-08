@@ -20,6 +20,7 @@
  */
 
 #include "audio/channel.h"
+#include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
@@ -27,12 +28,7 @@
 #include "gui/widgets/ruler.h"
 #include "utils/ui.h"
 
-G_DEFINE_TYPE (RegionWidget, region_widget, GTK_TYPE_DRAWING_AREA)
-
-/**
- * Space on the edges to show resize cursors
- */
-#define RESIZE_CURSOR_SPACE 9
+G_DEFINE_TYPE_WITH_PRIVATE (RegionWidget, region_widget, GTK_TYPE_DRAWING_AREA)
 
 static void
 draw_text (cairo_t *cr, char * name)
@@ -73,6 +69,9 @@ draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
   guint width, height;
   GtkStyleContext *context;
 
+  RegionWidgetPrivate * prv =
+    region_widget_get_instance_private (self);
+
   context = gtk_widget_get_style_context (GTK_WIDGET (self));
 
   width = gtk_widget_get_allocated_width (GTK_WIDGET (self));
@@ -80,8 +79,12 @@ draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
 
   gtk_render_background (context, cr, 0, 0, width, height);
 
-  GdkRGBA * color = &self->region->track->channel->color;
-  if (self->hover)
+  GdkRGBA * color;
+  if (prv->region->track->type == TRACK_TYPE_INSTRUMENT)
+    color = &((InstrumentTrack *)prv->region->track)->channel->color;
+  /*else if (self->region->track->type == TRACK_TYPE_AUDIO)*/
+    /*color = &((AudioTrack *)self->region->track)->channel->color;*/
+  if (prv->hover)
     {
       cairo_set_source_rgba (cr,
                              color->red + 0.2,
@@ -89,7 +92,7 @@ draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
                              color->blue + 0.2,
                              0.8);
     }
-  else if (self->selected)
+  else if (prv->selected)
     {
       cairo_set_source_rgba (cr,
                              color->red + 0.4,
@@ -105,7 +108,7 @@ draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
   cairo_stroke_preserve(cr);
   cairo_fill(cr);
 
-  draw_text (cr, self->region->name);
+  draw_text (cr, prv->region->name);
 
  return FALSE;
 }
@@ -114,65 +117,26 @@ static void
 on_motion (GtkWidget * widget, GdkEventMotion *event)
 {
   RegionWidget * self = REGION_WIDGET (widget);
-  GtkAllocation allocation;
-  gtk_widget_get_allocation (widget,
-                             &allocation);
+  RegionWidgetPrivate * prv =
+    region_widget_get_instance_private (self);
 
   if (event->type == GDK_MOTION_NOTIFY)
     {
-      /* set hover state */
-      self->hover = 1;
-
-      /* set cursor state */
-      if (event->x < RESIZE_CURSOR_SPACE)
-        {
-          self->cursor_state = RWS_CURSOR_RESIZE_L;
-          if (MW_TIMELINE->action != ARRANGER_ACTION_MOVING)
-            ui_set_cursor (widget, "w-resize");
-        }
-
-      else if (event->x > allocation.width - RESIZE_CURSOR_SPACE)
-        {
-          self->cursor_state = RWS_CURSOR_RESIZE_R;
-          if (MW_TIMELINE->action != ARRANGER_ACTION_MOVING)
-            ui_set_cursor (widget, "e-resize");
-        }
-      else
-        {
-          self->cursor_state = RWS_CURSOR_DEFAULT;
-          if (MW_TIMELINE->action != ARRANGER_ACTION_MOVING &&
-              MW_TIMELINE->action != ARRANGER_ACTION_STARTING_MOVING &&
-              MW_TIMELINE->action != ARRANGER_ACTION_RESIZING_L &&
-              MW_TIMELINE->action != ARRANGER_ACTION_RESIZING_R)
-            {
-              ui_set_cursor (widget, "default");
-            }
-        }
+      prv->hover = 1;
     }
   /* if leaving */
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
-      self->hover = 0;
-      if (MAIN_WINDOW->timeline->action != ARRANGER_ACTION_MOVING &&
-          MAIN_WINDOW->timeline->action != ARRANGER_ACTION_RESIZING_L &&
-          MAIN_WINDOW->timeline->action != ARRANGER_ACTION_RESIZING_R)
-        {
-          ui_set_cursor (widget, "default");
-        }
+      prv->hover = 0;
     }
   g_idle_add ((GSourceFunc) gtk_widget_queue_draw, GTK_WIDGET (self));
 }
 
-RegionWidget *
-region_widget_new (Region * region)
+void
+region_widget_setup (RegionWidget * self,
+                     Region *       region)
 {
-  g_message ("Creating region widget...");
-  RegionWidget * self = g_object_new (REGION_WIDGET_TYPE, NULL);
-
-  self->region = region;
-
   gtk_widget_add_events (GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
-
 
   /* connect signals */
   g_signal_connect (G_OBJECT (self), "draw",
@@ -183,16 +147,22 @@ region_widget_new (Region * region)
                     G_CALLBACK (on_motion),  self);
   g_signal_connect (G_OBJECT(self), "motion-notify-event",
                     G_CALLBACK (on_motion),  self);
-
-  return self;
 }
 
 void
 region_widget_select (RegionWidget * self,
                       int            select)
 {
-  self->selected = select;
+  RegionWidgetPrivate * prv =
+    region_widget_get_instance_private (self);
+  prv->selected = select;
   gtk_widget_queue_draw (GTK_WIDGET (self));
+}
+
+RegionWidgetPrivate *
+region_widget_get_private (RegionWidget * self)
+{
+  return region_widget_get_instance_private (self);
 }
 
 static void

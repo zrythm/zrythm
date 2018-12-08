@@ -286,6 +286,7 @@ setup_output (ChannelWidget * self)
                           "Stereo out");
       break;
     case CT_AUDIO:
+    case CT_BUS:
       gtk_label_set_text (self->output,
                           "Master");
       break;

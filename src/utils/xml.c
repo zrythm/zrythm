@@ -129,6 +129,12 @@ write_port_id (xmlTextWriterPtr writer, Port * port)
                                         "%d",
                                         port->id);
   rc = xmlTextWriterEndElement(writer);
+
+  if (rc < 0)
+    {
+      g_warning ("error occured");
+      return;
+    }
 }
 
 static void
@@ -153,6 +159,12 @@ write_gdk_rgba (xmlTextWriterPtr writer, GdkRGBA * color)
                                         "%f",
                                         color->alpha);
   rc = xmlTextWriterEndElement(writer);
+
+  if (rc < 0)
+    {
+      g_warning ("error occured");
+      return;
+    }
 }
 
 static void
@@ -243,6 +255,12 @@ write_port (xmlTextWriterPtr writer, Port * port)
 
 
   rc = xmlTextWriterEndElement(writer);
+
+  if (rc < 0)
+    {
+      g_warning ("error occured");
+      return;
+    }
 }
 
 static void
@@ -309,6 +327,12 @@ write_plugin_descr (xmlTextWriterPtr writer, Plugin * plugin)
                                         descr->uri);
 
   rc = xmlTextWriterEndElement(writer);
+
+  if (rc < 0)
+    {
+      g_warning ("error occured");
+      return;
+    }
 }
 
 static void
@@ -329,6 +353,12 @@ write_lv2_port (xmlTextWriterPtr writer, LV2_Port * port)
     }
 
   rc = xmlTextWriterEndElement(writer);
+
+  if (rc < 0)
+    {
+      g_warning ("error occured");
+      return;
+    }
 }
 
 static void
@@ -352,6 +382,12 @@ write_lv2_plugin (xmlTextWriterPtr writer, LV2_Plugin * plugin)
   rc = xmlTextWriterEndElement(writer);
 
   rc = xmlTextWriterEndElement(writer);
+
+  if (rc < 0)
+    {
+      g_warning ("error occured");
+      return;
+    }
 }
 
 static void
@@ -408,6 +444,12 @@ write_plugin (xmlTextWriterPtr writer, Plugin * plugin, int pos)
     }
 
   rc = xmlTextWriterEndElement(writer);
+
+  if (rc < 0)
+    {
+      g_warning ("error occured");
+      return;
+    }
 }
 
 static void
@@ -440,6 +482,12 @@ write_position (xmlTextWriterPtr writer, Position * pos, char * name)
 
   rc = xmlTextWriterEndElement(writer);
 
+
+  if (rc < 0)
+    {
+      g_warning ("error occured");
+      return;
+    }
 }
 
 static void
@@ -452,6 +500,12 @@ write_region_id (xmlTextWriterPtr writer, Region * region)
                                         "%d",
                                         region->id);
   rc = xmlTextWriterEndElement(writer);
+
+  if (rc < 0)
+    {
+      g_warning ("error occured");
+      return;
+    }
 }
 
 static void
@@ -467,11 +521,11 @@ write_region (xmlTextWriterPtr writer, Region * region)
                                         BAD_CAST "name",
                                         "%s",
                                         region->name);
-  if (region->track->channel->type == CT_AUDIO)
+  if (region->track->type == TRACK_TYPE_AUDIO)
     {
       //
     }
-  else if (region->track->channel->type == CT_MIDI)
+  else if (region->track->type == TRACK_TYPE_INSTRUMENT)
     {
       if (region->linked_region)
         {
@@ -494,6 +548,12 @@ write_region (xmlTextWriterPtr writer, Region * region)
   write_position (writer, &region->end_pos, "end_pos");
 
   rc = xmlTextWriterEndElement(writer);
+
+  if (rc < 0)
+    {
+      g_warning ("error occured");
+      return;
+    }
 }
 
 void
@@ -510,7 +570,6 @@ xml_write_regions ()
 
   int rc;
   xmlTextWriterPtr writer;
-  xmlChar *tmp;
 
   /* Create a new XmlWriter for uri, with no compression. */
   writer = xmlNewTextWriterFilename (PROJECT->regions_file_path, 0);
@@ -567,19 +626,26 @@ write_track (xmlTextWriterPtr writer, Track * track)
 {
   int rc;
   rc = xmlTextWriterStartElement (writer, BAD_CAST "Track");
-  rc = xmlTextWriterWriteFormatAttribute (writer,
-                                        BAD_CAST "num_regions",
-                                        "%d",
-                                        track->num_regions);
-  rc = xmlTextWriterStartElement (writer, BAD_CAST "Regions");
-  for (int i = 0; i < track->num_regions; i++)
+  /* FIXME */
+  /*rc = xmlTextWriterWriteFormatAttribute (writer,*/
+                                        /*BAD_CAST "num_regions",*/
+                                        /*"%d",*/
+                                        /*track->num_regions);*/
+  /*rc = xmlTextWriterStartElement (writer, BAD_CAST "Regions");*/
+  /*for (int i = 0; i < track->num_regions; i++)*/
+    /*{*/
+      /*write_region_id (writer, track->regions[i]);*/
+    /*}*/
+  /*rc = xmlTextWriterEndElement(writer);*/
+
+  /*rc = xmlTextWriterEndElement(writer);*/
+
+
+  if (rc < 0)
     {
-      write_region_id (writer, track->regions[i]);
+      g_warning ("error occured");
+      return;
     }
-  rc = xmlTextWriterEndElement(writer);
-
-  rc = xmlTextWriterEndElement(writer);
-
 }
 
 
@@ -657,6 +723,12 @@ write_channel (xmlTextWriterPtr writer, Channel * channel)
   write_track (writer, channel->track);
 
   rc = xmlTextWriterEndElement(writer);
+
+  if (rc < 0)
+    {
+      g_warning ("error occured");
+      return;
+    }
 }
 
 void
@@ -674,7 +746,6 @@ xml_write_ports ()
 
   int rc;
   xmlTextWriterPtr writer;
-  xmlChar *tmp;
 
   /* Create a new XmlWriter for uri, with no compression. */
   writer = xmlNewTextWriterFilename(file, 0);
@@ -762,6 +833,12 @@ write_transport (xmlTextWriterPtr writer)
   write_position (writer, &TRANSPORT->start_marker_pos, "start_marker_pos");
   write_position (writer, &TRANSPORT->end_marker_pos, "end_marker_pos");
   rc = xmlTextWriterEndElement (writer);
+
+  if (rc < 0)
+    {
+      g_warning ("error occured");
+      return;
+    }
 }
 
 /**
@@ -782,7 +859,6 @@ xml_write_project ()
 
   int rc;
   xmlTextWriterPtr writer;
-  xmlChar *tmp;
 
   /* Create a new XmlWriter for uri, with no compression. */
   writer = xmlNewTextWriterFilename(file, 0);
@@ -888,26 +964,20 @@ xml_load_ports ()
               {
                 if (NAME_IS ("Port"))
                   {
-                    attr =  GET_ATTRIBUTE(
-						       "id");
+                    attr =  GET_ATTRIBUTE("id");
                     if (TO_INT (attr) > 5) /* first 5 are standard ports */
                       {
                         port = port_get_or_create_blank (TO_INT (attr));
-                        attr =  GET_ATTRIBUTE(
-                                                           "label");
+                        attr =  GET_ATTRIBUTE("label");
                         port->label = g_strdup (attr);
-                        attr =  GET_ATTRIBUTE(
-                                                           "type");
+                        attr =  GET_ATTRIBUTE("type");
                         port->type = TO_INT (attr);
-                        attr =  GET_ATTRIBUTE(
-                                                           "flow");
+                        attr =  GET_ATTRIBUTE("flow");
                         port->flow = TO_INT (attr);
-                        attr =  GET_ATTRIBUTE(
-                                                           "num_srcs");
+                        attr =  GET_ATTRIBUTE("num_srcs");
                         /*port->num_srcs = TO_INT (attr);*/
                         port_num_srcs = TO_INT (attr);
-                        attr =  GET_ATTRIBUTE(
-                                                           "num_dests");
+                        attr =  GET_ATTRIBUTE("num_dests");
                         /*port->num_dests = TO_INT (attr);*/
                         port_num_dests = TO_INT (attr);
                       }
@@ -1019,33 +1089,33 @@ xml_load_regions ()
               {
                 if (NAME_IS ("Region"))
                   {
-                    attr =  GET_ATTRIBUTE(
-						       "id");
-                    region = region_get_or_create_blank (TO_INT (attr));
-                    attr =  GET_ATTRIBUTE(
-                                                       "name");
-                    region->name = g_strdup ((char *) attr);
-                    attr =  GET_ATTRIBUTE(
-                                                       "linked_region");
-                    if (attr)
-                      {
-                        /* linked region stuff */
+                    /*attr =  GET_ATTRIBUTE(*/
+						       /*"id");*/
+                    /*region = region_get_or_create_blank (TO_INT (attr));*/
+                    /*attr =  GET_ATTRIBUTE(*/
+                                                       /*"name");*/
+                    /*region->name = g_strdup ((char *) attr);*/
+                    /*attr =  GET_ATTRIBUTE(*/
+                                                       /*"linked_region");*/
+                    /*if (attr)*/
+                      /*{*/
+                        /*[> linked region stuff <]*/
 
-                      }
-                    attr =  GET_ATTRIBUTE(
-                                                       "filename");
-                    if (attr)
-                      {
-                        char * filepath = g_strdup_printf ("%s%s%s%s%s",
-                                                           PROJECT->dir,
-                                                           io_get_separator (),
-                                                           PROJECT_REGIONS_DIR,
-                                                           io_get_separator (),
-                                                           (char *) attr);
+                      /*}*/
+                    /*attr =  GET_ATTRIBUTE(*/
+                                                       /*"filename");*/
+                    /*if (attr)*/
+                      /*{*/
+                        /*char * filepath = g_strdup_printf ("%s%s%s%s%s",*/
+                                                           /*PROJECT->dir,*/
+                                                           /*io_get_separator (),*/
+                                                           /*PROJECT_REGIONS_DIR,*/
+                                                           /*io_get_separator (),*/
+                                                           /*(char *) attr);*/
 
-                        /* load midi file */
-                        smf_load_region (filepath, region);
-                      }
+                        /*[> load midi file <]*/
+                        /*smf_load_region (filepath, region);*/
+                      /*}*/
                   }
                 else if (NAME_IS ("Position"))
                   {
@@ -1258,14 +1328,6 @@ xml_load_project ()
                     reading_transport = 0;
                     attr =  GET_ATTRIBUTE ("id");
                     channel = channel_get_or_create_blank (TO_INT (attr));
-                    if (channel->id == 0)
-                      {
-                        MIXER->master = channel;
-                      }
-                    else
-                      {
-                        mixer_add_channel_and_init_track (channel);
-                      }
                     attr =  GET_ATTRIBUTE ("name");
                     channel->name = g_strdup ((char *) attr);
                     attr =  GET_ATTRIBUTE ("type");
@@ -1287,6 +1349,14 @@ xml_load_project ()
                       }
                     attr =  GET_ATTRIBUTE ("enabled");
                     channel->enabled = TO_INT (attr);
+                    if (channel->id == 0)
+                      {
+                        MIXER->master = channel;
+                      }
+                    else
+                      {
+                        mixer_add_channel_and_init_track (channel);
+                      }
                   }
                 else if (NAME_IS ("Plugin"))
                   {
@@ -1427,8 +1497,8 @@ xml_load_project ()
                     channel->color.alpha = TO_FLOAT (attr);
                     g_idle_add ((GSourceFunc) channel_widget_update_all,
                                 channel->widget);
-                    g_idle_add ((GSourceFunc) track_widget_update_all,
-                                channel->track->widget);
+                    /*g_idle_add ((GSourceFunc) track_widget_update_all,*/
+                                /*channel->track->widget);*/
                   }
                 else if (NAME_IS ("StereoIn"))
                   {
@@ -1526,7 +1596,7 @@ xml_load_project ()
                   {
                     attr =  GET_ATTRIBUTE(
                                                        BAD_CAST "num_regions");
-                    channel->track->num_regions = TO_INT (attr);
+                    /*channel->track->num_regions = TO_INT (attr);*/
                     do
                       {
                         ret = xmlTextReaderRead(reader);
@@ -1535,22 +1605,22 @@ xml_load_project ()
                         name = xmlTextReaderConstName(reader);
                       } while (!NAME_IS ("Regions") ||
                                type != XML_READER_TYPE_ELEMENT);
-                    for (int i = 0; i < channel->track->num_regions; i++)
-                      {
-                        do
-                          {
-                            ret = xmlTextReaderRead(reader);
-                            type = xmlTextReaderNodeType (reader);
-                            value = xmlTextReaderConstValue(reader);
-                            name = xmlTextReaderConstName(reader);
-                          } while (!NAME_IS ("Region") ||
-                                   type != XML_READER_TYPE_ELEMENT);
-                        attr =  GET_ATTRIBUTE ("id");
-                        Region * region =
-                          region_get_or_create_blank (TO_INT (attr));
-                        region->track = channel->track;
-                        channel->track->regions[i] = region;
-                      }
+                    /*for (int i = 0; i < channel->track->num_regions; i++)*/
+                      /*{*/
+                        /*do*/
+                          /*{*/
+                            /*ret = xmlTextReaderRead(reader);*/
+                            /*type = xmlTextReaderNodeType (reader);*/
+                            /*value = xmlTextReaderConstValue(reader);*/
+                            /*name = xmlTextReaderConstName(reader);*/
+                          /*} while (!NAME_IS ("Region") ||*/
+                                   /*type != XML_READER_TYPE_ELEMENT);*/
+                        /*attr =  GET_ATTRIBUTE ("id");*/
+                        /*Region * region =*/
+                          /*region_get_or_create_blank (TO_INT (attr));*/
+                        /*region->track = channel->track;*/
+                        /*channel->track->regions[i] = region;*/
+                      /*}*/
                   }
               }
             ret = xmlTextReaderRead(reader);

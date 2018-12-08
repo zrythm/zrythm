@@ -24,12 +24,15 @@
 
 #include "audio/automatable.h"
 #include "audio/automation_track.h"
+#include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "audio/region.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/color_area.h"
+#include "gui/widgets/chord_track.h"
+#include "gui/widgets/instrument_track.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
@@ -43,11 +46,6 @@ static void
 size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
 {
   gtk_widget_queue_draw (GTK_WIDGET (MAIN_WINDOW->timeline));
-  /*TrackWidget * track_widget = TRACK_WIDGET (widget);*/
-  /*for (int i = 0; i < track_widget->track->num_regions; i++)*/
-    /*{*/
-      /*gtk_widget_queue_resize (GTK_WIDGET (track_widget->track->regions[i]->widget));*/
-    /*}*/
   gtk_widget_queue_allocate (GTK_WIDGET (MAIN_WINDOW->timeline));
 }
 
@@ -57,7 +55,7 @@ on_show_automation (GtkWidget * widget, void * data)
   TrackWidget * self = TRACK_WIDGET (data);
 
   /* toggle visibility flag */
-  self->track->automations_visible = self->track->automations_visible ? 0 : 1;
+  self->track->bot_paned_visible = self->track->bot_paned_visible ? 0 : 1;
 
   tracklist_widget_show (MAIN_WINDOW->tracklist);
 }
@@ -89,21 +87,37 @@ on_draw (GtkWidget    * widget,
 }
 
 /**
- * Creates a new track widget using the given track.
+ * Sets up the track widget.
  *
- * 1 track has 1 track widget.
- * The track widget must always have at least 1 automation track in the automation
- * paned.
+ * Sets color, draw callback, etc.
  */
 TrackWidget *
 track_widget_new (Track * track)
 {
-  TrackWidget * self = g_object_new (
-                            TRACK_WIDGET_TYPE,
-                            NULL);
+  TrackWidget * self =
+    g_object_new (TRACK_WIDGET_TYPE,
+                  NULL);
   self->track = track;
 
-  self->color = color_area_widget_new (&track->channel->color,
+  /* set color */
+  GdkRGBA * color;
+  switch (self->track->type)
+    {
+    case TRACK_TYPE_INSTRUMENT:
+      color = &((InstrumentTrack *)track)->channel->color;
+      break;
+    case TRACK_TYPE_MASTER:
+      break;
+    case TRACK_TYPE_AUDIO:
+      break;
+    case TRACK_TYPE_CHORD:
+      color = calloc (1, sizeof (GdkRGBA));
+      gdk_rgba_parse (color, "blue");
+      break;
+    case TRACK_TYPE_BUS:
+      break;
+    }
+  self->color = color_area_widget_new (color,
                                        5,
                                        -1);
   gtk_box_pack_start (self->color_box,
@@ -112,53 +126,40 @@ track_widget_new (Track * track)
                       1,
                       0);
 
-  self->automation_tracklist_widget = automation_tracklist_widget_new (self);
-
-  track_widget_update_all (self);
-
-  gtk_container_add (
-    GTK_CONTAINER (self->solo),
-    gtk_image_new_from_resource (
-     "/online/alextee/zrythm/solo.svg"));
-  gtk_container_add (
-    GTK_CONTAINER (self->mute),
-    gtk_image_new_from_resource (
-     "/online/alextee/zrythm/mute.svg"));
-  gtk_container_add (
-    GTK_CONTAINER (self->record),
-    gtk_image_new_from_icon_name ("gtk-media-record",
-                                  GTK_ICON_SIZE_BUTTON));
-  gtk_widget_set_size_request (GTK_WIDGET (self->record),
-                               16,
-                               16);
-  gtk_container_add (
-    GTK_CONTAINER (self->show_automation),
-    gtk_image_new_from_icon_name ("gtk-justify-fill",
-                                  GTK_ICON_SIZE_BUTTON));
-
-  switch (track->channel->type)
-    {
-    case CT_MIDI:
-      gtk_image_set_from_resource (self->icon,
-                                   "/online/alextee/zrythm/instrument.svg");
-      break;
-    case CT_AUDIO:
-    case CT_MASTER:
-      gtk_image_set_from_resource (self->icon,
-                                   "/online/alextee/zrythm/audio.svg");
-      break;
-    case CT_BUS:
-      gtk_image_set_from_resource (self->icon,
-                                   "/online/alextee/zrythm/bus.svg");
-      break;
-    }
-
   g_signal_connect (self, "size-allocate",
                     G_CALLBACK (size_allocate_cb), NULL);
-  g_signal_connect (self->show_automation, "clicked",
-                    G_CALLBACK (on_show_automation), self);
-  g_signal_connect (self->track_automation_paned, "draw",
+  g_signal_connect (self->track_box, "draw",
                     G_CALLBACK (on_draw), self);
+
+  gtk_widget_show_all (GTK_WIDGET (self));
+
+  switch (self->track->type)
+    {
+    case TRACK_TYPE_INSTRUMENT:
+      self->ins_tw = instrument_track_widget_new (
+        (InstrumentTrack *) self->track,
+        self);
+      gtk_box_pack_start (self->track_box,
+                          GTK_WIDGET (self->ins_tw),
+                          1,
+                          1,
+                          0);
+      break;
+    case TRACK_TYPE_MASTER:
+    case TRACK_TYPE_AUDIO:
+    case TRACK_TYPE_CHORD:
+      self->chord_tw = chord_track_widget_new (
+        (ChordTrack *) self->track,
+        self);
+      gtk_box_pack_start (self->track_box,
+                          GTK_WIDGET (self->chord_tw),
+                          1,
+                          1,
+                          0);
+      break;
+    case TRACK_TYPE_BUS:
+      break;
+    }
 
   return self;
 }
@@ -180,25 +181,6 @@ track_widget_class_init (TrackWidgetClass * klass)
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         TrackWidget,
                                         track_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        TrackWidget,
-                                        track_grid);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                TrackWidget, track_name);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                TrackWidget, record);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                TrackWidget, solo);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                TrackWidget, mute);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        TrackWidget,
-                                        show_automation);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        TrackWidget,
-                                        track_automation_paned);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                TrackWidget, icon);
 }
 
 void
@@ -207,24 +189,6 @@ track_widget_select (TrackWidget * self,
 {
   self->selected = select;
   gtk_widget_queue_draw (GTK_WIDGET (self));
-  /*arranger_widget_set_channel(*/
-              /*MIDI_EDITOR->midi_arranger,*/
-              /*self->track->channel);*/
-}
-
-void
-track_widget_update_all (TrackWidget * self)
-{
-  gtk_label_set_text (self->track_name, self->track->channel->name);
-
-  for (int i = 0; i < self->track->num_automation_tracks; i++)
-    {
-      AutomationTrack * at = self->track->automation_tracks[i];
-      if (at->widget)
-        {
-          automation_track_widget_update (at->widget);
-        }
-    }
 }
 
 /**
@@ -233,10 +197,34 @@ track_widget_update_all (TrackWidget * self)
 void
 track_widget_show (TrackWidget * self)
 {
-  g_message ("showing track widget for %s", self->track->channel->name);
-  gtk_widget_show (GTK_WIDGET (self));
-  gtk_widget_show_all (GTK_WIDGET (self->color_box));
-  gtk_widget_show_all (GTK_WIDGET (self->track_box));
-  automation_tracklist_widget_show (self->automation_tracklist_widget);
+  switch (self->track->type)
+    {
+    case TRACK_TYPE_INSTRUMENT:
+      instrument_track_widget_show (self->ins_tw);
+      break;
+    case TRACK_TYPE_MASTER:
+    case TRACK_TYPE_AUDIO:
+    case TRACK_TYPE_CHORD:
+    case TRACK_TYPE_BUS:
+      break;
+    }
 }
 
+/**
+ * Wrapper.
+ */
+void
+track_widget_update_all (TrackWidget * self)
+{
+  switch (self->track->type)
+    {
+    case TRACK_TYPE_INSTRUMENT:
+      instrument_track_widget_update_all (
+        self->ins_tw);
+    case TRACK_TYPE_MASTER:
+    case TRACK_TYPE_AUDIO:
+    case TRACK_TYPE_CHORD:
+    case TRACK_TYPE_BUS:
+      break;
+    }
+}

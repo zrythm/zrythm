@@ -36,7 +36,6 @@ draw_text (cairo_t *cr, char * name)
 
   PangoLayout *layout;
   PangoFontDescription *desc;
-  int i;
 
   cairo_translate (cr, 2, 2);
 
@@ -133,8 +132,9 @@ audio_unit_label_widget_new (AULType type,
   self->type = type;
   self->port = port;
   self->parent = parent;
-  self->da = gtk_drawing_area_new ();
-  self->drag_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  self->da = GTK_DRAWING_AREA (gtk_drawing_area_new ());
+  self->drag_box = GTK_BOX (
+    gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
 
   if (type == AUL_TYPE_LEFT)
     {

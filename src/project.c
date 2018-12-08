@@ -25,6 +25,7 @@
 #include "audio/engine.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
+#include "audio/tracklist.h"
 #include "audio/transport.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
@@ -184,5 +185,6 @@ project_load (char * filepath) ///< this is the xml file
       mixer_add_master_and_init_track (channel_create_master ());
       mixer_add_channel_and_init_track (channel_create (CT_MIDI, "Ch 1"));
     }
+  PROJECT->tracklist = tracklist_new ();
 }
 

@@ -28,72 +28,60 @@
 #define USE_WIDE_HANDLE 1
 
 #define TRACKLIST_WIDGET_TYPE                  (tracklist_widget_get_type ())
-#define TRACKLIST_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), TRACKLIST_WIDGET_TYPE, TracklistWidget))
-#define TRACKLIST_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), TRACKLIST_WIDGET, TracklistWidgetClass))
-#define IS_TRACKLIST_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TRACKLIST_WIDGET_TYPE))
-#define IS_TRACKLIST_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), TRACKLIST_WIDGET_TYPE))
-#define TRACKLIST_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), TRACKLIST_WIDGET_TYPE, TracklistWidgetClass))
+G_DECLARE_FINAL_TYPE (TracklistWidget,
+                      tracklist_widget,
+                      TRACKLIST,
+                      WIDGET,
+                      GtkBox)
 
-#define FOREACH_SELECTED_TRACKS for (int i = 0; i < self->num_selected_tracks; \
-                                     i++)
-#define FOREACH_TW for (int i = 0; i < self->num_track_widgets; i++)
+#define FOREACH_TW for (int i = 0; i < self->num_visible; i++)
 #define MW_TRACKLIST MAIN_WINDOW->tracklist
 
-typedef struct TrackWidget TrackWidget;
+typedef struct _TrackWidget TrackWidget;
 typedef struct DragDestBoxWidget DragDestBoxWidget;
-typedef struct ChordTrackWidget ChordTrackWidget;
+typedef struct _ChordTrackWidget ChordTrackWidget;
+typedef struct InstrumentTrack InstrumentTrack;
 
-typedef struct TracklistWidget
+typedef struct _TracklistWidget
 {
-  GtkBox                        parent_instance;  ///< parent paned with master
+  GtkBox                        parent_instance;
   GtkGestureDrag *              drag;
   GtkGestureMultiPress *        multipress;
   GtkGestureMultiPress *        right_mouse_mp; ///< right mouse multipress
-  TrackWidget *                 master_tw; ///< master track widget
-  ChordTrackWidget *            chord_tw; ///< chord track widget
-  TrackWidget *                 track_widgets[100]; ///< track paneds, in the order they appear.
-                                      ///< invisible tracks do not get stored here,
-                                      ///< track widgets are created dynamically
-  int                           num_track_widgets;
-  Track *                       selected_tracks[100];
-  int                           num_selected_tracks;
-  DragDestBoxWidget *           ddbox; ///< drag destination box for dropping
-                                    ///< plugins in
-} TracklistWidget;
 
-typedef struct TracklistWidgetClass
-{
-  GtkBoxClass    parent_class;
-} TracklistWidgetClass;
+  /**
+   * Track widgets in order. These are the widgets that
+   * are actually displayed.
+   * Track widgets are created dynamically.
+   */
+  TrackWidget *                 visible_tw[200];
+  int                           num_visible;
+
+  /**
+   * Widget for drag and dropping plugins in to create
+   * new tracks.
+   */
+  DragDestBoxWidget *           ddbox;
+
+  /**
+   * Internal tracklist.
+   */
+  Tracklist *                   tracklist;
+} TracklistWidget;
 
 /**
  * Creates a new tracklist widget and sets it to main window.
  */
 TracklistWidget *
-tracklist_widget_new ();
+tracklist_widget_new (Tracklist * tracklist);
 
 /**
- * Adds master track.
- */
-void
-tracklist_widget_add_master_track (TracklistWidget * self);
-
-/**
- * Adds a track to the tracklist widget.
- *
- * Must NOT be used with master track (see tracklist_widget_add_master_track).
+ * Adds given track to tracklist widget.
  */
 void
 tracklist_widget_add_track (TracklistWidget * self,
                             Track *           track,
-                            int               pos); ///< position to insert at,
-                                                  ///< starting from 0 after master
-
-/**
- * Adds the chord track.
- */
-void
-tracklist_widget_add_chord_track (TracklistWidget * self);
+                            int               pos);
 
 /**
  * Removes the given track from the tracklist.
@@ -119,9 +107,8 @@ tracklist_widget_toggle_select_all_tracks (TracklistWidget *self,
 void
 tracklist_widget_show (TracklistWidget *self);
 
-
 Track *
-tracklist_widget_get_top_track ();
+tracklist_widget_get_first_visible_track (TracklistWidget * self);
 
 Track *
 tracklist_widget_get_prev_visible_track (Track * track);
@@ -130,6 +117,6 @@ Track *
 tracklist_widget_get_next_visible_track (Track * track);
 
 Track *
-tracklist_widget_get_bot_track ();
+tracklist_widget_get_last_visible_track (TracklistWidget * self);
 
 #endif

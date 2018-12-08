@@ -25,9 +25,10 @@
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/ruler.h"
+#include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_arranger_bg.h"
-#include "gui/widgets/midi_editor.h"
+#include "gui/widgets/ruler.h"
+#include "gui/widgets/piano_roll_page.h"
 #include "gui/widgets/piano_roll_labels.h"
 #include "gui/widgets/tracklist.h"
 
@@ -103,11 +104,11 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   for (int i = 0; i < 128; i++)
     {
       draw_borders (cr,
-                    MAIN_WINDOW->midi_editor->piano_roll_labels->px_per_note * i);
+                    PIANO_ROLL_PAGE->piano_roll_labels->px_per_note * i);
     }
 
   /* draw selections */
-  arranger_bg_draw_selections (MIDI_ARRANGER,
+  arranger_bg_draw_selections (ARRANGER_WIDGET (MIDI_ARRANGER),
                                cr);
 
   return 0;
@@ -160,7 +161,7 @@ midi_arranger_bg_widget_new ()
   // set the size
   int ww, hh;
   PianoRollLabelsWidget * piano_roll_labels =
-    MAIN_WINDOW->midi_editor->piano_roll_labels;
+    PIANO_ROLL_PAGE->piano_roll_labels;
   gtk_widget_get_size_request (
     GTK_WIDGET (piano_roll_labels),
     &ww,

@@ -22,43 +22,24 @@
 
 #include "audio/channel.h"
 #include "audio/midi_note.h"
+#include "audio/midi_region.h"
+#include "audio/instrument_track.h"
 #include "audio/region.h"
 #include "audio/track.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/midi_region.h"
 #include "gui/widgets/region.h"
 
 /**
- * Creates region (used when loading projects).
+ * Only to be used by implementing structs.
  */
-Region *
-region_get_or_create_blank (int id)
+void
+region_init (Region *   region,
+             RegionType type,
+             Track *    track,
+             Position * start_pos,
+             Position * end_pos)
 {
-  if (PROJECT->regions[id])
-    {
-      return PROJECT->regions[id];
-    }
-  else
-    {
-      Region * region = calloc (1, sizeof (Region));
-
-      region->id = id;
-      PROJECT->regions[id] = region;
-      PROJECT->num_regions++;
-      region->widget = region_widget_new (region);
-
-      g_message ("[region_new] Creating blank region %d", id);
-
-      return region;
-    }
-}
-
-Region *
-region_new (Track * track,
-            Position * start_pos,
-            Position * end_pos)
-{
-  Region * region = calloc (1, sizeof (Region));
-
   g_message ("creating region");
   region->start_pos.bars = start_pos->bars;
   region->start_pos.beats = start_pos->beats;
@@ -69,12 +50,18 @@ region_new (Track * track,
   region->end_pos.quarter_beats = end_pos->quarter_beats;
   region->end_pos.ticks = end_pos->ticks;
   region->track = track;
-  region->widget = region_widget_new (region);
   region->id = PROJECT->num_regions;
   region->name = g_strdup_printf ("Region %d", region->id);
+  if (track->type == TRACK_TYPE_AUDIO)
+    region->type = REGION_TYPE_AUDIO;
+  else if (track->type == TRACK_TYPE_INSTRUMENT)
+    {
+      region->type = REGION_TYPE_MIDI;
+      region->widget = REGION_WIDGET (
+        midi_region_widget_new (
+          (MidiRegion *) region));
+    }
   PROJECT->regions[PROJECT->num_regions++] = region;
-
-  return region;
 }
 
 /**
@@ -91,14 +78,15 @@ region_set_start_pos (Region * region,
 
   position_set_to_pos (&region->start_pos,
                        pos);
-  if (moved)
+  if (moved && region->type == REGION_TYPE_MIDI)
     {
+      MidiRegion * midi_region = (MidiRegion *) region;
       int prev_frames = position_to_frames (&prev);
       int now_frames = position_to_frames (pos);
       int frames = now_frames - prev_frames;
-      for (int i = 0; i < region->num_midi_notes; i++)
+      for (int i = 0; i < midi_region->num_midi_notes; i++)
         {
-          MidiNote * note = region->midi_notes[i];
+          MidiNote * note = midi_region->midi_notes[i];
           position_add_frames (&note->start_pos, frames);
           position_add_frames (&note->end_pos, frames);
         }
@@ -123,27 +111,38 @@ Region *
 region_at_position (Track    * track, ///< the track to look in
                     Position * pos) ///< the position
 {
-  for (int i = 0; i < track->num_regions; i++)
+  int num_regions = 0;
+  MidiRegion ** midi_regions;
+  if (track->type == TRACK_TYPE_AUDIO)
     {
-      if (position_compare (pos,
-                            &track->regions[i]->start_pos) >= 0 &&
-          position_compare (pos,
-                            &track->regions[i]->end_pos) <= 0)
+
+    }
+  else if (track->type == TRACK_TYPE_INSTRUMENT)
+    {
+      num_regions = ((InstrumentTrack *)track)->num_regions;
+      midi_regions = ((InstrumentTrack *)track)->regions;
+    }
+  for (int i = 0; i < num_regions; i++)
+    {
+      Region * region;
+      if (track->type == TRACK_TYPE_AUDIO)
         {
-          return track->regions[i];
+
+        }
+      else if (track->type == TRACK_TYPE_INSTRUMENT)
+        {
+          region = (Region *)midi_regions[i];
+        }
+
+      if (position_compare (pos,
+                            &region->start_pos) >= 0 &&
+          position_compare (pos,
+                            &region->end_pos) <= 0)
+        {
+          return region;
         }
     }
   return NULL;
-}
-
-/**
- * Adds midi note to region
- */
-void
-region_add_midi_note (Region * region,
-                      MidiNote * midi_note)
-{
-  region->midi_notes[region->num_midi_notes++] = midi_note;
 }
 
 /**
@@ -154,8 +153,19 @@ region_add_midi_note (Region * region,
 char *
 region_generate_filename (Region * region)
 {
+  char * chan_name;
+  if (region->track->type == TRACK_TYPE_AUDIO)
+    {
+      /* TODO */
+
+
+    }
+  else if (region->track->type == TRACK_TYPE_INSTRUMENT)
+    {
+      chan_name = ((InstrumentTrack *) region->track)->channel->name;
+    }
   return g_strdup_printf (REGION_PRINTF_FILENAME,
                           region->id,
-                          region->track->channel->name,
+                          chan_name,
                           region->name);
 }

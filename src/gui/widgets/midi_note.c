@@ -20,10 +20,12 @@
  */
 
 #include "audio/channel.h"
+#include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/midi_editor.h"
+#include "gui/widgets/piano_roll_page.h"
+#include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/ruler.h"
 #include "utils/ui.h"
@@ -48,7 +50,9 @@ draw_cb (MidiNoteWidget * self, cairo_t *cr, gpointer data)
 
   gtk_render_background (context, cr, 0, 0, width, height);
 
-  GdkRGBA * color = &self->midi_note->region->track->channel->color;
+  Region * region = (Region *) self->midi_note->midi_region;
+  InstrumentTrack * ins_track = (InstrumentTrack *) region->track;
+  GdkRGBA * color = &ins_track->channel->color;
   if (self->state != MNW_STATE_NONE)
     {
       cairo_set_source_rgba (cr,
@@ -77,18 +81,19 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
   GtkAllocation allocation;
   gtk_widget_get_allocation (widget,
                              &allocation);
+  ARRANGER_WIDGET_GET_PRIVATE (MIDI_ARRANGER);
 
   if (event->type == GDK_MOTION_NOTIFY)
     {
       if (event->x < RESIZE_CURSOR_SPACE &&
-          MIDI_ARRANGER->action != ARRANGER_ACTION_MOVING)
+          prv->action != ARRANGER_ACTION_MOVING)
         {
           self->state = MNW_STATE_RESIZE_L;
           ui_set_cursor (widget, "w-resize");
         }
 
       else if (event->x > allocation.width - RESIZE_CURSOR_SPACE &&
-          MIDI_ARRANGER->action != ARRANGER_ACTION_MOVING)
+          prv->action != ARRANGER_ACTION_MOVING)
         {
           self->state = MNW_STATE_RESIZE_R;
           ui_set_cursor (widget, "e-resize");
@@ -97,11 +102,11 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
         {
           if (self->state != MNW_STATE_SELECTED)
             self->state = MNW_STATE_HOVER;
-          if (MAIN_WINDOW->midi_editor->midi_arranger->action !=
+          if (prv->action !=
               ARRANGER_ACTION_MOVING &&
-              MAIN_WINDOW->midi_editor->midi_arranger->action !=
+              prv->action !=
               ARRANGER_ACTION_RESIZING_L &&
-              MAIN_WINDOW->midi_editor->midi_arranger->action !=
+              prv->action !=
               ARRANGER_ACTION_RESIZING_R)
             {
               ui_set_cursor (widget, "default");
@@ -112,11 +117,11 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
     {
       if (self->state != MNW_STATE_SELECTED)
         self->state = MNW_STATE_NONE;
-      if (MAIN_WINDOW->midi_editor->midi_arranger->action !=
+      if (prv->action !=
           ARRANGER_ACTION_MOVING &&
-          MAIN_WINDOW->midi_editor->midi_arranger->action !=
+          prv->action !=
           ARRANGER_ACTION_RESIZING_L &&
-          MAIN_WINDOW->midi_editor->midi_arranger->action !=
+          prv->action !=
           ARRANGER_ACTION_RESIZING_R)
         {
           ui_set_cursor (widget, "default");

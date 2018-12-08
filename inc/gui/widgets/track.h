@@ -26,52 +26,48 @@
 
 #include <gtk/gtk.h>
 
-#define TRACK_WIDGET_TYPE                  (track_widget_get_type ())
-#define TRACK_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), TRACK_WIDGET_TYPE, TrackWidget))
-#define TRACK_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), TRACK_WIDGET, TrackWidgetClass))
-#define IS_TRACK_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TRACK_WIDGET_TYPE))
-#define IS_TRACK_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), TRACK_WIDGET_TYPE))
-#define TRACK_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), TRACK_WIDGET_TYPE, TrackWidgetClass))
+#define TRACK_WIDGET_TYPE \
+  (track_widget_get_type ())
+G_DECLARE_FINAL_TYPE (TrackWidget,
+                      track_widget,
+                      TRACK,
+                      WIDGET,
+                      GtkPaned)
 
 typedef struct ColorAreaWidget ColorAreaWidget;
-typedef struct AutomationTracklistWidget AutomationTracklistWidget;
+typedef struct _InstrumentTrackWidget InstrumentTrackWidget;
+typedef struct _ChordTrackWidget ChordTrackWidget;
+typedef struct MasterTrackWidget MasterTrackWidget;
+typedef struct AudioTrackWidget AudioTrackWidget;
+typedef struct BusTrackWidget BusTrackWidget;
 
-typedef struct TrackWidget
+typedef struct _TrackWidget
 {
   GtkPaned                      parent_instance;
   GtkBox *                      track_box;
-  GtkGrid *                     track_grid;
   GtkBox *                      color_box;
   ColorAreaWidget *             color;
-  GtkLabel *                    track_name;
-  GtkButton *                   record;
-  GtkButton *                   solo;
-  GtkButton *                   mute;
-  GtkButton *                   show_automation;
-  GtkImage *                    icon;
-  GtkPaned *                    track_automation_paned; ///< top is the track part,
-                                                      ///< bot is the automation part
-  AutomationTracklistWidget *   automation_tracklist_widget;
   int                           selected; ///< selected or not
+  int                           visible; ///< visible or not
   Track *                       track; ///< associated track
+
+  /* depending on the track->type, only one of these is
+   * non-NULL */
+  InstrumentTrackWidget *       ins_tw; ///< if instrument
+  ChordTrackWidget *            chord_tw; ///< if chord
+  MasterTrackWidget *           master_tw;
+  AudioTrackWidget *            audio_tw;
+  BusTrackWidget *              bus_tw;
+
 } TrackWidget;
 
-typedef struct TrackWidgetClass
-{
-  GtkPanedClass    parent_class;
-} TrackWidgetClass;
-
 /**
- * Creates a new track widget from the given track.
+ * Sets up the track widget.
+ *
+ * Sets color, draw callback, etc.
  */
 TrackWidget *
 track_widget_new (Track * track);
-
-/**
- * Updates changes in the backend to the ui
- */
-void
-track_widget_update_all (TrackWidget * self);
 
 void
 track_widget_select (TrackWidget * self,
@@ -82,6 +78,12 @@ track_widget_select (TrackWidget * self,
  */
 void
 track_widget_show (TrackWidget * self);
+
+/**
+ * Wrapper.
+ */
+void
+track_widget_update_all (TrackWidget * self);
 
 #endif
 

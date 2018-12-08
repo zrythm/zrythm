@@ -39,40 +39,6 @@
 
 G_DEFINE_TYPE (ChordTrackWidget, chord_track_widget, GTK_TYPE_PANED)
 
-static void
-size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
-{
-  gtk_widget_queue_draw (GTK_WIDGET (MAIN_WINDOW->timeline));
-  gtk_widget_queue_allocate (GTK_WIDGET (MAIN_WINDOW->timeline));
-}
-
-
-static gboolean
-on_draw (GtkWidget    * widget,
-         cairo_t        *cr,
-         gpointer      user_data)
-{
-  ChordTrackWidget * self = CHORD_TRACK_WIDGET (user_data);
-
-  guint width, height;
-  GtkStyleContext *context;
-  context = gtk_widget_get_style_context (widget);
-
-  width = gtk_widget_get_allocated_width (widget);
-  height = gtk_widget_get_allocated_height (widget);
-
-  gtk_render_background (context, cr, 0, 0, width, height);
-
-  if (self->selected)
-    {
-      cairo_set_source_rgba (cr, 1, 1, 1, 0.1);
-      cairo_rectangle (cr, 0, 0, width, height);
-      cairo_fill (cr);
-    }
-
-  return FALSE;
-}
-
 /**
  * Creates a new track widget using the given track.
  *
@@ -81,24 +47,13 @@ on_draw (GtkWidget    * widget,
  * paned.
  */
 ChordTrackWidget *
-chord_track_widget_new (ChordTrack * track)
+chord_track_widget_new (ChordTrack * track,
+                        TrackWidget * parent)
 {
   ChordTrackWidget * self = g_object_new (
                             CHORD_TRACK_WIDGET_TYPE,
                             NULL);
-  self->track = track;
-
-  GdkRGBA * color = calloc (1, sizeof (GdkRGBA));
-  gdk_rgba_parse (color, "blue");
-  self->color = color_area_widget_new (color,
-                                       5,
-                                       -1);
-  gtk_widget_show (GTK_WIDGET (self->color));
-  gtk_box_pack_start (self->color_box,
-                      GTK_WIDGET (self->color),
-                      1,
-                      1,
-                      0);
+  self->parent = parent;
 
   chord_track_widget_update_all (self);
 
@@ -109,11 +64,6 @@ chord_track_widget_new (ChordTrack * track)
 
   gtk_image_set_from_resource (self->icon,
                                "/online/alextee/zrythm/chord.svg");
-
-  g_signal_connect (self, "size-allocate",
-                    G_CALLBACK (size_allocate_cb), NULL);
-  g_signal_connect (self->track_automation_paned, "draw",
-                    G_CALLBACK (on_draw), self);
 
   return self;
 }
@@ -130,10 +80,6 @@ chord_track_widget_class_init (ChordTrackWidgetClass * klass)
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
                                                "/online/alextee/zrythm/ui/chord_track.ui");
 
-  gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
-    ChordTrackWidget,
-    color_box);
   gtk_widget_class_bind_template_child (
     GTK_WIDGET_CLASS (klass),
     ChordTrackWidget,
@@ -162,18 +108,6 @@ chord_track_widget_class_init (ChordTrackWidgetClass * klass)
     GTK_WIDGET_CLASS (klass),
     ChordTrackWidget,
     icon);
-  gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
-    ChordTrackWidget,
-    track_automation_paned);
-}
-
-void
-chord_track_widget_select (ChordTrackWidget * self,
-                     int           select) ///< 1 = select, 0 = unselect
-{
-  self->selected = select;
-  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 void
@@ -191,8 +125,5 @@ chord_track_widget_show (ChordTrackWidget * self)
 {
   g_message ("showing Chord track widget");
   gtk_widget_show (GTK_WIDGET (self));
-  gtk_widget_show_all (GTK_WIDGET (self->color_box));
   gtk_widget_show_all (GTK_WIDGET (self->track_box));
 }
-
-

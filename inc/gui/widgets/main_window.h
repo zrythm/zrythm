@@ -35,18 +35,19 @@ G_DECLARE_FINAL_TYPE (MainWindowWidget, main_window_widget, MAIN, WINDOW_WIDGET,
 
 typedef struct RulerWidget RulerWidget;
 typedef struct BpmWidget BpmWidget;
-typedef struct TracklistWidget TracklistWidget;
+typedef struct _TracklistWidget TracklistWidget;
 typedef struct DigitalMeterWidget DigitalMeterWidget;
 typedef struct ColorAreaWidget ColorAreaWidget;
 typedef struct MixerWidget MixerWidget;
-typedef struct MidiEditorWidget MidiEditorWidget;
+typedef struct _PianoRollPageWidget PianoRollPageWidget;
 typedef struct BrowserWidget BrowserWidget;
 typedef struct Region Region;
 typedef struct SnapGridWidget SnapGridWidget;
-typedef struct ArrangerWidget ArrangerWidget;
+typedef struct _ArrangerWidget ArrangerWidget;
 typedef struct ConnectionsWidget ConnectionsWidget;
-typedef struct InspectorWidget InspectorWidget;
+typedef struct _InspectorWidget InspectorWidget;
 typedef struct RackWidget RackWidget;
+typedef struct _TimelineArrangerWidget TimelineArrangerWidget;
 
 typedef struct _MainWindowWidget
 {
@@ -91,7 +92,7 @@ typedef struct _MainWindowWidget
   RulerWidget              * ruler;     ///< created in code
   GtkScrolledWindow        * timeline_scroll;
   GtkViewport              * timeline_viewport;
-  ArrangerWidget           * timeline;
+  TimelineArrangerWidget * timeline;
   GtkToolbar               * instruments_toolbar;
   GtkBox                   * snap_grid_midi_box;
   SnapGridWidget           * snap_grid_midi;
@@ -99,7 +100,7 @@ typedef struct _MainWindowWidget
   GtkNotebook              * bot_notebook;
   RackWidget *               rack;
   ConnectionsWidget        * connections;
-  MidiEditorWidget         * midi_editor;
+  PianoRollPageWidget *       piano_roll_page;
   MixerWidget              * mixer;
   GtkNotebook              * right_notebook;
   BrowserWidget            * browser;

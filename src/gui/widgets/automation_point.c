@@ -21,6 +21,7 @@
 
 #include "audio/automation_track.h"
 #include "audio/channel.h"
+#include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
@@ -43,7 +44,21 @@ draw_cb (AutomationPointWidget * self, cairo_t *cr, gpointer data)
 
   gtk_render_background (context, cr, 0, 0, width, height);
 
-  GdkRGBA * color = &self->ap->at->track->channel->color;
+  Track * track = self->ap->at->track;
+  GdkRGBA * color;
+  switch (track->type)
+    {
+    case TRACK_TYPE_MASTER:
+      break;
+    case TRACK_TYPE_CHORD:
+      break;
+    case TRACK_TYPE_INSTRUMENT:
+      color = &((InstrumentTrack *)track)->channel->color;
+      break;
+    case TRACK_TYPE_AUDIO:
+    case TRACK_TYPE_BUS:
+      break;
+    }
   if (self->state != APW_STATE_NONE)
     {
       cairo_set_source_rgba (cr,

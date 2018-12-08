@@ -34,11 +34,12 @@
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/inspector_region.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/midi_editor.h"
 #include "gui/widgets/mixer.h"
+#include "gui/widgets/piano_roll_page.h"
 #include "gui/widgets/rack.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/snap_grid.h"
+#include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/tracklist.h"
 #include "gui/widgets/transport_controls.h"
@@ -354,8 +355,6 @@ main_window_widget_open (MainWindowWidget *win,
 {
 }
 
-
-
 MainWindowWidget *
 main_window_widget_new (ZrythmApp * _app)
 {
@@ -420,7 +419,7 @@ main_window_widget_new (ZrythmApp * _app)
 
 
   /* setup tracklist */
-  tracklist_widget_new ();
+  tracklist_widget_new (PROJECT->tracklist);
   gtk_container_add (GTK_CONTAINER (self->tracklist_viewport),
                      GTK_WIDGET (self->tracklist));
   gtk_widget_set_size_request (GTK_WIDGET (self->tracklist_header),
@@ -447,8 +446,8 @@ main_window_widget_new (ZrythmApp * _app)
                              img);
 
   /* setup timeline */
-  self->timeline = arranger_widget_new (ARRANGER_TYPE_TIMELINE,
-                                        &PROJECT->snap_grid_timeline);
+  self->timeline = timeline_arranger_widget_new (
+    &PROJECT->snap_grid_timeline);
   gtk_container_add (GTK_CONTAINER (self->timeline_viewport),
                      GTK_WIDGET (self->timeline));
   gtk_scrolled_window_set_min_content_width (self->timeline_scroll, 400);
@@ -456,7 +455,7 @@ main_window_widget_new (ZrythmApp * _app)
             gtk_scrolled_window_get_vadjustment (self->tracklist_scroll));
   gtk_widget_show_all (GTK_WIDGET (self->timeline_viewport));
   gtk_widget_show_all (GTK_WIDGET (self->timeline));
-  gtk_widget_show_all (GTK_WIDGET (self->timeline->bg));
+  /*gtk_widget_show_all (GTK_WIDGET (self->timeline->bg));*/
 
   /* setup browser */
   self->browser = browser_widget_new ();
@@ -475,7 +474,7 @@ main_window_widget_new (ZrythmApp * _app)
 
   /* setup bot half region */
   self->mixer = mixer_widget_new ();
-  self->midi_editor = midi_editor_widget_new ();
+  self->piano_roll_page = piano_roll_page_widget_new ();
   self->connections = connections_widget_new ();
   self->rack = rack_widget_new ();
   box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
@@ -490,9 +489,10 @@ main_window_widget_new (ZrythmApp * _app)
                     Z_GTK_NO_FILL,
                     2);
   gtk_widget_show_all (box);
-  gtk_notebook_prepend_page (self->bot_notebook,
-                            GTK_WIDGET (self->midi_editor),
-                            box);
+  gtk_notebook_prepend_page (
+    self->bot_notebook,
+    GTK_WIDGET (self->piano_roll_page),
+    box);
   gtk_notebook_append_page (self->bot_notebook,
                             GTK_WIDGET (self->rack),
                             gtk_label_new ("Rack"));
@@ -560,20 +560,20 @@ main_window_widget_new (ZrythmApp * _app)
                     /*G_CALLBACK (key_press_cb), NULL);*/
 
   /* show regions */
-  for (int i = 0; i < MIXER->num_channels; i++)
-    {
-      Channel * channel = MIXER->channels[i];
-      for (int j = 0; j < channel->track->num_regions; j++)
-        {
-          gtk_overlay_add_overlay (GTK_OVERLAY (self->timeline),
-                                   GTK_WIDGET (channel->track->regions[j]->widget));
-        }
-    }
-  for (int j = 0; j < MIXER->master->track->num_regions; j++)
-    {
-      gtk_overlay_add_overlay (GTK_OVERLAY (self->timeline),
-                               GTK_WIDGET (MIXER->master->track->regions[j]->widget));
-    }
+  /*for (int i = 0; i < MIXER->num_channels; i++)*/
+    /*{*/
+      /*Channel * channel = MIXER->channels[i];*/
+      /*for (int j = 0; j < channel->track->num_regions; j++)*/
+        /*{*/
+          /*gtk_overlay_add_overlay (GTK_OVERLAY (self->timeline),*/
+                                   /*GTK_WIDGET (channel->track->regions[j]->widget));*/
+        /*}*/
+    /*}*/
+  /*for (int j = 0; j < MIXER->master->track->num_regions; j++)*/
+    /*{*/
+      /*gtk_overlay_add_overlay (GTK_OVERLAY (self->timeline),*/
+                               /*GTK_WIDGET (MIXER->master->track->regions[j]->widget));*/
+    /*}*/
   gtk_widget_show_all (GTK_WIDGET (self->timeline));
 
   return self;

@@ -24,6 +24,7 @@
 #include "settings_manager.h"
 #include "audio/automation_track.h"
 #include "audio/channel.h"
+#include "audio/instrument_track.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
 #include "audio/transport.h"
@@ -106,9 +107,9 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
 
   /* handle horizontal drawing for tracks */
   /*int y_offset = 0;*/
-  for (int i = 0; i < MAIN_WINDOW->tracklist->num_track_widgets; i++)
+  for (int i = 0; i < MAIN_WINDOW->tracklist->num_visible; i++)
     {
-      TrackWidget * track_widget = MAIN_WINDOW->tracklist->track_widgets[i];
+      TrackWidget * track_widget = MAIN_WINDOW->tracklist->visible_tw[i];
 
       gint wx, wy;
       gtk_widget_translate_coordinates(
@@ -121,10 +122,10 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
       draw_horizontal_line (cr, wy - 2, 1.0);
 
       /* draw last line */
-      if (i == MAIN_WINDOW->tracklist->num_track_widgets - 1)
+      if (i == MAIN_WINDOW->tracklist->num_visible - 1)
         {
           wy += gtk_widget_get_allocated_height (GTK_WIDGET (
-                                track_widget->track_automation_paned));
+                                track_widget->track_box));
           draw_horizontal_line (cr, wy + 2, 1.0);
         }
     }
@@ -134,25 +135,30 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
     {
       Track * track = MIXER->channels[i]->track;
 
-      if (track->automations_visible)
+      if (track->bot_paned_visible)
         {
-          for (int j = 0; j < track->num_automation_tracks; j++)
+          if (track->type == TRACK_TYPE_INSTRUMENT)
             {
-              AutomationTrack * at = track->automation_tracks[j];
-
-              if (at->widget)
+              InstrumentTrack * ins_track =
+                (InstrumentTrack *) track;
+              for (int j = 0; j < ins_track->num_automation_tracks; j++)
                 {
-                  /* horizontal automation track lines */
-                  gint wx, wy;
-                  gtk_widget_translate_coordinates(
-                            GTK_WIDGET (at->widget->at_grid),
-                            GTK_WIDGET (MAIN_WINDOW->tracklist),
-                            0,
-                            0,
-                            &wx,
-                            &wy);
-                  draw_horizontal_line (cr, wy, 0.2);
+                  AutomationTrack * at = ins_track->automation_tracks[j];
 
+                  if (at->widget)
+                    {
+                      /* horizontal automation track lines */
+                      gint wx, wy;
+                      gtk_widget_translate_coordinates(
+                                GTK_WIDGET (at->widget->at_grid),
+                                GTK_WIDGET (MAIN_WINDOW->tracklist),
+                                0,
+                                0,
+                                &wx,
+                                &wy);
+                      draw_horizontal_line (cr, wy, 0.2);
+
+                    }
                 }
             }
         }

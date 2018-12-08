@@ -23,6 +23,7 @@
  */
 
 #include "audio/channel.h"
+#include "audio/instrument_track.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
 #include "gui/widgets/channel.h"
@@ -30,6 +31,7 @@
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_tracklist.h"
+#include "gui/widgets/instrument_track.h"
 #include "gui/widgets/track.h"
 #include "utils/gtk.h"
 #include "utils/arrays.h"
@@ -58,16 +60,28 @@ automation_tracklist_widget_new (TrackWidget * track_widget)
 void
 automation_tracklist_widget_show (AutomationTracklistWidget *self)
 {
+  GtkPaned * inherited_track;
+  switch (self->track_widget->track->type)
+    {
+    case TRACK_TYPE_INSTRUMENT:
+      inherited_track = GTK_PANED (self->track_widget->ins_tw);
+      break;
+    case TRACK_TYPE_MASTER:
+    case TRACK_TYPE_AUDIO:
+    case TRACK_TYPE_BUS:
+    case TRACK_TYPE_CHORD:
+      break;
+    }
+
   /* if automation tracklist should be shown */
-  if (self->track_widget->track->automations_visible)
+  if (self->track_widget->track->bot_paned_visible)
     {
       /* if automation tracklist is hidden */
-      if (gtk_paned_get_child2 (GTK_PANED (
-            self->track_widget->track_automation_paned)) !=
+      if (gtk_paned_get_child2 (inherited_track) !=
           GTK_WIDGET (self))
         {
           /* pack the automation tracklist in the track */
-          gtk_paned_pack2 (self->track_widget->track_automation_paned,
+          gtk_paned_pack2 (inherited_track,
                            GTK_WIDGET (self),
                            Z_GTK_NO_RESIZE,
                            Z_GTK_NO_SHRINK);
@@ -80,10 +94,23 @@ automation_tracklist_widget_show (AutomationTracklistWidget *self)
           /* add volume automation if no automations */
           if (self->num_automation_track_widgets == 0)
             {
-              automation_tracklist_widget_add_automation_track (
-                self,
-                self->track_widget->track->automation_tracks[0],
-                0);
+              switch (self->track_widget->track->type)
+                {
+                case TRACK_TYPE_INSTRUMENT:
+                  inherited_track = GTK_PANED (self->track_widget->ins_tw);
+                  InstrumentTrack * ins_track =
+                    (InstrumentTrack *) self->track_widget->track;
+                          automation_tracklist_widget_add_automation_track (
+                            self,
+                            ins_track->automation_tracks[0],
+                            0);
+                  break;
+                case TRACK_TYPE_MASTER:
+                case TRACK_TYPE_AUDIO:
+                case TRACK_TYPE_BUS:
+                case TRACK_TYPE_CHORD:
+                  break;
+                }
             }
         }
       gtk_widget_show_all (GTK_WIDGET (self));
@@ -91,14 +118,13 @@ automation_tracklist_widget_show (AutomationTracklistWidget *self)
   else /* if automation tracklist should be hidden */
     {
       /* if automation tracklist is visible */
-      if (gtk_paned_get_child2 (GTK_PANED (
-            self->track_widget->track_automation_paned)) ==
+      if (gtk_paned_get_child2 (inherited_track) ==
           GTK_WIDGET (self))
         {
           /* remove the automation tracklist from the track */
           g_object_ref (self);
           self->has_g_object_ref = 1;
-          gtk_container_remove (GTK_CONTAINER (self->track_widget->track_automation_paned),
+          gtk_container_remove (GTK_CONTAINER (inherited_track),
                                 GTK_WIDGET (self));
         }
     }
