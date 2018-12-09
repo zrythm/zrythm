@@ -10,11 +10,13 @@
     <file preprocess="xml-stripblanks">ui/connections.ui</file>
     <file preprocess="xml-stripblanks">ui/control.ui</file>
     <file preprocess="xml-stripblanks">ui/export_dialog.ui</file>
+    <file preprocess="xml-stripblanks">ui/header_bar.ui</file>
     <file preprocess="xml-stripblanks">ui/inspector.ui</file>
     <file preprocess="xml-stripblanks">ui/inspector_ap.ui</file>
     <file preprocess="xml-stripblanks">ui/inspector_midi.ui</file>
     <file preprocess="xml-stripblanks">ui/inspector_region.ui</file>
     <file preprocess="xml-stripblanks">ui/inspector_track.ui</file>
+    <file preprocess="xml-stripblanks">ui/instrument_track.ui</file>
     <file preprocess="xml-stripblanks">ui/main_window.ui</file>
     <file preprocess="xml-stripblanks">ui/mixer.ui</file>
     <file preprocess="xml-stripblanks">ui/piano_roll_page.ui</file>
@@ -27,37 +29,39 @@
     <file>theme.css</file>
 
     <!-- icons -->
-    <file>audio.svg</file>
-    <file>automate.svg</file>
-    <file>bus.svg</file>
-    <file>chord.svg</file>
-    <file>close.svg</file>
-    <file>delete.svg</file>
-    <file>forward.svg</file>
-    <file>grid.svg</file>
-    <file>instrument.svg</file>
-    <file>inspector.svg</file>
-    <file>listen.svg</file>
-    <file>loop.svg</file>
-    <file>maximize.svg</file>
-    <file>minimize.svg</file>
-    <file>mixer.svg</file>
-    <file>mute.svg</file>
-    <file>output.svg</file>
-    <file>phase-invert.svg</file>
-    <file>piano_roll.svg</file>
-    <file>play.svg</file>
-    <file>plugins.svg</file>
-    <file>plus.svg</file>
-    <file>power.svg</file>
-    <file>record.svg</file>
-    <file>record-on.svg</file>
-    <file>rewind.svg</file>
-    <file>slot-off.svg</file>
-    <file>slot-on.svg</file>
-    <file>solo.svg</file>
-    <file>stop.svg</file>
-    <file>z.svg</file>
+    <file>icons/audio.svg</file>
+    <file>icons/automate.svg</file>
+    <file>icons/bus.svg</file>
+    <file>icons/chord.svg</file>
+    <file>icons/close.svg</file>
+    <file>icons/delete.svg</file>
+    <file>icons/forward.svg</file>
+    <file>icons/grid.svg</file>
+    <file>icons/instrument.svg</file>
+    <!--<file>icons/inspector.svg</file>-->
+    <file>icons/listen.svg</file>
+    <file>icons/loop.svg</file>
+    <file>icons/maximize.svg</file>
+    <file>icons/minimize.svg</file>
+    <file>icons/mixer.svg</file>
+    <file>icons/mute.svg</file>
+    <file>icons/output.svg</file>
+    <file>icons/phase-invert.svg</file>
+    <file>icons/piano_roll.svg</file>
+    <file>icons/play.svg</file>
+    <file>icons/plugins.svg</file>
+    <file>icons/plus.svg</file>
+    <file>icons/power.svg</file>
+    <file>icons/record.svg</file>
+    <file>icons/record-on.svg</file>
+    <file>icons/rewind.svg</file>
+    <file>icons/slot-off.svg</file>
+    <file>icons/slot-on.svg</file>
+    <file>icons/solo.svg</file>
+    <file>icons/stop.svg</file>
+    <file>icons/z.svg</file>
     <file>z-splash.svg</file>
+    <file>icons/gnome-builder/ui-menu-symbolic-light.svg</file>
+    <file>icons/gnome-builder/ui-section-symbolic-light.svg</file>
   </gresource>
 </gresources>

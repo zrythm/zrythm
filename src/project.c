@@ -27,6 +27,7 @@
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "audio/transport.h"
+#include "gui/widgets/header_bar.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 #include "plugins/lv2_plugin.h"
@@ -153,11 +154,10 @@ project_set_title (char * _title)
 {
   PROJECT->title = g_strdup (_title);
 
-  if (MAIN_WINDOW)
+  if (MAIN_WINDOW && MW_HEADER_BAR)
     {
-      char * title = g_strdup_printf ("Zrythm - %s", PROJECT->title);
-      gtk_label_set_text (MAIN_WINDOW->title, title);
-      g_free (title);
+      header_bar_widget_set_title (MW_HEADER_BAR,
+                                   PROJECT->title);
     }
 }
 

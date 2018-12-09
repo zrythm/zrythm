@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+    <g color="#000" fill="#2e3436">
+        <path d="M1 1v14h2V1z" style="marker:none" overflow="visible"/>
+        <path d="M4.992 2.997v10h1a1 1 0 0 0 .5-.125l7-4c.31-.172.468-.524.468-.875 0-.352-.158-.703-.468-.875l-7-4a.995.995 0 0 0-.5-.125h-.094z" style="line-height:normal;-inkscape-font-specification:'Bitstream Vera Sans';text-indent:0;text-align:start;text-decoration-line:none;text-transform:none" font-weight="400" font-family="Bitstream Vera Sans" overflow="visible"/>
+    </g>
+</svg>

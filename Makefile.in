@@ -155,7 +155,7 @@ desktop_DATA = $(DATA_DIR)/zrythm.desktop
 
 #the application icon
 appicondir=$(datadir)/icons/hicolor/scalable/apps
-appicon_DATA = resources/z.svg
+appicon_DATA = resources/icons/z.svg
 
 
 # -----------------------------
@@ -178,7 +178,8 @@ $(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(BUILD_DIR)/resources.o
 $(BUILD_DIR)/resources.c: $(SRC_DIR)/zrythm.gresource.xml \
 	resources/ui/*.ui \
 	resources/theme.css \
-	resources/*.svg
+	resources/*.svg \
+	resources/icons/*.svg
 	$(MKDIR_P) $(BUILD_DIR)
 	glib-compile-resources $(SRC_DIR)/zrythm.gresource.xml --target=$(BUILD_DIR)/resources.c \
 	--generate-source --sourcedir=resources

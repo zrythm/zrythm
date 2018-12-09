@@ -734,7 +734,8 @@ tracklist_widget_show (TracklistWidget *self)
     {
       track_widget_show (MIXER->channels[i]->track->widget);
     }
-  gtk_widget_show (GTK_WIDGET (self->ddbox));
+  if (self->ddbox)
+    gtk_widget_show (GTK_WIDGET (self->ddbox));
 }
 
 Track *

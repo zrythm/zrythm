@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+    <g color="#000" font-weight="400" font-family="sans-serif" white-space="normal" fill="#2e3436">
+        <path d="M7 2.927c-4.042 0-5.893 3.611-5.893 3.611l1.786.904S4.14 4.927 7 4.927c2.055 0 3.097 1.394 3.484 2.074h-.91C8.243 7 8 8.253 8 9.034l6-.045.045-6c-1.044 0-2.033.525-2.033 1.668v.93l-.063.062C11.193 4.56 9.635 2.927 7 2.927z" style="line-height:normal;text-indent:0;text-align:start;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000;text-transform:none" overflow="visible"/>
+        <path d="M2.5 8.99c-.814 0-1.5.685-1.5 1.5v3c0 .813.686 1.5 1.5 1.5h3c.814 0 1.5-.687 1.5-1.5v-3c0-.815-.686-1.5-1.5-1.5zm.5 2h2v2H3z" style="line-height:normal;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000;text-transform:none;text-orientation:mixed;shape-padding:0;isolation:auto;mix-blend-mode:normal;marker:none" clip-rule="evenodd" overflow="visible" fill-rule="evenodd" image-rendering="optimizeQuality" shape-rendering="geometricPrecision" text-rendering="geometricPrecision"/>
+    </g>
+</svg>

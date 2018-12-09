@@ -31,7 +31,11 @@
 #define MW MAIN_WINDOW
 
 #define MAIN_WINDOW_WIDGET_TYPE                  (main_window_widget_get_type ())
-G_DECLARE_FINAL_TYPE (MainWindowWidget, main_window_widget, MAIN, WINDOW_WIDGET, GtkApplicationWindow)
+G_DECLARE_FINAL_TYPE (MainWindowWidget,
+                      main_window_widget,
+                      MAIN_WINDOW,
+                      WIDGET,
+                      GtkApplicationWindow)
 
 typedef struct RulerWidget RulerWidget;
 typedef struct BpmWidget BpmWidget;
@@ -48,29 +52,14 @@ typedef struct ConnectionsWidget ConnectionsWidget;
 typedef struct _InspectorWidget InspectorWidget;
 typedef struct RackWidget RackWidget;
 typedef struct _TimelineArrangerWidget TimelineArrangerWidget;
+typedef struct _HeaderBarWidget HeaderBarWidget;
 
 typedef struct _MainWindowWidget
 {
   GtkApplicationWindow     parent_instance;
-  GtkLabel                 * title;
-  GtkBox                   * main_box;
-  GtkBox                   * top_bar;
-  GtkBox                   * top_menubar;
-  GtkMenuItem              * file;
-  GtkImageMenuItem         * file_new;
-  GtkImageMenuItem         * file_open;
-  GtkImageMenuItem         * file_save;
-  GtkImageMenuItem         * file_save_as;
-  GtkImageMenuItem         * file_export;
-  GtkImageMenuItem         * file_quit;
-  GtkMenuItem              * edit;
-  GtkMenuItem              * view;
-  GtkMenuItem              * help;
-  GtkImageMenuItem         * help_about;
-  GtkBox                   * window_buttons;
-  GtkButton                * minimize;
-  GtkButton                * maximize;
-  GtkButton                * close;
+  GtkBox *                 main_box;
+  GtkBox *                 header_bar_box;
+  HeaderBarWidget *        header_bar;
   GtkToolbar               * top_toolbar;
   GtkBox                   * snap_grid_timeline_box;
   SnapGridWidget           * snap_grid_timeline;
@@ -117,7 +106,7 @@ typedef struct _MainWindowWidget
   GtkButton                * forward;
   GtkToggleButton          * trans_record;
   GtkToggleButton          * loop;
-  Region                   * selected_region;  ///< FIXME move to a new class "Selections" or something in zrythm_system
+  int                      is_maximized;
 } MainWindowWidget;
 
 /**
@@ -132,6 +121,12 @@ main_window_widget_new (ZrythmApp * app);
 void
 main_window_widget_open (MainWindowWidget  * win,
                          GFile             * file);
+
+void
+main_window_widget_quit (MainWindowWidget * self);
+
+void
+main_window_widget_toggle_maximize (MainWindowWidget * self);
 
 #endif
 

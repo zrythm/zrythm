@@ -53,7 +53,7 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (ArrangerWidget, arranger_widget, GTK_TYPE_OVERLAY)
+G_DEFINE_TYPE_WITH_PRIVATE (ArrangerWidget, arranger_widget, GTK_TYPE_OVERLAY)
 
 #define MW_RULER MAIN_WINDOW->ruler
 #define T_MIDI prv->type == ARRANGER_TYPE_MIDI
@@ -753,8 +753,16 @@ drag_end (GtkGestureDrag *gesture,
   prv->start_y = 0;
   prv->last_offset_x = 0;
   prv->last_offset_y = 0;
-  midi_arranger_widget_on_drag_end (
-    MIDI_ARRANGER_WIDGET (self));
+  if (T_MIDI)
+    {
+      midi_arranger_widget_on_drag_end (
+        MIDI_ARRANGER_WIDGET (self));
+    }
+  else if (T_TIMELINE)
+    {
+      timeline_arranger_widget_on_drag_end (
+        TIMELINE_ARRANGER_WIDGET (self));
+    }
 
   /* if clicked on something, or clicked or nothing */
   if (prv->action == ARRANGER_ACTION_STARTING_SELECTION ||
@@ -837,6 +845,7 @@ static void
 arranger_widget_init (ArrangerWidget *self)
 {
   GET_PRIVATE;
+
   prv->drag = GTK_GESTURE_DRAG (
                 gtk_gesture_drag_new (GTK_WIDGET (self)));
   prv->multipress = GTK_GESTURE_MULTI_PRESS (

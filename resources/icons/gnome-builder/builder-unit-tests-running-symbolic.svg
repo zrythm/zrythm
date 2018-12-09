@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+    <g color="#000" font-weight="400" fill="#2e3436">
+        <path d="M5.943 5v6H6.543a.6.6 0 0 0 .3-.075l4.2-2.4c.186-.103.28-.314.28-.525 0-.21-.094-.422-.28-.525l-4.2-2.4a.597.597 0 0 0-.3-.075h-.057z" style="line-height:normal;-inkscape-font-specification:'Bitstream Vera Sans';text-indent:0;text-align:start;text-decoration-line:none;text-transform:none" font-family="Bitstream Vera Sans" overflow="visible"/>
+        <path d="M7.943 1c-3.854 0-7 3.146-7 7s3.146 7 7 7 7-3.146 7-7-3.146-7-7-7zm0 2c2.773 0 5 2.227 5 5s-2.227 5-5 5c-2.774 0-5-2.227-5-5s2.226-5 5-5z" style="line-height:normal;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000;text-transform:none;text-orientation:mixed;shape-padding:0;isolation:auto;mix-blend-mode:normal" font-family="sans-serif" white-space="normal" overflow="visible"/>
+    </g>
+</svg>

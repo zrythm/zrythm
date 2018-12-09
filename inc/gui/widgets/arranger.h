@@ -82,7 +82,7 @@ typedef enum ArrangerChildType
   ARRANGER_CHILD_TYPE_AC
 } ArrangerChildType;
 
-typedef struct _ArrangerWidgetPrivate
+typedef struct
 {
   ArrangerWidgetType       type;
   GtkDrawingArea           * bg;
@@ -91,7 +91,7 @@ typedef struct _ArrangerWidgetPrivate
   GtkGestureMultiPress     * right_mouse_mp;
   double                   last_offset_x;  ///< for dragging regions, selections
   double                   last_offset_y;  ///< for selections
-  ArrangerAction     action;
+  ArrangerAction           action;
   double                   start_x; ///< for dragging
   double                   start_y; ///< for dragging
 

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+    <g fill="#2e3436">
+        <path d="M1.017 3.995h1v1h-1zM3.017 3.995h1v1h-1zM11.986 3.995h1v1h-1zM14.017 3.995h1v1h-1zM14.017 11.995h1v1h-1zM11.986 11.995h1v1h-1zM3.017 11.995h1v1h-1zM1.017 11.995h1v1h-1zM5.017 1.995h6v12h-6z" style="marker:none"/>
+        <path d="M2.344 6.29L.076 8.511l2.229 2.15c.475.55 1.168.504 1.683-.011L1.771 8.51l2.264-2.217c-.513-.57-1.226-.465-1.691-.004zM13.674 6.29l2.267 2.221-2.228 2.15c-.475.55-1.169.504-1.684-.011l2.217-2.139-2.264-2.217c.513-.57 1.226-.465 1.692-.004z" style="line-height:normal;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000;text-transform:none;text-orientation:mixed;shape-padding:0;isolation:auto;mix-blend-mode:normal;marker:none" color="#000" font-weight="400" font-family="sans-serif" white-space="normal" overflow="visible"/>
+    </g>
+</svg>

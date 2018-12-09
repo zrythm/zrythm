@@ -62,10 +62,12 @@ G_DEFINE_TYPE (TimelineArrangerWidget,
 TimelineArrangerWidget *
 timeline_arranger_widget_new (SnapGrid * snap_grid)
 {
-  g_message ("Creating MIDI arranger");
+  g_message ("Creating timeline arranger");
   TimelineArrangerWidget * self =
     g_object_new (TIMELINE_ARRANGER_WIDGET_TYPE, NULL);
 
+  ArrangerWidget * arr = ARRANGER_WIDGET (self);
+  GTK_CONTAINER (arr);
   arranger_widget_setup (ARRANGER_WIDGET (self),
                          snap_grid,
                          ARRANGER_TYPE_TIMELINE);

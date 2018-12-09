@@ -483,6 +483,7 @@ midi_arranger_widget_new (SnapGrid * snap_grid)
   MidiArrangerWidget * self =
     g_object_new (MIDI_ARRANGER_WIDGET_TYPE, NULL);
 
+  GTK_CONTAINER (ARRANGER_WIDGET (self));
   arranger_widget_setup (ARRANGER_WIDGET (self),
                          snap_grid,
                          ARRANGER_TYPE_MIDI);
