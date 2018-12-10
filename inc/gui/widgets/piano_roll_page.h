@@ -33,11 +33,12 @@ G_DECLARE_FINAL_TYPE (PianoRollPageWidget,
                       WIDGET,
                       GtkBox)
 
-#define PIANO_ROLL_PAGE MAIN_WINDOW->piano_roll_page
+#define PIANO_ROLL_PAGE MW_BOT_DOCK_EDGE->piano_roll_page
 
 typedef struct PianoRollLabelsWidget PianoRollLabelsWidget;
 typedef struct PianoRollNotesWidget PianoRollNotesWidget;
 typedef struct _MidiArrangerWidget MidiArrangerWidget;
+typedef struct _RulerWidget RulerWidget;
 
 typedef struct _PianoRollPageWidget
 {

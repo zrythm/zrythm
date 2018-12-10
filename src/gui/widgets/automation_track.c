@@ -31,8 +31,11 @@
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/automation_point.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/instrument_track.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/region.h"
+#include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/track.h"
 
 G_DEFINE_TYPE (AutomationTrackWidget, automation_track_widget, GTK_TYPE_PANED)
@@ -40,8 +43,8 @@ G_DEFINE_TYPE (AutomationTrackWidget, automation_track_widget, GTK_TYPE_PANED)
 static void
 size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
 {
-  gtk_widget_queue_draw (GTK_WIDGET (MAIN_WINDOW->timeline));
-  gtk_widget_queue_allocate (GTK_WIDGET (MAIN_WINDOW->timeline));
+  gtk_widget_queue_draw (GTK_WIDGET (MW_TIMELINE));
+  gtk_widget_queue_allocate (GTK_WIDGET (MW_TIMELINE));
 }
 
 static void

@@ -31,7 +31,7 @@ G_DECLARE_FINAL_TYPE (InspectorWidget,
                       WIDGET,
                       GtkBox)
 
-#define MW_INSPECTOR MAIN_WINDOW->inspector
+#define MW_INSPECTOR MW_LEFT_DOCK_EDGE->inspector
 
 typedef struct Region Region;
 typedef struct InspectorRegionWidget InspectorRegionWidget;

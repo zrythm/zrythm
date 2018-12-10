@@ -23,7 +23,9 @@
 #include "zrythm_app.h"
 #include "gui/widget_manager.h"
 #include "gui/widgets/browser.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/right_dock_edge.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 
@@ -36,12 +38,14 @@ visible_func (GtkTreeModel *model,
               GtkTreeIter  *iter,
               gpointer      data)
 {
+  BrowserWidget * self = BROWSER_WIDGET (data);
+
   // Visible if row is non-empty and category matches selected
   Plugin_Descriptor *descr;
   gboolean visible = FALSE;
 
   gtk_tree_model_get (model, iter, 1, &descr, -1);
-  if (!MW_BROWSER->selected_category)
+  if (!self->selected_category)
     {
       visible = TRUE;
     }
@@ -59,7 +63,7 @@ update_plugin_info_label (gpointer user_data)
 {
   char * label = (char *) user_data;
 
-  gtk_label_set_text (MAIN_WINDOW->browser->plugin_info, label);
+  gtk_label_set_text (MW_BROWSER->plugin_info, label);
 
   return G_SOURCE_REMOVE;
 }
@@ -133,11 +137,11 @@ on_drag_data_get (GtkWidget        *widget,
     /*gtk_tree_row_reference_new (MAIN_WINDOW->browser->plugins_tree_model,*/
                                 /*tp);*/
   GtkTreeIter iter;
-  gtk_tree_model_get_iter (GTK_TREE_MODEL (MAIN_WINDOW->browser->plugins_tree_model),
+  gtk_tree_model_get_iter (GTK_TREE_MODEL (MW_BROWSER->plugins_tree_model),
                            &iter,
                            tp);
   GValue value = G_VALUE_INIT;
-  gtk_tree_model_get_value (GTK_TREE_MODEL (MAIN_WINDOW->browser->plugins_tree_model),
+  gtk_tree_model_get_value (GTK_TREE_MODEL (MW_BROWSER->plugins_tree_model),
                             &iter,
                             1,
                             &value);
@@ -206,7 +210,7 @@ create_model_for_categories ()
 }
 
 static GtkTreeModel *
-create_model_for_plugins ()
+create_model_for_plugins (BrowserWidget * self)
 {
   GtkListStore *list_store;
   /*GtkTreePath *path;*/
@@ -233,8 +237,11 @@ create_model_for_plugins ()
 
   GtkTreeModel * model = gtk_tree_model_filter_new (GTK_TREE_MODEL (list_store),
                              NULL);
-  gtk_tree_model_filter_set_visible_func (GTK_TREE_MODEL_FILTER (model),
-                                          visible_func, NULL, NULL);
+  gtk_tree_model_filter_set_visible_func (
+    GTK_TREE_MODEL_FILTER (model),
+    visible_func,
+    self,
+    NULL);
 
   return model;
 }
@@ -357,7 +364,6 @@ BrowserWidget *
 browser_widget_new ()
 {
   BrowserWidget * self = g_object_new (BROWSER_WIDGET_TYPE, NULL);
-  MAIN_WINDOW->browser = self;
 
   g_message ("Instantiating browser widget...");
 
@@ -385,7 +391,7 @@ browser_widget_new ()
                           TRUE);
 
   /* populate plugins */
-  self->plugins_tree_model = GTK_TREE_MODEL_FILTER (create_model_for_plugins ());
+  self->plugins_tree_model = GTK_TREE_MODEL_FILTER (create_model_for_plugins (self));
   self->plugins_tree_view = GTK_TREE_VIEW (tree_view_create (
       GTK_TREE_MODEL (
         self->plugins_tree_model),

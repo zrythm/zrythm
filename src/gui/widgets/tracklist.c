@@ -29,6 +29,8 @@
 #include "audio/scale.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/chord_track.h"
 #include "gui/widgets/drag_dest_box.h"
@@ -266,7 +268,7 @@ on_add_ins_track ()
 
   Channel * chan = channel_create (CT_MIDI, "Instrument Track");
   mixer_add_channel_and_init_track (chan);
-  mixer_widget_add_channel (MIXERW, chan);
+  mixer_widget_add_channel (MW_MIXER, chan);
   tracklist_widget_add_track (self, chan->track, self->num_visible);
 }
 
@@ -676,7 +678,6 @@ tracklist_widget_new (Tracklist * tracklist)
                             "orientation",
                             GTK_ORIENTATION_VERTICAL,
                             NULL);
-  MAIN_WINDOW->tracklist = self;
   self->tracklist = tracklist;
   tracklist->widget = self;
 

@@ -19,6 +19,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/inspector_ap.h"
 #include "gui/widgets/inspector_midi.h"

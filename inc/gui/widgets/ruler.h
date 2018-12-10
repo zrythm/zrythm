@@ -25,11 +25,13 @@
 #include <gtk/gtk.h>
 
 #define RULER_WIDGET_TYPE                  (ruler_widget_get_type ())
-#define RULER_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), RULER_WIDGET_TYPE, Ruler))
-#define RULER_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), RULER_WIDGET, RulerWidgetClass))
-#define IS_RULER_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), RULER_WIDGET_TYPE))
-#define IS_RULER_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), RULER_WIDGET_TYPE))
-#define RULER_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), RULER_WIDGET_TYPE, RulerWidgetClass))
+G_DECLARE_FINAL_TYPE (RulerWidget,
+                      ruler_widget,
+                      RULER,
+                      WIDGET,
+                      GtkDrawingArea)
+
+#define MW_RULER MW_CENTER_DOCK->ruler
 
 /**
  * pixels to draw between each beat,
@@ -40,7 +42,7 @@
 
 #define SPACE_BEFORE_START 10 /* pixels to put before 1st bar */
 
-typedef struct RulerWidget
+typedef struct _RulerWidget
 {
   GtkDrawingArea           parent_instance;
   int                      px_per_beat;
@@ -52,11 +54,6 @@ typedef struct RulerWidget
   GtkGestureDrag           * drag;
   GtkGestureMultiPress     * multipress;
 } RulerWidget;
-
-typedef struct RulerWidgetClass
-{
-  GtkDrawingAreaClass       parent_class;
-} RulerWidgetClass;
 
 /**
  * Creates a ruler widget using the given ruler data.

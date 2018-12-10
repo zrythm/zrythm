@@ -30,6 +30,7 @@
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_tracklist.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/chord_track.h"
 #include "gui/widgets/instrument_track.h"
@@ -45,8 +46,10 @@ G_DEFINE_TYPE (TrackWidget, track_widget, GTK_TYPE_PANED)
 static void
 size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
 {
-  gtk_widget_queue_draw (GTK_WIDGET (MAIN_WINDOW->timeline));
-  gtk_widget_queue_allocate (GTK_WIDGET (MAIN_WINDOW->timeline));
+  gtk_widget_queue_draw (GTK_WIDGET (
+    MW_CENTER_DOCK->timeline));
+  gtk_widget_queue_allocate (GTK_WIDGET (
+    MW_CENTER_DOCK->timeline));
 }
 
 static void
@@ -57,7 +60,7 @@ on_show_automation (GtkWidget * widget, void * data)
   /* toggle visibility flag */
   self->track->bot_paned_visible = self->track->bot_paned_visible ? 0 : 1;
 
-  tracklist_widget_show (MAIN_WINDOW->tracklist);
+  tracklist_widget_show (MW_CENTER_DOCK->tracklist);
 }
 
 gboolean

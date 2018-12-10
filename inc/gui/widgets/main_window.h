@@ -37,22 +37,12 @@ G_DECLARE_FINAL_TYPE (MainWindowWidget,
                       WIDGET,
                       GtkApplicationWindow)
 
-typedef struct RulerWidget RulerWidget;
 typedef struct BpmWidget BpmWidget;
-typedef struct _TracklistWidget TracklistWidget;
 typedef struct DigitalMeterWidget DigitalMeterWidget;
 typedef struct ColorAreaWidget ColorAreaWidget;
-typedef struct MixerWidget MixerWidget;
-typedef struct _PianoRollPageWidget PianoRollPageWidget;
-typedef struct BrowserWidget BrowserWidget;
-typedef struct Region Region;
 typedef struct SnapGridWidget SnapGridWidget;
-typedef struct _ArrangerWidget ArrangerWidget;
-typedef struct ConnectionsWidget ConnectionsWidget;
-typedef struct _InspectorWidget InspectorWidget;
-typedef struct RackWidget RackWidget;
-typedef struct _TimelineArrangerWidget TimelineArrangerWidget;
 typedef struct _HeaderBarWidget HeaderBarWidget;
+typedef struct _CenterDockWidget CenterDockWidget;
 
 typedef struct _MainWindowWidget
 {
@@ -64,35 +54,7 @@ typedef struct _MainWindowWidget
   GtkBox                   * snap_grid_timeline_box;
   SnapGridWidget           * snap_grid_timeline;
   GtkBox                   * center_box;
-  GtkNotebook *            inspector_notebook;
-  InspectorWidget          * inspector;
-  GtkPaned                 * editor_plus_browser;
-  GtkPaned                 * editor;
-  GtkBox                   * editor_top;
-  GtkPaned                 * tracklist_timeline;
-  GtkBox                   * tracklist_top;
-  GtkScrolledWindow        * tracklist_scroll;
-  GtkViewport              * tracklist_viewport;
-  TracklistWidget          * tracklist;
-  GtkGrid                  * tracklist_header;
-  GtkBox                   * timeline_ruler;
-  GtkScrolledWindow        * ruler_scroll;
-  GtkViewport              * ruler_viewport;
-  RulerWidget              * ruler;     ///< created in code
-  GtkScrolledWindow        * timeline_scroll;
-  GtkViewport              * timeline_viewport;
-  TimelineArrangerWidget * timeline;
-  GtkToolbar               * instruments_toolbar;
-  GtkBox                   * snap_grid_midi_box;
-  SnapGridWidget           * snap_grid_midi;
-  GtkToolButton            * instrument_add;
-  GtkNotebook              * bot_notebook;
-  RackWidget *               rack;
-  ConnectionsWidget        * connections;
-  PianoRollPageWidget *       piano_roll_page;
-  MixerWidget              * mixer;
-  GtkNotebook              * right_notebook;
-  BrowserWidget            * browser;
+  CenterDockWidget *       center_dock;
   GtkBox                   * bot_bar;
   GtkToolbar               * bot_bar_left;
   GtkBox                   * digital_meters;

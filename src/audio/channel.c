@@ -36,6 +36,8 @@
 #include "audio/track.h"
 #include "audio/transport.h"
 #include "plugins/lv2_plugin.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/connections.h"
 #include "gui/widgets/main_window.h"
@@ -695,7 +697,7 @@ channel_add_plugin (Channel * channel,    ///< the channel
   plugin_generate_automatables (plugin);
   track_update_automation_tracks (channel->track);
   track_widget_update_all (channel->track->widget);
-  connections_widget_update (CONNECTIONSW);
+  connections_widget_update (MW_CONNECTIONS);
 }
 
 /**

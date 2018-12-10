@@ -27,6 +27,9 @@
 #include "audio/track.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/region.h"
+#include "gui/widgets/timeline_arranger.h"
 #include "utils/arrays.h"
 
 AutomationTrack *

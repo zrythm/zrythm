@@ -23,6 +23,7 @@
 #ifndef __GUI_WIDGETS_TIMELINE_ARRANGER_H__
 #define __GUI_WIDGETS_TIMELINE_ARRANGER_H__
 
+#include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/piano_roll_page.h"
 #include "audio/position.h"
@@ -36,7 +37,7 @@ G_DECLARE_FINAL_TYPE (TimelineArrangerWidget,
                       WIDGET,
                       ArrangerWidget)
 
-#define MW_TIMELINE MAIN_WINDOW->timeline
+#define MW_TIMELINE MW_CENTER_DOCK->timeline
 
 typedef struct ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote MidiNote;
@@ -44,6 +45,7 @@ typedef struct SnapGrid SnapGrid;
 typedef struct AutomationPoint AutomationPoint;
 typedef struct AutomationPointWidget AutomationPointWidget;
 typedef struct AutomationCurveWidget AutomationCurveWidget;
+typedef struct AutomationTrack AutomationTrack;
 
 typedef struct _TimelineArrangerWidget
 {

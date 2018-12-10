@@ -24,6 +24,8 @@
 #include "settings_manager.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_arranger_bg.h"
@@ -35,8 +37,6 @@
 #include <gtk/gtk.h>
 
 G_DEFINE_TYPE (MidiArrangerBgWidget, midi_arranger_bg_widget, GTK_TYPE_DRAWING_AREA)
-
-#define MW_RULER MAIN_WINDOW->ruler
 
 static void
 draw_borders (cairo_t * cr,
@@ -62,54 +62,54 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
 
   /* get positions in px */
   static int playhead_pos_in_px;
-  playhead_pos_in_px =
-    (TRANSPORT->playhead_pos.bars - 1) * MW_RULER->px_per_bar +
-    (TRANSPORT->playhead_pos.beats - 1) * MW_RULER->px_per_beat +
-    (TRANSPORT->playhead_pos.quarter_beats - 1) * MW_RULER->px_per_quarter_beat +
-    TRANSPORT->playhead_pos.ticks * MW_RULER->px_per_tick;
+  /*playhead_pos_in_px =*/
+    /*(TRANSPORT->playhead_pos.bars - 1) * MW_RULER->px_per_bar +*/
+    /*(TRANSPORT->playhead_pos.beats - 1) * MW_RULER->px_per_beat +*/
+    /*(TRANSPORT->playhead_pos.quarter_beats - 1) * MW_RULER->px_per_quarter_beat +*/
+    /*TRANSPORT->playhead_pos.ticks * MW_RULER->px_per_tick;*/
 
-  gtk_render_background (context, cr, 0, 0, MW_RULER->total_px, height);
+  /*gtk_render_background (context, cr, 0, 0, MW_RULER->total_px, height);*/
 
   /* handle vertical drawing */
-  for (int i = SPACE_BEFORE_START; i < MW_RULER->total_px; i++)
-  {
-    int actual_pos = i - SPACE_BEFORE_START;
-    if (actual_pos == playhead_pos_in_px)
-      {
-          cairo_set_source_rgb (cr, 1, 0, 0);
-          cairo_set_line_width (cr, 2);
-          cairo_move_to (cr, i, 0);
-          cairo_line_to (cr, i, height);
-          cairo_stroke (cr);
-      }
-      if (actual_pos % MW_RULER->px_per_bar == 0)
-      {
-          cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);
-          cairo_set_line_width (cr, 1);
-          cairo_move_to (cr, i, 0);
-          cairo_line_to (cr, i, height);
-          cairo_stroke (cr);
-      }
-      else if (actual_pos % MW_RULER->px_per_beat == 0)
-      {
-          cairo_set_source_rgb (cr, 0.25, 0.25, 0.25);
-          cairo_set_line_width (cr, 0.5);
-          cairo_move_to (cr, i, 0);
-          cairo_line_to (cr, i, height);
-          cairo_stroke (cr);
-      }
-  }
+  /*for (int i = SPACE_BEFORE_START; i < MW_RULER->total_px; i++)*/
+  /*{*/
+    /*int actual_pos = i - SPACE_BEFORE_START;*/
+    /*if (actual_pos == playhead_pos_in_px)*/
+      /*{*/
+          /*cairo_set_source_rgb (cr, 1, 0, 0);*/
+          /*cairo_set_line_width (cr, 2);*/
+          /*cairo_move_to (cr, i, 0);*/
+          /*cairo_line_to (cr, i, height);*/
+          /*cairo_stroke (cr);*/
+      /*}*/
+      /*if (actual_pos % MW_RULER->px_per_bar == 0)*/
+      /*{*/
+          /*cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);*/
+          /*cairo_set_line_width (cr, 1);*/
+          /*cairo_move_to (cr, i, 0);*/
+          /*cairo_line_to (cr, i, height);*/
+          /*cairo_stroke (cr);*/
+      /*}*/
+      /*else if (actual_pos % MW_RULER->px_per_beat == 0)*/
+      /*{*/
+          /*cairo_set_source_rgb (cr, 0.25, 0.25, 0.25);*/
+          /*cairo_set_line_width (cr, 0.5);*/
+          /*cairo_move_to (cr, i, 0);*/
+          /*cairo_line_to (cr, i, height);*/
+          /*cairo_stroke (cr);*/
+      /*}*/
+  /*}*/
 
   /* handle horizontal drawing */
-  for (int i = 0; i < 128; i++)
-    {
-      draw_borders (cr,
-                    PIANO_ROLL_PAGE->piano_roll_labels->px_per_note * i);
-    }
+  /*for (int i = 0; i < 128; i++)*/
+    /*{*/
+      /*draw_borders (cr,*/
+                    /*PIANO_ROLL_PAGE->piano_roll_labels->px_per_note * i);*/
+    /*}*/
 
-  /* draw selections */
-  arranger_bg_draw_selections (ARRANGER_WIDGET (MIDI_ARRANGER),
-                               cr);
+  /*[> draw selections <]*/
+  /*arranger_bg_draw_selections (ARRANGER_WIDGET (MIDI_ARRANGER),*/
+                               /*cr);*/
 
   return 0;
 }
@@ -160,16 +160,16 @@ midi_arranger_bg_widget_new ()
 
   // set the size
   int ww, hh;
-  PianoRollLabelsWidget * piano_roll_labels =
-    PIANO_ROLL_PAGE->piano_roll_labels;
-  gtk_widget_get_size_request (
-    GTK_WIDGET (piano_roll_labels),
-    &ww,
-    &hh);
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self),
-    MW_RULER->total_px,
-    hh);
+  /*PianoRollLabelsWidget * piano_roll_labels =*/
+    /*PIANO_ROLL_PAGE->piano_roll_labels;*/
+  /*gtk_widget_get_size_request (*/
+    /*GTK_WIDGET (piano_roll_labels),*/
+    /*&ww,*/
+    /*&hh);*/
+  /*gtk_widget_set_size_request (*/
+    /*GTK_WIDGET (self),*/
+    /*MW_RULER->total_px,*/
+    /*hh);*/
 
   gtk_widget_set_can_focus (GTK_WIDGET (self),
                            1);

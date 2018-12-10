@@ -34,6 +34,8 @@
 #include "gui/widgets/automation_curve.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/automation_track.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
@@ -55,7 +57,6 @@
 
 G_DEFINE_TYPE_WITH_PRIVATE (ArrangerWidget, arranger_widget, GTK_TYPE_OVERLAY)
 
-#define MW_RULER MAIN_WINDOW->ruler
 #define T_MIDI prv->type == ARRANGER_TYPE_MIDI
 #define T_TIMELINE prv->type == ARRANGER_TYPE_TIMELINE
 #define GET_PRIVATE ARRANGER_WIDGET_GET_PRIVATE (self)

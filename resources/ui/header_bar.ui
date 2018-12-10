@@ -20,6 +20,8 @@
               <object class="GtkMenuItem" id="file">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="label" translatable="yes">_File</property>
+                <property name="use_underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu" id="file_menu">
                     <property name="visible">True</property>
@@ -36,7 +38,6 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="on_file_open_activate" object="HeaderBarWidget" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -44,7 +45,6 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="on_file_save_activate" object="HeaderBarWidget" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -52,7 +52,6 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="on_file_save_as_activate" object="HeaderBarWidget" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -65,7 +64,6 @@
                       <object class="GtkMenuItem" id="file_export">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <signal name="activate" handler="on_file_export_activate" object="HeaderBarWidget" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -79,7 +77,6 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="on_file_quit_activate" object="HeaderBarWidget" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -90,6 +87,8 @@
               <object class="GtkMenuItem" id="edit">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="label" translatable="yes">_Edit</property>
+                <property name="use_underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu" id="edit_menu">
                     <property name="visible">True</property>
@@ -130,12 +129,16 @@
               <object class="GtkMenuItem" id="view">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="label" translatable="yes">_View</property>
+                <property name="use_underline">True</property>
               </object>
             </child>
             <child>
               <object class="GtkMenuItem" id="help">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="label" translatable="yes">_Help</property>
+                <property name="use_underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu">
                     <property name="visible">True</property>
@@ -155,7 +158,7 @@
           <packing>
             <property name="expand">True</property>
             <property name="fill">True</property>
-            <property name="position">0</property>
+            <property name="position">1</property>
           </packing>
         </child>
       </object>

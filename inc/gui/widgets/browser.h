@@ -25,15 +25,15 @@
 #include <gtk/gtk.h>
 
 #define BROWSER_WIDGET_TYPE                  (browser_widget_get_type ())
-#define BROWSER_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), BROWSER_WIDGET_TYPE, BrowserWidget))
-#define BROWSER_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), BROWSER_WIDGET, BrowserWidgetClass))
-#define IS_BROWSER_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), BROWSER_WIDGET_TYPE))
-#define IS_BROWSER_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), BROWSER_WIDGET_TYPE))
-#define BROWSER_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), BROWSER_WIDGET_TYPE, BrowserWidgetClass))
+G_DECLARE_FINAL_TYPE (BrowserWidget,
+                      browser_widget,
+                      BROWSER,
+                      WIDGET,
+                      GtkPaned)
 
-#define MW_BROWSER MAIN_WINDOW->browser
+#define MW_BROWSER MW_RIGHT_DOCK_EDGE->browser
 
-typedef struct BrowserWidget
+typedef struct _BrowserWidget
 {
   GtkPaned                 parent_instance;
   GtkGrid                  * browser_top;
@@ -49,11 +49,6 @@ typedef struct BrowserWidget
   GtkTreeView *            plugins_tree_view;
   GtkScrolledWindow *      plugin_scroll_window;
 } BrowserWidget;
-
-typedef struct BrowserWidgetClass
-{
-  GtkPanedClass               parent_class;
-} BrowserWidgetClass;
 
 BrowserWidget *
 browser_widget_new ();

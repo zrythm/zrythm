@@ -90,25 +90,6 @@ on_state_changed (MainWindowWidget * self,
     self->is_maximized = 1;
 }
 
-/**
- * FIXME move to timeline
- */
-static gboolean
-key_release_cb (GtkWidget      * widget,
-                 GdkEventKey * event,
-                 gpointer       data)
-{
-  if (event && event->keyval == GDK_KEY_space)
-    {
-      if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
-        transport_request_pause ();
-      else if (TRANSPORT->play_state == PLAYSTATE_PAUSED)
-        transport_request_roll ();
-    }
-
-  return FALSE;
-}
-
 
 
 void
@@ -148,114 +129,12 @@ main_window_widget_new (ZrythmApp * _app)
                       GTK_WIDGET (self->snap_grid_timeline),
                       1, 1, 0);
 
-  /* setup tracklist */
-  self->tracklist = tracklist_widget_new (PROJECT->tracklist);
-  gtk_container_add (GTK_CONTAINER (self->tracklist_viewport),
-                     GTK_WIDGET (self->tracklist));
-  gtk_widget_set_size_request (GTK_WIDGET (self->tracklist_header),
-                               -1,
-                               60);
-  tracklist_widget_show (self->tracklist);
-
-  /* setup ruler */
-  self->ruler = ruler_widget_new ();
-  gtk_container_add (GTK_CONTAINER (self->ruler_viewport),
-                     GTK_WIDGET (self->ruler));
-  gtk_scrolled_window_set_hadjustment (self->ruler_scroll,
-                                       gtk_scrolled_window_get_hadjustment (
-                                           GTK_SCROLLED_WINDOW (
-                                               self->timeline_scroll)));
-  gtk_widget_show_all (GTK_WIDGET (self->ruler_viewport));
-
-  /* setup inspector */
-  self->inspector = inspector_widget_new ();
-  img = resources_get_icon ("gnome-builder/ui-section-symbolic-light.svg");
-  gtk_notebook_prepend_page (self->inspector_notebook,
-                             GTK_WIDGET (self->inspector),
-                             img);
-
-  /* setup timeline */
-  self->timeline = timeline_arranger_widget_new (
-    &PROJECT->snap_grid_timeline);
-  gtk_container_add (GTK_CONTAINER (self->timeline_viewport),
-                     GTK_WIDGET (self->timeline));
-  gtk_scrolled_window_set_min_content_width (self->timeline_scroll, 400);
-  gtk_scrolled_window_set_vadjustment (self->timeline_scroll,
-            gtk_scrolled_window_get_vadjustment (self->tracklist_scroll));
-  gtk_widget_show_all (GTK_WIDGET (self->timeline_viewport));
-  gtk_widget_show_all (GTK_WIDGET (self->timeline));
-  /*gtk_widget_show_all (GTK_WIDGET (self->timeline->bg));*/
-
-  /* setup browser */
-  self->browser = browser_widget_new ();
-  gtk_notebook_prepend_page (
-    self->right_notebook,
-    GTK_WIDGET (self->browser),
-    resources_get_icon ("plugins.svg"));
-  gtk_widget_show_all (GTK_WIDGET (self->right_notebook));
-
-  /* setup bot toolbar */
-  self->snap_grid_midi = snap_grid_widget_new (&PROJECT->snap_grid_midi);
-  gtk_box_pack_start (GTK_BOX (self->snap_grid_midi_box),
-                      GTK_WIDGET (self->snap_grid_midi),
-                      1, 1, 0);
-
-  /* setup bot half region */
-  self->mixer = mixer_widget_new ();
-  self->piano_roll_page = piano_roll_page_widget_new ();
-  self->connections = connections_widget_new ();
-  self->rack = rack_widget_new ();
-  GtkWidget * box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  gtk_box_pack_start (GTK_BOX (box),
-                      resources_get_icon ("piano_roll.svg"),
-                      Z_GTK_NO_EXPAND,
-                      Z_GTK_NO_FILL,
-                      2);
-  gtk_box_pack_end (GTK_BOX (box),
-                    gtk_label_new ("Piano Roll"),
-                    Z_GTK_NO_EXPAND,
-                    Z_GTK_NO_FILL,
-                    2);
-  gtk_widget_show_all (box);
-  gtk_notebook_prepend_page (
-    self->bot_notebook,
-    GTK_WIDGET (self->piano_roll_page),
-    box);
-  gtk_notebook_append_page (self->bot_notebook,
-                            GTK_WIDGET (self->rack),
-                            gtk_label_new ("Rack"));
-  gtk_notebook_append_page (self->bot_notebook,
-                            GTK_WIDGET (self->connections),
-                            gtk_label_new ("Connections"));
-  box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  gtk_box_pack_start (GTK_BOX (box),
-                      resources_get_icon ("mixer.svg"),
-                      Z_GTK_NO_EXPAND,
-                      Z_GTK_NO_FILL,
-                      2);
-  gtk_box_pack_end (GTK_BOX (box),
-                    gtk_label_new ("Mixer"),
-                    Z_GTK_NO_EXPAND,
-                    Z_GTK_NO_FILL,
-                    2);
-  gtk_widget_show_all (box);
-  gtk_notebook_append_page (self->bot_notebook,
-                            GTK_WIDGET (self->mixer),
-                            box);
-  gtk_widget_show_all (GTK_WIDGET (MAIN_WINDOW->bot_notebook));
-
   // set icons
   GtkWidget * image = resources_get_icon (
           "z.svg");
   gtk_window_set_icon (
           GTK_WINDOW (self),
           gtk_image_get_pixbuf (GTK_IMAGE (image)));
-  gtk_tool_button_set_icon_widget (
-    self->instrument_add,
-    resources_get_icon ("plus.svg"));
-  gtk_button_set_image (
-    GTK_BUTTON (self->mixer->channels_add),
-    resources_get_icon ("plus.svg"));
 
   /* setup digital meters */
   self->digital_bpm = digital_meter_widget_new (DIGITAL_METER_TYPE_BPM, NULL);
@@ -272,8 +151,6 @@ main_window_widget_new (ZrythmApp * _app)
 
   /*gtk_widget_add_events (GTK_WIDGET (self->main_box),*/
                          /*GDK_KEY_PRESS_MASK);*/
-  g_signal_connect (G_OBJECT (self->main_box), "key_release_event",
-                    G_CALLBACK (key_release_cb), self);
   /*g_signal_connect (G_OBJECT (self), "grab-notify",*/
                     /*G_CALLBACK (key_press_cb), NULL);*/
 
@@ -292,7 +169,7 @@ main_window_widget_new (ZrythmApp * _app)
       /*gtk_overlay_add_overlay (GTK_OVERLAY (self->timeline),*/
                                /*GTK_WIDGET (MIXER->master->track->regions[j]->widget));*/
     /*}*/
-  gtk_widget_show_all (GTK_WIDGET (self->timeline));
+  /*gtk_widget_show_all (GTK_WIDGET (self->timeline));*/
 
   return self;
 }
@@ -323,51 +200,10 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
     GTK_WIDGET_CLASS (klass),
     MainWindowWidget,
     snap_grid_timeline_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget,
-                                        center_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget,
-                                        inspector_notebook);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, editor_plus_browser);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, editor);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, editor_top);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, tracklist_timeline);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, tracklist_top);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, tracklist_scroll);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, tracklist_viewport);
-  /*gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),*/
-                                                /*MainWindowWidget, tracks_paned);*/
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, tracklist_header);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, timeline_ruler);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, ruler_scroll);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, ruler_viewport);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, timeline_scroll);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, timeline_viewport);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, instruments_toolbar);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget,
-                                        snap_grid_midi_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, instrument_add);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, bot_notebook);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, right_notebook);
+  gtk_widget_class_bind_template_child (
+    GTK_WIDGET_CLASS (klass),
+    MainWindowWidget,
+    center_box);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         MainWindowWidget, bot_bar);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),

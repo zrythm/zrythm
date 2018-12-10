@@ -31,8 +31,10 @@
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/automation_track.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/ruler.h"
+#include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
@@ -41,7 +43,6 @@
 
 G_DEFINE_TYPE (TimelineBgWidget, timeline_bg_widget, GTK_TYPE_DRAWING_AREA)
 
-#define MW_RULER MAIN_WINDOW->ruler
 
 static void
 draw_horizontal_line (cairo_t * cr,
@@ -66,107 +67,107 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   guint height = gtk_widget_get_allocated_height (widget);
 
   /* get positions in px */
-  static int playhead_pos_in_px;
-  playhead_pos_in_px =
-    (TRANSPORT->playhead_pos.bars - 1) * MW_RULER->px_per_bar +
-    (TRANSPORT->playhead_pos.beats - 1) * MW_RULER->px_per_beat +
-    (TRANSPORT->playhead_pos.quarter_beats - 1) * MW_RULER->px_per_quarter_beat +
-    TRANSPORT->playhead_pos.ticks * MW_RULER->px_per_tick;
+  /*static int playhead_pos_in_px;*/
+  /*playhead_pos_in_px =*/
+    /*(TRANSPORT->playhead_pos.bars - 1) * MW_RULER->px_per_bar +*/
+    /*(TRANSPORT->playhead_pos.beats - 1) * MW_RULER->px_per_beat +*/
+    /*(TRANSPORT->playhead_pos.quarter_beats - 1) * MW_RULER->px_per_quarter_beat +*/
+    /*TRANSPORT->playhead_pos.ticks * MW_RULER->px_per_tick;*/
 
-  gtk_render_background (context, cr, 0, 0, MW_RULER->total_px, height);
+  /*gtk_render_background (context, cr, 0, 0, MW_RULER->total_px, height);*/
 
-  /* handle vertical drawing */
-  for (int i = SPACE_BEFORE_START; i < MW_RULER->total_px; i++)
-  {
-    int actual_pos = i - SPACE_BEFORE_START;
-    if (actual_pos == playhead_pos_in_px)
-      {
-          cairo_set_source_rgb (cr, 1, 0, 0);
-          cairo_set_line_width (cr, 2);
-          cairo_move_to (cr, i, 0);
-          cairo_line_to (cr, i, height);
-          cairo_stroke (cr);
-      }
-      if (actual_pos % MW_RULER->px_per_bar == 0)
-      {
-          cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);
-          cairo_set_line_width (cr, 1);
-          cairo_move_to (cr, i, 0);
-          cairo_line_to (cr, i, height);
-          cairo_stroke (cr);
-      }
-      else if (actual_pos % MW_RULER->px_per_beat == 0)
-      {
-          cairo_set_source_rgb (cr, 0.25, 0.25, 0.25);
-          cairo_set_line_width (cr, 0.5);
-          cairo_move_to (cr, i, 0);
-          cairo_line_to (cr, i, height);
-          cairo_stroke (cr);
-      }
-  }
+  /*[> handle vertical drawing <]*/
+  /*for (int i = SPACE_BEFORE_START; i < MW_RULER->total_px; i++)*/
+  /*{*/
+    /*int actual_pos = i - SPACE_BEFORE_START;*/
+    /*if (actual_pos == playhead_pos_in_px)*/
+      /*{*/
+          /*cairo_set_source_rgb (cr, 1, 0, 0);*/
+          /*cairo_set_line_width (cr, 2);*/
+          /*cairo_move_to (cr, i, 0);*/
+          /*cairo_line_to (cr, i, height);*/
+          /*cairo_stroke (cr);*/
+      /*}*/
+      /*if (actual_pos % MW_RULER->px_per_bar == 0)*/
+      /*{*/
+          /*cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);*/
+          /*cairo_set_line_width (cr, 1);*/
+          /*cairo_move_to (cr, i, 0);*/
+          /*cairo_line_to (cr, i, height);*/
+          /*cairo_stroke (cr);*/
+      /*}*/
+      /*else if (actual_pos % MW_RULER->px_per_beat == 0)*/
+      /*{*/
+          /*cairo_set_source_rgb (cr, 0.25, 0.25, 0.25);*/
+          /*cairo_set_line_width (cr, 0.5);*/
+          /*cairo_move_to (cr, i, 0);*/
+          /*cairo_line_to (cr, i, height);*/
+          /*cairo_stroke (cr);*/
+      /*}*/
+  /*}*/
 
-  /* handle horizontal drawing for tracks */
-  /*int y_offset = 0;*/
-  for (int i = 0; i < MAIN_WINDOW->tracklist->num_visible; i++)
-    {
-      TrackWidget * track_widget = MAIN_WINDOW->tracklist->visible_tw[i];
+  /*[> handle horizontal drawing for tracks <]*/
+  /*[>int y_offset = 0;<]*/
+  /*for (int i = 0; i < MW_TRACKLIST->num_visible; i++)*/
+    /*{*/
+      /*TrackWidget * track_widget = MW_TRACKLIST->visible_tw[i];*/
 
-      gint wx, wy;
-      gtk_widget_translate_coordinates(
-                GTK_WIDGET (track_widget),
-                GTK_WIDGET (MAIN_WINDOW->tracklist),
-                0,
-                0,
-                &wx,
-                &wy);
-      draw_horizontal_line (cr, wy - 2, 1.0);
+      /*gint wx, wy;*/
+      /*gtk_widget_translate_coordinates(*/
+                /*GTK_WIDGET (track_widget),*/
+                /*GTK_WIDGET (MW_TRACKLIST),*/
+                /*0,*/
+                /*0,*/
+                /*&wx,*/
+                /*&wy);*/
+      /*draw_horizontal_line (cr, wy - 2, 1.0);*/
 
-      /* draw last line */
-      if (i == MAIN_WINDOW->tracklist->num_visible - 1)
-        {
-          wy += gtk_widget_get_allocated_height (GTK_WIDGET (
-                                track_widget->track_box));
-          draw_horizontal_line (cr, wy + 2, 1.0);
-        }
-    }
+      /*[> draw last line <]*/
+      /*if (i == MW_TRACKLIST->num_visible - 1)*/
+        /*{*/
+          /*wy += gtk_widget_get_allocated_height (GTK_WIDGET (*/
+                                /*track_widget->track_box));*/
+          /*draw_horizontal_line (cr, wy + 2, 1.0);*/
+        /*}*/
+    /*}*/
 
-  /* draw automation related stuff */
-  for (int i = 0; i < MIXER->num_channels; i++)
-    {
-      Track * track = MIXER->channels[i]->track;
+  /*[> draw automation related stuff <]*/
+  /*for (int i = 0; i < MIXER->num_channels; i++)*/
+    /*{*/
+      /*Track * track = MIXER->channels[i]->track;*/
 
-      if (track->bot_paned_visible)
-        {
-          if (track->type == TRACK_TYPE_INSTRUMENT)
-            {
-              InstrumentTrack * ins_track =
-                (InstrumentTrack *) track;
-              for (int j = 0; j < ins_track->num_automation_tracks; j++)
-                {
-                  AutomationTrack * at = ins_track->automation_tracks[j];
+      /*if (track->bot_paned_visible)*/
+        /*{*/
+          /*if (track->type == TRACK_TYPE_INSTRUMENT)*/
+            /*{*/
+              /*InstrumentTrack * ins_track =*/
+                /*(InstrumentTrack *) track;*/
+              /*for (int j = 0; j < ins_track->num_automation_tracks; j++)*/
+                /*{*/
+                  /*AutomationTrack * at = ins_track->automation_tracks[j];*/
 
-                  if (at->widget)
-                    {
-                      /* horizontal automation track lines */
-                      gint wx, wy;
-                      gtk_widget_translate_coordinates(
-                                GTK_WIDGET (at->widget->at_grid),
-                                GTK_WIDGET (MAIN_WINDOW->tracklist),
-                                0,
-                                0,
-                                &wx,
-                                &wy);
-                      draw_horizontal_line (cr, wy, 0.2);
+                  /*if (at->widget)*/
+                    /*{*/
+                      /*[> horizontal automation track lines <]*/
+                      /*gint wx, wy;*/
+                      /*gtk_widget_translate_coordinates(*/
+                                /*GTK_WIDGET (at->widget->at_grid),*/
+                                /*GTK_WIDGET (MW_TRACKLIST),*/
+                                /*0,*/
+                                /*0,*/
+                                /*&wx,*/
+                                /*&wy);*/
+                      /*draw_horizontal_line (cr, wy, 0.2);*/
 
-                    }
-                }
-            }
-        }
-    }
+                    /*}*/
+                /*}*/
+            /*}*/
+        /*}*/
+    /*}*/
 
-  /* draw selections */
-  arranger_bg_draw_selections (MW->timeline,
-                               cr);
+  /*[> draw selections <]*/
+  /*arranger_bg_draw_selections (ARRANGER_WIDGET (MW_TIMELINE),*/
+                               /*cr);*/
 
   return 0;
 }
@@ -217,16 +218,16 @@ timeline_bg_widget_new ()
   TimelineBgWidget * self = g_object_new (TIMELINE_BG_WIDGET_TYPE, NULL);
 
   // set the size
-  int ww, hh;
-  TracklistWidget * tracklist = MAIN_WINDOW->tracklist;
-  gtk_widget_get_size_request (
-    GTK_WIDGET (tracklist),
-    &ww,
-    &hh);
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self),
-    MW_RULER->total_px,
-    hh);
+  /*int ww, hh;*/
+  /*TracklistWidget * tracklist = MW_TRACKLIST;*/
+  /*gtk_widget_get_size_request (*/
+    /*GTK_WIDGET (tracklist),*/
+    /*&ww,*/
+    /*&hh);*/
+  /*gtk_widget_set_size_request (*/
+    /*GTK_WIDGET (self),*/
+    /*MW_RULER->total_px,*/
+    /*hh);*/
 
   gtk_widget_set_can_focus (GTK_WIDGET (self),
                            1);

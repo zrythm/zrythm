@@ -30,6 +30,7 @@
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_tracklist.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/instrument_track.h"
 #include "gui/widgets/main_window.h"
@@ -54,7 +55,7 @@ on_show_automation (GtkWidget * widget, void * data)
   ((Track *)ins_track)->bot_paned_visible =
     ((Track *)ins_track)->bot_paned_visible ? 0 : 1;
 
-  tracklist_widget_show (MAIN_WINDOW->tracklist);
+  tracklist_widget_show (MW_TRACKLIST);
 }
 
 /**

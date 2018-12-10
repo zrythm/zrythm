@@ -143,7 +143,7 @@ draw_cb (AutomationCurveWidget * self, cairo_t *cr, gpointer data)
 
   /*gtk_widget_translate_coordinates(*/
             /*GTK_WIDGET (ap->widget),*/
-            /*GTK_WIDGET (MAIN_WINDOW->tracklist),*/
+            /*GTK_WIDGET (MW_TRACKLIST),*/
             /*0,*/
             /*0,*/
             /*&wx,*/
@@ -155,7 +155,7 @@ draw_cb (AutomationCurveWidget * self, cairo_t *cr, gpointer data)
     /*automation_track_get_ap_before_curve (at, self->ac);*/
   /*gtk_widget_translate_coordinates(*/
             /*GTK_WIDGET (prev_ap->widget),*/
-            /*GTK_WIDGET (MAIN_WINDOW->tracklist),*/
+            /*GTK_WIDGET (MW_TRACKLIST),*/
             /*0,*/
             /*0,*/
             /*&prev_wx,*/

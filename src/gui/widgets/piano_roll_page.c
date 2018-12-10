@@ -23,6 +23,8 @@
 #include "audio/region.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/piano_roll_page.h"
@@ -43,7 +45,6 @@ PianoRollPageWidget *
 piano_roll_page_widget_new ()
 {
   PianoRollPageWidget * self = g_object_new (PIANO_ROLL_PAGE_WIDGET_TYPE, NULL);
-  MAIN_WINDOW->piano_roll_page = self;
 
   gtk_label_set_text (self->midi_name_label,
                       "Select a region...");
@@ -60,10 +61,10 @@ piano_roll_page_widget_new ()
   self->midi_ruler = ruler_widget_new ();
   gtk_container_add (GTK_CONTAINER (self->midi_ruler_viewport),
                      GTK_WIDGET (self->midi_ruler));
-  gtk_scrolled_window_set_hadjustment (self->midi_ruler_scroll,
-                                       gtk_scrolled_window_get_hadjustment (
-                                           GTK_SCROLLED_WINDOW (
-                                               MAIN_WINDOW->timeline_scroll)));
+  /*gtk_scrolled_window_set_hadjustment (self->midi_ruler_scroll,*/
+                                       /*gtk_scrolled_window_get_hadjustment (*/
+                                           /*GTK_SCROLLED_WINDOW (*/
+    /*MW_CENTER_DOCK->timeline_scroll)));*/
 
   self->piano_roll_labels = piano_roll_labels_widget_new ();
   gtk_container_add (GTK_CONTAINER (self->piano_roll_labels_viewport),
@@ -86,9 +87,9 @@ piano_roll_page_widget_new ()
             self->piano_roll_notes_scroll,
             gtk_scrolled_window_get_vadjustment (
                GTK_SCROLLED_WINDOW (self->piano_roll_arranger_scroll)));
-  gtk_scrolled_window_set_hadjustment (self->piano_roll_arranger_scroll,
-            gtk_scrolled_window_get_hadjustment (
-               GTK_SCROLLED_WINDOW (MAIN_WINDOW->timeline_scroll)));
+  /*gtk_scrolled_window_set_hadjustment (self->piano_roll_arranger_scroll,*/
+            /*gtk_scrolled_window_get_hadjustment (*/
+               /*GTK_SCROLLED_WINDOW (MW_CENTER_DOCK->timeline_scroll)));*/
 
   return self;
 }

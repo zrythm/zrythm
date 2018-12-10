@@ -25,6 +25,8 @@
 #include "plugins/plugin.h"
 #include "plugins/lv2_plugin.h"
 #include "gui/widget_manager.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/drag_dest_box.h"
 #include "gui/widgets/main_window.h"
@@ -135,7 +137,7 @@ mixer_widget_init (MixerWidget * self)
 void
 mixer_widget_remove_channel (Channel * channel)
 {
-  MixerWidget * self = MIXERW;
+  MixerWidget * self = MW_MIXER;
 
   /* remove all channels starting from channel */
   for (int i = channel->id; i < MIXER->num_channels; i++)

@@ -31,7 +31,7 @@
 #define IS_CONNECTIONS_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), CONNECTIONS_WIDGET_TYPE))
 #define CONNECTIONS_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), CONNECTIONS_WIDGET_TYPE, ConnectionsWidgetClass))
 
-#define CONNECTIONSW MAIN_WINDOW->connections
+#define MW_CONNECTIONS MW_BOT_DOCK_EDGE->connections
 
 typedef struct AudioUnitWidget AudioUnitWidget;
 

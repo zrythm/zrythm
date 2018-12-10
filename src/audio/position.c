@@ -25,9 +25,13 @@
 #include "audio/position.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/piano_roll_page.h"
+#include "gui/widgets/ruler.h"
+#include "gui/widgets/timeline_arranger.h"
 #include "project/snap_grid.h"
 
 #include <gtk/gtk.h>
@@ -233,12 +237,12 @@ position_updated (Position * position)
           gtk_widget_queue_draw (
                   GTK_WIDGET (MAIN_WINDOW->digital_transport));
         }
-      if (MAIN_WINDOW->ruler)
+      if (MW_RULER)
         {
           gtk_widget_queue_draw (
-                  GTK_WIDGET (MAIN_WINDOW->ruler));
+                  GTK_WIDGET (MW_RULER));
         }
-      if (MAIN_WINDOW->timeline)
+      if (MW_TIMELINE)
         {
           ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);
           gtk_widget_queue_draw (

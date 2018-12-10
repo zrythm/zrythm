@@ -35,7 +35,6 @@ G_DECLARE_DERIVABLE_TYPE (ArrangerWidget,
                           WIDGET,
                           GtkOverlay)
 
-#define MW_TIMELINE MAIN_WINDOW->timeline
 #define ARRANGER_TOGGLE_SELECT_MIDI_NOTE(self, midi_note, append) \
   arranger_widget_toggle_select ( \
     ARRANGER_WIDGET (self), \

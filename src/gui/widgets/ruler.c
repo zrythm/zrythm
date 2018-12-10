@@ -24,12 +24,15 @@
 #include "settings_manager.h"
 #include "audio/position.h"
 #include "audio/transport.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/ruler.h"
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (RulerWidget, ruler_widget, GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (RulerWidget,
+               ruler_widget,
+               GTK_TYPE_DRAWING_AREA)
 
 #define Y_SPACING 5
 #define FONT "Monospace"
@@ -48,7 +51,7 @@ ruler_widget_px_to_pos (
            int      px) ///< pixels
 {
   /*g_message ("%d", px);*/
-  RulerWidget * self = MAIN_WINDOW->ruler;
+  RulerWidget * self = MW_RULER;
   pos->bars = px / self->px_per_bar + 1;
   px = px % self->px_per_bar;
   pos->beats = px / self->px_per_beat + 1;
@@ -66,11 +69,12 @@ ruler_widget_px_to_pos (
 int
 ruler_widget_pos_to_px (Position * pos)
 {
-  RulerWidget * self = MAIN_WINDOW->ruler;
-  return  (pos->bars - 1) * self->px_per_bar +
-    (pos->beats - 1) * self->px_per_beat +
-    (pos->quarter_beats - 1) * self->px_per_quarter_beat +
-    pos->ticks * self->px_per_tick;
+  /*RulerWidget * self = MW_RULER;*/
+  /*return  (pos->bars - 1) * self->px_per_bar +*/
+    /*(pos->beats - 1) * self->px_per_beat +*/
+    /*(pos->quarter_beats - 1) * self->px_per_quarter_beat +*/
+    /*pos->ticks * self->px_per_tick;*/
+  return 1;
 }
 
 static gboolean

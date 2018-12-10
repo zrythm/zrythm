@@ -4,7 +4,9 @@
     <file preprocess="xml-stripblanks">ui/audio_unit.ui</file>
     <file preprocess="xml-stripblanks">ui/automator.ui</file>
     <file preprocess="xml-stripblanks">ui/automation_track.ui</file>
+    <file preprocess="xml-stripblanks">ui/bot_dock_edge.ui</file>
     <file preprocess="xml-stripblanks">ui/browser.ui</file>
+    <file preprocess="xml-stripblanks">ui/center_dock.ui</file>
     <file preprocess="xml-stripblanks">ui/channel.ui</file>
     <file preprocess="xml-stripblanks">ui/chord_track.ui</file>
     <file preprocess="xml-stripblanks">ui/connections.ui</file>
@@ -17,11 +19,13 @@
     <file preprocess="xml-stripblanks">ui/inspector_region.ui</file>
     <file preprocess="xml-stripblanks">ui/inspector_track.ui</file>
     <file preprocess="xml-stripblanks">ui/instrument_track.ui</file>
+    <file preprocess="xml-stripblanks">ui/left_dock_edge.ui</file>
     <file preprocess="xml-stripblanks">ui/main_window.ui</file>
     <file preprocess="xml-stripblanks">ui/mixer.ui</file>
     <file preprocess="xml-stripblanks">ui/piano_roll_page.ui</file>
     <file preprocess="xml-stripblanks">ui/rack_plugin.ui</file>
     <file preprocess="xml-stripblanks">ui/rack_row.ui</file>
+    <file preprocess="xml-stripblanks">ui/right_dock_edge.ui</file>
     <file preprocess="xml-stripblanks">ui/track.ui</file>
     <file preprocess="xml-stripblanks">ui/snap_grid_popover.ui</file>
     <file preprocess="xml-stripblanks">ui/splash.ui</file>

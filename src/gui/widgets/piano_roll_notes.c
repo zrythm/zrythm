@@ -23,6 +23,8 @@
 #include "audio/midi.h"
 #include "audio/port.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/piano_roll_page.h"
 #include "gui/widgets/piano_roll_labels.h"
 #include "gui/widgets/piano_roll_notes.h"
@@ -221,10 +223,11 @@ piano_roll_notes_widget_new ()
   PianoRollNotesWidget * self = g_object_new (PIANO_ROLL_NOTES_WIDGET_TYPE, NULL);
 
   // set the size
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self),
-    36,
-    LABELS_WIDGET->total_px);
+  // FIXME move to "realize" signal of widget
+  /*gtk_widget_set_size_request (*/
+    /*GTK_WIDGET (self),*/
+    /*36,*/
+    /*LABELS_WIDGET->total_px);*/
 
   g_signal_connect (G_OBJECT (self), "draw",
                     G_CALLBACK (draw_cb), NULL);

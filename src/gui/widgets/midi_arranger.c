@@ -35,6 +35,8 @@
 #include "gui/widgets/automation_curve.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/automation_track.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
@@ -487,8 +489,6 @@ midi_arranger_widget_new (SnapGrid * snap_grid)
   arranger_widget_setup (ARRANGER_WIDGET (self),
                          snap_grid,
                          ARRANGER_TYPE_MIDI);
-
-  PIANO_ROLL_PAGE->midi_arranger = self;
 
   return self;
 }

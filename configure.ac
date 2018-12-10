@@ -56,11 +56,11 @@ PKG_CHECK_MODULES([LILV], [lilv-0 >= 0.24.2])
 PKG_CHECK_MODULES([SUIL], [suil-0 >= 0.10.0])
 #PKG_CHECK_MODULES([PANGO], [pango >= 1.0])
 #PKG_CHECK_MODULES([PANGOFT2], [pangoft2 >= 1.0])
+PKG_CHECK_MODULES([LIBDAZZLE], [libdazzle-1.0 >= 3.20])
 PKG_CHECK_MODULES([LIBXML], [libxml-2.0 >= 2.9.4])
 PKG_CHECK_MODULES([LIBSMF], [smf >= 1.3])
 PKG_CHECK_MODULES([SNDFILE], [sndfile >= 1.0.28])
 AM_COND_IF([LINUX],
-#           [PKG_CHECK_MODULES([LV2], [lv2 >= 1.15.3])])
            [PKG_CHECK_MODULES([LV2], [lv2 >= 1.14.0])])
 AM_COND_IF([WINDOWS],
            [PKG_CHECK_MODULES([LV2], [lv2 >= 1.14.0])])

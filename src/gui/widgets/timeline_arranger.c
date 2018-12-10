@@ -35,6 +35,8 @@
 #include "gui/widgets/automation_curve.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/automation_track.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
@@ -71,8 +73,6 @@ timeline_arranger_widget_new (SnapGrid * snap_grid)
   arranger_widget_setup (ARRANGER_WIDGET (self),
                          snap_grid,
                          ARRANGER_TYPE_TIMELINE);
-
-  MW_TIMELINE = self;
 
   return self;
 }
@@ -806,8 +806,6 @@ timeline_arranger_widget_move_items_x (
   TimelineArrangerWidget * self,
   int                      frames_diff)
 {
-  ARRANGER_WIDGET_GET_PRIVATE (self);
-
   /* update region positions */
   for (int i = 0; i < self->num_regions; i++)
     {

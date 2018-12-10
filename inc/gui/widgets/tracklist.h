@@ -35,7 +35,7 @@ G_DECLARE_FINAL_TYPE (TracklistWidget,
                       GtkBox)
 
 #define FOREACH_TW for (int i = 0; i < self->num_visible; i++)
-#define MW_TRACKLIST MAIN_WINDOW->tracklist
+#define MW_TRACKLIST MW_CENTER_DOCK->tracklist
 
 typedef struct _TrackWidget TrackWidget;
 typedef struct DragDestBoxWidget DragDestBoxWidget;
