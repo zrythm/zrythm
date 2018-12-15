@@ -153,12 +153,10 @@ main_window_widget_new (ZrythmApp * _app)
                           &PROJECT->snap_grid_midi);
 
   /* setup piano roll */
-  arranger_widget_setup (
-    ARRANGER_WIDGET (PIANO_ROLL->arranger),
-    &PROJECT->snap_grid_midi,
-    ARRANGER_TYPE_MIDI);
-  gtk_widget_show_all (
-    GTK_WIDGET (PIANO_ROLL->arranger));
+  if (MW_BOT_DOCK_EDGE && PIANO_ROLL)
+    {
+      piano_roll_widget_setup (PIANO_ROLL);
+    }
 
   // set icons
   GtkWidget * image = resources_get_icon (
@@ -181,7 +179,6 @@ main_window_widget_new (ZrythmApp * _app)
   transport_controls_init (self);
 
   /* setup piano roll */
-  piano_roll_widget_link_scrolls (self->center_dock->bot_dock_edge->piano_roll);
 
   /*gtk_widget_add_events (GTK_WIDGET (self->main_box),*/
                          /*GDK_KEY_PRESS_MASK);*/

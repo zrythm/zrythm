@@ -120,12 +120,12 @@ midi_arranger_widget_set_channel (
 
   GtkAdjustment * adj =
     gtk_scrolled_window_get_vadjustment (
-      PIANO_ROLL->piano_roll_arranger_scroll);
+      PIANO_ROLL->arranger_scroll);
   gtk_adjustment_set_value (
     adj,
     gtk_adjustment_get_upper (adj) / 2);
   gtk_scrolled_window_set_vadjustment (
-    PIANO_ROLL->piano_roll_arranger_scroll,
+    PIANO_ROLL->arranger_scroll,
     adj);
 }
 

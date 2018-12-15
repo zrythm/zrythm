@@ -4,7 +4,6 @@
   <requires lib="gtk+" version="3.20"/>
   <template class="PianoRollWidget" parent="GtkBox">
     <property name="visible">True</property>
-    <property name="can-focus">False</property>
     <child>
       <object class="GtkBox" id="midi_track_color_box">
         <property name="visible">1</property>
@@ -29,6 +28,9 @@
                 <property name="label" translatable="yes">Track name</property>
                 <property name="angle">90</property>
               </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
             </child>
             <child>
               <object class="GtkBox" id="midi_4box">
@@ -164,13 +166,13 @@
                             <property name="visible">1</property>
                             <property name="orientation">vertical</property>
                             <child>
-                              <object class="GtkScrolledWindow" id="piano_roll_arranger_scroll">
+                              <object class="GtkScrolledWindow" id="arranger_scroll">
                                 <property name="visible">1</property>
                                 <property name="can-focus">1</property>
                                 <property name="hscrollbar-policy">always</property>
                                 <property name="shadow-type">in</property>
                                 <child>
-                                  <object class="GtkViewport" id="piano_roll_arranger_viewport">
+                                  <object class="GtkViewport" id="arranger_viewport">
                                     <property name="visible">1</property>
                                     <child>
                                       <object class="MidiArrangerWidget" id="arranger">

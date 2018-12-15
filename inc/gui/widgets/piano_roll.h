@@ -61,13 +61,13 @@ typedef struct _PianoRollWidget
   GtkViewport              * piano_roll_notes_viewport;
   PianoRollNotesWidget     * piano_roll_notes;
   GtkBox                   * midi_arranger_box; ///< piano roll
-  GtkScrolledWindow        * piano_roll_arranger_scroll;
-  GtkViewport              * piano_roll_arranger_viewport;
+  GtkScrolledWindow        * arranger_scroll;
+  GtkViewport              * arranger_viewport;
   MidiArrangerWidget *     arranger;
 } MidiEditorWidget;
 
 void
-piano_roll_widget_link_scrolls (
+piano_roll_widget_setup (
   PianoRollWidget * self);
 
 #endif

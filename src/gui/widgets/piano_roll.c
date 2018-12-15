@@ -113,11 +113,15 @@ piano_roll_widget_class_init (
   gtk_widget_class_bind_template_child (
     klass,
     PianoRollWidget,
-    piano_roll_arranger_scroll);
+    piano_roll_notes);
   gtk_widget_class_bind_template_child (
     klass,
     PianoRollWidget,
-    piano_roll_arranger_viewport);
+    arranger_scroll);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
+    arranger_viewport);
   gtk_widget_class_bind_template_child (
     klass,
     PianoRollWidget,
@@ -128,21 +132,77 @@ piano_roll_widget_class_init (
  * Links scroll windows after all widgets have been
  * initialized.
  */
-void
-piano_roll_widget_link_scrolls (
+static void
+link_scrolls (
   PianoRollWidget * self)
 {
-  gtk_scrolled_window_set_hadjustment (
-    self->midi_ruler_scroll,
-    gtk_scrolled_window_get_hadjustment (
-      GTK_SCROLLED_WINDOW (
-        MW_CENTER_DOCK->timeline_scroll)));
+  /* link note labels v scroll to arranger v scroll */
+  if (self->piano_roll_labels_scroll)
+    {
+      gtk_scrolled_window_set_vadjustment (
+        self->piano_roll_labels_scroll,
+        gtk_scrolled_window_get_vadjustment (
+          GTK_SCROLLED_WINDOW (
+            self->arranger_scroll)));
+    }
 
-  gtk_scrolled_window_set_hadjustment (
-    self->piano_roll_arranger_scroll,
-    gtk_scrolled_window_get_hadjustment (
-      GTK_SCROLLED_WINDOW (
-        MW_CENTER_DOCK->timeline_scroll)));
+  /* link notes v scroll to arranger v scroll */
+  if (self->piano_roll_notes_scroll)
+    {
+      gtk_scrolled_window_set_vadjustment (
+        self->piano_roll_notes_scroll,
+        gtk_scrolled_window_get_vadjustment (
+          GTK_SCROLLED_WINDOW (
+            self->arranger_scroll)));
+    }
+
+  /* link ruler h scroll to timeline h scroll */
+  if (self->midi_ruler_scroll)
+    {
+      gtk_scrolled_window_set_hadjustment (
+        self->midi_ruler_scroll,
+        gtk_scrolled_window_get_hadjustment (
+          GTK_SCROLLED_WINDOW (
+            self->arranger_scroll)));
+    }
+
+  /*if (self->piano_roll_arranger_scroll)*/
+    /*{*/
+      /*gtk_scrolled_window_set_hadjustment (*/
+        /*self->piano_roll_arranger_scroll,*/
+        /*gtk_scrolled_window_get_hadjustment (*/
+          /*GTK_SCROLLED_WINDOW (*/
+            /*MW_CENTER_DOCK->timeline_scroll)));*/
+    /*}*/
+}
+
+void
+piano_roll_widget_setup (PianoRollWidget * self)
+{
+  if (self->arranger)
+    {
+      arranger_widget_setup (
+        ARRANGER_WIDGET (self->arranger),
+        &PROJECT->snap_grid_midi,
+        ARRANGER_TYPE_MIDI);
+      gtk_widget_show_all (
+        GTK_WIDGET (self->arranger));
+    }
+
+  /* set arranger size
+   * (h from note labels and w from ruler) */
+  int ww, hh;
+  gtk_widget_get_size_request (
+    GTK_WIDGET (self->piano_roll_labels),
+    &ww,
+    &hh);
+  RULER_WIDGET_GET_PRIVATE (self->ruler);
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self->arranger),
+    prv->total_px,
+    hh);
+
+  link_scrolls (self);
 }
 
 static void
@@ -161,14 +221,5 @@ piano_roll_widget_init (PianoRollWidget * self)
                       1,
                       1,
                       0);
-
-  /* link scrolls */
-  gtk_scrolled_window_set_vadjustment (
-            self->piano_roll_labels_scroll,
-            gtk_scrolled_window_get_vadjustment (
-               GTK_SCROLLED_WINDOW (self->piano_roll_arranger_scroll)));
-  gtk_scrolled_window_set_vadjustment (
-            self->piano_roll_notes_scroll,
-            gtk_scrolled_window_get_vadjustment (
-               GTK_SCROLLED_WINDOW (self->piano_roll_arranger_scroll)));
+  gtk_widget_show_all (GTK_WIDGET (self->midi_track_color_box));
 }
