@@ -22,21 +22,21 @@
 #ifndef __GUI_WIDGETS_PIANO_ROLL_LABELS_H__
 #define __GUI_WIDGETS_PIANO_ROLL_LABELS_H__
 
-#include "gui/widgets/piano_roll_page.h"
+#include "gui/widgets/piano_roll.h"
 
 #include <gtk/gtk.h>
 
 #define PIANO_ROLL_LABELS_WIDGET_TYPE                  (piano_roll_labels_widget_get_type ())
-#define PIANO_ROLL_LABELS_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), PIANO_ROLL_LABELS_WIDGET_TYPE, PianoRollLabelsWidget))
-#define PIANO_ROLL_LABELS_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), PIANO_ROLL_LABELS_WIDGET, PianoRollLabelsWidgetClass))
-#define IS_PIANO_ROLL_LABELS_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PIANO_ROLL_LABELS_WIDGET_TYPE))
-#define IS_PIANO_ROLL_LABELS_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), PIANO_ROLL_LABELS_WIDGET_TYPE))
-#define PIANO_ROLL_LABELS_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), PIANO_ROLL_LABELS_WIDGET_TYPE, PianoRollLabelsWidgetClass))
+G_DECLARE_FINAL_TYPE (PianoRollLabelsWidget,
+                      piano_roll_labels_widget,
+                      PIANO_ROLL_LABELS,
+                      WIDGET,
+                      GtkDrawingArea)
 
 #define DEFAULT_PX_PER_NOTE 8
-#define PIANO_ROLL_LABELS PIANO_ROLL_PAGE->piano_roll_labels
+#define PIANO_ROLL_LABELS PIANO_ROLL->piano_roll_labels
 
-typedef struct PianoRollLabelsWidget
+typedef struct _PianoRollLabelsWidget
 {
   GtkDrawingArea          parent_instance;
   int                     zoom_level;
@@ -45,17 +45,6 @@ typedef struct PianoRollLabelsWidget
   GtkGestureDrag          * drag;
   GtkGestureMultiPress    * multipress;
 } PianoRollLabelsWidget;
-
-typedef struct PianoRollLabelsWidgetClass
-{
-  GtkDrawingAreaClass       parent_class;
-} PianoRollLabelsWidgetClass;
-
-/**
- * Creates a piano_roll_labels.
- */
-PianoRollLabelsWidget *
-piano_roll_labels_widget_new ();
 
 #endif
 

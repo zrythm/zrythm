@@ -64,14 +64,14 @@ record_toggled_cb (GtkToggleButton * tg,
   if (gtk_toggle_button_get_active (tg))
     {
       GtkWidget * image = gtk_image_new_from_resource (
-              "/online/alextee/zrythm/record-on.svg");
+              "/org/zrythm/record-on.svg");
       gtk_button_set_image (GTK_BUTTON (MAIN_WINDOW->trans_record),
                             image);
     }
   else
     {
       GtkWidget * image = gtk_image_new_from_resource (
-              "/online/alextee/zrythm/record.svg");
+              "/org/zrythm/record.svg");
       gtk_button_set_image (GTK_BUTTON (MAIN_WINDOW->trans_record),
                             image);
 
@@ -100,22 +100,22 @@ transport_controls_init (MainWindowWidget * mw)
 {
   /* add icons */
   GtkWidget * image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/play.svg");
+          "/org/zrythm/play.svg");
   gtk_button_set_image (mw->play, image);
   image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/stop.svg");
+          "/org/zrythm/stop.svg");
   gtk_button_set_image (mw->stop, image);
   image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/record.svg");
+          "/org/zrythm/record.svg");
   gtk_button_set_image (GTK_BUTTON (mw->trans_record), image);
   image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/loop.svg");
+          "/org/zrythm/loop.svg");
   gtk_button_set_image (GTK_BUTTON (mw->loop), image);
   image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/forward.svg");
+          "/org/zrythm/forward.svg");
   gtk_button_set_image (GTK_BUTTON (mw->forward), image);
   image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/rewind.svg");
+          "/org/zrythm/rewind.svg");
   gtk_button_set_image (GTK_BUTTON (mw->backward), image);
 
   g_signal_connect (GTK_WIDGET (mw->play),

@@ -4,62 +4,56 @@
   <requires lib="gtk+" version="3.20"/>
   <template class="AutomationTrackWidget" parent="GtkPaned">
     <property name="visible">True</property>
-    <property name="can_focus">True</property>
+    <property name="can-focus">True</property>
     <property name="orientation">vertical</property>
     <child>
       <object class="GtkGrid" id="at_grid">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="visible">1</property>
         <child>
           <object class="GtkComboBox" id="selector">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="hexpand">True</property>
+            <property name="visible">1</property>
+            <property name="hexpand">1</property>
             <signal name="changed" handler="on_at_selector_changed" object="AutomationTrackWidget" swapped="no"/>
           </object>
           <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">0</property>
+            <property name="left-attach">0</property>
+            <property name="top-attach">0</property>
           </packing>
         </child>
         <child>
           <object class="GtkToggleButton" id="mute_toggle">
             <property name="label" translatable="yes">M</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
+            <property name="visible">1</property>
+            <property name="can-focus">1</property>
+            <property name="receives-default">1</property>
           </object>
           <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">0</property>
+            <property name="left-attach">1</property>
+            <property name="top-attach">0</property>
           </packing>
         </child>
         <child>
           <object class="GtkBox" id="value_box">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="visible">1</property>
             <property name="orientation">vertical</property>
-            <child>
-              <placeholder/>
-            </child>
           </object>
           <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">1</property>
+            <property name="left-attach">0</property>
+            <property name="top-attach">1</property>
           </packing>
         </child>
         <child>
           <object class="GtkButton" id="add_lane">
             <property name="label">gtk-add</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="use_stock">True</property>
+            <property name="visible">1</property>
+            <property name="can-focus">1</property>
+            <property name="receives-default">1</property>
+            <property name="use-stock">1</property>
             <signal name="clicked" handler="on_add_lane_clicked" object="AutomationTrackWidget" swapped="no"/>
           </object>
           <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">1</property>
+            <property name="left-attach">1</property>
+            <property name="top-attach">1</property>
           </packing>
         </child>
       </object>
@@ -67,9 +61,6 @@
         <property name="resize">True</property>
         <property name="shrink">False</property>
       </packing>
-    </child>
-    <child>
-      <placeholder/>
     </child>
   </template>
 </interface>

@@ -22,7 +22,7 @@
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/connections.h"
 #include "gui/widgets/mixer.h"
-#include "gui/widgets/piano_roll_page.h"
+#include "gui/widgets/piano_roll.h"
 #include "gui/widgets/rack.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
@@ -35,49 +35,6 @@ static void
 bot_dock_edge_widget_init (BotDockEdgeWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
-
-  self->mixer = mixer_widget_new ();
-  self->piano_roll_page = piano_roll_page_widget_new ();
-  self->connections = connections_widget_new ();
-  self->rack = rack_widget_new ();
-  GtkWidget * box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  gtk_box_pack_start (GTK_BOX (box),
-                      resources_get_icon ("piano_roll.svg"),
-                      Z_GTK_NO_EXPAND,
-                      Z_GTK_NO_FILL,
-                      2);
-  gtk_box_pack_end (GTK_BOX (box),
-                    gtk_label_new ("Piano Roll"),
-                    Z_GTK_NO_EXPAND,
-                    Z_GTK_NO_FILL,
-                    2);
-  gtk_widget_show_all (box);
-  gtk_notebook_prepend_page (
-    self->bot_notebook,
-    GTK_WIDGET (self->piano_roll_page),
-    box);
-  gtk_notebook_append_page (self->bot_notebook,
-                            GTK_WIDGET (self->rack),
-                            gtk_label_new ("Rack"));
-  gtk_notebook_append_page (self->bot_notebook,
-                            GTK_WIDGET (self->connections),
-                            gtk_label_new ("Connections"));
-  box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  gtk_box_pack_start (GTK_BOX (box),
-                      resources_get_icon ("mixer.svg"),
-                      Z_GTK_NO_EXPAND,
-                      Z_GTK_NO_FILL,
-                      2);
-  gtk_box_pack_end (GTK_BOX (box),
-                    gtk_label_new ("Mixer"),
-                    Z_GTK_NO_EXPAND,
-                    Z_GTK_NO_FILL,
-                    2);
-  gtk_widget_show_all (box);
-  gtk_notebook_append_page (self->bot_notebook,
-                            GTK_WIDGET (self->mixer),
-                            box);
-  gtk_widget_show_all (GTK_WIDGET (self->bot_notebook));
 
   /* set icons */
   gtk_button_set_image (
@@ -97,4 +54,20 @@ bot_dock_edge_widget_class_init (BotDockEdgeWidgetClass * _klass)
     klass,
     BotDockEdgeWidget,
     bot_notebook);
+  gtk_widget_class_bind_template_child (
+    klass,
+    BotDockEdgeWidget,
+    piano_roll);
+  gtk_widget_class_bind_template_child (
+    klass,
+    BotDockEdgeWidget,
+    mixer);
+  gtk_widget_class_bind_template_child (
+    klass,
+    BotDockEdgeWidget,
+    rack);
+  gtk_widget_class_bind_template_child (
+    klass,
+    BotDockEdgeWidget,
+    connections);
 }

@@ -7,20 +7,136 @@
     <property name="orientation">vertical</property>
     <child>
       <object class="GtkNotebook" id="bot_notebook">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="tab_pos">bottom</property>
+        <property name="visible">1</property>
+        <property name="can-focus">1</property>
+        <property name="tab-pos">bottom</property>
         <child>
-          <placeholder/>
+          <object class="PianoRollWidget" id="piano_roll">
+            <property name="visible">1</property>
+          </object>
         </child>
         <child type="tab">
-          <placeholder/>
+          <object class="GtkBox">
+            <property name="visible">1</property>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">1</property>
+                <property name="resource">/org/zrythm/icons/piano_roll.svg</property>
+              </object>
+              <packing>
+                <property name="expand">0</property>
+                <property name="fill">0</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">1</property>
+                <property name="label">Piano Roll</property>
+              </object>
+              <packing>
+                <property name="expand">0</property>
+                <property name="fill">0</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
         </child>
         <child>
-          <placeholder/>
+          <object class="MixerWidget" id="mixer">
+            <property name="visible">1</property>
+          </object>
         </child>
         <child type="tab">
-          <placeholder/>
+          <object class="GtkBox">
+            <property name="visible">1</property>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">1</property>
+                <property name="resource">/org/zrythm/icons/mixer.svg</property>
+              </object>
+              <packing>
+                <property name="expand">0</property>
+                <property name="fill">0</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">1</property>
+                <property name="label">Mixer</property>
+              </object>
+              <packing>
+                <property name="expand">0</property>
+                <property name="fill">0</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="RackWidget" id="rack">
+            <property name="visible">1</property>
+          </object>
+        </child>
+        <child type="tab">
+          <object class="GtkBox">
+            <property name="visible">1</property>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">1</property>
+                <property name="resource">/org/zrythm/icons/rack.svg</property>
+              </object>
+              <packing>
+                <property name="expand">0</property>
+                <property name="fill">0</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">1</property>
+                <property name="label">Rack</property>
+              </object>
+              <packing>
+                <property name="expand">0</property>
+                <property name="fill">0</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="ConnectionsWidget" id="connections">
+            <property name="visible">1</property>
+          </object>
+        </child>
+        <child type="tab">
+          <object class="GtkBox">
+            <property name="visible">1</property>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">1</property>
+                <property name="resource">/org/zrythm/icons/connections.svg</property>
+              </object>
+              <packing>
+                <property name="expand">0</property>
+                <property name="fill">0</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">1</property>
+                <property name="label">Connections</property>
+              </object>
+              <packing>
+                <property name="expand">0</property>
+                <property name="fill">0</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
         </child>
       </object>
       <packing>
@@ -31,5 +147,3 @@
     </child>
   </template>
 </interface>
-
-

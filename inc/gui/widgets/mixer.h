@@ -35,7 +35,7 @@ G_DECLARE_FINAL_TYPE (MixerWidget,
 
 #define MW_MIXER MW_BOT_DOCK_EDGE->mixer
 
-typedef struct DragDestBoxWidget DragDestBoxWidget;
+typedef struct _DragDestBoxWidget DragDestBoxWidget;
 
 typedef struct _MixerWidget
 {

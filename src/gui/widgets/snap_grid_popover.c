@@ -60,7 +60,7 @@ static void
 snap_grid_popover_widget_class_init (SnapGridPopoverWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
-                                               "/online/alextee/zrythm/ui/snap_grid_popover.ui");
+                                               "/org/zrythm/ui/snap_grid_popover.ui");
 
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         SnapGridPopoverWidget,

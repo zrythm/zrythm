@@ -1,5 +1,5 @@
 /*
- * utils/resources.h - resource utils
+ * gui/widgets/midi_ruler.c - Ruler
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,25 +19,25 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __UTILS_RESOURCES_H__
-#define __UTILS_RESOURCES_H__
+#include "gui/widgets/ruler.h"
+#include "gui/widgets/midi_ruler.h"
 
 #include <gtk/gtk.h>
 
-#define RESOURCE_PATH "/org/zrythm/"
-#define TEMPLATE_PATH "ui/"
-#define ICON_PATH "icons/"
+G_DEFINE_TYPE (MidiRulerWidget,
+               midi_ruler_widget,
+               RULER_WIDGET_TYPE)
 
-GtkWidget *
-resources_get_icon (const char * filename); ///< the path after .../icons/
+static void
+midi_ruler_widget_class_init (
+  MidiRulerWidgetClass * klass)
+{
+}
 
-/**
- * Sets class template from resource.
- *
- * Filename is part after .../ui/
- */
-void
-resources_set_class_template (GtkWidgetClass * klass,
-                              const char * filename);
+static void
+midi_ruler_widget_init (
+  MidiRulerWidget * self)
+{
+  g_message ("initing midi ruler");
+}
 
-#endif

@@ -25,15 +25,15 @@
 #include <gtk/gtk.h>
 
 #define SNAP_GRID_WIDGET_TYPE                  (snap_grid_widget_get_type ())
-#define SNAP_GRID_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), SNAP_GRID_WIDGET_TYPE, SnapGridWidget))
-#define SNAP_GRID_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), SNAP_GRID_WIDGET, SnapGridWidgetClass))
-#define IS_SNAP_GRID_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SNAP_GRID_WIDGET_TYPE))
-#define IS_SNAP_GRID_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), SNAP_GRID_WIDGET_TYPE))
-#define SNAP_GRID_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), SNAP_GRID_WIDGET_TYPE, SnapGridWidgetClass))
+G_DECLARE_FINAL_TYPE (SnapGridWidget,
+                      snap_grid_widget,
+                      SNAP_GRID,
+                      WIDGET,
+                      GtkMenuButton)
 
 typedef struct SnapGridPopoverWidget SnapGridPopoverWidget;
 
-typedef struct SnapGridWidget
+typedef struct _SnapGridWidget
 {
   GtkMenuButton           parent_instance;
   GtkBox *                box; ///< the box
@@ -44,19 +44,10 @@ typedef struct SnapGridWidget
   SnapGrid                * snap_grid;
 } SnapGridWidget;
 
-typedef struct SnapGridWidgetClass
-{
-  GtkMenuButtonClass       parent_class;
-} SnapGridWidgetClass;
-
 typedef struct SnapGrid SnapGrid;
 
-/**
- * Creates a digital meter with the given type (bpm or position).
- */
-SnapGridWidget *
-snap_grid_widget_new (SnapGrid * snap_grid);
+void
+snap_grid_widget_setup (SnapGridWidget * self,
+                        SnapGrid * snap_grid);
 
 #endif
-
-

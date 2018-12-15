@@ -37,7 +37,9 @@
 #include "utils/gtk.h"
 #include "utils/ui.h"
 
-G_DEFINE_TYPE (DragDestBoxWidget, drag_dest_box_widget, GTK_TYPE_BOX)
+G_DEFINE_TYPE (DragDestBoxWidget,
+               drag_dest_box_widget,
+               GTK_TYPE_BOX)
 
 static int counter = 0;
 
@@ -109,6 +111,12 @@ drag_dest_box_widget_new (GtkOrientation  orientation,
                             NULL);
   self->type = type;
 
+  /* make expandable */
+  gtk_widget_set_vexpand (GTK_WIDGET (self),
+                          1);
+  gtk_widget_set_hexpand (GTK_WIDGET (self),
+                          1);
+
   /* set as drag dest */
   gtk_drag_dest_set (GTK_WIDGET (self),
                             GTK_DEST_DEFAULT_ALL,
@@ -120,6 +128,10 @@ drag_dest_box_widget_new (GtkOrientation  orientation,
   g_signal_connect (GTK_WIDGET (self),
                     "drag-data-received",
                     G_CALLBACK(on_drag_data_received), NULL);
+
+  /* show */
+  gtk_widget_set_visible (GTK_WIDGET (self),
+                          1);
 
   return self;
 }

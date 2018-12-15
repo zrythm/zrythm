@@ -23,13 +23,13 @@
 #include "gui/widgets/rack_row.h"
 #include "utils/gtk.h"
 
-G_DEFINE_TYPE (RackWidget, rack_widget, GTK_TYPE_SCROLLED_WINDOW)
+G_DEFINE_TYPE (RackWidget,
+               rack_widget,
+               GTK_TYPE_SCROLLED_WINDOW)
 
-RackWidget *
-rack_widget_new ()
+static void
+rack_widget_init (RackWidget * self)
 {
-  RackWidget * self = g_object_new (RACK_WIDGET_TYPE,
-                                    NULL);
   self->main_box = GTK_BOX (
     gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_widget_set_valign (GTK_WIDGET (self->main_box), GTK_ALIGN_START);
@@ -71,13 +71,6 @@ rack_widget_new ()
                     Z_GTK_EXPAND,
                     Z_GTK_FILL,
                     0);
-
-  return self;
-}
-
-static void
-rack_widget_init (RackWidget * self)
-{
 }
 
 static void

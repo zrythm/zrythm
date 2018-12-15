@@ -26,11 +26,11 @@
 #include <gtk/gtk.h>
 
 #define DRAG_DEST_BOX_WIDGET_TYPE                  (drag_dest_box_widget_get_type ())
-#define DRAG_DEST_BOX_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), DRAG_DEST_BOX_WIDGET_TYPE, DragDestBoxWidget))
-#define DRAG_DEST_BOX_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), DRAG_DEST_BOX_WIDGET, DragDestBoxWidgetClass))
-#define IS_DRAG_DEST_BOX_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), DRAG_DEST_BOX_WIDGET_TYPE))
-#define IS_DRAG_DEST_BOX_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), DRAG_DEST_BOX_WIDGET_TYPE))
-#define DRAG_DEST_BOX_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), DRAG_DEST_BOX_WIDGET_TYPE, DragDestBoxWidgetClass))
+G_DECLARE_FINAL_TYPE (DragDestBoxWidget,
+                      drag_dest_box_widget,
+                      DRAG_DEST_BOX,
+                      WIDGET,
+                      GtkBox)
 
 typedef struct Channel Channel;
 
@@ -40,16 +40,11 @@ typedef enum DragDestBoxType
   DRAG_DEST_BOX_TYPE_TRACKLIST
 } DragDestBoxType;
 
-typedef struct DragDestBoxWidget
+typedef struct _DragDestBoxWidget
 {
   GtkBox                  parent_instance;
   DragDestBoxType         type;
 } DragDestBoxWidget;
-
-typedef struct DragDestBoxWidgetClass
-{
-  GtkBoxClass             parent_class;
-} DragDestBoxWidgetClass;
 
 /**
  * Creates a drag destination box widget.
@@ -60,5 +55,3 @@ drag_dest_box_widget_new (GtkOrientation  orientation,
                           DragDestBoxType type);
 
 #endif
-
-

@@ -4,30 +4,18 @@
   <requires lib="gtk+" version="3.20"/>
   <template class="LeftDockEdgeWidget" parent="GtkBox">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="orientation">vertical</property>
     <child>
       <object class="GtkNotebook" id="inspector_notebook">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="tab_pos">left</property>
-        <child>
-          <placeholder/>
+        <property name="visible">1</property>
+        <property name="can-focus">1</property>
+        <property name="tab-pos">left</property>
+        <child type="tab">
         </child>
         <child type="tab">
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
         </child>
         <child type="tab">
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child type="tab">
-          <placeholder/>
         </child>
       </object>
       <packing>

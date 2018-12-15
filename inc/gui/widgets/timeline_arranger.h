@@ -25,7 +25,7 @@
 
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/piano_roll_page.h"
+#include "gui/widgets/piano_roll.h"
 #include "audio/position.h"
 
 #include <gtk/gtk.h>
@@ -49,6 +49,7 @@ typedef struct AutomationTrack AutomationTrack;
 
 typedef struct _TimelineArrangerWidget
 {
+  ArrangerWidget           parent_instance;
   Region *                 regions[600];  ///< regions doing action upon (timeline)
   int                      num_regions;
   Region *                 start_region; ///< clicked region
@@ -64,9 +65,6 @@ typedef struct _TimelineArrangerWidget
   Position                 region_start_poses[600]; ///< region initial start positions, for moving regions
   Position                 ap_poses[600]; ///< for moving regions
 } TimelineArrangerWidget;
-
-TimelineArrangerWidget *
-timeline_arranger_widget_new (SnapGrid * snap_grid);
 
 /**
  * To be called from get_child_position in parent widget.
@@ -195,6 +193,8 @@ void
 timeline_arranger_widget_on_drag_end (
   TimelineArrangerWidget * self);
 
-GType timeline_arranger_widget_get_type(void);
+void
+timeline_arranger_widget_setup (
+  TimelineArrangerWidget * self);
 
 #endif

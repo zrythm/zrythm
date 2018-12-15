@@ -23,7 +23,9 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (PianoRollLabelsWidget, piano_roll_labels_widget, GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (PianoRollLabelsWidget,
+               piano_roll_labels_widget,
+               GTK_TYPE_DRAWING_AREA)
 
 static char * notes[12] = {
     "C",
@@ -255,11 +257,22 @@ drag_end (GtkGestureDrag *gesture,
 {
 }
 
-PianoRollLabelsWidget *
-piano_roll_labels_widget_new ()
+static void
+piano_roll_labels_widget_class_init (PianoRollLabelsWidgetClass * klass)
 {
-  g_message ("Creating piano roll labels...");
-  PianoRollLabelsWidget * self = g_object_new (PIANO_ROLL_LABELS_WIDGET_TYPE, NULL);
+}
+
+static void
+piano_roll_labels_widget_init (PianoRollLabelsWidget * self)
+{
+  /* make it able to notify */
+  gtk_widget_add_events (GTK_WIDGET (self),
+                         GDK_ALL_EVENTS_MASK);
+
+  self->drag = GTK_GESTURE_DRAG (
+                gtk_gesture_drag_new (GTK_WIDGET (self)));
+  self->multipress = GTK_GESTURE_MULTI_PRESS (
+                gtk_gesture_multi_press_new (GTK_WIDGET (self)));
 
   /* adjust for zoom level */
   self->zoom_level = 3;
@@ -284,25 +297,5 @@ piano_roll_labels_widget_new ()
                     G_CALLBACK (drag_end),  self);
   g_signal_connect (G_OBJECT (self->multipress), "pressed",
                     G_CALLBACK (multipress_pressed), self);
-
-  return self;
-}
-
-static void
-piano_roll_labels_widget_class_init (PianoRollLabelsWidgetClass * klass)
-{
-}
-
-static void
-piano_roll_labels_widget_init (PianoRollLabelsWidget * self)
-{
-  /* make it able to notify */
-  gtk_widget_add_events (GTK_WIDGET (self),
-                         GDK_ALL_EVENTS_MASK);
-
-  self->drag = GTK_GESTURE_DRAG (
-                gtk_gesture_drag_new (GTK_WIDGET (self)));
-  self->multipress = GTK_GESTURE_MULTI_PRESS (
-                gtk_gesture_multi_press_new (GTK_WIDGET (self)));
 }
 

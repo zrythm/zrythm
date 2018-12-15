@@ -23,7 +23,9 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (ColorAreaWidget, color_area_widget, GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (ColorAreaWidget,
+               color_area_widget,
+               GTK_TYPE_DRAWING_AREA)
 
 /**
  * Draws the color picker.

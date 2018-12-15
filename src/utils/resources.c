@@ -29,6 +29,7 @@ resources_get_icon (const char * filename) ///< the path after .../icons/
                    ICON_PATH,
                    filename);
   GtkWidget * icon = gtk_image_new_from_resource (path);
+  gtk_widget_set_visible (icon, 1);
   g_free (path);
   return icon;
 }

@@ -1,5 +1,5 @@
 /*
- * utils/resources.h - resource utils
+ * inc/gui/widgets/ruler.h - Ruler
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -16,28 +16,28 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __UTILS_RESOURCES_H__
-#define __UTILS_RESOURCES_H__
+#ifndef __GUI_WIDGETS_TIMELINE_RULER_H__
+#define __GUI_WIDGETS_TIMELINE_RULER_H__
+
+#include "gui/widgets/ruler.h"
 
 #include <gtk/gtk.h>
 
-#define RESOURCE_PATH "/org/zrythm/"
-#define TEMPLATE_PATH "ui/"
-#define ICON_PATH "icons/"
+#define TIMELINE_RULER_WIDGET_TYPE                  (timeline_ruler_widget_get_type ())
+G_DECLARE_FINAL_TYPE (TimelineRulerWidget,
+                      timeline_ruler_widget,
+                      TIMELINE_RULER,
+                      WIDGET,
+                      RulerWidget)
 
-GtkWidget *
-resources_get_icon (const char * filename); ///< the path after .../icons/
+#define MW_RULER MW_CENTER_DOCK->ruler
 
-/**
- * Sets class template from resource.
- *
- * Filename is part after .../ui/
- */
-void
-resources_set_class_template (GtkWidgetClass * klass,
-                              const char * filename);
+typedef struct _TimelineRulerWidget
+{
+  RulerWidget           parent_instance;
+} TimelineRulerWidget;
 
 #endif

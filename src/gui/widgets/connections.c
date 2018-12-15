@@ -28,7 +28,9 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (ConnectionsWidget, connections_widget, GTK_TYPE_GRID)
+G_DEFINE_TYPE (ConnectionsWidget,
+               connections_widget,
+               GTK_TYPE_GRID)
 
 static int
 draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
@@ -300,30 +302,6 @@ setup_combo_box (GtkComboBoxText * cb)
                                  &iter);
 }
 
-ConnectionsWidget *
-connections_widget_new ()
-{
-  ConnectionsWidget * self = g_object_new (CONNECTIONS_WIDGET_TYPE, NULL);
-  setup_combo_box (self->select_src_cb);
-  setup_combo_box (self->select_dest_cb);
-  self->src_au = audio_unit_widget_new (0);
-  gtk_container_add (GTK_CONTAINER (self->src_au_viewport),
-                     GTK_WIDGET (self->src_au));
-  self->dest_au = audio_unit_widget_new (1);
-  gtk_container_add (GTK_CONTAINER (self->dest_au_viewport),
-                     GTK_WIDGET (self->dest_au));
-
-  /* connect signals */
-  g_signal_connect (G_OBJECT (self->select_src_cb), "changed",
-                    G_CALLBACK (on_selector_changed), self);
-  g_signal_connect (G_OBJECT (self->select_dest_cb), "changed",
-                    G_CALLBACK (on_selector_changed), self);
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), self);
-
-  return self;
-}
-
 void
 connections_widget_update (ConnectionsWidget * self)
 {
@@ -338,7 +316,7 @@ connections_widget_class_init (ConnectionsWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (
                         GTK_WIDGET_CLASS (klass),
-                        "/online/alextee/zrythm/ui/connections.ui");
+                        "/org/zrythm/ui/connections.ui");
 
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         ConnectionsWidget,
@@ -358,5 +336,21 @@ static void
 connections_widget_init (ConnectionsWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
-}
 
+  setup_combo_box (self->select_src_cb);
+  setup_combo_box (self->select_dest_cb);
+  self->src_au = audio_unit_widget_new (0);
+  gtk_container_add (GTK_CONTAINER (self->src_au_viewport),
+                     GTK_WIDGET (self->src_au));
+  self->dest_au = audio_unit_widget_new (1);
+  gtk_container_add (GTK_CONTAINER (self->dest_au_viewport),
+                     GTK_WIDGET (self->dest_au));
+
+  /* connect signals */
+  g_signal_connect (G_OBJECT (self->select_src_cb), "changed",
+                    G_CALLBACK (on_selector_changed), self);
+  g_signal_connect (G_OBJECT (self->select_dest_cb), "changed",
+                    G_CALLBACK (on_selector_changed), self);
+  g_signal_connect (G_OBJECT (self), "draw",
+                    G_CALLBACK (draw_cb), self);
+}

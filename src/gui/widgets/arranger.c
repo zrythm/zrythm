@@ -42,12 +42,14 @@
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_arranger_bg.h"
 #include "gui/widgets/midi_note.h"
-#include "gui/widgets/piano_roll_page.h"
+#include "gui/widgets/midi_ruler.h"
+#include "gui/widgets/piano_roll.h"
 #include "gui/widgets/piano_roll_labels.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
+#include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "utils/arrays.h"
@@ -55,7 +57,9 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE_WITH_PRIVATE (ArrangerWidget, arranger_widget, GTK_TYPE_OVERLAY)
+G_DEFINE_TYPE_WITH_PRIVATE (ArrangerWidget,
+                            arranger_widget,
+                            GTK_TYPE_OVERLAY)
 
 #define T_MIDI prv->type == ARRANGER_TYPE_MIDI
 #define T_TIMELINE prv->type == ARRANGER_TYPE_TIMELINE
@@ -70,17 +74,32 @@ arranger_widget_get_private (ArrangerWidget * self)
 /**
  * Gets x position in pixels.
  *
- * FIXME should be in ruler.
  */
 int
-arranger_widget_get_x_pos_in_px (ArrangerWidget * self,
+arranger_widget_pos_to_px (ArrangerWidget * self,
                           Position * pos)
 {
-  return (pos->bars - 1) * MW_RULER->px_per_bar +
-  (pos->beats - 1) * MW_RULER->px_per_beat +
-  (pos->quarter_beats - 1) * MW_RULER->px_per_quarter_beat +
-  pos->ticks * MW_RULER->px_per_tick +
-  SPACE_BEFORE_START;
+  GET_PRIVATE;
+  RulerWidget * ruler = T_MIDI ?
+    RULER_WIDGET (MIDI_RULER) :
+    RULER_WIDGET (MW_RULER);
+  int px = ruler_widget_pos_to_px (ruler,
+                                   pos);
+  return px + SPACE_BEFORE_START;
+}
+
+void
+arranger_widget_px_to_pos (ArrangerWidget * self,
+                           Position * pos,
+                           int              px)
+{
+  GET_PRIVATE;
+  RulerWidget * ruler = T_MIDI ?
+    RULER_WIDGET (MIDI_RULER) :
+    RULER_WIDGET (MW_RULER);
+  ruler_widget_px_to_pos (ruler,
+                          pos,
+                          px - SPACE_BEFORE_START);
 }
 
 /**
@@ -527,9 +546,9 @@ drag_begin (GtkGestureDrag * gesture,
       else if (prv->n_press == 2)
         {
           Position pos;
-          ruler_widget_px_to_pos (
-                               &pos,
-                               start_x - SPACE_BEFORE_START);
+          arranger_widget_px_to_pos (self,
+                                     &pos,
+                                     start_x);
 
           Track * track = NULL;
           AutomationTrack * at = NULL;
@@ -543,8 +562,8 @@ drag_begin (GtkGestureDrag * gesture,
             }
           else if (T_MIDI)
             {
-              note = (PIANO_ROLL_PAGE->piano_roll_labels->total_px - start_y) /
-                PIANO_ROLL_PAGE->piano_roll_labels->px_per_note;
+              note = (PIANO_ROLL->piano_roll_labels->total_px - start_y) /
+                PIANO_ROLL->piano_roll_labels->px_per_note;
 
               /* if inside a region */
               MidiArrangerWidget * maw =
@@ -639,8 +658,9 @@ drag_update (GtkGestureDrag * gesture,
   else if (prv->action == ARRANGER_ACTION_RESIZING_L)
     {
       Position pos;
-      ruler_widget_px_to_pos (&pos,
-                 (prv->start_x + offset_x) - SPACE_BEFORE_START);
+      arranger_widget_px_to_pos (self,
+                                 &pos,
+                                 prv->start_x + offset_x);
       if (T_TIMELINE)
         {
           timeline_arranger_widget_snap_regions_l (
@@ -657,8 +677,9 @@ drag_update (GtkGestureDrag * gesture,
   else if (prv->action == ARRANGER_ACTION_RESIZING_R)
     {
       Position pos;
-      ruler_widget_px_to_pos (&pos,
-                 (prv->start_x + offset_x) - SPACE_BEFORE_START);
+      arranger_widget_px_to_pos (self,
+                                 &pos,
+                                 prv->start_x + offset_x);
       if (T_TIMELINE)
         {
           timeline_arranger_widget_snap_regions_r (
@@ -677,7 +698,14 @@ drag_update (GtkGestureDrag * gesture,
   else if (prv->action == ARRANGER_ACTION_MOVING)
     {
       Position diff_pos;
-      ruler_widget_px_to_pos (&diff_pos,
+      RulerWidget * ruler =
+        T_MIDI ?
+        RULER_WIDGET (MIDI_RULER) :
+        RULER_WIDGET (MW_RULER);
+      /* note: using ruler here because SPACE_BEFORE_START
+       * is irrelevant */
+      ruler_widget_px_to_pos (ruler,
+                              &diff_pos,
                               offset_x);
       int frames_diff = position_to_frames (&diff_pos);
       Position new_start_pos;
@@ -732,7 +760,7 @@ drag_update (GtkGestureDrag * gesture,
     }
   else if (T_TIMELINE)
     {
-      gtk_widget_queue_allocate (GTK_WIDGET (PIANO_ROLL_PAGE->midi_arranger));
+      gtk_widget_queue_allocate (GTK_WIDGET (MIDI_ARRANGER));
     }
   prv->last_offset_x = offset_x;
   prv->last_offset_y = offset_y;
@@ -835,6 +863,17 @@ arranger_widget_setup (ArrangerWidget *   self,
                     G_CALLBACK (on_key_action), self);
   g_signal_connect (G_OBJECT (self), "key-release-event",
                     G_CALLBACK (on_key_action), self);
+
+  if (T_TIMELINE)
+    {
+      timeline_arranger_widget_setup (
+        TIMELINE_ARRANGER_WIDGET (self));
+    }
+  else if (T_MIDI)
+    {
+      /*midi_arranger_widget_setup (*/
+        /*MIDI_ARRANGER_WIDGET (self));*/
+    }
 }
 
 static void

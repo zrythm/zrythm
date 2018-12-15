@@ -81,11 +81,11 @@ instrument_track_widget_new (InstrumentTrack * ins_track,
   gtk_container_add (
     GTK_CONTAINER (self->solo),
     gtk_image_new_from_resource (
-     "/online/alextee/zrythm/solo.svg"));
+     "/org/zrythm/solo.svg"));
   gtk_container_add (
     GTK_CONTAINER (self->mute),
     gtk_image_new_from_resource (
-     "/online/alextee/zrythm/mute.svg"));
+     "/org/zrythm/mute.svg"));
   gtk_container_add (
     GTK_CONTAINER (self->record),
     gtk_image_new_from_icon_name ("gtk-media-record",
@@ -102,16 +102,16 @@ instrument_track_widget_new (InstrumentTrack * ins_track,
     {
     case CT_MIDI:
       gtk_image_set_from_resource (self->icon,
-                                   "/online/alextee/zrythm/instrument.svg");
+                                   "/org/zrythm/instrument.svg");
       break;
     case CT_AUDIO:
     case CT_MASTER:
       gtk_image_set_from_resource (self->icon,
-                                   "/online/alextee/zrythm/audio.svg");
+                                   "/org/zrythm/audio.svg");
       break;
     case CT_BUS:
       gtk_image_set_from_resource (self->icon,
-                                   "/online/alextee/zrythm/bus.svg");
+                                   "/org/zrythm/bus.svg");
       break;
     }
 
@@ -132,7 +132,7 @@ instrument_track_widget_class_init (InstrumentTrackWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (
     GTK_WIDGET_CLASS (klass),
-    "/online/alextee/zrythm/ui/instrument_track.ui");
+    "/org/zrythm/ui/instrument_track.ui");
 
   gtk_widget_class_bind_template_child (
     GTK_WIDGET_CLASS (klass),

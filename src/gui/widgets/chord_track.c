@@ -60,10 +60,10 @@ chord_track_widget_new (ChordTrack * track,
   gtk_container_add (
     GTK_CONTAINER (self->mute),
     gtk_image_new_from_resource (
-     "/online/alextee/zrythm/mute.svg"));
+     "/org/zrythm/mute.svg"));
 
   gtk_image_set_from_resource (self->icon,
-                               "/online/alextee/zrythm/chord.svg");
+                               "/org/zrythm/chord.svg");
 
   return self;
 }
@@ -78,7 +78,7 @@ static void
 chord_track_widget_class_init (ChordTrackWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
-                                               "/online/alextee/zrythm/ui/chord_track.ui");
+                                               "/org/zrythm/ui/chord_track.ui");
 
   gtk_widget_class_bind_template_child (
     GTK_WIDGET_CLASS (klass),

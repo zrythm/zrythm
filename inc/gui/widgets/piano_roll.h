@@ -19,28 +19,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_PIANO_ROLL_PAGE_H__
-#define __GUI_WIDGETS_PIANO_ROLL_PAGE_H__
+#ifndef __GUI_WIDGETS_PIANO_ROLL_H__
+#define __GUI_WIDGETS_PIANO_ROLL_H__
 
 #include "gui/widgets/main_window.h"
 
 #include <gtk/gtk.h>
 
-#define PIANO_ROLL_PAGE_WIDGET_TYPE                  (piano_roll_page_widget_get_type ())
-G_DECLARE_FINAL_TYPE (PianoRollPageWidget,
-                      piano_roll_page,
-                      PIANO_ROLL_PAGE,
+#define PIANO_ROLL_WIDGET_TYPE                  (piano_roll_widget_get_type ())
+G_DECLARE_FINAL_TYPE (PianoRollWidget,
+                      piano_roll_widget,
+                      PIANO_ROLL,
                       WIDGET,
                       GtkBox)
 
-#define PIANO_ROLL_PAGE MW_BOT_DOCK_EDGE->piano_roll_page
+#define PIANO_ROLL MW_BOT_DOCK_EDGE->piano_roll
 
-typedef struct PianoRollLabelsWidget PianoRollLabelsWidget;
+typedef struct _PianoRollLabelsWidget PianoRollLabelsWidget;
 typedef struct PianoRollNotesWidget PianoRollNotesWidget;
 typedef struct _MidiArrangerWidget MidiArrangerWidget;
-typedef struct _RulerWidget RulerWidget;
+typedef struct _MidiRulerWidget MidiRulerWidget;
 
-typedef struct _PianoRollPageWidget
+typedef struct _PianoRollWidget
 {
   GtkBox                   parent_instance;
   GtkBox                   * midi_track_color_box;
@@ -51,7 +51,7 @@ typedef struct _PianoRollPageWidget
   GtkBox                   * midi_ruler_box;
   GtkScrolledWindow        * midi_ruler_scroll;
   GtkViewport              * midi_ruler_viewport;
-  RulerWidget              * midi_ruler;
+  MidiRulerWidget *        ruler;
   GtkBox                   * midi_notes_labels_box; ///< shows note labels C, C#, etc.
   GtkScrolledWindow        * piano_roll_labels_scroll;
   GtkViewport              * piano_roll_labels_viewport;
@@ -63,10 +63,11 @@ typedef struct _PianoRollPageWidget
   GtkBox                   * midi_arranger_box; ///< piano roll
   GtkScrolledWindow        * piano_roll_arranger_scroll;
   GtkViewport              * piano_roll_arranger_viewport;
-  MidiArrangerWidget *     midi_arranger;
+  MidiArrangerWidget *     arranger;
 } MidiEditorWidget;
 
-PianoRollPageWidget *
-piano_roll_page_widget_new ();
+void
+piano_roll_widget_link_scrolls (
+  PianoRollWidget * self);
 
 #endif

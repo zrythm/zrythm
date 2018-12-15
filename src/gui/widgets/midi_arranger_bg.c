@@ -29,9 +29,11 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_arranger_bg.h"
+#include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/ruler.h"
-#include "gui/widgets/piano_roll_page.h"
+#include "gui/widgets/piano_roll.h"
 #include "gui/widgets/piano_roll_labels.h"
+#include "gui/widgets/ruler.h"
 #include "gui/widgets/tracklist.h"
 
 #include <gtk/gtk.h>
@@ -42,16 +44,23 @@ static void
 draw_borders (cairo_t * cr,
               int y_offset)
 {
+  RULER_WIDGET_GET_PRIVATE (MIDI_RULER);
   cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
   cairo_set_line_width (cr, 0.5);
   cairo_move_to (cr, 0, y_offset);
-  cairo_line_to (cr, MW_RULER->total_px, y_offset);
+  cairo_line_to (cr, prv->total_px, y_offset);
   cairo_stroke (cr);
 }
 
 static gboolean
 draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
 {
+  if (!MAIN_WINDOW || !MIDI_ARRANGER || !PIANO_ROLL ||
+      !MIDI_RULER)
+    return FALSE;
+
+  RULER_WIDGET_GET_PRIVATE (MIDI_RULER);
+
   /*GdkRGBA color;*/
   GtkStyleContext *context;
 
@@ -62,54 +71,54 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
 
   /* get positions in px */
   static int playhead_pos_in_px;
-  /*playhead_pos_in_px =*/
-    /*(TRANSPORT->playhead_pos.bars - 1) * MW_RULER->px_per_bar +*/
-    /*(TRANSPORT->playhead_pos.beats - 1) * MW_RULER->px_per_beat +*/
-    /*(TRANSPORT->playhead_pos.quarter_beats - 1) * MW_RULER->px_per_quarter_beat +*/
-    /*TRANSPORT->playhead_pos.ticks * MW_RULER->px_per_tick;*/
+  playhead_pos_in_px =
+    (TRANSPORT->playhead_pos.bars - 1) * prv->px_per_bar +
+    (TRANSPORT->playhead_pos.beats - 1) * prv->px_per_beat +
+    (TRANSPORT->playhead_pos.quarter_beats - 1) * prv->px_per_quarter_beat +
+    TRANSPORT->playhead_pos.ticks * prv->px_per_tick;
 
-  /*gtk_render_background (context, cr, 0, 0, MW_RULER->total_px, height);*/
+  gtk_render_background (context, cr, 0, 0, prv->total_px, height);
 
   /* handle vertical drawing */
-  /*for (int i = SPACE_BEFORE_START; i < MW_RULER->total_px; i++)*/
-  /*{*/
-    /*int actual_pos = i - SPACE_BEFORE_START;*/
-    /*if (actual_pos == playhead_pos_in_px)*/
-      /*{*/
-          /*cairo_set_source_rgb (cr, 1, 0, 0);*/
-          /*cairo_set_line_width (cr, 2);*/
-          /*cairo_move_to (cr, i, 0);*/
-          /*cairo_line_to (cr, i, height);*/
-          /*cairo_stroke (cr);*/
-      /*}*/
-      /*if (actual_pos % MW_RULER->px_per_bar == 0)*/
-      /*{*/
-          /*cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);*/
-          /*cairo_set_line_width (cr, 1);*/
-          /*cairo_move_to (cr, i, 0);*/
-          /*cairo_line_to (cr, i, height);*/
-          /*cairo_stroke (cr);*/
-      /*}*/
-      /*else if (actual_pos % MW_RULER->px_per_beat == 0)*/
-      /*{*/
-          /*cairo_set_source_rgb (cr, 0.25, 0.25, 0.25);*/
-          /*cairo_set_line_width (cr, 0.5);*/
-          /*cairo_move_to (cr, i, 0);*/
-          /*cairo_line_to (cr, i, height);*/
-          /*cairo_stroke (cr);*/
-      /*}*/
-  /*}*/
+  for (int i = SPACE_BEFORE_START; i < prv->total_px; i++)
+  {
+    int actual_pos = i - SPACE_BEFORE_START;
+    if (actual_pos == playhead_pos_in_px)
+      {
+          cairo_set_source_rgb (cr, 1, 0, 0);
+          cairo_set_line_width (cr, 2);
+          cairo_move_to (cr, i, 0);
+          cairo_line_to (cr, i, height);
+          cairo_stroke (cr);
+      }
+      if (actual_pos % prv->px_per_bar == 0)
+      {
+          cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);
+          cairo_set_line_width (cr, 1);
+          cairo_move_to (cr, i, 0);
+          cairo_line_to (cr, i, height);
+          cairo_stroke (cr);
+      }
+      else if (actual_pos % prv->px_per_beat == 0)
+      {
+          cairo_set_source_rgb (cr, 0.25, 0.25, 0.25);
+          cairo_set_line_width (cr, 0.5);
+          cairo_move_to (cr, i, 0);
+          cairo_line_to (cr, i, height);
+          cairo_stroke (cr);
+      }
+  }
 
-  /* handle horizontal drawing */
-  /*for (int i = 0; i < 128; i++)*/
-    /*{*/
-      /*draw_borders (cr,*/
-                    /*PIANO_ROLL_PAGE->piano_roll_labels->px_per_note * i);*/
-    /*}*/
+  /*handle horizontal drawing*/
+  for (int i = 0; i < 128; i++)
+    {
+      draw_borders (cr,
+                    PIANO_ROLL->piano_roll_labels->px_per_note * i);
+    }
 
-  /*[> draw selections <]*/
-  /*arranger_bg_draw_selections (ARRANGER_WIDGET (MIDI_ARRANGER),*/
-                               /*cr);*/
+  /* draw selections */
+  arranger_bg_draw_selections (ARRANGER_WIDGET (MIDI_ARRANGER),
+                               cr);
 
   return 0;
 }
@@ -149,8 +158,8 @@ drag_end (GtkGestureDrag *gesture,
                gdouble         offset_y,
                gpointer        user_data)
 {
-  RulerWidget * self = (RulerWidget *) user_data;
-  self->start_x = 0;
+  RULER_WIDGET_GET_PRIVATE (user_data);
+  prv->start_x = 0;
 }
 
 MidiArrangerBgWidget *
@@ -158,10 +167,10 @@ midi_arranger_bg_widget_new ()
 {
   MidiArrangerBgWidget * self = g_object_new (MIDI_ARRANGER_BG_WIDGET_TYPE, NULL);
 
-  // set the size
+  // set the size FIXME uncomment
   int ww, hh;
   /*PianoRollLabelsWidget * piano_roll_labels =*/
-    /*PIANO_ROLL_PAGE->piano_roll_labels;*/
+    /*PIANO_ROLL->piano_roll_labels;*/
   /*gtk_widget_get_size_request (*/
     /*GTK_WIDGET (piano_roll_labels),*/
     /*&ww,*/

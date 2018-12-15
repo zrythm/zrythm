@@ -35,8 +35,9 @@ G_DECLARE_FINAL_TYPE (CenterDockWidget,
 
 typedef struct _RulerWidget RulerWidget;
 typedef struct _TracklistWidget TracklistWidget;
-typedef struct SnapGridWidget SnapGridWidget;
+typedef struct _SnapGridWidget SnapGridWidget;
 typedef struct _TimelineArrangerWidget TimelineArrangerWidget;
+typedef struct _TimelineRulerWidget TimelineRulerWidget;
 typedef struct _LeftDockEdgeWidget LeftDockEdgeWidget;
 typedef struct _RightDockEdgeWidget RightDockEdgeWidget;
 typedef struct _BotDockEdgeWidget BotDockEdgeWidget;
@@ -49,23 +50,24 @@ typedef struct _CenterDockWidget
   GtkBox                   * tracklist_top;
   GtkScrolledWindow        * tracklist_scroll;
   GtkViewport              * tracklist_viewport;
-  TracklistWidget          * tracklist;
   GtkGrid                  * tracklist_header;
-  GtkBox                   * timeline_ruler;
+  TracklistWidget          * tracklist;
   GtkScrolledWindow        * ruler_scroll;
   GtkViewport              * ruler_viewport;
-  RulerWidget              * ruler;
+  TimelineRulerWidget *    ruler;
   GtkScrolledWindow        * timeline_scroll;
   GtkViewport              * timeline_viewport;
   TimelineArrangerWidget * timeline;
-  GtkToolbar               * instruments_toolbar;
+  GtkToolbar               * left_tb;
   GtkToolButton            * instrument_add;
-  GtkBox                   * snap_grid_midi_box;
+  GtkToolButton *          toggle_left_dock;
+  GtkToolButton *          toggle_bot_dock;
   SnapGridWidget           * snap_grid_midi;
+  GtkToolbar *             right_tb;
+  GtkToolButton *          toggle_right_dock;
   LeftDockEdgeWidget *     left_dock_edge;
   RightDockEdgeWidget *    right_dock_edge;
   BotDockEdgeWidget *      bot_dock_edge;
 } CenterDockWidget;
 
 #endif
-

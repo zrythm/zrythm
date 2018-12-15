@@ -32,7 +32,7 @@ G_DECLARE_FINAL_TYPE (TrackWidget,
                       track_widget,
                       TRACK,
                       WIDGET,
-                      GtkPaned)
+                      GtkGrid)
 
 typedef struct ColorAreaWidget ColorAreaWidget;
 typedef struct _InstrumentTrackWidget InstrumentTrackWidget;
@@ -43,7 +43,7 @@ typedef struct BusTrackWidget BusTrackWidget;
 
 typedef struct _TrackWidget
 {
-  GtkPaned                      parent_instance;
+  GtkGrid                       parent_instance;
   GtkBox *                      track_box;
   GtkBox *                      color_box;
   ColorAreaWidget *             color;

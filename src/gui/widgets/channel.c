@@ -78,7 +78,7 @@ channel_widget_class_init (ChannelWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (
     GTK_WIDGET_CLASS (klass),
-    "/online/alextee/zrythm/ui/channel.ui");
+    "/org/zrythm/ui/channel.ui");
 
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         ChannelWidget,
@@ -256,18 +256,18 @@ setup_channel_icon (ChannelWidget * self)
     {
     case CT_MIDI:
       gtk_image_set_from_resource (self->icon,
-                  "/online/alextee/zrythm/instrument.svg");
+                  "/org/zrythm/instrument.svg");
       break;
     case CT_MASTER:
       gtk_image_set_from_resource (self->icon,
-                  "/online/alextee/zrythm/audio.svg");
+                  "/org/zrythm/audio.svg");
       break;
     case CT_AUDIO:
       gtk_image_set_from_resource (self->icon,
-                  "/online/alextee/zrythm/audio.svg");
+                  "/org/zrythm/audio.svg");
     case CT_BUS:
       gtk_image_set_from_resource (self->icon,
-                  "/online/alextee/zrythm/bus.svg");
+                  "/org/zrythm/bus.svg");
       break;
     }
 }
@@ -353,25 +353,25 @@ channel_widget_new (Channel * channel)
   channel_widget_update_all (self);
 
   GtkWidget * image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/plus.svg");
+          "/org/zrythm/plus.svg");
   /*gtk_button_set_image (self->add_slot, image);*/
   image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/listen.svg");
+          "/org/zrythm/listen.svg");
   gtk_button_set_image (self->listen, image);
   image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/solo.svg");
+          "/org/zrythm/solo.svg");
   gtk_button_set_image (self->solo, image);
   image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/mute.svg");
+          "/org/zrythm/mute.svg");
   gtk_button_set_image (self->mute, image);
   image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/record.svg");
+          "/org/zrythm/record.svg");
   gtk_button_set_image (GTK_BUTTON (self->record), image);
   image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/phase-invert.svg");
+          "/org/zrythm/phase-invert.svg");
   gtk_button_set_image (self->phase_invert, image);
   gtk_image_set_from_resource (self->output_img,
-                               "/online/alextee/zrythm/output.svg");
+                               "/org/zrythm/output.svg");
 
   return self;
 }

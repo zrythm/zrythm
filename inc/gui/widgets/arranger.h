@@ -23,7 +23,7 @@
 #define __GUI_WIDGETS_ARRANGER_H__
 
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/piano_roll_page.h"
+#include "gui/widgets/piano_roll.h"
 #include "audio/position.h"
 
 #include <gtk/gtk.h>
@@ -120,12 +120,14 @@ arranger_widget_setup (ArrangerWidget *   self,
 ArrangerWidgetPrivate *
 arranger_widget_get_private (ArrangerWidget * self);
 
-/**
- * Gets x position in pixels
- */
 int
-arranger_widget_get_x_pos_in_px (ArrangerWidget * self,
+arranger_widget_pos_to_px (ArrangerWidget * self,
                           Position * pos);
+
+void
+arranger_widget_px_to_pos (ArrangerWidget * self,
+                           Position * pos,
+                           int              px);
 
 void
 arranger_widget_get_hit_widgets_in_range (
@@ -186,5 +188,3 @@ arranger_widget_select_all (ArrangerWidget *  self,
 GType arranger_widget_get_type(void);
 
 #endif
-
-

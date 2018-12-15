@@ -43,8 +43,9 @@
 #include "utils/gtk.h"
 #include "utils/ui.h"
 
-G_DEFINE_TYPE (TracklistWidget, tracklist_widget, GTK_TYPE_BOX)
-
+G_DEFINE_TYPE (TracklistWidget,
+               tracklist_widget,
+               DZL_TYPE_MULTI_PANED)
 
 static TrackWidget *
 get_hit_track (TracklistWidget *  self,
@@ -664,27 +665,13 @@ tracklist_widget_add_track (TracklistWidget * self,
                  track->widget);
 }
 
-/**
- * Creates a new tracklist widget and sets it to main window.
- */
-TracklistWidget *
-tracklist_widget_new (Tracklist * tracklist)
+void
+setup_tracklist (TracklistWidget * self,
+                 Tracklist * tracklist)
 {
-  g_message ("Creating tracklist widget...");
 
-  /* create widget */
-  TracklistWidget * self = g_object_new (
-                            TRACKLIST_WIDGET_TYPE,
-                            "orientation",
-                            GTK_ORIENTATION_VERTICAL,
-                            NULL);
   self->tracklist = tracklist;
   tracklist->widget = self;
-
-  /* set size */
-  gtk_widget_set_size_request (GTK_WIDGET (self),
-                               -1,
-                               6000);
 
   /* add tracks */
   for (int i = 0; i < self->tracklist->num_tracks; i++)
@@ -695,32 +682,6 @@ tracklist_widget_new (Tracklist * tracklist)
                                     track,
                                     self->num_visible);
     }
-
-  /* make widget able to notify */
-  gtk_widget_add_events (GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
-
-  /* make widget focusable */
-  gtk_widget_set_can_focus (GTK_WIDGET (self),
-                           1);
-  gtk_widget_set_focus_on_click (GTK_WIDGET (self),
-                                 1);
-
-  g_signal_connect (G_OBJECT(self->drag), "drag-begin",
-                    G_CALLBACK (drag_begin),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-update",
-                    G_CALLBACK (drag_update),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-end",
-                    G_CALLBACK (drag_end),  self);
-  g_signal_connect (G_OBJECT (self->multipress), "pressed",
-                    G_CALLBACK (multipress_pressed), self);
-  g_signal_connect (G_OBJECT (self->right_mouse_mp), "pressed",
-                    G_CALLBACK (on_right_click), self);
-  g_signal_connect (G_OBJECT (self), "key-press-event",
-                    G_CALLBACK (on_key_action), self);
-  g_signal_connect (G_OBJECT (self), "key-release-event",
-                    G_CALLBACK (on_key_action), self);
-
-  return self; /* cosmetic */
 }
 
 /**
@@ -762,8 +723,25 @@ tracklist_widget_get_last_visible_track (TracklistWidget * self)
 }
 
 static void
+on_realize (GtkWidget * widget,
+            gpointer    user_data)
+{
+  TracklistWidget * self = TRACKLIST_WIDGET (widget);
+
+  setup_tracklist (self, PROJECT->tracklist);
+}
+
+static void
 tracklist_widget_init (TracklistWidget * self)
 {
+  self->ddbox =
+    drag_dest_box_widget_new (
+      GTK_ORIENTATION_VERTICAL,
+      0,
+      DRAG_DEST_BOX_TYPE_TRACKLIST);
+  gtk_container_add (GTK_CONTAINER (self),
+                   GTK_WIDGET (self->ddbox));
+
   self->drag = GTK_GESTURE_DRAG (
                 gtk_gesture_drag_new (GTK_WIDGET (self)));
   self->multipress = GTK_GESTURE_MULTI_PRESS (
@@ -772,6 +750,26 @@ tracklist_widget_init (TracklistWidget * self)
                 gtk_gesture_multi_press_new (GTK_WIDGET (self)));
   gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (self->right_mouse_mp),
                                  GDK_BUTTON_SECONDARY);
+
+  /* make widget able to notify */
+  gtk_widget_add_events (GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
+
+  g_signal_connect (G_OBJECT(self->drag), "drag-begin",
+                    G_CALLBACK (drag_begin),  self);
+  g_signal_connect (G_OBJECT(self->drag), "drag-update",
+                    G_CALLBACK (drag_update),  self);
+  g_signal_connect (G_OBJECT(self->drag), "drag-end",
+                    G_CALLBACK (drag_end),  self);
+  g_signal_connect (G_OBJECT (self->multipress), "pressed",
+                    G_CALLBACK (multipress_pressed), self);
+  g_signal_connect (G_OBJECT (self->right_mouse_mp), "pressed",
+                    G_CALLBACK (on_right_click), self);
+  g_signal_connect (G_OBJECT (self), "key-press-event",
+                    G_CALLBACK (on_key_action), self);
+  g_signal_connect (G_OBJECT (self), "key-release-event",
+                    G_CALLBACK (on_key_action), self);
+  g_signal_connect (G_OBJECT (self), "realize",
+                    G_CALLBACK (on_realize), NULL);
 }
 
 static void

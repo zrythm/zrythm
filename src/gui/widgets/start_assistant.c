@@ -197,7 +197,7 @@ static void
 start_assistant_widget_class_init (StartAssistantWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
-                                               "/online/alextee/zrythm/ui/start_assistant.ui");
+                                               "/org/zrythm/ui/start_assistant.ui");
 
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 StartAssistantWidget,

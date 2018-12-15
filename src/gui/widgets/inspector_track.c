@@ -30,7 +30,7 @@ static void
 inspector_track_widget_class_init (InspectorTrackWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
-                                               "/online/alextee/zrythm/ui/inspector_track.ui");
+                                               "/org/zrythm/ui/inspector_track.ui");
 
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         InspectorTrackWidget,

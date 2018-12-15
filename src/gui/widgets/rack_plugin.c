@@ -31,7 +31,7 @@ rack_plugin_widget_class_init (RackPluginWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (
     GTK_WIDGET_CLASS (klass),
-    "/online/alextee/zrythm/ui/rack_plugin.ui");
+    "/org/zrythm/ui/rack_plugin.ui");
 
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         RackPluginWidget,
@@ -72,11 +72,11 @@ rack_plugin_widget_new (Plugin * plugin)
 
   GtkWidget * image;
   image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/power.svg");
+          "/org/zrythm/power.svg");
   gtk_button_set_image (GTK_BUTTON (self->power),
                         image);
   image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/automate.svg");
+          "/org/zrythm/automate.svg");
   gtk_button_set_image (GTK_BUTTON (self->automate),
                         image);
 

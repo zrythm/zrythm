@@ -36,21 +36,18 @@ G_DECLARE_FINAL_TYPE (BotDockEdgeWidget,
 #define MW_BOT_DOCK_EDGE MW_CENTER_DOCK->bot_dock_edge
 
 typedef struct _MixerWidget MixerWidget;
-typedef struct _PianoRollPageWidget PianoRollPageWidget;
-typedef struct ConnectionsWidget ConnectionsWidget;
-typedef struct RackWidget RackWidget;
+typedef struct _PianoRollWidget PianoRollWidget;
+typedef struct _ConnectionsWidget ConnectionsWidget;
+typedef struct _RackWidget RackWidget;
 
 typedef struct _BotDockEdgeWidget
 {
   GtkBox                   parent_instance;
-  GtkNotebook              * bot_notebook;
-  RackWidget *               rack;
-  ConnectionsWidget        * connections;
-  PianoRollPageWidget *       piano_roll_page;
-  MixerWidget              * mixer;
+  GtkNotebook *            bot_notebook;
+  RackWidget *             rack;
+  ConnectionsWidget *      connections;
+  PianoRollWidget *        piano_roll;
+  MixerWidget *            mixer;
 } BotDockEdgeWidget;
 
 #endif
-
-
-

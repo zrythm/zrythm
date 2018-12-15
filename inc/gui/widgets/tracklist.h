@@ -23,6 +23,7 @@
 #ifndef __GUI_WIDGETS_TRACKLIST_H__
 #define __GUI_WIDGETS_TRACKLIST_H__
 
+#include <dazzle.h>
 #include <gtk/gtk.h>
 
 #define USE_WIDE_HANDLE 1
@@ -32,19 +33,19 @@ G_DECLARE_FINAL_TYPE (TracklistWidget,
                       tracklist_widget,
                       TRACKLIST,
                       WIDGET,
-                      GtkBox)
+                      DzlMultiPaned)
 
 #define FOREACH_TW for (int i = 0; i < self->num_visible; i++)
 #define MW_TRACKLIST MW_CENTER_DOCK->tracklist
 
 typedef struct _TrackWidget TrackWidget;
-typedef struct DragDestBoxWidget DragDestBoxWidget;
+typedef struct _DragDestBoxWidget DragDestBoxWidget;
 typedef struct _ChordTrackWidget ChordTrackWidget;
 typedef struct InstrumentTrack InstrumentTrack;
 
 typedef struct _TracklistWidget
 {
-  GtkBox                        parent_instance;
+  DzlMultiPaned                 parent_instance;
   GtkGestureDrag *              drag;
   GtkGestureMultiPress *        multipress;
   GtkGestureMultiPress *        right_mouse_mp; ///< right mouse multipress
@@ -69,11 +70,9 @@ typedef struct _TracklistWidget
   Tracklist *                   tracklist;
 } TracklistWidget;
 
-/**
- * Creates a new tracklist widget and sets it to main window.
- */
-TracklistWidget *
-tracklist_widget_new (Tracklist * tracklist);
+void
+setup_tracklist (TracklistWidget * self,
+                 Tracklist * tracklist);
 
 /**
  * Adds given track to tracklist widget.

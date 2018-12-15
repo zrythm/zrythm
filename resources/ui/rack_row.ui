@@ -4,38 +4,27 @@
   <requires lib="gtk+" version="3.20"/>
   <template class="RackRowWidget" parent="GtkBox">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="orientation">vertical</property>
     <child>
       <object class="GtkExpander" id="expander">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="expanded">True</property>
-        <property name="label_fill">True</property>
+        <property name="visible">1</property>
+        <property name="can-focus">1</property>
+        <property name="expanded">1</property>
+        <property name="label-fill">1</property>
         <child>
           <object class="GtkScrolledWindow">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="vscrollbar_policy">never</property>
-            <property name="shadow_type">in</property>
+            <property name="visible">1</property>
+            <property name="can-focus">1</property>
+            <property name="vscrollbar-policy">never</property>
+            <property name="shadow-type">in</property>
             <child>
               <object class="GtkViewport">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="visible">1</property>
                 <child>
                   <object class="GtkBox" id="box">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="visible">1</property>
                     <property name="halign">start</property>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
                   </object>
                 </child>
               </object>
@@ -44,11 +33,10 @@
         </child>
         <child type="label">
           <object class="GtkLabel" id="label">
-            <property name="width_request">388</property>
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="margin_left">4</property>
-            <property name="hexpand">True</property>
+            <property name="width-request">388</property>
+            <property name="visible">1</property>
+            <property name="margin-left">4</property>
+            <property name="hexpand">1</property>
             <property name="label" translatable="yes">expander</property>
             <property name="xalign">0</property>
           </object>

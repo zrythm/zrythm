@@ -43,6 +43,7 @@
 #include "gui/widgets/midi_arranger_bg.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_note.h"
+#include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/piano_roll_labels.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
@@ -88,11 +89,11 @@ midi_arranger_widget_set_channel (
 
   char * label = g_strdup_printf ("%s",
                                   channel->name);
-  gtk_label_set_text (PIANO_ROLL_PAGE->midi_name_label,
+  gtk_label_set_text (PIANO_ROLL->midi_name_label,
                       label);
   g_free (label);
 
-  color_area_widget_set_color (PIANO_ROLL_PAGE->midi_track_color,
+  color_area_widget_set_color (PIANO_ROLL->midi_track_color,
                                &channel->color);
 
   /* remove all previous children and add new */
@@ -119,12 +120,12 @@ midi_arranger_widget_set_channel (
 
   GtkAdjustment * adj =
     gtk_scrolled_window_get_vadjustment (
-      PIANO_ROLL_PAGE->piano_roll_arranger_scroll);
+      PIANO_ROLL->piano_roll_arranger_scroll);
   gtk_adjustment_set_value (
     adj,
     gtk_adjustment_get_upper (adj) / 2);
   gtk_scrolled_window_set_vadjustment (
-    PIANO_ROLL_PAGE->piano_roll_arranger_scroll,
+    PIANO_ROLL->piano_roll_arranger_scroll,
     adj);
 }
 
@@ -143,19 +144,19 @@ midi_arranger_widget_set_allocation (
     {
       MidiNoteWidget * midi_note_widget = MIDI_NOTE_WIDGET (widget);
       allocation->x =
-        arranger_widget_get_x_pos_in_px (
+        arranger_widget_pos_to_px (
           ARRANGER_WIDGET (self),
           &midi_note_widget->midi_note->start_pos);
       allocation->y =
-        PIANO_ROLL_PAGE->piano_roll_labels->px_per_note *
+        PIANO_ROLL->piano_roll_labels->px_per_note *
           (127 - midi_note_widget->midi_note->val);
       allocation->width =
-        arranger_widget_get_x_pos_in_px (
+        arranger_widget_pos_to_px (
           ARRANGER_WIDGET (self),
           &midi_note_widget->midi_note->end_pos) -
             allocation->x;
       allocation->height =
-        PIANO_ROLL_PAGE->piano_roll_labels->px_per_note;
+        PIANO_ROLL->piano_roll_labels->px_per_note;
     }
 }
 
@@ -231,7 +232,9 @@ midi_arranger_widget_on_drag_begin_note_hit (
   /* set selections, positions, actions, cursor */
   ARRANGER_WIDGET_GET_PRIVATE (self);
   MidiNote * midi_note = midi_note_widget->midi_note;
-  prv->start_pos_px = ruler_widget_pos_to_px (&midi_note->start_pos);
+  prv->start_pos_px =
+    ruler_widget_pos_to_px (RULER_WIDGET (MIDI_RULER),
+                            &midi_note->start_pos);
   position_set_to_pos (&prv->start_pos, &midi_note->start_pos);
   position_set_to_pos (&prv->end_pos, &midi_note->end_pos);
 
@@ -478,27 +481,12 @@ midi_arranger_widget_toggle_select_midi_note (
     append);
 }
 
-MidiArrangerWidget *
-midi_arranger_widget_new (SnapGrid * snap_grid)
-{
-  g_message ("Creating MIDI arranger");
-  MidiArrangerWidget * self =
-    g_object_new (MIDI_ARRANGER_WIDGET_TYPE, NULL);
-
-  GTK_CONTAINER (ARRANGER_WIDGET (self));
-  arranger_widget_setup (ARRANGER_WIDGET (self),
-                         snap_grid,
-                         ARRANGER_TYPE_MIDI);
-
-  return self;
-}
-
 static void
 midi_arranger_widget_class_init (MidiArrangerWidgetClass * klass)
 {
 }
 
 static void
-midi_arranger_widget_init (MidiArrangerWidget *self )
+midi_arranger_widget_init (MidiArrangerWidget *self)
 {
 }

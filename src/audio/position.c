@@ -29,9 +29,11 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
-#include "gui/widgets/piano_roll_page.h"
+#include "gui/widgets/midi_ruler.h"
+#include "gui/widgets/piano_roll.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/timeline_ruler.h"
 #include "project/snap_grid.h"
 
 #include <gtk/gtk.h>
@@ -248,14 +250,14 @@ position_updated (Position * position)
           gtk_widget_queue_draw (
             GTK_WIDGET (prv->bg));
         }
-      if (PIANO_ROLL_PAGE)
+      if (PIANO_ROLL)
         {
-          if (PIANO_ROLL_PAGE->midi_ruler)
+          if (MIDI_RULER)
             {
               gtk_widget_queue_draw (
-                      GTK_WIDGET (PIANO_ROLL_PAGE->midi_ruler));
+                      GTK_WIDGET (MIDI_RULER));
             }
-          if (PIANO_ROLL_PAGE->midi_arranger)
+          if (MIDI_ARRANGER)
             {
               ARRANGER_WIDGET_GET_PRIVATE (MIDI_ARRANGER);
               gtk_widget_queue_draw (

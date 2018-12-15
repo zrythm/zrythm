@@ -25,7 +25,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
-#include "gui/widgets/piano_roll_page.h"
+#include "gui/widgets/piano_roll.h"
 #include "gui/widgets/piano_roll_labels.h"
 #include "gui/widgets/piano_roll_notes.h"
 
@@ -33,7 +33,7 @@
 
 G_DEFINE_TYPE (PianoRollNotesWidget, piano_roll_notes_widget, GTK_TYPE_DRAWING_AREA)
 
-#define LABELS_WIDGET PIANO_ROLL_PAGE->piano_roll_labels
+#define LABELS_WIDGET PIANO_ROLL->piano_roll_labels
 
 /* 1 = black */
 static int notes[12] = {
@@ -131,8 +131,8 @@ drag_begin (GtkGestureDrag * gesture,
   jack_midi_event_t * ev = &MANUAL_PRESS_QUEUE->jack_midi_events[0];
   ev->time = 0;
   ev->size = 3;
-  start_y = PIANO_ROLL_PAGE->piano_roll_labels->total_px - start_y;
-  self->note = start_y / PIANO_ROLL_PAGE->piano_roll_labels->px_per_note;
+  start_y = PIANO_ROLL->piano_roll_labels->total_px - start_y;
+  self->note = start_y / PIANO_ROLL->piano_roll_labels->px_per_note;
   int vel = 90;
   if (!ev->buffer)
     ev->buffer = calloc (3, sizeof (jack_midi_data_t));
@@ -155,7 +155,7 @@ drag_update (GtkGestureDrag * gesture,
   PianoRollNotesWidget * self = (PianoRollNotesWidget *) user_data;
 
   int prev_note = self->note;
-  self->note = (self->start_y - offset_y) / PIANO_ROLL_PAGE->piano_roll_labels->px_per_note;
+  self->note = (self->start_y - offset_y) / PIANO_ROLL->piano_roll_labels->px_per_note;
   int vel = 90;
 
   /* if note changed */
@@ -216,18 +216,23 @@ drag_end (GtkGestureDrag *gesture,
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
+static void
+on_realize (GtkWidget * widget,
+            gpointer    user_data)
+{
+  // set the size
+  gtk_widget_set_size_request (
+    widget,
+    36,
+    LABELS_WIDGET->total_px);
+}
+
 PianoRollNotesWidget *
 piano_roll_notes_widget_new ()
 {
   g_message ("Creating piano roll notes...");
   PianoRollNotesWidget * self = g_object_new (PIANO_ROLL_NOTES_WIDGET_TYPE, NULL);
 
-  // set the size
-  // FIXME move to "realize" signal of widget
-  /*gtk_widget_set_size_request (*/
-    /*GTK_WIDGET (self),*/
-    /*36,*/
-    /*LABELS_WIDGET->total_px);*/
 
   g_signal_connect (G_OBJECT (self), "draw",
                     G_CALLBACK (draw_cb), NULL);
@@ -241,6 +246,11 @@ piano_roll_notes_widget_new ()
                     G_CALLBACK (drag_end),  self);
   g_signal_connect (G_OBJECT (self->multipress), "pressed",
                     G_CALLBACK (multipress_pressed), self);
+
+  g_signal_connect (G_OBJECT (self),
+                    "realize",
+                    G_CALLBACK (on_realize),
+                    NULL);
 
   return self;
 }

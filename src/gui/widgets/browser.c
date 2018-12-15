@@ -411,7 +411,7 @@ browser_widget_class_init (BrowserWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (
                         GTK_WIDGET_CLASS (klass),
-                        "/online/alextee/zrythm/ui/browser.ui");
+                        "/org/zrythm/ui/browser.ui");
 
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 BrowserWidget, browser_top);

@@ -43,13 +43,14 @@
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_arranger_bg.h"
 #include "gui/widgets/midi_region.h"
-#include "gui/widgets/piano_roll_page.h"
+#include "gui/widgets/piano_roll.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/piano_roll_labels.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
+#include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "utils/arrays.h"
@@ -60,22 +61,6 @@
 G_DEFINE_TYPE (TimelineArrangerWidget,
                timeline_arranger_widget,
                ARRANGER_WIDGET_TYPE)
-
-TimelineArrangerWidget *
-timeline_arranger_widget_new (SnapGrid * snap_grid)
-{
-  g_message ("Creating timeline arranger");
-  TimelineArrangerWidget * self =
-    g_object_new (TIMELINE_ARRANGER_WIDGET_TYPE, NULL);
-
-  ArrangerWidget * arr = ARRANGER_WIDGET (self);
-  GTK_CONTAINER (arr);
-  arranger_widget_setup (ARRANGER_WIDGET (self),
-                         snap_grid,
-                         ARRANGER_TYPE_TIMELINE);
-
-  return self;
-}
 
 /**
  * To be called from get_child_position in parent widget.
@@ -102,11 +87,11 @@ timeline_arranger_widget_set_allocation (
                 &wx,
                 &wy);
 
-      allocation->x = arranger_widget_get_x_pos_in_px (
+      allocation->x = arranger_widget_pos_to_px (
         ARRANGER_WIDGET (self),
         &rw_prv->region->start_pos);
       allocation->y = wy;
-      allocation->width = arranger_widget_get_x_pos_in_px (
+      allocation->width = arranger_widget_pos_to_px (
         ARRANGER_WIDGET (self),
         &rw_prv->region->end_pos) -
           allocation->x;
@@ -129,7 +114,7 @@ timeline_arranger_widget_set_allocation (
                 &wx,
                 &wy);
 
-      allocation->x = arranger_widget_get_x_pos_in_px (
+      allocation->x = arranger_widget_pos_to_px (
         ARRANGER_WIDGET (self),
         &ap->pos) -
           AP_WIDGET_POINT_SIZE / 2;
@@ -157,14 +142,14 @@ timeline_arranger_widget_set_allocation (
       AutomationPoint * next_ap =
         automation_track_get_ap_after_curve (ac->at, ac);
 
-      allocation->x = arranger_widget_get_x_pos_in_px (
+      allocation->x = arranger_widget_pos_to_px (
         ARRANGER_WIDGET (self),
         &prev_ap->pos);
       int prev_y = automation_point_get_y_in_px (prev_ap);
       int next_y = automation_point_get_y_in_px (next_ap);
       allocation->y = wy + (prev_y > next_y ? next_y : prev_y);
       allocation->width =
-        arranger_widget_get_x_pos_in_px (
+        arranger_widget_pos_to_px (
           ARRANGER_WIDGET (self),
           &next_ap->pos) - allocation->x;
       allocation->height = prev_y > next_y ? prev_y - next_y : next_y - prev_y;
@@ -473,8 +458,8 @@ timeline_arranger_widget_on_drag_begin_region_hit (
           break;
         }
       midi_arranger_widget_set_channel(
-                  PIANO_ROLL_PAGE->midi_arranger,
-                  chan);
+        MIDI_ARRANGER,
+        chan);
     }
 
   Region * region = rw_prv->region;
@@ -884,6 +869,24 @@ timeline_arranger_widget_move_items_x (
           position_set_to_pos (&ap->pos, &ap_pos);
         }
     }
+}
+
+void
+timeline_arranger_widget_setup (
+  TimelineArrangerWidget * self)
+{
+  // set the size
+  int ww, hh;
+  TracklistWidget * tracklist = MW_TRACKLIST;
+  gtk_widget_get_size_request (
+    GTK_WIDGET (tracklist),
+    &ww,
+    &hh);
+  RULER_WIDGET_GET_PRIVATE (MW_RULER);
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self),
+    prv->total_px,
+    hh);
 }
 
 void

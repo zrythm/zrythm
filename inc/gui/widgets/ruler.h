@@ -25,13 +25,15 @@
 #include <gtk/gtk.h>
 
 #define RULER_WIDGET_TYPE                  (ruler_widget_get_type ())
-G_DECLARE_FINAL_TYPE (RulerWidget,
+G_DECLARE_DERIVABLE_TYPE (RulerWidget,
                       ruler_widget,
                       RULER,
                       WIDGET,
                       GtkDrawingArea)
 
-#define MW_RULER MW_CENTER_DOCK->ruler
+#define RULER_WIDGET_GET_PRIVATE(self) \
+  RulerWidgetPrivate * prv = \
+    ruler_widget_get_private (RULER_WIDGET (self));
 
 /**
  * pixels to draw between each beat,
@@ -42,34 +44,40 @@ G_DECLARE_FINAL_TYPE (RulerWidget,
 
 #define SPACE_BEFORE_START 10 /* pixels to put before 1st bar */
 
-typedef struct _RulerWidget
+typedef struct Position Position;
+
+typedef struct
 {
-  GtkDrawingArea           parent_instance;
-  int                      px_per_beat;
-  int                      px_per_bar;
-  int                      px_per_quarter_beat;
+  unsigned int             px_per_beat;
+  unsigned int             px_per_bar;
+  unsigned int             px_per_quarter_beat;
   float                    px_per_tick;
-  int                      total_px;
+  unsigned int             total_px;
   double                   start_x; ///< for dragging
   GtkGestureDrag           * drag;
   GtkGestureMultiPress     * multipress;
-} RulerWidget;
+} RulerWidgetPrivate;
 
-/**
- * Creates a ruler widget using the given ruler data.
- */
-RulerWidget *
-ruler_widget_new ();
+typedef struct _RulerWidgetClass
+{
+  GtkDrawingAreaClass    parent_class;
+} RulerWidgetClass;
 
 /**
  * Turns px position into position.
  */
 void
 ruler_widget_px_to_pos (
-           Position * pos, ///< position to fill in
-           int      px); ///< pixels
+  RulerWidget * self,
+  Position * pos, ///< position to fill in
+  int      px); ///< pixels
 
 int
-ruler_widget_pos_to_px (Position * pos);
+ruler_widget_pos_to_px (
+  RulerWidget * self,
+  Position * pos);
+
+RulerWidgetPrivate *
+ruler_widget_get_private (RulerWidget * self);
 
 #endif

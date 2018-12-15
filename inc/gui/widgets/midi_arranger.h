@@ -23,7 +23,7 @@
 #define __GUI_WIDGETS_MIDI_ARRANGER_H__
 
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/piano_roll_page.h"
+#include "gui/widgets/piano_roll.h"
 #include "audio/position.h"
 
 #include <gtk/gtk.h>
@@ -35,7 +35,7 @@ G_DECLARE_FINAL_TYPE (MidiArrangerWidget,
                       WIDGET,
                       ArrangerWidget)
 
-#define MIDI_ARRANGER PIANO_ROLL_PAGE->midi_arranger
+#define MIDI_ARRANGER PIANO_ROLL->arranger
 
 typedef struct ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote MidiNote;
@@ -70,12 +70,6 @@ typedef struct _MidiArrangerWidget
    */
   Channel *                channel;
 } MidiArrangerWidget;
-
-/**
- * Creates a timeline widget using the given timeline data.
- */
-MidiArrangerWidget *
-midi_arranger_widget_new (SnapGrid * snap_grid);
 
 /**
  * Sets up the MIDI editor for the given region.

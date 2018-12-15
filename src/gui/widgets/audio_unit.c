@@ -45,7 +45,7 @@ audio_unit_widget_class_init (AudioUnitWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (
                         GTK_WIDGET_CLASS (klass),
-                        "/online/alextee/zrythm/ui/audio_unit.ui");
+                        "/org/zrythm/ui/audio_unit.ui");
 
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         AudioUnitWidget,

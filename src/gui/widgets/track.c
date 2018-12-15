@@ -41,7 +41,7 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (TrackWidget, track_widget, GTK_TYPE_PANED)
+G_DEFINE_TYPE (TrackWidget, track_widget, GTK_TYPE_GRID)
 
 static void
 size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
@@ -177,7 +177,7 @@ static void
 track_widget_class_init (TrackWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
-                                               "/online/alextee/zrythm/ui/track.ui");
+                                               "/org/zrythm/ui/track.ui");
 
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                                 TrackWidget, color_box);

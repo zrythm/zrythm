@@ -237,7 +237,7 @@ automation_track_widget_new (AutomationTrack * automation_track)
   setup_combo_box (self);
 
   GtkWidget *image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/mute.svg");
+          "/org/zrythm/mute.svg");
   gtk_button_set_image (GTK_BUTTON (self->mute_toggle), image);
   gtk_button_set_label (GTK_BUTTON (self->mute_toggle),
                         "");
@@ -261,7 +261,7 @@ static void
 automation_track_widget_class_init (AutomationTrackWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
-                                               "/online/alextee/zrythm/ui/automation_track.ui");
+                                               "/org/zrythm/ui/automation_track.ui");
 
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         AutomationTrackWidget,

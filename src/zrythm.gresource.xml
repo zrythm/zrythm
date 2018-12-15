@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-  <gresource prefix="/online/alextee/zrythm">
+  <gresource prefix="/org/zrythm">
     <file preprocess="xml-stripblanks">ui/audio_unit.ui</file>
     <file preprocess="xml-stripblanks">ui/automator.ui</file>
     <file preprocess="xml-stripblanks">ui/automation_track.ui</file>
@@ -22,7 +22,7 @@
     <file preprocess="xml-stripblanks">ui/left_dock_edge.ui</file>
     <file preprocess="xml-stripblanks">ui/main_window.ui</file>
     <file preprocess="xml-stripblanks">ui/mixer.ui</file>
-    <file preprocess="xml-stripblanks">ui/piano_roll_page.ui</file>
+    <file preprocess="xml-stripblanks">ui/piano_roll.ui</file>
     <file preprocess="xml-stripblanks">ui/rack_plugin.ui</file>
     <file preprocess="xml-stripblanks">ui/rack_row.ui</file>
     <file preprocess="xml-stripblanks">ui/right_dock_edge.ui</file>
@@ -65,6 +65,9 @@
     <file>icons/stop.svg</file>
     <file>icons/z.svg</file>
     <file>z-splash.svg</file>
+    <file>icons/gnome-builder/builder-view-left-pane-symbolic-light.svg</file>
+    <file>icons/gnome-builder/builder-view-bottom-pane-symbolic-light.svg</file>
+    <file>icons/gnome-builder/builder-view-right-pane-symbolic-light.svg</file>
     <file>icons/gnome-builder/ui-menu-symbolic-light.svg</file>
     <file>icons/gnome-builder/ui-section-symbolic-light.svg</file>
   </gresource>

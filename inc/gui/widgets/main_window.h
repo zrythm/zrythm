@@ -40,7 +40,7 @@ G_DECLARE_FINAL_TYPE (MainWindowWidget,
 typedef struct BpmWidget BpmWidget;
 typedef struct DigitalMeterWidget DigitalMeterWidget;
 typedef struct ColorAreaWidget ColorAreaWidget;
-typedef struct SnapGridWidget SnapGridWidget;
+typedef struct _SnapGridWidget SnapGridWidget;
 typedef struct _HeaderBarWidget HeaderBarWidget;
 typedef struct _CenterDockWidget CenterDockWidget;
 
@@ -51,7 +51,7 @@ typedef struct _MainWindowWidget
   GtkBox *                 header_bar_box;
   HeaderBarWidget *        header_bar;
   GtkToolbar               * top_toolbar;
-  GtkBox                   * snap_grid_timeline_box;
+  /* FIXME split top toolbar to separate widget */
   SnapGridWidget           * snap_grid_timeline;
   GtkBox                   * center_box;
   CenterDockWidget *       center_dock;

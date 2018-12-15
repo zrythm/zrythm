@@ -27,12 +27,13 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/ruler.h"
+#include "gui/widgets/timeline_ruler.h"
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (RulerWidget,
-               ruler_widget,
-               GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE_WITH_PRIVATE (RulerWidget,
+                            ruler_widget,
+                            GTK_TYPE_DRAWING_AREA)
 
 #define Y_SPACING 5
 #define FONT "Monospace"
@@ -45,20 +46,29 @@ G_DEFINE_TYPE (RulerWidget,
 #define Q_HEIGHT 12
 #define Q_WIDTH 7
 
+#define GET_PRIVATE RULER_WIDGET_GET_PRIVATE (self)
+
+RulerWidgetPrivate *
+ruler_widget_get_private (RulerWidget * self)
+{
+  return ruler_widget_get_instance_private (self);
+}
+
 void
 ruler_widget_px_to_pos (
-           Position * pos, ///< position to fill in
-           int      px) ///< pixels
+  RulerWidget * self,
+  Position *    pos, ///< position to fill in
+  int           px) ///< pixels
 {
-  /*g_message ("%d", px);*/
-  RulerWidget * self = MW_RULER;
-  pos->bars = px / self->px_per_bar + 1;
-  px = px % self->px_per_bar;
-  pos->beats = px / self->px_per_beat + 1;
-  px = px % self->px_per_beat;
-  pos->quarter_beats = px / self->px_per_quarter_beat + 1;
-  px = px % self->px_per_quarter_beat;
-  pos->ticks = px / self->px_per_tick;
+  GET_PRIVATE;
+
+  pos->bars = px / prv->px_per_bar + 1;
+  px = px % prv->px_per_bar;
+  pos->beats = px / prv->px_per_beat + 1;
+  px = px % prv->px_per_beat;
+  pos->quarter_beats = px / prv->px_per_quarter_beat + 1;
+  px = px % prv->px_per_quarter_beat;
+  pos->ticks = px / prv->px_per_tick;
   /*g_message ("%d %d %d %d",*/
              /*pos->bars,*/
              /*pos->beats,*/
@@ -67,19 +77,22 @@ ruler_widget_px_to_pos (
 }
 
 int
-ruler_widget_pos_to_px (Position * pos)
+ruler_widget_pos_to_px (RulerWidget * self,
+                        Position * pos)
 {
-  /*RulerWidget * self = MW_RULER;*/
-  /*return  (pos->bars - 1) * self->px_per_bar +*/
-    /*(pos->beats - 1) * self->px_per_beat +*/
-    /*(pos->quarter_beats - 1) * self->px_per_quarter_beat +*/
-    /*pos->ticks * self->px_per_tick;*/
-  return 1;
+  GET_PRIVATE;
+
+  return  (pos->bars - 1) * prv->px_per_bar +
+    (pos->beats - 1) * prv->px_per_beat +
+    (pos->quarter_beats - 1) * prv->px_per_quarter_beat +
+    pos->ticks * prv->px_per_tick;
 }
 
 static gboolean
 draw_cb (RulerWidget * self, cairo_t *cr, gpointer data)
 {
+  GET_PRIVATE;
+
   GtkStyleContext *context;
 
   context = gtk_widget_get_style_context (GTK_WIDGET (self));
@@ -88,28 +101,40 @@ draw_cb (RulerWidget * self, cairo_t *cr, gpointer data)
   guint height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
 
   /* get positions in px */
-  static int playhead_pos_in_px;
-  playhead_pos_in_px = ruler_widget_pos_to_px (&TRANSPORT->playhead_pos);
-  static int cue_pos_in_px;
-  cue_pos_in_px = ruler_widget_pos_to_px (&TRANSPORT->cue_pos);
-  static int start_marker_pos_px;
-  start_marker_pos_px = ruler_widget_pos_to_px (&TRANSPORT->start_marker_pos);
-  static int end_marker_pos_px;
-  end_marker_pos_px = ruler_widget_pos_to_px (&TRANSPORT->end_marker_pos);
-  static int loop_start_pos_px;
-  loop_start_pos_px = ruler_widget_pos_to_px (&TRANSPORT->loop_start_pos);
-  static int loop_end_pos_px;
-  loop_end_pos_px = ruler_widget_pos_to_px (&TRANSPORT->loop_end_pos);
+  int playhead_pos_in_px;
+  playhead_pos_in_px =
+    ruler_widget_pos_to_px (self,
+                            &TRANSPORT->playhead_pos);
+  int cue_pos_in_px;
+  cue_pos_in_px =
+    ruler_widget_pos_to_px (self,
+                            &TRANSPORT->cue_pos);
+  int start_marker_pos_px;
+  start_marker_pos_px =
+    ruler_widget_pos_to_px (self,
+                            &TRANSPORT->start_marker_pos);
+  int end_marker_pos_px;
+  end_marker_pos_px =
+    ruler_widget_pos_to_px (self,
+                            &TRANSPORT->end_marker_pos);
+  int loop_start_pos_px;
+  loop_start_pos_px =
+    ruler_widget_pos_to_px (self,
+                            &TRANSPORT->loop_start_pos);
+  int loop_end_pos_px;
+  loop_end_pos_px =
+    ruler_widget_pos_to_px (self,
+                            &TRANSPORT->loop_end_pos);
 
-  gtk_render_background (context, cr, 0, 0, self->total_px, height);
+  gtk_render_background (context, cr, 0, 0, prv->total_px, height);
 
   /* draw lines */
   int bar_count = 1;
-  for (int i = 0; i < self->total_px - SPACE_BEFORE_START; i++)
+  for (int i = 0; i < prv->total_px - SPACE_BEFORE_START; i++)
     {
       int draw_pos = i + SPACE_BEFORE_START;
 
-      if (i % self->px_per_bar == 0)
+      if (i % prv->px_per_bar == 0)
       {
           cairo_set_source_rgb (cr, 1, 1, 1);
           cairo_set_line_width (cr, 1);
@@ -130,7 +155,7 @@ draw_cb (RulerWidget * self, cairo_t *cr, gpointer data)
           cairo_show_text(cr, label);
           bar_count++;
       }
-      else if (i % self->px_per_beat == 0)
+      else if (i % prv->px_per_beat == 0)
       {
           cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
           cairo_set_line_width (cr, 0.5);
@@ -214,7 +239,6 @@ draw_cb (RulerWidget * self, cairo_t *cr, gpointer data)
                          START_MARKER_TRIANGLE_HEIGHT * 2 + 1);
           cairo_fill (cr);
       }
-
   }
 
  return FALSE;
@@ -237,11 +261,14 @@ multipress_pressed (GtkGestureMultiPress *gesture,
                gdouble               y,
                gpointer              user_data)
 {
+  RulerWidget * self = RULER_WIDGET (user_data);
   if (n_press == 2)
     {
       Position pos;
-      ruler_widget_px_to_pos (&pos,
-                 x - SPACE_BEFORE_START);
+      ruler_widget_px_to_pos (
+        self,
+        &pos,
+        x - SPACE_BEFORE_START);
       position_set_to_pos (&TRANSPORT->cue_pos,
                            &pos);
     }
@@ -254,11 +281,15 @@ drag_begin (GtkGestureDrag * gesture,
                gdouble         start_y,
                gpointer        user_data)
 {
-  RulerWidget * self = (RulerWidget *) user_data;
-  self->start_x = start_x;
+  RulerWidget * self = RULER_WIDGET (user_data);
+  GET_PRIVATE;
+
+  prv->start_x = start_x;
   Position pos;
-  ruler_widget_px_to_pos (&pos,
-             start_x - SPACE_BEFORE_START);
+  ruler_widget_px_to_pos (
+    self,
+    &pos,
+    start_x - SPACE_BEFORE_START);
   transport_move_playhead (&pos, 1);
 }
 
@@ -268,10 +299,14 @@ drag_update (GtkGestureDrag * gesture,
                gdouble         offset_y,
                gpointer        user_data)
 {
-  RulerWidget * self = (RulerWidget *) user_data;
+  RulerWidget * self = RULER_WIDGET (user_data);
+  GET_PRIVATE;
+
   Position pos;
-  ruler_widget_px_to_pos (&pos,
-             (self->start_x + offset_x) - SPACE_BEFORE_START);
+  ruler_widget_px_to_pos (
+    self,
+    &pos,
+    (prv->start_x + offset_x) - SPACE_BEFORE_START);
   transport_move_playhead (&pos, 1);
 }
 
@@ -282,46 +317,16 @@ drag_end (GtkGestureDrag *gesture,
                gpointer        user_data)
 {
   RulerWidget * self = (RulerWidget *) user_data;
-  self->start_x = 0;
+  GET_PRIVATE;
+
+  prv->start_x = 0;
 }
 
+/* FIXME delete */
 RulerWidget *
 ruler_widget_new ()
 {
-  g_message ("Creating ruler...");
-  RulerWidget * self = g_object_new (RULER_WIDGET_TYPE, NULL);
-
-  /* adjust for zoom level */
-  self->px_per_tick = (DEFAULT_PX_PER_TICK * TRANSPORT->zoom_level);
-  self->px_per_quarter_beat = (int) (self->px_per_tick * TICKS_PER_QUARTER_BEAT);
-  self->px_per_beat = (int) (self->px_per_tick * TICKS_PER_BEAT);
-  self->px_per_bar = self->px_per_beat * TRANSPORT->beats_per_bar;
-
-  self->total_px = self->px_per_bar *
-    (TRANSPORT->total_bars);
-
-
-  // set the size
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self),
-    self->total_px,
-    -1);
-
-  /* FIXME drags */
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), NULL);
-  /*g_signal_connect (G_OBJECT(self), "button_press_event",*/
-                    /*G_CALLBACK (button_press_cb),  self);*/
-  g_signal_connect (G_OBJECT(self->drag), "drag-begin",
-                    G_CALLBACK (drag_begin),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-update",
-                    G_CALLBACK (drag_update),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-end",
-                    G_CALLBACK (drag_end),  self);
-  g_signal_connect (G_OBJECT (self->multipress), "pressed",
-                    G_CALLBACK (multipress_pressed), self);
-
-  return self;
+  return NULL;
 }
 
 static void
@@ -332,12 +337,56 @@ ruler_widget_class_init (RulerWidgetClass * klass)
 static void
 ruler_widget_init (RulerWidget * self)
 {
+  g_message ("initing ruler...");
+  GET_PRIVATE;
+
   /* make it able to notify */
   gtk_widget_add_events (GTK_WIDGET (self),
                          GDK_ALL_EVENTS_MASK);
 
-  self->drag = GTK_GESTURE_DRAG (
+  prv->drag = GTK_GESTURE_DRAG (
                 gtk_gesture_drag_new (GTK_WIDGET (self)));
-  self->multipress = GTK_GESTURE_MULTI_PRESS (
+  prv->multipress = GTK_GESTURE_MULTI_PRESS (
                 gtk_gesture_multi_press_new (GTK_WIDGET (self)));
+
+  /*adjust for zoom level*/
+  float px_per_tick =
+    DEFAULT_PX_PER_TICK * TRANSPORT->zoom_level;
+  unsigned int px_per_quarter_beat =
+    px_per_tick * TICKS_PER_QUARTER_BEAT;
+  unsigned int px_per_beat =
+    px_per_tick * TICKS_PER_BEAT;
+  unsigned int px_per_bar =
+    px_per_beat * TRANSPORT->beats_per_bar;
+  prv->px_per_tick = px_per_tick;
+  GTK_WIDGET (self);
+  prv->px_per_quarter_beat = px_per_quarter_beat;
+  GTK_WIDGET (self);
+  prv->px_per_beat = px_per_beat;
+  GTK_WIDGET (self);
+  prv->px_per_bar = px_per_bar;
+  GTK_WIDGET (self);
+
+  prv->total_px = px_per_bar * TRANSPORT->total_bars;
+  GTK_WIDGET (self);
+
+  // set the size
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self),
+    prv->total_px,
+    -1);
+
+  /* FIXME drags */
+  g_signal_connect (G_OBJECT (self), "draw",
+                    G_CALLBACK (draw_cb), NULL);
+  /*g_signal_connect (G_OBJECT(self), "button_press_event",*/
+                    /*G_CALLBACK (button_press_cb),  self);*/
+  g_signal_connect (G_OBJECT(prv->drag), "drag-begin",
+                    G_CALLBACK (drag_begin),  self);
+  g_signal_connect (G_OBJECT(prv->drag), "drag-update",
+                    G_CALLBACK (drag_update),  self);
+  g_signal_connect (G_OBJECT(prv->drag), "drag-end",
+                    G_CALLBACK (drag_end),  self);
+  g_signal_connect (G_OBJECT (prv->multipress), "pressed",
+                    G_CALLBACK (multipress_pressed), self);
 }

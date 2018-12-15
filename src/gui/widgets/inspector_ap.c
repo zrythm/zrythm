@@ -31,7 +31,7 @@ static void
 inspector_ap_widget_class_init (InspectorApWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
-                                               "/online/alextee/zrythm/ui/inspector_ap.ui");
+                                               "/org/zrythm/ui/inspector_ap.ui");
 
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         InspectorApWidget,

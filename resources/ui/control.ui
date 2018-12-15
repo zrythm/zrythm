@@ -4,15 +4,11 @@
   <requires lib="gtk+" version="3.20"/>
   <template class="ControlWidget" parent="GtkBox">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <child>
       <object class="GtkBox" id="knob_box">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="visible">1</property>
         <property name="orientation">vertical</property>
-        <child>
-          <placeholder/>
-        </child>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -22,11 +18,10 @@
     </child>
     <child>
       <object class="GtkLabel" id="name">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="margin_left">4</property>
-        <property name="margin_right">4</property>
-        <property name="hexpand">True</property>
+        <property name="visible">1</property>
+        <property name="margin-left">4</property>
+        <property name="margin-right">4</property>
+        <property name="hexpand">1</property>
         <property name="label" translatable="yes">Name</property>
       </object>
       <packing>
@@ -37,12 +32,9 @@
     </child>
     <child>
       <object class="GtkToggleButton" id="toggle">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="receives_default">True</property>
-        <child>
-          <placeholder/>
-        </child>
+        <property name="visible">1</property>
+        <property name="can-focus">1</property>
+        <property name="receives-default">1</property>
       </object>
       <packing>
         <property name="expand">False</property>

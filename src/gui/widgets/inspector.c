@@ -38,7 +38,7 @@ static void
 inspector_widget_class_init (InspectorWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
-                                               "/online/alextee/zrythm/ui/inspector.ui");
+                                               "/org/zrythm/ui/inspector.ui");
 
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         InspectorWidget,

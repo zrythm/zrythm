@@ -24,18 +24,19 @@
 
 #include <gtk/gtk.h>
 
-#define CONNECTIONS_WIDGET_TYPE                  (connections_widget_get_type ())
-#define CONNECTIONS_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), CONNECTIONS_WIDGET_TYPE, ConnectionsWidget))
-#define CONNECTIONS_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), CONNECTIONS_WIDGET, ConnectionsWidgetClass))
-#define IS_CONNECTIONS_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), CONNECTIONS_WIDGET_TYPE))
-#define IS_CONNECTIONS_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), CONNECTIONS_WIDGET_TYPE))
-#define CONNECTIONS_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), CONNECTIONS_WIDGET_TYPE, ConnectionsWidgetClass))
+#define CONNECTIONS_WIDGET_TYPE \
+  (connections_widget_get_type ())
+G_DECLARE_FINAL_TYPE (ConnectionsWidget,
+                      connections_widget,
+                      CONNECTIONS,
+                      WIDGET,
+                      GtkGrid)
 
 #define MW_CONNECTIONS MW_BOT_DOCK_EDGE->connections
 
 typedef struct AudioUnitWidget AudioUnitWidget;
 
-typedef struct ConnectionsWidget
+typedef struct _ConnectionsWidget
 {
   GtkGrid                  parent_instance;
   GtkDrawingArea *         bg;  ///< overlay background
@@ -46,14 +47,6 @@ typedef struct ConnectionsWidget
   GtkViewport *            dest_au_viewport;
   AudioUnitWidget *        dest_au;
 } ConnectionsWidget;
-
-typedef struct ConnectionsWidgetClass
-{
-  GtkGridClass               parent_class;
-} ConnectionsWidgetClass;
-
-ConnectionsWidget *
-connections_widget_new ();
 
 /**
  * Updates the connections widget.

@@ -25,15 +25,15 @@
 #include <gtk/gtk.h>
 
 #define RACK_WIDGET_TYPE                  (rack_widget_get_type ())
-#define RACK_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), RACK_WIDGET_TYPE, RackWidget))
-#define RACK_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), RACK_WIDGET, RackWidgetClass))
-#define IS_RACK_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), RACK_WIDGET_TYPE))
-#define IS_RACK_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), RACK_WIDGET_TYPE))
-#define RACK_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), RACK_WIDGET_TYPE, RackWidgetClass))
+G_DECLARE_FINAL_TYPE (RackWidget,
+                      rack_widget,
+                      RACK,
+                      WIDGET,
+                      GtkScrolledWindow)
 
 typedef struct RackRowWidget RackRowWidget;
 
-typedef struct RackWidget
+typedef struct _RackWidget
 {
   GtkScrolledWindow        parent_instance;
   GtkBox *                 main_box;
@@ -42,13 +42,4 @@ typedef struct RackWidget
   GtkBox *                 dummy_box; ///< box at the end
 } RackWidget;
 
-typedef struct RackWidgetClass
-{
-  GtkScrolledWindowClass     parent_class;
-} RackWidgetClass;
-
-RackWidget *
-rack_widget_new ();
-
 #endif
-

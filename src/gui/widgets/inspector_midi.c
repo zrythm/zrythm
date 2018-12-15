@@ -30,7 +30,7 @@ static void
 inspector_midi_widget_class_init (InspectorMidiWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
-                                               "/online/alextee/zrythm/ui/inspector_midi.ui");
+                                               "/org/zrythm/ui/inspector_midi.ui");
 
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         InspectorMidiWidget,

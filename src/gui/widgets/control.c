@@ -35,7 +35,7 @@ control_widget_class_init (ControlWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (
     GTK_WIDGET_CLASS (klass),
-    "/online/alextee/zrythm/ui/control.ui");
+    "/org/zrythm/ui/control.ui");
 
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         ControlWidget,
@@ -76,7 +76,7 @@ control_widget_new (Port * port)
 
   GtkWidget * image;
   image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/automate.svg");
+          "/org/zrythm/automate.svg");
   gtk_button_set_image (GTK_BUTTON (self->toggle),
                         image);
 

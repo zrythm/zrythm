@@ -34,60 +34,11 @@
 #include "gui/widgets/tracklist.h"
 #include "gui/widgets/track.h"
 #include "utils/gtk.h"
+#include "utils/resources.h"
+
+#include <gtk/gtk.h>
 
 G_DEFINE_TYPE (MixerWidget, mixer_widget, GTK_TYPE_BOX)
-
-MixerWidget *
-mixer_widget_new ()
-{
-  MixerWidget * self = g_object_new (MIXER_WIDGET_TYPE, NULL);
-
-  gtk_box_pack_end (GTK_BOX (self),
-                    GTK_WIDGET (MIXER->master->widget),
-                    0, 0, 0);
-  for (int i = 0; i < MIXER->num_channels; i++)
-    {
-      ChannelWidget * chw = MIXER->channels[i]->widget;
-      gtk_container_remove (GTK_CONTAINER (self->channels_box),
-                            GTK_WIDGET (self->channels_add));
-      gtk_box_pack_start (self->channels_box,
-                        GTK_WIDGET (chw),
-                        0, 0, 0);
-      gtk_box_pack_start (self->channels_box,
-                          GTK_WIDGET (self->channels_add),
-                          0, 0, 0);
-
-    }
-  /* add dummy box for dnd */
-  self->ddbox = drag_dest_box_widget_new (GTK_ORIENTATION_HORIZONTAL,
-                                          0,
-                                          DRAG_DEST_BOX_TYPE_MIXER);
-  gtk_widget_set_size_request (GTK_WIDGET (self->ddbox),
-                               20, -1);
-  gtk_box_pack_start (self->channels_box,
-                      GTK_WIDGET (self->ddbox),
-                      1, 1, 0);
-
-  return self;
-}
-
-
-static void
-mixer_widget_class_init (MixerWidgetClass * klass)
-{
-  gtk_widget_class_set_template_from_resource (
-                        GTK_WIDGET_CLASS (klass),
-                        "/online/alextee/zrythm/ui/mixer.ui");
-
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MixerWidget, channels_scroll);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MixerWidget, channels_viewport);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MixerWidget, channels_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                MixerWidget, channels_add);
-}
 
 /**
  * Adds channel to mixer widget.
@@ -125,11 +76,6 @@ mixer_widget_add_channel (MixerWidget * self, Channel * channel)
 
 }
 
-static void
-mixer_widget_init (MixerWidget * self)
-{
-  gtk_widget_init_template (GTK_WIDGET (self));
-}
 
 /**
  * Removes channel from mixer widget.
@@ -183,3 +129,59 @@ mixer_widget_remove_channel (Channel * channel)
   gtk_widget_destroy (GTK_WIDGET (channel->widget));
 }
 
+static void
+mixer_widget_class_init (MixerWidgetClass * _klass)
+{
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "mixer.ui");
+
+  gtk_widget_class_bind_template_child (
+    klass,
+    MixerWidget,
+    channels_scroll);
+  gtk_widget_class_bind_template_child (
+    klass,
+    MixerWidget,
+    channels_viewport);
+  gtk_widget_class_bind_template_child (
+    klass,
+    MixerWidget,
+    channels_box);
+  gtk_widget_class_bind_template_child (
+    klass,
+    MixerWidget,
+    channels_add);
+}
+
+static void
+mixer_widget_init (MixerWidget * self)
+{
+  gtk_widget_init_template (GTK_WIDGET (self));
+
+  gtk_box_pack_end (GTK_BOX (self),
+                    GTK_WIDGET (MIXER->master->widget),
+                    0, 0, 0);
+  for (int i = 0; i < MIXER->num_channels; i++)
+    {
+      ChannelWidget * chw = MIXER->channels[i]->widget;
+      gtk_container_remove (GTK_CONTAINER (self->channels_box),
+                            GTK_WIDGET (self->channels_add));
+      gtk_box_pack_start (self->channels_box,
+                        GTK_WIDGET (chw),
+                        0, 0, 0);
+      gtk_box_pack_start (self->channels_box,
+                          GTK_WIDGET (self->channels_add),
+                          0, 0, 0);
+
+    }
+  /* add dummy box for dnd */
+  self->ddbox = drag_dest_box_widget_new (
+    GTK_ORIENTATION_HORIZONTAL,
+    0,
+    DRAG_DEST_BOX_TYPE_MIXER);
+  gtk_widget_set_size_request (GTK_WIDGET (self->ddbox),
+                               20, -1);
+  gtk_box_pack_start (self->channels_box,
+                      GTK_WIDGET (self->ddbox),
+                      1, 1, 0);
+}

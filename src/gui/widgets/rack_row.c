@@ -33,7 +33,7 @@ rack_row_widget_class_init (RackRowWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (
     GTK_WIDGET_CLASS (klass),
-    "/online/alextee/zrythm/ui/rack_row.ui");
+    "/org/zrythm/ui/rack_row.ui");
 
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         RackRowWidget,

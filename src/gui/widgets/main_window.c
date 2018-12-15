@@ -25,8 +25,10 @@
 #include "audio/track.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/bpm.h"
 #include "gui/widgets/browser.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/connections.h"
 #include "gui/widgets/digital_meter.h"
@@ -35,7 +37,7 @@
 #include "gui/widgets/inspector_region.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
-#include "gui/widgets/piano_roll_page.h"
+#include "gui/widgets/piano_roll.h"
 #include "gui/widgets/rack.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/snap_grid.h"
@@ -101,22 +103,22 @@ main_window_widget_open (MainWindowWidget *win,
 MainWindowWidget *
 main_window_widget_new (ZrythmApp * _app)
 {
-  GtkWidget * img;
-
   MainWindowWidget * self = g_object_new (
     MAIN_WINDOW_WIDGET_TYPE,
     "application",
     G_APPLICATION (_app),
     NULL);
+
+  g_message ("main window initialized");
+
   WIDGET_MANAGER->main_window = self;
   project_set_title ("Untitled Project");
   gtk_window_set_title (GTK_WINDOW (self), "Zrythm");
 
-
   // set default css provider
   GtkCssProvider * css_provider = gtk_css_provider_new();
   gtk_css_provider_load_from_resource (css_provider,
-                                       "/online/alextee/zrythm/theme.css");
+                                       "/org/zrythm/theme.css");
   gtk_style_context_add_provider_for_screen (
           gdk_screen_get_default (),
           GTK_STYLE_PROVIDER (css_provider),
@@ -124,10 +126,39 @@ main_window_widget_new (ZrythmApp * _app)
   g_object_unref (css_provider);
 
   /* setup top toolbar */
-  self->snap_grid_timeline = snap_grid_widget_new (&PROJECT->snap_grid_timeline);
-  gtk_box_pack_start (GTK_BOX (self->snap_grid_timeline_box),
-                      GTK_WIDGET (self->snap_grid_timeline),
-                      1, 1, 0);
+  snap_grid_widget_setup (
+    self->snap_grid_timeline,
+    &PROJECT->snap_grid_timeline);
+
+  /* setup ruler */
+  gtk_scrolled_window_set_hadjustment (
+    MW_CENTER_DOCK->ruler_scroll,
+    gtk_scrolled_window_get_hadjustment (
+      MW_CENTER_DOCK->timeline_scroll));
+
+  /* setup timeline */
+  arranger_widget_setup (
+    ARRANGER_WIDGET (MW_CENTER_DOCK->timeline),
+    &PROJECT->snap_grid_timeline,
+    ARRANGER_TYPE_TIMELINE);
+  gtk_scrolled_window_set_vadjustment (
+    MW_CENTER_DOCK->timeline_scroll,
+    gtk_scrolled_window_get_vadjustment (
+      MW_CENTER_DOCK->tracklist_scroll));
+  gtk_widget_show_all (
+    GTK_WIDGET (MW_CENTER_DOCK->timeline));
+
+  /* setup bot toolbar */
+  snap_grid_widget_setup (MW_CENTER_DOCK->snap_grid_midi,
+                          &PROJECT->snap_grid_midi);
+
+  /* setup piano roll */
+  arranger_widget_setup (
+    ARRANGER_WIDGET (PIANO_ROLL->arranger),
+    &PROJECT->snap_grid_midi,
+    ARRANGER_TYPE_MIDI);
+  gtk_widget_show_all (
+    GTK_WIDGET (PIANO_ROLL->arranger));
 
   // set icons
   GtkWidget * image = resources_get_icon (
@@ -148,6 +179,9 @@ main_window_widget_new (ZrythmApp * _app)
 
   /* set transport controls */
   transport_controls_init (self);
+
+  /* setup piano roll */
+  piano_roll_widget_link_scrolls (self->center_dock->bot_dock_edge->piano_roll);
 
   /*gtk_widget_add_events (GTK_WIDGET (self->main_box),*/
                          /*GDK_KEY_PRESS_MASK);*/
@@ -199,11 +233,15 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
   gtk_widget_class_bind_template_child (
     GTK_WIDGET_CLASS (klass),
     MainWindowWidget,
-    snap_grid_timeline_box);
+    snap_grid_timeline);
   gtk_widget_class_bind_template_child (
     GTK_WIDGET_CLASS (klass),
     MainWindowWidget,
     center_box);
+  gtk_widget_class_bind_template_child (
+    GTK_WIDGET_CLASS (klass),
+    MainWindowWidget,
+    center_dock);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         MainWindowWidget, bot_bar);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),

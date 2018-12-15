@@ -2,54 +2,30 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <template class="TrackWidget" parent="GtkPaned">
-    <property name="visible">True</property>
-    <property name="can_focus">True</property>
-    <property name="orientation">vertical</property>
-    <property name="wide_handle">True</property>
+  <template class="TrackWidget" parent="GtkGrid">
+    <property name="visible">1</property>
+    <property name="hexpand">1</property>
     <child>
-      <object class="GtkGrid">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="hexpand">True</property>
-        <child>
-          <object class="GtkBox" id="color_box">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="vexpand">True</property>
-            <property name="orientation">vertical</property>
-            <child>
-              <placeholder/>
-            </child>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox" id="track_box">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="orientation">vertical</property>
-            <child>
-              <placeholder/>
-            </child>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">0</property>
-            <property name="width">2</property>
-          </packing>
-        </child>
+      <object class="GtkBox" id="color_box">
+        <property name="visible">1</property>
+        <property name="vexpand">1</property>
+        <property name="orientation">vertical</property>
       </object>
       <packing>
-        <property name="resize">False</property>
-        <property name="shrink">False</property>
+        <property name="left-attach">0</property>
+        <property name="top-attach">0</property>
       </packing>
     </child>
     <child>
-      <placeholder/>
+      <object class="GtkBox" id="track_box">
+        <property name="visible">1</property>
+        <property name="orientation">vertical</property>
+      </object>
+      <packing>
+        <property name="left-attach">1</property>
+        <property name="top-attach">0</property>
+        <property name="width">2</property>
+      </packing>
     </child>
   </template>
 </interface>

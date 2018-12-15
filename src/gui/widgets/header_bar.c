@@ -199,13 +199,13 @@ header_bar_widget_init (HeaderBarWidget * self)
 
   /* set button icons */
   GtkWidget * image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/icons/close.svg");
+          "/org/zrythm/icons/close.svg");
   gtk_button_set_image (self->close, image);
   image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/icons/minimize.svg");
+          "/org/zrythm/icons/minimize.svg");
   gtk_button_set_image (self->minimize, image);
   image = gtk_image_new_from_resource (
-          "/online/alextee/zrythm/icons/maximize.svg");
+          "/org/zrythm/icons/maximize.svg");
   gtk_button_set_image (self->maximize, image);
 }
 
@@ -215,7 +215,7 @@ header_bar_widget_class_init (HeaderBarWidgetClass * klass)
   g_message ("init header bar class");
   gtk_widget_class_set_template_from_resource (
     GTK_WIDGET_CLASS (klass),
-    "/online/alextee/zrythm/ui/header_bar.ui");
+    "/org/zrythm/ui/header_bar.ui");
   gtk_widget_class_bind_template_child (
     GTK_WIDGET_CLASS (klass),
     HeaderBarWidget,

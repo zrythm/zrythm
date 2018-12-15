@@ -90,7 +90,7 @@ static void
 export_dialog_widget_class_init (ExportDialogWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
-                                               "/online/alextee/zrythm/ui/export_dialog.ui");
+                                               "/org/zrythm/ui/export_dialog.ui");
 
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         ExportDialogWidget,
