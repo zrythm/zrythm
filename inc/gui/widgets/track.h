@@ -33,6 +33,9 @@ G_DECLARE_FINAL_TYPE (TrackWidget,
                       TRACK,
                       WIDGET,
                       GtkGrid)
+#define IS_TRACK_WIDGET(obj) \
+  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), \
+   TRACK_WIDGET_TYPE))
 
 typedef struct ColorAreaWidget ColorAreaWidget;
 typedef struct _InstrumentTrackWidget InstrumentTrackWidget;

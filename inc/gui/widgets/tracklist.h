@@ -35,7 +35,6 @@ G_DECLARE_FINAL_TYPE (TracklistWidget,
                       WIDGET,
                       DzlMultiPaned)
 
-#define FOREACH_TW for (int i = 0; i < self->num_visible; i++)
 #define MW_TRACKLIST MW_CENTER_DOCK->tracklist
 
 typedef struct _TrackWidget TrackWidget;
@@ -49,14 +48,6 @@ typedef struct _TracklistWidget
   GtkGestureDrag *              drag;
   GtkGestureMultiPress *        multipress;
   GtkGestureMultiPress *        right_mouse_mp; ///< right mouse multipress
-
-  /**
-   * Track widgets in order. These are the widgets that
-   * are actually displayed.
-   * Track widgets are created dynamically.
-   */
-  TrackWidget *                 visible_tw[200];
-  int                           num_visible;
 
   /**
    * Widget for drag and dropping plugins in to create
@@ -73,20 +64,6 @@ typedef struct _TracklistWidget
 void
 setup_tracklist (TracklistWidget * self,
                  Tracklist * tracklist);
-
-/**
- * Adds given track to tracklist widget.
- */
-void
-tracklist_widget_add_track (TracklistWidget * self,
-                            Track *           track,
-                            int               pos);
-
-/**
- * Removes the given track from the tracklist.
- */
-void
-tracklist_widget_remove_track (Track * track);
 
 void
 tracklist_widget_toggle_select_track (TracklistWidget * self,
@@ -106,16 +83,12 @@ tracklist_widget_toggle_select_all_tracks (TracklistWidget *self,
 void
 tracklist_widget_show (TracklistWidget *self);
 
-Track *
-tracklist_widget_get_first_visible_track (TracklistWidget * self);
 
-Track *
-tracklist_widget_get_prev_visible_track (Track * track);
-
-Track *
-tracklist_widget_get_next_visible_track (Track * track);
-
-Track *
-tracklist_widget_get_last_visible_track (TracklistWidget * self);
+/**
+ * Deletes all tracks and re-adds them as per the
+ * tracklist object.
+ */
+void
+tracklist_widget_refresh (TracklistWidget * self);
 
 #endif

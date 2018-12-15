@@ -184,6 +184,8 @@ project_load (char * filepath) ///< this is the xml file
     {
       mixer_add_master_and_init_track (channel_create_master ());
       mixer_add_channel_and_init_track (channel_create (CT_MIDI, "Ch 1"));
+      mixer_add_channel_and_init_track (channel_create (CT_MIDI, "Ch 2"));
+      mixer_add_channel_and_init_track (channel_create (CT_MIDI, "Ch 3"));
     }
   PROJECT->tracklist = tracklist_new ();
 }

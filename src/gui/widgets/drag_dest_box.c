@@ -26,6 +26,7 @@
 #include "audio/channel.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
+#include "audio/tracklist.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
@@ -84,9 +85,8 @@ on_drag_data_received (GtkWidget        *widget,
       mixer_widget_add_channel (MW_MIXER, new_channel);
 
       /* create track widget */
-      tracklist_widget_add_track (MW_TRACKLIST,
-                                  new_channel->track,
-                                  MW_TRACKLIST->num_visible);
+      tracklist_add_track_last (PROJECT->tracklist,
+                                new_channel->track);
 
       track_widget_show (new_channel->track->widget);
       channel_widget_show (new_channel->widget);

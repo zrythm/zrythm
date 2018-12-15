@@ -100,6 +100,7 @@ InstrumentTrack *
 instrument_track_new (Channel * channel)
 {
   InstrumentTrack * track = calloc (1, sizeof (InstrumentTrack));
+  track_init ((Track *) track);
 
   track->channel = channel;
 

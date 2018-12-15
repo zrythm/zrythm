@@ -48,10 +48,16 @@ typedef enum TrackType
 typedef struct Track
 {
   TrackType           type; ///< the type of track this is
-  TrackWidget *       widget; ///< track widget, 1 track has 1 widget
+
+  /**
+   * Track Widget created dynamically.
+   * 1 track has 1 widget.
+   */
+  TrackWidget *       widget;
   int                 bot_paned_visible; ///< flag to set automations visible or not
   int                 visible;
   int                 selected;
+  int                 handle_pos; ///< position of multipane handle
 } Track;
 
 /**

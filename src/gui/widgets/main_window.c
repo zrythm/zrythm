@@ -178,7 +178,6 @@ main_window_widget_new (ZrythmApp * _app)
   /* set transport controls */
   transport_controls_init (self);
 
-  /* setup piano roll */
 
   /*gtk_widget_add_events (GTK_WIDGET (self->main_box),*/
                          /*GDK_KEY_PRESS_MASK);*/

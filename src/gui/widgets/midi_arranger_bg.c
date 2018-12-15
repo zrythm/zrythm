@@ -140,7 +140,8 @@ drag_begin (GtkGestureDrag * gesture,
                gdouble         start_y,
                gpointer        user_data)
 {
-  MidiArrangerBgWidget * self = (MidiArrangerBgWidget *) user_data;
+  MidiArrangerBgWidget * self =
+    MIDI_ARRANGER_BG_WIDGET (user_data);
   self->start_x = start_x;
 }
 
@@ -158,7 +159,7 @@ drag_end (GtkGestureDrag *gesture,
                gdouble         offset_y,
                gpointer        user_data)
 {
-  RULER_WIDGET_GET_PRIVATE (user_data);
+  RULER_WIDGET_GET_PRIVATE (MIDI_RULER);
   prv->start_x = 0;
 }
 

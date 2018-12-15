@@ -83,8 +83,33 @@ tracklist_add_track (Tracklist * tracklist,
                      Track *     track,
                      int         pos);
 
+void
+tracklist_remove_track (Tracklist * self,
+                        Track *     track);
+
+void
+tracklist_add_track_last (Tracklist * tracklist,
+                          Track *     track);
+
 int
 tracklist_get_track_pos (Tracklist * tracklist,
                          Track *     track);
+
+int
+tracklist_get_last_visible_pos (Tracklist * tracklist);
+
+Track*
+tracklist_get_last_visible_track (Tracklist * self);
+
+Track *
+tracklist_get_first_visible_track (Tracklist * self);
+
+Track *
+tracklist_get_prev_visible_track (Tracklist * self,
+                                  Track * track);
+
+Track *
+tracklist_get_next_visible_track (Tracklist * self,
+                                  Track * track);
 
 #endif

@@ -27,6 +27,7 @@
 #include "audio/instrument_track.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
+#include "audio/tracklist.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_point.h"
@@ -113,27 +114,35 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
 
   /* handle horizontal drawing for tracks */
   /*int y_offset = 0;*/
-  for (int i = 0; i < MW_TRACKLIST->num_visible; i++)
+  for (int i = 0; i < PROJECT->tracklist->num_tracks; i++)
     {
-      TrackWidget * track_widget = MW_TRACKLIST->visible_tw[i];
+      Track * track = PROJECT->tracklist->tracks[i];
+      if (!track->visible)
+        continue;
+
+      TrackWidget * tw = track->widget;
+
+      GtkWidget * tw_widget;
+      if (i == PROJECT->tracklist->num_tracks - 1)
+        {
+          /* draw last line */
+          tw_widget = GTK_WIDGET (MW_TRACKLIST->ddbox);
+        }
+      else
+        {
+          /* draw line on top of widget */
+          tw_widget = GTK_WIDGET (tw);
+        }
 
       gint wx, wy;
       gtk_widget_translate_coordinates(
-                GTK_WIDGET (track_widget),
+                tw_widget,
                 GTK_WIDGET (MW_TRACKLIST),
                 0,
                 0,
                 &wx,
                 &wy);
       draw_horizontal_line (cr, wy - 2, 1.0);
-
-      /* draw last line */
-      if (i == MW_TRACKLIST->num_visible - 1)
-        {
-          wy += gtk_widget_get_allocated_height (GTK_WIDGET (
-                                track_widget->track_box));
-          draw_horizontal_line (cr, wy + 2, 1.0);
-        }
     }
 
   /* draw automation related stuff */
@@ -195,8 +204,7 @@ drag_begin (GtkGestureDrag * gesture,
                gdouble         start_y,
                gpointer        user_data)
 {
-  RulerWidget * self = RULER_WIDGET (user_data);
-  RULER_WIDGET_GET_PRIVATE (self);
+  RULER_WIDGET_GET_PRIVATE (MW_RULER);
   prv->start_x = start_x;
 }
 
@@ -214,8 +222,7 @@ drag_end (GtkGestureDrag *gesture,
                gdouble         offset_y,
                gpointer        user_data)
 {
-  RulerWidget * self = RULER_WIDGET (user_data);
-  RULER_WIDGET_GET_PRIVATE (self);
+  RULER_WIDGET_GET_PRIVATE (MW_RULER);
   prv->start_x = 0;
 }
 

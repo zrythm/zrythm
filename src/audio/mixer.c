@@ -31,6 +31,7 @@
 #include "audio/instrument_track.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
+#include "audio/tracklist.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/track.h"
@@ -182,7 +183,8 @@ mixer_remove_channel (Channel * channel)
   channel->enabled = 0;
   channel->stop_thread = 1;
   mixer_widget_remove_channel (channel);
-  tracklist_widget_remove_track (channel->track);
+  tracklist_remove_track (PROJECT->tracklist,
+                          channel->track);
   for (int i = channel->id; i < MIXER->num_channels - 1; i++)
     {
       MIXER->channels[i] = MIXER->channels[i + 1];

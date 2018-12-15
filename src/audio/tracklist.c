@@ -24,6 +24,8 @@
 #include "audio/mixer.h"
 #include "audio/tracklist.h"
 #include "audio/track.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/tracklist.h"
 #include "utils/arrays.h"
 
@@ -38,17 +40,15 @@ tracklist_new ()
 
   /* add chord track */
   ChordTrack * chord_track = chord_track_default ();
-  tracklist_add_track (self,
-                       (Track * )chord_track,
-                       self->num_tracks);
+  tracklist_add_track_last (self,
+                            (Track * )chord_track);
 
   /* add each channel */
   for (int i = 0; i < MIXER->num_channels; i++)
     {
       Channel * channel = MIXER->channels[i];
-      tracklist_add_track (self,
-                           channel->track,
-                           self->num_tracks);
+      tracklist_add_track_last (self,
+                                channel->track);
     }
 
   return self;
@@ -128,6 +128,19 @@ tracklist_add_track (Tracklist * tracklist,
                 &tracklist->num_tracks,
                 pos,
                 (void *) track);
+  if (MAIN_WINDOW && MW_CENTER_DOCK && MW_TRACKLIST)
+    {
+      tracklist_widget_refresh (MW_TRACKLIST);
+    }
+}
+
+void
+tracklist_add_track_last (Tracklist * tracklist,
+                          Track *     track)
+{
+  array_append ((void **) tracklist->tracks,
+                &tracklist->num_tracks,
+                (void *) track);
 }
 
 int
@@ -137,4 +150,77 @@ tracklist_get_track_pos (Tracklist * tracklist,
   return array_index_of ((void **) tracklist->tracks,
                          tracklist->num_tracks,
                          (void *) track);
+}
+
+int
+tracklist_get_last_visible_pos (Tracklist * self)
+{
+  for (int i = self->num_tracks - 1; i >= 0; i--)
+    {
+      if (self->tracks[i]->visible)
+        {
+          return i;
+        }
+    }
+}
+
+Track*
+tracklist_get_last_visible_track (Tracklist * self)
+{
+  for (int i = self->num_tracks - 1; i >= 0; i--)
+    {
+      if (self->tracks[i]->visible)
+        {
+          return self->tracks[i];
+        }
+    }
+}
+
+Track *
+tracklist_get_first_visible_track (Tracklist * self)
+{
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      if (self->tracks[i]->visible)
+        {
+          return self->tracks[i];
+        }
+    }
+}
+
+Track *
+tracklist_get_prev_visible_track (Tracklist * self,
+                                  Track * track)
+{
+  for (int i = tracklist_get_track_pos (self, track);
+       i >= 0; i--)
+    {
+      if (self->tracks[i]->visible)
+        {
+          return self->tracks[i];
+        }
+    }
+}
+
+Track *
+tracklist_get_next_visible_track (Tracklist * self,
+                                  Track * track)
+{
+  for (int i = tracklist_get_track_pos (self, track);
+       i < self->num_tracks; i++)
+    {
+      if (self->tracks[i]->visible)
+        {
+          return self->tracks[i];
+        }
+    }
+}
+
+void
+tracklist_remove_track (Tracklist * self,
+                        Track *     track)
+{
+  array_delete ((void **) self->tracks,
+                &self->num_tracks,
+                (void *) track);
 }

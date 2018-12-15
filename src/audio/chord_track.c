@@ -31,6 +31,7 @@
 
 #include "audio/chord_track.h"
 #include "audio/scale.h"
+#include "audio/track.h"
 
 /**
  * Creates a new chord track using the given scale.
@@ -39,6 +40,7 @@ ChordTrack *
 chord_track_new (MusicalScale * scale)
 {
   ChordTrack * self = calloc (1, sizeof (ChordTrack));
+  track_init ((Track *) self);
 
   self->scale = scale;
 
@@ -52,6 +54,7 @@ ChordTrack *
 chord_track_default ()
 {
   ChordTrack * self = calloc (1, sizeof (ChordTrack));
+  track_init ((Track *) self);
 
   self->scale = musical_scale_new (SCALE_AEOLIAN, // natural minor
                                    NOTE_A);

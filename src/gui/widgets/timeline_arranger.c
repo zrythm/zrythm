@@ -903,10 +903,20 @@ timeline_arranger_widget_move_items_y (
       Track * old_track = self->start_region->track;
       if (track)
         {
-          Track * pt = tracklist_widget_get_prev_visible_track (old_track);
-          Track * nt = tracklist_widget_get_next_visible_track (old_track);
-          Track * tt = tracklist_widget_get_first_visible_track (MW_TRACKLIST);
-          Track * bt = tracklist_widget_get_last_visible_track (MW_TRACKLIST);
+          Track * pt =
+            tracklist_get_prev_visible_track (
+              PROJECT->tracklist,
+              old_track);
+          Track * nt =
+            tracklist_get_next_visible_track (
+              PROJECT->tracklist,
+              old_track);
+          Track * tt =
+            tracklist_get_first_visible_track (
+              PROJECT->tracklist);
+          Track * bt =
+            tracklist_get_last_visible_track (
+              PROJECT->tracklist);
           if (self->start_region->track != track)
             {
               /* if new track is lower and bot region is not at the lowest track */
@@ -917,7 +927,10 @@ timeline_arranger_widget_move_items_y (
                   for (int i = 0; i < self->num_regions; i++)
                     {
                       Region * region = self->regions[i];
-                      nt = tracklist_widget_get_next_visible_track (region->track);
+                      nt =
+                        tracklist_get_next_visible_track (
+                          PROJECT->tracklist,
+                          region->track);
                       old_track = region->track;
                       if (old_track->type == nt->type)
                         {
@@ -947,7 +960,10 @@ timeline_arranger_widget_move_items_y (
                   for (int i = 0; i < self->num_regions; i++)
                     {
                       Region * region = self->regions[i];
-                      pt = tracklist_widget_get_prev_visible_track (region->track);
+                      pt =
+                        tracklist_get_prev_visible_track (
+                          PROJECT->tracklist,
+                          region->track);
                       old_track = region->track;
                       if (old_track->type == pt->type)
                         {
