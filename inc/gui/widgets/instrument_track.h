@@ -52,7 +52,6 @@ typedef struct _InstrumentTrackWidget
   GtkButton *                   mute;
   GtkButton *                   show_automation;
   GtkImage *                    icon;
-  AutomationTracklistWidget *   automation_tracklist_widget;
 } InstrumentTrackWidget;
 
 /**
@@ -66,12 +65,6 @@ instrument_track_widget_new (InstrumentTrack * track,
  * Updates changes in the backend to the ui
  */
 void
-instrument_track_widget_update_all (InstrumentTrackWidget * self);
-
-/**
- * Makes sure the track widget and its elements have the visibility they should.
- */
-void
-instrument_track_widget_show (InstrumentTrackWidget * self);
+instrument_track_widget_refresh (InstrumentTrackWidget * self);
 
 #endif

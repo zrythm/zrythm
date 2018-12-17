@@ -42,6 +42,7 @@ typedef struct Track Track;
 typedef struct Channel Channel;
 typedef struct AutomatableTrack AutomatableTrack;
 typedef struct Plugin Plugin;
+typedef struct AutomationTrack AutomationTrack;
 
 typedef struct Automatable
 {
@@ -85,6 +86,12 @@ automatable_get_maxf (Automatable * automatable);
  */
 const float
 automatable_get_sizef (Automatable * automatable);
+
+/**
+ * Gets automation track for given automatable, if any.
+ */
+AutomationTrack *
+automatable_get_automation_track (Automatable * automatable);
 
 void
 automatable_free (Automatable * automatable);

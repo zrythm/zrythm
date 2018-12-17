@@ -24,6 +24,7 @@
 
 #include "audio/automatable.h"
 #include "audio/automation_track.h"
+#include "audio/automation_tracklist.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
@@ -37,8 +38,13 @@
 #include "gui/widgets/region.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/track.h"
+#include "utils/resources.h"
 
-G_DEFINE_TYPE (AutomationTrackWidget, automation_track_widget, GTK_TYPE_PANED)
+G_DEFINE_TYPE (AutomationTrackWidget,
+               automation_track_widget,
+               GTK_TYPE_PANED)
+
+#define GET_TRACK(self) Track * track = self->at->track
 
 static void
 size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
@@ -51,12 +57,12 @@ static void
 add_automation_track (AutomationTracklistWidget * atlw,
                       AutomationTrack *       at)
 {
-  automation_tracklist_widget_add_automation_track (
-    atlw,
-    at,
-    automation_tracklist_widget_get_automation_track_widget_index (
-      atlw,
-      at->widget) + 1);
+  /*automation_tracklist_widget_add_automation_track (*/
+    /*atlw,*/
+    /*at,*/
+    /*automation_tracklist_widget_get_automation_track_widget_index (*/
+      /*atlw,*/
+      /*at->widget) + 1);*/
 }
 
 static void
@@ -66,29 +72,22 @@ on_add_lane_clicked (GtkWidget * widget, void * data)
 
   /* get next non visible automation track and add its widget via
    * track_widget_add_automatoin_track_widget */
-  InstrumentTrack * it;
-  switch (self->at->track->type)
+  GET_TRACK (self);
+  AutomationTracklist * automation_tracklist =
+    track_get_automation_tracklist (track);
+  for (int i = 0;
+       i < automation_tracklist->num_automation_tracks;
+       i++)
     {
-    case TRACK_TYPE_INSTRUMENT:
-      it = (InstrumentTrack *) self->at->track;
-      for (int i = 0; i < it->num_automation_tracks; i++)
+      AutomationTrack * at =
+        automation_tracklist->automation_tracks[i];
+      if (!at->visible)
         {
-          AutomationTrack * at =
-            it->automation_tracks[i];
-          if (!at->widget)
-            {
-              add_automation_track (self->at->track->widget->ins_tw->automation_tracklist_widget,
-                                    at);
-              break;
-            }
+          add_automation_track (
+            automation_tracklist->widget,
+            at);
+          break;
         }
-      break;
-    case TRACK_TYPE_MASTER:
-      /* TODO */
-    case TRACK_TYPE_AUDIO:
-    case TRACK_TYPE_CHORD:
-    case TRACK_TYPE_BUS:
-      break;
     }
 }
 
@@ -258,25 +257,28 @@ automation_track_widget_init (AutomationTrackWidget * self)
 }
 
 static void
-automation_track_widget_class_init (AutomationTrackWidgetClass * klass)
+automation_track_widget_class_init (
+  AutomationTrackWidgetClass * _klass)
 {
-  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
-                                               "/org/zrythm/ui/automation_track.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass,
+                                "automation_track.ui");
 
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        AutomationTrackWidget,
-                                        selector);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        AutomationTrackWidget,
-                                        value_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        AutomationTrackWidget,
-                                        mute_toggle);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        AutomationTrackWidget,
-                                        at_grid);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
-                                        on_add_lane_clicked);
+  gtk_widget_class_bind_template_child (
+    klass,
+    AutomationTrackWidget,
+    selector);
+  gtk_widget_class_bind_template_child (
+    klass,
+    AutomationTrackWidget,
+    value_box);
+  gtk_widget_class_bind_template_child (
+    klass,
+    AutomationTrackWidget,
+    mute_toggle);
+  gtk_widget_class_bind_template_callback (
+    klass,
+    on_add_lane_clicked);
 }
 
 float
@@ -286,13 +288,13 @@ automation_track_widget_get_fvalue_at_y (AutomationTrackWidget * at_widget,
   Automatable * a = at_widget->at->automatable;
 
   GtkAllocation allocation;
-  gtk_widget_get_allocation (GTK_WIDGET (at_widget->at_grid),
+  gtk_widget_get_allocation (GTK_WIDGET (at_widget),
                              &allocation);
 
   gint wx, valy;
   gtk_widget_translate_coordinates(
             GTK_WIDGET (MW_TIMELINE),
-            GTK_WIDGET (at_widget->at_grid),
+            GTK_WIDGET (at_widget),
             0,
             _start_y,
             &wx,

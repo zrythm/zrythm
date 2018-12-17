@@ -29,6 +29,7 @@
 #endif
 
 #include "audio/automation_track.h"
+#include "audio/automation_tracklist.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
 #include "audio/mixer.h"
@@ -319,6 +320,7 @@ channel_generate_automatables (Channel * channel)
     {
       channel->automatables[channel->num_automatables++] =
         automatable_create_fader (channel);
+      g_message ("%p", channel->automatables[0]->track);
     }
 }
 
@@ -525,29 +527,12 @@ channel_remove_plugin (Channel * channel, int pos)
         {
           lv2_close_ui ((LV2_Plugin *) plugin->original_plugin);
 
-          /* remove automation tracks associated with plugin automatables */
-          for (int i = 0; i < plugin->num_automatables; i++)
-            {
-              Automatable * a = plugin->automatables[i];
-              AutomationTrack * at = automation_track_get_for_automatable (a);
-
-              switch (channel->track->type)
-                {
-                case TRACK_TYPE_INSTRUMENT:
-                  instrument_track_delete_automation_track (
-                                                                               (InstrumentTrack *) channel->track,
-                                                                               at);
-                  break;
-                case TRACK_TYPE_MASTER:
-                case TRACK_TYPE_AUDIO:
-                case TRACK_TYPE_CHORD:
-                case TRACK_TYPE_BUS:
-                  break;
-                }
-            }
         }
       plugin_free (channel->strip[pos]);
     }
+  AutomationTracklist * automation_tracklist =
+    track_get_automation_tracklist (channel->track);
+  automation_tracklist_update (automation_tracklist);
 }
 
 /**
@@ -695,8 +680,10 @@ channel_add_plugin (Channel * channel,    ///< the channel
   channel->enabled = prev_enabled;
 
   plugin_generate_automatables (plugin);
-  track_update_automation_tracks (channel->track);
-  track_widget_update_all (channel->track->widget);
+  AutomationTracklist * automation_tracklist =
+    track_get_automation_tracklist (channel->track);
+  automation_tracklist_update (automation_tracklist);
+  track_widget_refresh (channel->track->widget);
   connections_widget_update (MW_CONNECTIONS);
 }
 

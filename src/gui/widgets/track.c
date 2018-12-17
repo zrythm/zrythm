@@ -195,35 +195,17 @@ track_widget_select (TrackWidget * self,
 }
 
 /**
- * Makes sure the track widget and its elements have the visibility they should.
- */
-void
-track_widget_show (TrackWidget * self)
-{
-  switch (self->track->type)
-    {
-    case TRACK_TYPE_INSTRUMENT:
-      instrument_track_widget_show (self->ins_tw);
-      break;
-    case TRACK_TYPE_MASTER:
-    case TRACK_TYPE_AUDIO:
-    case TRACK_TYPE_CHORD:
-    case TRACK_TYPE_BUS:
-      break;
-    }
-}
-
-/**
  * Wrapper.
  */
 void
-track_widget_update_all (TrackWidget * self)
+track_widget_refresh (TrackWidget * self)
 {
   switch (self->track->type)
     {
     case TRACK_TYPE_INSTRUMENT:
-      instrument_track_widget_update_all (
+      instrument_track_widget_refresh (
         self->ins_tw);
+      break;
     case TRACK_TYPE_MASTER:
     case TRACK_TYPE_AUDIO:
     case TRACK_TYPE_CHORD:

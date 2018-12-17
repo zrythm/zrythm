@@ -86,7 +86,7 @@ automation_point_get_y_in_px (AutomationPoint * ap)
 
   int allocated_h =
     gtk_widget_get_allocated_height (
-      GTK_WIDGET (ap->at->widget->at_grid));
+      GTK_WIDGET (ap->at->widget));
   int point = allocated_h - ap_ratio * allocated_h;
   return point;
 }

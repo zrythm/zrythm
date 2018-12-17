@@ -475,10 +475,10 @@ void
 tracklist_widget_show (TracklistWidget *self)
 {
   gtk_widget_show (GTK_WIDGET (self));
-  track_widget_show (MIXER->master->track->widget);
+  track_widget_refresh (MIXER->master->track->widget);
   for (int i = 0; i < MIXER->num_channels; i++)
     {
-      track_widget_show (MIXER->channels[i]->track->widget);
+      track_widget_refresh (MIXER->channels[i]->track->widget);
     }
   if (self->ddbox)
     gtk_widget_show (GTK_WIDGET (self->ddbox));

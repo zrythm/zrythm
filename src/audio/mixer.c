@@ -114,26 +114,14 @@ mixer_load_plugins ()
     }
 }
 
+/* FIXME organize better */
 static void
 generate_track (Channel * channel)
 {
-  switch (channel->type)
-    {
-    case CT_MIDI:
-      channel->track = (Track *) instrument_track_new (channel);
-      break;
-    case CT_AUDIO:
-    case CT_BUS:
-    case CT_MASTER:
-      channel->track = (Track *) instrument_track_new (
-        channel);
-      break;
-    }
 
+  channel->track = track_new (channel);
   channel_generate_automatables (channel);
-  track_update_automation_tracks (channel->track);
-  channel->track->widget = track_widget_new (channel->track);
-  /*track_widget_show (channel->track->widget);*/
+  track_setup (channel->track);
 }
 
 /**

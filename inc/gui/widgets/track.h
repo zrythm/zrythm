@@ -77,16 +77,10 @@ track_widget_select (TrackWidget * self,
                      int           select); ///< 1 = select, 0 = unselect
 
 /**
- * Makes sure the track widget and its elements have the visibility they should.
- */
-void
-track_widget_show (TrackWidget * self);
-
-/**
  * Wrapper.
  */
 void
-track_widget_update_all (TrackWidget * self);
+track_widget_refresh (TrackWidget * self);
 
 #endif
 

@@ -20,6 +20,8 @@
  */
 
 #include "audio/automatable.h"
+#include "audio/automation_track.h"
+#include "audio/automation_tracklist.h"
 #include "audio/channel.h"
 #include "audio/track.h"
 #include "plugins/plugin.h"
@@ -156,6 +158,31 @@ automatable_free (Automatable * automatable)
   /* TODO go through every track and plugins
    * and set associated automatables to NULL */
 
+}
+
+/**
+ * Gets automation track for given automatable, if any.
+ */
+AutomationTrack *
+automatable_get_automation_track (Automatable * automatable)
+{
+  g_message ("%p", automatable->track);
+  Track * track = automatable->track;
+  AutomationTracklist * automation_tracklist =
+    track_get_automation_tracklist (track);
+
+  for (int i = 0;
+       i < automation_tracklist->num_automation_tracks;
+       i++)
+    {
+      AutomationTrack * at =
+        automation_tracklist->automation_tracks[i];
+      if (at->automatable == automatable)
+        {
+          return at;
+        }
+    }
+  return NULL;
 }
 
 

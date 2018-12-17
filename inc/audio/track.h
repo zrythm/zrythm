@@ -24,6 +24,7 @@
 
 #include <jack/jack.h>
 
+typedef struct AutomationTracklist AutomationTracklist;
 typedef struct Region Region;
 typedef struct Position Position;
 typedef struct _TrackWidget TrackWidget;
@@ -76,10 +77,33 @@ Track *
 track_new (Channel * channel);
 
 /**
- * Wrapper for each track type.
+ * Wrapper.
  */
 void
-track_update_automation_tracks (Track * track);
+track_setup (Track * track);
+
+/**
+ * Returns the automation tracklist if the track type has one,
+ * or NULL if it doesn't (like chord tracks).
+ */
+AutomationTracklist *
+track_get_automation_tracklist (Track * track);
+
+/**
+ * Returns the channel of the track, if the track type has
+ * a channel,
+ * or NULL if it doesn't.
+ */
+Channel *
+track_get_channel (Track * track);
+
+/**
+ * Wrapper for track types that have fader automatables.
+ *
+ * Otherwise returns NULL.
+ */
+Automatable *
+track_get_fader_automatable (Track * track);
 
 /**
  * Wrapper for each track type.

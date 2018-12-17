@@ -24,6 +24,7 @@
 
 #include "audio/automatable.h"
 #include "audio/automation_track.h"
+#include "audio/automation_tracklist.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "audio/region.h"
@@ -44,17 +45,21 @@ G_DEFINE_TYPE (InstrumentTrackWidget,
                instrument_track_widget,
                GTK_TYPE_PANED)
 
+#define GET_TRACK(self) Track * track = self->parent->track
+
 static void
 on_show_automation (GtkWidget * widget, void * data)
 {
-  TrackWidget * self = TRACK_WIDGET (data);
+  InstrumentTrackWidget * self =
+    INSTRUMENT_TRACK_WIDGET (data);
+
+  GET_TRACK (self);
 
   /* toggle visibility flag */
-  InstrumentTrack * ins_track =
-    (InstrumentTrack *) self->track;
-  ((Track *)ins_track)->bot_paned_visible =
-    ((Track *)ins_track)->bot_paned_visible ? 0 : 1;
+  track->bot_paned_visible =
+    track->bot_paned_visible ? 0 : 1;
 
+  /* FIXME rename to refresh */
   tracklist_widget_show (MW_TRACKLIST);
 }
 
@@ -74,9 +79,15 @@ instrument_track_widget_new (InstrumentTrack * ins_track,
                             NULL);
   self->parent = parent;
 
-  self->automation_tracklist_widget = automation_tracklist_widget_new (self->parent);
-
-  instrument_track_widget_update_all (self);
+  GET_TRACK (self);
+  AutomationTracklist * automation_tracklist =
+    track_get_automation_tracklist (track);
+  automation_tracklist->widget =
+    automation_tracklist_widget_new (automation_tracklist);
+  gtk_paned_pack2 (GTK_PANED (self),
+                   GTK_WIDGET (automation_tracklist->widget),
+                   Z_GTK_RESIZE,
+                   Z_GTK_NO_SHRINK);
 
   gtk_container_add (
     GTK_CONTAINER (self->solo),
@@ -169,33 +180,15 @@ instrument_track_widget_class_init (InstrumentTrackWidgetClass * klass)
 }
 
 void
-instrument_track_widget_update_all (InstrumentTrackWidget * self)
+instrument_track_widget_refresh (InstrumentTrackWidget * self)
 {
   InstrumentTrack * it = (InstrumentTrack *) self->parent->track;
   gtk_label_set_text (self->track_name,
                       it->channel->name);
 
-  for (int i = 0; i < it->num_automation_tracks; i++)
-    {
-      AutomationTrack * at = it->automation_tracks[i];
-      if (at->widget)
-        {
-          automation_track_widget_update (at->widget);
-        }
-    }
+  GET_TRACK (self);
+  AutomationTracklist * automation_tracklist =
+    track_get_automation_tracklist (track);
+  automation_tracklist_widget_refresh (
+    automation_tracklist->widget);
 }
-
-/**
- * Makes sure the track widget and its elements have the visibility they should.
- */
-void
-instrument_track_widget_show (InstrumentTrackWidget * self)
-{
-  g_message ("showing track widget for %s",
-             ((InstrumentTrack *) self->parent->track)->channel->name);
-  gtk_widget_show (GTK_WIDGET (self));
-  gtk_widget_show_all (GTK_WIDGET (self->track_box));
-  automation_tracklist_widget_show (self->automation_tracklist_widget);
-}
-
-

@@ -2,64 +2,53 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <template class="AutomationTrackWidget" parent="GtkPaned">
-    <property name="visible">True</property>
-    <property name="can-focus">True</property>
-    <property name="orientation">vertical</property>
+  <template class="AutomationTrackWidget" parent="GtkGrid">
+    <property name="visible">1</property>
     <child>
-      <object class="GtkGrid" id="at_grid">
+      <object class="GtkComboBox" id="selector">
         <property name="visible">1</property>
-        <child>
-          <object class="GtkComboBox" id="selector">
-            <property name="visible">1</property>
-            <property name="hexpand">1</property>
-            <signal name="changed" handler="on_at_selector_changed" object="AutomationTrackWidget" swapped="no"/>
-          </object>
-          <packing>
-            <property name="left-attach">0</property>
-            <property name="top-attach">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkToggleButton" id="mute_toggle">
-            <property name="label" translatable="yes">M</property>
-            <property name="visible">1</property>
-            <property name="can-focus">1</property>
-            <property name="receives-default">1</property>
-          </object>
-          <packing>
-            <property name="left-attach">1</property>
-            <property name="top-attach">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox" id="value_box">
-            <property name="visible">1</property>
-            <property name="orientation">vertical</property>
-          </object>
-          <packing>
-            <property name="left-attach">0</property>
-            <property name="top-attach">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkButton" id="add_lane">
-            <property name="label">gtk-add</property>
-            <property name="visible">1</property>
-            <property name="can-focus">1</property>
-            <property name="receives-default">1</property>
-            <property name="use-stock">1</property>
-            <signal name="clicked" handler="on_add_lane_clicked" object="AutomationTrackWidget" swapped="no"/>
-          </object>
-          <packing>
-            <property name="left-attach">1</property>
-            <property name="top-attach">1</property>
-          </packing>
-        </child>
+        <property name="hexpand">1</property>
+        <signal name="changed" handler="on_at_selector_changed" object="AutomationTrackWidget" swapped="no"/>
       </object>
       <packing>
-        <property name="resize">True</property>
-        <property name="shrink">False</property>
+        <property name="left-attach">0</property>
+        <property name="top-attach">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToggleButton" id="mute_toggle">
+        <property name="label" translatable="yes">M</property>
+        <property name="visible">1</property>
+        <property name="can-focus">1</property>
+        <property name="receives-default">1</property>
+      </object>
+      <packing>
+        <property name="left-attach">1</property>
+        <property name="top-attach">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkBox" id="value_box">
+        <property name="visible">1</property>
+        <property name="orientation">vertical</property>
+      </object>
+      <packing>
+        <property name="left-attach">0</property>
+        <property name="top-attach">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkButton" id="add_lane">
+        <property name="label">gtk-add</property>
+        <property name="visible">1</property>
+        <property name="can-focus">1</property>
+        <property name="receives-default">1</property>
+        <property name="use-stock">1</property>
+        <signal name="clicked" handler="on_add_lane_clicked" object="AutomationTrackWidget" swapped="no"/>
+      </object>
+      <packing>
+        <property name="left-attach">1</property>
+        <property name="top-attach">1</property>
       </packing>
     </child>
   </template>

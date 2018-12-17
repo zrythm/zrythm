@@ -21,8 +21,14 @@
 
 #include <stdlib.h>
 
-#include "audio/track.h"
+#include "audio/audio_track.h"
+#include "audio/bus_track.h"
+#include "audio/channel.h"
+#include "audio/chord_track.h"
 #include "audio/instrument_track.h"
+#include "audio/master_track.h"
+#include "audio/instrument_track.h"
+#include "audio/track.h"
 
 void
 track_init (Track * track)
@@ -31,16 +37,33 @@ track_init (Track * track)
   track->handle_pos = 1;
 }
 
+Track *
+track_new (Channel * channel)
+{
+  switch (channel->type)
+    {
+    case CT_MIDI:
+      return (Track *) instrument_track_new (channel);
+      break;
+    case CT_AUDIO:
+    case CT_BUS:
+    case CT_MASTER:
+      return (Track *) instrument_track_new (
+        channel);
+      break;
+    }
+}
+
 /**
- * Wrapper for each track type.
+ * Wrapper.
  */
 void
-track_update_automation_tracks (Track * track)
+track_setup (Track * track)
 {
   switch (track->type)
     {
     case TRACK_TYPE_INSTRUMENT:
-      instrument_track_update_automation_tracks (
+      instrument_track_setup (
         (InstrumentTrack *) track);
       break;
     case TRACK_TYPE_MASTER:
@@ -69,4 +92,108 @@ track_free (Track * track)
     case TRACK_TYPE_BUS:
       break;
     }
+}
+
+/**
+ * Returns the automation tracklist if the track type has one,
+ * or NULL if it doesn't (like chord tracks).
+ */
+AutomationTracklist *
+track_get_automation_tracklist (Track * track)
+{
+  switch (track->type)
+    {
+    case TRACK_TYPE_INSTRUMENT:
+        {
+          InstrumentTrack * it = (InstrumentTrack *) track;
+          return it->automation_tracklist;
+        }
+    case TRACK_TYPE_MASTER:
+        {
+          MasterTrack * mt = (MasterTrack *) track;
+          return mt->automation_tracklist;
+        }
+    case TRACK_TYPE_AUDIO:
+        {
+          AudioTrack * at = (AudioTrack *) track;
+          return at->automation_tracklist;
+        }
+    case TRACK_TYPE_CHORD:
+      break;
+    case TRACK_TYPE_BUS:
+        {
+          BusTrack * bt = (BusTrack *) track;
+          return bt->automation_tracklist;
+        }
+    }
+
+  return NULL;
+}
+
+/**
+ * Wrapper for track types that have fader automatables.
+ *
+ * Otherwise returns NULL.
+ */
+Automatable *
+track_get_fader_automatable (Track * track)
+{
+  switch (track->type)
+    {
+    case TRACK_TYPE_INSTRUMENT:
+        {
+          InstrumentTrack * it = (InstrumentTrack *) track;
+          return channel_get_fader_automatable (it->channel);
+        }
+    case TRACK_TYPE_MASTER:
+        {
+          MasterTrack * mt = (MasterTrack *) track;
+        }
+    case TRACK_TYPE_AUDIO:
+        {
+          AudioTrack * at = (AudioTrack *) track;
+        }
+    case TRACK_TYPE_CHORD:
+      break;
+    case TRACK_TYPE_BUS:
+        {
+          BusTrack * bt = (BusTrack *) track;
+        }
+    }
+
+  return NULL;
+}
+
+/**
+ * Returns the channel of the track, if the track type has
+ * a channel,
+ * or NULL if it doesn't.
+ */
+Channel *
+track_get_channel (Track * track)
+{
+  switch (track->type)
+    {
+    case TRACK_TYPE_INSTRUMENT:
+        {
+          InstrumentTrack * it = (InstrumentTrack *) track;
+          return it->channel;
+        }
+    case TRACK_TYPE_MASTER:
+        {
+          MasterTrack * mt = (MasterTrack *) track;
+        }
+    case TRACK_TYPE_AUDIO:
+        {
+          AudioTrack * at = (AudioTrack *) track;
+        }
+    case TRACK_TYPE_CHORD:
+      break;
+    case TRACK_TYPE_BUS:
+        {
+          BusTrack * bt = (BusTrack *) track;
+        }
+    }
+
+  return NULL;
 }

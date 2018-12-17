@@ -24,6 +24,7 @@
 #include "settings_manager.h"
 #include "gui/widgets/region.h"
 #include "audio/automation_track.h"
+#include "audio/automation_tracklist.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
 #include "audio/midi_region.h"
@@ -107,7 +108,7 @@ timeline_arranger_widget_set_allocation (
 
       gint wx, wy;
       gtk_widget_translate_coordinates(
-                GTK_WIDGET (ap->at->widget->at_grid),
+                GTK_WIDGET (ap->at->widget),
                 GTK_WIDGET (self),
                 0,
                 0,
@@ -131,7 +132,7 @@ timeline_arranger_widget_set_allocation (
 
       gint wx, wy;
       gtk_widget_translate_coordinates(
-                GTK_WIDGET (ac->at->widget->at_grid),
+                GTK_WIDGET (ac->at->widget),
                 GTK_WIDGET (self),
                 0,
                 0,
@@ -190,41 +191,33 @@ timeline_arranger_widget_get_automation_track_at_y (double y)
   for (int i = 0; i < MIXER->num_channels; i++)
     {
       Track * track = MIXER->channels[i]->track;
-      InstrumentTrack * it;
-      int num_automation_tracks;
-      switch (track->type)
-        {
-        case TRACK_TYPE_INSTRUMENT:
-          it = (InstrumentTrack *) track;
-          num_automation_tracks = it->num_automation_tracks;
-        case TRACK_TYPE_MASTER:
-        case TRACK_TYPE_AUDIO:
-        case TRACK_TYPE_CHORD:
-        case TRACK_TYPE_BUS:
-          break;
-        }
+      AutomationTracklist * automation_tracklist =
+        track_get_automation_tracklist (track);
+      if (!automation_tracklist)
+        continue;
 
-      for (int j = 0; j < num_automation_tracks; j++)
+      for (int j = 0;
+           j < automation_tracklist->num_automation_tracks;
+           j++)
         {
-          /*g_message ("at %d of %d", j, i);*/
-          AutomationTrack * at = NULL;
-          if (it)
-            at = it->automation_tracks[j];
+          AutomationTrack * at = automation_tracklist->automation_tracks[j];
+
           /* TODO check the rest */
           if (at->widget)
             {
               GtkAllocation allocation;
-              gtk_widget_get_allocation (GTK_WIDGET (at->widget->at_grid),
-                                         &allocation);
+              gtk_widget_get_allocation (
+                GTK_WIDGET (at->widget),
+                &allocation);
 
               gint wx, wy;
               gtk_widget_translate_coordinates(
-                        GTK_WIDGET (MW_TIMELINE),
-                        GTK_WIDGET (at->widget->at_grid),
-                        0,
-                        y,
-                        &wx,
-                        &wy);
+                GTK_WIDGET (MW_TIMELINE),
+                GTK_WIDGET (at->widget),
+                0,
+                y,
+                &wx,
+                &wy);
 
               if (wy >= 0 && wy <= allocation.height)
                 {
@@ -321,15 +314,13 @@ timeline_arranger_widget_select_all (
         {
           int num_regions;
           InstrumentTrack * it;
-          int num_automation_tracks;
-          AutomationTrack ** automation_tracks;
+          AutomationTracklist * automation_tracklist =
+            track_get_automation_tracklist (chan->track);
           switch (chan->track->type)
             {
             case TRACK_TYPE_INSTRUMENT:
               it = (InstrumentTrack *) chan->track;
               num_regions = it->num_regions;
-              num_automation_tracks = it->num_automation_tracks;
-              automation_tracks = it->automation_tracks;
             case TRACK_TYPE_MASTER:
             case TRACK_TYPE_AUDIO:
             case TRACK_TYPE_CHORD:
@@ -352,9 +343,12 @@ timeline_arranger_widget_select_all (
             }
           if (chan->track->bot_paned_visible)
             {
-              for (int j = 0; j < num_automation_tracks; j++)
+              for (int j = 0;
+                   j < automation_tracklist->num_automation_tracks;
+                   j++)
                 {
-                  AutomationTrack * at = automation_tracks[j];
+                  AutomationTrack * at =
+                    automation_tracklist->automation_tracks[j];
                   if (at->visible)
                     {
                       for (int k = 0; k < at->num_automation_points; k++)

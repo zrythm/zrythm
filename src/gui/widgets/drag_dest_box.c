@@ -88,7 +88,7 @@ on_drag_data_received (GtkWidget        *widget,
       tracklist_add_track_last (PROJECT->tracklist,
                                 new_channel->track);
 
-      track_widget_show (new_channel->track->widget);
+      track_widget_refresh (new_channel->track->widget);
       channel_widget_show (new_channel->widget);
     }
 }

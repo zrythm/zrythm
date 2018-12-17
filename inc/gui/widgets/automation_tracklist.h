@@ -22,6 +22,7 @@
 #ifndef __GUI_WIDGETS_AUTOMATION_TRACKLIST_H__
 #define __GUI_WIDGETS_AUTOMATION_TRACKLIST_H__
 
+#include <dazzle.h>
 #include <gtk/gtk.h>
 
 #define AUTOMATION_TRACKLIST_WIDGET_TYPE                  (automation_tracklist_widget_get_type ())
@@ -29,52 +30,35 @@ G_DECLARE_FINAL_TYPE (AutomationTracklistWidget,
                       automation_tracklist_widget,
                       AUTOMATION_TRACKLIST,
                       WIDGET,
-                      GtkBox)
+                      DzlMultiPaned)
 
-typedef struct AutomationTrackWidget AutomationTrackWidget;
+typedef struct _AutomationTrackWidget AutomationTrackWidget;
 typedef struct _TrackWidget TrackWidget;
+typedef struct AutomationTracklist AutomationTracklist;
 
 typedef struct _AutomationTracklistWidget
 {
-  GtkBox                  parent_instance;
-  AutomationTrackWidget * automation_track_widgets[400]; ///< the automation track will
-                                          ///< always be at the top part of the
-                                          ///< corresponding paned
-                                          ///< these stay when they are hidden
-  int                     num_automation_track_widgets; ///< counter
+  DzlMultiPaned           parent_instance;
 
   /**
-   * Parent track widget. Can be anything but chord.
+   * The backend.
    */
-  TrackWidget *           track_widget;
-
-  int                     has_g_object_ref; ///< flag
+  AutomationTracklist *   automation_tracklist;
 } AutomationTracklistWidget;
 
 /**
  * Creates a new tracks widget and sets it to main window.
  */
 AutomationTracklistWidget *
-automation_tracklist_widget_new (TrackWidget * track_widget);
-
-/**
- * Adds an automation track to the automation tracklist widget at pos.
- */
-void
-automation_tracklist_widget_add_automation_track (AutomationTracklistWidget * self,
-                                                  AutomationTrack *           at,
-                                                  int                         pos);
-
-int
-automation_tracklist_widget_get_automation_track_widget_index (
-  AutomationTracklistWidget * self,
-  AutomationTrackWidget * at);
+automation_tracklist_widget_new (
+  AutomationTracklist * automation_tracklist);
 
 /**
  * Show or hide all automation track widgets.
  */
 void
-automation_tracklist_widget_show (AutomationTracklistWidget * self);
+automation_tracklist_widget_refresh (
+  AutomationTracklistWidget * self);
 
 #endif
 

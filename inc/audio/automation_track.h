@@ -35,7 +35,7 @@ enum GenerateCurvePoints
 };
 
 typedef struct Port Port;
-typedef struct AutomationTrackWidget AutomationTrackWidget;
+typedef struct _AutomationTrackWidget AutomationTrackWidget;
 typedef struct Track Track;
 typedef struct Automatable Automatable;
 
@@ -50,14 +50,18 @@ typedef struct AutomationTrack
   AutomationCurve *         automation_curves[MAX_AUTOMATION_POINTS];
   int                       num_automation_curves;
   int                       visible;
+
+  /**
+   * Position of multipane handle.
+   */
+  int                       handle_pos;
 } AutomationTrack;
 
 /**
  * Creates an automation track for the given automatable
  */
 AutomationTrack *
-automation_track_new(Track *        track,
-                     Automatable *  automatable);
+automation_track_new (Automatable *  automatable);
 
 /**
  * Sets the automatable to the automation track and updates the GUI
@@ -65,12 +69,6 @@ automation_track_new(Track *        track,
 void
 automation_track_set_automatable (AutomationTrack * automation_track,
                                   Automatable *     a);
-
-/**
- * Gets automation track for given automatable, if any.
- */
-AutomationTrack *
-automation_track_get_for_automatable (Automatable * automatable);
 
 void
 automation_track_free (AutomationTrack * at);

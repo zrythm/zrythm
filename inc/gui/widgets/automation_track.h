@@ -25,11 +25,12 @@
 #include <gtk/gtk.h>
 
 #define AUTOMATION_TRACK_WIDGET_TYPE                  (automation_track_widget_get_type ())
-#define AUTOMATION_TRACK_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), AUTOMATION_TRACK_WIDGET_TYPE, AutomationTrackWidget))
-#define AUTOMATION_TRACK_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), AUTOMATION_TRACK_WIDGET, AutomationTrackWidgetClass))
+G_DECLARE_FINAL_TYPE (AutomationTrackWidget,
+                      automation_track_widget,
+                      AUTOMATION_TRACK,
+                      WIDGET,
+                      GtkGrid)
 #define IS_AUTOMATION_TRACK_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AUTOMATION_TRACK_WIDGET_TYPE))
-#define IS_AUTOMATION_TRACK_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), AUTOMATION_TRACK_WIDGET_TYPE))
-#define AUTOMATION_TRACK_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), AUTOMATION_TRACK_WIDGET_TYPE, AutomationTrackWidgetClass))
 
 typedef struct _TrackWidget TrackWidget;
 typedef struct AutomationTrack AutomationTrack;
@@ -37,21 +38,15 @@ typedef struct DigitalMeterWidget DigitalMeterWidget;
 typedef struct Track Track;
 typedef struct AutomationPointWidget AutomationPointWidget;
 
-typedef struct AutomationTrackWidget
+typedef struct _AutomationTrackWidget
 {
-  GtkPaned                parent_instance;
+  GtkGrid                 parent_instance;
   GtkComboBox *           selector;
   GtkBox *                value_box;
   DigitalMeterWidget *    value;
   GtkToggleButton *       mute_toggle;
-  GtkGrid *               at_grid;
   AutomationTrack *       at; ///< associated automation track
 } AutomationTrackWidget;
-
-typedef struct AutomationTrackWidgetClass
-{
-  GtkPanedClass    parent_class;
-} AutomationTrackWidgetClass;
 
 /**
  * Creates a new automation_track widget from the given automation_track.

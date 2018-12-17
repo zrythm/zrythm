@@ -22,6 +22,8 @@
 /** \file
  */
 
+#include "audio/automation_track.h"
+#include "audio/automation_tracklist.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
 #include "audio/mixer.h"
@@ -36,20 +38,25 @@
 #include "utils/gtk.h"
 #include "utils/arrays.h"
 
-G_DEFINE_TYPE (AutomationTracklistWidget, automation_tracklist_widget, GTK_TYPE_BOX)
+G_DEFINE_TYPE (AutomationTracklistWidget,
+               automation_tracklist_widget,
+               DZL_TYPE_MULTI_PANED)
+
+#define GET_TRACK(self) Track * track = \
+  self->automation_tracklist->track
 
 /**
  * Creates and returns an automation tracklist widget.
  */
 AutomationTracklistWidget *
-automation_tracklist_widget_new (TrackWidget * track_widget)
+automation_tracklist_widget_new (
+  AutomationTracklist * automation_tracklist)
 {
   AutomationTracklistWidget * self = g_object_new (
-                            AUTOMATION_TRACKLIST_WIDGET_TYPE,
-                            "orientation",
-                            GTK_ORIENTATION_VERTICAL,
-                            NULL);
-  self->track_widget = track_widget;
+    AUTOMATION_TRACKLIST_WIDGET_TYPE,
+    NULL);
+
+  self->automation_tracklist = automation_tracklist;
 
   return self;
 }
@@ -58,200 +65,77 @@ automation_tracklist_widget_new (TrackWidget * track_widget)
  * Show or hide all automation track widgets.
  */
 void
-automation_tracklist_widget_show (AutomationTracklistWidget *self)
+automation_tracklist_widget_refresh (
+  AutomationTracklistWidget *self)
 {
-  GtkPaned * inherited_track;
-  switch (self->track_widget->track->type)
-    {
-    case TRACK_TYPE_INSTRUMENT:
-      inherited_track = GTK_PANED (self->track_widget->ins_tw);
-      break;
-    case TRACK_TYPE_MASTER:
-    case TRACK_TYPE_AUDIO:
-    case TRACK_TYPE_BUS:
-    case TRACK_TYPE_CHORD:
-      break;
-    }
+  GET_TRACK (self);
 
-  /* if automation tracklist should be shown */
-  if (self->track_widget->track->bot_paned_visible)
+  if (!track->bot_paned_visible)
     {
-      /* if automation tracklist is hidden */
-      if (gtk_paned_get_child2 (inherited_track) !=
-          GTK_WIDGET (self))
-        {
-          /* pack the automation tracklist in the track */
-          gtk_paned_pack2 (inherited_track,
-                           GTK_WIDGET (self),
-                           Z_GTK_NO_RESIZE,
-                           Z_GTK_NO_SHRINK);
-          if (self->has_g_object_ref)
-            {
-              g_object_unref (self);
-              self->has_g_object_ref = 1;
-            }
-
-          /* add volume automation if no automations */
-          if (self->num_automation_track_widgets == 0)
-            {
-              switch (self->track_widget->track->type)
-                {
-                case TRACK_TYPE_INSTRUMENT:
-                  inherited_track = GTK_PANED (self->track_widget->ins_tw);
-                  InstrumentTrack * ins_track =
-                    (InstrumentTrack *) self->track_widget->track;
-                          automation_tracklist_widget_add_automation_track (
-                            self,
-                            ins_track->automation_tracks[0],
-                            0);
-                  break;
-                case TRACK_TYPE_MASTER:
-                case TRACK_TYPE_AUDIO:
-                case TRACK_TYPE_BUS:
-                case TRACK_TYPE_CHORD:
-                  break;
-                }
-            }
-        }
-      gtk_widget_show_all (GTK_WIDGET (self));
-    }
-  else /* if automation tracklist should be hidden */
-    {
-      /* if automation tracklist is visible */
-      if (gtk_paned_get_child2 (inherited_track) ==
-          GTK_WIDGET (self))
-        {
-          /* remove the automation tracklist from the track */
-          g_object_ref (self);
-          self->has_g_object_ref = 1;
-          gtk_container_remove (GTK_CONTAINER (inherited_track),
-                                GTK_WIDGET (self));
-        }
-    }
-}
-
-/**
- * Adds an automation track to the automation tracklist widget at pos.
- */
-void
-automation_tracklist_widget_add_automation_track (AutomationTracklistWidget * self,
-                                                  AutomationTrack *           at,
-                                                  int                         pos)
-{
-  if (pos > self->num_automation_track_widgets)
-    {
-      g_error ("Invalid position %d to add automation track in automation tracklist", pos);
+      gtk_widget_set_visible (GTK_WIDGET (self),
+                              0);
       return;
     }
 
-  g_message ("num automation track widgets %d", self->num_automation_track_widgets);
+  gtk_widget_set_visible (GTK_WIDGET (self),
+                          1);
 
-  /* create automation track */
-  AutomationTrackWidget * at_widget =
-    automation_track_widget_new (at);
+  /* remove all automation tracks */
+  z_gtk_container_remove_all_children (
+    GTK_CONTAINER (self));
 
-
-  /* if first automation track */
-  if (self->num_automation_track_widgets == 0)
+  /* add tracks */
+  for (int i = 0;
+       i < self->automation_tracklist->num_automation_tracks;
+       i++)
     {
-      /* pack the paned in the automations box */
-      gtk_box_pack_start (GTK_BOX (self),
-                          GTK_WIDGET (at_widget),
-                          Z_GTK_EXPAND,
-                          Z_GTK_FILL,
-                          0);
-    }
-  else /* not first automation track */
-    {
-        if (pos == 0) /* if going to be placed first */
-          {
-            /* remove current automation track widget from its parent
-             * and add it to new widget */
-            AutomationTrackWidget * current_widget = self->automation_track_widgets[pos];
-            g_object_ref (current_widget);
-            gtk_container_remove (GTK_CONTAINER (self),
-                                  GTK_WIDGET (current_widget));
-            gtk_paned_pack2 (GTK_PANED (at_widget),
-                             GTK_WIDGET (current_widget),
-                             Z_GTK_RESIZE,
-                             Z_GTK_NO_SHRINK);
-            g_object_unref (current_widget);
+      AutomationTrack * at =
+        self->automation_tracklist->automation_tracks[i];
+      if (at->visible)
+        {
+          /* create widget */
+          at->widget = automation_track_widget_new (at);
 
-            /* put new at widget where the prev at widget was in the parent */
-            gtk_paned_pack2 (GTK_PANED (self),
-                             GTK_WIDGET (at_widget),
-                             Z_GTK_NO_RESIZE,
-                             Z_GTK_NO_SHRINK);
-          }
-        else if (pos == self->num_automation_track_widgets) /* if last */
-          {
-            /* get parent */
-            AutomationTrackWidget * parent_at_widget;
-            parent_at_widget = self->automation_track_widgets[pos - 1];
-
-            /* put new at widget in the parent */
-            gtk_paned_pack2 (GTK_PANED (parent_at_widget),
-                             GTK_WIDGET (at_widget),
-                             Z_GTK_NO_RESIZE,
-                             Z_GTK_NO_SHRINK);
-
-          }
-        else /* if not first or last position */
-          {
-            /* get parent */
-            AutomationTrackWidget * parent_at_widget;
-            parent_at_widget = self->automation_track_widgets[pos - 1];
-
-            /* remove current automation track widget from its parent
-             * and add it to new widget */
-            AutomationTrackWidget * current_widget = self->automation_track_widgets[pos];
-            g_object_ref (current_widget);
-            gtk_container_remove (GTK_CONTAINER (parent_at_widget),
-                                  GTK_WIDGET (current_widget));
-            gtk_paned_pack2 (GTK_PANED (at_widget),
-                             GTK_WIDGET (current_widget),
-                             Z_GTK_NO_RESIZE,
-                             Z_GTK_NO_SHRINK);
-            g_object_unref (current_widget);
-
-            /* put new at widget where the prev at widget was in the parent */
-            gtk_paned_pack2 (GTK_PANED (parent_at_widget),
-                             GTK_WIDGET (at_widget),
-                             Z_GTK_NO_RESIZE,
-                             Z_GTK_NO_SHRINK);
-          }
+          /* add to automation tracklist widget */
+          gtk_container_add (GTK_CONTAINER (self),
+                             GTK_WIDGET (at->widget));
+        }
     }
 
-  /* insert into array */
-  array_insert ((void **) self->automation_track_widgets,
-                 &self->num_automation_track_widgets,
-                 pos,
-                 at_widget);
+  /* set handle position.
+   * this is done because the position resets to -1 every
+   * time a child is added or deleted */
+  GList *children, *iter;
+  children =
+    gtk_container_get_children (GTK_CONTAINER (self));
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      if (IS_AUTOMATION_TRACK_WIDGET (iter->data))
+        {
+          AutomationTrackWidget * atw =
+            AUTOMATION_TRACK_WIDGET (iter->data);
+          AutomationTrack * at = atw->at;
+          GValue a = G_VALUE_INIT;
+          g_value_init (&a, G_TYPE_INT);
+          g_value_set_int (&a, at->handle_pos);
+          gtk_container_child_set_property (
+            GTK_CONTAINER (self),
+            GTK_WIDGET (atw),
+            "position",
+            &a);
+        }
+    }
+  g_list_free(children);
 }
 
-int
-automation_tracklist_widget_get_automation_track_widget_index (
-  AutomationTracklistWidget * self,
-  AutomationTrackWidget * at)
-{
-  for (int i = 0; i < self->num_automation_track_widgets; i++)
-    {
-      if (self->automation_track_widgets[i] == at)
-        return i;
-    }
-  g_error ("automation track widget not found in atuomation tracklist widget");
-  return -1;
-}
-
-/**
- * GTK boilerplate.
- */
 static void
 automation_tracklist_widget_init (AutomationTracklistWidget * self)
 {
 }
+
 static void
 automation_tracklist_widget_class_init (AutomationTracklistWidgetClass * klass)
 {
 }
-

@@ -23,6 +23,7 @@
 
 #include "audio/automatable.h"
 #include "audio/automation_track.h"
+#include "audio/automation_tracklist.h"
 #include "audio/instrument_track.h"
 #include "audio/midi_note.h"
 #include "audio/position.h"
@@ -36,75 +37,28 @@
 
 #include <gtk/gtk.h>
 
-/**
- * Updates the automation tracks in the track. (adds missing)
- *
- * Builds an automation track for each automatable in the channel and its plugins,
- * unless it already exists.
- */
-void
-instrument_track_update_automation_tracks (InstrumentTrack * track)
-{
-  /* channel automatables */
-  for (int i = 0; i < track->channel->num_automatables; i++)
-    {
-      g_message ("%d %s",i, track->channel->automatables[i]->label);
-      AutomationTrack * at = automation_track_get_for_automatable (
-                            track->channel->automatables[i]);
-      if (!at)
-        {
-          at = automation_track_new ((Track *)track,
-                                     track->channel->automatables[i]);
-          g_message ("adding automation track %s to %s",
-                     at->automatable->label,
-                     track->channel->name);
-          track->automation_tracks[track->num_automation_tracks++] = at;
-        }
-    }
-
-  /* plugin automatables */
-  for (int j = 0; j < STRIP_SIZE; j++)
-    {
-      Plugin * plugin = track->channel->strip[j];
-      if (plugin)
-        {
-          for (int i = 0; i < plugin->num_automatables; i++)
-            {
-              AutomationTrack * at = automation_track_get_for_automatable (
-                                          plugin->automatables[i]);
-              if (!at)
-                {
-                  at = automation_track_new ((Track *)track,
-                                             plugin->automatables[i]);
-                  g_message ("adding automation track %s to %s",
-                             at->automatable->label,
-                             track->channel->name);
-                  track->automation_tracks[track->num_automation_tracks++] = at;
-                }
-            }
-        }
-    }
-}
-
-void
-instrument_track_delete_automation_track (InstrumentTrack *           track,
-                               AutomationTrack * at)
-{
-  array_delete ((gpointer) track->automation_tracks,
-                 &track->num_automation_tracks,
-                 at);
-  automation_track_free (at);
-}
-
 InstrumentTrack *
 instrument_track_new (Channel * channel)
 {
-  InstrumentTrack * track = calloc (1, sizeof (InstrumentTrack));
-  track_init ((Track *) track);
+  InstrumentTrack * self =
+    calloc (1, sizeof (InstrumentTrack));
+  Track * track = (Track *) self;
+  track_init ((Track *) self);
 
-  track->channel = channel;
+  self->channel = channel;
 
-  return track;
+  return self;
+}
+
+void
+instrument_track_setup (InstrumentTrack * self)
+{
+  Track * track = (Track *) self;
+
+  self->automation_tracklist =
+    automation_tracklist_new (track);
+
+  automation_tracklist_setup (self->automation_tracklist);
 }
 
 /**
@@ -209,5 +163,3 @@ instrument_track_free (InstrumentTrack * track)
 {
 
 }
-
-

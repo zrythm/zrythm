@@ -23,6 +23,7 @@
 #include "project.h"
 #include "settings_manager.h"
 #include "audio/automation_track.h"
+#include "audio/automation_tracklist.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
 #include "audio/mixer.h"
@@ -150,30 +151,29 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
     {
       Track * track = MIXER->channels[i]->track;
 
-      if (track->bot_paned_visible)
+      AutomationTracklist * automation_tracklist =
+        track_get_automation_tracklist (track);
+      if (automation_tracklist)
         {
-          if (track->type == TRACK_TYPE_INSTRUMENT)
+          for (int j = 0;
+               j < automation_tracklist->num_automation_tracks;
+               j++)
             {
-              InstrumentTrack * ins_track =
-                (InstrumentTrack *) track;
-              for (int j = 0; j < ins_track->num_automation_tracks; j++)
+              AutomationTrack * at = automation_tracklist->automation_tracks[j];
+
+              if (at->widget)
                 {
-                  AutomationTrack * at = ins_track->automation_tracks[j];
+                  /* horizontal automation track lines */
+                  gint wx, wy;
+                  gtk_widget_translate_coordinates(
+                            GTK_WIDGET (at->widget),
+                            GTK_WIDGET (MW_TRACKLIST),
+                            0,
+                            0,
+                            &wx,
+                            &wy);
+                  draw_horizontal_line (cr, wy, 0.2);
 
-                  if (at->widget)
-                    {
-                      /* horizontal automation track lines */
-                      gint wx, wy;
-                      gtk_widget_translate_coordinates(
-                                GTK_WIDGET (at->widget->at_grid),
-                                GTK_WIDGET (MW_TRACKLIST),
-                                0,
-                                0,
-                                &wx,
-                                &wy);
-                      draw_horizontal_line (cr, wy, 0.2);
-
-                    }
                 }
             }
         }

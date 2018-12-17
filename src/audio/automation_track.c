@@ -33,12 +33,11 @@
 #include "utils/arrays.h"
 
 AutomationTrack *
-automation_track_new (Track *         track,
-                      Automatable *   a)
+automation_track_new (Automatable *   a)
 {
   AutomationTrack * at = calloc (1, sizeof (AutomationTrack));
 
-  at->track = track;
+  at->track = a->track;
   automation_track_set_automatable (at, a);
 
   return at;
@@ -66,40 +65,6 @@ automation_track_update (AutomationTrack * at)
   automation_track_widget_update (at->widget);
 }
 
-/**
- * Gets automation track for given automatable, if any.
- */
-AutomationTrack *
-automation_track_get_for_automatable (Automatable * automatable)
-{
-  Track * track = automatable->track;
-
-  int num_automation_tracks = 0;
-  AutomationTrack ** automation_tracks;
-  switch (track->type)
-    {
-    case TRACK_TYPE_INSTRUMENT:
-      num_automation_tracks = ((InstrumentTrack *)track)->num_automation_tracks;
-      automation_tracks =
-        ((InstrumentTrack *)track)->automation_tracks;
-      break;
-    case TRACK_TYPE_MASTER:
-    case TRACK_TYPE_AUDIO:
-    case TRACK_TYPE_CHORD:
-    case TRACK_TYPE_BUS:
-      break;
-    }
-
-  for (int i = 0; i < num_automation_tracks; i++)
-    {
-      AutomationTrack * at = automation_tracks[i];
-      if (at->automatable == automatable)
-        {
-          return at;
-        }
-    }
-  return NULL;
-}
 
 static int
 cmpfunc (const void * _a, const void * _b)
