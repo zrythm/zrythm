@@ -34,24 +34,33 @@ tracklist_new ()
 {
   Tracklist * self = calloc (1, sizeof (Tracklist));
 
-  /* add master */
-  /*ChordTrack * chord_track = chord_track_default ();*/
-  /*tracklist_add_track (self, chord_track);*/
+  return self;
+}
+
+void
+tracklist_setup (Tracklist * self)
+{
+  /* add master track */
+  g_assert (MIXER);
+  g_assert (MIXER->master);
+  g_assert (MIXER->master->track);
+  tracklist_append_track (self,
+                          (Track *) MIXER->master);
 
   /* add chord track */
   ChordTrack * chord_track = chord_track_default ();
-  tracklist_add_track_last (self,
-                            (Track * )chord_track);
+  tracklist_append_track (self,
+                          (Track *) chord_track);
 
   /* add each channel */
   for (int i = 0; i < MIXER->num_channels; i++)
     {
       Channel * channel = MIXER->channels[i];
-      tracklist_add_track_last (self,
-                                channel->track);
+      g_assert (channel);
+      g_assert (channel->track);
+      tracklist_append_track (self,
+                              channel->track);
     }
-
-  return self;
 }
 
 /**
@@ -135,7 +144,7 @@ tracklist_add_track (Tracklist * tracklist,
 }
 
 void
-tracklist_add_track_last (Tracklist * tracklist,
+tracklist_append_track (Tracklist * tracklist,
                           Track *     track)
 {
   array_append ((void **) tracklist->tracks,

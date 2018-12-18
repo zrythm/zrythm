@@ -1,5 +1,5 @@
 /*
- * audio/bus_track.h - bus track
+ * audio/audio_region.h - Audio region
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,43 +19,31 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __AUDIO_BUS_TRACK_H__
-#define __AUDIO_BUS_TRACK_H__
+#ifndef __AUDIO_AUDIO_REGION_H__
+#define __AUDIO_AUDIO_REGION_H__
 
-#include "audio/track.h"
+#include "audio/position.h"
+#include "audio/region.h"
 
-typedef struct Position Position;
-typedef struct _TrackWidget TrackWidget;
+typedef struct _RegionWidget RegionWidget;
 typedef struct Channel Channel;
-typedef struct AutomationTrack AutomationTrack;
-typedef struct Automatable Automatable;
+typedef struct Track Track;
 
-typedef struct BusTrack
+typedef struct AudioRegion
 {
-  Track                 parent; ///< base track
+  Region          parent;
 
-  /**
-   * Owner channel.
-   *
-   * 1 channel has 1 track.
-   */
-  Channel *             channel;
+} AudioRegion;
 
-  AutomationTracklist * automation_tracklist;
-} BusTrack;
-
-BusTrack *
-bus_track_new (Channel * channel);
-
-void
-bus_track_setup (BusTrack * self);
+AudioRegion *
+audio_region_new (Track *    track,
+                 Position * start_pos,
+                 Position * end_pos);
 
 /**
- * Frees the track.
- *
- * TODO
+ * Creates region (used when loading projects).
  */
-void
-bus_track_free (BusTrack * track);
+AudioRegion *
+audio_region_get_or_create_blank (int id);
 
-#endif // __AUDIO_BUS_TRACK_H__
+#endif // __AUDIO_AUDIO_REGION_H__

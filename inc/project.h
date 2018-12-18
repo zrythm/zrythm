@@ -120,4 +120,8 @@ project_save (char * filename);
 void
 project_set_title (char * title);
 
+void
+project_add_region (Project * project,
+                    Region *  region);
+
 #endif

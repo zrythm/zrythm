@@ -30,7 +30,7 @@ build_deb_64:
   stage: build
   script:
     - apt-get update -qq && apt-get install -y -qq libxml2-dev libgtk-3-dev
-      libjack-dev liblilv-dev libsuil-dev libsmf-dev libsndfile1-dev libdazzle-1.0-dev
+      libjack-dev liblilv-dev libsuil-dev libsmf-dev libsndfile1-dev libdazzle-1.0-dev autoconf
       lv2-dev
     - ./autogen.sh
     - ./configure

@@ -79,10 +79,7 @@ mixer_get_channel_at_pos (int pos);
  * Adds channel to mixer and initializes track.
  */
 void
-mixer_add_channel_and_init_track (Channel * channel);
-
-void
-mixer_add_master_and_init_track (Channel * channel);
+mixer_add_channel (Channel * channel);
 
 /**
  * Removes the given channel.

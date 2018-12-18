@@ -22,9 +22,9 @@
 #include "zrythm_app.h"
 #include "project.h"
 #include "settings_manager.h"
-#include "gui/widgets/region.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
+#include "audio/bus_track.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
 #include "audio/midi_region.h"
@@ -437,14 +437,14 @@ timeline_arranger_widget_on_drag_begin_region_hit (
   REGION_WIDGET_GET_PRIVATE (rw);
 
   /* open MIDI editor */
-  if (prv->n_press > 0)
+  if (prv->n_press == 2)
     {
       Track * track = rw_prv->region->track;
       Channel * chan;
       switch (track->type)
         {
         case TRACK_TYPE_INSTRUMENT:
-          chan = ((InstrumentTrack *) track)->channel;
+          chan = ((BusTrack *) track)->channel;
         case TRACK_TYPE_MASTER:
         case TRACK_TYPE_AUDIO:
         case TRACK_TYPE_CHORD:

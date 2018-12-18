@@ -54,7 +54,7 @@ typedef struct _ConnectionsWidget
  * Updates the combo boxes.
  */
 void
-connections_widget_update (ConnectionsWidget * self);
+connections_widget_refresh (ConnectionsWidget * self);
 
 #endif
 

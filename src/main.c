@@ -45,5 +45,9 @@ main (int    argc,
 
 
   // sends activate signal
-  return g_application_run (G_APPLICATION (zrythm_app_new ()), argc, argv);
+  gtk_init (&argc, &argv);
+  return g_application_run (
+    G_APPLICATION (zrythm_app_new ()),
+    argc,
+    argv);
 }

@@ -79,17 +79,17 @@ tracklist_contains_chord_track (Tracklist * tracklist);
  * Adds given track to given spot in tracklist.
  */
 void
-tracklist_add_track (Tracklist * tracklist,
-                     Track *     track,
-                     int         pos);
+tracklist_insert_track (Tracklist * tracklist,
+                        Track *     track,
+                        int         pos);
 
 void
 tracklist_remove_track (Tracklist * self,
                         Track *     track);
 
 void
-tracklist_add_track_last (Tracklist * tracklist,
-                          Track *     track);
+tracklist_append_track (Tracklist * tracklist,
+                        Track *     track);
 
 int
 tracklist_get_track_pos (Tracklist * tracklist,

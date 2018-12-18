@@ -1,5 +1,5 @@
 /*
- * audio/midi_region.c - A region in the timeline having a start
+ * audio/audio_region.c - A region in the timeline having a start
  *   and an end
  *
  * Copyright (C) 2018 Alexandros Theodotou
@@ -21,61 +21,50 @@
  */
 
 #include "audio/channel.h"
-#include "audio/midi_note.h"
-#include "audio/midi_region.h"
+#include "audio/audio_region.h"
 #include "audio/track.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/midi_region.h"
+#include "gui/widgets/audio_region.h"
 #include "gui/widgets/region.h"
 
 /**
  * Creates region (used when loading projects).
  */
-MidiRegion *
-midi_region_get_or_create_blank (int id)
+AudioRegion *
+audio_region_get_or_create_blank (int id)
 {
   if (PROJECT->regions[id])
     {
-      return (MidiRegion *) PROJECT->regions[id];
+      return (AudioRegion *) PROJECT->regions[id];
     }
   else
     {
-      MidiRegion * midi_region = calloc (1, sizeof (MidiRegion));
-      Region * region = (Region *) midi_region;
+      AudioRegion * audio_region = calloc (1, sizeof (AudioRegion));
+      Region * region = (Region *) audio_region;
 
       region->id = id;
       PROJECT->regions[id] = region;
       PROJECT->num_regions++;
 
-      g_message ("[region_new] Creating blank region %d", id);
+      g_message ("Creating blank audio region %d", id);
 
-      return midi_region;
+      return audio_region;
     }
 }
 
-MidiRegion *
-midi_region_new (Track *    track,
+AudioRegion *
+audio_region_new (Track *    track,
                  Position * start_pos,
                  Position * end_pos)
 {
-  MidiRegion * midi_region = calloc (1, sizeof (MidiRegion));
+  AudioRegion * audio_region = calloc (1, sizeof (AudioRegion));
 
-  region_init ((Region *) midi_region,
-               REGION_TYPE_MIDI,
+  region_init ((Region *) audio_region,
+               REGION_TYPE_AUDIO,
                track,
                start_pos,
                end_pos);
 
-  return midi_region;
-}
-
-/**
- * Adds midi note to region
- */
-void
-midi_region_add_midi_note (MidiRegion * region,
-                      MidiNote * midi_note)
-{
-  region->midi_notes [region->num_midi_notes++] = midi_note;
+  return audio_region;
 }
 

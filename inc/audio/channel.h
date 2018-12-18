@@ -45,7 +45,7 @@
 typedef jack_default_audio_sample_t   sample_t;
 typedef jack_nframes_t                nframes_t;
 
-typedef struct ChannelWidget ChannelWidget;
+typedef struct _ChannelWidget ChannelWidget;
 typedef struct Track Track;
 typedef struct _TrackWidget TrackWidget;
 
@@ -166,25 +166,11 @@ Channel *
 channel_get_or_create_blank (int id);
 
 /**
- * Generates automatables for the channel.
- *
- * Should be called as soon as it is created
- * Note: called by mixer_add_channel ()
- */
-void
-channel_generate_automatables (Channel * channel);
-
-/**
- * Creates a channel using the given params.
+ * Creates a channel of the given type with the given label
  */
 Channel *
-channel_create (int     type, char * label); ///< the channel type (AUDIO/INS)
-
-/**
- * Creates master channel.
- */
-Channel *
-channel_create_master ();
+channel_create (ChannelType type,
+                char *      label);
 
 /**
  * The process function prototype.

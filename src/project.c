@@ -31,6 +31,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 #include "plugins/lv2_plugin.h"
+#include "utils/arrays.h"
 #include "utils/io.h"
 #include "utils/smf.h"
 #include "utils/xml.h"
@@ -182,11 +183,19 @@ project_load (char * filepath) ///< this is the xml file
     }
   else
     {
-      mixer_add_master_and_init_track (channel_create_master ());
-      mixer_add_channel_and_init_track (channel_create (CT_MIDI, "Ch 1"));
-      mixer_add_channel_and_init_track (channel_create (CT_MIDI, "Ch 2"));
-      mixer_add_channel_and_init_track (channel_create (CT_MIDI, "Ch 3"));
+      mixer_add_channel (
+        channel_create (CT_MASTER, "Master"));
+      mixer_add_channel (
+        channel_create (CT_MIDI, "Ch 1"));
     }
   PROJECT->tracklist = tracklist_new ();
 }
 
+void
+project_add_region (Project * self,
+                    Region *  region)
+{
+  array_append ((void **) self->regions,
+                &self->num_regions,
+                (void *) region);
+}

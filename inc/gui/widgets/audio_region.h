@@ -19,42 +19,42 @@
 
 /** \file */
 
-#ifndef __GUI_WIDGETS_MIDI_REGION_H__
-#define __GUI_WIDGETS_MIDI_REGION_H__
+#ifndef __GUI_WIDGETS_AUDIO_REGION_H__
+#define __GUI_WIDGETS_AUDIO_REGION_H__
 
 #include "audio/region.h"
 #include "gui/widgets/region.h"
 
 #include <gtk/gtk.h>
 
-#define MIDI_REGION_WIDGET_TYPE (midi_region_widget_get_type ())
-G_DECLARE_FINAL_TYPE (MidiRegionWidget,
-                      midi_region_widget,
-                      MIDI_REGION,
+#define AUDIO_REGION_WIDGET_TYPE (audio_region_widget_get_type ())
+G_DECLARE_FINAL_TYPE (AudioRegionWidget,
+                      audio_region_widget,
+                      AUDIO_REGION,
                       WIDGET,
                       RegionWidget);
 
-typedef struct MidiRegion MidiRegion;
+typedef struct AudioRegion AudioRegion;
 
-typedef enum MidiRegionCursor
+typedef enum AudioRegionCursor
 {
-  MIDI_REGION_CURSOR_DEFAULT,
-  MIDI_REGION_CURSOR_RESIZE_L,
-  MIDI_REGION_CURSOR_REPEAT_L,
-  MIDI_REGION_CURSOR_RESIZE_R,
-  MIDI_REGION_CURSOR_REPEAT_R
-} MidiRegionCursor;
+  AUDIO_REGION_CURSOR_DEFAULT,
+  AUDIO_REGION_CURSOR_RESIZE_L,
+  AUDIO_REGION_CURSOR_REPEAT_L,
+  AUDIO_REGION_CURSOR_RESIZE_R,
+  AUDIO_REGION_CURSOR_REPEAT_R
+} AudioRegionCursor;
 
-typedef struct _MidiRegionWidget
+typedef struct _AudioRegionWidget
 {
   RegionWidget             parent_instance;
-  MidiRegionCursor         cursor_state;
-} MidiRegionWidget;
+  AudioRegionCursor         cursor_state;
+} AudioRegionWidget;
 
 /**
  * Creates a region.
  */
-MidiRegionWidget *
-midi_region_widget_new (MidiRegion * midi_region);
+AudioRegionWidget *
+audio_region_widget_new (AudioRegion * audio_region);
 
 #endif

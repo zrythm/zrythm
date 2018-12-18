@@ -56,4 +56,7 @@ chord_track_new (MusicalScale * scale);
 ChordTrack *
 chord_track_default ();
 
+void
+chord_track_free (ChordTrack * self);
+
 #endif

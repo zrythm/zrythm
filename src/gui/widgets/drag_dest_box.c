@@ -76,20 +76,15 @@ on_drag_data_received (GtkWidget        *widget,
                                               g_strdup_printf ("%s %d",
                                                                descr->name,
                                                                counter++));
-      mixer_add_channel_and_init_track (new_channel);
+      mixer_add_channel (new_channel);
+      tracklist_append_track (PROJECT->tracklist,
+                                new_channel->track);
       channel_add_plugin (new_channel,
                           0,
                           plugin);
 
-      /* create channel widget */
-      mixer_widget_add_channel (MW_MIXER, new_channel);
-
-      /* create track widget */
-      tracklist_add_track_last (PROJECT->tracklist,
-                                new_channel->track);
-
-      track_widget_refresh (new_channel->track->widget);
-      channel_widget_show (new_channel->widget);
+      mixer_widget_refresh (MW_MIXER);
+      tracklist_widget_refresh (MW_TRACKLIST);
     }
 }
 
@@ -110,6 +105,14 @@ drag_dest_box_widget_new (GtkOrientation  orientation,
                             spacing,
                             NULL);
   self->type = type;
+
+  if (type == DRAG_DEST_BOX_TYPE_MIXER)
+    {
+      gtk_widget_set_size_request (
+        GTK_WIDGET (self),
+        20,
+        -1);
+    }
 
   /* make expandable */
   gtk_widget_set_vexpand (GTK_WIDGET (self),

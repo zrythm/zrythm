@@ -61,7 +61,8 @@ region_init (Region *   region,
         midi_region_widget_new (
           (MidiRegion *) region));
     }
-  PROJECT->regions[PROJECT->num_regions++] = region;
+  project_add_region (PROJECT,
+                      region);
 }
 
 /**
@@ -162,7 +163,7 @@ region_generate_filename (Region * region)
     }
   else if (region->track->type == TRACK_TYPE_INSTRUMENT)
     {
-      chan_name = ((InstrumentTrack *) region->track)->channel->name;
+      chan_name = ((BusTrack *) region->track)->channel->name;
     }
   return g_strdup_printf (REGION_PRINTF_FILENAME,
                           region->id,

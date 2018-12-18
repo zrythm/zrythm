@@ -1,5 +1,5 @@
 /*
- * audio/chord_track.c - Chord track
+ * audio/audio_track.c - audio track
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,54 +19,57 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * Object to hold information for the chord track.
- *
- * Contains project scale, chord markers, etc.
- */
-
 #include <stdlib.h>
 
-#include "audio/chord_track.h"
-#include "audio/scale.h"
-#include "audio/track.h"
+#include "audio/audio_track.h"
+#include "audio/automation_tracklist.h"
 
-/**
- * Creates a new chord track using the given scale.
- */
-ChordTrack *
-chord_track_new (MusicalScale * scale)
+AudioTrack *
+audio_track_new (Channel * channel)
 {
-  ChordTrack * self = calloc (1, sizeof (ChordTrack));
+  AudioTrack * self =
+    calloc (1, sizeof (AudioTrack));
 
   Track * track = (Track *) self;
-  track->type = TRACK_TYPE_CHORD;
+  track->type = TRACK_TYPE_AUDIO;
   track_init (track);
 
-  self->scale = scale;
+  BusTrack * bt = (BusTrack *) self;
+  bt->channel = channel;
 
   return self;
-}
 
-/**
- * Creates chord track using default scale.
- */
-ChordTrack *
-chord_track_default ()
-{
-  ChordTrack * self = calloc (1, sizeof (ChordTrack));
-  track_init ((Track *) self);
-
-  self->scale = musical_scale_new (SCALE_AEOLIAN, // natural minor
-                                   NOTE_A);
-
-  return self;
 }
 
 void
-chord_track_free (ChordTrack * self)
+audio_track_setup (AudioTrack * self)
+{
+  BusTrack * bt = (BusTrack *) self;
+
+  bus_track_setup (bt);
+}
+
+void
+audio_track_add_region (AudioTrack *  track,
+                        AudioRegion * region)
+{
+
+}
+
+void
+audio_track_remove_region (AudioTrack *  track,
+                           AudioRegion * region)
+{
+
+}
+
+/**
+ * Frees the track.
+ *
+ * TODO
+ */
+void
+audio_track_free (AudioTrack * track)
 {
 
 }

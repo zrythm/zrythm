@@ -51,16 +51,15 @@ typedef struct Region
   char         * name;
 
   RegionType   type;
+  Position     start_pos; ///< start position
+  Position     end_pos; ///< end position
 
   /**
-   * Start position.
+   * Position where the first unit of repeation ends.
+   *
+   * If end pos > unit_end_pos, then region is repeating.
    */
-  Position     start_pos;
-
-  /**
-   * End position.
-   */
-  Position     end_pos;
+  Position        unit_end_pos;
 
   /**
    * Region widget.

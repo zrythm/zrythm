@@ -1355,7 +1355,7 @@ xml_load_project ()
                       }
                     else
                       {
-                        mixer_add_channel_and_init_track (channel);
+                        mixer_add_channel (channel);
                       }
                   }
                 else if (NAME_IS ("Plugin"))
@@ -1495,7 +1495,7 @@ xml_load_project ()
                     channel->color.blue = TO_FLOAT (attr);
                     attr =  GET_ATTRIBUTE ("alpha");
                     channel->color.alpha = TO_FLOAT (attr);
-                    g_idle_add ((GSourceFunc) channel_widget_update_all,
+                    g_idle_add ((GSourceFunc) channel_widget_refresh,
                                 channel->widget);
                     /*g_idle_add ((GSourceFunc) track_widget_update_all,*/
                                 /*channel->track->widget);*/

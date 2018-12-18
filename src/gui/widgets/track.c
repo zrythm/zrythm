@@ -23,6 +23,7 @@
  */
 
 #include "audio/automatable.h"
+#include "audio/bus_track.h"
 #include "audio/automation_track.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
@@ -106,20 +107,18 @@ track_widget_new (Track * track)
   GdkRGBA * color;
   switch (self->track->type)
     {
-    case TRACK_TYPE_INSTRUMENT:
-      color = &((InstrumentTrack *)track)->channel->color;
-      break;
-    case TRACK_TYPE_MASTER:
-      break;
-    case TRACK_TYPE_AUDIO:
-      break;
     case TRACK_TYPE_CHORD:
       color = calloc (1, sizeof (GdkRGBA));
       gdk_rgba_parse (color, "blue");
       break;
     case TRACK_TYPE_BUS:
+    case TRACK_TYPE_INSTRUMENT:
+    case TRACK_TYPE_MASTER:
+    case TRACK_TYPE_AUDIO:
+      color = &((BusTrack *)track)->channel->color;
       break;
     }
+  g_message ("%p color", color);
   self->color = color_area_widget_new (color,
                                        5,
                                        -1);

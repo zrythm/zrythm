@@ -26,15 +26,14 @@
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/midi_arranger.h"
-#include "gui/widgets/midi_region.h"
+#include "gui/widgets/audio_region.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "utils/ui.h"
 
-G_DEFINE_TYPE (MidiRegionWidget,
-               midi_region_widget,
+G_DEFINE_TYPE (AudioRegionWidget,
+               audio_region_widget,
                REGION_WIDGET_TYPE)
 
 /**
@@ -43,19 +42,16 @@ G_DEFINE_TYPE (MidiRegionWidget,
 #define RESIZE_CURSOR_SPACE 9
 
 static gboolean
-draw_cb (MidiRegionWidget * self, cairo_t *cr, gpointer data)
+draw_cb (AudioRegionWidget * self, cairo_t *cr, gpointer data)
 {
   REGION_WIDGET_GET_PRIVATE (self);
   guint width, height;
   GtkStyleContext *context;
 
-  context =
-    gtk_widget_get_style_context (GTK_WIDGET (self));
+  context = gtk_widget_get_style_context (GTK_WIDGET (self));
 
-  width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (self));
-  height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  width = gtk_widget_get_allocated_width (GTK_WIDGET (self));
+  height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
 
   gtk_render_background (context, cr, 0, 0, width, height);
 
@@ -85,7 +81,7 @@ draw_cb (MidiRegionWidget * self, cairo_t *cr, gpointer data)
                              0.7);
     }
 
-  /* TODO draw midi notes */
+  /* TODO draw audio notes */
 
  return FALSE;
 }
@@ -96,7 +92,7 @@ draw_cb (MidiRegionWidget * self, cairo_t *cr, gpointer data)
 static void
 on_motion (GtkWidget * widget, GdkEventMotion *event)
 {
-  MidiRegionWidget * self = MIDI_REGION_WIDGET (widget);
+  AudioRegionWidget * self = AUDIO_REGION_WIDGET (widget);
   GtkAllocation allocation;
   gtk_widget_get_allocation (widget,
                              &allocation);
@@ -106,20 +102,20 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
     {
       if (event->x < RESIZE_CURSOR_SPACE)
         {
-          self->cursor_state = MIDI_REGION_CURSOR_RESIZE_L;
+          self->cursor_state = AUDIO_REGION_CURSOR_RESIZE_L;
           if (prv->action != ARRANGER_ACTION_MOVING)
             ui_set_cursor (widget, "w-resize");
         }
 
       else if (event->x > allocation.width - RESIZE_CURSOR_SPACE)
         {
-          self->cursor_state = MIDI_REGION_CURSOR_RESIZE_R;
+          self->cursor_state = AUDIO_REGION_CURSOR_RESIZE_R;
           if (prv->action != ARRANGER_ACTION_MOVING)
             ui_set_cursor (widget, "e-resize");
         }
       else
         {
-          self->cursor_state = MIDI_REGION_CURSOR_DEFAULT;
+          self->cursor_state = AUDIO_REGION_CURSOR_DEFAULT;
           if (prv->action != ARRANGER_ACTION_MOVING &&
               prv->action != ARRANGER_ACTION_STARTING_MOVING &&
               prv->action != ARRANGER_ACTION_RESIZING_L &&
@@ -141,14 +137,14 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
     }
 }
 
-MidiRegionWidget *
-midi_region_widget_new (MidiRegion * midi_region)
+AudioRegionWidget *
+audio_region_widget_new (AudioRegion * audio_region)
 {
-  g_message ("Creating midi region widget...");
-  MidiRegionWidget * self = g_object_new (MIDI_REGION_WIDGET_TYPE, NULL);
+  g_message ("Creating audio region widget...");
+  AudioRegionWidget * self = g_object_new (AUDIO_REGION_WIDGET_TYPE, NULL);
 
   region_widget_setup (REGION_WIDGET (self),
-                       (Region *) midi_region);
+                       (Region *) audio_region);
 
   /* connect signals */
   g_signal_connect (G_OBJECT (self), "draw",
@@ -164,11 +160,12 @@ midi_region_widget_new (MidiRegion * midi_region)
 }
 
 static void
-midi_region_widget_class_init (MidiRegionWidgetClass * klass)
+audio_region_widget_class_init (AudioRegionWidgetClass * klass)
 {
 }
 
 static void
-midi_region_widget_init (MidiRegionWidget * self)
+audio_region_widget_init (AudioRegionWidget * self)
 {
 }
+

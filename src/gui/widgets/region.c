@@ -19,6 +19,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/bus_track.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
@@ -81,7 +82,7 @@ draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
 
   GdkRGBA * color;
   if (prv->region->track->type == TRACK_TYPE_INSTRUMENT)
-    color = &((InstrumentTrack *)prv->region->track)->channel->color;
+    color = &((BusTrack *)prv->region->track)->channel->color;
   /*else if (self->region->track->type == TRACK_TYPE_AUDIO)*/
     /*color = &((AudioTrack *)self->region->track)->channel->color;*/
   if (prv->hover)

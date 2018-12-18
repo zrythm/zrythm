@@ -22,6 +22,7 @@
 /** \file
  */
 
+#include "audio/bus_track.h"
 #include "audio/channel.h"
 #include "audio/chord_track.h"
 #include "audio/instrument_track.h"
@@ -146,21 +147,21 @@ on_delete_tracks ()
   for (int i = 0; i < num_selected; i++)
     {
       Track * track = selected_tracks[i];
-      InstrumentTrack * it;
       switch (track->type)
         {
-        case TRACK_TYPE_MASTER:
         case TRACK_TYPE_CHORD:
           break;
         case TRACK_TYPE_INSTRUMENT:
-          it = (InstrumentTrack *) track;
-          mixer_remove_channel (it->channel);
-          break;
-          /* TODO below */
-        case TRACK_TYPE_AUDIO:
-          break;
+        case TRACK_TYPE_MASTER:
         case TRACK_TYPE_BUS:
-          break;
+        case TRACK_TYPE_AUDIO:
+            {
+              BusTrack * bt = (BusTrack *) track;
+              mixer_remove_channel (bt->channel);
+              tracklist_remove_track (self->tracklist,
+                                      track);
+              break;
+            }
         }
     }
 }
@@ -170,11 +171,13 @@ on_add_ins_track ()
 {
   TracklistWidget * self = MW_TRACKLIST;
 
-  Channel * chan = channel_create (CT_MIDI, "Instrument Track");
-  mixer_add_channel_and_init_track (chan);
-  mixer_widget_add_channel (MW_MIXER, chan);
-  tracklist_add_track_last (PROJECT->tracklist,
-                            chan->track);
+  Channel * chan = channel_create (CT_MIDI,
+                                   "Instrument Track");
+  mixer_add_channel (chan);
+  mixer_widget_refresh (MW_MIXER);
+  tracklist_append_track (PROJECT->tracklist,
+                          chan->track);
+  tracklist_widget_refresh (MW_TRACKLIST);
 }
 
 static void

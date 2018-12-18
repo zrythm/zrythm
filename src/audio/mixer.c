@@ -36,6 +36,7 @@
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
+#include "utils/arrays.h"
 
 #include <gtk/gtk.h>
 
@@ -114,31 +115,26 @@ mixer_load_plugins ()
     }
 }
 
-/* FIXME organize better */
-static void
-generate_track (Channel * channel)
-{
-
-  channel->track = track_new (channel);
-  channel_generate_automatables (channel);
-  track_setup (channel->track);
-}
-
 /**
  * Adds channel to mixer.
  */
 void
-mixer_add_channel_and_init_track (Channel * channel)
+mixer_add_channel (Channel * channel)
 {
-  generate_track (channel);
-  MIXER->channels[MIXER->num_channels++] = channel;
-}
+  g_assert (channel);
 
-void
-mixer_add_master_and_init_track (Channel * channel)
-{
-  generate_track (channel);
-  MIXER->master = channel;
+  if (channel->type == CT_MASTER)
+    {
+      MIXER->master = channel;
+    }
+  else
+    {
+      array_append ((void **) MIXER->channels,
+                    &MIXER->num_channels,
+                    (void *) channel);
+    }
+
+  channel->track = track_new (channel);
 }
 
 /**
@@ -167,19 +163,14 @@ mixer_get_channel_at_pos (int pos)
 void
 mixer_remove_channel (Channel * channel)
 {
+  g_message ("removing channel %s",
+             channel->name);
   AUDIO_ENGINE->run = 0;
   channel->enabled = 0;
   channel->stop_thread = 1;
-  mixer_widget_remove_channel (channel);
-  tracklist_remove_track (PROJECT->tracklist,
-                          channel->track);
-  for (int i = channel->id; i < MIXER->num_channels - 1; i++)
-    {
-      MIXER->channels[i] = MIXER->channels[i + 1];
-      MIXER->channels[i]->id = i;
-    }
-  MIXER->num_channels--;
+  array_delete ((void **) MIXER->channels,
+                &MIXER->num_channels,
+                channel);
   channel_free (channel);
-  g_message ("removed channel");
 }
 

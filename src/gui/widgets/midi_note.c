@@ -19,6 +19,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/bus_track.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
@@ -53,8 +54,8 @@ draw_cb (MidiNoteWidget * self, cairo_t *cr, gpointer data)
   gtk_render_background (context, cr, 0, 0, width, height);
 
   Region * region = (Region *) self->midi_note->midi_region;
-  InstrumentTrack * ins_track = (InstrumentTrack *) region->track;
-  GdkRGBA * color = &ins_track->channel->color;
+  BusTrack * bus_track = (BusTrack *) region->track;
+  GdkRGBA * color = &bus_track->channel->color;
   if (self->state != MNW_STATE_NONE)
     {
       cairo_set_source_rgba (cr,

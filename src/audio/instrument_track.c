@@ -42,10 +42,13 @@ instrument_track_new (Channel * channel)
 {
   InstrumentTrack * self =
     calloc (1, sizeof (InstrumentTrack));
+
   Track * track = (Track *) self;
+  track->type = TRACK_TYPE_INSTRUMENT;
   track_init ((Track *) self);
 
-  self->channel = channel;
+  BusTrack * bt = (BusTrack *) self;
+  bt->channel = channel;
 
   return self;
 }
@@ -53,12 +56,9 @@ instrument_track_new (Channel * channel)
 void
 instrument_track_setup (InstrumentTrack * self)
 {
-  Track * track = (Track *) self;
+  BusTrack * track = (BusTrack *) self;
 
-  self->automation_tracklist =
-    automation_tracklist_new (track);
-
-  automation_tracklist_setup (self->automation_tracklist);
+  bus_track_setup (track);
 }
 
 /**

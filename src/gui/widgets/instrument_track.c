@@ -25,6 +25,7 @@
 #include "audio/automatable.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
+#include "audio/bus_track.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "audio/region.h"
@@ -109,7 +110,7 @@ instrument_track_widget_new (InstrumentTrack * ins_track,
     gtk_image_new_from_icon_name ("gtk-justify-fill",
                                   GTK_ICON_SIZE_BUTTON));
 
-  switch (ins_track->channel->type)
+  switch (((BusTrack *)ins_track)->channel->type)
     {
     case CT_MIDI:
       gtk_image_set_from_resource (self->icon,
@@ -129,7 +130,24 @@ instrument_track_widget_new (InstrumentTrack * ins_track,
   g_signal_connect (self->show_automation, "clicked",
                     G_CALLBACK (on_show_automation), self);
 
+  gtk_widget_set_visible (GTK_WIDGET (self),
+                          1);
+
   return self;
+}
+
+void
+instrument_track_widget_refresh (InstrumentTrackWidget * self)
+{
+  InstrumentTrack * it = (InstrumentTrack *) self->parent->track;
+  gtk_label_set_text (self->track_name,
+                      ((BusTrack *)it)->channel->name);
+
+  GET_TRACK (self);
+  AutomationTracklist * automation_tracklist =
+    track_get_automation_tracklist (track);
+  automation_tracklist_widget_refresh (
+    automation_tracklist->widget);
 }
 
 static void
@@ -177,18 +195,4 @@ instrument_track_widget_class_init (InstrumentTrackWidgetClass * klass)
     GTK_WIDGET_CLASS (klass),
     InstrumentTrackWidget,
     icon);
-}
-
-void
-instrument_track_widget_refresh (InstrumentTrackWidget * self)
-{
-  InstrumentTrack * it = (InstrumentTrack *) self->parent->track;
-  gtk_label_set_text (self->track_name,
-                      it->channel->name);
-
-  GET_TRACK (self);
-  AutomationTracklist * automation_tracklist =
-    track_get_automation_tracklist (track);
-  automation_tracklist_widget_refresh (
-    automation_tracklist->widget);
 }

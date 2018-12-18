@@ -25,6 +25,7 @@
 #include "audio/automatable.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
+#include "audio/bus_track.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
@@ -128,25 +129,10 @@ create_automatables_store (Track * track)
 
   store = gtk_tree_store_new (2, G_TYPE_STRING, G_TYPE_POINTER);
 
-  int num_automatables;
-  Automatable ** automatables;
-  InstrumentTrack * it;
-  switch (track->type)
+  BusTrack * bt = (BusTrack *) track;
+  for (int i = 0; i < bt->channel->num_automatables; i++)
     {
-    case TRACK_TYPE_INSTRUMENT:
-      it = (InstrumentTrack *) track;
-      num_automatables = it->channel->num_automatables;
-      automatables = it->channel->automatables;
-      break;
-    case TRACK_TYPE_MASTER:
-    case TRACK_TYPE_AUDIO:
-    case TRACK_TYPE_CHORD:
-    case TRACK_TYPE_BUS:
-      break;
-    }
-  for (int i = 0; i < num_automatables; i++)
-    {
-      Automatable * a = automatables[i];
+      Automatable * a = bt->channel->automatables[i];
       gtk_tree_store_append (store, &iter, NULL);
       gtk_tree_store_set (store, &iter,
                           0, a->label,
@@ -156,25 +142,16 @@ create_automatables_store (Track * track)
 
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      Plugin * plugin = NULL;
-      InstrumentTrack * it;
-      switch (track->type)
-        {
-        case TRACK_TYPE_INSTRUMENT:
-          it = (InstrumentTrack *) track;
-          plugin = it->channel->strip[i];
-          break;
-        case TRACK_TYPE_MASTER:
-        case TRACK_TYPE_AUDIO:
-        case TRACK_TYPE_CHORD:
-        case TRACK_TYPE_BUS:
-          break;
-        }
+      Plugin * plugin = bt->channel->strip[i];
 
       if (plugin)
         {
           gtk_tree_store_append (store, &iter, NULL);
-          char * label = g_strdup_printf ("%d:%s", i, plugin->descr->name);
+          char * label =
+            g_strdup_printf (
+              "%d:%s",
+              i,
+              plugin->descr->name);
           gtk_tree_store_set (store, &iter, 0, label, -1);
           g_free (label);
           for (int j = 0; j < plugin->num_automatables; j++)

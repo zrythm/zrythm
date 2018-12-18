@@ -28,11 +28,12 @@
 #include <gtk/gtk.h>
 
 #define CHANNEL_WIDGET_TYPE                  (channel_widget_get_type ())
-#define CHANNEL_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), CHANNEL_WIDGET_TYPE, ChannelWidget))
-#define CHANNEL_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), CHANNEL_WIDGET, ChannelWidgetClass))
+G_DECLARE_FINAL_TYPE (ChannelWidget,
+                      channel_widget,
+                      CHANNEL,
+                      WIDGET,
+                      GtkGrid)
 #define IS_CHANNEL_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), CHANNEL_WIDGET_TYPE))
-#define IS_CHANNEL_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), CHANNEL_WIDGET_TYPE))
-#define CHANNEL_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), CHANNEL_WIDGET_TYPE, ChannelWidgetClass))
 
 typedef struct ColorAreaWidget ColorAreaWidget;
 typedef struct KnobWidget KnobWidget;
@@ -42,7 +43,7 @@ typedef struct Channel Channel;
 typedef struct ChannelSlotWidget ChannelSlotWidget;
 typedef struct PanWidget PanWidget;
 
-typedef struct ChannelWidget
+typedef struct _ChannelWidget
 {
   GtkGrid            parent_instance;
   GtkLabel            * output;
@@ -80,12 +81,6 @@ typedef struct ChannelWidget
   Channel             * channel;    ///< pointer to data
 } ChannelWidget;
 
-typedef struct ChannelWidgetClass
-{
-  GtkGridClass       parent_class;
-} ChannelWidgetClass;
-
-
 /**
  * Updates the slots.
  */
@@ -110,7 +105,7 @@ channel_widget_update_meter_reading (ChannelWidget * widget);
  * It is reduntant but keeps code organized. Should fix if it causes lags.
  */
 void
-channel_widget_update_all (ChannelWidget * self);
+channel_widget_refresh (ChannelWidget * self);
 
 /**
  * Displays the widget.

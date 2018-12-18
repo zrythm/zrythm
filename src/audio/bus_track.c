@@ -1,5 +1,5 @@
 /*
- * audio/chord_track.c - Chord track
+ * audio/bus_track.c - bus track
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,54 +19,44 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * Object to hold information for the chord track.
- *
- * Contains project scale, chord markers, etc.
- */
-
 #include <stdlib.h>
 
-#include "audio/chord_track.h"
-#include "audio/scale.h"
-#include "audio/track.h"
+#include "audio/automation_tracklist.h"
+#include "audio/bus_track.h"
 
-/**
- * Creates a new chord track using the given scale.
- */
-ChordTrack *
-chord_track_new (MusicalScale * scale)
+BusTrack *
+bus_track_new (Channel * channel)
 {
-  ChordTrack * self = calloc (1, sizeof (ChordTrack));
+  BusTrack * self =
+    calloc (1, sizeof (BusTrack));
 
   Track * track = (Track *) self;
-  track->type = TRACK_TYPE_CHORD;
+  track->type = TRACK_TYPE_BUS;
   track_init (track);
 
-  self->scale = scale;
-
-  return self;
-}
-
-/**
- * Creates chord track using default scale.
- */
-ChordTrack *
-chord_track_default ()
-{
-  ChordTrack * self = calloc (1, sizeof (ChordTrack));
-  track_init ((Track *) self);
-
-  self->scale = musical_scale_new (SCALE_AEOLIAN, // natural minor
-                                   NOTE_A);
+  self->channel = channel;
 
   return self;
 }
 
 void
-chord_track_free (ChordTrack * self)
+bus_track_setup (BusTrack * self)
+{
+  Track * track = (Track *) self;
+
+  self->automation_tracklist =
+    automation_tracklist_new (track);
+
+  automation_tracklist_setup (self->automation_tracklist);
+}
+
+/**
+ * Frees the track.
+ *
+ * TODO
+ */
+void
+bus_track_free (BusTrack * track)
 {
 
 }

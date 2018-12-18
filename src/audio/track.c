@@ -46,10 +46,13 @@ track_new (Channel * channel)
       return (Track *) instrument_track_new (channel);
       break;
     case CT_AUDIO:
+      return (Track *) audio_track_new (channel);
+      break;
     case CT_BUS:
+      return (Track *) bus_track_new (channel);
+      break;
     case CT_MASTER:
-      return (Track *) instrument_track_new (
-        channel);
+      return (Track *) master_track_new (channel);
       break;
     }
 }
@@ -67,9 +70,18 @@ track_setup (Track * track)
         (InstrumentTrack *) track);
       break;
     case TRACK_TYPE_MASTER:
+      master_track_setup (
+        (MasterTrack *) track);
+      break;
     case TRACK_TYPE_AUDIO:
+      audio_track_setup (
+        (AudioTrack *) track);
+      break;
     case TRACK_TYPE_CHORD:
+      break;
     case TRACK_TYPE_BUS:
+      bus_track_setup (
+        (BusTrack *) track);
       break;
     }
 }
@@ -87,9 +99,20 @@ track_free (Track * track)
         (InstrumentTrack *) track);
       break;
     case TRACK_TYPE_MASTER:
+      master_track_free (
+        (MasterTrack *) track);
+      break;
     case TRACK_TYPE_AUDIO:
+      audio_track_free (
+        (AudioTrack *) track);
+      break;
     case TRACK_TYPE_CHORD:
+      chord_track_free (
+        (ChordTrack *) track);
+      break;
     case TRACK_TYPE_BUS:
+      bus_track_free (
+        (BusTrack *) track);
       break;
     }
 }
@@ -103,24 +126,12 @@ track_get_automation_tracklist (Track * track)
 {
   switch (track->type)
     {
-    case TRACK_TYPE_INSTRUMENT:
-        {
-          InstrumentTrack * it = (InstrumentTrack *) track;
-          return it->automation_tracklist;
-        }
-    case TRACK_TYPE_MASTER:
-        {
-          MasterTrack * mt = (MasterTrack *) track;
-          return mt->automation_tracklist;
-        }
-    case TRACK_TYPE_AUDIO:
-        {
-          AudioTrack * at = (AudioTrack *) track;
-          return at->automation_tracklist;
-        }
     case TRACK_TYPE_CHORD:
       break;
     case TRACK_TYPE_BUS:
+    case TRACK_TYPE_INSTRUMENT:
+    case TRACK_TYPE_AUDIO:
+    case TRACK_TYPE_MASTER:
         {
           BusTrack * bt = (BusTrack *) track;
           return bt->automation_tracklist;
@@ -140,24 +151,15 @@ track_get_fader_automatable (Track * track)
 {
   switch (track->type)
     {
-    case TRACK_TYPE_INSTRUMENT:
-        {
-          InstrumentTrack * it = (InstrumentTrack *) track;
-          return channel_get_fader_automatable (it->channel);
-        }
-    case TRACK_TYPE_MASTER:
-        {
-          MasterTrack * mt = (MasterTrack *) track;
-        }
-    case TRACK_TYPE_AUDIO:
-        {
-          AudioTrack * at = (AudioTrack *) track;
-        }
     case TRACK_TYPE_CHORD:
       break;
     case TRACK_TYPE_BUS:
+    case TRACK_TYPE_AUDIO:
+    case TRACK_TYPE_MASTER:
+    case TRACK_TYPE_INSTRUMENT:
         {
           BusTrack * bt = (BusTrack *) track;
+          return channel_get_fader_automatable (bt->channel);
         }
     }
 
@@ -174,24 +176,15 @@ track_get_channel (Track * track)
 {
   switch (track->type)
     {
-    case TRACK_TYPE_INSTRUMENT:
-        {
-          InstrumentTrack * it = (InstrumentTrack *) track;
-          return it->channel;
-        }
-    case TRACK_TYPE_MASTER:
-        {
-          MasterTrack * mt = (MasterTrack *) track;
-        }
-    case TRACK_TYPE_AUDIO:
-        {
-          AudioTrack * at = (AudioTrack *) track;
-        }
     case TRACK_TYPE_CHORD:
       break;
+    case TRACK_TYPE_MASTER:
+    case TRACK_TYPE_INSTRUMENT:
+    case TRACK_TYPE_AUDIO:
     case TRACK_TYPE_BUS:
         {
           BusTrack * bt = (BusTrack *) track;
+          return bt->channel;
         }
     }
 

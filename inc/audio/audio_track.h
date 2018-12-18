@@ -22,6 +22,7 @@
 #ifndef __AUDIO_AUDIO_TRACK_H__
 #define __AUDIO_AUDIO_TRACK_H__
 
+#include "audio/bus_track.h"
 #include "audio/track.h"
 
 typedef struct Position Position;
@@ -33,7 +34,7 @@ typedef struct Automatable Automatable;
 
 typedef struct AudioTrack
 {
-  Track                 parent; ///< base track
+  BusTrack              parent; ///< base track
 
   /**
    * MIDI regions in this track.
@@ -41,18 +42,13 @@ typedef struct AudioTrack
   AudioRegion *         regions[200];
   int                   num_regions;  ///< counter
 
-  /**
-   * Owner channel.
-   *
-   * 1 channel has 1 track.
-   */
-  Channel *             channel;
-
-  AutomationTracklist * automation_tracklist;
 } AudioTrack;
 
 AudioTrack *
 audio_track_new (Channel * channel);
+
+void
+audio_track_setup (AudioTrack * self);
 
 void
 audio_track_add_region (AudioTrack *  track,
@@ -61,12 +57,6 @@ audio_track_add_region (AudioTrack *  track,
 void
 audio_track_remove_region (AudioTrack *  track,
                            AudioRegion * region);
-
-/**
- * Convenience function to get the fader automatable of the track.
- */
-Automatable *
-audio_track_get_fader_automatable (AudioTrack * track);
 
 /**
  * Frees the track.

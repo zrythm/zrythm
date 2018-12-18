@@ -121,11 +121,7 @@ automation_point_update_fvalue (AutomationPoint * ap,
     }
   else if (a->type == AUTOMATABLE_TYPE_CHANNEL_FADER)
     {
-      Channel * ch;
-      if (a->track->type == TRACK_TYPE_INSTRUMENT)
-        {
-          ch = ((InstrumentTrack *)a->track)->channel;
-        }
+      Channel * ch = track_get_channel (a->track);
       channel_set_fader_amp (ch, ap->fvalue);
     }
 }

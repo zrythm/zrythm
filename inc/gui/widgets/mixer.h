@@ -51,16 +51,7 @@ typedef struct _MixerWidget
 MixerWidget *
 mixer_widget_new ();
 
-/**
- * Adds channel to mixer widget.
- */
 void
-mixer_widget_add_channel (MixerWidget * self, Channel * channel);
-
-/**
- * Removes channel from mixer widget.
- */
-void
-mixer_widget_remove_channel (Channel * channel);
+mixer_widget_refresh (MixerWidget * self);
 
 #endif

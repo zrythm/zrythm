@@ -198,8 +198,9 @@ channel_process (Channel * channel,  ///< slots
   /* mark as processed */
   channel->processed = 1;
 
-  g_idle_add ((GSourceFunc) channel_widget_update_meter_reading,
-              channel->widget);
+  if (channel->widget)
+    g_idle_add ((GSourceFunc) channel_widget_update_meter_reading,
+                channel->widget);
 }
 
 static void
@@ -307,10 +308,9 @@ _create_channel (char * name)
  * Generates automatables for the channel.
  *
  * Should be called as soon as it is created
- * Note: called by mixer_add_channel ()
  */
-void
-channel_generate_automatables (Channel * channel)
+static void
+generate_automatables (Channel * channel)
 {
   g_message ("Generating automatables for channel %s",
              channel->name);
@@ -342,9 +342,6 @@ channel_get_or_create_blank (int id)
   /* thread related */
   setup_thread (channel);
 
-  /* create widget */
-  channel->widget = channel_widget_new (channel);
-
   PROJECT->channels[id] = channel;
   PROJECT->num_channels++;
 
@@ -354,63 +351,63 @@ channel_get_or_create_blank (int id)
 }
 
 /**
- * Creates master channel
+ * Creates a channel of the given type with the given label
  */
 Channel *
-channel_create_master ()
-{
-  g_message ("Creating Master channel");
-
-  Channel * channel = _create_channel("Master");
-
-  channel->type = CT_MASTER;
-
-  /* default settings */
-  gdk_rgba_parse (&channel->color, "red");
-  channel->output = NULL;
-
-  /* connect stereo in to stereo out */
-  port_connect (channel->stereo_in->l, channel->stereo_out->l);
-  port_connect (channel->stereo_in->r, channel->stereo_out->r);
-
-
-  /* connect stereo out ports to monitor TODO */
-
-  /* create widget */
-  channel->widget = channel_widget_new (channel);
-
-  return channel;
-}
-
-/**
- * Creates a channel using the given params
- */
-Channel *
-channel_create (int     type, char * label)             ///< the channel type (AUDIO/INS)
+channel_create (ChannelType type,
+                char *      label)
 {
 
   Channel * channel = _create_channel (label);
 
   channel->type = type;
 
-  /*gdk_rgba_parse (&channel->color, "rgb(20%,60%,4%)");*/
-  channel->color.red = rand () % 9 / 10.0;
-  channel->color.green = rand () % 9 / 10.0;
-  channel->color.blue = rand () % 9 / 10.0;
-  channel->color.alpha = 1.0;
-  channel->output = MIXER->master;
+  /* set default color */
+  if (type == CT_MASTER)
+    {
+      gdk_rgba_parse (&channel->color, "red");
+    }
+  else
+    {
+      channel->color.red = rand () % 9 / 10.0;
+      channel->color.green = rand () % 9 / 10.0;
+      channel->color.blue = rand () % 9 / 10.0;
+      channel->color.alpha = 1.0;
+    }
 
-  /* connect channel out ports to master */
-  port_connect (channel->stereo_out->l,
-                MIXER->master->stereo_in->l);
-  port_connect (channel->stereo_out->r,
-                MIXER->master->stereo_in->r);
+  /* set default output */
+  if (type == CT_MASTER)
+    {
+      channel->output = NULL;
+    }
+  else
+    {
+      channel->output = MIXER->master;
+    }
 
+  if (type == CT_AUDIO ||
+      type == CT_MIDI)
+    {
+      /* connect channel out ports to master */
+      port_connect (channel->stereo_out->l,
+                    MIXER->master->stereo_in->l);
+      port_connect (channel->stereo_out->r,
+                    MIXER->master->stereo_in->r);
+    }
+  else
+    {
+      /* connect stereo in to stereo out */
+      port_connect (channel->stereo_in->l,
+                    channel->stereo_out->l);
+      port_connect (channel->stereo_in->r,
+                    channel->stereo_out->r);
+    }
+
+  channel->track = track_new (channel);
+  generate_automatables (channel);
+  track_setup (channel->track);
 
   g_message ("Created channel %s of type %i", label, type);
-
-  /* create widget */
-  channel->widget = channel_widget_new (channel);
 
   return channel;
 }
@@ -420,8 +417,10 @@ channel_set_phase (void * _channel, float phase)
 {
   Channel * channel = (Channel *) _channel;
   channel->phase = phase;
-  gtk_label_set_text (channel->widget->phase_reading,
-                      g_strdup_printf ("%.1f", phase));
+
+  if (channel->widget)
+    gtk_label_set_text (channel->widget->phase_reading,
+                        g_strdup_printf ("%.1f", phase));
 }
 
 float
@@ -684,7 +683,7 @@ channel_add_plugin (Channel * channel,    ///< the channel
     track_get_automation_tracklist (channel->track);
   automation_tracklist_update (automation_tracklist);
   track_widget_refresh (channel->track->widget);
-  connections_widget_update (MW_CONNECTIONS);
+  connections_widget_refresh (MW_CONNECTIONS);
 }
 
 /**

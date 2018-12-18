@@ -303,9 +303,8 @@ setup_combo_box (GtkComboBoxText * cb)
 }
 
 void
-connections_widget_update (ConnectionsWidget * self)
+connections_widget_refresh (ConnectionsWidget * self)
 {
-  g_message ("updating connections widget combo boxes");
   setup_combo_box (self->select_src_cb);
   setup_combo_box (self->select_dest_cb);
 }
