@@ -19,9 +19,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "zrythm_app.h"
+#include "zrythm.h"
 #include "project.h"
-#include "settings_manager.h"
+#include "settings.h"
 #include "audio/position.h"
 #include "audio/transport.h"
 #include "gui/widgets/center_dock.h"
@@ -290,7 +290,7 @@ drag_begin (GtkGestureDrag * gesture,
     self,
     &pos,
     start_x - SPACE_BEFORE_START);
-  transport_move_playhead (&pos, 1);
+  transport_move_playhead (TRANSPORT, &pos, 1);
 }
 
 static void
@@ -307,7 +307,7 @@ drag_update (GtkGestureDrag * gesture,
     self,
     &pos,
     (prv->start_x + offset_x) - SPACE_BEFORE_START);
-  transport_move_playhead (&pos, 1);
+  transport_move_playhead (TRANSPORT, &pos, 1);
 }
 
 static void

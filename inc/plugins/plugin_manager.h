@@ -24,7 +24,7 @@
 
 #include <lilv/lilv.h>
 
-#define PLUGIN_MANAGER G_ZRYTHM_APP->plugin_manager
+#define PLUGIN_MANAGER ZRYTHM->plugin_manager
 #define LV2_SETTINGS PLUGIN_MANAGER->lv2_settings
 #define LILV_WORLD LV2_SETTINGS.lilv_world
 
@@ -118,19 +118,25 @@ typedef struct LV2_Settings
 
 typedef struct Plugin_Descriptor Plugin_Descriptor;
 
-typedef struct Plugin_Manager
+typedef struct PluginManager
 {
   Plugin_Descriptor      * plugin_descriptors[10000];
   char *                 plugin_categories[50];
   int                    num_plugin_categories;
   int                    num_plugins;
   LV2_Settings           lv2_settings;
-} Plugin_Manager;
+} PluginManager;
 
 /**
- * Initializes plugin manager and scans for plugins
+ * Initializes plugin manager.
+ */
+PluginManager *
+plugin_manager_new ();
+
+/**
+ * Scans for plugins.
  */
 void
-plugin_manager_init ();
+plugin_manager_setup (PluginManager * self);
 
 #endif

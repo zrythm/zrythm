@@ -19,9 +19,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "zrythm_app.h"
+#include "zrythm.h"
 #include "project.h"
-#include "settings_manager.h"
+#include "settings.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/bus_track.h"
@@ -499,16 +499,16 @@ timeline_arranger_widget_on_drag_begin_region_hit (
   for (int i = 0; i < self->num_regions; i++)
     {
       Region * region = self->regions[i];
-      if (tracklist_get_track_pos (PROJECT->tracklist,
+      if (tracklist_get_track_pos (TRACKLIST,
                                    region->track) <
-          tracklist_get_track_pos (PROJECT->tracklist,
+          tracklist_get_track_pos (TRACKLIST,
                                    self->top_region->track))
         {
           self->top_region = region;
         }
-      if (tracklist_get_track_pos (PROJECT->tracklist,
+      if (tracklist_get_track_pos (TRACKLIST,
                                    region->track) >
-          tracklist_get_track_pos (PROJECT->tracklist,
+          tracklist_get_track_pos (TRACKLIST,
                                    self->bot_region->track))
         {
           self->bot_region = region;
@@ -899,18 +899,18 @@ timeline_arranger_widget_move_items_y (
         {
           Track * pt =
             tracklist_get_prev_visible_track (
-              PROJECT->tracklist,
+              TRACKLIST,
               old_track);
           Track * nt =
             tracklist_get_next_visible_track (
-              PROJECT->tracklist,
+              TRACKLIST,
               old_track);
           Track * tt =
             tracklist_get_first_visible_track (
-              PROJECT->tracklist);
+              TRACKLIST);
           Track * bt =
             tracklist_get_last_visible_track (
-              PROJECT->tracklist);
+              TRACKLIST);
           if (self->start_region->track != track)
             {
               /* if new track is lower and bot region is not at the lowest track */
@@ -923,7 +923,7 @@ timeline_arranger_widget_move_items_y (
                       Region * region = self->regions[i];
                       nt =
                         tracklist_get_next_visible_track (
-                          PROJECT->tracklist,
+                          TRACKLIST,
                           region->track);
                       old_track = region->track;
                       if (old_track->type == nt->type)
@@ -956,7 +956,7 @@ timeline_arranger_widget_move_items_y (
                       Region * region = self->regions[i];
                       pt =
                         tracklist_get_prev_visible_track (
-                          PROJECT->tracklist,
+                          TRACKLIST,
                           region->track);
                       old_track = region->track;
                       if (old_track->type == pt->type)

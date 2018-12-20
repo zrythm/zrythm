@@ -25,13 +25,16 @@
 #ifndef __AUDIO_TRACKLIST_H__
 #define __AUDIO_TRACKLIST_H__
 
+#include "audio/engine.h"
+
 typedef struct Track Track;
 typedef struct _TracklistWidget TracklistWidget;
 
+#define TRACKLIST AUDIO_ENGINE->tracklist
 #define GET_SELECTED_TRACKS \
   Track * selected_tracks[200]; \
   int num_selected = 0; \
-  tracklist_get_selected_tracks (PROJECT->tracklist,\
+  tracklist_get_selected_tracks (AUDIO_ENGINE->tracklist,\
                                  selected_tracks,\
                                  &num_selected);
 

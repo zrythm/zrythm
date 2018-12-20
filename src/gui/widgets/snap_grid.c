@@ -19,7 +19,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "project/snap_grid.h"
+#include "audio/snap_grid.h"
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/snap_grid_popover.h"
 #include "utils/gtk.h"

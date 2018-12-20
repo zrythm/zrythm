@@ -19,7 +19,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "zrythm_app.h"
+#include "zrythm.h"
 #include "project.h"
 #include "audio/channel.h"
 #include "audio/engine.h"
@@ -46,21 +46,6 @@ project_create (char * filename)
   // set title
   g_message ("Creating project %s...", filename);
   PROJECT->title = g_strdup (filename);
-
-  PROJECT->snap_grid_timeline.grid_auto = 1;
-  /*PROJECT->snap_grid_timeline.grid_density = 3;*/
-  PROJECT->snap_grid_timeline.grid_density = 1;
-  PROJECT->snap_grid_timeline.snap_to_grid = 1;
-  PROJECT->snap_grid_timeline.snap_to_edges = 1;
-  PROJECT->snap_grid_timeline.type = SNAP_GRID_TIMELINE;
-  PROJECT->snap_grid_midi.grid_auto = 1;
-  /*PROJECT->snap_grid_midi.grid_density = 4;*/
-  PROJECT->snap_grid_midi.grid_density = 1;
-  PROJECT->snap_grid_midi.snap_to_grid = 1;
-  PROJECT->snap_grid_midi.snap_to_edges = 1;
-  PROJECT->snap_grid_midi.type = SNAP_GRID_MIDI;
-
-  transport_init ();
 }
 
 void
@@ -126,7 +111,7 @@ project_save (char * dir)
                                                              io_get_separator (),
                                                              channel->name,
                                                              j);
-                  LV2_Plugin * lv2_plugin = (LV2_Plugin *) plugin->original_plugin;
+                  Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
                   lv2_save_state (lv2_plugin,
                                   state_dir_plugin);
                   g_free (state_dir_plugin);
@@ -143,7 +128,9 @@ project_save (char * dir)
   xml_write_regions ();
   xml_write_project ();
 
-  zrythm_app_add_to_recent_projects (PROJECT->project_file_path);
+  zrythm_add_to_recent_projects (
+    ZRYTHM,
+    PROJECT->project_file_path);
   project_set_title (io_file_strip_path (dir));
 }
 
@@ -188,7 +175,6 @@ project_load (char * filepath) ///< this is the xml file
       mixer_add_channel (
         channel_create (CT_MIDI, "Ch 1"));
     }
-  PROJECT->tracklist = tracklist_new ();
 }
 
 void

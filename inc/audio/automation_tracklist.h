@@ -25,7 +25,7 @@
 #ifndef __AUDIO_AUTOMATION_TRACKLIST_H__
 #define __AUDIO_AUTOMATION_TRACKLIST_H__
 
-#define GET_SELECTED_TRACKS \
+#define GET_SELECTED_AUTOMATION_TRACKS \
   Track * selected_tracks[200]; \
   int num_selected = 0; \
   tracklist_get_selected_tracks (PROJECT->tracklist,\

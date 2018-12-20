@@ -139,7 +139,8 @@ exporter_export (ExportInfo * info)
               sf_write_int (sndfile, out_ptr, count);
 
               /* move playhead as many samples as processed */
-              transport_add_to_playhead (AUDIO_ENGINE->nframes);
+              transport_add_to_playhead (TRANSPORT,
+                                         AUDIO_ENGINE->nframes);
             } while (position_compare (&TRANSPORT->playhead_pos,
                                        &TRANSPORT->end_marker_pos) <= 0);
 

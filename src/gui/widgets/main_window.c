@@ -58,7 +58,7 @@ G_DEFINE_TYPE (MainWindowWidget,
 void
 main_window_widget_quit (MainWindowWidget * self)
 {
-  g_application_quit (G_APPLICATION (zrythm_app));
+  g_application_quit (G_APPLICATION (ZRYTHM));
 }
 
 void
@@ -109,10 +109,6 @@ main_window_widget_new (ZrythmApp * _app)
     G_APPLICATION (_app),
     NULL);
 
-  g_message ("main window initialized");
-
-  WIDGET_MANAGER->main_window = self;
-  project_set_title ("Untitled Project");
   gtk_window_set_title (GTK_WINDOW (self), "Zrythm");
 
   // set default css provider
@@ -125,10 +121,43 @@ main_window_widget_new (ZrythmApp * _app)
           800);
   g_object_unref (css_provider);
 
+
+
+  /*gtk_widget_add_events (GTK_WIDGET (self->main_box),*/
+                         /*GDK_KEY_PRESS_MASK);*/
+  /*g_signal_connect (G_OBJECT (self), "grab-notify",*/
+                    /*G_CALLBACK (key_press_cb), NULL);*/
+
+  /* show regions */
+  /*for (int i = 0; i < MIXER->num_channels; i++)*/
+    /*{*/
+      /*Channel * channel = MIXER->channels[i];*/
+      /*for (int j = 0; j < channel->track->num_regions; j++)*/
+        /*{*/
+          /*gtk_overlay_add_overlay (GTK_OVERLAY (self->timeline),*/
+                                   /*GTK_WIDGET (channel->track->regions[j]->widget));*/
+        /*}*/
+    /*}*/
+  /*for (int j = 0; j < MIXER->master->track->num_regions; j++)*/
+    /*{*/
+      /*gtk_overlay_add_overlay (GTK_OVERLAY (self->timeline),*/
+                               /*GTK_WIDGET (MIXER->master->track->regions[j]->widget));*/
+    /*}*/
+  /*gtk_widget_show_all (GTK_WIDGET (self->timeline));*/
+
+  return self;
+}
+
+void
+main_window_widget_refresh (MainWindowWidget * self)
+{
+  connections_widget_refresh (MW_CONNECTIONS);
+  tracklist_widget_refresh (MW_TRACKLIST);
+
   /* setup top toolbar */
   snap_grid_widget_setup (
     self->snap_grid_timeline,
-    &PROJECT->snap_grid_timeline);
+    &ZRYTHM->snap_grid_timeline);
 
   /* setup ruler */
   gtk_scrolled_window_set_hadjustment (
@@ -139,7 +168,7 @@ main_window_widget_new (ZrythmApp * _app)
   /* setup timeline */
   arranger_widget_setup (
     ARRANGER_WIDGET (MW_CENTER_DOCK->timeline),
-    &PROJECT->snap_grid_timeline,
+    &ZRYTHM->snap_grid_timeline,
     ARRANGER_TYPE_TIMELINE);
   gtk_scrolled_window_set_vadjustment (
     MW_CENTER_DOCK->timeline_scroll,
@@ -150,7 +179,7 @@ main_window_widget_new (ZrythmApp * _app)
 
   /* setup bot toolbar */
   snap_grid_widget_setup (MW_CENTER_DOCK->snap_grid_midi,
-                          &PROJECT->snap_grid_midi);
+                          &ZRYTHM->snap_grid_midi);
 
   /* setup piano roll */
   if (MW_BOT_DOCK_EDGE && PIANO_ROLL)
@@ -177,31 +206,6 @@ main_window_widget_new (ZrythmApp * _app)
 
   /* set transport controls */
   transport_controls_init (self);
-
-
-  /*gtk_widget_add_events (GTK_WIDGET (self->main_box),*/
-                         /*GDK_KEY_PRESS_MASK);*/
-  /*g_signal_connect (G_OBJECT (self), "grab-notify",*/
-                    /*G_CALLBACK (key_press_cb), NULL);*/
-
-  /* show regions */
-  /*for (int i = 0; i < MIXER->num_channels; i++)*/
-    /*{*/
-      /*Channel * channel = MIXER->channels[i];*/
-      /*for (int j = 0; j < channel->track->num_regions; j++)*/
-        /*{*/
-          /*gtk_overlay_add_overlay (GTK_OVERLAY (self->timeline),*/
-                                   /*GTK_WIDGET (channel->track->regions[j]->widget));*/
-        /*}*/
-    /*}*/
-  /*for (int j = 0; j < MIXER->master->track->num_regions; j++)*/
-    /*{*/
-      /*gtk_overlay_add_overlay (GTK_OVERLAY (self->timeline),*/
-                               /*GTK_WIDGET (MIXER->master->track->regions[j]->widget));*/
-    /*}*/
-  /*gtk_widget_show_all (GTK_WIDGET (self->timeline));*/
-
-  return self;
 }
 
 static void

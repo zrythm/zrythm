@@ -22,9 +22,9 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "zrythm_app.h"
+#include "zrythm.h"
 #include "project.h"
-#include "settings_manager.h"
+#include "settings.h"
 #include "audio/position.h"
 #include "audio/transport.h"
 #include "gui/widgets/digital_meter.h"
@@ -260,7 +260,9 @@ drag_update (GtkGestureDrag * gesture,
           /*g_message ("updating num with %d", num);*/
           if (abs (num) > 0)
             {
-              transport_set_bpm (TRANSPORT->bpm + num);
+              transport_set_bpm (TRANSPORT,
+                                 AUDIO_ENGINE,
+                                 TRANSPORT->bpm + num);
               self->last_y = offset_y;
             }
         }
@@ -270,7 +272,9 @@ drag_update (GtkGestureDrag * gesture,
           g_message ("%f", dec);
           if (fabs (dec) > 0)
             {
-              transport_set_bpm (TRANSPORT->bpm + dec);
+              transport_set_bpm (TRANSPORT,
+                                 AUDIO_ENGINE,
+                                 TRANSPORT->bpm + dec);
               self->last_y = offset_y;
             }
 

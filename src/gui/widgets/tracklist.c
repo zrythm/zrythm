@@ -54,9 +54,9 @@ get_hit_track (TracklistWidget *  self,
                double            y)
 {
   /* go through each child */
-  for(int i = 0; i < PROJECT->tracklist->num_tracks; i++)
+  for(int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      Track * track = PROJECT->tracklist->tracks[i];
+      Track * track = TRACKLIST->tracks[i];
       if (!track->visible)
         continue;
 
@@ -175,7 +175,7 @@ on_add_ins_track ()
                                    "Instrument Track");
   mixer_add_channel (chan);
   mixer_widget_refresh (MW_MIXER);
-  tracklist_append_track (PROJECT->tracklist,
+  tracklist_append_track (TRACKLIST,
                           chan->track);
   tracklist_widget_refresh (MW_TRACKLIST);
 }
@@ -343,9 +343,9 @@ tracklist_widget_toggle_select_all_tracks (
   TracklistWidget *self,
   int              select)
 {
-  for (int i = 0; i < PROJECT->tracklist->num_tracks; i++)
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      Track * track = PROJECT->tracklist->tracks[i];
+      Track * track = TRACKLIST->tracks[i];
       if (!track->visible)
         continue;
 
@@ -488,15 +488,6 @@ tracklist_widget_show (TracklistWidget *self)
 }
 
 static void
-on_realize (GtkWidget * widget,
-            gpointer    user_data)
-{
-  TracklistWidget * self = TRACKLIST_WIDGET (widget);
-
-  setup_tracklist_widget (self, PROJECT->tracklist);
-}
-
-static void
 tracklist_widget_init (TracklistWidget * self)
 {
   self->ddbox =
@@ -533,8 +524,6 @@ tracklist_widget_init (TracklistWidget * self)
                     G_CALLBACK (on_key_action), self);
   g_signal_connect (G_OBJECT (self), "key-release-event",
                     G_CALLBACK (on_key_action), self);
-  g_signal_connect (G_OBJECT (self), "realize",
-                    G_CALLBACK (on_realize), NULL);
 }
 
 static void

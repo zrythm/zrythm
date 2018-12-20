@@ -77,8 +77,8 @@ on_drag_data_received (GtkWidget        *widget,
                                                                descr->name,
                                                                counter++));
       mixer_add_channel (new_channel);
-      tracklist_append_track (PROJECT->tracklist,
-                                new_channel->track);
+      tracklist_append_track (TRACKLIST,
+                              new_channel->track);
       channel_add_plugin (new_channel,
                           0,
                           plugin);
@@ -123,8 +123,8 @@ drag_dest_box_widget_new (GtkOrientation  orientation,
   /* set as drag dest */
   gtk_drag_dest_set (GTK_WIDGET (self),
                             GTK_DEST_DEFAULT_ALL,
-                            WIDGET_MANAGER->entries,
-                            WIDGET_MANAGER->num_entries,
+                            ZRYTHM->entries,
+                            ZRYTHM->num_entries,
                             GDK_ACTION_COPY);
 
   /* connect signal */

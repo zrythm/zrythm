@@ -21,13 +21,7 @@
 
 #include <stdio.h>
 
-#include "zrythm_app.h"
-#include "settings_manager.h"
-#include "audio/engine.h"
-#include "audio/mixer.h"
-#include "gui/widget_manager.h"
-#include "gui/widgets/main_window.h"
-#include "plugins/plugin_manager.h"
+#include "zrythm.h"
 
 #include <gtk/gtk.h>
 
@@ -45,9 +39,9 @@ main (int    argc,
 
 
   // sends activate signal
-  gtk_init (&argc, &argv);
+  zrythm = zrythm_new ();
   return g_application_run (
-    G_APPLICATION (zrythm_app_new ()),
+    G_APPLICATION (zrythm),
     argc,
     argv);
 }

@@ -27,6 +27,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_region.h"
 #include "gui/widgets/region.h"
+#include "project.h"
 
 /**
  * Creates region (used when loading projects).

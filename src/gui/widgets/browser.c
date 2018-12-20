@@ -19,9 +19,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "settings_manager.h"
-#include "zrythm_app.h"
-#include "gui/widget_manager.h"
+#include "settings.h"
+#include "zrythm.h"
 #include "gui/widgets/browser.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
@@ -301,11 +300,12 @@ tree_view_create (GtkTreeModel * model,
 
   if (dnd)
     {
-      gtk_tree_view_enable_model_drag_source (GTK_TREE_VIEW (tree_view),
-                                    GDK_BUTTON1_MASK,
-                                    WIDGET_MANAGER->entries,
-                                    WIDGET_MANAGER->num_entries,
-                                    GDK_ACTION_COPY);
+      gtk_tree_view_enable_model_drag_source (
+        GTK_TREE_VIEW (tree_view),
+        GDK_BUTTON1_MASK,
+        ZRYTHM->entries,
+        ZRYTHM->num_entries,
+        GDK_ACTION_COPY);
       g_signal_connect (GTK_WIDGET (tree_view),
                         "drag-data-get",
                         G_CALLBACK (on_drag_data_get),

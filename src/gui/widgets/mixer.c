@@ -24,7 +24,6 @@
 #include "audio/track.h"
 #include "plugins/plugin.h"
 #include "plugins/lv2_plugin.h"
-#include "gui/widget_manager.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"

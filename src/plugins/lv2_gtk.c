@@ -26,7 +26,7 @@
 #include "lv2/lv2plug.in/ns/ext/patch/patch.h"
 #include "lv2/lv2plug.in/ns/ext/port-props/port-props.h"
 
-#include "zrythm_app.h"
+#include "zrythm.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_manager.h"
 
@@ -98,12 +98,12 @@ static void
 on_window_destroy(GtkWidget* widget,
                   gpointer   data)
 {
-  LV2_Plugin * plugin = (LV2_Plugin *) data;
+  Lv2Plugin * plugin = (Lv2Plugin *) data;
   plugin->window = NULL;
 }
 
 const char*
-lv2_native_ui_type(LV2_Plugin* plugin)
+lv2_native_ui_type(Lv2Plugin* plugin)
 {
 #if GTK_MAJOR_VERSION == 2
 	return "http://lv2plug.in/ns/extensions/ui#GtkUI";
@@ -117,7 +117,7 @@ lv2_native_ui_type(LV2_Plugin* plugin)
 static void
 on_save_activate(GtkWidget* widget, void* ptr)
 {
-	LV2_Plugin* plugin = (LV2_Plugin*)ptr;
+	Lv2Plugin* plugin = (Lv2Plugin*)ptr;
 	GtkWidget* dialog = gtk_file_chooser_dialog_new(
 		"Save State",
 		(GtkWindow*)plugin->window,
@@ -145,7 +145,7 @@ on_quit_activate(GtkWidget* widget, gpointer data)
 }
 
 typedef struct {
-	LV2_Plugin*     plugin;
+	Lv2Plugin*     plugin;
 	LilvNode* preset;
 } PresetRecord;
 
@@ -165,7 +165,7 @@ symbolify(const char* in)
 }
 
 static void
-set_window_title(LV2_Plugin* plugin)
+set_window_title(Lv2Plugin* plugin)
 {
 	LilvNode*   name   = lilv_plugin_get_name(plugin->lilv_plugin);
 	const char* name_str = lilv_node_as_string(name);
@@ -246,7 +246,7 @@ menu_cmp(gconstpointer a, gconstpointer b, gpointer data)
 }
 
 static PresetMenu*
-get_bank_menu(LV2_Plugin* plugin, PresetMenu* menu, const LilvNode* bank)
+get_bank_menu(Lv2Plugin* plugin, PresetMenu* menu, const LilvNode* bank)
 {
 	LilvNode* label = lilv_world_get(
 		LILV_WORLD, bank, plugin->nodes.rdfs_label, NULL);
@@ -265,7 +265,7 @@ get_bank_menu(LV2_Plugin* plugin, PresetMenu* menu, const LilvNode* bank)
 }
 
 static int
-add_preset_to_menu(LV2_Plugin*           plugin,
+add_preset_to_menu(Lv2Plugin*           plugin,
                    const LilvNode* node,
                    const LilvNode* title,
                    void*           data)
@@ -316,7 +316,7 @@ finish_menu(PresetMenu* menu)
 }
 
 static void
-rebuild_preset_menu(LV2_Plugin* plugin, GtkContainer* pset_menu)
+rebuild_preset_menu(Lv2Plugin* plugin, GtkContainer* pset_menu)
 {
 	// Clear current menu
 	plugin->active_preset_item = NULL;
@@ -339,7 +339,7 @@ rebuild_preset_menu(LV2_Plugin* plugin, GtkContainer* pset_menu)
 static void
 on_save_preset_activate(GtkWidget* widget, void* ptr)
 {
-	LV2_Plugin* plugin = (LV2_Plugin*)ptr;
+	Lv2Plugin* plugin = (Lv2Plugin*)ptr;
 
 	GtkWidget* dialog = gtk_file_chooser_dialog_new(
 		"Save Preset",
@@ -416,7 +416,7 @@ on_save_preset_activate(GtkWidget* widget, void* ptr)
 static void
 on_delete_preset_activate(GtkWidget* widget, void* ptr)
 {
-	LV2_Plugin* plugin = (LV2_Plugin*)ptr;
+	Lv2Plugin* plugin = (Lv2Plugin*)ptr;
 	if (!plugin->preset) {
 		return;
 	}
@@ -501,7 +501,7 @@ lv2_gtk_set_float_control(const Lv2ControlID* control, float value)
 }
 
 static double
-get_atom_double(LV2_Plugin* plugin, uint32_t size, LV2_URID type, const void* body)
+get_atom_double(Lv2Plugin* plugin, uint32_t size, LV2_URID type, const void* body)
 {
 	if (type == plugin->forge.Int || type == plugin->forge.Bool) {
 		return *(const int32_t*)body;
@@ -516,7 +516,7 @@ get_atom_double(LV2_Plugin* plugin, uint32_t size, LV2_URID type, const void* bo
 }
 
 static void
-control_changed(LV2_Plugin*       plugin,
+control_changed(Lv2Plugin*       plugin,
                 Controller* controller,
                 uint32_t    size,
                 LV2_URID    type,
@@ -565,7 +565,7 @@ control_changed(LV2_Plugin*       plugin,
 }
 
 static int
-patch_set_get(LV2_Plugin*                  plugin,
+patch_set_get(Lv2Plugin*                  plugin,
               const LV2_Atom_Object* obj,
               const LV2_Atom_URID**  property,
               const LV2_Atom**       value)
@@ -586,7 +586,7 @@ patch_set_get(LV2_Plugin*                  plugin,
 }
 
 static int
-patch_put_get(LV2_Plugin*                   plugin,
+patch_put_get(Lv2Plugin*                   plugin,
               const LV2_Atom_Object*  obj,
               const LV2_Atom_Object** body)
 {
@@ -605,7 +605,7 @@ patch_put_get(LV2_Plugin*                   plugin,
 }
 
 static void
-property_changed(LV2_Plugin* plugin, LV2_URID key, const LV2_Atom* value)
+property_changed(Lv2Plugin* plugin, LV2_URID key, const LV2_Atom* value)
 {
     Lv2ControlID* control = lv2_get_property_control(&plugin->controls, key);
     if (control) {
@@ -618,7 +618,7 @@ property_changed(LV2_Plugin* plugin, LV2_URID key, const LV2_Atom* value)
 }
 
 void
-lv2_ui_port_event(LV2_Plugin*       plugin,
+lv2_ui_port_event(Lv2Plugin*       plugin,
                    uint32_t    port_index,
                    uint32_t    buffer_size,
                    uint32_t    protocol,
@@ -746,7 +746,7 @@ file_changed(GtkFileChooserButton* widget,
              gpointer              data)
 {
 	Lv2ControlID*  control   = (Lv2ControlID*)data;
-	LV2_Plugin*       plugin     = control->plugin;
+	Lv2Plugin*       plugin     = control->plugin;
 	const char* filename = gtk_file_chooser_get_filename(
 		GTK_FILE_CHOOSER(widget));
 
@@ -986,7 +986,7 @@ control_group_cmp(const void* p1, const void* p2, void* data)
 }
 
 static GtkWidget*
-build_control_widget(LV2_Plugin* plugin, GtkWidget* window)
+build_control_widget(Lv2Plugin* plugin, GtkWidget* window)
 {
 	GtkWidget* port_table = gtk_table_new(plugin->num_ports, 3, false);
 
@@ -1069,7 +1069,7 @@ build_control_widget(LV2_Plugin* plugin, GtkWidget* window)
 }
 
 static void
-build_menu(LV2_Plugin* plugin, GtkWidget* window, GtkWidget* vbox)
+build_menu(Lv2Plugin* plugin, GtkWidget* window, GtkWidget* vbox)
 {
 	GtkWidget* menu_bar  = gtk_menu_bar_new();
 	GtkWidget* file      = gtk_menu_item_new_with_mnemonic("_File");
@@ -1124,18 +1124,18 @@ build_menu(LV2_Plugin* plugin, GtkWidget* window, GtkWidget* vbox)
 void
 on_external_ui_closed(void* controller)
 {
-  LV2_Plugin* jalv = (LV2_Plugin *) controller;
+  Lv2Plugin* jalv = (Lv2Plugin *) controller;
   lv2_close_ui(jalv);
 }
 
 bool
-lv2_discover_ui(LV2_Plugin* plugin)
+lv2_discover_ui(Lv2Plugin* plugin)
 {
   return TRUE;
 }
 
 int
-lv2_open_ui(LV2_Plugin* plugin)
+lv2_open_ui(Lv2Plugin* plugin)
 {
   LV2_External_UI_Host extui;
   GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -1230,7 +1230,7 @@ lv2_open_ui(LV2_Plugin* plugin)
 }
 
 int
-lv2_close_ui(LV2_Plugin* plugin)
+lv2_close_ui(Lv2Plugin* plugin)
 {
   if (plugin->window)
     {

@@ -24,12 +24,11 @@
 #ifndef __PROJECT_H__
 #define __PROJECT_H__
 
-#include "zrythm_app.h"
-#include "project/snap_grid.h"
+#include "zrythm.h"
 
 #include <gtk/gtk.h>
 
-#define PROJECT                 zrythm_app->project
+#define PROJECT                 ZRYTHM->project
 #define DEFAULT_PROJECT_NAME    "Untitled Project"
 #define PROJECT_FILE            "project.xml"
 #define PROJECT_REGIONS_FILE    "regions.xml"
@@ -63,16 +62,7 @@ typedef struct Project
   char              * regions_dir;
   char              * states_dir;
 
-  /**
-   * Timeline metadata like BPM, time signature, etc.
-   */
-  Transport         * transport;
-  SnapGrid          snap_grid_timeline; ///< snap/grid info for timeline
-  SnapGrid          snap_grid_midi; ///< snap/grid info for midi editor
-
-  /* for bookkeeping */
-  Port              * ports[600000];   ///< all ports have a reference here for easy access
-  int               num_ports;
+  /* for bookkeeping FIXME no, delete. manually go through each channel to find them */
   Channel           * channels[3000];
   int               num_channels;
   Plugin            * plugins[30000];
@@ -86,7 +76,6 @@ typedef struct Project
   MidiNote *        midi_notes[30000];
   int               num_midi_notes;
 
-  Tracklist *       tracklist;
 } Project;
 
 

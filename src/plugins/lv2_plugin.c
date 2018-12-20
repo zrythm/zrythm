@@ -55,6 +55,7 @@
 #include "plugins/lv2/control.h"
 #include "plugins/lv2/symap.h"
 #include "plugins/plugin.h"
+#include "project.h"
 #include "utils/io.h"
 #include "utils/string.h"
 
@@ -112,7 +113,7 @@ bool print_controls = 0;
 
 /** Return true iff Zrythm supports the given feature. */
 static bool
-_feature_is_supported (LV2_Plugin * plugin,
+_feature_is_supported (Lv2Plugin * plugin,
                       const char* uri)
 {
   if (!strcmp(uri, "http://lv2plug.in/ns/lv2core#isLive"))
@@ -133,7 +134,7 @@ static LV2_URID
 _map_uri(LV2_URID_Map_Handle handle,
         const char*         uri)
 {
-  LV2_Plugin* plugin = (LV2_Plugin*)handle;
+  Lv2Plugin* plugin = (Lv2Plugin*)handle;
   zix_sem_wait(&plugin->symap_lock);
   const LV2_URID id = symap_map(plugin->symap, uri);
   zix_sem_post(&plugin->symap_lock);
@@ -144,7 +145,7 @@ static const char*
 _unmap_uri(LV2_URID_Unmap_Handle handle,
           LV2_URID              urid)
 {
-  LV2_Plugin* plugin = (LV2_Plugin*)handle;
+  Lv2Plugin* plugin = (Lv2Plugin*)handle;
   zix_sem_wait(&plugin->symap_lock);
   const char* uri = symap_unmap(plugin->symap, urid);
   zix_sem_post(&plugin->symap_lock);
@@ -157,7 +158,7 @@ _unmap_uri(LV2_URID_Unmap_Handle handle,
    (e.g. buffers) is done later in activate_port().
 */
 static int
-_create_port(LV2_Plugin*   lv2_plugin,
+_create_port(Lv2Plugin*   lv2_plugin,
             uint32_t lv2_port_index,
             float    default_value,
             int            port_exists) ///< if zrythm port exists (when loading)
@@ -290,7 +291,7 @@ _create_port(LV2_Plugin*   lv2_plugin,
  * Used when loading a project.
 */
 int
-lv2_set_ports(LV2_Plugin* lv2_plugin)
+lv2_set_ports(Lv2Plugin* lv2_plugin)
 {
   float* default_values = (float*)calloc(
                     lilv_plugin_get_num_ports(lv2_plugin->lilv_plugin),
@@ -326,7 +327,7 @@ lv2_set_ports(LV2_Plugin* lv2_plugin)
    Create port structures from data (via create_port()) for all ports.
 */
 int
-lv2_create_ports(LV2_Plugin* lv2_plugin)
+lv2_create_ports(Lv2Plugin* lv2_plugin)
 {
   lv2_plugin->num_ports = lilv_plugin_get_num_ports(lv2_plugin->lilv_plugin);
   lv2_plugin->ports     = (LV2_Port*) calloc (lv2_plugin->num_ports,
@@ -365,7 +366,7 @@ lv2_create_ports(LV2_Plugin* lv2_plugin)
    Allocate port buffers (only necessary for MIDI).
 */
 void
-lv2_allocate_port_buffers(LV2_Plugin* plugin)
+lv2_allocate_port_buffers(Lv2Plugin* plugin)
 {
   for (uint32_t i = 0; i < plugin->num_ports; ++i)
     {
@@ -404,7 +405,7 @@ lv2_get_port_value (const char * port_sym,
                     uint32_t   * size,
                     uint32_t   * type)
 {
-  LV2_Plugin * lv2_plugin = (LV2_Plugin *) user_data;
+  Lv2Plugin * lv2_plugin = (Lv2Plugin *) user_data;
 
   LV2_Port * port = lv2_port_by_symbol (lv2_plugin,
                                         port_sym);
@@ -443,7 +444,7 @@ lv2_set_port_value (const char * port_sym,
    a problem when restoring the state of plugins with many ports.
 */
 LV2_Port*
-lv2_port_by_symbol(LV2_Plugin* plugin, const char* sym)
+lv2_port_by_symbol(Lv2Plugin* plugin, const char* sym)
 {
 	for (uint32_t i = 0; i < plugin->num_ports; ++i) {
 		LV2_Port* const port     = &plugin->ports[i];
@@ -459,7 +460,7 @@ lv2_port_by_symbol(LV2_Plugin* plugin, const char* sym)
 }
 
 Lv2ControlID*
-lv2_control_by_symbol(LV2_Plugin* plugin, const char* sym)
+lv2_control_by_symbol(Lv2Plugin* plugin, const char* sym)
 {
 	for (size_t i = 0; i < plugin->controls.n_controls; ++i) {
 		if (!strcmp(lilv_node_as_string(plugin->controls.controls[i]->symbol),
@@ -471,14 +472,14 @@ lv2_control_by_symbol(LV2_Plugin* plugin, const char* sym)
 }
 
 static void
-_print_control_value(LV2_Plugin* plugin, const LV2_Port* port, float value)
+_print_control_value(Lv2Plugin* plugin, const LV2_Port* port, float value)
 {
   const LilvNode* sym = lilv_port_get_symbol(plugin->lilv_plugin, port->lilv_port);
   g_message ("%-*s = %f\n", plugin->longest_sym, lilv_node_as_string(sym), value);
 }
 
 void
-lv2_create_controls(LV2_Plugin* lv2_plugin, bool writable)
+lv2_create_controls(Lv2Plugin* lv2_plugin, bool writable)
 {
   const LilvPlugin* plugin         = lv2_plugin->lilv_plugin;
   LilvWorld*        world          = LILV_WORLD;
@@ -541,7 +542,7 @@ lv2_create_controls(LV2_Plugin* lv2_plugin, bool writable)
 }
 
 void
-lv2_ui_instantiate(LV2_Plugin* plugin, const char* native_ui_type, void* parent)
+lv2_ui_instantiate(Lv2Plugin* plugin, const char* native_ui_type, void* parent)
 {
   plugin->ui_host = suil_host_new(lv2_ui_write, lv2_ui_port_index, NULL, NULL);
   plugin->extuiptr = NULL;
@@ -646,7 +647,7 @@ lv2_ui_instantiate(LV2_Plugin* plugin, const char* native_ui_type, void* parent)
 }
 
 bool
-lv2_ui_is_resizable(LV2_Plugin* plugin)
+lv2_ui_is_resizable(Lv2Plugin* plugin)
 {
   if (!plugin->ui) {
           return false;
@@ -680,7 +681,7 @@ lv2_ui_write(SuilController controller,
               uint32_t       protocol, ///< format
               const void*    buffer)
 {
-  LV2_Plugin* const plugin = (LV2_Plugin*)controller;
+  Lv2Plugin* const plugin = (Lv2Plugin*)controller;
 
   if (protocol != 0 && protocol != plugin->urids.atom_eventTransfer)
     {
@@ -718,7 +719,7 @@ lv2_ui_write(SuilController controller,
 }
 
 void
-lv2_apply_ui_events(LV2_Plugin* plugin, uint32_t nframes)
+lv2_apply_ui_events(Lv2Plugin* plugin, uint32_t nframes)
 {
   if (!plugin->has_ui)
     {
@@ -759,14 +760,14 @@ lv2_apply_ui_events(LV2_Plugin* plugin, uint32_t nframes)
 uint32_t
 lv2_ui_port_index(SuilController controller, const char* symbol)
 {
-	LV2_Plugin* const  plugin = (LV2_Plugin*)controller;
+	Lv2Plugin* const  plugin = (Lv2Plugin*)controller;
 	LV2_Port* port = lv2_port_by_symbol(plugin, symbol);
 
 	return port ? port->index : LV2UI_INVALID_PORT_INDEX;
 }
 
 void
-lv2_init_ui(LV2_Plugin* plugin)
+lv2_init_ui(Lv2Plugin* plugin)
 {
   // Set initial control port values
   for (uint32_t i = 0; i < plugin->num_ports; ++i)
@@ -797,7 +798,7 @@ lv2_init_ui(LV2_Plugin* plugin)
 }
 
 bool
-lv2_send_to_ui(LV2_Plugin*       plugin,
+lv2_send_to_ui(Lv2Plugin*       plugin,
                 uint32_t    port_index,
                 uint32_t    type,
                 uint32_t    size,
@@ -826,7 +827,7 @@ lv2_send_to_ui(LV2_Plugin*       plugin,
 }
 
 bool
-lv2_run(LV2_Plugin* plugin, uint32_t nframes)
+lv2_run(Lv2Plugin* plugin, uint32_t nframes)
 {
     /* Read and apply control change events from UI */
   if (plugin->window)
@@ -858,7 +859,7 @@ lv2_run(LV2_Plugin* plugin, uint32_t nframes)
 }
 
 bool
-lv2_update(LV2_Plugin* plugin)
+lv2_update(Lv2Plugin* plugin)
 {
   /* Check quit flag and close if set. */
   if (zix_sem_try_wait(&plugin->exit_sem))
@@ -923,7 +924,7 @@ lv2_update(LV2_Plugin* plugin)
 }
 
 static bool
-_apply_control_arg(LV2_Plugin* plugin, const char* s)
+_apply_control_arg(Lv2Plugin* plugin, const char* s)
 {
   char  sym[256];
   float val = 0.0f;
@@ -947,7 +948,7 @@ _apply_control_arg(LV2_Plugin* plugin, const char* s)
 }
 
 void
-lv2_backend_activate_port(LV2_Plugin * lv2_plugin, uint32_t port_index)
+lv2_backend_activate_port(Lv2Plugin * lv2_plugin, uint32_t port_index)
 {
   LV2_Port* const lv2_port   = &lv2_plugin->ports[port_index];
   Port * port = lv2_port->port;
@@ -1019,7 +1020,7 @@ lv2_backend_activate_port(LV2_Plugin * lv2_plugin, uint32_t port_index)
 }
 
 void
-lv2_set_feature_data (LV2_Plugin * plugin)
+lv2_set_feature_data (Lv2Plugin * plugin)
 {
   plugin->ext_data.data_access = NULL;
 
@@ -1223,7 +1224,7 @@ lv2_create_descriptor_from_lilv (const LilvPlugin * lp)
  *
  * Used when populating the plugin browser.
  */
-LV2_Plugin *
+Lv2Plugin *
 lv2_create_from_uri (Plugin    * plugin,  ///< a newly created plugin, with its descriptor filled in
                      const char * uri ///< the uri
                      )
@@ -1238,7 +1239,7 @@ lv2_create_from_uri (Plugin    * plugin,  ///< a newly created plugin, with its 
       g_error ("Failed to get LV2 Plugin from URI %s", uri);
       return NULL;
     }
-  LV2_Plugin * lv2_plugin = lv2_new (plugin);
+  Lv2Plugin * lv2_plugin = lv2_new (plugin);
 
   lv2_plugin->lilv_plugin = lilv_plugin;
 
@@ -1250,12 +1251,12 @@ lv2_create_from_uri (Plugin    * plugin,  ///< a newly created plugin, with its 
  *
  * Used when loading project files.
  */
-LV2_Plugin *
+Lv2Plugin *
 lv2_create_from_state (Plugin    * plugin,  ///< a newly created plugin
                        const char * _path    ///< path for state to load
                              )
 {
-  /*LV2_Plugin * lv2_plugin = lv2_new (plugin);*/
+  /*Lv2Plugin * lv2_plugin = lv2_new (plugin);*/
 
   /*lv2_set_feature_data (lv2_plugin);*/
 
@@ -1309,11 +1310,11 @@ lv2_create_from_state (Plugin    * plugin,  ///< a newly created plugin
  *
  * The given plugin instance must be a newly allocated one.
  */
-LV2_Plugin *
+Lv2Plugin *
 lv2_new (Plugin *plugin ///< a newly allocated plugin instance
          )
 {
-  LV2_Plugin * lv2_plugin = (LV2_Plugin *) calloc (1, sizeof (LV2_Plugin));
+  Lv2Plugin * lv2_plugin = (Lv2Plugin *) calloc (1, sizeof (Lv2Plugin));
 
   /* set pointers to each other */
   lv2_plugin->plugin = plugin;
@@ -1323,7 +1324,7 @@ lv2_new (Plugin *plugin ///< a newly allocated plugin instance
 }
 
 void
-lv2_free (LV2_Plugin * plugin)
+lv2_free (Lv2Plugin * plugin)
 {
   free (plugin);
 }
@@ -1333,7 +1334,7 @@ lv2_free (LV2_Plugin * plugin)
  * TODO
  */
 int
-lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
+lv2_instantiate (Lv2Plugin      * lv2_plugin,   ///< plugin to instantiate
                  char            * preset_uri   ///< uri of preset to load
                 )
 {
@@ -1801,7 +1802,7 @@ lv2_instantiate (LV2_Plugin      * lv2_plugin,   ///< plugin to instantiate
 }
 
 void
-lv2_plugin_process (LV2_Plugin * lv2_plugin, nframes_t nframes)
+lv2_plugin_process (Lv2Plugin * lv2_plugin, nframes_t nframes)
 {
   jack_client_t * client = AUDIO_ENGINE->client;
 
@@ -2009,7 +2010,7 @@ lv2_plugin_process (LV2_Plugin * lv2_plugin, nframes_t nframes)
 }
 
 void
-lv2_cleanup (LV2_Plugin *lv2_plugin)
+lv2_cleanup (Lv2Plugin *lv2_plugin)
 {
   /* Wait for finish signal from UI or signal handler */
   zix_sem_wait(&lv2_plugin->exit_sem);
@@ -2052,7 +2053,7 @@ lv2_cleanup (LV2_Plugin *lv2_plugin)
 }
 
 int
-lv2_save_state (LV2_Plugin * lv2_plugin, const char * dir)
+lv2_save_state (Lv2Plugin * lv2_plugin, const char * dir)
 {
   LilvState * state = lilv_state_new_from_instance (
     lv2_plugin->lilv_plugin,

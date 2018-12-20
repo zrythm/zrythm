@@ -362,7 +362,7 @@ write_lv2_port (xmlTextWriterPtr writer, LV2_Port * port)
 }
 
 static void
-write_lv2_plugin (xmlTextWriterPtr writer, LV2_Plugin * plugin)
+write_lv2_plugin (xmlTextWriterPtr writer, Lv2Plugin * plugin)
 {
   int rc;
   rc = xmlTextWriterStartElement (writer, BAD_CAST "LV2Plugin");
@@ -440,7 +440,7 @@ write_plugin (xmlTextWriterPtr writer, Plugin * plugin, int pos)
   rc = xmlTextWriterEndElement(writer);
   if (plugin->descr->protocol == PROT_LV2)
     {
-      write_lv2_plugin (writer, (LV2_Plugin *) plugin->original_plugin);
+      write_lv2_plugin (writer, (Lv2Plugin *) plugin->original_plugin);
     }
 
   rc = xmlTextWriterEndElement(writer);
@@ -773,9 +773,9 @@ xml_write_ports ()
                                    BAD_CAST PROJECT_XML_VER);
 
   /* write port */
-  for (int i = 0; i < PROJECT->num_ports; i++)
+  for (int i = 0; i < AUDIO_ENGINE->num_ports; i++)
     {
-      write_port (writer, PROJECT->ports[i]);
+      write_port (writer, AUDIO_ENGINE->ports[i]);
     }
 
   /* Close the element named FOOTER. */
@@ -1187,7 +1187,7 @@ xml_load_project ()
   xmlTextReaderPtr reader;
   int ret, reading_transport = 0, reading_channels = 0;
   const char * file          = PROJECT->project_file_path;
-  LV2_Plugin * lv2_plugin    = NULL;
+  Lv2Plugin * lv2_plugin    = NULL;
   Channel * channel          = NULL;
   Plugin * plugin            = NULL;
 

@@ -19,21 +19,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __ZRYTHM_APP_H__
-#define __ZRYTHM_APP_H__
+#ifndef __ZRYTHM_H__
+#define __ZRYTHM_H__
+
+#include "audio/snap_grid.h"
 
 #include <gtk/gtk.h>
 
-#define G_ZRYTHM_APP zrythm_app
+#define ZRYTHM zrythm
 
 #define ZRYTHM_APP_TYPE (zrythm_app_get_type ())
-G_DECLARE_FINAL_TYPE (ZrythmApp, zrythm_app, ZRYTHM, APP, GtkApplication)
+G_DECLARE_FINAL_TYPE (ZrythmApp,
+                      zrythm_app,
+                      ZRYTHM,
+                      APP,
+                      GtkApplication)
 
-typedef struct Widget_Manager Widget_Manager;
-typedef struct Settings_Manager Settings_Manager;
-typedef struct Audio_Engine Audio_Engine;
-typedef struct Plugin_Manager Plugin_Manager;
+typedef struct AudioEngine AudioEngine;
+typedef struct PluginManager PluginManager;
 typedef struct Project Project;
+typedef struct Settings Settings;
+typedef struct _MainWindowWidget MainWindowWidget;
 
 struct _ZrythmApp
 {
@@ -42,22 +48,21 @@ struct _ZrythmApp
   /**
    * The audio backend
    */
-  Audio_Engine *    audio_engine;
+  AudioEngine *    audio_engine;
 
   /**
    * Manages plugins (loading, instantiating, etc.)
    */
-  Plugin_Manager *  plugin_manager;
+  PluginManager *  plugin_manager;
 
-  /**
-   * Manages GUI widgets
-   */
-  Widget_Manager * widget_manager;
+  MainWindowWidget      * main_window;      ///< main window
+  GtkTargetEntry        entries[10];        ///< dnd entries
+  int                   num_entries;        ///< count
 
   /**
    * Application settings
    */
-  Settings_Manager *       settings_manager;
+  Settings *             settings;
 
   /**
    * The project global variable, containing all the information that
@@ -65,25 +70,36 @@ struct _ZrythmApp
    */
   Project * project;
 
+  SnapGrid          snap_grid_timeline; ///< snap/grid info for timeline
+  SnapGrid          snap_grid_midi; ///< snap/grid info for midi editor
+
   char                * zrythm_dir;
   char                * projects_dir;
   char                * recent_projects_file;
   char                * recent_projects[3000];
   int                 num_recent_projects;
+
+  /**
+   * Filename to open passed through the command line.
+   *
+   * Used only when a filename is passed.
+   * E.g., zrytm myproject.xml
+   */
+  char *              open_filename;
 };
 
-extern ZrythmApp * zrythm_app;
+extern ZrythmApp * zrythm;
 
 /**
  * Global variable, should be available to all files.
  */
-ZrythmApp * zrythm_app;
+ZrythmApp * zrythm;
 
 ZrythmApp *
-zrythm_app_new ();
+zrythm_new ();
 
 void
-zrythm_app_add_to_recent_projects (const char * filepath);
+zrythm_add_to_recent_projects (ZrythmApp * self,
+                                   const char * filepath);
 
-#endif /* __ZRYTHM_APP_H__ */
-
+#endif /* __ZRYTHM_H__ */

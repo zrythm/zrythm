@@ -19,7 +19,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "zrythm_app.h"
+#include "zrythm.h"
 #include "audio/mixer.h"
 #include "plugins/lv2_plugin.h"
 #include "gui/widgets/channel.h"
@@ -29,7 +29,6 @@
 #include "gui/widgets/fader.h"
 #include "gui/widgets/knob.h"
 #include "gui/widgets/pan.h"
-#include "gui/widget_manager.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 

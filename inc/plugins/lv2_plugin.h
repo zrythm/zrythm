@@ -79,7 +79,7 @@
 #    define REALTIME
 #endif
 
-typedef struct LV2_Plugin LV2_Plugin;
+typedef struct Lv2Plugin Lv2Plugin;
 typedef struct _GtkWidget GtkWidget;
 typedef struct _GtkCheckMenuItem GtkCheckMenuItem;
 
@@ -171,7 +171,7 @@ typedef struct LV2_Port
 	bool            old_api;    ///< True for event, false for atom
 } LV2_Port;
 
-typedef struct LV2_Plugin
+typedef struct Lv2Plugin
 {
   LV2_Extension_Data_Feature ext_data;
 
@@ -249,7 +249,7 @@ typedef struct LV2_Plugin
   Plugin             * plugin;           ///< base plugin instance (parent)
 
   char               * state_file; ///< for saving/loading state
-} LV2_Plugin;
+} Lv2Plugin;
 
 int
 lv2_printf(LV2_Log_Handle handle,
@@ -300,34 +300,34 @@ lv2_make_path(LV2_State_Make_Path_Handle handle,
                const char*                path);
 
 void
-lv2_save(LV2_Plugin* plugin, const char* dir);
+lv2_save(Lv2Plugin* plugin, const char* dir);
 
-typedef int (*PresetSink)(LV2_Plugin*           plugin,
+typedef int (*PresetSink)(Lv2Plugin*           plugin,
                           const LilvNode* node,
                           const LilvNode* title,
                           void*           data);
 
 int
-lv2_load_presets(LV2_Plugin* plugin, PresetSink sink, void* data);
+lv2_load_presets(Lv2Plugin* plugin, PresetSink sink, void* data);
 
 int
-lv2_unload_presets(LV2_Plugin* plugin);
+lv2_unload_presets(Lv2Plugin* plugin);
 
 void
-lv2_apply_state(LV2_Plugin* plugin, LilvState* state);
+lv2_apply_state(Lv2Plugin* plugin, LilvState* state);
 
 int
-lv2_apply_preset(LV2_Plugin* plugin, const LilvNode* preset);
+lv2_apply_preset(Lv2Plugin* plugin, const LilvNode* preset);
 
 int
-lv2_save_preset(LV2_Plugin*       plugin,
+lv2_save_preset(Lv2Plugin*       plugin,
                  const char* dir,
                  const char* uri,
                  const char* label,
                  const char* filename);
 
 int
-lv2_delete_current_preset(LV2_Plugin* plugin);
+lv2_delete_current_preset(Lv2Plugin* plugin);
 
 static inline char*
 lv2_strdup(const char* str)
@@ -353,7 +353,7 @@ lv2_strjoin(const char* a, const char* b)
 }
 
 LV2_Port*
-lv2_port_by_symbol(LV2_Plugin* plugin, const char* sym);
+lv2_port_by_symbol(Lv2Plugin* plugin, const char* sym);
 
 void
 lv2_ui_write(SuilController controller,
@@ -366,27 +366,27 @@ uint32_t
 lv2_ui_port_index(SuilController controller, const char* symbol);
 
 const char*
-lv2_native_ui_type(LV2_Plugin* plugin);
+lv2_native_ui_type(Lv2Plugin* plugin);
 
 bool
-lv2_discover_ui(LV2_Plugin* plugin);
+lv2_discover_ui(Lv2Plugin* plugin);
 
 int
-lv2_open_ui(LV2_Plugin* plugin);
+lv2_open_ui(Lv2Plugin* plugin);
 
 void
-lv2_init_ui(LV2_Plugin* plugin);
+lv2_init_ui(Lv2Plugin* plugin);
 
 int
-lv2_close_ui(LV2_Plugin* plugin);
+lv2_close_ui(Lv2Plugin* plugin);
 
 void
-lv2_ui_instantiate(LV2_Plugin*       plugin,
+lv2_ui_instantiate(Lv2Plugin*       plugin,
                     const char* native_ui_type,
                     void*       parent);
 
 bool
-lv2_ui_is_resizable(LV2_Plugin* plugin);
+lv2_ui_is_resizable(Lv2Plugin* plugin);
 
 void
 lv2_ui_write(SuilController controller,
@@ -396,20 +396,20 @@ lv2_ui_write(SuilController controller,
               const void*    buffer);
 
 void
-lv2_apply_ui_events(LV2_Plugin* plugin, uint32_t nframes);
+lv2_apply_ui_events(Lv2Plugin* plugin, uint32_t nframes);
 
 uint32_t
 lv2_ui_port_index(SuilController controller, const char* symbol);
 
 void
-lv2_ui_port_event(LV2_Plugin*       plugin,
+lv2_ui_port_event(Lv2Plugin*       plugin,
                    uint32_t    port_index,
                    uint32_t    buffer_size,
                    uint32_t    protocol,
                    const void* buffer);
 
 bool
-lv2_send_to_ui(LV2_Plugin*       plugin,
+lv2_send_to_ui(Lv2Plugin*       plugin,
                 uint32_t    port_index,
                 uint32_t    type,
                 uint32_t    size,
@@ -420,24 +420,24 @@ void
 lv2_gtk_set_float_control(const Lv2ControlID* control, float value);
 
 bool
-lv2_run(LV2_Plugin* plugin, uint32_t nframes);
+lv2_run(Lv2Plugin* plugin, uint32_t nframes);
 
 bool
-lv2_update(LV2_Plugin* plugin);
+lv2_update(Lv2Plugin* plugin);
 
 int
-lv2_ui_resize(LV2_Plugin* plugin, int width, int height);
+lv2_ui_resize(Lv2Plugin* plugin, int width, int height);
 
 
 /**
    Allocate port buffers (only necessary for MIDI).
 */
 void
-lv2_allocate_port_buffers(LV2_Plugin* plugin);
+lv2_allocate_port_buffers(Lv2Plugin* plugin);
 
 /** Expose a port to the system (if applicable) and connect it to its buffer. */
 void
-lv2_backend_activate_port(LV2_Plugin* plugin, uint32_t port_index);
+lv2_backend_activate_port(Lv2Plugin* plugin, uint32_t port_index);
 
 /**
  * Returns a newly allocated plugin descriptor for the given LilvPlugin
@@ -451,7 +451,7 @@ lv2_create_descriptor_from_lilv (const LilvPlugin * lp);
  *
  * Used when populating the plugin browser.
  */
-LV2_Plugin *
+Lv2Plugin *
 lv2_create_from_uri (Plugin    * plugin,  ///< a newly created plugin, with its descriptor filled in
                      const char * uri ///< the uri
                      );
@@ -459,7 +459,7 @@ lv2_create_from_uri (Plugin    * plugin,  ///< a newly created plugin, with its 
 /**
  * Creates an LV2 plugin from a state file.
  */
-LV2_Plugin *
+Lv2Plugin *
 lv2_create_from_state (Plugin    * plugin,  ///< a newly created plugin
                        const char * _path    ///< path for state to load
                        );
@@ -469,7 +469,7 @@ lv2_create_from_state (Plugin    * plugin,  ///< a newly created plugin
  *
  * Used when loading project files.
  */
-LV2_Plugin *
+Lv2Plugin *
 lv2_load_from_state (Plugin    * plugin);  ///< a newly created plugin
 
 /**
@@ -478,7 +478,7 @@ lv2_load_from_state (Plugin    * plugin);  ///< a newly created plugin
  * This is where the work is done.
  */
 int
-lv2_instantiate (LV2_Plugin      * plugin,   ///< plugin to instantiate
+lv2_instantiate (Lv2Plugin      * plugin,   ///< plugin to instantiate
                  char            * preset_uri   ///< uri of preset to load
                 );
 
@@ -487,19 +487,19 @@ lv2_instantiate (LV2_Plugin      * plugin,   ///< plugin to instantiate
  *
  * The given plugin instance must be a newly allocated one.
  */
-LV2_Plugin *
+Lv2Plugin *
 lv2_new (Plugin *plugin ///< a newly allocated plugin instance
          );
 
 /** TODO */
 void
-lv2_cleanup (LV2_Plugin *plugin);
+lv2_cleanup (Lv2Plugin *plugin);
 
 /**
  * Processes the plugin for this cycle.
  */
 void
-lv2_plugin_process (LV2_Plugin * lv2_plugin, nframes_t nframes);
+lv2_plugin_process (Lv2Plugin * lv2_plugin, nframes_t nframes);
 
 /**
  * Saves the current state in given dir.
@@ -507,12 +507,12 @@ lv2_plugin_process (LV2_Plugin * lv2_plugin, nframes_t nframes);
  * Used when saving the project.
  */
 int
-lv2_save_state (LV2_Plugin * lv2_plugin, const char * dir);
+lv2_save_state (Lv2Plugin * lv2_plugin, const char * dir);
 
 /**
  * Frees memory
  */
 void
-lv2_free (LV2_Plugin * plugin);
+lv2_free (Lv2Plugin * plugin);
 
 #endif

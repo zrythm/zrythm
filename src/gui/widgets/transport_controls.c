@@ -37,7 +37,7 @@ play_clicked_cb (GtkButton *button,
     }
   else
     {
-      transport_request_roll ();
+      transport_request_roll (TRANSPORT);
     }
 }
 
@@ -51,7 +51,7 @@ stop_clicked_cb (GtkButton *button,
                            &TRANSPORT->cue_pos);
     }
   else
-    transport_request_pause ();
+    transport_request_pause (TRANSPORT);
 
   midi_panic_all ();
 }

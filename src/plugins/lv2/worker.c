@@ -32,7 +32,7 @@ static void*
 worker_func(void* data)
 {
 	LV2_Worker* worker = (LV2_Worker*)data;
-	LV2_Plugin*       plugin   = worker->plugin;
+	Lv2Plugin*       plugin   = worker->plugin;
 	void*       buf    = NULL;
 	while (true) {
 		zix_sem_wait(&worker->sem);
@@ -62,7 +62,7 @@ worker_func(void* data)
 }
 
 void
-lv2_worker_init(LV2_Plugin*                       plugin,
+lv2_worker_init(Lv2Plugin*                       plugin,
                  LV2_Worker*                 worker,
                  const LV2_Worker_Interface* iface,
                  bool                        threaded)
@@ -99,7 +99,7 @@ lv2_worker_schedule(LV2_Worker_Schedule_Handle handle,
                      const void*                data)
 {
 	LV2_Worker* worker = (LV2_Worker*)handle;
-	LV2_Plugin*       plugin   = worker->plugin;
+	Lv2Plugin*       plugin   = worker->plugin;
 	if (worker->threaded) {
 		// Schedule a request to be executed by the worker thread
 		zix_ring_write(worker->requests, (const char*)&size, sizeof(size));

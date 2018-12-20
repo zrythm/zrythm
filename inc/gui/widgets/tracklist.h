@@ -41,6 +41,7 @@ typedef struct _TrackWidget TrackWidget;
 typedef struct _DragDestBoxWidget DragDestBoxWidget;
 typedef struct _ChordTrackWidget ChordTrackWidget;
 typedef struct InstrumentTrack InstrumentTrack;
+typedef struct Tracklist Tracklist;
 
 typedef struct _TracklistWidget
 {

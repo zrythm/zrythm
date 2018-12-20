@@ -27,7 +27,7 @@
 /** \file
  * Internal API for LV2 controls */
 
-typedef struct LV2_Plugin LV2_Plugin;
+typedef struct Lv2Plugin Lv2Plugin;
 
 /* Controls */
 
@@ -54,7 +54,7 @@ typedef enum {
 
 /** Plugin control. */
 typedef struct {
-	LV2_Plugin*       plugin;
+	Lv2Plugin*       plugin;
 	Lv2ControlType type;
 	LilvNode*   node;
 	LilvNode*   symbol;          ///< Symbol
@@ -83,10 +83,10 @@ typedef struct {
 } Lv2Controls;
 
 Lv2ControlID*
-lv2_new_port_control(LV2_Plugin* plugin, uint32_t index);
+lv2_new_port_control(Lv2Plugin* plugin, uint32_t index);
 
 Lv2ControlID*
-lv2_new_property_control(LV2_Plugin* plugin, const LilvNode* property);
+lv2_new_property_control(Lv2Plugin* plugin, const LilvNode* property);
 
 void
 lv2_add_control(Lv2Controls* controls, Lv2ControlID* control);

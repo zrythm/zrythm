@@ -19,9 +19,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "zrythm_app.h"
+#include "zrythm.h"
 #include "project.h"
-#include "settings_manager.h"
+#include "settings.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"

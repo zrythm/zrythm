@@ -1,5 +1,5 @@
 /*
- * settings.h - Settings
+ * settings.c - application settings
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,41 +19,58 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __SETTINGS_H__
-#define __SETTINGS_H__
+#include <stdlib.h>
 
-#include <gtk/gtk.h>
+#include "settings.h"
+#include "zrythm.h"
 
-typedef struct Settings_Manager
+static GSettings * gsettings;
+
+Settings *
+settings_new ()
 {
-  GSettings * gsettings;
-} Settings_Manager;
+  Settings * self = calloc (1, sizeof (Settings));
 
-/**
- * Initializes the settings manager
- */
+  self->gsettings =
+    g_settings_new ("org.zrythm");
+
+  return self;
+}
+
 void
-init_settings_manager ();
+settings_init (Settings * settings)
+{
+}
 
 /**
- * @brief Returns the value for the given key
- *
- * @param key       they key
+ * Returns the value for the given key
  */
 GVariant *
-get_value (const char      * key);
+get_value (const char * key)
+{
+  return g_settings_get_value (gsettings,
+                               key);
+}
 
 int
-get_int (const char *key);
+get_int (const char * key)
+{
+  return g_variant_get_int32 (get_value (key));
+}
 
 const char *
-get_string (const char * key);
+get_string (const char * key)
+{
+  return g_variant_get_string (get_value (key),
+                               NULL);
+}
 
 /**
  * Stores given value in given key
  */
 void
 store_value (char     * key,
-             GVariant * value);
+             GVariant * value)
+{
 
-#endif
+}

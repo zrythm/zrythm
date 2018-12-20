@@ -19,7 +19,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "zrythm_app.h"
+#include "zrythm.h"
 #include "gui/widgets/start_assistant.h"
 #include "utils/io.h"
 
@@ -162,16 +162,16 @@ start_assistant_widget_new (GtkWindow * parent,
   StartAssistantWidget * self = g_object_new (START_ASSISTANT_WIDGET_TYPE, NULL);
 
   for (self->num_project_infos = 0;
-       self->num_project_infos < G_ZRYTHM_APP->num_recent_projects;
+       self->num_project_infos < ZRYTHM->num_recent_projects;
        self->num_project_infos++)
     {
       int i = self->num_project_infos;
-      char * dir = io_get_dir (G_ZRYTHM_APP->recent_projects[i]);
+      char * dir = io_get_dir (ZRYTHM->recent_projects[i]);
       char * project_name = io_file_strip_path (dir);
       self->project_infos[i].name = project_name;
-      self->project_infos[i].filename = G_ZRYTHM_APP->recent_projects[i];
+      self->project_infos[i].filename = ZRYTHM->recent_projects[i];
       self->project_infos[i].modified =
-        io_file_get_last_modified_datetime (G_ZRYTHM_APP->recent_projects[i]);
+        io_file_get_last_modified_datetime (ZRYTHM->recent_projects[i]);
       g_free (dir);
     }
 

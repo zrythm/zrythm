@@ -106,7 +106,7 @@ automation_point_update_fvalue (AutomationPoint * ap,
       Plugin * plugin = a->port->owner_pl;
       if (plugin->descr->protocol == PROT_LV2)
         {
-          LV2_Plugin * lv2_plugin = (LV2_Plugin *) plugin->original_plugin;
+          Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
           if (lv2_plugin->ui_instance)
             {
               Lv2ControlID * control = a->control;

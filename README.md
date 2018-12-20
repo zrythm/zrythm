@@ -13,15 +13,32 @@ More info at https://www.zrythm.org
 - LV2
 
 ## Installation
-### Arch Linux (AUR)
+### Arch Linux/Manjaro
 https://aur.archlinux.org/packages/zrythm-git/ (for yaourt: `yaourt -S zrythm-git`)
+### Debian/Linux Mint/Ubuntu
+coming soon
+### Fedora
+coming soon
+### Manual installation
+_Note: You will need to have the development libraries for libxml2, gtk3, jack, lilv, suil, libsmf, libsndfile, libdazzle and lv2 installed_
+```
+git clone https://gitlab.com/alextee/zrythm.git
+cd zrythm
+./autogen.sh
+./configure
+make
+sudo make install
+```
+
+## Using
+At the moment, Zrythm assumes you have Jack installed and will only run if Jack is running. Everything else should be self-explanatory.
 
 ## Contributing
-For installation instructions see INSTALL
+For detailed installation instructions see INSTALL
 
-For contributing see CONTRIBUTING
+For contributing guidelines see CONTRIBUTING
 
-For any bugs please raise an issue
+For any bugs please raise an issue or join a chatroom below
 
 ## Chatrooms
 ### IRC (Freenode)

@@ -46,6 +46,7 @@ typedef struct AutomationPoint AutomationPoint;
 typedef struct AutomationPointWidget AutomationPointWidget;
 typedef struct AutomationCurveWidget AutomationCurveWidget;
 typedef struct AutomationTrack AutomationTrack;
+typedef struct AutomationCurve AutomationCurve;
 
 typedef struct _TimelineArrangerWidget
 {

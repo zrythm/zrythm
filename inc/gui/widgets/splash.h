@@ -22,7 +22,7 @@
 #ifndef __GUI_WIDGETS_SPLASH_H__
 #define __GUI_WIDGETS_SPLASH_H__
 
-#include "zrythm_app.h"
+#include "zrythm.h"
 
 #include <gtk/gtk.h>
 

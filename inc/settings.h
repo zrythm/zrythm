@@ -1,5 +1,5 @@
 /*
- * settings.c - application settings
+ * settings.h - Settings
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,57 +19,44 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
+#ifndef __SETTINGS_H__
+#define __SETTINGS_H__
 
-#include "settings_manager.h"
-#include "zrythm_app.h"
+#include <gtk/gtk.h>
 
-static GSettings * gsettings;
-
-void
-init_settings_manager ()
+typedef struct Settings
 {
-  g_message ("Initializing settings...");
-  gsettings =
-    g_settings_new ("online.alextee.zrythm");
+  GSettings * gsettings;
+} Settings;
 
-  Settings_Manager * settings_manager =
-    calloc (1, sizeof (Settings_Manager));
-
-  settings_manager->gsettings = gsettings;
-
-  zrythm_app->settings_manager = settings_manager;
-}
+Settings *
+settings_new ();
 
 /**
- * Returns the value for the given key
+ * Initializes the settings manager
+ */
+void
+settings_init (Settings * self);
+
+/**
+ * @brief Returns the value for the given key
+ *
+ * @param key       they key
  */
 GVariant *
-get_value (const char * key)
-{
-  return g_settings_get_value (gsettings,
-                               key);
-}
+get_value (const char      * key);
 
 int
-get_int (const char * key)
-{
-  return g_variant_get_int32 (get_value (key));
-}
+get_int (const char *key);
 
 const char *
-get_string (const char * key)
-{
-  return g_variant_get_string (get_value (key),
-                               NULL);
-}
+get_string (const char * key);
 
 /**
  * Stores given value in given key
  */
 void
 store_value (char     * key,
-             GVariant * value)
-{
+             GVariant * value);
 
-}
+#endif

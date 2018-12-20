@@ -25,7 +25,6 @@
 #include "audio/channel.h"
 #include "audio/engine.h"
 #include "plugins/lv2_plugin.h"
-#include "gui/widget_manager.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/channel_slot.h"
 #include "gui/widgets/main_window.h"
@@ -161,7 +160,7 @@ button_press_cb (GtkWidget      * widget,
         {
           if (plugin->descr->protocol == PROT_LV2)
             {
-              LV2_Plugin * lv2_plugin = (LV2_Plugin *) plugin->original_plugin;
+              Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
               if (lv2_plugin->window)
                 gtk_window_present (GTK_WINDOW (lv2_plugin->window));
               else
@@ -214,13 +213,13 @@ channel_slot_widget_new (int slot_index, Channel * channel)
 
   gtk_drag_source_set (GTK_WIDGET (channel->widget->slot_boxes[slot_index]),
                        GDK_MODIFIER_MASK,
-                       WIDGET_MANAGER->entries,
-                       WIDGET_MANAGER->num_entries,
+                       ZRYTHM->entries,
+                       ZRYTHM->num_entries,
                        GDK_ACTION_COPY);
   gtk_drag_dest_set (GTK_WIDGET (self),
                             GTK_DEST_DEFAULT_ALL,
-                            WIDGET_MANAGER->entries,
-                            WIDGET_MANAGER->num_entries,
+                            ZRYTHM->entries,
+                            ZRYTHM->num_entries,
                             GDK_ACTION_COPY);
 
   return self;

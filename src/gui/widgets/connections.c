@@ -336,8 +336,6 @@ connections_widget_init (ConnectionsWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  setup_combo_box (self->select_src_cb);
-  setup_combo_box (self->select_dest_cb);
   self->src_au = audio_unit_widget_new (0);
   gtk_container_add (GTK_CONTAINER (self->src_au_viewport),
                      GTK_WIDGET (self->src_au));

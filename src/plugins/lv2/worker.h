@@ -25,10 +25,10 @@
 
 #include "lv2/lv2plug.in/ns/ext/worker/worker.h"
 
-typedef struct LV2_Plugin LV2_Plugin;
+typedef struct Lv2Plugin Lv2Plugin;
 
 typedef struct {
-	LV2_Plugin*                 plugin;       ///< Pointer back to the plugin
+	Lv2Plugin*                 plugin;       ///< Pointer back to the plugin
 	ZixRing*                    requests;   ///< Requests to the worker
 	ZixRing*                    responses;  ///< Responses from the worker
 	void*                       response;   ///< Worker response buffer
@@ -39,7 +39,7 @@ typedef struct {
 } LV2_Worker;
 
 void
-lv2_worker_init(LV2_Plugin*                       plugin,
+lv2_worker_init(Lv2Plugin*                       plugin,
                  LV2_Worker*                 worker,
                  const LV2_Worker_Interface* iface,
                  bool                        threaded);

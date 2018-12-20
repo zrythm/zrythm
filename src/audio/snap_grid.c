@@ -1,5 +1,5 @@
 /*
- * gui/widget_manager.c - Manages GUI widgets
+ * project/snap_grid.c - Snap Grid info
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,23 +19,20 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
+#include <math.h>
 
-#include "zrythm_app.h"
-#include "gui/widget_manager.h"
+#include "audio/snap_grid.h"
 
-void
-init_widget_manager ()
+#include <gtk/gtk.h>
+
+/**
+ * Returns the grid intensity as a human-readable string.
+ *
+ * Must be free'd.
+ */
+char *
+snap_grid_stringize (SnapGrid * snap_grid)
 {
-  Widget_Manager * widget_manager = calloc (1, sizeof (Widget_Manager));
-  /*widget_manager->widgets = g_hash_table_new (g_str_hash,*/
-                         /*g_str_equal);*/
-
-  zrythm_app->widget_manager = widget_manager;
-
-  widget_manager->entries[0].target = "PLUGIN_DESCR";
-  widget_manager->entries[0].flags = GTK_TARGET_SAME_APP;
-  widget_manager->entries[0].info = 0;
-  widget_manager->num_entries = 1;
+  int power = pow (2, snap_grid->grid_density);
+  return g_strdup_printf ("1/%d", power);
 }
-

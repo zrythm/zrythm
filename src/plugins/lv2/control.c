@@ -14,7 +14,7 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include "zrythm_app.h"
+#include "zrythm.h"
 #include "audio/engine.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_manager.h"
@@ -36,7 +36,7 @@ scale_point_cmp(const Lv2ScalePoint* a, const Lv2ScalePoint* b)
 }
 
 Lv2ControlID*
-lv2_new_port_control(LV2_Plugin* plugin, uint32_t index)
+lv2_new_port_control(Lv2Plugin* plugin, uint32_t index)
 {
   LV2_Port*      port  = &plugin->ports[index];
   const LilvPort*   lport = port->lilv_port;
@@ -104,7 +104,7 @@ lv2_new_port_control(LV2_Plugin* plugin, uint32_t index)
 }
 
 static bool
-has_range(LV2_Plugin* plugin, const LilvNode* subject, const char* range_uri)
+has_range(Lv2Plugin* plugin, const LilvNode* subject, const char* range_uri)
 {
   LilvNode*  range  = lilv_new_uri(LILV_WORLD, range_uri);
   const bool result = lilv_world_ask(
@@ -114,7 +114,7 @@ has_range(LV2_Plugin* plugin, const LilvNode* subject, const char* range_uri)
 }
 
 Lv2ControlID*
-lv2_new_property_control(LV2_Plugin* plugin, const LilvNode* property)
+lv2_new_property_control(Lv2Plugin* plugin, const LilvNode* property)
 {
 	Lv2ControlID* id = (Lv2ControlID*)calloc(1, sizeof(Lv2ControlID));
 	id->plugin     = plugin;
@@ -183,7 +183,7 @@ lv2_set_control(const Lv2ControlID* control,
                  LV2_URID         type,
                  const void*      body)
 {
-  LV2_Plugin* plugin = control->plugin;
+  Lv2Plugin* plugin = control->plugin;
   if (control->type == PORT && type == plugin->forge.Float)
     {
       LV2_Port* port = &control->plugin->ports[control->index];

@@ -36,6 +36,7 @@
 #include "plugins/plugin.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/control.h"
+#include "project.h"
 #include "utils/arrays.h"
 
 #include <gtk/gtk.h>
@@ -148,7 +149,7 @@ plugin_generate_automatables (Plugin * plugin)
              plugin->descr->name);
   if (plugin->descr->protocol == PROT_LV2)
     {
-      LV2_Plugin * lv2_plugin = (LV2_Plugin *) plugin->original_plugin;
+      Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
       for (int j = 0; j < lv2_plugin->controls.n_controls; j++)
         {
           Lv2ControlID * control = lv2_plugin->controls.controls[j];
@@ -174,7 +175,7 @@ plugin_instantiate (Plugin * plugin ///< the plugin
   /* TODO */
   if (plugin->descr->protocol == PROT_LV2)
     {
-      LV2_Plugin *lv2 = (LV2_Plugin *) plugin->original_plugin;
+      Lv2Plugin *lv2 = (Lv2Plugin *) plugin->original_plugin;
       if (lv2_instantiate (lv2, NULL) < 0)
         {
           return -1;
@@ -203,7 +204,7 @@ plugin_process (Plugin * plugin, nframes_t nframes)
 
   if (plugin->descr->protocol == PROT_LV2)
     {
-      lv2_plugin_process ((LV2_Plugin *) plugin->original_plugin, nframes);
+      lv2_plugin_process ((Lv2Plugin *) plugin->original_plugin, nframes);
     }
 
   plugin->processed = 1;

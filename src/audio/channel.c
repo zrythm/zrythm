@@ -44,6 +44,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
+#include "project.h"
 #include "utils/math.h"
 
 #include <gtk/gtk.h>
@@ -524,7 +525,7 @@ channel_remove_plugin (Channel * channel, int pos)
                  channel->name, pos);
       if (plugin->descr->protocol == PROT_LV2)
         {
-          lv2_close_ui ((LV2_Plugin *) plugin->original_plugin);
+          lv2_close_ui ((Lv2Plugin *) plugin->original_plugin);
 
         }
       plugin_free (channel->strip[pos]);

@@ -19,9 +19,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "zrythm_app.h"
+#include "zrythm.h"
 #include "project.h"
-#include "settings_manager.h"
+#include "settings.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
@@ -115,16 +115,16 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
 
   /* handle horizontal drawing for tracks */
   /*int y_offset = 0;*/
-  for (int i = 0; i < PROJECT->tracklist->num_tracks; i++)
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      Track * track = PROJECT->tracklist->tracks[i];
+      Track * track = TRACKLIST->tracks[i];
       if (!track->visible)
         continue;
 
       TrackWidget * tw = track->widget;
 
       GtkWidget * tw_widget;
-      if (i == PROJECT->tracklist->num_tracks - 1)
+      if (i == TRACKLIST->num_tracks - 1)
         {
           /* draw last line */
           tw_widget = GTK_WIDGET (MW_TRACKLIST->ddbox);

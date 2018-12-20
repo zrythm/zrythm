@@ -25,13 +25,13 @@
 #define BLOCK_LENGTH 4096 // should be set by backend
 #define MIDI_BUF_SIZE 1024 // should be set by backend
 
-#include "zrythm_app.h"
+#include "zrythm.h"
 #include "utils/sem.h"
 
 #include <jack/jack.h>
 #include <jack/midiport.h>
 
-#define AUDIO_ENGINE zrythm_app->audio_engine
+#define AUDIO_ENGINE ZRYTHM->audio_engine
 #define MANUAL_PRESS_QUEUE AUDIO_ENGINE->midi_editor_manual_press->midi_events.queue
 #define MANUAL_PRESS_EVENTS AUDIO_ENGINE->midi_editor_manual_press->midi_events
 
@@ -47,8 +47,10 @@ typedef struct StereoPorts StereoPorts;
 typedef struct Port Port;
 typedef struct Channel Channel;
 typedef struct Plugin Plugin;
+typedef struct Transport Transport;
+typedef struct Tracklist Tracklist;
 
-typedef struct Audio_Engine
+typedef struct AudioEngine
 {
   jack_client_t     * client;     ///< jack client
 	uint32_t           block_length;   ///< Audio buffer size (block length)
@@ -67,17 +69,31 @@ typedef struct Audio_Engine
   ZixSem            port_operation_lock;  ///< semaphore for blocking DSP while plugin and its ports are deleted
   int               run;    ///< ok to process or not
   int               panic; ///< send note off MIDI everywhere
-} Audio_Engine;
+
+  Port              * ports[600000];   ///< all ports have a reference here for easy access
+  int               num_ports;
+
+  /**
+   * Timeline metadata like BPM, time signature, etc.
+   */
+  Transport         * transport;
+
+  Tracklist *       tracklist;
+} AudioEngine;
+
+AudioEngine *
+engine_new ();
 
 void
-init_audio_engine();
+engine_setup (AudioEngine * self);
 
 /**
  * Updates frames per tick based on the time sig, the BPM,
  * and the sample rate
  */
 void
-engine_update_frames_per_tick (int beats_per_bar,
+engine_update_frames_per_tick (AudioEngine * self,
+                               int beats_per_bar,
                                int bpm,
                                int sample_rate);
 

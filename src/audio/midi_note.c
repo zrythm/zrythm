@@ -26,6 +26,7 @@
 #include "audio/track.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_note.h"
+#include "project.h"
 
 /**
  * default velocity

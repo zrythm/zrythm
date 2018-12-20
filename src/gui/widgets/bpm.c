@@ -30,7 +30,9 @@ static void
 value_changed_cb (GtkSpinButton *spin_button,
                gpointer       user_data)
 {
-  transport_set_bpm (gtk_spin_button_get_value (spin_button));
+  transport_set_bpm (TRANSPORT,
+                     AUDIO_ENGINE,
+                     gtk_spin_button_get_value (spin_button));
 }
 
 static void
@@ -47,12 +49,13 @@ BpmWidget *
 bpm_widget_new ()
 {
   BpmWidget * self = g_object_new (BPM_WIDGET_TYPE, NULL);
-  GtkAdjustment * adj = gtk_adjustment_new (PROJECT->transport->bpm,
-                                            40.f,
-                                            400.f,
-                                            1.f,
-                                            1.f,
-                                            0.f);
+  GtkAdjustment * adj =
+    gtk_adjustment_new (TRANSPORT->bpm,
+                        40.f,
+                        400.f,
+                        1.f,
+                        1.f,
+                        0.f);
   gtk_spin_button_set_adjustment (GTK_SPIN_BUTTON (self),
                                   adj);
   gtk_spin_button_set_digits (GTK_SPIN_BUTTON (self),

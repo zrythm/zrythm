@@ -24,7 +24,7 @@ lv2_vprintf(LV2_Log_Handle handle,
              va_list        ap)
 {
 	// TODO: Lock
-	LV2_Plugin* plugin  = (LV2_Plugin*)handle;
+	Lv2Plugin* plugin  = (Lv2Plugin*)handle;
 	bool  fancy = true;
         bool  trace = true;
 	if (type == plugin->urids.log_Trace) {

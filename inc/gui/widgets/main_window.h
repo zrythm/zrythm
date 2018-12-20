@@ -22,12 +22,11 @@
 #ifndef __GUI_WIDGETS_MAIN_WINDOW_H__
 #define __GUI_WIDGETS_MAIN_WINDOW_H__
 
-#include "zrythm_app.h"
-#include "gui/widget_manager.h"
+#include "zrythm.h"
 
 #include <gtk/gtk.h>
 
-#define MAIN_WINDOW WIDGET_MANAGER->main_window
+#define MAIN_WINDOW ZRYTHM->main_window
 #define MW MAIN_WINDOW
 
 #define MAIN_WINDOW_WIDGET_TYPE                  (main_window_widget_get_type ())
@@ -76,6 +75,9 @@ typedef struct _MainWindowWidget
  */
 MainWindowWidget *
 main_window_widget_new (ZrythmApp * app);
+
+void
+main_window_widget_refresh (MainWindowWidget * self);
 
 /**
  * TODO

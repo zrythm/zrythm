@@ -25,16 +25,16 @@
 
 #include <stdint.h>
 
-#include "project.h"
+#include "audio/engine.h"
 #include "audio/region.h"
 #include "utils/sem.h"
 
 #include <gtk/gtk.h>
 
-#define TRANSPORT PROJECT->transport
+#define TRANSPORT AUDIO_ENGINE->transport
 #define DEFAULT_TOTAL_BARS 128
-#define MAX_BPM 360.f
-#define MIN_BPM 60.f
+#define MAX_BPM 420.f
+#define MIN_BPM 40.f
 #define DEFAULT_BPM 140.f
 #define DEFAULT_BEATS_PER_BAR 4
 #define DEFAULT_BEAT_UNIT 4
@@ -75,39 +75,47 @@ typedef struct Transport
 /**
  * Initialize transport
  */
+Transport *
+transport_new ();
+
 void
-transport_init ();
+transport_setup (Transport * self,
+                 AudioEngine * engine);
 
 /**
  * Sets BPM and does any necessary processing (like notifying interested
  * parties).
  */
 void
-transport_set_bpm (float bpm);
+transport_set_bpm (Transport * self,
+                   AudioEngine * engine,
+                   float bpm);
 
 /**
  * Moves the playhead by the time corresponding to given samples.
  */
 void
-transport_add_to_playhead (int nframes);
+transport_add_to_playhead (Transport * self,
+                           int nframes);
 
 void
-transport_request_pause ();
+transport_request_pause (Transport * self);
 
 void
-transport_request_roll ();
+transport_request_roll (Transport * self);
 
 /**
  * Moves playhead to given pos
  */
 void
-transport_move_playhead (Position * target, ///< position to set to
+transport_move_playhead (Transport * self,
+                         Position * target, ///< position to set to
                          int      panic); ///< send MIDI panic or not
 
 /**
  * Updates the frames in all transport positions
  */
 void
-transport_update_position_frames ();
+transport_update_position_frames (Transport * self);
 
 #endif

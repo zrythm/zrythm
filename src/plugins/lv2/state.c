@@ -28,7 +28,7 @@
 
 #include "lilv/lilv.h"
 
-#include "zrythm_app.h"
+#include "zrythm.h"
 #include "audio/transport.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_manager.h"
@@ -45,7 +45,7 @@ char*
 lv2_make_path(LV2_State_Make_Path_Handle handle,
                const char*                path)
 {
-	LV2_Plugin* plugin = (LV2_Plugin*)handle;
+	Lv2Plugin* plugin = (Lv2Plugin*)handle;
 
 	// Create in save directory if saving, otherwise use temp directory
 	return lv2_strjoin(plugin->save_dir ? plugin->save_dir : plugin->temp_dir, path);
@@ -57,7 +57,7 @@ get_port_value(const char* port_symbol,
                uint32_t*   size,
                uint32_t*   type)
 {
-	LV2_Plugin*        plugin = (LV2_Plugin*)user_data;
+	Lv2Plugin*        plugin = (Lv2Plugin*)user_data;
 	LV2_Port* port = lv2_port_by_symbol(plugin, port_symbol);
 	if (port && port->port->flow == FLOW_INPUT &&
             port->port->type == TYPE_CONTROL) {
@@ -70,7 +70,7 @@ get_port_value(const char* port_symbol,
 }
 
 void
-lv2_save(LV2_Plugin* plugin, const char* dir)
+lv2_save(Lv2Plugin* plugin, const char* dir)
 {
 	plugin->save_dir = lv2_strjoin(dir, "/");
 
@@ -90,7 +90,7 @@ lv2_save(LV2_Plugin* plugin, const char* dir)
 }
 
 int
-lv2_load_presets(LV2_Plugin* plugin, PresetSink sink, void* data)
+lv2_load_presets(Lv2Plugin* plugin, PresetSink sink, void* data)
 {
 	LilvNodes* presets = lilv_plugin_get_related(plugin->lilv_plugin,
 	                                             plugin->nodes.pset_Preset);
@@ -118,7 +118,7 @@ lv2_load_presets(LV2_Plugin* plugin, PresetSink sink, void* data)
 }
 
 int
-lv2_unload_presets(LV2_Plugin* plugin)
+lv2_unload_presets(Lv2Plugin* plugin)
 {
 	LilvNodes* presets = lilv_plugin_get_related(plugin->lilv_plugin,
 	                                             plugin->nodes.pset_Preset);
@@ -138,7 +138,7 @@ set_port_value(const char* port_symbol,
                uint32_t    size,
                uint32_t    type)
 {
-  LV2_Plugin*        plugin = (LV2_Plugin*)user_data;
+  Lv2Plugin*        plugin = (Lv2Plugin*)user_data;
   LV2_Port* port = lv2_port_by_symbol(plugin, port_symbol);
   if (!port) {
           fprintf(stderr, "error: Preset port `%s' is missing\n", port_symbol);
@@ -185,7 +185,7 @@ set_port_value(const char* port_symbol,
 }
 
 void
-lv2_apply_state(LV2_Plugin* plugin, LilvState* state)
+lv2_apply_state(Lv2Plugin* plugin, LilvState* state)
 {
   bool must_pause = !plugin->safe_restore && TRANSPORT->play_state == PLAYSTATE_ROLLING;
   if (state)
@@ -212,7 +212,7 @@ lv2_apply_state(LV2_Plugin* plugin, LilvState* state)
 }
 
 int
-lv2_apply_preset(LV2_Plugin* plugin, const LilvNode* preset)
+lv2_apply_preset(Lv2Plugin* plugin, const LilvNode* preset)
 {
   lilv_state_free (plugin->preset);
   plugin->preset = lilv_state_new_from_world (LILV_WORLD,
@@ -223,7 +223,7 @@ lv2_apply_preset(LV2_Plugin* plugin, const LilvNode* preset)
 }
 
 int
-lv2_save_preset(LV2_Plugin*       plugin,
+lv2_save_preset(Lv2Plugin*       plugin,
                 const char* dir,
                 const char* uri,
                 const char* label,
@@ -250,7 +250,7 @@ lv2_save_preset(LV2_Plugin*       plugin,
 }
 
 int
-lv2_delete_current_preset(LV2_Plugin* plugin)
+lv2_delete_current_preset(Lv2Plugin* plugin)
 {
 	if (!plugin->preset) {
 		return 1;
