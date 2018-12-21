@@ -1,5 +1,5 @@
 /*
- * gui/widgets/chord_track.c - Track
+ * gui/widgets/track.c - Track
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -24,23 +24,46 @@
 
 #include "audio/automatable.h"
 #include "audio/automation_track.h"
-#include "audio/chord_track.h"
+#include "audio/automation_tracklist.h"
+#include "audio/bus_track.h"
+#include "audio/master_track.h"
+#include "audio/track.h"
 #include "audio/region.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_tracklist.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/color_area.h"
+#include "gui/widgets/master_track.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/chord_track.h"
+#include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (ChordTrackWidget,
-               chord_track_widget,
+G_DEFINE_TYPE (MasterTrackWidget,
+               master_track_widget,
                GTK_TYPE_PANED)
+
+#define GET_TRACK(self) Track * track = self->parent->track
+
+static void
+on_show_automation (GtkWidget * widget, void * data)
+{
+  MasterTrackWidget * self =
+    MASTER_TRACK_WIDGET (data);
+
+  GET_TRACK (self);
+
+  /* toggle visibility flag */
+  track->bot_paned_visible =
+    track->bot_paned_visible ? 0 : 1;
+
+  /* FIXME rename to refresh */
+  tracklist_widget_show (MW_TRACKLIST);
+}
 
 /**
  * Creates a new track widget using the given track.
@@ -49,72 +72,87 @@ G_DEFINE_TYPE (ChordTrackWidget,
  * The track widget must always have at least 1 automation track in the automation
  * paned.
  */
-ChordTrackWidget *
-chord_track_widget_new (TrackWidget * parent)
+MasterTrackWidget *
+master_track_widget_new (TrackWidget *     parent)
 {
-  ChordTrackWidget * self = g_object_new (
-                            CHORD_TRACK_WIDGET_TYPE,
+  MasterTrackWidget * self = g_object_new (
+                            MASTER_TRACK_WIDGET_TYPE,
                             NULL);
   self->parent = parent;
 
-  gtk_container_add (
-    GTK_CONTAINER (self->record),
-    gtk_image_new_from_icon_name ("gtk-media-record",
-                                  GTK_ICON_SIZE_BUTTON));
-  gtk_widget_set_size_request (GTK_WIDGET (self->record),
-                               16,
-                               16);
+  GET_TRACK (self);
+  AutomationTracklist * automation_tracklist =
+    track_get_automation_tracklist (track);
+  automation_tracklist->widget =
+    automation_tracklist_widget_new (automation_tracklist);
+  gtk_paned_pack2 (GTK_PANED (self),
+                   GTK_WIDGET (automation_tracklist->widget),
+                   Z_GTK_RESIZE,
+                   Z_GTK_NO_SHRINK);
 
   gtk_widget_set_visible (GTK_WIDGET (self),
                           1);
-  gtk_widget_show_all (GTK_WIDGET (self));
 
   return self;
 }
 
 void
-chord_track_widget_refresh (ChordTrackWidget * self)
+master_track_widget_refresh (MasterTrackWidget * self)
 {
+  GET_TRACK (self);
+  Channel * channel = track_get_channel (track);
   gtk_label_set_text (self->track_name,
-                      "Chord Track");
+                      channel->name);
+
+  AutomationTracklist * automation_tracklist =
+    track_get_automation_tracklist (track);
+  automation_tracklist_widget_refresh (
+    automation_tracklist->widget);
 }
 
 static void
-chord_track_widget_init (ChordTrackWidget * self)
+master_track_widget_init (MasterTrackWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 }
 
 static void
-chord_track_widget_class_init (
-  ChordTrackWidgetClass * _klass)
+master_track_widget_class_init (MasterTrackWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass,
-                                "chord_track.ui");
+                                "master_track.ui");
 
   gtk_widget_class_bind_template_child (
     klass,
-    ChordTrackWidget,
+    MasterTrackWidget,
     track_box);
   gtk_widget_class_bind_template_child (
     klass,
-    ChordTrackWidget,
+    MasterTrackWidget,
     track_grid);
   gtk_widget_class_bind_template_child (
     klass,
-    ChordTrackWidget,
+    MasterTrackWidget,
     track_name);
   gtk_widget_class_bind_template_child (
     klass,
-    ChordTrackWidget,
+    MasterTrackWidget,
     record);
   gtk_widget_class_bind_template_child (
     klass,
-    ChordTrackWidget,
+    MasterTrackWidget,
     solo);
   gtk_widget_class_bind_template_child (
     klass,
-    ChordTrackWidget,
+    MasterTrackWidget,
     mute);
+  gtk_widget_class_bind_template_child (
+    klass,
+    MasterTrackWidget,
+    show_automation);
+  gtk_widget_class_bind_template_callback (
+    klass,
+    on_show_automation);
 }
+

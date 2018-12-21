@@ -76,7 +76,8 @@ on_drag_data_received (GtkWidget        *widget,
                                               g_strdup_printf ("%s %d",
                                                                descr->name,
                                                                counter++));
-      mixer_add_channel (new_channel);
+      mixer_add_channel (MIXER,
+                         new_channel);
       tracklist_append_track (TRACKLIST,
                               new_channel->track);
       channel_add_plugin (new_channel,

@@ -29,13 +29,16 @@
 #include "audio/track.h"
 #include "audio/region.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/audio_track.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_tracklist.h"
+#include "gui/widgets/bus_track.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/chord_track.h"
 #include "gui/widgets/instrument_track.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/master_track.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "utils/gtk.h"
@@ -98,14 +101,17 @@ on_draw (GtkWidget    * widget,
 TrackWidget *
 track_widget_new (Track * track)
 {
+  g_assert (track);
+
   TrackWidget * self =
     g_object_new (TRACK_WIDGET_TYPE,
                   NULL);
+
   self->track = track;
 
   /* set color */
   GdkRGBA * color;
-  switch (self->track->type)
+  switch (track->type)
     {
     case TRACK_TYPE_CHORD:
       color = calloc (1, sizeof (GdkRGBA));
@@ -115,10 +121,13 @@ track_widget_new (Track * track)
     case TRACK_TYPE_INSTRUMENT:
     case TRACK_TYPE_MASTER:
     case TRACK_TYPE_AUDIO:
-      color = &((BusTrack *)track)->channel->color;
-      break;
+        {
+          Channel * chan = track_get_channel (track);
+          color = &chan->color;
+          break;
+        }
     }
-  g_message ("%p color", color);
+  g_assert (color->alpha == 1.0);
   self->color = color_area_widget_new (color,
                                        5,
                                        -1);
@@ -138,9 +147,7 @@ track_widget_new (Track * track)
   switch (self->track->type)
     {
     case TRACK_TYPE_INSTRUMENT:
-      self->ins_tw = instrument_track_widget_new (
-        (InstrumentTrack *) self->track,
-        self);
+      self->ins_tw = instrument_track_widget_new (self);
       gtk_box_pack_start (self->track_box,
                           GTK_WIDGET (self->ins_tw),
                           1,
@@ -148,11 +155,23 @@ track_widget_new (Track * track)
                           0);
       break;
     case TRACK_TYPE_MASTER:
+      self->master_tw = master_track_widget_new (self);
+      gtk_box_pack_start (self->track_box,
+                          GTK_WIDGET (self->master_tw),
+                          1,
+                          1,
+                          0);
+      break;
     case TRACK_TYPE_AUDIO:
+      self->audio_tw = audio_track_widget_new (self);
+      gtk_box_pack_start (self->track_box,
+                          GTK_WIDGET (self->audio_tw),
+                          1,
+                          1,
+                          0);
+      break;
     case TRACK_TYPE_CHORD:
-      self->chord_tw = chord_track_widget_new (
-        (ChordTrack *) self->track,
-        self);
+      self->chord_tw = chord_track_widget_new (self);
       gtk_box_pack_start (self->track_box,
                           GTK_WIDGET (self->chord_tw),
                           1,
@@ -160,6 +179,12 @@ track_widget_new (Track * track)
                           0);
       break;
     case TRACK_TYPE_BUS:
+      self->bus_tw = bus_track_widget_new (self);
+      gtk_box_pack_start (self->track_box,
+                          GTK_WIDGET (self->bus_tw),
+                          1,
+                          1,
+                          0);
       break;
     }
 
@@ -206,9 +231,20 @@ track_widget_refresh (TrackWidget * self)
         self->ins_tw);
       break;
     case TRACK_TYPE_MASTER:
+      master_track_widget_refresh (
+        self->master_tw);
+      break;
     case TRACK_TYPE_AUDIO:
+      audio_track_widget_refresh (
+        self->audio_tw);
+      break;
     case TRACK_TYPE_CHORD:
+      chord_track_widget_refresh (
+        self->chord_tw);
+      break;
     case TRACK_TYPE_BUS:
+      bus_track_widget_refresh (
+        self->bus_tw);
       break;
     }
 }

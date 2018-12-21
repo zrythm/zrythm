@@ -358,6 +358,7 @@ Channel *
 channel_create (ChannelType type,
                 char *      label)
 {
+  g_assert (label);
 
   Channel * channel = _create_channel (label);
 
@@ -406,7 +407,6 @@ channel_create (ChannelType type,
 
   channel->track = track_new (channel);
   generate_automatables (channel);
-  track_setup (channel->track);
 
   g_message ("Created channel %s of type %i", label, type);
 

@@ -55,6 +55,12 @@ typedef struct Tracklist Tracklist;
 typedef struct Project
 {
   char              * title; ///< project title
+
+  /**
+   * Absolute path to project xml.
+   */
+  char              * filename;
+
   char              * dir; ///< path to save the project
   char              * project_file_path; ///< for convenience
   char              * regions_file_path;
@@ -76,38 +82,28 @@ typedef struct Project
   MidiNote *        midi_notes[30000];
   int               num_midi_notes;
 
+  ChordTrack *      chord_track; ///< the chord track
+  int               loaded; ///< project is loaded or not
 } Project;
 
 
-/**
- * Creates a project with default or given variables
- */
-void
-project_create (char * filename);
+Project *
+project_new ();
 
 /**
- * Creates a project with default or given variables
+ * If project has a filename set, it loads that. Otherwise
+ * it loads the default project.
  */
 void
-project_create_default ();
-
-/**
- * Loads project from a file.
- */
-void
-project_load (char * filename);
+project_setup (Project * self,
+               const char * filename);
 
 /**
  * Saves project to a file.
  */
 void
-project_save (char * filename);
-
-/**
- * Sets title to project and main window
- */
-void
-project_set_title (char * title);
+project_save (Project *    self,
+              const char * dir);
 
 void
 project_add_region (Project * project,

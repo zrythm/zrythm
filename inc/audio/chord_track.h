@@ -32,12 +32,17 @@
 
 #include <stdint.h>
 
+#include "audio/track.h"
+
+#define CHORD_TRACK PROJECT->chord_track
+
 typedef struct Chord Chord;
 typedef struct _ChordTrackWidget ChordTrackWidget;
 typedef struct MusicalScale MusicalScale;
 
 typedef struct ChordTrack
 {
+  Track                   parent;
   MusicalScale *          scale;
   Chord *                 chords[600];
   uint8_t                 num_chords;

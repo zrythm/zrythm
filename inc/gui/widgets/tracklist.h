@@ -63,8 +63,8 @@ typedef struct _TracklistWidget
 } TracklistWidget;
 
 void
-setup_tracklist (TracklistWidget * self,
-                 Tracklist * tracklist);
+tracklist_widget_setup (TracklistWidget * self,
+                        Tracklist * tracklist);
 
 void
 tracklist_widget_toggle_select_track (TracklistWidget * self,

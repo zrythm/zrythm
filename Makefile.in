@@ -147,7 +147,7 @@ OBJ = $(SRCS:%.c=$(BUILD_DIR)/%.o)
 # Gcc/Clang will create these .d files containing dependencies.
 DEP = $(OBJ:%.o=%.d)
 
-gsettings_SCHEMAS = $(DATA_DIR)/online.alextee.zrythm.gschema.xml
+gsettings_SCHEMAS = $(DATA_DIR)/org.zrythm.gschema.xml
 #EXTRA_DIST = $(gsettings_SCHEMAS)
 
 # desktop file

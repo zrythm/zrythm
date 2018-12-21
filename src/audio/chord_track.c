@@ -56,13 +56,11 @@ chord_track_new (MusicalScale * scale)
 ChordTrack *
 chord_track_default ()
 {
-  ChordTrack * self = calloc (1, sizeof (ChordTrack));
-  track_init ((Track *) self);
+  MusicalScale * scale =
+    musical_scale_new (SCALE_AEOLIAN, // natural minor
+                       NOTE_A);
 
-  self->scale = musical_scale_new (SCALE_AEOLIAN, // natural minor
-                                   NOTE_A);
-
-  return self;
+  return chord_track_new (scale);
 }
 
 void

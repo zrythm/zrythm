@@ -57,11 +57,10 @@ add_category (char * _category)
 
 int sort_category_func (const void *a, const void *b) {
     char * pa = *(char * const *) a, * pb = *(char * const *) b;
-    if (strcasecmp)
-      {
-        int r = strcasecmp(pa, pb);
-        if (r) return r;
-      }
+    int r = strcasecmp(pa, pb);
+    if (r)
+      return r;
+
     /* if equal ignoring case, use opposite of strcmp() result to get
      * lower before upper */
     return -strcmp(pa, pb); /* aka: return strcmp(b, a); */
@@ -70,11 +69,10 @@ int sort_category_func (const void *a, const void *b) {
 int sort_plugin_func (const void *a, const void *b) {
     Plugin_Descriptor * pa = *(Plugin_Descriptor * const *) a,
                       * pb = *(Plugin_Descriptor * const *) b;
-    if (strcasecmp)
-      {
-        int r = strcasecmp(pa->name, pb->name);
-        if (r) return r;
-      }
+    int r = strcasecmp(pa->name, pb->name);
+    if (r)
+      return r;
+
     /* if equal ignoring case, use opposite of strcmp() result to get
      * lower before upper */
     return -strcmp(pa->name, pb->name); /* aka: return strcmp(b, a); */
@@ -91,8 +89,8 @@ scan_plugins (PluginManager * self)
   /* load all plugins with lilv */
   LilvWorld * world = LILV_WORLD;
   const LilvPlugins * plugins = lilv_world_get_all_plugins (world);
-  const LilvPluginClasses * plugin_classes =
-                              lilv_world_get_plugin_classes (world);
+  /*const LilvPluginClasses * plugin_classes =*/
+                              /*lilv_world_get_plugin_classes (world);*/
   LV2_SETTINGS.lilv_plugins = plugins;
 
 

@@ -23,6 +23,8 @@
 #include "settings.h"
 #include "audio/engine.h"
 #include "audio/mixer.h"
+#include "audio/track.h"
+#include "audio/tracklist.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/splash.h"
 #include "gui/widgets/start_assistant.h"
@@ -203,10 +205,9 @@ task_completed_cb (GObject *source_object,
  */
 static void on_setup_main_window (GAction  *action,
                              GVariant *parameter,
-                             gpointer  data)
+                             gpointer  user_data)
 {
   g_message ("setup main window");
-  ZrythmApp * app = ZRYTHM_APP (data);
 
   main_window_widget_refresh (MAIN_WINDOW);
 
@@ -217,6 +218,7 @@ static void on_setup_main_window (GAction  *action,
  * Called after the main window has been initialized.
  *
  * Loads the project backend or creates the default one.
+ * FIXME rename
  */
 static void on_load_project (GAction  *action,
                              GVariant *parameter,
@@ -225,19 +227,20 @@ static void on_load_project (GAction  *action,
   g_message ("load_project");
   ZrythmApp * app = ZRYTHM_APP (user_data);
 
-  if (app->open_filename)
-    {
-      g_message ("yes filename");
-    }
-  else
-    {
-      g_message ("no filename");
-      project_set_title ("Untitled Project");
-    }
-  data->message =
-    "Finishing";
-  data->progress = 1.0;
-  update_splash (data);
+  app->project = project_new ();
+  app->tracklist = tracklist_new ();
+
+  project_setup (app->project,
+                 app->open_filename);
+  Track * track = MIXER->master->track;
+
+  tracklist_setup (TRACKLIST);
+
+
+  g_action_group_activate_action (
+    G_ACTION_GROUP (zrythm),
+    "setup_main_window",
+    NULL);
 }
 
 /**
@@ -253,8 +256,15 @@ static void on_init_main_window (GAction  *action,
 {
   g_message ("init main window");
 
+  gtk_widget_destroy (GTK_WIDGET (splash));
+
   ZrythmApp * app = ZRYTHM_APP (data);
   app->main_window = main_window_widget_new (app);
+
+  g_action_group_activate_action (
+    G_ACTION_GROUP (zrythm),
+    "load_project",
+    NULL);
 }
 
 static void
@@ -275,6 +285,10 @@ on_finish (GtkAssistant * _assistant,
       zrythm->open_filename = assistant->selection->filename;
     }
   gtk_widget_set_visible (GTK_WIDGET (assistant), 0);
+  data->message =
+    "Finishing";
+  data->progress = 1.0;
+  update_splash (data);
   g_action_group_activate_action (
     G_ACTION_GROUP (zrythm),
     "init_main_window",

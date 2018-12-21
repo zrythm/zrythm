@@ -24,8 +24,6 @@
 #include "settings.h"
 #include "zrythm.h"
 
-static GSettings * gsettings;
-
 Settings *
 settings_new ()
 {
@@ -46,31 +44,37 @@ settings_init (Settings * settings)
  * Returns the value for the given key
  */
 GVariant *
-get_value (const char * key)
+settings_get_value (Settings * self,
+                    const char * key)
 {
-  return g_settings_get_value (gsettings,
+  return g_settings_get_value (self->gsettings,
                                key);
 }
 
 int
-get_int (const char * key)
+settings_get_int (Settings * self,
+                  const char * key)
 {
-  return g_variant_get_int32 (get_value (key));
+  return g_variant_get_int32 (
+    settings_get_value (self, key));
 }
 
 const char *
-get_string (const char * key)
+settings_get_string (Settings * self,
+                     const char * key)
 {
-  return g_variant_get_string (get_value (key),
-                               NULL);
+  return g_variant_get_string (
+    settings_get_value (self, key),
+    NULL);
 }
 
 /**
  * Stores given value in given key
  */
 void
-store_value (char     * key,
-             GVariant * value)
+settings_store_value (Settings * self,
+                      char     * key,
+                      GVariant * value)
 {
 
 }

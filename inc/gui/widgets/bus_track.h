@@ -19,28 +19,28 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_INSTRUMENT_TRACK_H__
-#define __GUI_WIDGETS_INSTRUMENT_TRACK_H__
+#ifndef __GUI_WIDGETS_BUS_TRACK_H__
+#define __GUI_WIDGETS_BUS_TRACK_H__
 
 #include "audio/channel.h"
 #include "gui/widgets/track.h"
 
 #include <gtk/gtk.h>
 
-#define INSTRUMENT_TRACK_WIDGET_TYPE (instrument_track_widget_get_type ())
-G_DECLARE_FINAL_TYPE (InstrumentTrackWidget,
-                      instrument_track_widget,
-                      INSTRUMENT_TRACK,
+#define BUS_TRACK_WIDGET_TYPE (bus_track_widget_get_type ())
+G_DECLARE_FINAL_TYPE (BusTrackWidget,
+                      bus_track_widget,
+                      BUS_TRACK,
                       WIDGET,
                       GtkPaned)
 
 typedef struct _AutomationTracklistWidget AutomationTracklistWidget;
-typedef struct InstrumentTrack InstrumentTrack;
+typedef struct BusTrack BusTrack;
 
 /**
  * Top is the track part and bot is the automation part
  */
-typedef struct _InstrumentTrackWidget
+typedef struct _BusTrackWidget
 {
   GtkPaned                      parent_instance;
   TrackWidget *                 parent;
@@ -52,18 +52,19 @@ typedef struct _InstrumentTrackWidget
   GtkButton *                   mute;
   GtkButton *                   show_automation;
   GtkImage *                    icon;
-} InstrumentTrackWidget;
+} BusTrackWidget;
 
 /**
  * Creates a new track widget from the given track.
  */
-InstrumentTrackWidget *
-instrument_track_widget_new (TrackWidget *     parent);
+BusTrackWidget *
+bus_track_widget_new (TrackWidget *     parent);
 
 /**
  * Updates changes in the backend to the ui
  */
 void
-instrument_track_widget_refresh (InstrumentTrackWidget * self);
+bus_track_widget_refresh (BusTrackWidget * self);
 
 #endif
+

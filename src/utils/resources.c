@@ -52,3 +52,12 @@ resources_set_class_template (GtkWidgetClass * klass,
     path);
   g_free (path);
 }
+
+void
+resources_add_icon_to_button (GtkButton * btn,
+                              const char * path)
+{
+  GtkWidget * icon = resources_get_icon (path);
+  gtk_container_add (GTK_CONTAINER (btn),
+                     icon);
+}

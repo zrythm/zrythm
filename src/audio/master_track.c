@@ -24,6 +24,8 @@
 #include "audio/automation_tracklist.h"
 #include "audio/master_track.h"
 
+#include <gtk/gtk.h>
+
 MasterTrack *
 master_track_new (Channel * channel)
 {

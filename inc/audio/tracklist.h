@@ -30,11 +30,11 @@
 typedef struct Track Track;
 typedef struct _TracklistWidget TracklistWidget;
 
-#define TRACKLIST AUDIO_ENGINE->tracklist
+#define TRACKLIST ZRYTHM->tracklist
 #define GET_SELECTED_TRACKS \
   Track * selected_tracks[200]; \
   int num_selected = 0; \
-  tracklist_get_selected_tracks (AUDIO_ENGINE->tracklist,\
+  tracklist_get_selected_tracks (TRACKLIST,\
                                  selected_tracks,\
                                  &num_selected);
 
@@ -55,6 +55,10 @@ typedef struct Tracklist
 
 Tracklist *
 tracklist_new ();
+
+
+void
+tracklist_setup (Tracklist *  self);
 
 /**
  * Finds selected tracks and puts them in given array.

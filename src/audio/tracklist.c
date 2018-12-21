@@ -27,6 +27,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/tracklist.h"
+#include "project.h"
 #include "utils/arrays.h"
 
 Tracklist *
@@ -38,19 +39,19 @@ tracklist_new ()
 }
 
 void
-tracklist_setup (Tracklist * self)
+tracklist_setup (Tracklist *  self)
 {
   /* add master track */
   g_assert (MIXER);
   g_assert (MIXER->master);
   g_assert (MIXER->master->track);
   tracklist_append_track (self,
-                          (Track *) MIXER->master);
+                          (Track *) MIXER->master->track);
 
   /* add chord track */
-  ChordTrack * chord_track = chord_track_default ();
+  g_assert (CHORD_TRACK);
   tracklist_append_track (self,
-                          (Track *) chord_track);
+                          (Track *) CHORD_TRACK);
 
   /* add each channel */
   for (int i = 0; i < MIXER->num_channels; i++)

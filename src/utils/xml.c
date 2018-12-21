@@ -1355,7 +1355,8 @@ xml_load_project ()
                       }
                     else
                       {
-                        mixer_add_channel (channel);
+                        mixer_add_channel (MIXER,
+                                           channel);
                       }
                   }
                 else if (NAME_IS ("Plugin"))

@@ -44,7 +44,8 @@
  * process callback
  */
 void
-mixer_process (nframes_t     nframes)           ///< number of frames to fill in
+mixer_process (Mixer *   self,
+               nframes_t nframes) ///< number of frames to fill in
 {
   int loop = 1;
 
@@ -52,9 +53,9 @@ mixer_process (nframes_t     nframes)           ///< number of frames to fill in
   while (loop)
     {
       loop = 0;
-      for (int i = 0; i < MIXER->num_channels; i++)
+      for (int i = 0; i < self->num_channels; i++)
         {
-          if (!MIXER->channels[i]->processed)
+          if (!self->channels[i]->processed)
             {
               loop = 1;
               break;
@@ -64,36 +65,27 @@ mixer_process (nframes_t     nframes)           ///< number of frames to fill in
 
 
   /* process master channel */
-  channel_process (MIXER->master,
+  channel_process (self->master,
                    nframes);
 }
 
-void
-mixer_init ()
+Mixer *
+mixer_new ()
 {
-  g_message ("Initializing mixer...");
-  /* allocate size */
-  MIXER = calloc (1, sizeof (Mixer));
+  Mixer * self = calloc (1, sizeof (Mixer));
 
-  MIXER->num_channels = 0;
-
-  /* create master channel */
-  /*MIXER->master = channel_create_master ();*/
-
-  /* init channel strips array and add one of each */
-  /*ADD_CHANNEL (channel_create (CT_MIDI, "Ch 1"));*/
-  /*ADD_CHANNEL (channel_create (CT_AUDIO));*/
+  return self;
 }
 
 /**
  * Loads plugins from state files. Used when loading projects.
  */
 void
-mixer_load_plugins ()
+mixer_load_plugins (Mixer * self)
 {
-  for (int i = 0; i < MIXER->num_channels; i++)
+  for (int i = 0; i < self->num_channels; i++)
     {
-      Channel * channel = MIXER->channels[i];
+      Channel * channel = self->channels[i];
       for (int j = 0; j < STRIP_SIZE; j++)
         {
           Plugin * plugin = channel->strip[j];
@@ -107,7 +99,7 @@ mixer_load_plugins ()
   /* do master too  */
   for (int j = 0; j < STRIP_SIZE; j++)
     {
-      Plugin * plugin = MIXER->master->strip[j];
+      Plugin * plugin = self->master->strip[j];
       if (plugin)
         {
           plugin_instantiate (plugin);
@@ -117,24 +109,29 @@ mixer_load_plugins ()
 
 /**
  * Adds channel to mixer.
+ *
+ * The channel track is created in channel_create but it is
+ * setup here.
  */
 void
-mixer_add_channel (Channel * channel)
+mixer_add_channel (Mixer *   self,
+                   Channel * channel)
 {
   g_assert (channel);
+  g_assert (channel->track);
 
   if (channel->type == CT_MASTER)
     {
-      MIXER->master = channel;
+      self->master = channel;
     }
   else
     {
-      array_append ((void **) MIXER->channels,
-                    &MIXER->num_channels,
+      array_append ((void **) self->channels,
+                    &self->num_channels,
                     (void *) channel);
     }
 
-  channel->track = track_new (channel);
+  track_setup (channel->track);
 }
 
 /**
@@ -143,11 +140,12 @@ mixer_add_channel (Channel * channel)
  * Channel order in the mixer is reflected in the track list
  */
 Channel *
-mixer_get_channel_at_pos (int pos)
+mixer_get_channel_at_pos (Mixer * self,
+                          int pos)
 {
-  for (int i = 0; i < MIXER->num_channels; i++)
+  for (int i = 0; i < self->num_channels; i++)
     {
-      Channel * channel = MIXER->channels[i];
+      Channel * channel = self->channels[i];
       if (channel->id == pos)
         {
           return channel;
@@ -161,15 +159,16 @@ mixer_get_channel_at_pos (int pos)
  * Removes the given channel.
  */
 void
-mixer_remove_channel (Channel * channel)
+mixer_remove_channel (Mixer * self,
+                      Channel * channel)
 {
   g_message ("removing channel %s",
              channel->name);
   AUDIO_ENGINE->run = 0;
   channel->enabled = 0;
   channel->stop_thread = 1;
-  array_delete ((void **) MIXER->channels,
-                &MIXER->num_channels,
+  array_delete ((void **) self->channels,
+                &self->num_channels,
                 channel);
   channel_free (channel);
 }

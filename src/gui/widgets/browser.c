@@ -370,7 +370,9 @@ browser_widget_new ()
   gtk_label_set_xalign (self->plugin_info, 0);
 
   /* set divider position */
-  int divider_pos = get_int ("browser-divider-position");
+  int divider_pos =
+    settings_get_int (SETTINGS,
+                      "browser-divider-position");
   gtk_paned_set_position (GTK_PANED (self),
                           divider_pos);
 

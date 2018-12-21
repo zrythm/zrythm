@@ -157,7 +157,8 @@ on_delete_tracks ()
         case TRACK_TYPE_AUDIO:
             {
               BusTrack * bt = (BusTrack *) track;
-              mixer_remove_channel (bt->channel);
+              mixer_remove_channel (MIXER,
+                                    bt->channel);
               tracklist_remove_track (self->tracklist,
                                       track);
               break;
@@ -173,7 +174,7 @@ on_add_ins_track ()
 
   Channel * chan = channel_create (CT_MIDI,
                                    "Instrument Track");
-  mixer_add_channel (chan);
+  mixer_add_channel (MIXER, chan);
   mixer_widget_refresh (MW_MIXER);
   tracklist_append_track (TRACKLIST,
                           chan->track);
@@ -422,6 +423,9 @@ tracklist_widget_refresh (TracklistWidget * self)
           /* create widget */
           track->widget = track_widget_new (track);
 
+          g_assert (track->widget);
+          track_widget_refresh (track->widget);
+
           /* add to tracklist widget */
           gtk_container_add (GTK_CONTAINER (self),
                              GTK_WIDGET (track->widget));
@@ -461,10 +465,10 @@ tracklist_widget_refresh (TracklistWidget * self)
 }
 
 void
-setup_tracklist_widget (TracklistWidget * self,
+tracklist_widget_setup (TracklistWidget * self,
                         Tracklist * tracklist)
 {
-
+  g_assert (tracklist);
   self->tracklist = tracklist;
   tracklist->widget = self;
 

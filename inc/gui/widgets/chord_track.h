@@ -59,20 +59,13 @@ typedef struct _ChordTrackWidget
  * Creates a new chord_track widget from the given chord_track.
  */
 ChordTrackWidget *
-chord_track_widget_new (ChordTrack * chord_track,
-                        TrackWidget * parent);
+chord_track_widget_new (TrackWidget * parent);
 
 /**
  * Updates changes in the backend to the ui
  */
 void
-chord_track_widget_update_all (ChordTrackWidget * self);
-
-/**
- * Makes sure the chord_track widget and its elements have the visibility they should.
- */
-void
-chord_track_widget_show (ChordTrackWidget * self);
+chord_track_widget_refresh (ChordTrackWidget * self);
 
 #endif
 

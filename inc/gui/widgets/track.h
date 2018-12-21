@@ -40,9 +40,9 @@ G_DECLARE_FINAL_TYPE (TrackWidget,
 typedef struct ColorAreaWidget ColorAreaWidget;
 typedef struct _InstrumentTrackWidget InstrumentTrackWidget;
 typedef struct _ChordTrackWidget ChordTrackWidget;
-typedef struct MasterTrackWidget MasterTrackWidget;
-typedef struct AudioTrackWidget AudioTrackWidget;
-typedef struct BusTrackWidget BusTrackWidget;
+typedef struct _MasterTrackWidget MasterTrackWidget;
+typedef struct _AudioTrackWidget AudioTrackWidget;
+typedef struct _BusTrackWidget BusTrackWidget;
 
 typedef struct _TrackWidget
 {

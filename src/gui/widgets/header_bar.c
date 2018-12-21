@@ -119,7 +119,7 @@ on_file_save_as_activate (GtkMenuItem   * menu_item,
       char *filename;
 
       filename = gtk_file_chooser_get_filename (chooser);
-      project_save (filename);
+      project_save (PROJECT, filename);
       g_free (filename);
     }
 
@@ -138,7 +138,7 @@ on_file_save_activate (GtkMenuItem   * menu_item,
      }
    g_message ("%s project dir ", PROJECT->dir);
 
-   project_save (PROJECT->dir);
+   project_save (PROJECT, PROJECT->dir);
 }
 
 void

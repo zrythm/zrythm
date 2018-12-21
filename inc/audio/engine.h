@@ -78,7 +78,6 @@ typedef struct AudioEngine
    */
   Transport         * transport;
 
-  Tracklist *       tracklist;
 } AudioEngine;
 
 AudioEngine *

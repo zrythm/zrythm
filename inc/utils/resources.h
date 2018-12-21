@@ -40,4 +40,8 @@ void
 resources_set_class_template (GtkWidgetClass * klass,
                               const char * filename);
 
+void
+resources_add_icon_to_button (GtkButton * btn,
+                              const char * path);
+
 #endif

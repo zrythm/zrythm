@@ -26,7 +26,7 @@
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/bus_track.h"
-#include "audio/instrument_track.h"
+#include "audio/bus_track.h"
 #include "audio/track.h"
 #include "audio/region.h"
 #include "gui/widgets/arranger.h"
@@ -34,7 +34,7 @@
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/color_area.h"
-#include "gui/widgets/instrument_track.h"
+#include "gui/widgets/bus_track.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
@@ -42,8 +42,8 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (InstrumentTrackWidget,
-               instrument_track_widget,
+G_DEFINE_TYPE (BusTrackWidget,
+               bus_track_widget,
                GTK_TYPE_PANED)
 
 #define GET_TRACK(self) Track * track = self->parent->track
@@ -51,8 +51,8 @@ G_DEFINE_TYPE (InstrumentTrackWidget,
 static void
 on_show_automation (GtkWidget * widget, void * data)
 {
-  InstrumentTrackWidget * self =
-    INSTRUMENT_TRACK_WIDGET (data);
+  BusTrackWidget * self =
+    BUS_TRACK_WIDGET (data);
 
   GET_TRACK (self);
 
@@ -71,11 +71,11 @@ on_show_automation (GtkWidget * widget, void * data)
  * The track widget must always have at least 1 automation track in the automation
  * paned.
  */
-InstrumentTrackWidget *
-instrument_track_widget_new (TrackWidget *     parent)
+BusTrackWidget *
+bus_track_widget_new (TrackWidget *     parent)
 {
-  InstrumentTrackWidget * self = g_object_new (
-                            INSTRUMENT_TRACK_WIDGET_TYPE,
+  BusTrackWidget * self = g_object_new (
+                            BUS_TRACK_WIDGET_TYPE,
                             NULL);
   self->parent = parent;
 
@@ -110,7 +110,7 @@ instrument_track_widget_new (TrackWidget *     parent)
                                   GTK_ICON_SIZE_BUTTON));
 
   gtk_image_set_from_resource (self->icon,
-                               "/org/zrythm/instrument.svg");
+                               "/org/zrythm/bus.svg");
 
   g_signal_connect (self->show_automation, "clicked",
                     G_CALLBACK (on_show_automation), self);
@@ -122,9 +122,9 @@ instrument_track_widget_new (TrackWidget *     parent)
 }
 
 void
-instrument_track_widget_refresh (InstrumentTrackWidget * self)
+bus_track_widget_refresh (BusTrackWidget * self)
 {
-  InstrumentTrack * it = (InstrumentTrack *) self->parent->track;
+  BusTrack * it = (BusTrack *) self->parent->track;
   gtk_label_set_text (self->track_name,
                       ((BusTrack *)it)->channel->name);
 
@@ -136,48 +136,49 @@ instrument_track_widget_refresh (InstrumentTrackWidget * self)
 }
 
 static void
-instrument_track_widget_init (InstrumentTrackWidget * self)
+bus_track_widget_init (BusTrackWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 }
 
 static void
-instrument_track_widget_class_init (InstrumentTrackWidgetClass * klass)
+bus_track_widget_class_init (BusTrackWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (
     GTK_WIDGET_CLASS (klass),
-    "/org/zrythm/ui/instrument_track.ui");
+    "/org/zrythm/ui/bus_track.ui");
 
   gtk_widget_class_bind_template_child (
     GTK_WIDGET_CLASS (klass),
-    InstrumentTrackWidget,
+    BusTrackWidget,
     track_box);
   gtk_widget_class_bind_template_child (
     GTK_WIDGET_CLASS (klass),
-    InstrumentTrackWidget,
+    BusTrackWidget,
     track_grid);
   gtk_widget_class_bind_template_child (
     GTK_WIDGET_CLASS (klass),
-    InstrumentTrackWidget,
+    BusTrackWidget,
     track_name);
   gtk_widget_class_bind_template_child (
     GTK_WIDGET_CLASS (klass),
-    InstrumentTrackWidget,
+    BusTrackWidget,
     record);
   gtk_widget_class_bind_template_child (
     GTK_WIDGET_CLASS (klass),
-    InstrumentTrackWidget,
+    BusTrackWidget,
     solo);
   gtk_widget_class_bind_template_child (
     GTK_WIDGET_CLASS (klass),
-    InstrumentTrackWidget,
+    BusTrackWidget,
     mute);
   gtk_widget_class_bind_template_child (
     GTK_WIDGET_CLASS (klass),
-    InstrumentTrackWidget,
+    BusTrackWidget,
     show_automation);
   gtk_widget_class_bind_template_child (
     GTK_WIDGET_CLASS (klass),
-    InstrumentTrackWidget,
+    BusTrackWidget,
     icon);
 }
+

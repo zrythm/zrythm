@@ -22,6 +22,7 @@
 #include "zrythm.h"
 #include "project.h"
 #include "audio/channel.h"
+#include "audio/chord_track.h"
 #include "audio/engine.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
@@ -38,24 +39,26 @@
 
 #include <gtk/gtk.h>
 
-
-void
-project_create (char * filename)
+Project *
+project_new ()
 {
+  Project * self = calloc (1, sizeof (Project));
 
-  // set title
-  g_message ("Creating project %s...", filename);
-  PROJECT->title = g_strdup (filename);
+  return self;
 }
 
-void
-project_create_default ()
+/**
+ * Tears down the project before loading another one.
+ */
+static void
+tear_down (Project * self)
 {
-  project_create (DEFAULT_PROJECT_NAME);
+
 }
 
-void
-project_update_paths (const char * dir)
+static void
+update_paths (Project * self,
+              const char * dir)
 {
   PROJECT->dir = g_strdup (dir);
   PROJECT->project_file_path =
@@ -87,10 +90,73 @@ project_update_paths (const char * dir)
 }
 
 void
-project_save (char * dir)
+create_default (Project * self,
+                Mixer *   mixer)
+{
+  g_assert (self);
+  g_assert (mixer);
+
+  if (self->loaded)
+    tear_down (self);
+
+  self->title = g_strdup (DEFAULT_PROJECT_NAME);
+
+  /* add master channel to mixer */
+  mixer_add_channel (
+    mixer,
+    channel_create (CT_MASTER, "Master"));
+
+  /* create chord track */
+  self->chord_track = chord_track_default ();
+}
+
+static void
+load (Project *    self,
+      const char * filename)
+{
+  if (self->loaded)
+    tear_down (self);
+
+  g_assert (filename);
+  char * dir = io_get_dir (filename);
+  update_paths (self, dir);
+
+  xml_load_ports ();
+  xml_load_regions ();
+  xml_load_project ();
+  mixer_load_plugins (MIXER);
+
+  char * filepath_noext = io_file_strip_path (dir);
+  self->title = filepath_noext;
+  g_free (filepath_noext);
+
+  g_free (dir);
+
+  self->filename = filename;
+}
+
+/**
+ * If project has a filename set, it loads that. Otherwise
+ * it loads the default project.
+ */
+void
+project_setup (Project * self,
+               const char * filename)
+{
+  if (filename)
+    load (self, filename);
+  else
+    create_default (self,
+                    MIXER);
+}
+
+
+void
+project_save (Project *  self,
+              const char * dir)
 {
   io_mkdir (dir);
-  project_update_paths (dir);
+  update_paths (self, dir);
 
   smf_save_regions ();
 
@@ -131,50 +197,7 @@ project_save (char * dir)
   zrythm_add_to_recent_projects (
     ZRYTHM,
     PROJECT->project_file_path);
-  project_set_title (io_file_strip_path (dir));
-}
-
-/**
- * Sets title to project and main window
- */
-void
-project_set_title (char * _title)
-{
-  PROJECT->title = g_strdup (_title);
-
-  if (MAIN_WINDOW && MW_HEADER_BAR)
-    {
-      header_bar_widget_set_title (MW_HEADER_BAR,
-                                   PROJECT->title);
-    }
-}
-
-void
-project_load (char * filepath) ///< this is the xml file
-{
-  if (filepath)
-    {
-      char * dir = io_get_dir (filepath);
-      project_update_paths (dir);
-
-      xml_load_ports ();
-      xml_load_regions ();
-      xml_load_project ();
-      mixer_load_plugins ();
-
-      char * filepath_noext = io_file_strip_path (dir);
-      project_set_title (filepath_noext);
-      g_free (filepath_noext);
-
-      g_free (dir);
-    }
-  else
-    {
-      mixer_add_channel (
-        channel_create (CT_MASTER, "Master"));
-      mixer_add_channel (
-        channel_create (CT_MIDI, "Ch 1"));
-    }
+  self->title = io_file_strip_path (dir);
 }
 
 void

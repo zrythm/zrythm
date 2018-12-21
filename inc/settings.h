@@ -24,6 +24,8 @@
 
 #include <gtk/gtk.h>
 
+#define SETTINGS ZRYTHM->settings
+
 typedef struct Settings
 {
   GSettings * gsettings;
@@ -39,24 +41,26 @@ void
 settings_init (Settings * self);
 
 /**
- * @brief Returns the value for the given key
- *
- * @param key       they key
+ * Returns the value for the given key
  */
 GVariant *
-get_value (const char      * key);
+settings_get_value (Settings * self,
+                    const char * key);
 
 int
-get_int (const char *key);
+settings_get_int (Settings * self,
+                  const char * key);
 
 const char *
-get_string (const char * key);
+settings_get_string (Settings * self,
+                     const char * key);
 
 /**
  * Stores given value in given key
  */
 void
-store_value (char     * key,
-             GVariant * value);
+settings_store_value (Settings * self,
+                      char     * key,
+                      GVariant * value);
 
 #endif

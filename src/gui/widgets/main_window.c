@@ -23,6 +23,7 @@
 #include "project.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
+#include "audio/tracklist.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -151,8 +152,12 @@ main_window_widget_new (ZrythmApp * _app)
 void
 main_window_widget_refresh (MainWindowWidget * self)
 {
+  header_bar_widget_set_title (MW_HEADER_BAR,
+                               PROJECT->title);
+
   connections_widget_refresh (MW_CONNECTIONS);
-  tracklist_widget_refresh (MW_TRACKLIST);
+  tracklist_widget_setup (MW_TRACKLIST,
+                          TRACKLIST);
 
   /* setup top toolbar */
   snap_grid_widget_setup (

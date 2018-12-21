@@ -222,7 +222,7 @@ jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill
   /*
    * process
    */
-  mixer_process (nframes);
+  mixer_process (MIXER, nframes);
 
   /**
    * get jack's buffers with nframes frames for left & right
@@ -416,9 +416,6 @@ engine_setup (AudioEngine * self)
       g_error ("no more JACK ports available");
     }
 
-  /* initialize mixer, which handles the processing */
-  mixer_init ();
-
   /* init semaphore */
   zix_sem_init (&self->port_operation_lock, 1);
 
@@ -473,6 +470,7 @@ engine_new ()
     engine->buf_size_set = false;
 
     engine->transport = transport_new ();
+    engine->mixer = mixer_new ();
 
     return engine;
 }

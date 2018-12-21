@@ -43,11 +43,8 @@ typedef struct Mixer
   Channel        * master;                  ///< master output
 } Mixer;
 
-/**
- * Initializes the mixer
- */
-void
-mixer_init ();
+Mixer *
+mixer_new ();
 
 /**
  * The mixer begins the audio processing process.
@@ -59,13 +56,14 @@ mixer_init ();
  * and sent to Jack.
  */
 void
-mixer_process (nframes_t     _nframes);       ///< number of frames to fill in
+mixer_process (Mixer * mixer,
+               nframes_t     _nframes);       ///< number of frames to fill in
 
 /**
  * Loads plugins from state files. Used when loading projects.
  */
 void
-mixer_load_plugins ();
+mixer_load_plugins (Mixer * self);
 
 /**
  * Returns channel at given position (order)
@@ -73,18 +71,21 @@ mixer_load_plugins ();
  * Channel order in the mixer is reflected in the track list
  */
 Channel *
-mixer_get_channel_at_pos (int pos);
+mixer_get_channel_at_pos (Mixer * self,
+                          int pos);
 
 /**
  * Adds channel to mixer and initializes track.
  */
 void
-mixer_add_channel (Channel * channel);
+mixer_add_channel (Mixer *   mixer,
+                   Channel * channel);
 
 /**
  * Removes the given channel.
  */
 void
-mixer_remove_channel (Channel * channel);
+mixer_remove_channel (Mixer *   mixer,
+                      Channel * channel);
 
 #endif

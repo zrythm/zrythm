@@ -39,6 +39,7 @@ typedef struct AudioEngine AudioEngine;
 typedef struct PluginManager PluginManager;
 typedef struct Project Project;
 typedef struct Settings Settings;
+typedef struct Tracklist Tracklist;
 typedef struct _MainWindowWidget MainWindowWidget;
 
 struct _ZrythmApp
@@ -64,11 +65,9 @@ struct _ZrythmApp
    */
   Settings *             settings;
 
-  /**
-   * The project global variable, containing all the information that
-   * should be available to all files.
-   */
   Project * project;
+
+  Tracklist *         tracklist;
 
   SnapGrid          snap_grid_timeline; ///< snap/grid info for timeline
   SnapGrid          snap_grid_midi; ///< snap/grid info for midi editor
