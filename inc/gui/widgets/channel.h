@@ -40,7 +40,7 @@ typedef struct KnobWidget KnobWidget;
 typedef struct FaderWidget FaderWidget;
 typedef struct ChannelMeterWidget ChannelMeterWidget;
 typedef struct Channel Channel;
-typedef struct ChannelSlotWidget ChannelSlotWidget;
+typedef struct _ChannelSlotWidget ChannelSlotWidget;
 typedef struct PanWidget PanWidget;
 
 typedef struct _ChannelWidget

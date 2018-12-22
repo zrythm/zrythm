@@ -187,11 +187,12 @@ on_drag_data_get (GtkWidget        *widget,
  * Creates a new ChannelSlot widget and binds it to the given value.
  */
 ChannelSlotWidget *
-channel_slot_widget_new (int slot_index, Channel * channel)
+channel_slot_widget_new (int slot_index,
+                         ChannelWidget * cw)
 {
   ChannelSlotWidget * self = g_object_new (CHANNEL_SLOT_WIDGET_TYPE, NULL);
   self->slot_index = slot_index;
-  self->channel = channel;
+  self->channel = cw->channel;
 
   gtk_widget_set_size_request (GTK_WIDGET (self), -1, 24);
 
@@ -206,12 +207,12 @@ channel_slot_widget_new (int slot_index, Channel * channel)
                     G_CALLBACK(on_drag_data_received), NULL);
   g_signal_connect (G_OBJECT(self), "button_press_event",
                     G_CALLBACK (button_press_cb),  self);
-  g_signal_connect (GTK_WIDGET (channel->widget->slot_boxes[slot_index]),
+  g_signal_connect (GTK_WIDGET (cw->slot_boxes[slot_index]),
                     "drag-data-get",
                     G_CALLBACK (on_drag_data_get),
                     self);
 
-  gtk_drag_source_set (GTK_WIDGET (channel->widget->slot_boxes[slot_index]),
+  gtk_drag_source_set (GTK_WIDGET (cw->slot_boxes[slot_index]),
                        GDK_MODIFIER_MASK,
                        ZRYTHM->entries,
                        ZRYTHM->num_entries,

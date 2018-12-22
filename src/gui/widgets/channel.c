@@ -164,7 +164,7 @@ setup_slots (ChannelWidget * self)
       self->slot_boxes[i] =
         GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
 
-      self->slots[i] = channel_slot_widget_new (i, channel);
+      self->slots[i] = channel_slot_widget_new (i, self);
       /* FIXME set to channel widget width */
       /*gtk_widget_set_size_request (GTK_WIDGET (self->slot_boxes[i]),*/
                                    /*20, 20);*/

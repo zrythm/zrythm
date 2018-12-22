@@ -27,32 +27,29 @@
 
 #include <gtk/gtk.h>
 
-#define CHANNEL_SLOT_WIDGET_TYPE                  (channel_slot_widget_get_type ())
-#define CHANNEL_SLOT_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), CHANNEL_SLOT_WIDGET_TYPE, ChannelSlotWidget))
-#define CHANNEL_SLOT_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), CHANNEL_SLOT_WIDGET, ChannelSlotWidgetClass))
-#define IS_CHANNEL_SLOT_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), CHANNEL_SLOT_WIDGET_TYPE))
-#define IS_CHANNEL_SLOT_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), CHANNEL_SLOT_WIDGET_TYPE))
-#define CHANNEL_SLOT_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), CHANNEL_SLOT_WIDGET_TYPE, ChannelSlotWidgetClass))
+#define CHANNEL_SLOT_WIDGET_TYPE \
+  (channel_slot_widget_get_type ())
+G_DECLARE_FINAL_TYPE (ChannelSlotWidget,
+                      channel_slot_widget,
+                      CHANNEL_SLOT,
+                      WIDGET,
+                      GtkDrawingArea)
 
 typedef struct Plugin Plugin;
 typedef struct Channel Channel;
 
-typedef struct ChannelSlotWidget
+typedef struct _ChannelSlotWidget
 {
   GtkDrawingArea         parent_instance;
   Channel                * channel; ///< the channel this belongs to
   int                    slot_index; ///< the channel slot index
 } ChannelSlotWidget;
 
-typedef struct ChannelSlotWidgetClass
-{
-  GtkDrawingAreaClass    parent_class;
-} ChannelSlotWidgetClass;
-
 /**
  * Creates a new ChannelSlot widget and binds it to the given value.
  */
 ChannelSlotWidget *
-channel_slot_widget_new (int slot_index, Channel * channel);
+channel_slot_widget_new (int slot_index,
+                         ChannelWidget * cw);
 
 #endif

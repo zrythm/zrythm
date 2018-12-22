@@ -683,7 +683,6 @@ channel_add_plugin (Channel * channel,    ///< the channel
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (channel->track);
   automation_tracklist_update (automation_tracklist);
-  track_widget_refresh (channel->track->widget);
   connections_widget_refresh (MW_CONNECTIONS);
 }
 

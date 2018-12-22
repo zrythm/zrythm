@@ -32,6 +32,11 @@
 
 G_DEFINE_TYPE (BrowserWidget, browser_widget, GTK_TYPE_PANED)
 
+/**
+ * Visible function for plugin tree model.
+ *
+ * Used for filtering based on selected category.
+ */
 static gboolean
 visible_func (GtkTreeModel *model,
               GtkTreeIter  *iter,
@@ -49,7 +54,7 @@ visible_func (GtkTreeModel *model,
       visible = TRUE;
     }
   else if (descr->category &&
-      strcmp (descr->category, MW_BROWSER->selected_category) == 0)
+      strcmp (descr->category, self->selected_category) == 0)
     {
       visible = TRUE;
     }
@@ -58,11 +63,12 @@ visible_func (GtkTreeModel *model,
 }
 
 static int
-update_plugin_info_label (gpointer user_data)
+update_plugin_info_label (BrowserWidget * self,
+                          gpointer user_data)
 {
   char * label = (char *) user_data;
 
-  gtk_label_set_text (MW_BROWSER->plugin_info, label);
+  gtk_label_set_text (self->plugin_info, label);
 
   return G_SOURCE_REMOVE;
 }
@@ -71,7 +77,9 @@ static void
 on_selection_changed (GtkTreeSelection * ts,
                       gpointer         user_data)
 {
-  GtkTreeModel * model = GTK_TREE_MODEL (user_data);
+  BrowserWidget * self = BROWSER_WIDGET (user_data);
+  GtkTreeView * tv = gtk_tree_selection_get_tree_view (ts);
+  GtkTreeModel * model = gtk_tree_view_get_model (tv);
   GList * selected_rows = gtk_tree_selection_get_selected_rows (ts,
                                                                 NULL);
   if (selected_rows)
@@ -87,34 +95,35 @@ on_selection_changed (GtkTreeSelection * ts,
                                tp);
       GValue value = G_VALUE_INIT;
 
-      if (model == MW_BROWSER->category_tree_model)
+      if (model == self->category_tree_model)
         {
           gtk_tree_model_get_value (model,
                                     &iter,
                                     0,
                                     &value);
-          MW_BROWSER->selected_category = g_value_get_string (&value);
-          gtk_tree_model_filter_refilter (MW_BROWSER->plugins_tree_model);
+          self->selected_category = g_value_get_string (&value);
+          gtk_tree_model_filter_refilter (self->plugins_tree_model);
         }
-      else if (model == GTK_TREE_MODEL (MW_BROWSER->plugins_tree_model))
+      else if (model == GTK_TREE_MODEL (self->plugins_tree_model))
         {
           gtk_tree_model_get_value (model,
                                     &iter,
                                     1,
                                     &value);
           Plugin_Descriptor * descr = g_value_get_pointer (&value);
-          char * label = g_strdup_printf ("%s\n%s, %d\nAudio: %d, %d\nMidi: %d, %d\nControls: %d, %d",
-                                          descr->author,
-                                          descr->category,
-                                          descr->protocol,
-                                          descr->num_audio_ins,
-                                          descr->num_audio_outs,
-                                          descr->num_midi_ins,
-                                          descr->num_midi_outs,
-                                          descr->num_ctrl_ins,
-                                          descr->num_ctrl_outs);
-          g_main_context_invoke (NULL, update_plugin_info_label,
-                                 label);
+          char * label = g_strdup_printf (
+            "%s\n%s, %d\nAudio: %d, %d\nMidi: %d, %d\nControls: %d, %d",
+            descr->author,
+            descr->category,
+            descr->protocol,
+            descr->num_audio_ins,
+            descr->num_audio_outs,
+            descr->num_midi_ins,
+            descr->num_midi_outs,
+            descr->num_ctrl_ins,
+            descr->num_ctrl_outs);
+          update_plugin_info_label (self,
+                                    label);
         }
     }
 }
@@ -268,7 +277,8 @@ expander_callback (GObject    *object,
 }
 
 static GtkWidget *
-tree_view_create (GtkTreeModel * model,
+tree_view_create (BrowserWidget * self,
+                  GtkTreeModel * model,
                   int          allow_multi,
                   int          dnd)
 {
@@ -315,7 +325,7 @@ tree_view_create (GtkTreeModel * model,
   g_signal_connect (G_OBJECT (gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view))),
                     "changed",
                     G_CALLBACK (on_selection_changed),
-                    model);
+                    self);
 
   return tree_view;
 }
@@ -340,11 +350,13 @@ add_scroll_window (GtkTreeView * tree_view)
  * TODO FIXME
  */
 static GtkScrolledWindow *
-create_tree_view_add_to_expander (GtkTreeModel * model,
+create_tree_view_add_to_expander (BrowserWidget * self,
+                                  GtkTreeModel * model,
                   GtkExpander  * expander)
 {
   GtkWidget * scrolled_window = add_scroll_window
-                  (GTK_TREE_VIEW (tree_view_create (model,
+                  (GTK_TREE_VIEW (tree_view_create (self,
+                                                    model,
                                                     1,0)));
 
   /* add scroll window to expander */
@@ -377,14 +389,20 @@ browser_widget_new ()
                           divider_pos);
 
   /* create each tree */
-  create_tree_view_add_to_expander (create_model_for_types (),
-                    GTK_EXPANDER (self->collections_exp));
-  create_tree_view_add_to_expander (create_model_for_types (),
-                    GTK_EXPANDER (self->types_exp));
+  create_tree_view_add_to_expander (
+    self,
+    create_model_for_types (),
+    GTK_EXPANDER (self->collections_exp));
+  create_tree_view_add_to_expander (
+    self,
+    create_model_for_types (),
+    GTK_EXPANDER (self->types_exp));
   self->category_tree_model = create_model_for_categories ();
   GtkScrolledWindow * scrolled_window =
-  create_tree_view_add_to_expander (self->category_tree_model,
-                      GTK_EXPANDER (self->cat_exp));
+  create_tree_view_add_to_expander (
+    self,
+    self->category_tree_model,
+    GTK_EXPANDER (self->cat_exp));
 
   /* expand category by default */
   gtk_expander_set_expanded (GTK_EXPANDER (self->cat_exp),
@@ -394,7 +412,9 @@ browser_widget_new ()
 
   /* populate plugins */
   self->plugins_tree_model = GTK_TREE_MODEL_FILTER (create_model_for_plugins (self));
-  self->plugins_tree_view = GTK_TREE_VIEW (tree_view_create (
+  self->plugins_tree_view =
+    GTK_TREE_VIEW (tree_view_create (
+      self,
       GTK_TREE_MODEL (
         self->plugins_tree_model),
       0,

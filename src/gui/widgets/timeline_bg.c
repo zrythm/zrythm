@@ -114,28 +114,17 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   }
 
   /* handle horizontal drawing for tracks */
-  /*int y_offset = 0;*/
+  GtkWidget * tw_widget;
+  gint wx, wy;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       Track * track = TRACKLIST->tracks[i];
       if (!track->visible)
         continue;
 
+      /* draw line below widget */
       TrackWidget * tw = track->widget;
-
-      GtkWidget * tw_widget;
-      if (i == TRACKLIST->num_tracks - 1)
-        {
-          /* draw last line */
-          tw_widget = GTK_WIDGET (MW_TRACKLIST->ddbox);
-        }
-      else
-        {
-          /* draw line on top of widget */
-          tw_widget = GTK_WIDGET (tw);
-        }
-
-      gint wx, wy;
+      tw_widget = GTK_WIDGET (tw);
       gtk_widget_translate_coordinates(
                 tw_widget,
                 GTK_WIDGET (MW_TRACKLIST),
@@ -143,7 +132,10 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
                 0,
                 &wx,
                 &wy);
-      draw_horizontal_line (cr, wy - 2, 1.0);
+      int line_y =
+        (wy + gtk_widget_get_allocated_height (tw_widget)) - 2;
+      draw_horizontal_line (cr,
+                            (wy + gtk_widget_get_allocated_height (GTK_WIDGET (tw_widget))) - 2, 1.0);
     }
 
   /* draw automation related stuff */

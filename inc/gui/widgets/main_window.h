@@ -49,14 +49,14 @@ typedef struct _MainWindowWidget
   GtkBox *                 main_box;
   GtkBox *                 header_bar_box;
   HeaderBarWidget *        header_bar;
-  GtkToolbar               * top_toolbar;
+  GtkToolbar *             top_toolbar;
   /* FIXME split top toolbar to separate widget */
-  SnapGridWidget           * snap_grid_timeline;
-  GtkBox                   * center_box;
+  SnapGridWidget *         snap_grid_timeline;
+  GtkBox *                 center_box;
   CenterDockWidget *       center_dock;
-  GtkBox                   * bot_bar;
-  GtkToolbar               * bot_bar_left;
-  GtkBox                   * digital_meters;
+  GtkBox *                 bot_bar;
+  GtkToolbar *             bot_bar_left;
+  GtkBox *                 digital_meters;
   DigitalMeterWidget       * digital_bpm;
   DigitalMeterWidget       * digital_transport;
   GtkBox                   * transport;

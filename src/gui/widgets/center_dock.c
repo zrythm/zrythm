@@ -249,6 +249,10 @@ center_dock_widget_class_init (CenterDockWidgetClass * _klass)
     klass,
     CenterDockWidget,
     bot_dock_edge);
+  gtk_widget_class_bind_template_child (
+    klass,
+    CenterDockWidget,
+    right_dock_edge);
   gtk_widget_class_bind_template_callback (
     klass,
     on_toggle_left_dock_clicked);

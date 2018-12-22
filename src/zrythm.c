@@ -259,6 +259,10 @@ static void on_init_main_window (GAction  *action,
   gtk_widget_destroy (GTK_WIDGET (splash));
 
   ZrythmApp * app = ZRYTHM_APP (data);
+  app->entries[0].target = "PLUGIN_DESCR";
+  app->entries[0].flags = GTK_TARGET_SAME_APP;
+  app->entries[0].info = 0;
+  app->num_entries = 1;
   app->main_window = main_window_widget_new (app);
 
   g_action_group_activate_action (
@@ -359,10 +363,6 @@ zrythm_app_activate (GApplication * _app)
   /*PROJECT->snap_grid_midi.snap_to_grid = 1;*/
   /*PROJECT->snap_grid_midi.snap_to_edges = 1;*/
   /*PROJECT->snap_grid_midi.type = SNAP_GRID_MIDI;*/
-  /*widget_manager->entries[0].target = "PLUGIN_DESCR";*/
-  /*widget_manager->entries[0].flags = GTK_TARGET_SAME_APP;*/
-  /*widget_manager->entries[0].info = 0;*/
-  /*widget_manager->num_entries = 1;*/
 
   /*PROJECT = calloc (1, sizeof (Project));*/
 
