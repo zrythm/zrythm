@@ -31,6 +31,12 @@
 #define IS_AUTOMATION_CURVE_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), AUTOMATION_CURVE_WIDGET_TYPE))
 #define AUTOMATION_CURVE_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), AUTOMATION_CURVE_WIDGET_TYPE, AutomationCurveWidgetClass))
 
+/*
+ * extra space on top and bottom to make room for width 2
+ * lines when they are close to the top & bottom */
+#define AC_Y_PADDING 2.0
+#define AC_Y_HALF_PADDING (AC_Y_PADDING / 2.0)
+
 typedef enum ACW_CursorState
 {
   ACW_STATE_NONE,

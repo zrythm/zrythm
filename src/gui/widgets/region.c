@@ -29,7 +29,9 @@
 #include "gui/widgets/ruler.h"
 #include "utils/ui.h"
 
-G_DEFINE_TYPE_WITH_PRIVATE (RegionWidget, region_widget, GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE_WITH_PRIVATE (RegionWidget,
+                            region_widget,
+                            GTK_TYPE_DRAWING_AREA)
 
 static void
 draw_text (cairo_t *cr, char * name)
@@ -137,6 +139,10 @@ void
 region_widget_setup (RegionWidget * self,
                      Region *       region)
 {
+  REGION_WIDGET_GET_PRIVATE (self);
+
+  rw_prv->region = region;
+
   gtk_widget_add_events (GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
 
   /* connect signals */

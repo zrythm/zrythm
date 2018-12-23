@@ -148,12 +148,12 @@ timeline_arranger_widget_set_allocation (
         &prev_ap->pos);
       int prev_y = automation_point_get_y_in_px (prev_ap);
       int next_y = automation_point_get_y_in_px (next_ap);
-      allocation->y = wy + (prev_y > next_y ? next_y : prev_y);
+      allocation->y = (wy + (prev_y > next_y ? next_y : prev_y) - AC_Y_HALF_PADDING);
       allocation->width =
         arranger_widget_pos_to_px (
           ARRANGER_WIDGET (self),
           &next_ap->pos) - allocation->x;
-      allocation->height = prev_y > next_y ? prev_y - next_y : next_y - prev_y;
+      allocation->height = (prev_y > next_y ? prev_y - next_y : next_y - prev_y) + AC_Y_PADDING;
     }
 }
 

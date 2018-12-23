@@ -69,11 +69,11 @@ automation_curve_free (AutomationCurve * ap);
  *
  * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
  */
-int
+float
 automation_curve_get_y_px (AutomationCurve * start_ap, ///< start point (0, 0)
-                           int               x, ///< x coordinate in px
-                           int               width, ///< total width in px
-                           int               height); ///< total height in px
+                           float               x, ///< x coordinate in px
+                           float               width, ///< total width in px
+                           float               height); ///< total height in px
 
 void
 automation_curve_set_curviness (AutomationCurve * ac, float curviness);

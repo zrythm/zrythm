@@ -140,12 +140,14 @@ get_y_normalized (double x, double curviness, int start_at_1)
  * The function to return a point on the curve.
  *
  * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
+ *
+ * FIXME should be on widget.
  */
-int
+float
 automation_curve_get_y_px (AutomationCurve * ac, ///< start point (0, 0)
-                           int               x, ///< x coordinate in px
-                           int               width, ///< total width in px
-                           int               height) ///< total height in px
+                           float               x, ///< x coordinate in px
+                           float               width, ///< total width in px
+                           float               height) ///< total height in px
 {
   /* find next curve ap & next value ap */
   AutomationPoint * prev_ap = automation_track_get_ap_before_curve (ac->at,
@@ -155,7 +157,7 @@ automation_curve_get_y_px (AutomationCurve * ac, ///< start point (0, 0)
 
   double dx = (double) x / width; /* normalized x */
   double dy;
-  int ret;
+  float ret;
   if (automation_point_get_y_in_px (next_ap) > /* if next point is lower */
       automation_point_get_y_in_px (prev_ap))
     {
@@ -168,7 +170,7 @@ automation_curve_get_y_px (AutomationCurve * ac, ///< start point (0, 0)
     {
       dy = get_y_normalized (dx, ac->curviness, 0);
       ret = dy * height;
-      return (height - ret) - height;
+      return - ret;
     }
 }
 

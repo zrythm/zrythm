@@ -43,7 +43,7 @@
 
 G_DEFINE_TYPE (AutomationTrackWidget,
                automation_track_widget,
-               GTK_TYPE_PANED)
+               GTK_TYPE_GRID)
 
 #define GET_TRACK(self) Track * track = self->at->track
 

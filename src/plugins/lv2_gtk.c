@@ -1071,54 +1071,55 @@ build_control_widget(Lv2Plugin* plugin, GtkWidget* window)
 static void
 build_menu(Lv2Plugin* plugin, GtkWidget* window, GtkWidget* vbox)
 {
-	GtkWidget* menu_bar  = gtk_menu_bar_new();
-	GtkWidget* file      = gtk_menu_item_new_with_mnemonic("_File");
-	GtkWidget* file_menu = gtk_menu_new();
+  GtkWidget* menu_bar  = gtk_menu_bar_new();
+  GtkWidget* file      = gtk_menu_item_new_with_mnemonic("_File");
+  GtkWidget* file_menu = gtk_menu_new();
 
-	GtkAccelGroup* ag = gtk_accel_group_new();
-	gtk_window_add_accel_group(GTK_WINDOW(window), ag);
+  GtkAccelGroup* ag = gtk_accel_group_new();
+  gtk_window_add_accel_group(GTK_WINDOW(window), ag);
 
-	GtkWidget* save = gtk_image_menu_item_new_from_stock(GTK_STOCK_SAVE, ag);
-	GtkWidget* quit = gtk_image_menu_item_new_from_stock(GTK_STOCK_QUIT, ag);
+  GtkWidget* save =
+    gtk_image_menu_item_new_from_stock(GTK_STOCK_SAVE, ag);
+  GtkWidget* quit = gtk_image_menu_item_new_from_stock(GTK_STOCK_QUIT, ag);
 
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(file), file_menu);
-	gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), save);
-	gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), quit);
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), file);
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM(file), file_menu);
+  gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), save);
+  gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), quit);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), file);
 
-	GtkWidget* pset_item   = gtk_menu_item_new_with_mnemonic("_Presets");
-	GtkWidget* pset_menu   = gtk_menu_new();
-	GtkWidget* save_preset = gtk_menu_item_new_with_mnemonic(
-		"_Save Preset...");
-	GtkWidget* delete_preset = gtk_menu_item_new_with_mnemonic(
-		"_Delete Current Preset...");
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(pset_item), pset_menu);
-	gtk_menu_shell_append(GTK_MENU_SHELL(pset_menu), save_preset);
-	gtk_menu_shell_append(GTK_MENU_SHELL(pset_menu), delete_preset);
-	gtk_menu_shell_append(GTK_MENU_SHELL(pset_menu),
-	                      gtk_separator_menu_item_new());
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), pset_item);
+  GtkWidget* pset_item   = gtk_menu_item_new_with_mnemonic("_Presets");
+  GtkWidget* pset_menu   = gtk_menu_new();
+  GtkWidget* save_preset = gtk_menu_item_new_with_mnemonic(
+          "_Save Preset...");
+  GtkWidget* delete_preset = gtk_menu_item_new_with_mnemonic(
+          "_Delete Current Preset...");
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM(pset_item), pset_menu);
+  gtk_menu_shell_append(GTK_MENU_SHELL(pset_menu), save_preset);
+  gtk_menu_shell_append(GTK_MENU_SHELL(pset_menu), delete_preset);
+  gtk_menu_shell_append(GTK_MENU_SHELL(pset_menu),
+                        gtk_separator_menu_item_new());
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), pset_item);
 
-	PresetMenu menu = {
-		NULL, NULL, GTK_MENU(pset_menu),
-		g_sequence_new((GDestroyNotify)pset_menu_free)
-	};
-	lv2_load_presets(plugin, add_preset_to_menu, &menu);
-	finish_menu(&menu);
+  PresetMenu menu = {
+          NULL, NULL, GTK_MENU(pset_menu),
+          g_sequence_new((GDestroyNotify)pset_menu_free)
+  };
+  lv2_load_presets(plugin, add_preset_to_menu, &menu);
+  finish_menu(&menu);
 
-	g_signal_connect(G_OBJECT(quit), "activate",
-	                 G_CALLBACK(on_quit_activate), window);
+  g_signal_connect(G_OBJECT(quit), "activate",
+                   G_CALLBACK(on_quit_activate), window);
 
-	g_signal_connect(G_OBJECT(save), "activate",
-	                 G_CALLBACK(on_save_activate), plugin);
+  g_signal_connect(G_OBJECT(save), "activate",
+                   G_CALLBACK(on_save_activate), plugin);
 
-	g_signal_connect(G_OBJECT(save_preset), "activate",
-	                 G_CALLBACK(on_save_preset_activate), plugin);
+  g_signal_connect(G_OBJECT(save_preset), "activate",
+                   G_CALLBACK(on_save_preset_activate), plugin);
 
-	g_signal_connect(G_OBJECT(delete_preset), "activate",
-	                 G_CALLBACK(on_delete_preset_activate), plugin);
+  g_signal_connect(G_OBJECT(delete_preset), "activate",
+                   G_CALLBACK(on_delete_preset_activate), plugin);
 
-	gtk_box_pack_start(GTK_BOX(vbox), menu_bar, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(vbox), menu_bar, FALSE, FALSE, 0);
 }
 
 void

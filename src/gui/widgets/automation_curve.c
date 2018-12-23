@@ -152,29 +152,33 @@ draw_cb (AutomationCurveWidget * self, cairo_t *cr, gpointer data)
             /*&prev_wy);*/
   /*prev_wx = arranger_get_x_pos_in_px (&prev_ap->pos);*/
   /*int ww = wx - prev_wx;*/
-  int automation_point_y;
+  float automation_point_y;
   int prev_y_px = automation_point_get_y_in_px (prev_ap);
   int next_y_px = automation_point_get_y_in_px (next_ap);
   int prev_higher = prev_y_px < next_y_px;
-  int new_x = 0;
-  int new_y = prev_higher ? 0 : height;
+  float new_x = 0;
+  float new_y = prev_higher ? AC_Y_HALF_PADDING : height - AC_Y_HALF_PADDING;
+  cairo_move_to (cr,
+                 new_x,
+                 new_y);
   /*int height = prev_y_px > curr_y_px ?*/
     /*prev_y_px - curr_y_px :*/
     /*curr_y_px - prev_y_px;*/
-  cairo_set_line_width (cr, 1);
+  /*cairo_set_line_width (cr, 1);*/
   /*for (int l = 0; l < ww; l++)*/
-  for (int l = 0; l <= width; l++)
+  for (float l = 0; l <= width; l = l + 0.5)
     {
-      cairo_move_to (cr,
-                     new_x,
-                     new_y);
       automation_point_y =
         automation_curve_get_y_px (self->ac,
                                    l,
                                    width,
-                                   height);
+                                   height - AC_Y_PADDING);
       new_x = l;
       new_y = prev_higher ? automation_point_y : height + automation_point_y;
+      new_y -= AC_Y_HALF_PADDING; /* this is because height is 1 smaller than the actual height, so start drawing from 0.5 to actual height - 0.5 */
+      /*g_message ("new y %f , hieght %d",*/
+                 /*new_y,*/
+                 /*height);*/
       cairo_line_to (cr,
                      new_x,
                      new_y);
