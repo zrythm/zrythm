@@ -34,6 +34,18 @@ resources_get_icon (const char * filename) ///< the path after .../icons/
   return icon;
 }
 
+void
+resources_set_image_icon (GtkImage * img,
+                          const char * filename)
+{
+  char * path = g_strdup_printf ("%s%s%s",
+                   RESOURCE_PATH,
+                   ICON_PATH,
+                   filename);
+  gtk_image_set_from_resource (img, path);
+  g_free (path);
+}
+
 /**
  * Sets class template from resource.
  *

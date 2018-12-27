@@ -45,25 +45,7 @@
 
 G_DEFINE_TYPE (MasterTrackWidget,
                master_track_widget,
-               GTK_TYPE_PANED)
-
-#define GET_TRACK(self) Track * track = self->parent->track
-
-static void
-on_show_automation (GtkWidget * widget, void * data)
-{
-  MasterTrackWidget * self =
-    MASTER_TRACK_WIDGET (data);
-
-  GET_TRACK (self);
-
-  /* toggle visibility flag */
-  track->bot_paned_visible =
-    track->bot_paned_visible ? 0 : 1;
-
-  /* FIXME rename to refresh */
-  tracklist_widget_show (MW_TRACKLIST);
-}
+               TRACK_WIDGET_TYPE)
 
 /**
  * Creates a new track widget using the given track.
@@ -73,22 +55,33 @@ on_show_automation (GtkWidget * widget, void * data)
  * paned.
  */
 MasterTrackWidget *
-master_track_widget_new (TrackWidget *     parent)
+master_track_widget_new (Track * track)
 {
   MasterTrackWidget * self = g_object_new (
                             MASTER_TRACK_WIDGET_TYPE,
                             NULL);
-  self->parent = parent;
+  TRACK_WIDGET_GET_PRIVATE (self);
 
-  GET_TRACK (self);
+  /* setup color */
+  Channel * chan = track_get_channel (track);
+  color_area_widget_set_color (tw_prv->color,
+                               &chan->color);
+
+  /* setup automation tracklist */
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (track);
   automation_tracklist->widget =
     automation_tracklist_widget_new (automation_tracklist);
-  gtk_paned_pack2 (GTK_PANED (self),
+  gtk_paned_pack2 (GTK_PANED (tw_prv->paned),
                    GTK_WIDGET (automation_tracklist->widget),
                    Z_GTK_RESIZE,
                    Z_GTK_NO_SHRINK);
+
+  g_signal_connect (
+    self->show_automation,
+    "clicked",
+    G_CALLBACK (track_widget_on_show_automation),
+    self);
 
   gtk_widget_set_visible (GTK_WIDGET (self),
                           1);
@@ -99,13 +92,12 @@ master_track_widget_new (TrackWidget *     parent)
 void
 master_track_widget_refresh (MasterTrackWidget * self)
 {
-  GET_TRACK (self);
-  Channel * channel = track_get_channel (track);
-  gtk_label_set_text (self->track_name,
-                      channel->name);
+  TRACK_WIDGET_GET_PRIVATE (self);
+  gtk_label_set_text (tw_prv->name,
+                      ((ChannelTrack *)tw_prv->track)->channel->name);
 
   AutomationTracklist * automation_tracklist =
-    track_get_automation_tracklist (track);
+    track_get_automation_tracklist (tw_prv->track);
   automation_tracklist_widget_refresh (
     automation_tracklist->widget);
 }
@@ -113,46 +105,48 @@ master_track_widget_refresh (MasterTrackWidget * self)
 static void
 master_track_widget_init (MasterTrackWidget * self)
 {
-  gtk_widget_init_template (GTK_WIDGET (self));
+  TRACK_WIDGET_GET_PRIVATE (self);
+
+  /* create buttons */
+  self->record =
+    z_gtk_button_new_with_resource ("record.svg");
+  self->solo =
+    z_gtk_button_new_with_resource ("solo.svg");
+  self->mute =
+    z_gtk_button_new_with_resource ("mute.svg");
+  self->show_automation =
+    z_gtk_button_new_with_icon ("gtk-justify-fill");
+
+  /*set buttons to upper controls*/
+  gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),
+                      GTK_WIDGET (self->record),
+                      Z_GTK_NO_EXPAND,
+                      Z_GTK_NO_FILL,
+                      0);
+  gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),
+                      GTK_WIDGET (self->solo),
+                      Z_GTK_NO_EXPAND,
+                      Z_GTK_NO_FILL,
+                      0);
+  gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),
+                      GTK_WIDGET (self->mute),
+                      Z_GTK_NO_EXPAND,
+                      Z_GTK_NO_FILL,
+                      0);
+
+  /* pack buttons to bot controls */
+  gtk_box_pack_start (GTK_BOX (tw_prv->bot_controls),
+                      GTK_WIDGET (self->show_automation),
+                      Z_GTK_NO_EXPAND,
+                      Z_GTK_NO_FILL,
+                      0);
+
+  /* set icon */
+  resources_set_image_icon (tw_prv->icon,
+                            "bus.svg");
 }
 
 static void
 master_track_widget_class_init (MasterTrackWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass,
-                                "master_track.ui");
-
-  gtk_widget_class_bind_template_child (
-    klass,
-    MasterTrackWidget,
-    track_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MasterTrackWidget,
-    track_grid);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MasterTrackWidget,
-    track_name);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MasterTrackWidget,
-    record);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MasterTrackWidget,
-    solo);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MasterTrackWidget,
-    mute);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MasterTrackWidget,
-    show_automation);
-  gtk_widget_class_bind_template_callback (
-    klass,
-    on_show_automation);
 }
-

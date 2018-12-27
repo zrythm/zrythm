@@ -32,3 +32,44 @@ z_gtk_container_remove_all_children (GtkContainer * container)
   g_list_free(children);
 
 }
+
+void
+z_gtk_button_set_icon_name (GtkButton * btn,
+                            const char * name)
+{
+  GtkWidget * img =
+    gtk_image_new_from_icon_name (
+      name,
+      GTK_ICON_SIZE_BUTTON);
+  gtk_widget_set_visible (img, 1);
+  gtk_container_add (GTK_CONTAINER (btn),
+                     img);
+}
+
+/**
+ * Creates a button with the given icon name.
+ */
+GtkButton *
+z_gtk_button_new_with_icon (const char * name)
+{
+  GtkButton * btn = GTK_BUTTON (gtk_button_new ());
+  z_gtk_button_set_icon_name (btn,
+                              name);
+  gtk_widget_set_visible (GTK_WIDGET (btn),
+                          1);
+  return btn;
+}
+
+/**
+ * Creates a button with the given resource name as icon.
+ */
+GtkButton *
+z_gtk_button_new_with_resource (const char * name)
+{
+  GtkButton * btn = GTK_BUTTON (gtk_button_new ());
+  resources_add_icon_to_button (btn,
+                                name);
+  gtk_widget_set_visible (GTK_WIDGET (btn),
+                          1);
+  return btn;
+}

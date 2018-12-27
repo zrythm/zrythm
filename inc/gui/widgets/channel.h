@@ -35,7 +35,7 @@ G_DECLARE_FINAL_TYPE (ChannelWidget,
                       GtkGrid)
 #define IS_CHANNEL_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), CHANNEL_WIDGET_TYPE))
 
-typedef struct ColorAreaWidget ColorAreaWidget;
+typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct KnobWidget KnobWidget;
 typedef struct FaderWidget FaderWidget;
 typedef struct ChannelMeterWidget ChannelMeterWidget;

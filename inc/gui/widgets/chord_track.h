@@ -23,6 +23,7 @@
 #define __GUI_WIDGETS_CHORD_TRACK_H__
 
 #include "audio/channel.h"
+#include "gui/widgets/track.h"
 
 #include <gtk/gtk.h>
 
@@ -31,35 +32,23 @@ G_DECLARE_FINAL_TYPE (ChordTrackWidget,
                       chord_track_widget,
                       CHORD_TRACK,
                       WIDGET,
-                      GtkPaned)
+                      TrackWidget)
 
 typedef struct ChordTrack ChordTrack;
-typedef struct ChordTracklistWidget ChordTracklistWidget;
 
 typedef struct _ChordTrackWidget
 {
-  GtkPaned                      parent_instance;
-  TrackWidget *                 parent;
-  GtkBox *                      track_box;
-  GtkGrid *                     track_grid;
-  GtkLabel *                    track_name;
+  TrackWidget                   parent_instance;
   GtkButton *                   record;
   GtkButton *                   solo;
   GtkButton *                   mute;
-  GtkImage *                    icon;
-
-  /**
-   * For showing/hiding additional sub-tracks relating to
-   * chords.
-   */
-  ChordTracklistWidget *        chord_tracklist_widget;
 } ChordTrackWidget;
 
 /**
  * Creates a new chord_track widget from the given chord_track.
  */
 ChordTrackWidget *
-chord_track_widget_new (TrackWidget * parent);
+chord_track_widget_new (Track * track);
 
 /**
  * Updates changes in the backend to the ui
@@ -68,4 +57,3 @@ void
 chord_track_widget_refresh (ChordTrackWidget * self);
 
 #endif
-

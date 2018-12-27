@@ -40,7 +40,7 @@
 
 G_DEFINE_TYPE (ChordTrackWidget,
                chord_track_widget,
-               GTK_TYPE_PANED)
+               TRACK_WIDGET_TYPE)
 
 /**
  * Creates a new track widget using the given track.
@@ -50,24 +50,25 @@ G_DEFINE_TYPE (ChordTrackWidget,
  * paned.
  */
 ChordTrackWidget *
-chord_track_widget_new (TrackWidget * parent)
+chord_track_widget_new (Track * track)
 {
   ChordTrackWidget * self = g_object_new (
                             CHORD_TRACK_WIDGET_TYPE,
                             NULL);
-  self->parent = parent;
+  TRACK_WIDGET_GET_PRIVATE (self);
 
-  gtk_container_add (
-    GTK_CONTAINER (self->record),
-    gtk_image_new_from_icon_name ("gtk-media-record",
-                                  GTK_ICON_SIZE_BUTTON));
-  gtk_widget_set_size_request (GTK_WIDGET (self->record),
-                               16,
-                               16);
+  /* set track name */
+  gtk_label_set_text (tw_prv->name,
+                      "Chord Track");
+
+  /* setup color */
+  GdkRGBA * color = calloc (1, sizeof (GdkRGBA));
+  gdk_rgba_parse (color, "blue");
+  color_area_widget_set_color (tw_prv->color,
+                               color);
 
   gtk_widget_set_visible (GTK_WIDGET (self),
                           1);
-  gtk_widget_show_all (GTK_WIDGET (self));
 
   return self;
 }
@@ -75,46 +76,45 @@ chord_track_widget_new (TrackWidget * parent)
 void
 chord_track_widget_refresh (ChordTrackWidget * self)
 {
-  gtk_label_set_text (self->track_name,
-                      "Chord Track");
 }
 
 static void
 chord_track_widget_init (ChordTrackWidget * self)
 {
-  gtk_widget_init_template (GTK_WIDGET (self));
+  TRACK_WIDGET_GET_PRIVATE (self);
+
+  /* create buttons */
+  self->record =
+    z_gtk_button_new_with_resource ("record.svg");
+  self->solo =
+    z_gtk_button_new_with_resource ("solo.svg");
+  self->mute =
+    z_gtk_button_new_with_resource ("mute.svg");
+
+  /* set buttons to upper controls */
+  gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),
+                      GTK_WIDGET (self->record),
+                      Z_GTK_NO_EXPAND,
+                      Z_GTK_NO_FILL,
+                      0);
+  gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),
+                      GTK_WIDGET (self->solo),
+                      Z_GTK_NO_EXPAND,
+                      Z_GTK_NO_FILL,
+                      0);
+  gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),
+                      GTK_WIDGET (self->mute),
+                      Z_GTK_NO_EXPAND,
+                      Z_GTK_NO_FILL,
+                      0);
+
+  /* set icon */
+  resources_set_image_icon (tw_prv->icon,
+                            "chord.svg");
 }
 
 static void
 chord_track_widget_class_init (
   ChordTrackWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass,
-                                "chord_track.ui");
-
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChordTrackWidget,
-    track_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChordTrackWidget,
-    track_grid);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChordTrackWidget,
-    track_name);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChordTrackWidget,
-    record);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChordTrackWidget,
-    solo);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChordTrackWidget,
-    mute);
 }

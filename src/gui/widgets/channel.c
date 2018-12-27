@@ -81,11 +81,8 @@ phase_invert_button_clicked (ChannelWidget * self,
 static void
 refresh_color (ChannelWidget * self)
 {
-  self->color = color_area_widget_new (
-    &self->channel->color, -1, 10);
-  gtk_grid_attach (GTK_GRID (self),
-                   GTK_WIDGET (self->color),
-                   0, 1, 2, 1);
+  color_area_widget_set_color (self->color,
+                               &self->channel->color);
 }
 
 static void
@@ -276,27 +273,6 @@ channel_widget_new (Channel * channel)
   setup_channel_icon (self);
   channel_widget_refresh (self);
 
-  GtkWidget * image = gtk_image_new_from_resource (
-          "/org/zrythm/plus.svg");
-  /*gtk_button_set_image (self->add_slot, image);*/
-  image = gtk_image_new_from_resource (
-          "/org/zrythm/listen.svg");
-  gtk_button_set_image (self->listen, image);
-  image = gtk_image_new_from_resource (
-          "/org/zrythm/solo.svg");
-  gtk_button_set_image (self->solo, image);
-  image = gtk_image_new_from_resource (
-          "/org/zrythm/mute.svg");
-  gtk_button_set_image (self->mute, image);
-  image = gtk_image_new_from_resource (
-          "/org/zrythm/record.svg");
-  gtk_button_set_image (GTK_BUTTON (self->record), image);
-  image = gtk_image_new_from_resource (
-          "/org/zrythm/phase-invert.svg");
-  gtk_button_set_image (self->phase_invert, image);
-  gtk_image_set_from_resource (self->output_img,
-                               "/org/zrythm/output.svg");
-
   return self;
 }
 
@@ -307,6 +283,10 @@ channel_widget_class_init (ChannelWidgetClass * _klass)
   resources_set_class_template (klass,
                                 "channel.ui");
 
+  gtk_widget_class_bind_template_child (
+    klass,
+    ChannelWidget,
+    color);
   gtk_widget_class_bind_template_child (
     klass,
     ChannelWidget,

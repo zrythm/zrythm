@@ -78,10 +78,11 @@ timeline_arranger_widget_set_allocation (
     {
       RegionWidget * rw = REGION_WIDGET (widget);
       REGION_WIDGET_GET_PRIVATE (rw);
+      Track * track = rw_prv->region->track;
 
       gint wx, wy;
       gtk_widget_translate_coordinates(
-                GTK_WIDGET (rw_prv->region->track->widget->track_box),
+                GTK_WIDGET (track->widget),
                 GTK_WIDGET (self),
                 0,
                 0,
@@ -98,7 +99,7 @@ timeline_arranger_widget_set_allocation (
           allocation->x;
       allocation->height =
         gtk_widget_get_allocated_height (
-          GTK_WIDGET (rw_prv->region->track->widget->track_box));
+          GTK_WIDGET (track->widget));
     }
   else if (IS_AUTOMATION_POINT_WIDGET (widget))
     {
@@ -165,13 +166,13 @@ timeline_arranger_widget_get_track_at_y (double y)
       Track * track = MIXER->channels[i]->track;
 
       GtkAllocation allocation;
-      gtk_widget_get_allocation (GTK_WIDGET (track->widget->track_box),
+      gtk_widget_get_allocation (GTK_WIDGET (track->widget),
                                  &allocation);
 
       gint wx, wy;
       gtk_widget_translate_coordinates(
                 GTK_WIDGET (MW_TIMELINE),
-                GTK_WIDGET (track->widget->track_box),
+                GTK_WIDGET (track->widget),
                 0,
                 0,
                 &wx,
@@ -440,17 +441,7 @@ timeline_arranger_widget_on_drag_begin_region_hit (
   if (prv->n_press == 2)
     {
       Track * track = rw_prv->region->track;
-      Channel * chan;
-      switch (track->type)
-        {
-        case TRACK_TYPE_INSTRUMENT:
-          chan = ((BusTrack *) track)->channel;
-        case TRACK_TYPE_MASTER:
-        case TRACK_TYPE_AUDIO:
-        case TRACK_TYPE_CHORD:
-        case TRACK_TYPE_BUS:
-          break;
-        }
+      Channel * chan = track_get_channel (track);
       midi_arranger_widget_set_channel(
         MIDI_ARRANGER,
         chan);

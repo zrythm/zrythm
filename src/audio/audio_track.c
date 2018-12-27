@@ -34,7 +34,7 @@ audio_track_new (Channel * channel)
   track->type = TRACK_TYPE_AUDIO;
   track_init (track);
 
-  BusTrack * bt = (BusTrack *) self;
+  ChannelTrack * bt = (ChannelTrack *) self;
   bt->channel = channel;
 
   return self;
@@ -44,9 +44,9 @@ audio_track_new (Channel * channel)
 void
 audio_track_setup (AudioTrack * self)
 {
-  BusTrack * bt = (BusTrack *) self;
+  ChannelTrack * bt = (ChannelTrack *) self;
 
-  bus_track_setup (bt);
+  channel_track_setup (bt);
 }
 
 void

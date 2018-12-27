@@ -155,19 +155,9 @@ region_at_position (Track    * track, ///< the track to look in
 char *
 region_generate_filename (Region * region)
 {
-  char * chan_name;
-  if (region->track->type == TRACK_TYPE_AUDIO)
-    {
-      /* TODO */
-
-
-    }
-  else if (region->track->type == TRACK_TYPE_INSTRUMENT)
-    {
-      chan_name = ((BusTrack *) region->track)->channel->name;
-    }
+  Channel * channel = track_get_channel (region->track);
   return g_strdup_printf (REGION_PRINTF_FILENAME,
                           region->id,
-                          chan_name,
+                          channel->name,
                           region->name);
 }

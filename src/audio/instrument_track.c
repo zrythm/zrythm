@@ -47,8 +47,8 @@ instrument_track_new (Channel * channel)
   track->type = TRACK_TYPE_INSTRUMENT;
   track_init ((Track *) self);
 
-  BusTrack * bt = (BusTrack *) self;
-  bt->channel = channel;
+  ChannelTrack * ct = (ChannelTrack *) self;
+  ct->channel = channel;
 
   return self;
 }
@@ -56,9 +56,9 @@ instrument_track_new (Channel * channel)
 void
 instrument_track_setup (InstrumentTrack * self)
 {
-  BusTrack * track = (BusTrack *) self;
+  ChannelTrack * track = (ChannelTrack *) self;
 
-  bus_track_setup (track);
+  channel_track_setup (track);
 }
 
 /**

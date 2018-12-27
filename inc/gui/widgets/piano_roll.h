@@ -43,8 +43,7 @@ typedef struct _MidiRulerWidget MidiRulerWidget;
 typedef struct _PianoRollWidget
 {
   GtkBox                   parent_instance;
-  GtkBox                   * midi_track_color_box;
-  ColorAreaWidget          * midi_track_color;
+  ColorAreaWidget          * color_bar;
   GtkToolbar               * midi_bot_toolbar;
   GtkLabel                 * midi_name_label;
   GtkBox                   * midi_controls_above_notes_box;

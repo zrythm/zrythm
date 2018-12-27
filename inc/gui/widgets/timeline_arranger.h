@@ -44,7 +44,7 @@ typedef struct MidiNote MidiNote;
 typedef struct SnapGrid SnapGrid;
 typedef struct AutomationPoint AutomationPoint;
 typedef struct AutomationPointWidget AutomationPointWidget;
-typedef struct AutomationCurveWidget AutomationCurveWidget;
+typedef struct _AutomationCurveWidget AutomationCurveWidget;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct AutomationCurve AutomationCurve;
 

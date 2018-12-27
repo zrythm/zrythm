@@ -27,12 +27,13 @@
 
 #include <gtk/gtk.h>
 
-#define BUS_TRACK_WIDGET_TYPE (bus_track_widget_get_type ())
+#define BUS_TRACK_WIDGET_TYPE \
+  (bus_track_widget_get_type ())
 G_DECLARE_FINAL_TYPE (BusTrackWidget,
                       bus_track_widget,
                       BUS_TRACK,
                       WIDGET,
-                      GtkPaned)
+                      TrackWidget)
 
 typedef struct _AutomationTracklistWidget AutomationTracklistWidget;
 typedef struct BusTrack BusTrack;
@@ -42,23 +43,18 @@ typedef struct BusTrack BusTrack;
  */
 typedef struct _BusTrackWidget
 {
-  GtkPaned                      parent_instance;
-  TrackWidget *                 parent;
-  GtkBox *                      track_box;
-  GtkGrid *                     track_grid;
-  GtkLabel *                    track_name;
-  GtkButton *                   record;
-  GtkButton *                   solo;
-  GtkButton *                   mute;
-  GtkButton *                   show_automation;
-  GtkImage *                    icon;
+  TrackWidget                parent_instance;
+  GtkButton *                record;
+  GtkButton *                solo;
+  GtkButton *                mute;
+  GtkButton *                show_automation;
 } BusTrackWidget;
 
 /**
  * Creates a new track widget from the given track.
  */
 BusTrackWidget *
-bus_track_widget_new (TrackWidget *     parent);
+bus_track_widget_new (Track * track);
 
 /**
  * Updates changes in the backend to the ui
@@ -67,4 +63,3 @@ void
 bus_track_widget_refresh (BusTrackWidget * self);
 
 #endif
-

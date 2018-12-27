@@ -32,7 +32,7 @@ G_DECLARE_FINAL_TYPE (MasterTrackWidget,
                       master_track_widget,
                       MASTER_TRACK,
                       WIDGET,
-                      GtkPaned)
+                      TrackWidget)
 
 typedef struct _AutomationTracklistWidget AutomationTracklistWidget;
 typedef struct MasterTrack MasterTrack;
@@ -42,11 +42,7 @@ typedef struct MasterTrack MasterTrack;
  */
 typedef struct _MasterTrackWidget
 {
-  GtkPaned                      parent_instance;
-  TrackWidget *                 parent;
-  GtkBox *                      track_box;
-  GtkGrid *                     track_grid;
-  GtkLabel *                    track_name;
+  TrackWidget                   parent_instance;
   GtkButton *                   record;
   GtkButton *                   solo;
   GtkButton *                   mute;
@@ -57,7 +53,7 @@ typedef struct _MasterTrackWidget
  * Creates a new track widget from the given track.
  */
 MasterTrackWidget *
-master_track_widget_new (TrackWidget *     parent);
+master_track_widget_new (Track * track);
 
 /**
  * Updates changes in the backend to the ui
@@ -66,4 +62,3 @@ void
 master_track_widget_refresh (MasterTrackWidget * self);
 
 #endif
-

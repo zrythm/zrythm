@@ -38,7 +38,7 @@ G_DECLARE_FINAL_TYPE (MainWindowWidget,
 
 typedef struct BpmWidget BpmWidget;
 typedef struct DigitalMeterWidget DigitalMeterWidget;
-typedef struct ColorAreaWidget ColorAreaWidget;
+typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct _SnapGridWidget SnapGridWidget;
 typedef struct _HeaderBarWidget HeaderBarWidget;
 typedef struct _CenterDockWidget CenterDockWidget;

@@ -129,10 +129,10 @@ create_automatables_store (Track * track)
 
   store = gtk_tree_store_new (2, G_TYPE_STRING, G_TYPE_POINTER);
 
-  BusTrack * bt = (BusTrack *) track;
-  for (int i = 0; i < bt->channel->num_automatables; i++)
+  ChannelTrack * ct = (ChannelTrack *) track;
+  for (int i = 0; i < ct->channel->num_automatables; i++)
     {
-      Automatable * a = bt->channel->automatables[i];
+      Automatable * a = ct->channel->automatables[i];
       gtk_tree_store_append (store, &iter, NULL);
       gtk_tree_store_set (store, &iter,
                           0, a->label,
@@ -142,7 +142,7 @@ create_automatables_store (Track * track)
 
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      Plugin * plugin = bt->channel->strip[i];
+      Plugin * plugin = ct->channel->strip[i];
 
       if (plugin)
         {

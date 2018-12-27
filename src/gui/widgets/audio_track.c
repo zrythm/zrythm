@@ -44,25 +44,7 @@
 
 G_DEFINE_TYPE (AudioTrackWidget,
                audio_track_widget,
-               GTK_TYPE_PANED)
-
-#define GET_TRACK(self) Track * track = self->parent->track
-
-static void
-on_show_automation (GtkWidget * widget, void * data)
-{
-  AudioTrackWidget * self =
-    AUDIO_TRACK_WIDGET (data);
-
-  GET_TRACK (self);
-
-  /* toggle visibility flag */
-  track->bot_paned_visible =
-    track->bot_paned_visible ? 0 : 1;
-
-  /* FIXME rename to refresh */
-  tracklist_widget_show (MW_TRACKLIST);
-}
+               TRACK_WIDGET_TYPE)
 
 /**
  * Creates a new track widget using the given track.
@@ -72,113 +54,25 @@ on_show_automation (GtkWidget * widget, void * data)
  * paned.
  */
 AudioTrackWidget *
-audio_track_widget_new (TrackWidget *     parent)
+audio_track_widget_new (Track * track)
 {
   AudioTrackWidget * self = g_object_new (
                             AUDIO_TRACK_WIDGET_TYPE,
                             NULL);
-  self->parent = parent;
-
-  GET_TRACK (self);
-  AutomationTracklist * automation_tracklist =
-    track_get_automation_tracklist (track);
-  automation_tracklist->widget =
-    automation_tracklist_widget_new (automation_tracklist);
-  gtk_paned_pack2 (GTK_PANED (self),
-                   GTK_WIDGET (automation_tracklist->widget),
-                   Z_GTK_RESIZE,
-                   Z_GTK_NO_SHRINK);
-
-  gtk_container_add (
-    GTK_CONTAINER (self->solo),
-    gtk_image_new_from_resource (
-     "/org/zrythm/solo.svg"));
-  gtk_container_add (
-    GTK_CONTAINER (self->mute),
-    gtk_image_new_from_resource (
-     "/org/zrythm/mute.svg"));
-  gtk_container_add (
-    GTK_CONTAINER (self->record),
-    gtk_image_new_from_icon_name ("gtk-media-record",
-                                  GTK_ICON_SIZE_BUTTON));
-  gtk_widget_set_size_request (GTK_WIDGET (self->record),
-                               16,
-                               16);
-  gtk_container_add (
-    GTK_CONTAINER (self->show_automation),
-    gtk_image_new_from_icon_name ("gtk-justify-fill",
-                                  GTK_ICON_SIZE_BUTTON));
-
-  gtk_image_set_from_resource (self->icon,
-                               "/org/zrythm/audio.svg");
-
-  g_signal_connect (self->show_automation, "clicked",
-                    G_CALLBACK (on_show_automation), self);
-
-  gtk_widget_set_visible (GTK_WIDGET (self),
-                          1);
-
   return self;
 }
 
 void
 audio_track_widget_refresh (AudioTrackWidget * self)
 {
-  AudioTrack * it = (AudioTrack *) self->parent->track;
-  gtk_label_set_text (self->track_name,
-                      ((BusTrack *)it)->channel->name);
-
-  GET_TRACK (self);
-  AutomationTracklist * automation_tracklist =
-    track_get_automation_tracklist (track);
-  automation_tracklist_widget_refresh (
-    automation_tracklist->widget);
 }
 
 static void
 audio_track_widget_init (AudioTrackWidget * self)
 {
-  gtk_widget_init_template (GTK_WIDGET (self));
 }
 
 static void
 audio_track_widget_class_init (AudioTrackWidgetClass * klass)
 {
-  gtk_widget_class_set_template_from_resource (
-    GTK_WIDGET_CLASS (klass),
-    "/org/zrythm/ui/audio_track.ui");
-
-  gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
-    AudioTrackWidget,
-    track_box);
-  gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
-    AudioTrackWidget,
-    track_grid);
-  gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
-    AudioTrackWidget,
-    track_name);
-  gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
-    AudioTrackWidget,
-    record);
-  gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
-    AudioTrackWidget,
-    solo);
-  gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
-    AudioTrackWidget,
-    mute);
-  gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
-    AudioTrackWidget,
-    show_automation);
-  gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
-    AudioTrackWidget,
-    icon);
 }
-

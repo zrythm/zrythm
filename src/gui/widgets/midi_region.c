@@ -59,7 +59,7 @@ draw_cb (MidiRegionWidget * self, cairo_t *cr, gpointer data)
 
   gtk_render_background (context, cr, 0, 0, width, height);
 
-  GdkRGBA * color = &((BusTrack *)rw_prv->region->track)->channel->color;
+  GdkRGBA * color = &((ChannelTrack *)rw_prv->region->track)->channel->color;
   if (rw_prv->hover)
     {
       cairo_set_source_rgba (cr,

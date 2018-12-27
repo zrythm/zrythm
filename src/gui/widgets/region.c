@@ -82,11 +82,7 @@ draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
 
   gtk_render_background (context, cr, 0, 0, width, height);
 
-  GdkRGBA * color;
-  if (prv->region->track->type == TRACK_TYPE_INSTRUMENT)
-    color = &((BusTrack *)prv->region->track)->channel->color;
-  /*else if (self->region->track->type == TRACK_TYPE_AUDIO)*/
-    /*color = &((AudioTrack *)self->region->track)->channel->color;*/
+  GdkRGBA * color = &((ChannelTrack *) prv->region->track)->channel->color;
   if (prv->hover)
     {
       cairo_set_source_rgba (cr,

@@ -93,7 +93,7 @@ midi_arranger_widget_set_channel (
                       label);
   g_free (label);
 
-  color_area_widget_set_color (PIANO_ROLL->midi_track_color,
+  color_area_widget_set_color (PIANO_ROLL->color_bar,
                                &channel->color);
 
   /* remove all previous children and add new */

@@ -63,32 +63,13 @@ get_hit_track (TracklistWidget *  self,
       TrackWidget * tw = track->widget;
 
       GtkAllocation allocation;
-      GtkWidget * inner_tw;
-      switch (tw->track->type)
-        {
-        case TRACK_TYPE_INSTRUMENT:
-          inner_tw = GTK_WIDGET (tw->ins_tw);
-          break;
-        case TRACK_TYPE_MASTER:
-          inner_tw = GTK_WIDGET (tw->master_tw);
-          break;
-        case TRACK_TYPE_AUDIO:
-          inner_tw = GTK_WIDGET (tw->audio_tw);
-          break;
-        case TRACK_TYPE_CHORD:
-          inner_tw = GTK_WIDGET (tw->chord_tw);
-          break;
-        case TRACK_TYPE_BUS:
-          inner_tw = GTK_WIDGET (tw->bus_tw);
-          break;
-        }
-      gtk_widget_get_allocation (inner_tw,
+      gtk_widget_get_allocation (GTK_WIDGET (tw),
                                  &allocation);
 
       gint wx, wy;
       gtk_widget_translate_coordinates(
                 GTK_WIDGET (self),
-                inner_tw,
+                GTK_WIDGET (tw),
                 x,
                 y,
                 &wx,
@@ -156,9 +137,9 @@ on_delete_tracks ()
         case TRACK_TYPE_BUS:
         case TRACK_TYPE_AUDIO:
             {
-              BusTrack * bt = (BusTrack *) track;
+              ChannelTrack * ct = (ChannelTrack *) track;
               mixer_remove_channel (MIXER,
-                                    bt->channel);
+                                    ct->channel);
               tracklist_remove_track (self->tracklist,
                                       track);
               break;
@@ -251,18 +232,25 @@ on_right_click (GtkGestureMultiPress *gesture,
   TrackWidget * hit_tw = get_hit_track (self, x, y);
   if (hit_tw)
     {
+      TRACK_WIDGET_GET_PRIVATE (hit_tw);
+      Track * track = tw_prv->track;
+
       if (!array_contains ((void **)selected_tracks,
                            num_selected,
-                           hit_tw->track))
+                           track))
         {
           if (state_mask & GDK_SHIFT_MASK ||
               state_mask & GDK_CONTROL_MASK)
             {
-              tracklist_widget_toggle_select_track (self, hit_tw->track, 1);
+              tracklist_widget_toggle_select_track (self,
+                                                    track,
+                                                    1);
             }
           else
             {
-              tracklist_widget_toggle_select_track (self, hit_tw->track, 0);
+              tracklist_widget_toggle_select_track (self,
+                                                    track,
+                                                    0);
             }
         }
     }
@@ -301,14 +289,21 @@ multipress_pressed (GtkGestureMultiPress *gesture,
   TrackWidget * hit_tw = get_hit_track (self, x, y);
   if (hit_tw)
     {
+      TRACK_WIDGET_GET_PRIVATE (hit_tw);
+      Track * track = tw_prv->track;
+
       if (state_mask & GDK_SHIFT_MASK ||
           state_mask & GDK_CONTROL_MASK)
         {
-          tracklist_widget_toggle_select_track (self, hit_tw->track, 1);
+          tracklist_widget_toggle_select_track (self,
+                                                track,
+                                                1);
         }
       else
         {
-          tracklist_widget_toggle_select_track (self, hit_tw->track, 0);
+          tracklist_widget_toggle_select_track (self,
+                                                track,
+                                                0);
         }
     }
   else
@@ -450,7 +445,8 @@ tracklist_widget_refresh (TracklistWidget * self)
       if (IS_TRACK_WIDGET (iter->data))
         {
           TrackWidget * tw = TRACK_WIDGET (iter->data);
-          Track * track = tw->track;
+          TRACK_WIDGET_GET_PRIVATE (tw);
+          Track * track = tw_prv->track;
           GValue a = G_VALUE_INIT;
           g_value_init (&a, G_TYPE_INT);
           g_value_set_int (&a, track->handle_pos);

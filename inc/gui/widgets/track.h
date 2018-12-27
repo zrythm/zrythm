@@ -22,13 +22,11 @@
 #ifndef __GUI_WIDGETS_TRACK_H__
 #define __GUI_WIDGETS_TRACK_H__
 
-#include "audio/channel.h"
-
 #include <gtk/gtk.h>
 
 #define TRACK_WIDGET_TYPE \
   (track_widget_get_type ())
-G_DECLARE_FINAL_TYPE (TrackWidget,
+G_DECLARE_DERIVABLE_TYPE (TrackWidget,
                       track_widget,
                       TRACK,
                       WIDGET,
@@ -37,32 +35,52 @@ G_DECLARE_FINAL_TYPE (TrackWidget,
   (G_TYPE_CHECK_INSTANCE_TYPE ((obj), \
    TRACK_WIDGET_TYPE))
 
-typedef struct ColorAreaWidget ColorAreaWidget;
-typedef struct _InstrumentTrackWidget InstrumentTrackWidget;
-typedef struct _ChordTrackWidget ChordTrackWidget;
-typedef struct _MasterTrackWidget MasterTrackWidget;
-typedef struct _AudioTrackWidget AudioTrackWidget;
-typedef struct _BusTrackWidget BusTrackWidget;
+#define TRACK_WIDGET_GET_PRIVATE(self) \
+  TrackWidgetPrivate * tw_prv = \
+    track_widget_get_private (TRACK_WIDGET (self));
 
-typedef struct _TrackWidget
+typedef struct _ColorAreaWidget ColorAreaWidget;
+typedef struct Track Track;
+
+typedef struct
 {
-  GtkGrid                       parent_instance;
-  GtkBox *                      track_box;
-  GtkBox *                      color_box;
+  /**
+   * The color on the left.
+   */
   ColorAreaWidget *             color;
-  int                           selected; ///< selected or not
-  int                           visible; ///< visible or not
+
+  /**
+   * The track top / bot paned splitting the main track
+   * content and the bottom content (automation tracklist).
+   */
+  GtkPaned *                    paned;
+
+  /**
+   * The top part of the track.
+   */
+  GtkBox *                      top_grid;
+
+  GtkLabel *                    name; ///< track name
+  GtkImage *                    icon; ///< the icon
+
+  /**
+   * These are boxes to be filled by inheriting widgets.
+   */
+  GtkBox *                      upper_controls;
+  GtkBox *                      right_activity_box;
+  GtkBox *                      mid_controls;
+  GtkBox *                      bot_controls;
+
   Track *                       track; ///< associated track
 
-  /* depending on the track->type, only one of these is
-   * non-NULL */
-  InstrumentTrackWidget *       ins_tw; ///< if instrument
-  ChordTrackWidget *            chord_tw; ///< if chord
-  MasterTrackWidget *           master_tw;
-  AudioTrackWidget *            audio_tw;
-  BusTrackWidget *              bus_tw;
+  int                           selected; ///< selected or not
+  int                           visible; ///< visible or not
+} TrackWidgetPrivate;
 
-} TrackWidget;
+typedef struct _TrackWidgetClass
+{
+  GtkGridClass parent_class;
+} TrackWidgetClass;
 
 /**
  * Sets up the track widget.
@@ -82,5 +100,11 @@ track_widget_select (TrackWidget * self,
 void
 track_widget_refresh (TrackWidget * self);
 
-#endif
+TrackWidgetPrivate *
+track_widget_get_private (TrackWidget * self);
 
+void
+track_widget_on_show_automation (GtkWidget * widget,
+                                 void *      data);
+
+#endif

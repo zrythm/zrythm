@@ -1,5 +1,5 @@
 /*
- * audio/audio_track.h - audio track
+ * audio/channel_track.h - channel track
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,44 +19,38 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __AUDIO_AUDIO_TRACK_H__
-#define __AUDIO_AUDIO_TRACK_H__
+#ifndef __AUDIO_CHANNEL_TRACK_H__
+#define __AUDIO_CHANNEL_TRACK_H__
 
-#include "audio/channel_track.h"
 #include "audio/track.h"
 
 typedef struct Position Position;
 typedef struct _TrackWidget TrackWidget;
 typedef struct Channel Channel;
-typedef struct AudioRegion AudioRegion;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct Automatable Automatable;
 
-typedef struct AudioTrack
+/**
+ * This track is for convenience. It contains common
+ * variables for tracks that correspond to a channel in
+ * the mixer. Should never be instantiated.
+ */
+typedef struct ChannelTrack
 {
-  ChannelTrack          parent; ///< base track
+  Track                 parent; ///< base track
 
   /**
-   * MIDI regions in this track.
+   * Owner channel.
+   *
+   * 1 channel has 1 track.
    */
-  AudioRegion *         regions[200];
-  int                   num_regions;  ///< counter
+  Channel *             channel;
 
-} AudioTrack;
-
-AudioTrack *
-audio_track_new (Channel * channel);
+  AutomationTracklist * automation_tracklist;
+} ChannelTrack;
 
 void
-audio_track_setup (AudioTrack * self);
-
-void
-audio_track_add_region (AudioTrack *  track,
-                        AudioRegion * region);
-
-void
-audio_track_remove_region (AudioTrack *  track,
-                           AudioRegion * region);
+channel_track_setup (ChannelTrack * self);
 
 /**
  * Frees the track.
@@ -64,6 +58,6 @@ audio_track_remove_region (AudioTrack *  track,
  * TODO
  */
 void
-audio_track_free (AudioTrack * track);
+channel_track_free (ChannelTrack * track);
 
-#endif // __AUDIO_TRACK_H__
+#endif // __AUDIO_CHANNEL_TRACK_H__

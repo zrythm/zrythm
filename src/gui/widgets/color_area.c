@@ -70,19 +70,6 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 
   return FALSE;
 }
-/**
- * Creates a channel color widget using the given color pointer.
- */
-ColorAreaWidget *
-color_area_widget_new (GdkRGBA * color, int width, int height)
-{
-  ColorAreaWidget * self = g_object_new (COLOR_AREA_WIDGET_TYPE, NULL);
-  gtk_widget_set_size_request (GTK_WIDGET (self), width, height);
-  self->color = color;
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), NULL);
-  return self;
-}
 
 void
 color_area_widget_set_color (ColorAreaWidget * widget,
@@ -96,6 +83,8 @@ color_area_widget_set_color (ColorAreaWidget * widget,
 static void
 color_area_widget_init (ColorAreaWidget * self)
 {
+  g_signal_connect (G_OBJECT (self), "draw",
+                    G_CALLBACK (draw_cb), NULL);
 }
 
 static void

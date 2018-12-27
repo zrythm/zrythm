@@ -25,11 +25,14 @@
 #include <gtk/gtk.h>
 
 #define AUTOMATION_CURVE_WIDGET_TYPE                  (automation_curve_widget_get_type ())
-#define AUTOMATION_CURVE_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), AUTOMATION_CURVE_WIDGET_TYPE, AutomationCurveWidget))
-#define AUTOMATION_CURVE_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), AUTOMATION_CURVE_WIDGET, AutomationCurveWidgetClass))
-#define IS_AUTOMATION_CURVE_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AUTOMATION_CURVE_WIDGET_TYPE))
-#define IS_AUTOMATION_CURVE_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), AUTOMATION_CURVE_WIDGET_TYPE))
-#define AUTOMATION_CURVE_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), AUTOMATION_CURVE_WIDGET_TYPE, AutomationCurveWidgetClass))
+G_DECLARE_FINAL_TYPE (AutomationCurveWidget,
+                      automation_curve_widget,
+                      AUTOMATION_CURVE,
+                      WIDGET,
+                      GtkDrawingArea)
+#define IS_AUTOMATION_CURVE_WIDGET(obj) \
+  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), \
+   AUTOMATION_CURVE_WIDGET_TYPE))
 
 /*
  * extra space on top and bottom to make room for width 2
@@ -44,7 +47,7 @@ typedef enum ACW_CursorState
 
 typedef struct AutomationCurve AutomationCurve;
 
-typedef struct AutomationCurveWidget
+typedef struct _AutomationCurveWidget
 {
   GtkDrawingArea              parent_instance;
   AutomationCurve *           ac;   ///< the automation curve associated with this
@@ -58,11 +61,6 @@ typedef struct AutomationCurveWidget
 
   ACW_CursorState             cursor_state;
 } AutomationCurveWidget;
-
-typedef struct AutomationCurveWidgetClass
-{
-  GtkDrawingAreaClass       parent_class;
-} AutomationCurveWidgetClass;
 
 /**
  * Creates a automation_curve.

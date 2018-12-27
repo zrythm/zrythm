@@ -27,12 +27,13 @@
 
 #include <gtk/gtk.h>
 
-#define AUDIO_TRACK_WIDGET_TYPE (audio_track_widget_get_type ())
+#define AUDIO_TRACK_WIDGET_TYPE \
+  (audio_track_widget_get_type ())
 G_DECLARE_FINAL_TYPE (AudioTrackWidget,
                       audio_track_widget,
                       AUDIO_TRACK,
                       WIDGET,
-                      GtkPaned)
+                      TrackWidget)
 
 typedef struct _AutomationTracklistWidget AutomationTracklistWidget;
 typedef struct AudioTrack AudioTrack;
@@ -42,23 +43,14 @@ typedef struct AudioTrack AudioTrack;
  */
 typedef struct _AudioTrackWidget
 {
-  GtkPaned                      parent_instance;
-  TrackWidget *                 parent;
-  GtkBox *                      track_box;
-  GtkGrid *                     track_grid;
-  GtkLabel *                    track_name;
-  GtkButton *                   record;
-  GtkButton *                   solo;
-  GtkButton *                   mute;
-  GtkButton *                   show_automation;
-  GtkImage *                    icon;
+  TrackWidget                    parent_instance;
 } AudioTrackWidget;
 
 /**
  * Creates a new track widget from the given track.
  */
 AudioTrackWidget *
-audio_track_widget_new (TrackWidget *     parent);
+audio_track_widget_new (Track * track);
 
 /**
  * Updates changes in the backend to the ui
@@ -67,4 +59,3 @@ void
 audio_track_widget_refresh (AudioTrackWidget * self);
 
 #endif
-

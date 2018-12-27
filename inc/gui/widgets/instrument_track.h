@@ -27,12 +27,13 @@
 
 #include <gtk/gtk.h>
 
-#define INSTRUMENT_TRACK_WIDGET_TYPE (instrument_track_widget_get_type ())
+#define INSTRUMENT_TRACK_WIDGET_TYPE \
+  (instrument_track_widget_get_type ())
 G_DECLARE_FINAL_TYPE (InstrumentTrackWidget,
                       instrument_track_widget,
                       INSTRUMENT_TRACK,
                       WIDGET,
-                      GtkPaned)
+                      TrackWidget)
 
 typedef struct _AutomationTracklistWidget AutomationTracklistWidget;
 typedef struct InstrumentTrack InstrumentTrack;
@@ -42,28 +43,26 @@ typedef struct InstrumentTrack InstrumentTrack;
  */
 typedef struct _InstrumentTrackWidget
 {
-  GtkPaned                      parent_instance;
-  TrackWidget *                 parent;
-  GtkBox *                      track_box;
-  GtkGrid *                     track_grid;
-  GtkLabel *                    track_name;
+  TrackWidget                   parent_instance;
   GtkButton *                   record;
   GtkButton *                   solo;
   GtkButton *                   mute;
   GtkButton *                   show_automation;
-  GtkImage *                    icon;
+  GtkButton *                   lock;
+  GtkButton *                   freeze;
 } InstrumentTrackWidget;
 
 /**
  * Creates a new track widget from the given track.
  */
 InstrumentTrackWidget *
-instrument_track_widget_new (TrackWidget *     parent);
+instrument_track_widget_new (Track * track);
 
 /**
  * Updates changes in the backend to the ui
  */
 void
-instrument_track_widget_refresh (InstrumentTrackWidget * self);
+instrument_track_widget_refresh (
+  InstrumentTrackWidget * self);
 
 #endif

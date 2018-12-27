@@ -22,6 +22,7 @@
 #ifndef __AUDIO_BUS_TRACK_H__
 #define __AUDIO_BUS_TRACK_H__
 
+#include "audio/channel_track.h"
 #include "audio/track.h"
 
 typedef struct Position Position;
@@ -32,16 +33,7 @@ typedef struct Automatable Automatable;
 
 typedef struct BusTrack
 {
-  Track                 parent; ///< base track
-
-  /**
-   * Owner channel.
-   *
-   * 1 channel has 1 track.
-   */
-  Channel *             channel;
-
-  AutomationTracklist * automation_tracklist;
+  ChannelTrack        parent; ///< base track
 } BusTrack;
 
 BusTrack *

@@ -1,5 +1,5 @@
 /*
- * audio/bus_track.c - bus track
+ * audio/channel_track.c - channel track
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -22,28 +22,17 @@
 #include <stdlib.h>
 
 #include "audio/automation_tracklist.h"
-#include "audio/bus_track.h"
-
-BusTrack *
-bus_track_new (Channel * channel)
-{
-  BusTrack * self =
-    calloc (1, sizeof (BusTrack));
-
-  Track * track = (Track *) self;
-  track->type = TRACK_TYPE_BUS;
-  track_init (track);
-
-  ChannelTrack * ct = (ChannelTrack *) self;
-  ct->channel = channel;
-
-  return self;
-}
+#include "audio/channel_track.h"
 
 void
-bus_track_setup (BusTrack * self)
+channel_track_setup (ChannelTrack * self)
 {
-  channel_track_setup ((ChannelTrack *) self);
+  Track * track = (Track *) self;
+
+  self->automation_tracklist =
+    automation_tracklist_new (track);
+
+  automation_tracklist_setup (self->automation_tracklist);
 }
 
 /**
@@ -52,7 +41,7 @@ bus_track_setup (BusTrack * self)
  * TODO
  */
 void
-bus_track_free (BusTrack * track)
+channel_track_free (ChannelTrack * track)
 {
 
 }

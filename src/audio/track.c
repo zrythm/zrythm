@@ -133,7 +133,7 @@ track_get_automation_tracklist (Track * track)
     case TRACK_TYPE_AUDIO:
     case TRACK_TYPE_MASTER:
         {
-          BusTrack * bt = (BusTrack *) track;
+          ChannelTrack * bt = (ChannelTrack *) track;
           return bt->automation_tracklist;
         }
     }
@@ -158,7 +158,7 @@ track_get_fader_automatable (Track * track)
     case TRACK_TYPE_MASTER:
     case TRACK_TYPE_INSTRUMENT:
         {
-          BusTrack * bt = (BusTrack *) track;
+          ChannelTrack * bt = (ChannelTrack *) track;
           return channel_get_fader_automatable (bt->channel);
         }
     }
@@ -183,7 +183,7 @@ track_get_channel (Track * track)
     case TRACK_TYPE_AUDIO:
     case TRACK_TYPE_BUS:
         {
-          BusTrack * bt = (BusTrack *) track;
+          ChannelTrack * bt = (ChannelTrack *) track;
           return bt->channel;
         }
     }

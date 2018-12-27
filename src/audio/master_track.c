@@ -36,7 +36,7 @@ master_track_new (Channel * channel)
   track->type = TRACK_TYPE_MASTER;
   track_init (track);
 
-  BusTrack * bt = (BusTrack *) self;
+  ChannelTrack * bt = (ChannelTrack *) self;
   bt->channel = channel;
 
   return self;

@@ -31,6 +31,10 @@
 GtkWidget *
 resources_get_icon (const char * filename); ///< the path after .../icons/
 
+void
+resources_set_image_icon (GtkImage * img,
+                          const char * path);
+
 /**
  * Sets class template from resource.
  *

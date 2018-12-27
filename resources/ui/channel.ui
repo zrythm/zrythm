@@ -21,6 +21,12 @@
                 <property name="can-focus">1</property>
                 <property name="receives-default">1</property>
                 <property name="relief">none</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="visible">1</property>
+                    <property name="resource">/org/zrythm/icons/record.svg</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -29,6 +35,12 @@
                 <property name="can-focus">1</property>
                 <property name="receives-default">1</property>
                 <property name="relief">none</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="visible">1</property>
+                    <property name="resource">/org/zrythm/icons/mute.svg</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="position">1</property>
@@ -40,6 +52,12 @@
                 <property name="can-focus">1</property>
                 <property name="receives-default">1</property>
                 <property name="relief">none</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="visible">1</property>
+                    <property name="resource">/org/zrythm/icons/solo.svg</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="position">2</property>
@@ -51,6 +69,12 @@
                 <property name="can-focus">1</property>
                 <property name="receives-default">1</property>
                 <property name="relief">none</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="visible">1</property>
+                    <property name="resource">/org/zrythm/icons/listen.svg</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="position">3</property>
@@ -62,6 +86,12 @@
                 <property name="can-focus">1</property>
                 <property name="receives-default">1</property>
                 <property name="relief">none</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="visible">1</property>
+                    <property name="resource">/org/zrythm/icons/gnome-builder/lang-enum-value-symbolic-light.svg</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="position">4</property>
@@ -118,6 +148,12 @@
             <property name="can-focus">1</property>
             <property name="receives-default">1</property>
             <property name="relief">none</property>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">1</property>
+                <property name="resource">/org/zrythm/icons/phase-invert.svg</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>
@@ -195,6 +231,7 @@
         <child>
           <object class="GtkImage" id="output_img">
             <property name="visible">1</property>
+            <property name="resource">/org/zrythm/icons/gnome-builder/debug-step-out-symbolic-light.svg</property>
           </object>
           <packing>
             <property name="padding">2</property>
@@ -213,6 +250,17 @@
       <packing>
         <property name="left-attach">0</property>
         <property name="top-attach">2</property>
+        <property name="width">2</property>
+      </packing>
+    </child>
+    <child>
+      <object class="ColorAreaWidget" id="color">
+        <property name="visible">1</property>
+        <property name="height-request">10</property>
+      </object>
+      <packing>
+        <property name="left-attach">0</property>
+        <property name="top-attach">1</property>
         <property name="width">2</property>
       </packing>
     </child>

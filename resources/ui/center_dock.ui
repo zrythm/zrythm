@@ -157,7 +157,7 @@
                   <object class="GtkToolButton" id="toggle_left_dock">
                     <property name="visible">1</property>
                     <property name="label" translatable="yes">Left</property>
-                    <property name="tooltip-text">Toggle visiblity of left panel</property>
+                    <property name="tooltip-text">Show/hide left panel</property>
                     <signal name="clicked" handler="on_toggle_left_dock_clicked" swapped="no"/>
                   </object>
                   <packing>
@@ -168,17 +168,8 @@
                   <object class="GtkToolButton" id="toggle_bot_dock">
                     <property name="visible">1</property>
                     <property name="label" translatable="yes">Bot</property>
-                    <property name="tooltip-text">Toggle visiblity of bottom panel</property>
+                    <property name="tooltip-text">Show/hide of bottom panel</property>
                     <signal name="clicked" handler="on_toggle_bottom_dock_clicked" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="homogeneous">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkToolButton" id="toolbutton7">
-                    <property name="visible">1</property>
-                    <property name="label" translatable="yes"></property>
                   </object>
                   <packing>
                     <property name="homogeneous">1</property>
@@ -205,7 +196,7 @@
                   <object class="GtkToolButton" id="toggle_right_dock">
                     <property name="visible">1</property>
                     <property name="label" translatable="yes">Right</property>
-                    <property name="tooltip-text">Toggle visiblity of right panel</property>
+                    <property name="tooltip-text">Show/hide of right panel</property>
                     <signal name="clicked" handler="on_toggle_right_dock_clicked" swapped="no"/>
                   </object>
                   <packing>

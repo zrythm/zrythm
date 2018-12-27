@@ -46,7 +46,7 @@ draw_cb (AutomationPointWidget * self, cairo_t *cr, gpointer data)
   gtk_render_background (context, cr, 0, 0, width, height);
 
   Track * track = self->ap->at->track;
-  GdkRGBA * color = &((BusTrack *)track)->channel->color;
+  GdkRGBA * color = &((ChannelTrack *)track)->channel->color;
   if (self->state != APW_STATE_NONE)
     {
       cairo_set_source_rgba (cr,

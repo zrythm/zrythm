@@ -22,7 +22,7 @@
 #ifndef __AUDIO_INSTRUMENT_TRACK_H__
 #define __AUDIO_INSTRUMENT_TRACK_H__
 
-#include "audio/bus_track.h"
+#include "audio/channel_track.h"
 #include "audio/track.h"
 
 #include <jack/jack.h>
@@ -41,7 +41,7 @@ typedef jack_nframes_t nframes_t;
  */
 typedef struct InstrumentTrack
 {
-  BusTrack              parent; ///< base track
+  ChannelTrack          parent; ///< base track
 
   /**
    * MIDI regions in this track.

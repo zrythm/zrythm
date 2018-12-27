@@ -32,7 +32,7 @@ static const float _ap_curviness_range = AP_MAX_CURVINESS - AP_MIN_CURVINESS;
 #define AP_MID_CURVINESS 1.f
 
 typedef struct AutomationTrack AutomationTrack;
-typedef struct AutomationCurveWidget AutomationCurveWidget;
+typedef struct _AutomationCurveWidget AutomationCurveWidget;
 
 typedef enum AutomationCurveType
 {

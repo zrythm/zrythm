@@ -53,7 +53,7 @@ piano_roll_widget_class_init (
   gtk_widget_class_bind_template_child (
     klass,
     PianoRollWidget,
-    midi_track_color_box);
+    color_bar);
   gtk_widget_class_bind_template_child (
     klass,
     PianoRollWidget,
@@ -215,11 +215,6 @@ piano_roll_widget_init (PianoRollWidget * self)
 
   GdkRGBA * color = calloc (1, sizeof (GdkRGBA));
   gdk_rgba_parse (color, "gray");
-  self->midi_track_color = color_area_widget_new (color, 5, -1);
-  gtk_box_pack_start (self->midi_track_color_box,
-                      GTK_WIDGET (self->midi_track_color),
-                      1,
-                      1,
-                      0);
-  gtk_widget_show_all (GTK_WIDGET (self->midi_track_color_box));
+  color_area_widget_set_color (self->color_bar,
+                               color);
 }

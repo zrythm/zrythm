@@ -103,8 +103,8 @@ draw_cb (AutomationCurveWidget * self, cairo_t *cr, gpointer data)
 
   GdkRGBA * color;
   Track * track = self->ac->at->track;
-  BusTrack * bt = (BusTrack *) track;
-  color = &bt->channel->color;
+  ChannelTrack * ct = (ChannelTrack *) track;
+  color = &ct->channel->color;
   if (self->hover)
     {
       cairo_set_source_rgba (cr,
@@ -166,7 +166,7 @@ draw_cb (AutomationCurveWidget * self, cairo_t *cr, gpointer data)
     /*curr_y_px - prev_y_px;*/
   /*cairo_set_line_width (cr, 1);*/
   /*for (int l = 0; l < ww; l++)*/
-  for (float l = 0; l <= width; l = l + 0.5)
+  for (float l = 0; l <= width; l = l + 0.1)
     {
       automation_point_y =
         automation_curve_get_y_px (self->ac,

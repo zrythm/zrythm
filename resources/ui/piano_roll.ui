@@ -5,9 +5,9 @@
   <template class="PianoRollWidget" parent="GtkBox">
     <property name="visible">True</property>
     <child>
-      <object class="GtkBox" id="midi_track_color_box">
+      <object class="ColorAreaWidget" id="color_bar">
         <property name="visible">1</property>
-        <property name="orientation">vertical</property>
+        <property name="width-request">5</property>
       </object>
       <packing>
         <property name="expand">False</property>
