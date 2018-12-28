@@ -451,9 +451,7 @@ timeline_arranger_widget_on_drag_begin_region_hit (
   self->start_region = rw_prv->region;
 
   /* update arranger action */
-  if (!rw_prv->hover)
-    g_warning ("hitting region but region hover state is none, should be fixed");
-  else if (region->type == REGION_TYPE_MIDI &&
+  if (region->type == REGION_TYPE_MIDI &&
            MIDI_REGION_WIDGET (rw)->cursor_state ==
              MIDI_REGION_CURSOR_RESIZE_L)
     prv->action = ARRANGER_ACTION_RESIZING_L;
@@ -461,7 +459,7 @@ timeline_arranger_widget_on_drag_begin_region_hit (
            MIDI_REGION_WIDGET (rw)->cursor_state ==
              MIDI_REGION_CURSOR_RESIZE_R)
     prv->action = ARRANGER_ACTION_RESIZING_R;
-  else if (rw_prv->hover)
+  else
     {
       prv->action = ARRANGER_ACTION_STARTING_MOVING;
       ui_set_cursor (GTK_WIDGET (rw), "grabbing");

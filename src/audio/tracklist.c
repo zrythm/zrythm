@@ -78,7 +78,7 @@ tracklist_get_selected_tracks (Tracklist * tracklist,
       Track * track = tracklist->tracks[i];
       if (track->selected)
         {
-          selected_tracks[*num_selected++] = track;
+          selected_tracks[(*num_selected)++] = track;
         }
     }
 }

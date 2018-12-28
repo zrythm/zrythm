@@ -78,6 +78,8 @@ typedef struct Region
    * notes from the linked region are used
    */
   struct Region       * linked_region;
+
+  int                      selected;
 } Region;
 
 /**

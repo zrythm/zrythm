@@ -36,7 +36,7 @@ G_DECLARE_FINAL_TYPE (PianoRollWidget,
 #define PIANO_ROLL MW_BOT_DOCK_EDGE->piano_roll
 
 typedef struct _PianoRollLabelsWidget PianoRollLabelsWidget;
-typedef struct PianoRollNotesWidget PianoRollNotesWidget;
+typedef struct _PianoRollNotesWidget PianoRollNotesWidget;
 typedef struct _MidiArrangerWidget MidiArrangerWidget;
 typedef struct _MidiRulerWidget MidiRulerWidget;
 
@@ -47,15 +47,12 @@ typedef struct _PianoRollWidget
   GtkToolbar               * midi_bot_toolbar;
   GtkLabel                 * midi_name_label;
   GtkBox                   * midi_controls_above_notes_box;
-  GtkBox                   * midi_ruler_box;
   GtkScrolledWindow        * midi_ruler_scroll;
   GtkViewport              * midi_ruler_viewport;
   MidiRulerWidget *        ruler;
-  GtkBox                   * midi_notes_labels_box; ///< shows note labels C, C#, etc.
   GtkScrolledWindow        * piano_roll_labels_scroll;
   GtkViewport              * piano_roll_labels_viewport;
   PianoRollLabelsWidget    * piano_roll_labels;
-  GtkBox                   * midi_notes_draw_box; ///< shows piano roll
   GtkScrolledWindow        * piano_roll_notes_scroll;
   GtkViewport              * piano_roll_notes_viewport;
   PianoRollNotesWidget     * piano_roll_notes;

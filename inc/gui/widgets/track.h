@@ -71,10 +71,9 @@ typedef struct
   GtkBox *                      mid_controls;
   GtkBox *                      bot_controls;
 
-  Track *                       track; ///< associated track
+  GtkEventBox *                 event_box;
 
-  int                           selected; ///< selected or not
-  int                           visible; ///< visible or not
+  Track *                       track; ///< associated track
 } TrackWidgetPrivate;
 
 typedef struct _TrackWidgetClass

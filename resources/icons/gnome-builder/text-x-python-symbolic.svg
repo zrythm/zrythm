@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   width="16"
+   version="1.1"
+   id="svg7384"
+   height="16">
+  <metadata
+     id="metadata90">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Gnome Symbolic Icon Theme</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <title
+     id="title9167">Gnome Symbolic Icon Theme</title>
+  <defs
+     id="defs7386" />
+  <g
+     transform="translate(-159.99982,-340.00012)"
+     id="layer1">
+    <path
+       d="M 170.16211,341.99414 C 170.06491,341.99016 170,342 170,342 h -4 c 0,0 -1,0 -1,1 v 2 h -2 c -1,0 -1,1 -1,1 v 4 c 0,1 1,1 1,1 h 2 v -1 c 0,-2 2,-2 2,-2 h 3 c 0,0 1.00019,3.7e-4 1.05273,-0.91797 0,0 -0.0527,-1.81719 -0.0527,-2.08203 v -2 c 0.0332,-0.86179 -0.54628,-0.99392 -0.83789,-1.00586 z M 167,343 a 1,1 0 0 1 1,1 1,1 0 0 1 -1,1 1,1 0 0 1 -1,-1 1,1 0 0 1 1,-1 z"
+       id="path1811"
+       style="fill:#2e3436;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       id="path1805"
+       d="m 171,344 v 2 h 1.5 c 0.41667,0 0.34973,0.0608 0.41797,0.19727 C 172.98621,346.33375 173,346.5 173,346.5 v 3 c 0,0 -0.0138,0.16625 -0.082,0.30273 C 172.84973,349.93922 172.91667,350 172.5,350 H 171 a 1.0001,1.0001 0 0 0 -1,1 v 1.5 c 0,0.41667 -0.0608,0.34973 -0.19727,0.41797 C 169.66625,352.98621 169.5,353 169.5,353 h -3 c 0,0 -0.16625,-0.0138 -0.30273,-0.082 C 166.06078,352.84973 166,352.91667 166,352.5 V 351 h -2 v 1.5 c 0,1.08333 0.68922,1.90027 1.30273,2.20703 C 165.91625,355.01379 166.5,355 166.5,355 h 3 c 0,0 0.58375,0.0138 1.19727,-0.29297 C 171.31078,354.40027 172,353.58333 172,352.5 V 352 h 0.5 c 1.08333,0 1.90027,-0.68922 2.20703,-1.30273 C 175.01379,350.08375 175,349.5 175,349.5 v -3 c 0,0 0.0138,-0.58375 -0.29297,-1.19727 C 174.40027,344.68922 173.58333,344 172.5,344 Z"
+       style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;vector-effect:none;fill:#2e3436;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+    <path
+       id="path1809"
+       d="m 166.5,341 c 0,0 -0.58375,-0.0138 -1.19727,0.29297 C 164.68922,341.59973 164,342.41667 164,343.5 v 0.5 h -0.5 c -1.08333,0 -1.90027,0.68922 -2.20703,1.30273 C 160.98621,345.91625 161,346.5 161,346.5 v 3 c 0,1.08333 0.68922,1.90027 1.30273,2.20703 C 162.91625,352.01379 163.5,352 163.5,352 h 1.5 a 1.0001,1.0001 0 0 0 1,-1 v -0.5 c 0,-0.91667 0.31078,-1.09973 0.69727,-1.29297 C 167.08375,349.01379 167.5,349 167.5,349 h 2 c 1.08333,0 1.90027,-0.68922 2.20703,-1.30273 C 172.01379,347.08375 172,346.5 172,346.5 v -1.5 -1.5 c 0,-1.08333 -0.68922,-1.90027 -1.30273,-2.20703 C 170.08375,340.98621 169.5,341 169.5,341 Z m 0,2 h 3 c 0,0 0.16625,0.0138 0.30273,0.082 0.13649,0.0682 0.19727,0.001 0.19727,0.41797 v 1.5 1.5 c 0,0 -0.0138,0.16625 -0.082,0.30273 C 169.84973,346.93922 169.91667,347 169.5,347 h -2 c 0,0 -0.83375,-0.0138 -1.69727,0.41797 -0.75408,0.37704 -1.46258,1.31533 -1.65625,2.58203 H 163.5 c 0,0 -0.16625,-0.0138 -0.30273,-0.082 C 163.06078,349.84973 163,349.91667 163,349.5 v -3 c 0,0 0.0138,-0.16625 0.082,-0.30273 C 163.15027,346.06078 163.08333,346 163.5,346 h 1.5 a 1.0001,1.0001 0 0 0 1,-1 v -1.5 c 0,-0.41667 0.0608,-0.34973 0.19727,-0.41797 C 166.33375,343.01379 166.5,343 166.5,343 Z"
+       style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;vector-effect:none;fill:#2e3436;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+  </g>
+  <g
+     transform="translate(-159.99982,-340.00012)"
+     id="layer2" />
+  <g
+     transform="translate(-159.99982,-340.00012)"
+     id="layer3" />
+</svg>

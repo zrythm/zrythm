@@ -56,30 +56,30 @@ draw_cb (AudioRegionWidget * self, cairo_t *cr, gpointer data)
   gtk_render_background (context, cr, 0, 0, width, height);
 
   GdkRGBA * color = &((ChannelTrack *)rw_prv->region->track)->channel->color;
-  if (rw_prv->hover)
-    {
-      cairo_set_source_rgba (cr,
-                             color->red,
-                             color->green,
-                             color->blue,
-                             0.8);
-    }
-  else if (rw_prv->selected)
-    {
-      cairo_set_source_rgba (cr,
-                             color->red + 0.2,
-                             color->green + 0.2,
-                             color->blue + 0.2,
-                             0.8);
-    }
-  else
-    {
+  /*if (rw_prv->hover)*/
+    /*{*/
+      /*cairo_set_source_rgba (cr,*/
+                             /*color->red,*/
+                             /*color->green,*/
+                             /*color->blue,*/
+                             /*0.8);*/
+    /*}*/
+  /*else if (rw_prv->selected)*/
+    /*{*/
+      /*cairo_set_source_rgba (cr,*/
+                             /*color->red + 0.2,*/
+                             /*color->green + 0.2,*/
+                             /*color->blue + 0.2,*/
+                             /*0.8);*/
+    /*}*/
+  /*else*/
+    /*{*/
       cairo_set_source_rgba (cr,
                              color->red - 0.2,
                              color->green - 0.2,
                              color->blue - 0.2,
                              0.7);
-    }
+    /*}*/
 
   /* TODO draw audio notes */
 

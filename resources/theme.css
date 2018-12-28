@@ -4,9 +4,11 @@
 /*@define-color bg_color_entry #181818;*/
 /*@define-color selection_color #202530;*/
 /*@define-color selection_color_lighter #405060;*/
+@define-color hover_color alpha (white, 0.1);
+@define-color selection_color alpha (white, 0.07);
 
 /*enables drag on every widget to move the main window*/
-/** {*/
+/**#top_bar {*/
   /*-GtkWidget-window-dragging: true;*/
 /*}*/
 
@@ -60,4 +62,14 @@
   /*background-color: alpha (white, 0.12);*/
 /*}*/
 
+track:selected,
+region:selected
+{
+  background-color: @selection_color;
+}
 
+track:hover,
+region:hover
+{
+  background-color: @hover_color;
+}

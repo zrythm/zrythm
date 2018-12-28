@@ -41,8 +41,6 @@ G_DECLARE_DERIVABLE_TYPE (RegionWidget,
 typedef struct _RegionWidgetPrivate
 {
   Region                   * region;   ///< the region associated with this
-  int                      hover;
-  int                      selected;
 } RegionWidgetPrivate;
 
 typedef struct _RegionWidgetClass

@@ -83,26 +83,26 @@ draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
   gtk_render_background (context, cr, 0, 0, width, height);
 
   GdkRGBA * color = &((ChannelTrack *) prv->region->track)->channel->color;
-  if (prv->hover)
-    {
-      cairo_set_source_rgba (cr,
-                             color->red + 0.2,
-                             color->green + 0.2,
-                             color->blue + 0.2,
-                             0.8);
-    }
-  else if (prv->selected)
-    {
-      cairo_set_source_rgba (cr,
-                             color->red + 0.4,
-                             color->green + 0.4,
-                             color->blue + 0.4,
-                             0.8);
-    }
-  else
-    {
+  /*if (prv->hover)*/
+    /*{*/
+      /*cairo_set_source_rgba (cr,*/
+                             /*color->red + 0.2,*/
+                             /*color->green + 0.2,*/
+                             /*color->blue + 0.2,*/
+                             /*0.8);*/
+    /*}*/
+  /*else if (prv->selected)*/
+    /*{*/
+      /*cairo_set_source_rgba (cr,*/
+                             /*color->red + 0.4,*/
+                             /*color->green + 0.4,*/
+                             /*color->blue + 0.4,*/
+                             /*0.8);*/
+    /*}*/
+  /*else*/
+    /*{*/
       cairo_set_source_rgba (cr, color->red, color->green, color->blue, 0.7);
-    }
+    /*}*/
   cairo_rectangle(cr, 0, 0, width, height);
   cairo_stroke_preserve(cr);
   cairo_fill(cr);
@@ -119,16 +119,18 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
   RegionWidgetPrivate * prv =
     region_widget_get_instance_private (self);
 
-  if (event->type == GDK_MOTION_NOTIFY)
+  if (event->type == GDK_ENTER_NOTIFY)
     {
-      prv->hover = 1;
+      gtk_widget_set_state_flags (GTK_WIDGET (self),
+                                  GTK_STATE_FLAG_PRELIGHT,
+                                  0);
     }
   /* if leaving */
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
-      prv->hover = 0;
+      gtk_widget_unset_state_flags (GTK_WIDGET (self),
+                                    GTK_STATE_FLAG_PRELIGHT);
     }
-  g_idle_add ((GSourceFunc) gtk_widget_queue_draw, GTK_WIDGET (self));
 }
 
 void
@@ -158,7 +160,18 @@ region_widget_select (RegionWidget * self,
 {
   RegionWidgetPrivate * prv =
     region_widget_get_instance_private (self);
-  prv->selected = select;
+  prv->region->selected = select;
+  if (select)
+    {
+      gtk_widget_set_state_flags (GTK_WIDGET (self),
+                                  GTK_STATE_FLAG_SELECTED,
+                                  0);
+    }
+  else
+    {
+      gtk_widget_unset_state_flags (GTK_WIDGET (self),
+                                    GTK_STATE_FLAG_SELECTED);
+    }
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
@@ -171,6 +184,8 @@ region_widget_get_private (RegionWidget * self)
 static void
 region_widget_class_init (RegionWidgetClass * klass)
 {
+  gtk_widget_class_set_css_name (klass,
+                                 "region");
 }
 
 static void

@@ -69,10 +69,6 @@ piano_roll_widget_class_init (
   gtk_widget_class_bind_template_child (
     klass,
     PianoRollWidget,
-    midi_ruler_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollWidget,
     midi_ruler_scroll);
   gtk_widget_class_bind_template_child (
     klass,
@@ -85,10 +81,6 @@ piano_roll_widget_class_init (
   gtk_widget_class_bind_template_child (
     klass,
     PianoRollWidget,
-    midi_notes_labels_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollWidget,
     piano_roll_labels_scroll);
   gtk_widget_class_bind_template_child (
     klass,
@@ -98,10 +90,6 @@ piano_roll_widget_class_init (
     klass,
     PianoRollWidget,
     piano_roll_labels);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollWidget,
-    midi_notes_draw_box);
   gtk_widget_class_bind_template_child (
     klass,
     PianoRollWidget,

@@ -27,6 +27,7 @@
 #include "audio/automation_track.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
+#include "audio/tracklist.h"
 #include "audio/region.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/audio_track.h"
@@ -73,40 +74,43 @@ on_show_automation (GtkWidget * widget, void * data)
   tracklist_widget_show (MW_CENTER_DOCK->tracklist);
 }
 
-gboolean
-on_draw (GtkWidget    * widget,
-         cairo_t        *cr,
-         gpointer      user_data)
-{
-  TrackWidget * self = TRACK_WIDGET (user_data);
-  TRACK_WIDGET_GET_PRIVATE (self);
-
-  guint width, height;
-  GtkStyleContext *context;
-  context = gtk_widget_get_style_context (widget);
-
-  width = gtk_widget_get_allocated_width (widget);
-  height = gtk_widget_get_allocated_height (widget);
-
-  gtk_render_background (context, cr, 0, 0, width, height);
-
-  if (tw_prv->selected)
-    {
-      cairo_set_source_rgba (cr, 1, 1, 1, 0.1);
-      cairo_rectangle (cr, 0, 0, width, height);
-      cairo_fill (cr);
-    }
-
-  return FALSE;
-}
-
 void
 track_widget_select (TrackWidget * self,
                      int           select) ///< 1 = select, 0 = unselect
 {
   TRACK_WIDGET_GET_PRIVATE (self);
-  tw_prv->selected = select;
-  gtk_widget_queue_draw (GTK_WIDGET (self));
+  tw_prv->track->selected = select;
+  if (select)
+    {
+      gtk_widget_set_state_flags (GTK_WIDGET (self),
+                                  GTK_STATE_FLAG_SELECTED,
+                                  0);
+    }
+  else
+    {
+      gtk_widget_unset_state_flags (GTK_WIDGET (self),
+                                    GTK_STATE_FLAG_SELECTED);
+    }
+}
+
+static void
+on_motion (GtkWidget * widget,
+           GdkEventMotion *event,
+           gpointer        user_data)
+{
+  TrackWidget * self = TRACK_WIDGET (user_data);
+
+  if (event->type == GDK_ENTER_NOTIFY)
+    {
+      gtk_widget_set_state_flags (GTK_WIDGET (self),
+                                  GTK_STATE_FLAG_PRELIGHT,
+                                  0);
+    }
+  else if (event->type == GDK_LEAVE_NOTIFY)
+    {
+      gtk_widget_unset_state_flags (GTK_WIDGET (self),
+                                    GTK_STATE_FLAG_PRELIGHT);
+    }
 }
 
 /**
@@ -189,11 +193,6 @@ track_widget_new (Track * track)
   TRACK_WIDGET_GET_PRIVATE (self);
   tw_prv->track = track;
 
-  g_signal_connect (self, "size-allocate",
-                    G_CALLBACK (size_allocate_cb), NULL);
-  g_signal_connect (self, "draw",
-                    G_CALLBACK (on_draw), self);
-
   return self;
 }
 
@@ -218,7 +217,20 @@ static void
 track_widget_init (TrackWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
+
   TRACK_WIDGET_GET_PRIVATE (self);
+
+  /* make widget able to notify */
+  gtk_widget_add_events (GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
+
+  g_signal_connect (G_OBJECT (self), "size-allocate",
+                    G_CALLBACK (size_allocate_cb), NULL);
+  g_signal_connect (G_OBJECT (tw_prv->event_box), "enter-notify-event",
+                    G_CALLBACK (on_motion),  self);
+  g_signal_connect (G_OBJECT(tw_prv->event_box), "leave-notify-event",
+                    G_CALLBACK (on_motion),  self);
+  g_signal_connect (G_OBJECT(tw_prv->event_box), "motion-notify-event",
+                    G_CALLBACK (on_motion),  self);
 }
 
 static void
@@ -227,6 +239,9 @@ track_widget_class_init (TrackWidgetClass * _klass)
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass,
                                 "track.ui");
+
+  gtk_widget_class_set_css_name (klass,
+                                 "track");
 
   gtk_widget_class_bind_template_child_private (
     klass,
@@ -264,4 +279,8 @@ track_widget_class_init (TrackWidgetClass * _klass)
     klass,
     TrackWidget,
     bot_controls);
+  gtk_widget_class_bind_template_child_private (
+    klass,
+    TrackWidget,
+    event_box);
 }

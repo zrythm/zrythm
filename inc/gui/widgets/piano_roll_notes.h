@@ -25,15 +25,15 @@
 #include <gtk/gtk.h>
 
 #define PIANO_ROLL_NOTES_WIDGET_TYPE                  (piano_roll_notes_widget_get_type ())
-#define PIANO_ROLL_NOTES_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), PIANO_ROLL_NOTES_WIDGET_TYPE, PianoRollNotesWidget))
-#define PIANO_ROLL_NOTES_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), PIANO_ROLL_NOTES_WIDGET, PianoRollNotesWidgetClass))
-#define IS_PIANO_ROLL_NOTES_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PIANO_ROLL_NOTES_WIDGET_TYPE))
-#define IS_PIANO_ROLL_NOTES_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), PIANO_ROLL_NOTES_WIDGET_TYPE))
-#define PIANO_ROLL_NOTES_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), PIANO_ROLL_NOTES_WIDGET_TYPE, PianoRollNotesWidgetClass))
+G_DECLARE_FINAL_TYPE (PianoRollNotesWidget,
+                      piano_roll_notes_widget,
+                      PIANO_ROLL_NOTES,
+                      WIDGET,
+                      GtkDrawingArea)
 
 #define DEFAULT_PX_PER_NOTE 8
 
-typedef struct PianoRollNotesWidget
+typedef struct _PianoRollNotesWidget
 {
   GtkDrawingArea          parent_instance;
   GtkGestureDrag          * drag;
@@ -42,18 +42,4 @@ typedef struct PianoRollNotesWidget
   int                     note; ///< current note
 } PianoRollNotesWidget;
 
-typedef struct PianoRollNotesWidgetClass
-{
-  GtkDrawingAreaClass       parent_class;
-} PianoRollNotesWidgetClass;
-
-/**
- * Creates a piano_roll_notes.
- */
-PianoRollNotesWidget *
-piano_roll_notes_widget_new ();
-
 #endif
-
-
-

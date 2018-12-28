@@ -31,7 +31,9 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (PianoRollNotesWidget, piano_roll_notes_widget, GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (PianoRollNotesWidget,
+               piano_roll_notes_widget,
+               GTK_TYPE_DRAWING_AREA)
 
 #define LABELS_WIDGET PIANO_ROLL->piano_roll_labels
 
@@ -217,45 +219,6 @@ drag_end (GtkGestureDrag *gesture,
 }
 
 static void
-on_realize (GtkWidget * widget,
-            gpointer    user_data)
-{
-  // set the size
-  gtk_widget_set_size_request (
-    widget,
-    36,
-    LABELS_WIDGET->total_px);
-}
-
-PianoRollNotesWidget *
-piano_roll_notes_widget_new ()
-{
-  g_message ("Creating piano roll notes...");
-  PianoRollNotesWidget * self = g_object_new (PIANO_ROLL_NOTES_WIDGET_TYPE, NULL);
-
-
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), NULL);
-  /*g_signal_connect (G_OBJECT(self), "button_press_event",*/
-                    /*G_CALLBACK (button_press_cb),  self);*/
-  g_signal_connect (G_OBJECT(self->drag), "drag-begin",
-                    G_CALLBACK (drag_begin),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-update",
-                    G_CALLBACK (drag_update),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-end",
-                    G_CALLBACK (drag_end),  self);
-  g_signal_connect (G_OBJECT (self->multipress), "pressed",
-                    G_CALLBACK (multipress_pressed), self);
-
-  g_signal_connect (G_OBJECT (self),
-                    "realize",
-                    G_CALLBACK (on_realize),
-                    NULL);
-
-  return self;
-}
-
-static void
 piano_roll_notes_widget_class_init (PianoRollNotesWidgetClass * klass)
 {
 }
@@ -271,6 +234,17 @@ piano_roll_notes_widget_init (PianoRollNotesWidget * self)
                 gtk_gesture_drag_new (GTK_WIDGET (self)));
   self->multipress = GTK_GESTURE_MULTI_PRESS (
                 gtk_gesture_multi_press_new (GTK_WIDGET (self)));
+
+  g_signal_connect (G_OBJECT (self), "draw",
+                    G_CALLBACK (draw_cb), NULL);
+  /*g_signal_connect (G_OBJECT(self), "button_press_event",*/
+                    /*G_CALLBACK (button_press_cb),  self);*/
+  g_signal_connect (G_OBJECT(self->drag), "drag-begin",
+                    G_CALLBACK (drag_begin),  self);
+  g_signal_connect (G_OBJECT(self->drag), "drag-update",
+                    G_CALLBACK (drag_update),  self);
+  g_signal_connect (G_OBJECT(self->drag), "drag-end",
+                    G_CALLBACK (drag_end),  self);
+  g_signal_connect (G_OBJECT (self->multipress), "pressed",
+                    G_CALLBACK (multipress_pressed), self);
 }
-
-

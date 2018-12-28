@@ -55,10 +55,9 @@
                         <property name="vscroll-policy">natural</property>
                         <child>
                           <object class="TracklistWidget" id="tracklist">
+                            <property name="name">tracklist</property>
                             <property name="visible">1</property>
                             <property name="height-request">6000</property>
-                            <property name="can-focus">1</property>
-                            <property name="focus-on-click">1</property>
                           </object>
                         </child>
                       </object>
