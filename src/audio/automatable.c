@@ -166,7 +166,6 @@ automatable_free (Automatable * automatable)
 AutomationTrack *
 automatable_get_automation_track (Automatable * automatable)
 {
-  g_message ("%p", automatable->track);
   Track * track = automatable->track;
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (track);

@@ -202,8 +202,11 @@ midi_arranger_bg_widget_new ()
 }
 
 static void
-midi_arranger_bg_widget_class_init (MidiArrangerBgWidgetClass * klass)
+midi_arranger_bg_widget_class_init (MidiArrangerBgWidgetClass * _klass)
 {
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (klass,
+                                 "arranger-bg");
 }
 
 static void

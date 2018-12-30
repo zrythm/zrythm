@@ -57,9 +57,10 @@
           <object class="GtkLabel">
             <property name="visible">1</property>
             <property name="label" translatable="yes">Project name: name
-Path: /home/alex/Zrythm/name
+Path: /home/user/Zrythm/name
 Backend: JACK
-Frame rate: 44000</property>
+Frame rate: 44100
+(note: this text is hard coded at the moment)</property>
           </object>
         </child>
       </object>

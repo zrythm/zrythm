@@ -330,8 +330,11 @@ ruler_widget_new ()
 }
 
 static void
-ruler_widget_class_init (RulerWidgetClass * klass)
+ruler_widget_class_init (RulerWidgetClass * _klass)
 {
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (klass,
+                                 "ruler");
 }
 
 static void

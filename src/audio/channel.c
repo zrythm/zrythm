@@ -321,7 +321,6 @@ generate_automatables (Channel * channel)
     {
       channel->automatables[channel->num_automatables++] =
         automatable_create_fader (channel);
-      g_message ("%p", channel->automatables[0]->track);
     }
 }
 

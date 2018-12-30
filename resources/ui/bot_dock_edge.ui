@@ -87,7 +87,7 @@
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
-                <property name="resource">/org/zrythm/icons/rack.svg</property>
+                <property name="icon-name">audio-card</property>
               </object>
               <packing>
                 <property name="expand">0</property>
@@ -119,7 +119,7 @@
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
-                <property name="resource">/org/zrythm/icons/connections.svg</property>
+                <property name="icon-name">emblem-symbolic-link</property>
               </object>
               <packing>
                 <property name="expand">0</property>

@@ -424,6 +424,7 @@ zrythm_new ()
     "application-id", "org.zrythm",
     "flags", G_APPLICATION_HANDLES_OPEN,
     NULL);
+
   return self;
 }
 

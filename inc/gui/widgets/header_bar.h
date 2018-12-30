@@ -35,17 +35,11 @@ G_DECLARE_FINAL_TYPE (HeaderBarWidget,
 typedef struct _HeaderBarWidget
 {
   GtkHeaderBar             parent_instance;
-  GtkMenuItem *            file;
-  GtkImageMenuItem *       file_new;
-  GtkImageMenuItem *       file_open;
-  GtkImageMenuItem *       file_save;
-  GtkImageMenuItem *       file_save_as;
-  GtkImageMenuItem *       file_export;
-  GtkImageMenuItem *       file_quit;
-  GtkMenuItem *            edit;
-  GtkMenuItem *            view;
-  GtkMenuItem *            help;
-  GtkImageMenuItem *       help_about;
+  GtkMenuBar *             menu_bar;
+  GtkMenu *                file_menu;
+  GtkMenu *                edit_menu;
+  GtkMenu *                view_menu;
+  GtkMenu *                help_menu;
   GtkBox *                 window_buttons;
   GtkButton *              minimize;
   GtkButton *              maximize;
@@ -56,7 +50,8 @@ HeaderBarWidget *
 header_bar_widget_new ();
 
 void
-header_bar_widget_set_title (HeaderBarWidget * self,
-                             const char * title);
+header_bar_widget_setup (HeaderBarWidget * self,
+                         MainWindowWidget * mw,
+                         const char * title);
 
 #endif

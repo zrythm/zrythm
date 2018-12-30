@@ -27,10 +27,13 @@
 #include "gui/widgets/right_dock_edge.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
+#include "utils/resources.h"
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (BrowserWidget, browser_widget, GTK_TYPE_PANED)
+G_DEFINE_TYPE (BrowserWidget,
+               browser_widget,
+               GTK_TYPE_PANED)
 
 /**
  * Visible function for plugin tree model.
@@ -429,26 +432,43 @@ browser_widget_new ()
 }
 
 static void
-browser_widget_class_init (BrowserWidgetClass * klass)
+browser_widget_class_init (BrowserWidgetClass * _klass)
 {
-  gtk_widget_class_set_template_from_resource (
-                        GTK_WIDGET_CLASS (klass),
-                        "/org/zrythm/ui/browser.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass,
+                                "browser.ui");
 
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                BrowserWidget, browser_top);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                BrowserWidget, browser_search);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                BrowserWidget, collections_exp);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                BrowserWidget, types_exp);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                BrowserWidget, cat_exp);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                BrowserWidget, browser_bot);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                BrowserWidget, plugin_info);
+  gtk_widget_class_set_css_name (klass,
+                                 "browser");
+
+  gtk_widget_class_bind_template_child (
+    klass,
+    BrowserWidget,
+    browser_top);
+  gtk_widget_class_bind_template_child (
+    klass,
+    BrowserWidget,
+    browser_search);
+  gtk_widget_class_bind_template_child (
+    klass,
+    BrowserWidget,
+    collections_exp);
+  gtk_widget_class_bind_template_child (
+    klass,
+    BrowserWidget,
+    types_exp);
+  gtk_widget_class_bind_template_child (
+    klass,
+    BrowserWidget,
+    cat_exp);
+  gtk_widget_class_bind_template_child (
+    klass,
+    BrowserWidget,
+    browser_bot);
+  gtk_widget_class_bind_template_child (
+    klass,
+    BrowserWidget,
+    plugin_info);
 }
 
 static void

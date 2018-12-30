@@ -1,5 +1,5 @@
 /*
- * gui/widgets/transport_controls.h - transport controls (play/pause/stop...)
+ * gui/widgets/center_dock_bot_box.h - Main window widget
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,28 +19,29 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_TRANSPORT_CONTROLS_H__
-#define __GUI_WIDGETS_TRANSPORT_CONTROLS_H__
+#ifndef __GUI_WIDGETS_CENTER_DOCK_BOT_BOX_H__
+#define __GUI_WIDGETS_CENTER_DOCK_BOT_BOX_H__
 
 #include <gtk/gtk.h>
+#include <dazzle.h>
 
-#define TRANSPORT_CONTROLS_WIDGET_TYPE \
-  (transport_controls_widget_get_type ())
-G_DECLARE_FINAL_TYPE (TransportControlsWidget,
-                      transport_controls_widget,
-                      TRANSPORT_CONTROLS,
+#define CENTER_DOCK_BOT_BOX_WIDGET_TYPE                  (center_dock_bot_box_widget_get_type ())
+G_DECLARE_FINAL_TYPE (CenterDockBotBoxWidget,
+                      center_dock_bot_box_widget,
+                      CENTER_DOCK_BOT_BOX,
                       WIDGET,
                       GtkBox)
 
-typedef struct _TransportControlsWidget
+typedef struct _CenterDockBotBoxWidget
 {
   GtkBox                   parent_instance;
-  GtkButton                * play;
-  GtkButton                * stop;
-  GtkButton                * backward;
-  GtkButton                * forward;
-  GtkToggleButton          * trans_record;
-  GtkToggleButton          * loop;
-} TransportControlsWidget;
+  GtkToolbar               * left_tb;
+  GtkToolButton            * instrument_add;
+  GtkToolButton *          toggle_left_dock;
+  GtkToolButton *          toggle_bot_dock;
+  SnapGridWidget           * snap_grid_midi;
+  GtkToolbar *             right_tb;
+  GtkToolButton *          toggle_right_dock;
+} CenterDockBotBoxWidget;
 
 #endif

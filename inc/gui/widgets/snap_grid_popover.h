@@ -32,7 +32,7 @@
 #define IS_SNAP_GRID_POPOVER_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), SNAP_GRID_POPOVER_WIDGET_TYPE))
 #define SNAP_GRID_POPOVER_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), SNAP_GRID_POPOVER_WIDGET_TYPE, SnapGridPopoverWidgetClass))
 
-typedef struct DigitalMeterWidget DigitalMeterWidget;
+typedef struct _DigitalMeterWidget DigitalMeterWidget;
 typedef struct _SnapGridWidget SnapGridWidget;
 
 typedef struct SnapGridPopoverWidget

@@ -4,9 +4,11 @@
     <file preprocess="xml-stripblanks">ui/audio_unit.ui</file>
     <file preprocess="xml-stripblanks">ui/automator.ui</file>
     <file preprocess="xml-stripblanks">ui/automation_track.ui</file>
+    <file preprocess="xml-stripblanks">ui/bot_bar.ui</file>
     <file preprocess="xml-stripblanks">ui/bot_dock_edge.ui</file>
     <file preprocess="xml-stripblanks">ui/browser.ui</file>
     <file preprocess="xml-stripblanks">ui/center_dock.ui</file>
+    <file preprocess="xml-stripblanks">ui/center_dock_bot_box.ui</file>
     <file preprocess="xml-stripblanks">ui/channel.ui</file>
     <file preprocess="xml-stripblanks">ui/connections.ui</file>
     <file preprocess="xml-stripblanks">ui/control.ui</file>
@@ -28,6 +30,10 @@
     <file preprocess="xml-stripblanks">ui/snap_grid_popover.ui</file>
     <file preprocess="xml-stripblanks">ui/splash.ui</file>
     <file preprocess="xml-stripblanks">ui/start_assistant.ui</file>
+    <file preprocess="xml-stripblanks">ui/top_bar.ui</file>
+    <file preprocess="xml-stripblanks">ui/top_dock_edge.ui</file>
+    <file preprocess="xml-stripblanks">ui/tracklist_header.ui</file>
+    <file preprocess="xml-stripblanks">ui/transport_controls.ui</file>
     <file>theme.css</file>
 
     <!-- icons -->
@@ -63,6 +69,7 @@
     <file>icons/stop.svg</file>
     <file>icons/z.svg</file>
     <file>z-splash.svg</file>
+    <file>icons/gnome-builder/builder-split-tab-right-symbolic-light.svg</file>
     <file>icons/gnome-builder/builder-view-left-pane-symbolic-light.svg</file>
     <file>icons/gnome-builder/builder-view-bottom-pane-symbolic-light.svg</file>
     <file>icons/gnome-builder/builder-view-right-pane-symbolic-light.svg</file>

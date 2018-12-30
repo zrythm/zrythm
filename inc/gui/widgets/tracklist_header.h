@@ -1,5 +1,6 @@
 /*
- * gui/widgets/transport_controls.h - transport controls (play/pause/stop...)
+ * gui/widgets/tracklist_header.h - The box where ruler and
+ *   tracklist meet
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,28 +20,22 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_TRANSPORT_CONTROLS_H__
-#define __GUI_WIDGETS_TRANSPORT_CONTROLS_H__
+#ifndef __GUI_WIDGETS_TRACKLIST_HEADER_H__
+#define __GUI_WIDGETS_TRACKLIST_HEADER_H__
 
 #include <gtk/gtk.h>
 
-#define TRANSPORT_CONTROLS_WIDGET_TYPE \
-  (transport_controls_widget_get_type ())
-G_DECLARE_FINAL_TYPE (TransportControlsWidget,
-                      transport_controls_widget,
-                      TRANSPORT_CONTROLS,
+#define TRACKLIST_HEADER_WIDGET_TYPE \
+  (tracklist_header_widget_get_type ())
+G_DECLARE_FINAL_TYPE (TracklistHeaderWidget,
+                      tracklist_header_widget,
+                      TRACKLIST_HEADER,
                       WIDGET,
-                      GtkBox)
+                      GtkGrid)
 
-typedef struct _TransportControlsWidget
+typedef struct _TracklistHeaderWidget
 {
-  GtkBox                   parent_instance;
-  GtkButton                * play;
-  GtkButton                * stop;
-  GtkButton                * backward;
-  GtkButton                * forward;
-  GtkToggleButton          * trans_record;
-  GtkToggleButton          * loop;
-} TransportControlsWidget;
+  GtkGrid                parent_instance;
+} TracklistHeaderWidget;
 
 #endif

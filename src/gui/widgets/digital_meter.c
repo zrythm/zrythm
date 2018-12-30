@@ -34,7 +34,9 @@
 #include <pango/pangofc-fontmap.h>
 
 
-G_DEFINE_TYPE (DigitalMeterWidget, digital_meter_widget, GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (DigitalMeterWidget,
+               digital_meter_widget,
+               GTK_TYPE_DRAWING_AREA)
 
 #define FONT "Monospace"
 #define FONT_SIZE 16

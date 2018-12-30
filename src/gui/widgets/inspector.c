@@ -28,46 +28,11 @@
 #include "gui/widgets/inspector_track.h"
 #include "gui/widgets/main_window.h"
 #include "utils/gtk.h"
+#include "utils/resources.h"
 
 #include <gtk/gtk.h>
 
 G_DEFINE_TYPE (InspectorWidget, inspector_widget, GTK_TYPE_BOX)
-
-
-static void
-inspector_widget_class_init (InspectorWidgetClass * klass)
-{
-  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
-                                               "/org/zrythm/ui/inspector.ui");
-
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        InspectorWidget,
-                                        top_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        InspectorWidget,
-                                        track_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        InspectorWidget,
-                                        region_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        InspectorWidget,
-                                        ap_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        InspectorWidget,
-                                        bot_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        InspectorWidget,
-                                        midi_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        InspectorWidget,
-                                        no_item_label);
-}
-
-static void
-inspector_widget_init (InspectorWidget * self)
-{
-  gtk_widget_init_template (GTK_WIDGET (self));
-}
 
 InspectorWidget *
 inspector_widget_new ()
@@ -181,4 +146,51 @@ inspector_widget_show_selections (InspectorWidgetChildType type,
       !gtk_widget_get_visible (GTK_WIDGET (self->track)) &&
       !gtk_widget_get_visible (GTK_WIDGET (self->ap)))
     gtk_widget_set_visible (GTK_WIDGET (self->no_item_label), 1);
+}
+
+static void
+inspector_widget_class_init (
+  InspectorWidgetClass * _klass)
+{
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass,
+                                "inspector.ui");
+
+  gtk_widget_class_set_css_name (klass,
+                                 "inspector");
+
+  gtk_widget_class_bind_template_child (
+    klass,
+    InspectorWidget,
+    top_box);
+  gtk_widget_class_bind_template_child (
+    klass,
+    InspectorWidget,
+    track_box);
+  gtk_widget_class_bind_template_child (
+    klass,
+    InspectorWidget,
+    region_box);
+  gtk_widget_class_bind_template_child (
+    klass,
+    InspectorWidget,
+    ap_box);
+  gtk_widget_class_bind_template_child (
+    klass,
+    InspectorWidget,
+    bot_box);
+  gtk_widget_class_bind_template_child (
+    klass,
+    InspectorWidget,
+    midi_box);
+  gtk_widget_class_bind_template_child (
+    klass,
+    InspectorWidget,
+    no_item_label);
+}
+
+static void
+inspector_widget_init (InspectorWidget * self)
+{
+  gtk_widget_init_template (GTK_WIDGET (self));
 }

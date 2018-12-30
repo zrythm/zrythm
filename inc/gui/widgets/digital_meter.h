@@ -24,12 +24,13 @@
 
 #include <gtk/gtk.h>
 
-#define DIGITAL_METER_WIDGET_TYPE                  (digital_meter_widget_get_type ())
-#define DIGITAL_METER_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), DIGITAL_METER_WIDGET_TYPE, DigitalMeter))
-#define DIGITAL_METER_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), DIGITAL_METER_WIDGET, DigitalMeterWidgetClass))
-#define IS_DIGITAL_METER_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), DIGITAL_METER_WIDGET_TYPE))
-#define IS_DIGITAL_METER_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), DIGITAL_METER_WIDGET_TYPE))
-#define DIGITAL_METER_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), DIGITAL_METER_WIDGET_TYPE, DigitalMeterWidgetClass))
+#define DIGITAL_METER_WIDGET_TYPE \
+  (digital_meter_widget_get_type ())
+G_DECLARE_FINAL_TYPE (DigitalMeterWidget,
+                      digital_meter_widget,
+                      DIGITAL_METER,
+                      WIDGET,
+                      GtkDrawingArea)
 
 typedef enum DigitalMeterType
 {
@@ -38,7 +39,9 @@ typedef enum DigitalMeterType
   DIGITAL_METER_TYPE_TIMESIG
 } DigitalMeterType;
 
-typedef struct DigitalMeterWidget
+typedef struct SnapGrid SnapGrid;
+
+typedef struct _DigitalMeterWidget
 {
   GtkDrawingArea           parent_instance;
   DigitalMeterType         type;
@@ -74,11 +77,6 @@ typedef struct DigitalMeterWidget
   int                      update_dens; ///< flag to update density
   int                      start_dens; ///< start density
 } DigitalMeterWidget;
-
-typedef struct DigitalMeterWidgetClass
-{
-  GtkDrawingAreaClass       parent_class;
-} DigitalMeterWidgetClass;
 
 /**
  * Creates a digital meter with the given type (bpm or position).

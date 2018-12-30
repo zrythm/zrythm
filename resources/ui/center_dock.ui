@@ -19,21 +19,8 @@
                 <property name="visible">1</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkGrid" id="tracklist_header">
+                  <object class="TracklistHeaderWidget" id="tracklist_header">
                     <property name="visible">1</property>
-                    <property name="height_request">60</property>
-                    <child>
-                      <object class="GtkButton" id="button1">
-                        <property name="label" translatable="yes">button</property>
-                        <property name="visible">1</property>
-                        <property name="can-focus">1</property>
-                        <property name="receives-default">1</property>
-                      </object>
-                      <packing>
-                        <property name="left-attach">1</property>
-                        <property name="top-attach">0</property>
-                      </packing>
-                    </child>
                   </object>
                 </child>
                 <child>
@@ -137,76 +124,8 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="below_timeline_box">
+          <object class="CenterDockBotBoxWidget" id="bot_box">
             <property name="visible">1</property>
-            <child>
-              <object class="GtkToolbar" id="left_tb">
-                <property name="visible">1</property>
-                <property name="icon-size">2</property>
-                <child>
-                  <object class="GtkToolButton" id="instrument_add">
-                    <property name="visible">1</property>
-                    <property name="is-important">1</property>
-                  </object>
-                  <packing>
-                    <property name="homogeneous">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkToolButton" id="toggle_left_dock">
-                    <property name="visible">1</property>
-                    <property name="label" translatable="yes">Left</property>
-                    <property name="tooltip-text">Show/hide left panel</property>
-                    <signal name="clicked" handler="on_toggle_left_dock_clicked" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="homogeneous">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkToolButton" id="toggle_bot_dock">
-                    <property name="visible">1</property>
-                    <property name="label" translatable="yes">Bot</property>
-                    <property name="tooltip-text">Show/hide of bottom panel</property>
-                    <signal name="clicked" handler="on_toggle_bottom_dock_clicked" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="homogeneous">1</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="fill">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="SnapGridWidget" id="snap_grid_midi">
-                <property name="visible">1</property>
-              </object>
-              <packing>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolbar" id="right_tb">
-                <property name="visible">1</property>
-                <property name="halign">GTK_ALIGN_END</property>
-                <child>
-                  <object class="GtkToolButton" id="toggle_right_dock">
-                    <property name="visible">1</property>
-                    <property name="label" translatable="yes">Right</property>
-                    <property name="tooltip-text">Show/hide of right panel</property>
-                    <signal name="clicked" handler="on_toggle_right_dock_clicked" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="homogeneous">1</property>
-                  </packing>
-                </child>
-              </object>>
-              <packing>
-                <property name="position">2</property>
-              </packing>
-            </child>
           </object>
           <packing>
             <property name="position">1</property>
@@ -224,6 +143,9 @@
     </child>
     <child type="bottom">
       <object class="BotDockEdgeWidget" id="bot_dock_edge"/>
+    </child>
+    <child type="top">
+      <object class="TopDockEdgeWidget" id="top_dock_edge"/>
     </child>
   </template>
 </interface>

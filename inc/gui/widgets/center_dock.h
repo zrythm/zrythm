@@ -25,7 +25,8 @@
 #include <gtk/gtk.h>
 #include <dazzle.h>
 
-#define CENTER_DOCK_WIDGET_TYPE                  (center_dock_widget_get_type ())
+#define CENTER_DOCK_WIDGET_TYPE \
+  (center_dock_widget_get_type ())
 G_DECLARE_FINAL_TYPE (CenterDockWidget,
                       center_dock_widget,
                       CENTER_DOCK,
@@ -41,6 +42,9 @@ typedef struct _TimelineRulerWidget TimelineRulerWidget;
 typedef struct _LeftDockEdgeWidget LeftDockEdgeWidget;
 typedef struct _RightDockEdgeWidget RightDockEdgeWidget;
 typedef struct _BotDockEdgeWidget BotDockEdgeWidget;
+typedef struct _TopDockEdgeWidget TopDockEdgeWidget;
+typedef struct _CenterDockBotBoxWidget CenterDockBotBoxWidget;
+typedef struct _TracklistHeaderWidget TracklistHeaderWidget;
 
 typedef struct _CenterDockWidget
 {
@@ -50,24 +54,19 @@ typedef struct _CenterDockWidget
   GtkBox                   * tracklist_top;
   GtkScrolledWindow        * tracklist_scroll;
   GtkViewport              * tracklist_viewport;
-  GtkGrid                  * tracklist_header;
+  TracklistHeaderWidget *  tracklist_header;
   TracklistWidget          * tracklist;
   GtkScrolledWindow        * ruler_scroll;
   GtkViewport              * ruler_viewport;
   TimelineRulerWidget *    ruler;
   GtkScrolledWindow        * timeline_scroll;
   GtkViewport              * timeline_viewport;
+  CenterDockBotBoxWidget * bot_box;
   TimelineArrangerWidget * timeline;
-  GtkToolbar               * left_tb;
-  GtkToolButton            * instrument_add;
-  GtkToolButton *          toggle_left_dock;
-  GtkToolButton *          toggle_bot_dock;
-  SnapGridWidget           * snap_grid_midi;
-  GtkToolbar *             right_tb;
-  GtkToolButton *          toggle_right_dock;
   LeftDockEdgeWidget *     left_dock_edge;
   RightDockEdgeWidget *    right_dock_edge;
   BotDockEdgeWidget *      bot_dock_edge;
+  TopDockEdgeWidget *      top_dock_edge;
 } CenterDockWidget;
 
 #endif

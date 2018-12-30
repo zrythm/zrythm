@@ -57,6 +57,17 @@ splash_window_widget_new (ZrythmApp * app)
                                             NULL);
   gtk_progress_bar_set_fraction (self->progress_bar,
                                  0.0);
+
+  // set default css provider
+  GtkCssProvider * css_provider = gtk_css_provider_new();
+  gtk_css_provider_load_from_resource (css_provider,
+                                       "/org/zrythm/theme.css");
+  gtk_style_context_add_provider_for_screen (
+          gdk_screen_get_default (),
+          GTK_STYLE_PROVIDER (css_provider),
+          800);
+  g_object_unref (css_provider);
+
   return self;
 }
 

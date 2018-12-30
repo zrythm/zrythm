@@ -1,5 +1,5 @@
 /*
- * gui/widgets/transport_controls.h - transport controls (play/pause/stop...)
+ * gui/widgets/top_dock_edge.h - Main window widget
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,28 +19,27 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_TRANSPORT_CONTROLS_H__
-#define __GUI_WIDGETS_TRANSPORT_CONTROLS_H__
+#ifndef __GUI_WIDGETS_TOP_DOCK_EDGE_H__
+#define __GUI_WIDGETS_TOP_DOCK_EDGE_H__
+
 
 #include <gtk/gtk.h>
+#include <dazzle.h>
 
-#define TRANSPORT_CONTROLS_WIDGET_TYPE \
-  (transport_controls_widget_get_type ())
-G_DECLARE_FINAL_TYPE (TransportControlsWidget,
-                      transport_controls_widget,
-                      TRANSPORT_CONTROLS,
+#define TOP_DOCK_EDGE_WIDGET_TYPE                  (top_dock_edge_widget_get_type ())
+G_DECLARE_FINAL_TYPE (TopDockEdgeWidget,
+                      top_dock_edge_widget,
+                      TOP_DOCK_EDGE,
                       WIDGET,
                       GtkBox)
 
-typedef struct _TransportControlsWidget
+#define MW_TOP_DOCK_EDGE MW_CENTER_DOCK->top_dock_edge
+
+typedef struct _TopDockEdgeWidget
 {
   GtkBox                   parent_instance;
-  GtkButton                * play;
-  GtkButton                * stop;
-  GtkButton                * backward;
-  GtkButton                * forward;
-  GtkToggleButton          * trans_record;
-  GtkToggleButton          * loop;
-} TransportControlsWidget;
+  GtkToolbar *             top_toolbar;
+  SnapGridWidget *         snap_grid_timeline;
+} TopDockEdgeWidget;
 
 #endif

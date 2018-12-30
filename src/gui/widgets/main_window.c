@@ -25,14 +25,15 @@
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "audio/transport.h"
+#include "gui/accel.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
-#include "gui/widgets/bpm.h"
 #include "gui/widgets/browser.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/center_dock_bot_box.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/connections.h"
-#include "gui/widgets/digital_meter.h"
 #include "gui/widgets/header_bar.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/inspector_region.h"
@@ -44,8 +45,8 @@
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
+#include "gui/widgets/top_bar.h"
 #include "gui/widgets/tracklist.h"
-#include "gui/widgets/transport_controls.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/resources.h"
@@ -112,57 +113,19 @@ main_window_widget_new (ZrythmApp * _app)
 
   gtk_window_set_title (GTK_WINDOW (self), "Zrythm");
 
-  // set default css provider
-  GtkCssProvider * css_provider = gtk_css_provider_new();
-  gtk_css_provider_load_from_resource (css_provider,
-                                       "/org/zrythm/theme.css");
-  gtk_style_context_add_provider_for_screen (
-          gdk_screen_get_default (),
-          GTK_STYLE_PROVIDER (css_provider),
-          800);
-  g_object_unref (css_provider);
-
-
-
-  /*gtk_widget_add_events (GTK_WIDGET (self->main_box),*/
-                         /*GDK_KEY_PRESS_MASK);*/
-  /*g_signal_connect (G_OBJECT (self), "grab-notify",*/
-                    /*G_CALLBACK (key_press_cb), NULL);*/
-
-  /* show regions */
-  /*for (int i = 0; i < MIXER->num_channels; i++)*/
-    /*{*/
-      /*Channel * channel = MIXER->channels[i];*/
-      /*for (int j = 0; j < channel->track->num_regions; j++)*/
-        /*{*/
-          /*gtk_overlay_add_overlay (GTK_OVERLAY (self->timeline),*/
-                                   /*GTK_WIDGET (channel->track->regions[j]->widget));*/
-        /*}*/
-    /*}*/
-  /*for (int j = 0; j < MIXER->master->track->num_regions; j++)*/
-    /*{*/
-      /*gtk_overlay_add_overlay (GTK_OVERLAY (self->timeline),*/
-                               /*GTK_WIDGET (MIXER->master->track->regions[j]->widget));*/
-    /*}*/
-  /*gtk_widget_show_all (GTK_WIDGET (self->timeline));*/
-
   return self;
 }
 
 void
 main_window_widget_refresh (MainWindowWidget * self)
 {
-  header_bar_widget_set_title (MW_HEADER_BAR,
-                               PROJECT->title);
+  header_bar_widget_setup (MW_HEADER_BAR,
+                           self,
+                           PROJECT->title);
 
   connections_widget_refresh (MW_CONNECTIONS);
   tracklist_widget_setup (MW_TRACKLIST,
                           TRACKLIST);
-
-  /* setup top toolbar */
-  snap_grid_widget_setup (
-    self->snap_grid_timeline,
-    &ZRYTHM->snap_grid_timeline);
 
   /* setup ruler */
   gtk_scrolled_window_set_hadjustment (
@@ -183,7 +146,7 @@ main_window_widget_refresh (MainWindowWidget * self)
     GTK_WIDGET (MW_CENTER_DOCK->timeline));
 
   /* setup bot toolbar */
-  snap_grid_widget_setup (MW_CENTER_DOCK->snap_grid_midi,
+  snap_grid_widget_setup (MW_CENTER_DOCK->bot_box->snap_grid_midi,
                           &ZRYTHM->snap_grid_midi);
 
   /* setup piano roll */
@@ -199,82 +162,79 @@ main_window_widget_refresh (MainWindowWidget * self)
           GTK_WINDOW (self),
           gtk_image_get_pixbuf (GTK_IMAGE (image)));
 
-  /* setup digital meters */
-  self->digital_bpm = digital_meter_widget_new (DIGITAL_METER_TYPE_BPM, NULL);
-  self->digital_transport = digital_meter_widget_new (DIGITAL_METER_TYPE_POSITION,
-                                                      NULL);
-  gtk_container_add (GTK_CONTAINER (self->digital_meters),
-                     GTK_WIDGET (self->digital_bpm));
-  gtk_container_add (GTK_CONTAINER (self->digital_meters),
-                     GTK_WIDGET (self->digital_transport));
-  gtk_widget_show_all (GTK_WIDGET (self->digital_meters));
-
-  /* set transport controls */
-  transport_controls_init (self);
+  /* setup top and bot bars */
+  top_bar_widget_refresh (self->top_bar);
+  bot_bar_widget_refresh (self->bot_bar);
 }
 
 static void
-main_window_widget_class_init (MainWindowWidgetClass * klass)
+main_window_widget_class_init (MainWindowWidgetClass * _klass)
 {
-  resources_set_class_template (GTK_WIDGET_CLASS (klass),
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass,
                                 "main_window.ui");
 
   gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
+    klass,
     MainWindowWidget,
     main_box);
   gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
+    klass,
     MainWindowWidget,
     header_bar_box);
   gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
+    klass,
     MainWindowWidget,
     header_bar);
   gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
+    klass,
     MainWindowWidget,
-    top_toolbar);
+    top_bar);
   gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
-    MainWindowWidget,
-    snap_grid_timeline);
-  gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
+    klass,
     MainWindowWidget,
     center_box);
   gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
+    klass,
     MainWindowWidget,
     center_dock);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, bot_bar);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, bot_bar_left);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, digital_meters);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, transport);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, play);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, stop);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, backward);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, forward);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, trans_record);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        MainWindowWidget, loop);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
-                                           on_main_window_destroy);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
-                                           on_state_changed);
+  gtk_widget_class_bind_template_child (
+    klass,
+    MainWindowWidget,
+    bot_bar);
+  gtk_widget_class_bind_template_callback (
+    klass,
+    on_main_window_destroy);
+  gtk_widget_class_bind_template_callback (
+    klass,
+    on_state_changed);
 }
+
+/*static gboolean*/
+/*on_export (GtkAccelGroup *accel_group,*/
+           /*GObject *acceleratable,*/
+           /*guint keyval,*/
+           /*GdkModifierType modifier)*/
+/*{*/
+  /*g_message ("exporting");*/
+
+/*}*/
 
 static void
 main_window_widget_init (MainWindowWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  accel_add_all ();
+  self->accel_group = gtk_accel_group_new ();
+  gtk_window_add_accel_group (GTK_WINDOW (self),
+                              self->accel_group);
+  /*GClosure * closure =*/
+    /*g_cclosure_new (G_CALLBACK (on_export),*/
+                    /*NULL,*/
+                    /*NULL);*/
+  /*gtk_accel_group_connect_by_path (self->accel_group,*/
+                                   /*"<MainWindow>/File/Export As",*/
+                                   /*closure);*/
+
 }

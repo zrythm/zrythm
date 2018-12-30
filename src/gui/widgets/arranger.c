@@ -876,26 +876,6 @@ arranger_widget_setup (ArrangerWidget *   self,
     }
 }
 
-static void
-arranger_widget_class_init (ArrangerWidgetClass * klass)
-{
-}
-
-static void
-arranger_widget_init (ArrangerWidget *self)
-{
-  GET_PRIVATE;
-
-  prv->drag = GTK_GESTURE_DRAG (
-                gtk_gesture_drag_new (GTK_WIDGET (self)));
-  prv->multipress = GTK_GESTURE_MULTI_PRESS (
-                gtk_gesture_multi_press_new (GTK_WIDGET (self)));
-  prv->right_mouse_mp = GTK_GESTURE_MULTI_PRESS (
-                gtk_gesture_multi_press_new (GTK_WIDGET (self)));
-  gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (prv->right_mouse_mp),
-                                 GDK_BUTTON_SECONDARY);
-}
-
 /**
  * Draws the selection in its background.
  *
@@ -933,3 +913,23 @@ arranger_bg_draw_selections (ArrangerWidget * self,
     }
 }
 
+
+static void
+arranger_widget_class_init (ArrangerWidgetClass * _klass)
+{
+}
+
+static void
+arranger_widget_init (ArrangerWidget *self)
+{
+  GET_PRIVATE;
+
+  prv->drag = GTK_GESTURE_DRAG (
+                gtk_gesture_drag_new (GTK_WIDGET (self)));
+  prv->multipress = GTK_GESTURE_MULTI_PRESS (
+                gtk_gesture_multi_press_new (GTK_WIDGET (self)));
+  prv->right_mouse_mp = GTK_GESTURE_MULTI_PRESS (
+                gtk_gesture_multi_press_new (GTK_WIDGET (self)));
+  gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (prv->right_mouse_mp),
+                                 GDK_BUTTON_SECONDARY);
+}

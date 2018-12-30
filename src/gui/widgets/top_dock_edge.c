@@ -1,7 +1,7 @@
 /*
- * gui/widgets/bot_dock_edge.c - Main window widget
+ * gui/widgets/top_dock_edge.c - Main window widget
  *
- * Copybot (C) 2018 Alexandros Theodotou
+ * Copytop (C) 2018 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -19,57 +19,46 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "gui/widgets/bot_dock_edge.h"
-#include "gui/widgets/connections.h"
-#include "gui/widgets/mixer.h"
-#include "gui/widgets/piano_roll.h"
-#include "gui/widgets/rack.h"
+#include "zrythm.h"
+#include "gui/widgets/snap_grid.h"
+#include "gui/widgets/top_dock_edge.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
-G_DEFINE_TYPE (BotDockEdgeWidget,
-               bot_dock_edge_widget,
+G_DEFINE_TYPE (TopDockEdgeWidget,
+               top_dock_edge_widget,
                GTK_TYPE_BOX)
 
 static void
-bot_dock_edge_widget_init (BotDockEdgeWidget * self)
+top_dock_edge_widget_init (TopDockEdgeWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  /* set icons */
-  gtk_button_set_image (
-    GTK_BUTTON (self->mixer->channels_add),
-    resources_get_icon ("plus.svg"));
+  /* setup top toolbar */
+  snap_grid_widget_setup (
+    self->snap_grid_timeline,
+    &ZRYTHM->snap_grid_timeline);
+
 }
 
 static void
-bot_dock_edge_widget_class_init (BotDockEdgeWidgetClass * _klass)
+top_dock_edge_widget_class_init (
+  TopDockEdgeWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass,
-                                "bot_dock_edge.ui");
+                                "top_dock_edge.ui");
 
   gtk_widget_class_set_css_name (klass,
-                                 "bot-dock-edge");
+                                 "top-dock-edge");
 
   gtk_widget_class_bind_template_child (
     klass,
-    BotDockEdgeWidget,
-    bot_notebook);
+    TopDockEdgeWidget,
+    top_toolbar);
   gtk_widget_class_bind_template_child (
     klass,
-    BotDockEdgeWidget,
-    piano_roll);
-  gtk_widget_class_bind_template_child (
-    klass,
-    BotDockEdgeWidget,
-    mixer);
-  gtk_widget_class_bind_template_child (
-    klass,
-    BotDockEdgeWidget,
-    rack);
-  gtk_widget_class_bind_template_child (
-    klass,
-    BotDockEdgeWidget,
-    connections);
+    TopDockEdgeWidget,
+    snap_grid_timeline);
 }
+

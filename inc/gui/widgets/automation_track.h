@@ -34,7 +34,7 @@ G_DECLARE_FINAL_TYPE (AutomationTrackWidget,
 
 typedef struct _TrackWidget TrackWidget;
 typedef struct AutomationTrack AutomationTrack;
-typedef struct DigitalMeterWidget DigitalMeterWidget;
+typedef struct _DigitalMeterWidget DigitalMeterWidget;
 typedef struct Track Track;
 typedef struct AutomationPointWidget AutomationPointWidget;
 

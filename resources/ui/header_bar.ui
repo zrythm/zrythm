@@ -3,129 +3,91 @@
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <template class="HeaderBarWidget" parent="GtkHeaderBar">
-    <property name="name">header</property>
     <property name="visible">True</property>
-    <property name="can-focus">False</property>
+    <property name="can_focus">False</property>
     <property name="title" translatable="yes">Zrythm</property>
     <property name="subtitle" translatable="yes">Project name</property>
     <child>
       <object class="GtkBox">
-        <property name="visible">1</property>
-        <property name="orientation">vertical</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
         <child>
-          <object class="GtkMenuBar" id="menubar">
-            <property name="visible">1</property>
+          <object class="GtkImage">
+            <property name="width_request">20</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="resource">/org/zrythm/icons/z.svg</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkMenuBar" id="menu_bar">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <child>
               <object class="GtkMenuItem" id="file">
-                <property name="visible">1</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">_File</property>
-                <property name="use-underline">1</property>
+                <property name="use_underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu" id="file_menu">
-                    <property name="visible">1</property>
-                    <child>
-                      <object class="GtkImageMenuItem" id="file_new">
-                        <property name="visible">1</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkImageMenuItem" id="file_open">
-                        <property name="visible">1</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkImageMenuItem" id="file_save">
-                        <property name="visible">1</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkImageMenuItem" id="file_save_as">
-                        <property name="visible">1</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkSeparatorMenuItem" id="fmi5">
-                        <property name="visible">1</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkMenuItem" id="file_export">
-                        <property name="visible">1</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkSeparatorMenuItem" id="fmi1">
-                        <property name="visible">1</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkImageMenuItem" id="file_quit">
-                        <property name="visible">1</property>
-                      </object>
-                    </child>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                   </object>
                 </child>
               </object>
             </child>
             <child>
               <object class="GtkMenuItem" id="edit">
-                <property name="visible">1</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">_Edit</property>
-                <property name="use-underline">1</property>
+                <property name="use_underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu" id="edit_menu">
-                    <property name="visible">1</property>
-                    <child>
-                      <object class="GtkImageMenuItem" id="emi1">
-                        <property name="visible">1</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkImageMenuItem" id="emi2">
-                        <property name="visible">1</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkImageMenuItem" id="emi3">
-                        <property name="visible">1</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkImageMenuItem" id="emi4">
-                        <property name="visible">1</property>
-                      </object>
-                    </child>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                   </object>
                 </child>
               </object>
             </child>
             <child>
               <object class="GtkMenuItem" id="view">
-                <property name="visible">1</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">_View</property>
-                <property name="use-underline">1</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="view_menu">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
               <object class="GtkMenuItem" id="help">
-                <property name="visible">1</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">_Help</property>
-                <property name="use-underline">1</property>
+                <property name="use_underline">True</property>
                 <child type="submenu">
-                  <object class="GtkMenu">
-                    <property name="visible">1</property>
-                    <child>
-                      <object class="GtkImageMenuItem" id="help_about">
-                        <property name="visible">1</property>
-                      </object>
-                    </child>
+                  <object class="GtkMenu" id="help_menu">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                   </object>
                 </child>
               </object>
             </child>
           </object>
           <packing>
-            <property name="expand">1</property>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
         </child>
@@ -133,44 +95,55 @@
     </child>
     <child>
       <object class="GtkBox" id="window_buttons">
-        <property name="visible">1</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
         <child>
           <object class="GtkButton" id="minimize">
-            <property name="visible">1</property>
-            <property name="halign">start</property>
-            <property name="valign">start</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="receives_default">False</property>
             <property name="relief">none</property>
             <signal name="clicked" handler="minimize_clicked" object="HeaderBarWidget" swapped="no"/>
           </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
         </child>
         <child>
           <object class="GtkButton" id="maximize">
-            <property name="visible">1</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="receives_default">False</property>
             <property name="relief">none</property>
             <signal name="clicked" handler="maximize_clicked" object="HeaderBarWidget" swapped="no"/>
           </object>
           <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
         </child>
         <child>
           <object class="GtkButton" id="close">
-            <property name="visible">1</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="receives_default">False</property>
             <property name="relief">none</property>
             <signal name="clicked" handler="close_clicked" object="HeaderBarWidget" swapped="no"/>
           </object>
           <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
             <property name="position">2</property>
           </packing>
         </child>
       </object>
       <packing>
-        <property name="pack-type">end</property>
+        <property name="pack_type">end</property>
         <property name="position">2</property>
       </packing>
     </child>
-    <style>
-      <class name="window_dragging_class"/>
-    </style>
   </template>
 </interface>

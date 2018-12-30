@@ -1,5 +1,5 @@
 /*
- * gui/widgets/transport_controls.h - transport controls (play/pause/stop...)
+ * gui/widgets/bot_bar.h - Bottom bar
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,28 +19,29 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_TRANSPORT_CONTROLS_H__
-#define __GUI_WIDGETS_TRANSPORT_CONTROLS_H__
+#ifndef __GUI_WIDGETS_BOT_BAR_H__
+#define __GUI_WIDGETS_BOT_BAR_H__
 
 #include <gtk/gtk.h>
 
-#define TRANSPORT_CONTROLS_WIDGET_TYPE \
-  (transport_controls_widget_get_type ())
-G_DECLARE_FINAL_TYPE (TransportControlsWidget,
-                      transport_controls_widget,
-                      TRANSPORT_CONTROLS,
+#define BOT_BAR_WIDGET_TYPE \
+  (bot_bar_widget_get_type ())
+G_DECLARE_FINAL_TYPE (BotBarWidget,
+                      bot_bar_widget,
+                      BOT_BAR,
                       WIDGET,
                       GtkBox)
 
-typedef struct _TransportControlsWidget
+#define BOT_BAR MW->bot_bar
+
+
+typedef struct _BotBarWidget
 {
-  GtkBox                   parent_instance;
-  GtkButton                * play;
-  GtkButton                * stop;
-  GtkButton                * backward;
-  GtkButton                * forward;
-  GtkToggleButton          * trans_record;
-  GtkToggleButton          * loop;
-} TransportControlsWidget;
+  GtkBox                    parent_instance;
+  GtkToolbar *              bot_bar_left;
+} BotBarWidget;
+
+void
+bot_bar_widget_refresh (BotBarWidget * self);
 
 #endif

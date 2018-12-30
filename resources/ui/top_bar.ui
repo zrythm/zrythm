@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.22.1 -->
+<interface>
+  <requires lib="gtk+" version="3.20"/>
+  <template class="TopBarWidget" parent="GtkBox">
+    <property name="visible">1</property>
+    <child>
+      <object class="GtkToolbar" id="top_bar_left">
+        <property name="visible">1</property>
+        <child>
+          <object class="GtkToolButton" id="toolbutton8">
+            <property name="visible">1</property>
+            <property name="label" translatable="yes">New</property>
+          </object>
+          <packing>
+            <property name="homogeneous">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox" id="digital_meters">
+        <property name="visible">1</property>
+      </object>
+      <packing>
+        <property name="position">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="TransportControlsWidget" id="transport_controls">
+        <property name="visible">1</property>
+        <property name="hexpand">1</property>
+      </object>
+      <packing>
+        <property name="position">2</property>
+      </packing>
+    </child>
+  </template>
+</interface>

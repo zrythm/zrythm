@@ -258,8 +258,11 @@ drag_end (GtkGestureDrag *gesture,
 }
 
 static void
-piano_roll_labels_widget_class_init (PianoRollLabelsWidgetClass * klass)
+piano_roll_labels_widget_class_init (PianoRollLabelsWidgetClass * _klass)
 {
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (klass,
+                                 "piano-roll-labels");
 }
 
 static void

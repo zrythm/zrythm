@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.22.1 -->
+<interface>
+  <requires lib="gtk+" version="3.20"/>
+  <template class="TopDockEdgeWidget" parent="GtkBox">
+    <property name="visible">1</property>
+    <property name="hexpand">1</property>
+    <child>
+      <object class="GtkToolbar" id="top_toolbar">
+        <property name="visible">1</property>
+        <property name="icon-size">2</property>
+        <child>
+          <object class="GtkToolButton" id="toolbutton">
+            <property name="visible">1</property>
+            <property name="label" translatable="yes">New</property>
+          </object>
+          <packing>
+            <property name="homogeneous">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToolButton" id="toolbutton1">
+            <property name="visible">1</property>
+            <property name="label" translatable="yes">New</property>
+          </object>
+          <packing>
+            <property name="homogeneous">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToolButton" id="toolbutton2">
+            <property name="visible">1</property>
+            <property name="label" translatable="yes">New</property>
+          </object>
+          <packing>
+            <property name="homogeneous">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToolButton" id="toolbutton3">
+            <property name="visible">1</property>
+            <property name="label" translatable="yes">New</property>
+          </object>
+          <packing>
+            <property name="homogeneous">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox" id="top_box_right">
+        <property name="visible">1</property>
+        <child>
+          <object class="GtkBox" id="project_scale_box">
+            <property name="visible">1</property>
+            <property name="orientation">vertical</property>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="SnapGridWidget" id="snap_grid_timeline">
+            <property name="visible">1</property>
+          </object>
+          <packing>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="position">1</property>
+      </packing>
+    </child>
+  </template>
+</interface>

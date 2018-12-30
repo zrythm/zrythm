@@ -34,6 +34,7 @@
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_ruler.h"
+#include "gui/widgets/top_bar.h"
 #include "audio/snap_grid.h"
 
 #include <gtk/gtk.h>
@@ -234,10 +235,10 @@ position_updated (Position * position)
 {
   if (MAIN_WINDOW)
     {
-      if (MAIN_WINDOW->digital_transport)
+      if (TOP_BAR->digital_transport)
         {
           gtk_widget_queue_draw (
-                  GTK_WIDGET (MAIN_WINDOW->digital_transport));
+            GTK_WIDGET (TOP_BAR->digital_transport));
         }
       if (MW_RULER)
         {

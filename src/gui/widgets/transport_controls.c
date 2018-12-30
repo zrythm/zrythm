@@ -22,9 +22,14 @@
 #include "project.h"
 #include "audio/transport.h"
 #include "audio/midi.h"
-#include "gui/widgets/main_window.h"
+#include "gui/widgets/transport_controls.h"
+#include "utils/resources.h"
 
 #include <gtk/gtk.h>
+
+G_DEFINE_TYPE (TransportControlsWidget,
+               transport_controls_widget,
+               GTK_TYPE_BOX)
 
 static void
 play_clicked_cb (GtkButton *button,
@@ -61,21 +66,6 @@ record_toggled_cb (GtkToggleButton * tg,
                    gpointer        user_data)
 {
   /* TODO */
-  if (gtk_toggle_button_get_active (tg))
-    {
-      GtkWidget * image = gtk_image_new_from_resource (
-              "/org/zrythm/record-on.svg");
-      gtk_button_set_image (GTK_BUTTON (MAIN_WINDOW->trans_record),
-                            image);
-    }
-  else
-    {
-      GtkWidget * image = gtk_image_new_from_resource (
-              "/org/zrythm/record.svg");
-      gtk_button_set_image (GTK_BUTTON (MAIN_WINDOW->trans_record),
-                            image);
-
-    }
 }
 
 static void
@@ -96,44 +86,66 @@ loop_toggled_cb (GtkToggleButton * loop,
  * Initializes the transport controls in the main window.
  */
 void
-transport_controls_init (MainWindowWidget * mw)
+transport_controls_widget_refresh (MainWindowWidget * mw)
 {
-  /* add icons */
-  GtkWidget * image = gtk_image_new_from_resource (
-          "/org/zrythm/play.svg");
-  gtk_button_set_image (mw->play, image);
-  image = gtk_image_new_from_resource (
-          "/org/zrythm/stop.svg");
-  gtk_button_set_image (mw->stop, image);
-  image = gtk_image_new_from_resource (
-          "/org/zrythm/record.svg");
-  gtk_button_set_image (GTK_BUTTON (mw->trans_record), image);
-  image = gtk_image_new_from_resource (
-          "/org/zrythm/loop.svg");
-  gtk_button_set_image (GTK_BUTTON (mw->loop), image);
-  image = gtk_image_new_from_resource (
-          "/org/zrythm/forward.svg");
-  gtk_button_set_image (GTK_BUTTON (mw->forward), image);
-  image = gtk_image_new_from_resource (
-          "/org/zrythm/rewind.svg");
-  gtk_button_set_image (GTK_BUTTON (mw->backward), image);
+}
 
-  g_signal_connect (GTK_WIDGET (mw->play),
+static void
+transport_controls_widget_class_init (
+  TransportControlsWidgetClass * _klass)
+{
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass,
+                                "transport_controls.ui");
+
+  gtk_widget_class_set_css_name (klass,
+                                 "transport-controls");
+
+  gtk_widget_class_bind_template_child (
+    klass,
+    TransportControlsWidget,
+    play);
+  gtk_widget_class_bind_template_child (
+    klass,
+    TransportControlsWidget,
+    stop);
+  gtk_widget_class_bind_template_child (
+    klass,
+    TransportControlsWidget,
+    backward);
+  gtk_widget_class_bind_template_child (
+    klass,
+    TransportControlsWidget,
+    forward);
+  gtk_widget_class_bind_template_child (
+    klass,
+    TransportControlsWidget,
+    trans_record);
+  gtk_widget_class_bind_template_child (
+    klass,
+    TransportControlsWidget,
+    loop);
+}
+
+static void
+transport_controls_widget_init (TransportControlsWidget * self)
+{
+  gtk_widget_init_template (GTK_WIDGET (self));
+
+  g_signal_connect (GTK_WIDGET (self->play),
                       "clicked",
                       G_CALLBACK (play_clicked_cb),
                       NULL);
-  g_signal_connect (GTK_WIDGET (mw->stop),
+  g_signal_connect (GTK_WIDGET (self->stop),
                       "clicked",
                       G_CALLBACK (stop_clicked_cb),
                       NULL);
-  g_signal_connect (GTK_WIDGET (mw->trans_record),
+  g_signal_connect (GTK_WIDGET (self->trans_record),
                       "toggled",
                       G_CALLBACK (record_toggled_cb),
                       NULL);
-  GTK_WIDGET (mw->loop);
-  g_signal_connect (GTK_WIDGET (mw->loop),
+  g_signal_connect (GTK_WIDGET (self->loop),
                       "toggled",
                       G_CALLBACK (loop_toggled_cb),
                       NULL);
 }
-

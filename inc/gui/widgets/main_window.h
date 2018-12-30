@@ -37,11 +37,12 @@ G_DECLARE_FINAL_TYPE (MainWindowWidget,
                       GtkApplicationWindow)
 
 typedef struct BpmWidget BpmWidget;
-typedef struct DigitalMeterWidget DigitalMeterWidget;
 typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct _SnapGridWidget SnapGridWidget;
 typedef struct _HeaderBarWidget HeaderBarWidget;
 typedef struct _CenterDockWidget CenterDockWidget;
+typedef struct _BotBarWidget BotBarWidget;
+typedef struct _TopBarWidget TopBarWidget;
 
 typedef struct _MainWindowWidget
 {
@@ -49,25 +50,12 @@ typedef struct _MainWindowWidget
   GtkBox *                 main_box;
   GtkBox *                 header_bar_box;
   HeaderBarWidget *        header_bar;
-  GtkToolbar *             top_toolbar;
-  /* FIXME split top toolbar to separate widget */
-  SnapGridWidget *         snap_grid_timeline;
+  TopBarWidget *           top_bar;
   GtkBox *                 center_box;
   CenterDockWidget *       center_dock;
-  GtkBox *                 bot_bar;
-  GtkToolbar *             bot_bar_left;
-  GtkBox *                 digital_meters;
-  DigitalMeterWidget       * digital_bpm;
-  DigitalMeterWidget       * digital_transport;
-  GtkBox                   * transport;
-  BpmWidget                * bpm;    ///< created in code
-  GtkButton                * play;
-  GtkButton                * stop;
-  GtkButton                * backward;
-  GtkButton                * forward;
-  GtkToggleButton          * trans_record;
-  GtkToggleButton          * loop;
+  BotBarWidget *           bot_bar;
   int                      is_maximized;
+  GtkAccelGroup *          accel_group;
 } MainWindowWidget;
 
 /**

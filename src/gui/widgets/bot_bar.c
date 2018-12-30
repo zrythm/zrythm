@@ -1,5 +1,5 @@
 /*
- * gui/widgets/right_dock_edge.c - Main window widget
+ * gui/widgets/bot_bar.c - Bottom bar
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,44 +19,42 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "gui/widgets/browser.h"
-#include "gui/widgets/right_dock_edge.h"
+#include "gui/widgets/bot_bar.h"
+
+#include "utils/gtk.h"
 #include "utils/resources.h"
 
-G_DEFINE_TYPE (RightDockEdgeWidget,
-               right_dock_edge_widget,
+#include <gtk/gtk.h>
+
+G_DEFINE_TYPE (BotBarWidget,
+               bot_bar_widget,
                GTK_TYPE_BOX)
 
-static void
-right_dock_edge_widget_init (RightDockEdgeWidget * self)
+void
+bot_bar_widget_refresh (BotBarWidget * self)
 {
-  gtk_widget_init_template (GTK_WIDGET (self));
 
-  /* setup browser */
-  self->browser = browser_widget_new ();
-  gtk_notebook_prepend_page (
-    self->right_notebook,
-    GTK_WIDGET (self->browser),
-    resources_get_icon ("plugins.svg"));
-  gtk_widget_show_all (GTK_WIDGET (self->right_notebook));
 }
 
 static void
-right_dock_edge_widget_class_init (
-  RightDockEdgeWidgetClass * _klass)
+bot_bar_widget_class_init (BotBarWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass,
-                                "right_dock_edge.ui");
+                                "bot_bar.ui");
 
   gtk_widget_class_set_css_name (klass,
-                                 "right-dock-edge");
+                                 "bot-bar");
 
   gtk_widget_class_bind_template_child (
     klass,
-    RightDockEdgeWidget,
-    right_notebook);
+    BotBarWidget,
+    bot_bar_left);
 }
 
-
+static void
+bot_bar_widget_init (BotBarWidget * self)
+{
+  gtk_widget_init_template (GTK_WIDGET (self));
+}
 

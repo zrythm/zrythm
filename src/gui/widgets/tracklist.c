@@ -149,10 +149,9 @@ on_delete_tracks ()
 }
 
 static void
-on_add_ins_track ()
+on_add_ins_track (GtkMenuItem * menu_item,
+                  TracklistWidget * self)
 {
-  TracklistWidget * self = MW_TRACKLIST;
-
   Channel * chan = channel_create (CT_MIDI,
                                    "Instrument Track");
   mixer_add_channel (MIXER, chan);
@@ -163,10 +162,8 @@ on_add_ins_track ()
 }
 
 static void
-show_context_menu ()
+show_context_menu (TracklistWidget * self)
 {
-  TracklistWidget * self = MW_TRACKLIST;
-
   GtkWidget *menu, *menuitem;
   menu = gtk_menu_new();
 
@@ -190,7 +187,7 @@ show_context_menu ()
     {
       menuitem = gtk_menu_item_new_with_label("Add Instrument Track");
       g_signal_connect(menuitem, "activate",
-                       (GCallback) on_add_ins_track, NULL);
+                       (GCallback) on_add_ins_track, self);
       gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
       menuitem = gtk_menu_item_new_with_label("Add Audio Track");
       /*g_signal_connect(menuitem, "activate",*/
@@ -261,7 +258,7 @@ on_right_click (GtkGestureMultiPress *gesture,
 
   if (n_press == 1)
     {
-      show_context_menu ();
+      show_context_menu (self);
     }
 }
 
@@ -527,6 +524,9 @@ tracklist_widget_init (TracklistWidget * self)
 }
 
 static void
-tracklist_widget_class_init (TracklistWidgetClass * klass)
+tracklist_widget_class_init (TracklistWidgetClass * _klass)
 {
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (klass,
+                                 "tracklist");
 }

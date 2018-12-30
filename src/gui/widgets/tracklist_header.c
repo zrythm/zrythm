@@ -1,5 +1,5 @@
 /*
- * gui/widgets/right_dock_edge.c - Main window widget
+ * gui/widgets/tracklist_header.c - Main window widget
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,44 +19,31 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "gui/widgets/browser.h"
-#include "gui/widgets/right_dock_edge.h"
+#include "gui/widgets/tracklist_header.h"
 #include "utils/resources.h"
 
-G_DEFINE_TYPE (RightDockEdgeWidget,
-               right_dock_edge_widget,
-               GTK_TYPE_BOX)
+G_DEFINE_TYPE (TracklistHeaderWidget,
+               tracklist_header_widget,
+               GTK_TYPE_GRID)
 
 static void
-right_dock_edge_widget_init (RightDockEdgeWidget * self)
+tracklist_header_widget_init (
+  TracklistHeaderWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
-
-  /* setup browser */
-  self->browser = browser_widget_new ();
-  gtk_notebook_prepend_page (
-    self->right_notebook,
-    GTK_WIDGET (self->browser),
-    resources_get_icon ("plugins.svg"));
-  gtk_widget_show_all (GTK_WIDGET (self->right_notebook));
 }
 
+
 static void
-right_dock_edge_widget_class_init (
-  RightDockEdgeWidgetClass * _klass)
+tracklist_header_widget_class_init (
+  TracklistHeaderWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass,
-                                "right_dock_edge.ui");
+                                "tracklist_header.ui");
 
   gtk_widget_class_set_css_name (klass,
-                                 "right-dock-edge");
+                                 "tracklist-header");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    RightDockEdgeWidget,
-    right_notebook);
 }
-
-
 

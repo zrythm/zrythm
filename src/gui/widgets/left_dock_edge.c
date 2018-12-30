@@ -41,11 +41,15 @@ left_dock_edge_widget_init (LeftDockEdgeWidget * self)
 }
 
 static void
-left_dock_edge_widget_class_init (LeftDockEdgeWidgetClass * klass)
+left_dock_edge_widget_class_init (
+  LeftDockEdgeWidgetClass * _klass)
 {
-  resources_set_class_template (
-    GTK_WIDGET_CLASS (klass),
-    "left_dock_edge.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass,
+                                "left_dock_edge.ui");
+
+  gtk_widget_class_set_css_name (klass,
+                                 "left-dock-edge");
 
   gtk_widget_class_bind_template_child (
     GTK_WIDGET_CLASS (klass),

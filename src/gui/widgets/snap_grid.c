@@ -23,6 +23,7 @@
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/snap_grid_popover.h"
 #include "utils/gtk.h"
+#include "utils/resources.h"
 
 #include <gtk/gtk.h>
 
@@ -59,8 +60,8 @@ snap_grid_widget_init (SnapGridWidget * self)
   self->popover = snap_grid_popover_widget_new (self);
 
   self->box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
-  self->img = GTK_IMAGE (gtk_image_new_from_resource ("/org/zrythm/grid.svg"));
-  self->label = GTK_LABEL (gtk_label_new (""));
+  self->img = GTK_IMAGE (resources_get_icon ("gnome-builder/builder-split-tab-right-symbolic-light.svg"));
+  self->label = GTK_LABEL (gtk_label_new ("Snap/Grid"));
   gtk_box_pack_start (self->box,
                       GTK_WIDGET (self->img),
                       Z_GTK_NO_EXPAND,
@@ -79,5 +80,7 @@ snap_grid_widget_init (SnapGridWidget * self)
                     "clicked",
                     G_CALLBACK (on_clicked),
                     self);
+
+  gtk_widget_show_all (GTK_WIDGET (self));
 }
 
