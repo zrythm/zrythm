@@ -1,11 +1,9 @@
-# Official language image. Look for the different tagged releases at:
-image: "debian:buster"
+# build from debian by default
+image: "alextee12/debian:0.4"
 
 variables:
   _USER: "builduser"
   _PATH: /home/$_USER/$CI_PROJECT_NAME
-  _ARCH_USER: "user"
-  _ARCH_PATH: /home/$_ARCH_USER/$CI_PROJECT_NAME
 
 stages:
   - src_tar
@@ -26,14 +24,14 @@ build_src_tarball:
     - master
 
 build_deb_64:
-  image: "debian:buster"
+  image: "alextee12/debian:0.4"
   stage: build
   script:
-    - apt-get update -qq && apt-get install -y -qq libxml2-dev libgtk-3-dev
-      libjack-dev liblilv-dev libsuil-dev libsmf-dev libsndfile1-dev libdazzle-1.0-dev autoconf
-      lv2-dev
+    - sudo apt-get install -y -qq libxml2-dev libgtk-3-dev
+      libjack-dev liblilv-dev libsuil-dev libsmf-dev libsndfile1-dev autoconf
+      lv2-dev libdazzle-1.0-dev
     - ./autogen.sh
-    - ./configure
+    - ./configure --enable-release
     - make -j14
   artifacts:
     paths:
@@ -44,16 +42,29 @@ build_deb_64:
     - master
 
 build_pkg_64:
-  image: heichblatt/archlinux-yaourt
+  image: "alextee12/arch-yaourt:0.2"
   stage: build
   script:
-    - yaourt -Sy --noconfirm gtk3 lv2 lilv-git suil-git jack libsndfile libsmf libdazzle
-    - mkdir -p $_ARCH_PATH
-    - mv * $_ARCH_PATH
-    - pushd $_ARCH_PATH
+    - yaourt -Sy --noconfirm gtk3 lv2 lilv suil jack libsndfile libsmf libdazzle
+    - mkdir -p $_PATH
+    - mv sources.tar.gz PKGBUILD $_PATH
+    - pushd $_PATH
     - makepkg
     - popd
-    - sudo mv $_ARCH_PATH/*.pkg.tar.xz .
+    - sudo mv $_PATH/*.pkg.tar.xz .
+  artifacts:
+    paths:
+    - ./*.pkg.tar.xz
+    expire_in: 1 week
+  only:
+    - tags
+    - master
+
+build_rpm_64:
+  image: "alextee12/fedora:0.2"
+  stage: build
+  script:
+    - echo hello
   artifacts:
     paths:
     - ./*.pkg.tar.xz

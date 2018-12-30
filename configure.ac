@@ -44,6 +44,11 @@ AC_ARG_ENABLE(aur-build,
               [AC_SUBST([AUR_BUILD], [1])],
               [AC_SUBST([AUR_BUILD], [0])])
 
+AC_ARG_ENABLE(release,
+              AS_HELP_STRING([--enable-release], [Build for release (default is debug)]),
+              [AC_SUBST([RELEASE], [1])],
+              [AC_SUBST([RELEASE], [0])])
+
 # Check for a C compiler
 AC_PROG_CC([gcc])
 
