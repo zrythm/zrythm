@@ -25,10 +25,10 @@
 #include "audio/position.h"
 
 #define AP_MAX_CURVINESS 6.f
-static const float _ap_min_curviness = 1.f / AP_MAX_CURVINESS;
-#define AP_MIN_CURVINESS _ap_min_curviness
-static const float _ap_curviness_range = AP_MAX_CURVINESS - AP_MIN_CURVINESS;
-#define AP_CURVINESS_RANGE _ap_curviness_range
+#define AP_MIN_CURVINESS \
+  (1.f / AP_MAX_CURVINESS)
+#define AP_CURVINESS_RANGE \
+  (AP_MAX_CURVINESS - AP_MIN_CURVINESS)
 #define AP_MID_CURVINESS 1.f
 
 typedef struct AutomationTrack AutomationTrack;

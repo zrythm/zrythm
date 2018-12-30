@@ -6,7 +6,7 @@ It is written in C and it uses the GTK+3 toolkit. Bits and pieces are taken from
 More info at https://www.zrythm.org
 
 ## Current state
-![screenshot](https://alextee.website/wp-content/uploads/2018/11/Screenshot_20181112_002843.png)
+![screenshot](https://alextee.website/wp-content/uploads/2018/12/Screenshot_20181230_011119.png)
 ![screenshot](https://alextee.website/wp-content/uploads/2018/11/Screenshot_20181102_141207.png)
 
 ## Currently supported protocols:

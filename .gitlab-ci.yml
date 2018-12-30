@@ -1,9 +1,11 @@
 # build from debian by default
-image: "alextee12/debian:0.4"
+image: "alextee12/debian:0.5"
 
 variables:
   _USER: "builduser"
   _PATH: /home/$_USER/$CI_PROJECT_NAME
+  _PACKAGE_NAME: $CI_PROJECT_NAME-$CI_COMMIT_REF_NAME
+  _DEBIAN_PACKAGE_NAME: $CI_PROJECT_NAME_$CI_COMMIT_REF_NAME
 
 stages:
   - src_tar
@@ -12,46 +14,38 @@ stages:
 build_src_tarball:
   stage: src_tar
   script:
-    - tar -zcvf sources.tar.gz autogen.sh config.guess config.sub
+    - mkdir $_PACKAGE_NAME
+    - mv autogen.sh debian config.guess config.sub
       configure.ac CONTRIBUTING data Doxyfile inc INSTALL install-sh
-      LICENSE Makefile.in README.md resources src
+      LICENSE Makefile.in README.md resources src $_PACKAGE_NAME/
+    - tar -zcvf $_PACKAGE_NAME.tar.gz $_PACKAGE_NAME
   artifacts:
     paths:
-    - ./*.tar.gz
+    - ./$_PACKAGE_NAME.tar.gz
     expire_in: 1 week
   only:
     - tags
     - master
 
 build_deb_64:
-  image: "alextee12/debian:0.4"
   stage: build
   script:
-    - sudo apt-get install -y -qq libxml2-dev libgtk-3-dev
-      libjack-dev liblilv-dev libsuil-dev libsmf-dev libsndfile1-dev autoconf
-      lv2-dev libdazzle-1.0-dev
-    - ./autogen.sh
-    - ./configure --enable-release
-    - make -j14
+    - scripts/package-deb.sh
+    - mv $_PATH/*.deb ./
   artifacts:
     paths:
-    - PKGBUILD
+    - ./*amd64.deb
     expire_in: 1 week
   only:
     - tags
     - master
 
 build_pkg_64:
-  image: "alextee12/arch-yaourt:0.2"
+  image: "alextee12/arch-yaourt:0.3"
   stage: build
   script:
-    - yaourt -Sy --noconfirm gtk3 lv2 lilv suil jack libsndfile libsmf libdazzle
-    - mkdir -p $_PATH
-    - mv sources.tar.gz PKGBUILD $_PATH
-    - pushd $_PATH
-    - makepkg
-    - popd
-    - sudo mv $_PATH/*.pkg.tar.xz .
+    - scripts/package-pkg.sh
+    - cp $_PATH/*.pkg.tar.xz ./
   artifacts:
     paths:
     - ./*.pkg.tar.xz
@@ -61,13 +55,15 @@ build_pkg_64:
     - master
 
 build_rpm_64:
-  image: "alextee12/fedora:0.2"
+  image: "alextee12/fedora:0.3"
   stage: build
   script:
     - echo hello
+    - ./autogen.sh
+    - ./configure --enable-release --prefix=/usr
+    - make -j8
   artifacts:
     paths:
-    - ./*.pkg.tar.xz
     expire_in: 1 week
   only:
     - tags
