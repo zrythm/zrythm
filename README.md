@@ -14,9 +14,32 @@ More info at https://www.zrythm.org
 
 ## Installation
 ### Arch Linux/Manjaro
-https://aur.archlinux.org/packages/zrythm-git/ (for yaourt: `yaourt -S zrythm-git`)
+```
+# yaourt
+yaourt -S zrythm-git
+
+# yay
+yay -S zrythm-git
+```
 ### Debian/Linux Mint/Ubuntu
-coming soon
+```
+# add the repository
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 1D597D35
+sudo apt-add-repository "deb http://apt.alextee.org/apt/debian buster main"
+
+# install
+sudo apt-get update && sudo apt-get install zrythm
+```
+
+_Note: If you don't have apt-add-repository, install it using_
+`
+sudo apt-get install software-properties-common
+`
+
+_Note2: If some dependencies are not found, you might need to enable the universe repository (before installing) using_
+`
+sudo apt-add-repository universe
+`
 ### Fedora
 coming soon
 ### Manual installation
