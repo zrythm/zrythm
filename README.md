@@ -22,12 +22,33 @@ yaourt -S zrythm-git
 yay -S zrythm-git
 ```
 ### Debian/Linux Mint/Ubuntu
+add the public key
 ```
-# add the repository
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 1D597D35
-sudo apt-add-repository "deb http://apt.alextee.org/apt/debian buster main"
+```
+add appropriate repository
+```
+# for Ubuntu 14.04 LTS
+sudo apt-add-repository "deb https://apt.alextee.org/ubuntu trusty main"
 
-# install
+# for Ubuntu 16.04 LTS
+sudo apt-add-repository "deb https://apt.alextee.org/ubuntu xenial main"
+
+# for Ubuntu 18.04 LTS
+sudo apt-add-repository "deb https://apt.alextee.org/ubuntu bionic main"
+
+# for Ubuntu 18.10
+sudo apt-add-repository "deb https://apt.alextee.org/ubuntu cosmic main"
+
+# for Debian 9 (stable)
+sudo apt-add-repository "deb https://apt.alextee.org/debian stretch main"
+
+# for Debian 10 (stable)
+sudo apt-add-repository "deb https://apt.alextee.org/debian buster main"
+```
+
+install
+```
 sudo apt-get update && sudo apt-get install zrythm
 ```
 

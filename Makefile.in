@@ -6,6 +6,7 @@ WINDOWS=@WINDOWS@
 LINUX=@LINUX@
 OSX=@OSX@
 AUR_BUILD=@AUR_BUILD@
+DEB_BUILD=@DEB_BUILD@
 RELEASE=@RELEASE@
 
 # -----------------------
@@ -222,7 +223,9 @@ install-gschemas: $(gsettings_SCHEMAS)
 	$(MKDIR_P) "$(DESTDIR)$(gsettingsschemadir)"
 	$(INSTALL) $< "$(DESTDIR)$(gsettingsschemadir)/"
 ifneq ($(AUR_BUILD),1)
+ifneq ($(DEB_BUILD),1)
 	$(GLIB_COMPILE_SCHEMAS) "$(DESTDIR)$(gsettingsschemadir)"
+endif
 endif
 
 .PHONY: install-fonts

@@ -2,9 +2,11 @@
 %:
 	dh $@
 
-override_dh_auto_build:
+override_dh_auto_configure:
 	./autogen.sh
-	./configure --prefix=/user --enable-release
+	./configure --prefix=/usr --enable-deb-build --enable-release
+
+override_dh_auto_build:
 	$(MAKE)
 
 override_dh_auto_install:
