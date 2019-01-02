@@ -5,20 +5,15 @@ variables:
   _USER: "builduser"
   _PATH: /home/$_USER/$CI_PROJECT_NAME
   _PACKAGE_NAME: $CI_PROJECT_NAME-$CI_COMMIT_REF_NAME
-  _DEBIAN_PACKAGE_NAME: $CI_PROJECT_NAME_$CI_COMMIT_REF_NAME
+  _DEBIAN_VER: "0.1"
 
 stages:
-  - src_tar
   - build
 
 build_src_tarball:
-  stage: src_tar
+  stage: build
   script:
-    - mkdir $_PACKAGE_NAME
-    - mv autogen.sh debian config.guess config.sub
-      configure.ac CONTRIBUTING data Doxyfile inc INSTALL install-sh
-      LICENSE Makefile.in README.md resources src $_PACKAGE_NAME/
-    - tar -zcvf $_PACKAGE_NAME.tar.gz $_PACKAGE_NAME
+    - PACKAGE_NAME=$_PACKAGE_NAME scripts/create-tarball.sh
   artifacts:
     paths:
     - ./$_PACKAGE_NAME.tar.gz
@@ -30,6 +25,9 @@ build_src_tarball:
 build_deb_64:
   stage: build
   script:
+    - export PACKAGE_NAME="$CI_PROJECT_NAME"_"$_DEBIAN_VER"
+    - sed -e "s/@BRANCH@/$_DEBIAN_VER/" debian/changelog.in > debian/changelog && rm debian/changelog.in
+    - scripts/create-tarball.sh
     - scripts/package-deb.sh
     - mv $_PATH/*.deb ./
   artifacts:
@@ -44,6 +42,7 @@ build_pkg_64:
   image: "alextee12/arch-yaourt:0.3"
   stage: build
   script:
+    - PACKAGE_NAME=$_PACKAGE_NAME scripts/create-tarball.sh
     - scripts/package-pkg.sh
     - cp $_PATH/*.pkg.tar.xz ./
   artifacts:

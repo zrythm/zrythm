@@ -30,7 +30,7 @@ DEFS = @DEFS@
 INSTALL = install
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
-INSTALL_FONT = ${INSTALL} -m 755
+INSTALL_FONT = ${INSTALL} -m 644
 LDFLAGS = @LDFLAGS@
 MKDIR_P = mkdir -p
 GLIB_COMPILE_SCHEMAS = @GLIB_COMPILE_SCHEMAS@
@@ -221,7 +221,7 @@ install-appicon-data: $(appicon_DATA)
 .PHONY: install-gschemas
 install-gschemas: $(gsettings_SCHEMAS)
 	$(MKDIR_P) "$(DESTDIR)$(gsettingsschemadir)"
-	$(INSTALL) $< "$(DESTDIR)$(gsettingsschemadir)/"
+	$(INSTALL_DATA) $< "$(DESTDIR)$(gsettingsschemadir)/"
 ifneq ($(AUR_BUILD),1)
 ifneq ($(DEB_BUILD),1)
 	$(GLIB_COMPILE_SCHEMAS) "$(DESTDIR)$(gsettingsschemadir)"

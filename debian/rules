@@ -3,11 +3,10 @@
 	dh $@
 
 override_dh_auto_configure:
-	./autogen.sh
 	./configure --prefix=/usr --enable-deb-build --enable-release
 
-override_dh_auto_build:
-	$(MAKE)
+#override_dh_auto_build:
+	#$(MAKE)
 
-override_dh_auto_install:
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/zrythm PREFIX=/usr
+#override_dh_auto_install:
+# $(MAKE) install DESTDIR=$(CURDIR)/debian/zrythm PREFIX=/usr

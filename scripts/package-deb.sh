@@ -1,8 +1,6 @@
 #!/bin/sh
 mkdir -p $_PATH
-cp $_PACKAGE_NAME.tar.gz $_PATH/zrythm_0.1.orig.tar.gz
-tar xf $_PACKAGE_NAME.tar.gz --directory $_PATH/
-cd $_PATH/$_PACKAGE_NAME
-sed -e "s/@BRANCH@/0.1/" debian/changelog.in > debian/changelog
-rm debian/changelog.in
+cp $PACKAGE_NAME.tar.gz $_PATH/$PACKAGE_NAME.orig.tar.gz
+tar xf $PACKAGE_NAME.tar.gz --directory $_PATH/
+cd $_PATH/$PACKAGE_NAME
 debuild -us -uc

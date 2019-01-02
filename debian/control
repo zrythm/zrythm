@@ -3,7 +3,7 @@ Maintainer: Alexandros Theodotou <alex@zrythm.org>
 Section: sound
 Priority: optional
 Standards-Version: 4.3.0
-Build-Depends: debhelper (>= 9),
+Build-Depends: debhelper-compat (= 10),
   libxml2-dev (>= 2.9.4),
   libgtk-3-dev (>= 3.20),
   libjack-dev,

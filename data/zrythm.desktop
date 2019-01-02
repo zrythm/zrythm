@@ -1,9 +1,9 @@
 [Desktop Entry]
 Name=Zrythm
 Version=1.0
-Comment=Music Production System
+Comment=Music production system
 Exec=zrythm
 Icon=z.svg
 Type=Application
 StartupNotify=true
-Categories=AudioVideo;DAW;Audio
+Categories=AudioVideo;Audio

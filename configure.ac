@@ -43,7 +43,7 @@ AC_ARG_ENABLE(aur-build,
               AS_HELP_STRING([--enable-aur-build], [Used for packaging for AUR]),
               [AC_SUBST([AUR_BUILD], [1])],
               [AC_SUBST([AUR_BUILD], [0])])
-AC_ARG_ENABLE(aur-build,
+AC_ARG_ENABLE(deb-build,
               AS_HELP_STRING([--enable-deb-build], [Used for packaging for Debian]),
               [AC_SUBST([DEB_BUILD], [1])],
               [AC_SUBST([DEB_BUILD], [0])])
