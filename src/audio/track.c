@@ -55,6 +55,8 @@ track_new (Channel * channel)
       return (Track *) master_track_new (channel);
       break;
     }
+  g_assert_not_reached ();
+  return NULL;
 }
 
 /**

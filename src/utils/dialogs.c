@@ -42,9 +42,7 @@ GtkDialog * dialogs_get_open_project_dialog (GtkWindow * parent)
                                         "_Open",
                                         GTK_RESPONSE_ACCEPT,
                                         NULL);
-  return dialog;
+  return GTK_DIALOG (dialog);
 }
 
 #endif
-
-

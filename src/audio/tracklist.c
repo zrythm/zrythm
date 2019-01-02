@@ -172,6 +172,8 @@ tracklist_get_last_visible_pos (Tracklist * self)
           return i;
         }
     }
+  g_assert_not_reached ();
+  return -1;
 }
 
 Track*
@@ -184,6 +186,8 @@ tracklist_get_last_visible_track (Tracklist * self)
           return self->tracks[i];
         }
     }
+  g_assert_not_reached ();
+  return NULL;
 }
 
 Track *
@@ -196,6 +200,8 @@ tracklist_get_first_visible_track (Tracklist * self)
           return self->tracks[i];
         }
     }
+  g_assert_not_reached ();
+  return NULL;
 }
 
 Track *
@@ -210,6 +216,8 @@ tracklist_get_prev_visible_track (Tracklist * self,
           return self->tracks[i];
         }
     }
+  g_assert_not_reached ();
+  return NULL;
 }
 
 Track *
@@ -224,6 +232,8 @@ tracklist_get_next_visible_track (Tracklist * self,
           return self->tracks[i];
         }
     }
+  g_assert_not_reached ();
+  return NULL;
 }
 
 void

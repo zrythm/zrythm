@@ -43,7 +43,7 @@ sudo apt-add-repository "deb https://apt.alextee.org/ubuntu cosmic main"
 # for Debian 9 (stable)
 sudo apt-add-repository "deb https://apt.alextee.org/debian stretch main"
 
-# for Debian 10 (stable)
+# for Debian 10 (unstable)
 sudo apt-add-repository "deb https://apt.alextee.org/debian buster main"
 ```
 

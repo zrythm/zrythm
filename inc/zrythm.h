@@ -40,6 +40,7 @@ typedef struct PluginManager PluginManager;
 typedef struct Project Project;
 typedef struct Settings Settings;
 typedef struct Tracklist Tracklist;
+typedef struct UndoManager UndoManager;
 typedef struct _MainWindowWidget MainWindowWidget;
 
 struct _ZrythmApp
@@ -66,6 +67,8 @@ struct _ZrythmApp
   Settings *             settings;
 
   Project * project;
+
+  UndoManager *          undo_manager;
 
   Tracklist *         tracklist;
 

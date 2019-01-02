@@ -96,7 +96,7 @@ project_new ();
  */
 void
 project_setup (Project * self,
-               const char * filename);
+               char * filename);
 
 /**
  * Saves project to a file.

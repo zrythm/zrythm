@@ -116,8 +116,6 @@ static void
 on_motion (GtkWidget * widget, GdkEventMotion *event)
 {
   RegionWidget * self = REGION_WIDGET (widget);
-  RegionWidgetPrivate * prv =
-    region_widget_get_instance_private (self);
 
   if (event->type == GDK_ENTER_NOTIFY)
     {
@@ -182,8 +180,9 @@ region_widget_get_private (RegionWidget * self)
 }
 
 static void
-region_widget_class_init (RegionWidgetClass * klass)
+region_widget_class_init (RegionWidgetClass * _klass)
 {
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (klass,
                                  "region");
 }

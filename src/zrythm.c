@@ -30,6 +30,7 @@
 #include "gui/widgets/start_assistant.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
+#include "undo/undo_manager.h"
 #include "utils/io.h"
 
 #include <gtk/gtk.h>
@@ -55,7 +56,6 @@ typedef enum TaskId
 static SplashWindowWidget * splash;
 static GApplication * app;
 static StartAssistantWidget * assistant;
-static char * filename = NULL;
 static TaskId * task_id; ///< current task;
 static UpdateSplashData * data;
 
@@ -73,19 +73,22 @@ update_splash (UpdateSplashData *data)
 static void
 init_dirs_and_files ()
 {
-  ZRYTHM->zrythm_dir = g_strdup_printf ("%s%sZrythm",
-                                       io_get_home_dir (),
-                                       io_get_separator ());
+  ZRYTHM->zrythm_dir =
+    g_build_filename (io_get_home_dir (),
+                      "zrythm",
+                      NULL);
   io_mkdir (ZRYTHM->zrythm_dir);
 
-  ZRYTHM->projects_dir = g_strdup_printf ("%s%sProjects",
-                                         ZRYTHM->zrythm_dir,
-                                         io_get_separator ());
+  ZRYTHM->projects_dir =
+    g_build_filename (ZRYTHM->zrythm_dir,
+                      "Projects",
+                      NULL);
   io_mkdir (ZRYTHM->projects_dir);
 
-  ZRYTHM->recent_projects_file = g_strdup_printf ("%s%s.recent_projects",
-                                                        ZRYTHM->zrythm_dir,
-                                                        io_get_separator ());
+  ZRYTHM->recent_projects_file =
+    g_build_filename (ZRYTHM->zrythm_dir,
+                      ".recent_projects",
+                      NULL);
 }
 
 /**
@@ -144,6 +147,7 @@ task_func (GTask *task,
       break;
     case TASK_INIT_SETTINGS:
       ZRYTHM->settings = settings_new ();
+      ZRYTHM->undo_manager = undo_manager_new ();
       data->message =
         "Initializing audio engine";
       data->progress = 0.4;
@@ -232,7 +236,6 @@ static void on_load_project (GAction  *action,
 
   project_setup (app->project,
                  app->open_filename);
-  Track * track = MIXER->master->track;
 
   tracklist_setup (TRACKLIST);
 

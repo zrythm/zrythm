@@ -20,6 +20,7 @@
  */
 
 #include "utils/gtk.h"
+#include "utils/resources.h"
 
 void
 z_gtk_container_remove_all_children (GtkContainer * container)

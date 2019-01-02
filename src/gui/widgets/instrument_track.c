@@ -176,7 +176,7 @@ instrument_track_widget_init (InstrumentTrackWidget * self)
   resources_set_image_icon (tw_prv->icon,
                             "instrument.svg");
 
-  gtk_widget_show_all (self);
+  gtk_widget_show_all (GTK_WIDGET (self));
 }
 
 static void

@@ -24,6 +24,7 @@
 #include "gui/widgets/export_dialog.h"
 #include "project.h"
 #include "utils/io.h"
+#include "utils/resources.h"
 
 #include <gtk/gtk.h>
 
@@ -74,10 +75,11 @@ on_export_clicked (ExportDialogWidget * self,
   ExportInfo info;
   info.format = AUDIO_FORMAT_FLAC;
   info.depth = BIT_DEPTH_24;
-  info.file_uri = g_strdup_printf ("%s%sexports%sMaster.FLAC",
-                                   PROJECT->dir,
-                                   io_get_separator (),
-                                   io_get_separator ());
+  info.file_uri =
+    g_build_filename (PROJECT->dir,
+                      "exports",
+                      "Master.FLAC",
+                      NULL);
   g_message ("exporting");
   AUDIO_ENGINE->run = 0;
   exporter_export (&info);
@@ -87,54 +89,71 @@ on_export_clicked (ExportDialogWidget * self,
 }
 
 static void
-export_dialog_widget_class_init (ExportDialogWidgetClass * klass)
+export_dialog_widget_class_init (ExportDialogWidgetClass * _klass)
 {
-  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
-                                               "/org/zrythm/ui/export_dialog.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass,
+                                "export_dialog.ui");
 
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ExportDialogWidget,
-                                        cancel_button);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ExportDialogWidget,
-                                        export_button);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ExportDialogWidget,
-                                        pattern_cb);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ExportDialogWidget,
-                                        tracks_list);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ExportDialogWidget,
-                                        arrangement_button);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ExportDialogWidget,
-                                        start_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ExportDialogWidget,
-                                        loop_button);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ExportDialogWidget,
-                                        end_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ExportDialogWidget,
-                                        format_cb);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ExportDialogWidget,
-                                        dither_check);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        ExportDialogWidget,
-                                        output_label);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
-                                           on_arrangement_clicked);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
-                                           on_loop_clicked);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
-                                           on_cancel_clicked);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
-                                           on_export_clicked);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
-                                           on_close);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ExportDialogWidget,
+    cancel_button);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ExportDialogWidget,
+    export_button);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ExportDialogWidget,
+    pattern_cb);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ExportDialogWidget,
+    tracks_list);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ExportDialogWidget,
+    arrangement_button);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ExportDialogWidget,
+    start_box);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ExportDialogWidget,
+    loop_button);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ExportDialogWidget,
+    end_box);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ExportDialogWidget,
+    format_cb);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ExportDialogWidget,
+    dither_check);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ExportDialogWidget,
+    output_label);
+  gtk_widget_class_bind_template_callback (
+    klass,
+    on_arrangement_clicked);
+  gtk_widget_class_bind_template_callback (
+    klass,
+    on_loop_clicked);
+  gtk_widget_class_bind_template_callback (
+    klass,
+    on_cancel_clicked);
+  gtk_widget_class_bind_template_callback (
+    klass,
+    on_export_clicked);
+  gtk_widget_class_bind_template_callback (
+    klass,
+    on_close);
 }
 
 static void

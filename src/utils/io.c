@@ -28,22 +28,7 @@
 
 #include <gtk/gtk.h>
 
-#ifdef _WIN32
-static const char * separator = "\\"
-#else
-static const char * separator = "/";
-#endif
-
 static char * home_dir;
-
-/**
- * Gets system file separator.
- */
-char *
-io_get_separator () ///< string to write to
-{
-  return separator;
-}
 
 /**
  * Gets directory part of filename. MUST be freed.
@@ -51,20 +36,7 @@ io_get_separator () ///< string to write to
 char *
 io_get_dir (const char * filename) ///< filename containing directory
 {
-  char * separator = io_get_separator ();
-  char ** parts = g_strsplit_set (filename,
-                                  separator,
-                                  -1);
-  int k = 0;
-  while (parts[k] != NULL)
-    {
-      k++;
-    }
-  parts[k - 1] = NULL;
-  char * directory = g_strjoinv (separator, parts);
-
-  g_strfreev (parts);
-  return directory;
+  return g_path_get_dirname (filename);
 }
 
 /**
@@ -83,13 +55,7 @@ io_mkdir (const char * dir)
 static void
 setup_home_dir ()
 {
-  if ((home_dir = getenv ("XDG_CONFIG_HOME")) == NULL)
-    {
-      if ((home_dir = getenv ("HOME")) == NULL)
-        {
-          home_dir = getpwuid (getuid ())->pw_dir;
-        }
-    }
+  home_dir = (char *) g_get_home_dir ();
 }
 
 /**
@@ -137,18 +103,9 @@ io_file_strip_ext (const char * filename)
  * MUST be freed.
  */
 char *
-io_file_strip_path (const char * filename)
+io_path_get_basename (const char * filename)
 {
-  char ** path_file = g_strsplit (filename, io_get_separator (), -1);
-  int i = 0;
-  while (path_file[i] != NULL)
-    i++;
-  for (int j = 0; j < i - 1; j++)
-    {
-      g_free (path_file[j]);
-    }
-
-  return path_file[i - 1];
+  return g_path_get_basename (filename);
 }
 
 char *

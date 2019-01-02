@@ -155,7 +155,7 @@ setup_slots (ChannelWidget * self)
 {
   /*gtk_container_remove (GTK_CONTAINER (self->slots_box),*/
                         /*GTK_WIDGET (self->add_slot));*/
-  Channel * channel = self->channel;
+  /*Channel * channel = self->channel;*/
   for (int i = 0; i < STRIP_SIZE; i++)
     {
       self->slot_boxes[i] =

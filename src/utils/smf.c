@@ -135,10 +135,10 @@ smf_save_regions ()
 
       char * region_filename = region_generate_filename (region);
 
-      char * full_path = g_strdup_printf ("%s%s%s",
-                                          PROJECT->regions_dir,
-                                          io_get_separator (),
-                                          region_filename);
+      char * full_path =
+        g_build_filename (PROJECT->regions_dir,
+                          region_filename,
+                          NULL);
       g_message ("Writing region %s", full_path);
 
 

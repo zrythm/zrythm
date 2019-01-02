@@ -426,6 +426,7 @@ lv2_get_port_value (const char * port_sym,
  * Function to set a port value. TODO
  *
  * Used when retrieving the state.
+ * FIXME is this needed?
  */
 static void
 lv2_set_port_value (const char * port_sym,
@@ -1494,10 +1495,10 @@ lv2_instantiate (Lv2Plugin      * lv2_plugin,   ///< plugin to instantiate
   }
   else if (lv2_plugin->state_file)
     {
-      char * state_file_path = g_strdup_printf ("%s%s%s",
-                                                PROJECT->states_dir,
-                                                io_get_separator (),
-                                                lv2_plugin->state_file);
+      char * state_file_path =
+        g_build_filename (PROJECT->states_dir,
+                          lv2_plugin->state_file,
+                          NULL);
       lv2_plugin->state = lilv_state_new_from_file (LILV_WORLD,
                                                     &lv2_plugin->map,
                                                     NULL,
@@ -2075,6 +2076,7 @@ lv2_save_state (Lv2Plugin * lv2_plugin, const char * dir)
                                       lv2_plugin->plugin->descr->name);
       g_message ("before save state %d",
                  lv2_plugin->symap->size);
+      /* FIXME check for return value */
       int rc = lilv_state_save (LILV_WORLD,
                                 &lv2_plugin->map,
                                 &lv2_plugin->unmap,
@@ -2082,11 +2084,11 @@ lv2_save_state (Lv2Plugin * lv2_plugin, const char * dir)
                                 NULL,
                                 dir,
                                 label);
-      char * tmp = io_file_strip_path (dir);
-      lv2_plugin->state_file = g_strdup_printf ("%s%s%s",
-                                             tmp,
-                                             io_get_separator (),
-                                             label);
+      char * tmp = g_path_get_basename (dir);
+      lv2_plugin->state_file =
+        g_build_filename (tmp,
+                          label,
+                          NULL);
       g_free (label);
       g_free (tmp);
       lilv_state_free (state);

@@ -56,7 +56,6 @@ static gboolean
 draw_cb (PianoRollNotesWidget * self, cairo_t *cr, gpointer data)
 {
   guint width, height;
-  GdkRGBA color;
   GtkStyleContext *context;
 
   context = gtk_widget_get_style_context (GTK_WIDGET (self));

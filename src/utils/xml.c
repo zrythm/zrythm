@@ -52,6 +52,7 @@
 #define TO_INT(x) (int) g_ascii_strtoll((const char *) x, NULL, 10)
 #define TO_FLOAT(x) strtof((const char *) x, NULL)
 #define GET_ATTRIBUTE(x) xmlTextReaderGetAttribute (reader, BAD_CAST x);
+#define STRDUP(s) g_strdup ((char *) s)
 
 /**
  * Already serialized/deserialized ports
@@ -969,7 +970,7 @@ xml_load_ports ()
                       {
                         port = port_get_or_create_blank (TO_INT (attr));
                         attr =  GET_ATTRIBUTE("label");
-                        port->label = g_strdup (attr);
+                        port->label = STRDUP (attr);
                         attr =  GET_ATTRIBUTE("type");
                         port->type = TO_INT (attr);
                         attr =  GET_ATTRIBUTE("flow");

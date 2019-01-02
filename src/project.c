@@ -62,30 +62,25 @@ update_paths (Project * self,
 {
   PROJECT->dir = g_strdup (dir);
   PROJECT->project_file_path =
-    g_strdup_printf ("%s%s%s",
-                     PROJECT->dir,
-                     io_get_separator (),
-                     PROJECT_FILE);
+    g_build_filename (PROJECT->dir,
+                      PROJECT_FILE,
+                      NULL);
   PROJECT->regions_file_path =
-    g_strdup_printf ("%s%s%s",
-                     PROJECT->dir,
-                     io_get_separator (),
-                     PROJECT_REGIONS_FILE);
+    g_build_filename (PROJECT->dir,
+                      PROJECT_REGIONS_FILE,
+                      NULL);
   PROJECT->ports_file_path =
-    g_strdup_printf ("%s%s%s",
-                     PROJECT->dir,
-                     io_get_separator (),
-                     PROJECT_PORTS_FILE);
+    g_build_filename (PROJECT->dir,
+                      PROJECT_PORTS_FILE,
+                      NULL);
   PROJECT->regions_dir =
-    g_strdup_printf ("%s%s%s",
-                     PROJECT->dir,
-                     io_get_separator (),
-                     PROJECT_REGIONS_DIR);
+    g_build_filename (PROJECT->dir,
+                      PROJECT_REGIONS_DIR,
+                      NULL);
   PROJECT->states_dir =
-    g_strdup_printf ("%s%s%s",
-                     PROJECT->dir,
-                     io_get_separator (),
-                     PROJECT_STATES_DIR);
+    g_build_filename (PROJECT->dir,
+                      PROJECT_STATES_DIR,
+                      NULL);
   g_message ("updated paths %s", PROJECT->dir);
 }
 
@@ -112,7 +107,7 @@ create_default (Project * self,
 
 static void
 load (Project *    self,
-      const char * filename)
+      char * filename)
 {
   if (self->loaded)
     tear_down (self);
@@ -126,7 +121,7 @@ load (Project *    self,
   xml_load_project ();
   mixer_load_plugins (MIXER);
 
-  char * filepath_noext = io_file_strip_path (dir);
+  char * filepath_noext = g_path_get_basename (dir);
   self->title = filepath_noext;
   g_free (filepath_noext);
 
@@ -141,7 +136,7 @@ load (Project *    self,
  */
 void
 project_setup (Project * self,
-               const char * filename)
+               char * filename)
 {
   if (filename)
     load (self, filename);
@@ -172,11 +167,16 @@ project_save (Project *  self,
             {
               if (plugin->descr->protocol == PROT_LV2)
                 {
-                  char * state_dir_plugin = g_strdup_printf ("%s%s%s_%d",
-                                                             PROJECT->states_dir,
-                                                             io_get_separator (),
-                                                             channel->name,
-                                                             j);
+                  char * tmp =
+                    g_strdup_printf ("%s_%d",
+                                     channel->name,
+                                     j);
+                  char * state_dir_plugin =
+                    g_build_filename (PROJECT->states_dir,
+                                      tmp,
+                                      NULL);
+                  g_free (tmp);
+
                   Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
                   lv2_save_state (lv2_plugin,
                                   state_dir_plugin);
@@ -197,7 +197,7 @@ project_save (Project *  self,
   zrythm_add_to_recent_projects (
     ZRYTHM,
     PROJECT->project_file_path);
-  self->title = io_file_strip_path (dir);
+  self->title = g_path_get_basename (dir);
 }
 
 void

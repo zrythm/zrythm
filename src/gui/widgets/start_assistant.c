@@ -122,7 +122,7 @@ add_columns (GtkTreeView *treeview)
 {
   GtkCellRenderer *renderer;
   GtkTreeViewColumn *column;
-  GtkTreeModel *model = gtk_tree_view_get_model (treeview);
+  /*GtkTreeModel *model = gtk_tree_view_get_model (treeview);*/
 
   /* column for name */
   renderer = gtk_cell_renderer_text_new ();
@@ -167,7 +167,7 @@ start_assistant_widget_new (GtkWindow * parent,
     {
       int i = self->num_project_infos;
       char * dir = io_get_dir (ZRYTHM->recent_projects[i]);
-      char * project_name = io_file_strip_path (dir);
+      char * project_name = g_path_get_basename (dir);
       self->project_infos[i].name = project_name;
       self->project_infos[i].filename = ZRYTHM->recent_projects[i];
       self->project_infos[i].modified =

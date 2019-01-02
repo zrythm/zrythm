@@ -169,7 +169,7 @@ midi_arranger_bg_widget_new ()
   MidiArrangerBgWidget * self = g_object_new (MIDI_ARRANGER_BG_WIDGET_TYPE, NULL);
 
   // set the size FIXME uncomment
-  int ww, hh;
+  /*int ww, hh;*/
   /*PianoRollLabelsWidget * piano_roll_labels =*/
     /*PIANO_ROLL->piano_roll_labels;*/
   /*gtk_widget_get_size_request (*/

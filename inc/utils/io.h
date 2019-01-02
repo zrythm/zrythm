@@ -27,12 +27,6 @@
 #include <stdio.h>
 
 /**
- * Gets system file separator. MUST be freed.
- */
-char *
-io_get_separator (); ///< string to write to
-
-/**
  * Gets directory part of filename. MUST be freed.
  */
 char *
@@ -68,7 +62,7 @@ io_file_strip_ext (const char * filename);
  * MUST be freed.
  */
 char *
-io_file_strip_path (const char * filename);
+io_path_get_basename (const char * filename);
 
 char *
 io_file_get_creation_datetime (const char * filename);
