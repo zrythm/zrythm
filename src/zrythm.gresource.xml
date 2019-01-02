@@ -78,4 +78,9 @@
     <file>icons/gnome-builder/ui-menu-symbolic-light.svg</file>
     <file>icons/gnome-builder/ui-section-symbolic-light.svg</file>
   </gresource>
+  <gresource prefix="/org/gtk/libgtk">
+    <file>theme/Matcha-dark-sea/gtk-dark.css</file>
+    <file>theme/Matcha-dark-sea/gtk.css</file>
+    <!-- TODO add the rest -->
+  </gresource>
 </gresources>
