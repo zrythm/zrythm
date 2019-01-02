@@ -96,7 +96,7 @@ static void
 minimize_clicked (HeaderBarWidget * self,
                       gpointer user_data)
 {
-  gtk_window_iconify (GTK_WINDOW (MAIN_WINDOW));
+  main_window_widget_minimize (MAIN_WINDOW);
 }
 
 /**
@@ -195,6 +195,48 @@ on_file_save_activate (GtkMenuItem   * menu_item,
 static void
 new_activate (GtkMenuItem * menu_item,
               gpointer      user_data)
+{
+  g_message ("new activated");
+}
+
+static void
+undo_activate (GtkMenuItem * menu_item,
+              gpointer      user_data)
+{
+  g_message ("UNDO");
+}
+
+static void
+redo_activate (GtkMenuItem * menu_item,
+              gpointer      user_data)
+{
+  g_message ("REDO");
+}
+
+static void
+cut_activate (GtkMenuItem * menu_item,
+              gpointer      user_data)
+{
+  g_message ("CUT");
+}
+
+static void
+copy_activate (GtkMenuItem * menu_item,
+               gpointer      user_data)
+{
+  g_message ("new activated");
+}
+
+static void
+paste_activate (GtkMenuItem * menu_item,
+                gpointer      user_data)
+{
+  g_message ("new activated");
+}
+
+static void
+delete_activate (GtkMenuItem * menu_item,
+                 gpointer      user_data)
 {
   g_message ("new activated");
 }
@@ -302,6 +344,10 @@ header_bar_widget_setup (HeaderBarWidget * self,
                       0,
                       GDK_KEY_z,
                       GDK_CONTROL_MASK);
+  g_signal_connect (G_OBJECT (menu_item),
+                    "activate",
+                    G_CALLBACK (undo_activate),
+                    NULL);
   APPEND_TO_EDIT_MENU;
   menu_item =
     create_menu_item (mw->accel_group,
@@ -312,6 +358,10 @@ header_bar_widget_setup (HeaderBarWidget * self,
                       GDK_KEY_z,
                       GDK_CONTROL_MASK |
                         GDK_SHIFT_MASK);
+  g_signal_connect (G_OBJECT (menu_item),
+                    "activate",
+                    G_CALLBACK (redo_activate),
+                    NULL);
   APPEND_TO_EDIT_MENU;
   CREATE_SEPARATOR;
   APPEND_TO_EDIT_MENU;
@@ -323,6 +373,10 @@ header_bar_widget_setup (HeaderBarWidget * self,
                       0,
                       GDK_KEY_x,
                       GDK_CONTROL_MASK);
+  g_signal_connect (G_OBJECT (menu_item),
+                    "activate",
+                    G_CALLBACK (cut_activate),
+                    NULL);
   APPEND_TO_EDIT_MENU;
   menu_item =
     create_menu_item (mw->accel_group,
@@ -332,6 +386,10 @@ header_bar_widget_setup (HeaderBarWidget * self,
                       0,
                       GDK_KEY_c,
                       GDK_CONTROL_MASK);
+  g_signal_connect (G_OBJECT (menu_item),
+                    "activate",
+                    G_CALLBACK (copy_activate),
+                    NULL);
   APPEND_TO_EDIT_MENU;
   menu_item =
     create_menu_item (mw->accel_group,
@@ -341,6 +399,10 @@ header_bar_widget_setup (HeaderBarWidget * self,
                       0,
                       GDK_KEY_v,
                       GDK_CONTROL_MASK);
+  g_signal_connect (G_OBJECT (menu_item),
+                    "activate",
+                    G_CALLBACK (paste_activate),
+                    NULL);
   APPEND_TO_EDIT_MENU;
   menu_item =
     create_menu_item (mw->accel_group,
@@ -350,6 +412,10 @@ header_bar_widget_setup (HeaderBarWidget * self,
                       0,
                       GDK_KEY_Delete,
                       0);
+  g_signal_connect (G_OBJECT (menu_item),
+                    "activate",
+                    G_CALLBACK (delete_activate),
+                    NULL);
   APPEND_TO_EDIT_MENU;
   CREATE_SEPARATOR;
   APPEND_TO_EDIT_MENU;

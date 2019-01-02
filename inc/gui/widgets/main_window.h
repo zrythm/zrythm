@@ -80,5 +80,7 @@ main_window_widget_quit (MainWindowWidget * self);
 void
 main_window_widget_toggle_maximize (MainWindowWidget * self);
 
-#endif
+void
+main_window_widget_minimize (MainWindowWidget * self);
 
+#endif

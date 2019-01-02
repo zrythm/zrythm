@@ -238,3 +238,9 @@ main_window_widget_init (MainWindowWidget * self)
                                    /*closure);*/
 
 }
+
+void
+main_window_widget_minimize (MainWindowWidget * self)
+{
+  gtk_window_iconify (GTK_WINDOW (self));
+}

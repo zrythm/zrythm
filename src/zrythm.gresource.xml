@@ -82,5 +82,6 @@
     <file>theme/Matcha-dark-sea/gtk-dark.css</file>
     <file>theme/Matcha-dark-sea/gtk.css</file>
     <!-- TODO add the rest -->
+    <!-- OR use python to generate this file like GTK does -->
   </gresource>
 </gresources>

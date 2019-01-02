@@ -19,8 +19,8 @@
 @define-color hover_color alpha (white, 0.1);
 @define-color selection_color alpha (white, 0.07);
 
-/* FIXME doesn't work */
-header-bar {
+window
+{
   -GtkWidget-window-dragging: true;
 }
 
