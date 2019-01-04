@@ -27,14 +27,17 @@
 
 #include <gtk/gtk.h>
 
-#define FADER_WIDGET_TYPE                  (fader_widget_get_type ())
-#define FADER_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), FADER_WIDGET_TYPE, FaderWidget))
-#define FADER_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), FADER_WIDGET, FaderWidgetClass))
-#define IS_FADER_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FADER_WIDGET_TYPE))
-#define IS_FADER_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), FADER_WIDGET_TYPE))
-#define FADER_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), FADER_WIDGET_TYPE, FaderWidgetClass))
+#define FADER_WIDGET_TYPE \
+  (fader_widget_get_type ())
+G_DECLARE_FINAL_TYPE (FaderWidget,
+                      fader_widget,
+                      FADER,
+                      WIDGET,
+                      GtkDrawingArea)
+#define IS_FADER_WIDGET(obj) \
+  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FADER_WIDGET_TYPE))
 
-typedef struct FaderWidget
+typedef struct _FaderWidget
 {
   GtkDrawingArea         parent_instance;
   GtkGestureDrag *       drag;
@@ -48,18 +51,15 @@ typedef struct FaderWidget
   GdkRGBA                end_color;
 } FaderWidget;
 
-typedef struct FaderWidgetClass
-{
-  GtkDrawingAreaClass    parent_class;
-} FaderWidgetClass;
-
 /**
  * Creates a new Fader widget and binds it to the given value.
  */
-FaderWidget *
-fader_widget_new (float (*get_val)(void *),    ///< getter function
-                  void (*set_val)(void *, float),    ///< setter function
-                  void * object,              ///< object to call get/set with
-int width);
+void
+fader_widget_setup (
+  FaderWidget * self,
+  float         (*get_val)(void *),    ///< getter function
+  void          (*set_val)(void *, float),    ///< setter function
+  void *        object,              ///< object to call get/set with
+  int width);
 
 #endif

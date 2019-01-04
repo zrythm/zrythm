@@ -103,18 +103,6 @@ setup_phase_panel (ChannelWidget * self)
 }
 
 static void
-setup_fader (ChannelWidget * self)
-{
-  self->fader = fader_widget_new (channel_get_fader_amp,
-                                  channel_set_fader_amp,
-                                  self->channel,
-                                  40);
-  gtk_box_pack_start (self->fader_area,
-                       GTK_WIDGET (self->fader),
-                       0, 1, 0);
-}
-
-static void
 setup_meter (ChannelWidget * self)
 {
   self->meters[0] = meter_widget_new (
@@ -268,7 +256,11 @@ channel_widget_new (Channel * channel)
   setup_phase_panel (self);
   /*setup_pan (self);*/
   setup_slots (self);
-  setup_fader (self);
+  fader_widget_setup (self->fader,
+                      channel_get_fader_amp,
+                      channel_set_fader_amp,
+                      self->channel,
+                      40);
   setup_meter (self);
   setup_pan (self);
   setup_channel_icon (self);
@@ -337,7 +329,7 @@ channel_widget_class_init (ChannelWidgetClass * _klass)
   gtk_widget_class_bind_template_child (
     klass,
     ChannelWidget,
-    fader_area);
+    fader);
   gtk_widget_class_bind_template_child (
     klass,
     ChannelWidget,

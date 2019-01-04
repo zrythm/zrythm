@@ -20,6 +20,8 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include "zrythm.h"
 
@@ -37,6 +39,8 @@ main (int    argc,
   /* init suil */
   suil_init(&argc, &argv, SUIL_ARG_NONE);
 
+  /* init random */
+  srandom (time (NULL));
 
   // sends activate signal
   zrythm = zrythm_new ();

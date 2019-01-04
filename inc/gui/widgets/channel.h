@@ -37,7 +37,7 @@ G_DECLARE_FINAL_TYPE (ChannelWidget,
 
 typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct KnobWidget KnobWidget;
-typedef struct FaderWidget FaderWidget;
+typedef struct _FaderWidget FaderWidget;
 typedef struct ChannelMeterWidget ChannelMeterWidget;
 typedef struct Channel Channel;
 typedef struct _ChannelSlotWidget ChannelSlotWidget;
@@ -68,7 +68,6 @@ typedef struct _ChannelWidget
   GtkButton           * listen;
   GtkButton           * mute;
   GtkToggleButton     * record;
-  GtkBox              * fader_area;
   GtkBox              * meter_area;  ///< vertical including reading
   GtkBox              * meters_box;  ///< box for l/r meters
   GtkBox *            pan_box;

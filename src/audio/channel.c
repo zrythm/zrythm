@@ -370,10 +370,14 @@ channel_create (ChannelType type,
     }
   else
     {
-      channel->color.red = rand () % 9 / 10.0;
-      channel->color.green = rand () % 9 / 10.0;
-      channel->color.blue = rand () % 9 / 10.0;
+      channel->color.red = random () % 9 / 10.0;
+      channel->color.green = random () % 9 / 10.0;
+      channel->color.blue = random () % 9 / 10.0;
       channel->color.alpha = 1.0;
+      g_message ("rgb %f %f %f",
+                 channel->color.red,
+                 channel->color.green,
+                 channel->color.blue);
     }
 
   /* set default output */

@@ -106,4 +106,7 @@ void
 track_widget_on_show_automation (GtkWidget * widget,
                                  void *      data);
 
+GtkWidget *
+track_widget_get_bottom_paned (TrackWidget * self);
+
 #endif

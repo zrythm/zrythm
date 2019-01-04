@@ -100,6 +100,11 @@
           </object>
         </child>
         <child>
+          <object class="FaderWidget" id="fader">
+            <property name="visible">1</property>
+          </object>
+        </child>
+        <child>
           <object class="GtkBox" id="meter_area">
             <property name="visible">1</property>
             <property name="orientation">vertical</property>

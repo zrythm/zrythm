@@ -28,7 +28,9 @@
 #include "gui/widgets/fader.h"
 #include "utils/math.h"
 
-G_DEFINE_TYPE (FaderWidget, fader_widget, GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (FaderWidget,
+               fader_widget,
+               GTK_TYPE_DRAWING_AREA)
 
 #define GET_VAL ((*self->getter) (self->object))
 #define SET_VAL(real) ((*self->setter)(self->object, real))
@@ -211,33 +213,20 @@ drag_end (GtkGestureDrag *gesture,
 /**
  * Creates a new Fader widget and binds it to the given value.
  */
-FaderWidget *
-fader_widget_new (float (*get_val)(void *),    ///< getter function
-                  void (*set_val)(void *, float),    ///< setter function
-                  void * object,              ///< object to call get/set with
-                  int width)
+void
+fader_widget_setup (
+  FaderWidget * self,
+  float         (*get_val)(void *),    ///< getter function
+  void          (*set_val)(void *, float),    ///< setter function
+  void *        object,              ///< object to call get/set with
+  int width)
 {
-  FaderWidget * self = g_object_new (FADER_WIDGET_TYPE, NULL);
   self->getter = get_val;
   self->setter = set_val;
   self->object = object;
 
   /* set size */
   gtk_widget_set_size_request (GTK_WIDGET (self), width, -1);
-
-  /* connect signals */
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), self);
-  g_signal_connect (G_OBJECT (self), "enter-notify-event",
-                    G_CALLBACK (on_crossing),  self);
-  g_signal_connect (G_OBJECT(self), "leave-notify-event",
-                    G_CALLBACK (on_crossing),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-update",
-                    G_CALLBACK (drag_update),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-end",
-                    G_CALLBACK (drag_end),  self);
-
-  return self;
 }
 
 static void
@@ -252,6 +241,19 @@ fader_widget_init (FaderWidget * self)
   gtk_widget_add_events (GTK_WIDGET (self), crossing_mask);
 
   self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new (GTK_WIDGET (self)));
+
+  /* connect signals */
+  g_signal_connect (G_OBJECT (self), "draw",
+                    G_CALLBACK (draw_cb), self);
+  g_signal_connect (G_OBJECT (self), "enter-notify-event",
+                    G_CALLBACK (on_crossing),  self);
+  g_signal_connect (G_OBJECT(self), "leave-notify-event",
+                    G_CALLBACK (on_crossing),  self);
+  g_signal_connect (G_OBJECT(self->drag), "drag-update",
+                    G_CALLBACK (drag_update),  self);
+  g_signal_connect (G_OBJECT(self->drag), "drag-end",
+                    G_CALLBACK (drag_end),  self);
+
 }
 
 static void

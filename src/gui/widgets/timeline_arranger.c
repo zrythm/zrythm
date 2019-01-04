@@ -79,7 +79,7 @@ timeline_arranger_widget_set_allocation (
       RegionWidget * rw = REGION_WIDGET (widget);
       REGION_WIDGET_GET_PRIVATE (rw);
       Track * track = rw_prv->region->track;
-      TRACK_WIDGET_GET_PRIVATE (track->widget);
+      /*TRACK_WIDGET_GET_PRIVATE (track->widget);*/
 
       gint wx, wy;
       gtk_widget_translate_coordinates(
@@ -100,7 +100,9 @@ timeline_arranger_widget_set_allocation (
           allocation->x;
       allocation->height =
         gtk_widget_get_allocated_height (
-          GTK_WIDGET (tw_prv->top_grid));
+          GTK_WIDGET (track->widget)) -
+        gtk_widget_get_allocated_height (
+          track_widget_get_bottom_paned (track->widget));
     }
   else if (IS_AUTOMATION_POINT_WIDGET (widget))
     {

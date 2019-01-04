@@ -213,6 +213,14 @@ track_widget_on_show_automation (GtkWidget * widget,
   tracklist_widget_show (MW_TRACKLIST);
 }
 
+GtkWidget *
+track_widget_get_bottom_paned (TrackWidget * self)
+{
+  TRACK_WIDGET_GET_PRIVATE (self);
+
+  return gtk_paned_get_child2 (tw_prv->paned);
+}
+
 static void
 track_widget_init (TrackWidget * self)
 {
