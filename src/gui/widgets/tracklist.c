@@ -48,6 +48,27 @@ G_DEFINE_TYPE (TracklistWidget,
                tracklist_widget,
                DZL_TYPE_MULTI_PANED)
 
+static void
+on_resize_end (TracklistWidget * self,
+               GtkWidget *       child)
+{
+  if (!IS_TRACK_WIDGET (child))
+    return;
+
+  TrackWidget * tw = TRACK_WIDGET (child);
+  TRACK_WIDGET_GET_PRIVATE (tw);
+  Track * track = tw_prv->track;
+  GValue a = G_VALUE_INIT;
+  g_value_init (&a, G_TYPE_INT);
+  gtk_container_child_get_property (
+    GTK_CONTAINER (self),
+    GTK_WIDGET (tw),
+    "position",
+    &a);
+  track->handle_pos = g_value_get_int (&a);
+  Channel * chan = track_get_channel (track);
+}
+
 static TrackWidget *
 get_hit_track (TracklistWidget *  self,
                double            x,
@@ -521,6 +542,8 @@ tracklist_widget_init (TracklistWidget * self)
                     G_CALLBACK (on_key_action), self);
   g_signal_connect (G_OBJECT (self), "key-release-event",
                     G_CALLBACK (on_key_action), self);
+  g_signal_connect (G_OBJECT (self), "resize-drag-end",
+                    G_CALLBACK (on_resize_end), NULL);
 }
 
 static void

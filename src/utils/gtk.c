@@ -22,16 +22,40 @@
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
+/**
+ * NOTE: bumps reference, must be decremented after calling.
+ */
 void
 z_gtk_container_remove_all_children (GtkContainer * container)
 {
   GList *children, *iter;
 
-  children = gtk_container_get_children(GTK_CONTAINER(container));
-  for(iter = children; iter != NULL; iter = g_list_next(iter))
-    gtk_widget_destroy(GTK_WIDGET(iter->data));
-  g_list_free(children);
+  children =
+    gtk_container_get_children (GTK_CONTAINER (container));
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      g_object_ref (GTK_WIDGET (iter->data));
+      gtk_container_remove (
+        container,
+        GTK_WIDGET (iter->data));
+    }
+  g_list_free (children);
+}
 
+void
+z_gtk_container_destroy_all_children (GtkContainer * container)
+{
+  GList *children, *iter;
+
+  children =
+    gtk_container_get_children (GTK_CONTAINER (container));
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    gtk_widget_destroy (GTK_WIDGET (iter->data));
+  g_list_free (children);
 }
 
 void

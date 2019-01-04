@@ -133,9 +133,11 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
                 &wx,
                 &wy);
       int line_y =
-        (wy + gtk_widget_get_allocated_height (tw_widget)) - 2;
+        wy + gtk_widget_get_allocated_height (
+          GTK_WIDGET (tw_widget));
       draw_horizontal_line (cr,
-                            (wy + gtk_widget_get_allocated_height (GTK_WIDGET (tw_widget))) - 2, 1.0);
+                            line_y,
+                            1.0);
     }
 
   /* draw automation related stuff */

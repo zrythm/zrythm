@@ -23,11 +23,25 @@
 #include "gui/widgets/export_dialog.h"
 #include "gui/widgets/header_bar.h"
 #include "gui/widgets/main_window.h"
+#include "undo/undo_manager.h"
 #include "utils/resources.h"
 
 G_DEFINE_TYPE (HeaderBarWidget,
                header_bar_widget,
                GTK_TYPE_HEADER_BAR)
+
+void
+refresh_undo_redo_buttons (HeaderBarWidget * self)
+{
+  g_assert (UNDO_MANAGER);
+
+  gtk_widget_set_sensitive (
+    GTK_WIDGET (self->edit_undo),
+    !stack_is_empty (&UNDO_MANAGER->undo_stack));
+  gtk_widget_set_sensitive (
+    GTK_WIDGET (self->edit_redo),
+    !stack_is_empty (&UNDO_MANAGER->redo_stack));
+}
 
 static GtkMenuItem *
 create_menu_item (GtkAccelGroup * accel_group,
@@ -203,14 +217,18 @@ static void
 undo_activate (GtkMenuItem * menu_item,
               gpointer      user_data)
 {
-  g_message ("UNDO");
+  g_assert (!stack_is_empty (&UNDO_MANAGER->undo_stack));
+  undo_manager_undo (UNDO_MANAGER);
+  refresh_undo_redo_buttons ((HeaderBarWidget *) user_data);
 }
 
 static void
 redo_activate (GtkMenuItem * menu_item,
               gpointer      user_data)
 {
-  g_message ("REDO");
+  g_assert (!stack_is_empty (&UNDO_MANAGER->redo_stack));
+  undo_manager_redo (UNDO_MANAGER);
+  refresh_undo_redo_buttons ((HeaderBarWidget *) user_data);
 }
 
 static void
@@ -347,8 +365,9 @@ header_bar_widget_setup (HeaderBarWidget * self,
   g_signal_connect (G_OBJECT (menu_item),
                     "activate",
                     G_CALLBACK (undo_activate),
-                    NULL);
+                    self);
   APPEND_TO_EDIT_MENU;
+  self->edit_undo = menu_item;
   menu_item =
     create_menu_item (mw->accel_group,
                       "_Redo",
@@ -361,8 +380,9 @@ header_bar_widget_setup (HeaderBarWidget * self,
   g_signal_connect (G_OBJECT (menu_item),
                     "activate",
                     G_CALLBACK (redo_activate),
-                    NULL);
+                    self);
   APPEND_TO_EDIT_MENU;
+  self->edit_redo = menu_item;
   CREATE_SEPARATOR;
   APPEND_TO_EDIT_MENU;
   menu_item =
@@ -592,6 +612,8 @@ header_bar_widget_setup (HeaderBarWidget * self,
 
 #undef APPEND_TO_MENU_SHELL
 #undef CREATE_SEPARATOR
+
+  refresh_undo_redo_buttons (self);
 }
 
 static void

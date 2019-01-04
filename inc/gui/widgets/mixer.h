@@ -36,21 +36,34 @@ G_DECLARE_FINAL_TYPE (MixerWidget,
 #define MW_MIXER MW_BOT_DOCK_EDGE->mixer
 
 typedef struct _DragDestBoxWidget DragDestBoxWidget;
+typedef struct Channel Channel;
 
 typedef struct _MixerWidget
 {
   GtkBox                   parent_instance;
-  DragDestBoxWidget *      ddbox;  ///< box for DNDing plugins
-  MixerWidget *            mixer;
-  GtkScrolledWindow *      channels_scroll;
-  GtkViewport *            channels_viewport;
+  DragDestBoxWidget *      ddbox;  ///< for DNDing plugins
+
+  /**
+   * Box containing all channels except master.
+   */
   GtkBox *                 channels_box;
+
   GtkButton *              channels_add;
+  GtkBox *                 master_box;
 } MixerWidget;
 
-MixerWidget *
-mixer_widget_new ();
+/**
+ * To be called once.
+ */
+void
+mixer_widget_setup (MixerWidget * self,
+                    Channel *     master);
 
+/**
+ * Refreshes the content.
+ *
+ * To be called repeatedly.
+ */
 void
 mixer_widget_refresh (MixerWidget * self);
 

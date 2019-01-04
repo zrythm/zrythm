@@ -63,7 +63,7 @@ chord_track_widget_new (Track * track)
 
   /* setup color */
   GdkRGBA * color = calloc (1, sizeof (GdkRGBA));
-  gdk_rgba_parse (color, "blue");
+  gdk_rgba_parse (color, "#0328fa");
   color_area_widget_set_color (tw_prv->color,
                                color);
 

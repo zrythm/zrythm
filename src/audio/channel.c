@@ -366,7 +366,7 @@ channel_create (ChannelType type,
   /* set default color */
   if (type == CT_MASTER)
     {
-      gdk_rgba_parse (&channel->color, "red");
+      gdk_rgba_parse (&channel->color, "#f01010");
     }
   else
     {

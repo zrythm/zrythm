@@ -165,6 +165,16 @@ main_window_widget_refresh (MainWindowWidget * self)
   /* setup top and bot bars */
   top_bar_widget_refresh (self->top_bar);
   bot_bar_widget_refresh (self->bot_bar);
+
+  /* setup mixer */
+  mixer_widget_setup (MW_MIXER,
+                      MIXER->master);
+}
+
+void
+main_window_widget_minimize (MainWindowWidget * self)
+{
+  gtk_window_iconify (GTK_WINDOW (self));
 }
 
 static void
@@ -237,10 +247,4 @@ main_window_widget_init (MainWindowWidget * self)
                                    /*"<MainWindow>/File/Export As",*/
                                    /*closure);*/
 
-}
-
-void
-main_window_widget_minimize (MainWindowWidget * self)
-{
-  gtk_window_iconify (GTK_WINDOW (self));
 }

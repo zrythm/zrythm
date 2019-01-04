@@ -44,10 +44,6 @@ G_DEFINE_TYPE (MixerWidget,
 void
 mixer_widget_refresh (MixerWidget * self)
 {
-  /* remove dummy box for dnd */
-  g_object_ref (self->ddbox);
-  g_object_ref (self->channels_add);
-
   /* remove all things in the container */
   z_gtk_container_remove_all_children (
     GTK_CONTAINER (self->channels_box));
@@ -67,16 +63,7 @@ mixer_widget_refresh (MixerWidget * self)
 
       channel_widget_refresh (channel->widget);
 
-      if (i == -1) /* master */
-        {
-          gtk_box_pack_end (
-            GTK_BOX (self),
-            GTK_WIDGET (channel->widget),
-            Z_GTK_NO_EXPAND,
-            Z_GTK_NO_FILL,
-            0);
-        }
-      else /* not master */
+      if (i != -1) /* not master */
         {
           gtk_box_pack_start (
             self->channels_box,
@@ -102,6 +89,19 @@ mixer_widget_refresh (MixerWidget * self)
   g_object_unref (self->channels_add);
 }
 
+void
+mixer_widget_setup (MixerWidget * self,
+                    Channel *     master)
+{
+  if (!master->widget)
+    master->widget = channel_widget_new (master);
+  gtk_container_add (
+    GTK_CONTAINER (self->master_box),
+    GTK_WIDGET (master->widget));
+
+  mixer_widget_refresh (self);
+}
+
 static void
 mixer_widget_class_init (MixerWidgetClass * _klass)
 {
@@ -111,19 +111,15 @@ mixer_widget_class_init (MixerWidgetClass * _klass)
   gtk_widget_class_bind_template_child (
     klass,
     MixerWidget,
-    channels_scroll);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MixerWidget,
-    channels_viewport);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MixerWidget,
     channels_box);
   gtk_widget_class_bind_template_child (
     klass,
     MixerWidget,
     channels_add);
+  gtk_widget_class_bind_template_child (
+    klass,
+    MixerWidget,
+    master_box);
 }
 
 static void

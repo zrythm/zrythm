@@ -226,6 +226,7 @@ refresh_output (ChannelWidget * self)
 static void
 refresh_name (ChannelWidget * self)
 {
+  g_assert (self->channel->name);
   gtk_label_set_text (self->name,
                       self->channel->name);
 }
@@ -282,6 +283,8 @@ channel_widget_class_init (ChannelWidgetClass * _klass)
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass,
                                 "channel.ui");
+  gtk_widget_class_set_css_name (klass,
+                                 "channel");
 
   gtk_widget_class_bind_template_child (
     klass,

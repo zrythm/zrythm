@@ -18,6 +18,7 @@
 @define-color z_purple #9D3955;
 @define-color hover_color alpha (white, 0.1);
 @define-color selection_color alpha (white, 0.07);
+/* see https://coolors.co/ to generate more */
 
 window
 {
@@ -44,6 +45,16 @@ treeview.view
   background-color: @bg_darker_variant1;
 }
 
+entry:focus
+{
+  border-color: @bright_orange;
+}
+
+entry selection
+{
+  background-color: @z_yellow;
+}
+
 treeview.view:hover
 {
   background-color: @bg_light_variant1;
@@ -62,7 +73,8 @@ notebook stack
 
 tracklist,
 ruler,
-piano-roll-labels
+piano-roll-labels,
+window
 {
 background-color: @bg_dark_variant1;
 }
@@ -85,7 +97,7 @@ background-color: @bg_dark_variant2;
 }
 
 header-bar,
-header-bar menubar
+menubar
 {
   background-color: @bg_darker_variant2;
 }

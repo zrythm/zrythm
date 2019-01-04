@@ -52,7 +52,11 @@ enum ZGtkShrink
 };
 
 void
-z_gtk_container_remove_all_children (GtkContainer * container);
+z_gtk_container_remove_all_children (
+  GtkContainer * container);
+
+void
+z_gtk_container_destroy_all_children (GtkContainer * container);
 
 void
 z_gtk_button_set_icon_name (GtkButton * btn,

@@ -3,26 +3,39 @@
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <template class="MixerWidget" parent="GtkBox">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
+    <property name="visible">1</property>
+    <property name="can_focus">0</property>
     <child>
-      <object class="GtkScrolledWindow" id="channels_scroll">
+      <object class="GtkScrolledWindow">
         <property name="visible">1</property>
-        <property name="can-focus">1</property>
-        <property name="shadow-type">in</property>
+        <property name="can_focus">1</property>
+        <property name="shadow_type">in</property>
         <child>
-          <object class="GtkViewport" id="channels_viewport">
+          <object class="GtkViewport">
             <property name="visible">1</property>
+            <property name="can_focus">0</property>
             <child>
               <object class="GtkBox" id="channels_box">
                 <property name="visible">1</property>
+                <property name="can_focus">0</property>
                 <child>
                   <object class="GtkButton" id="channels_add">
                     <property name="visible">1</property>
-                    <property name="can-focus">1</property>
-                    <property name="receives-default">1</property>
+                    <property name="can_focus">1</property>
+                    <property name="receives_default">1</property>
                     <property name="relief">none</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="visible">1</property>
+                        <property name="resource">/org/zrythm/icons/add.svg</property>
+                      </object>
+                    </child>
                   </object>
+                  <packing>
+                    <property name="expand">0</property>
+                    <property name="fill">1</property>
+                    <property name="position">0</property>
+                  </packing>
                 </child>
               </object>
             </child>
@@ -30,9 +43,21 @@
         </child>
       </object>
       <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
+        <property name="expand">1</property>
+        <property name="fill">1</property>
         <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkBox" id="master_box">
+        <property name="visible">1</property>
+        <property name="can_focus">0</property>
+      </object>
+      <packing>
+        <property name="expand">0</property>
+        <property name="fill">0</property>
+        <property name="pack_type">end</property>
+        <property name="position">1</property>
       </packing>
     </child>
   </template>
