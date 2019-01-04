@@ -152,12 +152,12 @@ draw_cb (AutomationCurveWidget * self, cairo_t *cr, gpointer data)
             /*&prev_wy);*/
   /*prev_wx = arranger_get_x_pos_in_px (&prev_ap->pos);*/
   /*int ww = wx - prev_wx;*/
-  float automation_point_y;
+  double automation_point_y;
   int prev_y_px = automation_point_get_y_in_px (prev_ap);
   int next_y_px = automation_point_get_y_in_px (next_ap);
   int prev_higher = prev_y_px < next_y_px;
-  float new_x = 0;
-  float new_y = prev_higher ? AC_Y_HALF_PADDING : height - AC_Y_HALF_PADDING;
+  double new_x = AC_Y_HALF_PADDING;
+  double new_y = prev_higher ? AC_Y_HALF_PADDING : height - AC_Y_HALF_PADDING;
   cairo_move_to (cr,
                  new_x,
                  new_y);
@@ -166,19 +166,27 @@ draw_cb (AutomationCurveWidget * self, cairo_t *cr, gpointer data)
     /*curr_y_px - prev_y_px;*/
   /*cairo_set_line_width (cr, 1);*/
   /*for (int l = 0; l < ww; l++)*/
-  for (float l = 0; l <= width; l = l + 0.1)
+  for (double l = AC_Y_HALF_PADDING;
+       l <= ((double) width - AC_Y_HALF_PADDING);
+       l = l + 0.1)
     {
       automation_point_y =
-        automation_curve_get_y_px (self->ac,
-                                   l,
-                                   width,
-                                   height - AC_Y_PADDING);
+        automation_curve_get_y_px (
+          self->ac,
+          l - AC_Y_HALF_PADDING, // this should come to 0
+          width - AC_Y_PADDING,
+          height - AC_Y_PADDING);
       new_x = l;
       new_y = prev_higher ? automation_point_y : height + automation_point_y;
-      new_y -= AC_Y_HALF_PADDING; /* this is because height is 1 smaller than the actual height, so start drawing from 0.5 to actual height - 0.5 */
-      /*g_message ("new y %f , hieght %d",*/
-                 /*new_y,*/
-                 /*height);*/
+
+      /* this is because height is 1 smaller than the actual height, so start drawing from 0.5 to actual height - 0.5 */
+      if (prev_higher)
+        new_y += AC_Y_HALF_PADDING;
+      else
+        new_y -= AC_Y_HALF_PADDING;
+      /*g_message ("new x %f , new y %f",*/
+                 /*new_x,*/
+                 /*new_y);*/
       cairo_line_to (cr,
                      new_x,
                      new_y);

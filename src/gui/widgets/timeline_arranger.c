@@ -79,6 +79,7 @@ timeline_arranger_widget_set_allocation (
       RegionWidget * rw = REGION_WIDGET (widget);
       REGION_WIDGET_GET_PRIVATE (rw);
       Track * track = rw_prv->region->track;
+      TRACK_WIDGET_GET_PRIVATE (track->widget);
 
       gint wx, wy;
       gtk_widget_translate_coordinates(
@@ -99,7 +100,7 @@ timeline_arranger_widget_set_allocation (
           allocation->x;
       allocation->height =
         gtk_widget_get_allocated_height (
-          GTK_WIDGET (track->widget));
+          GTK_WIDGET (tw_prv->top_grid));
     }
   else if (IS_AUTOMATION_POINT_WIDGET (widget))
     {
@@ -146,14 +147,14 @@ timeline_arranger_widget_set_allocation (
 
       allocation->x = arranger_widget_pos_to_px (
         ARRANGER_WIDGET (self),
-        &prev_ap->pos);
+        &prev_ap->pos) - AC_Y_HALF_PADDING;
       int prev_y = automation_point_get_y_in_px (prev_ap);
       int next_y = automation_point_get_y_in_px (next_ap);
       allocation->y = (wy + (prev_y > next_y ? next_y : prev_y) - AC_Y_HALF_PADDING);
       allocation->width =
-        arranger_widget_pos_to_px (
+        (arranger_widget_pos_to_px (
           ARRANGER_WIDGET (self),
-          &next_ap->pos) - allocation->x;
+          &next_ap->pos) - allocation->x) + AC_Y_HALF_PADDING;
       allocation->height = (prev_y > next_y ? prev_y - next_y : next_y - prev_y) + AC_Y_PADDING;
     }
 }

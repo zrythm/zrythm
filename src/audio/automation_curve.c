@@ -143,21 +143,25 @@ get_y_normalized (double x, double curviness, int start_at_1)
  *
  * FIXME should be on widget.
  */
-float
+double
 automation_curve_get_y_px (AutomationCurve * ac, ///< start point (0, 0)
-                           float               x, ///< x coordinate in px
-                           float               width, ///< total width in px
-                           float               height) ///< total height in px
+                           double               x, ///< x coordinate in px
+                           double               width, ///< total width in px
+                           double               height) ///< total height in px
 {
   /* find next curve ap & next value ap */
-  AutomationPoint * prev_ap = automation_track_get_ap_before_curve (ac->at,
-                                                                    ac);
-  AutomationPoint * next_ap = automation_track_get_ap_after_curve (ac->at,
-                                                                   ac);
+  AutomationPoint * prev_ap =
+    automation_track_get_ap_before_curve (
+      ac->at,
+      ac);
+  AutomationPoint * next_ap =
+    automation_track_get_ap_after_curve (
+      ac->at,
+      ac);
 
-  double dx = (double) x / width; /* normalized x */
+  double dx = x / width; /* normalized x */
   double dy;
-  float ret;
+  double ret;
   if (automation_point_get_y_in_px (next_ap) > /* if next point is lower */
       automation_point_get_y_in_px (prev_ap))
     {

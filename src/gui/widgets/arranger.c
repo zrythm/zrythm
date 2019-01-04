@@ -533,7 +533,7 @@ drag_begin (GtkGestureDrag * gesture,
             TIMELINE_ARRANGER_WIDGET (self));
         }
     }
-  else /* no note hit */
+  else /* nothing hit */
     {
       if (prv->n_press == 1)
         {
@@ -559,6 +559,9 @@ drag_begin (GtkGestureDrag * gesture,
               at = timeline_arranger_widget_get_automation_track_at_y (start_y);
               if (!at)
                 track = timeline_arranger_widget_get_track_at_y (start_y);
+              g_message ("track %p at %p",
+                         track,
+                         at);
             }
           else if (T_MIDI)
             {
