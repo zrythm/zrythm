@@ -64,8 +64,8 @@ channel_widget_update_meter_reading (ChannelWidget * widget)
       gtk_label_set_text (widget->meter_reading, string);
       g_free (string);
     }
-  gtk_widget_queue_draw (GTK_WIDGET (widget->meters[0]));
-  gtk_widget_queue_draw (GTK_WIDGET (widget->meters[1]));
+  gtk_widget_queue_draw (GTK_WIDGET (widget->meter_l));
+  gtk_widget_queue_draw (GTK_WIDGET (widget->meter_r));
 }
 
 static void
@@ -105,22 +105,16 @@ setup_phase_panel (ChannelWidget * self)
 static void
 setup_meter (ChannelWidget * self)
 {
-  self->meters[0] = meter_widget_new (
-                          channel_get_current_l_db,
-                          self->channel,
-                          METER_TYPE_DB,
-                          12);
-  self->meters[1] = meter_widget_new (
-                          channel_get_current_r_db,
-                          self->channel,
-                          METER_TYPE_DB,
-                          12);
-  gtk_box_pack_start (self->meters_box,
-                       GTK_WIDGET (self->meters[0]),
-                       1, 1, 0);
-  gtk_box_pack_start (self->meters_box,
-                       GTK_WIDGET (self->meters[1]),
-                       1, 1, 0);
+  meter_widget_setup (self->meter_l,
+               channel_get_current_l_db,
+               self->channel,
+               METER_TYPE_DB,
+               12);
+  meter_widget_setup (self->meter_r,
+               channel_get_current_r_db,
+               self->channel,
+               METER_TYPE_DB,
+               12);
 }
 
 /**
@@ -168,19 +162,16 @@ setup_channel_icon (ChannelWidget * self)
   switch (self->channel->type)
     {
     case CT_MIDI:
-      gtk_image_set_from_resource (self->icon,
-                  "/org/zrythm/instrument.svg");
-      break;
-    case CT_MASTER:
-      gtk_image_set_from_resource (self->icon,
-                  "/org/zrythm/audio.svg");
+      resources_set_image_icon (self->icon,
+                                "instrument.svg");
       break;
     case CT_AUDIO:
-      gtk_image_set_from_resource (self->icon,
-                  "/org/zrythm/audio.svg");
+      resources_set_image_icon (self->icon,
+                                "audio.svg");
     case CT_BUS:
-      gtk_image_set_from_resource (self->icon,
-                  "/org/zrythm/bus.svg");
+    case CT_MASTER:
+      resources_set_image_icon (self->icon,
+                                "bus.svg");
       break;
     }
 }
@@ -243,6 +234,7 @@ channel_widget_refresh (ChannelWidget * self)
 {
   refresh_name (self);
   refresh_output (self);
+  channel_widget_update_meter_reading (self);
   refresh_color (self);
 }
 
@@ -337,7 +329,11 @@ channel_widget_class_init (ChannelWidgetClass * _klass)
   gtk_widget_class_bind_template_child (
     klass,
     ChannelWidget,
-    meters_box);
+    meter_l);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ChannelWidget,
+    meter_r);
   gtk_widget_class_bind_template_child (
     klass,
     ChannelWidget,

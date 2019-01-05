@@ -19,17 +19,29 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <float.h>
 #include <math.h>
 
 #include "utils/math.h"
+
+#include <gtk/gtk.h>
 
 /**
  * Returns fader value 0.0 to 1.0 from amp value 0.0 to 2.0 (+6 dbFS).
  */
 double math_get_fader_val_from_amp (double amp)
 {
-  double fader = pow (6.0 * log (amp) + 192 * log (2.0), 8.0) / (pow (log (2.0), 8.0) * pow (198.0, 8.0));
-  return fader;
+  /* to prevent weird values when amp is very small */
+  if (amp <= 0.000001)
+    return 0.0;
+  else
+    {
+      double fader =
+        pow (6.0 * log (amp) +
+             192.0 * log (2.0), 8.0) /
+        (pow (log (2.0), 8.0) * pow (198.0, 8.0));
+      return fader;
+    }
 }
 
 /**
@@ -44,30 +56,31 @@ double math_get_amp_val_from_fader (double fader)
 /**
  * Calculate db using RMS method.
  */
-float math_calculate_rms_db (float *   buf, ///< buffer containing the samples
-                             uint32_t  nframes) ///< number of samples
+double math_calculate_rms_db (
+  float *   buf, ///< buffer containing the samples
+  uint32_t  nframes) ///< number of samples
 {
-  float sum = 0, sample = 0;
+  double sum = 0, sample = 0;
   for (int i = 0; i < nframes; i += RMS_FRAMES)
   {
     sample = buf[i];
     sum += (sample * sample);
   }
-  return math_amp_to_dbfs (sqrt (sum / (nframes / (float) RMS_FRAMES)));
+  return math_amp_to_dbfs (sqrt (sum / (nframes / (double) RMS_FRAMES)));
 }
 
 /**
  * Convert from amplitude 0.0 to 2.0 to dbFS.
  */
-float math_amp_to_dbfs (float amp)
+double math_amp_to_dbfs (double amp)
 {
-  return 20.f * log10f (amp);
+  return 20.f * log10 (amp);
 }
 
 /**
  * Convert form dbFS to amplitude 0.0 to 2.0.
  */
-float math_dbfs_to_amp (float dbfs)
+double math_dbfs_to_amp (double dbfs)
 {
-  return 10.f * (dbfs / 20.f);
+  return pow (10.0, (dbfs / 20.0));
 }

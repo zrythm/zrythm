@@ -66,7 +66,6 @@ on_resize_end (TracklistWidget * self,
     "position",
     &a);
   track->handle_pos = g_value_get_int (&a);
-  Channel * chan = track_get_channel (track);
 }
 
 static TrackWidget *

@@ -14,12 +14,13 @@ More info at https://www.zrythm.org
 
 ## Installation
 ### Arch Linux/Manjaro
+Substitute `yaourt` with your AUR-compatible package manager
 ```
-# yaourt
-yaourt -S zrythm-git
+# stable
+yaourt -S zrythm
 
-# yay
-yay -S zrythm-git
+# latest (unstable)
+yaourt -S zrythm-git
 ```
 ### Debian/Linux Mint/Ubuntu
 add the public key
@@ -64,6 +65,8 @@ _Note2: If some dependencies are not found, you might need to enable the univers
 `
 sudo apt-add-repository universe
 `
+
+_Note3: For latest (unstable) version, install this directly using `dpkg -i`:_ https://gitlab.com/alextee/zrythm/-/jobs/artifacts/master/download?job=build_deb_64
 ### Fedora
 coming soon
 ### Manual installation
@@ -98,10 +101,24 @@ For any bugs please raise an issue or join a chatroom below
 `zrythm` server (https://discord.gg/AbHb3eD)
 
 ## License
-GPLv3+
+Copyright (C) 2019  Alexandros Theodotou
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 
 ## Support
-Monthly donations of any amount are accepted (and appreciated) below:
+Donations of any amount are accepted (and appreciated) below:
 
 ### Patreon
 https://www.patreon.com/alextee

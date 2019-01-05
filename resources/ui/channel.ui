@@ -109,8 +109,18 @@
             <property name="visible">1</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkBox" id="meters_box">
+              <object class="GtkBox">
                 <property name="visible">1</property>
+                <child>
+                  <object class="MeterWidget" id="meter_l">
+                    <property name="visible">1</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="MeterWidget" id="meter_r">
+                    <property name="visible">1</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">1</property>

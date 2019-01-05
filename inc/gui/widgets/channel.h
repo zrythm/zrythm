@@ -69,11 +69,11 @@ typedef struct _ChannelWidget
   GtkButton           * mute;
   GtkToggleButton     * record;
   GtkBox              * meter_area;  ///< vertical including reading
-  GtkBox              * meters_box;  ///< box for l/r meters
   GtkBox *            pan_box;
   PanWidget *         pan;
   FaderWidget         * fader;
-  MeterWidget         * meters[2];    ///< meter widgets (l/r)
+  MeterWidget         * meter_l;
+  MeterWidget         * meter_r;
   GtkLabel            * meter_reading;
   GtkImage            * icon;
   GtkImage *          output_img;

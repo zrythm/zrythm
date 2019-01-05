@@ -17,12 +17,26 @@ build_src_tarball:
   artifacts:
     paths:
     - ./$_PACKAGE_NAME.tar.gz
-    expire_in: 1 week
+    expire_in: 4 weeks
   only:
     - tags
     - master
 
 build_deb_64:
+  stage: build
+  script:
+    - export PACKAGE_NAME="$CI_PROJECT_NAME"_"$_DEBIAN_VER"
+    - sed -e "s/@BRANCH@/$CI_COMMIT_REF_NAME/" debian/changelog.in > debian/changelog && rm debian/changelog.in
+    - scripts/create-tarball.sh
+    - scripts/package-deb.sh
+    - mv $_PATH/*.deb ./
+  artifacts:
+    paths:
+    - ./zrythm_*amd64.deb
+  only:
+    - tags
+
+build_deb_64_unstable:
   stage: build
   script:
     - export PACKAGE_NAME="$CI_PROJECT_NAME"_"$_DEBIAN_VER"
@@ -32,10 +46,9 @@ build_deb_64:
     - mv $_PATH/*.deb ./
   artifacts:
     paths:
-    - ./*amd64.deb
-    expire_in: 1 week
+    - ./zrythm_*amd64.deb
+    expire_in: 4 weeks
   only:
-    - tags
     - master
 
 build_pkg_64:
@@ -48,7 +61,7 @@ build_pkg_64:
   artifacts:
     paths:
     - ./*.pkg.tar.xz
-    expire_in: 1 week
+    expire_in: 4 weeks
   only:
     - tags
     - master
@@ -63,7 +76,7 @@ build_rpm_64:
     - make -j8
   artifacts:
     paths:
-    expire_in: 1 week
+    expire_in: 4 weeks
   only:
     - tags
     - master

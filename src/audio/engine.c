@@ -128,10 +128,6 @@ jack_buffer_size_cb(nframes_t nframes, void* data)
 /**
  * The process callback for this JACK application is called in a
  * special realtime thread once for each audio cycle.
- *
- * This client follows a simple rule: when the JACK transport is
- * running, copy the input port to the output.  When it stops, exit.
- *
  */
 static int
 jack_process_cb (nframes_t    nframes,     ///< the number of frames to fill

@@ -39,17 +39,17 @@ double math_get_amp_val_from_fader (double fader);
 /**
  * Calculate db using RMS method.
  */
-float math_calculate_rms_db (float *   buf, ///< buffer containing the samples
+double math_calculate_rms_db (float *   buf, ///< buffer containing the samples
                              uint32_t  nframes); ///< number of samples
 
 /**
  * Convert from amplitude 0.0 to 2.0 to dbFS.
  */
-float math_amp_to_dbfs (float amp);
+double math_amp_to_dbfs (double amp);
 
 /**
  * Convert form dbFS to amplitude 0.0 to 2.0.
  */
-float math_dbfs_to_amp (float dbfs);
+double math_dbfs_to_amp (double dbfs);
 
 #endif

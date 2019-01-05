@@ -126,19 +126,6 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   cairo_set_line_width (cr, 1.7);
   cairo_stroke(cr);
 
-  //highlight if grabbed or if mouse is hovering over me
-  if (self->hover)
-    {
-      cairo_set_source_rgba (cr, 0.8, 0.8, 0.8, 0.12 );
-      cairo_new_sub_path (cr);
-      cairo_arc (cr, x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);
-      cairo_arc (cr, x + width - radius, y + height - radius, radius, 0 * degrees, 90 * degrees);
-      cairo_arc (cr, x + radius, y + height - radius, radius, 90 * degrees, 180 * degrees);
-      cairo_arc (cr, x + radius, y + radius, radius, 180 * degrees, 270 * degrees);
-      cairo_close_path (cr);
-      cairo_fill (cr);
-    }
-
   /* draw fader line */
   cairo_set_source_rgba (cr, 0, 0, 0, 1);
   cairo_set_line_width (cr, 16.0);
@@ -146,12 +133,19 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   cairo_move_to (cr, x, y + (height - value_px));
   cairo_line_to (cr, x+ width, y + (height - value_px));
   cairo_stroke (cr);
-  cairo_set_source_rgba (cr, 0.4, 0.1, 0.05, 1);
+  /*cairo_set_source_rgba (cr, 0.4, 0.1, 0.05, 1);*/
+  GdkRGBA color;
+  gdk_rgba_parse (&color,
+                  "#9D3955");
+  cairo_set_source_rgba (cr,
+                         color.red,
+                         color.green,
+                         color.blue,
+                         1);
   cairo_set_line_width (cr, 3.0);
   cairo_move_to (cr, x, y + (height - value_px));
   cairo_line_to (cr, x+ width, y + (height - value_px));
   cairo_stroke (cr);
-
 }
 
 
@@ -159,16 +153,20 @@ static void
 on_crossing (GtkWidget * widget, GdkEvent *event)
 {
   FaderWidget * self = FADER_WIDGET (widget);
-  if (gdk_event_get_event_type (event) == GDK_ENTER_NOTIFY)
-    self->hover = 1;
-  else if (gdk_event_get_event_type (event) == GDK_LEAVE_NOTIFY)
+
+  if (gdk_event_get_event_type (event) ==
+        GDK_ENTER_NOTIFY)
     {
-      if (!gtk_gesture_drag_get_offset (self->drag,
-                                       NULL,
-                                       NULL))
-        self->hover = 0;
+      gtk_widget_set_state_flags (GTK_WIDGET (self),
+                                  GTK_STATE_FLAG_PRELIGHT,
+                                  0);
     }
-  gtk_widget_queue_draw(widget);
+  else if (gdk_event_get_event_type (event) ==
+             GDK_LEAVE_NOTIFY)
+    {
+      gtk_widget_unset_state_flags (GTK_WIDGET (self),
+                                    GTK_STATE_FLAG_PRELIGHT);
+    }
 }
 
 static double clamp
@@ -185,7 +183,8 @@ drag_update (GtkGestureDrag * gesture,
 {
   FaderWidget * self = (FaderWidget *) user_data;
   offset_y = - offset_y;
-  int use_y = abs(offset_y - self->last_y) > abs(offset_x - self->last_x);
+  /*int use_y = abs(offset_y - self->last_y) > abs(offset_x - self->last_x);*/
+  int use_y = 1;
   /*double multiplier = 0.005;*/
   double diff = use_y ? offset_y - self->last_y : offset_x - self->last_x;
   double height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
@@ -232,15 +231,17 @@ fader_widget_setup (
 static void
 fader_widget_init (FaderWidget * self)
 {
-  gdk_rgba_parse (&self->start_color, "rgba(40%,20%,5%,1.0)");
-  gdk_rgba_parse (&self->end_color, "rgba(30%,17%,3%,0.8)");
+  gdk_rgba_parse (&self->start_color, "#D68A0C");
+  gdk_rgba_parse (&self->end_color, "#F9CA1B");
 
   /* make it able to notify */
   gtk_widget_set_has_window (GTK_WIDGET (self), TRUE);
-  int crossing_mask = GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;
+  int crossing_mask =
+    GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;
   gtk_widget_add_events (GTK_WIDGET (self), crossing_mask);
 
-  self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new (GTK_WIDGET (self)));
+  self->drag = GTK_GESTURE_DRAG (
+    gtk_gesture_drag_new (GTK_WIDGET (self)));
 
   /* connect signals */
   g_signal_connect (G_OBJECT (self), "draw",
@@ -257,6 +258,9 @@ fader_widget_init (FaderWidget * self)
 }
 
 static void
-fader_widget_class_init (FaderWidgetClass * klass)
+fader_widget_class_init (FaderWidgetClass * _klass)
 {
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (klass,
+                                 "fader");
 }

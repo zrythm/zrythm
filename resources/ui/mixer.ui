@@ -10,6 +10,7 @@
         <property name="visible">1</property>
         <property name="can_focus">1</property>
         <property name="shadow_type">in</property>
+        <property name="vscrollbar-policy">GTK_POLICY_NEVER</property>
         <child>
           <object class="GtkViewport">
             <property name="visible">1</property>

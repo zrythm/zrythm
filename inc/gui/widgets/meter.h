@@ -28,11 +28,12 @@
 #include <gtk/gtk.h>
 
 #define METER_WIDGET_TYPE                  (meter_widget_get_type ())
-#define METER_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), METER_WIDGET_TYPE, MeterWidget))
-#define METER_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), METER_WIDGET, MeterWidgetClass))
+G_DECLARE_FINAL_TYPE (MeterWidget,
+                      meter_widget,
+                      METER,
+                      WIDGET,
+                      GtkDrawingArea)
 #define IS_METER_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), METER_WIDGET_TYPE))
-#define IS_METER_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), METER_WIDGET_TYPE))
-#define METER_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), METER_WIDGET_TYPE, MeterWidgetClass))
 
 typedef enum MeterType
 {
@@ -40,7 +41,7 @@ typedef enum MeterType
   METER_TYPE_DB
 } MeterType;
 
-typedef struct MeterWidget
+typedef struct _MeterWidget
 {
   GtkDrawingArea         parent_instance;
   float                  (*getter)(void*); ///< getter function for value
@@ -51,19 +52,15 @@ typedef struct MeterWidget
   GdkRGBA                end_color;
 } MeterWidget;
 
-typedef struct MeterWidgetClass
-{
-  GtkDrawingAreaClass    parent_class;
-} MeterWidgetClass;
-
 /**
  * Creates a new Meter widget and binds it to the given value.
  */
-MeterWidget *
-meter_widget_new (float       (*getter)(void *),    ///< getter function
-                  void        * object,      ///< object to call get on
-                  MeterType   type,    ///< meter type
-                  int         width);
+void
+meter_widget_setup (
+  MeterWidget * self,
+  float       (*getter)(void *),    ///< getter function
+  void        * object,      ///< object to call get on
+  MeterType   type,    ///< meter type
+  int         width);
 
 #endif
-

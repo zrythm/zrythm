@@ -159,7 +159,8 @@ region:selected
 }
 
 track:hover,
-region:hover
+region:hover,
+fader:hover
 {
   background-color: @hover_color;
 }

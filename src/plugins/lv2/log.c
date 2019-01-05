@@ -23,30 +23,31 @@ lv2_vprintf(LV2_Log_Handle handle,
              const char*    fmt,
              va_list        ap)
 {
-	// TODO: Lock
-	Lv2Plugin* plugin  = (Lv2Plugin*)handle;
-	bool  fancy = true;
-        bool  trace = true;
-	if (type == plugin->urids.log_Trace) {
-		lv2_ansi_start(stderr, 32);
-		fprintf(stderr, "trace: ");
-	} else if (type == plugin->urids.log_Error) {
-		lv2_ansi_start(stderr, 31);
-		fprintf(stderr, "error: ");
-	} else if (type == plugin->urids.log_Warning) {
-		lv2_ansi_start(stderr, 33);
-		fprintf(stderr, "warning: ");
-	} else {
-		fancy = false;
-	}
+  // TODO: Lock
+  Lv2Plugin* plugin  = (Lv2Plugin*)handle;
+  bool  fancy = true;
+  /*bool  trace = true;*/
+  if (type == plugin->urids.log_Trace)
+    {
+          lv2_ansi_start(stderr, 32);
+          fprintf(stderr, "trace: ");
+  } else if (type == plugin->urids.log_Error) {
+          lv2_ansi_start(stderr, 31);
+          fprintf(stderr, "error: ");
+  } else if (type == plugin->urids.log_Warning) {
+          lv2_ansi_start(stderr, 33);
+          fprintf(stderr, "warning: ");
+  } else {
+          fancy = false;
+  }
 
-	const int st = vfprintf(stderr, fmt, ap);
+  const int st = vfprintf(stderr, fmt, ap);
 
-	if (fancy) {
-		lv2_ansi_reset(stderr);
-	}
+  if (fancy) {
+          lv2_ansi_reset(stderr);
+  }
 
-	return st;
+  return st;
 }
 
 int

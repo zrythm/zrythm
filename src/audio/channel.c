@@ -189,12 +189,16 @@ channel_process (Channel * channel,  ///< slots
   port_apply_fader (channel->stereo_out->r, channel->fader_amp);
 
   /* calc decibels */
-  channel_set_current_l_db (channel,
-                            math_calculate_rms_db (channel->stereo_out->l->buf,
-                                         channel->stereo_out->l->nframes));
-  channel_set_current_r_db (channel,
-                            math_calculate_rms_db (channel->stereo_out->r->buf,
-                                         channel->stereo_out->r->nframes));
+  channel_set_current_l_db (
+    channel,
+    math_calculate_rms_db (
+      channel->stereo_out->l->buf,
+      (double) channel->stereo_out->l->nframes));
+  channel_set_current_r_db (
+    channel,
+    math_calculate_rms_db (
+      channel->stereo_out->r->buf,
+      (double) channel->stereo_out->r->nframes));
 
   /* mark as processed */
   channel->processed = 1;
@@ -279,6 +283,8 @@ _create_channel (char * name)
   channel->fader_amp = 1.0f;
   channel->phase = 0.0f;
   channel->pan = 0.5f;
+  channel->l_port_db = 0.f;
+  channel->r_port_db = 0.f;
 
   /* connect MIDI in port from engine's jack port */
   port_connect (AUDIO_ENGINE->midi_in, channel->midi_in);

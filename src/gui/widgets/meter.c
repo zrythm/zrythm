@@ -31,10 +31,10 @@ G_DEFINE_TYPE (MeterWidget, meter_widget, GTK_TYPE_DRAWING_AREA)
 
 #define GET_REAL_VAL ((*self->getter) (self->object))
 
-static float
+static double
 meter_val_from_real (MeterWidget * self)
 {
-  double amp = GET_REAL_VAL;
+  double amp = math_dbfs_to_amp (GET_REAL_VAL);
   return math_get_fader_val_from_amp (amp);
 }
 
@@ -51,17 +51,7 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 
   gtk_render_background (context, cr, 0, 0, width, height);
 
-  /* a custom shape that could be wrapped in a function */
-  double
-         arc_y         = 0,
-         aspect        = 1.0,     /* aspect ratio */
-         corner_radius = height / 90.0;   /* and corner curvature radius */
-
-  double radius = corner_radius / aspect;
-  double degrees = G_PI / 180.0;
-  /* value in pixels = total pixels * val
-   * val is percentage */
-  float meter_val;
+  double meter_val;
   switch (self->type)
     {
     case METER_TYPE_DB:
@@ -70,27 +60,14 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
     case METER_TYPE_MIDI:
       break;
     }
-  double value_px = height * (double) meter_val;
+  double value_px = height * meter_val;
   if (value_px < 0)
     value_px = 0;
-
-  /* draw background bar */
-  /*cairo_new_sub_path (cr);*/
-  /*cairo_arc (cr, x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);*/
-  /*cairo_line_to (cr, x + width, y + height - value_px);*/
-  /*[>cairo_arc (cr, x + width - radius, y + height - radius, radius, 0 * degrees, 90 * degrees);<]*/
-  /*cairo_line_to (cr, x, y + height - value_px);*/
-  /*[>cairo_arc (cr, x + radius, y + height - radius, radius, 90 * degrees, 180 * degrees);<]*/
-  /*cairo_arc (cr, x + radius, y + radius, radius, 180 * degrees, 270 * degrees);*/
-  /*cairo_close_path (cr);*/
-
-  /*cairo_set_source_rgba (cr, 0.4, 0.4, 0.4, 0.2);*/
-  /*cairo_fill(cr);*/
 
   /* draw filled in bar */
   float width_without_padding = width - 4;
 
-  float intensity = meter_val;
+  float intensity = (float) meter_val;
   const float intensity_inv = 1.0 - intensity;
   float r = intensity_inv * self->end_color.red   +
             intensity * self->start_color.red;
@@ -102,33 +79,29 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
             /*intensity * self->start_color.alpha;*/
   cairo_set_source_rgba (cr, r,g,b, 1.0);
   float x = 2;
-  cairo_new_sub_path (cr);
-  cairo_move_to (cr, x, arc_y + (height - value_px));
-  cairo_line_to (cr, x + width_without_padding, arc_y + (height - value_px));
-  cairo_arc (cr, x + width_without_padding - radius, arc_y + height - radius, radius, 0 * degrees, 90 * degrees);
-  cairo_arc (cr, x + radius, arc_y + height - radius, radius, 90 * degrees, 180 * degrees);
-  cairo_line_to (cr, x, arc_y + (height - value_px));
-  cairo_close_path (cr);
+  cairo_rectangle (cr,
+                   x,
+                   height - value_px,
+                   x + width_without_padding,
+                   value_px);
   cairo_fill(cr);
 
 
   /* draw border line */
   cairo_set_source_rgba (cr, 0.1, 0.1, 0.1, 1.0);
   cairo_set_line_width (cr, 1.7);
-  cairo_new_sub_path (cr);
-  cairo_move_to (cr, x + width_without_padding - radius, arc_y + radius);
-  cairo_arc (cr, x + width_without_padding - radius, arc_y + radius, radius, -90 * degrees, 0 * degrees);
-  cairo_arc (cr, x + width_without_padding - radius, arc_y + height - radius, radius, 0 * degrees, 90 * degrees);
-  cairo_arc (cr, x + radius, arc_y + height - radius, radius, 90 * degrees, 180 * degrees);
-  cairo_arc (cr, x + radius, arc_y + radius, radius, 180 * degrees, 270 * degrees);
-  cairo_close_path (cr);
+  cairo_rectangle (cr,
+                   x,
+                   0,
+                   x + width_without_padding,
+                   height);
   cairo_stroke(cr);
 
   /* draw meter line */
   cairo_set_source_rgba (cr, 0.4, 0.1, 0.05, 1);
   cairo_set_line_width (cr, 1.0);
-  cairo_move_to (cr, x, arc_y + (height - value_px));
-  cairo_line_to (cr, x + width_without_padding, arc_y + (height - value_px));
+  cairo_move_to (cr, x, height - value_px);
+  cairo_line_to (cr, x + width_without_padding, height - value_px);
   cairo_stroke (cr);
 
   return FALSE;
@@ -154,19 +127,29 @@ on_crossing (GtkWidget * widget, GdkEvent *event)
 /**
  * Creates a new Meter widget and binds it to the given value.
  */
-MeterWidget *
-meter_widget_new (float       (*getter)(void *),    ///< getter function
-                  void        * object,      ///< object to call get on
-                  MeterType   type,    ///< meter type
-                  int         width)
+void
+meter_widget_setup (
+  MeterWidget * self,
+  float       (*getter)(void *),    ///< getter function
+  void        * object,      ///< object to call get on
+  MeterType   type,    ///< meter type
+  int         width)
 {
-  MeterWidget * self = g_object_new (METER_WIDGET_TYPE, NULL);
   self->getter = getter;
   self->object = object;
   self->type = type;
 
   /* set size */
   gtk_widget_set_size_request (GTK_WIDGET (self), width, -1);
+}
+
+static void
+meter_widget_init (MeterWidget * self)
+{
+  /*gdk_rgba_parse (&self->start_color, "#00FF66");*/
+  /*gdk_rgba_parse (&self->end_color, "#00FFCC");*/
+  gdk_rgba_parse (&self->start_color, "#F9CA1B");
+  gdk_rgba_parse (&self->end_color, "#1DDD6A");
 
   /* connect signals */
   g_signal_connect (G_OBJECT (self), "draw",
@@ -175,25 +158,12 @@ meter_widget_new (float       (*getter)(void *),    ///< getter function
                     G_CALLBACK (on_crossing),  self);
   g_signal_connect (G_OBJECT(self), "leave-notify-event",
                     G_CALLBACK (on_crossing),  self);
-
-  return self;
 }
 
 static void
-meter_widget_init (MeterWidget * self)
+meter_widget_class_init (MeterWidgetClass * _klass)
 {
-  gdk_rgba_parse (&self->start_color, "#00FF66");
-  gdk_rgba_parse (&self->end_color, "#00FFCC");
-
-  /* make it able to notify */
-  /*gtk_widget_set_has_window (GTK_WIDGET (self), TRUE);*/
-  /*int crossing_mask = GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;*/
-  /*gtk_widget_add_events (GTK_WIDGET (self), crossing_mask);*/
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (klass,
+                                 "meter");
 }
-
-static void
-meter_widget_class_init (MeterWidgetClass * klass)
-{
-}
-
-
