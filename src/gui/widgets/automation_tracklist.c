@@ -74,14 +74,15 @@ automation_tracklist_widget_refresh (
     {
       gtk_widget_set_visible (GTK_WIDGET (self),
                               0);
-      return;
+    }
+  else
+    {
+      gtk_widget_set_visible (GTK_WIDGET (self),
+                              1);
     }
 
-  gtk_widget_set_visible (GTK_WIDGET (self),
-                          1);
-
   /* remove all automation tracks */
-  z_gtk_container_remove_all_children (
+  z_gtk_container_destroy_all_children (
     GTK_CONTAINER (self));
 
   /* add tracks */
@@ -91,6 +92,8 @@ automation_tracklist_widget_refresh (
     {
       AutomationTrack * at =
         self->automation_tracklist->automation_tracks[i];
+
+      /* show automation track */
       if (at->visible)
         {
           /* create widget */
@@ -99,6 +102,23 @@ automation_tracklist_widget_refresh (
           /* add to automation tracklist widget */
           gtk_container_add (GTK_CONTAINER (self),
                              GTK_WIDGET (at->widget));
+
+        }
+
+      /* show/hide automation points/curves */
+      for (int j = 0; j < at->num_automation_points; j++)
+        {
+          AutomationPoint * ap = at->automation_points[j];
+          gtk_widget_set_visible (
+            GTK_WIDGET (ap->widget),
+            at->visible && track->bot_paned_visible);
+        }
+      for (int j = 0; j < at->num_automation_curves; j++)
+        {
+          AutomationCurve * ac = at->automation_curves[j];
+          gtk_widget_set_visible (
+            GTK_WIDGET (ac->widget),
+            at->visible && track->bot_paned_visible);
         }
     }
 

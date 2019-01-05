@@ -1,7 +1,7 @@
 /*
  * gui/widgets/automation_track.c - AutomationTrack
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -100,7 +100,6 @@ on_show (GtkWidget *widget,
          gpointer   user_data)
 {
   /*AutomationTrackWidget * self = AUTOMATION_TRACK_WIDGET (user_data);*/
-  g_message ("showing");
 }
 
 
@@ -110,7 +109,6 @@ on_at_selector_changed (GtkComboBox * widget,
 {
   AutomationTrackWidget * self = AUTOMATION_TRACK_WIDGET (user_data);
 
-  g_message ("selector changed");
   GtkTreeIter iter;
   gtk_combo_box_get_active_iter (widget, &iter);
   GtkTreeModel * model = gtk_combo_box_get_model (widget);
@@ -212,17 +210,14 @@ automation_track_widget_new (AutomationTrack * automation_track)
 
   setup_combo_box (self);
 
-  GtkWidget *image = gtk_image_new_from_resource (
-          "/org/zrythm/mute.svg");
-  gtk_button_set_image (GTK_BUTTON (self->mute_toggle), image);
-  gtk_button_set_label (GTK_BUTTON (self->mute_toggle),
-                        "");
-
   /* connect signals */
   g_signal_connect (self, "size-allocate",
                     G_CALLBACK (size_allocate_cb), NULL);
   g_signal_connect (self, "show",
                     G_CALLBACK (on_show), self);
+
+  gtk_widget_set_vexpand (GTK_WIDGET (self),
+                          1);
 
   return self;
 }
@@ -240,6 +235,8 @@ automation_track_widget_class_init (
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass,
                                 "automation_track.ui");
+  gtk_widget_class_set_css_name (klass,
+                                 "automation-track");
 
   gtk_widget_class_bind_template_child (
     klass,

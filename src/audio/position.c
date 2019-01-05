@@ -205,13 +205,13 @@ position_set_tick (Position * position,
  * Sets position to target position
  */
 void
-position_set_to_pos (Position * position,
-                     Position * target)
+position_set_to_pos (Position * pos,
+                Position * target)
 {
-  position_set_bar (position, target->bars);
-  position_set_beat (position, target->beats);
-  position_set_quarter_beat (position, target->quarter_beats);
-  position_set_tick (position, target->ticks);
+  position_set_bar (pos, target->bars);
+  position_set_beat (pos, target->beats);
+  position_set_quarter_beat (pos, target->quarter_beats);
+  position_set_tick (pos, target->ticks);
 }
 
 void

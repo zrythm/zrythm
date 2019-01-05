@@ -184,7 +184,9 @@ automation_track_add_automation_curve (AutomationTrack * at,
                                        AutomationCurve * ac)
 {
   /* add point */
-  at->automation_curves[at->num_automation_curves++] = ac;
+  array_append ((void **) at->automation_curves,
+                &at->num_automation_curves,
+                (void *) ac);
 
   /* sort by position */
   qsort (at->automation_curves,

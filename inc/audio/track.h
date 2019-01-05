@@ -22,6 +22,7 @@
 #ifndef __AUDIO_TRACK_H__
 #define __AUDIO_TRACK_H__
 
+#include <gtk/gtk.h>
 #include <jack/jack.h>
 
 typedef struct AutomationTracklist AutomationTracklist;
@@ -104,6 +105,9 @@ track_get_channel (Track * track);
  */
 Automatable *
 track_get_fader_automatable (Track * track);
+
+GdkRGBA *
+track_get_color (Track * track);
 
 /**
  * Wrapper for each track type.

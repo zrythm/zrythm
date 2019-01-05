@@ -80,6 +80,7 @@ typedef enum ChordType
   CHORD_TYPE_AUG
 } ChordType;
 
+typedef struct _ChordWidget ChordWidget;
 /**
  * Chords are to be generated on demand.
  */
@@ -95,6 +96,7 @@ typedef struct Chord
   int                   inversion; ///< == 0 no inversion,
                                    ///< < 0 means highest note(s) drop an octave
                                    ///< > 0 means lowest note(s) receive an octave
+  ChordWidget *         widget;
 } Chord;
 
 /**

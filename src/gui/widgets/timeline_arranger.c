@@ -26,6 +26,8 @@
 #include "audio/automation_tracklist.h"
 #include "audio/bus_track.h"
 #include "audio/channel.h"
+#include "audio/chord.h"
+#include "audio/chord_track.h"
 #include "audio/instrument_track.h"
 #include "audio/midi_region.h"
 #include "audio/mixer.h"
@@ -38,6 +40,7 @@
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/chord.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
@@ -159,14 +162,46 @@ timeline_arranger_widget_set_allocation (
           &next_ap->pos) - allocation->x) + AC_Y_HALF_PADDING;
       allocation->height = (prev_y > next_y ? prev_y - next_y : next_y - prev_y) + AC_Y_PADDING;
     }
+  else if (IS_CHORD_WIDGET (widget))
+    {
+      ChordWidget * cw = CHORD_WIDGET (widget);
+      Track * track = (Track *) CHORD_TRACK;
+
+      gint wx, wy;
+      gtk_widget_translate_coordinates(
+                GTK_WIDGET (track->widget),
+                GTK_WIDGET (self),
+                0,
+                0,
+                &wx,
+                &wy);
+
+      allocation->x = arranger_widget_pos_to_px (
+        ARRANGER_WIDGET (self),
+        &cw->chord->pos);
+      Position tmp;
+      position_set_to_pos (&tmp,
+                           &cw->chord->pos);
+      position_set_beat (
+        &tmp,
+        tmp.beats + 1);
+      allocation->y = wy;
+      allocation->width = arranger_widget_pos_to_px (
+        ARRANGER_WIDGET (self),
+        &tmp) -
+          allocation->x;
+      allocation->height =
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (track->widget));
+    }
 }
 
 Track *
 timeline_arranger_widget_get_track_at_y (double y)
 {
-  for (int i = 0; i < MIXER->num_channels; i++)
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      Track * track = MIXER->channels[i]->track;
+      Track * track = TRACKLIST->tracks[i];
 
       GtkAllocation allocation;
       gtk_widget_get_allocation (GTK_WIDGET (track->widget),
@@ -192,9 +227,9 @@ timeline_arranger_widget_get_track_at_y (double y)
 AutomationTrack *
 timeline_arranger_widget_get_automation_track_at_y (double y)
 {
-  for (int i = 0; i < MIXER->num_channels; i++)
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      Track * track = MIXER->channels[i]->track;
+      Track * track = TRACKLIST->tracks[i];
       AutomationTracklist * automation_tracklist =
         track_get_automation_tracklist (track);
       if (!automation_tracklist)
@@ -669,6 +704,38 @@ timeline_arranger_widget_create_region (
   prv->action = ARRANGER_ACTION_RESIZING_R;
   self->regions[0] = region;
   self->num_regions = 1;
+}
+
+void
+timeline_arranger_widget_create_chord (
+  TimelineArrangerWidget * self,
+  Track *                  track,
+  Position *               pos)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  position_snap (NULL,
+                 pos,
+                 track,
+                 NULL,
+                 prv->snap_grid);
+ Chord * chord = chord_new (NOTE_A,
+                            1,
+                            NOTE_A,
+                            CHORD_TYPE_MIN,
+                            0);
+ position_set_to_pos (&chord->pos,
+                      pos);
+
+ chord_track_add_chord ((ChordTrack *) track,
+                        chord);
+
+  gtk_overlay_add_overlay (GTK_OVERLAY (self),
+                           GTK_WIDGET (chord->widget));
+  gtk_widget_show (GTK_WIDGET (chord->widget));
+  prv->action = ARRANGER_ACTION_NONE;
+  self->chords[0] = chord;
+  self->num_chords = 1;
 }
 
 void

@@ -32,6 +32,7 @@
 #include "audio/chord_track.h"
 #include "audio/scale.h"
 #include "audio/track.h"
+#include "utils/arrays.h"
 
 /**
  * Creates a new chord track using the given scale.
@@ -47,8 +48,20 @@ chord_track_new (MusicalScale * scale)
 
   self->scale = scale;
 
+  gdk_rgba_parse (&self->color, "#0328fa");
+
   return self;
 }
+
+void
+chord_track_add_chord (ChordTrack * self,
+                       Chord *      chord)
+{
+  array_append ((void **) self->chords,
+                &self->num_chords,
+                (void *) chord);
+}
+
 
 /**
  * Creates chord track using default scale.

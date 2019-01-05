@@ -93,6 +93,9 @@ arranger_widget_px_to_pos (ArrangerWidget * self,
                            Position * pos,
                            int              px)
 {
+  /* clamp at 0 */
+  if (px < SPACE_BEFORE_START)
+    px = SPACE_BEFORE_START;
   GET_PRIVATE;
   RulerWidget * ruler = T_MIDI ?
     RULER_WIDGET (MIDI_RULER) :
@@ -251,13 +254,11 @@ arranger_widget_get_hit_widget (ArrangerWidget *  self,
           else if (type == ARRANGER_CHILD_TYPE_AP &&
                    IS_AUTOMATION_POINT_WIDGET (widget))
             {
-              g_message ("wx %d wy %d", wx, wy);
               return widget;
             }
           else if (type == ARRANGER_CHILD_TYPE_AC &&
                    IS_AUTOMATION_CURVE_WIDGET (widget))
             {
-              g_message ("wx %d wy %d", wx, wy);
               return widget;
             }
         }
@@ -590,12 +591,28 @@ drag_begin (GtkGestureDrag * gesture,
                     &pos,
                     start_y);
                 }
+              /* double click inside a track */
               else if (T_TIMELINE && track)
                 {
-                  timeline_arranger_widget_create_region (
-                    TIMELINE_ARRANGER_WIDGET (self),
-                    track,
-                    &pos);
+                  switch (track->type)
+                    {
+                    case TRACK_TYPE_INSTRUMENT:
+                    case TRACK_TYPE_AUDIO:
+                      timeline_arranger_widget_create_region (
+                        TIMELINE_ARRANGER_WIDGET (self),
+                        track,
+                        &pos);
+                      break;
+                    case TRACK_TYPE_MASTER:
+                      break;
+                    case TRACK_TYPE_CHORD:
+                      timeline_arranger_widget_create_chord (
+                        TIMELINE_ARRANGER_WIDGET (self),
+                        track,
+                        &pos);
+                    case TRACK_TYPE_BUS:
+                      break;
+                    }
                 }
               else if (T_MIDI && region)
                 {

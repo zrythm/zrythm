@@ -28,6 +28,7 @@
 #include "stdlib.h"
 
 #include "audio/chord.h"
+#include "gui/widgets/chord.h"
 
 /**
  * Creates a chord.
@@ -87,6 +88,8 @@ chord_new (MusicalNote            root,
     }
 
   /* TODO invert */
+
+  self->widget = chord_widget_new (self);
 
   return self;
 }

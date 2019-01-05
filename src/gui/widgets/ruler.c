@@ -60,6 +60,7 @@ ruler_widget_px_to_pos (
   Position *    pos, ///< position to fill in
   int           px) ///< pixels
 {
+  if (px < 0) px = 0;
   GET_PRIVATE;
 
   pos->bars = px / prv->px_per_bar + 1;

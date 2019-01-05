@@ -47,6 +47,7 @@ typedef struct AutomationPointWidget AutomationPointWidget;
 typedef struct _AutomationCurveWidget AutomationCurveWidget;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct AutomationCurve AutomationCurve;
+typedef struct Chord Chord;
 
 typedef struct _TimelineArrangerWidget
 {
@@ -65,6 +66,8 @@ typedef struct _TimelineArrangerWidget
    * to move the objects accordingly */
   Position                 region_start_poses[600]; ///< region initial start positions, for moving regions
   Position                 ap_poses[600]; ///< for moving regions
+  Chord *                  chords[800];
+  int                      num_chords;
 } TimelineArrangerWidget;
 
 /**
@@ -160,6 +163,12 @@ timeline_arranger_widget_create_ap (
 
 void
 timeline_arranger_widget_create_region (
+  TimelineArrangerWidget * self,
+  Track *                  track,
+  Position *               pos);
+
+void
+timeline_arranger_widget_create_chord (
   TimelineArrangerWidget * self,
   Track *                  track,
   Position *               pos);

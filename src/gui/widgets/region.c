@@ -191,4 +191,3 @@ static void
 region_widget_init (RegionWidget * self)
 {
 }
-

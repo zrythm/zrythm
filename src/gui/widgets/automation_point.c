@@ -60,11 +60,17 @@ draw_cb (AutomationPointWidget * self, cairo_t *cr, gpointer data)
       cairo_set_source_rgba (cr, color->red, color->green, color->blue, 0.7);
     }
   /* TODO circle */
-  cairo_rectangle(cr,
-                  AP_WIDGET_PADDING,
-                  AP_WIDGET_PADDING,
-                  width - AP_WIDGET_PADDING * 2,
-                  height - AP_WIDGET_PADDING * 2);
+  /*cairo_rectangle(cr,*/
+                  /*AP_WIDGET_PADDING,*/
+                  /*AP_WIDGET_PADDING,*/
+                  /*width - AP_WIDGET_PADDING * 2,*/
+                  /*height - AP_WIDGET_PADDING * 2);*/
+  cairo_arc (cr,
+             width / 2,
+             height / 2,
+             width / 2 - AP_WIDGET_PADDING,
+             0,
+             2 * G_PI);
   cairo_stroke_preserve(cr);
   cairo_fill(cr);
 

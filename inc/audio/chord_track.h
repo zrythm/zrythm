@@ -45,8 +45,9 @@ typedef struct ChordTrack
   Track                   parent;
   MusicalScale *          scale;
   Chord *                 chords[600];
-  uint8_t                 num_chords;
+  int                     num_chords;
   ChordTrackWidget *      widget;
+  GdkRGBA                 color;
 } ChordTrack;
 
 /**
@@ -60,6 +61,10 @@ chord_track_new (MusicalScale * scale);
  */
 ChordTrack *
 chord_track_default ();
+
+void
+chord_track_add_chord (ChordTrack * self,
+                       Chord *      chord);
 
 void
 chord_track_free (ChordTrack * self);

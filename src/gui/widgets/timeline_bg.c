@@ -141,9 +141,9 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
     }
 
   /* draw automation related stuff */
-  for (int i = 0; i < MIXER->num_channels; i++)
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      Track * track = MIXER->channels[i]->track;
+      Track * track = TRACKLIST->tracks[i];
 
       AutomationTracklist * automation_tracklist =
         track_get_automation_tracklist (track);
@@ -155,7 +155,9 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
             {
               AutomationTrack * at = automation_tracklist->automation_tracks[j];
 
-              if (at->widget)
+              if (at->widget &&
+                  track->bot_paned_visible &&
+                  at->visible)
                 {
                   /* horizontal automation track lines */
                   gint wx, wy;

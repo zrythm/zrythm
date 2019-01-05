@@ -25,6 +25,9 @@
 #define TICKS_PER_BAR 3840
 #define TICKS_PER_BEAT 960
 #define TICKS_PER_QUARTER_BEAT 240
+#define position_add_ticks(position, _ticks) \
+  position_set_tick (position, \
+                     (position)->ticks + _ticks)
 
 typedef struct SnapGrid SnapGrid;
 typedef struct Track Track;

@@ -129,7 +129,9 @@ void
 instrument_track_add_region (InstrumentTrack      * track,
                   MidiRegion     * region)
 {
-  track->regions[track->num_regions++] = region;
+  array_append ((void **) track->regions,
+                &track->num_regions,
+                (void *) region);
   ((Region *)region)->track = (Track *) track;
 }
 

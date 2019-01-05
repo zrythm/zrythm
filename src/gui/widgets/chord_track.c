@@ -56,16 +56,15 @@ chord_track_widget_new (Track * track)
                             CHORD_TRACK_WIDGET_TYPE,
                             NULL);
   TRACK_WIDGET_GET_PRIVATE (self);
+  ChordTrack * ct = (ChordTrack *) track;
 
   /* set track name */
   gtk_label_set_text (tw_prv->name,
                       "Chord Track");
 
   /* setup color */
-  GdkRGBA * color = calloc (1, sizeof (GdkRGBA));
-  gdk_rgba_parse (color, "#0328fa");
   color_area_widget_set_color (tw_prv->color,
-                               color);
+                               &ct->color);
 
   gtk_widget_set_visible (GTK_WIDGET (self),
                           1);
