@@ -66,7 +66,7 @@ _Note2: If some dependencies are not found, you might need to enable the univers
 sudo apt-add-repository universe
 `
 
-_Note3: For latest (unstable) version, install this directly using `dpkg -i`:_ https://gitlab.com/alextee/zrythm/-/jobs/artifacts/master/download?job=build_deb_64
+_Note3: For latest (unstable) version, install this directly using `dpkg -i`:_ https://gitlab.com/alextee/zrythm/-/jobs/artifacts/master/download?job=build_deb_64_unstable
 ### Fedora
 coming soon
 ### Manual installation
