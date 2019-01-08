@@ -41,16 +41,6 @@ on_closed (SnapGridPopoverWidget *self,
   g_free (txt);
 }
 
-static void
-on_snap_grid_toggled (GtkToggleButton * widget,
-                      gpointer          user_data)
-{
-  SnapGridPopoverWidget * self =
-    SNAP_GRID_POPOVER_WIDGET (user_data);
-  self->owner->snap_grid->snap =
-    gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (self->snap_grid));
-}
-
 /**
  * Creates a digital meter with the given type (bpm or position).
  */
@@ -96,24 +86,9 @@ snap_grid_popover_widget_class_init (SnapGridPopoverWidgetClass * _klass)
     klass,
     SnapGridPopoverWidget,
     note_type_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    SnapGridPopoverWidget,
-    snap_grid);
-  gtk_widget_class_bind_template_child (
-    klass,
-    SnapGridPopoverWidget,
-    snap_offset);
-  gtk_widget_class_bind_template_child (
-    klass,
-    SnapGridPopoverWidget,
-    snap_events);
   gtk_widget_class_bind_template_callback (
     klass,
     on_closed);
-  gtk_widget_class_bind_template_callback (
-    klass,
-    on_snap_grid_toggled);
 }
 
 static void

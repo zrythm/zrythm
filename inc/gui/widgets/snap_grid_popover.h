@@ -45,9 +45,6 @@ typedef struct _SnapGridPopoverWidget
   DigitalMeterWidget      * dm_note_length; ///< digital meter for density
   GtkBox *                note_type_box;
   DigitalMeterWidget      * dm_note_type; ///< digital meter for note type
-  GtkCheckButton *        snap_grid;
-  GtkCheckButton *        snap_offset;
-  GtkCheckButton *        snap_events;
 } SnapGridPopoverWidget;
 
 /**

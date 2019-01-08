@@ -52,7 +52,7 @@ build_deb_64_unstable:
     - master
 
 build_pkg_64:
-  image: "alextee12/arch-yaourt:0.3"
+  image: "alextee12/arch-yaourt:0.4"
   stage: build
   script:
     - PACKAGE_NAME=$_PACKAGE_NAME scripts/create-tarball.sh

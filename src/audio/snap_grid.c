@@ -156,7 +156,7 @@ snap_grid_get_note_ticks (SnapGrid * self)
         }
       break;
     }
-
+  g_assert_not_reached ();
 }
 
 static void
@@ -369,7 +369,7 @@ snap_grid_init (SnapGrid *   self,
   self->note_length = note_length;
   self->num_snap_points = 0;
   self->note_type = NOTE_TYPE_NORMAL;
-  self->snap_type = SNAP_TYPE_GRID;
+  self->snap_to_grid = 1;
 }
 
 void

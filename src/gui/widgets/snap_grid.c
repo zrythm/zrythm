@@ -62,8 +62,10 @@ snap_grid_widget_init (SnapGridWidget * self)
   self->box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
   self->img = GTK_IMAGE (
     resources_get_icon (ICON_TYPE_GNOME_BUILDER,
-                        "builder-split-tab-right-symbolic-light.svg"));
+                        "completion-snippet-symbolic-light.svg"));
   self->label = GTK_LABEL (gtk_label_new ("Snap/Grid"));
+  gtk_widget_set_tooltip_text (GTK_WIDGET (self->box),
+                               "Snap/Grid options");
   gtk_box_pack_start (self->box,
                       GTK_WIDGET (self->img),
                       Z_GTK_NO_EXPAND,

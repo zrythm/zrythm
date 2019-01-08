@@ -3,72 +3,172 @@
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <template class="TopDockEdgeWidget" parent="GtkBox">
-    <property name="visible">1</property>
-    <property name="hexpand">1</property>
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="hexpand">True</property>
     <child>
       <object class="GtkToolbar" id="top_toolbar">
-        <property name="visible">1</property>
-        <property name="icon-size">2</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="icon_size">2</property>
         <child>
           <object class="GtkToolButton" id="toolbutton">
-            <property name="visible">1</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="label" translatable="yes">New</property>
           </object>
           <packing>
-            <property name="homogeneous">1</property>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
           </packing>
         </child>
         <child>
           <object class="GtkToolButton" id="toolbutton1">
-            <property name="visible">1</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="label" translatable="yes">New</property>
           </object>
           <packing>
-            <property name="homogeneous">1</property>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
           </packing>
         </child>
         <child>
           <object class="GtkToolButton" id="toolbutton2">
-            <property name="visible">1</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="label" translatable="yes">New</property>
           </object>
           <packing>
-            <property name="homogeneous">1</property>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
           </packing>
         </child>
         <child>
           <object class="GtkToolButton" id="toolbutton3">
-            <property name="visible">1</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="label" translatable="yes">New</property>
           </object>
           <packing>
-            <property name="homogeneous">1</property>
-          </packing>
-        </child>
-      </object>
-    </child>
-    <child>
-      <object class="GtkBox" id="top_box_right">
-        <property name="visible">1</property>
-        <child>
-          <object class="GtkBox" id="project_scale_box">
-            <property name="visible">1</property>
-            <property name="orientation">vertical</property>
-          </object>
-          <packing>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="SnapGridWidget" id="snap_grid_timeline">
-            <property name="visible">1</property>
-          </object>
-          <packing>
-            <property name="position">2</property>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
           </packing>
         </child>
       </object>
       <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkBox" id="top_box_right">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkBox" id="snap_to_box">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkToggleButton" id="snap_to_grid">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="visible">1</property>
+                    <property name="resource">/org/zrythm/icons/gnome-builder/ui-packing-symbolic-light.svg</property>
+                    <property name="tooltip_text" translatable="yes">Snap to grid</property>
+                  </object>
+                </child>
+                <signal name="toggled" handler="on_snap_to_grid_toggled" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="snap_to_grid_keep_offset">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="visible">1</property>
+                    <property name="resource">/org/zrythm/icons/gnome-builder/widget-layout-symbolic-light.svg</property>
+                    <property name="tooltip_text" translatable="yes">Snaps to grid and keeps offset</property>
+                  </object>
+                </child>
+                <property name="receives_default">True</property>
+                <signal name="toggled" handler="on_snap_to_grid_keep_offset_toggled" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="snap_to_events">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="visible">1</property>
+                    <property name="resource">/org/zrythm/icons/gnome-builder/builder-split-tab-right-symbolic-light.svg</property>
+                    <property name="tooltip_text" translatable="yes">Snap to events (regions)</property>
+                  </object>
+                </child>
+                <property name="receives_default">True</property>
+                <signal name="toggled" handler="on_snap_to_events_toggled" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="SnapGridWidget" id="snap_grid_timeline">
+                <property name="visible">1</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
+            <style>
+              <class name="linked"/>
+            </style>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="project_scale_box">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
         <property name="position">1</property>
       </packing>
     </child>

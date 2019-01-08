@@ -635,7 +635,7 @@ timeline_arranger_widget_create_ap (
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
   position_print (pos);
-  if (prv->snap_grid->snap)
+  if (SNAP_GRID_ANY_SNAP (prv->snap_grid))
     position_snap (NULL,
                    pos,
                    track,
@@ -673,7 +673,7 @@ timeline_arranger_widget_create_region (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  if (prv->snap_grid->snap)
+  if (SNAP_GRID_ANY_SNAP (prv->snap_grid))
     {
       position_snap (NULL,
                      pos,
@@ -720,7 +720,7 @@ timeline_arranger_widget_create_chord (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  if (prv->snap_grid->snap)
+  if (SNAP_GRID_ANY_SNAP (prv->snap_grid))
     position_snap (NULL,
                    pos,
                    track,
@@ -813,7 +813,7 @@ timeline_arranger_widget_snap_regions_l (
   for (int i = 0; i < self->num_regions; i++)
     {
       Region * region = self->regions[i];
-      if (prv->snap_grid->snap)
+      if (SNAP_GRID_ANY_SNAP (prv->snap_grid))
         position_snap (NULL,
                        pos,
                        region->track,
@@ -834,7 +834,7 @@ timeline_arranger_widget_snap_regions_r (
   for (int i = 0; i < self->num_regions; i++)
     {
       Region * region = self->regions[i];
-      if (prv->snap_grid->snap)
+      if (SNAP_GRID_ANY_SNAP (prv->snap_grid))
         position_snap (NULL,
                        pos,
                        region->track,

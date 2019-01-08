@@ -28,6 +28,10 @@
   (&ZRYTHM->snap_grid_midi == sg)
 #define SNAP_GRID_IS_TIMELINE(sg) \
   (&ZRYTHM->snap_grid_timeline == sg)
+/* if any snapping is enabled */
+#define SNAP_GRID_ANY_SNAP(sg) \
+  (sg->snap_to_grid || sg->snap_to_grid_keep_offset || \
+   sg->snap_to_events)
 
 typedef enum NoteLength
 {
@@ -49,14 +53,6 @@ typedef enum NoteType
   NOTE_TYPE_TRIPLET ///< 3/2 of its original size
 } NoteType;
 
-typedef enum SnapType
-{
-  SNAP_TYPE_GRID,
-  SNAP_TYPE_GRID_KEEP_OFFSET, ///< keeps note offset from
-                              ///< snap point
-  SNAP_TYPE_EDGES ///< snap to other events (regions)
-} SnapType;
-
 typedef struct SnapGrid
 {
   /**
@@ -73,9 +69,9 @@ typedef struct SnapGrid
   NoteLength       note_length;
   NoteType         note_type;
 
-  int              snap; ///< snap or not
-
-  SnapType         snap_type;
+  int              snap_to_grid;
+  int              snap_to_grid_keep_offset;
+  int              snap_to_events;
 
   /**
    * Snap points to be used by the grid and by position

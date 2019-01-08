@@ -279,7 +279,7 @@ midi_arranger_widget_on_drag_begin_create_note (
   MidiRegion * region)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
-  if (prv->snap_grid->snap)
+  if (SNAP_GRID_ANY_SNAP(prv->snap_grid))
     position_snap (NULL,
                    pos,
                    NULL,
@@ -359,7 +359,7 @@ midi_arranger_widget_snap_midi_notes_l (
   for (int i = 0; i < self->num_midi_notes; i++)
     {
       MidiNote * midi_note = self->midi_notes[i];
-      if (prv->snap_grid->snap)
+      if (SNAP_GRID_ANY_SNAP(prv->snap_grid))
         position_snap (NULL,
                        pos,
                        NULL,
@@ -384,7 +384,7 @@ midi_arranger_widget_snap_midi_notes_r (
   for (int i = 0; i < self->num_midi_notes; i++)
     {
       MidiNote * midi_note = self->midi_notes[i];
-      if (prv->snap_grid->snap)
+      if (SNAP_GRID_ANY_SNAP(prv->snap_grid))
         position_snap (NULL,
                        pos,
                        NULL,
@@ -410,7 +410,7 @@ midi_arranger_widget_move_midi_notes_x (
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
   /* snap first selected midi note's pos */
-  if (prv->snap_grid->snap)
+  if (SNAP_GRID_ANY_SNAP(prv->snap_grid))
     position_snap (NULL,
                    pos,
                    NULL,

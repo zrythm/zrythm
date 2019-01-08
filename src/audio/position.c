@@ -420,14 +420,18 @@ position_snap (Position * prev_pos, ///< prev pos
 {
   /* this should only be called if snap is on.
    * the check should be done before calling */
-  g_assert (sg->snap);
+  g_assert (SNAP_GRID_ANY_SNAP (sg));
 
-  switch (sg->snap_type)
+  if (sg->snap_to_grid && !sg->snap_to_grid_keep_offset &&
+      !sg->snap_to_events)
     {
-    case SNAP_TYPE_GRID:
+      g_message ("snapping pos");
       snap_pos (pos, sg);
-      break;
-    case SNAP_TYPE_GRID_KEEP_OFFSET:
+      g_message ("end");
+    }
+  else if (!sg->snap_to_grid && sg->snap_to_grid_keep_offset &&
+           !sg->snap_to_events)
+    {
       g_assert (prev_pos);
       /* TODO */
       /* get closest snap point to prev_pos */
@@ -437,9 +441,6 @@ position_snap (Position * prev_pos, ///< prev pos
       /* snap pos*/
 
       /* add diff */
-      break;
-    case SNAP_TYPE_EDGES:
-      break;
     }
 }
 

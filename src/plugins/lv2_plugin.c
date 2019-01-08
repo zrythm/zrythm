@@ -822,7 +822,10 @@ lv2_send_to_ui(Lv2Plugin*       plugin,
           return true;
   } else
     {
-      g_warning ("Plugin => UI buffer overflow!");
+      Plugin_Descriptor * descr = ((Plugin *)plugin)->descr;
+      g_warning ("lv2_send_to_ui: %s (%s) => UI buffer overflow!",
+                 descr->name,
+                 descr->uri);
       return false;
     }
 }
@@ -2002,7 +2005,10 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin, nframes_t nframes)
             if (zix_ring_write(lv2_plugin->plugin_events, buf, sizeof(buf))
                 < sizeof(buf))
               {
-                g_warning ("Plugin => UI buffer overflow!");
+                Plugin_Descriptor * descr = ((Plugin *)lv2_plugin)->descr;
+                g_warning ("lv2_plugin_process: %s (%s) => UI buffer overflow!",
+                           descr->name,
+                           descr->uri);
               }
           }
   }
