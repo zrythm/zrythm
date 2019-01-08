@@ -34,6 +34,8 @@ get_icon_type_str (IconType icon_type)
     case ICON_TYPE_GNOME_BUILDER:
       return g_strdup_printf ("gnome-builder");
     }
+  g_assert_not_reached ();
+  return NULL;
 }
 
 GtkWidget *

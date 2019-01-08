@@ -685,13 +685,13 @@ write_channel (xmlTextWriterPtr writer, Channel * channel)
                                         "%f",
                                         channel->volume);
   rc = xmlTextWriterWriteFormatAttribute (writer,
-                                        BAD_CAST "muted",
+                                        BAD_CAST "mute",
                                         "%d",
-                                        channel->muted);
+                                        channel->mute);
   rc = xmlTextWriterWriteFormatAttribute (writer,
-                                        BAD_CAST "soloed",
+                                        BAD_CAST "solo",
                                         "%d",
-                                        channel->soloed);
+                                        channel->solo);
   rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "phase",
                                         "%f",
@@ -1350,10 +1350,10 @@ xml_load_project ()
                     channel->type = TO_INT (attr);
                     attr =  GET_ATTRIBUTE ("volume");
                     channel->volume = TO_FLOAT (attr);
-                    attr =  GET_ATTRIBUTE ("muted");
-                    channel->muted = TO_INT (attr);
-                    attr =  GET_ATTRIBUTE ("soloed");
-                    channel->soloed = TO_INT (attr);
+                    attr =  GET_ATTRIBUTE ("mute");
+                    channel->mute = TO_INT (attr);
+                    attr =  GET_ATTRIBUTE ("solo");
+                    channel->solo = TO_INT (attr);
                     attr =  GET_ATTRIBUTE ("phase");
                     channel->phase = TO_FLOAT (attr);
                     attr =  GET_ATTRIBUTE ("recording");

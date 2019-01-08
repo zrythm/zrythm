@@ -40,7 +40,7 @@ typedef struct _InspectorTrackWidget
   GtkBox *            position_box;
   GtkBox *            length_box;
   GtkColorButton *    color;
-  GtkToggleButton *   muted_toggle;
+  GtkToggleButton *   mute_toggle;
 } InspectorTrackWidget;
 
 /**

@@ -178,6 +178,7 @@ $(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(BUILD_DIR)/resources.o
 	# done
 
 $(BUILD_DIR)/zrythm.gresource.xml: resources/gen-gtk-gresources-xml.py \
+	resources/theme.css \
 	resources/ui/*.ui \
 	resources/icons/zrythm/*.svg \
 	resources/icons/gnome-builder/*.svg

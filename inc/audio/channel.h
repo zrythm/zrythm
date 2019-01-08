@@ -73,8 +73,8 @@ typedef struct Channel
   ChannelType             type;             ///< MIDI / Audio / Master
   float                   volume; ///< value of the volume fader in db
   float                   fader_amp; ///< fader value amplitude (0.0 ~ 1.5)
-  int                     muted;            ///< muted or not
-  int                     soloed;           ///< soloed or not
+  int                     mute;            ///< mute or not
+  int                     solo;           ///< solo or not
   GdkRGBA                 color;          ///< see https://ometer.com/gtk-colors.html
   float                   phase;        ///< used by the phase knob (0.0-360.0 value)
   float                   pan; ///< (0~1) 0.5 is center
@@ -128,6 +128,12 @@ channel_get_phase (void * channel);
  */
 //float
 //channel_get_volume (void * channel);
+
+void
+channel_toggle_solo (Channel * channel);
+
+void
+channel_toggle_mute (Channel * channel);
 
 /**
  * Sets the fader amplitude (not db)

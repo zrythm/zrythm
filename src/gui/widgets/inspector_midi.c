@@ -43,7 +43,7 @@ inspector_midi_widget_class_init (InspectorMidiWidgetClass * klass)
                                         color);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         InspectorMidiWidget,
-                                        muted_toggle);
+                                        mute_toggle);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         InspectorMidiWidget,
                                         header);

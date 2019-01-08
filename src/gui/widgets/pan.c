@@ -26,7 +26,9 @@
 
 #include "gui/widgets/pan.h"
 
-G_DEFINE_TYPE (PanWidget, pan_widget, GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (PanWidget,
+               pan_widget,
+               GTK_TYPE_DRAWING_AREA)
 
 #define GET_VAL ((*self->getter) (self->object))
 #define SET_VAL(real) ((*self->setter)(self->object, real))
@@ -44,34 +46,10 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 
   gtk_render_background (context, cr, 0, 0, width, height);
 
-  /* a custom shape that could be wrapped in a function */
-  double x         = 0,        /* parapans like cairo_rectangle */
-         y         = 0,
-         aspect        = 1.0,     /* aspect ratio */
-         corner_radius = height / 90.0;   /* and corner curvature radius */
-
-  double radius = corner_radius / aspect;
-  double degrees = G_PI / 180.0;
-   /*value in pixels = total pixels * val*/
-   /*val is percentage*/
-  double pan_val = GET_VAL;
-  double value_px = height * pan_val;
-
-  /* draw background bar */
-  cairo_new_sub_path (cr);
-  cairo_arc (cr, x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);
-  cairo_line_to (cr, x + width, y + height - value_px);
-  /*cairo_arc (cr, x + width - radius, y + height - radius, radius, 0 * degrees, 90 * degrees);*/
-  cairo_line_to (cr, x, y + height - value_px);
-  /*cairo_arc (cr, x + radius, y + height - radius, radius, 90 * degrees, 180 * degrees);*/
-  cairo_arc (cr, x + radius, y + radius, radius, 180 * degrees, 270 * degrees);
-  cairo_close_path (cr);
-
-  cairo_set_source_rgba (cr, 0.4, 0.4, 0.4, 0.2);
-  cairo_fill(cr);
-
   /* draw filled in bar */
+  float pan_val = GET_VAL;
   float intensity = pan_val;
+  float value_px = pan_val * width;
   const float intensity_inv = 1.0 - intensity;
   float r = intensity_inv * self->end_color.red   +
             intensity * self->start_color.red;
@@ -82,59 +60,10 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   float a = intensity_inv * self->end_color.alpha  +
             intensity * self->start_color.alpha;
 
-  cairo_set_source_rgba (cr, r,g,b,a);
-  cairo_new_sub_path (cr);
-  cairo_line_to (cr, x + width, y + (height - value_px));
-  /*cairo_arc (cr, x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);*/
-  cairo_arc (cr, x + width - radius, y + height - radius, radius, 0 * degrees, 90 * degrees);
-  cairo_arc (cr, x + radius, y + height - radius, radius, 90 * degrees, 180 * degrees);
-  cairo_line_to (cr, x, y + (height - value_px));
-  /*cairo_arc (cr, x + radius, y + radius, radius, 180 * degrees, 270 * degrees);*/
-  cairo_close_path (cr);
-
-  cairo_fill(cr);
-
-
-  /* draw border line */
-  cairo_set_source_rgba (cr, 0.2, 0.2, 0.2, 1);
-  cairo_new_sub_path (cr);
-  cairo_arc (cr, x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);
-  cairo_arc (cr, x + width - radius, y + height - radius, radius, 0 * degrees, 90 * degrees);
-  cairo_arc (cr, x + radius, y + height - radius, radius, 90 * degrees, 180 * degrees);
-  cairo_arc (cr, x + radius, y + radius, radius, 180 * degrees, 270 * degrees);
-  cairo_close_path (cr);
-
-  /*cairo_set_source_rgba (cr, 0.4, 0.2, 0.05, 0.2);*/
-  /*cairo_fill_preserve (cr);*/
-  cairo_set_line_width (cr, 1.7);
-  cairo_stroke(cr);
-
-  //highlight if grabbed or if mouse is hovering over me
-  if (self->hover)
-    {
-      cairo_set_source_rgba (cr, 0.8, 0.8, 0.8, 0.12 );
-      cairo_new_sub_path (cr);
-      cairo_arc (cr, x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);
-      cairo_arc (cr, x + width - radius, y + height - radius, radius, 0 * degrees, 90 * degrees);
-      cairo_arc (cr, x + radius, y + height - radius, radius, 90 * degrees, 180 * degrees);
-      cairo_arc (cr, x + radius, y + radius, radius, 180 * degrees, 270 * degrees);
-      cairo_close_path (cr);
-      cairo_fill (cr);
-    }
-
   /* draw pan line */
-  cairo_set_source_rgba (cr, 0, 0, 0, 1);
-  cairo_set_line_width (cr, 16.0);
-  cairo_set_line_cap  (cr, CAIRO_LINE_CAP_SQUARE);
-  cairo_move_to (cr, x, y + (height - value_px));
-  cairo_line_to (cr, x+ width, y + (height - value_px));
+  cairo_move_to (cr, value_px, 0);
+  cairo_line_to (cr, value_px, height);
   cairo_stroke (cr);
-  cairo_set_source_rgba (cr, 0.4, 0.1, 0.05, 1);
-  cairo_set_line_width (cr, 3.0);
-  cairo_move_to (cr, x, y + (height - value_px));
-  cairo_line_to (cr, x+ width, y + (height - value_px));
-  cairo_stroke (cr);
-
 }
 
 
@@ -142,16 +71,20 @@ static void
 on_crossing (GtkWidget * widget, GdkEvent *event)
 {
   PanWidget * self = PAN_WIDGET (widget);
-  if (gdk_event_get_event_type (event) == GDK_ENTER_NOTIFY)
-    self->hover = 1;
-  else if (gdk_event_get_event_type (event) == GDK_LEAVE_NOTIFY)
+
+  if (gdk_event_get_event_type (event) ==
+      GDK_ENTER_NOTIFY)
     {
-      if (!gtk_gesture_drag_get_offset (self->drag,
-                                       NULL,
-                                       NULL))
-        self->hover = 0;
+      gtk_widget_set_state_flags (GTK_WIDGET (self),
+                                  GTK_STATE_FLAG_PRELIGHT,
+                                  0);
     }
-  gtk_widget_queue_draw(widget);
+  else if (gdk_event_get_event_type (event) ==
+           GDK_LEAVE_NOTIFY)
+    {
+      gtk_widget_unset_state_flags (GTK_WIDGET (self),
+                                    GTK_STATE_FLAG_PRELIGHT);
+    }
 }
 
 static double clamp
@@ -216,6 +149,9 @@ pan_widget_new (float (*get_val)(void *),    ///< getter function
   g_signal_connect (G_OBJECT(self->drag), "drag-end",
                     G_CALLBACK (drag_end),  self);
 
+  gtk_widget_set_visible (GTK_WIDGET (self),
+                          1);
+
   return self;
 }
 
@@ -234,7 +170,9 @@ pan_widget_init (PanWidget * self)
 }
 
 static void
-pan_widget_class_init (PanWidgetClass * klass)
+pan_widget_class_init (PanWidgetClass * _klass)
 {
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (klass,
+                                 "pan");
 }
-

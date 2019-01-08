@@ -40,7 +40,7 @@ typedef struct InspectorRegionWidget
   GtkBox *            position_box;
   GtkBox *            length_box;
   GtkColorButton *    color;
-  GtkToggleButton *   muted_toggle;
+  GtkToggleButton *   mute_toggle;
 } InspectorRegionWidget;
 
 typedef struct InspectorRegionWidgetClass

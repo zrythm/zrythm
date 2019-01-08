@@ -161,7 +161,8 @@ region:selected
 
 track:hover,
 region:hover,
-fader:hover
+fader:hover,
+pan:hover
 {
   background-color: @hover_color;
 }

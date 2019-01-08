@@ -43,7 +43,7 @@ inspector_region_widget_class_init (InspectorRegionWidgetClass * klass)
                                         color);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         InspectorRegionWidget,
-                                        muted_toggle);
+                                        mute_toggle);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         InspectorRegionWidget,
                                         header);

@@ -19,22 +19,65 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "undo/edit_channel_action.h"
 #include "undo/undoable_action.h"
 
 /**
  * Performs the action.
+ *
+ * Note: only to be called by undo manager.
  */
 void
 undoable_action_do (UndoableAction * self)
 {
+  switch (self->type)
+    {
+    case UNDOABLE_ACTION_TYPE_CREATE_CHANNEL:
+      break;
+    case UNDOABLE_ACTION_TYPE_EDIT_CHANNEL:
+      edit_channel_action_do (
+        (EditChannelAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_DELETE_CHANNEL:
+      break;
+    case UNDOABLE_ACTION_TYPE_MOVE_CHANNEL:
+      break;
+    case UNDOABLE_ACTION_TYPE_CREATE_REGIONS:
+      break;
+    case UNDOABLE_ACTION_TYPE_MOVE_REGIONS:
+      break;
+    case UNDOABLE_ACTION_TYPE_DELETE_REGIONS:
+      break;
+    }
 }
 
 /**
  * Undoes the action.
+ *
+ * Note: only to be called by undo manager.
  */
 void
 undoable_action_undo (UndoableAction * self)
 {
+  switch (self->type)
+    {
+    case UNDOABLE_ACTION_TYPE_CREATE_CHANNEL:
+      break;
+    case UNDOABLE_ACTION_TYPE_EDIT_CHANNEL:
+      edit_channel_action_undo (
+        (EditChannelAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_DELETE_CHANNEL:
+      break;
+    case UNDOABLE_ACTION_TYPE_MOVE_CHANNEL:
+      break;
+    case UNDOABLE_ACTION_TYPE_CREATE_REGIONS:
+      break;
+    case UNDOABLE_ACTION_TYPE_MOVE_REGIONS:
+      break;
+    case UNDOABLE_ACTION_TYPE_DELETE_REGIONS:
+      break;
+    }
 }
 
 void

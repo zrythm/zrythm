@@ -31,7 +31,7 @@ G_DEFINE_TYPE (HeaderBarWidget,
                GTK_TYPE_HEADER_BAR)
 
 void
-refresh_undo_redo_buttons (HeaderBarWidget * self)
+header_bar_widget_refresh_undo_redo_buttons (HeaderBarWidget * self)
 {
   g_assert (UNDO_MANAGER);
 
@@ -221,7 +221,7 @@ undo_activate (GtkMenuItem * menu_item,
 {
   g_assert (!stack_is_empty (&UNDO_MANAGER->undo_stack));
   undo_manager_undo (UNDO_MANAGER);
-  refresh_undo_redo_buttons ((HeaderBarWidget *) user_data);
+  header_bar_widget_refresh_undo_redo_buttons ((HeaderBarWidget *) user_data);
 }
 
 static void
@@ -230,7 +230,7 @@ redo_activate (GtkMenuItem * menu_item,
 {
   g_assert (!stack_is_empty (&UNDO_MANAGER->redo_stack));
   undo_manager_redo (UNDO_MANAGER);
-  refresh_undo_redo_buttons ((HeaderBarWidget *) user_data);
+  header_bar_widget_refresh_undo_redo_buttons ((HeaderBarWidget *) user_data);
 }
 
 static void
@@ -645,7 +645,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
 #undef APPEND_TO_MENU_SHELL
 #undef CREATE_SEPARATOR
 
-  refresh_undo_redo_buttons (self);
+  header_bar_widget_refresh_undo_redo_buttons (self);
 }
 
 static void

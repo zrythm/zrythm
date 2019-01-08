@@ -46,4 +46,3 @@ typedef enum PanAlgorithm
 } PanAlgorithm;
 
 #endif
-

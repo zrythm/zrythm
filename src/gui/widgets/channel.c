@@ -29,6 +29,9 @@
 #include "gui/widgets/fader.h"
 #include "gui/widgets/knob.h"
 #include "gui/widgets/pan.h"
+#include "undo/edit_channel_action.h"
+#include "undo/undo_manager.h"
+#include "undo/undoable_action.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
@@ -76,7 +79,50 @@ phase_invert_button_clicked (ChannelWidget * self,
 }
 
 
+static void
+on_record_toggled (GtkToggleButton * btn,
+                   ChannelWidget *   self)
+{
 
+}
+
+static void
+on_solo_toggled (GtkToggleButton * btn,
+                 ChannelWidget *   self)
+{
+  if (!self->undo_redo_action)
+    {
+      UndoableAction * action =
+        edit_channel_action_new_solo (self->channel);
+      undo_manager_perform (UNDO_MANAGER,
+                            action);
+    }
+  else
+    {
+      self->undo_redo_action = 0;
+    }
+}
+
+static void
+on_mute_toggled (GtkToggleButton * btn,
+                 ChannelWidget * self)
+{
+
+}
+
+static void
+on_listen_toggled (GtkToggleButton * btn,
+                   ChannelWidget *   self)
+{
+
+}
+
+static void
+on_e_activate (GtkButton *     btn,
+               ChannelWidget * self)
+{
+
+}
 
 static void
 refresh_color (ChannelWidget * self)
@@ -227,6 +273,17 @@ setup_pan (ChannelWidget * self)
                        0);
 }
 
+static void
+refresh_buttons (ChannelWidget * self)
+{
+  gtk_toggle_button_set_active (
+    self->solo,
+    self->channel->solo);
+  gtk_toggle_button_set_active (
+    self->mute,
+    self->channel->mute);
+}
+
 /**
  * Updates everything on the widget.
  *
@@ -238,6 +295,7 @@ channel_widget_refresh (ChannelWidget * self)
   refresh_name (self);
   refresh_output (self);
   channel_widget_update_meter_reading (self);
+  refresh_buttons (self);
   refresh_color (self);
 }
 
@@ -356,6 +414,21 @@ channel_widget_class_init (ChannelWidgetClass * _klass)
   gtk_widget_class_bind_template_callback (
     klass,
     phase_invert_button_clicked);
+  gtk_widget_class_bind_template_callback (
+    klass,
+    on_record_toggled);
+  gtk_widget_class_bind_template_callback (
+    klass,
+    on_solo_toggled);
+  gtk_widget_class_bind_template_callback (
+    klass,
+    on_mute_toggled);
+  gtk_widget_class_bind_template_callback (
+    klass,
+    on_listen_toggled);
+  gtk_widget_class_bind_template_callback (
+    klass,
+    on_e_activate);
 }
 
 static void

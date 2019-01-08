@@ -60,7 +60,7 @@ stack_push (Stack *    s,
     g_warning ("stack is full, cannot push");
   else
     {
-      s->elements[s->top++] = element;
+      s->elements[++s->top] = element;
     }
 }
 

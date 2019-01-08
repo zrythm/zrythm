@@ -41,7 +41,7 @@ typedef struct _FaderWidget FaderWidget;
 typedef struct ChannelMeterWidget ChannelMeterWidget;
 typedef struct Channel Channel;
 typedef struct _ChannelSlotWidget ChannelSlotWidget;
-typedef struct PanWidget PanWidget;
+typedef struct _PanWidget PanWidget;
 
 typedef struct _ChannelWidget
 {
@@ -64,9 +64,9 @@ typedef struct _ChannelWidget
   GtkToggleButton     * slot2b;
   //GtkButton           * add_slot;
   GtkButton           * e;
-  GtkButton           * solo;
-  GtkButton           * listen;
-  GtkButton           * mute;
+  GtkToggleButton *      solo;
+  GtkToggleButton           * listen;
+  GtkToggleButton           * mute;
   GtkToggleButton     * record;
   GtkBox              * meter_area;  ///< vertical including reading
   GtkBox *            pan_box;
@@ -77,6 +77,7 @@ typedef struct _ChannelWidget
   GtkLabel            * meter_reading;
   GtkImage            * icon;
   GtkImage *          output_img;
+  int                   undo_redo_action; ///< 1 if current action is undo or redo
   Channel             * channel;    ///< pointer to data
 } ChannelWidget;
 

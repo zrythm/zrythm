@@ -331,9 +331,8 @@ closest_snap_point (Position * pos, ///< position
   int frames = position_to_frames (pos);
   int p1_frames = position_to_frames (p1);
   int p2_frames = position_to_frames (p2);
-  g_message ("frames %d %d %d", frames, p1_frames, p2_frames);
-  if (frames - position_to_frames (p1) <=
-      position_to_frames (p2) - frames)
+  if (frames - p1_frames <=
+      p2_frames - frames)
     {
       return p1;
     }

@@ -40,7 +40,7 @@ typedef struct InspectorMidiWidget
   GtkBox *            position_box;
   GtkBox *            length_box;
   GtkColorButton *    color;
-  GtkToggleButton *   muted_toggle;
+  GtkToggleButton *   mute_toggle;
 } InspectorMidiWidget;
 
 typedef struct InspectorMidiWidgetClass

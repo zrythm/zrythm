@@ -30,18 +30,19 @@ typedef enum EditChannelActionType
   EDIT_CHANNEL_ACTION_TYPE_MUTE,
   EDIT_CHANNEL_ACTION_TYPE_CHANGE_VOLUME,
   EDIT_CHANNEL_ACTION_TYPE_CHANGE_PAN
-}
+} EditChannelActionType;
+
+typedef struct Channel Channel;
 
 typedef struct EditChannelAction
 {
   UndoableAction              parent_instance;
   EditChannelActionType       type;
 
+  Channel *                   channel;
   /**
    * Params to be changed.
    */
-  int                         solo_new;
-  int                         mute_new;
   float                       vol_prev;
   float                       vol_new;
   float                       pan_prev;
@@ -49,17 +50,19 @@ typedef struct EditChannelAction
 } EditChannelAction;
 
 UndoableAction *
-edit_channel_action_new_solo (int solo);
+edit_channel_action_new_solo (Channel * channel);
 
 UndoableAction *
-edit_channel_action_new_mute (int mute);
+edit_channel_action_new_mute (Channel * channel);
 
 UndoableAction *
-edit_channel_action_new_vol (float vol_prev,
+edit_channel_action_new_vol (Channel * channel,
+                             float vol_prev,
                              float vol_new);
 
 UndoableAction *
-edit_channel_action_new_pan (float pan_prev,
+edit_channel_action_new_pan (Channel * channel,
+                             float pan_prev,
                              float pan_new);
 
 void

@@ -32,6 +32,8 @@ G_DECLARE_FINAL_TYPE (HeaderBarWidget,
                       GtkHeaderBar)
 #define MW_HEADER_BAR MAIN_WINDOW->header_bar
 
+typedef struct _MainWindowWidget MainWindowWidget;
+
 typedef struct _HeaderBarWidget
 {
   GtkHeaderBar             parent_instance;
@@ -50,6 +52,10 @@ typedef struct _HeaderBarWidget
 
 HeaderBarWidget *
 header_bar_widget_new ();
+
+void
+header_bar_widget_refresh_undo_redo_buttons (
+  HeaderBarWidget * self);
 
 void
 header_bar_widget_setup (HeaderBarWidget * self,

@@ -27,14 +27,17 @@
 
 #include <gtk/gtk.h>
 
-#define PAN_WIDGET_TYPE                  (pan_widget_get_type ())
-#define PAN_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), PAN_WIDGET_TYPE, PanWidget))
-#define PAN_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), PAN_WIDGET, PanWidgetClass))
-#define IS_PAN_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PAN_WIDGET_TYPE))
-#define IS_PAN_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), PAN_WIDGET_TYPE))
-#define PAN_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), PAN_WIDGET_TYPE, PanWidgetClass))
+#define PAN_WIDGET_TYPE \
+  (pan_widget_get_type ())
+G_DECLARE_FINAL_TYPE (PanWidget,
+                      pan_widget,
+                      PAN,
+                      WIDGET,
+                      GtkDrawingArea)
+#define IS_PAN_WIDGET(obj) \
+  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PAN_WIDGET_TYPE))
 
-typedef struct PanWidget
+typedef struct _PanWidget
 {
   GtkDrawingArea         parent_instance;
   GtkGestureDrag         * drag;
@@ -43,15 +46,9 @@ typedef struct PanWidget
   void *                 object;
   double                 last_x;
   double                 last_y;
-  int                    hover; ///< hovered or not
   GdkRGBA                start_color;
   GdkRGBA                end_color;
 } PanWidget;
-
-typedef struct PanWidgetClass
-{
-  GtkDrawingAreaClass    parent_class;
-} PanWidgetClass;
 
 /**
  * Creates a new Pan widget and binds it to the given value.
@@ -63,5 +60,3 @@ pan_widget_new (float       (*getter)(void *),    ///< getter function
                   int         height);
 
 #endif
-
-

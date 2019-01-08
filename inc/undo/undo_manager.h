@@ -26,6 +26,8 @@
 
 #define UNDO_MANAGER ZRYTHM->undo_manager
 
+typedef struct UndoableAction UndoableAction;
+
 typedef struct UndoManager
 {
   Stack                  undo_stack;
@@ -46,5 +48,12 @@ undo_manager_undo (UndoManager * self);
  */
 void
 undo_manager_redo (UndoManager * self);
+
+/**
+ * Performs the action and pushes it to the undo stack.
+ */
+void
+undo_manager_perform (UndoManager *    self,
+                      UndoableAction * action);
 
 #endif

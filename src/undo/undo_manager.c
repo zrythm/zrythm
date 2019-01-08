@@ -19,6 +19,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "gui/widgets/header_bar.h"
+#include "gui/widgets/main_window.h"
 #include "undo/undoable_action.h"
 #include "undo/undo_manager.h"
 
@@ -83,4 +85,19 @@ undo_manager_redo (UndoManager * self)
   /* push action to the undo stack */
   STACK_PUSH (&self->undo_stack,
               action);
+}
+
+/**
+ * Does performs the action and pushes it to the undo stack.
+ */
+void
+undo_manager_perform (UndoManager *    self,
+                      UndoableAction * action)
+{
+  undoable_action_do (action);
+  STACK_PUSH (&self->undo_stack,
+              action);
+  self->redo_stack.top = -1;
+  header_bar_widget_refresh_undo_redo_buttons (
+    MW_HEADER_BAR);
 }

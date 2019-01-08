@@ -119,7 +119,7 @@
       </packing>
     </child>
     <child>
-      <object class="GtkToggleButton" id="muted_toggle">
+      <object class="GtkToggleButton" id="mute_toggle">
         <property name="visible">1</property>
         <property name="can-focus">1</property>
         <property name="receives-default">1</property>

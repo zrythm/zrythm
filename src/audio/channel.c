@@ -311,6 +311,26 @@ _create_channel (char * name)
   return channel;
 }
 
+void
+channel_toggle_solo (Channel * channel)
+{
+  channel->solo = !channel->solo;
+  if (channel->widget)
+    {
+      channel_widget_refresh (channel->widget);
+    }
+  if (channel->track->widget)
+    {
+      track_widget_refresh (channel->track->widget);
+    }
+}
+
+void
+channel_toggle_mute (Channel * channel)
+{
+  channel->mute = !channel->mute;
+}
+
 /**
  * Generates automatables for the channel.
  *

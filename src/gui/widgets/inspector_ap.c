@@ -44,7 +44,7 @@ inspector_ap_widget_class_init (InspectorApWidgetClass * klass)
                                         color);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         InspectorApWidget,
-                                        muted_toggle);
+                                        mute_toggle);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
                                         InspectorApWidget,
                                         header);
