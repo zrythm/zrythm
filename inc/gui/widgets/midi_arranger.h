@@ -199,6 +199,11 @@ void
 midi_arranger_widget_on_drag_end (
   MidiArrangerWidget * self);
 
-GType midi_arranger_widget_get_type(void);
+/**
+ * Readd children.
+ */
+void
+midi_arranger_widget_refresh_children (
+  MidiArrangerWidget * self);
 
 #endif

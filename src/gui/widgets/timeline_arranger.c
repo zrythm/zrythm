@@ -57,6 +57,9 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
+#include "undo/undoable_action.h"
+#include "undo/create_chords_action.h"
+#include "undo/undo_manager.h"
 #include "utils/arrays.h"
 #include "utils/ui.h"
 
@@ -733,13 +736,11 @@ timeline_arranger_widget_create_chord (
                             0);
  position_set_to_pos (&chord->pos,
                       pos);
-
- chord_track_add_chord ((ChordTrack *) track,
-                        chord);
-
-  gtk_overlay_add_overlay (GTK_OVERLAY (self),
-                           GTK_WIDGET (chord->widget));
-  gtk_widget_show (GTK_WIDGET (chord->widget));
+ Chord * chords[1] = { chord };
+ UndoableAction * action =
+   create_chords_action_new (chords, 1);
+ undo_manager_perform (UNDO_MANAGER,
+                       action);
   prv->action = ARRANGER_ACTION_NONE;
   self->chords[0] = chord;
   self->num_chords = 1;
@@ -1093,6 +1094,121 @@ timeline_arranger_widget_on_drag_end (
     {
       self->start_region = NULL;
       self->start_ap = NULL;
+    }
+}
+
+static void
+add_children_from_chord_track (
+  TimelineArrangerWidget * self,
+  ChordTrack *             ct)
+{
+  for (int i = 0; i < ct->num_chords; i++)
+    {
+      Chord * chord = ct->chords[i];
+      gtk_overlay_add_overlay (GTK_OVERLAY (self),
+                               GTK_WIDGET (chord->widget));
+    }
+}
+
+static void
+add_children_from_instrument_track (
+  TimelineArrangerWidget * self,
+  InstrumentTrack *        it)
+{
+  for (int i = 0; i < it->num_regions; i++)
+    {
+      MidiRegion * mr = it->regions[i];
+      Region * r = (Region *) mr;
+      gtk_overlay_add_overlay (GTK_OVERLAY (self),
+                               GTK_WIDGET (r->widget));
+    }
+  ChannelTrack * ct = (ChannelTrack *) it;
+  AutomationTracklist * atl = ct->automation_tracklist;
+  for (int i = 0; i < atl->num_automation_tracks; i++)
+    {
+      AutomationTrack * at = atl->automation_tracks[i];
+      if (at->visible)
+        {
+          for (int j = 0; j < at->num_automation_points; j++)
+            {
+              AutomationPoint * ap =
+                at->automation_points[j];
+              if (ap->widget)
+                {
+                  gtk_overlay_add_overlay (
+                    GTK_OVERLAY (self),
+                    GTK_WIDGET (ap->widget));
+                }
+            }
+          for (int j = 0; j < at->num_automation_curves; j++)
+            {
+              AutomationCurve * ac =
+                at->automation_curves[j];
+              if (ac->widget)
+                {
+                  gtk_overlay_add_overlay (
+                    GTK_OVERLAY (self),
+                    GTK_WIDGET (ac->widget));
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Readd children.
+ */
+void
+timeline_arranger_widget_refresh_children (
+  TimelineArrangerWidget * self)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  /* remove all children except bg */
+  GList *children, *iter;
+
+  children =
+    gtk_container_get_children (GTK_CONTAINER (self));
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      GtkWidget * widget = GTK_WIDGET (iter->data);
+      if (widget != (GtkWidget *) prv->bg)
+        {
+          g_object_ref (widget);
+          gtk_container_remove (
+            GTK_CONTAINER (self),
+            GTK_WIDGET (iter->data));
+        }
+    }
+  g_list_free (children);
+
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      Track * track = TRACKLIST->tracks[i];
+      if (track->visible)
+        {
+          switch (track->type)
+            {
+            case TRACK_TYPE_CHORD:
+              add_children_from_chord_track (
+                self,
+                (ChordTrack *) track);
+              break;
+            case TRACK_TYPE_INSTRUMENT:
+              add_children_from_instrument_track (
+                self,
+                (InstrumentTrack *) track);
+              break;
+            case TRACK_TYPE_MASTER:
+              break;
+            case TRACK_TYPE_AUDIO:
+              break;
+            case TRACK_TYPE_BUS:
+              break;
+            }
+        }
     }
 }
 

@@ -130,6 +130,9 @@ chord_widget_new (Chord * chord)
   g_signal_connect (G_OBJECT(self), "leave-notify-event",
                     G_CALLBACK (on_motion),  self);
 
+  gtk_widget_set_visible (GTK_WIDGET (self),
+                          1);
+
   return self;
 }
 

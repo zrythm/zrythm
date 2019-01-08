@@ -42,4 +42,8 @@ typedef struct _PianoRollNotesWidget
   int                     note; ///< current note
 } PianoRollNotesWidget;
 
+void
+piano_roll_notes_widget_refresh (
+  PianoRollNotesWidget * self);
+
 #endif

@@ -41,80 +41,6 @@ G_DEFINE_TYPE (PianoRollWidget,
                piano_roll_widget,
                GTK_TYPE_BOX)
 
-static void
-piano_roll_widget_class_init (
-  PianoRollWidgetClass * _klass)
-{
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass,
-    "piano_roll.ui");
-
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollWidget,
-    color_bar);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollWidget,
-    midi_bot_toolbar);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollWidget,
-    midi_name_label);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollWidget,
-    midi_controls_above_notes_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollWidget,
-    midi_ruler_scroll);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollWidget,
-    midi_ruler_viewport);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollWidget,
-    ruler);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollWidget,
-    piano_roll_labels_scroll);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollWidget,
-    piano_roll_labels_viewport);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollWidget,
-    piano_roll_labels);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollWidget,
-    piano_roll_notes_scroll);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollWidget,
-    piano_roll_notes_viewport);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollWidget,
-    piano_roll_notes);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollWidget,
-    arranger_scroll);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollWidget,
-    arranger_viewport);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollWidget,
-    arranger);
-}
 
 /**
  * Links scroll windows after all widgets have been
@@ -191,6 +117,9 @@ piano_roll_widget_setup (PianoRollWidget * self)
     hh);
 
   link_scrolls (self);
+
+  piano_roll_notes_widget_refresh (
+    self->piano_roll_notes);
 }
 
 static void
@@ -205,4 +134,79 @@ piano_roll_widget_init (PianoRollWidget * self)
   gdk_rgba_parse (color, "gray");
   color_area_widget_set_color (self->color_bar,
                                color);
+}
+
+static void
+piano_roll_widget_class_init (
+  PianoRollWidgetClass * _klass)
+{
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (
+    klass,
+    "piano_roll.ui");
+
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
+    color_bar);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
+    midi_bot_toolbar);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
+    midi_name_label);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
+    midi_controls_above_notes_box);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
+    midi_ruler_scroll);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
+    midi_ruler_viewport);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
+    ruler);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
+    piano_roll_labels_scroll);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
+    piano_roll_labels_viewport);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
+    piano_roll_labels);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
+    piano_roll_notes_scroll);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
+    piano_roll_notes_viewport);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
+    piano_roll_notes);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
+    arranger_scroll);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
+    arranger_viewport);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
+    arranger);
 }

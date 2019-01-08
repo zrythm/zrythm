@@ -67,6 +67,10 @@ chord_track_add_chord (ChordTrack * self,
                        Chord *      chord);
 
 void
+chord_track_remove_chord (ChordTrack * self,
+                          Chord *      chord);
+
+void
 chord_track_free (ChordTrack * self);
 
 #endif

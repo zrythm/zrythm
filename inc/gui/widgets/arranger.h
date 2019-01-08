@@ -185,6 +185,11 @@ void
 arranger_widget_select_all (ArrangerWidget *  self,
                                    int               select);
 
-GType arranger_widget_get_type(void);
+/**
+ * Readd children.
+ */
+void
+arranger_widget_refresh_children (
+  ArrangerWidget * self);
 
 #endif

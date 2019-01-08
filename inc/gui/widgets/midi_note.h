@@ -70,5 +70,3 @@ midi_note_widget_set_state_and_queue_draw (MidiNoteWidget *    self,
 GType midi_note_widget_get_type(void);
 
 #endif
-
-

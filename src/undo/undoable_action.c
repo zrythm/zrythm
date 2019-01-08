@@ -19,6 +19,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "undo/create_chords_action.h"
 #include "undo/edit_channel_action.h"
 #include "undo/undoable_action.h"
 
@@ -48,6 +49,10 @@ undoable_action_do (UndoableAction * self)
       break;
     case UNDOABLE_ACTION_TYPE_DELETE_REGIONS:
       break;
+    case UNDOABLE_ACTION_TYPE_CREATE_CHORDS:
+      create_chords_action_do (
+        (CreateChordsAction *) self);
+      break;
     }
 }
 
@@ -76,6 +81,10 @@ undoable_action_undo (UndoableAction * self)
     case UNDOABLE_ACTION_TYPE_MOVE_REGIONS:
       break;
     case UNDOABLE_ACTION_TYPE_DELETE_REGIONS:
+      break;
+    case UNDOABLE_ACTION_TYPE_CREATE_CHORDS:
+      create_chords_action_undo (
+        (CreateChordsAction *) self);
       break;
     }
 }

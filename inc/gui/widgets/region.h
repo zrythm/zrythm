@@ -59,7 +59,4 @@ region_widget_select (RegionWidget * self,
 RegionWidgetPrivate *
 region_widget_get_private (RegionWidget * self);
 
-GType region_widget_get_type(void);
-
 #endif
-

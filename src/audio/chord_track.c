@@ -62,6 +62,14 @@ chord_track_add_chord (ChordTrack * self,
                 (void *) chord);
 }
 
+void
+chord_track_remove_chord (ChordTrack * self,
+                          Chord *      chord)
+{
+  array_delete ((void **) self->chords,
+                &self->num_chords,
+                (void *) chord);
+}
 
 /**
  * Creates chord track using default scale.

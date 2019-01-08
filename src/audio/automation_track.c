@@ -280,6 +280,8 @@ automation_track_get_ap_after_curve (AutomationTrack * at,
   for (int i = 0; i < at->num_automation_points; i++)
     {
       AutomationPoint * ap = at->automation_points[i];
+      position_print (&ap->pos);
+      position_print (&ac->pos);
       if (position_compare (&ap->pos,
                             &ac->pos) >= 0)
         {

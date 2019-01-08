@@ -485,6 +485,17 @@ midi_arranger_widget_toggle_select_midi_note (
     append);
 }
 
+/**
+ * Readd children.
+ */
+void
+midi_arranger_widget_refresh_children (
+  MidiArrangerWidget * self)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+  /* TODO */
+}
+
 static void
 midi_arranger_widget_class_init (MidiArrangerWidgetClass * klass)
 {

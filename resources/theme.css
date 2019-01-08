@@ -16,6 +16,7 @@
 @define-color z_yellow #F9CA1B;
 @define-color bright_orange #F79616;
 @define-color z_purple #9D3955;
+@define-color matcha_green #2eb398;
 @define-color hover_color alpha (white, 0.1);
 @define-color selection_color alpha (white, 0.07);
 /* see https://coolors.co/ to generate more */
@@ -55,10 +56,36 @@ entry selection
   background-color: @z_yellow;
 }
 
-treeview.view:hover
+treeview.view:hover,
+scrollbar
 {
   background-color: @bg_light_variant1;
 }
+
+/* for editing notebook tab line */
+/*notebook > header.top > tabs > tab:hover {*/
+  /*box-shadow: inset 0 -2px alpha(#2eb398,0.6), 0 1px alpha(#2eb398,0.6);*/
+/*}*/
+
+/*notebook > header.top > tabs > tab:checked {*/
+  /*box-shadow: inset 0 -2px #2eb398, 0 1px #2eb398;*/
+/*}*/
+
+/*notebook > header.right > tabs > tab:hover {*/
+  /*box-shadow: inset 2px 0 alpha(#2eb398,0.6), -1px 0 alpha(#2eb398,0.6);*/
+/*}*/
+
+/*notebook > header.right > tabs > tab:checked {*/
+  /*box-shadow: inset 2px 0 #2eb398, -1px 0 #2eb398;*/
+/*}*/
+
+/*notebook > header.left > tabs > tab:hover {*/
+  /*box-shadow: inset -2px 0 alpha(#2eb398,0.6), 1px 0 alpha(#2eb398,0.6);*/
+/*}*/
+
+/*notebook > header.left > tabs > tab:checked {*/
+  /*box-shadow: inset -2px 0 #2eb398, 1px 0 #2eb398;*/
+/*}*/
 
 treeview.view:selected
 {
@@ -114,7 +141,8 @@ button.toggle:hover,
 button.popup:hover,
 button:hover,
 button.flat:hover,
-button.text-button:hover
+button.text-button:hover,
+tooltip.background
 {
   background-color: @bg_lighter_variant1;
 }
@@ -150,7 +178,7 @@ bot-dock-edge toolbar
 
 arranger-bg
 {
-background-color: @bg_darker_variant1;
+  background-color: @bg_darker_variant1;
 }
 
 track:selected,

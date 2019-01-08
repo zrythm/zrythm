@@ -47,6 +47,7 @@ typedef struct AutomationPointWidget AutomationPointWidget;
 typedef struct _AutomationCurveWidget AutomationCurveWidget;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct AutomationCurve AutomationCurve;
+typedef struct _RegionWidget RegionWidget;
 typedef struct Chord Chord;
 
 typedef struct _TimelineArrangerWidget
@@ -205,6 +206,13 @@ timeline_arranger_widget_on_drag_end (
 
 void
 timeline_arranger_widget_setup (
+  TimelineArrangerWidget * self);
+
+/**
+ * Readd children.
+ */
+void
+timeline_arranger_widget_refresh_children (
   TimelineArrangerWidget * self);
 
 #endif

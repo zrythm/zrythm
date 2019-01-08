@@ -32,7 +32,7 @@
           <object class="GtkToolButton" id="toggle_bot_dock">
             <property name="visible">1</property>
             <property name="label" translatable="yes">Bot</property>
-            <property name="tooltip-text">Show/hide of bottom panel</property>
+            <property name="tooltip-text">Show/hide bottom panel</property>
             <signal name="clicked" handler="on_toggle_bottom_dock_clicked" swapped="no"/>
           </object>
           <packing>
@@ -60,7 +60,7 @@
           <object class="GtkToolButton" id="toggle_right_dock">
             <property name="visible">1</property>
             <property name="label" translatable="yes">Right</property>
-            <property name="tooltip-text">Show/hide of right panel</property>
+            <property name="tooltip-text">Show/hide right panel</property>
             <signal name="clicked" handler="on_toggle_right_dock_clicked" swapped="no"/>
           </object>
           <packing>

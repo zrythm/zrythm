@@ -122,7 +122,6 @@
                                     <child>
                                       <object class="PianoRollNotesWidget" id="piano_roll_notes">
                                         <property name="visible">1</property>
-                                        <property name="width-request">36</property>>
                                       </object>
                                     </child>
                                   </object>

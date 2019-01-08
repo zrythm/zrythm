@@ -222,6 +222,16 @@ piano_roll_notes_widget_class_init (PianoRollNotesWidgetClass * klass)
 {
 }
 
+void
+piano_roll_notes_widget_refresh (PianoRollNotesWidget * self)
+{
+  // set the size
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self),
+    36,
+    PIANO_ROLL_LABELS->total_px);
+}
+
 static void
 piano_roll_notes_widget_init (PianoRollNotesWidget * self)
 {

@@ -560,9 +560,6 @@ drag_begin (GtkGestureDrag * gesture,
               at = timeline_arranger_widget_get_automation_track_at_y (start_y);
               if (!at)
                 track = timeline_arranger_widget_get_track_at_y (start_y);
-              g_message ("track %p at %p",
-                         track,
-                         at);
             }
           else if (T_MIDI)
             {
@@ -933,6 +930,22 @@ arranger_bg_draw_selections (ArrangerWidget * self,
     }
 }
 
+/**
+ * Readd children.
+ */
+void
+arranger_widget_refresh_children (
+  ArrangerWidget * self)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  if (T_MIDI)
+    midi_arranger_widget_refresh_children (
+      MIDI_ARRANGER_WIDGET (self));
+  else if (T_TIMELINE)
+    timeline_arranger_widget_refresh_children (
+      TIMELINE_ARRANGER_WIDGET (self));
+}
 
 static void
 arranger_widget_class_init (ArrangerWidgetClass * _klass)
