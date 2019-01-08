@@ -92,16 +92,20 @@ center_dock_bot_box_widget_init (
   // set icons
   gtk_tool_button_set_icon_widget (
     self->instrument_add,
-    resources_get_icon ("plus.svg"));
+    resources_get_icon (ICON_TYPE_ZRYTHM,
+                        "plus.svg"));
   gtk_tool_button_set_icon_widget (
     self->toggle_left_dock,
-    resources_get_icon ("gnome-builder/builder-view-left-pane-symbolic-light.svg"));
+    resources_get_icon (ICON_TYPE_GNOME_BUILDER,
+                        "builder-view-left-pane-symbolic-light.svg"));
   gtk_tool_button_set_icon_widget (
     self->toggle_bot_dock,
-    resources_get_icon ("gnome-builder/builder-view-bottom-pane-symbolic-light.svg"));
+    resources_get_icon (ICON_TYPE_GNOME_BUILDER,
+                        "builder-view-bottom-pane-symbolic-light.svg"));
   gtk_tool_button_set_icon_widget (
     self->toggle_right_dock,
-    resources_get_icon ("gnome-builder/builder-view-right-pane-symbolic-light.svg"));
+    resources_get_icon (ICON_TYPE_GNOME_BUILDER,
+                        "builder-view-right-pane-symbolic-light.svg"));
 }
 
 

@@ -23,10 +23,13 @@
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/snap_grid_popover.h"
+#include "utils/resources.h"
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (SnapGridPopoverWidget, snap_grid_popover_widget, GTK_TYPE_POPOVER)
+G_DEFINE_TYPE (SnapGridPopoverWidget,
+               snap_grid_popover_widget,
+               GTK_TYPE_POPOVER)
 
 static void
 on_closed (SnapGridPopoverWidget *self,
@@ -38,6 +41,16 @@ on_closed (SnapGridPopoverWidget *self,
   g_free (txt);
 }
 
+static void
+on_snap_grid_toggled (GtkToggleButton * widget,
+                      gpointer          user_data)
+{
+  SnapGridPopoverWidget * self =
+    SNAP_GRID_POPOVER_WIDGET (user_data);
+  self->owner->snap_grid->snap =
+    gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (self->snap_grid));
+}
+
 /**
  * Creates a digital meter with the given type (bpm or position).
  */
@@ -47,38 +60,60 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
   SnapGridPopoverWidget * self = g_object_new (SNAP_GRID_POPOVER_WIDGET_TYPE, NULL);
 
   self->owner = owner;
-  self->dm_density = digital_meter_widget_new (DIGITAL_METER_TYPE_TIMESIG,
-                                               owner->snap_grid);
-  gtk_container_add (GTK_CONTAINER (self->density_box),
-                     GTK_WIDGET (self->dm_density));
+  self->dm_note_length =
+    digital_meter_widget_new (
+      DIGITAL_METER_TYPE_NOTE_LENGTH,
+      owner->snap_grid);
+  gtk_container_add (GTK_CONTAINER (self->note_length_box),
+                     GTK_WIDGET (self->dm_note_length));
+  self->dm_note_type =
+    digital_meter_widget_new (
+      DIGITAL_METER_TYPE_NOTE_TYPE,
+      owner->snap_grid);
+  gtk_container_add (GTK_CONTAINER (self->note_type_box),
+                     GTK_WIDGET (self->dm_note_type));
 
 
   return self;
 }
 
 static void
-snap_grid_popover_widget_class_init (SnapGridPopoverWidgetClass * klass)
+snap_grid_popover_widget_class_init (SnapGridPopoverWidgetClass * _klass)
 {
-  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
-                                               "/org/zrythm/ui/snap_grid_popover.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass,
+                                "snap_grid_popover.ui");
 
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        SnapGridPopoverWidget,
-                                        grid_adaptive);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        SnapGridPopoverWidget,
-                                        density_box);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        SnapGridPopoverWidget,
-                                        snap_grid);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        SnapGridPopoverWidget,
-                                        snap_offset);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        SnapGridPopoverWidget,
-                                        snap_events);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
-                                           on_closed);
+  gtk_widget_class_bind_template_child (
+    klass,
+    SnapGridPopoverWidget,
+    grid_adaptive);
+  gtk_widget_class_bind_template_child (
+    klass,
+    SnapGridPopoverWidget,
+    note_length_box);
+  gtk_widget_class_bind_template_child (
+    klass,
+    SnapGridPopoverWidget,
+    note_type_box);
+  gtk_widget_class_bind_template_child (
+    klass,
+    SnapGridPopoverWidget,
+    snap_grid);
+  gtk_widget_class_bind_template_child (
+    klass,
+    SnapGridPopoverWidget,
+    snap_offset);
+  gtk_widget_class_bind_template_child (
+    klass,
+    SnapGridPopoverWidget,
+    snap_events);
+  gtk_widget_class_bind_template_callback (
+    klass,
+    on_closed);
+  gtk_widget_class_bind_template_callback (
+    klass,
+    on_snap_grid_toggled);
 }
 
 static void

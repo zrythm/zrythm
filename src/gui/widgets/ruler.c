@@ -67,14 +67,9 @@ ruler_widget_px_to_pos (
   px = px % prv->px_per_bar;
   pos->beats = px / prv->px_per_beat + 1;
   px = px % prv->px_per_beat;
-  pos->quarter_beats = px / prv->px_per_quarter_beat + 1;
-  px = px % prv->px_per_quarter_beat;
+  pos->sixteenths = px / prv->px_per_sixteenth + 1;
+  px = px % prv->px_per_sixteenth;
   pos->ticks = px / prv->px_per_tick;
-  /*g_message ("%d %d %d %d",*/
-             /*pos->bars,*/
-             /*pos->beats,*/
-             /*pos->quarter_beats,*/
-             /*pos->ticks);*/
 }
 
 int
@@ -85,7 +80,7 @@ ruler_widget_pos_to_px (RulerWidget * self,
 
   return  (pos->bars - 1) * prv->px_per_bar +
     (pos->beats - 1) * prv->px_per_beat +
-    (pos->quarter_beats - 1) * prv->px_per_quarter_beat +
+    (pos->sixteenths - 1) * prv->px_per_sixteenth +
     pos->ticks * prv->px_per_tick;
 }
 
@@ -356,15 +351,15 @@ ruler_widget_init (RulerWidget * self)
   /*adjust for zoom level*/
   float px_per_tick =
     DEFAULT_PX_PER_TICK * TRANSPORT->zoom_level;
-  unsigned int px_per_quarter_beat =
-    px_per_tick * TICKS_PER_QUARTER_BEAT;
+  unsigned int px_per_sixteenth =
+    px_per_tick * TICKS_PER_SIXTEENTH_NOTE;
   unsigned int px_per_beat =
     px_per_tick * TICKS_PER_BEAT;
   unsigned int px_per_bar =
     px_per_beat * TRANSPORT->beats_per_bar;
   prv->px_per_tick = px_per_tick;
   GTK_WIDGET (self);
-  prv->px_per_quarter_beat = px_per_quarter_beat;
+  prv->px_per_sixteenth = px_per_sixteenth;
   GTK_WIDGET (self);
   prv->px_per_beat = px_per_beat;
   GTK_WIDGET (self);

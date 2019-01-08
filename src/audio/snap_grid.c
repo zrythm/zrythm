@@ -19,11 +19,364 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <math.h>
-
 #include "audio/snap_grid.h"
+#include "audio/transport.h"
 
 #include <gtk/gtk.h>
+
+int
+snap_grid_get_note_ticks (SnapGrid * self)
+{
+  switch (self->note_length)
+    {
+    case NOTE_LENGTH_2_1:
+      switch (self->note_type)
+        {
+        case NOTE_TYPE_NORMAL:
+          return 8 * TICKS_PER_QUARTER_NOTE;
+          break;
+        case NOTE_TYPE_DOTTED:
+          return 12 * TICKS_PER_QUARTER_NOTE;
+          break;
+        case NOTE_TYPE_TRIPLET:
+          return (16 * TICKS_PER_QUARTER_NOTE) / 3;
+          break;
+        }
+      break;
+    case NOTE_LENGTH_1_1:
+      switch (self->note_type)
+        {
+        case NOTE_TYPE_NORMAL:
+          return 4 * TICKS_PER_QUARTER_NOTE;
+          break;
+        case NOTE_TYPE_DOTTED:
+          return 6 * TICKS_PER_QUARTER_NOTE;
+          break;
+        case NOTE_TYPE_TRIPLET:
+          return (8 * TICKS_PER_QUARTER_NOTE) / 3;
+          break;
+        }
+      break;
+    case NOTE_LENGTH_1_2:
+      switch (self->note_type)
+        {
+        case NOTE_TYPE_NORMAL:
+          return 2 * TICKS_PER_QUARTER_NOTE;
+          break;
+        case NOTE_TYPE_DOTTED:
+          return 3 * TICKS_PER_QUARTER_NOTE;
+          break;
+        case NOTE_TYPE_TRIPLET:
+          return (4 * TICKS_PER_QUARTER_NOTE) / 3;
+          break;
+        }
+      break;
+    case NOTE_LENGTH_1_4:
+      switch (self->note_type)
+        {
+        case NOTE_TYPE_NORMAL:
+          return TICKS_PER_QUARTER_NOTE;
+          break;
+        case NOTE_TYPE_DOTTED:
+          return (3 * TICKS_PER_QUARTER_NOTE) / 2;
+          break;
+        case NOTE_TYPE_TRIPLET:
+          return (2 * TICKS_PER_QUARTER_NOTE) / 3;
+          break;
+        }
+      break;
+    case NOTE_LENGTH_1_8:
+      switch (self->note_type)
+        {
+        case NOTE_TYPE_NORMAL:
+          return TICKS_PER_QUARTER_NOTE / 2;
+          break;
+        case NOTE_TYPE_DOTTED:
+          return (3 * TICKS_PER_QUARTER_NOTE) / 4;
+          break;
+        case NOTE_TYPE_TRIPLET:
+          return TICKS_PER_QUARTER_NOTE / 3;
+          break;
+        }
+      break;
+    case NOTE_LENGTH_1_16:
+      switch (self->note_type)
+        {
+        case NOTE_TYPE_NORMAL:
+          return TICKS_PER_QUARTER_NOTE / 4;
+          break;
+        case NOTE_TYPE_DOTTED:
+          return (3 * TICKS_PER_QUARTER_NOTE) / 8;
+          break;
+        case NOTE_TYPE_TRIPLET:
+          return TICKS_PER_QUARTER_NOTE / 6;
+          break;
+        }
+      break;
+    case NOTE_LENGTH_1_32:
+      switch (self->note_type)
+        {
+        case NOTE_TYPE_NORMAL:
+          return TICKS_PER_QUARTER_NOTE / 8;
+          break;
+        case NOTE_TYPE_DOTTED:
+          return (3 * TICKS_PER_QUARTER_NOTE) / 16;
+          break;
+        case NOTE_TYPE_TRIPLET:
+          return TICKS_PER_QUARTER_NOTE / 12;
+          break;
+        }
+      break;
+    case NOTE_LENGTH_1_64:
+      switch (self->note_type)
+        {
+        case NOTE_TYPE_NORMAL:
+          return TICKS_PER_QUARTER_NOTE / 16;
+          break;
+        case NOTE_TYPE_DOTTED:
+          return (3 * TICKS_PER_QUARTER_NOTE) / 32;
+          break;
+        case NOTE_TYPE_TRIPLET:
+          return TICKS_PER_QUARTER_NOTE / 24;
+          break;
+        }
+      break;
+    case NOTE_LENGTH_1_128:
+      switch (self->note_type)
+        {
+        case NOTE_TYPE_NORMAL:
+          return TICKS_PER_QUARTER_NOTE / 32;
+          break;
+        case NOTE_TYPE_DOTTED:
+          return (3 * TICKS_PER_QUARTER_NOTE) / 64;
+          break;
+        case NOTE_TYPE_TRIPLET:
+          return TICKS_PER_QUARTER_NOTE / 48;
+          break;
+        }
+      break;
+    }
+
+}
+
+static void
+update_snap_points (SnapGrid * self)
+{
+  Position tmp, end_pos;
+  position_init (&tmp);
+  position_set_to_bar (&end_pos,
+                       TRANSPORT->total_bars);
+  while (position_compare (&tmp, &end_pos)
+           < 0)
+    {
+      position_add_ticks (
+        &tmp,
+        snap_grid_get_note_ticks (self));
+      /*switch (self->note_length)*/
+        /*{*/
+        /*case NOTE_LENGTH_2_1:*/
+          /*switch (self->note_type)*/
+            /*{*/
+            /*case NOTE_TYPE_NORMAL:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*8 * TICKS_PER_QUARTER_NOTE);*/
+              /*break;*/
+            /*case NOTE_TYPE_DOTTED:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*12 * TICKS_PER_QUARTER_NOTE);*/
+              /*break;*/
+            /*case NOTE_TYPE_TRIPLET:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*(16 * TICKS_PER_QUARTER_NOTE) / 3);*/
+              /*break;*/
+            /*}*/
+          /*break;*/
+        /*case NOTE_LENGTH_1_1:*/
+          /*switch (self->note_type)*/
+            /*{*/
+            /*case NOTE_TYPE_NORMAL:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*4 * TICKS_PER_QUARTER_NOTE);*/
+              /*break;*/
+            /*case NOTE_TYPE_DOTTED:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*6 * TICKS_PER_QUARTER_NOTE);*/
+              /*break;*/
+            /*case NOTE_TYPE_TRIPLET:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*(8 * TICKS_PER_QUARTER_NOTE) / 3);*/
+              /*break;*/
+            /*}*/
+          /*break;*/
+        /*case NOTE_LENGTH_1_2:*/
+          /*switch (self->note_type)*/
+            /*{*/
+            /*case NOTE_TYPE_NORMAL:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*2 * TICKS_PER_QUARTER_NOTE);*/
+              /*break;*/
+            /*case NOTE_TYPE_DOTTED:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*3 * TICKS_PER_QUARTER_NOTE);*/
+              /*break;*/
+            /*case NOTE_TYPE_TRIPLET:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*(4 * TICKS_PER_QUARTER_NOTE) / 3);*/
+              /*break;*/
+            /*}*/
+          /*break;*/
+        /*case NOTE_LENGTH_1_4:*/
+          /*switch (self->note_type)*/
+            /*{*/
+            /*case NOTE_TYPE_NORMAL:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*TICKS_PER_QUARTER_NOTE);*/
+              /*break;*/
+            /*case NOTE_TYPE_DOTTED:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*(3 * TICKS_PER_QUARTER_NOTE) / 2);*/
+              /*break;*/
+            /*case NOTE_TYPE_TRIPLET:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*(2 * TICKS_PER_QUARTER_NOTE) / 3);*/
+              /*break;*/
+            /*}*/
+          /*break;*/
+        /*case NOTE_LENGTH_1_8:*/
+          /*switch (self->note_type)*/
+            /*{*/
+            /*case NOTE_TYPE_NORMAL:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*TICKS_PER_QUARTER_NOTE / 2);*/
+              /*break;*/
+            /*case NOTE_TYPE_DOTTED:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*(3 * TICKS_PER_QUARTER_NOTE) / 4);*/
+              /*break;*/
+            /*case NOTE_TYPE_TRIPLET:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*TICKS_PER_QUARTER_NOTE / 3);*/
+              /*break;*/
+            /*}*/
+          /*break;*/
+        /*case NOTE_LENGTH_1_16:*/
+          /*switch (self->note_type)*/
+            /*{*/
+            /*case NOTE_TYPE_NORMAL:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*TICKS_PER_QUARTER_NOTE / 4);*/
+              /*break;*/
+            /*case NOTE_TYPE_DOTTED:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*(3 * TICKS_PER_QUARTER_NOTE) / 8);*/
+              /*break;*/
+            /*case NOTE_TYPE_TRIPLET:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*TICKS_PER_QUARTER_NOTE / 6);*/
+              /*break;*/
+            /*}*/
+          /*break;*/
+        /*case NOTE_LENGTH_1_32:*/
+          /*switch (self->note_type)*/
+            /*{*/
+            /*case NOTE_TYPE_NORMAL:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*TICKS_PER_QUARTER_NOTE / 8);*/
+              /*break;*/
+            /*case NOTE_TYPE_DOTTED:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*(3 * TICKS_PER_QUARTER_NOTE) / 16);*/
+              /*break;*/
+            /*case NOTE_TYPE_TRIPLET:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*TICKS_PER_QUARTER_NOTE / 12);*/
+              /*break;*/
+            /*}*/
+          /*break;*/
+        /*case NOTE_LENGTH_1_64:*/
+          /*switch (self->note_type)*/
+            /*{*/
+            /*case NOTE_TYPE_NORMAL:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*TICKS_PER_QUARTER_NOTE / 16);*/
+              /*break;*/
+            /*case NOTE_TYPE_DOTTED:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*(3 * TICKS_PER_QUARTER_NOTE) / 32);*/
+              /*break;*/
+            /*case NOTE_TYPE_TRIPLET:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*TICKS_PER_QUARTER_NOTE / 24);*/
+              /*break;*/
+            /*}*/
+          /*break;*/
+        /*case NOTE_LENGTH_1_128:*/
+          /*switch (self->note_type)*/
+            /*{*/
+            /*case NOTE_TYPE_NORMAL:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*TICKS_PER_QUARTER_NOTE / 32);*/
+              /*break;*/
+            /*case NOTE_TYPE_DOTTED:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*(3 * TICKS_PER_QUARTER_NOTE) / 64);*/
+              /*break;*/
+            /*case NOTE_TYPE_TRIPLET:*/
+              /*position_add_ticks (*/
+                /*&tmp,*/
+                /*TICKS_PER_QUARTER_NOTE / 48);*/
+              /*break;*/
+            /*}*/
+          /*break;*/
+        /*}*/
+      position_set_to_pos (
+        &self->snap_points[self->num_snap_points++],
+        &tmp);
+    }
+}
+
+void
+snap_grid_init (SnapGrid *   self,
+                NoteLength   note_length)
+{
+  self->grid_auto = 1;
+  self->note_length = note_length;
+  self->num_snap_points = 0;
+  self->note_type = NOTE_TYPE_NORMAL;
+  self->snap_type = SNAP_TYPE_GRID;
+}
+
+void
+snap_grid_setup (SnapGrid * self)
+{
+  update_snap_points (self);
+}
 
 /**
  * Returns the grid intensity as a human-readable string.
@@ -31,8 +384,54 @@
  * Must be free'd.
  */
 char *
-snap_grid_stringize (SnapGrid * snap_grid)
+snap_grid_stringize (SnapGrid * self)
 {
-  int power = pow (2, snap_grid->grid_density);
-  return g_strdup_printf ("1/%d", power);
+  char * c;
+  char * first_part;
+  switch (self->note_type)
+    {
+      case NOTE_TYPE_NORMAL:
+        c = "";
+        break;
+      case NOTE_TYPE_DOTTED:
+        c = ".";
+        break;
+      case NOTE_TYPE_TRIPLET:
+        c = "t";
+        break;
+    }
+  switch (self->note_length)
+    {
+    case NOTE_LENGTH_2_1:
+      first_part = "2/1";
+      break;
+    case NOTE_LENGTH_1_1:
+      first_part = "1/1";
+      break;
+    case NOTE_LENGTH_1_2:
+      first_part = "1/2";
+      break;
+    case NOTE_LENGTH_1_4:
+      first_part = "1/4";
+      break;
+    case NOTE_LENGTH_1_8:
+      first_part = "1/8";
+      break;
+    case NOTE_LENGTH_1_16:
+      first_part = "1/16";
+      break;
+    case NOTE_LENGTH_1_32:
+      first_part = "1/32";
+      break;
+    case NOTE_LENGTH_1_64:
+      first_part = "1/64";
+      break;
+    case NOTE_LENGTH_1_128:
+      first_part = "1/128";
+      break;
+    }
+
+  return g_strdup_printf ("%s%s",
+                          first_part,
+                          c);
 }

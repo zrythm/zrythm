@@ -34,7 +34,9 @@ left_dock_edge_widget_init (LeftDockEdgeWidget * self)
 
   /* setup inspector */
   self->inspector = inspector_widget_new ();
-  GtkWidget * img = resources_get_icon ("gnome-builder/ui-section-symbolic-light.svg");
+  GtkWidget * img =
+    resources_get_icon (ICON_TYPE_GNOME_BUILDER,
+                        "ui-section-symbolic-light.svg");
   gtk_notebook_prepend_page (self->inspector_notebook,
                              GTK_WIDGET (self->inspector),
                              img);

@@ -44,11 +44,11 @@ midi_note_new (MidiRegion * midi_region,
 
   midi_note->start_pos.bars = start_pos->bars;
   midi_note->start_pos.beats = start_pos->beats;
-  midi_note->start_pos.quarter_beats = start_pos->quarter_beats;
+  midi_note->start_pos.sixteenths = start_pos->sixteenths;
   midi_note->start_pos.ticks = start_pos->ticks;
   midi_note->end_pos.bars = end_pos->bars;
   midi_note->end_pos.beats = end_pos->beats;
-  midi_note->end_pos.quarter_beats = end_pos->quarter_beats;
+  midi_note->end_pos.sixteenths = end_pos->sixteenths;
   midi_note->end_pos.ticks = end_pos->ticks;
   midi_note->midi_region = midi_region;
   midi_note->val = val;

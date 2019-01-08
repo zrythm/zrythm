@@ -22,7 +22,7 @@
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
-                <property name="resource">/org/zrythm/icons/piano_roll.svg</property>
+                <property name="resource">/org/zrythm/icons/zrythm/piano_roll.svg</property>
               </object>
               <packing>
                 <property name="expand">0</property>
@@ -55,7 +55,7 @@
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
-                <property name="resource">/org/zrythm/icons/mixer.svg</property>
+                <property name="resource">/org/zrythm/icons/zrythm/mixer.svg</property>
               </object>
               <packing>
                 <property name="expand">0</property>

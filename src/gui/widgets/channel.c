@@ -163,14 +163,17 @@ setup_channel_icon (ChannelWidget * self)
     {
     case CT_MIDI:
       resources_set_image_icon (self->icon,
+                                ICON_TYPE_ZRYTHM,
                                 "instrument.svg");
       break;
     case CT_AUDIO:
       resources_set_image_icon (self->icon,
+                                ICON_TYPE_ZRYTHM,
                                 "audio.svg");
     case CT_BUS:
     case CT_MASTER:
       resources_set_image_icon (self->icon,
+                                ICON_TYPE_ZRYTHM,
                                 "bus.svg");
       break;
     }

@@ -159,7 +159,7 @@ desktop_DATA = $(DATA_DIR)/zrythm.desktop
 
 #the application icon
 appicondir=$(datadir)/icons/hicolor/scalable/apps
-appicon_DATA = resources/icons/z.svg
+appicon_DATA = resources/icons/zrythm/z.svg
 
 
 # -----------------------------
@@ -177,17 +177,19 @@ $(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(BUILD_DIR)/resources.o
 	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
 	# done
 
+$(BUILD_DIR)/zrythm.gresource.xml: resources/gen-gtk-gresources-xml.py \
+	resources/ui/*.ui \
+	resources/icons/zrythm/*.svg \
+	resources/icons/gnome-builder/*.svg
+	resources/gen-gtk-gresources-xml.py resources $@
+
+$(BUILD_DIR)/resources.c: $(BUILD_DIR)/zrythm.gresource.xml
+	$(MKDIR_P) $(BUILD_DIR)
+	glib-compile-resources $(BUILD_DIR)/zrythm.gresource.xml --target=$(BUILD_DIR)/resources.c \
+	--generate-source --sourcedir=resources
+
 # Include all dep files
 -include $(DEP)
-
-$(BUILD_DIR)/resources.c: $(SRC_DIR)/zrythm.gresource.xml \
-	resources/ui/*.ui \
-	resources/theme.css \
-	resources/*.svg \
-	resources/icons/*.svg
-	$(MKDIR_P) $(BUILD_DIR)
-	glib-compile-resources $(SRC_DIR)/zrythm.gresource.xml --target=$(BUILD_DIR)/resources.c \
-	--generate-source --sourcedir=resources
 
 # Build target for every single object file.
 # The potential dependency on header files is covered
@@ -203,6 +205,7 @@ clean:
 	#rm -rf $(BUILD_DIR)/*
 	# This should remove all generated files.
 	-rm $(BUILD_DIR)/$(BIN)$(EXT) $(OBJ) $(DEP)
+	-rm $(BUILD_DIR)/zrythm.gresource.xml
 
 .PHONY: install
 install: $(BUILD_DIR)/$(BIN)$(EXT) install-appicon-data install-desktop-data install-gschemas install-fonts

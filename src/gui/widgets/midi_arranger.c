@@ -279,11 +279,12 @@ midi_arranger_widget_on_drag_begin_create_note (
   MidiRegion * region)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
-  position_snap (NULL,
-                 pos,
-                 NULL,
-                 (Region *) region,
-                 prv->snap_grid);
+  if (prv->snap_grid->snap)
+    position_snap (NULL,
+                   pos,
+                   NULL,
+                   (Region *) region,
+                   prv->snap_grid);
   MidiNote * midi_note = midi_note_new (region,
                                    pos,
                                    pos,
@@ -358,11 +359,12 @@ midi_arranger_widget_snap_midi_notes_l (
   for (int i = 0; i < self->num_midi_notes; i++)
     {
       MidiNote * midi_note = self->midi_notes[i];
-      position_snap (NULL,
-                     pos,
-                     NULL,
-                     (Region *) midi_note->midi_region,
-                     prv->snap_grid);
+      if (prv->snap_grid->snap)
+        position_snap (NULL,
+                       pos,
+                       NULL,
+                       (Region *) midi_note->midi_region,
+                       prv->snap_grid);
       midi_note_set_start_pos (midi_note,
                                pos);
     }
@@ -382,11 +384,12 @@ midi_arranger_widget_snap_midi_notes_r (
   for (int i = 0; i < self->num_midi_notes; i++)
     {
       MidiNote * midi_note = self->midi_notes[i];
-      position_snap (NULL,
-                     pos,
-                     NULL,
-                     (Region *) midi_note->midi_region,
-                     prv->snap_grid);
+      if (prv->snap_grid->snap)
+        position_snap (NULL,
+                       pos,
+                       NULL,
+                       (Region *) midi_note->midi_region,
+                       prv->snap_grid);
       if (position_compare (pos, &midi_note->start_pos) > 0)
         {
           midi_note_set_end_pos (midi_note,
@@ -407,11 +410,12 @@ midi_arranger_widget_move_midi_notes_x (
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
   /* snap first selected midi note's pos */
-  position_snap (NULL,
-                 pos,
-                 NULL,
-                 (Region *) self->start_midi_note->midi_region,
-                 prv->snap_grid);
+  if (prv->snap_grid->snap)
+    position_snap (NULL,
+                   pos,
+                   NULL,
+                   (Region *) self->start_midi_note->midi_region,
+                   prv->snap_grid);
   for (int i = 0; i < self->num_midi_notes; i++)
     {
       MidiNote * midi_note = self->midi_notes[i];

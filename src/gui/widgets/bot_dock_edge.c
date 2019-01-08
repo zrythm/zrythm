@@ -39,7 +39,8 @@ bot_dock_edge_widget_init (BotDockEdgeWidget * self)
   /* set icons */
   gtk_button_set_image (
     GTK_BUTTON (self->mixer->channels_add),
-    resources_get_icon ("plus.svg"));
+    resources_get_icon (ICON_TYPE_ZRYTHM,
+                        "plus.svg"));
 }
 
 static void

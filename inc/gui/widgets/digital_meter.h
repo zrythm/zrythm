@@ -36,7 +36,9 @@ typedef enum DigitalMeterType
 {
   DIGITAL_METER_TYPE_BPM,
   DIGITAL_METER_TYPE_POSITION,
-  DIGITAL_METER_TYPE_TIMESIG
+  DIGITAL_METER_TYPE_TIMESIG,
+  DIGITAL_METER_TYPE_NOTE_TYPE,
+  DIGITAL_METER_TYPE_NOTE_LENGTH,
 } DigitalMeterType;
 
 typedef struct SnapGrid SnapGrid;
@@ -63,19 +65,23 @@ typedef struct _DigitalMeterWidget
   int                      bars_end_pos;
   int                      beats_start_pos;
   int                      beats_end_pos;
-  int                      quarter_beats_start_pos;
-  int                      quarter_beats_end_pos;
+  int                      sixteenths_start_pos;
+  int                      sixteenths_end_pos;
   int                      ticks_start_pos;
   int                      ticks_end_pos;
   int                      update_bars; ///< flag to update bars
   int                      update_beats; ///< flag to update beats
-  int                      update_quarter_beats; ///< flag to update beats
+  int                      update_sixteenths; ///< flag to update beats
   int                      update_ticks; ///< flag to update beats
 
-  /* for time sig */
+  /* for note length/type */
   SnapGrid *               snap_grid;
-  int                      update_dens; ///< flag to update density
-  int                      start_dens; ///< start density
+  int                      update_note_length; ///< flag to update note length
+  int                      start_note_length; ///< start note length
+  int                      update_note_type; ///< flag to update note type
+  int                      start_note_type; ///< start note type
+
+  /* for time sig TODO */
 } DigitalMeterWidget;
 
 /**
@@ -86,4 +92,3 @@ digital_meter_widget_new (DigitalMeterType      type,
                           SnapGrid *            snap_grid); ///< for timesig
 
 #endif
-

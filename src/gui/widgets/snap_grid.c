@@ -42,9 +42,11 @@ snap_grid_widget_setup (SnapGridWidget * self,
                         SnapGrid * snap_grid)
 {
   self->snap_grid = snap_grid;
+  self->popover = snap_grid_popover_widget_new (self);
+  gtk_menu_button_set_popover (GTK_MENU_BUTTON (self),
+                               GTK_WIDGET (self->popover));
 
   char * string = snap_grid_stringize (snap_grid);
-  g_message (string);
   gtk_label_set_text (self->label, string);
   g_free (string);
 }
@@ -57,10 +59,10 @@ snap_grid_widget_class_init (SnapGridWidgetClass * klass)
 static void
 snap_grid_widget_init (SnapGridWidget * self)
 {
-  self->popover = snap_grid_popover_widget_new (self);
-
   self->box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
-  self->img = GTK_IMAGE (resources_get_icon ("gnome-builder/builder-split-tab-right-symbolic-light.svg"));
+  self->img = GTK_IMAGE (
+    resources_get_icon (ICON_TYPE_GNOME_BUILDER,
+                        "builder-split-tab-right-symbolic-light.svg"));
   self->label = GTK_LABEL (gtk_label_new ("Snap/Grid"));
   gtk_box_pack_start (self->box,
                       GTK_WIDGET (self->img),
@@ -74,8 +76,6 @@ snap_grid_widget_init (SnapGridWidget * self)
                     1);
   gtk_container_add (GTK_CONTAINER (self),
                      GTK_WIDGET (self->box));
-  gtk_menu_button_set_popover (GTK_MENU_BUTTON (self),
-                               GTK_WIDGET (self->popover));
   g_signal_connect (G_OBJECT (self),
                     "clicked",
                     G_CALLBACK (on_clicked),

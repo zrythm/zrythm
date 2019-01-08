@@ -22,12 +22,32 @@
 #ifndef __AUDIO_POSITION_H__
 #define __AUDIO_POSITION_H__
 
-#define TICKS_PER_BAR 3840
-#define TICKS_PER_BEAT 960
-#define TICKS_PER_QUARTER_BEAT 240
+#define TICKS_PER_QUARTER_NOTE 960
+#define TICKS_PER_SIXTEENTH_NOTE 240
+/**
+ * Regarding calculation:
+ * TICKS_PER_QUARTER_NOTE * 4 to get the ticks per full note.
+ * Divide by beat unit (e.g. if beat unit is 2, it means it
+ * is a 1/2th note, so multiply 1/2 with the ticks per note
+ */
+#define TICKS_PER_BEAT \
+  ((TICKS_PER_QUARTER_NOTE * 4) / TRANSPORT->beat_unit)
+#define TICKS_PER_BAR \
+  (TICKS_PER_BEAT * TRANSPORT->beats_per_bar)
+#define SIXTEENTHS_PER_BEAT \
+  (16 / TRANSPORT->beat_unit)
 #define position_add_ticks(position, _ticks) \
   position_set_tick (position, \
                      (position)->ticks + _ticks)
+#define position_add_sixteenths(position, _s) \
+  position_set_sixteenth (position, \
+                     (position)->sixteenths + _s)
+#define position_add_beats(position, _b) \
+  position_set_beat (position, \
+                     (position)->beats + _b)
+#define position_add_bars(position, _b) \
+  position_set_bar (position, \
+                     (position)->bars + _b)
 
 typedef struct SnapGrid SnapGrid;
 typedef struct Track Track;
@@ -35,11 +55,26 @@ typedef struct Region Region;
 
 typedef struct Position
 {
-  int       bars;
+  int       bars; ///< this is the size of the number of beats per bar (top part of time sig)
+
+  /**
+   * The size of the beat is the the beat unit (bot part
+   * of time sig).
+   */
   int       beats;
-  int       quarter_beats;
-  int       ticks;              ///< for now 240 ticks per quarter beat
-  int       frames;            ///< position in frames
+
+  /*
+   * This is always the size of a 1/16th note regardless
+   * of time sig (so if bot part is 16, this will always be
+   * 1). This is added for convenience when compared to BBT,
+   * so that the user only has 240 ticks to deal with for
+   * precise operations instead of 960.
+   */
+  int       sixteenths;
+
+  int       ticks; ///< 240 ticks per sixteen
+
+  int       frames; ///< position in frames (samples)
 } Position;
 
 /**
@@ -53,23 +88,23 @@ position_init (Position * position);
  */
 void
 position_set_to_bar (Position * position,
-                      int        bar_no);
+                     int        bar_no);
 
 void
 position_set_bar (Position * position,
-                  int      bar);
+                  int        bar);
 
 void
 position_set_beat (Position * position,
-                  int      beat);
+                   int        beat);
 
 void
-position_set_quarter_beat (Position * position,
-                  int      quarter_beat);
+position_set_sixteenth (Position * position,
+                        int        sixteenth);
 
 void
 position_set_tick (Position * position,
-                   int      tick);
+                   int        tick);
 
 /**
  * Sets position to target position
@@ -80,7 +115,7 @@ position_set_to_pos (Position * position,
 
 void
 position_add_frames (Position * position,
-                     int      frames);
+                     int        frames);
 
 /**
  * Converts position bars/beats/quarter beats/ticks to frames
@@ -98,7 +133,8 @@ position_updated (Position * position);
  * Converts seconds to position and puts the result in the given Position.
  */
 void
-position_from_seconds (Position * position, double secs);
+position_from_seconds (Position * position,
+                       double     secs);
 
 /**
  * Compares 2 positions.

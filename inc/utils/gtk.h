@@ -24,6 +24,7 @@
 
 #include <gtk/gtk.h>
 
+typedef enum IconType IconType;
 /**
  * For readability, instead of using 0s and 1s.
  */
@@ -72,6 +73,7 @@ z_gtk_button_new_with_icon (const char * name);
  * Creates a button with the given resource name as icon.
  */
 GtkButton *
-z_gtk_button_new_with_resource (const char * name);
+z_gtk_button_new_with_resource (IconType  icon_type,
+                                const char * name);
 
 #endif

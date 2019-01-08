@@ -126,11 +126,14 @@ instrument_track_widget_init (InstrumentTrackWidget * self)
 
   /* create buttons */
   self->record =
-    z_gtk_button_new_with_resource ("record.svg");
+    z_gtk_button_new_with_resource (ICON_TYPE_ZRYTHM,
+                                    "record.svg");
   self->solo =
-    z_gtk_button_new_with_resource ("solo.svg");
+    z_gtk_button_new_with_resource (ICON_TYPE_ZRYTHM,
+                                    "solo.svg");
   self->mute =
-    z_gtk_button_new_with_resource ("mute.svg");
+    z_gtk_button_new_with_resource (ICON_TYPE_ZRYTHM,
+                                    "mute.svg");
   self->show_automation =
     z_gtk_button_new_with_icon ("gtk-justify-fill");
   self->lock =
@@ -174,6 +177,7 @@ instrument_track_widget_init (InstrumentTrackWidget * self)
 
   /* set icon */
   resources_set_image_icon (tw_prv->icon,
+                            ICON_TYPE_ZRYTHM,
                             "instrument.svg");
 
   gtk_widget_show_all (GTK_WIDGET (self));

@@ -50,7 +50,7 @@ typedef struct
 {
   unsigned int             px_per_beat;
   unsigned int             px_per_bar;
-  unsigned int             px_per_quarter_beat;
+  unsigned int             px_per_sixteenth;
   float                    px_per_tick;
   unsigned int             total_px;
   double                   start_x; ///< for dragging

@@ -25,7 +25,7 @@
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
-                <property name="resource">/org/zrythm/z-splash.svg</property>
+                <property name="resource">/org/zrythm/icons/zrythm/z-splash.svg</property>
               </object>
               <packing>
                 <property name="index">-1</property>

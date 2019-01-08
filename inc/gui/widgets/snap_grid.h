@@ -31,7 +31,7 @@ G_DECLARE_FINAL_TYPE (SnapGridWidget,
                       WIDGET,
                       GtkMenuButton)
 
-typedef struct SnapGridPopoverWidget SnapGridPopoverWidget;
+typedef struct _SnapGridPopoverWidget SnapGridPopoverWidget;
 
 typedef struct _SnapGridWidget
 {

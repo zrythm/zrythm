@@ -160,12 +160,18 @@ task_func (GTask *task,
       break;
     case TASK_INIT_PLUGIN_MANAGER:
       ZRYTHM->plugin_manager = plugin_manager_new ();
+      snap_grid_init (&ZRYTHM->snap_grid_timeline,
+                      NOTE_LENGTH_1_1);
+      snap_grid_init (&ZRYTHM->snap_grid_midi,
+                      NOTE_LENGTH_1_8);
       data->message =
         "Setting up backend";
       data->progress = 0.7;
       break;
     case TASK_END:
       engine_setup (AUDIO_ENGINE);
+      snap_grid_setup (&ZRYTHM->snap_grid_timeline);
+      snap_grid_setup (&ZRYTHM->snap_grid_midi);
       plugin_manager_setup (PLUGIN_MANAGER);
       data->message =
         "Loading project";
@@ -355,22 +361,6 @@ static void
 zrythm_app_activate (GApplication * _app)
 {
   g_message ("activate %d", *task_id);
-
-  /*PROJECT->snap_grid_timeline.grid_auto = 1;*/
-  /*[>PROJECT->snap_grid_timeline.grid_density = 3;<]*/
-  /*PROJECT->snap_grid_timeline.grid_density = 1;*/
-  /*PROJECT->snap_grid_timeline.snap_to_grid = 1;*/
-  /*PROJECT->snap_grid_timeline.snap_to_edges = 1;*/
-  /*PROJECT->snap_grid_timeline.type = SNAP_GRID_TIMELINE;*/
-  /*PROJECT->snap_grid_midi.grid_auto = 1;*/
-  /*[>PROJECT->snap_grid_midi.grid_density = 4;<]*/
-  /*PROJECT->snap_grid_midi.grid_density = 1;*/
-  /*PROJECT->snap_grid_midi.snap_to_grid = 1;*/
-  /*PROJECT->snap_grid_midi.snap_to_edges = 1;*/
-  /*PROJECT->snap_grid_midi.type = SNAP_GRID_MIDI;*/
-
-  /*PROJECT = calloc (1, sizeof (Project));*/
-
 }
 
 

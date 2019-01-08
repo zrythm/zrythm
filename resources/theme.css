@@ -119,7 +119,8 @@ button.text-button:hover
   background-color: @bg_lighter_variant1;
 }
 
-menu
+menu,
+popover
 {
   background-color: @bg_lighter_variant2;
 }

@@ -61,8 +61,16 @@ typedef struct Transport
   Position      loop_end_pos;           ///< loop marker end position
   Position      start_marker_pos;       ///< start marker position
   Position      end_marker_pos;         ///< end marker position
-  int           beats_per_bar;     ///< top part of time signature
-  int           beat_unit;   ///< bottom part of time signature, power of 2
+
+  /**
+   * The top part (beats_per_par) is the number of beat units
+   * (the bottom part) there will be per bar.
+   *
+   * Example: 4/4 = 4 (top) 1/4th (bot) notes per bar.
+   * 2/8 = 2 (top) 1/8th (bot) notes per bar.
+   */
+  int                beats_per_bar; ///< top part of time signature
+  int                beat_unit;   ///< bottom part of time signature, power of 2
   float         zoom_level;             ///< zoom level used in ruler/transport widget calculations FIXME move to gui
   uint32_t           position;       ///< Transport position in frames
 	float              bpm;            ///< Transport tempo in beats per minute

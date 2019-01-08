@@ -156,8 +156,9 @@ main_window_widget_refresh (MainWindowWidget * self)
     }
 
   // set icons
-  GtkWidget * image = resources_get_icon (
-          "z.svg");
+  GtkWidget * image =
+    resources_get_icon (ICON_TYPE_ZRYTHM,
+                        "z.svg");
   gtk_window_set_icon (
           GTK_WINDOW (self),
           gtk_image_get_pixbuf (GTK_IMAGE (image)));

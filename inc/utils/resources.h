@@ -28,11 +28,19 @@
 #define TEMPLATE_PATH "ui/"
 #define ICON_PATH "icons/"
 
+typedef enum IconType
+{
+  ICON_TYPE_ZRYTHM,
+  ICON_TYPE_GNOME_BUILDER
+} IconType;
+
 GtkWidget *
-resources_get_icon (const char * filename); ///< the path after .../icons/
+resources_get_icon (IconType     icon_type,
+                    const char * filename);
 
 void
-resources_set_image_icon (GtkImage * img,
+resources_set_image_icon (GtkImage *   img,
+                          IconType     icon_type,
                           const char * path);
 
 /**
@@ -45,7 +53,8 @@ resources_set_class_template (GtkWidgetClass * klass,
                               const char * filename);
 
 void
-resources_add_icon_to_button (GtkButton * btn,
+resources_add_icon_to_button (GtkButton *  btn,
+                              IconType     icon_type,
                               const char * path);
 
 #endif

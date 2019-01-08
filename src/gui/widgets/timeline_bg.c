@@ -78,7 +78,7 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   playhead_pos_in_px =
     (TRANSPORT->playhead_pos.bars - 1) * prv->px_per_bar +
     (TRANSPORT->playhead_pos.beats - 1) * prv->px_per_beat +
-    (TRANSPORT->playhead_pos.quarter_beats - 1) * prv->px_per_quarter_beat +
+    (TRANSPORT->playhead_pos.sixteenths - 1) * prv->px_per_sixteenth +
     TRANSPORT->playhead_pos.ticks * prv->px_per_tick;
 
   gtk_render_background (context, cr, 0, 0, prv->total_px, height);

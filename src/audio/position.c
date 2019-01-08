@@ -47,26 +47,37 @@ position_init (Position * position)
 {
   position->bars = 1;
   position->beats = 1;
-  position->quarter_beats = 1;
+  position->sixteenths = 1;
   position->ticks = 0;
 }
 
 /**
  * Converts position bars/beats/quarter beats/ticks to frames
+ *
+ * Note: transport must be setup by this point.
  */
 int
 position_to_frames (Position * position)
 {
-  int frames = AUDIO_ENGINE->frames_per_tick * (position->bars - 1) *
-    TRANSPORT->beats_per_bar * 4 * TICKS_PER_QUARTER_BEAT;
+  int frames =
+    AUDIO_ENGINE->frames_per_tick *
+    (position->bars - 1) *
+    TRANSPORT->beats_per_bar *
+    TICKS_PER_BEAT;
   if (position->beats)
-    frames += AUDIO_ENGINE->frames_per_tick * (position->beats - 1) *
-      4 * TICKS_PER_QUARTER_BEAT;
-  if (position->quarter_beats)
-    frames += AUDIO_ENGINE->frames_per_tick * (position->quarter_beats - 1) *
-      TICKS_PER_QUARTER_BEAT;
+    frames +=
+      AUDIO_ENGINE->frames_per_tick *
+      (position->beats - 1) *
+      TICKS_PER_BEAT;
+  if (position->sixteenths)
+    frames +=
+      AUDIO_ENGINE->frames_per_tick *
+      (position->sixteenths - 1) *
+      TICKS_PER_SIXTEENTH_NOTE;
   if (position->ticks)
-    frames += AUDIO_ENGINE->frames_per_tick * position->ticks;
+    frames +=
+      AUDIO_ENGINE->frames_per_tick *
+      position->ticks;
   return frames;
 }
 
@@ -90,7 +101,7 @@ position_set_to_bar (Position * position,
     bar = 1;
   position->bars = bar;
   position->beats = 1;
-  position->quarter_beats = 1;
+  position->sixteenths = 1;
   position->ticks = 0;
   position->frames = position_to_frames (position);
   g_idle_add ((GSourceFunc) position_updated,
@@ -113,7 +124,7 @@ void
 position_set_beat (Position * position,
                   int      beat)
 {
-  while (beat < 1 || beat > 4)
+  while (beat < 1 || beat > TRANSPORT->beats_per_bar)
     {
       if (beat < 1)
         {
@@ -122,13 +133,13 @@ position_set_beat (Position * position,
               beat = 1;
               break;
             }
-          beat += 4;
+          beat += TRANSPORT->beats_per_bar;
           position_set_bar (position,
                             position->bars - 1);
         }
-      else if (beat > 4)
+      else if (beat > TRANSPORT->beats_per_bar)
         {
-          beat -= 4;
+          beat -= TRANSPORT->beats_per_bar;
           position_set_bar (position,
                             position->bars + 1);
         }
@@ -140,30 +151,30 @@ position_set_beat (Position * position,
 }
 
 void
-position_set_quarter_beat (Position * position,
-                  int      quarter_beat)
+position_set_sixteenth (Position * position,
+                        int        sixteenth)
 {
-  while (quarter_beat < 1 || quarter_beat > 4)
+  while (sixteenth < 1 || sixteenth > SIXTEENTHS_PER_BEAT)
     {
-      if (quarter_beat < 1)
+      if (sixteenth < 1)
         {
           if (position->bars == 1 && position->beats == 1)
             {
-              quarter_beat = 1;
+              sixteenth = 1;
               break;
             }
-          quarter_beat += 4;
+          sixteenth += SIXTEENTHS_PER_BEAT;
           position_set_beat (position,
                              position->beats - 1);
         }
-      else if (quarter_beat > 4)
+      else if (sixteenth > SIXTEENTHS_PER_BEAT)
         {
-          quarter_beat -= 4;
+          sixteenth -= SIXTEENTHS_PER_BEAT;
           position_set_beat (position,
                              position->beats + 1);
         }
     }
-  position->quarter_beats = quarter_beat;
+  position->sixteenths = sixteenth;
   position->frames = position_to_frames (position);
   g_idle_add ((GSourceFunc) position_updated,
               position);
@@ -174,25 +185,28 @@ void
 position_set_tick (Position * position,
                   int      tick)
 {
-  while (tick < 0 || tick > TICKS_PER_QUARTER_BEAT - 1)
+  while (tick < 0 || tick > TICKS_PER_SIXTEENTH_NOTE - 1)
     {
       if (tick < 0)
         {
-          if (position->bars == 1 && position->beats == 1 &&
-              position->quarter_beats == 1)
+          if (position->bars == 1 &&
+              position->beats == 1 &&
+              position->sixteenths == 1)
             {
               tick = 0;
               break;
             }
-          tick += TICKS_PER_QUARTER_BEAT;
-          position_set_quarter_beat (position,
-                                     position->quarter_beats - 1);
+          tick += TICKS_PER_SIXTEENTH_NOTE;
+          position_set_sixteenth (
+            position,
+            position->sixteenths - 1);
         }
-      else if (tick > TICKS_PER_QUARTER_BEAT - 1)
+      else if (tick > TICKS_PER_SIXTEENTH_NOTE - 1)
         {
-          tick -= TICKS_PER_QUARTER_BEAT;
-          position_set_quarter_beat (position,
-                                     position->quarter_beats + 1);
+          tick -= TICKS_PER_SIXTEENTH_NOTE;
+          position_set_sixteenth (
+            position,
+            position->sixteenths + 1);
         }
     }
   position->ticks = tick;
@@ -210,7 +224,7 @@ position_set_to_pos (Position * pos,
 {
   position_set_bar (pos, target->bars);
   position_set_beat (pos, target->beats);
-  position_set_quarter_beat (pos, target->quarter_beats);
+  position_set_sixteenth (pos, target->sixteenths);
   position_set_tick (pos, target->ticks);
 }
 
@@ -281,13 +295,13 @@ position_compare (Position * p1,
 {
   if (p1->bars == p2->bars &&
       p1->beats == p2->beats &&
-      p1->quarter_beats == p2->quarter_beats &&
+      p1->sixteenths == p2->sixteenths &&
       p1->ticks == p2->ticks)
     return 0;
   else if ((p1->bars < p2->bars) ||
            (p1->bars == p2->bars && p1->beats < p2->beats) ||
-           (p1->bars == p2->bars && p1->beats == p2->beats && p1->quarter_beats < p2->quarter_beats) ||
-           (p1->bars == p2->bars && p1->beats == p2->beats && p1->quarter_beats == p2->quarter_beats && p1->ticks < p2->ticks))
+           (p1->bars == p2->bars && p1->beats == p2->beats && p1->sixteenths < p2->sixteenths) ||
+           (p1->bars == p2->bars && p1->beats == p2->beats && p1->sixteenths == p2->sixteenths && p1->ticks < p2->ticks))
     return -1;
   else
     return 1;
@@ -302,7 +316,7 @@ position_print (Position * pos)
   g_message ("Pos: %d.%d.%d.%d",
              pos->bars,
              pos->beats,
-             pos->quarter_beats,
+             pos->sixteenths,
              pos->ticks);
 }
 
@@ -331,30 +345,16 @@ get_prev_snap_point (Position * pos, ///< the position
                      SnapGrid * sg, ///< snap grid options
                      Position * prev_snap_point) ///< position to set
 {
-  prev_snap_point->bars = 1;
-  prev_snap_point->beats = 1;
-  prev_snap_point->quarter_beats = 1;
-  prev_snap_point->ticks = 0;
-  if (sg->grid_density == 0) /* 1/1 */
+  for (int i = sg->num_snap_points - 1; i >= 0; i--)
     {
-      prev_snap_point->bars = pos->bars;
-    }
-  else if (sg->grid_density == 1) /* 1/2 */
-    {
-      prev_snap_point->bars = pos->bars;
-      if (pos->beats >= 3)
+      Position * snap_point = &sg->snap_points[i];
+      if (position_compare (snap_point,
+                            pos) <= 0)
         {
-          prev_snap_point->beats = 3;
+          position_set_to_pos (prev_snap_point,
+                               snap_point);
+          return;
         }
-      else
-        {
-          prev_snap_point->beats = 1;
-        }
-    }
-  else if (sg->grid_density == 2) /* 1/4 */
-    {
-      prev_snap_point->bars = pos->bars;
-      prev_snap_point->beats = pos->beats;
     }
 }
 
@@ -363,31 +363,17 @@ get_next_snap_point (Position * pos,
                      SnapGrid *sg,
                      Position * next_snap_point)
 {
-  next_snap_point->bars = 1;
-  next_snap_point->beats = 1;
-  next_snap_point->quarter_beats = 1;
-  next_snap_point->ticks = 0;
-  if (sg->grid_density == 0) /* 1/1 */
+  for (int i = 0; i < sg->num_snap_points; i++)
     {
-      next_snap_point->bars = pos->bars + 1;
-    }
-  else if (sg->grid_density == 1) /* 1/2 */
-    {
-      if (pos->beats >= 3)
+      Position * snap_point = &sg->snap_points[i];
+      position_print (snap_point);
+      if (position_compare (snap_point,
+                            pos) > 0)
         {
-          next_snap_point->bars = pos->bars + 1;
-          next_snap_point->beats = 1;
+          position_set_to_pos (next_snap_point,
+                               snap_point);
+          return;
         }
-      else
-        {
-          next_snap_point->bars = pos->bars;
-          next_snap_point->beats = 3;
-        }
-    }
-  else if (sg->grid_density == 2) /* 1/4 */
-    {
-      position_set_beat (next_snap_point,
-                         pos->beats + 1);
     }
 }
 
@@ -416,7 +402,10 @@ position_set_min_size (Position * start_pos,  ///< start position
                        Position * end_pos, ///< position to set
                        SnapGrid * snap) ///< the snap grid
 {
-  get_next_snap_point (start_pos, snap, end_pos);
+  position_set_to_pos (end_pos, start_pos);
+  position_add_ticks (
+    end_pos,
+    snap_grid_get_note_ticks (snap));
 }
 
 /**
@@ -429,27 +418,29 @@ position_snap (Position * prev_pos, ///< prev pos
                Region   * region, ///< region at new pos (for midi moving)
                SnapGrid * sg) ///< options
 {
-  if (sg->snap_to_grid)
+  /* this should only be called if snap is on.
+   * the check should be done before calling */
+  g_assert (sg->snap);
+
+  switch (sg->snap_type)
     {
-      if (sg->snap_keep_offset && prev_pos)
-        {
-          /* get closest snap point to prev_pos */
+    case SNAP_TYPE_GRID:
+      snap_pos (pos, sg);
+      break;
+    case SNAP_TYPE_GRID_KEEP_OFFSET:
+      g_assert (prev_pos);
+      /* TODO */
+      /* get closest snap point to prev_pos */
 
-          /* get diff from closest snap point */
+      /* get diff from closest snap point */
 
-          /* snap pos*/
+      /* snap pos*/
 
-          /* add diff */
-
-        }
-      else
-        {
-          /* just snap pos */
-          snap_pos (pos, sg);
-        }
-
+      /* add diff */
+      break;
+    case SNAP_TYPE_EDGES:
+      break;
     }
-
 }
 
 /**
@@ -468,13 +459,13 @@ int
 position_to_ticks (Position * pos)
 {
   int ticks = (pos->bars - 1) *
-    TRANSPORT->beats_per_bar * 4 * TICKS_PER_QUARTER_BEAT;
+    TRANSPORT->beats_per_bar * TICKS_PER_BAR;
   if (pos->beats)
     ticks += (pos->beats - 1) *
-      4 * TICKS_PER_QUARTER_BEAT;
-  if (pos->quarter_beats)
-    ticks += (pos->quarter_beats - 1) *
-      TICKS_PER_QUARTER_BEAT;
+      TICKS_PER_BEAT;
+  if (pos->sixteenths)
+    ticks += (pos->sixteenths - 1) *
+      TICKS_PER_SIXTEENTH_NOTE;
   if (pos->ticks)
     ticks += pos->ticks;
   return ticks;

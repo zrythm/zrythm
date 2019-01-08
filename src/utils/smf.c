@@ -65,7 +65,7 @@ smf_save_regions ()
           return;
         }
       ret = smf_set_ppqn (smf,
-                          TICKS_PER_QUARTER_BEAT);
+                          TICKS_PER_QUARTER_NOTE);
       if (ret)
         {
           g_warning ("Setting PPQN failed");

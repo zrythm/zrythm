@@ -22,26 +22,95 @@
 #ifndef __PROJECT_SNAP_GRID_H__
 #define __PROJECT_SNAP_GRID_H__
 
-typedef enum SnapGridType
+#include "audio/position.h"
+
+#define SNAP_GRID_IS_MIDI(sg) \
+  (&ZRYTHM->snap_grid_midi == sg)
+#define SNAP_GRID_IS_TIMELINE(sg) \
+  (&ZRYTHM->snap_grid_timeline == sg)
+
+typedef enum NoteLength
 {
-  SNAP_GRID_TIMELINE,
-  SNAP_GRID_MIDI
-} SnapGridType;
+  NOTE_LENGTH_2_1,
+  NOTE_LENGTH_1_1,
+  NOTE_LENGTH_1_2,
+  NOTE_LENGTH_1_4,
+  NOTE_LENGTH_1_8,
+  NOTE_LENGTH_1_16,
+  NOTE_LENGTH_1_32,
+  NOTE_LENGTH_1_64,
+  NOTE_LENGTH_1_128
+} NoteLength;
+
+typedef enum NoteType
+{
+  NOTE_TYPE_NORMAL,
+  NOTE_TYPE_DOTTED, ///< 2/3 of its original size
+  NOTE_TYPE_TRIPLET ///< 3/2 of its original size
+} NoteType;
+
+typedef enum SnapType
+{
+  SNAP_TYPE_GRID,
+  SNAP_TYPE_GRID_KEEP_OFFSET, ///< keeps note offset from
+                              ///< snap point
+  SNAP_TYPE_EDGES ///< snap to other events (regions)
+} SnapType;
 
 typedef struct SnapGrid
 {
-  int grid_auto; ///< adaptive grid (grid automatically fits current time sig
-                  ///< and zoom level)
-  int grid_density; ///< power of 2 (e.g. if 0 -> 1
-                                    ///< 1 -> 2
-                                    ///< 2 -> 4
-                                    ///< 3 -> 8, etc.
-  int snap_to_grid; ///< snap to grid (either auto or grid density above)
-  int snap_keep_offset; ///< snap to grid (either auto or grid intensity above)
-                        ///< while keeping the offset
-  int snap_to_edges; ///< snap to region edges
-  SnapGridType   type;
+  /**
+   * If this is on, the grid will chose the note length
+   * automatically.
+   *
+   * The note type still applies.
+   */
+  int              grid_auto;
+
+  /**
+   * These two determine the divisions of the grid.
+   */
+  NoteLength       note_length;
+  NoteType         note_type;
+
+  int              snap; ///< snap or not
+
+  SnapType         snap_type;
+
+  /**
+   * Snap points to be used by the grid and by position
+   * to calculate previous/next snap point.
+   */
+  Position         snap_points[1096];
+  int              num_snap_points;
 } SnapGrid;
+
+void
+snap_grid_init (SnapGrid *   self,
+                NoteLength   note_length);
+
+void
+snap_grid_setup (SnapGrid * self);
+
+/**
+ * Sets note length and re-calculates snap points.
+ */
+void
+snap_grid_set_note_length (SnapGrid * self,
+                           NoteLength note_length);
+
+/**
+ * Gets currently selected note length in ticks.
+ */
+int
+snap_grid_get_note_ticks (SnapGrid * self);
+
+/**
+ * Sets note type and re-calculates snap points.
+ */
+void
+snap_grid_set_note_type (SnapGrid *self,
+                         NoteType   note_type);
 
 /**
  * Returns the grid intensity as a human-readable string.

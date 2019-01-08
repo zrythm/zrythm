@@ -37,7 +37,8 @@ right_dock_edge_widget_init (RightDockEdgeWidget * self)
   gtk_notebook_prepend_page (
     self->right_notebook,
     GTK_WIDGET (self->browser),
-    resources_get_icon ("plugins.svg"));
+    resources_get_icon (ICON_TYPE_ZRYTHM,
+                        "plugins.svg"));
   gtk_widget_show_all (GTK_WIDGET (self->right_notebook));
 }
 

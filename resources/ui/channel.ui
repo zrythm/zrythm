@@ -24,7 +24,7 @@
                 <child>
                   <object class="GtkImage">
                     <property name="visible">1</property>
-                    <property name="resource">/org/zrythm/icons/record.svg</property>
+                    <property name="resource">/org/zrythm/icons/zrythm/record.svg</property>
                   </object>
                 </child>
               </object>
@@ -38,7 +38,7 @@
                 <child>
                   <object class="GtkImage">
                     <property name="visible">1</property>
-                    <property name="resource">/org/zrythm/icons/mute.svg</property>
+                    <property name="resource">/org/zrythm/icons/zrythm/mute.svg</property>
                   </object>
                 </child>
               </object>
@@ -55,7 +55,7 @@
                 <child>
                   <object class="GtkImage">
                     <property name="visible">1</property>
-                    <property name="resource">/org/zrythm/icons/solo.svg</property>
+                    <property name="resource">/org/zrythm/icons/zrythm/solo.svg</property>
                   </object>
                 </child>
               </object>
@@ -72,7 +72,7 @@
                 <child>
                   <object class="GtkImage">
                     <property name="visible">1</property>
-                    <property name="resource">/org/zrythm/icons/listen.svg</property>
+                    <property name="resource">/org/zrythm/icons/zrythm/listen.svg</property>
                   </object>
                 </child>
               </object>
@@ -166,7 +166,7 @@
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
-                <property name="resource">/org/zrythm/icons/phase-invert.svg</property>
+                <property name="resource">/org/zrythm/icons/zrythm/phase-invert.svg</property>
               </object>
             </child>
           </object>

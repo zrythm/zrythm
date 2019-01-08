@@ -44,11 +44,11 @@ region_init (Region *   region,
   g_message ("creating region");
   region->start_pos.bars = start_pos->bars;
   region->start_pos.beats = start_pos->beats;
-  region->start_pos.quarter_beats = start_pos->quarter_beats;
+  region->start_pos.sixteenths = start_pos->sixteenths;
   region->start_pos.ticks = start_pos->ticks;
   region->end_pos.bars = end_pos->bars;
   region->end_pos.beats = end_pos->beats;
-  region->end_pos.quarter_beats = end_pos->quarter_beats;
+  region->end_pos.sixteenths = end_pos->sixteenths;
   region->end_pos.ticks = end_pos->ticks;
   region->track = track;
   region->id = PROJECT->num_regions;

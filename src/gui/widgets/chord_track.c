@@ -84,11 +84,14 @@ chord_track_widget_init (ChordTrackWidget * self)
 
   /* create buttons */
   self->record =
-    z_gtk_button_new_with_resource ("record.svg");
+    z_gtk_button_new_with_resource (ICON_TYPE_ZRYTHM,
+                                    "record.svg");
   self->solo =
-    z_gtk_button_new_with_resource ("solo.svg");
+    z_gtk_button_new_with_resource (ICON_TYPE_ZRYTHM,
+                                    "solo.svg");
   self->mute =
-    z_gtk_button_new_with_resource ("mute.svg");
+    z_gtk_button_new_with_resource (ICON_TYPE_ZRYTHM,
+                                    "mute.svg");
 
   /* set buttons to upper controls */
   gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),
@@ -109,6 +112,7 @@ chord_track_widget_init (ChordTrackWidget * self)
 
   /* set icon */
   resources_set_image_icon (tw_prv->icon,
+                            ICON_TYPE_ZRYTHM,
                             "chord.svg");
 }
 

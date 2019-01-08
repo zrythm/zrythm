@@ -634,11 +634,14 @@ timeline_arranger_widget_create_ap (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  position_snap (NULL,
-                 pos,
-                 track,
-                 NULL,
-                 prv->snap_grid);
+  position_print (pos);
+  if (prv->snap_grid->snap)
+    position_snap (NULL,
+                   pos,
+                   track,
+                   NULL,
+                   prv->snap_grid);
+  position_print (pos);
 
   /* if the automatable is float in this automation track */
   if (automatable_is_float (at->automatable))
@@ -670,11 +673,14 @@ timeline_arranger_widget_create_region (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  position_snap (NULL,
-                 pos,
-                 track,
-                 NULL,
-                 prv->snap_grid);
+  if (prv->snap_grid->snap)
+    {
+      position_snap (NULL,
+                     pos,
+                     track,
+                     NULL,
+                     prv->snap_grid);
+    }
   Region * region;
   if (track->type == TRACK_TYPE_INSTRUMENT)
     {
@@ -714,11 +720,12 @@ timeline_arranger_widget_create_chord (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  position_snap (NULL,
-                 pos,
-                 track,
-                 NULL,
-                 prv->snap_grid);
+  if (prv->snap_grid->snap)
+    position_snap (NULL,
+                   pos,
+                   track,
+                   NULL,
+                   prv->snap_grid);
  Chord * chord = chord_new (NOTE_A,
                             1,
                             NOTE_A,
@@ -806,11 +813,12 @@ timeline_arranger_widget_snap_regions_l (
   for (int i = 0; i < self->num_regions; i++)
     {
       Region * region = self->regions[i];
-      position_snap (NULL,
-                     pos,
-                     region->track,
-                     NULL,
-                     prv->snap_grid);
+      if (prv->snap_grid->snap)
+        position_snap (NULL,
+                       pos,
+                       region->track,
+                       NULL,
+                       prv->snap_grid);
       region_set_start_pos (region,
                             pos,
                             0);
@@ -826,11 +834,12 @@ timeline_arranger_widget_snap_regions_r (
   for (int i = 0; i < self->num_regions; i++)
     {
       Region * region = self->regions[i];
-      position_snap (NULL,
-                     pos,
-                     region->track,
-                     NULL,
-                     prv->snap_grid);
+      if (prv->snap_grid->snap)
+        position_snap (NULL,
+                       pos,
+                       region->track,
+                       NULL,
+                       prv->snap_grid);
       if (position_compare (pos, &region->start_pos) > 0)
         {
           region_set_end_pos (region,

@@ -78,7 +78,7 @@ struct _ZrythmApp
   char                * zrythm_dir;
   char                * projects_dir;
   char                * recent_projects_file;
-  char                * recent_projects[3000];
+  char                * recent_projects[1000];
   int                 num_recent_projects;
 
   /**

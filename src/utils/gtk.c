@@ -89,10 +89,12 @@ z_gtk_button_new_with_icon (const char * name)
  * Creates a button with the given resource name as icon.
  */
 GtkButton *
-z_gtk_button_new_with_resource (const char * name)
+z_gtk_button_new_with_resource (IconType  icon_type,
+                                const char * name)
 {
   GtkButton * btn = GTK_BUTTON (gtk_button_new ());
   resources_add_icon_to_button (btn,
+                                icon_type,
                                 name);
   gtk_widget_set_visible (GTK_WIDGET (btn),
                           1);

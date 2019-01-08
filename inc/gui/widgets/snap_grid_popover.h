@@ -26,33 +26,29 @@
 #include <gtk/gtk.h>
 
 #define SNAP_GRID_POPOVER_WIDGET_TYPE                  (snap_grid_popover_widget_get_type ())
-#define SNAP_GRID_POPOVER_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), SNAP_GRID_POPOVER_WIDGET_TYPE, SnapGridPopoverWidget))
-#define SNAP_GRID_POPOVER_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), SNAP_GRID_POPOVER_WIDGET, SnapGridPopoverWidgetClass))
+G_DECLARE_FINAL_TYPE (SnapGridPopoverWidget,
+                      snap_grid_popover_widget,
+                      SNAP_GRID_POPOVER,
+                      WIDGET,
+                      GtkPopover)
 #define IS_SNAP_GRID_POPOVER_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SNAP_GRID_POPOVER_WIDGET_TYPE))
-#define IS_SNAP_GRID_POPOVER_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), SNAP_GRID_POPOVER_WIDGET_TYPE))
-#define SNAP_GRID_POPOVER_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), SNAP_GRID_POPOVER_WIDGET_TYPE, SnapGridPopoverWidgetClass))
 
 typedef struct _DigitalMeterWidget DigitalMeterWidget;
 typedef struct _SnapGridWidget SnapGridWidget;
 
-typedef struct SnapGridPopoverWidget
+typedef struct _SnapGridPopoverWidget
 {
   GtkPopover              parent_instance;
   SnapGridWidget          * owner; ///< the owner
   GtkCheckButton          * grid_adaptive;
-  GtkBox *                density_box;
-  DigitalMeterWidget      * dm_density; ///< digital meter for density
+  GtkBox *                note_length_box;
+  DigitalMeterWidget      * dm_note_length; ///< digital meter for density
+  GtkBox *                note_type_box;
+  DigitalMeterWidget      * dm_note_type; ///< digital meter for note type
   GtkCheckButton *        snap_grid;
   GtkCheckButton *        snap_offset;
   GtkCheckButton *        snap_events;
 } SnapGridPopoverWidget;
-
-typedef struct SnapGridPopoverWidgetClass
-{
-  GtkPopoverClass       parent_class;
-} SnapGridPopoverWidgetClass;
-
-typedef struct SnapGridPopover SnapGridPopover;
 
 /**
  * Creates the popover.
@@ -61,4 +57,3 @@ SnapGridPopoverWidget *
 snap_grid_popover_widget_new (SnapGridWidget * owner);
 
 #endif
-

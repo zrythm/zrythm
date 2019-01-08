@@ -457,29 +457,44 @@ static void
 write_position (xmlTextWriterPtr writer, Position * pos, char * name)
 {
   int rc;
-  rc = xmlTextWriterStartElement (writer, BAD_CAST "Position");
-  rc = xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "id",
-                                         "%s", name);
-  rc = xmlTextWriterWriteFormatAttribute (writer,
-                                        BAD_CAST "bars",
-                                        "%d",
-                                        pos->bars);
-  rc = xmlTextWriterWriteFormatAttribute (writer,
-                                        BAD_CAST "beats",
-                                        "%d",
-                                        pos->beats);
-  rc = xmlTextWriterWriteFormatAttribute (writer,
-                                        BAD_CAST "quarter_beats",
-                                        "%d",
-                                        pos->quarter_beats);
-  rc = xmlTextWriterWriteFormatAttribute (writer,
-                                        BAD_CAST "ticks",
-                                        "%d",
-                                        pos->ticks);
-  rc = xmlTextWriterWriteFormatAttribute (writer,
-                                        BAD_CAST "frames",
-                                        "%d",
-                                        pos->frames);
+  rc =
+    xmlTextWriterStartElement (
+      writer,
+      BAD_CAST "Position");
+  rc =
+    xmlTextWriterWriteFormatAttribute(
+      writer, BAD_CAST "id",
+      "%s", name);
+  rc =
+    xmlTextWriterWriteFormatAttribute (
+      writer,
+      BAD_CAST "bars",
+      "%d",
+      pos->bars);
+  rc =
+    xmlTextWriterWriteFormatAttribute (
+      writer,
+      BAD_CAST "beats",
+      "%d",
+      pos->beats);
+  rc =
+    xmlTextWriterWriteFormatAttribute (
+      writer,
+      BAD_CAST "sixteenths",
+      "%d",
+      pos->sixteenths);
+  rc =
+    xmlTextWriterWriteFormatAttribute (
+      writer,
+      BAD_CAST "ticks",
+      "%d",
+      pos->ticks);
+  rc =
+    xmlTextWriterWriteFormatAttribute (
+      writer,
+      BAD_CAST "frames",
+      "%d",
+      pos->frames);
 
   rc = xmlTextWriterEndElement(writer);
 
@@ -1131,8 +1146,8 @@ xml_load_regions ()
                                                            "beats");
                         region->start_pos.beats = TO_INT (attr);
                         attr =  GET_ATTRIBUTE(
-                                                           "quarter_beats");
-                        region->start_pos.quarter_beats = TO_INT (attr);
+                                                           "sixteenths");
+                        region->start_pos.sixteenths = TO_INT (attr);
                         attr =  GET_ATTRIBUTE(
                                                            "ticks");
                         region->start_pos.ticks = TO_INT (attr);
@@ -1149,8 +1164,8 @@ xml_load_regions ()
                                                            "beats");
                         region->end_pos.beats = TO_INT (attr);
                         attr =  GET_ATTRIBUTE(
-                                                           "quarter_beats");
-                        region->end_pos.quarter_beats = TO_INT (attr);
+                                                           "sixteenths");
+                        region->end_pos.sixteenths = TO_INT (attr);
                         attr =  GET_ATTRIBUTE(
                                                            "ticks");
                         region->end_pos.ticks = TO_INT (attr);
@@ -1246,8 +1261,8 @@ xml_load_project ()
                         TRANSPORT->playhead_pos.bars = TO_INT (attr);
                         attr =  GET_ATTRIBUTE ("beats");
                         TRANSPORT->playhead_pos.beats = TO_INT (attr);
-                        attr =  GET_ATTRIBUTE ("quarter_beats");
-                        TRANSPORT->playhead_pos.quarter_beats = TO_INT (attr);
+                        attr =  GET_ATTRIBUTE ("sixteenths");
+                        TRANSPORT->playhead_pos.sixteenths = TO_INT (attr);
                         attr =  GET_ATTRIBUTE ("ticks");
                         TRANSPORT->playhead_pos.ticks = TO_INT (attr);
                         attr =  GET_ATTRIBUTE ("frames");
@@ -1259,8 +1274,8 @@ xml_load_project ()
                         TRANSPORT->cue_pos.bars = TO_INT (attr);
                         attr =  GET_ATTRIBUTE ("beats");
                         TRANSPORT->cue_pos.beats = TO_INT (attr);
-                        attr =  GET_ATTRIBUTE ("quarter_beats");
-                        TRANSPORT->cue_pos.quarter_beats = TO_INT (attr);
+                        attr =  GET_ATTRIBUTE ("sixteenths");
+                        TRANSPORT->cue_pos.sixteenths = TO_INT (attr);
                         attr =  GET_ATTRIBUTE ("ticks");
                         TRANSPORT->cue_pos.ticks = TO_INT (attr);
                         attr =  GET_ATTRIBUTE ("frames");
@@ -1272,8 +1287,8 @@ xml_load_project ()
                         TRANSPORT->loop_start_pos.bars = TO_INT (attr);
                         attr =  GET_ATTRIBUTE ("beats");
                         TRANSPORT->loop_start_pos.beats = TO_INT (attr);
-                        attr =  GET_ATTRIBUTE ("quarter_beats");
-                        TRANSPORT->loop_start_pos.quarter_beats = TO_INT (attr);
+                        attr =  GET_ATTRIBUTE ("sixteenths");
+                        TRANSPORT->loop_start_pos.sixteenths = TO_INT (attr);
                         attr =  GET_ATTRIBUTE ("ticks");
                         TRANSPORT->loop_start_pos.ticks = TO_INT (attr);
                         attr =  GET_ATTRIBUTE ("frames");
@@ -1285,8 +1300,8 @@ xml_load_project ()
                         TRANSPORT->loop_end_pos.bars = TO_INT (attr);
                         attr =  GET_ATTRIBUTE ("beats");
                         TRANSPORT->loop_end_pos.beats = TO_INT (attr);
-                        attr =  GET_ATTRIBUTE ("quarter_beats");
-                        TRANSPORT->loop_end_pos.quarter_beats = TO_INT (attr);
+                        attr =  GET_ATTRIBUTE ("sixteenths");
+                        TRANSPORT->loop_end_pos.sixteenths = TO_INT (attr);
                         attr =  GET_ATTRIBUTE ("ticks");
                         TRANSPORT->loop_end_pos.ticks = TO_INT (attr);
                         attr =  GET_ATTRIBUTE ("frames");
@@ -1298,8 +1313,8 @@ xml_load_project ()
                         TRANSPORT->start_marker_pos.bars = TO_INT (attr);
                         attr =  GET_ATTRIBUTE ("beats");
                         TRANSPORT->start_marker_pos.beats = TO_INT (attr);
-                        attr =  GET_ATTRIBUTE ("quarter_beats");
-                        TRANSPORT->start_marker_pos.quarter_beats = TO_INT (attr);
+                        attr =  GET_ATTRIBUTE ("sixteenths");
+                        TRANSPORT->start_marker_pos.sixteenths = TO_INT (attr);
                         attr =  GET_ATTRIBUTE ("ticks");
                         TRANSPORT->start_marker_pos.ticks = TO_INT (attr);
                         attr =  GET_ATTRIBUTE ("frames");
@@ -1311,8 +1326,8 @@ xml_load_project ()
                         TRANSPORT->end_marker_pos.bars = TO_INT (attr);
                         attr =  GET_ATTRIBUTE ("beats");
                         TRANSPORT->end_marker_pos.beats = TO_INT (attr);
-                        attr =  GET_ATTRIBUTE ("quarter_beats");
-                        TRANSPORT->end_marker_pos.quarter_beats = TO_INT (attr);
+                        attr =  GET_ATTRIBUTE ("sixteenths");
+                        TRANSPORT->end_marker_pos.sixteenths = TO_INT (attr);
                         attr =  GET_ATTRIBUTE ("ticks");
                         TRANSPORT->end_marker_pos.ticks = TO_INT (attr);
                         attr =  GET_ATTRIBUTE ("frames");

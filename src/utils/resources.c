@@ -21,13 +21,32 @@
 
 #include "utils/resources.h"
 
-GtkWidget *
-resources_get_icon (const char * filename) ///< the path after .../icons/
+/**
+ * Note: MUST be free'd
+ */
+static char *
+get_icon_type_str (IconType icon_type)
 {
-  char * path = g_strdup_printf ("%s%s%s",
+  switch (icon_type)
+    {
+    case ICON_TYPE_ZRYTHM:
+      return g_strdup ("zrythm");
+    case ICON_TYPE_GNOME_BUILDER:
+      return g_strdup_printf ("gnome-builder");
+    }
+}
+
+GtkWidget *
+resources_get_icon (IconType     icon_type,
+                    const char * filename)
+{
+  char * icon_dir = get_icon_type_str (icon_type);
+  char * path = g_strdup_printf ("%s%s%s/%s",
                    RESOURCE_PATH,
                    ICON_PATH,
+                   icon_dir,
                    filename);
+  g_free (icon_dir);
   GtkWidget * icon = gtk_image_new_from_resource (path);
   gtk_widget_set_visible (icon, 1);
   g_free (path);
@@ -35,13 +54,17 @@ resources_get_icon (const char * filename) ///< the path after .../icons/
 }
 
 void
-resources_set_image_icon (GtkImage * img,
+resources_set_image_icon (GtkImage *   img,
+                          IconType     icon_type,
                           const char * filename)
 {
-  char * path = g_strdup_printf ("%s%s%s",
+  char * icon_dir = get_icon_type_str (icon_type);
+  char * path = g_strdup_printf ("%s%s%s/%s",
                    RESOURCE_PATH,
                    ICON_PATH,
+                   icon_dir,
                    filename);
+  g_free (icon_dir);
   gtk_image_set_from_resource (img, path);
   g_free (path);
 }
@@ -66,10 +89,12 @@ resources_set_class_template (GtkWidgetClass * klass,
 }
 
 void
-resources_add_icon_to_button (GtkButton * btn,
+resources_add_icon_to_button (GtkButton *  btn,
+                              IconType     icon_type,
                               const char * path)
 {
-  GtkWidget * icon = resources_get_icon (path);
+  GtkWidget * icon = resources_get_icon (icon_type,
+                                         path);
   gtk_container_add (GTK_CONTAINER (btn),
                      icon);
 }

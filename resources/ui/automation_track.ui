@@ -23,7 +23,7 @@
         <child>
           <object class="GtkImage">
             <property name="visible">1</property>
-            <property name="resource">/org/zrythm/icons/mute.svg</property>
+            <property name="resource">/org/zrythm/icons/zrythm/mute.svg</property>
           </object>
         </child>
       </object>
