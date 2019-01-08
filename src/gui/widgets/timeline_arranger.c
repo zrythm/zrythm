@@ -637,29 +637,31 @@ timeline_arranger_widget_create_ap (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  position_print (pos);
   if (SNAP_GRID_ANY_SNAP (prv->snap_grid))
     position_snap (NULL,
                    pos,
                    track,
                    NULL,
                    prv->snap_grid);
-  position_print (pos);
 
   /* if the automatable is float in this automation track */
   if (automatable_is_float (at->automatable))
     {
       /* add automation point to automation track */
-      float value = automation_track_widget_get_fvalue_at_y (
-                                      at->widget,
-                                      start_y);
+      float value =
+        automation_track_widget_get_fvalue_at_y (
+          at->widget,
+          start_y);
 
-      AutomationPoint * ap = automation_point_new_float (at,
-                                             value,
-                                             pos);
-      automation_track_add_automation_point (at,
-                                             ap,
-                                             GENERATE_CURVE_POINTS);
+      AutomationPoint * ap =
+        automation_point_new_float (
+          at,
+          value,
+          pos);
+      automation_track_add_automation_point (
+        at,
+        ap,
+        GENERATE_CURVE_POINTS);
       gtk_overlay_add_overlay (GTK_OVERLAY (self),
                                GTK_WIDGET (ap->widget));
       gtk_widget_show (GTK_WIDGET (ap->widget));

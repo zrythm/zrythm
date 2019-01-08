@@ -458,8 +458,7 @@ position_from_seconds (Position * position, double secs)
 int
 position_to_ticks (Position * pos)
 {
-  int ticks = (pos->bars - 1) *
-    TRANSPORT->beats_per_bar * TICKS_PER_BAR;
+  int ticks = (pos->bars - 1) * TICKS_PER_BAR;
   if (pos->beats)
     ticks += (pos->beats - 1) *
       TICKS_PER_BEAT;
@@ -479,8 +478,10 @@ position_get_midway_pos (Position * start_pos,
                          Position * end_pos,
                          Position * pos) ///< position to set to
 {
-  int ticks_diff = position_to_ticks (end_pos) -
-    position_to_ticks (start_pos);
+  int end_ticks, start_ticks, ticks_diff;
+  start_ticks = position_to_ticks (start_pos);
+  end_ticks = position_to_ticks (end_pos);
+  ticks_diff = end_ticks - start_ticks;
   position_set_to_pos (pos, start_pos);
   position_set_tick (pos, ticks_diff / 2);
 }
