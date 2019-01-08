@@ -26,6 +26,7 @@
 #include "project.h"
 #include "settings.h"
 #include "audio/position.h"
+#include "audio/snap_grid.h"
 #include "audio/transport.h"
 #include "gui/widgets/digital_meter.h"
 
@@ -424,7 +425,11 @@ drag_end (GtkGestureDrag *gesture,
   self->update_beats = 0;
   self->update_sixteenths = 0;
   self->update_ticks = 0;
+  if (self->update_note_length ||
+      self->update_note_type)
+    snap_grid_setup (self->snap_grid);
   self->update_note_length = 0;
+  self->update_note_type = 0;
 }
 
 static gboolean

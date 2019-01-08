@@ -655,17 +655,6 @@ header_bar_widget_init (HeaderBarWidget * self)
 
   /* make widget able to notify */
   gtk_widget_add_events (GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
-
-  /* set button icons */
-  GtkWidget * image = gtk_image_new_from_resource (
-          "/org/zrythm/icons/close.svg");
-  gtk_button_set_image (self->close, image);
-  image = gtk_image_new_from_resource (
-          "/org/zrythm/icons/minimize.svg");
-  gtk_button_set_image (self->minimize, image);
-  image = gtk_image_new_from_resource (
-          "/org/zrythm/icons/maximize.svg");
-  gtk_button_set_image (self->maximize, image);
 }
 
 static void

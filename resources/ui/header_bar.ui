@@ -103,6 +103,12 @@
             <property name="can_focus">False</property>
             <property name="receives_default">False</property>
             <property name="relief">none</property>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">1</property>
+                <property name="resource">/org/zrythm/icons/zrythm/minimize.svg</property>
+              </object>
+            </child>
             <signal name="clicked" handler="minimize_clicked" object="HeaderBarWidget" swapped="no"/>
           </object>
           <packing>
@@ -117,6 +123,12 @@
             <property name="can_focus">False</property>
             <property name="receives_default">False</property>
             <property name="relief">none</property>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">1</property>
+                <property name="resource">/org/zrythm/icons/zrythm/maximize.svg</property>
+              </object>
+            </child>
             <signal name="clicked" handler="maximize_clicked" object="HeaderBarWidget" swapped="no"/>
           </object>
           <packing>
@@ -131,6 +143,12 @@
             <property name="can_focus">False</property>
             <property name="receives_default">False</property>
             <property name="relief">none</property>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">1</property>
+                <property name="resource">/org/zrythm/icons/zrythm/close.svg</property>
+              </object>
+            </child>
             <signal name="clicked" handler="close_clicked" object="HeaderBarWidget" swapped="no"/>
           </object>
           <packing>

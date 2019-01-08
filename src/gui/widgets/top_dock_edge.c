@@ -33,7 +33,7 @@ static void
 on_snap_to_grid_toggled (GtkToggleButton * toggle,
                          gpointer          user_data)
 {
-  ZRYTHM->snap_grid_timeline.snap_to_grid =
+  ZRYTHM->snap_grid_timeline->snap_to_grid =
     gtk_toggle_button_get_active (toggle);
 }
 
@@ -42,7 +42,7 @@ on_snap_to_grid_keep_offset_toggled (
   GtkToggleButton * toggle,
   gpointer          user_data)
 {
-  ZRYTHM->snap_grid_timeline.snap_to_grid_keep_offset =
+  ZRYTHM->snap_grid_timeline->snap_to_grid_keep_offset =
     gtk_toggle_button_get_active (toggle);
 }
 
@@ -50,7 +50,7 @@ static void
 on_snap_to_events_toggled (GtkToggleButton * toggle,
                          gpointer          user_data)
 {
-  ZRYTHM->snap_grid_timeline.snap_to_events =
+  ZRYTHM->snap_grid_timeline->snap_to_events =
     gtk_toggle_button_get_active (toggle);
 }
 
@@ -62,17 +62,17 @@ top_dock_edge_widget_init (TopDockEdgeWidget * self)
   /* setup top toolbar */
   snap_grid_widget_setup (
     self->snap_grid_timeline,
-    &ZRYTHM->snap_grid_timeline);
+    ZRYTHM->snap_grid_timeline);
 
   gtk_toggle_button_set_active (
     self->snap_to_grid,
-    ZRYTHM->snap_grid_timeline.snap_to_grid);
+    ZRYTHM->snap_grid_timeline->snap_to_grid);
   gtk_toggle_button_set_active (
     self->snap_to_grid_keep_offset,
-    ZRYTHM->snap_grid_timeline.snap_to_grid_keep_offset);
+    ZRYTHM->snap_grid_timeline->snap_to_grid_keep_offset);
   gtk_toggle_button_set_active (
     self->snap_to_events,
-    ZRYTHM->snap_grid_timeline.snap_to_events);
+    ZRYTHM->snap_grid_timeline->snap_to_events);
 }
 
 static void

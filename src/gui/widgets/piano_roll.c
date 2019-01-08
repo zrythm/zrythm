@@ -171,7 +171,7 @@ piano_roll_widget_setup (PianoRollWidget * self)
     {
       arranger_widget_setup (
         ARRANGER_WIDGET (self->arranger),
-        &ZRYTHM->snap_grid_midi,
+        ZRYTHM->snap_grid_midi,
         ARRANGER_TYPE_MIDI);
       gtk_widget_show_all (
         GTK_WIDGET (self->arranger));

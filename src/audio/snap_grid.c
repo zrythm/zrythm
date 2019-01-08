@@ -165,13 +165,18 @@ update_snap_points (SnapGrid * self)
   Position tmp, end_pos;
   position_init (&tmp);
   position_set_to_bar (&end_pos,
-                       TRANSPORT->total_bars);
+                       TRANSPORT->total_bars + 1);
+  self->num_snap_points = 0;
+  position_set_to_pos (
+    &self->snap_points[self->num_snap_points++],
+    &tmp);
   while (position_compare (&tmp, &end_pos)
            < 0)
     {
       position_add_ticks (
         &tmp,
         snap_grid_get_note_ticks (self));
+      position_print (&tmp);
       /*switch (self->note_length)*/
         /*{*/
         /*case NOTE_LENGTH_2_1:*/
@@ -361,15 +366,18 @@ update_snap_points (SnapGrid * self)
     }
 }
 
-void
-snap_grid_init (SnapGrid *   self,
-                NoteLength   note_length)
+SnapGrid *
+snap_grid_new (NoteLength   note_length)
 {
+  SnapGrid * self = calloc (1, sizeof (SnapGrid));
+
   self->grid_auto = 1;
   self->note_length = note_length;
   self->num_snap_points = 0;
   self->note_type = NOTE_TYPE_NORMAL;
   self->snap_to_grid = 1;
+
+  return self;
 }
 
 void

@@ -329,6 +329,9 @@ closest_snap_point (Position * pos, ///< position
                     Position * p2) ///< snap point 2
 {
   int frames = position_to_frames (pos);
+  int p1_frames = position_to_frames (p1);
+  int p2_frames = position_to_frames (p2);
+  g_message ("frames %d %d %d", frames, p1_frames, p2_frames);
   if (frames - position_to_frames (p1) <=
       position_to_frames (p2) - frames)
     {
@@ -366,6 +369,7 @@ get_next_snap_point (Position * pos,
   for (int i = 0; i < sg->num_snap_points; i++)
     {
       Position * snap_point = &sg->snap_points[i];
+      g_message ("snap point");
       position_print (snap_point);
       if (position_compare (snap_point,
                             pos) > 0)
@@ -385,6 +389,10 @@ snap_pos (Position * pos,
   get_prev_snap_point (pos, sg, &prev_snap_point);
   Position next_snap_point;
   get_next_snap_point (pos, sg, &next_snap_point);
+  g_message ("prev n next");
+  position_print (pos);
+  position_print (&prev_snap_point);
+  position_print (&next_snap_point);
   Position * csp = closest_snap_point (pos,
                                        &prev_snap_point,
                                        &next_snap_point);

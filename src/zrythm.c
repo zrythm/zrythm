@@ -160,18 +160,18 @@ task_func (GTask *task,
       break;
     case TASK_INIT_PLUGIN_MANAGER:
       ZRYTHM->plugin_manager = plugin_manager_new ();
-      snap_grid_init (&ZRYTHM->snap_grid_timeline,
-                      NOTE_LENGTH_1_1);
-      snap_grid_init (&ZRYTHM->snap_grid_midi,
-                      NOTE_LENGTH_1_8);
+      ZRYTHM->snap_grid_timeline =
+        snap_grid_new (NOTE_LENGTH_1_1);
+      ZRYTHM->snap_grid_midi =
+        snap_grid_new (NOTE_LENGTH_1_8);
       data->message =
         "Setting up backend";
       data->progress = 0.7;
       break;
     case TASK_END:
       engine_setup (AUDIO_ENGINE);
-      snap_grid_setup (&ZRYTHM->snap_grid_timeline);
-      snap_grid_setup (&ZRYTHM->snap_grid_midi);
+      snap_grid_setup (ZRYTHM->snap_grid_timeline);
+      snap_grid_setup (ZRYTHM->snap_grid_midi);
       plugin_manager_setup (PLUGIN_MANAGER);
       data->message =
         "Loading project";

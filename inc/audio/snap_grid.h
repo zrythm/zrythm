@@ -77,13 +77,12 @@ typedef struct SnapGrid
    * Snap points to be used by the grid and by position
    * to calculate previous/next snap point.
    */
-  Position         snap_points[1096];
+  Position         snap_points[12096];
   int              num_snap_points;
 } SnapGrid;
 
-void
-snap_grid_init (SnapGrid *   self,
-                NoteLength   note_length);
+SnapGrid *
+snap_grid_new (NoteLength   note_length);
 
 void
 snap_grid_setup (SnapGrid * self);

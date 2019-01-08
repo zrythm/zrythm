@@ -72,8 +72,8 @@ struct _ZrythmApp
 
   Tracklist *         tracklist;
 
-  SnapGrid          snap_grid_timeline; ///< snap/grid info for timeline
-  SnapGrid          snap_grid_midi; ///< snap/grid info for midi editor
+  SnapGrid *          snap_grid_timeline; ///< snap/grid info for timeline
+  SnapGrid *         snap_grid_midi; ///< snap/grid info for midi editor
 
   char                * zrythm_dir;
   char                * projects_dir;
