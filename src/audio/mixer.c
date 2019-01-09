@@ -32,11 +32,14 @@
 #include "audio/mixer.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "utils/arrays.h"
+#include "utils/ui.h"
 
 #include <gtk/gtk.h>
 
@@ -173,3 +176,55 @@ mixer_remove_channel (Mixer * self,
   channel_free (channel);
 }
 
+void
+mixer_add_channel_from_plugin_descr (
+  Mixer * mixer,
+  Plugin_Descriptor * descr)
+{
+  Plugin * plugin = plugin_create_from_descr (descr);
+
+  if (plugin_instantiate (plugin) < 0)
+    {
+      char * message =
+        g_strdup_printf (
+          "Error instantiating plugin “%s”. Please see log for details.",
+          plugin->descr->name);
+
+      if (MAIN_WINDOW)
+        ui_show_error_message (
+          GTK_WINDOW (MAIN_WINDOW),
+          message);
+      g_free (message);
+      plugin_free (plugin);
+      return;
+    }
+
+  Channel * new_channel =
+    channel_create (CT_MIDI,
+                    descr->name);
+  mixer_add_channel (MIXER,
+                     new_channel);
+  tracklist_append_track (TRACKLIST,
+                          new_channel->track);
+  channel_add_plugin (new_channel,
+                      0,
+                      plugin);
+
+  if (MW_MIXER)
+    mixer_widget_refresh (MW_MIXER);
+  if (MW_TRACKLIST)
+    tracklist_widget_refresh (MW_TRACKLIST);
+}
+
+Channel *
+mixer_get_channel_by_name (Mixer * self,
+                           char *  name)
+{
+  for (int i = 0; i < self->num_channels; i++)
+    {
+      Channel * chan = self->channels[i];
+      if (g_strcmp0 (chan->name, name) == 0)
+        return chan;
+    }
+  return NULL;
+}

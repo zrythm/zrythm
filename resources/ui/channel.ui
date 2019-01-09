@@ -6,7 +6,7 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="margin_top">2</property>
-    <property name="margin_bottom">2</property>
+    <property name="margin_bottom">6</property>
     <child>
       <object class="GtkBox" id="fader_area">
         <property name="visible">True</property>

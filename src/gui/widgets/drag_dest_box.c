@@ -42,8 +42,6 @@ G_DEFINE_TYPE (DragDestBoxWidget,
                drag_dest_box_widget,
                GTK_TYPE_BOX)
 
-static int counter = 0;
-
 static void
 on_drag_data_received (GtkWidget        *widget,
                GdkDragContext   *context,
@@ -58,34 +56,10 @@ on_drag_data_received (GtkWidget        *widget,
   if (self->type == DRAG_DEST_BOX_TYPE_MIXER ||
       self->type == DRAG_DEST_BOX_TYPE_TRACKLIST)
     {
-      Plugin_Descriptor * descr = *(gpointer *) gtk_selection_data_get_data (data);
-      Plugin * plugin = plugin_create_from_descr (descr);
-
-      if (plugin_instantiate (plugin) < 0)
-        {
-          char * message = g_strdup_printf ("Error instantiating plugin “%s”. Please see log for details.",
-                                            plugin->descr->name);
-
-          ui_show_error_message (GTK_WINDOW (MAIN_WINDOW), message);
-          g_free (message);
-          plugin_free (plugin);
-          return;
-        }
-
-      Channel * new_channel = channel_create (CT_MIDI,
-                                              g_strdup_printf ("%s %d",
-                                                               descr->name,
-                                                               counter++));
-      mixer_add_channel (MIXER,
-                         new_channel);
-      tracklist_append_track (TRACKLIST,
-                              new_channel->track);
-      channel_add_plugin (new_channel,
-                          0,
-                          plugin);
-
-      mixer_widget_refresh (MW_MIXER);
-      tracklist_widget_refresh (MW_TRACKLIST);
+      Plugin_Descriptor * descr =
+        *(gpointer *) gtk_selection_data_get_data (data);
+      mixer_add_channel_from_plugin_descr (MIXER,
+                                           descr);
     }
 }
 

@@ -21,6 +21,7 @@
 
 #include "settings.h"
 #include "zrythm.h"
+#include "audio/mixer.h"
 #include "gui/widgets/browser.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
@@ -34,6 +35,31 @@
 G_DEFINE_TYPE (BrowserWidget,
                browser_widget,
                GTK_TYPE_PANED)
+
+static void
+on_row_activated (GtkTreeView       *tree_view,
+               GtkTreePath       *tp,
+               GtkTreeViewColumn *column,
+               gpointer           user_data)
+{
+  GtkTreeModel * model = GTK_TREE_MODEL (user_data);
+  GtkTreeIter iter;
+  gtk_tree_model_get_iter (
+    model,
+    &iter,
+    tp);
+  GValue value = G_VALUE_INIT;
+  gtk_tree_model_get_value (
+    model,
+    &iter,
+    1,
+    &value);
+  Plugin_Descriptor * descr =
+    g_value_get_pointer (&value);
+  mixer_add_channel_from_plugin_descr (
+    MIXER,
+    descr);
+}
 
 /**
  * Visible function for plugin tree model.
@@ -422,6 +448,10 @@ browser_widget_new ()
         self->plugins_tree_model),
       0,
       1));
+  g_signal_connect (G_OBJECT (self->plugins_tree_view),
+                    "row-activated",
+                    G_CALLBACK (on_row_activated),
+                    self->plugins_tree_model);
   GtkWidget * plugin_scroll_window =
     add_scroll_window (self->plugins_tree_view);
   gtk_box_pack_start (GTK_BOX (self->browser_bot),
