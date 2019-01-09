@@ -27,25 +27,13 @@ add the public key
 ```
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 1D597D35
 ```
-add appropriate repository
+add the appropriate repository
 ```
-# for Ubuntu 14.04 LTS/Linux Mint 17
-# note: not currently supported
-sudo apt-add-repository "deb https://apt.alextee.org/ubuntu trusty main"
-
-# for Ubuntu 16.04 LTS/Linux Mint 18
-# note: not currently supported
-sudo apt-add-repository "deb https://apt.alextee.org/ubuntu xenial main"
-
 # for Ubuntu 18.04 LTS/Linux Mint 19
 sudo apt-add-repository "deb https://apt.alextee.org/ubuntu bionic main"
 
 # for Ubuntu 18.10
 sudo apt-add-repository "deb https://apt.alextee.org/ubuntu cosmic main"
-
-# for Debian Stretch/Devuan ASCII
-# note: not currently supported
-sudo apt-add-repository "deb https://apt.alextee.org/debian stretch main"
 
 # for Debian Buster/Devuan Beowulf
 sudo apt-add-repository "deb https://apt.alextee.org/debian buster main"
