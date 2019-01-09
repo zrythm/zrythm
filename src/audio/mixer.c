@@ -38,6 +38,7 @@
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
+#include "plugins/plugin_manager.h"
 #include "utils/arrays.h"
 #include "utils/ui.h"
 
@@ -199,8 +200,14 @@ mixer_add_channel_from_plugin_descr (
       return;
     }
 
+  ChannelType ct;
+  if (IS_LV2_PLUGIN_CATEGORY (plugin,
+                              LV2_INSTRUMENT_PLUGIN))
+    ct = CT_MIDI;
+  else
+    ct = CT_BUS;
   Channel * new_channel =
-    channel_create (CT_MIDI,
+    channel_create (ct,
                     descr->name);
   mixer_add_channel (MIXER,
                      new_channel);

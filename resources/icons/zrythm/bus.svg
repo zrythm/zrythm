@@ -227,14 +227,14 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="31.678384"
-     inkscape:cx="3.5498928"
+     inkscape:cx="-1.3746008"
      inkscape:cy="3.3817768"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="true"
      units="px"
      inkscape:window-width="1920"
-     inkscape:window-height="1135"
+     inkscape:window-height="1015"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -266,38 +266,34 @@
        d="m -1.9109945,293.347 v 0.47697 c 0.4359062,0.16393 0.7544769,0.60702 0.7544759,1.14722 1.3e-6,0.68348 -0.5071153,1.21904 -1.1208618,1.21904 -0.6137465,0 -1.12293,-0.53556 -1.1229288,-1.21904 -10e-7,-0.53945 0.3189972,-0.9817 0.7544759,-1.14619 v -0.47749 c -0.6956077,0.17773 -1.2076796,0.84411 -1.2076782,1.62368 -1.6e-6,0.91206 0.7001722,1.67018 1.5761311,1.67018 0.8759589,0 1.57406575,-0.75812 1.57406417,-1.67018 1.32e-6,-0.78034 -0.51142797,-1.44727 -1.20767827,-1.62419 z"
        id="path7274"
        inkscape:connector-curvature="0" />
-    <g
-       id="g3283"
-       transform="translate(0.04050889,-0.03748881)">
-      <path
-         transform="matrix(0.854196,0.34945334,-0.34945334,0.854196,102.87007,42.19453)"
-         inkscape:transform-center-y="0.024696976"
-         inkscape:transform-center-x="-0.069129619"
-         d="m 3.8394661,294.86108 -0.6173287,-0.31428 -0.6223199,0.30427 0.1081323,-0.68423 -0.4816914,-0.49783 0.6841582,-0.1086 0.3246182,-0.61196 0.3147007,0.61712 0.6823165,0.11962 -0.4896624,0.49 z"
-         inkscape:randomized="0"
-         inkscape:rounded="0"
-         inkscape:flatsided="false"
-         sodipodi:arg2="1.5788654"
-         sodipodi:arg1="0.95054684"
-         sodipodi:r2="0.54385489"
-         sodipodi:r1="1.0545424"
-         sodipodi:cy="294.00296"
-         sodipodi:cx="3.2265258"
-         sodipodi:sides="5"
-         id="path2231"
-         style="fill:#808080;stroke:#b3b3b3;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:markers fill stroke"
-         sodipodi:type="star" />
-      <text
-         id="text2237"
-         y="296.23123"
-         x="0.11687929"
-         style="font-style:normal;font-weight:normal;font-size:2.3397646px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#b3b3b3;fill-opacity:1;stroke:#b3b3b3;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none"
-         xml:space="preserve"><tspan
-           style="fill:#b3b3b3;stroke:#b3b3b3;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none"
-           y="296.23123"
-           x="0.11687929"
-           id="tspan2235"
-           sodipodi:role="line">FX</tspan></text>
-    </g>
+    <path
+       sodipodi:type="star"
+       style="fill:#808080;stroke:#b3b3b3;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:markers fill stroke"
+       id="path2231"
+       sodipodi:sides="5"
+       sodipodi:cx="3.2265258"
+       sodipodi:cy="294.00296"
+       sodipodi:r1="1.0545424"
+       sodipodi:r2="0.54385489"
+       sodipodi:arg1="0.95054684"
+       sodipodi:arg2="1.5788654"
+       inkscape:flatsided="false"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="m 3.8394661,294.86108 -0.6173287,-0.31428 -0.6223199,0.30427 0.1081323,-0.68423 -0.4816914,-0.49783 0.6841582,-0.1086 0.3246182,-0.61196 0.3147007,0.61712 0.6823165,0.11962 -0.4896624,0.49 z"
+       inkscape:transform-center-x="-0.069129619"
+       inkscape:transform-center-y="0.024696976"
+       transform="matrix(0.854196,0.34945334,-0.34945334,0.854196,102.91058,42.157041)" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:2.3397646px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#b3b3b3;fill-opacity:1;stroke:#b3b3b3;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none"
+       x="0.15738818"
+       y="296.19376"
+       id="text2237"><tspan
+         sodipodi:role="line"
+         id="tspan2235"
+         x="0.15738818"
+         y="296.19376"
+         style="fill:#b3b3b3;stroke:#b3b3b3;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none">FX</tspan></text>
   </g>
 </svg>

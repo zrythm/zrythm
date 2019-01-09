@@ -63,6 +63,11 @@ bus_track_widget_new (Track * track)
 
   TRACK_WIDGET_GET_PRIVATE (self);
 
+  /* setup color */
+  Channel * chan = track_get_channel (track);
+  color_area_widget_set_color (tw_prv->color,
+                           &chan->color);
+
   /* setup automation tracklist */
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (track);

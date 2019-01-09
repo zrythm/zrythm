@@ -199,6 +199,7 @@ setup_slots (ChannelWidget * self)
       gtk_box_pack_start (self->slots_box,
                           GTK_WIDGET (self->slot_boxes[i]),
                           0, 1, 0);
+      gtk_widget_show_all (GTK_WIDGET (self->slot_boxes[i]));
     }
 }
 

@@ -429,16 +429,8 @@ channel_create (ChannelType type,
       channel->output = MIXER->master;
     }
 
-  if (type == CT_AUDIO ||
-      type == CT_MIDI)
-    {
-      /* connect channel out ports to master */
-      port_connect (channel->stereo_out->l,
-                    MIXER->master->stereo_in->l);
-      port_connect (channel->stereo_out->r,
-                    MIXER->master->stereo_in->r);
-    }
-  else
+  if (type == CT_BUS ||
+      type == CT_MASTER)
     {
       /* connect stereo in to stereo out */
       port_connect (channel->stereo_in->l,

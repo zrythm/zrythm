@@ -43,7 +43,11 @@ typedef struct AudioTrack AudioTrack;
  */
 typedef struct _AudioTrackWidget
 {
-  TrackWidget                    parent_instance;
+  TrackWidget                   parent_instance;
+  GtkButton *                   record;
+  GtkButton *                   solo;
+  GtkButton *                   mute;
+  GtkButton *                   show_automation;
 } AudioTrackWidget;
 
 /**

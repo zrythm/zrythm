@@ -59,6 +59,30 @@ audio_track_widget_new (Track * track)
   AudioTrackWidget * self = g_object_new (
                             AUDIO_TRACK_WIDGET_TYPE,
                             NULL);
+
+  TRACK_WIDGET_GET_PRIVATE (self);
+
+  /* setup color */
+  Channel * chan = track_get_channel (track);
+  color_area_widget_set_color (tw_prv->color,
+                           &chan->color);
+
+  /* setup automation tracklist */
+  AutomationTracklist * automation_tracklist =
+    track_get_automation_tracklist (track);
+  automation_tracklist->widget =
+    automation_tracklist_widget_new (automation_tracklist);
+  gtk_paned_pack2 (GTK_PANED (tw_prv->paned),
+                   GTK_WIDGET (automation_tracklist->widget),
+                   Z_GTK_RESIZE,
+                   Z_GTK_NO_SHRINK);
+
+  g_signal_connect (
+    self->show_automation,
+    "clicked",
+    G_CALLBACK (track_widget_on_show_automation),
+    self);
+
   return self;
 }
 

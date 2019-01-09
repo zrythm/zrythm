@@ -27,6 +27,12 @@
 #define PLUGIN_MANAGER ZRYTHM->plugin_manager
 #define LV2_SETTINGS PLUGIN_MANAGER->lv2_settings
 #define LILV_WORLD LV2_SETTINGS.lilv_world
+#define LV2_GENERATOR_PLUGIN "Generator"
+#define LV2_CONSTANT_PLUGIN "Constant"
+#define LV2_INSTRUMENT_PLUGIN "Instrument"
+#define LV2_OSCILLATOR_PLUGIN "Oscillator"
+#define IS_LV2_PLUGIN_CATEGORY(p, c) \
+  (g_strcmp0 (((Plugin *)p)->descr->category, c) == 0)
 
 
 typedef struct
