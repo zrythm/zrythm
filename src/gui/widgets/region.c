@@ -83,29 +83,21 @@ draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
   gtk_render_background (context, cr, 0, 0, width, height);
 
   GdkRGBA * color = &((ChannelTrack *) prv->region->track)->channel->color;
-  /*if (prv->hover)*/
-    /*{*/
-      /*cairo_set_source_rgba (cr,*/
-                             /*color->red + 0.2,*/
-                             /*color->green + 0.2,*/
-                             /*color->blue + 0.2,*/
-                             /*0.8);*/
-    /*}*/
-  /*else if (prv->selected)*/
-    /*{*/
-      /*cairo_set_source_rgba (cr,*/
-                             /*color->red + 0.4,*/
-                             /*color->green + 0.4,*/
-                             /*color->blue + 0.4,*/
-                             /*0.8);*/
-    /*}*/
-  /*else*/
-    /*{*/
-      cairo_set_source_rgba (cr, color->red, color->green, color->blue, 0.7);
-    /*}*/
+  cairo_set_source_rgba (cr,
+                         color->red,
+                         color->green,
+                         color->blue,
+                         0.8);
   cairo_rectangle(cr, 0, 0, width, height);
-  cairo_stroke_preserve(cr);
   cairo_fill(cr);
+  cairo_set_source_rgba (cr,
+                         color->red,
+                         color->green,
+                         color->blue,
+                         1.0);
+  cairo_rectangle(cr, 0, 0, width, height);
+  cairo_set_line_width (cr, 3.5);
+  cairo_stroke (cr);
 
   draw_text (cr, prv->region->name);
 
