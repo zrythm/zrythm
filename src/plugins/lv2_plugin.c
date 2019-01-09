@@ -1835,7 +1835,9 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin, nframes_t nframes)
         lv2_atom_forge_key(forge, lv2_plugin->urids.time_bar);
         lv2_atom_forge_long(forge, PLAYHEAD.bars - 1);
         lv2_atom_forge_key(forge, lv2_plugin->urids.time_beatUnit);
-        lv2_atom_forge_int(forge, TRANSPORT->beat_unit);
+        lv2_atom_forge_int(
+          forge,
+          transport_get_beat_unit (TRANSPORT));
         lv2_atom_forge_key(forge, lv2_plugin->urids.time_beatsPerBar);
         lv2_atom_forge_float(forge, TRANSPORT->beats_per_bar);
         lv2_atom_forge_key(forge, lv2_plugin->urids.time_beatsPerMinute);

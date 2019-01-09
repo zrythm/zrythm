@@ -31,11 +31,12 @@
  * is a 1/2th note, so multiply 1/2 with the ticks per note
  */
 #define TICKS_PER_BEAT \
-  ((TICKS_PER_QUARTER_NOTE * 4) / TRANSPORT->beat_unit)
+  ((TICKS_PER_QUARTER_NOTE * 4) / \
+   transport_get_beat_unit (TRANSPORT))
 #define TICKS_PER_BAR \
   (TICKS_PER_BEAT * TRANSPORT->beats_per_bar)
 #define SIXTEENTHS_PER_BEAT \
-  (16 / TRANSPORT->beat_unit)
+  (16 / transport_get_beat_unit (TRANSPORT))
 #define position_add_ticks(position, _ticks) \
   position_set_tick (position, \
                      (position)->ticks + _ticks)

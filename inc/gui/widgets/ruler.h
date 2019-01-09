@@ -80,4 +80,7 @@ ruler_widget_pos_to_px (
 RulerWidgetPrivate *
 ruler_widget_get_private (RulerWidget * self);
 
+void
+ruler_widget_refresh (RulerWidget * self);
+
 #endif

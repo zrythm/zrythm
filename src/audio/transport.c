@@ -143,3 +143,24 @@ transport_update_position_frames (Transport * self)
   position_update_frames (&self->loop_start_pos);
   position_update_frames (&self->loop_end_pos);
 }
+
+/**
+ * Gets beat unit as int.
+ */
+int
+transport_get_beat_unit (Transport * self)
+{
+  switch (self->beat_unit)
+    {
+    case BEAT_UNIT_2:
+      return 2;
+    case BEAT_UNIT_4:
+      return 4;
+    case BEAT_UNIT_8:
+      return 8;
+    case BEAT_UNIT_16:
+      return 16;
+    }
+  g_assert_not_reached ();
+  return -1;
+}

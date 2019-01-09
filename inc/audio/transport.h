@@ -37,13 +37,21 @@
 #define MIN_BPM 40.f
 #define DEFAULT_BPM 140.f
 #define DEFAULT_BEATS_PER_BAR 4
-#define DEFAULT_BEAT_UNIT 4
+#define DEFAULT_BEAT_UNIT BEAT_UNIT_4
 #define DEFAULT_ZOOM_LEVEL 1.0f
 
 #define PLAYHEAD TRANSPORT->playhead_pos
 #define IS_TRANSPORT_ROLLING TRANSPORT->play_state == PLAYSTATE_ROLLING
 
 struct Project;
+
+typedef enum BeatUnit
+{
+  BEAT_UNIT_2,
+  BEAT_UNIT_4,
+  BEAT_UNIT_8,
+  BEAT_UNIT_16
+} BeatUnit;
 
 typedef enum {
   PLAYSTATE_ROLL_REQUESTED,
@@ -70,7 +78,7 @@ typedef struct Transport
    * 2/8 = 2 (top) 1/8th (bot) notes per bar.
    */
   int                beats_per_bar; ///< top part of time signature
-  int                beat_unit;   ///< bottom part of time signature, power of 2
+  BeatUnit           beat_unit;   ///< bottom part of time signature, power of 2
   float         zoom_level;             ///< zoom level used in ruler/transport widget calculations FIXME move to gui
   uint32_t           position;       ///< Transport position in frames
 	float              bpm;            ///< Transport tempo in beats per minute
@@ -125,5 +133,11 @@ transport_move_playhead (Transport * self,
  */
 void
 transport_update_position_frames (Transport * self);
+
+/**
+ * Gets beat unit as int.
+ */
+int
+transport_get_beat_unit (Transport * self);
 
 #endif

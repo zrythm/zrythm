@@ -28,7 +28,15 @@
 #include "audio/position.h"
 #include "audio/snap_grid.h"
 #include "audio/transport.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/digital_meter.h"
+#include "gui/widgets/main_window.h"
+#include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_ruler.h"
+#include "gui/widgets/ruler.h"
+#include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/timeline_ruler.h"
 
 #include <gtk/gtk.h>
 
@@ -230,26 +238,10 @@ draw_cb (DigitalMeterWidget * self, cairo_t *cr, gpointer data)
 
       /* fill text */
       cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);
-      /*cairo_select_font_face (cr, "Segment7",*/
-                              /*CAIRO_FONT_SLANT_NORMAL,*/
-                              /*CAIRO_FONT_WEIGHT_BOLD);*/
       cairo_set_font_size (cr, 16.0);
-      /*cairo_text_extents (cr, "8", &te1);*/
-      /*cairo_text_extents (cr, "88", &te2);*/
-      /*cairo_text_extents (cr, "888", &te3);*/
-
-      /*self->num_part_start_pos = ((width / 2) - te5.width / 2) - HALF_SPACE_BETWEEN;*/
-      /*self->num_part_end_pos = self->num_part_start_pos + te3.width;*/
-      /*self->dec_part_start_pos = self->num_part_end_pos + SPACE_BETWEEN;*/
-      /*self->dec_part_end_pos = self->dec_part_start_pos + te2.width;*/
       self->height_start_pos = (height / 2 - te1.height / 2);
       self->height_end_pos = self->height_start_pos + te1.height;
 
-      /* draw integer part */
-      /*if (num_part < 100)*/
-        /*text = g_strdup_printf (" %d", num_part);*/
-      /*else*/
-        /*text = g_strdup_printf ("%d", num_part);*/
       switch (self->snap_grid->note_type)
         {
         case NOTE_TYPE_NORMAL:
@@ -266,6 +258,67 @@ draw_cb (DigitalMeterWidget * self, cairo_t *cr, gpointer data)
                      0,
                      self->height_end_pos);
       cairo_show_text (cr, text);
+
+      /* draw line */
+      cairo_move_to (cr, 0, 0);
+      cairo_line_to (cr, width, 0);
+      cairo_stroke (cr);
+
+      break;
+    case DIGITAL_METER_TYPE_TIMESIG:
+
+      /* fill text */
+      cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);
+
+      cairo_select_font_face (cr, "Segment7",
+                              CAIRO_FONT_SLANT_NORMAL,
+                              CAIRO_FONT_WEIGHT_BOLD);
+      cairo_set_font_size (cr, 24.0);
+      cairo_text_extents (cr, "8", &te1);
+      cairo_text_extents (cr, "88", &te2);
+      cairo_text_extents (cr, "888", &te3);
+
+      /*self->num_part_start_pos = ((width / 2) - te5.width / 2) - HALF_SPACE_BETWEEN;*/
+      /*self->num_part_end_pos = self->num_part_start_pos + te3.width;*/
+      /*self->dec_part_start_pos = self->num_part_end_pos + SPACE_BETWEEN;*/
+      /*self->dec_part_end_pos = self->dec_part_start_pos + te2.width;*/
+      self->height_start_pos = (height / 2 - te1.height / 2);
+      self->height_end_pos = self->height_start_pos + te1.height;
+
+      char * beat_unit;
+      switch (TRANSPORT->beat_unit)
+        {
+        case BEAT_UNIT_2:
+          beat_unit = " 2";
+          break;
+        case BEAT_UNIT_4:
+          beat_unit = " 4";
+          break;
+        case BEAT_UNIT_8:
+          beat_unit = " 8";
+          break;
+        case BEAT_UNIT_16:
+          beat_unit = "16";
+          break;
+        }
+      char * beats_per_bar;
+      if (TRANSPORT->beats_per_bar < 10)
+        beats_per_bar =
+          g_strdup_printf (" %d",
+                           TRANSPORT->beats_per_bar);
+      else
+        beats_per_bar =
+          g_strdup_printf ("%d",
+                           TRANSPORT->beats_per_bar);
+      text = g_strdup_printf ("%s/%s",
+                              beats_per_bar,
+                              beat_unit);
+      g_free (beats_per_bar);
+      cairo_move_to (cr,
+                     0,
+                     self->height_end_pos);
+      cairo_show_text (cr, text);
+      g_free (text);
 
       /* draw line */
       cairo_move_to (cr, 0, 0);
@@ -291,6 +344,13 @@ drag_start (GtkGestureDrag * gesture,
   if (self->type == DIGITAL_METER_TYPE_NOTE_TYPE)
     self->start_note_type =
       self->snap_grid->note_type;
+  if (self->type == DIGITAL_METER_TYPE_TIMESIG)
+    {
+      self->start_timesig_top =
+        TRANSPORT->beats_per_bar;
+      self->start_timesig_bot =
+        TRANSPORT->beat_unit;
+    }
 }
 
 static void
@@ -407,6 +467,47 @@ drag_update (GtkGestureDrag * gesture,
               NOTE_TYPE_TRIPLET : num;
         }
       break;
+    case DIGITAL_METER_TYPE_TIMESIG:
+      if (self->update_timesig_top)
+        {
+          num = self->start_timesig_top + (int) offset_y / 24;
+          if (num < 1)
+            {
+              TRANSPORT->beats_per_bar = 1;
+            }
+          else
+            {
+              TRANSPORT->beats_per_bar =
+                num > 16 ?
+                16 : num;
+            }
+        }
+      else if (self->update_timesig_bot)
+        {
+          num = self->start_timesig_bot + (int) offset_y / 24;
+          if (num < 0)
+            {
+              TRANSPORT->beat_unit = BEAT_UNIT_2;
+            }
+          else
+            {
+              TRANSPORT->beat_unit =
+                num > BEAT_UNIT_16 ?
+                BEAT_UNIT_16 : num;
+            }
+        }
+      if (self->update_timesig_top ||
+          self->update_timesig_bot)
+        {
+          ruler_widget_refresh (
+            RULER_WIDGET (MW_RULER));
+          ruler_widget_refresh (
+            RULER_WIDGET (MIDI_RULER));
+          gtk_widget_queue_draw (
+            GTK_WIDGET (MW_TIMELINE));
+          gtk_widget_queue_draw (
+            GTK_WIDGET (MIDI_ARRANGER));
+        }
     }
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
@@ -430,6 +531,8 @@ drag_end (GtkGestureDrag *gesture,
     snap_grid_setup (self->snap_grid);
   self->update_note_length = 0;
   self->update_note_type = 0;
+  self->update_timesig_top = 0;
+  self->update_timesig_bot = 0;
 }
 
 static gboolean
@@ -439,6 +542,8 @@ button_press_cb (GtkWidget      * event_box,
 {
   DigitalMeterWidget * self = (DigitalMeterWidget *) data;
   /*g_message ("%d, %d", self->height_start_pos, self->height_end_pos);*/
+  int width =
+    gtk_widget_get_allocated_width (GTK_WIDGET (self));
   switch (self->type)
     {
     case DIGITAL_METER_TYPE_BPM:
@@ -493,6 +598,16 @@ button_press_cb (GtkWidget      * event_box,
     case DIGITAL_METER_TYPE_NOTE_TYPE:
       self->update_note_type = 1;
       break;
+    case DIGITAL_METER_TYPE_TIMESIG:
+      if (event->x <= width / 2)
+        {
+          self->update_timesig_top = 1;
+        }
+      else
+        {
+          self->update_timesig_bot = 1;
+        }
+      break;
     }
   return 0;
 }
@@ -542,6 +657,13 @@ digital_meter_widget_new (DigitalMeterType      type,
         -1,
         30);
       self->snap_grid = sg;
+      break;
+    case DIGITAL_METER_TYPE_TIMESIG:
+      // set the size
+      gtk_widget_set_size_request (
+        GTK_WIDGET (self),
+        78,
+        -1);
       break;
     }
 

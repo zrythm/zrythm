@@ -325,28 +325,10 @@ ruler_widget_new ()
   return NULL;
 }
 
-static void
-ruler_widget_class_init (RulerWidgetClass * _klass)
+void
+ruler_widget_refresh (RulerWidget * self)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (klass,
-                                 "ruler");
-}
-
-static void
-ruler_widget_init (RulerWidget * self)
-{
-  g_message ("initing ruler...");
-  GET_PRIVATE;
-
-  /* make it able to notify */
-  gtk_widget_add_events (GTK_WIDGET (self),
-                         GDK_ALL_EVENTS_MASK);
-
-  prv->drag = GTK_GESTURE_DRAG (
-                gtk_gesture_drag_new (GTK_WIDGET (self)));
-  prv->multipress = GTK_GESTURE_MULTI_PRESS (
-                gtk_gesture_multi_press_new (GTK_WIDGET (self)));
+  RULER_WIDGET_GET_PRIVATE (self);
 
   /*adjust for zoom level*/
   float px_per_tick =
@@ -374,6 +356,32 @@ ruler_widget_init (RulerWidget * self)
     GTK_WIDGET (self),
     prv->total_px,
     -1);
+}
+
+static void
+ruler_widget_class_init (RulerWidgetClass * _klass)
+{
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (klass,
+                                 "ruler");
+}
+
+static void
+ruler_widget_init (RulerWidget * self)
+{
+  g_message ("initing ruler...");
+  GET_PRIVATE;
+
+  /* make it able to notify */
+  gtk_widget_add_events (GTK_WIDGET (self),
+                         GDK_ALL_EVENTS_MASK);
+
+  prv->drag = GTK_GESTURE_DRAG (
+                gtk_gesture_drag_new (GTK_WIDGET (self)));
+  prv->multipress = GTK_GESTURE_MULTI_PRESS (
+                gtk_gesture_multi_press_new (GTK_WIDGET (self)));
+
+  ruler_widget_refresh (self);
 
   /* FIXME drags */
   g_signal_connect (G_OBJECT (self), "draw",

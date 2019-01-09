@@ -45,6 +45,7 @@ typedef struct _TopBarWidget
   GtkBox *                  digital_meters;
   DigitalMeterWidget *      digital_bpm;
   DigitalMeterWidget *      digital_transport;
+  DigitalMeterWidget *      digital_timesig;
   BpmWidget *               bpm;    ///< created in code
   TransportControlsWidget * transport_controls;
 } TopBarWidget;

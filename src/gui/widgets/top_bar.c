@@ -44,8 +44,13 @@ top_bar_widget_refresh (TopBarWidget * self)
   self->digital_transport =
     digital_meter_widget_new (DIGITAL_METER_TYPE_POSITION,
                               NULL);
+  self->digital_timesig =
+    digital_meter_widget_new (DIGITAL_METER_TYPE_TIMESIG,
+                              NULL);
   gtk_container_add (GTK_CONTAINER (self->digital_meters),
                      GTK_WIDGET (self->digital_bpm));
+  gtk_container_add (GTK_CONTAINER (self->digital_meters),
+                     GTK_WIDGET (self->digital_timesig));
   gtk_container_add (GTK_CONTAINER (self->digital_meters),
                      GTK_WIDGET (self->digital_transport));
   gtk_widget_show_all (GTK_WIDGET (self->digital_meters));

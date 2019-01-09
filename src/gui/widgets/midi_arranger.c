@@ -492,7 +492,7 @@ void
 midi_arranger_widget_refresh_children (
   MidiArrangerWidget * self)
 {
-  ARRANGER_WIDGET_GET_PRIVATE (self);
+  /*ARRANGER_WIDGET_GET_PRIVATE (self);*/
   /* TODO */
 }
 

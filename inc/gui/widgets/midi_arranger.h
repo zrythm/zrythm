@@ -22,6 +22,7 @@
 #ifndef __GUI_WIDGETS_MIDI_ARRANGER_H__
 #define __GUI_WIDGETS_MIDI_ARRANGER_H__
 
+#include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/piano_roll.h"
 #include "audio/position.h"

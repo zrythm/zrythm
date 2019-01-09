@@ -81,7 +81,11 @@ typedef struct _DigitalMeterWidget
   int                      update_note_type; ///< flag to update note type
   int                      start_note_type; ///< start note type
 
-  /* for time sig TODO */
+  /* for time sig */
+  int                      update_timesig_top;
+  int                      start_timesig_top;
+  int                      update_timesig_bot;
+  int                      start_timesig_bot;
 } DigitalMeterWidget;
 
 /**
@@ -89,6 +93,6 @@ typedef struct _DigitalMeterWidget
  */
 DigitalMeterWidget *
 digital_meter_widget_new (DigitalMeterType      type,
-                          SnapGrid *            snap_grid); ///< for timesig
+                          SnapGrid *            snap_grid);
 
 #endif
