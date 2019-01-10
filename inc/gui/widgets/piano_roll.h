@@ -39,6 +39,8 @@ typedef struct _PianoRollNotesWidget PianoRollNotesWidget;
 typedef struct _MidiArrangerWidget MidiArrangerWidget;
 typedef struct _MidiRulerWidget MidiRulerWidget;
 typedef struct _ColorAreaWidget ColorAreaWidget;
+typedef struct _MidiModifierArrangerWidget
+  MidiModifierArrangerWidget;
 
 typedef struct _PianoRollWidget
 {
@@ -60,6 +62,9 @@ typedef struct _PianoRollWidget
   GtkScrolledWindow        * arranger_scroll;
   GtkViewport              * arranger_viewport;
   MidiArrangerWidget *     arranger;
+  GtkScrolledWindow *      modifier_arranger_scroll;
+  GtkViewport *            modifier_arranger_viewport;
+  MidiModifierArrangerWidget * modifier_arranger;
   PianoRoll *              piano_roll; ///< pointer to backend struct
 } MidiEditorWidget;
 

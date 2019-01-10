@@ -22,6 +22,8 @@
 #ifndef __GUI_WIDGETS_MIDI_ARRANGER_BG_H__
 #define __GUI_WIDGETS_MIDI_ARRANGER_BG_H__
 
+#include "gui/widgets/arranger_bg.h"
+
 #include <gtk/gtk.h>
 
 #define MIDI_ARRANGER_BG_WIDGET_TYPE \
@@ -30,21 +32,18 @@ G_DECLARE_FINAL_TYPE (MidiArrangerBgWidget,
                       midi_arranger_bg_widget,
                       Z,
                       MIDI_ARRANGER_BG_WIDGET,
-                      GtkDrawingArea);
+                      ArrangerBgWidget);
 
 typedef struct _MidiArrangerBgWidget
 {
-  GtkDrawingArea           parent_instance;
-  int                      total_px;
-  double                   start_x; ///< for dragging
-  GtkGestureDrag           * drag;
-  GtkGestureMultiPress     * multipress;
+  ArrangerBgWidget         parent_instance;
 } MidiArrangerBgWidget;
 
 /**
  * Creates a timeline widget using the given timeline data.
  */
 MidiArrangerBgWidget *
-midi_arranger_bg_widget_new ();
+midi_arranger_bg_widget_new (RulerWidget *    ruler,
+                             ArrangerWidget * arranger);
 
 #endif

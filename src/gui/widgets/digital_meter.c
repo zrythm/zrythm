@@ -33,6 +33,7 @@
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
@@ -507,6 +508,8 @@ drag_update (GtkGestureDrag * gesture,
             GTK_WIDGET (MW_TIMELINE));
           gtk_widget_queue_draw (
             GTK_WIDGET (MIDI_ARRANGER));
+          gtk_widget_queue_draw (
+            GTK_WIDGET (MIDI_MODIFIER_ARRANGER));
         }
     }
   gtk_widget_queue_draw (GTK_WIDGET (self));

@@ -29,6 +29,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/piano_roll.h"
 #include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/piano_roll.h"
@@ -70,7 +71,19 @@ link_scrolls (
             self->arranger_scroll)));
     }
 
-  /* link ruler h scroll to timeline h scroll */
+  /* link arranger h scroll to timeline h scroll */
+  if (self->arranger_scroll)
+    {
+      g_assert (MW_CENTER_DOCK);
+      g_assert (MW_CENTER_DOCK->timeline_scroll);
+      gtk_scrolled_window_set_hadjustment (
+        self->arranger_scroll,
+        gtk_scrolled_window_get_hadjustment (
+          GTK_SCROLLED_WINDOW (
+            MW_CENTER_DOCK->timeline_scroll)));
+    }
+
+  /* link ruler h scroll to arranger h scroll */
   if (self->midi_ruler_scroll)
     {
       gtk_scrolled_window_set_hadjustment (
@@ -80,14 +93,16 @@ link_scrolls (
             self->arranger_scroll)));
     }
 
-  /*if (self->piano_roll_arranger_scroll)*/
-    /*{*/
-      /*gtk_scrolled_window_set_hadjustment (*/
-        /*self->piano_roll_arranger_scroll,*/
-        /*gtk_scrolled_window_get_hadjustment (*/
-          /*GTK_SCROLLED_WINDOW (*/
-            /*MW_CENTER_DOCK->timeline_scroll)));*/
-    /*}*/
+  /* link modifier arranger h scroll to arranger h scroll */
+  if (self->modifier_arranger_scroll)
+    {
+      gtk_scrolled_window_set_hadjustment (
+        self->modifier_arranger_scroll,
+        gtk_scrolled_window_get_hadjustment (
+          GTK_SCROLLED_WINDOW (
+            self->arranger_scroll)));
+    }
+
 }
 
 void
@@ -105,6 +120,15 @@ piano_roll_widget_setup (
         ARRANGER_TYPE_MIDI);
       gtk_widget_show_all (
         GTK_WIDGET (self->arranger));
+    }
+  if (self->modifier_arranger)
+    {
+      arranger_widget_setup (
+        Z_ARRANGER_WIDGET (self->modifier_arranger),
+        ZRYTHM->snap_grid_midi,
+        ARRANGER_TYPE_MIDI_MODIFIER);
+      gtk_widget_show_all (
+        GTK_WIDGET (self->modifier_arranger));
     }
 
   /* set arranger size
@@ -213,4 +237,16 @@ piano_roll_widget_class_init (
     klass,
     PianoRollWidget,
     arranger);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
+    modifier_arranger_scroll);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
+    modifier_arranger_viewport);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
+    modifier_arranger);
 }

@@ -42,6 +42,7 @@
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_arranger_bg.h"
 #include "gui/widgets/midi_modifier_arranger.h"
+#include "gui/widgets/midi_modifier_arranger_bg.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/piano_roll.h"
@@ -858,11 +859,24 @@ arranger_widget_setup (ArrangerWidget *   self,
   prv->type = type;
   if (T_MIDI)
     {
-      prv->bg = GTK_DRAWING_AREA (midi_arranger_bg_widget_new ());
+      prv->bg = Z_ARRANGER_BG_WIDGET (
+        midi_arranger_bg_widget_new (
+          Z_RULER_WIDGET (MIDI_RULER),
+          Z_ARRANGER_WIDGET (MIDI_ARRANGER)));
     }
   else if (T_TIMELINE)
     {
-      prv->bg = GTK_DRAWING_AREA (timeline_bg_widget_new ());
+      prv->bg = Z_ARRANGER_BG_WIDGET (
+        timeline_bg_widget_new (
+          Z_RULER_WIDGET (MW_RULER),
+          Z_ARRANGER_WIDGET (MW_TIMELINE)));
+    }
+  else if (T_MIDI_MODIFIER)
+    {
+      prv->bg = Z_ARRANGER_BG_WIDGET (
+        midi_modifier_arranger_bg_widget_new (
+          Z_RULER_WIDGET (MIDI_RULER),
+          Z_ARRANGER_WIDGET (MIDI_MODIFIER_ARRANGER)));
     }
 
   gtk_container_add (GTK_CONTAINER (self),
@@ -956,6 +970,9 @@ arranger_widget_refresh_children (
   else if (T_TIMELINE)
     timeline_arranger_widget_refresh_children (
       Z_TIMELINE_ARRANGER_WIDGET (self));
+  else if (T_MIDI_MODIFIER)
+    midi_modifier_arranger_widget_refresh_children (
+      Z_MIDI_MODIFIER_ARRANGER_WIDGET (self));
 }
 
 static void

@@ -71,6 +71,8 @@ typedef enum ArrangerAction
   ARRANGER_ACTION_SELECTING
 } ArrangerAction;
 
+typedef struct _ArrangerBgWidget ArrangerBgWidget;
+
 /**
  * Used internally.
  */
@@ -85,10 +87,10 @@ typedef enum ArrangerChildType
 typedef struct
 {
   ArrangerWidgetType       type;
-  GtkDrawingArea           * bg;
-  GtkGestureDrag           * drag;
-  GtkGestureMultiPress     * multipress;
-  GtkGestureMultiPress     * right_mouse_mp;
+  ArrangerBgWidget *       bg;
+  GtkGestureDrag *         drag;
+  GtkGestureMultiPress *   multipress;
+  GtkGestureMultiPress *   right_mouse_mp;
   double                   last_offset_x;  ///< for dragging regions, selections
   double                   last_offset_y;  ///< for selections
   ArrangerAction           action;
@@ -102,7 +104,7 @@ typedef struct
   /* end */
 
   int                      n_press; ///< for multipress
-  SnapGrid                 * snap_grid; ///< associated snap grid
+  SnapGrid *               snap_grid; ///< associated snap grid
 } ArrangerWidgetPrivate;
 
 typedef struct _ArrangerWidgetClass

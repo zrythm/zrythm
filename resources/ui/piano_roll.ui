@@ -236,20 +236,30 @@
                             </child>
                           </object>
                           <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkBox" id="midi_vel_draw_box">
+                          <object class="GtkScrolledWindow" id="modifier_arranger_scroll">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="orientation">vertical</property>
+                            <property name="can_focus">True</property>
+                            <property name="hscrollbar_policy">external</property>
+                            <property name="shadow_type">in</property>
+                            <property name="expand">1</property>
+                            <child>
+                              <object class="GtkViewport" id="modifier_arranger_viewport">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <child>
+                                  <object class="MidiModifierArrangerWidget" id="modifier_arranger">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">1</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
                           </object>
                           <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>

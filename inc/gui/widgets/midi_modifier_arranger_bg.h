@@ -1,5 +1,6 @@
 /*
- * inc/gui/widgets/timeline_bg.h - Timeline background
+ * inc/gui/widgets/midi_modifier_arranger.h - MIDI modifier
+ *   arranger background
  *
  * Copyright (C) 2019 Alexandros Theodotou
  *
@@ -19,31 +20,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_TIMELINE_BG_H__
-#define __GUI_WIDGETS_TIMELINE_BG_H__
+#ifndef __GUI_WIDGETS_MIDI_MODIFIER_ARRANGER_BG_H__
+#define __GUI_WIDGETS_MIDI_MODIFIER_ARRANGER_BG_H__
 
 #include "gui/widgets/arranger_bg.h"
 
 #include <gtk/gtk.h>
 
-#define TIMELINE_BG_WIDGET_TYPE \
-  (timeline_bg_widget_get_type ())
-G_DECLARE_FINAL_TYPE (TimelineBgWidget,
-                      timeline_bg_widget,
+#define MIDI_MODIFIER_ARRANGER_BG_WIDGET_TYPE \
+  (midi_modifier_arranger_bg_widget_get_type ())
+G_DECLARE_FINAL_TYPE (MidiModifierArrangerBgWidget,
+                      midi_modifier_arranger_bg_widget,
                       Z,
-                      TIMELINE_BG_WIDGET,
+                      MIDI_MODIFIER_ARRANGER_BG_WIDGET,
                       ArrangerBgWidget)
 
-typedef struct _TimelineBgWidget
+typedef struct _MidiModifierArrangerBgWidget
 {
   ArrangerBgWidget         parent_instance;
-} TimelineBgWidget;
+} MidiModifierArrangerBgWidget;
 
 /**
- * Creates a timeline widget using the given timeline data.
+ * Creates a midi_modifier_arranger widget using the given midi_modifier_arranger data.
  */
-TimelineBgWidget *
-timeline_bg_widget_new (RulerWidget *    ruler,
-                        ArrangerWidget * arranger);
+MidiModifierArrangerBgWidget *
+midi_modifier_arranger_bg_widget_new (
+  RulerWidget *    ruler,
+  ArrangerWidget * arranger);
 
 #endif
