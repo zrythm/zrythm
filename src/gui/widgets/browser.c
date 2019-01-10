@@ -54,7 +54,7 @@ on_row_activated (GtkTreeView       *tree_view,
     &iter,
     1,
     &value);
-  Plugin_Descriptor * descr =
+  PluginDescriptor * descr =
     g_value_get_pointer (&value);
   mixer_add_channel_from_plugin_descr (
     MIXER,
@@ -71,10 +71,10 @@ visible_func (GtkTreeModel *model,
               GtkTreeIter  *iter,
               gpointer      data)
 {
-  BrowserWidget * self = BROWSER_WIDGET (data);
+  BrowserWidget * self = Z_BROWSER_WIDGET (data);
 
   // Visible if row is non-empty and category matches selected
-  Plugin_Descriptor *descr;
+  PluginDescriptor *descr;
   gboolean visible = FALSE;
 
   gtk_tree_model_get (model, iter, 1, &descr, -1);
@@ -106,7 +106,7 @@ static void
 on_selection_changed (GtkTreeSelection * ts,
                       gpointer         user_data)
 {
-  BrowserWidget * self = BROWSER_WIDGET (user_data);
+  BrowserWidget * self = Z_BROWSER_WIDGET (user_data);
   GtkTreeView * tv = gtk_tree_selection_get_tree_view (ts);
   GtkTreeModel * model = gtk_tree_view_get_model (tv);
   GList * selected_rows = gtk_tree_selection_get_selected_rows (ts,
@@ -139,7 +139,7 @@ on_selection_changed (GtkTreeSelection * ts,
                                     &iter,
                                     1,
                                     &value);
-          Plugin_Descriptor * descr = g_value_get_pointer (&value);
+          PluginDescriptor * descr = g_value_get_pointer (&value);
           char * label = g_strdup_printf (
             "%s\n%s, %d\nAudio: %d, %d\nMidi: %d, %d\nControls: %d, %d",
             descr->author,
@@ -182,13 +182,13 @@ on_drag_data_get (GtkWidget        *widget,
                             &iter,
                             1,
                             &value);
-  Plugin_Descriptor * descr = g_value_get_pointer (&value);
+  PluginDescriptor * descr = g_value_get_pointer (&value);
 
   gtk_selection_data_set (data,
         gdk_atom_intern_static_string ("PLUGIN_DESCR"),
         32,
         (const guchar *)&descr,
-        sizeof (Plugin_Descriptor));
+        sizeof (PluginDescriptor));
 }
 
 static GtkTreeModel *

@@ -200,7 +200,8 @@ draw_cb (AutomationCurveWidget * self, cairo_t *cr, gpointer data)
 static void
 on_motion (GtkWidget * widget, GdkEventMotion *event)
 {
-  AutomationCurveWidget * self = AUTOMATION_CURVE_WIDGET (widget);
+  AutomationCurveWidget * self =
+    Z_AUTOMATION_CURVE_WIDGET (widget);
 
   GtkAllocation allocation;
   gtk_widget_get_allocation (widget,

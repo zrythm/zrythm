@@ -1,8 +1,8 @@
 /*
- * gui/widgets/drag_dest_box.h - A dnd destination box used by mixer and tracklist
- *                                widgets
+ * gui/widgets/drag_dest_box.h - A dnd destination box used
+ * by mixer and tracklist widgets
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -25,11 +25,12 @@
 
 #include <gtk/gtk.h>
 
-#define DRAG_DEST_BOX_WIDGET_TYPE                  (drag_dest_box_widget_get_type ())
+#define DRAG_DEST_BOX_WIDGET_TYPE \
+  (drag_dest_box_widget_get_type ())
 G_DECLARE_FINAL_TYPE (DragDestBoxWidget,
                       drag_dest_box_widget,
-                      DRAG_DEST_BOX,
-                      WIDGET,
+                      Z,
+                      DRAG_DEST_BOX_WIDGET,
                       GtkBox)
 
 typedef struct Channel Channel;

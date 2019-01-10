@@ -33,7 +33,9 @@
 #include "gui/widgets/ruler.h"
 #include "utils/ui.h"
 
-G_DEFINE_TYPE (MidiNoteWidget, midi_note_widget, GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (MidiNoteWidget,
+               midi_note_widget,
+               GTK_TYPE_DRAWING_AREA)
 
 /**
  * Space on the edges to show resize cursors
@@ -81,7 +83,7 @@ draw_cb (MidiNoteWidget * self, cairo_t *cr, gpointer data)
 static void
 on_motion (GtkWidget * widget, GdkEventMotion *event)
 {
-  MidiNoteWidget * self = MIDI_NOTE_WIDGET (widget);
+  MidiNoteWidget * self = Z_MIDI_NOTE_WIDGET (widget);
   GtkAllocation allocation;
   gtk_widget_get_allocation (widget,
                              &allocation);
@@ -142,34 +144,8 @@ midi_note_widget_new (MidiNote * midi_note)
 
   self->midi_note = midi_note;
 
-  gtk_widget_add_events (GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
-
-
-  /* connect signals */
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), self);
-  g_signal_connect (G_OBJECT (self), "enter-notify-event",
-                    G_CALLBACK (on_motion),  self);
-  g_signal_connect (G_OBJECT(self), "leave-notify-event",
-                    G_CALLBACK (on_motion),  self);
-  g_signal_connect (G_OBJECT(self), "motion-notify-event",
-                    G_CALLBACK (on_motion),  self);
-
-  /* set tooltip */
-  gtk_widget_set_tooltip_text (GTK_WIDGET (self),
-                               "Midi note");
 
   return self;
-}
-
-static void
-midi_note_widget_class_init (MidiNoteWidgetClass * klass)
-{
-}
-
-static void
-midi_note_widget_init (MidiNoteWidget * self)
-{
 }
 
 /**
@@ -188,3 +164,29 @@ midi_note_widget_set_state_and_queue_draw (MidiNoteWidget *    self,
 }
 
 
+
+static void
+midi_note_widget_class_init (MidiNoteWidgetClass * klass)
+{
+}
+
+static void
+midi_note_widget_init (MidiNoteWidget * self)
+{
+  gtk_widget_add_events (GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
+
+
+  /* connect signals */
+  g_signal_connect (G_OBJECT (self), "draw",
+                    G_CALLBACK (draw_cb), self);
+  g_signal_connect (G_OBJECT (self), "enter-notify-event",
+                    G_CALLBACK (on_motion),  self);
+  g_signal_connect (G_OBJECT(self), "leave-notify-event",
+                    G_CALLBACK (on_motion),  self);
+  g_signal_connect (G_OBJECT(self), "motion-notify-event",
+                    G_CALLBACK (on_motion),  self);
+
+  /* set tooltip */
+  gtk_widget_set_tooltip_text (GTK_WIDGET (self),
+                               "Midi note");
+}

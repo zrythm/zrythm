@@ -111,7 +111,7 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 static void
 on_crossing (GtkWidget * widget, GdkEvent *event)
 {
-  MeterWidget * self = METER_WIDGET (widget);
+  MeterWidget * self = Z_METER_WIDGET (widget);
   GdkEventType type = gdk_event_get_event_type (event);
   if (type == GDK_ENTER_NOTIFY)
     {

@@ -1,4 +1,6 @@
 /*
+ * gui/widgets/piano_roll_notes.h - Piano roll notes
+ *
  * Copyright (C) 2018 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -24,11 +26,12 @@
 
 #include <gtk/gtk.h>
 
-#define PIANO_ROLL_NOTES_WIDGET_TYPE                  (piano_roll_notes_widget_get_type ())
+#define PIANO_ROLL_NOTES_WIDGET_TYPE \
+  (piano_roll_notes_widget_get_type ())
 G_DECLARE_FINAL_TYPE (PianoRollNotesWidget,
                       piano_roll_notes_widget,
-                      PIANO_ROLL_NOTES,
-                      WIDGET,
+                      Z,
+                      PIANO_ROLL_NOTES_WIDGET,
                       GtkDrawingArea)
 
 #define DEFAULT_PX_PER_NOTE 8

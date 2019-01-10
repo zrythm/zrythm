@@ -1,7 +1,7 @@
 /*
  * gui/widgets/chord_track.h - ChordTrack view
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -27,11 +27,12 @@
 
 #include <gtk/gtk.h>
 
-#define CHORD_TRACK_WIDGET_TYPE                  (chord_track_widget_get_type ())
+#define CHORD_TRACK_WIDGET_TYPE \
+  (chord_track_widget_get_type ())
 G_DECLARE_FINAL_TYPE (ChordTrackWidget,
                       chord_track_widget,
-                      CHORD_TRACK,
-                      WIDGET,
+                      Z,
+                      CHORD_TRACK_WIDGET,
                       TrackWidget)
 
 typedef struct ChordTrack ChordTrack;

@@ -104,7 +104,8 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 static void
 on_crossing (GtkWidget * widget, GdkEvent *event)
 {
-  AudioUnitLabelWidget * self = AUDIO_UNIT_LABEL_WIDGET (widget);
+  AudioUnitLabelWidget * self =
+    Z_AUDIO_UNIT_LABEL_WIDGET (widget);
   int type = gdk_event_get_event_type (event);
   if (type == GDK_ENTER_NOTIFY)
     {

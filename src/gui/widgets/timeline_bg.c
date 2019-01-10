@@ -176,8 +176,9 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
     }
 
   /* draw selections */
-  arranger_bg_draw_selections (ARRANGER_WIDGET (MW_TIMELINE),
-                               cr);
+  arranger_bg_draw_selections (
+    Z_ARRANGER_WIDGET (MW_TIMELINE),
+    cr);
 
   return 0;
 }

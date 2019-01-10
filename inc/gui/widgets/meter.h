@@ -1,7 +1,7 @@
 /*
  * gui/widgets/meter.h - Meter widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -27,13 +27,13 @@
 
 #include <gtk/gtk.h>
 
-#define METER_WIDGET_TYPE                  (meter_widget_get_type ())
+#define METER_WIDGET_TYPE \
+  (meter_widget_get_type ())
 G_DECLARE_FINAL_TYPE (MeterWidget,
                       meter_widget,
-                      METER,
-                      WIDGET,
+                      Z,
+                      METER_WIDGET,
                       GtkDrawingArea)
-#define IS_METER_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), METER_WIDGET_TYPE))
 
 typedef enum MeterType
 {

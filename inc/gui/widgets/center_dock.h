@@ -1,7 +1,7 @@
 /*
  * gui/widgets/center_dock.h - Main window widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -29,8 +29,8 @@
   (center_dock_widget_get_type ())
 G_DECLARE_FINAL_TYPE (CenterDockWidget,
                       center_dock_widget,
-                      CENTER_DOCK,
-                      WIDGET,
+                      Z,
+                      CENTER_DOCK_WIDGET,
                       DzlDockBin)
 #define MW_CENTER_DOCK MAIN_WINDOW->center_dock
 

@@ -29,6 +29,7 @@
 #include "audio/position.h"
 #include "audio/region.h"
 #include "audio/track.h"
+#include "audio/velocity.h"
 #include "plugins/lv2/control.h"
 #include "plugins/lv2_plugin.h"
 #include "gui/widgets/track.h"
@@ -100,7 +101,7 @@ instrument_track_fill_midi_events (InstrumentTrack      * track,
                 ev->buffer = calloc (3, sizeof (jack_midi_data_t));
               ev->buffer[0] = MIDI_CH1_NOTE_ON; /* status byte */
               ev->buffer[1] = midi_note->val; /* note number 0-127 */
-              ev->buffer[2] = midi_note->vel; /* velocity 0-127 */
+              ev->buffer[2] = midi_note->vel->vel; /* velocity 0-127 */
             }
 
           /* note off event */
@@ -119,7 +120,7 @@ instrument_track_fill_midi_events (InstrumentTrack      * track,
                 ev->buffer = calloc (3, sizeof (jack_midi_data_t));
               ev->buffer[0] = MIDI_CH1_NOTE_OFF; /* status byte */
               ev->buffer[1] = midi_note->val; /* note number 0-127 */
-              ev->buffer[2] = midi_note->vel; /* velocity 0-127 */
+              ev->buffer[2] = midi_note->vel->vel; /* velocity 0-127 */
             }
         }
     }

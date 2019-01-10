@@ -1,7 +1,7 @@
 /*
  * gui/widgets/color_area.h - channel color picker
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -30,11 +30,12 @@
 
 #include <gtk/gtk.h>
 
-#define COLOR_AREA_WIDGET_TYPE          (color_area_widget_get_type ())
+#define COLOR_AREA_WIDGET_TYPE \
+  (color_area_widget_get_type ())
 G_DECLARE_FINAL_TYPE (ColorAreaWidget,
                       color_area_widget,
-                      COLOR_AREA,
-                      WIDGET,
+                      Z,
+                      COLOR_AREA_WIDGET,
                       GtkDrawingArea)
 
 typedef struct _ColorAreaWidget

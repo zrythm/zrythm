@@ -1,5 +1,6 @@
 /*
- * gui/widgets/transport_controls.h - transport controls (play/pause/stop...)
+ * gui/widgets/transport_controls.h - transport controls
+ *   (play/pause/stop...)
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -28,8 +29,8 @@
   (transport_controls_widget_get_type ())
 G_DECLARE_FINAL_TYPE (TransportControlsWidget,
                       transport_controls_widget,
-                      TRANSPORT_CONTROLS,
-                      WIDGET,
+                      Z,
+                      TRANSPORT_CONTROLS_WIDGET,
                       GtkBox)
 
 typedef struct _TransportControlsWidget

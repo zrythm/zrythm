@@ -1,7 +1,7 @@
 /*
  * gui/widgets/browser.h - The plugin, etc., browser on the right
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -24,11 +24,12 @@
 
 #include <gtk/gtk.h>
 
-#define BROWSER_WIDGET_TYPE                  (browser_widget_get_type ())
+#define BROWSER_WIDGET_TYPE \
+  (browser_widget_get_type ())
 G_DECLARE_FINAL_TYPE (BrowserWidget,
                       browser_widget,
-                      BROWSER,
-                      WIDGET,
+                      Z,
+                      BROWSER_WIDGET,
                       GtkPaned)
 
 #define MW_BROWSER MW_RIGHT_DOCK_EDGE->browser

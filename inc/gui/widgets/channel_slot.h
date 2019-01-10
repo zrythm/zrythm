@@ -1,7 +1,7 @@
 /*
  * gui/widgets/channel_slot.h - Channel slot
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -31,8 +31,8 @@
   (channel_slot_widget_get_type ())
 G_DECLARE_FINAL_TYPE (ChannelSlotWidget,
                       channel_slot_widget,
-                      CHANNEL_SLOT,
-                      WIDGET,
+                      Z,
+                      CHANNEL_SLOT_WIDGET,
                       GtkDrawingArea)
 
 typedef struct Plugin Plugin;

@@ -132,10 +132,10 @@ automation_tracklist_widget_refresh (
        iter != NULL;
        iter = g_list_next (iter))
     {
-      if (IS_AUTOMATION_TRACK_WIDGET (iter->data))
+      if (Z_IS_AUTOMATION_TRACK_WIDGET (iter->data))
         {
           AutomationTrackWidget * atw =
-            AUTOMATION_TRACK_WIDGET (iter->data);
+            Z_AUTOMATION_TRACK_WIDGET (iter->data);
           AutomationTrack * at = atw->at;
           GValue a = G_VALUE_INIT;
           g_value_init (&a, G_TYPE_INT);

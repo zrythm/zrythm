@@ -32,4 +32,3 @@ ui_show_error_message (GtkWindow * parent_window,
                        const char * message);
 
 #endif
-

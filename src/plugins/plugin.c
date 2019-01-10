@@ -76,7 +76,7 @@ _plugin_new ()
  * using the given descriptor.
  */
 Plugin *
-plugin_create_from_descr (Plugin_Descriptor * descr)
+plugin_create_from_descr (PluginDescriptor * descr)
 {
   Plugin * plugin = _plugin_new ();
   plugin->descr = descr;

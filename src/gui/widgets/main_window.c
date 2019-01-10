@@ -135,7 +135,7 @@ main_window_widget_refresh (MainWindowWidget * self)
 
   /* setup timeline */
   arranger_widget_setup (
-    ARRANGER_WIDGET (MW_CENTER_DOCK->timeline),
+    Z_ARRANGER_WIDGET (MW_CENTER_DOCK->timeline),
     ZRYTHM->snap_grid_timeline,
     ARRANGER_TYPE_TIMELINE);
   gtk_scrolled_window_set_vadjustment (
@@ -152,7 +152,8 @@ main_window_widget_refresh (MainWindowWidget * self)
   /* setup piano roll */
   if (MW_BOT_DOCK_EDGE && PIANO_ROLL)
     {
-      piano_roll_widget_setup (PIANO_ROLL);
+      piano_roll_widget_setup (PIANO_ROLL,
+                               ZRYTHM->piano_roll);
     }
 
   // set icons

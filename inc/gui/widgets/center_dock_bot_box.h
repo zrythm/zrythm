@@ -1,7 +1,7 @@
 /*
  * gui/widgets/center_dock_bot_box.h - Main window widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -25,11 +25,12 @@
 #include <gtk/gtk.h>
 #include <dazzle.h>
 
-#define CENTER_DOCK_BOT_BOX_WIDGET_TYPE                  (center_dock_bot_box_widget_get_type ())
+#define CENTER_DOCK_BOT_BOX_WIDGET_TYPE \
+  (center_dock_bot_box_widget_get_type ())
 G_DECLARE_FINAL_TYPE (CenterDockBotBoxWidget,
                       center_dock_bot_box_widget,
-                      CENTER_DOCK_BOT_BOX,
-                      WIDGET,
+                      Z,
+                      CENTER_DOCK_BOT_BOX_WIDGET,
                       GtkBox)
 
 typedef struct _CenterDockBotBoxWidget

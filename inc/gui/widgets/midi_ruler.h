@@ -1,7 +1,7 @@
 /*
  * inc/gui/widgets/midi_ruler.h - MIDI ruler
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -26,11 +26,12 @@
 
 #include <gtk/gtk.h>
 
-#define MIDI_RULER_WIDGET_TYPE                  (midi_ruler_widget_get_type ())
+#define MIDI_RULER_WIDGET_TYPE \
+  (midi_ruler_widget_get_type ())
 G_DECLARE_FINAL_TYPE (MidiRulerWidget,
                       midi_ruler_widget,
-                      MIDI_RULER,
-                      WIDGET,
+                      Z,
+                      MIDI_RULER_WIDGET,
                       RulerWidget)
 
 #define MIDI_RULER PIANO_ROLL->ruler

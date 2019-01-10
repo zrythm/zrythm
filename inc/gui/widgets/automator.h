@@ -1,7 +1,7 @@
 /*
  * gui/widgets/automator.h - A automator widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -26,16 +26,17 @@
 
 #include <gtk/gtk.h>
 
-#define AUTOMATOR_WIDGET_TYPE                  (automator_widget_get_type ())
-#define AUTOMATOR_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), AUTOMATOR_WIDGET_TYPE, AutomatorWidget))
-#define AUTOMATOR_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), AUTOMATOR_WIDGET, AutomatorWidgetClass))
-#define IS_AUTOMATOR_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AUTOMATOR_WIDGET_TYPE))
-#define IS_AUTOMATOR_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), AUTOMATOR_WIDGET_TYPE))
-#define AUTOMATOR_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), AUTOMATOR_WIDGET_TYPE, AutomatorWidgetClass))
+#define AUTOMATOR_WIDGET_TYPE \
+  (automator_widget_get_type ())
+G_DECLARE_FINAL_TYPE (AutomatorWidget,
+                      automator_widget,
+                      Z,
+                      AUTOMATOR_WIDGET,
+                      GtkGrid)
 
-typedef struct ControlWidget ControlWidget;
+typedef struct _ControlWidget ControlWidget;
 
-typedef struct AutomatorWidget
+typedef struct _AutomatorWidget
 {
   GtkGrid                   parent_instance;
   GtkLabel *                name;
@@ -47,12 +48,6 @@ typedef struct AutomatorWidget
   GtkToggleButton *         automate;
 } AutomatorWidget;
 
-typedef struct AutomatorWidgetClass
-{
-  GtkGridClass       parent_class;
-} AutomatorWidgetClass;
-
-
 /**
  * Creates a automator widget using the given automator data.
  */
@@ -60,4 +55,3 @@ AutomatorWidget *
 automator_widget_new ();
 
 #endif
-

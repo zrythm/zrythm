@@ -1,7 +1,7 @@
 /*
  * gui/widgets/pan.h - Pan widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -31,11 +31,9 @@
   (pan_widget_get_type ())
 G_DECLARE_FINAL_TYPE (PanWidget,
                       pan_widget,
-                      PAN,
-                      WIDGET,
+                      Z,
+                      PAN_WIDGET,
                       GtkDrawingArea)
-#define IS_PAN_WIDGET(obj) \
-  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PAN_WIDGET_TYPE))
 
 typedef struct _PanWidget
 {

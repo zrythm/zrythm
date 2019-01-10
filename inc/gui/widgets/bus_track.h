@@ -1,7 +1,7 @@
 /*
  * gui/widgets/track.h - Track view
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -31,11 +31,12 @@
   (bus_track_widget_get_type ())
 G_DECLARE_FINAL_TYPE (BusTrackWidget,
                       bus_track_widget,
-                      BUS_TRACK,
-                      WIDGET,
+                      Z,
+                      BUS_TRACK_WIDGET,
                       TrackWidget)
 
-typedef struct _AutomationTracklistWidget AutomationTracklistWidget;
+typedef struct _AutomationTracklistWidget
+  AutomationTracklistWidget;
 typedef struct BusTrack BusTrack;
 
 /**

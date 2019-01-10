@@ -1,7 +1,7 @@
 /*
  * gui/widgets/rack_plugin.h - A rack_plugin widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -26,17 +26,18 @@
 
 #include <gtk/gtk.h>
 
-#define RACK_PLUGIN_WIDGET_TYPE                  (rack_plugin_widget_get_type ())
-#define RACK_PLUGIN_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), RACK_PLUGIN_WIDGET_TYPE, RackPluginWidget))
-#define RACK_PLUGIN_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), RACK_PLUGIN_WIDGET, RackPluginWidgetClass))
-#define IS_RACK_PLUGIN_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), RACK_PLUGIN_WIDGET_TYPE))
-#define IS_RACK_PLUGIN_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), RACK_PLUGIN_WIDGET_TYPE))
-#define RACK_PLUGIN_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), RACK_PLUGIN_WIDGET_TYPE, RackPluginWidgetClass))
+#define RACK_PLUGIN_WIDGET_TYPE \
+  (rack_plugin_widget_get_type ())
+G_DECLARE_FINAL_TYPE (RackPluginWidget,
+                      rack_plugin_widget,
+                      Z,
+                      RACK_PLUGIN_WIDGET,
+                      GtkGrid)
 
-typedef struct ControlWidget ControlWidget;
+typedef struct _ControlWidget ControlWidget;
 typedef struct Plugin Plugin;
 
-typedef struct RackPluginWidget
+typedef struct _RackPluginWidget
 {
   GtkGrid                   parent_instance;
   GtkLabel *                name;
@@ -53,12 +54,6 @@ typedef struct RackPluginWidget
   GtkToggleButton *         automate;
   Plugin *                  plugin; ///< the plugin
 } RackPluginWidget;
-
-typedef struct RackPluginWidgetClass
-{
-  GtkGridClass       parent_class;
-} RackPluginWidgetClass;
-
 
 /**
  * Creates a rack_plugin widget using the given rack_plugin data.

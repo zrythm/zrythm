@@ -1,7 +1,7 @@
 /*
  * gui/widgets/control.h - A control widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -27,17 +27,17 @@
 #include <gtk/gtk.h>
 
 #define CONTROL_WIDGET_TYPE                  (control_widget_get_type ())
-#define CONTROL_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), CONTROL_WIDGET_TYPE, ControlWidget))
-#define CONTROL_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), CONTROL_WIDGET, ControlWidgetClass))
-#define IS_CONTROL_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), CONTROL_WIDGET_TYPE))
-#define IS_CONTROL_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), CONTROL_WIDGET_TYPE))
-#define CONTROL_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), CONTROL_WIDGET_TYPE, ControlWidgetClass))
+G_DECLARE_FINAL_TYPE (ControlWidget,
+                      control_widget,
+                      Z,
+                      CONTROL_WIDGET,
+                      GtkBox)
 
-typedef struct ControlWidget ControlWidget;
+typedef struct _ControlWidget ControlWidget;
 typedef struct Port Port;
-typedef struct KnobWidget KnobWidget;
+typedef struct _KnobWidget KnobWidget;
 
-typedef struct ControlWidget
+typedef struct _ControlWidget
 {
   GtkBox                    parent_instance;
   GtkLabel *                name;
@@ -47,11 +47,6 @@ typedef struct ControlWidget
   Port *                    port; ///< the port it corresponds to
 } ControlWidget;
 
-typedef struct ControlWidgetClass
-{
-  GtkBoxClass       parent_class;
-} ControlWidgetClass;
-
 /**
  * Creates a control widget using the given control data.
  */
@@ -59,5 +54,3 @@ ControlWidget *
 control_widget_new (Port * port);
 
 #endif
-
-

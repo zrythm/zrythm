@@ -67,8 +67,8 @@ int sort_category_func (const void *a, const void *b) {
 }
 
 int sort_plugin_func (const void *a, const void *b) {
-    Plugin_Descriptor * pa = *(Plugin_Descriptor * const *) a,
-                      * pb = *(Plugin_Descriptor * const *) b;
+    PluginDescriptor * pa = *(PluginDescriptor * const *) a,
+                      * pb = *(PluginDescriptor * const *) b;
     int r = strcasecmp(pa->name, pb->name);
     if (r)
       return r;
@@ -99,7 +99,7 @@ scan_plugins (PluginManager * self)
     {
       const LilvPlugin* p = lilv_plugins_get(plugins, i);
 
-      Plugin_Descriptor * descriptor =
+      PluginDescriptor * descriptor =
         lv2_create_descriptor_from_lilv (p);
 
       if (descriptor)

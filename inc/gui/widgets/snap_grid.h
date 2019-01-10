@@ -1,7 +1,7 @@
 /*
  * inc/gui/widgets/snap_grid.h - Snap and grid selection widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -24,14 +24,16 @@
 
 #include <gtk/gtk.h>
 
-#define SNAP_GRID_WIDGET_TYPE                  (snap_grid_widget_get_type ())
+#define SNAP_GRID_WIDGET_TYPE \
+  (snap_grid_widget_get_type ())
 G_DECLARE_FINAL_TYPE (SnapGridWidget,
                       snap_grid_widget,
-                      SNAP_GRID,
-                      WIDGET,
+                      Z,
+                      SNAP_GRID_WIDGET,
                       GtkMenuButton)
 
 typedef struct _SnapGridPopoverWidget SnapGridPopoverWidget;
+typedef struct SnapGrid SnapGrid;
 
 typedef struct _SnapGridWidget
 {
@@ -43,8 +45,6 @@ typedef struct _SnapGridWidget
   GtkBox                  * content; ///< popover content holder
   SnapGrid                * snap_grid;
 } SnapGridWidget;
-
-typedef struct SnapGrid SnapGrid;
 
 void
 snap_grid_widget_setup (SnapGridWidget * self,

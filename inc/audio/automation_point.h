@@ -26,7 +26,7 @@
 #include "audio/position.h"
 
 typedef struct AutomationTrack AutomationTrack;
-typedef struct AutomationPointWidget AutomationPointWidget;
+typedef struct _AutomationPointWidget AutomationPointWidget;
 
 typedef struct AutomationPoint
 {

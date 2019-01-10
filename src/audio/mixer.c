@@ -180,7 +180,7 @@ mixer_remove_channel (Mixer * self,
 void
 mixer_add_channel_from_plugin_descr (
   Mixer * mixer,
-  Plugin_Descriptor * descr)
+  PluginDescriptor * descr)
 {
   Plugin * plugin = plugin_create_from_descr (descr);
 

@@ -31,6 +31,7 @@
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "audio/transport.h"
+#include "audio/velocity.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_curve.h"
 #include "gui/widgets/automation_point.h"
@@ -140,19 +141,20 @@ midi_arranger_widget_set_allocation (
   GtkWidget *          widget,
   GdkRectangle *       allocation)
 {
-  if (IS_MIDI_NOTE_WIDGET (widget))
+  if (Z_IS_MIDI_NOTE_WIDGET (widget))
     {
-      MidiNoteWidget * midi_note_widget = MIDI_NOTE_WIDGET (widget);
+      MidiNoteWidget * midi_note_widget =
+        Z_MIDI_NOTE_WIDGET (widget);
       allocation->x =
         arranger_widget_pos_to_px (
-          ARRANGER_WIDGET (self),
+          Z_ARRANGER_WIDGET (self),
           &midi_note_widget->midi_note->start_pos);
       allocation->y =
         PIANO_ROLL->piano_roll_labels->px_per_note *
           (127 - midi_note_widget->midi_note->val);
       allocation->width =
         arranger_widget_pos_to_px (
-          ARRANGER_WIDGET (self),
+          Z_ARRANGER_WIDGET (self),
           &midi_note_widget->midi_note->end_pos) -
             allocation->x;
       allocation->height =
@@ -173,13 +175,13 @@ midi_arranger_widget_get_hit_midi_note (MidiArrangerWidget *  self,
 {
   GtkWidget * widget =
     arranger_widget_get_hit_widget (
-      ARRANGER_WIDGET (self),
+      Z_ARRANGER_WIDGET (self),
       ARRANGER_CHILD_TYPE_MIDI_NOTE,
       x,
       y);
   if (widget)
     {
-      return MIDI_NOTE_WIDGET (widget);
+      return Z_MIDI_NOTE_WIDGET (widget);
     }
   return NULL;
 }
@@ -233,7 +235,7 @@ midi_arranger_widget_on_drag_begin_note_hit (
   ARRANGER_WIDGET_GET_PRIVATE (self);
   MidiNote * midi_note = midi_note_widget->midi_note;
   prv->start_pos_px =
-    ruler_widget_pos_to_px (RULER_WIDGET (MIDI_RULER),
+    ruler_widget_pos_to_px (Z_RULER_WIDGET (MIDI_RULER),
                             &midi_note->start_pos);
   position_set_to_pos (&prv->start_pos, &midi_note->start_pos);
   position_set_to_pos (&prv->end_pos, &midi_note->end_pos);
@@ -285,11 +287,12 @@ midi_arranger_widget_on_drag_begin_create_note (
                    NULL,
                    (Region *) region,
                    prv->snap_grid);
+  Velocity * vel = velocity_default ();
   MidiNote * midi_note = midi_note_new (region,
                                    pos,
                                    pos,
                                    note,
-                                   -1);
+                                   vel);
   position_set_min_size (&midi_note->start_pos,
                          &midi_note->end_pos,
                          prv->snap_grid);
@@ -315,7 +318,7 @@ midi_arranger_widget_find_and_select_midi_notes (
   double               offset_x,
   double               offset_y)
 {
-  ArrangerWidget * aw = ARRANGER_WIDGET (self);
+  ArrangerWidget * aw = Z_ARRANGER_WIDGET (self);
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
   /* find enclosed midi notes */
@@ -335,7 +338,7 @@ midi_arranger_widget_find_and_select_midi_notes (
   for (int i = 0; i < num_midi_note_widgets; i++)
     {
       MidiNoteWidget * midi_note_widget =
-        MIDI_NOTE_WIDGET (midi_note_widgets[i]);
+        Z_MIDI_NOTE_WIDGET (midi_note_widgets[i]);
       MidiNote * midi_note = midi_note_widget->midi_note;
       self->midi_notes[self->num_midi_notes++] = midi_note;
       midi_arranger_widget_toggle_select_midi_note (
@@ -479,7 +482,7 @@ midi_arranger_widget_toggle_select_midi_note (
   int                  append)
 {
   arranger_widget_toggle_select (
-    ARRANGER_WIDGET (self),
+    Z_ARRANGER_WIDGET (self),
     ARRANGER_CHILD_TYPE_MIDI_NOTE,
     (void *) midi_note,
     append);

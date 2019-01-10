@@ -1,7 +1,7 @@
 /*
  * gui/widgets/right_dock_edge.h - Main window widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -25,12 +25,14 @@
 #include <gtk/gtk.h>
 #include <dazzle.h>
 
-#define RIGHT_DOCK_EDGE_WIDGET_TYPE                  (right_dock_edge_widget_get_type ())
+#define RIGHT_DOCK_EDGE_WIDGET_TYPE \
+  (right_dock_edge_widget_get_type ())
 G_DECLARE_FINAL_TYPE (RightDockEdgeWidget,
                       right_dock_edge_widget,
-                      RIGHT_DOCK_EDGE,
-                      WIDGET,
+                      Z,
+                      RIGHT_DOCK_EDGE_WIDGET,
                       GtkBox)
+
 #define MW_RIGHT_DOCK_EDGE MW_CENTER_DOCK->right_dock_edge
 
 typedef struct _BrowserWidget BrowserWidget;
@@ -43,6 +45,3 @@ typedef struct _RightDockEdgeWidget
 } RightDockEdgeWidget;
 
 #endif
-
-
-

@@ -1,7 +1,7 @@
 /*
  * inc/gui/widgets/editor_notebook.h - Editor notebook (bot of arranger)
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -22,15 +22,14 @@
 #ifndef __GUI_WIDGETS_PIANO_ROLL_H__
 #define __GUI_WIDGETS_PIANO_ROLL_H__
 
-#include "gui/widgets/main_window.h"
-
 #include <gtk/gtk.h>
 
-#define PIANO_ROLL_WIDGET_TYPE                  (piano_roll_widget_get_type ())
+#define PIANO_ROLL_WIDGET_TYPE \
+  (piano_roll_widget_get_type ())
 G_DECLARE_FINAL_TYPE (PianoRollWidget,
                       piano_roll_widget,
-                      PIANO_ROLL,
-                      WIDGET,
+                      Z,
+                      PIANO_ROLL_WIDGET,
                       GtkBox)
 
 #define PIANO_ROLL MW_BOT_DOCK_EDGE->piano_roll
@@ -39,6 +38,7 @@ typedef struct _PianoRollLabelsWidget PianoRollLabelsWidget;
 typedef struct _PianoRollNotesWidget PianoRollNotesWidget;
 typedef struct _MidiArrangerWidget MidiArrangerWidget;
 typedef struct _MidiRulerWidget MidiRulerWidget;
+typedef struct _ColorAreaWidget ColorAreaWidget;
 
 typedef struct _PianoRollWidget
 {
@@ -60,10 +60,12 @@ typedef struct _PianoRollWidget
   GtkScrolledWindow        * arranger_scroll;
   GtkViewport              * arranger_viewport;
   MidiArrangerWidget *     arranger;
+  PianoRoll *              piano_roll; ///< pointer to backend struct
 } MidiEditorWidget;
 
 void
 piano_roll_widget_setup (
-  PianoRollWidget * self);
+  PianoRollWidget * self,
+  PianoRoll *       pr);
 
 #endif

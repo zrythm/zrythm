@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2018 Alexandros Theodotou
+ * gui/widgets/piano_roll_labels.h - Piano roll labels
+ *
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -22,15 +24,14 @@
 #ifndef __GUI_WIDGETS_PIANO_ROLL_LABELS_H__
 #define __GUI_WIDGETS_PIANO_ROLL_LABELS_H__
 
-#include "gui/widgets/piano_roll.h"
-
 #include <gtk/gtk.h>
 
-#define PIANO_ROLL_LABELS_WIDGET_TYPE                  (piano_roll_labels_widget_get_type ())
+#define PIANO_ROLL_LABELS_WIDGET_TYPE \
+  (piano_roll_labels_widget_get_type ())
 G_DECLARE_FINAL_TYPE (PianoRollLabelsWidget,
                       piano_roll_labels_widget,
-                      PIANO_ROLL_LABELS,
-                      WIDGET,
+                      Z,
+                      PIANO_ROLL_LABELS_WIDGET,
                       GtkDrawingArea)
 
 #define DEFAULT_PX_PER_NOTE 8
@@ -47,5 +48,3 @@ typedef struct _PianoRollLabelsWidget
 } PianoRollLabelsWidget;
 
 #endif
-
-

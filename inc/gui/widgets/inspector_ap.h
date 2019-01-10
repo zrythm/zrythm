@@ -1,7 +1,7 @@
 /*
  * gui/widgets/inspector_ap.h - A inspector_ap widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -24,16 +24,17 @@
 
 #include <gtk/gtk.h>
 
-#define INSPECTOR_AP_WIDGET_TYPE                  (inspector_ap_widget_get_type ())
-#define INSPECTOR_AP_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), INSPECTOR_AP_WIDGET_TYPE, InspectorApWidget))
-#define INSPECTOR_AP_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), INSPECTOR_AP_WIDGET, InspectorApWidgetClass))
-#define IS_INSPECTOR_AP_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), INSPECTOR_AP_WIDGET_TYPE))
-#define IS_INSPECTOR_AP_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), INSPECTOR_AP_WIDGET_TYPE))
-#define INSPECTOR_AP_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), INSPECTOR_AP_WIDGET_TYPE, InspectorApWidgetClass))
+#define INSPECTOR_AP_WIDGET_TYPE \
+  (inspector_ap_widget_get_type ())
+G_DECLARE_FINAL_TYPE (InspectorApWidget,
+                      inspector_ap_widget,
+                      Z,
+                      INSPECTOR_AP_WIDGET,
+                      GtkGrid)
 
 typedef struct AutomationPoint AutomationPoint;
 
-typedef struct InspectorApWidget
+typedef struct _InspectorApWidget
 {
   GtkGrid             parent_instance;
   GtkLabel *          header;
@@ -42,11 +43,6 @@ typedef struct InspectorApWidget
   GtkColorButton *    color;
   GtkToggleButton *   mute_toggle;
 } InspectorApWidget;
-
-typedef struct InspectorApWidgetClass
-{
-  GtkGridClass       parent_class;
-} InspectorApWidgetClass;
 
 /**
  * Creates the inspector_ap widget.
@@ -57,12 +53,9 @@ InspectorApWidget *
 inspector_ap_widget_new ();
 
 void
-inspector_ap_widget_show_aps (InspectorApWidget * self,
-                              AutomationPoint **               aps,
-                              int                     num_aps);
+inspector_ap_widget_show_aps (
+  InspectorApWidget * self,
+  AutomationPoint **  aps,
+  int                 num_aps);
 
 #endif
-
-
-
-

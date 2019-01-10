@@ -1,7 +1,7 @@
 /*
  * gui/widgets/knob.h - knob
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -27,14 +27,15 @@
 
 #include <gtk/gtk.h>
 
-#define KNOB_WIDGET_TYPE          (knob_widget_get_type ())
-#define KNOB_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), KNOB_WIDGET_TYPE, Knob))
-#define KNOB_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), KNOB_WIDGET, KnobWidgetClass))
-#define IS_KNOB_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), KNOB_WIDGET_TYPE))
-#define IS_KNOB_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), KNOB_WIDGET_TYPE))
-#define KNOB_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), KNOB_WIDGET_TYPE, KnobWidgetClass))
+#define KNOB_WIDGET_TYPE \
+  (knob_widget_get_type ())
+G_DECLARE_FINAL_TYPE (KnobWidget,
+                      knob_widget,
+                      Z,
+                      KNOB_WIDGET,
+                      GtkDrawingArea)
 
-typedef struct KnobWidget
+typedef struct _KnobWidget
 {
   GtkDrawingArea        parent_instance;
   float (*getter)(void*);       ///< getter
@@ -54,11 +55,6 @@ typedef struct KnobWidget
   double                last_x;    ///< used in gesture drag
   double                last_y;    ///< used in gesture drag
 } KnobWidget;
-
-typedef struct KnobWidgetClass
-{
-  GtkDrawingAreaClass   parent_class;
-} KnobWidgetClass;
 
 /**
  * Creates a knob widget with the given options and binds it to the given value.

@@ -1,7 +1,7 @@
 /*
  * gui/widgets/mixer.h - Mixer widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -26,11 +26,12 @@
 
 #include <gtk/gtk.h>
 
-#define MIXER_WIDGET_TYPE                  (mixer_widget_get_type ())
+#define MIXER_WIDGET_TYPE \
+  (mixer_widget_get_type ())
 G_DECLARE_FINAL_TYPE (MixerWidget,
                       mixer_widget,
-                      MIXER,
-                      WIDGET,
+                      Z,
+                      MIXER_WIDGET,
                       GtkBox)
 
 #define MW_MIXER MW_BOT_DOCK_EDGE->mixer

@@ -1,7 +1,7 @@
 /*
  * gui/widgets/inspector.h - A inspector widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -24,20 +24,21 @@
 
 #include <gtk/gtk.h>
 
-#define INSPECTOR_WIDGET_TYPE                  (inspector_widget_get_type ())
+#define INSPECTOR_WIDGET_TYPE \
+  (inspector_widget_get_type ())
 G_DECLARE_FINAL_TYPE (InspectorWidget,
                       inspector_widget,
-                      INSPECTOR,
-                      WIDGET,
+                      Z,
+                      INSPECTOR_WIDGET,
                       GtkBox)
 
 #define MW_INSPECTOR MW_LEFT_DOCK_EDGE->inspector
 
 typedef struct Region Region;
-typedef struct InspectorRegionWidget InspectorRegionWidget;
-typedef struct InspectorApWidget InspectorApWidget;
+typedef struct _InspectorRegionWidget InspectorRegionWidget;
+typedef struct _InspectorApWidget InspectorApWidget;
 typedef struct _InspectorTrackWidget InspectorTrackWidget;
-typedef struct InspectorMidiWidget InspectorMidiWidget;
+typedef struct _InspectorMidiWidget InspectorMidiWidget;
 
 typedef enum InspectorWidgetChildType
 {

@@ -50,5 +50,4 @@ master_track_setup (MasterTrack * self);
 void
 master_track_free (MasterTrack * track);
 
-#endif // __AUDIO_BUS_TRACK_H__
-
+#endif // __AUDIO_MASTER_TRACK_H__

@@ -1,7 +1,7 @@
 /*
  * gui/widgets/audio_unit_label.h - AudioUnitLabel widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -27,12 +27,13 @@
 
 #include <gtk/gtk.h>
 
-#define AUDIO_UNIT_LABEL_WIDGET_TYPE                  (audio_unit_label_widget_get_type ())
-#define AUDIO_UNIT_LABEL_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), AUDIO_UNIT_LABEL_WIDGET_TYPE, AudioUnitLabelWidget))
-#define AUDIO_UNIT_LABEL_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), AUDIO_UNIT_LABEL_WIDGET, AudioUnitLabelWidgetClass))
-#define IS_AUDIO_UNIT_LABEL_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AUDIO_UNIT_LABEL_WIDGET_TYPE))
-#define IS_AUDIO_UNIT_LABEL_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), AUDIO_UNIT_LABEL_WIDGET_TYPE))
-#define AUDIO_UNIT_LABEL_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), AUDIO_UNIT_LABEL_WIDGET_TYPE, AudioUnitLabelWidgetClass))
+#define AUDIO_UNIT_LABEL_WIDGET_TYPE \
+  (audio_unit_label_widget_get_type ())
+G_DECLARE_FINAL_TYPE (AudioUnitLabelWidget,
+                      audio_unit_label_widget,
+                      Z,
+                      AUDIO_UNIT_LABEL_WIDGET,
+                      GtkBox)
 
 typedef enum AULType
 {
@@ -41,9 +42,9 @@ typedef enum AULType
 } AULType;
 
 typedef struct Port Port;
-typedef struct AudioUnitWidget AudioUnitWidget;
+typedef struct _AudioUnitWidget AudioUnitWidget;
 
-typedef struct AudioUnitLabelWidget
+typedef struct _AudioUnitLabelWidget
 {
   GtkBox                 parent_instance;
   GtkDrawingArea *       da;
@@ -54,11 +55,6 @@ typedef struct AudioUnitLabelWidget
   int                    hover; ///< hovered or not
 } AudioUnitLabelWidget;
 
-typedef struct AudioUnitLabelWidgetClass
-{
-  GtkBoxClass    parent_class;
-} AudioUnitLabelWidgetClass;
-
 /**
  * Creates a new AudioUnitLabel widget and binds it to the given value.
  */
@@ -68,4 +64,3 @@ audio_unit_label_widget_new (AULType type,
                              AudioUnitWidget * parent);
 
 #endif
-

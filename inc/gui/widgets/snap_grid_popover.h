@@ -1,7 +1,8 @@
 /*
- * inc/gui/widgets/snap_grid_popover_popover.h - Snap and grid_popover popover widget
+ * inc/gui/widgets/snap_grid_popover_popover.h - Snap and
+ *   grid popover widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -25,13 +26,13 @@
 
 #include <gtk/gtk.h>
 
-#define SNAP_GRID_POPOVER_WIDGET_TYPE                  (snap_grid_popover_widget_get_type ())
+#define SNAP_GRID_POPOVER_WIDGET_TYPE \
+  (snap_grid_popover_widget_get_type ())
 G_DECLARE_FINAL_TYPE (SnapGridPopoverWidget,
                       snap_grid_popover_widget,
-                      SNAP_GRID_POPOVER,
-                      WIDGET,
+                      Z,
+                      SNAP_GRID_POPOVER_WIDGET,
                       GtkPopover)
-#define IS_SNAP_GRID_POPOVER_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SNAP_GRID_POPOVER_WIDGET_TYPE))
 
 typedef struct _DigitalMeterWidget DigitalMeterWidget;
 typedef struct _SnapGridWidget SnapGridWidget;

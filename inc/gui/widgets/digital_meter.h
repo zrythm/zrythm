@@ -1,7 +1,7 @@
 /*
- * inc/gui/widgets/ruler.h - DigitalMeter
+ * inc/gui/widgets/digital_meter.h - DigitalMeter
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -28,8 +28,8 @@
   (digital_meter_widget_get_type ())
 G_DECLARE_FINAL_TYPE (DigitalMeterWidget,
                       digital_meter_widget,
-                      DIGITAL_METER,
-                      WIDGET,
+                      Z,
+                      DIGITAL_METER_WIDGET,
                       GtkDrawingArea)
 
 typedef enum DigitalMeterType

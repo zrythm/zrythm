@@ -500,9 +500,9 @@ drag_update (GtkGestureDrag * gesture,
           self->update_timesig_bot)
         {
           ruler_widget_refresh (
-            RULER_WIDGET (MW_RULER));
+            Z_RULER_WIDGET (MW_RULER));
           ruler_widget_refresh (
-            RULER_WIDGET (MIDI_RULER));
+            Z_RULER_WIDGET (MIDI_RULER));
           gtk_widget_queue_draw (
             GTK_WIDGET (MW_TIMELINE));
           gtk_widget_queue_draw (

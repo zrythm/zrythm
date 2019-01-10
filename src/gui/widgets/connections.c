@@ -122,7 +122,7 @@ static void
 on_selector_changed (GtkComboBox * widget,
                gpointer     user_data)
 {
-  ConnectionsWidget * self = CONNECTIONS_WIDGET (user_data);
+  ConnectionsWidget * self = Z_CONNECTIONS_WIDGET (user_data);
 
   GtkTreeIter iter;
   gtk_combo_box_get_active_iter (widget, &iter);

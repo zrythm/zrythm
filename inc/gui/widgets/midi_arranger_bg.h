@@ -1,7 +1,7 @@
 /*
  * inc/gui/widgets/midi_arranger_bg.h - MidiArranger background
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -24,11 +24,12 @@
 
 #include <gtk/gtk.h>
 
-#define MIDI_ARRANGER_BG_WIDGET_TYPE                  (midi_arranger_bg_widget_get_type ())
+#define MIDI_ARRANGER_BG_WIDGET_TYPE \
+  (midi_arranger_bg_widget_get_type ())
 G_DECLARE_FINAL_TYPE (MidiArrangerBgWidget,
                       midi_arranger_bg_widget,
-                      MIDI_ARRANGER_BG,
-                      WIDGET,
+                      Z,
+                      MIDI_ARRANGER_BG_WIDGET,
                       GtkDrawingArea);
 
 typedef struct _MidiArrangerBgWidget
@@ -47,6 +48,3 @@ MidiArrangerBgWidget *
 midi_arranger_bg_widget_new ();
 
 #endif
-
-
-

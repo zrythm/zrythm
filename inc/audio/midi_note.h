@@ -2,7 +2,7 @@
  * audio/midi_note.h - A midi_note in the timeline having a start
  *   and an end
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -26,11 +26,12 @@
 #include "audio/position.h"
 #include "audio/midi_region.h"
 
-typedef struct MidiNoteWidget MidiNoteWidget;
+typedef struct _MidiNoteWidget MidiNoteWidget;
 typedef struct Channel Channel;
 typedef struct Track Track;
 typedef struct MidiEvents MidiEvents;
 typedef struct Position Position;
+typedef struct Velocity Velocity;
 
 typedef struct MidiNote
 {
@@ -39,16 +40,16 @@ typedef struct MidiNote
   Position        end_pos;
   MidiNoteWidget  * widget;
   MidiRegion *    midi_region; ///< owner region
-  int             vel;  ///< velocity
+  Velocity *      vel;  ///< velocity
   int             val; ///< note
 } MidiNote;
 
 MidiNote *
 midi_note_new (MidiRegion * region,
-               Position * start_pos,
-               Position * end_pos,
-               int      val,
-               int      vel);
+               Position *   start_pos,
+               Position *   end_pos,
+               int          val,
+               Velocity *   vel);
 
 void
 midi_note_delete (MidiNote * midi_note);
@@ -77,5 +78,4 @@ midi_note_notes_to_events (MidiNote     ** midi_notes, ///< array
                            MidiEvents   * events);  ///< preallocated struct to fill
 
 
-#endif // __AUDIO_POSITION_H__
-
+#endif // __AUDIO_MIDI_NOTE_H__

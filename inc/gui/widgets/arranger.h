@@ -31,21 +31,21 @@
 #define ARRANGER_WIDGET_TYPE                  (arranger_widget_get_type ())
 G_DECLARE_DERIVABLE_TYPE (ArrangerWidget,
                           arranger_widget,
-                          ARRANGER,
-                          WIDGET,
+                          Z,
+                          ARRANGER_WIDGET,
                           GtkOverlay)
 
 #define ARRANGER_TOGGLE_SELECT_MIDI_NOTE(self, midi_note, append) \
   arranger_widget_toggle_select ( \
-    ARRANGER_WIDGET (self), \
+    Z_ARRANGER_WIDGET (self), \
     ARRANGER_CHILD_TYPE_MIDI_NOTE, \
     (void *) midi_note, \
     append);
 #define ARRANGER_WIDGET_GET_PRIVATE(self) \
   ArrangerWidgetPrivate * prv = \
-    arranger_widget_get_private (ARRANGER_WIDGET (self));
+    arranger_widget_get_private (Z_ARRANGER_WIDGET (self));
 
-typedef struct ArrangerBgWidget ArrangerBgWidget;
+typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote MidiNote;
 typedef struct SnapGrid SnapGrid;
 typedef struct AutomationPoint AutomationPoint;
@@ -53,7 +53,8 @@ typedef struct AutomationPoint AutomationPoint;
 typedef enum ArrangerWidgetType
 {
   ARRANGER_TYPE_TIMELINE,
-  ARRANGER_TYPE_MIDI
+  ARRANGER_TYPE_MIDI,
+  ARRANGER_TYPE_MIDI_MODIFIER
 } ArrangerWidgetType;
 
 typedef enum ArrangerAction
@@ -161,29 +162,10 @@ void
 arranger_bg_draw_selections (ArrangerWidget * arranger,
                              cairo_t *        cr);
 
-/**
- * Selects the region.
- *
- * NOTE for timeline.
- */
 void
-arranger_widget_toggle_select_region (ArrangerWidget * self,
-                                      Region         * region,
-                                      int              append);
-
-void
-arranger_widget_toggle_select_automation_point (ArrangerWidget * self,
-                                      AutomationPoint         * ap,
-                                      int              append);
-
-void
-arranger_widget_toggle_select_midi_note (ArrangerWidget * self,
-                                      MidiNote         * midi_note,
-                                      int              append);
-
-void
-arranger_widget_select_all (ArrangerWidget *  self,
-                                   int               select);
+arranger_widget_select_all (
+  ArrangerWidget *  self,
+  int               select);
 
 /**
  * Readd children.

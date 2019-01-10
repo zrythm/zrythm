@@ -1,7 +1,7 @@
 /*
  * gui/widgets/rack_row.h - A rack_row widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -26,12 +26,13 @@
 
 #include <gtk/gtk.h>
 
-#define RACK_ROW_WIDGET_TYPE                  (rack_row_widget_get_type ())
-#define RACK_ROW_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), RACK_ROW_WIDGET_TYPE, RackRowWidget))
-#define RACK_ROW_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), RACK_ROW_WIDGET, RackRowWidgetClass))
-#define IS_RACK_ROW_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), RACK_ROW_WIDGET_TYPE))
-#define IS_RACK_ROW_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), RACK_ROW_WIDGET_TYPE))
-#define RACK_ROW_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), RACK_ROW_WIDGET_TYPE, RackRowWidgetClass))
+#define RACK_ROW_WIDGET_TYPE \
+  (rack_row_widget_get_type ())
+G_DECLARE_FINAL_TYPE (RackRowWidget,
+                      rack_row_widget,
+                      Z,
+                      RACK_ROW_WIDGET,
+                      GtkBox)
 
 typedef enum RRWType
 {
@@ -39,10 +40,10 @@ typedef enum RRWType
   RRW_TYPE_CHANNEL
 } RRWType;
 
-typedef struct AutomatorWidget AutomatorWidget;
-typedef struct RackPluginWidget RackPluginWidget;
+typedef struct _AutomatorWidget AutomatorWidget;
+typedef struct _RackPluginWidget RackPluginWidget;
 
-typedef struct RackRowWidget
+typedef struct _RackRowWidget
 {
   GtkBox                  parent_instance;
   GtkExpander *           expander;
@@ -55,12 +56,6 @@ typedef struct RackRowWidget
   Channel *               channel; ///< channel, if type channel
 } RackRowWidget;
 
-typedef struct RackRowWidgetClass
-{
-  GtkBoxClass       parent_class;
-} RackRowWidgetClass;
-
-
 /**
  * Creates a rack_row widget using the given rack_row data.
  */
@@ -69,4 +64,3 @@ rack_row_widget_new (RRWType              type,
                      Channel *            channel); ///< channel, if type channel
 
 #endif
-

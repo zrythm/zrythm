@@ -69,7 +69,7 @@ add_automation_track (AutomationTracklistWidget * atlw,
 static void
 on_add_lane_clicked (GtkWidget * widget, void * data)
 {
-  AutomationTrackWidget * self = AUTOMATION_TRACK_WIDGET (data);
+  AutomationTrackWidget * self = Z_AUTOMATION_TRACK_WIDGET (data);
 
   /* get next non visible automation track and add its widget via
    * track_widget_add_automatoin_track_widget */
@@ -107,7 +107,8 @@ void
 on_at_selector_changed (GtkComboBox * widget,
                gpointer     user_data)
 {
-  AutomationTrackWidget * self = AUTOMATION_TRACK_WIDGET (user_data);
+  AutomationTrackWidget * self =
+    Z_AUTOMATION_TRACK_WIDGET (user_data);
 
   GtkTreeIter iter;
   gtk_combo_box_get_active_iter (widget, &iter);
@@ -170,22 +171,33 @@ create_automatables_store (Track * track)
 static void
 setup_combo_box (AutomationTrackWidget * self)
 {
-  GtkTreeModel * model = create_automatables_store (self->at->track);
+  GtkTreeModel * model =
+    create_automatables_store (self->at->track);
   gtk_combo_box_set_model (self->selector,
                            model);
-  gtk_cell_layout_clear (GTK_CELL_LAYOUT (self->selector));
-  GtkCellRenderer* renderer = gtk_cell_renderer_text_new ();
-  gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (self->selector), renderer, TRUE);
-  gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (self->selector), renderer,
-                                  "text", 0,
-                                  NULL);
+  gtk_cell_layout_clear (
+    GTK_CELL_LAYOUT (self->selector));
+  GtkCellRenderer* renderer =
+    gtk_cell_renderer_text_new ();
+  gtk_cell_layout_pack_start (
+    GTK_CELL_LAYOUT (self->selector),
+    renderer,
+    TRUE);
+  gtk_cell_layout_set_attributes (
+    GTK_CELL_LAYOUT (self->selector),
+    renderer,
+    "text", 0,
+    NULL);
 
   GtkTreeIter iter;
   /* FIXME find the associated automatable */
-  GtkTreePath * path = gtk_tree_path_new_from_indices (0, -1);
+  GtkTreePath * path =
+    gtk_tree_path_new_from_indices (0, -1);
   gtk_tree_model_get_iter (model, &iter, path);
   gtk_tree_path_free (path);
-  gtk_combo_box_set_active_iter (GTK_COMBO_BOX (self->selector), &iter);
+  gtk_combo_box_set_active_iter (
+    GTK_COMBO_BOX (self->selector),
+    &iter);
 }
 
 void
@@ -262,8 +274,9 @@ automation_track_widget_get_fvalue_at_y (AutomationTrackWidget * at_widget,
   Automatable * a = at_widget->at->automatable;
 
   GtkAllocation allocation;
-  gtk_widget_get_allocation (GTK_WIDGET (at_widget),
-                             &allocation);
+  gtk_widget_get_allocation (
+    GTK_WIDGET (at_widget),
+    &allocation);
 
   gint wx, valy;
   gtk_widget_translate_coordinates(

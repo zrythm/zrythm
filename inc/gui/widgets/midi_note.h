@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2018 Alexandros Theodotou
+ * gui/widgets/midi_note.h - MIDI note
+ *
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -26,12 +28,13 @@
 
 #include <gtk/gtk.h>
 
-#define MIDI_NOTE_WIDGET_TYPE                  (midi_note_widget_get_type ())
-#define MIDI_NOTE_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), MIDI_NOTE_WIDGET_TYPE, MidiNoteWidget))
-#define MIDI_NOTE_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), MIDI_NOTE_WIDGET, MidiNoteWidgetClass))
-#define IS_MIDI_NOTE_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), MIDI_NOTE_WIDGET_TYPE))
-#define IS_MIDI_NOTE_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), MIDI_NOTE_WIDGET_TYPE))
-#define MIDI_NOTE_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), MIDI_NOTE_WIDGET_TYPE, MidiNoteWidgetClass))
+#define MIDI_NOTE_WIDGET_TYPE \
+  (midi_note_widget_get_type ())
+G_DECLARE_FINAL_TYPE (MidiNoteWidget,
+                      midi_note_widget,
+                      Z,
+                      MIDI_NOTE_WIDGET,
+                      GtkBox)
 
 typedef enum MidiNoteWidgetState
 {
@@ -42,17 +45,12 @@ typedef enum MidiNoteWidgetState
   MNW_STATE_HOVER
 } MidiNoteWidgetState;
 
-typedef struct MidiNoteWidget
+typedef struct _MidiNoteWidget
 {
   GtkBox                   parent_instance;
   MidiNote *               midi_note;   ///< the midi_note associated with this
   MidiNoteWidgetState      state;
 } MidiNoteWidget;
-
-typedef struct MidiNoteWidgetClass
-{
-  GtkBoxClass       parent_class;
-} MidiNoteWidgetClass;
 
 /**
  * Creates a midi_note.
@@ -64,9 +62,8 @@ midi_note_widget_new (MidiNote * midi_note);
  * Sets hover state and queues draw.
  */
 void
-midi_note_widget_set_state_and_queue_draw (MidiNoteWidget *    self,
-                                           MidiNoteWidgetState state);
-
-GType midi_note_widget_get_type(void);
+midi_note_widget_set_state_and_queue_draw (
+  MidiNoteWidget *    self,
+  MidiNoteWidgetState state);
 
 #endif

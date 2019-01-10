@@ -1,7 +1,7 @@
 /*
  * gui/widgets/audio_unit.h - AudioUnit widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -25,11 +25,11 @@
 #include <gtk/gtk.h>
 
 #define AUDIO_UNIT_WIDGET_TYPE                  (audio_unit_widget_get_type ())
-#define AUDIO_UNIT_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), AUDIO_UNIT_WIDGET_TYPE, AudioUnitWidget))
-#define AUDIO_UNIT_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), AUDIO_UNIT_WIDGET, AudioUnitWidgetClass))
-#define IS_AUDIO_UNIT_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AUDIO_UNIT_WIDGET_TYPE))
-#define IS_AUDIO_UNIT_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), AUDIO_UNIT_WIDGET_TYPE))
-#define AUDIO_UNIT_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), AUDIO_UNIT_WIDGET_TYPE, AudioUnitWidgetClass))
+G_DECLARE_FINAL_TYPE (AudioUnitWidget,
+                      audio_unit_widget,
+                      Z,
+                      AUDIO_UNIT_WIDGET,
+                      GtkGrid)
 
 typedef enum AUWidgetType
 {
@@ -44,10 +44,10 @@ typedef enum AUWidgetType
 typedef struct Plugin Plugin;
 typedef struct Channel Channel;
 typedef struct RackController RackController;
-typedef struct AudioUnitLabelWidget AudioUnitLabelWidget;
+typedef struct _AudioUnitLabelWidget AudioUnitLabelWidget;
 typedef enum AULType AULType;
 
-typedef struct AudioUnitWidget
+typedef struct _AudioUnitWidget
 {
   GtkGrid                  parent_instance;
   AudioUnitLabelWidget *   l_labels[400];
@@ -63,11 +63,6 @@ typedef struct AudioUnitWidget
   RackController *         rc; ///< if rack controller;
   AUWidgetType             type;
 } AudioUnitWidget;
-
-typedef struct AudioUnitWidgetClass
-{
-  GtkGridClass               parent_class;
-} AudioUnitWidgetClass;
 
 AudioUnitWidget *
 audio_unit_widget_new (int is_right);

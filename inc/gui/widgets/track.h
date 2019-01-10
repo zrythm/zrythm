@@ -1,7 +1,7 @@
 /*
  * gui/widgets/track.h - Track view
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -27,17 +27,14 @@
 #define TRACK_WIDGET_TYPE \
   (track_widget_get_type ())
 G_DECLARE_DERIVABLE_TYPE (TrackWidget,
-                      track_widget,
-                      TRACK,
-                      WIDGET,
-                      GtkGrid)
-#define IS_TRACK_WIDGET(obj) \
-  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), \
-   TRACK_WIDGET_TYPE))
+                          track_widget,
+                          Z,
+                          TRACK_WIDGET,
+                          GtkGrid)
 
 #define TRACK_WIDGET_GET_PRIVATE(self) \
   TrackWidgetPrivate * tw_prv = \
-    track_widget_get_private (TRACK_WIDGET (self));
+    track_widget_get_private (Z_TRACK_WIDGET (self));
 
 typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct Track Track;

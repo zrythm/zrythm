@@ -1,7 +1,7 @@
 /*
  * inc/gui/widgets/arranger.h - MIDI arranger widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -29,18 +29,19 @@
 
 #include <gtk/gtk.h>
 
-#define MIDI_ARRANGER_WIDGET_TYPE (midi_arranger_widget_get_type ())
+#define MIDI_ARRANGER_WIDGET_TYPE \
+  (midi_arranger_widget_get_type ())
 G_DECLARE_FINAL_TYPE (MidiArrangerWidget,
                       midi_arranger_widget,
-                      MIDI_ARRANGER,
-                      WIDGET,
+                      Z,
+                      MIDI_ARRANGER_WIDGET,
                       ArrangerWidget)
 
 #define MIDI_ARRANGER PIANO_ROLL->arranger
 
-typedef struct ArrangerBgWidget ArrangerBgWidget;
+typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote MidiNote;
-typedef struct MidiNoteWidget MidiNoteWidget;
+typedef struct _MidiNoteWidget MidiNoteWidget;
 typedef struct SnapGrid SnapGrid;
 typedef struct AutomationPoint AutomationPoint;
 typedef struct MidiRegion MidiRegion;

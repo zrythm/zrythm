@@ -1,7 +1,7 @@
 /*
  * gui/widgets/connections.h - Connections widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -28,13 +28,13 @@
   (connections_widget_get_type ())
 G_DECLARE_FINAL_TYPE (ConnectionsWidget,
                       connections_widget,
-                      CONNECTIONS,
-                      WIDGET,
+                      Z,
+                      CONNECTIONS_WIDGET,
                       GtkGrid)
 
 #define MW_CONNECTIONS MW_BOT_DOCK_EDGE->connections
 
-typedef struct AudioUnitWidget AudioUnitWidget;
+typedef struct _AudioUnitWidget AudioUnitWidget;
 
 typedef struct _ConnectionsWidget
 {

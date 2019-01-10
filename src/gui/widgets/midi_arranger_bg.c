@@ -117,8 +117,9 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
     }
 
   /* draw selections */
-  arranger_bg_draw_selections (ARRANGER_WIDGET (MIDI_ARRANGER),
-                               cr);
+  arranger_bg_draw_selections (
+    Z_ARRANGER_WIDGET (MIDI_ARRANGER),
+    cr);
 
   return 0;
 }
@@ -141,7 +142,7 @@ drag_begin (GtkGestureDrag * gesture,
                gpointer        user_data)
 {
   MidiArrangerBgWidget * self =
-    MIDI_ARRANGER_BG_WIDGET (user_data);
+    Z_MIDI_ARRANGER_BG_WIDGET (user_data);
   self->start_x = start_x;
 }
 

@@ -1,7 +1,7 @@
 /*
  * gui/widgets/export_dialog.h - Export audio dialog
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -24,14 +24,15 @@
 
 #include <gtk/gtk.h>
 
-#define EXPORT_DIALOG_WIDGET_TYPE                  (export_dialog_widget_get_type ())
-#define EXPORT_DIALOG_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), EXPORT_DIALOG_WIDGET_TYPE, ExportDialogWidget))
-#define EXPORT_DIALOG_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), EXPORT_DIALOG_WIDGET, ExportDialogWidgetClass))
-#define IS_EXPORT_DIALOG_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), EXPORT_DIALOG_WIDGET_TYPE))
-#define IS_EXPORT_DIALOG_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), EXPORT_DIALOG_WIDGET_TYPE))
-#define EXPORT_DIALOG_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), EXPORT_DIALOG_WIDGET_TYPE, ExportDialogWidgetClass))
+#define EXPORT_DIALOG_WIDGET_TYPE \
+  (export_dialog_widget_get_type ())
+G_DECLARE_FINAL_TYPE (ExportDialogWidget,
+                      export_dialog_widget,
+                      Z,
+                      EXPORT_DIALOG_WIDGET,
+                      GtkDialog)
 
-typedef struct ExportDialogWidget
+typedef struct _ExportDialogWidget
 {
   GtkDialog            parent_instance;
   GtkButton            * cancel_button;
@@ -47,11 +48,6 @@ typedef struct ExportDialogWidget
   GtkLabel             * output_label;
 } ExportDialogWidget;
 
-typedef struct ExportDialogWidgetClass
-{
-  GtkDialogClass       parent_class;
-} ExportDialogWidgetClass;
-
 /**
  * Creates a export_dialog widget and displays it.
  */
@@ -59,4 +55,3 @@ ExportDialogWidget *
 export_dialog_widget_new ();
 
 #endif
-

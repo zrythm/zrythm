@@ -60,19 +60,19 @@ size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
     MW_CENTER_DOCK->timeline));
 }
 
-static void
-on_show_automation (GtkWidget * widget, void * data)
-{
-  TrackWidget * self = TRACK_WIDGET (data);
+/*static void*/
+/*on_show_automation (GtkWidget * widget, void * data)*/
+/*{*/
+  /*TrackWidget * self = Z_TRACK_WIDGET (data);*/
 
-  TRACK_WIDGET_GET_PRIVATE (self);
+  /*TRACK_WIDGET_GET_PRIVATE (self);*/
 
-  /* toggle visibility flag */
-  tw_prv->track->bot_paned_visible =
-    tw_prv->track->bot_paned_visible ? 0 : 1;
+  /*[> toggle visibility flag <]*/
+  /*tw_prv->track->bot_paned_visible =*/
+    /*tw_prv->track->bot_paned_visible ? 0 : 1;*/
 
-  tracklist_widget_show (MW_CENTER_DOCK->tracklist);
-}
+  /*tracklist_widget_show (MW_CENTER_DOCK->tracklist);*/
+/*}*/
 
 void
 track_widget_select (TrackWidget * self,
@@ -98,7 +98,7 @@ on_motion (GtkWidget * widget,
            GdkEventMotion *event,
            gpointer        user_data)
 {
-  TrackWidget * self = TRACK_WIDGET (user_data);
+  TrackWidget * self = Z_TRACK_WIDGET (user_data);
 
   if (event->type == GDK_ENTER_NOTIFY)
     {
@@ -125,23 +125,23 @@ track_widget_refresh (TrackWidget * self)
     {
     case TRACK_TYPE_INSTRUMENT:
       instrument_track_widget_refresh (
-        INSTRUMENT_TRACK_WIDGET (self));
+        Z_INSTRUMENT_TRACK_WIDGET (self));
       break;
     case TRACK_TYPE_MASTER:
       master_track_widget_refresh (
-        MASTER_TRACK_WIDGET (self));
+        Z_MASTER_TRACK_WIDGET (self));
       break;
     case TRACK_TYPE_AUDIO:
       audio_track_widget_refresh (
-        AUDIO_TRACK_WIDGET (self));
+        Z_AUDIO_TRACK_WIDGET (self));
       break;
     case TRACK_TYPE_CHORD:
       chord_track_widget_refresh (
-        CHORD_TRACK_WIDGET (self));
+        Z_CHORD_TRACK_WIDGET (self));
       break;
     case TRACK_TYPE_BUS:
       bus_track_widget_refresh (
-        BUS_TRACK_WIDGET (self));
+        Z_BUS_TRACK_WIDGET (self));
       break;
     }
 }
@@ -167,28 +167,28 @@ track_widget_new (Track * track)
   switch (track->type)
     {
     case TRACK_TYPE_CHORD:
-      self = TRACK_WIDGET (
+      self = Z_TRACK_WIDGET (
         chord_track_widget_new (track));
       break;
     case TRACK_TYPE_BUS:
-      self = TRACK_WIDGET (
+      self = Z_TRACK_WIDGET (
         bus_track_widget_new (track));
       break;
     case TRACK_TYPE_INSTRUMENT:
-      self = TRACK_WIDGET (
+      self = Z_TRACK_WIDGET (
         instrument_track_widget_new (track));
       break;
     case TRACK_TYPE_MASTER:
-      self = TRACK_WIDGET (
+      self = Z_TRACK_WIDGET (
         master_track_widget_new (track));
       break;
     case TRACK_TYPE_AUDIO:
-      self = TRACK_WIDGET (
+      self = Z_TRACK_WIDGET (
         audio_track_widget_new (track));
       break;
     }
 
-  g_assert (IS_TRACK_WIDGET (self));
+  g_assert (Z_IS_TRACK_WIDGET (self));
 
   TRACK_WIDGET_GET_PRIVATE (self);
   tw_prv->track = track;
@@ -201,7 +201,7 @@ track_widget_on_show_automation (GtkWidget * widget,
                                  void *      data)
 {
   TrackWidget * self =
-    TRACK_WIDGET (data);
+    Z_TRACK_WIDGET (data);
 
   TRACK_WIDGET_GET_PRIVATE (self);
 

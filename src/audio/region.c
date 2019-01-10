@@ -58,7 +58,7 @@ region_init (Region *   region,
   else if (track->type == TRACK_TYPE_INSTRUMENT)
     {
       region->type = REGION_TYPE_MIDI;
-      region->widget = REGION_WIDGET (
+      region->widget = Z_REGION_WIDGET (
         midi_region_widget_new (
           (MidiRegion *) region));
     }

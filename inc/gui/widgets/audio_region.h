@@ -30,8 +30,8 @@
 #define AUDIO_REGION_WIDGET_TYPE (audio_region_widget_get_type ())
 G_DECLARE_FINAL_TYPE (AudioRegionWidget,
                       audio_region_widget,
-                      AUDIO_REGION,
-                      WIDGET,
+                      Z,
+                      AUDIO_REGION_WIDGET,
                       RegionWidget);
 
 typedef struct AudioRegion AudioRegion;

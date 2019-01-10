@@ -41,10 +41,11 @@ on_drag_data_received (GtkWidget        *widget,
                guint             time,
                gpointer          user_data)
 {
-  ChannelSlotWidget * channel_slot = CHANNEL_SLOT_WIDGET (widget);
+  ChannelSlotWidget * channel_slot =
+    Z_CHANNEL_SLOT_WIDGET (widget);
   Channel * channel = channel_slot->channel;
 
-  Plugin_Descriptor * descr = *(gpointer *) gtk_selection_data_get_data (data);
+  PluginDescriptor * descr = *(gpointer *) gtk_selection_data_get_data (data);
 
   Plugin * plugin = plugin_create_from_descr (descr);
 

@@ -257,7 +257,7 @@ multipress_pressed (GtkGestureMultiPress *gesture,
                gdouble               y,
                gpointer              user_data)
 {
-  RulerWidget * self = RULER_WIDGET (user_data);
+  RulerWidget * self = Z_RULER_WIDGET (user_data);
   if (n_press == 2)
     {
       Position pos;
@@ -277,7 +277,7 @@ drag_begin (GtkGestureDrag * gesture,
                gdouble         start_y,
                gpointer        user_data)
 {
-  RulerWidget * self = RULER_WIDGET (user_data);
+  RulerWidget * self = Z_RULER_WIDGET (user_data);
   GET_PRIVATE;
 
   prv->start_x = start_x;
@@ -295,7 +295,7 @@ drag_update (GtkGestureDrag * gesture,
                gdouble         offset_y,
                gpointer        user_data)
 {
-  RulerWidget * self = RULER_WIDGET (user_data);
+  RulerWidget * self = Z_RULER_WIDGET (user_data);
   GET_PRIVATE;
 
   Position pos;

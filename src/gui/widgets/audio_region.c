@@ -92,7 +92,7 @@ draw_cb (AudioRegionWidget * self, cairo_t *cr, gpointer data)
 static void
 on_motion (GtkWidget * widget, GdkEventMotion *event)
 {
-  AudioRegionWidget * self = AUDIO_REGION_WIDGET (widget);
+  AudioRegionWidget * self = Z_AUDIO_REGION_WIDGET (widget);
   GtkAllocation allocation;
   gtk_widget_get_allocation (widget,
                              &allocation);
@@ -143,7 +143,7 @@ audio_region_widget_new (AudioRegion * audio_region)
   g_message ("Creating audio region widget...");
   AudioRegionWidget * self = g_object_new (AUDIO_REGION_WIDGET_TYPE, NULL);
 
-  region_widget_setup (REGION_WIDGET (self),
+  region_widget_setup (Z_REGION_WIDGET (self),
                        (Region *) audio_region);
 
   /* connect signals */

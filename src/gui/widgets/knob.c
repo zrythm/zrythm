@@ -330,6 +330,8 @@ knob_widget_new (float (*get_val)(void *),    ///< getter function
                     int         size,
                     float       zero)
 {
+  g_assert (object);
+
   KnobWidget * self = g_object_new (KNOB_WIDGET_TYPE, NULL);
   /*self->value = value;*/
   self->getter = get_val;
@@ -374,6 +376,9 @@ knob_widget_init (KnobWidget * self)
   int crossing_mask = GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;
   gtk_widget_add_events (GTK_WIDGET (self), crossing_mask);
   self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new (GTK_WIDGET (&self->parent_instance)));
+
+  gtk_widget_set_visible (GTK_WIDGET (self),
+                          1);
 }
 
 static void

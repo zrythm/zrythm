@@ -23,6 +23,7 @@
 #include "settings.h"
 #include "audio/engine.h"
 #include "audio/mixer.h"
+#include "audio/piano_roll.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/widgets/main_window.h"
@@ -164,6 +165,7 @@ task_func (GTask *task,
         snap_grid_new (NOTE_LENGTH_1_1);
       ZRYTHM->snap_grid_midi =
         snap_grid_new (NOTE_LENGTH_1_8);
+      ZRYTHM->piano_roll = piano_roll_new ();
       data->message =
         "Setting up backend";
       data->progress = 0.7;

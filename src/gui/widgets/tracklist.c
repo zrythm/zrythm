@@ -52,10 +52,10 @@ static void
 on_resize_end (TracklistWidget * self,
                GtkWidget *       child)
 {
-  if (!IS_TRACK_WIDGET (child))
+  if (!Z_IS_TRACK_WIDGET (child))
     return;
 
-  TrackWidget * tw = TRACK_WIDGET (child);
+  TrackWidget * tw = Z_TRACK_WIDGET (child);
   TRACK_WIDGET_GET_PRIVATE (tw);
   Track * track = tw_prv->track;
   GValue a = G_VALUE_INIT;
@@ -459,9 +459,9 @@ tracklist_widget_refresh (TracklistWidget * self)
        iter != NULL;
        iter = g_list_next (iter))
     {
-      if (IS_TRACK_WIDGET (iter->data))
+      if (Z_IS_TRACK_WIDGET (iter->data))
         {
-          TrackWidget * tw = TRACK_WIDGET (iter->data);
+          TrackWidget * tw = Z_TRACK_WIDGET (iter->data);
           TRACK_WIDGET_GET_PRIVATE (tw);
           Track * track = tw_prv->track;
           GValue a = G_VALUE_INIT;

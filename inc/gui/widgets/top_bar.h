@@ -1,7 +1,7 @@
 /*
  * gui/widgets/top_bar.h - Toptom bar
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -28,15 +28,15 @@
   (top_bar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (TopBarWidget,
                       top_bar_widget,
-                      TOP_BAR,
-                      WIDGET,
+                      Z,
+                      TOP_BAR_WIDGET,
                       GtkBox)
 
 #define TOP_BAR MW->top_bar
 
-typedef struct BpmWidget BpmWidget;
 typedef struct _DigitalMeterWidget DigitalMeterWidget;
-typedef struct _TransportControlsWidget TransportControlsWidget;
+typedef struct _TransportControlsWidget
+  TransportControlsWidget;
 
 typedef struct _TopBarWidget
 {
@@ -46,7 +46,6 @@ typedef struct _TopBarWidget
   DigitalMeterWidget *      digital_bpm;
   DigitalMeterWidget *      digital_transport;
   DigitalMeterWidget *      digital_timesig;
-  BpmWidget *               bpm;    ///< created in code
   TransportControlsWidget * transport_controls;
 } TopBarWidget;
 

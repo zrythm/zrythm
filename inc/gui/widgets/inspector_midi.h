@@ -1,7 +1,7 @@
 /*
  * gui/widgets/inspector_midi.h - A inspector_midi widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -24,16 +24,17 @@
 
 #include <gtk/gtk.h>
 
-#define INSPECTOR_MIDI_WIDGET_TYPE                  (inspector_midi_widget_get_type ())
-#define INSPECTOR_MIDI_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), INSPECTOR_MIDI_WIDGET_TYPE, InspectorMidiWidget))
-#define INSPECTOR_MIDI_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), INSPECTOR_MIDI_WIDGET, InspectorMidiWidgetClass))
-#define IS_INSPECTOR_MIDI_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), INSPECTOR_MIDI_WIDGET_TYPE))
-#define IS_INSPECTOR_MIDI_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), INSPECTOR_MIDI_WIDGET_TYPE))
-#define INSPECTOR_MIDI_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), INSPECTOR_MIDI_WIDGET_TYPE, InspectorMidiWidgetClass))
+#define INSPECTOR_MIDI_WIDGET_TYPE \
+  (inspector_midi_widget_get_type ())
+G_DECLARE_FINAL_TYPE (InspectorMidiWidget,
+                      inspector_midi_widget,
+                      Z,
+                      INSPECTOR_MIDI_WIDGET,
+                      GtkGrid)
 
 typedef struct MidiNote MidiNote;
 
-typedef struct InspectorMidiWidget
+typedef struct _InspectorMidiWidget
 {
   GtkGrid             parent_instance;
   GtkLabel *          header;
@@ -42,11 +43,6 @@ typedef struct InspectorMidiWidget
   GtkColorButton *    color;
   GtkToggleButton *   mute_toggle;
 } InspectorMidiWidget;
-
-typedef struct InspectorMidiWidgetClass
-{
-  GtkGridClass       parent_class;
-} InspectorMidiWidgetClass;
 
 /**
  * Creates the inspector_midi widget.
@@ -57,11 +53,9 @@ InspectorMidiWidget *
 inspector_midi_widget_new ();
 
 void
-inspector_midi_widget_show_midi(InspectorMidiWidget * self,
-                                      MidiNote **               midis,
-                                      int                     num_midis);
+inspector_midi_widget_show_midi (
+  InspectorMidiWidget * self,
+  MidiNote **           midis,
+  int                   num_midis);
 
 #endif
-
-
-

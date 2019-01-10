@@ -1,7 +1,7 @@
 /*
  * utils/io.h - IO utils
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -69,5 +69,5 @@ io_file_get_creation_datetime (const char * filename);
 
 char *
 io_file_get_last_modified_datetime (const char * filename);
-#endif
 
+#endif

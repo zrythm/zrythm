@@ -1,7 +1,7 @@
 /*
  * audio/midi_region.h - MIDI region
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *

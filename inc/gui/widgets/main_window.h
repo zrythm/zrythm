@@ -1,7 +1,7 @@
 /*
  * gui/widgets/main_window.h - Main window widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -29,16 +29,14 @@
 #define MAIN_WINDOW ZRYTHM->main_window
 #define MW MAIN_WINDOW
 
-#define MAIN_WINDOW_WIDGET_TYPE                  (main_window_widget_get_type ())
+#define MAIN_WINDOW_WIDGET_TYPE \
+  (main_window_widget_get_type ())
 G_DECLARE_FINAL_TYPE (MainWindowWidget,
                       main_window_widget,
-                      MAIN_WINDOW,
-                      WIDGET,
+                      Z,
+                      MAIN_WINDOW_WIDGET,
                       GtkApplicationWindow)
 
-typedef struct BpmWidget BpmWidget;
-typedef struct _ColorAreaWidget ColorAreaWidget;
-typedef struct _SnapGridWidget SnapGridWidget;
 typedef struct _HeaderBarWidget HeaderBarWidget;
 typedef struct _CenterDockWidget CenterDockWidget;
 typedef struct _BotBarWidget BotBarWidget;

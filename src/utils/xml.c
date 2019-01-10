@@ -268,7 +268,7 @@ static void
 write_plugin_descr (xmlTextWriterPtr writer, Plugin * plugin)
 {
   int rc;
-  Plugin_Descriptor * descr = plugin->descr;
+  PluginDescriptor * descr = plugin->descr;
   rc = xmlTextWriterStartElement (writer, BAD_CAST "Descriptor");
   rc = xmlTextWriterWriteFormatAttribute (writer,
                                         BAD_CAST "author",
@@ -1392,8 +1392,8 @@ xml_load_project ()
                   }
                 else if (NAME_IS ("Descriptor"))
                   {
-                    Plugin_Descriptor * descr =
-                      calloc (1, sizeof (Plugin_Descriptor));
+                    PluginDescriptor * descr =
+                      calloc (1, sizeof (PluginDescriptor));
                     attr =  GET_ATTRIBUTE ("author");
                     descr->author = g_strdup ((char *)attr);
                     attr =  GET_ATTRIBUTE ("name");

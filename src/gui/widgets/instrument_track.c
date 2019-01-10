@@ -47,21 +47,21 @@ G_DEFINE_TYPE (InstrumentTrackWidget,
                instrument_track_widget,
                TRACK_WIDGET_TYPE)
 
-static void
-on_show_automation (GtkWidget * widget, void * data)
-{
-  InstrumentTrackWidget * self =
-    INSTRUMENT_TRACK_WIDGET (data);
+/*static void*/
+/*on_show_automation (GtkWidget * widget, void * data)*/
+/*{*/
+  /*InstrumentTrackWidget * self =*/
+    /*Z_INSTRUMENT_TRACK_WIDGET (data);*/
 
-  TRACK_WIDGET_GET_PRIVATE (self);
+  /*TRACK_WIDGET_GET_PRIVATE (self);*/
 
-  /* toggle visibility flag */
-  tw_prv->track->bot_paned_visible =
-    tw_prv->track->bot_paned_visible ? 0 : 1;
+  /*[> toggle visibility flag <]*/
+  /*tw_prv->track->bot_paned_visible =*/
+    /*tw_prv->track->bot_paned_visible ? 0 : 1;*/
 
-  /* FIXME rename to refresh */
-  tracklist_widget_show (MW_TRACKLIST);
-}
+  /*[> FIXME rename to refresh <]*/
+  /*tracklist_widget_show (MW_TRACKLIST);*/
+/*}*/
 
 /**
  * Creates a new track widget using the given track.

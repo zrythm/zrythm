@@ -1,7 +1,8 @@
 /*
- * audio/ports.h - ports to pass when processing the audio signal
+ * audio/ports.h - ports to pass when processing the audio
+ *   signal
  *
- * copyright (c) 2018 alexandros theodotou
+ * copyright (c) 2019 alexandros theodotou
  *
  * this file is part of zrythm
  *
@@ -30,8 +31,10 @@
 #include <jack/jack.h>
 
 #define MAX_DESTINATIONS 23
-#define FOREACH_SRCS(port) for (int i = 0; i < port->num_srcs; i++)
-#define FOREACH_DESTS(port) for (int i = 0; i < port->num_dests; i++)
+#define FOREACH_SRCS(port) \
+  for (int i = 0; i < port->num_srcs; i++)
+#define FOREACH_DESTS(port) \
+  for (int i = 0; i < port->num_dests; i++)
 
 typedef struct Plugin Plugin;
 

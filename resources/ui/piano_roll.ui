@@ -4,6 +4,7 @@
   <requires lib="gtk+" version="3.20"/>
   <template class="PianoRollWidget" parent="GtkBox">
     <property name="visible">True</property>
+    <property name="can_focus">False</property>
     <child>
       <object class="ColorAreaWidget" id="color_bar">
         <property name="visible">1</property>
@@ -17,52 +18,71 @@
     </child>
     <child>
       <object class="GtkBox" id="midi_inner_box">
-        <property name="visible">1</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkBox" id="midi_top_box">
-            <property name="visible">1</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <child>
               <object class="GtkLabel" id="midi_name_label">
-                <property name="visible">1</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Track name</property>
                 <property name="angle">90</property>
               </object>
               <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
                 <property name="position">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkBox" id="midi_4box">
-                <property name="visible">1</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkBox" id="midi_controls_region_box">
-                    <property name="visible">1</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <child>
                       <object class="GtkBox" id="midi_controls_above_notes_box">
-                        <property name="visible">1</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkButton">
                             <property name="label" translatable="yes">button</property>
-                            <property name="visible">1</property>
-                            <property name="can-focus">1</property>
-                            <property name="receives-default">1</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
                           </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
                         </child>
                       </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
                     </child>
                     <child>
                       <object class="GtkScrolledWindow" id="midi_ruler_scroll">
-                        <property name="visible">1</property>
-                        <property name="can-focus">1</property>
-                        <property name="hscrollbar-policy">external</property>
-                        <property name="vscrollbar-policy">never</property>
-                        <property name="shadow-type">in</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="hscrollbar_policy">external</property>
+                        <property name="vscrollbar_policy">never</property>
+                        <property name="shadow_type">in</property>
                         <child>
                           <object class="GtkViewport" id="midi_ruler_viewport">
-                            <property name="visible">1</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <child>
                               <object class="MidiRulerWidget" id="ruler">
                                 <property name="visible">1</property>
@@ -72,34 +92,44 @@
                         </child>
                       </object>
                       <packing>
-                        <property name="expand">1</property>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
                       </packing>
                     </child>
                   </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
                 </child>
                 <child>
                   <object class="GtkPaned" id="midi_arranger_velocity_paned">
-                    <property name="visible">1</property>
-                    <property name="can-focus">1</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
                     <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkBox" id="midi_notes_arranger_box">
-                        <property name="visible">1</property>
                         <property name="height_request">120</property>
-                        <property name="vexpand">1</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="vexpand">True</property>
                         <child>
                           <object class="GtkBox" id="midi_notes_box">
-                            <property name="visible">1</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <child>
                               <object class="GtkScrolledWindow" id="piano_roll_labels_scroll">
-                                <property name="visible">1</property>
-                                <property name="can-focus">1</property>
-                                <property name="hscrollbar-policy">never</property>
-                                <property name="vscrollbar-policy">external</property>
-                                <property name="shadow-type">in</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="hscrollbar_policy">never</property>
+                                <property name="vscrollbar_policy">external</property>
+                                <property name="shadow_type">in</property>
                                 <child>
                                   <object class="GtkViewport" id="piano_roll_labels_viewport">
-                                    <property name="visible">1</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
                                     <child>
                                       <object class="PianoRollLabelsWidget" id="piano_roll_labels">
                                         <property name="visible">1</property>
@@ -108,17 +138,23 @@
                                   </object>
                                 </child>
                               </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
                             </child>
                             <child>
                               <object class="GtkScrolledWindow" id="piano_roll_notes_scroll">
-                                <property name="visible">1</property>
-                                <property name="can-focus">1</property>
-                                <property name="hscrollbar-policy">never</property>
-                                <property name="vscrollbar-policy">external</property>
-                                <property name="shadow-type">in</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="hscrollbar_policy">never</property>
+                                <property name="vscrollbar_policy">external</property>
+                                <property name="shadow_type">in</property>
                                 <child>
                                   <object class="GtkViewport" id="piano_roll_notes_viewport">
-                                    <property name="visible">1</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
                                     <child>
                                       <object class="PianoRollNotesWidget" id="piano_roll_notes">
                                         <property name="visible">1</property>
@@ -128,24 +164,33 @@
                                 </child>
                               </object>
                               <packing>
-                                <property name="expand">1</property>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
                               </packing>
                             </child>
                           </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
                         </child>
                         <child>
                           <object class="GtkBox" id="midi_arranger_box">
-                            <property name="visible">1</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="orientation">vertical</property>
                             <child>
                               <object class="GtkScrolledWindow" id="arranger_scroll">
-                                <property name="visible">1</property>
-                                <property name="can-focus">1</property>
-                                <property name="hscrollbar-policy">always</property>
-                                <property name="shadow-type">in</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="hscrollbar_policy">always</property>
+                                <property name="shadow_type">in</property>
                                 <child>
                                   <object class="GtkViewport" id="arranger_viewport">
-                                    <property name="visible">1</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
                                     <child>
                                       <object class="MidiArrangerWidget" id="arranger">
                                         <property name="visible">1</property>
@@ -155,79 +200,108 @@
                                 </child>
                               </object>
                               <packing>
-                                <property name="expand">1</property>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
                               </packing>
                             </child>
                           </object>
                           <packing>
-                            <property name="expand">1</property>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
-                        <property name="shrink">0</property>
+                        <property name="resize">False</property>
+                        <property name="shrink">False</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkBox" id="midi_vel_label_editor_box">
                         <property name="height_request">40</property>
-                        <property name="visible">1</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <child>
                           <object class="GtkBox" id="midi_vel_chooser_box">
-                            <property name="visible">1</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="orientation">vertical</property>
+                            <child>
+                              <object class="MidiModifierChooserWidget" id="midi_modifier_chooser">
+                                <property name="visible">1</property>
+
+                              </object>
+                            </child>
                           </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
                         </child>
                         <child>
                           <object class="GtkBox" id="midi_vel_draw_box">
-                            <property name="visible">1</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="orientation">vertical</property>
                           </object>
                           <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
-                        <property name="shrink">0</property>
+                        <property name="resize">True</property>
+                        <property name="shrink">False</property>
                       </packing>
                     </child>
                   </object>
                   <packing>
-                    <property name="expand">1</property>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
                     <property name="position">2</property>
                   </packing>
                 </child>
               </object>
               <packing>
-                <property name="expand">1</property>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
             </child>
             <child>
               <object class="GtkToolbar" id="midi_side_toolbar">
-                <property name="visible">1</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
-                <property name="icon-size">2</property>
+                <property name="icon_size">2</property>
               </object>
               <packing>
-                <property name="fill">0</property>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
                 <property name="position">2</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">1</property>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
           </packing>
         </child>
         <child>
           <object class="GtkToolbar" id="midi_bot_toolbar">
-            <property name="visible">1</property>
-            <property name="icon-size">2</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="icon_size">2</property>
           </object>
           <packing>
-            <property name="fill">0</property>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
             <property name="position">1</property>
           </packing>
         </child>
@@ -243,6 +317,7 @@
     <widgets>
       <widget name="midi_controls_above_notes_box"/>
       <widget name="midi_notes_box"/>
+      <widget name="midi_vel_chooser_box"/>
     </widgets>
   </object>
 </interface>

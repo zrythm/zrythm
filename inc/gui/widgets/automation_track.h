@@ -1,7 +1,7 @@
 /*
  * gui/widgets/automation_track.h - AutomationTrack view
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -27,16 +27,15 @@
 #define AUTOMATION_TRACK_WIDGET_TYPE                  (automation_track_widget_get_type ())
 G_DECLARE_FINAL_TYPE (AutomationTrackWidget,
                       automation_track_widget,
-                      AUTOMATION_TRACK,
-                      WIDGET,
+                      Z,
+                      AUTOMATION_TRACK_WIDGET,
                       GtkGrid)
-#define IS_AUTOMATION_TRACK_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AUTOMATION_TRACK_WIDGET_TYPE))
 
 typedef struct _TrackWidget TrackWidget;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct _DigitalMeterWidget DigitalMeterWidget;
 typedef struct Track Track;
-typedef struct AutomationPointWidget AutomationPointWidget;
+typedef struct _AutomationPointWidget AutomationPointWidget;
 
 typedef struct _AutomationTrackWidget
 {

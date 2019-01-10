@@ -1,7 +1,7 @@
 /*
  * gui/widgets/chord_widget.h - Chord widget on timeline
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -26,14 +26,13 @@
 
 #include <gtk/gtk.h>
 
-#define CHORD_WIDGET_TYPE (chord_widget_get_type ())
+#define CHORD_WIDGET_TYPE \
+  (chord_widget_get_type ())
 G_DECLARE_FINAL_TYPE (ChordWidget,
                       chord_widget,
-                      CHORD,
-                      WIDGET,
+                      Z,
+                      CHORD_WIDGET,
                       GtkDrawingArea);
-#define IS_CHORD_WIDGET(obj) \
-  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), CHORD_WIDGET_TYPE))
 
 typedef struct Chord Chord;
 

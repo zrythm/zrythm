@@ -1,7 +1,7 @@
 /*
  * gui/widgets/header_bar.h - Main window widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -24,12 +24,14 @@
 
 #include <gtk/gtk.h>
 
-#define HEADER_BAR_WIDGET_TYPE                  (header_bar_widget_get_type ())
+#define HEADER_BAR_WIDGET_TYPE \
+  (header_bar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (HeaderBarWidget,
                       header_bar_widget,
-                      HEADER_BAR,
-                      WIDGET,
+                      Z,
+                      HEADER_BAR_WIDGET,
                       GtkHeaderBar)
+
 #define MW_HEADER_BAR MAIN_WINDOW->header_bar
 
 typedef struct _MainWindowWidget MainWindowWidget;

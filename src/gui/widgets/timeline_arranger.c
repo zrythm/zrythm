@@ -80,9 +80,9 @@ timeline_arranger_widget_set_allocation (
   GtkWidget *          widget,
   GdkRectangle *       allocation)
 {
-  if (IS_REGION_WIDGET (widget))
+  if (Z_IS_REGION_WIDGET (widget))
     {
-      RegionWidget * rw = REGION_WIDGET (widget);
+      RegionWidget * rw = Z_REGION_WIDGET (widget);
       REGION_WIDGET_GET_PRIVATE (rw);
       Track * track = rw_prv->region->track;
       /*TRACK_WIDGET_GET_PRIVATE (track->widget);*/
@@ -97,11 +97,11 @@ timeline_arranger_widget_set_allocation (
                 &wy);
 
       allocation->x = arranger_widget_pos_to_px (
-        ARRANGER_WIDGET (self),
+        Z_ARRANGER_WIDGET (self),
         &rw_prv->region->start_pos);
       allocation->y = wy;
       allocation->width = arranger_widget_pos_to_px (
-        ARRANGER_WIDGET (self),
+        Z_ARRANGER_WIDGET (self),
         &rw_prv->region->end_pos) -
           allocation->x;
       allocation->height =
@@ -110,9 +110,10 @@ timeline_arranger_widget_set_allocation (
         gtk_widget_get_allocated_height (
           track_widget_get_bottom_paned (track->widget));
     }
-  else if (IS_AUTOMATION_POINT_WIDGET (widget))
+  else if (Z_IS_AUTOMATION_POINT_WIDGET (widget))
     {
-      AutomationPointWidget * ap_widget = AUTOMATION_POINT_WIDGET (widget);
+      AutomationPointWidget * ap_widget =
+        Z_AUTOMATION_POINT_WIDGET (widget);
       AutomationPoint * ap = ap_widget->ap;
       /*Automatable * a = ap->at->automatable;*/
 
@@ -126,7 +127,7 @@ timeline_arranger_widget_set_allocation (
                 &wy);
 
       allocation->x = arranger_widget_pos_to_px (
-        ARRANGER_WIDGET (self),
+        Z_ARRANGER_WIDGET (self),
         &ap->pos) -
           AP_WIDGET_POINT_SIZE / 2;
       allocation->y = (wy + automation_point_get_y_in_px (ap)) -
@@ -134,9 +135,10 @@ timeline_arranger_widget_set_allocation (
       allocation->width = AP_WIDGET_POINT_SIZE;
       allocation->height = AP_WIDGET_POINT_SIZE;
     }
-  else if (IS_AUTOMATION_CURVE_WIDGET (widget))
+  else if (Z_IS_AUTOMATION_CURVE_WIDGET (widget))
     {
-      AutomationCurveWidget * acw = AUTOMATION_CURVE_WIDGET (widget);
+      AutomationCurveWidget * acw =
+        Z_AUTOMATION_CURVE_WIDGET (widget);
       AutomationCurve * ac = acw->ac;
       /*Automatable * a = ap->at->automatable;*/
 
@@ -154,20 +156,20 @@ timeline_arranger_widget_set_allocation (
         automation_track_get_ap_after_curve (ac->at, ac);
 
       allocation->x = arranger_widget_pos_to_px (
-        ARRANGER_WIDGET (self),
+        Z_ARRANGER_WIDGET (self),
         &prev_ap->pos) - AC_Y_HALF_PADDING;
       int prev_y = automation_point_get_y_in_px (prev_ap);
       int next_y = automation_point_get_y_in_px (next_ap);
       allocation->y = (wy + (prev_y > next_y ? next_y : prev_y) - AC_Y_HALF_PADDING);
       allocation->width =
         (arranger_widget_pos_to_px (
-          ARRANGER_WIDGET (self),
+          Z_ARRANGER_WIDGET (self),
           &next_ap->pos) - allocation->x) + AC_Y_HALF_PADDING;
       allocation->height = (prev_y > next_y ? prev_y - next_y : next_y - prev_y) + AC_Y_PADDING;
     }
-  else if (IS_CHORD_WIDGET (widget))
+  else if (Z_IS_CHORD_WIDGET (widget))
     {
-      ChordWidget * cw = CHORD_WIDGET (widget);
+      ChordWidget * cw = Z_CHORD_WIDGET (widget);
       Track * track = (Track *) CHORD_TRACK;
 
       gint wx, wy;
@@ -180,7 +182,7 @@ timeline_arranger_widget_set_allocation (
                 &wy);
 
       allocation->x = arranger_widget_pos_to_px (
-        ARRANGER_WIDGET (self),
+        Z_ARRANGER_WIDGET (self),
         &cw->chord->pos);
       Position tmp;
       position_set_to_pos (&tmp,
@@ -190,7 +192,7 @@ timeline_arranger_widget_set_allocation (
         tmp.beats + 1);
       allocation->y = wy;
       allocation->width = arranger_widget_pos_to_px (
-        ARRANGER_WIDGET (self),
+        Z_ARRANGER_WIDGET (self),
         &tmp) -
           allocation->x;
       allocation->height =
@@ -279,13 +281,13 @@ timeline_arranger_widget_get_hit_region (TimelineArrangerWidget *  self,
 {
   GtkWidget * widget =
     arranger_widget_get_hit_widget (
-      ARRANGER_WIDGET (self),
+      Z_ARRANGER_WIDGET (self),
       ARRANGER_CHILD_TYPE_REGION,
       x,
       y);
   if (widget)
     {
-      return REGION_WIDGET (widget);
+      return Z_REGION_WIDGET (widget);
     }
   return NULL;
 }
@@ -297,13 +299,13 @@ timeline_arranger_widget_get_hit_ap (
   double            y)
 {
   GtkWidget * widget = arranger_widget_get_hit_widget (
-    ARRANGER_WIDGET (self),
+    Z_ARRANGER_WIDGET (self),
     ARRANGER_CHILD_TYPE_AP,
     x,
     y);
   if (widget)
     {
-      return AUTOMATION_POINT_WIDGET (widget);
+      return Z_AUTOMATION_POINT_WIDGET (widget);
     }
   return NULL;
 }
@@ -315,13 +317,13 @@ timeline_arranger_widget_get_hit_curve (
   double y)
 {
   GtkWidget * widget = arranger_widget_get_hit_widget (
-    ARRANGER_WIDGET (self),
+    Z_ARRANGER_WIDGET (self),
     ARRANGER_CHILD_TYPE_AC,
     x,
     y);
   if (widget)
     {
-      return AUTOMATION_CURVE_WIDGET (widget);
+      return Z_AUTOMATION_CURVE_WIDGET (widget);
     }
   return NULL;
 }
@@ -424,7 +426,7 @@ timeline_arranger_widget_toggle_select_region (
   int                      append)
 {
   arranger_widget_toggle_select (
-    ARRANGER_WIDGET (self),
+    Z_ARRANGER_WIDGET (self),
     ARRANGER_CHILD_TYPE_REGION,
     (void *) region,
     append);
@@ -437,7 +439,7 @@ timeline_arranger_widget_toggle_select_automation_point (
   int               append)
 {
   arranger_widget_toggle_select (
-    ARRANGER_WIDGET (self),
+    Z_ARRANGER_WIDGET (self),
     ARRANGER_CHILD_TYPE_AP,
     (void *) ap,
     append);
@@ -493,11 +495,11 @@ timeline_arranger_widget_on_drag_begin_region_hit (
 
   /* update arranger action */
   if (region->type == REGION_TYPE_MIDI &&
-           MIDI_REGION_WIDGET (rw)->cursor_state ==
+           Z_MIDI_REGION_WIDGET (rw)->cursor_state ==
              MIDI_REGION_CURSOR_RESIZE_L)
     prv->action = ARRANGER_ACTION_RESIZING_L;
   else if (region->type == REGION_TYPE_MIDI &&
-           MIDI_REGION_WIDGET (rw)->cursor_state ==
+           Z_MIDI_REGION_WIDGET (rw)->cursor_state ==
              MIDI_REGION_CURSOR_RESIZE_R)
     prv->action = ARRANGER_ACTION_RESIZING_R;
   else
@@ -760,7 +762,7 @@ timeline_arranger_widget_find_and_select_items (
   GtkWidget *    region_widgets[800];
   int            num_region_widgets = 0;
   arranger_widget_get_hit_widgets_in_range (
-    ARRANGER_WIDGET (self),
+    Z_ARRANGER_WIDGET (self),
     ARRANGER_CHILD_TYPE_REGION,
     prv->start_x,
     prv->start_y,
@@ -773,19 +775,21 @@ timeline_arranger_widget_find_and_select_items (
   /* select the enclosed regions */
   for (int i = 0; i < num_region_widgets; i++)
     {
-      RegionWidget * rw = REGION_WIDGET (region_widgets[i]);
+      RegionWidget * rw =
+        Z_REGION_WIDGET (region_widgets[i]);
       REGION_WIDGET_GET_PRIVATE (rw);
       Region * region = rw_prv->region;
-      timeline_arranger_widget_toggle_select_region (self,
-                                            region,
-                                            1);
+      timeline_arranger_widget_toggle_select_region (
+        self,
+        region,
+        1);
     }
 
   /* find enclosed automation_points */
   GtkWidget *    ap_widgets[800];
   int            num_ap_widgets = 0;
   arranger_widget_get_hit_widgets_in_range (
-    ARRANGER_WIDGET (self),
+    Z_ARRANGER_WIDGET (self),
     ARRANGER_CHILD_TYPE_AP,
     prv->start_x,
     prv->start_y,
@@ -798,7 +802,7 @@ timeline_arranger_widget_find_and_select_items (
   for (int i = 0; i < num_ap_widgets; i++)
     {
       AutomationPointWidget * ap_widget =
-        AUTOMATION_POINT_WIDGET (ap_widgets[i]);
+        Z_AUTOMATION_POINT_WIDGET (ap_widgets[i]);
       AutomationPoint * ap = ap_widget->ap;
       timeline_arranger_widget_toggle_select_automation_point (self,
                                                       ap,

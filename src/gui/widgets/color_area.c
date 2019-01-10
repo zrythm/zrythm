@@ -33,7 +33,7 @@ G_DEFINE_TYPE (ColorAreaWidget,
 static int
 draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 {
-  ColorAreaWidget * color_area = COLOR_AREA_WIDGET (widget);
+  ColorAreaWidget * color_area = Z_COLOR_AREA_WIDGET (widget);
   GdkRGBA * color = color_area->color;
   guint width, height;
   GtkStyleContext *context;

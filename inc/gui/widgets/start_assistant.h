@@ -1,7 +1,8 @@
 /*
- * gui/widgets/start_assistant.h - Start assistant to show when launching Zrythm
+ * gui/widgets/start_assistant.h - Start assistant to show
+ *   when launching Zrythm
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -27,12 +28,13 @@
 
 #include <gtk/gtk.h>
 
-#define START_ASSISTANT_WIDGET_TYPE                  (start_assistant_widget_get_type ())
-#define START_ASSISTANT_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), START_ASSISTANT_WIDGET_TYPE, StartAssistantWidget))
-#define START_ASSISTANT_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), START_ASSISTANT_WIDGET, StartAssistantWidgetClass))
-#define IS_START_ASSISTANT_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), START_ASSISTANT_WIDGET_TYPE))
-#define IS_START_ASSISTANT_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), START_ASSISTANT_WIDGET_TYPE))
-#define START_ASSISTANT_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), START_ASSISTANT_WIDGET_TYPE, StartAssistantWidgetClass))
+#define START_ASSISTANT_WIDGET_TYPE \
+  (start_assistant_widget_get_type ())
+G_DECLARE_FINAL_TYPE (StartAssistantWidget,
+                      start_assistant_widget,
+                      Z,
+                      START_ASSISTANT_WIDGET,
+                      GtkAssistant)
 
 typedef struct ProjectInfo
 {
@@ -50,7 +52,7 @@ enum
   NUM_COLUMNS
 };
 
-typedef struct StartAssistantWidget
+typedef struct _StartAssistantWidget
 {
   GtkAssistant        parent_instance;
   GtkTreeView         * projects;
@@ -62,12 +64,6 @@ typedef struct StartAssistantWidget
   int                 num_project_infos;
 } StartAssistantWidget;
 
-typedef struct StartAssistantWidgetClass
-{
-  GtkAssistantClass       parent_class;
-} StartAssistantWidgetClass;
-
-
 /**
  * Creates a channel widget using the given channel data.
  */
@@ -76,4 +72,3 @@ start_assistant_widget_new (GtkWindow * parent,
                             int show_create_new_project);
 
 #endif
-

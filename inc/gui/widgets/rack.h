@@ -1,7 +1,7 @@
 /*
  * gui/widgets/rack.h - Rack widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -24,14 +24,15 @@
 
 #include <gtk/gtk.h>
 
-#define RACK_WIDGET_TYPE                  (rack_widget_get_type ())
+#define RACK_WIDGET_TYPE \
+  (rack_widget_get_type ())
 G_DECLARE_FINAL_TYPE (RackWidget,
                       rack_widget,
-                      RACK,
-                      WIDGET,
+                      Z,
+                      RACK_WIDGET,
                       GtkScrolledWindow)
 
-typedef struct RackRowWidget RackRowWidget;
+typedef struct _RackRowWidget RackRowWidget;
 
 typedef struct _RackWidget
 {
@@ -41,5 +42,8 @@ typedef struct _RackWidget
   int                      num_rack_rows;
   GtkBox *                 dummy_box; ///< box at the end
 } RackWidget;
+
+void
+rack_widget_setup (RackWidget * self);
 
 #endif

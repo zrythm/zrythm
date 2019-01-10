@@ -139,7 +139,7 @@ setup_phase_panel (ChannelWidget * self)
                                       self->channel,
                                       0,
                                       180,
-                                      30,
+                                      20,
                                       0.0f);
   gtk_box_pack_end (self->phase_controls,
                        GTK_WIDGET (self->phase_knob),

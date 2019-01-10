@@ -2,7 +2,7 @@
  * gui/widgets/tracklist_header.h - The box where ruler and
  *   tracklist meet
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -29,8 +29,8 @@
   (tracklist_header_widget_get_type ())
 G_DECLARE_FINAL_TYPE (TracklistHeaderWidget,
                       tracklist_header_widget,
-                      TRACKLIST_HEADER,
-                      WIDGET,
+                      Z,
+                      TRACKLIST_HEADER_WIDGET,
                       GtkGrid)
 
 typedef struct _TracklistHeaderWidget

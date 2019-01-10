@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -26,12 +26,13 @@
 
 #include <gtk/gtk.h>
 
-#define AUTOMATION_POINT_WIDGET_TYPE                  (automation_point_widget_get_type ())
-#define AUTOMATION_POINT_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), AUTOMATION_POINT_WIDGET_TYPE, AutomationPointWidget))
-#define AUTOMATION_POINT_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), AUTOMATION_POINT_WIDGET, AutomationPointWidgetClass))
-#define IS_AUTOMATION_POINT_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AUTOMATION_POINT_WIDGET_TYPE))
-#define IS_AUTOMATION_POINT_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), AUTOMATION_POINT_WIDGET_TYPE))
-#define AUTOMATION_POINT_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), AUTOMATION_POINT_WIDGET_TYPE, AutomationPointWidgetClass))
+#define AUTOMATION_POINT_WIDGET_TYPE \
+  (automation_point_widget_get_type ())
+G_DECLARE_FINAL_TYPE (AutomationPointWidget,
+                      automation_point_widget,
+                      Z,
+                      AUTOMATION_POINT_WIDGET,
+                      GtkBox)
 
 #define AP_WIDGET_POINT_SIZE 6
 #define AP_WIDGET_CURVE_H 2
@@ -45,18 +46,12 @@ typedef enum AutomationPointWidgetState
   APW_STATE_HOVER
 } AutomationPointWidgetState;
 
-typedef struct AutomationPointWidget
+typedef struct _AutomationPointWidget
 {
   GtkBox                      parent_instance;
   AutomationPoint *           ap;   ///< the automation_point associated with this
   AutomationPointWidgetState  state;
 } AutomationPointWidget;
-
-
-typedef struct AutomationPointWidgetClass
-{
-  GtkBoxClass       parent_class;
-} AutomationPointWidgetClass;
 
 /**
  * Creates a automation_point.

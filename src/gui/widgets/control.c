@@ -28,7 +28,9 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (ControlWidget, control_widget, GTK_TYPE_BOX)
+G_DEFINE_TYPE (ControlWidget,
+               control_widget,
+               GTK_TYPE_BOX)
 
 static void
 control_widget_class_init (ControlWidgetClass * klass)

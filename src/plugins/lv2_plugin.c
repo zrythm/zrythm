@@ -428,15 +428,15 @@ lv2_get_port_value (const char * port_sym,
  * Used when retrieving the state.
  * FIXME is this needed?
  */
-static void
-lv2_set_port_value (const char * port_sym,
-                    void       * user_data,
-                    const void * value,
-                    uint32_t   * size,
-                    uint32_t   * type)
-{
+/*static void*/
+/*lv2_set_port_value (const char * port_sym,*/
+                    /*void       * user_data,*/
+                    /*const void * value,*/
+                    /*uint32_t   * size,*/
+                    /*uint32_t   * type)*/
+/*{*/
 
-}
+/*}*/
 
 /**
    Get a port structure by symbol.
@@ -822,7 +822,7 @@ lv2_send_to_ui(Lv2Plugin*       plugin,
           return true;
   } else
     {
-      Plugin_Descriptor * descr = ((Plugin *)plugin)->descr;
+      PluginDescriptor * descr = ((Plugin *)plugin)->descr;
       g_warning ("lv2_send_to_ui: %s (%s) => UI buffer overflow!",
                  descr->name,
                  descr->uri);
@@ -1081,7 +1081,7 @@ lv2_set_feature_data (Lv2Plugin * plugin)
  * Returns a newly allocated plugin descriptor for the given LilvPlugin
  * if it can be hosted, otherwise NULL.
  */
-Plugin_Descriptor *
+PluginDescriptor *
 lv2_create_descriptor_from_lilv (const LilvPlugin * lp)
 {
   const LilvNode*  lv2_uri = lilv_plugin_get_uri (lp);
@@ -1146,7 +1146,7 @@ lv2_create_descriptor_from_lilv (const LilvPlugin * lp)
 #endif
 
   /* set descriptor info */
-  Plugin_Descriptor * pd = calloc (1, sizeof (Plugin_Descriptor));
+  PluginDescriptor * pd = calloc (1, sizeof (PluginDescriptor));
   pd->protocol = PROT_LV2;
   const char * str = lilv_node_as_string (name);
   pd->name = g_strdup (str);
@@ -2007,7 +2007,7 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin, nframes_t nframes)
             if (zix_ring_write(lv2_plugin->plugin_events, buf, sizeof(buf))
                 < sizeof(buf))
               {
-                Plugin_Descriptor * descr = ((Plugin *)lv2_plugin)->descr;
+                PluginDescriptor * descr = ((Plugin *)lv2_plugin)->descr;
                 g_warning ("lv2_plugin_process: %s (%s) => UI buffer overflow!",
                            descr->name,
                            descr->uri);
@@ -2092,6 +2092,10 @@ lv2_save_state (Lv2Plugin * lv2_plugin, const char * dir)
                                 NULL,
                                 dir,
                                 label);
+      if (rc)
+        {
+          g_warning ("Lilv save state failed");
+        }
       char * tmp = g_path_get_basename (dir);
       lv2_plugin->state_file =
         g_build_filename (tmp,
@@ -2101,7 +2105,7 @@ lv2_save_state (Lv2Plugin * lv2_plugin, const char * dir)
       g_free (tmp);
       lilv_state_free (state);
 
-      return 0;
+      return rc;
     }
   else
     {

@@ -1,7 +1,7 @@
 /*
  * gui/widgets/bot_bar.h - Bottom bar
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -28,8 +28,8 @@
   (bot_bar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (BotBarWidget,
                       bot_bar_widget,
-                      BOT_BAR,
-                      WIDGET,
+                      Z,
+                      BOT_BAR_WIDGET,
                       GtkBox)
 
 #define BOT_BAR MW->bot_bar

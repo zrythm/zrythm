@@ -1,8 +1,7 @@
 /*
  * gui/widgets/timeline_arranger.h - timeline
- *                                       arranger widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -30,20 +29,21 @@
 
 #include <gtk/gtk.h>
 
-#define TIMELINE_ARRANGER_WIDGET_TYPE                  (timeline_arranger_widget_get_type ())
+#define TIMELINE_ARRANGER_WIDGET_TYPE \
+  (timeline_arranger_widget_get_type ())
 G_DECLARE_FINAL_TYPE (TimelineArrangerWidget,
                       timeline_arranger_widget,
-                      TIMELINE_ARRANGER,
-                      WIDGET,
+                      Z,
+                      TIMELINE_ARRANGER_WIDGET,
                       ArrangerWidget)
 
 #define MW_TIMELINE MW_CENTER_DOCK->timeline
 
-typedef struct ArrangerBgWidget ArrangerBgWidget;
+typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote MidiNote;
 typedef struct SnapGrid SnapGrid;
 typedef struct AutomationPoint AutomationPoint;
-typedef struct AutomationPointWidget AutomationPointWidget;
+typedef struct _AutomationPointWidget AutomationPointWidget;
 typedef struct _AutomationCurveWidget AutomationCurveWidget;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct AutomationCurve AutomationCurve;

@@ -1,8 +1,8 @@
 /*
- * gui/instrument_timeline_view.h - The view of an instrument left of its
- *   timeline counterpart
+ * gui/instrument_timeline_view.h - The view of an instrument
+ *   left of its timeline counterpart
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -28,11 +28,12 @@
 
 #define USE_WIDE_HANDLE 1
 
-#define TRACKLIST_WIDGET_TYPE                  (tracklist_widget_get_type ())
+#define TRACKLIST_WIDGET_TYPE \
+  (tracklist_widget_get_type ())
 G_DECLARE_FINAL_TYPE (TracklistWidget,
                       tracklist_widget,
-                      TRACKLIST,
-                      WIDGET,
+                      Z,
+                      TRACKLIST_WIDGET,
                       DzlMultiPaned)
 
 #define MW_TRACKLIST MW_CENTER_DOCK->tracklist

@@ -80,7 +80,8 @@ draw_cb (AutomationPointWidget * self, cairo_t *cr, gpointer data)
 static void
 on_motion (GtkWidget * widget, GdkEventMotion *event)
 {
-  AutomationPointWidget * self = AUTOMATION_POINT_WIDGET (widget);
+  AutomationPointWidget * self =
+    Z_AUTOMATION_POINT_WIDGET (widget);
 
   GtkAllocation allocation;
   gtk_widget_get_allocation (widget,

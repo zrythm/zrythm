@@ -91,12 +91,16 @@ link_scrolls (
 }
 
 void
-piano_roll_widget_setup (PianoRollWidget * self)
+piano_roll_widget_setup (
+  PianoRollWidget * self,
+  PianoRoll *       pr)
 {
+  self->piano_roll = pr;
+
   if (self->arranger)
     {
       arranger_widget_setup (
-        ARRANGER_WIDGET (self->arranger),
+        Z_ARRANGER_WIDGET (self->arranger),
         ZRYTHM->snap_grid_midi,
         ARRANGER_TYPE_MIDI);
       gtk_widget_show_all (

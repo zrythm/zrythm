@@ -1,7 +1,7 @@
 /*
  * gui/widgets/top_dock_edge.h - Main window widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -26,11 +26,12 @@
 #include <gtk/gtk.h>
 #include <dazzle.h>
 
-#define TOP_DOCK_EDGE_WIDGET_TYPE                  (top_dock_edge_widget_get_type ())
+#define TOP_DOCK_EDGE_WIDGET_TYPE \
+  (top_dock_edge_widget_get_type ())
 G_DECLARE_FINAL_TYPE (TopDockEdgeWidget,
                       top_dock_edge_widget,
-                      TOP_DOCK_EDGE,
-                      WIDGET,
+                      Z,
+                      TOP_DOCK_EDGE_WIDGET,
                       GtkBox)
 
 #define MW_TOP_DOCK_EDGE MW_CENTER_DOCK->top_dock_edge

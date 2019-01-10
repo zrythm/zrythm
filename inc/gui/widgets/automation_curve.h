@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -24,15 +24,13 @@
 
 #include <gtk/gtk.h>
 
-#define AUTOMATION_CURVE_WIDGET_TYPE                  (automation_curve_widget_get_type ())
+#define AUTOMATION_CURVE_WIDGET_TYPE \
+  (automation_curve_widget_get_type ())
 G_DECLARE_FINAL_TYPE (AutomationCurveWidget,
                       automation_curve_widget,
-                      AUTOMATION_CURVE,
-                      WIDGET,
+                      Z,
+                      AUTOMATION_CURVE_WIDGET,
                       GtkDrawingArea)
-#define IS_AUTOMATION_CURVE_WIDGET(obj) \
-  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), \
-   AUTOMATION_CURVE_WIDGET_TYPE))
 
 /*
  * extra space on top and bottom to make room for width 2

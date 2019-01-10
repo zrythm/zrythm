@@ -1,7 +1,7 @@
 /*
  * gui/widgets/channel.h - A channel widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -27,18 +27,18 @@
 
 #include <gtk/gtk.h>
 
-#define CHANNEL_WIDGET_TYPE                  (channel_widget_get_type ())
+#define CHANNEL_WIDGET_TYPE \
+  (channel_widget_get_type ())
 G_DECLARE_FINAL_TYPE (ChannelWidget,
                       channel_widget,
-                      CHANNEL,
-                      WIDGET,
+                      Z,
+                      CHANNEL_WIDGET,
                       GtkGrid)
-#define IS_CHANNEL_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), CHANNEL_WIDGET_TYPE))
 
 typedef struct _ColorAreaWidget ColorAreaWidget;
-typedef struct KnobWidget KnobWidget;
+typedef struct _KnobWidget KnobWidget;
 typedef struct _FaderWidget FaderWidget;
-typedef struct ChannelMeterWidget ChannelMeterWidget;
+typedef struct _ChannelMeterWidget ChannelMeterWidget;
 typedef struct Channel Channel;
 typedef struct _ChannelSlotWidget ChannelSlotWidget;
 typedef struct _PanWidget PanWidget;

@@ -30,7 +30,8 @@ on_projects_selection_changed (GtkTreeSelection * ts,
                       gpointer         user_data)
 {
   GtkTreeIter iter;
-  StartAssistantWidget * self = START_ASSISTANT_WIDGET (user_data);
+  StartAssistantWidget * self =
+    Z_START_ASSISTANT_WIDGET (user_data);
 
   GList * selected_rows =
     gtk_tree_selection_get_selected_rows (self->projects_selection,
@@ -65,7 +66,8 @@ void
 on_create_new_project_toggled (GtkToggleButton *togglebutton,
                gpointer         user_data)
 {
-  StartAssistantWidget * self = START_ASSISTANT_WIDGET (user_data);
+  StartAssistantWidget * self =
+    Z_START_ASSISTANT_WIDGET (user_data);
 
   if (gtk_toggle_button_get_active (togglebutton))
     {

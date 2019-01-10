@@ -29,6 +29,8 @@
 #include "audio/region.h"
 #include "audio/track.h"
 #include "audio/transport.h"
+#include "audio/velocity.h"
+#include "gui/widgets/velocity.h"
 #include "utils/arrays.h"
 #include "utils/io.h"
 #include "utils/smf.h"
@@ -208,15 +210,24 @@ smf_load_region (const char *   file,   ///< file to load
       int ticks = event->time_pulses;
       if (type == MIDI_CH1_NOTE_ON) /* note on */
         {
+          MidiNote * midi_note = &notes[num_notes];
+
           g_message ("note on at %d ticks", ticks);
           /*position_set_to_pos (&notes[num_notes].start_pos,*/
                                /*region->start_pos)*/
-          position_init (&notes[num_notes].start_pos);
+          position_init (&midi_note->start_pos);
           /*position_add_frames (&notes[num_notes].start_pos,*/
                                /*frames);*/
-          position_set_tick (&notes[num_notes].start_pos, ticks);
-          notes[num_notes].val = event->midi_buffer[1];
-          notes[num_notes].vel = event->midi_buffer[2];
+          position_set_tick (&midi_note->start_pos,
+                             ticks);
+          midi_note->val =
+            event->midi_buffer[1];
+          midi_note->vel =
+            velocity_new (event->midi_buffer[2]);
+          midi_note->vel->midi_note = midi_note;
+          midi_note->vel->widget =
+            velocity_widget_new (midi_note->vel);
+
           num_notes++;
         }
       else if (type == MIDI_CH1_NOTE_OFF) /* note off */

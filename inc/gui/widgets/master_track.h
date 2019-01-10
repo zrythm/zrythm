@@ -1,7 +1,7 @@
 /*
  * gui/widgets/track.h - Track view
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -27,11 +27,12 @@
 
 #include <gtk/gtk.h>
 
-#define MASTER_TRACK_WIDGET_TYPE (master_track_widget_get_type ())
+#define MASTER_TRACK_WIDGET_TYPE \
+  (master_track_widget_get_type ())
 G_DECLARE_FINAL_TYPE (MasterTrackWidget,
                       master_track_widget,
-                      MASTER_TRACK,
-                      WIDGET,
+                      Z,
+                      MASTER_TRACK_WIDGET,
                       TrackWidget)
 
 typedef struct _AutomationTracklistWidget AutomationTracklistWidget;

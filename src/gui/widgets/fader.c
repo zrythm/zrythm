@@ -152,7 +152,7 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 static void
 on_crossing (GtkWidget * widget, GdkEvent *event)
 {
-  FaderWidget * self = FADER_WIDGET (widget);
+  FaderWidget * self = Z_FADER_WIDGET (widget);
 
   if (gdk_event_get_event_type (event) ==
         GDK_ENTER_NOTIFY)

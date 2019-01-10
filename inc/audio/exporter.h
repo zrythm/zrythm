@@ -46,4 +46,3 @@ void
 exporter_export (ExportInfo * info);
 
 #endif
-

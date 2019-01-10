@@ -102,7 +102,8 @@ rack_row_widget_new (RRWType              type,
                                 -1,
                                 160);
 
+  gtk_widget_set_visible (GTK_WIDGET (self),
+                          1);
+
   return self;
 }
-
-

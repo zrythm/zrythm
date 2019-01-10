@@ -1,7 +1,7 @@
 /*
  * gui/widgets/inspector_region.h - A inspector_region widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -24,16 +24,17 @@
 
 #include <gtk/gtk.h>
 
-#define INSPECTOR_REGION_WIDGET_TYPE                  (inspector_region_widget_get_type ())
-#define INSPECTOR_REGION_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), INSPECTOR_REGION_WIDGET_TYPE, InspectorRegionWidget))
-#define INSPECTOR_REGION_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), INSPECTOR_REGION_WIDGET, InspectorRegionWidgetClass))
-#define IS_INSPECTOR_REGION_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), INSPECTOR_REGION_WIDGET_TYPE))
-#define IS_INSPECTOR_REGION_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), INSPECTOR_REGION_WIDGET_TYPE))
-#define INSPECTOR_REGION_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), INSPECTOR_REGION_WIDGET_TYPE, InspectorRegionWidgetClass))
+#define INSPECTOR_REGION_WIDGET_TYPE \
+  (inspector_region_widget_get_type ())
+G_DECLARE_FINAL_TYPE (InspectorRegionWidget,
+                      inspector_region_widget,
+                      Z,
+                      INSPECTOR_REGION_WIDGET,
+                      GtkGrid)
 
 typedef struct Region Region;
 
-typedef struct InspectorRegionWidget
+typedef struct _InspectorRegionWidget
 {
   GtkGrid             parent_instance;
   GtkLabel *          header;
@@ -42,11 +43,6 @@ typedef struct InspectorRegionWidget
   GtkColorButton *    color;
   GtkToggleButton *   mute_toggle;
 } InspectorRegionWidget;
-
-typedef struct InspectorRegionWidgetClass
-{
-  GtkGridClass       parent_class;
-} InspectorRegionWidgetClass;
 
 /**
  * Creates the inspector_region widget.
@@ -62,5 +58,3 @@ inspector_region_widget_show_regions (InspectorRegionWidget * self,
                                       int                     num_regions);
 
 #endif
-
-

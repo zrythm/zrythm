@@ -443,7 +443,7 @@ lv2_backend_activate_port(Lv2Plugin* plugin, uint32_t port_index);
  * Returns a newly allocated plugin descriptor for the given LilvPlugin
  * if it can be hosted, otherwise NULL.
  */
-Plugin_Descriptor *
+PluginDescriptor *
 lv2_create_descriptor_from_lilv (const LilvPlugin * lp);
 
 /**

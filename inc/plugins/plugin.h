@@ -69,7 +69,7 @@ typedef enum PluginArchitecture
  * A descriptor to be implemented by all plugins
  * This will be used throughout the UI
  */
-typedef struct Plugin_Descriptor
+typedef struct PluginDescriptor
 {
   char                 * author;
   char                 * name;
@@ -85,7 +85,7 @@ typedef struct Plugin_Descriptor
   PluginProtocol       protocol;           ///< VST/LV2/DSSI/LADSPA...
   char                 * path;
   char                 * uri;            ///< for LV2 plugins
-} Plugin_Descriptor;
+} PluginDescriptor;
 
 /**
  * The base plugin
@@ -95,7 +95,7 @@ typedef struct Plugin
 {
   int                  id;
   void                 * original_plugin;     ///< pointer to original plugin inheriting this base plugin
-  Plugin_Descriptor    * descr;                 ///< descriptor
+  PluginDescriptor    * descr;                 ///< descriptor
   Port                 * in_ports[MAX_IN_PORTS];           ///< ports coming in as input
   int                  num_in_ports;    ///< counter
   Port                 * out_ports[MAX_OUT_PORTS];           ///< ports going out as output
@@ -129,7 +129,7 @@ plugin_get_or_create_blank (int id);
  * using the given descriptor.
  */
 Plugin *
-plugin_create_from_descr (Plugin_Descriptor * descr);
+plugin_create_from_descr (PluginDescriptor * descr);
 
 /**
  * Loads the plugin from its state file.
@@ -163,4 +163,3 @@ void
 plugin_free (Plugin *plugin);
 
 #endif
-

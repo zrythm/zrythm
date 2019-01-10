@@ -1,7 +1,7 @@
 /*
  * gui/widgets/inspector_track.h - A inspector_track widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -24,11 +24,12 @@
 
 #include <gtk/gtk.h>
 
-#define INSPECTOR_TRACK_WIDGET_TYPE                  (inspector_track_widget_get_type ())
+#define INSPECTOR_TRACK_WIDGET_TYPE \
+  (inspector_track_widget_get_type ())
 G_DECLARE_FINAL_TYPE (InspectorTrackWidget,
                       inspector_track_widget,
-                      INSPECTOR_TRACK,
-                      WIDGET,
+                      Z,
+                      INSPECTOR_TRACK_WIDGET,
                       GtkGrid)
 
 typedef struct Track Track;
@@ -57,6 +58,3 @@ inspector_track_widget_show_tracks (InspectorTrackWidget * self,
                                       int                     num_tracks);
 
 #endif
-
-
-

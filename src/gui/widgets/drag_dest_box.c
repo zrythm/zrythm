@@ -52,11 +52,11 @@ on_drag_data_received (GtkWidget        *widget,
                guint             time,
                gpointer          user_data)
 {
-  DragDestBoxWidget * self = DRAG_DEST_BOX_WIDGET (widget);
+  DragDestBoxWidget * self = Z_DRAG_DEST_BOX_WIDGET (widget);
   if (self->type == DRAG_DEST_BOX_TYPE_MIXER ||
       self->type == DRAG_DEST_BOX_TYPE_TRACKLIST)
     {
-      Plugin_Descriptor * descr =
+      PluginDescriptor * descr =
         *(gpointer *) gtk_selection_data_get_data (data);
       mixer_add_channel_from_plugin_descr (MIXER,
                                            descr);

@@ -107,7 +107,7 @@ draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
 static void
 on_motion (GtkWidget * widget, GdkEventMotion *event)
 {
-  RegionWidget * self = REGION_WIDGET (widget);
+  RegionWidget * self = Z_REGION_WIDGET (widget);
 
   if (event->type == GDK_ENTER_NOTIFY)
     {

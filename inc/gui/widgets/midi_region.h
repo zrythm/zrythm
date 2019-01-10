@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2018 Alexandros Theodotou
+ * gui/widgets/midi_region.h - MIDI region
+ *
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -27,11 +29,12 @@
 
 #include <gtk/gtk.h>
 
-#define MIDI_REGION_WIDGET_TYPE (midi_region_widget_get_type ())
+#define MIDI_REGION_WIDGET_TYPE \
+  (midi_region_widget_get_type ())
 G_DECLARE_FINAL_TYPE (MidiRegionWidget,
                       midi_region_widget,
-                      MIDI_REGION,
-                      WIDGET,
+                      Z,
+                      MIDI_REGION_WIDGET,
                       RegionWidget);
 
 typedef struct MidiRegion MidiRegion;

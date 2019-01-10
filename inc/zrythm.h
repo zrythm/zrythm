@@ -38,6 +38,7 @@ G_DECLARE_FINAL_TYPE (ZrythmApp,
 typedef struct AudioEngine AudioEngine;
 typedef struct PluginManager PluginManager;
 typedef struct Project Project;
+typedef struct PianoRoll PianoRoll;
 typedef struct Settings Settings;
 typedef struct Tracklist Tracklist;
 typedef struct UndoManager UndoManager;
@@ -71,6 +72,8 @@ struct _ZrythmApp
   UndoManager *          undo_manager;
 
   Tracklist *         tracklist;
+
+  PianoRoll *         piano_roll;
 
   SnapGrid *          snap_grid_timeline; ///< snap/grid info for timeline
   SnapGrid *         snap_grid_midi; ///< snap/grid info for midi editor

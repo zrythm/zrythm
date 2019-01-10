@@ -30,4 +30,3 @@
 GtkDialog * dialogs_get_open_project_dialog (GtkWindow * parent);
 
 #endif
-

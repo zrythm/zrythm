@@ -1,7 +1,7 @@
 /*
  * inc/gui/widgets/ruler.h - Ruler
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -24,16 +24,17 @@
 
 #include <gtk/gtk.h>
 
-#define RULER_WIDGET_TYPE                  (ruler_widget_get_type ())
+#define RULER_WIDGET_TYPE \
+  (ruler_widget_get_type ())
 G_DECLARE_DERIVABLE_TYPE (RulerWidget,
-                      ruler_widget,
-                      RULER,
-                      WIDGET,
-                      GtkDrawingArea)
+                          ruler_widget,
+                          Z,
+                          RULER_WIDGET,
+                          GtkDrawingArea)
 
 #define RULER_WIDGET_GET_PRIVATE(self) \
   RulerWidgetPrivate * prv = \
-    ruler_widget_get_private (RULER_WIDGET (self));
+    ruler_widget_get_private (Z_RULER_WIDGET (self));
 
 /**
  * pixels to draw between each beat,

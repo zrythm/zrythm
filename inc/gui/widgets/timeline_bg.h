@@ -1,7 +1,7 @@
 /*
  * inc/gui/widgets/timeline_bg.h - Timeline background
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -24,14 +24,15 @@
 
 #include <gtk/gtk.h>
 
-#define TIMELINE_BG_WIDGET_TYPE                  (timeline_bg_widget_get_type ())
-#define TIMELINE_BG_WIDGET(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), TIMELINE_BG_WIDGET_TYPE, TimelineBg))
-#define TIMELINE_BG_WIDGET_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST  ((klass), TIMELINE_BG_WIDGET, TimelineBgWidgetClass))
-#define IS_TIMELINE_BG_WIDGET(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TIMELINE_BG_WIDGET_TYPE))
-#define IS_TIMELINE_BG_WIDGET_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE  ((klass), TIMELINE_BG_WIDGET_TYPE))
-#define TIMELINE_BG_WIDGET_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS  ((obj), TIMELINE_BG_WIDGET_TYPE, TimelineBgWidgetClass))
+#define TIMELINE_BG_WIDGET_TYPE \
+  (timeline_bg_widget_get_type ())
+G_DECLARE_FINAL_TYPE (TimelineBgWidget,
+                      timeline_bg_widget,
+                      Z,
+                      TIMELINE_BG_WIDGET,
+                      GtkDrawingArea)
 
-typedef struct TimelineBgWidget
+typedef struct _TimelineBgWidget
 {
   GtkDrawingArea           parent_instance;
   int                      total_px;
@@ -40,11 +41,6 @@ typedef struct TimelineBgWidget
   GtkGestureMultiPress     * multipress;
 } TimelineBgWidget;
 
-typedef struct TimelineBgWidgetClass
-{
-  GtkDrawingAreaClass       parent_class;
-} TimelineBgWidgetClass;
-
 /**
  * Creates a timeline widget using the given timeline data.
  */
@@ -52,5 +48,3 @@ TimelineBgWidget *
 timeline_bg_widget_new ();
 
 #endif
-
-

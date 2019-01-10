@@ -27,15 +27,9 @@ G_DEFINE_TYPE (RackWidget,
                rack_widget,
                GTK_TYPE_SCROLLED_WINDOW)
 
-static void
-rack_widget_init (RackWidget * self)
+void
+rack_widget_setup (RackWidget * self)
 {
-  self->main_box = GTK_BOX (
-    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  gtk_widget_set_valign (GTK_WIDGET (self->main_box), GTK_ALIGN_START);
-  gtk_container_add (GTK_CONTAINER (self),
-                     GTK_WIDGET (self->main_box));
-
   /* pack the automators row */
   self->rack_rows[0] = rack_row_widget_new (RRW_TYPE_AUTOMATORS,
                                             NULL);
@@ -64,6 +58,18 @@ rack_widget_init (RackWidget * self)
 
   /* pack the master channel row */
 
+}
+
+static void
+rack_widget_init (RackWidget * self)
+{
+  self->main_box = GTK_BOX (
+    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  gtk_widget_set_valign (GTK_WIDGET (self->main_box), GTK_ALIGN_START);
+  gtk_container_add (GTK_CONTAINER (self),
+                     GTK_WIDGET (self->main_box));
+
+
   /* pack dummy box */
   self->dummy_box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_box_pack_end (GTK_BOX (self->main_box),
@@ -71,6 +77,8 @@ rack_widget_init (RackWidget * self)
                     Z_GTK_EXPAND,
                     Z_GTK_FILL,
                     0);
+
+  gtk_widget_show_all (GTK_WIDGET (self));
 }
 
 static void

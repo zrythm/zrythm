@@ -35,7 +35,7 @@ typedef jack_default_audio_sample_t   sample_t;
 typedef jack_nframes_t                nframes_t;
 
 typedef struct Channel Channel;
-typedef struct Plugin_Descriptor Plugin_Descriptor;
+typedef struct PluginDescriptor PluginDescriptor;
 
 typedef struct Mixer
 {
@@ -92,7 +92,7 @@ mixer_remove_channel (Mixer *   mixer,
 void
 mixer_add_channel_from_plugin_descr (
   Mixer * mixer,
-  Plugin_Descriptor * descr);
+  PluginDescriptor * descr);
 
 Channel *
 mixer_get_channel_by_name (Mixer * self,

@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2018 Alexandros Theodotou
+ * gui/widgets/region.h - Region widget
+ *
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -26,17 +28,17 @@
 
 #include <gtk/gtk.h>
 
-#define REGION_WIDGET_TYPE (region_widget_get_type ())
+#define REGION_WIDGET_TYPE \
+  (region_widget_get_type ())
 G_DECLARE_DERIVABLE_TYPE (RegionWidget,
                           region_widget,
-                          REGION,
-                          WIDGET,
+                          Z,
+                          REGION_WIDGET,
                           GtkDrawingArea)
-#define IS_REGION_WIDGET(obj) \
-  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), REGION_WIDGET_TYPE))
+
 #define REGION_WIDGET_GET_PRIVATE(self) \
   RegionWidgetPrivate * rw_prv = \
-    region_widget_get_private (REGION_WIDGET (self));
+    region_widget_get_private (Z_REGION_WIDGET (self));
 
 typedef struct _RegionWidgetPrivate
 {

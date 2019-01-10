@@ -20,7 +20,6 @@
  */
 
 #include "gui/widgets/top_bar.h"
-#include "gui/widgets/bpm.h"
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/transport_controls.h"
 

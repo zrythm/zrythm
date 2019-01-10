@@ -48,17 +48,17 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 
   /* draw filled in bar */
   float pan_val = GET_VAL;
-  float intensity = pan_val;
+  /*float intensity = pan_val;*/
   float value_px = pan_val * width;
-  const float intensity_inv = 1.0 - intensity;
-  float r = intensity_inv * self->end_color.red   +
-            intensity * self->start_color.red;
-  float g = intensity_inv * self->end_color.green +
-            intensity * self->start_color.green;
-  float b = intensity_inv * self->end_color.blue  +
-            intensity * self->start_color.blue;
-  float a = intensity_inv * self->end_color.alpha  +
-            intensity * self->start_color.alpha;
+  /*const float intensity_inv = 1.0 - intensity;*/
+  /*float r = intensity_inv * self->end_color.red   +*/
+            /*intensity * self->start_color.red;*/
+  /*float g = intensity_inv * self->end_color.green +*/
+            /*intensity * self->start_color.green;*/
+  /*float b = intensity_inv * self->end_color.blue  +*/
+            /*intensity * self->start_color.blue;*/
+  /*float a = intensity_inv * self->end_color.alpha  +*/
+            /*intensity * self->start_color.alpha;*/
 
   /* draw pan line */
   cairo_move_to (cr, value_px, 0);
@@ -70,7 +70,7 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 static void
 on_crossing (GtkWidget * widget, GdkEvent *event)
 {
-  PanWidget * self = PAN_WIDGET (widget);
+  PanWidget * self = Z_PAN_WIDGET (widget);
 
   if (gdk_event_get_event_type (event) ==
       GDK_ENTER_NOTIFY)

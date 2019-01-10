@@ -137,7 +137,7 @@ draw_cb (MidiRegionWidget * self, cairo_t *cr, gpointer data)
 static void
 on_motion (GtkWidget * widget, GdkEventMotion *event)
 {
-  MidiRegionWidget * self = MIDI_REGION_WIDGET (widget);
+  MidiRegionWidget * self = Z_MIDI_REGION_WIDGET (widget);
   GtkAllocation allocation;
   gtk_widget_get_allocation (widget,
                              &allocation);
@@ -188,7 +188,7 @@ midi_region_widget_new (MidiRegion * midi_region)
   g_message ("Creating midi region widget...");
   MidiRegionWidget * self = g_object_new (MIDI_REGION_WIDGET_TYPE, NULL);
 
-  region_widget_setup (REGION_WIDGET (self),
+  region_widget_setup (Z_REGION_WIDGET (self),
                        (Region *) midi_region);
 
   /* connect signals */

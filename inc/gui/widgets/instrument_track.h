@@ -1,7 +1,7 @@
 /*
- * gui/widgets/track.h - Track view
+ * gui/widgets/instrument_track.h - Track view
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -31,8 +31,8 @@
   (instrument_track_widget_get_type ())
 G_DECLARE_FINAL_TYPE (InstrumentTrackWidget,
                       instrument_track_widget,
-                      INSTRUMENT_TRACK,
-                      WIDGET,
+                      Z,
+                      INSTRUMENT_TRACK_WIDGET,
                       TrackWidget)
 
 typedef struct _AutomationTracklistWidget AutomationTracklistWidget;

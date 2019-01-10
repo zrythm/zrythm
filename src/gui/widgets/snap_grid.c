@@ -33,7 +33,7 @@ static void
 on_clicked (GtkButton * button,
             gpointer  user_data)
 {
-  SnapGridWidget * self = SNAP_GRID_WIDGET (user_data);
+  SnapGridWidget * self = Z_SNAP_GRID_WIDGET (user_data);
   gtk_widget_show_all (GTK_WIDGET (self->popover));
 }
 

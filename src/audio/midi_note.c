@@ -2,7 +2,7 @@
  * audio/midi_note.c - A midi_note in the timeline having a start
  *   and an end
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -24,21 +24,18 @@
 #include "audio/midi_note.h"
 #include "audio/position.h"
 #include "audio/track.h"
+#include "audio/velocity.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_note.h"
+#include "gui/widgets/velocity.h"
 #include "project.h"
-
-/**
- * default velocity
- */
-#define DEFAULT_VEL 90
 
 MidiNote *
 midi_note_new (MidiRegion * midi_region,
-            Position * start_pos,
-            Position * end_pos,
-            int      val,
-            int      vel)
+               Position *   start_pos,
+               Position *   end_pos,
+               int          val,
+               Velocity *   vel)
 {
   MidiNote * midi_note = calloc (1, sizeof (MidiNote));
 
@@ -52,7 +49,9 @@ midi_note_new (MidiRegion * midi_region,
   midi_note->end_pos.ticks = end_pos->ticks;
   midi_note->midi_region = midi_region;
   midi_note->val = val;
-  midi_note->vel = vel > -1 ? vel : DEFAULT_VEL;
+  midi_note->vel = vel;
+  vel->midi_note = midi_note;
+  vel->widget = velocity_widget_new (vel);
   midi_note->widget = midi_note_widget_new (midi_note);
   midi_note->id = PROJECT->num_midi_notes;
   g_object_ref (midi_note->widget);
@@ -113,7 +112,7 @@ midi_note_notes_to_events (MidiNote     ** midi_notes, ///< array
         ev->buffer = calloc (3, sizeof (jack_midi_data_t));
       ev->buffer[0] = MIDI_CH1_NOTE_ON; /* status byte */
       ev->buffer[1] = note->val; /* note number 0-127 */
-      ev->buffer[2] = note->vel; /* velocity 0-127 */
+      ev->buffer[2] = note->vel->vel; /* velocity 0-127 */
       events->num_events++;
 
       /* note off */
@@ -125,7 +124,7 @@ midi_note_notes_to_events (MidiNote     ** midi_notes, ///< array
         ev->buffer = calloc (3, sizeof (jack_midi_data_t));
       ev->buffer[0] = MIDI_CH1_NOTE_OFF; /* status byte */
       ev->buffer[1] = note->val; /* note number 0-127 */
-      ev->buffer[2] = note->vel; /* velocity 0-127 */
+      ev->buffer[2] = note->vel->vel; /* velocity 0-127 */
       events->num_events++;
     }
 }

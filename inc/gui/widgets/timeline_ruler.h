@@ -1,7 +1,7 @@
 /*
  * inc/gui/widgets/ruler.h - Ruler
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -26,11 +26,12 @@
 
 #include <gtk/gtk.h>
 
-#define TIMELINE_RULER_WIDGET_TYPE                  (timeline_ruler_widget_get_type ())
+#define TIMELINE_RULER_WIDGET_TYPE \
+  (timeline_ruler_widget_get_type ())
 G_DECLARE_FINAL_TYPE (TimelineRulerWidget,
                       timeline_ruler_widget,
-                      TIMELINE_RULER,
-                      WIDGET,
+                      Z,
+                      TIMELINE_RULER_WIDGET,
                       RulerWidget)
 
 #define MW_RULER MW_CENTER_DOCK->ruler
