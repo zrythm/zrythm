@@ -44,7 +44,7 @@ G_DEFINE_TYPE (AudioRegionWidget,
 static gboolean
 draw_cb (AudioRegionWidget * self, cairo_t *cr, gpointer data)
 {
-  REGION_WIDGET_GET_PRIVATE (self);
+  REGION_WIDGET_GET_PRIVATE (data);
   guint width, height;
   GtkStyleContext *context;
 

@@ -31,7 +31,7 @@
 
 G_DEFINE_TYPE_WITH_PRIVATE (RegionWidget,
                             region_widget,
-                            GTK_TYPE_DRAWING_AREA)
+                            GTK_TYPE_BOX)
 
 static void
 draw_text (cairo_t *cr, char * name)
@@ -72,8 +72,7 @@ draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
   guint width, height;
   GtkStyleContext *context;
 
-  RegionWidgetPrivate * prv =
-    region_widget_get_instance_private (self);
+  REGION_WIDGET_GET_PRIVATE (data);
 
   context = gtk_widget_get_style_context (GTK_WIDGET (self));
 
@@ -82,7 +81,7 @@ draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
 
   gtk_render_background (context, cr, 0, 0, width, height);
 
-  GdkRGBA * color = &((ChannelTrack *) prv->region->track)->channel->color;
+  GdkRGBA * color = &((ChannelTrack *) rw_prv->region->track)->channel->color;
   cairo_set_source_rgba (cr,
                          color->red,
                          color->green,
@@ -99,7 +98,7 @@ draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
   cairo_set_line_width (cr, 3.5);
   cairo_stroke (cr);
 
-  draw_text (cr, prv->region->name);
+  draw_text (cr, rw_prv->region->name);
 
  return FALSE;
 }
@@ -131,10 +130,19 @@ region_widget_setup (RegionWidget * self,
 
   rw_prv->region = region;
 
+  rw_prv->drawing_area =
+    GTK_DRAWING_AREA (gtk_drawing_area_new ());
+  gtk_container_add (GTK_CONTAINER (self),
+                     GTK_WIDGET (rw_prv->drawing_area));
+  gtk_widget_set_visible (GTK_WIDGET (rw_prv->drawing_area),
+                          1);
+  gtk_widget_set_hexpand (GTK_WIDGET (rw_prv->drawing_area),
+                          1);
+
   gtk_widget_add_events (GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
 
   /* connect signals */
-  g_signal_connect (G_OBJECT (self), "draw",
+  g_signal_connect (G_OBJECT (rw_prv->drawing_area), "draw",
                     G_CALLBACK (draw_cb), self);
   g_signal_connect (G_OBJECT (self), "enter-notify-event",
                     G_CALLBACK (on_motion),  self);

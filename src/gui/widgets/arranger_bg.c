@@ -178,20 +178,6 @@ arranger_bg_widget_init (ArrangerBgWidget *self )
     GTK_GESTURE_MULTI_PRESS (
       gtk_gesture_multi_press_new (GTK_WIDGET (self)));
 
-  // set the size FIXME uncomment
-  int ww, hh;
-  PianoRollLabelsWidget * piano_roll_labels =
-    PIANO_ROLL->piano_roll_labels;
-  RULER_WIDGET_GET_PRIVATE (MW_RULER);
-  gtk_widget_get_size_request (
-    GTK_WIDGET (piano_roll_labels),
-    &ww,
-    &hh);
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self),
-    prv->total_px,
-    hh);
-
   gtk_widget_set_can_focus (GTK_WIDGET (self),
                            1);
   gtk_widget_set_focus_on_click (GTK_WIDGET (self),

@@ -87,6 +87,21 @@ scrollbar
   /*box-shadow: inset -2px 0 #2eb398, 1px 0 #2eb398;*/
 /*}*/
 
+region
+{
+  box-shadow: 2px 2px 6px alpha (black, 0.1);
+}
+
+region:selected
+{
+  box-shadow: 2px 2px 10px @selection_color;
+}
+
+region:hover
+{
+  box-shadow: 2px 2px 10px @hover_color;
+}
+
 treeview.view:selected
 {
   background-color: @z_purple;

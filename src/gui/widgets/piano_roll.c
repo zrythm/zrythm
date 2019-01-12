@@ -143,6 +143,10 @@ piano_roll_widget_setup (
     GTK_WIDGET (self->arranger),
     prv->total_px,
     hh);
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self->modifier_arranger),
+    prv->total_px,
+    -1);
 
   link_scrolls (self);
 

@@ -34,7 +34,7 @@ G_DECLARE_DERIVABLE_TYPE (RegionWidget,
                           region_widget,
                           Z,
                           REGION_WIDGET,
-                          GtkDrawingArea)
+                          GtkBox)
 
 #define REGION_WIDGET_GET_PRIVATE(self) \
   RegionWidgetPrivate * rw_prv = \
@@ -43,11 +43,12 @@ G_DECLARE_DERIVABLE_TYPE (RegionWidget,
 typedef struct _RegionWidgetPrivate
 {
   Region                   * region;   ///< the region associated with this
+  GtkDrawingArea *         drawing_area;
 } RegionWidgetPrivate;
 
 typedef struct _RegionWidgetClass
 {
-  GtkDrawingAreaClass parent_class;
+  GtkBoxClass parent_class;
 } RegionWidgetClass;
 
 void

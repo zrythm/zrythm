@@ -49,7 +49,7 @@ G_DEFINE_TYPE (MidiRegionWidget,
 static gboolean
 draw_cb (MidiRegionWidget * self, cairo_t *cr, gpointer data)
 {
-  REGION_WIDGET_GET_PRIVATE (self);
+  REGION_WIDGET_GET_PRIVATE (data);
   guint width, height;
   GtkStyleContext *context;
 
@@ -190,9 +190,10 @@ midi_region_widget_new (MidiRegion * midi_region)
 
   region_widget_setup (Z_REGION_WIDGET (self),
                        (Region *) midi_region);
+  REGION_WIDGET_GET_PRIVATE (self);
 
   /* connect signals */
-  g_signal_connect (G_OBJECT (self), "draw",
+  g_signal_connect (G_OBJECT (rw_prv->drawing_area), "draw",
                     G_CALLBACK (draw_cb), self);
   g_signal_connect (G_OBJECT (self), "enter-notify-event",
                     G_CALLBACK (on_motion),  self);
