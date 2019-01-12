@@ -57,10 +57,13 @@ midi_modifier_arranger_widget_set_allocation (
       height = gtk_widget_get_allocated_height (
         GTK_WIDGET (self));
 
+      int vel_px =
+        height *
+        ((float) vw->velocity->vel / 127.f);
       allocation->x = wx;
-      allocation->y = 0;
+      allocation->y = height - vel_px;
       allocation->width = 8;
-      allocation->height = height / 2;
+      allocation->height = vel_px;
     }
 }
 

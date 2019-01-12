@@ -43,6 +43,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger_bg.h"
 #include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/piano_roll_labels.h"
@@ -298,8 +299,12 @@ midi_arranger_widget_on_drag_begin_create_note (
                          prv->snap_grid);
   midi_region_add_midi_note (region,
                         midi_note);
-  gtk_overlay_add_overlay (GTK_OVERLAY (self),
-                           GTK_WIDGET (midi_note->widget));
+  gtk_overlay_add_overlay (
+    GTK_OVERLAY (self),
+    GTK_WIDGET (midi_note->widget));
+  gtk_overlay_add_overlay (
+    GTK_OVERLAY (MIDI_MODIFIER_ARRANGER),
+    GTK_WIDGET (midi_note->vel->widget));
   gtk_widget_show (GTK_WIDGET (midi_note->widget));
   prv->action = ARRANGER_ACTION_RESIZING_R;
   self->midi_notes[0] = midi_note;

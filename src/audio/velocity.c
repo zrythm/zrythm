@@ -26,7 +26,7 @@
 /**
  * default velocity
  */
-#define DEFAULT_VELOCITY 90
+#define DEFAULT_VELOCITY 64
 
 Velocity *
 velocity_new (int        vel)

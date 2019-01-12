@@ -82,9 +82,7 @@ For any bugs please raise an issue or join a chatroom below
 
 ## Chatrooms
 ### IRC (Freenode)
-`#zrythm` channel
-### Matrix
-`zrythm` room (https://matrix.to/#/!aPVJxKGBLLAIRygQYD:matrix.org)
+`#zrythm` channel (for Matrix users `#freenode_#zrythm:matrix.org`)
 ### Discord
 `zrythm` server (https://discord.gg/AbHb3eD)
 
@@ -108,9 +106,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ## Support
 Donations of any amount are accepted (and appreciated) below:
 
-### Patreon
-https://www.patreon.com/alextee
-### Liberapay
-https://liberapay.com/alextee/
 ### Paypal
 https://www.paypal.me/alextee90
+### Liberapay
+https://liberapay.com/alextee/
+### Patreon
+https://www.patreon.com/alextee

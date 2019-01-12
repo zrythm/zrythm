@@ -50,6 +50,7 @@ typedef struct _VelocityWidget
   GtkBox                   parent_instance;
   Velocity *               velocity;   ///< the velocity associated with this
   VelocityWidgetState      state;
+  GtkDrawingArea *         drawing_area; ///< the drwaing area
 } VelocityWidget;
 
 /**
