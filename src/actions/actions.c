@@ -19,14 +19,77 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/transport.h"
 #include "actions/actions.h"
 #include "actions/undo_manager.h"
 #include "project.h"
+#include "gui/widgets/arranger.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/export_dialog.h"
 #include "gui/widgets/header_bar.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_modifier_arranger.h"
+#include "gui/widgets/midi_ruler.h"
+#include "gui/widgets/piano_roll.h"
+#include "gui/widgets/ruler.h"
+#include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/timeline_ruler.h"
 
 #include <gtk/gtk.h>
+
+void
+action_enable_window_action (
+  const char * action_name)
+{
+  GAction * action =
+    g_action_map_lookup_action (
+      G_ACTION_MAP (MAIN_WINDOW),
+      action_name);
+  g_simple_action_set_enabled (
+    G_SIMPLE_ACTION (action),
+    1);
+}
+
+void
+action_disable_window_action (
+  const char * action_name)
+{
+  GAction * action =
+    g_action_map_lookup_action (
+      G_ACTION_MAP (MAIN_WINDOW),
+      action_name);
+  g_simple_action_set_enabled (
+    G_SIMPLE_ACTION (action),
+    0);
+}
+
+void
+action_enable_app_action (
+  const char * action_name)
+{
+  GAction * action =
+    g_action_map_lookup_action (
+      G_ACTION_MAP (ZRYTHM),
+      action_name);
+  g_simple_action_set_enabled (
+    G_SIMPLE_ACTION (action),
+    1);
+}
+
+void
+action_disable_app_action (
+  const char * action_name)
+{
+  GAction * action =
+    g_action_map_lookup_action (
+      G_ACTION_MAP (ZRYTHM),
+      action_name);
+  g_simple_action_set_enabled (
+    G_SIMPLE_ACTION (action),
+    0);
+}
 
 void
 activate_about (GSimpleAction *action,
@@ -66,7 +129,24 @@ activate_zoom_in (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  g_message ("ZOOMING IN");
+  TRANSPORT->zoom_level *= 1.3f;
+  ruler_widget_refresh (Z_RULER_WIDGET (MW_RULER));
+  ruler_widget_refresh (Z_RULER_WIDGET (MIDI_RULER));
+  arranger_widget_refresh (
+    Z_ARRANGER_WIDGET (MW_TIMELINE));
+  arranger_widget_refresh (
+    Z_ARRANGER_WIDGET (MIDI_ARRANGER));
+  arranger_widget_refresh (
+    Z_ARRANGER_WIDGET (MIDI_MODIFIER_ARRANGER));
+  if (TRANSPORT->zoom_level > 60.f)
+    {
+      action_disable_window_action ("zoom-in");
+    }
+  if (TRANSPORT->zoom_level >= 0.2f)
+    {
+      action_enable_window_action ("zoom-out");
+    }
+  g_message ("zoom level %f", TRANSPORT->zoom_level);
 }
 
 void
@@ -74,7 +154,24 @@ activate_zoom_out (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  g_message ("ZOOMING IN");
+  TRANSPORT->zoom_level /= 1.3f;
+  ruler_widget_refresh (Z_RULER_WIDGET (MW_RULER));
+  ruler_widget_refresh (Z_RULER_WIDGET (MIDI_RULER));
+  arranger_widget_refresh (
+    Z_ARRANGER_WIDGET (MW_TIMELINE));
+  arranger_widget_refresh (
+    Z_ARRANGER_WIDGET (MIDI_ARRANGER));
+  arranger_widget_refresh (
+    Z_ARRANGER_WIDGET (MIDI_MODIFIER_ARRANGER));
+  if (TRANSPORT->zoom_level <= 60.f)
+    {
+      action_enable_window_action ("zoom-in");
+    }
+  if (TRANSPORT->zoom_level < 0.2f)
+    {
+      action_disable_window_action ("zoom-out");
+    }
+  g_message ("zoom level %f", TRANSPORT->zoom_level);
 }
 
 void
@@ -90,7 +187,15 @@ activate_original_size (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  g_message ("ZOOMING IN");
+  TRANSPORT->zoom_level = DEFAULT_ZOOM_LEVEL;
+  ruler_widget_refresh (Z_RULER_WIDGET (MW_RULER));
+  ruler_widget_refresh (Z_RULER_WIDGET (MIDI_RULER));
+  arranger_widget_refresh (
+    Z_ARRANGER_WIDGET (MW_TIMELINE));
+  arranger_widget_refresh (
+    Z_ARRANGER_WIDGET (MIDI_ARRANGER));
+  arranger_widget_refresh (
+    Z_ARRANGER_WIDGET (MIDI_MODIFIER_ARRANGER));
 }
 
 void
@@ -186,7 +291,7 @@ activate_iconify (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-
+  gtk_window_iconify (GTK_WINDOW (MAIN_WINDOW));
 }
 
 void
@@ -279,7 +384,18 @@ activate_toggle_left_panel (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  g_message ("ZOOMING IN");
+  CenterDockWidget * self = MW_CENTER_DOCK;
+  GValue a = G_VALUE_INIT;
+  g_value_init (&a, G_TYPE_BOOLEAN);
+  g_object_get_property (G_OBJECT (self),
+                         "left-visible",
+                         &a);
+  int val = g_value_get_boolean (&a);
+  g_value_set_boolean (&a,
+                       val == 1 ? 0 : 1);
+  g_object_set_property (G_OBJECT (self),
+                         "left-visible",
+                         &a);
 }
 
 void
@@ -287,7 +403,18 @@ activate_toggle_right_panel (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  g_message ("ZOOMING IN");
+  CenterDockWidget * self = MW_CENTER_DOCK;
+  GValue a = G_VALUE_INIT;
+  g_value_init (&a, G_TYPE_BOOLEAN);
+  g_object_get_property (G_OBJECT (self),
+                         "right-visible",
+                         &a);
+  int val = g_value_get_boolean (&a);
+  g_value_set_boolean (&a,
+                       val == 1 ? 0 : 1);
+  g_object_set_property (G_OBJECT (self),
+                         "right-visible",
+                         &a);
 }
 
 void
@@ -295,7 +422,18 @@ activate_toggle_bot_panel (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  g_message ("ZOOMING IN");
+  CenterDockWidget * self = MW_CENTER_DOCK;
+  GValue a = G_VALUE_INIT;
+  g_value_init (&a, G_TYPE_BOOLEAN);
+  g_object_get_property (G_OBJECT (self),
+                         "bottom-visible",
+                         &a);
+  int val = g_value_get_boolean (&a);
+  g_value_set_boolean (&a,
+                       val == 1 ? 0 : 1);
+  g_object_set_property (G_OBJECT (self),
+                         "bottom-visible",
+                         &a);
 }
 
 void
@@ -313,12 +451,24 @@ activate_fullscreen (GSimpleAction *action,
 {
   if (MAIN_WINDOW->is_maximized)
     {
+      gtk_window_resize (GTK_WINDOW (MAIN_WINDOW),
+                         MAIN_WINDOW->width,
+                         MAIN_WINDOW->height);
       gtk_window_unmaximize (GTK_WINDOW (MAIN_WINDOW));
       MAIN_WINDOW->is_maximized = 0;
+      /*gtk_window_resize (GTK_WINDOW (MAIN_WINDOW),*/
+                         /*MAIN_WINDOW->width,*/
+                         /*MAIN_WINDOW->height);*/
     }
   else
     {
       gtk_window_maximize (GTK_WINDOW (MAIN_WINDOW));
+      MAIN_WINDOW->height =
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (MAIN_WINDOW));
+      MAIN_WINDOW->width =
+        gtk_widget_get_allocated_width (
+          GTK_WIDGET (MAIN_WINDOW));
     }
 }
 

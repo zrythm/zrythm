@@ -3,25 +3,32 @@
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <template class="StartAssistantWidget" parent="GtkAssistant">
-    <property name="can-focus">False</property>
+    <property name="can_focus">False</property>
     <property name="modal">True</property>
-    <property name="type-hint">dialog</property>
-    <property name="urgency-hint">True</property>
-    <property name="use-header-bar">0</property>
+    <property name="type_hint">dialog</property>
+    <property name="urgency_hint">True</property>
+    <property name="use_header_bar">0</property>
     <child>
       <object class="GtkBox" id="select_project_box">
-        <property name="visible">1</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkLabel" id="select_project_label">
-            <property name="visible">1</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="label" translatable="yes">Select a project...</property>
           </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
         </child>
         <child>
           <object class="GtkTreeView" id="projects">
-            <property name="visible">1</property>
-            <property name="can-focus">1</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
             <child internal-child="selection">
               <object class="GtkTreeSelection" id="projects_selection">
                 <signal name="changed" handler="on_projects_selection_changed" object="StartAssistantWidget" swapped="no"/>
@@ -29,47 +36,63 @@
             </child>
           </object>
           <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
         </child>
         <child>
           <object class="GtkCheckButton" id="create_new_project">
             <property name="label" translatable="yes">Create new project</property>
-            <property name="visible">1</property>
-            <property name="can-focus">1</property>
-            <property name="draw-indicator">1</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="draw_indicator">True</property>
             <signal name="toggled" handler="on_create_new_project_toggled" object="StartAssistantWidget" swapped="no"/>
           </object>
           <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
             <property name="position">2</property>
           </packing>
         </child>
       </object>
       <packing>
-        <property name="has-padding">False</property>
+        <property name="has_padding">False</property>
       </packing>
     </child>
     <child>
       <object class="GtkBox">
-        <property name="visible">1</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkLabel">
-            <property name="visible">1</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="label" translatable="yes">Project name: name
 Path: /home/user/Zrythm/name
 Backend: JACK
 Frame rate: 44100
 (note: this text is hard coded at the moment)</property>
           </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
         </child>
       </object>
       <packing>
-        <property name="page-type">confirm</property>
-        <property name="has-padding">False</property>
+        <property name="page_type">confirm</property>
+        <property name="has_padding">False</property>
       </packing>
     </child>
     <child type="titlebar">
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
     </child>
   </template>
 </interface>

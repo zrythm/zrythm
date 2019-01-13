@@ -163,7 +163,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
       0,
       NULL,
       0,
-      "win.export");
+      "win.export-as");
   APPEND_TO_FILE_MENU;
   CREATE_SEPARATOR;
   APPEND_TO_FILE_MENU;
@@ -275,6 +275,9 @@ header_bar_widget_setup (HeaderBarWidget * self,
       "builder-view-left-pane-symbolic-light.svg",
       1,
       "win.toggle-left-panel");
+  gtk_check_menu_item_set_active (
+    GTK_CHECK_MENU_ITEM (menu_item),
+    1);
   APPEND_TO_VIEW_MENU;
   menu_item =
     create_menu_item (
@@ -284,6 +287,9 @@ header_bar_widget_setup (HeaderBarWidget * self,
       "builder-view-right-pane-symbolic-light.svg",
       1,
       "win.toggle-right-panel");
+  gtk_check_menu_item_set_active (
+    GTK_CHECK_MENU_ITEM (menu_item),
+    1);
   APPEND_TO_VIEW_MENU;
   menu_item =
     create_menu_item (
@@ -293,6 +299,9 @@ header_bar_widget_setup (HeaderBarWidget * self,
       "builder-view-bottom-pane-symbolic-light.svg",
       1,
       "win.toggle-bot-panel");
+  gtk_check_menu_item_set_active (
+    GTK_CHECK_MENU_ITEM (menu_item),
+    1);
   APPEND_TO_VIEW_MENU;
   menu_item =
     create_menu_item (
@@ -302,6 +311,9 @@ header_bar_widget_setup (HeaderBarWidget * self,
       NULL,
       1,
       "win.toggle-status-bar");
+  gtk_check_menu_item_set_active (
+    GTK_CHECK_MENU_ITEM (menu_item),
+    1);
   APPEND_TO_VIEW_MENU;
   CREATE_SEPARATOR;
   APPEND_TO_VIEW_MENU;
@@ -350,7 +362,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
       0,
       NULL,
       0,
-      "app.fullscren");
+      "app.fullscreen");
   APPEND_TO_VIEW_MENU;
 #undef APPEND_TO_VIEW_MENU
 

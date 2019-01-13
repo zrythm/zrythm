@@ -24,9 +24,15 @@
 #include "settings.h"
 #include "audio/position.h"
 #include "audio/transport.h"
+#include "gui/widgets/arranger.h"
+#include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_modifier_arranger.h"
+#include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/ruler.h"
+#include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_ruler.h"
 
 #include <gtk/gtk.h>

@@ -263,7 +263,7 @@ position_updated (Position * position)
         {
           ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);
           gtk_widget_queue_draw (
-            GTK_WIDGET (prv->bg));
+            GTK_WIDGET (ar_prv->bg));
         }
       if (PIANO_ROLL)
         {
@@ -276,7 +276,7 @@ position_updated (Position * position)
             {
               ARRANGER_WIDGET_GET_PRIVATE (MIDI_ARRANGER);
               gtk_widget_queue_draw (
-                      GTK_WIDGET (prv->bg));
+                      GTK_WIDGET (ar_prv->bg));
             }
         }
     }

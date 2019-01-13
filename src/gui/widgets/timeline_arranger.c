@@ -481,7 +481,7 @@ timeline_arranger_widget_on_drag_begin_region_hit (
   REGION_WIDGET_GET_PRIVATE (rw);
 
   /* open MIDI editor */
-  if (prv->n_press == 2)
+  if (ar_prv->n_press == 2)
     {
       Track * track = rw_prv->region->track;
       Channel * chan = track_get_channel (track);
@@ -497,14 +497,14 @@ timeline_arranger_widget_on_drag_begin_region_hit (
   if (region->type == REGION_TYPE_MIDI &&
            Z_MIDI_REGION_WIDGET (rw)->cursor_state ==
              MIDI_REGION_CURSOR_RESIZE_L)
-    prv->action = ARRANGER_ACTION_RESIZING_L;
+    ar_prv->action = ARRANGER_ACTION_RESIZING_L;
   else if (region->type == REGION_TYPE_MIDI &&
            Z_MIDI_REGION_WIDGET (rw)->cursor_state ==
              MIDI_REGION_CURSOR_RESIZE_R)
-    prv->action = ARRANGER_ACTION_RESIZING_R;
+    ar_prv->action = ARRANGER_ACTION_RESIZING_R;
   else
     {
-      prv->action = ARRANGER_ACTION_STARTING_MOVING;
+      ar_prv->action = ARRANGER_ACTION_STARTING_MOVING;
       ui_set_cursor (GTK_WIDGET (rw), "grabbing");
     }
 
@@ -558,7 +558,7 @@ timeline_arranger_widget_on_drag_begin_ap_hit (
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
   AutomationPoint * ap = ap_widget->ap;
-  prv->start_pos_px = start_x;
+  ar_prv->start_pos_px = start_x;
   self->start_ap = ap;
   if (!array_contains ((void **) self->automation_points,
                        self->num_automation_points,
@@ -574,7 +574,7 @@ timeline_arranger_widget_on_drag_begin_ap_hit (
       break;
     case APW_STATE_HOVER:
     case APW_STATE_SELECTED:
-      prv->action = ARRANGER_ACTION_STARTING_MOVING;
+      ar_prv->action = ARRANGER_ACTION_STARTING_MOVING;
       ui_set_cursor (GTK_WIDGET (ap_widget), "grabbing");
       break;
     }
@@ -603,9 +603,9 @@ timeline_arranger_widget_find_start_poses (
     {
       Region * r = self->regions[i];
       if (position_compare (&r->start_pos,
-                            &prv->start_pos) <= 0)
+                            &ar_prv->start_pos) <= 0)
         {
-          position_set_to_pos (&prv->start_pos,
+          position_set_to_pos (&ar_prv->start_pos,
                                &r->start_pos);
         }
 
@@ -617,9 +617,9 @@ timeline_arranger_widget_find_start_poses (
     {
       AutomationPoint * ap = self->automation_points[i];
       if (position_compare (&ap->pos,
-                            &prv->start_pos) <= 0)
+                            &ar_prv->start_pos) <= 0)
         {
-          position_set_to_pos (&prv->start_pos,
+          position_set_to_pos (&ar_prv->start_pos,
                                &ap->pos);
         }
 
@@ -639,12 +639,12 @@ timeline_arranger_widget_create_ap (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  if (SNAP_GRID_ANY_SNAP (prv->snap_grid))
+  if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid))
     position_snap (NULL,
                    pos,
                    track,
                    NULL,
-                   prv->snap_grid);
+                   ar_prv->snap_grid);
 
   /* if the automatable is float in this automation track */
   if (automatable_is_float (at->automatable))
@@ -680,13 +680,13 @@ timeline_arranger_widget_create_region (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  if (SNAP_GRID_ANY_SNAP (prv->snap_grid))
+  if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid))
     {
       position_snap (NULL,
                      pos,
                      track,
                      NULL,
-                     prv->snap_grid);
+                     ar_prv->snap_grid);
     }
   Region * region;
   if (track->type == TRACK_TYPE_INSTRUMENT)
@@ -701,7 +701,7 @@ timeline_arranger_widget_create_region (
     }
   position_set_min_size (&region->start_pos,
                          &region->end_pos,
-                         prv->snap_grid);
+                         ar_prv->snap_grid);
   if (track->type == TRACK_TYPE_INSTRUMENT)
     {
       instrument_track_add_region ((InstrumentTrack *)track,
@@ -714,7 +714,7 @@ timeline_arranger_widget_create_region (
   gtk_overlay_add_overlay (GTK_OVERLAY (self),
                            GTK_WIDGET (region->widget));
   gtk_widget_show (GTK_WIDGET (region->widget));
-  prv->action = ARRANGER_ACTION_RESIZING_R;
+  ar_prv->action = ARRANGER_ACTION_RESIZING_R;
   self->regions[0] = region;
   self->num_regions = 1;
 }
@@ -727,12 +727,12 @@ timeline_arranger_widget_create_chord (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  if (SNAP_GRID_ANY_SNAP (prv->snap_grid))
+  if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid))
     position_snap (NULL,
                    pos,
                    track,
                    NULL,
-                   prv->snap_grid);
+                   ar_prv->snap_grid);
  Chord * chord = chord_new (NOTE_A,
                             1,
                             NOTE_A,
@@ -745,7 +745,7 @@ timeline_arranger_widget_create_chord (
    create_chords_action_new (chords, 1);
  undo_manager_perform (UNDO_MANAGER,
                        action);
-  prv->action = ARRANGER_ACTION_NONE;
+  ar_prv->action = ARRANGER_ACTION_NONE;
   self->chords[0] = chord;
   self->num_chords = 1;
 }
@@ -764,8 +764,8 @@ timeline_arranger_widget_find_and_select_items (
   arranger_widget_get_hit_widgets_in_range (
     Z_ARRANGER_WIDGET (self),
     ARRANGER_CHILD_TYPE_REGION,
-    prv->start_x,
-    prv->start_y,
+    ar_prv->start_x,
+    ar_prv->start_y,
     offset_x,
     offset_y,
     region_widgets,
@@ -791,8 +791,8 @@ timeline_arranger_widget_find_and_select_items (
   arranger_widget_get_hit_widgets_in_range (
     Z_ARRANGER_WIDGET (self),
     ARRANGER_CHILD_TYPE_AP,
-    prv->start_x,
-    prv->start_y,
+    ar_prv->start_x,
+    ar_prv->start_y,
     offset_x,
     offset_y,
     ap_widgets,
@@ -820,12 +820,12 @@ timeline_arranger_widget_snap_regions_l (
   for (int i = 0; i < self->num_regions; i++)
     {
       Region * region = self->regions[i];
-      if (SNAP_GRID_ANY_SNAP (prv->snap_grid))
+      if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid))
         position_snap (NULL,
                        pos,
                        region->track,
                        NULL,
-                       prv->snap_grid);
+                       ar_prv->snap_grid);
       region_set_start_pos (region,
                             pos,
                             0);
@@ -841,12 +841,12 @@ timeline_arranger_widget_snap_regions_r (
   for (int i = 0; i < self->num_regions; i++)
     {
       Region * region = self->regions[i];
-      if (SNAP_GRID_ANY_SNAP (prv->snap_grid))
+      if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid))
         position_snap (NULL,
                        pos,
                        region->track,
                        NULL,
-                       prv->snap_grid);
+                       ar_prv->snap_grid);
       if (position_compare (pos, &region->start_pos) > 0)
         {
           region_set_end_pos (region,
@@ -968,7 +968,7 @@ timeline_arranger_widget_move_items_y (
   if (self->start_region)
     {
       /* check if should be moved to new track */
-      Track * track = timeline_arranger_widget_get_track_at_y (prv->start_y + offset_y);
+      Track * track = timeline_arranger_widget_get_track_at_y (ar_prv->start_y + offset_y);
       Track * old_track = self->start_region->track;
       if (track)
         {
@@ -1077,7 +1077,7 @@ timeline_arranger_widget_move_items_y (
 
           float fval =
             automation_track_widget_get_fvalue_at_y (ap->at->widget,
-                                                     prv->start_y + offset_y + diff);
+                                                     ar_prv->start_y + offset_y + diff);
           automation_point_update_fvalue (ap, fval);
         }
     }
@@ -1096,7 +1096,7 @@ timeline_arranger_widget_on_drag_end (
     }
 
   /* if didn't click on something */
-  if (prv->action != ARRANGER_ACTION_STARTING_MOVING)
+  if (ar_prv->action != ARRANGER_ACTION_STARTING_MOVING)
     {
       self->start_region = NULL;
       self->start_ap = NULL;
@@ -1180,7 +1180,7 @@ timeline_arranger_widget_refresh_children (
        iter = g_list_next (iter))
     {
       GtkWidget * widget = GTK_WIDGET (iter->data);
-      if (widget != (GtkWidget *) prv->bg)
+      if (widget != (GtkWidget *) ar_prv->bg)
         {
           g_object_ref (widget);
           gtk_container_remove (

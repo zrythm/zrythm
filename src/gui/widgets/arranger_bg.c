@@ -148,8 +148,13 @@ drag_end (GtkGestureDrag *gesture,
   ArrangerBgWidget * self =
     Z_ARRANGER_BG_WIDGET (user_data);
   ARRANGER_BG_WIDGET_GET_PRIVATE (self);
-  RULER_WIDGET_GET_PRIVATE (ab_prv->ruler);
-  prv->start_x = 0;
+  ab_prv->start_x = 0;
+}
+
+void
+arranger_bg_widget_refresh (ArrangerBgWidget * self)
+{
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 ArrangerBgWidgetPrivate *

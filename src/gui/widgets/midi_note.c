@@ -87,19 +87,21 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
   GtkAllocation allocation;
   gtk_widget_get_allocation (widget,
                              &allocation);
-  ARRANGER_WIDGET_GET_PRIVATE (MIDI_ARRANGER);
+  ArrangerWidgetPrivate * ar_prv =
+    arranger_widget_get_private (
+      Z_ARRANGER_WIDGET (MIDI_ARRANGER));
 
   if (event->type == GDK_MOTION_NOTIFY)
     {
       if (event->x < RESIZE_CURSOR_SPACE &&
-          prv->action != ARRANGER_ACTION_MOVING)
+          ar_prv->action != ARRANGER_ACTION_MOVING)
         {
           self->state = MNW_STATE_RESIZE_L;
           ui_set_cursor (widget, "w-resize");
         }
 
       else if (event->x > allocation.width - RESIZE_CURSOR_SPACE &&
-          prv->action != ARRANGER_ACTION_MOVING)
+          ar_prv->action != ARRANGER_ACTION_MOVING)
         {
           self->state = MNW_STATE_RESIZE_R;
           ui_set_cursor (widget, "e-resize");
@@ -108,11 +110,11 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
         {
           if (self->state != MNW_STATE_SELECTED)
             self->state = MNW_STATE_HOVER;
-          if (prv->action !=
+          if (ar_prv->action !=
               ARRANGER_ACTION_MOVING &&
-              prv->action !=
+              ar_prv->action !=
               ARRANGER_ACTION_RESIZING_L &&
-              prv->action !=
+              ar_prv->action !=
               ARRANGER_ACTION_RESIZING_R)
             {
               ui_set_cursor (widget, "default");
@@ -123,11 +125,11 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
     {
       if (self->state != MNW_STATE_SELECTED)
         self->state = MNW_STATE_NONE;
-      if (prv->action !=
+      if (ar_prv->action !=
           ARRANGER_ACTION_MOVING &&
-          prv->action !=
+          ar_prv->action !=
           ARRANGER_ACTION_RESIZING_L &&
-          prv->action !=
+          ar_prv->action !=
           ARRANGER_ACTION_RESIZING_R)
         {
           ui_set_cursor (widget, "default");

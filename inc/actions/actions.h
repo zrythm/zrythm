@@ -22,6 +22,22 @@
 #include <gtk/gtk.h>
 
 void
+action_enable_window_action (
+  const char * action_name);
+
+void
+action_disable_window_action (
+  const char * action_name);
+
+void
+action_enable_app_action (
+  const char * action_name);
+
+void
+action_disable_app_action (
+  const char * action_name);
+
+void
 activate_about (GSimpleAction *action,
                 GVariant      *variant,
                 gpointer       user_data);

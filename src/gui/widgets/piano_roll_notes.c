@@ -156,7 +156,11 @@ drag_update (GtkGestureDrag * gesture,
   PianoRollNotesWidget * self = (PianoRollNotesWidget *) user_data;
 
   int prev_note = self->note;
-  self->note = (self->start_y - offset_y) / PIANO_ROLL->piano_roll_labels->px_per_note;
+  self->note =
+    CLAMP ((self->start_y - offset_y) /
+             PIANO_ROLL->piano_roll_labels->px_per_note,
+           0,
+           127);
   int vel = 90;
 
   /* if note changed */

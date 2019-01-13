@@ -53,6 +53,8 @@ typedef struct _MainWindowWidget
   CenterDockWidget *       center_dock;
   BotBarWidget *           bot_bar;
   int                      is_maximized;
+  int                      height;
+  int                      width;
   GtkAccelGroup *          accel_group;
 } MainWindowWidget;
 
@@ -74,11 +76,5 @@ main_window_widget_open (MainWindowWidget  * win,
 
 void
 main_window_widget_quit (MainWindowWidget * self);
-
-void
-main_window_widget_toggle_maximize (MainWindowWidget * self);
-
-void
-main_window_widget_minimize (MainWindowWidget * self);
 
 #endif

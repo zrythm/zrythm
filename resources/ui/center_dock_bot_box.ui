@@ -22,7 +22,7 @@
             <property name="visible">1</property>
             <property name="label" translatable="yes">Left</property>
             <property name="tooltip-text">Show/hide left panel</property>
-            <signal name="clicked" handler="on_toggle_left_dock_clicked" swapped="no"/>
+            <property name="action-name">win.toggle-left-panel</property>
           </object>
           <packing>
             <property name="homogeneous">1</property>
@@ -33,7 +33,7 @@
             <property name="visible">1</property>
             <property name="label" translatable="yes">Bot</property>
             <property name="tooltip-text">Show/hide bottom panel</property>
-            <signal name="clicked" handler="on_toggle_bottom_dock_clicked" swapped="no"/>
+            <property name="action-name">win.toggle-bot-panel</property>
           </object>
           <packing>
             <property name="homogeneous">1</property>
@@ -61,7 +61,7 @@
             <property name="visible">1</property>
             <property name="label" translatable="yes">Right</property>
             <property name="tooltip-text">Show/hide right panel</property>
-            <signal name="clicked" handler="on_toggle_right_dock_clicked" swapped="no"/>
+            <property name="action-name">win.toggle-right-panel</property>
           </object>
           <packing>
             <property name="homogeneous">1</property>

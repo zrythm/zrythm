@@ -69,7 +69,9 @@ midi_arranger_widget_set_channel (
   MidiArrangerWidget * self,
   Channel *            channel)
 {
-  ARRANGER_WIDGET_GET_PRIVATE (self);
+  ArrangerWidgetPrivate * ar_prv =
+    arranger_widget_get_private (
+      Z_ARRANGER_WIDGET (self));
   if (channel->track->type != TRACK_TYPE_INSTRUMENT)
     {
       g_error ("Track is not an instrument track");
@@ -103,7 +105,7 @@ midi_arranger_widget_set_channel (
   children = gtk_container_get_children(GTK_CONTAINER(self));
   for(iter = children; iter != NULL; iter = g_list_next(iter))
     {
-      if (iter->data != prv->bg)
+      if (iter->data != ar_prv->bg)
         gtk_container_remove (GTK_CONTAINER (self),
                               GTK_WIDGET (iter->data));
     }
@@ -235,11 +237,11 @@ midi_arranger_widget_on_drag_begin_note_hit (
   /* set selections, positions, actions, cursor */
   ARRANGER_WIDGET_GET_PRIVATE (self);
   MidiNote * midi_note = midi_note_widget->midi_note;
-  prv->start_pos_px =
+  ar_prv->start_pos_px =
     ruler_widget_pos_to_px (Z_RULER_WIDGET (MIDI_RULER),
                             &midi_note->start_pos);
-  position_set_to_pos (&prv->start_pos, &midi_note->start_pos);
-  position_set_to_pos (&prv->end_pos, &midi_note->end_pos);
+  position_set_to_pos (&ar_prv->start_pos, &midi_note->start_pos);
+  position_set_to_pos (&ar_prv->end_pos, &midi_note->end_pos);
 
   /* if already in selected notes, prepare to do action on all of them,
    * otherwise change selection to just this note */
@@ -257,14 +259,14 @@ midi_arranger_widget_on_drag_begin_note_hit (
       g_warning ("hitting midi note but midi note hover state is none, should be fixed");
       break;
     case MNW_STATE_RESIZE_L:
-      prv->action = ARRANGER_ACTION_RESIZING_L;
+      ar_prv->action = ARRANGER_ACTION_RESIZING_L;
       break;
     case MNW_STATE_RESIZE_R:
-      prv->action = ARRANGER_ACTION_RESIZING_R;
+      ar_prv->action = ARRANGER_ACTION_RESIZING_R;
       break;
     case MNW_STATE_HOVER:
     case MNW_STATE_SELECTED:
-      prv->action = ARRANGER_ACTION_STARTING_MOVING;
+      ar_prv->action = ARRANGER_ACTION_STARTING_MOVING;
       ui_set_cursor (GTK_WIDGET (midi_note_widget), "grabbing");
       break;
     }
@@ -282,12 +284,12 @@ midi_arranger_widget_on_drag_begin_create_note (
   MidiRegion * region)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
-  if (SNAP_GRID_ANY_SNAP(prv->snap_grid))
+  if (SNAP_GRID_ANY_SNAP(ar_prv->snap_grid))
     position_snap (NULL,
                    pos,
                    NULL,
                    (Region *) region,
-                   prv->snap_grid);
+                   ar_prv->snap_grid);
   Velocity * vel = velocity_default ();
   MidiNote * midi_note = midi_note_new (region,
                                    pos,
@@ -296,7 +298,7 @@ midi_arranger_widget_on_drag_begin_create_note (
                                    vel);
   position_set_min_size (&midi_note->start_pos,
                          &midi_note->end_pos,
-                         prv->snap_grid);
+                         ar_prv->snap_grid);
   midi_region_add_midi_note (region,
                         midi_note);
   gtk_overlay_add_overlay (
@@ -306,7 +308,7 @@ midi_arranger_widget_on_drag_begin_create_note (
     GTK_OVERLAY (MIDI_MODIFIER_ARRANGER),
     GTK_WIDGET (midi_note->vel->widget));
   gtk_widget_show (GTK_WIDGET (midi_note->widget));
-  prv->action = ARRANGER_ACTION_RESIZING_R;
+  ar_prv->action = ARRANGER_ACTION_RESIZING_R;
   self->midi_notes[0] = midi_note;
   self->num_midi_notes = 1;
 }
@@ -324,7 +326,9 @@ midi_arranger_widget_find_and_select_midi_notes (
   double               offset_y)
 {
   ArrangerWidget * aw = Z_ARRANGER_WIDGET (self);
-  ARRANGER_WIDGET_GET_PRIVATE (self);
+  ArrangerWidgetPrivate * ar_prv =
+    arranger_widget_get_private (
+      Z_ARRANGER_WIDGET (self));
 
   /* find enclosed midi notes */
   GtkWidget *    midi_note_widgets[800];
@@ -332,8 +336,8 @@ midi_arranger_widget_find_and_select_midi_notes (
   arranger_widget_get_hit_widgets_in_range (
     aw,
     ARRANGER_CHILD_TYPE_MIDI_NOTE,
-    prv->start_x,
-    prv->start_y,
+    ar_prv->start_x,
+    ar_prv->start_y,
     offset_x,
     offset_y,
     midi_note_widgets,
@@ -367,12 +371,12 @@ midi_arranger_widget_snap_midi_notes_l (
   for (int i = 0; i < self->num_midi_notes; i++)
     {
       MidiNote * midi_note = self->midi_notes[i];
-      if (SNAP_GRID_ANY_SNAP(prv->snap_grid))
+      if (SNAP_GRID_ANY_SNAP(ar_prv->snap_grid))
         position_snap (NULL,
                        pos,
                        NULL,
                        (Region *) midi_note->midi_region,
-                       prv->snap_grid);
+                       ar_prv->snap_grid);
       midi_note_set_start_pos (midi_note,
                                pos);
     }
@@ -392,12 +396,12 @@ midi_arranger_widget_snap_midi_notes_r (
   for (int i = 0; i < self->num_midi_notes; i++)
     {
       MidiNote * midi_note = self->midi_notes[i];
-      if (SNAP_GRID_ANY_SNAP(prv->snap_grid))
+      if (SNAP_GRID_ANY_SNAP(ar_prv->snap_grid))
         position_snap (NULL,
                        pos,
                        NULL,
                        (Region *) midi_note->midi_region,
-                       prv->snap_grid);
+                       ar_prv->snap_grid);
       if (position_compare (pos, &midi_note->start_pos) > 0)
         {
           midi_note_set_end_pos (midi_note,
@@ -418,12 +422,12 @@ midi_arranger_widget_move_midi_notes_x (
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
   /* snap first selected midi note's pos */
-  if (SNAP_GRID_ANY_SNAP(prv->snap_grid))
+  if (SNAP_GRID_ANY_SNAP(ar_prv->snap_grid))
     position_snap (NULL,
                    pos,
                    NULL,
                    (Region *) self->start_midi_note->midi_region,
-                   prv->snap_grid);
+                   ar_prv->snap_grid);
   for (int i = 0; i < self->num_midi_notes; i++)
     {
       MidiNote * midi_note = self->midi_notes[i];
@@ -458,7 +462,7 @@ midi_arranger_widget_move_midi_notes_y (
                              /*&pos);*/
       /* check if should be moved to new note  */
       midi_note->val = midi_arranger_widget_get_note_at_y (
-        prv->start_y + offset_y);
+        ar_prv->start_y + offset_y);
     }
 }
 

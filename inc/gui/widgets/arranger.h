@@ -42,7 +42,7 @@ G_DECLARE_DERIVABLE_TYPE (ArrangerWidget,
     (void *) midi_note, \
     append);
 #define ARRANGER_WIDGET_GET_PRIVATE(self) \
-  ArrangerWidgetPrivate * prv = \
+  ArrangerWidgetPrivate * ar_prv = \
     arranger_widget_get_private (Z_ARRANGER_WIDGET (self));
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
@@ -173,7 +173,7 @@ arranger_widget_select_all (
  * Readd children.
  */
 void
-arranger_widget_refresh_children (
+arranger_widget_refresh (
   ArrangerWidget * self);
 
 #endif

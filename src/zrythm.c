@@ -474,20 +474,17 @@ zrythm_app_startup (GApplication* _app)
     "<Control><Shift>2",
     "win.toggle-bot-panel");
   accel_install_primary_action_accelerator (
-    "<Control>plus",
+    "<Control>equal",
     "win.zoom-in");
   accel_install_primary_action_accelerator (
     "<Control>minus",
     "win.zoom-out");
   accel_install_primary_action_accelerator (
-    "<Control>equal",
+    "<Control>plus",
     "win.original-size");
   accel_install_primary_action_accelerator (
     "<Control>bracketleft",
     "win.best-fit");
-  accel_install_primary_action_accelerator (
-    "F11",
-    "app.fullscreen");
 }
 
 ZrythmApp *

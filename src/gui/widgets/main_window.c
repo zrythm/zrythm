@@ -144,12 +144,6 @@ main_window_widget_refresh (MainWindowWidget * self)
                       MIXER->master);
 }
 
-void
-main_window_widget_minimize (MainWindowWidget * self)
-{
-  gtk_window_iconify (GTK_WINDOW (self));
-}
-
 static void
 main_window_widget_class_init (MainWindowWidgetClass * _klass)
 {

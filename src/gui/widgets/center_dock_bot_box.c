@@ -30,60 +30,6 @@ G_DEFINE_TYPE (CenterDockBotBoxWidget,
                GTK_TYPE_BOX)
 
 static void
-on_toggle_left_dock_clicked (GtkToolButton * tb,
-                             gpointer        user_data)
-{
-  CenterDockWidget * self = MW_CENTER_DOCK;
-  GValue a = G_VALUE_INIT;
-  g_value_init (&a, G_TYPE_BOOLEAN);
-  g_object_get_property (G_OBJECT (self),
-                         "left-visible",
-                         &a);
-  int val = g_value_get_boolean (&a);
-  g_value_set_boolean (&a,
-                       val == 1 ? 0 : 1);
-  g_object_set_property (G_OBJECT (self),
-                         "left-visible",
-                         &a);
-}
-
-static void
-on_toggle_bottom_dock_clicked (GtkToolButton * tb,
-                             gpointer        user_data)
-{
-  CenterDockWidget * self = MW_CENTER_DOCK;
-  GValue a = G_VALUE_INIT;
-  g_value_init (&a, G_TYPE_BOOLEAN);
-  g_object_get_property (G_OBJECT (self),
-                         "bottom-visible",
-                         &a);
-  int val = g_value_get_boolean (&a);
-  g_value_set_boolean (&a,
-                       val == 1 ? 0 : 1);
-  g_object_set_property (G_OBJECT (self),
-                         "bottom-visible",
-                         &a);
-}
-
-static void
-on_toggle_right_dock_clicked (GtkToolButton * tb,
-                             gpointer        user_data)
-{
-  CenterDockWidget * self = MW_CENTER_DOCK;
-  GValue a = G_VALUE_INIT;
-  g_value_init (&a, G_TYPE_BOOLEAN);
-  g_object_get_property (G_OBJECT (self),
-                         "right-visible",
-                         &a);
-  int val = g_value_get_boolean (&a);
-  g_value_set_boolean (&a,
-                       val == 1 ? 0 : 1);
-  g_object_set_property (G_OBJECT (self),
-                         "right-visible",
-                         &a);
-}
-
-static void
 center_dock_bot_box_widget_init (
   CenterDockBotBoxWidget * self)
 {
@@ -148,14 +94,5 @@ center_dock_bot_box_widget_class_init (
     klass,
     CenterDockBotBoxWidget,
     toggle_right_dock);
-  gtk_widget_class_bind_template_callback (
-    klass,
-    on_toggle_left_dock_clicked);
-  gtk_widget_class_bind_template_callback (
-    klass,
-    on_toggle_bottom_dock_clicked);
-  gtk_widget_class_bind_template_callback (
-    klass,
-    on_toggle_right_dock_clicked);
 }
 

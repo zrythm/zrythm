@@ -54,4 +54,7 @@ typedef struct _ArrangerBgWidgetClass
 ArrangerBgWidgetPrivate *
 arranger_bg_widget_get_private (ArrangerBgWidget * self);
 
+void
+arranger_bg_widget_refresh (ArrangerBgWidget * self);
+
 #endif

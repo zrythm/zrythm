@@ -141,7 +141,9 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
   GtkAllocation allocation;
   gtk_widget_get_allocation (widget,
                              &allocation);
-  ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);
+  ArrangerWidgetPrivate * prv =
+    arranger_widget_get_private (
+      Z_ARRANGER_WIDGET (MW_TIMELINE));
 
   if (event->type == GDK_MOTION_NOTIFY)
     {
