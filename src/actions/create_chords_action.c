@@ -1,5 +1,5 @@
 /*
- * undo/create_chords_action.c - UndoableAction
+ * actions/create_chords_action.c - UndoableAction
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -24,7 +24,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "project.h"
-#include "undo/create_chords_action.h"
+#include "actions/create_chords_action.h"
 
 /**
  * Note: chord addresses are to be copied.

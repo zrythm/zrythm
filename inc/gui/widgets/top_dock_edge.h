@@ -41,9 +41,13 @@ typedef struct _TopDockEdgeWidget
   GtkBox                   parent_instance;
   GtkToolbar *             top_toolbar;
   SnapGridWidget *         snap_grid_timeline;
-  GtkToggleButton *        snap_to_grid;
-  GtkToggleButton *        snap_to_grid_keep_offset;
-  GtkToggleButton *        snap_to_events;
+  GtkToggleToolButton *        snap_to_grid;
+  GtkToggleToolButton *        snap_to_grid_keep_offset;
+  GtkToggleToolButton *        snap_to_events;
+  GtkToggleToolButton *          original_size;
+  GtkToggleToolButton *          best_fit;
+  GtkToggleToolButton *          zoom_out;
+  GtkToggleToolButton *          zoom_in;
 } TopDockEdgeWidget;
 
 #endif

@@ -228,7 +228,9 @@ install-gschemas: $(gsettings_SCHEMAS)
 	$(INSTALL_DATA) $< "$(DESTDIR)$(gsettingsschemadir)/"
 ifneq ($(AUR_BUILD),1)
 ifneq ($(DEB_BUILD),1)
+ifeq ($(DESTDIR),)
 	$(GLIB_COMPILE_SCHEMAS) "$(DESTDIR)$(gsettingsschemadir)"
+endif
 endif
 endif
 

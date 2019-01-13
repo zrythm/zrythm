@@ -232,6 +232,10 @@ piano_roll_widget_class_init (
   gtk_widget_class_bind_template_child (
     klass,
     PianoRollWidget,
+    midi_arranger_velocity_paned);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
     arranger_scroll);
   gtk_widget_class_bind_template_child (
     klass,

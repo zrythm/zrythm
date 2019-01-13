@@ -1,7 +1,7 @@
 /*
  * gui/widgets/main_window.c - the main window
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -21,6 +21,7 @@
 
 #include "config.h"
 #include "project.h"
+#include "actions/actions.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
@@ -57,31 +58,11 @@ G_DEFINE_TYPE (MainWindowWidget,
                main_window_widget,
                GTK_TYPE_APPLICATION_WINDOW)
 
-void
-main_window_widget_quit (MainWindowWidget * self)
-{
-  g_application_quit (G_APPLICATION (ZRYTHM));
-}
-
-void
-main_window_widget_toggle_maximize (MainWindowWidget * self)
-{
-  if (self->is_maximized)
-    {
-      gtk_window_unmaximize (GTK_WINDOW (self));
-      self->is_maximized = 0;
-    }
-  else
-    {
-      gtk_window_maximize (GTK_WINDOW (self));
-    }
-}
-
 static void
 on_main_window_destroy (MainWindowWidget * self,
                         gpointer user_data)
 {
-  main_window_widget_quit (self);
+  g_application_quit (G_APPLICATION (ZRYTHM));
 }
 
 static void
@@ -94,24 +75,14 @@ on_state_changed (MainWindowWidget * self,
     self->is_maximized = 1;
 }
 
-
-
-void
-main_window_widget_open (MainWindowWidget *win,
-                         GFile            *file)
-{
-}
-
 MainWindowWidget *
 main_window_widget_new (ZrythmApp * _app)
 {
   MainWindowWidget * self = g_object_new (
     MAIN_WINDOW_WIDGET_TYPE,
-    "application",
-    G_APPLICATION (_app),
+    "application", G_APPLICATION (_app),
+    "title", "Zrythm",
     NULL);
-
-  gtk_window_set_title (GTK_WINDOW (self), "Zrythm");
 
   return self;
 }
@@ -232,15 +203,65 @@ main_window_widget_class_init (MainWindowWidgetClass * _klass)
 
 /*}*/
 
+/*static gboolean*/
+/*on_key_action (GtkWidget *widget,*/
+               /*GdkEventKey  *event,*/
+               /*gpointer   user_data)*/
+/*{*/
+  /*g_message ("aa");*/
+
+  /*return FALSE;*/
+/*}*/
+
+/*static const DzlShortcutEntry shortcuts[] = {*/
+  /*{ "org.zrythm.window.New", 0, NULL, ("Editing"), ("Project"), ("New Project"), ("Create a new project") },*/
+  /*{ "org.zrythm.window.ZoomIn", 0, NULL, ("Editing"), ("Arrangement"), ("Zoom In"), ("Zoom in on each arranger") },*/
+  /*{ "org.zrythm.window.Fullscreen", 0, "F11", ("Editing"), ("General"), ("Fullscreen"), ("Toggle window fullscreen") },*/
+/*};*/
+
+static GActionEntry actions[] = {
+  { "new", activate_new },
+  { "open", activate_open },
+  { "save", activate_save },
+  { "save-as", activate_save_as },
+  { "export-as", activate_export_as },
+  { "properties", activate_properties },
+  { "undo", activate_undo },
+  { "redo", activate_redo },
+  { "cut", activate_cut },
+  { "copy", activate_copy },
+  { "paste", activate_paste },
+  { "delete", activate_delete },
+  { "clear-selection", activate_clear_selection },
+  { "select-all", activate_select_all },
+  { "toggle-left-panel", activate_toggle_left_panel },
+  { "toggle-right-panel", activate_toggle_right_panel },
+  { "toggle-bot-panel", activate_toggle_bot_panel },
+  { "toggle-status-bar", activate_toggle_status_bar },
+  { "zoom-in", activate_zoom_in },
+  { "zoom-out", activate_zoom_out },
+  { "original-size", activate_original_size },
+  { "best-fit", activate_best_fit },
+  { "snap-to-grid", activate_snap_to_grid },
+  { "snap-keep-offset", activate_snap_keep_offset },
+  { "snap-events", activate_snap_events },
+};
+
 static void
 main_window_widget_init (MainWindowWidget * self)
 {
+  g_action_map_add_action_entries (
+    G_ACTION_MAP (self),
+    actions,
+    G_N_ELEMENTS (actions),
+    self);
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  accel_add_all ();
-  self->accel_group = gtk_accel_group_new ();
-  gtk_window_add_accel_group (GTK_WINDOW (self),
-                              self->accel_group);
+  /*accel_add_all ();*/
+  /*self->accel_group = gtk_accel_group_new ();*/
+  /*gtk_window_add_accel_group (GTK_WINDOW (self),*/
+                              /*self->accel_group);*/
   /*GClosure * closure =*/
     /*g_cclosure_new (G_CALLBACK (on_export),*/
                     /*NULL,*/
@@ -248,5 +269,39 @@ main_window_widget_init (MainWindowWidget * self)
   /*gtk_accel_group_connect_by_path (self->accel_group,*/
                                    /*"<MainWindow>/File/Export As",*/
                                    /*closure);*/
+
+  /*dzl_shortcut_manager_add_shortcut_entries (*/
+    /*NULL,*/
+    /*shortcuts,*/
+    /*G_N_ELEMENTS (shortcuts),*/
+    /*NULL);*/
+
+  /*DzlShortcutController * controller =*/
+    /*dzl_shortcut_controller_find (GTK_WIDGET (self));*/
+
+  /*dzl_shortcut_controller_add_command_action (*/
+    /*controller,*/
+    /*"org.zrythm.window.New",*/
+    /*NULL,*/
+    /*0,*/
+    /*"win.new-project");*/
+  /*dzl_shortcut_controller_add_command_action (*/
+    /*controller,*/
+    /*"org.zrythm.window.ZoomIn",*/
+    /*NULL,*/
+    /*0,*/
+    /*"win.zoom-in");*/
+  /*dzl_shortcut_controller_add_command_action (*/
+    /*controller,*/
+    /*"org.zrythm.window.Fullscreen",*/
+    /*NULL,*/
+    /*0,*/
+    /*"win.fullscreen");*/
+
+  /*g_signal_connect_swapped (*/
+    /*self,*/
+    /*"key-press-event",*/
+    /*G_CALLBACK (dzl_shortcut_manager_handle_event),*/
+    /*dzl_shortcut_manager_get_default ());*/
 
 }

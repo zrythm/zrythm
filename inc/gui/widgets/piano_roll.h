@@ -55,6 +55,7 @@ typedef struct _PianoRollWidget
   GtkScrolledWindow        * piano_roll_labels_scroll;
   GtkViewport              * piano_roll_labels_viewport;
   PianoRollLabelsWidget    * piano_roll_labels;
+  GtkPaned *               midi_arranger_velocity_paned;
   GtkScrolledWindow        * piano_roll_notes_scroll;
   GtkViewport              * piano_roll_notes_viewport;
   PianoRollNotesWidget     * piano_roll_notes;

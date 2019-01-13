@@ -1,5 +1,5 @@
 /*
- * undo/undoable_action.c - UndoableAction
+ * actions/undoable_action.c - UndoableAction
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,9 +19,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "undo/create_chords_action.h"
-#include "undo/edit_channel_action.h"
-#include "undo/undoable_action.h"
+#include "actions/create_chords_action.h"
+#include "actions/edit_channel_action.h"
+#include "actions/undoable_action.h"
 
 /**
  * Performs the action.

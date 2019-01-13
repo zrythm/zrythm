@@ -29,9 +29,9 @@
 #include "gui/widgets/fader.h"
 #include "gui/widgets/knob.h"
 #include "gui/widgets/pan.h"
-#include "undo/edit_channel_action.h"
-#include "undo/undo_manager.h"
-#include "undo/undoable_action.h"
+#include "actions/edit_channel_action.h"
+#include "actions/undo_manager.h"
+#include "actions/undoable_action.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 

@@ -58,5 +58,3 @@ if len(sys.argv) > 2:
   f = open(outfile, 'w')
   f.write(xml)
   f.close()
-else:
-  print(xml)

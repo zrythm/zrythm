@@ -57,9 +57,9 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
-#include "undo/undoable_action.h"
-#include "undo/create_chords_action.h"
-#include "undo/undo_manager.h"
+#include "actions/undoable_action.h"
+#include "actions/create_chords_action.h"
+#include "actions/undo_manager.h"
 #include "utils/arrays.h"
 #include "utils/ui.h"
 

@@ -21,23 +21,27 @@
 
 #include "zrythm.h"
 #include "settings.h"
+#include "actions/actions.h"
 #include "audio/engine.h"
 #include "audio/mixer.h"
 #include "audio/piano_roll.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
+#include "gui/accel.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/splash.h"
 #include "gui/widgets/start_assistant.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
-#include "undo/undo_manager.h"
+#include "actions/undo_manager.h"
 #include "utils/io.h"
 
 #include <gtk/gtk.h>
 
 
-G_DEFINE_TYPE(ZrythmApp, zrythm_app, GTK_TYPE_APPLICATION);
+G_DEFINE_TYPE (ZrythmApp,
+               zrythm_app,
+               GTK_TYPE_APPLICATION);
 
 typedef struct UpdateSplashData
 {
@@ -63,9 +67,12 @@ static UpdateSplashData * data;
 static void
 update_splash (UpdateSplashData *data)
 {
-  splash_widget_update (splash,
-                        data->message,
-                        data->progress);
+  /* sometimes this gets called after the splash window
+   * gets deleted so added for safety */
+  if (splash && GTK_IS_WIDGET (splash))
+    splash_widget_update (splash,
+                          data->message,
+                          data->progress);
 }
 
 /**
@@ -215,7 +222,7 @@ task_completed_cb (GObject *source_object,
  *
  * This is the final step.
  */
-static void on_setup_main_window (GAction  *action,
+static void on_setup_main_window (GSimpleAction  *action,
                              GVariant *parameter,
                              gpointer  user_data)
 {
@@ -234,7 +241,7 @@ static void on_setup_main_window (GAction  *action,
  * Loads the project backend or creates the default one.
  * FIXME rename
  */
-static void on_load_project (GAction  *action,
+static void on_load_project (GSimpleAction  *action,
                              GVariant *parameter,
                              gpointer  user_data)
 {
@@ -263,7 +270,7 @@ static void on_load_project (GAction  *action,
  * It initializes the main window and shows it (not set up
  * yet)
  */
-static void on_init_main_window (GAction  *action,
+static void on_init_main_window (GSimpleAction  *action,
                              GVariant *parameter,
                              gpointer  data)
 {
@@ -319,7 +326,7 @@ on_finish (GtkAssistant * _assistant,
  * Checks if a project was given in the command line. If not,
  * it prompts the user for a project (start assistant).
  */
-static void on_prompt_for_project (GAction  *action,
+static void on_prompt_for_project (GSimpleAction  *action,
                              GVariant *parameter,
                              gpointer  data)
 {
@@ -364,7 +371,6 @@ zrythm_app_activate (GApplication * _app)
 {
   g_message ("activate %d", *task_id);
 }
-
 
 /**
  * Called when a filename is passed to the command line
@@ -411,6 +417,77 @@ zrythm_app_startup (GApplication* _app)
                         (gpointer) task_id,
                         NULL);
   g_task_run_in_thread (task, task_func);
+
+  /* install accelerators for each action */
+  accel_install_primary_action_accelerator (
+    "<Control>q",
+    "app.quit");
+  accel_install_primary_action_accelerator (
+    "F11",
+    "app.fullscreen");
+  accel_install_primary_action_accelerator (
+    "<Control>n",
+    "win.new");
+  accel_install_primary_action_accelerator (
+    "<Control>o",
+    "win.open");
+  accel_install_primary_action_accelerator (
+    "<Control>s",
+    "win.save");
+  accel_install_primary_action_accelerator (
+    "<Control><Shift>s",
+    "win.save-as");
+  accel_install_primary_action_accelerator (
+    "<Control>e",
+    "win.export-as");
+  accel_install_primary_action_accelerator (
+    "<Control>z",
+    "win.undo");
+  accel_install_primary_action_accelerator (
+    "<Control><Shift>z",
+    "win.redo");
+  accel_install_primary_action_accelerator (
+    "<Control>x",
+    "win.cut");
+  accel_install_primary_action_accelerator (
+    "<Control>c",
+    "win.copy");
+  accel_install_primary_action_accelerator (
+    "<Control>v",
+    "win.paste");
+  accel_install_primary_action_accelerator (
+    "Delete",
+    "win.delete");
+  accel_install_primary_action_accelerator (
+    "<Control><Shift>a",
+    "win.clear-selection");
+  accel_install_primary_action_accelerator (
+    "<Control>a",
+    "win.select-all");
+  accel_install_primary_action_accelerator (
+    "<Control><Shift>4",
+    "win.toggle-left-panel");
+  accel_install_primary_action_accelerator (
+    "<Control><Shift>6",
+    "win.toggle-right-panel");
+  accel_install_primary_action_accelerator (
+    "<Control><Shift>2",
+    "win.toggle-bot-panel");
+  accel_install_primary_action_accelerator (
+    "<Control>plus",
+    "win.zoom-in");
+  accel_install_primary_action_accelerator (
+    "<Control>minus",
+    "win.zoom-out");
+  accel_install_primary_action_accelerator (
+    "<Control>equal",
+    "win.original-size");
+  accel_install_primary_action_accelerator (
+    "<Control>bracketleft",
+    "win.best-fit");
+  accel_install_primary_action_accelerator (
+    "F11",
+    "app.fullscreen");
 }
 
 ZrythmApp *
@@ -419,6 +496,7 @@ zrythm_new ()
   ZrythmApp * self =  g_object_new (
     ZRYTHM_APP_TYPE,
     "application-id", "org.zrythm",
+    "resource-base-path", "/org/zrythm",
     "flags", G_APPLICATION_HANDLES_OPEN,
     NULL);
 
@@ -437,46 +515,66 @@ static void
 zrythm_app_init (ZrythmApp *app)
 {
   /* prompt for project */
-  GSimpleAction * prompt_for_project_action =
-    g_simple_action_new ("prompt_for_project", NULL);
-  g_signal_connect (prompt_for_project_action,
-                    "activate",
-                    G_CALLBACK (on_prompt_for_project),
-                    app);
-  g_action_map_add_action (
-    G_ACTION_MAP (app),
-    G_ACTION (prompt_for_project_action));
+  /*GSimpleAction * prompt_for_project_action =*/
+    /*g_simple_action_new ("prompt_for_project", NULL);*/
+  /*g_signal_connect (prompt_for_project_action,*/
+                    /*"activate",*/
+                    /*G_CALLBACK (on_prompt_for_project),*/
+                    /*app);*/
+  /*g_action_map_add_action (*/
+    /*G_ACTION_MAP (app),*/
+    /*G_ACTION (prompt_for_project_action));*/
 
-  /* init main window */
-  GSimpleAction * init_main_window_action =
-    g_simple_action_new ("init_main_window", NULL);
-  g_signal_connect (init_main_window_action,
-                    "activate",
-                    G_CALLBACK (on_init_main_window),
-                    app);
-  g_action_map_add_action (
-    G_ACTION_MAP (app),
-    G_ACTION (init_main_window_action));
+  /*[> init main window <]*/
+  /*GSimpleAction * init_main_window_action =*/
+    /*g_simple_action_new ("init_main_window", NULL);*/
+  /*g_signal_connect (init_main_window_action,*/
+                    /*"activate",*/
+                    /*G_CALLBACK (on_init_main_window),*/
+                    /*app);*/
+  /*g_action_map_add_action (*/
+    /*G_ACTION_MAP (app),*/
+    /*G_ACTION (init_main_window_action));*/
 
-  /* setup main window */
-  GSimpleAction * setup_main_window_action =
-    g_simple_action_new ("setup_main_window", NULL);
-  g_signal_connect (setup_main_window_action,
-                    "activate",
-                    G_CALLBACK (on_setup_main_window),
-                    app);
-  g_action_map_add_action (
-    G_ACTION_MAP (app),
-    G_ACTION (setup_main_window_action));
+  /*[> setup main window <]*/
+  /*GSimpleAction * setup_main_window_action =*/
+    /*g_simple_action_new ("setup_main_window", NULL);*/
+  /*g_signal_connect (setup_main_window_action,*/
+                    /*"activate",*/
+                    /*G_CALLBACK (on_setup_main_window),*/
+                    /*app);*/
+  /*g_action_map_add_action (*/
+    /*G_ACTION_MAP (app),*/
+    /*G_ACTION (setup_main_window_action));*/
 
-  /* load project */
-  GSimpleAction * load_project_action =
-    g_simple_action_new ("load_project", NULL);
-  g_signal_connect (load_project_action,
-                    "activate",
-                    G_CALLBACK (on_load_project),
-                    app);
-  g_action_map_add_action (
+  /*[> load project <]*/
+  /*GSimpleAction * load_project_action =*/
+    /*g_simple_action_new ("load_project", NULL);*/
+  /*g_signal_connect (load_project_action,*/
+                    /*"activate",*/
+                    /*G_CALLBACK (on_load_project),*/
+                    /*app);*/
+  /*g_action_map_add_action (*/
+    /*G_ACTION_MAP (app),*/
+    /*G_ACTION (load_project_action));*/
+
+  const GActionEntry entries[] = {
+    { "prompt_for_project", on_prompt_for_project },
+    { "init_main_window", on_init_main_window },
+    { "setup_main_window", on_setup_main_window },
+    { "load_project", on_load_project },
+    { "about", activate_about },
+    { "fullscreen", activate_fullscreen },
+    { "manual", activate_manual },
+    { "license", activate_license },
+    { "iconify", activate_iconify },
+    { "quit", activate_quit },
+    { "shortcuts", activate_shortcuts },
+  };
+
+  g_action_map_add_action_entries (
     G_ACTION_MAP (app),
-    G_ACTION (load_project_action));
+    entries,
+    G_N_ELEMENTS (entries),
+    app);
 }

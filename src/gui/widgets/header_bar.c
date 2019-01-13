@@ -20,10 +20,11 @@
  */
 
 #include "project.h"
+#include "gui/accel.h"
 #include "gui/widgets/export_dialog.h"
 #include "gui/widgets/header_bar.h"
 #include "gui/widgets/main_window.h"
-#include "undo/undo_manager.h"
+#include "actions/undo_manager.h"
 #include "utils/resources.h"
 
 G_DEFINE_TYPE (HeaderBarWidget,
@@ -44,14 +45,12 @@ header_bar_widget_refresh_undo_redo_buttons (HeaderBarWidget * self)
 }
 
 static GtkMenuItem *
-create_menu_item (GtkAccelGroup * accel_group,
-                  gchar *         label_name,
+create_menu_item (gchar *         label_name,
                   gchar *         icon_name,
                   IconType        resource_icon_type,
                   gchar *         resource,
                   int             is_toggle,
-                  guint           accel_key,
-                  GdkModifierType accel_mods)
+                  const char *    action_name)
 {
   GtkWidget *box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
   GtkWidget *icon;
@@ -75,16 +74,12 @@ create_menu_item (GtkAccelGroup * accel_group,
   gtk_label_set_use_underline (GTK_LABEL (label), TRUE);
   gtk_label_set_xalign (GTK_LABEL (label), 0.0);
 
-  if (accel_key)
-    {
-      gtk_widget_add_accelerator (menu_item,
-                                  "activate",
-                                  accel_group,
-                                  accel_key,
-                                  accel_mods,
-                                  GTK_ACCEL_VISIBLE);
-      gtk_accel_label_set_accel_widget (GTK_ACCEL_LABEL (label), menu_item);
-    }
+  gtk_actionable_set_action_name (
+    GTK_ACTIONABLE (menu_item),
+    action_name);
+  accel_set_accel_label_from_action (
+    GTK_ACCEL_LABEL (label),
+    action_name);
 
   gtk_box_pack_end (GTK_BOX (box), label, TRUE, TRUE, 0);
 
@@ -93,172 +88,6 @@ create_menu_item (GtkAccelGroup * accel_group,
   gtk_widget_show_all (menu_item);
 
   return GTK_MENU_ITEM (menu_item);
-}
-
-/**
- * close button event
- */
-static void
-close_clicked (HeaderBarWidget * self,
-               gpointer user_data)
-{
-  main_window_widget_quit (MAIN_WINDOW);
-}
-
-/**
- * minimize button event
- */
-static void
-minimize_clicked (HeaderBarWidget * self,
-                      gpointer user_data)
-{
-  main_window_widget_minimize (MAIN_WINDOW);
-}
-
-/**
- * maximize button event
- */
-static void
-maximize_clicked (HeaderBarWidget * self,
-                      gpointer user_data)
-{
-  main_window_widget_toggle_maximize (MAIN_WINDOW);
-}
-
-static void
-on_file_open_activate (GtkMenuItem * menu_item,
-                       gpointer      user_data)
-{
-  /*GtkDialog * dialog = dialogs_get_open_project_dialog (GTK_WINDOW (MAIN_WINDOW));*/
-
-  /*int res = gtk_dialog_run (GTK_DIALOG (dialog));*/
-  /*if (res == GTK_RESPONSE_ACCEPT)*/
-    /*{*/
-      /*char *filename;*/
-      /*GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);*/
-      /*filename = gtk_file_chooser_get_filename (chooser);*/
-      /*project_load (filename);*/
-      /*g_free (filename);*/
-    /*}*/
-
-  /*gtk_widget_destroy (dialog);*/
-}
-
-static void
-on_file_export_activate(GtkMenuItem   * menu_item,
-           gpointer      user_data)
-{
-  ExportDialogWidget * export = export_dialog_widget_new ();
-  gtk_dialog_run (GTK_DIALOG (export));
-}
-
-static void
-on_file_save_as_activate (GtkMenuItem   * menu_item,
-            gpointer      user_data)
-{
-  GtkWidget *dialog;
-  GtkFileChooser *chooser;
-  GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
-  gint res;
-
-  dialog = gtk_file_chooser_dialog_new ("Save Project",
-                                        GTK_WINDOW (MAIN_WINDOW),
-                                        action,
-                                        "_Cancel",
-                                        GTK_RESPONSE_CANCEL,
-                                        "_Save",
-                                        GTK_RESPONSE_ACCEPT,
-                                        NULL);
-  chooser = GTK_FILE_CHOOSER (dialog);
-
-  gtk_file_chooser_set_do_overwrite_confirmation (chooser, TRUE);
-
-  if (PROJECT->title)
-    gtk_file_chooser_set_current_name (chooser,
-                                       PROJECT->title);
-  else
-    gtk_file_chooser_set_filename (chooser,
-                                   "Untitled project");
-
-  res = gtk_dialog_run (GTK_DIALOG (dialog));
-  if (res == GTK_RESPONSE_ACCEPT)
-    {
-      char *filename;
-
-      filename = gtk_file_chooser_get_filename (chooser);
-      project_save (PROJECT, filename);
-      g_free (filename);
-    }
-
-  gtk_widget_destroy (dialog);
-}
-
-static void
-on_file_save_activate (GtkMenuItem   * menu_item,
-         gpointer      user_data)
-{
-   if (!PROJECT->dir ||
-       !PROJECT->title)
-     {
-       on_file_save_as_activate (menu_item, user_data);
-       return;
-     }
-   g_message ("%s project dir ", PROJECT->dir);
-
-   project_save (PROJECT, PROJECT->dir);
-}
-
-static void
-new_activate (GtkMenuItem * menu_item,
-              gpointer      user_data)
-{
-  g_message ("new activated");
-}
-
-static void
-undo_activate (GtkMenuItem * menu_item,
-              gpointer      user_data)
-{
-  g_assert (!stack_is_empty (&UNDO_MANAGER->undo_stack));
-  undo_manager_undo (UNDO_MANAGER);
-  header_bar_widget_refresh_undo_redo_buttons ((HeaderBarWidget *) user_data);
-}
-
-static void
-redo_activate (GtkMenuItem * menu_item,
-              gpointer      user_data)
-{
-  g_assert (!stack_is_empty (&UNDO_MANAGER->redo_stack));
-  undo_manager_redo (UNDO_MANAGER);
-  header_bar_widget_refresh_undo_redo_buttons ((HeaderBarWidget *) user_data);
-}
-
-static void
-cut_activate (GtkMenuItem * menu_item,
-              gpointer      user_data)
-{
-  g_message ("CUT");
-}
-
-static void
-copy_activate (GtkMenuItem * menu_item,
-               gpointer      user_data)
-{
-  g_message ("new activated");
-}
-
-static void
-paste_activate (GtkMenuItem * menu_item,
-                gpointer      user_data)
-{
-  g_message ("new activated");
-}
-
-static void
-delete_activate (GtkMenuItem * menu_item,
-                 gpointer      user_data)
-{
-  g_message ("new activated");
 }
 
 void
@@ -289,356 +118,281 @@ header_bar_widget_setup (HeaderBarWidget * self,
   gtk_widget_show_all (GTK_WIDGET (menu_item))
 
   GtkMenuItem * menu_item;
-  menu_item = create_menu_item (mw->accel_group,
-                    "_New",
-                    "document-new",
-                    0,
-                    NULL,
-                    0,
-                    GDK_KEY_n,
-                    GDK_CONTROL_MASK);
-  g_signal_connect (G_OBJECT (menu_item),
-                    "activate",
-                    G_CALLBACK (new_activate),
-                    NULL);
+  menu_item =
+    create_menu_item (
+      "_New",
+      "document-new",
+      0,
+      NULL,
+      0,
+      "win.new");
   APPEND_TO_FILE_MENU;
-  menu_item = create_menu_item (mw->accel_group,
-                    "_Open",
-                    "document-open",
-                    0,
-                    NULL,
-                    0,
-                    GDK_KEY_o,
-                    GDK_CONTROL_MASK);
+  menu_item =
+    create_menu_item (
+      "_Open",
+      "document-open",
+      0,
+      NULL,
+      0,
+      "win.open");
   APPEND_TO_FILE_MENU;
-  menu_item = create_menu_item (mw->accel_group,
-                    "_Save",
-                    "document-save",
-                    0,
-                    NULL,
-                    0,
-                    GDK_KEY_s,
-                    GDK_CONTROL_MASK);
+  menu_item =
+    create_menu_item (
+      "_Save",
+      "document-save",
+      0,
+      NULL,
+      0,
+      "win.save");
   APPEND_TO_FILE_MENU;
-  menu_item = create_menu_item (mw->accel_group,
-                    "Save _As",
-                    "document-save-as",
-                    0,
-                    NULL,
-                    0,
-                    GDK_KEY_s,
-                    GDK_CONTROL_MASK |
-                      GDK_SHIFT_MASK);
+  menu_item =
+    create_menu_item (
+      "Save _As",
+      "document-save-as",
+      0,
+      NULL,
+      0,
+      "win.save-as");
   APPEND_TO_FILE_MENU;
   CREATE_SEPARATOR;
   APPEND_TO_FILE_MENU;
-  menu_item = create_menu_item (mw->accel_group,
-                    "_Export As",
-                    "document-send",
-                    0,
-                    NULL,
-                    0,
-                    GDK_KEY_e,
-                    GDK_CONTROL_MASK);
+  menu_item =
+    create_menu_item (
+      "_Export As",
+      "document-send",
+      0,
+      NULL,
+      0,
+      "win.export");
   APPEND_TO_FILE_MENU;
   CREATE_SEPARATOR;
   APPEND_TO_FILE_MENU;
-  menu_item = create_menu_item (mw->accel_group,
-                    "_Preferences",
-                    "document-properties",
-                    0,
-                    NULL,
-                    0,
-                    GDK_KEY_p,
-                    GDK_CONTROL_MASK);
+  menu_item =
+    create_menu_item (
+      "_Preferences",
+      "document-properties",
+      0,
+      NULL,
+      0,
+      "win.properties"); /* project properties */
   APPEND_TO_FILE_MENU;
-  menu_item = create_menu_item (mw->accel_group,
-                    "_Quit",
-                    "window-close",
-                    0,
-                    NULL,
-                    0,
-                    GDK_KEY_q,
-                    GDK_CONTROL_MASK);
+  menu_item =
+    create_menu_item (
+      "_Quit",
+      "window-close",
+      0,
+      NULL,
+      0,
+      "app.quit");
   APPEND_TO_FILE_MENU;
 #undef APPEND_TO_FILE_MENU
 
   menu_item =
-    create_menu_item (mw->accel_group,
-                      "_Undo",
-                      "edit-undo",
-                      0,
-                      NULL,
-                      0,
-                      GDK_KEY_z,
-                      GDK_CONTROL_MASK);
-  g_signal_connect (G_OBJECT (menu_item),
-                    "activate",
-                    G_CALLBACK (undo_activate),
-                    self);
+    create_menu_item (
+      "_Undo",
+      "edit-undo",
+      0,
+      NULL,
+      0,
+      "win.undo");
   APPEND_TO_EDIT_MENU;
   self->edit_undo = menu_item;
   menu_item =
-    create_menu_item (mw->accel_group,
-                      "_Redo",
-                      "edit-redo",
-                      0,
-                      NULL,
-                      0,
-                      GDK_KEY_z,
-                      GDK_CONTROL_MASK |
-                        GDK_SHIFT_MASK);
-  g_signal_connect (G_OBJECT (menu_item),
-                    "activate",
-                    G_CALLBACK (redo_activate),
-                    self);
+    create_menu_item (
+      "_Redo",
+      "edit-redo",
+      0,
+      NULL,
+      0,
+      "win.redo");
   APPEND_TO_EDIT_MENU;
   self->edit_redo = menu_item;
   CREATE_SEPARATOR;
   APPEND_TO_EDIT_MENU;
   menu_item =
-    create_menu_item (mw->accel_group,
-                      "Cu_t",
-                      "edit-cut",
-                      0,
-                      NULL,
-                      0,
-                      GDK_KEY_x,
-                      GDK_CONTROL_MASK);
-  g_signal_connect (G_OBJECT (menu_item),
-                    "activate",
-                    G_CALLBACK (cut_activate),
-                    NULL);
+    create_menu_item (
+      "Cu_t",
+      "edit-cut",
+      0,
+      NULL,
+      0,
+      "win.cut");
   APPEND_TO_EDIT_MENU;
   menu_item =
-    create_menu_item (mw->accel_group,
-                      "_Copy",
-                      "edit-copy",
-                      0,
-                      NULL,
-                      0,
-                      GDK_KEY_c,
-                      GDK_CONTROL_MASK);
-  g_signal_connect (G_OBJECT (menu_item),
-                    "activate",
-                    G_CALLBACK (copy_activate),
-                    NULL);
+    create_menu_item (
+      "_Copy",
+      "edit-copy",
+      0,
+      NULL,
+      0,
+      "win.copy");
   APPEND_TO_EDIT_MENU;
   menu_item =
-    create_menu_item (mw->accel_group,
-                      "_Paste",
-                      "edit-paste",
-                      0,
-                      NULL,
-                      0,
-                      GDK_KEY_v,
-                      GDK_CONTROL_MASK);
-  g_signal_connect (G_OBJECT (menu_item),
-                    "activate",
-                    G_CALLBACK (paste_activate),
-                    NULL);
+    create_menu_item (
+      "_Paste",
+      "edit-paste",
+      0,
+      NULL,
+      0,
+      "win.paste");
   APPEND_TO_EDIT_MENU;
   menu_item =
-    create_menu_item (mw->accel_group,
-                      "_Delete",
-                      "edit-delete",
-                      0,
-                      NULL,
-                      0,
-                      GDK_KEY_Delete,
-                      0);
-  g_signal_connect (G_OBJECT (menu_item),
-                    "activate",
-                    G_CALLBACK (delete_activate),
-                    NULL);
+    create_menu_item (
+      "_Delete",
+      "edit-delete",
+      0,
+      NULL,
+      0,
+      "win.delete");
   APPEND_TO_EDIT_MENU;
   CREATE_SEPARATOR;
   APPEND_TO_EDIT_MENU;
   menu_item =
-    create_menu_item (mw->accel_group,
-                      "Cle_ar Selection",
-                      "edit-clear",
-                      0,
-                      NULL,
-                      0,
-                      GDK_KEY_a,
-                      GDK_CONTROL_MASK |
-                        GDK_SHIFT_MASK);
+    create_menu_item (
+      "Cle_ar Selection",
+      "edit-clear",
+      0,
+      NULL,
+      0,
+      "win.clear-selection");
   APPEND_TO_EDIT_MENU;
   menu_item =
-    create_menu_item (mw->accel_group,
-                      "Select A_ll",
-                      "edit-select-all",
-                      0,
-                      NULL,
-                      0,
-                      GDK_KEY_a,
-                      GDK_CONTROL_MASK);
+    create_menu_item (
+      "Select A_ll",
+      "edit-select-all",
+      0,
+      NULL,
+      0,
+      "win.select-all");
   APPEND_TO_EDIT_MENU;
 #undef APPEND_TO_EDIT_MENU
 
   menu_item =
-    create_menu_item (mw->accel_group,
-                      "Left Panel",
-                      NULL,
-                      ICON_TYPE_GNOME_BUILDER,
-                      "builder-view-left-pane-symbolic-light.svg",
-                      1,
-                      GDK_KEY_KP_4,
-                      GDK_CONTROL_MASK |
-                        GDK_SHIFT_MASK);
+    create_menu_item (
+      "Left Panel",
+      NULL,
+      ICON_TYPE_GNOME_BUILDER,
+      "builder-view-left-pane-symbolic-light.svg",
+      1,
+      "win.toggle-left-panel");
   APPEND_TO_VIEW_MENU;
   menu_item =
-    create_menu_item (mw->accel_group,
-                      "Right Panel",
-                      NULL,
-                      ICON_TYPE_GNOME_BUILDER,
-                      "builder-view-right-pane-symbolic-light.svg",
-                      1,
-                      GDK_KEY_KP_6,
-                      GDK_CONTROL_MASK |
-                        GDK_SHIFT_MASK);
+    create_menu_item (
+      "Right Panel",
+      NULL,
+      ICON_TYPE_GNOME_BUILDER,
+      "builder-view-right-pane-symbolic-light.svg",
+      1,
+      "win.toggle-right-panel");
   APPEND_TO_VIEW_MENU;
   menu_item =
-    create_menu_item (mw->accel_group,
-                      "Bottom Panel",
-                      NULL,
-                      ICON_TYPE_GNOME_BUILDER,
-                      "builder-view-bottom-pane-symbolic-light.svg",
-                      1,
-                      GDK_KEY_KP_2,
-                      GDK_CONTROL_MASK |
-                        GDK_SHIFT_MASK);
+    create_menu_item (
+      "Bottom Panel",
+      NULL,
+      ICON_TYPE_GNOME_BUILDER,
+      "builder-view-bottom-pane-symbolic-light.svg",
+      1,
+      "win.toggle-bot-panel");
   APPEND_TO_VIEW_MENU;
   menu_item =
-    create_menu_item (mw->accel_group,
-                      "Status Bar",
-                      "edit-select-all",
-                      0,
-                      NULL,
-                      1,
-                      0,
-                      0);
+    create_menu_item (
+      "Status Bar",
+      "edit-select-all",
+      0,
+      NULL,
+      1,
+      "win.toggle-status-bar");
   APPEND_TO_VIEW_MENU;
   CREATE_SEPARATOR;
   APPEND_TO_VIEW_MENU;
   menu_item =
-    create_menu_item (mw->accel_group,
-                      "_Zoom In",
-                      "zoom-in",
-                      0,
-                      NULL,
-                      0,
-                      GDK_KEY_KP_Add,
-                      GDK_CONTROL_MASK);
+    create_menu_item (
+      "_Zoom In",
+      "zoom-in",
+      0,
+      NULL,
+      0,
+      "win.zoom-in");
   APPEND_TO_VIEW_MENU;
   menu_item =
-    create_menu_item (mw->accel_group,
-                      "Zoom _Out",
-                      "zoom-out",
-                      0,
-                      NULL,
-                      0,
-                      GDK_KEY_KP_Subtract,
-                      GDK_CONTROL_MASK);
+    create_menu_item (
+      "Zoom _Out",
+      "zoom-out",
+      0,
+      NULL,
+      0,
+      "win.zoom-out");
   APPEND_TO_VIEW_MENU;
   menu_item =
-    create_menu_item (mw->accel_group,
-                      "Original Size",
-                      "zoom-original",
-                      0,
-                      NULL,
-                      0,
-                      GDK_KEY_KP_Equal,
-                      GDK_CONTROL_MASK);
+    create_menu_item (
+      "Original Size",
+      "zoom-original",
+      0,
+      NULL,
+      0,
+      "win.original-size");
   APPEND_TO_VIEW_MENU;
   menu_item =
-    create_menu_item (mw->accel_group,
-                      "Best Fit",
-                      "zoom-fit-best",
-                      0,
-                      NULL,
-                      0,
-                      GDK_KEY_bracketleft,
-                      GDK_CONTROL_MASK);
+    create_menu_item (
+      "Best Fit",
+      "zoom-fit-best",
+      0,
+      NULL,
+      0,
+      "win.best-fit");
   APPEND_TO_VIEW_MENU;
   CREATE_SEPARATOR;
   APPEND_TO_VIEW_MENU;
   menu_item =
-    create_menu_item (mw->accel_group,
-                      "_Fullscreen",
-                      "view-fullscreen",
-                      0,
-                      NULL,
-                      0,
-                      GDK_KEY_F11,
-                      0);
+    create_menu_item (
+      "_Fullscreen",
+      "view-fullscreen",
+      0,
+      NULL,
+      0,
+      "app.fullscren");
   APPEND_TO_VIEW_MENU;
 #undef APPEND_TO_VIEW_MENU
 
   menu_item =
-    create_menu_item (mw->accel_group,
-                      "Manual",
-                      "help-contents",
-                      0,
-                      NULL,
-                      0,
-                      0,
-                      0);
+    create_menu_item (
+      "Manual",
+      "help-contents",
+      0,
+      NULL,
+      0,
+      "app.manual");
   APPEND_TO_HELP_MENU;
   menu_item =
-    create_menu_item (mw->accel_group,
-                      "Keyboard Shortcuts",
-                      "",
-                      0,
-                      NULL,
-                      0,
-                      0,
-                      0);
-  APPEND_TO_HELP_MENU;
-  menu_item =
-    create_menu_item (mw->accel_group,
-                      "Tutorials",
-                      "",
-                      0,
-                      NULL,
-                      0,
-                      0,
-                      0);
+    create_menu_item (
+      "Keyboard Shortcuts",
+      "",
+      0,
+      NULL,
+      0,
+      "app.shortcuts");
   APPEND_TO_HELP_MENU;
   CREATE_SEPARATOR;
   APPEND_TO_HELP_MENU;
   menu_item =
-    create_menu_item (mw->accel_group,
-                      "Release Notes",
-                      "",
-                      0,
-                      NULL,
-                      0,
-                      0,
-                      0);
-  APPEND_TO_HELP_MENU;
-  menu_item =
-    create_menu_item (mw->accel_group,
-                      "License",
-                      "",
-                      0,
-                      NULL,
-                      0,
-                      0,
-                      0);
+    create_menu_item (
+      "License",
+      "",
+      0,
+      NULL,
+      0,
+      "app.license");
   APPEND_TO_HELP_MENU;
   CREATE_SEPARATOR;
   APPEND_TO_HELP_MENU;
   menu_item =
-    create_menu_item (mw->accel_group,
-                      "About",
-                      "help-about",
-                      0,
-                      NULL,
-                      0,
-                      0,
-                      0);
+    create_menu_item (
+      "About",
+      "help-about",
+      0,
+      NULL,
+      0,
+      "app.about");
   APPEND_TO_HELP_MENU;
 #undef APPEND_TO_HELP_MENU
 
@@ -703,25 +457,4 @@ header_bar_widget_class_init (HeaderBarWidgetClass * _klass)
     klass,
     HeaderBarWidget,
     close);
-  gtk_widget_class_bind_template_callback (
-    klass,
-    minimize_clicked);
-  gtk_widget_class_bind_template_callback (
-    klass,
-    close_clicked);
-  gtk_widget_class_bind_template_callback (
-    klass,
-    maximize_clicked);
-  gtk_widget_class_bind_template_callback (
-    klass,
-    on_file_open_activate);
-  gtk_widget_class_bind_template_callback (
-    klass,
-    on_file_save_activate);
-  gtk_widget_class_bind_template_callback (
-    klass,
-    on_file_save_as_activate);
-  gtk_widget_class_bind_template_callback (
-    klass,
-    on_file_export_activate);
 }

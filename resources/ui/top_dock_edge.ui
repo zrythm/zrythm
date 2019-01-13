@@ -44,17 +44,6 @@
             <property name="homogeneous">True</property>
           </packing>
         </child>
-        <child>
-          <object class="GtkToolButton" id="toolbutton3">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="label" translatable="yes">New</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="homogeneous">True</property>
-          </packing>
-        </child>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -71,18 +60,11 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkToggleButton" id="snap_to_grid">
+              <object class="GtkToggleToolButton" id="snap_to_grid">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <child>
-                  <object class="GtkImage">
-                    <property name="visible">1</property>
-                    <property name="resource">/org/zrythm/icons/gnome-builder/ui-packing-symbolic-light.svg</property>
-                    <property name="tooltip_text" translatable="yes">Snap to grid</property>
-                  </object>
-                </child>
-                <signal name="toggled" handler="on_snap_to_grid_toggled" swapped="no"/>
+                <property name="action-name">win.snap-to-grid</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -91,18 +73,11 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="snap_to_grid_keep_offset">
+              <object class="GtkToggleToolButton" id="snap_to_grid_keep_offset">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <child>
-                  <object class="GtkImage">
-                    <property name="visible">1</property>
-                    <property name="resource">/org/zrythm/icons/gnome-builder/widget-layout-symbolic-light.svg</property>
-                    <property name="tooltip_text" translatable="yes">Snaps to grid and keeps offset</property>
-                  </object>
-                </child>
                 <property name="receives_default">True</property>
-                <signal name="toggled" handler="on_snap_to_grid_keep_offset_toggled" swapped="no"/>
+                <property name="tooltip_text" translatable="yes">Snaps to grid and keeps offset</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -111,18 +86,12 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="snap_to_events">
+              <object class="GtkToggleToolButton" id="snap_to_events">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <child>
-                  <object class="GtkImage">
-                    <property name="visible">1</property>
-                    <property name="resource">/org/zrythm/icons/gnome-builder/builder-split-tab-right-symbolic-light.svg</property>
-                    <property name="tooltip_text" translatable="yes">Snap to events (regions)</property>
-                  </object>
-                </child>
                 <property name="receives_default">True</property>
-                <signal name="toggled" handler="on_snap_to_events_toggled" swapped="no"/>
+                <property name="action-name">win.snap-to-events</property>
+                <property name="tooltip_text" translatable="yes">Snap to events (regions)</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -170,6 +139,72 @@
         <property name="expand">False</property>
         <property name="fill">True</property>
         <property name="position">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkBox" id="zoom_box">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkToolButton" id="original_size">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="action-name">win.original-size</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToolButton" id="best_fit">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="action-name">win.best-fit</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToolButton" id="zoom_out">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="action-name">win.zoom-out</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToolButton" id="zoom_in">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="action-name">win.zoom-in</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
+        <style>
+          <class name="linked"/>
+        </style>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">2</property>
       </packing>
     </child>
   </template>

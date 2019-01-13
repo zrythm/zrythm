@@ -1,5 +1,5 @@
 /*
- * undo/undoable_action.h - UndoableAction
+ * actions/undoable_action.h - UndoableAction
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *

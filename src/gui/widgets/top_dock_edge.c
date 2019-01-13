@@ -30,31 +30,6 @@ G_DEFINE_TYPE (TopDockEdgeWidget,
                GTK_TYPE_BOX)
 
 static void
-on_snap_to_grid_toggled (GtkToggleButton * toggle,
-                         gpointer          user_data)
-{
-  ZRYTHM->snap_grid_timeline->snap_to_grid =
-    gtk_toggle_button_get_active (toggle);
-}
-
-static void
-on_snap_to_grid_keep_offset_toggled (
-  GtkToggleButton * toggle,
-  gpointer          user_data)
-{
-  ZRYTHM->snap_grid_timeline->snap_to_grid_keep_offset =
-    gtk_toggle_button_get_active (toggle);
-}
-
-static void
-on_snap_to_events_toggled (GtkToggleButton * toggle,
-                         gpointer          user_data)
-{
-  ZRYTHM->snap_grid_timeline->snap_to_events =
-    gtk_toggle_button_get_active (toggle);
-}
-
-static void
 top_dock_edge_widget_init (TopDockEdgeWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
@@ -64,15 +39,52 @@ top_dock_edge_widget_init (TopDockEdgeWidget * self)
     self->snap_grid_timeline,
     ZRYTHM->snap_grid_timeline);
 
-  gtk_toggle_button_set_active (
+  gtk_toggle_tool_button_set_active (
     self->snap_to_grid,
     ZRYTHM->snap_grid_timeline->snap_to_grid);
-  gtk_toggle_button_set_active (
+  gtk_toggle_tool_button_set_active (
     self->snap_to_grid_keep_offset,
     ZRYTHM->snap_grid_timeline->snap_to_grid_keep_offset);
-  gtk_toggle_button_set_active (
+  gtk_toggle_tool_button_set_active (
     self->snap_to_events,
     ZRYTHM->snap_grid_timeline->snap_to_events);
+
+  gtk_tool_button_set_icon_widget (
+    GTK_TOOL_BUTTON (self->snap_to_grid),
+    resources_get_icon (ICON_TYPE_GNOME_BUILDER,
+                        "ui-packing-symbolic-light.svg"));
+  gtk_tool_button_set_icon_widget (
+    GTK_TOOL_BUTTON (self->snap_to_grid_keep_offset),
+    resources_get_icon (ICON_TYPE_GNOME_BUILDER,
+                        "widget-layout-symbolic-light.svg"));
+  gtk_tool_button_set_icon_widget (
+    GTK_TOOL_BUTTON (self->snap_to_events),
+    resources_get_icon (ICON_TYPE_GNOME_BUILDER,
+                        "builder-split-tab-right-symbolic-light.svg"));
+  gtk_tool_button_set_icon_widget (
+    GTK_TOOL_BUTTON (self->zoom_in),
+    gtk_image_new_from_icon_name (
+      "zoom-in",
+      GTK_ICON_SIZE_SMALL_TOOLBAR));
+  gtk_tool_button_set_icon_widget (
+    GTK_TOOL_BUTTON (self->zoom_out),
+    gtk_image_new_from_icon_name (
+      "zoom-out",
+      GTK_ICON_SIZE_SMALL_TOOLBAR));
+  gtk_tool_button_set_icon_widget (
+    GTK_TOOL_BUTTON (self->best_fit),
+    gtk_image_new_from_icon_name (
+      "zoom-fit-best",
+      GTK_ICON_SIZE_SMALL_TOOLBAR));
+  gtk_tool_button_set_icon_widget (
+    GTK_TOOL_BUTTON (self->original_size),
+    gtk_image_new_from_icon_name (
+      "zoom-original",
+      GTK_ICON_SIZE_SMALL_TOOLBAR));
+  gtk_widget_show_all (GTK_WIDGET (self->zoom_in));
+  gtk_widget_show_all (GTK_WIDGET (self->zoom_out));
+  gtk_widget_show_all (GTK_WIDGET (self->best_fit));
+  gtk_widget_show_all (GTK_WIDGET (self->original_size));
 }
 
 static void
@@ -106,14 +118,21 @@ top_dock_edge_widget_class_init (
     klass,
     TopDockEdgeWidget,
     snap_to_events);
-  gtk_widget_class_bind_template_callback (
+  gtk_widget_class_bind_template_child (
     klass,
-    on_snap_to_grid_toggled);
-  gtk_widget_class_bind_template_callback (
+    TopDockEdgeWidget,
+    original_size);
+  gtk_widget_class_bind_template_child (
     klass,
-    on_snap_to_grid_keep_offset_toggled);
-  gtk_widget_class_bind_template_callback (
+    TopDockEdgeWidget,
+    best_fit);
+  gtk_widget_class_bind_template_child (
     klass,
-    on_snap_to_events_toggled);
+    TopDockEdgeWidget,
+    zoom_out);
+  gtk_widget_class_bind_template_child (
+    klass,
+    TopDockEdgeWidget,
+    zoom_in);
 }
 

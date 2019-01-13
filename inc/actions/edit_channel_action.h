@@ -1,5 +1,5 @@
 /*
- * undo/edit_channel_action.h - UndoableAction
+ * actions/edit_channel_action.h - UndoableAction
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -22,7 +22,7 @@
 #ifndef __UNDO_EDIT_CHANNEL_ACTION_H__
 #define __UNDO_EDIT_CHANNEL_ACTION_H__
 
-#include "undo/undoable_action.h"
+#include "actions/undoable_action.h"
 
 typedef enum EditChannelActionType
 {

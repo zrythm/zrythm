@@ -12,6 +12,7 @@
 @define-color light_variant1 #656464;
 @define-color light_variant2 #989797;
 @define-color bright_green #1DDD6A;
+@define-color darkish_green #19664c;
 @define-color dark_orange #D68A0C;
 @define-color z_yellow #F9CA1B;
 @define-color bright_orange #F79616;
@@ -142,6 +143,13 @@ header-bar,
 menubar
 {
   background-color: @bg_darker_variant2;
+}
+
+/* override button size from theme */
+button
+{
+  min-width: 4px;
+  min-height: 4px;
 }
 
 button.toggle,

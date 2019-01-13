@@ -22,10 +22,35 @@
 #ifndef __GUI_ACCEL_H__
 #define __GUI_ACCEL_H__
 
+#include <gtk/gtk.h>
+
 /**
  * Adds all global accelerators.
  */
 void
 accel_add_all ();
+
+void
+accel_install_action_accelerator (
+  const char *     primary,
+  const char *     secondary,
+  const char *     action_name);
+
+/**
+ * Install accelerator for an action.
+ */
+void
+accel_install_primary_action_accelerator (
+  const char *     primary,
+  const char *     action_name);
+
+//char *
+//accel_get_primary_accel_for_action (
+  //const char * action_name);
+
+void
+accel_set_accel_label_from_action (
+  GtkAccelLabel * accel_label,
+  const char *    action_name);
 
 #endif

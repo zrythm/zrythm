@@ -1,5 +1,5 @@
 /*
- * undo/undo_redo_manager.c - Undo/Redo Manager
+ * actions/undo_redo_manager.c - Undo/Redo Manager
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -21,8 +21,8 @@
 
 #include "gui/widgets/header_bar.h"
 #include "gui/widgets/main_window.h"
-#include "undo/undoable_action.h"
-#include "undo/undo_manager.h"
+#include "actions/undoable_action.h"
+#include "actions/undo_manager.h"
 
 UndoManager *
 undo_manager_new ()

@@ -11,6 +11,9 @@
         <property name="vexpand">1</property>
         <property name="orientation">vertical</property>
         <child>
+          <object class="TopDockEdgeWidget" id="top_dock_edge"/>
+        </child>
+        <child>
           <object class="GtkPaned" id="tracklist_timeline">
             <property name="visible">1</property>
             <property name="can-focus">1</property>
@@ -128,7 +131,7 @@
             <property name="visible">1</property>
           </object>
           <packing>
-            <property name="position">1</property>
+            <property name="position">2</property>
           </packing>
         </child>
       </object>
@@ -143,9 +146,6 @@
     </child>
     <child type="bottom">
       <object class="BotDockEdgeWidget" id="bot_dock_edge"/>
-    </child>
-    <child type="top">
-      <object class="TopDockEdgeWidget" id="top_dock_edge"/>
     </child>
   </template>
 </interface>

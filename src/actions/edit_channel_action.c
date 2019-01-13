@@ -1,5 +1,5 @@
 /*
- * undo/edit_channel_action.c - UndoableAction
+ * actions/edit_channel_action.c - UndoableAction
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -21,7 +21,7 @@
 
 #include "audio/channel.h"
 #include "gui/widgets/channel.h"
-#include "undo/edit_channel_action.h"
+#include "actions/edit_channel_action.h"
 
 static EditChannelAction *
 _create ()

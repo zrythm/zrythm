@@ -1,5 +1,5 @@
 /*
- * undo/create_chords_action.h - UndoableAction
+ * actions/create_chords_action.h - UndoableAction
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -22,7 +22,7 @@
 #ifndef __UNDO_CREATE_CHORDS_ACTION_H__
 #define __UNDO_CREATE_CHORDS_ACTION_H__
 
-#include "undo/undoable_action.h"
+#include "actions/undoable_action.h"
 
 typedef struct Chord Chord;
 

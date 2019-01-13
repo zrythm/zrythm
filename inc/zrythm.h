@@ -25,6 +25,7 @@
 #include "audio/snap_grid.h"
 
 #include <gtk/gtk.h>
+#include <dazzle.h>
 
 #define ZRYTHM zrythm
 

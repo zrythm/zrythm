@@ -1,5 +1,5 @@
 /*
- * undo/undo_manager.h - Undo Manager
+ * actions/undo_manager.h - Undo Manager
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
