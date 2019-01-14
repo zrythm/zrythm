@@ -65,15 +65,18 @@ static StartAssistantWidget * assistant;
 static TaskId * task_id; ///< current task;
 static UpdateSplashData * data;
 
-static void
+static int
 update_splash (UpdateSplashData *data)
 {
   /* sometimes this gets called after the splash window
    * gets deleted so added for safety */
   if (splash && GTK_IS_WIDGET (splash))
-    splash_widget_update (splash,
-                          data->message,
-                          data->progress);
+    {
+      splash_widget_update (splash,
+                            data->message,
+                            data->progress);
+    }
+  return G_SOURCE_REMOVE;
 }
 
 /**
@@ -196,7 +199,6 @@ task_func (GTask *task,
       data->progress = 0.8;
       break;
     }
-  g_idle_add ((GSourceFunc) update_splash, data);
 }
 
 static void
@@ -204,6 +206,7 @@ task_completed_cb (GObject *source_object,
                         GAsyncResult *res,
                         gpointer user_data)
 {
+  g_idle_add ((GSourceFunc) update_splash, data);
   if (*task_id == TASK_END)
     {
       g_action_group_activate_action (

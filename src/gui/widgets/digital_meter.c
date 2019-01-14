@@ -660,6 +660,7 @@ digital_meter_widget_new (DigitalMeterType  type,
         -1,
         30);
       self->note_length = note_length;
+      self->note_type = note_type;
       break;
 
     case DIGITAL_METER_TYPE_NOTE_TYPE:
@@ -668,6 +669,7 @@ digital_meter_widget_new (DigitalMeterType  type,
         GTK_WIDGET (self),
         -1,
         30);
+      self->note_length = note_length;
       self->note_type = note_type;
       break;
     case DIGITAL_METER_TYPE_TIMESIG:
