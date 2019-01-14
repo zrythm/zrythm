@@ -26,6 +26,7 @@
 #include "project.h"
 #include "settings.h"
 #include "audio/position.h"
+#include "audio/quantize.h"
 #include "audio/snap_grid.h"
 #include "audio/transport.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -222,7 +223,8 @@ draw_cb (DigitalMeterWidget * self, cairo_t *cr, gpointer data)
         /*text = g_strdup_printf (" %d", num_part);*/
       /*else*/
         /*text = g_strdup_printf ("%d", num_part);*/
-      text = snap_grid_stringize (self->snap_grid);
+      text = snap_grid_stringize (*self->note_length,
+                                  *self->note_type);
       cairo_move_to (cr,
                      0,
                      self->height_end_pos);
@@ -243,7 +245,7 @@ draw_cb (DigitalMeterWidget * self, cairo_t *cr, gpointer data)
       self->height_start_pos = (height / 2 - te1.height / 2);
       self->height_end_pos = self->height_start_pos + te1.height;
 
-      switch (self->snap_grid->note_type)
+      switch (*self->note_type)
         {
         case NOTE_TYPE_NORMAL:
           text = "normal";
@@ -341,10 +343,10 @@ drag_start (GtkGestureDrag * gesture,
   DigitalMeterWidget * self = (DigitalMeterWidget *) user_data;
   if (self->type == DIGITAL_METER_TYPE_NOTE_LENGTH)
     self->start_note_length =
-      self->snap_grid->note_length;
+      *self->note_length;
   if (self->type == DIGITAL_METER_TYPE_NOTE_TYPE)
     self->start_note_type =
-      self->snap_grid->note_type;
+      *self->note_type;
   if (self->type == DIGITAL_METER_TYPE_TIMESIG)
     {
       self->start_timesig_top =
@@ -449,9 +451,9 @@ drag_update (GtkGestureDrag * gesture,
         {
           num = self->start_note_length + (int) offset_y / 24;
           if (num < 0)
-            self->snap_grid->note_length = 0;
+            *self->note_length = 0;
           else
-            self->snap_grid->note_length =
+            *self->note_length =
               num > NOTE_LENGTH_1_128 ?
               NOTE_LENGTH_1_128 : num;
         }
@@ -461,9 +463,9 @@ drag_update (GtkGestureDrag * gesture,
         {
           num = self->start_note_type + (int) offset_y / 24;
           if (num < 0)
-            self->snap_grid->note_type = 0;
+            *self->note_type = 0;
           else
-            self->snap_grid->note_type =
+            *self->note_type =
               num > NOTE_TYPE_TRIPLET ?
               NOTE_TYPE_TRIPLET : num;
         }
@@ -529,9 +531,15 @@ drag_end (GtkGestureDrag *gesture,
   self->update_beats = 0;
   self->update_sixteenths = 0;
   self->update_ticks = 0;
+  /* FIXME super reduntant */
   if (self->update_note_length ||
       self->update_note_type)
-    snap_grid_setup (self->snap_grid);
+    {
+      snap_grid_setup (ZRYTHM->snap_grid_timeline);
+      snap_grid_setup (ZRYTHM->snap_grid_midi);
+      quantize_setup (ZRYTHM->quantize_timeline);
+      quantize_setup (ZRYTHM->quantize_midi);
+    }
   self->update_note_length = 0;
   self->update_note_type = 0;
   self->update_timesig_top = 0;
@@ -619,8 +627,9 @@ button_press_cb (GtkWidget      * event_box,
  * Creates a digital meter with the given type (bpm or position).
  */
 DigitalMeterWidget *
-digital_meter_widget_new (DigitalMeterType      type,
-                          SnapGrid *            sg)
+digital_meter_widget_new (DigitalMeterType  type,
+                          NoteLength *      note_length,
+                          NoteType *        note_type)
 {
   g_message ("Creating digital meter...");
   DigitalMeterWidget * self = g_object_new (DIGITAL_METER_WIDGET_TYPE, NULL);
@@ -650,7 +659,7 @@ digital_meter_widget_new (DigitalMeterType      type,
         GTK_WIDGET (self),
         -1,
         30);
-      self->snap_grid = sg;
+      self->note_length = note_length;
       break;
 
     case DIGITAL_METER_TYPE_NOTE_TYPE:
@@ -659,7 +668,7 @@ digital_meter_widget_new (DigitalMeterType      type,
         GTK_WIDGET (self),
         -1,
         30);
-      self->snap_grid = sg;
+      self->note_type = note_type;
       break;
     case DIGITAL_METER_TYPE_TIMESIG:
       // set the size

@@ -1,7 +1,7 @@
 /*
  * project/snap_grid.c - Snap Grid info
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -24,13 +24,17 @@
 
 #include <gtk/gtk.h>
 
+/**
+ * Gets given note length and type in ticks.
+ */
 int
-snap_grid_get_note_ticks (SnapGrid * self)
+snap_grid_get_note_ticks (NoteLength note_length,
+                          NoteType   note_type)
 {
-  switch (self->note_length)
+  switch (note_length)
     {
     case NOTE_LENGTH_2_1:
-      switch (self->note_type)
+      switch (note_type)
         {
         case NOTE_TYPE_NORMAL:
           return 8 * TICKS_PER_QUARTER_NOTE;
@@ -44,7 +48,7 @@ snap_grid_get_note_ticks (SnapGrid * self)
         }
       break;
     case NOTE_LENGTH_1_1:
-      switch (self->note_type)
+      switch (note_type)
         {
         case NOTE_TYPE_NORMAL:
           return 4 * TICKS_PER_QUARTER_NOTE;
@@ -58,7 +62,7 @@ snap_grid_get_note_ticks (SnapGrid * self)
         }
       break;
     case NOTE_LENGTH_1_2:
-      switch (self->note_type)
+      switch (note_type)
         {
         case NOTE_TYPE_NORMAL:
           return 2 * TICKS_PER_QUARTER_NOTE;
@@ -72,7 +76,7 @@ snap_grid_get_note_ticks (SnapGrid * self)
         }
       break;
     case NOTE_LENGTH_1_4:
-      switch (self->note_type)
+      switch (note_type)
         {
         case NOTE_TYPE_NORMAL:
           return TICKS_PER_QUARTER_NOTE;
@@ -86,7 +90,7 @@ snap_grid_get_note_ticks (SnapGrid * self)
         }
       break;
     case NOTE_LENGTH_1_8:
-      switch (self->note_type)
+      switch (note_type)
         {
         case NOTE_TYPE_NORMAL:
           return TICKS_PER_QUARTER_NOTE / 2;
@@ -100,7 +104,7 @@ snap_grid_get_note_ticks (SnapGrid * self)
         }
       break;
     case NOTE_LENGTH_1_16:
-      switch (self->note_type)
+      switch (note_type)
         {
         case NOTE_TYPE_NORMAL:
           return TICKS_PER_QUARTER_NOTE / 4;
@@ -114,7 +118,7 @@ snap_grid_get_note_ticks (SnapGrid * self)
         }
       break;
     case NOTE_LENGTH_1_32:
-      switch (self->note_type)
+      switch (note_type)
         {
         case NOTE_TYPE_NORMAL:
           return TICKS_PER_QUARTER_NOTE / 8;
@@ -128,7 +132,7 @@ snap_grid_get_note_ticks (SnapGrid * self)
         }
       break;
     case NOTE_LENGTH_1_64:
-      switch (self->note_type)
+      switch (note_type)
         {
         case NOTE_TYPE_NORMAL:
           return TICKS_PER_QUARTER_NOTE / 16;
@@ -142,7 +146,7 @@ snap_grid_get_note_ticks (SnapGrid * self)
         }
       break;
     case NOTE_LENGTH_1_128:
-      switch (self->note_type)
+      switch (note_type)
         {
         case NOTE_TYPE_NORMAL:
           return TICKS_PER_QUARTER_NOTE / 32;
@@ -175,7 +179,8 @@ update_snap_points (SnapGrid * self)
     {
       position_add_ticks (
         &tmp,
-        snap_grid_get_note_ticks (self));
+        snap_grid_get_note_ticks (self->note_length,
+                                  self->note_type));
       /*position_print (&tmp);*/
       position_set_to_pos (
         &self->snap_points[self->num_snap_points++],
@@ -209,11 +214,12 @@ snap_grid_setup (SnapGrid * self)
  * Must be free'd.
  */
 char *
-snap_grid_stringize (SnapGrid * self)
+snap_grid_stringize (NoteLength note_length,
+                     NoteType   note_type)
 {
   char * c;
   char * first_part;
-  switch (self->note_type)
+  switch (note_type)
     {
       case NOTE_TYPE_NORMAL:
         c = "";
@@ -225,7 +231,7 @@ snap_grid_stringize (SnapGrid * self)
         c = "t";
         break;
     }
-  switch (self->note_length)
+  switch (note_length)
     {
     case NOTE_LENGTH_2_1:
       first_part = "2/1";

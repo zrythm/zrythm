@@ -1,7 +1,7 @@
 /*
- * project/snap_grid.h - Snap Grid info
+ * audio/snap_grid.h - Snap Grid info
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -19,8 +19,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __PROJECT_SNAP_GRID_H__
-#define __PROJECT_SNAP_GRID_H__
+#ifndef __AUDIO_SNAP_GRID_H__
+#define __AUDIO_SNAP_GRID_H__
 
 #include "audio/position.h"
 
@@ -90,22 +90,23 @@ snap_grid_setup (SnapGrid * self);
 /**
  * Sets note length and re-calculates snap points.
  */
-void
-snap_grid_set_note_length (SnapGrid * self,
-                           NoteLength note_length);
+//void
+//snap_grid_set_note_length (SnapGrid * self,
+                           //NoteLength note_length);
 
 /**
- * Gets currently selected note length in ticks.
+ * Gets given note length and type in ticks.
  */
 int
-snap_grid_get_note_ticks (SnapGrid * self);
+snap_grid_get_note_ticks (NoteLength note_length,
+                          NoteType   note_type);
 
 /**
  * Sets note type and re-calculates snap points.
  */
-void
-snap_grid_set_note_type (SnapGrid *self,
-                         NoteType   note_type);
+//void
+//snap_grid_set_note_type (SnapGrid *self,
+                         //NoteType   note_type);
 
 /**
  * Returns the grid intensity as a human-readable string.
@@ -113,6 +114,7 @@ snap_grid_set_note_type (SnapGrid *self,
  * Must be free'd.
  */
 char *
-snap_grid_stringize (SnapGrid * snap_grid);
+snap_grid_stringize (NoteLength note_length,
+                     NoteType   note_type);
 
 #endif

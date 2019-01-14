@@ -1,5 +1,5 @@
 /*
- * gui/widgets/snap_grid.c - Snap & grid selection widget
+ * gui/widgets/quantize_mb.c - Snap & grid selection widget
  *
  * Copyright (C) 2019 Alexandros Theodotou
  *
@@ -19,57 +19,57 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/quantize.h"
 #include "audio/snap_grid.h"
-#include "gui/widgets/snap_grid.h"
-#include "gui/widgets/snap_grid_popover.h"
+#include "gui/widgets/quantize_mb.h"
+#include "gui/widgets/quantize_mb_popover.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (SnapGridWidget,
-               snap_grid_widget,
+G_DEFINE_TYPE (QuantizeMbWidget,
+               quantize_mb_widget,
                GTK_TYPE_MENU_BUTTON)
 
 static void
 on_clicked (GtkButton * button,
             gpointer  user_data)
 {
-  SnapGridWidget * self = Z_SNAP_GRID_WIDGET (user_data);
+  QuantizeMbWidget * self = Z_QUANTIZE_MB_WIDGET (user_data);
   gtk_widget_show_all (GTK_WIDGET (self->popover));
 }
 
 void
-snap_grid_widget_setup (SnapGridWidget * self,
-                        SnapGrid * snap_grid)
+quantize_mb_widget_setup (QuantizeMbWidget * self,
+                        Quantize * quantize)
 {
-  self->snap_grid = snap_grid;
-  self->popover = snap_grid_popover_widget_new (self);
+  self->quantize = quantize;
+  self->popover = quantize_mb_popover_widget_new (self);
   gtk_menu_button_set_popover (GTK_MENU_BUTTON (self),
                                GTK_WIDGET (self->popover));
 
-  char * string =
-    snap_grid_stringize (snap_grid->note_length,
-                         snap_grid->note_type);
+  char * string = snap_grid_stringize (quantize->note_length,
+                                       quantize->note_type);
   gtk_label_set_text (self->label, string);
   g_free (string);
 }
 
 static void
-snap_grid_widget_class_init (SnapGridWidgetClass * klass)
+quantize_mb_widget_class_init (QuantizeMbWidgetClass * klass)
 {
 }
 
 static void
-snap_grid_widget_init (SnapGridWidget * self)
+quantize_mb_widget_init (QuantizeMbWidget * self)
 {
   self->box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
   self->img = GTK_IMAGE (
     resources_get_icon (ICON_TYPE_GNOME_BUILDER,
                         "completion-snippet-symbolic-light.svg"));
-  self->label = GTK_LABEL (gtk_label_new ("Snap/Grid"));
+  self->label = GTK_LABEL (gtk_label_new ("Quantize"));
   gtk_widget_set_tooltip_text (GTK_WIDGET (self->box),
-                               "Snap/Grid options");
+                               "Quantize options");
   gtk_box_pack_start (self->box,
                       GTK_WIDGET (self->img),
                       Z_GTK_NO_EXPAND,
@@ -89,4 +89,3 @@ snap_grid_widget_init (SnapGridWidget * self)
 
   gtk_widget_show_all (GTK_WIDGET (self));
 }
-

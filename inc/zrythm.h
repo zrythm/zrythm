@@ -25,7 +25,6 @@
 #include "audio/snap_grid.h"
 
 #include <gtk/gtk.h>
-#include <dazzle.h>
 
 #define ZRYTHM zrythm
 
@@ -43,6 +42,7 @@ typedef struct PianoRoll PianoRoll;
 typedef struct Settings Settings;
 typedef struct Tracklist Tracklist;
 typedef struct UndoManager UndoManager;
+typedef struct Quantize Quantize;
 typedef struct _MainWindowWidget MainWindowWidget;
 
 struct _ZrythmApp
@@ -77,7 +77,9 @@ struct _ZrythmApp
   PianoRoll *         piano_roll;
 
   SnapGrid *          snap_grid_timeline; ///< snap/grid info for timeline
+  Quantize *          quantize_timeline;
   SnapGrid *         snap_grid_midi; ///< snap/grid info for midi editor
+  Quantize *          quantize_midi;
 
   char                * zrythm_dir;
   char                * projects_dir;

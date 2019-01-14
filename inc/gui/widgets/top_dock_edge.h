@@ -24,7 +24,6 @@
 
 
 #include <gtk/gtk.h>
-#include <dazzle.h>
 
 #define TOP_DOCK_EDGE_WIDGET_TYPE \
   (top_dock_edge_widget_get_type ())
@@ -36,18 +35,21 @@ G_DECLARE_FINAL_TYPE (TopDockEdgeWidget,
 
 #define MW_TOP_DOCK_EDGE MW_CENTER_DOCK->top_dock_edge
 
+typedef struct _QuantizeMbWidget QuantizeMbWidget;
+
 typedef struct _TopDockEdgeWidget
 {
   GtkBox                   parent_instance;
   GtkToolbar *             top_toolbar;
   SnapGridWidget *         snap_grid_timeline;
-  GtkToggleToolButton *        snap_to_grid;
-  GtkToggleToolButton *        snap_to_grid_keep_offset;
-  GtkToggleToolButton *        snap_to_events;
-  GtkToggleToolButton *          original_size;
-  GtkToggleToolButton *          best_fit;
-  GtkToggleToolButton *          zoom_out;
-  GtkToggleToolButton *          zoom_in;
+  GtkToggleToolButton *    snap_to_grid;
+  GtkToggleToolButton *    snap_to_grid_keep_offset;
+  GtkToggleToolButton *    snap_to_events;
+  GtkToggleToolButton *    original_size;
+  GtkToggleToolButton *    best_fit;
+  GtkToggleToolButton *    zoom_out;
+  GtkToggleToolButton *    zoom_in;
+  QuantizeMbWidget *       quantize_mb;
 } TopDockEdgeWidget;
 
 #endif

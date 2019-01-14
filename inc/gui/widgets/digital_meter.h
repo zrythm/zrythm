@@ -32,6 +32,9 @@ G_DECLARE_FINAL_TYPE (DigitalMeterWidget,
                       DIGITAL_METER_WIDGET,
                       GtkDrawingArea)
 
+typedef enum NoteLength NoteLength;
+typedef enum NoteType NoteType;
+
 typedef enum DigitalMeterType
 {
   DIGITAL_METER_TYPE_BPM,
@@ -75,7 +78,8 @@ typedef struct _DigitalMeterWidget
   int                      update_ticks; ///< flag to update beats
 
   /* for note length/type */
-  SnapGrid *               snap_grid;
+  NoteLength *             note_length;
+  NoteType *               note_type;
   int                      update_note_length; ///< flag to update note length
   int                      start_note_length; ///< start note length
   int                      update_note_type; ///< flag to update note type
@@ -92,7 +96,8 @@ typedef struct _DigitalMeterWidget
  * Creates a digital meter with the given type (bpm or position).
  */
 DigitalMeterWidget *
-digital_meter_widget_new (DigitalMeterType      type,
-                          SnapGrid *            snap_grid);
+digital_meter_widget_new (DigitalMeterType  type,
+                          NoteLength *      note_length,
+                          NoteType *        note_type);
 
 #endif

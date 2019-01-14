@@ -25,6 +25,7 @@
 #include "audio/engine.h"
 #include "audio/mixer.h"
 #include "audio/piano_roll.h"
+#include "audio/quantize.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/accel.h"
@@ -170,8 +171,14 @@ task_func (GTask *task,
       ZRYTHM->plugin_manager = plugin_manager_new ();
       ZRYTHM->snap_grid_timeline =
         snap_grid_new (NOTE_LENGTH_1_1);
+      ZRYTHM->quantize_timeline =
+        quantize_new (NOTE_LENGTH_1_1,
+                      ZRYTHM->snap_grid_timeline);
       ZRYTHM->snap_grid_midi =
         snap_grid_new (NOTE_LENGTH_1_8);
+      ZRYTHM->quantize_midi =
+        quantize_new (NOTE_LENGTH_1_8,
+                      ZRYTHM->snap_grid_midi);
       ZRYTHM->piano_roll = piano_roll_new ();
       data->message =
         "Setting up backend";
@@ -181,6 +188,8 @@ task_func (GTask *task,
       engine_setup (AUDIO_ENGINE);
       snap_grid_setup (ZRYTHM->snap_grid_timeline);
       snap_grid_setup (ZRYTHM->snap_grid_midi);
+      quantize_setup (ZRYTHM->quantize_timeline);
+      quantize_setup (ZRYTHM->quantize_midi);
       plugin_manager_setup (PLUGIN_MANAGER);
       data->message =
         "Loading project";

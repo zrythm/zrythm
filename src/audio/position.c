@@ -406,7 +406,8 @@ position_set_min_size (Position * start_pos,  ///< start position
   position_set_to_pos (end_pos, start_pos);
   position_add_ticks (
     end_pos,
-    snap_grid_get_note_ticks (snap));
+    snap_grid_get_note_ticks (snap->note_length,
+                              snap->note_type));
 }
 
 /**

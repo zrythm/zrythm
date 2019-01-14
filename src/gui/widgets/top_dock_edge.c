@@ -22,6 +22,7 @@
 #include "zrythm.h"
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/top_dock_edge.h"
+#include "gui/widgets/quantize_mb.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
@@ -38,6 +39,9 @@ top_dock_edge_widget_init (TopDockEdgeWidget * self)
   snap_grid_widget_setup (
     self->snap_grid_timeline,
     ZRYTHM->snap_grid_timeline);
+  quantize_mb_widget_setup (
+    self->quantize_mb,
+    ZRYTHM->quantize_timeline);
 
   gtk_toggle_tool_button_set_active (
     self->snap_to_grid,
@@ -51,16 +55,19 @@ top_dock_edge_widget_init (TopDockEdgeWidget * self)
 
   gtk_tool_button_set_icon_widget (
     GTK_TOOL_BUTTON (self->snap_to_grid),
-    resources_get_icon (ICON_TYPE_GNOME_BUILDER,
-                        "ui-packing-symbolic-light.svg"));
+    resources_get_icon (
+      ICON_TYPE_GNOME_BUILDER,
+      "ui-packing-symbolic-light.svg"));
   gtk_tool_button_set_icon_widget (
     GTK_TOOL_BUTTON (self->snap_to_grid_keep_offset),
-    resources_get_icon (ICON_TYPE_GNOME_BUILDER,
-                        "widget-layout-symbolic-light.svg"));
+    resources_get_icon (
+      ICON_TYPE_GNOME_BUILDER,
+      "widget-layout-symbolic-light.svg"));
   gtk_tool_button_set_icon_widget (
     GTK_TOOL_BUTTON (self->snap_to_events),
-    resources_get_icon (ICON_TYPE_GNOME_BUILDER,
-                        "builder-split-tab-right-symbolic-light.svg"));
+    resources_get_icon (
+      ICON_TYPE_GNOME_BUILDER,
+      "builder-split-tab-right-symbolic-light.svg"));
   gtk_tool_button_set_icon_widget (
     GTK_TOOL_BUTTON (self->zoom_in),
     gtk_image_new_from_icon_name (
@@ -101,10 +108,6 @@ top_dock_edge_widget_class_init (
   gtk_widget_class_bind_template_child (
     klass,
     TopDockEdgeWidget,
-    top_toolbar);
-  gtk_widget_class_bind_template_child (
-    klass,
-    TopDockEdgeWidget,
     snap_grid_timeline);
   gtk_widget_class_bind_template_child (
     klass,
@@ -134,5 +137,9 @@ top_dock_edge_widget_class_init (
     klass,
     TopDockEdgeWidget,
     zoom_in);
+  gtk_widget_class_bind_template_child (
+    klass,
+    TopDockEdgeWidget,
+    quantize_mb);
 }
 
