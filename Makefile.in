@@ -94,7 +94,7 @@ DEFAULT_INCLUDES = -I. -I./$(INC_DIR) -I./$(SRC_DIR)
 ifeq ($(RELEASE),1)
 	DEFAULT_CFLAGS = -O3
 else
-	DEFAULT_CFLAGS = -g -O0
+	DEFAULT_CFLAGS = -g -O0 -pg
 endif
 
 # -rdynamic gcc flag
@@ -108,7 +108,9 @@ ifeq ($(WINDOWS),1)
 	EXT = .exe
 	EXTRA_LD_FLAGS += -fno-stack-protector -mwindows
 else
-	EXTRA_LD_FLAGS=
+ifneq ($(RELEASE),1)
+	EXTRA_LD_FLAGS += -pg
+endif
 endif
 
 CFLAGS = -Wall \
@@ -123,8 +125,7 @@ CFLAGS = -Wall \
 	$(LV2_CFLAGS) \
 	$(SUIL_CFLAGS) \
 	$(SNDFILE_CFLAGS) \
-	$(DEFAULT_CFLAGS) \
-	$(EXTRA_LD_FLAGS)
+	$(DEFAULT_CFLAGS)
 
 
 LDFLAGS =	$(GTK3_LIBS) \
@@ -136,6 +137,7 @@ LDFLAGS =	$(GTK3_LIBS) \
 	$(LV2_LIBS) \
 	$(SUIL_LIBS) \
 	$(SNDFILE_LIBS) \
+	$(EXTRA_LD_FLAGS) \
 	-lm \
 	-lpthread
 
