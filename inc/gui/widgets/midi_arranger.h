@@ -142,6 +142,13 @@ midi_arranger_widget_on_drag_begin_create_note (
   MidiRegion * region);
 
 /**
+ * Sets up the widget.
+ */
+void
+midi_arranger_widget_setup (
+  MidiArrangerWidget * self);
+
+/**
  * Called when in selection mode.
  *
  * Called by arranger widget during drag_update to find and

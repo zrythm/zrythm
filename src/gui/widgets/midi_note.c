@@ -142,30 +142,15 @@ MidiNoteWidget *
 midi_note_widget_new (MidiNote * midi_note)
 {
   g_message ("Creating midi_note widget...");
-  MidiNoteWidget * self = g_object_new (MIDI_NOTE_WIDGET_TYPE, NULL);
+  MidiNoteWidget * self =
+    g_object_new (MIDI_NOTE_WIDGET_TYPE,
+                  "visible", 1,
+                  NULL);
 
   self->midi_note = midi_note;
 
-
   return self;
 }
-
-/**
- * Sets hover state and queues draw.
- */
-void
-midi_note_widget_set_state_and_queue_draw (MidiNoteWidget *    self,
-                                           MidiNoteWidgetState state)
-{
-  if (self->state != state)
-    {
-      self->state = state;
-      gtk_widget_queue_draw (GTK_WIDGET (self));
-    }
-
-}
-
-
 
 static void
 midi_note_widget_class_init (MidiNoteWidgetClass * klass)

@@ -50,6 +50,7 @@
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_bg.h"
+#include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "utils/arrays.h"
@@ -101,36 +102,8 @@ midi_arranger_widget_set_channel (
                                &channel->color);
 
   /* remove all previous children and add new */
-  GList *children, *iter;
-  children = gtk_container_get_children(GTK_CONTAINER(self));
-  for(iter = children; iter != NULL; iter = g_list_next(iter))
-    {
-      if (iter->data != ar_prv->bg)
-        gtk_container_remove (GTK_CONTAINER (self),
-                              GTK_WIDGET (iter->data));
-    }
-  g_list_free(children);
-  for (int i = 0; i < it->num_regions; i++)
-    {
-      MidiRegion * region = it->regions[i];
-      for (int j = 0; j < region->num_midi_notes; j++)
-        {
-          gtk_overlay_add_overlay (GTK_OVERLAY (self),
-                                   GTK_WIDGET (region->midi_notes[j]->widget));
-        }
-    }
-  gtk_widget_queue_allocate (GTK_WIDGET (self));
+  arranger_widget_refresh (Z_ARRANGER_WIDGET (self));
   gtk_widget_show_all (GTK_WIDGET (self));
-
-  GtkAdjustment * adj =
-    gtk_scrolled_window_get_vadjustment (
-      PIANO_ROLL->arranger_scroll);
-  gtk_adjustment_set_value (
-    adj,
-    gtk_adjustment_get_upper (adj) / 2);
-  gtk_scrolled_window_set_vadjustment (
-    PIANO_ROLL->arranger_scroll,
-    adj);
 }
 
 /**
@@ -230,6 +203,23 @@ midi_arranger_widget_show_context_menu (MidiArrangerWidget * self)
 }
 
 void
+midi_arranger_widget_setup (
+  MidiArrangerWidget * self)
+{
+  // set the size
+  int ww, hh;
+  gtk_widget_get_size_request (
+    GTK_WIDGET (PIANO_ROLL_LABELS),
+    &ww,
+    &hh);
+  RULER_WIDGET_GET_PRIVATE (MW_RULER);
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self),
+    prv->total_px,
+    hh);
+}
+
+void
 midi_arranger_widget_on_drag_begin_note_hit (
   MidiArrangerWidget * self,
   MidiNoteWidget *     midi_note_widget)
@@ -301,13 +291,7 @@ midi_arranger_widget_on_drag_begin_create_note (
                          ar_prv->snap_grid);
   midi_region_add_midi_note (region,
                         midi_note);
-  gtk_overlay_add_overlay (
-    GTK_OVERLAY (self),
-    GTK_WIDGET (midi_note->widget));
-  gtk_overlay_add_overlay (
-    GTK_OVERLAY (MIDI_MODIFIER_ARRANGER),
-    GTK_WIDGET (midi_note->vel->widget));
-  gtk_widget_show (GTK_WIDGET (midi_note->widget));
+  arranger_widget_refresh (Z_ARRANGER_WIDGET (self));
   ar_prv->action = ARRANGER_ACTION_RESIZING_R;
   self->midi_notes[0] = midi_note;
   self->num_midi_notes = 1;
@@ -504,8 +488,41 @@ void
 midi_arranger_widget_refresh_children (
   MidiArrangerWidget * self)
 {
-  /*ARRANGER_WIDGET_GET_PRIVATE (self);*/
-  /* TODO */
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  /* remove all children except bg */
+  GList *children, *iter;
+
+  children =
+    gtk_container_get_children (GTK_CONTAINER (self));
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      GtkWidget * widget = GTK_WIDGET (iter->data);
+      if (widget != (GtkWidget *) ar_prv->bg)
+        {
+          g_object_ref (widget);
+          gtk_container_remove (
+            GTK_CONTAINER (self),
+            widget);
+        }
+    }
+  g_list_free (children);
+
+  InstrumentTrack * it =
+    (InstrumentTrack *) self->channel->track;
+  for (int i = 0; i < it->num_regions; i++)
+    {
+      MidiRegion * mr = it->regions[i];
+      for (int j = 0; j < mr->num_midi_notes; j++)
+        {
+          MidiNote * midi_note = mr->midi_notes[j];
+          gtk_overlay_add_overlay (
+            GTK_OVERLAY (self),
+            GTK_WIDGET (midi_note->widget));
+        }
+    }
 }
 
 static void

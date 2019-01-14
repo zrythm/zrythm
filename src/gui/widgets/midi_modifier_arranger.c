@@ -22,7 +22,10 @@
 
 #include "audio/midi_note.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/midi_modifier_arranger.h"
+#include "gui/widgets/ruler.h"
+#include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/velocity.h"
 
 G_DEFINE_TYPE (MidiModifierArrangerWidget,
@@ -176,8 +179,12 @@ void
 midi_modifier_arranger_widget_setup (
   MidiModifierArrangerWidget * self)
 {
-
-  /* TODO */
+  /* set arranger size */
+  RULER_WIDGET_GET_PRIVATE (MW_RULER);
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self),
+    prv->total_px,
+    -1);
 }
 
 /**

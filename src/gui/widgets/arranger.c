@@ -784,12 +784,11 @@ drag_update (GtkGestureDrag * gesture,
   gtk_widget_queue_allocate(GTK_WIDGET (self));
   if (T_MIDI)
     {
-      gtk_widget_queue_draw (GTK_WIDGET (self));
-      gtk_widget_show_all (GTK_WIDGET (self));
+      /*gtk_widget_queue_draw (GTK_WIDGET (self));*/
+      /*gtk_widget_show_all (GTK_WIDGET (self));*/
     }
   else if (T_TIMELINE)
     {
-      gtk_widget_queue_allocate (GTK_WIDGET (MIDI_ARRANGER));
     }
   ar_prv->last_offset_x = offset_x;
   ar_prv->last_offset_y = offset_y;
@@ -862,21 +861,21 @@ arranger_widget_setup (ArrangerWidget *   self,
       ar_prv->bg = Z_ARRANGER_BG_WIDGET (
         midi_arranger_bg_widget_new (
           Z_RULER_WIDGET (MIDI_RULER),
-          Z_ARRANGER_WIDGET (MIDI_ARRANGER)));
+          self));
     }
   else if (T_TIMELINE)
     {
       ar_prv->bg = Z_ARRANGER_BG_WIDGET (
         timeline_bg_widget_new (
           Z_RULER_WIDGET (MW_RULER),
-          Z_ARRANGER_WIDGET (MW_TIMELINE)));
+          self));
     }
   else if (T_MIDI_MODIFIER)
     {
       ar_prv->bg = Z_ARRANGER_BG_WIDGET (
         midi_modifier_arranger_bg_widget_new (
           Z_RULER_WIDGET (MIDI_RULER),
-          Z_ARRANGER_WIDGET (MIDI_MODIFIER_ARRANGER)));
+          self));
     }
 
   gtk_container_add (GTK_CONTAINER (self),
@@ -913,8 +912,13 @@ arranger_widget_setup (ArrangerWidget *   self,
     }
   else if (T_MIDI)
     {
-      /*midi_arranger_widget_setup (*/
-        /*MIDI_ARRANGER_WIDGET (self));*/
+      midi_arranger_widget_setup (
+        Z_MIDI_ARRANGER_WIDGET (self));
+    }
+  else if (T_MIDI_MODIFIER)
+    {
+      midi_modifier_arranger_widget_setup (
+        Z_MIDI_MODIFIER_ARRANGER_WIDGET (self));
     }
 }
 

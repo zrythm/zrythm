@@ -1185,7 +1185,7 @@ timeline_arranger_widget_refresh_children (
           g_object_ref (widget);
           gtk_container_remove (
             GTK_CONTAINER (self),
-            GTK_WIDGET (iter->data));
+            widget);
         }
     }
   g_list_free (children);
