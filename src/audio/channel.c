@@ -439,6 +439,15 @@ channel_create (ChannelType type,
                     channel->stereo_out->r);
     }
 
+  if (type != CT_MASTER)
+    {
+      /* connect channel out ports to master */
+      port_connect (channel->stereo_out->l,
+                    MIXER->master->stereo_in->l);
+      port_connect (channel->stereo_out->r,
+                    MIXER->master->stereo_in->r);
+    }
+
   channel->track = track_new (channel);
   generate_automatables (channel);
 
