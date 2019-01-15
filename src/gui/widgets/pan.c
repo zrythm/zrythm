@@ -22,6 +22,7 @@
 /** \file
  */
 
+#include <math.h>
 #include <stdlib.h>
 
 #include "gui/widgets/pan.h"
@@ -107,6 +108,21 @@ drag_update (GtkGestureDrag * gesture,
   self->last_x = offset_x;
   self->last_y = offset_y;
   gtk_widget_queue_draw (GTK_WIDGET (self));
+
+  /* make it from -0.5 to 0.5 */
+  float pan_val = GET_VAL - 0.5f;
+
+  /* get as percentage */
+  pan_val = (fabs (pan_val) / 0.5f) * 100.f;
+
+  char * string =
+    g_strdup_printf ("%s%.0f%%",
+                     GET_VAL < 0.5f ? "-" : "",
+                     pan_val);
+  gtk_label_set_text (self->tooltip_label,
+                      string);
+  g_free (string);
+  gtk_window_present (self->tooltip_win);
 }
 
 static void
@@ -118,6 +134,7 @@ drag_end (GtkGestureDrag *gesture,
   PanWidget * self = (PanWidget *) user_data;
   self->last_x = 0;
   self->last_y = 0;
+  gtk_widget_hide (GTK_WIDGET (self->tooltip_win));
 }
 
 /**
@@ -165,6 +182,19 @@ pan_widget_init (PanWidget * self)
   gtk_widget_set_has_window (GTK_WIDGET (self), TRUE);
   int crossing_mask = GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;
   gtk_widget_add_events (GTK_WIDGET (self), crossing_mask);
+
+  self->tooltip_win =
+    GTK_WINDOW (gtk_window_new (GTK_WINDOW_POPUP));
+  gtk_window_set_type_hint (self->tooltip_win,
+                            GDK_WINDOW_TYPE_HINT_TOOLTIP);
+  self->tooltip_label =
+    GTK_LABEL (gtk_label_new ("label"));
+  gtk_widget_set_visible (GTK_WIDGET (self->tooltip_label),
+                          1);
+  gtk_container_add (GTK_CONTAINER (self->tooltip_win),
+                     GTK_WIDGET (self->tooltip_label));
+  gtk_window_set_position (self->tooltip_win,
+                           GTK_WIN_POS_MOUSE);
 
   self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new (GTK_WIDGET (self)));
 }

@@ -44,6 +44,8 @@ typedef struct _PanWidget
   void *                 object;
   double                 last_x;
   double                 last_y;
+  GtkWindow *            tooltip_win;
+  GtkLabel *             tooltip_label;
   GdkRGBA                start_color;
   GdkRGBA                end_color;
 } PanWidget;
