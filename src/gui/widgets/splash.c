@@ -57,11 +57,23 @@ splash_window_widget_new (ZrythmApp * app)
                                             NULL);
   gtk_progress_bar_set_fraction (self->progress_bar,
                                  0.0);
-
+  /* set theme */
   g_object_set (gtk_settings_get_default (),
                 "gtk-theme-name",
                 "Matcha-dark-sea",
                 NULL);
+
+  g_object_set (gtk_settings_get_default (),
+                "gtk-icon-theme-name",
+                "breeze-dark-z",
+                NULL);
+
+  /*const char * path[1];*/
+  /*path[0] = g_strdup_printf ("%s/icons/breeze-dark/home/alex/Documents/git/zrythm/resources/icons/breeze-dark";*/
+  /*gtk_icon_theme_set_search_path (*/
+    /*gtk_icon_theme_get_default (),*/
+    /*path,*/
+    /*1);*/
 
   // set default css provider
   GtkCssProvider * css_provider = gtk_css_provider_new();

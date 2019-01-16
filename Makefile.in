@@ -24,6 +24,7 @@ SRC_DIR = src
 INC_DIR = inc
 DATA_DIR = data
 FONTS_DIR = resources/fonts
+ICONS_DIR = resources/icons
 
 CC = @CC@
 DEFS = @DEFS@
@@ -211,7 +212,7 @@ clean:
 	-rm $(BUILD_DIR)/zrythm.gresource.xml
 
 .PHONY: install
-install: $(BUILD_DIR)/$(BIN)$(EXT) install-appicon-data install-desktop-data install-gschemas install-fonts
+install: $(BUILD_DIR)/$(BIN)$(EXT) install-appicon-data install-desktop-data install-gschemas install-fonts install-icon-theme
 	$(MKDIR_P) $(DESTDIR)$(bindir)
 	$(INSTALL) $< $(DESTDIR)$(bindir)/$(BIN)$(EXT)
 
@@ -223,6 +224,11 @@ uninstall:
 install-appicon-data: $(appicon_DATA)
 	$(MKDIR_P) "$(DESTDIR)$(appicondir)"
 	$(INSTALL_DATA) $< "$(DESTDIR)$(appicondir)/"
+
+.PHONY: install-icon-theme
+install-icon-theme: ext/breeze-icons/icons-dark
+	$(MKDIR_P) "$(DESTDIR)$(datadir)/icons"
+	$(INSTALL_DATA) -d $< "$(DESTDIR)$(datadir)/icons/breeze-dark-z"
 
 .PHONY: install-gschemas
 install-gschemas: $(gsettings_SCHEMAS)

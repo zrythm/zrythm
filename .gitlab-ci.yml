@@ -6,6 +6,7 @@ variables:
   _PATH: /home/$_USER/$CI_PROJECT_NAME
   _PACKAGE_NAME: $CI_PROJECT_NAME-$CI_COMMIT_REF_NAME
   _DEBIAN_VER: "0.1"
+  GIT_SUBMODULE_STRATEGY: recursive
 
 stages:
   - build

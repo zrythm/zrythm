@@ -1,5 +1,5 @@
 # Initialize autoconf: package name, version, bug report address
-AC_INIT([zrythm], [0.1], [alex@alextee.website])
+AC_INIT([zrythm], [0.1], [alex@zrythm.org])
 
 # Declare config.h as output header
 AC_CONFIG_HEADERS([config.h])
