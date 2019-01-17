@@ -227,8 +227,9 @@ install-appicon-data: $(appicon_DATA)
 
 .PHONY: install-icon-theme
 install-icon-theme: ext/breeze-icons/icons-dark
-	$(MKDIR_P) "$(DESTDIR)$(datadir)/icons"
-	$(INSTALL_DATA) -d $< "$(DESTDIR)$(datadir)/icons/breeze-dark-z"
+	$(MKDIR_P) "$(DESTDIR)$(datadir)/icons/breeze-dark-z"
+	chmod 755 "$(DESTDIR)$(datadir)/icons/breeze-dark-z"
+	cp -r $</* "$(DESTDIR)$(datadir)/icons/breeze-dark-z/"
 
 .PHONY: install-gschemas
 install-gschemas: $(gsettings_SCHEMAS)
