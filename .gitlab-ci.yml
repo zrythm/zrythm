@@ -6,6 +6,7 @@ variables:
   _PATH: /home/$_USER/$CI_PROJECT_NAME
   _PACKAGE_NAME: $CI_PROJECT_NAME-$CI_COMMIT_REF_NAME
   _DEBIAN_VER: "0.1"
+  _RPM_VER: "0.1"
   GIT_SUBMODULE_STRATEGY: recursive
 
 stages:
@@ -48,7 +49,6 @@ build_deb_64_unstable:
   artifacts:
     paths:
     - ./zrythm_*amd64.deb
-    expire_in: 4 weeks
   only:
     - master
 
