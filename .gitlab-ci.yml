@@ -6,7 +6,7 @@ variables:
   _PATH: /home/$_USER/$CI_PROJECT_NAME
   _PACKAGE_NAME: $CI_PROJECT_NAME-$CI_COMMIT_REF_NAME
   _DEBIAN_VER: "0.1"
-  _RPM_VER: "0.1"
+  _RPM_VER: $CI_COMMIT_REF_NAME
   GIT_SUBMODULE_STRATEGY: recursive
 
 stages:
@@ -68,16 +68,22 @@ build_pkg_64:
     - master
 
 build_rpm_64:
-  image: "alextee12/fedora:0.3"
+  image: "alextee12/fedora:0.4"
   stage: build
   script:
-    - echo hello
-    - ./autogen.sh
-    - ./configure --enable-release --prefix=/usr
-    - make -j8
+    - export PACKAGE_NAME=$CI_PROJECT_NAME-$_RPM_VER
+    - sed -e "s/@BRANCH@/$_RPM_VER/g" zrythm.spec.in > zrythm.spec && rm zrythm.spec.in
+    - scripts/create-tarball.sh
+    - cp ./$PACKAGE_NAME.tar.gz ~/
+    - sudo dnf -y copr enable ycollet/linuxmao
+    - sudo dnf -y install libsmf-devel
+    - scripts/package-rpm.sh
+    - mv /home/$_USER/rpmbuild/SRPMS/$PACKAGE_NAME-*.src.rpm ./
+    - mv /home/$_USER/rpmbuild/RPMS/x86_64/$PACKAGE_NAME-*.x86_64.rpm ./
   artifacts:
     paths:
-    expire_in: 4 weeks
+      - ./zrythm*.src.rpm
+      - ./zrythm*.x86_64.rpm
   only:
     - tags
     - master

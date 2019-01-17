@@ -1,14 +1,12 @@
 Summary: A free GNU/Linux Digital Audio Workstation (DAW) focused on electronic music and high modularity.
 Name: zrythm
-Version: @BRANCH
+Version: @BRANCH@
 Release: 1%{?dist}
 License: GPLv3+
 URL: https://www.zrythm.org
-Copyright: GPL
 Group: System Environment/Base
-Source0: https://gitlab.com/alextee/zrythm/-/archive/master/zrythm-master.tar.gz
-BuildRoot: /var/tmp/%{name}-buildroot
-BuildArch: x86_64
+Source0: https://gitlab.com/alextee/zrythm/-/archive/@BRANCH@/zrythm-@BRANCH@.tar.gz
+
 BuildRequires: libxml2-devel
 BuildRequires: gtk3-devel
 BuildRequires: jack-audio-connection-kit-devel
@@ -17,6 +15,12 @@ BuildRequires: suil-devel
 BuildRequires: autoconf
 BuildRequires: lv2-devel
 BuildRequires: libdazzle-devel
+BuildRequires: libsndfile-devel
+BuildRequires: libsmf-devel
+BuildRequires: autoconf
+BuildRequires: automake
+BuildRequires: gcc
+BuildRequires: pkgconfig
 Requires: libxml2
 Requires: gtk3
 Requires: jack-audio-connection-kit
@@ -24,6 +28,10 @@ Requires: lilv
 Requires: suil
 Requires: lv2
 Requires: libdazzle
+Requires: libsmf
+Requires: libsndfile
+
+BuildRoot: ~/rpmbuild/
 
 %description
 Zrythm is a free modern music production system, also known
@@ -40,20 +48,23 @@ More info at https://www.zrythm.org
 %setup -q
 
 %build
-make %{?_smp_mflags}
+./autogen.sh
+%configure
+%{__make} %{?_smp_mflags}
 
 %install
-rm -rf $RPM_BUILD_ROOT
-make install DESTDIR=$RPM_BUILD_ROOT
+%{__rm} -rf $RPM_BUILD_ROOT
+%{__make} install DESTDIR=$RPM_BUILD_ROOT
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+%{__rm} -rf $RPM_BUILD_ROOT
 
 %files
-%license License
 %defattr(-,root,root)
 %doc README.md CONTRIBUTING.md INSTALL.md
+%{_bindir}/*
+%{_datadir}/*
 
 %changelog
-* Thu Jan 17 2019 Alexandros Theodotou <alex@alextee.org> 
-- Packaged RPM
+* Thu Jan 17 2019 Alexandros Theodotou <alex@alextee.org>
+- RPM release

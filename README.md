@@ -55,8 +55,15 @@ sudo apt-add-repository universe
 `
 
 _Note3: For latest (unstable) version, install this directly using `dpkg -i`:_ https://gitlab.com/alextee/zrythm/-/jobs/artifacts/master/download?job=build_deb_64_unstable
-### Fedora
-coming soon
+### Fedora 27/28/29
+enable dnf repository
+```
+sudo dnf -y copr enable alextee/zrythm
+```
+install
+```
+sudo dnf -y install zrythm
+```
 ### Manual installation
 _Note: You will need to have the development libraries for libxml2, gtk3, jack, lilv, suil, libsmf, libsndfile, libdazzle and lv2 installed_
 ```
