@@ -316,7 +316,7 @@ activate_undo (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  g_assert (!stack_is_empty (&UNDO_MANAGER->undo_stack));
+  if (stack_is_empty (&UNDO_MANAGER->undo_stack)) return;
   undo_manager_undo (UNDO_MANAGER);
   header_bar_widget_refresh_undo_redo_buttons ((HeaderBarWidget *) user_data);
 }
@@ -326,7 +326,7 @@ activate_redo (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  g_assert (!stack_is_empty (&UNDO_MANAGER->redo_stack));
+  if (stack_is_empty (&UNDO_MANAGER->redo_stack)) return;
   undo_manager_redo (UNDO_MANAGER);
   header_bar_widget_refresh_undo_redo_buttons ((HeaderBarWidget *) user_data);
 }
