@@ -510,17 +510,20 @@ midi_arranger_widget_refresh_children (
     }
   g_list_free (children);
 
-  InstrumentTrack * it =
-    (InstrumentTrack *) self->channel->track;
-  for (int i = 0; i < it->num_regions; i++)
+  if (self->channel)
     {
-      MidiRegion * mr = it->regions[i];
-      for (int j = 0; j < mr->num_midi_notes; j++)
+      InstrumentTrack * it =
+        (InstrumentTrack *) self->channel->track;
+      for (int i = 0; i < it->num_regions; i++)
         {
-          MidiNote * midi_note = mr->midi_notes[j];
-          gtk_overlay_add_overlay (
-            GTK_OVERLAY (self),
-            GTK_WIDGET (midi_note->widget));
+          MidiRegion * mr = it->regions[i];
+          for (int j = 0; j < mr->num_midi_notes; j++)
+            {
+              MidiNote * midi_note = mr->midi_notes[j];
+              gtk_overlay_add_overlay (
+                GTK_OVERLAY (self),
+                GTK_WIDGET (midi_note->widget));
+            }
         }
     }
 }

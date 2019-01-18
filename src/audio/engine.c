@@ -282,7 +282,7 @@ void
 jack_shutdown_cb (void *arg)
 {
   // TODO
-  g_error ("Jack shutting down...");
+  g_warning ("Jack shutting down...");
 }
 
 void

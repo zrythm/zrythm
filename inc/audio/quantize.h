@@ -54,7 +54,7 @@ typedef struct Quantize
    * Snap points to be used by the grid and by position
    * to calculate previous/next snap point.
    */
-  Position         snap_points[12096];
+  Position         snap_points[MAX_SNAP_POINTS];
   int              num_snap_points;
 } Quantize;
 

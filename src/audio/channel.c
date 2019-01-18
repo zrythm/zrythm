@@ -74,7 +74,11 @@ process_channel_work (void * argument)
         {
           if (AUDIO_ENGINE->nframes > 0)
             {
+              g_message ("calling channel process %s",
+                         channel->name);
               channel_process (channel, AUDIO_ENGINE->nframes);
+              g_message ("done calling channel process %s",
+                         channel->name);
               channel->processed = 1;
             }
         }
@@ -103,10 +107,17 @@ channel_process (Channel * channel,  ///< slots
               nframes_t   nframes)    ///< sample count
 {
   /* clear buffers */
-  port_clear_buffer (channel->stereo_in->l);
-  port_clear_buffer (channel->stereo_in->r);
-  port_clear_buffer (channel->midi_in);
-  port_clear_buffer (channel->piano_roll);
+  if (channel->type == CT_MASTER ||
+      channel->type == CT_BUS)
+    {
+      port_clear_buffer (channel->stereo_in->l);
+      port_clear_buffer (channel->stereo_in->r);
+    }
+  if (channel->type == CT_MIDI)
+    {
+      port_clear_buffer (channel->midi_in);
+      port_clear_buffer (channel->piano_roll);
+    }
   port_clear_buffer (channel->stereo_out->l);
   port_clear_buffer (channel->stereo_out->r);
   for (int j = 0; j < STRIP_SIZE; j++)
@@ -128,10 +139,22 @@ channel_process (Channel * channel,  ///< slots
             }
         }
     }
+  g_message ("buffers cleared %s",
+             channel->name);
 
   /* sum AUDIO IN coming to the channel */
-  port_sum_signal_from_inputs (channel->stereo_in->l, nframes);
-  port_sum_signal_from_inputs (channel->stereo_in->r, nframes);
+  if (channel->type == CT_MASTER ||
+      channel->type == CT_BUS)
+    {
+      port_sum_signal_from_inputs (
+        channel->stereo_in->l,
+        nframes);
+      port_sum_signal_from_inputs (
+        channel->stereo_in->r,
+        nframes);
+    }
+  g_message ("summed signal coming in %s",
+             channel->name);
 
   /* panic MIDI if necessary */
   if (AUDIO_ENGINE->panic)
@@ -167,15 +190,25 @@ channel_process (Channel * channel,  ///< slots
               port_sum_signal_from_inputs (port, nframes);
             }
 
+          g_message ("summed plugin signals coming in %s",
+                     plugin->descr->name);
+
             /* run plugin processing
              * this should put the appropriate result in the plugin's audio out */
             plugin_process (plugin, nframes);
+
+          g_message ("processed plugin %s",
+                     plugin->descr->name);
         }
     }
 
   /* same for channel ports */
+  g_message ("summing stereo out ports %s",
+             channel->name);
   port_sum_signal_from_inputs (channel->stereo_out->l, nframes);
   port_sum_signal_from_inputs (channel->stereo_out->r, nframes);
+  g_message ("summed stereo out ports %s",
+             channel->name);
 
   /* apply pan */
   port_apply_pan_stereo (channel->stereo_out->l,
@@ -183,10 +216,14 @@ channel_process (Channel * channel,  ///< slots
                          channel->pan,
                          PAN_LAW_MINUS_3DB,
                          PAN_ALGORITHM_SINE_LAW);
+  g_message ("applied pan %s",
+             channel->name);
 
   /* apply faders */
   port_apply_fader (channel->stereo_out->l, channel->fader_amp);
   port_apply_fader (channel->stereo_out->r, channel->fader_amp);
+  g_message ("applied fader %s",
+             channel->name);
 
   /* calc decibels */
   channel_set_current_l_db (
@@ -199,13 +236,17 @@ channel_process (Channel * channel,  ///< slots
     math_calculate_rms_db (
       channel->stereo_out->r->buf,
       (double) channel->stereo_out->r->nframes));
+  g_message ("calculated decibels %s",
+             channel->name);
 
   /* mark as processed */
   channel->processed = 1;
+  g_message ("marked as processed %s",
+             channel->name);
 
-  if (channel->widget)
-    g_idle_add ((GSourceFunc) channel_widget_update_meter_reading,
-                channel->widget);
+  /*if (channel->widget)*/
+    /*g_idle_add ((GSourceFunc) channel_widget_update_meter_reading,*/
+                /*channel->widget);*/
 }
 
 static void
@@ -624,12 +665,12 @@ channel_add_plugin (Channel * channel,    ///< the channel
   /* if main plugin or no other plugin before it */
   if (pos == 0 || !prev_plugin)
     {
-      if (channel->type == CT_AUDIO)
+      switch (channel->type)
         {
+        case CT_AUDIO:
           /* TODO connect L and R audio ports for recording */
-        }
-      else if (channel->type == CT_MIDI)
-        {
+          break;
+        case CT_MIDI:
           /* Connect MIDI port and piano roll to the plugin */
           for (int i = 0; i < plugin->num_in_ports; i++)
             {
@@ -642,6 +683,42 @@ channel_add_plugin (Channel * channel,    ///< the channel
                     port_connect (channel->piano_roll, port);
                 }
             }
+          break;
+        case CT_BUS:
+        case CT_MASTER:
+          /* disconnect channel stereo in */
+          port_disconnect_all (channel->stereo_in->l);
+          port_disconnect_all (channel->stereo_in->r);
+
+          /* connect channel stereo in to plugin */
+          int last_index = 0;
+          for (int j = 0; j < 2; j++)
+            {
+              for (;
+                   last_index < plugin->num_in_ports;
+                   last_index++)
+                {
+                  if (plugin->in_ports[last_index]->type ==
+                      TYPE_AUDIO)
+                    {
+                      if (j == 0)
+                        {
+                          port_connect (
+                            channel->stereo_in->l,
+                            plugin->in_ports[last_index]);
+                          break;
+                        }
+                      else
+                        {
+                          port_connect (
+                            channel->stereo_in->r,
+                            plugin->in_ports[last_index]);
+                          break;
+                        }
+                    }
+                }
+            }
+          break;
         }
     }
   else if (prev_plugin)

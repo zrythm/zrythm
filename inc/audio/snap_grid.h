@@ -33,6 +33,8 @@
   (sg->snap_to_grid || sg->snap_to_grid_keep_offset || \
    sg->snap_to_events)
 
+#define MAX_SNAP_POINTS 120096
+
 typedef enum NoteLength
 {
   NOTE_LENGTH_2_1,
@@ -77,7 +79,7 @@ typedef struct SnapGrid
    * Snap points to be used by the grid and by position
    * to calculate previous/next snap point.
    */
-  Position         snap_points[12096];
+  Position         snap_points[MAX_SNAP_POINTS];
   int              num_snap_points;
 } SnapGrid;
 

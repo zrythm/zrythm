@@ -226,8 +226,9 @@ port_connect (Port * src, Port * dest)
 int
 port_disconnect (Port * src, Port * dest)
 {
-  g_assert (src);
-  g_assert (dest);
+  if (!src || !dest)
+    g_error ("port_disconnect: src or dest is NULL");
+
   /* disconnect dest from src */
   array_delete ((void **)src->dests, &src->num_dests, dest);
   array_delete ((void **)dest->srcs, &dest->num_srcs, src);
@@ -250,7 +251,8 @@ ports_connected (Port * src, Port * dest)
 int
 port_disconnect_all (Port * port)
 {
-  g_assert (port);
+  if (!port)
+    g_error ("port_disconnect_all: port is NULL");
 
   FOREACH_SRCS (port)
     {
@@ -324,17 +326,10 @@ port_sum_signal_from_inputs (Port * port, nframes_t nframes)
         {
         }
       else if (src_port->owner_pl)
-        while (!src_port->owner_pl->processed)
-          {
-#if _POSIX_C_SOURCE >= 199309L
-            nanosleep(&ts, NULL);
-#else
-            usleep (SLEEPTIME * 1000);
-#endif
-          }
-      else if (src_port->owner_ch)
         {
-          while (!src_port->owner_ch->processed)
+          g_message ("%s owner port",
+                     src_port->owner_pl->descr->name);
+          while (!src_port->owner_pl->processed)
             {
 #if _POSIX_C_SOURCE >= 199309L
               nanosleep(&ts, NULL);
@@ -342,6 +337,29 @@ port_sum_signal_from_inputs (Port * port, nframes_t nframes)
               usleep (SLEEPTIME * 1000);
 #endif
             }
+          g_message ("%s owner port done",
+                     src_port->owner_pl->descr->name);
+        }
+      else if (src_port->owner_ch)
+        {
+          g_message ("%s port, %s owner channel",
+                     src_port->label,
+                     src_port->owner_ch->name);
+          while (!src_port->owner_ch->processed &&
+                 src_port !=
+                   src_port->owner_ch->stereo_in->l &&
+                 src_port !=
+                   src_port->owner_ch->stereo_in->r)
+            {
+#if _POSIX_C_SOURCE >= 199309L
+              nanosleep(&ts, NULL);
+#else
+              usleep (SLEEPTIME * 1000);
+#endif
+            }
+          g_message ("%s port, %s owner channel done",
+                     src_port->label,
+                     src_port->owner_ch->name);
         }
 
       /* sum the signals */
