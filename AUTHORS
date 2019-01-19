@@ -1,0 +1,11 @@
+# see https://www.gnu.org/prep/maintain/html_node/Recording-Contributors.html
+
+# NOTE: ignore this file for now
+
+Dean Elsner   first version of all files except gdb-lines.c and m68k.c.
+Jay Fenlason  entire files gdb-lines.c and m68k.c, most of app.c,
+              plus extensive changes in messages.c, input-file.c, write.c
+              and revisions elsewhere.
+
+Note: GAS is distributed with the files obstack.c and obstack.h, but
+they are considered a separate package, not part of GAS proper.

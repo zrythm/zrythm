@@ -17,6 +17,7 @@ BuildRequires: lv2-devel
 BuildRequires: libdazzle-devel
 BuildRequires: libsndfile-devel
 BuildRequires: libsmf-devel
+BuildRequires: portaudio-devel
 BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: gcc
@@ -30,6 +31,7 @@ Requires: lv2
 Requires: libdazzle
 Requires: libsmf
 Requires: libsndfile
+Requires: portaudio
 
 BuildRoot: ~/rpmbuild/
 

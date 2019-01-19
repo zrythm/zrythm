@@ -13,7 +13,8 @@ Build-Depends: debhelper-compat (= 10),
   libsndfile1-dev (>= 1.0.28),
   autoconf,
   lv2-dev (>= 1.14.0~),
-  libdazzle-1.0-dev
+  libdazzle-1.0-dev,
+  portaudio19-dev
 
 Package: zrythm
 Architecture: any

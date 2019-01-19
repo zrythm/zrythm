@@ -7,7 +7,7 @@ pkgdesc="Free GNU/Linux music production system (DAW)"
 arch=('x86_64')
 url="https://www.zrythm.org"
 license=('GPL')
-depends=('gtk3' 'lv2' 'lilv' 'suil' 'jack' 'libsndfile' 'libsmf' 'libdazzle')
+depends=('gtk3' 'lv2' 'lilv' 'suil' 'jack' 'libsndfile' 'libsmf' 'libdazzle' 'portaudio')
 source=("$pkgname-$pkgver".tar.gz)
 md5sums=('SKIP')
 
