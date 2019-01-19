@@ -19,6 +19,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/preferences.h"
 #include "audio/transport.h"
 #include "actions/actions.h"
 #include "actions/undo_manager.h"
@@ -33,6 +34,7 @@
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/piano_roll.h"
+#include "gui/widgets/preferences.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_ruler.h"
@@ -122,6 +124,20 @@ activate_shortcuts (GSimpleAction *action,
                     GVariant      *variant,
                     gpointer       user_data)
 {
+}
+
+/**
+ * Show preferences window.
+ */
+void
+activate_preferences (GSimpleAction *action,
+                      GVariant      *variant,
+                      gpointer       user_data)
+{
+  PreferencesWidget * widget =
+    preferences_widget_new (PREFERENCES);
+  gtk_widget_set_visible (GTK_WIDGET (widget),
+                          1);
 }
 
 void

@@ -125,6 +125,7 @@ background-color: @bg_dark_variant1;
 left-dock-edge notebook header,
 right-dock-edge notebook header,
 bot-dock-edge notebook header,
+notebook header,
 center-dock-bot-box,
 center-dock-bot-box toolbar,
 tracklist-header,
@@ -134,7 +135,9 @@ top-bar,
 top-bar toolbar,
 bot-bar,
 bot-bar toolbar,
-assistant
+assistant,
+buttonbox,
+dialog
 {
 background-color: @bg_dark_variant2;
 }

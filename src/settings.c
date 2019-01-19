@@ -29,52 +29,10 @@ settings_new ()
 {
   Settings * self = calloc (1, sizeof (Settings));
 
-  self->gsettings =
+  self->root =
     g_settings_new ("org.zrythm");
+  self->preferences =
+    g_settings_new ("org.zrythm.preferences");
 
   return self;
-}
-
-void
-settings_init (Settings * settings)
-{
-}
-
-/**
- * Returns the value for the given key
- */
-GVariant *
-settings_get_value (Settings * self,
-                    const char * key)
-{
-  return g_settings_get_value (self->gsettings,
-                               key);
-}
-
-int
-settings_get_int (Settings * self,
-                  const char * key)
-{
-  return g_variant_get_int32 (
-    settings_get_value (self, key));
-}
-
-const char *
-settings_get_string (Settings * self,
-                     const char * key)
-{
-  return g_variant_get_string (
-    settings_get_value (self, key),
-    NULL);
-}
-
-/**
- * Stores given value in given key
- */
-void
-settings_store_value (Settings * self,
-                      char     * key,
-                      GVariant * value)
-{
-
 }

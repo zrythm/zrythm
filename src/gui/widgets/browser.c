@@ -412,7 +412,7 @@ browser_widget_new ()
 
   /* set divider position */
   int divider_pos =
-    settings_get_int (SETTINGS,
+    g_settings_get_int (SETTINGS->root,
                       "browser-divider-position");
   gtk_paned_set_position (GTK_PANED (self),
                           divider_pos);

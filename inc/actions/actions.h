@@ -42,6 +42,14 @@ activate_about (GSimpleAction *action,
                 GVariant      *variant,
                 gpointer       user_data);
 
+/**
+ * Show preferences window.
+ */
+void
+activate_preferences (GSimpleAction *action,
+                      GVariant      *variant,
+                      gpointer       user_data);
+
 void
 activate_quit (GSimpleAction *action,
                GVariant      *variant,

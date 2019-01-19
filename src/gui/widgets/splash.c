@@ -1,7 +1,7 @@
 /*
  * gui/widgets/splash.c - Splash window
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -20,32 +20,13 @@
  */
 
 #include "gui/widgets/splash.h"
+#include "utils/resources.h"
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (SplashWindowWidget, splash_window_widget,
+G_DEFINE_TYPE (SplashWindowWidget,
+               splash_window_widget,
                GTK_TYPE_WINDOW)
-
-static void
-splash_window_widget_class_init (SplashWindowWidgetClass * klass)
-{
-  gtk_widget_class_set_template_from_resource (
-                          GTK_WIDGET_CLASS (klass),
-                          "/org/zrythm/ui/splash.ui");
-
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        SplashWindowWidget,
-                                        label);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                        SplashWindowWidget,
-                                        progress_bar);
-}
-
-static void
-splash_window_widget_init (SplashWindowWidget * self)
-{
-  gtk_widget_init_template (GTK_WIDGET (self));
-}
 
 
 SplashWindowWidget *
@@ -99,4 +80,27 @@ splash_widget_update (SplashWindowWidget * self,
                                  progress);
 }
 
+static void
+splash_window_widget_class_init (
+  SplashWindowWidgetClass * _klass)
+{
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass,
+                                "splash.ui");
+
+  gtk_widget_class_bind_template_child (
+    klass,
+    SplashWindowWidget,
+    label);
+  gtk_widget_class_bind_template_child (
+    klass,
+    SplashWindowWidget,
+    progress_bar);
+}
+
+static void
+splash_window_widget_init (SplashWindowWidget * self)
+{
+  gtk_widget_init_template (GTK_WIDGET (self));
+}
 

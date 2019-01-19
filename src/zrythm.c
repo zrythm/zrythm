@@ -25,6 +25,7 @@
 #include "audio/engine.h"
 #include "audio/mixer.h"
 #include "audio/piano_roll.h"
+#include "audio/preferences.h"
 #include "audio/quantize.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
@@ -159,6 +160,8 @@ task_func (GTask *task,
       break;
     case TASK_INIT_SETTINGS:
       ZRYTHM->settings = settings_new ();
+      ZRYTHM->preferences =
+        preferences_new (ZRYTHM->settings);
       ZRYTHM->undo_manager = undo_manager_new ();
       data->message =
         "Initializing audio engine";
@@ -438,6 +441,9 @@ zrythm_app_startup (GApplication* _app)
     "F11",
     "app.fullscreen");
   accel_install_primary_action_accelerator (
+    "<Control><Shift>p",
+    "app.preferences");
+  accel_install_primary_action_accelerator (
     "<Control>n",
     "win.new");
   accel_install_primary_action_accelerator (
@@ -577,6 +583,7 @@ zrythm_app_init (ZrythmApp *app)
     { "manual", activate_manual },
     { "license", activate_license },
     { "iconify", activate_iconify },
+    { "preferences", activate_preferences },
     { "quit", activate_quit },
     { "shortcuts", activate_shortcuts },
   };

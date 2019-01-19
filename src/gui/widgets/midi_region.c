@@ -187,8 +187,9 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
 MidiRegionWidget *
 midi_region_widget_new (MidiRegion * midi_region)
 {
-  g_message ("Creating midi region widget...");
-  MidiRegionWidget * self = g_object_new (MIDI_REGION_WIDGET_TYPE, NULL);
+  MidiRegionWidget * self =
+    g_object_new (MIDI_REGION_WIDGET_TYPE,
+                  NULL);
 
   region_widget_setup (Z_REGION_WIDGET (self),
                        (Region *) midi_region);

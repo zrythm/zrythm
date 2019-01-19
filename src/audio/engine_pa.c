@@ -177,7 +177,8 @@ pa_open_stream (AudioEngine * engine)
 
   PaStreamParameters in_param;
   in_param.device =
-    Pa_GetHostApiInfo (2)->defaultInputDevice;
+    Pa_GetHostApiInfo (
+      Pa_GetDefaultHostApi ())->defaultInputDevice;
   in_param.channelCount = 2;
   in_param.sampleFormat = paFloat32;
   in_param.suggestedLatency = 10.0;
@@ -185,7 +186,8 @@ pa_open_stream (AudioEngine * engine)
 
   PaStreamParameters out_param;
   out_param.device =
-    Pa_GetHostApiInfo (2)->defaultOutputDevice;
+    Pa_GetHostApiInfo (
+      Pa_GetDefaultHostApi ())->defaultOutputDevice;
   out_param.channelCount = 2;
   out_param.sampleFormat = paFloat32;
   out_param.suggestedLatency = 10.0;

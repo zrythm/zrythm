@@ -31,6 +31,7 @@
 #include "audio/engine_pa.h"
 #include "audio/midi.h"
 #include "audio/mixer.h"
+#include "audio/preferences.h"
 #include "audio/transport.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
@@ -62,17 +63,17 @@ engine_setup (AudioEngine * self)
   transport_setup (self->transport,
                    self);
 
-  self->type = ENGINE_TYPE_JACK;
+  self->backend = PREFERENCES->audio_backend;
 
   /* init semaphore */
   zix_sem_init (&self->port_operation_lock, 1);
 
-  switch (self->type)
+  switch (self->backend)
     {
-    case ENGINE_TYPE_JACK:
+    case ENGINE_BACKEND_JACK:
       jack_setup (self);
       break;
-    case ENGINE_TYPE_PORT_AUDIO:
+    case ENGINE_BACKEND_PORT_AUDIO:
       pa_setup (self);
       break;
     }
@@ -101,12 +102,12 @@ close_audio_engine (AudioEngine * self)
 {
   g_message ("closing audio engine...");
 
-  switch (self->type)
+  switch (self->backend)
     {
-    case ENGINE_TYPE_JACK:
+    case ENGINE_BACKEND_JACK:
       jack_client_close (self->client);
       break;
-    case ENGINE_TYPE_PORT_AUDIO:
+    case ENGINE_BACKEND_PORT_AUDIO:
       pa_terminate (self);
       break;
     }

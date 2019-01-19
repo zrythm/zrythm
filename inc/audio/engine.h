@@ -51,16 +51,17 @@ typedef struct Plugin Plugin;
 typedef struct Transport Transport;
 typedef struct Tracklist Tracklist;
 
-typedef enum EngineType
+typedef enum EngineBackend
 {
-  ENGINE_TYPE_JACK,
-  ENGINE_TYPE_PORT_AUDIO
-} EngineType;
+  ENGINE_BACKEND_JACK,
+  ENGINE_BACKEND_PORT_AUDIO,
+  NUM_ENGINE_BACKENDS,
+} EngineBackend;
 
 typedef struct AudioEngine
 {
   jack_client_t     * client;     ///< jack client
-  EngineType         type;
+  EngineBackend      backend; ///< current backend, regardless if the selection chagned in preferences
 	uint32_t           block_length;   ///< Audio buffer size (block length)
 	size_t             midi_buf_size;  ///< Size of MIDI port buffers
 	uint32_t           sample_rate;    ///< Sample rate

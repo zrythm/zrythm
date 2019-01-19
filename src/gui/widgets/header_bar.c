@@ -174,7 +174,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
       0,
       NULL,
       0,
-      "win.properties"); /* project properties */
+      "app.preferences");
   APPEND_TO_FILE_MENU;
   menu_item =
     create_menu_item (
