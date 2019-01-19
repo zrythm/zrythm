@@ -145,6 +145,8 @@ LDFLAGS =	$(GTK3_LIBS) \
 	$(SUIL_LIBS) \
 	$(SNDFILE_LIBS) \
 	$(EXTRA_LD_FLAGS) \
+	-lrt \
+	-lasound \
 	-lm \
 	-lpthread
 

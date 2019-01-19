@@ -119,10 +119,11 @@ pa_stream_cb (const void *                    in,
               PaStreamCallbackFlags           status_flags,
               void *                          user_data)
 {
-  g_message ("calling stream");
   AudioEngine * engine = (AudioEngine *) user_data;
   if (!engine->run)
     return 0;
+
+  g_message ("calling stream");
 
   engine_process_prepare (engine,
                           nframes);
@@ -166,13 +167,36 @@ pa_open_stream (AudioEngine * engine)
   PaStream *stream;
   PaError err;
 
+  for (int i = 0; i < Pa_GetHostApiCount (); i++)
+    {
+      const PaHostApiInfo * info = Pa_GetHostApiInfo (i);
+      g_message ("host api %d %s",
+                 i,
+                 info->name);
+    }
+
+  PaStreamParameters in_param;
+  in_param.device =
+    Pa_GetHostApiInfo (2)->defaultInputDevice;
+  in_param.channelCount = 2;
+  in_param.sampleFormat = paFloat32;
+  in_param.suggestedLatency = 10.0;
+  in_param.hostApiSpecificStreamInfo = NULL;
+
+  PaStreamParameters out_param;
+  out_param.device =
+    Pa_GetHostApiInfo (2)->defaultOutputDevice;
+  out_param.channelCount = 2;
+  out_param.sampleFormat = paFloat32;
+  out_param.suggestedLatency = 10.0;
+  out_param.hostApiSpecificStreamInfo = NULL;
+
   /* Open an audio I/O stream. */
   err =
-    Pa_OpenDefaultStream(
+    Pa_OpenStream(
       &stream,
-      2,          /* stereo input */
-      2,          /* stereo output */
-      paFloat32,  /* 32 bit floating point output */
+      &in_param,          /* stereo input */
+      &out_param,          /* stereo output */
       SAMPLE_RATE,
       256,        /* frames per buffer, i.e. the number
       of sample frames that PortAudio will
@@ -181,6 +205,7 @@ pa_open_stream (AudioEngine * engine)
       paFramesPerBufferUnspecified, which
       tells PortAudio to pick the best,
       possibly changing, buffer size.*/
+      0,
       pa_stream_cb, /* this is your callback function */
       engine ); /*This is a pointer that will be passed to
       your callback*/
@@ -202,7 +227,7 @@ pa_terminate (AudioEngine * engine)
     g_warning ("error stopping Port Audio stream: %s",
                Pa_GetErrorText (err));
 
-  err = Pa_CloseStream( stream );
+  err = Pa_CloseStream( engine->pa_stream );
   if( err != paNoError )
     g_warning ("error closing Port Audio stream: %s",
                Pa_GetErrorText (err));

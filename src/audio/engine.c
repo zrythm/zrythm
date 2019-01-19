@@ -62,7 +62,7 @@ engine_setup (AudioEngine * self)
   transport_setup (self->transport,
                    self);
 
-  self->type = ENGINE_TYPE_PORT_AUDIO;
+  self->type = ENGINE_TYPE_JACK;
 
   /* init semaphore */
   zix_sem_init (&self->port_operation_lock, 1);
