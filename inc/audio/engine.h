@@ -1,7 +1,7 @@
 /*
  * audio/engine.h - Audio engine
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -30,6 +30,7 @@
 
 #include <jack/jack.h>
 #include <jack/midiport.h>
+#include <portaudio.h>
 
 #define AUDIO_ENGINE ZRYTHM->audio_engine
 #define MANUAL_PRESS_QUEUE AUDIO_ENGINE->midi_editor_manual_press->midi_events.queue
@@ -50,9 +51,16 @@ typedef struct Plugin Plugin;
 typedef struct Transport Transport;
 typedef struct Tracklist Tracklist;
 
+typedef enum EngineType
+{
+  ENGINE_TYPE_JACK,
+  ENGINE_TYPE_PORT_AUDIO
+} EngineType;
+
 typedef struct AudioEngine
 {
   jack_client_t     * client;     ///< jack client
+  EngineType         type;
 	uint32_t           block_length;   ///< Audio buffer size (block length)
 	size_t             midi_buf_size;  ///< Size of MIDI port buffers
 	uint32_t           sample_rate;    ///< Sample rate
@@ -63,7 +71,7 @@ typedef struct AudioEngine
   StereoPorts       * stereo_out;  ///< stereo out ports to JACK
   Port              * midi_in;     ///< MIDI in port from JACK
   Port              * midi_editor_manual_press; ///< manual note press in editor
-  nframes_t         nframes;     ///< nframes for current cycle
+  uint32_t          nframes;     ///< nframes for current cycle
   //MIDI_Controller    * midi_controller; ///< the midi input on JACK
   //Port_Manager      * port_manager;  ///< manages all ports created for/by plugins
   ZixSem            port_operation_lock;  ///< semaphore for blocking DSP while plugin and its ports are deleted
@@ -72,6 +80,15 @@ typedef struct AudioEngine
 
   Port              * ports[600000];   ///< all ports have a reference here for easy access
   int               num_ports;
+
+  /**
+   * Port Audio output buffer.
+   *
+   * Unlike JACK, the audio goes directly here.
+   */
+  float *            pa_out_buf;
+
+  PaStream *         pa_stream;
 
   /**
    * Timeline metadata like BPM, time signature, etc.
@@ -95,5 +112,21 @@ engine_update_frames_per_tick (AudioEngine * self,
                                int beats_per_bar,
                                int bpm,
                                int sample_rate);
+
+/**
+ * To be called by each implementation to prepare the
+ * structures before processing.
+ *
+ * Clears buffers, marks all as unprocessed, etc.
+ */
+void
+engine_process_prepare (AudioEngine * self,
+                        uint32_t      nframes);
+
+/**
+ * To be called after processing for common logic.
+ */
+void
+engine_post_process (AudioEngine * self);
 
 #endif

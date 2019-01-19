@@ -190,7 +190,7 @@ port_connect (Port * src, Port * dest)
   port_disconnect (src, dest);
   if (src->type != dest->type)
     {
-      g_error ("Cannot connect ports, incompatible types");
+      g_warning ("Cannot connect ports, incompatible types");
       return -1;
     }
   src->dests[src->num_dests++] = dest;
@@ -227,7 +227,7 @@ int
 port_disconnect (Port * src, Port * dest)
 {
   if (!src || !dest)
-    g_error ("port_disconnect: src or dest is NULL");
+    g_warning ("port_disconnect: src or dest is NULL");
 
   /* disconnect dest from src */
   array_delete ((void **)src->dests, &src->num_dests, dest);
@@ -252,7 +252,7 @@ int
 port_disconnect_all (Port * port)
 {
   if (!port)
-    g_error ("port_disconnect_all: port is NULL");
+    g_warning ("port_disconnect_all: port is NULL");
 
   FOREACH_SRCS (port)
     {

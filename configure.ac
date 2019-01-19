@@ -73,6 +73,7 @@ AM_COND_IF([LINUX],
            [PKG_CHECK_MODULES([LV2], [lv2 >= 1.14.0])])
 AM_COND_IF([WINDOWS],
            [PKG_CHECK_MODULES([LV2], [lv2 >= 1.14.0])])
+PKG_CHECK_MODULES([PORTAUDIO], [portaudio-2.0])
 
 #Checks for header files.
 #Checks for typedefs, structures, and compiler characteristics.

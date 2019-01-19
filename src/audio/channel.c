@@ -244,9 +244,9 @@ channel_process (Channel * channel,  ///< slots
   g_message ("marked as processed %s",
              channel->name);
 
-  /*if (channel->widget)*/
-    /*g_idle_add ((GSourceFunc) channel_widget_update_meter_reading,*/
-                /*channel->widget);*/
+  if (channel->widget)
+    g_idle_add ((GSourceFunc) channel_widget_update_meter_reading,
+                channel->widget);
 }
 
 static void

@@ -1055,7 +1055,13 @@ build_control_widget(Lv2Plugin* plugin, GtkWidget* window)
 	if (n_rows > 0) {
 		gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
 		GtkWidget* alignment = gtk_alignment_new(0.5, 0.0, 1.0, 0.0);
-		gtk_alignment_set_padding(GTK_ALIGNMENT(alignment), 0, 0, 8, 8);
+		/*gtk_alignment_set_padding(GTK_ALIGNMENT(alignment), 0, 0, 8, 8);*/
+                gtk_widget_set_margin_start (
+                  GTK_WIDGET (port_table),
+                  8);
+                gtk_widget_set_margin_end (
+                  GTK_WIDGET (port_table),
+                  8);
 		gtk_container_add(GTK_CONTAINER(alignment), port_table);
 		return alignment;
 	} else {
@@ -1079,8 +1085,9 @@ build_menu(Lv2Plugin* plugin, GtkWidget* window, GtkWidget* vbox)
   gtk_window_add_accel_group(GTK_WINDOW(window), ag);
 
   GtkWidget* save =
-    gtk_image_menu_item_new_from_stock(GTK_STOCK_SAVE, ag);
-  GtkWidget* quit = gtk_image_menu_item_new_from_stock(GTK_STOCK_QUIT, ag);
+    gtk_menu_item_new_with_mnemonic ("_Save");
+  GtkWidget* quit =
+    gtk_menu_item_new_with_mnemonic ("_Quit");
 
   gtk_menu_item_set_submenu(GTK_MENU_ITEM(file), file_menu);
   gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), save);
