@@ -28,39 +28,11 @@
 
 typedef struct Settings
 {
-  GSettings * gsettings;
+  GSettings * root;
+  GSettings * preferences;
 } Settings;
 
 Settings *
 settings_new ();
-
-/**
- * Initializes the settings manager
- */
-void
-settings_init (Settings * self);
-
-/**
- * Returns the value for the given key
- */
-GVariant *
-settings_get_value (Settings * self,
-                    const char * key);
-
-int
-settings_get_int (Settings * self,
-                  const char * key);
-
-const char *
-settings_get_string (Settings * self,
-                     const char * key);
-
-/**
- * Stores given value in given key
- */
-void
-settings_store_value (Settings * self,
-                      char     * key,
-                      GVariant * value);
 
 #endif

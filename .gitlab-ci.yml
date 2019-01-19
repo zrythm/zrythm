@@ -1,5 +1,5 @@
 # build from debian by default
-image: "alextee12/debian:0.5"
+image: "alextee12/debian:0.7"
 
 variables:
   _USER: "builduser"
@@ -53,7 +53,7 @@ build_deb_64_unstable:
     - master
 
 build_pkg_64:
-  image: "alextee12/arch-yaourt:0.4"
+  image: "alextee12/arch-yaourt:0.5"
   stage: build
   script:
     - PACKAGE_NAME=$_PACKAGE_NAME scripts/create-tarball.sh
@@ -68,7 +68,7 @@ build_pkg_64:
     - master
 
 build_rpm_64:
-  image: "alextee12/fedora:0.4"
+  image: "alextee12/fedora:0.5"
   stage: build
   script:
     - export PACKAGE_NAME=$CI_PROJECT_NAME-$_RPM_VER

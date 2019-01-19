@@ -90,6 +90,7 @@ midi_modifier_chooser_widget_init (
   model = create_icon_store ();
   gtk_combo_box_set_model (GTK_COMBO_BOX (self),
                            model);
+  gtk_cell_layout_clear (GTK_CELL_LAYOUT (self));
   g_object_unref (model);
   renderer = gtk_cell_renderer_text_new ();
   gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (self), renderer, TRUE);
@@ -98,8 +99,6 @@ midi_modifier_chooser_widget_init (
     "text", TEXT_COL,
     NULL);
   gtk_combo_box_set_active (GTK_COMBO_BOX (self), 0);
-
-  gtk_widget_show_all (GTK_WIDGET (self));
 }
 
 static void

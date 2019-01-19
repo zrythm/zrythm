@@ -1,7 +1,7 @@
 /*
  * inc/zrythm_app.h - The GTK application
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -44,6 +44,7 @@ typedef struct Tracklist Tracklist;
 typedef struct UndoManager UndoManager;
 typedef struct Quantize Quantize;
 typedef struct _MainWindowWidget MainWindowWidget;
+typedef struct Preferences Preferences;
 
 struct _ZrythmApp
 {
@@ -62,6 +63,8 @@ struct _ZrythmApp
   MainWindowWidget      * main_window;      ///< main window
   GtkTargetEntry        entries[10];        ///< dnd entries
   int                   num_entries;        ///< count
+
+  Preferences *     preferences;
 
   /**
    * Application settings
