@@ -36,11 +36,6 @@ G_DEFINE_TYPE (AudioRegionWidget,
                audio_region_widget,
                REGION_WIDGET_TYPE)
 
-/**
- * Space on the edges to show resize cursors
- */
-#define RESIZE_CURSOR_SPACE 9
-
 static gboolean
 draw_cb (AudioRegionWidget * self, cairo_t *cr, gpointer data)
 {
@@ -97,25 +92,28 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
   gtk_widget_get_allocation (widget,
                              &allocation);
   ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);
+  REGION_WIDGET_GET_PRIVATE (self);
 
   if (event->type == GDK_MOTION_NOTIFY)
     {
       if (event->x < RESIZE_CURSOR_SPACE)
         {
-          self->cursor_state = AUDIO_REGION_CURSOR_RESIZE_L;
+          rw_prv->cursor_state = UI_CURSOR_STATE_RESIZE_L;
           if (ar_prv->action != ARRANGER_ACTION_MOVING)
             ui_set_cursor (widget, "w-resize");
         }
 
-      else if (event->x > allocation.width - RESIZE_CURSOR_SPACE)
+      else if (event->x >
+                 allocation.width - RESIZE_CURSOR_SPACE)
         {
-          self->cursor_state = AUDIO_REGION_CURSOR_RESIZE_R;
+          rw_prv->cursor_state =
+            UI_CURSOR_STATE_RESIZE_R;
           if (ar_prv->action != ARRANGER_ACTION_MOVING)
             ui_set_cursor (widget, "e-resize");
         }
       else
         {
-          self->cursor_state = AUDIO_REGION_CURSOR_DEFAULT;
+          rw_prv->cursor_state = UI_CURSOR_STATE_DEFAULT;
           if (ar_prv->action != ARRANGER_ACTION_MOVING &&
               ar_prv->action != ARRANGER_ACTION_STARTING_MOVING &&
               ar_prv->action != ARRANGER_ACTION_RESIZING_L &&

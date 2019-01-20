@@ -33,6 +33,8 @@ G_DECLARE_FINAL_TYPE (CenterDockBotBoxWidget,
                       CENTER_DOCK_BOT_BOX_WIDGET,
                       GtkBox)
 
+typedef struct _TimelineMinimapWidget TimelineMinimapWidget;
+
 typedef struct _CenterDockBotBoxWidget
 {
   GtkBox                   parent_instance;
@@ -43,6 +45,7 @@ typedef struct _CenterDockBotBoxWidget
   SnapGridWidget           * snap_grid_midi;
   GtkToolbar *             right_tb;
   GtkToolButton *          toggle_right_dock;
+  TimelineMinimapWidget *  timeline_minimap;
 } CenterDockBotBoxWidget;
 
 #endif

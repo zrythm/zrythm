@@ -150,9 +150,9 @@ midi_arranger_widget_get_hit_midi_note (MidiArrangerWidget *  self,
                                  double            y)
 {
   GtkWidget * widget =
-    arranger_widget_get_hit_widget (
-      Z_ARRANGER_WIDGET (self),
-      ARRANGER_CHILD_TYPE_MIDI_NOTE,
+    ui_get_hit_child (
+      GTK_CONTAINER (self),
+      MIDI_NOTE_WIDGET_TYPE,
       x,
       y);
   if (widget)
@@ -319,7 +319,7 @@ midi_arranger_widget_find_and_select_midi_notes (
   int            num_midi_note_widgets = 0;
   arranger_widget_get_hit_widgets_in_range (
     aw,
-    ARRANGER_CHILD_TYPE_MIDI_NOTE,
+    MIDI_NOTE_WIDGET_TYPE,
     ar_prv->start_x,
     ar_prv->start_y,
     offset_x,
@@ -476,7 +476,7 @@ midi_arranger_widget_toggle_select_midi_note (
 {
   arranger_widget_toggle_select (
     Z_ARRANGER_WIDGET (self),
-    ARRANGER_CHILD_TYPE_MIDI_NOTE,
+    MIDI_NOTE_WIDGET_TYPE,
     (void *) midi_note,
     append);
 }

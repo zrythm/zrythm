@@ -27,6 +27,7 @@
 #include "audio/piano_roll.h"
 #include "audio/preferences.h"
 #include "audio/quantize.h"
+#include "audio/timeline_minimap.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/accel.h"
@@ -186,6 +187,8 @@ task_func (GTask *task,
         quantize_new (NOTE_LENGTH_1_8,
                       ZRYTHM->snap_grid_midi);
       ZRYTHM->piano_roll = piano_roll_new ();
+      ZRYTHM->timeline_minimap =
+        timeline_minimap_new ();
       data->message =
         "Setting up backend";
       data->progress = 0.7;

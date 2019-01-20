@@ -24,11 +24,47 @@
 
 #include <gtk/gtk.h>
 
+/**
+ * Space on the edges to show resize cursors
+ */
+#define RESIZE_CURSOR_SPACE 9
+
+/**
+ * Various cursor states to be shared.
+ */
+typedef enum UiCursorState
+{
+  UI_CURSOR_STATE_DEFAULT,
+  UI_CURSOR_STATE_RESIZE_L,
+  UI_CURSOR_STATE_REPEAT_L,
+  UI_CURSOR_STATE_RESIZE_R,
+  UI_CURSOR_STATE_REPEAT_R,
+} UiCursorState;
+
 void
 ui_set_cursor (GtkWidget * widget, char * name);
 
 void
 ui_show_error_message (GtkWindow * parent_window,
                        const char * message);
+
+/**
+ * Returns if the child is hit or not by the coordinates in
+ * parent.
+ */
+int
+ui_is_child_hit (GtkContainer * parent,
+                 GtkWidget *    child,
+                 double         x, ///< x in parent space
+                 double         y); ///< y in parent space
+
+/**
+ * Returns the matching hit child, or NULL.
+ */
+GtkWidget *
+ui_get_hit_child (GtkContainer * parent,
+                  double         x, ///< x in parent space
+                  double         y, ///< y in parent space
+                  GType          type); ///< type to look for
 
 #endif

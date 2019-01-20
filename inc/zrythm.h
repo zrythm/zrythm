@@ -45,6 +45,7 @@ typedef struct UndoManager UndoManager;
 typedef struct Quantize Quantize;
 typedef struct _MainWindowWidget MainWindowWidget;
 typedef struct Preferences Preferences;
+typedef struct TimelineMinimap TimelineMinimap;
 
 struct _ZrythmApp
 {
@@ -83,6 +84,8 @@ struct _ZrythmApp
   Quantize *          quantize_timeline;
   SnapGrid *         snap_grid_midi; ///< snap/grid info for midi editor
   Quantize *          quantize_midi;
+
+  TimelineMinimap *   timeline_minimap; ///< minimap backend
 
   char                * zrythm_dir;
   char                * projects_dir;

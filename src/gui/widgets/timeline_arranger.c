@@ -280,11 +280,11 @@ timeline_arranger_widget_get_hit_region (TimelineArrangerWidget *  self,
                                   double            y)
 {
   GtkWidget * widget =
-    arranger_widget_get_hit_widget (
-      Z_ARRANGER_WIDGET (self),
-      ARRANGER_CHILD_TYPE_REGION,
+    ui_get_hit_child (
+      GTK_CONTAINER (self),
       x,
-      y);
+      y,
+      REGION_WIDGET_TYPE);
   if (widget)
     {
       return Z_REGION_WIDGET (widget);
@@ -298,11 +298,12 @@ timeline_arranger_widget_get_hit_ap (
   double            x,
   double            y)
 {
-  GtkWidget * widget = arranger_widget_get_hit_widget (
-    Z_ARRANGER_WIDGET (self),
-    ARRANGER_CHILD_TYPE_AP,
-    x,
-    y);
+  GtkWidget * widget =
+    ui_get_hit_child (
+      GTK_CONTAINER (self),
+      x,
+      y,
+      AUTOMATION_POINT_WIDGET_TYPE);
   if (widget)
     {
       return Z_AUTOMATION_POINT_WIDGET (widget);
@@ -316,11 +317,12 @@ timeline_arranger_widget_get_hit_curve (
   double x,
   double y)
 {
-  GtkWidget * widget = arranger_widget_get_hit_widget (
-    Z_ARRANGER_WIDGET (self),
-    ARRANGER_CHILD_TYPE_AC,
-    x,
-    y);
+  GtkWidget * widget =
+    ui_get_hit_child (
+      GTK_CONTAINER (self),
+      x,
+      y,
+      AUTOMATION_CURVE_WIDGET_TYPE);
   if (widget)
     {
       return Z_AUTOMATION_CURVE_WIDGET (widget);
@@ -427,7 +429,7 @@ timeline_arranger_widget_toggle_select_region (
 {
   arranger_widget_toggle_select (
     Z_ARRANGER_WIDGET (self),
-    ARRANGER_CHILD_TYPE_REGION,
+    REGION_WIDGET_TYPE,
     (void *) region,
     append);
 }
@@ -440,7 +442,7 @@ timeline_arranger_widget_toggle_select_automation_point (
 {
   arranger_widget_toggle_select (
     Z_ARRANGER_WIDGET (self),
-    ARRANGER_CHILD_TYPE_AP,
+    AUTOMATION_POINT_WIDGET_TYPE,
     (void *) ap,
     append);
 }
@@ -495,12 +497,12 @@ timeline_arranger_widget_on_drag_begin_region_hit (
 
   /* update arranger action */
   if (region->type == REGION_TYPE_MIDI &&
-           Z_MIDI_REGION_WIDGET (rw)->cursor_state ==
-             MIDI_REGION_CURSOR_RESIZE_L)
+           rw_prv->cursor_state ==
+             UI_CURSOR_STATE_RESIZE_L)
     ar_prv->action = ARRANGER_ACTION_RESIZING_L;
   else if (region->type == REGION_TYPE_MIDI &&
-           Z_MIDI_REGION_WIDGET (rw)->cursor_state ==
-             MIDI_REGION_CURSOR_RESIZE_R)
+           rw_prv->cursor_state ==
+              UI_CURSOR_STATE_RESIZE_R)
     ar_prv->action = ARRANGER_ACTION_RESIZING_R;
   else
     {
@@ -763,7 +765,7 @@ timeline_arranger_widget_find_and_select_items (
   int            num_region_widgets = 0;
   arranger_widget_get_hit_widgets_in_range (
     Z_ARRANGER_WIDGET (self),
-    ARRANGER_CHILD_TYPE_REGION,
+    REGION_WIDGET_TYPE,
     ar_prv->start_x,
     ar_prv->start_y,
     offset_x,
@@ -790,7 +792,7 @@ timeline_arranger_widget_find_and_select_items (
   int            num_ap_widgets = 0;
   arranger_widget_get_hit_widgets_in_range (
     Z_ARRANGER_WIDGET (self),
-    ARRANGER_CHILD_TYPE_AP,
+    AUTOMATION_POINT_WIDGET_TYPE,
     ar_prv->start_x,
     ar_prv->start_y,
     offset_x,
@@ -1216,6 +1218,18 @@ timeline_arranger_widget_refresh_children (
             }
         }
     }
+}
+
+/**
+ * Scroll to the given position.
+ */
+void
+timeline_arranger_widget_scroll_to (
+  TimelineArrangerWidget * self,
+  Position *               pos)
+{
+  /* TODO */
+
 }
 
 static void

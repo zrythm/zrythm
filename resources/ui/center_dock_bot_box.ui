@@ -72,5 +72,14 @@
         <property name="position">2</property>
       </packing>
     </child>
+    <child>
+      <object class="TimelineMinimapWidget" id="timeline_minimap">
+        <property name="visible">1</property>
+        <property name="expand">1</property>
+      </object>
+      <packing>
+        <property name="position">3</property>
+      </packing>
+    </child>
   </template>
 </interface>

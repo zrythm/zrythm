@@ -1,5 +1,5 @@
 /*
- * gui/widgets/midi_region.h - MIDI region
+ * audio/timeline_minimap.c - Timeline minimap backend
  *
  * Copyright (C) 2019 Alexandros Theodotou
  *
@@ -21,34 +21,45 @@
 
 /** \file */
 
-#ifndef __GUI_WIDGETS_MIDI_REGION_H__
-#define __GUI_WIDGETS_MIDI_REGION_H__
+#include <stdlib.h>
 
-#include "audio/region.h"
-#include "gui/widgets/region.h"
-#include "utils/ui.h"
-
-#include <gtk/gtk.h>
-
-#define MIDI_REGION_WIDGET_TYPE \
-  (midi_region_widget_get_type ())
-G_DECLARE_FINAL_TYPE (MidiRegionWidget,
-                      midi_region_widget,
-                      Z,
-                      MIDI_REGION_WIDGET,
-                      RegionWidget);
-
-typedef struct MidiRegion MidiRegion;
-
-typedef struct _MidiRegionWidget
-{
-  RegionWidget             parent_instance;
-} MidiRegionWidget;
+#include "audio/timeline_minimap.h"
 
 /**
- * Creates a region.
+ * To be called once during initialization.
  */
-MidiRegionWidget *
-midi_region_widget_new (MidiRegion * midi_region);
+TimelineMinimap *
+timeline_minimap_new ()
+{
+  TimelineMinimap * self =
+    calloc (1, sizeof (TimelineMinimap));
 
-#endif
+  position_init (&self->selection_start);
+  position_init (&self->selection_end);
+
+  return self;
+}
+
+/**
+ * Calculates start/end based on zoom.
+ *
+ * To be called when zoom changed from other sources besides
+ * minimap.
+ */
+void
+timeline_minimap_update_selector_from_zoom (int zoom)
+{
+  /* TODO calculate start/end pos based on zoom level */
+
+}
+
+/**
+ * Returns zoom level from current selector poses.
+ */
+int
+timeline_minimap_get_zoom_from_selector ()
+{
+  /* TODO */
+
+  return 2;
+}

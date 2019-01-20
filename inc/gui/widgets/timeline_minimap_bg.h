@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2018 Alexandros Theodotou
+ * gui/widgets/timeline_minimap_bg.h - Minimap
+ *   bg
+ *
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -19,32 +22,25 @@
 
 /** \file */
 
-#ifndef __GUI_WIDGETS_AUDIO_REGION_H__
-#define __GUI_WIDGETS_AUDIO_REGION_H__
-
-#include "audio/region.h"
-#include "gui/widgets/region.h"
+#ifndef __GUI_WIDGETS_TIMELINE_MINIMAP_BG_H__
+#define __GUI_WIDGETS_TIMELINE_MINIMAP_BG_H__
 
 #include <gtk/gtk.h>
 
-#define AUDIO_REGION_WIDGET_TYPE (audio_region_widget_get_type ())
-G_DECLARE_FINAL_TYPE (AudioRegionWidget,
-                      audio_region_widget,
+#define TIMELINE_MINIMAP_BG_WIDGET_TYPE \
+  (timeline_minimap_bg_widget_get_type ())
+G_DECLARE_FINAL_TYPE (TimelineMinimapBgWidget,
+                      timeline_minimap_bg_widget,
                       Z,
-                      AUDIO_REGION_WIDGET,
-                      RegionWidget);
+                      TIMELINE_MINIMAP_BG_WIDGET,
+                      GtkDrawingArea)
 
-typedef struct AudioRegion AudioRegion;
-
-typedef struct _AudioRegionWidget
+typedef struct _TimelineMinimapBgWidget
 {
-  RegionWidget             parent_instance;
-} AudioRegionWidget;
+  GtkDrawingArea             parent_instance;
+} TimelineMinimapBgWidget;
 
-/**
- * Creates a region.
- */
-AudioRegionWidget *
-audio_region_widget_new (AudioRegion * audio_region);
+TimelineMinimapBgWidget *
+timeline_minimap_bg_widget_new ();
 
 #endif

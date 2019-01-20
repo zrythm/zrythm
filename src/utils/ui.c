@@ -47,3 +47,73 @@ ui_show_error_message (GtkWindow * parent_window,
   gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (dialog);
 }
+
+/**
+ * Returns the matching hit child, or NULL.
+ */
+GtkWidget *
+ui_get_hit_child (GtkContainer * parent,
+                  double         x, ///< x in parent space
+                  double         y, ///< y in parent space
+                  GType          type) ///< type to look for
+{
+  GList *children, *iter;
+
+  /* go through each overlay child */
+  children =
+    gtk_container_get_children (parent);
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      GtkWidget * widget = GTK_WIDGET (iter->data);
+
+      GtkAllocation allocation;
+      gtk_widget_get_allocation (widget,
+                                 &allocation);
+
+      gint wx, wy;
+      gtk_widget_translate_coordinates(
+                GTK_WIDGET (parent),
+                GTK_WIDGET (widget),
+                x,
+                y,
+                &wx,
+                &wy);
+
+      /* if hit */
+      if (wx >= 0 &&
+          wx <= allocation.width &&
+          wy >= 0 &&
+          wy <= allocation.height)
+        {
+          /* if type matches */
+          if (type == G_OBJECT_TYPE (widget))
+            {
+              return widget;
+            }
+        }
+    }
+  return NULL;
+}
+
+/**
+ * Returns if the child is hit or not by the coordinates in
+ * parent.
+ */
+int
+ui_is_child_hit (GtkContainer * parent,
+                 GtkWidget *    child,
+                 double         x, ///< x in parent space
+                 double         y) ///< y in parent space
+{
+  GtkWidget * widget =
+    ui_get_hit_child (parent,
+                      x,
+                      y,
+                      G_OBJECT_TYPE (child));
+  if (widget == child)
+    return 1;
+  else
+    return 0;
+}

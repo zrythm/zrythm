@@ -23,6 +23,7 @@
 #include "gui/widgets/center_dock_bot_box.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/left_dock_edge.h"
+#include "gui/widgets/timeline_minimap.h"
 #include "utils/resources.h"
 
 G_DEFINE_TYPE (CenterDockBotBoxWidget,
@@ -94,5 +95,9 @@ center_dock_bot_box_widget_class_init (
     klass,
     CenterDockBotBoxWidget,
     toggle_right_dock);
+  gtk_widget_class_bind_template_child (
+    klass,
+    CenterDockBotBoxWidget,
+    timeline_minimap);
 }
 

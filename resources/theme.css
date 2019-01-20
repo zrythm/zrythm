@@ -42,10 +42,6 @@ window
 /*#gpaned-instruments separator:hover {*/
   /*background-color: alpha (white, 0.40);*/
 /*}*/
-treeview.view
-{
-  background-color: @bg_darker_variant1;
-}
 
 entry:focus
 {
@@ -202,7 +198,9 @@ bot-dock-edge toolbar
   background-color: @bg_dark_variant2;
 }
 
-arranger-bg
+arranger-bg,
+treeview.view,
+timeline-minimap-bg
 {
   background-color: @bg_darker_variant1;
 }

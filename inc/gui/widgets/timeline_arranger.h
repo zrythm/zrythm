@@ -215,4 +215,12 @@ void
 timeline_arranger_widget_refresh_children (
   TimelineArrangerWidget * self);
 
+/**
+ * Scroll to the given position.
+ */
+void
+timeline_arranger_widget_scroll_to (
+  TimelineArrangerWidget * self,
+  Position *               pos);
+
 #endif

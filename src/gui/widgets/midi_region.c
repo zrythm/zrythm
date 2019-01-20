@@ -32,16 +32,11 @@
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
-#include "utils/ui.h"
 
 G_DEFINE_TYPE (MidiRegionWidget,
                midi_region_widget,
                REGION_WIDGET_TYPE)
 
-/**
- * Space on the edges to show resize cursors
- */
-#define RESIZE_CURSOR_SPACE 9
 
 #define Y_PADDING 6.f
 #define Y_HALF_PADDING 3.f
@@ -144,25 +139,25 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
   ArrangerWidgetPrivate * prv =
     arranger_widget_get_private (
       Z_ARRANGER_WIDGET (MW_TIMELINE));
+  REGION_WIDGET_GET_PRIVATE (self);
 
   if (event->type == GDK_MOTION_NOTIFY)
     {
       if (event->x < RESIZE_CURSOR_SPACE)
         {
-          self->cursor_state = MIDI_REGION_CURSOR_RESIZE_L;
+          rw_prv->cursor_state = UI_CURSOR_STATE_RESIZE_L;
           if (prv->action != ARRANGER_ACTION_MOVING)
             ui_set_cursor (widget, "w-resize");
         }
-
       else if (event->x > allocation.width - RESIZE_CURSOR_SPACE)
         {
-          self->cursor_state = MIDI_REGION_CURSOR_RESIZE_R;
+          rw_prv->cursor_state = UI_CURSOR_STATE_RESIZE_R;
           if (prv->action != ARRANGER_ACTION_MOVING)
             ui_set_cursor (widget, "e-resize");
         }
       else
         {
-          self->cursor_state = MIDI_REGION_CURSOR_DEFAULT;
+          rw_prv->cursor_state = UI_CURSOR_STATE_DEFAULT;
           if (prv->action != ARRANGER_ACTION_MOVING &&
               prv->action != ARRANGER_ACTION_STARTING_MOVING &&
               prv->action != ARRANGER_ACTION_RESIZING_L &&

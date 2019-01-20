@@ -73,17 +73,6 @@ typedef enum ArrangerAction
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
 
-/**
- * Used internally.
- */
-typedef enum ArrangerChildType
-{
-  ARRANGER_CHILD_TYPE_MIDI_NOTE,
-  ARRANGER_CHILD_TYPE_REGION,
-  ARRANGER_CHILD_TYPE_AP,
-  ARRANGER_CHILD_TYPE_AC
-} ArrangerChildType;
-
 typedef struct
 {
   ArrangerWidgetType       type;
@@ -135,7 +124,7 @@ arranger_widget_px_to_pos (ArrangerWidget * self,
 void
 arranger_widget_get_hit_widgets_in_range (
   ArrangerWidget *  self,
-  ArrangerChildType type,
+  GType             type,
   double            start_x,
   double            start_y,
   double            offset_x,
@@ -143,15 +132,9 @@ arranger_widget_get_hit_widgets_in_range (
   GtkWidget **      array, ///< array to fill
   int *             array_size); ///< array_size to fill
 
-GtkWidget *
-arranger_widget_get_hit_widget (ArrangerWidget *  self,
-                ArrangerChildType type,
-                double            x,
-                double            y);
-
 void
 arranger_widget_toggle_select (ArrangerWidget *  self,
-               ArrangerChildType type,
+               GType             type,
                void *            child,
                int               append);
 

@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2018 Alexandros Theodotou
+ * audio/timeline_minimap.h - Timeline minimap backend
+ *
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -19,32 +21,31 @@
 
 /** \file */
 
-#ifndef __GUI_WIDGETS_AUDIO_REGION_H__
-#define __GUI_WIDGETS_AUDIO_REGION_H__
+#ifndef __AUDIO_TIMELINE_MINIMAP_H__
+#define __AUDIO_TIMELINE_MINIMAP_H__
 
-#include "audio/region.h"
-#include "gui/widgets/region.h"
+#include "audio/position.h"
 
-#include <gtk/gtk.h>
-
-#define AUDIO_REGION_WIDGET_TYPE (audio_region_widget_get_type ())
-G_DECLARE_FINAL_TYPE (AudioRegionWidget,
-                      audio_region_widget,
-                      Z,
-                      AUDIO_REGION_WIDGET,
-                      RegionWidget);
-
-typedef struct AudioRegion AudioRegion;
-
-typedef struct _AudioRegionWidget
+typedef struct TimelineMinimap
 {
-  RegionWidget             parent_instance;
-} AudioRegionWidget;
+  Position            selection_start;
+  Position            selection_end;
+  float *             zoom; ///< pointer to the zoom value
+} TimelineMinimap;
 
 /**
- * Creates a region.
+ * To be called once during initialization.
  */
-AudioRegionWidget *
-audio_region_widget_new (AudioRegion * audio_region);
+TimelineMinimap *
+timeline_minimap_new ();
+
+void
+timeline_minimap_update_selector_from_zoom (int zoom);
+
+/**
+ * Returns zoom level from current selector poses.
+ */
+int
+timeline_minimap_get_zoom_from_selector ();
 
 #endif

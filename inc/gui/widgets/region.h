@@ -24,7 +24,8 @@
 #ifndef __GUI_WIDGETS_REGION_H__
 #define __GUI_WIDGETS_REGION_H__
 
-#include <audio/region.h>
+#include "audio/region.h"
+#include "utils/ui.h"
 
 #include <gtk/gtk.h>
 
@@ -43,6 +44,7 @@ G_DECLARE_DERIVABLE_TYPE (RegionWidget,
 typedef struct _RegionWidgetPrivate
 {
   Region                   * region;   ///< the region associated with this
+  UiCursorState            cursor_state;
   GtkDrawingArea *         drawing_area;
 } RegionWidgetPrivate;
 

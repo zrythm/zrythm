@@ -55,6 +55,7 @@
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "utils/arrays.h"
+#include "utils/cairo.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
@@ -148,7 +149,7 @@ get_child_position (GtkOverlay   *overlay,
 void
 arranger_widget_get_hit_widgets_in_range (
   ArrangerWidget *  self,
-  ArrangerChildType type,
+  GType             type,
   double            start_x,
   double            start_y,
   double            offset_x,
@@ -201,80 +202,22 @@ arranger_widget_get_hit_widgets_in_range (
         }
       if (!y_hit) continue;
 
-      if (type == ARRANGER_CHILD_TYPE_MIDI_NOTE &&
+      if (type == MIDI_NOTE_WIDGET_TYPE &&
           Z_IS_MIDI_NOTE_WIDGET (widget))
         {
           array[(*array_size)++] = widget;
         }
-      else if (type == ARRANGER_CHILD_TYPE_REGION &&
+      else if (type == REGION_WIDGET_TYPE &&
                Z_IS_REGION_WIDGET (widget))
         {
           array[(*array_size)++] = widget;
         }
-      else if (type == ARRANGER_CHILD_TYPE_AP &&
+      else if (type == AUTOMATION_POINT_WIDGET_TYPE &&
                Z_IS_AUTOMATION_POINT_WIDGET (widget))
         {
           array[(*array_size)++] = widget;
         }
     }
-}
-
-GtkWidget *
-arranger_widget_get_hit_widget (ArrangerWidget *  self,
-                ArrangerChildType type,
-                double            x,
-                double            y)
-{
-  GList *children, *iter;
-
-  /* go through each overlay child */
-  children = gtk_container_get_children (GTK_CONTAINER (self));
-  for(iter = children; iter != NULL; iter = g_list_next (iter))
-    {
-      GtkWidget * widget = GTK_WIDGET (iter->data);
-
-      GtkAllocation allocation;
-      gtk_widget_get_allocation (widget,
-                                 &allocation);
-
-      gint wx, wy;
-      gtk_widget_translate_coordinates(
-                GTK_WIDGET (self),
-                GTK_WIDGET (widget),
-                x,
-                y,
-                &wx,
-                &wy);
-
-      /* if hit */
-      if (wx >= 0 &&
-          wx <= allocation.width &&
-          wy >= 0 &&
-          wy <= allocation.height)
-        {
-          if (type == ARRANGER_CHILD_TYPE_MIDI_NOTE &&
-              Z_IS_MIDI_NOTE_WIDGET (widget))
-            {
-              return widget;
-            }
-          else if (type == ARRANGER_CHILD_TYPE_REGION &&
-                   Z_IS_REGION_WIDGET (widget))
-            {
-              return widget;
-            }
-          else if (type == ARRANGER_CHILD_TYPE_AP &&
-                   Z_IS_AUTOMATION_POINT_WIDGET (widget))
-            {
-              return widget;
-            }
-          else if (type == ARRANGER_CHILD_TYPE_AC &&
-                   Z_IS_AUTOMATION_CURVE_WIDGET (widget))
-            {
-              return widget;
-            }
-        }
-    }
-  return NULL;
 }
 
 static void
@@ -298,7 +241,7 @@ update_inspector (ArrangerWidget *self)
  */
 void
 arranger_widget_toggle_select (ArrangerWidget *  self,
-               ArrangerChildType type,
+               GType             type,
                void *            child,
                int               append)
 {
@@ -311,12 +254,12 @@ arranger_widget_toggle_select (ArrangerWidget *  self,
     {
       TimelineArrangerWidget * taw =
         Z_TIMELINE_ARRANGER_WIDGET (self);
-      if (type == ARRANGER_CHILD_TYPE_REGION)
+      if (type == REGION_WIDGET_TYPE)
         {
           array = (void **) taw->regions;
           num = &taw->num_regions;
         }
-      else if (type == ARRANGER_CHILD_TYPE_AP)
+      else if (type == AUTOMATION_POINT_WIDGET_TYPE)
         {
           array = (void **) taw->automation_points;
           num = &taw->num_automation_points;
@@ -326,7 +269,7 @@ arranger_widget_toggle_select (ArrangerWidget *  self,
     {
       MidiArrangerWidget * maw =
         Z_MIDI_ARRANGER_WIDGET (self);
-      if (type == ARRANGER_CHILD_TYPE_MIDI_NOTE)
+      if (type == MIDI_NOTE_WIDGET_TYPE)
         {
           array = (void **) maw->midi_notes;
           num = &maw->num_midi_notes;
@@ -339,7 +282,7 @@ arranger_widget_toggle_select (ArrangerWidget *  self,
       for (int i = 0; i < (*num); i++)
         {
           void * r = array[i];
-          if (type == ARRANGER_CHILD_TYPE_REGION)
+          if (type == REGION_WIDGET_TYPE)
             {
               region_widget_select (((Region *)r)->widget, 0);
             }
@@ -356,7 +299,7 @@ arranger_widget_toggle_select (ArrangerWidget *  self,
       array_delete (array,
                     num,
                     child);
-      if (type == ARRANGER_CHILD_TYPE_REGION)
+      if (type == REGION_WIDGET_TYPE)
         {
           region_widget_select (((Region *)child)->widget, 0);
         }
@@ -367,7 +310,7 @@ arranger_widget_toggle_select (ArrangerWidget *  self,
       array_append (array,
                     num,
                     child);
-      if (type == ARRANGER_CHILD_TYPE_REGION)
+      if (type == REGION_WIDGET_TYPE)
         {
           region_widget_select (((Region *)child)->widget, 1);
         }
@@ -942,20 +885,11 @@ arranger_bg_draw_selections (ArrangerWidget * self,
     1 - ar_prv->start_y;
   if (ar_prv->action == ARRANGER_ACTION_SELECTING)
     {
-      cairo_set_source_rgba (cr, 0.9, 0.9, 0.9, 1.0);
-      cairo_rectangle (cr,
-                       ar_prv->start_x,
-                       ar_prv->start_y,
-                       offset_x,
-                       offset_y);
-      cairo_stroke (cr);
-      cairo_set_source_rgba (cr, 0.3, 0.3, 0.3, 0.3);
-      cairo_rectangle (cr,
-                       ar_prv->start_x,
-                       ar_prv->start_y,
-                       offset_x,
-                       offset_y);
-      cairo_fill (cr);
+      z_cairo_draw_selection (cr,
+                              ar_prv->start_x,
+                              ar_prv->start_y,
+                              offset_x,
+                              offset_y);
     }
 }
 

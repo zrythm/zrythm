@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2018 Alexandros Theodotou
+ * utils/cairo.h - Cairo utilities
+ *
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -19,32 +21,23 @@
 
 /** \file */
 
-#ifndef __GUI_WIDGETS_AUDIO_REGION_H__
-#define __GUI_WIDGETS_AUDIO_REGION_H__
-
-#include "audio/region.h"
-#include "gui/widgets/region.h"
+#ifndef __UTILS_CAIRO_H__
+#define __UTILS_CAIRO_H__
 
 #include <gtk/gtk.h>
 
-#define AUDIO_REGION_WIDGET_TYPE (audio_region_widget_get_type ())
-G_DECLARE_FINAL_TYPE (AudioRegionWidget,
-                      audio_region_widget,
-                      Z,
-                      AUDIO_REGION_WIDGET,
-                      RegionWidget);
+void
+z_cairo_draw_selection (cairo_t * cr,
+                        double    start_x,
+                        double    start_y,
+                        double    offset_x,
+                        double    offset_y);
 
-typedef struct AudioRegion AudioRegion;
-
-typedef struct _AudioRegionWidget
-{
-  RegionWidget             parent_instance;
-} AudioRegionWidget;
-
-/**
- * Creates a region.
- */
-AudioRegionWidget *
-audio_region_widget_new (AudioRegion * audio_region);
+void
+z_cairo_draw_horizontal_line (cairo_t * cr,
+                              double    y,
+                              double    from_x,
+                              double    to_x,
+                              double    alpha);
 
 #endif

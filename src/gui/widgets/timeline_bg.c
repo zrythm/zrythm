@@ -41,6 +41,7 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
+#include "utils/cairo.h"
 
 #include <gtk/gtk.h>
 
@@ -49,25 +50,13 @@ G_DEFINE_TYPE (TimelineBgWidget,
                ARRANGER_BG_WIDGET_TYPE)
 
 
-static void
-draw_horizontal_line (cairo_t * cr,
-                      int       y_offset,
-                      double    alpha)
-{
-  cairo_set_source_rgba (cr, 0.7, 0.7, 0.7, alpha);
-  cairo_set_line_width (cr, 0.5);
-  cairo_move_to (cr, 0, y_offset);
-  RULER_WIDGET_GET_PRIVATE (MW_RULER);
-  cairo_line_to (cr, prv->total_px, y_offset);
-  cairo_stroke (cr);
-}
-
 static gboolean
 draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
 {
   /* handle horizontal drawing for tracks */
   GtkWidget * tw_widget;
   gint wx, wy;
+  RULER_WIDGET_GET_PRIVATE (MW_RULER);
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       Track * track = TRACKLIST->tracks[i];
@@ -87,9 +76,11 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
       int line_y =
         wy + gtk_widget_get_allocated_height (
           GTK_WIDGET (tw_widget));
-      draw_horizontal_line (cr,
-                            line_y,
-                            1.0);
+      z_cairo_draw_horizontal_line (cr,
+                                    line_y,
+                                    0.0,
+                                    prv->total_px,
+                                    1.0);
     }
 
   /* draw automation related stuff */
@@ -120,7 +111,11 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
                             0,
                             &wx,
                             &wy);
-                  draw_horizontal_line (cr, wy, 0.2);
+                  z_cairo_draw_horizontal_line (cr,
+                                        wy,
+                                        0.0,
+                                        prv->total_px,
+                                        0.2);
 
                 }
             }
@@ -157,5 +152,4 @@ timeline_bg_widget_init (TimelineBgWidget *self )
 {
   g_signal_connect (G_OBJECT (self), "draw",
                     G_CALLBACK (draw_cb), NULL);
-
 }
