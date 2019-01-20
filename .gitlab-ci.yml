@@ -1,5 +1,5 @@
 # build from debian by default
-image: "alextee12/debian:0.6"
+image: "alextee12/debian:0.7"
 
 variables:
   _USER: "builduser"
