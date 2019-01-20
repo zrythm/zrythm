@@ -39,14 +39,10 @@ AM_COND_IF([OSX],
            [AC_SUBST([OSX], [1])])
 
 # options
-AC_ARG_ENABLE(aur-build,
-              AS_HELP_STRING([--enable-aur-build], [Used for packaging for AUR]),
-              [AC_SUBST([AUR_BUILD], [1])],
-              [AC_SUBST([AUR_BUILD], [0])])
-AC_ARG_ENABLE(deb-build,
-              AS_HELP_STRING([--enable-deb-build], [Used for packaging for Debian]),
-              [AC_SUBST([DEB_BUILD], [1])],
-              [AC_SUBST([DEB_BUILD], [0])])
+AC_ARG_ENABLE(package-mode,
+              AS_HELP_STRING([--enable-package-mode], [Used when making deb/rpm/pkg packages]),
+              [AC_SUBST([PACKAGE_MODE], [1])],
+              [AC_SUBST([PACKAGE_MODE], [0])])
 
 AC_ARG_ENABLE(release,
               AS_HELP_STRING([--enable-release], [Build for release (default is debug)]),

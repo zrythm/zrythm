@@ -14,8 +14,8 @@ md5sums=('SKIP')
 build() {
   cd "$pkgname-$pkgver"
   ./autogen.sh
-	./configure --prefix=/usr --enable-release --enable-aur-build
-	make -j14
+  ./configure --prefix=/usr --enable-release --enable-package-mode
+  make -j14
 }
 
 package() {

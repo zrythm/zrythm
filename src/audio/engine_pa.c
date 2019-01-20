@@ -170,10 +170,13 @@ pa_open_stream (AudioEngine * engine)
   for (int i = 0; i < Pa_GetHostApiCount (); i++)
     {
       const PaHostApiInfo * info = Pa_GetHostApiInfo (i);
-      g_message ("host api %d %s",
-                 i,
-                 info->name);
+      g_message ("host api %s (%d) found",
+                 info->name,
+		 i);
     }
+  g_message ("using default host api %s (%d)",
+	     Pa_GetHostApiInfo (Pa_GetDefaultHostApi ())->name,
+	     Pa_GetDefaultHostApi ());
 
   PaStreamParameters in_param;
   in_param.device =

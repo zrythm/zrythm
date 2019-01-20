@@ -3,7 +3,7 @@
 	dh $@
 
 override_dh_auto_configure:
-	./configure --prefix=/usr --enable-deb-build --enable-release
+	./configure --prefix=/usr --enable-package-mode --enable-release
 
 #override_dh_auto_build:
 	#$(MAKE)
