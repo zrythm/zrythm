@@ -33,6 +33,9 @@ G_DECLARE_FINAL_TYPE (CenterDockBotBoxWidget,
                       CENTER_DOCK_BOT_BOX_WIDGET,
                       GtkBox)
 
+#define MW_CENTER_DOCK_BOT_BOX \
+  MW_CENTER_DOCK->bot_box
+
 typedef struct _TimelineMinimapWidget TimelineMinimapWidget;
 
 typedef struct _CenterDockBotBoxWidget

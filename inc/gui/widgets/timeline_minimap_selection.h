@@ -50,4 +50,9 @@ TimelineMinimapSelectionWidget *
 timeline_minimap_selection_widget_new (
   TimelineMinimapWidget * parent);
 
+void
+timeline_minimap_selection_widget_on_motion (GtkWidget * widget,
+           GdkEventMotion *event,
+           gpointer user_data);
+
 #endif

@@ -19,9 +19,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <math.h>
+
 #include "zrythm.h"
 #include "project.h"
 #include "settings.h"
+#include "actions/actions.h"
 #include "audio/position.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
@@ -70,11 +73,11 @@ ruler_widget_px_to_pos (
   GET_PRIVATE;
 
   pos->bars = px / rw_prv->px_per_bar + 1;
-  px = px % rw_prv->px_per_bar;
+  px = px % (int) round (rw_prv->px_per_bar);
   pos->beats = px / rw_prv->px_per_beat + 1;
-  px = px % rw_prv->px_per_beat;
+  px = px % (int) round (rw_prv->px_per_beat);
   pos->sixteenths = px / rw_prv->px_per_sixteenth + 1;
-  px = px % rw_prv->px_per_sixteenth;
+  px = px % (int) round (rw_prv->px_per_sixteenth);
   pos->ticks = px / rw_prv->px_per_tick;
 }
 
@@ -136,7 +139,7 @@ draw_cb (RulerWidget * self, cairo_t *cr, gpointer data)
     {
       int draw_pos = i + SPACE_BEFORE_START;
 
-      if (i % rw_prv->px_per_bar == 0)
+      if (i % (int) round (rw_prv->px_per_bar) == 0)
       {
           cairo_set_source_rgb (cr, 1, 1, 1);
           cairo_set_line_width (cr, 1);
@@ -157,7 +160,7 @@ draw_cb (RulerWidget * self, cairo_t *cr, gpointer data)
           cairo_show_text(cr, label);
           bar_count++;
       }
-      else if (i % rw_prv->px_per_beat == 0)
+      else if (i % (int) round (rw_prv->px_per_beat) == 0)
       {
           cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
           cairo_set_line_width (cr, 0.5);
@@ -337,31 +340,29 @@ ruler_widget_refresh (RulerWidget * self)
   RULER_WIDGET_GET_PRIVATE (self);
 
   /*adjust for zoom level*/
-  float px_per_tick =
-    DEFAULT_PX_PER_TICK * TRANSPORT->zoom_level;
-  unsigned int px_per_sixteenth =
-    px_per_tick * TICKS_PER_SIXTEENTH_NOTE;
-  unsigned int px_per_beat =
-    px_per_tick * TICKS_PER_BEAT;
-  unsigned int px_per_bar =
-    px_per_beat * TRANSPORT->beats_per_bar;
-  rw_prv->px_per_tick = px_per_tick;
-  GTK_WIDGET (self);
-  rw_prv->px_per_sixteenth = px_per_sixteenth;
-  GTK_WIDGET (self);
-  rw_prv->px_per_beat = px_per_beat;
-  GTK_WIDGET (self);
-  rw_prv->px_per_bar = px_per_bar;
-  GTK_WIDGET (self);
+  rw_prv->px_per_tick =
+    DEFAULT_PX_PER_TICK * rw_prv->zoom_level;
+  rw_prv->px_per_sixteenth =
+    rw_prv->px_per_tick * TICKS_PER_SIXTEENTH_NOTE;
+  rw_prv->px_per_beat =
+    rw_prv->px_per_tick * TICKS_PER_BEAT;
+  rw_prv->px_per_bar =
+    rw_prv->px_per_beat * TRANSPORT->beats_per_bar;
 
-  rw_prv->total_px = px_per_bar * TRANSPORT->total_bars;
-  GTK_WIDGET (self);
+  Position pos;
+  position_set_to_bar (&pos,
+                       TRANSPORT->total_bars + 1);
+  rw_prv->total_px =
+    rw_prv->px_per_tick * position_to_ticks (&pos);
 
   // set the size
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
     rw_prv->total_px,
     -1);
+
+  gtk_widget_queue_draw (
+    GTK_WIDGET (self));
 }
 
 static void
@@ -372,11 +373,56 @@ ruler_widget_class_init (RulerWidgetClass * _klass)
                                  "ruler");
 }
 
+/**
+ * Sets zoom level and disables/enables buttons
+ * accordingly.
+ *
+ * Returns if the zoom level was set or not.
+ */
+int
+ruler_widget_set_zoom_level (RulerWidget * self,
+                             float         zoom_level)
+{
+  if (zoom_level > MAX_ZOOM_LEVEL)
+    {
+      action_disable_window_action ("zoom-in");
+    }
+  else
+    {
+      action_enable_window_action ("zoom-in");
+    }
+  if (zoom_level < MIN_ZOOM_LEVEL)
+    {
+      action_enable_window_action ("zoom-out");
+    }
+  else
+    {
+      action_enable_window_action ("zoom-out");
+    }
+
+  int update = zoom_level >= MIN_ZOOM_LEVEL &&
+    zoom_level <= MAX_ZOOM_LEVEL;
+
+  if (update)
+    {
+      RULER_WIDGET_GET_PRIVATE (self);
+      rw_prv->zoom_level = zoom_level;
+      ruler_widget_refresh (self);
+      return 1;
+    }
+  else
+    {
+      return 0;
+    }
+}
+
 static void
 ruler_widget_init (RulerWidget * self)
 {
   g_message ("initing ruler...");
   GET_PRIVATE;
+
+  rw_prv->zoom_level = DEFAULT_ZOOM_LEVEL;
 
   /* make it able to notify */
   gtk_widget_add_events (GTK_WIDGET (self),

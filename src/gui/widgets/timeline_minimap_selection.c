@@ -47,8 +47,8 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   return FALSE;
 }
 
-static void
-on_motion (GtkWidget * widget,
+void
+timeline_minimap_selection_widget_on_motion (GtkWidget * widget,
            GdkEventMotion *event,
            gpointer user_data)
 {
@@ -65,7 +65,6 @@ on_motion (GtkWidget * widget,
       if (event->x < RESIZE_CURSOR_SPACE)
         {
           self->cursor = UI_CURSOR_STATE_RESIZE_L;
-          g_message ("resize l");
           if (self->parent->action != TIMELINE_MINIMAP_ACTION_MOVING)
             ui_set_cursor (widget, "w-resize");
         }
@@ -73,14 +72,12 @@ on_motion (GtkWidget * widget,
                  RESIZE_CURSOR_SPACE)
         {
           self->cursor = UI_CURSOR_STATE_RESIZE_R;
-          g_message ("resize r");
           if (self->parent->action != TIMELINE_MINIMAP_ACTION_MOVING)
             ui_set_cursor (widget, "e-resize");
         }
       else
         {
           self->cursor = UI_CURSOR_STATE_DEFAULT;
-          g_message ("default");
           if (self->parent->action !=
                 TIMELINE_MINIMAP_ACTION_MOVING &&
               self->parent->action !=
@@ -93,14 +90,13 @@ on_motion (GtkWidget * widget,
               ui_set_cursor (widget, "default");
             }
         }
-      g_message ("entering");
-    }
-  /* if leaving */
-  else if (event->type == GDK_LEAVE_NOTIFY)
-    {
-      g_message ("leaving");
-      gtk_widget_unset_state_flags (GTK_WIDGET (self),
-                                    GTK_STATE_FLAG_PRELIGHT);
+      /* if leaving */
+      if (event->type == GDK_LEAVE_NOTIFY)
+        {
+          g_message ("leaving");
+          gtk_widget_unset_state_flags (GTK_WIDGET (self),
+                                        GTK_STATE_FLAG_PRELIGHT);
+        }
     }
 }
 
@@ -149,16 +145,16 @@ timeline_minimap_selection_widget_init (
                     "draw",
                     G_CALLBACK (draw_cb),
                     self);
-  g_signal_connect (G_OBJECT (self->drawing_area),
-                    "enter-notify-event",
-                    G_CALLBACK (on_motion),
-                    self);
-  g_signal_connect (G_OBJECT(self->drawing_area),
-                    "leave-notify-event",
-                    G_CALLBACK (on_motion),
-                    self);
+  /*g_signal_connect (G_OBJECT (self->drawing_area),*/
+                    /*"enter-notify-event",*/
+                    /*G_CALLBACK (on_motion),*/
+                    /*self);*/
+  /*g_signal_connect (G_OBJECT(self->drawing_area),*/
+                    /*"leave-notify-event",*/
+                    /*G_CALLBACK (on_motion),*/
+                    /*self);*/
   g_signal_connect (G_OBJECT(self->drawing_area),
                     "motion-notify-event",
-                    G_CALLBACK (on_motion),
+                    G_CALLBACK (timeline_minimap_selection_widget_on_motion),
                     self);
 }

@@ -1600,6 +1600,8 @@ lv2_instantiate (Lv2Plugin      * lv2_plugin,   ///< plugin to instantiate
     }
 
   /* Get a lv2_plugin->UI */
+  g_message (
+    "Looking for native UI");
   const char* native_ui_type_uri = lv2_native_ui_type (lv2_plugin);
   lv2_plugin->uis = lilv_plugin_get_uis (lv2_plugin->lilv_plugin);
   if (!LV2_SETTINGS.opts.generic_ui && native_ui_type_uri)
@@ -1609,14 +1611,26 @@ lv2_instantiate (Lv2Plugin      * lv2_plugin,   ///< plugin to instantiate
       LILV_FOREACH(uis, u, lv2_plugin->uis)
         {
           const LilvUI* this_ui = lilv_uis_get(lv2_plugin->uis, u);
+          const LilvNodes* types = lilv_ui_get_classes(this_ui);
+          LILV_FOREACH(nodes, t, types)
+            {
+              const char * pt = lilv_node_as_uri (
+                              lilv_nodes_get(types, t));
+              g_message ("Found UI: %s", pt);
+            }
           if (lilv_ui_is_supported(this_ui,
                                    suil_ui_supported,
                                    native_ui_type,
                                    &lv2_plugin->ui_type))
             {
               /* TODO: Multiple UI support */
+              g_message ("UI is supported");
               lv2_plugin->ui = this_ui;
               break;
+            }
+          else
+            {
+              g_message ("UI unsupported by suil");
             }
         }
     }
@@ -1627,6 +1641,8 @@ lv2_instantiate (Lv2Plugin      * lv2_plugin,   ///< plugin to instantiate
 
   if (!lv2_plugin->ui)
     {
+      g_message (
+        "Native UI not found, looking for external");
       LILV_FOREACH(uis, u, lv2_plugin->uis)
         {
           const LilvUI* ui = lilv_uis_get(lv2_plugin->uis, u);
@@ -1635,15 +1651,18 @@ lv2_instantiate (Lv2Plugin      * lv2_plugin,   ///< plugin to instantiate
             {
               const char * pt = lilv_node_as_uri (
                               lilv_nodes_get(types, t));
-              g_message ("UI: %s", pt);
               if (!strcmp (pt, "http://kxstudio.sf.net/ns/lv2ext/external-ui#Widget"))
                 {
+                  g_message ("Found UI: %s", pt);
+                  g_message ("External KX UI selected");
                   lv2_plugin->externalui = true;
                   lv2_plugin->ui = ui;
                   lv2_plugin->ui_type = lv2_plugin->nodes.ui_externalkx;
                 }
               else if (!strcmp (pt, "http://lv2plug.in/ns/extensions/ui#external"))
                 {
+                  g_message ("Found UI: %s", pt);
+                  g_message ("External UI selected");
                   lv2_plugin->externalui = true;
                   lv2_plugin->ui_type = lv2_plugin->nodes.ui_externallv;
                   lv2_plugin->ui = ui;
@@ -1655,12 +1674,12 @@ lv2_instantiate (Lv2Plugin      * lv2_plugin,   ///< plugin to instantiate
   /* Create ringbuffers for UI if necessary */
   if (lv2_plugin->ui)
     {
-      g_message ("UI:           %s",
+      g_message ("Selected UI:           %s",
               lilv_node_as_uri(lilv_ui_get_uri(lv2_plugin->ui)));
     }
   else
     {
-      g_message ("UI:           None");
+      g_message ("Selected UI:           None");
     }
 
   /* Create port and control structures */

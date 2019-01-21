@@ -36,6 +36,9 @@ G_DECLARE_FINAL_TYPE (TimelineMinimapWidget,
                       TIMELINE_MINIMAP_WIDGET,
                       GtkOverlay)
 
+#define MW_TIMELINE_MINIMAP \
+  MW_CENTER_DOCK_BOT_BOX->timeline_minimap
+
 typedef struct _TimelineMinimapBgWidget TimelineMinimapBgWidget;
 typedef struct _TimelineMinimapSelectionWidget TimelineMinimapSelectionWidget;
 typedef struct TimelineMinimap TimelineMinimap;
@@ -62,11 +65,11 @@ typedef struct _TimelineMinimapWidget
   GtkGestureMultiPress *   right_mouse_mp;
   double                   last_offset_x;  ///< for dragging regions, selections
   double                   last_offset_y;  ///< for selections
+  double                   selection_start_pos; ///< to be set in drag_begin
+  double                   selection_end_pos; ///< to be set in drag_begin
   double                   start_x; ///< for dragging
   double                   start_y; ///< for dragging
-  double                   start_pos_px; ///< for moving regions
-  Position                 start_pos; ///< useful for moving
-  Position                 end_pos; ///< for moving regions
+  double                   start_zoom_level; //< to be set in drag_begin
   int                      n_press; ///< for multipress
 } TimelineMinimapWidget;
 
@@ -86,5 +89,12 @@ timeline_minimap_widget_px_to_pos (
   TimelineMinimapWidget * self,
   Position *              pos,
   int                     px);
+
+/**
+ * Causes reallocation.
+ */
+void
+timeline_minimap_widget_refresh (
+  TimelineMinimapWidget * self);
 
 #endif

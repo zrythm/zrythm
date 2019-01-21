@@ -75,10 +75,6 @@ transport_setup (Transport * self,
   /* set playstate */
   self->play_state = PLAYSTATE_PAUSED;
 
-
-  /* set zoom level */
-  self->zoom_level = DEFAULT_ZOOM_LEVEL;
-
   self->loop = 1;
 
   transport_set_bpm (self,

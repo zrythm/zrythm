@@ -27,6 +27,7 @@
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/center_dock_bot_box.h"
 #include "gui/widgets/export_dialog.h"
 #include "gui/widgets/header_bar.h"
 #include "gui/widgets/main_window.h"
@@ -37,6 +38,7 @@
 #include "gui/widgets/preferences.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_ruler.h"
 
 #include <gtk/gtk.h>
@@ -145,7 +147,11 @@ activate_zoom_in (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  TRANSPORT->zoom_level *= 1.3f;
+  RULER_WIDGET_GET_PRIVATE (
+    Z_RULER_WIDGET (MW_RULER));
+  ruler_widget_set_zoom_level (
+    Z_RULER_WIDGET (MW_RULER),
+    rw_prv->zoom_level * 1.3f);
   ruler_widget_refresh (Z_RULER_WIDGET (MW_RULER));
   ruler_widget_refresh (Z_RULER_WIDGET (MIDI_RULER));
   arranger_widget_refresh (
@@ -154,15 +160,7 @@ activate_zoom_in (GSimpleAction *action,
     Z_ARRANGER_WIDGET (MIDI_ARRANGER));
   arranger_widget_refresh (
     Z_ARRANGER_WIDGET (MIDI_MODIFIER_ARRANGER));
-  if (TRANSPORT->zoom_level > 60.f)
-    {
-      action_disable_window_action ("zoom-in");
-    }
-  if (TRANSPORT->zoom_level >= 0.2f)
-    {
-      action_enable_window_action ("zoom-out");
-    }
-  g_message ("zoom level %f", TRANSPORT->zoom_level);
+  timeline_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
 }
 
 void
@@ -170,24 +168,22 @@ activate_zoom_out (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  TRANSPORT->zoom_level /= 1.3f;
-  ruler_widget_refresh (Z_RULER_WIDGET (MW_RULER));
-  ruler_widget_refresh (Z_RULER_WIDGET (MIDI_RULER));
+  RULER_WIDGET_GET_PRIVATE (
+    Z_RULER_WIDGET (MW_RULER));
+  double zoom_level = rw_prv->zoom_level / 1.3;
+  ruler_widget_set_zoom_level (
+    Z_RULER_WIDGET (MW_RULER),
+    zoom_level);
+  ruler_widget_set_zoom_level (
+    Z_RULER_WIDGET (MIDI_RULER),
+    zoom_level);
   arranger_widget_refresh (
     Z_ARRANGER_WIDGET (MW_TIMELINE));
   arranger_widget_refresh (
     Z_ARRANGER_WIDGET (MIDI_ARRANGER));
   arranger_widget_refresh (
     Z_ARRANGER_WIDGET (MIDI_MODIFIER_ARRANGER));
-  if (TRANSPORT->zoom_level <= 60.f)
-    {
-      action_enable_window_action ("zoom-in");
-    }
-  if (TRANSPORT->zoom_level < 0.2f)
-    {
-      action_disable_window_action ("zoom-out");
-    }
-  g_message ("zoom level %f", TRANSPORT->zoom_level);
+  timeline_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
 }
 
 void
@@ -196,6 +192,7 @@ activate_best_fit (GSimpleAction *action,
                   gpointer       user_data)
 {
   g_message ("ZOOMING IN");
+  timeline_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
 }
 
 void
@@ -203,7 +200,9 @@ activate_original_size (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  TRANSPORT->zoom_level = DEFAULT_ZOOM_LEVEL;
+  RULER_WIDGET_GET_PRIVATE (
+    Z_RULER_WIDGET (MW_RULER));
+  rw_prv->zoom_level = DEFAULT_ZOOM_LEVEL;
   ruler_widget_refresh (Z_RULER_WIDGET (MW_RULER));
   ruler_widget_refresh (Z_RULER_WIDGET (MIDI_RULER));
   arranger_widget_refresh (
@@ -212,6 +211,7 @@ activate_original_size (GSimpleAction *action,
     Z_ARRANGER_WIDGET (MIDI_ARRANGER));
   arranger_widget_refresh (
     Z_ARRANGER_WIDGET (MIDI_MODIFIER_ARRANGER));
+  timeline_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
 }
 
 void

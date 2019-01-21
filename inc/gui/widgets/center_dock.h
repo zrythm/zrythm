@@ -69,4 +69,7 @@ typedef struct _CenterDockWidget
   TopDockEdgeWidget *      top_dock_edge;
 } CenterDockWidget;
 
+void
+center_dock_widget_setup (CenterDockWidget * self);
+
 #endif

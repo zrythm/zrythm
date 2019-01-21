@@ -116,6 +116,9 @@ main_window_widget_refresh (MainWindowWidget * self)
   gtk_widget_show_all (
     GTK_WIDGET (MW_CENTER_DOCK->timeline));
 
+  /* setup center dock */
+  center_dock_widget_setup (MW_CENTER_DOCK);
+
   /* setup bot toolbar */
   snap_grid_widget_setup (MW_CENTER_DOCK->bot_box->snap_grid_midi,
                           ZRYTHM->snap_grid_midi);

@@ -45,6 +45,7 @@ typedef struct _MidiNoteWidget MidiNoteWidget;
 typedef struct SnapGrid SnapGrid;
 typedef struct AutomationPoint AutomationPoint;
 typedef struct MidiRegion MidiRegion;
+typedef struct Channel Channel;
 
 typedef struct _MidiArrangerWidget
 {

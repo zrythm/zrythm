@@ -24,6 +24,8 @@
 
 #include <gtk/gtk.h>
 
+#define DEFAULT_ZOOM_LEVEL 1.0f
+
 #define RULER_WIDGET_TYPE \
   (ruler_widget_get_type ())
 G_DECLARE_DERIVABLE_TYPE (RulerWidget,
@@ -45,6 +47,9 @@ G_DECLARE_DERIVABLE_TYPE (RulerWidget,
 
 #define SPACE_BEFORE_START 10 /* pixels to put before 1st bar */
 
+#define MIN_ZOOM_LEVEL 0.2f
+#define MAX_ZOOM_LEVEL 60.f
+
 typedef struct Position Position;
 
 typedef struct
@@ -52,11 +57,17 @@ typedef struct
   unsigned int             px_per_beat;
   unsigned int             px_per_bar;
   unsigned int             px_per_sixteenth;
-  float                    px_per_tick;
+  double                   px_per_tick;
   unsigned int             total_px;
   double                   start_x; ///< for dragging
-  GtkGestureDrag           * drag;
-  GtkGestureMultiPress     * multipress;
+
+  /**
+   * Zoom level.
+   */
+  double                   zoom_level;
+
+  GtkGestureDrag *         drag;
+  GtkGestureMultiPress *   multipress;
 } RulerWidgetPrivate;
 
 typedef struct _RulerWidgetClass
@@ -80,6 +91,16 @@ ruler_widget_pos_to_px (
 
 RulerWidgetPrivate *
 ruler_widget_get_private (RulerWidget * self);
+
+/**
+ * Sets zoom level and disables/enables buttons
+ * accordingly.
+ *
+ * Returns if the zoom level was set or not.
+ */
+int
+ruler_widget_set_zoom_level (RulerWidget * self,
+                             float         zoom_level);
 
 void
 ruler_widget_refresh (RulerWidget * self);

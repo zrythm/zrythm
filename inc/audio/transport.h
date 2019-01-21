@@ -38,7 +38,6 @@
 #define DEFAULT_BPM 140.f
 #define DEFAULT_BEATS_PER_BAR 4
 #define DEFAULT_BEAT_UNIT BEAT_UNIT_4
-#define DEFAULT_ZOOM_LEVEL 1.0f
 
 #define PLAYHEAD TRANSPORT->playhead_pos
 #define IS_TRANSPORT_ROLLING TRANSPORT->play_state == PLAYSTATE_ROLLING
@@ -79,7 +78,6 @@ typedef struct Transport
    */
   int                beats_per_bar; ///< top part of time signature
   BeatUnit           beat_unit;   ///< bottom part of time signature, power of 2
-  float         zoom_level;             ///< zoom level used in ruler/transport widget calculations FIXME move to gui
   uint32_t           position;       ///< Transport position in frames
 	float              bpm;            ///< Transport tempo in beats per minute
 	int               rolling;        ///< Transport speed (0=stop, 1=play)

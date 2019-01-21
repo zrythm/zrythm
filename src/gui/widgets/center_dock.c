@@ -22,12 +22,14 @@
 #include "audio/transport.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/center_dock_bot_box.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/piano_roll.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/top_dock_edge.h"
 #include "gui/widgets/tracklist.h"
@@ -54,6 +56,29 @@ key_release_cb (GtkWidget      * widget,
   return FALSE;
 }
 
+void
+on_hadj_value_changed (GtkAdjustment *adjustment,
+                       gpointer       user_data)
+{
+  CenterDockWidget * self =
+    Z_CENTER_DOCK_WIDGET (user_data);
+
+  timeline_minimap_widget_refresh (
+    self->bot_box->timeline_minimap);
+}
+
+void
+center_dock_widget_setup (CenterDockWidget * self)
+{
+  GtkAdjustment * adj =
+    gtk_scrollable_get_hadjustment (
+      GTK_SCROLLABLE (self->ruler_viewport));
+  g_signal_connect (G_OBJECT (adj),
+                    "value-changed",
+                    G_CALLBACK (on_hadj_value_changed),
+                    self);
+}
+
 static void
 center_dock_widget_init (CenterDockWidget * self)
 {
@@ -77,8 +102,10 @@ center_dock_widget_init (CenterDockWidget * self)
                          &a);
 
   /* set events */
-  g_signal_connect (G_OBJECT (self), "key_release_event",
-                    G_CALLBACK (key_release_cb), self);
+  g_signal_connect (G_OBJECT (self),
+                    "key_release_event",
+                    G_CALLBACK (key_release_cb),
+                    self);
 }
 
 
