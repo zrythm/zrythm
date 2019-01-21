@@ -327,8 +327,8 @@ port_sum_signal_from_inputs (Port * port, nframes_t nframes)
         }
       else if (src_port->owner_pl)
         {
-          g_message ("%s owner port",
-                     src_port->owner_pl->descr->name);
+          /*g_message ("%s owner port",*/
+                     /*src_port->owner_pl->descr->name);*/
           while (!src_port->owner_pl->processed)
             {
 #if _POSIX_C_SOURCE >= 199309L
@@ -337,14 +337,14 @@ port_sum_signal_from_inputs (Port * port, nframes_t nframes)
               usleep (SLEEPTIME * 1000);
 #endif
             }
-          g_message ("%s owner port done",
-                     src_port->owner_pl->descr->name);
+          /*g_message ("%s owner port done",*/
+                     /*src_port->owner_pl->descr->name);*/
         }
       else if (src_port->owner_ch)
         {
-          g_message ("%s port, %s owner channel",
-                     src_port->label,
-                     src_port->owner_ch->name);
+          /*g_message ("%s port, %s owner channel",*/
+                     /*src_port->label,*/
+                     /*src_port->owner_ch->name);*/
           while (!src_port->owner_ch->processed &&
                  src_port !=
                    src_port->owner_ch->stereo_in->l &&
@@ -357,9 +357,9 @@ port_sum_signal_from_inputs (Port * port, nframes_t nframes)
               usleep (SLEEPTIME * 1000);
 #endif
             }
-          g_message ("%s port, %s owner channel done",
-                     src_port->label,
-                     src_port->owner_ch->name);
+          /*g_message ("%s port, %s owner channel done",*/
+                     /*src_port->label,*/
+                     /*src_port->owner_ch->name);*/
         }
 
       /* sum the signals */

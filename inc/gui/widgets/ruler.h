@@ -33,7 +33,7 @@ G_DECLARE_DERIVABLE_TYPE (RulerWidget,
                           GtkDrawingArea)
 
 #define RULER_WIDGET_GET_PRIVATE(self) \
-  RulerWidgetPrivate * prv = \
+  RulerWidgetPrivate * rw_prv = \
     ruler_widget_get_private (Z_RULER_WIDGET (self));
 
 /**

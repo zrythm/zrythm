@@ -139,7 +139,8 @@ region_widget_setup (RegionWidget * self,
   gtk_widget_set_hexpand (GTK_WIDGET (rw_prv->drawing_area),
                           1);
 
-  gtk_widget_add_events (GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
+  gtk_widget_add_events (GTK_WIDGET (self),
+                         GDK_ALL_EVENTS_MASK);
 
   /* connect signals */
   g_signal_connect (G_OBJECT (rw_prv->drawing_area), "draw",

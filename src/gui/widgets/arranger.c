@@ -907,7 +907,7 @@ arranger_widget_refresh (
       RULER_WIDGET_GET_PRIVATE (MIDI_RULER);
       gtk_widget_set_size_request (
         GTK_WIDGET (self),
-        prv->total_px,
+        rw_prv->total_px,
         -1);
       midi_arranger_widget_refresh_children (
         Z_MIDI_ARRANGER_WIDGET (self));
@@ -917,7 +917,7 @@ arranger_widget_refresh (
       RULER_WIDGET_GET_PRIVATE (MW_RULER);
       gtk_widget_set_size_request (
         GTK_WIDGET (self),
-        prv->total_px,
+        rw_prv->total_px,
         -1);
       timeline_arranger_widget_refresh_children (
         Z_TIMELINE_ARRANGER_WIDGET (self));
@@ -927,7 +927,7 @@ arranger_widget_refresh (
       RULER_WIDGET_GET_PRIVATE (MIDI_RULER);
       gtk_widget_set_size_request (
         GTK_WIDGET (self),
-        prv->total_px,
+        rw_prv->total_px,
         -1);
       midi_modifier_arranger_widget_refresh_children (
         Z_MIDI_MODIFIER_ARRANGER_WIDGET (self));

@@ -74,11 +74,11 @@ process_channel_work (void * argument)
         {
           if (AUDIO_ENGINE->nframes > 0)
             {
-              g_message ("calling channel process %s",
-                         channel->name);
+              /*g_message ("calling channel process %s",*/
+                         /*channel->name);*/
               channel_process (channel, AUDIO_ENGINE->nframes);
-              g_message ("done calling channel process %s",
-                         channel->name);
+              /*g_message ("done calling channel process %s",*/
+                         /*channel->name);*/
               channel->processed = 1;
             }
         }
@@ -139,8 +139,8 @@ channel_process (Channel * channel,  ///< slots
             }
         }
     }
-  g_message ("buffers cleared %s",
-             channel->name);
+  /*g_message ("buffers cleared %s",*/
+             /*channel->name);*/
 
   /* sum AUDIO IN coming to the channel */
   if (channel->type == CT_MASTER ||
@@ -153,8 +153,8 @@ channel_process (Channel * channel,  ///< slots
         channel->stereo_in->r,
         nframes);
     }
-  g_message ("summed signal coming in %s",
-             channel->name);
+  /*g_message ("summed signal coming in %s",*/
+             /*channel->name);*/
 
   /* panic MIDI if necessary */
   if (AUDIO_ENGINE->panic)
@@ -190,25 +190,25 @@ channel_process (Channel * channel,  ///< slots
               port_sum_signal_from_inputs (port, nframes);
             }
 
-          g_message ("summed plugin signals coming in %s",
-                     plugin->descr->name);
+          /*g_message ("summed plugin signals coming in %s",*/
+                     /*plugin->descr->name);*/
 
             /* run plugin processing
              * this should put the appropriate result in the plugin's audio out */
             plugin_process (plugin, nframes);
 
-          g_message ("processed plugin %s",
-                     plugin->descr->name);
+          /*g_message ("processed plugin %s",*/
+                     /*plugin->descr->name);*/
         }
     }
 
   /* same for channel ports */
-  g_message ("summing stereo out ports %s",
-             channel->name);
+  /*g_message ("summing stereo out ports %s",*/
+             /*channel->name);*/
   port_sum_signal_from_inputs (channel->stereo_out->l, nframes);
   port_sum_signal_from_inputs (channel->stereo_out->r, nframes);
-  g_message ("summed stereo out ports %s",
-             channel->name);
+  /*g_message ("summed stereo out ports %s",*/
+             /*channel->name);*/
 
   /* apply pan */
   port_apply_pan_stereo (channel->stereo_out->l,
@@ -216,14 +216,14 @@ channel_process (Channel * channel,  ///< slots
                          channel->pan,
                          PAN_LAW_MINUS_3DB,
                          PAN_ALGORITHM_SINE_LAW);
-  g_message ("applied pan %s",
-             channel->name);
+  /*g_message ("applied pan %s",*/
+             /*channel->name);*/
 
   /* apply faders */
   port_apply_fader (channel->stereo_out->l, channel->fader_amp);
   port_apply_fader (channel->stereo_out->r, channel->fader_amp);
-  g_message ("applied fader %s",
-             channel->name);
+  /*g_message ("applied fader %s",*/
+             /*channel->name);*/
 
   /* calc decibels */
   channel_set_current_l_db (
@@ -236,13 +236,13 @@ channel_process (Channel * channel,  ///< slots
     math_calculate_rms_db (
       channel->stereo_out->r->buf,
       (double) channel->stereo_out->r->nframes));
-  g_message ("calculated decibels %s",
-             channel->name);
+  /*g_message ("calculated decibels %s",*/
+             /*channel->name);*/
 
   /* mark as processed */
   channel->processed = 1;
-  g_message ("marked as processed %s",
-             channel->name);
+  /*g_message ("marked as processed %s",*/
+             /*channel->name);*/
 
   if (channel->widget)
     g_idle_add ((GSourceFunc) channel_widget_update_meter_reading,

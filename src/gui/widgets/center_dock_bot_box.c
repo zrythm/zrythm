@@ -53,6 +53,9 @@ center_dock_bot_box_widget_init (
     self->toggle_right_dock,
     resources_get_icon (ICON_TYPE_GNOME_BUILDER,
                         "builder-view-right-pane-symbolic-light.svg"));
+
+  timeline_minimap_widget_setup (self->timeline_minimap,
+                                 ZRYTHM->timeline_minimap);
 }
 
 

@@ -51,7 +51,7 @@ void
 mixer_process (Mixer *   self,
                nframes_t nframes) ///< number of frames to fill in
 {
-  g_message ("procesing mixer");
+  /*g_message ("procesing mixer");*/
   int loop = 1;
 
   /* wait for channels to finish processing */
@@ -70,11 +70,10 @@ mixer_process (Mixer *   self,
 
 
   /* process master channel */
-  g_message ("procesing master");
+  /*g_message ("procesing master");*/
   channel_process (self->master,
                    nframes);
-  g_message ("done procesing master");
-  g_message ("procesing finished");
+  /*g_message ("procesing finished");*/
 }
 
 Mixer *

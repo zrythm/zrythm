@@ -79,7 +79,7 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
       z_cairo_draw_horizontal_line (cr,
                                     line_y,
                                     0.0,
-                                    prv->total_px,
+                                    rw_prv->total_px,
                                     1.0);
     }
 
@@ -114,7 +114,7 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
                   z_cairo_draw_horizontal_line (cr,
                                         wy,
                                         0.0,
-                                        prv->total_px,
+                                        rw_prv->total_px,
                                         0.2);
 
                 }

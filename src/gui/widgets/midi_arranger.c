@@ -215,7 +215,7 @@ midi_arranger_widget_setup (
   RULER_WIDGET_GET_PRIVATE (MW_RULER);
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
-    prv->total_px,
+    rw_prv->total_px,
     hh);
 }
 

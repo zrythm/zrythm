@@ -69,13 +69,13 @@ ruler_widget_px_to_pos (
   if (px < 0) px = 0;
   GET_PRIVATE;
 
-  pos->bars = px / prv->px_per_bar + 1;
-  px = px % prv->px_per_bar;
-  pos->beats = px / prv->px_per_beat + 1;
-  px = px % prv->px_per_beat;
-  pos->sixteenths = px / prv->px_per_sixteenth + 1;
-  px = px % prv->px_per_sixteenth;
-  pos->ticks = px / prv->px_per_tick;
+  pos->bars = px / rw_prv->px_per_bar + 1;
+  px = px % rw_prv->px_per_bar;
+  pos->beats = px / rw_prv->px_per_beat + 1;
+  px = px % rw_prv->px_per_beat;
+  pos->sixteenths = px / rw_prv->px_per_sixteenth + 1;
+  px = px % rw_prv->px_per_sixteenth;
+  pos->ticks = px / rw_prv->px_per_tick;
 }
 
 int
@@ -84,10 +84,10 @@ ruler_widget_pos_to_px (RulerWidget * self,
 {
   GET_PRIVATE;
 
-  return  (pos->bars - 1) * prv->px_per_bar +
-    (pos->beats - 1) * prv->px_per_beat +
-    (pos->sixteenths - 1) * prv->px_per_sixteenth +
-    pos->ticks * prv->px_per_tick;
+  return  (pos->bars - 1) * rw_prv->px_per_bar +
+    (pos->beats - 1) * rw_prv->px_per_beat +
+    (pos->sixteenths - 1) * rw_prv->px_per_sixteenth +
+    pos->ticks * rw_prv->px_per_tick;
 }
 
 static gboolean
@@ -128,15 +128,15 @@ draw_cb (RulerWidget * self, cairo_t *cr, gpointer data)
     ruler_widget_pos_to_px (self,
                             &TRANSPORT->loop_end_pos);
 
-  gtk_render_background (context, cr, 0, 0, prv->total_px, height);
+  gtk_render_background (context, cr, 0, 0, rw_prv->total_px, height);
 
   /* draw lines */
   int bar_count = 1;
-  for (int i = 0; i < prv->total_px - SPACE_BEFORE_START; i++)
+  for (int i = 0; i < rw_prv->total_px - SPACE_BEFORE_START; i++)
     {
       int draw_pos = i + SPACE_BEFORE_START;
 
-      if (i % prv->px_per_bar == 0)
+      if (i % rw_prv->px_per_bar == 0)
       {
           cairo_set_source_rgb (cr, 1, 1, 1);
           cairo_set_line_width (cr, 1);
@@ -157,7 +157,7 @@ draw_cb (RulerWidget * self, cairo_t *cr, gpointer data)
           cairo_show_text(cr, label);
           bar_count++;
       }
-      else if (i % prv->px_per_beat == 0)
+      else if (i % rw_prv->px_per_beat == 0)
       {
           cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
           cairo_set_line_width (cr, 0.5);
@@ -286,7 +286,7 @@ drag_begin (GtkGestureDrag * gesture,
   RulerWidget * self = Z_RULER_WIDGET (user_data);
   GET_PRIVATE;
 
-  prv->start_x = start_x;
+  rw_prv->start_x = start_x;
   Position pos;
   ruler_widget_px_to_pos (
     self,
@@ -308,7 +308,7 @@ drag_update (GtkGestureDrag * gesture,
   ruler_widget_px_to_pos (
     self,
     &pos,
-    (prv->start_x + offset_x) - SPACE_BEFORE_START);
+    (rw_prv->start_x + offset_x) - SPACE_BEFORE_START);
   transport_move_playhead (TRANSPORT, &pos, 1);
 }
 
@@ -321,7 +321,7 @@ drag_end (GtkGestureDrag *gesture,
   RulerWidget * self = (RulerWidget *) user_data;
   GET_PRIVATE;
 
-  prv->start_x = 0;
+  rw_prv->start_x = 0;
 }
 
 /* FIXME delete */
@@ -345,22 +345,22 @@ ruler_widget_refresh (RulerWidget * self)
     px_per_tick * TICKS_PER_BEAT;
   unsigned int px_per_bar =
     px_per_beat * TRANSPORT->beats_per_bar;
-  prv->px_per_tick = px_per_tick;
+  rw_prv->px_per_tick = px_per_tick;
   GTK_WIDGET (self);
-  prv->px_per_sixteenth = px_per_sixteenth;
+  rw_prv->px_per_sixteenth = px_per_sixteenth;
   GTK_WIDGET (self);
-  prv->px_per_beat = px_per_beat;
+  rw_prv->px_per_beat = px_per_beat;
   GTK_WIDGET (self);
-  prv->px_per_bar = px_per_bar;
+  rw_prv->px_per_bar = px_per_bar;
   GTK_WIDGET (self);
 
-  prv->total_px = px_per_bar * TRANSPORT->total_bars;
+  rw_prv->total_px = px_per_bar * TRANSPORT->total_bars;
   GTK_WIDGET (self);
 
   // set the size
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
-    prv->total_px,
+    rw_prv->total_px,
     -1);
 }
 
@@ -382,9 +382,9 @@ ruler_widget_init (RulerWidget * self)
   gtk_widget_add_events (GTK_WIDGET (self),
                          GDK_ALL_EVENTS_MASK);
 
-  prv->drag = GTK_GESTURE_DRAG (
+  rw_prv->drag = GTK_GESTURE_DRAG (
                 gtk_gesture_drag_new (GTK_WIDGET (self)));
-  prv->multipress = GTK_GESTURE_MULTI_PRESS (
+  rw_prv->multipress = GTK_GESTURE_MULTI_PRESS (
                 gtk_gesture_multi_press_new (GTK_WIDGET (self)));
 
   ruler_widget_refresh (self);
@@ -394,12 +394,12 @@ ruler_widget_init (RulerWidget * self)
                     G_CALLBACK (draw_cb), NULL);
   /*g_signal_connect (G_OBJECT(self), "button_press_event",*/
                     /*G_CALLBACK (button_press_cb),  self);*/
-  g_signal_connect (G_OBJECT(prv->drag), "drag-begin",
+  g_signal_connect (G_OBJECT(rw_prv->drag), "drag-begin",
                     G_CALLBACK (drag_begin),  self);
-  g_signal_connect (G_OBJECT(prv->drag), "drag-update",
+  g_signal_connect (G_OBJECT(rw_prv->drag), "drag-update",
                     G_CALLBACK (drag_update),  self);
-  g_signal_connect (G_OBJECT(prv->drag), "drag-end",
+  g_signal_connect (G_OBJECT(rw_prv->drag), "drag-end",
                     G_CALLBACK (drag_end),  self);
-  g_signal_connect (G_OBJECT (prv->multipress), "pressed",
+  g_signal_connect (G_OBJECT (rw_prv->multipress), "pressed",
                     G_CALLBACK (multipress_pressed), self);
 }

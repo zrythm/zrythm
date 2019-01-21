@@ -20,6 +20,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_minimap_selection.h"
 #include "utils/cairo.h"
@@ -46,14 +48,16 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
 }
 
 static void
-on_motion (GtkWidget * widget, GdkEventMotion *event)
+on_motion (GtkWidget * widget,
+           GdkEventMotion *event,
+           gpointer user_data)
 {
   TimelineMinimapSelectionWidget * self =
-    Z_TIMELINE_MINIMAP_SELECTION_WIDGET (widget);
+    Z_TIMELINE_MINIMAP_SELECTION_WIDGET (user_data);
   guint width =
     gtk_widget_get_allocated_width (widget);
 
-  if (event->type == GDK_ENTER_NOTIFY)
+  if (event->type == GDK_MOTION_NOTIFY)
     {
       gtk_widget_set_state_flags (GTK_WIDGET (self),
                                   GTK_STATE_FLAG_PRELIGHT,
@@ -61,6 +65,7 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
       if (event->x < RESIZE_CURSOR_SPACE)
         {
           self->cursor = UI_CURSOR_STATE_RESIZE_L;
+          g_message ("resize l");
           if (self->parent->action != TIMELINE_MINIMAP_ACTION_MOVING)
             ui_set_cursor (widget, "w-resize");
         }
@@ -68,12 +73,14 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
                  RESIZE_CURSOR_SPACE)
         {
           self->cursor = UI_CURSOR_STATE_RESIZE_R;
+          g_message ("resize r");
           if (self->parent->action != TIMELINE_MINIMAP_ACTION_MOVING)
             ui_set_cursor (widget, "e-resize");
         }
       else
         {
           self->cursor = UI_CURSOR_STATE_DEFAULT;
+          g_message ("default");
           if (self->parent->action !=
                 TIMELINE_MINIMAP_ACTION_MOVING &&
               self->parent->action !=
@@ -86,10 +93,12 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
               ui_set_cursor (widget, "default");
             }
         }
+      g_message ("entering");
     }
   /* if leaving */
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
+      g_message ("leaving");
       gtk_widget_unset_state_flags (GTK_WIDGET (self),
                                     GTK_STATE_FLAG_PRELIGHT);
     }
@@ -133,12 +142,23 @@ timeline_minimap_selection_widget_init (
   gtk_widget_set_visible (GTK_WIDGET (self),
                           1);
 
-  g_signal_connect (G_OBJECT (self->drawing_area), "draw",
-                    G_CALLBACK (draw_cb), NULL);
-  g_signal_connect (G_OBJECT (self), "enter-notify-event",
-                    G_CALLBACK (on_motion),  self);
-  g_signal_connect (G_OBJECT(self), "leave-notify-event",
-                    G_CALLBACK (on_motion),  self);
-  g_signal_connect (G_OBJECT(self), "motion-notify-event",
-                    G_CALLBACK (on_motion),  self);
+  gtk_widget_add_events (GTK_WIDGET (self->drawing_area),
+                         GDK_ALL_EVENTS_MASK);
+
+  g_signal_connect (G_OBJECT (self->drawing_area),
+                    "draw",
+                    G_CALLBACK (draw_cb),
+                    self);
+  g_signal_connect (G_OBJECT (self->drawing_area),
+                    "enter-notify-event",
+                    G_CALLBACK (on_motion),
+                    self);
+  g_signal_connect (G_OBJECT(self->drawing_area),
+                    "leave-notify-event",
+                    G_CALLBACK (on_motion),
+                    self);
+  g_signal_connect (G_OBJECT(self->drawing_area),
+                    "motion-notify-event",
+                    G_CALLBACK (on_motion),
+                    self);
 }

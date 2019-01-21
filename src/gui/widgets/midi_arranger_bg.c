@@ -52,7 +52,7 @@ draw_borders (MidiArrangerBgWidget * self,
   cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
   cairo_set_line_width (cr, 0.5);
   cairo_move_to (cr, 0, y_offset);
-  cairo_line_to (cr, prv->total_px, y_offset);
+  cairo_line_to (cr, rw_prv->total_px, y_offset);
   cairo_stroke (cr);
 }
 
