@@ -32,6 +32,7 @@ Requires: libdazzle
 Requires: libsmf
 Requires: libsndfile
 Requires: portaudio
+Requires: breeze-icon-theme
 
 BuildRoot: ~/rpmbuild/
 

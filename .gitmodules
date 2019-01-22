@@ -1,4 +1,0 @@
-[submodule "ext/breeze-icons"]
-	path = ext/breeze-icons
-	url = https://github.com/KDE/breeze-icons.git
-  branch = master

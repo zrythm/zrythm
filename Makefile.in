@@ -222,7 +222,7 @@ clean:
 	-rm $(BUILD_DIR)/zrythm.gresource.xml
 
 .PHONY: install
-install: $(BUILD_DIR)/$(BIN)$(EXT) install-appicon-data install-desktop-data install-gschemas install-fonts install-icon-theme
+install: $(BUILD_DIR)/$(BIN)$(EXT) install-appicon-data install-desktop-data install-gschemas install-fonts
 	$(MKDIR_P) $(DESTDIR)$(bindir)
 	$(INSTALL) $< $(DESTDIR)$(bindir)/$(BIN)$(EXT)
 
@@ -235,11 +235,11 @@ install-appicon-data: $(appicon_DATA)
 	$(MKDIR_P) "$(DESTDIR)$(appicondir)"
 	$(INSTALL_DATA) $< "$(DESTDIR)$(appicondir)/"
 
-.PHONY: install-icon-theme
-install-icon-theme: ext/breeze-icons/icons-dark
-	$(MKDIR_P) "$(DESTDIR)$(datadir)/icons/breeze-dark-z"
-	chmod 755 "$(DESTDIR)$(datadir)/icons/breeze-dark-z"
-	cp -r $</* "$(DESTDIR)$(datadir)/icons/breeze-dark-z/"
+#.PHONY: install-icon-theme
+#install-icon-theme: ext/breeze-icons/icons-dark
+	#$(MKDIR_P) "$(DESTDIR)$(datadir)/icons/breeze-dark-z"
+	#chmod 755 "$(DESTDIR)$(datadir)/icons/breeze-dark-z"
+	#cp -r $</* "$(DESTDIR)$(datadir)/icons/breeze-dark-z/"
 
 .PHONY: install-gschemas
 install-gschemas: $(gsettings_SCHEMAS)

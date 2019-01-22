@@ -15,6 +15,7 @@ Build-Depends: debhelper-compat (= 10),
   lv2-dev (>= 1.14.0~),
   libdazzle-1.0-dev,
   portaudio19-dev
+Depends: breeze-icon-theme
 
 Package: zrythm
 Architecture: any
