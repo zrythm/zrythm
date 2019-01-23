@@ -24,6 +24,7 @@
 #include "actions/actions.h"
 #include "actions/undo_manager.h"
 #include "project.h"
+#include "gui/backend/timeline_selections.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -40,6 +41,7 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_ruler.h"
+#include "utils/gtk.h"
 
 #include <gtk/gtk.h>
 
@@ -360,7 +362,28 @@ activate_copy (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  g_message ("ZOOMING IN");
+  int timeline_focused =
+    gtk_widget_has_focus (GTK_WIDGET (MW_TIMELINE));
+  if (timeline_focused)
+    {
+      g_message ("copy: timeline focused");
+      g_message (region_serialize (PROJECT->regions[0]));
+      gtk_clipboard_set_text (
+        DEFAULT_CLIPBOARD,
+        timeline_selections_serialize (
+          &MW_TIMELINE->selections),
+        -1);
+    }
+}
+
+static void
+on_timeline_clipboard_received (
+  GtkClipboard *     clipboard,
+  const char *       text,
+  gpointer           data)
+{
+  g_message ("clipboard data received: %s",
+             text);
 }
 
 void
@@ -368,7 +391,16 @@ activate_paste (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  g_message ("ZOOMING IN");
+  int timeline_focused =
+    gtk_widget_has_focus (GTK_WIDGET (MW_TIMELINE));
+  if (timeline_focused)
+    {
+      g_message ("paste: timeline focused");
+      gtk_clipboard_request_text (
+        DEFAULT_CLIPBOARD,
+        on_timeline_clipboard_received,
+        NULL);
+    }
 }
 
 void

@@ -22,10 +22,11 @@
 #ifndef __GUI_WIDGETS_TIMELINE_ARRANGER_H__
 #define __GUI_WIDGETS_TIMELINE_ARRANGER_H__
 
+#include "audio/position.h"
+#include "gui/backend/timeline_selections.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/piano_roll.h"
-#include "audio/position.h"
 
 #include <gtk/gtk.h>
 
@@ -53,22 +54,15 @@ typedef struct Chord Chord;
 typedef struct _TimelineArrangerWidget
 {
   ArrangerWidget           parent_instance;
-  Region *                 regions[600];  ///< regions doing action upon (timeline)
-  int                      num_regions;
   Region *                 start_region; ///< clicked region
-  Region *                 top_region; ///< highest selected region
-  Region *                 bot_region; ///< lowest selected region
-  AutomationPoint *        automation_points[600];  ///< automation points doing action upon (timeline)
   AutomationPoint *        start_ap;
-  int                      num_automation_points;
   AutomationCurve *        start_ac;
 
+  TimelineSelections       selections;
   /* temporary start positions, set on drag_begin, and used in drag_update
    * to move the objects accordingly */
   Position                 region_start_poses[600]; ///< region initial start positions, for moving regions
   Position                 ap_poses[600]; ///< for moving regions
-  Chord *                  chords[800];
-  int                      num_chords;
 } TimelineArrangerWidget;
 
 /**

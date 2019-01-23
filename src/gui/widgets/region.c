@@ -83,10 +83,10 @@ draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
 
   GdkRGBA * color = &((ChannelTrack *) rw_prv->region->track)->channel->color;
   cairo_set_source_rgba (cr,
-                         color->red,
-                         color->green,
-                         color->blue,
-                         0.8);
+                         color->red - 0.06,
+                         color->green - 0.06,
+                         color->blue - 0.06,
+                         0.7);
   cairo_rectangle(cr, 0, 0, width, height);
   cairo_fill(cr);
   cairo_set_source_rgba (cr,

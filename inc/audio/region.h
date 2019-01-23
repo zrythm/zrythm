@@ -25,6 +25,8 @@
 
 #include "audio/position.h"
 
+#include <cyaml/cyaml.h>
+
 #define REGION_PRINTF_FILENAME "%d_%s_%s.mid"
 
 typedef struct _RegionWidget RegionWidget;
@@ -37,6 +39,7 @@ typedef enum RegionType
   REGION_TYPE_MIDI,
   REGION_TYPE_AUDIO
 } RegionType;
+
 
 typedef struct Region
 {
@@ -82,6 +85,38 @@ typedef struct Region
   int                      selected;
 } Region;
 
+static const cyaml_strval_t region_type_strings[] = {
+	{ "Midi",          REGION_TYPE_MIDI    },
+	{ "Audio",         REGION_TYPE_AUDIO   },
+};
+
+static const cyaml_schema_field_t
+  region_fields_schema[] =
+{
+	CYAML_FIELD_INT(
+			"id", CYAML_FLAG_DEFAULT,
+			Region, id),
+
+  CYAML_FIELD_ENUM(
+			"type", CYAML_FLAG_DEFAULT,
+			Region, type, region_type_strings,
+CYAML_ARRAY_LEN(region_type_strings)),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+region_schema = {
+	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+			Region, region_fields_schema),
+};
+
+static const cyaml_config_t config = {
+	.log_level = CYAML_LOG_DEBUG, /* Logging errors and warnings only. */
+	.log_fn = cyaml_log,            /* Use the default logging function. */
+	.mem_fn = cyaml_mem,            /* Use the default memory allocator. */
+};
+
 /**
  * Only to be used by implementing structs.
  */
@@ -122,5 +157,13 @@ region_at_position (Track    * track, ///< the track to look in
  */
 char *
 region_generate_filename (Region * region);
+
+/**
+ * Serializes the region.
+ *
+ * MUST be free'd.
+ */
+char *
+region_serialize (Region * region);
 
 #endif // __AUDIO_REGION_H__

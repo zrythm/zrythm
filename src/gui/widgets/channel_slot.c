@@ -213,16 +213,25 @@ channel_slot_widget_new (int slot_index,
                     G_CALLBACK (on_drag_data_get),
                     self);
 
-  gtk_drag_source_set (GTK_WIDGET (cw->slot_boxes[slot_index]),
-                       GDK_MODIFIER_MASK,
-                       ZRYTHM->entries,
-                       ZRYTHM->num_entries,
-                       GDK_ACTION_COPY);
-  gtk_drag_dest_set (GTK_WIDGET (self),
-                            GTK_DEST_DEFAULT_ALL,
-                            ZRYTHM->entries,
-                            ZRYTHM->num_entries,
-                            GDK_ACTION_COPY);
+  GtkTargetEntry entries[2];
+  entries[0].target = TARGET_ENTRY_PLUGIN;
+  entries[0].flags = GTK_TARGET_SAME_APP;
+  entries[0].info = TARGET_ENTRY_ID_PLUGIN;
+  entries[1].target = TARGET_ENTRY_PLUGIN_DESCR;
+  entries[1].flags = GTK_TARGET_SAME_APP;
+  entries[1].info = TARGET_ENTRY_ID_PLUGIN_DESCR;
+  gtk_drag_source_set (
+    GTK_WIDGET (cw->slot_boxes[slot_index]),
+    GDK_MODIFIER_MASK,
+    entries,
+    1,
+    GDK_ACTION_COPY);
+  gtk_drag_dest_set (
+    GTK_WIDGET (self),
+    GTK_DEST_DEFAULT_ALL,
+    entries,
+    2,
+    GDK_ACTION_COPY);
 
   return self;
 }

@@ -70,15 +70,15 @@ midi_arranger_widget_set_channel (
   MidiArrangerWidget * self,
   Channel *            channel)
 {
-  ArrangerWidgetPrivate * ar_prv =
-    arranger_widget_get_private (
-      Z_ARRANGER_WIDGET (self));
+  /*ArrangerWidgetPrivate * ar_prv =*/
+    /*arranger_widget_get_private (*/
+      /*Z_ARRANGER_WIDGET (self));*/
   if (channel->track->type != TRACK_TYPE_INSTRUMENT)
     {
       g_error ("Track is not an instrument track");
       return;
     }
-  InstrumentTrack * it = (InstrumentTrack *) channel->track;
+  /*InstrumentTrack * it = (InstrumentTrack *) channel->track;*/
   if (self->channel)
     {
       channel_reattach_midi_editor_manual_press_port (

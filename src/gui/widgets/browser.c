@@ -339,11 +339,15 @@ tree_view_create (BrowserWidget * self,
 
   if (dnd)
     {
+      GtkTargetEntry entries[1];
+      entries[0].target = TARGET_ENTRY_PLUGIN_DESCR;
+      entries[0].flags = GTK_TARGET_SAME_APP;
+      entries[0].info = TARGET_ENTRY_ID_PLUGIN_DESCR;
       gtk_tree_view_enable_model_drag_source (
         GTK_TREE_VIEW (tree_view),
         GDK_BUTTON1_MASK,
-        ZRYTHM->entries,
-        ZRYTHM->num_entries,
+        entries,
+        1,
         GDK_ACTION_COPY);
       g_signal_connect (GTK_WIDGET (tree_view),
                         "drag-data-get",

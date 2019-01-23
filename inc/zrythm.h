@@ -35,6 +35,18 @@ G_DECLARE_FINAL_TYPE (ZrythmApp,
                       APP,
                       GtkApplication)
 
+/* Gtk target entries */
+/* Plugin descriptor, used to instantiate plugins */
+#define TARGET_ENTRY_PLUGIN_DESCR "PLUGIN_DESCR"
+#define TARGET_ENTRY_ID_PLUGIN_DESCR 0
+/* Plugin ID, used to move/copy plugins */
+#define TARGET_ENTRY_PLUGIN "PLUGIN"
+#define TARGET_ENTRY_ID_PLUGIN 1
+/* */
+#define TARGET_ENTRY_TIMELINE_SELECTIONS \
+  "TIMELINE_SELECTIONS"
+#define TARGET_ENTRY_ID_TIMELINE_SELECTIONS 2
+
 typedef struct AudioEngine AudioEngine;
 typedef struct PluginManager PluginManager;
 typedef struct Project Project;
@@ -62,8 +74,6 @@ struct _ZrythmApp
   PluginManager *  plugin_manager;
 
   MainWindowWidget      * main_window;      ///< main window
-  GtkTargetEntry        entries[10];        ///< dnd entries
-  int                   num_entries;        ///< count
 
   Preferences *     preferences;
 

@@ -96,11 +96,15 @@ drag_dest_box_widget_new (GtkOrientation  orientation,
                           1);
 
   /* set as drag dest */
+  GtkTargetEntry entries[1];
+  entries[0].target = TARGET_ENTRY_PLUGIN_DESCR;
+  entries[0].flags = GTK_TARGET_SAME_APP;
+  entries[0].info = 0;
   gtk_drag_dest_set (GTK_WIDGET (self),
-                            GTK_DEST_DEFAULT_ALL,
-                            ZRYTHM->entries,
-                            ZRYTHM->num_entries,
-                            GDK_ACTION_COPY);
+                     GTK_DEST_DEFAULT_ALL,
+                     entries,
+                     1,
+                     GDK_ACTION_COPY);
 
   /* connect signal */
   g_signal_connect (GTK_WIDGET (self),

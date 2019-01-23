@@ -68,15 +68,10 @@ engine_setup (AudioEngine * self)
   /* init semaphore */
   zix_sem_init (&self->port_operation_lock, 1);
 
-  switch (self->backend)
-    {
-    case ENGINE_BACKEND_JACK:
-      jack_setup (self);
-      break;
-    case ENGINE_BACKEND_PORT_AUDIO:
-      pa_setup (self);
-      break;
-    }
+  if (self->backend == ENGINE_BACKEND_JACK)
+    jack_setup (self);
+  else if (self->backend == ENGINE_BACKEND_PORT_AUDIO)
+    pa_setup (self);
 }
 
 /**
@@ -102,15 +97,10 @@ close_audio_engine (AudioEngine * self)
 {
   g_message ("closing audio engine...");
 
-  switch (self->backend)
-    {
-    case ENGINE_BACKEND_JACK:
-      jack_client_close (self->client);
-      break;
-    case ENGINE_BACKEND_PORT_AUDIO:
-      pa_terminate (self);
-      break;
-    }
+  if (self->backend == ENGINE_BACKEND_JACK)
+    jack_client_close (self->client);
+  else if (self->backend == ENGINE_BACKEND_PORT_AUDIO)
+    pa_terminate (self);
 }
 
 /**

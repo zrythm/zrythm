@@ -297,10 +297,6 @@ static void on_init_main_window (GSimpleAction  *action,
   gtk_widget_destroy (GTK_WIDGET (splash));
 
   ZrythmApp * app = ZRYTHM_APP (data);
-  app->entries[0].target = "PLUGIN_DESCR";
-  app->entries[0].flags = GTK_TARGET_SAME_APP;
-  app->entries[0].info = 0;
-  app->num_entries = 1;
   app->main_window = main_window_widget_new (app);
 
   g_action_group_activate_action (

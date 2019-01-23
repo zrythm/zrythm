@@ -256,13 +256,13 @@ arranger_widget_toggle_select (ArrangerWidget *  self,
         Z_TIMELINE_ARRANGER_WIDGET (self);
       if (type == REGION_WIDGET_TYPE)
         {
-          array = (void **) taw->regions;
-          num = &taw->num_regions;
+          array = (void **) taw->selections.regions;
+          num = &taw->selections.num_regions;
         }
       else if (type == AUTOMATION_POINT_WIDGET_TYPE)
         {
-          array = (void **) taw->automation_points;
-          num = &taw->num_automation_points;
+          array = (void **) taw->selections.automation_points;
+          num = &taw->selections.num_automation_points;
         }
     }
   if (T_MIDI)

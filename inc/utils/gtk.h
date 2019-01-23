@@ -24,6 +24,9 @@
 
 #include <gtk/gtk.h>
 
+#define DEFAULT_CLIPBOARD \
+  gtk_clipboard_get_default (gdk_display_get_default ())
+
 typedef enum IconType IconType;
 /**
  * For readability, instead of using 0s and 1s.
