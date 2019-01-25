@@ -52,10 +52,8 @@ tracklist_init (Tracklist * self)
   tracklist_append_track ((Track *) CHORD_TRACK);
 
   /* add each channel */
-  g_message ("num channels %d", MIXER->num_channels);
   for (int i = 0; i < MIXER->num_channels; i++)
     {
-      g_message ("adding channel at %d", i);
       Channel * channel = MIXER->channels[i];
       g_assert (channel);
       g_assert (channel->track);
