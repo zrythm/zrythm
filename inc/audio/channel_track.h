@@ -22,12 +22,12 @@
 #ifndef __AUDIO_CHANNEL_TRACK_H__
 #define __AUDIO_CHANNEL_TRACK_H__
 
+#include "audio/automation_tracklist.h"
 #include "audio/track.h"
 
 typedef struct Position Position;
 typedef struct _TrackWidget TrackWidget;
 typedef struct Channel Channel;
-typedef struct AutomationTrack AutomationTrack;
 typedef struct Automatable Automatable;
 
 /**
@@ -44,9 +44,10 @@ typedef struct ChannelTrack
    *
    * 1 channel has 1 track.
    */
-  Channel *             channel;
+  int                   channel_id;
+  Channel *             channel; ///< cache
 
-  AutomationTracklist * automation_tracklist;
+  AutomationTracklist   automation_tracklist;
 } ChannelTrack;
 
 void

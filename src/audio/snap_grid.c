@@ -19,8 +19,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/engine.h"
 #include "audio/snap_grid.h"
 #include "audio/transport.h"
+#include "project.h"
 
 #include <gtk/gtk.h>
 
@@ -163,8 +165,11 @@ snap_grid_get_note_ticks (NoteLength note_length,
   g_assert_not_reached ();
 }
 
-static void
-update_snap_points (SnapGrid * self)
+/**
+ * Updates snap points.
+ */
+void
+snap_grid_update_snap_points (SnapGrid * self)
 {
   Position tmp, end_pos;
   position_init (&tmp);
@@ -188,24 +193,15 @@ update_snap_points (SnapGrid * self)
     }
 }
 
-SnapGrid *
-snap_grid_new (NoteLength   note_length)
+void
+snap_grid_init (SnapGrid *   self,
+                NoteLength   note_length)
 {
-  SnapGrid * self = calloc (1, sizeof (SnapGrid));
-
   self->grid_auto = 1;
   self->note_length = note_length;
   self->num_snap_points = 0;
   self->note_type = NOTE_TYPE_NORMAL;
   self->snap_to_grid = 1;
-
-  return self;
-}
-
-void
-snap_grid_setup (SnapGrid * self)
-{
-  update_snap_points (self);
 }
 
 /**

@@ -40,6 +40,7 @@
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/tracklist.h"
 #include "gui/widgets/track.h"
+#include "project.h"
 #include "utils/arrays.h"
 #include "utils/gtk.h"
 #include "utils/ui.h"
@@ -141,8 +142,6 @@ drag_end (GtkGestureDrag *gesture,
 static void
 on_delete_tracks ()
 {
-  TracklistWidget * self = MW_TRACKLIST;
-
   GET_SELECTED_TRACKS;
 
   for (int i = 0; i < num_selected; i++)
@@ -158,10 +157,8 @@ on_delete_tracks ()
         case TRACK_TYPE_AUDIO:
             {
               ChannelTrack * ct = (ChannelTrack *) track;
-              mixer_remove_channel (MIXER,
-                                    ct->channel);
-              tracklist_remove_track (self->tracklist,
-                                      track);
+              mixer_remove_channel (ct->channel);
+              tracklist_remove_track (track);
               break;
             }
         }
@@ -174,10 +171,9 @@ on_add_ins_track (GtkMenuItem * menu_item,
 {
   Channel * chan = channel_create (CT_MIDI,
                                    "Instrument Track");
-  mixer_add_channel (MIXER, chan);
+  mixer_add_channel (chan);
   mixer_widget_refresh (MW_MIXER);
-  tracklist_append_track (TRACKLIST,
-                          chan->track);
+  tracklist_append_track (chan->track);
   tracklist_widget_refresh (MW_TRACKLIST);
 }
 

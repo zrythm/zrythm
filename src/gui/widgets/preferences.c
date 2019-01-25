@@ -20,9 +20,9 @@
  */
 
 #include "audio/engine.h"
-#include "audio/preferences.h"
 #include "gui/widgets/preferences.h"
-#include "settings.h"
+#include "settings/preferences.h"
+#include "settings/settings.h"
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>

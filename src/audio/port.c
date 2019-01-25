@@ -70,7 +70,6 @@ port_get_or_create_blank (int id)
       AUDIO_ENGINE->ports[id] = port;
       AUDIO_ENGINE->num_ports++;
       port->buf = calloc (AUDIO_ENGINE->block_length, sizeof (sample_t));
-      port->nframes = AUDIO_ENGINE->block_length;
       port->num_dests = 0;
       port->flow = FLOW_UNKNOWN;
 
@@ -86,15 +85,14 @@ port_get_or_create_blank (int id)
  * Sets id and updates appropriate counters.
  */
 Port *
-port_new (nframes_t nframes, char * label)
+port_new (char * label)
 {
   Port * port = calloc (1, sizeof (Port));
 
   port->id = AUDIO_ENGINE->num_ports;
   AUDIO_ENGINE->ports[AUDIO_ENGINE->num_ports++] = port;
   port->num_dests = 0;
-  port->nframes = nframes;
-  port->buf = calloc (nframes, sizeof (sample_t));
+  port->buf = calloc (AUDIO_ENGINE->block_length, sizeof (sample_t));
   port->flow = FLOW_UNKNOWN;
   port->label = g_strdup (label);
 
@@ -107,12 +105,11 @@ port_new (nframes_t nframes, char * label)
  * Creates port.
  */
 Port *
-port_new_with_type (nframes_t    nframes,
-                    PortType     type,
+port_new_with_type (PortType     type,
                     PortFlow     flow,
                     char         * label)
 {
-  Port * port = port_new (nframes, label);
+  Port * port = port_new (label);
 
   port->type = type;
   port->flow = flow;
@@ -137,14 +134,13 @@ stereo_ports_new (Port * l, Port * r)
  * Creates port and adds given data to it.
  */
 Port *
-port_new_with_data (nframes_t    nframes,
-                    PortInternalType internal_type, ///< the internal data format
+port_new_with_data (PortInternalType internal_type, ///< the internal data format
                     PortType     type,
                     PortFlow     flow,
                     char         * label,
                     void         * data)   ///< the data
 {
-  Port * port = port_new_with_type (nframes, type, flow, label);
+  Port * port = port_new_with_type (type, flow, label);
 
   /** TODO semaphore **/
   port->data = data;
@@ -296,7 +292,8 @@ port_disconnect_all (Port * port)
 void
 port_apply_fader (Port * port, float amp)
 {
-  for (int i = 0; i < port->nframes; i++)
+  int nframes = AUDIO_ENGINE->block_length;
+  for (int i = 0; i < nframes; i++)
     {
       port->buf[i] *= amp;
     }
@@ -307,9 +304,10 @@ port_apply_fader (Port * port, float amp)
  * First sets port buf to 0, then sums the given port signal from its inputs.
  */
 void
-port_sum_signal_from_inputs (Port * port, nframes_t nframes)
+port_sum_signal_from_inputs (Port * port)
 {
   /*port_init_buf (port, nframes);*/
+  int nframes = AUDIO_ENGINE->block_length;
 #if _POSIX_C_SOURCE >= 199309L
   struct timespec ts;
   ts.tv_sec = SLEEPTIME / 1000;
@@ -408,9 +406,10 @@ port_clear_buffer (Port * port)
 {
   if (port->type == TYPE_AUDIO)
     {
-      /* FIXME sometimes this fails */
       if (port->buf)
-        memset (port->buf, 0, port->nframes * sizeof (sample_t));
+        memset (port->buf,
+                0,
+                AUDIO_ENGINE->block_length * sizeof (float));
     }
   else if (port->type == TYPE_EVENT)
     {
@@ -428,9 +427,10 @@ port_apply_pan_stereo (Port *       l,
                        PanLaw       pan_law,
                        PanAlgorithm pan_algo)
 {
+  int nframes = AUDIO_ENGINE->block_length;
   if (pan_algo == PAN_ALGORITHM_SINE_LAW)
     {
-      for (int i = 0; i < l->nframes; i++)
+      for (int i = 0; i < nframes; i++)
         {
           r->buf[i] *= sinf (pan * (M_PIF / 2.f));
           l->buf[i] *= sinf ((1.f - pan) * (M_PIF / 2.f));

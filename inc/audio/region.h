@@ -72,7 +72,8 @@ typedef struct Region
   /**
    * Owner track.
    */
-  Track        * track;
+  int            track_id;
+  Track *        track; ///< cache
 
   /**
    * Linked parent region.
@@ -80,7 +81,8 @@ typedef struct Region
    * Either the midi notes from this region, or the midi
    * notes from the linked region are used
    */
-  struct Region       * linked_region;
+  int             linked_region_id;
+  struct Region * linked_region; ///< cache
 
   int                      selected;
 } Region;

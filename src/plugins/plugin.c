@@ -190,7 +190,7 @@ plugin_instantiate (Plugin * plugin ///< the plugin
  * Process plugin
  */
 void
-plugin_process (Plugin * plugin, nframes_t nframes)
+plugin_process (Plugin * plugin)
 {
 
   /* if has MIDI input port */
@@ -204,7 +204,7 @@ plugin_process (Plugin * plugin, nframes_t nframes)
 
   if (plugin->descr->protocol == PROT_LV2)
     {
-      lv2_plugin_process ((Lv2Plugin *) plugin->original_plugin, nframes);
+      lv2_plugin_process ((Lv2Plugin *) plugin->original_plugin);
     }
 
   plugin->processed = 1;

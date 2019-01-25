@@ -25,9 +25,11 @@
 #include <signal.h>
 
 #include "audio/channel.h"
+#include "audio/engine.h"
 #include "audio/mixer.h"
 #include "audio/midi.h"
 #include "audio/transport.h"
+#include "project.h"
 
 /**
  * Appends the events from src to dest

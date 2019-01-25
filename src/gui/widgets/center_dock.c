@@ -24,6 +24,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/center_dock_bot_box.h"
 #include "gui/widgets/left_dock_edge.h"
+#include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/piano_roll.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/ruler.h"
@@ -34,6 +35,7 @@
 #include "gui/widgets/top_dock_edge.h"
 #include "gui/widgets/tracklist.h"
 #include "gui/widgets/tracklist_header.h"
+#include "project.h"
 #include "utils/resources.h"
 
 G_DEFINE_TYPE (CenterDockWidget,
@@ -70,9 +72,13 @@ on_hadj_value_changed (GtkAdjustment *adjustment,
 void
 center_dock_widget_setup (CenterDockWidget * self)
 {
+  ruler_widget_refresh (Z_RULER_WIDGET (MW_RULER));
+  ruler_widget_refresh (Z_RULER_WIDGET (MIDI_RULER));
+
   GtkAdjustment * adj =
     gtk_scrollable_get_hadjustment (
       GTK_SCROLLABLE (self->ruler_viewport));
+
   g_signal_connect (G_OBJECT (adj),
                     "value-changed",
                     G_CALLBACK (on_hadj_value_changed),

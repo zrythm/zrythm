@@ -78,6 +78,9 @@ PKG_CHECK_MODULES([LIBCYAML], [libcyaml])
 AM_COND_IF([WINDOWS],
            [AC_CHECK_HEADERS([windows.h])])
 AC_CHECK_HEADERS([unistd.h])
+AC_CHECK_FUNC([mlock],
+              [AC_DEFINE([HAVE_MLOCK], [1],
+              [Define if mlock exists.])])
 
 AM_COND_IF([LINUX],
            [LDFLAGS="$LDFLAGS -L/usr/lib"])

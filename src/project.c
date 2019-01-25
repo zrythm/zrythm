@@ -35,17 +35,8 @@
 #include "utils/arrays.h"
 #include "utils/io.h"
 #include "utils/smf.h"
-#include "utils/xml.h"
 
 #include <gtk/gtk.h>
-
-Project *
-project_new ()
-{
-  Project * self = calloc (1, sizeof (Project));
-
-  return self;
-}
 
 /**
  * Tears down the project before loading another one.
@@ -85,24 +76,21 @@ update_paths (Project * self,
 }
 
 void
-create_default (Project * self,
-                Mixer *   mixer)
+create_default (Project * self)
 {
-  g_assert (self);
-  g_assert (mixer);
-
-  if (self->loaded)
-    tear_down (self);
+  engine_init (&self->audio_engine);
+  undo_manager_init (&self->undo_manager);
 
   self->title = g_strdup (DEFAULT_PROJECT_NAME);
 
   /* add master channel to mixer */
   mixer_add_channel (
-    mixer,
     channel_create (CT_MASTER, "Master"));
 
   /* create chord track */
   self->chord_track = chord_track_default ();
+
+  self->loaded = 1;
 }
 
 static void
@@ -116,10 +104,10 @@ load (Project *    self,
   char * dir = io_get_dir (filename);
   update_paths (self, dir);
 
-  xml_load_ports ();
-  xml_load_regions ();
-  xml_load_project ();
-  mixer_load_plugins (MIXER);
+  /*xml_load_ports ();*/
+  /*xml_load_regions ();*/
+  /*xml_load_project ();*/
+  mixer_load_plugins ();
 
   char * filepath_noext = g_path_get_basename (dir);
   self->title = filepath_noext;
@@ -128,6 +116,8 @@ load (Project *    self,
   g_free (dir);
 
   self->filename = filename;
+
+  self->loaded = 1;
 }
 
 /**
@@ -135,14 +125,27 @@ load (Project *    self,
  * it loads the default project.
  */
 void
-project_setup (Project * self,
-               char * filename)
+project_load (char * filename)
 {
   if (filename)
-    load (self, filename);
+    load (PROJECT, filename);
   else
-    create_default (self,
-                    MIXER);
+    create_default (PROJECT);
+
+  snap_grid_init (&PROJECT->snap_grid_timeline,
+                  NOTE_LENGTH_1_1);
+  quantize_init (&PROJECT->quantize_timeline,
+                 NOTE_LENGTH_1_1);
+  snap_grid_init (&PROJECT->snap_grid_midi,
+                  NOTE_LENGTH_1_8);
+  quantize_init (&PROJECT->quantize_midi,
+                NOTE_LENGTH_1_8);
+  piano_roll_init (&PROJECT->piano_roll);
+  snap_grid_update_snap_points (&PROJECT->snap_grid_timeline);
+  snap_grid_update_snap_points (&PROJECT->snap_grid_midi);
+  quantize_update_snap_points (&PROJECT->quantize_timeline);
+  quantize_update_snap_points (&PROJECT->quantize_midi);
+  tracklist_init (&PROJECT->tracklist);
 }
 
 
@@ -161,7 +164,7 @@ project_save (Project *  self,
       Channel * channel = MIXER->channels[i];
       for (int j = 0; j < STRIP_SIZE; j++)
         {
-          Plugin * plugin = channel->strip[j];
+          Plugin * plugin = channel->plugins[j];
 
           if (plugin)
             {
@@ -190,9 +193,9 @@ project_save (Project *  self,
         }
     }
 
-  xml_write_ports ();
-  xml_write_regions ();
-  xml_write_project ();
+  /*xml_write_ports ();*/
+  /*xml_write_regions ();*/
+  /*xml_write_project ();*/
 
   zrythm_add_to_recent_projects (
     ZRYTHM,

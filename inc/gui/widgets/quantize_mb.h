@@ -33,7 +33,7 @@ G_DECLARE_FINAL_TYPE (QuantizeMbWidget,
                       GtkMenuButton)
 
 typedef struct _QuantizeMbPopoverWidget QuantizeMbPopoverWidget;
-typedef struct QuantizeMb QuantizeMb;
+typedef struct Quantize Quantize;
 
 typedef struct _QuantizeMbWidget
 {

@@ -28,14 +28,14 @@
 
 #include "lilv/lilv.h"
 
-#include "zrythm.h"
 #include "audio/transport.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_manager.h"
+#include "project.h"
 
 #include <gtk/gtk.h>
 
-#define NS_ZRYTHM "http://alextee.online/ns/zrythm#"
+#define NS_ZRYTHM "https://lv2.zrythm.org/ns/zrythm#"
 #define NS_RDF  "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 #define NS_RDFS "http://www.w3.org/2000/01/rdf-schema#"
 #define NS_XSD  "http://www.w3.org/2001/XMLSchema#"

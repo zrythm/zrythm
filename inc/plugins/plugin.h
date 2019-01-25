@@ -147,7 +147,7 @@ plugin_instantiate (Plugin * plugin);
  * Process plugin
  */
 void
-plugin_process (Plugin * plugin, nframes_t nframes);
+plugin_process (Plugin * plugin);
 
 /**
  * (re)Generates automatables for the plugin.

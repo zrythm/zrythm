@@ -21,9 +21,6 @@
 
 #include <math.h>
 
-#include "zrythm.h"
-#include "project.h"
-#include "settings.h"
 #include "actions/actions.h"
 #include "audio/position.h"
 #include "audio/transport.h"
@@ -37,6 +34,9 @@
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_ruler.h"
+#include "project.h"
+#include "settings/settings.h"
+#include "zrythm.h"
 
 #include <gtk/gtk.h>
 
@@ -96,6 +96,12 @@ ruler_widget_pos_to_px (RulerWidget * self,
 static gboolean
 draw_cb (RulerWidget * self, cairo_t *cr, gpointer data)
 {
+  /* engine is run only set after everything is set up
+   * so this is a good way to decide if we should draw
+   * or not */
+  if (!AUDIO_ENGINE->run)
+    return FALSE;
+
   GET_PRIVATE;
 
   GtkStyleContext *context;
@@ -139,7 +145,7 @@ draw_cb (RulerWidget * self, cairo_t *cr, gpointer data)
     {
       int draw_pos = i + SPACE_BEFORE_START;
 
-      if (i % (int) round (rw_prv->px_per_bar) == 0)
+      if (i % rw_prv->px_per_bar == 0)
       {
           cairo_set_source_rgb (cr, 1, 1, 1);
           cairo_set_line_width (cr, 1);
@@ -160,7 +166,7 @@ draw_cb (RulerWidget * self, cairo_t *cr, gpointer data)
           cairo_show_text(cr, label);
           bar_count++;
       }
-      else if (i % (int) round (rw_prv->px_per_beat) == 0)
+      else if (i % rw_prv->px_per_beat == 0)
       {
           cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
           cairo_set_line_width (cr, 0.5);
@@ -295,7 +301,7 @@ drag_begin (GtkGestureDrag * gesture,
     self,
     &pos,
     start_x - SPACE_BEFORE_START);
-  transport_move_playhead (TRANSPORT, &pos, 1);
+  transport_move_playhead (&pos, 1);
 }
 
 static void
@@ -312,7 +318,7 @@ drag_update (GtkGestureDrag * gesture,
     self,
     &pos,
     (rw_prv->start_x + offset_x) - SPACE_BEFORE_START);
-  transport_move_playhead (TRANSPORT, &pos, 1);
+  transport_move_playhead (&pos, 1);
 }
 
 static void
@@ -338,6 +344,8 @@ void
 ruler_widget_refresh (RulerWidget * self)
 {
   RULER_WIDGET_GET_PRIVATE (self);
+
+  g_message ("REFRESH");
 
   /*adjust for zoom level*/
   rw_prv->px_per_tick =
@@ -432,8 +440,6 @@ ruler_widget_init (RulerWidget * self)
                 gtk_gesture_drag_new (GTK_WIDGET (self)));
   rw_prv->multipress = GTK_GESTURE_MULTI_PRESS (
                 gtk_gesture_multi_press_new (GTK_WIDGET (self)));
-
-  ruler_widget_refresh (self);
 
   /* FIXME drags */
   g_signal_connect (G_OBJECT (self), "draw",

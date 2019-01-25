@@ -123,13 +123,13 @@ scan_plugins (PluginManager * self)
   g_message ("%d Plugins scanned.", PLUGIN_MANAGER->num_plugins);
 }
 
-PluginManager *
-plugin_manager_new ()
+/**
+ * Initializes plugin manager.
+ */
+void
+plugin_manager_init (PluginManager * self)
 {
   g_message ("Initializing plugin manager...");
-  PluginManager * self =
-    calloc (1, sizeof (PluginManager));
-
   self->num_plugins = 0;
   self->num_plugin_categories = 0;
 
@@ -245,12 +245,10 @@ plugin_manager_new ()
   settings->bufz_nominalBlockLength  = lilv_new_uri(world,"http://lv2plug.in/ns/ext/buf-size#nominalBlockLength");
   settings->bufz_coarseBlockLength   = lilv_new_uri(world,"http://lv2plug.in/ns/ext/buf-size#coarseBlockLength");
 #endif
-
-  return self;
 }
 
 void
-plugin_manager_setup (PluginManager * self)
+plugin_manager_scan_plugins (PluginManager * self)
 {
   scan_plugins (self);
 }

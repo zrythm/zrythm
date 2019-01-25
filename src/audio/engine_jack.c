@@ -40,17 +40,15 @@
 int
 jack_sample_rate_cb(uint32_t nframes, void * data)
 {
-  AudioEngine * engine = (AudioEngine *) data;
-  engine->sample_rate = nframes;
+  AUDIO_ENGINE->sample_rate = nframes;
 
   if (PROJECT)
     engine_update_frames_per_tick (
-      engine,
-      engine->transport->beats_per_bar,
-      engine->transport->bpm,
-      engine->sample_rate);
+      TRANSPORT->beats_per_bar,
+      TRANSPORT->bpm,
+      AUDIO_ENGINE->sample_rate);
   else
-    engine_update_frames_per_tick (engine, 4, 120, 44000);
+    engine_update_frames_per_tick (4, 120, 44000);
 
   g_message ("JACK: Sample rate changed to %d", nframes);
   return 0;
@@ -78,7 +76,6 @@ jack_buffer_size_cb (uint32_t nframes,
   for (int i = 0; i < AUDIO_ENGINE->num_ports; i++)
     {
       Port * port = AUDIO_ENGINE->ports[i];
-      port->nframes = nframes;
       port->buf = realloc (port->buf, nframes * sizeof (float));
       /* TODO memset */
     }
@@ -87,9 +84,9 @@ jack_buffer_size_cb (uint32_t nframes,
       Channel * channel = MIXER->channels[i];
       for (int j = 0; j < STRIP_SIZE; j++)
         {
-          if (channel->strip[j])
+          if (channel->plugins[j])
             {
-              Plugin * plugin = channel->strip[j];
+              Plugin * plugin = channel->plugins[j];
               if (plugin->descr->protocol == PROT_LV2)
                 {
                   lv2_allocate_port_buffers (
@@ -116,8 +113,7 @@ jack_process_cb (nframes_t nframes, ///< the number of frames to fill
   if (!engine->run)
     return 0;
 
-  engine_process_prepare (engine,
-                          nframes);
+  engine_process_prepare (nframes);
 
   float * stereo_out_l, * stereo_out_r;
 
@@ -167,7 +163,7 @@ jack_process_cb (nframes_t nframes, ///< the number of frames to fill
   /*
    * process
    */
-  mixer_process (MIXER, nframes);
+  mixer_process (nframes);
 
   /**
    * get jack's buffers with nframes frames for left & right
@@ -232,13 +228,15 @@ jack_setup (AudioEngine * self)
           }
           exit (1);
   }
-  if (status & JackServerStarted) {
-  // FIXME g_info
-          g_message ("JACK server started\n");
+  if (status & JackServerStarted)
+    {
+      // FIXME g_info
+      g_message ("JACK server started");
   }
-  if (status & JackNameNotUnique) {
-          client_name = jack_get_client_name(self->client);
-          g_error ("unique name `%s' assigned\n", client_name);
+  if (status & JackNameNotUnique)
+    {
+      client_name = jack_get_client_name(self->client);
+      g_error ("JACK: unique name '%s' assigned", client_name);
   }
 
   /* Set audio engine properties */
@@ -263,7 +261,6 @@ jack_setup (AudioEngine * self)
 
   /* create ports */
   Port * stereo_out_l = port_new_with_data (
-        self->block_length,
         INTERNAL_JACK_PORT,
         TYPE_AUDIO,
         FLOW_OUTPUT,
@@ -272,7 +269,6 @@ jack_setup (AudioEngine * self)
                                     JACK_DEFAULT_AUDIO_TYPE,
                                     JackPortIsOutput, 0));
   Port * stereo_out_r = port_new_with_data (
-        self->block_length,
         INTERNAL_JACK_PORT,
         TYPE_AUDIO,
         FLOW_OUTPUT,
@@ -281,7 +277,6 @@ jack_setup (AudioEngine * self)
                                     JACK_DEFAULT_AUDIO_TYPE,
                                     JackPortIsOutput, 0));
   Port * stereo_in_l = port_new_with_data (
-        self->block_length,
         INTERNAL_JACK_PORT,
         TYPE_AUDIO,
         FLOW_INPUT,
@@ -290,7 +285,6 @@ jack_setup (AudioEngine * self)
                                     JACK_DEFAULT_AUDIO_TYPE,
                                     JackPortIsInput, 0));
   Port * stereo_in_r = port_new_with_data (
-        self->block_length,
         INTERNAL_JACK_PORT,
         TYPE_AUDIO,
         FLOW_INPUT,
@@ -299,7 +293,6 @@ jack_setup (AudioEngine * self)
                                     JACK_DEFAULT_AUDIO_TYPE,
                                     JackPortIsInput, 0));
   Port * midi_in = port_new_with_data (
-        self->block_length,
         INTERNAL_JACK_PORT,
         TYPE_EVENT,
         FLOW_INPUT,
@@ -309,7 +302,6 @@ jack_setup (AudioEngine * self)
                                      JackPortIsInput, 0));
 
   Port * midi_editor_manual_press = port_new_with_type (
-        self->block_length,
         TYPE_EVENT,
         FLOW_INPUT,
         "MIDI Editor Manual Press");

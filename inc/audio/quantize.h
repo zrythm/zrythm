@@ -29,6 +29,10 @@
   (&ZRYTHM->quantize_midi == q)
 #define QUANTIZE_IS_TIMELINE(q) \
   (&ZRYTHM->quantize_timeline == q)
+#define QUANTIZE_TIMELINE \
+  (&PROJECT->quantize_timeline)
+#define QUANTIZE_MIDI \
+  (&PROJECT->quantize_midi)
 
 typedef struct Quantize
 {
@@ -46,11 +50,6 @@ typedef struct Quantize
   NoteType         note_type;
 
   /**
-   * In case grid is selected.
-   */
-  SnapGrid *       snap_grid;
-
-  /**
    * Snap points to be used by the grid and by position
    * to calculate previous/next snap point.
    */
@@ -58,12 +57,18 @@ typedef struct Quantize
   int              num_snap_points;
 } Quantize;
 
-Quantize *
-quantize_new (NoteLength   note_length,
-              SnapGrid *   snap_grid);
-
+/**
+ * Initializes the quantize struct.
+ */
 void
-quantize_setup (Quantize * self);
+quantize_init (Quantize *   self,
+               NoteLength   note_length);
+
+/**
+ * Updates quantize snap points.
+ */
+void
+quantize_update_snap_points (Quantize * self);
 
 /**
  * Sets note length and re-calculates snap points.

@@ -32,6 +32,7 @@ bus_track_new (Channel * channel)
 
   Track * track = (Track *) self;
   track->type = TRACK_TYPE_BUS;
+  gdk_rgba_parse (&track->color, "#F9CA1B");
   track_init (track);
 
   ChannelTrack * ct = (ChannelTrack *) self;

@@ -19,7 +19,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/timeline_minimap.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -460,14 +459,6 @@ timeline_minimap_widget_refresh (
   TimelineMinimapWidget * self)
 {
   gtk_widget_queue_allocate (GTK_WIDGET (self));
-}
-
-void
-timeline_minimap_widget_setup (
-  TimelineMinimapWidget * self,
-  TimelineMinimap * minimap)
-{
-  self->minimap = minimap;
 }
 
 static void

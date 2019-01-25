@@ -41,14 +41,29 @@ typedef struct Automatable Automatable;
 
 typedef struct AutomationTrack
 {
-  Automatable *             automatable; ///< the automatable
+  /**
+   * The automatable this automation track is for.
+   */
+  Automatable *             automatable;
   AutomationTrackWidget *   widget;
-  Track *                   track; ///< owner track
+
+  /**
+   * Owner track.
+   *
+   * For convenience only.
+   */
+  Track *                   track;
+
+  /**
+   * The automation points.
+   *
+   * Must always stay sorted by position.
+   */
   AutomationPoint *         automation_points[MAX_AUTOMATION_POINTS];
-                                      ///< automation points TODO sort every time
   int                       num_automation_points;
   AutomationCurve *         automation_curves[MAX_AUTOMATION_POINTS];
   int                       num_automation_curves;
+
   int                       visible;
 
   /**

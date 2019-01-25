@@ -34,6 +34,7 @@ master_track_new (Channel * channel)
 
   Track * track = (Track *) self;
   track->type = TRACK_TYPE_MASTER;
+  gdk_rgba_parse (&track->color, "#f01010");
   track_init (track);
 
   ChannelTrack * bt = (ChannelTrack *) self;

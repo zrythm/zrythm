@@ -43,9 +43,9 @@ main (int    argc,
   srandom (time (NULL));
 
   // sends activate signal
-  zrythm = zrythm_new ();
+  zrythm_app = zrythm_app_new ();
   return g_application_run (
-    G_APPLICATION (zrythm),
+    G_APPLICATION (zrythm_app),
     argc,
     argv);
 }

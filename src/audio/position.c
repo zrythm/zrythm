@@ -23,6 +23,7 @@
 
 #include "audio/engine.h"
 #include "audio/position.h"
+#include "audio/snap_grid.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -35,7 +36,7 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/top_bar.h"
-#include "audio/snap_grid.h"
+#include "project.h"
 
 #include <gtk/gtk.h>
 

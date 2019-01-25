@@ -39,6 +39,7 @@
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "plugins/plugin_manager.h"
+#include "project.h"
 #include "utils/arrays.h"
 #include "utils/ui.h"
 
@@ -48,8 +49,7 @@
  * process callback
  */
 void
-mixer_process (Mixer *   self,
-               nframes_t nframes) ///< number of frames to fill in
+mixer_process () ///< number of frames to fill in
 {
   /*g_message ("procesing mixer");*/
   int loop = 1;
@@ -58,9 +58,9 @@ mixer_process (Mixer *   self,
   while (loop)
     {
       loop = 0;
-      for (int i = 0; i < self->num_channels; i++)
+      for (int i = 0; i < MIXER->num_channels; i++)
         {
-          if (!self->channels[i]->processed)
+          if (!MIXER->channels[i]->processed)
             {
               loop = 1;
               break;
@@ -71,31 +71,22 @@ mixer_process (Mixer *   self,
 
   /* process master channel */
   /*g_message ("procesing master");*/
-  channel_process (self->master,
-                   nframes);
+  channel_process (MIXER->master);
   /*g_message ("procesing finished");*/
-}
-
-Mixer *
-mixer_new ()
-{
-  Mixer * self = calloc (1, sizeof (Mixer));
-
-  return self;
 }
 
 /**
  * Loads plugins from state files. Used when loading projects.
  */
 void
-mixer_load_plugins (Mixer * self)
+mixer_load_plugins ()
 {
-  for (int i = 0; i < self->num_channels; i++)
+  for (int i = 0; i < MIXER->num_channels; i++)
     {
-      Channel * channel = self->channels[i];
+      Channel * channel = MIXER->channels[i];
       for (int j = 0; j < STRIP_SIZE; j++)
         {
-          Plugin * plugin = channel->strip[j];
+          Plugin * plugin = channel->plugins[j];
           if (plugin)
             {
               plugin_instantiate (plugin);
@@ -106,12 +97,30 @@ mixer_load_plugins (Mixer * self)
   /* do master too  */
   for (int j = 0; j < STRIP_SIZE; j++)
     {
-      Plugin * plugin = self->master->strip[j];
+      Plugin * plugin = MIXER->master->plugins[j];
       if (plugin)
         {
           plugin_instantiate (plugin);
         }
     }
+}
+
+/**
+ * Gets next unique channel ID.
+ *
+ * Gets the max ID of all channels and increments it.
+ */
+int
+mixer_get_next_channel_id ()
+{
+  int count = 1;
+  for (int i = 0; i < MIXER->num_channels; i++)
+    {
+      Channel * channel = MIXER->channels[i];
+      if (channel->id >= count)
+        count = channel->id + 1;
+    }
+  return count;
 }
 
 /**
@@ -121,20 +130,21 @@ mixer_load_plugins (Mixer * self)
  * setup here.
  */
 void
-mixer_add_channel (Mixer *   self,
-                   Channel * channel)
+mixer_add_channel (Channel * channel)
 {
   g_assert (channel);
   g_assert (channel->track);
 
   if (channel->type == CT_MASTER)
     {
-      self->master = channel;
+      MIXER->master = channel;
     }
   else
     {
-      array_append ((void **) self->channels,
-                    &self->num_channels,
+      MIXER->channel_ids[MIXER->num_channels] =
+        channel->id;
+      array_append ((void **) MIXER->channels,
+                    &MIXER->num_channels,
                     (void *) channel);
     }
 
@@ -147,16 +157,11 @@ mixer_add_channel (Mixer *   self,
  * Channel order in the mixer is reflected in the track list
  */
 Channel *
-mixer_get_channel_at_pos (Mixer * self,
-                          int pos)
+mixer_get_channel_at_pos (int pos)
 {
-  for (int i = 0; i < self->num_channels; i++)
+  if (pos < MIXER->num_channels)
     {
-      Channel * channel = self->channels[i];
-      if (channel->id == pos)
-        {
-          return channel;
-        }
+      return MIXER->channels[pos];
     }
   g_warning ("No channel found at pos %d", pos);
   return NULL;
@@ -166,23 +171,21 @@ mixer_get_channel_at_pos (Mixer * self,
  * Removes the given channel.
  */
 void
-mixer_remove_channel (Mixer * self,
-                      Channel * channel)
+mixer_remove_channel (Channel * channel)
 {
   g_message ("removing channel %s",
              channel->name);
   AUDIO_ENGINE->run = 0;
   channel->enabled = 0;
   channel->stop_thread = 1;
-  array_delete ((void **) self->channels,
-                &self->num_channels,
+  array_delete ((void **) MIXER->channels,
+                &MIXER->num_channels,
                 channel);
   channel_free (channel);
 }
 
 void
 mixer_add_channel_from_plugin_descr (
-  Mixer * mixer,
   PluginDescriptor * descr)
 {
   Plugin * plugin = plugin_create_from_descr (descr);
@@ -212,10 +215,8 @@ mixer_add_channel_from_plugin_descr (
   Channel * new_channel =
     channel_create (ct,
                     descr->name);
-  mixer_add_channel (MIXER,
-                     new_channel);
-  tracklist_append_track (TRACKLIST,
-                          new_channel->track);
+  mixer_add_channel (new_channel);
+  tracklist_append_track (new_channel->track);
   channel_add_plugin (new_channel,
                       0,
                       plugin);
@@ -227,12 +228,11 @@ mixer_add_channel_from_plugin_descr (
 }
 
 Channel *
-mixer_get_channel_by_name (Mixer * self,
-                           char *  name)
+mixer_get_channel_by_name (char *  name)
 {
-  for (int i = 0; i < self->num_channels; i++)
+  for (int i = 0; i < MIXER->num_channels; i++)
     {
-      Channel * chan = self->channels[i];
+      Channel * chan = MIXER->channels[i];
       if (g_strcmp0 (chan->name, name) == 0)
         return chan;
     }

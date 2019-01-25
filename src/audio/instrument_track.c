@@ -46,6 +46,7 @@ instrument_track_new (Channel * channel)
 
   Track * track = (Track *) self;
   track->type = TRACK_TYPE_INSTRUMENT;
+  gdk_rgba_parse (&track->color, "#F79616");
   track_init ((Track *) self);
 
   ChannelTrack * ct = (ChannelTrack *) self;

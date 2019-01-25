@@ -14,11 +14,11 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include "zrythm.h"
 #include "audio/engine.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2/control.h"
+#include "project.h"
 
 #include <lilv/lilv.h>
 

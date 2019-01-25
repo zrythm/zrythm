@@ -19,7 +19,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/preferences.h"
+#include "settings/preferences.h"
 #include "audio/transport.h"
 #include "actions/actions.h"
 #include "actions/undo_manager.h"
@@ -539,8 +539,8 @@ activate_snap_to_grid (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  ZRYTHM->snap_grid_timeline->snap_to_grid =
-    !ZRYTHM->snap_grid_timeline->snap_to_grid;
+  SNAP_GRID_TIMELINE->snap_to_grid =
+    !SNAP_GRID_TIMELINE->snap_to_grid;
 }
 
 void
@@ -548,8 +548,8 @@ activate_snap_keep_offset (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  ZRYTHM->snap_grid_timeline->snap_to_grid_keep_offset =
-    !ZRYTHM->snap_grid_timeline->snap_to_grid_keep_offset;
+  SNAP_GRID_TIMELINE->snap_to_grid_keep_offset =
+    !SNAP_GRID_TIMELINE->snap_to_grid_keep_offset;
 }
 
 void
@@ -557,6 +557,6 @@ activate_snap_events (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  ZRYTHM->snap_grid_timeline->snap_to_events =
-    !ZRYTHM->snap_grid_timeline->snap_to_events;
+  SNAP_GRID_TIMELINE->snap_to_events =
+    !SNAP_GRID_TIMELINE->snap_to_events;
 }

@@ -56,7 +56,6 @@ typedef enum TimelineMinimapAction
 typedef struct _TimelineMinimapWidget
 {
   GtkOverlay                        parent_instance;
-  TimelineMinimap *                 minimap; ///< backend
   TimelineMinimapBgWidget *         bg;
   TimelineMinimapSelectionWidget  * selection;
   TimelineMinimapAction             action;
@@ -72,14 +71,6 @@ typedef struct _TimelineMinimapWidget
   double                   start_zoom_level; //< to be set in drag_begin
   int                      n_press; ///< for multipress
 } TimelineMinimapWidget;
-
-/**
- * To be called once to set up the back end.
- */
-void
-timeline_minimap_widget_setup (
-  TimelineMinimapWidget * self,
-  TimelineMinimap * minimap);
 
 /**
  * Taken from arranger.c

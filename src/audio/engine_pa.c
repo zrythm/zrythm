@@ -50,33 +50,27 @@ pa_setup (AudioEngine * self)
 
   /* create ports */
   Port * stereo_out_l = port_new_with_type (
-        self->block_length,
         TYPE_AUDIO,
         FLOW_OUTPUT,
         "PortAudio Stereo Out / L");
   Port * stereo_out_r = port_new_with_type (
-        self->block_length,
         TYPE_AUDIO,
         FLOW_OUTPUT,
         "PortAudio Stereo Out / R");
   Port * stereo_in_l = port_new_with_type (
-        self->block_length,
         TYPE_AUDIO,
         FLOW_INPUT,
         "PortAudio Stereo In / L");
   Port * stereo_in_r = port_new_with_type (
-        self->block_length,
         TYPE_AUDIO,
         FLOW_INPUT,
         "PortAudio Stereo In / R");
   Port * midi_in = port_new_with_type (
-        self->block_length,
         TYPE_EVENT,
         FLOW_INPUT,
         "PortAudio MIDI In");
 
   Port * midi_editor_manual_press = port_new_with_type (
-        self->block_length,
         TYPE_EVENT,
         FLOW_INPUT,
         "MIDI Editor Manual Press");
@@ -125,8 +119,7 @@ pa_stream_cb (const void *                    in,
 
   g_message ("calling stream");
 
-  engine_process_prepare (engine,
-                          nframes);
+  engine_process_prepare (nframes);
 
   engine->pa_out_buf = (float *) out;
   (void) in; /* prevent unused variable warning */
@@ -140,17 +133,19 @@ pa_stream_cb (const void *                    in,
   /*
    * process
    */
-  mixer_process (MIXER, nframes);
+  mixer_process ();
 
   /* by this time, the Master channel should have its Stereo Out ports filled.
    * pass their buffers to PA's buffers */
   for (int i = 0; i < nframes; i++)
     {
-      *engine->pa_out_buf++ = MIXER->master->stereo_out->l->buf[i];
-      *engine->pa_out_buf++ = MIXER->master->stereo_out->r->buf[i];
+      *engine->pa_out_buf++ =
+        MIXER->master->stereo_out->l->buf[i];
+      *engine->pa_out_buf++ =
+        MIXER->master->stereo_out->r->buf[i];
     }
 
-  engine_post_process (engine);
+  engine_post_process ();
 
   /*
    * processing finished, return 0

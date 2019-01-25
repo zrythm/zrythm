@@ -28,7 +28,14 @@ typedef struct _VelocityWidget VelocityWidget;
 typedef struct Velocity
 {
   int              vel; ///< velocity value (0-127)
-  MidiNote *       midi_note; ///< pointer back to MIDI note
+
+  /**
+   * Owner.
+   *
+   * For convenience only.
+   */
+  MidiNote *       midi_note;
+
   VelocityWidget * widget; ///< widget
 } Velocity;
 

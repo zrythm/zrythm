@@ -27,7 +27,8 @@ typedef struct Plugin Plugin;
 typedef struct RackController
 {
   int                       id; ///< position in the rack
-  Plugin *                  plugin; ///< the plugin doing the work
+  int                       plugin_id; ///< the plugin doing the work
+  Plugin *                  plugin; ///< cache
 } RackController;
 
 #endif

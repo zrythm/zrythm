@@ -81,6 +81,7 @@ typedef enum ChordType
 } ChordType;
 
 typedef struct _ChordWidget ChordWidget;
+
 /**
  * Chords are to be generated on demand.
  */

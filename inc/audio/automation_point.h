@@ -30,13 +30,29 @@ typedef struct _AutomationPointWidget AutomationPointWidget;
 
 typedef struct AutomationPoint
 {
-  int                      id;
   Position                 pos;
   float                    fvalue; ///< float value
   int                      bvalue; ///< boolean value
   int                      svalue; ///< step value
   AutomationTrack *        at; ///< pointer back to parent
   AutomationPointWidget *  widget;
+
+  /* ======== Useful only for de/serialization ====== */
+  /**
+   * Unique ID.
+   *
+   * All IDs are stored in the Project struct.
+   */
+  int                      id;
+  /**
+   * The ID of the track the automation point is in.
+   */
+  int                      track_id;
+  /**
+   * The label of the automatable so we know how to find
+   * the corresponding automation track.
+   */
+  char *                   automatable_label;
 } AutomationPoint;
 
 /**

@@ -141,7 +141,7 @@ create_automatables_store (Track * track)
 
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      Plugin * plugin = ct->channel->strip[i];
+      Plugin * plugin = ct->channel->plugins[i];
 
       if (plugin)
         {

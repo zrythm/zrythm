@@ -24,6 +24,11 @@
 #ifndef __PROJECT_H__
 #define __PROJECT_H__
 
+#include "actions/undo_manager.h"
+#include "audio/engine.h"
+#include "audio/piano_roll.h"
+#include "audio/quantize.h"
+#include "audio/tracklist.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
@@ -68,9 +73,31 @@ typedef struct Project
   char              * regions_dir;
   char              * states_dir;
 
-  /* for bookkeeping FIXME no, delete. manually go through each channel to find them */
-  Channel           * channels[3000];
-  int               num_channels;
+  UndoManager         undo_manager;
+
+  Tracklist          tracklist;
+
+  PianoRoll          piano_roll;
+
+  SnapGrid           snap_grid_timeline; ///< snap/grid info for timeline
+  Quantize           quantize_timeline;
+  SnapGrid          snap_grid_midi; ///< snap/grid info for midi editor
+  Quantize           quantize_midi;
+
+  /**
+   * The audio backend
+   */
+  AudioEngine        audio_engine;
+
+  /**
+   * For serializing/deserializing.
+   *
+   * These are stored here when created so that they can
+   * easily be serialized/deserialized.
+   *
+   * Channels are stored in the mixer, and tracks are stored
+   * in the tracklist.
+   */
   Plugin            * plugins[30000];
   int               num_plugins;
   Region            * regions [30000];
@@ -82,21 +109,29 @@ typedef struct Project
   MidiNote *        midi_notes[30000];
   int               num_midi_notes;
 
-  ChordTrack *      chord_track; ///< the chord track
-  int               loaded; ///< project is loaded or not
+  /**
+   * The chord track.
+   *
+   * This is a pointer because track_new, etc. do some things
+   * when called.
+   */
+  ChordTrack *      chord_track;
+
+  /**
+   * If a project is currently loaded or not.
+   *
+   * This is useful so that we know if we need to tear down
+   * when loading a new project while another one is loaded.
+   */
+  int               loaded;
 } Project;
-
-
-Project *
-project_new ();
 
 /**
  * If project has a filename set, it loads that. Otherwise
  * it loads the default project.
  */
 void
-project_setup (Project * self,
-               char * filename);
+project_load (char * filename);
 
 /**
  * Saves project to a file.

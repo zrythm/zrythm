@@ -20,8 +20,6 @@
  */
 
 #include "zrythm.h"
-#include "project.h"
-#include "settings.h"
 #include "gui/widgets/region.h"
 #include "audio/automation_track.h"
 #include "audio/channel.h"
@@ -54,6 +52,8 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
+#include "project.h"
+#include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/cairo.h"
 #include "utils/ui.h"

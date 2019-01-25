@@ -32,6 +32,7 @@
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/tracklist.h"
 #include "gui/widgets/track.h"
+#include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 

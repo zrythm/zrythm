@@ -28,6 +28,7 @@
 #include "gui/widgets/channel.h"
 #include "gui/widgets/channel_slot.h"
 #include "gui/widgets/main_window.h"
+#include "project.h"
 
 G_DEFINE_TYPE (ChannelSlotWidget, channel_slot_widget, GTK_TYPE_DRAWING_AREA)
 
@@ -87,7 +88,7 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 
   int padding = 2;
   cairo_text_extents_t te;
-  Plugin * plugin = self->channel->strip[self->slot_index];
+  Plugin * plugin = self->channel->plugins[self->slot_index];
   if (plugin)
     {
       /* fill background */
@@ -156,7 +157,7 @@ button_press_cb (GtkWidget      * widget,
   if (event->type == GDK_2BUTTON_PRESS)
     {
       ChannelSlotWidget * self = (ChannelSlotWidget *) data;
-      Plugin * plugin = self->channel->strip[self->slot_index];
+      Plugin * plugin = self->channel->plugins[self->slot_index];
       if (plugin)
         {
           if (plugin->descr->protocol == PROT_LV2)

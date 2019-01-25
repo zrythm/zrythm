@@ -29,10 +29,8 @@ channel_track_setup (ChannelTrack * self)
 {
   Track * track = (Track *) self;
 
-  self->automation_tracklist =
-    automation_tracklist_new (track);
-
-  automation_tracklist_setup (self->automation_tracklist);
+  automation_tracklist_init (&self->automation_tracklist,
+                             track);
 }
 
 /**

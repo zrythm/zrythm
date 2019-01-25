@@ -37,31 +37,38 @@ typedef struct _AutomationTracklistWidget AutomationTracklistWidget;
 typedef struct Track Track;
 
 /**
- * Internal Tracklist.
+ * Each track has an automation tracklist with automation
+ * tracks to be generated at runtime, and filled in with
+ * automation points/curves when loading projects.
  */
 typedef struct AutomationTracklist
 {
   /**
+   * Automation tracks to be generated/used at run time.
+   *
    * These should be updated with ALL of the automatables
    * available in the channel and its plugins every time there
    * is an update.
+   *
+   * When loading projects, these should be first generated
+   * and then updated with automation points/curves.
    */
   AutomationTrack *            automation_tracks[4000];
   int                          num_automation_tracks;
 
   /**
    * Pointer back to owner track.
+   *
+   * For convenience only. Not to be serialized.
    */
-  Track *                      track;
+  Track *                      track; ///< cache
 
   AutomationTracklistWidget *  widget;
 } AutomationTracklist;
 
-AutomationTracklist *
-automation_tracklist_new (Track * track);
-
 void
-automation_tracklist_setup (AutomationTracklist * self);
+automation_tracklist_init (AutomationTracklist * self,
+                           Track *               track);
 
 /**
  * Finds visible tracks and puts them in given array.
@@ -80,7 +87,7 @@ automation_tracklist_get_visible_tracks (
  * unless it already exists.
  */
 void
-automation_tracklist_update (AutomationTracklist * self);
+automation_tracklist_refresh (AutomationTracklist * self);
 
 AutomationTrack *
 automation_tracklist_fetch_first_invisible_at (

@@ -41,6 +41,7 @@ typedef struct _MidiRulerWidget MidiRulerWidget;
 typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct _MidiModifierArrangerWidget
   MidiModifierArrangerWidget;
+typedef struct PianoRoll PianoRoll;
 
 typedef struct _PianoRollWidget
 {

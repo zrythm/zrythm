@@ -19,13 +19,15 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/engine.h"
 #include "audio/quantize.h"
 #include "audio/transport.h"
+#include "project.h"
 
 #include <gtk/gtk.h>
 
-static void
-update_snap_points (Quantize * self)
+void
+quantize_update_snap_points (Quantize * self)
 {
   Position tmp, end_pos;
   position_init (&tmp);
@@ -49,23 +51,15 @@ update_snap_points (Quantize * self)
     }
 }
 
-Quantize *
-quantize_new (NoteLength   note_length,
-              SnapGrid *   snap_grid)
+/**
+ * Initializes the quantize struct.
+ */
+void
+quantize_init (Quantize *   self,
+               NoteLength   note_length)
 {
-  Quantize * self = calloc (1, sizeof (Quantize));
-
   self->use_grid = 1;
   self->note_length = note_length;
   self->num_snap_points = 0;
   self->note_type = NOTE_TYPE_NORMAL;
-  self->snap_grid = snap_grid;
-
-  return self;
-}
-
-void
-quantize_setup (Quantize * self)
-{
-  update_snap_points (self);
 }

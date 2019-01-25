@@ -57,8 +57,8 @@ draw_cb (MidiNoteWidget * self, cairo_t *cr, gpointer data)
 
   Region * region = (Region *) self->midi_note->midi_region;
   Track * track = region->track;
-  Channel * channel = track_get_channel (track);
-  GdkRGBA * color = &channel->color;
+  /*Channel * channel = track_get_channel (track);*/
+  GdkRGBA * color = &track->color;
   if (self->state != MNW_STATE_NONE)
     {
       cairo_set_source_rgba (cr,

@@ -36,6 +36,12 @@
 #define FOREACH_DESTS(port) \
   for (int i = 0; i < port->num_dests; i++)
 
+/**
+ * Special ID for owner_pl, owner_ch, etc. to indicate that
+ * the port is not owned.
+ */
+#define PORT_NOT_OWNED -1
+
 typedef struct Plugin Plugin;
 
 typedef enum PortFlow {
@@ -74,35 +80,100 @@ typedef enum PanLaw PanLaw;
  */
 typedef struct Port
 {
-  int                 id;             ///< each port has an ID so that they can get connected
-  char                * label;     ///< human readable label
-  sample_t            * buf;      ///< buffer to be allocated with malloc, for AUDIO
-  MidiEvents         midi_events;   ///< contains the raw MIDI packets, for MIDI ports
-  /* FIXME necessary? */
-  nframes_t           nframes;        ///< number of frames (size of samples array)
-	PortType            type;       ///< Data type
-	PortFlow            flow;       ///< Data flow direction
-  struct Port         * srcs[MAX_DESTINATIONS];  ///< ports coming in
-  struct Port         * dests[MAX_DESTINATIONS];  ///< destination ports
-  int                 num_srcs; ///< counter
-  int                 num_dests; ///< counter
-  LV2_Port            * lv2_port;    ///< used for LV2
-  PortInternalType   internal_type;
-  void                * data;    ///< pointer to arbitrary data. use internal to check what data it is
-  int                 owner_jack;        ///< 1 if owner is JACK
+  /**
+   * Unique ID.
+   */
+  int                 id;
+
+  char *              label; ///< human readable label
+
+  /**
+   * Buffer to be reallocated every time the buffer size
+   * changes.
+   *
+   * The buffer size is AUDIO_ENGINE->block_length.
+   */
+  float *             buf;
+
+  /**
+   * Contains raw MIDI data (MIDI ports only)
+   */
+  MidiEvents          midi_events;
+
+	PortType            type; ///< Data type
+	PortFlow            flow; ///< Data flow direction
+
+  /**
+   * Inputs and Outputs.
+   */
+  int                 src_ids[MAX_DESTINATIONS];
+  int                 dest_ids[MAX_DESTINATIONS];
+  int                 num_srcs;
+  int                 num_dests;
+
+  /**
+   * Cache.
+   */
+  struct Port *       srcs[MAX_DESTINATIONS];
+  struct Port *       dests[MAX_DESTINATIONS];
+
+  /**
+   * Indicates whether data or lv2_port should be used.
+   */
+  PortInternalType    internal_type;
+  LV2_Port *          lv2_port; ///< used for LV2
+
+  /**
+   * Pointer to arbitrary data.
+   *
+   * Use internal_type to check what data it is.
+   */
+  void *              data;
+
+  /* ====== flags to indicate port owner ====== */
+  int                 owner_jack; ///< 1 if owner is JACK
   int                 is_piano_roll; ///< 1 if piano roll
-  Plugin              * owner_pl;           ///< owner plugin, for plugins
-  Channel             * owner_ch;           ///< owner channel, for channels
-  int                 exported;   ///< used in xml project file export
+
+  /**
+   * ID of owner plugin, if any.
+   *
+   * If the port is not owned by a plugin this will be
+   * PORT_NOT_OWNED.
+   */
+  int                 owner_pl_id;
+
+  /**
+   * ID of owner channel, if any.
+   *
+   * If the port is not owned by a channel this will be
+   * PORT_NOT_OWNED.
+   */
+  int                 owner_ch_id;
+
+  /* ====== cache ====== */
+  Plugin              * owner_pl;
+  Channel             * owner_ch;
+
+  /**
+   * FIXME ???
+   * used in xml project file export
+   */
+  int                 exported;
 } Port;
 
 /**
  * L & R port, for convenience.
  *
- * Must ONLY be craeted via stereo_ports_new()
+ * Must ONLY be created via stereo_ports_new()
  */
 typedef struct StereoPorts
 {
+  int        l_id;
+  int        r_id;
+
+  /**
+   * Cache.
+   */
   Port       * l;
   Port       * r;
 } StereoPorts;
@@ -117,14 +188,13 @@ port_get_or_create_blank (int id);
  * Creates port.
  */
 Port *
-port_new (nframes_t nframes, char * label);
+port_new (char * label);
 
 /**
  * Creates port.
  */
 Port *
-port_new_with_type (nframes_t    nframes,
-                    PortType     type,
+port_new_with_type (PortType     type,
                     PortFlow     flow,
                     char         * label);
 
@@ -132,8 +202,7 @@ port_new_with_type (nframes_t    nframes,
  * Creates port and adds given data to it
  */
 Port *
-port_new_with_data (nframes_t    nframes,
-                    PortInternalType internal_type, ///< the internal data format
+port_new_with_data (PortInternalType internal_type, ///< the internal data format
                     PortType     type,
                     PortFlow     flow,
                     char         * label,
@@ -173,7 +242,7 @@ port_apply_fader (Port * port, float amp);
  * First sets port buf to 0, then sums the given port signal from its inputs.
  */
 void
-port_sum_signal_from_inputs (Port * port, nframes_t nframes);
+port_sum_signal_from_inputs (Port * port);
 
 /**
  * if port buffer size changed, reallocate port buffer, otherwise memset to 0.

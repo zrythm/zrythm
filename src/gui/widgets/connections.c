@@ -20,11 +20,13 @@
  */
 
 #include "audio/channel.h"
+#include "audio/engine.h"
 #include "audio/mixer.h"
-#include "plugins/plugin.h"
 #include "gui/widgets/audio_unit.h"
 #include "gui/widgets/audio_unit_label.h"
 #include "gui/widgets/connections.h"
+#include "plugins/plugin.h"
+#include "project.h"
 
 #include <gtk/gtk.h>
 
@@ -223,7 +225,7 @@ create_audio_units_store ()
       g_free (label);
       for (int j = 0; j < STRIP_SIZE; j++)
         {
-          Plugin * plugin = channel->strip[j];
+          Plugin * plugin = channel->plugins[j];
           if (plugin)
             {
               char * label = g_strdup_printf ("%s:%d:%s",
@@ -254,7 +256,7 @@ create_audio_units_store ()
                       -1);
   for (int j = 0; j < STRIP_SIZE; j++)
     {
-      Plugin * plugin = MIXER->master->strip[j];
+      Plugin * plugin = MIXER->master->plugins[j];
       if (plugin)
         {
           char * label = g_strdup_printf ("%d:%s", j, plugin->descr->name);

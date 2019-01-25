@@ -30,13 +30,18 @@ typedef enum MidiModifier
   MIDI_MODIFIER_AFTERTOUCH,
 } MidiModifier;
 
+/**
+ * Piano roll serializable backend.
+ *
+ * The actual widgets should reflect the information here.
+ */
 typedef struct PianoRoll
 {
   int                    notes_zoom; ///< notes zoom level
   MidiModifier           midi_modifier; ///< selected midi modifier
 } PianoRoll;
 
-PianoRoll *
-piano_roll_new ();
+void
+piano_roll_init (PianoRoll * self);
 
 #endif

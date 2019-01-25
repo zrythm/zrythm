@@ -23,14 +23,10 @@
 
 #include "audio/piano_roll.h"
 
-PianoRoll *
-piano_roll_new ()
+void
+piano_roll_init (PianoRoll * self)
 {
-  PianoRoll * self = calloc (1, sizeof (PianoRoll));
-
   self->notes_zoom = 1; /* FIXME */
 
   self->midi_modifier = MIDI_MODIFIER_VELOCITY;
-
-  return self;
 }

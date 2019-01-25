@@ -1,5 +1,5 @@
 /*
- * utils/xml.c - XML serializer for parsing/writing project file
+ * settings.h - Settings
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -19,36 +19,23 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
- */
-#ifndef __UTILS_XML_H__
-#define __UTILS_XML_H__
+#ifndef __SETTINGS_H__
+#define __SETTINGS_H__
 
-#include <libxml/xmlwriter.h>
+#include <gtk/gtk.h>
 
+#define SETTINGS (&ZRYTHM->settings)
 
-/**
- * Writes the project to an XML file.
- */
-void
-xml_write_project ();
-
-void
-xml_write_ports ();
-
-void
-xml_write_regions ();
-
-void
-xml_load_ports ();
-
-void
-xml_load_regions ();
+typedef struct Settings
+{
+  GSettings * root;
+  GSettings * preferences;
+} Settings;
 
 /**
- * Loads the project data.
+ * Initializes settings.
  */
 void
-xml_load_project ();
+settings_init (Settings * self);
 
 #endif

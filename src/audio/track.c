@@ -136,7 +136,7 @@ track_get_automation_tracklist (Track * track)
     case TRACK_TYPE_MASTER:
         {
           ChannelTrack * bt = (ChannelTrack *) track;
-          return bt->automation_tracklist;
+          return &bt->automation_tracklist;
         }
     }
 

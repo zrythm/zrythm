@@ -20,10 +20,12 @@
  */
 
 #include "audio/channel.h"
+#include "audio/engine.h"
 #include "audio/mixer.h"
 #include "audio/port.h"
 #include "gui/widgets/control.h"
 #include "gui/widgets/knob.h"
+#include "project.h"
 #include "utils/gtk.h"
 
 #include <gtk/gtk.h>

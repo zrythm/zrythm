@@ -25,13 +25,17 @@
 #include "audio/position.h"
 
 #define SNAP_GRID_IS_MIDI(sg) \
-  (&ZRYTHM->snap_grid_midi == sg)
+  (&PROJECT->snap_grid_midi == sg)
 #define SNAP_GRID_IS_TIMELINE(sg) \
-  (&ZRYTHM->snap_grid_timeline == sg)
+  (&PROJECT->snap_grid_timeline == sg)
 /* if any snapping is enabled */
 #define SNAP_GRID_ANY_SNAP(sg) \
   (sg->snap_to_grid || sg->snap_to_grid_keep_offset || \
    sg->snap_to_events)
+#define SNAP_GRID_TIMELINE \
+  (&PROJECT->snap_grid_timeline)
+#define SNAP_GRID_MIDI \
+  (&PROJECT->snap_grid_timeline)
 
 #define MAX_SNAP_POINTS 120096
 
@@ -83,11 +87,15 @@ typedef struct SnapGrid
   int              num_snap_points;
 } SnapGrid;
 
-SnapGrid *
-snap_grid_new (NoteLength   note_length);
-
 void
-snap_grid_setup (SnapGrid * self);
+snap_grid_init (SnapGrid *   self,
+                NoteLength   note_length);
+
+/**
+ * Updates snap points.
+ */
+void
+snap_grid_update_snap_points (SnapGrid * self);
 
 /**
  * Sets note length and re-calculates snap points.

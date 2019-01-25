@@ -1,7 +1,7 @@
 /*
- * audio/timeline_minimap.h - Timeline minimap backend
+ * settings.c - application settings
  *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -19,33 +19,16 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file */
+#include <stdlib.h>
 
-#ifndef __AUDIO_TIMELINE_MINIMAP_H__
-#define __AUDIO_TIMELINE_MINIMAP_H__
-
-#include "audio/position.h"
-
-typedef struct TimelineMinimap
-{
-  Position            selection_start;
-  Position            selection_end;
-  float *             zoom; ///< pointer to the zoom value
-} TimelineMinimap;
-
-/**
- * To be called once during initialization.
- */
-TimelineMinimap *
-timeline_minimap_new ();
+#include "settings/settings.h"
+#include "zrythm.h"
 
 void
-timeline_minimap_update_selector_from_zoom (int zoom);
-
-/**
- * Returns zoom level from current selector poses.
- */
-int
-timeline_minimap_get_zoom_from_selector ();
-
-#endif
+settings_init (Settings * self)
+{
+  self->root =
+    g_settings_new ("org.zrythm");
+  self->preferences =
+    g_settings_new ("org.zrythm.preferences");
+}

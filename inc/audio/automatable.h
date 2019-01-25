@@ -44,9 +44,22 @@ typedef struct AutomatableTrack AutomatableTrack;
 typedef struct Plugin Plugin;
 typedef struct AutomationTrack AutomationTrack;
 
+/**
+ * An automatable control.
+ *
+ * These are not meant to be serialized and are generated
+ * at run time.
+ */
 typedef struct Automatable
 {
-  Port *               port; ///< port, if plugin port
+  /**
+   * Port, if plugin port.
+   */
+  Port *               port; ///< cache
+
+  /**
+   * Lv2Control
+   */
   Lv2ControlID *       control; ///< control, if LV2 plugin
   Track *              track; ///< associated track
   //AutomatableTrack *   at; ///< automatable track, if any
