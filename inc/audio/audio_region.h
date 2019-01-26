@@ -29,12 +29,6 @@ typedef struct _RegionWidget RegionWidget;
 typedef struct Channel Channel;
 typedef struct Track Track;
 
-typedef struct AudioRegion
-{
-  Region          parent;
-
-} AudioRegion;
-
 AudioRegion *
 audio_region_new (Track *    track,
                  Position * start_pos,

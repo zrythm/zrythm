@@ -156,16 +156,28 @@ project_save (const char * dir);
 #define PROJECT_ADD_X(camelcase, lowercase) \
   void \
   project_add_##lowercase (camelcase * lowercase);
+#define PROJECT_GET_X(camelcase, lowercase) \
+  camelcase * \
+  project_get_##lowercase (int id);
 
 PROJECT_ADD_X (Region, region);
+PROJECT_GET_X (Region, region);
 PROJECT_ADD_X (Track, track);
+PROJECT_GET_X (Track, track);
 PROJECT_ADD_X (Channel, channel);
+PROJECT_GET_X (Channel, channel);
 PROJECT_ADD_X (Plugin, plugin);
+PROJECT_GET_X (Plugin, plugin);
 PROJECT_ADD_X (AutomationPoint, automation_point);
+PROJECT_GET_X (AutomationPoint, automation_point);
 PROJECT_ADD_X (AutomationCurve, automation_curve);
+PROJECT_GET_X (AutomationCurve, automation_curve);
 PROJECT_ADD_X (MidiNote, midi_note);
+PROJECT_GET_X (MidiNote, midi_note);
 PROJECT_ADD_X (Port, port);
+PROJECT_GET_X (Port, port);
 
 #undef PROJECT_ADD_X
+#undef PROJECT_GET_X
 
 #endif

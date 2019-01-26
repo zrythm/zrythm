@@ -89,6 +89,23 @@ track_setup (Track * track)
 }
 
 /**
+ * Wrapper.
+ */
+void
+track_add_region (Track * track,
+                  Region * region)
+{
+  if (track->type == TRACK_TYPE_INSTRUMENT)
+    {
+      instrument_track_add_region (
+        (InstrumentTrack *) track,
+        (MidiRegion *) region);
+    }
+
+  g_warning ("attempted to add region to a track type that does not accept regions");
+}
+
+/**
  * Wrapper for each track type.
  */
 void

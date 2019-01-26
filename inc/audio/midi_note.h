@@ -23,8 +23,9 @@
 #ifndef __AUDIO_MIDI_NOTE_H__
 #define __AUDIO_MIDI_NOTE_H__
 
-#include "audio/position.h"
 #include "audio/midi_region.h"
+#include "audio/position.h"
+#include "audio/velocity.h"
 
 typedef struct _MidiNoteWidget MidiNoteWidget;
 typedef struct Channel Channel;
@@ -32,6 +33,7 @@ typedef struct Track Track;
 typedef struct MidiEvents MidiEvents;
 typedef struct Position Position;
 typedef struct Velocity Velocity;
+typedef struct MidiRegion MidiRegion;
 
 typedef struct MidiNote
 {
@@ -39,10 +41,45 @@ typedef struct MidiNote
   Position        start_pos;
   Position        end_pos;
   MidiNoteWidget  * widget;
-  MidiRegion *    midi_region; ///< owner region
+
+  /**
+   * Owner.
+   *
+   * For convenience only (cache).
+   */
+  MidiRegion *    midi_region; ///< cache
+
   Velocity *      vel;  ///< velocity
   int             val; ///< note
 } MidiNote;
+
+static const cyaml_schema_field_t
+  midi_note_fields_schema[] =
+{
+	CYAML_FIELD_INT (
+			"id", CYAML_FLAG_DEFAULT,
+			MidiNote, id),
+  CYAML_FIELD_MAPPING (
+      "start_pos", CYAML_FLAG_DEFAULT,
+      MidiNote, start_pos, position_fields_schema),
+  CYAML_FIELD_MAPPING (
+      "end_pos", CYAML_FLAG_DEFAULT,
+      MidiNote, end_pos, position_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "vel", CYAML_FLAG_POINTER,
+    MidiNote, vel, velocity_fields_schema),
+	CYAML_FIELD_INT (
+			"val", CYAML_FLAG_DEFAULT,
+			MidiNote, val),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+midi_note_schema = {
+	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+			MidiNote, midi_note_fields_schema),
+};
 
 MidiNote *
 midi_note_new (MidiRegion * region,
@@ -50,6 +87,13 @@ midi_note_new (MidiRegion * region,
                Position *   end_pos,
                int          val,
                Velocity *   vel);
+
+/**
+ * Deep clones the midi note.
+ */
+MidiNote *
+midi_note_clone (MidiNote *  src,
+                 MidiRegion * mr); ///< owner region
 
 void
 midi_note_delete (MidiNote * midi_note);

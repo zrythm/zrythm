@@ -23,6 +23,8 @@
 #ifndef __AUDIO_REGION_H__
 #define __AUDIO_REGION_H__
 
+#include "audio/midi_note.h"
+#include "audio/midi_region.h"
 #include "audio/position.h"
 
 #include <cyaml/cyaml.h>
@@ -33,6 +35,8 @@ typedef struct _RegionWidget RegionWidget;
 typedef struct Channel Channel;
 typedef struct Track Track;
 typedef struct MidiNote MidiNote;
+typedef struct MidiRegion MidiRegion;
+typedef struct AudioRegion AudioRegion;
 
 typedef enum RegionType
 {
@@ -40,6 +44,11 @@ typedef enum RegionType
   REGION_TYPE_AUDIO
 } RegionType;
 
+typedef enum RegionCloneFlag
+{
+  REGION_CLONE_COPY,
+  REGION_CLONE_LINK
+} RegionCloneFlag;
 
 typedef struct Region
 {
@@ -85,11 +94,80 @@ typedef struct Region
   struct Region * linked_region; ///< cache
 
   int                      selected;
+
+  /**
+   * This is a hack to make the region serialize its
+   * subtype.
+   *
+   * Only useful for serialization.
+   */
+  MidiRegion *         midi_region;
+  AudioRegion *        audio_region;
 } Region;
+
+typedef struct MidiRegion
+{
+  Region          parent;
+
+  /**
+   * MIDI notes.
+   */
+  MidiNote *      midi_notes[200];
+
+  /**
+   * MIDI note count.
+   */
+  int             num_midi_notes;
+
+  /**
+   * Dummy member because serialization skips the midi
+   * region if it is all 0's.
+   */
+  int             dummy;
+} MidiRegion;
+
+typedef struct AudioRegion
+{
+  Region          parent;
+
+} AudioRegion;
 
 static const cyaml_strval_t region_type_strings[] = {
 	{ "Midi",          REGION_TYPE_MIDI    },
 	{ "Audio",         REGION_TYPE_AUDIO   },
+};
+
+static const cyaml_schema_field_t
+  midi_region_fields_schema[] =
+{
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "midi_notes", CYAML_FLAG_DEFAULT,
+      MidiRegion, midi_notes, num_midi_notes,
+      &midi_note_schema, 0, CYAML_UNLIMITED),
+	//CYAML_FIELD_INT (
+			//"dummy", CYAML_FLAG_DEFAULT,
+			//MidiRegion, dummy),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+midi_region_schema = {
+	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+			MidiRegion, midi_region_fields_schema),
+};
+
+static const cyaml_schema_field_t
+  audio_region_fields_schema[] =
+{
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+audio_region_schema = {
+	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+			AudioRegion, audio_region_fields_schema),
 };
 
 static const cyaml_schema_field_t
@@ -124,6 +202,12 @@ static const cyaml_schema_field_t
 	CYAML_FIELD_INT (
 			"selected", CYAML_FLAG_DEFAULT,
 			Region, selected),
+  CYAML_FIELD_MAPPING_PTR (
+    "midi_region", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    Region, midi_region, midi_region_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "audio_region", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    Region, audio_region, audio_region_fields_schema),
 
 	CYAML_FIELD_END
 };
@@ -160,6 +244,9 @@ void
 region_set_end_pos (Region * region,
                     Position * end_pos);
 
+void
+region_unpack (Region * region);
+
 /**
  * Returns the region at the given position in the given channel
  */
@@ -174,6 +261,16 @@ region_at_position (Track    * track, ///< the track to look in
  */
 char *
 region_generate_filename (Region * region);
+
+/**
+ * Clone region.
+ *
+ * Creates a new region and either links to the original or
+ * copies every field.
+ */
+Region *
+region_clone (Region *        region,
+              RegionCloneFlag flag);
 
 /**
  * Serializes the region.

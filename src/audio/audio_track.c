@@ -23,6 +23,7 @@
 
 #include "audio/audio_track.h"
 #include "audio/automation_tracklist.h"
+#include "project.h"
 
 AudioTrack *
 audio_track_new (Channel * channel)

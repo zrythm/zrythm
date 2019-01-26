@@ -23,6 +23,7 @@
 #include "audio/channel.h"
 #include "audio/midi_note.h"
 #include "audio/midi_region.h"
+#include "audio/region.h"
 #include "audio/track.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_region.h"
@@ -67,6 +68,8 @@ midi_region_new (Track *    track,
                start_pos,
                end_pos);
 
+  midi_region->dummy = 1;
+
   return midi_region;
 }
 
@@ -79,4 +82,3 @@ midi_region_add_midi_note (MidiRegion * region,
 {
   region->midi_notes [region->num_midi_notes++] = midi_note;
 }
-

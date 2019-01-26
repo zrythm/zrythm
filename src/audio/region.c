@@ -43,14 +43,10 @@ region_init (Region *   region,
              Position * end_pos)
 {
   g_message ("creating region");
-  region->start_pos.bars = start_pos->bars;
-  region->start_pos.beats = start_pos->beats;
-  region->start_pos.sixteenths = start_pos->sixteenths;
-  region->start_pos.ticks = start_pos->ticks;
-  region->end_pos.bars = end_pos->bars;
-  region->end_pos.beats = end_pos->beats;
-  region->end_pos.sixteenths = end_pos->sixteenths;
-  region->end_pos.ticks = end_pos->ticks;
+  position_set_to_pos (&region->start_pos,
+                       start_pos);
+  position_set_to_pos (&region->end_pos,
+                       end_pos);
   region->track_id = track->id;
   region->track = track;
   Channel * chan = track_get_channel (track);
@@ -58,14 +54,18 @@ region_init (Region *   region,
                                   chan->name,
                                   region->id);
   region->linked_region_id = -1;
-  if (track->type == TRACK_TYPE_AUDIO)
-    region->type = REGION_TYPE_AUDIO;
-  else if (track->type == TRACK_TYPE_INSTRUMENT)
+  region->type = type;
+  if (type == REGION_TYPE_AUDIO)
     {
-      region->type = REGION_TYPE_MIDI;
+      AudioRegion * ar = (AudioRegion *) region;
+      region->audio_region = ar;
+    }
+  else if (type == REGION_TYPE_MIDI)
+    {
+      MidiRegion * mr = (MidiRegion *) region;
+      region->midi_region = mr;
       region->widget = Z_REGION_WIDGET (
-        midi_region_widget_new (
-          (MidiRegion *) region));
+        midi_region_widget_new (mr));
     }
   project_add_region (region);
 }
@@ -149,6 +149,48 @@ region_at_position (Track    * track, ///< the track to look in
         }
     }
   return NULL;
+}
+
+/**
+ * Clone region.
+ *
+ * Creates a new region and either links to the original or
+ * copies every field.
+ */
+Region *
+region_clone (Region *        region,
+              RegionCloneFlag flag)
+{
+  Track * track =
+    project_get_track (region->track_id);
+
+  Region * new_region = NULL;
+  if (region->type == REGION_TYPE_MIDI)
+    {
+      MidiRegion * mr =
+        midi_region_new (track,
+                         &region->start_pos,
+                         &region->end_pos);
+      MidiRegion * mr_orig = region->midi_region;
+      if (flag == REGION_CLONE_COPY)
+        {
+          for (int i = 0; i < mr_orig->num_midi_notes; i++)
+            {
+              MidiNote * mn =
+                midi_note_clone (mr_orig->midi_notes[i],
+                                 mr);
+
+              midi_region_add_midi_note (mr,
+                                         mn);
+            }
+        }
+
+      new_region = (Region *) mr;
+    }
+
+  new_region->selected = region->selected;
+
+  return new_region;
 }
 
 /**

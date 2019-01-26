@@ -179,6 +179,13 @@ int
 position_to_ticks (Position * pos);
 
 /**
+ * Sets position to the given total tick count.
+ */
+void
+position_from_ticks (Position * pos,
+                     int        ticks);
+
+/**
  * Snaps position using given options.
  */
 void

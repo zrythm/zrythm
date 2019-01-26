@@ -22,6 +22,8 @@
 #ifndef __AUDIO_VELOCITY_H__
 #define __AUDIO_VELOCITY_H__
 
+#include <cyaml/cyaml.h>
+
 typedef struct MidiNote MidiNote;
 typedef struct _VelocityWidget VelocityWidget;
 
@@ -34,13 +36,32 @@ typedef struct Velocity
    *
    * For convenience only.
    */
-  MidiNote *       midi_note;
+  MidiNote *       midi_note; ///< cache
 
   VelocityWidget * widget; ///< widget
 } Velocity;
 
+static const cyaml_schema_field_t
+  velocity_fields_schema[] =
+{
+	CYAML_FIELD_INT (
+			"vel", CYAML_FLAG_DEFAULT,
+			Velocity, vel),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+velocity_schema = {
+	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+			Velocity, velocity_fields_schema),
+};
+
 Velocity *
 velocity_new (int        vel);
+
+Velocity *
+velocity_clone (Velocity * src);
 
 Velocity *
 velocity_default ();

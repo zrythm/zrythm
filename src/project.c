@@ -227,14 +227,30 @@ get_next_available_id (void ** array,
     PROJECT->plural[x->id] = x; \
     PROJECT->num_##plural++; \
   }
+#define PROJECT_GET_X(camelcase, lowercase, plural) \
+  camelcase * \
+  project_get_##lowercase (int id) \
+  { \
+    return PROJECT->plural[id]; \
+  }
+
 
 PROJECT_ADD_X (Region, region, regions)
+PROJECT_GET_X (Region, region, regions)
 PROJECT_ADD_X (Track, track, tracks)
+PROJECT_GET_X (Track, track, tracks)
 PROJECT_ADD_X (Channel, channel, channels)
+PROJECT_GET_X (Channel, channel, channels)
 PROJECT_ADD_X (Plugin, plugin, plugins)
+PROJECT_GET_X (Plugin, plugin, plugins)
 PROJECT_ADD_X (AutomationPoint, automation_point, automation_points)
+PROJECT_GET_X (AutomationPoint, automation_point, automation_points)
 PROJECT_ADD_X (AutomationCurve, automation_curve, automation_curves)
+PROJECT_GET_X (AutomationCurve, automation_curve, automation_curves)
 PROJECT_ADD_X (MidiNote, midi_note, midi_notes)
+PROJECT_GET_X (MidiNote, midi_note, midi_notes)
 PROJECT_ADD_X (Port, port, ports)
+PROJECT_GET_X (Port, port, ports)
 
 #undef PROJECT_ADD_X
+#undef PROJECT_GET_X

@@ -39,25 +39,37 @@ midi_note_new (MidiRegion * midi_region,
 {
   MidiNote * midi_note = calloc (1, sizeof (MidiNote));
 
-  midi_note->start_pos.bars = start_pos->bars;
-  midi_note->start_pos.beats = start_pos->beats;
-  midi_note->start_pos.sixteenths = start_pos->sixteenths;
-  midi_note->start_pos.ticks = start_pos->ticks;
-  midi_note->end_pos.bars = end_pos->bars;
-  midi_note->end_pos.beats = end_pos->beats;
-  midi_note->end_pos.sixteenths = end_pos->sixteenths;
-  midi_note->end_pos.ticks = end_pos->ticks;
+  position_set_to_pos (&midi_note->start_pos,
+                       start_pos);
+  position_set_to_pos (&midi_note->end_pos,
+                       end_pos);
   midi_note->midi_region = midi_region;
   midi_note->val = val;
   midi_note->vel = vel;
   vel->midi_note = midi_note;
   vel->widget = velocity_widget_new (vel);
   midi_note->widget = midi_note_widget_new (midi_note);
-  midi_note->id = PROJECT->num_midi_notes;
   g_object_ref (midi_note->widget);
-  PROJECT->midi_notes[PROJECT->num_midi_notes++] = midi_note;
+
+  project_add_midi_note (midi_note);
 
   return midi_note;
+}
+
+/**
+ * Deep clones the midi note.
+ */
+MidiNote *
+midi_note_clone (MidiNote *  src,
+                 MidiRegion * mr) ///< owner region
+{
+  Velocity * vel = velocity_clone (src->vel);
+
+  return midi_note_new (mr,
+                        &src->start_pos,
+                        &src->end_pos,
+                        src->val,
+                        vel);
 }
 
 void

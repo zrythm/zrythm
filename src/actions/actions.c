@@ -370,6 +370,8 @@ activate_copy (GSimpleAction *action,
       g_message ("copy: timeline focused");
       /*char * serialized = timeline_selections_serialize (*/
         /*TIMELINE_SELECTIONS);*/
+      g_message ("midi region num midi notes %d",
+                 TIMELINE_SELECTIONS->regions[0]->midi_region->num_midi_notes);
 
       gtk_clipboard_set_text (
         DEFAULT_CLIPBOARD,
@@ -390,11 +392,14 @@ on_timeline_clipboard_received (
 
   TimelineSelections * ts =
     timeline_selections_deserialize (text);
-  /*g_message ("top region %p linked region %d num regions %d start pos bars %d",*/
-             /*ts->top_region,*/
-             /*ts->regions[0]->linked_region_id,*/
-             /*ts->num_regions,*/
-             /*ts->regions[0]->start_pos.bars);*/
+  g_message ("top region %p num midi notes %d",
+             ts->top_region,
+             ts->regions[0]->midi_region->num_midi_notes);
+
+  timeline_selections_paste_to_pos (ts,
+                                    &PLAYHEAD);
+
+  /* free ts */
 }
 
 void

@@ -24,6 +24,7 @@
 
 #include "audio/automation_point.h"
 #include "audio/chord.h"
+#include "audio/midi_region.h"
 #include "audio/region.h"
 
 #define TIMELINE_SELECTIONS (&PROJECT->timeline_selections)
@@ -82,15 +83,19 @@ timeline_selections_schema = {
                            //TimelineSelections * dest);
 
 /**
- * Serializes to XML.
- *
- * MUST be free'd.
+ * Returns the position of the leftmost object.
  */
-char *
-timeline_selections_serialize (
-  TimelineSelections * ts); ///< TS to serialize
+void
+timeline_selections_get_start_pos (
+  TimelineSelections * ts,
+  Position *                pos); ///< position to fill in
 
-TimelineSelections *
-timeline_selections_deserialize (const char * e);
+void
+timeline_selections_paste_to_pos (
+  TimelineSelections * ts,
+  Position *           pos);
+
+X_SERIALIZE_INC (TimelineSelections, timeline_selections)
+X_DESERIALIZE_INC (TimelineSelections, timeline_selections)
 
 #endif

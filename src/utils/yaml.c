@@ -28,22 +28,26 @@
 /**
  * Gets nth line from a string.
  */
-const char *sgets(char *s, int n, char **strp){
-    if(**strp == '\0')return NULL;
-    int i;
-    for(i=0;i<n-1;++i, ++(*strp)){
-        s[i] = **strp;
-        if(**strp == '\0')
-            break;
-        if(**strp == '\n'){
-            s[i+1]='\0';
-            ++(*strp);
-            break;
+const char *sgets(char *s, int n, char **strp)
+{
+  if (**strp == '\0')
+    return NULL;
+  int i;
+  for (i=0;i<n-1;++i, ++(*strp))
+    {
+      s[i] = **strp;
+      if(**strp == '\0')
+        break;
+      if(**strp == '\n')
+        {
+          s[i+1]='\0';
+          ++(*strp);
+          break;
         }
     }
-    if(i==n-1)
-        s[i] = '\0';
-    return s;
+  if (i==n-1)
+    s[i] = '\0';
+  return s;
 }
 
 /**
@@ -51,25 +55,39 @@ const char *sgets(char *s, int n, char **strp){
  * YAML string.
  */
 void
-yaml_sanitize (char ** e)
+yaml_sanitize (char * e, size_t output_len)
 {
-  char buff[80];
-  char cpy[strlen (*e)];
+  char buff[120];
+  char cpy[output_len];
   int index = 0;
+  g_message ("size %d", output_len);
   while (NULL != sgets (buff,
                         sizeof (buff),
-                        e))
+                        &e))
     {
-      if (buff[0] > 31)
-        {
-          for (int i = 0; i < strlen (buff); i++)
-            cpy[index++] = buff[i];
-          g_message (cpy);
-        }
+          int i = 0;
+          int stop = 0;
+          while (buff[i] != '\n' &&
+                 buff[i] != '\0')
+            {
+              if (buff[i] < 6 &&
+                  buff[i] > 127)
+                {
+                  stop = 1;
+                  g_message ("found char %d",
+                             buff[i]);
+                  break;
+                }
+              else
+                cpy[index++] = buff[i++];
+            }
+          if (stop)
+            break;
+          break;
     }
+  cpy[index++] = '\0';
   for (int i = 0; i < index; i++)
     {
-      (*e)[i] = cpy[i];
+      e[i] = cpy[i];
     }
-  (*e)[index] = '\0';
 }

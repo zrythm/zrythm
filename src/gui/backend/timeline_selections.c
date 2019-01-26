@@ -19,61 +19,112 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/engine.h"
+#include "audio/track.h"
+#include "audio/transport.h"
 #include "gui/backend/timeline_selections.h"
+#include "project.h"
 #include "utils/yaml.h"
 
 #include <gtk/gtk.h>
 
 /**
- * Serializes to XML.
- *
- * MUST be free'd.
+ * Returns the position of the leftmost object.
  */
-char *
-timeline_selections_serialize (
-  TimelineSelections * ts) ///< TS to serialize
+static void
+get_start_pos (
+  TimelineSelections * ts,
+  Position *           pos) ///< position to fill in
 {
-  cyaml_err_t err;
+  position_set_to_bar (pos,
+                       TRANSPORT->total_bars);
 
-  char * output =
-    calloc (1200, sizeof (char));
-  size_t output_len;
-  err =
-    cyaml_save_data (
-      &output,
-      &output_len,
-      &config,
-      &timeline_selections_schema,
-      ts,
-      0);
-  if (err != CYAML_OK)
+  for (int i = 0; i < ts->num_regions; i++)
     {
-      g_warning ("error %s",
-                 cyaml_strerror (err));
+      Region * region = ts->regions[i];
+      if (position_compare (&region->start_pos,
+                            pos) < 0)
+        position_set_to_pos (pos,
+                             &region->start_pos);
     }
-
-  yaml_sanitize (&output);
-
-  return output;
+  for (int i = 0; i < ts->num_automation_points; i++)
+    {
+      AutomationPoint * automation_point =
+        ts->automation_points[i];
+      if (position_compare (&automation_point->pos,
+                            pos) < 0)
+        position_set_to_pos (pos,
+                             &automation_point->pos);
+    }
+  for (int i = 0; i < ts->num_chords; i++)
+    {
+      Chord * chord = ts->chords[i];
+      if (position_compare (&chord->pos,
+                            pos) < 0)
+        position_set_to_pos (pos,
+                             &chord->pos);
+    }
 }
 
-TimelineSelections *
-timeline_selections_deserialize (const char * e)
+void
+timeline_selections_paste_to_pos (
+  TimelineSelections * ts,
+  Position *           pos)
 {
-  TimelineSelections * self;
+  int pos_ticks = position_to_ticks (pos);
 
-  cyaml_err_t err =
-    cyaml_load_data ((const unsigned char *) e,
-                     strlen (e),
-                     &config,
-                     &timeline_selections_schema,
-                     (cyaml_data_t **) &self,
-                     NULL);
-  if (err != CYAML_OK)
+  /* get pos of earliest object */
+  Position start_pos;
+  get_start_pos (ts,
+                 &start_pos);
+  int start_pos_ticks =
+    position_to_ticks (&start_pos);
+
+  /* subtract the start pos from every object and
+   * add the given pos */
+#define DIFF (curr_ticks - start_pos_ticks)
+  int curr_ticks, i;
+  for (i = 0; i < ts->num_regions; i++)
     {
-      g_error ("error %s",
-               cyaml_strerror (err));
-    }
+      Region * region = ts->regions[i];
 
-  return self;
+      /* update positions */
+      curr_ticks = position_to_ticks (&region->start_pos);
+      position_from_ticks (&region->start_pos,
+                           pos_ticks + DIFF);
+      curr_ticks = position_to_ticks (&region->end_pos);
+      position_from_ticks (&region->end_pos,
+                           pos_ticks + DIFF);
+      curr_ticks = position_to_ticks (&region->unit_end_pos);
+      position_from_ticks (&region->unit_end_pos,
+                           pos_ticks + DIFF);
+
+      /* clone and add to track */
+      Region * cp =
+        region_clone (region,
+                      REGION_CLONE_COPY);
+      track_add_region (cp->track,
+                        cp);
+    }
+  for (i = 0; i < ts->num_automation_points; i++)
+    {
+      AutomationPoint * ap =
+        ts->automation_points[i];
+
+      curr_ticks = position_to_ticks (&ap->pos);
+      position_from_ticks (&ap->pos,
+                           pos_ticks + DIFF);
+    }
+  for (i = 0; i < ts->num_chords; i++)
+    {
+      Chord * chord = ts->chords[i];
+
+      curr_ticks = position_to_ticks (&chord->pos);
+      position_from_ticks (&chord->pos,
+                           pos_ticks + DIFF);
+    }
+#undef DIFF
 }
+
+X_SERIALIZE_SRC (TimelineSelections, timeline_selections)
+X_DESERIALIZE_SRC (TimelineSelections, timeline_selections)

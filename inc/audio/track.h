@@ -86,12 +86,18 @@ typedef struct Track
 void
 track_init (Track * track);
 
-
 /**
  * Wrapper.
  */
 Track *
 track_new (Channel * channel);
+
+/**
+ * Wrapper.
+ */
+void
+track_add_region (Track * track,
+                  Region * region);
 
 /**
  * Wrapper.

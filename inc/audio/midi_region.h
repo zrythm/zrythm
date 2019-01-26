@@ -22,43 +22,21 @@
 #ifndef __AUDIO_MIDI_REGION_H__
 #define __AUDIO_MIDI_REGION_H__
 
-#include "audio/position.h"
-#include "audio/region.h"
-
-typedef struct _RegionWidget RegionWidget;
-typedef struct Channel Channel;
 typedef struct Track Track;
+typedef struct Position Position;
+typedef struct MidiRegion MidiRegion;
 typedef struct MidiNote MidiNote;
-
-typedef struct MidiRegion
-{
-  Region          parent;
-
-  /**
-   * MIDI notes.
-   */
-  MidiNote *      midi_notes[200];
-
-  /**
-   * MIDI note count.
-   */
-  int             num_midi_notes;
-
-  /**
-   * Position where the first unit of repeation ends.
-   */
-  Position        unit_end_pos;
-
-  /**
-   * 1 if the region is repeating.
-   */
-  int             is_repeating;
-} MidiRegion;
 
 MidiRegion *
 midi_region_new (Track *    track,
                  Position * start_pos,
                  Position * end_pos);
+
+/**
+ * Deep clones the midi region.
+ */
+MidiRegion *
+midi_region_clone (MidiRegion * src);
 
 /**
  * Creates region (used when loading projects).

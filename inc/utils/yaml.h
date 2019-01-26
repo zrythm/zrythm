@@ -24,6 +24,70 @@
 
 #include <cyaml/cyaml.h>
 
+/**
+ * Serializes to XML.
+ *
+ * MUST be free'd.
+ */
+#define X_SERIALIZE_INC(camelcase, lowercase) \
+  char * \
+  lowercase##_serialize ( \
+    camelcase * x);
+
+#define X_SERIALIZE_SRC(camelcase, lowercase) \
+  char * \
+  lowercase##_serialize ( \
+    camelcase * x) \
+  { \
+    cyaml_err_t err; \
+ \
+    char * output; \
+    size_t output_len; \
+    err = \
+      cyaml_save_data ( \
+        &output, \
+        &output_len, \
+        &config, \
+        &lowercase##_schema, \
+        x, \
+        0); \
+    if (err != CYAML_OK) \
+      { \
+        g_warning ("error %s", \
+                   cyaml_strerror (err)); \
+      } \
+ \
+    output[output_len] = '\0'; \
+ \
+    return output; \
+  }
+
+#define X_DESERIALIZE_INC(camelcase, lowercase) \
+  camelcase * \
+  lowercase##_deserialize (const char * e);
+
+#define X_DESERIALIZE_SRC(camelcase, lowercase) \
+  camelcase * \
+  lowercase##_deserialize (const char * e) \
+  { \
+    camelcase * self; \
+ \
+    cyaml_err_t err = \
+      cyaml_load_data ((const unsigned char *) e, \
+                       strlen (e), \
+                       &config, \
+                       &lowercase##_schema, \
+                       (cyaml_data_t **) &self, \
+                       NULL); \
+    if (err != CYAML_OK) \
+      { \
+        g_error ("error %s", \
+                 cyaml_strerror (err)); \
+      } \
+ \
+    return self; \
+  }
+
 static const cyaml_config_t config = {
 	.log_level = CYAML_LOG_DEBUG, /* Logging errors and warnings only. */
 	.log_fn = cyaml_log,            /* Use the default logging function. */
@@ -41,6 +105,6 @@ int_schema = {
  * YAML string.
  */
 void
-yaml_sanitize (char ** e);
+yaml_sanitize (char * e, size_t output_len);
 
 #endif

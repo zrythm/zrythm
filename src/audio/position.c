@@ -473,6 +473,22 @@ position_to_ticks (Position * pos)
 }
 
 /**
+ * Sets position to the given total tick count.
+ */
+void
+position_from_ticks (Position * pos,
+                     int        ticks)
+{
+  pos->bars = ticks / TICKS_PER_BAR;
+  ticks = ticks % TICKS_PER_BAR;
+  pos->beats = ticks / TICKS_PER_BEAT;
+  ticks = ticks % TICKS_PER_BEAT;
+  pos->sixteenths = ticks / TICKS_PER_SIXTEENTH_NOTE;
+  ticks = ticks % TICKS_PER_SIXTEENTH_NOTE;
+  pos->ticks = ticks;
+}
+
+/**
  * Calculates the midway point between the two positions and sets it on pos.
  */
 void
