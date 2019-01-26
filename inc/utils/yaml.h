@@ -1,5 +1,5 @@
 /*
- * audio/master_track.c - master track
+ * utils/yaml.h - YAML utils
  *
  * Copyright (C) 2019 Alexandros Theodotou
  *
@@ -19,48 +19,28 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
+#ifndef __UTILS_YAML_H__
+#define __UTILS_YAML_H__
 
-#include "audio/automation_tracklist.h"
-#include "audio/master_track.h"
-#include "project.h"
+#include <cyaml/cyaml.h>
 
-#include <gtk/gtk.h>
+static const cyaml_config_t config = {
+	.log_level = CYAML_LOG_DEBUG, /* Logging errors and warnings only. */
+	.log_fn = cyaml_log,            /* Use the default logging function. */
+	.mem_fn = cyaml_mem,            /* Use the default memory allocator. */
+};
 
-MasterTrack *
-master_track_new (Channel * channel)
-{
-  MasterTrack * self =
-    calloc (1, sizeof (MasterTrack));
-
-  Track * track = (Track *) self;
-  track->type = TRACK_TYPE_MASTER;
-  gdk_rgba_parse (&track->color, "#f01010");
-  track_init (track);
-  project_add_track (track);
-
-  ChannelTrack * bt = (ChannelTrack *) self;
-  bt->channel = channel;
-
-  return self;
-}
-
-void
-master_track_setup (MasterTrack * self)
-{
-  BusTrack * track = (BusTrack *) self;
-
-  bus_track_setup (track);
-}
+static const cyaml_schema_value_t
+int_schema = {
+	CYAML_VALUE_INT (CYAML_FLAG_DEFAULT,
+                   typeof (int)),
+};
 
 /**
- * Frees the track.
- *
- * TODO
+ * Removes lines starting with control chars from the
+ * YAML string.
  */
 void
-master_track_free (MasterTrack * track)
-{
+yaml_sanitize (char ** e);
 
-}
-
+#endif

@@ -33,6 +33,7 @@ audio_track_new (Channel * channel)
   Track * track = (Track *) self;
   track->type = TRACK_TYPE_AUDIO;
   track_init (track);
+  project_add_track (track);
 
   ChannelTrack * bt = (ChannelTrack *) self;
   bt->channel = channel;

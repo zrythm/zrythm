@@ -259,7 +259,7 @@ activate_save (GSimpleAction *action,
      }
    g_message ("%s project dir ", PROJECT->dir);
 
-   project_save (PROJECT, PROJECT->dir);
+   project_save (PROJECT->dir);
 }
 
 void
@@ -297,7 +297,7 @@ activate_save_as (GSimpleAction *action,
       char *filename;
 
       filename = gtk_file_chooser_get_filename (chooser);
-      project_save (PROJECT, filename);
+      project_save (filename);
       g_free (filename);
     }
 
@@ -357,6 +357,7 @@ activate_cut (GSimpleAction *action,
   g_message ("ZOOMING IN");
 }
 
+
 void
 activate_copy (GSimpleAction *action,
                   GVariant      *variant,
@@ -367,11 +368,13 @@ activate_copy (GSimpleAction *action,
   if (timeline_focused)
     {
       g_message ("copy: timeline focused");
-      g_message (region_serialize (PROJECT->regions[0]));
+      /*char * serialized = timeline_selections_serialize (*/
+        /*TIMELINE_SELECTIONS);*/
+
       gtk_clipboard_set_text (
         DEFAULT_CLIPBOARD,
         timeline_selections_serialize (
-          &MW_TIMELINE->selections),
+          TIMELINE_SELECTIONS),
         -1);
     }
 }
@@ -384,6 +387,14 @@ on_timeline_clipboard_received (
 {
   g_message ("clipboard data received: %s",
              text);
+
+  TimelineSelections * ts =
+    timeline_selections_deserialize (text);
+  /*g_message ("top region %p linked region %d num regions %d start pos bars %d",*/
+             /*ts->top_region,*/
+             /*ts->regions[0]->linked_region_id,*/
+             /*ts->num_regions,*/
+             /*ts->regions[0]->start_pos.bars);*/
 }
 
 void

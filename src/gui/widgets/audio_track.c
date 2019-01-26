@@ -38,6 +38,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
+#include "project.h"
 #include "utils/gtk.h"
 
 #include <gtk/gtk.h>

@@ -30,10 +30,7 @@
 #include "gui/widgets/midi_region.h"
 #include "gui/widgets/region.h"
 #include "project.h"
-
-#include <libxml/encoding.h>
-#include <libxml/xmlreader.h>
-
+#include "utils/yaml.h"
 
 /**
  * Only to be used by implementing structs.
@@ -54,9 +51,13 @@ region_init (Region *   region,
   region->end_pos.beats = end_pos->beats;
   region->end_pos.sixteenths = end_pos->sixteenths;
   region->end_pos.ticks = end_pos->ticks;
+  region->track_id = track->id;
   region->track = track;
-  region->id = PROJECT->num_regions;
-  region->name = g_strdup_printf ("Region %d", region->id);
+  Channel * chan = track_get_channel (track);
+  region->name = g_strdup_printf ("%s (%d)",
+                                  chan->name,
+                                  region->id);
+  region->linked_region_id = -1;
   if (track->type == TRACK_TYPE_AUDIO)
     region->type = REGION_TYPE_AUDIO;
   else if (track->type == TRACK_TYPE_INSTRUMENT)
@@ -66,8 +67,7 @@ region_init (Region *   region,
         midi_region_widget_new (
           (MidiRegion *) region));
     }
-  project_add_region (PROJECT,
-                      region);
+  project_add_region (region);
 }
 
 /**
@@ -191,62 +191,6 @@ region_serialize (Region * region)
     {
       g_message ("error %s",
                  cyaml_strerror (err));
-	/* Handle error */
     }
   return output;
-  /*xmlBufferPtr buf =*/
-    /*xmlBufferCreate();*/
-  /*xmlTextWriterPtr writer =*/
-    /*xmlNewTextWriterMemory (buf,*/
-                            /*0);*/
-
-
-  /*xmlTextWriterStartElement (*/
-      /*writer,*/
-      /*BAD_CAST "Region");*/
-  /*xmlTextWriterWriteFormatAttribute (*/
-    /*writer,*/
-    /*BAD_CAST "id",*/
-    /*"%d",*/
-    /*region->id);*/
-  /*xmlTextWriterWriteFormatAttribute (*/
-    /*writer,*/
-    /*BAD_CAST "name",*/
-    /*"%s",*/
-      /*region->name);*/
-  /*if (region->track->type == TRACK_TYPE_AUDIO)*/
-    /*{*/
-      /*//*/
-    /*}*/
-  /*else if (region->track->type == TRACK_TYPE_INSTRUMENT)*/
-    /*{*/
-      /*if (region->linked_region)*/
-        /*{*/
-          /*xmlTextWriterWriteFormatAttribute (*/
-            /*writer,*/
-            /*BAD_CAST "linked_region_id",*/
-            /*"%d",*/
-            /*region->linked_region->id);*/
-        /*}*/
-      /*else*/
-        /*{*/
-          /*char * filename = region_generate_filename (region);*/
-          /*xmlTextWriterWriteFormatAttribute (*/
-            /*writer,*/
-            /*BAD_CAST "filename",*/
-            /*"%s",*/
-            /*filename);*/
-          /*g_free (filename);*/
-        /*}*/
-    /*}*/
-  /*write_position (writer, &region->start_pos, "start_pos");*/
-  /*write_position (writer, &region->end_pos, "end_pos");*/
-
-  /*rc = xmlTextWriterEndElement(writer);*/
-
-  /*if (rc < 0)*/
-    /*{*/
-      /*g_warning ("error occured");*/
-      /*return;*/
-    /*}*/
 }

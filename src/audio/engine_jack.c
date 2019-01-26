@@ -73,9 +73,9 @@ jack_buffer_size_cb (uint32_t nframes,
 
   /** reallocate port buffers to new size */
   g_message ("Reallocating port buffers to %d", nframes);
-  for (int i = 0; i < AUDIO_ENGINE->num_ports; i++)
+  for (int i = 0; i < PROJECT->num_ports; i++)
     {
-      Port * port = AUDIO_ENGINE->ports[i];
+      Port * port = PROJECT->ports[i];
       port->buf = realloc (port->buf, nframes * sizeof (float));
       /* TODO memset */
     }

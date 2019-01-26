@@ -95,14 +95,35 @@ static const cyaml_strval_t region_type_strings[] = {
 static const cyaml_schema_field_t
   region_fields_schema[] =
 {
-	CYAML_FIELD_INT(
+	CYAML_FIELD_INT (
 			"id", CYAML_FLAG_DEFAULT,
 			Region, id),
-
-  CYAML_FIELD_ENUM(
+  CYAML_FIELD_STRING_PTR (
+      "name", CYAML_FLAG_POINTER,
+			Region, name,
+			0, CYAML_UNLIMITED),
+  CYAML_FIELD_ENUM (
 			"type", CYAML_FLAG_DEFAULT,
 			Region, type, region_type_strings,
-CYAML_ARRAY_LEN(region_type_strings)),
+      CYAML_ARRAY_LEN (region_type_strings)),
+  CYAML_FIELD_MAPPING (
+      "start_pos", CYAML_FLAG_DEFAULT,
+      Region, start_pos, position_fields_schema),
+  CYAML_FIELD_MAPPING (
+      "end_pos", CYAML_FLAG_DEFAULT,
+      Region, end_pos, position_fields_schema),
+  CYAML_FIELD_MAPPING (
+      "unit_end_pos", CYAML_FLAG_DEFAULT,
+      Region, unit_end_pos, position_fields_schema),
+	CYAML_FIELD_INT (
+			"track_id", CYAML_FLAG_DEFAULT,
+			Region, track_id),
+	CYAML_FIELD_INT (
+			"linked_region_id", CYAML_FLAG_DEFAULT,
+			Region, linked_region_id),
+	CYAML_FIELD_INT (
+			"selected", CYAML_FLAG_DEFAULT,
+			Region, selected),
 
 	CYAML_FIELD_END
 };
@@ -111,12 +132,6 @@ static const cyaml_schema_value_t
 region_schema = {
 	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
 			Region, region_fields_schema),
-};
-
-static const cyaml_config_t config = {
-	.log_level = CYAML_LOG_DEBUG, /* Logging errors and warnings only. */
-	.log_fn = cyaml_log,            /* Use the default logging function. */
-	.mem_fn = cyaml_mem,            /* Use the default memory allocator. */
 };
 
 /**

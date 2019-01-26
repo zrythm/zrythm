@@ -345,8 +345,6 @@ ruler_widget_refresh (RulerWidget * self)
 {
   RULER_WIDGET_GET_PRIVATE (self);
 
-  g_message ("REFRESH");
-
   /*adjust for zoom level*/
   rw_prv->px_per_tick =
     DEFAULT_PX_PER_TICK * rw_prv->zoom_level;

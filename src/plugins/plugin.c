@@ -56,7 +56,6 @@
  * Creates an empty plugin.
  *
  * To be filled in by the caller.
- * FIXME should be static?
  */
 static Plugin *
 _plugin_new ()
@@ -65,8 +64,7 @@ _plugin_new ()
 
   plugin->processed = 1;
 
-  plugin->id = PROJECT->num_plugins;
-  PROJECT->plugins[PROJECT->num_plugins++] = plugin;
+  project_add_plugin (plugin);
 
   return plugin;
 }

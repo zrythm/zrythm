@@ -58,17 +58,17 @@ typedef jack_nframes_t                nframes_t;
 Port *
 port_get_or_create_blank (int id)
 {
-  if (AUDIO_ENGINE->ports[id])
+  if (PROJECT->ports[id])
     {
-      return AUDIO_ENGINE->ports[id];
+      return PROJECT->ports[id];
     }
   else
     {
       Port * port = calloc (1, sizeof (Port));
 
       port->id = id;
-      AUDIO_ENGINE->ports[id] = port;
-      AUDIO_ENGINE->num_ports++;
+      PROJECT->ports[id] = port;
+      PROJECT->num_ports++;
       port->buf = calloc (AUDIO_ENGINE->block_length, sizeof (sample_t));
       port->num_dests = 0;
       port->flow = FLOW_UNKNOWN;
@@ -89,8 +89,8 @@ port_new (char * label)
 {
   Port * port = calloc (1, sizeof (Port));
 
-  port->id = AUDIO_ENGINE->num_ports;
-  AUDIO_ENGINE->ports[AUDIO_ENGINE->num_ports++] = port;
+  port->id = PROJECT->num_ports;
+  PROJECT->ports[PROJECT->num_ports++] = port;
   port->num_dests = 0;
   port->buf = calloc (AUDIO_ENGINE->block_length, sizeof (sample_t));
   port->flow = FLOW_UNKNOWN;
@@ -164,7 +164,7 @@ port_free (Port * port)
   if (port->buf)
     free (port->buf);
 
-  array_delete ((void **) AUDIO_ENGINE->ports, &AUDIO_ENGINE->num_ports, port);
+  array_delete ((void **) PROJECT->ports, &PROJECT->num_ports, port);
   free (port);
 }
 
@@ -382,9 +382,9 @@ port_sum_signal_from_inputs (Port * port)
 void
 port_print_connections_all ()
 {
-  for (int i = 0; i < AUDIO_ENGINE->num_ports; i++)
+  for (int i = 0; i < PROJECT->num_ports; i++)
     {
-      Port * src = AUDIO_ENGINE->ports[i];
+      Port * src = PROJECT->ports[i];
       if (!src->owner_pl && !src->owner_ch && !src->owner_jack)
         {
           g_warning ("Port %s has no owner", src->label);

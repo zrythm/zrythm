@@ -22,9 +22,11 @@
 #ifndef __ACTIONS_TIMELINE_SELECTIONS_H__
 #define __ACTIONS_TIMELINE_SELECTIONS_H__
 
-typedef struct Region Region;
-typedef struct AutomationPoint AutomationPoint;
-typedef struct Chord Chord;
+#include "audio/automation_point.h"
+#include "audio/chord.h"
+#include "audio/region.h"
+
+#define TIMELINE_SELECTIONS (&PROJECT->timeline_selections)
 
 /**
  * Selections to be used for the timeline's current
@@ -42,6 +44,36 @@ typedef struct TimelineSelections
   int                      num_chords;
 } TimelineSelections;
 
+static const cyaml_schema_field_t
+  timeline_selections_fields_schema[] =
+{
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "regions", CYAML_FLAG_OPTIONAL,
+      TimelineSelections, regions, num_regions,
+      &region_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_MAPPING_PTR (
+    "top_region", CYAML_FLAG_OPTIONAL | CYAML_FLAG_POINTER,
+    TimelineSelections, top_region, region_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "bot_region", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    TimelineSelections, bot_region, region_fields_schema),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "automation_points", CYAML_FLAG_OPTIONAL,
+      TimelineSelections, automation_points, num_automation_points,
+      &automation_point_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "chords", CYAML_FLAG_OPTIONAL,
+    TimelineSelections, chords, num_chords,
+    &chord_schema, 0, CYAML_UNLIMITED),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+timeline_selections_schema = {
+	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+			TimelineSelections, timeline_selections_fields_schema),
+};
 /**
  * Clone the struct for copying, undoing, etc.
  */
@@ -57,5 +89,8 @@ typedef struct TimelineSelections
 char *
 timeline_selections_serialize (
   TimelineSelections * ts); ///< TS to serialize
+
+TimelineSelections *
+timeline_selections_deserialize (const char * e);
 
 #endif

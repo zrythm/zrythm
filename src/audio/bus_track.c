@@ -23,6 +23,7 @@
 
 #include "audio/automation_tracklist.h"
 #include "audio/bus_track.h"
+#include "project.h"
 
 BusTrack *
 bus_track_new (Channel * channel)
@@ -34,6 +35,7 @@ bus_track_new (Channel * channel)
   track->type = TRACK_TYPE_BUS;
   gdk_rgba_parse (&track->color, "#F9CA1B");
   track_init (track);
+  project_add_track (track);
 
   ChannelTrack * ct = (ChannelTrack *) self;
   ct->channel = channel;

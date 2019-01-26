@@ -32,6 +32,7 @@
 #include "audio/velocity.h"
 #include "plugins/lv2/control.h"
 #include "plugins/lv2_plugin.h"
+#include "project.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/automation_track.h"
 #include "utils/arrays.h"
@@ -48,6 +49,7 @@ instrument_track_new (Channel * channel)
   track->type = TRACK_TYPE_INSTRUMENT;
   gdk_rgba_parse (&track->color, "#F79616");
   track_init ((Track *) self);
+  project_add_track (track);
 
   ChannelTrack * ct = (ChannelTrack *) self;
   ct->channel = channel;

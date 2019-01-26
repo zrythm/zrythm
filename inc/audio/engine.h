@@ -78,9 +78,6 @@ typedef struct AudioEngine
   int               run;    ///< ok to process or not
   int               panic; ///< send note off MIDI everywhere
 
-  Port              * ports[600000];   ///< all ports have a reference here for easy access
-  int               num_ports;
-
   /**
    * Port Audio output buffer.
    *

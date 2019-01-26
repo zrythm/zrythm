@@ -33,6 +33,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/chord_track.h"
 #include "gui/widgets/tracklist.h"
+#include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 

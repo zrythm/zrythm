@@ -58,7 +58,6 @@ typedef struct _TimelineArrangerWidget
   AutomationPoint *        start_ap;
   AutomationCurve *        start_ac;
 
-  TimelineSelections       selections;
   /* temporary start positions, set on drag_begin, and used in drag_update
    * to move the objects accordingly */
   Position                 region_start_poses[600]; ///< region initial start positions, for moving regions

@@ -1104,7 +1104,7 @@ lv2_create_descriptor_from_lilv (const LilvPlugin * lp)
     }
   if (!name || !lilv_plugin_get_port_by_index(lp, 0))
     {
-      g_warning ("Ignoring invalid LV2 plugin %s",
+      g_message ("Ignoring invalid LV2 plugin %s",
                  lilv_node_as_string(lilv_plugin_get_uri(lp)));
       lilv_node_free(name);
       return NULL;

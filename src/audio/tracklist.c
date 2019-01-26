@@ -128,6 +128,8 @@ void
 tracklist_add_track (Track *     track,
                      int         pos)
 {
+  TRACKLIST->track_ids[pos] =
+    track->id;
   array_insert ((void **) TRACKLIST->tracks,
                 &TRACKLIST->num_tracks,
                 pos,
@@ -145,6 +147,8 @@ tracklist_add_track (Track *     track,
 void
 tracklist_append_track (Track *     track)
 {
+  TRACKLIST->track_ids[TRACKLIST->num_tracks] =
+    track->id;
   array_append ((void **) TRACKLIST->tracks,
                 &TRACKLIST->num_tracks,
                 (void *) track);

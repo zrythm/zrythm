@@ -22,6 +22,8 @@
 #ifndef __AUDIO_POSITION_H__
 #define __AUDIO_POSITION_H__
 
+#include <cyaml/cyaml.h>
+
 #define TICKS_PER_QUARTER_NOTE 960
 #define TICKS_PER_SIXTEENTH_NOTE 240
 /**
@@ -77,6 +79,25 @@ typedef struct Position
 
   int       frames; ///< position in frames (samples)
 } Position;
+
+static const cyaml_schema_field_t
+  position_fields_schema[] =
+{
+	CYAML_FIELD_INT (
+			"bars", CYAML_FLAG_DEFAULT,
+			Position, bars),
+	CYAML_FIELD_INT (
+			"beats", CYAML_FLAG_DEFAULT,
+			Position, beats),
+	CYAML_FIELD_INT (
+			"sixteenths", CYAML_FLAG_DEFAULT,
+			Position, sixteenths),
+	CYAML_FIELD_INT (
+			"ticks", CYAML_FLAG_DEFAULT,
+			Position, ticks),
+
+	CYAML_FIELD_END
+};
 
 /**
  * Initializes given position to all 0

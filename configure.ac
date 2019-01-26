@@ -1,5 +1,5 @@
 # Initialize autoconf: package name, version, bug report address
-AC_INIT([zrythm], [0.1], [alex@zrythm.org])
+AC_INIT([zrythm], [0.0.1], [alex@zrythm.org])
 
 # Declare config.h as output header
 AC_CONFIG_HEADERS([config.h])
@@ -46,7 +46,8 @@ AC_ARG_ENABLE(package-mode,
 
 AC_ARG_ENABLE(release,
               AS_HELP_STRING([--enable-release], [Build for release (default is debug)]),
-              [AC_SUBST([RELEASE], [1])],
+              [AC_SUBST([RELEASE], [1])]
+              [AC_DEFINE([RELEASE], [1], [Compiled in release mode])],
               [AC_SUBST([RELEASE], [0])])
 
 # Check for a C compiler

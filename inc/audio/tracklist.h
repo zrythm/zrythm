@@ -45,8 +45,16 @@ typedef struct Tracklist
 {
   /**
    * All tracks that exist.
+   *
+   * These should always be sorted in the same way they
+   * are visible in the GUI.
    */
   Track *             tracks[MAX_TRACKS];
+
+  /**
+   * The track IDs used to identify tracks.
+   */
+  int                 track_ids[MAX_TRACKS];
   int                 num_tracks;
 
   TracklistWidget *   widget;

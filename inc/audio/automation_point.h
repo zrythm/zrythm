@@ -34,7 +34,17 @@ typedef struct AutomationPoint
   float                    fvalue; ///< float value
   int                      bvalue; ///< boolean value
   int                      svalue; ///< step value
-  AutomationTrack *        at; ///< pointer back to parent
+
+  /**
+   * Pointer back to parent.
+   *
+   * For convenience only.
+   */
+  AutomationTrack *        at;
+
+  /**
+   * GUI Widget.
+   */
   AutomationPointWidget *  widget;
 
   /* ======== Useful only for de/serialization ====== */
@@ -45,15 +55,42 @@ typedef struct AutomationPoint
    */
   int                      id;
   /**
-   * The ID of the track the automation point is in.
+   * Port ID of the automatable so we know where to place
+   * this automation point.
    */
-  int                      track_id;
-  /**
-   * The label of the automatable so we know how to find
-   * the corresponding automation track.
-   */
-  char *                   automatable_label;
+  int                      port_id;
 } AutomationPoint;
+
+static const cyaml_schema_field_t
+  automation_point_fields_schema[] =
+{
+	CYAML_FIELD_INT (
+			"id", CYAML_FLAG_DEFAULT,
+			AutomationPoint, id),
+  CYAML_FIELD_MAPPING (
+      "pos", CYAML_FLAG_DEFAULT,
+      AutomationPoint, pos, position_fields_schema),
+	CYAML_FIELD_INT (
+			"svalue", CYAML_FLAG_DEFAULT,
+			AutomationPoint, svalue),
+	CYAML_FIELD_INT (
+			"bvalue", CYAML_FLAG_DEFAULT,
+			AutomationPoint, bvalue),
+	CYAML_FIELD_FLOAT (
+			"fvalue", CYAML_FLAG_DEFAULT,
+			AutomationPoint, fvalue),
+	CYAML_FIELD_INT (
+			"port_id", CYAML_FLAG_DEFAULT,
+			AutomationPoint, port_id),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+automation_point_schema = {
+	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+			AutomationPoint, automation_point_fields_schema),
+};
 
 /**
  * Creates automation point in given track at given Position
@@ -80,4 +117,3 @@ void
 automation_point_free (AutomationPoint * ap);
 
 #endif // __AUDIO_AUTOMATION_POINT_H__
-

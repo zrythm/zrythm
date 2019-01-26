@@ -21,9 +21,12 @@
 
 #include "zrythm.h"
 #include "project.h"
+#include "audio/automation_curve.h"
+#include "audio/automation_point.h"
 #include "audio/channel.h"
 #include "audio/chord_track.h"
 #include "audio/engine.h"
+#include "audio/midi_note.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
@@ -48,8 +51,7 @@ tear_down (Project * self)
 }
 
 static void
-update_paths (Project * self,
-              const char * dir)
+update_paths (const char * dir)
 {
   PROJECT->dir = g_strdup (dir);
   PROJECT->project_file_path =
@@ -102,7 +104,7 @@ load (Project *    self,
 
   g_assert (filename);
   char * dir = io_get_dir (filename);
-  update_paths (self, dir);
+  update_paths (dir);
 
   /*xml_load_ports ();*/
   /*xml_load_regions ();*/
@@ -150,11 +152,10 @@ project_load (char * filename)
 
 
 void
-project_save (Project *  self,
-              const char * dir)
+project_save (const char * dir)
 {
   io_mkdir (dir);
-  update_paths (self, dir);
+  update_paths (dir);
 
   smf_save_regions ();
 
@@ -200,14 +201,40 @@ project_save (Project *  self,
   zrythm_add_to_recent_projects (
     ZRYTHM,
     PROJECT->project_file_path);
-  self->title = g_path_get_basename (dir);
+  PROJECT->title = g_path_get_basename (dir);
 }
 
-void
-project_add_region (Project * self,
-                    Region *  region)
+static int
+get_next_available_id (void ** array,
+                       int     size)
 {
-  array_append ((void **) self->regions,
-                &self->num_regions,
-                (void *) region);
+  for (int i = 0; i < size; i++)
+    {
+      /* if region doesn't exist at this index, use it */
+      if (!array[i])
+        return i;
+    }
+  return size;
 }
+
+#define PROJECT_ADD_X(camelcase, lowercase, plural) \
+  void \
+  project_add_##lowercase (camelcase * x) \
+  { \
+    x->id = \
+      get_next_available_id ((void **) PROJECT->plural, \
+                             PROJECT->num_##plural); \
+    PROJECT->plural[x->id] = x; \
+    PROJECT->num_##plural++; \
+  }
+
+PROJECT_ADD_X (Region, region, regions)
+PROJECT_ADD_X (Track, track, tracks)
+PROJECT_ADD_X (Channel, channel, channels)
+PROJECT_ADD_X (Plugin, plugin, plugins)
+PROJECT_ADD_X (AutomationPoint, automation_point, automation_points)
+PROJECT_ADD_X (AutomationCurve, automation_curve, automation_curves)
+PROJECT_ADD_X (MidiNote, midi_note, midi_notes)
+PROJECT_ADD_X (Port, port, ports)
+
+#undef PROJECT_ADD_X

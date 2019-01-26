@@ -25,10 +25,12 @@
 #define __PROJECT_H__
 
 #include "actions/undo_manager.h"
+#include "audio/channel.h"
 #include "audio/engine.h"
 #include "audio/piano_roll.h"
 #include "audio/quantize.h"
 #include "audio/tracklist.h"
+#include "gui/backend/timeline_selections.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
@@ -84,6 +86,8 @@ typedef struct Project
   SnapGrid          snap_grid_midi; ///< snap/grid info for midi editor
   Quantize           quantize_midi;
 
+  TimelineSelections       timeline_selections;
+
   /**
    * The audio backend
    */
@@ -95,10 +99,10 @@ typedef struct Project
    * These are stored here when created so that they can
    * easily be serialized/deserialized.
    *
-   * Channels are stored in the mixer, and tracks are stored
-   * in the tracklist.
+   * Note: when objects get deleted they are responsible
+   * for setting their position to NULL.
    */
-  Plugin            * plugins[30000];
+  Plugin *          plugins[2000];
   int               num_plugins;
   Region            * regions [30000];
   int               num_regions;
@@ -108,6 +112,12 @@ typedef struct Project
   int               num_automation_curves;
   MidiNote *        midi_notes[30000];
   int               num_midi_notes;
+  Channel *         channels[300];
+  int               num_channels;
+  Track *           tracks[300];
+  int               num_tracks;
+  Port *            ports[600000];
+  int               num_ports;
 
   /**
    * The chord track.
@@ -137,11 +147,25 @@ project_load (char * filename);
  * Saves project to a file.
  */
 void
-project_save (Project *    self,
-              const char * dir);
+project_save (const char * dir);
 
-void
-project_add_region (Project * project,
-                    Region *  region);
+/**
+ * Adds a region to the project struct and assigns it an
+ * ID.
+ */
+#define PROJECT_ADD_X(camelcase, lowercase) \
+  void \
+  project_add_##lowercase (camelcase * lowercase);
+
+PROJECT_ADD_X (Region, region);
+PROJECT_ADD_X (Track, track);
+PROJECT_ADD_X (Channel, channel);
+PROJECT_ADD_X (Plugin, plugin);
+PROJECT_ADD_X (AutomationPoint, automation_point);
+PROJECT_ADD_X (AutomationCurve, automation_curve);
+PROJECT_ADD_X (MidiNote, midi_note);
+PROJECT_ADD_X (Port, port);
+
+#undef PROJECT_ADD_X
 
 #endif

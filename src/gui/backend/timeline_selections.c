@@ -20,6 +20,7 @@
  */
 
 #include "gui/backend/timeline_selections.h"
+#include "utils/yaml.h"
 
 #include <gtk/gtk.h>
 
@@ -32,5 +33,47 @@ char *
 timeline_selections_serialize (
   TimelineSelections * ts) ///< TS to serialize
 {
-  return g_strdup_printf ("hello");
+  cyaml_err_t err;
+
+  char * output =
+    calloc (1200, sizeof (char));
+  size_t output_len;
+  err =
+    cyaml_save_data (
+      &output,
+      &output_len,
+      &config,
+      &timeline_selections_schema,
+      ts,
+      0);
+  if (err != CYAML_OK)
+    {
+      g_warning ("error %s",
+                 cyaml_strerror (err));
+    }
+
+  yaml_sanitize (&output);
+
+  return output;
+}
+
+TimelineSelections *
+timeline_selections_deserialize (const char * e)
+{
+  TimelineSelections * self;
+
+  cyaml_err_t err =
+    cyaml_load_data ((const unsigned char *) e,
+                     strlen (e),
+                     &config,
+                     &timeline_selections_schema,
+                     (cyaml_data_t **) &self,
+                     NULL);
+  if (err != CYAML_OK)
+    {
+      g_error ("error %s",
+               cyaml_strerror (err));
+    }
+
+  return self;
 }
