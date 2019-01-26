@@ -29,6 +29,10 @@
 #include "audio/master_track.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
+#include "gui/widgets/arranger.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/main_window.h"
+#include "gui/widgets/timeline_arranger.h"
 
 void
 track_init (Track * track)
@@ -100,9 +104,14 @@ track_add_region (Track * track,
       instrument_track_add_region (
         (InstrumentTrack *) track,
         (MidiRegion *) region);
+      arranger_widget_refresh (
+        Z_ARRANGER_WIDGET (MW_TIMELINE));
     }
-
-  g_warning ("attempted to add region to a track type that does not accept regions");
+  else
+    {
+      g_warning ("attempted to add region to a track type"
+                 " that does not accept regions");
+    }
 }
 
 /**

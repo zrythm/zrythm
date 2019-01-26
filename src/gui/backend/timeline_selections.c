@@ -103,6 +103,7 @@ timeline_selections_paste_to_pos (
       Region * cp =
         region_clone (region,
                       REGION_CLONE_COPY);
+      region_print (cp);
       track_add_region (cp->track,
                         cp);
     }
@@ -126,5 +127,6 @@ timeline_selections_paste_to_pos (
 #undef DIFF
 }
 
-X_SERIALIZE_SRC (TimelineSelections, timeline_selections)
-X_DESERIALIZE_SRC (TimelineSelections, timeline_selections)
+SERIALIZE_SRC (TimelineSelections, timeline_selections)
+DESERIALIZE_SRC (TimelineSelections, timeline_selections)
+PRINT_YAML_SRC (TimelineSelections, timeline_selections)

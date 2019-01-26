@@ -26,6 +26,7 @@
 #include "audio/chord.h"
 #include "audio/midi_region.h"
 #include "audio/region.h"
+#include "utils/yaml.h"
 
 #define TIMELINE_SELECTIONS (&PROJECT->timeline_selections)
 
@@ -95,7 +96,8 @@ timeline_selections_paste_to_pos (
   TimelineSelections * ts,
   Position *           pos);
 
-X_SERIALIZE_INC (TimelineSelections, timeline_selections)
-X_DESERIALIZE_INC (TimelineSelections, timeline_selections)
+SERIALIZE_INC (TimelineSelections, timeline_selections)
+DESERIALIZE_INC (TimelineSelections, timeline_selections)
+PRINT_YAML_INC (TimelineSelections, timeline_selections)
 
 #endif

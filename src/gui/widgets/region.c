@@ -191,4 +191,5 @@ region_widget_class_init (RegionWidgetClass * _klass)
 static void
 region_widget_init (RegionWidget * self)
 {
+  gtk_widget_set_visible (GTK_WIDGET (self), 1);
 }

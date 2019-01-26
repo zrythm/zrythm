@@ -29,12 +29,12 @@
  *
  * MUST be free'd.
  */
-#define X_SERIALIZE_INC(camelcase, lowercase) \
+#define SERIALIZE_INC(camelcase, lowercase) \
   char * \
   lowercase##_serialize ( \
     camelcase * x);
 
-#define X_SERIALIZE_SRC(camelcase, lowercase) \
+#define SERIALIZE_SRC(camelcase, lowercase) \
   char * \
   lowercase##_serialize ( \
     camelcase * x) \
@@ -62,11 +62,11 @@
     return output; \
   }
 
-#define X_DESERIALIZE_INC(camelcase, lowercase) \
+#define DESERIALIZE_INC(camelcase, lowercase) \
   camelcase * \
   lowercase##_deserialize (const char * e);
 
-#define X_DESERIALIZE_SRC(camelcase, lowercase) \
+#define DESERIALIZE_SRC(camelcase, lowercase) \
   camelcase * \
   lowercase##_deserialize (const char * e) \
   { \
@@ -88,6 +88,20 @@
     return self; \
   }
 
+#define PRINT_YAML_INC(camelcase, lowercase) \
+  void \
+  lowercase##_print (camelcase * x);
+
+#define PRINT_YAML_SRC(camelcase, lowercase) \
+  void \
+  lowercase##_print (camelcase * x) \
+  { \
+    char * serialized = \
+      lowercase##_serialize (x); \
+    g_message (#lowercase" :\n %s", \
+               serialized); \
+  }
+
 static const cyaml_config_t config = {
 	.log_level = CYAML_LOG_DEBUG, /* Logging errors and warnings only. */
 	.log_fn = cyaml_log,            /* Use the default logging function. */
@@ -99,12 +113,5 @@ int_schema = {
 	CYAML_VALUE_INT (CYAML_FLAG_DEFAULT,
                    typeof (int)),
 };
-
-/**
- * Removes lines starting with control chars from the
- * YAML string.
- */
-void
-yaml_sanitize (char * e, size_t output_len);
 
 #endif

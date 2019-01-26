@@ -208,31 +208,6 @@ region_generate_filename (Region * region)
                           region->name);
 }
 
-/**
- * Serializes the region.
- *
- * MUST be free'd.
- */
-char *
-region_serialize (Region * region)
-{
-  cyaml_err_t err;
-
-  char * output =
-    calloc (1200, sizeof (char));
-  size_t output_len;
-  err =
-    cyaml_save_data (
-      &output,
-      &output_len,
-      &config,
-      &region_schema,
-      region,
-      0);
-  if (err != CYAML_OK)
-    {
-      g_message ("error %s",
-                 cyaml_strerror (err));
-    }
-  return output;
-}
+SERIALIZE_SRC (Region, region)
+DESERIALIZE_SRC (Region, region)
+PRINT_YAML_SRC (Region, region)

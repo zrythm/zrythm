@@ -26,8 +26,7 @@
 #include "audio/midi_note.h"
 #include "audio/midi_region.h"
 #include "audio/position.h"
-
-#include <cyaml/cyaml.h>
+#include "utils/yaml.h"
 
 #define REGION_PRINTF_FILENAME "%d_%s_%s.mid"
 
@@ -272,12 +271,8 @@ Region *
 region_clone (Region *        region,
               RegionCloneFlag flag);
 
-/**
- * Serializes the region.
- *
- * MUST be free'd.
- */
-char *
-region_serialize (Region * region);
+SERIALIZE_INC (Region, region)
+DESERIALIZE_INC (Region, region)
+PRINT_YAML_INC (Region, region)
 
 #endif // __AUDIO_REGION_H__
