@@ -29,6 +29,9 @@
 #include "utils/yaml.h"
 
 #define REGION_PRINTF_FILENAME "%d_%s_%s.mid"
+#define region_set_track(region,track) \
+  ((Region *)region)->track = (Track *) track; \
+  ((Region *)region)->track_id = ((Track *) track)->id
 
 typedef struct _RegionWidget RegionWidget;
 typedef struct Channel Channel;
@@ -129,6 +132,7 @@ typedef struct AudioRegion
 {
   Region          parent;
 
+  int             dummy;
 } AudioRegion;
 
 static const cyaml_strval_t region_type_strings[] = {
@@ -140,12 +144,14 @@ static const cyaml_schema_field_t
   midi_region_fields_schema[] =
 {
   CYAML_FIELD_SEQUENCE_COUNT (
+    /* default because it is an array of pointers, not a
+     * pointer to an array */
     "midi_notes", CYAML_FLAG_DEFAULT,
       MidiRegion, midi_notes, num_midi_notes,
       &midi_note_schema, 0, CYAML_UNLIMITED),
-	//CYAML_FIELD_INT (
-			//"dummy", CYAML_FLAG_DEFAULT,
-			//MidiRegion, dummy),
+  CYAML_FIELD_INT (
+      "dummy", CYAML_FLAG_DEFAULT,
+      MidiRegion, dummy),
 
 	CYAML_FIELD_END
 };
@@ -159,6 +165,9 @@ midi_region_schema = {
 static const cyaml_schema_field_t
   audio_region_fields_schema[] =
 {
+  CYAML_FIELD_INT (
+      "dummy", CYAML_FLAG_DEFAULT,
+      AudioRegion, dummy),
 
 	CYAML_FIELD_END
 };
@@ -202,10 +211,10 @@ static const cyaml_schema_field_t
 			"selected", CYAML_FLAG_DEFAULT,
 			Region, selected),
   CYAML_FIELD_MAPPING_PTR (
-    "midi_region", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    "midi_region", CYAML_FLAG_POINTER,
     Region, midi_region, midi_region_fields_schema),
   CYAML_FIELD_MAPPING_PTR (
-    "audio_region", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    "audio_region", CYAML_FLAG_POINTER,
     Region, audio_region, audio_region_fields_schema),
 
 	CYAML_FIELD_END
@@ -272,7 +281,13 @@ region_clone (Region *        region,
               RegionCloneFlag flag);
 
 SERIALIZE_INC (Region, region)
+SERIALIZE_INC (MidiRegion, midi_region)
+SERIALIZE_INC (AudioRegion, audio_region)
 DESERIALIZE_INC (Region, region)
+DESERIALIZE_INC (MidiRegion, midi_region)
+DESERIALIZE_INC (AudioRegion, audio_region)
 PRINT_YAML_INC (Region, region)
+PRINT_YAML_INC (MidiRegion, midi_region)
+PRINT_YAML_INC (AudioRegion, audio_region)
 
 #endif // __AUDIO_REGION_H__

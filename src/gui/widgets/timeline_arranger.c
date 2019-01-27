@@ -1222,6 +1222,16 @@ timeline_arranger_widget_scroll_to (
 
 }
 
+static gboolean
+on_focus (GtkWidget       *widget,
+          gpointer         user_data)
+{
+  g_message ("timeline focused");
+  MAIN_WINDOW->last_focused = widget;
+
+  return FALSE;
+}
+
 static void
 timeline_arranger_widget_class_init (TimelineArrangerWidgetClass * klass)
 {
@@ -1230,4 +1240,8 @@ timeline_arranger_widget_class_init (TimelineArrangerWidgetClass * klass)
 static void
 timeline_arranger_widget_init (TimelineArrangerWidget *self )
 {
+  g_signal_connect (self,
+                    "grab-focus",
+                    G_CALLBACK (on_focus),
+                    self);
 }

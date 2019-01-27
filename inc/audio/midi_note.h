@@ -60,7 +60,9 @@ static const cyaml_schema_field_t
 			"id", CYAML_FLAG_DEFAULT,
 			MidiNote, id),
   CYAML_FIELD_MAPPING (
-      "start_pos", CYAML_FLAG_DEFAULT,
+      "start_pos",
+      /* direct struct inside struct -> default */
+      CYAML_FLAG_DEFAULT,
       MidiNote, start_pos, position_fields_schema),
   CYAML_FIELD_MAPPING (
       "end_pos", CYAML_FLAG_DEFAULT,
@@ -77,6 +79,7 @@ static const cyaml_schema_field_t
 
 static const cyaml_schema_value_t
 midi_note_schema = {
+    /* wherever it is used it will be a pointer */
 	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
 			MidiNote, midi_note_fields_schema),
 };

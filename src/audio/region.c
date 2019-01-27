@@ -59,6 +59,7 @@ region_init (Region *   region,
     {
       AudioRegion * ar = (AudioRegion *) region;
       region->audio_region = ar;
+      ar->dummy = 1;
     }
   else if (type == REGION_TYPE_MIDI)
     {
@@ -66,6 +67,10 @@ region_init (Region *   region,
       region->midi_region = mr;
       region->widget = Z_REGION_WIDGET (
         midi_region_widget_new (mr));
+      mr->dummy = 1;
+      region->audio_region =
+        calloc (1,sizeof (AudioRegion));
+      region->audio_region->dummy = 1;
     }
   project_add_region (region);
 }

@@ -99,6 +99,7 @@ void
 track_add_region (Track * track,
                   Region * region)
 {
+  region_set_track (region, track);
   if (track->type == TRACK_TYPE_INSTRUMENT)
     {
       instrument_track_add_region (
@@ -106,12 +107,11 @@ track_add_region (Track * track,
         (MidiRegion *) region);
       arranger_widget_refresh (
         Z_ARRANGER_WIDGET (MW_TIMELINE));
+      return;
     }
-  else
-    {
-      g_warning ("attempted to add region to a track type"
-                 " that does not accept regions");
-    }
+
+  g_warning ("attempted to add region to a track type"
+             " that does not accept regions");
 }
 
 /**

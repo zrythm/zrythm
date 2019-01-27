@@ -134,7 +134,7 @@ instrument_track_widget_init (InstrumentTrackWidget * self)
     z_gtk_button_new_with_resource (ICON_TYPE_ZRYTHM,
                                     "mute.svg");
   self->show_automation =
-    z_gtk_button_new_with_icon ("gtk-justify-fill");
+    z_gtk_button_new_with_icon ("format-justify-fill");
   self->lock =
     GTK_BUTTON (gtk_button_new_with_label ("Lock"));
   self->freeze =

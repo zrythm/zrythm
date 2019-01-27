@@ -46,7 +46,7 @@ typedef struct InstrumentTrack
   /**
    * MIDI regions in this track.
    */
-  MidiRegion *          regions[200];
+  MidiRegion *          regions[800];
   int                   num_regions;  ///< counter
 } InstrumentTrack;
 

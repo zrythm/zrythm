@@ -309,19 +309,6 @@ position_compare (Position * p1,
 }
 
 /**
- * For debugging
- */
-void
-position_print (Position * pos)
-{
-  g_message ("Pos: %d.%d.%d.%d",
-             pos->bars,
-             pos->beats,
-             pos->sixteenths,
-             pos->ticks);
-}
-
-/**
  * Returns closest snap point.
  */
 static Position *
@@ -479,11 +466,11 @@ void
 position_from_ticks (Position * pos,
                      int        ticks)
 {
-  pos->bars = ticks / TICKS_PER_BAR;
+  pos->bars = ticks / TICKS_PER_BAR + 1;
   ticks = ticks % TICKS_PER_BAR;
-  pos->beats = ticks / TICKS_PER_BEAT;
+  pos->beats = ticks / TICKS_PER_BEAT + 1;
   ticks = ticks % TICKS_PER_BEAT;
-  pos->sixteenths = ticks / TICKS_PER_SIXTEENTH_NOTE;
+  pos->sixteenths = ticks / TICKS_PER_SIXTEENTH_NOTE + 1;
   ticks = ticks % TICKS_PER_SIXTEENTH_NOTE;
   pos->ticks = ticks;
 }
@@ -503,3 +490,7 @@ position_get_midway_pos (Position * start_pos,
   position_set_to_pos (pos, start_pos);
   position_set_tick (pos, ticks_diff / 2);
 }
+
+SERIALIZE_SRC (Position, position)
+DESERIALIZE_SRC (Position, position)
+PRINT_YAML_SRC (Position, position)

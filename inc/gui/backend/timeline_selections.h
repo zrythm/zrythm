@@ -50,6 +50,8 @@ static const cyaml_schema_field_t
   timeline_selections_fields_schema[] =
 {
   CYAML_FIELD_SEQUENCE_COUNT (
+    /* not a pointer because it is an array of region
+     * pointers, not a pointer to an array */
     "regions", CYAML_FLAG_OPTIONAL,
       TimelineSelections, regions, num_regions,
       &region_schema, 0, CYAML_UNLIMITED),

@@ -29,6 +29,7 @@
 #include "gui/widgets/midi_region.h"
 #include "gui/widgets/region.h"
 #include "project.h"
+#include "utils/yaml.h"
 
 /**
  * Creates region (used when loading projects).
@@ -82,3 +83,7 @@ midi_region_add_midi_note (MidiRegion * region,
 {
   region->midi_notes [region->num_midi_notes++] = midi_note;
 }
+
+SERIALIZE_SRC (MidiRegion, midi_region)
+DESERIALIZE_SRC (MidiRegion, midi_region)
+PRINT_YAML_SRC (MidiRegion, midi_region)

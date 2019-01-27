@@ -57,9 +57,11 @@
                    cyaml_strerror (err)); \
       } \
  \
-    output[output_len] = '\0'; \
+    char * new_str = g_strdup (output); \
+    new_str[output_len] = '\0'; \
+    config.mem_fn(config.mem_ctx, output, 0); \
  \
-    return output; \
+    return new_str; \
   }
 
 #define DESERIALIZE_INC(camelcase, lowercase) \
@@ -98,7 +100,7 @@
   { \
     char * serialized = \
       lowercase##_serialize (x); \
-    g_message (#lowercase" :\n %s", \
+    g_message ("[YAML print]\n"#lowercase" :\n %s", \
                serialized); \
   }
 

@@ -22,7 +22,7 @@
 #ifndef __AUDIO_POSITION_H__
 #define __AUDIO_POSITION_H__
 
-#include <cyaml/cyaml.h>
+#include "utils/yaml.h"
 
 #define TICKS_PER_QUARTER_NOTE 960
 #define TICKS_PER_SIXTEENTH_NOTE 240
@@ -99,6 +99,12 @@ static const cyaml_schema_field_t
 	CYAML_FIELD_END
 };
 
+static const cyaml_schema_value_t
+position_schema = {
+	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+			Position, position_fields_schema),
+};
+
 /**
  * Initializes given position to all 0
  */
@@ -169,12 +175,6 @@ int
 position_compare (Position * p1,
                   Position * p2);
 
-/**
- * For debugging
- */
-void
-position_print (Position * pos);
-
 int
 position_to_ticks (Position * pos);
 
@@ -218,5 +218,9 @@ void
 position_get_midway_pos (Position * start_pos,
                          Position * end_pos,
                          Position * pos); ///< position to set to
+
+SERIALIZE_INC (Position, position)
+DESERIALIZE_INC (Position, position)
+PRINT_YAML_INC (Position, position)
 
 #endif

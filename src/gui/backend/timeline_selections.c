@@ -20,6 +20,7 @@
  */
 
 #include "audio/engine.h"
+#include "audio/position.h"
 #include "audio/track.h"
 #include "audio/transport.h"
 #include "gui/backend/timeline_selections.h"
@@ -83,6 +84,14 @@ timeline_selections_paste_to_pos (
   /* subtract the start pos from every object and
    * add the given pos */
 #define DIFF (curr_ticks - start_pos_ticks)
+#define ADJUST_POSITION(x) \
+  curr_ticks = position_to_ticks (x); \
+  position_from_ticks (x, pos_ticks + DIFF)
+
+  g_message ("[before loop]num regions %d num midi notes %d",
+             ts->num_regions,
+             ts->regions[0]->midi_region->num_midi_notes);
+
   int curr_ticks, i;
   for (i = 0; i < ts->num_regions; i++)
     {
@@ -95,9 +104,36 @@ timeline_selections_paste_to_pos (
       curr_ticks = position_to_ticks (&region->end_pos);
       position_from_ticks (&region->end_pos,
                            pos_ticks + DIFF);
-      curr_ticks = position_to_ticks (&region->unit_end_pos);
-      position_from_ticks (&region->unit_end_pos,
-                           pos_ticks + DIFF);
+      /* TODO */
+      position_set_to_pos (&region->unit_end_pos,
+                           &region->end_pos);
+  g_message ("[in loop]num regions %d num midi notes %d",
+             ts->num_regions,
+             ts->regions[0]->midi_region->num_midi_notes);
+
+      /* same for midi notes */
+      g_message ("region type %d", region->type);
+      if (region->type == REGION_TYPE_MIDI)
+        {
+          MidiRegion * mr = region->midi_region;
+          g_message ("HELLO?");
+          g_message ("num midi notes here %d",
+                     mr->num_midi_notes);
+          for (int j = 0; j < mr->num_midi_notes; j++)
+            {
+              MidiNote * mn = mr->midi_notes[j];
+              g_message ("old midi start");
+              /*position_print (&mn->start_pos);*/
+              g_message ("bars %d",
+                         mn->start_pos.bars);
+              g_message ("new midi start");
+              ADJUST_POSITION (&mn->start_pos);
+              position_print (&mn->start_pos);
+              g_message ("old midi start");
+              ADJUST_POSITION (&mn->end_pos);
+              position_print (&mn->end_pos);
+            }
+        }
 
       /* clone and add to track */
       Region * cp =
