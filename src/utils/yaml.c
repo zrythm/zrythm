@@ -1,7 +1,7 @@
 /*
- * utils/xml.c - XML serializer for parsing/writing project file
+ * utils/yaml.c - YAML utils
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -19,36 +19,33 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
- */
-#ifndef __UTILS_XML_H__
-#define __UTILS_XML_H__
+#include <string.h>
 
-#include <libxml/xmlwriter.h>
+#include "utils/yaml.h"
 
+#include <gtk/gtk.h>
 
 /**
- * Writes the project to an XML file.
+ * Gets nth line from a string.
  */
-void
-xml_write_project ();
-
-void
-xml_write_ports ();
-
-void
-xml_write_regions ();
-
-void
-xml_load_ports ();
-
-void
-xml_load_regions ();
-
-/**
- * Loads the project data.
- */
-void
-xml_load_project ();
-
-#endif
+const char *sgets(char *s, int n, char **strp)
+{
+  if (**strp == '\0')
+    return NULL;
+  int i;
+  for (i=0;i<n-1;++i, ++(*strp))
+    {
+      s[i] = **strp;
+      if(**strp == '\0')
+        break;
+      if(**strp == '\n')
+        {
+          s[i+1]='\0';
+          ++(*strp);
+          break;
+        }
+    }
+  if (i==n-1)
+    s[i] = '\0';
+  return s;
+}

@@ -21,7 +21,7 @@
 
 #include "zrythm.h"
 #include "project.h"
-#include "settings.h"
+#include "settings/settings.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/bus_track.h"
@@ -336,12 +336,12 @@ timeline_arranger_widget_update_inspector (
 {
   inspector_widget_show_selections (
     INSPECTOR_CHILD_REGION,
-    (void **) self->selections.regions,
-    self->selections.num_regions);
+    (void **) TIMELINE_SELECTIONS->regions,
+    TIMELINE_SELECTIONS->num_regions);
   inspector_widget_show_selections (
     INSPECTOR_CHILD_AP,
-    (void **) self->selections.automation_points,
-    self->selections.num_automation_points);
+    (void **) TIMELINE_SELECTIONS->automation_points,
+    TIMELINE_SELECTIONS->num_automation_points);
 }
 
 void
@@ -349,8 +349,8 @@ timeline_arranger_widget_select_all (
   TimelineArrangerWidget *  self,
   int                       select)
 {
-  self->selections.num_regions = 0;
-  self->selections.num_automation_points = 0;
+  TIMELINE_SELECTIONS->num_regions = 0;
+  TIMELINE_SELECTIONS->num_automation_points = 0;
 
   for (int i = 0; i < MIXER->num_channels; i++)
     {
@@ -382,8 +382,8 @@ timeline_arranger_widget_select_all (
               if (select)
                 {
                   /* select  */
-                  array_append ((void **)self->selections.regions,
-                                &self->selections.num_regions,
+                  array_append ((void **)TIMELINE_SELECTIONS->regions,
+                                &TIMELINE_SELECTIONS->num_regions,
                                 r);
                 }
             }
@@ -518,8 +518,8 @@ timeline_arranger_widget_on_drag_begin_region_hit (
       timeline_arranger_widget_toggle_select_region (
         self, region, 1);
     }
-  else if (!array_contains ((void **)self->selections.regions,
-                      self->selections.num_regions,
+  else if (!array_contains ((void **)TIMELINE_SELECTIONS->regions,
+                      TIMELINE_SELECTIONS->num_regions,
                       region))
     {
       /* else if not already selected select only it */
@@ -528,24 +528,20 @@ timeline_arranger_widget_on_drag_begin_region_hit (
     }
 
   /* find highest and lowest selected regions */
-  self->selections.top_region = self->selections.regions[0];
-  self->selections.bot_region = self->selections.regions[0];
-  for (int i = 0; i < self->selections.num_regions; i++)
+  TIMELINE_SELECTIONS->top_region = TIMELINE_SELECTIONS->regions[0];
+  TIMELINE_SELECTIONS->bot_region = TIMELINE_SELECTIONS->regions[0];
+  for (int i = 0; i < TIMELINE_SELECTIONS->num_regions; i++)
     {
-      Region * region = self->selections.regions[i];
-      if (tracklist_get_track_pos (TRACKLIST,
-                                   region->track) <
-          tracklist_get_track_pos (TRACKLIST,
-                                   self->selections.top_region->track))
+      Region * region = TIMELINE_SELECTIONS->regions[i];
+      if (tracklist_get_track_pos (region->track) <
+          tracklist_get_track_pos (TIMELINE_SELECTIONS->top_region->track))
         {
-          self->selections.top_region = region;
+          TIMELINE_SELECTIONS->top_region = region;
         }
-      if (tracklist_get_track_pos (TRACKLIST,
-                                   region->track) >
-          tracklist_get_track_pos (TRACKLIST,
-                                   self->selections.bot_region->track))
+      if (tracklist_get_track_pos (region->track) >
+          tracklist_get_track_pos (TIMELINE_SELECTIONS->bot_region->track))
         {
-          self->selections.bot_region = region;
+          TIMELINE_SELECTIONS->bot_region = region;
         }
     }
 }
@@ -562,12 +558,12 @@ timeline_arranger_widget_on_drag_begin_ap_hit (
   AutomationPoint * ap = ap_widget->ap;
   ar_prv->start_pos_px = start_x;
   self->start_ap = ap;
-  if (!array_contains ((void **) self->selections.automation_points,
-                       self->selections.num_automation_points,
+  if (!array_contains ((void **) TIMELINE_SELECTIONS->automation_points,
+                       TIMELINE_SELECTIONS->num_automation_points,
                        (void *) ap))
     {
-      self->selections.automation_points[0] = ap;
-      self->selections.num_automation_points = 1;
+      TIMELINE_SELECTIONS->automation_points[0] = ap;
+      TIMELINE_SELECTIONS->num_automation_points = 1;
     }
   switch (ap_widget->state)
     {
@@ -601,9 +597,9 @@ timeline_arranger_widget_find_start_poses (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  for (int i = 0; i < self->selections.num_regions; i++)
+  for (int i = 0; i < TIMELINE_SELECTIONS->num_regions; i++)
     {
-      Region * r = self->selections.regions[i];
+      Region * r = TIMELINE_SELECTIONS->regions[i];
       if (position_compare (&r->start_pos,
                             &ar_prv->start_pos) <= 0)
         {
@@ -615,9 +611,9 @@ timeline_arranger_widget_find_start_poses (
       position_set_to_pos (&self->region_start_poses[i],
                            &r->start_pos);
     }
-  for (int i = 0; i < self->selections.num_automation_points; i++)
+  for (int i = 0; i < TIMELINE_SELECTIONS->num_automation_points; i++)
     {
-      AutomationPoint * ap = self->selections.automation_points[i];
+      AutomationPoint * ap = TIMELINE_SELECTIONS->automation_points[i];
       if (position_compare (&ap->pos,
                             &ar_prv->start_pos) <= 0)
         {
@@ -669,8 +665,8 @@ timeline_arranger_widget_create_ap (
       gtk_overlay_add_overlay (GTK_OVERLAY (self),
                                GTK_WIDGET (ap->widget));
       gtk_widget_show (GTK_WIDGET (ap->widget));
-      self->selections.automation_points[0] = ap;
-      self->selections.num_automation_points = 1;
+      TIMELINE_SELECTIONS->automation_points[0] = ap;
+      TIMELINE_SELECTIONS->num_automation_points = 1;
     }
 }
 
@@ -717,8 +713,8 @@ timeline_arranger_widget_create_region (
                            GTK_WIDGET (region->widget));
   gtk_widget_show (GTK_WIDGET (region->widget));
   ar_prv->action = ARRANGER_ACTION_RESIZING_R;
-  self->selections.regions[0] = region;
-  self->selections.num_regions = 1;
+  TIMELINE_SELECTIONS->regions[0] = region;
+  TIMELINE_SELECTIONS->num_regions = 1;
 }
 
 void
@@ -748,8 +744,8 @@ timeline_arranger_widget_create_chord (
  undo_manager_perform (UNDO_MANAGER,
                        action);
   ar_prv->action = ARRANGER_ACTION_NONE;
-  self->selections.chords[0] = chord;
-  self->selections.num_chords = 1;
+  TIMELINE_SELECTIONS->chords[0] = chord;
+  TIMELINE_SELECTIONS->num_chords = 1;
 }
 
 void
@@ -819,9 +815,9 @@ timeline_arranger_widget_snap_regions_l (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  for (int i = 0; i < self->selections.num_regions; i++)
+  for (int i = 0; i < TIMELINE_SELECTIONS->num_regions; i++)
     {
-      Region * region = self->selections.regions[i];
+      Region * region = TIMELINE_SELECTIONS->regions[i];
       if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid))
         position_snap (NULL,
                        pos,
@@ -840,9 +836,9 @@ timeline_arranger_widget_snap_regions_r (
   Position *               pos)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
-  for (int i = 0; i < self->selections.num_regions; i++)
+  for (int i = 0; i < TIMELINE_SELECTIONS->num_regions; i++)
     {
-      Region * region = self->selections.regions[i];
+      Region * region = TIMELINE_SELECTIONS->regions[i];
       if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid))
         position_snap (NULL,
                        pos,
@@ -863,9 +859,9 @@ timeline_arranger_widget_move_items_x (
   int                      frames_diff)
 {
   /* update region positions */
-  for (int i = 0; i < self->selections.num_regions; i++)
+  for (int i = 0; i < TIMELINE_SELECTIONS->num_regions; i++)
     {
-      Region * r = self->selections.regions[i];
+      Region * r = TIMELINE_SELECTIONS->regions[i];
       Position * prev_start_pos = &self->region_start_poses[i];
       int length_frames = position_to_frames (&r->end_pos) -
         position_to_frames (&r->start_pos);
@@ -879,9 +875,9 @@ timeline_arranger_widget_move_items_x (
     }
 
   /* update ap positions */
-  for (int i = 0; i < self->selections.num_automation_points; i++)
+  for (int i = 0; i < TIMELINE_SELECTIONS->num_automation_points; i++)
     {
-      AutomationPoint * ap = self->selections.automation_points[i];
+      AutomationPoint * ap = TIMELINE_SELECTIONS->automation_points[i];
 
       /* get prev and next value APs */
       AutomationPoint * prev_ap = automation_track_get_prev_ap (ap->at,
@@ -976,31 +972,26 @@ timeline_arranger_widget_move_items_y (
         {
           Track * pt =
             tracklist_get_prev_visible_track (
-              TRACKLIST,
               old_track);
           Track * nt =
             tracklist_get_next_visible_track (
-              TRACKLIST,
               old_track);
           Track * tt =
-            tracklist_get_first_visible_track (
-              TRACKLIST);
+            tracklist_get_first_visible_track ();
           Track * bt =
-            tracklist_get_last_visible_track (
-              TRACKLIST);
+            tracklist_get_last_visible_track ();
           if (self->start_region->track != track)
             {
               /* if new track is lower and bot region is not at the lowest track */
               if (track == nt &&
-                  self->selections.bot_region->track != bt)
+                  TIMELINE_SELECTIONS->bot_region->track != bt)
                 {
                   /* shift all selected regions to their next track */
-                  for (int i = 0; i < self->selections.num_regions; i++)
+                  for (int i = 0; i < TIMELINE_SELECTIONS->num_regions; i++)
                     {
-                      Region * region = self->selections.regions[i];
+                      Region * region = TIMELINE_SELECTIONS->regions[i];
                       nt =
                         tracklist_get_next_visible_track (
-                          TRACKLIST,
                           region->track);
                       old_track = region->track;
                       if (old_track->type == nt->type)
@@ -1021,19 +1012,18 @@ timeline_arranger_widget_move_items_y (
                     }
                 }
               else if (track == pt &&
-                       self->selections.top_region->track != tt)
+                       TIMELINE_SELECTIONS->top_region->track != tt)
                 {
                   /*g_message ("track %s top region track %s tt %s",*/
                              /*track->channel->name,*/
                              /*self->top_region->track->channel->name,*/
                              /*tt->channel->name);*/
                   /* shift all selected regions to their prev track */
-                  for (int i = 0; i < self->selections.num_regions; i++)
+                  for (int i = 0; i < TIMELINE_SELECTIONS->num_regions; i++)
                     {
-                      Region * region = self->selections.regions[i];
+                      Region * region = TIMELINE_SELECTIONS->regions[i];
                       pt =
                         tracklist_get_prev_visible_track (
-                          TRACKLIST,
                           region->track);
                       old_track = region->track;
                       if (old_track->type == pt->type)
@@ -1058,9 +1048,9 @@ timeline_arranger_widget_move_items_y (
     }
   else if (self->start_ap)
     {
-      for (int i = 0; i < self->selections.num_automation_points; i++)
+      for (int i = 0; i < TIMELINE_SELECTIONS->num_automation_points; i++)
         {
-          AutomationPoint * ap = self->selections.automation_points[i];
+          AutomationPoint * ap = TIMELINE_SELECTIONS->automation_points[i];
 
           /* get adjusted y for this ap */
           /*Position region_pos;*/
@@ -1091,9 +1081,9 @@ timeline_arranger_widget_on_drag_end (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  for (int i = 0; i < self->selections.num_regions; i++)
+  for (int i = 0; i < TIMELINE_SELECTIONS->num_regions; i++)
     {
-      Region * region = self->selections.regions[i];
+      Region * region = TIMELINE_SELECTIONS->regions[i];
       ui_set_cursor (GTK_WIDGET (region->widget), "default");
     }
 
@@ -1131,7 +1121,7 @@ add_children_from_instrument_track (
                                GTK_WIDGET (r->widget));
     }
   ChannelTrack * ct = (ChannelTrack *) it;
-  AutomationTracklist * atl = ct->automation_tracklist;
+  AutomationTracklist * atl = &ct->automation_tracklist;
   for (int i = 0; i < atl->num_automation_tracks; i++)
     {
       AutomationTrack * at = atl->automation_tracks[i];
@@ -1232,6 +1222,16 @@ timeline_arranger_widget_scroll_to (
 
 }
 
+static gboolean
+on_focus (GtkWidget       *widget,
+          gpointer         user_data)
+{
+  g_message ("timeline focused");
+  MAIN_WINDOW->last_focused = widget;
+
+  return FALSE;
+}
+
 static void
 timeline_arranger_widget_class_init (TimelineArrangerWidgetClass * klass)
 {
@@ -1240,4 +1240,8 @@ timeline_arranger_widget_class_init (TimelineArrangerWidgetClass * klass)
 static void
 timeline_arranger_widget_init (TimelineArrangerWidget *self )
 {
+  g_signal_connect (self,
+                    "grab-focus",
+                    G_CALLBACK (on_focus),
+                    self);
 }

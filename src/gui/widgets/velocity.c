@@ -49,8 +49,7 @@ draw_cb (GtkDrawingArea * da,
 
   Region * region =
     (Region *) self->velocity->midi_note->midi_region;
-  ChannelTrack * ct = (ChannelTrack *) region->track;
-  GdkRGBA * color = &ct->channel->color;
+  GdkRGBA * color = &region->track->color;
 
   cairo_set_source_rgba (cr,
                          color->red - 0.2,

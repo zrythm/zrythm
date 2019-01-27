@@ -1,8 +1,7 @@
 /*
- * audio/mixer.h - the mixer mixing all the channels and sending the data
- *                 to jack
+ * audio/mixer.h - The mixer
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -23,29 +22,33 @@
 #ifndef __AUDIO_MIXER_H__
 #define __AUDIO_MIXER_H__
 
-#include "audio/engine.h"
-
 #include <jack/jack.h>
 
-#define MIXER AUDIO_ENGINE->mixer
+#define MIXER (&AUDIO_ENGINE->mixer)
 #define STRIP_SIZE 9 /* mixer strip size (number of plugin slots) */
 #define FOREACH_CH for (int i = 0; i < MIXER->num_channels; i++)
-
-typedef jack_default_audio_sample_t   sample_t;
-typedef jack_nframes_t                nframes_t;
+#define MAX_CHANNELS 300
 
 typedef struct Channel Channel;
 typedef struct PluginDescriptor PluginDescriptor;
 
+/**
+ * Mixer is a single global struct defined in the Project
+ * struct.
+ *
+ * It can be easily fetched using the MIXER macro.
+ */
 typedef struct Mixer
 {
-  Channel        * channels[100];      ///< array of channel strips
-  int            num_channels;           ///< # of channels EXCLUDING master
-  Channel        * master;                  ///< master output
-} Mixer;
+  /**
+   * Array of channels besides master.
+   */
+  Channel        * channels[MAX_CHANNELS];
+  int            channel_ids[MAX_CHANNELS];
+  int            num_channels; ///< # of channels
 
-Mixer *
-mixer_new ();
+  Channel        * master; ///< master channel
+} Mixer;
 
 /**
  * The mixer begins the audio processing process.
@@ -57,14 +60,13 @@ mixer_new ();
  * and sent to Jack.
  */
 void
-mixer_process (Mixer * mixer,
-               nframes_t     _nframes);       ///< number of frames to fill in
+mixer_process ();
 
 /**
  * Loads plugins from state files. Used when loading projects.
  */
 void
-mixer_load_plugins (Mixer * self);
+mixer_load_plugins ();
 
 /**
  * Returns channel at given position (order)
@@ -72,30 +74,33 @@ mixer_load_plugins (Mixer * self);
  * Channel order in the mixer is reflected in the track list
  */
 Channel *
-mixer_get_channel_at_pos (Mixer * self,
-                          int pos);
+mixer_get_channel_at_pos (int pos);
 
 /**
  * Adds channel to mixer and initializes track.
  */
 void
-mixer_add_channel (Mixer *   mixer,
-                   Channel * channel);
+mixer_add_channel (Channel * channel);
 
 /**
  * Removes the given channel.
  */
 void
-mixer_remove_channel (Mixer *   mixer,
-                      Channel * channel);
+mixer_remove_channel (Channel * channel);
 
 void
 mixer_add_channel_from_plugin_descr (
-  Mixer * mixer,
   PluginDescriptor * descr);
 
 Channel *
-mixer_get_channel_by_name (Mixer * self,
-                           char *  name);
+mixer_get_channel_by_name (char *  name);
+
+/**
+ * Gets next unique channel ID.
+ *
+ * Gets the max ID of all channels and increments it.
+ */
+int
+mixer_get_next_channel_id ();
 
 #endif

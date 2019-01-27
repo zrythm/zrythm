@@ -24,7 +24,7 @@
 
 #include <gtk/gtk.h>
 
-#define SETTINGS ZRYTHM->settings
+#define SETTINGS (&ZRYTHM->settings)
 
 typedef struct Settings
 {
@@ -32,7 +32,10 @@ typedef struct Settings
   GSettings * preferences;
 } Settings;
 
-Settings *
-settings_new ();
+/**
+ * Initializes settings.
+ */
+void
+settings_init (Settings * self);
 
 #endif

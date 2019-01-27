@@ -32,6 +32,7 @@
 #include "audio/velocity.h"
 #include "plugins/lv2/control.h"
 #include "plugins/lv2_plugin.h"
+#include "project.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/automation_track.h"
 #include "utils/arrays.h"
@@ -46,7 +47,9 @@ instrument_track_new (Channel * channel)
 
   Track * track = (Track *) self;
   track->type = TRACK_TYPE_INSTRUMENT;
+  gdk_rgba_parse (&track->color, "#F79616");
   track_init ((Track *) self);
+  project_add_track (track);
 
   ChannelTrack * ct = (ChannelTrack *) self;
   ct->channel = channel;
@@ -130,10 +133,11 @@ void
 instrument_track_add_region (InstrumentTrack      * track,
                   MidiRegion     * region)
 {
+  g_message ("midi region num notes %d",
+             region->num_midi_notes);
   array_append ((void **) track->regions,
                 &track->num_regions,
                 (void *) region);
-  ((Region *)region)->track = (Track *) track;
 }
 
 void

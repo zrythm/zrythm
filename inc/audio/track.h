@@ -25,6 +25,8 @@
 #include <gtk/gtk.h>
 #include <jack/jack.h>
 
+#define MAX_REGIONS 300
+
 typedef struct AutomationTracklist AutomationTracklist;
 typedef struct Region Region;
 typedef struct Position Position;
@@ -49,6 +51,13 @@ typedef enum TrackType
  */
 typedef struct Track
 {
+  /**
+   * Useful for de/serializing.
+   *
+   * All IDs are stored in the tracklist.
+   */
+  int                 id;
+
   TrackType           type; ///< the type of track this is
 
   /**
@@ -60,6 +69,13 @@ typedef struct Track
   int                 visible;
   int                 selected;
   int                 handle_pos; ///< position of multipane handle
+
+  /**
+   * Track color.
+   *
+   * This is used in the channels as well.
+   */
+  GdkRGBA              color;
 } Track;
 
 /**
@@ -70,12 +86,18 @@ typedef struct Track
 void
 track_init (Track * track);
 
-
 /**
  * Wrapper.
  */
 Track *
 track_new (Channel * channel);
+
+/**
+ * Wrapper.
+ */
+void
+track_add_region (Track * track,
+                  Region * region);
 
 /**
  * Wrapper.

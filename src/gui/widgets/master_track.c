@@ -63,9 +63,8 @@ master_track_widget_new (Track * track)
   TRACK_WIDGET_GET_PRIVATE (self);
 
   /* setup color */
-  Channel * chan = track_get_channel (track);
   color_area_widget_set_color (tw_prv->color,
-                               &chan->color);
+                               &track->color);
 
   /* setup automation tracklist */
   AutomationTracklist * automation_tracklist =
@@ -118,7 +117,7 @@ master_track_widget_init (MasterTrackWidget * self)
     z_gtk_button_new_with_resource (ICON_TYPE_ZRYTHM,
                                     "mute.svg");
   self->show_automation =
-    z_gtk_button_new_with_icon ("gtk-justify-fill");
+    z_gtk_button_new_with_icon ("format-justify-fill");
 
   /*set buttons to upper controls*/
   gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),

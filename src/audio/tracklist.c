@@ -32,28 +32,24 @@
 #include "project.h"
 #include "utils/arrays.h"
 
-Tracklist *
-tracklist_new ()
-{
-  Tracklist * self = calloc (1, sizeof (Tracklist));
-
-  return self;
-}
-
+/**
+ * Initializes the tracklist.
+ *
+ * Note: mixer and master channel/track, chord track and
+ * each channel must be initialized at this point.
+ */
 void
-tracklist_setup (Tracklist *  self)
+tracklist_init (Tracklist * self)
 {
   /* add master track */
   g_assert (MIXER);
   g_assert (MIXER->master);
   g_assert (MIXER->master->track);
-  tracklist_append_track (self,
-                          (Track *) MIXER->master->track);
+  tracklist_append_track ((Track *) MIXER->master->track);
 
   /* add chord track */
   g_assert (CHORD_TRACK);
-  tracklist_append_track (self,
-                          (Track *) CHORD_TRACK);
+  tracklist_append_track ((Track *) CHORD_TRACK);
 
   /* add each channel */
   for (int i = 0; i < MIXER->num_channels; i++)
@@ -61,8 +57,7 @@ tracklist_setup (Tracklist *  self)
       Channel * channel = MIXER->channels[i];
       g_assert (channel);
       g_assert (channel->track);
-      tracklist_append_track (self,
-                              channel->track);
+      tracklist_append_track (channel->track);
     }
 }
 
@@ -70,14 +65,13 @@ tracklist_setup (Tracklist *  self)
  * Finds selected tracks and puts them in given array.
  */
 void
-tracklist_get_selected_tracks (Tracklist * tracklist,
-                               Track **    selected_tracks,
+tracklist_get_selected_tracks (Track **    selected_tracks,
                                int *       num_selected)
 {
   *num_selected = 0;
-  for (int i = 0; i < tracklist->num_tracks; i++)
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      Track * track = tracklist->tracks[i];
+      Track * track = TRACKLIST->tracks[i];
       if (track->selected)
         {
           selected_tracks[(*num_selected)++] = track;
@@ -89,14 +83,13 @@ tracklist_get_selected_tracks (Tracklist * tracklist,
  * Finds visible tracks and puts them in given array.
  */
 void
-tracklist_get_visible_tracks (Tracklist * tracklist,
-                              Track **    visible_tracks,
+tracklist_get_visible_tracks (Track **    visible_tracks,
                               int *       num_visible)
 {
   *num_visible = 0;
-  for (int i = 0; i < tracklist->num_tracks; i++)
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      Track * track = tracklist->tracks[i];
+      Track * track = TRACKLIST->tracks[i];
       if (track->visible)
         {
           visible_tracks[*num_visible++] = track;
@@ -105,11 +98,11 @@ tracklist_get_visible_tracks (Tracklist * tracklist,
 }
 
 int
-tracklist_contains_master_track (Tracklist * tracklist)
+tracklist_contains_master_track ()
 {
-  for (int i = 0; tracklist->num_tracks; i++)
+  for (int i = 0; TRACKLIST->num_tracks; i++)
     {
-      Track * track = tracklist->tracks[i];
+      Track * track = TRACKLIST->tracks[i];
       if (track->type == TRACK_TYPE_MASTER)
         return 1;
     }
@@ -117,11 +110,11 @@ tracklist_contains_master_track (Tracklist * tracklist)
 }
 
 int
-tracklist_contains_chord_track (Tracklist * tracklist)
+tracklist_contains_chord_track ()
 {
-  for (int i = 0; tracklist->num_tracks; i++)
+  for (int i = 0; TRACKLIST->num_tracks; i++)
     {
-      Track * track = tracklist->tracks[i];
+      Track * track = TRACKLIST->tracks[i];
       if (track->type == TRACK_TYPE_CHORD)
         return 1;
     }
@@ -132,12 +125,13 @@ tracklist_contains_chord_track (Tracklist * tracklist)
  * Adds given track to given spot in tracklist.
  */
 void
-tracklist_add_track (Tracklist * tracklist,
-                     Track *     track,
+tracklist_add_track (Track *     track,
                      int         pos)
 {
-  array_insert ((void **) tracklist->tracks,
-                &tracklist->num_tracks,
+  TRACKLIST->track_ids[pos] =
+    track->id;
+  array_insert ((void **) TRACKLIST->tracks,
+                &TRACKLIST->num_tracks,
                 pos,
                 (void *) track);
   if (MAIN_WINDOW && MW_CENTER_DOCK && MW_TRACKLIST)
@@ -151,29 +145,29 @@ tracklist_add_track (Tracklist * tracklist,
 }
 
 void
-tracklist_append_track (Tracklist * tracklist,
-                          Track *     track)
+tracklist_append_track (Track *     track)
 {
-  array_append ((void **) tracklist->tracks,
-                &tracklist->num_tracks,
+  TRACKLIST->track_ids[TRACKLIST->num_tracks] =
+    track->id;
+  array_append ((void **) TRACKLIST->tracks,
+                &TRACKLIST->num_tracks,
                 (void *) track);
 }
 
 int
-tracklist_get_track_pos (Tracklist * tracklist,
-                         Track *     track)
+tracklist_get_track_pos (Track *     track)
 {
-  return array_index_of ((void **) tracklist->tracks,
-                         tracklist->num_tracks,
+  return array_index_of ((void **) TRACKLIST->tracks,
+                         TRACKLIST->num_tracks,
                          (void *) track);
 }
 
 int
-tracklist_get_last_visible_pos (Tracklist * self)
+tracklist_get_last_visible_pos ()
 {
-  for (int i = self->num_tracks - 1; i >= 0; i--)
+  for (int i = TRACKLIST->num_tracks - 1; i >= 0; i--)
     {
-      if (self->tracks[i]->visible)
+      if (TRACKLIST->tracks[i]->visible)
         {
           return i;
         }
@@ -183,13 +177,13 @@ tracklist_get_last_visible_pos (Tracklist * self)
 }
 
 Track*
-tracklist_get_last_visible_track (Tracklist * self)
+tracklist_get_last_visible_track ()
 {
-  for (int i = self->num_tracks - 1; i >= 0; i--)
+  for (int i = TRACKLIST->num_tracks - 1; i >= 0; i--)
     {
-      if (self->tracks[i]->visible)
+      if (TRACKLIST->tracks[i]->visible)
         {
-          return self->tracks[i];
+          return TRACKLIST->tracks[i];
         }
     }
   g_assert_not_reached ();
@@ -197,13 +191,13 @@ tracklist_get_last_visible_track (Tracklist * self)
 }
 
 Track *
-tracklist_get_first_visible_track (Tracklist * self)
+tracklist_get_first_visible_track ()
 {
-  for (int i = 0; i < self->num_tracks; i++)
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      if (self->tracks[i]->visible)
+      if (TRACKLIST->tracks[i]->visible)
         {
-          return self->tracks[i];
+          return TRACKLIST->tracks[i];
         }
     }
   g_assert_not_reached ();
@@ -211,15 +205,14 @@ tracklist_get_first_visible_track (Tracklist * self)
 }
 
 Track *
-tracklist_get_prev_visible_track (Tracklist * self,
-                                  Track * track)
+tracklist_get_prev_visible_track (Track * track)
 {
-  for (int i = tracklist_get_track_pos (self, track);
+  for (int i = tracklist_get_track_pos (track);
        i >= 0; i--)
     {
-      if (self->tracks[i]->visible)
+      if (TRACKLIST->tracks[i]->visible)
         {
-          return self->tracks[i];
+          return TRACKLIST->tracks[i];
         }
     }
   g_assert_not_reached ();
@@ -227,15 +220,14 @@ tracklist_get_prev_visible_track (Tracklist * self,
 }
 
 Track *
-tracklist_get_next_visible_track (Tracklist * self,
-                                  Track * track)
+tracklist_get_next_visible_track (Track * track)
 {
-  for (int i = tracklist_get_track_pos (self, track);
-       i < self->num_tracks; i++)
+  for (int i = tracklist_get_track_pos (track);
+       i < TRACKLIST->num_tracks; i++)
     {
-      if (self->tracks[i]->visible)
+      if (TRACKLIST->tracks[i]->visible)
         {
-          return self->tracks[i];
+          return TRACKLIST->tracks[i];
         }
     }
   g_assert_not_reached ();
@@ -243,10 +235,9 @@ tracklist_get_next_visible_track (Tracklist * self,
 }
 
 void
-tracklist_remove_track (Tracklist * self,
-                        Track *     track)
+tracklist_remove_track (Track *     track)
 {
-  array_delete ((void **) self->tracks,
-                &self->num_tracks,
+  array_delete ((void **) TRACKLIST->tracks,
+                &TRACKLIST->num_tracks,
                 (void *) track);
 }

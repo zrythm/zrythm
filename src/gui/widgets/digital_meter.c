@@ -1,7 +1,8 @@
 /*
- * gui/widgets/digital_meter.c - Digital meter for BPM, position, etc.
+ * gui/widgets/digital_meter.c - Digital meter for BPM,
+ *   position, etc.
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -22,9 +23,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "zrythm.h"
-#include "project.h"
-#include "settings.h"
 #include "audio/position.h"
 #include "audio/quantize.h"
 #include "audio/snap_grid.h"
@@ -39,6 +37,9 @@
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_ruler.h"
+#include "project.h"
+#include "settings/settings.h"
+#include "zrythm.h"
 
 #include <gtk/gtk.h>
 
@@ -377,9 +378,7 @@ drag_update (GtkGestureDrag * gesture,
           /*g_message ("updating num with %d", num);*/
           if (abs (num) > 0)
             {
-              transport_set_bpm (TRANSPORT,
-                                 AUDIO_ENGINE,
-                                 TRANSPORT->bpm + num);
+              transport_set_bpm (TRANSPORT->bpm + num);
               self->last_y = offset_y;
             }
         }
@@ -389,9 +388,7 @@ drag_update (GtkGestureDrag * gesture,
           g_message ("%f", dec);
           if (fabs (dec) > 0)
             {
-              transport_set_bpm (TRANSPORT,
-                                 AUDIO_ENGINE,
-                                 TRANSPORT->bpm + dec);
+              transport_set_bpm (TRANSPORT->bpm + dec);
               self->last_y = offset_y;
             }
 
@@ -535,10 +532,14 @@ drag_end (GtkGestureDrag *gesture,
   if (self->update_note_length ||
       self->update_note_type)
     {
-      snap_grid_setup (ZRYTHM->snap_grid_timeline);
-      snap_grid_setup (ZRYTHM->snap_grid_midi);
-      quantize_setup (ZRYTHM->quantize_timeline);
-      quantize_setup (ZRYTHM->quantize_midi);
+      snap_grid_update_snap_points (
+        &PROJECT->snap_grid_timeline);
+      snap_grid_update_snap_points (
+        &PROJECT->snap_grid_midi);
+      quantize_update_snap_points (
+        &PROJECT->quantize_timeline);
+      quantize_update_snap_points (
+        &PROJECT->quantize_midi);
     }
   self->update_note_length = 0;
   self->update_note_type = 0;

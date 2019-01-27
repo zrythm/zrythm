@@ -19,11 +19,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/preferences.h"
+#include "audio/instrument_track.h"
+#include "audio/track.h"
 #include "audio/transport.h"
 #include "actions/actions.h"
 #include "actions/undo_manager.h"
-#include "project.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -41,6 +41,8 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_ruler.h"
+#include "project.h"
+#include "settings/preferences.h"
 #include "utils/gtk.h"
 
 #include <gtk/gtk.h>
@@ -259,7 +261,7 @@ activate_save (GSimpleAction *action,
      }
    g_message ("%s project dir ", PROJECT->dir);
 
-   project_save (PROJECT, PROJECT->dir);
+   project_save (PROJECT->dir);
 }
 
 void
@@ -297,7 +299,7 @@ activate_save_as (GSimpleAction *action,
       char *filename;
 
       filename = gtk_file_chooser_get_filename (chooser);
-      project_save (PROJECT, filename);
+      project_save (filename);
       g_free (filename);
     }
 
@@ -357,21 +359,21 @@ activate_cut (GSimpleAction *action,
   g_message ("ZOOMING IN");
 }
 
+
 void
 activate_copy (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  int timeline_focused =
-    gtk_widget_has_focus (GTK_WIDGET (MW_TIMELINE));
-  if (timeline_focused)
+  g_message ("copy");
+  if (MAIN_WINDOW->last_focused == GTK_WIDGET (MW_TIMELINE))
     {
       g_message ("copy: timeline focused");
-      g_message (region_serialize (PROJECT->regions[0]));
+
       gtk_clipboard_set_text (
         DEFAULT_CLIPBOARD,
         timeline_selections_serialize (
-          &MW_TIMELINE->selections),
+          TIMELINE_SELECTIONS),
         -1);
     }
 }
@@ -384,6 +386,36 @@ on_timeline_clipboard_received (
 {
   g_message ("clipboard data received: %s",
              text);
+
+  if (!text)
+    return;
+  /*MidiRegion * mr =*/
+    /*midi_region_deserialize (text);*/
+
+  /*midi_region_print (mr);*/
+  TimelineSelections * ts =
+    timeline_selections_deserialize (text);
+  g_message ("printing deserialized");
+  timeline_selections_print (ts);
+  /*g_message ("num regions %d num midi notes %d",*/
+             /*ts->num_regions,*/
+             /*ts->regions[0]->midi_region->num_midi_notes);*/
+  /*g_message ("attempting to read midi note pos");*/
+  /*g_message ("midi note %p",*/
+             /*ts->regions[0]->midi_region->midi_notes[0]);*/
+  /*g_message ("midi note start_pos %p",*/
+             /*ts->regions[0]->midi_region->midi_notes[0]->start_pos);*/
+  /*g_message ("midi note start bar %d",*/
+             /*ts->regions[0]->midi_region->midi_notes[0]->start_pos.bars);*/
+
+  if (MAIN_WINDOW->last_focused == GTK_WIDGET (MW_TIMELINE))
+    {
+      timeline_selections_paste_to_pos (ts,
+                                        &PLAYHEAD);
+    }
+
+  /* free ts */
+  g_message ("paste done");
 }
 
 void
@@ -391,16 +423,11 @@ activate_paste (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  int timeline_focused =
-    gtk_widget_has_focus (GTK_WIDGET (MW_TIMELINE));
-  if (timeline_focused)
-    {
-      g_message ("paste: timeline focused");
-      gtk_clipboard_request_text (
-        DEFAULT_CLIPBOARD,
-        on_timeline_clipboard_received,
-        NULL);
-    }
+  g_message ("paste");
+  gtk_clipboard_request_text (
+    DEFAULT_CLIPBOARD,
+    on_timeline_clipboard_received,
+    NULL);
 }
 
 void
@@ -539,8 +566,8 @@ activate_snap_to_grid (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  ZRYTHM->snap_grid_timeline->snap_to_grid =
-    !ZRYTHM->snap_grid_timeline->snap_to_grid;
+  SNAP_GRID_TIMELINE->snap_to_grid =
+    !SNAP_GRID_TIMELINE->snap_to_grid;
 }
 
 void
@@ -548,8 +575,8 @@ activate_snap_keep_offset (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  ZRYTHM->snap_grid_timeline->snap_to_grid_keep_offset =
-    !ZRYTHM->snap_grid_timeline->snap_to_grid_keep_offset;
+  SNAP_GRID_TIMELINE->snap_to_grid_keep_offset =
+    !SNAP_GRID_TIMELINE->snap_to_grid_keep_offset;
 }
 
 void
@@ -557,6 +584,6 @@ activate_snap_events (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  ZRYTHM->snap_grid_timeline->snap_to_events =
-    !ZRYTHM->snap_grid_timeline->snap_to_events;
+  SNAP_GRID_TIMELINE->snap_to_events =
+    !SNAP_GRID_TIMELINE->snap_to_events;
 }

@@ -23,6 +23,7 @@ build_src_tarball:
   only:
     - tags
     - master
+    - merge_requests
 
 build_deb_64:
   stage: build
@@ -51,6 +52,7 @@ build_deb_64_unstable:
     - ./zrythm_*amd64.deb
   only:
     - master
+    - merge_requests
 
 build_pkg_64:
   image: "alextee12/arch-yaourt:latest"
@@ -66,6 +68,7 @@ build_pkg_64:
   only:
     - tags
     - master
+    - merge_requests
 
 build_rpm_64:
   image: "alextee12/fedora:latest"
@@ -87,3 +90,4 @@ build_rpm_64:
   only:
     - tags
     - master
+    - merge_requests

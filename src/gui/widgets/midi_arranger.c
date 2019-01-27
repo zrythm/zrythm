@@ -21,7 +21,7 @@
 
 #include "zrythm.h"
 #include "project.h"
-#include "settings.h"
+#include "settings/settings.h"
 #include "gui/widgets/region.h"
 #include "audio/automation_track.h"
 #include "audio/channel.h"
@@ -99,7 +99,7 @@ midi_arranger_widget_set_channel (
   g_free (label);
 
   color_area_widget_set_color (PIANO_ROLL->color_bar,
-                               &channel->color);
+                               &channel->track->color);
 
   /* remove all previous children and add new */
   arranger_widget_refresh (Z_ARRANGER_WIDGET (self));

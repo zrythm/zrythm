@@ -22,6 +22,8 @@
 #ifndef __AUDIO_POSITION_H__
 #define __AUDIO_POSITION_H__
 
+#include "utils/yaml.h"
+
 #define TICKS_PER_QUARTER_NOTE 960
 #define TICKS_PER_SIXTEENTH_NOTE 240
 /**
@@ -77,6 +79,31 @@ typedef struct Position
 
   int       frames; ///< position in frames (samples)
 } Position;
+
+static const cyaml_schema_field_t
+  position_fields_schema[] =
+{
+	CYAML_FIELD_INT (
+			"bars", CYAML_FLAG_DEFAULT,
+			Position, bars),
+	CYAML_FIELD_INT (
+			"beats", CYAML_FLAG_DEFAULT,
+			Position, beats),
+	CYAML_FIELD_INT (
+			"sixteenths", CYAML_FLAG_DEFAULT,
+			Position, sixteenths),
+	CYAML_FIELD_INT (
+			"ticks", CYAML_FLAG_DEFAULT,
+			Position, ticks),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+position_schema = {
+	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+			Position, position_fields_schema),
+};
 
 /**
  * Initializes given position to all 0
@@ -148,14 +175,15 @@ int
 position_compare (Position * p1,
                   Position * p2);
 
-/**
- * For debugging
- */
-void
-position_print (Position * pos);
-
 int
 position_to_ticks (Position * pos);
+
+/**
+ * Sets position to the given total tick count.
+ */
+void
+position_from_ticks (Position * pos,
+                     int        ticks);
 
 /**
  * Snaps position using given options.
@@ -190,5 +218,9 @@ void
 position_get_midway_pos (Position * start_pos,
                          Position * end_pos,
                          Position * pos); ///< position to set to
+
+SERIALIZE_INC (Position, position)
+DESERIALIZE_INC (Position, position)
+PRINT_YAML_INC (Position, position)
 
 #endif

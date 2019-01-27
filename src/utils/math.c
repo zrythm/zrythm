@@ -58,7 +58,7 @@ double math_get_amp_val_from_fader (double fader)
  */
 double math_calculate_rms_db (
   float *   buf, ///< buffer containing the samples
-  uint32_t  nframes) ///< number of samples
+  int       nframes) ///< number of samples
 {
   double sum = 0, sample = 0;
   for (int i = 0; i < nframes; i += RMS_FRAMES)

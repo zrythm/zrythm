@@ -19,17 +19,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/preferences.h"
-#include "settings.h"
+#include "settings/preferences.h"
+#include "settings/settings.h"
 
 /**
  * Initializes preferences with values from settings.
  */
-Preferences *
-preferences_new (Settings * settings)
+void
+preferences_init (Preferences * self,
+                  Settings *    settings)
 {
-  Preferences * self = calloc (1, sizeof (Preferences));
-
   self->settings = settings;
 
   self->audio_backend =
@@ -38,8 +37,6 @@ preferences_new (Settings * settings)
   self->edit_region_size =
     g_settings_get_int (settings->preferences,
                       "audio-backend");
-
-  return self;
 }
 
 void

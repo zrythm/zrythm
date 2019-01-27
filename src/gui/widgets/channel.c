@@ -21,6 +21,7 @@
 
 #include "zrythm.h"
 #include "audio/mixer.h"
+#include "audio/track.h"
 #include "plugins/lv2_plugin.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/color_area.h"
@@ -32,6 +33,7 @@
 #include "actions/edit_channel_action.h"
 #include "actions/undo_manager.h"
 #include "actions/undoable_action.h"
+#include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
@@ -128,7 +130,7 @@ static void
 refresh_color (ChannelWidget * self)
 {
   color_area_widget_set_color (self->color,
-                               &self->channel->color);
+                               &self->channel->track->color);
 }
 
 static void

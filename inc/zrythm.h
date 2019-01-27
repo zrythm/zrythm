@@ -23,6 +23,9 @@
 #define __ZRYTHM_H__
 
 #include "audio/snap_grid.h"
+#include "plugins/plugin_manager.h"
+#include "settings/preferences.h"
+#include "settings/settings.h"
 
 #include <gtk/gtk.h>
 
@@ -47,61 +50,47 @@ G_DECLARE_FINAL_TYPE (ZrythmApp,
   "TIMELINE_SELECTIONS"
 #define TARGET_ENTRY_ID_TIMELINE_SELECTIONS 2
 
-typedef struct AudioEngine AudioEngine;
-typedef struct PluginManager PluginManager;
-typedef struct Project Project;
-typedef struct PianoRoll PianoRoll;
-typedef struct Settings Settings;
-typedef struct Tracklist Tracklist;
-typedef struct UndoManager UndoManager;
-typedef struct Quantize Quantize;
 typedef struct _MainWindowWidget MainWindowWidget;
-typedef struct Preferences Preferences;
-typedef struct TimelineMinimap TimelineMinimap;
+typedef struct Project Project;
 
-struct _ZrythmApp
+/**
+ * To be used throughout the program.
+ *
+ * Everything here should be global and function regardless
+ * of the project.
+ */
+typedef struct Zrythm
 {
-  GtkApplication parent;
-
-  /**
-   * The audio backend
-   */
-  AudioEngine *    audio_engine;
-
   /**
    * Manages plugins (loading, instantiating, etc.)
    */
-  PluginManager *  plugin_manager;
+  PluginManager           plugin_manager;
 
-  MainWindowWidget      * main_window;      ///< main window
+  MainWindowWidget *      main_window; ///< main window
 
-  Preferences *     preferences;
+  Preferences             preferences;
 
   /**
    * Application settings
    */
-  Settings *             settings;
+  Settings                settings;
 
-  Project * project;
+  /**
+   * Project data.
+   *
+   * This is what should be exported/imported when saving/
+   * loading projects.
+   *
+   * The only reason this is a pointer is to easily
+   * deserialize.
+   */
+  Project *               project;
 
-  UndoManager *          undo_manager;
-
-  Tracklist *         tracklist;
-
-  PianoRoll *         piano_roll;
-
-  SnapGrid *          snap_grid_timeline; ///< snap/grid info for timeline
-  Quantize *          quantize_timeline;
-  SnapGrid *         snap_grid_midi; ///< snap/grid info for midi editor
-  Quantize *          quantize_midi;
-
-  TimelineMinimap *   timeline_minimap; ///< minimap backend
-
-  char                * zrythm_dir;
-  char                * projects_dir;
-  char                * recent_projects_file;
-  char                * recent_projects[1000];
-  int                 num_recent_projects;
+  char *                  zrythm_dir;
+  char *                  projects_dir;
+  char *                  recent_projects_file;
+  char *                  recent_projects[1000];
+  int                     num_recent_projects;
 
   /**
    * Filename to open passed through the command line.
@@ -109,21 +98,35 @@ struct _ZrythmApp
    * Used only when a filename is passed.
    * E.g., zrytm myproject.xml
    */
-  char *              open_filename;
+  char *                  open_filename;
+} Zrythm;
+
+/**
+ * The global struct.
+ *
+ * Contains data that is irrelevant to the project.
+ */
+struct _ZrythmApp
+{
+  GtkApplication      parent;
+
+  Zrythm *            zrythm;
 };
 
-extern ZrythmApp * zrythm;
+extern Zrythm * zrythm;
+extern ZrythmApp * zrythm_app;
 
 /**
  * Global variable, should be available to all files.
  */
-ZrythmApp * zrythm;
+Zrythm * zrythm;
+ZrythmApp * zrythm_app;
 
 ZrythmApp *
-zrythm_new ();
+zrythm_app_new ();
 
 void
-zrythm_add_to_recent_projects (ZrythmApp * self,
-                                   const char * filepath);
+zrythm_add_to_recent_projects (Zrythm * self,
+                               const char * filepath);
 
 #endif /* __ZRYTHM_H__ */

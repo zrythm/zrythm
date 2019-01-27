@@ -103,8 +103,8 @@ draw_cb (AutomationCurveWidget * self, cairo_t *cr, gpointer data)
 
   GdkRGBA * color;
   Track * track = self->ac->at->track;
-  ChannelTrack * ct = (ChannelTrack *) track;
-  color = &ct->channel->color;
+  /*ChannelTrack * ct = (ChannelTrack *) track;*/
+  color = &track->color;
   if (self->hover)
     {
       cairo_set_source_rgba (cr,

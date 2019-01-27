@@ -35,6 +35,7 @@
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
+#include "project.h"
 #include "utils/gtk.h"
 #include "utils/ui.h"
 
@@ -58,8 +59,7 @@ on_drag_data_received (GtkWidget        *widget,
     {
       PluginDescriptor * descr =
         *(gpointer *) gtk_selection_data_get_data (data);
-      mixer_add_channel_from_plugin_descr (MIXER,
-                                           descr);
+      mixer_add_channel_from_plugin_descr (descr);
     }
 }
 

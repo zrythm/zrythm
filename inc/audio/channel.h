@@ -1,7 +1,7 @@
 /*
  * audio/channel.h - a channel on the mixer
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -59,56 +59,144 @@ typedef enum ChannelType
 
 typedef struct Channel
 {
-  int                     id;  ///< position in mixer/tracks, useful in serialization
-                              ///< MASTER must always be id 0, and the rest of
-                              ///< the channels must be the nth position in the
-                              ///< mixer, either visible or not.
-                              ///< this means that the id can change if we reorder
-                              ///< channels, so nothing should depend on this being
-                              ///< static.
-  char *                  name;        ///< channel name
-  /* note: the first plugin is special, it is the "main" plugin of the channel
-   * where processing starts */
-  Plugin *                strip[STRIP_SIZE]; ///< the channel strip
-  ChannelType             type;             ///< MIDI / Audio / Master
-  float                   volume; ///< value of the volume fader in db
-  float                   fader_amp; ///< fader value amplitude (0.0 ~ 1.5)
-  int                     mute;            ///< mute or not
-  int                     solo;           ///< solo or not
-  GdkRGBA                 color;          ///< see https://ometer.com/gtk-colors.html
-  float                   phase;        ///< used by the phase knob (0.0-360.0 value)
-  float                   pan; ///< (0~1) 0.5 is center
-
-  /* these are for plugins to connect to if they want
-   * processing starts at the first plugin with a clean buffer,
-   * and if any ports are connected as that plugin's input,
-   * their buffers are added to the first plugin
+  /**
+   * Unique IDs useful in serialization.
+   *
+   * Master must always be 0.
    */
-  StereoPorts *           stereo_in;  ///< l & r input ports
-  Port *                  midi_in;   ///< MIDI in
-  Port *                  piano_roll;  ///< MIDI piano roll input
+  int                  id;
 
-  /* connecting to this is also optional
-   * plugins are processed slot-by-slot, and if nothing is connected here
-   * it will simply remain an empty buffer, i.e., channel will produce no sound */
-  StereoPorts *           stereo_out;  ///< l & r output ports
+  char *               name; ///< channel name
 
-  float                   l_port_db;   ///< current db after processing l port
-  float                   r_port_db;   ///< current db after processing r port
-  int                     processed;   ///< processed in this cycle or not
-  int                     recording;  ///< recording mode or not
+  /**
+   * The channel strip.
+   *
+   * Note: the first plugin is special in MIDI channels.
+   */
+  int                  plugin_ids[STRIP_SIZE];
+  Plugin *             plugins[STRIP_SIZE]; ///< cache
+
+  /**
+   * Type of channel this is.
+   */
+  ChannelType          type;
+
+  /**
+   * Volume in dBFS. (-inf ~ +6)
+   */
+  float                volume;
+
+  /**
+   * Volume in amplitude (0.0 ~ 1.5)
+   */
+  float                fader_amp;
+  int                  mute; ///< muted or not
+  int                  solo; ///< solo or not
+  float                phase;        ///< used by the phase knob (0.0-360.0 value)
+  float                pan; ///< (0~1) 0.5 is center
+
+  /* These are for plugins to connect to.
+   *
+   * Processing starts at the first plugin with a clean
+   * buffer, and if any ports are connected as that
+   * plugin's input, their buffers are added to the first
+   * plugin
+   */
+  StereoPorts *        stereo_in;  ///< l & r input ports
+
+  /**
+   * MIDI in.
+   *
+   * TODO describe what it does.
+   */
+  int                  midi_in_id;
+
+  /**
+   * MIDI piano roll input.
+   *
+   * TODO describe what it does.
+   */
+  int                  piano_roll_id;
+
+  /**
+   * Cache.
+   */
+  Port *               midi_in;
+  Port *               piano_roll;
+
+  /*
+   * The last plugin should connect to this.
+   *
+   * Plugins are processed slot-by-slot, and if nothing
+   * is connected here it will simply remain an empty
+   * buffer, i.e., channel will produce no sound
+   * */
+  StereoPorts *        stereo_out;
+
+  /**
+   * Current dBFS after procesing each output port.
+   *
+   * Transient variables only used by the GUI.
+   */
+  float                l_port_db;
+  float                r_port_db;
+
+  /**
+   * Flag to indicate if channel has been processed in
+   * this cycle or not.
+   */
+  int                  processed;
+
+  /**
+   * Channel is in record mode or not.
+   */
+  int                  recording;
   //pthread_t         thread;     ///< the channel processing thread.
                           ///< each channel does processing on a separate thread
-  jack_native_thread_t    thread;
-  int                     stop_thread;    ///< flag to stop the thread
-  struct Channel *        output;     ///< output channel to route signal to
-  Track *                 track;   ///< the track associated with this channel
-  int                     enabled; ///< enabled or not
-  Automatable *           automatables[40]; ///< automatables for this channel,
-                      ///< eg. volume (fader), pan, mute, etc.
-  int                     num_automatables;  ///< counter
-  int                     visible; ///< whether visible or not
-  ChannelWidget *         widget; ///< the channel widget
+                          //
+  /**
+   * Jack special thread for the channel.
+   *
+   * TODO at the moment, each channel gets 1 thread. If
+   * this causes performance issues, try pre-allocating
+   * NUM_CORES - 1 threads and using those.
+   */
+  jack_native_thread_t thread;
+  int                  stop_thread; ///< flag to stop the thread
+
+  /**
+   * Output channel to route signal to.
+   */
+  int                  output_id;
+
+  /**
+   * Cache.
+   */
+  struct Channel *     output;
+
+  /**
+   * Track associated with this channel.
+   */
+  int                  track_id;
+
+  /**
+   * Cache.
+   */
+  Track *              track;
+
+  int                  enabled; ///< enabled or not
+
+  /**
+   * Automatables for this channel to be generated at run
+   * time (amp, pan, mute, etc.).
+   *
+   * Not to be serialized.
+   */
+  Automatable *        automatables[40];
+  int                  num_automatables;
+
+  int                  visible; ///< whether visible or not
+  ChannelWidget *      widget; ///< the channel widget
 } Channel;
 
 void
@@ -187,8 +275,7 @@ channel_create (ChannelType type,
  * in order.
  */
 void
-channel_process (Channel * channel, ///< the channel
-                 nframes_t   nframes);    ///< sample count
+channel_process (Channel * channel);
 
 /**
  * Adds given plugin to given position in the strip.

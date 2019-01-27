@@ -81,7 +81,7 @@ draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
 
   gtk_render_background (context, cr, 0, 0, width, height);
 
-  GdkRGBA * color = &((ChannelTrack *) rw_prv->region->track)->channel->color;
+  GdkRGBA * color = &rw_prv->region->track->color;
   cairo_set_source_rgba (cr,
                          color->red - 0.06,
                          color->green - 0.06,
@@ -191,4 +191,5 @@ region_widget_class_init (RegionWidgetClass * _klass)
 static void
 region_widget_init (RegionWidget * self)
 {
+  gtk_widget_set_visible (GTK_WIDGET (self), 1);
 }

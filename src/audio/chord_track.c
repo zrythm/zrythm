@@ -32,6 +32,7 @@
 #include "audio/chord_track.h"
 #include "audio/scale.h"
 #include "audio/track.h"
+#include "project.h"
 #include "utils/arrays.h"
 
 /**
@@ -45,6 +46,7 @@ chord_track_new (MusicalScale * scale)
   Track * track = (Track *) self;
   track->type = TRACK_TYPE_CHORD;
   track_init (track);
+  project_add_track (track);
 
   self->scale = scale;
 

@@ -37,10 +37,11 @@ typedef struct AudioTrack
   ChannelTrack          parent; ///< base track
 
   /**
-   * MIDI regions in this track.
+   * Audio regions in this track.
    */
-  AudioRegion *         regions[200];
-  int                   num_regions;  ///< counter
+  int                   region_ids[MAX_REGIONS];
+  int                   num_regions;
+  AudioRegion *         regions[MAX_REGIONS]; ///< cache
 
 } AudioTrack;
 

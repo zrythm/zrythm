@@ -24,8 +24,15 @@
 
 #include "audio/engine.h"
 
-#define PREFERENCES ZRYTHM->preferences
+#define PREFERENCES (&ZRYTHM->preferences)
 
+typedef struct Settings Settings;
+
+/**
+ * Preferences.
+ *
+ * No need to be de/serialized.
+ */
 typedef struct Preferences
 {
   /* Audio tab */
@@ -34,14 +41,18 @@ typedef struct Preferences
   /* Editing tab */
   int                 edit_region_size;
 
+  /**
+   * For convenience only.
+   */
   Settings *          settings;
 } Preferences;
 
 /**
  * Initializes preferences with values from settings.
  */
-Preferences *
-preferences_new (Settings * settings);
+void
+preferences_init (Preferences * self,
+                  Settings *    settings);
 
 void
 preferences_set_audio_backend (Preferences * self,

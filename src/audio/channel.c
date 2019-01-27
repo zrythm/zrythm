@@ -76,7 +76,7 @@ process_channel_work (void * argument)
             {
               /*g_message ("calling channel process %s",*/
                          /*channel->name);*/
-              channel_process (channel, AUDIO_ENGINE->nframes);
+              channel_process (channel);
               /*g_message ("done calling channel process %s",*/
                          /*channel->name);*/
               channel->processed = 1;
@@ -103,8 +103,7 @@ process_channel_work (void * argument)
  *     -> process plugin
  */
 void
-channel_process (Channel * channel,  ///< slots
-              nframes_t   nframes)    ///< sample count
+channel_process (Channel * channel)
 {
   /* clear buffers */
   if (channel->type == CT_MASTER ||
@@ -122,7 +121,7 @@ channel_process (Channel * channel,  ///< slots
   port_clear_buffer (channel->stereo_out->r);
   for (int j = 0; j < STRIP_SIZE; j++)
     {
-      Plugin * plugin = channel->strip[j];
+      Plugin * plugin = channel->plugins[j];
       if (plugin)
         {
           for (int i = 0; i < plugin->num_in_ports; i++)
@@ -147,11 +146,9 @@ channel_process (Channel * channel,  ///< slots
       channel->type == CT_BUS)
     {
       port_sum_signal_from_inputs (
-        channel->stereo_in->l,
-        nframes);
+        channel->stereo_in->l);
       port_sum_signal_from_inputs (
-        channel->stereo_in->r,
-        nframes);
+        channel->stereo_in->r);
     }
   /*g_message ("summed signal coming in %s",*/
              /*channel->name);*/
@@ -169,7 +166,7 @@ channel_process (Channel * channel,  ///< slots
           instrument_track_fill_midi_events (
             (InstrumentTrack *)channel->track,
             &PLAYHEAD,
-            nframes,
+            AUDIO_ENGINE->block_length,
             &channel->piano_roll->midi_events);
         }
     }
@@ -178,7 +175,7 @@ channel_process (Channel * channel,  ///< slots
   /* go through each slot (plugin) on the channel strip */
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      Plugin * plugin = channel->strip[i];
+      Plugin * plugin = channel->plugins[i];
       if (plugin)
         {
 
@@ -187,7 +184,7 @@ channel_process (Channel * channel,  ///< slots
             {
               Port * port = plugin->in_ports[j];
 
-              port_sum_signal_from_inputs (port, nframes);
+              port_sum_signal_from_inputs (port);
             }
 
           /*g_message ("summed plugin signals coming in %s",*/
@@ -195,7 +192,7 @@ channel_process (Channel * channel,  ///< slots
 
             /* run plugin processing
              * this should put the appropriate result in the plugin's audio out */
-            plugin_process (plugin, nframes);
+            plugin_process (plugin);
 
           /*g_message ("processed plugin %s",*/
                      /*plugin->descr->name);*/
@@ -205,8 +202,8 @@ channel_process (Channel * channel,  ///< slots
   /* same for channel ports */
   /*g_message ("summing stereo out ports %s",*/
              /*channel->name);*/
-  port_sum_signal_from_inputs (channel->stereo_out->l, nframes);
-  port_sum_signal_from_inputs (channel->stereo_out->r, nframes);
+  port_sum_signal_from_inputs (channel->stereo_out->l);
+  port_sum_signal_from_inputs (channel->stereo_out->r);
   /*g_message ("summed stereo out ports %s",*/
              /*channel->name);*/
 
@@ -230,12 +227,12 @@ channel_process (Channel * channel,  ///< slots
     channel,
     math_calculate_rms_db (
       channel->stereo_out->l->buf,
-      (double) channel->stereo_out->l->nframes));
+      AUDIO_ENGINE->nframes));
   channel_set_current_r_db (
     channel,
     math_calculate_rms_db (
       channel->stereo_out->r->buf,
-      (double) channel->stereo_out->r->nframes));
+      AUDIO_ENGINE->nframes));
   /*g_message ("calculated decibels %s",*/
              /*channel->name);*/
 
@@ -279,31 +276,39 @@ _create_channel (char * name)
   channel->name = g_strdup (name);
 
   /* create ports */
-  char * pll = g_strdup_printf ("%s stereo in L", channel->name);
-  char * plr = g_strdup_printf ("%s stereo in R", channel->name);
-  channel->stereo_in = stereo_ports_new (
-              port_new_with_type (AUDIO_ENGINE->block_length,
-                                  TYPE_AUDIO, FLOW_INPUT,
-                                  pll),
-              port_new_with_type (AUDIO_ENGINE->block_length,
-                                  TYPE_AUDIO, FLOW_INPUT,
-                                  plr));
+  char * pll =
+    g_strdup_printf ("%s stereo in L",
+                     channel->name);
+  char * plr =
+    g_strdup_printf ("%s stereo in R",
+                     channel->name);
+  channel->stereo_in =
+    stereo_ports_new (
+      port_new_with_type (TYPE_AUDIO,
+                          FLOW_INPUT,
+                          pll),
+      port_new_with_type (TYPE_AUDIO,
+                          FLOW_INPUT,
+                          plr));
   g_free (pll);
   g_free (plr);
   pll = g_strdup_printf ("%s MIDI in", channel->name);
-  channel->midi_in = port_new_with_type (AUDIO_ENGINE->block_length,
-                                         TYPE_EVENT, FLOW_INPUT,
-                                         pll);
+  channel->midi_in =
+    port_new_with_type (
+      TYPE_EVENT,
+      FLOW_INPUT,
+      pll);
   g_free (pll);
   pll = g_strdup_printf ("%s Stereo out L", channel->name);
   plr = g_strdup_printf ("%s Stereo out R", channel->name);
-  channel->stereo_out = stereo_ports_new (
-              port_new_with_type (AUDIO_ENGINE->block_length,
-                                  TYPE_AUDIO, FLOW_OUTPUT,
-                                  pll),
-              port_new_with_type (AUDIO_ENGINE->block_length,
-                                  TYPE_AUDIO, FLOW_OUTPUT,
-                                  plr));
+  channel->stereo_out =
+    stereo_ports_new (
+     port_new_with_type (TYPE_AUDIO,
+                         FLOW_OUTPUT,
+                         pll),
+     port_new_with_type (TYPE_AUDIO,
+                         FLOW_OUTPUT,
+                         plr));
   g_message ("Created stereo out ports");
   g_free (pll);
   g_free (plr);
@@ -316,7 +321,7 @@ _create_channel (char * name)
   /* init plugins */
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      channel->strip[i] = NULL;
+      channel->plugins[i] = NULL;
     }
 
   /* set volume, phase, pan */
@@ -335,18 +340,16 @@ _create_channel (char * name)
 
   /* set up piano roll port */
   char * tmp =g_strdup_printf ("%s Piano Roll", channel->name);
-  channel->piano_roll = port_new_with_type (
-        AUDIO_ENGINE->block_length,
-        TYPE_EVENT,
-        FLOW_INPUT,
-        tmp);
+  channel->piano_roll =
+    port_new_with_type (
+      TYPE_EVENT,
+      FLOW_INPUT,
+      tmp);
   channel->piano_roll->is_piano_roll = 1;
   channel->piano_roll->owner_jack = 0;
   channel->piano_roll->owner_ch = channel;
   channel->piano_roll->midi_events.queue = calloc (1, sizeof (MidiEvents));
 
-  channel->id = PROJECT->num_channels;
-  PROJECT->channels[PROJECT->num_channels++] = channel;
   channel->visible = 1;
 
   return channel;
@@ -397,9 +400,9 @@ generate_automatables (Channel * channel)
 Channel *
 channel_get_or_create_blank (int id)
 {
-  if (PROJECT->channels[id])
+  if (MIXER->channels[id])
     {
-      return PROJECT->channels[id];
+      return MIXER->channels[id];
     }
 
   Channel * channel = calloc (1, sizeof (Channel));
@@ -409,8 +412,8 @@ channel_get_or_create_blank (int id)
   /* thread related */
   setup_thread (channel);
 
-  PROJECT->channels[id] = channel;
-  PROJECT->num_channels++;
+  MIXER->channels[id] = channel;
+  MIXER->num_channels++;
 
   g_message ("[channel_new] Creating blank channel %d", id);
 
@@ -428,8 +431,7 @@ channel_create (ChannelType type,
 
   int count = 1;
   char * new_label = label;
-  while (mixer_get_channel_by_name (MIXER,
-                                    new_label))
+  while (mixer_get_channel_by_name (new_label))
     {
       if (new_label != label)
         g_free (new_label);
@@ -443,30 +445,15 @@ channel_create (ChannelType type,
 
   channel->type = type;
 
-  /* set default color */
-  if (type == CT_MASTER)
-    {
-      gdk_rgba_parse (&channel->color, "#f01010");
-    }
-  else
-    {
-      channel->color.red = random () % 8 / 10.0;
-      channel->color.green = random () % 8 / 10.0;
-      channel->color.blue = random () % 8 / 10.0;
-      channel->color.alpha = 1.0;
-      g_message ("rgb %f %f %f",
-                 channel->color.red,
-                 channel->color.green,
-                 channel->color.blue);
-    }
-
   /* set default output */
   if (type == CT_MASTER)
     {
       channel->output = NULL;
+      channel->id = 0;
     }
   else
     {
+      channel->id = mixer_get_next_channel_id ();
       channel->output = MIXER->master;
     }
 
@@ -602,7 +589,7 @@ channel_set_current_r_db (Channel * channel, float val)
 void
 channel_remove_plugin (Channel * channel, int pos)
 {
-  Plugin * plugin = channel->strip[pos];
+  Plugin * plugin = channel->plugins[pos];
   if (plugin)
     {
       g_message ("Removing %s from %s:%d", plugin->descr->name,
@@ -612,11 +599,11 @@ channel_remove_plugin (Channel * channel, int pos)
           lv2_close_ui ((Lv2Plugin *) plugin->original_plugin);
 
         }
-      plugin_free (channel->strip[pos]);
+      plugin_free (channel->plugins[pos]);
     }
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (channel->track);
-  automation_tracklist_update (automation_tracklist);
+  automation_tracklist_refresh (automation_tracklist);
 }
 
 /**
@@ -635,18 +622,18 @@ channel_add_plugin (Channel * channel,    ///< the channel
   channel->enabled = 0;
 
   /* free current plugin */
-  /*Plugin * old = channel->strip[pos];*/
+  /*Plugin * old = channel->plugins[pos];*/
   channel_remove_plugin (channel, pos);
 
   g_message ("Inserting %s at %s:%d", plugin->descr->name,
              channel->name, pos);
-  channel->strip[pos] = plugin;
+  channel->plugins[pos] = plugin;
   plugin->channel = channel;
 
   Plugin * next_plugin = NULL;
   for (int i = pos + 1; i < STRIP_SIZE; i++)
     {
-      next_plugin = channel->strip[i];
+      next_plugin = channel->plugins[i];
       if (next_plugin)
         break;
     }
@@ -654,7 +641,7 @@ channel_add_plugin (Channel * channel,    ///< the channel
   Plugin * prev_plugin = NULL;
   for (int i = pos - 1; i >= 0; i--)
     {
-      prev_plugin = channel->strip[i];
+      prev_plugin = channel->plugins[i];
       if (prev_plugin)
         break;
     }
@@ -802,7 +789,7 @@ channel_add_plugin (Channel * channel,    ///< the channel
   plugin_generate_automatables (plugin);
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (channel->track);
-  automation_tracklist_update (automation_tracklist);
+  automation_tracklist_refresh (automation_tracklist);
   connections_widget_refresh (MW_CONNECTIONS);
 }
 
@@ -815,7 +802,7 @@ channel_get_last_active_slot_index (Channel * channel)
   int index = -1;
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      if (channel->strip[i])
+      if (channel->plugins[i])
         index = i;
     }
   return index;
@@ -845,9 +832,9 @@ channel_get_first_plugin (Channel * channel)
   Plugin * plugin = NULL;
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      if (channel->strip[i])
+      if (channel->plugins[i])
         {
-          plugin = channel->strip[i];
+          plugin = channel->plugins[i];
           break;
         }
     }
@@ -939,7 +926,7 @@ channel_get_plugin_index (Channel * channel,
 {
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      if (channel->strip[i] == plugin)
+      if (channel->plugins[i] == plugin)
         {
           return i;
         }
@@ -975,7 +962,7 @@ channel_free (Channel * channel)
   g_free (channel->name);
   FOREACH_STRIP
     {
-      Plugin * pl = channel->strip[i];
+      Plugin * pl = channel->plugins[i];
       if (pl)
         {
           plugin_free (pl);

@@ -24,15 +24,11 @@
 #include "actions/undoable_action.h"
 #include "actions/undo_manager.h"
 
-UndoManager *
-undo_manager_new ()
+void
+undo_manager_init (UndoManager * self)
 {
-  UndoManager * self = calloc (1, sizeof (UndoManager));
-
   self->undo_stack.top = -1;
   self->redo_stack.top = -1;
-
-  return self;
 }
 
 /**

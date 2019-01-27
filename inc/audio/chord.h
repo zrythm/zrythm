@@ -33,6 +33,7 @@
 #include <stdint.h>
 
 #include "audio/position.h"
+#include "utils/yaml.h"
 
 typedef enum MusicalNote
 {
@@ -81,23 +82,72 @@ typedef enum ChordType
 } ChordType;
 
 typedef struct _ChordWidget ChordWidget;
+
 /**
  * Chords are to be generated on demand.
  */
 typedef struct Chord
 {
   Position              pos; ///< chord object position (if used in chord track)
-  uint8_t               has_bass; ///< has base note or not
+  int               has_bass; ///< has base note or not
   MusicalNote           root_note; ///< root note
   MusicalNote           bass_note; ///< bass note 1 octave below
   ChordType             type;
-  unsigned char   notes[36]; ///< 3 octaves, 1st octave is for base note
+  int    notes[36]; ///< 3 octaves, 1st octave is for base note
                                   ///< starts at C always
   int                   inversion; ///< == 0 no inversion,
                                    ///< < 0 means highest note(s) drop an octave
                                    ///< > 0 means lowest note(s) receive an octave
   ChordWidget *         widget;
 } Chord;
+
+static const cyaml_strval_t musical_note_strings[] = {
+	{ "C",          NOTE_C    },
+	{ "C#",         NOTE_CS   },
+	{ "D",          NOTE_D   },
+	{ "D#",         NOTE_DS   },
+	{ "E",          NOTE_E   },
+	{ "F",          NOTE_F   },
+	{ "F#",         NOTE_FS   },
+	{ "G",          NOTE_G   },
+	{ "G#",         NOTE_GS   },
+	{ "A",          NOTE_A   },
+	{ "A#",         NOTE_AS   },
+	{ "B",          NOTE_B   },
+};
+
+static const cyaml_schema_field_t
+  chord_fields_schema[] =
+{
+  CYAML_FIELD_MAPPING (
+      "pos", CYAML_FLAG_DEFAULT,
+      Chord, pos, position_fields_schema),
+	CYAML_FIELD_INT (
+			"has_bass", CYAML_FLAG_DEFAULT,
+			Chord, has_bass),
+  CYAML_FIELD_ENUM (
+			"root_note", CYAML_FLAG_DEFAULT,
+			Chord, root_note, musical_note_strings,
+      CYAML_ARRAY_LEN (musical_note_strings)),
+  CYAML_FIELD_ENUM (
+			"bass_note", CYAML_FLAG_DEFAULT,
+			Chord, bass_note, musical_note_strings,
+      CYAML_ARRAY_LEN (musical_note_strings)),
+  CYAML_FIELD_SEQUENCE_FIXED (
+    "notes", CYAML_FLAG_OPTIONAL,
+      Chord, notes, &int_schema, 36),
+	CYAML_FIELD_INT (
+			"inversion", CYAML_FLAG_DEFAULT,
+			Chord, inversion),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+chord_schema = {
+	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+			Chord, chord_fields_schema),
+};
 
 /**
  * Creates a chord.

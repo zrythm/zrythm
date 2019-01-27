@@ -1,7 +1,7 @@
 /*
  * zrythm_app.c - The GTK app
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -20,14 +20,12 @@
  */
 
 #include "zrythm.h"
-#include "settings.h"
 #include "actions/actions.h"
+#include "actions/undo_manager.h"
 #include "audio/engine.h"
 #include "audio/mixer.h"
 #include "audio/piano_roll.h"
-#include "audio/preferences.h"
 #include "audio/quantize.h"
-#include "audio/timeline_minimap.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/accel.h"
@@ -36,7 +34,8 @@
 #include "gui/widgets/start_assistant.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
-#include "actions/undo_manager.h"
+#include "settings/preferences.h"
+#include "settings/settings.h"
 #include "utils/io.h"
 
 #include <gtk/gtk.h>
@@ -132,8 +131,8 @@ init_recent_projects ()
 }
 
 void
-zrythm_add_to_recent_projects (ZrythmApp * self,
-                                   const char * filepath)
+zrythm_add_to_recent_projects (Zrythm * self,
+                               const char * filepath)
 {
   FILE * file = fopen (self->recent_projects_file, "a");
 
@@ -160,46 +159,26 @@ task_func (GTask *task,
       data->progress = 0.3;
       break;
     case TASK_INIT_SETTINGS:
-      ZRYTHM->settings = settings_new ();
-      ZRYTHM->preferences =
-        preferences_new (ZRYTHM->settings);
-      ZRYTHM->undo_manager = undo_manager_new ();
+      settings_init (&ZRYTHM->settings);
+      preferences_init (&ZRYTHM->preferences,
+                        &ZRYTHM->settings);
       data->message =
         "Initializing audio engine";
       data->progress = 0.4;
       break;
     case TASK_INIT_AUDIO_ENGINE:
-      ZRYTHM->audio_engine = engine_new ();
       data->message =
         "Initializing plugin manager";
       data->progress = 0.6;
       break;
     case TASK_INIT_PLUGIN_MANAGER:
-      ZRYTHM->plugin_manager = plugin_manager_new ();
-      ZRYTHM->snap_grid_timeline =
-        snap_grid_new (NOTE_LENGTH_1_1);
-      ZRYTHM->quantize_timeline =
-        quantize_new (NOTE_LENGTH_1_1,
-                      ZRYTHM->snap_grid_timeline);
-      ZRYTHM->snap_grid_midi =
-        snap_grid_new (NOTE_LENGTH_1_8);
-      ZRYTHM->quantize_midi =
-        quantize_new (NOTE_LENGTH_1_8,
-                      ZRYTHM->snap_grid_midi);
-      ZRYTHM->piano_roll = piano_roll_new ();
-      ZRYTHM->timeline_minimap =
-        timeline_minimap_new ();
+      plugin_manager_init (&ZRYTHM->plugin_manager);
       data->message =
         "Setting up backend";
       data->progress = 0.7;
       break;
     case TASK_END:
-      engine_setup (AUDIO_ENGINE);
-      snap_grid_setup (ZRYTHM->snap_grid_timeline);
-      snap_grid_setup (ZRYTHM->snap_grid_midi);
-      quantize_setup (ZRYTHM->quantize_timeline);
-      quantize_setup (ZRYTHM->quantize_midi);
-      plugin_manager_setup (PLUGIN_MANAGER);
+      plugin_manager_scan_plugins (&ZRYTHM->plugin_manager);
       data->message =
         "Loading project";
       data->progress = 0.8;
@@ -216,14 +195,14 @@ task_completed_cb (GObject *source_object,
   if (*task_id == TASK_END)
     {
       g_action_group_activate_action (
-        G_ACTION_GROUP (zrythm),
+        G_ACTION_GROUP (zrythm_app),
         "prompt_for_project",
         NULL);
     }
   else
     {
       (*task_id)++;
-      GTask * task = g_task_new (ZRYTHM,
+      GTask * task = g_task_new (zrythm_app,
                                  NULL,
                                  task_completed_cb,
                                  (gpointer) task_id);
@@ -264,19 +243,11 @@ static void on_load_project (GSimpleAction  *action,
                              gpointer  user_data)
 {
   g_message ("load_project");
-  ZrythmApp * app = ZRYTHM_APP (user_data);
 
-  app->project = project_new ();
-  app->tracklist = tracklist_new ();
-
-  project_setup (app->project,
-                 app->open_filename);
-
-  tracklist_setup (TRACKLIST);
-
+  project_load (ZRYTHM->open_filename);
 
   g_action_group_activate_action (
-    G_ACTION_GROUP (zrythm),
+    G_ACTION_GROUP (zrythm_app),
     "setup_main_window",
     NULL);
 }
@@ -297,10 +268,10 @@ static void on_init_main_window (GSimpleAction  *action,
   gtk_widget_destroy (GTK_WIDGET (splash));
 
   ZrythmApp * app = ZRYTHM_APP (data);
-  app->main_window = main_window_widget_new (app);
+  ZRYTHM->main_window = main_window_widget_new (app);
 
   g_action_group_activate_action (
-    G_ACTION_GROUP (zrythm),
+    G_ACTION_GROUP (app),
     "load_project",
     NULL);
 }
@@ -328,7 +299,7 @@ on_finish (GtkAssistant * _assistant,
   data->progress = 1.0;
   update_splash (data);
   g_action_group_activate_action (
-    G_ACTION_GROUP (zrythm),
+    G_ACTION_GROUP (zrythm_app),
     "init_main_window",
     NULL);
 }
@@ -347,10 +318,10 @@ static void on_prompt_for_project (GSimpleAction  *action,
   g_message ("prompt for project");
   ZrythmApp * app = ZRYTHM_APP (data);
 
-  if (app->open_filename)
+  if (ZRYTHM->open_filename)
     {
       g_action_group_activate_action (
-        G_ACTION_GROUP (zrythm),
+        G_ACTION_GROUP (app),
         "init_main_window",
         NULL);
     }
@@ -423,7 +394,7 @@ zrythm_app_startup (GApplication* _app)
   task_id = calloc (1, sizeof (TaskId));
   *task_id = TASK_START;
   data = calloc (1, sizeof (UpdateSplashData));
-  GTask * task = g_task_new (ZRYTHM,
+  GTask * task = g_task_new (app,
                              NULL,
                              task_completed_cb,
                              (gpointer) task_id);
@@ -505,7 +476,7 @@ zrythm_app_startup (GApplication* _app)
 }
 
 ZrythmApp *
-zrythm_new ()
+zrythm_app_new ()
 {
   ZrythmApp * self =  g_object_new (
     ZRYTHM_APP_TYPE,
@@ -513,6 +484,10 @@ zrythm_new ()
     "resource-base-path", "/org/zrythm",
     "flags", G_APPLICATION_HANDLES_OPEN,
     NULL);
+
+  self->zrythm = calloc (1, sizeof (Zrythm));
+  ZRYTHM = self->zrythm;
+  ZRYTHM->project = calloc (1, sizeof (Project));
 
   return self;
 }

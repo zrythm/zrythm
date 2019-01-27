@@ -29,6 +29,10 @@
 #include "audio/master_track.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
+#include "gui/widgets/arranger.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/main_window.h"
+#include "gui/widgets/timeline_arranger.h"
 
 void
 track_init (Track * track)
@@ -89,6 +93,28 @@ track_setup (Track * track)
 }
 
 /**
+ * Wrapper.
+ */
+void
+track_add_region (Track * track,
+                  Region * region)
+{
+  region_set_track (region, track);
+  if (track->type == TRACK_TYPE_INSTRUMENT)
+    {
+      instrument_track_add_region (
+        (InstrumentTrack *) track,
+        (MidiRegion *) region);
+      arranger_widget_refresh (
+        Z_ARRANGER_WIDGET (MW_TIMELINE));
+      return;
+    }
+
+  g_warning ("attempted to add region to a track type"
+             " that does not accept regions");
+}
+
+/**
  * Wrapper for each track type.
  */
 void
@@ -136,7 +162,7 @@ track_get_automation_tracklist (Track * track)
     case TRACK_TYPE_MASTER:
         {
           ChannelTrack * bt = (ChannelTrack *) track;
-          return bt->automation_tracklist;
+          return &bt->automation_tracklist;
         }
     }
 

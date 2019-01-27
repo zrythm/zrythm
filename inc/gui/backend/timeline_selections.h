@@ -22,9 +22,13 @@
 #ifndef __ACTIONS_TIMELINE_SELECTIONS_H__
 #define __ACTIONS_TIMELINE_SELECTIONS_H__
 
-typedef struct Region Region;
-typedef struct AutomationPoint AutomationPoint;
-typedef struct Chord Chord;
+#include "audio/automation_point.h"
+#include "audio/chord.h"
+#include "audio/midi_region.h"
+#include "audio/region.h"
+#include "utils/yaml.h"
+
+#define TIMELINE_SELECTIONS (&PROJECT->timeline_selections)
 
 /**
  * Selections to be used for the timeline's current
@@ -42,6 +46,38 @@ typedef struct TimelineSelections
   int                      num_chords;
 } TimelineSelections;
 
+static const cyaml_schema_field_t
+  timeline_selections_fields_schema[] =
+{
+  CYAML_FIELD_SEQUENCE_COUNT (
+    /* not a pointer because it is an array of region
+     * pointers, not a pointer to an array */
+    "regions", CYAML_FLAG_OPTIONAL,
+      TimelineSelections, regions, num_regions,
+      &region_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_MAPPING_PTR (
+    "top_region", CYAML_FLAG_OPTIONAL | CYAML_FLAG_POINTER,
+    TimelineSelections, top_region, region_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "bot_region", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    TimelineSelections, bot_region, region_fields_schema),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "automation_points", CYAML_FLAG_OPTIONAL,
+      TimelineSelections, automation_points, num_automation_points,
+      &automation_point_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "chords", CYAML_FLAG_OPTIONAL,
+    TimelineSelections, chords, num_chords,
+    &chord_schema, 0, CYAML_UNLIMITED),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+timeline_selections_schema = {
+	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+			TimelineSelections, timeline_selections_fields_schema),
+};
 /**
  * Clone the struct for copying, undoing, etc.
  */
@@ -50,12 +86,20 @@ typedef struct TimelineSelections
                            //TimelineSelections * dest);
 
 /**
- * Serializes to XML.
- *
- * MUST be free'd.
+ * Returns the position of the leftmost object.
  */
-char *
-timeline_selections_serialize (
-  TimelineSelections * ts); ///< TS to serialize
+void
+timeline_selections_get_start_pos (
+  TimelineSelections * ts,
+  Position *                pos); ///< position to fill in
+
+void
+timeline_selections_paste_to_pos (
+  TimelineSelections * ts,
+  Position *           pos);
+
+SERIALIZE_INC (TimelineSelections, timeline_selections)
+DESERIALIZE_INC (TimelineSelections, timeline_selections)
+PRINT_YAML_INC (TimelineSelections, timeline_selections)
 
 #endif

@@ -56,7 +56,6 @@
  * Creates an empty plugin.
  *
  * To be filled in by the caller.
- * FIXME should be static?
  */
 static Plugin *
 _plugin_new ()
@@ -65,8 +64,7 @@ _plugin_new ()
 
   plugin->processed = 1;
 
-  plugin->id = PROJECT->num_plugins;
-  PROJECT->plugins[PROJECT->num_plugins++] = plugin;
+  project_add_plugin (plugin);
 
   return plugin;
 }
@@ -190,7 +188,7 @@ plugin_instantiate (Plugin * plugin ///< the plugin
  * Process plugin
  */
 void
-plugin_process (Plugin * plugin, nframes_t nframes)
+plugin_process (Plugin * plugin)
 {
 
   /* if has MIDI input port */
@@ -204,7 +202,7 @@ plugin_process (Plugin * plugin, nframes_t nframes)
 
   if (plugin->descr->protocol == PROT_LV2)
     {
-      lv2_plugin_process ((Lv2Plugin *) plugin->original_plugin, nframes);
+      lv2_plugin_process ((Lv2Plugin *) plugin->original_plugin);
     }
 
   plugin->processed = 1;

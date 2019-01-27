@@ -21,41 +21,32 @@
 
 #include "audio/engine.h"
 #include "audio/transport.h"
+#include "project.h"
 
 /**
  * Sets BPM and does any necessary processing (like notifying interested
  * parties).
  */
 void
-transport_set_bpm (Transport * self,
-                   AudioEngine * engine,
-                   float bpm)
+transport_set_bpm (float bpm)
 {
   if (bpm < MIN_BPM)
     bpm = MIN_BPM;
   else if (bpm > MAX_BPM)
     bpm = MAX_BPM;
-  self->bpm = bpm;
-  engine_update_frames_per_tick (engine,
-                                 self->beats_per_bar,
+  TRANSPORT->bpm = bpm;
+  engine_update_frames_per_tick (TRANSPORT->beats_per_bar,
                                  bpm,
-                                 engine->sample_rate);
+                                 AUDIO_ENGINE->sample_rate);
 }
 
-Transport *
-transport_new ()
-{
-  g_message ("initializing transport...");
-  Transport * transport = calloc (1, sizeof (Transport));
-
-
-  return transport;
-}
-
+/**
+ * Initialize transport
+ */
 void
-transport_setup (Transport * self,
-                 AudioEngine * engine)
+transport_init (Transport * self)
 {
+  g_message ("Initializing transport");
   // set inital total number of beats
   // this is applied to the ruler
   self->total_bars = DEFAULT_TOTAL_BARS;
@@ -77,35 +68,32 @@ transport_setup (Transport * self,
 
   self->loop = 1;
 
-  transport_set_bpm (self,
-                     engine,
-                     DEFAULT_BPM);
+  transport_set_bpm (DEFAULT_BPM);
 
   zix_sem_init(&self->paused, 0);
 }
 
 void
-transport_request_pause (Transport * self)
+transport_request_pause ()
 {
-  self->play_state = PLAYSTATE_PAUSE_REQUESTED;
+  TRANSPORT->play_state = PLAYSTATE_PAUSE_REQUESTED;
 }
 
 void
-transport_request_roll (Transport * self)
+transport_request_roll ()
 {
-  self->play_state = PLAYSTATE_ROLL_REQUESTED;
+  TRANSPORT->play_state = PLAYSTATE_ROLL_REQUESTED;
 }
 
 /**
  * Moves the playhead by the time corresponding to given samples.
  */
 void
-transport_add_to_playhead (Transport * self,
-                           int frames)
+transport_add_to_playhead (int frames)
 {
-  if (self->play_state == PLAYSTATE_ROLLING)
+  if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
     {
-      position_add_frames (&self->playhead_pos,
+      position_add_frames (&TRANSPORT->playhead_pos,
                            frames);
     }
 }
@@ -114,11 +102,10 @@ transport_add_to_playhead (Transport * self,
  * Moves playhead to given pos
  */
 void
-transport_move_playhead (Transport * self,
-                         Position * target, ///< position to set to
+transport_move_playhead (Position * target, ///< position to set to
                          int      panic) ///< send MIDI panic or not
 {
-  position_set_to_pos (&self->playhead_pos,
+  position_set_to_pos (&TRANSPORT->playhead_pos,
                        target);
   if (panic)
     {
@@ -130,23 +117,23 @@ transport_move_playhead (Transport * self,
  * Updates the frames in all transport positions
  */
 void
-transport_update_position_frames (Transport * self)
+transport_update_position_frames ()
 {
-  position_update_frames (&self->playhead_pos);
-  position_update_frames (&self->cue_pos);
-  position_update_frames (&self->start_marker_pos);
-  position_update_frames (&self->end_marker_pos);
-  position_update_frames (&self->loop_start_pos);
-  position_update_frames (&self->loop_end_pos);
+  position_update_frames (&TRANSPORT->playhead_pos);
+  position_update_frames (&TRANSPORT->cue_pos);
+  position_update_frames (&TRANSPORT->start_marker_pos);
+  position_update_frames (&TRANSPORT->end_marker_pos);
+  position_update_frames (&TRANSPORT->loop_start_pos);
+  position_update_frames (&TRANSPORT->loop_end_pos);
 }
 
 /**
  * Gets beat unit as int.
  */
 int
-transport_get_beat_unit (Transport * self)
+transport_get_beat_unit ()
 {
-  switch (self->beat_unit)
+  switch (TRANSPORT->beat_unit)
     {
     case BEAT_UNIT_2:
       return 2;

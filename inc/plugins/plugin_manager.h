@@ -24,7 +24,7 @@
 
 #include <lilv/lilv.h>
 
-#define PLUGIN_MANAGER ZRYTHM->plugin_manager
+#define PLUGIN_MANAGER (&ZRYTHM->plugin_manager)
 #define LV2_SETTINGS PLUGIN_MANAGER->lv2_settings
 #define LILV_WORLD LV2_SETTINGS.lilv_world
 #define LV2_GENERATOR_PLUGIN "Generator"
@@ -136,13 +136,13 @@ typedef struct PluginManager
 /**
  * Initializes plugin manager.
  */
-PluginManager *
-plugin_manager_new ();
+void
+plugin_manager_init (PluginManager * self);
 
 /**
  * Scans for plugins.
  */
 void
-plugin_manager_setup (PluginManager * self);
+plugin_manager_scan_plugins (PluginManager * self);
 
 #endif

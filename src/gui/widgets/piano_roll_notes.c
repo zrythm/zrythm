@@ -28,6 +28,7 @@
 #include "gui/widgets/piano_roll.h"
 #include "gui/widgets/piano_roll_labels.h"
 #include "gui/widgets/piano_roll_notes.h"
+#include "project.h"
 
 #include <gtk/gtk.h>
 

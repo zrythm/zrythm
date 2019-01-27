@@ -56,6 +56,14 @@ typedef struct _MainWindowWidget
   int                      height;
   int                      width;
   GtkAccelGroup *          accel_group;
+
+  /**
+   * Last focused widget.
+   *
+   * Used to check what area is focused when doing copy
+   * paste, etc. Can either be Arranger or piano roll.
+   */
+  GtkWidget *              last_focused;
 } MainWindowWidget;
 
 /**

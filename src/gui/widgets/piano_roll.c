@@ -36,6 +36,7 @@
 #include "gui/widgets/piano_roll_labels.h"
 #include "gui/widgets/piano_roll_notes.h"
 #include "gui/widgets/ruler.h"
+#include "project.h"
 #include "utils/resources.h"
 
 G_DEFINE_TYPE (PianoRollWidget,
@@ -116,7 +117,7 @@ piano_roll_widget_setup (
     {
       arranger_widget_setup (
         Z_ARRANGER_WIDGET (self->arranger),
-        ZRYTHM->snap_grid_midi,
+        &PROJECT->snap_grid_midi,
         ARRANGER_TYPE_MIDI);
       gtk_widget_show_all (
         GTK_WIDGET (self->arranger));
@@ -125,7 +126,7 @@ piano_roll_widget_setup (
     {
       arranger_widget_setup (
         Z_ARRANGER_WIDGET (self->modifier_arranger),
-        ZRYTHM->snap_grid_midi,
+        &PROJECT->snap_grid_midi,
         ARRANGER_TYPE_MIDI_MODIFIER);
       gtk_widget_show_all (
         GTK_WIDGET (self->modifier_arranger));

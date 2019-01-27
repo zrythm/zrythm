@@ -55,10 +55,10 @@ accel_install_action_accelerator (
   const char *     secondary,
   const char *     action_name)
 {
-  g_assert (ZRYTHM);
+  g_assert (zrythm_app);
   const char *accels[] = { primary, secondary };
   gtk_application_set_accels_for_action (
-    GTK_APPLICATION (ZRYTHM),
+    GTK_APPLICATION (zrythm_app),
     action_name,
     accels);
 }
@@ -81,12 +81,12 @@ accel_set_accel_label_from_action (
   GtkAccelLabel * accel_label,
   const char *    action_name)
 {
-  g_assert (ZRYTHM);
+  g_assert (zrythm_app);
   guint accel_key;
   GdkModifierType accel_mods;
   gchar ** accels =
     gtk_application_get_accels_for_action (
-      GTK_APPLICATION (ZRYTHM),
+      GTK_APPLICATION (zrythm_app),
       action_name);
   if (accels[0] != NULL)
     {

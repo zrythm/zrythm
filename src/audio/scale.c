@@ -45,7 +45,7 @@ musical_scale_new (MusicalScaleType      type,
   self->root_key = root;
 
   /* add basic triads for each scale */
-  uint8_t * notes = self->notes;
+  int * notes = self->notes;
   Chord ** chords = self->default_chords;
   MusicalNote note;
   switch (self->type)

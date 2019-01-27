@@ -107,7 +107,7 @@ main_window_widget_refresh (MainWindowWidget * self)
   /* setup timeline */
   arranger_widget_setup (
     Z_ARRANGER_WIDGET (MW_CENTER_DOCK->timeline),
-    ZRYTHM->snap_grid_timeline,
+    &PROJECT->snap_grid_timeline,
     ARRANGER_TYPE_TIMELINE);
   gtk_scrolled_window_set_vadjustment (
     MW_CENTER_DOCK->timeline_scroll,
@@ -121,13 +121,13 @@ main_window_widget_refresh (MainWindowWidget * self)
 
   /* setup bot toolbar */
   snap_grid_widget_setup (MW_CENTER_DOCK->bot_box->snap_grid_midi,
-                          ZRYTHM->snap_grid_midi);
+                          &PROJECT->snap_grid_midi);
 
   /* setup piano roll */
   if (MW_BOT_DOCK_EDGE && PIANO_ROLL)
     {
       piano_roll_widget_setup (PIANO_ROLL,
-                               ZRYTHM->piano_roll);
+                               &PROJECT->piano_roll);
     }
 
   // set icons

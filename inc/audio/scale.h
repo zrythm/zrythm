@@ -261,13 +261,13 @@ typedef struct MusicalScale
   MusicalNote                root_key;
 
   /* TODO maybe remove this functionality */
-  uint8_t                    has_asc_desc; ///< flag if scale has different notes
+  int                        has_asc_desc; ///< flag if scale has different notes
                                           ///< when ascending and descending
 
-  uint8_t                    notes[12]; ///< notes in scale, not used if flag above
+  int                    notes[12]; ///< notes in scale, not used if flag above
                                         ///< is 1
-  uint8_t                    notes_asc[12]; ///< notes when ascending
-  uint8_t                    notes_desc[12]; ///< notes when descending
+  int                    notes_asc[12]; ///< notes when ascending
+  int                     notes_desc[12]; ///< notes when descending
   Chord *                    default_chords[12]; ///< default chords, as many as
                                                   ///< the notes in the scale
                                                   ///< triads with base note

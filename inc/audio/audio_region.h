@@ -1,7 +1,7 @@
 /*
  * audio/audio_region.h - Audio region
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -28,12 +28,6 @@
 typedef struct _RegionWidget RegionWidget;
 typedef struct Channel Channel;
 typedef struct Track Track;
-
-typedef struct AudioRegion
-{
-  Region          parent;
-
-} AudioRegion;
 
 AudioRegion *
 audio_region_new (Track *    track,

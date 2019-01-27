@@ -122,6 +122,7 @@ endif
 #									 -DGTK_DISABLE_DEPRECATED
 endif
 
+# FIXME don't override CFLAGS
 CFLAGS = -Wall \
  	$(R_DYNAMIC) \
 	$(DEFAULT_INCLUDES) \
@@ -137,7 +138,6 @@ CFLAGS = -Wall \
 	$(SUIL_CFLAGS) \
 	$(SNDFILE_CFLAGS) \
 	$(DEFAULT_CFLAGS)
-
 
 LDFLAGS =	\
   $(LIBCYAML_LIBS) \

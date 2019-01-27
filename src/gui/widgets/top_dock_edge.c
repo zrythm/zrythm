@@ -23,6 +23,7 @@
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/top_dock_edge.h"
 #include "gui/widgets/quantize_mb.h"
+#include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
@@ -38,20 +39,21 @@ top_dock_edge_widget_init (TopDockEdgeWidget * self)
   /* setup top toolbar */
   snap_grid_widget_setup (
     self->snap_grid_timeline,
-    ZRYTHM->snap_grid_timeline);
+    SNAP_GRID_TIMELINE);
   quantize_mb_widget_setup (
     self->quantize_mb,
-    ZRYTHM->quantize_timeline);
+    QUANTIZE_TIMELINE);
 
+  /* FIXME move to actions */
   gtk_toggle_tool_button_set_active (
     self->snap_to_grid,
-    ZRYTHM->snap_grid_timeline->snap_to_grid);
+    SNAP_GRID_TIMELINE->snap_to_grid);
   gtk_toggle_tool_button_set_active (
     self->snap_to_grid_keep_offset,
-    ZRYTHM->snap_grid_timeline->snap_to_grid_keep_offset);
+    SNAP_GRID_TIMELINE->snap_to_grid_keep_offset);
   gtk_toggle_tool_button_set_active (
     self->snap_to_events,
-    ZRYTHM->snap_grid_timeline->snap_to_events);
+    SNAP_GRID_TIMELINE->snap_to_events);
 
   gtk_tool_button_set_icon_widget (
     GTK_TOOL_BUTTON (self->snap_to_grid),

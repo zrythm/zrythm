@@ -38,6 +38,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
+#include "project.h"
 #include "utils/gtk.h"
 
 #include <gtk/gtk.h>
@@ -63,9 +64,8 @@ audio_track_widget_new (Track * track)
   TRACK_WIDGET_GET_PRIVATE (self);
 
   /* setup color */
-  Channel * chan = track_get_channel (track);
   color_area_widget_set_color (tw_prv->color,
-                           &chan->color);
+                               &track->color);
 
   /* setup automation tracklist */
   AutomationTracklist * automation_tracklist =

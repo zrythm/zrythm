@@ -23,6 +23,7 @@
 
 #include "audio/engine.h"
 #include "audio/position.h"
+#include "audio/snap_grid.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -35,7 +36,7 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/top_bar.h"
-#include "audio/snap_grid.h"
+#include "project.h"
 
 #include <gtk/gtk.h>
 
@@ -308,19 +309,6 @@ position_compare (Position * p1,
 }
 
 /**
- * For debugging
- */
-void
-position_print (Position * pos)
-{
-  g_message ("Pos: %d.%d.%d.%d",
-             pos->bars,
-             pos->beats,
-             pos->sixteenths,
-             pos->ticks);
-}
-
-/**
  * Returns closest snap point.
  */
 static Position *
@@ -472,6 +460,22 @@ position_to_ticks (Position * pos)
 }
 
 /**
+ * Sets position to the given total tick count.
+ */
+void
+position_from_ticks (Position * pos,
+                     int        ticks)
+{
+  pos->bars = ticks / TICKS_PER_BAR + 1;
+  ticks = ticks % TICKS_PER_BAR;
+  pos->beats = ticks / TICKS_PER_BEAT + 1;
+  ticks = ticks % TICKS_PER_BEAT;
+  pos->sixteenths = ticks / TICKS_PER_SIXTEENTH_NOTE + 1;
+  ticks = ticks % TICKS_PER_SIXTEENTH_NOTE;
+  pos->ticks = ticks;
+}
+
+/**
  * Calculates the midway point between the two positions and sets it on pos.
  */
 void
@@ -486,3 +490,7 @@ position_get_midway_pos (Position * start_pos,
   position_set_to_pos (pos, start_pos);
   position_set_tick (pos, ticks_diff / 2);
 }
+
+SERIALIZE_SRC (Position, position)
+DESERIALIZE_SRC (Position, position)
+PRINT_YAML_SRC (Position, position)

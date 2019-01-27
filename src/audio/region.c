@@ -30,10 +30,7 @@
 #include "gui/widgets/midi_region.h"
 #include "gui/widgets/region.h"
 #include "project.h"
-
-#include <libxml/encoding.h>
-#include <libxml/xmlreader.h>
-
+#include "utils/yaml.h"
 
 /**
  * Only to be used by implementing structs.
@@ -46,28 +43,36 @@ region_init (Region *   region,
              Position * end_pos)
 {
   g_message ("creating region");
-  region->start_pos.bars = start_pos->bars;
-  region->start_pos.beats = start_pos->beats;
-  region->start_pos.sixteenths = start_pos->sixteenths;
-  region->start_pos.ticks = start_pos->ticks;
-  region->end_pos.bars = end_pos->bars;
-  region->end_pos.beats = end_pos->beats;
-  region->end_pos.sixteenths = end_pos->sixteenths;
-  region->end_pos.ticks = end_pos->ticks;
+  position_set_to_pos (&region->start_pos,
+                       start_pos);
+  position_set_to_pos (&region->end_pos,
+                       end_pos);
+  region->track_id = track->id;
   region->track = track;
-  region->id = PROJECT->num_regions;
-  region->name = g_strdup_printf ("Region %d", region->id);
-  if (track->type == TRACK_TYPE_AUDIO)
-    region->type = REGION_TYPE_AUDIO;
-  else if (track->type == TRACK_TYPE_INSTRUMENT)
+  Channel * chan = track_get_channel (track);
+  region->name = g_strdup_printf ("%s (%d)",
+                                  chan->name,
+                                  region->id);
+  region->linked_region_id = -1;
+  region->type = type;
+  if (type == REGION_TYPE_AUDIO)
     {
-      region->type = REGION_TYPE_MIDI;
-      region->widget = Z_REGION_WIDGET (
-        midi_region_widget_new (
-          (MidiRegion *) region));
+      AudioRegion * ar = (AudioRegion *) region;
+      region->audio_region = ar;
+      ar->dummy = 1;
     }
-  project_add_region (PROJECT,
-                      region);
+  else if (type == REGION_TYPE_MIDI)
+    {
+      MidiRegion * mr = (MidiRegion *) region;
+      region->midi_region = mr;
+      region->widget = Z_REGION_WIDGET (
+        midi_region_widget_new (mr));
+      mr->dummy = 1;
+      region->audio_region =
+        calloc (1,sizeof (AudioRegion));
+      region->audio_region->dummy = 1;
+    }
+  project_add_region (region);
 }
 
 /**
@@ -152,6 +157,48 @@ region_at_position (Track    * track, ///< the track to look in
 }
 
 /**
+ * Clone region.
+ *
+ * Creates a new region and either links to the original or
+ * copies every field.
+ */
+Region *
+region_clone (Region *        region,
+              RegionCloneFlag flag)
+{
+  Track * track =
+    project_get_track (region->track_id);
+
+  Region * new_region = NULL;
+  if (region->type == REGION_TYPE_MIDI)
+    {
+      MidiRegion * mr =
+        midi_region_new (track,
+                         &region->start_pos,
+                         &region->end_pos);
+      MidiRegion * mr_orig = region->midi_region;
+      if (flag == REGION_CLONE_COPY)
+        {
+          for (int i = 0; i < mr_orig->num_midi_notes; i++)
+            {
+              MidiNote * mn =
+                midi_note_clone (mr_orig->midi_notes[i],
+                                 mr);
+
+              midi_region_add_midi_note (mr,
+                                         mn);
+            }
+        }
+
+      new_region = (Region *) mr;
+    }
+
+  new_region->selected = region->selected;
+
+  return new_region;
+}
+
+/**
  * Generates the filename for this region.
  *
  * MUST be free'd.
@@ -166,87 +213,6 @@ region_generate_filename (Region * region)
                           region->name);
 }
 
-/**
- * Serializes the region.
- *
- * MUST be free'd.
- */
-char *
-region_serialize (Region * region)
-{
-  cyaml_err_t err;
-
-  char * output =
-    calloc (1200, sizeof (char));
-  size_t output_len;
-  err =
-    cyaml_save_data (
-      &output,
-      &output_len,
-      &config,
-      &region_schema,
-      region,
-      0);
-  if (err != CYAML_OK)
-    {
-      g_message ("error %s",
-                 cyaml_strerror (err));
-	/* Handle error */
-    }
-  return output;
-  /*xmlBufferPtr buf =*/
-    /*xmlBufferCreate();*/
-  /*xmlTextWriterPtr writer =*/
-    /*xmlNewTextWriterMemory (buf,*/
-                            /*0);*/
-
-
-  /*xmlTextWriterStartElement (*/
-      /*writer,*/
-      /*BAD_CAST "Region");*/
-  /*xmlTextWriterWriteFormatAttribute (*/
-    /*writer,*/
-    /*BAD_CAST "id",*/
-    /*"%d",*/
-    /*region->id);*/
-  /*xmlTextWriterWriteFormatAttribute (*/
-    /*writer,*/
-    /*BAD_CAST "name",*/
-    /*"%s",*/
-      /*region->name);*/
-  /*if (region->track->type == TRACK_TYPE_AUDIO)*/
-    /*{*/
-      /*//*/
-    /*}*/
-  /*else if (region->track->type == TRACK_TYPE_INSTRUMENT)*/
-    /*{*/
-      /*if (region->linked_region)*/
-        /*{*/
-          /*xmlTextWriterWriteFormatAttribute (*/
-            /*writer,*/
-            /*BAD_CAST "linked_region_id",*/
-            /*"%d",*/
-            /*region->linked_region->id);*/
-        /*}*/
-      /*else*/
-        /*{*/
-          /*char * filename = region_generate_filename (region);*/
-          /*xmlTextWriterWriteFormatAttribute (*/
-            /*writer,*/
-            /*BAD_CAST "filename",*/
-            /*"%s",*/
-            /*filename);*/
-          /*g_free (filename);*/
-        /*}*/
-    /*}*/
-  /*write_position (writer, &region->start_pos, "start_pos");*/
-  /*write_position (writer, &region->end_pos, "end_pos");*/
-
-  /*rc = xmlTextWriterEndElement(writer);*/
-
-  /*if (rc < 0)*/
-    /*{*/
-      /*g_warning ("error occured");*/
-      /*return;*/
-    /*}*/
-}
+SERIALIZE_SRC (Region, region)
+DESERIALIZE_SRC (Region, region)
+PRINT_YAML_SRC (Region, region)

@@ -24,7 +24,7 @@
 
 #include "utils/stack.h"
 
-#define UNDO_MANAGER ZRYTHM->undo_manager
+#define UNDO_MANAGER (&PROJECT->undo_manager)
 
 typedef struct UndoableAction UndoableAction;
 
@@ -34,8 +34,8 @@ typedef struct UndoManager
   Stack                  redo_stack;
 } UndoManager;
 
-UndoManager *
-undo_manager_new ();
+void
+undo_manager_init (UndoManager * self);
 
 /**
  * Undo last action.

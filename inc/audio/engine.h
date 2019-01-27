@@ -25,19 +25,19 @@
 #define BLOCK_LENGTH 4096 // should be set by backend
 #define MIDI_BUF_SIZE 1024 // should be set by backend
 
-#include "zrythm.h"
+#include "audio/mixer.h"
+#include "audio/transport.h"
 #include "utils/sem.h"
 
 #include <jack/jack.h>
 #include <jack/midiport.h>
 #include <portaudio.h>
 
-#define AUDIO_ENGINE ZRYTHM->audio_engine
+#define AUDIO_ENGINE (&PROJECT->audio_engine)
 #define MANUAL_PRESS_QUEUE AUDIO_ENGINE->midi_editor_manual_press->midi_events.queue
 #define MANUAL_PRESS_EVENTS AUDIO_ENGINE->midi_editor_manual_press->midi_events
 
 typedef jack_nframes_t                nframes_t;
-typedef struct Mixer Mixer;
 
 //typedef struct MIDI_Controller
 //{
@@ -48,7 +48,6 @@ typedef struct StereoPorts StereoPorts;
 typedef struct Port Port;
 typedef struct Channel Channel;
 typedef struct Plugin Plugin;
-typedef struct Transport Transport;
 typedef struct Tracklist Tracklist;
 
 typedef enum EngineBackend
@@ -67,7 +66,7 @@ typedef struct AudioEngine
 	uint32_t           sample_rate;    ///< Sample rate
   int               frames_per_tick;  ///< number of frames per tick
 	int               buf_size_set;   ///< True iff buffer size callback fired
-  Mixer              * mixer;        ///< the mixer
+  Mixer              mixer;        ///< the mixer
   StereoPorts       * stereo_in;  ///< stereo in ports from JACK
   StereoPorts       * stereo_out;  ///< stereo out ports to JACK
   Port              * midi_in;     ///< MIDI in port from JACK
@@ -78,9 +77,6 @@ typedef struct AudioEngine
   ZixSem            port_operation_lock;  ///< semaphore for blocking DSP while plugin and its ports are deleted
   int               run;    ///< ok to process or not
   int               panic; ///< send note off MIDI everywhere
-
-  Port              * ports[600000];   ///< all ports have a reference here for easy access
-  int               num_ports;
 
   /**
    * Port Audio output buffer.
@@ -94,23 +90,22 @@ typedef struct AudioEngine
   /**
    * Timeline metadata like BPM, time signature, etc.
    */
-  Transport         * transport;
+  Transport         transport;
 
 } AudioEngine;
 
-AudioEngine *
-engine_new ();
-
+/**
+ * Inits audio engine.
+ */
 void
-engine_setup (AudioEngine * self);
+engine_init (AudioEngine * self);
 
 /**
  * Updates frames per tick based on the time sig, the BPM,
  * and the sample rate
  */
 void
-engine_update_frames_per_tick (AudioEngine * self,
-                               int beats_per_bar,
+engine_update_frames_per_tick (int beats_per_bar,
                                int bpm,
                                int sample_rate);
 
@@ -121,13 +116,12 @@ engine_update_frames_per_tick (AudioEngine * self,
  * Clears buffers, marks all as unprocessed, etc.
  */
 void
-engine_process_prepare (AudioEngine * self,
-                        uint32_t      nframes);
+engine_process_prepare (uint32_t      nframes);
 
 /**
  * To be called after processing for common logic.
  */
 void
-engine_post_process (AudioEngine * self);
+engine_post_process ();
 
 #endif

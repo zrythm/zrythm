@@ -93,9 +93,9 @@ exporter_export (ExportInfo * info)
                   channel->processed = 0;
                   for (int j = 0; j < STRIP_SIZE; j++)
                     {
-                      if (channel->strip[j])
+                      if (channel->plugins[j])
                         {
-                          channel->strip[j]->processed = 0;
+                          channel->plugins[j]->processed = 0;
                         }
                     }
                 }
@@ -117,8 +117,7 @@ exporter_export (ExportInfo * info)
                 }
 
               /* process master channel */
-              channel_process (MIXER->master,
-                               AUDIO_ENGINE->nframes);
+              channel_process (MIXER->master);
 
 
               /* by this time, the Master channel should have its Stereo Out ports filled.
@@ -139,8 +138,7 @@ exporter_export (ExportInfo * info)
               sf_write_int (sndfile, out_ptr, count);
 
               /* move playhead as many samples as processed */
-              transport_add_to_playhead (TRANSPORT,
-                                         AUDIO_ENGINE->nframes);
+              transport_add_to_playhead (AUDIO_ENGINE->nframes);
             } while (position_compare (&TRANSPORT->playhead_pos,
                                        &TRANSPORT->end_marker_pos) <= 0);
 

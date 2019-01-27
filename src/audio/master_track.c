@@ -1,7 +1,7 @@
 /*
  * audio/master_track.c - master track
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -23,6 +23,7 @@
 
 #include "audio/automation_tracklist.h"
 #include "audio/master_track.h"
+#include "project.h"
 
 #include <gtk/gtk.h>
 
@@ -34,7 +35,9 @@ master_track_new (Channel * channel)
 
   Track * track = (Track *) self;
   track->type = TRACK_TYPE_MASTER;
+  gdk_rgba_parse (&track->color, "#f01010");
   track_init (track);
+  project_add_track (track);
 
   ChannelTrack * bt = (ChannelTrack *) self;
   bt->channel = channel;

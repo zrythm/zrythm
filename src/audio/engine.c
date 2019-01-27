@@ -31,12 +31,12 @@
 #include "audio/engine_pa.h"
 #include "audio/midi.h"
 #include "audio/mixer.h"
-#include "audio/preferences.h"
 #include "audio/transport.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"
+#include "settings/preferences.h"
 
 #include <gtk/gtk.h>
 
@@ -44,24 +44,27 @@
 #include <jack/midiport.h>
 
  void
-engine_update_frames_per_tick (AudioEngine * self,
-                               int beats_per_bar,
+engine_update_frames_per_tick (int beats_per_bar,
                                int bpm,
                                int sample_rate)
 {
-  self->frames_per_tick =
+  AUDIO_ENGINE->frames_per_tick =
     (sample_rate * 60.f * beats_per_bar) /
     (bpm * TICKS_PER_BAR);
 
   /* update positions */
-  transport_update_position_frames (self->transport);
+  transport_update_position_frames (&AUDIO_ENGINE->transport);
 }
 
+/**
+ * Init audio engine
+ */
 void
-engine_setup (AudioEngine * self)
+engine_init (AudioEngine * self)
 {
-  transport_setup (self->transport,
-                   self);
+  g_message ("Initializing audio engine...");
+
+  transport_init (&self->transport);
 
   self->backend = PREFERENCES->audio_backend;
 
@@ -72,35 +75,19 @@ engine_setup (AudioEngine * self)
     jack_setup (self);
   else if (self->backend == ENGINE_BACKEND_PORT_AUDIO)
     pa_setup (self);
-}
 
-/**
- * Init audio engine
- */
-AudioEngine *
-engine_new ()
-{
-    g_message ("Initializing audio engine...");
-    AudioEngine * engine = calloc (1, sizeof (AudioEngine));
-
-
-    engine->buf_size_set = false;
-
-    engine->transport = transport_new ();
-    engine->mixer = mixer_new ();
-
-    return engine;
+  self->buf_size_set = false;
 }
 
 void
-close_audio_engine (AudioEngine * self)
+close_audio_engine ()
 {
   g_message ("closing audio engine...");
 
-  if (self->backend == ENGINE_BACKEND_JACK)
-    jack_client_close (self->client);
-  else if (self->backend == ENGINE_BACKEND_PORT_AUDIO)
-    pa_terminate (self);
+  if (AUDIO_ENGINE->backend == ENGINE_BACKEND_JACK)
+    jack_client_close (AUDIO_ENGINE->client);
+  else if (AUDIO_ENGINE->backend == ENGINE_BACKEND_PORT_AUDIO)
+    pa_terminate (AUDIO_ENGINE);
 }
 
 /**
@@ -110,10 +97,9 @@ close_audio_engine (AudioEngine * self)
  * Clears buffers, marks all as unprocessed, etc.
  */
 void
-engine_process_prepare (AudioEngine * self,
-                        uint32_t      nframes)
+engine_process_prepare (uint32_t      nframes)
 {
-  self->nframes = nframes;
+  AUDIO_ENGINE->nframes = nframes;
 
   if (TRANSPORT->play_state == PLAYSTATE_PAUSE_REQUESTED)
     {
@@ -125,11 +111,11 @@ engine_process_prepare (AudioEngine * self,
       TRANSPORT->play_state = PLAYSTATE_ROLLING;
     }
 
-  zix_sem_wait (&self->port_operation_lock);
+  zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
 
   /* reset all buffers */
-  port_clear_buffer (self->midi_in);
-  port_clear_buffer (self->midi_editor_manual_press);
+  port_clear_buffer (AUDIO_ENGINE->midi_in);
+  port_clear_buffer (AUDIO_ENGINE->midi_editor_manual_press);
 
   /* set all to unprocessed for this cycle */
   for (int i = 0; i < MIXER->num_channels; i++)
@@ -138,9 +124,9 @@ engine_process_prepare (AudioEngine * self,
       channel->processed = 0;
       for (int j = 0; j < STRIP_SIZE; j++)
         {
-          if (channel->strip[j])
+          if (channel->plugins[j])
             {
-              channel->strip[j]->processed = 0;
+              channel->plugins[j]->processed = 0;
             }
         }
     }
@@ -161,22 +147,20 @@ engine_post_process (AudioEngine * self)
     }
 
   /* loop position back if about to exit loop */
-  if (self->transport->loop && /* if looping */
+  if (TRANSPORT->loop && /* if looping */
       IS_TRANSPORT_ROLLING && /* if rolling */
-      (self->transport->playhead_pos.frames <=  /* if current pos is inside loop */
-          self->transport->loop_end_pos.frames) &&
-      ((self->transport->playhead_pos.frames + self->nframes) > /* if next pos will be outside loop */
-          self->transport->loop_end_pos.frames))
+      (TRANSPORT->playhead_pos.frames <=  /* if current pos is inside loop */
+          TRANSPORT->loop_end_pos.frames) &&
+      ((TRANSPORT->playhead_pos.frames + self->nframes) > /* if next pos will be outside loop */
+          TRANSPORT->loop_end_pos.frames))
     {
       transport_move_playhead (
-        self->transport,
-        &self->transport->loop_start_pos,
+        &TRANSPORT->loop_start_pos,
         1);
     }
   else if (IS_TRANSPORT_ROLLING)
     {
       /* move playhead as many samples as processed */
-      transport_add_to_playhead (self->transport,
-                                 self->nframes);
+      transport_add_to_playhead (self->nframes);
     }
 }

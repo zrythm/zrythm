@@ -39,6 +39,12 @@ velocity_new (int        vel)
 }
 
 Velocity *
+velocity_clone (Velocity * src)
+{
+  return velocity_new (src->vel);
+}
+
+Velocity *
 velocity_default ()
 {
   Velocity * self = calloc (1, sizeof (Velocity));

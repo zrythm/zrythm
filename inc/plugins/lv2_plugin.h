@@ -499,7 +499,7 @@ lv2_cleanup (Lv2Plugin *plugin);
  * Processes the plugin for this cycle.
  */
 void
-lv2_plugin_process (Lv2Plugin * lv2_plugin, nframes_t nframes);
+lv2_plugin_process (Lv2Plugin * lv2_plugin);
 
 /**
  * Saves the current state in given dir.

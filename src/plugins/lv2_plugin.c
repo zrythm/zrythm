@@ -176,9 +176,10 @@ _create_port(Lv2Plugin*   lv2_plugin,
     }
   else
     {
-      char * port_name = g_strdup_printf ("LV2: %s",
-                                               lilv_node_as_string (sym));
-      lv2_port->port      = port_new(AUDIO_ENGINE->block_length, port_name);
+      char * port_name =
+        g_strdup_printf ("LV2: %s",
+                         lilv_node_as_string (sym));
+      lv2_port->port = port_new (port_name);
       g_free (port_name);
     }
   lv2_port->port->owner_pl = lv2_plugin->plugin;
@@ -1103,7 +1104,7 @@ lv2_create_descriptor_from_lilv (const LilvPlugin * lp)
     }
   if (!name || !lilv_plugin_get_port_by_index(lp, 0))
     {
-      g_warning ("Ignoring invalid LV2 plugin %s",
+      g_message ("Ignoring invalid LV2 plugin %s",
                  lilv_node_as_string(lilv_plugin_get_uri(lp)));
       lilv_node_free(name);
       return NULL;
@@ -1825,8 +1826,9 @@ lv2_instantiate (Lv2Plugin      * lv2_plugin,   ///< plugin to instantiate
 }
 
 void
-lv2_plugin_process (Lv2Plugin * lv2_plugin, nframes_t nframes)
+lv2_plugin_process (Lv2Plugin * lv2_plugin)
 {
+  int nframes = AUDIO_ENGINE->nframes;
   jack_client_t * client = AUDIO_ENGINE->client;
 
     /* If transport state is not as expected, then something has changed */
@@ -1914,7 +1916,7 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin, nframes_t nframes)
       if (port->type == TYPE_AUDIO)
         {
           /* Connect lv2 ports  to plugin port buffers */
-          port->nframes = nframes;
+          /*port->nframes = nframes;*/
           lilv_instance_connect_port(
                   lv2_plugin->instance, p,
                   port->buf);

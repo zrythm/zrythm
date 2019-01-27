@@ -83,7 +83,7 @@ rack_row_widget_new (RRWType              type,
       gtk_label_set_text (self->label, channel->name);
       for (int i = 0; i < STRIP_SIZE; i++)
         {
-          Plugin * plugin = channel->strip[i];
+          Plugin * plugin = channel->plugins[i];
           if (plugin)
             {
               self->rack_plugins[i] = rack_plugin_widget_new (plugin);

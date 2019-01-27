@@ -43,12 +43,28 @@ typedef enum AutomationCurveType
 
 typedef struct AutomationCurve
 {
-  int                      id;
   Position                 pos;
   float                    curviness; ///< curviness, default 1
   AutomationCurveType      type;
   AutomationTrack *        at; ///< pointer back to parent
   AutomationCurveWidget *  widget;
+
+  /* ======== Useful only for de/serialization ====== */
+  /**
+   * Unique ID.
+   *
+   * All IDs are stored in the Project struct.
+   */
+  int                      id;
+  /**
+   * The ID of the track the automation point is in.
+   */
+  int                      track_id;
+  /**
+   * The label of the automatable so we know how to find
+   * the corresponding automation track.
+   */
+  char *                   automatable_label;
 } AutomationCurve;
 
 /**

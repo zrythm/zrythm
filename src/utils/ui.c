@@ -88,7 +88,9 @@ ui_get_hit_child (GtkContainer * parent,
           wy <= allocation.height)
         {
           /* if type matches */
-          if (type == G_OBJECT_TYPE (widget))
+          if (G_TYPE_CHECK_INSTANCE_TYPE (
+                widget,
+                type))
             {
               return widget;
             }

@@ -21,9 +21,12 @@
 
 #include "zrythm.h"
 #include "project.h"
+#include "audio/automation_curve.h"
+#include "audio/automation_point.h"
 #include "audio/channel.h"
 #include "audio/chord_track.h"
 #include "audio/engine.h"
+#include "audio/midi_note.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
@@ -35,17 +38,8 @@
 #include "utils/arrays.h"
 #include "utils/io.h"
 #include "utils/smf.h"
-#include "utils/xml.h"
 
 #include <gtk/gtk.h>
-
-Project *
-project_new ()
-{
-  Project * self = calloc (1, sizeof (Project));
-
-  return self;
-}
 
 /**
  * Tears down the project before loading another one.
@@ -57,8 +51,7 @@ tear_down (Project * self)
 }
 
 static void
-update_paths (Project * self,
-              const char * dir)
+update_paths (const char * dir)
 {
   PROJECT->dir = g_strdup (dir);
   PROJECT->project_file_path =
@@ -85,24 +78,21 @@ update_paths (Project * self,
 }
 
 void
-create_default (Project * self,
-                Mixer *   mixer)
+create_default (Project * self)
 {
-  g_assert (self);
-  g_assert (mixer);
-
-  if (self->loaded)
-    tear_down (self);
+  engine_init (&self->audio_engine);
+  undo_manager_init (&self->undo_manager);
 
   self->title = g_strdup (DEFAULT_PROJECT_NAME);
 
   /* add master channel to mixer */
   mixer_add_channel (
-    mixer,
     channel_create (CT_MASTER, "Master"));
 
   /* create chord track */
   self->chord_track = chord_track_default ();
+
+  self->loaded = 1;
 }
 
 static void
@@ -114,12 +104,12 @@ load (Project *    self,
 
   g_assert (filename);
   char * dir = io_get_dir (filename);
-  update_paths (self, dir);
+  update_paths (dir);
 
-  xml_load_ports ();
-  xml_load_regions ();
-  xml_load_project ();
-  mixer_load_plugins (MIXER);
+  /*xml_load_ports ();*/
+  /*xml_load_regions ();*/
+  /*xml_load_project ();*/
+  mixer_load_plugins ();
 
   char * filepath_noext = g_path_get_basename (dir);
   self->title = filepath_noext;
@@ -128,6 +118,8 @@ load (Project *    self,
   g_free (dir);
 
   self->filename = filename;
+
+  self->loaded = 1;
 }
 
 /**
@@ -135,23 +127,35 @@ load (Project *    self,
  * it loads the default project.
  */
 void
-project_setup (Project * self,
-               char * filename)
+project_load (char * filename)
 {
   if (filename)
-    load (self, filename);
+    load (PROJECT, filename);
   else
-    create_default (self,
-                    MIXER);
+    create_default (PROJECT);
+
+  snap_grid_init (&PROJECT->snap_grid_timeline,
+                  NOTE_LENGTH_1_1);
+  quantize_init (&PROJECT->quantize_timeline,
+                 NOTE_LENGTH_1_1);
+  snap_grid_init (&PROJECT->snap_grid_midi,
+                  NOTE_LENGTH_1_8);
+  quantize_init (&PROJECT->quantize_midi,
+                NOTE_LENGTH_1_8);
+  piano_roll_init (&PROJECT->piano_roll);
+  snap_grid_update_snap_points (&PROJECT->snap_grid_timeline);
+  snap_grid_update_snap_points (&PROJECT->snap_grid_midi);
+  quantize_update_snap_points (&PROJECT->quantize_timeline);
+  quantize_update_snap_points (&PROJECT->quantize_midi);
+  tracklist_init (&PROJECT->tracklist);
 }
 
 
 void
-project_save (Project *  self,
-              const char * dir)
+project_save (const char * dir)
 {
   io_mkdir (dir);
-  update_paths (self, dir);
+  update_paths (dir);
 
   smf_save_regions ();
 
@@ -161,7 +165,7 @@ project_save (Project *  self,
       Channel * channel = MIXER->channels[i];
       for (int j = 0; j < STRIP_SIZE; j++)
         {
-          Plugin * plugin = channel->strip[j];
+          Plugin * plugin = channel->plugins[j];
 
           if (plugin)
             {
@@ -190,21 +194,63 @@ project_save (Project *  self,
         }
     }
 
-  xml_write_ports ();
-  xml_write_regions ();
-  xml_write_project ();
+  /*xml_write_ports ();*/
+  /*xml_write_regions ();*/
+  /*xml_write_project ();*/
 
   zrythm_add_to_recent_projects (
     ZRYTHM,
     PROJECT->project_file_path);
-  self->title = g_path_get_basename (dir);
+  PROJECT->title = g_path_get_basename (dir);
 }
 
-void
-project_add_region (Project * self,
-                    Region *  region)
+static int
+get_next_available_id (void ** array,
+                       int     size)
 {
-  array_append ((void **) self->regions,
-                &self->num_regions,
-                (void *) region);
+  for (int i = 0; i < size; i++)
+    {
+      /* if region doesn't exist at this index, use it */
+      if (!array[i])
+        return i;
+    }
+  return size;
 }
+
+#define PROJECT_ADD_X(camelcase, lowercase, plural) \
+  void \
+  project_add_##lowercase (camelcase * x) \
+  { \
+    x->id = \
+      get_next_available_id ((void **) PROJECT->plural, \
+                             PROJECT->num_##plural); \
+    PROJECT->plural[x->id] = x; \
+    PROJECT->num_##plural++; \
+  }
+#define PROJECT_GET_X(camelcase, lowercase, plural) \
+  camelcase * \
+  project_get_##lowercase (int id) \
+  { \
+    return PROJECT->plural[id]; \
+  }
+
+
+PROJECT_ADD_X (Region, region, regions)
+PROJECT_GET_X (Region, region, regions)
+PROJECT_ADD_X (Track, track, tracks)
+PROJECT_GET_X (Track, track, tracks)
+PROJECT_ADD_X (Channel, channel, channels)
+PROJECT_GET_X (Channel, channel, channels)
+PROJECT_ADD_X (Plugin, plugin, plugins)
+PROJECT_GET_X (Plugin, plugin, plugins)
+PROJECT_ADD_X (AutomationPoint, automation_point, automation_points)
+PROJECT_GET_X (AutomationPoint, automation_point, automation_points)
+PROJECT_ADD_X (AutomationCurve, automation_curve, automation_curves)
+PROJECT_GET_X (AutomationCurve, automation_curve, automation_curves)
+PROJECT_ADD_X (MidiNote, midi_note, midi_notes)
+PROJECT_GET_X (MidiNote, midi_note, midi_notes)
+PROJECT_ADD_X (Port, port, ports)
+PROJECT_GET_X (Port, port, ports)
+
+#undef PROJECT_ADD_X
+#undef PROJECT_GET_X

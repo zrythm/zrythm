@@ -19,8 +19,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "settings.h"
 #include "zrythm.h"
+#include "audio/engine.h"
 #include "audio/mixer.h"
 #include "gui/widgets/browser.h"
 #include "gui/widgets/center_dock.h"
@@ -28,6 +28,8 @@
 #include "gui/widgets/right_dock_edge.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
+#include "project.h"
+#include "settings/settings.h"
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
@@ -56,9 +58,7 @@ on_row_activated (GtkTreeView       *tree_view,
     &value);
   PluginDescriptor * descr =
     g_value_get_pointer (&value);
-  mixer_add_channel_from_plugin_descr (
-    MIXER,
-    descr);
+  mixer_add_channel_from_plugin_descr (descr);
 }
 
 /**

@@ -49,22 +49,14 @@ delete_automation_track (AutomationTracklist * self,
   automation_track_free (at);
 }
 
-AutomationTracklist *
-automation_tracklist_new (Track * track)
+void
+automation_tracklist_init (AutomationTracklist * self,
+                           Track *               track)
 {
-  AutomationTracklist * self =
-    calloc (1, sizeof (AutomationTracklist));
-
   self->track = track;
 
-  return self;
-}
-
-void
-automation_tracklist_setup (AutomationTracklist * self)
-{
   /* add all automation tracks */
-  automation_tracklist_update (self);
+  automation_tracklist_refresh (self);
 
   /* set fader visible */
   Automatable * fader = track_get_fader_automatable (self->track);
@@ -74,7 +66,7 @@ automation_tracklist_setup (AutomationTracklist * self)
 }
 
 void
-automation_tracklist_update (AutomationTracklist * self)
+automation_tracklist_refresh (AutomationTracklist * self)
 {
   Channel * channel = track_get_channel (self->track);
 
@@ -102,7 +94,7 @@ automation_tracklist_update (AutomationTracklist * self)
         {
           Channel * channel =
             track_get_channel (self->track);
-          Plugin * plugin = channel->strip[j];
+          Plugin * plugin = channel->plugins[j];
           if (plugin)
             {
               for (int k = 0; k < plugin->num_automatables; k++)
@@ -153,7 +145,7 @@ automation_tracklist_update (AutomationTracklist * self)
     {
       Channel * channel =
         track_get_channel (self->track);
-      Plugin * plugin = channel->strip[j];
+      Plugin * plugin = channel->plugins[j];
       if (plugin)
         {
           for (int i = 0; i < plugin->num_automatables; i++)
