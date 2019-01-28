@@ -245,9 +245,10 @@ position_add_frames (Position * position,
  * Notifies other parts.
  * FIXME check what the position is first
  */
-void
+int
 position_updated (Position * position)
 {
+	g_message( "pos %d", position ); 
   if (MAIN_WINDOW)
     {
       if (TOP_BAR->digital_transport)
@@ -281,6 +282,7 @@ position_updated (Position * position)
             }
         }
     }
+	return 0;
 }
 
 /**

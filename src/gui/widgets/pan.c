@@ -34,7 +34,7 @@ G_DEFINE_TYPE (PanWidget,
 #define GET_VAL ((*self->getter) (self->object))
 #define SET_VAL(real) ((*self->setter)(self->object, real))
 
-static void
+static int
 draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 {
   guint width, height;
@@ -197,6 +197,7 @@ pan_widget_init (PanWidget * self)
                            GTK_WIN_POS_MOUSE);
 
   self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new (GTK_WIDGET (self)));
+	return 0;
 }
 
 static void

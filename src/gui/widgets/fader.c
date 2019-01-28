@@ -48,7 +48,7 @@ real_val_from_fader (FaderWidget * self, double fader)
   return math_get_amp_val_from_fader (fader);
 }
 
-static void
+static int
 draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 {
   guint width, height;
@@ -146,6 +146,7 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   cairo_move_to (cr, x, y + (height - value_px));
   cairo_line_to (cr, x+ width, y + (height - value_px));
   cairo_stroke (cr);
+	return 0;
 }
 
 

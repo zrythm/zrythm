@@ -53,7 +53,7 @@ G_DEFINE_TYPE (ChannelWidget, channel_widget, GTK_TYPE_GRID)
  * that would be done via gtk_widget_set_tick_functions()
  * gtk_widget_set_tick_function()
  */
-void
+int
 channel_widget_update_meter_reading (ChannelWidget * widget)
 {
   g_assert (widget);
@@ -71,6 +71,8 @@ channel_widget_update_meter_reading (ChannelWidget * widget)
     }
   gtk_widget_queue_draw (GTK_WIDGET (widget->meter_l));
   gtk_widget_queue_draw (GTK_WIDGET (widget->meter_r));
+
+	return 0;
 }
 
 static void

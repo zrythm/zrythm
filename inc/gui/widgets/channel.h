@@ -96,7 +96,7 @@ channel_widget_new (Channel * channel);
 /**
  * Updates the meter reading
  */
-void
+int
 channel_widget_update_meter_reading (ChannelWidget * widget);
 
 /**
