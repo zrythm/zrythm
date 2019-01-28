@@ -154,7 +154,7 @@ position_to_frames (Position * position);
 /**
  * Notifies other parts.
  */
-void
+int
 position_updated (Position * position);
 
 /**

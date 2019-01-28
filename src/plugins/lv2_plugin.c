@@ -925,7 +925,7 @@ lv2_update(Lv2Plugin* plugin)
       }
     }
 
-  return true;
+  return FALSE;
 }
 
 static bool
