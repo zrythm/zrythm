@@ -1,5 +1,5 @@
 /*
- * gui/widgets/browser.c - The plugin, etc., browser on the right
+ * gui/widgets/file_browser.c - The file, etc., file_browser on the right
  *
  * Copyright (C) 2018 Alexandros Theodotou
  *
@@ -22,7 +22,7 @@
 #include "zrythm.h"
 #include "audio/engine.h"
 #include "audio/mixer.h"
-#include "gui/widgets/browser.h"
+#include "gui/widgets/file_browser.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/right_dock_edge.h"
@@ -34,8 +34,8 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (BrowserWidget,
-               browser_widget,
+G_DEFINE_TYPE (FileBrowserWidget,
+               file_browser_widget,
                GTK_TYPE_PANED)
 
 static void
@@ -62,7 +62,7 @@ on_row_activated (GtkTreeView       *tree_view,
 }
 
 /**
- * Visible function for plugin tree model.
+ * Visible function for file tree model.
  *
  * Used for filtering based on selected category.
  */
@@ -71,7 +71,7 @@ visible_func (GtkTreeModel *model,
               GtkTreeIter  *iter,
               gpointer      data)
 {
-  BrowserWidget * self = Z_BROWSER_WIDGET (data);
+  FileBrowserWidget * self = Z_FILE_BROWSER_WIDGET (data);
 
   // Visible if row is non-empty and category matches selected
   PluginDescriptor *descr;
@@ -92,12 +92,12 @@ visible_func (GtkTreeModel *model,
 }
 
 static int
-update_plugin_info_label (BrowserWidget * self,
+update_file_info_label (FileBrowserWidget * self,
                           gpointer user_data)
 {
   char * label = (char *) user_data;
 
-  gtk_label_set_text (self->plugin_info, label);
+  gtk_label_set_text (self->file_info, label);
 
   return G_SOURCE_REMOVE;
 }
@@ -106,7 +106,7 @@ static void
 on_selection_changed (GtkTreeSelection * ts,
                       gpointer         user_data)
 {
-  BrowserWidget * self = Z_BROWSER_WIDGET (user_data);
+  FileBrowserWidget * self = Z_FILE_BROWSER_WIDGET (user_data);
   GtkTreeView * tv = gtk_tree_selection_get_tree_view (ts);
   GtkTreeModel * model = gtk_tree_view_get_model (tv);
   GList * selected_rows = gtk_tree_selection_get_selected_rows (ts,
@@ -116,7 +116,7 @@ on_selection_changed (GtkTreeSelection * ts,
       GtkTreePath * tp = (GtkTreePath *)g_list_first (selected_rows)->data;
       /*gint * indices = gtk_tree_path_get_indices (tp);*/
       /*GtkTreeRowReference *rr =*/
-        /*gtk_tree_row_reference_new (MAIN_WINDOW->browser->plugins_tree_model,*/
+        /*gtk_tree_row_reference_new (MAIN_WINDOW->file_browser->files_tree_model,*/
                                     /*tp);*/
       GtkTreeIter iter;
       gtk_tree_model_get_iter (model,
@@ -131,9 +131,9 @@ on_selection_changed (GtkTreeSelection * ts,
                                     0,
                                     &value);
           self->selected_category = g_value_get_string (&value);
-          gtk_tree_model_filter_refilter (self->plugins_tree_model);
+          gtk_tree_model_filter_refilter (self->files_tree_model);
         }
-      else if (model == GTK_TREE_MODEL (self->plugins_tree_model))
+      else if (model == GTK_TREE_MODEL (self->files_tree_model))
         {
           gtk_tree_model_get_value (model,
                                     &iter,
@@ -151,13 +151,13 @@ on_selection_changed (GtkTreeSelection * ts,
             descr->num_midi_outs,
             descr->num_ctrl_ins,
             descr->num_ctrl_outs);
-          update_plugin_info_label (self,
+          update_file_info_label (self,
                                     label);
         }
     }
 }
 
-void
+static void
 on_drag_data_get (GtkWidget        *widget,
                GdkDragContext   *context,
                GtkSelectionData *data,
@@ -171,14 +171,14 @@ on_drag_data_get (GtkWidget        *widget,
   GtkTreePath * tp = (GtkTreePath *)g_list_first (selected_rows)->data;
   /*gint * indices = gtk_tree_path_get_indices (tp);*/
   /*GtkTreeRowReference *rr =*/
-    /*gtk_tree_row_reference_new (MAIN_WINDOW->browser->plugins_tree_model,*/
+    /*gtk_tree_row_reference_new (MAIN_WINDOW->file_browser->files_tree_model,*/
                                 /*tp);*/
   GtkTreeIter iter;
-  gtk_tree_model_get_iter (GTK_TREE_MODEL (MW_BROWSER->plugins_tree_model),
+  gtk_tree_model_get_iter (GTK_TREE_MODEL (MW_FILE_BROWSER->files_tree_model),
                            &iter,
                            tp);
   GValue value = G_VALUE_INIT;
-  gtk_tree_model_get_value (GTK_TREE_MODEL (MW_BROWSER->plugins_tree_model),
+  gtk_tree_model_get_value (GTK_TREE_MODEL (MW_FILE_BROWSER->files_tree_model),
                             &iter,
                             1,
                             &value);
@@ -199,7 +199,7 @@ create_model_for_types ()
   GtkTreeIter iter;
   gint i;
 
-  /* plugin name, index */
+  /* file name, index */
   list_store = gtk_list_store_new (2,
                                    G_TYPE_STRING, G_TYPE_INT);
 
@@ -228,7 +228,7 @@ create_model_for_categories ()
   GtkTreeIter iter;
   gint i;
 
-  /* plugin name, index */
+  /* file name, index */
   list_store = gtk_list_store_new (1,
                                    G_TYPE_STRING);
 
@@ -247,14 +247,14 @@ create_model_for_categories ()
 }
 
 static GtkTreeModel *
-create_model_for_plugins (BrowserWidget * self)
+create_model_for_files (FileBrowserWidget * self)
 {
   GtkListStore *list_store;
   /*GtkTreePath *path;*/
   GtkTreeIter iter;
   gint i;
 
-  /* plugin name, index */
+  /* file name, index */
   list_store = gtk_list_store_new (2,
                                    G_TYPE_STRING, G_TYPE_POINTER);
 
@@ -306,7 +306,7 @@ expander_callback (GObject    *object,
 }
 
 static GtkWidget *
-tree_view_create (BrowserWidget * self,
+tree_view_create (FileBrowserWidget * self,
                   GtkTreeModel * model,
                   int          allow_multi,
                   int          dnd)
@@ -383,7 +383,7 @@ add_scroll_window (GtkTreeView * tree_view)
  * TODO FIXME
  */
 static GtkScrolledWindow *
-create_tree_view_add_to_expander (BrowserWidget * self,
+create_tree_view_add_to_expander (FileBrowserWidget * self,
                                   GtkTreeModel * model,
                   GtkExpander  * expander)
 {
@@ -405,14 +405,14 @@ create_tree_view_add_to_expander (BrowserWidget * self,
   return GTK_SCROLLED_WINDOW (scrolled_window);
 }
 
-BrowserWidget *
-browser_widget_new ()
+FileBrowserWidget *
+file_browser_widget_new ()
 {
-  BrowserWidget * self = g_object_new (BROWSER_WIDGET_TYPE, NULL);
+  FileBrowserWidget * self = g_object_new (FILE_BROWSER_WIDGET_TYPE, NULL);
 
-  g_message ("Instantiating browser widget...");
+  g_message ("Instantiating file_browser widget...");
 
-  gtk_label_set_xalign (self->plugin_info, 0);
+  gtk_label_set_xalign (self->file_info, 0);
 
   /* set divider position */
   int divider_pos =
@@ -435,78 +435,78 @@ browser_widget_new ()
   create_tree_view_add_to_expander (
     self,
     self->category_tree_model,
-    GTK_EXPANDER (self->cat_exp));
+    GTK_EXPANDER (self->locations_exp));
 
   /* expand category by default */
-  gtk_expander_set_expanded (GTK_EXPANDER (self->cat_exp),
+  gtk_expander_set_expanded (GTK_EXPANDER (self->locations_exp),
                              TRUE);
   gtk_widget_set_vexpand (GTK_WIDGET (scrolled_window),
                           TRUE);
 
-  /* populate plugins */
-  self->plugins_tree_model = GTK_TREE_MODEL_FILTER (create_model_for_plugins (self));
-  self->plugins_tree_view =
+  /* populate files */
+  self->files_tree_model = GTK_TREE_MODEL_FILTER (create_model_for_files (self));
+  self->files_tree_view =
     GTK_TREE_VIEW (tree_view_create (
       self,
       GTK_TREE_MODEL (
-        self->plugins_tree_model),
+        self->files_tree_model),
       0,
       1));
-  g_signal_connect (G_OBJECT (self->plugins_tree_view),
+  g_signal_connect (G_OBJECT (self->files_tree_view),
                     "row-activated",
                     G_CALLBACK (on_row_activated),
-                    self->plugins_tree_model);
-  GtkWidget * plugin_scroll_window =
-    add_scroll_window (self->plugins_tree_view);
+                    self->files_tree_model);
+  GtkWidget * file_scroll_window =
+    add_scroll_window (self->files_tree_view);
   gtk_box_pack_start (GTK_BOX (self->browser_bot),
-                      plugin_scroll_window,
+                      file_scroll_window,
                       1, 1, 0);
 
   return self;
 }
 
 static void
-browser_widget_class_init (BrowserWidgetClass * _klass)
+file_browser_widget_class_init (FileBrowserWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass,
-                                "browser.ui");
+                                "file_browser.ui");
 
   gtk_widget_class_set_css_name (klass,
                                  "browser");
 
   gtk_widget_class_bind_template_child (
     klass,
-    BrowserWidget,
+    FileBrowserWidget,
     browser_top);
   gtk_widget_class_bind_template_child (
     klass,
-    BrowserWidget,
+    FileBrowserWidget,
     browser_search);
   gtk_widget_class_bind_template_child (
     klass,
-    BrowserWidget,
+    FileBrowserWidget,
     collections_exp);
   gtk_widget_class_bind_template_child (
     klass,
-    BrowserWidget,
+    FileBrowserWidget,
     types_exp);
   gtk_widget_class_bind_template_child (
     klass,
-    BrowserWidget,
-    cat_exp);
+    FileBrowserWidget,
+    locations_exp);
   gtk_widget_class_bind_template_child (
     klass,
-    BrowserWidget,
+    FileBrowserWidget,
     browser_bot);
   gtk_widget_class_bind_template_child (
     klass,
-    BrowserWidget,
-    plugin_info);
+    FileBrowserWidget,
+    file_info);
 }
 
 static void
-browser_widget_init (BrowserWidget * self)
+file_browser_widget_init (FileBrowserWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 }

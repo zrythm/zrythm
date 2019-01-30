@@ -1,7 +1,7 @@
 /*
  * gui/widgets/right_dock_edge.c - Main window widget
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -19,7 +19,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "gui/widgets/browser.h"
+#include "gui/widgets/file_browser.h"
+#include "gui/widgets/plugin_browser.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "utils/resources.h"
 
@@ -33,12 +34,22 @@ right_dock_edge_widget_init (RightDockEdgeWidget * self)
   gtk_widget_init_template (GTK_WIDGET (self));
 
   /* setup browser */
-  self->browser = browser_widget_new ();
+  self->plugin_browser = plugin_browser_widget_new ();
   gtk_notebook_prepend_page (
     self->right_notebook,
-    GTK_WIDGET (self->browser),
-    resources_get_icon (ICON_TYPE_ZRYTHM,
-                        "plugins.svg"));
+    GTK_WIDGET (self->plugin_browser),
+    /*resources_get_icon (ICON_TYPE_ZRYTHM,*/
+                        /*"plugins.svg"));*/
+    gtk_image_new_from_icon_name (
+      "plugins",
+      GTK_ICON_SIZE_SMALL_TOOLBAR));
+  self->file_browser = file_browser_widget_new ();
+  gtk_notebook_append_page (
+    self->right_notebook,
+    GTK_WIDGET (self->file_browser),
+    gtk_image_new_from_icon_name (
+      "file-catalog-symbolic",
+      GTK_ICON_SIZE_SMALL_TOOLBAR));
   gtk_widget_show_all (GTK_WIDGET (self->right_notebook));
 }
 

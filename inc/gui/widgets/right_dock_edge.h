@@ -35,13 +35,15 @@ G_DECLARE_FINAL_TYPE (RightDockEdgeWidget,
 
 #define MW_RIGHT_DOCK_EDGE MW_CENTER_DOCK->right_dock_edge
 
-typedef struct _BrowserWidget BrowserWidget;
+typedef struct _PluginBrowserWidget PluginBrowserWidget;
+typedef struct _FileBrowserWidget FileBrowserWidget;
 
 typedef struct _RightDockEdgeWidget
 {
   GtkBox                   parent_instance;
-  GtkNotebook              * right_notebook;
-  BrowserWidget            * browser;
+  GtkNotebook *            right_notebook;
+  PluginBrowserWidget *    plugin_browser;
+  FileBrowserWidget *      file_browser;
 } RightDockEdgeWidget;
 
 #endif

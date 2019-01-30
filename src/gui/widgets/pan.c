@@ -65,6 +65,8 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   cairo_move_to (cr, value_px, 0);
   cairo_line_to (cr, value_px, height);
   cairo_stroke (cr);
+
+  return FALSE;
 }
 
 
@@ -197,7 +199,6 @@ pan_widget_init (PanWidget * self)
                            GTK_WIN_POS_MOUSE);
 
   self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new (GTK_WIDGET (self)));
-	return 0;
 }
 
 static void

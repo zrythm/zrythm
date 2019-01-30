@@ -1,5 +1,5 @@
 /*
- * gui/widgets/browser.h - The plugin, etc., browser on the right
+ * gui/widgets/file_browser.h - The file, etc., file_browser on the right
  *
  * Copyright (C) 2019 Alexandros Theodotou
  *
@@ -19,39 +19,39 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_BROWSER_H__
-#define __GUI_WIDGETS_BROWSER_H__
+#ifndef __GUI_WIDGETS_FILE_BROWSER_H__
+#define __GUI_WIDGETS_FILE_BROWSER_H__
 
 #include <gtk/gtk.h>
 
-#define BROWSER_WIDGET_TYPE \
-  (browser_widget_get_type ())
-G_DECLARE_FINAL_TYPE (BrowserWidget,
-                      browser_widget,
+#define FILE_BROWSER_WIDGET_TYPE \
+  (file_browser_widget_get_type ())
+G_DECLARE_FINAL_TYPE (FileBrowserWidget,
+                      file_browser_widget,
                       Z,
-                      BROWSER_WIDGET,
+                      FILE_BROWSER_WIDGET,
                       GtkPaned)
 
-#define MW_BROWSER MW_RIGHT_DOCK_EDGE->browser
+#define MW_FILE_BROWSER MW_RIGHT_DOCK_EDGE->file_browser
 
-typedef struct _BrowserWidget
+typedef struct _FileBrowserWidget
 {
   GtkPaned                 parent_instance;
   GtkGrid                  * browser_top;
   GtkSearchEntry           * browser_search;
   GtkExpander              * collections_exp;
   GtkExpander              * types_exp;
-  GtkExpander              * cat_exp;
+  GtkExpander              * locations_exp;
   GtkBox                   * browser_bot;
-  GtkLabel                 * plugin_info;
+  GtkLabel                 * file_info;
   const char *             selected_category; ///< selected category
   GtkTreeModel             * category_tree_model;
-  GtkTreeModelFilter       * plugins_tree_model;
-  GtkTreeView *            plugins_tree_view;
-  GtkScrolledWindow *      plugin_scroll_window;
-} BrowserWidget;
+  GtkTreeModelFilter       * files_tree_model;
+  GtkTreeView *            files_tree_view;
+  GtkScrolledWindow *      file_scroll_window;
+} FileBrowserWidget;
 
-BrowserWidget *
-browser_widget_new ();
+FileBrowserWidget *
+file_browser_widget_new ();
 
 #endif
