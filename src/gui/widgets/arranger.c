@@ -78,40 +78,6 @@ arranger_widget_get_private (ArrangerWidget * self)
 }
 
 /**
- * Gets x position in pixels.
- *
- */
-int
-arranger_widget_pos_to_px (ArrangerWidget * self,
-                          Position * pos)
-{
-  GET_PRIVATE;
-  RulerWidget * ruler = T_MIDI ?
-    Z_RULER_WIDGET (MIDI_RULER) :
-    Z_RULER_WIDGET (MW_RULER);
-  int px = ruler_widget_pos_to_px (ruler,
-                                   pos);
-  return px + SPACE_BEFORE_START;
-}
-
-void
-arranger_widget_px_to_pos (ArrangerWidget * self,
-                           Position * pos,
-                           int              px)
-{
-  /* clamp at 0 */
-  if (px < SPACE_BEFORE_START)
-    px = SPACE_BEFORE_START;
-  GET_PRIVATE;
-  RulerWidget * ruler = T_MIDI ?
-    Z_RULER_WIDGET (MIDI_RULER) :
-    Z_RULER_WIDGET (MW_RULER);
-  ruler_widget_px_to_pos (ruler,
-                          pos,
-                          px - SPACE_BEFORE_START);
-}
-
-/**
  * Gets called to set the position/size of each overlayed widget.
  */
 static gboolean
@@ -126,10 +92,9 @@ get_child_position (GtkOverlay   *overlay,
   if (Z_IS_ARRANGER_PLAYHEAD_WIDGET (widget))
     {
       allocation->x =
-        arranger_widget_pos_to_px (
-          self,
-          &TRANSPORT->playhead_pos)
-        - 1; /* minus half the width */
+        ui_pos_to_px (
+          &TRANSPORT->playhead_pos,
+          1) - 1; /* minus half the width */
       allocation->y = 0;
       allocation->width = 2;
       allocation->height =
@@ -513,9 +478,7 @@ drag_begin (GtkGestureDrag * gesture,
       else if (ar_prv->n_press == 2)
         {
           Position pos;
-          arranger_widget_px_to_pos (self,
-                                     &pos,
-                                     start_x);
+          ui_px_to_pos (start_x, &pos, 1);
 
           Track * track = NULL;
           AutomationTrack * at = NULL;
@@ -642,9 +605,9 @@ drag_update (GtkGestureDrag * gesture,
   else if (ar_prv->action == ARRANGER_ACTION_RESIZING_L)
     {
       Position pos;
-      arranger_widget_px_to_pos (self,
-                                 &pos,
-                                 ar_prv->start_x + offset_x);
+      ui_px_to_pos (ar_prv->start_x + offset_x,
+                    &pos,
+                    1);
       if (T_TIMELINE)
         {
           timeline_arranger_widget_snap_regions_l (
@@ -661,9 +624,9 @@ drag_update (GtkGestureDrag * gesture,
   else if (ar_prv->action == ARRANGER_ACTION_RESIZING_R)
     {
       Position pos;
-      arranger_widget_px_to_pos (self,
-                                 &pos,
-                                 ar_prv->start_x + offset_x);
+      ui_px_to_pos (ar_prv->start_x + offset_x,
+                    &pos,
+                    1);
       if (T_TIMELINE)
         {
           timeline_arranger_widget_snap_regions_r (
@@ -688,9 +651,9 @@ drag_update (GtkGestureDrag * gesture,
         Z_RULER_WIDGET (MW_RULER);
       /* note: using ruler here because SPACE_BEFORE_START
        * is irrelevant */
-      ruler_widget_px_to_pos (ruler,
-                              &diff_pos,
-                              offset_x);
+      ui_px_to_pos (offset_x,
+                    &diff_pos,
+                    0);
       int frames_diff = position_to_frames (&diff_pos);
       Position new_start_pos;
       position_set_to_pos (&new_start_pos, &ar_prv->start_pos);

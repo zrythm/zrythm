@@ -31,6 +31,7 @@
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_ruler.h"
+#include "gui/widgets/ruler_playhead.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/top_bar.h"
@@ -99,6 +100,53 @@ transport_request_roll ()
   TRANSPORT->play_state = PLAYSTATE_ROLL_REQUESTED;
 }
 
+static void
+on_playhead_changed ()
+{
+  if (MAIN_WINDOW)
+    {
+      if (TOP_BAR->digital_transport)
+        {
+          g_idle_add (
+            (GSourceFunc) gtk_widget_queue_draw,
+            GTK_WIDGET (TOP_BAR->digital_transport));
+        }
+      if (TIMELINE_ARRANGER_PLAYHEAD)
+        {
+          g_idle_add (
+            (GSourceFunc) gtk_widget_queue_allocate,
+            GTK_WIDGET (MW_TIMELINE));
+        }
+      if (TIMELINE_RULER_PLAYHEAD)
+        {
+          g_idle_add (
+            (GSourceFunc) gtk_widget_queue_allocate,
+            GTK_WIDGET (MW_RULER));
+        }
+      if (PIANO_ROLL)
+        {
+          if (MIDI_RULER)
+            {
+              g_idle_add (
+                (GSourceFunc) gtk_widget_queue_allocate,
+                GTK_WIDGET (MIDI_RULER));
+            }
+          if (MIDI_ARRANGER)
+            {
+              g_idle_add (
+                (GSourceFunc) gtk_widget_queue_allocate,
+                GTK_WIDGET (MIDI_ARRANGER));
+            }
+          if (MIDI_MODIFIER_ARRANGER)
+            {
+              g_idle_add (
+                (GSourceFunc) gtk_widget_queue_allocate,
+                GTK_WIDGET (MIDI_MODIFIER_ARRANGER));
+            }
+        }
+    }
+}
+
 /**
  * Moves the playhead by the time corresponding to given samples.
  */
@@ -109,48 +157,7 @@ transport_add_to_playhead (int frames)
     {
       position_add_frames (&TRANSPORT->playhead_pos,
                            frames);
-      if (MAIN_WINDOW)
-        {
-          if (TOP_BAR->digital_transport)
-            {
-              g_idle_add (
-                (GSourceFunc) gtk_widget_queue_draw,
-                GTK_WIDGET (TOP_BAR->digital_transport));
-            }
-          if (TIMELINE_ARRANGER_PLAYHEAD)
-            {
-              g_idle_add (
-                (GSourceFunc) gtk_widget_queue_allocate,
-                GTK_WIDGET (MW_TIMELINE));
-            }
-          if (MW_RULER)
-            {
-              g_idle_add (
-                (GSourceFunc) gtk_widget_queue_draw,
-                GTK_WIDGET (MW_RULER));
-            }
-          if (PIANO_ROLL)
-            {
-              if (MIDI_RULER)
-                {
-                  g_idle_add (
-                    (GSourceFunc) gtk_widget_queue_draw,
-                    GTK_WIDGET (MIDI_RULER));
-                }
-              if (MIDI_ARRANGER)
-                {
-                  g_idle_add (
-                    (GSourceFunc) gtk_widget_queue_allocate,
-                    GTK_WIDGET (MIDI_ARRANGER));
-                }
-              if (MIDI_MODIFIER_ARRANGER)
-                {
-                  g_idle_add (
-                    (GSourceFunc) gtk_widget_queue_allocate,
-                    GTK_WIDGET (MIDI_MODIFIER_ARRANGER));
-                }
-            }
-        }
+      on_playhead_changed ();
     }
 }
 
@@ -167,6 +174,8 @@ transport_move_playhead (Position * target, ///< position to set to
     {
       AUDIO_ENGINE->panic = 1;
     }
+
+  on_playhead_changed ();
 }
 
 /**

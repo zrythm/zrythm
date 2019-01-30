@@ -198,16 +198,14 @@ jack_process_cb (nframes_t nframes, ///< the number of frames to fill
 int
 jack_xrun_cb (void *arg)
 {
-  jack_client_t * client = (jack_client_t *) arg;
+  /*jack_client_t * client = (jack_client_t *) arg;*/
 
-  float delayed_usecs =
-    jack_get_xrun_delayed_usecs (client);
-  float max_delayed_usecs =
-    jack_get_max_delayed_usecs (client);
+  /*float delayed_usecs =*/
+    /*jack_get_xrun_delayed_usecs (client);*/
+  /*float max_delayed_usecs =*/
+    /*jack_get_max_delayed_usecs (client);*/
 
-  g_warning ("XRUN occured (delay %f, max delay %f)",
-             delayed_usecs / 1000.f,
-             max_delayed_usecs / 1000.f);
+  g_warning ("XRUN occurred");
 
   return 0;
 }

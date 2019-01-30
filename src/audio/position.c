@@ -105,8 +105,6 @@ position_set_to_bar (Position * position,
   position->sixteenths = 1;
   position->ticks = 0;
   position->frames = position_to_frames (position);
-  g_idle_add ((GSourceFunc) position_updated,
-              position);
 }
 
 void
@@ -117,8 +115,6 @@ position_set_bar (Position * position,
     bar = 1;
   position->bars = bar;
   position->frames = position_to_frames (position);
-  g_idle_add ((GSourceFunc) position_updated,
-              position);
 }
 
 void
@@ -147,8 +143,6 @@ position_set_beat (Position * position,
     }
   position->beats = beat;
   position->frames = position_to_frames (position);
-  g_idle_add ((GSourceFunc) position_updated,
-              position);
 }
 
 void
@@ -177,8 +171,6 @@ position_set_sixteenth (Position * position,
     }
   position->sixteenths = sixteenth;
   position->frames = position_to_frames (position);
-  g_idle_add ((GSourceFunc) position_updated,
-              position);
 }
 
 
@@ -212,8 +204,6 @@ position_set_tick (Position * position,
     }
   position->ticks = tick;
   position->frames = position_to_frames (position);
-  g_idle_add ((GSourceFunc) position_updated,
-              position);
 }
 
 /**
@@ -237,49 +227,6 @@ position_add_frames (Position * position,
   position_set_tick (position,
                      position->ticks +
                        frames / AUDIO_ENGINE->frames_per_tick);
-}
-
-/**
- * Notifies other parts.
- * FIXME check what the position is first
- */
-int
-position_updated (Position * position)
-{
-  /*if (MAIN_WINDOW)*/
-    /*{*/
-      /*if (TOP_BAR->digital_transport)*/
-        /*{*/
-          /*gtk_widget_queue_draw (*/
-            /*GTK_WIDGET (TOP_BAR->digital_transport));*/
-        /*}*/
-      /*if (MW_RULER)*/
-        /*{*/
-          /*gtk_widget_queue_draw (*/
-                  /*GTK_WIDGET (MW_RULER));*/
-        /*}*/
-      /*if (MW_TIMELINE)*/
-        /*{*/
-          /*ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);*/
-          /*gtk_widget_queue_draw (*/
-            /*GTK_WIDGET (ar_prv->bg));*/
-        /*}*/
-      /*if (PIANO_ROLL)*/
-        /*{*/
-          /*if (MIDI_RULER)*/
-            /*{*/
-              /*gtk_widget_queue_draw (*/
-                      /*GTK_WIDGET (MIDI_RULER));*/
-            /*}*/
-          /*if (MIDI_ARRANGER)*/
-            /*{*/
-              /*ARRANGER_WIDGET_GET_PRIVATE (MIDI_ARRANGER);*/
-              /*gtk_widget_queue_draw (*/
-                      /*GTK_WIDGET (ar_prv->bg));*/
-            /*}*/
-        /*}*/
-    /*}*/
-	/*return 0;*/
 }
 
 /**

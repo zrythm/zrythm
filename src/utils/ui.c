@@ -19,6 +19,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <math.h>
+
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/main_window.h"
+#include "gui/widgets/ruler.h"
+#include "gui/widgets/timeline_ruler.h"
 #include "utils/ui.h"
 
 void
@@ -118,4 +124,56 @@ ui_is_child_hit (GtkContainer * parent,
     return 1;
   else
     return 0;
+}
+
+/**
+ * Converts from pixels to position.
+ */
+void
+ui_px_to_pos (int               px,
+           Position *        pos,
+           int               has_padding) ///< whether the given px include padding
+{
+  if (!MAIN_WINDOW || !MW_RULER)
+    return;
+
+  RULER_WIDGET_GET_PRIVATE (MW_RULER)
+
+  if (has_padding)
+    {
+      px -= SPACE_BEFORE_START;
+
+      /* clamp at 0 */
+      if (px < 0)
+        px = 0;
+    }
+
+  pos->bars = px / rw_prv->px_per_bar + 1;
+  px = px % (int) round (rw_prv->px_per_bar);
+  pos->beats = px / rw_prv->px_per_beat + 1;
+  px = px % (int) round (rw_prv->px_per_beat);
+  pos->sixteenths = px / rw_prv->px_per_sixteenth + 1;
+  px = px % (int) round (rw_prv->px_per_sixteenth);
+  pos->ticks = px / rw_prv->px_per_tick;
+}
+
+int
+ui_pos_to_px (Position *       pos,
+           int              use_padding)
+{
+  if (!MAIN_WINDOW || !MW_RULER)
+    return 0;
+
+  RULER_WIDGET_GET_PRIVATE (MW_RULER)
+
+  int px =
+    (pos->bars - 1) * rw_prv->px_per_bar +
+    (pos->beats - 1) * rw_prv->px_per_beat +
+    (pos->sixteenths - 1) * rw_prv->px_per_sixteenth +
+    pos->ticks * rw_prv->px_per_tick;
+
+  if (use_padding)
+    px += SPACE_BEFORE_START;
+
+  return px;
 }

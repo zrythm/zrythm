@@ -67,4 +67,16 @@ ui_get_hit_child (GtkContainer * parent,
                   double         y, ///< y in parent space
                   GType          type); ///< type to look for
 
+/**
+ * Converts from pixels to position.
+ */
+void
+ui_px_to_pos (int               px,
+           Position *        pos,
+           int               has_padding); ///< whether the given px contain padding
+
+int
+ui_pos_to_px (Position *       pos,
+           int              use_padding); ///< whether to add padding to the px
+
 #endif

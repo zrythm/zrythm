@@ -122,17 +122,16 @@ midi_arranger_widget_set_allocation (
       MidiNoteWidget * midi_note_widget =
         Z_MIDI_NOTE_WIDGET (widget);
       allocation->x =
-        arranger_widget_pos_to_px (
-          Z_ARRANGER_WIDGET (self),
-          &midi_note_widget->midi_note->start_pos);
+        ui_pos_to_px (
+          &midi_note_widget->midi_note->start_pos,
+          1);
       allocation->y =
         PIANO_ROLL->piano_roll_labels->px_per_note *
           (127 - midi_note_widget->midi_note->val);
       allocation->width =
-        arranger_widget_pos_to_px (
-          Z_ARRANGER_WIDGET (self),
-          &midi_note_widget->midi_note->end_pos) -
-            allocation->x;
+        ui_pos_to_px (
+          &midi_note_widget->midi_note->end_pos,
+          1) - allocation->x;
       allocation->height =
         PIANO_ROLL->piano_roll_labels->px_per_note;
     }
@@ -228,8 +227,9 @@ midi_arranger_widget_on_drag_begin_note_hit (
   ARRANGER_WIDGET_GET_PRIVATE (self);
   MidiNote * midi_note = midi_note_widget->midi_note;
   ar_prv->start_pos_px =
-    ruler_widget_pos_to_px (Z_RULER_WIDGET (MIDI_RULER),
-                            &midi_note->start_pos);
+    ui_pos_to_px (
+      &midi_note->start_pos,
+      0);
   position_set_to_pos (&ar_prv->start_pos, &midi_note->start_pos);
   position_set_to_pos (&ar_prv->end_pos, &midi_note->end_pos);
 

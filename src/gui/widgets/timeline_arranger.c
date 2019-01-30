@@ -96,14 +96,15 @@ timeline_arranger_widget_set_allocation (
                 &wx,
                 &wy);
 
-      allocation->x = arranger_widget_pos_to_px (
-        Z_ARRANGER_WIDGET (self),
-        &rw_prv->region->start_pos);
+      allocation->x =
+        ui_pos_to_px (
+          &rw_prv->region->start_pos,
+          1);
       allocation->y = wy;
-      allocation->width = arranger_widget_pos_to_px (
-        Z_ARRANGER_WIDGET (self),
-        &rw_prv->region->end_pos) -
-          allocation->x;
+      allocation->width =
+        ui_pos_to_px (
+          &rw_prv->region->end_pos,
+          1) - allocation->x;
       allocation->height =
         gtk_widget_get_allocated_height (
           GTK_WIDGET (track->widget)) -
@@ -126,11 +127,11 @@ timeline_arranger_widget_set_allocation (
                 &wx,
                 &wy);
 
-      allocation->x = arranger_widget_pos_to_px (
-        Z_ARRANGER_WIDGET (self),
-        &ap->pos) -
-          AP_WIDGET_POINT_SIZE / 2;
-      allocation->y = (wy + automation_point_get_y_in_px (ap)) -
+      allocation->x =
+        ui_pos_to_px (&ap->pos, 1) -
+        AP_WIDGET_POINT_SIZE / 2;
+      allocation->y =
+        (wy + automation_point_get_y_in_px (ap)) -
         AP_WIDGET_POINT_SIZE / 2;
       allocation->width = AP_WIDGET_POINT_SIZE;
       allocation->height = AP_WIDGET_POINT_SIZE;
@@ -155,16 +156,17 @@ timeline_arranger_widget_set_allocation (
       AutomationPoint * next_ap =
         automation_track_get_ap_after_curve (ac->at, ac);
 
-      allocation->x = arranger_widget_pos_to_px (
-        Z_ARRANGER_WIDGET (self),
-        &prev_ap->pos) - AC_Y_HALF_PADDING;
+      allocation->x =
+        ui_pos_to_px (
+          &prev_ap->pos,
+          1) - AC_Y_HALF_PADDING;
       int prev_y = automation_point_get_y_in_px (prev_ap);
       int next_y = automation_point_get_y_in_px (next_ap);
       allocation->y = (wy + (prev_y > next_y ? next_y : prev_y) - AC_Y_HALF_PADDING);
       allocation->width =
-        (arranger_widget_pos_to_px (
-          Z_ARRANGER_WIDGET (self),
-          &next_ap->pos) - allocation->x) + AC_Y_HALF_PADDING;
+        (ui_pos_to_px (
+          &next_ap->pos,
+          1) - allocation->x) + AC_Y_HALF_PADDING;
       allocation->height = (prev_y > next_y ? prev_y - next_y : next_y - prev_y) + AC_Y_PADDING;
     }
   else if (Z_IS_CHORD_WIDGET (widget))
@@ -181,9 +183,10 @@ timeline_arranger_widget_set_allocation (
                 &wx,
                 &wy);
 
-      allocation->x = arranger_widget_pos_to_px (
-        Z_ARRANGER_WIDGET (self),
-        &cw->chord->pos);
+      allocation->x =
+        ui_pos_to_px (
+          &cw->chord->pos,
+          1);
       Position tmp;
       position_set_to_pos (&tmp,
                            &cw->chord->pos);
@@ -191,10 +194,10 @@ timeline_arranger_widget_set_allocation (
         &tmp,
         tmp.beats + 1);
       allocation->y = wy;
-      allocation->width = arranger_widget_pos_to_px (
-        Z_ARRANGER_WIDGET (self),
-        &tmp) -
-          allocation->x;
+      allocation->width =
+        ui_pos_to_px (
+          &tmp,
+          1) - allocation->x;
       allocation->height =
         gtk_widget_get_allocated_height (
           GTK_WIDGET (track->widget));

@@ -32,7 +32,7 @@ G_DECLARE_DERIVABLE_TYPE (RulerWidget,
                           ruler_widget,
                           Z,
                           RULER_WIDGET,
-                          GtkDrawingArea)
+                          GtkOverlay)
 
 #define RULER_WIDGET_GET_PRIVATE(self) \
   RulerWidgetPrivate * rw_prv = \
@@ -51,9 +51,12 @@ G_DECLARE_DERIVABLE_TYPE (RulerWidget,
 #define MAX_ZOOM_LEVEL 60.f
 
 typedef struct Position Position;
+typedef struct _RulerPlayheadWidget RulerPlayheadWidget;
 
 typedef struct
 {
+  RulerPlayheadWidget *    playhead;
+  GtkDrawingArea *         bg;
   unsigned int             px_per_beat;
   unsigned int             px_per_bar;
   unsigned int             px_per_sixteenth;
@@ -72,7 +75,7 @@ typedef struct
 
 typedef struct _RulerWidgetClass
 {
-  GtkDrawingAreaClass    parent_class;
+  GtkOverlayClass    parent_class;
 } RulerWidgetClass;
 
 /**

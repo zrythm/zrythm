@@ -55,9 +55,9 @@ timeline_minimap_widget_px_to_pos (
   double ratio = (double) px / width;
   RULER_WIDGET_GET_PRIVATE (MW_RULER);
   int px_in_ruler = rw_prv->total_px * ratio;
-  ruler_widget_px_to_pos (Z_RULER_WIDGET (MW_RULER),
-                          pos,
-                          px_in_ruler);
+  ui_px_to_pos (px_in_ruler,
+                pos,
+                1);
 }
 
 static void
