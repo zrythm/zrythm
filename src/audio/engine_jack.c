@@ -205,7 +205,7 @@ jack_xrun_cb (void *arg)
   /*float max_delayed_usecs =*/
     /*jack_get_max_delayed_usecs (client);*/
 
-  g_warning ("XRUN occurred");
+  g_message ("XRUN occurred");
 
   return 0;
 }

@@ -645,10 +645,6 @@ drag_update (GtkGestureDrag * gesture,
   else if (ar_prv->action == ARRANGER_ACTION_MOVING)
     {
       Position diff_pos;
-      RulerWidget * ruler =
-        T_MIDI ?
-        Z_RULER_WIDGET (MIDI_RULER) :
-        Z_RULER_WIDGET (MW_RULER);
       /* note: using ruler here because SPACE_BEFORE_START
        * is irrelevant */
       ui_px_to_pos (offset_x,
@@ -888,7 +884,8 @@ arranger_widget_refresh (
       gtk_widget_set_size_request (
         GTK_WIDGET (self),
         rw_prv->total_px,
-        -1);
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (PIANO_ROLL_LABELS)));
       midi_arranger_widget_refresh_children (
         Z_MIDI_ARRANGER_WIDGET (self));
     }

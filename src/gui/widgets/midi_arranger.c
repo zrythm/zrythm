@@ -103,6 +103,7 @@ midi_arranger_widget_set_channel (
 
   /* remove all previous children and add new */
   arranger_widget_refresh (Z_ARRANGER_WIDGET (self));
+
   gtk_widget_show_all (GTK_WIDGET (self));
 }
 

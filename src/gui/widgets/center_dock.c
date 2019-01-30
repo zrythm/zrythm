@@ -75,6 +75,17 @@ center_dock_widget_setup (CenterDockWidget * self)
   ruler_widget_refresh (Z_RULER_WIDGET (MW_RULER));
   ruler_widget_refresh (Z_RULER_WIDGET (MIDI_RULER));
 
+  /* setup timeline */
+  arranger_widget_setup (Z_ARRANGER_WIDGET (MW_TIMELINE),
+                         SNAP_GRID_TIMELINE,
+                         ARRANGER_TYPE_TIMELINE);
+  gtk_scrolled_window_set_vadjustment (
+    MW_CENTER_DOCK->timeline_scroll,
+    gtk_scrolled_window_get_vadjustment (
+      MW_CENTER_DOCK->tracklist_scroll));
+  gtk_widget_show_all (
+    GTK_WIDGET (MW_CENTER_DOCK->timeline));
+
   GtkAdjustment * adj =
     gtk_scrollable_get_hadjustment (
       GTK_SCROLLABLE (self->ruler_viewport));

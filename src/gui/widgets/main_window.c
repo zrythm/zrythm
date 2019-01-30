@@ -104,18 +104,6 @@ main_window_widget_refresh (MainWindowWidget * self)
     gtk_scrolled_window_get_hadjustment (
       MW_CENTER_DOCK->timeline_scroll));
 
-  /* setup timeline */
-  arranger_widget_setup (
-    Z_ARRANGER_WIDGET (MW_CENTER_DOCK->timeline),
-    &PROJECT->snap_grid_timeline,
-    ARRANGER_TYPE_TIMELINE);
-  gtk_scrolled_window_set_vadjustment (
-    MW_CENTER_DOCK->timeline_scroll,
-    gtk_scrolled_window_get_vadjustment (
-      MW_CENTER_DOCK->tracklist_scroll));
-  gtk_widget_show_all (
-    GTK_WIDGET (MW_CENTER_DOCK->timeline));
-
   /* setup center dock */
   center_dock_widget_setup (MW_CENTER_DOCK);
 
