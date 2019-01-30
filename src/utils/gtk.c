@@ -19,6 +19,7 @@
  * along with zrythm.  if not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "gui/accel.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
@@ -99,4 +100,52 @@ z_gtk_button_new_with_resource (IconType  icon_type,
   gtk_widget_set_visible (GTK_WIDGET (btn),
                           1);
   return btn;
+}
+
+GtkMenuItem *
+z_gtk_create_menu_item (gchar *     label_name,
+                  gchar *         icon_name,
+                  IconType        resource_icon_type,
+                  gchar *         resource,
+                  int             is_toggle,
+                  const char *    action_name)
+{
+  GtkWidget *box =
+    gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
+  GtkWidget *icon = NULL;
+  if (icon_name)
+    icon =
+      gtk_image_new_from_icon_name (icon_name,
+                                    GTK_ICON_SIZE_MENU);
+  else if (resource)
+    icon =
+      resources_get_icon (resource_icon_type,
+                          resource);
+  GtkWidget *label = gtk_accel_label_new (label_name);
+  GtkWidget * menu_item;
+  if (is_toggle)
+    menu_item = gtk_check_menu_item_new ();
+  else
+    menu_item = gtk_menu_item_new ();
+
+  if (icon)
+    gtk_container_add (GTK_CONTAINER (box), icon);
+
+  gtk_label_set_use_underline (GTK_LABEL (label), TRUE);
+  gtk_label_set_xalign (GTK_LABEL (label), 0.0);
+
+  gtk_actionable_set_action_name (
+    GTK_ACTIONABLE (menu_item),
+    action_name);
+  accel_set_accel_label_from_action (
+    GTK_ACCEL_LABEL (label),
+    action_name);
+
+  gtk_box_pack_end (GTK_BOX (box), label, TRUE, TRUE, 0);
+
+  gtk_container_add (GTK_CONTAINER (menu_item), box);
+
+  gtk_widget_show_all (menu_item);
+
+  return GTK_MENU_ITEM (menu_item);
 }

@@ -79,4 +79,12 @@ GtkButton *
 z_gtk_button_new_with_resource (IconType  icon_type,
                                 const char * name);
 
+GtkMenuItem *
+z_gtk_create_menu_item (gchar *     label_name,
+                  gchar *         icon_name,
+                  IconType        resource_icon_type,
+                  gchar *         resource,
+                  int             is_toggle,
+                  const char *    action_name);
+
 #endif

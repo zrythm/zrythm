@@ -33,6 +33,7 @@ audio_track_new (Channel * channel)
 
   Track * track = (Track *) self;
   track->type = TRACK_TYPE_AUDIO;
+  gdk_rgba_parse (&track->color, "#19664c");
   track_init (track);
   project_add_track (track);
 

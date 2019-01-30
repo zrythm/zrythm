@@ -40,6 +40,7 @@
 #include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "utils/gtk.h"
+#include "utils/resources.h"
 
 #include <gtk/gtk.h>
 
@@ -89,11 +90,62 @@ audio_track_widget_new (Track * track)
 void
 audio_track_widget_refresh (AudioTrackWidget * self)
 {
+  TRACK_WIDGET_GET_PRIVATE (self);
+  gtk_label_set_text (tw_prv->name,
+                      ((ChannelTrack *)tw_prv->track)->channel->name);
+
+  AutomationTracklist * automation_tracklist =
+    track_get_automation_tracklist (tw_prv->track);
+  automation_tracklist_widget_refresh (
+    automation_tracklist->widget);
 }
 
 static void
 audio_track_widget_init (AudioTrackWidget * self)
 {
+  TRACK_WIDGET_GET_PRIVATE (self);
+
+  /* create buttons */
+  self->record =
+    z_gtk_button_new_with_resource (ICON_TYPE_ZRYTHM,
+                                    "record.svg");
+  self->solo =
+    z_gtk_button_new_with_resource (ICON_TYPE_ZRYTHM,
+                                    "solo.svg");
+  self->mute =
+    z_gtk_button_new_with_resource (ICON_TYPE_ZRYTHM,
+                                    "mute.svg");
+  self->show_automation =
+    z_gtk_button_new_with_icon ("format-justify-fill");
+
+  /* set buttons to upper controls */
+  gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),
+                      GTK_WIDGET (self->record),
+                      Z_GTK_NO_EXPAND,
+                      Z_GTK_NO_FILL,
+                      0);
+  gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),
+                      GTK_WIDGET (self->solo),
+                      Z_GTK_NO_EXPAND,
+                      Z_GTK_NO_FILL,
+                      0);
+  gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),
+                      GTK_WIDGET (self->mute),
+                      Z_GTK_NO_EXPAND,
+                      Z_GTK_NO_FILL,
+                      0);
+
+  /* pack buttons to bot controls */
+  gtk_box_pack_start (GTK_BOX (tw_prv->bot_controls),
+                      GTK_WIDGET (self->show_automation),
+                      Z_GTK_NO_EXPAND,
+                      Z_GTK_NO_FILL,
+                      0);
+
+  /* set icon */
+  resources_set_image_icon (tw_prv->icon,
+                            ICON_TYPE_ZRYTHM,
+                            "audio.svg");
 }
 
 static void

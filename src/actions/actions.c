@@ -595,7 +595,12 @@ activate_create_audio_track (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-
+  Channel * chan =
+    channel_create (CT_AUDIO, "Audio Track");
+  mixer_add_channel (chan);
+  mixer_widget_refresh (MW_MIXER);
+  tracklist_append_track (chan->track);
+  tracklist_widget_refresh (MW_TRACKLIST);
 }
 
 void
@@ -616,7 +621,12 @@ activate_create_bus_track (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  g_message ("TODO create bus track");
+  Channel * chan =
+    channel_create (CT_BUS, "Bus Track");
+  mixer_add_channel (chan);
+  mixer_widget_refresh (MW_MIXER);
+  tracklist_append_track (chan->track);
+  tracklist_widget_refresh (MW_TRACKLIST);
 }
 
 void

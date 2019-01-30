@@ -25,6 +25,7 @@
 #include "gui/widgets/header_bar.h"
 #include "gui/widgets/main_window.h"
 #include "actions/undo_manager.h"
+#include "utils/gtk.h"
 #include "utils/resources.h"
 
 G_DEFINE_TYPE (HeaderBarWidget,
@@ -42,52 +43,6 @@ header_bar_widget_refresh_undo_redo_buttons (HeaderBarWidget * self)
   gtk_widget_set_sensitive (
     GTK_WIDGET (self->edit_redo),
     !stack_is_empty (&UNDO_MANAGER->redo_stack));
-}
-
-static GtkMenuItem *
-create_menu_item (gchar *         label_name,
-                  gchar *         icon_name,
-                  IconType        resource_icon_type,
-                  gchar *         resource,
-                  int             is_toggle,
-                  const char *    action_name)
-{
-  GtkWidget *box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
-  GtkWidget *icon;
-  if (icon_name)
-    icon =
-      gtk_image_new_from_icon_name (icon_name,
-                                    GTK_ICON_SIZE_MENU);
-  else if (resource)
-    icon =
-      resources_get_icon (resource_icon_type,
-                          resource);
-  GtkWidget *label = gtk_accel_label_new (label_name);
-  GtkWidget * menu_item;
-  if (is_toggle)
-    menu_item = gtk_check_menu_item_new ();
-  else
-    menu_item = gtk_menu_item_new ();
-
-  gtk_container_add (GTK_CONTAINER (box), icon);
-
-  gtk_label_set_use_underline (GTK_LABEL (label), TRUE);
-  gtk_label_set_xalign (GTK_LABEL (label), 0.0);
-
-  gtk_actionable_set_action_name (
-    GTK_ACTIONABLE (menu_item),
-    action_name);
-  accel_set_accel_label_from_action (
-    GTK_ACCEL_LABEL (label),
-    action_name);
-
-  gtk_box_pack_end (GTK_BOX (box), label, TRUE, TRUE, 0);
-
-  gtk_container_add (GTK_CONTAINER (menu_item), box);
-
-  gtk_widget_show_all (menu_item);
-
-  return GTK_MENU_ITEM (menu_item);
 }
 
 void
@@ -119,7 +74,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
 
   GtkMenuItem * menu_item;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "_New",
       "document-new",
       0,
@@ -128,7 +83,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
       "win.new");
   APPEND_TO_FILE_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "_Open",
       "document-open",
       0,
@@ -137,7 +92,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
       "win.open");
   APPEND_TO_FILE_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "_Save",
       "document-save",
       0,
@@ -146,7 +101,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
       "win.save");
   APPEND_TO_FILE_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "Save _As",
       "document-save-as",
       0,
@@ -157,7 +112,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   CREATE_SEPARATOR;
   APPEND_TO_FILE_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "_Export As",
       "document-send",
       0,
@@ -168,7 +123,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   CREATE_SEPARATOR;
   APPEND_TO_FILE_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "_Preferences",
       "document-properties",
       0,
@@ -177,7 +132,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
       "app.preferences");
   APPEND_TO_FILE_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "_Quit",
       "window-close",
       0,
@@ -188,7 +143,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
 #undef APPEND_TO_FILE_MENU
 
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "_Undo",
       "edit-undo",
       0,
@@ -198,7 +153,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   APPEND_TO_EDIT_MENU;
   self->edit_undo = menu_item;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "_Redo",
       "edit-redo",
       0,
@@ -210,7 +165,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   CREATE_SEPARATOR;
   APPEND_TO_EDIT_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "Cu_t",
       "edit-cut",
       0,
@@ -219,7 +174,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
       "win.cut");
   APPEND_TO_EDIT_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "_Copy",
       "edit-copy",
       0,
@@ -228,7 +183,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
       "win.copy");
   APPEND_TO_EDIT_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "_Paste",
       "edit-paste",
       0,
@@ -237,7 +192,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
       "win.paste");
   APPEND_TO_EDIT_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "_Delete",
       "edit-delete",
       0,
@@ -248,7 +203,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   CREATE_SEPARATOR;
   APPEND_TO_EDIT_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "Cle_ar Selection",
       "edit-clear",
       0,
@@ -257,7 +212,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
       "win.clear-selection");
   APPEND_TO_EDIT_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "Select A_ll",
       "edit-select-all",
       0,
@@ -268,7 +223,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
 #undef APPEND_TO_EDIT_MENU
 
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "Left Panel",
       NULL,
       ICON_TYPE_GNOME_BUILDER,
@@ -280,7 +235,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
     1);
   APPEND_TO_VIEW_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "Right Panel",
       NULL,
       ICON_TYPE_GNOME_BUILDER,
@@ -292,7 +247,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
     1);
   APPEND_TO_VIEW_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "Bottom Panel",
       NULL,
       ICON_TYPE_GNOME_BUILDER,
@@ -304,7 +259,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
     1);
   APPEND_TO_VIEW_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "Status Bar",
       "edit-select-all",
       0,
@@ -318,7 +273,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   CREATE_SEPARATOR;
   APPEND_TO_VIEW_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "_Zoom In",
       "zoom-in",
       0,
@@ -327,7 +282,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
       "win.zoom-in");
   APPEND_TO_VIEW_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "Zoom _Out",
       "zoom-out",
       0,
@@ -336,7 +291,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
       "win.zoom-out");
   APPEND_TO_VIEW_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "Original Size",
       "zoom-original",
       0,
@@ -345,7 +300,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
       "win.original-size");
   APPEND_TO_VIEW_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "Best Fit",
       "zoom-fit-best",
       0,
@@ -356,7 +311,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   CREATE_SEPARATOR;
   APPEND_TO_VIEW_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "_Fullscreen",
       "view-fullscreen",
       0,
@@ -367,7 +322,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
 #undef APPEND_TO_VIEW_MENU
 
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "Manual",
       "help-contents",
       0,
@@ -376,7 +331,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
       "app.manual");
   APPEND_TO_HELP_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "Keyboard Shortcuts",
       "",
       0,
@@ -387,7 +342,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   CREATE_SEPARATOR;
   APPEND_TO_HELP_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "License",
       "",
       0,
@@ -398,7 +353,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   CREATE_SEPARATOR;
   APPEND_TO_HELP_MENU;
   menu_item =
-    create_menu_item (
+    z_gtk_create_menu_item (
       "About",
       "help-about",
       0,

@@ -27,6 +27,7 @@
 #include "audio/mixer.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
+#include "gui/accel.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
@@ -37,6 +38,7 @@
 #include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "utils/gtk.h"
+#include "utils/resources.h"
 #include "utils/ui.h"
 
 G_DEFINE_TYPE (DragDestBoxWidget,
@@ -96,32 +98,45 @@ drag_end (GtkGestureDrag *gesture,
 static void
 show_context_menu (DragDestBoxWidget * self)
 {
-  GtkWidget *menu, *menuitem;
+  GtkWidget *menu;
+  GtkMenuItem * menu_item;
   menu = gtk_menu_new();
 
-  menuitem =
-    gtk_menu_item_new_with_mnemonic (
-      "Add _Instrument Track");
-  gtk_actionable_set_action_name (
-    GTK_ACTIONABLE (menuitem),
-    "win.create-ins-track");
-  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
-  menuitem =
-    gtk_menu_item_new_with_mnemonic (
-      "Add _Audio Track");
-  gtk_actionable_set_action_name (
-    GTK_ACTIONABLE (menuitem),
-    "win.create-audio-track");
-  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
-  menuitem =
-    gtk_menu_item_new_with_mnemonic (
-      "Add _Bus Track");
-  gtk_actionable_set_action_name (
-    GTK_ACTIONABLE (menuitem),
-    "win.create-bus-track");
-  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
+  menu_item =
+    z_gtk_create_menu_item (
+      "Add _Instrument Track",
+      NULL,
+      ICON_TYPE_GNOME_BUILDER,
+      NULL,
+      0,
+      "win.create-ins-track");
+  gtk_menu_shell_append (GTK_MENU_SHELL(menu),
+                         GTK_WIDGET (menu_item));
+  menu_item =
+    z_gtk_create_menu_item (
+      "Add _Audio Track",
+      NULL,
+      ICON_TYPE_GNOME_BUILDER,
+      NULL,
+      0,
+      "win.create-audio-track");
+  gtk_menu_shell_append (GTK_MENU_SHELL(menu),
+                         GTK_WIDGET (menu_item));
+  menu_item =
+    z_gtk_create_menu_item (
+      "Add _Bus Track",
+      NULL,
+      ICON_TYPE_GNOME_BUILDER,
+      NULL,
+      0,
+      "win.create-bus-track");
+  gtk_menu_shell_append (GTK_MENU_SHELL(menu),
+                         GTK_WIDGET (menu_item));
 
   gtk_widget_show_all(menu);
+  gtk_menu_attach_to_widget (GTK_MENU (menu),
+                             GTK_WIDGET (self),
+                             NULL);
   gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
 }
 
@@ -137,7 +152,6 @@ on_right_click (GtkGestureMultiPress *gesture,
 
   tracklist_widget_toggle_select_all_tracks (
     MW_TRACKLIST, 0);
-  g_message ("elo");
 
   if (n_press == 1)
     {
@@ -154,7 +168,6 @@ multipress_pressed (GtkGestureMultiPress *gesture,
 {
   DragDestBoxWidget * self =
     Z_DRAG_DEST_BOX_WIDGET (user_data);
-  g_message ("mp");
 
   GdkEventSequence *sequence =
     gtk_gesture_single_get_current_sequence (GTK_GESTURE_SINGLE (gesture));
