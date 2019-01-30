@@ -32,6 +32,8 @@
 
 #include <gtk/gtk.h>
 
+#include <jack/statistics.h>
+
 #define JACK_PORT_T(exp) ((jack_port_t *) exp)
 #define MIDI_IN_EVENT(i) (AUDIO_ENGINE->midi_in->midi_events.jack_midi_events[i])
 #define MIDI_IN_NUM_EVENTS AUDIO_ENGINE->midi_in->midi_events.num_events
@@ -193,6 +195,23 @@ jack_process_cb (nframes_t nframes, ///< the number of frames to fill
   return 0;
 }
 
+int
+jack_xrun_cb (void *arg)
+{
+  jack_client_t * client = (jack_client_t *) arg;
+
+  float delayed_usecs =
+    jack_get_xrun_delayed_usecs (client);
+  float max_delayed_usecs =
+    jack_get_max_delayed_usecs (client);
+
+  g_warning ("XRUN occured (delay %f, max delay %f)",
+             delayed_usecs / 1000.f,
+             max_delayed_usecs / 1000.f);
+
+  return 0;
+}
+
 /**
  * JACK calls this shutdown_callback if the server ever
  * shuts down or decides to disconnect the client.
@@ -250,10 +269,19 @@ jack_setup (AudioEngine * self)
 
 
   /* set jack callbacks */
-  jack_set_process_callback (self->client, &jack_process_cb, self);
-  jack_set_buffer_size_callback(self->client, &jack_buffer_size_cb, self);
-  jack_set_sample_rate_callback(self->client, &jack_sample_rate_cb, self);
-  jack_on_shutdown(self->client, &jack_shutdown_cb, self);
+  jack_set_process_callback (self->client,
+                             &jack_process_cb,
+                             self);
+  jack_set_buffer_size_callback (self->client,
+                                 &jack_buffer_size_cb,
+                                 self);
+  jack_set_sample_rate_callback (self->client,
+                                 &jack_sample_rate_cb,
+                                 self);
+  jack_set_xrun_callback (self->client,
+                          &jack_xrun_cb,
+                          self->client);
+  jack_on_shutdown (self->client, &jack_shutdown_cb, self);
   /*jack_set_latency_callback(client, &jack_latency_cb, arg);*/
 #ifdef JALV_JACK_SESSION
   /*jack_set_session_callback(client, &jack_session_cb, arg);*/

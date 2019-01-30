@@ -201,6 +201,26 @@ activate_snap_keep_offset (GSimpleAction *action,
                   gpointer       user_data);
 
 void
+activate_create_audio_track (GSimpleAction *action,
+                  GVariant      *variant,
+                  gpointer       user_data);
+
+void
+activate_create_ins_track (GSimpleAction *action,
+                  GVariant      *variant,
+                  gpointer       user_data);
+
+void
+activate_create_bus_track (GSimpleAction *action,
+                  GVariant      *variant,
+                  gpointer       user_data);
+
+void
+activate_delete_selected_tracks (GSimpleAction *action,
+                  GVariant      *variant,
+                  gpointer       user_data);
+
+void
 activate_snap_events (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data);

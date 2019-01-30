@@ -2,7 +2,7 @@
  * gui/widgets/drag_dest_box.c - A dnd destination box used by mixer and tracklist
  *                                widgets
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -41,7 +41,7 @@
 
 G_DEFINE_TYPE (DragDestBoxWidget,
                drag_dest_box_widget,
-               GTK_TYPE_BOX)
+               GTK_TYPE_EVENT_BOX)
 
 static void
 on_drag_data_received (GtkWidget        *widget,
@@ -54,12 +54,121 @@ on_drag_data_received (GtkWidget        *widget,
                gpointer          user_data)
 {
   DragDestBoxWidget * self = Z_DRAG_DEST_BOX_WIDGET (widget);
-  if (self->type == DRAG_DEST_BOX_TYPE_MIXER ||
-      self->type == DRAG_DEST_BOX_TYPE_TRACKLIST)
+  if (self == TRACKLIST_DRAG_DEST_BOX ||
+      self == MIXER_DRAG_DEST_BOX)
     {
       PluginDescriptor * descr =
         *(gpointer *) gtk_selection_data_get_data (data);
       mixer_add_channel_from_plugin_descr (descr);
+    }
+}
+
+static void
+drag_begin (GtkGestureDrag * gesture,
+               gdouble         start_x,
+               gdouble         start_y,
+               gpointer        user_data)
+{
+  g_message ("drag");
+
+}
+
+static void
+drag_update (GtkGestureDrag * gesture,
+               gdouble         offset_x,
+               gdouble         offset_y,
+               gpointer        user_data)
+{
+
+}
+
+static void
+drag_end (GtkGestureDrag *gesture,
+               gdouble         offset_x,
+               gdouble         offset_y,
+               gpointer        user_data)
+{
+
+
+}
+
+
+static void
+show_context_menu (DragDestBoxWidget * self)
+{
+  GtkWidget *menu, *menuitem;
+  menu = gtk_menu_new();
+
+  menuitem =
+    gtk_menu_item_new_with_mnemonic (
+      "Add _Instrument Track");
+  gtk_actionable_set_action_name (
+    GTK_ACTIONABLE (menuitem),
+    "win.create-ins-track");
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
+  menuitem =
+    gtk_menu_item_new_with_mnemonic (
+      "Add _Audio Track");
+  gtk_actionable_set_action_name (
+    GTK_ACTIONABLE (menuitem),
+    "win.create-audio-track");
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
+  menuitem =
+    gtk_menu_item_new_with_mnemonic (
+      "Add _Bus Track");
+  gtk_actionable_set_action_name (
+    GTK_ACTIONABLE (menuitem),
+    "win.create-bus-track");
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
+
+  gtk_widget_show_all(menu);
+  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
+}
+
+static void
+on_right_click (GtkGestureMultiPress *gesture,
+               gint                  n_press,
+               gdouble               x,
+               gdouble               y,
+               gpointer              user_data)
+{
+  DragDestBoxWidget * self =
+    Z_DRAG_DEST_BOX_WIDGET (user_data);
+
+  tracklist_widget_toggle_select_all_tracks (
+    MW_TRACKLIST, 0);
+  g_message ("elo");
+
+  if (n_press == 1)
+    {
+      show_context_menu (self);
+    }
+}
+
+static void
+multipress_pressed (GtkGestureMultiPress *gesture,
+               gint                  n_press,
+               gdouble               x,
+               gdouble               y,
+               gpointer              user_data)
+{
+  DragDestBoxWidget * self =
+    Z_DRAG_DEST_BOX_WIDGET (user_data);
+  g_message ("mp");
+
+  GdkEventSequence *sequence =
+    gtk_gesture_single_get_current_sequence (GTK_GESTURE_SINGLE (gesture));
+  const GdkEvent * event =
+    gtk_gesture_get_last_event (GTK_GESTURE (gesture), sequence);
+  GdkModifierType state_mask;
+  gdk_event_get_state (event, &state_mask);
+
+  if (self == TRACKLIST_DRAG_DEST_BOX)
+    {
+      if (!(state_mask & GDK_SHIFT_MASK ||
+          state_mask & GDK_CONTROL_MASK))
+        tracklist_widget_toggle_select_all_tracks (
+          MW_TRACKLIST, 0);
     }
 }
 
@@ -74,12 +183,7 @@ drag_dest_box_widget_new (GtkOrientation  orientation,
   /* create */
   DragDestBoxWidget * self = g_object_new (
                             DRAG_DEST_BOX_WIDGET_TYPE,
-                            "orientation",
-                            orientation,
-                            "spacing",
-                            spacing,
                             NULL);
-  self->type = type;
 
   if (type == DRAG_DEST_BOX_TYPE_MIXER)
     {
@@ -124,10 +228,44 @@ drag_dest_box_widget_new (GtkOrientation  orientation,
 static void
 drag_dest_box_widget_init (DragDestBoxWidget * self)
 {
+  self->multipress =
+    GTK_GESTURE_MULTI_PRESS (
+      gtk_gesture_multi_press_new (GTK_WIDGET (self)));
+  self->right_mouse_mp =
+    GTK_GESTURE_MULTI_PRESS (
+      gtk_gesture_multi_press_new (GTK_WIDGET (self)));
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (self->right_mouse_mp),
+    GDK_BUTTON_SECONDARY);
+  self->drag =
+    GTK_GESTURE_DRAG (
+      gtk_gesture_drag_new (GTK_WIDGET (self)));
+
+
+  /* make widget able to notify */
+  gtk_widget_add_events (GTK_WIDGET (self),
+                         GDK_ALL_EVENTS_MASK);
+
+  /* connect signals */
+  g_signal_connect (G_OBJECT (self->multipress), "pressed",
+                    G_CALLBACK (multipress_pressed), self);
+  g_signal_connect (G_OBJECT (self->right_mouse_mp),
+                    "pressed",
+                    G_CALLBACK (on_right_click),
+                    self);
+  g_signal_connect (G_OBJECT(self->drag), "drag-begin",
+                    G_CALLBACK (drag_begin),  self);
+  g_signal_connect (G_OBJECT(self->drag), "drag-update",
+                    G_CALLBACK (drag_update),  self);
+  g_signal_connect (G_OBJECT(self->drag), "drag-end",
+                    G_CALLBACK (drag_end),  self);
 }
+
 static void
-drag_dest_box_widget_class_init (DragDestBoxWidgetClass * klass)
+drag_dest_box_widget_class_init (
+  DragDestBoxWidgetClass * _klass)
 {
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (klass,
+                                 "drag-dest-box");
 }
-
-

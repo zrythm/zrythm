@@ -47,9 +47,6 @@ typedef struct Tracklist Tracklist;
 typedef struct _TracklistWidget
 {
   DzlMultiPaned                 parent_instance;
-  GtkGestureDrag *              drag;
-  GtkGestureMultiPress *        multipress;
-  GtkGestureMultiPress *        right_mouse_mp; ///< right mouse multipress
 
   /**
    * Widget for drag and dropping plugins in to create
@@ -85,6 +82,11 @@ tracklist_widget_toggle_select_all_tracks (TracklistWidget *self,
 void
 tracklist_widget_show (TracklistWidget *self);
 
+
+TrackWidget *
+tracklist_widget_get_hit_track (TracklistWidget *  self,
+               double            x,
+               double            y);
 
 /**
  * Deletes all tracks and re-adds them as per the

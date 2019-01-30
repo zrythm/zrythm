@@ -49,6 +49,7 @@ typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote MidiNote;
 typedef struct SnapGrid SnapGrid;
 typedef struct AutomationPoint AutomationPoint;
+typedef struct _ArrangerPlayheadWidget ArrangerPlayheadWidget;
 
 typedef enum ArrangerWidgetType
 {
@@ -77,6 +78,7 @@ typedef struct
 {
   ArrangerWidgetType       type;
   ArrangerBgWidget *       bg;
+  ArrangerPlayheadWidget * playhead;
   GtkGestureDrag *         drag;
   GtkGestureMultiPress *   multipress;
   GtkGestureMultiPress *   right_mouse_mp;

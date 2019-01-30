@@ -46,6 +46,10 @@ typedef struct
    */
   ColorAreaWidget *             color;
 
+  GtkGestureDrag *              drag;
+  GtkGestureMultiPress *        multipress;
+  GtkGestureMultiPress *        right_mouse_mp; ///< right mouse multipress
+
   /**
    * The track top / bot paned splitting the main track
    * content and the bottom content (automation tracklist).

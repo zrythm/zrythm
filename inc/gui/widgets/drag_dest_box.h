@@ -31,7 +31,11 @@ G_DECLARE_FINAL_TYPE (DragDestBoxWidget,
                       drag_dest_box_widget,
                       Z,
                       DRAG_DEST_BOX_WIDGET,
-                      GtkBox)
+                      GtkEventBox)
+#define TRACKLIST_DRAG_DEST_BOX \
+  MW_TRACKLIST->ddbox
+#define MIXER_DRAG_DEST_BOX \
+  MW_MIXER->ddbox
 
 typedef struct Channel Channel;
 
@@ -43,8 +47,10 @@ typedef enum DragDestBoxType
 
 typedef struct _DragDestBoxWidget
 {
-  GtkBox                  parent_instance;
-  DragDestBoxType         type;
+  GtkEventBox             parent_instance;
+  GtkGestureDrag *        drag;
+  GtkGestureMultiPress *  multipress;
+  GtkGestureMultiPress *  right_mouse_mp; ///< right mouse multipress
 } DragDestBoxWidget;
 
 /**

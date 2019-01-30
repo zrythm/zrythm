@@ -69,8 +69,8 @@ on_resize_end (TracklistWidget * self,
   track->handle_pos = g_value_get_int (&a);
 }
 
-static TrackWidget *
-get_hit_track (TracklistWidget *  self,
+TrackWidget *
+tracklist_widget_get_hit_track (TracklistWidget *  self,
                double            x,
                double            y)
 {
@@ -106,225 +106,6 @@ get_hit_track (TracklistWidget *  self,
         }
     }
   return NULL;
-}
-
-static void
-drag_begin (GtkGestureDrag * gesture,
-               gdouble         start_x,
-               gdouble         start_y,
-               gpointer        user_data)
-{
-
-}
-
-static void
-drag_update (GtkGestureDrag * gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-               gpointer        user_data)
-{
-
-}
-
-static void
-drag_end (GtkGestureDrag *gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-               gpointer        user_data)
-{
-
-
-}
-
-/**
- * Delete track(s) action handler.
- */
-static void
-on_delete_tracks ()
-{
-  GET_SELECTED_TRACKS;
-
-  for (int i = 0; i < num_selected; i++)
-    {
-      Track * track = selected_tracks[i];
-      switch (track->type)
-        {
-        case TRACK_TYPE_CHORD:
-          break;
-        case TRACK_TYPE_INSTRUMENT:
-        case TRACK_TYPE_MASTER:
-        case TRACK_TYPE_BUS:
-        case TRACK_TYPE_AUDIO:
-            {
-              ChannelTrack * ct = (ChannelTrack *) track;
-              mixer_remove_channel (ct->channel);
-              tracklist_remove_track (track);
-              break;
-            }
-        }
-    }
-}
-
-static void
-on_add_ins_track (GtkMenuItem * menu_item,
-                  TracklistWidget * self)
-{
-  Channel * chan = channel_create (CT_MIDI,
-                                   "Instrument Track");
-  mixer_add_channel (chan);
-  mixer_widget_refresh (MW_MIXER);
-  tracklist_append_track (chan->track);
-  tracklist_widget_refresh (MW_TRACKLIST);
-}
-
-static void
-show_context_menu (TracklistWidget * self)
-{
-  GtkWidget *menu, *menuitem;
-  menu = gtk_menu_new();
-
-  GET_SELECTED_TRACKS;
-
-  if (num_selected > 0)
-    {
-      char * str;
-      if (num_selected == 1)
-        str = g_strdup_printf ("Delete Track");
-      else
-        str = g_strdup_printf ("Delete %d Tracks",
-                               num_selected);
-      menuitem = gtk_menu_item_new_with_label(str);
-      g_free (str);
-      g_signal_connect(menuitem, "activate",
-                       (GCallback) on_delete_tracks, NULL);
-      gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
-    }
-  else
-    {
-      menuitem = gtk_menu_item_new_with_label("Add Instrument Track");
-      g_signal_connect(menuitem, "activate",
-                       (GCallback) on_add_ins_track, self);
-      gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
-      menuitem = gtk_menu_item_new_with_label("Add Audio Track");
-      /*g_signal_connect(menuitem, "activate",*/
-                       /*(GCallback) on_delete_tracks, NULL);*/
-      gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
-      menuitem = gtk_menu_item_new_with_label("Add Bus");
-      /*g_signal_connect(menuitem, "activate",*/
-                       /*(GCallback) on_delete_tracks, NULL);*/
-      gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
-    }
-
-  gtk_widget_show_all(menu);
-  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
-}
-
-static void
-on_right_click (GtkGestureMultiPress *gesture,
-               gint                  n_press,
-               gdouble               x,
-               gdouble               y,
-               gpointer              user_data)
-{
-  TracklistWidget * self = (TracklistWidget *) user_data;
-
-  if (!gtk_widget_has_focus (GTK_WIDGET (self)))
-    gtk_widget_grab_focus (GTK_WIDGET (self));
-
-  GdkEventSequence *sequence =
-    gtk_gesture_single_get_current_sequence (GTK_GESTURE_SINGLE (gesture));
-  /*guint button =*/
-    /*gtk_gesture_single_get_current_button (GTK_GESTURE_SINGLE (gesture));*/
-  const GdkEvent * event =
-    gtk_gesture_get_last_event (GTK_GESTURE (gesture), sequence);
-  GdkModifierType state_mask;
-  gdk_event_get_state (event, &state_mask);
-
-  GET_SELECTED_TRACKS
-
-  TrackWidget * hit_tw = get_hit_track (self, x, y);
-  if (hit_tw)
-    {
-      TRACK_WIDGET_GET_PRIVATE (hit_tw);
-      Track * track = tw_prv->track;
-
-      if (!array_contains ((void **)selected_tracks,
-                           num_selected,
-                           track))
-        {
-          if (state_mask & GDK_SHIFT_MASK ||
-              state_mask & GDK_CONTROL_MASK)
-            {
-              tracklist_widget_toggle_select_track (self,
-                                                    track,
-                                                    1);
-            }
-          else
-            {
-              tracklist_widget_toggle_select_track (self,
-                                                    track,
-                                                    0);
-            }
-        }
-    }
-  else
-    {
-      tracklist_widget_toggle_select_all_tracks (self, 0);
-    }
-
-  if (n_press == 1)
-    {
-      show_context_menu (self);
-    }
-}
-
-static void
-multipress_pressed (GtkGestureMultiPress *gesture,
-               gint                  n_press,
-               gdouble               x,
-               gdouble               y,
-               gpointer              user_data)
-{
-  TracklistWidget * self = (TracklistWidget *) user_data;
-
-  if (!gtk_widget_has_focus (GTK_WIDGET (self)))
-    gtk_widget_grab_focus (GTK_WIDGET (self));
-
-  GdkEventSequence *sequence =
-    gtk_gesture_single_get_current_sequence (GTK_GESTURE_SINGLE (gesture));
-  /*guint button =*/
-    /*gtk_gesture_single_get_current_button (GTK_GESTURE_SINGLE (gesture));*/
-  const GdkEvent * event =
-    gtk_gesture_get_last_event (GTK_GESTURE (gesture), sequence);
-  GdkModifierType state_mask;
-  gdk_event_get_state (event, &state_mask);
-
-  TrackWidget * hit_tw = get_hit_track (self, x, y);
-  if (hit_tw)
-    {
-      TRACK_WIDGET_GET_PRIVATE (hit_tw);
-      Track * track = tw_prv->track;
-
-      if (state_mask & GDK_SHIFT_MASK ||
-          state_mask & GDK_CONTROL_MASK)
-        {
-          tracklist_widget_toggle_select_track (self,
-                                                track,
-                                                1);
-        }
-      else
-        {
-          tracklist_widget_toggle_select_track (self,
-                                                track,
-                                                0);
-        }
-    }
-  else
-    {
-      if (!(state_mask & GDK_SHIFT_MASK ||
-          state_mask & GDK_CONTROL_MASK))
-        tracklist_widget_toggle_select_all_tracks (self, 0);
-    }
 }
 
 static gboolean
@@ -511,28 +292,10 @@ tracklist_widget_init (TracklistWidget * self)
   gtk_container_add (GTK_CONTAINER (self),
                    GTK_WIDGET (self->ddbox));
 
-  self->drag = GTK_GESTURE_DRAG (
-                gtk_gesture_drag_new (GTK_WIDGET (self)));
-  self->multipress = GTK_GESTURE_MULTI_PRESS (
-                gtk_gesture_multi_press_new (GTK_WIDGET (self)));
-  self->right_mouse_mp = GTK_GESTURE_MULTI_PRESS (
-                gtk_gesture_multi_press_new (GTK_WIDGET (self)));
-  gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (self->right_mouse_mp),
-                                 GDK_BUTTON_SECONDARY);
-
   /* make widget able to notify */
-  gtk_widget_add_events (GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
+  gtk_widget_add_events (GTK_WIDGET (self),
+                         GDK_ALL_EVENTS_MASK);
 
-  g_signal_connect (G_OBJECT(self->drag), "drag-begin",
-                    G_CALLBACK (drag_begin),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-update",
-                    G_CALLBACK (drag_update),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-end",
-                    G_CALLBACK (drag_end),  self);
-  g_signal_connect (G_OBJECT (self->multipress), "pressed",
-                    G_CALLBACK (multipress_pressed), self);
-  g_signal_connect (G_OBJECT (self->right_mouse_mp), "pressed",
-                    G_CALLBACK (on_right_click), self);
   g_signal_connect (G_OBJECT (self), "key-press-event",
                     G_CALLBACK (on_key_action), self);
   g_signal_connect (G_OBJECT (self), "key-release-event",

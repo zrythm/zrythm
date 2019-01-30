@@ -152,6 +152,118 @@ track_widget_get_private (TrackWidget * self)
   return track_widget_get_instance_private (self);
 }
 
+static void
+show_context_menu (TrackWidget * self)
+{
+  GtkWidget *menu, *menuitem;
+  menu = gtk_menu_new();
+
+  GET_SELECTED_TRACKS;
+
+  if (num_selected > 0)
+    {
+      /* FIXME move to track */
+      char * str;
+      if (num_selected == 1)
+        str = g_strdup_printf ("_Delete Track");
+      else
+        str = g_strdup_printf ("_Delete %d Tracks",
+                               num_selected);
+      menuitem = gtk_menu_item_new_with_mnemonic (str);
+      g_free (str);
+      gtk_actionable_set_action_name (
+        GTK_ACTIONABLE (menuitem),
+        "win.delete-selected-tracks");
+      gtk_menu_shell_append (GTK_MENU_SHELL(menu), menuitem);
+    }
+
+  gtk_widget_show_all(menu);
+  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
+}
+
+static void
+on_right_click (GtkGestureMultiPress *gesture,
+               gint                  n_press,
+               gdouble               x,
+               gdouble               y,
+               gpointer              user_data)
+{
+  TrackWidget * tw = Z_TRACK_WIDGET (user_data);
+  TRACK_WIDGET_GET_PRIVATE (tw);
+
+  GdkEventSequence *sequence =
+    gtk_gesture_single_get_current_sequence (
+      GTK_GESTURE_SINGLE (gesture));
+  const GdkEvent * event =
+    gtk_gesture_get_last_event (
+      GTK_GESTURE (gesture), sequence);
+  GdkModifierType state_mask;
+  gdk_event_get_state (event, &state_mask);
+
+  Track * track = tw_prv->track;
+  if (!track->selected)
+    {
+      if (state_mask & GDK_SHIFT_MASK ||
+          state_mask & GDK_CONTROL_MASK)
+        {
+          tracklist_widget_toggle_select_track (MW_TRACKLIST,
+                                                track,
+                                                1);
+        }
+      else
+        {
+          tracklist_widget_toggle_select_track (MW_TRACKLIST,
+                                                track,
+                                                0);
+        }
+    }
+  if (n_press == 1)
+    {
+      show_context_menu (tw);
+    }
+}
+
+static void
+multipress_pressed (GtkGestureMultiPress *gesture,
+               gint                  n_press,
+               gdouble               x,
+               gdouble               y,
+               gpointer              user_data)
+{
+  TrackWidget * self =
+    Z_TRACK_WIDGET (user_data);
+
+  g_message ("mp track");
+
+  /* FIXME should do this via focus on click property */
+  /*if (!gtk_widget_has_focus (GTK_WIDGET (self)))*/
+    /*gtk_widget_grab_focus (GTK_WIDGET (self));*/
+
+  GdkEventSequence *sequence =
+    gtk_gesture_single_get_current_sequence (GTK_GESTURE_SINGLE (gesture));
+  const GdkEvent * event =
+    gtk_gesture_get_last_event (GTK_GESTURE (gesture), sequence);
+  GdkModifierType state_mask;
+  gdk_event_get_state (event, &state_mask);
+
+  TRACK_WIDGET_GET_PRIVATE (self);
+  Track * track = tw_prv->track;
+
+  if (state_mask & GDK_SHIFT_MASK ||
+      state_mask & GDK_CONTROL_MASK)
+    {
+      tracklist_widget_toggle_select_track (MW_TRACKLIST,
+                                            track,
+                                            1);
+    }
+  else
+    {
+      tracklist_widget_toggle_select_track (MW_TRACKLIST,
+                                            track,
+                                            0);
+    }
+}
+
 /**
  * Wrapper for child track widget.
  *
@@ -228,16 +340,35 @@ track_widget_init (TrackWidget * self)
 
   TRACK_WIDGET_GET_PRIVATE (self);
 
-  /* make widget able to notify */
-  gtk_widget_add_events (GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
+  tw_prv->multipress =
+    GTK_GESTURE_MULTI_PRESS (
+      gtk_gesture_multi_press_new (GTK_WIDGET (self)));
+  tw_prv->right_mouse_mp =
+    GTK_GESTURE_MULTI_PRESS (
+      gtk_gesture_multi_press_new (GTK_WIDGET (self)));
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (tw_prv->right_mouse_mp),
+    GDK_BUTTON_SECONDARY);
 
+  /* make widget able to notify */
+  gtk_widget_add_events (GTK_WIDGET (self),
+                         GDK_ALL_EVENTS_MASK);
+
+  g_signal_connect (G_OBJECT (tw_prv->multipress), "pressed",
+                    G_CALLBACK (multipress_pressed), self);
+  g_signal_connect (G_OBJECT (tw_prv->right_mouse_mp),
+                    "pressed",
+                    G_CALLBACK (on_right_click), self);
   g_signal_connect (G_OBJECT (self), "size-allocate",
                     G_CALLBACK (size_allocate_cb), NULL);
-  g_signal_connect (G_OBJECT (tw_prv->event_box), "enter-notify-event",
+  g_signal_connect (G_OBJECT (tw_prv->event_box),
+                    "enter-notify-event",
                     G_CALLBACK (on_motion),  self);
-  g_signal_connect (G_OBJECT(tw_prv->event_box), "leave-notify-event",
+  g_signal_connect (G_OBJECT(tw_prv->event_box),
+                    "leave-notify-event",
                     G_CALLBACK (on_motion),  self);
-  g_signal_connect (G_OBJECT(tw_prv->event_box), "motion-notify-event",
+  g_signal_connect (G_OBJECT(tw_prv->event_box),
+                    "motion-notify-event",
                     G_CALLBACK (on_motion),  self);
 }
 

@@ -29,6 +29,7 @@
 #include "audio/track.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/arranger_playhead.h"
 #include "gui/widgets/automation_curve.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/automation_track.h"
@@ -122,6 +123,19 @@ get_child_position (GtkOverlay   *overlay,
   ArrangerWidget * self = (ArrangerWidget *) overlay;
   GET_PRIVATE;
 
+  if (Z_IS_ARRANGER_PLAYHEAD_WIDGET (widget))
+    {
+      allocation->x =
+        arranger_widget_pos_to_px (
+          self,
+          &TRANSPORT->playhead_pos)
+        - 1; /* minus half the width */
+      allocation->y = 0;
+      allocation->width = 2;
+      allocation->height =
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (self));
+    }
   if (T_MIDI)
     {
       midi_arranger_widget_set_allocation (
@@ -818,6 +832,11 @@ arranger_widget_setup (ArrangerWidget *   self,
           Z_RULER_WIDGET (MIDI_RULER),
           self));
     }
+
+  ar_prv->playhead =
+    arranger_playhead_widget_new ();
+  gtk_overlay_add_overlay (GTK_OVERLAY (self),
+                           GTK_WIDGET (ar_prv->playhead));
 
   gtk_container_add (GTK_CONTAINER (self),
                      GTK_WIDGET (ar_prv->bg));

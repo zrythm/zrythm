@@ -59,44 +59,28 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   /*guint width = gtk_widget_get_allocated_width (widget);*/
   guint height = gtk_widget_get_allocated_height (widget);
 
-  /* get positions in px */
-  static int playhead_pos_in_px;
-  playhead_pos_in_px =
-    (TRANSPORT->playhead_pos.bars - 1) * rw_prv->px_per_bar +
-    (TRANSPORT->playhead_pos.beats - 1) * rw_prv->px_per_beat +
-    (TRANSPORT->playhead_pos.sixteenths - 1) * rw_prv->px_per_sixteenth +
-    TRANSPORT->playhead_pos.ticks * rw_prv->px_per_tick;
-
   gtk_render_background (context, cr, 0, 0, rw_prv->total_px, height);
 
   /* handle vertical drawing */
   for (int i = SPACE_BEFORE_START; i < rw_prv->total_px; i++)
   {
     int actual_pos = i - SPACE_BEFORE_START;
-    if (actual_pos == playhead_pos_in_px)
-      {
-          cairo_set_source_rgb (cr, 1, 0, 0);
-          cairo_set_line_width (cr, 2);
-          cairo_move_to (cr, i, 0);
-          cairo_line_to (cr, i, height);
-          cairo_stroke (cr);
-      }
-      if (actual_pos % rw_prv->px_per_bar == 0)
-      {
-          cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);
-          cairo_set_line_width (cr, 1);
-          cairo_move_to (cr, i, 0);
-          cairo_line_to (cr, i, height);
-          cairo_stroke (cr);
-      }
-      else if (actual_pos % rw_prv->px_per_beat == 0)
-      {
-          cairo_set_source_rgb (cr, 0.25, 0.25, 0.25);
-          cairo_set_line_width (cr, 0.5);
-          cairo_move_to (cr, i, 0);
-          cairo_line_to (cr, i, height);
-          cairo_stroke (cr);
-      }
+    if (actual_pos % rw_prv->px_per_bar == 0)
+    {
+        cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);
+        cairo_set_line_width (cr, 1);
+        cairo_move_to (cr, i, 0);
+        cairo_line_to (cr, i, height);
+        cairo_stroke (cr);
+    }
+    else if (actual_pos % rw_prv->px_per_beat == 0)
+    {
+        cairo_set_source_rgb (cr, 0.25, 0.25, 0.25);
+        cairo_set_line_width (cr, 0.5);
+        cairo_move_to (cr, i, 0);
+        cairo_line_to (cr, i, height);
+        cairo_stroke (cr);
+    }
   }
 
   /* draw selections */

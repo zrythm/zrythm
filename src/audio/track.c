@@ -1,7 +1,7 @@
 /*
  * audio/track.c - the back end for a timeline track
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *

@@ -35,12 +35,14 @@
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_ruler.h"
+#include "gui/widgets/mixer.h"
 #include "gui/widgets/piano_roll.h"
 #include "gui/widgets/preferences.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_ruler.h"
+#include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "settings/preferences.h"
 #include "utils/gtk.h"
@@ -586,4 +588,61 @@ activate_snap_events (GSimpleAction *action,
 {
   SNAP_GRID_TIMELINE->snap_to_events =
     !SNAP_GRID_TIMELINE->snap_to_events;
+}
+
+void
+activate_create_audio_track (GSimpleAction *action,
+                  GVariant      *variant,
+                  gpointer       user_data)
+{
+
+}
+
+void
+activate_create_ins_track (GSimpleAction *action,
+                  GVariant      *variant,
+                  gpointer       user_data)
+{
+  Channel * chan =
+    channel_create (CT_MIDI, "Instrument Track");
+  mixer_add_channel (chan);
+  mixer_widget_refresh (MW_MIXER);
+  tracklist_append_track (chan->track);
+  tracklist_widget_refresh (MW_TRACKLIST);
+}
+
+void
+activate_create_bus_track (GSimpleAction *action,
+                  GVariant      *variant,
+                  gpointer       user_data)
+{
+  g_message ("TODO create bus track");
+}
+
+void
+activate_delete_selected_tracks (GSimpleAction *action,
+                  GVariant      *variant,
+                  gpointer       user_data)
+{
+  GET_SELECTED_TRACKS;
+
+  for (int i = 0; i < num_selected; i++)
+    {
+      Track * track = selected_tracks[i];
+      switch (track->type)
+        {
+        case TRACK_TYPE_CHORD:
+          break;
+        case TRACK_TYPE_INSTRUMENT:
+        case TRACK_TYPE_MASTER:
+        case TRACK_TYPE_BUS:
+        case TRACK_TYPE_AUDIO:
+            {
+              ChannelTrack * ct = (ChannelTrack *) track;
+              mixer_remove_channel (ct->channel);
+              tracklist_remove_track (track);
+              break;
+            }
+        }
+    }
 }

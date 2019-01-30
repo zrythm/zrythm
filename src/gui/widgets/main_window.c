@@ -217,12 +217,16 @@ main_window_widget_class_init (MainWindowWidgetClass * _klass)
 /*};*/
 
 static GActionEntry actions[] = {
+
+  /* file menu */
   { "new", activate_new },
   { "open", activate_open },
   { "save", activate_save },
   { "save-as", activate_save_as },
   { "export-as", activate_export_as },
   { "properties", activate_properties },
+
+  /* edit menu */
   { "undo", activate_undo },
   { "redo", activate_redo },
   { "cut", activate_cut },
@@ -231,6 +235,8 @@ static GActionEntry actions[] = {
   { "delete", activate_delete },
   { "clear-selection", activate_clear_selection },
   { "select-all", activate_select_all },
+
+  /* view menu */
   { "toggle-left-panel", activate_toggle_left_panel },
   { "toggle-right-panel", activate_toggle_right_panel },
   { "toggle-bot-panel", activate_toggle_bot_panel },
@@ -239,9 +245,16 @@ static GActionEntry actions[] = {
   { "zoom-out", activate_zoom_out },
   { "original-size", activate_original_size },
   { "best-fit", activate_best_fit },
+
+  /* snapping */
   { "snap-to-grid", activate_snap_to_grid },
   { "snap-keep-offset", activate_snap_keep_offset },
   { "snap-events", activate_snap_events },
+
+  { "create-audio-track", activate_create_audio_track },
+  { "create-ins-track", activate_create_ins_track },
+  { "create-bus-track", activate_create_bus_track },
+  { "delete-selected-tracks", activate_delete_selected_tracks },
 };
 
 static void

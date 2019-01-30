@@ -237,8 +237,6 @@ position_add_frames (Position * position,
   position_set_tick (position,
                      position->ticks +
                        frames / AUDIO_ENGINE->frames_per_tick);
-  g_idle_add ((GSourceFunc) position_updated,
-              position);
 }
 
 /**
@@ -248,41 +246,40 @@ position_add_frames (Position * position,
 int
 position_updated (Position * position)
 {
-	g_message( "pos %d", position ); 
-  if (MAIN_WINDOW)
-    {
-      if (TOP_BAR->digital_transport)
-        {
-          gtk_widget_queue_draw (
-            GTK_WIDGET (TOP_BAR->digital_transport));
-        }
-      if (MW_RULER)
-        {
-          gtk_widget_queue_draw (
-                  GTK_WIDGET (MW_RULER));
-        }
-      if (MW_TIMELINE)
-        {
-          ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);
-          gtk_widget_queue_draw (
-            GTK_WIDGET (ar_prv->bg));
-        }
-      if (PIANO_ROLL)
-        {
-          if (MIDI_RULER)
-            {
-              gtk_widget_queue_draw (
-                      GTK_WIDGET (MIDI_RULER));
-            }
-          if (MIDI_ARRANGER)
-            {
-              ARRANGER_WIDGET_GET_PRIVATE (MIDI_ARRANGER);
-              gtk_widget_queue_draw (
-                      GTK_WIDGET (ar_prv->bg));
-            }
-        }
-    }
-	return 0;
+  /*if (MAIN_WINDOW)*/
+    /*{*/
+      /*if (TOP_BAR->digital_transport)*/
+        /*{*/
+          /*gtk_widget_queue_draw (*/
+            /*GTK_WIDGET (TOP_BAR->digital_transport));*/
+        /*}*/
+      /*if (MW_RULER)*/
+        /*{*/
+          /*gtk_widget_queue_draw (*/
+                  /*GTK_WIDGET (MW_RULER));*/
+        /*}*/
+      /*if (MW_TIMELINE)*/
+        /*{*/
+          /*ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);*/
+          /*gtk_widget_queue_draw (*/
+            /*GTK_WIDGET (ar_prv->bg));*/
+        /*}*/
+      /*if (PIANO_ROLL)*/
+        /*{*/
+          /*if (MIDI_RULER)*/
+            /*{*/
+              /*gtk_widget_queue_draw (*/
+                      /*GTK_WIDGET (MIDI_RULER));*/
+            /*}*/
+          /*if (MIDI_ARRANGER)*/
+            /*{*/
+              /*ARRANGER_WIDGET_GET_PRIVATE (MIDI_ARRANGER);*/
+              /*gtk_widget_queue_draw (*/
+                      /*GTK_WIDGET (ar_prv->bg));*/
+            /*}*/
+        /*}*/
+    /*}*/
+	/*return 0;*/
 }
 
 /**

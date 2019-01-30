@@ -22,6 +22,20 @@
 #include "audio/engine.h"
 #include "audio/transport.h"
 #include "project.h"
+#include "gui/widgets/arranger.h"
+#include "gui/widgets/arranger_playhead.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/digital_meter.h"
+#include "gui/widgets/main_window.h"
+#include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_modifier_arranger.h"
+#include "gui/widgets/midi_ruler.h"
+#include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/timeline_ruler.h"
+#include "gui/widgets/top_bar.h"
+
+#include <gtk/gtk.h>
 
 /**
  * Sets BPM and does any necessary processing (like notifying interested
@@ -95,6 +109,48 @@ transport_add_to_playhead (int frames)
     {
       position_add_frames (&TRANSPORT->playhead_pos,
                            frames);
+      if (MAIN_WINDOW)
+        {
+          if (TOP_BAR->digital_transport)
+            {
+              g_idle_add (
+                (GSourceFunc) gtk_widget_queue_draw,
+                GTK_WIDGET (TOP_BAR->digital_transport));
+            }
+          if (TIMELINE_ARRANGER_PLAYHEAD)
+            {
+              g_idle_add (
+                (GSourceFunc) gtk_widget_queue_allocate,
+                GTK_WIDGET (MW_TIMELINE));
+            }
+          if (MW_RULER)
+            {
+              g_idle_add (
+                (GSourceFunc) gtk_widget_queue_draw,
+                GTK_WIDGET (MW_RULER));
+            }
+          if (PIANO_ROLL)
+            {
+              if (MIDI_RULER)
+                {
+                  g_idle_add (
+                    (GSourceFunc) gtk_widget_queue_draw,
+                    GTK_WIDGET (MIDI_RULER));
+                }
+              if (MIDI_ARRANGER)
+                {
+                  g_idle_add (
+                    (GSourceFunc) gtk_widget_queue_allocate,
+                    GTK_WIDGET (MIDI_ARRANGER));
+                }
+              if (MIDI_MODIFIER_ARRANGER)
+                {
+                  g_idle_add (
+                    (GSourceFunc) gtk_widget_queue_allocate,
+                    GTK_WIDGET (MIDI_MODIFIER_ARRANGER));
+                }
+            }
+        }
     }
 }
 
