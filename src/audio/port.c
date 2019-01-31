@@ -28,11 +28,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#if _POSIX_C_SOURCE >= 199309L
-#include <time.h>   // for nanosleep
-#else
-#include <unistd.h> // for usleep
-#endif
 #include <math.h>
 
 #include "project.h"
@@ -47,7 +42,7 @@
 
 #include <jack/jack.h>
 
-#define SLEEPTIME 1
+#define SLEEPTIME_USEC 60
 
 typedef jack_default_audio_sample_t   sample_t;
 typedef jack_nframes_t                nframes_t;
@@ -309,11 +304,6 @@ port_sum_signal_from_inputs (Port * port)
 {
   /*port_init_buf (port, nframes);*/
   int nframes = AUDIO_ENGINE->block_length;
-#if _POSIX_C_SOURCE >= 199309L
-  struct timespec ts;
-  ts.tv_sec = SLEEPTIME / 1000;
-  ts.tv_nsec = (SLEEPTIME % 1000) * 1000000;
-#endif
 
   /* for any output port pointing to it */
   for (int k = 0; k < port->num_srcs; k++)
@@ -330,11 +320,7 @@ port_sum_signal_from_inputs (Port * port)
                      /*src_port->owner_pl->descr->name);*/
           while (!src_port->owner_pl->processed)
             {
-#if _POSIX_C_SOURCE >= 199309L
-              nanosleep(&ts, NULL);
-#else
-              usleep (SLEEPTIME * 1000);
-#endif
+              g_usleep (SLEEPTIME_USEC);
             }
           /*g_message ("%s owner port done",*/
                      /*src_port->owner_pl->descr->name);*/
@@ -350,11 +336,7 @@ port_sum_signal_from_inputs (Port * port)
                  src_port !=
                    src_port->owner_ch->stereo_in->r)
             {
-#if _POSIX_C_SOURCE >= 199309L
-              nanosleep(&ts, NULL);
-#else
-              usleep (SLEEPTIME * 1000);
-#endif
+              g_usleep (SLEEPTIME_USEC);
             }
           /*g_message ("%s port, %s owner channel done",*/
                      /*src_port->label,*/

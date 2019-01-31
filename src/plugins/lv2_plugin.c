@@ -925,7 +925,7 @@ lv2_update(Lv2Plugin* plugin)
       }
     }
 
-  return FALSE;
+  return TRUE;
 }
 
 static bool
@@ -2019,16 +2019,21 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
         else if (send_ui_updates &&
                  port->type == TYPE_CONTROL)
           {
-            char buf[sizeof(Lv2ControlChange) + sizeof(float)];
+            char buf[sizeof(Lv2ControlChange) +
+              sizeof(float)];
             Lv2ControlChange* ev = (Lv2ControlChange*)buf;
             ev->index    = p;
             ev->protocol = 0;
             ev->size     = sizeof(float);
             *(float*)ev->body = lv2_port->control;
-            if (zix_ring_write(lv2_plugin->plugin_events, buf, sizeof(buf))
+            if (zix_ring_write (
+                  lv2_plugin->plugin_events,
+                  buf,
+                  sizeof(buf))
                 < sizeof(buf))
               {
-                PluginDescriptor * descr = ((Plugin *)lv2_plugin)->descr;
+                PluginDescriptor * descr =
+                  lv2_plugin->plugin->descr;
                 g_warning ("lv2_plugin_process: %s (%s) => UI buffer overflow!",
                            descr->name,
                            descr->uri);

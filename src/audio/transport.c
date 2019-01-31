@@ -100,9 +100,19 @@ transport_request_roll ()
   TRANSPORT->play_state = PLAYSTATE_ROLL_REQUESTED;
 }
 
+/**
+ * makes the playhead_changed code only run half the times
+ */
+static int aa = 0;
+static int automatic = 0;
+
 static int
 on_playhead_changed ()
 {
+  if (automatic && (aa++ % 2 != 0))
+    {
+      return 0;
+    }
   if (MAIN_WINDOW)
     {
       if (TOP_BAR->digital_transport)
@@ -139,6 +149,7 @@ on_playhead_changed ()
             }
         }
     }
+  aa = 1;
   return 0;
 }
 
@@ -152,6 +163,7 @@ transport_add_to_playhead (int frames)
     {
       position_add_frames (&TRANSPORT->playhead_pos,
                            frames);
+      automatic = 1;
       g_idle_add ((GSourceFunc) on_playhead_changed,
                   NULL);
     }
@@ -171,7 +183,9 @@ transport_move_playhead (Position * target, ///< position to set to
       AUDIO_ENGINE->panic = 1;
     }
 
-  on_playhead_changed ();
+  automatic = 0;
+  g_idle_add ((GSourceFunc) on_playhead_changed,
+              NULL);
 }
 
 /**

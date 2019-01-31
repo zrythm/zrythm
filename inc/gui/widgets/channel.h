@@ -78,6 +78,7 @@ typedef struct _ChannelWidget
   GtkImage            * icon;
   GtkImage *          output_img;
   int                   undo_redo_action; ///< 1 if current action is undo or redo
+  double                meter_reading_val; ///< cache
   Channel             * channel;    ///< pointer to data
 } ChannelWidget;
 
@@ -96,8 +97,11 @@ channel_widget_new (Channel * channel);
 /**
  * Updates the meter reading
  */
-int
-channel_widget_update_meter_reading (ChannelWidget * widget);
+gboolean
+channel_widget_update_meter_reading (
+  ChannelWidget * widget,
+  GdkFrameClock * frame_clock,
+  gpointer        user_data);
 
 /**
  * Updates everything on the widget.

@@ -35,6 +35,7 @@
 #include "actions/undoable_action.h"
 #include "project.h"
 #include "utils/gtk.h"
+#include "utils/math.h"
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
@@ -53,13 +54,32 @@ G_DEFINE_TYPE (ChannelWidget, channel_widget, GTK_TYPE_GRID)
  * that would be done via gtk_widget_set_tick_functions()
  * gtk_widget_set_tick_function()
  */
-int
-channel_widget_update_meter_reading (ChannelWidget * widget)
+gboolean
+channel_widget_update_meter_reading (
+  ChannelWidget * widget,
+  GdkFrameClock * frame_clock,
+  gpointer        user_data)
 {
-  g_assert (widget);
+  double prev = widget->meter_reading_val;
+  Channel * channel = widget->channel;
 
-  double val = (channel_get_current_l_db (widget->channel) +
-                channel_get_current_r_db (widget->channel)) / 2;
+  /* calc decibels */
+  channel_set_current_l_db (
+    channel,
+    math_calculate_rms_db (
+      channel->stereo_out->l->buf,
+      AUDIO_ENGINE->nframes));
+  channel_set_current_r_db (
+    channel,
+    math_calculate_rms_db (
+      channel->stereo_out->r->buf,
+      AUDIO_ENGINE->nframes));
+
+  double val =
+    (channel_get_current_l_db (channel) +
+      channel_get_current_r_db (channel)) / 2;
+  if (val == prev)
+    return G_SOURCE_CONTINUE;
   char * string;
   if (val < -100.)
     gtk_label_set_text (widget->meter_reading, "-∞");
@@ -72,7 +92,9 @@ channel_widget_update_meter_reading (ChannelWidget * widget)
   gtk_widget_queue_draw (GTK_WIDGET (widget->meter_l));
   gtk_widget_queue_draw (GTK_WIDGET (widget->meter_r));
 
-	return 0;
+  widget->meter_reading_val = val;
+
+  return G_SOURCE_CONTINUE;
 }
 
 static void
@@ -299,7 +321,7 @@ channel_widget_refresh (ChannelWidget * self)
 {
   refresh_name (self);
   refresh_output (self);
-  channel_widget_update_meter_reading (self);
+  channel_widget_update_meter_reading (self, NULL, NULL);
   refresh_buttons (self);
   refresh_color (self);
 }
@@ -323,6 +345,12 @@ channel_widget_new (Channel * channel)
   setup_pan (self);
   setup_channel_icon (self);
   channel_widget_refresh (self);
+
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self),
+    (GtkTickCallback) channel_widget_update_meter_reading,
+    NULL,
+    NULL);
 
   return self;
 }

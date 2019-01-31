@@ -50,8 +50,8 @@
 #include <gtk/gtk.h>
 #include <jack/thread.h>
 
-/* milliseconds */
-#define SLEEPTIME_MS 100
+/* microseconds */
+#define SLEEPTIME_USEC 60
 
 /**
  * Thread work
@@ -61,12 +61,6 @@ static void *
 process_channel_work (void * argument)
 {
   Channel * channel = (Channel *) argument;
-
-#if _POSIX_C_SOURCE >= 199309L
-  struct timespec ts;
-  ts.tv_sec = SLEEPTIME_MS / 1000000;
-  ts.tv_nsec = (SLEEPTIME_MS % 1000) * 1000;
-#endif
 
   while (!channel->stop_thread)
     {
@@ -83,11 +77,7 @@ process_channel_work (void * argument)
             }
         }
 
-#if _POSIX_C_SOURCE >= 199309L
-      nanosleep(&ts, NULL);
-#else
-      usleep (SLEEPTIME_MS);
-#endif
+      g_usleep (SLEEPTIME_USEC);
     }
 
   return 0;
@@ -222,28 +212,10 @@ channel_process (Channel * channel)
   /*g_message ("applied fader %s",*/
              /*channel->name);*/
 
-  /* calc decibels */
-  channel_set_current_l_db (
-    channel,
-    math_calculate_rms_db (
-      channel->stereo_out->l->buf,
-      AUDIO_ENGINE->nframes));
-  channel_set_current_r_db (
-    channel,
-    math_calculate_rms_db (
-      channel->stereo_out->r->buf,
-      AUDIO_ENGINE->nframes));
-  /*g_message ("calculated decibels %s",*/
-             /*channel->name);*/
-
   /* mark as processed */
   channel->processed = 1;
   /*g_message ("marked as processed %s",*/
              /*channel->name);*/
-
-  if (channel->widget)
-    g_idle_add ((GSourceFunc) channel_widget_update_meter_reading,
-                channel->widget);
 }
 
 static void

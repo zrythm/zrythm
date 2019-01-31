@@ -66,6 +66,7 @@ mixer_process () ///< number of frames to fill in
               break;
             }
         }
+      g_usleep (1000);
     }
 
 
