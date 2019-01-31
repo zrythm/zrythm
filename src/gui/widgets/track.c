@@ -40,6 +40,8 @@
 #include "gui/widgets/instrument_track.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/master_track.h"
+#include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "utils/gtk.h"
@@ -54,10 +56,12 @@ G_DEFINE_TYPE_WITH_PRIVATE (TrackWidget,
 static void
 size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
 {
+  /* redraw timeline bg */
+  TIMELINE_BG->cache = 0;
   gtk_widget_queue_draw (GTK_WIDGET (
-    MW_CENTER_DOCK->timeline));
+    MW_TIMELINE));
   gtk_widget_queue_allocate (GTK_WIDGET (
-    MW_CENTER_DOCK->timeline));
+    MW_TIMELINE));
 }
 
 /*static void*/

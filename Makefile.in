@@ -7,6 +7,7 @@ LINUX=@LINUX@
 OSX=@OSX@
 PACKAGE_MODE=@PACKAGE_MODE@
 RELEASE=@RELEASE@
+PROFILING=@PROFILING@
 
 # -----------------------
 #  dirs/names/files
@@ -104,6 +105,10 @@ else
 	DEFAULT_CFLAGS += -g -O0
 endif
 
+ifeq ($(PROFILING),1)
+	DEFAULT_CFLAGS += -pg
+endif
+
 # -rdynamic gcc flag
 ifeq ($(CC),gcc)
 	R_DYNAMIC = -rdynamic
@@ -156,6 +161,10 @@ LDFLAGS =	\
 	-lasound \
 	-lm \
 	-lpthread
+
+ifeq ($(PROFILING),1)
+	DEFAULT_LDFLAGS += -pg
+endif
 
 built_src = $(BUILD_DIR)/resources.c
 built_obj = $(built_src:%.c=$(BUILD_DIR/%.o))

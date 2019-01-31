@@ -36,6 +36,8 @@ G_DECLARE_DERIVABLE_TYPE (ArrangerBgWidget,
   ArrangerBgWidgetPrivate * ab_prv = \
     arranger_bg_widget_get_private (Z_ARRANGER_BG_WIDGET (self));
 
+typedef struct _RulerWidget RulerWidget;
+
 typedef struct
 {
   int                      total_px;
@@ -44,6 +46,11 @@ typedef struct
   GtkGestureMultiPress  *  multipress;
   RulerWidget *            ruler; ///< associated ruler
   ArrangerWidget *         arranger; ///< parent arranger
+
+  /* draw caching */
+  int                      cache; ///< set to 0 to redraw
+  cairo_t *                cached_cr;
+  cairo_surface_t *        cached_surface;
 } ArrangerBgWidgetPrivate;
 
 typedef struct _ArrangerBgWidgetClass
@@ -56,5 +63,15 @@ arranger_bg_widget_get_private (ArrangerBgWidget * self);
 
 void
 arranger_bg_widget_refresh (ArrangerBgWidget * self);
+
+/**
+ * Draws the selection in its background.
+ *
+ * Should only be called by the bg widgets when drawing.
+ */
+void
+arranger_bg_widget_draw_selections (
+  ArrangerWidget * arranger,
+  cairo_t *        cr);
 
 #endif

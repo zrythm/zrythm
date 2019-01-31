@@ -501,7 +501,8 @@ midi_arranger_widget_refresh_children (
        iter = g_list_next (iter))
     {
       GtkWidget * widget = GTK_WIDGET (iter->data);
-      if (widget != (GtkWidget *) ar_prv->bg)
+      if (widget != (GtkWidget *) ar_prv->bg &&
+          widget != (GtkWidget *) ar_prv->playhead)
         {
           g_object_ref (widget);
           gtk_container_remove (

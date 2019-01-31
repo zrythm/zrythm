@@ -34,9 +34,17 @@ G_DECLARE_FINAL_TYPE (TimelineBgWidget,
                       TIMELINE_BG_WIDGET,
                       ArrangerBgWidget)
 
+#define TIMELINE_BG \
+  Z_TIMELINE_BG_WIDGET (arranger_widget_get_private (Z_ARRANGER_WIDGET (MW_TIMELINE))->bg)
+
 typedef struct _TimelineBgWidget
 {
   ArrangerBgWidget         parent_instance;
+
+  /* draw caching */
+  int                      cache; ///< set to 0 to redraw
+  cairo_t *                cached_cr;
+  cairo_surface_t *        cached_surface;
 } TimelineBgWidget;
 
 /**

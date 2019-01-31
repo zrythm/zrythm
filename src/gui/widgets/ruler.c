@@ -93,7 +93,7 @@ ruler_widget_get_private (RulerWidget * self)
 }
 
 static gboolean
-draw_cb (GtkWidget * widget,
+ruler_draw_cb (GtkWidget * widget,
          cairo_t *cr,
          RulerWidget * self)
 {
@@ -103,149 +103,162 @@ draw_cb (GtkWidget * widget,
   if (!AUDIO_ENGINE->run)
     return FALSE;
 
-  GdkRectangle rect;
-  gdk_cairo_get_clip_rectangle (cr,
-                                &rect);
-
   GET_PRIVATE;
 
-  GtkStyleContext *context;
-
-  context = gtk_widget_get_style_context (GTK_WIDGET (self));
-
-  /*width = gtk_widget_get_allocated_width (widget);*/
-  guint height =
-    gtk_widget_get_allocated_height (widget);
-
-  /* get positions in px */
-  int cue_pos_in_px;
-  cue_pos_in_px =
-    ui_pos_to_px (
-      &TRANSPORT->cue_pos,
-      0);
-  int start_marker_pos_px;
-  start_marker_pos_px =
-    ui_pos_to_px (
-      &TRANSPORT->start_marker_pos,
-      0);
-  int end_marker_pos_px;
-  end_marker_pos_px =
-    ui_pos_to_px (
-      &TRANSPORT->end_marker_pos,
-      0);
-  int loop_start_pos_px;
-  loop_start_pos_px =
-    ui_pos_to_px (
-      &TRANSPORT->loop_start_pos,
-      0);
-  int loop_end_pos_px;
-  loop_end_pos_px =
-    ui_pos_to_px (
-      &TRANSPORT->loop_end_pos,
-      0);
-
-  gtk_render_background (context, cr,
-                         rect.x, rect.y,
-                         rect.width, rect.height);
-
-  /* draw lines */
-  for (int i = rect.x; i < rect.x + rect.width; i++)
+  /* if not cached, draw */
+  if (!rw_prv->cache)
     {
-      int draw_pos = i + SPACE_BEFORE_START;
+      GtkStyleContext * context =
+        gtk_widget_get_style_context (GTK_WIDGET (self));
 
-      if (i % rw_prv->px_per_bar == 0)
-      {
-        cairo_set_source_rgb (cr, 1, 1, 1);
-        cairo_set_line_width (cr, 1);
-        cairo_move_to (cr, draw_pos, 0);
-        cairo_line_to (cr, draw_pos, height / 3);
-        cairo_stroke (cr);
-        cairo_set_source_rgb (cr, 0.8, 0.8, 0.8);
-        cairo_select_font_face(cr, FONT,
-            CAIRO_FONT_SLANT_NORMAL,
-            CAIRO_FONT_WEIGHT_NORMAL);
-        cairo_set_font_size(cr, FONT_SIZE);
-        gchar * label =
-          g_strdup_printf ("%d", i / rw_prv->px_per_bar + 1);
-        static cairo_text_extents_t extents;
-        cairo_text_extents(cr, label, &extents);
-        cairo_move_to (cr,
-                       (draw_pos ) - extents.width / 2,
-                       (height / 2) + Y_SPACING);
-        cairo_show_text(cr, label);
-      }
-      else if (i % rw_prv->px_per_beat == 0)
-      {
-          cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
-          cairo_set_line_width (cr, 0.5);
-          cairo_move_to (cr, draw_pos, 0);
-          cairo_line_to (cr, draw_pos, height / 4);
-          cairo_stroke (cr);
-      }
-      else if (0)
+      guint width =
+        gtk_widget_get_allocated_width (widget);
+      guint height =
+        gtk_widget_get_allocated_height (widget);
+
+      rw_prv->cached_surface =
+        cairo_surface_create_similar (
+          cairo_get_target (cr),
+          CAIRO_CONTENT_COLOR_ALPHA,
+          width,
+          height);
+      rw_prv->cached_cr =
+        cairo_create (rw_prv->cached_surface);
+
+      /* get positions in px */
+      int cue_pos_in_px;
+      cue_pos_in_px =
+        ui_pos_to_px (
+          &TRANSPORT->cue_pos,
+          0);
+      int start_marker_pos_px;
+      start_marker_pos_px =
+        ui_pos_to_px (
+          &TRANSPORT->start_marker_pos,
+          0);
+      int end_marker_pos_px;
+      end_marker_pos_px =
+        ui_pos_to_px (
+          &TRANSPORT->end_marker_pos,
+          0);
+      int loop_start_pos_px;
+      loop_start_pos_px =
+        ui_pos_to_px (
+          &TRANSPORT->loop_start_pos,
+          0);
+      int loop_end_pos_px;
+      loop_end_pos_px =
+        ui_pos_to_px (
+          &TRANSPORT->loop_end_pos,
+          0);
+
+      gtk_render_background (context, rw_prv->cached_cr,
+                             0, 0,
+                             width, height);
+
+      /* draw lines */
+      for (int i = 0; i < width; i++)
         {
+          int draw_pos = i + SPACE_BEFORE_START;
 
+          if (i % rw_prv->px_per_bar == 0)
+            {
+              cairo_set_source_rgb (rw_prv->cached_cr, 1, 1, 1);
+              cairo_set_line_width (rw_prv->cached_cr, 1);
+              cairo_move_to (rw_prv->cached_cr, draw_pos, 0);
+              cairo_line_to (rw_prv->cached_cr, draw_pos, height / 3);
+              cairo_stroke (rw_prv->cached_cr);
+              cairo_set_source_rgb (rw_prv->cached_cr, 0.8, 0.8, 0.8);
+              cairo_select_font_face(rw_prv->cached_cr, FONT,
+                  CAIRO_FONT_SLANT_NORMAL,
+                  CAIRO_FONT_WEIGHT_NORMAL);
+              cairo_set_font_size(rw_prv->cached_cr, FONT_SIZE);
+              gchar * label =
+                g_strdup_printf ("%d", i / rw_prv->px_per_bar + 1);
+              static cairo_text_extents_t extents;
+              cairo_text_extents(rw_prv->cached_cr, label, &extents);
+              cairo_move_to (rw_prv->cached_cr,
+                             (draw_pos ) - extents.width / 2,
+                             (height / 2) + Y_SPACING);
+              cairo_show_text(rw_prv->cached_cr, label);
+            }
+          else if (i % rw_prv->px_per_beat == 0)
+            {
+              cairo_set_source_rgb (rw_prv->cached_cr, 0.7, 0.7, 0.7);
+              cairo_set_line_width (rw_prv->cached_cr, 0.5);
+              cairo_move_to (rw_prv->cached_cr, draw_pos, 0);
+              cairo_line_to (rw_prv->cached_cr, draw_pos, height / 4);
+              cairo_stroke (rw_prv->cached_cr);
+            }
+          else if (0)
+            {
+
+            }
+          if (i == cue_pos_in_px)
+            {
+              cairo_set_source_rgb (rw_prv->cached_cr, 0, 0.6, 0.9);
+              cairo_set_line_width (rw_prv->cached_cr, 2);
+              cairo_move_to (
+                rw_prv->cached_cr,
+                draw_pos,
+                ((height - PLAYHEAD_TRIANGLE_HEIGHT) - Q_HEIGHT) - 1);
+              cairo_line_to (
+                rw_prv->cached_cr,
+                draw_pos + Q_WIDTH,
+                ((height - PLAYHEAD_TRIANGLE_HEIGHT) - Q_HEIGHT / 2) - 1);
+              cairo_line_to (
+                rw_prv->cached_cr,
+                draw_pos,
+                (height - PLAYHEAD_TRIANGLE_HEIGHT) - 1);
+              cairo_fill (rw_prv->cached_cr);
+            }
+          if (i == start_marker_pos_px)
+            {
+              cairo_set_source_rgb (rw_prv->cached_cr, 1, 0, 0);
+              cairo_set_line_width (rw_prv->cached_cr, 2);
+              cairo_move_to (rw_prv->cached_cr, draw_pos, 0);
+              cairo_line_to (rw_prv->cached_cr, draw_pos + START_MARKER_TRIANGLE_WIDTH,
+                             0);
+              cairo_line_to (rw_prv->cached_cr, draw_pos,
+                             START_MARKER_TRIANGLE_HEIGHT);
+              cairo_fill (rw_prv->cached_cr);
+            }
+          if (i == end_marker_pos_px)
+            {
+              cairo_set_source_rgb (rw_prv->cached_cr, 1, 0, 0);
+              cairo_set_line_width (rw_prv->cached_cr, 2);
+              cairo_move_to (rw_prv->cached_cr, draw_pos - START_MARKER_TRIANGLE_WIDTH, 0);
+              cairo_line_to (rw_prv->cached_cr, draw_pos, 0);
+              cairo_line_to (rw_prv->cached_cr, draw_pos, START_MARKER_TRIANGLE_HEIGHT);
+              cairo_fill (rw_prv->cached_cr);
+            }
+          if (i == loop_start_pos_px)
+            {
+              cairo_set_source_rgb (rw_prv->cached_cr, 0, 0.9, 0.7);
+              cairo_set_line_width (rw_prv->cached_cr, 2);
+              cairo_move_to (rw_prv->cached_cr, draw_pos, START_MARKER_TRIANGLE_HEIGHT + 1);
+              cairo_line_to (rw_prv->cached_cr, draw_pos, START_MARKER_TRIANGLE_HEIGHT * 2 + 1);
+              cairo_line_to (rw_prv->cached_cr, draw_pos + START_MARKER_TRIANGLE_WIDTH,
+                             START_MARKER_TRIANGLE_HEIGHT + 1);
+              cairo_fill (rw_prv->cached_cr);
+            }
+          if (i == loop_end_pos_px)
+            {
+              cairo_set_source_rgb (rw_prv->cached_cr, 0, 0.9, 0.7);
+              cairo_set_line_width (rw_prv->cached_cr, 2);
+              cairo_move_to (rw_prv->cached_cr, draw_pos, START_MARKER_TRIANGLE_HEIGHT + 1);
+              cairo_line_to (rw_prv->cached_cr, draw_pos - START_MARKER_TRIANGLE_WIDTH,
+                             START_MARKER_TRIANGLE_HEIGHT + 1);
+              cairo_line_to (rw_prv->cached_cr, draw_pos,
+                             START_MARKER_TRIANGLE_HEIGHT * 2 + 1);
+              cairo_fill (rw_prv->cached_cr);
+            }
         }
-    if (i == cue_pos_in_px)
-      {
-        cairo_set_source_rgb (cr, 0, 0.6, 0.9);
-        cairo_set_line_width (cr, 2);
-        cairo_move_to (
-          cr,
-          draw_pos,
-          ((height - PLAYHEAD_TRIANGLE_HEIGHT) - Q_HEIGHT) - 1);
-        cairo_line_to (
-          cr,
-          draw_pos + Q_WIDTH,
-          ((height - PLAYHEAD_TRIANGLE_HEIGHT) - Q_HEIGHT / 2) - 1);
-        cairo_line_to (
-          cr,
-          draw_pos,
-          (height - PLAYHEAD_TRIANGLE_HEIGHT) - 1);
-        cairo_fill (cr);
-      }
-    if (i == start_marker_pos_px)
-      {
-        cairo_set_source_rgb (cr, 1, 0, 0);
-        cairo_set_line_width (cr, 2);
-        cairo_move_to (cr, draw_pos, 0);
-        cairo_line_to (cr, draw_pos + START_MARKER_TRIANGLE_WIDTH,
-                       0);
-        cairo_line_to (cr, draw_pos,
-                       START_MARKER_TRIANGLE_HEIGHT);
-        cairo_fill (cr);
-      }
-    if (i == end_marker_pos_px)
-      {
-        cairo_set_source_rgb (cr, 1, 0, 0);
-        cairo_set_line_width (cr, 2);
-        cairo_move_to (cr, draw_pos - START_MARKER_TRIANGLE_WIDTH, 0);
-        cairo_line_to (cr, draw_pos, 0);
-        cairo_line_to (cr, draw_pos, START_MARKER_TRIANGLE_HEIGHT);
-        cairo_fill (cr);
-      }
-    if (i == loop_start_pos_px)
-      {
-        cairo_set_source_rgb (cr, 0, 0.9, 0.7);
-        cairo_set_line_width (cr, 2);
-        cairo_move_to (cr, draw_pos, START_MARKER_TRIANGLE_HEIGHT + 1);
-        cairo_line_to (cr, draw_pos, START_MARKER_TRIANGLE_HEIGHT * 2 + 1);
-        cairo_line_to (cr, draw_pos + START_MARKER_TRIANGLE_WIDTH,
-                       START_MARKER_TRIANGLE_HEIGHT + 1);
-        cairo_fill (cr);
-      }
-    if (i == loop_end_pos_px)
-      {
-        cairo_set_source_rgb (cr, 0, 0.9, 0.7);
-        cairo_set_line_width (cr, 2);
-        cairo_move_to (cr, draw_pos, START_MARKER_TRIANGLE_HEIGHT + 1);
-        cairo_line_to (cr, draw_pos - START_MARKER_TRIANGLE_WIDTH,
-                       START_MARKER_TRIANGLE_HEIGHT + 1);
-        cairo_line_to (cr, draw_pos,
-                       START_MARKER_TRIANGLE_HEIGHT * 2 + 1);
-        cairo_fill (cr);
-      }
-  }
+      rw_prv->cache = 1;
+    }
+
+  cairo_set_source_surface (cr, rw_prv->cached_surface, 0, 0);
+  cairo_paint (cr);
 
  return FALSE;
 }
@@ -355,6 +368,8 @@ ruler_widget_refresh (RulerWidget * self)
     rw_prv->total_px,
     -1);
 
+  rw_prv->cache = 0;
+
   gtk_widget_queue_draw (
     GTK_WIDGET (self));
 }
@@ -441,7 +456,7 @@ ruler_widget_init (RulerWidget * self)
 
   /* FIXME drags */
   g_signal_connect (G_OBJECT (rw_prv->bg), "draw",
-                    G_CALLBACK (draw_cb), self);
+                    G_CALLBACK (ruler_draw_cb), self);
   /*g_signal_connect (G_OBJECT(self), "button_press_event",*/
                     /*G_CALLBACK (button_press_cb),  self);*/
   g_signal_connect (G_OBJECT (self), "get-child-position",

@@ -20,6 +20,7 @@
  */
 
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/arranger_bg.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"

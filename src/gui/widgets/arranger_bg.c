@@ -32,10 +32,12 @@
 #include "gui/widgets/piano_roll_labels.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_ruler.h"
+#include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "zrythm.h"
+#include "utils/cairo.h"
 
 #include <gtk/gtk.h>
 
@@ -44,63 +46,107 @@ G_DEFINE_TYPE_WITH_PRIVATE (ArrangerBgWidget,
                             GTK_TYPE_DRAWING_AREA)
 
 static gboolean
-draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
+arranger_bg_draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
 {
-  GdkRectangle rect;
-  gdk_cairo_get_clip_rectangle (cr,
-                                &rect);
-
-  ArrangerBgWidget * self = Z_ARRANGER_BG_WIDGET (widget);
+  ArrangerBgWidget * self = (ArrangerBgWidget *) widget;
   ARRANGER_BG_WIDGET_GET_PRIVATE (self);
 
-  RULER_WIDGET_GET_PRIVATE (ab_prv->ruler);
-
-  /*GdkRGBA color;*/
-  GtkStyleContext *context;
-
-  context = gtk_widget_get_style_context (widget);
-
-  /*guint width = gtk_widget_get_allocated_width (widget);*/
-  /*guint height = gtk_widget_get_allocated_height (widget);*/
-
-  gtk_render_background (context, cr,
-                         rect.x, rect.y,
-                         rect.width,
-                         rect.height);
-
-  /* handle vertical drawing */
-  for (int i =
-         (rect.x > SPACE_BEFORE_START ?
-          rect.x :
-          SPACE_BEFORE_START);
-       i < rect.x + rect.width;
-       i++)
-  {
-    int actual_pos = i - SPACE_BEFORE_START;
-    if (actual_pos % rw_prv->px_per_bar == 0)
+  /* if not cached, draw */
+  if (!ab_prv->cache)
     {
-        cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);
-        cairo_set_line_width (cr, 1);
-        cairo_move_to (cr, i, rect.y);
-        cairo_line_to (cr, i, rect.y + rect.height);
-        cairo_stroke (cr);
-    }
-    else if (actual_pos % rw_prv->px_per_beat == 0)
-    {
-        cairo_set_source_rgb (cr, 0.25, 0.25, 0.25);
-        cairo_set_line_width (cr, 0.5);
-        cairo_move_to (cr, i, rect.y);
-        cairo_line_to (cr, i, rect.y + rect.height);
-        cairo_stroke (cr);
-    }
-  }
+      guint height =
+        gtk_widget_get_allocated_height (widget);
+      guint width =
+        gtk_widget_get_allocated_width (widget);
 
-  /* draw selections */
-  arranger_bg_draw_selections (
-    ab_prv->arranger,
-    cr);
+      ab_prv->cached_surface =
+        cairo_surface_create_similar (
+          cairo_get_target (cr),
+          CAIRO_CONTENT_COLOR_ALPHA,
+          width,
+          height);
+      ab_prv->cached_cr =
+        cairo_create (ab_prv->cached_surface);
+
+      RULER_WIDGET_GET_PRIVATE (ab_prv->ruler);
+
+      /*GdkRGBA color;*/
+      GtkStyleContext *context;
+
+      context = gtk_widget_get_style_context (widget);
+
+      /*guint width = gtk_widget_get_allocated_width (widget);*/
+      /*guint height = gtk_widget_get_allocated_height (widget);*/
+
+      gtk_render_background (context, ab_prv->cached_cr,
+                             0, 0,
+                             width, height);
+
+      /* handle vertical drawing */
+      for (int i = SPACE_BEFORE_START;
+           i < width;
+           i++)
+        {
+          int actual_pos = i - SPACE_BEFORE_START;
+          if (actual_pos % rw_prv->px_per_bar == 0)
+            {
+              cairo_set_source_rgb (ab_prv->cached_cr, 0.3, 0.3, 0.3);
+              cairo_set_line_width (ab_prv->cached_cr, 1);
+              cairo_move_to (ab_prv->cached_cr, i, 0);
+              cairo_line_to (ab_prv->cached_cr, i, height);
+              cairo_stroke (ab_prv->cached_cr);
+            }
+          else if (actual_pos % rw_prv->px_per_beat == 0)
+            {
+              cairo_set_source_rgb (ab_prv->cached_cr, 0.25, 0.25, 0.25);
+              cairo_set_line_width (ab_prv->cached_cr, 0.5);
+              cairo_move_to (ab_prv->cached_cr, i, 0);
+              cairo_line_to (ab_prv->cached_cr, i, height);
+              cairo_stroke (ab_prv->cached_cr);
+            }
+        }
+
+      ab_prv->cache = 1;
+    }
+
+  cairo_set_source_surface (cr, ab_prv->cached_surface, 0, 0);
+  cairo_paint (cr);
+
+      /* draw selections */
+      arranger_bg_widget_draw_selections (
+        ab_prv->arranger,
+        cr);
 
   return 0;
+}
+
+/**
+ * Draws the selection in its background.
+ *
+ * Should only be called by the bg widgets when drawing.
+ */
+void
+arranger_bg_widget_draw_selections (
+  ArrangerWidget * self,
+  cairo_t *        cr)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  double offset_x, offset_y;
+  offset_x = ar_prv->start_x + ar_prv->last_offset_x > 0 ?
+    ar_prv->last_offset_x :
+    1 - ar_prv->start_x;
+  offset_y = ar_prv->start_y + ar_prv->last_offset_y > 0 ?
+    ar_prv->last_offset_y :
+    1 - ar_prv->start_y;
+  if (ar_prv->action == ARRANGER_ACTION_SELECTING)
+    {
+      z_cairo_draw_selection (cr,
+                              ar_prv->start_x,
+                              ar_prv->start_y,
+                              offset_x,
+                              offset_y);
+    }
 }
 
 static void
@@ -150,6 +196,12 @@ drag_end (GtkGestureDrag *gesture,
 void
 arranger_bg_widget_refresh (ArrangerBgWidget * self)
 {
+  ARRANGER_BG_WIDGET_GET_PRIVATE (self);
+
+  ab_prv->cache = 0;
+  if (Z_IS_TIMELINE_BG_WIDGET (self))
+    Z_TIMELINE_BG_WIDGET (self)->cache = 0;
+
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
@@ -185,7 +237,7 @@ arranger_bg_widget_init (ArrangerBgWidget *self )
                                  1);
 
   g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), NULL);
+                    G_CALLBACK (arranger_bg_draw_cb), NULL);
   g_signal_connect (G_OBJECT(ab_prv->drag), "drag-begin",
                     G_CALLBACK (drag_begin),  self);
   g_signal_connect (G_OBJECT(ab_prv->drag), "drag-update",

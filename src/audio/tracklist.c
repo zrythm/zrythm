@@ -24,10 +24,12 @@
 #include "audio/mixer.h"
 #include "audio/tracklist.h"
 #include "audio/track.h"
+#include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
+#include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "utils/arrays.h"
@@ -134,13 +136,15 @@ tracklist_add_track (Track *     track,
                 &TRACKLIST->num_tracks,
                 pos,
                 (void *) track);
-  if (MAIN_WINDOW && MW_CENTER_DOCK && MW_TRACKLIST)
+  if (MAIN_WINDOW && MW_CENTER_DOCK)
     {
-      tracklist_widget_refresh (MW_TRACKLIST);
-    }
-  if (MW_MIXER)
-    {
-      mixer_widget_refresh (MW_MIXER);
+      if (MW_CENTER_DOCK && MW_TRACKLIST)
+        tracklist_widget_refresh (MW_TRACKLIST);
+      if (MW_MIXER)
+        mixer_widget_refresh (MW_MIXER);
+      if (MW_TIMELINE)
+        arranger_widget_refresh (
+          Z_ARRANGER_WIDGET (MW_TIMELINE));
     }
 }
 

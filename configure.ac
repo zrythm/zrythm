@@ -44,6 +44,11 @@ AC_ARG_ENABLE(package-mode,
               [AC_SUBST([PACKAGE_MODE], [1])],
               [AC_SUBST([PACKAGE_MODE], [0])])
 
+AC_ARG_ENABLE(profiling,
+              AS_HELP_STRING([--enable-profiling], [Enables profiling with gprof]),
+              [AC_SUBST([PROFILING], [1])],
+              [AC_SUBST([PROFILING], [0])])
+
 AC_ARG_ENABLE(release,
               AS_HELP_STRING([--enable-release], [Build for release (default is debug)]),
               [AC_SUBST([RELEASE], [1])]

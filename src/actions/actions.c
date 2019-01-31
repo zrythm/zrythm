@@ -40,6 +40,7 @@
 #include "gui/widgets/preferences.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/tracklist.h"
@@ -614,6 +615,8 @@ activate_create_ins_track (GSimpleAction *action,
   mixer_widget_refresh (MW_MIXER);
   tracklist_append_track (chan->track);
   tracklist_widget_refresh (MW_TRACKLIST);
+  arranger_bg_widget_refresh (
+    Z_ARRANGER_BG_WIDGET (TIMELINE_BG));
 }
 
 void

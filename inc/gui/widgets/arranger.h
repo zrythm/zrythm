@@ -140,15 +140,6 @@ arranger_widget_toggle_select (ArrangerWidget *  self,
                void *            child,
                int               append);
 
-/**
- * Draws the selection in its background.
- *
- * Should only be called by the bg widgets when drawing.
- */
-void
-arranger_bg_draw_selections (ArrangerWidget * arranger,
-                             cairo_t *        cr);
-
 void
 arranger_widget_select_all (
   ArrangerWidget *  self,

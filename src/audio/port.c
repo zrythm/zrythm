@@ -295,7 +295,8 @@ port_apply_fader (Port * port, float amp)
   int nframes = AUDIO_ENGINE->block_length;
   for (int i = 0; i < nframes; i++)
     {
-      port->buf[i] *= amp;
+      if (port->buf[i] != 0.f)
+        port->buf[i] *= amp;
     }
 }
 
@@ -432,8 +433,10 @@ port_apply_pan_stereo (Port *       l,
     {
       for (int i = 0; i < nframes; i++)
         {
-          r->buf[i] *= sinf (pan * (M_PIF / 2.f));
-          l->buf[i] *= sinf ((1.f - pan) * (M_PIF / 2.f));
+          if (r->buf[i] != 0.f)
+            r->buf[i] *= sinf (pan * (M_PIF / 2.f));
+          if (l->buf[i] != 0.f)
+            l->buf[i] *= sinf ((1.f - pan) * (M_PIF / 2.f));
         }
 
     }

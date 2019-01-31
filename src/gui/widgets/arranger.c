@@ -56,7 +56,6 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
-#include "utils/cairo.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
@@ -838,34 +837,6 @@ arranger_widget_setup (ArrangerWidget *   self,
     {
       midi_modifier_arranger_widget_setup (
         Z_MIDI_MODIFIER_ARRANGER_WIDGET (self));
-    }
-}
-
-/**
- * Draws the selection in its background.
- *
- * Should only be called by the bg widgets when drawing.
- */
-void
-arranger_bg_draw_selections (ArrangerWidget * self,
-                             cairo_t *        cr)
-{
-  GET_PRIVATE;
-
-  double offset_x, offset_y;
-  offset_x = ar_prv->start_x + ar_prv->last_offset_x > 0 ?
-    ar_prv->last_offset_x :
-    1 - ar_prv->start_x;
-  offset_y = ar_prv->start_y + ar_prv->last_offset_y > 0 ?
-    ar_prv->last_offset_y :
-    1 - ar_prv->start_y;
-  if (ar_prv->action == ARRANGER_ACTION_SELECTING)
-    {
-      z_cairo_draw_selection (cr,
-                              ar_prv->start_x,
-                              ar_prv->start_y,
-                              offset_x,
-                              offset_y);
     }
 }
 
