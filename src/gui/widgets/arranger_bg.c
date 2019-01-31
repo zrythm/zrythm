@@ -51,71 +51,60 @@ arranger_bg_draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   ArrangerBgWidget * self = (ArrangerBgWidget *) widget;
   ARRANGER_BG_WIDGET_GET_PRIVATE (self);
 
-  /* if not cached, draw */
-  if (!ab_prv->cache)
+  GdkRectangle rect;
+  gdk_cairo_get_clip_rectangle (cr,
+	                        &rect);
+
+  /*guint height =*/
+    /*gtk_widget_get_allocated_height (widget);*/
+  /*guint width =*/
+    /*gtk_widget_get_allocated_width (widget);*/
+
+  RULER_WIDGET_GET_PRIVATE (ab_prv->ruler);
+
+  /*GdkRGBA color;*/
+  GtkStyleContext *context;
+
+  context = gtk_widget_get_style_context (widget);
+
+  /*guint width = gtk_widget_get_allocated_width (widget);*/
+  /*guint height = gtk_widget_get_allocated_height (widget);*/
+
+  gtk_render_background (context, cr,
+                         rect.x, rect.y,
+                         rect.width, rect.height);
+
+  /* handle vertical drawing */
+  for (int i =
+         (rect.x > SPACE_BEFORE_START ?
+          rect.x :
+          SPACE_BEFORE_START);
+       i < rect.x + rect.width;
+       i++)
+  {
+    int actual_pos = i - SPACE_BEFORE_START;
+    if (actual_pos % rw_prv->px_per_bar == 0)
     {
-      guint height =
-        gtk_widget_get_allocated_height (widget);
-      guint width =
-        gtk_widget_get_allocated_width (widget);
-
-      ab_prv->cached_surface =
-        cairo_surface_create_similar (
-          cairo_get_target (cr),
-          CAIRO_CONTENT_COLOR_ALPHA,
-          width,
-          height);
-      ab_prv->cached_cr =
-        cairo_create (ab_prv->cached_surface);
-
-      RULER_WIDGET_GET_PRIVATE (ab_prv->ruler);
-
-      /*GdkRGBA color;*/
-      GtkStyleContext *context;
-
-      context = gtk_widget_get_style_context (widget);
-
-      /*guint width = gtk_widget_get_allocated_width (widget);*/
-      /*guint height = gtk_widget_get_allocated_height (widget);*/
-
-      gtk_render_background (context, ab_prv->cached_cr,
-                             0, 0,
-                             width, height);
-
-      /* handle vertical drawing */
-      for (int i = SPACE_BEFORE_START;
-           i < width;
-           i++)
-        {
-          int actual_pos = i - SPACE_BEFORE_START;
-          if (actual_pos % rw_prv->px_per_bar == 0)
-            {
-              cairo_set_source_rgb (ab_prv->cached_cr, 0.3, 0.3, 0.3);
-              cairo_set_line_width (ab_prv->cached_cr, 1);
-              cairo_move_to (ab_prv->cached_cr, i, 0);
-              cairo_line_to (ab_prv->cached_cr, i, height);
-              cairo_stroke (ab_prv->cached_cr);
-            }
-          else if (actual_pos % rw_prv->px_per_beat == 0)
-            {
-              cairo_set_source_rgb (ab_prv->cached_cr, 0.25, 0.25, 0.25);
-              cairo_set_line_width (ab_prv->cached_cr, 0.5);
-              cairo_move_to (ab_prv->cached_cr, i, 0);
-              cairo_line_to (ab_prv->cached_cr, i, height);
-              cairo_stroke (ab_prv->cached_cr);
-            }
-        }
-
-      ab_prv->cache = 1;
+        cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);
+        cairo_set_line_width (cr, 1);
+        cairo_move_to (cr, i, rect.y);
+        cairo_line_to (cr, i, rect.y + rect.height);
+        cairo_stroke (cr);
     }
+    else if (actual_pos % rw_prv->px_per_beat == 0)
+    {
+        cairo_set_source_rgb (cr, 0.25, 0.25, 0.25);
+        cairo_set_line_width (cr, 0.5);
+        cairo_move_to (cr, i, rect.y);
+        cairo_line_to (cr, i, rect.y + rect.height);
+        cairo_stroke (cr);
+    }
+  }
 
-  cairo_set_source_surface (cr, ab_prv->cached_surface, 0, 0);
-  cairo_paint (cr);
-
-      /* draw selections */
-      arranger_bg_widget_draw_selections (
-        ab_prv->arranger,
-        cr);
+  /* draw selections */
+  arranger_bg_widget_draw_selections (
+    ab_prv->arranger,
+    cr);
 
   return 0;
 }
@@ -196,12 +185,6 @@ drag_end (GtkGestureDrag *gesture,
 void
 arranger_bg_widget_refresh (ArrangerBgWidget * self)
 {
-  ARRANGER_BG_WIDGET_GET_PRIVATE (self);
-
-  ab_prv->cache = 0;
-  if (Z_IS_TIMELINE_BG_WIDGET (self))
-    Z_TIMELINE_BG_WIDGET (self)->cache = 0;
-
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 

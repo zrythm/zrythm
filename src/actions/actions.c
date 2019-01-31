@@ -615,8 +615,6 @@ activate_create_ins_track (GSimpleAction *action,
   mixer_widget_refresh (MW_MIXER);
   tracklist_append_track (chan->track);
   tracklist_widget_refresh (MW_TRACKLIST);
-  arranger_bg_widget_refresh (
-    Z_ARRANGER_BG_WIDGET (TIMELINE_BG));
 }
 
 void

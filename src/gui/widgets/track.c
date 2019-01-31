@@ -56,8 +56,6 @@ G_DEFINE_TYPE_WITH_PRIVATE (TrackWidget,
 static void
 size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
 {
-  /* redraw timeline bg */
-  TIMELINE_BG->cache = 0;
   gtk_widget_queue_draw (GTK_WIDGET (
     MW_TIMELINE));
   gtk_widget_queue_allocate (GTK_WIDGET (

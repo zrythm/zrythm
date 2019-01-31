@@ -71,11 +71,6 @@ typedef struct
 
   GtkGestureDrag *         drag;
   GtkGestureMultiPress *   multipress;
-
-  /* draw caching */
-  int                      cache; ///< set to 0 to redraw
-  cairo_t *                cached_cr;
-  cairo_surface_t *        cached_surface;
 } RulerWidgetPrivate;
 
 typedef struct _RulerWidgetClass

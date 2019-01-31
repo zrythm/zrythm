@@ -142,9 +142,6 @@ tracklist_add_track (Track *     track,
         tracklist_widget_refresh (MW_TRACKLIST);
       if (MW_MIXER)
         mixer_widget_refresh (MW_MIXER);
-      if (MW_TIMELINE)
-        arranger_widget_refresh (
-          Z_ARRANGER_WIDGET (MW_TIMELINE));
     }
 }
 

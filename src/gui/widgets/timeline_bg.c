@@ -52,99 +52,84 @@ G_DEFINE_TYPE (TimelineBgWidget,
 static gboolean
 draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
 {
-  TimelineBgWidget * self =
-    (TimelineBgWidget *) widget;
+  GdkRectangle rect;
+  gdk_cairo_get_clip_rectangle (cr,
+                                &rect);
 
-  /* if not cached, draw */
-  if (!self->cache)
+  /* handle horizontal drawing for tracks */
+  GtkWidget * tw_widget;
+  gint wx, wy;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      guint height =
-        gtk_widget_get_allocated_height (widget);
-      guint width =
-        gtk_widget_get_allocated_width (widget);
+      Track * track = TRACKLIST->tracks[i];
+      if (!track->visible)
+        continue;
 
-      self->cached_surface =
-        cairo_surface_create_similar (
-          cairo_get_target (cr),
-          CAIRO_CONTENT_COLOR_ALPHA,
-          width,
-          height);
-      self->cached_cr =
-        cairo_create (self->cached_surface);
+      /* draw line below widget */
+      TrackWidget * tw = track->widget;
+      tw_widget = GTK_WIDGET (tw);
+      gtk_widget_translate_coordinates(
+                tw_widget,
+                GTK_WIDGET (MW_TRACKLIST),
+                0,
+                0,
+                &wx,
+                &wy);
+      int line_y =
+        wy + gtk_widget_get_allocated_height (
+          GTK_WIDGET (tw_widget));
+      if (line_y > rect.y &&
+          line_y < (rect.y + rect.height))
+        z_cairo_draw_horizontal_line (cr,
+                                      line_y,
+                                      rect.x,
+                                      rect.x + rect.width,
+                                      1.0);
+    }
 
-      /* handle horizontal drawing for tracks */
-      GtkWidget * tw_widget;
-      gint wx, wy;
-      for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  /* draw automation related stuff */
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      Track * track = TRACKLIST->tracks[i];
+
+      AutomationTracklist * automation_tracklist =
+        track_get_automation_tracklist (track);
+      if (automation_tracklist)
         {
-          Track * track = TRACKLIST->tracks[i];
-          if (!track->visible)
-            continue;
-
-          /* draw line below widget */
-          TrackWidget * tw = track->widget;
-          tw_widget = GTK_WIDGET (tw);
-          gtk_widget_translate_coordinates(
-                    tw_widget,
-                    GTK_WIDGET (MW_TRACKLIST),
-                    0,
-                    0,
-                    &wx,
-                    &wy);
-          int line_y =
-            wy + gtk_widget_get_allocated_height (
-              GTK_WIDGET (tw_widget));
-          z_cairo_draw_horizontal_line (self->cached_cr,
-                                        line_y,
-                                        0,
-                                        width,
-                                        1.0);
-        }
-
-      /* draw automation related stuff */
-      for (int i = 0; i < TRACKLIST->num_tracks; i++)
-        {
-          Track * track = TRACKLIST->tracks[i];
-
-          AutomationTracklist * automation_tracklist =
-            track_get_automation_tracklist (track);
-          if (automation_tracklist)
+          for (int j = 0;
+               j < automation_tracklist->num_automation_tracks;
+               j++)
             {
-              for (int j = 0;
-                   j < automation_tracklist->num_automation_tracks;
-                   j++)
+              AutomationTrack * at = automation_tracklist->automation_tracks[j];
+
+              if (at->widget &&
+                  track->bot_paned_visible &&
+                  at->visible)
                 {
-                  AutomationTrack * at = automation_tracklist->automation_tracks[j];
+                  /* horizontal automation track lines */
+                  gint wx, wy;
+                  gtk_widget_translate_coordinates(
+                            GTK_WIDGET (at->widget),
+                            GTK_WIDGET (MW_TRACKLIST),
+                            0,
+                            0,
+                            &wx,
+                            &wy);
+                  if (wy > rect.y &&
+                      wy < (rect.y + rect.height))
+                    z_cairo_draw_horizontal_line (
+                      cr,
+                      wy,
+                      rect.x,
+                      rect.x + rect.width,
+                      0.2);
 
-                  if (at->widget &&
-                      track->bot_paned_visible &&
-                      at->visible)
-                    {
-                      /* horizontal automation track lines */
-                      gint wx, wy;
-                      gtk_widget_translate_coordinates(
-                                GTK_WIDGET (at->widget),
-                                GTK_WIDGET (MW_TRACKLIST),
-                                0,
-                                0,
-                                &wx,
-                                &wy);
-                      z_cairo_draw_horizontal_line (
-                        self->cached_cr,
-                        wy,
-                        0,
-                        width,
-                        0.2);
-
-                    }
                 }
             }
         }
-      self->cache = 1;
     }
 
-  cairo_set_source_surface (cr, self->cached_surface, 0, 0);
-  cairo_paint (cr);
+
 
   return 0;
 }

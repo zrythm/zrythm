@@ -46,11 +46,6 @@ typedef struct
   GtkGestureMultiPress  *  multipress;
   RulerWidget *            ruler; ///< associated ruler
   ArrangerWidget *         arranger; ///< parent arranger
-
-  /* draw caching */
-  int                      cache; ///< set to 0 to redraw
-  cairo_t *                cached_cr;
-  cairo_surface_t *        cached_surface;
 } ArrangerBgWidgetPrivate;
 
 typedef struct _ArrangerBgWidgetClass
