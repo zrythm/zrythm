@@ -103,6 +103,10 @@ draw_cb (GtkWidget * widget,
   if (!AUDIO_ENGINE->run)
     return FALSE;
 
+  GdkRectangle rect;
+  gdk_cairo_get_clip_rectangle (cr,
+                                &rect);
+
   GET_PRIVATE;
 
   GtkStyleContext *context;
@@ -140,11 +144,12 @@ draw_cb (GtkWidget * widget,
       &TRANSPORT->loop_end_pos,
       0);
 
-  gtk_render_background (context, cr, 0, 0, rw_prv->total_px, height);
+  gtk_render_background (context, cr,
+                         rect.x, rect.y,
+                         rect.width, rect.height);
 
   /* draw lines */
-  int bar_count = 1;
-  for (int i = 0; i < rw_prv->total_px - SPACE_BEFORE_START; i++)
+  for (int i = rect.x; i < rect.x + rect.width; i++)
     {
       int draw_pos = i + SPACE_BEFORE_START;
 
@@ -160,14 +165,14 @@ draw_cb (GtkWidget * widget,
             CAIRO_FONT_SLANT_NORMAL,
             CAIRO_FONT_WEIGHT_NORMAL);
         cairo_set_font_size(cr, FONT_SIZE);
-        gchar * label = g_strdup_printf ("%d", bar_count);
+        gchar * label =
+          g_strdup_printf ("%d", i / rw_prv->px_per_bar + 1);
         static cairo_text_extents_t extents;
         cairo_text_extents(cr, label, &extents);
         cairo_move_to (cr,
                        (draw_pos ) - extents.width / 2,
                        (height / 2) + Y_SPACING);
         cairo_show_text(cr, label);
-        bar_count++;
       }
       else if (i % rw_prv->px_per_beat == 0)
       {

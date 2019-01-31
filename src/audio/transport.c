@@ -100,51 +100,46 @@ transport_request_roll ()
   TRANSPORT->play_state = PLAYSTATE_ROLL_REQUESTED;
 }
 
-static void
+static int
 on_playhead_changed ()
 {
   if (MAIN_WINDOW)
     {
       if (TOP_BAR->digital_transport)
         {
-          g_idle_add (
-            (GSourceFunc) gtk_widget_queue_draw,
+          gtk_widget_queue_draw (
             GTK_WIDGET (TOP_BAR->digital_transport));
         }
       if (TIMELINE_ARRANGER_PLAYHEAD)
         {
-          g_idle_add (
-            (GSourceFunc) gtk_widget_queue_allocate,
+          gtk_widget_queue_allocate (
             GTK_WIDGET (MW_TIMELINE));
         }
       if (TIMELINE_RULER_PLAYHEAD)
         {
-          g_idle_add (
-            (GSourceFunc) gtk_widget_queue_allocate,
+          gtk_widget_queue_allocate (
             GTK_WIDGET (MW_RULER));
         }
       if (PIANO_ROLL)
         {
           if (MIDI_RULER)
             {
-              g_idle_add (
-                (GSourceFunc) gtk_widget_queue_allocate,
+              gtk_widget_queue_allocate (
                 GTK_WIDGET (MIDI_RULER));
             }
           if (MIDI_ARRANGER)
             {
-              g_idle_add (
-                (GSourceFunc) gtk_widget_queue_allocate,
+              gtk_widget_queue_allocate (
                 GTK_WIDGET (MIDI_ARRANGER));
             }
           if (MIDI_MODIFIER_ARRANGER)
             {
-              g_idle_add (
-                (GSourceFunc) gtk_widget_queue_allocate,
+              gtk_widget_queue_allocate (
                 GTK_WIDGET (MIDI_MODIFIER_ARRANGER));
             }
         }
     }
+  return 0;
 }
 
 /**
@@ -157,7 +152,8 @@ transport_add_to_playhead (int frames)
     {
       position_add_frames (&TRANSPORT->playhead_pos,
                            frames);
-      on_playhead_changed ();
+      g_idle_add ((GSourceFunc) on_playhead_changed,
+                  NULL);
     }
 }
 

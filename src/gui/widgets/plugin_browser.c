@@ -46,6 +46,9 @@ enum
   NUM_COLUMNS
 };
 
+/**
+ * Called when row is double clicked.
+ */
 static void
 on_row_activated (GtkTreeView       *tree_view,
                GtkTreePath       *tp,
@@ -62,7 +65,7 @@ on_row_activated (GtkTreeView       *tree_view,
   gtk_tree_model_get_value (
     model,
     &iter,
-    1,
+    COLUMN_DESCR,
     &value);
   PluginDescriptor * descr =
     g_value_get_pointer (&value);
@@ -178,14 +181,11 @@ on_drag_data_get (GtkWidget        *widget,
                guint             time,
                gpointer          user_data)
 {
-  GtkTreeSelection * ts = (GtkTreeSelection *) user_data;
-  GList * selected_rows = gtk_tree_selection_get_selected_rows (ts,
+  GtkTreeSelection * ts = GTK_TREE_SELECTION (user_data);
+  GList * selected_rows =
+    gtk_tree_selection_get_selected_rows (ts,
                                                                 NULL);
   GtkTreePath * tp = (GtkTreePath *)g_list_first (selected_rows)->data;
-  /*gint * indices = gtk_tree_path_get_indices (tp);*/
-  /*GtkTreeRowReference *rr =*/
-    /*gtk_tree_row_reference_new (MAIN_WINDOW->plugin_browser->plugins_tree_model,*/
-                                /*tp);*/
   GtkTreeIter iter;
   gtk_tree_model_get_iter (
     GTK_TREE_MODEL (MW_PLUGIN_BROWSER->plugins_tree_model),
@@ -220,7 +220,8 @@ create_model_for_types ()
 
   for (i = 0; i < PLUGIN_MANAGER->num_plugins; i++)
     {
-      const gchar * name = PLUGIN_MANAGER->plugin_descriptors[i]->name;
+      const gchar * name =
+        PLUGIN_MANAGER->plugin_descriptors[i]->name;
 
       // Add a new row to the model
       gtk_list_store_append (list_store, &iter);

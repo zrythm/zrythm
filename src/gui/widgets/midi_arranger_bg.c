@@ -44,15 +44,15 @@ G_DEFINE_TYPE (MidiArrangerBgWidget,
 
 static void
 draw_borders (MidiArrangerBgWidget * self,
-              cairo_t * cr,
-              int y_offset)
+              cairo_t *              cr,
+              int                    x_from,
+              int                    x_to,
+              int                    y_offset)
 {
-  ARRANGER_BG_WIDGET_GET_PRIVATE (self);
-  RULER_WIDGET_GET_PRIVATE (ab_prv->ruler);
   cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
   cairo_set_line_width (cr, 0.5);
-  cairo_move_to (cr, 0, y_offset);
-  cairo_line_to (cr, rw_prv->total_px, y_offset);
+  cairo_move_to (cr, x_from, y_offset);
+  cairo_line_to (cr, x_to, y_offset);
   cairo_stroke (cr);
 }
 
@@ -62,13 +62,23 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   MidiArrangerBgWidget * self =
     Z_MIDI_ARRANGER_BG_WIDGET (widget);
 
+  GdkRectangle rect;
+  gdk_cairo_get_clip_rectangle (cr,
+                                &rect);
+
   /*handle horizontal drawing*/
   for (int i = 0; i < 128; i++)
     {
-      draw_borders (
-        self,
-        cr,
-        PIANO_ROLL->piano_roll_labels->px_per_note * i);
+      int y_offset =
+        PIANO_ROLL_LABELS->px_per_note * i;
+      if (y_offset > rect.y &&
+          y_offset < (rect.y + rect.height))
+        draw_borders (
+          self,
+          cr,
+          rect.x,
+          rect.x + rect.width,
+          y_offset);
     }
 
   return 0;

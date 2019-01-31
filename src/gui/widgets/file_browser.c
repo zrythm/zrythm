@@ -38,6 +38,21 @@ G_DEFINE_TYPE (FileBrowserWidget,
                file_browser_widget,
                GTK_TYPE_PANED)
 
+typedef enum
+{
+  DATA_TYPE_AUDIO,
+  DATA_TYPE_MIDI,
+} DataType;
+
+enum
+{
+  COLUMN_ICON,
+  COLUMN_NAME,
+  COLUMN_DATA,
+  COLUMN_DATA_TYPE,
+  NUM_COLUMNS
+};
+
 static void
 on_row_activated (GtkTreeView       *tree_view,
                GtkTreePath       *tp,
@@ -50,15 +65,24 @@ on_row_activated (GtkTreeView       *tree_view,
     model,
     &iter,
     tp);
-  GValue value = G_VALUE_INIT;
-  gtk_tree_model_get_value (
-    model,
-    &iter,
-    1,
-    &value);
-  PluginDescriptor * descr =
-    g_value_get_pointer (&value);
-  mixer_add_channel_from_plugin_descr (descr);
+  GValue value;
+  /*value = G_VALUE_INIT;*/
+  /*gtk_tree_model_get_value (*/
+    /*model,*/
+    /*&iter,*/
+    /*COLUMN_DATA_TYPE,*/
+    /*&value);*/
+  /*DataType data_type =*/
+    /*g_value_get_int (&value);*/
+
+  /*if (data_type == DATA_TYPE_AUDIO)*/
+    /*{*/
+
+    /*}*/
+  /*else if (data_type == DATA_TYPE_MIDI)*/
+    /*{*/
+
+    /*}*/
 }
 
 /**
@@ -71,24 +95,9 @@ visible_func (GtkTreeModel *model,
               GtkTreeIter  *iter,
               gpointer      data)
 {
-  FileBrowserWidget * self = Z_FILE_BROWSER_WIDGET (data);
+  /*FileBrowserWidget * self = Z_FILE_BROWSER_WIDGET (data);*/
 
-  // Visible if row is non-empty and category matches selected
-  PluginDescriptor *descr;
-  gboolean visible = FALSE;
-
-  gtk_tree_model_get (model, iter, 1, &descr, -1);
-  if (!self->selected_category)
-    {
-      visible = TRUE;
-    }
-  else if (descr->category &&
-      strcmp (descr->category, self->selected_category) == 0)
-    {
-      visible = TRUE;
-    }
-
-  return visible;
+  return TRUE;
 }
 
 static int

@@ -51,6 +51,9 @@ G_DEFINE_TYPE (MidiModifierArrangerBgWidget,
 static gboolean
 draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
 {
+  GdkRectangle rect;
+  gdk_cairo_get_clip_rectangle (cr,
+                                &rect);
   return 0;
 }
 

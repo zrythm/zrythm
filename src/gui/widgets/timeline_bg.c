@@ -53,10 +53,13 @@ G_DEFINE_TYPE (TimelineBgWidget,
 static gboolean
 draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
 {
+  GdkRectangle rect;
+  gdk_cairo_get_clip_rectangle (cr,
+                                &rect);
+
   /* handle horizontal drawing for tracks */
   GtkWidget * tw_widget;
   gint wx, wy;
-  RULER_WIDGET_GET_PRIVATE (MW_RULER);
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       Track * track = TRACKLIST->tracks[i];
@@ -76,11 +79,13 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
       int line_y =
         wy + gtk_widget_get_allocated_height (
           GTK_WIDGET (tw_widget));
-      z_cairo_draw_horizontal_line (cr,
-                                    line_y,
-                                    0.0,
-                                    rw_prv->total_px,
-                                    1.0);
+      if (line_y > rect.y &&
+          line_y < (rect.y + rect.height))
+        z_cairo_draw_horizontal_line (cr,
+                                      line_y,
+                                      rect.x,
+                                      rect.x + rect.width,
+                                      1.0);
     }
 
   /* draw automation related stuff */
@@ -111,11 +116,14 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
                             0,
                             &wx,
                             &wy);
-                  z_cairo_draw_horizontal_line (cr,
-                                        wy,
-                                        0.0,
-                                        rw_prv->total_px,
-                                        0.2);
+                  if (wy > rect.y &&
+                      wy < (rect.y + rect.height))
+                    z_cairo_draw_horizontal_line (
+                      cr,
+                      wy,
+                      rect.x,
+                      rect.x + rect.width,
+                      0.2);
 
                 }
             }

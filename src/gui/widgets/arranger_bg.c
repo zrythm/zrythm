@@ -46,6 +46,10 @@ G_DEFINE_TYPE_WITH_PRIVATE (ArrangerBgWidget,
 static gboolean
 draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
 {
+  GdkRectangle rect;
+  gdk_cairo_get_clip_rectangle (cr,
+                                &rect);
+
   ArrangerBgWidget * self = Z_ARRANGER_BG_WIDGET (widget);
   ARRANGER_BG_WIDGET_GET_PRIVATE (self);
 
@@ -57,28 +61,36 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   context = gtk_widget_get_style_context (widget);
 
   /*guint width = gtk_widget_get_allocated_width (widget);*/
-  guint height = gtk_widget_get_allocated_height (widget);
+  /*guint height = gtk_widget_get_allocated_height (widget);*/
 
-  gtk_render_background (context, cr, 0, 0, rw_prv->total_px, height);
+  gtk_render_background (context, cr,
+                         rect.x, rect.y,
+                         rect.width,
+                         rect.height);
 
   /* handle vertical drawing */
-  for (int i = SPACE_BEFORE_START; i < rw_prv->total_px; i++)
+  for (int i =
+         (rect.x > SPACE_BEFORE_START ?
+          rect.x :
+          SPACE_BEFORE_START);
+       i < rect.x + rect.width;
+       i++)
   {
     int actual_pos = i - SPACE_BEFORE_START;
     if (actual_pos % rw_prv->px_per_bar == 0)
     {
         cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);
         cairo_set_line_width (cr, 1);
-        cairo_move_to (cr, i, 0);
-        cairo_line_to (cr, i, height);
+        cairo_move_to (cr, i, rect.y);
+        cairo_line_to (cr, i, rect.y + rect.height);
         cairo_stroke (cr);
     }
     else if (actual_pos % rw_prv->px_per_beat == 0)
     {
         cairo_set_source_rgb (cr, 0.25, 0.25, 0.25);
         cairo_set_line_width (cr, 0.5);
-        cairo_move_to (cr, i, 0);
-        cairo_line_to (cr, i, height);
+        cairo_move_to (cr, i, rect.y);
+        cairo_line_to (cr, i, rect.y + rect.height);
         cairo_stroke (cr);
     }
   }

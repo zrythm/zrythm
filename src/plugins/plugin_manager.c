@@ -120,7 +120,20 @@ scan_plugins (PluginManager * self)
          sizeof (char *),
          sort_category_func);
 
-  g_message ("%d Plugins scanned.", PLUGIN_MANAGER->num_plugins);
+  g_message ("%d Plugins scanned.",
+             PLUGIN_MANAGER->num_plugins);
+
+  for (int i = 0; i < PLUGIN_MANAGER->num_plugins; i++)
+    {
+      PluginDescriptor * descr =
+        PLUGIN_MANAGER->plugin_descriptors[i];
+
+      g_message ("[%d] %s (%s - %s)",
+                 i,
+                 descr->name,
+                 descr->uri,
+                 descr->category);
+    }
 }
 
 /**
