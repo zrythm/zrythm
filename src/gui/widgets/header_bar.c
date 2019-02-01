@@ -125,7 +125,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "_Preferences",
-      "document-properties",
+      "application-x-m4",
       0,
       NULL,
       0,

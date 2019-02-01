@@ -35,7 +35,8 @@ INSTALL_FONT = ${INSTALL} -m 644
 LDFLAGS = @LDFLAGS@
 MKDIR_P = mkdir -p
 GLIB_COMPILE_SCHEMAS = @GLIB_COMPILE_SCHEMAS@
-gsettingsschemadir = @gsettingsschemadir@
+# doesn't work in prefixes like /opt/...
+#gsettingsschemadir = @gsettingsschemadir@
 OBJEXT = @OBJEXT@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
@@ -47,6 +48,7 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
 SHELL = @SHELL@
 srcdir = @srcdir@
+gsettingsschemadir = `@PKG_CONFIG@ --variable=prefix glib-2.0`/share/glib-2.0/schemas
 
 # Installation directory variables
 prefix = @prefix@
