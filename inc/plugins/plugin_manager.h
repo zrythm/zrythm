@@ -128,6 +128,7 @@ typedef struct PluginManager
 {
   PluginDescriptor      * plugin_descriptors[10000];
   char *                 plugin_categories[50];
+  char *                 collections[50]; ///< TODO
   int                    num_plugin_categories;
   int                    num_plugins;
   LV2_Settings           lv2_settings;

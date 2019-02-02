@@ -50,11 +50,20 @@ io_get_home_dir ();
 FILE *
 io_touch_file (const char * filename);
 
+char *
+io_path_get_parent_dir (const char * path);
+
 /**
  * Strips extensions from given filename.
  */
 char *
 io_file_strip_ext (const char * filename);
+
+/**
+ * Returns file extension or NULL.
+ */
+char *
+io_file_get_ext (const char * file);
 
 /**
  * Strips path from given filename.

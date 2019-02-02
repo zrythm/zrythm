@@ -407,16 +407,20 @@ tree_view_create (PluginBrowserWidget * self,
         entries,
         1,
         GDK_ACTION_COPY);
-      g_signal_connect (GTK_WIDGET (tree_view),
-                        "drag-data-get",
-                        G_CALLBACK (on_drag_data_get),
-                        gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view)));
+      g_signal_connect (
+        GTK_WIDGET (tree_view),
+        "drag-data-get",
+        G_CALLBACK (on_drag_data_get),
+        gtk_tree_view_get_selection (
+          GTK_TREE_VIEW (tree_view)));
     }
 
-  g_signal_connect (G_OBJECT (gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view))),
-                    "changed",
-                    G_CALLBACK (on_selection_changed),
-                    self);
+  g_signal_connect (
+    G_OBJECT (gtk_tree_view_get_selection (
+                GTK_TREE_VIEW (tree_view))),
+    "changed",
+     G_CALLBACK (on_selection_changed),
+     self);
 
   return tree_view;
 }

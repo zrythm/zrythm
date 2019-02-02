@@ -67,7 +67,7 @@ sudo dnf -y install zrythm
 ### Manual installation
 _Note: You will need to have the development libraries for libxml2, gtk3, jack, lilv, suil, libsmf, libsndfile, libdazzle and lv2 installed_
 ```
-git clone https://gitlab.com/alextee/zrythm.git
+git clone https://git.zrythm.org/zrythm/zrythm.git
 cd zrythm
 ./autogen.sh
 ./configure

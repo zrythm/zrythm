@@ -22,6 +22,7 @@
 #include "zrythm.h"
 #include "audio/engine.h"
 #include "audio/mixer.h"
+#include "gui/backend/file_manager.h"
 #include "gui/widgets/file_browser.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
@@ -30,6 +31,7 @@
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/io.h"
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
@@ -38,52 +40,13 @@ G_DEFINE_TYPE (FileBrowserWidget,
                file_browser_widget,
                GTK_TYPE_PANED)
 
-typedef enum
-{
-  DATA_TYPE_AUDIO,
-  DATA_TYPE_MIDI,
-} DataType;
-
 enum
 {
   COLUMN_ICON,
   COLUMN_NAME,
-  COLUMN_DATA,
-  COLUMN_DATA_TYPE,
+  COLUMN_DESCR,
   NUM_COLUMNS
 };
-
-static void
-on_row_activated (GtkTreeView       *tree_view,
-               GtkTreePath       *tp,
-               GtkTreeViewColumn *column,
-               gpointer           user_data)
-{
-  GtkTreeModel * model = GTK_TREE_MODEL (user_data);
-  GtkTreeIter iter;
-  gtk_tree_model_get_iter (
-    model,
-    &iter,
-    tp);
-  GValue value;
-  /*value = G_VALUE_INIT;*/
-  /*gtk_tree_model_get_value (*/
-    /*model,*/
-    /*&iter,*/
-    /*COLUMN_DATA_TYPE,*/
-    /*&value);*/
-  /*DataType data_type =*/
-    /*g_value_get_int (&value);*/
-
-  /*if (data_type == DATA_TYPE_AUDIO)*/
-    /*{*/
-
-    /*}*/
-  /*else if (data_type == DATA_TYPE_MIDI)*/
-    /*{*/
-
-    /*}*/
-}
 
 /**
  * Visible function for file tree model.
@@ -115,53 +78,69 @@ static void
 on_selection_changed (GtkTreeSelection * ts,
                       gpointer         user_data)
 {
-  FileBrowserWidget * self = Z_FILE_BROWSER_WIDGET (user_data);
-  GtkTreeView * tv = gtk_tree_selection_get_tree_view (ts);
-  GtkTreeModel * model = gtk_tree_view_get_model (tv);
-  GList * selected_rows = gtk_tree_selection_get_selected_rows (ts,
-                                                                NULL);
+  FileBrowserWidget * self =
+    Z_FILE_BROWSER_WIDGET (user_data);
+  GtkTreeView * tv =
+    gtk_tree_selection_get_tree_view (ts);
+  GtkTreeModel * model =
+    gtk_tree_view_get_model (tv);
+  GList * selected_rows =
+    gtk_tree_selection_get_selected_rows (ts,
+                                          NULL);
   if (selected_rows)
     {
-      GtkTreePath * tp = (GtkTreePath *)g_list_first (selected_rows)->data;
-      /*gint * indices = gtk_tree_path_get_indices (tp);*/
-      /*GtkTreeRowReference *rr =*/
-        /*gtk_tree_row_reference_new (MAIN_WINDOW->file_browser->files_tree_model,*/
-                                    /*tp);*/
+      GtkTreePath * tp =
+        (GtkTreePath *) g_list_first (selected_rows)->data;
       GtkTreeIter iter;
       gtk_tree_model_get_iter (model,
                                &iter,
                                tp);
       GValue value = G_VALUE_INIT;
 
-      if (model == self->category_tree_model)
+      if (model == self->type_tree_model)
         {
           gtk_tree_model_get_value (model,
                                     &iter,
                                     0,
                                     &value);
-          self->selected_category = g_value_get_string (&value);
-          gtk_tree_model_filter_refilter (self->files_tree_model);
+          self->selected_type =
+            g_value_get_pointer (&value);
+          gtk_tree_model_filter_refilter (
+            self->files_tree_model);
         }
-      else if (model == GTK_TREE_MODEL (self->files_tree_model))
+      else if (model ==
+               GTK_TREE_MODEL (self->files_tree_model))
         {
           gtk_tree_model_get_value (model,
                                     &iter,
-                                    1,
+                                    COLUMN_DESCR,
                                     &value);
-          PluginDescriptor * descr = g_value_get_pointer (&value);
-          char * label = g_strdup_printf (
-            "%s\n%s, %d\nAudio: %d, %d\nMidi: %d, %d\nControls: %d, %d",
-            descr->author,
-            descr->category,
-            descr->protocol,
-            descr->num_audio_ins,
-            descr->num_audio_outs,
-            descr->num_midi_ins,
-            descr->num_midi_outs,
-            descr->num_ctrl_ins,
-            descr->num_ctrl_outs);
+          FileDescriptor * descr =
+            g_value_get_pointer (&value);
+          FileType * ft =
+            file_manager_get_file_type_from_enum (
+              descr->type);
+
+
+          /* TODO set sample rate, etc. */
+          char * label;
+          if (descr->type == FILE_TYPE_MP3 ||
+              descr->type == FILE_TYPE_FLAC ||
+              descr->type == FILE_TYPE_OGG ||
+              descr->type == FILE_TYPE_WAV)
+            label =
+              g_strdup_printf (
+              "%s\nType: %s",
+              descr->label,
+              ft->label);
+          else
+            label =
+              g_strdup_printf (
+              "%s\nType: %s",
+              descr->label,
+              ft->label);
           update_file_info_label (self,
-                                    label);
+                                  label);
         }
     }
 }
@@ -175,29 +154,30 @@ on_drag_data_get (GtkWidget        *widget,
                gpointer          user_data)
 {
   GtkTreeSelection * ts = (GtkTreeSelection *) user_data;
-  GList * selected_rows = gtk_tree_selection_get_selected_rows (ts,
-                                                                NULL);
-  GtkTreePath * tp = (GtkTreePath *)g_list_first (selected_rows)->data;
-  /*gint * indices = gtk_tree_path_get_indices (tp);*/
-  /*GtkTreeRowReference *rr =*/
-    /*gtk_tree_row_reference_new (MAIN_WINDOW->file_browser->files_tree_model,*/
-                                /*tp);*/
+  GList * selected_rows =
+    gtk_tree_selection_get_selected_rows (ts,
+                                          NULL);
+  GtkTreePath * tp =
+    (GtkTreePath *) g_list_first (selected_rows)->data;
   GtkTreeIter iter;
-  gtk_tree_model_get_iter (GTK_TREE_MODEL (MW_FILE_BROWSER->files_tree_model),
-                           &iter,
-                           tp);
+  gtk_tree_model_get_iter (
+    GTK_TREE_MODEL (MW_FILE_BROWSER->files_tree_model),
+    &iter,
+    tp);
   GValue value = G_VALUE_INIT;
-  gtk_tree_model_get_value (GTK_TREE_MODEL (MW_FILE_BROWSER->files_tree_model),
-                            &iter,
-                            1,
-                            &value);
-  PluginDescriptor * descr = g_value_get_pointer (&value);
+  gtk_tree_model_get_value (
+    GTK_TREE_MODEL (MW_FILE_BROWSER->files_tree_model),
+    &iter,
+    1,
+    &value);
+  FileDescriptor * descr = g_value_get_pointer (&value);
 
-  gtk_selection_data_set (data,
-        gdk_atom_intern_static_string ("PLUGIN_DESCR"),
-        32,
-        (const guchar *)&descr,
-        sizeof (PluginDescriptor));
+  gtk_selection_data_set (
+    data,
+    gdk_atom_intern_static_string ("FILE_DESCR"),
+    32,
+    (const guchar *)&descr,
+    sizeof (FileDescriptor));
 }
 
 static GtkTreeModel *
@@ -210,27 +190,28 @@ create_model_for_types ()
 
   /* file name, index */
   list_store = gtk_list_store_new (2,
-                                   G_TYPE_STRING, G_TYPE_INT);
+                                   G_TYPE_STRING,
+                                   G_TYPE_POINTER);
 
-  for (i = 0; i < PLUGIN_MANAGER->num_plugins; i++)
+  for (i = 0; i < NUM_FILE_TYPES; i++)
     {
-      const gchar * name = PLUGIN_MANAGER->plugin_descriptors[i]->name;
+      FileType * ft =
+        FILE_MANAGER->file_types[i];
 
       // Add a new row to the model
       gtk_list_store_append (list_store, &iter);
-      gtk_list_store_set (list_store, &iter,
-                          0, name,
-                          -1);
-      gtk_list_store_set (list_store, &iter,
-                          1, i,
-                          -1);
+      gtk_list_store_set (
+        list_store, &iter,
+        0, ft->label,
+        1, ft,
+        -1);
     }
 
   return GTK_TREE_MODEL (list_store);
 }
 
 static GtkTreeModel *
-create_model_for_categories ()
+create_model_for_locations ()
 {
   GtkListStore *list_store;
   /*GtkTreePath *path;*/
@@ -238,18 +219,22 @@ create_model_for_categories ()
   gint i;
 
   /* file name, index */
-  list_store = gtk_list_store_new (1,
-                                   G_TYPE_STRING);
+  list_store = gtk_list_store_new (2,
+                                   G_TYPE_STRING,
+                                   G_TYPE_POINTER);
 
-  for (i = 0; i < PLUGIN_MANAGER->num_plugin_categories; i++)
+  for (i = 0; i < FILE_MANAGER->num_locations; i++)
     {
-      const gchar * name = PLUGIN_MANAGER->plugin_categories[i];
+      FileBrowserLocation * loc =
+        FILE_MANAGER->locations[i];
 
       // Add a new row to the model
       gtk_list_store_append (list_store, &iter);
-      gtk_list_store_set (list_store, &iter,
-                          0, name,
-                          -1);
+      gtk_list_store_set (
+        list_store, &iter,
+        0, loc->label,
+        1, loc,
+        -1);
     }
 
   return GTK_TREE_MODEL (list_store);
@@ -264,25 +249,62 @@ create_model_for_files (FileBrowserWidget * self)
   gint i;
 
   /* file name, index */
-  list_store = gtk_list_store_new (2,
-                                   G_TYPE_STRING, G_TYPE_POINTER);
+  list_store =
+    gtk_list_store_new (NUM_COLUMNS,
+                        G_TYPE_STRING,
+                        G_TYPE_STRING,
+                        G_TYPE_POINTER);
 
-  for (i = 0; i < PLUGIN_MANAGER->num_plugins; i++)
+  for (i = 0; i < FILE_MANAGER->num_files; i++)
     {
-      const gchar * name = PLUGIN_MANAGER->plugin_descriptors[i]->name;
+      FileDescriptor * descr =
+        FILE_MANAGER->files[i];
+
+      gchar * icon_name;
+      switch (descr->type)
+        {
+        case FILE_TYPE_MIDI:
+          icon_name = "audio-midi";
+          break;
+        case FILE_TYPE_MP3:
+          icon_name = "audio-mp3";
+          break;
+        case FILE_TYPE_FLAC:
+          icon_name = "audio-flac";
+          break;
+        case FILE_TYPE_OGG:
+          icon_name = "application-ogg";
+          break;
+        case FILE_TYPE_WAV:
+          icon_name = "audio-x-wav";
+          break;
+        case FILE_TYPE_DIR:
+          icon_name = "inode-directory";
+          break;
+        case FILE_TYPE_PARENT_DIR:
+          icon_name = "inode-directory";
+          break;
+        case FILE_TYPE_OTHER:
+          icon_name = "none";
+          break;
+        case NUM_FILE_TYPES:
+          break;
+        }
 
       // Add a new row to the model
       gtk_list_store_append (list_store, &iter);
-      gtk_list_store_set (list_store, &iter,
-                          0, name,
-                          -1);
-      gtk_list_store_set (list_store, &iter,
-                          1, PLUGIN_MANAGER->plugin_descriptors[i],
-                          -1);
+      gtk_list_store_set (
+        list_store, &iter,
+        COLUMN_ICON, icon_name,
+        COLUMN_NAME, descr->label,
+        COLUMN_DESCR, descr,
+        -1);
     }
 
-  GtkTreeModel * model = gtk_tree_model_filter_new (GTK_TREE_MODEL (list_store),
-                             NULL);
+  GtkTreeModel * model =
+    gtk_tree_model_filter_new (
+      GTK_TREE_MODEL (list_store),
+      NULL);
   gtk_tree_model_filter_set_visible_func (
     GTK_TREE_MODEL_FILTER (model),
     visible_func,
@@ -291,6 +313,55 @@ create_model_for_files (FileBrowserWidget * self)
 
   return model;
 }
+
+static void
+on_row_activated (GtkTreeView       *tree_view,
+               GtkTreePath       *tp,
+               GtkTreeViewColumn *column,
+               gpointer           user_data)
+{
+  FileBrowserWidget * self =
+    MW_FILE_BROWSER;
+  GtkTreeModel * model =
+    GTK_TREE_MODEL (self->files_tree_model);
+  GtkTreeIter iter;
+  gtk_tree_model_get_iter (
+    model,
+    &iter,
+    tp);
+  GValue value = G_VALUE_INIT;
+  gtk_tree_model_get_value (
+    model,
+    &iter,
+    COLUMN_DESCR,
+    &value);
+  FileDescriptor * descr =
+    g_value_get_pointer (&value);
+
+  g_message ("activated file type %d, abs path %s",
+             descr->type,
+             descr->absolute_path);
+  if (descr->type == FILE_TYPE_DIR ||
+      descr->type == FILE_TYPE_PARENT_DIR)
+    {
+      /* FIXME free unnecessary stuff */
+      FileBrowserLocation * loc =
+        malloc (sizeof (FileBrowserLocation));
+      loc->path = descr->absolute_path;
+      loc->label = g_path_get_basename (loc->path);
+      file_manager_set_selection (
+        loc,
+        FB_SELECTION_TYPE_LOCATIONS,
+        1);
+      self->files_tree_model =
+        GTK_TREE_MODEL_FILTER (
+          create_model_for_files (self));
+      gtk_tree_view_set_model (
+        self->files_tree_view,
+        GTK_TREE_MODEL (self->files_tree_model));
+    }
+}
+
 
 static void
 expander_callback (GObject    *object,
@@ -325,16 +396,48 @@ tree_view_create (FileBrowserWidget * self,
       GTK_TREE_MODEL (model));
 
   /* init tree view */
-  GtkCellRenderer * renderer =
-    gtk_cell_renderer_text_new ();
-  GtkTreeViewColumn * column =
-    gtk_tree_view_column_new_with_attributes ("Test",
-                                              renderer,
-                                              "text",
-                                              0,
-                                              NULL);
-  gtk_tree_view_append_column ( GTK_TREE_VIEW (tree_view),
-                               column);
+  GtkCellRenderer * renderer;
+  GtkTreeViewColumn * column;
+  if (GTK_TREE_MODEL (self->files_tree_model) == model)
+    {
+      /* column for icon */
+      renderer =
+        gtk_cell_renderer_pixbuf_new ();
+      column =
+        gtk_tree_view_column_new_with_attributes (
+          "icon", renderer,
+          "icon-name", COLUMN_ICON,
+          NULL);
+      gtk_tree_view_append_column (
+        GTK_TREE_VIEW (tree_view),
+        column);
+
+      /* column for name */
+      renderer =
+        gtk_cell_renderer_text_new ();
+      column =
+        gtk_tree_view_column_new_with_attributes (
+          "name", renderer,
+          "text", COLUMN_NAME,
+          NULL);
+      gtk_tree_view_append_column (
+        GTK_TREE_VIEW (tree_view),
+        column);
+    }
+  else
+    {
+      /* column for name */
+      renderer =
+        gtk_cell_renderer_text_new ();
+      column =
+        gtk_tree_view_column_new_with_attributes (
+          "name", renderer,
+          "text", 0,
+          NULL);
+      gtk_tree_view_append_column (
+        GTK_TREE_VIEW (tree_view),
+        column);
+    }
 
   /* hide headers and allow multi-selection */
   gtk_tree_view_set_headers_visible (
@@ -343,7 +446,8 @@ tree_view_create (FileBrowserWidget * self,
 
   if (allow_multi)
     gtk_tree_selection_set_mode (
-        gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view)),
+        gtk_tree_view_get_selection (
+          GTK_TREE_VIEW (tree_view)),
         GTK_SELECTION_MULTIPLE);
 
   if (dnd)
@@ -358,16 +462,20 @@ tree_view_create (FileBrowserWidget * self,
         entries,
         1,
         GDK_ACTION_COPY);
-      g_signal_connect (GTK_WIDGET (tree_view),
-                        "drag-data-get",
-                        G_CALLBACK (on_drag_data_get),
-                        gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view)));
+      g_signal_connect (
+        GTK_WIDGET (tree_view),
+        "drag-data-get",
+        G_CALLBACK (on_drag_data_get),
+        gtk_tree_view_get_selection (
+          GTK_TREE_VIEW (tree_view)));
     }
 
-  g_signal_connect (G_OBJECT (gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view))),
-                    "changed",
-                    G_CALLBACK (on_selection_changed),
-                    self);
+  g_signal_connect (
+    G_OBJECT (gtk_tree_view_get_selection (
+                GTK_TREE_VIEW (tree_view))),
+    "changed",
+     G_CALLBACK (on_selection_changed),
+     self);
 
   return tree_view;
 }
@@ -439,21 +547,24 @@ file_browser_widget_new ()
     self,
     create_model_for_types (),
     GTK_EXPANDER (self->types_exp));
-  self->category_tree_model = create_model_for_categories ();
+  self->locations_tree_model =
+    create_model_for_locations ();
   GtkScrolledWindow * scrolled_window =
   create_tree_view_add_to_expander (
     self,
-    self->category_tree_model,
+    self->locations_tree_model,
     GTK_EXPANDER (self->locations_exp));
 
-  /* expand category by default */
-  gtk_expander_set_expanded (GTK_EXPANDER (self->locations_exp),
-                             TRUE);
+  /* expand locations by default */
+  gtk_expander_set_expanded (
+    GTK_EXPANDER (self->locations_exp),
+    TRUE);
   gtk_widget_set_vexpand (GTK_WIDGET (scrolled_window),
                           TRUE);
 
   /* populate files */
-  self->files_tree_model = GTK_TREE_MODEL_FILTER (create_model_for_files (self));
+  self->files_tree_model =
+    GTK_TREE_MODEL_FILTER (create_model_for_files (self));
   self->files_tree_view =
     GTK_TREE_VIEW (tree_view_create (
       self,
@@ -464,7 +575,7 @@ file_browser_widget_new ()
   g_signal_connect (G_OBJECT (self->files_tree_view),
                     "row-activated",
                     G_CALLBACK (on_row_activated),
-                    self->files_tree_model);
+                    NULL);
   GtkWidget * file_scroll_window =
     add_scroll_window (self->files_tree_view);
   gtk_box_pack_start (GTK_BOX (self->browser_bot),

@@ -29,6 +29,7 @@
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/accel.h"
+#include "gui/backend/file_manager.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/splash.h"
 #include "gui/widgets/start_assistant.h"
@@ -173,12 +174,14 @@ task_func (GTask *task,
       break;
     case TASK_INIT_PLUGIN_MANAGER:
       plugin_manager_init (&ZRYTHM->plugin_manager);
+      file_manager_init (&ZRYTHM->file_manager);
       data->message =
         "Setting up backend";
       data->progress = 0.7;
       break;
     case TASK_END:
       plugin_manager_scan_plugins (&ZRYTHM->plugin_manager);
+      file_manager_load_files (&ZRYTHM->file_manager);
       data->message =
         "Loading project";
       data->progress = 0.8;

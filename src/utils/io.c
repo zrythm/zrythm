@@ -59,6 +59,21 @@ setup_home_dir ()
 }
 
 /**
+ * Returns file extension or NULL.
+ */
+char *
+io_file_get_ext (const char * file)
+{
+  char ** parts = g_strsplit (file, ".", 2);
+  char * file_part = parts[0];
+  char * ext_part = parts[1];
+
+  g_free (file_part);
+
+  return ext_part;
+}
+
+/**
  * Gets home dir. MUST be freed.
  */
 char *
@@ -106,6 +121,54 @@ char *
 io_path_get_basename (const char * filename)
 {
   return g_path_get_basename (filename);
+}
+
+char *
+io_path_get_parent_dir (const char * path)
+{
+  char ** parts = g_strsplit (path, G_DIR_SEPARATOR_S, -1);
+  char * new_str = NULL;
+  char * prev_str = NULL;
+  int num_parts = 0;
+  while (parts[num_parts])
+    {
+      num_parts++;
+    }
+
+  /* root */
+  if (num_parts < 2)
+    new_str = g_strdup (G_DIR_SEPARATOR_S);
+  else
+    {
+      for (int i = 0; i < num_parts - 1; i++)
+        {
+          prev_str = new_str;
+
+          if (i == 1)
+            new_str = g_strconcat (new_str,
+                                   parts[i],
+                                   NULL);
+          else if (i == 0)
+            new_str = g_strconcat (G_DIR_SEPARATOR_S,
+                                   parts[i],
+                                   NULL);
+          else
+            new_str = g_strconcat (new_str,
+                                   G_DIR_SEPARATOR_S,
+                                   parts[i],
+                                   NULL);
+
+          if (prev_str)
+            g_free (prev_str);
+        }
+    }
+
+  g_strfreev (parts);
+
+  g_message ("parent dir for %s is %s",
+             path,
+             new_str);
+  return new_str;
 }
 
 char *

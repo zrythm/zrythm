@@ -22,6 +22,9 @@
 #ifndef __UTILS_ARRAYS_H__
 #define __UTILS_ARRAYS_H__
 
+#define Z_ARRAY(array) ((void **) array)
+#define Z_ARRAY_ELEMENT(element) ((void *) element)
+
 void
 array_delete (void ** array, int * size, void * element);
 

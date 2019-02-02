@@ -34,21 +34,24 @@ G_DECLARE_FINAL_TYPE (FileBrowserWidget,
 
 #define MW_FILE_BROWSER MW_RIGHT_DOCK_EDGE->file_browser
 
+typedef struct FileType FileType;
+
 typedef struct _FileBrowserWidget
 {
-  GtkPaned                 parent_instance;
-  GtkGrid                  * browser_top;
-  GtkSearchEntry           * browser_search;
-  GtkExpander              * collections_exp;
-  GtkExpander              * types_exp;
-  GtkExpander              * locations_exp;
-  GtkBox                   * browser_bot;
-  GtkLabel                 * file_info;
-  const char *             selected_category; ///< selected category
-  GtkTreeModel             * category_tree_model;
-  GtkTreeModelFilter       * files_tree_model;
-  GtkTreeView *            files_tree_view;
-  GtkScrolledWindow *      file_scroll_window;
+  GtkPaned               parent_instance;
+  GtkGrid *              browser_top;
+  GtkSearchEntry *       browser_search;
+  GtkExpander *          collections_exp;
+  GtkExpander *          types_exp;
+  GtkExpander *          locations_exp;
+  GtkBox *               browser_bot;
+  GtkLabel *             file_info;
+  FileType *             selected_type;
+  GtkTreeModel *         type_tree_model;
+  GtkTreeModel *         locations_tree_model;
+  GtkTreeModelFilter *   files_tree_model;
+  GtkTreeView *          files_tree_view;
+  GtkScrolledWindow *    file_scroll_window;
 } FileBrowserWidget;
 
 FileBrowserWidget *

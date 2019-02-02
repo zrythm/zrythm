@@ -23,6 +23,7 @@
 #define __ZRYTHM_H__
 
 #include "audio/snap_grid.h"
+#include "gui/backend/file_manager.h"
 #include "plugins/plugin_manager.h"
 #include "settings/preferences.h"
 #include "settings/settings.h"
@@ -65,6 +66,8 @@ typedef struct Zrythm
    * Manages plugins (loading, instantiating, etc.)
    */
   PluginManager           plugin_manager;
+
+  FileManager             file_manager;
 
   MainWindowWidget *      main_window; ///< main window
 
