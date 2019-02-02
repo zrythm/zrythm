@@ -72,6 +72,7 @@ sysconfdir = @sysconfdir@
 
 # library CFLAGS
 LIBCYAML_CFLAGS = @LIBCYAML_CFLAGS@
+FFMPEG_CFLAGS = @FFMPEG_CFLAGS@
 GTK3_CFLAGS = @GTK3_CFLAGS@
 JACK_CFLAGS = @JACK_CFLAGS@
 LIBDAZZLE_CFLAGS = @LIBDAZZLE_CFLAGS@
@@ -81,11 +82,13 @@ SUIL_CFLAGS = @SUIL_CFLAGS@
 LIBXML_CFLAGS = @LIBXML_CFLAGS@
 LIBSMF_CFLAGS = @LIBSMF_CFLAGS@
 PORTAUDIO_CFLAGS = @PORTAUDIO_CFLAGS@
+SAMPLERATE_CFLAGS = @SAMPLERATE_CFLAGS@
 SNDFILE_CFLAGS = @SNDFILE_CFLAGS@
 
 # library LIBS
 LIBCYAML_LIBS = @LIBCYAML_LIBS@
 GTK3_LIBS = @GTK3_LIBS@
+FFMPEG_LIBS = @FFMPEG_LIBS@
 JACK_LIBS = @JACK_LIBS@
 LIBDAZZLE_LIBS = @LIBDAZZLE_LIBS@
 LILV_LIBS = @LILV_LIBS@
@@ -94,9 +97,10 @@ SUIL_LIBS = @SUIL_LIBS@
 LIBXML_LIBS = @LIBXML_LIBS@
 LIBSMF_LIBS = @LIBSMF_LIBS@
 PORTAUDIO_LIBS = @PORTAUDIO_LIBS@
+SAMPLERATE_LIBS = @SAMPLERATE_LIBS@
 SNDFILE_LIBS = @SNDFILE_LIBS@
 
-DEFAULT_INCLUDES = -I. -I./$(INC_DIR) -I./$(SRC_DIR)
+DEFAULT_INCLUDES = -I. -I./$(INC_DIR) -I./$(SRC_DIR) -I./ext
 
 ifeq ($(RELEASE),1)
 	DEFAULT_CFLAGS += -O3
@@ -134,6 +138,7 @@ CFLAGS = -Wall \
  	$(R_DYNAMIC) \
 	$(DEFAULT_INCLUDES) \
 	$(LIBCYAML_CFLAGS) \
+	$(FFMPEG_CFLAGS) \
 	$(GTK3_CFLAGS) \
 	$(JACK_CFLAGS) \
 	$(LIBDAZZLE_CFLAGS) \
@@ -143,12 +148,14 @@ CFLAGS = -Wall \
 	$(LV2_CFLAGS) \
 	$(PORTAUDIO_CFLAGS) \
 	$(SUIL_CFLAGS) \
+	$(SAMPLERATE_CFLAGS) \
 	$(SNDFILE_CFLAGS) \
 	$(DEFAULT_CFLAGS)
 
 LDFLAGS =	\
   $(LIBCYAML_LIBS) \
   $(GTK3_LIBS) \
+	$(FFMPEG_LIBS) \
 	$(JACK_LIBS) \
 	$(LIBDAZZLE_LIBS) \
 	$(LIBSMF_LIBS) \
@@ -157,6 +164,7 @@ LDFLAGS =	\
 	$(LV2_LIBS) \
 	$(PORTAUDIO_LIBS) \
 	$(SUIL_LIBS) \
+	$(SAMPLERATE_LIBS) \
 	$(SNDFILE_LIBS) \
 	$(EXTRA_LD_FLAGS) \
 	-lrt \
@@ -173,7 +181,8 @@ built_obj = $(built_src:%.c=$(BUILD_DIR/%.o))
 built_dep = $(built_obj:%.o=%.d))
 
 #Find all the C++ files in the src/ directory
-SRCS = $(shell find src/ -name "*.c")
+SRCS = $(shell find src/ -name "*.c") \
+			 $(shell find ext/ -name "*.c")
 # All .o files go to build dir.
 OBJ = $(SRCS:%.c=$(BUILD_DIR)/%.o)
 # Gcc/Clang will create these .d files containing dependencies.

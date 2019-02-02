@@ -180,6 +180,8 @@ load_files_from_location (
                 fd->type = FILE_TYPE_MIDI;
               else if (!g_ascii_strncasecmp (ext, "flac", 3))
                 fd->type = FILE_TYPE_FLAC;
+              else if (!g_ascii_strncasecmp (ext, "mp3", 3))
+                fd->type = FILE_TYPE_MP3;
               else
                 fd->type = FILE_TYPE_OTHER;
             }

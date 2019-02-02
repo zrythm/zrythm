@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "ext/audio_decoder/ad.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
@@ -38,6 +39,9 @@ main (int    argc,
 {
   /* init suil */
   suil_init(&argc, &argv, SUIL_ARG_NONE);
+
+  /* init audio decoder */
+  ad_init ();
 
   /* init random */
   srandom (time (NULL));

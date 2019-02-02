@@ -71,12 +71,20 @@ PKG_CHECK_MODULES([LIBDAZZLE], [libdazzle-1.0 >= 3.20])
 PKG_CHECK_MODULES([LIBXML], [libxml-2.0 >= 2.9.4])
 PKG_CHECK_MODULES([LIBSMF], [smf >= 1.3])
 PKG_CHECK_MODULES([SNDFILE], [sndfile >= 1.0.28])
+PKG_CHECK_MODULES([SAMPLERATE], [samplerate >= 0.1.9])
 AM_COND_IF([LINUX],
            [PKG_CHECK_MODULES([LV2], [lv2 >= 1.14.0])])
 AM_COND_IF([WINDOWS],
            [PKG_CHECK_MODULES([LV2], [lv2 >= 1.14.0])])
 PKG_CHECK_MODULES([PORTAUDIO], [portaudio-2.0])
 PKG_CHECK_MODULES([LIBCYAML], [libcyaml])
+
+#FFMPEG stuff
+PKG_CHECK_MODULES(
+  [FFMPEG],
+  [libavcodec libavutil libavformat],
+  [AC_DEFINE([HAVE_FFMPEG],[1],[Use ffmpeg])])
+
 
 #Checks for header files.
 #Checks for typedefs, structures, and compiler characteristics.

@@ -19,9 +19,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <math.h>
+
 #include "zrythm.h"
 #include "audio/engine.h"
 #include "audio/mixer.h"
+#include "ext/audio_decoder/ad.h"
 #include "gui/backend/file_manager.h"
 #include "gui/widgets/file_browser.h"
 #include "gui/widgets/center_dock.h"
@@ -35,6 +38,9 @@
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
+
+#include <sndfile.h>
+#include <samplerate.h>
 
 G_DEFINE_TYPE (FileBrowserWidget,
                file_browser_widget,
@@ -122,17 +128,33 @@ on_selection_changed (GtkTreeSelection * ts,
               descr->type);
 
 
-          /* TODO set sample rate, etc. */
           char * label;
           if (descr->type == FILE_TYPE_MP3 ||
               descr->type == FILE_TYPE_FLAC ||
               descr->type == FILE_TYPE_OGG ||
               descr->type == FILE_TYPE_WAV)
-            label =
-              g_strdup_printf (
-              "%s\nType: %s",
-              descr->label,
-              ft->label);
+            {
+              /* open with sndfile */
+              struct adinfo nfo;
+              ad_finfo (descr->absolute_path,
+                        &nfo);
+              ad_dump_nfo (3, &nfo);
+              /*SF_INFO sfinfo;*/
+              /*SNDFILE * sndfile =*/
+                /*sf_open (descr->absolute_path,*/
+                         /*SFM_READ,*/
+                         /*&sfinfo);*/
+              label =
+                g_strdup_printf (
+                "%s\nFormat: TODO\nSample rate: %d\n"
+                "Channels:%d Bitrate: %d\nBit depth: %d",
+                descr->label,
+                nfo.sample_rate,
+                nfo.channels,
+                nfo.bit_rate,
+                nfo.bit_depth);
+              /*sf_close (sndfile);*/
+            }
           else
             label =
               g_strdup_printf (
@@ -359,6 +381,70 @@ on_row_activated (GtkTreeView       *tree_view,
       gtk_tree_view_set_model (
         self->files_tree_view,
         GTK_TREE_MODEL (self->files_tree_model));
+    }
+  else if (descr->type == FILE_TYPE_WAV ||
+           descr->type == FILE_TYPE_OGG ||
+           descr->type == FILE_TYPE_FLAC ||
+           descr->type == FILE_TYPE_MP3)
+    {
+      /* open with sndfile */
+      /*SF_INFO sfinfo;*/
+      /*SNDFILE * sndfile =*/
+        /*sf_open (descr->absolute_path,*/
+                 /*SFM_READ,*/
+                 /*&sfinfo);*/
+      /*float in_buff[sfinfo.frames * sfinfo.channels];*/
+      /*sf_readf_float (sndfile,*/
+                      /*in_buff,*/
+                      /*sfinfo.frames * sfinfo.channels);*/
+
+      /* open with ad */
+      struct adinfo nfo;
+      void * handle =
+        ad_open (descr->absolute_path,
+                 &nfo);
+      float * in_buff =
+        malloc (nfo.frames * nfo.channels * sizeof (float));
+      int samples_read =
+        ad_read (handle,
+                 in_buff,
+                 nfo.frames * nfo.channels);
+      g_message ("%d samples read",
+                 samples_read);
+
+      /* resample with libsamplerate */
+      double src_ratio =
+        (1.0 * AUDIO_ENGINE->sample_rate) /
+        nfo.sample_rate ;
+      if (fabs (src_ratio - 1.0) < 1e-20)
+        {
+          g_message ("Target samplerate and input "
+                     "samplerate are the same.");
+        }
+      if (src_is_valid_ratio (src_ratio) == 0)
+        {
+          g_warning ("Sample rate change out of valid "
+                     "range.");
+        }
+      float * out_buff =
+        malloc ((nfo.frames * src_ratio) *
+                  nfo.channels * sizeof (float));
+      SRC_DATA src_data;
+      src_data.data_in = in_buff;
+      src_data.data_out = out_buff;
+      src_data.input_frames = nfo.frames;
+      src_data.output_frames = nfo.frames * src_ratio;
+      src_data.src_ratio = src_ratio;
+
+      src_simple (&src_data,
+                  SRC_SINC_BEST_QUALITY,
+                  nfo.channels);
+      free (in_buff);
+      g_message ("output frames gen %ld, input frames used "
+                 "%ld",
+                 src_data.output_frames_gen,
+                 src_data.input_frames_used);
+      ad_close (handle);
     }
 }
 
