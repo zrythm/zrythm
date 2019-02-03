@@ -241,10 +241,14 @@ smf_load_region (const char *   file,   ///< file to load
                   position_init (&notes[i].end_pos);
                   /*position_add_frames (&notes[i].end_pos,*/
                                        /*frames);*/
-                  position_set_tick (&notes[i].end_pos, ticks);
-                  array_delete ((void **) notes,
-                                &num_notes,
-                                (void *) &notes[i]);
+                  position_set_tick (
+                    &notes[i].end_pos,
+                    ticks);
+
+                  /* FIXME below doesn't work */
+                  /*array_delete (notes,*/
+                                /*num_notes,*/
+                                /*&notes[i]);*/
                   break;
                 }
             }

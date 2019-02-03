@@ -132,10 +132,10 @@ tracklist_add_track (Track *     track,
 {
   TRACKLIST->track_ids[pos] =
     track->id;
-  array_insert ((void **) TRACKLIST->tracks,
-                &TRACKLIST->num_tracks,
+  array_insert (TRACKLIST->tracks,
+                TRACKLIST->num_tracks,
                 pos,
-                (void *) track);
+                track);
   if (MAIN_WINDOW && MW_CENTER_DOCK)
     {
       if (MW_CENTER_DOCK && MW_TRACKLIST)
@@ -150,9 +150,9 @@ tracklist_append_track (Track *     track)
 {
   TRACKLIST->track_ids[TRACKLIST->num_tracks] =
     track->id;
-  array_append ((void **) TRACKLIST->tracks,
-                &TRACKLIST->num_tracks,
-                (void *) track);
+  array_append (TRACKLIST->tracks,
+                TRACKLIST->num_tracks,
+                track);
 }
 
 int
@@ -238,7 +238,7 @@ tracklist_get_next_visible_track (Track * track)
 void
 tracklist_remove_track (Track *     track)
 {
-  array_delete ((void **) TRACKLIST->tracks,
-                &TRACKLIST->num_tracks,
-                (void *) track);
+  array_delete (TRACKLIST->tracks,
+                TRACKLIST->num_tracks,
+                track);
 }

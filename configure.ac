@@ -99,6 +99,12 @@ AC_CHECK_FUNC([mlock],
 AM_COND_IF([LINUX],
            [LDFLAGS="$LDFLAGS -L/usr/lib"])
 
+# Check for breeze icons
+AC_CHECK_FILE([/usr/share/icons/breeze-dark],,
+              [echo "Breeze icons are required" && \
+               echo "Please install them using a package manager or manually from here https://github.com/KDE/breeze-icons" && \
+               exit 1])
+
 # Add GSettings support
 GLIB_GSETTINGS
 

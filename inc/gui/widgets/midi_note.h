@@ -48,6 +48,7 @@ typedef enum MidiNoteWidgetState
 typedef struct _MidiNoteWidget
 {
   GtkBox                   parent_instance;
+  GtkDrawingArea *         drawing_area;
   MidiNote *               midi_note;   ///< the midi_note associated with this
   MidiNoteWidgetState      state;
 } MidiNoteWidget;

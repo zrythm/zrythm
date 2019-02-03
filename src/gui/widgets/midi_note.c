@@ -1,7 +1,7 @@
 /*
  * gui/widgets/midi_note.c - MIDI Note
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex@zrythm.org>
  *
  * This file is part of Zrythm
  *
@@ -35,7 +35,7 @@
 
 G_DEFINE_TYPE (MidiNoteWidget,
                midi_note_widget,
-               GTK_TYPE_DRAWING_AREA)
+               GTK_TYPE_BOX)
 
 /**
  * Space on the edges to show resize cursors
@@ -162,9 +162,15 @@ midi_note_widget_init (MidiNoteWidget * self)
 {
   gtk_widget_add_events (GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
 
+  self->drawing_area =
+    GTK_DRAWING_AREA (gtk_drawing_area_new ());
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->drawing_area), 1);
+  gtk_container_add (GTK_CONTAINER (self),
+                     GTK_WIDGET (self->drawing_area));
 
   /* connect signals */
-  g_signal_connect (G_OBJECT (self), "draw",
+  g_signal_connect (G_OBJECT (self->drawing_area), "draw",
                     G_CALLBACK (draw_cb), self);
   g_signal_connect (G_OBJECT (self), "enter-notify-event",
                     G_CALLBACK (on_motion),  self);

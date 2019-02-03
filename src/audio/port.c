@@ -159,7 +159,7 @@ port_free (Port * port)
   if (port->buf)
     free (port->buf);
 
-  array_delete ((void **) PROJECT->ports, &PROJECT->num_ports, port);
+  array_delete (PROJECT->ports, PROJECT->num_ports, port);
   free (port);
 }
 
@@ -221,8 +221,8 @@ port_disconnect (Port * src, Port * dest)
     g_warning ("port_disconnect: src or dest is NULL");
 
   /* disconnect dest from src */
-  array_delete ((void **)src->dests, &src->num_dests, dest);
-  array_delete ((void **)dest->srcs, &dest->num_srcs, src);
+  array_delete (src->dests, src->num_dests, dest);
+  array_delete (dest->srcs, dest->num_srcs, src);
   return 0;
 }
 

@@ -23,6 +23,7 @@
 #ifndef __AUDIO_REGION_H__
 #define __AUDIO_REGION_H__
 
+#include "audio/audio_clip.h"
 #include "audio/midi_note.h"
 #include "audio/midi_region.h"
 #include "audio/position.h"
@@ -130,9 +131,11 @@ typedef struct MidiRegion
 
 typedef struct AudioRegion
 {
-  Region          parent;
+  Region              parent;
 
-  int             dummy;
+  AudioClip *         audio_clip;
+
+  int                 dummy;
 } AudioRegion;
 
 static const cyaml_strval_t region_type_strings[] = {

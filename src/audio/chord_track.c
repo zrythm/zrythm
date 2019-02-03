@@ -59,18 +59,18 @@ void
 chord_track_add_chord (ChordTrack * self,
                        Chord *      chord)
 {
-  array_append ((void **) self->chords,
-                &self->num_chords,
-                (void *) chord);
+  array_append (self->chords,
+                self->num_chords,
+                chord);
 }
 
 void
 chord_track_remove_chord (ChordTrack * self,
                           Chord *      chord)
 {
-  array_delete ((void **) self->chords,
-                &self->num_chords,
-                (void *) chord);
+  array_delete (self->chords,
+                self->num_chords,
+                chord);
 }
 
 /**

@@ -26,6 +26,7 @@
 #include "audio/instrument_track.h"
 #include "audio/region.h"
 #include "audio/track.h"
+#include "gui/widgets/audio_region.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_region.h"
 #include "gui/widgets/region.h"
@@ -59,7 +60,12 @@ region_init (Region *   region,
     {
       AudioRegion * ar = (AudioRegion *) region;
       region->audio_region = ar;
+      region->widget = Z_REGION_WIDGET (
+        audio_region_widget_new (ar));
       ar->dummy = 1;
+      region->midi_region =
+        calloc (1,sizeof (MidiRegion));
+      region->midi_region->dummy = 1;
     }
   else if (type == REGION_TYPE_MIDI)
     {

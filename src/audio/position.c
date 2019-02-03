@@ -57,10 +57,10 @@ position_init (Position * position)
  *
  * Note: transport must be setup by this point.
  */
-int
+long
 position_to_frames (Position * position)
 {
-  int frames =
+  long frames =
     AUDIO_ENGINE->frames_per_tick *
     (position->bars - 1) *
     TRANSPORT->beats_per_bar *
@@ -221,7 +221,7 @@ position_set_to_pos (Position * pos,
 
 void
 position_add_frames (Position * position,
-                     int      frames)
+                     long       frames)
 {
   position->frames += frames;
   position_set_tick (position,

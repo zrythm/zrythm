@@ -20,6 +20,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "gui/backend/file_manager.h"
 #include "utils/io.h"
@@ -104,6 +105,19 @@ file_manager_init (FileManager * self)
   file_manager_set_selection (fl,
                               FB_SELECTION_TYPE_LOCATIONS,
                               0);
+}
+
+static int
+alphaBetize (const void * _a,
+             const void * _b)
+{
+  FileDescriptor * a = *(FileDescriptor * const *) _a;
+  FileDescriptor * b = *(FileDescriptor * const *) _b;
+  int r = strcasecmp(a->label, b->label);
+  if (r) return r;
+  /* if equal ignoring case, use opposite of strcmp()
+   * result to get lower before upper */
+  return -strcmp(a->label, b->label); /* aka: return strcmp(b, a); */
 }
 
 static void
@@ -201,6 +215,10 @@ load_files_from_location (
                  fd->type,
                  fd->hidden);
     }
+  qsort (self->files,
+         self->num_files,
+         sizeof (FileDescriptor *),
+         alphaBetize);
   g_message ("Total files: %d",
              self->num_files);
 }

@@ -135,9 +135,9 @@ instrument_track_add_region (InstrumentTrack      * track,
 {
   g_message ("midi region num notes %d",
              region->num_midi_notes);
-  array_append ((void **) track->regions,
-                &track->num_regions,
-                (void *) region);
+  array_append (track->regions,
+                track->num_regions,
+                region);
 }
 
 void

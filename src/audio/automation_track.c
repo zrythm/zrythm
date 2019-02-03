@@ -188,9 +188,9 @@ automation_track_add_automation_curve (AutomationTrack * at,
                                        AutomationCurve * ac)
 {
   /* add point */
-  array_append ((void **) at->automation_curves,
-                &at->num_automation_curves,
-                (void *) ac);
+  array_append (at->automation_curves,
+                at->num_automation_curves,
+                ac);
 
   /* sort by position */
   qsort (at->automation_curves,
@@ -361,9 +361,9 @@ void
 automation_track_remove_ap (AutomationTrack * at,
                             AutomationPoint * ap)
 {
-  array_delete ((void **) at->automation_points,
-                 &at->num_automation_points,
-                 ap);
+  array_delete (at->automation_points,
+                at->num_automation_points,
+                ap);
   automation_point_free (ap);
 }
 
@@ -374,9 +374,9 @@ void
 automation_track_remove_ac (AutomationTrack * at,
                             AutomationCurve * ac)
 {
-  array_delete ((void **) at->automation_curves,
-                 &at->num_automation_curves,
-                 ac);
+  array_delete (at->automation_curves,
+                at->num_automation_curves,
+                ac);
   automation_curve_free (ac);
 }
 

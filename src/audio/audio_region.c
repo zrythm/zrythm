@@ -55,17 +55,26 @@ audio_region_get_or_create_blank (int id)
 
 AudioRegion *
 audio_region_new (Track *    track,
-                 Position * start_pos,
-                 Position * end_pos)
+                  Position * start_pos,
+                  Position * end_pos)
 {
-  AudioRegion * audio_region = calloc (1, sizeof (AudioRegion));
+  AudioRegion * self =
+    calloc (1, sizeof (AudioRegion));
 
-  region_init ((Region *) audio_region,
+  region_init ((Region *) self,
                REGION_TYPE_AUDIO,
                track,
                start_pos,
                end_pos);
 
-  return audio_region;
+  return self;
+}
+
+void
+audio_region_add_audio_clip (AudioRegion * self,
+                             AudioClip *   ac)
+{
+  self->audio_clip = ac;
+  /*audio_region_widget_refresh (self->widget);*/
 }
 

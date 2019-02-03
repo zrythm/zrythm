@@ -40,6 +40,12 @@ static gboolean
 draw_cb (AudioRegionWidget * self, cairo_t *cr, gpointer data)
 {
   REGION_WIDGET_GET_PRIVATE (data);
+  Region * region = rw_prv->region;
+  AudioRegion * audio_region = (AudioRegion *) region;
+
+  if (!audio_region->audio_clip)
+    return FALSE;
+
   guint width, height;
   GtkStyleContext *context;
 

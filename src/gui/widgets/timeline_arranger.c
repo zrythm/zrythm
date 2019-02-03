@@ -24,6 +24,7 @@
 #include "settings/settings.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
+#include "audio/audio_track.h"
 #include "audio/bus_track.h"
 #include "audio/channel.h"
 #include "audio/chord.h"
@@ -385,9 +386,10 @@ timeline_arranger_widget_select_all (
               if (select)
                 {
                   /* select  */
-                  array_append ((void **)TIMELINE_SELECTIONS->regions,
-                                &TIMELINE_SELECTIONS->num_regions,
-                                r);
+                  array_append (
+                    TIMELINE_SELECTIONS->regions,
+                    TIMELINE_SELECTIONS->num_regions,
+                    r);
                 }
             }
           if (chan->track->bot_paned_visible)
@@ -1156,6 +1158,53 @@ add_children_from_instrument_track (
     }
 }
 
+static void
+add_children_from_audio_track (
+  TimelineArrangerWidget * self,
+  AudioTrack *             audio_track)
+{
+  g_message ("adding children");
+  for (int i = 0; i < audio_track->num_regions; i++)
+    {
+      AudioRegion * mr = audio_track->regions[i];
+      g_message ("adding region");
+      Region * r = (Region *) mr;
+      gtk_overlay_add_overlay (GTK_OVERLAY (self),
+                               GTK_WIDGET (r->widget));
+    }
+  ChannelTrack * ct = (ChannelTrack *) audio_track;
+  AutomationTracklist * atl = &ct->automation_tracklist;
+  for (int i = 0; i < atl->num_automation_tracks; i++)
+    {
+      AutomationTrack * at = atl->automation_tracks[i];
+      if (at->visible)
+        {
+          for (int j = 0; j < at->num_automation_points; j++)
+            {
+              AutomationPoint * ap =
+                at->automation_points[j];
+              if (ap->widget)
+                {
+                  gtk_overlay_add_overlay (
+                    GTK_OVERLAY (self),
+                    GTK_WIDGET (ap->widget));
+                }
+            }
+          for (int j = 0; j < at->num_automation_curves; j++)
+            {
+              AutomationCurve * ac =
+                at->automation_curves[j];
+              if (ac->widget)
+                {
+                  gtk_overlay_add_overlay (
+                    GTK_OVERLAY (self),
+                    GTK_WIDGET (ac->widget));
+                }
+            }
+        }
+    }
+}
+
 /**
  * Readd children.
  */
@@ -1206,6 +1255,9 @@ timeline_arranger_widget_refresh_children (
             case TRACK_TYPE_MASTER:
               break;
             case TRACK_TYPE_AUDIO:
+              add_children_from_audio_track (
+                self,
+                (AudioTrack *) track);
               break;
             case TRACK_TYPE_BUS:
               break;

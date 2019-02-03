@@ -1,5 +1,5 @@
 /*
- * audio/audio_region.h - Audio region
+ * audio/audio_clip.c - Audio clip for audio regions
  *
  * Copyright (C) 2019 Alexandros Theodotou
  *
@@ -19,29 +19,25 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __AUDIO_AUDIO_REGION_H__
-#define __AUDIO_AUDIO_REGION_H__
+#include <stdlib.h>
 
-#include "audio/position.h"
-#include "audio/region.h"
+#include "audio/audio_clip.h"
 
-typedef struct _RegionWidget RegionWidget;
-typedef struct Channel Channel;
-typedef struct Track Track;
+#include <gtk/gtk.h>
 
-AudioRegion *
-audio_region_new (Track *    track,
-                  Position * start_pos,
-                  Position * end_pos);
+AudioClip *
+audio_clip_new (AudioRegion * region,
+                float *       buff,
+                long          buff_size,
+                char *        filename)
+{
+  AudioClip * self = calloc (1, sizeof (AudioClip));
 
-/**
- * Creates region (used when loading projects).
- */
-AudioRegion *
-audio_region_get_or_create_blank (int id);
+  self->audio_region = region;
+  self->buff = buff;
+  self->buff_size = buff_size;
+  self->filename = strdup (filename);
+  self->end_frames = buff_size - 1;
 
-void
-audio_region_add_audio_clip (AudioRegion * self,
-                             AudioClip *   ac);
-
-#endif // __AUDIO_AUDIO_REGION_H__
+  return self;
+}

@@ -1,7 +1,8 @@
 /*
- * gui/widgets/file_browser.c - The file, etc., file_browser on the right
+ * gui/widgets/file_browser.c - The file file_browser on
+ *   the right
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -22,14 +23,22 @@
 #include <math.h>
 
 #include "zrythm.h"
+#include "audio/audio_region.h"
+#include "audio/audio_track.h"
 #include "audio/engine.h"
 #include "audio/mixer.h"
+#include "audio/region.h"
 #include "ext/audio_decoder/ad.h"
 #include "gui/backend/file_manager.h"
-#include "gui/widgets/file_browser.h"
+#include "gui/widgets/arranger.h"
+#include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/file_browser.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/mixer.h"
 #include "gui/widgets/right_dock_edge.h"
+#include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/tracklist.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
@@ -403,13 +412,16 @@ on_row_activated (GtkTreeView       *tree_view,
       void * handle =
         ad_open (descr->absolute_path,
                  &nfo);
+      long in_buff_size = nfo.frames * nfo.channels;
+      /* add some extra buffer for some reason */
       float * in_buff =
-        malloc (nfo.frames * nfo.channels * sizeof (float));
-      int samples_read =
+        malloc (in_buff_size * sizeof (float));
+      long samples_read =
         ad_read (handle,
                  in_buff,
-                 nfo.frames * nfo.channels);
-      g_message ("%d samples read",
+                 in_buff_size);
+      g_message ("in buff size: %ld, %ld samples read",
+                 in_buff_size,
                  samples_read);
 
       /* resample with libsamplerate */
@@ -426,25 +438,74 @@ on_row_activated (GtkTreeView       *tree_view,
           g_warning ("Sample rate change out of valid "
                      "range.");
         }
+      long out_buff_size =
+        in_buff_size * src_ratio;
+      /* add some extra buffer for some reason */
       float * out_buff =
-        malloc ((nfo.frames * src_ratio) *
-                  nfo.channels * sizeof (float));
+        malloc (out_buff_size * sizeof (float));
       SRC_DATA src_data;
-      src_data.data_in = in_buff;
-      src_data.data_out = out_buff;
+      g_message ("out_buff_size %ld, sizeof float %ld, "
+                 "sizeof long %ld, src ratio %f",
+                 out_buff_size,
+                 sizeof (float),
+                 sizeof (long),
+                 src_ratio);
+      src_data.data_in = &in_buff[0];
+      src_data.data_out = &out_buff[0];
       src_data.input_frames = nfo.frames;
       src_data.output_frames = nfo.frames * src_ratio;
       src_data.src_ratio = src_ratio;
 
-      src_simple (&src_data,
-                  SRC_SINC_BEST_QUALITY,
-                  nfo.channels);
-      free (in_buff);
-      g_message ("output frames gen %ld, input frames used "
-                 "%ld",
+      int err =
+        src_simple (&src_data,
+                    SRC_SINC_BEST_QUALITY,
+                    nfo.channels);
+      g_message ("output frames gen %ld, out buff size %ld, "
+                 "input frames used %ld, err %d",
                  src_data.output_frames_gen,
-                 src_data.input_frames_used);
+                 out_buff_size,
+                 src_data.input_frames_used,
+                 err);
+
+      /* create a channel/track */
+      Channel * chan =
+        channel_create (CT_AUDIO, "Audio Track");
+      mixer_add_channel (chan);
+      tracklist_append_track (chan->track);
+
+      /* create an audio region & add to track */
+      Position start_pos, end_pos;
+      position_set_to_pos (&start_pos,
+                           &PLAYHEAD);
+      position_set_to_pos (&end_pos,
+                           &PLAYHEAD);
+      position_add_frames (&end_pos,
+                           src_data.output_frames_gen);
+      AudioRegion * ar =
+        audio_region_new (chan->track,
+                          &start_pos,
+                          &end_pos);
+      audio_track_add_region ((AudioTrack *) chan->track,
+                              ar);
+
+      /* create an audio clip and add to region */
+      AudioClip * ac =
+        audio_clip_new (ar,
+                        out_buff,
+                        src_data.output_frames_gen,
+                        descr->absolute_path);
+      audio_region_add_audio_clip (ar,
+                                   ac);
+
+      /* refresh tracklist */
+      mixer_widget_refresh (MW_MIXER);
+      tracklist_widget_refresh (MW_TRACKLIST);
+      arranger_widget_refresh (
+        Z_ARRANGER_WIDGET (MW_TIMELINE));
+
+      /* cleanup */
       ad_close (handle);
+      free (in_buff);
     }
 }
 

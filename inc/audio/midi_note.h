@@ -1,6 +1,6 @@
 /*
- * audio/midi_note.h - A midi_note in the timeline having a start
- *   and an end
+ * audio/midi_note.h - A midi_note in the timeline having a
+ *   start and an end
  *
  * Copyright (C) 2019 Alexandros Theodotou
  *

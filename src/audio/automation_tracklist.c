@@ -33,9 +33,9 @@ static void
 add_automation_track (AutomationTracklist * self,
                       AutomationTrack *     at)
 {
-  array_append ((void **) self->automation_tracks,
-                &self->num_automation_tracks,
-                (void *) at);
+  array_append (self->automation_tracks,
+                self->num_automation_tracks,
+                at);
   at->visible = 0;
 }
 
@@ -43,9 +43,9 @@ static void
 delete_automation_track (AutomationTracklist * self,
                          AutomationTrack *     at)
 {
-  array_delete ((void **) self->automation_tracks,
-                 &self->num_automation_tracks,
-                 at);
+  array_delete (self->automation_tracks,
+                self->num_automation_tracks,
+                at);
   automation_track_free (at);
 }
 
@@ -175,9 +175,9 @@ automation_tracklist_get_visible_tracks (
       AutomationTrack * at = self->automation_tracks[i];
       if (at->visible)
         {
-          array_append ((void **) visible_tracks,
-                        num_visible,
-                        (void *) at);
+          array_append (visible_tracks,
+                        *num_visible,
+                        at);
         }
     }
 }

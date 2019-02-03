@@ -24,6 +24,7 @@
 #include "audio/audio_track.h"
 #include "audio/automation_tracklist.h"
 #include "project.h"
+#include "utils/arrays.h"
 
 AudioTrack *
 audio_track_new (Channel * channel)
@@ -56,7 +57,9 @@ void
 audio_track_add_region (AudioTrack *  track,
                         AudioRegion * region)
 {
-
+  array_append (track->regions,
+                track->num_regions,
+                region);
 }
 
 void

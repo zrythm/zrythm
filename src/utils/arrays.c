@@ -21,47 +21,6 @@
 
 #include "utils/arrays.h"
 
-void
-array_delete (void ** array, int * size, void * element)
-{
-  for (int i = 0; i < (* size); i++)
-    {
-      if (array[i] == element)
-        {
-          --(* size);
-          for (int j = i; j < (* size); j++)
-            {
-              array[j] = array[j + 1];
-            }
-          break;
-        }
-    }
-}
-
-/**
- * Appends element to the end of array array and increases the size.
- */
-void
-array_append (void ** array, int * size, void * element)
-{
-  array[(* size)] = element;
-  (* size)++;
-}
-
-/**
- * Inserts element in array at pos and increases the size.
- */
-void
-array_insert (void ** array, int * size, int pos, void * element)
-{
-  for (int i = pos; i < (* size); i++)
-    {
-      array[i + 1] = array[i];
-    }
-  array[pos] = element;
-  (* size)++;
-}
-
 /**
  * Returns 1 if element exists in array, 0 if not.
  *
@@ -91,4 +50,23 @@ array_index_of (void ** array, int size, void * element)
         return i;
     }
   return -1;
+}
+
+static int
+alphaBetize (const char *a, const char *b)
+{
+  int r = strcasecmp(a, b);
+  if (r) return r;
+  /* if equal ignoring case, use opposite of strcmp()
+   * result to get lower before upper */
+  return -strcmp(a, b); /* aka: return strcmp(b, a); */
+}
+
+void
+array_sort_alphabetically (char ** array,
+                           int     size,
+                           int     case_sensitive)
+{
+  if (!case_sensitive)
+    qsort (array, size, sizeof (char *), alphaBetize);
 }

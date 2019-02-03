@@ -77,7 +77,7 @@ typedef struct Position
 
   int       ticks; ///< 240 ticks per sixteen
 
-  int       frames; ///< position in frames (samples)
+  long      frames; ///< position in frames (samples)
 } Position;
 
 static const cyaml_schema_field_t
@@ -143,12 +143,12 @@ position_set_to_pos (Position * position,
 
 void
 position_add_frames (Position * position,
-                     int        frames);
+                     long       frames);
 
 /**
  * Converts position bars/beats/quarter beats/ticks to frames
  */
-int
+long
 position_to_frames (Position * position);
 
 /**

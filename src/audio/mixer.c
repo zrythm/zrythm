@@ -144,9 +144,9 @@ mixer_add_channel (Channel * channel)
     {
       MIXER->channel_ids[MIXER->num_channels] =
         channel->id;
-      array_append ((void **) MIXER->channels,
-                    &MIXER->num_channels,
-                    (void *) channel);
+      array_append (MIXER->channels,
+                    MIXER->num_channels,
+                    channel);
     }
 
   track_setup (channel->track);
@@ -179,8 +179,8 @@ mixer_remove_channel (Channel * channel)
   AUDIO_ENGINE->run = 0;
   channel->enabled = 0;
   channel->stop_thread = 1;
-  array_delete ((void **) MIXER->channels,
-                &MIXER->num_channels,
+  array_delete (MIXER->channels,
+                MIXER->num_channels,
                 channel);
   channel_free (channel);
 }
