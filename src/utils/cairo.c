@@ -59,3 +59,14 @@ z_cairo_draw_horizontal_line (cairo_t * cr,
   cairo_line_to (cr, to_x, y);
   cairo_stroke (cr);
 }
+
+void
+z_cairo_draw_vertical_line (cairo_t * cr,
+                            double    x,
+                            double    from_y,
+                            double    to_y)
+{
+  cairo_move_to (cr, x, from_y);
+  cairo_line_to (cr, x, to_y);
+  cairo_stroke (cr);
+}

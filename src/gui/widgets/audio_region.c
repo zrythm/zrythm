@@ -1,7 +1,7 @@
 /*
- * gui/widgets/region.c- Region
+ * gui/widgets/audio_region.c- Region
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -30,6 +30,7 @@
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
+#include "utils/cairo.h"
 #include "utils/ui.h"
 
 G_DEFINE_TYPE (AudioRegionWidget,
@@ -46,6 +47,8 @@ draw_cb (AudioRegionWidget * self, cairo_t *cr, gpointer data)
   if (!audio_region->audio_clip)
     return FALSE;
 
+  AudioClip * ac = audio_region->audio_clip;
+
   guint width, height;
   GtkStyleContext *context;
 
@@ -57,32 +60,36 @@ draw_cb (AudioRegionWidget * self, cairo_t *cr, gpointer data)
   gtk_render_background (context, cr, 0, 0, width, height);
 
   GdkRGBA * color = &rw_prv->region->track->color;
-  /*if (rw_prv->hover)*/
-    /*{*/
-      /*cairo_set_source_rgba (cr,*/
-                             /*color->red,*/
-                             /*color->green,*/
-                             /*color->blue,*/
-                             /*0.8);*/
-    /*}*/
-  /*else if (rw_prv->selected)*/
-    /*{*/
-      /*cairo_set_source_rgba (cr,*/
-                             /*color->red + 0.2,*/
-                             /*color->green + 0.2,*/
-                             /*color->blue + 0.2,*/
-                             /*0.8);*/
-    /*}*/
-  /*else*/
-    /*{*/
-      cairo_set_source_rgba (cr,
-                             color->red - 0.2,
-                             color->green - 0.2,
-                             color->blue - 0.2,
-                             0.7);
-    /*}*/
+  cairo_set_source_rgba (cr,
+                         color->red + 0.3,
+                         color->green + 0.3,
+                         color->blue + 0.3,
+                         0.9);
+  cairo_set_line_width (cr, 1);
 
-  /* TODO draw audio notes */
+  long prev_frames = 0;
+  for (int i = 0; i < width; i++)
+    {
+      long curr_frames = ui_px_to_frames (i, 0);
+      float min = 0, max = 0;
+      for (int j = prev_frames; j < curr_frames; j++)
+        {
+          float val = ac->buff[j];
+          if (val > max)
+            max = val;
+          if (val < min)
+            min = val;
+        }
+      min = (min + 1.0) / 2.0; /* normallize */
+      max = (max + 1.0) / 2.0; /* normalize */
+      z_cairo_draw_vertical_line (
+        cr,
+        i,
+        min * height,
+        max * height);
+
+      prev_frames = curr_frames;
+    }
 
  return FALSE;
 }

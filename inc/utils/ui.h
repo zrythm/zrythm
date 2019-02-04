@@ -75,6 +75,15 @@ ui_px_to_pos (int               px,
            Position *        pos,
            int               has_padding); ///< whether the given px contain padding
 
+/**
+ * Converts from pixels to frames.
+ *
+ * Returns the frames.
+ */
+long
+ui_px_to_frames (int   px,
+                 int   has_padding); ///< whether the given px contain padding
+
 int
 ui_pos_to_px (Position *       pos,
            int              use_padding); ///< whether to add padding to the px
