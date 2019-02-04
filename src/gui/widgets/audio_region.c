@@ -85,8 +85,8 @@ draw_cb (AudioRegionWidget * self, cairo_t *cr, gpointer data)
       z_cairo_draw_vertical_line (
         cr,
         i,
-        min * height,
-        max * height);
+        MAX (min * height, 0),
+        MIN (max * height, height));
 
       prev_frames = curr_frames;
     }

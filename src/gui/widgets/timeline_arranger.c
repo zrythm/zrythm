@@ -364,22 +364,31 @@ timeline_arranger_widget_select_all (
         {
           int num_regions;
           InstrumentTrack * it;
+          AudioTrack *      at;
           AutomationTracklist * automation_tracklist =
             track_get_automation_tracklist (chan->track);
-          switch (chan->track->type)
+          if (chan->track->type ==
+                TRACK_TYPE_INSTRUMENT)
             {
-            case TRACK_TYPE_INSTRUMENT:
               it = (InstrumentTrack *) chan->track;
               num_regions = it->num_regions;
-            case TRACK_TYPE_MASTER:
-            case TRACK_TYPE_AUDIO:
-            case TRACK_TYPE_CHORD:
-            case TRACK_TYPE_BUS:
-              break;
+            }
+          else if (chan->track->type ==
+                    TRACK_TYPE_AUDIO)
+            {
+              at = (AudioTrack *) chan->track;
+              num_regions = at->num_regions;
             }
           for (int j = 0; j < num_regions; j++)
             {
-              Region * r = (Region *) it->regions[j];
+              Region * r;
+
+              if (chan->track->type ==
+                    TRACK_TYPE_INSTRUMENT)
+                r = (Region *) it->regions[j];
+              else if (chan->track->type ==
+                         TRACK_TYPE_AUDIO)
+                r = (Region *) at->regions[j];
 
               region_widget_select (r->widget, select);
 
@@ -491,10 +500,13 @@ timeline_arranger_widget_on_drag_begin_region_hit (
   if (ar_prv->n_press == 2)
     {
       Track * track = rw_prv->region->track;
-      Channel * chan = track_get_channel (track);
-      midi_arranger_widget_set_channel(
-        MIDI_ARRANGER,
-        chan);
+      if (track->type == TRACK_TYPE_INSTRUMENT)
+        {
+          Channel * chan = track_get_channel (track);
+          midi_arranger_widget_set_channel(
+            MIDI_ARRANGER,
+            chan);
+        }
     }
 
   Region * region = rw_prv->region;
@@ -681,6 +693,9 @@ timeline_arranger_widget_create_region (
   Track *                  track,
   Position *               pos)
 {
+  if (track->type == TRACK_TYPE_AUDIO)
+    return;
+
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
   if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid))
@@ -698,10 +713,6 @@ timeline_arranger_widget_create_region (
                                pos,
                                pos);
     }
-  else if (track->type == TRACK_TYPE_AUDIO)
-    {
-      /* TODO */
-    }
   position_set_min_size (&region->start_pos,
                          &region->end_pos,
                          ar_prv->snap_grid);
@@ -709,10 +720,6 @@ timeline_arranger_widget_create_region (
     {
       instrument_track_add_region ((InstrumentTrack *)track,
                         (MidiRegion *) region);
-    }
-  else if (track->type == TRACK_TYPE_AUDIO)
-    {
-      /* TODO */
     }
   gtk_overlay_add_overlay (GTK_OVERLAY (self),
                            GTK_WIDGET (region->widget));

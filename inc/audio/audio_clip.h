@@ -63,6 +63,8 @@ typedef struct AudioClip
   float *             buff;
   long                buff_size;
 
+  int                 channels;
+
   /**
    * Original filename.
    */
@@ -84,6 +86,7 @@ AudioClip *
 audio_clip_new (AudioRegion * region,
                 float *       buff,
                 long          buff_size,
+                int           channels,
                 char *        filename);
 
 

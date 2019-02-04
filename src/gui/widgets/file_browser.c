@@ -480,7 +480,8 @@ on_row_activated (GtkTreeView       *tree_view,
       position_set_to_pos (&end_pos,
                            &PLAYHEAD);
       position_add_frames (&end_pos,
-                           src_data.output_frames_gen);
+                           src_data.output_frames_gen /
+                           nfo.channels);
       AudioRegion * ar =
         audio_region_new (chan->track,
                           &start_pos,
@@ -493,6 +494,7 @@ on_row_activated (GtkTreeView       *tree_view,
         audio_clip_new (ar,
                         out_buff,
                         src_data.output_frames_gen,
+                        nfo.channels,
                         descr->absolute_path);
       audio_region_add_audio_clip (ar,
                                    ac);

@@ -29,6 +29,7 @@ AudioClip *
 audio_clip_new (AudioRegion * region,
                 float *       buff,
                 long          buff_size,
+                int           channels,
                 char *        filename)
 {
   AudioClip * self = calloc (1, sizeof (AudioClip));
@@ -36,6 +37,7 @@ audio_clip_new (AudioRegion * region,
   self->audio_region = region;
   self->buff = buff;
   self->buff_size = buff_size;
+  self->channels = channels;
   self->filename = strdup (filename);
   self->end_frames = buff_size - 1;
 
