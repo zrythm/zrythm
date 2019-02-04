@@ -39,7 +39,7 @@ audio_clip_new (AudioRegion * region,
   self->buff_size = buff_size;
   self->channels = channels;
   self->filename = strdup (filename);
-  self->end_frames = buff_size - 1;
+  self->end_frames = (buff_size / channels) - 1;
 
   return self;
 }

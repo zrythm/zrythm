@@ -28,6 +28,7 @@
 #include <unistd.h> // for usleep
 #endif
 
+#include "audio/audio_track.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
@@ -97,6 +98,7 @@ channel_process (Channel * channel)
 {
   /* clear buffers */
   if (channel->type == CT_MASTER ||
+      channel->type == CT_AUDIO ||
       channel->type == CT_BUS)
     {
       port_clear_buffer (channel->stereo_in->l);
@@ -151,6 +153,7 @@ channel_process (Channel * channel)
   /* get events from track if playing */
   else if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
     {
+      /* fill midi events to pass to ins plugin */
       if (channel->track->type == TRACK_TYPE_INSTRUMENT)
         {
           instrument_track_fill_midi_events (
@@ -158,6 +161,15 @@ channel_process (Channel * channel)
             &PLAYHEAD,
             AUDIO_ENGINE->block_length,
             &channel->piano_roll->midi_events);
+        }
+      /* fill stereo in buffers with info from the current
+       * clip */
+      else if (channel->track->type ==
+                 TRACK_TYPE_AUDIO)
+        {
+          audio_track_fill_stereo_in_buffers (
+            (AudioTrack *)channel->track,
+            channel->stereo_in);
         }
     }
   midi_events_dequeue (&channel->piano_roll->midi_events);
@@ -430,6 +442,7 @@ channel_create (ChannelType type,
     }
 
   if (type == CT_BUS ||
+      type == CT_AUDIO ||
       type == CT_MASTER)
     {
       /* connect stereo in to stereo out */

@@ -31,6 +31,7 @@ typedef struct Channel Channel;
 typedef struct AudioRegion AudioRegion;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct Automatable Automatable;
+typedef struct StereoPorts StereoPorts;
 
 typedef struct AudioTrack
 {
@@ -58,6 +59,14 @@ audio_track_add_region (AudioTrack *  track,
 void
 audio_track_remove_region (AudioTrack *  track,
                            AudioRegion * region);
+
+/**
+ * Fills stereo in buffers with info from the current clip.
+ */
+void
+audio_track_fill_stereo_in_buffers (
+  AudioTrack *  self,
+  StereoPorts * stereo_in);
 
 /**
  * Frees the track.
