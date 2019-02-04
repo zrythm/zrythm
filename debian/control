@@ -14,7 +14,11 @@ Build-Depends: debhelper-compat (= 10),
   autoconf,
   lv2-dev (>= 1.14.0~),
   libdazzle-1.0-dev,
-  portaudio19-dev
+  portaudio19-dev,
+  libsamplerate0-dev,
+  libavcodec-dev,
+  libavutil-dev,
+  libavformat-dev
 Depends: breeze-icon-theme
 
 Package: zrythm

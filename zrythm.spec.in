@@ -1,7 +1,7 @@
 Summary: A free GNU/Linux Digital Audio Workstation (DAW) focused on electronic music and high modularity.
 Name: zrythm
 Version: @BRANCH@
-Release: 2%{?dist}
+Release: 1%{?dist}
 License: GPLv3+
 URL: https://www.zrythm.org
 Group: System Environment/Base
@@ -22,6 +22,7 @@ BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: gcc
 BuildRequires: pkgconfig
+BuildRequires: ffmpeg-devel
 Requires: libxml2
 Requires: gtk3
 Requires: jack-audio-connection-kit
@@ -33,6 +34,7 @@ Requires: libsmf
 Requires: libsndfile
 Requires: portaudio
 Requires: breeze-icon-theme
+Requires: ffmpeg
 
 BuildRoot: ~/rpmbuild/
 
