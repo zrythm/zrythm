@@ -89,6 +89,19 @@ typedef struct Project
   TimelineSelections       timeline_selections;
 
   /**
+   * Selected range.
+   *
+   * This is 2 points instead of start/end because the 2nd
+   * point can be dragged past the 1st point so the order
+   * gets swapped.
+   *
+   * Should be compared each time to see which one is first.
+   */
+  Position           range_1;
+  Position           range_2;
+  int                has_range; ///< if 0 range is not displayed
+
+  /**
    * The audio backend
    */
   AudioEngine        audio_engine;

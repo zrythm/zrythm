@@ -54,7 +54,7 @@ _Note2: If some dependencies are not found, you might need to enable the univers
 sudo apt-add-repository universe
 `
 
-_Note3: For latest (unstable) version, install this directly using `dpkg -i`:_ https://git.zrythm.org/zrythm/zrythm/-/jobs/artifacts/master/download?job=build_deb_64_unstable
+_Note3: For latest (unstable) version, install this directly by double clicking or by using `sudo dpkg -i` and then `sudo apt-get -f install`:_ https://git.zrythm.org/zrythm/zrythm/-/jobs/artifacts/master/download?job=build_deb_64_unstable
 ### Fedora 27/28/29
 enable dnf repository
 ```
@@ -81,20 +81,20 @@ At the moment, Zrythm assumes you have Jack installed and will only run if Jack 
 Everything else should be self-explanatory. Manual coming soon.
 
 ## Contributing
-For detailed installation instructions see INSTALL
+For detailed installation instructions see [INSTALL.md](https://git.zrythm.org/zrythm/zrythm/blob/master/INSTALL.md)
 
-For contributing guidelines see CONTRIBUTING
+For contributing guidelines see [CONTRIBUTING.md](https://git.zrythm.org/zrythm/zrythm/blob/master/CONTRIBUTING.md)
 
 For any bugs please raise an issue or join a chatroom below
 
 ## Chatrooms
-### IRC (Freenode)
+### Matrix/IRC (Freenode)
 `#zrythm` channel (for Matrix users `#freenode_#zrythm:matrix.org`)
 ### Discord
-`zrythm` server (https://discord.gg/AbHb3eD)
+`zrythm` community server (https://discord.gg/AbHb3eD)
 
 ## License
-Copyright (C) 2019  Alexandros Theodotou
+Copyright (C) 2018-2019  Alexandros Theodotou
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -109,13 +109,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-
 ## Support
 Donations of any amount are accepted (and appreciated) below:
 
 ### Paypal
 https://www.paypal.me/alextee90
-### Liberapay
+### LiberaPay
 https://liberapay.com/alextee/
-### Patreon
-https://www.patreon.com/alextee
+### Bitcoin
+coming soon

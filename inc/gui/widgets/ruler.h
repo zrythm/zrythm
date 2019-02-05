@@ -62,15 +62,11 @@ typedef struct
   unsigned int             px_per_sixteenth;
   double                   px_per_tick;
   unsigned int             total_px;
-  double                   start_x; ///< for dragging
 
   /**
    * Zoom level.
    */
   double                   zoom_level;
-
-  GtkGestureDrag *         drag;
-  GtkGestureMultiPress *   multipress;
 } RulerWidgetPrivate;
 
 typedef struct _RulerWidgetClass

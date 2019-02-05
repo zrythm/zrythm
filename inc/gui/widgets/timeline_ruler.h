@@ -23,6 +23,7 @@
 #define __GUI_WIDGETS_TIMELINE_RULER_H__
 
 #include "gui/widgets/ruler.h"
+#include "utils/ui.h"
 
 #include <gtk/gtk.h>
 
@@ -36,9 +37,35 @@ G_DECLARE_FINAL_TYPE (TimelineRulerWidget,
 
 #define MW_RULER MW_CENTER_DOCK->ruler
 
+typedef struct _RulerRangeWidget RulerRangeWidget;
+
+typedef enum TRWTarget
+{
+  TRW_TARGET_PLAYHEAD,
+  TRW_TARGET_RANGE,
+} TRWTarget;
+
 typedef struct _TimelineRulerWidget
 {
-  RulerWidget           parent_instance;
+  RulerWidget              parent_instance;
+  RulerRangeWidget *       range;
+
+  /**
+   * Dragging playhead or creating range, etc.
+   */
+  UiOverlayAction          action;
+  TRWTarget                target; ///< object working upon
+  double                   start_x; ///< for dragging
+  double                   last_offset_x;
+  int                      range1_first; ///< range1 was before range2 at drag start
+  GtkGestureDrag *         drag;
+  GtkGestureMultiPress *   multipress;
 } TimelineRulerWidget;
+
+void
+timeline_ruler_widget_set_ruler_range_position (
+  TimelineRulerWidget * self,
+  RulerRangeWidget *    rr,
+  GtkAllocation *       allocation);
 
 #endif

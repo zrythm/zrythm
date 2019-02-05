@@ -19,7 +19,8 @@ Build-Depends: debhelper-compat (= 10),
   libavcodec-dev,
   libavutil-dev,
   libavformat-dev
-Depends: breeze-icon-theme
+Depends: breeze-icon-theme,
+  libcyaml
 
 Package: zrythm
 Architecture: any

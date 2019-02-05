@@ -1,7 +1,7 @@
 Format-Specification: http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?op=file&rev=142
 Name: zrythm
 Maintainer: Alexandros Theodotou <alex@zrythm.org>
-Source: git://gitlab.com/alextee/zrythm/
+Source: git://git.zrythm.org/zrythm/zrythm/
 
 Copyright: 2018 Alexandros Theodotou <alex@zrythm.org>
 License: GPL-3+
@@ -10,7 +10,7 @@ Files: debian/*
 Copyright: 2018 Alexandros Theodotou <alex@zrythm.org>
 License: GPL-3+
 
-License: GPL-3+
+License: GPL-3
  Zrythm is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or

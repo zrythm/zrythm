@@ -24,6 +24,8 @@
 
 #include <gtk/gtk.h>
 
+typedef struct Position Position;
+
 /**
  * Space on the edges to show resize cursors
  */
@@ -40,6 +42,22 @@ typedef enum UiCursorState
   UI_CURSOR_STATE_RESIZE_R,
   UI_CURSOR_STATE_REPEAT_R,
 } UiCursorState;
+
+/**
+ * Various overlay actions to be shared.
+ */
+typedef enum UiOverlayAction
+{
+  UI_OVERLAY_ACTION_NONE,
+  UI_OVERLAY_ACTION_RESIZING_L,
+  UI_OVERLAY_ACTION_RESIZING_R,
+  UI_OVERLAY_ACTION_STARTING_MOVING,
+  UI_OVERLAY_ACTION_MOVING,
+  UI_OVERLAY_ACTION_STARTING_CHANGING_CURVE,
+  UI_OVERLAY_ACTION_CHANGING_CURVE,
+  UI_OVERLAY_ACTION_STARTING_SELECTION,
+  UI_OVERLAY_ACTION_SELECTING,
+} UiOverlayAction;
 
 void
 ui_set_cursor (GtkWidget * widget, char * name);

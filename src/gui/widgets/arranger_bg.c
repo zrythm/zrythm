@@ -55,24 +55,33 @@ arranger_bg_draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   gdk_cairo_get_clip_rectangle (cr,
 	                        &rect);
 
-  /*guint height =*/
-    /*gtk_widget_get_allocated_height (widget);*/
-  /*guint width =*/
-    /*gtk_widget_get_allocated_width (widget);*/
-
   RULER_WIDGET_GET_PRIVATE (ab_prv->ruler);
 
-  /*GdkRGBA color;*/
   GtkStyleContext *context;
 
   context = gtk_widget_get_style_context (widget);
 
-  /*guint width = gtk_widget_get_allocated_width (widget);*/
-  /*guint height = gtk_widget_get_allocated_height (widget);*/
-
   gtk_render_background (context, cr,
                          rect.x, rect.y,
                          rect.width, rect.height);
+
+  /* in order they appear */
+  Position range_first_pos, range_second_pos;
+  if (position_compare (&PROJECT->range_1,
+                        &PROJECT->range_2) <= 0)
+    {
+      position_set_to_pos (&range_first_pos,
+                           &PROJECT->range_1);
+      position_set_to_pos (&range_second_pos,
+                           &PROJECT->range_2);
+    }
+  else
+    {
+      position_set_to_pos (&range_first_pos,
+                           &PROJECT->range_2);
+      position_set_to_pos (&range_second_pos,
+                           &PROJECT->range_1);
+    }
 
   /* handle vertical drawing */
   for (int i =
@@ -81,30 +90,57 @@ arranger_bg_draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
           SPACE_BEFORE_START);
        i < rect.x + rect.width;
        i++)
-  {
-    int actual_pos = i - SPACE_BEFORE_START;
-    if (actual_pos % rw_prv->px_per_bar == 0)
     {
-        cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);
-        cairo_set_line_width (cr, 1);
-        cairo_move_to (cr, i, rect.y);
-        cairo_line_to (cr, i, rect.y + rect.height);
-        cairo_stroke (cr);
+      int actual_pos = i - SPACE_BEFORE_START;
+      if (actual_pos % rw_prv->px_per_bar == 0)
+        {
+          cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);
+          cairo_set_line_width (cr, 1);
+          cairo_move_to (cr, i, rect.y);
+          cairo_line_to (cr, i, rect.y + rect.height);
+          cairo_stroke (cr);
+        }
+      else if (actual_pos % rw_prv->px_per_beat == 0)
+        {
+          cairo_set_source_rgb (cr, 0.25, 0.25, 0.25);
+          cairo_set_line_width (cr, 0.5);
+          cairo_move_to (cr, i, rect.y);
+          cairo_line_to (cr, i, rect.y + rect.height);
+          cairo_stroke (cr);
+        }
     }
-    else if (actual_pos % rw_prv->px_per_beat == 0)
-    {
-        cairo_set_source_rgb (cr, 0.25, 0.25, 0.25);
-        cairo_set_line_width (cr, 0.5);
-        cairo_move_to (cr, i, rect.y);
-        cairo_line_to (cr, i, rect.y + rect.height);
-        cairo_stroke (cr);
-    }
-  }
 
   /* draw selections */
   arranger_bg_widget_draw_selections (
     ab_prv->arranger,
     cr);
+
+  /* draw range */
+  if (PROJECT->has_range)
+    {
+      int range_first_px, range_second_px;
+      range_first_px = ui_pos_to_px (&range_first_pos, 1);
+      range_second_px = ui_pos_to_px (&range_second_pos, 1);
+      cairo_set_source_rgba (cr, 0.3, 0.3, 0.3, 0.3);
+      cairo_rectangle (cr,
+                       range_first_px > rect.x ? range_first_px : rect.x,
+                       rect.y,
+                       range_second_px < rect.x + rect.width ? range_second_px - range_first_px : (rect.x + rect.width) - range_first_px,
+                       rect.height);
+      cairo_fill (cr);
+      cairo_set_source_rgba (cr, 0.8, 0.8, 0.8, 0.4);
+      cairo_set_line_width (cr, 2);
+      z_cairo_draw_vertical_line (
+        cr,
+        range_first_px > rect.x ? range_first_px : rect.x,
+        rect.y,
+        rect.y + rect.height);
+      z_cairo_draw_vertical_line (
+        cr,
+        range_second_px < rect.x + rect.width ? range_second_px : rect.x + rect.width,
+        rect.y,
+        rect.y + rect.height);
+    }
 
   return 0;
 }

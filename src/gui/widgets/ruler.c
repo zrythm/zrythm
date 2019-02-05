@@ -33,6 +33,7 @@
 #include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/ruler_playhead.h"
+#include "gui/widgets/ruler_range.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "project.h"
@@ -81,6 +82,13 @@ get_child_position (GtkOverlay   *overlay,
       allocation->width = PLAYHEAD_TRIANGLE_WIDTH;
       allocation->height =
         PLAYHEAD_TRIANGLE_HEIGHT;
+    }
+  else if (Z_IS_RULER_RANGE_WIDGET (widget))
+    {
+      timeline_ruler_widget_set_ruler_range_position (
+        Z_TIMELINE_RULER_WIDGET (self),
+        Z_RULER_RANGE_WIDGET (widget),
+        allocation);
     }
 
   return TRUE;
@@ -260,74 +268,6 @@ reset_ruler ()
 
 }
 
-static gboolean
-multipress_pressed (GtkGestureMultiPress *gesture,
-               gint                  n_press,
-               gdouble               x,
-               gdouble               y,
-               gpointer              user_data)
-{
-  if (n_press == 2)
-    {
-      Position pos;
-      ui_px_to_pos (
-        x,
-        &pos,
-        1);
-      position_set_to_pos (&TRANSPORT->cue_pos,
-                           &pos);
-
-    }
-  return FALSE;
-}
-
-static void
-drag_begin (GtkGestureDrag * gesture,
-               gdouble         start_x,
-               gdouble         start_y,
-               gpointer        user_data)
-{
-  RulerWidget * self = Z_RULER_WIDGET (user_data);
-  GET_PRIVATE;
-
-  rw_prv->start_x = start_x;
-  Position pos;
-  ui_px_to_pos (
-    start_x,
-    &pos,
-    1);
-  transport_move_playhead (&pos, 1);
-}
-
-static void
-drag_update (GtkGestureDrag * gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-               gpointer        user_data)
-{
-  RulerWidget * self = Z_RULER_WIDGET (user_data);
-  GET_PRIVATE;
-
-  Position pos;
-  ui_px_to_pos (
-    rw_prv->start_x + offset_x,
-    &pos,
-    1);
-  transport_move_playhead (&pos, 1);
-}
-
-static void
-drag_end (GtkGestureDrag *gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-               gpointer        user_data)
-{
-  RulerWidget * self = (RulerWidget *) user_data;
-  GET_PRIVATE;
-
-  rw_prv->start_x = 0;
-}
-
 void
 ruler_widget_refresh (RulerWidget * self)
 {
@@ -434,24 +374,9 @@ ruler_widget_init (RulerWidget * self)
   gtk_widget_add_events (GTK_WIDGET (rw_prv->bg),
                          GDK_ALL_EVENTS_MASK);
 
-  rw_prv->drag = GTK_GESTURE_DRAG (
-    gtk_gesture_drag_new (GTK_WIDGET (rw_prv->bg)));
-  rw_prv->multipress = GTK_GESTURE_MULTI_PRESS (
-    gtk_gesture_multi_press_new (GTK_WIDGET (rw_prv->bg)));
 
-  /* FIXME drags */
   g_signal_connect (G_OBJECT (rw_prv->bg), "draw",
                     G_CALLBACK (ruler_draw_cb), self);
-  /*g_signal_connect (G_OBJECT(self), "button_press_event",*/
-                    /*G_CALLBACK (button_press_cb),  self);*/
   g_signal_connect (G_OBJECT (self), "get-child-position",
                     G_CALLBACK (get_child_position), NULL);
-  g_signal_connect (G_OBJECT(rw_prv->drag), "drag-begin",
-                    G_CALLBACK (drag_begin),  self);
-  g_signal_connect (G_OBJECT(rw_prv->drag), "drag-update",
-                    G_CALLBACK (drag_update),  self);
-  g_signal_connect (G_OBJECT(rw_prv->drag), "drag-end",
-                    G_CALLBACK (drag_end),  self);
-  g_signal_connect (G_OBJECT (rw_prv->multipress), "pressed",
-                    G_CALLBACK (multipress_pressed), self);
 }
