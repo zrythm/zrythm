@@ -47,22 +47,6 @@ G_DEFINE_TYPE (InstrumentTrackWidget,
                instrument_track_widget,
                TRACK_WIDGET_TYPE)
 
-/*static void*/
-/*on_show_automation (GtkWidget * widget, void * data)*/
-/*{*/
-  /*InstrumentTrackWidget * self =*/
-    /*Z_INSTRUMENT_TRACK_WIDGET (data);*/
-
-  /*TRACK_WIDGET_GET_PRIVATE (self);*/
-
-  /*[> toggle visibility flag <]*/
-  /*tw_prv->track->bot_paned_visible =*/
-    /*tw_prv->track->bot_paned_visible ? 0 : 1;*/
-
-  /*[> FIXME rename to refresh <]*/
-  /*tracklist_widget_show (MW_TRACKLIST);*/
-/*}*/
-
 /**
  * Creates a new track widget using the given track.
  *
@@ -94,9 +78,14 @@ instrument_track_widget_new (Track * track)
                    Z_GTK_NO_SHRINK);
 
   g_signal_connect (
+    self->record,
+    "toggled",
+    G_CALLBACK (track_widget_on_record_toggled),
+    self);
+  g_signal_connect (
     self->show_automation,
-    "clicked",
-    G_CALLBACK (track_widget_on_show_automation),
+    "toggled",
+    G_CALLBACK (track_widget_on_show_automation_toggled),
     self);
 
   gtk_widget_set_visible (GTK_WIDGET (self),
@@ -106,11 +95,26 @@ instrument_track_widget_new (Track * track)
 }
 
 void
-instrument_track_widget_refresh (InstrumentTrackWidget * self)
+instrument_track_widget_refresh (
+  InstrumentTrackWidget * self)
 {
   TRACK_WIDGET_GET_PRIVATE (self);
-  gtk_label_set_text (tw_prv->name,
-                      ((ChannelTrack *)tw_prv->track)->channel->name);
+  Track * track = tw_prv->track;
+  ChannelTrack * ct = (ChannelTrack *) track;
+  Channel * chan = ct->channel;
+
+  gtk_label_set_text (
+    tw_prv->name,
+    chan->name);
+  if (gtk_toggle_button_get_active (self->record) !=
+      chan->recording)
+    {
+      tw_prv->manual_recording_toggle = 1;
+      g_message ("setting manual for %s", chan->name);
+      gtk_toggle_button_set_active (
+        self->record,
+        chan->recording);
+    }
 
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (tw_prv->track);
@@ -125,20 +129,24 @@ instrument_track_widget_init (InstrumentTrackWidget * self)
 
   /* create buttons */
   self->record =
-    z_gtk_button_new_with_resource (ICON_TYPE_ZRYTHM,
-                                    "record.svg");
+    z_gtk_toggle_button_new_with_icon ("media-record");
   self->solo =
-    z_gtk_button_new_with_resource (ICON_TYPE_ZRYTHM,
-                                    "solo.svg");
+    z_gtk_toggle_button_new_with_resource (
+      ICON_TYPE_ZRYTHM,
+      "solo.svg");
   self->mute =
-    z_gtk_button_new_with_resource (ICON_TYPE_ZRYTHM,
-                                    "mute.svg");
+    z_gtk_toggle_button_new_with_resource (
+      ICON_TYPE_ZRYTHM,
+      "mute.svg");
   self->show_automation =
-    z_gtk_button_new_with_icon ("format-justify-fill");
+    z_gtk_toggle_button_new_with_icon (
+      "format-justify-fill");
   self->lock =
-    GTK_BUTTON (gtk_button_new_with_label ("Lock"));
+    GTK_TOGGLE_BUTTON (
+      gtk_toggle_button_new_with_label ("Lock"));
   self->freeze =
-    GTK_BUTTON (gtk_button_new_with_label ("Freeze"));
+    GTK_TOGGLE_BUTTON (
+      gtk_toggle_button_new_with_label ("Freeze"));
 
   /* set buttons to upper controls */
   gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),
@@ -183,6 +191,7 @@ instrument_track_widget_init (InstrumentTrackWidget * self)
 }
 
 static void
-instrument_track_widget_class_init (InstrumentTrackWidgetClass * klass)
+instrument_track_widget_class_init (
+  InstrumentTrackWidgetClass * klass)
 {
 }

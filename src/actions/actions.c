@@ -601,7 +601,7 @@ activate_create_audio_track (GSimpleAction *action,
   mixer_add_channel (chan);
   mixer_widget_refresh (MW_MIXER);
   tracklist_append_track (chan->track);
-  tracklist_widget_refresh (MW_TRACKLIST);
+  tracklist_widget_hard_refresh (MW_TRACKLIST);
 }
 
 void
@@ -614,7 +614,7 @@ activate_create_ins_track (GSimpleAction *action,
   mixer_add_channel (chan);
   mixer_widget_refresh (MW_MIXER);
   tracklist_append_track (chan->track);
-  tracklist_widget_refresh (MW_TRACKLIST);
+  tracklist_widget_hard_refresh (MW_TRACKLIST);
 }
 
 void
@@ -627,7 +627,7 @@ activate_create_bus_track (GSimpleAction *action,
   mixer_add_channel (chan);
   mixer_widget_refresh (MW_MIXER);
   tracklist_append_track (chan->track);
-  tracklist_widget_refresh (MW_TRACKLIST);
+  tracklist_widget_hard_refresh (MW_TRACKLIST);
 }
 
 void

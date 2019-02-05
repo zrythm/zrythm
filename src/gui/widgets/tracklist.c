@@ -152,10 +152,16 @@ tracklist_widget_toggle_select_all_tracks (
                                     num_selected);
 }
 
+/**
+ * Toggles selecting the track, with the option to either
+ * add the track to the current selection or to select it
+ * exclusively.
+ */
 void
-tracklist_widget_toggle_select_track (TracklistWidget * self,
-                               Track *           track,
-                               int               append) ///< append to selections
+tracklist_widget_toggle_select_track (
+  TracklistWidget * self,
+  Track *           track,
+  int               append) ///< append to selections
 {
   GET_SELECTED_TRACKS;
 
@@ -191,7 +197,7 @@ tracklist_widget_toggle_select_track (TracklistWidget * self,
 }
 
 void
-tracklist_widget_refresh (TracklistWidget * self)
+tracklist_widget_hard_refresh (TracklistWidget * self)
 {
   /* remove ddbox */
   g_object_ref (self->ddbox);
@@ -262,14 +268,14 @@ tracklist_widget_setup (TracklistWidget * self,
   self->tracklist = tracklist;
   tracklist->widget = self;
 
-  tracklist_widget_refresh (self);
+  tracklist_widget_hard_refresh (self);
 }
 
 /**
  * Makes sure all the tracks for channels marked as visible are visible.
  */
 void
-tracklist_widget_show (TracklistWidget *self)
+tracklist_widget_soft_refresh (TracklistWidget *self)
 {
   gtk_widget_show (GTK_WIDGET (self));
   track_widget_refresh (MIXER->master->track->widget);

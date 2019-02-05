@@ -19,6 +19,22 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/*
+  Copyright 2007-2016 David Robillard <http://drobilla.net>
+
+  Permission to use, copy, modify, and/or distribute this software for any
+  purpose with or without fee is hereby granted, provided that the above
+  copyright notice and this permission notice appear in all copies.
+
+  THIS SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+*/
+
 /** \file
  * Implementation of LV2 Plugin.
  */
@@ -1831,59 +1847,81 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
   int nframes = AUDIO_ENGINE->nframes;
   jack_client_t * client = AUDIO_ENGINE->client;
 
-    /* If transport state is not as expected, then something has changed */
-    const bool xport_changed = (
-      lv2_plugin->rolling != (TRANSPORT->play_state == PLAYSTATE_ROLLING) ||
-      lv2_plugin->pos.frames != PLAYHEAD.frames ||
-      lv2_plugin->bpm != TRANSPORT->bpm);
+  /* If transport state is not as expected, then something has changed */
+  const bool xport_changed = (
+    lv2_plugin->rolling != (TRANSPORT->play_state == PLAYSTATE_ROLLING) ||
+    lv2_plugin->pos.frames != PLAYHEAD.frames ||
+    lv2_plugin->bpm != TRANSPORT->bpm);
 
-    uint8_t   pos_buf[256];
-    LV2_Atom* lv2_pos = (LV2_Atom*)pos_buf;
-    if (xport_changed)
-      {
-        /* Build an LV2 position object to report change to plugin */
-        lv2_atom_forge_set_buffer(&lv2_plugin->forge, pos_buf, sizeof(pos_buf));
-        LV2_Atom_Forge*      forge = &lv2_plugin->forge;
-        LV2_Atom_Forge_Frame frame;
-        lv2_atom_forge_object(forge, &frame, 0, lv2_plugin->urids.time_Position);
-        lv2_atom_forge_key(forge, lv2_plugin->urids.time_frame);
-        lv2_atom_forge_long(forge, PLAYHEAD.frames);
-        lv2_atom_forge_key(forge, lv2_plugin->urids.time_speed);
-        lv2_atom_forge_float(forge, TRANSPORT->play_state == PLAYSTATE_ROLLING ? 1.0 : 0.0);
-        lv2_atom_forge_key(forge, lv2_plugin->urids.time_barBeat);
-        lv2_atom_forge_float(
-                forge, (float) PLAYHEAD.beats - 1 + ((float) PLAYHEAD.ticks / (float) TICKS_PER_BEAT));
-        lv2_atom_forge_key(forge, lv2_plugin->urids.time_bar);
-        lv2_atom_forge_long(forge, PLAYHEAD.bars - 1);
-        lv2_atom_forge_key(forge, lv2_plugin->urids.time_beatUnit);
-        lv2_atom_forge_int(
-          forge,
-          transport_get_beat_unit (TRANSPORT));
-        lv2_atom_forge_key(forge, lv2_plugin->urids.time_beatsPerBar);
-        lv2_atom_forge_float(forge, TRANSPORT->beats_per_bar);
-        lv2_atom_forge_key(forge, lv2_plugin->urids.time_beatsPerMinute);
-        lv2_atom_forge_float(forge, TRANSPORT->bpm);
+  uint8_t   pos_buf[256];
+  LV2_Atom * lv2_pos = (LV2_Atom*) pos_buf;
+  if (xport_changed)
+    {
+      /* Build an LV2 position object to report change to
+       * plugin */
+      lv2_atom_forge_set_buffer (
+        &lv2_plugin->forge,
+        pos_buf,
+        sizeof(pos_buf));
+      LV2_Atom_Forge * forge = &lv2_plugin->forge;
+      LV2_Atom_Forge_Frame frame;
+      lv2_atom_forge_object (
+        forge,
+        &frame,
+        0,
+        lv2_plugin->urids.time_Position);
+      lv2_atom_forge_key (
+        forge,
+        lv2_plugin->urids.time_frame);
+      lv2_atom_forge_long (
+        forge,
+        PLAYHEAD.frames);
+      lv2_atom_forge_key (
+        forge,
+        lv2_plugin->urids.time_speed);
+      lv2_atom_forge_float (
+        forge,
+        TRANSPORT->play_state == PLAYSTATE_ROLLING ?
+          1.0 : 0.0);
+      lv2_atom_forge_key (
+        forge,
+        lv2_plugin->urids.time_barBeat);
+      lv2_atom_forge_float (
+        forge,
+        (float) PLAYHEAD.beats - 1 +
+        ((float) PLAYHEAD.ticks /
+          (float) TICKS_PER_BEAT));
+      lv2_atom_forge_key (
+        forge,
+        lv2_plugin->urids.time_bar);
+      lv2_atom_forge_long (
+        forge,
+        PLAYHEAD.bars - 1);
+      lv2_atom_forge_key (
+        forge,
+        lv2_plugin->urids.time_beatUnit);
+      lv2_atom_forge_int (
+        forge,
+        transport_get_beat_unit (TRANSPORT));
+      lv2_atom_forge_key (
+        forge,
+        lv2_plugin->urids.time_beatsPerBar);
+      lv2_atom_forge_float (
+        forge,
+        TRANSPORT->beats_per_bar);
+      lv2_atom_forge_key (
+        forge,
+        lv2_plugin->urids.time_beatsPerMinute);
+      lv2_atom_forge_float (forge, TRANSPORT->bpm);
+    }
 
-        if (1)
-          {
-            /*char* str = sratom_to_turtle(*/
-                    /*lv2_plugin->sratom, &lv2_plugin->unmap, "time:", NULL, NULL,*/
-                    /*lv2_pos->type, lv2_pos->size,*/
-                    /*LV2_ATOM_BODY(lv2_pos));*/
-            /*lv2_ansi_start(stdout, 36);*/
-            /*printf("\n## Position ##\n%s\n", str);*/
-            /*lv2_ansi_reset(stdout);*/
-            /*free(str);*/
-          }
-      }
-
-    /* Update transport state to expected values for next cycle */
-    lv2_plugin->pos.frames =
-      TRANSPORT->play_state == PLAYSTATE_ROLLING ?
-      PLAYHEAD.frames + nframes :
-      lv2_plugin->pos.frames;
-    lv2_plugin->bpm      = TRANSPORT->bpm;
-    lv2_plugin->rolling  = TRANSPORT->play_state == PLAYSTATE_ROLLING;
+  /* Update transport state to expected values for next cycle */
+  lv2_plugin->pos.frames =
+    TRANSPORT->play_state == PLAYSTATE_ROLLING ?
+    PLAYHEAD.frames + nframes :
+    lv2_plugin->pos.frames;
+  lv2_plugin->bpm      = TRANSPORT->bpm;
+  lv2_plugin->rolling  = TRANSPORT->play_state == PLAYSTATE_ROLLING;
 
     /*switch (TRANSPORT->play_state) {*/
     /*case PLAYSTATE_PAUSE_REQUESTED:*/
@@ -1908,6 +1946,7 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
     /*default:*/
             /*break;*/
     /*}*/
+
   /* Prepare port buffers */
   for (uint32_t p = 0; p < lv2_plugin->num_ports; ++p)
     {
@@ -1917,56 +1956,68 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
         {
           /* Connect lv2 ports  to plugin port buffers */
           /*port->nframes = nframes;*/
-          lilv_instance_connect_port(
-                  lv2_plugin->instance, p,
-                  port->buf);
+          lilv_instance_connect_port (
+            lv2_plugin->instance, p, port->buf);
 #ifdef HAVE_JACK_METADATA
-      }
-    else if (port->type == TYPE_CV && lv2_port->sys_port)
-      {
-              /* Connect plugin port directly to Jack port buffer */
-              lilv_instance_connect_port(
-                      lv2_plugin->instance, p,
-                      jack_port_get_buffer(lv2_port->sys_port, nframes));
+        }
+      else if (port->type == TYPE_CV && lv2_port->sys_port)
+        {
+          /* Connect plugin port directly to Jack port
+           * buffer */
+          lilv_instance_connect_port (
+            lv2_plugin->instance,
+            p,
+            jack_port_get_buffer (lv2_port->sys_port,
+                                  nframes));
 #endif
-      }
-    else if (port->type == TYPE_EVENT && port->flow == FLOW_INPUT) {
-              lv2_evbuf_reset(lv2_port->evbuf, true);
+        }
+      else if (port->type == TYPE_EVENT &&
+               port->flow == FLOW_INPUT)
+        {
+          lv2_evbuf_reset(lv2_port->evbuf, true);
 
-              /* Write transport change event if applicable */
-              LV2_Evbuf_Iterator iter = lv2_evbuf_begin(lv2_port->evbuf);
-              if (xport_changed)
-                {
-                  lv2_evbuf_write(&iter, 0, 0,
-                                  lv2_pos->type, lv2_pos->size,
-                                  (const uint8_t*)LV2_ATOM_BODY(lv2_pos));
-                }
+          /* Write transport change event if applicable */
+          LV2_Evbuf_Iterator iter =
+            lv2_evbuf_begin(lv2_port->evbuf);
+          if (xport_changed)
+            {
+              lv2_evbuf_write (
+                &iter, 0, 0,
+                lv2_pos->type, lv2_pos->size,
+                (const uint8_t*) LV2_ATOM_BODY(lv2_pos));
+            }
 
-              if (lv2_plugin->request_update)
-                {
-                  /* Plugin state has changed, request an update */
-                  const LV2_Atom_Object get = {
-                          { sizeof(LV2_Atom_Object_Body),
-                            lv2_plugin->urids.atom_Object },
-                          { 0, lv2_plugin->urids.patch_Get } };
-                  lv2_evbuf_write(&iter, 0, 0,
-                                  get.atom.type, get.atom.size,
-                                  (const uint8_t*)LV2_ATOM_BODY(&get));
-                }
+          if (lv2_plugin->request_update)
+            {
+              /* Plugin state has changed, request an
+               * update */
+              const LV2_Atom_Object get = {
+                      { sizeof(LV2_Atom_Object_Body),
+                        lv2_plugin->urids.atom_Object },
+                      { 0, lv2_plugin->urids.patch_Get } };
+              lv2_evbuf_write (
+                &iter, 0, 0,
+                get.atom.type, get.atom.size,
+                (const uint8_t*) LV2_ATOM_BODY(&get));
+            }
 
-              if (port->midi_events.num_events > 0)
+          if (port->midi_events.num_events > 0)
+            {
+              /* Write Jack MIDI input */
+              for (uint32_t i = 0;
+                   i < port->midi_events.num_events;
+                   ++i)
                 {
-                  /* Write Jack MIDI input */
-                  for (uint32_t i = 0; i < port->midi_events.num_events; ++i)
-                    {
-                      jack_midi_event_t * ev = &port->midi_events.jack_midi_events[i];
-                      lv2_evbuf_write(&iter,
-                                      ev->time, 0,
-                                      lv2_plugin->urids.midi_MidiEvent,
-                                      ev->size, ev->buffer);
-                    }
+                  jack_midi_event_t * ev =
+                    &port->midi_events.jack_midi_events[i];
+                  lv2_evbuf_write (
+                    &iter,
+                    ev->time, 0,
+                    lv2_plugin->urids.midi_MidiEvent,
+                    ev->size, ev->buffer);
                 }
-              midi_events_clear (&port->midi_events);
+            }
+          midi_events_clear (&port->midi_events);
       } else if (port->type == TYPE_EVENT) {
               /* Clear event output for plugin to write to */
               lv2_evbuf_reset(lv2_port->evbuf, false);

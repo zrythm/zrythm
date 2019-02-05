@@ -501,7 +501,7 @@ on_row_activated (GtkTreeView       *tree_view,
 
       /* refresh tracklist */
       mixer_widget_refresh (MW_MIXER);
-      tracklist_widget_refresh (MW_TRACKLIST);
+      tracklist_widget_hard_refresh (MW_TRACKLIST);
       arranger_widget_refresh (
         Z_ARRANGER_WIDGET (MW_TIMELINE));
 

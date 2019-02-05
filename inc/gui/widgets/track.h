@@ -75,6 +75,11 @@ typedef struct
   GtkEventBox *                 event_box;
 
   Track *                       track; ///< associated track
+
+  /**
+   * Used to tell the callback if we want it to run or not.
+   */
+  int                           manual_recording_toggle;
 } TrackWidgetPrivate;
 
 typedef struct _TrackWidgetClass
@@ -103,9 +108,21 @@ track_widget_refresh (TrackWidget * self);
 TrackWidgetPrivate *
 track_widget_get_private (TrackWidget * self);
 
+/**
+ * Callback when automation button is toggled.
+ */
 void
-track_widget_on_show_automation (GtkWidget * widget,
-                                 void *      data);
+track_widget_on_show_automation_toggled (
+  GtkWidget * widget,
+  void *      data);
+
+/**
+ * Callback when record button is toggled.
+ */
+void
+track_widget_on_record_toggled (
+  GtkWidget * widget,
+  void *      data);
 
 GtkWidget *
 track_widget_get_bottom_paned (TrackWidget * self);

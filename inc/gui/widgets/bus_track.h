@@ -45,10 +45,10 @@ typedef struct BusTrack BusTrack;
 typedef struct _BusTrackWidget
 {
   TrackWidget                parent_instance;
-  GtkButton *                record;
-  GtkButton *                solo;
-  GtkButton *                mute;
-  GtkButton *                show_automation;
+  GtkToggleButton *          record;
+  GtkToggleButton *          solo;
+  GtkToggleButton *          mute;
+  GtkToggleButton *          show_automation;
 } BusTrackWidget;
 
 /**

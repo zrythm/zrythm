@@ -103,28 +103,21 @@ jack_buffer_size_cb (uint32_t nframes,
 }
 
 /**
- * The process callback for this JACK application is
- * called in a special realtime thread once for each audio
- * cycle.
+ * Gets MIDI event count from JACK.
+ *
+ * The events stay in the JACK port.
  */
-int
-jack_process_cb (nframes_t nframes, ///< the number of frames to fill
-                 void *    data) ///< user data
+static void
+get_midi_event_count (
+  AudioEngine * self,
+  nframes_t     nframes,
+  int           print)
 {
-  AudioEngine * engine = (AudioEngine *) data;
-  if (!engine->run)
-    return 0;
-
-  engine_process_prepare (nframes);
-
-  float * stereo_out_l, * stereo_out_r;
-
-  /* get MIDI events from JACK and store to engine MIDI
-   * in port
-   */
   void* port_buf = jack_port_get_buffer (
-        JACK_PORT_T (engine->midi_in->data), nframes);
-  MIDI_IN_NUM_EVENTS = jack_midi_get_event_count(port_buf);
+        JACK_PORT_T (self->midi_in->data), nframes);
+  MIDI_IN_NUM_EVENTS = jack_midi_get_event_count (port_buf);
+
+  /* print */
   if(MIDI_IN_NUM_EVENTS > 0)
     {
       g_message ("JACK: have %d events", MIDI_IN_NUM_EVENTS);
@@ -155,30 +148,55 @@ jack_process_cb (nframes_t nframes, ///< the number of frames to fill
                      /*MIDI_IN_EVENT(i).time, *(MIDI_IN_EVENT(i).buffer));*/
         }
     }
+}
+
+/**
+ * The process callback for this JACK application is
+ * called in a special realtime thread once for each audio
+ * cycle.
+ */
+int
+jack_process_cb (
+  nframes_t nframes, ///< the number of frames to fill
+  void *    data) ///< user data
+{
+  AudioEngine * engine = (AudioEngine *) data;
+  if (!engine->run)
+    return 0;
+
+  /* run pre-process code */
+  engine_process_prepare (nframes);
+
+  /* get num of midi events in JACK's midi in buffer */
+  get_midi_event_count (engine, nframes, 1);
+
   /* get MIDI events from other sources */
   /*if (engine->panic)*/
     /*{*/
       /*midi_panic (&engine->midi_editor_manual_press->midi_events);*/
     /*}*/
-  midi_events_dequeue (&engine->midi_editor_manual_press->midi_events);
+  midi_events_dequeue (
+    &engine->midi_editor_manual_press->midi_events);
 
-  /*
-   * process
-   */
+  /* this will keep looping until everything was
+   * processed in this cycle */
   mixer_process (nframes);
 
-  /**
-   * get jack's buffers with nframes frames for left & right
-   */
+  /* get jack's buffers with nframes frames for left &
+   * right */
+  float * stereo_out_l, * stereo_out_r;
   stereo_out_l = (float *)
-    jack_port_get_buffer (JACK_PORT_T (engine->stereo_out->l->data),
-                          nframes);
+    jack_port_get_buffer (
+      JACK_PORT_T (engine->stereo_out->l->data),
+      nframes);
   stereo_out_r = (float *)
-    jack_port_get_buffer (JACK_PORT_T (engine->stereo_out->r->data),
-                           nframes);
+    jack_port_get_buffer (
+      JACK_PORT_T (engine->stereo_out->r->data),
+      nframes);
 
-  /* by this time, the Master channel should have its Stereo Out ports filled.
-   * pass their buffers to jack's buffers */
+  /* by this time, the Master channel should have its
+   * Stereo Out ports filled. pass their buffers to JACK's
+   * buffers */
   for (int i = 0; i < nframes; i++)
     {
       stereo_out_l[i] = MIXER->master->stereo_out->l->buf[i];
@@ -187,10 +205,11 @@ jack_process_cb (nframes_t nframes, ///< the number of frames to fill
   (void) stereo_out_l; /* avoid unused warnings */
   (void) stereo_out_r;
 
+  /* run post-process code */
   engine_post_process (engine);
 
   /*
-   * processing finished, return 0
+   * processing finished, return 0 (OK)
    */
   return 0;
 }

@@ -85,13 +85,12 @@ chord_track_widget_init (ChordTrackWidget * self)
 
   /* create buttons */
   self->record =
-    z_gtk_button_new_with_resource (ICON_TYPE_ZRYTHM,
-                                    "record.svg");
+    z_gtk_toggle_button_new_with_icon ("media-record");
   self->solo =
-    z_gtk_button_new_with_resource (ICON_TYPE_ZRYTHM,
+    z_gtk_toggle_button_new_with_resource (ICON_TYPE_ZRYTHM,
                                     "solo.svg");
   self->mute =
-    z_gtk_button_new_with_resource (ICON_TYPE_ZRYTHM,
+    z_gtk_toggle_button_new_with_resource (ICON_TYPE_ZRYTHM,
                                     "mute.svg");
 
   /* set buttons to upper controls */

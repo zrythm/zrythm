@@ -40,9 +40,9 @@ typedef struct ChordTrack ChordTrack;
 typedef struct _ChordTrackWidget
 {
   TrackWidget                   parent_instance;
-  GtkButton *                   record;
-  GtkButton *                   solo;
-  GtkButton *                   mute;
+  GtkToggleButton *             record;
+  GtkToggleButton *             solo;
+  GtkToggleButton *             mute;
 } ChordTrackWidget;
 
 /**

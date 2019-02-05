@@ -153,9 +153,15 @@ channel_process (Channel * channel)
   /* get events from track if playing */
   else if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
     {
-      /* fill midi events to pass to ins plugin */
       if (channel->track->type == TRACK_TYPE_INSTRUMENT)
         {
+          if (channel->recording)
+            {
+              /* convert MIDI data to regions */
+
+            }
+
+          /* fill midi events to pass to ins plugin */
           instrument_track_fill_midi_events (
             (InstrumentTrack *)channel->track,
             &PLAYHEAD,
@@ -827,26 +833,40 @@ channel_get_first_plugin (Channel * channel)
 }
 
 /**
- * Toggles the recording state of the channel.
- *
- * To be called when the record buttin is toggled.
- * TODO actually call this.
+ * Sets recording and connects/disconnects the JACK ports.
  */
 void
-channel_toggle_recording (Channel * channel)
+channel_set_recording (Channel * channel,
+                       int       recording)
 {
-  channel->recording = channel->recording == 0 ? 1 : 0;
-
-  /* find first plugin */
-  Plugin * plugin = channel_get_first_plugin (channel);
-
-  if (plugin)
+  if (channel->type == CT_AUDIO)
     {
-      if (channel->type == CT_AUDIO)
+      /* TODO connect L and R audio ports for recording */
+      if (recording)
         {
-          /* TODO connect L and R audio ports for recording */
+          port_connect (
+            AUDIO_ENGINE->stereo_in->l,
+            channel->stereo_in->l);
+          port_connect (
+            AUDIO_ENGINE->stereo_in->r,
+            channel->stereo_in->r);
         }
-      else if (channel->type == CT_MIDI)
+      else
+        {
+          port_disconnect (
+            AUDIO_ENGINE->stereo_in->l,
+            channel->stereo_in->l);
+          port_disconnect (
+            AUDIO_ENGINE->stereo_in->r,
+            channel->stereo_in->r);
+        }
+    }
+  else if (channel->type == CT_MIDI)
+    {
+      /* find first plugin */
+      Plugin * plugin = channel_get_first_plugin (channel);
+
+      if (plugin)
         {
           /* Connect/Disconnect MIDI port to the plugin */
           for (int i = 0; i < plugin->num_in_ports; i++)
@@ -855,15 +875,20 @@ channel_toggle_recording (Channel * channel)
               if (port->type == TYPE_EVENT &&
                   port->flow == FLOW_INPUT)
                 {
-                  g_message ("%d MIDI In port: %s", i, port->label);
-                  if (channel->recording)
-                    port_connect (AUDIO_ENGINE->midi_in, port);
+                  g_message ("%d MIDI In port: %s",
+                             i, port->label);
+                  if (recording)
+                    port_connect (
+                      AUDIO_ENGINE->midi_in, port);
                   else
-                    port_disconnect (AUDIO_ENGINE->midi_in, port);
+                    port_disconnect (
+                      AUDIO_ENGINE->midi_in, port);
                 }
             }
         }
     }
+
+  channel->recording = recording;
 }
 
 /**

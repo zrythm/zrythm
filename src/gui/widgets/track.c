@@ -62,26 +62,15 @@ size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
     MW_TIMELINE));
 }
 
-/*static void*/
-/*on_show_automation (GtkWidget * widget, void * data)*/
-/*{*/
-  /*TrackWidget * self = Z_TRACK_WIDGET (data);*/
-
-  /*TRACK_WIDGET_GET_PRIVATE (self);*/
-
-  /*[> toggle visibility flag <]*/
-  /*tw_prv->track->bot_paned_visible =*/
-    /*tw_prv->track->bot_paned_visible ? 0 : 1;*/
-
-  /*tracklist_widget_show (MW_CENTER_DOCK->tracklist);*/
-/*}*/
-
 void
-track_widget_select (TrackWidget * self,
-                     int           select) ///< 1 = select, 0 = unselect
+track_widget_select (
+  TrackWidget * self,
+  int           select) ///< select or not
 {
   TRACK_WIDGET_GET_PRIVATE (self);
-  tw_prv->track->selected = select;
+  Track * track = tw_prv->track;
+
+  track->selected = select;
   if (select)
     {
       gtk_widget_set_state_flags (GTK_WIDGET (self),
@@ -92,6 +81,42 @@ track_widget_select (TrackWidget * self,
     {
       gtk_widget_unset_state_flags (GTK_WIDGET (self),
                                     GTK_STATE_FLAG_SELECTED);
+    }
+
+  /* auto-set recording mode */
+  ChannelTrack * ct;
+  Channel * chan;
+  switch (track->type)
+    {
+    case TRACK_TYPE_INSTRUMENT:
+    case TRACK_TYPE_AUDIO:
+    case TRACK_TYPE_MASTER:
+    case TRACK_TYPE_BUS:
+      ct = (ChannelTrack *)track;
+      chan = ct->channel;
+      g_message ("%sselecting track %s, recording %d sa %d",
+                 select ? "" : "de",
+                 chan->name,
+                 chan->recording,
+                 chan->record_set_automatically);
+      /* if selecting the track and recording is not already
+       * on, turn these on */
+      if (select && !chan->recording)
+        {
+          channel_set_recording (chan, 1);
+          chan->record_set_automatically = 1;
+        }
+      /* if deselecting and record mode was automatically
+       * set when the track was selected, turn these off */
+      else if (!select && chan->record_set_automatically)
+        {
+          channel_set_recording (chan, 0);
+          chan->record_set_automatically = 0;
+        }
+      track_widget_refresh (self);
+      break;
+    case TRACK_TYPE_CHORD:
+      break;
     }
 }
 
@@ -235,16 +260,17 @@ multipress_pressed (GtkGestureMultiPress *gesture,
   TrackWidget * self =
     Z_TRACK_WIDGET (user_data);
 
-  g_message ("mp track");
-
   /* FIXME should do this via focus on click property */
   /*if (!gtk_widget_has_focus (GTK_WIDGET (self)))*/
     /*gtk_widget_grab_focus (GTK_WIDGET (self));*/
 
   GdkEventSequence *sequence =
-    gtk_gesture_single_get_current_sequence (GTK_GESTURE_SINGLE (gesture));
+    gtk_gesture_single_get_current_sequence (
+      GTK_GESTURE_SINGLE (gesture));
   const GdkEvent * event =
-    gtk_gesture_get_last_event (GTK_GESTURE (gesture), sequence);
+    gtk_gesture_get_last_event (
+      GTK_GESTURE (gesture),
+      sequence);
   GdkModifierType state_mask;
   gdk_event_get_state (event, &state_mask);
 
@@ -311,20 +337,52 @@ track_widget_new (Track * track)
 }
 
 void
-track_widget_on_show_automation (GtkWidget * widget,
+track_widget_on_show_automation_toggled (GtkWidget * widget,
                                  void *      data)
 {
   TrackWidget * self =
     Z_TRACK_WIDGET (data);
 
   TRACK_WIDGET_GET_PRIVATE (self);
+  Track * track = tw_prv->track;
 
   /* toggle visibility flag */
-  tw_prv->track->bot_paned_visible =
-    tw_prv->track->bot_paned_visible ? 0 : 1;
+  track->bot_paned_visible =
+    !track->bot_paned_visible;
 
-  /* FIXME rename to refresh */
-  tracklist_widget_show (MW_TRACKLIST);
+  tracklist_widget_soft_refresh (MW_TRACKLIST);
+}
+
+void
+track_widget_on_record_toggled (
+  GtkWidget * widget,
+  void *      data)
+{
+  TrackWidget * self =
+    Z_TRACK_WIDGET (data);
+  TRACK_WIDGET_GET_PRIVATE (self);
+  Track * track = tw_prv->track;
+  ChannelTrack * ct = (ChannelTrack *) track;
+  Channel * chan = ct->channel;
+
+  /* hack to not flip the toggle if this callback is called
+   * through code */
+  if (tw_prv->manual_recording_toggle)
+    {
+      g_message ("manual toggle was set for %s, returning",
+                 chan->name);
+      tw_prv->manual_recording_toggle = 0;
+      return;
+    }
+
+  /* toggle record flag */
+  channel_set_recording (chan, !chan->recording);
+  chan->record_set_automatically = 0;
+  g_message ("recording %d, %s",
+             chan->recording,
+             chan->name);
+
+  tracklist_widget_soft_refresh (MW_TRACKLIST);
 }
 
 GtkWidget *

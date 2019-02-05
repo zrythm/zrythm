@@ -10,6 +10,7 @@
         <property name="can-focus">1</property>
         <property name="receives-default">1</property>
         <property name="relief">none</property>
+        <property name="tooltip_text" translatable="yes">Play</property>
         <child>
           <object class="GtkImage">
             <property name="visible">1</property>
@@ -24,6 +25,7 @@
         <property name="can-focus">1</property>
         <property name="receives-default">1</property>
         <property name="relief">none</property>
+        <property name="tooltip_text" translatable="yes">Stop</property>
         <child>
           <object class="GtkImage">
             <property name="visible">1</property>
@@ -40,9 +42,8 @@
         <property name="visible">1</property>
         <property name="can-focus">1</property>
         <property name="receives-default">1</property>
-        <property name="halign">center</property>
-        <property name="valign">center</property>
         <property name="relief">none</property>
+        <property name="tooltip_text" translatable="yes">Record</property>
         <child>
           <object class="GtkImage">
             <property name="visible">1</property>
@@ -60,6 +61,7 @@
         <property name="can-focus">1</property>
         <property name="receives-default">1</property>
         <property name="relief">none</property>
+        <property name="tooltip_text" translatable="yes">Backward</property>
         <child>
           <object class="GtkImage">
             <property name="visible">1</property>
@@ -77,6 +79,7 @@
         <property name="can-focus">1</property>
         <property name="receives-default">1</property>
         <property name="relief">none</property>
+        <property name="tooltip_text" translatable="yes">Forward</property>
         <child>
           <object class="GtkImage">
             <property name="visible">1</property>
@@ -93,6 +96,7 @@
         <property name="visible">1</property>
         <property name="can-focus">1</property>
         <property name="receives-default">1</property>
+        <property name="tooltip_text" translatable="yes">Loop</property>
         <child>
           <object class="GtkImage">
             <property name="visible">1</property>

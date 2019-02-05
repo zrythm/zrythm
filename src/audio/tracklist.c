@@ -139,7 +139,7 @@ tracklist_add_track (Track *     track,
   if (MAIN_WINDOW && MW_CENTER_DOCK)
     {
       if (MW_CENTER_DOCK && MW_TRACKLIST)
-        tracklist_widget_refresh (MW_TRACKLIST);
+        tracklist_widget_hard_refresh (MW_TRACKLIST);
       if (MW_MIXER)
         mixer_widget_refresh (MW_MIXER);
     }

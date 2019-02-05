@@ -44,12 +44,12 @@ typedef struct InstrumentTrack InstrumentTrack;
 typedef struct _InstrumentTrackWidget
 {
   TrackWidget                   parent_instance;
-  GtkButton *                   record;
-  GtkButton *                   solo;
-  GtkButton *                   mute;
-  GtkButton *                   show_automation;
-  GtkButton *                   lock;
-  GtkButton *                   freeze;
+  GtkToggleButton *             record;
+  GtkToggleButton *             solo;
+  GtkToggleButton *             mute;
+  GtkToggleButton *             show_automation;
+  GtkToggleButton *             lock;
+  GtkToggleButton *             freeze;
 } InstrumentTrackWidget;
 
 /**

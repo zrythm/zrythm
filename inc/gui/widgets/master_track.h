@@ -44,10 +44,10 @@ typedef struct MasterTrack MasterTrack;
 typedef struct _MasterTrackWidget
 {
   TrackWidget                   parent_instance;
-  GtkButton *                   record;
-  GtkButton *                   solo;
-  GtkButton *                   mute;
-  GtkButton *                   show_automation;
+  GtkToggleButton *             record;
+  GtkToggleButton *             solo;
+  GtkToggleButton *             mute;
+  GtkToggleButton *             show_automation;
 } MasterTrackWidget;
 
 /**

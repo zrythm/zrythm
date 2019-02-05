@@ -73,14 +73,15 @@ tracklist_widget_toggle_select_track (TracklistWidget * self,
  * Selects or deselects all tracks.
  */
 void
-tracklist_widget_toggle_select_all_tracks (TracklistWidget *self,
-                                           int              select);
+tracklist_widget_toggle_select_all_tracks (
+  TracklistWidget *self,
+  int              select);
 
 /**
  * Makes sure all the tracks for channels marked as visible are visible.
  */
 void
-tracklist_widget_show (TracklistWidget *self);
+tracklist_widget_soft_refresh (TracklistWidget *self);
 
 
 TrackWidget *
@@ -89,10 +90,9 @@ tracklist_widget_get_hit_track (TracklistWidget *  self,
                double            y);
 
 /**
- * Deletes all tracks and re-adds them as per the
- * tracklist object.
+ * Deletes all tracks and re-adds them.
  */
 void
-tracklist_widget_refresh (TracklistWidget * self);
+tracklist_widget_hard_refresh (TracklistWidget * self);
 
 #endif

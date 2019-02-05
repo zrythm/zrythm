@@ -79,9 +79,14 @@ audio_track_widget_new (Track * track)
                    Z_GTK_NO_SHRINK);
 
   g_signal_connect (
+    self->record,
+    "toggled",
+    G_CALLBACK (track_widget_on_record_toggled),
+    self);
+  g_signal_connect (
     self->show_automation,
     "clicked",
-    G_CALLBACK (track_widget_on_show_automation),
+    G_CALLBACK (track_widget_on_show_automation_toggled),
     self);
 
   return self;
@@ -91,8 +96,22 @@ void
 audio_track_widget_refresh (AudioTrackWidget * self)
 {
   TRACK_WIDGET_GET_PRIVATE (self);
-  gtk_label_set_text (tw_prv->name,
-                      ((ChannelTrack *)tw_prv->track)->channel->name);
+  Track * track = tw_prv->track;
+  ChannelTrack * ct = (ChannelTrack *) track;
+  Channel * chan = ct->channel;
+
+  gtk_label_set_text (
+    tw_prv->name,
+    chan->name);
+  if (gtk_toggle_button_get_active (self->record) !=
+      chan->recording)
+    {
+      tw_prv->manual_recording_toggle = 1;
+      g_message ("setting manual for %s", chan->name);
+      gtk_toggle_button_set_active (
+        self->record,
+        chan->recording);
+    }
 
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (tw_prv->track);
@@ -107,16 +126,15 @@ audio_track_widget_init (AudioTrackWidget * self)
 
   /* create buttons */
   self->record =
-    z_gtk_button_new_with_resource (ICON_TYPE_ZRYTHM,
-                                    "record.svg");
+    z_gtk_toggle_button_new_with_icon ("media-record");
   self->solo =
-    z_gtk_button_new_with_resource (ICON_TYPE_ZRYTHM,
+    z_gtk_toggle_button_new_with_resource (ICON_TYPE_ZRYTHM,
                                     "solo.svg");
   self->mute =
-    z_gtk_button_new_with_resource (ICON_TYPE_ZRYTHM,
+    z_gtk_toggle_button_new_with_resource (ICON_TYPE_ZRYTHM,
                                     "mute.svg");
   self->show_automation =
-    z_gtk_button_new_with_icon ("format-justify-fill");
+    z_gtk_toggle_button_new_with_icon ("format-justify-fill");
 
   /* set buttons to upper controls */
   gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),

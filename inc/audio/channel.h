@@ -1,7 +1,7 @@
 /*
  * audio/channel.h - a channel on the mixer
  *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -197,6 +197,16 @@ typedef struct Channel
 
   int                  visible; ///< whether visible or not
   ChannelWidget *      widget; ///< the channel widget
+
+  /**
+   * Whether record was set automatically when the channel
+   * was selected.
+   *
+   * This is so that it can be unset when selecting another
+   * channel. If we don't do this all the channels end up
+   * staying on record mode.
+   */
+  int                  record_set_automatically;
 } Channel;
 
 void
@@ -252,6 +262,13 @@ channel_set_current_l_db (Channel * channel, float val);
 
 void
 channel_set_current_r_db (Channel * channel, float val);
+
+/**
+ * Sets recording and connects/disconnects the JACK ports.
+ */
+void
+channel_set_recording (Channel * self,
+                       int       recording);
 
 /**
  * Used when loading projects.

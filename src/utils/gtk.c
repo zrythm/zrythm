@@ -87,6 +87,21 @@ z_gtk_button_new_with_icon (const char * name)
 }
 
 /**
+ * Creates a toggle button with the given icon name.
+ */
+GtkToggleButton *
+z_gtk_toggle_button_new_with_icon (const char * name)
+{
+  GtkToggleButton * btn =
+    GTK_TOGGLE_BUTTON (gtk_toggle_button_new ());
+  z_gtk_button_set_icon_name (GTK_BUTTON (btn),
+                              name);
+  gtk_widget_set_visible (GTK_WIDGET (btn),
+                          1);
+  return btn;
+}
+
+/**
  * Creates a button with the given resource name as icon.
  */
 GtkButton *
@@ -102,6 +117,28 @@ z_gtk_button_new_with_resource (IconType  icon_type,
   return btn;
 }
 
+/**
+ * Creates a toggle button with the given resource name as
+ * icon.
+ */
+GtkToggleButton *
+z_gtk_toggle_button_new_with_resource (
+  IconType  icon_type,
+  const char * name)
+{
+  GtkToggleButton * btn =
+    GTK_TOGGLE_BUTTON (gtk_toggle_button_new ());
+  resources_add_icon_to_button (GTK_BUTTON (btn),
+                                icon_type,
+                                name);
+  gtk_widget_set_visible (GTK_WIDGET (btn),
+                          1);
+  return btn;
+}
+
+/**
+ * TODO add description.
+ */
 GtkMenuItem *
 z_gtk_create_menu_item (gchar *     label_name,
                   gchar *         icon_name,

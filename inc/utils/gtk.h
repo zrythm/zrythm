@@ -73,11 +73,26 @@ GtkButton *
 z_gtk_button_new_with_icon (const char * name);
 
 /**
+ * Creates a toggle button with the given icon name.
+ */
+GtkToggleButton *
+z_gtk_toggle_button_new_with_icon (const char * name);
+
+/**
  * Creates a button with the given resource name as icon.
  */
 GtkButton *
 z_gtk_button_new_with_resource (IconType  icon_type,
                                 const char * name);
+
+/**
+ * Creates a toggle button with the given resource name as
+ * icon.
+ */
+GtkToggleButton *
+z_gtk_toggle_button_new_with_resource (
+  IconType  icon_type,
+  const char * name);
 
 GtkMenuItem *
 z_gtk_create_menu_item (gchar *     label_name,

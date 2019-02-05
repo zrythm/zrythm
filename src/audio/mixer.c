@@ -225,7 +225,7 @@ mixer_add_channel_from_plugin_descr (
   if (MW_MIXER)
     mixer_widget_refresh (MW_MIXER);
   if (MW_TRACKLIST)
-    tracklist_widget_refresh (MW_TRACKLIST);
+    tracklist_widget_hard_refresh (MW_TRACKLIST);
 }
 
 Channel *
