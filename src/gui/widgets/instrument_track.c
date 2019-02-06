@@ -77,11 +77,12 @@ instrument_track_widget_new (Track * track)
                    Z_GTK_RESIZE,
                    Z_GTK_NO_SHRINK);
 
-  g_signal_connect (
-    self->record,
-    "toggled",
-    G_CALLBACK (track_widget_on_record_toggled),
-    self);
+  self->record_toggle_handler_id =
+    g_signal_connect (
+      self->record,
+      "toggled",
+      G_CALLBACK (track_widget_on_record_toggled),
+      self);
   g_signal_connect (
     self->show_automation,
     "toggled",
@@ -106,15 +107,15 @@ instrument_track_widget_refresh (
   gtk_label_set_text (
     tw_prv->name,
     chan->name);
-  if (gtk_toggle_button_get_active (self->record) !=
-      chan->recording)
-    {
-      tw_prv->manual_recording_toggle = 1;
-      g_message ("setting manual for %s", chan->name);
+
+  /* don't trigger callback */
+  g_signal_handler_block (
+    self->record, self->record_toggle_handler_id);
       gtk_toggle_button_set_active (
         self->record,
         chan->recording);
-    }
+  g_signal_handler_unblock (
+    self->record, self->record_toggle_handler_id);
 
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (tw_prv->track);
@@ -125,15 +126,24 @@ instrument_track_widget_refresh (
 static void
 instrument_track_widget_init (InstrumentTrackWidget * self)
 {
+  GtkStyleContext * context;
   TRACK_WIDGET_GET_PRIVATE (self);
 
   /* create buttons */
   self->record =
     z_gtk_toggle_button_new_with_icon ("media-record");
+  context =
+    gtk_widget_get_style_context (
+      GTK_WIDGET (self->record));
+  gtk_style_context_add_class (context, "record-button");
   self->solo =
     z_gtk_toggle_button_new_with_resource (
       ICON_TYPE_ZRYTHM,
       "solo.svg");
+  context =
+    gtk_widget_get_style_context (
+      GTK_WIDGET (self->solo));
+  gtk_style_context_add_class (context, "solo-button");
   self->mute =
     z_gtk_toggle_button_new_with_resource (
       ICON_TYPE_ZRYTHM,

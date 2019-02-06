@@ -49,6 +49,11 @@ typedef struct _BusTrackWidget
   GtkToggleButton *          solo;
   GtkToggleButton *          mute;
   GtkToggleButton *          show_automation;
+
+  /**
+   * Signal handler IDs.
+   */
+  gulong                        record_toggle_handler_id;
 } BusTrackWidget;
 
 /**

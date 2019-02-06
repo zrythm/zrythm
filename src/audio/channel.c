@@ -155,9 +155,13 @@ channel_process (Channel * channel)
     {
       if (channel->track->type == TRACK_TYPE_INSTRUMENT)
         {
-          if (channel->recording)
+          if (TRANSPORT->recording && channel->recording)
             {
-              /* convert MIDI data to regions */
+              if (TRANSPORT->starting_recording)
+                {
+                  /* create region if not already in one */
+                }
+              /* convert MIDI data to midi notes */
 
             }
 

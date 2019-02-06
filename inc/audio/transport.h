@@ -79,6 +79,17 @@ typedef struct Transport
 	float              bpm;            ///< Transport tempo in beats per minute
 	int               rolling;        ///< Transport speed (0=stop, 1=play)
   int               loop;        ///< loop or not
+  int               recording; ///< recording or not
+
+  /**
+   * This is set when record is toggled and is used to check
+   * if a new region should be created.
+   *
+   * It should be set to off after the first cycle it is
+   * processed in in the audio engine post process.
+   */
+  int               starting_recording;
+
 	ZixSem             paused;         ///< Paused signal from process thread
   Play_State         play_state;     ///< play state
 } Transport;

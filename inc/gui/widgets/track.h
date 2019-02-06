@@ -75,11 +75,6 @@ typedef struct
   GtkEventBox *                 event_box;
 
   Track *                       track; ///< associated track
-
-  /**
-   * Used to tell the callback if we want it to run or not.
-   */
-  int                           manual_recording_toggle;
 } TrackWidgetPrivate;
 
 typedef struct _TrackWidgetClass

@@ -180,15 +180,35 @@ popover
   background-color: @bg_lighter_variant2;
 }
 
-button.toggle:checked,
+button:not(.record-button):not(.solo-button).toggle:checked,
 menuitem:hover
 {
   background-color: @dark_orange;
 }
 
-button.toggle:active
+button:not(.record-button).toggle:active
 {
   background-color: @bright_orange;
+}
+
+button.toggle.record-button:checked
+{
+  background-color: #ED2939;
+}
+
+button.toggle.solo-button:checked
+{
+  background-color: @darkish_green;
+}
+
+button.toggle.record-button:active
+{
+  background-color: #FF2400;
+}
+
+button.toggle.solo-button:active
+{
+  background-color: @matcha_green;
 }
 
 button:not(.toggle):active,

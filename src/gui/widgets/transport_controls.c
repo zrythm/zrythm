@@ -65,7 +65,16 @@ static void
 record_toggled_cb (GtkToggleButton * tg,
                    gpointer        user_data)
 {
-  /* TODO */
+  if (gtk_toggle_button_get_active (tg))
+    {
+      TRANSPORT->recording = 1;
+      TRANSPORT->starting_recording = 1;
+    }
+  else
+    {
+      TRANSPORT->recording = 0;
+      TRANSPORT->starting_recording = 0;
+    }
 }
 
 static void

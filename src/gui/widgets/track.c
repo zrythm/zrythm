@@ -365,16 +365,6 @@ track_widget_on_record_toggled (
   ChannelTrack * ct = (ChannelTrack *) track;
   Channel * chan = ct->channel;
 
-  /* hack to not flip the toggle if this callback is called
-   * through code */
-  if (tw_prv->manual_recording_toggle)
-    {
-      g_message ("manual toggle was set for %s, returning",
-                 chan->name);
-      tw_prv->manual_recording_toggle = 0;
-      return;
-    }
-
   /* toggle record flag */
   channel_set_recording (chan, !chan->recording);
   chan->record_set_automatically = 0;

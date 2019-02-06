@@ -50,6 +50,11 @@ typedef struct _InstrumentTrackWidget
   GtkToggleButton *             show_automation;
   GtkToggleButton *             lock;
   GtkToggleButton *             freeze;
+
+  /**
+   * Signal handler IDs.
+   */
+  gulong                        record_toggle_handler_id;
 } InstrumentTrackWidget;
 
 /**

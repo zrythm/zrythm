@@ -81,14 +81,24 @@ chord_track_widget_refresh (ChordTrackWidget * self)
 static void
 chord_track_widget_init (ChordTrackWidget * self)
 {
+  GtkStyleContext * context;
   TRACK_WIDGET_GET_PRIVATE (self);
 
   /* create buttons */
   self->record =
     z_gtk_toggle_button_new_with_icon ("media-record");
+  context =
+    gtk_widget_get_style_context (
+      GTK_WIDGET (self->record));
+  gtk_style_context_add_class (context, "record-button");
   self->solo =
-    z_gtk_toggle_button_new_with_resource (ICON_TYPE_ZRYTHM,
-                                    "solo.svg");
+    z_gtk_toggle_button_new_with_resource (
+      ICON_TYPE_ZRYTHM,
+      "solo.svg");
+  context =
+    gtk_widget_get_style_context (
+      GTK_WIDGET (self->solo));
+  gtk_style_context_add_class (context, "solo-button");
   self->mute =
     z_gtk_toggle_button_new_with_resource (ICON_TYPE_ZRYTHM,
                                     "mute.svg");
