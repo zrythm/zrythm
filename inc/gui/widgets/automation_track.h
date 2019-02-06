@@ -45,6 +45,11 @@ typedef struct _AutomationTrackWidget
   DigitalMeterWidget *    value;
   GtkToggleButton *       mute_toggle;
   AutomationTrack *       at; ///< associated automation track
+
+  /**
+   * Selected automatable path.
+   */
+  char *                  path;
 } AutomationTrackWidget;
 
 /**

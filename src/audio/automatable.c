@@ -49,17 +49,25 @@ automatable_create_fader (Channel * channel)
 }
 
 Automatable *
-automatable_create_mute (Track * track)
+automatable_create_pan (Channel * channel)
 {
   Automatable * automatable = _create_blank ();
+
+  automatable->track = channel->track;
+  automatable->label = g_strdup ("Pan");
+  automatable->type = AUTOMATABLE_TYPE_CHANNEL_PAN;
 
   return automatable;
 }
 
 Automatable *
-automatable_create_pan (Track * track)
+automatable_create_mute (Channel * channel)
 {
   Automatable * automatable = _create_blank ();
+
+  automatable->track = channel->track;
+  automatable->label = g_strdup ("Mute");
+  automatable->type = AUTOMATABLE_TYPE_CHANNEL_MUTE;
 
   return automatable;
 }
@@ -73,11 +81,28 @@ automatable_create_lv2_control (Plugin *       plugin,
   automatable->control = control;
   LV2_Port * port = &control->plugin->ports[control->index];
   automatable->port = port->port;
+  /*automatable->index = control->index;*/
   automatable->type = AUTOMATABLE_TYPE_PLUGIN_CONTROL;
   automatable->track = plugin->channel->track;
-  automatable->slot_index = channel_get_plugin_index (plugin->channel,
-                                                      port->port->owner_pl);
+  automatable->slot_index =
+    channel_get_plugin_index (plugin->channel,
+                              plugin);
   automatable->label = g_strdup (automatable->port->label);
+
+  return automatable;
+}
+
+Automatable *
+automatable_create_plugin_enabled (Plugin *       plugin)
+{
+  Automatable * automatable = _create_blank ();
+
+  automatable->type = AUTOMATABLE_TYPE_PLUGIN_ENABLED;
+  automatable->track = plugin->channel->track;
+  automatable->slot_index =
+    channel_get_plugin_index (plugin->channel,
+                              plugin);
+  automatable->label = g_strdup ("Enable/disable");
 
   return automatable;
 }

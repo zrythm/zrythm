@@ -41,6 +41,9 @@
 #define FOREACH_STRIP for (int i = 0; i < STRIP_SIZE; i++)
 #define FOREACH_AUTOMATABLE(ch) for (int i = 0; i < ch->num_automatables; i++)
 #define MAX_FADER_AMP 1.42f
+#define channel_get_fader_automatable(ch) \
+  channel_get_automatable (ch, \
+                           AUTOMATABLE_TYPE_CHANNEL_FADER)
 
 typedef jack_default_audio_sample_t   sample_t;
 typedef jack_nframes_t                nframes_t;
@@ -343,7 +346,8 @@ channel_get_first_plugin (Channel * channel);
  * Convenience function to get the fader automatable of the channel.
  */
 Automatable *
-channel_get_fader_automatable (Channel * channel);
+channel_get_automatable (Channel *       channel,
+                         AutomatableType type);
 
 void
 channel_remove_plugin (Channel * channel, int pos);

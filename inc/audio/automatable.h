@@ -62,7 +62,7 @@ typedef struct Automatable
    */
   Lv2ControlID *       control; ///< control, if LV2 plugin
   Track *              track; ///< associated track
-  //AutomatableTrack *   at; ///< automatable track, if any
+
   int                  slot_index; ///< slot index in channel, if plugin automation
                                     ///< eg. automating enabled/disabled
   char *               label; ///< human friendly label
@@ -73,14 +73,17 @@ Automatable *
 automatable_create_fader (Channel * channel);
 
 Automatable *
-automatable_create_mute (Track * track);
+automatable_create_mute (Channel * channel);
 
 Automatable *
-automatable_create_pan (Track * track);
+automatable_create_pan (Channel * channel);
 
 Automatable *
 automatable_create_lv2_control (Plugin *       plugin,
                                 Lv2ControlID * control);
+
+Automatable *
+automatable_create_plugin_enabled (Plugin * plugin);
 
 int
 automatable_is_bool (Automatable * automatable);

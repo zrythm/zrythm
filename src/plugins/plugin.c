@@ -145,14 +145,26 @@ plugin_generate_automatables (Plugin * plugin)
 {
   g_message ("generating automatables for %s...",
              plugin->descr->name);
+
+  /* add plugin enabled automatable */
+  array_append (
+    plugin->automatables,
+    plugin->num_automatables,
+    automatable_create_plugin_enabled (plugin));
+
+  /* add plugin control automatables */
   if (plugin->descr->protocol == PROT_LV2)
     {
       Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
       for (int j = 0; j < lv2_plugin->controls.n_controls; j++)
         {
-          Lv2ControlID * control = lv2_plugin->controls.controls[j];
-          plugin->automatables[plugin->num_automatables++] =
-            automatable_create_lv2_control (plugin, control);
+          Lv2ControlID * control =
+            lv2_plugin->controls.controls[j];
+          array_append (
+            plugin->automatables,
+            plugin->num_automatables,
+            automatable_create_lv2_control (plugin,
+                                            control));
         }
     }
   else

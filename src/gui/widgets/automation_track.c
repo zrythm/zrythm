@@ -47,6 +47,28 @@ G_DEFINE_TYPE (AutomationTrackWidget,
 
 #define GET_TRACK(self) Track * track = self->at->track
 
+/**
+ * Enums for identifying combobox entries.
+ */
+enum
+{
+  CHANNEL_FADER_INDEX,
+  CHANNEL_PAN_INDEX,
+  CHANNEL_MUTE_INDEX,
+  PLUGIN_START_INDEX
+};
+enum
+{
+  PLUGIN_ENABLED_INDEX,
+  PLUGIN_CONTROL_START_INDEX
+};
+enum
+{
+  COLUMN_LABEL,
+  COLUMN_AUTOMATABLE,
+  NUM_COLUMNS
+};
+
 static void
 size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
 {
@@ -114,7 +136,8 @@ on_at_selector_changed (GtkComboBox * widget,
   gtk_combo_box_get_active_iter (widget, &iter);
   GtkTreeModel * model = gtk_combo_box_get_model (widget);
   GValue value = G_VALUE_INIT;
-  gtk_tree_model_get_value (model, &iter, 1, &value);
+  gtk_tree_model_get_value (model, &iter,
+                            COLUMN_AUTOMATABLE, &value);
   Automatable * a = g_value_get_pointer (&value);
   automation_track_set_automatable (self->at, a);
 }
@@ -126,7 +149,9 @@ create_automatables_store (Track * track)
   GtkTreeStore *store;
   /*gint i;*/
 
-  store = gtk_tree_store_new (2, G_TYPE_STRING, G_TYPE_POINTER);
+  store = gtk_tree_store_new (NUM_COLUMNS,
+                              G_TYPE_STRING,
+                              G_TYPE_POINTER);
 
   ChannelTrack * ct = (ChannelTrack *) track;
   for (int i = 0; i < ct->channel->num_automatables; i++)
@@ -134,8 +159,8 @@ create_automatables_store (Track * track)
       Automatable * a = ct->channel->automatables[i];
       gtk_tree_store_append (store, &iter, NULL);
       gtk_tree_store_set (store, &iter,
-                          0, a->label,
-                          1, a,
+                          COLUMN_LABEL, a->label,
+                          COLUMN_AUTOMATABLE, a,
                           -1);
     }
 
@@ -145,21 +170,26 @@ create_automatables_store (Track * track)
 
       if (plugin)
         {
+          /* add category: <slot>:<plugin name> */
           gtk_tree_store_append (store, &iter, NULL);
           char * label =
             g_strdup_printf (
               "%d:%s",
               i,
               plugin->descr->name);
-          gtk_tree_store_set (store, &iter, 0, label, -1);
+          gtk_tree_store_set (store, &iter,
+                              COLUMN_LABEL, label,
+                              -1);
           g_free (label);
           for (int j = 0; j < plugin->num_automatables; j++)
             {
               Automatable * a = plugin->automatables[j];
+
+              /* add automatable */
               gtk_tree_store_append (store, &iter2, &iter);
               gtk_tree_store_set (store, &iter2,
-                                  0, a->label,
-                                  1, a,
+                                  COLUMN_LABEL, a->label,
+                                  COLUMN_AUTOMATABLE, a,
                                   -1);
             }
         }
@@ -179,6 +209,10 @@ setup_combo_box (AutomationTrackWidget * self)
     GTK_CELL_LAYOUT (self->selector));
   GtkCellRenderer* renderer =
     gtk_cell_renderer_text_new ();
+  g_object_set (G_OBJECT (renderer),
+                "ellipsize",
+                PANGO_ELLIPSIZE_END,
+                NULL);
   gtk_cell_layout_pack_start (
     GTK_CELL_LAYOUT (self->selector),
     renderer,
@@ -186,13 +220,49 @@ setup_combo_box (AutomationTrackWidget * self)
   gtk_cell_layout_set_attributes (
     GTK_CELL_LAYOUT (self->selector),
     renderer,
-    "text", 0,
+    "text", COLUMN_LABEL,
     NULL);
 
   GtkTreeIter iter;
   /* FIXME find the associated automatable */
-  GtkTreePath * path =
-    gtk_tree_path_new_from_indices (0, -1);
+  GtkTreePath * path;
+  Automatable * a = self->at->automatable;
+  switch (a->type)
+    {
+    case AUTOMATABLE_TYPE_CHANNEL_FADER:
+      path =
+        gtk_tree_path_new_from_indices (
+          CHANNEL_FADER_INDEX,
+          -1);
+      break;
+    case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
+      path =
+        gtk_tree_path_new_from_indices (
+          a->slot_index + PLUGIN_START_INDEX,
+          a->control->index + PLUGIN_CONTROL_START_INDEX,
+          -1);
+      break;
+    case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
+      path =
+        gtk_tree_path_new_from_indices (
+          a->slot_index + PLUGIN_START_INDEX,
+          PLUGIN_ENABLED_INDEX,
+          -1);
+      break;
+    case AUTOMATABLE_TYPE_CHANNEL_MUTE:
+      path =
+        gtk_tree_path_new_from_indices (
+          CHANNEL_MUTE_INDEX,
+          -1);
+      break;
+    case AUTOMATABLE_TYPE_CHANNEL_PAN:
+      path =
+        gtk_tree_path_new_from_indices (
+          CHANNEL_PAN_INDEX,
+          -1);
+      break;
+    }
+
   gtk_tree_model_get_iter (model, &iter, path);
   gtk_tree_path_free (path);
   gtk_combo_box_set_active_iter (

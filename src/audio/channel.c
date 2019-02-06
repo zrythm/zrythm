@@ -464,10 +464,29 @@ generate_automatables (Channel * channel)
              channel->name);
 
   /* generate channel automatables if necessary */
-  if (!channel_get_fader_automatable (channel))
+  if (!channel_get_automatable (
+        channel,
+        AUTOMATABLE_TYPE_CHANNEL_FADER))
     {
-      channel->automatables[channel->num_automatables++] =
-        automatable_create_fader (channel);
+      array_append (channel->automatables,
+                    channel->num_automatables,
+                    automatable_create_fader (channel));
+    }
+  if (!channel_get_automatable (
+        channel,
+        AUTOMATABLE_TYPE_CHANNEL_PAN))
+    {
+      array_append (channel->automatables,
+                    channel->num_automatables,
+                    automatable_create_pan (channel));
+    }
+  if (!channel_get_automatable (
+        channel,
+        AUTOMATABLE_TYPE_CHANNEL_MUTE))
+    {
+      array_append (channel->automatables,
+                    channel->num_automatables,
+                    automatable_create_mute (channel));
     }
 }
 
@@ -1036,13 +1055,14 @@ channel_get_plugin_index (Channel * channel,
  * Convenience function to get the fader automatable of the channel.
  */
 Automatable *
-channel_get_fader_automatable (Channel * channel)
+channel_get_automatable (Channel *       channel,
+                         AutomatableType type)
 {
   for (int i = 0; i < channel->num_automatables; i++)
     {
       Automatable * automatable = channel->automatables[i];
 
-      if (IS_AUTOMATABLE_CH_FADER (automatable))
+      if (type == automatable->type)
         return automatable;
     }
   return NULL;
