@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2018 Alexandros Theodotou
  * Copyright (C) 2008-2012 Paul Davis
- * Author: David Robillard
+ * Copyright (C) David Robillard
  *
  * This file is part of Zrythm
  *

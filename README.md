@@ -81,17 +81,15 @@ At the moment, Zrythm assumes you have Jack installed and will only run if Jack 
 Everything else should be self-explanatory. Manual coming soon.
 
 ## Contributing
-For detailed installation instructions see [INSTALL.md](https://git.zrythm.org/zrythm/zrythm/blob/master/INSTALL.md)
+For detailed installation instructions see [INSTALL.md](INSTALL.md)
 
-For contributing guidelines see [CONTRIBUTING.md](https://git.zrythm.org/zrythm/zrythm/blob/master/CONTRIBUTING.md)
+For contributing guidelines see [CONTRIBUTING.md](CONTRIBUTING.md)
 
 For any bugs please raise an issue or join a chatroom below
 
 ## Chatrooms
 ### Matrix/IRC (Freenode)
 `#zrythm` channel (for Matrix users `#freenode_#zrythm:matrix.org`)
-### Discord
-`zrythm` community server (https://discord.gg/AbHb3eD)
 
 ## License
 Copyright (C) 2018-2019  Alexandros Theodotou
