@@ -34,9 +34,6 @@
 
 #include <jack/statistics.h>
 
-#define JACK_PORT_T(exp) ((jack_port_t *) exp)
-#define MIDI_IN_EVENT(i) (AUDIO_ENGINE->midi_in->midi_events.jack_midi_events[i])
-#define MIDI_IN_NUM_EVENTS AUDIO_ENGINE->midi_in->midi_events.num_events
 
 /** Jack sample rate callback. */
 int
@@ -113,9 +110,12 @@ get_midi_event_count (
   nframes_t     nframes,
   int           print)
 {
-  void* port_buf = jack_port_get_buffer (
+  self->port_buf = jack_port_get_buffer (
         JACK_PORT_T (self->midi_in->data), nframes);
-  MIDI_IN_NUM_EVENTS = jack_midi_get_event_count (port_buf);
+  MIDI_IN_NUM_EVENTS = jack_midi_get_event_count (self->port_buf);
+
+  if (!print)
+    return;
 
   /* print */
   if(MIDI_IN_NUM_EVENTS > 0)
@@ -124,7 +124,7 @@ get_midi_event_count (
       for(int i=0; i < MIDI_IN_NUM_EVENTS; i++)
         {
           jack_midi_event_t * event = &MIDI_IN_EVENT(i);
-          jack_midi_event_get(event, port_buf, i);
+          jack_midi_event_get(event, self->port_buf, i);
           uint8_t type = event->buffer[0] & 0xf0;
           uint8_t channel = event->buffer[0] & 0xf;
           switch (type)

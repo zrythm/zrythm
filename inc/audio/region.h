@@ -123,6 +123,13 @@ typedef struct MidiRegion
   int             num_midi_notes;
 
   /**
+   * Unended notes started in recording with MIDI NOTE ON
+   * signal but haven't received a NOTE OFF yet
+   */
+  MidiNote *      unended_notes[40];
+  int             num_unended_notes;
+
+  /**
    * Dummy member because serialization skips the midi
    * region if it is all 0's.
    */

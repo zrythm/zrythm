@@ -84,6 +84,26 @@ midi_region_add_midi_note (MidiRegion * region,
   region->midi_notes [region->num_midi_notes++] = midi_note;
 }
 
+/**
+ * Returns the midi note with the given pitch from the
+ * unended notes.
+ *
+ * Used when recording.
+ */
+MidiNote *
+midi_region_find_unended_note (MidiRegion * self,
+                               int          pitch)
+{
+  for (int i = 0; i < self->num_unended_notes; i++)
+    {
+      MidiNote * mn = self->unended_notes[i];
+      if (mn->val == pitch)
+        return mn;
+    }
+  g_assert_not_reached ();
+  return NULL;
+}
+
 SERIALIZE_SRC (MidiRegion, midi_region)
 DESERIALIZE_SRC (MidiRegion, midi_region)
 PRINT_YAML_SRC (MidiRegion, midi_region)

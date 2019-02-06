@@ -88,7 +88,7 @@ typedef struct Transport
    * It should be set to off after the first cycle it is
    * processed in in the audio engine post process.
    */
-  int               starting_recording;
+  //int               starting_recording;
 
 	ZixSem             paused;         ///< Paused signal from process thread
   Play_State         play_state;     ///< play state

@@ -24,6 +24,12 @@
 
 #include <stdlib.h>
 
+#define JACK_PORT_T(exp) ((jack_port_t *) exp)
+#define MIDI_IN_EVENT(i) (AUDIO_ENGINE->midi_in->midi_events.jack_midi_events[i])
+#define MIDI_IN_NUM_EVENTS AUDIO_ENGINE->midi_in->midi_events.num_events
+
+typedef struct AudioEngine AudioEngine;
+
 /** Jack sample rate callback. */
 int
 jack_sample_rate_cb (uint32_t nframes, void * data);

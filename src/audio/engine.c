@@ -147,10 +147,10 @@ engine_post_process (AudioEngine * self)
     }
 
   /* already processed recording start */
-  if (TRANSPORT->starting_recording)
-    {
-      TRANSPORT->starting_recording = 0;
-    }
+  /*if (IS_TRANSPORT_ROLLING && TRANSPORT->starting_recording)*/
+    /*{*/
+      /*TRANSPORT->starting_recording = 0;*/
+    /*}*/
 
   /* loop position back if about to exit loop */
   if (TRANSPORT->loop && /* if looping */

@@ -32,6 +32,7 @@
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
+#include "audio/engine_jack.h"
 #include "audio/instrument_track.h"
 #include "audio/mixer.h"
 #include "audio/pan.h"
@@ -46,6 +47,7 @@
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
+#include "utils/arrays.h"
 #include "utils/math.h"
 
 #include <gtk/gtk.h>
@@ -84,6 +86,92 @@ process_channel_work (void * argument)
   return 0;
 }
 
+/**
+ * Handles the recording logic inside the process cycle.
+ */
+static void
+handle_recording (Channel * self)
+{
+  Region * region =
+    track_get_region_at_pos (self->track,
+                             &PLAYHEAD);
+  /* get end position TODO snap */
+  Position tmp;
+  position_set_to_pos (&tmp, &PLAYHEAD);
+  position_add_frames (
+    &tmp,
+    AUDIO_ENGINE->nframes + 1);
+
+  if (self->type == CT_MIDI)
+    {
+      MidiRegion * mr = (MidiRegion *) region;
+
+      if (region) /* if inside a region */
+        {
+          /* set region end pos */
+          region_set_end_pos (region,
+                              &tmp);
+        }
+      else /* if not already in a region */
+        {
+          /* create region */
+          mr = midi_region_new (self->track,
+                                &PLAYHEAD,
+                                &tmp);
+          region = (Region *) mr;
+          track_add_region (self->track,
+                            region);
+        }
+
+      /* convert MIDI data to midi notes */
+      if (MIDI_IN_NUM_EVENTS > 0)
+        {
+          MidiNote * mn;
+          for (int i = 0; i < MIDI_IN_NUM_EVENTS; i++)
+            {
+              jack_midi_event_t * event = &MIDI_IN_EVENT(i);
+              jack_midi_event_get (event,
+                                   AUDIO_ENGINE->port_buf,
+                                   i);
+              uint8_t type = event->buffer[0] & 0xf0;
+              Velocity * vel;
+              switch (type)
+                {
+                  case MIDI_CH1_NOTE_ON:
+                    vel =
+                      velocity_new (event->buffer[2]);
+                    mn =
+                      midi_note_new (
+                        mr,
+                        &PLAYHEAD,
+                        &tmp,
+                        event->buffer[1],
+                        vel);
+                    midi_region_add_midi_note (mr, mn);
+
+                    /* add to unended notes */
+                    array_append (mr->unended_notes,
+                                  mr->num_unended_notes,
+                                  mn);
+                    break;
+                  case MIDI_CH1_NOTE_OFF:
+                    mn =
+                      midi_region_find_unended_note (
+                        mr,
+                        event->buffer[1]);
+                    midi_note_set_end_pos (mn,
+                                           &tmp);
+                    break;
+                  case MIDI_CH1_CTRL_CHANGE:
+                    /* TODO */
+                    break;
+                  default:
+                          break;
+                }
+            } /* for loop num events */
+        } /* if have midi events */
+    } /* if channel type MIDI */
+}
 
 /**
  * For each plugin
@@ -157,12 +245,7 @@ channel_process (Channel * channel)
         {
           if (TRANSPORT->recording && channel->recording)
             {
-              if (TRANSPORT->starting_recording)
-                {
-                  /* create region if not already in one */
-                }
-              /* convert MIDI data to midi notes */
-
+              handle_recording (channel);
             }
 
           /* fill midi events to pass to ins plugin */

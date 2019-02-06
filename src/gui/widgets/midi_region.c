@@ -44,7 +44,6 @@ G_DEFINE_TYPE (MidiRegionWidget,
 static gboolean
 draw_cb (MidiRegionWidget * self, cairo_t *cr, gpointer data)
 {
-  g_message ("drawing");
   REGION_WIDGET_GET_PRIVATE (data);
   guint width, height;
   GtkStyleContext *context;

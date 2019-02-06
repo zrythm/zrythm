@@ -51,4 +51,25 @@ void
 midi_region_add_midi_note (MidiRegion * region,
                       MidiNote * midi_note);
 
+/**
+ * Returns the midi note with the given pitch from the
+ * unended notes.
+ *
+ * Used when recording.
+ */
+MidiNote *
+midi_region_find_unended_note (MidiRegion * self,
+                               int          pitch);
+/**
+ * Returns the midi note at given position with the given
+ * pitch.
+ *
+ * Used when recording.
+ */
+//MidiNote *
+//midi_region_get_midi_note_at (
+  //MidiRegion * self,
+  //Position *   pos,
+  //int          pitch);
+
 #endif // __AUDIO_MIDI_REGION_H__

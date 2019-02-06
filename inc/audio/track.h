@@ -100,6 +100,14 @@ track_add_region (Track * track,
                   Region * region);
 
 /**
+ * Returns the region at the given position, or NULL.
+ */
+Region *
+track_get_region_at_pos (
+  Track *    track,
+  Position * pos);
+
+/**
  * Wrapper.
  */
 void

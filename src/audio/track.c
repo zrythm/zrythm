@@ -218,3 +218,40 @@ track_get_channel (Track * track)
 
   return NULL;
 }
+
+/**
+ * Returns the region at the given position, or NULL.
+ */
+Region *
+track_get_region_at_pos (
+  Track *    track,
+  Position * pos)
+{
+  if (track->type == TRACK_TYPE_INSTRUMENT)
+    {
+      InstrumentTrack * it = (InstrumentTrack *) track;
+      for (int i = 0; i < it->num_regions; i++)
+        {
+          Region * r = (Region *) it->regions[i];
+          if (position_compare (pos,
+                                &r->start_pos) >= 0 &&
+              position_compare (pos,
+                                &r->end_pos) <= 0)
+            return r;
+        }
+    }
+  else if (track->type == TRACK_TYPE_AUDIO)
+    {
+      AudioTrack * at = (AudioTrack *) track;
+      for (int i = 0; i < at->num_regions; i++)
+        {
+          Region * r = (Region *) at->regions[i];
+          if (position_compare (pos,
+                                &r->start_pos) >= 0 &&
+              position_compare (pos,
+                                &r->end_pos) <= 0)
+            return r;
+        }
+    }
+  return NULL;
+}

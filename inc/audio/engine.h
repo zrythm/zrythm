@@ -79,6 +79,11 @@ typedef struct AudioEngine
   int               panic; ///< send note off MIDI everywhere
 
   /**
+   * Port buffer for raw MIDI data.
+   */
+  void *            port_buf;
+
+  /**
    * Port Audio output buffer.
    *
    * Unlike JACK, the audio goes directly here.
