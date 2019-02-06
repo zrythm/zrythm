@@ -134,7 +134,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "_Quit",
-      "window-close",
+      "gtk-quit",
       0,
       NULL,
       0,

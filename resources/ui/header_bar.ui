@@ -107,7 +107,7 @@
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
-                <property name="resource">/org/zrythm/icons/zrythm/minimize.svg</property>
+                <property name="icon-name">window-minimize</property>
               </object>
             </child>
           </object>
@@ -127,7 +127,7 @@
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
-                <property name="resource">/org/zrythm/icons/zrythm/maximize.svg</property>
+                <property name="icon-name">window-maximize</property>
               </object>
             </child>
           </object>
@@ -147,7 +147,7 @@
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
-                <property name="resource">/org/zrythm/icons/zrythm/close.svg</property>
+                <property name="icon-name">window-close</property>
               </object>
             </child>
           </object>

@@ -48,7 +48,7 @@ right_dock_edge_widget_init (RightDockEdgeWidget * self)
     self->right_notebook,
     GTK_WIDGET (self->file_browser),
     gtk_image_new_from_icon_name (
-      "file-catalog-symbolic",
+      "media-optical-audio",
       GTK_ICON_SIZE_SMALL_TOOLBAR));
   gtk_widget_show_all (GTK_WIDGET (self->right_notebook));
 }
