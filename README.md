@@ -78,7 +78,7 @@ sudo make install
 ## Using
 At the moment, Zrythm assumes you have Jack installed and will only run if Jack is running. For Jack setup instructions see https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack
 
-Please refer to the [manual](https://docs.zrythm.org) for more information.
+Please refer to the [manual](https://manual.zrythm.org) for more information.
 
 ## Contributing
 For detailed installation instructions see [INSTALL.md](INSTALL.md)

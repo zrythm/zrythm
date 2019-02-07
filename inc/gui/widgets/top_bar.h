@@ -47,6 +47,7 @@ typedef struct _TopBarWidget
   DigitalMeterWidget *      digital_transport;
   DigitalMeterWidget *      digital_timesig;
   TransportControlsWidget * transport_controls;
+  GtkLabel *                cpu_load;
 } TopBarWidget;
 
 void

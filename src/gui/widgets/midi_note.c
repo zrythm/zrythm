@@ -43,7 +43,8 @@ G_DEFINE_TYPE (MidiNoteWidget,
 #define RESIZE_CURSOR_SPACE 9
 
 static gboolean
-draw_cb (MidiNoteWidget * self, cairo_t *cr, gpointer data)
+draw_cb (GtkDrawingArea * widget, cairo_t *cr,
+         MidiNoteWidget * self)
 {
   guint width, height;
   GtkStyleContext *context;
@@ -166,6 +167,8 @@ midi_note_widget_init (MidiNoteWidget * self)
     GTK_DRAWING_AREA (gtk_drawing_area_new ());
   gtk_widget_set_visible (
     GTK_WIDGET (self->drawing_area), 1);
+  gtk_widget_set_hexpand (GTK_WIDGET (self->drawing_area),
+                          1);
   gtk_container_add (GTK_CONTAINER (self),
                      GTK_WIDGET (self->drawing_area));
 

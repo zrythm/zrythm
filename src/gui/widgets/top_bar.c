@@ -19,18 +19,37 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/engine.h"
 #include "gui/widgets/top_bar.h"
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/transport_controls.h"
+#include "project.h"
 
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
 
+#include <jack/jack.h>
+
 G_DEFINE_TYPE (TopBarWidget,
                top_bar_widget,
                GTK_TYPE_BOX)
+
+gboolean
+refresh_dsp_load (GtkWidget *label,
+                  GdkFrameClock *frame_clock,
+                  gpointer user_data)
+{
+  char * cpu_load =
+    g_strdup_printf ("%.2f%%",
+                    jack_cpu_load (AUDIO_ENGINE->client));
+  gtk_label_set_text (GTK_LABEL (label),
+                      cpu_load);
+  g_free (cpu_load);
+
+  return G_SOURCE_CONTINUE;
+}
 
 void
 top_bar_widget_refresh (TopBarWidget * self)
@@ -57,6 +76,12 @@ top_bar_widget_refresh (TopBarWidget * self)
                      GTK_WIDGET (self->digital_transport));
   gtk_widget_show_all (GTK_WIDGET (self->digital_meters));
   gtk_widget_show_all (GTK_WIDGET (self));
+
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self->cpu_load),
+    refresh_dsp_load,
+    NULL,
+    NULL);
 }
 
 static void
@@ -81,6 +106,10 @@ top_bar_widget_class_init (TopBarWidgetClass * _klass)
     klass,
     TopBarWidget,
     transport_controls);
+  gtk_widget_class_bind_template_child (
+    klass,
+    TopBarWidget,
+    cpu_load);
 }
 
 static void
