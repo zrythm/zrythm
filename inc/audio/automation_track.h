@@ -82,14 +82,16 @@ automation_track_new (Automatable *  automatable);
  * Sets the automatable to the automation track and updates the GUI
  */
 void
-automation_track_set_automatable (AutomationTrack * automation_track,
-                                  Automatable *     a);
+automation_track_set_automatable (
+  AutomationTrack * automation_track,
+  Automatable *     a);
 
 void
 automation_track_free (AutomationTrack * at);
 
 void
-automation_track_print_automation_points (AutomationTrack * at);
+automation_track_print_automation_points (
+  AutomationTrack * at);
 
 /**
  * Forces sort of the automation points.
@@ -101,9 +103,10 @@ automation_track_force_sort (AutomationTrack * at);
  * Adds automation point and optionally generates curve points accordingly.
  */
 void
-automation_track_add_automation_point (AutomationTrack * at,
-                                       AutomationPoint * ap,
-                                       int               generate_curve_points);
+automation_track_add_automation_point (
+  AutomationTrack * at,
+  AutomationPoint * ap,
+  int               generate_curve_points);
 
 /**
  * Adds automation curve.

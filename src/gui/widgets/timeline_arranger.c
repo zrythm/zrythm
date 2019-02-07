@@ -1087,6 +1087,10 @@ timeline_arranger_widget_move_items_y (
     }
 }
 
+/**
+ * Sets the default cursor in all selected regions and
+ * intializes start positions.
+ */
 void
 timeline_arranger_widget_on_drag_end (
   TimelineArrangerWidget * self)
