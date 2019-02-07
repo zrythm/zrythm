@@ -516,14 +516,14 @@ timeline_arranger_widget_on_drag_begin_region_hit (
   if (region->type == REGION_TYPE_MIDI &&
            rw_prv->cursor_state ==
              UI_CURSOR_STATE_RESIZE_L)
-    ar_prv->action = ARRANGER_ACTION_RESIZING_L;
+    ar_prv->action = UI_OVERLAY_ACTION_RESIZING_L;
   else if (region->type == REGION_TYPE_MIDI &&
            rw_prv->cursor_state ==
               UI_CURSOR_STATE_RESIZE_R)
-    ar_prv->action = ARRANGER_ACTION_RESIZING_R;
+    ar_prv->action = UI_OVERLAY_ACTION_RESIZING_R;
   else
     {
-      ar_prv->action = ARRANGER_ACTION_STARTING_MOVING;
+      ar_prv->action = UI_OVERLAY_ACTION_STARTING_MOVING;
       ui_set_cursor (GTK_WIDGET (rw), "grabbing");
     }
 
@@ -589,7 +589,7 @@ timeline_arranger_widget_on_drag_begin_ap_hit (
       break;
     case APW_STATE_HOVER:
     case APW_STATE_SELECTED:
-      ar_prv->action = ARRANGER_ACTION_STARTING_MOVING;
+      ar_prv->action = UI_OVERLAY_ACTION_STARTING_MOVING;
       ui_set_cursor (GTK_WIDGET (ap_widget), "grabbing");
       break;
     }
@@ -724,7 +724,7 @@ timeline_arranger_widget_create_region (
   gtk_overlay_add_overlay (GTK_OVERLAY (self),
                            GTK_WIDGET (region->widget));
   gtk_widget_show (GTK_WIDGET (region->widget));
-  ar_prv->action = ARRANGER_ACTION_RESIZING_R;
+  ar_prv->action = UI_OVERLAY_ACTION_RESIZING_R;
   TIMELINE_SELECTIONS->regions[0] = region;
   TIMELINE_SELECTIONS->num_regions = 1;
 }
@@ -755,7 +755,7 @@ timeline_arranger_widget_create_chord (
    create_chords_action_new (chords, 1);
  undo_manager_perform (UNDO_MANAGER,
                        action);
-  ar_prv->action = ARRANGER_ACTION_NONE;
+  ar_prv->action = UI_OVERLAY_ACTION_NONE;
   TIMELINE_SELECTIONS->chords[0] = chord;
   TIMELINE_SELECTIONS->num_chords = 1;
 }
@@ -1100,7 +1100,7 @@ timeline_arranger_widget_on_drag_end (
     }
 
   /* if didn't click on something */
-  if (ar_prv->action != ARRANGER_ACTION_STARTING_MOVING)
+  if (ar_prv->action != UI_OVERLAY_ACTION_STARTING_MOVING)
     {
       self->start_region = NULL;
       self->start_ap = NULL;

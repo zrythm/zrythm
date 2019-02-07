@@ -77,8 +77,7 @@ center_dock_widget_setup (CenterDockWidget * self)
 
   /* setup timeline */
   arranger_widget_setup (Z_ARRANGER_WIDGET (MW_TIMELINE),
-                         SNAP_GRID_TIMELINE,
-                         ARRANGER_TYPE_TIMELINE);
+                         SNAP_GRID_TIMELINE);
   gtk_scrolled_window_set_vadjustment (
     MW_CENTER_DOCK->timeline_scroll,
     gtk_scrolled_window_get_vadjustment (

@@ -25,6 +25,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/piano_roll.h"
 #include "audio/position.h"
+#include "utils/ui.h"
 
 #include <gtk/gtk.h>
 
@@ -44,6 +45,12 @@ G_DECLARE_DERIVABLE_TYPE (ArrangerWidget,
 #define ARRANGER_WIDGET_GET_PRIVATE(self) \
   ArrangerWidgetPrivate * ar_prv = \
     arranger_widget_get_private (Z_ARRANGER_WIDGET (self));
+#define ARRANGER_IS_TIMELINE(self) \
+  (Z_IS_TIMELINE_ARRANGER_WIDGET (self))
+#define ARRANGER_IS_MIDI(self) \
+  (Z_IS_MIDI_ARRANGER_WIDGET (self))
+#define ARRANGER_IS_MIDI_MODIFIER(self) \
+  (Z_IS_MIDI_MODIFIER_ARRANGER_WIDGET (self))
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote MidiNote;
@@ -51,32 +58,10 @@ typedef struct SnapGrid SnapGrid;
 typedef struct AutomationPoint AutomationPoint;
 typedef struct _ArrangerPlayheadWidget ArrangerPlayheadWidget;
 
-typedef enum ArrangerWidgetType
-{
-  ARRANGER_TYPE_TIMELINE,
-  ARRANGER_TYPE_MIDI,
-  ARRANGER_TYPE_MIDI_MODIFIER
-} ArrangerWidgetType;
-
-typedef enum ArrangerAction
-{
-  ARRANGER_ACTION_NONE,
-  ARRANGER_ACTION_RESIZING_L,
-  ARRANGER_ACTION_RESIZING_R,
-  ARRANGER_ACTION_STARTING_MOVING, ///< in drag_start
-  ARRANGER_ACTION_MOVING,
-  ARRANGER_ACTION_STARTING_CHANGING_CURVE,
-  ARRANGER_ACTION_CHANGING_CURVE,
-  ARRANGER_ACTION_STARTING_SELECTION, ///< used in drag_start, useful to check If
-                                    ///< nothing was clicked
-  ARRANGER_ACTION_SELECTING
-} ArrangerAction;
-
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
 
 typedef struct
 {
-  ArrangerWidgetType       type;
   ArrangerBgWidget *       bg;
   ArrangerPlayheadWidget * playhead;
   GtkGestureDrag *         drag;
@@ -84,7 +69,7 @@ typedef struct
   GtkGestureMultiPress *   right_mouse_mp;
   double                   last_offset_x;  ///< for dragging regions, selections
   double                   last_offset_y;  ///< for selections
-  ArrangerAction           action;
+  UiOverlayAction          action;
   double                   start_x; ///< for dragging
   double                   start_y; ///< for dragging
 
@@ -108,8 +93,7 @@ typedef struct _ArrangerWidgetClass
  */
 void
 arranger_widget_setup (ArrangerWidget *   self,
-                       SnapGrid *         snap_grid,
-                       ArrangerWidgetType type);
+                       SnapGrid *         snap_grid);
 
 ArrangerWidgetPrivate *
 arranger_widget_get_private (ArrangerWidget * self);

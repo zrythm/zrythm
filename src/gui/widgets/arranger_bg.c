@@ -164,7 +164,7 @@ arranger_bg_widget_draw_selections (
   offset_y = ar_prv->start_y + ar_prv->last_offset_y > 0 ?
     ar_prv->last_offset_y :
     1 - ar_prv->start_y;
-  if (ar_prv->action == ARRANGER_ACTION_SELECTING)
+  if (ar_prv->action == UI_OVERLAY_ACTION_SELECTING)
     {
       z_cairo_draw_selection (cr,
                               ar_prv->start_x,

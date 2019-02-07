@@ -64,10 +64,6 @@ G_DEFINE_TYPE_WITH_PRIVATE (ArrangerWidget,
                             arranger_widget,
                             GTK_TYPE_OVERLAY)
 
-#define T_MIDI ar_prv->type == ARRANGER_TYPE_MIDI
-#define T_TIMELINE ar_prv->type == ARRANGER_TYPE_TIMELINE
-#define T_MIDI_MODIFIER ar_prv->type == \
-  ARRANGER_TYPE_MIDI_MODIFIER
 #define GET_PRIVATE ARRANGER_WIDGET_GET_PRIVATE (self)
 
 ArrangerWidgetPrivate *
@@ -86,7 +82,6 @@ get_child_position (GtkOverlay   *overlay,
                     gpointer      user_data)
 {
   ArrangerWidget * self = (ArrangerWidget *) overlay;
-  GET_PRIVATE;
 
   if (Z_IS_ARRANGER_PLAYHEAD_WIDGET (widget))
     {
@@ -100,21 +95,21 @@ get_child_position (GtkOverlay   *overlay,
         gtk_widget_get_allocated_height (
           GTK_WIDGET (self));
     }
-  if (T_MIDI)
+  if (ARRANGER_IS_MIDI (self))
     {
       midi_arranger_widget_set_allocation (
         Z_MIDI_ARRANGER_WIDGET (self),
         widget,
         allocation);
     }
-  else if (T_TIMELINE)
+  else if (ARRANGER_IS_TIMELINE (self))
     {
       timeline_arranger_widget_set_allocation (
         Z_TIMELINE_ARRANGER_WIDGET (self),
         widget,
         allocation);
     }
-  else if (T_MIDI_MODIFIER)
+  else if (ARRANGER_IS_MIDI_MODIFIER (self))
     {
       midi_modifier_arranger_widget_set_allocation (
         Z_MIDI_MODIFIER_ARRANGER_WIDGET (self),
@@ -201,13 +196,12 @@ arranger_widget_get_hit_widgets_in_range (
 static void
 update_inspector (ArrangerWidget *self)
 {
-  GET_PRIVATE;
-  if (T_MIDI)
+  if (ARRANGER_IS_MIDI (self))
     {
       midi_arranger_widget_update_inspector (
         Z_MIDI_ARRANGER_WIDGET (self));
     }
-  else if (T_TIMELINE)
+  else if (ARRANGER_IS_TIMELINE (self))
     {
       timeline_arranger_widget_update_inspector (
         Z_TIMELINE_ARRANGER_WIDGET (self));
@@ -223,12 +217,10 @@ arranger_widget_toggle_select (ArrangerWidget *  self,
                void *            child,
                int               append)
 {
-  GET_PRIVATE;
-
   void ** array;
   int * num;
 
-  if (T_TIMELINE)
+  if (ARRANGER_IS_TIMELINE (self))
     {
       if (type == REGION_WIDGET_TYPE)
         {
@@ -241,7 +233,7 @@ arranger_widget_toggle_select (ArrangerWidget *  self,
           num = &TIMELINE_SELECTIONS->num_automation_points;
         }
     }
-  if (T_MIDI)
+  if (ARRANGER_IS_MIDI (self))
     {
       MidiArrangerWidget * maw =
         Z_MIDI_ARRANGER_WIDGET (self);
@@ -297,15 +289,13 @@ void
 arranger_widget_select_all (ArrangerWidget *  self,
                             int               select)
 {
-  GET_PRIVATE;
-
-  if (T_MIDI)
+  if (ARRANGER_IS_MIDI (self))
     {
       midi_arranger_widget_select_all (
         Z_MIDI_ARRANGER_WIDGET (self),
         select);
     }
-  else if (T_TIMELINE)
+  else if (ARRANGER_IS_TIMELINE (self))
     {
       timeline_arranger_widget_select_all (
         Z_TIMELINE_ARRANGER_WIDGET (self),
@@ -318,14 +308,12 @@ arranger_widget_select_all (ArrangerWidget *  self,
 static void
 show_context_menu (ArrangerWidget * self)
 {
-  GET_PRIVATE;
-
-  if (T_MIDI)
+  if (ARRANGER_IS_MIDI (self))
     {
       midi_arranger_widget_show_context_menu (
         Z_MIDI_ARRANGER_WIDGET (self));
     }
-  else if (T_TIMELINE)
+  else if (ARRANGER_IS_TIMELINE (self))
     {
       timeline_arranger_widget_show_context_menu (
         Z_TIMELINE_ARRANGER_WIDGET (self));
@@ -407,19 +395,19 @@ drag_begin (GtkGestureDrag * gesture,
   GdkModifierType state_mask;
   gdk_event_get_state (event, &state_mask);
 
-  MidiNoteWidget * midi_note_widget = T_MIDI ?
+  MidiNoteWidget * midi_note_widget = ARRANGER_IS_MIDI (self) ?
     midi_arranger_widget_get_hit_midi_note (
       Z_MIDI_ARRANGER_WIDGET (self), start_x, start_y) :
     NULL;
-  RegionWidget * rw = T_TIMELINE ?
+  RegionWidget * rw = ARRANGER_IS_TIMELINE (self) ?
     timeline_arranger_widget_get_hit_region (
       Z_TIMELINE_ARRANGER_WIDGET (self), start_x, start_y) :
     NULL;
-  AutomationCurveWidget * ac_widget = T_TIMELINE ?
+  AutomationCurveWidget * ac_widget = ARRANGER_IS_TIMELINE (self) ?
     timeline_arranger_widget_get_hit_curve (
       Z_TIMELINE_ARRANGER_WIDGET (self), start_x, start_y) :
     NULL;
-  AutomationPointWidget * ap_widget = T_TIMELINE ?
+  AutomationPointWidget * ap_widget = ARRANGER_IS_TIMELINE (self) ?
     timeline_arranger_widget_get_hit_ap (
       Z_TIMELINE_ARRANGER_WIDGET (self), start_x, start_y) :
     NULL;
@@ -458,7 +446,7 @@ drag_begin (GtkGestureDrag * gesture,
       /* find start pos */
       position_init (&ar_prv->start_pos);
       position_set_bar (&ar_prv->start_pos, 2000);
-      if (T_TIMELINE)
+      if (ARRANGER_IS_TIMELINE (self))
         {
           timeline_arranger_widget_find_start_poses (
             Z_TIMELINE_ARRANGER_WIDGET (self));
@@ -469,7 +457,7 @@ drag_begin (GtkGestureDrag * gesture,
       if (ar_prv->n_press == 1)
         {
           /* area selection */
-          ar_prv->action = ARRANGER_ACTION_STARTING_SELECTION;
+          ar_prv->action = UI_OVERLAY_ACTION_STARTING_SELECTION;
 
           /* deselect all */
           arranger_widget_select_all (self, 0);
@@ -483,13 +471,13 @@ drag_begin (GtkGestureDrag * gesture,
           AutomationTrack * at = NULL;
           int note;
           Region * region = NULL;
-          if (T_TIMELINE)
+          if (ARRANGER_IS_TIMELINE (self))
             {
               at = timeline_arranger_widget_get_automation_track_at_y (start_y);
               if (!at)
                 track = timeline_arranger_widget_get_track_at_y (start_y);
             }
-          else if (T_MIDI)
+          else if (ARRANGER_IS_MIDI (self))
             {
               note = (PIANO_ROLL->piano_roll_labels->total_px - start_y) /
                 PIANO_ROLL->piano_roll_labels->px_per_note;
@@ -504,10 +492,10 @@ drag_begin (GtkGestureDrag * gesture,
                     &pos);
                 }
             }
-          if (((T_TIMELINE && track) || (T_TIMELINE && at)) ||
-              (T_MIDI && region))
+          if (((ARRANGER_IS_TIMELINE (self) && track) || (ARRANGER_IS_TIMELINE (self) && at)) ||
+              (ARRANGER_IS_MIDI (self) && region))
             {
-              if (T_TIMELINE && at)
+              if (ARRANGER_IS_TIMELINE (self) && at)
                 {
                   timeline_arranger_widget_create_ap (
                     Z_TIMELINE_ARRANGER_WIDGET (self),
@@ -517,7 +505,7 @@ drag_begin (GtkGestureDrag * gesture,
                     start_y);
                 }
               /* double click inside a track */
-              else if (T_TIMELINE && track)
+              else if (ARRANGER_IS_TIMELINE (self) && track)
                 {
                   switch (track->type)
                     {
@@ -539,7 +527,7 @@ drag_begin (GtkGestureDrag * gesture,
                       break;
                     }
                 }
-              else if (T_MIDI && region)
+              else if (ARRANGER_IS_MIDI (self) && region)
                 {
                   midi_arranger_widget_on_drag_begin_create_note (
                     Z_MIDI_ARRANGER_WIDGET (self),
@@ -569,70 +557,70 @@ drag_update (GtkGestureDrag * gesture,
   /* set action to selecting if starting selection. this is because
    * drag_update never gets called if it's just a click, so we can check at
    * drag_end and see if anything was selected */
-  if (ar_prv->action == ARRANGER_ACTION_STARTING_SELECTION)
+  if (ar_prv->action == UI_OVERLAY_ACTION_STARTING_SELECTION)
     {
-      ar_prv->action = ARRANGER_ACTION_SELECTING;
+      ar_prv->action = UI_OVERLAY_ACTION_SELECTING;
     }
-  else if (ar_prv->action == ARRANGER_ACTION_STARTING_MOVING)
+  else if (ar_prv->action == UI_OVERLAY_ACTION_STARTING_MOVING)
     {
-      ar_prv->action = ARRANGER_ACTION_MOVING;
+      ar_prv->action = UI_OVERLAY_ACTION_MOVING;
     }
 
   /* if drawing a selection */
-  if (ar_prv->action == ARRANGER_ACTION_SELECTING)
+  if (ar_prv->action == UI_OVERLAY_ACTION_SELECTING)
     {
       /* deselect all */
       arranger_widget_select_all (self, 0);
 
-      if (T_TIMELINE)
+      if (ARRANGER_IS_TIMELINE (self))
         {
           timeline_arranger_widget_find_and_select_items (
             Z_TIMELINE_ARRANGER_WIDGET (self),
             offset_x,
             offset_y);
         }
-      else if (T_MIDI)
+      else if (ARRANGER_IS_MIDI (self))
         {
           midi_arranger_widget_find_and_select_midi_notes (
             Z_MIDI_ARRANGER_WIDGET (self),
             offset_x,
             offset_y);
         }
-    } /* endif ARRANGER_ACTION_SELECTING */
+    } /* endif UI_OVERLAY_ACTION_SELECTING */
 
   /* handle x */
-  else if (ar_prv->action == ARRANGER_ACTION_RESIZING_L)
+  else if (ar_prv->action == UI_OVERLAY_ACTION_RESIZING_L)
     {
       Position pos;
       ui_px_to_pos (ar_prv->start_x + offset_x,
                     &pos,
                     1);
-      if (T_TIMELINE)
+      if (ARRANGER_IS_TIMELINE (self))
         {
           timeline_arranger_widget_snap_regions_l (
             Z_TIMELINE_ARRANGER_WIDGET (self),
             &pos);
         }
-      else if (T_MIDI)
+      else if (ARRANGER_IS_MIDI (self))
         {
           midi_arranger_widget_snap_midi_notes_l (
             Z_MIDI_ARRANGER_WIDGET (self),
             &pos);
         }
     } /* endif RESIZING_L */
-  else if (ar_prv->action == ARRANGER_ACTION_RESIZING_R)
+  else if (ar_prv->action == UI_OVERLAY_ACTION_RESIZING_R)
     {
       Position pos;
       ui_px_to_pos (ar_prv->start_x + offset_x,
                     &pos,
                     1);
-      if (T_TIMELINE)
+      if (ARRANGER_IS_TIMELINE (self))
         {
           timeline_arranger_widget_snap_regions_r (
             Z_TIMELINE_ARRANGER_WIDGET (self),
             &pos);
         }
-      else if (T_MIDI)
+      else if (ARRANGER_IS_MIDI (self))
         {
           midi_arranger_widget_snap_midi_notes_r (
             Z_MIDI_ARRANGER_WIDGET (self),
@@ -641,7 +629,7 @@ drag_update (GtkGestureDrag * gesture,
     } /*endif RESIZING_R */
 
   /* if moving the selection */
-  else if (ar_prv->action == ARRANGER_ACTION_MOVING)
+  else if (ar_prv->action == UI_OVERLAY_ACTION_MOVING)
     {
       Position diff_pos;
       /* note: using ruler here because SPACE_BEFORE_START
@@ -662,13 +650,13 @@ drag_update (GtkGestureDrag * gesture,
       frames_diff = position_to_frames (&new_start_pos) -
         position_to_frames (&ar_prv->start_pos);
 
-      if (T_TIMELINE)
+      if (ARRANGER_IS_TIMELINE (self))
         {
           timeline_arranger_widget_move_items_x (
             Z_TIMELINE_ARRANGER_WIDGET (self),
             frames_diff);
         }
-      else if (T_MIDI)
+      else if (ARRANGER_IS_MIDI (self))
         {
           /*midi_arranger_widget_move_midi_notes_x (*/
             /*MIDI_ARRANGER_WIDGET (self),*/
@@ -680,13 +668,13 @@ drag_update (GtkGestureDrag * gesture,
                            /*diff);*/
 
       /* handle y */
-      if (T_TIMELINE)
+      if (ARRANGER_IS_TIMELINE (self))
         {
           timeline_arranger_widget_move_items_y (
             Z_TIMELINE_ARRANGER_WIDGET (self),
             offset_y);
         }
-      else if (T_MIDI)
+      else if (ARRANGER_IS_MIDI (self))
         {
           midi_arranger_widget_move_midi_notes_y (
             Z_MIDI_ARRANGER_WIDGET (self),
@@ -695,12 +683,12 @@ drag_update (GtkGestureDrag * gesture,
     } /* endif MOVING */
 
   gtk_widget_queue_allocate(GTK_WIDGET (self));
-  if (T_MIDI)
+  if (ARRANGER_IS_MIDI (self))
     {
       /*gtk_widget_queue_draw (GTK_WIDGET (self));*/
       /*gtk_widget_show_all (GTK_WIDGET (self));*/
     }
-  else if (T_TIMELINE)
+  else if (ARRANGER_IS_TIMELINE (self))
     {
     }
   ar_prv->last_offset_x = offset_x;
@@ -723,23 +711,23 @@ drag_end (GtkGestureDrag *gesture,
   ar_prv->start_y = 0;
   ar_prv->last_offset_x = 0;
   ar_prv->last_offset_y = 0;
-  if (T_MIDI)
+  if (ARRANGER_IS_MIDI (self))
     {
       midi_arranger_widget_on_drag_end (
         Z_MIDI_ARRANGER_WIDGET (self));
     }
-  else if (T_TIMELINE)
+  else if (ARRANGER_IS_TIMELINE (self))
     {
       timeline_arranger_widget_on_drag_end (
         Z_TIMELINE_ARRANGER_WIDGET (self));
     }
 
   /* if clicked on something, or clicked or nothing */
-  if (ar_prv->action == ARRANGER_ACTION_STARTING_SELECTION ||
-      ar_prv->action == ARRANGER_ACTION_STARTING_MOVING)
+  if (ar_prv->action == UI_OVERLAY_ACTION_STARTING_SELECTION ||
+      ar_prv->action == UI_OVERLAY_ACTION_STARTING_MOVING)
     {
       /* if clicked on something */
-      if (ar_prv->action == ARRANGER_ACTION_STARTING_MOVING)
+      if (ar_prv->action == UI_OVERLAY_ACTION_STARTING_MOVING)
         {
           /*set_state_and_redraw_tl_regions (self, RW_STATE_SELECTED);*/
           /*set_state_and_redraw_tl_automation_points (self,*/
@@ -749,41 +737,39 @@ drag_end (GtkGestureDrag *gesture,
         }
 
       /* else if clicked on nothing */
-      else if (ar_prv->action == ARRANGER_ACTION_STARTING_SELECTION)
+      else if (ar_prv->action == UI_OVERLAY_ACTION_STARTING_SELECTION)
         {
           arranger_widget_select_all (self, 0);
         }
     }
 
-  ar_prv->action = ARRANGER_ACTION_NONE;
+  ar_prv->action = UI_OVERLAY_ACTION_NONE;
   gtk_widget_queue_draw (GTK_WIDGET (ar_prv->bg));
 }
 
 
 void
 arranger_widget_setup (ArrangerWidget *   self,
-                       SnapGrid *         snap_grid,
-                       ArrangerWidgetType type)
+                       SnapGrid *         snap_grid)
 {
   GET_PRIVATE;
 
   ar_prv->snap_grid = snap_grid;
-  ar_prv->type = type;
-  if (T_MIDI)
+  if (ARRANGER_IS_MIDI (self))
     {
       ar_prv->bg = Z_ARRANGER_BG_WIDGET (
         midi_arranger_bg_widget_new (
           Z_RULER_WIDGET (MIDI_RULER),
           self));
     }
-  else if (T_TIMELINE)
+  else if (ARRANGER_IS_TIMELINE (self))
     {
       ar_prv->bg = Z_ARRANGER_BG_WIDGET (
         timeline_bg_widget_new (
           Z_RULER_WIDGET (MW_RULER),
           self));
     }
-  else if (T_MIDI_MODIFIER)
+  else if (ARRANGER_IS_MIDI_MODIFIER (self))
     {
       ar_prv->bg = Z_ARRANGER_BG_WIDGET (
         midi_modifier_arranger_bg_widget_new (
@@ -823,17 +809,17 @@ arranger_widget_setup (ArrangerWidget *   self,
   g_signal_connect (G_OBJECT (self), "key-release-event",
                     G_CALLBACK (on_key_action), self);
 
-  if (T_TIMELINE)
+  if (ARRANGER_IS_TIMELINE (self))
     {
       timeline_arranger_widget_setup (
         Z_TIMELINE_ARRANGER_WIDGET (self));
     }
-  else if (T_MIDI)
+  else if (ARRANGER_IS_MIDI (self))
     {
       midi_arranger_widget_setup (
         Z_MIDI_ARRANGER_WIDGET (self));
     }
-  else if (T_MIDI_MODIFIER)
+  else if (ARRANGER_IS_MIDI_MODIFIER (self))
     {
       midi_modifier_arranger_widget_setup (
         Z_MIDI_MODIFIER_ARRANGER_WIDGET (self));
@@ -849,7 +835,7 @@ arranger_widget_refresh (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  if (T_MIDI)
+  if (ARRANGER_IS_MIDI (self))
     {
       RULER_WIDGET_GET_PRIVATE (MIDI_RULER);
       gtk_widget_set_size_request (
@@ -860,7 +846,7 @@ arranger_widget_refresh (
       midi_arranger_widget_refresh_children (
         Z_MIDI_ARRANGER_WIDGET (self));
     }
-  else if (T_TIMELINE)
+  else if (ARRANGER_IS_TIMELINE (self))
     {
       RULER_WIDGET_GET_PRIVATE (MW_RULER);
       gtk_widget_set_size_request (
@@ -870,7 +856,7 @@ arranger_widget_refresh (
       timeline_arranger_widget_refresh_children (
         Z_TIMELINE_ARRANGER_WIDGET (self));
     }
-  else if (T_MIDI_MODIFIER)
+  else if (ARRANGER_IS_MIDI_MODIFIER (self))
     {
       RULER_WIDGET_GET_PRIVATE (MIDI_RULER);
       gtk_widget_set_size_request (

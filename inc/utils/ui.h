@@ -51,10 +51,20 @@ typedef enum UiOverlayAction
   UI_OVERLAY_ACTION_NONE,
   UI_OVERLAY_ACTION_RESIZING_L,
   UI_OVERLAY_ACTION_RESIZING_R,
+
+  /**
+   * To be set in drag_start.
+   */
   UI_OVERLAY_ACTION_STARTING_MOVING,
   UI_OVERLAY_ACTION_MOVING,
   UI_OVERLAY_ACTION_STARTING_CHANGING_CURVE,
   UI_OVERLAY_ACTION_CHANGING_CURVE,
+
+  /**
+   * To be set in drag_start.
+   *
+   * Useful to check if nothing was clicked.
+   */
   UI_OVERLAY_ACTION_STARTING_SELECTION,
   UI_OVERLAY_ACTION_SELECTING,
 } UiOverlayAction;

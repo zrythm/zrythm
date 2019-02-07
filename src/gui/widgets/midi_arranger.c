@@ -250,14 +250,14 @@ midi_arranger_widget_on_drag_begin_note_hit (
       g_warning ("hitting midi note but midi note hover state is none, should be fixed");
       break;
     case MNW_STATE_RESIZE_L:
-      ar_prv->action = ARRANGER_ACTION_RESIZING_L;
+      ar_prv->action = UI_OVERLAY_ACTION_RESIZING_L;
       break;
     case MNW_STATE_RESIZE_R:
-      ar_prv->action = ARRANGER_ACTION_RESIZING_R;
+      ar_prv->action = UI_OVERLAY_ACTION_RESIZING_R;
       break;
     case MNW_STATE_HOVER:
     case MNW_STATE_SELECTED:
-      ar_prv->action = ARRANGER_ACTION_STARTING_MOVING;
+      ar_prv->action = UI_OVERLAY_ACTION_STARTING_MOVING;
       ui_set_cursor (GTK_WIDGET (midi_note_widget), "grabbing");
       break;
     }
@@ -293,7 +293,7 @@ midi_arranger_widget_on_drag_begin_create_note (
   midi_region_add_midi_note (region,
                         midi_note);
   arranger_widget_refresh (Z_ARRANGER_WIDGET (self));
-  ar_prv->action = ARRANGER_ACTION_RESIZING_R;
+  ar_prv->action = UI_OVERLAY_ACTION_RESIZING_R;
   self->midi_notes[0] = midi_note;
   self->num_midi_notes = 1;
 }
