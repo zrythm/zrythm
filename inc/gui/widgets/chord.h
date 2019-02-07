@@ -48,4 +48,8 @@ typedef struct _ChordWidget
 ChordWidget *
 chord_widget_new (Chord * chord);
 
+void
+chord_widget_select (ChordWidget * self,
+                     int            select);
+
 #endif

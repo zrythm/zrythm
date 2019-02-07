@@ -98,6 +98,9 @@ typedef struct Chord
   int                   inversion; ///< == 0 no inversion,
                                    ///< < 0 means highest note(s) drop an octave
                                    ///< > 0 means lowest note(s) receive an octave
+
+  int                   selected; ///< selected in timeline
+  int                   visible;
   ChordWidget *         widget;
 } Chord;
 
@@ -166,5 +169,9 @@ chord_new (MusicalNote            root,
  */
 char *
 chord_as_string (Chord * chord);
+
+void
+chord_set_pos (Chord *    self,
+               Position * pos);
 
 #endif

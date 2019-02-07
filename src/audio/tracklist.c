@@ -145,6 +145,21 @@ tracklist_add_track (Track *     track,
     }
 }
 
+ChordTrack *
+tracklist_get_chord_track ()
+{
+  Track * track;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      track = TRACKLIST->tracks[i];
+      if (track->type == TRACK_TYPE_CHORD)
+        {
+          return (ChordTrack *) track;
+        }
+    }
+  g_assert_not_reached ();
+}
+
 void
 tracklist_append_track (Track *     track)
 {

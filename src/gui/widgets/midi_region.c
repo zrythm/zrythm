@@ -61,9 +61,9 @@ draw_cb (MidiRegionWidget * self, cairo_t *cr, gpointer data)
   GdkRGBA * color = &rw_prv->region->track->color;
 
   cairo_set_source_rgba (cr,
-                         color->red - 0.2,
-                         color->green - 0.2,
-                         color->blue - 0.2,
+                         color->red - 0.3,
+                         color->green - 0.3,
+                         color->blue - 0.3,
                          0.9);
 
   MidiRegion * mr =

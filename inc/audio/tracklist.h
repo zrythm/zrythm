@@ -38,6 +38,8 @@ typedef struct _TracklistWidget TracklistWidget;
                                  &num_selected);
 #define MAX_TRACKS 300
 
+typedef struct ChordTrack ChordTrack;
+
 /**
  * Internal Tracklist.
  */
@@ -104,6 +106,9 @@ tracklist_append_track (Track *     track);
 
 int
 tracklist_get_track_pos (Track *     track);
+
+ChordTrack *
+tracklist_get_chord_track ();
 
 int
 tracklist_get_last_visible_pos ();

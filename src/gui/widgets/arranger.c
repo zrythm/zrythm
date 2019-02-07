@@ -35,6 +35,7 @@
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/chord.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
@@ -213,6 +214,11 @@ arranger_widget_get_hit_widgets_in_range (
         {
           array[(*array_size)++] = widget;
         }
+      else if (type == CHORD_WIDGET_TYPE &&
+               Z_IS_CHORD_WIDGET (widget))
+        {
+          array[(*array_size)++] = widget;
+        }
     }
 }
 
@@ -252,8 +258,15 @@ arranger_widget_toggle_select (ArrangerWidget *  self,
         }
       else if (type == AUTOMATION_POINT_WIDGET_TYPE)
         {
-          array = (void **) TIMELINE_SELECTIONS->automation_points;
+          array =
+            (void **) TIMELINE_SELECTIONS->automation_points;
           num = &TIMELINE_SELECTIONS->num_automation_points;
+        }
+      else if (type == CHORD_WIDGET_TYPE)
+        {
+          array =
+            (void **) TIMELINE_SELECTIONS->chords;
+          num = &TIMELINE_SELECTIONS->num_chords;
         }
     }
   if (ARRANGER_IS_MIDI (self))
@@ -277,6 +290,11 @@ arranger_widget_toggle_select (ArrangerWidget *  self,
             {
               region_widget_select (((Region *)r)->widget, 0);
             }
+          else if (type == CHORD_WIDGET_TYPE)
+            {
+              chord_widget_select (((Chord *)r)->widget, 0);
+
+            }
         }
       *num = 0;
     }
@@ -294,6 +312,10 @@ arranger_widget_toggle_select (ArrangerWidget *  self,
         {
           region_widget_select (((Region *)child)->widget, 0);
         }
+      else if (type == CHORD_WIDGET_TYPE)
+        {
+          chord_widget_select (((Chord *)child)->widget, 0);
+        }
     }
   else /* not selected */
     {
@@ -305,6 +327,10 @@ arranger_widget_toggle_select (ArrangerWidget *  self,
         {
           region_widget_select (((Region *)child)->widget, 1);
         }
+      else if (type == CHORD_WIDGET_TYPE)
+        {
+          chord_widget_select (((Chord *)child)->widget, 1);
+        }
     }
 }
 
@@ -312,16 +338,18 @@ void
 arranger_widget_select_all (ArrangerWidget *  self,
                             int               select)
 {
-  if (ARRANGER_IS_MIDI (self))
+  GET_ARRANGER_ALIASES (self);
+
+  if (midi_arranger)
     {
       midi_arranger_widget_select_all (
-        Z_MIDI_ARRANGER_WIDGET (self),
+        midi_arranger,
         select);
     }
-  else if (ARRANGER_IS_TIMELINE (self))
+  else if (timeline)
     {
       timeline_arranger_widget_select_all (
-        Z_TIMELINE_ARRANGER_WIDGET (self),
+        timeline,
         select);
     }
   update_inspector (self);
@@ -425,6 +453,7 @@ drag_begin (GtkGestureDrag * gesture,
   RegionWidget *          rw = NULL;
   AutomationCurveWidget * ac_widget = NULL;
   AutomationPointWidget * ap_widget = NULL;
+  ChordWidget *           chord_widget = NULL;
   if (midi_arranger)
     {
       midi_arranger = Z_MIDI_ARRANGER_WIDGET (self);
@@ -444,11 +473,15 @@ drag_begin (GtkGestureDrag * gesture,
       ap_widget =
         timeline_arranger_widget_get_hit_ap (
           timeline, start_x, start_y);
+      chord_widget =
+        timeline_arranger_widget_get_hit_chord (
+          timeline, start_x, start_y);
     }
 
   /* if something is hit */
   int is_hit =
-    midi_note_widget || rw || ac_widget || ap_widget;
+    midi_note_widget || rw || ac_widget || ap_widget ||
+    chord_widget;
   if (is_hit)
     {
       /* set selections, positions, actions, cursor */
@@ -465,6 +498,14 @@ drag_begin (GtkGestureDrag * gesture,
             state_mask,
             start_x,
             rw);
+        }
+      else if (chord_widget)
+        {
+          timeline_arranger_widget_on_drag_begin_chord_hit (
+            timeline,
+            state_mask,
+            start_x,
+            chord_widget);
         }
       else if (ap_widget)
         {

@@ -278,10 +278,30 @@ timeline_arranger_widget_get_automation_track_at_y (double y)
   return NULL;
 }
 
+ChordWidget *
+timeline_arranger_widget_get_hit_chord (
+  TimelineArrangerWidget *  self,
+  double                    x,
+  double                    y)
+{
+  GtkWidget * widget =
+    ui_get_hit_child (
+      GTK_CONTAINER (self),
+      x,
+      y,
+      CHORD_WIDGET_TYPE);
+  if (widget)
+    {
+      return Z_CHORD_WIDGET (widget);
+    }
+  return NULL;
+}
+
 RegionWidget *
-timeline_arranger_widget_get_hit_region (TimelineArrangerWidget *  self,
-                                  double            x,
-                                  double            y)
+timeline_arranger_widget_get_hit_region (
+  TimelineArrangerWidget *  self,
+  double                    x,
+  double                    y)
 {
   GtkWidget * widget =
     ui_get_hit_child (
@@ -356,6 +376,27 @@ timeline_arranger_widget_select_all (
   TIMELINE_SELECTIONS->num_regions = 0;
   TIMELINE_SELECTIONS->num_automation_points = 0;
 
+  /* select chords */
+  ChordTrack * ct = tracklist_get_chord_track ();
+  for (int i = 0; i < ct->num_chords; i++)
+    {
+      Chord * chord = ct->chords[i];
+      if (chord->visible)
+        {
+          chord_widget_select (chord->widget, select);
+
+          if (select)
+            {
+              /* select  */
+              array_append (
+                TIMELINE_SELECTIONS->chords,
+                TIMELINE_SELECTIONS->num_chords,
+                chord);
+            }
+        }
+    }
+
+  /* select everything else */
   for (int i = 0; i < MIXER->num_channels; i++)
     {
       Channel * chan = MIXER->channels[i];
@@ -445,6 +486,20 @@ timeline_arranger_widget_toggle_select_region (
     Z_ARRANGER_WIDGET (self),
     REGION_WIDGET_TYPE,
     (void *) region,
+    append);
+}
+
+/* FIXME should be macro? */
+void
+timeline_arranger_widget_toggle_select_chord (
+  TimelineArrangerWidget * self,
+  Chord *                  chord,
+  int                      append)
+{
+  arranger_widget_toggle_select (
+    Z_ARRANGER_WIDGET (self),
+    CHORD_WIDGET_TYPE,
+    (void *) chord,
     append);
 }
 
@@ -564,6 +619,48 @@ timeline_arranger_widget_on_drag_begin_region_hit (
 }
 
 void
+timeline_arranger_widget_on_drag_begin_chord_hit (
+  TimelineArrangerWidget * self,
+  GdkModifierType          state_mask,
+  double                   start_x,
+  ChordWidget *            cw)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  /* if double click */
+  if (ar_prv->n_press == 2)
+    {
+    }
+
+  Chord * chord = cw->chord;
+  self->start_chord = chord;
+
+  /* update arranger action */
+  ar_prv->action = UI_OVERLAY_ACTION_STARTING_MOVING;
+  ui_set_cursor (GTK_WIDGET (cw), "grabbing");
+
+  /* select/ deselect chords */
+  if (state_mask & GDK_SHIFT_MASK ||
+      state_mask & GDK_CONTROL_MASK)
+    {
+      /* if ctrl pressed toggle on/off */
+      timeline_arranger_widget_toggle_select_chord (
+        self, chord, 1);
+    }
+  else if (!array_contains (
+             (void **)TIMELINE_SELECTIONS->chords,
+             TIMELINE_SELECTIONS->num_chords,
+             chord))
+    {
+      /* else if not already selected select only it */
+      timeline_arranger_widget_select_all (
+        self, 0);
+      timeline_arranger_widget_toggle_select_chord (
+        self, chord, 0);
+    }
+}
+
+void
 timeline_arranger_widget_on_drag_begin_ap_hit (
   TimelineArrangerWidget * self,
   GdkModifierType          state_mask,
@@ -624,9 +721,23 @@ timeline_arranger_widget_find_start_poses (
                                &r->start_pos);
         }
 
-      /* set start poses fo regions */
+      /* set start poses for regions */
       position_set_to_pos (&self->region_start_poses[i],
                            &r->start_pos);
+    }
+  for (int i = 0; i < TIMELINE_SELECTIONS->num_chords; i++)
+    {
+      Chord * r = TIMELINE_SELECTIONS->chords[i];
+      if (position_compare (&r->pos,
+                            &ar_prv->start_pos) <= 0)
+        {
+          position_set_to_pos (&ar_prv->start_pos,
+                               &r->pos);
+        }
+
+      /* set start poses for chords */
+      position_set_to_pos (&self->chord_start_poses[i],
+                           &r->pos);
     }
   for (int i = 0; i < TIMELINE_SELECTIONS->num_automation_points; i++)
     {
@@ -795,6 +906,32 @@ timeline_arranger_widget_find_and_select_items (
         1);
     }
 
+  /* find enclosed chords */
+  GtkWidget *    chord_widgets[800];
+  int            num_chord_widgets = 0;
+  arranger_widget_get_hit_widgets_in_range (
+    Z_ARRANGER_WIDGET (self),
+    CHORD_WIDGET_TYPE,
+    ar_prv->start_x,
+    ar_prv->start_y,
+    offset_x,
+    offset_y,
+    chord_widgets,
+    &num_chord_widgets);
+
+
+  /* select the enclosed chords */
+  for (int i = 0; i < num_chord_widgets; i++)
+    {
+      ChordWidget * rw =
+        Z_CHORD_WIDGET (chord_widgets[i]);
+      Chord * chord = rw->chord;
+      timeline_arranger_widget_toggle_select_chord (
+        self,
+        chord,
+        1);
+    }
+
   /* find enclosed automation_points */
   GtkWidget *    ap_widgets[800];
   int            num_ap_widgets = 0;
@@ -884,6 +1021,18 @@ timeline_arranger_widget_move_items_x (
       position_set_to_pos (&tmp, prev_start_pos);
       position_add_frames (&tmp, frames_diff);
       region_set_start_pos (r, &tmp, 1);
+    }
+
+  /* update chord positions */
+  for (int i = 0; i < TIMELINE_SELECTIONS->num_chords; i++)
+    {
+      Chord * r = TIMELINE_SELECTIONS->chords[i];
+      Position * prev_start_pos =
+        &self->chord_start_poses[i];
+      Position tmp;
+      position_set_to_pos (&tmp, prev_start_pos);
+      position_add_frames (&tmp, frames_diff);
+      chord_set_pos (r, &tmp);
     }
 
   /* update ap positions */
@@ -1101,6 +1250,11 @@ timeline_arranger_widget_on_drag_end (
     {
       Region * region = TIMELINE_SELECTIONS->regions[i];
       ui_set_cursor (GTK_WIDGET (region->widget), "default");
+    }
+  for (int i = 0; i < TIMELINE_SELECTIONS->num_chords; i++)
+    {
+      Chord * chord = TIMELINE_SELECTIONS->chords[i];
+      ui_set_cursor (GTK_WIDGET (chord->widget), "default");
     }
 
   /* if didn't click on something */

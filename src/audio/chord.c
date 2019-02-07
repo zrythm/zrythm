@@ -30,6 +30,13 @@
 #include "audio/chord.h"
 #include "gui/widgets/chord.h"
 
+void
+chord_set_pos (Chord *    self,
+               Position * pos)
+{
+  position_set_to_pos (&self->pos, pos);
+}
+
 /**
  * Creates a chord.
  */
@@ -90,6 +97,8 @@ chord_new (MusicalNote            root,
   /* TODO invert */
 
   self->widget = chord_widget_new (self);
+
+  self->visible = 1;
 
   return self;
 }

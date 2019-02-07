@@ -54,13 +54,19 @@ typedef struct Chord Chord;
 typedef struct _TimelineArrangerWidget
 {
   ArrangerWidget           parent_instance;
-  Region *                 start_region; ///< clicked region
+
+  /**
+   * Object first clicked is stored in start_*.
+   */
+  Region *                 start_region;
   AutomationPoint *        start_ap;
   AutomationCurve *        start_ac;
+  Chord *                  start_chord;
 
   /* temporary start positions, set on drag_begin, and used in drag_update
    * to move the objects accordingly */
   Position                 region_start_poses[600]; ///< region initial start positions, for moving regions
+  Position                 chord_start_poses[600]; ///< region initial start positions, for moving regions
   Position                 ap_poses[600]; ///< for moving regions
 } TimelineArrangerWidget;
 
@@ -86,6 +92,12 @@ timeline_arranger_widget_get_hit_region (
   TimelineArrangerWidget *  self,
   double            x,
   double            y);
+
+ChordWidget *
+timeline_arranger_widget_get_hit_chord (
+  TimelineArrangerWidget *  self,
+  double                    x,
+  double                    y);
 
 AutomationPointWidget *
 timeline_arranger_widget_get_hit_ap (
@@ -115,6 +127,12 @@ timeline_arranger_widget_toggle_select_region (
   int                      append);
 
 void
+timeline_arranger_widget_toggle_select_chord (
+  TimelineArrangerWidget * self,
+  Chord *                  chord,
+  int                      append);
+
+void
 timeline_arranger_widget_toggle_select_automation_point (
   TimelineArrangerWidget *  self,
   AutomationPoint * ap,
@@ -135,6 +153,13 @@ timeline_arranger_widget_on_drag_begin_region_hit (
   GdkModifierType          state_mask,
   double                   start_x,
   RegionWidget *           rw);
+
+void
+timeline_arranger_widget_on_drag_begin_chord_hit (
+  TimelineArrangerWidget * self,
+  GdkModifierType          state_mask,
+  double                   start_x,
+  ChordWidget *            cw);
 
 void
 timeline_arranger_widget_on_drag_begin_ap_hit (

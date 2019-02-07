@@ -83,16 +83,43 @@ draw_cb (ChordWidget * self,
 
   GdkRGBA * color = &CHORD_TRACK->color;
   cairo_set_source_rgba (cr,
+                         color->red - 0.06,
+                         color->green - 0.06,
+                         color->blue - 0.06,
+                         0.7);
+  cairo_rectangle(cr, 0, 0, width, height);
+  cairo_fill(cr);
+  cairo_set_source_rgba (cr,
                          color->red,
                          color->green,
-                         color->blue, 0.7);
+                         color->blue,
+                         1.0);
   cairo_rectangle(cr, 0, 0, width, height);
-  cairo_stroke_preserve(cr);
-  cairo_fill(cr);
+  cairo_set_line_width (cr, 3.5);
+  cairo_stroke (cr);
 
   draw_text (cr, "A min");
 
  return FALSE;
+}
+
+void
+chord_widget_select (ChordWidget * self,
+                     int            select)
+{
+  self->chord->selected = select;
+  if (select)
+    {
+      gtk_widget_set_state_flags (GTK_WIDGET (self),
+                                  GTK_STATE_FLAG_SELECTED,
+                                  0);
+    }
+  else
+    {
+      gtk_widget_unset_state_flags (GTK_WIDGET (self),
+                                    GTK_STATE_FLAG_SELECTED);
+    }
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 /**

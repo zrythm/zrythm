@@ -84,17 +84,20 @@ scrollbar
   /*box-shadow: inset -2px 0 #2eb398, 1px 0 #2eb398;*/
 /*}*/
 
-region
+region,
+chord
 {
   box-shadow: 2px 2px 6px alpha (black, 0.1);
 }
 
-region:selected
+region:selected,
+chord:selected
 {
   box-shadow: 2px 2px 10px @selection_color;
 }
 
-region:hover
+region:hover,
+chord:hover
 {
   box-shadow: 2px 2px 10px @hover_color;
 }
@@ -231,13 +234,15 @@ timeline-minimap-bg
 }
 
 track:selected,
-region:selected
+region:selected,
+chord:selected
 {
   background-color: @selection_color;
 }
 
 track:hover,
 region:hover,
+chord:hover,
 fader:hover,
 pan:hover,
 ruler-playhead:hover,
