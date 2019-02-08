@@ -59,8 +59,6 @@ draw_text (cairo_t *cr, int x, int y, char * text)
   pango_layout_set_font_description (layout, desc);
   pango_font_description_free (desc);
 
-  cairo_set_source_rgb (cr, 0, 0, 0);
-
   /* Inform Pango to re-layout the text with the new transformation */
   /*pango_cairo_update_layout (cr, layout);*/
 
@@ -86,8 +84,7 @@ draw_cb (PianoRollLabelsWidget * self, cairo_t *cr, gpointer data)
 
   gtk_render_background (context, cr, 0, 0, self->total_px, height);
 
-  /* draw top line */
-
+  cairo_set_source_rgba (cr, 0.7, 0.7, 0.7, 1.0);
 
   /* draw note labels with bot lines */
   for (int i = 0; i < 128; i++)

@@ -32,6 +32,18 @@ typedef struct Position Position;
 #define RESIZE_CURSOR_SPACE 9
 
 /**
+ * Shows the notification when idle.
+ *
+ * This should be called from threads other than GTK main
+ * thread.
+ */
+#define ui_show_notification_idle(msg) \
+  char * text = g_strdup (msg); \
+  g_warning (msg); \
+  g_idle_add ((GSourceFunc) ui_show_notification_idle_func, \
+              (void *) text)
+
+/**
  * Various cursor states to be shared.
  */
 typedef enum UiCursorState
@@ -112,8 +124,27 @@ long
 ui_px_to_frames (int   px,
                  int   has_padding); ///< whether the given px contain padding
 
+/**
+ * Converts position to px, optionally adding the ruler
+ * padding.
+ */
 int
 ui_pos_to_px (Position *       pos,
-           int              use_padding); ///< whether to add padding to the px
+           int              use_padding);
+
+/**
+ * Shows a notification in the revealer.
+ */
+void
+ui_show_notification (const char * msg);
+
+/**
+ * Show notification from non-GTK threads.
+ *
+ * This should be used internally. Use the
+ * ui_show_notification_idle macro instead.
+ */
+int
+ui_show_notification_idle_func (char * msg);
 
 #endif

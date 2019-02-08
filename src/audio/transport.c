@@ -150,7 +150,7 @@ on_playhead_changed ()
         }
     }
   aa = 1;
-  return 0;
+  return G_SOURCE_REMOVE;
 }
 
 /**

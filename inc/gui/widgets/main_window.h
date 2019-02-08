@@ -55,6 +55,9 @@ typedef struct _MainWindowWidget
   int                      height;
   int                      width;
   GtkAccelGroup *          accel_group;
+  GtkRevealer *            revealer;
+  GtkButton *              close_notification_button;
+  GtkLabel *               notification_label;
 
   /**
    * Last focused widget.

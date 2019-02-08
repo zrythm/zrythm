@@ -26,9 +26,11 @@
 #include "audio/mixer.h"
 #include "audio/port.h"
 #include "audio/transport.h"
+#include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"
+#include "utils/ui.h"
 
 #include <gtk/gtk.h>
 
@@ -217,14 +219,7 @@ jack_process_cb (
 int
 jack_xrun_cb (void *arg)
 {
-  /*jack_client_t * client = (jack_client_t *) arg;*/
-
-  /*float delayed_usecs =*/
-    /*jack_get_xrun_delayed_usecs (client);*/
-  /*float max_delayed_usecs =*/
-    /*jack_get_max_delayed_usecs (client);*/
-
-  g_message ("XRUN occurred");
+  ui_show_notification_idle ("XRUN occurred");
 
   return 0;
 }

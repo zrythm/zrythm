@@ -177,6 +177,23 @@ static double clamp
 }
 
 static void
+drag_begin (GtkGestureDrag *gesture,
+            double           start_x,
+            double           start_y,
+               gpointer        user_data)
+{
+  FaderWidget * self = (FaderWidget *) user_data;
+
+  char * string =
+    g_strdup_printf ("%.1f",
+                     math_amp_to_dbfs (GET_VAL));
+  gtk_label_set_text (self->tooltip_label,
+                      string);
+  g_free (string);
+  gtk_window_present (self->tooltip_win);
+}
+
+static void
 drag_update (GtkGestureDrag * gesture,
                gdouble         offset_x,
                gdouble         offset_y,
@@ -273,6 +290,8 @@ fader_widget_init (FaderWidget * self)
                     G_CALLBACK (on_crossing),  self);
   g_signal_connect (G_OBJECT(self), "leave-notify-event",
                     G_CALLBACK (on_crossing),  self);
+  g_signal_connect (G_OBJECT(self->drag), "drag-begin",
+                    G_CALLBACK (drag_begin),  self);
   g_signal_connect (G_OBJECT(self->drag), "drag-update",
                     G_CALLBACK (drag_update),  self);
   g_signal_connect (G_OBJECT(self->drag), "drag-end",

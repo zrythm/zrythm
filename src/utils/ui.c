@@ -204,3 +204,31 @@ ui_px_to_frames (int   px,
   return (AUDIO_ENGINE->frames_per_tick * px) /
     rw_prv->px_per_tick;
 }
+
+/**
+ * Shows a notification in the revealer.
+ */
+void
+ui_show_notification (const char * msg)
+{
+  gtk_label_set_text (MAIN_WINDOW->notification_label,
+                      msg);
+  gtk_revealer_set_reveal_child (
+    GTK_REVEALER (MAIN_WINDOW->revealer),
+    1);
+}
+
+/**
+ * Show notification from non-GTK threads.
+ *
+ * This should be used internally. Use the
+ * ui_show_notification_idle macro instead.
+ */
+int
+ui_show_notification_idle_func (char * msg)
+{
+  ui_show_notification (msg);
+  g_free (msg);
+
+  return G_SOURCE_REMOVE;
+}

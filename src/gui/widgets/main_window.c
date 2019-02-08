@@ -88,6 +88,16 @@ main_window_widget_new (ZrythmApp * _app)
   return self;
 }
 
+static void
+on_close_notification_clicked (
+  GtkButton * btn,
+  gpointer    user_data)
+{
+  gtk_revealer_set_reveal_child (
+    GTK_REVEALER (MAIN_WINDOW->revealer),
+    0);
+}
+
 void
 main_window_widget_refresh (MainWindowWidget * self)
 {
@@ -167,6 +177,18 @@ main_window_widget_class_init (MainWindowWidgetClass * _klass)
     klass,
     MainWindowWidget,
     bot_bar);
+  gtk_widget_class_bind_template_child (
+    klass,
+    MainWindowWidget,
+    revealer);
+  gtk_widget_class_bind_template_child (
+    klass,
+    MainWindowWidget,
+    close_notification_button);
+  gtk_widget_class_bind_template_child (
+    klass,
+    MainWindowWidget,
+    notification_label);
   gtk_widget_class_bind_template_callback (
     klass,
     on_main_window_destroy);
@@ -229,4 +251,7 @@ main_window_widget_init (MainWindowWidget * self)
     self);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  g_signal_connect (G_OBJECT (self->close_notification_button), "clicked",
+                    G_CALLBACK (on_close_notification_clicked), NULL);
 }
