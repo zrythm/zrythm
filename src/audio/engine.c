@@ -99,6 +99,7 @@ close_audio_engine ()
 void
 engine_process_prepare (uint32_t      nframes)
 {
+  AUDIO_ENGINE->last_time_taken = g_get_monotonic_time ();
   AUDIO_ENGINE->nframes = nframes;
 
   if (TRANSPORT->play_state == PLAYSTATE_PAUSE_REQUESTED)
@@ -169,4 +170,14 @@ engine_post_process (AudioEngine * self)
       /* move playhead as many samples as processed */
       transport_add_to_playhead (self->nframes);
     }
+
+  AUDIO_ENGINE->last_time_taken =
+    g_get_monotonic_time () - AUDIO_ENGINE->last_time_taken;
+  if (AUDIO_ENGINE->max_time_taken <
+      AUDIO_ENGINE->last_time_taken)
+    AUDIO_ENGINE->max_time_taken =
+      AUDIO_ENGINE->last_time_taken;
+  /*g_message ("last time %ld, max time %ld",*/
+             /*AUDIO_ENGINE->last_time_taken,*/
+             /*AUDIO_ENGINE->max_time_taken);*/
 }

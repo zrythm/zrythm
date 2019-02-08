@@ -30,7 +30,7 @@
 
 #include <jack/jack.h>
 
-#define MAX_DESTINATIONS 23
+#define MAX_DESTINATIONS 600
 #define FOREACH_SRCS(port) \
   for (int i = 0; i < port->num_srcs; i++)
 #define FOREACH_DESTS(port) \

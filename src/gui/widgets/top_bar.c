@@ -36,17 +36,38 @@ G_DEFINE_TYPE (TopBarWidget,
                top_bar_widget,
                GTK_TYPE_BOX)
 
+/**
+ * In microseconds.
+ */
+#define TIME_TO_UPDATE_DSP_LOAD 800000
+static gint64 last_time_updated = 0;
+
+/**
+ * Refreshes DSP load percentage.
+ */
 gboolean
 refresh_dsp_load (GtkWidget *label,
                   GdkFrameClock *frame_clock,
                   gpointer user_data)
 {
+  gint64 curr_time = g_get_monotonic_time ();
+  if (curr_time - last_time_updated <
+      TIME_TO_UPDATE_DSP_LOAD)
+    return G_SOURCE_CONTINUE;
+  gint64 block_latency =
+    (AUDIO_ENGINE->block_length * 1000000) /
+    AUDIO_ENGINE->sample_rate;
   char * cpu_load =
     g_strdup_printf ("%.2f%%",
-                    jack_cpu_load (AUDIO_ENGINE->client));
+                    /*jack_cpu_load (AUDIO_ENGINE->client));*/
+                    (AUDIO_ENGINE->max_time_taken * 100.0) /
+                      block_latency);
   gtk_label_set_text (GTK_LABEL (label),
                       cpu_load);
   g_free (cpu_load);
+
+  AUDIO_ENGINE->max_time_taken = 0;
+  last_time_updated = curr_time;
 
   return G_SOURCE_CONTINUE;
 }

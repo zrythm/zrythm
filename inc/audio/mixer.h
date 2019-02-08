@@ -27,7 +27,7 @@
 #define MIXER (&AUDIO_ENGINE->mixer)
 #define STRIP_SIZE 9 /* mixer strip size (number of plugin slots) */
 #define FOREACH_CH for (int i = 0; i < MIXER->num_channels; i++)
-#define MAX_CHANNELS 300
+#define MAX_CHANNELS 3000
 
 typedef struct Channel Channel;
 typedef struct PluginDescriptor PluginDescriptor;

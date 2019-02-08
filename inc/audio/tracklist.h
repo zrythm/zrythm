@@ -36,7 +36,7 @@ typedef struct _TracklistWidget TracklistWidget;
   int num_selected = 0; \
   tracklist_get_selected_tracks (selected_tracks,\
                                  &num_selected);
-#define MAX_TRACKS 300
+#define MAX_TRACKS 3000
 
 typedef struct ChordTrack ChordTrack;
 
