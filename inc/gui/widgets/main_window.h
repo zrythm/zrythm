@@ -46,7 +46,6 @@ typedef struct _MainWindowWidget
 {
   GtkApplicationWindow     parent_instance;
   GtkBox *                 main_box;
-  GtkBox *                 header_bar_box;
   HeaderBarWidget *        header_bar;
   TopBarWidget *           top_bar;
   GtkBox *                 center_box;

@@ -506,49 +506,8 @@ zrythm_app_class_init (ZrythmAppClass *class)
 static void
 zrythm_app_init (ZrythmApp *app)
 {
-  /* prompt for project */
-  /*GSimpleAction * prompt_for_project_action =*/
-    /*g_simple_action_new ("prompt_for_project", NULL);*/
-  /*g_signal_connect (prompt_for_project_action,*/
-                    /*"activate",*/
-                    /*G_CALLBACK (on_prompt_for_project),*/
-                    /*app);*/
-  /*g_action_map_add_action (*/
-    /*G_ACTION_MAP (app),*/
-    /*G_ACTION (prompt_for_project_action));*/
-
-  /*[> init main window <]*/
-  /*GSimpleAction * init_main_window_action =*/
-    /*g_simple_action_new ("init_main_window", NULL);*/
-  /*g_signal_connect (init_main_window_action,*/
-                    /*"activate",*/
-                    /*G_CALLBACK (on_init_main_window),*/
-                    /*app);*/
-  /*g_action_map_add_action (*/
-    /*G_ACTION_MAP (app),*/
-    /*G_ACTION (init_main_window_action));*/
-
-  /*[> setup main window <]*/
-  /*GSimpleAction * setup_main_window_action =*/
-    /*g_simple_action_new ("setup_main_window", NULL);*/
-  /*g_signal_connect (setup_main_window_action,*/
-                    /*"activate",*/
-                    /*G_CALLBACK (on_setup_main_window),*/
-                    /*app);*/
-  /*g_action_map_add_action (*/
-    /*G_ACTION_MAP (app),*/
-    /*G_ACTION (setup_main_window_action));*/
-
-  /*[> load project <]*/
-  /*GSimpleAction * load_project_action =*/
-    /*g_simple_action_new ("load_project", NULL);*/
-  /*g_signal_connect (load_project_action,*/
-                    /*"activate",*/
-                    /*G_CALLBACK (on_load_project),*/
-                    /*app);*/
-  /*g_action_map_add_action (*/
-    /*G_ACTION_MAP (app),*/
-    /*G_ACTION (load_project_action));*/
+  /* prefer x11 backend because plugin UIs need it to load */
+  gdk_set_allowed_backends ("x11,*");
 
   const GActionEntry entries[] = {
     { "prompt_for_project", on_prompt_for_project },

@@ -150,10 +150,6 @@ main_window_widget_class_init (MainWindowWidgetClass * _klass)
   gtk_widget_class_bind_template_child (
     klass,
     MainWindowWidget,
-    header_bar_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MainWindowWidget,
     header_bar);
   gtk_widget_class_bind_template_child (
     klass,
@@ -177,33 +173,10 @@ main_window_widget_class_init (MainWindowWidgetClass * _klass)
   gtk_widget_class_bind_template_callback (
     klass,
     on_state_changed);
+
+  gtk_widget_class_set_css_name (klass,
+                                 "main-window");
 }
-
-/*static gboolean*/
-/*on_export (GtkAccelGroup *accel_group,*/
-           /*GObject *acceleratable,*/
-           /*guint keyval,*/
-           /*GdkModifierType modifier)*/
-/*{*/
-  /*g_message ("exporting");*/
-
-/*}*/
-
-/*static gboolean*/
-/*on_key_action (GtkWidget *widget,*/
-               /*GdkEventKey  *event,*/
-               /*gpointer   user_data)*/
-/*{*/
-  /*g_message ("aa");*/
-
-  /*return FALSE;*/
-/*}*/
-
-/*static const DzlShortcutEntry shortcuts[] = {*/
-  /*{ "org.zrythm.window.New", 0, NULL, ("Editing"), ("Project"), ("New Project"), ("Create a new project") },*/
-  /*{ "org.zrythm.window.ZoomIn", 0, NULL, ("Editing"), ("Arrangement"), ("Zoom In"), ("Zoom in on each arranger") },*/
-  /*{ "org.zrythm.window.Fullscreen", 0, "F11", ("Editing"), ("General"), ("Fullscreen"), ("Toggle window fullscreen") },*/
-/*};*/
 
 static GActionEntry actions[] = {
 
@@ -256,51 +229,4 @@ main_window_widget_init (MainWindowWidget * self)
     self);
 
   gtk_widget_init_template (GTK_WIDGET (self));
-
-  /*accel_add_all ();*/
-  /*self->accel_group = gtk_accel_group_new ();*/
-  /*gtk_window_add_accel_group (GTK_WINDOW (self),*/
-                              /*self->accel_group);*/
-  /*GClosure * closure =*/
-    /*g_cclosure_new (G_CALLBACK (on_export),*/
-                    /*NULL,*/
-                    /*NULL);*/
-  /*gtk_accel_group_connect_by_path (self->accel_group,*/
-                                   /*"<MainWindow>/File/Export As",*/
-                                   /*closure);*/
-
-  /*dzl_shortcut_manager_add_shortcut_entries (*/
-    /*NULL,*/
-    /*shortcuts,*/
-    /*G_N_ELEMENTS (shortcuts),*/
-    /*NULL);*/
-
-  /*DzlShortcutController * controller =*/
-    /*dzl_shortcut_controller_find (GTK_WIDGET (self));*/
-
-  /*dzl_shortcut_controller_add_command_action (*/
-    /*controller,*/
-    /*"org.zrythm.window.New",*/
-    /*NULL,*/
-    /*0,*/
-    /*"win.new-project");*/
-  /*dzl_shortcut_controller_add_command_action (*/
-    /*controller,*/
-    /*"org.zrythm.window.ZoomIn",*/
-    /*NULL,*/
-    /*0,*/
-    /*"win.zoom-in");*/
-  /*dzl_shortcut_controller_add_command_action (*/
-    /*controller,*/
-    /*"org.zrythm.window.Fullscreen",*/
-    /*NULL,*/
-    /*0,*/
-    /*"win.fullscreen");*/
-
-  /*g_signal_connect_swapped (*/
-    /*self,*/
-    /*"key-press-event",*/
-    /*G_CALLBACK (dzl_shortcut_manager_handle_event),*/
-    /*dzl_shortcut_manager_get_default ());*/
-
 }

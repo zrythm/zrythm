@@ -39,7 +39,7 @@ G_DEFINE_TYPE (TopBarWidget,
 /**
  * In microseconds.
  */
-#define TIME_TO_UPDATE_DSP_LOAD 800000
+#define TIME_TO_UPDATE_DSP_LOAD 600000
 static gint64 last_time_updated = 0;
 
 /**
