@@ -727,20 +727,22 @@ drag_update (GtkGestureDrag * gesture,
   else if (ar_prv->action == UI_OVERLAY_ACTION_MOVING)
     {
 
-      /* FIXME is this needed? why not do same as RESIZING
-       * logic?*/
-      /* get the offset difference in frames */
+      /* get the offset pos (so we can add it to the start
+       * positions and then snap it) */
       Position diff_pos;
-      ui_px_to_pos (offset_x,
+      int is_negative = offset_x < 0;
+      ui_px_to_pos (abs (offset_x),
                     &diff_pos,
                     0);
-      long frames_diff = position_to_frames (&diff_pos);
+      long ticks_diff = position_to_ticks (&diff_pos);
+      if (is_negative)
+        ticks_diff = - ticks_diff;
 
       /* get new start pos and snap it */
       Position new_start_pos;
       position_set_to_pos (&new_start_pos,
                            &ar_prv->start_pos);
-      position_add_frames (&new_start_pos, frames_diff);
+      position_add_ticks (&new_start_pos, ticks_diff);
       if (SNAP_GRID_ANY_SNAP(ar_prv->snap_grid))
         position_snap (NULL,
                        &new_start_pos,
@@ -750,14 +752,14 @@ drag_update (GtkGestureDrag * gesture,
 
       /* get frames difference from snapped new position to
        * start pos */
-      frames_diff = position_to_frames (&new_start_pos) -
-        position_to_frames (&ar_prv->start_pos);
+      ticks_diff = position_to_ticks (&new_start_pos) -
+        position_to_ticks (&ar_prv->start_pos);
 
       if (timeline)
         {
           timeline_arranger_widget_move_items_x (
             timeline,
-            frames_diff);
+            ticks_diff);
         }
       else if (midi_arranger)
         {

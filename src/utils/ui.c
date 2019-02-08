@@ -130,6 +130,10 @@ ui_is_child_hit (GtkContainer * parent,
 
 /**
  * Converts from pixels to position.
+ *
+ * Only works with positive numbers. Negatives will be
+ * clamped at 0. If a negative is needed, pass the abs to
+ * this function and then change the sign.
  */
 void
 ui_px_to_pos (int               px,

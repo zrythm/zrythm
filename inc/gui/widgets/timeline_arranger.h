@@ -211,7 +211,7 @@ timeline_arranger_widget_snap_regions_r (
 void
 timeline_arranger_widget_move_items_x (
   TimelineArrangerWidget * self,
-  int                      frames_diff);
+  long                     ticks_diff);
 
 void
 timeline_arranger_widget_move_items_y (

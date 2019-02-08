@@ -1005,21 +1005,21 @@ timeline_arranger_widget_snap_regions_r (
 void
 timeline_arranger_widget_move_items_x (
   TimelineArrangerWidget * self,
-  int                      frames_diff)
+  long                     ticks_diff)
 {
   /* update region positions */
   for (int i = 0; i < TIMELINE_SELECTIONS->num_regions; i++)
     {
       Region * r = TIMELINE_SELECTIONS->regions[i];
       Position * prev_start_pos = &self->region_start_poses[i];
-      int length_frames = position_to_frames (&r->end_pos) -
-        position_to_frames (&r->start_pos);
+      long length_ticks = position_to_ticks (&r->end_pos) -
+        position_to_ticks (&r->start_pos);
       Position tmp;
       position_set_to_pos (&tmp, prev_start_pos);
-      position_add_frames (&tmp, frames_diff + length_frames);
+      position_add_ticks (&tmp, ticks_diff + length_ticks);
       region_set_end_pos (r, &tmp);
       position_set_to_pos (&tmp, prev_start_pos);
-      position_add_frames (&tmp, frames_diff);
+      position_add_ticks (&tmp, ticks_diff);
       region_set_start_pos (r, &tmp, 1);
     }
 
@@ -1031,7 +1031,7 @@ timeline_arranger_widget_move_items_x (
         &self->chord_start_poses[i];
       Position tmp;
       position_set_to_pos (&tmp, prev_start_pos);
-      position_add_frames (&tmp, frames_diff);
+      position_add_ticks (&tmp, ticks_diff);
       chord_set_pos (r, &tmp);
     }
 
@@ -1050,7 +1050,7 @@ timeline_arranger_widget_move_items_x (
       Position * prev_pos = &self->ap_poses[i];
       position_set_to_pos (&ap_pos,
                            prev_pos);
-      position_add_frames (&ap_pos, frames_diff);
+      position_add_ticks (&ap_pos, ticks_diff);
 
       Position mid_pos;
       AutomationCurve * ac;
