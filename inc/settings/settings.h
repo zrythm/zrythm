@@ -29,7 +29,21 @@
 typedef struct Settings
 {
   GSettings * root;
+
+  /**
+   * This is for everything stored in preferences that can
+   * be edited by the user.
+   */
   GSettings * preferences;
+
+  /**
+   * UI memory.
+   *
+   * This is for storing things like last selections, etc.,
+   * that do not appear in the preferences but are "silently"
+   * remembered.
+   */
+  GSettings * ui;
 } Settings;
 
 /**

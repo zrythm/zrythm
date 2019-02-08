@@ -31,4 +31,6 @@ settings_init (Settings * self)
     g_settings_new ("org.zrythm");
   self->preferences =
     g_settings_new ("org.zrythm.preferences");
+  self->ui =
+    g_settings_new ("org.zrythm.ui");
 }

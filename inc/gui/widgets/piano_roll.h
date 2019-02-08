@@ -67,6 +67,7 @@ typedef struct _PianoRollWidget
   GtkScrolledWindow *      modifier_arranger_scroll;
   GtkViewport *            modifier_arranger_viewport;
   MidiModifierArrangerWidget * modifier_arranger;
+  GtkButton *              toggle_notation;
   PianoRoll *              piano_roll; ///< pointer to backend struct
 } MidiEditorWidget;
 

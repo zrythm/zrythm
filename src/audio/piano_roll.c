@@ -1,7 +1,5 @@
 /*
- * audio/piano_roll.c - piano roll back end
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-9 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -17,6 +15,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * \file
+ *
+ * Piano roll.
  */
 
 #include <stdlib.h>

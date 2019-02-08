@@ -106,6 +106,23 @@ link_scrolls (
 
 }
 
+static void
+toggle_note_notation_cb (GtkButton *button,
+               gpointer   user_data)
+{
+  if (g_settings_get_enum (SETTINGS->ui,
+                           "note-notation") == 0)
+    g_settings_set_enum (SETTINGS->ui,
+                         "note-notation",
+                         1);
+  else
+    g_settings_set_enum (SETTINGS->ui,
+                         "note-notation",
+                         0);
+  gtk_widget_queue_draw (
+    GTK_WIDGET (PIANO_ROLL_LABELS));
+}
+
 void
 piano_roll_widget_setup (
   PianoRollWidget * self,
@@ -158,6 +175,11 @@ piano_roll_widget_init (PianoRollWidget * self)
   gdk_rgba_parse (color, "gray");
   color_area_widget_set_color (self->color_bar,
                                color);
+
+  g_signal_connect (G_OBJECT (self->toggle_notation),
+                    "clicked",
+                    G_CALLBACK (toggle_note_notation_cb),
+                    NULL);
 }
 
 static void
@@ -237,6 +259,10 @@ piano_roll_widget_class_init (
     klass,
     PianoRollWidget,
     arranger);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
+    toggle_notation);
   gtk_widget_class_bind_template_child (
     klass,
     PianoRollWidget,

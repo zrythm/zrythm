@@ -20,12 +20,20 @@
  */
 
 #include "gui/widgets/piano_roll_labels.h"
+#include "settings/settings.h"
+#include "zrythm.h"
 
 #include <gtk/gtk.h>
 
 G_DEFINE_TYPE (PianoRollLabelsWidget,
                piano_roll_labels_widget,
                GTK_TYPE_DRAWING_AREA)
+
+enum NoteNotation
+{
+  NOTE_NOTATION_NOTES,
+  NOTE_NOTATION_NUMBERS,
+};
 
 static char * notes[12] = {
     "C",
@@ -86,6 +94,10 @@ draw_cb (PianoRollLabelsWidget * self, cairo_t *cr, gpointer data)
 
   cairo_set_source_rgba (cr, 0.7, 0.7, 0.7, 1.0);
 
+  int note_notation =
+    g_settings_get_enum (SETTINGS->ui,
+                         "note-notation");
+
   /* draw note labels with bot lines */
   for (int i = 0; i < 128; i++)
     {
@@ -94,9 +106,13 @@ draw_cb (PianoRollLabelsWidget * self, cairo_t *cr, gpointer data)
       cairo_line_to (cr, width, bot_line_px);
       cairo_stroke (cr);
 
-      char * text = g_strdup_printf ("%s%d",
-                                     notes[i % 12],
-                                     i / 12 - 2);
+      char * text;
+      if (note_notation == NOTE_NOTATION_NOTES)
+        text = g_strdup_printf ("%s%d",
+                                notes[i % 12],
+                                i / 12 - 2);
+      else if (note_notation == NOTE_NOTATION_NUMBERS)
+        text = g_strdup_printf ("%d", i);
       draw_text (cr, 3, (bot_line_px - self->px_per_note) + 3,
                  text);
       g_free (text);
