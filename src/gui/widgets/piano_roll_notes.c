@@ -231,10 +231,11 @@ piano_roll_notes_widget_refresh (PianoRollNotesWidget * self)
   // set the size
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
-    36,
+    48,
     PIANO_ROLL_LABELS->total_px);
 }
 
+/* FIXME rename to piano roll keys */
 static void
 piano_roll_notes_widget_init (PianoRollNotesWidget * self)
 {
