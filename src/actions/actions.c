@@ -110,12 +110,13 @@ activate_about (GSimpleAction *action,
   GtkAboutDialog *dialog;
 
   dialog =
-    g_object_new (GTK_TYPE_ABOUT_DIALOG,
-                  "copyright", "Copyright 2019 Alexandros Theodotou",
-                  "logo-icon-name", "org.gnome.clocks",
-                  "website", "https://www.zrythm.org",
-                  "version", "0.1",
-                  NULL);
+    g_object_new (
+      GTK_TYPE_ABOUT_DIALOG,
+      "copyright", "Copyright 2019 Alexandros Theodotou",
+      "logo-icon-name", "z",
+      "website", "https://www.zrythm.org",
+      "version", "unreleased",
+      NULL);
 
   gtk_window_present (GTK_WINDOW (dialog));
 }

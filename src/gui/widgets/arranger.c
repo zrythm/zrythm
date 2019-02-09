@@ -321,7 +321,7 @@ arranger_widget_toggle_select (ArrangerWidget *  self,
     {
       /* select */
       array_append (array,
-                    *num,
+                    (*num),
                     child);
       if (type == REGION_WIDGET_TYPE)
         {

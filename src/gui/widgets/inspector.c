@@ -19,6 +19,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "gui/backend/timeline_selections.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/inspector.h"
@@ -27,6 +28,7 @@
 #include "gui/widgets/inspector_region.h"
 #include "gui/widgets/inspector_track.h"
 #include "gui/widgets/main_window.h"
+#include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
@@ -93,10 +95,14 @@ inspector_widget_new ()
  * If num_regions < 1, it hides the regions box, etc.
  */
 void
-inspector_widget_show_selections (InspectorWidgetChildType type,
-                                  void **                  selections,
-                                  int                      num_selections)
+inspector_widget_show_selections (
+  InspectorWidgetChildType type,
+  void **                  selections,
+  int                      num_selections)
 {
+
+  g_message ("showing inspector selections");
+  timeline_selections_print (TIMELINE_SELECTIONS);
   InspectorWidget * self = MW_INSPECTOR;
   if (type == INSPECTOR_CHILD_REGION)
     gtk_widget_set_visible (GTK_WIDGET (self->region), 0);
@@ -115,6 +121,7 @@ inspector_widget_show_selections (InspectorWidgetChildType type,
                                                 (Region **) selections,
                                                 num_selections);
           gtk_widget_set_visible (GTK_WIDGET (self->region), 1);
+          g_message ("showing region");
         }
       else if (type == INSPECTOR_CHILD_AP)
         {
