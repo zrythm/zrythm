@@ -115,6 +115,32 @@ track_add_region (Track * track,
 }
 
 /**
+ * Wrapper.
+ */
+void
+track_remove_region (Track * track,
+                     Region * region,
+                     int       delete)
+{
+  if (track->type == TRACK_TYPE_INSTRUMENT)
+    {
+      instrument_track_remove_region (
+        (InstrumentTrack *) track,
+        (MidiRegion *) region);
+    }
+  else if (track->type == TRACK_TYPE_AUDIO)
+    {
+      audio_track_remove_region (
+        (AudioTrack *) track,
+        (AudioRegion *) region);
+    }
+  if (delete)
+    region_free (region);
+  arranger_widget_refresh (
+    Z_ARRANGER_WIDGET (MW_TIMELINE));
+}
+
+/**
  * Wrapper for each track type.
  */
 void

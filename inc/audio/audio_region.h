@@ -44,4 +44,12 @@ void
 audio_region_add_audio_clip (AudioRegion * self,
                              AudioClip *   ac);
 
+/**
+ * Frees members only but not the audio region itself.
+ *
+ * Regions should be free'd using region_free.
+ */
+void
+audio_region_free_members (AudioRegion * self);
+
 #endif // __AUDIO_AUDIO_REGION_H__

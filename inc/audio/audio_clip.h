@@ -89,5 +89,7 @@ audio_clip_new (AudioRegion * region,
                 int           channels,
                 char *        filename);
 
+void
+audio_clip_free (AudioClip * self);
 
 #endif // __AUDIO_AUDIO_CLIP_H__

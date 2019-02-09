@@ -43,3 +43,12 @@ audio_clip_new (AudioRegion * region,
 
   return self;
 }
+
+void
+audio_clip_free (AudioClip * self)
+{
+  free (self->buff);
+  g_free (self->filename);
+  gtk_widget_destroy (GTK_WIDGET (self->widget));
+  free (self);
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -17,32 +17,36 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __UNDO_CREATE_CHORDS_ACTION_H__
-#define __UNDO_CREATE_CHORDS_ACTION_H__
+#ifndef __UNDO_DELETE_TIMELINE_SELECTIONS_ACTION_H__
+#define __UNDO_DELETE_TIMELINE_SELECTIONS_ACTION_H__
 
 #include "actions/undoable_action.h"
 
-typedef struct Chord Chord;
+typedef struct TimelineSelections TimelineSelections;
 
-typedef struct CreateChordsAction
+typedef struct DeleteTimelineSelectionsAction
 {
   UndoableAction              parent_instance;
 
-  Chord *                     chords[800];
-  int                         num_chords;
-} CreateChordsAction;
+  /**
+   * A clone of the timeline selections at the time.
+   */
+  TimelineSelections *        ts;
+} DeleteTimelineSelectionsAction;
 
 UndoableAction *
-create_chords_action_new (Chord ** chords,
-                          int       num_chords);
+delete_timeline_selections_action_new ();
 
 void
-create_chords_action_do (CreateChordsAction * self);
+delete_timeline_selections_action_do (
+  DeleteTimelineSelectionsAction * self);
 
 void
-create_chords_action_undo (CreateChordsAction * self);
+delete_timeline_selections_action_undo (
+  DeleteTimelineSelectionsAction * self);
 
 void
-create_chords_action_free (CreateChordsAction * self);
+delete_timeline_selections_action_free (
+  DeleteTimelineSelectionsAction * self);
 
 #endif

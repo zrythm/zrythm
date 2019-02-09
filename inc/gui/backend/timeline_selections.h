@@ -81,9 +81,8 @@ timeline_selections_schema = {
 /**
  * Clone the struct for copying, undoing, etc.
  */
-//void
-//timeline_selections_clone (TimelineSelections * src,
-                           //TimelineSelections * dest);
+TimelineSelections *
+timeline_selections_clone ();
 
 /**
  * Returns the position of the leftmost object.
@@ -97,6 +96,9 @@ void
 timeline_selections_paste_to_pos (
   TimelineSelections * ts,
   Position *           pos);
+
+void
+timeline_selections_free (TimelineSelections * self);
 
 SERIALIZE_INC (TimelineSelections, timeline_selections)
 DESERIALIZE_INC (TimelineSelections, timeline_selections)

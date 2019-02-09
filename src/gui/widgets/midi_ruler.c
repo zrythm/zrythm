@@ -26,6 +26,7 @@
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/midi_ruler.h"
 #include "project.h"
+#include "utils/ui.h"
 
 #include <gtk/gtk.h>
 

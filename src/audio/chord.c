@@ -102,3 +102,9 @@ chord_new (MusicalNote            root,
 
   return self;
 }
+
+void
+chord_free (Chord * self)
+{
+  free (self);
+}

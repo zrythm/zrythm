@@ -174,4 +174,7 @@ void
 chord_set_pos (Chord *    self,
                Position * pos);
 
+void
+chord_free (Chord * self);
+
 #endif

@@ -24,6 +24,7 @@
 #include "audio/transport.h"
 #include "actions/actions.h"
 #include "actions/undo_manager.h"
+#include "actions/delete_timeline_selections_action.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -369,11 +370,8 @@ activate_copy (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  g_message ("copy");
   if (MAIN_WINDOW->last_focused == GTK_WIDGET (MW_TIMELINE))
     {
-      g_message ("copy: timeline focused");
-
       gtk_clipboard_set_text (
         DEFAULT_CLIPBOARD,
         timeline_selections_serialize (
@@ -393,24 +391,10 @@ on_timeline_clipboard_received (
 
   if (!text)
     return;
-  /*MidiRegion * mr =*/
-    /*midi_region_deserialize (text);*/
-
-  /*midi_region_print (mr);*/
   TimelineSelections * ts =
     timeline_selections_deserialize (text);
   g_message ("printing deserialized");
   timeline_selections_print (ts);
-  /*g_message ("num regions %d num midi notes %d",*/
-             /*ts->num_regions,*/
-             /*ts->regions[0]->midi_region->num_midi_notes);*/
-  /*g_message ("attempting to read midi note pos");*/
-  /*g_message ("midi note %p",*/
-             /*ts->regions[0]->midi_region->midi_notes[0]);*/
-  /*g_message ("midi note start_pos %p",*/
-             /*ts->regions[0]->midi_region->midi_notes[0]->start_pos);*/
-  /*g_message ("midi note start bar %d",*/
-             /*ts->regions[0]->midi_region->midi_notes[0]->start_pos.bars);*/
 
   if (MAIN_WINDOW->last_focused == GTK_WIDGET (MW_TIMELINE))
     {
@@ -439,7 +423,13 @@ activate_delete (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  g_message ("ZOOMING IN");
+  if (MAIN_WINDOW->last_focused == GTK_WIDGET (MW_TIMELINE))
+    {
+      UndoableAction * action =
+        delete_timeline_selections_action_new ();
+      undo_manager_perform (UNDO_MANAGER,
+                            action);
+    }
 }
 
 void

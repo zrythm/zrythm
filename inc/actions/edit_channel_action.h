@@ -39,7 +39,8 @@ typedef struct EditChannelAction
   UndoableAction              parent_instance;
   EditChannelActionType       type;
 
-  Channel *                   channel;
+  int                         channel_id;
+
   /**
    * Params to be changed.
    */
@@ -70,5 +71,8 @@ edit_channel_action_do (EditChannelAction * self);
 
 void
 edit_channel_action_undo (EditChannelAction * self);
+
+void
+edit_channel_action_free (EditChannelAction * self);
 
 #endif

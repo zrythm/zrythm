@@ -72,4 +72,12 @@ midi_region_find_unended_note (MidiRegion * self,
   //Position *   pos,
   //int          pitch);
 
+/**
+ * Frees members only but not the midi region itself.
+ *
+ * Regions should be free'd using region_free.
+ */
+void
+midi_region_free_members (MidiRegion * self);
+
 #endif // __AUDIO_MIDI_REGION_H__

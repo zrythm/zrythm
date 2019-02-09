@@ -124,5 +124,7 @@ midi_note_notes_to_events (MidiNote     ** midi_notes, ///< array
                            Position     * pos, ///< position to offset time from
                            MidiEvents   * events);  ///< preallocated struct to fill
 
+void
+midi_note_free (MidiNote * self);
 
 #endif // __AUDIO_MIDI_NOTE_H__

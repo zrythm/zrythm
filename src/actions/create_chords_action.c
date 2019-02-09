@@ -1,6 +1,4 @@
 /*
- * actions/create_chords_action.c - UndoableAction
- *
  * Copyright (C) 2018 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -75,3 +73,13 @@ create_chords_action_undo (CreateChordsAction * self)
     }
 }
 
+void
+create_chords_action_free (CreateChordsAction * self)
+{
+  for (int i = 0; i < self->num_chords; i++)
+    {
+      Chord * chord = self->chords[i];
+      chord_free (chord);
+    }
+
+}

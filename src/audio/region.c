@@ -20,6 +20,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/audio_region.h"
 #include "audio/channel.h"
 #include "audio/midi_note.h"
 #include "audio/midi_region.h"
@@ -198,8 +199,13 @@ region_clone (Region *        region,
 
       new_region = (Region *) mr;
     }
+  else if (region->type == REGION_TYPE_AUDIO)
+    {
+
+    }
 
   new_region->selected = region->selected;
+  new_region->cloned_from = region->id;
 
   return new_region;
 }
@@ -241,6 +247,21 @@ region_generate_filename (Region * region)
                           region->id,
                           channel->name,
                           region->name);
+}
+
+void
+region_free (Region * self)
+{
+  if (self->name)
+    g_free (self->name);
+  if (self->widget)
+    gtk_widget_destroy (GTK_WIDGET (self->widget));
+  if (self->midi_region)
+    midi_region_free_members (self->midi_region);
+  if (self->audio_region)
+    audio_region_free_members (self->audio_region);
+
+  free (self);
 }
 
 SERIALIZE_SRC (Region, region)

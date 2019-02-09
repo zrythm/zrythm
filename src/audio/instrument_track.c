@@ -144,20 +144,9 @@ void
 instrument_track_remove_region (InstrumentTrack    * track,
                      MidiRegion   * region)
 {
-  for (int i = 0; i < track->num_regions; i++)
-    {
-      if (track->regions[i] == region)
-        {
-          for (int j = i; j < track->num_regions - 1; j++)
-            {
-              track->regions[j] = track->regions[j + 1];
-            }
-          track->num_regions--;
-          ((Region *)region)->track = NULL;
-          return;
-        }
-    }
-  g_warning ("region not found in track");
+  array_delete (track->regions,
+                track->num_regions,
+                region);
 }
 
 /**

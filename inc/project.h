@@ -125,9 +125,9 @@ typedef struct Project
   int               num_automation_curves;
   MidiNote *        midi_notes[30000];
   int               num_midi_notes;
-  Channel *         channels[300];
+  Channel *         channels[3000];
   int               num_channels;
-  Track *           tracks[300];
+  Track *           tracks[3000];
   int               num_tracks;
   Port *            ports[600000];
   int               num_ports;

@@ -141,3 +141,8 @@ midi_note_notes_to_events (MidiNote     ** midi_notes, ///< array
     }
 }
 
+void
+midi_note_free (MidiNote * self)
+{
+  free (self);
+}

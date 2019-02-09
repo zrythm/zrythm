@@ -20,6 +20,7 @@
  */
 
 #include "actions/create_chords_action.h"
+#include "actions/delete_timeline_selections_action.h"
 #include "actions/edit_channel_action.h"
 #include "actions/undoable_action.h"
 
@@ -47,7 +48,9 @@ undoable_action_do (UndoableAction * self)
       break;
     case UNDOABLE_ACTION_TYPE_MOVE_REGIONS:
       break;
-    case UNDOABLE_ACTION_TYPE_DELETE_REGIONS:
+    case UNDOABLE_ACTION_TYPE_DELETE_TIMELINE_SELECTIONS:
+      delete_timeline_selections_action_do (
+        (DeleteTimelineSelectionsAction *) self);
       break;
     case UNDOABLE_ACTION_TYPE_CREATE_CHORDS:
       create_chords_action_do (
@@ -80,7 +83,9 @@ undoable_action_undo (UndoableAction * self)
       break;
     case UNDOABLE_ACTION_TYPE_MOVE_REGIONS:
       break;
-    case UNDOABLE_ACTION_TYPE_DELETE_REGIONS:
+    case UNDOABLE_ACTION_TYPE_DELETE_TIMELINE_SELECTIONS:
+      delete_timeline_selections_action_undo (
+        (DeleteTimelineSelectionsAction *) self);
       break;
     case UNDOABLE_ACTION_TYPE_CREATE_CHORDS:
       create_chords_action_undo (
@@ -92,4 +97,29 @@ undoable_action_undo (UndoableAction * self)
 void
 undoable_action_free (UndoableAction * self)
 {
+  switch (self->type)
+    {
+    case UNDOABLE_ACTION_TYPE_CREATE_CHANNEL:
+      break;
+    case UNDOABLE_ACTION_TYPE_EDIT_CHANNEL:
+      edit_channel_action_free (
+        (EditChannelAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_DELETE_CHANNEL:
+      break;
+    case UNDOABLE_ACTION_TYPE_MOVE_CHANNEL:
+      break;
+    case UNDOABLE_ACTION_TYPE_CREATE_REGIONS:
+      break;
+    case UNDOABLE_ACTION_TYPE_MOVE_REGIONS:
+      break;
+    case UNDOABLE_ACTION_TYPE_DELETE_TIMELINE_SELECTIONS:
+      delete_timeline_selections_action_free (
+        (DeleteTimelineSelectionsAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_CREATE_CHORDS:
+      create_chords_action_free (
+        (CreateChordsAction *) self);
+      break;
+    }
 }

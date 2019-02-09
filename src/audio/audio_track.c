@@ -69,7 +69,9 @@ void
 audio_track_remove_region (AudioTrack *  track,
                            AudioRegion * region)
 {
-
+  array_delete (track->regions,
+                track->num_regions,
+                region);
 }
 
 /**

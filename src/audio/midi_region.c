@@ -104,6 +104,24 @@ midi_region_find_unended_note (MidiRegion * self,
   return NULL;
 }
 
+/**
+ * Frees members only but not the midi region itself.
+ *
+ * Regions should be free'd using region_free.
+ */
+void
+midi_region_free_members (MidiRegion * self)
+{
+  for (int i = 0; i < self->num_midi_notes; i++)
+    {
+      midi_note_free (self->midi_notes[i]);
+    }
+  for (int i = 0; i < self->num_unended_notes; i++)
+    {
+      midi_note_free (self->unended_notes[i]);
+    }
+}
+
 SERIALIZE_SRC (MidiRegion, midi_region)
 DESERIALIZE_SRC (MidiRegion, midi_region)
 PRINT_YAML_SRC (MidiRegion, midi_region)

@@ -25,6 +25,7 @@
 #include "audio/transport.h"
 #include "gui/backend/timeline_selections.h"
 #include "project.h"
+#include "utils/arrays.h"
 #include "utils/yaml.h"
 
 #include <gtk/gtk.h>
@@ -65,6 +66,30 @@ get_start_pos (
         position_set_to_pos (pos,
                              &chord->pos);
     }
+}
+
+/**
+ * Clone the struct for copying, undoing, etc.
+ */
+TimelineSelections *
+timeline_selections_clone ()
+{
+  TimelineSelections * new_ts =
+    calloc (1, sizeof (TimelineSelections));
+
+  TimelineSelections * src = TIMELINE_SELECTIONS;
+
+  for (int i = 0; i < src->num_regions; i++)
+    {
+      Region * r = src->regions[i];
+      Region * new_r =
+        region_clone (r, REGION_CLONE_COPY);
+      array_append (new_ts->regions,
+                    new_ts->num_regions,
+                    new_r);
+    }
+
+  return new_ts;
 }
 
 void
@@ -161,6 +186,12 @@ timeline_selections_paste_to_pos (
                            pos_ticks + DIFF);
     }
 #undef DIFF
+}
+
+void
+timeline_selections_free (TimelineSelections * self)
+{
+  free (self);
 }
 
 SERIALIZE_SRC (TimelineSelections, timeline_selections)

@@ -78,3 +78,14 @@ audio_region_add_audio_clip (AudioRegion * self,
   /*audio_region_widget_refresh (self->widget);*/
 }
 
+/**
+ * Frees members only but not the audio region itself.
+ *
+ * Regions should be free'd using region_free.
+ */
+void
+audio_region_free_members (AudioRegion * self)
+{
+  if (self->audio_clip)
+    audio_clip_free (self->audio_clip);
+}

@@ -1,7 +1,5 @@
 /*
- * actions/edit_channel_action.c - UndoableAction
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -19,9 +17,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "actions/edit_channel_action.h"
 #include "audio/channel.h"
 #include "gui/widgets/channel.h"
-#include "actions/edit_channel_action.h"
+#include "project.h"
 
 static EditChannelAction *
 _create ()
@@ -41,7 +40,7 @@ edit_channel_action_new_solo (Channel * channel)
   EditChannelAction * self = _create ();
 
   UndoableAction * ua = (UndoableAction *) self;
-  self->channel = channel;
+  self->channel_id = channel->id;
   self->type = EDIT_CHANNEL_ACTION_TYPE_SOLO;
 
   return ua;
@@ -53,7 +52,7 @@ edit_channel_action_new_mute (Channel * channel)
   EditChannelAction * self = _create ();
 
   UndoableAction * ua = (UndoableAction *) self;
-  self->channel = channel;
+  self->channel_id = channel->id;
   self->type = EDIT_CHANNEL_ACTION_TYPE_MUTE;
 
   return ua;
@@ -67,7 +66,7 @@ edit_channel_action_new_vol (Channel * channel,
   EditChannelAction * self = _create ();
 
   UndoableAction * ua = (UndoableAction *) self;
-  self->channel = channel;
+  self->channel_id = channel->id;
   self->type = EDIT_CHANNEL_ACTION_TYPE_CHANGE_VOLUME;
   self->vol_prev = vol_prev;
   self->vol_new = vol_new;
@@ -83,7 +82,7 @@ edit_channel_action_new_pan (Channel * channel,
   EditChannelAction * self = _create ();
 
   UndoableAction * ua = (UndoableAction *) self;
-  self->channel = channel;
+  self->channel_id = channel->id;
   self->type = EDIT_CHANNEL_ACTION_TYPE_CHANGE_PAN;
   self->pan_prev = pan_prev;
   self->pan_new = pan_new;
@@ -94,21 +93,22 @@ edit_channel_action_new_pan (Channel * channel,
 void
 edit_channel_action_do (EditChannelAction * self)
 {
+  Channel * channel = PROJECT->channels[self->channel_id];
   switch (self->type)
     {
     case EDIT_CHANNEL_ACTION_TYPE_SOLO:
-      self->channel->widget->undo_redo_action = 1;
-      channel_toggle_solo (self->channel);
+      channel->widget->undo_redo_action = 1;
+      channel_toggle_solo (channel);
       break;
     case EDIT_CHANNEL_ACTION_TYPE_MUTE:
-      channel_toggle_mute (self->channel);
+      channel_toggle_mute (channel);
       break;
     case EDIT_CHANNEL_ACTION_TYPE_CHANGE_VOLUME:
-      channel_set_fader_amp (self->channel,
+      channel_set_fader_amp (channel,
                              self->vol_new);
       break;
     case EDIT_CHANNEL_ACTION_TYPE_CHANGE_PAN:
-      channel_set_pan (self->channel,
+      channel_set_pan (channel,
                        self->pan_new);
       break;
     }
@@ -117,22 +117,29 @@ edit_channel_action_do (EditChannelAction * self)
 void
 edit_channel_action_undo (EditChannelAction * self)
 {
+  Channel * channel = PROJECT->channels[self->channel_id];
   switch (self->type)
     {
     case EDIT_CHANNEL_ACTION_TYPE_SOLO:
-      self->channel->widget->undo_redo_action = 1;
-      channel_toggle_solo (self->channel);
+      channel->widget->undo_redo_action = 1;
+      channel_toggle_solo (channel);
       break;
     case EDIT_CHANNEL_ACTION_TYPE_MUTE:
-      channel_toggle_mute (self->channel);
+      channel_toggle_mute (channel);
       break;
     case EDIT_CHANNEL_ACTION_TYPE_CHANGE_VOLUME:
-      channel_set_fader_amp (self->channel,
+      channel_set_fader_amp (channel,
                              self->vol_prev);
       break;
     case EDIT_CHANNEL_ACTION_TYPE_CHANGE_PAN:
-      channel_set_pan (self->channel,
+      channel_set_pan (channel,
                        self->pan_prev);
       break;
     }
+}
+
+void
+edit_channel_action_free (EditChannelAction * self)
+{
+  free (self);
 }

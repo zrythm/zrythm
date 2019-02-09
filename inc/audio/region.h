@@ -51,6 +51,9 @@ typedef enum RegionType
 
 typedef enum RegionCloneFlag
 {
+  /**
+   * Create a completely new region with a new id.
+   */
   REGION_CLONE_COPY,
   REGION_CLONE_LINK
 } RegionCloneFlag;
@@ -101,6 +104,14 @@ typedef struct Region
   int                      selected;
 
   /**
+   * ID cloned from.
+   *
+   * Used when deleting.
+   * TODO figure out a better way
+   */
+  int             cloned_from;
+
+  /**
    * Muted or not.
    */
   int                muted;
@@ -110,7 +121,7 @@ typedef struct Region
    *
    * If null, the track color is used.
    */
-  GdkRGBA *       color;
+  GdkRGBA        color;
 
   /**
    * This is a hack to make the region serialize its
@@ -310,6 +321,9 @@ region_get_start_region (Region ** regions,
 Region *
 region_clone (Region *        region,
               RegionCloneFlag flag);
+
+void
+region_free (Region * region);
 
 SERIALIZE_INC (Region, region)
 SERIALIZE_INC (MidiRegion, midi_region)
