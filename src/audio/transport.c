@@ -130,7 +130,7 @@ on_playhead_changed ()
           gtk_widget_queue_allocate (
             GTK_WIDGET (MW_RULER));
         }
-      if (PIANO_ROLL)
+      if (MW_PIANO_ROLL)
         {
           if (MIDI_RULER)
             {

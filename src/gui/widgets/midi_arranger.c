@@ -63,51 +63,6 @@ G_DEFINE_TYPE (MidiArrangerWidget,
                ARRANGER_WIDGET_TYPE)
 
 /**
- * Sets up the MIDI editor for the given region.
- */
-void
-midi_arranger_widget_set_channel (
-  MidiArrangerWidget * self,
-  Channel *            channel)
-{
-  /*ArrangerWidgetPrivate * ar_prv =*/
-    /*arranger_widget_get_private (*/
-      /*Z_ARRANGER_WIDGET (self));*/
-  if (channel->track->type != TRACK_TYPE_INSTRUMENT)
-    {
-      g_error ("Track is not an instrument track");
-      return;
-    }
-  /*InstrumentTrack * it = (InstrumentTrack *) channel->track;*/
-  if (self->channel)
-    {
-      channel_reattach_midi_editor_manual_press_port (
-        self->channel,
-        0);
-    }
-  channel_reattach_midi_editor_manual_press_port (
-    channel,
-    1);
-  self->channel = channel;
-
-  /*gtk_notebook_set_current_page (MAIN_WINDOW->bot_notebook, 0);*/
-
-  char * label = g_strdup_printf ("%s",
-                                  channel->name);
-  gtk_label_set_text (PIANO_ROLL->midi_name_label,
-                      label);
-  g_free (label);
-
-  color_area_widget_set_color (PIANO_ROLL->color_bar,
-                               &channel->track->color);
-
-  /* remove all previous children and add new */
-  arranger_widget_refresh (Z_ARRANGER_WIDGET (self));
-
-  gtk_widget_show_all (GTK_WIDGET (self));
-}
-
-/**
  * To be called from get_child_position in parent widget.
  *
  * Used to allocate the overlay children.
@@ -127,14 +82,14 @@ midi_arranger_widget_set_allocation (
           &midi_note_widget->midi_note->start_pos,
           1);
       allocation->y =
-        PIANO_ROLL->piano_roll_labels->px_per_note *
+        MW_PIANO_ROLL->piano_roll_labels->px_per_note *
           (127 - midi_note_widget->midi_note->val);
       allocation->width =
         ui_pos_to_px (
           &midi_note_widget->midi_note->end_pos,
           1) - allocation->x;
       allocation->height =
-        PIANO_ROLL->piano_roll_labels->px_per_note;
+        MW_PIANO_ROLL->piano_roll_labels->px_per_note;
     }
 }
 
@@ -512,10 +467,10 @@ midi_arranger_widget_refresh_children (
     }
   g_list_free (children);
 
-  if (self->channel)
+  if (PIANO_ROLL->track)
     {
       InstrumentTrack * it =
-        (InstrumentTrack *) self->channel->track;
+        (InstrumentTrack *) PIANO_ROLL->track;
       for (int i = 0; i < it->num_regions; i++)
         {
           MidiRegion * mr = it->regions[i];

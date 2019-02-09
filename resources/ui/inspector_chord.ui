@@ -22,11 +22,11 @@
 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <template class="InspectorChordsWidget" parent="GtkGrid">
+  <template class="InspectorChordWidget" parent="GtkGrid">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <child>
-      <object class="GtkLabel">
+      <object class="GtkLabel" id="header">
         <property name="visible">1</property>
         <property name="label" translatable="yes">Chords</property>
       </object>

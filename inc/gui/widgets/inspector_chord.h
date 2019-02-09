@@ -17,43 +17,43 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_INSPECTOR_TRACK_H__
-#define __GUI_WIDGETS_INSPECTOR_TRACK_H__
+#ifndef __GUI_WIDGETS_INSPECTOR_CHORD_H__
+#define __GUI_WIDGETS_INSPECTOR_CHORD_H__
 
 #include <gtk/gtk.h>
 
-#define INSPECTOR_TRACK_WIDGET_TYPE \
-  (inspector_track_widget_get_type ())
-G_DECLARE_FINAL_TYPE (InspectorTrackWidget,
-                      inspector_track_widget,
+#define INSPECTOR_CHORD_WIDGET_TYPE \
+  (inspector_chord_widget_get_type ())
+G_DECLARE_FINAL_TYPE (InspectorChordWidget,
+                      inspector_chord_widget,
                       Z,
-                      INSPECTOR_TRACK_WIDGET,
+                      INSPECTOR_CHORD_WIDGET,
                       GtkGrid)
 
-typedef struct Track Track;
+typedef struct Chord Chord;
 
-typedef struct _InspectorTrackWidget
+typedef struct _InspectorChordWidget
 {
   GtkGrid             parent_instance;
   GtkLabel *          header;
-  GtkBox *            position_box;
-  GtkBox *            length_box;
-  GtkColorButton *    color;
-  GtkToggleButton *   mute_toggle;
-} InspectorTrackWidget;
+  //GtkBox *            position_box;
+  //GtkBox *            length_box;
+  //GtkColorButton *    color;
+  //GtkToggleButton *   mute_toggle;
+} InspectorChordWidget;
 
 /**
- * Creates the inspector_track widget.
+ * Creates the inspector_chord widget.
  *
  * Only once per project.
  */
-InspectorTrackWidget *
-inspector_track_widget_new ();
+InspectorChordWidget *
+inspector_chord_widget_new ();
 
 void
-inspector_track_widget_show_tracks (
-  InspectorTrackWidget * self,
-  Track **               tracks,
-  int                    num_tracks);
+inspector_chord_widget_show_chords (
+  InspectorChordWidget * self,
+  Chord **               chords,
+  int                    num_chords);
 
 #endif

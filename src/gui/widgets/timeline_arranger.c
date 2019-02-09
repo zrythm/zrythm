@@ -366,6 +366,10 @@ timeline_arranger_widget_update_inspector (
     INSPECTOR_CHILD_AP,
     (void **) TIMELINE_SELECTIONS->automation_points,
     TIMELINE_SELECTIONS->num_automation_points);
+  inspector_widget_show_selections (
+    INSPECTOR_CHILD_CHORD,
+    (void **) TIMELINE_SELECTIONS->chords,
+    TIMELINE_SELECTIONS->num_chords);
 }
 
 void
@@ -557,10 +561,7 @@ timeline_arranger_widget_on_drag_begin_region_hit (
       Track * track = rw_prv->region->track;
       if (track->type == TRACK_TYPE_INSTRUMENT)
         {
-          Channel * chan = track_get_channel (track);
-          midi_arranger_widget_set_channel(
-            MIDI_ARRANGER,
-            chan);
+          piano_roll_set_track (track);
         }
     }
 

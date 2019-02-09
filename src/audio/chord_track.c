@@ -48,6 +48,8 @@ chord_track_new (MusicalScale * scale)
   track_init (track);
   project_add_track (track);
 
+  self->name = g_strdup ("Chord Track");
+
   self->scale = scale;
 
   gdk_rgba_parse (&self->color, "#0328fa");

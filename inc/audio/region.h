@@ -29,6 +29,8 @@
 #include "audio/position.h"
 #include "utils/yaml.h"
 
+#include <gtk/gtk.h>
+
 #define REGION_PRINTF_FILENAME "%d_%s_%s.mid"
 #define region_set_track(region,track) \
   ((Region *)region)->track = (Track *) track; \
@@ -97,6 +99,18 @@ typedef struct Region
   struct Region * linked_region; ///< cache
 
   int                      selected;
+
+  /**
+   * Muted or not.
+   */
+  int                muted;
+
+  /**
+   * TODO region color independent of track.
+   *
+   * If null, the track color is used.
+   */
+  GdkRGBA *       color;
 
   /**
    * This is a hack to make the region serialize its
@@ -279,6 +293,13 @@ region_at_position (Track    * track, ///< the track to look in
  */
 char *
 region_generate_filename (Region * region);
+
+/**
+ * Returns the region with the earliest start point.
+ */
+Region *
+region_get_start_region (Region ** regions,
+                         int       num_regions);
 
 /**
  * Clone region.

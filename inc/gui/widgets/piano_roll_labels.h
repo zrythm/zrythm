@@ -35,7 +35,7 @@ G_DECLARE_FINAL_TYPE (PianoRollLabelsWidget,
                       GtkDrawingArea)
 
 #define DEFAULT_PX_PER_NOTE 8
-#define PIANO_ROLL_LABELS PIANO_ROLL->piano_roll_labels
+#define PIANO_ROLL_LABELS MW_PIANO_ROLL->piano_roll_labels
 
 typedef struct _PianoRollLabelsWidget
 {

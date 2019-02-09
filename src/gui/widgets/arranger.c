@@ -601,12 +601,14 @@ drag_begin (GtkGestureDrag * gesture,
           else if (midi_arranger)
             {
               /* find the note and region at x,y */
-              note = (PIANO_ROLL->piano_roll_labels->total_px - start_y) /
-                PIANO_ROLL->piano_roll_labels->px_per_note;
-              if (midi_arranger->channel)
+              note =
+                (MW_PIANO_ROLL->piano_roll_labels->total_px
+                  - start_y) /
+                MW_PIANO_ROLL->piano_roll_labels->px_per_note;
+              if (PIANO_ROLL->track)
                 {
                   region = region_at_position (
-                    midi_arranger->channel->track,
+                    PIANO_ROLL->track,
                     &pos);
                 }
 
@@ -785,6 +787,13 @@ drag_update (GtkGestureDrag * gesture,
 
   /* things have changed, reallocate */
   gtk_widget_queue_allocate(GTK_WIDGET (self));
+
+  /* redraw midi ruler if region positions were changed */
+  if (timeline && TIMELINE_SELECTIONS->num_regions > 0 &&
+      (ar_prv->action == UI_OVERLAY_ACTION_MOVING ||
+      ar_prv->action == UI_OVERLAY_ACTION_RESIZING_L ||
+      ar_prv->action == UI_OVERLAY_ACTION_RESIZING_R))
+    gtk_widget_queue_draw (GTK_WIDGET (MIDI_RULER));
 
   /* update last offsets */
   ar_prv->last_offset_x = offset_x;

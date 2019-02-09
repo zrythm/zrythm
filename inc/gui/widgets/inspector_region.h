@@ -1,6 +1,4 @@
 /*
- * gui/widgets/inspector_region.h - A inspector_region widget
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -17,6 +15,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * \file
+ * Widget showing region info in the inspector.
  */
 
 #ifndef __GUI_WIDGETS_INSPECTOR_REGION_H__
@@ -38,6 +41,7 @@ typedef struct _InspectorRegionWidget
 {
   GtkGrid             parent_instance;
   GtkLabel *          header;
+  GtkEntry *          name;
   GtkBox *            position_box;
   GtkBox *            length_box;
   GtkColorButton *    color;
@@ -53,8 +57,9 @@ InspectorRegionWidget *
 inspector_region_widget_new ();
 
 void
-inspector_region_widget_show_regions (InspectorRegionWidget * self,
-                                      Region **               regions,
-                                      int                     num_regions);
+inspector_region_widget_show_regions (
+  InspectorRegionWidget * self,
+  Region **               regions,
+  int                     num_regions);
 
 #endif

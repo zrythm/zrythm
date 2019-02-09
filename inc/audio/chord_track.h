@@ -46,6 +46,7 @@ typedef struct ChordTrack
   MusicalScale *          scale;
   Chord *                 chords[600];
   int                     num_chords;
+  char *                  name;
   ChordTrackWidget *      widget;
   GdkRGBA                 color;
 } ChordTrack;

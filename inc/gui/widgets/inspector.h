@@ -39,13 +39,15 @@ typedef struct _InspectorRegionWidget InspectorRegionWidget;
 typedef struct _InspectorApWidget InspectorApWidget;
 typedef struct _InspectorTrackWidget InspectorTrackWidget;
 typedef struct _InspectorMidiWidget InspectorMidiWidget;
+typedef struct _InspectorChordWidget InspectorChordWidget;
 
 typedef enum InspectorWidgetChildType
 {
   INSPECTOR_CHILD_REGION,
   INSPECTOR_CHILD_MIDI,
   INSPECTOR_CHILD_TRACK,
-  INSPECTOR_CHILD_AP
+  INSPECTOR_CHILD_AP,
+  INSPECTOR_CHILD_CHORD,
 } InspectorWidgetChildType;
 
 typedef struct _InspectorWidget
@@ -65,6 +67,8 @@ typedef struct _InspectorWidget
   GtkBox *                  midi_box;
   InspectorMidiWidget *     midi;
   GtkBox *                  bot_box;
+  InspectorChordWidget *    chord;
+  GtkBox *                  chord_box;
   GtkLabel *                no_item_label; ///< no item selected label
 } InspectorWidget;
 
@@ -82,9 +86,10 @@ inspector_widget_new ();
  * If num_regions < 1, it hides the regions box.
  */
 void
-inspector_widget_show_selections (InspectorWidgetChildType type,
-                                  void **                  selections,
-                                  int                      num_selections);
+inspector_widget_show_selections (
+  InspectorWidgetChildType type,
+  void **                  selections,
+  int                      num_selections);
 
 #endif
 

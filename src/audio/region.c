@@ -205,6 +205,30 @@ region_clone (Region *        region,
 }
 
 /**
+ * Returns the region with the earliest start point.
+ */
+Region *
+region_get_start_region (Region ** regions,
+                         int       num_regions)
+{
+  Position pos;
+  Region * start_region;
+  position_set_bar (&pos, TRANSPORT->total_bars + 1);
+  for (int i = 0; i < num_regions; i++)
+    {
+      Region * r = regions[i];
+      if (position_compare (&r->start_pos,
+                            &pos) <= 0)
+        {
+          position_set_to_pos (&pos,
+                               &r->start_pos);
+          start_region = r;
+        }
+    }
+  return start_region;
+}
+
+/**
  * Generates the filename for this region.
  *
  * MUST be free'd.

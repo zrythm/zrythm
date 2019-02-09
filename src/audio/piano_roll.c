@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-9 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -20,12 +20,49 @@
 /**
  * \file
  *
- * Piano roll.
+ * Piano roll backend.
+ *
+ * This is meant to be serialized along with each project.
  */
 
 #include <stdlib.h>
 
+#include "audio/channel.h"
 #include "audio/piano_roll.h"
+#include "audio/track.h"
+#include "gui/widgets/piano_roll.h"
+#include "project.h"
+
+/**
+ * Sets the track and refreshes the piano roll widgets.
+ *
+ * To be called only from GTK threads.
+ */
+void
+piano_roll_set_track (Track * track)
+{
+  PianoRoll * self = PIANO_ROLL;
+
+  if (track->type != TRACK_TYPE_INSTRUMENT)
+    {
+      g_warning ("Track is not an instrument track");
+      return;
+    }
+  /*InstrumentTrack * it = (InstrumentTrack *) channel->track;*/
+  if (self->track)
+    {
+      channel_reattach_midi_editor_manual_press_port (
+        track_get_channel (track),
+        0);
+    }
+  channel_reattach_midi_editor_manual_press_port (
+    track_get_channel (track),
+    1);
+  self->track = track;
+  self->track_id = track->id;
+
+  piano_roll_widget_track_updated ();
+}
 
 void
 piano_roll_init (PianoRoll * self)

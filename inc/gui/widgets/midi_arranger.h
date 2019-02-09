@@ -37,7 +37,7 @@ G_DECLARE_FINAL_TYPE (MidiArrangerWidget,
                       MIDI_ARRANGER_WIDGET,
                       ArrangerWidget)
 
-#define MIDI_ARRANGER PIANO_ROLL->arranger
+#define MIDI_ARRANGER MW_PIANO_ROLL->arranger
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote MidiNote;
@@ -67,20 +67,7 @@ typedef struct _MidiArrangerWidget
    * used in drag_update to move the objects accordingly
    */
   Position                 midi_note_start_poses[600];
-
-  /**
-   * Channel currently attached to MIDI arranger.
-   */
-  Channel *                channel;
 } MidiArrangerWidget;
-
-/**
- * Sets up the MIDI editor for the given region.
- */
-void
-midi_arranger_widget_set_channel (
-  MidiArrangerWidget * arranger,
-  Channel *            channel);
 
 void
 midi_arranger_widget_toggle_select_midi_note (

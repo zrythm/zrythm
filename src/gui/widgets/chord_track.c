@@ -61,7 +61,7 @@ chord_track_widget_new (Track * track)
 
   /* set track name */
   gtk_label_set_text (tw_prv->name,
-                      "Chord Track");
+                      ct->name);
 
   /* setup color */
   color_area_widget_set_color (tw_prv->color,

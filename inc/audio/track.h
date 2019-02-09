@@ -136,8 +136,11 @@ track_get_channel (Track * track);
 Automatable *
 track_get_fader_automatable (Track * track);
 
-GdkRGBA *
-track_get_color (Track * track);
+/**
+ * Wrapper to get the track name.
+ */
+char *
+track_get_name (Track * track);
 
 /**
  * Wrapper for each track type.

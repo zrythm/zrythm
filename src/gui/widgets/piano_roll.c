@@ -123,6 +123,40 @@ toggle_note_notation_cb (GtkButton *button,
     GTK_WIDGET (PIANO_ROLL_LABELS));
 }
 
+/**
+ * Called when the selected track for the piano roll has
+ * been updated.
+ *
+ * It sets the color, labels, refreshes the midi arranger,
+ * etc.
+ */
+void
+piano_roll_widget_track_updated ()
+{
+  PianoRollWidget * self = MW_PIANO_ROLL;
+  /*gtk_notebook_set_current_page (MAIN_WINDOW->bot_notebook, 0);*/
+
+  char * label =
+    g_strdup_printf (
+      "%s",
+      track_get_name (self->piano_roll->track));
+  gtk_label_set_text (self->midi_name_label,
+                      label);
+  g_free (label);
+
+  color_area_widget_set_color (
+    self->color_bar,
+    &self->piano_roll->track->color);
+
+  /* remove all previous children and add new */
+  arranger_widget_refresh (
+    Z_ARRANGER_WIDGET (MIDI_ARRANGER));
+
+  gtk_widget_queue_draw (GTK_WIDGET (MIDI_RULER));
+
+  gtk_widget_show_all (GTK_WIDGET (MIDI_ARRANGER));
+}
+
 void
 piano_roll_widget_setup (
   PianoRollWidget * self,
@@ -151,12 +185,12 @@ piano_roll_widget_setup (
 
   GtkAdjustment * adj =
     gtk_scrolled_window_get_vadjustment (
-      PIANO_ROLL->arranger_scroll);
+      MW_PIANO_ROLL->arranger_scroll);
   gtk_adjustment_set_value (
     adj,
     gtk_adjustment_get_upper (adj) / 2);
   gtk_scrolled_window_set_vadjustment (
-    PIANO_ROLL->arranger_scroll,
+    MW_PIANO_ROLL->arranger_scroll,
     adj);
 
   piano_roll_notes_widget_refresh (

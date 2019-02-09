@@ -255,3 +255,30 @@ track_get_region_at_pos (
     }
   return NULL;
 }
+
+/**
+ * Wrapper to get the track name.
+ */
+char *
+track_get_name (Track * track)
+{
+  switch (track->type)
+    {
+    case TRACK_TYPE_CHORD:
+        {
+          ChordTrack * ct = (ChordTrack *) track;
+          return ct->name;
+        }
+      break;
+    case TRACK_TYPE_BUS:
+    case TRACK_TYPE_AUDIO:
+    case TRACK_TYPE_MASTER:
+    case TRACK_TYPE_INSTRUMENT:
+        {
+          ChannelTrack * ct = (ChannelTrack *) track;
+          return ct->channel->name;
+        }
+    default:
+      return NULL;
+    }
+}

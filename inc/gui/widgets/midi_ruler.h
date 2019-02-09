@@ -34,7 +34,7 @@ G_DECLARE_FINAL_TYPE (MidiRulerWidget,
                       MIDI_RULER_WIDGET,
                       RulerWidget)
 
-#define MIDI_RULER PIANO_ROLL->ruler
+#define MIDI_RULER MW_PIANO_ROLL->ruler
 
 typedef struct _MidiRulerWidget
 {

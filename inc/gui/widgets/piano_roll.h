@@ -32,7 +32,7 @@ G_DECLARE_FINAL_TYPE (PianoRollWidget,
                       PIANO_ROLL_WIDGET,
                       GtkBox)
 
-#define PIANO_ROLL MW_BOT_DOCK_EDGE->piano_roll
+#define MW_PIANO_ROLL MW_BOT_DOCK_EDGE->piano_roll
 
 typedef struct _PianoRollLabelsWidget PianoRollLabelsWidget;
 typedef struct _PianoRollNotesWidget PianoRollNotesWidget;
@@ -70,6 +70,16 @@ typedef struct _PianoRollWidget
   GtkButton *              toggle_notation;
   PianoRoll *              piano_roll; ///< pointer to backend struct
 } MidiEditorWidget;
+
+/**
+ * Called when the selected track for the piano roll has
+ * been updated.
+ *
+ * It sets the color, labels, refreshes the midi arranger,
+ * etc.
+ */
+void
+piano_roll_widget_track_updated ();
 
 void
 piano_roll_widget_setup (

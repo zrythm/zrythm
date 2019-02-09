@@ -36,8 +36,6 @@ G_DEFINE_TYPE (PianoRollNotesWidget,
                piano_roll_notes_widget,
                GTK_TYPE_DRAWING_AREA)
 
-#define LABELS_WIDGET PIANO_ROLL->piano_roll_labels
-
 /* 1 = black */
 static int notes[12] = {
     0,
@@ -64,12 +62,12 @@ draw_cb (PianoRollNotesWidget * self, cairo_t *cr, gpointer data)
   width = gtk_widget_get_allocated_width (GTK_WIDGET (self));
   height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
 
-  gtk_render_background (context, cr, 0, 0, LABELS_WIDGET->total_px, height);
+  gtk_render_background (context, cr, 0, 0, PIANO_ROLL_LABELS->total_px, height);
 
   /* draw note notes with bot lines */
   for (int i = 0; i < 128; i++)
     {
-      int top_line_px = LABELS_WIDGET->total_px - LABELS_WIDGET->px_per_note * (i + 1);
+      int top_line_px = PIANO_ROLL_LABELS->total_px - PIANO_ROLL_LABELS->px_per_note * (i + 1);
       int black_note = notes [i % 12] == 1;
 
       if (black_note)
@@ -81,7 +79,7 @@ draw_cb (PianoRollNotesWidget * self, cairo_t *cr, gpointer data)
           cairo_set_source_rgb (cr, 1, 1, 1);
         }
       cairo_rectangle (cr, 0, top_line_px,
-                       width, LABELS_WIDGET->px_per_note);
+                       width, PIANO_ROLL_LABELS->px_per_note);
       cairo_fill (cr);
 
       /* add shade if currently pressed note */
@@ -92,7 +90,7 @@ draw_cb (PianoRollNotesWidget * self, cairo_t *cr, gpointer data)
           else
             cairo_set_source_rgba (cr, 0, 0, 0, 0.3);
           cairo_rectangle (cr, 0, top_line_px,
-                           width, LABELS_WIDGET->px_per_note);
+                           width, PIANO_ROLL_LABELS->px_per_note);
           cairo_fill (cr);
         }
     }
@@ -100,7 +98,7 @@ draw_cb (PianoRollNotesWidget * self, cairo_t *cr, gpointer data)
   /* draw dividing lines */
   for (int i = 0; i < 128; i++)
     {
-      int bot_line_px = LABELS_WIDGET->total_px - LABELS_WIDGET->px_per_note * i;
+      int bot_line_px = PIANO_ROLL_LABELS->total_px - PIANO_ROLL_LABELS->px_per_note * i;
       cairo_set_source_rgba (cr, 0, 0, 0, 0.8);
       cairo_set_line_width (cr, 1.0);
       cairo_move_to (cr, 0, bot_line_px);
@@ -133,8 +131,8 @@ drag_begin (GtkGestureDrag * gesture,
   jack_midi_event_t * ev = &MANUAL_PRESS_QUEUE->jack_midi_events[0];
   ev->time = 0;
   ev->size = 3;
-  start_y = PIANO_ROLL->piano_roll_labels->total_px - start_y;
-  self->note = start_y / PIANO_ROLL->piano_roll_labels->px_per_note;
+  start_y = PIANO_ROLL_LABELS->total_px - start_y;
+  self->note = start_y / PIANO_ROLL_LABELS->px_per_note;
   int vel = 90;
   if (!ev->buffer)
     ev->buffer = calloc (3, sizeof (jack_midi_data_t));
@@ -159,7 +157,7 @@ drag_update (GtkGestureDrag * gesture,
   int prev_note = self->note;
   self->note =
     CLAMP ((self->start_y - offset_y) /
-             PIANO_ROLL->piano_roll_labels->px_per_note,
+             PIANO_ROLL_LABELS->px_per_note,
            0,
            127);
   int vel = 90;

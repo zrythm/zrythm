@@ -125,7 +125,7 @@ main_window_widget_refresh (MainWindowWidget * self)
   /* setup piano roll */
   if (MW_BOT_DOCK_EDGE && PIANO_ROLL)
     {
-      piano_roll_widget_setup (PIANO_ROLL,
+      piano_roll_widget_setup (MW_PIANO_ROLL,
                                &PROJECT->piano_roll);
     }
 

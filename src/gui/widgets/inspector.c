@@ -24,6 +24,7 @@
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/inspector_ap.h"
+#include "gui/widgets/inspector_chord.h"
 #include "gui/widgets/inspector_midi.h"
 #include "gui/widgets/inspector_region.h"
 #include "gui/widgets/inspector_track.h"
@@ -46,6 +47,7 @@ inspector_widget_new ()
   self->region = inspector_region_widget_new ();
   self->ap = inspector_ap_widget_new ();
   self->midi = inspector_midi_widget_new ();
+  self->chord = inspector_chord_widget_new ();
   gtk_box_pack_start (GTK_BOX (self->track_box),
                       GTK_WIDGET (self->track),
                       Z_GTK_NO_EXPAND,
@@ -63,6 +65,11 @@ inspector_widget_new ()
                       0);
   gtk_box_pack_start (GTK_BOX (self->midi_box),
                       GTK_WIDGET (self->midi),
+                      Z_GTK_NO_EXPAND,
+                      Z_GTK_FILL,
+                      0);
+  gtk_box_pack_start (GTK_BOX (self->chord_box),
+                      GTK_WIDGET (self->chord),
                       Z_GTK_NO_EXPAND,
                       Z_GTK_FILL,
                       0);
@@ -101,8 +108,6 @@ inspector_widget_show_selections (
   int                      num_selections)
 {
 
-  g_message ("showing inspector selections");
-  timeline_selections_print (TIMELINE_SELECTIONS);
   InspectorWidget * self = MW_INSPECTOR;
   if (type == INSPECTOR_CHILD_REGION)
     gtk_widget_set_visible (GTK_WIDGET (self->region), 0);
@@ -112,38 +117,57 @@ inspector_widget_show_selections (
     gtk_widget_set_visible (GTK_WIDGET (self->track), 0);
   else if (type == INSPECTOR_CHILD_MIDI)
     gtk_widget_set_visible (GTK_WIDGET (self->midi), 0);
-  gtk_widget_set_visible (GTK_WIDGET (self->no_item_label), 0);
+  else if (type == INSPECTOR_CHILD_CHORD)
+    gtk_widget_set_visible (GTK_WIDGET (self->chord), 0);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->no_item_label), 0);
   if (num_selections > 0)
     {
       if (type == INSPECTOR_CHILD_REGION)
         {
-          inspector_region_widget_show_regions (self->region,
-                                                (Region **) selections,
-                                                num_selections);
-          gtk_widget_set_visible (GTK_WIDGET (self->region), 1);
-          g_message ("showing region");
+          inspector_region_widget_show_regions (
+            self->region,
+            (Region **) selections,
+            num_selections);
+          gtk_widget_set_visible (
+            GTK_WIDGET (self->region), 1);
         }
       else if (type == INSPECTOR_CHILD_AP)
         {
-          inspector_ap_widget_show_aps (self->ap,
-                                        (AutomationPoint **) selections,
-                                        num_selections);
-          gtk_widget_set_visible (GTK_WIDGET (self->ap), 1);
+          inspector_ap_widget_show_aps (
+            self->ap,
+            (AutomationPoint **) selections,
+            num_selections);
+          gtk_widget_set_visible (
+            GTK_WIDGET (self->ap), 1);
         }
       else if (type == INSPECTOR_CHILD_MIDI)
         {
-          inspector_midi_widget_show_midi (self->midi,
-                                           (MidiNote **) selections,
-                                           num_selections);
-          gtk_widget_set_visible (GTK_WIDGET (self->midi), 1);
+          inspector_midi_widget_show_midi (
+            self->midi,
+            (MidiNote **) selections,
+            num_selections);
+          gtk_widget_set_visible (
+            GTK_WIDGET (self->midi), 1);
 
         }
       else if (type == INSPECTOR_CHILD_TRACK)
         {
-          inspector_track_widget_show_tracks (self->track,
-                                        (Track **) selections,
-                                        num_selections);
-          gtk_widget_set_visible (GTK_WIDGET (self->track), 1);
+          inspector_track_widget_show_tracks (
+            self->track,
+            (Track **) selections,
+            num_selections);
+          gtk_widget_set_visible (
+            GTK_WIDGET (self->track), 1);
+        }
+      else if (type == INSPECTOR_CHILD_CHORD)
+        {
+          inspector_chord_widget_show_chords (
+            self->chord,
+            (Chord **) selections,
+            num_selections);
+          gtk_widget_set_visible (
+            GTK_WIDGET (self->chord), 1);
         }
     }
 
@@ -151,8 +175,10 @@ inspector_widget_show_selections (
   if (!gtk_widget_get_visible (GTK_WIDGET (self->region)) &&
       !gtk_widget_get_visible (GTK_WIDGET (self->midi)) &&
       !gtk_widget_get_visible (GTK_WIDGET (self->track)) &&
+      !gtk_widget_get_visible (GTK_WIDGET (self->chord)) &&
       !gtk_widget_get_visible (GTK_WIDGET (self->ap)))
-    gtk_widget_set_visible (GTK_WIDGET (self->no_item_label), 1);
+    gtk_widget_set_visible (
+      GTK_WIDGET (self->no_item_label), 1);
 }
 
 static void
@@ -190,6 +216,10 @@ inspector_widget_class_init (
     klass,
     InspectorWidget,
     midi_box);
+  gtk_widget_class_bind_template_child (
+    klass,
+    InspectorWidget,
+    chord_box);
   gtk_widget_class_bind_template_child (
     klass,
     InspectorWidget,
