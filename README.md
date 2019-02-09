@@ -6,8 +6,8 @@ It is written in C and it uses the GTK+3 toolkit. Bits and pieces are taken from
 More info at https://www.zrythm.org
 
 ## Current state
-![screenshot 1](https://www.zrythm.org/img/Screenshot_20190105_165238.png)
-![screenshot 2](https://www.zrythm.org/img/Screenshot_20190105_165002.png)
+![screenshot 1](https://www.zrythm.org/img/Screenshot%20from%202019-02-07%2018-19-51.png)
+![screenshot 2](https://www.zrythm.org/img/Screenshot%20from%202019-02-07%2018-20-47.png)
 
 ## Currently supported protocols:
 - LV2

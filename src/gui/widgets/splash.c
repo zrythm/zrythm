@@ -46,7 +46,7 @@ splash_window_widget_new (ZrythmApp * app)
 
   g_object_set (gtk_settings_get_default (),
                 "gtk-icon-theme-name",
-                "breeze-dark-z",
+                "breeze-dark",
                 NULL);
 
   /*const char * path[1];*/
