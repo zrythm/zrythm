@@ -132,7 +132,8 @@ draw_cb (GtkWidget *widget, cairo_t *cr,
  * Sets the appropriate cursor.
  */
 static void
-on_motion (GtkWidget * widget, GdkEventMotion *event)
+on_motion (GtkWidget * widget,
+           GdkEventMotion *event)
 {
   RulerMarkerWidget * self =
     Z_RULER_MARKER_WIDGET (widget);
@@ -144,18 +145,23 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
 
   if (event->type == GDK_MOTION_NOTIFY)
     {
-      if (event->x < RESIZE_CURSOR_SPACE)
+      if (self->type ==
+            RULER_MARKER_TYPE_SONG_START ||
+          self->type ==
+            RULER_MARKER_TYPE_LOOP_START)
         {
-          self->cursor_state = UI_CURSOR_STATE_RESIZE_L;
-          if (trw->action != UI_OVERLAY_ACTION_MOVING)
-            ui_set_cursor (widget, "w-resize");
+          self->cursor_state =
+            UI_CURSOR_STATE_RESIZE_L;
+          ui_set_cursor (widget, "w-resize");
         }
-      else if (event->x > allocation.width -
-                 RESIZE_CURSOR_SPACE)
+      else if (self->type ==
+                 RULER_MARKER_TYPE_SONG_END ||
+               self->type ==
+                 RULER_MARKER_TYPE_LOOP_END)
         {
-          self->cursor_state = UI_CURSOR_STATE_RESIZE_R;
-          if (trw->action != UI_OVERLAY_ACTION_MOVING)
-            ui_set_cursor (widget, "e-resize");
+          self->cursor_state =
+            UI_CURSOR_STATE_RESIZE_R;
+          ui_set_cursor (widget, "e-resize");
         }
       else
         {
@@ -173,7 +179,7 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
             }
         }
     }
-  /* if leaving */
+  /*[> if leaving <]*/
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
       if (trw->action != UI_OVERLAY_ACTION_MOVING &&

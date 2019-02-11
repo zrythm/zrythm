@@ -134,15 +134,18 @@ ruler_range_widget_init (RulerRangeWidget * self)
                          GDK_ALL_EVENTS_MASK);
 
   /* connect signals */
-  g_signal_connect (GTK_WIDGET (self),
-                    "draw",
-                    G_CALLBACK (draw_cb), NULL);
-  g_signal_connect (G_OBJECT (self), "enter-notify-event",
-                    G_CALLBACK (on_motion),  self);
-  g_signal_connect (G_OBJECT(self), "leave-notify-event",
-                    G_CALLBACK (on_motion),  self);
-  g_signal_connect (G_OBJECT(self), "motion-notify-event",
-                    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    GTK_WIDGET (self), "draw",
+    G_CALLBACK (draw_cb), NULL);
+  g_signal_connect (
+    G_OBJECT (self), "enter-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self), "leave-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self), "motion-notify-event",
+    G_CALLBACK (on_motion),  self);
 }
 
 static void

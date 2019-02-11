@@ -188,10 +188,47 @@ drag_begin (GtkGestureDrag *       gesture,
                       &PROJECT->range_2) <= 0;
 
   guint height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
 
+  RulerMarkerWidget * hit_marker =
+    Z_RULER_MARKER_WIDGET (
+      ui_get_hit_child (
+        GTK_CONTAINER (self),
+        start_x,
+        start_y,
+        RULER_MARKER_WIDGET_TYPE));
+
+  /* if one of the markers hit */
+  if (hit_marker)
+    {
+      if (hit_marker == self->song_start)
+        {
+          self->action =
+            UI_OVERLAY_ACTION_STARTING_MOVING;
+          self->target = TRW_TARGET_SONG_START;
+        }
+      else if (hit_marker == self->song_end)
+        {
+          self->action =
+            UI_OVERLAY_ACTION_STARTING_MOVING;
+          self->target = TRW_TARGET_SONG_END;
+        }
+      else if (hit_marker == self->loop_start)
+        {
+          self->action =
+            UI_OVERLAY_ACTION_STARTING_MOVING;
+          self->target = TRW_TARGET_LOOP_START;
+        }
+      else if (hit_marker == self->loop_end)
+        {
+          self->action =
+            UI_OVERLAY_ACTION_STARTING_MOVING;
+          self->target = TRW_TARGET_LOOP_END;
+        }
+    }
   /* if lower 3/4ths */
-  if (start_y > (height * 1) / 4)
+  else if (start_y > (height * 1) / 4)
     {
       Position pos;
       ui_px_to_pos (
@@ -226,7 +263,6 @@ drag_begin (GtkGestureDrag *       gesture,
           PROJECT->has_range = 1;
           self->action =
             UI_OVERLAY_ACTION_RESIZING_R;
-          self->target = TRW_TARGET_RANGE;
           ui_px_to_pos (
             start_x,
             &PROJECT->range_1,
@@ -238,6 +274,7 @@ drag_begin (GtkGestureDrag *       gesture,
           gtk_widget_set_visible (
             GTK_WIDGET (self->range), 1);
         }
+      self->target = TRW_TARGET_RANGE;
     }
   self->last_offset_x = 0;
 }
@@ -312,6 +349,38 @@ drag_update (GtkGestureDrag * gesture,
             &pos,
             1);
           transport_move_playhead (&pos, 1);
+        }
+      else if (self->target == TRW_TARGET_LOOP_START)
+        {
+          ui_px_to_pos (
+            self->start_x + offset_x,
+            &TRANSPORT->loop_start_pos,
+            1);
+          transport_update_position_frames ();
+        }
+      else if (self->target == TRW_TARGET_LOOP_END)
+        {
+          ui_px_to_pos (
+            self->start_x + offset_x,
+            &TRANSPORT->loop_end_pos,
+            1);
+          transport_update_position_frames ();
+        }
+      else if (self->target == TRW_TARGET_SONG_START)
+        {
+          ui_px_to_pos (
+            self->start_x + offset_x,
+            &TRANSPORT->start_marker_pos,
+            1);
+          transport_update_position_frames ();
+        }
+      else if (self->target == TRW_TARGET_SONG_END)
+        {
+          ui_px_to_pos (
+            self->start_x + offset_x,
+            &TRANSPORT->end_marker_pos,
+            1);
+          transport_update_position_frames ();
         }
     } /* endif MOVING */
 
