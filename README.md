@@ -13,7 +13,7 @@ More info at https://www.zrythm.org
 - LV2
 
 ## Installation
-### Arch Linux/Manjaro
+### pacman
 Substitute `yaourt` with your AUR-compatible package manager
 ```
 # stable
@@ -22,20 +22,13 @@ yaourt -S zrythm
 # latest (unstable)
 yaourt -S zrythm-git
 ```
-### Debian/Linux Mint/Ubuntu
+### apt
 add the public key
 ```
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 1D597D35
 ```
-add the appropriate repository
+add the repository
 ```
-# for Ubuntu 18.04 LTS/Linux Mint 19
-sudo apt-add-repository "deb https://apt.alextee.org/ubuntu bionic main"
-
-# for Ubuntu 18.10
-sudo apt-add-repository "deb https://apt.alextee.org/ubuntu cosmic main"
-
-# for Debian Buster/Devuan Beowulf
 sudo apt-add-repository "deb https://apt.alextee.org/debian buster main"
 ```
 
@@ -55,7 +48,7 @@ sudo apt-add-repository universe
 `
 
 _Note3: For latest (unstable) version, install this directly by double clicking or by using `sudo dpkg -i` and then `sudo apt-get -f install`:_ https://git.zrythm.org/zrythm/zrythm/-/jobs/artifacts/master/download?job=build_deb_64_unstable
-### Fedora 27/28/29
+### rpm
 enable dnf repository
 ```
 sudo dnf -y copr enable alextee/zrythm
@@ -108,11 +101,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ## Support
-Donations of any amount are accepted (and appreciated) below:
+Donations of any amount are welcome below:
 
 ### Paypal
 https://www.paypal.me/alextee90
 ### LiberaPay
 https://liberapay.com/alextee/
 ### Bitcoin
-coming soon
+39DP4txZ1ig5zGdbwCURtRkzX4xLez952M

@@ -1,7 +1,5 @@
 /*
- * utils/ui.c - GTK/GDK utils
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -32,10 +30,12 @@
 void
 ui_set_cursor (GtkWidget * widget, char * name)
 {
-  GdkWindow * win = gtk_widget_get_parent_window (widget);
-  GdkCursor * cursor = gdk_cursor_new_from_name (
-                                gdk_display_get_default (),
-                                name);
+  GdkWindow * win =
+    gtk_widget_get_parent_window (widget);
+  GdkCursor * cursor =
+    gdk_cursor_new_from_name (
+      gdk_display_get_default (),
+      name);
   gdk_window_set_cursor(win, cursor);
 }
 
@@ -46,12 +46,14 @@ void
 ui_show_error_message (GtkWindow * parent_window,
                        const char * message)
 {
-  GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
-  GtkWidget * dialog = gtk_message_dialog_new (parent_window,
-                                   flags,
-                                   GTK_MESSAGE_ERROR,
-                                   GTK_BUTTONS_CLOSE,
-                                   message);
+  GtkDialogFlags flags =
+    GTK_DIALOG_DESTROY_WITH_PARENT;
+  GtkWidget * dialog =
+    gtk_message_dialog_new (parent_window,
+      flags,
+      GTK_MESSAGE_ERROR,
+      GTK_BUTTONS_CLOSE,
+      message);
   gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (dialog);
 }
@@ -60,10 +62,11 @@ ui_show_error_message (GtkWindow * parent_window,
  * Returns the matching hit child, or NULL.
  */
 GtkWidget *
-ui_get_hit_child (GtkContainer * parent,
-                  double         x, ///< x in parent space
-                  double         y, ///< y in parent space
-                  GType          type) ///< type to look for
+ui_get_hit_child (
+  GtkContainer * parent,
+  double         x, ///< x in parent space
+  double         y, ///< y in parent space
+  GType          type) ///< type to look for
 {
   GList *children, *iter;
 
@@ -81,13 +84,13 @@ ui_get_hit_child (GtkContainer * parent,
                                  &allocation);
 
       gint wx, wy;
-      gtk_widget_translate_coordinates(
-                GTK_WIDGET (parent),
-                GTK_WIDGET (widget),
-                x,
-                y,
-                &wx,
-                &wy);
+      gtk_widget_translate_coordinates (
+        GTK_WIDGET (parent),
+        GTK_WIDGET (widget),
+        x,
+        y,
+        &wx,
+        &wy);
 
       /* if hit */
       if (wx >= 0 &&

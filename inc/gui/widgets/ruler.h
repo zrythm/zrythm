@@ -1,7 +1,5 @@
 /*
- * inc/gui/widgets/ruler.h - Ruler
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -17,6 +15,10 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * \file Ruler parent class.
  */
 
 #ifndef __GUI_WIDGETS_RULER_H__
@@ -39,13 +41,17 @@ G_DECLARE_DERIVABLE_TYPE (RulerWidget,
     ruler_widget_get_private (Z_RULER_WIDGET (self));
 
 /**
- * pixels to draw between each beat,
- * before being adjusted for zoom.
- * used by the ruler and timeline
+ * Pixels to draw between each beat, before being
+ * adjusted for zoom.
+ *
+ * Used by the ruler and timeline.
  */
 #define DEFAULT_PX_PER_TICK 0.03f
 
-#define SPACE_BEFORE_START 10 /* pixels to put before 1st bar */
+/**
+ * Pixels to put before 1st bar.
+ */
+#define SPACE_BEFORE_START 10
 
 #define MIN_ZOOM_LEVEL 0.2f
 #define MAX_ZOOM_LEVEL 60.f

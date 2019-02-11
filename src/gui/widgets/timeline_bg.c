@@ -1,7 +1,5 @@
 /*
- * gui/widgets/timeline_bg.c - Timeline background
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -17,6 +15,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * \file
+ *
+ * Timeline background inheriting from arranger_bg.
  */
 
 #include "zrythm.h"
@@ -50,7 +54,10 @@ G_DEFINE_TYPE (TimelineBgWidget,
                ARRANGER_BG_WIDGET_TYPE)
 
 static gboolean
-draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
+timeline_bg_draw_cb (
+  GtkWidget *widget,
+  cairo_t *cr,
+  gpointer data)
 {
   GdkRectangle rect;
   gdk_cairo_get_clip_rectangle (cr,
@@ -157,6 +164,7 @@ timeline_bg_widget_class_init (TimelineBgWidgetClass * _klass)
 static void
 timeline_bg_widget_init (TimelineBgWidget *self )
 {
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), NULL);
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (timeline_bg_draw_cb), NULL);
 }

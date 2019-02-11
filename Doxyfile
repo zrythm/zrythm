@@ -1,22 +1,3 @@
-#
-#  Copyright (C) 2018-2019 Alexandros Theodotou
-#
-#  This file is part of Zrythm
-#
-#  Zrythm is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  Zrythm is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-#
-
 # Doxyfile 1.8.13
 
 # This file describes the settings to be used by the documentation system
@@ -63,8 +44,8 @@ PROJECT_NUMBER         = 0.1
 # for a project that appears at the top of each page and should give viewer a
 # quick idea about the purpose of the project. Keep the description short.
 
-PROJECT_BRIEF          = "Zrythm is a modular music production system \
-                          for electronic music"
+PROJECT_BRIEF          = "Zrythm is a free GNU/Linux music \
+  production system (DAW)"
 
 # With the PROJECT_LOGO tag one can specify a logo or an icon that is included
 # in the documentation. The maximum height of the logo should not exceed 55
@@ -1633,7 +1614,7 @@ SERVER_BASED_SEARCH    = NO
 # search results.
 #
 # Doxygen ships with an example indexer (doxyindexer) and search engine
-# (doxysearch.cgi) which are based on the open source search engine library
+# (doxysearch.cgi) which are based on the free search engine library
 # Xapian (see: http://xapian.org/).
 #
 # See the section "External Indexing and Searching" for details.
@@ -1646,7 +1627,7 @@ EXTERNAL_SEARCH        = NO
 # which will return the search results when EXTERNAL_SEARCH is enabled.
 #
 # Doxygen ships with an example indexer (doxyindexer) and search engine
-# (doxysearch.cgi) which are based on the open source search engine library
+# (doxysearch.cgi) which are based on the free search engine library
 # Xapian (see: http://xapian.org/). See the section "External Indexing and
 # Searching" for details.
 # This tag requires that the tag SEARCHENGINE is set to YES.

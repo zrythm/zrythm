@@ -1,7 +1,5 @@
 /*
- * gui/widgets/arranger.c - The timeline containing regions
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -17,6 +15,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * \file
+ *
+ * Arranger parent class containing common
+ * logic for the timeline and piano roll.
  */
 
 #include "zrythm.h"
@@ -406,7 +411,8 @@ on_key_action (GtkWidget *widget,
 /**
  * On button press.
  *
- * This merely sets the number of clicks. It is always called
+ * This merely sets the number of clicks and
+ * objects clicked on. It is always called
  * before drag_begin, so the logic is done in drag_begin.
  */
 static void
@@ -449,6 +455,10 @@ drag_begin (GtkGestureDrag * gesture,
   GET_ARRANGER_ALIASES (self);
 
   /* get hit arranger objects */
+  /* FIXME move this part to multipress, makes
+   * more sense and makes this function smaller/
+   * easier to understand.
+   */
   MidiNoteWidget *        midi_note_widget = NULL;
   RegionWidget *          rw = NULL;
   AutomationCurveWidget * ac_widget = NULL;
@@ -535,12 +545,24 @@ drag_begin (GtkGestureDrag * gesture,
       /* single click */
       if (ar_prv->n_press == 1)
         {
-          /* area selection */
+          /* selection */
           ar_prv->action =
             UI_OVERLAY_ACTION_STARTING_SELECTION;
 
-          /* deselect all */
-          arranger_widget_select_all (self, 0);
+          /* if timeline, set either selecting
+           * objects or selecting range */
+          if (timeline)
+            {
+              timeline_arranger_widget_set_select_type (
+                timeline,
+                start_y);
+            }
+          /* midi arranger only selects objects */
+          else if (midi_arranger)
+            {
+              /* deselect all */
+              arranger_widget_select_all (self, 0);
+            }
         }
       /* double click, something will be created */
       else if (ar_prv->n_press == 2)
@@ -662,13 +684,13 @@ drag_update (GtkGestureDrag * gesture,
   /* if drawing a selection */
   if (ar_prv->action == UI_OVERLAY_ACTION_SELECTING)
     {
-      /* deselect all */
-      arranger_widget_select_all (self, 0);
-
       /* find and select objects inside selection */
+      /* NOTE: timeline might select a range or
+       * objects depending on y
+       */
       if (timeline)
         {
-          timeline_arranger_widget_find_and_select_items (
+          timeline_arranger_widget_select (
             timeline,
             offset_x,
             offset_y);

@@ -1,7 +1,5 @@
 /*
- * gui/widgets/timeline_ruler.c - Ruler
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -70,7 +68,7 @@ timeline_ruler_widget_set_ruler_range_position (
   allocation->y = 0;
   allocation->height =
     gtk_widget_get_allocated_height (
-      GTK_WIDGET (self)) / 2;
+      GTK_WIDGET (self)) / 4;
 }
 
 void
@@ -125,8 +123,8 @@ drag_begin (GtkGestureDrag *       gesture,
   guint height =
     gtk_widget_get_allocated_height (GTK_WIDGET (self));
 
-  /* if lower half */
-  if (start_y > height / 2)
+  /* if lower 3/4ths */
+  if (start_y > (height * 1) / 4)
     {
       Position pos;
       ui_px_to_pos (
@@ -138,7 +136,7 @@ drag_begin (GtkGestureDrag *       gesture,
         UI_OVERLAY_ACTION_STARTING_MOVING;
       self->target = TRW_TARGET_PLAYHEAD;
     }
-  else /* if upper half */
+  else /* if upper 1/4th */
     {
       /* check if range is hit */
       int range_hit =

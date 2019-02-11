@@ -1,7 +1,5 @@
 /*
- * inc/gui/widgets/ruler.h - Ruler
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -17,6 +15,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * \file
+ *
+ * Timeline ruler derived from base ruler.
  */
 
 #ifndef __GUI_WIDGETS_TIMELINE_RULER_H__
@@ -39,10 +43,17 @@ G_DECLARE_FINAL_TYPE (TimelineRulerWidget,
 
 typedef struct _RulerRangeWidget RulerRangeWidget;
 
+/**
+ * The timeline ruler widget target acting upon.
+ */
 typedef enum TRWTarget
 {
   TRW_TARGET_PLAYHEAD,
-  TRW_TARGET_RANGE,
+  TRW_TARGET_LOOP_START,
+  TRW_TARGET_LOOP_END,
+  TRW_TARGET_SONG_START,
+  TRW_TARGET_SONG_END,
+  TRW_TARGET_RANGE, ///< FIXME delete
 } TRWTarget;
 
 typedef struct _TimelineRulerWidget

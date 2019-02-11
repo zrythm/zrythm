@@ -51,6 +51,15 @@ typedef struct AutomationCurve AutomationCurve;
 typedef struct _RegionWidget RegionWidget;
 typedef struct Chord Chord;
 
+/**
+ * The selection type if current action is SELECTING.
+ */
+typedef enum SelectionType
+{
+  TA_SELECTION_TYPE_OBJECTS, ///< selecting objects
+  TA_SELECTION_TYPE_RANGE, ///< selecting a range
+} SelectionType;
+
 typedef struct _TimelineArrangerWidget
 {
   ArrangerWidget           parent_instance;
@@ -68,6 +77,7 @@ typedef struct _TimelineArrangerWidget
   Position                 region_start_poses[600]; ///< region initial start positions, for moving regions
   Position                 chord_start_poses[600]; ///< region initial start positions, for moving regions
   Position                 ap_poses[600]; ///< for moving regions
+  SelectionType            selection_type;
 } TimelineArrangerWidget;
 
 /**
@@ -86,6 +96,15 @@ timeline_arranger_widget_get_track_at_y (double y);
 
 AutomationTrack *
 timeline_arranger_widget_get_automation_track_at_y (double y);
+
+/**
+ * Determines the selection time (objects/range)
+ * and sets it.
+ */
+void
+timeline_arranger_widget_set_select_type (
+  TimelineArrangerWidget * self,
+  double                   y);
 
 RegionWidget *
 timeline_arranger_widget_get_hit_region (
@@ -192,8 +211,13 @@ timeline_arranger_widget_create_chord (
   Track *                  track,
   Position *               pos);
 
+/**
+ * First determines the selection type (objects/
+ * range), then either finds and selects items or
+ * selects a range.
+ */
 void
-timeline_arranger_widget_find_and_select_items (
+timeline_arranger_widget_select (
   TimelineArrangerWidget * self,
   double                   offset_x,
   double                   offset_y);

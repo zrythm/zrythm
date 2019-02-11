@@ -1,7 +1,5 @@
 /*
- * gui/widgets/arranger_bg.c - Arranger background
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -31,6 +29,7 @@
 #include "gui/widgets/piano_roll.h"
 #include "gui/widgets/piano_roll_labels.h"
 #include "gui/widgets/ruler.h"
+#include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/tracklist.h"
@@ -164,7 +163,14 @@ arranger_bg_widget_draw_selections (
   offset_y = ar_prv->start_y + ar_prv->last_offset_y > 0 ?
     ar_prv->last_offset_y :
     1 - ar_prv->start_y;
-  if (ar_prv->action == UI_OVERLAY_ACTION_SELECTING)
+
+  /* if action is selecting and not selecting range
+   * (in the case of timeline */
+  if (ar_prv->action ==
+        UI_OVERLAY_ACTION_SELECTING &&
+      !(MW_TIMELINE->selection_type ==
+          TA_SELECTION_TYPE_RANGE &&
+        self == Z_ARRANGER_WIDGET (MW_TIMELINE)))
     {
       z_cairo_draw_selection (cr,
                               ar_prv->start_x,

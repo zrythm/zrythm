@@ -1,6 +1,4 @@
 /*
- * gui/widgets/ruler_range.h - Ruler range box.
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -17,6 +15,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * \file
+ *
+ * Ruler range box.
  */
 
 #ifndef __GUI_WIDGETS_RULER_RANGE_H__

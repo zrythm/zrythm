@@ -265,16 +265,17 @@ midi_arranger_widget_find_and_select_midi_notes (
   double               offset_x,
   double               offset_y)
 {
-  ArrangerWidget * aw = Z_ARRANGER_WIDGET (self);
-  ArrangerWidgetPrivate * ar_prv =
-    arranger_widget_get_private (
-      Z_ARRANGER_WIDGET (self));
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  /* deselect all */
+  arranger_widget_select_all (
+    Z_ARRANGER_WIDGET (self), 0);
 
   /* find enclosed midi notes */
   GtkWidget *    midi_note_widgets[800];
   int            num_midi_note_widgets = 0;
   arranger_widget_get_hit_widgets_in_range (
-    aw,
+    Z_ARRANGER_WIDGET (self),
     MIDI_NOTE_WIDGET_TYPE,
     ar_prv->start_x,
     ar_prv->start_y,
