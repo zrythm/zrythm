@@ -42,6 +42,7 @@ G_DECLARE_FINAL_TYPE (TimelineRulerWidget,
 #define MW_RULER MW_CENTER_DOCK->ruler
 
 typedef struct _RulerRangeWidget RulerRangeWidget;
+typedef struct _RulerMarkerWidget RulerMarkerWidget;
 
 /**
  * The timeline ruler widget target acting upon.
@@ -62,6 +63,15 @@ typedef struct _TimelineRulerWidget
   RulerRangeWidget *       range;
 
   /**
+   * Markers.
+   */
+  RulerMarkerWidget *      song_start;
+  RulerMarkerWidget *      song_end;
+  RulerMarkerWidget *      loop_start;
+  RulerMarkerWidget *      loop_end;
+  RulerMarkerWidget *      cue_point;
+
+  /**
    * Dragging playhead or creating range, etc.
    */
   UiOverlayAction          action;
@@ -77,6 +87,12 @@ void
 timeline_ruler_widget_set_ruler_range_position (
   TimelineRulerWidget * self,
   RulerRangeWidget *    rr,
+  GtkAllocation *       allocation);
+
+void
+timeline_ruler_widget_set_ruler_marker_position (
+  TimelineRulerWidget * self,
+  RulerMarkerWidget *    rr,
   GtkAllocation *       allocation);
 
 #endif

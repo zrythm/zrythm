@@ -17,6 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Ruler widget.
+ */
+
 #include <math.h>
 
 #include "actions/actions.h"
@@ -31,6 +37,7 @@
 #include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/ruler_playhead.h"
+#include "gui/widgets/ruler_marker.h"
 #include "gui/widgets/ruler_range.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_ruler.h"
@@ -49,6 +56,7 @@ G_DEFINE_TYPE_WITH_PRIVATE (RulerWidget,
 #define FONT "Monospace"
 #define FONT_SIZE 14
 
+     /* FIXME delete these, see ruler_marker.h */
 #define START_MARKER_TRIANGLE_HEIGHT 8
 #define START_MARKER_TRIANGLE_WIDTH 8
 #define Q_HEIGHT 12
@@ -88,6 +96,13 @@ get_child_position (GtkOverlay   *overlay,
         Z_RULER_RANGE_WIDGET (widget),
         allocation);
     }
+  else if (Z_IS_RULER_MARKER_WIDGET (widget))
+    {
+      timeline_ruler_widget_set_ruler_marker_position (
+        Z_TIMELINE_RULER_WIDGET (self),
+        Z_RULER_MARKER_WIDGET (widget),
+        allocation);
+    }
 
   return TRUE;
 }
@@ -122,33 +137,6 @@ ruler_draw_cb (GtkWidget * widget,
   /*width = gtk_widget_get_allocated_width (widget);*/
   guint height =
     gtk_widget_get_allocated_height (widget);
-
-  /* get positions in px */
-  int cue_pos_in_px;
-  cue_pos_in_px =
-    ui_pos_to_px (
-      &TRANSPORT->cue_pos,
-      0);
-  int start_marker_pos_px;
-  start_marker_pos_px =
-    ui_pos_to_px (
-      &TRANSPORT->start_marker_pos,
-      0);
-  int end_marker_pos_px;
-  end_marker_pos_px =
-    ui_pos_to_px (
-      &TRANSPORT->end_marker_pos,
-      0);
-  int loop_start_pos_px;
-  loop_start_pos_px =
-    ui_pos_to_px (
-      &TRANSPORT->loop_start_pos,
-      0);
-  int loop_end_pos_px;
-  loop_end_pos_px =
-    ui_pos_to_px (
-      &TRANSPORT->loop_end_pos,
-      0);
 
   gtk_render_background (context, cr,
                          rect.x, rect.y,
@@ -187,69 +175,6 @@ ruler_draw_cb (GtkWidget * widget,
           cairo_move_to (cr, draw_pos, 0);
           cairo_line_to (cr, draw_pos, height / 4);
           cairo_stroke (cr);
-      }
-      else if (0)
-        {
-
-        }
-    if (i == cue_pos_in_px)
-      {
-        cairo_set_source_rgb (cr, 0, 0.6, 0.9);
-        cairo_set_line_width (cr, 2);
-        cairo_move_to (
-          cr,
-          draw_pos,
-          ((height - PLAYHEAD_TRIANGLE_HEIGHT) - Q_HEIGHT) - 1);
-        cairo_line_to (
-          cr,
-          draw_pos + Q_WIDTH,
-          ((height - PLAYHEAD_TRIANGLE_HEIGHT) - Q_HEIGHT / 2) - 1);
-        cairo_line_to (
-          cr,
-          draw_pos,
-          (height - PLAYHEAD_TRIANGLE_HEIGHT) - 1);
-        cairo_fill (cr);
-      }
-    if (i == start_marker_pos_px)
-      {
-        cairo_set_source_rgb (cr, 1, 0, 0);
-        cairo_set_line_width (cr, 2);
-        cairo_move_to (cr, draw_pos, 0);
-        cairo_line_to (cr, draw_pos + START_MARKER_TRIANGLE_WIDTH,
-                       0);
-        cairo_line_to (cr, draw_pos,
-                       START_MARKER_TRIANGLE_HEIGHT);
-        cairo_fill (cr);
-      }
-    if (i == end_marker_pos_px)
-      {
-        cairo_set_source_rgb (cr, 1, 0, 0);
-        cairo_set_line_width (cr, 2);
-        cairo_move_to (cr, draw_pos - START_MARKER_TRIANGLE_WIDTH, 0);
-        cairo_line_to (cr, draw_pos, 0);
-        cairo_line_to (cr, draw_pos, START_MARKER_TRIANGLE_HEIGHT);
-        cairo_fill (cr);
-      }
-    if (i == loop_start_pos_px)
-      {
-        cairo_set_source_rgb (cr, 0, 0.9, 0.7);
-        cairo_set_line_width (cr, 2);
-        cairo_move_to (cr, draw_pos, START_MARKER_TRIANGLE_HEIGHT + 1);
-        cairo_line_to (cr, draw_pos, START_MARKER_TRIANGLE_HEIGHT * 2 + 1);
-        cairo_line_to (cr, draw_pos + START_MARKER_TRIANGLE_WIDTH,
-                       START_MARKER_TRIANGLE_HEIGHT + 1);
-        cairo_fill (cr);
-      }
-    if (i == loop_end_pos_px)
-      {
-        cairo_set_source_rgb (cr, 0, 0.9, 0.7);
-        cairo_set_line_width (cr, 2);
-        cairo_move_to (cr, draw_pos, START_MARKER_TRIANGLE_HEIGHT + 1);
-        cairo_line_to (cr, draw_pos - START_MARKER_TRIANGLE_WIDTH,
-                       START_MARKER_TRIANGLE_HEIGHT + 1);
-        cairo_line_to (cr, draw_pos,
-                       START_MARKER_TRIANGLE_HEIGHT * 2 + 1);
-        cairo_fill (cr);
       }
   }
 

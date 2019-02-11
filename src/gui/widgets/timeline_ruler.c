@@ -20,7 +20,10 @@
 #include "audio/engine.h"
 #include "audio/position.h"
 #include "audio/transport.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/ruler.h"
+#include "gui/widgets/ruler_marker.h"
 #include "gui/widgets/ruler_range.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "project.h"
@@ -69,6 +72,70 @@ timeline_ruler_widget_set_ruler_range_position (
   allocation->height =
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self)) / 4;
+}
+
+void
+timeline_ruler_widget_set_ruler_marker_position (
+  TimelineRulerWidget * self,
+  RulerMarkerWidget *    rm,
+  GtkAllocation *       allocation)
+{
+  switch (rm->type)
+    {
+    case RULER_MARKER_TYPE_SONG_START:
+      allocation->x =
+        ui_pos_to_px (
+          &TRANSPORT->start_marker_pos,
+          1);
+      allocation->y = 0;
+      allocation->width = RULER_MARKER_SIZE;
+      allocation->height = RULER_MARKER_SIZE;
+      break;
+    case RULER_MARKER_TYPE_SONG_END:
+      allocation->x =
+        ui_pos_to_px (
+          &TRANSPORT->end_marker_pos,
+          1) - RULER_MARKER_SIZE;
+      allocation->y = 0;
+      allocation->width = RULER_MARKER_SIZE;
+      allocation->height = RULER_MARKER_SIZE;
+      break;
+    case RULER_MARKER_TYPE_LOOP_START:
+      allocation->x =
+        ui_pos_to_px (
+          &TRANSPORT->loop_start_pos,
+          1);
+      allocation->y = RULER_MARKER_SIZE + 1;
+      allocation->width = RULER_MARKER_SIZE;
+      allocation->height = RULER_MARKER_SIZE;
+      break;
+    case RULER_MARKER_TYPE_LOOP_END:
+      allocation->x =
+        ui_pos_to_px (
+          &TRANSPORT->loop_end_pos,
+          1) - RULER_MARKER_SIZE;
+      allocation->y = RULER_MARKER_SIZE + 1;
+      allocation->width = RULER_MARKER_SIZE;
+      allocation->height = RULER_MARKER_SIZE;
+      break;
+    case RULER_MARKER_TYPE_CUE_POINT:
+      allocation->x =
+        ui_pos_to_px (
+          &TRANSPORT->cue_pos,
+          1);
+      if (MAIN_WINDOW && MW_RULER)
+        {
+      allocation->y =
+        ((gtk_widget_get_allocated_height (
+          GTK_WIDGET (MW_RULER)) - RULER_MARKER_SIZE) - CUE_MARKER_HEIGHT) - 1;
+        }
+      else
+        allocation->y = RULER_MARKER_SIZE *2;
+      allocation->width = CUE_MARKER_WIDTH;
+      allocation->height = CUE_MARKER_HEIGHT;
+      break;
+    }
+
 }
 
 void
@@ -280,6 +347,38 @@ timeline_ruler_widget_init (
     ruler_range_widget_new ();
   gtk_overlay_add_overlay (GTK_OVERLAY (self),
                            GTK_WIDGET (self->range));
+
+  /* add all the markers */
+  self->song_start =
+    ruler_marker_widget_new (
+      RULER_MARKER_TYPE_SONG_START);
+  gtk_overlay_add_overlay (
+    GTK_OVERLAY (self),
+    GTK_WIDGET (self->song_start));
+  self->song_end =
+    ruler_marker_widget_new (
+      RULER_MARKER_TYPE_SONG_END);
+  gtk_overlay_add_overlay (
+    GTK_OVERLAY (self),
+    GTK_WIDGET (self->song_end));
+  self->loop_start =
+    ruler_marker_widget_new (
+      RULER_MARKER_TYPE_LOOP_START);
+  gtk_overlay_add_overlay (
+    GTK_OVERLAY (self),
+    GTK_WIDGET (self->loop_start));
+  self->loop_end =
+    ruler_marker_widget_new (
+      RULER_MARKER_TYPE_LOOP_END);
+  gtk_overlay_add_overlay (
+    GTK_OVERLAY (self),
+    GTK_WIDGET (self->loop_end));
+  self->cue_point =
+    ruler_marker_widget_new (
+      RULER_MARKER_TYPE_CUE_POINT);
+  gtk_overlay_add_overlay (
+    GTK_OVERLAY (self),
+    GTK_WIDGET (self->cue_point));
 
   self->drag = GTK_GESTURE_DRAG (
     gtk_gesture_drag_new (GTK_WIDGET (self)));

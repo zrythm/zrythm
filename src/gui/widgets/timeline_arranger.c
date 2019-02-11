@@ -904,15 +904,21 @@ timeline_arranger_widget_set_select_type (
         &wx,
         &wy);
 
-      /* if bot half, select range */
+      /* if bot half */
       if (wy >= allocation.height / 2 &&
           wy <= allocation.height)
         {
+          /* select range */
           self->selection_type =
             TA_SELECTION_TYPE_RANGE;
+
+          /* set it visible */
+          gtk_widget_set_visible (
+            GTK_WIDGET (MW_RULER->range), 1);
         }
-      else /* if top half, select objects */
+      else /* if top half */
         {
+          /* select objects */
           self->selection_type =
             TA_SELECTION_TYPE_OBJECTS;
 

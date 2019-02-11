@@ -1,6 +1,4 @@
 /*
- * gui/widgets/ruler_range.c - Ruler range
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
