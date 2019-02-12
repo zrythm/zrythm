@@ -389,11 +389,16 @@ _create_channel (char * name)
   g_message ("Created stereo out ports");
   g_free (pll);
   g_free (plr);
-  channel->stereo_in->l->owner_ch = channel;
-  channel->stereo_in->r->owner_ch = channel;
-  channel->stereo_out->l->owner_ch = channel;
-  channel->stereo_out->r->owner_ch = channel;
-  channel->midi_in->owner_ch = channel;
+  port_set_owner_channel (channel->stereo_in->l,
+                          channel);
+  port_set_owner_channel (channel->stereo_in->r,
+                          channel);
+  port_set_owner_channel (channel->stereo_out->l,
+                          channel);
+  port_set_owner_channel (channel->stereo_out->r,
+                          channel);
+  port_set_owner_channel (channel->midi_in,
+                          channel);
 
   /* init plugins */
   for (int i = 0; i < STRIP_SIZE; i++)

@@ -1,7 +1,5 @@
 /*
- * audio/track.h - the back end for a timeline track
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,8 +17,16 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * The backend for a timeline track.
+ */
+
 #ifndef __AUDIO_TRACK_H__
 #define __AUDIO_TRACK_H__
+
+#include "utils/yaml.h"
 
 #include <gtk/gtk.h>
 #include <jack/jack.h>
@@ -77,6 +83,52 @@ typedef struct Track
    */
   GdkRGBA              color;
 } Track;
+
+static const cyaml_strval_t
+track_type_strings[] =
+{
+	{ "Instrument",     TRACK_TYPE_INSTRUMENT    },
+	{ "Audio",          TRACK_TYPE_AUDIO   },
+	{ "Master",         TRACK_TYPE_MASTER   },
+	{ "Chord",          TRACK_TYPE_CHORD   },
+	{ "Bus",            TRACK_TYPE_BUS   },
+};
+
+static const cyaml_schema_field_t
+track_fields_schema[] =
+{
+	CYAML_FIELD_INT (
+    "id", CYAML_FLAG_DEFAULT,
+    Track, id),
+  CYAML_FIELD_ENUM (
+    "type", CYAML_FLAG_DEFAULT,
+    Track, type, track_type_strings,
+    CYAML_ARRAY_LEN (track_type_strings)),
+	CYAML_FIELD_INT (
+    "bot_paned_visible", CYAML_FLAG_DEFAULT,
+    Track, bot_paned_visible),
+	CYAML_FIELD_INT (
+    "visible", CYAML_FLAG_DEFAULT,
+    Track, visible),
+	CYAML_FIELD_INT (
+    "selected", CYAML_FLAG_DEFAULT,
+    Track, selected),
+	CYAML_FIELD_INT (
+    "handle_pos", CYAML_FLAG_DEFAULT,
+    Track, handle_pos),
+  CYAML_FIELD_MAPPING (
+    "color", CYAML_FLAG_DEFAULT,
+    Track, color, gdk_rgba_fields_schema),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+track_schema = {
+	CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    Track, track_fields_schema),
+};
 
 /**
  * Only to be used by implementing structs.

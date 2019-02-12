@@ -199,6 +199,8 @@ _create_port(Lv2Plugin*   lv2_plugin,
       g_free (port_name);
     }
   lv2_port->port->owner_pl = lv2_plugin->plugin;
+  lv2_port->port->owner_pl_id =
+    lv2_plugin->plugin->id;
   lv2_port->port->lv2_port = lv2_port;
   lv2_port->evbuf     = NULL;
   lv2_port->buf_size  = 0;
@@ -1352,7 +1354,11 @@ lv2_free (Lv2Plugin * plugin)
 
 /**
  * Instantiate the plugin.
- * TODO
+ *
+ * All of the actual initialization is done here.
+ * If this is a new plugin, preset_uri should be
+ * empty. If the project is being loaded, preset
+ * uri should be the state file path.
  */
 int
 lv2_instantiate (Lv2Plugin      * lv2_plugin,   ///< plugin to instantiate
@@ -1568,15 +1574,18 @@ lv2_instantiate (Lv2Plugin      * lv2_plugin,   ///< plugin to instantiate
           LV2_Port * lv2_port = &lv2_plugin->ports[i];
           Port * port = lv2_port->port;
           port->owner_pl = plugin;
+          port->owner_pl_id = plugin->id;
           /*if (port->type == TYPE_AUDIO)*/
             /*{*/
               if (port->flow == FLOW_INPUT)
                 {
-                  plugin->in_ports[plugin->num_in_ports++] = port;
+                  plugin->in_ports[plugin->num_in_ports] = port;
+                  plugin->in_port_ids[plugin->num_in_ports++] = port->id;
                 }
               else if (port->flow == FLOW_OUTPUT)
                 {
-                  plugin->out_ports[plugin->num_out_ports++] = port;
+                  plugin->out_ports[plugin->num_out_ports] = port;
+                  plugin->out_port_ids[plugin->num_out_ports++] = port->id;
                 }
             /*}*/
         }

@@ -337,8 +337,8 @@ activate_export_as (GSimpleAction *action,
     {
       ui_show_error_message (
         MAIN_WINDOW,
-        "A project does not exist yet. Please save"
-        " the project before exporting.");
+        "Project doesn't have a path yet. Please"
+        " save the project before exporting.");
     }
 }
 

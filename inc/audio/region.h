@@ -203,7 +203,7 @@ midi_region_schema = {
 };
 
 static const cyaml_schema_field_t
-  audio_region_fields_schema[] =
+audio_region_fields_schema[] =
 {
   CYAML_FIELD_INT (
     "dummy", CYAML_FLAG_DEFAULT,

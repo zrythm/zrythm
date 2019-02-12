@@ -67,6 +67,49 @@ typedef struct AutomationCurve
   char *                   automatable_label;
 } AutomationCurve;
 
+static const cyaml_strval_t
+automation_curve_type_strings[] =
+{
+	{ "Boolean",  AUTOMATION_CURVE_TYPE_BOOL },
+	{ "Step",     AUTOMATION_CURVE_TYPE_STEP },
+	{ "Float",    AUTOMATION_CURVE_TYPE_FLOAT },
+};
+
+static const cyaml_schema_field_t
+  automation_curve_fields_schema[] =
+{
+	CYAML_FIELD_INT (
+    "id", CYAML_FLAG_DEFAULT,
+    AutomationCurve, id),
+  CYAML_FIELD_MAPPING (
+    "pos", CYAML_FLAG_DEFAULT,
+    AutomationCurve, pos, position_fields_schema),
+	CYAML_FIELD_FLOAT (
+    "curviness", CYAML_FLAG_DEFAULT,
+    AutomationCurve, curviness),
+  CYAML_FIELD_ENUM (
+    "type", CYAML_FLAG_DEFAULT,
+    AutomationCurve, type,
+    automation_curve_type_strings,
+    CYAML_ARRAY_LEN (automation_curve_type_strings)),
+	CYAML_FIELD_INT (
+    "track_id", CYAML_FLAG_DEFAULT,
+    AutomationCurve, track_id),
+  CYAML_FIELD_STRING_PTR (
+    "automatable_label", CYAML_FLAG_POINTER,
+    AutomationCurve, automatable_label,
+   	0, CYAML_UNLIMITED),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+automation_curve_schema = {
+	CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    AutomationCurve, automation_curve_fields_schema),
+};
+
 /**
  * Creates curviness point in given track at given Position
  */

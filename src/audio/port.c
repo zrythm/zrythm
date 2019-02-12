@@ -147,6 +147,28 @@ port_new_with_data (PortInternalType internal_type, ///< the internal data forma
 }
 
 /**
+ * Sets the owner channel & its ID.
+ */
+void
+port_set_owner_channel (Port *    port,
+                        Channel * chan)
+{
+  port->owner_ch = chan;
+  port->owner_ch_id = chan->id;
+}
+
+/**
+ * Sets the owner plugin & its ID.
+ */
+void
+port_set_owner_plugin (Port *   port,
+                       Plugin * pl)
+{
+  port->owner_pl = pl;
+  port->owner_pl_id = pl->id;
+}
+
+/**
  * Deletes port, doing required cleanup and updating counters.
  */
 void
@@ -184,8 +206,10 @@ port_connect (Port * src, Port * dest)
       g_warning ("Cannot connect ports, incompatible types");
       return -1;
     }
-  src->dests[src->num_dests++] = dest;
-  dest->srcs[dest->num_srcs++] = src;
+  src->dests[src->num_dests] = dest;
+  src->dest_ids[src->num_dests++] = dest->id;
+  dest->srcs[dest->num_srcs] = src;
+  dest->src_ids[dest->num_srcs++] = src->id;
   g_message ("Connected port %d(%s) to %d(%s)",
              src->id,
              src->label,

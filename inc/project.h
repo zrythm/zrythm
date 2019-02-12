@@ -30,12 +30,19 @@
 #define __PROJECT_H__
 
 #include "actions/undo_manager.h"
+#include "audio/automation_curve.h"
+#include "audio/automation_point.h"
 #include "audio/channel.h"
 #include "audio/engine.h"
+#include "audio/midi_note.h"
+#include "audio/port.h"
 #include "audio/quantize.h"
+#include "audio/region.h"
+#include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/backend/piano_roll.h"
 #include "gui/backend/timeline_selections.h"
+#include "plugins/plugin.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
@@ -191,14 +198,47 @@ static const cyaml_schema_field_t
 	CYAML_FIELD_INT (
     "has_range", CYAML_FLAG_DEFAULT,
     Project, has_range),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "plugins", CYAML_FLAG_DEFAULT,
+    Project, plugins, num_plugins,
+    &plugin_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "regions", CYAML_FLAG_DEFAULT,
+    Project, regions, num_regions,
+    &region_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "automation_points", CYAML_FLAG_DEFAULT,
+    Project, automation_points, num_automation_points,
+    &automation_point_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "automation_curves", CYAML_FLAG_DEFAULT,
+    Project, automation_curves, num_automation_curves,
+    &automation_curve_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "midi_notes", CYAML_FLAG_DEFAULT,
+    Project, midi_notes, num_midi_notes,
+    &midi_note_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "channels", CYAML_FLAG_DEFAULT,
+    Project, channels, num_channels,
+    &channel_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "tracks", CYAML_FLAG_DEFAULT,
+    Project, tracks, num_tracks,
+    &track_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "ports", CYAML_FLAG_DEFAULT,
+    Project, ports, num_ports,
+    &port_schema, 0, CYAML_UNLIMITED),
 
 	CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
-project_schema = {
+project_schema =
+{
 	CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER,
-			Region, region_fields_schema),
+  Project, project_fields_schema),
 };
 
 /**

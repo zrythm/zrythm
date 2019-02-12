@@ -1,32 +1,32 @@
 /*
- * audio/ports.h - ports to pass when processing the audio
- *   signal
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
- * copyright (c) 2019 alexandros theodotou
+ * This file is part of Zrythm
  *
- * this file is part of zrythm
- *
- * zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the gnu general public license as published by
- * the free software foundation, either version 3 of the license, or
+ * Zrythm is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * zrythm is distributed in the hope that it will be useful,
- * but without any warranty; without even the implied warranty of
- * merchantability or fitness for a particular purpose.  see the
- * gnu general public license for more details.
+ * Zrythm is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * you should have received a copy of the gnu general public license
- * along with zrythm.  if not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #ifndef __AUDIO_PORTS_H__
 #define __AUDIO_PORTS_H__
 
 /** \file
- * Port API. */
+ * Ports that transfer audio/midi/other signals to
+ * one another.
+ */
 
 #include "audio/midi.h"
+#include "utils/yaml.h"
 
 #include <jack/jack.h>
 
@@ -161,6 +161,84 @@ typedef struct Port
   int                 exported;
 } Port;
 
+static const cyaml_strval_t
+port_flow_strings[] =
+{
+	{ "Unknown",       FLOW_UNKNOWN    },
+	{ "Input",         FLOW_INPUT   },
+	{ "Output",        FLOW_OUTPUT   },
+};
+
+static const cyaml_strval_t
+port_type_strings[] =
+{
+	{ "Unknown",       TYPE_UNKNOWN    },
+	{ "Control",       TYPE_CONTROL   },
+	{ "Audio",         TYPE_AUDIO   },
+	{ "Event",         TYPE_EVENT   },
+	{ "CV",            TYPE_CV   },
+};
+
+static const cyaml_strval_t
+port_internal_type_strings[] =
+{
+	{ "LV2 Port",       INTERNAL_LV2_PORT    },
+	{ "JACK Port",      INTERNAL_JACK_PORT   },
+};
+
+static const cyaml_schema_field_t
+port_fields_schema[] =
+{
+  CYAML_FIELD_INT (
+    "id", CYAML_FLAG_DEFAULT,
+    Port, id),
+  CYAML_FIELD_STRING_PTR (
+    "label", CYAML_FLAG_POINTER,
+    Port, label,
+   	0, CYAML_UNLIMITED),
+  CYAML_FIELD_ENUM (
+    "type", CYAML_FLAG_DEFAULT,
+    Port, type, port_type_strings,
+    CYAML_ARRAY_LEN (port_type_strings)),
+  CYAML_FIELD_ENUM (
+    "flow", CYAML_FLAG_DEFAULT,
+    Port, flow, port_flow_strings,
+    CYAML_ARRAY_LEN (port_flow_strings)),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "src_ids", CYAML_FLAG_DEFAULT,
+    Port, src_ids, num_srcs,
+    &int_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "dest_ids", CYAML_FLAG_DEFAULT,
+    Port, dest_ids, num_dests,
+    &int_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_ENUM (
+    "internal_type", CYAML_FLAG_DEFAULT,
+    Port, internal_type, port_internal_type_strings,
+    CYAML_ARRAY_LEN (port_internal_type_strings)),
+  CYAML_FIELD_INT (
+    "owner_jack", CYAML_FLAG_DEFAULT,
+    Port, owner_jack),
+  CYAML_FIELD_INT (
+    "is_piano_roll", CYAML_FLAG_DEFAULT,
+    Port, is_piano_roll),
+  CYAML_FIELD_INT (
+    "owner_pl_id", CYAML_FLAG_DEFAULT,
+    Port, owner_pl_id),
+  CYAML_FIELD_INT (
+    "owner_ch_id", CYAML_FLAG_DEFAULT,
+    Port, owner_ch_id),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+port_schema = {
+	CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    Port, port_fields_schema),
+};
+
 /**
  * L & R port, for convenience.
  *
@@ -243,6 +321,20 @@ port_apply_fader (Port * port, float amp);
  */
 void
 port_sum_signal_from_inputs (Port * port);
+
+/**
+ * Sets the owner channel & its ID.
+ */
+void
+port_set_owner_channel (Port *    port,
+                        Channel * chan);
+
+/**
+ * Sets the owner plugin & its ID.
+ */
+void
+port_set_owner_plugin (Port *   port,
+                       Plugin * chan);
 
 /**
  * if port buffer size changed, reallocate port buffer, otherwise memset to 0.

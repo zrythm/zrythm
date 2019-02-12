@@ -62,34 +62,35 @@ typedef struct AutomationPoint
 } AutomationPoint;
 
 static const cyaml_schema_field_t
-  automation_point_fields_schema[] =
+automation_point_fields_schema[] =
 {
 	CYAML_FIELD_INT (
-			"id", CYAML_FLAG_DEFAULT,
-			AutomationPoint, id),
+    "id", CYAML_FLAG_DEFAULT,
+    AutomationPoint, id),
   CYAML_FIELD_MAPPING (
-      "pos", CYAML_FLAG_DEFAULT,
-      AutomationPoint, pos, position_fields_schema),
+    "pos", CYAML_FLAG_DEFAULT,
+    AutomationPoint, pos, position_fields_schema),
 	CYAML_FIELD_INT (
-			"svalue", CYAML_FLAG_DEFAULT,
-			AutomationPoint, svalue),
+    "svalue", CYAML_FLAG_DEFAULT,
+    AutomationPoint, svalue),
 	CYAML_FIELD_INT (
-			"bvalue", CYAML_FLAG_DEFAULT,
-			AutomationPoint, bvalue),
+    "bvalue", CYAML_FLAG_DEFAULT,
+    AutomationPoint, bvalue),
 	CYAML_FIELD_FLOAT (
-			"fvalue", CYAML_FLAG_DEFAULT,
-			AutomationPoint, fvalue),
+    "fvalue", CYAML_FLAG_DEFAULT,
+    AutomationPoint, fvalue),
 	CYAML_FIELD_INT (
-			"port_id", CYAML_FLAG_DEFAULT,
-			AutomationPoint, port_id),
+    "port_id", CYAML_FLAG_DEFAULT,
+    AutomationPoint, port_id),
 
 	CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 automation_point_schema = {
-	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
-			AutomationPoint, automation_point_fields_schema),
+	CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    AutomationPoint, automation_point_fields_schema),
 };
 
 /**

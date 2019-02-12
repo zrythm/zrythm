@@ -157,6 +157,7 @@ project_save (const char * dir)
 {
   io_mkdir (dir);
   update_paths (dir);
+  PROJECT->title = io_path_get_basename (dir);
 
   smf_save_regions ();
 
@@ -198,7 +199,10 @@ project_save (const char * dir)
   /*xml_write_ports ();*/
   /*xml_write_regions ();*/
   /*xml_write_project ();*/
-  project_serialize (PROJECT);
+  g_message ("plugin %p", PROJECT->plugins[0]);
+  g_message ("descr %p", PROJECT->plugins[0]->descr);
+  char * yaml = project_serialize (PROJECT);
+  g_message ("\n%s", yaml);
 
   zrythm_add_to_recent_projects (
     ZRYTHM,

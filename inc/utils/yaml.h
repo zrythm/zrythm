@@ -26,6 +26,8 @@
 #ifndef __UTILS_YAML_H__
 #define __UTILS_YAML_H__
 
+#include <gtk/gtk.h>
+
 #include <cyaml/cyaml.h>
 
 /**
@@ -118,6 +120,25 @@ static const cyaml_schema_value_t
 int_schema = {
 	CYAML_VALUE_INT (CYAML_FLAG_DEFAULT,
                    typeof (int)),
+};
+
+static const cyaml_schema_field_t
+gdk_rgba_fields_schema[] =
+{
+	CYAML_FIELD_FLOAT (
+    "red", CYAML_FLAG_DEFAULT,
+	  GdkRGBA, red),
+	CYAML_FIELD_FLOAT (
+    "green", CYAML_FLAG_DEFAULT,
+	  GdkRGBA, green),
+	CYAML_FIELD_FLOAT (
+    "blue", CYAML_FLAG_DEFAULT,
+	  GdkRGBA, blue),
+	CYAML_FIELD_FLOAT (
+    "alpha", CYAML_FLAG_DEFAULT,
+	  GdkRGBA, alpha),
+
+	CYAML_FIELD_END
 };
 
 #endif
