@@ -19,5 +19,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-//const char
+#ifndef __UTILS_AUDIO_H__
+#define __UTILS_AUDIO_H__
 
+/**
+ * Number of plugin slots per channel.
+ */
+#define STRIP_SIZE 9
+
+#endif

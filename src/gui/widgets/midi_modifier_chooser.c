@@ -1,7 +1,5 @@
 /*
- * gui/widgets/midi_modifier_chooser.c - Choose MIDI modifier
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,8 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/piano_roll.h"
 #include "gui/widgets/midi_modifier_chooser.h"
+#include "gui/backend/piano_roll.h"
 
 G_DEFINE_TYPE (MidiModifierChooserWidget,
                midi_modifier_chooser_widget,

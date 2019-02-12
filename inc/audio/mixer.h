@@ -1,7 +1,5 @@
 /*
- * audio/mixer.h - The mixer
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,10 +20,12 @@
 #ifndef __AUDIO_MIXER_H__
 #define __AUDIO_MIXER_H__
 
+#include "audio/channel.h"
+#include "utils/audio.h"
+
 #include <jack/jack.h>
 
 #define MIXER (&AUDIO_ENGINE->mixer)
-#define STRIP_SIZE 9 /* mixer strip size (number of plugin slots) */
 #define FOREACH_CH for (int i = 0; i < MIXER->num_channels; i++)
 #define MAX_CHANNELS 3000
 
@@ -49,6 +49,28 @@ typedef struct Mixer
 
   Channel        * master; ///< master channel
 } Mixer;
+
+static const cyaml_schema_field_t
+mixer_fields_schema[] =
+{
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "channel_ids", CYAML_FLAG_DEFAULT,
+    Mixer, channel_ids, num_channels,
+    &int_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_MAPPING_PTR (
+    "master", CYAML_FLAG_POINTER,
+    Mixer, master, channel_fields_schema),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+mixer_schema =
+{
+	CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+	  Mixer, mixer_fields_schema),
+};
 
 /**
  * The mixer begins the audio processing process.

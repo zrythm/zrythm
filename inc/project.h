@@ -1,9 +1,5 @@
 /*
- * project.h - A project (or song), containing all the project data
- *   as opposed to zrythm_app.h which manages things not project-dependent
- *   like plugins and overall settings
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -21,15 +17,24 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * A project (or song), containing all the project
+ * data as opposed to zrythm_app.h which manages
+ * global things like plugin descriptors and global
+ * settings.
+ */
+
 #ifndef __PROJECT_H__
 #define __PROJECT_H__
 
 #include "actions/undo_manager.h"
 #include "audio/channel.h"
 #include "audio/engine.h"
-#include "audio/piano_roll.h"
 #include "audio/quantize.h"
 #include "audio/tracklist.h"
+#include "gui/backend/piano_roll.h"
 #include "gui/backend/timeline_selections.h"
 #include "zrythm.h"
 
@@ -149,6 +154,53 @@ typedef struct Project
   int               loaded;
 } Project;
 
+static const cyaml_schema_field_t
+  project_fields_schema[] =
+{
+  CYAML_FIELD_STRING_PTR (
+    "title", CYAML_FLAG_POINTER,
+    Project, title,
+    0, CYAML_UNLIMITED),
+  CYAML_FIELD_MAPPING (
+    "tracklist", CYAML_FLAG_DEFAULT,
+    Project, tracklist, tracklist_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "piano_roll", CYAML_FLAG_DEFAULT,
+    Project, piano_roll, piano_roll_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "snap_grid_timeline", CYAML_FLAG_DEFAULT,
+    Project, snap_grid_timeline, snap_grid_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "quantize_timeline", CYAML_FLAG_DEFAULT,
+    Project, quantize_timeline, quantize_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "snap_grid_midi", CYAML_FLAG_DEFAULT,
+    Project, snap_grid_midi, snap_grid_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "quantize_midi", CYAML_FLAG_DEFAULT,
+    Project, quantize_midi, quantize_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "timeline_selections", CYAML_FLAG_DEFAULT,
+    Project, timeline_selections, timeline_selections_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "range_1", CYAML_FLAG_DEFAULT,
+    Project, range_1, position_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "range_2", CYAML_FLAG_DEFAULT,
+    Project, range_1, position_fields_schema),
+	CYAML_FIELD_INT (
+    "has_range", CYAML_FLAG_DEFAULT,
+    Project, has_range),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+project_schema = {
+	CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER,
+			Region, region_fields_schema),
+};
+
 /**
  * If project has a filename set, it loads that. Otherwise
  * it loads the default project.
@@ -192,5 +244,9 @@ PROJECT_GET_X (Port, port);
 
 #undef PROJECT_ADD_X
 #undef PROJECT_GET_X
+
+SERIALIZE_INC (Project, project)
+DESERIALIZE_INC (Project, project)
+PRINT_YAML_INC (Project, project)
 
 #endif

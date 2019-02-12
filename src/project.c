@@ -38,6 +38,7 @@
 #include "utils/arrays.h"
 #include "utils/io.h"
 #include "utils/smf.h"
+#include "utils/ui.h"
 
 #include <gtk/gtk.h>
 
@@ -197,11 +198,14 @@ project_save (const char * dir)
   /*xml_write_ports ();*/
   /*xml_write_regions ();*/
   /*xml_write_project ();*/
+  project_serialize (PROJECT);
 
   zrythm_add_to_recent_projects (
     ZRYTHM,
     PROJECT->project_file_path);
   PROJECT->title = g_path_get_basename (dir);
+
+  ui_show_notification ("Project saved.");
 }
 
 static int
@@ -254,3 +258,7 @@ PROJECT_GET_X (Port, port, ports)
 
 #undef PROJECT_ADD_X
 #undef PROJECT_GET_X
+
+SERIALIZE_SRC (Project, project)
+DESERIALIZE_SRC (Project, project)
+PRINT_YAML_SRC (Project, project)

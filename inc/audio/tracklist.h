@@ -1,7 +1,5 @@
 /*
- * audio/tracklist.h - Tracklist backend
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -19,7 +17,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
+/**
+ * \file
+ *
+ * Tracklist backend.
  */
 
 #ifndef __AUDIO_TRACKLIST_H__
@@ -61,6 +62,25 @@ typedef struct Tracklist
 
   TracklistWidget *   widget;
 } Tracklist;
+
+static const cyaml_schema_field_t
+  tracklist_fields_schema[] =
+{
+  CYAML_FIELD_SEQUENCE_COUNT (
+    /* default because it is an array of pointers, not a
+     * pointer to an array */
+    "track_ids", CYAML_FLAG_DEFAULT,
+      Tracklist, track_ids, num_tracks,
+      &int_schema, 0, CYAML_UNLIMITED),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+tracklist_schema = {
+	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+			Tracklist, tracklist_fields_schema),
+};
 
 /**
  * Initializes the tracklist.

@@ -1,6 +1,4 @@
 /*
- * gui/backend/file_manager.h - File manager
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm

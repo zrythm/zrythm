@@ -1,7 +1,5 @@
 /*
- * actions/actions.c - Zrythm GActions
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,6 +15,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * \file
+ *
+ * GAction actions.
  */
 
 #include "audio/instrument_track.h"
@@ -46,7 +50,6 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
-#include "settings/preferences.h"
 #include "utils/gtk.h"
 
 #include <gtk/gtk.h>
@@ -146,7 +149,7 @@ activate_preferences (GSimpleAction *action,
                       gpointer       user_data)
 {
   PreferencesWidget * widget =
-    preferences_widget_new (PREFERENCES);
+    preferences_widget_new ();
   gtk_widget_set_visible (GTK_WIDGET (widget),
                           1);
 }
@@ -324,8 +327,19 @@ activate_export_as (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  ExportDialogWidget * export = export_dialog_widget_new ();
-  gtk_dialog_run (GTK_DIALOG (export));
+  /* if project is loaded */
+  if (PROJECT->project_file_path)
+    {
+      ExportDialogWidget * export = export_dialog_widget_new ();
+      gtk_dialog_run (GTK_DIALOG (export));
+    }
+  else
+    {
+      ui_show_error_message (
+        MAIN_WINDOW,
+        "A project does not exist yet. Please save"
+        " the project before exporting.");
+    }
 }
 
 void

@@ -1,6 +1,4 @@
 /*
- * audio/channel.h - a channel on the mixer
- *
  * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -26,12 +24,11 @@
  * \file
  *
  * API for Channel, representing a channel strip on the mixer.
- *
- * Detailed description.
  */
 
-#include "audio/mixer.h"
 #include "plugins/plugin.h"
+#include "utils/audio.h"
+#include "utils/yaml.h"
 
 #include <gdk/gdk.h>
 
@@ -105,19 +102,29 @@ typedef struct Channel
    * plugin's input, their buffers are added to the first
    * plugin
    */
-  StereoPorts *        stereo_in;  ///< l & r input ports
+  StereoPorts *        stereo_in;  ///< l & r input ports, cache
 
   /**
-   * MIDI in.
+   * These should be serialized instead of
+   * stereo_in.
+   */
+  int                  stereo_in_l_id;
+  int                  stereo_in_r_id;
+
+  /**
+   * MIDI in port ID.
    *
-   * TODO describe what it does.
+   * This port is for receiving MIDI signals from
+   * an external MIDI source.
    */
   int                  midi_in_id;
 
   /**
-   * MIDI piano roll input.
+   * MIDI piano roll input port ID.
    *
-   * TODO describe what it does.
+   * This port is for receiving MIDI signals from
+   * the piano roll (i.e., MIDI notes inside
+   * regions).
    */
   int                  piano_roll_id;
 
@@ -135,6 +142,13 @@ typedef struct Channel
    * buffer, i.e., channel will produce no sound
    * */
   StereoPorts *        stereo_out;
+
+  /**
+   * These should be serialized instead of
+   * stereo_out.
+   */
+  int                  stereo_out_l_id;
+  int                  stereo_out_r_id;
 
   /**
    * Current dBFS after procesing each output port.
@@ -211,6 +225,99 @@ typedef struct Channel
    */
   int                  record_set_automatically;
 } Channel;
+
+static const cyaml_strval_t
+channel_type_strings[] =
+{
+	{ "Audio",       CT_AUDIO    },
+	{ "MIDI",        CT_MIDI   },
+	{ "Bus",         CT_BUS    },
+	{ "Master",      CT_MASTER   },
+};
+
+static const cyaml_schema_field_t
+channel_fields_schema[] =
+{
+	CYAML_FIELD_INT (
+    "id", CYAML_FLAG_DEFAULT,
+    Channel, id),
+  CYAML_FIELD_STRING_PTR (
+    "name", CYAML_FLAG_POINTER,
+    Channel, name,
+   	0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_FIXED (
+    "plugin_ids", CYAML_FLAG_DEFAULT,
+    Channel, plugin_ids,
+    &int_schema, STRIP_SIZE),
+  CYAML_FIELD_ENUM (
+    "type", CYAML_FLAG_DEFAULT,
+    Channel, type, channel_type_strings,
+    CYAML_ARRAY_LEN (channel_type_strings)),
+	CYAML_FIELD_FLOAT (
+    "volume", CYAML_FLAG_DEFAULT,
+    Channel, volume),
+	CYAML_FIELD_FLOAT (
+    "fader_amp", CYAML_FLAG_DEFAULT,
+    Channel, fader_amp),
+	CYAML_FIELD_INT (
+    "mute", CYAML_FLAG_DEFAULT,
+    Channel, mute),
+	CYAML_FIELD_INT (
+    "solo", CYAML_FLAG_DEFAULT,
+    Channel, solo),
+	CYAML_FIELD_FLOAT (
+    "phase", CYAML_FLAG_DEFAULT,
+    Channel, phase),
+	CYAML_FIELD_FLOAT (
+    "pan", CYAML_FLAG_DEFAULT,
+    Channel, pan),
+	CYAML_FIELD_INT (
+    "stereo_in_l_id", CYAML_FLAG_DEFAULT,
+    Channel, stereo_in_l_id),
+	CYAML_FIELD_INT (
+    "stereo_in_r_id", CYAML_FLAG_DEFAULT,
+    Channel, stereo_in_r_id),
+	CYAML_FIELD_INT (
+    "midi_in_id", CYAML_FLAG_DEFAULT,
+    Channel, midi_in_id),
+	CYAML_FIELD_INT (
+    "piano_roll_id", CYAML_FLAG_DEFAULT,
+    Channel, piano_roll_id),
+	CYAML_FIELD_INT (
+    "stereo_out_l_id", CYAML_FLAG_DEFAULT,
+    Channel, stereo_out_l_id),
+	CYAML_FIELD_INT (
+    "stereo_out_r_id", CYAML_FLAG_DEFAULT,
+    Channel, stereo_out_r_id),
+	CYAML_FIELD_INT (
+    "recording", CYAML_FLAG_DEFAULT,
+    Channel, recording),
+	CYAML_FIELD_INT (
+    "output_id", CYAML_FLAG_DEFAULT,
+    Channel, output_id),
+	CYAML_FIELD_INT (
+    "track_id", CYAML_FLAG_DEFAULT,
+    Channel, track_id),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    /* default because it is an array of pointers, not a
+     * pointer to an array */
+    "automatables", CYAML_FLAG_DEFAULT,
+    Channel, automatables, num_automatables,
+    &automatable_schema, 0, CYAML_UNLIMITED),
+	CYAML_FIELD_INT (
+    "visible", CYAML_FLAG_DEFAULT,
+    Channel, track_id),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+channel_schema =
+{
+	CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+	  Channel, channel_fields_schema),
+};
 
 void
 channel_set_phase (void * channel, float phase);

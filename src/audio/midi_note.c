@@ -1,8 +1,5 @@
 /*
- * audio/midi_note.c - A midi_note in the timeline having a start
- *   and an end
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -18,6 +15,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * \file
+ *
+ * A MIDI note in the timeline.
  */
 
 #include "audio/midi.h"

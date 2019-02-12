@@ -1,7 +1,5 @@
 /*
- * audio/piano_roll.h - piano roll back end
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -50,6 +48,40 @@ typedef struct PianoRoll
   int                      track_id;
   Track *                  track; ///< cache
 } PianoRoll;
+
+static const cyaml_strval_t
+midi_modifier_strings[] =
+{
+	{ "Velocity",      MIDI_MODIFIER_VELOCITY    },
+	{ "Pitch Wheel",   MIDI_MODIFIER_PITCH_WHEEL   },
+	{ "Mod Wheel",     MIDI_MODIFIER_MOD_WHEEL   },
+	{ "Aftertouch",    MIDI_MODIFIER_AFTERTOUCH   },
+};
+
+static const cyaml_schema_field_t
+piano_roll_fields_schema[] =
+{
+	CYAML_FIELD_INT (
+			"notes_zoom", CYAML_FLAG_DEFAULT,
+			PianoRoll, notes_zoom),
+  CYAML_FIELD_ENUM (
+			"midi_modifier", CYAML_FLAG_DEFAULT,
+			PianoRoll, midi_modifier, midi_modifier_strings,
+      CYAML_ARRAY_LEN (midi_modifier_strings)),
+	CYAML_FIELD_INT (
+			"track_id", CYAML_FLAG_DEFAULT,
+			PianoRoll, track_id),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+piano_roll_schema =
+{
+	CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+		PianoRoll, piano_roll_fields_schema),
+};
 
 void
 piano_roll_init (PianoRoll * self);

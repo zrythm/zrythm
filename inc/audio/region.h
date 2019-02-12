@@ -1,8 +1,5 @@
 /*
- * audio/region.h - A region in the timeline having a start
- *   and an end
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -20,6 +17,11 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * A region in the timeline.
+ */
 #ifndef __AUDIO_REGION_H__
 #define __AUDIO_REGION_H__
 
@@ -170,39 +172,42 @@ typedef struct AudioRegion
   int                 dummy;
 } AudioRegion;
 
-static const cyaml_strval_t region_type_strings[] = {
+static const cyaml_strval_t
+region_type_strings[] =
+{
 	{ "Midi",          REGION_TYPE_MIDI    },
 	{ "Audio",         REGION_TYPE_AUDIO   },
 };
 
 static const cyaml_schema_field_t
-  midi_region_fields_schema[] =
+midi_region_fields_schema[] =
 {
   CYAML_FIELD_SEQUENCE_COUNT (
     /* default because it is an array of pointers, not a
      * pointer to an array */
     "midi_notes", CYAML_FLAG_DEFAULT,
-      MidiRegion, midi_notes, num_midi_notes,
-      &midi_note_schema, 0, CYAML_UNLIMITED),
+    MidiRegion, midi_notes, num_midi_notes,
+    &midi_note_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_INT (
-      "dummy", CYAML_FLAG_DEFAULT,
-      MidiRegion, dummy),
+    "dummy", CYAML_FLAG_DEFAULT,
+    MidiRegion, dummy),
 
 	CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 midi_region_schema = {
-	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
-			MidiRegion, midi_region_fields_schema),
+	CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+		MidiRegion, midi_region_fields_schema),
 };
 
 static const cyaml_schema_field_t
   audio_region_fields_schema[] =
 {
   CYAML_FIELD_INT (
-      "dummy", CYAML_FLAG_DEFAULT,
-      AudioRegion, dummy),
+    "dummy", CYAML_FLAG_DEFAULT,
+    AudioRegion, dummy),
 
 	CYAML_FIELD_END
 };
@@ -217,34 +222,34 @@ static const cyaml_schema_field_t
   region_fields_schema[] =
 {
 	CYAML_FIELD_INT (
-			"id", CYAML_FLAG_DEFAULT,
-			Region, id),
+    "id", CYAML_FLAG_DEFAULT,
+	  Region, id),
   CYAML_FIELD_STRING_PTR (
-      "name", CYAML_FLAG_POINTER,
-			Region, name,
-			0, CYAML_UNLIMITED),
+    "name", CYAML_FLAG_POINTER,
+    Region, name,
+   	0, CYAML_UNLIMITED),
   CYAML_FIELD_ENUM (
-			"type", CYAML_FLAG_DEFAULT,
-			Region, type, region_type_strings,
-      CYAML_ARRAY_LEN (region_type_strings)),
+    "type", CYAML_FLAG_DEFAULT,
+    Region, type, region_type_strings,
+    CYAML_ARRAY_LEN (region_type_strings)),
   CYAML_FIELD_MAPPING (
-      "start_pos", CYAML_FLAG_DEFAULT,
-      Region, start_pos, position_fields_schema),
+    "start_pos", CYAML_FLAG_DEFAULT,
+    Region, start_pos, position_fields_schema),
   CYAML_FIELD_MAPPING (
-      "end_pos", CYAML_FLAG_DEFAULT,
-      Region, end_pos, position_fields_schema),
+    "end_pos", CYAML_FLAG_DEFAULT,
+    Region, end_pos, position_fields_schema),
   CYAML_FIELD_MAPPING (
-      "unit_end_pos", CYAML_FLAG_DEFAULT,
-      Region, unit_end_pos, position_fields_schema),
+    "unit_end_pos", CYAML_FLAG_DEFAULT,
+    Region, unit_end_pos, position_fields_schema),
 	CYAML_FIELD_INT (
-			"track_id", CYAML_FLAG_DEFAULT,
-			Region, track_id),
+    "track_id", CYAML_FLAG_DEFAULT,
+    Region, track_id),
 	CYAML_FIELD_INT (
-			"linked_region_id", CYAML_FLAG_DEFAULT,
-			Region, linked_region_id),
+    "linked_region_id", CYAML_FLAG_DEFAULT,
+    Region, linked_region_id),
 	CYAML_FIELD_INT (
-			"selected", CYAML_FLAG_DEFAULT,
-			Region, selected),
+    "selected", CYAML_FLAG_DEFAULT,
+    Region, selected),
   CYAML_FIELD_MAPPING_PTR (
     "midi_region", CYAML_FLAG_POINTER,
     Region, midi_region, midi_region_fields_schema),

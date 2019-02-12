@@ -1,7 +1,5 @@
 /*
- * utils/arrays.c - Array helpers
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -18,6 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
+
+/**
+ * \file
+ *
+ * Array helpers.
+ */
+
+#include <stdlib.h>
+#include <string.h>
 
 #include "utils/arrays.h"
 

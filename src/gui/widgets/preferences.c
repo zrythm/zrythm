@@ -1,6 +1,4 @@
 /*
- * gui/widgets/preferences.c - Preferences window
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -19,64 +17,23 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Preferences window.
+ */
+
 #include "audio/engine.h"
 #include "gui/widgets/preferences.h"
-#include "settings/preferences.h"
 #include "settings/settings.h"
 #include "utils/resources.h"
+#include "zrythm.h"
 
 #include <gtk/gtk.h>
 
 G_DEFINE_TYPE (PreferencesWidget,
                preferences_widget,
                GTK_TYPE_DIALOG)
-
-
-
-/*static void*/
-/*append_category (PreferencesWidget * self,*/
-                 /*const char *        category)*/
-/*{*/
-  /*GtkWidget * category_label =*/
-    /*gtk_label_new (category);*/
-  /*gtk_widget_set_visible (category_label,*/
-                          /*1);*/
-
-  /*GtkFlowBox * flowbox =*/
-    /*GTK_FLOW_BOX (gtk_flow_box_new ());*/
-  /*gtk_widget_set_visible (GTK_WIDGET (flowbox),*/
-                          /*1);*/
-  /*gtk_orientable_set_orientation (*/
-    /*GTK_ORIENTABLE (flowbox),*/
-    /*GTK_ORIENTATION_VERTICAL);*/
-
-  /*GValue value = G_VALUE_INIT;*/
-  /*g_value_init (&value,*/
-                /*G_TYPE_SETTINGS_SCHEMA);*/
-  /*g_object_get_property (*/
-    /*G_OBJECT (self->settings->org_zrythm_preferences_audio),*/
-    /*"settings-schema",*/
-    /*&value);*/
-  /*g_assert (G_VALUE_HOLDS_BOXED (&value));*/
-  /*GSettingsSchema * schema =*/
-    /*(GSettingsSchema *) (g_value_get_boxed (&value));*/
-  /*gchar ** keys = g_settings_schema_list_keys (schema);*/
-  /*int i = 0;*/
-  /*while (keys[i] != NULL)*/
-    /*{*/
-      /*g_message ("%s", keys[i]);*/
-      /*GSettingsSchemaKey * key =*/
-        /*g_settings_schema_get_key (schema,*/
-                                   /*keys[i]);*/
-      /*GVariantType * variant_type =*/
-        /*g_settings_schema_key_get_value_type (key);*/
-      /*i++;*/
-    /*}*/
-
-  /*gtk_notebook_append_page (self->categories,*/
-                            /*GTK_WIDGET (flowbox),*/
-                            /*category_label);*/
-/*}*/
 
 enum
 {
@@ -132,7 +89,9 @@ setup_audio (PreferencesWidget * self)
 
   gtk_combo_box_set_active (
     GTK_COMBO_BOX (self->audio_backend),
-    self->preferences->audio_backend);
+    g_settings_get_enum (
+      S_PREFERENCES,
+      "audio-backend"));
 }
 
 
@@ -155,8 +114,9 @@ on_ok_clicked (GtkWidget * widget,
   PreferencesWidget * self =
     Z_PREFERENCES_WIDGET (user_data);
 
-  preferences_set_audio_backend (
-    self->preferences,
+  g_settings_set_enum (
+    S_PREFERENCES,
+    "audio-backend",
     gtk_combo_box_get_active (self->audio_backend));
 
   gtk_window_close (GTK_WINDOW (self));
@@ -166,13 +126,11 @@ on_ok_clicked (GtkWidget * widget,
  * Sets up the preferences widget.
  */
 PreferencesWidget *
-preferences_widget_new (Preferences * preferences)
+preferences_widget_new ()
 {
   PreferencesWidget * self =
     g_object_new (PREFERENCES_WIDGET_TYPE,
                   NULL);
-
-  self->preferences = preferences;
 
   setup_audio (self);
 

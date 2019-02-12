@@ -1,7 +1,5 @@
 /*
- * audio/automatable.h - An automatable
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,6 +21,7 @@
 #define __AUDIO_AUTOMATABLE_H__
 
 #include "plugins/lv2/control.h"
+#include "utils/yaml.h"
 
 #define IS_AUTOMATABLE_LV2_CONTROL(x) x->type == AUTOMATABLE_TYPE_PLUGIN_CONTROL && \
                                    x->control
@@ -58,16 +57,72 @@ typedef struct Automatable
   Port *               port; ///< cache
 
   /**
+   * This should be serialized instead of port.
+   */
+  int                  port_id;
+
+  /**
    * Lv2Control
    */
   Lv2ControlID *       control; ///< control, if LV2 plugin
   Track *              track; ///< associated track
+
+  /**
+   * This should be serialized instead of port.
+   */
+  int                  track_id;
 
   int                  slot_index; ///< slot index in channel, if plugin automation
                                     ///< eg. automating enabled/disabled
   char *               label; ///< human friendly label
   AutomatableType      type; ///< volume/pan/plugin control/etc.
 } Automatable;
+
+static const cyaml_strval_t
+automatable_type_strings[] =
+{
+	{ "Plugin Control",
+    AUTOMATABLE_TYPE_PLUGIN_CONTROL },
+	{ "Plugin Enabled",
+    AUTOMATABLE_TYPE_PLUGIN_ENABLED },
+	{ "Channel Fader",
+    AUTOMATABLE_TYPE_CHANNEL_FADER },
+	{ "Channel Mute",
+    AUTOMATABLE_TYPE_CHANNEL_MUTE },
+	{ "Channel Pan",
+    AUTOMATABLE_TYPE_CHANNEL_PAN },
+};
+
+static const cyaml_schema_field_t
+automatable_fields_schema[] =
+{
+  CYAML_FIELD_INT (
+    "port_id", CYAML_FLAG_DEFAULT,
+    Automatable, port_id),
+  CYAML_FIELD_INT (
+    "track_id", CYAML_FLAG_DEFAULT,
+    Automatable, track_id),
+  CYAML_FIELD_INT (
+    "slot_index", CYAML_FLAG_DEFAULT,
+    Automatable, slot_index),
+  CYAML_FIELD_STRING_PTR (
+    "label", CYAML_FLAG_POINTER,
+    Automatable, label,
+   	0, CYAML_UNLIMITED),
+  CYAML_FIELD_ENUM (
+    "type", CYAML_FLAG_DEFAULT,
+    Automatable, type, automatable_type_strings,
+    CYAML_ARRAY_LEN (automatable_type_strings)),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+automatable_schema = {
+	CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+		Automatable, automatable_fields_schema),
+};
 
 Automatable *
 automatable_create_fader (Channel * channel);

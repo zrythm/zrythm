@@ -1,7 +1,4 @@
 /*
- * audio/transport.h - The transport struct containing all objects in
- *  the transport and their metadata
- *
  * Copyright (C) 2018 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -18,6 +15,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * \file
+ *
+ * The transport struct containing all objects in
+ *  the transport and their metadata
  */
 
 #ifndef __AUDIO_TRANSPORT_H__
@@ -93,6 +97,76 @@ typedef struct Transport
 	ZixSem             paused;         ///< Paused signal from process thread
   Play_State         play_state;     ///< play state
 } Transport;
+
+static const cyaml_strval_t
+beat_unit_strings[] =
+{
+	{ "2",      BEAT_UNIT_2    },
+	{ "4",      BEAT_UNIT_4    },
+	{ "8",      BEAT_UNIT_8    },
+	{ "16",     BEAT_UNIT_16   },
+};
+
+static const cyaml_schema_field_t
+transport_fields_schema[] =
+{
+  CYAML_FIELD_INT (
+    "total_bars", CYAML_FLAG_DEFAULT,
+    Transport, total_bars),
+  CYAML_FIELD_MAPPING (
+    "playhead_pos", CYAML_FLAG_DEFAULT,
+    Transport, playhead_pos,
+    position_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "cue_pos", CYAML_FLAG_DEFAULT,
+    Transport, cue_pos,
+    position_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "loop_start_pos", CYAML_FLAG_DEFAULT,
+    Transport, loop_start_pos,
+    position_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "loop_end_pos", CYAML_FLAG_DEFAULT,
+    Transport, loop_end_pos,
+    position_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "start_marker_pos", CYAML_FLAG_DEFAULT,
+    Transport, start_marker_pos,
+    position_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "end_marker_pos", CYAML_FLAG_DEFAULT,
+    Transport, end_marker_pos,
+    position_fields_schema),
+  CYAML_FIELD_INT (
+    "beats_per_bar", CYAML_FLAG_DEFAULT,
+    Transport, beats_per_bar),
+  CYAML_FIELD_ENUM (
+    "beat_unit", CYAML_FLAG_DEFAULT,
+    Transport, beat_unit, beat_unit_strings,
+    CYAML_ARRAY_LEN (beat_unit_strings)),
+  CYAML_FIELD_INT (
+    "position", CYAML_FLAG_DEFAULT,
+    Transport, position),
+  CYAML_FIELD_FLOAT (
+    "bpm", CYAML_FLAG_DEFAULT,
+    Transport, bpm),
+  CYAML_FIELD_INT (
+    "loop", CYAML_FLAG_DEFAULT,
+    Transport, loop),
+  CYAML_FIELD_INT (
+    "recording", CYAML_FLAG_DEFAULT,
+    Transport, recording),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+transport_schema =
+{
+	CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+	  Transport, transport_fields_schema),
+};
 
 /**
  * Initialize transport

@@ -19,28 +19,45 @@
   along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 -->
+
+
 <schemalist>
   <schema id="org.zrythm"
           path="/org/zrythm/">
-    <key name='browser-divider-position' type='i'>
-      <default>220</default>
-      <summary>Divider position</summary>
-      <description>
-        Height of the instrument browser on the top side of
-        the GtkPaned
-      </description>
-    </key>
   </schema>
 
+  <enum id="org.zrythm.preferences.audio-backend-enum">
+    <value nick="jack" value="0"/>
+    <value nick="port-audio" value="1"/>
+  </enum>
+  <enum id="org.zrythm.preferences.export-time-range-enum">
+    <value nick="song" value="0"/>
+    <value nick="loop" value="1"/>
+    <value nick="custom" value="2"/>
+  </enum>
+  <enum id="org.zrythm.preferences.export-format-enum">
+    <value nick="FLAC" value="0"/>
+    <value nick="OGG" value="1"/>
+    <value nick="WAV" value="2"/>
+    <value nick="MP3" value="3"/>
+  </enum>
+  <enum id="org.zrythm.ui.notenotation">
+    <value nick="notes" value="0"/>
+    <value nick="numbers" value="1"/>
+  </enum>
+
+  <!-- PREFERENCES schema -->
   <schema id="org.zrythm.preferences"
           path="/org/zrythm/preferences/">
-    <key name="audio-backend" type="i">
-      <default>0</default>
+
+    <key name="audio-backend" enum="org.zrythm.preferences.audio-backend-enum">
+      <default>"jack"</default>
       <summary>Audio Backend</summary>
       <description>
         The audio back end to use
       </description>
     </key>
+
     <key name="edit-region-size" type="i">
       <default>4</default>
       <summary>Region Size</summary>
@@ -49,20 +66,63 @@
         created regions
       </description>
     </key>
+
+    <!-- KEY: export artist -->
+    <key name="export-artist" type="s">
+      <default>"Zrythm"</default>
+      <summary>Artist to use when exporting</summary>
+      <description>
+        The artist to use by default when exporting. This value is saved/loaded in the export dialog.
+      </description>
+    </key>
+
+    <!-- KEY: export genre -->
+    <key name="export-genre" type="s">
+      <default>"Electronic"</default>
+      <summary>Genre to use when exporting</summary>
+      <description>
+        The genre to use by default when exporting. This value is saved/loaded in the export dialog.
+      </description>
+    </key>
+
+    <!-- KEY: export time range -->
+    <key name="export-time-range" enum="org.zrythm.preferences.export-time-range-enum">
+      <default>"song"</default>
+      <summary>Time range to use when exporting</summary>
+      <description>
+        The time range to display as selected by default when exporting. This value is saved when an export is done and remembered the next time the export dialog is displayed.
+      </description>
+    </key>
+
+    <!-- KEY: export format -->
+    <key name="export-format" enum="org.zrythm.preferences.export-format-enum">
+      <default>"FLAC"</default>
+      <summary>Format to use when exporting</summary>
+      <description>
+        The format to display as selected by default when exporting. This value is saved when an export is done and remembered the next time the export dialog is displayed.
+      </description>
+    </key>
   </schema>
 
-  <enum id="org.zrythm.ui.notenotation">
-    <value nick="notes" value="0"/>
-    <value nick="numbers" value="1"/>
-  </enum>
-
+  <!-- UI schema -->
   <schema id="org.zrythm.ui"
           path="/org/zrythm/ui/">
+    <!-- KEY: note notation -->
     <key name="note-notation" enum="org.zrythm.ui.notenotation">
       <default>"notes"</default>
       <summary>Note Notation</summary>
       <description>
         The note notation used in the piano roll. (note numbers or notes like C, C#)
+      </description>
+    </key>
+
+    <!-- KEY: browser divider position -->
+    <key name='browser-divider-position' type='i'>
+      <default>220</default>
+      <summary>Divider position</summary>
+      <description>
+        Height of the instrument browser on the top side of
+        the GtkPaned
       </description>
     </key>
   </schema>

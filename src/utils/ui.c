@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -43,8 +43,9 @@ ui_set_cursor (GtkWidget * widget, char * name)
  * Shows error popup.
  */
 void
-ui_show_error_message (GtkWindow * parent_window,
-                       const char * message)
+ui_show_error_message_full (
+  GtkWindow * parent_window,
+  const char * message)
 {
   GtkDialogFlags flags =
     GTK_DIALOG_DESTROY_WITH_PARENT;

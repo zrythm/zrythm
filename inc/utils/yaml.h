@@ -1,6 +1,4 @@
 /*
- * utils/yaml.h - YAML utils
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -17,6 +15,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * \file
+ *
+ * YAML utils.
  */
 
 #ifndef __UTILS_YAML_H__
@@ -105,7 +109,7 @@
   }
 
 static const cyaml_config_t config = {
-	.log_level = CYAML_LOG_WARNING, /* Logging errors and warnings only. */
+	.log_level = CYAML_LOG_DEBUG, /* Logging errors and warnings only. */
 	.log_fn = cyaml_log,            /* Use the default logging function. */
 	.mem_fn = cyaml_mem,            /* Use the default memory allocator. */
 };

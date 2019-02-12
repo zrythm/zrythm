@@ -1,6 +1,4 @@
 /*
- * inc/zrythm_app.h - The GTK application
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -19,13 +17,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * The GTK application.
+ */
+
 #ifndef __ZRYTHM_H__
 #define __ZRYTHM_H__
 
 #include "audio/snap_grid.h"
 #include "gui/backend/file_manager.h"
 #include "plugins/plugin_manager.h"
-#include "settings/preferences.h"
 #include "settings/settings.h"
 
 #include <gtk/gtk.h>
@@ -70,8 +73,6 @@ typedef struct Zrythm
   FileManager             file_manager;
 
   MainWindowWidget *      main_window; ///< main window
-
-  Preferences             preferences;
 
   /**
    * Application settings

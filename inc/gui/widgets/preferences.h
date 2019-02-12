@@ -1,6 +1,4 @@
 /*
- * gui/widgets/preferences.h - Preferences window
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -47,6 +45,6 @@ typedef struct _PreferencesWidget
 } PreferencesWidget;
 
 PreferencesWidget *
-preferences_widget_new (Preferences * preferences);
+preferences_widget_new ();
 
 #endif

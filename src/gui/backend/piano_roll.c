@@ -28,7 +28,7 @@
 #include <stdlib.h>
 
 #include "audio/channel.h"
-#include "audio/piano_roll.h"
+#include "gui/backend/piano_roll.h"
 #include "audio/track.h"
 #include "gui/widgets/piano_roll.h"
 #include "project.h"

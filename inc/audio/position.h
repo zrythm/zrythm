@@ -107,8 +107,9 @@ static const cyaml_schema_field_t
 
 static const cyaml_schema_value_t
 position_schema = {
-	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
-			Position, position_fields_schema),
+	CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    Position, position_fields_schema),
 };
 
 /**

@@ -1,7 +1,5 @@
 /*
- * gui/widgets/midi_note.c - MIDI Note
- *
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex@zrythm.org>
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,6 +20,7 @@
 #include "audio/bus_track.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
+#include "audio/region.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"

@@ -1,7 +1,5 @@
 /*
- * audio/export.h - Audio file exporter
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -22,12 +20,20 @@
 #ifndef __AUDIO_EXPORT_H__
 #define __AUDIO_EXPORT_H__
 
+/**
+ * Audio format.
+ */
 typedef enum AudioFormat
 {
   AUDIO_FORMAT_FLAC,
-  AUDIO_FORMAT_OGG
+  AUDIO_FORMAT_OGG,
+  AUDIO_FORMAT_WAV,
+  AUDIO_FORMAT_MP3,
 } AudioFormat;
 
+/**
+ * Bit depth.
+ */
 typedef enum BitDepth
 {
   BIT_DEPTH_16,
@@ -35,14 +41,26 @@ typedef enum BitDepth
   BIT_DEPTH_32
 } BitDepth;
 
-typedef struct ExportInfo
+/**
+ * Export settings to be passed to the exporter
+ * to use.
+ */
+typedef struct ExportSettings
 {
   AudioFormat       format;
+  char *            artist;
+  char *            genre;
   BitDepth          depth;
   char *            file_uri;
-} ExportInfo;
+} ExportSettings;
 
+/**
+ * Exports an audio file based on the given
+ * settings.
+ *
+ * TODO move some things into functions.
+ */
 void
-exporter_export (ExportInfo * info);
+exporter_export (ExportSettings * info);
 
 #endif

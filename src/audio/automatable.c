@@ -1,7 +1,5 @@
 /*
- * audio/automatable.c - An automatable
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -42,6 +40,7 @@ automatable_create_fader (Channel * channel)
   Automatable * automatable = _create_blank ();
 
   automatable->track = channel->track;
+  automatable->track_id = channel->track->id;
   automatable->label = g_strdup ("Volume");
   automatable->type = AUTOMATABLE_TYPE_CHANNEL_FADER;
 
@@ -54,6 +53,7 @@ automatable_create_pan (Channel * channel)
   Automatable * automatable = _create_blank ();
 
   automatable->track = channel->track;
+  automatable->track_id = channel->track->id;
   automatable->label = g_strdup ("Pan");
   automatable->type = AUTOMATABLE_TYPE_CHANNEL_PAN;
 
@@ -66,6 +66,7 @@ automatable_create_mute (Channel * channel)
   Automatable * automatable = _create_blank ();
 
   automatable->track = channel->track;
+  automatable->track_id = channel->track->id;
   automatable->label = g_strdup ("Mute");
   automatable->type = AUTOMATABLE_TYPE_CHANNEL_MUTE;
 
@@ -81,9 +82,12 @@ automatable_create_lv2_control (Plugin *       plugin,
   automatable->control = control;
   LV2_Port * port = &control->plugin->ports[control->index];
   automatable->port = port->port;
+  automatable->port_id = port->port->id;
   /*automatable->index = control->index;*/
   automatable->type = AUTOMATABLE_TYPE_PLUGIN_CONTROL;
   automatable->track = plugin->channel->track;
+  automatable->track_id =
+    plugin->channel->track->id;
   automatable->slot_index =
     channel_get_plugin_index (plugin->channel,
                               plugin);
@@ -93,12 +97,15 @@ automatable_create_lv2_control (Plugin *       plugin,
 }
 
 Automatable *
-automatable_create_plugin_enabled (Plugin *       plugin)
+automatable_create_plugin_enabled (
+  Plugin * plugin)
 {
   Automatable * automatable = _create_blank ();
 
   automatable->type = AUTOMATABLE_TYPE_PLUGIN_ENABLED;
   automatable->track = plugin->channel->track;
+  automatable->track_id =
+    plugin->channel->track->id;
   automatable->slot_index =
     channel_get_plugin_index (plugin->channel,
                               plugin);
@@ -208,5 +215,4 @@ automatable_get_automation_track (Automatable * automatable)
     }
   return NULL;
 }
-
 

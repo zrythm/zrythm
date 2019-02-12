@@ -1,7 +1,5 @@
 /*
- * settings.h - Settings
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -25,6 +23,8 @@
 #include <gtk/gtk.h>
 
 #define SETTINGS (&ZRYTHM->settings)
+#define S_PREFERENCES SETTINGS->preferences
+#define S_UI SETTINGS->ui
 
 typedef struct Settings
 {

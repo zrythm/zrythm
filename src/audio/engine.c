@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,7 +36,6 @@
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"
-#include "settings/preferences.h"
 
 #include <gtk/gtk.h>
 
@@ -66,7 +65,10 @@ engine_init (AudioEngine * self)
 
   transport_init (&self->transport);
 
-  self->backend = PREFERENCES->audio_backend;
+  self->backend =
+    g_settings_get_enum (
+      S_PREFERENCES,
+      "audio-backend");
 
   /* init semaphore */
   zix_sem_init (&self->port_operation_lock, 1);

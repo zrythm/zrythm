@@ -1,7 +1,5 @@
 /*
- * audio/exporter.c - Audio file exporter
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,6 +17,15 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Audio file exporter.
+ *
+ * Currently used by the export dialog to export
+ * the mixdown.
+ */
+
 #include <stdio.h>
 
 #include "audio/channel.h"
@@ -34,15 +41,24 @@
 
 #define	AMPLITUDE	(1.0 * 0x7F000000)
 
+/**
+ * Exports an audio file based on the given
+ * settings.
+ *
+ * TODO move some things into functions.
+ */
 void
-exporter_export (ExportInfo * info)
+exporter_export (ExportSettings * info)
 {
   if (info->format == AUDIO_FORMAT_FLAC)
     {
       SF_INFO sfinfo;
       memset (&sfinfo, 0, sizeof (sfinfo));
-      sfinfo.frames	= position_to_frames (&TRANSPORT->end_marker_pos) -
-        position_to_frames (&TRANSPORT->start_marker_pos);
+      sfinfo.frames =
+        position_to_frames (
+          &TRANSPORT->end_marker_pos) -
+          position_to_frames (
+            &TRANSPORT->start_marker_pos);
       sfinfo.samplerate = AUDIO_ENGINE->sample_rate;
       sfinfo.channels = 2;
       if (info->depth == BIT_DEPTH_16)
@@ -69,19 +85,37 @@ exporter_export (ExportInfo * info)
 
       if (sndfile)
         {
-          sf_set_string (sndfile, SF_STR_TITLE, PROJECT->title);
-          sf_set_string (sndfile, SF_STR_SOFTWARE, "Zrythm");
-          sf_set_string (sndfile, SF_STR_ARTIST, "One Night Alive");
-          sf_set_string (sndfile, SF_STR_GENRE, "Electronic");
+          sf_set_string (
+            sndfile,
+            SF_STR_TITLE,
+            PROJECT->title);
+          sf_set_string (
+            sndfile,
+            SF_STR_SOFTWARE,
+            "Zrythm");
+          sf_set_string (
+            sndfile,
+            SF_STR_ARTIST,
+            info->artist);
+          sf_set_string (
+            sndfile,
+            SF_STR_GENRE,
+            info->genre);
 
           Position prev_playhead_pos;
-          position_set_to_pos (&prev_playhead_pos, &TRANSPORT->playhead_pos);
-          position_set_to_pos (&TRANSPORT->playhead_pos,
-                               &TRANSPORT->start_marker_pos);
-          Play_State prev_play_state = TRANSPORT->play_state;
-          TRANSPORT->play_state = PLAYSTATE_ROLLING;
+          position_set_to_pos (
+            &prev_playhead_pos,
+            &TRANSPORT->playhead_pos);
+          position_set_to_pos (
+            &TRANSPORT->playhead_pos,
+            &TRANSPORT->start_marker_pos);
+          Play_State prev_play_state =
+            TRANSPORT->play_state;
+          TRANSPORT->play_state =
+            PLAYSTATE_ROLLING;
 
-          zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
+          zix_sem_wait (
+            &AUDIO_ENGINE->port_operation_lock);
 
           do
             {
@@ -158,6 +192,5 @@ exporter_export (ExportInfo * info)
         }
 
     }
-
 }
 

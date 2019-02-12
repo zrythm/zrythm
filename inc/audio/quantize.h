@@ -1,6 +1,4 @@
 /*
- * audio/quantize.h - Quantize info
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -19,11 +17,19 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Quantize info.
+ */
+
 #ifndef __AUDIO_QUANTIZE_H__
 #define __AUDIO_QUANTIZE_H__
 
 #include "audio/position.h"
 #include "audio/snap_grid.h"
+
+#include "utils/yaml.h"
 
 #define QUANTIZE_IS_MIDI(q) \
   (&ZRYTHM->quantize_midi == q)
@@ -56,6 +62,31 @@ typedef struct Quantize
   Position         snap_points[MAX_SNAP_POINTS];
   int              num_snap_points;
 } Quantize;
+
+static const cyaml_schema_field_t
+  quantize_fields_schema[] =
+{
+  CYAML_FIELD_INT (
+    "use_grid", CYAML_FLAG_DEFAULT,
+    Quantize, use_grid),
+  CYAML_FIELD_ENUM (
+    "note_length", CYAML_FLAG_DEFAULT,
+    Quantize, note_length, note_length_strings,
+    CYAML_ARRAY_LEN (note_length_strings)),
+  CYAML_FIELD_ENUM (
+    "note_type", CYAML_FLAG_DEFAULT,
+    Quantize, note_type, note_type_strings,
+    CYAML_ARRAY_LEN (note_type_strings)),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+quantize_schema = {
+	CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+	  Quantize, quantize_fields_schema),
+};
 
 /**
  * Initializes the quantize struct.

@@ -1,6 +1,4 @@
 /*
- * zrythm_app.c - The GTK app
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -24,18 +22,17 @@
 #include "actions/undo_manager.h"
 #include "audio/engine.h"
 #include "audio/mixer.h"
-#include "audio/piano_roll.h"
 #include "audio/quantize.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/accel.h"
 #include "gui/backend/file_manager.h"
+#include "gui/backend/piano_roll.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/splash.h"
 #include "gui/widgets/start_assistant.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
-#include "settings/preferences.h"
 #include "settings/settings.h"
 #include "utils/io.h"
 
@@ -161,8 +158,6 @@ task_func (GTask *task,
       break;
     case TASK_INIT_SETTINGS:
       settings_init (&ZRYTHM->settings);
-      preferences_init (&ZRYTHM->preferences,
-                        &ZRYTHM->settings);
       data->message =
         "Initializing audio engine";
       data->progress = 0.4;

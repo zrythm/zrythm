@@ -1,7 +1,5 @@
 /*
- * utils/ui.h - GTK/GDK utils
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,6 +15,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * \file
+ *
+ * User Interface utils.
+ *
  */
 
 #ifndef __UTILS_UI_H__
@@ -42,6 +47,15 @@ typedef struct Position Position;
   g_warning (msg); \
   g_idle_add ((GSourceFunc) ui_show_notification_idle_func, \
               (void *) text)
+
+/**
+ * Wrapper to show error message so that no casting
+ * of the window is needed on the caller side.
+ */
+#define ui_show_error_message(win, msg) \
+    ui_show_error_message_full ( \
+      GTK_WINDOW (win), \
+      msg);
 
 /**
  * Various cursor states to be shared.
@@ -85,8 +99,9 @@ void
 ui_set_cursor (GtkWidget * widget, char * name);
 
 void
-ui_show_error_message (GtkWindow * parent_window,
-                       const char * message);
+ui_show_error_message_full (
+  GtkWindow * parent_window,
+  const char * message);
 
 /**
  * Returns if the child is hit or not by the coordinates in

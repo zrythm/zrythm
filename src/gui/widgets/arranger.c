@@ -926,23 +926,30 @@ arranger_widget_setup (ArrangerWidget *   self,
                                  1);
 
   /* connect signals */
-  g_signal_connect (G_OBJECT (self), "get-child-position",
-                    G_CALLBACK (get_child_position), NULL);
-  g_signal_connect (G_OBJECT(ar_prv->drag), "drag-begin",
-                    G_CALLBACK (drag_begin),  self);
-  g_signal_connect (G_OBJECT(ar_prv->drag), "drag-update",
-                    G_CALLBACK (drag_update),  self);
-  g_signal_connect (G_OBJECT(ar_prv->drag), "drag-end",
-                    G_CALLBACK (drag_end),  self);
-  g_signal_connect (G_OBJECT (ar_prv->multipress), "pressed",
-                    G_CALLBACK (multipress_pressed), self);
-  g_signal_connect (G_OBJECT (ar_prv->right_mouse_mp),
-                    "pressed",
-                    G_CALLBACK (on_right_click), self);
-  g_signal_connect (G_OBJECT (self), "key-press-event",
-                    G_CALLBACK (on_key_action), self);
-  g_signal_connect (G_OBJECT (self), "key-release-event",
-                    G_CALLBACK (on_key_action), self);
+  g_signal_connect (
+    G_OBJECT (self), "get-child-position",
+    G_CALLBACK (get_child_position), NULL);
+  g_signal_connect (
+    G_OBJECT(ar_prv->drag), "drag-begin",
+    G_CALLBACK (drag_begin),  self);
+  g_signal_connect (
+    G_OBJECT(ar_prv->drag), "drag-update",
+    G_CALLBACK (drag_update),  self);
+  g_signal_connect (
+    G_OBJECT(ar_prv->drag), "drag-end",
+    G_CALLBACK (drag_end),  self);
+  g_signal_connect (
+    G_OBJECT (ar_prv->multipress), "pressed",
+    G_CALLBACK (multipress_pressed), self);
+  g_signal_connect (
+    G_OBJECT (ar_prv->right_mouse_mp), "pressed",
+    G_CALLBACK (on_right_click), self);
+  g_signal_connect (
+    G_OBJECT (self), "key-press-event",
+    G_CALLBACK (on_key_action), self);
+  g_signal_connect (
+    G_OBJECT (self), "key-release-event",
+    G_CALLBACK (on_key_action), self);
 }
 
 /**

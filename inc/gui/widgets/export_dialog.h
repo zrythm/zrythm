@@ -1,7 +1,5 @@
 /*
- * gui/widgets/export_dialog.h - Export audio dialog
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -35,21 +33,22 @@ G_DECLARE_FINAL_TYPE (ExportDialogWidget,
 typedef struct _ExportDialogWidget
 {
   GtkDialog            parent_instance;
-  GtkButton            * cancel_button;
-  GtkButton            * export_button;
-  GtkComboBox          * pattern_cb;
-  GtkListBox           * tracks_list;
-  GtkButton            * arrangement_button;
-  GtkBox               * start_box;
-  GtkButton            * loop_button;
-  GtkBox               * end_box;
-  GtkComboBox          * format_cb;
-  GtkCheckButton       * dither_check;
-  GtkLabel             * output_label;
+  GtkButton *          cancel_button;
+  GtkButton *          export_button;
+  GtkEntry *           export_artist;
+  GtkEntry *           export_genre;
+  GtkComboBox *        filename_pattern;
+  GtkListBox *         tracks;
+  GtkToggleButton *    time_range_song;
+  GtkToggleButton *    time_range_loop;
+  GtkToggleButton *    time_range_custom;
+  GtkComboBox *        format;
+  GtkCheckButton *     dither;
+  GtkLabel *           output_label;
 } ExportDialogWidget;
 
 /**
- * Creates a export_dialog widget and displays it.
+ * Creates an export dialog widget and displays it.
  */
 ExportDialogWidget *
 export_dialog_widget_new ();

@@ -1,7 +1,5 @@
 /*
- * gui/widgets/midi_modifier_chooser.h - Choose MIDI modifier
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,6 +15,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * \file
+ *
+ * This widget is for choosing a MIDI modifier
+ * (velocity, pitch bend, etc.) to show in the
+ * MIDI modifier arranger.
  */
 
 #ifndef __GUI_WIDGETS_MIDI_MODIFIER_CHOOSER_H__

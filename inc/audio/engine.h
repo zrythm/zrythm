@@ -1,7 +1,5 @@
 /*
- * audio/engine.h - Audio engine
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,6 +15,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * \file
+ *
+ * The audio engine.
  */
 
 #ifndef __AUDIO_ENGINE_H__
@@ -67,6 +71,17 @@ typedef struct AudioEngine
   int               frames_per_tick;  ///< number of frames per tick
 	int               buf_size_set;   ///< True iff buffer size callback fired
   Mixer              mixer;        ///< the mixer
+
+  /**
+   * To be serialized instead of StereoPorts.
+   */
+  int               stereo_in_l_id;
+  int               stereo_in_r_id;
+  int               stereo_out_l_id;
+  int               stereo_out_r_id;
+  int               midi_in_id;
+  int               midi_editor_manual_press_id;;
+
   StereoPorts       * stereo_in;  ///< stereo in ports from JACK
   StereoPorts       * stereo_out;  ///< stereo out ports to JACK
   Port              * midi_in;     ///< MIDI in port from JACK
@@ -102,6 +117,53 @@ typedef struct AudioEngine
   gint64            max_time_taken;
 
 } AudioEngine;
+
+static const cyaml_schema_field_t
+engine_fields_schema[] =
+{
+  CYAML_FIELD_INT (
+    "sample_rate", CYAML_FLAG_DEFAULT,
+    AudioEngine, sample_rate),
+  CYAML_FIELD_INT (
+    "frames_per_tick", CYAML_FLAG_DEFAULT,
+    AudioEngine, frames_per_tick),
+  CYAML_FIELD_MAPPING (
+    "mixer", CYAML_FLAG_DEFAULT,
+    AudioEngine, mixer,
+    mixer_fields_schema),
+  CYAML_FIELD_INT (
+    "stereo_in_l_id", CYAML_FLAG_DEFAULT,
+    AudioEngine, stereo_in_l_id),
+  CYAML_FIELD_INT (
+    "stereo_in_r_id", CYAML_FLAG_DEFAULT,
+    AudioEngine, stereo_in_r_id),
+  CYAML_FIELD_INT (
+    "stereo_out_l_id", CYAML_FLAG_DEFAULT,
+    AudioEngine, stereo_out_l_id),
+  CYAML_FIELD_INT (
+    "stereo_out_r_id", CYAML_FLAG_DEFAULT,
+    AudioEngine, stereo_out_r_id),
+  CYAML_FIELD_INT (
+    "midi_in_id", CYAML_FLAG_DEFAULT,
+    AudioEngine, midi_in_id),
+  CYAML_FIELD_INT (
+    "midi_editor_manual_press_id", CYAML_FLAG_DEFAULT,
+    AudioEngine, midi_editor_manual_press_id),
+  CYAML_FIELD_MAPPING (
+    "transport", CYAML_FLAG_DEFAULT,
+    AudioEngine, transport,
+    transport_fields_schema),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+engine_schema =
+{
+	CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+	  AudioEngine, engine_fields_schema),
+};
 
 /**
  * Inits audio engine.
