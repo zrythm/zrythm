@@ -29,6 +29,7 @@ typedef enum AudioFormat
   AUDIO_FORMAT_OGG,
   AUDIO_FORMAT_WAV,
   AUDIO_FORMAT_MP3,
+  NUM_AUDIO_FORMATS,
 } AudioFormat;
 
 /**
@@ -41,6 +42,13 @@ typedef enum BitDepth
   BIT_DEPTH_32
 } BitDepth;
 
+typedef enum ExportTimeRange
+{
+  TIME_RANGE_LOOP,
+  TIME_RANGE_SONG,
+  TIME_RANGE_CUSTOM,
+} ExportTimeRange;
+
 /**
  * Export settings to be passed to the exporter
  * to use.
@@ -48,11 +56,34 @@ typedef enum BitDepth
 typedef struct ExportSettings
 {
   AudioFormat       format;
-  char *            artist;
-  char *            genre;
+  const char *      artist;
+  const char *      genre;
+
+  /**
+   * Bit depth (16/24/64).
+   */
   BitDepth          depth;
+  ExportTimeRange   time_range;
+
+  /**
+   * In case of custom time range.
+   */
+  Position          custom_start;
+  Position          custom_end;
+
+  /**
+   * Dither or not.
+   */
+  int               dither;
+
+  /**
+   * Absolute path for export file.
+   */
   char *            file_uri;
 } ExportSettings;
+
+char *
+exporter_stringize_audio_format (AudioFormat format);
 
 /**
  * Exports an audio file based on the given

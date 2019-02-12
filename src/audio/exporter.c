@@ -34,12 +34,40 @@
 #include "audio/mixer.h"
 #include "audio/position.h"
 #include "audio/transport.h"
+#include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/io.h"
+#include "utils/ui.h"
 
 #include <sndfile.h>
 
 #define	AMPLITUDE	(1.0 * 0x7F000000)
+
+char *
+exporter_stringize_audio_format (AudioFormat format)
+{
+  char * str;
+
+  switch (format)
+    {
+    case AUDIO_FORMAT_FLAC:
+      str = g_strdup ("FLAC");
+      break;
+    case AUDIO_FORMAT_OGG:
+      str = g_strdup ("ogg");
+      break;
+    case AUDIO_FORMAT_WAV:
+      str = g_strdup ("wav");
+      break;
+    case AUDIO_FORMAT_MP3:
+      str = g_strdup ("mp3");
+      break;
+    case NUM_AUDIO_FORMATS:
+      break;
+    }
+
+  return str;
+}
 
 /**
  * Exports an audio file based on the given
@@ -50,147 +78,239 @@
 void
 exporter_export (ExportSettings * info)
 {
+  SF_INFO sfinfo;
+  memset (&sfinfo, 0, sizeof (sfinfo));
+
   if (info->format == AUDIO_FORMAT_FLAC)
     {
-      SF_INFO sfinfo;
-      memset (&sfinfo, 0, sizeof (sfinfo));
+      sfinfo.format = SF_FORMAT_FLAC;
+    }
+  else if (info->format == AUDIO_FORMAT_WAV)
+    {
+      sfinfo.format = SF_FORMAT_WAV;
+    }
+  else if (info->format == AUDIO_FORMAT_OGG)
+    {
+      sfinfo.format = SF_FORMAT_OGG;
+    }
+  else
+    {
+      ui_show_error_message (
+        MAIN_WINDOW,
+        "Format not supported yet");
+      return;
+    }
+
+  if (info->format == AUDIO_FORMAT_OGG)
+    {
+      sfinfo.format =
+        sfinfo.format | SF_FORMAT_VORBIS;
+    }
+  else if (info->depth == BIT_DEPTH_16)
+    {
+      sfinfo.format =
+        sfinfo.format | SF_FORMAT_PCM_16;
+    }
+  else if (info->depth == BIT_DEPTH_24)
+    {
+      sfinfo.format =
+        sfinfo.format | SF_FORMAT_PCM_24;
+    }
+  else if (info->depth == BIT_DEPTH_32)
+    {
+      sfinfo.format =
+        sfinfo.format | SF_FORMAT_PCM_32;
+    }
+
+  if (info->time_range ==
+        TIME_RANGE_SONG)
+    {
       sfinfo.frames =
         position_to_frames (
           &TRANSPORT->end_marker_pos) -
           position_to_frames (
             &TRANSPORT->start_marker_pos);
-      sfinfo.samplerate = AUDIO_ENGINE->sample_rate;
-      sfinfo.channels = 2;
-      if (info->depth == BIT_DEPTH_16)
-        {
-          sfinfo.format = SF_FORMAT_FLAC | SF_FORMAT_PCM_16;
-        }
-      else if (info->depth == BIT_DEPTH_24)
-        {
-          sfinfo.format = SF_FORMAT_FLAC | SF_FORMAT_PCM_24;
-        }
-      else if (info->depth == BIT_DEPTH_32)
-        {
-          sfinfo.format = SF_FORMAT_FLAC | SF_FORMAT_PCM_32;
-        }
-      if (!sf_format_check (&sfinfo))
-        {
-          g_warning ("SF_INFO invalid");
-          return;
-        }
-      char * dir = io_get_dir (info->file_uri);
-      io_mkdir (dir);
-      g_free (dir);
-      SNDFILE * sndfile = sf_open (info->file_uri, SFM_WRITE, &sfinfo);
+    }
+  else if (info->time_range ==
+             TIME_RANGE_LOOP)
+    {
+      sfinfo.frames =
+        position_to_frames (
+          &TRANSPORT->loop_end_pos) -
+          position_to_frames (
+            &TRANSPORT->loop_start_pos);
+    }
 
-      if (sndfile)
-        {
-          sf_set_string (
-            sndfile,
-            SF_STR_TITLE,
-            PROJECT->title);
-          sf_set_string (
-            sndfile,
-            SF_STR_SOFTWARE,
-            "Zrythm");
-          sf_set_string (
-            sndfile,
-            SF_STR_ARTIST,
-            info->artist);
-          sf_set_string (
-            sndfile,
-            SF_STR_GENRE,
-            info->genre);
+  sfinfo.samplerate = AUDIO_ENGINE->sample_rate;
+  sfinfo.channels = 2;
 
-          Position prev_playhead_pos;
-          position_set_to_pos (
-            &prev_playhead_pos,
-            &TRANSPORT->playhead_pos);
+  if (!sf_format_check (&sfinfo))
+    {
+      ui_show_error_message (
+        MAIN_WINDOW,
+        "SF INFO invalid");
+      return;
+    }
+
+  char * dir = io_get_dir (info->file_uri);
+  io_mkdir (dir);
+  g_free (dir);
+  SNDFILE * sndfile =
+    sf_open (info->file_uri, SFM_WRITE, &sfinfo);
+
+  if (sndfile)
+    {
+      sf_set_string (
+        sndfile,
+        SF_STR_TITLE,
+        PROJECT->title);
+      sf_set_string (
+        sndfile,
+        SF_STR_SOFTWARE,
+        "Zrythm");
+      sf_set_string (
+        sndfile,
+        SF_STR_ARTIST,
+        info->artist);
+      sf_set_string (
+        sndfile,
+        SF_STR_GENRE,
+        info->genre);
+
+      Position prev_playhead_pos;
+      Position stop_pos; // position to stop at
+      position_set_to_pos (
+        &prev_playhead_pos,
+        &TRANSPORT->playhead_pos);
+      if (info->time_range ==
+            TIME_RANGE_SONG)
+        {
           position_set_to_pos (
             &TRANSPORT->playhead_pos,
             &TRANSPORT->start_marker_pos);
-          Play_State prev_play_state =
-            TRANSPORT->play_state;
-          TRANSPORT->play_state =
-            PLAYSTATE_ROLLING;
+          position_set_to_pos (
+            &stop_pos,
+            &TRANSPORT->end_marker_pos);
+        }
+      else if (info->time_range ==
+                 TIME_RANGE_LOOP)
+        {
+          position_set_to_pos (
+            &TRANSPORT->playhead_pos,
+            &TRANSPORT->loop_start_pos);
+          position_set_to_pos (
+            &stop_pos,
+            &TRANSPORT->loop_end_pos);
+        }
+      Play_State prev_play_state =
+        TRANSPORT->play_state;
+      TRANSPORT->play_state =
+        PLAYSTATE_ROLLING;
 
-          zix_sem_wait (
-            &AUDIO_ENGINE->port_operation_lock);
+      zix_sem_wait (
+        &AUDIO_ENGINE->port_operation_lock);
 
-          do
+      do
+        {
+
+          /* set all to unprocessed for this cycle */
+          for (int i = 0; i < MIXER->num_channels; i++)
             {
+              Channel * channel = MIXER->channels[i];
+              channel->processed = 0;
+              for (int j = 0; j < STRIP_SIZE; j++)
+                {
+                  if (channel->plugins[j])
+                    {
+                      channel->plugins[j]->processed = 0;
+                    }
+                }
+            }
 
-              /* set all to unprocessed for this cycle */
+          int loop = 1;
+
+          /* wait for channels to finish processing */
+          while (loop)
+            {
+              loop = 0;
               for (int i = 0; i < MIXER->num_channels; i++)
                 {
-                  Channel * channel = MIXER->channels[i];
-                  channel->processed = 0;
-                  for (int j = 0; j < STRIP_SIZE; j++)
+                  if (!MIXER->channels[i]->processed)
                     {
-                      if (channel->plugins[j])
-                        {
-                          channel->plugins[j]->processed = 0;
-                        }
+                      loop = 1;
+                      break;
                     }
                 }
+            }
 
-              int loop = 1;
-
-              /* wait for channels to finish processing */
-              while (loop)
-                {
-                  loop = 0;
-                  for (int i = 0; i < MIXER->num_channels; i++)
-                    {
-                      if (!MIXER->channels[i]->processed)
-                        {
-                          loop = 1;
-                          break;
-                        }
-                    }
-                }
-
-              /* process master channel */
-              channel_process (MIXER->master);
+          /* process master channel */
+          channel_process (MIXER->master);
 
 
-              /* by this time, the Master channel should have its Stereo Out ports filled.
-               * pass their buffers to jack's buffers */
-              int count= 0;
-              int out_ptr[AUDIO_ENGINE->nframes * 2];
-              for (int i = 0; i < AUDIO_ENGINE->nframes; i++)
-                {
-                  out_ptr[count++] = AMPLITUDE *
-                    MIXER->master->stereo_out->l->buf[i];
-                  out_ptr[count++] = AMPLITUDE *
-                    MIXER->master->stereo_out->r->buf[i];
-                  /*if (out_ptr [count - 1] > 0)*/
-                    /*g_message ("val l%d r%d", out_ptr [count - 2],*/
-                               /*out_ptr [count - 1]);*/
-                }
+          /* by this time, the Master channel should have its Stereo Out ports filled.
+           * pass their buffers to jack's buffers */
+          int count= 0;
+          int out_ptr[AUDIO_ENGINE->nframes * 2];
+          for (int i = 0; i < AUDIO_ENGINE->nframes; i++)
+            {
+              out_ptr[count++] = AMPLITUDE *
+                MIXER->master->stereo_out->l->buf[i];
+              out_ptr[count++] = AMPLITUDE *
+                MIXER->master->stereo_out->r->buf[i];
+              /*if (out_ptr [count - 1] > 0)*/
+                /*g_message ("val l%d r%d", out_ptr [count - 2],*/
+                           /*out_ptr [count - 1]);*/
+            }
 
-              sf_write_int (sndfile, out_ptr, count);
+          sf_write_int (sndfile, out_ptr, count);
 
-              /* move playhead as many samples as processed */
-              transport_add_to_playhead (AUDIO_ENGINE->nframes);
-            } while (position_compare (&TRANSPORT->playhead_pos,
-                                       &TRANSPORT->end_marker_pos) <= 0);
+          /* move playhead as many samples as processed */
+          transport_add_to_playhead (AUDIO_ENGINE->nframes);
+        } while (
+            position_compare (
+              &TRANSPORT->playhead_pos,
+              &stop_pos) <= 0);
 
-          zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
+      zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
 
-          TRANSPORT->play_state = prev_play_state;
-          position_set_to_pos (&TRANSPORT->playhead_pos,
-                               &prev_playhead_pos);
+      TRANSPORT->play_state = prev_play_state;
+      position_set_to_pos (
+        &TRANSPORT->playhead_pos,
+        &prev_playhead_pos);
 
 
-          sf_close (sndfile);
-        }
-      else
+      sf_close (sndfile);
+    }
+  else
+    {
+      int error = sf_error (NULL);
+      char * error_str;
+      switch (error)
         {
-          g_warning ("Couldn't open SNDFILE %s", info->file_uri);
-          return;
+        case 1:
+          error_str =
+            g_strdup ("Unrecognized format");
+          break;
+        case 2:
+          error_str =
+            g_strdup ("System error");
+          break;
+        case 3:
+          error_str =
+            g_strdup ("Malformed file");
+          break;
+        case 4:
+          error_str =
+            g_strdup ("Unsupported encoding");
+          break;
         }
 
+      g_warning ("Couldn't open SNDFILE %s:\n%s",
+                 info->file_uri,
+                 error_str);
+      g_free (error_str);
+
+      return;
     }
 }
 

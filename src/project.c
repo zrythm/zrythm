@@ -75,6 +75,10 @@ update_paths (const char * dir)
     g_build_filename (PROJECT->dir,
                       PROJECT_STATES_DIR,
                       NULL);
+  PROJECT->exports_dir =
+    g_build_filename (PROJECT->dir,
+                      PROJECT_EXPORTS_DIR,
+                      NULL);
   g_message ("updated paths %s", PROJECT->dir);
 }
 
@@ -199,8 +203,6 @@ project_save (const char * dir)
   /*xml_write_ports ();*/
   /*xml_write_regions ();*/
   /*xml_write_project ();*/
-  g_message ("plugin %p", PROJECT->plugins[0]);
-  g_message ("descr %p", PROJECT->plugins[0]->descr);
   char * yaml = project_serialize (PROJECT);
   g_message ("\n%s", yaml);
 

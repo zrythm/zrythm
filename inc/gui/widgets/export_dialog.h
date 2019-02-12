@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -43,6 +43,7 @@ typedef struct _ExportDialogWidget
   GtkToggleButton *    time_range_loop;
   GtkToggleButton *    time_range_custom;
   GtkComboBox *        format;
+  GtkComboBox *        bit_depth;
   GtkCheckButton *     dither;
   GtkLabel *           output_label;
 } ExportDialogWidget;

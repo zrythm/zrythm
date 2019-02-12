@@ -54,6 +54,7 @@
 #define PROJECT_PORTS_FILE      "ports.xml"
 #define PROJECT_REGIONS_DIR     "Regions"
 #define PROJECT_STATES_DIR      "states"
+#define PROJECT_EXPORTS_DIR     "exports"
 
 /* project xml version */
 #define PROJECT_XML_VER "0.1"
@@ -86,6 +87,7 @@ typedef struct Project
   char              * ports_file_path;
   char              * regions_dir;
   char              * states_dir;
+  char              * exports_dir;
 
   UndoManager         undo_manager;
 

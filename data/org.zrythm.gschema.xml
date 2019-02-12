@@ -41,6 +41,11 @@
     <value nick="WAV" value="2"/>
     <value nick="MP3" value="3"/>
   </enum>
+  <enum id="org.zrythm.preferences.export-bit-depth-enum">
+    <value nick="16" value="0"/>
+    <value nick="24" value="1"/>
+    <value nick="23" value="2"/>
+  </enum>
   <enum id="org.zrythm.ui.notenotation">
     <value nick="notes" value="0"/>
     <value nick="numbers" value="1"/>
@@ -100,6 +105,24 @@
       <summary>Format to use when exporting</summary>
       <description>
         The format to display as selected by default when exporting. This value is saved when an export is done and remembered the next time the export dialog is displayed.
+      </description>
+    </key>
+
+    <!-- KEY: export dither -->
+    <key name="export-dither" type="i">
+      <default>0</default>
+      <summary>Add dither to export</summary>
+      <description>
+        Add dither while exporting.
+      </description>
+    </key>
+
+    <!-- KEY: export bit depth -->
+    <key name="export-bit-depth" enum="org.zrythm.preferences.export-bit-depth-enum">
+      <default>"24"</default>
+      <summary>Bit depth to use when exporting</summary>
+      <description>
+        Bit depth to use when exporting.
       </description>
     </key>
   </schema>
