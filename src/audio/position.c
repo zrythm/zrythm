@@ -358,8 +358,9 @@ position_snap (Position * prev_pos, ///< prev pos
    * the check should be done before calling */
   g_assert (SNAP_GRID_ANY_SNAP (sg));
 
-  if (sg->snap_to_grid && !sg->snap_to_grid_keep_offset &&
-      !sg->snap_to_events)
+  if ((sg->snap_to_grid && !sg->snap_to_grid_keep_offset &&
+      !sg->snap_to_events) ||
+      (!track && !region))
     {
       snap_pos (pos, sg);
     }

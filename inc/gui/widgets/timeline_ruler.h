@@ -63,6 +63,14 @@ typedef struct _TimelineRulerWidget
   RulerRangeWidget *       range;
 
   /**
+   * Set on drag begin.
+   *
+   * Useful for moving range.
+   */
+  Position                 range1_start_pos;
+  Position                 range2_start_pos;
+
+  /**
    * Markers.
    */
   RulerMarkerWidget *      song_start;

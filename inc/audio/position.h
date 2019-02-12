@@ -1,7 +1,7 @@
 /*
  * audio/postition.h - A position on the timeline
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -51,6 +51,12 @@
 #define position_add_bars(position, _b) \
   position_set_bar (position, \
                      (position)->bars + _b)
+#define position_snap_simple(pos, sg) \
+  position_snap (0, \
+                 pos, \
+                 0, \
+                 0, \
+                 sg)
 
 typedef struct SnapGrid SnapGrid;
 typedef struct Track Track;

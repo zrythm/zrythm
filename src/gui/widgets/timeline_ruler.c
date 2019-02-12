@@ -20,11 +20,16 @@
 #include "audio/engine.h"
 #include "audio/position.h"
 #include "audio/transport.h"
+#include "gui/widgets/arranger.h"
+#include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/ruler_marker.h"
 #include "gui/widgets/ruler_range.h"
+#include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "project.h"
 #include "utils/ui.h"
@@ -152,6 +157,13 @@ on_drag_begin_range_hit (TimelineRulerWidget * self,
       self->action = UI_OVERLAY_ACTION_STARTING_MOVING;
       ui_set_cursor (GTK_WIDGET (rr), "grabbing");
     }
+
+  position_set_to_pos (
+    &self->range1_start_pos,
+    &PROJECT->range_1);
+  position_set_to_pos (
+    &self->range2_start_pos,
+    &PROJECT->range_2);
 }
 
 static gboolean
@@ -168,6 +180,9 @@ multipress_pressed (GtkGestureMultiPress *gesture,
         x,
         &pos,
         1);
+      position_snap_simple (
+        &pos,
+        SNAP_GRID_TIMELINE);
       position_set_to_pos (&TRANSPORT->cue_pos,
                            &pos);
 
@@ -235,6 +250,9 @@ drag_begin (GtkGestureDrag *       gesture,
         start_x,
         &pos,
         1);
+      position_snap_simple (
+        &pos,
+        SNAP_GRID_TIMELINE);
       transport_move_playhead (&pos, 1);
       self->action =
         UI_OVERLAY_ACTION_STARTING_MOVING;
@@ -267,10 +285,12 @@ drag_begin (GtkGestureDrag *       gesture,
             start_x,
             &PROJECT->range_1,
             1);
-          ui_px_to_pos (
-            start_x,
+          position_snap_simple (
+            &PROJECT->range_1,
+            SNAP_GRID_TIMELINE);
+          position_set_to_pos (
             &PROJECT->range_2,
-            1);
+            &PROJECT->range_1);
           gtk_widget_set_visible (
             GTK_WIDGET (self->range), 1);
         }
@@ -296,10 +316,26 @@ drag_update (GtkGestureDrag * gesture,
       if (self->target ==
             TRW_TARGET_RANGE)
         {
-          ui_px_to_pos (
-            self->start_x + offset_x,
-            &PROJECT->range_1,
-            1);
+          if (self->range1_first)
+            {
+              ui_px_to_pos (
+                self->start_x + offset_x,
+                &PROJECT->range_1,
+                1);
+              position_snap_simple (
+                &PROJECT->range_1,
+                SNAP_GRID_TIMELINE);
+            }
+          else
+            {
+              ui_px_to_pos (
+                self->start_x + offset_x,
+                &PROJECT->range_2,
+                1);
+              position_snap_simple (
+                &PROJECT->range_2,
+                SNAP_GRID_TIMELINE);
+            }
         }
     } /* endif RESIZING_L */
 
@@ -308,10 +344,26 @@ drag_update (GtkGestureDrag * gesture,
       if (self->target ==
             TRW_TARGET_RANGE)
         {
-          ui_px_to_pos (
-            self->start_x + offset_x,
-            &PROJECT->range_2,
-            1);
+          if (self->range1_first)
+            {
+              ui_px_to_pos (
+                self->start_x + offset_x,
+                &PROJECT->range_2,
+                1);
+              position_snap_simple (
+                &PROJECT->range_2,
+                SNAP_GRID_TIMELINE);
+            }
+          else
+            {
+              ui_px_to_pos (
+                self->start_x + offset_x,
+                &PROJECT->range_1,
+                1);
+              position_snap_simple (
+                &PROJECT->range_1,
+                SNAP_GRID_TIMELINE);
+            }
         }
     } /*endif RESIZING_R */
 
@@ -321,24 +373,103 @@ drag_update (GtkGestureDrag * gesture,
       if (self->target == TRW_TARGET_RANGE)
         {
           Position diff_pos;
-          ui_px_to_pos (abs (offset_x - self->last_offset_x),
-                        &diff_pos,
-                        0);
-          long frames_diff = position_to_frames (&diff_pos);
+          ui_px_to_pos (
+            abs (offset_x),
+            &diff_pos,
+            0);
+          int ticks_diff = position_to_ticks (&diff_pos);
+          g_message ("ticks diff %d",
+                     ticks_diff);
 
-          if (offset_x >= self->last_offset_x)
+          int r1_ticks =
+            position_to_ticks (
+              (&PROJECT->range_1));
+          int r2_ticks =
+            position_to_ticks (
+              (&PROJECT->range_2));
+          int ticks_length =
+            self->range1_first? r2_ticks - r1_ticks :
+            r1_ticks - r2_ticks;
+          g_message ("ticks length %d",
+                     ticks_length);
+
+          if (offset_x >= 0)
             {
-              position_add_frames (&PROJECT->range_1,
-                                   frames_diff);
-              position_add_frames (&PROJECT->range_2,
-                                   frames_diff);
+              if (self->range1_first)
+                {
+                  position_set_to_pos (
+                    &PROJECT->range_1,
+                    &self->range1_start_pos);
+                  position_add_ticks (
+                    &PROJECT->range_1,
+                    ticks_diff);
+                  position_snap_simple (
+                    &PROJECT->range_1,
+                    SNAP_GRID_TIMELINE);
+                  position_set_to_pos (
+                    &PROJECT->range_2,
+                    &PROJECT->range_1);
+                  position_add_ticks (
+                    &PROJECT->range_2,
+                    ticks_length);
+                }
+              else /* range_2 first */
+                {
+                  position_set_to_pos (
+                    &PROJECT->range_2,
+                    &self->range2_start_pos);
+                  position_add_ticks (
+                    &PROJECT->range_2,
+                    ticks_diff);
+                  position_snap_simple (
+                    &PROJECT->range_2,
+                    SNAP_GRID_TIMELINE);
+                  position_set_to_pos (
+                    &PROJECT->range_1,
+                    &PROJECT->range_2);
+                  position_add_ticks (
+                    &PROJECT->range_1,
+                    ticks_length);
+                }
             }
-          else
+          else /* if negative offset */
             {
-              position_add_frames (&PROJECT->range_1,
-                                   -frames_diff);
-              position_add_frames (&PROJECT->range_2,
-                                   -frames_diff);
+              if (self->range1_first)
+                {
+                  position_set_to_pos (
+                    &PROJECT->range_1,
+                    &self->range1_start_pos);
+                  position_add_ticks (
+                    &PROJECT->range_1,
+                    -ticks_diff);
+                  position_snap_simple (
+                    &PROJECT->range_1,
+                    SNAP_GRID_TIMELINE);
+                  position_set_to_pos (
+                    &PROJECT->range_2,
+                    &PROJECT->range_1);
+                  position_add_ticks (
+                    &PROJECT->range_2,
+                    ticks_length);
+                }
+              else
+                {
+                  position_set_to_pos (
+                    &PROJECT->range_2,
+                    &self->range2_start_pos);
+                  position_add_ticks (
+                    &PROJECT->range_2,
+                    -ticks_diff);
+                  position_snap_simple (
+                    &PROJECT->range_2,
+                    SNAP_GRID_TIMELINE);
+                  position_set_to_pos (
+                    &PROJECT->range_1,
+                    &PROJECT->range_2);
+                  position_add_ticks (
+                    &PROJECT->range_1,
+                    ticks_length);
+                }
             }
         }
       else if (self->target == TRW_TARGET_PLAYHEAD)
@@ -348,6 +479,9 @@ drag_update (GtkGestureDrag * gesture,
             self->start_x + offset_x,
             &pos,
             1);
+          position_snap_simple (
+            &pos,
+            SNAP_GRID_TIMELINE);
           transport_move_playhead (&pos, 1);
         }
       else if (self->target == TRW_TARGET_LOOP_START)
@@ -356,6 +490,9 @@ drag_update (GtkGestureDrag * gesture,
             self->start_x + offset_x,
             &TRANSPORT->loop_start_pos,
             1);
+          position_snap_simple (
+            &TRANSPORT->loop_start_pos,
+            SNAP_GRID_TIMELINE);
           transport_update_position_frames ();
         }
       else if (self->target == TRW_TARGET_LOOP_END)
@@ -364,6 +501,9 @@ drag_update (GtkGestureDrag * gesture,
             self->start_x + offset_x,
             &TRANSPORT->loop_end_pos,
             1);
+          position_snap_simple (
+            &TRANSPORT->loop_end_pos,
+            SNAP_GRID_TIMELINE);
           transport_update_position_frames ();
         }
       else if (self->target == TRW_TARGET_SONG_START)
@@ -372,6 +512,9 @@ drag_update (GtkGestureDrag * gesture,
             self->start_x + offset_x,
             &TRANSPORT->start_marker_pos,
             1);
+          position_snap_simple (
+            &TRANSPORT->start_marker_pos,
+            SNAP_GRID_TIMELINE);
           transport_update_position_frames ();
         }
       else if (self->target == TRW_TARGET_SONG_END)
@@ -380,12 +523,37 @@ drag_update (GtkGestureDrag * gesture,
             self->start_x + offset_x,
             &TRANSPORT->end_marker_pos,
             1);
+          position_snap_simple (
+            &TRANSPORT->end_marker_pos,
+            SNAP_GRID_TIMELINE);
           transport_update_position_frames ();
         }
     } /* endif MOVING */
 
   gtk_widget_queue_allocate(GTK_WIDGET (self));
   self->last_offset_x = offset_x;
+
+  if (self->target ==
+        TRW_TARGET_RANGE)
+    {
+      ARRANGER_WIDGET_GET_PRIVATE (
+        MW_TIMELINE);
+      gtk_widget_queue_draw (
+        GTK_WIDGET (
+          ar_prv->bg));
+      ar_prv =
+        arranger_widget_get_private (
+          Z_ARRANGER_WIDGET (MIDI_ARRANGER));
+      gtk_widget_queue_draw (
+        GTK_WIDGET (
+          ar_prv->bg));
+      ar_prv =
+        arranger_widget_get_private (
+          Z_ARRANGER_WIDGET (MIDI_MODIFIER_ARRANGER));
+      gtk_widget_queue_draw (
+        GTK_WIDGET (
+          ar_prv->bg));
+    }
 
   /* TODO update inspector */
 }

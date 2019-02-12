@@ -1,6 +1,4 @@
 /*
- * audio/snap_grid.h - Snap Grid info
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -17,6 +15,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * \file
+ * Snap/grid information.
  */
 
 #ifndef __AUDIO_SNAP_GRID_H__
