@@ -122,4 +122,15 @@ track_widget_on_record_toggled (
 GtkWidget *
 track_widget_get_bottom_paned (TrackWidget * self);
 
+/**
+ * Returns if cursor is in top half of the track.
+ *
+ * Used by timeline to determine if it will select
+ * objects or range.
+ */
+int
+track_widget_is_cursor_in_top_half (
+  TrackWidget * self,
+  double        y);
+
 #endif

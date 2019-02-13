@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -141,6 +141,42 @@ timeline_bg_draw_cb (
   return 0;
 }
 
+static void
+on_motion (TimelineBgWidget * self,
+           GdkEventMotion *event)
+{
+  if (event->type == GDK_MOTION_NOTIFY)
+    {
+      Track * track =
+        timeline_arranger_widget_get_track_at_y (
+          event->y);
+
+      if (track)
+        {
+          if (track_widget_is_cursor_in_top_half (
+                track->widget,
+                event->y))
+            {
+              /* set cursor to normal */
+              ui_set_cursor (GTK_WIDGET (self),
+                             "default");
+            }
+          else
+            {
+              /* set cursor to range selection */
+              ui_set_cursor (GTK_WIDGET (self),
+                             "text");
+            }
+        }
+      else
+        {
+          /* set cursor to normal */
+          ui_set_cursor (GTK_WIDGET (self),
+                         "default");
+        }
+    }
+}
+
 TimelineBgWidget *
 timeline_bg_widget_new (RulerWidget *    ruler,
                         ArrangerWidget * arranger)
@@ -164,7 +200,13 @@ timeline_bg_widget_class_init (TimelineBgWidgetClass * _klass)
 static void
 timeline_bg_widget_init (TimelineBgWidget *self )
 {
+  gtk_widget_add_events (GTK_WIDGET (self),
+                         GDK_ALL_EVENTS_MASK);
+
   g_signal_connect (
     G_OBJECT (self), "draw",
     G_CALLBACK (timeline_bg_draw_cb), NULL);
+  g_signal_connect (
+    G_OBJECT(self), "motion-notify-event",
+    G_CALLBACK (on_motion),  self);
 }

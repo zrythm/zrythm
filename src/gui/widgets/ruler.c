@@ -191,6 +191,34 @@ reset_ruler ()
 
 }
 
+static void
+on_motion (GtkDrawingArea * da,
+           GdkEventMotion *event,
+           RulerWidget *    self)
+{
+  if (self != MW_RULER)
+    return;
+
+  int height = gtk_widget_get_allocated_height (
+    GTK_WIDGET (da));
+  if (event->type == GDK_MOTION_NOTIFY)
+    {
+      /* if lower 3/4ths */
+      if (event->y > (height * 1) / 4)
+        {
+          /* set cursor to normal */
+          ui_set_cursor (GTK_WIDGET (self),
+                         "default");
+        }
+      else /* upper 1/4th */
+        {
+          /* set cursor to range selection */
+          ui_set_cursor (GTK_WIDGET (self),
+                         "text");
+        }
+    }
+}
+
 void
 ruler_widget_refresh (RulerWidget * self)
 {
@@ -287,6 +315,8 @@ ruler_widget_init (RulerWidget * self)
                           1);
   gtk_container_add (GTK_CONTAINER (self),
                      GTK_WIDGET (rw_prv->bg));
+  gtk_widget_add_events (GTK_WIDGET (rw_prv->bg),
+                         GDK_ALL_EVENTS_MASK);
 
   rw_prv->playhead =
     ruler_playhead_widget_new ();
@@ -298,8 +328,13 @@ ruler_widget_init (RulerWidget * self)
                          GDK_ALL_EVENTS_MASK);
 
 
-  g_signal_connect (G_OBJECT (rw_prv->bg), "draw",
-                    G_CALLBACK (ruler_draw_cb), self);
-  g_signal_connect (G_OBJECT (self), "get-child-position",
-                    G_CALLBACK (get_child_position), NULL);
+  g_signal_connect (
+    G_OBJECT (rw_prv->bg), "draw",
+    G_CALLBACK (ruler_draw_cb), self);
+  g_signal_connect (
+    G_OBJECT (rw_prv->bg), "motion-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT (self), "get-child-position",
+    G_CALLBACK (get_child_position), NULL);
 }

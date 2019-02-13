@@ -888,25 +888,18 @@ timeline_arranger_widget_set_select_type (
 
   if (track)
     {
-      /* determine selection type based on click
-       * position */
-      GtkAllocation allocation;
-      gtk_widget_get_allocation (
-        GTK_WIDGET (track->widget),
-        &allocation);
+      if (track_widget_is_cursor_in_top_half (
+            track->widget,
+            y))
+        {
+          /* select objects */
+          self->selection_type =
+            TA_SELECTION_TYPE_OBJECTS;
 
-      gint wx, wy;
-      gtk_widget_translate_coordinates (
-        GTK_WIDGET (self),
-        GTK_WIDGET (track->widget),
-        0,
-        y,
-        &wx,
-        &wy);
-
-      /* if bot half */
-      if (wy >= allocation.height / 2 &&
-          wy <= allocation.height)
+          /* deselect all */
+          arranger_widget_select_all (self, 0);
+        }
+      else
         {
           /* select range */
           self->selection_type =
@@ -915,15 +908,6 @@ timeline_arranger_widget_set_select_type (
           /* set it visible */
           gtk_widget_set_visible (
             GTK_WIDGET (MW_RULER->range), 1);
-        }
-      else /* if top half */
-        {
-          /* select objects */
-          self->selection_type =
-            TA_SELECTION_TYPE_OBJECTS;
-
-          /* deselect all */
-          arranger_widget_select_all (self, 0);
         }
     }
   else
@@ -1044,10 +1028,18 @@ timeline_arranger_widget_select (
         ar_prv->start_x,
         &PROJECT->range_1,
         1);
+      position_snap_simple (
+        &PROJECT->range_1,
+        SNAP_GRID_TIMELINE);
       ui_px_to_pos (
         ar_prv->start_x + offset_x,
         &PROJECT->range_2,
         1);
+      position_snap_simple (
+        &PROJECT->range_2,
+        SNAP_GRID_TIMELINE);
+      gtk_widget_queue_allocate (
+        GTK_WIDGET (MW_RULER));
     }
 }
 
@@ -1192,6 +1184,7 @@ timeline_arranger_widget_move_items_x (
         }
     }
 }
+
 
 void
 timeline_arranger_widget_setup (
@@ -1555,8 +1548,7 @@ timeline_arranger_widget_class_init (TimelineArrangerWidgetClass * klass)
 static void
 timeline_arranger_widget_init (TimelineArrangerWidget *self )
 {
-  g_signal_connect (self,
-                    "grab-focus",
-                    G_CALLBACK (on_focus),
-                    self);
+  g_signal_connect (
+    self, "grab-focus",
+    G_CALLBACK (on_focus), self);
 }

@@ -173,6 +173,49 @@ track_widget_refresh (TrackWidget * self)
     }
 }
 
+/**
+ * Returns if cursor is in top half of the track.
+ *
+ * Used by timeline to determine if it will select
+ * objects or range.
+ */
+int
+track_widget_is_cursor_in_top_half (
+  TrackWidget * self,
+  double        y)
+{
+  TRACK_WIDGET_GET_PRIVATE (self);
+  GtkWidget * top_grid =
+    GTK_WIDGET (tw_prv->top_grid);
+
+  /* determine selection type based on click
+   * position */
+  GtkAllocation allocation;
+  gtk_widget_get_allocation (
+    GTK_WIDGET (top_grid),
+    &allocation);
+
+  gint wx, wy;
+  gtk_widget_translate_coordinates (
+    GTK_WIDGET (MW_TIMELINE),
+    GTK_WIDGET (top_grid),
+    0,
+    y,
+    &wx,
+    &wy);
+
+  /* if bot half */
+  if (wy >= allocation.height / 2 &&
+      wy <= allocation.height)
+    {
+      return 0;
+    }
+  else /* if top half */
+    {
+      return 1;
+    }
+}
+
 TrackWidgetPrivate *
 track_widget_get_private (TrackWidget * self)
 {

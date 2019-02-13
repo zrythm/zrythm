@@ -377,10 +377,8 @@ drag_update (GtkGestureDrag * gesture,
             abs (offset_x),
             &diff_pos,
             0);
-          int ticks_diff = position_to_ticks (&diff_pos);
-          g_message ("ticks diff %d",
-                     ticks_diff);
-
+          int ticks_diff =
+            position_to_ticks (&diff_pos);
           int r1_ticks =
             position_to_ticks (
               (&PROJECT->range_1));
@@ -390,8 +388,6 @@ drag_update (GtkGestureDrag * gesture,
           int ticks_length =
             self->range1_first? r2_ticks - r1_ticks :
             r1_ticks - r2_ticks;
-          g_message ("ticks length %d",
-                     ticks_length);
 
           if (offset_x >= 0)
             {

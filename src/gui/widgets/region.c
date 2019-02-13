@@ -1,7 +1,7 @@
 /*
  * gui/widgets/region.c- Region
  *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -143,14 +143,18 @@ region_widget_setup (RegionWidget * self,
                          GDK_ALL_EVENTS_MASK);
 
   /* connect signals */
-  g_signal_connect (G_OBJECT (rw_prv->drawing_area), "draw",
-                    G_CALLBACK (draw_cb), self);
-  g_signal_connect (G_OBJECT (self), "enter-notify-event",
-                    G_CALLBACK (on_motion),  self);
-  g_signal_connect (G_OBJECT(self), "leave-notify-event",
-                    G_CALLBACK (on_motion),  self);
-  g_signal_connect (G_OBJECT(self), "motion-notify-event",
-                    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT (rw_prv->drawing_area), "draw",
+    G_CALLBACK (draw_cb), self);
+  g_signal_connect (
+    G_OBJECT (self), "enter-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self), "leave-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self), "motion-notify-event",
+    G_CALLBACK (on_motion),  self);
 }
 
 void
