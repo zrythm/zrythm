@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -35,30 +35,6 @@ _create ()
 }
 
 UndoableAction *
-edit_channel_action_new_solo (Channel * channel)
-{
-  EditChannelAction * self = _create ();
-
-  UndoableAction * ua = (UndoableAction *) self;
-  self->channel_id = channel->id;
-  self->type = EDIT_CHANNEL_ACTION_TYPE_SOLO;
-
-  return ua;
-}
-
-UndoableAction *
-edit_channel_action_new_mute (Channel * channel)
-{
-  EditChannelAction * self = _create ();
-
-  UndoableAction * ua = (UndoableAction *) self;
-  self->channel_id = channel->id;
-  self->type = EDIT_CHANNEL_ACTION_TYPE_MUTE;
-
-  return ua;
-}
-
-UndoableAction *
 edit_channel_action_new_vol (Channel * channel,
                              float vol_prev,
                              float vol_new)
@@ -67,7 +43,8 @@ edit_channel_action_new_vol (Channel * channel,
 
   UndoableAction * ua = (UndoableAction *) self;
   self->channel_id = channel->id;
-  self->type = EDIT_CHANNEL_ACTION_TYPE_CHANGE_VOLUME;
+  self->type =
+    EDIT_CHANNEL_ACTION_TYPE_CHANGE_VOLUME;
   self->vol_prev = vol_prev;
   self->vol_new = vol_new;
 
@@ -93,16 +70,10 @@ edit_channel_action_new_pan (Channel * channel,
 void
 edit_channel_action_do (EditChannelAction * self)
 {
-  Channel * channel = PROJECT->channels[self->channel_id];
+  Channel * channel =
+    PROJECT->channels[self->channel_id];
   switch (self->type)
     {
-    case EDIT_CHANNEL_ACTION_TYPE_SOLO:
-      channel->widget->undo_redo_action = 1;
-      channel_toggle_solo (channel);
-      break;
-    case EDIT_CHANNEL_ACTION_TYPE_MUTE:
-      channel_toggle_mute (channel);
-      break;
     case EDIT_CHANNEL_ACTION_TYPE_CHANGE_VOLUME:
       channel_set_fader_amp (channel,
                              self->vol_new);
@@ -117,16 +88,10 @@ edit_channel_action_do (EditChannelAction * self)
 void
 edit_channel_action_undo (EditChannelAction * self)
 {
-  Channel * channel = PROJECT->channels[self->channel_id];
+  Channel * channel =
+    PROJECT->channels[self->channel_id];
   switch (self->type)
     {
-    case EDIT_CHANNEL_ACTION_TYPE_SOLO:
-      channel->widget->undo_redo_action = 1;
-      channel_toggle_solo (channel);
-      break;
-    case EDIT_CHANNEL_ACTION_TYPE_MUTE:
-      channel_toggle_mute (channel);
-      break;
     case EDIT_CHANNEL_ACTION_TYPE_CHANGE_VOLUME:
       channel_set_fader_amp (channel,
                              self->vol_prev);

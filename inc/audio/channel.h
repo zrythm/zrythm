@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -90,8 +90,6 @@ typedef struct Channel
    * Volume in amplitude (0.0 ~ 1.5)
    */
   float                fader_amp;
-  int                  mute; ///< muted or not
-  int                  solo; ///< solo or not
   float                phase;        ///< used by the phase knob (0.0-360.0 value)
   float                pan; ///< (0~1) 0.5 is center
 
@@ -164,10 +162,6 @@ typedef struct Channel
    */
   int                  processed;
 
-  /**
-   * Channel is in record mode or not.
-   */
-  int                  recording;
   //pthread_t         thread;     ///< the channel processing thread.
                           ///< each channel does processing on a separate thread
                           //
@@ -259,12 +253,6 @@ channel_fields_schema[] =
 	CYAML_FIELD_FLOAT (
     "fader_amp", CYAML_FLAG_DEFAULT,
     Channel, fader_amp),
-	CYAML_FIELD_INT (
-    "mute", CYAML_FLAG_DEFAULT,
-    Channel, mute),
-	CYAML_FIELD_INT (
-    "solo", CYAML_FLAG_DEFAULT,
-    Channel, solo),
 	CYAML_FIELD_FLOAT (
     "phase", CYAML_FLAG_DEFAULT,
     Channel, phase),
@@ -289,9 +277,6 @@ channel_fields_schema[] =
 	CYAML_FIELD_INT (
     "stereo_out_r_id", CYAML_FLAG_DEFAULT,
     Channel, stereo_out_r_id),
-	CYAML_FIELD_INT (
-    "recording", CYAML_FLAG_DEFAULT,
-    Channel, recording),
 	CYAML_FIELD_INT (
     "output_id", CYAML_FLAG_DEFAULT,
     Channel, output_id),
@@ -326,24 +311,6 @@ float
 channel_get_phase (void * channel);
 
 /**
- * TODO delete
- */
-//void
-//channel_set_volume (void * channel, float volume);
-
-/**
- * TODO delete
- */
-//float
-//channel_get_volume (void * channel);
-
-void
-channel_toggle_solo (Channel * channel);
-
-void
-channel_toggle_mute (Channel * channel);
-
-/**
  * Sets the fader amplitude (not db)
  */
 void
@@ -372,13 +339,6 @@ channel_set_current_l_db (Channel * channel, float val);
 
 void
 channel_set_current_r_db (Channel * channel, float val);
-
-/**
- * Sets recording and connects/disconnects the JACK ports.
- */
-void
-channel_set_recording (Channel * self,
-                       int       recording);
 
 /**
  * Used when loading projects.

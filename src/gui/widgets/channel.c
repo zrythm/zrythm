@@ -1,7 +1,5 @@
 /*
- * gui/widgets/channel.c - A channel widget
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -109,31 +107,29 @@ static void
 on_record_toggled (GtkToggleButton * btn,
                    ChannelWidget *   self)
 {
-
+  track_set_recording (
+    self->channel->track,
+    gtk_toggle_button_get_active (btn));
 }
 
 static void
 on_solo_toggled (GtkToggleButton * btn,
                  ChannelWidget *   self)
 {
-  if (!self->undo_redo_action)
-    {
-      UndoableAction * action =
-        edit_channel_action_new_solo (self->channel);
-      undo_manager_perform (UNDO_MANAGER,
-                            action);
-    }
-  else
-    {
-      self->undo_redo_action = 0;
-    }
+  track_set_soloed (
+    self->channel->track,
+    gtk_toggle_button_get_active (btn),
+    1);
 }
 
 static void
 on_mute_toggled (GtkToggleButton * btn,
                  ChannelWidget * self)
 {
-
+  track_set_muted (
+    self->channel->track,
+    gtk_toggle_button_get_active (btn),
+    1);
 }
 
 static void
@@ -304,11 +300,14 @@ static void
 refresh_buttons (ChannelWidget * self)
 {
   gtk_toggle_button_set_active (
+    self->record,
+    self->channel->track->recording);
+  gtk_toggle_button_set_active (
     self->solo,
-    self->channel->solo);
+    self->channel->track->solo);
   gtk_toggle_button_set_active (
     self->mute,
-    self->channel->mute);
+    self->channel->track->mute);
 }
 
 /**
@@ -324,6 +323,36 @@ channel_widget_refresh (ChannelWidget * self)
   channel_widget_update_meter_reading (self, NULL, NULL);
   refresh_buttons (self);
   refresh_color (self);
+}
+
+/**
+ * Blocks all signal handlers.
+ */
+void
+channel_widget_block_all_signal_handlers (
+  ChannelWidget * self)
+{
+  g_signal_handler_block (
+    self->solo,
+    self->solo_toggled_handler_id);
+  g_signal_handler_block (
+    self->mute,
+    self->mute_toggled_handler_id);
+}
+
+/**
+ * Unblocks all signal handlers.
+ */
+void
+channel_widget_unblock_all_signal_handlers (
+  ChannelWidget * self)
+{
+  g_signal_handler_unblock (
+    self->solo,
+    self->solo_toggled_handler_id);
+  g_signal_handler_unblock (
+    self->mute,
+    self->mute_toggled_handler_id);
 }
 
 
@@ -444,28 +473,40 @@ channel_widget_class_init (ChannelWidgetClass * _klass)
     klass,
     ChannelWidget,
     output_img);
-  gtk_widget_class_bind_template_callback (
-    klass,
-    phase_invert_button_clicked);
-  gtk_widget_class_bind_template_callback (
-    klass,
-    on_record_toggled);
-  gtk_widget_class_bind_template_callback (
-    klass,
-    on_solo_toggled);
-  gtk_widget_class_bind_template_callback (
-    klass,
-    on_mute_toggled);
-  gtk_widget_class_bind_template_callback (
-    klass,
-    on_listen_toggled);
-  gtk_widget_class_bind_template_callback (
-    klass,
-    on_e_activate);
 }
 
 static void
 channel_widget_init (ChannelWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  GtkStyleContext * context;
+  z_gtk_container_destroy_all_children (
+    GTK_CONTAINER (self->record));
+  z_gtk_button_set_icon_name (
+    GTK_BUTTON (self->record),
+    "media-record");
+  context =
+    gtk_widget_get_style_context (
+      GTK_WIDGET (self->record));
+  gtk_style_context_add_class (
+    context, "record-button");
+  context =
+    gtk_widget_get_style_context (
+      GTK_WIDGET (self->solo));
+  gtk_style_context_add_class (
+    context, "solo-button");
+
+  self->solo_toggled_handler_id =
+    g_signal_connect (
+      G_OBJECT (self->solo), "toggled",
+      G_CALLBACK (on_solo_toggled), self);
+  self->mute_toggled_handler_id =
+    g_signal_connect (
+      G_OBJECT (self->mute), "toggled",
+      G_CALLBACK (on_mute_toggled), self);
+  self->record_toggled_handler_id =
+    g_signal_connect (
+      G_OBJECT (self->record), "toggled",
+      G_CALLBACK (on_record_toggled), self);
 }

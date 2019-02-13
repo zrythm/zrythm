@@ -73,6 +73,12 @@ mixer_schema =
 };
 
 /**
+ * Returns if mixer has soloed channels.
+ */
+int
+mixer_has_soloed_channels ();
+
+/**
  * The mixer begins the audio processing process.
  *
  * For each channel, it calls the process function of each plugin in order,

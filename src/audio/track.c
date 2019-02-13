@@ -21,6 +21,8 @@
 
 #include <stdlib.h>
 
+#include "actions/edit_track_action.h"
+#include "actions/undo_manager.h"
 #include "audio/audio_track.h"
 #include "audio/bus_track.h"
 #include "audio/channel.h"
@@ -30,9 +32,12 @@
 #include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/channel.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/track.h"
+#include "project.h"
 
 void
 track_init (Track * track)
@@ -61,6 +66,140 @@ track_new (Channel * channel)
     }
   g_assert_not_reached ();
   return NULL;
+}
+
+/**
+ * Sets recording and connects/disconnects the JACK ports.
+ */
+void
+track_set_recording (Track *   track,
+                     int       recording)
+{
+  Channel * channel =
+    track_get_channel (track);
+
+  if (!channel)
+    {
+      ui_show_notification_idle (
+        "Recording not implemented yet for this "
+        "track.");
+      return;
+    }
+  if (channel->type == CT_AUDIO)
+    {
+      /* TODO connect L and R audio ports for recording */
+      if (recording)
+        {
+          port_connect (
+            AUDIO_ENGINE->stereo_in->l,
+            channel->stereo_in->l);
+          port_connect (
+            AUDIO_ENGINE->stereo_in->r,
+            channel->stereo_in->r);
+        }
+      else
+        {
+          port_disconnect (
+            AUDIO_ENGINE->stereo_in->l,
+            channel->stereo_in->l);
+          port_disconnect (
+            AUDIO_ENGINE->stereo_in->r,
+            channel->stereo_in->r);
+        }
+    }
+  else if (channel->type == CT_MIDI)
+    {
+      /* find first plugin */
+      Plugin * plugin = channel_get_first_plugin (channel);
+
+      if (plugin)
+        {
+          /* Connect/Disconnect MIDI port to the plugin */
+          for (int i = 0; i < plugin->num_in_ports; i++)
+            {
+              Port * port = plugin->in_ports[i];
+              if (port->type == TYPE_EVENT &&
+                  port->flow == FLOW_INPUT)
+                {
+                  g_message ("%d MIDI In port: %s",
+                             i, port->label);
+                  if (recording)
+                    port_connect (
+                      AUDIO_ENGINE->midi_in, port);
+                  else
+                    port_disconnect (
+                      AUDIO_ENGINE->midi_in, port);
+                }
+            }
+        }
+    }
+
+  track->recording = recording;
+
+  if (channel && channel->widget)
+    {
+      channel_widget_block_all_signal_handlers (
+        channel->widget);
+      channel_widget_refresh (channel->widget);
+      channel_widget_unblock_all_signal_handlers (
+        channel->widget);
+    }
+  if (track->widget)
+    {
+      track_widget_block_all_signal_handlers (
+        track->widget);
+      track_widget_refresh (track->widget);
+      track_widget_unblock_all_signal_handlers (
+        track->widget);
+    }
+}
+
+/**
+ * Sets track muted and optionally adds the action
+ * to the undo stack.
+ */
+void
+track_set_muted (Track * track,
+                 int     mute,
+                 int     trigger_undo)
+{
+  UndoableAction * action =
+    edit_track_action_new_mute (track,
+                                mute);
+  if (trigger_undo)
+    {
+      undo_manager_perform (UNDO_MANAGER,
+                            action);
+    }
+  else
+    {
+      edit_track_action_do (
+        (EditTrackAction *) action);
+    }
+}
+
+/**
+ * Sets track soloed, updates UI and optionally
+ * adds the action to the undo stack.
+ */
+void
+track_set_soloed (Track * track,
+                  int     solo,
+                  int     trigger_undo)
+{
+  UndoableAction * action =
+    edit_track_action_new_solo (track,
+                                solo);
+  if (trigger_undo)
+    {
+      undo_manager_perform (UNDO_MANAGER,
+                            action);
+    }
+  else
+    {
+      edit_track_action_do (
+        (EditTrackAction *) action);
+    }
 }
 
 /**

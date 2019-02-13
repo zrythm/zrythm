@@ -75,6 +75,9 @@ typedef struct Track
   int                 visible;
   int                 selected;
   int                 handle_pos; ///< position of multipane handle
+  int                 mute; ///< muted or not
+  int                 solo; ///< solo or not
+  int                 recording; ///< recording or not
 
   /**
    * Track color.
@@ -119,6 +122,15 @@ track_fields_schema[] =
   CYAML_FIELD_MAPPING (
     "color", CYAML_FLAG_DEFAULT,
     Track, color, gdk_rgba_fields_schema),
+	CYAML_FIELD_INT (
+    "mute", CYAML_FLAG_DEFAULT,
+    Track, mute),
+	CYAML_FIELD_INT (
+    "solo", CYAML_FLAG_DEFAULT,
+    Track, solo),
+	CYAML_FIELD_INT (
+    "recording", CYAML_FLAG_DEFAULT,
+    Track, recording),
 
 	CYAML_FIELD_END
 };
@@ -143,6 +155,32 @@ track_init (Track * track);
  */
 Track *
 track_new (Channel * channel);
+
+/**
+ * Sets track muted and optionally adds the action
+ * to the undo stack.
+ */
+void
+track_set_muted (Track * track,
+                 int     mute,
+                 int     trigger_undo);
+
+/**
+ * Sets recording and connects/disconnects the
+ * JACK ports.
+ */
+void
+track_set_recording (Track *   self,
+                     int       recording);
+
+/**
+ * Sets track soloed and optionally adds the action
+ * to the undo stack.
+ */
+void
+track_set_soloed (Track * track,
+                  int     solo,
+                  int     trigger_undo);
 
 /**
  * Wrapper.

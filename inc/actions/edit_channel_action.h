@@ -1,7 +1,5 @@
 /*
- * actions/edit_channel_action.h - UndoableAction
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -26,10 +24,8 @@
 
 typedef enum EditChannelActionType
 {
-  EDIT_CHANNEL_ACTION_TYPE_SOLO,
-  EDIT_CHANNEL_ACTION_TYPE_MUTE,
   EDIT_CHANNEL_ACTION_TYPE_CHANGE_VOLUME,
-  EDIT_CHANNEL_ACTION_TYPE_CHANGE_PAN
+  EDIT_CHANNEL_ACTION_TYPE_CHANGE_PAN,
 } EditChannelActionType;
 
 typedef struct Channel Channel;
@@ -49,12 +45,6 @@ typedef struct EditChannelAction
   float                       pan_prev;
   float                       pan_new;
 } EditChannelAction;
-
-UndoableAction *
-edit_channel_action_new_solo (Channel * channel);
-
-UndoableAction *
-edit_channel_action_new_mute (Channel * channel);
 
 UndoableAction *
 edit_channel_action_new_vol (Channel * channel,

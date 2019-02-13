@@ -1,7 +1,5 @@
 /*
- * gui/widgets/track.c - Track
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -76,15 +74,24 @@ master_track_widget_new (Track * track)
                    Z_GTK_RESIZE,
                    Z_GTK_NO_SHRINK);
 
-  self->record_toggle_handler_id =
+  tw_prv->record_toggle_handler_id =
     g_signal_connect (
-      self->record,
-      "toggled",
+      self->record, "toggled",
       G_CALLBACK (track_widget_on_record_toggled),
+      self);
+  tw_prv->mute_toggled_handler_id =
+    g_signal_connect (
+      self->mute, "toggled",
+      G_CALLBACK (track_widget_on_mute_toggled),
+      self);
+  tw_prv->solo_toggled_handler_id =
+    g_signal_connect (
+      self->solo, "toggled",
+      G_CALLBACK (track_widget_on_solo_toggled),
       self);
   g_signal_connect (
     self->show_automation,
-    "clicked",
+    "toggled",
     G_CALLBACK (track_widget_on_show_automation_toggled),
     self);
 
@@ -92,6 +99,36 @@ master_track_widget_new (Track * track)
                           1);
 
   return self;
+}
+
+static void
+refresh_buttons (
+  MasterTrackWidget * self)
+{
+  TRACK_WIDGET_GET_PRIVATE (self);
+  g_signal_handler_block (
+    self->record, tw_prv->record_toggle_handler_id);
+      gtk_toggle_button_set_active (
+        self->record,
+        tw_prv->track->recording);
+  g_signal_handler_unblock (
+    self->record, tw_prv->record_toggle_handler_id);
+
+  g_signal_handler_block (
+    self->solo, tw_prv->solo_toggled_handler_id);
+      gtk_toggle_button_set_active (
+        self->solo,
+        tw_prv->track->solo);
+  g_signal_handler_unblock (
+    self->solo, tw_prv->solo_toggled_handler_id);
+
+  g_signal_handler_block (
+    self->mute, tw_prv->mute_toggled_handler_id);
+      gtk_toggle_button_set_active (
+        self->mute,
+        tw_prv->track->mute);
+  g_signal_handler_unblock (
+    self->mute, tw_prv->mute_toggled_handler_id);
 }
 
 void
@@ -106,14 +143,7 @@ master_track_widget_refresh (MasterTrackWidget * self)
     tw_prv->name,
     chan->name);
 
-  /* don't trigger callback */
-  g_signal_handler_block (
-    self->record, self->record_toggle_handler_id);
-      gtk_toggle_button_set_active (
-        self->record,
-        chan->recording);
-  g_signal_handler_unblock (
-    self->record, self->record_toggle_handler_id);
+  refresh_buttons (self);
 
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (tw_prv->track);

@@ -43,6 +43,13 @@ typedef struct _ChordTrackWidget
   GtkToggleButton *             record;
   GtkToggleButton *             solo;
   GtkToggleButton *             mute;
+
+  /**
+   * Signal handler IDs.
+   */
+  gulong              record_toggle_handler_id;
+  gulong              solo_toggled_handler_id;
+  gulong              mute_toggled_handler_id;
 } ChordTrackWidget;
 
 /**

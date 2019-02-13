@@ -1,7 +1,7 @@
 /*
  * actions/undoable_action.c - UndoableAction
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -22,6 +22,7 @@
 #include "actions/create_chords_action.h"
 #include "actions/delete_timeline_selections_action.h"
 #include "actions/edit_channel_action.h"
+#include "actions/edit_track_action.h"
 #include "actions/undoable_action.h"
 
 /**
@@ -43,6 +44,10 @@ undoable_action_do (UndoableAction * self)
     case UNDOABLE_ACTION_TYPE_DELETE_CHANNEL:
       break;
     case UNDOABLE_ACTION_TYPE_MOVE_CHANNEL:
+      break;
+    case UNDOABLE_ACTION_TYPE_EDIT_TRACK:
+      edit_track_action_do (
+        (EditTrackAction *) self);
       break;
     case UNDOABLE_ACTION_TYPE_CREATE_REGIONS:
       break;
@@ -78,6 +83,10 @@ undoable_action_undo (UndoableAction * self)
     case UNDOABLE_ACTION_TYPE_DELETE_CHANNEL:
       break;
     case UNDOABLE_ACTION_TYPE_MOVE_CHANNEL:
+      break;
+    case UNDOABLE_ACTION_TYPE_EDIT_TRACK:
+      edit_track_action_undo (
+        (EditTrackAction *) self);
       break;
     case UNDOABLE_ACTION_TYPE_CREATE_REGIONS:
       break;

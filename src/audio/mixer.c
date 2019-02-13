@@ -77,6 +77,20 @@ mixer_process () ///< number of frames to fill in
 }
 
 /**
+ * Returns if mixer has soloed channels.
+ */
+int
+mixer_has_soloed_channels ()
+{
+  for (int i = 0; i < MIXER->num_channels; i++)
+    {
+      if (MIXER->channels[i]->track->solo)
+        return 1;
+    }
+  return 0;
+}
+
+/**
  * Loads plugins from state files. Used when loading projects.
  */
 void

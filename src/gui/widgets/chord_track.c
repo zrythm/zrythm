@@ -1,7 +1,7 @@
 /*
  * gui/widgets/chord_track.c - Track
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *

@@ -1,7 +1,7 @@
 /*
  * gui/widgets/track.c - Track
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -97,20 +97,20 @@ track_widget_select (
       g_message ("%sselecting track %s, recording %d sa %d",
                  select ? "" : "de",
                  chan->name,
-                 chan->recording,
+                 track->recording,
                  chan->record_set_automatically);
       /* if selecting the track and recording is not already
        * on, turn these on */
-      if (select && !chan->recording)
+      if (select && !track->recording)
         {
-          channel_set_recording (chan, 1);
+          track_set_recording (track, 1);
           chan->record_set_automatically = 1;
         }
       /* if deselecting and record mode was automatically
        * set when the track was selected, turn these off */
       else if (!select && chan->record_set_automatically)
         {
-          channel_set_recording (chan, 0);
+          track_set_recording (track, 0);
           chan->record_set_automatically = 0;
         }
       track_widget_refresh (self);
@@ -213,6 +213,136 @@ track_widget_is_cursor_in_top_half (
   else /* if top half */
     {
       return 1;
+    }
+}
+
+/**
+ * Blocks all signal handlers.
+ */
+void
+track_widget_block_all_signal_handlers (
+  TrackWidget * self)
+{
+  TRACK_WIDGET_GET_PRIVATE (self);
+  if (Z_IS_INSTRUMENT_TRACK_WIDGET (self))
+    {
+      InstrumentTrackWidget * itw =
+        Z_INSTRUMENT_TRACK_WIDGET (self);
+      g_signal_handler_block (
+        itw->solo,
+        tw_prv->solo_toggled_handler_id);
+      g_signal_handler_block (
+        itw->mute,
+        tw_prv->mute_toggled_handler_id);
+    }
+  else if (Z_IS_AUDIO_TRACK_WIDGET (self))
+    {
+      AudioTrackWidget * atw =
+        Z_AUDIO_TRACK_WIDGET (self);
+      g_signal_handler_block (
+        atw->solo,
+        tw_prv->solo_toggled_handler_id);
+      g_signal_handler_block (
+        atw->mute,
+        tw_prv->mute_toggled_handler_id);
+    }
+  else if (Z_IS_MASTER_TRACK_WIDGET (self))
+    {
+      MasterTrackWidget * mtw =
+        Z_MASTER_TRACK_WIDGET (self);
+      g_signal_handler_block (
+        mtw->solo,
+        tw_prv->solo_toggled_handler_id);
+      g_signal_handler_block (
+        mtw->mute,
+        tw_prv->mute_toggled_handler_id);
+    }
+  else if (Z_IS_CHORD_TRACK_WIDGET (self))
+    {
+      ChordTrackWidget * mtw =
+        Z_CHORD_TRACK_WIDGET (self);
+      g_signal_handler_block (
+        mtw->solo,
+        tw_prv->solo_toggled_handler_id);
+      g_signal_handler_block (
+        mtw->mute,
+        tw_prv->mute_toggled_handler_id);
+    }
+  else if (Z_IS_BUS_TRACK_WIDGET (self))
+    {
+      BusTrackWidget * mtw =
+        Z_BUS_TRACK_WIDGET (self);
+      g_signal_handler_block (
+        mtw->solo,
+        tw_prv->solo_toggled_handler_id);
+      g_signal_handler_block (
+        mtw->mute,
+        tw_prv->mute_toggled_handler_id);
+    }
+}
+
+/**
+ * Unblocks all signal handlers.
+ */
+void
+track_widget_unblock_all_signal_handlers (
+  TrackWidget * self)
+{
+  TRACK_WIDGET_GET_PRIVATE (self);
+  if (Z_IS_INSTRUMENT_TRACK_WIDGET (self))
+    {
+      InstrumentTrackWidget * itw =
+        Z_INSTRUMENT_TRACK_WIDGET (self);
+      g_signal_handler_unblock (
+        itw->solo,
+        tw_prv->solo_toggled_handler_id);
+      g_signal_handler_unblock (
+        itw->mute,
+        tw_prv->mute_toggled_handler_id);
+    }
+  else if (Z_IS_AUDIO_TRACK_WIDGET (self))
+    {
+      AudioTrackWidget * atw =
+        Z_AUDIO_TRACK_WIDGET (self);
+      g_signal_handler_unblock (
+        atw->solo,
+        tw_prv->solo_toggled_handler_id);
+      g_signal_handler_unblock (
+        atw->mute,
+        tw_prv->mute_toggled_handler_id);
+    }
+  else if (Z_IS_MASTER_TRACK_WIDGET (self))
+    {
+      MasterTrackWidget * mtw =
+        Z_MASTER_TRACK_WIDGET (self);
+      g_signal_handler_unblock (
+        mtw->solo,
+        tw_prv->solo_toggled_handler_id);
+      g_signal_handler_unblock (
+        mtw->mute,
+        tw_prv->mute_toggled_handler_id);
+    }
+  else if (Z_IS_CHORD_TRACK_WIDGET (self))
+    {
+      ChordTrackWidget * mtw =
+        Z_CHORD_TRACK_WIDGET (self);
+      g_signal_handler_unblock (
+        mtw->solo,
+        tw_prv->solo_toggled_handler_id);
+      g_signal_handler_unblock (
+        mtw->mute,
+        tw_prv->mute_toggled_handler_id);
+    }
+  else if (Z_IS_BUS_TRACK_WIDGET (self))
+    {
+      BusTrackWidget * mtw =
+        Z_BUS_TRACK_WIDGET (self);
+      g_signal_handler_unblock (
+        mtw->solo,
+        tw_prv->solo_toggled_handler_id);
+      g_signal_handler_unblock (
+        mtw->mute,
+        tw_prv->mute_toggled_handler_id);
     }
 }
 
@@ -397,6 +527,34 @@ track_widget_on_show_automation_toggled (GtkWidget * widget,
 }
 
 void
+track_widget_on_solo_toggled (
+  GtkToggleButton * btn,
+  void *            data)
+{
+  TRACK_WIDGET_GET_PRIVATE (data);
+  track_set_soloed (
+    tw_prv->track,
+    gtk_toggle_button_get_active (btn),
+    1);
+}
+
+/**
+ * General handler for tracks that have mute
+ * buttons.
+ */
+void
+track_widget_on_mute_toggled (
+  GtkToggleButton * btn,
+  void *            data)
+{
+  TRACK_WIDGET_GET_PRIVATE (data);
+  track_set_muted (
+    tw_prv->track,
+    gtk_toggle_button_get_active (btn),
+    1);
+}
+
+void
 track_widget_on_record_toggled (
   GtkWidget * widget,
   void *      data)
@@ -409,10 +567,10 @@ track_widget_on_record_toggled (
   Channel * chan = ct->channel;
 
   /* toggle record flag */
-  channel_set_recording (chan, !chan->recording);
+  track_set_recording (track, !track->recording);
   chan->record_set_automatically = 0;
   g_message ("recording %d, %s",
-             chan->recording,
+             track->recording,
              chan->name);
 
   tracklist_widget_soft_refresh (MW_TRACKLIST);
@@ -447,22 +605,27 @@ track_widget_init (TrackWidget * self)
   gtk_widget_add_events (GTK_WIDGET (self),
                          GDK_ALL_EVENTS_MASK);
 
-  g_signal_connect (G_OBJECT (tw_prv->multipress), "pressed",
-                    G_CALLBACK (multipress_pressed), self);
-  g_signal_connect (G_OBJECT (tw_prv->right_mouse_mp),
-                    "pressed",
-                    G_CALLBACK (on_right_click), self);
-  g_signal_connect (G_OBJECT (self), "size-allocate",
-                    G_CALLBACK (size_allocate_cb), NULL);
-  g_signal_connect (G_OBJECT (tw_prv->event_box),
-                    "enter-notify-event",
-                    G_CALLBACK (on_motion),  self);
-  g_signal_connect (G_OBJECT(tw_prv->event_box),
-                    "leave-notify-event",
-                    G_CALLBACK (on_motion),  self);
-  g_signal_connect (G_OBJECT(tw_prv->event_box),
-                    "motion-notify-event",
-                    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT (tw_prv->multipress), "pressed",
+    G_CALLBACK (multipress_pressed), self);
+  g_signal_connect (
+    G_OBJECT (tw_prv->right_mouse_mp), "pressed",
+    G_CALLBACK (on_right_click), self);
+  g_signal_connect (
+    G_OBJECT (self), "size-allocate",
+    G_CALLBACK (size_allocate_cb), NULL);
+  g_signal_connect (
+    G_OBJECT (tw_prv->event_box),
+    "enter-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(tw_prv->event_box),
+    "leave-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(tw_prv->event_box),
+    "motion-notify-event",
+    G_CALLBACK (on_motion),  self);
 }
 
 static void

@@ -1,7 +1,5 @@
 /*
- * audio/channel.c - a channel on the mixer
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex and zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,14 +17,15 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * A channel on the mixer.
+ */
+
 #include <math.h>
 #include <unistd.h>
 #include <stdlib.h>
-#if _POSIX_C_SOURCE >= 199309L
-#include <time.h>   // for nanosleep
-#else
-#include <unistd.h> // for usleep
-#endif
 
 #include "audio/audio_track.h"
 #include "audio/automation_track.h"
@@ -243,7 +242,8 @@ channel_process (Channel * channel)
     {
       if (channel->track->type == TRACK_TYPE_INSTRUMENT)
         {
-          if (TRANSPORT->recording && channel->recording)
+          if (TRANSPORT->recording &&
+                channel->track->recording)
             {
               handle_recording (channel);
             }
@@ -297,25 +297,40 @@ channel_process (Channel * channel)
   /* same for channel ports */
   /*g_message ("summing stereo out ports %s",*/
              /*channel->name);*/
-  port_sum_signal_from_inputs (channel->stereo_out->l);
-  port_sum_signal_from_inputs (channel->stereo_out->r);
-  /*g_message ("summed stereo out ports %s",*/
-             /*channel->name);*/
+  /* if muted, clear output ports */
+  if (channel->track->mute ||
+        (mixer_has_soloed_channels () &&
+           !channel->track->solo &&
+           channel != MIXER->master))
+    {
+      port_clear_buffer (channel->stereo_out->l);
+      port_clear_buffer (channel->stereo_out->r);
+    }
+  else /* not muted or is soloed */
+    {
+      port_sum_signal_from_inputs (
+        channel->stereo_out->l);
+      port_sum_signal_from_inputs (
+        channel->stereo_out->r);
+      /*g_message ("summed stereo out ports %s",*/
+                 /*channel->name);*/
 
-  /* apply pan */
-  port_apply_pan_stereo (channel->stereo_out->l,
-                         channel->stereo_out->r,
-                         channel->pan,
-                         PAN_LAW_MINUS_3DB,
-                         PAN_ALGORITHM_SINE_LAW);
-  /*g_message ("applied pan %s",*/
-             /*channel->name);*/
+      /* apply pan */
+      port_apply_pan_stereo (
+        channel->stereo_out->l,
+        channel->stereo_out->r,
+        channel->pan,
+        PAN_LAW_MINUS_3DB,
+        PAN_ALGORITHM_SINE_LAW);
+      /*g_message ("applied pan %s",*/
+                 /*channel->name);*/
 
-  /* apply faders */
-  port_apply_fader (channel->stereo_out->l, channel->fader_amp);
-  port_apply_fader (channel->stereo_out->r, channel->fader_amp);
-  /*g_message ("applied fader %s",*/
-             /*channel->name);*/
+      /* apply faders */
+      port_apply_fader (channel->stereo_out->l, channel->fader_amp);
+      port_apply_fader (channel->stereo_out->r, channel->fader_amp);
+      /*g_message ("applied fader %s",*/
+                 /*channel->name);*/
+    }
 
   /* mark as processed */
   channel->processed = 1;
@@ -435,26 +450,6 @@ _create_channel (char * name)
   channel->visible = 1;
 
   return channel;
-}
-
-void
-channel_toggle_solo (Channel * channel)
-{
-  channel->solo = !channel->solo;
-  if (channel->widget)
-    {
-      channel_widget_refresh (channel->widget);
-    }
-  if (channel->track->widget)
-    {
-      track_widget_refresh (channel->track->widget);
-    }
-}
-
-void
-channel_toggle_mute (Channel * channel)
-{
-  channel->mute = !channel->mute;
 }
 
 /**
@@ -943,64 +938,6 @@ channel_get_first_plugin (Channel * channel)
   return plugin;
 }
 
-/**
- * Sets recording and connects/disconnects the JACK ports.
- */
-void
-channel_set_recording (Channel * channel,
-                       int       recording)
-{
-  if (channel->type == CT_AUDIO)
-    {
-      /* TODO connect L and R audio ports for recording */
-      if (recording)
-        {
-          port_connect (
-            AUDIO_ENGINE->stereo_in->l,
-            channel->stereo_in->l);
-          port_connect (
-            AUDIO_ENGINE->stereo_in->r,
-            channel->stereo_in->r);
-        }
-      else
-        {
-          port_disconnect (
-            AUDIO_ENGINE->stereo_in->l,
-            channel->stereo_in->l);
-          port_disconnect (
-            AUDIO_ENGINE->stereo_in->r,
-            channel->stereo_in->r);
-        }
-    }
-  else if (channel->type == CT_MIDI)
-    {
-      /* find first plugin */
-      Plugin * plugin = channel_get_first_plugin (channel);
-
-      if (plugin)
-        {
-          /* Connect/Disconnect MIDI port to the plugin */
-          for (int i = 0; i < plugin->num_in_ports; i++)
-            {
-              Port * port = plugin->in_ports[i];
-              if (port->type == TYPE_EVENT &&
-                  port->flow == FLOW_INPUT)
-                {
-                  g_message ("%d MIDI In port: %s",
-                             i, port->label);
-                  if (recording)
-                    port_connect (
-                      AUDIO_ENGINE->midi_in, port);
-                  else
-                    port_disconnect (
-                      AUDIO_ENGINE->midi_in, port);
-                }
-            }
-        }
-    }
-
-  channel->recording = recording;
-}
 
 /**
  * Connects or disconnects the MIDI editor key press port to the channel's

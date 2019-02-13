@@ -49,11 +49,6 @@ typedef struct _AudioTrackWidget
   GtkToggleButton *             solo;
   GtkToggleButton *             mute;
   GtkToggleButton *             show_automation;
-
-  /**
-   * Signal handler IDs.
-   */
-  gulong                        record_toggle_handler_id;
 } AudioTrackWidget;
 
 /**

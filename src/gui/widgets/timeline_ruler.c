@@ -501,6 +501,8 @@ drag_update (GtkGestureDrag * gesture,
             &TRANSPORT->loop_end_pos,
             SNAP_GRID_TIMELINE);
           transport_update_position_frames ();
+          gtk_widget_queue_draw (
+            GTK_WIDGET (self->loop_end));
         }
       else if (self->target == TRW_TARGET_SONG_START)
         {
@@ -526,7 +528,7 @@ drag_update (GtkGestureDrag * gesture,
         }
     } /* endif MOVING */
 
-  gtk_widget_queue_allocate(GTK_WIDGET (self));
+  gtk_widget_queue_allocate (GTK_WIDGET (self));
   self->last_offset_x = offset_x;
 
   if (self->target ==

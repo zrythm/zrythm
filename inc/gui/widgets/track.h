@@ -75,6 +75,16 @@ typedef struct
   GtkEventBox *                 event_box;
 
   Track *                       track; ///< associated track
+
+  /**
+   * Signal handler IDs for tracks that have them.
+   *
+   * This is more convenient instead of having them
+   * in each widget.
+   */
+  gulong              record_toggle_handler_id;
+  gulong              solo_toggled_handler_id;
+  gulong              mute_toggled_handler_id;
 } TrackWidgetPrivate;
 
 typedef struct _TrackWidgetClass
@@ -93,6 +103,34 @@ track_widget_new (Track * track);
 void
 track_widget_select (TrackWidget * self,
                      int           select); ///< 1 = select, 0 = unselect
+
+void
+track_widget_on_solo_toggled (
+  GtkToggleButton * btn,
+  void *            data);
+
+/**
+ * General handler for tracks that have mute
+ * buttons.
+ */
+void
+track_widget_on_mute_toggled (
+  GtkToggleButton * btn,
+  void *            data);
+
+/**
+ * Blocks all signal handlers.
+ */
+void
+track_widget_block_all_signal_handlers (
+  TrackWidget * self);
+
+/**
+ * Unblocks all signal handlers.
+ */
+void
+track_widget_unblock_all_signal_handlers (
+  TrackWidget * self);
 
 /**
  * Wrapper.

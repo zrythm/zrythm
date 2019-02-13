@@ -1,7 +1,5 @@
 /*
- * gui/widgets/channel.h - A channel widget
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -77,9 +75,15 @@ typedef struct _ChannelWidget
   GtkLabel            * meter_reading;
   GtkImage            * icon;
   GtkImage *          output_img;
-  int                   undo_redo_action; ///< 1 if current action is undo or redo
   double                meter_reading_val; ///< cache
   Channel             * channel;    ///< pointer to data
+
+  /**
+   * Signal handler IDs.
+   */
+  gulong              record_toggled_handler_id;
+  gulong              solo_toggled_handler_id;
+  gulong              mute_toggled_handler_id;
 } ChannelWidget;
 
 /**
@@ -87,6 +91,20 @@ typedef struct _ChannelWidget
  */
 void
 channel_update_slots (ChannelWidget * self);
+
+/**
+ * Blocks all signal handlers.
+ */
+void
+channel_widget_block_all_signal_handlers (
+  ChannelWidget * self);
+
+/**
+ * Unblocks all signal handlers.
+ */
+void
+channel_widget_unblock_all_signal_handlers (
+  ChannelWidget * self);
 
 /**
  * Creates a channel widget using the given channel data.

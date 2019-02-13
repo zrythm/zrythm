@@ -1,6 +1,4 @@
 /*
- * gui/widgets/track.h - Track view
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -48,11 +46,6 @@ typedef struct _MasterTrackWidget
   GtkToggleButton *             solo;
   GtkToggleButton *             mute;
   GtkToggleButton *             show_automation;
-
-  /**
-   * Signal handler IDs.
-   */
-  gulong                        record_toggle_handler_id;
 } MasterTrackWidget;
 
 /**

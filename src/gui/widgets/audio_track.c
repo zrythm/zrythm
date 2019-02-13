@@ -1,7 +1,5 @@
 /*
- * gui/widgets/track.c - Track
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -73,24 +71,64 @@ audio_track_widget_new (Track * track)
     track_get_automation_tracklist (track);
   automation_tracklist->widget =
     automation_tracklist_widget_new (automation_tracklist);
-  gtk_paned_pack2 (GTK_PANED (tw_prv->paned),
-                   GTK_WIDGET (automation_tracklist->widget),
-                   Z_GTK_RESIZE,
-                   Z_GTK_NO_SHRINK);
+  gtk_paned_pack2 (
+    GTK_PANED (tw_prv->paned),
+    GTK_WIDGET (automation_tracklist->widget),
+    Z_GTK_RESIZE,
+    Z_GTK_NO_SHRINK);
 
-  self->record_toggle_handler_id =
+  tw_prv->record_toggle_handler_id =
     g_signal_connect (
-      self->record,
-      "toggled",
+      self->record, "toggled",
       G_CALLBACK (track_widget_on_record_toggled),
+      self);
+  tw_prv->mute_toggled_handler_id =
+    g_signal_connect (
+      self->mute, "toggled",
+      G_CALLBACK (track_widget_on_mute_toggled),
+      self);
+  tw_prv->solo_toggled_handler_id =
+    g_signal_connect (
+      self->solo, "toggled",
+      G_CALLBACK (track_widget_on_solo_toggled),
       self);
   g_signal_connect (
     self->show_automation,
-    "clicked",
+    "toggled",
     G_CALLBACK (track_widget_on_show_automation_toggled),
     self);
 
   return self;
+}
+
+static void
+refresh_buttons (
+  AudioTrackWidget * self)
+{
+  TRACK_WIDGET_GET_PRIVATE (self);
+  g_signal_handler_block (
+    self->record, tw_prv->record_toggle_handler_id);
+      gtk_toggle_button_set_active (
+        self->record,
+        tw_prv->track->recording);
+  g_signal_handler_unblock (
+    self->record, tw_prv->record_toggle_handler_id);
+
+  g_signal_handler_block (
+    self->solo, tw_prv->solo_toggled_handler_id);
+      gtk_toggle_button_set_active (
+        self->solo,
+        tw_prv->track->solo);
+  g_signal_handler_unblock (
+    self->solo, tw_prv->solo_toggled_handler_id);
+
+  g_signal_handler_block (
+    self->mute, tw_prv->mute_toggled_handler_id);
+      gtk_toggle_button_set_active (
+        self->mute,
+        tw_prv->track->mute);
+  g_signal_handler_unblock (
+    self->mute, tw_prv->mute_toggled_handler_id);
 }
 
 void
@@ -105,14 +143,7 @@ audio_track_widget_refresh (AudioTrackWidget * self)
     tw_prv->name,
     chan->name);
 
-  /* don't trigger callback */
-  g_signal_handler_block (
-    self->record, self->record_toggle_handler_id);
-      gtk_toggle_button_set_active (
-        self->record,
-        chan->recording);
-  g_signal_handler_unblock (
-    self->record, self->record_toggle_handler_id);
+  refresh_buttons (self);
 
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (tw_prv->track);
@@ -132,51 +163,62 @@ audio_track_widget_init (AudioTrackWidget * self)
   context =
     gtk_widget_get_style_context (
       GTK_WIDGET (self->record));
-  gtk_style_context_add_class (context, "record-button");
+  gtk_style_context_add_class (
+    context, "record-button");
   self->solo =
-    z_gtk_toggle_button_new_with_resource (ICON_TYPE_ZRYTHM,
-                                    "solo.svg");
+    z_gtk_toggle_button_new_with_resource (
+      ICON_TYPE_ZRYTHM,
+      "solo.svg");
   context =
     gtk_widget_get_style_context (
       GTK_WIDGET (self->solo));
-  gtk_style_context_add_class (context, "solo-button");
+  gtk_style_context_add_class (
+    context, "solo-button");
   self->mute =
-    z_gtk_toggle_button_new_with_resource (ICON_TYPE_ZRYTHM,
-                                    "mute.svg");
+    z_gtk_toggle_button_new_with_resource (
+      ICON_TYPE_ZRYTHM,
+      "mute.svg");
   self->show_automation =
-    z_gtk_toggle_button_new_with_icon ("format-justify-fill");
+    z_gtk_toggle_button_new_with_icon (
+      "format-justify-fill");
 
   /* set buttons to upper controls */
-  gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),
-                      GTK_WIDGET (self->record),
-                      Z_GTK_NO_EXPAND,
-                      Z_GTK_NO_FILL,
-                      0);
-  gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),
-                      GTK_WIDGET (self->solo),
-                      Z_GTK_NO_EXPAND,
-                      Z_GTK_NO_FILL,
-                      0);
-  gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),
-                      GTK_WIDGET (self->mute),
-                      Z_GTK_NO_EXPAND,
-                      Z_GTK_NO_FILL,
-                      0);
+  gtk_box_pack_start (
+    GTK_BOX (tw_prv->upper_controls),
+    GTK_WIDGET (self->record),
+    Z_GTK_NO_EXPAND,
+    Z_GTK_NO_FILL,
+    0);
+  gtk_box_pack_start (
+    GTK_BOX (tw_prv->upper_controls),
+    GTK_WIDGET (self->solo),
+    Z_GTK_NO_EXPAND,
+    Z_GTK_NO_FILL,
+    0);
+  gtk_box_pack_start (
+    GTK_BOX (tw_prv->upper_controls),
+    GTK_WIDGET (self->mute),
+    Z_GTK_NO_EXPAND,
+    Z_GTK_NO_FILL,
+    0);
 
   /* pack buttons to bot controls */
-  gtk_box_pack_start (GTK_BOX (tw_prv->bot_controls),
-                      GTK_WIDGET (self->show_automation),
-                      Z_GTK_NO_EXPAND,
-                      Z_GTK_NO_FILL,
-                      0);
+  gtk_box_pack_start (
+    GTK_BOX (tw_prv->bot_controls),
+    GTK_WIDGET (self->show_automation),
+    Z_GTK_NO_EXPAND,
+    Z_GTK_NO_FILL,
+    0);
 
   /* set icon */
-  resources_set_image_icon (tw_prv->icon,
-                            ICON_TYPE_ZRYTHM,
-                            "audio.svg");
+  resources_set_image_icon (
+    tw_prv->icon,
+    ICON_TYPE_ZRYTHM,
+    "audio.svg");
 }
 
 static void
-audio_track_widget_class_init (AudioTrackWidgetClass * klass)
+audio_track_widget_class_init (
+  AudioTrackWidgetClass * klass)
 {
 }

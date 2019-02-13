@@ -43,7 +43,6 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="relief">none</property>
-                <signal name="toggled" handler="on_record_toggled" object="ChannelWidget" swapped="no"/>
                 <child>
                   <object class="GtkImage">
                     <property name="visible">True</property>
@@ -59,17 +58,16 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="mute">
+              <object class="GtkToggleButton" id="solo">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="relief">none</property>
-                <signal name="toggled" handler="on_mute_toggled" object="ChannelWidget" swapped="no"/>
                 <child>
                   <object class="GtkImage">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="resource">/org/zrythm/icons/zrythm/mute.svg</property>
+                    <property name="resource">/org/zrythm/icons/zrythm/solo.svg</property>
                   </object>
                 </child>
               </object>
@@ -80,17 +78,16 @@
               </packing>
             </child>
             <child>
-              <object class="GtkToggleButton" id="solo">
+              <object class="GtkToggleButton" id="mute">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="relief">none</property>
-                <signal name="toggled" handler="on_solo_toggled" object="ChannelWidget" swapped="no"/>
                 <child>
                   <object class="GtkImage">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="resource">/org/zrythm/icons/zrythm/solo.svg</property>
+                    <property name="resource">/org/zrythm/icons/zrythm/mute.svg</property>
                   </object>
                 </child>
               </object>
@@ -106,7 +103,6 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="relief">none</property>
-                <signal name="toggled" handler="on_listen_toggled" object="ChannelWidget" swapped="no"/>
                 <child>
                   <object class="GtkImage">
                     <property name="visible">True</property>
@@ -127,7 +123,6 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="relief">none</property>
-                <signal name="activate" handler="on_e_activate" object="ChannelWidget" swapped="no"/>
                 <child>
                   <object class="GtkImage">
                     <property name="visible">True</property>
