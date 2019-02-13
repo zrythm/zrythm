@@ -33,6 +33,7 @@
 #include "audio/transport.h"
 #include "gui/widgets/header_bar.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
 #include "plugins/lv2_plugin.h"
 #include "utils/arrays.h"
@@ -155,6 +156,16 @@ project_load (char * filename)
   tracklist_init (&PROJECT->tracklist);
 }
 
+/**
+ * Sets if the project has range and updates UI.
+ */
+void
+project_set_has_range (int has_range)
+{
+  PROJECT->has_range = has_range;
+
+  timeline_ruler_refresh ();
+}
 
 void
 project_save (const char * dir)

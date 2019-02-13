@@ -51,15 +51,6 @@ typedef struct AutomationCurve AutomationCurve;
 typedef struct _RegionWidget RegionWidget;
 typedef struct Chord Chord;
 
-/**
- * The selection type if current action is SELECTING.
- */
-typedef enum SelectionType
-{
-  TA_SELECTION_TYPE_OBJECTS, ///< selecting objects
-  TA_SELECTION_TYPE_RANGE, ///< selecting a range
-} SelectionType;
-
 typedef struct _TimelineArrangerWidget
 {
   ArrangerWidget           parent_instance;
@@ -77,7 +68,11 @@ typedef struct _TimelineArrangerWidget
   Position                 region_start_poses[600]; ///< region initial start positions, for moving regions
   Position                 chord_start_poses[600]; ///< region initial start positions, for moving regions
   Position                 ap_poses[600]; ///< for moving regions
-  SelectionType            selection_type;
+
+  /**
+   * 1 if resizing range.
+   */
+  int                      resizing_range;
 } TimelineArrangerWidget;
 
 /**
@@ -90,6 +85,10 @@ timeline_arranger_widget_set_allocation (
   TimelineArrangerWidget * self,
   GtkWidget *          widget,
   GdkRectangle *       allocation);
+
+void
+timeline_arranger_widget_snap_range_r (
+  Position *               pos);
 
 Track *
 timeline_arranger_widget_get_track_at_y (double y);

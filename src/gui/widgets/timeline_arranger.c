@@ -475,6 +475,14 @@ timeline_arranger_widget_select_all (
             }
         }
     }
+
+  /**
+   * Deselect range if deselecting all.
+   */
+  if (!select)
+    {
+      project_set_has_range (0);
+    }
 }
 
 /**
@@ -766,7 +774,8 @@ timeline_arranger_widget_create_ap (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid))
+  if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
+      !ar_prv->shift_held)
     position_snap (NULL,
                    pos,
                    track,
@@ -810,7 +819,8 @@ timeline_arranger_widget_create_region (
 
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid))
+  if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
+      !ar_prv->shift_held)
     {
       position_snap (NULL,
                      pos,
@@ -849,7 +859,8 @@ timeline_arranger_widget_create_chord (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid))
+  if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
+      !ar_prv->shift_held)
     position_snap (NULL,
                    pos,
                    track,
@@ -893,33 +904,50 @@ timeline_arranger_widget_set_select_type (
             y))
         {
           /* select objects */
-          self->selection_type =
-            TA_SELECTION_TYPE_OBJECTS;
+          self->resizing_range = 0;
 
           /* deselect all */
-          arranger_widget_select_all (self, 0);
+          arranger_widget_select_all (
+            Z_ARRANGER_WIDGET (self), 0);
         }
       else
         {
-          /* select range */
-          self->selection_type =
-            TA_SELECTION_TYPE_RANGE;
+          /* set range 1 at current point */
+          ui_px_to_pos (
+            ar_prv->start_x,
+            &PROJECT->range_1,
+            1);
+          if (SNAP_GRID_ANY_SNAP (
+                ar_prv->snap_grid) &&
+              !ar_prv->shift_held)
+            position_snap_simple (
+              &PROJECT->range_1,
+              SNAP_GRID_TIMELINE);
+          position_set_to_pos (
+            &PROJECT->range_2,
+            &PROJECT->range_1);
 
-          /* set it visible */
-          gtk_widget_set_visible (
-            GTK_WIDGET (MW_RULER->range), 1);
+          /* set resizing range flags */
+          self->resizing_range = 1;
+          ar_prv->action =
+            UI_OVERLAY_ACTION_RESIZING_R;
+          project_set_has_range (1);
         }
     }
   else
     {
       /* TODO something similar as above based on
        * visible space */
-      self->selection_type =
-        TA_SELECTION_TYPE_OBJECTS;
+      self->resizing_range = 0;
 
       /* deselect all */
-      arranger_widget_select_all (self, 0);
+      arranger_widget_select_all (
+        Z_ARRANGER_WIDGET (self), 0);
     }
+
+  arranger_widget_refresh_all_backgrounds ();
+  gtk_widget_queue_allocate (
+    GTK_WIDGET (MW_RULER));
 }
 
 /**
@@ -935,111 +963,85 @@ timeline_arranger_widget_select (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  if (self->selection_type ==
-      TA_SELECTION_TYPE_OBJECTS)
+  /* deselect all */
+  arranger_widget_select_all (
+    Z_ARRANGER_WIDGET (self), 0);
+
+  /* find enclosed regions */
+  GtkWidget *    region_widgets[800];
+  int            num_region_widgets = 0;
+  arranger_widget_get_hit_widgets_in_range (
+    Z_ARRANGER_WIDGET (self),
+    REGION_WIDGET_TYPE,
+    ar_prv->start_x,
+    ar_prv->start_y,
+    offset_x,
+    offset_y,
+    region_widgets,
+    &num_region_widgets);
+
+
+  /* select the enclosed regions */
+  for (int i = 0; i < num_region_widgets; i++)
     {
-      /* deselect all */
-      arranger_widget_select_all (self, 0);
+      RegionWidget * rw =
+        Z_REGION_WIDGET (region_widgets[i]);
+      REGION_WIDGET_GET_PRIVATE (rw);
+      Region * region = rw_prv->region;
+      timeline_arranger_widget_toggle_select_region (
+        self,
+        region,
+        1);
+    }
 
-      /* find enclosed regions */
-      GtkWidget *    region_widgets[800];
-      int            num_region_widgets = 0;
-      arranger_widget_get_hit_widgets_in_range (
-        Z_ARRANGER_WIDGET (self),
-        REGION_WIDGET_TYPE,
-        ar_prv->start_x,
-        ar_prv->start_y,
-        offset_x,
-        offset_y,
-        region_widgets,
-        &num_region_widgets);
-
-
-      /* select the enclosed regions */
-      for (int i = 0; i < num_region_widgets; i++)
-        {
-          RegionWidget * rw =
-            Z_REGION_WIDGET (region_widgets[i]);
-          REGION_WIDGET_GET_PRIVATE (rw);
-          Region * region = rw_prv->region;
-          timeline_arranger_widget_toggle_select_region (
-            self,
-            region,
-            1);
-        }
-
-      /* find enclosed chords */
-      GtkWidget *    chord_widgets[800];
-      int            num_chord_widgets = 0;
-      arranger_widget_get_hit_widgets_in_range (
-        Z_ARRANGER_WIDGET (self),
-        CHORD_WIDGET_TYPE,
-        ar_prv->start_x,
-        ar_prv->start_y,
-        offset_x,
-        offset_y,
-        chord_widgets,
-        &num_chord_widgets);
+  /* find enclosed chords */
+  GtkWidget *    chord_widgets[800];
+  int            num_chord_widgets = 0;
+  arranger_widget_get_hit_widgets_in_range (
+    Z_ARRANGER_WIDGET (self),
+    CHORD_WIDGET_TYPE,
+    ar_prv->start_x,
+    ar_prv->start_y,
+    offset_x,
+    offset_y,
+    chord_widgets,
+    &num_chord_widgets);
 
 
-      /* select the enclosed chords */
-      for (int i = 0; i < num_chord_widgets; i++)
-        {
-          ChordWidget * rw =
-            Z_CHORD_WIDGET (chord_widgets[i]);
-          Chord * chord = rw->chord;
-          timeline_arranger_widget_toggle_select_chord (
-            self,
-            chord,
-            1);
-        }
-
-      /* find enclosed automation_points */
-      GtkWidget *    ap_widgets[800];
-      int            num_ap_widgets = 0;
-      arranger_widget_get_hit_widgets_in_range (
-        Z_ARRANGER_WIDGET (self),
-        AUTOMATION_POINT_WIDGET_TYPE,
-        ar_prv->start_x,
-        ar_prv->start_y,
-        offset_x,
-        offset_y,
-        ap_widgets,
-        &num_ap_widgets);
-
-      /* select the enclosed automation_points */
-      for (int i = 0; i < num_ap_widgets; i++)
-        {
-          AutomationPointWidget * ap_widget =
-            Z_AUTOMATION_POINT_WIDGET (ap_widgets[i]);
-          AutomationPoint * ap = ap_widget->ap;
-          timeline_arranger_widget_toggle_select_automation_point (self,
-                                                          ap,
-                                                          1);
-        }
-    } /* end if selecting objects */
-  /* if selecting range */
-  else if (self->selection_type ==
-           TA_SELECTION_TYPE_RANGE)
+  /* select the enclosed chords */
+  for (int i = 0; i < num_chord_widgets; i++)
     {
-      /* set range */
-      PROJECT->has_range = 1;
-      ui_px_to_pos (
-        ar_prv->start_x,
-        &PROJECT->range_1,
+      ChordWidget * rw =
+        Z_CHORD_WIDGET (chord_widgets[i]);
+      Chord * chord = rw->chord;
+      timeline_arranger_widget_toggle_select_chord (
+        self,
+        chord,
         1);
-      position_snap_simple (
-        &PROJECT->range_1,
-        SNAP_GRID_TIMELINE);
-      ui_px_to_pos (
-        ar_prv->start_x + offset_x,
-        &PROJECT->range_2,
-        1);
-      position_snap_simple (
-        &PROJECT->range_2,
-        SNAP_GRID_TIMELINE);
-      gtk_widget_queue_allocate (
-        GTK_WIDGET (MW_RULER));
+    }
+
+  /* find enclosed automation_points */
+  GtkWidget *    ap_widgets[800];
+  int            num_ap_widgets = 0;
+  arranger_widget_get_hit_widgets_in_range (
+    Z_ARRANGER_WIDGET (self),
+    AUTOMATION_POINT_WIDGET_TYPE,
+    ar_prv->start_x,
+    ar_prv->start_y,
+    offset_x,
+    offset_y,
+    ap_widgets,
+    &num_ap_widgets);
+
+  /* select the enclosed automation_points */
+  for (int i = 0; i < num_ap_widgets; i++)
+    {
+      AutomationPointWidget * ap_widget =
+        Z_AUTOMATION_POINT_WIDGET (ap_widgets[i]);
+      AutomationPoint * ap = ap_widget->ap;
+      timeline_arranger_widget_toggle_select_automation_point (self,
+                                                      ap,
+                                                      1);
     }
 }
 
@@ -1053,7 +1055,8 @@ timeline_arranger_widget_snap_regions_l (
   for (int i = 0; i < TIMELINE_SELECTIONS->num_regions; i++)
     {
       Region * region = TIMELINE_SELECTIONS->regions[i];
-      if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid))
+      if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
+          !ar_prv->shift_held)
         position_snap (NULL,
                        pos,
                        region->track,
@@ -1074,7 +1077,8 @@ timeline_arranger_widget_snap_regions_r (
   for (int i = 0; i < TIMELINE_SELECTIONS->num_regions; i++)
     {
       Region * region = TIMELINE_SELECTIONS->regions[i];
-      if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid))
+      if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
+          !ar_prv->shift_held)
         position_snap (NULL,
                        pos,
                        region->track,
@@ -1086,6 +1090,28 @@ timeline_arranger_widget_snap_regions_r (
                               pos);
         }
     }
+}
+
+void
+timeline_arranger_widget_snap_range_r (
+  Position *               pos)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);
+
+  /* set range */
+  if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
+      !ar_prv->shift_held)
+    position_snap_simple (
+      pos,
+      SNAP_GRID_TIMELINE);
+  position_set_to_pos (
+    &PROJECT->range_2,
+    pos);
+
+  gtk_widget_queue_allocate (
+    GTK_WIDGET (MW_RULER));
+
+  arranger_widget_refresh_all_backgrounds ();
 }
 
 void

@@ -144,6 +144,14 @@ timeline_ruler_widget_set_ruler_marker_position (
 }
 
 void
+timeline_ruler_refresh ()
+{
+  gtk_widget_set_visible (
+    GTK_WIDGET (MW_RULER->range),
+    PROJECT->has_range);
+}
+
+void
 on_drag_begin_range_hit (TimelineRulerWidget * self,
                          RulerRangeWidget *    rr)
 {
@@ -167,11 +175,12 @@ on_drag_begin_range_hit (TimelineRulerWidget * self,
 }
 
 static gboolean
-multipress_pressed (GtkGestureMultiPress *gesture,
-               gint                  n_press,
-               gdouble               x,
-               gdouble               y,
-               gpointer              user_data)
+multipress_pressed (
+  GtkGestureMultiPress *gesture,
+  gint                  n_press,
+  gdouble               x,
+  gdouble               y,
+  TimelineRulerWidget * self)
 {
   if (n_press == 2)
     {
@@ -187,6 +196,18 @@ multipress_pressed (GtkGestureMultiPress *gesture,
                            &pos);
 
     }
+
+  GdkEventSequence *sequence =
+    gtk_gesture_single_get_current_sequence (
+      GTK_GESTURE_SINGLE (gesture));
+  const GdkEvent * event =
+    gtk_gesture_get_last_event (
+      GTK_GESTURE (gesture), sequence);
+  GdkModifierType state_mask;
+  gdk_event_get_state (event, &state_mask);
+  if (state_mask & GDK_SHIFT_MASK)
+    self->shift_held = 1;
+
   return FALSE;
 }
 
@@ -250,9 +271,10 @@ drag_begin (GtkGestureDrag *       gesture,
         start_x,
         &pos,
         1);
-      position_snap_simple (
-        &pos,
-        SNAP_GRID_TIMELINE);
+      if (!self->shift_held)
+        position_snap_simple (
+          &pos,
+          SNAP_GRID_TIMELINE);
       transport_move_playhead (&pos, 1);
       self->action =
         UI_OVERLAY_ACTION_STARTING_MOVING;
@@ -285,9 +307,10 @@ drag_begin (GtkGestureDrag *       gesture,
             start_x,
             &PROJECT->range_1,
             1);
-          position_snap_simple (
-            &PROJECT->range_1,
-            SNAP_GRID_TIMELINE);
+          if (!self->shift_held)
+            position_snap_simple (
+              &PROJECT->range_1,
+              SNAP_GRID_TIMELINE);
           position_set_to_pos (
             &PROJECT->range_2,
             &PROJECT->range_1);
@@ -305,6 +328,19 @@ drag_update (GtkGestureDrag * gesture,
                gdouble         offset_y,
             TimelineRulerWidget * self)
 {
+  GdkEventSequence *sequence =
+    gtk_gesture_single_get_current_sequence (
+      GTK_GESTURE_SINGLE (gesture));
+  const GdkEvent * event =
+    gtk_gesture_get_last_event (
+      GTK_GESTURE (gesture), sequence);
+  GdkModifierType state_mask;
+  gdk_event_get_state (event, &state_mask);
+  if (state_mask & GDK_SHIFT_MASK)
+    self->shift_held = 1;
+  else
+    self->shift_held = 0;
+
   if (self->action == UI_OVERLAY_ACTION_STARTING_MOVING)
     {
       self->action = UI_OVERLAY_ACTION_MOVING;
@@ -322,9 +358,10 @@ drag_update (GtkGestureDrag * gesture,
                 self->start_x + offset_x,
                 &PROJECT->range_1,
                 1);
-              position_snap_simple (
-                &PROJECT->range_1,
-                SNAP_GRID_TIMELINE);
+              if (!self->shift_held)
+                position_snap_simple (
+                  &PROJECT->range_1,
+                  SNAP_GRID_TIMELINE);
             }
           else
             {
@@ -332,9 +369,10 @@ drag_update (GtkGestureDrag * gesture,
                 self->start_x + offset_x,
                 &PROJECT->range_2,
                 1);
-              position_snap_simple (
-                &PROJECT->range_2,
-                SNAP_GRID_TIMELINE);
+              if (!self->shift_held)
+                position_snap_simple (
+                  &PROJECT->range_2,
+                  SNAP_GRID_TIMELINE);
             }
         }
     } /* endif RESIZING_L */
@@ -350,9 +388,10 @@ drag_update (GtkGestureDrag * gesture,
                 self->start_x + offset_x,
                 &PROJECT->range_2,
                 1);
-              position_snap_simple (
-                &PROJECT->range_2,
-                SNAP_GRID_TIMELINE);
+              if (!self->shift_held)
+                position_snap_simple (
+                  &PROJECT->range_2,
+                  SNAP_GRID_TIMELINE);
             }
           else
             {
@@ -360,9 +399,10 @@ drag_update (GtkGestureDrag * gesture,
                 self->start_x + offset_x,
                 &PROJECT->range_1,
                 1);
-              position_snap_simple (
-                &PROJECT->range_1,
-                SNAP_GRID_TIMELINE);
+              if (!self->shift_held)
+                position_snap_simple (
+                  &PROJECT->range_1,
+                  SNAP_GRID_TIMELINE);
             }
         }
     } /*endif RESIZING_R */
@@ -399,9 +439,10 @@ drag_update (GtkGestureDrag * gesture,
                   position_add_ticks (
                     &PROJECT->range_1,
                     ticks_diff);
-                  position_snap_simple (
-                    &PROJECT->range_1,
-                    SNAP_GRID_TIMELINE);
+                  if (!self->shift_held)
+                    position_snap_simple (
+                      &PROJECT->range_1,
+                      SNAP_GRID_TIMELINE);
                   position_set_to_pos (
                     &PROJECT->range_2,
                     &PROJECT->range_1);
@@ -417,9 +458,10 @@ drag_update (GtkGestureDrag * gesture,
                   position_add_ticks (
                     &PROJECT->range_2,
                     ticks_diff);
-                  position_snap_simple (
-                    &PROJECT->range_2,
-                    SNAP_GRID_TIMELINE);
+                  if (!self->shift_held)
+                    position_snap_simple (
+                      &PROJECT->range_2,
+                      SNAP_GRID_TIMELINE);
                   position_set_to_pos (
                     &PROJECT->range_1,
                     &PROJECT->range_2);
@@ -438,9 +480,10 @@ drag_update (GtkGestureDrag * gesture,
                   position_add_ticks (
                     &PROJECT->range_1,
                     -ticks_diff);
-                  position_snap_simple (
-                    &PROJECT->range_1,
-                    SNAP_GRID_TIMELINE);
+                  if (!self->shift_held)
+                    position_snap_simple (
+                      &PROJECT->range_1,
+                      SNAP_GRID_TIMELINE);
                   position_set_to_pos (
                     &PROJECT->range_2,
                     &PROJECT->range_1);
@@ -456,9 +499,10 @@ drag_update (GtkGestureDrag * gesture,
                   position_add_ticks (
                     &PROJECT->range_2,
                     -ticks_diff);
-                  position_snap_simple (
-                    &PROJECT->range_2,
-                    SNAP_GRID_TIMELINE);
+                  if (!self->shift_held)
+                    position_snap_simple (
+                      &PROJECT->range_2,
+                      SNAP_GRID_TIMELINE);
                   position_set_to_pos (
                     &PROJECT->range_1,
                     &PROJECT->range_2);
@@ -475,9 +519,10 @@ drag_update (GtkGestureDrag * gesture,
             self->start_x + offset_x,
             &pos,
             1);
-          position_snap_simple (
-            &pos,
-            SNAP_GRID_TIMELINE);
+          if (!self->shift_held)
+            position_snap_simple (
+              &pos,
+              SNAP_GRID_TIMELINE);
           transport_move_playhead (&pos, 1);
         }
       else if (self->target == TRW_TARGET_LOOP_START)
@@ -486,9 +531,10 @@ drag_update (GtkGestureDrag * gesture,
             self->start_x + offset_x,
             &TRANSPORT->loop_start_pos,
             1);
-          position_snap_simple (
-            &TRANSPORT->loop_start_pos,
-            SNAP_GRID_TIMELINE);
+          if (!self->shift_held)
+            position_snap_simple (
+              &TRANSPORT->loop_start_pos,
+              SNAP_GRID_TIMELINE);
           transport_update_position_frames ();
         }
       else if (self->target == TRW_TARGET_LOOP_END)
@@ -497,9 +543,10 @@ drag_update (GtkGestureDrag * gesture,
             self->start_x + offset_x,
             &TRANSPORT->loop_end_pos,
             1);
-          position_snap_simple (
-            &TRANSPORT->loop_end_pos,
-            SNAP_GRID_TIMELINE);
+          if (!self->shift_held)
+            position_snap_simple (
+              &TRANSPORT->loop_end_pos,
+              SNAP_GRID_TIMELINE);
           transport_update_position_frames ();
           gtk_widget_queue_draw (
             GTK_WIDGET (self->loop_end));
@@ -510,9 +557,10 @@ drag_update (GtkGestureDrag * gesture,
             self->start_x + offset_x,
             &TRANSPORT->start_marker_pos,
             1);
-          position_snap_simple (
-            &TRANSPORT->start_marker_pos,
-            SNAP_GRID_TIMELINE);
+          if (!self->shift_held)
+            position_snap_simple (
+              &TRANSPORT->start_marker_pos,
+              SNAP_GRID_TIMELINE);
           transport_update_position_frames ();
         }
       else if (self->target == TRW_TARGET_SONG_END)
@@ -521,9 +569,10 @@ drag_update (GtkGestureDrag * gesture,
             self->start_x + offset_x,
             &TRANSPORT->end_marker_pos,
             1);
-          position_snap_simple (
-            &TRANSPORT->end_marker_pos,
-            SNAP_GRID_TIMELINE);
+          if (!self->shift_held)
+            position_snap_simple (
+              &TRANSPORT->end_marker_pos,
+              SNAP_GRID_TIMELINE);
           transport_update_position_frames ();
         }
     } /* endif MOVING */
@@ -563,6 +612,7 @@ drag_end (GtkGestureDrag *gesture,
             TimelineRulerWidget * self)
 {
   self->start_x = 0;
+  self->shift_held = 0;
 
   self->action = UI_OVERLAY_ACTION_NONE;
 }

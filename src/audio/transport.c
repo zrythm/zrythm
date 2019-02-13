@@ -192,12 +192,18 @@ transport_move_playhead (Position * target, ///< position to set to
 void
 transport_update_position_frames ()
 {
-  position_update_frames (&TRANSPORT->playhead_pos);
-  position_update_frames (&TRANSPORT->cue_pos);
-  position_update_frames (&TRANSPORT->start_marker_pos);
-  position_update_frames (&TRANSPORT->end_marker_pos);
-  position_update_frames (&TRANSPORT->loop_start_pos);
-  position_update_frames (&TRANSPORT->loop_end_pos);
+  position_update_frames (
+    &TRANSPORT->playhead_pos);
+  position_update_frames (
+    &TRANSPORT->cue_pos);
+  position_update_frames (
+    &TRANSPORT->start_marker_pos);
+  position_update_frames (
+    &TRANSPORT->end_marker_pos);
+  position_update_frames (
+    &TRANSPORT->loop_start_pos);
+  position_update_frames (
+    &TRANSPORT->loop_end_pos);
 }
 
 /**

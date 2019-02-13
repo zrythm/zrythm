@@ -118,25 +118,37 @@ arranger_bg_draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   if (PROJECT->has_range)
     {
       int range_first_px, range_second_px;
-      range_first_px = ui_pos_to_px (&range_first_pos, 1);
-      range_second_px = ui_pos_to_px (&range_second_pos, 1);
-      cairo_set_source_rgba (cr, 0.3, 0.3, 0.3, 0.3);
-      cairo_rectangle (cr,
-                       range_first_px > rect.x ? range_first_px : rect.x,
-                       rect.y,
-                       range_second_px < rect.x + rect.width ? range_second_px - range_first_px : (rect.x + rect.width) - range_first_px,
-                       rect.height);
+      range_first_px =
+        ui_pos_to_px (&range_first_pos, 1);
+      range_second_px =
+        ui_pos_to_px (&range_second_pos, 1);
+      cairo_set_source_rgba (
+        cr, 0.3, 0.3, 0.3, 0.3);
+      cairo_rectangle (
+        cr,
+        range_first_px > rect.x ?
+          range_first_px :
+          rect.x,
+        rect.y,
+        range_second_px < rect.x + rect.width ?
+          range_second_px - range_first_px :
+          (rect.x + rect.width) - range_first_px,
+        rect.height);
       cairo_fill (cr);
       cairo_set_source_rgba (cr, 0.8, 0.8, 0.8, 0.4);
       cairo_set_line_width (cr, 2);
       z_cairo_draw_vertical_line (
         cr,
-        range_first_px > rect.x ? range_first_px : rect.x,
+        range_first_px > rect.x ?
+          range_first_px :
+          rect.x,
         rect.y,
         rect.y + rect.height);
       z_cairo_draw_vertical_line (
         cr,
-        range_second_px < rect.x + rect.width ? range_second_px : rect.x + rect.width,
+        range_second_px < rect.x + rect.width ?
+          range_second_px :
+          rect.x + rect.width,
         rect.y,
         rect.y + rect.height);
     }
@@ -167,10 +179,7 @@ arranger_bg_widget_draw_selections (
   /* if action is selecting and not selecting range
    * (in the case of timeline */
   if (ar_prv->action ==
-        UI_OVERLAY_ACTION_SELECTING &&
-      !(MW_TIMELINE->selection_type ==
-          TA_SELECTION_TYPE_RANGE &&
-        self == Z_ARRANGER_WIDGET (MW_TIMELINE)))
+        UI_OVERLAY_ACTION_SELECTING)
     {
       z_cairo_draw_selection (cr,
                               ar_prv->start_x,

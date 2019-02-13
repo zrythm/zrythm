@@ -339,6 +339,31 @@ arranger_widget_toggle_select (ArrangerWidget *  self,
     }
 }
 
+/**
+ * Refreshes all arranger backgrounds.
+ */
+void
+arranger_widget_refresh_all_backgrounds ()
+{
+  ArrangerWidgetPrivate * ar_prv;
+
+  ar_prv =
+    arranger_widget_get_private (
+      Z_ARRANGER_WIDGET (MW_TIMELINE));
+  gtk_widget_queue_draw (
+    GTK_WIDGET (ar_prv->bg));
+  ar_prv =
+    arranger_widget_get_private (
+      Z_ARRANGER_WIDGET (MIDI_ARRANGER));
+  gtk_widget_queue_draw (
+    GTK_WIDGET (ar_prv->bg));
+  ar_prv =
+    arranger_widget_get_private (
+      Z_ARRANGER_WIDGET (MIDI_MODIFIER_ARRANGER));
+  gtk_widget_queue_draw (
+    GTK_WIDGET (ar_prv->bg));
+}
+
 void
 arranger_widget_select_all (ArrangerWidget *  self,
                             int               select)
@@ -426,6 +451,16 @@ multipress_pressed (GtkGestureMultiPress *gesture,
   GET_PRIVATE;
 
   ar_prv->n_press = n_press;
+  GdkEventSequence *sequence =
+    gtk_gesture_single_get_current_sequence (
+      GTK_GESTURE_SINGLE (gesture));
+  const GdkEvent * event =
+    gtk_gesture_get_last_event (
+      GTK_GESTURE (gesture), sequence);
+  GdkModifierType state_mask;
+  gdk_event_get_state (event, &state_mask);
+  if (state_mask & GDK_SHIFT_MASK)
+    ar_prv->shift_held = 1;
 }
 
 static void
@@ -664,6 +699,19 @@ drag_update (GtkGestureDrag * gesture,
     Z_ARRANGER_WIDGET (user_data);
   GET_PRIVATE;
 
+  GdkEventSequence *sequence =
+    gtk_gesture_single_get_current_sequence (
+      GTK_GESTURE_SINGLE (gesture));
+  const GdkEvent * event =
+    gtk_gesture_get_last_event (
+      GTK_GESTURE (gesture), sequence);
+  GdkModifierType state_mask;
+  gdk_event_get_state (event, &state_mask);
+  if (state_mask & GDK_SHIFT_MASK)
+    ar_prv->shift_held = 1;
+  else
+    ar_prv->shift_held = 0;
+
   GET_ARRANGER_ALIASES (self);
 
   /* set action to selecting if starting selection. this
@@ -671,23 +719,23 @@ drag_update (GtkGestureDrag * gesture,
    * a click, so we can check at drag_end and see if
    * anything was selected */
   if (ar_prv->action ==
-      UI_OVERLAY_ACTION_STARTING_SELECTION)
+        UI_OVERLAY_ACTION_STARTING_SELECTION)
     {
-      ar_prv->action = UI_OVERLAY_ACTION_SELECTING;
+      ar_prv->action =
+        UI_OVERLAY_ACTION_SELECTING;
     }
   else if (ar_prv->action ==
-           UI_OVERLAY_ACTION_STARTING_MOVING)
+             UI_OVERLAY_ACTION_STARTING_MOVING)
     {
-      ar_prv->action = UI_OVERLAY_ACTION_MOVING;
+      ar_prv->action =
+        UI_OVERLAY_ACTION_MOVING;
     }
 
   /* if drawing a selection */
-  if (ar_prv->action == UI_OVERLAY_ACTION_SELECTING)
+  if (ar_prv->action ==
+        UI_OVERLAY_ACTION_SELECTING)
     {
       /* find and select objects inside selection */
-      /* NOTE: timeline might select a range or
-       * objects depending on y
-       */
       if (timeline)
         {
           timeline_arranger_widget_select (
@@ -727,17 +775,22 @@ drag_update (GtkGestureDrag * gesture,
             &pos);
         }
     } /* endif RESIZING_L */
-  else if (ar_prv->action == UI_OVERLAY_ACTION_RESIZING_R)
+  else if (ar_prv->action ==
+             UI_OVERLAY_ACTION_RESIZING_R)
     {
       Position pos;
       ui_px_to_pos (ar_prv->start_x + offset_x,
                     &pos,
                     1);
-      if (ARRANGER_IS_TIMELINE (self))
+      if (timeline)
         {
-          timeline_arranger_widget_snap_regions_r (
-            Z_TIMELINE_ARRANGER_WIDGET (self),
-            &pos);
+          if (timeline->resizing_range)
+            timeline_arranger_widget_snap_range_r (
+              &pos);
+          else
+            timeline_arranger_widget_snap_regions_r (
+              Z_TIMELINE_ARRANGER_WIDGET (self),
+              &pos);
         }
       else if (ARRANGER_IS_MIDI (self))
         {
@@ -839,6 +892,8 @@ drag_end (GtkGestureDrag *gesture,
   ar_prv->start_y = 0;
   ar_prv->last_offset_x = 0;
   ar_prv->last_offset_y = 0;
+
+  ar_prv->shift_held = 0;
 
   GET_ARRANGER_ALIASES (self);
 

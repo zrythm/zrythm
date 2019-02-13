@@ -79,6 +79,10 @@ typedef struct
 
   int                      n_press; ///< for multipress
   SnapGrid *               snap_grid; ///< associated snap grid
+  /**
+   * If shift was held down during the press.
+   */
+  int                      shift_held;
 } ArrangerWidgetPrivate;
 
 typedef struct _ArrangerWidgetClass
@@ -104,6 +108,12 @@ void
 arranger_widget_px_to_pos (ArrangerWidget * self,
                            Position * pos,
                            int              px);
+
+/**
+ * Refreshes all arranger backgrounds.
+ */
+void
+arranger_widget_refresh_all_backgrounds ();
 
 void
 arranger_widget_get_hit_widgets_in_range (

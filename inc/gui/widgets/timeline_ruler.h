@@ -89,7 +89,15 @@ typedef struct _TimelineRulerWidget
   int                      range1_first; ///< range1 was before range2 at drag start
   GtkGestureDrag *         drag;
   GtkGestureMultiPress *   multipress;
+
+  /**
+   * If shift was held down during the press.
+   */
+  int                      shift_held;
 } TimelineRulerWidget;
+
+void
+timeline_ruler_refresh ();
 
 void
 timeline_ruler_widget_set_ruler_range_position (

@@ -1,6 +1,4 @@
 /*
- * inc/gui/widgets/midi_arranger_bg.h - MidiArranger background
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm

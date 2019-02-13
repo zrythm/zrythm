@@ -257,6 +257,12 @@ void
 project_save (const char * dir);
 
 /**
+ * Sets if the project has range and updates UI.
+ */
+void
+project_set_has_range (int has_range);
+
+/**
  * Adds a region to the project struct and assigns it an
  * ID.
  */
