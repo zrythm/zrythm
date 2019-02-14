@@ -387,12 +387,20 @@ timeline_arranger_widget_select_all (
       Chord * chord = ct->chords[i];
       if (chord->visible)
         {
-          chord_widget_select (chord->widget, select);
+          chord_widget_select (
+            chord->widget, select);
 
           if (select)
             {
               /* select  */
               array_append (
+                TIMELINE_SELECTIONS->chords,
+                TIMELINE_SELECTIONS->num_chords,
+                chord);
+            }
+          else
+            {
+              array_delete (
                 TIMELINE_SELECTIONS->chords,
                 TIMELINE_SELECTIONS->num_chords,
                 chord);
@@ -410,8 +418,10 @@ timeline_arranger_widget_select_all (
           int num_regions;
           InstrumentTrack * it;
           AudioTrack *      at;
-          AutomationTracklist * automation_tracklist =
-            track_get_automation_tracklist (chan->track);
+          AutomationTracklist *
+            automation_tracklist =
+              track_get_automation_tracklist (
+                chan->track);
           if (chan->track->type ==
                 TRACK_TYPE_INSTRUMENT)
             {
@@ -435,7 +445,8 @@ timeline_arranger_widget_select_all (
                          TRACK_TYPE_AUDIO)
                 r = (Region *) at->regions[j];
 
-              region_widget_select (r->widget, select);
+              region_widget_select (
+                r->widget, select);
 
               if (select)
                 {
@@ -912,26 +923,12 @@ timeline_arranger_widget_set_select_type (
         }
       else
         {
-          /* set range 1 at current point */
-          ui_px_to_pos (
-            ar_prv->start_x,
-            &PROJECT->range_1,
-            1);
-          if (SNAP_GRID_ANY_SNAP (
-                ar_prv->snap_grid) &&
-              !ar_prv->shift_held)
-            position_snap_simple (
-              &PROJECT->range_1,
-              SNAP_GRID_TIMELINE);
-          position_set_to_pos (
-            &PROJECT->range_2,
-            &PROJECT->range_1);
 
           /* set resizing range flags */
           self->resizing_range = 1;
+          self->resizing_range_start = 1;
           ar_prv->action =
             UI_OVERLAY_ACTION_RESIZING_R;
-          project_set_has_range (1);
         }
     }
   else
@@ -1098,6 +1095,26 @@ timeline_arranger_widget_snap_range_r (
 {
   ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);
 
+  if (MW_TIMELINE->resizing_range_start)
+    {
+      /* set range 1 at current point */
+      ui_px_to_pos (
+        ar_prv->start_x,
+        &PROJECT->range_1,
+        1);
+      if (SNAP_GRID_ANY_SNAP (
+            ar_prv->snap_grid) &&
+          !ar_prv->shift_held)
+        position_snap_simple (
+          &PROJECT->range_1,
+          SNAP_GRID_TIMELINE);
+      position_set_to_pos (
+        &PROJECT->range_2,
+        &PROJECT->range_1);
+
+      MW_TIMELINE->resizing_range_start = 0;
+    }
+
   /* set range */
   if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
       !ar_prv->shift_held)
@@ -1107,6 +1124,7 @@ timeline_arranger_widget_snap_range_r (
   position_set_to_pos (
     &PROJECT->range_2,
     pos);
+  project_set_has_range (1);
 
   gtk_widget_queue_allocate (
     GTK_WIDGET (MW_RULER));
@@ -1376,6 +1394,9 @@ timeline_arranger_widget_on_drag_end (
       self->start_region = NULL;
       self->start_ap = NULL;
     }
+
+  self->resizing_range = 0;
+  self->resizing_range_start = 0;
 }
 
 static void

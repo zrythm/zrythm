@@ -1,6 +1,4 @@
 /*
- * inc/gui/widgets/quantize_mb.h - Quantize menu button
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -17,6 +15,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * \file
+ *
+ * Quantize menu button.
  */
 
 #ifndef __GUI_WIDGETS_QUANTIZE_MB_H__
@@ -40,11 +44,15 @@ typedef struct _QuantizeMbWidget
   GtkMenuButton           parent_instance;
   GtkBox *                box; ///< the box
   GtkImage *              img; ///< img to show next to the label
-  GtkLabel                * label; ///< label to show
-  QuantizeMbPopoverWidget   * popover; ///< the popover to show
-  GtkBox                  * content; ///< popover content holder
-  Quantize                * quantize;
+  GtkLabel *              label; ///< label to show
+  QuantizeMbPopoverWidget * popover; ///< the popover to show
+  GtkBox *                content; ///< popover content holder
+  Quantize *              quantize;
 } QuantizeMbWidget;
+
+void
+quantize_mb_widget_refresh (
+  QuantizeMbWidget * self);
 
 void
 quantize_mb_widget_setup (QuantizeMbWidget * self,

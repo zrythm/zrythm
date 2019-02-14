@@ -1,7 +1,5 @@
 /*
- * gui/widgets/top_bar.c - Toptom bar
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -75,34 +73,6 @@ refresh_dsp_load (GtkWidget *label,
 void
 top_bar_widget_refresh (TopBarWidget * self)
 {
-
-  /* setup digital meters */
-  self->digital_bpm =
-    digital_meter_widget_new (DIGITAL_METER_TYPE_BPM,
-                              NULL,
-                              NULL);
-  self->digital_transport =
-    digital_meter_widget_new (DIGITAL_METER_TYPE_POSITION,
-                              NULL,
-                              NULL);
-  self->digital_timesig =
-    digital_meter_widget_new (DIGITAL_METER_TYPE_TIMESIG,
-                              NULL,
-                              NULL);
-  gtk_container_add (GTK_CONTAINER (self->digital_meters),
-                     GTK_WIDGET (self->digital_bpm));
-  gtk_container_add (GTK_CONTAINER (self->digital_meters),
-                     GTK_WIDGET (self->digital_timesig));
-  gtk_container_add (GTK_CONTAINER (self->digital_meters),
-                     GTK_WIDGET (self->digital_transport));
-  gtk_widget_show_all (GTK_WIDGET (self->digital_meters));
-  gtk_widget_show_all (GTK_WIDGET (self));
-
-  gtk_widget_add_tick_callback (
-    GTK_WIDGET (self->cpu_load),
-    refresh_dsp_load,
-    NULL,
-    NULL);
 }
 
 static void
@@ -137,4 +107,39 @@ static void
 top_bar_widget_init (TopBarWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  /* setup digital meters */
+  self->digital_bpm =
+    digital_meter_widget_new (
+      DIGITAL_METER_TYPE_BPM,
+      NULL,
+      NULL);
+  self->digital_transport =
+    digital_meter_widget_new (
+      DIGITAL_METER_TYPE_POSITION,
+      NULL,
+      NULL);
+  self->digital_timesig =
+    digital_meter_widget_new (
+      DIGITAL_METER_TYPE_TIMESIG,
+      NULL,
+      NULL);
+  gtk_container_add (
+    GTK_CONTAINER (self->digital_meters),
+    GTK_WIDGET (self->digital_bpm));
+  gtk_container_add (
+    GTK_CONTAINER (self->digital_meters),
+    GTK_WIDGET (self->digital_timesig));
+  gtk_container_add (
+    GTK_CONTAINER (self->digital_meters),
+    GTK_WIDGET (self->digital_transport));
+  gtk_widget_show_all (
+    GTK_WIDGET (self->digital_meters));
+  gtk_widget_show_all (GTK_WIDGET (self));
+
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self->cpu_load),
+    refresh_dsp_load,
+    NULL,
+    NULL);
 }

@@ -464,12 +464,11 @@ multipress_pressed (GtkGestureMultiPress *gesture,
 }
 
 static void
-drag_begin (GtkGestureDrag * gesture,
-               gdouble         start_x,
-               gdouble         start_y,
-               gpointer        user_data)
+drag_begin (GtkGestureDrag *   gesture,
+            gdouble            start_x,
+            gdouble            start_y,
+            ArrangerWidget *   self)
 {
-  ArrangerWidget * self = (ArrangerWidget *) user_data;
   GET_PRIVATE;
 
   ar_prv->start_x = start_x;
@@ -752,7 +751,8 @@ drag_update (GtkGestureDrag * gesture,
         }
     } /* endif UI_OVERLAY_ACTION_SELECTING */
 
-  else if (ar_prv->action == UI_OVERLAY_ACTION_RESIZING_L)
+  else if (ar_prv->action ==
+             UI_OVERLAY_ACTION_RESIZING_L)
     {
 
       /* get new pos */
@@ -803,7 +803,6 @@ drag_update (GtkGestureDrag * gesture,
   /* if moving the selection */
   else if (ar_prv->action == UI_OVERLAY_ACTION_MOVING)
     {
-
       /* get the offset pos (so we can add it to the start
        * positions and then snap it) */
       Position diff_pos;

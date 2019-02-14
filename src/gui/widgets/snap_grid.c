@@ -39,6 +39,24 @@ on_clicked (GtkButton * button,
   gtk_widget_show_all (GTK_WIDGET (self->popover));
 }
 
+static void
+set_label (SnapGridWidget * self)
+{
+  char * string =
+    snap_grid_stringize (
+      self->snap_grid->note_length,
+      self->snap_grid->note_type);
+  gtk_label_set_text (self->label, string);
+  g_free (string);
+}
+
+void
+snap_grid_widget_refresh (
+  SnapGridWidget * self)
+{
+  set_label (self);
+}
+
 void
 snap_grid_widget_setup (SnapGridWidget * self,
                         SnapGrid * snap_grid)
@@ -48,11 +66,7 @@ snap_grid_widget_setup (SnapGridWidget * self,
   gtk_menu_button_set_popover (GTK_MENU_BUTTON (self),
                                GTK_WIDGET (self->popover));
 
-  char * string =
-    snap_grid_stringize (snap_grid->note_length,
-                         snap_grid->note_type);
-  gtk_label_set_text (self->label, string);
-  g_free (string);
+  set_label (self);
 }
 
 static void

@@ -1,7 +1,5 @@
 /*
- * gui/widgets/main_window.c - the main window
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -47,6 +45,7 @@
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
+#include "gui/widgets/top_dock_edge.h"
 #include "gui/widgets/top_bar.h"
 #include "gui/widgets/tracklist.h"
 #include "utils/gtk.h"
@@ -116,6 +115,8 @@ main_window_widget_refresh (MainWindowWidget * self)
       MW_CENTER_DOCK->timeline_scroll));
 
   /* setup center dock */
+  top_dock_edge_widget_refresh (
+    MW_CENTER_DOCK->top_dock_edge);
   center_dock_widget_setup (MW_CENTER_DOCK);
 
   /* setup bot toolbar */

@@ -50,4 +50,8 @@ void
 snap_grid_widget_setup (SnapGridWidget * self,
                         SnapGrid * snap_grid);
 
+void
+snap_grid_widget_refresh (
+  SnapGridWidget * self);
+
 #endif

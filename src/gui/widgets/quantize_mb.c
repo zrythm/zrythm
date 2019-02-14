@@ -40,6 +40,24 @@ on_clicked (GtkButton * button,
   gtk_widget_show_all (GTK_WIDGET (self->popover));
 }
 
+static void
+set_label (QuantizeMbWidget * self)
+{
+  char * string =
+    snap_grid_stringize (
+      self->quantize->note_length,
+      self->quantize->note_type);
+  gtk_label_set_text (self->label, string);
+  g_free (string);
+}
+
+void
+quantize_mb_widget_refresh (
+  QuantizeMbWidget * self)
+{
+  set_label (self);
+}
+
 void
 quantize_mb_widget_setup (QuantizeMbWidget * self,
                         Quantize * quantize)
@@ -49,10 +67,7 @@ quantize_mb_widget_setup (QuantizeMbWidget * self,
   gtk_menu_button_set_popover (GTK_MENU_BUTTON (self),
                                GTK_WIDGET (self->popover));
 
-  char * string = snap_grid_stringize (quantize->note_length,
-                                       quantize->note_type);
-  gtk_label_set_text (self->label, string);
-  g_free (string);
+  set_label (self);
 }
 
 static void

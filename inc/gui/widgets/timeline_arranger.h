@@ -73,6 +73,12 @@ typedef struct _TimelineArrangerWidget
    * 1 if resizing range.
    */
   int                      resizing_range;
+
+  /**
+   * 1 if this is the first call to resize the range,
+   * so range1 can be set.
+   */
+  int                      resizing_range_start;
 } TimelineArrangerWidget;
 
 /**

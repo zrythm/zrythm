@@ -1,7 +1,5 @@
 /*
- * gui/widgets/top_dock_edge.c - Main window widget
- *
- * Copytop (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -30,6 +28,17 @@
 G_DEFINE_TYPE (TopDockEdgeWidget,
                top_dock_edge_widget,
                GTK_TYPE_BOX)
+
+
+void
+top_dock_edge_widget_refresh (
+  TopDockEdgeWidget * self)
+{
+  snap_grid_widget_refresh (
+    self->snap_grid_timeline);
+  quantize_mb_widget_refresh (
+    self->quantize_mb);
+}
 
 static void
 top_dock_edge_widget_init (TopDockEdgeWidget * self)

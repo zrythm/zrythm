@@ -52,4 +52,8 @@ typedef struct _TopDockEdgeWidget
   QuantizeMbWidget *       quantize_mb;
 } TopDockEdgeWidget;
 
+void
+top_dock_edge_widget_refresh (
+  TopDockEdgeWidget * self);
+
 #endif
