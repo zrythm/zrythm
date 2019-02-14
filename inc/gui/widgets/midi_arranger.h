@@ -1,6 +1,4 @@
 /*
- * inc/gui/widgets/arranger.h - MIDI arranger widget
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -52,12 +50,6 @@ typedef struct _MidiArrangerWidget
   ArrangerWidget           parent_instance;
 
   /**
-   * MIDI notes acting on.
-   */
-  MidiNote *               midi_notes[600];
-  int                      num_midi_notes;
-
-  /**
    * Start MIDI note acting on. This is the note that was
    * clicked, even though there could be more selected.
    */
@@ -101,6 +93,10 @@ void
 midi_arranger_widget_select_all (MidiArrangerWidget *  self,
                                  int               select);
 
+void
+midi_arranger_widget_find_start_poses (
+  MidiArrangerWidget * self);
+
 /**
  * Shows context menu.
  *
@@ -116,6 +112,8 @@ midi_arranger_widget_show_context_menu (MidiArrangerWidget * self);
 void
 midi_arranger_widget_on_drag_begin_note_hit (
   MidiArrangerWidget * self,
+  GdkModifierType          state_mask,
+  double                   start_x,
   MidiNoteWidget *     midi_note_widget);
 
 /**
@@ -123,7 +121,7 @@ midi_arranger_widget_on_drag_begin_note_hit (
  * clicked (i.e., a note is created).
  */
 void
-midi_arranger_widget_on_drag_begin_create_note (
+midi_arranger_widget_create_note (
   MidiArrangerWidget * self,
   Position * pos,
   int                  note,
@@ -143,7 +141,7 @@ midi_arranger_widget_setup (
  * select the midi notes enclosed in the selection area.
  */
 void
-midi_arranger_widget_find_and_select_midi_notes (
+midi_arranger_widget_select (
   MidiArrangerWidget * self,
   double               offset_x,
   double               offset_y);
@@ -173,16 +171,16 @@ midi_arranger_widget_snap_midi_notes_r (
  * widget.
  */
 void
-midi_arranger_widget_move_midi_notes_x (
-  MidiArrangerWidget *self,
-  Position *          pos);
+midi_arranger_widget_move_items_x (
+  MidiArrangerWidget * self,
+  long                 ticks_diff);
 
 /**
  * Called when moving midi notes in drag update in arranger
  * widget for moving up/down (changing note).
  */
 void
-midi_arranger_widget_move_midi_notes_y (
+midi_arranger_widget_move_items_y (
   MidiArrangerWidget *self,
   double              offset_y);
 

@@ -81,8 +81,9 @@ ui_get_hit_child (
       GtkWidget * widget = GTK_WIDGET (iter->data);
 
       GtkAllocation allocation;
-      gtk_widget_get_allocation (widget,
-                                 &allocation);
+      gtk_widget_get_allocation (
+        widget,
+        &allocation);
 
       gint wx, wy;
       gtk_widget_translate_coordinates (

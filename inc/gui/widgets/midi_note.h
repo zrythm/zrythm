@@ -1,7 +1,5 @@
 /*
- * gui/widgets/midi_note.h - MIDI note
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -24,7 +22,8 @@
 #ifndef __GUI_WIDGETS_MIDI_NOTE_H__
 #define __GUI_WIDGETS_MIDI_NOTE_H__
 
-#include <audio/midi_note.h>
+#include "audio/midi_note.h"
+#include "utils/ui.h"
 
 #include <gtk/gtk.h>
 
@@ -36,21 +35,12 @@ G_DECLARE_FINAL_TYPE (MidiNoteWidget,
                       MIDI_NOTE_WIDGET,
                       GtkBox)
 
-typedef enum MidiNoteWidgetState
-{
-  MNW_STATE_NONE,
-  MNW_STATE_SELECTED,
-  MNW_STATE_RESIZE_L,
-  MNW_STATE_RESIZE_R,
-  MNW_STATE_HOVER
-} MidiNoteWidgetState;
-
 typedef struct _MidiNoteWidget
 {
   GtkBox                   parent_instance;
   GtkDrawingArea *         drawing_area;
-  MidiNote *               midi_note;   ///< the midi_note associated with this
-  MidiNoteWidgetState      state;
+  MidiNote *               midi_note; ///< the midi_note associated with this
+  UiCursorState            cursor_state;
 } MidiNoteWidget;
 
 /**
@@ -59,12 +49,8 @@ typedef struct _MidiNoteWidget
 MidiNoteWidget *
 midi_note_widget_new (MidiNote * midi_note);
 
-/**
- * Sets hover state and queues draw.
- */
 void
-midi_note_widget_set_state_and_queue_draw (
-  MidiNoteWidget *    self,
-  MidiNoteWidgetState state);
+midi_note_widget_select (MidiNoteWidget * self,
+                         int              select);
 
 #endif

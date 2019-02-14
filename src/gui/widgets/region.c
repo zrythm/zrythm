@@ -1,6 +1,4 @@
 /*
- * gui/widgets/region.c- Region
- *
  * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
@@ -103,23 +101,26 @@ draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
  return FALSE;
 }
 
-static void
-on_motion (GtkWidget * widget, GdkEventMotion *event)
+static int
+on_motion (GtkWidget *      widget,
+           GdkEventMotion * event,
+           RegionWidget *   self)
 {
-  RegionWidget * self = Z_REGION_WIDGET (widget);
-
   if (event->type == GDK_ENTER_NOTIFY)
     {
-      gtk_widget_set_state_flags (GTK_WIDGET (self),
-                                  GTK_STATE_FLAG_PRELIGHT,
-                                  0);
+      gtk_widget_set_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_PRELIGHT,
+        0);
     }
   /* if leaving */
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
-      gtk_widget_unset_state_flags (GTK_WIDGET (self),
-                                    GTK_STATE_FLAG_PRELIGHT);
+      gtk_widget_unset_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_PRELIGHT);
     }
+  return FALSE;
 }
 
 void
@@ -139,7 +140,7 @@ region_widget_setup (RegionWidget * self,
   gtk_widget_set_hexpand (GTK_WIDGET (rw_prv->drawing_area),
                           1);
 
-  gtk_widget_add_events (GTK_WIDGET (self),
+  gtk_widget_add_events (GTK_WIDGET (rw_prv->drawing_area),
                          GDK_ALL_EVENTS_MASK);
 
   /* connect signals */
@@ -147,13 +148,16 @@ region_widget_setup (RegionWidget * self,
     G_OBJECT (rw_prv->drawing_area), "draw",
     G_CALLBACK (draw_cb), self);
   g_signal_connect (
-    G_OBJECT (self), "enter-notify-event",
+    G_OBJECT (rw_prv->drawing_area),
+    "enter-notify-event",
     G_CALLBACK (on_motion),  self);
   g_signal_connect (
-    G_OBJECT(self), "leave-notify-event",
+    G_OBJECT(rw_prv->drawing_area),
+    "leave-notify-event",
     G_CALLBACK (on_motion),  self);
   g_signal_connect (
-    G_OBJECT(self), "motion-notify-event",
+    G_OBJECT(rw_prv->drawing_area),
+    "motion-notify-event",
     G_CALLBACK (on_motion),  self);
 }
 
@@ -166,14 +170,16 @@ region_widget_select (RegionWidget * self,
   prv->region->selected = select;
   if (select)
     {
-      gtk_widget_set_state_flags (GTK_WIDGET (self),
-                                  GTK_STATE_FLAG_SELECTED,
-                                  0);
+      gtk_widget_set_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_SELECTED,
+        0);
     }
   else
     {
-      gtk_widget_unset_state_flags (GTK_WIDGET (self),
-                                    GTK_STATE_FLAG_SELECTED);
+      gtk_widget_unset_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_SELECTED);
     }
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }

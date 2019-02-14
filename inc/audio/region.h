@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -113,9 +113,7 @@ typedef struct Region
    */
   int             cloned_from;
 
-  /**
-   * Muted or not.
-   */
+  /** Muted or not */
   int                muted;
 
   /**

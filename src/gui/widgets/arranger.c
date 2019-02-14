@@ -276,12 +276,11 @@ arranger_widget_toggle_select (ArrangerWidget *  self,
     }
   if (ARRANGER_IS_MIDI (self))
     {
-      MidiArrangerWidget * maw =
-        Z_MIDI_ARRANGER_WIDGET (self);
       if (type == MIDI_NOTE_WIDGET_TYPE)
         {
-          array = (void **) maw->midi_notes;
-          num = &maw->num_midi_notes;
+          array =
+            (void **) MIDI_ARRANGER_SELECTIONS->midi_notes;
+          num = &MIDI_ARRANGER_SELECTIONS->num_midi_notes;
         }
     }
 
@@ -533,6 +532,8 @@ drag_begin (GtkGestureDrag *   gesture,
         {
           midi_arranger_widget_on_drag_begin_note_hit (
             midi_arranger,
+            state_mask,
+            start_x,
             midi_note_widget);
         }
       else if (rw)
@@ -568,10 +569,15 @@ drag_begin (GtkGestureDrag *   gesture,
       /* find start pos */
       position_init (&ar_prv->start_pos);
       position_set_bar (&ar_prv->start_pos, 2000);
-      if (ARRANGER_IS_TIMELINE (self))
+      if (timeline)
         {
           timeline_arranger_widget_find_start_poses (
             timeline);
+        }
+      else if (midi_arranger)
+        {
+          midi_arranger_widget_find_start_poses (
+            midi_arranger);
         }
     }
   else /* nothing hit */
@@ -583,6 +589,9 @@ drag_begin (GtkGestureDrag *   gesture,
           ar_prv->action =
             UI_OVERLAY_ACTION_STARTING_SELECTION;
 
+          /* deselect all */
+          arranger_widget_select_all (self, 0);
+
           /* if timeline, set either selecting
            * objects or selecting range */
           if (timeline)
@@ -590,12 +599,6 @@ drag_begin (GtkGestureDrag *   gesture,
               timeline_arranger_widget_set_select_type (
                 timeline,
                 start_y);
-            }
-          /* midi arranger only selects objects */
-          else if (midi_arranger)
-            {
-              /* deselect all */
-              arranger_widget_select_all (self, 0);
             }
         }
       /* double click, something will be created */
@@ -671,7 +674,7 @@ drag_begin (GtkGestureDrag *   gesture,
               /* create a note */
               if (region)
                 {
-                  midi_arranger_widget_on_drag_begin_create_note (
+                  midi_arranger_widget_create_note (
                     midi_arranger,
                     &pos,
                     note,
@@ -744,7 +747,7 @@ drag_update (GtkGestureDrag * gesture,
         }
       else if (ARRANGER_IS_MIDI (self))
         {
-          midi_arranger_widget_find_and_select_midi_notes (
+          midi_arranger_widget_select (
             midi_arranger,
             offset_x,
             offset_y);
@@ -839,9 +842,9 @@ drag_update (GtkGestureDrag * gesture,
         }
       else if (midi_arranger)
         {
-          /*midi_arranger_widget_move_midi_notes_x (*/
-            /*midi_arranger,*/
-            /*&pos);*/
+          midi_arranger_widget_move_items_x (
+            midi_arranger,
+            ticks_diff);
         }
 
       /* handle moving up/down */
@@ -853,7 +856,7 @@ drag_update (GtkGestureDrag * gesture,
         }
       else if (midi_arranger)
         {
-          midi_arranger_widget_move_midi_notes_y (
+          midi_arranger_widget_move_items_y (
             midi_arranger,
             offset_y);
         }

@@ -41,6 +41,7 @@
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/backend/piano_roll.h"
+#include "gui/backend/midi_arranger_selections.h"
 #include "gui/backend/timeline_selections.h"
 #include "plugins/plugin.h"
 #include "zrythm.h"
@@ -101,6 +102,7 @@ typedef struct Project
   Quantize           quantize_midi;
 
   TimelineSelections       timeline_selections;
+  MidiArrangerSelections   midi_arranger_selections;
 
   /**
    * Selected range.
@@ -191,6 +193,9 @@ static const cyaml_schema_field_t
   CYAML_FIELD_MAPPING (
     "timeline_selections", CYAML_FLAG_DEFAULT,
     Project, timeline_selections, timeline_selections_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "midi_arranger_selections", CYAML_FLAG_DEFAULT,
+    Project, midi_arranger_selections, midi_arranger_selections_fields_schema),
   CYAML_FIELD_MAPPING (
     "range_1", CYAML_FLAG_DEFAULT,
     Project, range_1, position_fields_schema),

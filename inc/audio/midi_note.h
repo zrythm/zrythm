@@ -1,8 +1,5 @@
 /*
- * audio/midi_note.h - A midi_note in the timeline having a
- *   start and an end
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -35,6 +32,15 @@ typedef struct Position Position;
 typedef struct Velocity Velocity;
 typedef struct MidiRegion MidiRegion;
 
+typedef enum MidiNoteCloneFlag
+{
+  /**
+   * Create a completely new region with a new id.
+   */
+  MIDI_NOTE_CLONE_COPY,
+  MIDI_NOTE_CLONE_LINK
+} MidiNoteCloneFlag;
+
 typedef struct MidiNote
 {
   int             id;
@@ -51,6 +57,20 @@ typedef struct MidiNote
 
   Velocity *      vel;  ///< velocity
   int             val; ///< note
+
+  /** Muted or not */
+  int                muted;
+
+  /** Selected or not */
+  int             selected;
+
+  /**
+   * ID cloned from.
+   *
+   * Used when deleting.
+   * TODO figure out a better way
+   */
+  //int             cloned_from;
 } MidiNote;
 
 static const cyaml_schema_field_t
@@ -73,6 +93,9 @@ static const cyaml_schema_field_t
 	CYAML_FIELD_INT (
 			"val", CYAML_FLAG_DEFAULT,
 			MidiNote, val),
+	CYAML_FIELD_INT (
+			"muted", CYAML_FLAG_DEFAULT,
+			MidiNote, muted),
 
 	CYAML_FIELD_END
 };

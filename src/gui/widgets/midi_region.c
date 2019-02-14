@@ -1,7 +1,5 @@
 /*
- * gui/widgets/region.c- Region
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -129,10 +127,11 @@ draw_cb (MidiRegionWidget * self, cairo_t *cr, gpointer data)
 /**
  * Sets the appropriate cursor.
  */
-static void
-on_motion (GtkWidget * widget, GdkEventMotion *event)
+static int
+on_motion (GtkWidget * widget,
+           GdkEventMotion *event,
+           MidiRegionWidget * self)
 {
-  MidiRegionWidget * self = Z_MIDI_REGION_WIDGET (widget);
   GtkAllocation allocation;
   gtk_widget_get_allocation (widget,
                              &allocation);
@@ -145,23 +144,33 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
     {
       if (event->x < RESIZE_CURSOR_SPACE)
         {
-          rw_prv->cursor_state = UI_CURSOR_STATE_RESIZE_L;
-          if (prv->action != UI_OVERLAY_ACTION_MOVING)
+          rw_prv->cursor_state =
+            UI_CURSOR_STATE_RESIZE_L;
+          if (prv->action !=
+                UI_OVERLAY_ACTION_MOVING)
             ui_set_cursor (widget, "w-resize");
         }
-      else if (event->x > allocation.width - RESIZE_CURSOR_SPACE)
+      else if (event->x > allocation.width -
+                 RESIZE_CURSOR_SPACE)
         {
-          rw_prv->cursor_state = UI_CURSOR_STATE_RESIZE_R;
-          if (prv->action != UI_OVERLAY_ACTION_MOVING)
+          rw_prv->cursor_state =
+            UI_CURSOR_STATE_RESIZE_R;
+          if (prv->action !=
+                UI_OVERLAY_ACTION_MOVING)
             ui_set_cursor (widget, "e-resize");
         }
       else
         {
-          rw_prv->cursor_state = UI_CURSOR_STATE_DEFAULT;
-          if (prv->action != UI_OVERLAY_ACTION_MOVING &&
-              prv->action != UI_OVERLAY_ACTION_STARTING_MOVING &&
-              prv->action != UI_OVERLAY_ACTION_RESIZING_L &&
-              prv->action != UI_OVERLAY_ACTION_RESIZING_R)
+          rw_prv->cursor_state =
+            UI_CURSOR_STATE_DEFAULT;
+          if (prv->action !=
+                UI_OVERLAY_ACTION_MOVING &&
+              prv->action !=
+                UI_OVERLAY_ACTION_STARTING_MOVING &&
+              prv->action !=
+                UI_OVERLAY_ACTION_RESIZING_L &&
+              prv->action !=
+                UI_OVERLAY_ACTION_RESIZING_R)
             {
               ui_set_cursor (widget, "default");
             }
@@ -170,13 +179,17 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
   /* if leaving */
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
-      if (prv->action != UI_OVERLAY_ACTION_MOVING &&
-          prv->action != UI_OVERLAY_ACTION_RESIZING_L &&
-          prv->action != UI_OVERLAY_ACTION_RESIZING_R)
+      if (prv->action !=
+            UI_OVERLAY_ACTION_MOVING &&
+          prv->action !=
+            UI_OVERLAY_ACTION_RESIZING_L &&
+          prv->action !=
+            UI_OVERLAY_ACTION_RESIZING_R)
         {
           ui_set_cursor (widget, "default");
         }
     }
+  return FALSE;
 }
 
 MidiRegionWidget *
@@ -191,14 +204,21 @@ midi_region_widget_new (MidiRegion * midi_region)
   REGION_WIDGET_GET_PRIVATE (self);
 
   /* connect signals */
-  g_signal_connect (G_OBJECT (rw_prv->drawing_area), "draw",
-                    G_CALLBACK (draw_cb), self);
-  g_signal_connect (G_OBJECT (self), "enter-notify-event",
-                    G_CALLBACK (on_motion),  self);
-  g_signal_connect (G_OBJECT(self), "leave-notify-event",
-                    G_CALLBACK (on_motion),  self);
-  g_signal_connect (G_OBJECT(self), "motion-notify-event",
-                    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT (rw_prv->drawing_area), "draw",
+    G_CALLBACK (draw_cb), self);
+  g_signal_connect (
+    G_OBJECT (rw_prv->drawing_area),
+    "enter-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(rw_prv->drawing_area),
+    "leave-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(rw_prv->drawing_area),
+    "motion-notify-event",
+    G_CALLBACK (on_motion),  self);
 
   return self;
 }

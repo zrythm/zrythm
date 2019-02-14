@@ -21,6 +21,7 @@
 #define __AUDIO_PIANO_ROLL_H__
 
 #define PIANO_ROLL (&PROJECT->piano_roll)
+#define PIANO_ROLL_SELECTED_TRACK (PIANO_ROLL->track)
 
 typedef enum MidiModifier
 {
@@ -42,9 +43,7 @@ typedef struct PianoRoll
   int                    notes_zoom; ///< notes zoom level
   MidiModifier           midi_modifier; ///< selected midi modifier
 
-  /**
-   * Track currently attached to piano_roll.
-   */
+  /** Track currently attached to piano_roll. */
   int                      track_id;
   Track *                  track; ///< cache
 } PianoRoll;

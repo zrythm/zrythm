@@ -1,7 +1,5 @@
 /*
- * gui/widgets/plugin_browser.c - The plugin, etc., plugin_browser on the right
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -369,6 +367,11 @@ tree_view_create (PluginBrowserWidget * self,
       gtk_tree_view_append_column (
         GTK_TREE_VIEW (tree_view),
         column);
+
+      /* set search column */
+      gtk_tree_view_set_search_column (
+        GTK_TREE_VIEW (tree_view),
+        COLUMN_NAME);
     }
   else
     {

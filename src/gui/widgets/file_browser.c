@@ -1,7 +1,4 @@
 /*
- * gui/widgets/file_browser.c - The file file_browser on
- *   the right
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -541,13 +538,15 @@ tree_view_create (FileBrowserWidget * self,
                   int          dnd)
 {
   /* instantiate tree view using model */
-  GtkWidget * tree_view = gtk_tree_view_new_with_model (
+  GtkWidget * tree_view =
+    gtk_tree_view_new_with_model (
       GTK_TREE_MODEL (model));
 
   /* init tree view */
   GtkCellRenderer * renderer;
   GtkTreeViewColumn * column;
-  if (GTK_TREE_MODEL (self->files_tree_model) == model)
+  if (GTK_TREE_MODEL (self->files_tree_model) ==
+        model)
     {
       /* column for icon */
       renderer =
@@ -572,6 +571,11 @@ tree_view_create (FileBrowserWidget * self,
       gtk_tree_view_append_column (
         GTK_TREE_VIEW (tree_view),
         column);
+
+      /* set search column */
+      gtk_tree_view_set_search_column (
+        GTK_TREE_VIEW (tree_view),
+        COLUMN_NAME);
     }
   else
     {

@@ -1,6 +1,4 @@
 /*
- * actions/timeline_selections.h - timeline
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -36,12 +34,21 @@
  */
 typedef struct TimelineSelections
 {
-  Region *                 regions[600];  ///< regions doing action upon (timeline)
+  /** Regions doing action upon */
+  Region *                 regions[600];
   int                      num_regions;
-  Region *                 top_region; ///< highest selected region
-  Region *                 bot_region; ///< lowest selected region
-  AutomationPoint *        automation_points[600];  ///< automation points doing action upon (timeline)
+
+  /** Highest selected region */
+  Region *                 top_region;
+
+  /** Lowest selected region */
+  Region *                 bot_region;
+
+  /** Automation points acting upon */
+  AutomationPoint *        automation_points[600];
   int                      num_automation_points;
+
+  /** Chords acting upon */
   Chord *                  chords[800];
   int                      num_chords;
 } TimelineSelections;

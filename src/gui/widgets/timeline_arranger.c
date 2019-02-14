@@ -588,17 +588,16 @@ timeline_arranger_widget_on_drag_begin_region_hit (
   self->start_region = rw_prv->region;
 
   /* update arranger action */
-  if (region->type == REGION_TYPE_MIDI &&
-           rw_prv->cursor_state ==
+  if (rw_prv->cursor_state ==
              UI_CURSOR_STATE_RESIZE_L)
     ar_prv->action = UI_OVERLAY_ACTION_RESIZING_L;
-  else if (region->type == REGION_TYPE_MIDI &&
-           rw_prv->cursor_state ==
+  else if (rw_prv->cursor_state ==
               UI_CURSOR_STATE_RESIZE_R)
     ar_prv->action = UI_OVERLAY_ACTION_RESIZING_R;
   else
     {
-      ar_prv->action = UI_OVERLAY_ACTION_STARTING_MOVING;
+      ar_prv->action =
+        UI_OVERLAY_ACTION_STARTING_MOVING;
       ui_set_cursor (GTK_WIDGET (rw), "grabbing");
     }
 
@@ -620,9 +619,13 @@ timeline_arranger_widget_on_drag_begin_region_hit (
     }
 
   /* find highest and lowest selected regions */
-  TIMELINE_SELECTIONS->top_region = TIMELINE_SELECTIONS->regions[0];
-  TIMELINE_SELECTIONS->bot_region = TIMELINE_SELECTIONS->regions[0];
-  for (int i = 0; i < TIMELINE_SELECTIONS->num_regions; i++)
+  TIMELINE_SELECTIONS->top_region =
+    TIMELINE_SELECTIONS->regions[0];
+  TIMELINE_SELECTIONS->bot_region =
+    TIMELINE_SELECTIONS->regions[0];
+  for (int i = 0;
+       i < TIMELINE_SELECTIONS->num_regions;
+       i++)
     {
       Region * region = TIMELINE_SELECTIONS->regions[i];
       if (tracklist_get_track_pos (region->track) <
@@ -916,10 +919,6 @@ timeline_arranger_widget_set_select_type (
         {
           /* select objects */
           self->resizing_range = 0;
-
-          /* deselect all */
-          arranger_widget_select_all (
-            Z_ARRANGER_WIDGET (self), 0);
         }
       else
         {
@@ -936,10 +935,6 @@ timeline_arranger_widget_set_select_type (
       /* TODO something similar as above based on
        * visible space */
       self->resizing_range = 0;
-
-      /* deselect all */
-      arranger_widget_select_all (
-        Z_ARRANGER_WIDGET (self), 0);
     }
 
   arranger_widget_refresh_all_backgrounds ();
@@ -1049,11 +1044,14 @@ timeline_arranger_widget_snap_regions_l (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  for (int i = 0; i < TIMELINE_SELECTIONS->num_regions; i++)
+  for (int i = 0;
+       i < TIMELINE_SELECTIONS->num_regions;
+       i++)
     {
-      Region * region = TIMELINE_SELECTIONS->regions[i];
+      Region * region =
+        TIMELINE_SELECTIONS->regions[i];
       if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
-          !ar_prv->shift_held)
+            !ar_prv->shift_held)
         position_snap (NULL,
                        pos,
                        region->track,
@@ -1071,17 +1069,22 @@ timeline_arranger_widget_snap_regions_r (
   Position *               pos)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
-  for (int i = 0; i < TIMELINE_SELECTIONS->num_regions; i++)
+
+  for (int i = 0;
+       i < TIMELINE_SELECTIONS->num_regions;
+       i++)
     {
-      Region * region = TIMELINE_SELECTIONS->regions[i];
+      Region * region =
+        TIMELINE_SELECTIONS->regions[i];
       if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
-          !ar_prv->shift_held)
+            !ar_prv->shift_held)
         position_snap (NULL,
                        pos,
                        region->track,
                        NULL,
                        ar_prv->snap_grid);
-      if (position_compare (pos, &region->start_pos) > 0)
+      if (position_compare (
+            pos, &region->start_pos) > 0)
         {
           region_set_end_pos (region,
                               pos);
