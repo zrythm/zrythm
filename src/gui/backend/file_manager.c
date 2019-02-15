@@ -210,10 +210,10 @@ load_files_from_location (
         fd->hidden = 0;
 
       self->files[self->num_files++] = fd;
-      g_message ("File found: %s (%d - %d)",
-                 fd->absolute_path,
-                 fd->type,
-                 fd->hidden);
+      /*g_message ("File found: %s (%d - %d)",*/
+                 /*fd->absolute_path,*/
+                 /*fd->type,*/
+                 /*fd->hidden);*/
     }
   qsort (self->files,
          self->num_files,

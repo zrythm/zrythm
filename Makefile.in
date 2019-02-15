@@ -209,16 +209,17 @@ OBJ = $(SRCS:%.c=$(BUILD_DIR)/%.o)
 # Gcc/Clang will create these .d files containing dependencies.
 DEP = $(OBJ:%.o=%.d)
 
-gsettings_SCHEMAS = $(DATA_DIR)/org.zrythm.gschema.xml
+gsettings_SCHEMAS = org.zrythm.gschema.xml
 #EXTRA_DIST = $(gsettings_SCHEMAS)
 
 # desktop file
 desktopdir = $(datadir)/applications
-desktop_DATA = $(DATA_DIR)/zrythm.desktop
+desktop_DATA = zrythm.desktop
 
 #the application icon
 appicondir=$(datadir)/icons/hicolor/scalable/apps
-appicon_DATA = resources/icons/zrythm/z.svg
+appicon_DATA_srcdir = resources/icons/zrythm
+appicon_DATA = z.svg
 
 
 # -----------------------------
@@ -273,22 +274,20 @@ install: $(BUILD_DIR)/$(BIN)$(EXT) install-appicon-data install-desktop-data ins
 	$(INSTALL) $< $(DESTDIR)$(bindir)/$(BIN)$(EXT)
 
 .PHONY: uninstall
-uninstall:
+uninstall: uninstall-appicon-data uninstall-gschemas uninstall-desktop
 	rm -f $(bindir)/$(BIN)$(EXT)
 
 .PHONY: install-appicon-data
-install-appicon-data: $(appicon_DATA)
+install-appicon-data: $(appicon_DATA_srcdir)/$(appicon_DATA)
 	$(MKDIR_P) "$(DESTDIR)$(appicondir)"
 	$(INSTALL_DATA) $< "$(DESTDIR)$(appicondir)/"
 
-#.PHONY: install-icon-theme
-#install-icon-theme: ext/breeze-icons/icons-dark
-	#$(MKDIR_P) "$(DESTDIR)$(datadir)/icons/breeze-dark-z"
-	#chmod 755 "$(DESTDIR)$(datadir)/icons/breeze-dark-z"
-	#cp -r $</* "$(DESTDIR)$(datadir)/icons/breeze-dark-z/"
+.PHONY: uninstall-appicon-data
+uninstall-appicon-data:
+	rm -f $< "$(DESTDIR)$(appicondir)/$(appicon_DATA)"
 
 .PHONY: install-gschemas
-install-gschemas: $(gsettings_SCHEMAS)
+install-gschemas: $(DATA_DIR)/$(gsettings_SCHEMAS)
 	$(MKDIR_P) "$(DESTDIR)$(gsettingsschemadir)"
 	$(INSTALL_DATA) $< "$(DESTDIR)$(gsettingsschemadir)/"
 ifneq ($(PACKAGE_MODE),1)
@@ -297,13 +296,21 @@ ifeq ($(DESTDIR),)
 endif
 endif
 
+.PHONY: uninstall-gschemas
+uninstall-gschemas:
+	rm -f $(gsettingsschemadir)/$(gsettings_SCHEMAS)
+	$(GLIB_COMPILE_SCHEMAS) "$(DESTDIR)$(gsettingsschemadir)"
+
 .PHONY: install-fonts
 install-fonts: $(FONTS_DIR)/Segment7Standard/*
 	$(MKDIR_P) "$(DESTDIR)$(fontdir)/$(BIN)/Segment7Standard"
 	$(INSTALL_FONT) $< "$(DESTDIR)$(fontdir)/$(BIN)/Segment7Standard/"
 
 .PHONY: install-desktop
-install-desktop-data: $(desktop_DATA)
+install-desktop-data: $(DATA_DIR)/$(desktop_DATA)
 	$(MKDIR_P) "$(DESTDIR)$(desktopdir)"
 	$(INSTALL_DATA) $< "$(DESTDIR)$(desktopdir)/"
 
+.PHONY: uninstall-desktop
+uninstall-desktop-data:
+	rm -f $(desktopdir)/$(desktop_DATA)
