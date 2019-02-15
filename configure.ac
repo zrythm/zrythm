@@ -114,8 +114,8 @@ AC_CHECK_FUNC([mlock],
               [AC_DEFINE([HAVE_MLOCK], [1],
               [Define if mlock exists.])])
 
-AM_COND_IF([LINUX],
-           [LDFLAGS="$LDFLAGS -L/usr/lib"])
+#AM_COND_IF([LINUX],
+           #[LDFLAGS="$LDFLAGS -L/usr/lib"])
 
 # Check for breeze icons
 AC_CHECK_FILE([/usr/share/icons/breeze-dark],,

@@ -154,7 +154,6 @@ endif
 
 # FIXME don't override CFLAGS
 CFLAGS = -Wall \
- 	$(R_DYNAMIC) \
 	$(DEFAULT_INCLUDES) \
 	$(LIBCYAML_CFLAGS) \
 	$(FFMPEG_CFLAGS) \
@@ -186,6 +185,7 @@ LDFLAGS =	\
 	$(SAMPLERATE_LIBS) \
 	$(SNDFILE_LIBS) \
 	$(EXTRA_LD_FLAGS) \
+ 	$(R_DYNAMIC) \
 	-lrt \
 	-lasound \
 	-lm \
@@ -231,7 +231,7 @@ $(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(BUILD_DIR)/resources.o
 	# Create build directories - same structure as sources.
 	$(MKDIR_P) $(@D)
 	# Just link all the object files.
-	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
+	$(CC) $^ $(LDFLAGS) -o $@
 	# done
 
 $(BUILD_DIR)/zrythm.gresource.xml: resources/gen-gtk-gresources-xml.py \
@@ -256,7 +256,7 @@ $(BUILD_DIR)/%.$(OBJEXT): %.c
 	$(MKDIR_P) $(dir $@)
 	# The -MMD flags additionaly creates a .d file with
 	# the same name as the .o file.
-	$(CC) $(CFLAGS) -MMD -c $< -o $@ $(LDFLAGS)
+	$(CC) $(CFLAGS) -MMD -c $< -o $@
 
 .PHONY: clean
 clean:
