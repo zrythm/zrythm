@@ -26,6 +26,7 @@ AC_CONFIG_HEADERS([config.h])
 AC_CANONICAL_HOST
 
 build_linux=no
+build_freebsd=no
 build_windows=no
 build_mac=no
 
@@ -33,6 +34,9 @@ build_mac=no
 case "${host_os}" in
   linux*)
     build_linux=yes
+    ;;
+  freebsd*)
+    build_freebsd=yes
     ;;
   cygwin*|mingw*)
     build_windows=yes
@@ -49,12 +53,19 @@ esac
 AM_CONDITIONAL([LINUX], [test "$build_linux" = "yes"])
 AM_COND_IF([LINUX],
            [AC_SUBST([LINUX], [1])])
+AM_CONDITIONAL([FREEBSD], [test "$build_freebsd" = "yes"])
+AM_COND_IF([FREEBSD],
+           [AC_SUBST([FREEBSD], [1])])
 AM_CONDITIONAL([WINDOWS], [test "$build_windows" = "yes"])
 AM_COND_IF([WINDOWS],
            [AC_SUBST([WINDOWS], [1])])
 AM_CONDITIONAL([OSX], [test "$build_mac" = "yes"])
 AM_COND_IF([OSX],
            [AC_SUBST([OSX], [1])])
+AM_CONDITIONAL([USE_DEFAULT_PREFIX],
+               [test "x$prefix" = xNONE])
+AM_COND_IF([USE_DEFAULT_PREFIX],
+           [AC_SUBST([USE_DEFAULT_PREFIX], [1])])
 
 # options
 AC_ARG_ENABLE(package-mode,
@@ -118,10 +129,15 @@ AC_CHECK_FUNC([mlock],
            #[LDFLAGS="$LDFLAGS -L/usr/lib"])
 
 # Check for breeze icons
-AC_CHECK_FILE([/usr/share/icons/breeze-dark],,
+AM_COND_IF([USE_DEFAULT_PREFIX],
+           [AC_CHECK_FILE([$ac_default_prefix/share/icons/breeze-dark],,
               [echo "Breeze icons are required" && \
                echo "Please install them using a package manager or manually from here https://github.com/KDE/breeze-icons" && \
-               exit 1])
+               exit 1])],
+           [AC_CHECK_FILE([$prefix/share/icons/breeze-dark],,
+              [echo "Breeze icons are required" && \
+               echo "Please install them using a package manager or manually from here https://github.com/KDE/breeze-icons" && \
+               exit 1])])
 
 # Add GSettings support
 GLIB_GSETTINGS
