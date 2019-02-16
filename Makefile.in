@@ -135,9 +135,9 @@ ifeq ($(PROFILING),1)
 endif
 
 # -rdynamic gcc flag
-ifeq ($(CC),gcc)
+ifeq ($(patsubst gcc%,gcc,$(CC)),gcc)
 	R_DYNAMIC = -rdynamic
-else ifeq ($(CC),clang)
+else ifeq ($(patsubst clang%,clang,$(patsubst cc,clang,$(CC))),clang)
 	R_DYNAMIC = -Wl,--export-dynamic
 else ifeq ($(CC),x86_64-w64-mingw32-gcc)
 	#R_DYNAMIC = -export-all-symbols
