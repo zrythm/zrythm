@@ -1,5 +1,5 @@
 # build from debian by default
-image: "alextee12/debian:latest"
+image: "registry.zrythm.org/zrythm/zrythm/debian/latest:latest"
 
 variables:
   _USER: "builduser"
@@ -71,7 +71,7 @@ build_pkg_64:
     - merge_requests
 
 build_rpm_64:
-  image: "alextee12/fedora:latest"
+  image: "registry.zrythm.org/zrythm/zrythm/fedora/latest:latest"
   stage: build
   script:
     - export PACKAGE_NAME=$CI_PROJECT_NAME-$_RPM_VER
