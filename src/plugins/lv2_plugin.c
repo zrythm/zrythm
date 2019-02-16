@@ -1481,24 +1481,27 @@ lv2_instantiate (Lv2Plugin      * lv2_plugin,   ///< plugin to instantiate
   free(templ);
 #endif
 
-  LV2_State_Make_Path make_path = { lv2_plugin, lv2_make_path };
-  lv2_plugin->make_path_feature.data = &make_path;
+  lv2_plugin->make_path.handle = &lv2_plugin;
+  lv2_plugin->make_path.path = lv2_make_path;
+  lv2_plugin->make_path_feature.data = &lv2_plugin->make_path;
 
-  LV2_Worker_Schedule sched = { &lv2_plugin->worker, lv2_worker_schedule };
-  lv2_plugin->sched_feature.data = &sched;
+  lv2_plugin->sched.handle = &lv2_plugin->worker;
+  lv2_plugin->sched.schedule_work = lv2_worker_schedule;
+  lv2_plugin->sched_feature.data = &lv2_plugin->sched;
 
-  LV2_Worker_Schedule ssched = { &lv2_plugin->state_worker, lv2_worker_schedule };
-  lv2_plugin->state_sched_feature.data = &ssched;
+  lv2_plugin->ssched.handle = &lv2_plugin->state_worker;
+  lv2_plugin->ssched.schedule_work = lv2_worker_schedule;
+  lv2_plugin->state_sched_feature.data = &lv2_plugin->ssched;
 
-  LV2_Log_Log llog = { &lv2_plugin, lv2_printf, lv2_vprintf };
-  lv2_plugin->log_feature.data = &llog;
+  lv2_plugin->llog.handle = lv2_plugin;
+  lv2_plugin->llog.printf = lv2_printf;
+  lv2_plugin->llog.vprintf = lv2_vprintf;
+  lv2_plugin->log_feature.data = &lv2_plugin->llog;
 
   zix_sem_init(&lv2_plugin->exit_sem, 0);
   lv2_plugin->done = &lv2_plugin->exit_sem;
 
   zix_sem_init(&lv2_plugin->worker.sem, 0);
-
-
 
   /* Load preset, if specified */
   if (preset_uri)

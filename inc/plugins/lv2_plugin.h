@@ -249,6 +249,12 @@ typedef struct Lv2Plugin
   Plugin             * plugin;           ///< base plugin instance (parent)
 
   char               * state_file; ///< for saving/loading state
+
+  /** plugin feature data */
+  LV2_State_Make_Path make_path;
+  LV2_Worker_Schedule sched;
+  LV2_Worker_Schedule ssched;
+  LV2_Log_Log         llog;
 } Lv2Plugin;
 
 int
