@@ -46,7 +46,7 @@ Requires: libxml2
 Requires: gtk3
 Requires: jack-audio-connection-kit
 Requires: lilv
-Requires: suil
+Requires: suil >= 0.10.2
 Requires: lv2
 Requires: libdazzle
 Requires: libsmf

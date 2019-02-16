@@ -93,7 +93,11 @@ AC_PREFIX_DEFAULT([/usr])
 PKG_CHECK_MODULES([GTK3], [gtk+-3.0 >= 3.20])
 PKG_CHECK_MODULES([JACK], [jack])
 PKG_CHECK_MODULES([LILV], [lilv-0 >= 0.24.2])
-PKG_CHECK_MODULES([SUIL], [suil-0 >= 0.10.0])
+
+# SUIL 0.10.0 fails to wrap some x11 plugins in GTK3
+PKG_CHECK_MODULES([SUIL],
+                  [suil-0 >= 0.10.2],,
+                  [echo "Suil version is too old and some plugin UIs will not be displayed. Please install a newer version of suil. If you still want to use your current version (with some plugin UIs not displaying) please change the version requirement in configure.ac" && exit 1])
 #PKG_CHECK_MODULES([PANGO], [pango >= 1.0])
 #PKG_CHECK_MODULES([PANGOFT2], [pangoft2 >= 1.0])
 PKG_CHECK_MODULES([LIBDAZZLE], [libdazzle-1.0 >= 3.20])
