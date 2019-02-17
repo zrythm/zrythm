@@ -1,7 +1,3 @@
-[submodule "ext/suil"]
-	path = ext/suil
-	url = https://git.zrythm.org/zrythm/suil.git
-  branch = master
 [submodule "ext/libcyaml"]
 	path = ext/libcyaml
 	url = https://github.com/tlsa/libcyaml.git

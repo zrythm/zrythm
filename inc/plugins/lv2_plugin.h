@@ -40,13 +40,13 @@
 #include "plugins/lv2/symap.h"
 #include "plugins/lv2/worker.h"
 #include "plugins/lv2/zix/ring.h"
+#include "plugins/lv2/suil.h"
 #include "utils/sem.h"
 #include "plugins/lv2/zix/thread.h"
 #include "plugins/lv2/lv2_external_ui.h"
 
 #include <lilv/lilv.h>
 #include <serd/serd.h>
-#include <suil/suil.h>
 
 #include <lv2/lv2plug.in/ns/ext/atom/atom.h>
 #include <lv2/lv2plug.in/ns/ext/atom/forge.h>

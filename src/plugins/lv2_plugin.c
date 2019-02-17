@@ -1,7 +1,7 @@
 /*
  * plugins/lv2_plugin.c - For single instances of LV2 Plugins
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -69,6 +69,7 @@
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2/control.h"
+#include "plugins/lv2/suil.h"
 #include "plugins/lv2/symap.h"
 #include "plugins/plugin.h"
 #include "project.h"
@@ -96,7 +97,6 @@
 
 #include <lilv/lilv.h>
 #include <sratom/sratom.h>
-#include <suil/suil.h>
 
 #include "plugins/lv2/lv2_evbuf.h"
 #include "plugins/lv2/worker.h"

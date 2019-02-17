@@ -22,11 +22,10 @@
 #include <time.h>
 
 #include "ext/audio_decoder/ad.h"
+#include "plugins/lv2/suil.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
-
-#include <suil/suil.h>
 
 /**
  * main

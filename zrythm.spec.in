@@ -88,7 +88,6 @@ More info at https://www.zrythm.org
 %doc README.md CONTRIBUTING.md INSTALL.md
 %{_bindir}/*
 %{_datadir}/*
-%{_libdir}/*
 
 %changelog
 * Thu Jan 17 2019 Alexandros Theodotou <alex@alextee.org>
