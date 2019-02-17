@@ -255,7 +255,7 @@ $(CYAML_BUILD_DIR)/libcyaml.a:
 
 # build suil
 $(SUIL_BUILD_DIR)/libsuil-0.a:
-	cd $(SUIL_SRC_DIR) && ./waf configure --static --prefix=$(PREFIX) && ./waf
+	cd $(SUIL_SRC_DIR) && ./waf configure --static --prefix=$(PREFIX) --no-qt && ./waf
 
 $(BUILD_DIR)/zrythm.gresource.xml: resources/gen-gtk-gresources-xml.py \
 	resources/theme.css \
