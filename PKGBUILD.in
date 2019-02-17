@@ -16,27 +16,39 @@
 #  You should have received a copy of the GNU General Public License
 #  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-# Maintainer: Alexandros Theodotou <alex at alextee dot org>
+# Maintainer: Alexandros Theodotou <alex at zrythm dot org>
 
 pkgname=zrythm
 pkgver=@BRANCH@
+_pkgname="$pkgname-$pkgver"
 pkgrel=1
 pkgdesc="Free GNU/Linux music production system (DAW)"
 arch=('x86_64')
 url="https://www.zrythm.org"
 license=('GPL')
-depends=('gtk3' 'lv2' 'lilv' 'suil' 'jack' 'libsndfile' 'libsmf' 'libdazzle' 'portaudio' 'breeze-icons')
-source=("$pkgname-$pkgver".tar.gz)
-md5sums=('SKIP')
+depends=('gtk3' 'lv2' 'lilv' 'jack' 'libsndfile' 'libsmf' 'libdazzle'
+         'breeze-icons' 'portaudio' 'ffmpeg')
+source=(""$_pkgname".tar.gz"
+        "libcyaml::https://github.com/tlsa/libcyaml/archive/v0.1.0.tar.gz"
+        "suil::https://git.zrythm.org/zrythm/suil/-/archive/master/suil-master.tar.gz")
+md5sums=('SKIP'
+         'SKIP'
+         'SKIP')
+
+prepare() {
+	cd "$srcdir/$_pkgname"
+  cp -r $srcdir/libcyaml-0.1.0/* ./ext/libcyaml/
+  cp -r $srcdir/suil-master/* ./ext/suil/
+}
 
 build() {
-  cd "$pkgname-$pkgver"
+  cd "$srcdir/$_pkgname"
   ./autogen.sh
   ./configure --prefix=/usr --enable-release --enable-package-mode
   make -j14
 }
 
 package() {
-  cd "$pkgname-$pkgver"
+  cd "$srcdir/$_pkgname"
 	make DESTDIR="$pkgdir/" install
 }

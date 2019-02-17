@@ -41,7 +41,7 @@ BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: gcc
 BuildRequires: pkgconfig
-BuildRequires: ffmpeg-devel
+#BuildRequires: ffmpeg-devel
 Requires: libxml2
 Requires: gtk3
 Requires: jack-audio-connection-kit
@@ -53,7 +53,7 @@ Requires: libsmf
 Requires: libsndfile
 Requires: portaudio
 Requires: breeze-icon-theme
-Requires: ffmpeg
+#Requires: ffmpeg
 
 BuildRoot: ~/rpmbuild/
 

@@ -114,10 +114,10 @@ PKG_CHECK_MODULES([PORTAUDIO], [portaudio-2.0])
 PKG_CHECK_MODULES([LIBYAML], [yaml-0.1])
 
 #FFMPEG stuff
-PKG_CHECK_MODULES(
-  [FFMPEG],
-  [libavcodec libavutil libavformat],
-  [AC_DEFINE([HAVE_FFMPEG],[1],[Use ffmpeg])])
+#PKG_CHECK_MODULES(
+  #[FFMPEG],
+  #[libavcodec libavutil libavformat],
+  #[AC_DEFINE([HAVE_FFMPEG],[1],[Use ffmpeg])])
 
 
 #Checks for header files.
