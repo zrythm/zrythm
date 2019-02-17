@@ -24,6 +24,7 @@ SUFFIXES += .d
 WINDOWS=@WINDOWS@
 LINUX=@LINUX@
 OSX=@OSX@
+HAVE_QT5=@HAVE_QT5@
 PACKAGE_MODE=@PACKAGE_MODE@
 RELEASE=@RELEASE@
 PROFILING=@PROFILING@
@@ -48,6 +49,7 @@ CYAML_BUILD_DIR = ext/libcyaml/build/release
 CYAML_SRC_DIR = ext/libcyaml
 
 CC = @CC@
+CXX = @CXX@
 DEFS = @DEFS@
 INSTALL = install
 INSTALL_DATA = ${INSTALL} -m 644
@@ -94,7 +96,7 @@ sysconfdir = @sysconfdir@
 # library CFLAGS
 #LIBCYAML_CFLAGS = @LIBCYAML_CFLAGS@
 LIBYAML_CFLAGS = @LIBYAML_CFLAGS@
-#FFMPEG_CFLAGS = @FFMPEG_CFLAGS@
+FFMPEG_CFLAGS = @FFMPEG_CFLAGS@
 GTK3_CFLAGS = @GTK3_CFLAGS@
 JACK_CFLAGS = @JACK_CFLAGS@
 LIBDAZZLE_CFLAGS = @LIBDAZZLE_CFLAGS@
@@ -103,6 +105,7 @@ LV2_CFLAGS = @LV2_CFLAGS@
 LIBXML_CFLAGS = @LIBXML_CFLAGS@
 LIBSMF_CFLAGS = @LIBSMF_CFLAGS@
 PORTAUDIO_CFLAGS = @PORTAUDIO_CFLAGS@
+QT5_CFLAGS = @QT5_CFLAGS@
 SAMPLERATE_CFLAGS = @SAMPLERATE_CFLAGS@
 SNDFILE_CFLAGS = @SNDFILE_CFLAGS@
 X11_CFLAGS = @X11_CFLAGS@
@@ -111,7 +114,7 @@ X11_CFLAGS = @X11_CFLAGS@
 #LIBCYAML_LIBS = @LIBCYAML_LIBS@
 LIBYAML_LIBS = @LIBYAML_LIBS@
 GTK3_LIBS = @GTK3_LIBS@
-#FFMPEG_LIBS = @FFMPEG_LIBS@
+FFMPEG_LIBS = @FFMPEG_LIBS@
 JACK_LIBS = @JACK_LIBS@
 LIBDAZZLE_LIBS = @LIBDAZZLE_LIBS@
 LILV_LIBS = @LILV_LIBS@
@@ -119,6 +122,7 @@ LV2_LIBS = @LV2_LIBS@
 LIBXML_LIBS = @LIBXML_LIBS@
 LIBSMF_LIBS = @LIBSMF_LIBS@
 PORTAUDIO_LIBS = @PORTAUDIO_LIBS@
+QT5_LIBS = @QT5_LIBS@
 SAMPLERATE_LIBS = @SAMPLERATE_LIBS@
 SNDFILE_LIBS = @SNDFILE_LIBS@
 X11_LIBS = @X11_LIBS@
@@ -163,6 +167,7 @@ endif
 # FIXME don't override CFLAGS
 CFLAGS = -Wall \
 	$(DEFAULT_INCLUDES) \
+	$(FFMPEG_CFLAGS) \
 	$(GTK3_CFLAGS) \
 	$(JACK_CFLAGS) \
 	$(LIBDAZZLE_CFLAGS) \
@@ -172,14 +177,17 @@ CFLAGS = -Wall \
 	$(LILV_CFLAGS) \
 	$(LV2_CFLAGS) \
 	$(PORTAUDIO_CFLAGS) \
+	$(QT5_CFLAGS) \
 	$(SAMPLERATE_CFLAGS) \
 	$(SNDFILE_CFLAGS) \
 	$(X11_CFLAGS) \
-	$(DEFAULT_CFLAGS)
+	$(DEFAULT_CFLAGS) \
+	-fPIC
 
 #$(LIBCYAML_LIBS) \
 
 LDFLAGS =	\
+	$(FFMPEG_LIBS) \
   $(GTK3_LIBS) \
 	$(JACK_LIBS) \
 	$(LIBDAZZLE_LIBS) \
@@ -189,6 +197,7 @@ LDFLAGS =	\
 	$(LILV_LIBS) \
 	$(LV2_LIBS) \
 	$(PORTAUDIO_LIBS) \
+	$(QT5_LIBS) \
 	$(SAMPLERATE_LIBS) \
 	$(SNDFILE_LIBS) \
 	$(X11_LIBS) \
@@ -210,10 +219,13 @@ built_dep = $(built_obj:%.o=%.d))
 #Find all the C++ files in the src/ directory
 SRCS = $(shell find src/ -name "*.c") \
 			 $(shell find ext/audio_decoder -name "*.c")
+SRCS_CPP = $(shell find src/ -name "*.cpp")
 # All .o files go to build dir.
-OBJ = $(SRCS:%.c=$(BUILD_DIR)/%.o)
+OBJ = $(SRCS:%.c=$(BUILD_DIR)/%.c.o)
+OBJ_CPP = $(SRCS_CPP:%.cpp=$(BUILD_DIR)/%.cpp.o)
 # Gcc/Clang will create these .d files containing dependencies.
 DEP = $(OBJ:%.o=%.d)
+DEP_CPP = $(OBJ_CPP:%.o=%.d)
 
 gsettings_SCHEMAS = org.zrythm.gschema.xml
 #EXTRA_DIST = $(gsettings_SCHEMAS)
@@ -237,12 +249,12 @@ appicon_DATA = z.svg
 $(BIN) : $(BUILD_DIR)/$(BIN)$(EXT)
 
 # Actual target of the binary - depends on all .o files.
-$(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(BUILD_DIR)/resources.o ext/libcyaml/build/release/libcyaml.a
+$(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(OBJ_CPP) $(BUILD_DIR)/resources.o ext/libcyaml/build/release/libcyaml.a
 	# Create build directories - same structure as sources.
 	echo $(CYAML_BUILD_DIR)
 	$(MKDIR_P) $(@D)
 	# Just link all the object files.
-	$(CC) $^ $(LDFLAGS) -o $@
+	$(CC) $^ $(LDFLAGS) -lstdc++ -o $@
 	# done
 
 # build libcyaml
@@ -263,15 +275,20 @@ $(BUILD_DIR)/resources.c: $(BUILD_DIR)/zrythm.gresource.xml
 
 # Include all dep files
 -include $(DEP)
+-include $(DEP_CPP)
 
 # Build target for every single object file.
 # The potential dependency on header files is covered
 # by calling `-include $(DEP)`.
 # The -MMD flags additionaly creates a .d file with
 # the same name as the .o file.
-$(BUILD_DIR)/%.$(OBJEXT): %.c
+$(BUILD_DIR)/%.c.$(OBJEXT): %.c
 	$(MKDIR_P) $(dir $@)
 	$(CC) $(CFLAGS) -I./ext/libcyaml/include -MMD -c $< -o $@
+
+$(BUILD_DIR)/%.cpp.$(OBJEXT): %.cpp
+	$(MKDIR_P) $(dir $@)
+	$(CXX) $(CFLAGS) $(QT5_CFLAGS) -lstdc++ -I./ext/libcyaml/include -MMD -c $< -o $@
 
 .PHONY: clean
 clean:

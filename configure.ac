@@ -86,6 +86,7 @@ AC_ARG_ENABLE(release,
 
 # Check for a C compiler
 AC_PROG_CC([gcc])
+AC_PROG_CXX([g++])
 
 AC_PREFIX_DEFAULT([/usr])
 
@@ -113,12 +114,17 @@ PKG_CHECK_MODULES([PORTAUDIO], [portaudio-2.0])
 #PKG_CHECK_MODULES([LIBCYAML], [libcyaml])
 PKG_CHECK_MODULES([LIBYAML], [yaml-0.1])
 PKG_CHECK_MODULES([X11], [x11])
+PKG_CHECK_MODULES([QT5], [Qt5Widgets],
+                  [AC_DEFINE([HAVE_QT5],[1],[QT5 support in suil])
+                  AC_SUBST([HAVE_QT5],[1])],
+                  [echo "Building without QT5 support in suil"])
+#PKG_CHECK_MODULES([QT4], [QtGui])
 
 #FFMPEG stuff
-#PKG_CHECK_MODULES(
-  #[FFMPEG],
-  #[libavcodec libavutil libavformat],
-  #[AC_DEFINE([HAVE_FFMPEG],[1],[Use ffmpeg])])
+PKG_CHECK_MODULES(
+  [FFMPEG],
+  [libavcodec libavutil libavformat],
+  [AC_DEFINE([HAVE_FFMPEG],[1],[Use ffmpeg])])
 
 
 #Checks for header files.

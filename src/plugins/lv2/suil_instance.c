@@ -14,12 +14,14 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#include "config.h"
 #include "plugins/lv2/suil.h"
 
 #include <gtk/gtk.h>
 
 unsigned
-suil_ui_supported (const char* ui_type_uri)
+suil_ui_supported(const char* host_type_uri,
+                  const char* ui_type_uri)
 {
 	enum {
 		SUIL_WRAPPING_UNSUPPORTED = 0,
@@ -30,6 +32,10 @@ suil_ui_supported (const char* ui_type_uri)
 		return SUIL_WRAPPING_NATIVE;
   else if (!strcmp(ui_type_uri, X11_UI_URI))
 		return SUIL_WRAPPING_EMBEDDED;
+#ifdef HAVE_QT5
+  else if (!strcmp (ui_type_uri, QT5_UI_URI))
+    return SUIL_WRAPPING_EMBEDDED;
+#endif
   else
     return SUIL_WRAPPING_UNSUPPORTED;
 }
@@ -42,8 +48,7 @@ open_wrapper(SuilHost*      host,
              unsigned       n_features)
 {
 	SuilWrapper* wrapper = NULL;
-	if (!strcmp(container_type_uri, GTK3_UI_URI)
-	    && !strcmp(ui_type_uri, X11_UI_URI))
+	if (!strcmp(ui_type_uri, X11_UI_URI))
     {
       wrapper = suil_wrapper_new_x11(host,
                       container_type_uri,
@@ -51,6 +56,16 @@ open_wrapper(SuilHost*      host,
                       features,
                       n_features);
     }
+#ifdef HAVE_QT5
+  else if (!strcmp(ui_type_uri, QT5_UI_URI))
+    {
+      wrapper = suil_wrapper_new_qt5(host,
+                      container_type_uri,
+                      ui_type_uri,
+                      features,
+                      n_features);
+    }
+#endif
 
 	if (!wrapper) {
 		SUIL_ERRORF("Unable to wrap UI type <%s> as type <%s>\n",

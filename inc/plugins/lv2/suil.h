@@ -43,6 +43,9 @@
 #define WIN_UI_URI   LV2_UI_PREFIX "WindowsUI"
 #define COCOA_UI_URI LV2_UI__CocoaUI
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
    @defgroup suil Suil
@@ -173,7 +176,8 @@ suil_host_free(SuilHost* host);
    and increasing values are of a progressively lower quality and/or stability.
 */
 unsigned
-suil_ui_supported(const char* ui_type_uri);
+suil_ui_supported(const char* host_type_uri,
+                  const char* ui_type_uri);
 
 /**
    Instantiate a UI for an LV2 plugin.
@@ -275,6 +279,9 @@ suil_instance_extension_data(SuilInstance* instance,
 /**
    @}
 */
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 
 #include "lv2/lv2plug.in/ns/extensions/ui/ui.h"
 
@@ -334,11 +341,25 @@ typedef SuilWrapper* (*SuilWrapperNewFunc)(SuilHost*      host,
 
 /** Prototype for suil_wrapper_new in each wrapper module. */
 SuilWrapper*
-suil_wrapper_new_x11(SuilHost*      host,
+suil_wrapper_new_x11 (SuilHost*      host,
                  const char*    host_type_uri,
                  const char*    ui_type_uri,
                  LV2_Feature*** features,
                  unsigned       n_features);
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+/** Prototype for suil_wrapper_new in each wrapper module. */
+SuilWrapper*
+suil_wrapper_new_qt5 (SuilHost*      host,
+                 const char*    host_type_uri,
+                 const char*    ui_type_uri,
+                 LV2_Feature*** features,
+                 unsigned       n_features);
+#ifdef __cplusplus
+} // end extern "C"
+#endif
 
 /** Prototype for suil_host_init in each init module. */
 void
