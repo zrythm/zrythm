@@ -47,7 +47,7 @@ _Note2: If some dependencies are not found, you might need to enable the univers
 sudo apt-add-repository universe
 `
 
-_Note3: For latest (unstable) version, install this directly by double clicking or by using `sudo dpkg -i` and then `sudo apt-get -f install`:_ https://git.zrythm.org/zrythm/zrythm/-/jobs/artifacts/master/download?job=build_deb_64_unstable
+_Note3: For latest (unstable) version, install this directly by double clicking or by using `sudo apt install ./<filename>.deb`:_ https://git.zrythm.org/zrythm/zrythm/-/jobs/artifacts/master/download?job=build_deb_64_unstable
 ### rpm
 enable dnf repository
 ```
@@ -58,7 +58,7 @@ install
 sudo dnf -y install zrythm
 ```
 ### Manual installation
-_Note: You will need to have the development libraries for libxml2, gtk3, jack, lilv, suil, libsmf, libsndfile, libdazzle and lv2 installed_
+_Note: You will need to have the development libraries for gtk3, jack, lilv, libsmf, libsndfile, libsamplerate, ffmpeg, libdazzle and lv2 installed_
 ```
 git clone https://git.zrythm.org/zrythm/zrythm.git
 cd zrythm
