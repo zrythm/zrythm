@@ -1,0 +1,6 @@
+[submodule "ext/suil"]
+	path = ext/suil
+	url = http://git.drobilla.net/suil.git
+[submodule "ext/libcyaml"]
+	path = ext/libcyaml
+	url = https://github.com/tlsa/libcyaml.git

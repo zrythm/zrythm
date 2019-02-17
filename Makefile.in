@@ -44,6 +44,10 @@ INC_DIR = inc
 DATA_DIR = data
 FONTS_DIR = resources/fonts
 ICONS_DIR = resources/icons
+SUIL_BUILD_DIR = ext/suil/build
+CYAML_BUILD_DIR = ext/libcyaml/build/release
+SUIL_SRC_DIR = ext/suil
+CYAML_SRC_DIR = ext/libcyaml
 
 CC = @CC@
 DEFS = @DEFS@
@@ -90,14 +94,15 @@ sysconfdir = @sysconfdir@
 
 
 # library CFLAGS
-LIBCYAML_CFLAGS = @LIBCYAML_CFLAGS@
+#LIBCYAML_CFLAGS = @LIBCYAML_CFLAGS@
+LIBYAML_CFLAGS = @LIBYAML_CFLAGS@
 FFMPEG_CFLAGS = @FFMPEG_CFLAGS@
 GTK3_CFLAGS = @GTK3_CFLAGS@
 JACK_CFLAGS = @JACK_CFLAGS@
 LIBDAZZLE_CFLAGS = @LIBDAZZLE_CFLAGS@
 LILV_CFLAGS = @LILV_CFLAGS@
 LV2_CFLAGS = @LV2_CFLAGS@
-SUIL_CFLAGS = @SUIL_CFLAGS@
+#SUIL_CFLAGS = @SUIL_CFLAGS@
 LIBXML_CFLAGS = @LIBXML_CFLAGS@
 LIBSMF_CFLAGS = @LIBSMF_CFLAGS@
 PORTAUDIO_CFLAGS = @PORTAUDIO_CFLAGS@
@@ -105,14 +110,15 @@ SAMPLERATE_CFLAGS = @SAMPLERATE_CFLAGS@
 SNDFILE_CFLAGS = @SNDFILE_CFLAGS@
 
 # library LIBS
-LIBCYAML_LIBS = @LIBCYAML_LIBS@
+#LIBCYAML_LIBS = @LIBCYAML_LIBS@
+LIBYAML_LIBS = @LIBYAML_LIBS@
 GTK3_LIBS = @GTK3_LIBS@
 FFMPEG_LIBS = @FFMPEG_LIBS@
 JACK_LIBS = @JACK_LIBS@
 LIBDAZZLE_LIBS = @LIBDAZZLE_LIBS@
 LILV_LIBS = @LILV_LIBS@
 LV2_LIBS = @LV2_LIBS@
-SUIL_LIBS = @SUIL_LIBS@
+#SUIL_LIBS = @SUIL_LIBS@
 LIBXML_LIBS = @LIBXML_LIBS@
 LIBSMF_LIBS = @LIBSMF_LIBS@
 PORTAUDIO_LIBS = @PORTAUDIO_LIBS@
@@ -154,36 +160,40 @@ endif
 #									 -DGTK_DISABLE_DEPRECATED
 endif
 
+#$(LIBCYAML_CFLAGS) \
+#$(SUIL_CFLAGS) \
+
 # FIXME don't override CFLAGS
 CFLAGS = -Wall \
 	$(DEFAULT_INCLUDES) \
-	$(LIBCYAML_CFLAGS) \
 	$(FFMPEG_CFLAGS) \
 	$(GTK3_CFLAGS) \
 	$(JACK_CFLAGS) \
 	$(LIBDAZZLE_CFLAGS) \
 	$(LIBSMF_CFLAGS) \
 	$(LIBXML_CFLAGS) \
+	$(LIBYAML_CFLAGS) \
 	$(LILV_CFLAGS) \
 	$(LV2_CFLAGS) \
 	$(PORTAUDIO_CFLAGS) \
-	$(SUIL_CFLAGS) \
 	$(SAMPLERATE_CFLAGS) \
 	$(SNDFILE_CFLAGS) \
 	$(DEFAULT_CFLAGS)
 
+#$(LIBCYAML_LIBS) \
+#$(SUIL_LIBS) \
+
 LDFLAGS =	\
-  $(LIBCYAML_LIBS) \
   $(GTK3_LIBS) \
 	$(FFMPEG_LIBS) \
 	$(JACK_LIBS) \
 	$(LIBDAZZLE_LIBS) \
 	$(LIBSMF_LIBS) \
 	$(LIBXML_LIBS) \
+	$(LIBYAML_LIBS) \
 	$(LILV_LIBS) \
 	$(LV2_LIBS) \
 	$(PORTAUDIO_LIBS) \
-	$(SUIL_LIBS) \
 	$(SAMPLERATE_LIBS) \
 	$(SNDFILE_LIBS) \
 	$(EXTRA_LD_FLAGS) \
@@ -203,7 +213,7 @@ built_dep = $(built_obj:%.o=%.d))
 
 #Find all the C++ files in the src/ directory
 SRCS = $(shell find src/ -name "*.c") \
-			 $(shell find ext/ -name "*.c")
+			 $(shell find ext/audio_decoder -name "*.c")
 # All .o files go to build dir.
 OBJ = $(SRCS:%.c=$(BUILD_DIR)/%.o)
 # Gcc/Clang will create these .d files containing dependencies.
@@ -221,6 +231,7 @@ appicondir=$(datadir)/icons/hicolor/scalable/apps
 appicon_DATA_srcdir = resources/icons/zrythm
 appicon_DATA = z.svg
 
+# static libs
 
 # -----------------------------
 #  rules
@@ -230,12 +241,21 @@ appicon_DATA = z.svg
 $(BIN) : $(BUILD_DIR)/$(BIN)$(EXT)
 
 # Actual target of the binary - depends on all .o files.
-$(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(BUILD_DIR)/resources.o
+$(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(BUILD_DIR)/resources.o ext/libcyaml/build/release/libcyaml.a ext/suil/build/libsuil-0.a
 	# Create build directories - same structure as sources.
+	echo $(CYAML_BUILD_DIR)
 	$(MKDIR_P) $(@D)
 	# Just link all the object files.
 	$(CC) $^ $(LDFLAGS) -o $@
 	# done
+
+# build libcyaml
+$(CYAML_BUILD_DIR)/libcyaml.a:
+	cd $(CYAML_SRC_DIR) && make VARIANT=release
+
+# build suil
+$(SUIL_BUILD_DIR)/libsuil-0.a:
+	cd $(SUIL_SRC_DIR) && ./waf configure --static --prefix=$(PREFIX) && ./waf
 
 $(BUILD_DIR)/zrythm.gresource.xml: resources/gen-gtk-gresources-xml.py \
 	resources/theme.css \
@@ -255,11 +275,11 @@ $(BUILD_DIR)/resources.c: $(BUILD_DIR)/zrythm.gresource.xml
 # Build target for every single object file.
 # The potential dependency on header files is covered
 # by calling `-include $(DEP)`.
+# The -MMD flags additionaly creates a .d file with
+# the same name as the .o file.
 $(BUILD_DIR)/%.$(OBJEXT): %.c
 	$(MKDIR_P) $(dir $@)
-	# The -MMD flags additionaly creates a .d file with
-	# the same name as the .o file.
-	$(CC) $(CFLAGS) -MMD -c $< -o $@
+	$(CC) $(CFLAGS) -I./ext/suil -I./ext/libcyaml/include -MMD -c $< -o $@
 
 .PHONY: clean
 clean:
@@ -267,11 +287,19 @@ clean:
 	# This should remove all generated files.
 	-rm $(BUILD_DIR)/$(BIN)$(EXT) $(OBJ) $(DEP)
 	-rm $(BUILD_DIR)/zrythm.gresource.xml
+	-rm -rf $(CYAML_SRC_DIR)/build/*
+	-rm -rf $(SUIL_SRC_DIR)/build/*
 
 .PHONY: install
-install: $(BUILD_DIR)/$(BIN)$(EXT) install-appicon-data install-desktop-data install-gschemas install-fonts
+install: $(BUILD_DIR)/$(BIN)$(EXT) install-appicon-data install-desktop-data install-gschemas install-fonts install-suil-sos
 	$(MKDIR_P) $(DESTDIR)$(bindir)
 	$(INSTALL) $< $(DESTDIR)$(bindir)/$(BIN)$(EXT)
+
+.PHONY: install-suil-sos
+install-suil-sos: $(SUIL_BUILD_DIR)/libsuil_x11.so $(SUIL_BUILD_DIR)/libsuil_x11_in_gtk3.so
+	$(MKDIR_P) $(DESTDIR)$(libdir)
+	$(INSTALL) $(SUIL_BUILD_DIR)/libsuil_x11.so $(DESTDIR)$(libdir)/
+	$(INSTALL) $(SUIL_BUILD_DIR)/libsuil_x11_in_gtk3.so $(DESTDIR)$(libdir)/
 
 .PHONY: uninstall
 uninstall: uninstall-appicon-data uninstall-gschemas uninstall-desktop
