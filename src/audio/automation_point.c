@@ -1,7 +1,5 @@
 /*
- * audio/automation_point.c - Automation point
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -101,29 +99,7 @@ automation_point_update_fvalue (AutomationPoint * ap,
   ap->fvalue = fval;
 
   Automatable * a = ap->at->automatable;
-  if (a->type == AUTOMATABLE_TYPE_PLUGIN_CONTROL)
-    {
-      Plugin * plugin = a->port->owner_pl;
-      if (plugin->descr->protocol == PROT_LV2)
-        {
-          Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
-          if (lv2_plugin->ui_instance)
-            {
-              Lv2ControlID * control = a->control;
-              LV2_Port* port = &control->plugin->ports[control->index];
-              port->control = fval;
-            }
-          else
-            {
-              lv2_gtk_set_float_control (a->control, ap->fvalue);
-            }
-        }
-    }
-  else if (a->type == AUTOMATABLE_TYPE_CHANNEL_FADER)
-    {
-      Channel * ch = track_get_channel (a->track);
-      channel_set_fader_amp (ch, ap->fvalue);
-    }
+  automatable_set_val (a, fval);
 }
 
 /**

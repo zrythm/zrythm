@@ -1,7 +1,5 @@
 /*
- * plugins/lv2_plugin.h - For single instances of LV2 Plugins
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *

@@ -1,7 +1,5 @@
 /*
- * audio/automation_track.h - Automation track
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -168,6 +166,35 @@ automation_track_get_ap_index (AutomationTrack * at,
 int
 automation_track_get_curve_index (AutomationTrack * at,
                                   AutomationCurve * ac);
+
+/**
+ * Returns the automation curve at the given pos.
+ */
+AutomationCurve *
+automation_track_get_ac_at_pos (
+  AutomationTrack * self,
+  Position *        pos);
+
+/**
+ * Returns the automation point before the pos.
+ */
+AutomationPoint *
+automation_track_get_ap_before_pos (
+  AutomationTrack * self,
+  Position *        pos);
+
+/**
+ * Returns the actual parameter value at the given
+ * position.
+ *
+ * If there is no automation point/curve during
+ * the position, it returns the current value
+ * of the parameter it is automating.
+ */
+float
+automation_track_get_value_at_pos (
+  AutomationTrack * at,
+  Position *        pos);
 
 /**
  * Updates automation track & its GUI

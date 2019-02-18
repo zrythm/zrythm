@@ -119,8 +119,11 @@ automation_curve_get_y_in_px (AutomationCurve * ac)
  *
  * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
  */
-static double
-get_y_normalized (double x, double curviness, int start_at_1)
+double
+automation_curve_get_y_normalized (
+  double x, ///< x coordinate
+  double curviness,
+  int start_at_1) ///< start at lower point
 {
   if (start_at_1)
     {
@@ -163,14 +166,14 @@ automation_curve_get_y_px (AutomationCurve * ac, ///< start point (0, 0)
   if (automation_point_get_y_in_px (next_ap) > /* if next point is lower */
       automation_point_get_y_in_px (prev_ap))
     {
-      dy = get_y_normalized (dx, ac->curviness, 1); /* start higher */
+      dy = automation_curve_get_y_normalized (dx, ac->curviness, 1); /* start higher */
       ret = dy * height;
       return height - ret; /* reverse the value because in pixels higher y values
                               are actually lower */
     }
   else
     {
-      dy = get_y_normalized (dx, ac->curviness, 0);
+      dy = automation_curve_get_y_normalized (dx, ac->curviness, 0);
       ret = dy * height;
       return - ret;
     }

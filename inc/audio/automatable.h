@@ -159,6 +159,24 @@ const float
 automatable_get_sizef (Automatable * automatable);
 
 /**
+ * Gets the current value of the parameter the
+ * automatable is for.
+ *
+ * This does not consider the automation track, it
+ * only looks in the actual parameter for its
+ * current value.
+ */
+float
+automatable_get_val (Automatable * self);
+
+/**
+ * Updates the value.
+ */
+void
+automatable_set_val (Automatable * self,
+                     float         val);
+
+/**
  * Gets automation track for given automatable, if any.
  */
 AutomationTrack *

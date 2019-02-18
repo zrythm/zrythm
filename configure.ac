@@ -124,7 +124,8 @@ PKG_CHECK_MODULES([QT5], [Qt5Widgets],
 PKG_CHECK_MODULES(
   [FFMPEG],
   [libavcodec libavutil libavformat],
-  [AC_DEFINE([HAVE_FFMPEG],[1],[Use ffmpeg])])
+  [AC_DEFINE([HAVE_FFMPEG],[1],[Use ffmpeg])],
+  [echo "Building without MP3 support"])
 
 
 #Checks for header files.

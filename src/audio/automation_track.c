@@ -1,7 +1,5 @@
 /*
- * audio/automation_track.c - Automation track
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -18,6 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
+
+#include <math.h>
 
 #include "audio/automatable.h"
 #include "audio/automation_curve.h"
@@ -393,6 +393,103 @@ automation_track_get_ap_index (AutomationTrack * at,
         }
     }
   return -1;
+}
+
+/**
+ * Returns the automation curve at the given pos.
+ */
+AutomationCurve *
+automation_track_get_ac_at_pos (
+  AutomationTrack * self,
+  Position *        pos)
+{
+  AutomationPoint * prev_ap =
+    automation_track_get_ap_before_pos (
+      self, pos);
+  if (!prev_ap)
+    return NULL;
+  AutomationPoint * next_ap =
+    automation_track_get_next_ap (
+      self, prev_ap);
+  if (!next_ap)
+    return NULL;
+  return automation_track_get_next_curve_ac (
+          self,
+          prev_ap);
+}
+
+/**
+ * Returns the automation point before the pos.
+ */
+AutomationPoint *
+automation_track_get_ap_before_pos (
+  AutomationTrack * self,
+  Position *        pos)
+{
+  AutomationPoint * ap;
+  for (int i = self->num_automation_points - 1;
+       i >= 0;
+       i--)
+    {
+      ap = self->automation_points[i];
+      if (position_compare (&ap->pos,
+                            pos) <= 0)
+        return ap;
+    }
+  return NULL;
+}
+
+/**
+ * Returns the normalized value (0.0-1.0) at the
+ * given position.
+ *
+ * If there is no automation point/curve during
+ * the position, it returns negative.
+ */
+float
+automation_track_get_value_at_pos (
+  AutomationTrack * self,
+  Position *        pos)
+{
+  AutomationCurve * ac =
+    automation_track_get_ac_at_pos (
+      self, pos);
+  if (!ac)
+    return -1.f;
+  AutomationPoint * prev_ap =
+    automation_track_get_ap_before_pos (
+      self, pos);
+  AutomationPoint * next_ap =
+    automation_track_get_next_ap (
+      self, prev_ap);
+  /*g_message ("prev fvalue %f next %f",*/
+             /*prev_ap->fvalue,*/
+             /*next_ap->fvalue);*/
+  int prev_ap_lower =
+    prev_ap->fvalue <= next_ap->fvalue;
+  float prev_next_diff = fabs (prev_ap->fvalue - next_ap->fvalue);
+
+  /* ratio of how far in we are in the curve */
+  int pos_ticks = position_to_ticks (pos);
+  int prev_ap_ticks = position_to_ticks (&prev_ap->pos);
+  int next_ap_ticks = position_to_ticks (&next_ap->pos);
+  double ratio =
+    (double) (pos_ticks - prev_ap_ticks) /
+    (next_ap_ticks - prev_ap_ticks);
+  /*g_message ("ratio %f",*/
+             /*ratio);*/
+
+  double result =
+    automation_curve_get_y_normalized (
+      ratio, ac->curviness, !prev_ap_lower);
+  result = result * prev_next_diff;
+  /*g_message ("halfbaked result %f start at lower %d",*/
+             /*result, prev_ap_lower);*/
+  result += prev_ap->fvalue;
+
+  g_message ("result %f",
+             result);
+  return result;
 }
 
 int

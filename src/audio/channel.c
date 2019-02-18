@@ -618,6 +618,9 @@ channel_get_phase (void * _channel)
   /*return channel->volume;*/
 /*}*/
 
+/**
+ * Sets the amplitude of the fader. (0.0 to 2.0)
+ */
 void
 channel_set_fader_amp (void * _channel, float amp)
 {

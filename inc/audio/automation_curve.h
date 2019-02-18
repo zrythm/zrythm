@@ -1,7 +1,5 @@
 /*
- * audio/automation_curve.h - Automation curve
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -43,6 +41,9 @@ typedef enum AutomationCurveType
 
 typedef struct AutomationCurve
 {
+  /**
+   * Midway position between previous ap and next ap.
+   */
   Position                 pos;
   float                    curviness; ///< curviness, default 1
   AutomationCurveType      type;
@@ -133,6 +134,17 @@ automation_curve_get_y_px (AutomationCurve * start_ap, ///< start point (0, 0)
                            double               x, ///< x coordinate in px
                            double               width, ///< total width in px
                            double               height); ///< total height in px
+
+/**
+ * The function.
+ *
+ * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
+ */
+double
+automation_curve_get_y_normalized (
+  double x, ///< x coordinate
+  double curviness,
+  int start_at_1); ///< start at lower point
 
 void
 automation_curve_set_curviness (AutomationCurve * ac, float curviness);

@@ -24,6 +24,7 @@
 #include "audio/track.h"
 #include "plugins/plugin.h"
 #include "plugins/lv2_plugin.h"
+#include "utils/math.h"
 
 #include <gtk/gtk.h>
 
@@ -145,7 +146,7 @@ automatable_get_minf (Automatable * a)
     {
       if (IS_AUTOMATABLE_CH_FADER (a))
         {
-          return -128.f;
+          return 0.f;
         }
       else if (IS_AUTOMATABLE_LV2_CONTROL (a))
         {
@@ -163,7 +164,7 @@ automatable_get_maxf (Automatable * a)
     {
       if (IS_AUTOMATABLE_CH_FADER (a))
         {
-          return 3.f;
+          return 1.0f;
         }
       else if (IS_AUTOMATABLE_LV2_CONTROL (a))
         {
@@ -189,6 +190,87 @@ automatable_free (Automatable * automatable)
 {
   /* TODO go through every track and plugins
    * and set associated automatables to NULL */
+
+}
+
+/**
+ * Gets the current value of the parameter the
+ * automatable is for.
+ *
+ * This does not consider the automation track, it
+ * only looks in the actual parameter for its
+ * current value.
+ */
+float
+automatable_get_val (Automatable * a)
+{
+  if (a->type == AUTOMATABLE_TYPE_PLUGIN_CONTROL)
+    {
+      Plugin * plugin = a->port->owner_pl;
+      if (plugin->descr->protocol == PROT_LV2)
+        {
+          /*Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;*/
+          /*if (lv2_plugin->ui_instance)*/
+            /*{*/
+              Lv2ControlID * control = a->control;
+              LV2_Port* port = &control->plugin->ports[control->index];
+              return port->control;
+            /*}*/
+          /*else*/
+            /*{*/
+              /*return a->control;*/
+            /*}*/
+        }
+    }
+  else if (a->type == AUTOMATABLE_TYPE_CHANNEL_FADER)
+    {
+      Channel * ch = track_get_channel (a->track);
+      return ch->fader_amp;
+    }
+  return 0;
+}
+
+/**
+ * Updates the actual value.
+ *
+ * The given value is always a normalized 0.0-1.0
+ * value and must be translated to the actual value
+ * before setting it.
+ */
+void
+automatable_set_val (Automatable * a,
+                     float         val)
+{
+  if (a->type == AUTOMATABLE_TYPE_PLUGIN_CONTROL)
+    {
+      Plugin * plugin = a->port->owner_pl;
+      if (plugin->descr->protocol == PROT_LV2)
+        {
+          Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
+          if (lv2_plugin->ui_instance)
+            {
+              Lv2ControlID * control = a->control;
+              LV2_Port* port = &control->plugin->ports[control->index];
+              port->control = val;
+            }
+          else
+            {
+              lv2_gtk_set_float_control (
+                a->control, val);
+            }
+        }
+    }
+  else if (a->type == AUTOMATABLE_TYPE_CHANNEL_FADER)
+    {
+      Channel * ch = track_get_channel (a->track);
+      double dval =
+        math_get_amp_val_from_fader (val);
+      g_message ("setting channel fader to %f",
+                 dval);
+      channel_set_fader_amp (
+        ch,
+        dval);
+    }
 
 }
 

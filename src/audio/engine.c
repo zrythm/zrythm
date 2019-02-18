@@ -25,6 +25,8 @@
 #include <signal.h>
 
 #include "zrythm.h"
+#include "audio/automation_track.h"
+#include "audio/automation_tracklist.h"
 #include "audio/channel.h"
 #include "audio/engine.h"
 #include "audio/engine_jack.h"
@@ -130,6 +132,38 @@ engine_process_prepare (uint32_t      nframes)
           if (channel->plugins[j])
             {
               channel->plugins[j]->processed = 0;
+            }
+        }
+    }
+
+  /* for each automation track, update the val */
+  if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
+    {
+      Track * track;
+      AutomationTracklist * atl;
+      AutomationTrack * at;
+      for (int i = 0; i < TRACKLIST->num_tracks; i++)
+        {
+          track = TRACKLIST->tracks[i];
+          atl =
+            track_get_automation_tracklist (track);
+          if (!atl)
+            continue;
+          for (int j = 0;
+               j < atl->num_automation_tracks;
+               j++)
+            {
+              at = atl->automation_tracks[j];
+              float val =
+                automation_track_get_value_at_pos (
+                  at, &PLAYHEAD);
+              /* if there was an automation event
+               * at the playhead position, val is
+               * positive */
+              if (val >= 0.f)
+                automatable_set_val (
+                  at->automatable,
+                  val);
             }
         }
     }
