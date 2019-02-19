@@ -63,4 +63,8 @@ audio_track_widget_new (Track * track);
 void
 audio_track_widget_refresh (AudioTrackWidget * self);
 
+void
+audio_track_widget_refresh_buttons (
+  AudioTrackWidget * self);
+
 #endif

@@ -65,4 +65,8 @@ void
 instrument_track_widget_refresh (
   InstrumentTrackWidget * self);
 
+void
+instrument_track_widget_refresh_buttons (
+  InstrumentTrackWidget * self);
+
 #endif

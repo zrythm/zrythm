@@ -129,6 +129,10 @@ channel_widget_update_meter_reading (
 void
 channel_widget_refresh (ChannelWidget * self);
 
+void
+channel_widget_refresh_buttons (
+  ChannelWidget * self);
+
 /**
  * Displays the widget.
  */

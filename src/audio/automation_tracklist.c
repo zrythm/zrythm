@@ -1,7 +1,5 @@
 /*
- * audio/automation_tracklist.c - Tracklist backend
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,11 +20,14 @@
 #include <stdlib.h>
 
 #include "audio/automatable.h"
+#include "audio/automation_lane.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
-#include "plugins/plugin.h"
 #include "audio/track.h"
+#include "gui/widgets/automation_lane.h"
+#include "gui/widgets/automation_tracklist.h"
+#include "plugins/plugin.h"
 #include "utils/arrays.h"
 
 static void
@@ -36,7 +37,6 @@ add_automation_track (AutomationTracklist * self,
   array_append (self->automation_tracks,
                 self->num_automation_tracks,
                 at);
-  at->visible = 0;
 }
 
 static void
@@ -49,26 +49,38 @@ delete_automation_track (AutomationTracklist * self,
   automation_track_free (at);
 }
 
+/**
+ * Adds all automation tracks and sets fader as
+ * visible.
+ */
 void
-automation_tracklist_init (AutomationTracklist * self,
-                           Track *               track)
+automation_tracklist_init (
+  AutomationTracklist * self,
+  Track *               track)
 {
   self->track = track;
 
   /* add all automation tracks */
-  automation_tracklist_refresh (self);
+  automation_tracklist_update (self);
 
-  /* set fader visible */
-  Automatable * fader = track_get_fader_automatable (self->track);
+  /* create a visible lane for the fader */
+  Automatable * fader =
+    track_get_fader_automatable (self->track);
   AutomationTrack * fader_at =
     automatable_get_automation_track (fader);
-  fader_at->visible = 1;
+  AutomationLane * fader_al =
+    automation_lane_new (fader_at);
+  array_append (self->automation_lanes,
+                self->num_automation_lanes,
+                fader_al);
 }
 
 void
-automation_tracklist_refresh (AutomationTracklist * self)
+automation_tracklist_update (
+  AutomationTracklist * self)
 {
-  Channel * channel = track_get_channel (self->track);
+  Channel * channel =
+    track_get_channel (self->track);
 
   /* remove unneeded automation tracks */
   for (int i = 0; i < self->num_automation_tracks; i++)
@@ -170,16 +182,37 @@ automation_tracklist_get_visible_tracks (
   int *                 num_visible)
 {
   *num_visible = 0;
-  for (int i = 0; self->num_automation_tracks; i++)
+  for (int i = 0;
+       i < self->num_automation_lanes; i++)
     {
-      AutomationTrack * at = self->automation_tracks[i];
-      if (at->visible)
+      AutomationLane * al =
+        self->automation_lanes[i];
+      if (al->visible)
         {
           array_append (visible_tracks,
                         *num_visible,
-                        at);
+                        al->at);
         }
     }
+}
+
+AutomationTrack *
+automation_tracklist_get_at_from_automatable (
+  AutomationTracklist * self,
+  Automatable *         a)
+{
+  for (int i = 0; i < self->num_automation_tracks;
+       i++)
+    {
+      AutomationTrack * at =
+        self->automation_tracks[i];
+      if (at->automatable == a)
+        {
+          return at;
+        }
+    }
+  g_assert_not_reached ();
+  return NULL;
 }
 
 /**
@@ -196,9 +229,14 @@ automation_tracklist_fetch_first_invisible_at (
   for (int i = 0; self->num_automation_tracks; i++)
     {
       AutomationTrack * at = self->automation_tracks[i];
-      if (!at->visible)
+      if (!at->al)
         {
-          at->visible = 1;
+          at->al = automation_lane_new (at);
+          return at;
+        }
+      if (!at->al->visible)
+        {
+          at->al->visible = 1;
           return at;
         }
     }

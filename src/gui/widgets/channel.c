@@ -296,8 +296,9 @@ setup_pan (ChannelWidget * self)
                        0);
 }
 
-static void
-refresh_buttons (ChannelWidget * self)
+void
+channel_widget_refresh_buttons (
+  ChannelWidget * self)
 {
   gtk_toggle_button_set_active (
     self->record,
@@ -321,7 +322,7 @@ channel_widget_refresh (ChannelWidget * self)
   refresh_name (self);
   refresh_output (self);
   channel_widget_update_meter_reading (self, NULL, NULL);
-  refresh_buttons (self);
+  channel_widget_refresh_buttons (self);
   refresh_color (self);
 }
 

@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.22.1 -->
 <!--
 
-  Copyright (C) 2018-2019 Alexandros Theodotou
+  Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
 
   This file is part of Zrythm
 
@@ -22,14 +22,13 @@
 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <template class="AutomationTrackWidget" parent="GtkGrid">
+  <template class="AutomationLaneWidget" parent="GtkGrid">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <child>
       <object class="GtkComboBox" id="selector">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <signal name="changed" handler="on_at_selector_changed" object="AutomationTrackWidget" swapped="no"/>
       </object>
       <packing>
         <property name="left_attach">0</property>
@@ -62,7 +61,7 @@
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
         <property name="use_stock">True</property>
-        <signal name="clicked" handler="on_add_lane_clicked" object="AutomationTrackWidget" swapped="no"/>
+        <signal name="clicked" handler="on_add_lane_clicked" object="AutomationLaneWidget" swapped="no"/>
       </object>
       <packing>
         <property name="left_attach">2</property>

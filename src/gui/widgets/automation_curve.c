@@ -255,4 +255,3 @@ static void
 automation_curve_widget_init (AutomationCurveWidget * self)
 {
 }
-

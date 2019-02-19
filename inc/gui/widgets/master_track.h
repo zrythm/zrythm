@@ -58,6 +58,11 @@ master_track_widget_new (Track * track);
  * Updates changes in the backend to the ui
  */
 void
-master_track_widget_refresh (MasterTrackWidget * self);
+master_track_widget_refresh (
+  MasterTrackWidget * self);
+
+void
+master_track_widget_refresh_buttons (
+  MasterTrackWidget * self);
 
 #endif

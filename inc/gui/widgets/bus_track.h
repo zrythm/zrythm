@@ -63,4 +63,8 @@ bus_track_widget_new (Track * track);
 void
 bus_track_widget_refresh (BusTrackWidget * self);
 
+void
+bus_track_widget_refresh_buttons (
+  BusTrackWidget * self);
+
 #endif

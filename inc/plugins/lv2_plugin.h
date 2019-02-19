@@ -64,10 +64,8 @@
 #include "lv2/lv2plug.in/ns/extensions/units/units.h"
 #include "lv2/lv2plug.in/ns/ext/patch/patch.h"
 #include "lv2/lv2plug.in/ns/ext/port-groups/port-groups.h"
-#ifdef HAVE_LV2_1_2_0
 #include "lv2/lv2plug.in/ns/ext/buf-size/buf-size.h"
 #include "lv2/lv2plug.in/ns/ext/options/options.h"
-#endif
 
 #include <sratom/sratom.h>
 
@@ -189,6 +187,8 @@ typedef struct Lv2Plugin
   const LV2_Feature* features[11];
 
   const LV2_Feature* state_features[8];
+
+  LV2_Options_Option options[6];
 
   LV2_Nodes          nodes;          ///< nodes
 	LV2_Atom_Forge     forge;          ///< Atom forge

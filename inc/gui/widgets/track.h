@@ -138,6 +138,13 @@ track_widget_unblock_all_signal_handlers (
 void
 track_widget_refresh (TrackWidget * self);
 
+/**
+ * Wrapper to refresh mute button only.
+ */
+void
+track_widget_refresh_buttons (
+  TrackWidget * self);
+
 TrackWidgetPrivate *
 track_widget_get_private (TrackWidget * self);
 

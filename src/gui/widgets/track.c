@@ -1,6 +1,4 @@
 /*
- * gui/widgets/track.c - Track
- *
  * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -31,7 +29,7 @@
 #include "audio/region.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/audio_track.h"
-#include "gui/widgets/automation_track.h"
+#include "gui/widgets/automation_lane.h"
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/bus_track.h"
 #include "gui/widgets/center_dock.h"
@@ -171,6 +169,41 @@ track_widget_refresh (TrackWidget * self)
         Z_BUS_TRACK_WIDGET (self));
       break;
     }
+}
+
+/**
+ * Wrapper to refresh buttons only.
+ */
+void
+track_widget_refresh_buttons (
+  TrackWidget * self)
+{
+  TRACK_WIDGET_GET_PRIVATE (self);
+
+  switch (tw_prv->track->type)
+    {
+    case TRACK_TYPE_INSTRUMENT:
+      instrument_track_widget_refresh_buttons (
+        Z_INSTRUMENT_TRACK_WIDGET (self));
+      break;
+    case TRACK_TYPE_MASTER:
+      master_track_widget_refresh_buttons (
+        Z_MASTER_TRACK_WIDGET (self));
+      break;
+    case TRACK_TYPE_AUDIO:
+      audio_track_widget_refresh_buttons (
+        Z_AUDIO_TRACK_WIDGET (self));
+      break;
+    case TRACK_TYPE_CHORD:
+      chord_track_widget_refresh_buttons (
+        Z_CHORD_TRACK_WIDGET (self));
+      break;
+    case TRACK_TYPE_BUS:
+      bus_track_widget_refresh_buttons (
+        Z_BUS_TRACK_WIDGET (self));
+      break;
+    }
+
 }
 
 /**

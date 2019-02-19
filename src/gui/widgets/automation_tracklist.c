@@ -1,7 +1,5 @@
 /*
- * gui/widgets/automation_tracklist.c - Track list for automations
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -22,6 +20,7 @@
 /** \file
  */
 
+#include "audio/automation_lane.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
@@ -31,7 +30,7 @@
 #include "gui/widgets/channel.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
-#include "gui/widgets/automation_track.h"
+#include "gui/widgets/automation_lane.h"
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/instrument_track.h"
 #include "gui/widgets/track.h"
@@ -52,9 +51,10 @@ AutomationTracklistWidget *
 automation_tracklist_widget_new (
   AutomationTracklist * automation_tracklist)
 {
-  AutomationTracklistWidget * self = g_object_new (
-    AUTOMATION_TRACKLIST_WIDGET_TYPE,
-    NULL);
+  AutomationTracklistWidget * self =
+    g_object_new (
+      AUTOMATION_TRACKLIST_WIDGET_TYPE,
+      NULL);
 
   self->automation_tracklist = automation_tracklist;
 
@@ -62,7 +62,7 @@ automation_tracklist_widget_new (
 }
 
 /**
- * Show or hide all automation track widgets.
+ * Show or hide all automation lane widgets.
  */
 void
 automation_tracklist_widget_refresh (
@@ -81,45 +81,55 @@ automation_tracklist_widget_refresh (
                               1);
     }
 
-  /* remove all automation tracks */
-  z_gtk_container_destroy_all_children (
+  /* remove all automation lanes */
+  z_gtk_container_remove_all_children (
     GTK_CONTAINER (self));
 
   /* add tracks */
+  g_message ("num automation lanes %d",
+             self->automation_tracklist->num_automation_lanes);
   for (int i = 0;
-       i < self->automation_tracklist->num_automation_tracks;
+       i < self->automation_tracklist->
+         num_automation_lanes;
        i++)
     {
-      AutomationTrack * at =
-        self->automation_tracklist->automation_tracks[i];
+      AutomationLane * al =
+        self->automation_tracklist->
+          automation_lanes[i];
 
       /* show automation track */
-      if (at->visible)
+      if (al->visible)
         {
-          /* create widget */
-          at->widget = automation_track_widget_new (at);
+          g_assert (GTK_IS_WIDGET (al->widget));
+          /*g_message ("self %p, al %p, al widget %p",*/
+                     /*self,*/
+                     /*al,*/
+                     /*al->widget);*/
+
+          automation_lane_widget_refresh (
+            al->widget);
 
           /* add to automation tracklist widget */
-          gtk_container_add (GTK_CONTAINER (self),
-                             GTK_WIDGET (at->widget));
-
+          gtk_container_add (
+            GTK_CONTAINER (self),
+            GTK_WIDGET (al->widget));
         }
 
       /* show/hide automation points/curves */
-      for (int j = 0; j < at->num_automation_points; j++)
-        {
-          AutomationPoint * ap = at->automation_points[j];
-          gtk_widget_set_visible (
-            GTK_WIDGET (ap->widget),
-            at->visible && track->bot_paned_visible);
-        }
-      for (int j = 0; j < at->num_automation_curves; j++)
-        {
-          AutomationCurve * ac = at->automation_curves[j];
-          gtk_widget_set_visible (
-            GTK_WIDGET (ac->widget),
-            at->visible && track->bot_paned_visible);
-        }
+      /*for (int j = 0; j < at->num_automation_points; j++)*/
+        /*{*/
+          /*AutomationPoint * ap = at->automation_points[j];*/
+          /*gtk_widget_set_visible (*/
+            /*GTK_WIDGET (ap->widget),*/
+            /*at->visible && track->bot_paned_visible);*/
+        /*}*/
+      /*for (int j = 0; j < at->num_automation_curves; j++)*/
+        /*{*/
+          /*AutomationCurve * ac = at->automation_curves[j];*/
+          /*gtk_widget_set_visible (*/
+            /*GTK_WIDGET (ac->widget),*/
+            /*at->visible && track->bot_paned_visible);*/
+        /*}*/
     }
 
   /* set handle position.
@@ -132,17 +142,17 @@ automation_tracklist_widget_refresh (
        iter != NULL;
        iter = g_list_next (iter))
     {
-      if (Z_IS_AUTOMATION_TRACK_WIDGET (iter->data))
+      if (Z_IS_AUTOMATION_LANE_WIDGET (iter->data))
         {
-          AutomationTrackWidget * atw =
-            Z_AUTOMATION_TRACK_WIDGET (iter->data);
-          AutomationTrack * at = atw->at;
+          AutomationLaneWidget * alw =
+            Z_AUTOMATION_LANE_WIDGET (iter->data);
+          AutomationLane * al = alw->al;
           GValue a = G_VALUE_INIT;
           g_value_init (&a, G_TYPE_INT);
-          g_value_set_int (&a, at->handle_pos);
+          g_value_set_int (&a, al->handle_pos);
           gtk_container_child_set_property (
             GTK_CONTAINER (self),
-            GTK_WIDGET (atw),
+            GTK_WIDGET (alw),
             "position",
             &a);
         }
@@ -151,11 +161,13 @@ automation_tracklist_widget_refresh (
 }
 
 static void
-automation_tracklist_widget_init (AutomationTracklistWidget * self)
+automation_tracklist_widget_init (
+  AutomationTracklistWidget * self)
 {
 }
 
 static void
-automation_tracklist_widget_class_init (AutomationTracklistWidgetClass * klass)
+automation_tracklist_widget_class_init (
+  AutomationTracklistWidgetClass * klass)
 {
 }

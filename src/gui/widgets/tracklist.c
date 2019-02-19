@@ -216,9 +216,9 @@ tracklist_widget_hard_refresh (TracklistWidget * self)
       if (track->visible)
         {
           /* create widget */
-          track->widget = track_widget_new (track);
+          if (!track->widget)
+            track->widget = track_widget_new (track);
 
-          g_assert (track->widget);
           track_widget_refresh (track->widget);
 
           /* add to tracklist widget */

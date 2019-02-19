@@ -1,7 +1,5 @@
 /*
- * utils/gtk.h - GTK utils
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -17,6 +15,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * \file
+ *
+ * GTK utils.
  */
 
 #ifndef __UTILS_GTK_H__
@@ -60,7 +64,13 @@ z_gtk_container_remove_all_children (
   GtkContainer * container);
 
 void
-z_gtk_container_destroy_all_children (GtkContainer * container);
+z_gtk_container_destroy_all_children (
+  GtkContainer * container);
+
+void
+z_gtk_container_remove_children_of_type (
+  GtkContainer * container,
+  GType          type);
 
 void
 z_gtk_button_set_icon_name (GtkButton * btn,

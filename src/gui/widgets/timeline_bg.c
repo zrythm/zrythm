@@ -24,7 +24,7 @@
  */
 
 #include "zrythm.h"
-#include "audio/automation_track.h"
+#include "audio/automation_lane.h"
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
@@ -33,8 +33,8 @@
 #include "audio/tracklist.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/automation_lane.h"
 #include "gui/widgets/automation_point.h"
-#include "gui/widgets/automation_track.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/ruler.h"
@@ -104,19 +104,22 @@ timeline_bg_draw_cb (
       if (automation_tracklist)
         {
           for (int j = 0;
-               j < automation_tracklist->num_automation_tracks;
+               j < automation_tracklist->
+                 num_automation_lanes;
                j++)
             {
-              AutomationTrack * at = automation_tracklist->automation_tracks[j];
+              AutomationLane * al =
+                automation_tracklist->
+                  automation_lanes[j];
 
-              if (at->widget &&
+              if (al->widget &&
                   track->bot_paned_visible &&
-                  at->visible)
+                  al->visible)
                 {
                   /* horizontal automation track lines */
                   gint wx, wy;
                   gtk_widget_translate_coordinates(
-                            GTK_WIDGET (at->widget),
+                            GTK_WIDGET (al->widget),
                             GTK_WIDGET (MW_TRACKLIST),
                             0,
                             0,

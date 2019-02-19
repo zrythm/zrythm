@@ -28,7 +28,7 @@
 #include "audio/track.h"
 #include "audio/region.h"
 #include "gui/widgets/arranger.h"
-#include "gui/widgets/automation_track.h"
+#include "gui/widgets/automation_lane.h"
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/color_area.h"
@@ -101,8 +101,8 @@ audio_track_widget_new (Track * track)
   return self;
 }
 
-static void
-refresh_buttons (
+void
+audio_track_widget_refresh_buttons (
   AudioTrackWidget * self)
 {
   TRACK_WIDGET_GET_PRIVATE (self);
@@ -143,7 +143,7 @@ audio_track_widget_refresh (AudioTrackWidget * self)
     tw_prv->name,
     chan->name);
 
-  refresh_buttons (self);
+  audio_track_widget_refresh_buttons (self);
 
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (tw_prv->track);

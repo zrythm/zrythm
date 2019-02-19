@@ -177,7 +177,6 @@ CFLAGS = -Wall \
 	$(LILV_CFLAGS) \
 	$(LV2_CFLAGS) \
 	$(PORTAUDIO_CFLAGS) \
-	$(QT5_CFLAGS) \
 	$(SAMPLERATE_CFLAGS) \
 	$(SNDFILE_CFLAGS) \
 	$(X11_CFLAGS) \
@@ -197,7 +196,6 @@ LDFLAGS =	\
 	$(LILV_LIBS) \
 	$(LV2_LIBS) \
 	$(PORTAUDIO_LIBS) \
-	$(QT5_LIBS) \
 	$(SAMPLERATE_LIBS) \
 	$(SNDFILE_LIBS) \
 	$(X11_LIBS) \
@@ -251,10 +249,9 @@ $(BIN) : $(BUILD_DIR)/$(BIN)$(EXT)
 # Actual target of the binary - depends on all .o files.
 $(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(OBJ_CPP) $(BUILD_DIR)/resources.o ext/libcyaml/build/release/libcyaml.a
 	# Create build directories - same structure as sources.
-	echo $(CYAML_BUILD_DIR)
 	$(MKDIR_P) $(@D)
 	# Just link all the object files.
-	$(CC) $^ $(LDFLAGS) -lstdc++ -o $@
+	$(CC) $^ $(LDFLAGS) $(QT5_LIBS) -lstdc++ -o $@
 	# done
 
 # build libcyaml

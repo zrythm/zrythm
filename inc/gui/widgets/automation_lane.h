@@ -1,7 +1,5 @@
 /*
- * gui/widgets/automation_track.h - AutomationTrack view
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,16 +17,16 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_AUTOMATION_TRACK_H__
-#define __GUI_WIDGETS_AUTOMATION_TRACK_H__
+#ifndef __GUI_WIDGETS_AUTOMATION_LANE_H__
+#define __GUI_WIDGETS_AUTOMATION_LANE_H__
 
 #include <gtk/gtk.h>
 
-#define AUTOMATION_TRACK_WIDGET_TYPE                  (automation_track_widget_get_type ())
-G_DECLARE_FINAL_TYPE (AutomationTrackWidget,
-                      automation_track_widget,
+#define AUTOMATION_LANE_WIDGET_TYPE                  (automation_lane_widget_get_type ())
+G_DECLARE_FINAL_TYPE (AutomationLaneWidget,
+                      automation_lane_widget,
                       Z,
-                      AUTOMATION_TRACK_WIDGET,
+                      AUTOMATION_LANE_WIDGET,
                       GtkGrid)
 
 typedef struct _TrackWidget TrackWidget;
@@ -36,43 +34,52 @@ typedef struct AutomationTrack AutomationTrack;
 typedef struct _DigitalMeterWidget DigitalMeterWidget;
 typedef struct Track Track;
 typedef struct _AutomationPointWidget AutomationPointWidget;
+typedef struct AutomationLane AutomationLane;
 
-typedef struct _AutomationTrackWidget
+typedef struct _AutomationLaneWidget
 {
   GtkGrid                 parent_instance;
   GtkComboBox *           selector;
   GtkBox *                value_box;
   DigitalMeterWidget *    value;
   GtkToggleButton *       mute_toggle;
-  AutomationTrack *       at; ///< associated automation track
+  AutomationLane *        al; ///< associated automation track
 
   /**
    * Selected automatable path.
    */
   char *                  path;
-} AutomationTrackWidget;
+
+  /**
+   * For freezing callbacks.
+   */
+  gulong                  selector_changed_cb_id;
+} AutomationLaneWidget;
 
 /**
  * Creates a new automation_track widget from the given automation_track.
  */
-AutomationTrackWidget *
-automation_track_widget_new ();
+AutomationLaneWidget *
+automation_lane_widget_new ();
 
 /**
  * Updates GUI.
  */
 void
-automation_track_widget_update (AutomationTrackWidget * self);
+automation_lane_widget_refresh (
+  AutomationLaneWidget * self);
 
 /**
  * Gets the float value at the y-point of the automation track.
  */
 float
-automation_track_widget_get_fvalue_at_y (AutomationTrackWidget * at_widget,
-                                         double                  _start_y);
+automation_lane_widget_get_fvalue_at_y (
+  AutomationLaneWidget * self,
+  double                 _start_y);
 
 double
-automation_track_widget_get_y (AutomationTrackWidget * at_widget,
-                               AutomationPointWidget * ap);
+automation_lane_widget_get_y (
+  AutomationLaneWidget *  self,
+  AutomationPointWidget * ap);
 
 #endif

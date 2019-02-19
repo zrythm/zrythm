@@ -27,7 +27,6 @@
 #include "audio/chord_track.h"
 #include "audio/region.h"
 #include "gui/widgets/arranger.h"
-#include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/main_window.h"
@@ -74,6 +73,14 @@ chord_track_widget_new (Track * track)
 }
 
 void
+chord_track_widget_refresh_buttons (
+  ChordTrackWidget * self)
+{
+  /* TODO*/
+
+}
+
+void
 chord_track_widget_refresh (ChordTrackWidget * self)
 {
 }
@@ -86,11 +93,13 @@ chord_track_widget_init (ChordTrackWidget * self)
 
   /* create buttons */
   self->record =
-    z_gtk_toggle_button_new_with_icon ("media-record");
+    z_gtk_toggle_button_new_with_icon (
+      "media-record");
   context =
     gtk_widget_get_style_context (
       GTK_WIDGET (self->record));
-  gtk_style_context_add_class (context, "record-button");
+  gtk_style_context_add_class (
+    context, "record-button");
   self->solo =
     z_gtk_toggle_button_new_with_resource (
       ICON_TYPE_ZRYTHM,

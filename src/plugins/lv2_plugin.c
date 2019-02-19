@@ -1,6 +1,4 @@
 /*
- * plugins/lv2_plugin.c - For single instances of LV2 Plugins
- *
  * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -35,7 +33,9 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-/** \file
+/**
+ * \file
+ *
  * Implementation of LV2 Plugin.
  */
 
@@ -82,7 +82,6 @@
 #include <lv2/lv2plug.in/ns/ext/buf-size/buf-size.h>
 #include <lv2/lv2plug.in/ns/ext/data-access/data-access.h>
 #include <lv2/lv2plug.in/ns/ext/event/event.h>
-#include <lv2/lv2plug.in/ns/ext/options/options.h>
 #include <lv2/lv2plug.in/ns/ext/parameters/parameters.h>
 #include <lv2/lv2plug.in/ns/ext/patch/patch.h>
 #include <lv2/lv2plug.in/ns/ext/port-groups/port-groups.h>
@@ -1148,21 +1147,26 @@ lv2_create_descriptor_from_lilv (const LilvPlugin * lp)
       return NULL;
     }
 
-#ifdef HAVE_LV2_1_2_0
-  LilvNodes *required_features = lilv_plugin_get_required_features (lp);
-  if (lilv_nodes_contains (required_features,
-                           LV2_SETTINGS.world->bufz_powerOf2BlockLength) ||
-                  lilv_nodes_contains (required_features, LV2_SETTINGS.world->bufz_fixedBlockLength)
+  LilvNodes *required_features =
+    lilv_plugin_get_required_features (lp);
+  if (lilv_nodes_contains (
+        required_features,
+        LV2_SETTINGS.bufz_powerOf2BlockLength) ||
+      lilv_nodes_contains (
+        required_features,
+        LV2_SETTINGS.bufz_fixedBlockLength)
      )
     {
-      g_warning ("Ignoring LV2 Plugin \"%1\" because its buffer-size requirements cannot be satisfied.",
-               lilv_node_as_string(name));
+      g_warning (
+        "Ignoring LV2 Plugin %s because "
+        "its buffer-size requirements "
+        "cannot be satisfied.",
+        lilv_node_as_string(name));
       lilv_nodes_free (required_features);
       lilv_node_free (name);
       return NULL;
   }
   lilv_nodes_free(required_features);
-#endif
 
   /* set descriptor info */
   PluginDescriptor * pd = calloc (1, sizeof (PluginDescriptor));
@@ -1371,45 +1375,92 @@ lv2_instantiate (Lv2Plugin      * lv2_plugin,   ///< plugin to instantiate
   lv2_set_feature_data (lv2_plugin);
 
   /* Cache URIs for concepts we'll use */
-  lv2_plugin->nodes.atom_AtomPort          = lilv_new_uri(world, LV2_ATOM__AtomPort);
-  lv2_plugin->nodes.atom_Chunk             = lilv_new_uri(world, LV2_ATOM__Chunk);
-  lv2_plugin->nodes.atom_Float             = lilv_new_uri(world, LV2_ATOM__Float);
-  lv2_plugin->nodes.atom_Path              = lilv_new_uri(world, LV2_ATOM__Path);
-  lv2_plugin->nodes.atom_Sequence          = lilv_new_uri(world, LV2_ATOM__Sequence);
-  lv2_plugin->nodes.ev_EventPort           = lilv_new_uri(world, LV2_EVENT__EventPort);
-  lv2_plugin->nodes.lv2_AudioPort          = lilv_new_uri(world, LV2_CORE__AudioPort);
-  lv2_plugin->nodes.lv2_CVPort             = lilv_new_uri(world, LV2_CORE__CVPort);
-  lv2_plugin->nodes.lv2_ControlPort        = lilv_new_uri(world, LV2_CORE__ControlPort);
-  lv2_plugin->nodes.lv2_InputPort          = lilv_new_uri(world, LV2_CORE__InputPort);
-  lv2_plugin->nodes.lv2_OutputPort         = lilv_new_uri(world, LV2_CORE__OutputPort);
-  lv2_plugin->nodes.lv2_connectionOptional = lilv_new_uri(world, LV2_CORE__connectionOptional);
-  lv2_plugin->nodes.lv2_control            = lilv_new_uri(world, LV2_CORE__control);
-  lv2_plugin->nodes.lv2_default            = lilv_new_uri(world, LV2_CORE__default);
-  lv2_plugin->nodes.lv2_enumeration        = lilv_new_uri(world, LV2_CORE__enumeration);
-  lv2_plugin->nodes.lv2_integer            = lilv_new_uri(world, LV2_CORE__integer);
-  lv2_plugin->nodes.lv2_maximum            = lilv_new_uri(world, LV2_CORE__maximum);
-  lv2_plugin->nodes.lv2_minimum            = lilv_new_uri(world, LV2_CORE__minimum);
-  lv2_plugin->nodes.lv2_name               = lilv_new_uri(world, LV2_CORE__name);
-  lv2_plugin->nodes.lv2_reportsLatency     = lilv_new_uri(world, LV2_CORE__reportsLatency);
-  lv2_plugin->nodes.lv2_sampleRate         = lilv_new_uri(world, LV2_CORE__sampleRate);
-  lv2_plugin->nodes.lv2_symbol             = lilv_new_uri(world, LV2_CORE__symbol);
-  lv2_plugin->nodes.lv2_toggled            = lilv_new_uri(world, LV2_CORE__toggled);
-  lv2_plugin->nodes.midi_MidiEvent         = lilv_new_uri(world, LV2_MIDI__MidiEvent);
-  lv2_plugin->nodes.pg_group               = lilv_new_uri(world, LV2_PORT_GROUPS__group);
-  lv2_plugin->nodes.pprops_logarithmic     = lilv_new_uri(world, LV2_PORT_PROPS__logarithmic);
-  lv2_plugin->nodes.pprops_notOnGUI        = lilv_new_uri(world, LV2_PORT_PROPS__notOnGUI);
-  lv2_plugin->nodes.pprops_rangeSteps      = lilv_new_uri(world, LV2_PORT_PROPS__rangeSteps);
-  lv2_plugin->nodes.pset_Preset            = lilv_new_uri(world, LV2_PRESETS__Preset);
-  lv2_plugin->nodes.pset_bank              = lilv_new_uri(world, LV2_PRESETS__bank);
-  lv2_plugin->nodes.rdfs_comment           = lilv_new_uri(world, LILV_NS_RDFS "comment");
-  lv2_plugin->nodes.rdfs_label             = lilv_new_uri(world, LILV_NS_RDFS "label");
-  lv2_plugin->nodes.rdfs_range             = lilv_new_uri(world, LILV_NS_RDFS "range");
-  lv2_plugin->nodes.rsz_minimumSize        = lilv_new_uri(world, LV2_RESIZE_PORT__minimumSize);
-  lv2_plugin->nodes.work_interface         = lilv_new_uri(world, LV2_WORKER__interface);
-  lv2_plugin->nodes.work_schedule          = lilv_new_uri(world, LV2_WORKER__schedule);
-  lv2_plugin->nodes.ui_externallv          = lilv_new_uri(world, "http://lv2plug.in/ns/extensions/ui#external");
-  lv2_plugin->nodes.ui_externalkx          = lilv_new_uri(world, "http://kxstudio.sf.net/ns/lv2ext/external-ui#Widget");
-  lv2_plugin->nodes.end                    = NULL;
+  lv2_plugin->nodes.atom_AtomPort =
+    lilv_new_uri (world, LV2_ATOM__AtomPort);
+  lv2_plugin->nodes.atom_Chunk =
+    lilv_new_uri(world, LV2_ATOM__Chunk);
+  lv2_plugin->nodes.atom_Float =
+    lilv_new_uri(world, LV2_ATOM__Float);
+  lv2_plugin->nodes.atom_Path =
+    lilv_new_uri(world, LV2_ATOM__Path);
+  lv2_plugin->nodes.atom_Sequence =
+    lilv_new_uri(world, LV2_ATOM__Sequence);
+  lv2_plugin->nodes.ev_EventPort =
+    lilv_new_uri(world, LV2_EVENT__EventPort);
+  lv2_plugin->nodes.lv2_AudioPort =
+    lilv_new_uri(world, LV2_CORE__AudioPort);
+  lv2_plugin->nodes.lv2_CVPort =
+    lilv_new_uri(world, LV2_CORE__CVPort);
+  lv2_plugin->nodes.lv2_ControlPort =
+    lilv_new_uri(world, LV2_CORE__ControlPort);
+  lv2_plugin->nodes.lv2_InputPort =
+    lilv_new_uri(world, LV2_CORE__InputPort);
+  lv2_plugin->nodes.lv2_OutputPort =
+    lilv_new_uri(world, LV2_CORE__OutputPort);
+  lv2_plugin->nodes.lv2_connectionOptional =
+    lilv_new_uri(world,
+                 LV2_CORE__connectionOptional);
+  lv2_plugin->nodes.lv2_control            =
+    lilv_new_uri(world, LV2_CORE__control);
+  lv2_plugin->nodes.lv2_default            =
+    lilv_new_uri(world, LV2_CORE__default);
+  lv2_plugin->nodes.lv2_enumeration        =
+    lilv_new_uri(world, LV2_CORE__enumeration);
+  lv2_plugin->nodes.lv2_integer            =
+    lilv_new_uri(world, LV2_CORE__integer);
+  lv2_plugin->nodes.lv2_maximum            =
+    lilv_new_uri(world, LV2_CORE__maximum);
+  lv2_plugin->nodes.lv2_minimum            =
+    lilv_new_uri(world, LV2_CORE__minimum);
+  lv2_plugin->nodes.lv2_name               =
+    lilv_new_uri(world, LV2_CORE__name);
+  lv2_plugin->nodes.lv2_reportsLatency     =
+    lilv_new_uri(world, LV2_CORE__reportsLatency);
+  lv2_plugin->nodes.lv2_sampleRate         =
+    lilv_new_uri(world, LV2_CORE__sampleRate);
+  lv2_plugin->nodes.lv2_symbol             =
+    lilv_new_uri(world, LV2_CORE__symbol);
+  lv2_plugin->nodes.lv2_toggled            =
+    lilv_new_uri(world, LV2_CORE__toggled);
+  lv2_plugin->nodes.midi_MidiEvent         =
+    lilv_new_uri(world, LV2_MIDI__MidiEvent);
+  lv2_plugin->nodes.pg_group               =
+    lilv_new_uri(world, LV2_PORT_GROUPS__group);
+  lv2_plugin->nodes.pprops_logarithmic     =
+    lilv_new_uri(world,
+                 LV2_PORT_PROPS__logarithmic);
+  lv2_plugin->nodes.pprops_notOnGUI
+    = lilv_new_uri(world, LV2_PORT_PROPS__notOnGUI);
+  lv2_plugin->nodes.pprops_rangeSteps      =
+    lilv_new_uri(world, LV2_PORT_PROPS__rangeSteps);
+  lv2_plugin->nodes.pset_Preset            =
+    lilv_new_uri(world, LV2_PRESETS__Preset);
+  lv2_plugin->nodes.pset_bank              =
+    lilv_new_uri(world, LV2_PRESETS__bank);
+  lv2_plugin->nodes.rdfs_comment           =
+    lilv_new_uri(world, LILV_NS_RDFS "comment");
+  lv2_plugin->nodes.rdfs_label             =
+    lilv_new_uri(world, LILV_NS_RDFS "label");
+  lv2_plugin->nodes.rdfs_range             =
+    lilv_new_uri(world, LILV_NS_RDFS "range");
+  lv2_plugin->nodes.rsz_minimumSize        =
+    lilv_new_uri(world,
+                 LV2_RESIZE_PORT__minimumSize);
+  lv2_plugin->nodes.work_interface         =
+    lilv_new_uri(world, LV2_WORKER__interface);
+  lv2_plugin->nodes.work_schedule          =
+    lilv_new_uri(world, LV2_WORKER__schedule);
+  lv2_plugin->nodes.ui_externallv          =
+    lilv_new_uri(
+      world,
+      "http://lv2plug.in/ns/extensions/"
+      "ui#external");
+  lv2_plugin->nodes.ui_externalkx          =
+    lilv_new_uri(
+      world,
+      "http://kxstudio.sf.net/ns/lv2ext/"
+      "external-ui#Widget");
+  lv2_plugin->nodes.end = NULL;
 
 
   lv2_plugin->symap = symap_new();
@@ -1751,25 +1802,41 @@ lv2_instantiate (Lv2Plugin      * lv2_plugin,   ///< plugin to instantiate
   g_message ("Update rate:  %.01f Hz", lv2_plugin->ui_update_hz);
 
   /* Build options array to pass to plugin */
-  const LV2_Options_Option options[] = {
-          { LV2_OPTIONS_INSTANCE,
-            0,
-            lv2_plugin->urids.param_sampleRate,
-            sizeof(float),
-            lv2_plugin->urids.atom_Float,
-            &AUDIO_ENGINE->sample_rate },
-          { LV2_OPTIONS_INSTANCE, 0, lv2_plugin->urids.bufsz_minBlockLength,
-            sizeof(int32_t), lv2_plugin->urids.atom_Int, &AUDIO_ENGINE->block_length },
-          { LV2_OPTIONS_INSTANCE, 0, lv2_plugin->urids.bufsz_maxBlockLength,
-            sizeof(int32_t), lv2_plugin->urids.atom_Int, &AUDIO_ENGINE->block_length },
-          { LV2_OPTIONS_INSTANCE, 0, lv2_plugin->urids.bufsz_sequenceSize,
-            sizeof(int32_t), lv2_plugin->urids.atom_Int, &AUDIO_ENGINE->midi_buf_size },
-          { LV2_OPTIONS_INSTANCE, 0, lv2_plugin->urids.ui_updateRate,
-            sizeof(float), lv2_plugin->urids.atom_Float, &lv2_plugin->ui_update_hz },
-          { LV2_OPTIONS_INSTANCE, 0, 0, 0, 0, NULL }
-  };
+  const LV2_Options_Option options[] =
+    {
+      { LV2_OPTIONS_INSTANCE, 0,
+        lv2_plugin->urids.param_sampleRate,
+        sizeof(float),
+        lv2_plugin->urids.atom_Float,
+        &AUDIO_ENGINE->sample_rate },
+      { LV2_OPTIONS_INSTANCE, 0,
+        lv2_plugin->urids.bufsz_minBlockLength,
+        sizeof(int32_t),
+        lv2_plugin->urids.atom_Int,
+        &AUDIO_ENGINE->block_length },
+      { LV2_OPTIONS_INSTANCE, 0,
+        lv2_plugin->urids.bufsz_maxBlockLength,
+        sizeof(int32_t),
+        lv2_plugin->urids.atom_Int,
+        &AUDIO_ENGINE->block_length },
+      { LV2_OPTIONS_INSTANCE, 0,
+        lv2_plugin->urids.bufsz_sequenceSize,
+        sizeof(int32_t),
+        lv2_plugin->urids.atom_Int,
+        &AUDIO_ENGINE->midi_buf_size },
+      { LV2_OPTIONS_INSTANCE, 0,
+        lv2_plugin->urids.ui_updateRate,
+        sizeof(float),
+        lv2_plugin->urids.atom_Float,
+        &lv2_plugin->ui_update_hz },
+      { LV2_OPTIONS_INSTANCE, 0, 0, 0, 0, NULL }
+    };
+  memcpy(&lv2_plugin->options,
+         options,
+         sizeof (options));
 
-  lv2_plugin->options_feature.data = (void*)&options;
+  lv2_plugin->options_feature.data =
+    &lv2_plugin->options;
 
   /* Create Plugin <=> UI communication buffers */
   lv2_plugin->ui_events     = zix_ring_new(LV2_SETTINGS.opts.buffer_size);

@@ -25,7 +25,7 @@
 #include "audio/automation_point.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
-#include "gui/widgets/automation_track.h"
+#include "gui/widgets/automation_lane.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/region.h"
@@ -35,36 +35,15 @@
 AutomationTrack *
 automation_track_new (Automatable *   a)
 {
-  AutomationTrack * at = calloc (1, sizeof (AutomationTrack));
+  AutomationTrack * at =
+    calloc (1, sizeof (AutomationTrack));
 
   at->track = a->track;
-  automation_track_set_automatable (at, a);
+  /*automation_track_set_automatable (at, a);*/
+  at->automatable = a;
 
   return at;
 }
-
-/**
- * Sets the automatable to the automation track and updates the GUI
- */
-void
-automation_track_set_automatable (AutomationTrack * automation_track,
-                                  Automatable *     a)
-{
-  automation_track->automatable = a;
-
-  /* TODO update GUI */
-
-}
-
-/**
- * Updates automation track & its GUI
- */
-void
-automation_track_update (AutomationTrack * at)
-{
-  automation_track_widget_update (at->widget);
-}
-
 
 static int
 cmpfunc (const void * _a, const void * _b)
@@ -485,10 +464,13 @@ automation_track_get_value_at_pos (
   result = result * prev_next_diff;
   /*g_message ("halfbaked result %f start at lower %d",*/
              /*result, prev_ap_lower);*/
-  result += prev_ap->fvalue;
+  if (prev_ap_lower)
+    result += prev_ap->fvalue;
+  else
+    result += next_ap->fvalue;
 
-  g_message ("result %f",
-             result);
+  /*g_message ("result of %s: %f",*/
+             /*self->automatable->label, result);*/
   return result;
 }
 

@@ -1,7 +1,5 @@
 /*
- * gui/widgets/track.c - Track
- *
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -30,7 +28,7 @@
 #include "audio/track.h"
 #include "audio/region.h"
 #include "gui/widgets/arranger.h"
-#include "gui/widgets/automation_track.h"
+#include "gui/widgets/automation_lane.h"
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/color_area.h"
@@ -104,8 +102,8 @@ instrument_track_widget_new (Track * track)
   return self;
 }
 
-static void
-refresh_buttons (
+void
+instrument_track_widget_refresh_buttons (
   InstrumentTrackWidget * self)
 {
   TRACK_WIDGET_GET_PRIVATE (self);
@@ -143,7 +141,7 @@ instrument_track_widget_refresh (
   ChannelTrack * ct = (ChannelTrack *) track;
   Channel * chan = ct->channel;
 
-  refresh_buttons (self);
+  instrument_track_widget_refresh_buttons (self);
 
   gtk_label_set_text (
     tw_prv->name,

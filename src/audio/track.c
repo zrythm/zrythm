@@ -166,6 +166,8 @@ track_set_muted (Track * track,
   UndoableAction * action =
     edit_track_action_new_mute (track,
                                 mute);
+  g_message ("setting mute to %d",
+             mute);
   if (trigger_undo)
     {
       undo_manager_perform (UNDO_MANAGER,

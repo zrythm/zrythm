@@ -64,4 +64,8 @@ chord_track_widget_new (Track * track);
 void
 chord_track_widget_refresh (ChordTrackWidget * self);
 
+void
+chord_track_widget_refresh_buttons (
+  ChordTrackWidget * self);
+
 #endif

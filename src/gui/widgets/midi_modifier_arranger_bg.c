@@ -1,7 +1,5 @@
 /*
- * gui/widgets/midi_modifier_arranger_bg.c - MidiModifierArranger background
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -30,8 +28,8 @@
 #include "audio/tracklist.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/automation_lane.h"
 #include "gui/widgets/automation_point.h"
-#include "gui/widgets/automation_track.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/ruler.h"

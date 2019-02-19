@@ -1,7 +1,5 @@
 /*
- * gui/widgets/timeline_arranger.c - The timeline containing regions
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,9 +17,17 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * The timeline containing regions and other
+ * objects.
+ */
+
 #include "zrythm.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "audio/automation_lane.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/audio_track.h"
@@ -30,6 +36,7 @@
 #include "audio/chord.h"
 #include "audio/chord_track.h"
 #include "audio/instrument_track.h"
+#include "audio/master_track.h"
 #include "audio/midi_region.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
@@ -37,8 +44,8 @@
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_curve.h"
+#include "gui/widgets/automation_lane.h"
 #include "gui/widgets/automation_point.h"
-#include "gui/widgets/automation_track.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/chord.h"
@@ -121,7 +128,7 @@ timeline_arranger_widget_set_allocation (
 
       gint wx, wy;
       gtk_widget_translate_coordinates(
-                GTK_WIDGET (ap->at->widget),
+                GTK_WIDGET (ap->at->al->widget),
                 GTK_WIDGET (self),
                 0,
                 0,
@@ -146,7 +153,7 @@ timeline_arranger_widget_set_allocation (
 
       gint wx, wy;
       gtk_widget_translate_coordinates(
-                GTK_WIDGET (ac->at->widget),
+                GTK_WIDGET (ac->at->al->widget),
                 GTK_WIDGET (self),
                 0,
                 0,
@@ -213,19 +220,20 @@ timeline_arranger_widget_get_track_at_y (double y)
       Track * track = TRACKLIST->tracks[i];
 
       GtkAllocation allocation;
-      gtk_widget_get_allocation (GTK_WIDGET (track->widget),
-                                 &allocation);
+      gtk_widget_get_allocation (
+        GTK_WIDGET (track->widget),
+        &allocation);
 
       gint wx, wy;
       gtk_widget_translate_coordinates(
-                GTK_WIDGET (MW_TIMELINE),
-                GTK_WIDGET (track->widget),
-                0,
-                0,
-                &wx,
-                &wy);
+        GTK_WIDGET (MW_TIMELINE),
+        GTK_WIDGET (track->widget),
+        0,
+        y,
+        &wx,
+        &wy);
 
-      if (y > -wy && y < ((-wy) + allocation.height))
+      if (wy >= 0 && wy <= allocation.height)
         {
           return track;
         }
@@ -245,23 +253,25 @@ timeline_arranger_widget_get_automation_track_at_y (double y)
         continue;
 
       for (int j = 0;
-           j < automation_tracklist->num_automation_tracks;
+           j < automation_tracklist->
+             num_automation_lanes;
            j++)
         {
-          AutomationTrack * at = automation_tracklist->automation_tracks[j];
+          AutomationLane * al =
+            automation_tracklist->automation_lanes[j];
 
           /* TODO check the rest */
-          if (at->widget)
+          if (al->visible && al->widget)
             {
               GtkAllocation allocation;
               gtk_widget_get_allocation (
-                GTK_WIDGET (at->widget),
+                GTK_WIDGET (al->widget),
                 &allocation);
 
               gint wx, wy;
               gtk_widget_translate_coordinates(
                 GTK_WIDGET (MW_TIMELINE),
-                GTK_WIDGET (at->widget),
+                GTK_WIDGET (al->widget),
                 0,
                 y,
                 &wx,
@@ -269,7 +279,7 @@ timeline_arranger_widget_get_automation_track_at_y (double y)
 
               if (wy >= 0 && wy <= allocation.height)
                 {
-                  return at;
+                  return al->at;
                 }
             }
         }
@@ -460,14 +470,19 @@ timeline_arranger_widget_select_all (
           if (chan->track->bot_paned_visible)
             {
               for (int j = 0;
-                   j < automation_tracklist->num_automation_tracks;
+                   j < automation_tracklist->
+                     num_automation_lanes;
                    j++)
                 {
-                  AutomationTrack * at =
-                    automation_tracklist->automation_tracks[j];
-                  if (at->visible)
+                  AutomationLane * al =
+                    automation_tracklist->
+                      automation_lanes[j];
+                  if (al->visible)
                     {
-                      for (int k = 0; k < at->num_automation_points; k++)
+                      for (int k = 0;
+                           k < al->at->
+                             num_automation_points;
+                           k++)
                         {
                           /*AutomationPoint * ap = at->automation_points[k];*/
 
@@ -796,13 +811,16 @@ timeline_arranger_widget_create_ap (
                    NULL,
                    ar_prv->snap_grid);
 
+  g_message ("at here: %s",
+             at->automatable->label);
+
   /* if the automatable is float in this automation track */
   if (automatable_is_float (at->automatable))
     {
       /* add automation point to automation track */
       float value =
-        automation_track_widget_get_fvalue_at_y (
-          at->widget,
+        automation_lane_widget_get_fvalue_at_y (
+          at->al->widget,
           start_y);
 
       AutomationPoint * ap =
@@ -814,11 +832,14 @@ timeline_arranger_widget_create_ap (
         at,
         ap,
         GENERATE_CURVE_POINTS);
-      gtk_overlay_add_overlay (GTK_OVERLAY (self),
-                               GTK_WIDGET (ap->widget));
+      gtk_overlay_add_overlay (
+        GTK_OVERLAY (self),
+        GTK_WIDGET (ap->widget));
       gtk_widget_show (GTK_WIDGET (ap->widget));
-      TIMELINE_SELECTIONS->automation_points[0] = ap;
-      TIMELINE_SELECTIONS->num_automation_points = 1;
+      TIMELINE_SELECTIONS->automation_points[0] =
+        ap;
+      TIMELINE_SELECTIONS->num_automation_points =
+        1;
     }
 }
 
@@ -1345,7 +1366,9 @@ timeline_arranger_widget_move_items_y (
     {
       for (int i = 0; i < TIMELINE_SELECTIONS->num_automation_points; i++)
         {
-          AutomationPoint * ap = TIMELINE_SELECTIONS->automation_points[i];
+          AutomationPoint * ap =
+            TIMELINE_SELECTIONS->
+              automation_points[i];
 
           /* get adjusted y for this ap */
           /*Position region_pos;*/
@@ -1355,16 +1378,19 @@ timeline_arranger_widget_move_items_y (
             /*position_to_frames (&self->tl_start_region->start_pos);*/
           /*position_add_frames (&region_pos, diff);*/
           int this_y =
-            automation_track_widget_get_y (ap->at->widget,
-                                           ap->widget);
+            automation_lane_widget_get_y (
+              ap->at->al->widget,
+              ap->widget);
           int start_ap_y =
-            automation_track_widget_get_y (self->start_ap->at->widget,
-                                           self->start_ap->widget);
+            automation_lane_widget_get_y (
+              self->start_ap->at->al->widget,
+              self->start_ap->widget);
           int diff = this_y - start_ap_y;
 
           float fval =
-            automation_track_widget_get_fvalue_at_y (ap->at->widget,
-                                                     ar_prv->start_y + offset_y + diff);
+            automation_lane_widget_get_fvalue_at_y (
+              ap->at->al->widget,
+              ar_prv->start_y + offset_y + diff);
           automation_point_update_fvalue (ap, fval);
         }
     }
@@ -1403,6 +1429,49 @@ timeline_arranger_widget_on_drag_end (
 }
 
 static void
+add_children_from_channel_track (
+  ChannelTrack * ct)
+{
+  AutomationTracklist * atl =
+    &ct->automation_tracklist;
+  for (int i = 0;
+       i < atl->num_automation_lanes; i++)
+    {
+      AutomationLane * al =
+        atl->automation_lanes[i];
+      if (al->visible)
+        {
+          for (int j = 0;
+               j < al->at->num_automation_points;
+               j++)
+            {
+              AutomationPoint * ap =
+                al->at->automation_points[j];
+              if (ap->widget)
+                {
+                  gtk_overlay_add_overlay (
+                    GTK_OVERLAY (MW_TIMELINE),
+                    GTK_WIDGET (ap->widget));
+                }
+            }
+          for (int j = 0;
+               j < al->at->num_automation_curves;
+               j++)
+            {
+              AutomationCurve * ac =
+                al->at->automation_curves[j];
+              if (ac->widget)
+                {
+                  gtk_overlay_add_overlay (
+                    GTK_OVERLAY (MW_TIMELINE),
+                    GTK_WIDGET (ac->widget));
+                }
+            }
+        }
+    }
+}
+
+static void
 add_children_from_chord_track (
   TimelineArrangerWidget * self,
   ChordTrack *             ct)
@@ -1410,8 +1479,9 @@ add_children_from_chord_track (
   for (int i = 0; i < ct->num_chords; i++)
     {
       Chord * chord = ct->chords[i];
-      gtk_overlay_add_overlay (GTK_OVERLAY (self),
-                               GTK_WIDGET (chord->widget));
+      gtk_overlay_add_overlay (
+        GTK_OVERLAY (self),
+        GTK_WIDGET (chord->widget));
     }
 }
 
@@ -1428,36 +1498,7 @@ add_children_from_instrument_track (
                                GTK_WIDGET (r->widget));
     }
   ChannelTrack * ct = (ChannelTrack *) it;
-  AutomationTracklist * atl = &ct->automation_tracklist;
-  for (int i = 0; i < atl->num_automation_tracks; i++)
-    {
-      AutomationTrack * at = atl->automation_tracks[i];
-      if (at->visible)
-        {
-          for (int j = 0; j < at->num_automation_points; j++)
-            {
-              AutomationPoint * ap =
-                at->automation_points[j];
-              if (ap->widget)
-                {
-                  gtk_overlay_add_overlay (
-                    GTK_OVERLAY (self),
-                    GTK_WIDGET (ap->widget));
-                }
-            }
-          for (int j = 0; j < at->num_automation_curves; j++)
-            {
-              AutomationCurve * ac =
-                at->automation_curves[j];
-              if (ac->widget)
-                {
-                  gtk_overlay_add_overlay (
-                    GTK_OVERLAY (self),
-                    GTK_WIDGET (ac->widget));
-                }
-            }
-        }
-    }
+  add_children_from_channel_track (ct);
 }
 
 static void
@@ -1475,36 +1516,26 @@ add_children_from_audio_track (
                                GTK_WIDGET (r->widget));
     }
   ChannelTrack * ct = (ChannelTrack *) audio_track;
-  AutomationTracklist * atl = &ct->automation_tracklist;
-  for (int i = 0; i < atl->num_automation_tracks; i++)
-    {
-      AutomationTrack * at = atl->automation_tracks[i];
-      if (at->visible)
-        {
-          for (int j = 0; j < at->num_automation_points; j++)
-            {
-              AutomationPoint * ap =
-                at->automation_points[j];
-              if (ap->widget)
-                {
-                  gtk_overlay_add_overlay (
-                    GTK_OVERLAY (self),
-                    GTK_WIDGET (ap->widget));
-                }
-            }
-          for (int j = 0; j < at->num_automation_curves; j++)
-            {
-              AutomationCurve * ac =
-                at->automation_curves[j];
-              if (ac->widget)
-                {
-                  gtk_overlay_add_overlay (
-                    GTK_OVERLAY (self),
-                    GTK_WIDGET (ac->widget));
-                }
-            }
-        }
-    }
+  add_children_from_channel_track (ct);
+}
+
+static void
+add_children_from_master_track (
+  TimelineArrangerWidget * self,
+  MasterTrack *            mt)
+{
+  g_message ("removing and adding");
+  ChannelTrack * ct = (ChannelTrack *) mt;
+  add_children_from_channel_track (ct);
+}
+
+static void
+add_children_from_bus_track (
+  TimelineArrangerWidget * self,
+  BusTrack *               mt)
+{
+  ChannelTrack * ct = (ChannelTrack *) mt;
+  add_children_from_channel_track (ct);
 }
 
 /**
@@ -1555,6 +1586,9 @@ timeline_arranger_widget_refresh_children (
                 (InstrumentTrack *) track);
               break;
             case TRACK_TYPE_MASTER:
+              add_children_from_master_track (
+                self,
+                (MasterTrack *) track);
               break;
             case TRACK_TYPE_AUDIO:
               add_children_from_audio_track (
@@ -1562,6 +1596,9 @@ timeline_arranger_widget_refresh_children (
                 (AudioTrack *) track);
               break;
             case TRACK_TYPE_BUS:
+              add_children_from_bus_track (
+                self,
+                (BusTrack *) track);
               break;
             }
         }

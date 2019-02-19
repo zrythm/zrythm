@@ -1,7 +1,5 @@
 /*
- * audio/automation_tracklist.h - Tracklist backend
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,7 +17,11 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
+/**
+ * \file
+ *
+ * Automation tracklist containing automation
+ * points and curves.
  */
 
 #ifndef __AUDIO_AUTOMATION_TRACKLIST_H__
@@ -33,8 +35,11 @@
                                  &num_selected);
 
 typedef struct AutomationTrack AutomationTrack;
-typedef struct _AutomationTracklistWidget AutomationTracklistWidget;
+typedef struct _AutomationTracklistWidget
+  AutomationTracklistWidget;
 typedef struct Track Track;
+typedef struct Automatable Automatable;
+typedef struct AutomationLane AutomationLane;
 
 /**
  * Each track has an automation tracklist with automation
@@ -55,6 +60,19 @@ typedef struct AutomationTracklist
    */
   AutomationTrack *            automation_tracks[4000];
   int                          num_automation_tracks;
+
+  /**
+   * These are the active automation lanes that are
+   * shown in the UI, including hidden ones.
+   *
+   * Automation tracks become active automation
+   * lanes when they have automation or are selected.
+   *
+   * They must be associated with an automation
+   * track.
+   */
+  AutomationLane *             automation_lanes[400];
+  int                          num_automation_lanes;
 
   /**
    * Pointer back to owner track.
@@ -87,7 +105,12 @@ automation_tracklist_get_visible_tracks (
  * unless it already exists.
  */
 void
-automation_tracklist_refresh (AutomationTracklist * self);
+automation_tracklist_update (AutomationTracklist * self);
+
+AutomationTrack *
+automation_tracklist_get_at_from_automatable (
+  AutomationTracklist * self,
+  Automatable *         a);
 
 AutomationTrack *
 automation_tracklist_fetch_first_invisible_at (

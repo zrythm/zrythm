@@ -38,6 +38,7 @@
 #include "audio/track.h"
 #include "audio/transport.h"
 #include "plugins/lv2_plugin.h"
+#include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
@@ -618,6 +619,15 @@ channel_get_phase (void * _channel)
   /*return channel->volume;*/
 /*}*/
 
+static int
+redraw_fader_asnyc (Channel * channel)
+{
+  gtk_widget_queue_draw (
+    GTK_WIDGET (channel->widget->fader));
+
+  return FALSE;
+}
+
 /**
  * Sets the amplitude of the fader. (0.0 to 2.0)
  */
@@ -633,8 +643,8 @@ channel_set_fader_amp (void * _channel, float amp)
   /* TODO update tooltip */
   gtk_label_set_text (channel->widget->phase_reading,
                       g_strdup_printf ("%.1f", channel->volume));
-  g_idle_add ((GSourceFunc) gtk_widget_queue_draw,
-              GTK_WIDGET (channel->widget->fader));
+  g_idle_add ((GSourceFunc) redraw_fader_asnyc,
+              channel);
 }
 
 float
@@ -644,13 +654,22 @@ channel_get_fader_amp (void * _channel)
   return channel->fader_amp;
 }
 
+static int
+redraw_pan_async (Channel * channel)
+{
+  gtk_widget_queue_draw (
+    GTK_WIDGET (channel->widget->pan));
+
+  return FALSE;
+}
+
 void
 channel_set_pan (void * _channel, float pan)
 {
   Channel * channel = (Channel *) _channel;
   channel->pan = pan;
-  g_idle_add ((GSourceFunc) gtk_widget_queue_draw,
-              GTK_WIDGET (channel->widget->pan));
+  g_idle_add ((GSourceFunc) redraw_pan_async,
+              channel);
 }
 
 float
@@ -704,7 +723,7 @@ channel_remove_plugin (Channel * channel, int pos)
     }
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (channel->track);
-  automation_tracklist_refresh (automation_tracklist);
+  automation_tracklist_update (automation_tracklist);
 }
 
 /**
@@ -890,7 +909,12 @@ channel_add_plugin (Channel * channel,    ///< the channel
   plugin_generate_automatables (plugin);
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (channel->track);
-  automation_tracklist_refresh (automation_tracklist);
+  automation_tracklist_update (
+    automation_tracklist);
+  if (automation_tracklist &&
+      automation_tracklist->widget)
+    automation_tracklist_widget_refresh (
+      automation_tracklist->widget);
   connections_widget_refresh (MW_CONNECTIONS);
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -33,9 +33,11 @@ enum GenerateCurvePoints
 };
 
 typedef struct Port Port;
-typedef struct _AutomationTrackWidget AutomationTrackWidget;
+typedef struct _AutomationTrackWidget
+  AutomationTrackWidget;
 typedef struct Track Track;
 typedef struct Automatable Automatable;
+typedef struct AutomationLane AutomationLane;
 
 typedef struct AutomationTrack
 {
@@ -43,7 +45,6 @@ typedef struct AutomationTrack
    * The automatable this automation track is for.
    */
   Automatable *             automatable;
-  AutomationTrackWidget *   widget;
 
   /**
    * Owner track.
@@ -62,12 +63,11 @@ typedef struct AutomationTrack
   AutomationCurve *         automation_curves[MAX_AUTOMATION_POINTS];
   int                       num_automation_curves;
 
-  int                       visible;
-
   /**
-   * Position of multipane handle.
+   * Associated lane.
    */
-  int                       handle_pos;
+  int                       al_index;
+  AutomationLane *          al; ///< cache
 } AutomationTrack;
 
 /**

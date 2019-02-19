@@ -34,7 +34,7 @@
 #include "plugins/lv2_plugin.h"
 #include "project.h"
 #include "gui/widgets/track.h"
-#include "gui/widgets/automation_track.h"
+#include "gui/widgets/automation_lane.h"
 #include "utils/arrays.h"
 
 #include <gtk/gtk.h>

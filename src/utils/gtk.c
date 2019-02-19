@@ -41,6 +41,7 @@ z_gtk_container_remove_all_children (GtkContainer * container)
       gtk_container_remove (
         container,
         GTK_WIDGET (iter->data));
+      g_message ("removed");
     }
   g_list_free (children);
 }
@@ -56,6 +57,32 @@ z_gtk_container_destroy_all_children (GtkContainer * container)
        iter != NULL;
        iter = g_list_next (iter))
     gtk_widget_destroy (GTK_WIDGET (iter->data));
+  g_list_free (children);
+}
+
+void
+z_gtk_container_remove_children_of_type (
+  GtkContainer * container,
+  GType          type)
+{
+  GList *children, *iter;
+
+  children =
+    gtk_container_get_children (GTK_CONTAINER (container));
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      GtkWidget * widget = iter->data;
+      if (G_TYPE_CHECK_INSTANCE_TYPE (
+            widget, type))
+        {
+          g_object_ref (widget);
+          gtk_container_remove (
+            container,
+            widget);
+        }
+    }
   g_list_free (children);
 }
 

@@ -116,62 +116,90 @@ automatable_create_plugin_enabled (
 }
 
 int
-automatable_is_bool (Automatable * automatable)
+automatable_is_bool (Automatable * a)
 {
-
-  return 0;
+  switch (a->type)
+    {
+    case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
+      if (a->control->value_type ==
+          a->control->plugin->forge.Bool)
+        {
+          return 1;
+        }
+      return 0;
+    case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
+    case AUTOMATABLE_TYPE_CHANNEL_MUTE:
+      return 1;
+    case AUTOMATABLE_TYPE_CHANNEL_FADER:
+    case AUTOMATABLE_TYPE_CHANNEL_PAN:
+      return 0;
+    }
+  g_assert_not_reached ();
+  return -1;
 }
 
 int
 automatable_is_float (Automatable * a)
 {
-  if (IS_AUTOMATABLE_LV2_CONTROL (a))
+  return 1;
+
+  /* FIXME aren't all floats? this should only
+   * be used to determine how the curve should
+   * look*/
+  switch (a->type)
     {
-      if (a->control->value_type == a->control->plugin->forge.Float)
+    case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
+      if (a->control->value_type ==
+          a->control->plugin->forge.Float)
         {
           return 1;
         }
-    }
-  else if (IS_AUTOMATABLE_CH_FADER (a))
-    {
+      return 0;
+      break;
+    case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
+    case AUTOMATABLE_TYPE_CHANNEL_MUTE:
+      return 0;
+    case AUTOMATABLE_TYPE_CHANNEL_FADER:
+    case AUTOMATABLE_TYPE_CHANNEL_PAN:
       return 1;
     }
-  return 0;
+  g_assert_not_reached ();
+  return -1;
 }
 
 const float
 automatable_get_minf (Automatable * a)
 {
-  if (automatable_is_float (a))
+  switch (a->type)
     {
-      if (IS_AUTOMATABLE_CH_FADER (a))
-        {
-          return 0.f;
-        }
-      else if (IS_AUTOMATABLE_LV2_CONTROL (a))
-        {
-          return lilv_node_as_float (a->control->min);
-        }
+    case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
+      return lilv_node_as_float (a->control->min);
+      break;
+    case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
+    case AUTOMATABLE_TYPE_CHANNEL_FADER:
+    case AUTOMATABLE_TYPE_CHANNEL_MUTE:
+    case AUTOMATABLE_TYPE_CHANNEL_PAN:
+      return 0.f;
     }
-  g_warning ("automatable %s is not float", a->label);
+  g_assert_not_reached ();
   return -1;
 }
 
 const float
 automatable_get_maxf (Automatable * a)
 {
-  if (automatable_is_float (a))
+  switch (a->type)
     {
-      if (IS_AUTOMATABLE_CH_FADER (a))
-        {
-          return 1.0f;
-        }
-      else if (IS_AUTOMATABLE_LV2_CONTROL (a))
-        {
-          return lilv_node_as_float (a->control->max);
-        }
+    case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
+      return lilv_node_as_float (a->control->max);
+      break;
+    case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
+    case AUTOMATABLE_TYPE_CHANNEL_FADER:
+    case AUTOMATABLE_TYPE_CHANNEL_MUTE:
+    case AUTOMATABLE_TYPE_CHANNEL_PAN:
+      return 1.f;
     }
-  g_warning ("automatable %s is not float", a->label);
+  g_assert_not_reached ();
   return -1;
 }
 
@@ -204,30 +232,33 @@ automatable_free (Automatable * automatable)
 float
 automatable_get_val (Automatable * a)
 {
-  if (a->type == AUTOMATABLE_TYPE_PLUGIN_CONTROL)
+  Plugin * plugin;
+  Channel * ch;
+  switch (a->type)
     {
-      Plugin * plugin = a->port->owner_pl;
+    case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
+      plugin = a->port->owner_pl;
       if (plugin->descr->protocol == PROT_LV2)
         {
-          /*Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;*/
-          /*if (lv2_plugin->ui_instance)*/
-            /*{*/
-              Lv2ControlID * control = a->control;
-              LV2_Port* port = &control->plugin->ports[control->index];
-              return port->control;
-            /*}*/
-          /*else*/
-            /*{*/
-              /*return a->control;*/
-            /*}*/
+          Lv2ControlID * control = a->control;
+          LV2_Port* port = &control->plugin->ports[control->index];
+          return port->control;
         }
-    }
-  else if (a->type == AUTOMATABLE_TYPE_CHANNEL_FADER)
-    {
-      Channel * ch = track_get_channel (a->track);
+      break;
+    case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
+      plugin = a->port->owner_pl;
+      return plugin->enabled;
+    case AUTOMATABLE_TYPE_CHANNEL_FADER:
+      ch = track_get_channel (a->track);
       return ch->fader_amp;
+    case AUTOMATABLE_TYPE_CHANNEL_MUTE:
+      return a->track->mute;
+    case AUTOMATABLE_TYPE_CHANNEL_PAN:
+      ch = track_get_channel (a->track);
+      return ch->pan;
     }
-  return 0;
+  g_assert_not_reached ();
+  return -1;
 }
 
 /**
@@ -241,12 +272,16 @@ void
 automatable_set_val (Automatable * a,
                      float         val)
 {
-  if (a->type == AUTOMATABLE_TYPE_PLUGIN_CONTROL)
+  Plugin * plugin;
+  Channel * ch;
+  switch (a->type)
     {
-      Plugin * plugin = a->port->owner_pl;
+    case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
+      plugin = a->port->owner_pl;
       if (plugin->descr->protocol == PROT_LV2)
         {
-          Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
+          Lv2Plugin * lv2_plugin =
+            (Lv2Plugin *) plugin->original_plugin;
           if (lv2_plugin->ui_instance)
             {
               Lv2ControlID * control = a->control;
@@ -259,19 +294,27 @@ automatable_set_val (Automatable * a,
                 a->control, val);
             }
         }
-    }
-  else if (a->type == AUTOMATABLE_TYPE_CHANNEL_FADER)
-    {
-      Channel * ch = track_get_channel (a->track);
-      double dval =
-        math_get_amp_val_from_fader (val);
-      g_message ("setting channel fader to %f",
-                 dval);
+      return;
+    case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
+      plugin = a->port->owner_pl;
+      plugin->enabled = val > 0.5f;
+      return;
+    case AUTOMATABLE_TYPE_CHANNEL_FADER:
+      ch = track_get_channel (a->track);
       channel_set_fader_amp (
         ch,
-        dval);
+        math_get_amp_val_from_fader (val));
+      return;
+    case AUTOMATABLE_TYPE_CHANNEL_MUTE:
+      track_set_muted (a->track,
+                      val > 0.5f,
+                      0);
+      return;
+    case AUTOMATABLE_TYPE_CHANNEL_PAN:
+      ch = track_get_channel (a->track);
+      channel_set_pan (ch, val);
+      return;
     }
-
 }
 
 /**

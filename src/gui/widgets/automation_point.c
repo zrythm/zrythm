@@ -1,7 +1,5 @@
 /*
- * gui/widgets/automation_point.c- AutomationPoint
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -111,40 +109,30 @@ automation_point_widget_new (AutomationPoint * automation_point)
   gtk_widget_add_events (GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
 
   /* connect signals */
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), self);
-  g_signal_connect (G_OBJECT (self), "enter-notify-event",
-                    G_CALLBACK (on_motion),  self);
-  g_signal_connect (G_OBJECT(self), "leave-notify-event",
-                    G_CALLBACK (on_motion),  self);
-  g_signal_connect (G_OBJECT(self), "motion-notify-event",
-                    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (draw_cb), self);
+  g_signal_connect (
+    G_OBJECT (self), "enter-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self), "leave-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self), "motion-notify-event",
+    G_CALLBACK (on_motion),  self);
 
   return self;
 }
 
 static void
-automation_point_widget_class_init (AutomationPointWidgetClass * klass)
+automation_point_widget_class_init (
+  AutomationPointWidgetClass * klass)
 {
 }
 
 static void
-automation_point_widget_init (AutomationPointWidget * self)
+automation_point_widget_init (
+  AutomationPointWidget * self)
 {
 }
-
-/**
- * Sets hover state and queues draw.
- */
-void
-automation_point_widget_set_state_and_queue_draw (AutomationPointWidget *    self,
-                                                  AutomationPointWidgetState state)
-{
-  if (self->state != state)
-    {
-      self->state = state;
-      gtk_widget_queue_draw (GTK_WIDGET (self));
-    }
-
-}
-

@@ -33,7 +33,7 @@
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_curve.h"
 #include "gui/widgets/automation_point.h"
-#include "gui/widgets/automation_track.h"
+#include "gui/widgets/automation_lane.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/color_area.h"

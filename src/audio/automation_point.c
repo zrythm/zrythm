@@ -23,6 +23,7 @@
 #include <math.h>
 
 #include "audio/automatable.h"
+#include "audio/automation_lane.h"
 #include "audio/automation_point.h"
 #include "audio/automation_track.h"
 #include "audio/channel.h"
@@ -30,8 +31,8 @@
 #include "audio/port.h"
 #include "audio/position.h"
 #include "audio/track.h"
+#include "gui/widgets/automation_lane.h"
 #include "gui/widgets/automation_point.h"
-#include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_curve.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin.h"
@@ -84,7 +85,7 @@ automation_point_get_y_in_px (AutomationPoint * ap)
 
   int allocated_h =
     gtk_widget_get_allocated_height (
-      GTK_WIDGET (ap->at->widget));
+      GTK_WIDGET (ap->at->al->widget));
   int point = allocated_h - ap_ratio * allocated_h;
   return point;
 }

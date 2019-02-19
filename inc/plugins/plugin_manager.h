@@ -1,7 +1,5 @@
 /*
- * plugins/plugin_manager.h - Manages plugins
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -114,12 +112,12 @@ typedef struct LV2_Settings
 	LilvNode * auto_automation_controller;
 	LilvNode * inline_display_in_gui;
 #endif
-#ifdef HAVE_LV2_1_2_0
+//#ifdef HAVE_LV2_1_2_0
 	LilvNode * bufz_powerOf2BlockLength;
 	LilvNode * bufz_fixedBlockLength;
 	LilvNode * bufz_nominalBlockLength;
 	LilvNode * bufz_coarseBlockLength;
-#endif
+//#endif
 } LV2_Settings;
 
 typedef struct PluginDescriptor PluginDescriptor;
