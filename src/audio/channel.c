@@ -694,12 +694,13 @@ channel_remove_plugin (Channel * channel, int pos)
     {
       g_message ("Removing %s from %s:%d", plugin->descr->name,
                  channel->name, pos);
+      channel->plugins[pos] = NULL;
       if (plugin->descr->protocol == PROT_LV2)
         {
           lv2_close_ui ((Lv2Plugin *) plugin->original_plugin);
 
         }
-      plugin_free (channel->plugins[pos]);
+      plugin_free (plugin);
     }
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (channel->track);
