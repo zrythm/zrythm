@@ -300,20 +300,31 @@ automatable_set_val_from_normalized (
       plugin = a->port->owner_pl;
       if (plugin->descr->protocol == PROT_LV2)
         {
+          Lv2ControlID * ctrl = a->control;
           float maxf =
             automatable_get_maxf (a);
           float minf =
             automatable_get_minf (a);
-          float range = maxf - minf;
-          /*g_message ("min %f max %f",*/
-                     /*minf, maxf);*/
-          float real_val = minf + val * range;
+          float real_val;
+          if (ctrl->is_logarithmic)
+            {
+              /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
+              real_val = minf * pow (maxf / minf, val);
+            }
+          else if (ctrl->is_toggle)
+            {
+              real_val = val >= 0.5f ? 1.f : 0.f;
+            }
+          else
+            {
+              real_val = minf + val * (maxf - minf);
+            }
           g_message ("real val %f", real_val);
           /*real_val /= range;*/
           /*g_message ("real val / range = %f",*/
                      /*real_val);*/
-          a->control->plugin->
-            ports[a->control->index].control = real_val;
+          ctrl->plugin->
+            ports[ctrl->index].control = real_val;
         }
       return;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
