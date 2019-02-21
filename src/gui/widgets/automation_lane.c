@@ -320,8 +320,6 @@ void
 automation_lane_widget_refresh (
   AutomationLaneWidget * self)
 {
-  g_message ("updating automation track widget");
-
   g_signal_handler_block (
     self->selector,
     self->selector_changed_cb_id);

@@ -1,8 +1,5 @@
 /*
- * audio/automation_point.h - Automation point
- *   and an end
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -108,8 +105,16 @@ automation_point_get_y_in_px (AutomationPoint * ap);
  * Updates the value and notifies interested parties.
  */
 void
-automation_point_update_fvalue (AutomationPoint * ap,
-                                float             fval);
+automation_point_update_fvalue (
+  AutomationPoint * ap,
+  float             fval);
+
+/**
+ * Returns the normalized value (0.0 to 1.0).
+ */
+float
+automation_point_get_normalized_value (
+  AutomationPoint * ap);
 
 /**
  * Frees the automation point.

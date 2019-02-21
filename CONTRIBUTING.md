@@ -107,6 +107,12 @@ the main author. You should only license your code under
 GPLv3+ like the rest of the project to ensure software
 freedom.
 
+# TROUBLESHOOTING
+## Getting random GUI related errors with no trace in valgrind or GTK warnings
+Calling GTK code or g_idle_add from non-GUI threads?
+## GUI lagging
+Using g_idle_add without returning false in the GSourceFunc? Not using g_idle_add?
+
 # OTHER
   1. Backend files should have a _new() and a _init() function. The _new is used to create the object and the _init is used to initialize it. This is so that objects can be created somewhere and initialized somewhere else, for whatever reason.
   2. GUI widgets that exist no matter what (like the tracklist, mixer, browser, etc.) should be initialized by the UI files with no _new function. Widgets that are created dynamically like channels and tracks should have a _new function. In both cases they should have a _setup function to initialize them with data and a _refresh function to update the widget to reflect the backend data. _setup must only be called once and _refresh can be called any time, but excessive calling should be avoided on widgets with many children such as the mixer and tracklist to avoid performance issues.

@@ -78,6 +78,22 @@ int sort_plugin_func (const void *a, const void *b) {
     return -strcmp(pa->name, pb->name); /* aka: return strcmp(b, a); */
 }
 
+static void
+print_plugins ()
+{
+  for (int i = 0; i < PLUGIN_MANAGER->num_plugins; i++)
+    {
+      PluginDescriptor * descr =
+        PLUGIN_MANAGER->plugin_descriptors[i];
+
+      g_message ("[%d] %s (%s - %s)",
+                 i,
+                 descr->name,
+                 descr->uri,
+                 descr->category);
+    }
+}
+
 /**
  * scans for plugins.
  */
@@ -123,17 +139,7 @@ scan_plugins (PluginManager * self)
   g_message ("%d Plugins scanned.",
              PLUGIN_MANAGER->num_plugins);
 
-  for (int i = 0; i < PLUGIN_MANAGER->num_plugins; i++)
-    {
-      PluginDescriptor * descr =
-        PLUGIN_MANAGER->plugin_descriptors[i];
-
-      g_message ("[%d] %s (%s - %s)",
-                 i,
-                 descr->name,
-                 descr->uri,
-                 descr->category);
-    }
+  /*print_plugins ();*/
 }
 
 /**

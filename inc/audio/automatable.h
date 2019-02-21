@@ -159,6 +159,15 @@ const float
 automatable_get_sizef (Automatable * automatable);
 
 /**
+ * Converts real value (eg. -10.0 to 100.0) to
+ * normalized value (0.0 to 1.0).
+ */
+float
+automatable_real_val_to_normalized (
+  Automatable * self,
+  float         real_val);
+
+/**
  * Gets the current value of the parameter the
  * automatable is for.
  *
@@ -173,8 +182,9 @@ automatable_get_val (Automatable * self);
  * Updates the value.
  */
 void
-automatable_set_val (Automatable * self,
-                     float         val);
+automatable_set_val_from_normalized (
+  Automatable * self,
+  float         val);
 
 /**
  * Gets automation track for given automatable, if any.

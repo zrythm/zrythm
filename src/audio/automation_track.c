@@ -426,7 +426,7 @@ automation_track_get_ap_before_pos (
  * the position, it returns negative.
  */
 float
-automation_track_get_value_at_pos (
+automation_track_get_normalized_val_at_pos (
   AutomationTrack * self,
   Position *        pos)
 {
@@ -444,9 +444,17 @@ automation_track_get_value_at_pos (
   /*g_message ("prev fvalue %f next %f",*/
              /*prev_ap->fvalue,*/
              /*next_ap->fvalue);*/
+  float prev_ap_normalized_val =
+    automation_point_get_normalized_value (
+      prev_ap);
+  float next_ap_normalized_val =
+    automation_point_get_normalized_value (
+      next_ap);
   int prev_ap_lower =
-    prev_ap->fvalue <= next_ap->fvalue;
-  float prev_next_diff = fabs (prev_ap->fvalue - next_ap->fvalue);
+    prev_ap_normalized_val <= next_ap_normalized_val;
+  float prev_next_diff =
+    fabs (prev_ap_normalized_val -
+          next_ap_normalized_val);
 
   /* ratio of how far in we are in the curve */
   int pos_ticks = position_to_ticks (pos);
@@ -465,9 +473,11 @@ automation_track_get_value_at_pos (
   /*g_message ("halfbaked result %f start at lower %d",*/
              /*result, prev_ap_lower);*/
   if (prev_ap_lower)
-    result += prev_ap->fvalue;
+    result +=
+      prev_ap_normalized_val;
   else
-    result += next_ap->fvalue;
+    result +=
+      next_ap_normalized_val;
 
   /*g_message ("result of %s: %f",*/
              /*self->automatable->label, result);*/

@@ -94,12 +94,34 @@ size_request(GtkWidget* widget, GtkRequisition* req)
 	#endif
 }
 
+/**
+ * Called both on generic UIs and normal UIs when
+ * a plugin window is destroyed.
+ */
 static void
 on_window_destroy(GtkWidget* widget,
                   gpointer   data)
 {
   Lv2Plugin * plugin = (Lv2Plugin *) data;
   plugin->window = NULL;
+
+  /* reinit widget in plugin ports and controls */
+  for (int i = 0; i < plugin->controls.n_controls;
+       i++)
+    {
+      Lv2ControlID * control =
+        plugin->controls.controls[i];
+
+      control->widget = NULL;
+    }
+
+  for (int i = 0; i < plugin->num_ports; i++)
+    {
+      LV2_Port * port =
+        &plugin->ports[i];
+
+      port->widget = NULL;
+    }
 }
 
 const char*
@@ -470,23 +492,53 @@ differ_enough(float a, float b)
 }
 
 void
-lv2_gtk_set_float_control(const Lv2ControlID* control, float value)
+lv2_gtk_set_float_control (
+  const Lv2ControlID* control,
+  float value)
 {
-  if (control->value_type == control->plugin->forge.Int) {
-          const int32_t ival = lrint(value);
-          set_control(control, sizeof(ival), control->plugin->forge.Int, &ival);
-  } else if (control->value_type == control->plugin->forge.Long) {
-          const int64_t lval = lrint(value);
-          set_control(control, sizeof(lval), control->plugin->forge.Long, &lval);
-  } else if (control->value_type == control->plugin->forge.Float) {
-          set_control(control, sizeof(value), control->plugin->forge.Float, &value);
-  } else if (control->value_type == control->plugin->forge.Double) {
-          const double dval = value;
-          set_control(control, sizeof(dval), control->plugin->forge.Double, &dval);
-  } else if (control->value_type == control->plugin->forge.Bool) {
-          const int32_t ival = value;
-          set_control(control, sizeof(ival), control->plugin->forge.Bool, &ival);
-  }
+  if (control->value_type == control->plugin->forge.Int)
+    {
+      const int32_t ival = lrint(value);
+      set_control (control,
+                   sizeof(ival),
+                   control->plugin->forge.Int,
+                   &ival);
+    }
+  else if (control->value_type ==
+           control->plugin->forge.Long)
+    {
+      const int64_t lval = lrint(value);
+      set_control (control,
+                   sizeof(lval),
+                   control->plugin->forge.Long,
+                   &lval);
+    }
+  else if (control->value_type ==
+           control->plugin->forge.Float)
+    {
+      set_control (control,
+                   sizeof(value),
+                   control->plugin->forge.Float,
+                   &value);
+    }
+  else if (control->value_type ==
+           control->plugin->forge.Double)
+    {
+      const double dval = value;
+      set_control (control,
+                   sizeof(dval),
+                   control->plugin->forge.Double,
+                   &dval);
+    }
+  else if (control->value_type ==
+           control->plugin->forge.Bool)
+    {
+      const int32_t ival = value;
+      set_control (control,
+                   sizeof(ival),
+                   control->plugin->forge.Bool,
+                   &ival);
+    }
   else
     {
       /* FIXME ? */

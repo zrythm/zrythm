@@ -192,7 +192,7 @@ automation_track_get_ap_before_pos (
  * of the parameter it is automating.
  */
 float
-automation_track_get_value_at_pos (
+automation_track_get_normalized_val_at_pos (
   AutomationTrack * at,
   Position *        pos);
 

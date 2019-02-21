@@ -74,33 +74,49 @@ automation_point_new_float (AutomationTrack *   at,
  * automation track.
  */
 int
-automation_point_get_y_in_px (AutomationPoint * ap)
+automation_point_get_y_in_px (
+  AutomationPoint * self)
 {
-  Automatable * a = ap->at->automatable;
-  float ap_max = automatable_get_maxf (a);
-  float ap_range = ap_max - automatable_get_minf (a);
-
   /* ratio of current value in the range */
-  float ap_ratio = (ap_range - (ap_max - ap->fvalue)) / ap_range;
+  float ap_ratio =
+    automation_point_get_normalized_value (self);
 
   int allocated_h =
     gtk_widget_get_allocated_height (
-      GTK_WIDGET (ap->at->al->widget));
+      GTK_WIDGET (self->at->al->widget));
   int point = allocated_h - ap_ratio * allocated_h;
   return point;
 }
 
 /**
- * Updates the value and notifies interested parties.
+ * Returns the normalized value (0.0 to 1.0).
+ */
+float
+automation_point_get_normalized_value (
+  AutomationPoint * self)
+{
+  /* TODO convert to macro */
+  return automatable_real_val_to_normalized (
+    self->at->automatable,
+    self->fvalue);
+}
+
+/**
+ * Updates the value from given real value and
+ * notifies interested parties.
  */
 void
-automation_point_update_fvalue (AutomationPoint * ap,
-                                float             fval)
+automation_point_update_fvalue (
+  AutomationPoint * self,
+  float             real_val)
 {
-  ap->fvalue = fval;
+  self->fvalue = real_val;
 
-  Automatable * a = ap->at->automatable;
-  automatable_set_val (a, fval);
+  Automatable * a = self->at->automatable;
+  automatable_set_val_from_normalized (
+    a,
+    automatable_real_val_to_normalized (a,
+                                        real_val));
 }
 
 /**

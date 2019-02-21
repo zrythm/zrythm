@@ -432,6 +432,7 @@ timeline_arranger_widget_select_all (
             automation_tracklist =
               track_get_automation_tracklist (
                 chan->track);
+
           if (chan->track->type ==
                 TRACK_TYPE_INSTRUMENT)
             {
@@ -444,6 +445,9 @@ timeline_arranger_widget_select_all (
               at = (AudioTrack *) chan->track;
               num_regions = at->num_regions;
             }
+          else
+            num_regions = 0;
+
           for (int j = 0; j < num_regions; j++)
             {
               Region * r;
@@ -1538,7 +1542,6 @@ add_children_from_master_track (
   TimelineArrangerWidget * self,
   MasterTrack *            mt)
 {
-  g_message ("removing and adding");
   ChannelTrack * ct = (ChannelTrack *) mt;
   add_children_from_channel_track (ct);
 }

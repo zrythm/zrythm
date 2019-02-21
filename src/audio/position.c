@@ -213,10 +213,11 @@ void
 position_set_to_pos (Position * pos,
                 Position * target)
 {
-  position_set_bar (pos, target->bars);
-  position_set_beat (pos, target->beats);
-  position_set_sixteenth (pos, target->sixteenths);
-  position_set_tick (pos, target->ticks);
+  pos->bars = target->bars;
+  pos->beats = target->beats;
+  pos->sixteenths = target->sixteenths;
+  pos->ticks = target->ticks;
+  pos->frames = position_to_frames (pos);
 }
 
 void

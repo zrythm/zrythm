@@ -101,7 +101,7 @@ close_audio_engine ()
  * Clears buffers, marks all as unprocessed, etc.
  */
 void
-engine_process_prepare (uint32_t      nframes)
+engine_process_prepare (uint32_t nframes)
 {
   AUDIO_ENGINE->last_time_taken = g_get_monotonic_time ();
   AUDIO_ENGINE->nframes = nframes;
@@ -155,13 +155,15 @@ engine_process_prepare (uint32_t      nframes)
             {
               at = atl->automation_tracks[j];
               float val =
-                automation_track_get_value_at_pos (
+                automation_track_get_normalized_val_at_pos (
                   at, &PLAYHEAD);
+              /*g_message ("val received %f",*/
+                         /*val);*/
               /* if there was an automation event
                * at the playhead position, val is
                * positive */
               if (val >= 0.f)
-                automatable_set_val (
+                automatable_set_val_from_normalized (
                   at->automatable,
                   val);
             }

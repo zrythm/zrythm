@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <math.h>
+
 #include "audio/automatable.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
@@ -262,6 +264,22 @@ automatable_get_val (Automatable * a)
 }
 
 /**
+ * Converts real value (eg. -10.0 to 100.0) to
+ * normalized value (0.0 to 1.0).
+ */
+float
+automatable_real_val_to_normalized (
+  Automatable * self,
+  float         real_val)
+{
+  float fmax = automatable_get_maxf (self);
+  float frange = fmax - automatable_get_minf (self);
+
+  /* ratio of current value in the range */
+  return (frange - (fmax - real_val)) / frange;
+}
+
+/**
  * Updates the actual value.
  *
  * The given value is always a normalized 0.0-1.0
@@ -269,9 +287,11 @@ automatable_get_val (Automatable * a)
  * before setting it.
  */
 void
-automatable_set_val (Automatable * a,
-                     float         val)
+automatable_set_val_from_normalized (
+  Automatable * a,
+  float         val)
 {
+  /*g_assert (val <= 1.f && val >= 0.f);*/
   Plugin * plugin;
   Channel * ch;
   switch (a->type)
@@ -280,19 +300,20 @@ automatable_set_val (Automatable * a,
       plugin = a->port->owner_pl;
       if (plugin->descr->protocol == PROT_LV2)
         {
-          Lv2Plugin * lv2_plugin =
-            (Lv2Plugin *) plugin->original_plugin;
-          if (lv2_plugin->ui_instance)
-            {
-              Lv2ControlID * control = a->control;
-              LV2_Port* port = &control->plugin->ports[control->index];
-              port->control = val;
-            }
-          else
-            {
-              lv2_gtk_set_float_control (
-                a->control, val);
-            }
+          float maxf =
+            automatable_get_maxf (a);
+          float minf =
+            automatable_get_minf (a);
+          float range = maxf - minf;
+          /*g_message ("min %f max %f",*/
+                     /*minf, maxf);*/
+          float real_val = minf + val * range;
+          g_message ("real val %f", real_val);
+          /*real_val /= range;*/
+          /*g_message ("real val / range = %f",*/
+                     /*real_val);*/
+          a->control->plugin->
+            ports[a->control->index].control = real_val;
         }
       return;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
