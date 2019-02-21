@@ -1253,10 +1253,12 @@ timeline_arranger_widget_move_items_x (
     }
 }
 
-
+/**
+ * Sets width to ruler width and height to
+ * tracklist height.
+ */
 void
-timeline_arranger_widget_setup (
-  TimelineArrangerWidget * self)
+timeline_arranger_widget_set_size ()
 {
   // set the size
   int ww, hh;
@@ -1267,9 +1269,18 @@ timeline_arranger_widget_setup (
     &hh);
   RULER_WIDGET_GET_PRIVATE (MW_RULER);
   gtk_widget_set_size_request (
-    GTK_WIDGET (self),
+    GTK_WIDGET (MW_TIMELINE),
     rw_prv->total_px,
     hh);
+}
+
+/**
+ * To be called once at init time.
+ */
+void
+timeline_arranger_widget_setup ()
+{
+  timeline_arranger_widget_set_size ();
 }
 
 void

@@ -1,7 +1,5 @@
 /*
- * gui/widgets/timeline_arranger.h - timeline
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -251,9 +249,15 @@ void
 timeline_arranger_widget_on_drag_end (
   TimelineArrangerWidget * self);
 
+/**
+ * Sets width to ruler width and height to
+ * tracklist height.
+ */
 void
-timeline_arranger_widget_setup (
-  TimelineArrangerWidget * self);
+timeline_arranger_widget_set_size ();
+
+void
+timeline_arranger_widget_setup ();
 
 /**
  * Readd children.

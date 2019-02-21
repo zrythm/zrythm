@@ -81,6 +81,9 @@ arranger_bg_draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
       position_set_to_pos (&range_second_pos,
                            &PROJECT->range_1);
     }
+  /*g_message ("rect x %d width %d y %d height %d",*/
+             /*rect.x, rect.width,*/
+             /*rect.y, rect.height);*/
 
   /* handle vertical drawing */
   for (int i =

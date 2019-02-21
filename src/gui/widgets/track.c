@@ -51,13 +51,23 @@ G_DEFINE_TYPE_WITH_PRIVATE (TrackWidget,
                             track_widget,
                             GTK_TYPE_GRID)
 
-static void
-size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
+static int draw_timeline_async ()
 {
   gtk_widget_queue_draw (GTK_WIDGET (
     MW_TIMELINE));
   gtk_widget_queue_allocate (GTK_WIDGET (
     MW_TIMELINE));
+
+  return FALSE;
+}
+
+static void
+size_allocate_cb (GtkWidget * widget,
+                  GtkAllocation * allocation,
+                  void * data)
+{
+  g_idle_add ((GSourceFunc) draw_timeline_async,
+              NULL);
 }
 
 void

@@ -1033,11 +1033,7 @@ arranger_widget_refresh (
     }
   else if (timeline)
     {
-      RULER_WIDGET_GET_PRIVATE (MW_RULER);
-      gtk_widget_set_size_request (
-        GTK_WIDGET (self),
-        rw_prv->total_px,
-        -1);
+      timeline_arranger_widget_set_size ();
       timeline_arranger_widget_refresh_children (
         timeline);
     }

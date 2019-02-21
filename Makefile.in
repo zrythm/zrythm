@@ -161,6 +161,9 @@ endif
 #EXTRA_LD_FLAGS += -DGDK_DISABLE_DEPRECATED \
 #									 -DGTK_DISABLE_DEPRECATED
 endif
+ifeq ($(PROFILING),1)
+	EXTRA_LD_FLAGS += -pg
+endif
 
 #$(LIBCYAML_CFLAGS) \
 
@@ -183,8 +186,6 @@ CFLAGS = -Wall \
 	$(DEFAULT_CFLAGS) \
 	-fPIC
 
-#$(LIBCYAML_LIBS) \
-
 LDFLAGS =	\
 	$(FFMPEG_LIBS) \
   $(GTK3_LIBS) \
@@ -205,10 +206,6 @@ LDFLAGS =	\
 	-lasound \
 	-lm \
 	-lpthread
-
-ifeq ($(PROFILING),1)
-	DEFAULT_LDFLAGS += -pg
-endif
 
 built_src = $(BUILD_DIR)/resources.c
 built_obj = $(built_src:%.c=$(BUILD_DIR/%.o))
