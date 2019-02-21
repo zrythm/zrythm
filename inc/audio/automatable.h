@@ -168,6 +168,15 @@ automatable_real_val_to_normalized (
   float         real_val);
 
 /**
+ * Converts normalized value (0.0 to 1.0) to
+ * real value (eg. -10.0 to 100.0).
+ */
+float
+automatable_normalized_val_to_real (
+  Automatable * self,
+  float         normalized_val);
+
+/**
  * Gets the current value of the parameter the
  * automatable is for.
  *

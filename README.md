@@ -104,8 +104,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 Donations of any amount are welcome below:
 
 ### Paypal
-https://www.paypal.me/alextee90
+https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LZWVK6228PQGE&source=url
 ### LiberaPay
 https://liberapay.com/alextee/
 ### Bitcoin
-39DP4txZ1ig5zGdbwCURtRkzX4xLez952M
+bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j

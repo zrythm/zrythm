@@ -264,6 +264,60 @@ automatable_get_val (Automatable * a)
 }
 
 /**
+ * Converts normalized value (0.0 to 1.0) to
+ * real value (eg. -10.0 to 100.0).
+ */
+float
+automatable_normalized_val_to_real (
+  Automatable * a,
+  float         val)
+{
+  Plugin * plugin;
+  switch (a->type)
+    {
+    case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
+      plugin = a->port->owner_pl;
+      if (plugin->descr->protocol == PROT_LV2)
+        {
+          Lv2ControlID * ctrl = a->control;
+          float maxf =
+            automatable_get_maxf (a);
+          float minf =
+            automatable_get_minf (a);
+          float real_val;
+          if (ctrl->is_logarithmic)
+            {
+              /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
+              real_val = minf * pow (maxf / minf, val);
+            }
+          else if (ctrl->is_toggle)
+            {
+              real_val = val >= 0.5f ? 1.f : 0.f;
+            }
+          else
+            {
+              real_val = minf + val * (maxf - minf);
+            }
+          /*g_message ("real val %f", real_val);*/
+          /*real_val /= range;*/
+          /*g_message ("real val / range = %f",*/
+                     /*real_val);*/
+          return real_val;
+        }
+    case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
+      plugin = a->port->owner_pl;
+      return val > 0.5f;
+    case AUTOMATABLE_TYPE_CHANNEL_FADER:
+      return math_get_amp_val_from_fader (val);
+    case AUTOMATABLE_TYPE_CHANNEL_MUTE:
+      return val > 0.5f;
+    case AUTOMATABLE_TYPE_CHANNEL_PAN:
+      return val;
+    }
+  return -1.f;
+}
+
+/**
  * Converts real value (eg. -10.0 to 100.0) to
  * normalized value (0.0 to 1.0).
  */
@@ -319,7 +373,7 @@ automatable_set_val_from_normalized (
             {
               real_val = minf + val * (maxf - minf);
             }
-          g_message ("real val %f", real_val);
+          /*g_message ("real val %f", real_val);*/
           /*real_val /= range;*/
           /*g_message ("real val / range = %f",*/
                      /*real_val);*/

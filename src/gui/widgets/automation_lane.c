@@ -410,13 +410,9 @@ automation_lane_widget_get_fvalue_at_y (
 
   /*g_message ("getting f value at y, automatable %s",*/
              /*a->label);*/
-  float max = automatable_get_maxf (a);
-  float min = automatable_get_minf (a);
-  /*g_message ("automatable max %f min %f", max, min);*/
-  float automatable_size = automatable_get_sizef (a);
-  float automatable_value = min + widget_ratio * automatable_size;
-  automatable_value = MIN (automatable_value, max);
-  automatable_value = MAX (automatable_value, min);
+  float automatable_value =
+    automatable_normalized_val_to_real (
+      a, widget_ratio);
   g_message ("automatable value %f", automatable_value);
 
   return automatable_value;
