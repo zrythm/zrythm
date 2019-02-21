@@ -44,7 +44,7 @@ typedef struct Position Position;
  */
 #define ui_show_notification_idle(msg) \
   char * text = g_strdup (msg); \
-  g_warning (msg); \
+  g_message (msg); \
   g_idle_add ((GSourceFunc) ui_show_notification_idle_func, \
               (void *) text)
 

@@ -40,6 +40,7 @@ typedef struct _AutomationLaneWidget
 {
   GtkGrid                 parent_instance;
   GtkComboBox *           selector;
+  GtkTreeModel *          selector_model;
   GtkBox *                value_box;
   DigitalMeterWidget *    value;
   GtkToggleButton *       mute_toggle;

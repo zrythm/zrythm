@@ -113,6 +113,6 @@ automation_tracklist_get_at_from_automatable (
   Automatable *         a);
 
 AutomationTrack *
-automation_tracklist_fetch_first_invisible_at (
+automation_tracklist_get_first_invisible_at (
   AutomationTracklist * self);
 #endif

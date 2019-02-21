@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -71,14 +71,16 @@ track_widget_select (
   track->selected = select;
   if (select)
     {
-      gtk_widget_set_state_flags (GTK_WIDGET (self),
-                                  GTK_STATE_FLAG_SELECTED,
-                                  0);
+      gtk_widget_set_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_SELECTED,
+        0);
     }
   else
     {
-      gtk_widget_unset_state_flags (GTK_WIDGET (self),
-                                    GTK_STATE_FLAG_SELECTED);
+      gtk_widget_unset_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_SELECTED);
     }
 
   /* auto-set recording mode */
@@ -92,11 +94,12 @@ track_widget_select (
     case TRACK_TYPE_BUS:
       ct = (ChannelTrack *)track;
       chan = ct->channel;
-      g_message ("%sselecting track %s, recording %d sa %d",
-                 select ? "" : "de",
-                 chan->name,
-                 track->recording,
-                 chan->record_set_automatically);
+      g_message (
+        "%sselecting track %s, recording %d sa %d",
+        select ? "" : "de",
+        chan->name,
+        track->recording,
+        chan->record_set_automatically);
       /* if selecting the track and recording is not already
        * on, turn these on */
       if (select && !track->recording)

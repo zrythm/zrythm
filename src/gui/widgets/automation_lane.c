@@ -38,6 +38,7 @@
 #include "gui/widgets/region.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/track.h"
+#include "utils/arrays.h"
 #include "utils/resources.h"
 
 G_DEFINE_TYPE (AutomationLaneWidget,
@@ -78,18 +79,18 @@ size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
 /**
  * Adds automation lane for automation track.
  */
-static void
-add_automation_lane (
-  AutomationTracklistWidget * atlw,
-  AutomationTrack *           at)
-{
+/*static void*/
+/*add_automation_lane (*/
+  /*AutomationTracklistWidget * atlw,*/
+  /*AutomationTrack *           at)*/
+/*{*/
   /*automation_tracklist_widget_add_automation_track (*/
     /*atlw,*/
     /*at,*/
     /*automation_tracklist_widget_get_automation_lane_widget_index (*/
       /*atlw,*/
       /*at->widget) + 1);*/
-}
+/*}*/
 
 
 static void
@@ -103,25 +104,91 @@ on_add_lane_clicked (
   /* get next non visible automation track and add its widget via
    * track_widget_add_automatoin_track_widget */
   GET_TRACK (self);
-  AutomationTracklist * automation_tracklist =
+  AutomationTracklist * atl =
     track_get_automation_tracklist (track);
-  for (int i = 0;
-       i < automation_tracklist->num_automation_tracks;
-       i++)
+  AutomationTrack * at =
+    automation_tracklist_get_first_invisible_at (
+      atl);
+  if (!at)
+    return;
+
+  if (!at->al)
     {
-      AutomationTrack * at =
-        automation_tracklist->automation_tracks[i];
-      if (!at->al)
-        {
-          add_automation_lane (
-            automation_tracklist->widget,
-            at);
-          break;
-        }
+      at->al = automation_lane_new (at);
+      array_append (atl->automation_lanes,
+                    atl->num_automation_lanes,
+                    at->al);
+      g_message ("atl num auto lanes %d",
+                 atl->num_automation_lanes);
     }
+  else
+    {
+      at->al->visible = 1;
+    }
+  g_message ("the at is %s",
+             at->automatable->label);
+
+  automation_tracklist_widget_refresh (
+    atl->widget);
 }
 
-void
+/**
+ * Sets selected automation lane on combo box.
+ */
+static void
+set_active_al (
+  AutomationLaneWidget * self,
+  GtkTreeModel *         model,
+  AutomationLane *       al)
+{
+  GtkTreeIter iter;
+  GtkTreePath * path;
+  Automatable * a = al->at->automatable;
+  switch (a->type)
+    {
+    case AUTOMATABLE_TYPE_CHANNEL_FADER:
+      path =
+        gtk_tree_path_new_from_indices (
+          CHANNEL_FADER_INDEX,
+          -1);
+      break;
+    case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
+      path =
+        gtk_tree_path_new_from_indices (
+          a->slot_index + PLUGIN_START_INDEX,
+          a->control->index + PLUGIN_CONTROL_START_INDEX,
+          -1);
+      break;
+    case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
+      path =
+        gtk_tree_path_new_from_indices (
+          a->slot_index + PLUGIN_START_INDEX,
+          PLUGIN_ENABLED_INDEX,
+          -1);
+      break;
+    case AUTOMATABLE_TYPE_CHANNEL_MUTE:
+      path =
+        gtk_tree_path_new_from_indices (
+          CHANNEL_MUTE_INDEX,
+          -1);
+      break;
+    case AUTOMATABLE_TYPE_CHANNEL_PAN:
+      path =
+        gtk_tree_path_new_from_indices (
+          CHANNEL_PAN_INDEX,
+          -1);
+      break;
+    }
+
+  gtk_tree_model_get_iter (model, &iter, path);
+  gtk_tree_path_free (path);
+  gtk_combo_box_set_active_iter (
+    GTK_COMBO_BOX (self->selector),
+    &iter);
+
+}
+
+static void
 on_at_selector_changed (
   GtkComboBox *          widget,
   AutomationLaneWidget * self)
@@ -136,14 +203,29 @@ on_at_selector_changed (
     COLUMN_AUTOMATABLE, &value);
   Automatable * a = g_value_get_pointer (&value);
   Track * track = self->al->at->track;
+
+  /* get selected automation track */
   AutomationTrack * at =
     automation_tracklist_get_at_from_automatable (
       track_get_automation_tracklist (track),
       a);
 
-  automation_lane_update_automation_track (
-    self->al,
-    at);
+  /* if this automation track is not already
+   * in a visible lane */
+  if (!at->al || !at->al->visible)
+    automation_lane_update_automation_track (
+      self->al,
+      at);
+  else
+    {
+      set_active_al (self,
+                     self->selector_model,
+                     self->al);
+      ui_show_notification (
+        "Selected automatable already has an "
+        "automation lane");
+    }
+
 }
 
 static GtkTreeModel *
@@ -207,10 +289,10 @@ create_automatables_store (Track * track)
 static void
 setup_combo_box (AutomationLaneWidget * self)
 {
-  GtkTreeModel * model =
+  self->selector_model =
     create_automatables_store (self->al->at->track);
   gtk_combo_box_set_model (self->selector,
-                           model);
+                           self->selector_model);
   gtk_cell_layout_clear (
     GTK_CELL_LAYOUT (self->selector));
   GtkCellRenderer* renderer =
@@ -229,51 +311,9 @@ setup_combo_box (AutomationLaneWidget * self)
     "text", COLUMN_LABEL,
     NULL);
 
-  GtkTreeIter iter;
-  /* FIXME find the associated automatable */
-  GtkTreePath * path;
-  Automatable * a = self->al->at->automatable;
-  switch (a->type)
-    {
-    case AUTOMATABLE_TYPE_CHANNEL_FADER:
-      path =
-        gtk_tree_path_new_from_indices (
-          CHANNEL_FADER_INDEX,
-          -1);
-      break;
-    case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
-      path =
-        gtk_tree_path_new_from_indices (
-          a->slot_index + PLUGIN_START_INDEX,
-          a->control->index + PLUGIN_CONTROL_START_INDEX,
-          -1);
-      break;
-    case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
-      path =
-        gtk_tree_path_new_from_indices (
-          a->slot_index + PLUGIN_START_INDEX,
-          PLUGIN_ENABLED_INDEX,
-          -1);
-      break;
-    case AUTOMATABLE_TYPE_CHANNEL_MUTE:
-      path =
-        gtk_tree_path_new_from_indices (
-          CHANNEL_MUTE_INDEX,
-          -1);
-      break;
-    case AUTOMATABLE_TYPE_CHANNEL_PAN:
-      path =
-        gtk_tree_path_new_from_indices (
-          CHANNEL_PAN_INDEX,
-          -1);
-      break;
-    }
-
-  gtk_tree_model_get_iter (model, &iter, path);
-  gtk_tree_path_free (path);
-  gtk_combo_box_set_active_iter (
-    GTK_COMBO_BOX (self->selector),
-    &iter);
+  set_active_al (self,
+                 self->selector_model,
+                 self->al);
 }
 
 void

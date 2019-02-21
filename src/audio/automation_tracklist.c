@@ -223,20 +223,28 @@ automation_tracklist_get_at_from_automatable (
  * and returns it.
  */
 AutomationTrack *
-automation_tracklist_fetch_first_invisible_at (
+automation_tracklist_get_first_invisible_at (
   AutomationTracklist * self)
 {
-  for (int i = 0; self->num_automation_tracks; i++)
+  /* prioritize automation tracks with existing
+   * lanes */
+  for (int i = 0;
+       i < self->num_automation_tracks; i++)
+    {
+      AutomationTrack * at =
+        self->automation_tracks[i];
+      if (at->al && !at->al->visible)
+        {
+          return at;
+        }
+    }
+
+  for (int i = 0;
+       i < self->num_automation_tracks; i++)
     {
       AutomationTrack * at = self->automation_tracks[i];
       if (!at->al)
         {
-          at->al = automation_lane_new (at);
-          return at;
-        }
-      if (!at->al->visible)
-        {
-          at->al->visible = 1;
           return at;
         }
     }

@@ -1,7 +1,5 @@
 /*
- * audio/engine_jack.c - Jack engine
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *

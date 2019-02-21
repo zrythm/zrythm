@@ -1432,6 +1432,9 @@ static void
 add_children_from_channel_track (
   ChannelTrack * ct)
 {
+  if (!((Track *)ct)->bot_paned_visible)
+    return;
+
   AutomationTracklist * atl =
     &ct->automation_tracklist;
   for (int i = 0;

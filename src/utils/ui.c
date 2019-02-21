@@ -215,6 +215,22 @@ ui_px_to_frames (int   px,
 }
 
 /**
+ * Hides the notification.
+ *
+ * Used ui_show_notification to be called after
+ * a timeout.
+ */
+static int
+hide_notification_async ()
+{
+  gtk_revealer_set_reveal_child (
+    GTK_REVEALER (MAIN_WINDOW->revealer),
+    0);
+
+  return FALSE;
+}
+
+/**
  * Shows a notification in the revealer.
  */
 void
@@ -225,6 +241,8 @@ ui_show_notification (const char * msg)
   gtk_revealer_set_reveal_child (
     GTK_REVEALER (MAIN_WINDOW->revealer),
     1);
+  g_timeout_add_seconds (
+    3, (GSourceFunc) hide_notification_async, NULL);
 }
 
 /**

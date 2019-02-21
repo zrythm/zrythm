@@ -1,7 +1,5 @@
 /*
- * gui/widgets/tracks.c - TrackList
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -278,10 +276,12 @@ void
 tracklist_widget_soft_refresh (TracklistWidget *self)
 {
   gtk_widget_show (GTK_WIDGET (self));
-  track_widget_refresh (MIXER->master->track->widget);
+  track_widget_refresh (
+    MIXER->master->track->widget);
   for (int i = 0; i < MIXER->num_channels; i++)
     {
-      track_widget_refresh (MIXER->channels[i]->track->widget);
+      track_widget_refresh (
+        MIXER->channels[i]->track->widget);
     }
   if (self->ddbox)
     gtk_widget_show (GTK_WIDGET (self->ddbox));

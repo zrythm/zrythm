@@ -128,9 +128,13 @@ midi_arranger_widget_update_inspector (
 }
 
 void
-midi_arranger_widget_select_all (MidiArrangerWidget *  self,
-                                 int               select)
+midi_arranger_widget_select_all (
+  MidiArrangerWidget *  self,
+  int               select)
 {
+  if (!PIANO_ROLL->track)
+    return;
+
   MIDI_ARRANGER_SELECTIONS->num_midi_notes = 0;
 
   /* select midi notes */

@@ -27,12 +27,14 @@
 #include "audio/instrument_track.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/automation_lane.h"
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/instrument_track.h"
+#include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/track.h"
 #include "utils/gtk.h"
 #include "utils/arrays.h"
@@ -85,7 +87,7 @@ automation_tracklist_widget_refresh (
   z_gtk_container_remove_all_children (
     GTK_CONTAINER (self));
 
-  /* add tracks */
+  /* add automation lanes */
   g_message ("num automation lanes %d",
              self->automation_tracklist->num_automation_lanes);
   for (int i = 0;
@@ -158,6 +160,9 @@ automation_tracklist_widget_refresh (
         }
     }
   g_list_free(children);
+
+  timeline_arranger_widget_refresh_children (
+    MW_TIMELINE);
 }
 
 static void
