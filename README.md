@@ -84,6 +84,9 @@ For any bugs please raise an issue or join a chatroom below
 ### Matrix/IRC (Freenode)
 `#zrythm` channel (for Matrix users `#freenode_#zrythm:matrix.org`)
 
+## Mailing lists
+zrythm-dev@nongnu.org for developers, zrythm-user@nongnu.org for users
+
 ## License
 Copyright (C) 2018-2019  Alexandros Theodotou
 
