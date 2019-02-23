@@ -252,6 +252,50 @@ clean_ports (Port ** array, int * size)
   (* size) = 0;
 }
 
+/**
+ * shows plugin ui and sets window close callback
+ */
+void
+plugin_show_ui (Plugin *plugin, GtkWidget *host, void *closeCallback)
+{
+  if (plugin->descr->protocol == PROT_LV2)
+    {
+      Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
+      lv2_plugin->host = host;
+      lv2_plugin->host_on_destroy_cb = closeCallback;
+      if (lv2_plugin->window)
+	{
+	  GtkWindow *window = GTK_WINDOW(lv2_plugin->window);
+	  gtk_window_present (window);
+	  if (closeCallback)
+	    {
+	      g_signal_connect (G_OBJECT (window), "delete-event",
+				G_CALLBACK (closeCallback), lv2_plugin->host);
+	    }
+	}
+      else
+	{
+	  lv2_open_ui (lv2_plugin);
+	}
+    }
+}
+
+
+/**
+ * hides plugin ui 
+ */
+void
+plugin_hide_ui (Plugin *plugin)
+{
+  if (plugin->descr->protocol == PROT_LV2)
+    {
+      Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
+      if (lv2_plugin->window)
+	gtk_window_close (GTK_WINDOW(lv2_plugin->window));
+      else
+	lv2_close_ui (lv2_plugin);
+    }
+}
 
 /**
  * Frees given plugin, breaks all its port connections, and frees its ports

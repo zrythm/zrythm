@@ -26,6 +26,10 @@
 #include "gui/widgets/track.h"
 
 #include <gtk/gtk.h>
+#define GET_CHANNEL(x) \
+ (track_get_channel (track_widget_get_private (Z_TRACK_WIDGET (x))->track))
+
+
 
 #define INSTRUMENT_TRACK_WIDGET_TYPE \
   (instrument_track_widget_get_type ())
@@ -47,9 +51,11 @@ typedef struct _InstrumentTrackWidget
   GtkToggleButton *             record;
   GtkToggleButton *             solo;
   GtkToggleButton *             mute;
+  GtkToggleButton *             gui;
   GtkToggleButton *             show_automation;
   GtkToggleButton *             lock;
   GtkToggleButton *             freeze;
+  gulong 			gui_toggled_handler_id;
 } InstrumentTrackWidget;
 
 /**
@@ -58,6 +64,15 @@ typedef struct _InstrumentTrackWidget
 InstrumentTrackWidget *
 instrument_track_widget_new (Track * track);
 
+ void
+instument_track_ui_toggle (GtkWidget * self, InstrumentTrackWidget * data);
+
+/**
+ * Updates ui_active state if instrument window is closed
+ *
+ */
+void
+instrument_track_instrument_closed (GtkWidget *window, GdkEventKey *e, gpointer data);
 /**
  * Updates changes in the backend to the ui
  */

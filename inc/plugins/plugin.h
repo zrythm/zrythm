@@ -270,6 +270,17 @@ void
 plugin_process (Plugin * plugin);
 
 /**
+ * Process show ui
+ */
+void
+plugin_show_ui (Plugin *plugin,GtkWidget *host,void*cb);
+
+/**
+ * Process hide ui
+ */
+void
+plugin_hide_ui (Plugin *plugin);
+/**
  * (re)Generates automatables for the plugin.
  */
 void
