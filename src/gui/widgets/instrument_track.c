@@ -141,9 +141,11 @@ instrument_track_widget_new (Track * track)
   ChannelTrack * ct = (ChannelTrack *) track;
   Channel * chan = ct->channel;
   Plugin * plugin = chan->plugins[0];
+  if (plugin)
+    {
       plugin_show_ui (plugin, self, instrument_track_instrument_closed);
-
-  gtk_widget_set_visible (GTK_WIDGET (self),
+    }
+  gtk_widget_set_visible (GTK_WIDGET(self),
                           1);
 
   return self;
