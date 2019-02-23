@@ -168,7 +168,7 @@ button_press_cb (GtkWidget * widget,
 	    }
 	  else
 	    {
-	      plugin_open_ui (plugin, NULL, NULL);
+	      plugin_open_ui (plugin);
 
 	    }
 	}

@@ -26,6 +26,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "gui/widgets/instrument_track.h"
+
 #ifdef HAVE_ISATTY
 #    include <unistd.h>
 #endif

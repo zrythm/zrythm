@@ -33,7 +33,7 @@
 #include "audio/engine.h"
 #include "audio/track.h"
 #include "audio/transport.h"
-#include "gui/widgets/inspector_track.h"
+#include "gui/widgets/instrument_track.h"
 #include "plugins/plugin.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/control.h"
@@ -265,8 +265,6 @@ plugin_open_ui (Plugin *plugin)
 
       lv2_plugin->host =
 	   plugin->channel->track->widget;
-      lv2_plugin->host_on_destroy_cb =
-	  instrument_track_widget_on_plugin_ui_closed();
       if (lv2_plugin->window)
 	{
 	  GtkWindow *window = GTK_WINDOW(lv2_plugin->window);
@@ -274,7 +272,7 @@ plugin_open_ui (Plugin *plugin)
 	    {
 	      g_signal_connect (
 		  G_OBJECT (window), "delete-event",
-		  G_CALLBACK (instrument_track_widget_on_plugin_ui_closed),
+		  G_CALLBACK (instrument_track_widget_on_plugin_delete_event),
 		  lv2_plugin->host);
 	    }
 	}

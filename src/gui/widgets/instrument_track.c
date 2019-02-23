@@ -28,6 +28,7 @@
 #include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "audio/region.h"
+#include "plugins/plugin.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_lane.h"
 #include "gui/widgets/automation_tracklist.h"
@@ -51,15 +52,16 @@ instument_track_ui_toggle (GtkWidget * self, InstrumentTrackWidget * data)
   Channel * channel = GET_CHANNEL(data);
   TRACK_WIDGET_GET_PRIVATE(data);
   Plugin * plugin = channel->plugins[0];
-  if (!((InstrumentTrack *)tw_prv->track)->ui_active )
+  InstrumentTrack * it = plugin->channel->track;
+  if (!it->ui_active )
     {
       plugin_open_ui (plugin);
-      ((InstrumentTrack *)tw_prv->track)->ui_active = 1;
+      it->ui_active = 1;
     }
   else
     {
       plugin_close_ui (plugin);
-      ((InstrumentTrack *)tw_prv->track)->ui_active = 0;
+      it->ui_active = 0;
     }
   instrument_track_widget_refresh_buttons (data);
 
@@ -69,19 +71,23 @@ instument_track_ui_toggle (GtkWidget * self, InstrumentTrackWidget * data)
  *
  */
 void
-instrument_track_widget_on_plugin_ui_closed (GtkWidget *window,
+instrument_track_widget_on_plugin_delete_event (GtkWidget *window,
 				    GdkEventKey *e,
 				    gpointer data)
 {
+  if(data){
   TRACK_WIDGET_GET_PRIVATE(data);
-  if (((InstrumentTrack *)tw_prv->track)->ui_active ==0)
+  Channel * channel = GET_CHANNEL(data);
+  Plugin * plugin = channel->plugins[0];
+  InstrumentTrack * it = (InstrumentTrack *)tw_prv->track;
+
+  if (it->ui_active == 1)
     {
-      Channel * channel = GET_CHANNEL(data);
-      Plugin * plugin = channel->plugins[0];
-      plugin_close_ui (plugin);
-      ((InstrumentTrack *)tw_prv->track)->ui_active = 0;
+      plugin_close_ui(plugin);
+      it->ui_active = 0;
       instrument_track_widget_refresh_buttons (data);
     }
+  }
 }
 /**
  * Creates a new track widget using the given track.
@@ -143,8 +149,7 @@ instrument_track_widget_new (Track * track)
   Plugin * plugin = chan->plugins[0];
   if (plugin)
     {
-      plugin_open_ui (plugin, self,
-		      instrument_track_widget_on_plugin_ui_closed);
+      plugin_open_ui (plugin);
       gtk_widget_set_visible (GTK_WIDGET(self), 1);
     }
   return self;
