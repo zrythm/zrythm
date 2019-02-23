@@ -43,7 +43,6 @@ void
 track_init (Track * track)
 {
   track->visible = 1;
-  track->ui_active = 1;
   track->handle_pos = 1;
 }
 

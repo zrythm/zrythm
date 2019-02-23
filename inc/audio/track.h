@@ -78,7 +78,6 @@ typedef struct Track
   int                 mute; ///< muted or not
   int                 solo; ///< solo or not
   int                 recording; ///< recording or not
-  int                 ui_active;
 
 
   /**

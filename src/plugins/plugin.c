@@ -33,6 +33,7 @@
 #include "audio/engine.h"
 #include "audio/track.h"
 #include "audio/transport.h"
+#include "gui/widgets/inspector_track.h"
 #include "plugins/plugin.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/control.h"
@@ -256,21 +257,25 @@ clean_ports (Port ** array, int * size)
  * shows plugin ui and sets window close callback
  */
 void
-plugin_show_ui (Plugin *plugin, GtkWidget *host, void *closeCallback)
+plugin_open_ui (Plugin *plugin)
 {
   if (plugin->descr->protocol == PROT_LV2)
     {
       Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
-      lv2_plugin->host = host;
-      lv2_plugin->host_on_destroy_cb = closeCallback;
+
+      lv2_plugin->host =
+	   plugin->channel->track->widget;
+      lv2_plugin->host_on_destroy_cb =
+	  instrument_track_widget_on_plugin_ui_closed();
       if (lv2_plugin->window)
 	{
 	  GtkWindow *window = GTK_WINDOW(lv2_plugin->window);
 	  gtk_window_present (window);
-	  if (closeCallback)
 	    {
-	      g_signal_connect (G_OBJECT (window), "delete-event",
-				G_CALLBACK (closeCallback), lv2_plugin->host);
+	      g_signal_connect (
+		  G_OBJECT (window), "delete-event",
+		  G_CALLBACK (instrument_track_widget_on_plugin_ui_closed),
+		  lv2_plugin->host);
 	    }
 	}
       else
@@ -285,7 +290,7 @@ plugin_show_ui (Plugin *plugin, GtkWidget *host, void *closeCallback)
  * hides plugin ui 
  */
 void
-plugin_hide_ui (Plugin *plugin)
+plugin_close_ui (Plugin *plugin)
 {
   if (plugin->descr->protocol == PROT_LV2)
     {

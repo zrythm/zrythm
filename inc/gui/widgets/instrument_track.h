@@ -51,7 +51,7 @@ typedef struct _InstrumentTrackWidget
   GtkToggleButton *             record;
   GtkToggleButton *             solo;
   GtkToggleButton *             mute;
-  GtkToggleButton *             gui;
+  GtkToggleButton *             show_ui;
   GtkToggleButton *             show_automation;
   GtkToggleButton *             lock;
   GtkToggleButton *             freeze;
@@ -72,7 +72,7 @@ instument_track_ui_toggle (GtkWidget * self, InstrumentTrackWidget * data);
  *
  */
 void
-instrument_track_instrument_closed (GtkWidget *window, GdkEventKey *e, gpointer data);
+instrument_track_widget_on_plugin_ui_closed (GtkWidget *window, GdkEventKey *e, gpointer data);
 /**
  * Updates changes in the backend to the ui
  */

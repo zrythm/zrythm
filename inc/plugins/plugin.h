@@ -273,13 +273,13 @@ plugin_process (Plugin * plugin);
  * Process show ui
  */
 void
-plugin_show_ui (Plugin *plugin,GtkWidget *host,void*cb);
+plugin_open_ui (Plugin *plugin);
 
 /**
  * Process hide ui
  */
 void
-plugin_hide_ui (Plugin *plugin);
+plugin_close_ui (Plugin *plugin);
 /**
  * (re)Generates automatables for the plugin.
  */

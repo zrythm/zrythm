@@ -53,6 +53,7 @@ instrument_track_new (Channel * channel)
 
   ChannelTrack * ct = (ChannelTrack *) self;
   ct->channel = channel;
+  self->ui_active = 1;
 
   return self;
 }

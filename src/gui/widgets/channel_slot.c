@@ -150,20 +150,27 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 }
 
 static gboolean
-button_press_cb (GtkWidget * widget, GdkEventButton * event, gpointer data)
+button_press_cb (GtkWidget * widget,
+		 GdkEventButton * event,
+		 gpointer data)
 {
   if (event->type == GDK_2BUTTON_PRESS)
     {
       ChannelSlotWidget * self = (ChannelSlotWidget *) data;
       Plugin * plugin = self->channel->plugins[self->slot_index];
-      if (plugin->descr->protocol == PROT_LV2)
+      if (plugin)
 	{
+	  if (plugin->descr->protocol == PROT_LV2)
+	    {
 	      Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
-	      instument_track_ui_toggle(widget, lv2_plugin->host);
+	      instument_track_ui_toggle (widget, lv2_plugin->host);
 
-	}else {
-	      plugin_show_ui (plugin,NULL,NULL);
+	    }
+	  else
+	    {
+	      plugin_open_ui (plugin, NULL, NULL);
 
+	    }
 	}
     }
   return FALSE;
