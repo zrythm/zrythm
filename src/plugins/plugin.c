@@ -33,6 +33,7 @@
 #include "audio/engine.h"
 #include "audio/track.h"
 #include "audio/transport.h"
+#include "gui/widgets/instrument_track.h"
 #include "plugins/plugin.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/control.h"
@@ -252,6 +253,52 @@ clean_ports (Port ** array, int * size)
   (* size) = 0;
 }
 
+/**
+ * shows plugin ui and sets window close callback
+ */
+void
+plugin_open_ui (Plugin *plugin)
+{
+  if (plugin->descr->protocol == PROT_LV2)
+    {
+      Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
+
+      lv2_plugin->host =
+	   plugin->channel->track->widget;
+      if (lv2_plugin->window)
+	{
+	  GtkWindow *window = GTK_WINDOW(lv2_plugin->window);
+	  gtk_window_present (window);
+	    {
+	      g_signal_connect (
+		  G_OBJECT (window), "delete-event",
+		  G_CALLBACK (instrument_track_widget_on_plugin_delete_event),
+		  lv2_plugin->host);
+	    }
+	}
+      else
+	{
+	  lv2_open_ui (lv2_plugin);
+	}
+    }
+}
+
+
+/**
+ * hides plugin ui 
+ */
+void
+plugin_close_ui (Plugin *plugin)
+{
+  if (plugin->descr->protocol == PROT_LV2)
+    {
+      Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
+      if (lv2_plugin->window)
+	gtk_window_close (GTK_WINDOW(lv2_plugin->window));
+      else
+	lv2_close_ui (lv2_plugin);
+    }
+}
 
 /**
  * Frees given plugin, breaks all its port connections, and frees its ports

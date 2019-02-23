@@ -1913,8 +1913,8 @@ lv2_instantiate (Lv2Plugin      * lv2_plugin,   ///< plugin to instantiate
   lv2_plugin->has_ui = lv2_discover_ui(lv2_plugin);
 
   /* Run UI (or prompt at console) */
-  g_message ("Opening UI...");
-  lv2_open_ui(lv2_plugin);
+//  g_message ("Opening UI...");
+//  lv2_open_ui(lv2_plugin,NULL,NULL);
   g_message ("UI opened");
 
   return 0;

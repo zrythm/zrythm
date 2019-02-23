@@ -21,12 +21,14 @@
  */
 
 #include "audio/automatable.h"
+#include "plugins/lv2_plugin.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/bus_track.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "audio/region.h"
+#include "plugins/plugin.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_lane.h"
 #include "gui/widgets/automation_tracklist.h"
@@ -44,7 +46,49 @@
 G_DEFINE_TYPE (InstrumentTrackWidget,
                instrument_track_widget,
                TRACK_WIDGET_TYPE)
+ void
+instument_track_ui_toggle (GtkWidget * self, InstrumentTrackWidget * data)
+{
+  Channel * channel = GET_CHANNEL(data);
+  TRACK_WIDGET_GET_PRIVATE(data);
+  Plugin * plugin = channel->plugins[0];
+  InstrumentTrack * it = plugin->channel->track;
+  if (!it->ui_active )
+    {
+      plugin_open_ui (plugin);
+      it->ui_active = 1;
+    }
+  else
+    {
+      plugin_close_ui (plugin);
+      it->ui_active = 0;
+    }
+  instrument_track_widget_refresh_buttons (data);
 
+}
+/**
+ * Updates ui_active state if instrument window is closed
+ *
+ */
+void
+instrument_track_widget_on_plugin_delete_event (GtkWidget *window,
+				    GdkEventKey *e,
+				    gpointer data)
+{
+  if(data){
+  TRACK_WIDGET_GET_PRIVATE(data);
+  Channel * channel = GET_CHANNEL(data);
+  Plugin * plugin = channel->plugins[0];
+  InstrumentTrack * it = (InstrumentTrack *)tw_prv->track;
+
+  if (it->ui_active == 1)
+    {
+      plugin_close_ui(plugin);
+      it->ui_active = 0;
+      instrument_track_widget_refresh_buttons (data);
+    }
+  }
+}
 /**
  * Creates a new track widget using the given track.
  *
@@ -85,6 +129,10 @@ instrument_track_widget_new (Track * track)
       self->mute, "toggled",
       G_CALLBACK (track_widget_on_mute_toggled),
       self);
+  self->gui_toggled_handler_id = g_signal_connect (
+      self->show_ui, "toggled",
+      G_CALLBACK (instument_track_ui_toggle),
+      self);
   tw_prv->solo_toggled_handler_id =
     g_signal_connect (
       self->solo, "toggled",
@@ -96,9 +144,14 @@ instrument_track_widget_new (Track * track)
     G_CALLBACK (track_widget_on_show_automation_toggled),
     self);
 
-  gtk_widget_set_visible (GTK_WIDGET (self),
-                          1);
-
+  ChannelTrack * ct = (ChannelTrack *) track;
+  Channel * chan = ct->channel;
+  Plugin * plugin = chan->plugins[0];
+  if (plugin)
+    {
+      plugin_open_ui (plugin);
+      gtk_widget_set_visible (GTK_WIDGET(self), 1);
+    }
   return self;
 }
 
@@ -130,6 +183,14 @@ instrument_track_widget_refresh_buttons (
         tw_prv->track->mute);
   g_signal_handler_unblock (
     self->mute, tw_prv->mute_toggled_handler_id);
+
+  g_signal_handler_block (
+    self->show_ui, self->gui_toggled_handler_id);
+      gtk_toggle_button_set_active (
+        self->show_ui,
+	((InstrumentTrack *)tw_prv->track)->ui_active );
+  g_signal_handler_unblock (
+    self->show_ui, self->gui_toggled_handler_id);
 }
 
 void
@@ -158,7 +219,6 @@ instrument_track_widget_init (InstrumentTrackWidget * self)
 {
   GtkStyleContext * context;
   TRACK_WIDGET_GET_PRIVATE (self);
-
   /* create buttons */
   self->record =
     z_gtk_toggle_button_new_with_icon (
@@ -181,6 +241,10 @@ instrument_track_widget_init (InstrumentTrackWidget * self)
     z_gtk_toggle_button_new_with_resource (
       ICON_TYPE_ZRYTHM,
       "mute.svg");
+  self->show_ui =
+    z_gtk_toggle_button_new_with_resource (
+      ICON_TYPE_ZRYTHM,
+      "instrument.svg");
   self->show_automation =
     z_gtk_toggle_button_new_with_icon (
       "format-justify-fill");
@@ -207,6 +271,12 @@ instrument_track_widget_init (InstrumentTrackWidget * self)
   gtk_box_pack_start (
     GTK_BOX (tw_prv->upper_controls),
     GTK_WIDGET (self->mute),
+    Z_GTK_NO_EXPAND,
+    Z_GTK_NO_FILL,
+    0);
+  gtk_box_pack_start (
+    GTK_BOX (tw_prv->upper_controls),
+    GTK_WIDGET (self->show_ui),
     Z_GTK_NO_EXPAND,
     Z_GTK_NO_FILL,
     0);

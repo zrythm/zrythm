@@ -22,6 +22,7 @@
 
 #include "audio/automatable.h"
 #include "audio/port.h"
+#include "gui/widgets/instrument_track.h"
 
 #include <jack/jack.h>
 
@@ -33,6 +34,8 @@
 #define DUMMY_PLUGIN "Dummy Plugin"
 
 typedef struct Channel Channel;
+
+
 
 enum PluginCategory
 {
@@ -269,6 +272,17 @@ plugin_instantiate (Plugin * plugin);
 void
 plugin_process (Plugin * plugin);
 
+/**
+ * Process show ui
+ */
+void
+plugin_open_ui (Plugin *plugin);
+
+/**
+ * Process hide ui
+ */
+void
+plugin_close_ui (Plugin *plugin);
 /**
  * (re)Generates automatables for the plugin.
  */

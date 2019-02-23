@@ -79,6 +79,7 @@ typedef struct Track
   int                 solo; ///< solo or not
   int                 recording; ///< recording or not
 
+
   /**
    * Track color.
    *
