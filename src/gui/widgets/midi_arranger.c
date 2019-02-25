@@ -76,14 +76,14 @@ midi_arranger_widget_set_allocation (
       MidiNoteWidget * midi_note_widget =
         Z_MIDI_NOTE_WIDGET (widget);
       allocation->x =
-        ui_pos_to_px (
+        ui_pos_to_px_timeline (
           &midi_note_widget->midi_note->start_pos,
           1);
       allocation->y =
         MW_PIANO_ROLL->piano_roll_labels->px_per_note *
           (127 - midi_note_widget->midi_note->val);
       allocation->width =
-        ui_pos_to_px (
+        ui_pos_to_px_timeline (
           &midi_note_widget->midi_note->end_pos,
           1) - allocation->x;
       allocation->height =
@@ -134,39 +134,34 @@ midi_arranger_widget_select_all (
   MidiArrangerWidget *  self,
   int               select)
 {
-  if (!PIANO_ROLL->track)
+  if (!PIANO_ROLL->region)
     return;
 
   MIDI_ARRANGER_SELECTIONS->num_midi_notes = 0;
 
   /* select midi notes */
-  InstrumentTrack * it =
-    (InstrumentTrack *) PIANO_ROLL_SELECTED_TRACK;
-  for (int j = 0; j < it->num_regions; j++)
+  MidiRegion * mr =
+    (MidiRegion *) PIANO_ROLL_SELECTED_REGION;
+  for (int i = 0; i < mr->num_midi_notes; i++)
     {
-      MidiRegion * mr = it->regions[j];
+      MidiNote * midi_note = mr->midi_notes[i];
+      midi_note_widget_select (
+        midi_note->widget, select);
 
-      for (int i = 0; i < mr->num_midi_notes; i++)
+      if (select)
         {
-          MidiNote * midi_note = mr->midi_notes[i];
-          midi_note_widget_select (
-            midi_note->widget, select);
-
-          if (select)
-            {
-              /* select  */
-              array_append (
-                MIDI_ARRANGER_SELECTIONS->midi_notes,
-                MIDI_ARRANGER_SELECTIONS->num_midi_notes,
-                midi_note);
-            }
-          else
-            {
-              array_delete (
-                MIDI_ARRANGER_SELECTIONS->midi_notes,
-                MIDI_ARRANGER_SELECTIONS->num_midi_notes,
-                midi_note);
-            }
+          /* select  */
+          array_append (
+            MIDI_ARRANGER_SELECTIONS->midi_notes,
+            MIDI_ARRANGER_SELECTIONS->num_midi_notes,
+            midi_note);
+        }
+      else
+        {
+          array_delete (
+            MIDI_ARRANGER_SELECTIONS->midi_notes,
+            MIDI_ARRANGER_SELECTIONS->num_midi_notes,
+            midi_note);
         }
     }
 }
@@ -324,7 +319,7 @@ midi_arranger_widget_create_note (
     {
       position_snap (NULL,
                      pos,
-                     PIANO_ROLL_SELECTED_TRACK,
+                     NULL,
                      NULL,
                      ar_prv->snap_grid);
     }
@@ -541,7 +536,6 @@ midi_arranger_widget_move_items_y (
 	  /*&deltamax);*/
 	  /* check if should be moved to new note  */
 	  int old_val = midi_note->val;
-	  
 
 	  midi_note->val = midi_note->val + y_delta;
 	  /* check if should be moved to     new note */
@@ -673,20 +667,16 @@ midi_arranger_widget_refresh_children (
     }
   g_list_free (children);
 
-  if (PIANO_ROLL->track)
+  if (PIANO_ROLL->region)
     {
-      InstrumentTrack * it =
-        (InstrumentTrack *) PIANO_ROLL->track;
-      for (int i = 0; i < it->num_regions; i++)
+      MidiRegion * mr =
+        (MidiRegion *) PIANO_ROLL->region;
+      for (int j = 0; j < mr->num_midi_notes; j++)
         {
-          MidiRegion * mr = it->regions[i];
-          for (int j = 0; j < mr->num_midi_notes; j++)
-            {
-              MidiNote * midi_note = mr->midi_notes[j];
-              gtk_overlay_add_overlay (
-                GTK_OVERLAY (self),
-                GTK_WIDGET (midi_note->widget));
-            }
+          MidiNote * midi_note = mr->midi_notes[j];
+          gtk_overlay_add_overlay (
+            GTK_OVERLAY (self),
+            GTK_WIDGET (midi_note->widget));
         }
     }
 }

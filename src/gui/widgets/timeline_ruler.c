@@ -54,22 +54,22 @@ timeline_ruler_widget_set_ruler_range_position (
   if (range1_first)
     {
       allocation->x =
-        ui_pos_to_px (
+        ui_pos_to_px_timeline (
           &PROJECT->range_1,
           1);
       allocation->width =
-        ui_pos_to_px (
+        ui_pos_to_px_timeline (
           &PROJECT->range_2,
           1) - allocation->x;
     }
   else
     {
       allocation->x =
-        ui_pos_to_px (
+        ui_pos_to_px_timeline (
           &PROJECT->range_2,
           1);
       allocation->width =
-        ui_pos_to_px (
+        ui_pos_to_px_timeline (
           &PROJECT->range_1,
           1) - allocation->x;
     }
@@ -89,7 +89,7 @@ timeline_ruler_widget_set_ruler_marker_position (
     {
     case RULER_MARKER_TYPE_SONG_START:
       allocation->x =
-        ui_pos_to_px (
+        ui_pos_to_px_timeline (
           &TRANSPORT->start_marker_pos,
           1);
       allocation->y = 0;
@@ -98,7 +98,7 @@ timeline_ruler_widget_set_ruler_marker_position (
       break;
     case RULER_MARKER_TYPE_SONG_END:
       allocation->x =
-        ui_pos_to_px (
+        ui_pos_to_px_timeline (
           &TRANSPORT->end_marker_pos,
           1) - RULER_MARKER_SIZE;
       allocation->y = 0;
@@ -107,7 +107,7 @@ timeline_ruler_widget_set_ruler_marker_position (
       break;
     case RULER_MARKER_TYPE_LOOP_START:
       allocation->x =
-        ui_pos_to_px (
+        ui_pos_to_px_timeline (
           &TRANSPORT->loop_start_pos,
           1);
       allocation->y = RULER_MARKER_SIZE + 1;
@@ -116,7 +116,7 @@ timeline_ruler_widget_set_ruler_marker_position (
       break;
     case RULER_MARKER_TYPE_LOOP_END:
       allocation->x =
-        ui_pos_to_px (
+        ui_pos_to_px_timeline (
           &TRANSPORT->loop_end_pos,
           1) - RULER_MARKER_SIZE;
       allocation->y = RULER_MARKER_SIZE + 1;
@@ -125,7 +125,7 @@ timeline_ruler_widget_set_ruler_marker_position (
       break;
     case RULER_MARKER_TYPE_CUE_POINT:
       allocation->x =
-        ui_pos_to_px (
+        ui_pos_to_px_timeline (
           &TRANSPORT->cue_pos,
           1);
       if (MAIN_WINDOW && MW_RULER)
@@ -185,7 +185,7 @@ multipress_pressed (
   if (n_press == 2)
     {
       Position pos;
-      ui_px_to_pos (
+      ui_px_to_pos_timeline (
         x,
         &pos,
         1);
@@ -267,7 +267,7 @@ drag_begin (GtkGestureDrag *       gesture,
   else if (start_y > (height * 1) / 4)
     {
       Position pos;
-      ui_px_to_pos (
+      ui_px_to_pos_timeline (
         start_x,
         &pos,
         1);
@@ -303,7 +303,7 @@ drag_begin (GtkGestureDrag *       gesture,
           PROJECT->has_range = 1;
           self->action =
             UI_OVERLAY_ACTION_RESIZING_R;
-          ui_px_to_pos (
+          ui_px_to_pos_timeline (
             start_x,
             &PROJECT->range_1,
             1);
@@ -354,7 +354,7 @@ drag_update (GtkGestureDrag * gesture,
         {
           if (self->range1_first)
             {
-              ui_px_to_pos (
+              ui_px_to_pos_timeline (
                 self->start_x + offset_x,
                 &PROJECT->range_1,
                 1);
@@ -365,7 +365,7 @@ drag_update (GtkGestureDrag * gesture,
             }
           else
             {
-              ui_px_to_pos (
+              ui_px_to_pos_timeline (
                 self->start_x + offset_x,
                 &PROJECT->range_2,
                 1);
@@ -384,7 +384,7 @@ drag_update (GtkGestureDrag * gesture,
         {
           if (self->range1_first)
             {
-              ui_px_to_pos (
+              ui_px_to_pos_timeline (
                 self->start_x + offset_x,
                 &PROJECT->range_2,
                 1);
@@ -395,7 +395,7 @@ drag_update (GtkGestureDrag * gesture,
             }
           else
             {
-              ui_px_to_pos (
+              ui_px_to_pos_timeline (
                 self->start_x + offset_x,
                 &PROJECT->range_1,
                 1);
@@ -413,7 +413,7 @@ drag_update (GtkGestureDrag * gesture,
       if (self->target == TRW_TARGET_RANGE)
         {
           Position diff_pos;
-          ui_px_to_pos (
+          ui_px_to_pos_timeline (
             abs (offset_x),
             &diff_pos,
             0);
@@ -515,7 +515,7 @@ drag_update (GtkGestureDrag * gesture,
       else if (self->target == TRW_TARGET_PLAYHEAD)
         {
           Position pos;
-          ui_px_to_pos (
+          ui_px_to_pos_timeline (
             self->start_x + offset_x,
             &pos,
             1);
@@ -527,7 +527,7 @@ drag_update (GtkGestureDrag * gesture,
         }
       else if (self->target == TRW_TARGET_LOOP_START)
         {
-          ui_px_to_pos (
+          ui_px_to_pos_timeline (
             self->start_x + offset_x,
             &TRANSPORT->loop_start_pos,
             1);
@@ -539,7 +539,7 @@ drag_update (GtkGestureDrag * gesture,
         }
       else if (self->target == TRW_TARGET_LOOP_END)
         {
-          ui_px_to_pos (
+          ui_px_to_pos_timeline (
             self->start_x + offset_x,
             &TRANSPORT->loop_end_pos,
             1);
@@ -553,7 +553,7 @@ drag_update (GtkGestureDrag * gesture,
         }
       else if (self->target == TRW_TARGET_SONG_START)
         {
-          ui_px_to_pos (
+          ui_px_to_pos_timeline (
             self->start_x + offset_x,
             &TRANSPORT->start_marker_pos,
             1);
@@ -565,7 +565,7 @@ drag_update (GtkGestureDrag * gesture,
         }
       else if (self->target == TRW_TARGET_SONG_END)
         {
-          ui_px_to_pos (
+          ui_px_to_pos_timeline (
             self->start_x + offset_x,
             &TRANSPORT->end_marker_pos,
             1);

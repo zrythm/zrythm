@@ -481,20 +481,14 @@ on_row_activated (GtkTreeView       *tree_view,
                            nfo.channels);
       AudioRegion * ar =
         audio_region_new (chan->track,
+                          out_buff,
+                          src_data.output_frames_gen,
+                          nfo.channels,
+                          descr->absolute_path,
                           &start_pos,
                           &end_pos);
       audio_track_add_region ((AudioTrack *) chan->track,
                               ar);
-
-      /* create an audio clip and add to region */
-      AudioClip * ac =
-        audio_clip_new (ar,
-                        out_buff,
-                        src_data.output_frames_gen,
-                        nfo.channels,
-                        descr->absolute_path);
-      audio_region_add_audio_clip (ar,
-                                   ac);
 
       /* refresh tracklist */
       mixer_widget_refresh (MW_MIXER);

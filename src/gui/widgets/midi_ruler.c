@@ -23,8 +23,13 @@
 #include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
-#include "gui/widgets/ruler.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_ruler.h"
+#include "gui/widgets/piano_roll.h"
+#include "gui/widgets/ruler.h"
+#include "gui/widgets/ruler_marker.h"
 #include "project.h"
 #include "utils/ui.h"
 
@@ -42,7 +47,7 @@ midi_ruler_draw_cb (GtkWidget * widget,
   /* engine is run only set after everything is set up
    * so this is a good way to decide if we should draw
    * or not */
-  if (!AUDIO_ENGINE->run || !PIANO_ROLL->track)
+  if (!AUDIO_ENGINE->run || !PIANO_ROLL->region)
     return FALSE;
 
   GdkRectangle rect;
@@ -57,7 +62,7 @@ midi_ruler_draw_cb (GtkWidget * widget,
   guint height =
     gtk_widget_get_allocated_height (widget);
 
-  Track * track = PIANO_ROLL->track;
+  Track * track = PIANO_ROLL->region->track;
   InstrumentTrack * it = (InstrumentTrack *) track;
   cairo_set_source_rgba (cr,
                          track->color.red,
@@ -70,8 +75,8 @@ midi_ruler_draw_cb (GtkWidget * widget,
     {
       Region * region = (Region *) it->regions[i];
 
-      px_start = ui_pos_to_px (&region->start_pos, 1);
-      px_end = ui_pos_to_px (&region->end_pos, 1);
+      px_start = ui_pos_to_px_timeline (&region->start_pos, 1);
+      px_end = ui_pos_to_px_timeline (&region->end_pos, 1);
 
       /* TODO only conditionally draw if it is within cairo
        * clip */
@@ -82,6 +87,239 @@ midi_ruler_draw_cb (GtkWidget * widget,
     }
 
  return FALSE;
+}
+
+void
+midi_ruler_widget_set_ruler_marker_position (
+  MidiRulerWidget * self,
+  RulerMarkerWidget *    rm,
+  GtkAllocation *       allocation)
+{
+  switch (rm->type)
+    {
+    case RULER_MARKER_TYPE_LOOP_START:
+      if (PIANO_ROLL->region)
+        {
+          allocation->x =
+            ui_pos_to_px_piano_roll (
+              &PIANO_ROLL->region->loop_start_pos,
+              1);
+        }
+      else
+        allocation->x = 0;
+      allocation->y = RULER_MARKER_SIZE + 1;
+      allocation->width = RULER_MARKER_SIZE;
+      allocation->height = RULER_MARKER_SIZE;
+      break;
+    case RULER_MARKER_TYPE_LOOP_END:
+      if (PIANO_ROLL->region)
+        {
+          allocation->x =
+            ui_pos_to_px_piano_roll (
+              &PIANO_ROLL->region->loop_end_pos,
+              1) - RULER_MARKER_SIZE;
+        }
+      else
+        allocation->x = 0;
+      allocation->y = RULER_MARKER_SIZE + 1;
+      allocation->width = RULER_MARKER_SIZE;
+      allocation->height = RULER_MARKER_SIZE;
+      break;
+    case RULER_MARKER_TYPE_CLIP_START:
+      if (PIANO_ROLL->region)
+        {
+          allocation->x =
+            ui_pos_to_px_piano_roll (
+              &PIANO_ROLL->region->clip_start_pos,
+              1);
+        }
+      else
+        allocation->x = 0;
+      if (MAIN_WINDOW && MIDI_RULER)
+        {
+      allocation->y =
+        ((gtk_widget_get_allocated_height (
+          GTK_WIDGET (MIDI_RULER)) -
+            RULER_MARKER_SIZE) - CUE_MARKER_HEIGHT) -
+            1;
+        }
+      else
+        allocation->y = RULER_MARKER_SIZE *2;
+      allocation->width = CUE_MARKER_WIDTH;
+      allocation->height = CUE_MARKER_HEIGHT;
+      break;
+    }
+
+}
+
+static gboolean
+multipress_pressed (
+  GtkGestureMultiPress *gesture,
+  gint                  n_press,
+  gdouble               x,
+  gdouble               y,
+  MidiRulerWidget * self)
+{
+  if (n_press == 2)
+    {
+      Position pos;
+      ui_px_to_pos_timeline (
+        x,
+        &pos,
+        1);
+      position_snap_simple (
+        &pos,
+        SNAP_GRID_TIMELINE);
+      position_set_to_pos (&TRANSPORT->cue_pos,
+                           &pos);
+
+    }
+
+  GdkEventSequence *sequence =
+    gtk_gesture_single_get_current_sequence (
+      GTK_GESTURE_SINGLE (gesture));
+  const GdkEvent * event =
+    gtk_gesture_get_last_event (
+      GTK_GESTURE (gesture), sequence);
+  GdkModifierType state_mask;
+  gdk_event_get_state (event, &state_mask);
+  if (state_mask & GDK_SHIFT_MASK)
+    self->shift_held = 1;
+
+  return FALSE;
+}
+
+static void
+drag_begin (GtkGestureDrag *       gesture,
+            gdouble               start_x,
+            gdouble               start_y,
+            MidiRulerWidget * self)
+{
+  g_message ("drag begin");
+  self->start_x = start_x;
+
+  guint height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
+
+  RulerMarkerWidget * hit_marker =
+    Z_RULER_MARKER_WIDGET (
+      ui_get_hit_child (
+        GTK_CONTAINER (self),
+        start_x,
+        start_y,
+        RULER_MARKER_WIDGET_TYPE));
+
+  /* if one of the markers hit */
+  if (hit_marker)
+    {
+      if (hit_marker == self->loop_start)
+        {
+          self->action =
+            UI_OVERLAY_ACTION_STARTING_MOVING;
+          self->target = MRW_TARGET_LOOP_START;
+        }
+      else if (hit_marker == self->loop_end)
+        {
+          self->action =
+            UI_OVERLAY_ACTION_STARTING_MOVING;
+          self->target = MRW_TARGET_LOOP_END;
+        }
+      else if (hit_marker == self->clip_start)
+        {
+          self->action =
+            UI_OVERLAY_ACTION_STARTING_MOVING;
+          self->target = MRW_TARGET_CLIP_START;
+        }
+    }
+  self->last_offset_x = 0;
+}
+
+static void
+drag_update (GtkGestureDrag * gesture,
+               gdouble         offset_x,
+               gdouble         offset_y,
+            MidiRulerWidget * self)
+{
+  GdkEventSequence *sequence =
+    gtk_gesture_single_get_current_sequence (
+      GTK_GESTURE_SINGLE (gesture));
+  const GdkEvent * event =
+    gtk_gesture_get_last_event (
+      GTK_GESTURE (gesture), sequence);
+  GdkModifierType state_mask;
+  gdk_event_get_state (event, &state_mask);
+  if (state_mask & GDK_SHIFT_MASK)
+    self->shift_held = 1;
+  else
+    self->shift_held = 0;
+
+  if (self->action ==
+      UI_OVERLAY_ACTION_STARTING_MOVING)
+    {
+      self->action = UI_OVERLAY_ACTION_MOVING;
+    }
+
+  /* handle x */
+  /* if moving the selection */
+  if (self->action == UI_OVERLAY_ACTION_MOVING)
+    {
+      if (self->target == MRW_TARGET_LOOP_START)
+        {
+          ui_px_to_pos_timeline (
+            self->start_x + offset_x,
+            &PIANO_ROLL->region->loop_start_pos,
+            1);
+          if (!self->shift_held)
+            position_snap_simple (
+              &PIANO_ROLL->region->loop_start_pos,
+              SNAP_GRID_TIMELINE);
+          transport_update_position_frames ();
+        }
+      else if (self->target == MRW_TARGET_LOOP_END)
+        {
+          ui_px_to_pos_timeline (
+            self->start_x + offset_x,
+            &PIANO_ROLL->region->loop_end_pos,
+            1);
+          if (!self->shift_held)
+            position_snap_simple (
+              &PIANO_ROLL->region->loop_end_pos,
+              SNAP_GRID_TIMELINE);
+          transport_update_position_frames ();
+          gtk_widget_queue_draw (
+            GTK_WIDGET (self->loop_end));
+        }
+      else if (self->target == MRW_TARGET_CLIP_START)
+        {
+          ui_px_to_pos_timeline (
+            self->start_x + offset_x,
+            &PIANO_ROLL->region->clip_start_pos,
+            1);
+          if (!self->shift_held)
+            position_snap_simple (
+              &PIANO_ROLL->region->clip_start_pos,
+              SNAP_GRID_TIMELINE);
+          transport_update_position_frames ();
+        }
+    } /* endif MOVING */
+
+  gtk_widget_queue_allocate (GTK_WIDGET (self));
+  self->last_offset_x = offset_x;
+
+  /* TODO update inspector */
+}
+
+static void
+drag_end (GtkGestureDrag *gesture,
+               gdouble         offset_x,
+               gdouble         offset_y,
+            MidiRulerWidget * self)
+{
+  self->start_x = 0;
+  self->shift_held = 0;
+
+  self->action = UI_OVERLAY_ACTION_NONE;
 }
 
 static void
@@ -96,7 +334,47 @@ midi_ruler_widget_init (
 {
   RULER_WIDGET_GET_PRIVATE (self);
 
-  g_signal_connect (G_OBJECT (rw_prv->bg), "draw",
-                    G_CALLBACK (midi_ruler_draw_cb), self);
+  /*g_signal_connect (*/
+    /*G_OBJECT (rw_prv->bg), "draw",*/
+    /*G_CALLBACK (midi_ruler_draw_cb), self);*/
+
+  /* add all the markers */
+  self->loop_start =
+    ruler_marker_widget_new (
+      RULER_MARKER_TYPE_LOOP_START);
+  gtk_overlay_add_overlay (
+    GTK_OVERLAY (self),
+    GTK_WIDGET (self->loop_start));
+  self->loop_end =
+    ruler_marker_widget_new (
+      RULER_MARKER_TYPE_LOOP_END);
+  gtk_overlay_add_overlay (
+    GTK_OVERLAY (self),
+    GTK_WIDGET (self->loop_end));
+  self->clip_start =
+    ruler_marker_widget_new (
+      RULER_MARKER_TYPE_CLIP_START);
+  gtk_overlay_add_overlay (
+    GTK_OVERLAY (self),
+    GTK_WIDGET (self->clip_start));
+
+  self->drag = GTK_GESTURE_DRAG (
+    gtk_gesture_drag_new (GTK_WIDGET (self)));
+  self->multipress = GTK_GESTURE_MULTI_PRESS (
+    gtk_gesture_multi_press_new (
+      GTK_WIDGET (self)));
+
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-begin",
+    G_CALLBACK (drag_begin),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-update",
+    G_CALLBACK (drag_update),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-end",
+    G_CALLBACK (drag_end),  self);
+  g_signal_connect (
+    G_OBJECT (self->multipress), "pressed",
+    G_CALLBACK (multipress_pressed), self);
 }
 

@@ -343,4 +343,5 @@ musical_scale_new (MusicalScaleType      type,
       break;
     }
 
+  return self;
 }

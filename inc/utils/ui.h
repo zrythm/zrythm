@@ -126,7 +126,7 @@ ui_get_hit_child (GtkContainer * parent,
  * Converts from pixels to position.
  */
 void
-ui_px_to_pos (int               px,
+ui_px_to_pos_timeline (int               px,
            Position *        pos,
            int               has_padding); ///< whether the given px contain padding
 
@@ -136,7 +136,7 @@ ui_px_to_pos (int               px,
  * Returns the frames.
  */
 long
-ui_px_to_frames (int   px,
+ui_px_to_frames_timeline (int   px,
                  int   has_padding); ///< whether the given px contain padding
 
 /**
@@ -144,7 +144,32 @@ ui_px_to_frames (int   px,
  * padding.
  */
 int
-ui_pos_to_px (Position *       pos,
+ui_pos_to_px_timeline (Position *       pos,
+           int              use_padding);
+
+/**
+ * Converts from pixels to position.
+ */
+void
+ui_px_to_pos_piano_roll (int               px,
+           Position *        pos,
+           int               has_padding); ///< whether the given px contain padding
+
+/**
+ * Converts from pixels to frames.
+ *
+ * Returns the frames.
+ */
+long
+ui_px_to_frames_piano_roll (int   px,
+                 int   has_padding); ///< whether the given px contain padding
+
+/**
+ * Converts position to px, optionally adding the ruler
+ * padding.
+ */
+int
+ui_pos_to_px_piano_roll (Position *       pos,
            int              use_padding);
 
 /**

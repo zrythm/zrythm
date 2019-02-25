@@ -79,7 +79,7 @@ typedef struct _PianoRollWidget
  * etc.
  */
 void
-piano_roll_widget_track_updated ();
+piano_roll_widget_region_updated ();
 
 void
 piano_roll_widget_setup (

@@ -55,6 +55,10 @@ audio_region_get_or_create_blank (int id)
 
 AudioRegion *
 audio_region_new (Track *    track,
+                  float *    buff,
+                  long       buff_size,
+                  int        channels,
+                  char *     filename,
                   Position * start_pos,
                   Position * end_pos)
 {
@@ -67,15 +71,12 @@ audio_region_new (Track *    track,
                start_pos,
                end_pos);
 
-  return self;
-}
+  self->buff = buff;
+  self->buff_size = buff_size;
+  self->channels = channels;
+  self->filename = strdup (filename);
 
-void
-audio_region_add_audio_clip (AudioRegion * self,
-                             AudioClip *   ac)
-{
-  self->audio_clip = ac;
-  /*audio_region_widget_refresh (self->widget);*/
+  return self;
 }
 
 /**
@@ -86,6 +87,6 @@ audio_region_add_audio_clip (AudioRegion * self,
 void
 audio_region_free_members (AudioRegion * self)
 {
-  if (self->audio_clip)
-    audio_clip_free (self->audio_clip);
+  free (self->buff);
+  g_free (self->filename);
 }

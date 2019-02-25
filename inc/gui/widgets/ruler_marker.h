@@ -56,6 +56,7 @@ typedef enum RulerMarkerType
   RULER_MARKER_TYPE_LOOP_START,
   RULER_MARKER_TYPE_LOOP_END,
   RULER_MARKER_TYPE_CUE_POINT,
+  RULER_MARKER_TYPE_CLIP_START,
 } RulerMarkerType;
 
 typedef struct _RulerMarkerWidget

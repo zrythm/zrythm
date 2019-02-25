@@ -73,11 +73,11 @@ draw_cb (GtkWidget *widget, cairo_t *cr,
                      0,
                      0);
       cairo_line_to (cr,
-                     width,
-                     0);
-      cairo_line_to (cr,
                      0,
                      height);
+      cairo_line_to (cr,
+                     width,
+                     0);
       cairo_fill (cr);
       break;
     case RULER_MARKER_TYPE_SONG_END:
@@ -97,15 +97,18 @@ draw_cb (GtkWidget *widget, cairo_t *cr,
     case RULER_MARKER_TYPE_LOOP_START:
       cairo_set_source_rgb (cr, 0, 0.9, 0.7);
       cairo_set_line_width (cr, 2);
-      cairo_move_to (cr,
-                     0,
-                     0);
-      cairo_line_to (cr,
-                     0,
-                     height);
-      cairo_line_to (cr,
-                     width,
-                     0);
+      cairo_move_to (
+        cr,
+        0,
+        0);
+      cairo_line_to (
+        cr,
+        width,
+        height / 2);
+      cairo_line_to (
+        cr,
+        0,
+        height);
       cairo_fill (cr);
       break;
     case RULER_MARKER_TYPE_LOOP_END:
@@ -122,6 +125,24 @@ draw_cb (GtkWidget *widget, cairo_t *cr,
                      width,
                      height);
       cairo_fill (cr);
+      break;
+    case RULER_MARKER_TYPE_CLIP_START:
+      cairo_set_source_rgb (cr, 0.2, 0.6, 0.9);
+      cairo_set_line_width (cr, 2);
+      cairo_move_to (
+        cr,
+        0,
+        0);
+      cairo_line_to (
+        cr,
+        width,
+        height / 2);
+      cairo_line_to (
+        cr,
+        0,
+        height);
+      cairo_fill (cr);
+
       break;
     }
 

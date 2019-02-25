@@ -128,8 +128,8 @@ timeline_selections_paste_to_pos (
       position_from_ticks (&region->end_pos,
                            pos_ticks + DIFF);
       /* TODO */
-      position_set_to_pos (&region->unit_end_pos,
-                           &region->end_pos);
+      /*position_set_to_pos (&region->unit_end_pos,*/
+                           /*&region->end_pos);*/
   g_message ("[in loop]num regions %d num midi notes %d",
              ts->num_regions,
              ts->regions[0]->midi_region->num_midi_notes);

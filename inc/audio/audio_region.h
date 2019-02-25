@@ -31,6 +31,10 @@ typedef struct Track Track;
 
 AudioRegion *
 audio_region_new (Track *    track,
+                  float *    buff,
+                  long       buff_size,
+                  int        channels,
+                  char *     filename,
                   Position * start_pos,
                   Position * end_pos);
 
@@ -39,10 +43,6 @@ audio_region_new (Track *    track,
  */
 AudioRegion *
 audio_region_get_or_create_blank (int id);
-
-void
-audio_region_add_audio_clip (AudioRegion * self,
-                             AudioClip *   ac);
 
 /**
  * Frees members only but not the audio region itself.

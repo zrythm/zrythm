@@ -39,29 +39,29 @@
  * To be called only from GTK threads.
  */
 void
-piano_roll_set_track (Track * track)
+piano_roll_set_region (Region * region)
 {
   PianoRoll * self = PIANO_ROLL;
 
-  if (track->type != TRACK_TYPE_INSTRUMENT)
+  if (region->track->type != TRACK_TYPE_INSTRUMENT)
     {
       g_warning ("Track is not an instrument track");
       return;
     }
   /*InstrumentTrack * it = (InstrumentTrack *) channel->track;*/
-  if (self->track)
+  if (self->region)
     {
       channel_reattach_midi_editor_manual_press_port (
-        track_get_channel (track),
+        track_get_channel (region->track),
         0);
     }
   channel_reattach_midi_editor_manual_press_port (
-    track_get_channel (track),
+    track_get_channel (region->track),
     1);
-  self->track = track;
-  self->track_id = track->id;
+  self->region = region;
+  self->region_id = region->id;
 
-  piano_roll_widget_track_updated ();
+  piano_roll_widget_region_updated ();
 }
 
 void

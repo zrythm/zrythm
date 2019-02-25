@@ -80,20 +80,6 @@ typedef struct _RulerWidgetClass
   GtkOverlayClass    parent_class;
 } RulerWidgetClass;
 
-/**
- * Turns px position into position.
- */
-void
-ruler_widget_px_to_pos (
-  RulerWidget * self,
-  Position * pos, ///< position to fill in
-  int      px); ///< pixels
-
-int
-ruler_widget_pos_to_px (
-  RulerWidget * self,
-  Position * pos);
-
 RulerWidgetPrivate *
 ruler_widget_get_private (RulerWidget * self);
 
@@ -104,8 +90,9 @@ ruler_widget_get_private (RulerWidget * self);
  * Returns if the zoom level was set or not.
  */
 int
-ruler_widget_set_zoom_level (RulerWidget * self,
-                             float         zoom_level);
+ruler_widget_set_zoom_level (
+  RulerWidget * self,
+  float         zoom_level);
 
 void
 ruler_widget_refresh (RulerWidget * self);

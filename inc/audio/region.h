@@ -25,7 +25,6 @@
 #ifndef __AUDIO_REGION_H__
 #define __AUDIO_REGION_H__
 
-#include "audio/audio_clip.h"
 #include "audio/midi_note.h"
 #include "audio/midi_region.h"
 #include "audio/position.h"
@@ -44,6 +43,7 @@ typedef struct Track Track;
 typedef struct MidiNote MidiNote;
 typedef struct MidiRegion MidiRegion;
 typedef struct AudioRegion AudioRegion;
+typedef struct _AudioClipWidget AudioClipWidget;
 
 typedef enum RegionType
 {
@@ -73,15 +73,28 @@ typedef struct Region
   char         * name;
 
   RegionType   type;
-  Position     start_pos; ///< start position
-  Position     end_pos; ///< end position
 
-  /**
-   * Position where the first unit of repeation ends.
+  /** Start position in the timeline. */
+  Position     start_pos;
+
+  /** End position in the timeline. */
+  Position     end_pos;
+
+  /** Start position of the clip. */
+  Position     clip_start_pos;
+
+  /** Start position of the clip loop.
    *
-   * If end pos > unit_end_pos, then region is repeating.
-   */
-  Position        unit_end_pos;
+   * The first time the region plays it will start
+   * playing from the clip_start_pos and then loop
+   * to this position. */
+  Position     loop_start_pos;
+
+  /** End position of the clip loop.
+   *
+   * Once this is reached, the clip will go back to
+   * the clip  loop start position. */
+  Position     loop_end_pos;
 
   /**
    * Region widget.
@@ -111,7 +124,7 @@ typedef struct Region
    * Used when deleting.
    * TODO figure out a better way
    */
-  int             cloned_from;
+  int               cloned_from;
 
   /** Muted or not */
   int                muted;
@@ -165,7 +178,25 @@ typedef struct AudioRegion
 {
   Region              parent;
 
-  AudioClip *         audio_clip;
+  /** Position to fade in until. */
+  Position            fade_in_pos;
+
+  /** Position to fade out from. */
+  Position            fade_out_pos;
+
+  /**
+   * Buffer holding samples/frames.
+   */
+  float *             buff;
+  long                buff_size;
+
+  /** Number of channels in the audio buffer. */
+  int                 channels;
+
+  /**
+   * Original filename.
+   */
+  char *              filename;
 
   int                 dummy;
 } AudioRegion;
@@ -236,9 +267,9 @@ static const cyaml_schema_field_t
   CYAML_FIELD_MAPPING (
     "end_pos", CYAML_FLAG_DEFAULT,
     Region, end_pos, position_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "unit_end_pos", CYAML_FLAG_DEFAULT,
-    Region, unit_end_pos, position_fields_schema),
+  //CYAML_FIELD_MAPPING (
+    //"unit_end_pos", CYAML_FLAG_DEFAULT,
+    //Region, unit_end_pos, position_fields_schema),
 	CYAML_FIELD_INT (
     "track_id", CYAML_FLAG_DEFAULT,
     Region, track_id),

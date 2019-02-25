@@ -122,9 +122,9 @@ arranger_bg_draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
     {
       int range_first_px, range_second_px;
       range_first_px =
-        ui_pos_to_px (&range_first_pos, 1);
+        ui_pos_to_px_timeline (&range_first_pos, 1);
       range_second_px =
-        ui_pos_to_px (&range_second_pos, 1);
+        ui_pos_to_px_timeline (&range_second_pos, 1);
       cairo_set_source_rgba (
         cr, 0.3, 0.3, 0.3, 0.3);
       cairo_rectangle (

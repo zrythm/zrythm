@@ -91,7 +91,6 @@ audio_track_fill_stereo_in_buffers (
     {
       AudioRegion * ar = self->regions[i];
       Region * r = (Region *) ar;
-      AudioClip * ac = ar->audio_clip;
       long region_start_frames =
         position_to_frames (&r->start_pos);
       long region_end_frames =
@@ -102,7 +101,7 @@ audio_track_fill_stereo_in_buffers (
           long local_frames_start =
             cycle_start_frames - region_start_frames;
           int buff_index = 0;
-          if (ac->channels == 1)
+          if (ar->channels == 1)
             {
               /*g_message ("1 channel");*/
               for (int i = 0;
@@ -111,25 +110,15 @@ audio_track_fill_stereo_in_buffers (
                 {
                   buff_index = local_frames_start + i;
                   if (buff_index < 0 ||
-                      buff_index >= ac->buff_size)
+                      buff_index >= ar->buff_size)
                     continue;
-                  /*if (fabs (ac->buff[buff_index]) > 1.0)*/
-                    /*{*/
-                      /*g_message (*/
-                        /*"i %d, buff index %d, buff size %ld, val %f",*/
-                        /*i,*/
-                        /*buff_index,*/
-                        /*ac->buff_size,*/
-                        /*ac->buff[buff_index]);*/
-                      /*ac->buff[buff_index] = 0.0;*/
-                    /*}*/
                   stereo_in->l->buf[i] =
-                    ac->buff[buff_index];
+                    ar->buff[buff_index];
                   stereo_in->r->buf[i] =
-                    ac->buff[buff_index];
+                    ar->buff[buff_index];
                 }
             }
-          else if (ac->channels == 2)
+          else if (ar->channels == 2)
             {
               /*g_message ("2 channels");*/
               for (int i = 0;
@@ -138,28 +127,12 @@ audio_track_fill_stereo_in_buffers (
                 {
                   buff_index = local_frames_start + i;
                   if (buff_index < 0 ||
-                      buff_index + 1 >= ac->buff_size)
+                      buff_index + 1 >= ar->buff_size)
                     continue;
-                  /*if (fabs (ac->buff[buff_index]) > 1.0)*/
-                    /*{*/
-                      /*g_message (*/
-                        /*"i %d, val %f",*/
-                        /*i,*/
-                        /*ac->buff[buff_index]);*/
-                      /*ac->buff[buff_index] = 0.0;*/
-                    /*}*/
-                  /*if (fabs (ac->buff[buff_index + 1]) > 1.0)*/
-                    /*{*/
-                      /*g_message (*/
-                        /*"i %d, val %f",*/
-                        /*i,*/
-                        /*ac->buff[buff_index]);*/
-                      /*ac->buff[buff_index] = 0.0;*/
-                    /*}*/
                   stereo_in->l->buf[i] =
-                    ac->buff[buff_index];
+                    ar->buff[buff_index];
                   stereo_in->r->buf[i] =
-                    ac->buff[buff_index + 1];
+                    ar->buff[buff_index + 1];
                 }
             }
         }

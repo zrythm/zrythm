@@ -23,6 +23,7 @@
 #define __GUI_WIDGETS_MIDI_RULER_H__
 
 #include "gui/widgets/ruler.h"
+#include "utils/ui.h"
 
 #include <gtk/gtk.h>
 
@@ -36,10 +37,51 @@ G_DECLARE_FINAL_TYPE (MidiRulerWidget,
 
 #define MIDI_RULER MW_PIANO_ROLL->ruler
 
+typedef struct _RulerMarkerWidget RulerMarkerWidget;
+
+/**
+ * The midi ruler widget target acting upon.
+ */
+typedef enum MRWTarget
+{
+  MRW_TARGET_PLAYHEAD,
+  MRW_TARGET_LOOP_START,
+  MRW_TARGET_LOOP_END,
+  MRW_TARGET_CLIP_START,
+} MRWTarget;
+
 typedef struct _MidiRulerWidget
 {
   RulerWidget         parent_instance;
 
+  /**
+   * Markers.
+   */
+  RulerMarkerWidget *      loop_start;
+  RulerMarkerWidget *      loop_end;
+  RulerMarkerWidget *      clip_start;
+
+  /**
+   * Dragging playhead or creating range, etc.
+   */
+  UiOverlayAction          action;
+  MRWTarget                target; ///< object working upon
+  double                   start_x; ///< for dragging
+  double                   last_offset_x;
+  int                      range1_first; ///< range1 was before range2 at drag start
+  GtkGestureDrag *         drag;
+  GtkGestureMultiPress *   multipress;
+
+  /**
+   * If shift was held down during the press.
+   */
+  int                      shift_held;
 } MidiRulerWidget;
+
+void
+midi_ruler_widget_set_ruler_marker_position (
+  MidiRulerWidget * self,
+  RulerMarkerWidget *    rm,
+  GtkAllocation *       allocation);
 
 #endif

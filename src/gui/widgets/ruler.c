@@ -79,7 +79,7 @@ get_child_position (GtkOverlay   *overlay,
   if (Z_IS_RULER_PLAYHEAD_WIDGET (widget))
     {
       allocation->x =
-        ui_pos_to_px (
+        ui_pos_to_px_timeline (
           &TRANSPORT->playhead_pos,
           1) - (PLAYHEAD_TRIANGLE_WIDTH / 2);
       allocation->y =
@@ -98,10 +98,16 @@ get_child_position (GtkOverlay   *overlay,
     }
   else if (Z_IS_RULER_MARKER_WIDGET (widget))
     {
-      timeline_ruler_widget_set_ruler_marker_position (
-        Z_TIMELINE_RULER_WIDGET (self),
-        Z_RULER_MARKER_WIDGET (widget),
-        allocation);
+      if (Z_IS_TIMELINE_RULER_WIDGET (self))
+        timeline_ruler_widget_set_ruler_marker_position (
+          Z_TIMELINE_RULER_WIDGET (self),
+          Z_RULER_MARKER_WIDGET (widget),
+          allocation);
+      else
+        midi_ruler_widget_set_ruler_marker_position (
+          Z_MIDI_RULER_WIDGET (self),
+          Z_RULER_MARKER_WIDGET (widget),
+          allocation);
     }
 
   return TRUE;

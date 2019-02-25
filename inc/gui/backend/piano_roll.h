@@ -21,7 +21,7 @@
 #define __AUDIO_PIANO_ROLL_H__
 
 #define PIANO_ROLL (&PROJECT->piano_roll)
-#define PIANO_ROLL_SELECTED_TRACK (PIANO_ROLL->track)
+#define PIANO_ROLL_SELECTED_REGION (PIANO_ROLL->region)
 
 typedef enum MidiModifier
 {
@@ -31,7 +31,7 @@ typedef enum MidiModifier
   MIDI_MODIFIER_AFTERTOUCH,
 } MidiModifier;
 
-typedef struct Track Track;
+typedef struct Region Region;
 
 /**
  * Piano roll serializable backend.
@@ -43,9 +43,9 @@ typedef struct PianoRoll
   int                    notes_zoom; ///< notes zoom level
   MidiModifier           midi_modifier; ///< selected midi modifier
 
-  /** Track currently attached to piano_roll. */
-  int                      track_id;
-  Track *                  track; ///< cache
+  /** Region currently attached to piano_roll. */
+  int                      region_id;
+  Region *                 region; ///< cache
 } PianoRoll;
 
 static const cyaml_strval_t
@@ -68,8 +68,8 @@ piano_roll_fields_schema[] =
 			PianoRoll, midi_modifier, midi_modifier_strings,
       CYAML_ARRAY_LEN (midi_modifier_strings)),
 	CYAML_FIELD_INT (
-			"track_id", CYAML_FLAG_DEFAULT,
-			PianoRoll, track_id),
+			"region_id", CYAML_FLAG_DEFAULT,
+			PianoRoll, region_id),
 
 	CYAML_FIELD_END
 };
@@ -91,6 +91,6 @@ piano_roll_init (PianoRoll * self);
  * To be called only from GTK threads.
  */
 void
-piano_roll_set_track (Track * track);
+piano_roll_set_region (Region * region);
 
 #endif

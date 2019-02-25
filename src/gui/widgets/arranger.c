@@ -115,7 +115,7 @@ get_child_position (GtkOverlay   *overlay,
   if (Z_IS_ARRANGER_PLAYHEAD_WIDGET (widget))
     {
       allocation->x =
-        ui_pos_to_px (
+        ui_pos_to_px_timeline (
           &TRANSPORT->playhead_pos,
           1) - 1; /* minus half the width */
       allocation->y = 0;
@@ -611,7 +611,7 @@ drag_begin (GtkGestureDrag *   gesture,
           Region * region = NULL;
 
           /* get the position */
-          ui_px_to_pos (start_x, &pos, 1);
+          ui_px_to_pos_timeline (start_x, &pos, 1);
 
           if (timeline)
             {
@@ -664,12 +664,7 @@ drag_begin (GtkGestureDrag *   gesture,
                 (MW_PIANO_ROLL->piano_roll_labels->total_px
                   - start_y) /
                 MW_PIANO_ROLL->piano_roll_labels->px_per_note;
-              if (PIANO_ROLL->track)
-                {
-                  region = region_at_position (
-                    PIANO_ROLL->track,
-                    &pos);
-                }
+              region = PIANO_ROLL->region;
 
               /* create a note */
               if (region)
@@ -760,7 +755,7 @@ drag_update (GtkGestureDrag * gesture,
 
       /* get new pos */
       Position pos;
-      ui_px_to_pos (ar_prv->start_x + offset_x,
+      ui_px_to_pos_timeline (ar_prv->start_x + offset_x,
                     &pos,
                     1);
 
@@ -782,7 +777,7 @@ drag_update (GtkGestureDrag * gesture,
              UI_OVERLAY_ACTION_RESIZING_R)
     {
       Position pos;
-      ui_px_to_pos (ar_prv->start_x + offset_x,
+      ui_px_to_pos_timeline (ar_prv->start_x + offset_x,
                     &pos,
                     1);
       if (timeline)
@@ -810,7 +805,7 @@ drag_update (GtkGestureDrag * gesture,
        * positions and then snap it) */
       Position diff_pos;
       int is_negative = offset_x < 0;
-      ui_px_to_pos (abs (offset_x),
+      ui_px_to_pos_timeline (abs (offset_x),
                     &diff_pos,
                     0);
       long ticks_diff = position_to_ticks (&diff_pos);

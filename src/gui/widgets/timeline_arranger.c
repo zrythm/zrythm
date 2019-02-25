@@ -105,12 +105,12 @@ timeline_arranger_widget_set_allocation (
                 &wy);
 
       allocation->x =
-        ui_pos_to_px (
+        ui_pos_to_px_timeline (
           &rw_prv->region->start_pos,
           1);
       allocation->y = wy;
       allocation->width =
-        ui_pos_to_px (
+        ui_pos_to_px_timeline (
           &rw_prv->region->end_pos,
           1) - allocation->x;
       allocation->height =
@@ -136,7 +136,7 @@ timeline_arranger_widget_set_allocation (
                 &wy);
 
       allocation->x =
-        ui_pos_to_px (&ap->pos, 1) -
+        ui_pos_to_px_timeline (&ap->pos, 1) -
         AP_WIDGET_POINT_SIZE / 2;
       allocation->y =
         (wy + automation_point_get_y_in_px (ap)) -
@@ -165,14 +165,14 @@ timeline_arranger_widget_set_allocation (
         automation_track_get_ap_after_curve (ac->at, ac);
 
       allocation->x =
-        ui_pos_to_px (
+        ui_pos_to_px_timeline (
           &prev_ap->pos,
           1) - AC_Y_HALF_PADDING;
       int prev_y = automation_point_get_y_in_px (prev_ap);
       int next_y = automation_point_get_y_in_px (next_ap);
       allocation->y = (wy + (prev_y > next_y ? next_y : prev_y) - AC_Y_HALF_PADDING);
       allocation->width =
-        (ui_pos_to_px (
+        (ui_pos_to_px_timeline (
           &next_ap->pos,
           1) - allocation->x) + AC_Y_HALF_PADDING;
       allocation->height = (prev_y > next_y ? prev_y - next_y : next_y - prev_y) + AC_Y_PADDING;
@@ -192,7 +192,7 @@ timeline_arranger_widget_set_allocation (
                 &wy);
 
       allocation->x =
-        ui_pos_to_px (
+        ui_pos_to_px_timeline (
           &cw->chord->pos,
           1);
       Position tmp;
@@ -203,7 +203,7 @@ timeline_arranger_widget_set_allocation (
         tmp.beats + 1);
       allocation->y = wy;
       allocation->width =
-        ui_pos_to_px (
+        ui_pos_to_px_timeline (
           &tmp,
           1) - allocation->x;
       allocation->height =
@@ -599,7 +599,7 @@ timeline_arranger_widget_on_drag_begin_region_hit (
       Track * track = rw_prv->region->track;
       if (track->type == TRACK_TYPE_INSTRUMENT)
         {
-          piano_roll_set_track (track);
+          piano_roll_set_region (rw_prv->region);
         }
     }
 
@@ -1126,7 +1126,7 @@ timeline_arranger_widget_snap_range_r (
   if (MW_TIMELINE->resizing_range_start)
     {
       /* set range 1 at current point */
-      ui_px_to_pos (
+      ui_px_to_pos_timeline (
         ar_prv->start_x,
         &PROJECT->range_1,
         1);

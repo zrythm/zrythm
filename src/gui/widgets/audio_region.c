@@ -42,12 +42,7 @@ draw_cb (AudioRegionWidget * self, cairo_t *cr, gpointer data)
 {
   REGION_WIDGET_GET_PRIVATE (data);
   Region * region = rw_prv->region;
-  AudioRegion * audio_region = (AudioRegion *) region;
-
-  if (!audio_region->audio_clip)
-    return FALSE;
-
-  AudioClip * ac = audio_region->audio_clip;
+  AudioRegion * ar = (AudioRegion *) region;
 
   guint width, height;
   GtkStyleContext *context;
@@ -70,11 +65,11 @@ draw_cb (AudioRegionWidget * self, cairo_t *cr, gpointer data)
   long prev_frames = 0;
   for (int i = 0; i < width; i++)
     {
-      long curr_frames = ui_px_to_frames (i, 0);
+      long curr_frames = ui_px_to_frames_timeline (i, 0);
       float min = 0, max = 0;
       for (int j = prev_frames; j < curr_frames; j++)
         {
-          float val = ac->buff[j];
+          float val = ar->buff[j];
           if (val > max)
             max = val;
           if (val < min)
