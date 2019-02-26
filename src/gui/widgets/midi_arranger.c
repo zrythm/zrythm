@@ -76,14 +76,14 @@ midi_arranger_widget_set_allocation (
       MidiNoteWidget * midi_note_widget =
         Z_MIDI_NOTE_WIDGET (widget);
       allocation->x =
-        ui_pos_to_px_timeline (
+        ui_pos_to_px_piano_roll (
           &midi_note_widget->midi_note->start_pos,
           1);
       allocation->y =
         MW_PIANO_ROLL->piano_roll_labels->px_per_note *
           (127 - midi_note_widget->midi_note->val);
       allocation->width =
-        ui_pos_to_px_timeline (
+        ui_pos_to_px_piano_roll (
           &midi_note_widget->midi_note->end_pos,
           1) - allocation->x;
       allocation->height =

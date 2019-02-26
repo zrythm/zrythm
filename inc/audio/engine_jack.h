@@ -1,7 +1,5 @@
 /*
- * audio/engine.h - Audio engine
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -25,8 +23,11 @@
 #include <stdlib.h>
 
 #define JACK_PORT_T(exp) ((jack_port_t *) exp)
-#define MIDI_IN_EVENT(i) (AUDIO_ENGINE->midi_in->midi_events.jack_midi_events[i])
-#define MIDI_IN_NUM_EVENTS AUDIO_ENGINE->midi_in->midi_events.num_events
+#define MIDI_IN_EVENT(i) \
+  (AUDIO_ENGINE->midi_in->midi_events-> \
+   jack_midi_events[i])
+#define MIDI_IN_NUM_EVENTS \
+  AUDIO_ENGINE->midi_in->midi_events->num_events
 
 typedef struct AudioEngine AudioEngine;
 

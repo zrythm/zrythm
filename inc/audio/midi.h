@@ -35,6 +35,9 @@
 #define MIDI_CH1_PROG_CHANGE 0xC0
 #define MIDI_CH1_CHAN_AFTERTOUCH 0xD0
 #define MIDI_CH1_PITCH_WHEEL_RANGE 0xE0
+#define MIDI_ALL_NOTES_OFF 0x7B
+#define MIDI_ALL_SOUND_OFF 0x78
+#define MAX_MIDI_EVENTS 128
 
 #include <jack/midiport.h>
 
@@ -47,10 +50,19 @@ typedef struct MidiEvents MidiEvents;
 typedef struct MidiEvents
 {
   int        num_events;       ///< number of events
-  jack_midi_event_t     jack_midi_events[128];       ///< jack midi events
+  jack_midi_event_t   jack_midi_events[MAX_MIDI_EVENTS];       ///< jack midi events
   MidiEvents           * queue; ///< for queing events. engine will copy them to the
                               ///< original MIDI events when ready to be processed
 } MidiEvents;
+
+/**
+ * Returns a MidiEvents instance with pre-allocated
+ * buffers for each midi event.
+ *
+ * Optionally allocates/initializes the queue.
+ */
+MidiEvents *
+midi_events_new (int init_queue);
 
 /**
  * Appends the events from src to dest

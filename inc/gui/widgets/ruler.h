@@ -52,6 +52,8 @@ G_DECLARE_DERIVABLE_TYPE (RulerWidget,
  * Pixels to put before 1st bar.
  */
 #define SPACE_BEFORE_START 10
+#define SPACE_BEFORE_START_F 10.f
+#define SPACE_BEFORE_START_D 10.0
 
 #define MIN_ZOOM_LEVEL 0.2f
 #define MAX_ZOOM_LEVEL 60.f

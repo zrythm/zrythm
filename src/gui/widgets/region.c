@@ -38,7 +38,6 @@ draw_text (cairo_t *cr, char * name)
 
   PangoLayout *layout;
   PangoFontDescription *desc;
-  /*int i;*/
 
   cairo_translate (cr, 2, 2);
 
@@ -56,9 +55,8 @@ draw_text (cairo_t *cr, char * name)
   /*pango_cairo_update_layout (cr, layout);*/
 
   /*pango_layout_get_size (layout, &width, &height);*/
-  /*cairo_move_to (cr, - ((double)width / PANGO_SCALE) / 2, - RADIUS);*/
+  /*cairo_move_to (cr, - ((double)width / PANGO_SCALA) / 2, - RADIUS);*/
   pango_cairo_show_layout (cr, layout);
-
 
   /* free the layout object */
   g_object_unref (layout);
@@ -71,6 +69,7 @@ draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
   GtkStyleContext *context;
 
   REGION_WIDGET_GET_PRIVATE (data);
+  Region * r = rw_prv->region;
 
   context = gtk_widget_get_style_context (GTK_WIDGET (self));
 
@@ -95,6 +94,51 @@ draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
   cairo_rectangle(cr, 0, 0, width, height);
   cairo_set_line_width (cr, 3.5);
   cairo_stroke (cr);
+
+  /* draw loop points */
+  double dashes[] = { 5 };
+  cairo_set_dash (cr, dashes, 1, 0);
+  cairo_set_line_width (cr, 1);
+  cairo_set_source_rgba (cr,
+                         0,
+                         0,
+                         0,
+                         1.0);
+  /*long full_ticks =*/
+    /*region_get_full_length_in_ticks (r);*/
+  /*long loop_start_ticks =*/
+    /*position_to_ticks (&r->loop_start_pos);*/
+  long loop_end_ticks =
+    position_to_ticks (&r->loop_end_pos);
+  long loop_ticks =
+    region_get_loop_length_in_ticks (r);
+  int px =
+    ui_pos_to_px_timeline (&r->loop_start_pos, 0);
+  if (px != 0)
+    {
+      cairo_set_source_rgba (cr,
+                             0,
+                             1,
+                             0,
+                             1.0);
+      cairo_move_to (cr, px, 0);
+      cairo_line_to (cr, px, height);
+      cairo_stroke (cr);
+    }
+
+  Position tmp;
+  int num_loops = region_get_num_loops (r, 0);
+  for (int i = 0; i < num_loops; i++)
+    {
+      position_from_ticks (
+        &tmp, loop_end_ticks + loop_ticks * i);
+      px =
+        ui_pos_to_px_timeline (&tmp, 0);
+
+      cairo_move_to (cr, px, 0);
+      cairo_line_to (cr, px, height);
+      cairo_stroke (cr);
+    }
 
   draw_text (cr, rw_prv->region->name);
 

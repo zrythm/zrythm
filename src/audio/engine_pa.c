@@ -86,8 +86,9 @@ pa_setup (AudioEngine * self)
   self->midi_editor_manual_press = midi_editor_manual_press;
 
   /* init MIDI queues for manual presse/piano roll */
-  self->midi_editor_manual_press->midi_events.queue =
-    calloc (1, sizeof (MidiEvents));
+  self->midi_editor_manual_press->midi_events->
+    queue =
+      calloc (1, sizeof (MidiEvents));
 
   self->pa_stream = pa_open_stream (self);
 

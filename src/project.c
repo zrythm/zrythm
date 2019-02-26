@@ -164,7 +164,7 @@ project_set_has_range (int has_range)
 {
   PROJECT->has_range = has_range;
 
-  timeline_ruler_refresh ();
+  timeline_ruler_widget_refresh ();
 }
 
 void

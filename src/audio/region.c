@@ -46,6 +46,21 @@ region_init (Region *   region,
                        start_pos);
   position_set_to_pos (&region->end_pos,
                        end_pos);
+  long length =
+    region_get_full_length_in_ticks (region);
+  position_from_ticks (&region->true_end_pos,
+                       length);
+  position_init (&region->loop_start_pos);
+  /*g_message ("loop start");*/
+  position_print (&region->loop_start_pos);
+  /*g_message ("loop end");*/
+  position_set_to_pos (&region->loop_end_pos,
+                       &region->true_end_pos);
+  /*position_print (&region->loop_end_pos);*/
+  /*g_message ("start pos");*/
+  /*position_print (&region->start_pos);*/
+  /*g_message ("end pos");*/
+  /*position_print (&region->end_pos);*/
   region->track_id = track->id;
   region->track = track;
   Channel * chan = track_get_channel (track);
@@ -93,19 +108,59 @@ region_set_start_pos (Region * region,
 
   position_set_to_pos (&region->start_pos,
                        pos);
-  if (moved && region->type == REGION_TYPE_MIDI)
-    {
-      MidiRegion * midi_region = (MidiRegion *) region;
-      int prev_frames = position_to_frames (&prev);
-      int now_frames = position_to_frames (pos);
-      int frames = now_frames - prev_frames;
-      for (int i = 0; i < midi_region->num_midi_notes; i++)
-        {
-          MidiNote * note = midi_region->midi_notes[i];
-          position_add_frames (&note->start_pos, frames);
-          position_add_frames (&note->end_pos, frames);
-        }
-    }
+  /*if (moved && region->type == REGION_TYPE_MIDI)*/
+    /*{*/
+      /*MidiRegion * midi_region = (MidiRegion *) region;*/
+      /*int prev_frames = position_to_frames (&prev);*/
+      /*int now_frames = position_to_frames (pos);*/
+      /*int frames = now_frames - prev_frames;*/
+      /*for (int i = 0; i < midi_region->num_midi_notes; i++)*/
+        /*{*/
+          /*MidiNote * note = midi_region->midi_notes[i];*/
+          /*position_add_frames (&note->start_pos, frames);*/
+          /*position_add_frames (&note->end_pos, frames);*/
+        /*}*/
+    /*}*/
+  long length =
+    region_get_full_length_in_ticks (region);
+  position_from_ticks (&region->true_end_pos,
+                       length);
+}
+
+/**
+ * Returns the full length as it appears on the
+ * timeline in ticks.
+ */
+long
+region_get_full_length_in_ticks (
+  Region * region)
+{
+  return position_to_ticks (&region->end_pos) -
+    position_to_ticks (&region->start_pos);
+}
+
+/**
+ * Returns the length of the loop in ticks.
+ */
+long
+region_get_loop_length_in_ticks (
+  Region * region)
+{
+  return
+    position_to_ticks (&region->loop_end_pos) -
+      position_to_ticks (&region->loop_start_pos);
+}
+
+/**
+ * Returns the true length as it appears on the
+ * piano roll (not taking into account any looping)
+ * in ticks.
+ */
+long
+region_get_true_length_in_ticks (
+  Region * region)
+{
+  return position_to_ticks (&region->true_end_pos);
 }
 
 /**
@@ -116,6 +171,50 @@ region_set_end_pos (Region * region,
                     Position * pos)
 {
   position_set_to_pos (&region->end_pos,
+                       pos);
+}
+
+/**
+ * Checks if position is valid then sets it.
+ */
+void
+region_set_true_end_pos (Region * region,
+                         Position * pos)
+{
+  position_set_to_pos (&region->true_end_pos,
+                       pos);
+}
+
+/**
+ * Checks if position is valid then sets it.
+ */
+void
+region_set_loop_end_pos (Region * region,
+                         Position * pos)
+{
+  position_set_to_pos (&region->loop_end_pos,
+                       pos);
+}
+
+/**
+ * Checks if position is valid then sets it.
+ */
+void
+region_set_loop_start_pos (Region * region,
+                         Position * pos)
+{
+  position_set_to_pos (&region->loop_start_pos,
+                       pos);
+}
+
+/**
+ * Checks if position is valid then sets it.
+ */
+void
+region_set_clip_start_pos (Region * region,
+                         Position * pos)
+{
+  position_set_to_pos (&region->clip_start_pos,
                        pos);
 }
 
@@ -158,6 +257,56 @@ region_at_position (Track    * track, ///< the track to look in
         }
     }
   return NULL;
+}
+
+/**
+ * Returns if the position is inside the region
+ * or not.
+ */
+int
+region_is_hit (
+  Region *   region,
+  Position * pos) ///< global position
+{
+  return
+    position_compare (
+      &region->start_pos, pos) <= 0 &&
+    position_compare (
+      &region->end_pos, pos) > 0;
+}
+
+/**
+ * Returns the number of loops in the region,
+ * optionally including incomplete ones.
+ */
+int
+region_get_num_loops (
+  Region * region,
+  int      count_incomplete_loops)
+{
+  int i = 0;
+  long loop_size =
+    region_get_loop_length_in_ticks (region);
+  long full_size =
+    region_get_full_length_in_ticks (region);
+  long loop_start =
+    position_to_ticks (&region->loop_start_pos);
+  long curr_ticks = loop_start;
+
+  while (curr_ticks < full_size)
+    {
+      i++;
+      curr_ticks += loop_size;
+    }
+
+  if (!count_incomplete_loops)
+    i--;
+
+  /*if (count_incomplete_loops &&*/
+      /*(curr_ticks - loop_start) % loop_size != 0)*/
+    /*i++;*/
+
+  return i;
 }
 
 /**
@@ -205,6 +354,31 @@ region_clone (Region *        region,
   new_region->cloned_from = region->id;
 
   return new_region;
+}
+
+/**
+ * Converts a position on the timeline (global)
+ * to a local position (in the clip).
+ */
+void
+region_timeline_pos_to_local (
+  Region *   region, ///< the region
+  Position * timeline_pos, ///< timeline position
+  Position * local_pos) ///< position to fill
+{
+  long diff;
+  if (region)
+    {
+      diff =
+        position_to_ticks (timeline_pos) -
+        position_to_ticks (
+          &region->start_pos);
+    }
+  else
+    {
+      diff = 0;
+    }
+  position_from_ticks (local_pos, diff);
 }
 
 /**

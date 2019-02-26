@@ -877,6 +877,22 @@ timeline_arranger_widget_create_region (
   position_set_min_size (&region->start_pos,
                          &region->end_pos,
                          ar_prv->snap_grid);
+  region_set_end_pos (region,
+                      &region->end_pos);
+  long length =
+    region_get_full_length_in_ticks (region);
+  position_from_ticks (&region->true_end_pos,
+                       length);
+  region_set_true_end_pos (region,
+                           &region->true_end_pos);
+  Position tmp;
+  position_init (&tmp);
+  region_set_clip_start_pos (region,
+                             &tmp);
+  region_set_loop_start_pos (region,
+                             &tmp);
+  region_set_loop_end_pos (region,
+                           &region->true_end_pos);
   if (track->type == TRACK_TYPE_INSTRUMENT)
     {
       instrument_track_add_region ((InstrumentTrack *)track,

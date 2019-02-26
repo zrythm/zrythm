@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -256,22 +256,24 @@ _create_port(Lv2Plugin*   lv2_plugin,
       lv2_port->port->type = TYPE_CV;
 #endif
     }
-  else if (lilv_port_is_a (lv2_plugin->lilv_plugin,
-                           lv2_port->lilv_port,
-                           lv2_plugin->nodes.ev_EventPort))
+  else if (lilv_port_is_a (
+            lv2_plugin->lilv_plugin,
+            lv2_port->lilv_port,
+            lv2_plugin->nodes.ev_EventPort))
     {
       lv2_port->port->type = TYPE_EVENT;
+      lv2_port->port->midi_events =
+        midi_events_new (1);
       lv2_port->old_api = true;
     }
-  else if (lilv_port_is_a (lv2_plugin->lilv_plugin,
-                           lv2_port->lilv_port,
-                           lv2_plugin->nodes.atom_AtomPort))
+  else if (lilv_port_is_a (
+            lv2_plugin->lilv_plugin,
+            lv2_port->lilv_port,
+            lv2_plugin->nodes.atom_AtomPort))
     {
       lv2_port->port->type = TYPE_EVENT;
-      /*if (lv2_port->port->flow == FLOW_INPUT)*/
-        /*{*/
-          /*g_message ("input MIDI port created");*/
-        /*}*/
+      lv2_port->port->midi_events =
+        midi_events_new (1);
       lv2_port->old_api = false;
     }
   else if (!optional)
@@ -2080,15 +2082,15 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
                 (const uint8_t*) LV2_ATOM_BODY(&get));
             }
 
-          if (port->midi_events.num_events > 0)
+          if (port->midi_events->num_events > 0)
             {
               /* Write Jack MIDI input */
               for (uint32_t i = 0;
-                   i < port->midi_events.num_events;
+                   i < port->midi_events->num_events;
                    ++i)
                 {
                   jack_midi_event_t * ev =
-                    &port->midi_events.jack_midi_events[i];
+                    &port->midi_events->jack_midi_events[i];
                   lv2_evbuf_write (
                     &iter,
                     ev->time, 0,
@@ -2096,7 +2098,7 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
                     ev->size, ev->buffer);
                 }
             }
-          midi_events_clear (&port->midi_events);
+          midi_events_clear (port->midi_events);
       } else if (port->type == TYPE_EVENT) {
               /* Clear event output for plugin to write to */
               lv2_evbuf_reset(lv2_port->evbuf, false);

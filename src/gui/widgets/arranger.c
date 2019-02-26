@@ -112,36 +112,53 @@ get_child_position (GtkOverlay   *overlay,
 {
   ArrangerWidget * self = (ArrangerWidget *) overlay;
 
+  GET_ARRANGER_ALIASES (self);
+
   if (Z_IS_ARRANGER_PLAYHEAD_WIDGET (widget))
     {
-      allocation->x =
-        ui_pos_to_px_timeline (
-          &TRANSPORT->playhead_pos,
-          1) - 1; /* minus half the width */
+      if (timeline)
+        allocation->x =
+          ui_pos_to_px_timeline (
+            &TRANSPORT->playhead_pos,
+            1) - 1; /* minus half the width */
+      else if ((midi_arranger ||
+               midi_modifier_arranger) &&
+               PIANO_ROLL->region)
+        {
+          Position pos;
+          region_timeline_pos_to_local (
+            PIANO_ROLL->region,
+            &TRANSPORT->playhead_pos,
+            &pos);
+          allocation->x =
+            ui_pos_to_px_piano_roll (
+              &pos,
+              1) - 1; /* minus half the width */
+        }
       allocation->y = 0;
       allocation->width = 2;
       allocation->height =
         gtk_widget_get_allocated_height (
           GTK_WIDGET (self));
     }
-  if (ARRANGER_IS_MIDI (self))
+  if (midi_arranger)
     {
       midi_arranger_widget_set_allocation (
-        Z_MIDI_ARRANGER_WIDGET (self),
+        midi_arranger,
         widget,
         allocation);
     }
-  else if (ARRANGER_IS_TIMELINE (self))
+  else if (timeline)
     {
       timeline_arranger_widget_set_allocation (
-        Z_TIMELINE_ARRANGER_WIDGET (self),
+        timeline,
         widget,
         allocation);
     }
-  else if (ARRANGER_IS_MIDI_MODIFIER (self))
+  else if (midi_modifier_arranger)
     {
       midi_modifier_arranger_widget_set_allocation (
-        Z_MIDI_MODIFIER_ARRANGER_WIDGET (self),
+        midi_modifier_arranger,
         widget,
         allocation);
     }
@@ -381,6 +398,10 @@ arranger_widget_select_all (ArrangerWidget *  self,
         timeline,
         select);
     }
+  else if (midi_modifier_arranger)
+    {
+      /* TODO */
+    }
   update_inspector (self);
 }
 
@@ -611,7 +632,13 @@ drag_begin (GtkGestureDrag *   gesture,
           Region * region = NULL;
 
           /* get the position */
-          ui_px_to_pos_timeline (start_x, &pos, 1);
+          if (timeline)
+            ui_px_to_pos_timeline (
+              start_x, &pos, 1);
+          else if (midi_arranger ||
+                   midi_modifier_arranger)
+            ui_px_to_pos_piano_roll (
+              start_x, &pos, 1);
 
           if (timeline)
             {
@@ -755,9 +782,13 @@ drag_update (GtkGestureDrag * gesture,
 
       /* get new pos */
       Position pos;
-      ui_px_to_pos_timeline (ar_prv->start_x + offset_x,
-                    &pos,
-                    1);
+      if (timeline)
+        ui_px_to_pos_timeline (
+          ar_prv->start_x + offset_x, &pos, 1);
+      else if (midi_arranger ||
+               midi_modifier_arranger)
+        ui_px_to_pos_piano_roll (
+          ar_prv->start_x + offset_x, &pos, 1);
 
       /* snap selections based on new pos */
       if (timeline)
@@ -777,9 +808,16 @@ drag_update (GtkGestureDrag * gesture,
              UI_OVERLAY_ACTION_RESIZING_R)
     {
       Position pos;
-      ui_px_to_pos_timeline (ar_prv->start_x + offset_x,
-                    &pos,
-                    1);
+
+      /* get position */
+      if (timeline)
+        ui_px_to_pos_timeline (
+          ar_prv->start_x + offset_x, &pos, 1);
+      else if (midi_arranger ||
+               midi_modifier_arranger)
+        ui_px_to_pos_piano_roll (
+          ar_prv->start_x + offset_x, &pos, 1);
+
       if (timeline)
         {
           if (timeline->resizing_range)
@@ -805,9 +843,13 @@ drag_update (GtkGestureDrag * gesture,
        * positions and then snap it) */
       Position diff_pos;
       int is_negative = offset_x < 0;
-      ui_px_to_pos_timeline (abs (offset_x),
-                    &diff_pos,
-                    0);
+      if (timeline)
+        ui_px_to_pos_timeline (
+          abs (offset_x), &diff_pos, 0);
+      else if (midi_arranger ||
+               midi_modifier_arranger)
+        ui_px_to_pos_piano_roll (
+          abs (offset_x), &diff_pos, 0);
       long ticks_diff = position_to_ticks (&diff_pos);
       if (is_negative)
         ticks_diff = - ticks_diff;
@@ -903,6 +945,10 @@ drag_end (GtkGestureDrag *gesture,
     {
       timeline_arranger_widget_on_drag_end (
         timeline);
+    }
+  else if (midi_modifier_arranger)
+    {
+      /* TODO */
     }
 
   /* if clicked on nothing */
@@ -1043,7 +1089,8 @@ arranger_widget_refresh (
         midi_modifier_arranger);
     }
 
-  arranger_bg_widget_refresh (ar_prv->bg);
+  if (ar_prv->bg)
+    arranger_bg_widget_refresh (ar_prv->bg);
 }
 
 static void

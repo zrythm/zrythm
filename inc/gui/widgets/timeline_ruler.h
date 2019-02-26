@@ -97,7 +97,7 @@ typedef struct _TimelineRulerWidget
 } TimelineRulerWidget;
 
 void
-timeline_ruler_refresh ();
+timeline_ruler_widget_refresh ();
 
 void
 timeline_ruler_widget_set_ruler_range_position (

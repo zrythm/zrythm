@@ -74,11 +74,21 @@ typedef struct Region
 
   RegionType   type;
 
+  /* GLOBAL POSITIONS ON THE TIMELINE */
+  /* -------------------------------- */
+
   /** Start position in the timeline. */
   Position     start_pos;
 
   /** End position in the timeline. */
   Position     end_pos;
+
+  /* LOCAL POSITIONS STARTING FROM 0.0.0.0 */
+  /* ------------------------------------- */
+
+  /** Position that the original region ends in,
+   * without any loops or modifications. */
+  Position     true_end_pos;
 
   /** Start position of the clip. */
   Position     clip_start_pos;
@@ -87,14 +97,20 @@ typedef struct Region
    *
    * The first time the region plays it will start
    * playing from the clip_start_pos and then loop
-   * to this position. */
+   * to this position.
+   *
+   */
   Position     loop_start_pos;
 
   /** End position of the clip loop.
    *
    * Once this is reached, the clip will go back to
-   * the clip  loop start position. */
+   * the clip  loop start position.
+   *
+   */
   Position     loop_end_pos;
+
+  /* ---------------------------------------- */
 
   /**
    * Region widget.
@@ -296,6 +312,49 @@ region_schema = {
 };
 
 /**
+ * Returns the full length as it appears on the
+ * timeline in ticks.
+ */
+long
+region_get_full_length_in_ticks (
+  Region * region);
+
+/**
+ * Returns the true length as it appears on the
+ * piano roll (not taking into account any looping)
+ * in ticks.
+ */
+long
+region_get_true_length_in_ticks (
+  Region * region);
+
+/**
+ * Returns the length of the loop in ticks.
+ */
+long
+region_get_loop_length_in_ticks (
+  Region * region);
+
+/**
+ * Converts a position on the timeline (global)
+ * to a local position (in the clip).
+ */
+void
+region_timeline_pos_to_local (
+  Region *   region, ///< the region
+  Position * timeline_pos, ///< timeline position
+  Position * local_pos); ///< position to fill
+
+/**
+ * Returns the number of loops in the region,
+ * optionally including incomplete ones.
+ */
+int
+region_get_num_loops (
+  Region * region,
+  int      count_incomplete_loops);
+
+/**
  * Only to be used by implementing structs.
  */
 void
@@ -320,6 +379,43 @@ region_set_start_pos (Region * region,
 void
 region_set_end_pos (Region * region,
                     Position * end_pos);
+
+/**
+ * Checks if position is valid then sets it.
+ */
+void
+region_set_true_end_pos (Region * region,
+                         Position * end_pos);
+
+/**
+ * Checks if position is valid then sets it.
+ */
+void
+region_set_loop_end_pos (Region * region,
+                         Position * pos);
+
+/**
+ * Checks if position is valid then sets it.
+ */
+void
+region_set_loop_start_pos (Region * region,
+                         Position * pos);
+
+/**
+ * Checks if position is valid then sets it.
+ */
+void
+region_set_clip_start_pos (Region * region,
+                         Position * pos);
+
+/**
+ * Returns if the position is inside the region
+ * or not.
+ */
+int
+region_is_hit (
+  Region *   region,
+  Position * pos); ///< global position
 
 void
 region_unpack (Region * region);

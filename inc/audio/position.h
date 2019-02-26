@@ -182,7 +182,7 @@ position_to_ticks (Position * pos);
  */
 void
 position_from_ticks (Position * pos,
-                     int        ticks);
+                     long       ticks);
 
 /**
  * Snaps position using given options.

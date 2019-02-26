@@ -71,16 +71,16 @@ link_scrolls (
     }
 
   /* link arranger h scroll to timeline h scroll */
-  if (self->arranger_scroll)
-    {
-      g_assert (MW_CENTER_DOCK);
-      g_assert (MW_CENTER_DOCK->timeline_scroll);
-      gtk_scrolled_window_set_hadjustment (
-        self->arranger_scroll,
-        gtk_scrolled_window_get_hadjustment (
-          GTK_SCROLLED_WINDOW (
-            MW_CENTER_DOCK->timeline_scroll)));
-    }
+  /*if (self->arranger_scroll)*/
+    /*{*/
+      /*g_assert (MW_CENTER_DOCK);*/
+      /*g_assert (MW_CENTER_DOCK->timeline_scroll);*/
+      /*gtk_scrolled_window_set_hadjustment (*/
+        /*self->arranger_scroll,*/
+        /*gtk_scrolled_window_get_hadjustment (*/
+          /*GTK_SCROLLED_WINDOW (*/
+            /*MW_CENTER_DOCK->timeline_scroll)));*/
+    /*}*/
 
   /* link ruler h scroll to arranger h scroll */
   if (self->midi_ruler_scroll)
@@ -146,11 +146,16 @@ piano_roll_widget_region_updated ()
     self->color_bar,
     &self->piano_roll->region->track->color);
 
+  /* ruler must be refreshed first to get the
+   * correct px when calling ui_* functions */
+  midi_ruler_widget_refresh (
+    MIDI_RULER);
+
   /* remove all previous children and add new */
   arranger_widget_refresh (
     Z_ARRANGER_WIDGET (MIDI_ARRANGER));
-
-  gtk_widget_queue_draw (GTK_WIDGET (MIDI_RULER));
+  arranger_widget_refresh (
+    Z_ARRANGER_WIDGET (MIDI_MODIFIER_ARRANGER));
 
   gtk_widget_show_all (GTK_WIDGET (MIDI_ARRANGER));
 }

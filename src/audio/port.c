@@ -107,6 +107,8 @@ port_new_with_type (PortType     type,
   Port * port = port_new (label);
 
   port->type = type;
+  if (port->type == TYPE_EVENT)
+    port->midi_events = midi_events_new (1);
   port->flow = flow;
 
   return port;
@@ -377,8 +379,8 @@ port_sum_signal_from_inputs (Port * port)
         }
       else if (port->type == TYPE_EVENT)
         {
-          midi_events_append (&src_port->midi_events,
-                              &port->midi_events);
+          midi_events_append (src_port->midi_events,
+                              port->midi_events);
         }
     }
 }
@@ -420,7 +422,8 @@ port_clear_buffer (Port * port)
     }
   else if (port->type == TYPE_EVENT)
     {
-      port->midi_events.num_events = 0;
+      if (port->midi_events)
+        port->midi_events->num_events = 0;
     }
 }
 

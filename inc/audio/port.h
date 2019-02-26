@@ -98,7 +98,7 @@ typedef struct Port
   /**
    * Contains raw MIDI data (MIDI ports only)
    */
-  MidiEvents          midi_events;
+  MidiEvents *        midi_events;
 
 	PortType            type; ///< Data type
 	PortFlow            flow; ///< Data flow direction

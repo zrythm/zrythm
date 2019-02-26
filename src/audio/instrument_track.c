@@ -1,7 +1,5 @@
 /*
- * audio/track.c - the back end for a timeline track
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -72,10 +70,11 @@ instrument_track_setup (InstrumentTrack * self)
  * NOTE: real time func
  */
 void
-instrument_track_fill_midi_events (InstrumentTrack      * track,
-                        Position   * pos, ///< start position to check
-                        nframes_t  nframes, ///< n of frames from start pos
-                        MidiEvents * midi_events) ///< midi events to fill
+instrument_track_fill_midi_events (
+  InstrumentTrack      * track,
+  Position   * pos, ///< start position to check
+  nframes_t  nframes, ///< n of frames from start po
+  MidiEvents * midi_events) ///< midi events to fill
 {
   Position end_pos;
   position_set_to_pos (&end_pos, pos);
@@ -85,46 +84,189 @@ instrument_track_fill_midi_events (InstrumentTrack      * track,
   for (int i = 0; i < track->num_regions; i++)
     {
       MidiRegion * region = track->regions[i];
-      for (int j = 0; j < region->num_midi_notes; j++)
-        {
-          MidiNote * midi_note = region->midi_notes[j];
+      Region * r = (Region *) region;
 
-          /* note on event */
-          if (position_compare (&midi_note->start_pos,
-                                pos) >= 0 &&
-              position_compare (&midi_note->start_pos,
-                                &end_pos) <= 0)
+      if (!region_is_hit (r,
+                          pos))
+        continue;
+
+      /* get local positions */
+      Position local_pos, local_end_pos;
+      region_timeline_pos_to_local (
+        r, pos, &local_pos);
+      region_timeline_pos_to_local (
+        r, &end_pos, &local_end_pos);
+
+      /* add clip_start position to start from
+       * there */
+      long clip_start_ticks =
+        position_to_ticks (
+          &r->clip_start_pos);
+      long region_length_ticks =
+        region_get_full_length_in_ticks (
+          r);
+      Position loop_start_adjusted,
+               loop_end_adjusted,
+               region_end_adjusted;
+      position_set_to_pos (
+        &loop_start_adjusted,
+        &r->loop_start_pos);
+      position_set_to_pos (
+        &loop_end_adjusted,
+        &r->loop_end_pos);
+      position_init (&region_end_adjusted);
+      position_add_ticks (
+        &local_pos, clip_start_ticks);
+      position_add_ticks (
+        &local_end_pos, clip_start_ticks);
+      position_add_ticks (
+        &loop_start_adjusted, - clip_start_ticks);
+      position_add_ticks (
+        &loop_end_adjusted, - clip_start_ticks);
+      position_add_ticks (
+        &region_end_adjusted, region_length_ticks);
+
+      /* send all MIDI notes off if end of the
+       * region is within this cycle */
+      if (position_compare (
+            &region_end_adjusted,
+            &local_pos) >= 0 &&
+          position_compare (
+            &region_end_adjusted,
+            &local_end_pos) <= 0)
+        {
+          jack_midi_event_t * ev =
+            &midi_events->queue->
+              jack_midi_events[
+                midi_events->queue->
+                  num_events++];
+          ev->time =
+            position_to_frames (
+              &region_end_adjusted) -
+            position_to_frames (&local_pos);
+          ev->size = 3;
+          /* status byte */
+          ev->buffer[0] = MIDI_CH1_CTRL_CHANGE;
+          /* note number 0-127 */
+          ev->buffer[1] = MIDI_ALL_NOTES_OFF;
+          /* velocity 0-127 */
+          ev->buffer[2] = 0x00;
+        }
+
+      /* check if inside loop */
+      int in_loop =
+        position_compare (
+          &local_pos, &loop_start_adjusted) >= 0;
+
+      if (in_loop)
+        {
+          /* adjust position after looping */
+          long loop_length =
+            region_get_loop_length_in_ticks (r);
+          while (position_compare (
+                   &local_pos,
+                   &loop_end_adjusted) >= 0)
+            {
+              position_add_ticks (
+                &local_pos, - loop_length);
+              position_add_ticks (
+                &local_end_pos, - loop_length);
+            }
+
+          /* if crossing the loop line send midi
+           * notes off */
+          if (position_compare (
+                &loop_end_adjusted,
+                &local_pos) >= 0 &&
+              position_compare (
+                &loop_end_adjusted,
+                &local_end_pos) <= 0)
             {
               jack_midi_event_t * ev =
-                &midi_events->queue->jack_midi_events[
-                  midi_events->queue->num_events++];
-              ev->time = position_to_frames (&midi_note->start_pos) -
-                position_to_frames (pos);
+                &midi_events->queue->
+                  jack_midi_events[
+                    midi_events->queue->
+                      num_events++];
+              ev->time =
+                position_to_frames (
+                  &loop_end_adjusted) -
+                position_to_frames (&local_pos);
               ev->size = 3;
-              if (!ev->buffer)
-                ev->buffer = calloc (3, sizeof (jack_midi_data_t));
-              ev->buffer[0] = MIDI_CH1_NOTE_ON; /* status byte */
-              ev->buffer[1] = midi_note->val; /* note number 0-127 */
-              ev->buffer[2] = midi_note->vel->vel; /* velocity 0-127 */
+              /* status byte */
+              ev->buffer[0] = MIDI_CH1_CTRL_CHANGE;
+              /* note number 0-127 */
+              ev->buffer[1] = MIDI_ALL_NOTES_OFF;
+              /* velocity 0-127 */
+              ev->buffer[2] = 0x00;
+            }
+        }
+
+      /* readjust position */
+      position_add_ticks (
+        &local_pos, - clip_start_ticks);
+      position_add_ticks (
+        &local_end_pos, - clip_start_ticks);
+
+      for (int i = 0;
+           i < region->num_midi_notes;
+           i++)
+        {
+          MidiNote * midi_note =
+            region->midi_notes[i];
+
+          /* check for note on event */
+          if (position_compare (
+                &midi_note->start_pos,
+                &local_pos) >= 0 &&
+              position_compare (
+                &midi_note->start_pos,
+                &local_end_pos) <= 0)
+            {
+              jack_midi_event_t * ev =
+                &midi_events->queue->
+                  jack_midi_events[
+                    midi_events->queue->
+                      num_events++];
+              ev->time =
+                position_to_frames (
+                  &midi_note->start_pos) -
+                position_to_frames (&local_pos);
+              ev->size = 3;
+              /* status byte */
+              ev->buffer[0] =
+                MIDI_CH1_NOTE_ON;
+              /* note number */
+              ev->buffer[1] =
+                midi_note->val;
+              /* velocity */
+              ev->buffer[2] =
+                midi_note->vel->vel;
             }
 
           /* note off event */
-          if (position_compare (&midi_note->end_pos,
-                                pos) >= 0 &&
-              position_compare (&midi_note->end_pos,
-                                &end_pos) <= 0)
+          if (position_compare (
+                &midi_note->end_pos,
+                &local_pos) >= 0 &&
+              position_compare (
+                &midi_note->end_pos,
+                &local_end_pos) <= 0)
             {
               jack_midi_event_t * ev =
-                &midi_events->queue->jack_midi_events[
-                  midi_events->queue->num_events++];
-              ev->time = position_to_frames (&midi_note->end_pos) -
-                position_to_frames (pos);
+                &midi_events->queue->
+                  jack_midi_events[
+                    midi_events->queue->
+                      num_events++];
+              ev->time =
+                position_to_frames (
+                  &midi_note->end_pos) -
+                position_to_frames (&local_pos);
               ev->size = 3;
-              if (!ev->buffer)
-                ev->buffer = calloc (3, sizeof (jack_midi_data_t));
-              ev->buffer[0] = MIDI_CH1_NOTE_OFF; /* status byte */
-              ev->buffer[1] = midi_note->val; /* note number 0-127 */
-              ev->buffer[2] = midi_note->vel->vel; /* velocity 0-127 */
+              /* status byte */
+              ev->buffer[0] = MIDI_CH1_NOTE_OFF;
+              /* note number 0-127 */
+              ev->buffer[1] = midi_note->val;
+              /* velocity 0-127 */
+              ev->buffer[2] = midi_note->vel->vel;
             }
         }
     }

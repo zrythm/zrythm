@@ -79,6 +79,9 @@ typedef struct _MidiRulerWidget
 } MidiRulerWidget;
 
 void
+midi_ruler_widget_refresh ();
+
+void
 midi_ruler_widget_set_ruler_marker_position (
   MidiRulerWidget * self,
   RulerMarkerWidget *    rm,

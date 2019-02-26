@@ -66,13 +66,12 @@ draw_cb (MidiRegionWidget * self, cairo_t *cr, gpointer data)
 
   MidiRegion * mr =
     (MidiRegion *) rw_prv->region;
-  int region_end_ticks =
-    position_to_ticks (&rw_prv->region->end_pos);
-  int region_start_ticks =
-    position_to_ticks (&rw_prv->region->start_pos);
-  int ticks_in_region =
-    region_end_ticks -
-    region_start_ticks;
+  Region * r = (Region *) mr;
+  int num_loops =
+    region_get_num_loops (r, 1);
+  long ticks_in_region =
+    region_get_full_length_in_ticks (
+      (Region *) mr);
   float x_start, y_start, x_end;
 
   int min_val = 127, max_val = 0;
@@ -90,6 +89,13 @@ draw_cb (MidiRegionWidget * self, cairo_t *cr, gpointer data)
   float y_note_size = 1.f / y_interval;
 
   /* draw midi notes */
+  long loop_end_ticks =
+    position_to_ticks (&r->loop_end_pos);
+  long loop_ticks =
+    region_get_loop_length_in_ticks (r);
+  int px =
+    ui_pos_to_px_timeline (&r->loop_start_pos, 0);
+  Position tmp;
   for (int i = 0; i < mr->num_midi_notes; i++)
     {
       MidiNote * mn = mr->midi_notes[i];
@@ -100,24 +106,65 @@ draw_cb (MidiRegionWidget * self, cairo_t *cr, gpointer data)
         position_to_ticks (&mn->start_pos);
       int mn_end_ticks =
         position_to_ticks (&mn->end_pos);
-      x_start =
-        (float) (mn_start_ticks - region_start_ticks) /
-        (float) ticks_in_region;
-      x_end =
-        (float) (mn_end_ticks - region_start_ticks) /
-        (float) ticks_in_region;
+      int tmp_start_ticks, tmp_end_ticks;
+      /*x_start =*/
+        /*(float) mn_start_ticks /*/
+        /*ticks_in_region;*/
+      /*x_end =*/
+        /*(float) mn_end_ticks /*/
+        /*ticks_in_region;*/
+
+      /* if note starts before the loop ends and
+       * continues after the loop (should be
+       * clipped) */
+      if (position_compare (
+            &mn->start_pos, &r->loop_end_pos) < 0 &&
+          position_compare (
+            &mn->end_pos, &r->loop_end_pos) >= 0)
+        {
+          for (int j = 0;
+               j < num_loops;
+               j++)
+            {
+              /* calculate draw endpoints */
+              tmp_start_ticks =
+                mn_start_ticks + loop_ticks * j;
+              tmp_end_ticks =
+                loop_end_ticks + loop_ticks * j;
+              x_start =
+                (float) tmp_start_ticks /
+                ticks_in_region;
+              x_end =
+                (float) tmp_end_ticks /
+                ticks_in_region;
+
+              /* get ratio (0.0 - 1.0) on y where
+               * midi note is */
+              y_start =
+                (max_val - mn->val) / y_interval;
+
+              /* draw */
+              cairo_rectangle (
+                cr,
+                x_start * width,
+                y_start * height,
+                (x_end - x_start) * width,
+                y_note_size * height);
+              cairo_fill (cr);
+            }
+        }
 
       /* get ratio (0.0 - 1.0) on y where midi note is */
-      y_start =
-        (max_val - mn->val) / y_interval;
+      /*y_start =*/
+        /*(max_val - mn->val) / y_interval;*/
 
-      /* draw */
-      cairo_rectangle (cr,
-                       x_start * width,
-                       y_start * height,
-                       (x_end - x_start) * width,
-                       y_note_size * height);
-      cairo_fill (cr);
+      /*[> draw <]*/
+      /*cairo_rectangle (cr,*/
+                       /*x_start * width,*/
+                       /*y_start * height,*/
+                       /*(x_end - x_start) * width,*/
+                       /*y_note_size * height);*/
+      /*cairo_fill (cr);*/
     }
 
 

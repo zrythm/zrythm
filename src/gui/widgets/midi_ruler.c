@@ -26,6 +26,7 @@
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/piano_roll.h"
 #include "gui/widgets/ruler.h"
@@ -62,7 +63,8 @@ midi_ruler_draw_cb (GtkWidget * widget,
   guint height =
     gtk_widget_get_allocated_height (widget);
 
-  Track * track = PIANO_ROLL->region->track;
+  Region * region = PIANO_ROLL->region;
+  Track * track = region->track;
   InstrumentTrack * it = (InstrumentTrack *) track;
   cairo_set_source_rgba (cr,
                          track->color.red,
@@ -71,20 +73,21 @@ midi_ruler_draw_cb (GtkWidget * widget,
                          0.8);
 
   int px_start, px_end;
-  for (int i = 0; i < it->num_regions; i++)
-    {
-      Region * region = (Region *) it->regions[i];
 
-      px_start = ui_pos_to_px_timeline (&region->start_pos, 1);
-      px_end = ui_pos_to_px_timeline (&region->end_pos, 1);
+  Position pos;
+  position_init (&pos);
+  px_start =
+    ui_pos_to_px_piano_roll (&pos, 1);
+  px_end =
+    ui_pos_to_px_piano_roll (&region->true_end_pos,
+                             1);
 
-      /* TODO only conditionally draw if it is within cairo
-       * clip */
-      cairo_rectangle (cr,
-                       px_start, 0,
-                       px_end - px_start, height);
-      cairo_fill (cr);
-    }
+  /* TODO only conditionally draw if it is within cairo
+   * clip */
+  cairo_rectangle (cr,
+                   px_start, 0,
+                   px_end - px_start, height / 4.0);
+  cairo_fill (cr);
 
  return FALSE;
 }
@@ -152,6 +155,66 @@ midi_ruler_widget_set_ruler_marker_position (
 
 }
 
+void
+midi_ruler_widget_refresh ()
+{
+  RULER_WIDGET_GET_PRIVATE (MIDI_RULER);
+
+  Region * r = PIANO_ROLL->region;
+  long total_ticks;
+  int viewport_width;
+  if (r)
+    {
+      total_ticks =
+        region_get_true_length_in_ticks (r);
+
+      viewport_width =
+        gtk_widget_get_allocated_width (
+          GTK_WIDGET (
+            MW_PIANO_ROLL->midi_ruler_viewport));
+
+      /* set zoom level so that it matches the length
+       * of the selected region */
+      rw_prv->px_per_tick =
+        (viewport_width - SPACE_BEFORE_START_D) /
+        total_ticks;
+      rw_prv->zoom_level =
+        rw_prv->px_per_tick / DEFAULT_PX_PER_TICK;
+    }
+
+  /*adjust for zoom level*/
+  rw_prv->px_per_tick =
+    DEFAULT_PX_PER_TICK * rw_prv->zoom_level;
+  rw_prv->px_per_sixteenth =
+    rw_prv->px_per_tick * TICKS_PER_SIXTEENTH_NOTE;
+  rw_prv->px_per_beat =
+    rw_prv->px_per_tick * TICKS_PER_BEAT;
+  rw_prv->px_per_bar =
+    rw_prv->px_per_beat * TRANSPORT->beats_per_bar;
+
+  if (r)
+    rw_prv->total_px =
+      rw_prv->px_per_tick * total_ticks + 40;
+  else
+    {
+      Position pos;
+      position_set_to_bar (
+        &pos, TRANSPORT->total_bars + 1);
+      rw_prv->total_px =
+        rw_prv->px_per_tick *
+        position_to_ticks (&pos);
+    }
+
+  // set the size
+  gtk_widget_set_size_request (
+    GTK_WIDGET (MIDI_RULER),
+    rw_prv->total_px,
+    30);
+
+  gtk_widget_queue_draw (
+    GTK_WIDGET (MIDI_RULER));
+}
+
 static gboolean
 multipress_pressed (
   GtkGestureMultiPress *gesture,
@@ -163,7 +226,7 @@ multipress_pressed (
   if (n_press == 2)
     {
       Position pos;
-      ui_px_to_pos_timeline (
+      ui_px_to_pos_piano_roll (
         x,
         &pos,
         1);
@@ -266,7 +329,7 @@ drag_update (GtkGestureDrag * gesture,
     {
       if (self->target == MRW_TARGET_LOOP_START)
         {
-          ui_px_to_pos_timeline (
+          ui_px_to_pos_piano_roll (
             self->start_x + offset_x,
             &PIANO_ROLL->region->loop_start_pos,
             1);
@@ -278,7 +341,7 @@ drag_update (GtkGestureDrag * gesture,
         }
       else if (self->target == MRW_TARGET_LOOP_END)
         {
-          ui_px_to_pos_timeline (
+          ui_px_to_pos_piano_roll (
             self->start_x + offset_x,
             &PIANO_ROLL->region->loop_end_pos,
             1);
@@ -292,7 +355,7 @@ drag_update (GtkGestureDrag * gesture,
         }
       else if (self->target == MRW_TARGET_CLIP_START)
         {
-          ui_px_to_pos_timeline (
+          ui_px_to_pos_piano_roll (
             self->start_x + offset_x,
             &PIANO_ROLL->region->clip_start_pos,
             1);

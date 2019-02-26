@@ -228,32 +228,10 @@ on_motion (GtkDrawingArea * da,
 void
 ruler_widget_refresh (RulerWidget * self)
 {
-  RULER_WIDGET_GET_PRIVATE (self);
-
-  /*adjust for zoom level*/
-  rw_prv->px_per_tick =
-    DEFAULT_PX_PER_TICK * rw_prv->zoom_level;
-  rw_prv->px_per_sixteenth =
-    rw_prv->px_per_tick * TICKS_PER_SIXTEENTH_NOTE;
-  rw_prv->px_per_beat =
-    rw_prv->px_per_tick * TICKS_PER_BEAT;
-  rw_prv->px_per_bar =
-    rw_prv->px_per_beat * TRANSPORT->beats_per_bar;
-
-  Position pos;
-  position_set_to_bar (&pos,
-                       TRANSPORT->total_bars + 1);
-  rw_prv->total_px =
-    rw_prv->px_per_tick * position_to_ticks (&pos);
-
-  // set the size
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self),
-    rw_prv->total_px,
-    -1);
-
-  gtk_widget_queue_draw (
-    GTK_WIDGET (self));
+  if (Z_IS_TIMELINE_RULER_WIDGET (self))
+    timeline_ruler_widget_refresh ();
+  else
+    midi_ruler_widget_refresh ();
 }
 
 static void

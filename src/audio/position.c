@@ -1,7 +1,5 @@
 /*
- * audio/position.c - position on the timeline
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -412,7 +410,7 @@ position_to_ticks (Position * pos)
  */
 void
 position_from_ticks (Position * pos,
-                     int        ticks)
+                     long       ticks)
 {
   pos->bars = ticks / TICKS_PER_BAR + 1;
   ticks = ticks % TICKS_PER_BAR;

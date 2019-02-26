@@ -31,6 +31,29 @@
 #include "audio/transport.h"
 #include "project.h"
 
+
+/**
+ * Returns a MidiEvents instance with pre-allocated
+ * buffers for each midi event.
+ */
+MidiEvents *
+midi_events_new (int init_queue)
+{
+  MidiEvents * self =
+    calloc (1, sizeof (MidiEvents));
+  for (int i = 0; i < MAX_MIDI_EVENTS; i++)
+    {
+      jack_midi_event_t * ev =
+        &self->jack_midi_events[i];
+      ev->buffer =
+        calloc (3, sizeof (jack_midi_data_t));
+    }
+  if (init_queue)
+    self->queue = midi_events_new (0);
+
+  return self;
+}
+
 /**
  * Appends the events from src to dest
  */
@@ -91,8 +114,8 @@ midi_panic (MidiEvents * events)
   ev->size = 3;
   if (!ev->buffer)
     ev->buffer = calloc (3, sizeof (jack_midi_data_t));
-  ev->buffer[0] = 0xB0; /* All sounds off */
-  ev->buffer[1] = 0x7B;
+  ev->buffer[0] = MIDI_CH1_CTRL_CHANGE;
+  ev->buffer[1] = MIDI_ALL_SOUND_OFF;
   ev->buffer[2] = 0x00;
 }
 
@@ -102,11 +125,14 @@ midi_panic (MidiEvents * events)
 void
 midi_panic_all ()
 {
-  midi_panic (&AUDIO_ENGINE->midi_editor_manual_press->midi_events);
+  midi_panic (
+    AUDIO_ENGINE->midi_editor_manual_press->
+      midi_events);
 
   for (int i = 0; i < MIXER->num_channels; i++)
     {
       Channel * channel = MIXER->channels[i];
-      midi_panic (&channel->piano_roll->midi_events);
+      midi_panic (
+        channel->piano_roll->midi_events);
     }
 }

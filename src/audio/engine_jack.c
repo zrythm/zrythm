@@ -176,7 +176,7 @@ jack_process_cb (
       /*midi_panic (&engine->midi_editor_manual_press->midi_events);*/
     /*}*/
   midi_events_dequeue (
-    &engine->midi_editor_manual_press->midi_events);
+    engine->midi_editor_manual_press->midi_events);
 
   /* this will keep looping until everything was
    * processed in this cycle */
@@ -339,11 +339,11 @@ jack_setup (AudioEngine * self)
                                      JACK_DEFAULT_MIDI_TYPE,
                                      JackPortIsInput, 0));
 
-  Port * midi_editor_manual_press = port_new_with_type (
-        TYPE_EVENT,
-        FLOW_INPUT,
-        "MIDI Editor Manual Press");
-
+  Port * midi_editor_manual_press =
+    port_new_with_type (
+      TYPE_EVENT,
+      FLOW_INPUT,
+      "MIDI Editor Manual Press");
 
   stereo_in_l->owner_jack = 1;
   stereo_in_r->owner_jack = 1;
@@ -358,7 +358,10 @@ jack_setup (AudioEngine * self)
   self->midi_editor_manual_press = midi_editor_manual_press;
 
   /* init MIDI queues for manual presse/piano roll */
-  self->midi_editor_manual_press->midi_events.queue = calloc (1, sizeof (MidiEvents));
+  self->midi_in->midi_events =
+    midi_events_new (1);
+  self->midi_editor_manual_press->midi_events =
+    midi_events_new (1);
 
   if (!self->stereo_in->l->data || !self->stereo_in->r->data ||
       !self->stereo_out->l->data || !self->stereo_out->r->data ||

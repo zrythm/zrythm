@@ -202,20 +202,24 @@ channel_process (Channel * channel)
   for (int j = 0; j < STRIP_SIZE; j++)
     {
       Plugin * plugin = channel->plugins[j];
-      if (plugin)
+      if (!plugin)
+        continue;
+
+      for (int i = 0; i < plugin->num_in_ports;
+           i++)
         {
-          for (int i = 0; i < plugin->num_in_ports; i++)
-            {
-              port_clear_buffer (plugin->in_ports[i]);
-            }
-          for (int i = 0; i < plugin->num_out_ports; i++)
-            {
-              port_clear_buffer (plugin->out_ports[i]);
-            }
-          for (int i = 0; i < plugin->num_unknown_ports; i++)
-            {
-              port_clear_buffer (plugin->unknown_ports[i]);
-            }
+          port_clear_buffer (plugin->in_ports[i]);
+        }
+      for (int i = 0; i < plugin->num_out_ports;
+           i++)
+        {
+          port_clear_buffer (plugin->out_ports[i]);
+        }
+      for (int i = 0;
+           i < plugin->num_unknown_ports; i++)
+        {
+          port_clear_buffer (
+            plugin->unknown_ports[i]);
         }
     }
   /*g_message ("buffers cleared %s",*/
@@ -236,12 +240,15 @@ channel_process (Channel * channel)
   /* panic MIDI if necessary */
   if (AUDIO_ENGINE->panic)
     {
-      midi_panic (&channel->piano_roll->midi_events);
+      midi_panic (
+        channel->piano_roll->midi_events);
     }
   /* get events from track if playing */
-  else if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
+  else if (TRANSPORT->play_state ==
+           PLAYSTATE_ROLLING)
     {
-      if (channel->track->type == TRACK_TYPE_INSTRUMENT)
+      if (channel->track->type ==
+          TRACK_TYPE_INSTRUMENT)
         {
           if (TRANSPORT->recording &&
                 channel->track->recording)
@@ -254,7 +261,7 @@ channel_process (Channel * channel)
             (InstrumentTrack *)channel->track,
             &PLAYHEAD,
             AUDIO_ENGINE->block_length,
-            &channel->piano_roll->midi_events);
+            channel->piano_roll->midi_events);
         }
       /* fill stereo in buffers with info from the current
        * clip */
@@ -266,7 +273,8 @@ channel_process (Channel * channel)
             channel->stereo_in);
         }
     }
-  midi_events_dequeue (&channel->piano_roll->midi_events);
+  midi_events_dequeue (
+    channel->piano_roll->midi_events);
 
   /* go through each slot (plugin) on the channel strip */
   for (int i = 0; i < STRIP_SIZE; i++)
@@ -391,6 +399,8 @@ _create_channel (char * name)
       TYPE_EVENT,
       FLOW_INPUT,
       pll);
+  channel->midi_in->midi_events =
+    midi_events_new (1);
   g_free (pll);
   pll = g_strdup_printf ("%s Stereo out L", channel->name);
   plr = g_strdup_printf ("%s Stereo out R", channel->name);
@@ -446,7 +456,8 @@ _create_channel (char * name)
   channel->piano_roll->is_piano_roll = 1;
   channel->piano_roll->owner_jack = 0;
   channel->piano_roll->owner_ch = channel;
-  channel->piano_roll->midi_events.queue = calloc (1, sizeof (MidiEvents));
+  channel->piano_roll->midi_events =
+    midi_events_new (1);
 
   channel->visible = 1;
 
