@@ -338,12 +338,18 @@ region_get_loop_length_in_ticks (
 /**
  * Converts a position on the timeline (global)
  * to a local position (in the clip).
+ *
+ * If normalize is 1 it will only return a position
+ * from 0.0.0.0 to loop_end (it will traverse the
+ * loops to find the appropriate position),
+ * otherwise it may exceed loop_end.
  */
 void
 region_timeline_pos_to_local (
   Region *   region, ///< the region
   Position * timeline_pos, ///< timeline position
-  Position * local_pos); ///< position to fill
+  Position * local_pos, ///< position to fill
+  int        normalize);
 
 /**
  * Returns the number of loops in the region,

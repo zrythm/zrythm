@@ -78,10 +78,16 @@ get_child_position (GtkOverlay   *overlay,
 
   if (Z_IS_RULER_PLAYHEAD_WIDGET (widget))
     {
-      allocation->x =
-        ui_pos_to_px_timeline (
-          &TRANSPORT->playhead_pos,
-          1) - (PLAYHEAD_TRIANGLE_WIDTH / 2);
+      if (Z_IS_TIMELINE_RULER_WIDGET (self))
+        allocation->x =
+          ui_pos_to_px_timeline (
+            &TRANSPORT->playhead_pos,
+            1) - (PLAYHEAD_TRIANGLE_WIDTH / 2);
+      /*else*/
+        /*allocation->x =*/
+          /*ui_pos_to_px_piano_roll (*/
+            /*&TRANSPORT->playhead_pos,*/
+            /*1) - (PLAYHEAD_TRIANGLE_WIDTH / 2);*/
       allocation->y =
         gtk_widget_get_allocated_height (GTK_WIDGET (self)) -
           PLAYHEAD_TRIANGLE_HEIGHT;
@@ -234,14 +240,6 @@ ruler_widget_refresh (RulerWidget * self)
     midi_ruler_widget_refresh ();
 }
 
-static void
-ruler_widget_class_init (RulerWidgetClass * _klass)
-{
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (klass,
-                                 "ruler");
-}
-
 /**
  * Sets zoom level and disables/enables buttons
  * accordingly.
@@ -321,4 +319,12 @@ ruler_widget_init (RulerWidget * self)
   g_signal_connect (
     G_OBJECT (self), "get-child-position",
     G_CALLBACK (get_child_position), NULL);
+}
+
+static void
+ruler_widget_class_init (RulerWidgetClass * _klass)
+{
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (klass,
+                                 "ruler");
 }

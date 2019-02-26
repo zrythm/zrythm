@@ -93,9 +93,9 @@ instrument_track_fill_midi_events (
       /* get local positions */
       Position local_pos, local_end_pos;
       region_timeline_pos_to_local (
-        r, pos, &local_pos);
+        r, pos, &local_pos, 1);
       region_timeline_pos_to_local (
-        r, &end_pos, &local_end_pos);
+        r, &end_pos, &local_end_pos, 1);
 
       /* add clip_start position to start from
        * there */
@@ -154,24 +154,24 @@ instrument_track_fill_midi_events (
         }
 
       /* check if inside loop */
-      int in_loop =
-        position_compare (
-          &local_pos, &loop_start_adjusted) >= 0;
+      /*int in_loop =*/
+        /*position_compare (*/
+          /*&local_pos, &loop_start_adjusted) >= 0;*/
 
-      if (in_loop)
-        {
-          /* adjust position after looping */
-          long loop_length =
-            region_get_loop_length_in_ticks (r);
-          while (position_compare (
-                   &local_pos,
-                   &loop_end_adjusted) >= 0)
-            {
-              position_add_ticks (
-                &local_pos, - loop_length);
-              position_add_ticks (
-                &local_end_pos, - loop_length);
-            }
+      /*if (in_loop)*/
+        /*{*/
+          /*[> adjust position after looping <]*/
+          /*long loop_length =*/
+            /*region_get_loop_length_in_ticks (r);*/
+          /*while (position_compare (*/
+                   /*&local_pos,*/
+                   /*&loop_end_adjusted) >= 0)*/
+            /*{*/
+              /*position_add_ticks (*/
+                /*&local_pos, - loop_length);*/
+              /*position_add_ticks (*/
+                /*&local_end_pos, - loop_length);*/
+            /*}*/
 
           /* if crossing the loop line send midi
            * notes off */
@@ -199,7 +199,7 @@ instrument_track_fill_midi_events (
               /* velocity 0-127 */
               ev->buffer[2] = 0x00;
             }
-        }
+        /*}*/
 
       /* readjust position */
       position_add_ticks (
@@ -276,8 +276,8 @@ void
 instrument_track_add_region (InstrumentTrack      * track,
                   MidiRegion     * region)
 {
-  g_message ("midi region num notes %d",
-             region->num_midi_notes);
+  /*g_message ("midi region num notes %d",*/
+             /*region->num_midi_notes);*/
   array_append (track->regions,
                 track->num_regions,
                 region);

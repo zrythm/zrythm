@@ -115,7 +115,7 @@ midi_panic (MidiEvents * events)
   if (!ev->buffer)
     ev->buffer = calloc (3, sizeof (jack_midi_data_t));
   ev->buffer[0] = MIDI_CH1_CTRL_CHANGE;
-  ev->buffer[1] = MIDI_ALL_SOUND_OFF;
+  ev->buffer[1] = MIDI_ALL_NOTES_OFF;
   ev->buffer[2] = 0x00;
 }
 

@@ -211,7 +211,7 @@ midi_ruler_widget_refresh ()
     rw_prv->total_px,
     30);
 
-  gtk_widget_queue_draw (
+  gtk_widget_queue_allocate (
     GTK_WIDGET (MIDI_RULER));
 }
 

@@ -359,26 +359,64 @@ region_clone (Region *        region,
 /**
  * Converts a position on the timeline (global)
  * to a local position (in the clip).
+ *
+ * If normalize is 1 it will only return a position
+ * from 0.0.0.0 to loop_end (it will traverse the
+ * loops to find the appropriate position),
+ * otherwise it may exceed loop_end.
  */
 void
 region_timeline_pos_to_local (
   Region *   region, ///< the region
   Position * timeline_pos, ///< timeline position
-  Position * local_pos) ///< position to fill
+  Position * local_pos, ///< position to fill
+  int        normalize)
 {
-  long diff;
-  if (region)
+  long diff_ticks;
+
+  if (normalize)
     {
-      diff =
-        position_to_ticks (timeline_pos) -
-        position_to_ticks (
-          &region->start_pos);
+      if (region)
+        {
+          diff_ticks =
+            position_to_ticks (timeline_pos) -
+            position_to_ticks (
+              &region->start_pos);
+          long loop_end_ticks =
+            position_to_ticks (
+              &region->loop_end_pos);
+          long loop_size =
+            region_get_loop_length_in_ticks (
+              region);
+
+          while (diff_ticks >= loop_end_ticks)
+            {
+              diff_ticks -= loop_size;
+            }
+        }
+      else
+        {
+          diff_ticks = 0;
+        }
+      position_from_ticks (local_pos, diff_ticks);
+      return;
     }
   else
     {
-      diff = 0;
+      if (region)
+        {
+          diff_ticks =
+            position_to_ticks (timeline_pos) -
+            position_to_ticks (
+              &region->start_pos);
+        }
+      else
+        {
+          diff_ticks = 0;
+        }
+      position_from_ticks (local_pos, diff_ticks);
+      return;
     }
-  position_from_ticks (local_pos, diff);
 }
 
 /**

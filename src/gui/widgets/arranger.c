@@ -125,15 +125,20 @@ get_child_position (GtkOverlay   *overlay,
                midi_modifier_arranger) &&
                PIANO_ROLL->region)
         {
-          Position pos;
-          region_timeline_pos_to_local (
-            PIANO_ROLL->region,
-            &TRANSPORT->playhead_pos,
-            &pos);
-          allocation->x =
-            ui_pos_to_px_piano_roll (
-              &pos,
-              1) - 1; /* minus half the width */
+          if (region_is_hit (
+                PIANO_ROLL->region,
+                &PLAYHEAD))
+            {
+              Position pos;
+              region_timeline_pos_to_local (
+                PIANO_ROLL->region,
+                &TRANSPORT->playhead_pos,
+                &pos, 1);
+              allocation->x =
+                ui_pos_to_px_piano_roll (
+                  &pos,
+                  1) - 1; /* minus half the width */
+            }
         }
       allocation->y = 0;
       allocation->width = 2;

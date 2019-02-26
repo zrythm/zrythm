@@ -104,40 +104,50 @@ draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
                          0,
                          0,
                          1.0);
-  /*long full_ticks =*/
-    /*region_get_full_length_in_ticks (r);*/
-  /*long loop_start_ticks =*/
-    /*position_to_ticks (&r->loop_start_pos);*/
+
+  Position tmp;
+  long loop_start_ticks =
+    position_to_ticks (&r->loop_start_pos);
   long loop_end_ticks =
     position_to_ticks (&r->loop_end_pos);
   long loop_ticks =
     region_get_loop_length_in_ticks (r);
+  long clip_start_ticks =
+    position_to_ticks (&r->clip_start_pos);
+
+  position_from_ticks (
+    &tmp, loop_start_ticks - clip_start_ticks);
   int px =
-    ui_pos_to_px_timeline (&r->loop_start_pos, 0);
+    ui_pos_to_px_timeline (&tmp, 0);
   if (px != 0)
     {
-      cairo_set_source_rgba (cr,
-                             0,
-                             1,
-                             0,
-                             1.0);
+      cairo_set_source_rgba (
+        cr, 0, 1, 0, 1.0);
       cairo_move_to (cr, px, 0);
       cairo_line_to (cr, px, height);
       cairo_stroke (cr);
     }
 
-  Position tmp;
-  int num_loops = region_get_num_loops (r, 0);
+  int num_loops = region_get_num_loops (r, 1);
   for (int i = 0; i < num_loops; i++)
     {
       position_from_ticks (
         &tmp, loop_end_ticks + loop_ticks * i);
-      px =
-        ui_pos_to_px_timeline (&tmp, 0);
 
-      cairo_move_to (cr, px, 0);
-      cairo_line_to (cr, px, height);
-      cairo_stroke (cr);
+      /* adjust for clip_start */
+      position_add_ticks (
+        &tmp, - clip_start_ticks);
+
+      px = ui_pos_to_px_timeline (&tmp, 0);
+
+      if (px <= width - 1)
+        {
+          cairo_set_source_rgba (
+            cr, 0, 0, 0, 1.0);
+          cairo_move_to (cr, px, 0);
+          cairo_line_to (cr, px, height);
+          cairo_stroke (cr);
+        }
     }
 
   draw_text (cr, rw_prv->region->name);

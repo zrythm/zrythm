@@ -169,7 +169,9 @@ on_motion (GtkWidget * widget,
       if (self->type ==
             RULER_MARKER_TYPE_SONG_START ||
           self->type ==
-            RULER_MARKER_TYPE_LOOP_START)
+            RULER_MARKER_TYPE_LOOP_START ||
+          self->type ==
+            RULER_MARKER_TYPE_CLIP_START)
         {
           self->cursor_state =
             UI_CURSOR_STATE_RESIZE_L;

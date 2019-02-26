@@ -93,6 +93,8 @@ draw_cb (MidiRegionWidget * self, cairo_t *cr, gpointer data)
     position_to_ticks (&r->loop_end_pos);
   long loop_ticks =
     region_get_loop_length_in_ticks (r);
+  long clip_start_ticks =
+    position_to_ticks (&r->clip_start_pos);
   int px =
     ui_pos_to_px_timeline (&r->loop_start_pos, 0);
   Position tmp;
@@ -107,30 +109,53 @@ draw_cb (MidiRegionWidget * self, cairo_t *cr, gpointer data)
       int mn_end_ticks =
         position_to_ticks (&mn->end_pos);
       int tmp_start_ticks, tmp_end_ticks;
-      /*x_start =*/
-        /*(float) mn_start_ticks /*/
-        /*ticks_in_region;*/
-      /*x_end =*/
-        /*(float) mn_end_ticks /*/
-        /*ticks_in_region;*/
 
-      /* if note starts before the loop ends and
-       * continues after the loop (should be
-       * clipped) */
+      /* adjust for clip start */
+      /*int adjusted_mn_start_ticks =*/
+        /*mn_start_ticks - clip_start_ticks;*/
+      /*int adjusted_mn_end_ticks =*/
+        /*mn_end_ticks - clip_end_ticks;*/
+
+      /* if before loop start & after clip start */
+      /*if (position_compare (*/
+            /*&mn->start_pos, &r->loop_start_pos) < 0 &&*/
+          /*position_compare (*/
+            /*&mn->start_pos, &r->clip_start_pos) >= 0)*/
+        /*{*/
+
+        /*}*/
+      /* if before loop end */
       if (position_compare (
-            &mn->start_pos, &r->loop_end_pos) < 0 &&
-          position_compare (
-            &mn->end_pos, &r->loop_end_pos) >= 0)
+            &mn->start_pos, &r->loop_end_pos) < 0)
         {
           for (int j = 0;
                j < num_loops;
                j++)
             {
+              /* if note started before loop start
+               * only draw it once */
+              if (position_compare (
+                    &mn->start_pos,
+                    &r->loop_start_pos) < 0 &&
+                  j != 0)
+                break;
+
               /* calculate draw endpoints */
               tmp_start_ticks =
                 mn_start_ticks + loop_ticks * j;
-              tmp_end_ticks =
-                loop_end_ticks + loop_ticks * j;
+              /* if should be clipped */
+              if (position_compare (
+                    &mn->end_pos, &r->loop_end_pos) >= 0)
+                tmp_end_ticks =
+                  loop_end_ticks + loop_ticks * j;
+              else
+                tmp_end_ticks =
+                  mn_end_ticks + loop_ticks * j;
+
+              /* adjust for clip start */
+              tmp_start_ticks -= clip_start_ticks;
+              tmp_end_ticks -= clip_start_ticks;
+
               x_start =
                 (float) tmp_start_ticks /
                 ticks_in_region;
@@ -153,18 +178,6 @@ draw_cb (MidiRegionWidget * self, cairo_t *cr, gpointer data)
               cairo_fill (cr);
             }
         }
-
-      /* get ratio (0.0 - 1.0) on y where midi note is */
-      /*y_start =*/
-        /*(max_val - mn->val) / y_interval;*/
-
-      /*[> draw <]*/
-      /*cairo_rectangle (cr,*/
-                       /*x_start * width,*/
-                       /*y_start * height,*/
-                       /*(x_end - x_start) * width,*/
-                       /*y_note_size * height);*/
-      /*cairo_fill (cr);*/
     }
 
 
