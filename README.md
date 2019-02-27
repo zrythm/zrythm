@@ -62,6 +62,7 @@ _Note: You will need to have the development libraries for gtk3, jack, lilv, lib
 ```
 git clone https://git.zrythm.org/zrythm/zrythm.git
 cd zrythm
+git submodule update --init --recursive
 ./autogen.sh
 ./configure
 make
