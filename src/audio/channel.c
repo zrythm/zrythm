@@ -918,15 +918,9 @@ channel_add_plugin (Channel * channel,    ///< the channel
   channel->enabled = prev_enabled;
 
   plugin_generate_automatables (plugin);
-  AutomationTracklist * automation_tracklist =
-    track_get_automation_tracklist (channel->track);
-  automation_tracklist_update (
-    automation_tracklist);
-  if (automation_tracklist &&
-      automation_tracklist->widget)
-    automation_tracklist_widget_refresh (
-      automation_tracklist->widget);
-  connections_widget_refresh (MW_CONNECTIONS);
+
+  EVENTS_PUSH (ET_PLUGIN_ADDED,
+               plugin);
 }
 
 /**

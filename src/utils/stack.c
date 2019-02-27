@@ -1,7 +1,5 @@
 /*
- * utils/stack.c - Stack implementation
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,7 +17,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
+/**
+ * \file
+ *
+ * Stack implementation.
  */
 
 #include "utils/stack.h"
@@ -39,7 +40,18 @@ stack_is_empty (Stack * s)
 int
 stack_is_full (Stack * s)
 {
-  return stack_size (s) == MAX_STACK_LENGTH;
+  return stack_size (s) == s->max_length;
+}
+
+Stack *
+stack_new (int length)
+{
+  Stack * self = calloc (1, sizeof (Stack));
+
+  self->elements = calloc (length, sizeof (void *));
+  self->max_length = length;
+
+  return self;
 }
 
 void *
@@ -85,7 +97,7 @@ stack_pop_last (Stack * s)
 {
   void * element = s->elements[0];
 
-  for (int i = 0; i < MAX_STACK_LENGTH - 1; i++)
+  for (int i = 0; i < s->max_length - 1; i++)
     {
       s->elements[i] = s->elements[i + 1];
     }

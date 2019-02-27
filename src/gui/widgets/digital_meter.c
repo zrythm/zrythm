@@ -499,16 +499,9 @@ drag_update (GtkGestureDrag * gesture,
       if (self->update_timesig_top ||
           self->update_timesig_bot)
         {
-          ruler_widget_refresh (
-            Z_RULER_WIDGET (MW_RULER));
-          ruler_widget_refresh (
-            Z_RULER_WIDGET (MIDI_RULER));
-          gtk_widget_queue_draw (
-            GTK_WIDGET (MW_TIMELINE));
-          gtk_widget_queue_draw (
-            GTK_WIDGET (MIDI_ARRANGER));
-          gtk_widget_queue_draw (
-            GTK_WIDGET (MIDI_MODIFIER_ARRANGER));
+          EVENTS_PUSH (
+            ET_TIME_SIGNATURE_CHANGED,
+            NULL);
         }
     }
   gtk_widget_queue_draw (GTK_WIDGET (self));

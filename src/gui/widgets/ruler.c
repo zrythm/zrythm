@@ -241,6 +241,7 @@ ruler_widget_refresh (RulerWidget * self)
 }
 
 /**
+ * FIXME move to somewhere else, maybe project.
  * Sets zoom level and disables/enables buttons
  * accordingly.
  *

@@ -61,7 +61,8 @@ piano_roll_set_region (Region * region)
   self->region = region;
   self->region_id = region->id;
 
-  piano_roll_widget_region_updated ();
+  EVENTS_PUSH (ET_PIANO_ROLL_REGION_CHANGED,
+               NULL);
 }
 
 void

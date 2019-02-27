@@ -27,6 +27,7 @@
 #define __ZRYTHM_H__
 
 #include "audio/snap_grid.h"
+#include "gui/backend/events.h"
 #include "gui/backend/file_manager.h"
 #include "plugins/plugin_manager.h"
 #include "settings/settings.h"
@@ -103,6 +104,11 @@ typedef struct Zrythm
    * E.g., zrytm myproject.xml
    */
   char *                  open_filename;
+
+  /**
+   * GUI events.
+   */
+  Events                  events;
 } Zrythm;
 
 /**

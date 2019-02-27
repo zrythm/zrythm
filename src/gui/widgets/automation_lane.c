@@ -128,8 +128,8 @@ on_add_lane_clicked (
   g_message ("the at is %s",
              at->automatable->label);
 
-  automation_tracklist_widget_refresh (
-    atl->widget);
+  EVENTS_PUSH (ET_AUTOMATION_LANE_ADDED,
+               at->al);
 }
 
 /**

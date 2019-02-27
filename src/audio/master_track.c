@@ -1,6 +1,4 @@
 /*
- * audio/master_track.c - master track
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm

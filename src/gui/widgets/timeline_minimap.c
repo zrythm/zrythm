@@ -126,12 +126,8 @@ resize_selection_l (
       gtk_adjustment_set_value (adj,
                                 ruler_px);
 
-      arranger_widget_refresh (
-        Z_ARRANGER_WIDGET (MW_TIMELINE));
-      arranger_widget_refresh (
-        Z_ARRANGER_WIDGET (MIDI_ARRANGER));
-      arranger_widget_refresh (
-        Z_ARRANGER_WIDGET (MIDI_MODIFIER_ARRANGER));
+      EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
+                   NULL);
     }
 }
 
@@ -178,12 +174,8 @@ resize_selection_r (
       gtk_adjustment_set_value (adj,
                                 ruler_px);
 
-      arranger_widget_refresh (
-        Z_ARRANGER_WIDGET (MW_TIMELINE));
-      arranger_widget_refresh (
-        Z_ARRANGER_WIDGET (MIDI_ARRANGER));
-      arranger_widget_refresh (
-        Z_ARRANGER_WIDGET (MIDI_MODIFIER_ARRANGER));
+      EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
+                   NULL);
     }
 
 }

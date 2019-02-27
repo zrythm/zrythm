@@ -1,7 +1,5 @@
 /*
- * gui/widgets/chord_track.c - Track
- *
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -72,6 +70,9 @@ chord_track_widget_new (Track * track)
   return self;
 }
 
+/**
+ * FIXME delete
+ */
 void
 chord_track_widget_refresh_buttons (
   ChordTrackWidget * self)

@@ -29,6 +29,7 @@
 #include "audio/master_track.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
+#include "gui/backend/events.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/center_dock.h"
@@ -134,22 +135,8 @@ track_set_recording (Track *   track,
 
   track->recording = recording;
 
-  if (channel && channel->widget)
-    {
-      channel_widget_block_all_signal_handlers (
-        channel->widget);
-      channel_widget_refresh (channel->widget);
-      channel_widget_unblock_all_signal_handlers (
-        channel->widget);
-    }
-  if (track->widget)
-    {
-      track_widget_block_all_signal_handlers (
-        track->widget);
-      track_widget_refresh (track->widget);
-      track_widget_unblock_all_signal_handlers (
-        track->widget);
-    }
+  EVENTS_PUSH (ET_TRACK_STATE_CHANGED,
+               track);
 }
 
 /**
@@ -244,13 +231,14 @@ track_add_region (Track * track,
       instrument_track_add_region (
         (InstrumentTrack *) track,
         (MidiRegion *) region);
-      arranger_widget_refresh (
-        Z_ARRANGER_WIDGET (MW_TIMELINE));
+      EVENTS_PUSH (ET_REGION_CREATED,
+                   region);
       return;
     }
 
-  g_warning ("attempted to add region to a track type"
-             " that does not accept regions");
+  g_warning (
+    "attempted to add region to a track type"
+    " that does not accept regions");
 }
 
 /**
@@ -275,8 +263,7 @@ track_remove_region (Track * track,
     }
   if (delete)
     region_free (region);
-  arranger_widget_refresh (
-    Z_ARRANGER_WIDGET (MW_TIMELINE));
+  EVENTS_PUSH (ET_REGION_REMOVED, track);
 }
 
 /**

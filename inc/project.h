@@ -104,6 +104,10 @@ typedef struct Project
   TimelineSelections       timeline_selections;
   MidiArrangerSelections   midi_arranger_selections;
 
+  /** Zoom levels. TODO */
+  double             timeline_zoom;
+  double             piano_roll_zoom;
+
   /**
    * Selected range.
    *

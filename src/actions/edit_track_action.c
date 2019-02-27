@@ -66,60 +66,6 @@ edit_track_action_new_mute (Track * track,
   return ua;
 }
 
-static int
-refresh_chan_buttons_async (Channel * chan)
-{
-  channel_widget_block_all_signal_handlers (
-    chan->widget);
-  channel_widget_refresh_buttons (chan->widget);
-  channel_widget_unblock_all_signal_handlers (
-    chan->widget);
-
-  return FALSE;
-}
-
-static int
-refresh_track_buttons_async (Track * track)
-{
-  track_widget_block_all_signal_handlers (
-    track->widget);
-  track_widget_refresh_buttons (track->widget);
-  track_widget_unblock_all_signal_handlers (
-    track->widget);
-
-  return FALSE;
-}
-
-/**
- * Refreshes the channel and track widgets.
- */
-static void
-refresh_chan_and_track_widgets (
-  EditTrackAction * self)
-{
-  Track * track = PROJECT->tracks[self->track_id];
-  Channel * chan = track_get_channel (track);
-  switch (self->type)
-    {
-    case EDIT_TRACK_ACTION_TYPE_SOLO:
-    case EDIT_TRACK_ACTION_TYPE_MUTE:
-    case EDIT_TRACK_ACTION_TYPE_RECORD:
-      if (chan && chan->widget)
-        {
-          g_idle_add (
-            (GSourceFunc) refresh_chan_buttons_async,
-            chan);
-        }
-      if (track->widget)
-        {
-          g_idle_add (
-            (GSourceFunc) refresh_track_buttons_async,
-            track);
-        }
-      break;
-    }
-}
-
 void
 edit_track_action_do (EditTrackAction * self)
 {
@@ -128,17 +74,15 @@ edit_track_action_do (EditTrackAction * self)
     {
     case EDIT_TRACK_ACTION_TYPE_SOLO:
       track->solo = self->solo_new;
-      refresh_chan_and_track_widgets (
-        self);
       break;
     case EDIT_TRACK_ACTION_TYPE_MUTE:
       track->mute = self->mute_new;
-      refresh_chan_and_track_widgets (
-        self);
       break;
     case EDIT_TRACK_ACTION_TYPE_RECORD:
       break;
     }
+      EVENTS_PUSH (ET_TRACK_STATE_CHANGED,
+                   track);
 }
 
 void
@@ -149,17 +93,15 @@ edit_track_action_undo (EditTrackAction * self)
     {
     case EDIT_TRACK_ACTION_TYPE_SOLO:
       track->solo = !self->solo_new;
-      refresh_chan_and_track_widgets (
-        self);
       break;
     case EDIT_TRACK_ACTION_TYPE_MUTE:
       track->mute = !self->mute_new;
-      refresh_chan_and_track_widgets (
-        self);
       break;
     case EDIT_TRACK_ACTION_TYPE_RECORD:
       break;
     }
+  EVENTS_PUSH (ET_TRACK_STATE_CHANGED,
+               track);
 }
 
 void

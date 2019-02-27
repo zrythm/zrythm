@@ -28,8 +28,8 @@ typedef struct UndoableAction UndoableAction;
 
 typedef struct UndoManager
 {
-  Stack                  undo_stack;
-  Stack                  redo_stack;
+  Stack                  * undo_stack;
+  Stack                  * redo_stack;
 } UndoManager;
 
 void

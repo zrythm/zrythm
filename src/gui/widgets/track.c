@@ -569,7 +569,8 @@ track_widget_on_show_automation_toggled (GtkWidget * widget,
   track->bot_paned_visible =
     !track->bot_paned_visible;
 
-  tracklist_widget_soft_refresh (MW_TRACKLIST);
+  EVENTS_PUSH (ET_TRACK_BOT_PANED_VISIBILITY_CHANGED,
+               track);
 }
 
 void
@@ -619,7 +620,8 @@ track_widget_on_record_toggled (
              track->recording,
              chan->name);
 
-  tracklist_widget_soft_refresh (MW_TRACKLIST);
+  EVENTS_PUSH (ET_TRACK_STATE_CHANGED,
+               track);
 }
 
 GtkWidget *

@@ -59,7 +59,8 @@ delete_timeline_selections_action_do (
                            r,
                            1);
     }
-  timeline_arranger_widget_refresh_children (MW_TIMELINE);
+  EVENTS_PUSH (ET_TIMELINE_SELECTIONS_CHANGED,
+               NULL);
 }
 
 void
@@ -75,7 +76,8 @@ delete_timeline_selections_action_undo (
       track_add_region (r->track,
                         r);
     }
-  timeline_arranger_widget_refresh_children (MW_TIMELINE);
+  EVENTS_PUSH (ET_TIMELINE_SELECTIONS_CHANGED,
+               NULL);
 }
 
 void

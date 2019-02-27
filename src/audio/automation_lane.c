@@ -70,8 +70,10 @@ automation_lane_update_automation_track (
 
   automation_tracklist_update (
     track_get_automation_tracklist (at->track));
-  arranger_widget_refresh (
-    Z_ARRANGER_WIDGET (MW_TIMELINE));
+
+  EVENTS_PUSH (
+    ET_AUTOMATION_LANE_AUTOMATION_TRACK_CHANGED,
+    self);
 }
 
 void

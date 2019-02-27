@@ -1,7 +1,5 @@
 /*
- * gui/widgets/header_bar.c - Main window widget
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -32,6 +30,8 @@ G_DEFINE_TYPE (HeaderBarWidget,
                header_bar_widget,
                GTK_TYPE_HEADER_BAR)
 
+/* TODO rename to refresh buttons and refresh
+* everything */
 void
 header_bar_widget_refresh_undo_redo_buttons (HeaderBarWidget * self)
 {
@@ -39,10 +39,10 @@ header_bar_widget_refresh_undo_redo_buttons (HeaderBarWidget * self)
 
   gtk_widget_set_sensitive (
     GTK_WIDGET (self->edit_undo),
-    !stack_is_empty (&UNDO_MANAGER->undo_stack));
+    !stack_is_empty (UNDO_MANAGER->undo_stack));
   gtk_widget_set_sensitive (
     GTK_WIDGET (self->edit_redo),
-    !stack_is_empty (&UNDO_MANAGER->redo_stack));
+    !stack_is_empty (UNDO_MANAGER->redo_stack));
 }
 
 void

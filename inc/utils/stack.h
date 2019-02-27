@@ -1,7 +1,5 @@
 /*
- * utils/stack.h - Stack implementation
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,15 +26,18 @@
 
 #include <gtk/gtk.h>
 
-#define MAX_STACK_LENGTH 64
 #define STACK_PUSH(s, element) \
   stack_push (s, (void *) element)
 
 typedef struct Stack
 {
-  void *            elements[MAX_STACK_LENGTH];
+  void **           elements;
+  int               max_length;
   int               top;
 } Stack;
+
+Stack *
+stack_new (int length);
 
 int
 stack_size (Stack * s);

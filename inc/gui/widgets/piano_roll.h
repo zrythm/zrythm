@@ -71,16 +71,6 @@ typedef struct _PianoRollWidget
   PianoRoll *              piano_roll; ///< pointer to backend struct
 } MidiEditorWidget;
 
-/**
- * Called when the selected track for the piano roll has
- * been updated.
- *
- * It sets the color, labels, refreshes the midi arranger,
- * etc.
- */
-void
-piano_roll_widget_region_updated ();
-
 void
 piano_roll_widget_setup (
   PianoRollWidget * self,

@@ -104,52 +104,52 @@ transport_request_roll ()
 static int aa = 0;
 static int automatic = 0;
 
-static int
-on_playhead_changed ()
-{
-  if (automatic && (aa++ % 2 != 0))
-    {
-      return 0;
-    }
-  if (MAIN_WINDOW)
-    {
-      if (TOP_BAR->digital_transport)
-        {
-          gtk_widget_queue_draw (
-            GTK_WIDGET (TOP_BAR->digital_transport));
-        }
-      if (TIMELINE_ARRANGER_PLAYHEAD)
-        {
-          gtk_widget_queue_allocate (
-            GTK_WIDGET (MW_TIMELINE));
-        }
-      if (TIMELINE_RULER_PLAYHEAD)
-        {
-          gtk_widget_queue_allocate (
-            GTK_WIDGET (MW_RULER));
-        }
-      if (MW_PIANO_ROLL)
-        {
-          if (MIDI_RULER)
-            {
-              gtk_widget_queue_allocate (
-                GTK_WIDGET (MIDI_RULER));
-            }
-          if (MIDI_ARRANGER)
-            {
-              gtk_widget_queue_allocate (
-                GTK_WIDGET (MIDI_ARRANGER));
-            }
-          if (MIDI_MODIFIER_ARRANGER)
-            {
-              gtk_widget_queue_allocate (
-                GTK_WIDGET (MIDI_MODIFIER_ARRANGER));
-            }
-        }
-    }
-  aa = 1;
-  return G_SOURCE_REMOVE;
-}
+/*static int*/
+/*on_playhead_changed ()*/
+/*{*/
+  /*if (automatic && (aa++ % 2 != 0))*/
+    /*{*/
+      /*return 0;*/
+    /*}*/
+  /*if (MAIN_WINDOW)*/
+    /*{*/
+      /*if (TOP_BAR->digital_transport)*/
+        /*{*/
+          /*gtk_widget_queue_draw (*/
+            /*GTK_WIDGET (TOP_BAR->digital_transport));*/
+        /*}*/
+      /*if (TIMELINE_ARRANGER_PLAYHEAD)*/
+        /*{*/
+          /*gtk_widget_queue_allocate (*/
+            /*GTK_WIDGET (MW_TIMELINE));*/
+        /*}*/
+      /*if (TIMELINE_RULER_PLAYHEAD)*/
+        /*{*/
+          /*gtk_widget_queue_allocate (*/
+            /*GTK_WIDGET (MW_RULER));*/
+        /*}*/
+      /*if (MW_PIANO_ROLL)*/
+        /*{*/
+          /*if (MIDI_RULER)*/
+            /*{*/
+              /*gtk_widget_queue_allocate (*/
+                /*GTK_WIDGET (MIDI_RULER));*/
+            /*}*/
+          /*if (MIDI_ARRANGER)*/
+            /*{*/
+              /*gtk_widget_queue_allocate (*/
+                /*GTK_WIDGET (MIDI_ARRANGER));*/
+            /*}*/
+          /*if (MIDI_MODIFIER_ARRANGER)*/
+            /*{*/
+              /*gtk_widget_queue_allocate (*/
+                /*GTK_WIDGET (MIDI_MODIFIER_ARRANGER));*/
+            /*}*/
+        /*}*/
+    /*}*/
+  /*aa = 1;*/
+  /*return G_SOURCE_REMOVE;*/
+/*}*/
 
 /**
  * Moves the playhead by the time corresponding to given samples.
@@ -162,8 +162,7 @@ transport_add_to_playhead (int frames)
       position_add_frames (&TRANSPORT->playhead_pos,
                            frames);
       automatic = 1;
-      g_idle_add ((GSourceFunc) on_playhead_changed,
-                  NULL);
+      EVENTS_PUSH (ET_PLAYHEAD_POS_CHANGED, NULL);
     }
 }
 
@@ -182,8 +181,7 @@ transport_move_playhead (Position * target, ///< position to set to
     }
 
   automatic = 0;
-  g_idle_add ((GSourceFunc) on_playhead_changed,
-              NULL);
+  EVENTS_PUSH (ET_PLAYHEAD_POS_CHANGED, NULL);
 }
 
 /**

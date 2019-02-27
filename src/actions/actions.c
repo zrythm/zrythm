@@ -154,6 +154,7 @@ activate_preferences (GSimpleAction *action,
                           1);
 }
 
+/* FIXME rename to timeline zoom in */
 void
 activate_zoom_in (GSimpleAction *action,
                   GVariant      *variant,
@@ -164,15 +165,9 @@ activate_zoom_in (GSimpleAction *action,
   ruler_widget_set_zoom_level (
     Z_RULER_WIDGET (MW_RULER),
     rw_prv->zoom_level * 1.3f);
-  ruler_widget_refresh (Z_RULER_WIDGET (MW_RULER));
-  ruler_widget_refresh (Z_RULER_WIDGET (MIDI_RULER));
-  arranger_widget_refresh (
-    Z_ARRANGER_WIDGET (MW_TIMELINE));
-  arranger_widget_refresh (
-    Z_ARRANGER_WIDGET (MIDI_ARRANGER));
-  arranger_widget_refresh (
-    Z_ARRANGER_WIDGET (MIDI_MODIFIER_ARRANGER));
-  timeline_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
+
+  EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
+               NULL)
 }
 
 void
@@ -186,16 +181,9 @@ activate_zoom_out (GSimpleAction *action,
   ruler_widget_set_zoom_level (
     Z_RULER_WIDGET (MW_RULER),
     zoom_level);
-  ruler_widget_set_zoom_level (
-    Z_RULER_WIDGET (MIDI_RULER),
-    zoom_level);
-  arranger_widget_refresh (
-    Z_ARRANGER_WIDGET (MW_TIMELINE));
-  arranger_widget_refresh (
-    Z_ARRANGER_WIDGET (MIDI_ARRANGER));
-  arranger_widget_refresh (
-    Z_ARRANGER_WIDGET (MIDI_MODIFIER_ARRANGER));
-  timeline_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
+
+  EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
+               NULL)
 }
 
 void
@@ -203,8 +191,11 @@ activate_best_fit (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
+  /* TODO */
   g_message ("ZOOMING IN");
-  timeline_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
+
+  EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
+               NULL)
 }
 
 void
@@ -215,15 +206,9 @@ activate_original_size (GSimpleAction *action,
   RULER_WIDGET_GET_PRIVATE (
     Z_RULER_WIDGET (MW_RULER));
   rw_prv->zoom_level = DEFAULT_ZOOM_LEVEL;
-  ruler_widget_refresh (Z_RULER_WIDGET (MW_RULER));
-  ruler_widget_refresh (Z_RULER_WIDGET (MIDI_RULER));
-  arranger_widget_refresh (
-    Z_ARRANGER_WIDGET (MW_TIMELINE));
-  arranger_widget_refresh (
-    Z_ARRANGER_WIDGET (MIDI_ARRANGER));
-  arranger_widget_refresh (
-    Z_ARRANGER_WIDGET (MIDI_MODIFIER_ARRANGER));
-  timeline_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
+
+  EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
+               NULL)
 }
 
 void
@@ -355,9 +340,12 @@ activate_undo (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  if (stack_is_empty (&UNDO_MANAGER->undo_stack)) return;
+  if (stack_is_empty (UNDO_MANAGER->undo_stack))
+    return;
   undo_manager_undo (UNDO_MANAGER);
-  header_bar_widget_refresh_undo_redo_buttons ((HeaderBarWidget *) user_data);
+
+  EVENTS_PUSH (ET_UNDO_REDO_ACTION_DONE,
+               NULL);
 }
 
 void
@@ -365,9 +353,12 @@ activate_redo (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  if (stack_is_empty (&UNDO_MANAGER->redo_stack)) return;
+  if (stack_is_empty (UNDO_MANAGER->redo_stack))
+    return;
   undo_manager_redo (UNDO_MANAGER);
-  header_bar_widget_refresh_undo_redo_buttons ((HeaderBarWidget *) user_data);
+
+  EVENTS_PUSH (ET_UNDO_REDO_ACTION_DONE,
+               NULL);
 }
 
 void
@@ -479,6 +470,8 @@ activate_toggle_left_panel (GSimpleAction *action,
   g_object_set_property (G_OBJECT (self),
                          "left-visible",
                          &a);
+
+  /* TODO update header bar buttons */
 }
 
 void
@@ -534,9 +527,9 @@ activate_fullscreen (GSimpleAction *action,
 {
   if (MAIN_WINDOW->is_maximized)
     {
-      gtk_window_resize (GTK_WINDOW (MAIN_WINDOW),
-                         MAIN_WINDOW->width,
-                         MAIN_WINDOW->height);
+      /*gtk_window_resize (GTK_WINDOW (MAIN_WINDOW),*/
+                         /*MAIN_WINDOW->width,*/
+                         /*MAIN_WINDOW->height);*/
       gtk_window_unmaximize (GTK_WINDOW (MAIN_WINDOW));
       MAIN_WINDOW->is_maximized = 0;
       /*gtk_window_resize (GTK_WINDOW (MAIN_WINDOW),*/
@@ -546,12 +539,12 @@ activate_fullscreen (GSimpleAction *action,
   else
     {
       gtk_window_maximize (GTK_WINDOW (MAIN_WINDOW));
-      MAIN_WINDOW->height =
-        gtk_widget_get_allocated_height (
-          GTK_WIDGET (MAIN_WINDOW));
-      MAIN_WINDOW->width =
-        gtk_widget_get_allocated_width (
-          GTK_WIDGET (MAIN_WINDOW));
+      /*MAIN_WINDOW->height =*/
+        /*gtk_widget_get_allocated_height (*/
+          /*GTK_WIDGET (MAIN_WINDOW));*/
+      /*MAIN_WINDOW->width =*/
+        /*gtk_widget_get_allocated_width (*/
+          /*GTK_WIDGET (MAIN_WINDOW));*/
     }
 }
 
@@ -604,9 +597,9 @@ activate_create_audio_track (GSimpleAction *action,
   Channel * chan =
     channel_create (CT_AUDIO, "Audio Track");
   mixer_add_channel (chan);
-  mixer_widget_refresh (MW_MIXER);
   tracklist_append_track (chan->track);
-  tracklist_widget_hard_refresh (MW_TRACKLIST);
+
+  EVENTS_PUSH (ET_TRACK_ADDED, chan->track);
 }
 
 void
@@ -617,9 +610,9 @@ activate_create_ins_track (GSimpleAction *action,
   Channel * chan =
     channel_create (CT_MIDI, "Instrument Track");
   mixer_add_channel (chan);
-  mixer_widget_refresh (MW_MIXER);
   tracklist_append_track (chan->track);
-  tracklist_widget_hard_refresh (MW_TRACKLIST);
+
+  EVENTS_PUSH (ET_TRACK_ADDED, chan->track);
 }
 
 void
@@ -630,9 +623,9 @@ activate_create_bus_track (GSimpleAction *action,
   Channel * chan =
     channel_create (CT_BUS, "Bus Track");
   mixer_add_channel (chan);
-  mixer_widget_refresh (MW_MIXER);
   tracklist_append_track (chan->track);
-  tracklist_widget_hard_refresh (MW_TRACKLIST);
+
+  EVENTS_PUSH (ET_TRACK_ADDED, chan->track);
 }
 
 void

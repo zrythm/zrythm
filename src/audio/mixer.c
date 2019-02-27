@@ -1,7 +1,5 @@
 /*
- * audio/mixer.c - The mixer
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -236,10 +234,8 @@ mixer_add_channel_from_plugin_descr (
                       0,
                       plugin);
 
-  if (MW_MIXER)
-    mixer_widget_refresh (MW_MIXER);
-  if (MW_TRACKLIST)
-    tracklist_widget_hard_refresh (MW_TRACKLIST);
+  EVENTS_PUSH (ET_TRACK_ADDED,
+               new_channel->track);
 }
 
 Channel *

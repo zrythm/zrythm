@@ -1,7 +1,5 @@
 /*
- * project.c - A project (or song), containing all the project data
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,6 +15,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * \file
+ *
+ * A project contains everything that should be
+ * serialized.
  */
 
 #include "zrythm.h"
@@ -164,7 +169,7 @@ project_set_has_range (int has_range)
 {
   PROJECT->has_range = has_range;
 
-  timeline_ruler_widget_refresh ();
+  EVENTS_PUSH (ET_RANGE_ADDED, NULL);
 }
 
 void

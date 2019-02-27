@@ -121,42 +121,6 @@ toggle_note_notation_cb (GtkButton *button,
     GTK_WIDGET (PIANO_ROLL_LABELS));
 }
 
-/**
- * Called when the selected track for the piano roll has
- * been updated.
- *
- * It sets the color, labels, refreshes the midi arranger,
- * etc.
- */
-void
-piano_roll_widget_region_updated ()
-{
-  PianoRollWidget * self = MW_PIANO_ROLL;
-  /*gtk_notebook_set_current_page (MAIN_WINDOW->bot_notebook, 0);*/
-
-  gtk_label_set_text (
-    self->midi_name_label,
-    track_get_name (
-      self->piano_roll->region->track));
-
-  color_area_widget_set_color (
-    self->color_bar,
-    &self->piano_roll->region->track->color);
-
-  /* ruler must be refreshed first to get the
-   * correct px when calling ui_* functions */
-  midi_ruler_widget_refresh (
-    MIDI_RULER);
-
-  /* remove all previous children and add new */
-  arranger_widget_refresh (
-    Z_ARRANGER_WIDGET (MIDI_ARRANGER));
-  arranger_widget_refresh (
-    Z_ARRANGER_WIDGET (MIDI_MODIFIER_ARRANGER));
-
-  gtk_widget_show_all (GTK_WIDGET (MIDI_ARRANGER));
-}
-
 void
 piano_roll_widget_setup (
   PianoRollWidget * self,

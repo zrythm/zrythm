@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -55,8 +55,8 @@ create_chords_action_do (CreateChordsAction * self)
       Chord * chord = self->chords[i];
       chord_track_add_chord (CHORD_TRACK,
                              chord);
-      timeline_arranger_widget_refresh_children (
-        MW_TIMELINE);
+
+      EVENTS_PUSH (ET_CHORD_CREATED, chord);
     }
 }
 
@@ -68,8 +68,8 @@ create_chords_action_undo (CreateChordsAction * self)
       Chord * chord = self->chords[i];
       chord_track_remove_chord (CHORD_TRACK,
                                 chord);
-      timeline_arranger_widget_refresh_children (
-        MW_TIMELINE);
+
+      EVENTS_PUSH (ET_CHORD_REMOVED, chord);
     }
 }
 

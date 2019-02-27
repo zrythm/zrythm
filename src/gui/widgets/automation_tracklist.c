@@ -160,9 +160,6 @@ automation_tracklist_widget_refresh (
         }
     }
   g_list_free(children);
-
-  timeline_arranger_widget_refresh_children (
-    MW_TIMELINE);
 }
 
 static void

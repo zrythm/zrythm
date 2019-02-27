@@ -65,8 +65,7 @@ on_hadj_value_changed (GtkAdjustment *adjustment,
   CenterDockWidget * self =
     Z_CENTER_DOCK_WIDGET (user_data);
 
-  timeline_minimap_widget_refresh (
-    self->bot_box->timeline_minimap);
+  EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED, NULL);
 }
 
 void

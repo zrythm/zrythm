@@ -342,13 +342,6 @@ create_model_for_files (FileBrowserWidget * self)
   return model;
 }
 
-static int
-refresh_widgets ()
-{
-
-  return FALSE;
-}
-
 static void
 on_row_activated (GtkTreeView       *tree_view,
                GtkTreePath       *tp,
@@ -497,11 +490,8 @@ on_row_activated (GtkTreeView       *tree_view,
       audio_track_add_region (
         (AudioTrack *) chan->track, ar);
 
-      /* refresh tracklist */
-      mixer_widget_refresh (MW_MIXER);
-      tracklist_widget_hard_refresh (MW_TRACKLIST);
-      arranger_widget_refresh (
-        Z_ARRANGER_WIDGET (MW_TIMELINE));
+      EVENTS_PUSH (ET_TRACK_ADDED,
+                   chan->track);
 
       /* cleanup */
       ad_close (handle);

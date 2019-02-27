@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -223,6 +223,7 @@ static void on_setup_main_window (GSimpleAction  *action,
 {
   g_message ("setup main window");
 
+  events_init (&ZRYTHM->events);
   main_window_widget_refresh (MAIN_WINDOW);
 
   AUDIO_ENGINE->run = 1;
