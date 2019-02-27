@@ -208,6 +208,21 @@ on_plugin_added (Plugin * plugin)
   connections_widget_refresh (MW_CONNECTIONS);
 }
 
+static void
+on_midi_note_changed (MidiNote * midi_note)
+{
+  Region * r = (Region *) midi_note->midi_region;
+
+  if (r->widget)
+    gtk_widget_queue_draw (GTK_WIDGET (r->widget));
+}
+
+/**
+ * In microseconds.
+ */
+#define TIME_TO_UPDATE 24000
+static gint64 last_time_updated = 0;
+
 /**
  * GSourceFunc to be added using idle add.
  *
@@ -216,6 +231,14 @@ on_plugin_added (Plugin * plugin)
 int
 events_process ()
 {
+  gint64 curr_time = g_get_monotonic_time ();
+  /*if (curr_time - last_time_updated <*/
+      /*TIME_TO_UPDATE)*/
+    /*{*/
+      /*g_usleep (24000);*/
+      /*return G_SOURCE_CONTINUE;*/
+    /*}*/
+
   EventType et;
   void * arg;
 
@@ -265,6 +288,10 @@ events_process ()
           break;
         case ET_TRACK_SELECT_CHANGED:
           on_track_select_changed ((Track *) arg);
+          break;
+        case ET_MIDI_NOTE_CHANGED:
+          on_midi_note_changed ((MidiNote *) arg);
+          break;
         case ET_TIMELINE_VIEWPORT_CHANGED:
           timeline_minimap_widget_refresh (
             MW_TIMELINE_MINIMAP);
@@ -308,7 +335,8 @@ events_process ()
         }
     }
 
-  g_usleep (8000);
+  last_time_updated = curr_time;
+  g_usleep (1000);
 
   return TRUE;
 }
@@ -322,8 +350,9 @@ events_init (Events * self)
   self->et_stack = stack_new (64);
   self->arg_stack = stack_new (64);
 
-  g_idle_add_full (
-    G_PRIORITY_HIGH_IDLE + 30,
-    (GSourceFunc) events_process,
-    NULL, NULL);
+  /*g_idle_add_full (*/
+    /*G_PRIORITY_HIGH_IDLE + 30,*/
+    /*(GSourceFunc) events_process,*/
+    /*NULL, NULL);*/
+  g_idle_add ((GSourceFunc) events_process, NULL);
 }

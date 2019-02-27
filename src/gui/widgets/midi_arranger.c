@@ -415,6 +415,9 @@ midi_arranger_widget_snap_midi_notes_l (
                        ar_prv->snap_grid);
       midi_note_set_start_pos (midi_note,
                                pos);
+
+      EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
+                   midi_note);
     }
 }
 
@@ -449,6 +452,8 @@ midi_arranger_widget_snap_midi_notes_r (
           midi_note_set_end_pos (midi_note,
                                  pos);
         }
+      EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
+                   midi_note);
     }
 }
 
@@ -481,6 +486,9 @@ midi_arranger_widget_move_items_x (
       position_set_to_pos (&tmp, prev_start_pos);
       position_add_ticks (&tmp, ticks_diff);
       midi_note_set_start_pos (r, &tmp);
+
+      EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
+                   r);
     }
 }
 
@@ -613,6 +621,8 @@ midi_arranger_widget_on_drag_end (
         MIDI_ARRANGER_SELECTIONS->midi_notes[i];
       ui_set_cursor (
         GTK_WIDGET (midi_note->widget), "default");
+      EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
+                   midi_note);
     }
 
   /* if didn't click on something */

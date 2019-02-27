@@ -1062,7 +1062,6 @@ void
 arranger_widget_refresh (
   ArrangerWidget * self)
 {
-  g_message ("refresh");
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
   GET_ARRANGER_ALIASES (self);

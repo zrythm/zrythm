@@ -62,6 +62,12 @@ typedef enum EventType
    */
   ET_PIANO_ROLL_REGION_CHANGED,
 
+  /**
+   * Clip marker (clip start, loop start, loop end)
+   * position changed.
+   */
+  ET_CLIP_MARKER_POS_CHANGED,
+
   ET_UNDO_REDO_ACTION_DONE,
 
   /**
@@ -71,6 +77,7 @@ typedef enum EventType
   ET_PLUGIN_ADDED,
   ET_RANGE_ADDED,
   ET_PLAYHEAD_POS_CHANGED,
+  ET_MIDI_NOTE_CHANGED,
   ET_TIMELINE_SELECTIONS_CHANGED,
   ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
 } EventType;
