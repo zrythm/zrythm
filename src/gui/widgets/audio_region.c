@@ -147,20 +147,25 @@ AudioRegionWidget *
 audio_region_widget_new (AudioRegion * audio_region)
 {
   g_message ("Creating audio region widget...");
-  AudioRegionWidget * self = g_object_new (AUDIO_REGION_WIDGET_TYPE, NULL);
+  AudioRegionWidget * self =
+    g_object_new (AUDIO_REGION_WIDGET_TYPE, NULL);
 
   region_widget_setup (Z_REGION_WIDGET (self),
                        (Region *) audio_region);
 
   /* connect signals */
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), self);
-  g_signal_connect (G_OBJECT (self), "enter-notify-event",
-                    G_CALLBACK (on_motion),  self);
-  g_signal_connect (G_OBJECT(self), "leave-notify-event",
-                    G_CALLBACK (on_motion),  self);
-  g_signal_connect (G_OBJECT(self), "motion-notify-event",
-                    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (draw_cb), self);
+  g_signal_connect (
+    G_OBJECT (self), "enter-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self), "leave-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self), "motion-notify-event",
+    G_CALLBACK (on_motion),  self);
 
   return self;
 }

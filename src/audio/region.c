@@ -121,10 +121,10 @@ region_set_start_pos (Region * region,
           /*position_add_frames (&note->end_pos, frames);*/
         /*}*/
     /*}*/
-  long length =
-    region_get_full_length_in_ticks (region);
-  position_from_ticks (&region->true_end_pos,
-                       length);
+  /*long length =*/
+    /*region_get_full_length_in_ticks (region);*/
+  /*position_from_ticks (&region->true_end_pos,*/
+                       /*length);*/
 }
 
 /**

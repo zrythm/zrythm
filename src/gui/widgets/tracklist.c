@@ -217,6 +217,8 @@ tracklist_widget_hard_refresh (TracklistWidget * self)
           if (!track->widget)
             track->widget = track_widget_new (track);
 
+          g_message ("track widget %p",
+                     track->widget);
           track_widget_refresh (track->widget);
 
           /* add to tracklist widget */

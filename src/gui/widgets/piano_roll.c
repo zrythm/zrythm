@@ -134,13 +134,10 @@ piano_roll_widget_region_updated ()
   PianoRollWidget * self = MW_PIANO_ROLL;
   /*gtk_notebook_set_current_page (MAIN_WINDOW->bot_notebook, 0);*/
 
-  char * label =
-    g_strdup_printf (
-      "%s",
-      track_get_name (self->piano_roll->region->track));
-  gtk_label_set_text (self->midi_name_label,
-                      label);
-  g_free (label);
+  gtk_label_set_text (
+    self->midi_name_label,
+    track_get_name (
+      self->piano_roll->region->track));
 
   color_area_widget_set_color (
     self->color_bar,

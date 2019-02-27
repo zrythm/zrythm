@@ -95,14 +95,15 @@ timeline_arranger_widget_set_allocation (
       Track * track = rw_prv->region->track;
       /*TRACK_WIDGET_GET_PRIVATE (track->widget);*/
 
+      if (!track->widget)
+        track->widget = track_widget_new (track);
+
       gint wx, wy;
       gtk_widget_translate_coordinates(
-                GTK_WIDGET (track->widget),
-                GTK_WIDGET (self),
-                0,
-                0,
-                &wx,
-                &wy);
+        GTK_WIDGET (track->widget),
+        GTK_WIDGET (self),
+        0, 0,
+        &wx, &wy);
 
       allocation->x =
         ui_pos_to_px_timeline (
@@ -600,6 +601,9 @@ timeline_arranger_widget_on_drag_begin_region_hit (
       if (track->type == TRACK_TYPE_INSTRUMENT)
         {
           piano_roll_set_region (rw_prv->region);
+          /*g_message ("region size");*/
+          /*position_print (*/
+            /*&rw_prv->region->true_end_pos);*/
         }
     }
 
@@ -1546,8 +1550,9 @@ add_children_from_audio_track (
       AudioRegion * mr = audio_track->regions[i];
       g_message ("adding region");
       Region * r = (Region *) mr;
-      gtk_overlay_add_overlay (GTK_OVERLAY (self),
-                               GTK_WIDGET (r->widget));
+      gtk_overlay_add_overlay (
+        GTK_OVERLAY (self),
+        GTK_WIDGET (r->widget));
     }
   ChannelTrack * ct = (ChannelTrack *) audio_track;
   add_children_from_channel_track (ct);
