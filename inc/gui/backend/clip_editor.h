@@ -41,6 +41,10 @@ typedef struct ClipEditor
 
   PianoRoll                piano_roll;
   AudioClipEditor          audio_clip_editor;
+
+  /** Flag used by rulers when region first
+   * changes. */
+  int                      region_changed;
 } ClipEditor;
 
 static const cyaml_schema_field_t

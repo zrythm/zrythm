@@ -174,6 +174,9 @@ ruler_draw_cb (GtkWidget * widget,
 
   GET_PRIVATE;
 
+  if (rw_prv->px_per_bar < 2.0)
+    return FALSE;
+
   GtkStyleContext *context;
 
   context = gtk_widget_get_style_context (GTK_WIDGET (self));

@@ -171,8 +171,6 @@ midi_ruler_widget_refresh ()
         gtk_widget_get_allocated_width (
           GTK_WIDGET (
             MW_PIANO_ROLL->midi_ruler_viewport));
-      g_message ("viewport width %d",
-                 viewport_width);
 
       /* set zoom level so that it matches the length
        * of the selected region */

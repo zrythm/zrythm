@@ -179,6 +179,58 @@ on_track_select_changed (Track * track)
                          track->selected);
 }
 
+/**
+ * Called when setting clip editor region using
+ * g_idle_add to give the widgets time to have
+ * widths.
+ */
+static int
+refresh_midi_ruler_and_arranger ()
+{
+  if (!ui_is_widget_revealed (MIDI_RULER))
+    {
+      g_usleep (1000);
+      return TRUE;
+    }
+
+  /* ruler must be refreshed first to get the
+   * correct px when calling ui_* functions */
+  midi_ruler_widget_refresh (
+    MIDI_RULER);
+
+  /* remove all previous children and add new */
+  arranger_widget_refresh (
+    Z_ARRANGER_WIDGET (MIDI_ARRANGER));
+  arranger_widget_refresh (
+    Z_ARRANGER_WIDGET (
+      MIDI_MODIFIER_ARRANGER));
+
+  return FALSE;
+}
+
+/**
+ * Called when setting clip editor region using
+ * g_idle_add to give the widgets time to have
+ * widths.
+ */
+static int
+refresh_audio_ruler_and_arranger ()
+{
+  if (!ui_is_widget_revealed (AUDIO_RULER))
+    {
+      g_usleep (1000);
+      return TRUE;
+    }
+
+  /* ruler must be refreshed first to get the
+   * correct px when calling ui_* functions */
+  audio_ruler_widget_refresh ();
+
+  /* remove all previous children and add new */
+
+  return FALSE;
+}
+
 static void
 on_clip_editor_region_changed ()
 {
@@ -190,6 +242,10 @@ on_clip_editor_region_changed ()
     {
       if (r->type == REGION_TYPE_MIDI)
         {
+          gtk_stack_set_visible_child (
+            GTK_STACK (MW_CLIP_EDITOR),
+            GTK_WIDGET (MW_PIANO_ROLL));
+
           gtk_label_set_text (
             MW_PIANO_ROLL->midi_name_label,
             track_get_name (
@@ -199,28 +255,16 @@ on_clip_editor_region_changed ()
             MW_PIANO_ROLL->color_bar,
             &r->track->color);
 
-          /* ruler must be refreshed first to get the
-           * correct px when calling ui_* functions */
-          midi_ruler_widget_refresh (
-            MIDI_RULER);
-
-          /* remove all previous children and add new */
-          arranger_widget_refresh (
-            Z_ARRANGER_WIDGET (MIDI_ARRANGER));
-          arranger_widget_refresh (
-            Z_ARRANGER_WIDGET (
-              MIDI_MODIFIER_ARRANGER));
-
-          gtk_widget_show_all (
-            GTK_WIDGET (MIDI_ARRANGER));
-
-          gtk_stack_set_visible_child (
-            GTK_STACK (MW_CLIP_EDITOR),
-            GTK_WIDGET (MW_PIANO_ROLL));
-
+          g_idle_add (
+            refresh_midi_ruler_and_arranger,
+            NULL);
         }
       else if (r->type == REGION_TYPE_AUDIO)
         {
+          gtk_stack_set_visible_child (
+            GTK_STACK (MW_CLIP_EDITOR),
+            GTK_WIDGET (MW_AUDIO_CLIP_EDITOR));
+
           gtk_label_set_text (
             MW_AUDIO_CLIP_EDITOR->track_name,
             track_get_name (
@@ -230,13 +274,9 @@ on_clip_editor_region_changed ()
             MW_AUDIO_CLIP_EDITOR->color_bar,
             &r->track->color);
 
-          /* ruler must be refreshed first to get the
-           * correct px when calling ui_* functions */
-          audio_ruler_widget_refresh ();
-
-          gtk_stack_set_visible_child (
-            GTK_STACK (MW_CLIP_EDITOR),
-            GTK_WIDGET (MW_AUDIO_CLIP_EDITOR));
+          g_idle_add (
+            refresh_audio_ruler_and_arranger,
+            NULL);
         }
     }
   else
@@ -246,6 +286,7 @@ on_clip_editor_region_changed ()
         GTK_WIDGET (
           MW_CLIP_EDITOR->no_selection_label));
     }
+  g_message ("clip editor region changed");
 }
 
 static void

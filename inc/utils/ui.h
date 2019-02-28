@@ -57,6 +57,12 @@ typedef struct Position Position;
       GTK_WINDOW (win), \
       msg);
 
+#define ui_is_widget_revealed(widget) \
+  (gtk_widget_get_allocated_height ( \
+     GTK_WIDGET (widget)) > 1 || \
+   gtk_widget_get_allocated_width ( \
+     GTK_WIDGET (widget)) > 1)
+
 /**
  * Various cursor states to be shared.
  */

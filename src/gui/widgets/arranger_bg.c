@@ -56,6 +56,8 @@ arranger_bg_draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
 	                        &rect);
 
   RULER_WIDGET_GET_PRIVATE (ab_prv->ruler);
+  if (rw_prv->px_per_bar < 2.0)
+    return FALSE;
 
   GtkStyleContext *context;
 
