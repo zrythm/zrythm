@@ -21,6 +21,7 @@
  * \file
  *
  * GTK utils.
+ * TODO merge with UI
  */
 
 #ifndef __UTILS_GTK_H__

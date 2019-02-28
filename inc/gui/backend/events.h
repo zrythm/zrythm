@@ -60,7 +60,7 @@ typedef enum EventType
    *
    * Eg., a region in the timeline was clicked.
    */
-  ET_PIANO_ROLL_REGION_CHANGED,
+  ET_CLIP_EDITOR_REGION_CHANGED,
 
   /**
    * Clip marker (clip start, loop start, loop end)
@@ -69,13 +69,15 @@ typedef enum EventType
   ET_CLIP_MARKER_POS_CHANGED,
 
   ET_UNDO_REDO_ACTION_DONE,
+  ET_RANGE_SELECTION_CHANGED,
+  ET_TIMELINE_LOOP_MARKER_POS_CHANGED,
+  ET_TIMELINE_SONG_MARKER_POS_CHANGED,
 
   /**
    * Zoom level or view area changed.
    */
   ET_TIMELINE_VIEWPORT_CHANGED,
   ET_PLUGIN_ADDED,
-  ET_RANGE_ADDED,
   ET_PLAYHEAD_POS_CHANGED,
   ET_MIDI_NOTE_CHANGED,
   ET_TIMELINE_SELECTIONS_CHANGED,

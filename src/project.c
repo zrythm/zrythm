@@ -153,7 +153,7 @@ project_load (char * filename)
                   NOTE_LENGTH_1_8);
   quantize_init (&PROJECT->quantize_midi,
                 NOTE_LENGTH_1_8);
-  piano_roll_init (&PROJECT->piano_roll);
+  clip_editor_init (&PROJECT->clip_editor);
   snap_grid_update_snap_points (&PROJECT->snap_grid_timeline);
   snap_grid_update_snap_points (&PROJECT->snap_grid_midi);
   quantize_update_snap_points (&PROJECT->quantize_timeline);
@@ -169,7 +169,7 @@ project_set_has_range (int has_range)
 {
   PROJECT->has_range = has_range;
 
-  EVENTS_PUSH (ET_RANGE_ADDED, NULL);
+  EVENTS_PUSH (ET_RANGE_SELECTION_CHANGED, NULL);
 }
 
 void

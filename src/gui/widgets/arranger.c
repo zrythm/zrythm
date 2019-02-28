@@ -41,6 +41,7 @@
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/chord.h"
+#include "gui/widgets/clip_editor.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
@@ -123,15 +124,15 @@ get_child_position (GtkOverlay   *overlay,
             1) - 1; /* minus half the width */
       else if ((midi_arranger ||
                midi_modifier_arranger) &&
-               PIANO_ROLL->region)
+               CLIP_EDITOR->region)
         {
           if (region_is_hit (
-                PIANO_ROLL->region,
+                CLIP_EDITOR->region,
                 &PLAYHEAD))
             {
               Position pos;
               region_timeline_pos_to_local (
-                PIANO_ROLL->region,
+                CLIP_EDITOR->region,
                 &TRANSPORT->playhead_pos,
                 &pos, 1);
               allocation->x =
@@ -696,7 +697,7 @@ drag_begin (GtkGestureDrag *   gesture,
                 (MW_PIANO_ROLL->piano_roll_labels->total_px
                   - start_y) /
                 MW_PIANO_ROLL->piano_roll_labels->px_per_note;
-              region = PIANO_ROLL->region;
+              region = CLIP_EDITOR->region;
 
               /* create a note */
               if (region)

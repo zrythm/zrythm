@@ -598,13 +598,10 @@ timeline_arranger_widget_on_drag_begin_region_hit (
   if (ar_prv->n_press == 2)
     {
       Track * track = rw_prv->region->track;
-      if (track->type == TRACK_TYPE_INSTRUMENT)
-        {
-          piano_roll_set_region (rw_prv->region);
-          /*g_message ("region size");*/
-          /*position_print (*/
-            /*&rw_prv->region->true_end_pos);*/
-        }
+      clip_editor_set_region (rw_prv->region);
+      /*g_message ("region size");*/
+      /*position_print (*/
+        /*&rw_prv->region->true_end_pos);*/
     }
 
   Region * region = rw_prv->region;

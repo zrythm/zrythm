@@ -22,6 +22,7 @@
 #include "audio/engine.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/clip_editor.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/midi_ruler.h"
@@ -356,4 +357,22 @@ ui_show_notification_idle_func (char * msg)
   g_free (msg);
 
   return G_SOURCE_REMOVE;
+}
+
+/**
+ * Returns the modifier type (state mask) from the
+ * given gesture.
+ */
+void
+ui_get_modifier_type_from_gesture (
+  GtkGestureSingle * gesture,
+  GdkModifierType *  state_mask) ///< return value
+{
+  GdkEventSequence *sequence =
+    gtk_gesture_single_get_current_sequence (
+      gesture);
+  const GdkEvent * event =
+    gtk_gesture_get_last_event (
+      GTK_GESTURE (gesture), sequence);
+  gdk_event_get_state (event, state_mask);
 }

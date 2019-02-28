@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,14 +19,15 @@
 
 #include "audio/engine.h"
 #include "audio/instrument_track.h"
+#include "audio/position.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
+#include "gui/widgets/audio_clip_editor.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/midi_modifier_arranger.h"
-#include "gui/widgets/midi_ruler.h"
+#include "gui/widgets/audio_ruler.h"
 #include "gui/widgets/piano_roll.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/ruler_marker.h"
@@ -35,14 +36,14 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (MidiRulerWidget,
-               midi_ruler_widget,
+G_DEFINE_TYPE (AudioRulerWidget,
+               audio_ruler_widget,
                RULER_WIDGET_TYPE)
 
 static gboolean
-midi_ruler_draw_cb (GtkWidget * widget,
+audio_ruler_draw_cb (GtkWidget * widget,
          cairo_t *cr,
-         MidiRulerWidget * self)
+         AudioRulerWidget * self)
 {
   /* engine is run only set after everything is set up
    * so this is a good way to decide if we should draw
@@ -92,8 +93,8 @@ midi_ruler_draw_cb (GtkWidget * widget,
 }
 
 void
-midi_ruler_widget_set_ruler_marker_position (
-  MidiRulerWidget * self,
+audio_ruler_widget_set_ruler_marker_position (
+  AudioRulerWidget * self,
   RulerMarkerWidget *    rm,
   GtkAllocation *       allocation)
 {
@@ -137,11 +138,11 @@ midi_ruler_widget_set_ruler_marker_position (
         }
       else
         allocation->x = 0;
-      if (MAIN_WINDOW && MIDI_RULER)
+      if (MAIN_WINDOW && AUDIO_RULER)
         {
       allocation->y =
         ((gtk_widget_get_allocated_height (
-          GTK_WIDGET (MIDI_RULER)) -
+          GTK_WIDGET (AUDIO_RULER)) -
             RULER_MARKER_SIZE) - CUE_MARKER_HEIGHT) -
             1;
         }
@@ -155,9 +156,9 @@ midi_ruler_widget_set_ruler_marker_position (
 }
 
 void
-midi_ruler_widget_refresh ()
+audio_ruler_widget_refresh ()
 {
-  RULER_WIDGET_GET_PRIVATE (MIDI_RULER);
+  RULER_WIDGET_GET_PRIVATE (AUDIO_RULER);
 
   Region * r = CLIP_EDITOR->region;
   long total_ticks;
@@ -170,9 +171,7 @@ midi_ruler_widget_refresh ()
       viewport_width =
         gtk_widget_get_allocated_width (
           GTK_WIDGET (
-            MW_PIANO_ROLL->midi_ruler_viewport));
-      g_message ("viewport width %d",
-                 viewport_width);
+            MW_AUDIO_CLIP_EDITOR->ruler_viewport));
 
       /* set zoom level so that it matches the length
        * of the selected region */
@@ -208,29 +207,29 @@ midi_ruler_widget_refresh ()
 
   // set the size
   gtk_widget_set_size_request (
-    GTK_WIDGET (MIDI_RULER),
+    GTK_WIDGET (AUDIO_RULER),
     rw_prv->total_px,
     30);
 
   gtk_widget_queue_allocate (
-    GTK_WIDGET (MIDI_RULER));
+    GTK_WIDGET (AUDIO_RULER));
 }
 
 static void
-midi_ruler_widget_class_init (
-  MidiRulerWidgetClass * klass)
+audio_ruler_widget_class_init (
+  AudioRulerWidgetClass * klass)
 {
 }
 
 static void
-midi_ruler_widget_init (
-  MidiRulerWidget * self)
+audio_ruler_widget_init (
+  AudioRulerWidget * self)
 {
   RULER_WIDGET_GET_PRIVATE (self);
 
   /*g_signal_connect (*/
     /*G_OBJECT (rw_prv->bg), "draw",*/
-    /*G_CALLBACK (midi_ruler_draw_cb), self);*/
+    /*G_CALLBACK (audio_ruler_draw_cb), self);*/
 
   /* add all the markers */
   self->loop_start =
@@ -251,6 +250,6 @@ midi_ruler_widget_init (
   gtk_overlay_add_overlay (
     GTK_OVERLAY (self),
     GTK_WIDGET (self->clip_start));
-
 }
+
 

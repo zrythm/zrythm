@@ -163,6 +163,7 @@ on_motion (GtkWidget * widget,
                              &allocation);
 
   TimelineRulerWidget * trw = MW_RULER;
+  RULER_WIDGET_GET_PRIVATE (trw);
 
   if (event->type == GDK_MOTION_NOTIFY)
     {
@@ -189,13 +190,13 @@ on_motion (GtkWidget * widget,
       else
         {
           self->cursor_state = UI_CURSOR_STATE_DEFAULT;
-          if (trw->action !=
+          if (rw_prv->action !=
                 UI_OVERLAY_ACTION_MOVING &&
-              trw->action !=
+              rw_prv->action !=
                 UI_OVERLAY_ACTION_STARTING_MOVING &&
-              trw->action !=
+              rw_prv->action !=
                 UI_OVERLAY_ACTION_RESIZING_L &&
-              trw->action !=
+              rw_prv->action !=
                 UI_OVERLAY_ACTION_RESIZING_R)
             {
               ui_set_cursor (widget, "default");
@@ -205,9 +206,9 @@ on_motion (GtkWidget * widget,
   /*[> if leaving <]*/
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
-      if (trw->action != UI_OVERLAY_ACTION_MOVING &&
-          trw->action != UI_OVERLAY_ACTION_RESIZING_L &&
-          trw->action != UI_OVERLAY_ACTION_RESIZING_R)
+      if (rw_prv->action != UI_OVERLAY_ACTION_MOVING &&
+          rw_prv->action != UI_OVERLAY_ACTION_RESIZING_L &&
+          rw_prv->action != UI_OVERLAY_ACTION_RESIZING_R)
         {
           ui_set_cursor (widget, "default");
         }

@@ -31,6 +31,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/center_dock_bot_box.h"
 #include "gui/widgets/channel.h"
+#include "gui/widgets/clip_editor.h"
 #include "gui/widgets/connections.h"
 #include "gui/widgets/file_browser.h"
 #include "gui/widgets/header_bar.h"
@@ -120,14 +121,16 @@ main_window_widget_refresh (MainWindowWidget * self)
   center_dock_widget_setup (MW_CENTER_DOCK);
 
   /* setup bot toolbar */
-  snap_grid_widget_setup (MW_CENTER_DOCK->bot_box->snap_grid_midi,
-                          &PROJECT->snap_grid_midi);
+  snap_grid_widget_setup (
+    MW_CENTER_DOCK->bot_box->snap_grid_midi,
+    &PROJECT->snap_grid_midi);
 
   /* setup piano roll */
-  if (MW_BOT_DOCK_EDGE && PIANO_ROLL)
+  if (MW_BOT_DOCK_EDGE && MW_CLIP_EDITOR)
     {
-      piano_roll_widget_setup (MW_PIANO_ROLL,
-                               &PROJECT->piano_roll);
+      clip_editor_widget_setup (
+        MW_CLIP_EDITOR,
+        &PROJECT->clip_editor);
     }
 
   // set icons

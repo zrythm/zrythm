@@ -187,4 +187,13 @@ ui_show_notification (const char * msg);
 int
 ui_show_notification_idle_func (char * msg);
 
+/**
+ * Returns the modifier type (state mask) from the
+ * given gesture.
+ */
+void
+ui_get_modifier_type_from_gesture (
+  GtkGestureSingle * gesture,
+  GdkModifierType *  state_mask); ///< return value
+
 #endif

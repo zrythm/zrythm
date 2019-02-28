@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,26 +17,24 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef __AUDIO_AUDIO_CLIP_EDITOR_H__
+#define __AUDIO_AUDIO_CLIP_EDITOR_H__
+
+#define AUDIO_CLIP_EDITOR (&CLIP_EDITOR->audio_clip_editor)
+
 /**
- * \file
+ * Audio clip editor serializable backend.
  *
- * Piano roll backend.
- *
- * This is meant to be serialized along with each project.
+ * The actual widgets should reflect the information here.
  */
+typedef struct AudioClipEditor
+{
+  /* TODO */
+  int dummy;
+} AudioClipEditor;
 
-#include <stdlib.h>
-
-#include "audio/channel.h"
-#include "gui/backend/piano_roll.h"
-#include "audio/track.h"
-#include "gui/widgets/piano_roll.h"
-#include "project.h"
 
 void
-piano_roll_init (PianoRoll * self)
-{
-  self->notes_zoom = 1; /* FIXME */
+audio_clip_editor_init (AudioClipEditor * self);
 
-  self->midi_modifier = MIDI_MODIFIER_VELOCITY;
-}
+#endif

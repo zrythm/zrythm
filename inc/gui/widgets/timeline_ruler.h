@@ -44,19 +44,6 @@ G_DECLARE_FINAL_TYPE (TimelineRulerWidget,
 typedef struct _RulerRangeWidget RulerRangeWidget;
 typedef struct _RulerMarkerWidget RulerMarkerWidget;
 
-/**
- * The timeline ruler widget target acting upon.
- */
-typedef enum TRWTarget
-{
-  TRW_TARGET_PLAYHEAD,
-  TRW_TARGET_LOOP_START,
-  TRW_TARGET_LOOP_END,
-  TRW_TARGET_SONG_START,
-  TRW_TARGET_SONG_END,
-  TRW_TARGET_RANGE, ///< FIXME delete
-} TRWTarget;
-
 typedef struct _TimelineRulerWidget
 {
   RulerWidget              parent_instance;
@@ -79,21 +66,8 @@ typedef struct _TimelineRulerWidget
   RulerMarkerWidget *      loop_end;
   RulerMarkerWidget *      cue_point;
 
-  /**
-   * Dragging playhead or creating range, etc.
-   */
-  UiOverlayAction          action;
-  TRWTarget                target; ///< object working upon
-  double                   start_x; ///< for dragging
-  double                   last_offset_x;
-  int                      range1_first; ///< range1 was before range2 at drag start
-  GtkGestureDrag *         drag;
-  GtkGestureMultiPress *   multipress;
-
-  /**
-   * If shift was held down during the press.
-   */
-  int                      shift_held;
+  /** range1 was before range2 at drag start. */
+  int                      range1_first;
 } TimelineRulerWidget;
 
 void
@@ -110,5 +84,26 @@ timeline_ruler_widget_set_ruler_marker_position (
   TimelineRulerWidget * self,
   RulerMarkerWidget *    rr,
   GtkAllocation *       allocation);
+
+/**
+ * Called from ruler drag begin.
+ */
+void
+timeline_ruler_on_drag_begin_no_marker_hit (
+  GtkGestureDrag *       gesture,
+  gdouble               start_x,
+  gdouble               start_y,
+  TimelineRulerWidget * self,
+  guint                  height);
+
+/**
+ * Called from ruler drag update.
+ */
+void
+timeline_ruler_on_drag_update (
+  GtkGestureDrag * gesture,
+  gdouble         offset_x,
+  gdouble         offset_y,
+  TimelineRulerWidget * self);
 
 #endif

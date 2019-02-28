@@ -29,12 +29,16 @@
 #include "audio/channel.h"
 #include "audio/track.h"
 #include "gui/backend/events.h"
+#include "gui/backend/clip_editor.h"
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/arranger_playhead.h"
+#include "gui/widgets/audio_clip_editor.h"
+#include "gui/widgets/audio_ruler.h"
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/center_dock_bot_box.h"
+#include "gui/widgets/clip_editor.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/connections.h"
 #include "gui/widgets/color_area.h"
@@ -51,6 +55,7 @@
 #include "gui/widgets/top_bar.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
+#include "project.h"
 #include "utils/stack.h"
 #include "zrythm.h"
 
@@ -129,6 +134,16 @@ on_track_state_changed (Track * track)
 }
 
 static void
+on_range_selection_changed ()
+{
+  ARRANGER_WIDGET_GET_PRIVATE (
+    MW_TIMELINE);
+  gtk_widget_queue_draw (
+    GTK_WIDGET (
+      ar_prv->bg));
+}
+
+static void
 on_automation_lane_added (AutomationLane * al)
 {
   AutomationTracklist * atl =
@@ -165,32 +180,72 @@ on_track_select_changed (Track * track)
 }
 
 static void
-on_piano_roll_region_changed ()
+on_clip_editor_region_changed ()
 {
-  PianoRollWidget * self = MW_PIANO_ROLL;
+  /* TODO */
   /*gtk_notebook_set_current_page (MAIN_WINDOW->bot_notebook, 0);*/
+  Region * r = CLIP_EDITOR->region;
 
-  gtk_label_set_text (
-    self->midi_name_label,
-    track_get_name (
-      self->piano_roll->region->track));
+  if (r)
+    {
+      if (r->type == REGION_TYPE_MIDI)
+        {
+          gtk_label_set_text (
+            MW_PIANO_ROLL->midi_name_label,
+            track_get_name (
+              r->track));
 
-  color_area_widget_set_color (
-    self->color_bar,
-    &self->piano_roll->region->track->color);
+          color_area_widget_set_color (
+            MW_PIANO_ROLL->color_bar,
+            &r->track->color);
 
-  /* ruler must be refreshed first to get the
-   * correct px when calling ui_* functions */
-  midi_ruler_widget_refresh (
-    MIDI_RULER);
+          /* ruler must be refreshed first to get the
+           * correct px when calling ui_* functions */
+          midi_ruler_widget_refresh (
+            MIDI_RULER);
 
-  /* remove all previous children and add new */
-  arranger_widget_refresh (
-    Z_ARRANGER_WIDGET (MIDI_ARRANGER));
-  arranger_widget_refresh (
-    Z_ARRANGER_WIDGET (MIDI_MODIFIER_ARRANGER));
+          /* remove all previous children and add new */
+          arranger_widget_refresh (
+            Z_ARRANGER_WIDGET (MIDI_ARRANGER));
+          arranger_widget_refresh (
+            Z_ARRANGER_WIDGET (
+              MIDI_MODIFIER_ARRANGER));
 
-  gtk_widget_show_all (GTK_WIDGET (MIDI_ARRANGER));
+          gtk_widget_show_all (
+            GTK_WIDGET (MIDI_ARRANGER));
+
+          gtk_stack_set_visible_child (
+            GTK_STACK (MW_CLIP_EDITOR),
+            GTK_WIDGET (MW_PIANO_ROLL));
+
+        }
+      else if (r->type == REGION_TYPE_AUDIO)
+        {
+          gtk_label_set_text (
+            MW_AUDIO_CLIP_EDITOR->track_name,
+            track_get_name (
+              r->track));
+
+          color_area_widget_set_color (
+            MW_AUDIO_CLIP_EDITOR->color_bar,
+            &r->track->color);
+
+          /* ruler must be refreshed first to get the
+           * correct px when calling ui_* functions */
+          audio_ruler_widget_refresh ();
+
+          gtk_stack_set_visible_child (
+            GTK_STACK (MW_CLIP_EDITOR),
+            GTK_WIDGET (MW_AUDIO_CLIP_EDITOR));
+        }
+    }
+  else
+    {
+      gtk_stack_set_visible_child (
+        GTK_STACK (MW_CLIP_EDITOR),
+        GTK_WIDGET (
+          MW_CLIP_EDITOR->no_selection_label));
+    }
 }
 
 static void
@@ -257,6 +312,21 @@ events_process ()
           timeline_arranger_widget_refresh_children (
             MW_TIMELINE);
           break;
+        case ET_CLIP_MARKER_POS_CHANGED:
+          gtk_widget_queue_allocate (
+            GTK_WIDGET (arg)); // ruler widget
+          gtk_widget_queue_draw (
+            GTK_WIDGET (
+              CLIP_EDITOR->region->widget));
+          break;
+        case ET_TIMELINE_LOOP_MARKER_POS_CHANGED:
+        case ET_TIMELINE_SONG_MARKER_POS_CHANGED:
+          gtk_widget_queue_allocate (
+            GTK_WIDGET (MW_TIMELINE));
+          break;
+        case ET_RANGE_SELECTION_CHANGED:
+          on_range_selection_changed ();
+          break;
         case ET_TIME_SIGNATURE_CHANGED:
           ruler_widget_refresh (
             Z_RULER_WIDGET (MW_RULER));
@@ -272,8 +342,8 @@ events_process ()
         case ET_PLAYHEAD_POS_CHANGED:
           on_playhead_changed ();
           break;
-        case ET_PIANO_ROLL_REGION_CHANGED:
-          on_piano_roll_region_changed ();
+        case ET_CLIP_EDITOR_REGION_CHANGED:
+          on_clip_editor_region_changed ();
           break;
         case ET_AUTOMATION_LANE_AUTOMATION_TRACK_CHANGED:
           arranger_widget_refresh (

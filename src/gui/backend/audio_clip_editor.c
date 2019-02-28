@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -20,7 +20,7 @@
 /**
  * \file
  *
- * Piano roll backend.
+ * Audio clip editor backend.
  *
  * This is meant to be serialized along with each project.
  */
@@ -28,15 +28,13 @@
 #include <stdlib.h>
 
 #include "audio/channel.h"
-#include "gui/backend/piano_roll.h"
+#include "gui/backend/audio_clip_editor.h"
 #include "audio/track.h"
-#include "gui/widgets/piano_roll.h"
+#include "gui/widgets/audio_clip_editor.h"
 #include "project.h"
 
 void
-piano_roll_init (PianoRoll * self)
+audio_clip_editor_init (AudioClipEditor * self)
 {
-  self->notes_zoom = 1; /* FIXME */
-
-  self->midi_modifier = MIDI_MODIFIER_VELOCITY;
+  /* TODO */
 }

@@ -29,8 +29,10 @@
 #include "audio/position.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/audio_ruler.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/clip_editor.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
@@ -65,6 +67,29 @@ G_DEFINE_TYPE_WITH_PRIVATE (RulerWidget,
 #define GET_PRIVATE RULER_WIDGET_GET_PRIVATE (self)
 
 /**
+ * Gets each specific ruler.
+ *
+ * Useful boilerplate
+ */
+#define GET_RULER_ALIASES(self) \
+  TimelineRulerWidget * timeline_ruler = NULL; \
+  MidiRulerWidget *     midi_ruler = NULL; \
+  AudioRulerWidget *    audio_ruler = NULL; \
+  if (Z_IS_TIMELINE_RULER_WIDGET (self)) \
+    { \
+      timeline_ruler = Z_TIMELINE_RULER_WIDGET (self); \
+    } \
+  else if (Z_IS_MIDI_RULER_WIDGET (self)) \
+    { \
+      midi_ruler = Z_MIDI_RULER_WIDGET (self); \
+    } \
+  else if (Z_IS_AUDIO_RULER_WIDGET (self)) \
+    { \
+      audio_ruler = \
+        Z_AUDIO_RULER_WIDGET (self); \
+    }
+
+/**
  * Gets called to set the position/size of each overlayed widget.
  */
 static gboolean
@@ -75,10 +100,11 @@ get_child_position (GtkOverlay   *overlay,
 {
   RulerWidget * self =
     Z_RULER_WIDGET (overlay);
+  GET_RULER_ALIASES (self);
 
   if (Z_IS_RULER_PLAYHEAD_WIDGET (widget))
     {
-      if (Z_IS_TIMELINE_RULER_WIDGET (self))
+      if (timeline_ruler)
         allocation->x =
           ui_pos_to_px_timeline (
             &TRANSPORT->playhead_pos,
@@ -89,7 +115,8 @@ get_child_position (GtkOverlay   *overlay,
             /*&TRANSPORT->playhead_pos,*/
             /*1) - (PLAYHEAD_TRIANGLE_WIDTH / 2);*/
       allocation->y =
-        gtk_widget_get_allocated_height (GTK_WIDGET (self)) -
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (self)) -
           PLAYHEAD_TRIANGLE_HEIGHT;
       allocation->width = PLAYHEAD_TRIANGLE_WIDTH;
       allocation->height =
@@ -104,14 +131,19 @@ get_child_position (GtkOverlay   *overlay,
     }
   else if (Z_IS_RULER_MARKER_WIDGET (widget))
     {
-      if (Z_IS_TIMELINE_RULER_WIDGET (self))
+      if (timeline_ruler)
         timeline_ruler_widget_set_ruler_marker_position (
           Z_TIMELINE_RULER_WIDGET (self),
           Z_RULER_MARKER_WIDGET (widget),
           allocation);
-      else
+      else if (midi_ruler)
         midi_ruler_widget_set_ruler_marker_position (
           Z_MIDI_RULER_WIDGET (self),
+          Z_RULER_MARKER_WIDGET (widget),
+          allocation);
+      else if (audio_ruler)
+        audio_ruler_widget_set_ruler_marker_position (
+          Z_AUDIO_RULER_WIDGET (self),
           Z_RULER_MARKER_WIDGET (widget),
           allocation);
     }
@@ -146,7 +178,6 @@ ruler_draw_cb (GtkWidget * widget,
 
   context = gtk_widget_get_style_context (GTK_WIDGET (self));
 
-  /*width = gtk_widget_get_allocated_width (widget);*/
   guint height =
     gtk_widget_get_allocated_height (widget);
 
@@ -155,52 +186,315 @@ ruler_draw_cb (GtkWidget * widget,
                          rect.width, rect.height);
 
   /* draw lines */
-  for (int i = rect.x; i < rect.x + rect.width; i++)
+  int i = 0;
+  double curr_px;
+  while ((curr_px =
+          rw_prv->px_per_bar * i++ +
+          SPACE_BEFORE_START) <
+         rect.x + rect.width)
     {
-      int draw_pos = i + SPACE_BEFORE_START;
+      if (curr_px < rect.x)
+        continue;
 
-      if (i % rw_prv->px_per_bar == 0)
-      {
-        cairo_set_source_rgb (cr, 1, 1, 1);
-        cairo_set_line_width (cr, 1);
-        cairo_move_to (cr, draw_pos, 0);
-        cairo_line_to (cr, draw_pos, height / 3);
-        cairo_stroke (cr);
-        cairo_set_source_rgb (cr, 0.8, 0.8, 0.8);
-        cairo_select_font_face(cr, FONT,
-            CAIRO_FONT_SLANT_NORMAL,
-            CAIRO_FONT_WEIGHT_NORMAL);
-        cairo_set_font_size(cr, FONT_SIZE);
-        gchar * label =
-          g_strdup_printf ("%d", i / rw_prv->px_per_bar + 1);
-        static cairo_text_extents_t extents;
-        cairo_text_extents(cr, label, &extents);
-        cairo_move_to (cr,
-                       (draw_pos ) - extents.width / 2,
-                       (height / 2) + Y_SPACING);
-        cairo_show_text(cr, label);
-      }
-      else if (i % rw_prv->px_per_beat == 0)
-      {
-          cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
-          cairo_set_line_width (cr, 0.5);
-          cairo_move_to (cr, draw_pos, 0);
-          cairo_line_to (cr, draw_pos, height / 4);
-          cairo_stroke (cr);
-      }
+      cairo_set_source_rgb (cr, 1, 1, 1);
+      cairo_set_line_width (cr, 1);
+      cairo_move_to (cr, curr_px, 0);
+      cairo_line_to (cr, curr_px, height / 3);
+      cairo_stroke (cr);
+      cairo_set_source_rgb (cr, 0.8, 0.8, 0.8);
+      cairo_select_font_face(cr, FONT,
+          CAIRO_FONT_SLANT_NORMAL,
+          CAIRO_FONT_WEIGHT_NORMAL);
+      cairo_set_font_size(cr, FONT_SIZE);
+      gchar * label =
+        g_strdup_printf ("%d", i);
+      static cairo_text_extents_t extents;
+      cairo_text_extents(cr, label, &extents);
+      cairo_move_to (cr,
+                     (curr_px ) - extents.width / 2,
+                     (height / 2) + Y_SPACING);
+      cairo_show_text(cr, label);
+    }
+  i = 0;
+  while ((curr_px =
+          rw_prv->px_per_beat * i++ +
+          SPACE_BEFORE_START) <
+         rect.x + rect.width)
+    {
+      if (curr_px < rect.x)
+        continue;
+
+      cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
+      cairo_set_line_width (cr, 0.5);
+      cairo_move_to (cr, curr_px, 0);
+      cairo_line_to (cr, curr_px, height / 4);
+      cairo_stroke (cr);
   }
 
  return FALSE;
 }
 
-/**
- * TODO: for updating the global static variables
- * when needed
- */
-void
-reset_ruler ()
+static gboolean
+multipress_pressed (
+  GtkGestureMultiPress *gesture,
+  gint                  n_press,
+  gdouble               x,
+  gdouble               y,
+  RulerWidget *         self)
 {
+  RULER_WIDGET_GET_PRIVATE (self);
+  GET_RULER_ALIASES (self);
 
+  if (n_press == 2)
+    {
+      Position pos;
+      if (midi_ruler)
+        {
+          ui_px_to_pos_piano_roll (
+            x,
+            &pos,
+            1);
+          position_snap_simple (
+            &pos,
+            SNAP_GRID_MIDI);
+        }
+      else if (timeline_ruler)
+        {
+          ui_px_to_pos_timeline (
+            x,
+            &pos,
+            1);
+          position_snap_simple (
+            &pos,
+            SNAP_GRID_TIMELINE);
+        }
+      position_set_to_pos (&TRANSPORT->cue_pos,
+                           &pos);
+
+    }
+
+  GdkModifierType state_mask;
+  ui_get_modifier_type_from_gesture (
+    GTK_GESTURE_SINGLE (gesture),
+    &state_mask);
+  if (state_mask & GDK_SHIFT_MASK)
+    rw_prv->shift_held = 1;
+
+  return FALSE;
+}
+
+static void
+drag_begin (GtkGestureDrag *      gesture,
+            gdouble               start_x,
+            gdouble               start_y,
+            RulerWidget *         self)
+{
+  RULER_WIDGET_GET_PRIVATE (self);
+  GET_RULER_ALIASES (self);
+
+  rw_prv->start_x = start_x;
+
+  if (timeline_ruler)
+    {
+      timeline_ruler->range1_first =
+        position_compare (&PROJECT->range_1,
+                          &PROJECT->range_2) <= 0;
+    }
+
+  guint height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
+
+  RulerMarkerWidget * hit_marker =
+    Z_RULER_MARKER_WIDGET (
+      ui_get_hit_child (
+        GTK_CONTAINER (self),
+        start_x,
+        start_y,
+        RULER_MARKER_WIDGET_TYPE));
+
+  /* if one of the markers hit */
+  if (hit_marker)
+    {
+      if (timeline_ruler)
+        {
+          if (hit_marker ==
+              timeline_ruler->song_start)
+            {
+              rw_prv->action =
+                UI_OVERLAY_ACTION_STARTING_MOVING;
+              rw_prv->target =
+                RW_TARGET_SONG_START;
+            }
+          else if (hit_marker ==
+                   timeline_ruler->song_end)
+            {
+              rw_prv->action =
+                UI_OVERLAY_ACTION_STARTING_MOVING;
+              rw_prv->target =
+                RW_TARGET_SONG_END;
+            }
+          else if (hit_marker ==
+                   timeline_ruler->loop_start)
+            {
+              rw_prv->action =
+                UI_OVERLAY_ACTION_STARTING_MOVING;
+              rw_prv->target =
+                RW_TARGET_LOOP_START;
+            }
+          else if (hit_marker ==
+                   timeline_ruler->loop_end)
+            {
+              rw_prv->action =
+                UI_OVERLAY_ACTION_STARTING_MOVING;
+              rw_prv->target =
+                RW_TARGET_LOOP_END;
+            }
+
+        }
+      else if (midi_ruler)
+        {
+          if (hit_marker == midi_ruler->loop_start)
+            {
+              rw_prv->action =
+                UI_OVERLAY_ACTION_STARTING_MOVING;
+              rw_prv->target =
+                RW_TARGET_LOOP_START;
+            }
+          else if (hit_marker ==
+                   midi_ruler->loop_end)
+            {
+              rw_prv->action =
+                UI_OVERLAY_ACTION_STARTING_MOVING;
+              rw_prv->target =
+                RW_TARGET_LOOP_END;
+            }
+          else if (hit_marker ==
+                   midi_ruler->clip_start)
+            {
+              rw_prv->action =
+                UI_OVERLAY_ACTION_STARTING_MOVING;
+              rw_prv->target =
+                RW_TARGET_CLIP_START;
+            }
+        }
+    }
+  else
+    {
+      if (timeline_ruler)
+        timeline_ruler_on_drag_begin_no_marker_hit (
+          gesture, start_x, start_y, timeline_ruler,
+          height);
+    }
+  rw_prv->last_offset_x = 0;
+}
+
+static void
+drag_update (GtkGestureDrag * gesture,
+               gdouble         offset_x,
+               gdouble         offset_y,
+            RulerWidget * self)
+{
+  RULER_WIDGET_GET_PRIVATE (self);
+  GET_RULER_ALIASES (self);
+
+  GdkModifierType state_mask;
+  ui_get_modifier_type_from_gesture (
+    GTK_GESTURE_SINGLE (gesture),
+    &state_mask);
+
+  if (state_mask & GDK_SHIFT_MASK)
+    rw_prv->shift_held = 1;
+  else
+    rw_prv->shift_held = 0;
+
+  if (rw_prv->action ==
+      UI_OVERLAY_ACTION_STARTING_MOVING)
+    {
+      rw_prv->action = UI_OVERLAY_ACTION_MOVING;
+    }
+
+  if (timeline_ruler)
+    timeline_ruler_on_drag_update (
+      gesture, offset_x, offset_y, timeline_ruler);
+  /* handle x */
+  /* if moving the selection */
+  else if (rw_prv->action == UI_OVERLAY_ACTION_MOVING)
+    {
+      RulerMarkerWidget * loop_start,
+                        * loop_end,
+                        * clip_start;
+      if (midi_ruler)
+        {
+          loop_start = midi_ruler->loop_start;
+          loop_end = midi_ruler->loop_end;
+          clip_start = midi_ruler->clip_start;
+        }
+      else if (audio_ruler)
+        {
+          loop_start = audio_ruler->loop_start;
+          loop_end = audio_ruler->loop_end;
+          clip_start = audio_ruler->clip_start;
+        }
+
+      if (rw_prv->target == RW_TARGET_LOOP_START)
+        {
+          ui_px_to_pos_piano_roll (
+            rw_prv->start_x + offset_x,
+            &CLIP_EDITOR->region->loop_start_pos,
+            1);
+          if (!rw_prv->shift_held)
+            position_snap_simple (
+              &CLIP_EDITOR->region->loop_start_pos,
+              SNAP_GRID_TIMELINE);
+          transport_update_position_frames ();
+        }
+      else if (rw_prv->target == RW_TARGET_LOOP_END)
+        {
+          ui_px_to_pos_piano_roll (
+            rw_prv->start_x + offset_x,
+            &CLIP_EDITOR->region->loop_end_pos,
+            1);
+          if (!rw_prv->shift_held)
+            position_snap_simple (
+              &CLIP_EDITOR->region->loop_end_pos,
+              SNAP_GRID_TIMELINE);
+          transport_update_position_frames ();
+        }
+      else if (rw_prv->target == RW_TARGET_CLIP_START)
+        {
+          ui_px_to_pos_piano_roll (
+            rw_prv->start_x + offset_x,
+            &CLIP_EDITOR->region->clip_start_pos,
+            1);
+          if (!rw_prv->shift_held)
+            position_snap_simple (
+              &CLIP_EDITOR->region->clip_start_pos,
+              SNAP_GRID_TIMELINE);
+          transport_update_position_frames ();
+        }
+
+      EVENTS_PUSH (ET_CLIP_MARKER_POS_CHANGED,
+                   self);
+    } /* endif MOVING */
+
+  rw_prv->last_offset_x = offset_x;
+
+  /* TODO update inspector */
+}
+
+static void
+drag_end (GtkGestureDrag *gesture,
+          gdouble         offset_x,
+          gdouble         offset_y,
+          RulerWidget *   self)
+{
+  RULER_WIDGET_GET_PRIVATE (self);
+
+  rw_prv->start_x = 0;
+  rw_prv->shift_held = 0;
+
+  rw_prv->action = UI_OVERLAY_ACTION_NONE;
 }
 
 static void
@@ -234,10 +528,14 @@ on_motion (GtkDrawingArea * da,
 void
 ruler_widget_refresh (RulerWidget * self)
 {
-  if (Z_IS_TIMELINE_RULER_WIDGET (self))
+  GET_RULER_ALIASES (self);
+
+  if (timeline_ruler)
     timeline_ruler_widget_refresh ();
-  else
+  else if (midi_ruler)
     midi_ruler_widget_refresh ();
+  else if (audio_ruler)
+    audio_ruler_widget_refresh ();
 }
 
 /**
@@ -310,6 +608,11 @@ ruler_widget_init (RulerWidget * self)
   gtk_widget_add_events (GTK_WIDGET (rw_prv->bg),
                          GDK_ALL_EVENTS_MASK);
 
+  rw_prv->drag = GTK_GESTURE_DRAG (
+    gtk_gesture_drag_new (GTK_WIDGET (self)));
+  rw_prv->multipress = GTK_GESTURE_MULTI_PRESS (
+    gtk_gesture_multi_press_new (
+      GTK_WIDGET (self)));
 
   g_signal_connect (
     G_OBJECT (rw_prv->bg), "draw",
@@ -320,6 +623,18 @@ ruler_widget_init (RulerWidget * self)
   g_signal_connect (
     G_OBJECT (self), "get-child-position",
     G_CALLBACK (get_child_position), NULL);
+  g_signal_connect (
+    G_OBJECT(rw_prv->drag), "drag-begin",
+    G_CALLBACK (drag_begin),  self);
+  g_signal_connect (
+    G_OBJECT(rw_prv->drag), "drag-update",
+    G_CALLBACK (drag_update),  self);
+  g_signal_connect (
+    G_OBJECT(rw_prv->drag), "drag-end",
+    G_CALLBACK (drag_end),  self);
+  g_signal_connect (
+    G_OBJECT (rw_prv->multipress), "pressed",
+    G_CALLBACK (multipress_pressed), self);
 }
 
 static void

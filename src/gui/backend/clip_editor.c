@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,15 +28,42 @@
 #include <stdlib.h>
 
 #include "audio/channel.h"
-#include "gui/backend/piano_roll.h"
+#include "gui/backend/clip_editor.h"
 #include "audio/track.h"
-#include "gui/widgets/piano_roll.h"
 #include "project.h"
 
+/**
+ * Sets the region and refreshes the widgets.
+ *
+ * To be called only from GTK threads.
+ */
 void
-piano_roll_init (PianoRoll * self)
+clip_editor_set_region (Region * region)
 {
-  self->notes_zoom = 1; /* FIXME */
+  ClipEditor * self = CLIP_EDITOR;
 
-  self->midi_modifier = MIDI_MODIFIER_VELOCITY;
+  if (self->region && self->region->type ==
+        REGION_TYPE_MIDI)
+    {
+      channel_reattach_midi_editor_manual_press_port (
+        track_get_channel (region->track),
+        0);
+    }
+  if (region->type == REGION_TYPE_MIDI)
+    channel_reattach_midi_editor_manual_press_port (
+      track_get_channel (region->track),
+      1);
+  self->region = region;
+  self->region_id = region->id;
+
+  EVENTS_PUSH (ET_CLIP_EDITOR_REGION_CHANGED,
+               NULL);
 }
+
+void
+clip_editor_init (ClipEditor * self)
+{
+  piano_roll_init (&self->piano_roll);
+  audio_clip_editor_init (&self->audio_clip_editor);
+}
+

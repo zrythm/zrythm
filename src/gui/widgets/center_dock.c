@@ -23,6 +23,7 @@
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/center_dock_bot_box.h"
+#include "gui/widgets/clip_editor.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/piano_roll.h"

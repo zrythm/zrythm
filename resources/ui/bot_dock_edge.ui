@@ -31,7 +31,7 @@
         <property name="can-focus">1</property>
         <property name="tab-pos">bottom</property>
         <child>
-          <object class="PianoRollWidget" id="piano_roll">
+          <object class="ClipEditorWidget" id="clip_editor">
             <property name="visible">1</property>
           </object>
         </child>

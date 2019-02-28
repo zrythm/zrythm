@@ -23,6 +23,7 @@
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/clip_editor.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/piano_roll.h"
@@ -40,7 +41,6 @@
 G_DEFINE_TYPE (PianoRollWidget,
                piano_roll_widget,
                GTK_TYPE_BOX)
-
 
 /**
  * Links scroll windows after all widgets have been
@@ -174,10 +174,9 @@ piano_roll_widget_init (PianoRollWidget * self)
   color_area_widget_set_color (self->color_bar,
                                color);
 
-  g_signal_connect (G_OBJECT (self->toggle_notation),
-                    "clicked",
-                    G_CALLBACK (toggle_note_notation_cb),
-                    NULL);
+  g_signal_connect (
+    G_OBJECT (self->toggle_notation), "clicked",
+    G_CALLBACK (toggle_note_notation_cb), NULL);
 }
 
 static void

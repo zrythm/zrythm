@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,58 +17,64 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "gui/widgets/bot_dock_edge.h"
-#include "gui/widgets/connections.h"
-#include "gui/widgets/mixer.h"
+#include "gui/backend/clip_editor.h"
+#include "gui/widgets/audio_clip_editor.h"
+#include "gui/widgets/audio_ruler.h"
+#include "gui/widgets/clip_editor.h"
 #include "gui/widgets/piano_roll.h"
-#include "gui/widgets/rack.h"
-#include "utils/gtk.h"
 #include "utils/resources.h"
 
-G_DEFINE_TYPE (BotDockEdgeWidget,
-               bot_dock_edge_widget,
-               GTK_TYPE_BOX)
+G_DEFINE_TYPE (ClipEditorWidget,
+               clip_editor_widget,
+               GTK_TYPE_STACK)
 
-static void
-bot_dock_edge_widget_init (BotDockEdgeWidget * self)
+void
+clip_editor_widget_setup (
+  ClipEditorWidget * self,
+  ClipEditor *       clip_editor)
 {
-  gtk_widget_init_template (GTK_WIDGET (self));
+  self->clip_editor = clip_editor;
 
-  /* set icons */
-  gtk_button_set_image (
-    GTK_BUTTON (self->mixer->channels_add),
-    resources_get_icon (ICON_TYPE_ZRYTHM,
-                        "plus.svg"));
+  piano_roll_widget_setup (
+    self->piano_roll,
+    &clip_editor->piano_roll);
+  audio_clip_editor_widget_setup (
+    self->audio_clip_editor,
+    &clip_editor->audio_clip_editor);
+
+  gtk_stack_set_visible_child (
+    GTK_STACK (self),
+    GTK_WIDGET (self->no_selection_label));
 }
 
 static void
-bot_dock_edge_widget_class_init (BotDockEdgeWidgetClass * _klass)
+clip_editor_widget_init (ClipEditorWidget * self)
+{
+  gtk_widget_init_template (GTK_WIDGET (self));
+}
+
+static void
+clip_editor_widget_class_init (
+  ClipEditorWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass,
-                                "bot_dock_edge.ui");
+                                "clip_editor.ui");
 
   gtk_widget_class_set_css_name (klass,
-                                 "bot-dock-edge");
+                                 "clip-editor");
 
   gtk_widget_class_bind_template_child (
     klass,
-    BotDockEdgeWidget,
-    bot_notebook);
+    ClipEditorWidget,
+    piano_roll);
   gtk_widget_class_bind_template_child (
     klass,
-    BotDockEdgeWidget,
-    clip_editor);
+    ClipEditorWidget,
+    audio_clip_editor);
   gtk_widget_class_bind_template_child (
     klass,
-    BotDockEdgeWidget,
-    mixer);
-  gtk_widget_class_bind_template_child (
-    klass,
-    BotDockEdgeWidget,
-    rack);
-  gtk_widget_class_bind_template_child (
-    klass,
-    BotDockEdgeWidget,
-    connections);
+    ClipEditorWidget,
+    no_selection_label);
 }
+

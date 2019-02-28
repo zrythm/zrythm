@@ -1,6 +1,4 @@
 /*
- * inc/gui/widgets/editor_notebook.h - Editor notebook (bot of arranger)
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -32,7 +30,7 @@ G_DECLARE_FINAL_TYPE (PianoRollWidget,
                       PIANO_ROLL_WIDGET,
                       GtkBox)
 
-#define MW_PIANO_ROLL MW_BOT_DOCK_EDGE->piano_roll
+#define MW_PIANO_ROLL MW_CLIP_EDITOR->piano_roll
 
 typedef struct _PianoRollLabelsWidget PianoRollLabelsWidget;
 typedef struct _PianoRollNotesWidget PianoRollNotesWidget;

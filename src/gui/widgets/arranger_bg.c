@@ -21,6 +21,7 @@
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/clip_editor.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/arranger_bg.h"
@@ -81,35 +82,40 @@ arranger_bg_draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
       position_set_to_pos (&range_second_pos,
                            &PROJECT->range_1);
     }
-  /*g_message ("rect x %d width %d y %d height %d",*/
-             /*rect.x, rect.width,*/
-             /*rect.y, rect.height);*/
 
   /* handle vertical drawing */
-  for (int i =
-         (rect.x > SPACE_BEFORE_START ?
-          rect.x :
-          SPACE_BEFORE_START);
-       i < rect.x + rect.width;
-       i++)
+  int i = 0;
+  double curr_px;
+  while ((curr_px =
+          rw_prv->px_per_bar * i++ +
+          SPACE_BEFORE_START) <
+         rect.x + rect.width)
     {
-      int actual_pos = i - SPACE_BEFORE_START;
-      if (actual_pos % rw_prv->px_per_bar == 0)
-        {
-          cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);
-          cairo_set_line_width (cr, 1);
-          cairo_move_to (cr, i, rect.y);
-          cairo_line_to (cr, i, rect.y + rect.height);
-          cairo_stroke (cr);
-        }
-      else if (actual_pos % rw_prv->px_per_beat == 0)
-        {
-          cairo_set_source_rgb (cr, 0.25, 0.25, 0.25);
-          cairo_set_line_width (cr, 0.5);
-          cairo_move_to (cr, i, rect.y);
-          cairo_line_to (cr, i, rect.y + rect.height);
-          cairo_stroke (cr);
-        }
+      if (curr_px < rect.x)
+        continue;
+
+      cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);
+      cairo_set_line_width (cr, 1);
+      cairo_move_to (cr, curr_px, rect.y);
+      cairo_line_to (cr,
+                     curr_px, rect.y + rect.height);
+      cairo_stroke (cr);
+    }
+  i = 0;
+  while ((curr_px =
+          rw_prv->px_per_beat * i++ +
+          SPACE_BEFORE_START) <
+         rect.x + rect.width)
+    {
+      if (curr_px < rect.x)
+        continue;
+
+      cairo_set_source_rgb (cr, 0.25, 0.25, 0.25);
+      cairo_set_line_width (cr, 0.5);
+      cairo_move_to (cr, curr_px, rect.y);
+      cairo_line_to (cr,
+                     curr_px, rect.y + rect.height);
+      cairo_stroke (cr);
     }
 
   /* draw selections */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,6 +23,8 @@
 
 #ifndef __GUI_WIDGETS_RULER_H__
 #define __GUI_WIDGETS_RULER_H__
+
+#include "utils/ui.h"
 
 #include <gtk/gtk.h>
 
@@ -61,19 +63,51 @@ G_DECLARE_DERIVABLE_TYPE (RulerWidget,
 typedef struct Position Position;
 typedef struct _RulerPlayheadWidget RulerPlayheadWidget;
 
+/**
+ * The ruler widget target acting upon.
+ */
+typedef enum RWTarget
+{
+  RW_TARGET_PLAYHEAD,
+  RW_TARGET_LOOP_START,
+  RW_TARGET_LOOP_END,
+  RW_TARGET_CLIP_START,
+  RW_TARGET_SONG_START,
+  RW_TARGET_SONG_END,
+  RW_TARGET_RANGE, ///< for timeline only
+} RWTarget;
+
 typedef struct
 {
   RulerPlayheadWidget *    playhead;
   GtkDrawingArea *         bg;
-  unsigned int             px_per_beat;
-  unsigned int             px_per_bar;
-  unsigned int             px_per_sixteenth;
+  double                   px_per_beat;
+  double                   px_per_bar;
+  double                   px_per_sixteenth;
   double                   px_per_tick;
-  unsigned int             total_px;
+  double                   total_px;
 
   /**
-   * Zoom level.
+   * Dragging playhead or creating range, etc.
    */
+  UiOverlayAction          action;
+
+  /** For dragging. */
+  double                   start_x;
+  double                   last_offset_x;
+
+  GtkGestureDrag *         drag;
+  GtkGestureMultiPress *   multipress;
+
+  /** Target acting upon. */
+  RWTarget                 target;
+
+  /**
+   * If shift was held down during the press.
+   */
+  int                      shift_held;
+
+  /** FIXME move somewhere else */
   double                   zoom_level;
 } RulerWidgetPrivate;
 

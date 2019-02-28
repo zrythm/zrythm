@@ -36,6 +36,7 @@
 #include "gui/widgets/automation_lane.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/clip_editor.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
@@ -134,14 +135,14 @@ midi_arranger_widget_select_all (
   MidiArrangerWidget *  self,
   int               select)
 {
-  if (!PIANO_ROLL->region)
+  if (!CLIP_EDITOR->region)
     return;
 
   MIDI_ARRANGER_SELECTIONS->num_midi_notes = 0;
 
   /* select midi notes */
   MidiRegion * mr =
-    (MidiRegion *) PIANO_ROLL_SELECTED_REGION;
+    (MidiRegion *) CLIP_EDITOR_SELECTED_REGION;
   for (int i = 0; i < mr->num_midi_notes; i++)
     {
       MidiNote * midi_note = mr->midi_notes[i];
@@ -677,10 +678,10 @@ midi_arranger_widget_refresh_children (
     }
   g_list_free (children);
 
-  if (PIANO_ROLL->region)
+  if (CLIP_EDITOR->region)
     {
       MidiRegion * mr =
-        (MidiRegion *) PIANO_ROLL->region;
+        (MidiRegion *) CLIP_EDITOR->region;
       for (int j = 0; j < mr->num_midi_notes; j++)
         {
           MidiNote * midi_note = mr->midi_notes[j];

@@ -40,7 +40,7 @@
 #include "audio/region.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
-#include "gui/backend/piano_roll.h"
+#include "gui/backend/clip_editor.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/backend/timeline_selections.h"
 #include "plugins/plugin.h"
@@ -94,17 +94,18 @@ typedef struct Project
 
   Tracklist          tracklist;
 
-  PianoRoll          piano_roll;
+  /** Backend for the widget. */
+  ClipEditor         clip_editor;
 
   SnapGrid           snap_grid_timeline; ///< snap/grid info for timeline
   Quantize           quantize_timeline;
-  SnapGrid          snap_grid_midi; ///< snap/grid info for midi editor
+  SnapGrid          snap_grid_midi; ///< snap/grid info for midi/audio editor
   Quantize           quantize_midi;
 
   TimelineSelections       timeline_selections;
   MidiArrangerSelections   midi_arranger_selections;
 
-  /** Zoom levels. TODO */
+  /** Zoom levels. TODO & move to clip_editor */
   double             timeline_zoom;
   double             piano_roll_zoom;
 
@@ -180,8 +181,8 @@ static const cyaml_schema_field_t
     "tracklist", CYAML_FLAG_DEFAULT,
     Project, tracklist, tracklist_fields_schema),
   CYAML_FIELD_MAPPING (
-    "piano_roll", CYAML_FLAG_DEFAULT,
-    Project, piano_roll, piano_roll_fields_schema),
+    "clip_editor", CYAML_FLAG_DEFAULT,
+    Project, clip_editor, clip_editor_fields_schema),
   CYAML_FIELD_MAPPING (
     "snap_grid_timeline", CYAML_FLAG_DEFAULT,
     Project, snap_grid_timeline, snap_grid_fields_schema),

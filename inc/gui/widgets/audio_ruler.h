@@ -17,27 +17,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_MIDI_RULER_H__
-#define __GUI_WIDGETS_MIDI_RULER_H__
+#ifndef __GUI_WIDGETS_AUDIO_RULER_H__
+#define __GUI_WIDGETS_AUDIO_RULER_H__
 
 #include "gui/widgets/ruler.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
 
-#define MIDI_RULER_WIDGET_TYPE \
-  (midi_ruler_widget_get_type ())
-G_DECLARE_FINAL_TYPE (MidiRulerWidget,
-                      midi_ruler_widget,
+#define AUDIO_RULER_WIDGET_TYPE \
+  (audio_ruler_widget_get_type ())
+G_DECLARE_FINAL_TYPE (AudioRulerWidget,
+                      audio_ruler_widget,
                       Z,
-                      MIDI_RULER_WIDGET,
+                      AUDIO_RULER_WIDGET,
                       RulerWidget)
 
-#define MIDI_RULER MW_PIANO_ROLL->ruler
+#define AUDIO_RULER MW_AUDIO_CLIP_EDITOR->ruler
 
 typedef struct _RulerMarkerWidget RulerMarkerWidget;
 
-typedef struct _MidiRulerWidget
+typedef struct _AudioRulerWidget
 {
   RulerWidget         parent_instance;
 
@@ -49,14 +49,14 @@ typedef struct _MidiRulerWidget
   RulerMarkerWidget *      clip_start;
 
   int                      range1_first; ///< range1 was before range2 at drag start
-} MidiRulerWidget;
+} AudioRulerWidget;
 
 void
-midi_ruler_widget_refresh ();
+audio_ruler_widget_refresh ();
 
 void
-midi_ruler_widget_set_ruler_marker_position (
-  MidiRulerWidget * self,
+audio_ruler_widget_set_ruler_marker_position (
+  AudioRulerWidget * self,
   RulerMarkerWidget *    rm,
   GtkAllocation *       allocation);
 

@@ -17,20 +17,14 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __AUDIO_PIANO_ROLL_H__
-#define __AUDIO_PIANO_ROLL_H__
+#ifndef __AUDIO_CLIP_EDITOR_H__
+#define __AUDIO_CLIP_EDITOR_H__
 
-#include <cyaml/cyaml.h>
+#include "gui/backend/piano_roll.h"
+#include "gui/backend/audio_clip_editor.h"
 
-#define PIANO_ROLL (&CLIP_EDITOR->piano_roll)
-
-typedef enum MidiModifier
-{
-  MIDI_MODIFIER_VELOCITY,
-  MIDI_MODIFIER_PITCH_WHEEL,
-  MIDI_MODIFIER_MOD_WHEEL,
-  MIDI_MODIFIER_AFTERTOUCH,
-} MidiModifier;
+#define CLIP_EDITOR (&PROJECT->clip_editor)
+#define CLIP_EDITOR_SELECTED_REGION (CLIP_EDITOR->region)
 
 typedef struct Region Region;
 
@@ -39,44 +33,44 @@ typedef struct Region Region;
  *
  * The actual widgets should reflect the information here.
  */
-typedef struct PianoRoll
+typedef struct ClipEditor
 {
-  int                    notes_zoom; ///< notes zoom level
-  MidiModifier           midi_modifier; ///< selected midi modifier
-} PianoRoll;
+  /** Region currently attached to the clip editor. */
+  int                      region_id;
+  Region *                 region; ///< cache
 
-static const cyaml_strval_t
-midi_modifier_strings[] =
-{
-	{ "Velocity",      MIDI_MODIFIER_VELOCITY    },
-	{ "Pitch Wheel",   MIDI_MODIFIER_PITCH_WHEEL   },
-	{ "Mod Wheel",     MIDI_MODIFIER_MOD_WHEEL   },
-	{ "Aftertouch",    MIDI_MODIFIER_AFTERTOUCH   },
-};
+  PianoRoll                piano_roll;
+  AudioClipEditor          audio_clip_editor;
+} ClipEditor;
 
 static const cyaml_schema_field_t
-piano_roll_fields_schema[] =
+clip_editor_fields_schema[] =
 {
 	CYAML_FIELD_INT (
-			"notes_zoom", CYAML_FLAG_DEFAULT,
-			PianoRoll, notes_zoom),
-  CYAML_FIELD_ENUM (
-			"midi_modifier", CYAML_FLAG_DEFAULT,
-			PianoRoll, midi_modifier, midi_modifier_strings,
-      CYAML_ARRAY_LEN (midi_modifier_strings)),
+			"region_id", CYAML_FLAG_DEFAULT,
+			ClipEditor, region_id),
 
 	CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
-piano_roll_schema =
+clip_editor_schema =
 {
 	CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
-		PianoRoll, piano_roll_fields_schema),
+		ClipEditor, clip_editor_fields_schema),
 };
 
 void
-piano_roll_init (PianoRoll * self);
+clip_editor_init (ClipEditor * self);
+
+/**
+ * Sets the track and refreshes the piano roll widgets.
+ *
+ * To be called only from GTK threads.
+ */
+void
+clip_editor_set_region (Region * region);
 
 #endif
+

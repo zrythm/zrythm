@@ -1,7 +1,5 @@
 /*
- * gui/widgets/bot_dock_edge.h - Main window widget
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -37,7 +35,7 @@ G_DECLARE_FINAL_TYPE (BotDockEdgeWidget,
 #define MW_BOT_DOCK_EDGE MW_CENTER_DOCK->bot_dock_edge
 
 typedef struct _MixerWidget MixerWidget;
-typedef struct _PianoRollWidget PianoRollWidget;
+typedef struct _ClipEditorWidget ClipEditorWidget;
 typedef struct _ConnectionsWidget ConnectionsWidget;
 typedef struct _RackWidget RackWidget;
 
@@ -47,7 +45,7 @@ typedef struct _BotDockEdgeWidget
   GtkNotebook *            bot_notebook;
   RackWidget *             rack;
   ConnectionsWidget *      connections;
-  PianoRollWidget *        piano_roll;
+  ClipEditorWidget *       clip_editor;
   MixerWidget *            mixer;
 } BotDockEdgeWidget;
 
