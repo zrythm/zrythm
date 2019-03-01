@@ -355,7 +355,7 @@ events_process ()
           break;
         case ET_CLIP_MARKER_POS_CHANGED:
           gtk_widget_queue_allocate (
-            GTK_WIDGET (arg)); // ruler widget
+            GTK_WIDGET (MIDI_RULER)); // ruler widget
           gtk_widget_queue_draw (
             GTK_WIDGET (
               CLIP_EDITOR->region->widget));
@@ -447,7 +447,7 @@ events_process ()
     }
 
   last_time_updated = curr_time;
-  g_usleep (1000);
+  g_usleep (2000);
 
   return TRUE;
 }

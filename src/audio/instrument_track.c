@@ -153,57 +153,30 @@ instrument_track_fill_midi_events (
           ev->buffer[2] = 0x00;
         }
 
-      /* check if inside loop */
-      /*int in_loop =*/
-        /*position_compare (*/
-          /*&local_pos, &loop_start_adjusted) >= 0;*/
-
-      /*if (in_loop)*/
-        /*{*/
-          /*[> adjust position after looping <]*/
-          /*long loop_length =*/
-            /*region_get_loop_length_in_ticks (r);*/
-          /*while (position_compare (*/
-                   /*&local_pos,*/
-                   /*&loop_end_adjusted) >= 0)*/
-            /*{*/
-              /*position_add_ticks (*/
-                /*&local_pos, - loop_length);*/
-              /*position_add_ticks (*/
-                /*&local_end_pos, - loop_length);*/
-            /*}*/
-
-          /* if crossing the loop line send midi
-           * notes off */
-      g_message ("local pos, loop end adjusted");
-      position_print (&local_pos);
-      position_print (&loop_end_adjusted);
-          if (position_compare (
-                &loop_end_adjusted,
-                &local_pos) >= 0 &&
-              position_compare (
-                &loop_end_adjusted,
-                &local_end_pos) <= 0)
-            {
-              g_message ("hello");
-              jack_midi_event_t * ev =
-                &midi_events->queue->
-                  jack_midi_events[
-                    midi_events->queue->
-                      num_events++];
-              ev->time =
-                position_to_frames (
-                  &loop_end_adjusted) -
-                position_to_frames (&local_pos);
-              ev->size = 3;
-              /* status byte */
-              ev->buffer[0] = MIDI_CH1_CTRL_CHANGE;
-              /* note number 0-127 */
-              ev->buffer[1] = MIDI_ALL_NOTES_OFF;
-              /* velocity 0-127 */
-              ev->buffer[2] = 0x00;
-            }
-        /*}*/
+      /* if crossing loop
+       * (local end pos will be back to the loop
+       * start) */
+      if (position_compare (
+            &local_end_pos,
+            &local_pos) <= 0)
+        {
+          jack_midi_event_t * ev =
+            &midi_events->queue->
+              jack_midi_events[
+                midi_events->queue->
+                  num_events++];
+          ev->time =
+            position_to_frames (
+              &loop_end_adjusted) -
+            position_to_frames (&local_pos);
+          ev->size = 3;
+          /* status byte */
+          ev->buffer[0] = MIDI_CH1_CTRL_CHANGE;
+          /* note number 0-127 */
+          ev->buffer[1] = MIDI_ALL_NOTES_OFF;
+          /* velocity 0-127 */
+          ev->buffer[2] = 0x00;
+        }
 
       /* readjust position */
       position_add_ticks (
