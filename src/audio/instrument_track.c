@@ -175,6 +175,9 @@ instrument_track_fill_midi_events (
 
           /* if crossing the loop line send midi
            * notes off */
+      g_message ("local pos, loop end adjusted");
+      position_print (&local_pos);
+      position_print (&loop_end_adjusted);
           if (position_compare (
                 &loop_end_adjusted,
                 &local_pos) >= 0 &&
@@ -182,6 +185,7 @@ instrument_track_fill_midi_events (
                 &loop_end_adjusted,
                 &local_end_pos) <= 0)
             {
+              g_message ("hello");
               jack_midi_event_t * ev =
                 &midi_events->queue->
                   jack_midi_events[

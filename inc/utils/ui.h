@@ -132,7 +132,7 @@ ui_get_hit_child (GtkContainer * parent,
  * Converts from pixels to position.
  */
 void
-ui_px_to_pos_timeline (int               px,
+ui_px_to_pos_timeline (double               px,
            Position *        pos,
            int               has_padding); ///< whether the given px contain padding
 
@@ -157,7 +157,7 @@ ui_pos_to_px_timeline (Position *       pos,
  * Converts from pixels to position.
  */
 void
-ui_px_to_pos_piano_roll (int               px,
+ui_px_to_pos_piano_roll (double               px,
            Position *        pos,
            int               has_padding); ///< whether the given px contain padding
 

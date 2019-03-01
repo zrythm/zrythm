@@ -145,7 +145,7 @@ ui_is_child_hit (GtkContainer * parent,
  * this function and then change the sign.
  */
 void
-ui_px_to_pos_timeline (int               px,
+ui_px_to_pos_timeline (double               px,
            Position *        pos,
            int               has_padding) ///< whether the given px include padding
 {
@@ -156,20 +156,22 @@ ui_px_to_pos_timeline (int               px,
 
   if (has_padding)
     {
-      px -= SPACE_BEFORE_START;
+      px -= SPACE_BEFORE_START_D;
 
       /* clamp at 0 */
-      if (px < 0)
-        px = 0;
+      if (px < 0.0)
+        px = 0.0;
     }
 
   pos->bars = px / rw_prv->px_per_bar + 1;
-  px = px % (int) round (rw_prv->px_per_bar);
+  px = fmod (px, rw_prv->px_per_bar);
   pos->beats = px / rw_prv->px_per_beat + 1;
-  px = px % (int) round (rw_prv->px_per_beat);
+  px = fmod (px, rw_prv->px_per_beat);
   pos->sixteenths = px / rw_prv->px_per_sixteenth + 1;
-  px = px % (int) round (rw_prv->px_per_sixteenth);
+  px = fmod (px, rw_prv->px_per_sixteenth);
   pos->ticks = px / rw_prv->px_per_tick;
+  g_message ("sixteenths %d ticks %d",
+             pos->sixteenths, pos->ticks);
 }
 
 /**
@@ -233,7 +235,7 @@ ui_px_to_frames_timeline (
  * this function and then change the sign.
  */
 void
-ui_px_to_pos_piano_roll (int               px,
+ui_px_to_pos_piano_roll (double               px,
            Position *        pos,
            int               has_padding) ///< whether the given px include padding
 {
@@ -244,19 +246,19 @@ ui_px_to_pos_piano_roll (int               px,
 
   if (has_padding)
     {
-      px -= SPACE_BEFORE_START;
+      px -= SPACE_BEFORE_START_D;
 
       /* clamp at 0 */
-      if (px < 0)
-        px = 0;
+      if (px < 0.0)
+        px = 0.0;
     }
 
   pos->bars = px / rw_prv->px_per_bar + 1;
-  px = px % (int) round (rw_prv->px_per_bar);
+  px = fmod (px, rw_prv->px_per_bar);
   pos->beats = px / rw_prv->px_per_beat + 1;
-  px = px % (int) round (rw_prv->px_per_beat);
+  px = fmod (px, rw_prv->px_per_beat);
   pos->sixteenths = px / rw_prv->px_per_sixteenth + 1;
-  px = px % (int) round (rw_prv->px_per_sixteenth);
+  px = fmod (px, rw_prv->px_per_sixteenth);
   pos->ticks = px / rw_prv->px_per_tick;
 }
 

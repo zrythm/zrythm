@@ -422,24 +422,10 @@ drag_update (GtkGestureDrag * gesture,
       gesture, offset_x, offset_y, timeline_ruler);
   /* handle x */
   /* if moving the selection */
-  else if (rw_prv->action == UI_OVERLAY_ACTION_MOVING)
+  else if (midi_ruler &&
+           rw_prv->action ==
+             UI_OVERLAY_ACTION_MOVING)
     {
-      RulerMarkerWidget * loop_start,
-                        * loop_end,
-                        * clip_start;
-      if (midi_ruler)
-        {
-          loop_start = midi_ruler->loop_start;
-          loop_end = midi_ruler->loop_end;
-          clip_start = midi_ruler->clip_start;
-        }
-      else if (audio_ruler)
-        {
-          loop_start = audio_ruler->loop_start;
-          loop_end = audio_ruler->loop_end;
-          clip_start = audio_ruler->clip_start;
-        }
-
       if (rw_prv->target == RW_TARGET_LOOP_START)
         {
           ui_px_to_pos_piano_roll (

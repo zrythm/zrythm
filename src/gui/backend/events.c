@@ -363,7 +363,7 @@ events_process ()
         case ET_TIMELINE_LOOP_MARKER_POS_CHANGED:
         case ET_TIMELINE_SONG_MARKER_POS_CHANGED:
           gtk_widget_queue_allocate (
-            GTK_WIDGET (MW_TIMELINE));
+            GTK_WIDGET (MW_RULER));
           break;
         case ET_RANGE_SELECTION_CHANGED:
           on_range_selection_changed ();
