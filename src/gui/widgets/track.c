@@ -51,23 +51,22 @@ G_DEFINE_TYPE_WITH_PRIVATE (TrackWidget,
                             track_widget,
                             GTK_TYPE_GRID)
 
-static int draw_timeline_async ()
+static int draw_timeline_async (GtkWidget * widget)
 {
-  gtk_widget_queue_draw (GTK_WIDGET (
-    MW_TIMELINE));
-  gtk_widget_queue_allocate (GTK_WIDGET (
-    MW_TIMELINE));
+
+  if (!ui_is_widget_revealed (widget))
+    {
+      g_usleep (1000);
+
+      return TRUE;
+    }
+
+  /*gtk_widget_queue_draw (*/
+    /*GTK_WIDGET (MW_TIMELINE));*/
+  gtk_widget_queue_allocate (
+    GTK_WIDGET (MW_TIMELINE));
 
   return FALSE;
-}
-
-static void
-size_allocate_cb (GtkWidget * widget,
-                  GtkAllocation * allocation,
-                  void * data)
-{
-  g_idle_add ((GSourceFunc) draw_timeline_async,
-              NULL);
 }
 
 void
@@ -556,12 +555,10 @@ track_widget_new (Track * track)
 }
 
 void
-track_widget_on_show_automation_toggled (GtkWidget * widget,
-                                 void *      data)
+track_widget_on_show_automation_toggled (
+  GtkWidget *   widget,
+  TrackWidget * self)
 {
-  TrackWidget * self =
-    Z_TRACK_WIDGET (data);
-
   TRACK_WIDGET_GET_PRIVATE (self);
   Track * track = tw_prv->track;
 
@@ -659,9 +656,6 @@ track_widget_init (TrackWidget * self)
   g_signal_connect (
     G_OBJECT (tw_prv->right_mouse_mp), "pressed",
     G_CALLBACK (on_right_click), self);
-  g_signal_connect (
-    G_OBJECT (self), "size-allocate",
-    G_CALLBACK (size_allocate_cb), NULL);
   g_signal_connect (
     G_OBJECT (tw_prv->event_box),
     "enter-notify-event",

@@ -114,11 +114,16 @@ timeline_arranger_widget_set_allocation (
         ui_pos_to_px_timeline (
           &rw_prv->region->end_pos,
           1) - allocation->x;
+
       allocation->height =
         gtk_widget_get_allocated_height (
-          GTK_WIDGET (track->widget)) -
-        gtk_widget_get_allocated_height (
-          track_widget_get_bottom_paned (track->widget));
+          GTK_WIDGET (track->widget));
+      if (track->bot_paned_visible)
+        {
+          allocation->height -=
+            gtk_widget_get_allocated_height (
+              track_widget_get_bottom_paned (track->widget)) + 1;
+        }
     }
   else if (Z_IS_AUTOMATION_POINT_WIDGET (widget))
     {
@@ -1603,6 +1608,7 @@ timeline_arranger_widget_refresh_children (
     }
   g_list_free (children);
 
+  /* add tracks */
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       Track * track = TRACKLIST->tracks[i];

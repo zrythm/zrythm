@@ -109,7 +109,7 @@ midi_ruler_widget_set_ruler_marker_position (
         }
       else
         allocation->x = 0;
-      allocation->y = RULER_MARKER_SIZE + 1;
+      allocation->y = 0;
       allocation->width = RULER_MARKER_SIZE;
       allocation->height = RULER_MARKER_SIZE;
       break;
@@ -123,7 +123,7 @@ midi_ruler_widget_set_ruler_marker_position (
         }
       else
         allocation->x = 0;
-      allocation->y = RULER_MARKER_SIZE + 1;
+      allocation->y = 0;
       allocation->width = RULER_MARKER_SIZE;
       allocation->height = RULER_MARKER_SIZE;
       break;

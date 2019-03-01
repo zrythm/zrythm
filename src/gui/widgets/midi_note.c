@@ -84,6 +84,13 @@ on_motion (GtkWidget *      widget,
                              &allocation);
   ARRANGER_WIDGET_GET_PRIVATE (MIDI_ARRANGER);
 
+  if (event->type == GDK_ENTER_NOTIFY)
+    {
+      gtk_widget_set_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_PRELIGHT,
+        0);
+    }
   if (event->type == GDK_MOTION_NOTIFY)
     {
       if (event->x < RESIZE_CURSOR_SPACE)
@@ -131,6 +138,9 @@ on_motion (GtkWidget *      widget,
             UI_OVERLAY_ACTION_RESIZING_R)
         {
           ui_set_cursor (widget, "default");
+          gtk_widget_unset_state_flags (
+            GTK_WIDGET (self),
+            GTK_STATE_FLAG_PRELIGHT);
         }
     }
 
@@ -172,8 +182,12 @@ midi_note_widget_new (MidiNote * midi_note)
 }
 
 static void
-midi_note_widget_class_init (MidiNoteWidgetClass * klass)
+midi_note_widget_class_init (
+  MidiNoteWidgetClass * _klass)
 {
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (klass,
+                                 "region");
 }
 
 static void

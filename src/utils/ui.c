@@ -170,8 +170,6 @@ ui_px_to_pos_timeline (double               px,
   pos->sixteenths = px / rw_prv->px_per_sixteenth + 1;
   px = fmod (px, rw_prv->px_per_sixteenth);
   pos->ticks = px / rw_prv->px_per_tick;
-  g_message ("sixteenths %d ticks %d",
-             pos->sixteenths, pos->ticks);
 }
 
 /**

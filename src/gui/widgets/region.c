@@ -22,9 +22,11 @@
 #include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
+#include "gui/widgets/timeline_arranger.h"
 #include "utils/ui.h"
 
 G_DEFINE_TYPE_WITH_PRIVATE (RegionWidget,
@@ -160,6 +162,8 @@ on_motion (GtkWidget *      widget,
            GdkEventMotion * event,
            RegionWidget *   self)
 {
+  ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);
+
   if (event->type == GDK_ENTER_NOTIFY)
     {
       gtk_widget_set_state_flags (
@@ -170,9 +174,15 @@ on_motion (GtkWidget *      widget,
   /* if leaving */
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
-      gtk_widget_unset_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_PRELIGHT);
+      if (ar_prv->action !=
+            UI_OVERLAY_ACTION_MOVING &&
+          ar_prv->action !=
+            UI_OVERLAY_ACTION_RESIZING_L &&
+          ar_prv->action !=
+            UI_OVERLAY_ACTION_RESIZING_R)
+        gtk_widget_unset_state_flags (
+          GTK_WIDGET (self),
+          GTK_STATE_FLAG_PRELIGHT);
     }
   return FALSE;
 }

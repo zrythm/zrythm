@@ -1,7 +1,5 @@
 /*
- * gui/widgets/track.h - Track view
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -154,7 +152,7 @@ track_widget_get_private (TrackWidget * self);
 void
 track_widget_on_show_automation_toggled (
   GtkWidget * widget,
-  void *      data);
+  TrackWidget * self);
 
 /**
  * Callback when record button is toggled.

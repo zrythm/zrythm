@@ -166,9 +166,12 @@ on_track_added (Track * track)
     mixer_widget_refresh (MW_MIXER);
   if (MW_TRACKLIST)
     tracklist_widget_hard_refresh (MW_TRACKLIST);
+
+  /* needs to be called later because tracks need
+   * time to get allocated */
   if (MW_TIMELINE)
-    arranger_widget_refresh (
-      Z_ARRANGER_WIDGET (MW_TIMELINE));
+    g_idle_add (arranger_widget_refresh,
+                Z_ARRANGER_WIDGET (MW_TIMELINE));
 }
 
 static void
@@ -393,6 +396,8 @@ events_process ()
         case ET_TRACK_BOT_PANED_VISIBILITY_CHANGED:
           tracklist_widget_soft_refresh (
             MW_TRACKLIST);
+          arranger_widget_refresh (
+            Z_ARRANGER_WIDGET (MW_TIMELINE));
           break;
         case ET_TRACK_ADDED:
           on_track_added ((Track *) arg);

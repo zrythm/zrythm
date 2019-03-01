@@ -140,7 +140,7 @@ arranger_widget_select_all (
 /**
  * Readd children.
  */
-void
+int
 arranger_widget_refresh (
   ArrangerWidget * self);
 

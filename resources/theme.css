@@ -103,19 +103,22 @@ scrollbar
 /*}*/
 
 region,
-chord
+chord,
+midi_note
 {
   box-shadow: 2px 2px 6px alpha (black, 0.1);
 }
 
 region:selected,
-chord:selected
+chord:selected,
+midi_note:selected
 {
   box-shadow: 2px 2px 10px @selection_color;
 }
 
 region:hover,
-chord:hover
+chord:hover,
+midi_note:hover
 {
   box-shadow: 2px 2px 10px @hover_color;
 }
@@ -253,7 +256,8 @@ timeline-minimap-bg
 
 track:selected,
 region:selected,
-chord:selected
+chord:selected,
+midi_note:selected
 {
   background-color: @selection_color;
 }

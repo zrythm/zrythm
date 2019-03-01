@@ -1059,7 +1059,7 @@ arranger_widget_setup (ArrangerWidget *   self,
 /**
  * Readd children.
  */
-void
+int
 arranger_widget_refresh (
   ArrangerWidget * self)
 {
@@ -1097,6 +1097,8 @@ arranger_widget_refresh (
 
   if (ar_prv->bg)
     arranger_bg_widget_refresh (ar_prv->bg);
+
+  return FALSE;
 }
 
 static void
