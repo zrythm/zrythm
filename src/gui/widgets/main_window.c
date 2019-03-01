@@ -74,6 +74,8 @@ on_state_changed (MainWindowWidget * self,
   if (event->new_window_state &
         GDK_WINDOW_STATE_MAXIMIZED)
     self->is_maximized = 1;
+  else
+    self->is_maximized = 0;
 }
 
 MainWindowWidget *

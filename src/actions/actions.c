@@ -527,24 +527,13 @@ activate_fullscreen (GSimpleAction *action,
 {
   if (MAIN_WINDOW->is_maximized)
     {
-      /*gtk_window_resize (GTK_WINDOW (MAIN_WINDOW),*/
-                         /*MAIN_WINDOW->width,*/
-                         /*MAIN_WINDOW->height);*/
-      gtk_window_unmaximize (GTK_WINDOW (MAIN_WINDOW));
-      MAIN_WINDOW->is_maximized = 0;
-      /*gtk_window_resize (GTK_WINDOW (MAIN_WINDOW),*/
-                         /*MAIN_WINDOW->width,*/
-                         /*MAIN_WINDOW->height);*/
+      gtk_window_unmaximize (
+        GTK_WINDOW (MAIN_WINDOW));
     }
   else
     {
-      gtk_window_maximize (GTK_WINDOW (MAIN_WINDOW));
-      /*MAIN_WINDOW->height =*/
-        /*gtk_widget_get_allocated_height (*/
-          /*GTK_WIDGET (MAIN_WINDOW));*/
-      /*MAIN_WINDOW->width =*/
-        /*gtk_widget_get_allocated_width (*/
-          /*GTK_WIDGET (MAIN_WINDOW));*/
+      gtk_window_maximize (
+        GTK_WINDOW (MAIN_WINDOW));
     }
 }
 
