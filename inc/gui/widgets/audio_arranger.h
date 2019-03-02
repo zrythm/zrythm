@@ -63,6 +63,10 @@ audio_arranger_widget_set_allocation (
 void
 audio_arranger_widget_show_context_menu (AudioArrangerWidget * self);
 
+void
+audio_arranger_widget_refresh_children (
+  AudioArrangerWidget * self);
+
 /**
  * Sets up the widget.
  */

@@ -64,9 +64,11 @@ typedef struct _RulerMarkerWidget
   GtkDrawingArea          parent_instance;
   UiCursorState           cursor_state;
   RulerMarkerType         type;
+  RulerWidget *           ruler; ///< owner
 } RulerMarkerWidget;
 
 RulerMarkerWidget *
-ruler_marker_widget_new (RulerMarkerType type);
+ruler_marker_widget_new (RulerWidget * ruler,
+                         RulerMarkerType type);
 
 #endif

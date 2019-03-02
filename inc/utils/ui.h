@@ -142,7 +142,25 @@ ui_px_to_pos_timeline (double               px,
  * Returns the frames.
  */
 long
-ui_px_to_frames_timeline (int   px,
+ui_px_to_frames_timeline (double   px,
+                 int   has_padding); ///< whether the given px contain padding
+
+/**
+ * Converts from pixels to frames.
+ *
+ * Returns the frames.
+ */
+long
+ui_px_to_frames_piano_roll (double   px,
+                 int   has_padding); ///< whether the given px contain padding
+
+/**
+ * Converts from pixels to frames.
+ *
+ * Returns the frames.
+ */
+long
+ui_px_to_frames_audio_clip_editor (double   px,
                  int   has_padding); ///< whether the given px contain padding
 
 /**
@@ -154,6 +172,23 @@ ui_pos_to_px_timeline (Position *       pos,
            int              use_padding);
 
 /**
+ * Converts position to px, optionally adding the ruler
+ * padding.
+ */
+int
+ui_pos_to_px_piano_roll (Position *       pos,
+           int              use_padding);
+
+/**
+ * Converts position to px, optionally adding the ruler
+ * padding.
+ */
+int
+ui_pos_to_px_audio_clip_editor (
+  Position *       pos,
+  int              use_padding);
+
+/**
  * Converts from pixels to position.
  */
 void
@@ -162,21 +197,14 @@ ui_px_to_pos_piano_roll (double               px,
            int               has_padding); ///< whether the given px contain padding
 
 /**
- * Converts from pixels to frames.
- *
- * Returns the frames.
+ * Converts from pixels to position.
  */
-long
-ui_px_to_frames_piano_roll (int   px,
-                 int   has_padding); ///< whether the given px contain padding
+void
+ui_px_to_pos_audio_clip_editor (
+  double               px,
+  Position *        pos,
+  int               has_padding); ///< whether the given px contain padding
 
-/**
- * Converts position to px, optionally adding the ruler
- * padding.
- */
-int
-ui_pos_to_px_piano_roll (Position *       pos,
-           int              use_padding);
 
 /**
  * Shows a notification in the revealer.

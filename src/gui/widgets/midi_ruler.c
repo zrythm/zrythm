@@ -55,8 +55,9 @@ midi_ruler_draw_cb (GtkWidget * widget,
                                 &rect);
 
   GtkStyleContext *context;
-
-  context = gtk_widget_get_style_context (GTK_WIDGET (self));
+  context =
+    gtk_widget_get_style_context (
+      GTK_WIDGET (self));
 
   /*width = gtk_widget_get_allocated_width (widget);*/
   guint height =
@@ -64,7 +65,6 @@ midi_ruler_draw_cb (GtkWidget * widget,
 
   Region * region = CLIP_EDITOR->region;
   Track * track = region->track;
-  InstrumentTrack * it = (InstrumentTrack *) track;
   cairo_set_source_rgba (cr,
                          track->color.red,
                          track->color.green,
@@ -81,8 +81,6 @@ midi_ruler_draw_cb (GtkWidget * widget,
     ui_pos_to_px_piano_roll (&region->true_end_pos,
                              1);
 
-  /* TODO only conditionally draw if it is within cairo
-   * clip */
   cairo_rectangle (cr,
                    px_start, 0,
                    px_end - px_start, height / 4.0);
@@ -226,26 +224,26 @@ midi_ruler_widget_init (
 {
   RULER_WIDGET_GET_PRIVATE (self);
 
-  /*g_signal_connect (*/
-    /*G_OBJECT (rw_prv->bg), "draw",*/
-    /*G_CALLBACK (midi_ruler_draw_cb), self);*/
+  g_signal_connect (
+    G_OBJECT (rw_prv->bg), "draw",
+    G_CALLBACK (midi_ruler_draw_cb), self);
 
   /* add all the markers */
   self->loop_start =
     ruler_marker_widget_new (
-      RULER_MARKER_TYPE_LOOP_START);
+      self, RULER_MARKER_TYPE_LOOP_START);
   gtk_overlay_add_overlay (
     GTK_OVERLAY (self),
     GTK_WIDGET (self->loop_start));
   self->loop_end =
     ruler_marker_widget_new (
-      RULER_MARKER_TYPE_LOOP_END);
+      self, RULER_MARKER_TYPE_LOOP_END);
   gtk_overlay_add_overlay (
     GTK_OVERLAY (self),
     GTK_WIDGET (self->loop_end));
   self->clip_start =
     ruler_marker_widget_new (
-      RULER_MARKER_TYPE_CLIP_START);
+      self, RULER_MARKER_TYPE_CLIP_START);
   gtk_overlay_add_overlay (
     GTK_OVERLAY (self),
     GTK_WIDGET (self->clip_start));

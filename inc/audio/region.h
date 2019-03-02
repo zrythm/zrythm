@@ -329,6 +329,13 @@ region_get_true_length_in_ticks (
   Region * region);
 
 /**
+ * Returns the length of the loop in frames.
+ */
+long
+region_get_loop_length_in_frames (
+  Region * region);
+
+/**
  * Returns the length of the loop in ticks.
  */
 long

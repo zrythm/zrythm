@@ -255,7 +255,8 @@ timeline_arranger_widget_get_automation_track_at_y (double y)
       Track * track = TRACKLIST->tracks[i];
       AutomationTracklist * automation_tracklist =
         track_get_automation_tracklist (track);
-      if (!automation_tracklist)
+      if (!automation_tracklist ||
+          !track->bot_paned_visible)
         continue;
 
       for (int j = 0;

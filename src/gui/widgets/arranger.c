@@ -35,6 +35,10 @@
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/arranger_playhead.h"
+#include "gui/widgets/audio_arranger.h"
+#include "gui/widgets/audio_arranger_bg.h"
+#include "gui/widgets/audio_clip_editor.h"
+#include "gui/widgets/audio_ruler.h"
 #include "gui/widgets/automation_curve.h"
 #include "gui/widgets/automation_lane.h"
 #include "gui/widgets/automation_point.h"
@@ -82,6 +86,7 @@ G_DEFINE_TYPE_WITH_PRIVATE (ArrangerWidget,
   TimelineArrangerWidget *     timeline = NULL; \
   MidiArrangerWidget *         midi_arranger = NULL; \
   MidiModifierArrangerWidget * midi_modifier_arranger = NULL; \
+  AudioArrangerWidget * audio_arranger = NULL; \
   if (ARRANGER_IS_MIDI (self)) \
     { \
       midi_arranger = Z_MIDI_ARRANGER_WIDGET (self); \
@@ -89,6 +94,10 @@ G_DEFINE_TYPE_WITH_PRIVATE (ArrangerWidget,
   else if (ARRANGER_IS_TIMELINE (self)) \
     { \
       timeline = Z_TIMELINE_ARRANGER_WIDGET (self); \
+    } \
+  else if (Z_IS_AUDIO_ARRANGER_WIDGET (self)) \
+    { \
+      audio_arranger = Z_AUDIO_ARRANGER_WIDGET (self); \
     } \
   else if (ARRANGER_IS_MIDI_MODIFIER (self)) \
     { \
@@ -106,24 +115,25 @@ arranger_widget_get_private (ArrangerWidget * self)
  * Gets called to set the position/size of each overlayed widget.
  */
 static gboolean
-get_child_position (GtkOverlay   *overlay,
+get_child_position (GtkOverlay   *self,
                     GtkWidget    *widget,
                     GdkRectangle *allocation,
                     gpointer      user_data)
 {
-  ArrangerWidget * self = (ArrangerWidget *) overlay;
-
   GET_ARRANGER_ALIASES (self);
 
   if (Z_IS_ARRANGER_PLAYHEAD_WIDGET (widget))
     {
+      /* note: -1 (half the width of the playhead
+       * widget */
       if (timeline)
         allocation->x =
           ui_pos_to_px_timeline (
             &TRANSPORT->playhead_pos,
-            1) - 1; /* minus half the width */
+            1) - 1;
       else if ((midi_arranger ||
-               midi_modifier_arranger) &&
+               midi_modifier_arranger ||
+               audio_arranger) &&
                CLIP_EDITOR->region)
         {
           if (region_is_hit (
@@ -135,10 +145,15 @@ get_child_position (GtkOverlay   *overlay,
                 CLIP_EDITOR->region,
                 &TRANSPORT->playhead_pos,
                 &pos, 1);
-              allocation->x =
-                ui_pos_to_px_piano_roll (
-                  &pos,
-                  1) - 1; /* minus half the width */
+              if (audio_arranger)
+                allocation->x =
+                  ui_pos_to_px_audio_clip_editor (
+                    &pos, 1) - 1;
+              else
+                allocation->x =
+                  ui_pos_to_px_piano_roll (
+                    &pos,
+                    1) - 1;
             }
         }
       allocation->y = 0;
@@ -147,7 +162,7 @@ get_child_position (GtkOverlay   *overlay,
         gtk_widget_get_allocated_height (
           GTK_WIDGET (self));
     }
-  if (midi_arranger)
+  else if (midi_arranger)
     {
       midi_arranger_widget_set_allocation (
         midi_arranger,
@@ -165,6 +180,13 @@ get_child_position (GtkOverlay   *overlay,
     {
       midi_modifier_arranger_widget_set_allocation (
         midi_modifier_arranger,
+        widget,
+        allocation);
+    }
+  else if (audio_arranger)
+    {
+      audio_arranger_widget_set_allocation (
+        audio_arranger,
         widget,
         allocation);
     }
@@ -253,15 +275,25 @@ arranger_widget_get_hit_widgets_in_range (
 static void
 update_inspector (ArrangerWidget *self)
 {
-  if (ARRANGER_IS_MIDI (self))
+  GET_ARRANGER_ALIASES (self);
+
+  if (midi_arranger)
     {
       midi_arranger_widget_update_inspector (
-        Z_MIDI_ARRANGER_WIDGET (self));
+        midi_arranger);
     }
-  else if (ARRANGER_IS_TIMELINE (self))
+  else if (timeline)
     {
       timeline_arranger_widget_update_inspector (
-        Z_TIMELINE_ARRANGER_WIDGET (self));
+        timeline);
+    }
+  else if (audio_arranger)
+    {
+
+    }
+  else if (midi_modifier_arranger)
+    {
+
     }
 }
 
@@ -384,6 +416,11 @@ arranger_widget_refresh_all_backgrounds ()
       Z_ARRANGER_WIDGET (MIDI_MODIFIER_ARRANGER));
   gtk_widget_queue_draw (
     GTK_WIDGET (ar_prv->bg));
+  ar_prv =
+    arranger_widget_get_private (
+      Z_ARRANGER_WIDGET (AUDIO_ARRANGER));
+  gtk_widget_queue_draw (
+    GTK_WIDGET (ar_prv->bg));
 }
 
 void
@@ -408,6 +445,11 @@ arranger_widget_select_all (ArrangerWidget *  self,
     {
       /* TODO */
     }
+  else if (audio_arranger)
+    {
+
+    }
+
   update_inspector (self);
 }
 
@@ -415,15 +457,26 @@ arranger_widget_select_all (ArrangerWidget *  self,
 static void
 show_context_menu (ArrangerWidget * self)
 {
-  if (ARRANGER_IS_MIDI (self))
+  GET_ARRANGER_ALIASES (self);
+
+  if (midi_arranger)
     {
       midi_arranger_widget_show_context_menu (
         Z_MIDI_ARRANGER_WIDGET (self));
     }
-  else if (ARRANGER_IS_TIMELINE (self))
+  else if (timeline)
     {
       timeline_arranger_widget_show_context_menu (
         Z_TIMELINE_ARRANGER_WIDGET (self));
+    }
+  else if (audio_arranger)
+    {
+      audio_arranger_widget_show_context_menu (
+        Z_AUDIO_ARRANGER_WIDGET (self));
+    }
+  else if (midi_modifier_arranger)
+    {
+
     }
 }
 
@@ -956,6 +1009,10 @@ drag_end (GtkGestureDrag *gesture,
     {
       /* TODO */
     }
+  else if (audio_arranger)
+    {
+      /* TODO */
+    }
 
   /* if clicked on nothing */
   if (ar_prv->action ==
@@ -972,6 +1029,19 @@ drag_end (GtkGestureDrag *gesture,
   gtk_widget_queue_draw (GTK_WIDGET (ar_prv->bg));
 }
 
+static gboolean
+tick_cb (GtkWidget *widget,
+         GdkFrameClock *frame_clock,
+         gpointer user_data)
+{
+  if (gtk_widget_get_visible (widget))
+    {
+      gtk_widget_queue_draw (widget);
+      gtk_widget_queue_allocate (widget);
+    }
+
+  return G_SOURCE_CONTINUE;
+}
 
 void
 arranger_widget_setup (ArrangerWidget *   self,
@@ -1010,6 +1080,15 @@ arranger_widget_setup (ArrangerWidget *   self,
           self));
       midi_modifier_arranger_widget_setup (
         midi_modifier_arranger);
+    }
+  else if (audio_arranger)
+    {
+      ar_prv->bg = Z_ARRANGER_BG_WIDGET (
+        audio_arranger_bg_widget_new (
+          Z_RULER_WIDGET (AUDIO_RULER),
+          self));
+      audio_arranger_widget_setup (
+        audio_arranger);
     }
   gtk_container_add (GTK_CONTAINER (self),
                      GTK_WIDGET (ar_prv->bg));
@@ -1054,6 +1133,10 @@ arranger_widget_setup (ArrangerWidget *   self,
   g_signal_connect (
     G_OBJECT (self), "key-release-event",
     G_CALLBACK (on_key_action), self);
+
+  /*gtk_widget_add_tick_callback (*/
+    /*GTK_WIDGET (self), tick_cb,*/
+    /*NULL, NULL);*/
 }
 
 /**
@@ -1093,6 +1176,17 @@ arranger_widget_refresh (
         -1);
       midi_modifier_arranger_widget_refresh_children (
         midi_modifier_arranger);
+    }
+  else if (audio_arranger)
+    {
+      RULER_WIDGET_GET_PRIVATE (AUDIO_RULER);
+      gtk_widget_set_size_request (
+        GTK_WIDGET (self),
+        rw_prv->total_px,
+        -1);
+      audio_arranger_widget_refresh_children (
+        audio_arranger);
+
     }
 
   if (ar_prv->bg)

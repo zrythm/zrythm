@@ -154,16 +154,14 @@ draw_cb (GtkWidget *widget, cairo_t *cr,
  */
 static void
 on_motion (GtkWidget * widget,
-           GdkEventMotion *event)
+           GdkEventMotion *event,
+           RulerMarkerWidget * self)
 {
-  RulerMarkerWidget * self =
-    Z_RULER_MARKER_WIDGET (widget);
   GtkAllocation allocation;
   gtk_widget_get_allocation (widget,
                              &allocation);
 
-  TimelineRulerWidget * trw = MW_RULER;
-  RULER_WIDGET_GET_PRIVATE (trw);
+  RULER_WIDGET_GET_PRIVATE (self->ruler);
 
   if (event->type == GDK_MOTION_NOTIFY)
     {
@@ -216,13 +214,15 @@ on_motion (GtkWidget * widget,
 }
 
 RulerMarkerWidget *
-ruler_marker_widget_new (RulerMarkerType type)
+ruler_marker_widget_new (RulerWidget * ruler,
+                         RulerMarkerType type)
 {
   RulerMarkerWidget * self =
     g_object_new (RULER_MARKER_WIDGET_TYPE,
                   NULL);
 
   self->type = type;
+  self->ruler = ruler;
 
   return self;
 }

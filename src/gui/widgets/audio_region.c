@@ -1,7 +1,5 @@
 /*
- * gui/widgets/audio_region.c- Region
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -38,23 +36,30 @@ G_DEFINE_TYPE (AudioRegionWidget,
                REGION_WIDGET_TYPE)
 
 static gboolean
-draw_cb (AudioRegionWidget * self, cairo_t *cr, gpointer data)
+draw_cb (AudioRegionWidget * self,
+         cairo_t *cr, gpointer data)
 {
   REGION_WIDGET_GET_PRIVATE (data);
-  Region * region = rw_prv->region;
-  AudioRegion * ar = (AudioRegion *) region;
+  Region * r = rw_prv->region;
+  AudioRegion * ar = (AudioRegion *) r;
 
   guint width, height;
   GtkStyleContext *context;
 
-  context = gtk_widget_get_style_context (GTK_WIDGET (self));
+  context =
+    gtk_widget_get_style_context (GTK_WIDGET (self));
 
-  width = gtk_widget_get_allocated_width (GTK_WIDGET (self));
-  height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  width =
+    gtk_widget_get_allocated_width (
+      GTK_WIDGET (self));
+  height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
 
-  gtk_render_background (context, cr, 0, 0, width, height);
+  gtk_render_background (context, cr,
+                         0, 0, width, height);
 
-  GdkRGBA * color = &rw_prv->region->track->color;
+  GdkRGBA * color = &r->track->color;
   cairo_set_source_rgba (cr,
                          color->red + 0.3,
                          color->green + 0.3,
@@ -62,10 +67,39 @@ draw_cb (AudioRegionWidget * self, cairo_t *cr, gpointer data)
                          0.9);
   cairo_set_line_width (cr, 1);
 
+  int num_loops =
+    region_get_num_loops (r, 1);
+  long ticks_in_region =
+    region_get_full_length_in_ticks (r);
+  float x_start, y_start, x_end;
+
   long prev_frames = 0;
-  for (int i = 0; i < width; i++)
+  long loop_end_frames =
+    position_to_frames (&r->loop_end_pos) *
+    ar->channels;
+  long loop_start_frames =
+    position_to_frames (&r->loop_end_pos) *
+    ar->channels;
+  long loop_frames =
+    region_get_loop_length_in_frames (r) *
+    ar->channels;
+  long clip_start_frames =
+    position_to_frames (&r->clip_start_pos) *
+    ar->channels;
+  int px =
+    ui_pos_to_px_timeline (&r->loop_start_pos, 0);
+  Position tmp;
+  long frame_interval =
+    ui_px_to_frames_timeline (0.6 * ar->channels, 0);
+  for (double i = 0.0; i < (double) width; i += 0.6)
     {
-      long curr_frames = ui_px_to_frames_timeline (i, 0);
+      long curr_frames =
+        ui_px_to_frames_timeline (i * ar->channels, 0);
+      /*if (curr_frames < loop_start_frames)*/
+        curr_frames += clip_start_frames;
+      /*else*/
+        while (curr_frames >= loop_end_frames)
+          curr_frames -= loop_frames;
       float min = 0, max = 0;
       for (int j = prev_frames; j < curr_frames; j++)
         {

@@ -381,6 +381,32 @@ drag_begin (GtkGestureDrag *      gesture,
                 RW_TARGET_CLIP_START;
             }
         }
+      else if (audio_ruler)
+        {
+          if (hit_marker == audio_ruler->loop_start)
+            {
+              rw_prv->action =
+                UI_OVERLAY_ACTION_STARTING_MOVING;
+              rw_prv->target =
+                RW_TARGET_LOOP_START;
+            }
+          else if (hit_marker ==
+                   audio_ruler->loop_end)
+            {
+              rw_prv->action =
+                UI_OVERLAY_ACTION_STARTING_MOVING;
+              rw_prv->target =
+                RW_TARGET_LOOP_END;
+            }
+          else if (hit_marker ==
+                   audio_ruler->clip_start)
+            {
+              rw_prv->action =
+                UI_OVERLAY_ACTION_STARTING_MOVING;
+              rw_prv->target =
+                RW_TARGET_CLIP_START;
+            }
+        }
     }
   else
     {
@@ -453,6 +479,50 @@ drag_update (GtkGestureDrag * gesture,
       else if (rw_prv->target == RW_TARGET_CLIP_START)
         {
           ui_px_to_pos_piano_roll (
+            rw_prv->start_x + offset_x,
+            &CLIP_EDITOR->region->clip_start_pos,
+            1);
+          if (!rw_prv->shift_held)
+            position_snap_simple (
+              &CLIP_EDITOR->region->clip_start_pos,
+              SNAP_GRID_TIMELINE);
+          transport_update_position_frames ();
+        }
+
+      EVENTS_PUSH (ET_CLIP_MARKER_POS_CHANGED,
+                   self);
+    }
+  else if (audio_ruler &&
+           rw_prv->action ==
+             UI_OVERLAY_ACTION_MOVING)
+    {
+      if (rw_prv->target == RW_TARGET_LOOP_START)
+        {
+          ui_px_to_pos_audio_clip_editor (
+            rw_prv->start_x + offset_x,
+            &CLIP_EDITOR->region->loop_start_pos,
+            1);
+          if (!rw_prv->shift_held)
+            position_snap_simple (
+              &CLIP_EDITOR->region->loop_start_pos,
+              SNAP_GRID_TIMELINE);
+          transport_update_position_frames ();
+        }
+      else if (rw_prv->target == RW_TARGET_LOOP_END)
+        {
+          ui_px_to_pos_audio_clip_editor (
+            rw_prv->start_x + offset_x,
+            &CLIP_EDITOR->region->loop_end_pos,
+            1);
+          if (!rw_prv->shift_held)
+            position_snap_simple (
+              &CLIP_EDITOR->region->loop_end_pos,
+              SNAP_GRID_TIMELINE);
+          transport_update_position_frames ();
+        }
+      else if (rw_prv->target == RW_TARGET_CLIP_START)
+        {
+          ui_px_to_pos_audio_clip_editor (
             rw_prv->start_x + offset_x,
             &CLIP_EDITOR->region->clip_start_pos,
             1);

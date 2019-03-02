@@ -82,56 +82,77 @@ audio_track_fill_stereo_in_buffers (
   AudioTrack *  self,
   StereoPorts * stereo_in)
 {
+  long region_start_frames,
+       region_end_frames,
+       local_frames_start,
+       loop_end_frames,
+       loop_frames,
+       clip_start_frames;
+  int buff_index, i, j;
   long cycle_start_frames =
     position_to_frames (&PLAYHEAD);
   long cycle_end_frames =
     cycle_start_frames + AUDIO_ENGINE->block_length;
 
-  for (int i = 0; i < self->num_regions; i++)
+  for (i = 0; i < self->num_regions; i++)
     {
       AudioRegion * ar = self->regions[i];
       Region * r = (Region *) ar;
-      long region_start_frames =
+      region_start_frames =
         position_to_frames (&r->start_pos);
-      long region_end_frames =
+      region_end_frames =
         position_to_frames (&r->end_pos);
       if (region_start_frames <= cycle_end_frames &&
           region_end_frames >= cycle_start_frames)
         {
-          long local_frames_start =
+          local_frames_start =
             cycle_start_frames - region_start_frames;
-          int buff_index = 0;
+
+          loop_end_frames =
+            position_to_frames (&r->loop_end_pos);
+          loop_frames =
+            region_get_loop_length_in_frames (r);
+          clip_start_frames =
+            position_to_frames (&r->clip_start_pos);
+          local_frames_start += clip_start_frames;
+          while (local_frames_start >=
+                 loop_end_frames)
+            local_frames_start -= loop_frames;
+
+          buff_index = 0;
           if (ar->channels == 1)
             {
               /*g_message ("1 channel");*/
-              for (int i = 0;
-                   i < AUDIO_ENGINE->block_length;
-                   i++)
+              for (j = 0;
+                   j < AUDIO_ENGINE->block_length;
+                   j++)
                 {
-                  buff_index = local_frames_start + i;
+                  buff_index = local_frames_start + j;
                   if (buff_index < 0 ||
                       buff_index >= ar->buff_size)
                     continue;
-                  stereo_in->l->buf[i] =
+                  stereo_in->l->buf[j] =
                     ar->buff[buff_index];
-                  stereo_in->r->buf[i] =
+                  stereo_in->r->buf[j] =
                     ar->buff[buff_index];
                 }
             }
           else if (ar->channels == 2)
             {
               /*g_message ("2 channels");*/
-              for (int i = 0;
-                   i < AUDIO_ENGINE->block_length;
-                   i += 2)
+              for (j = 0;
+                   j < AUDIO_ENGINE->block_length;
+                   j += 2)
                 {
-                  buff_index = local_frames_start + i;
+                  buff_index = local_frames_start +
+                    j;
                   if (buff_index < 0 ||
-                      buff_index + 1 >= ar->buff_size)
+                      buff_index + 1 >=
+                        ar->buff_size)
                     continue;
-                  stereo_in->l->buf[i] =
+                  stereo_in->l->buf[j] =
                     ar->buff[buff_index];
-                  stereo_in->r->buf[i] =
+                  stereo_in->r->buf[j] =
                     ar->buff[buff_index + 1];
                 }
             }

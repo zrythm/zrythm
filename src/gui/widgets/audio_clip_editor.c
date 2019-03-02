@@ -61,14 +61,14 @@ audio_clip_editor_widget_setup (
 
   if (self->arranger)
     {
-      /*arranger_widget_setup (*/
-        /*Z_ARRANGER_WIDGET (self->arranger),*/
-        /*&PROJECT->snap_grid_midi);*/
-      /*gtk_widget_show_all (*/
-        /*GTK_WIDGET (self->arranger));*/
+      arranger_widget_setup (
+        Z_ARRANGER_WIDGET (self->arranger),
+        &PROJECT->snap_grid_midi);
+      gtk_widget_show_all (
+        GTK_WIDGET (self->arranger));
     }
 
-  /*link_scrolls (self);*/
+  link_scrolls (self);
 }
 
 static void

@@ -46,13 +46,14 @@ region_init (Region *   region,
                        start_pos);
   position_set_to_pos (&region->end_pos,
                        end_pos);
+  position_init (&region->clip_start_pos);
   long length =
     region_get_full_length_in_ticks (region);
   position_from_ticks (&region->true_end_pos,
                        length);
   position_init (&region->loop_start_pos);
   /*g_message ("loop start");*/
-  position_print (&region->loop_start_pos);
+  /*position_print (&region->loop_start_pos);*/
   /*g_message ("loop end");*/
   position_set_to_pos (&region->loop_end_pos,
                        &region->true_end_pos);
@@ -149,6 +150,18 @@ region_get_loop_length_in_ticks (
   return
     position_to_ticks (&region->loop_end_pos) -
       position_to_ticks (&region->loop_start_pos);
+}
+
+/**
+ * Returns the length of the loop in frames.
+ */
+long
+region_get_loop_length_in_frames (
+  Region * region)
+{
+  return
+    position_to_frames (&region->loop_end_pos) -
+      position_to_frames (&region->loop_start_pos);
 }
 
 /**
@@ -290,7 +303,8 @@ region_get_num_loops (
   long full_size =
     region_get_full_length_in_ticks (region);
   long loop_start =
-    position_to_ticks (&region->loop_start_pos);
+    position_to_ticks (&region->loop_start_pos) -
+    position_to_ticks (&region->clip_start_pos);
   long curr_ticks = loop_start;
 
   while (curr_ticks < full_size)

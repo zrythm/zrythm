@@ -28,7 +28,6 @@
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/audio_ruler.h"
-#include "gui/widgets/piano_roll.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/ruler_marker.h"
 #include "project.h"
@@ -55,9 +54,9 @@ audio_ruler_draw_cb (GtkWidget * widget,
   gdk_cairo_get_clip_rectangle (cr,
                                 &rect);
 
-  GtkStyleContext *context;
-
-  context = gtk_widget_get_style_context (GTK_WIDGET (self));
+  /*GtkStyleContext *context;*/
+  /*context =*/
+    /*gtk_widget_get_style_context (GTK_WIDGET (self));*/
 
   /*width = gtk_widget_get_allocated_width (widget);*/
   guint height =
@@ -65,7 +64,6 @@ audio_ruler_draw_cb (GtkWidget * widget,
 
   Region * region = CLIP_EDITOR->region;
   Track * track = region->track;
-  InstrumentTrack * it = (InstrumentTrack *) track;
   cairo_set_source_rgba (cr,
                          track->color.red,
                          track->color.green,
@@ -77,13 +75,11 @@ audio_ruler_draw_cb (GtkWidget * widget,
   Position pos;
   position_init (&pos);
   px_start =
-    ui_pos_to_px_piano_roll (&pos, 1);
+    ui_pos_to_px_audio_clip_editor (&pos, 1);
   px_end =
-    ui_pos_to_px_piano_roll (&region->true_end_pos,
+    ui_pos_to_px_audio_clip_editor (&region->true_end_pos,
                              1);
 
-  /* TODO only conditionally draw if it is within cairo
-   * clip */
   cairo_rectangle (cr,
                    px_start, 0,
                    px_end - px_start, height / 4.0);
@@ -98,41 +94,42 @@ audio_ruler_widget_set_ruler_marker_position (
   RulerMarkerWidget *    rm,
   GtkAllocation *       allocation)
 {
-  switch (rm->type)
+  if (rm->type == RULER_MARKER_TYPE_LOOP_START)
     {
-    case RULER_MARKER_TYPE_LOOP_START:
       if (CLIP_EDITOR->region)
         {
           allocation->x =
-            ui_pos_to_px_piano_roll (
+            ui_pos_to_px_audio_clip_editor (
               &CLIP_EDITOR->region->loop_start_pos,
               1);
         }
       else
         allocation->x = 0;
-      allocation->y = RULER_MARKER_SIZE + 1;
+      allocation->y = 0;
       allocation->width = RULER_MARKER_SIZE;
       allocation->height = RULER_MARKER_SIZE;
-      break;
-    case RULER_MARKER_TYPE_LOOP_END:
+    }
+  else if (rm->type == RULER_MARKER_TYPE_LOOP_END)
+    {
       if (CLIP_EDITOR->region)
         {
           allocation->x =
-            ui_pos_to_px_piano_roll (
+            ui_pos_to_px_audio_clip_editor (
               &CLIP_EDITOR->region->loop_end_pos,
               1) - RULER_MARKER_SIZE;
         }
       else
         allocation->x = 0;
-      allocation->y = RULER_MARKER_SIZE + 1;
+      allocation->y = 0;
       allocation->width = RULER_MARKER_SIZE;
       allocation->height = RULER_MARKER_SIZE;
-      break;
-    case RULER_MARKER_TYPE_CLIP_START:
+    }
+  else if (rm->type == RULER_MARKER_TYPE_CLIP_START)
+    {
       if (CLIP_EDITOR->region)
         {
           allocation->x =
-            ui_pos_to_px_piano_roll (
+            ui_pos_to_px_audio_clip_editor (
               &CLIP_EDITOR->region->clip_start_pos,
               1);
         }
@@ -150,9 +147,7 @@ audio_ruler_widget_set_ruler_marker_position (
         allocation->y = RULER_MARKER_SIZE *2;
       allocation->width = CUE_MARKER_WIDTH;
       allocation->height = CUE_MARKER_HEIGHT;
-      break;
     }
-
 }
 
 void
@@ -225,31 +220,32 @@ static void
 audio_ruler_widget_init (
   AudioRulerWidget * self)
 {
+  RulerWidget * ruler =
+    Z_RULER_WIDGET (self);
   RULER_WIDGET_GET_PRIVATE (self);
 
-  /*g_signal_connect (*/
-    /*G_OBJECT (rw_prv->bg), "draw",*/
-    /*G_CALLBACK (audio_ruler_draw_cb), self);*/
+  g_signal_connect (
+    G_OBJECT (rw_prv->bg), "draw",
+    G_CALLBACK (audio_ruler_draw_cb), self);
 
   /* add all the markers */
   self->loop_start =
     ruler_marker_widget_new (
-      RULER_MARKER_TYPE_LOOP_START);
+      ruler, RULER_MARKER_TYPE_LOOP_START);
   gtk_overlay_add_overlay (
     GTK_OVERLAY (self),
     GTK_WIDGET (self->loop_start));
   self->loop_end =
     ruler_marker_widget_new (
-      RULER_MARKER_TYPE_LOOP_END);
+      ruler, RULER_MARKER_TYPE_LOOP_END);
   gtk_overlay_add_overlay (
     GTK_OVERLAY (self),
     GTK_WIDGET (self->loop_end));
   self->clip_start =
     ruler_marker_widget_new (
-      RULER_MARKER_TYPE_CLIP_START);
+      ruler, RULER_MARKER_TYPE_CLIP_START);
   gtk_overlay_add_overlay (
     GTK_OVERLAY (self),
     GTK_WIDGET (self->clip_start));
 }
-
 

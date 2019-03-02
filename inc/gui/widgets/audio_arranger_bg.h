@@ -17,31 +17,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_MIDI_ARRANGER_BG_H__
-#define __GUI_WIDGETS_MIDI_ARRANGER_BG_H__
+#ifndef __GUI_WIDGETS_AUDIO_ARRANGER_BG_H__
+#define __GUI_WIDGETS_AUDIO_ARRANGER_BG_H__
 
 #include "gui/widgets/arranger_bg.h"
 
 #include <gtk/gtk.h>
 
-#define MIDI_ARRANGER_BG_WIDGET_TYPE \
-  (midi_arranger_bg_widget_get_type ())
-G_DECLARE_FINAL_TYPE (MidiArrangerBgWidget,
-                      midi_arranger_bg_widget,
+#define AUDIO_ARRANGER_BG_WIDGET_TYPE \
+  (audio_arranger_bg_widget_get_type ())
+G_DECLARE_FINAL_TYPE (AudioArrangerBgWidget,
+                      audio_arranger_bg_widget,
                       Z,
-                      MIDI_ARRANGER_BG_WIDGET,
+                      AUDIO_ARRANGER_BG_WIDGET,
                       ArrangerBgWidget);
 
-typedef struct _MidiArrangerBgWidget
+typedef struct _AudioArrangerBgWidget
 {
   ArrangerBgWidget         parent_instance;
-} MidiArrangerBgWidget;
+} AudioArrangerBgWidget;
 
 /**
  * Creates a timeline widget using the given timeline data.
  */
-MidiArrangerBgWidget *
-midi_arranger_bg_widget_new (RulerWidget *    ruler,
-                             ArrangerWidget * arranger);
+AudioArrangerBgWidget *
+audio_arranger_bg_widget_new (
+  RulerWidget *    ruler,
+  ArrangerWidget * arranger);
 
 #endif
+

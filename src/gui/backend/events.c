@@ -32,6 +32,7 @@
 #include "gui/backend/clip_editor.h"
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/arranger_playhead.h"
+#include "gui/widgets/audio_arranger.h"
 #include "gui/widgets/audio_clip_editor.h"
 #include "gui/widgets/audio_ruler.h"
 #include "gui/widgets/automation_tracklist.h"
@@ -64,7 +65,7 @@
 #define ARG_POP(ev) \
   ((void *) stack_pop (ev->arg_stack))
 
-static void
+static int
 on_playhead_changed ()
 {
   /*if (automatic && (aa++ % 2 != 0))*/
@@ -106,8 +107,40 @@ on_playhead_changed ()
                 GTK_WIDGET (MIDI_MODIFIER_ARRANGER));
             }
         }
+      if (MW_AUDIO_CLIP_EDITOR)
+        {
+          if (AUDIO_RULER)
+            gtk_widget_queue_allocate (
+              GTK_WIDGET (AUDIO_RULER));
+          if (AUDIO_ARRANGER)
+            {
+              /*ARRANGER_WIDGET_GET_PRIVATE (*/
+                /*AUDIO_ARRANGER);*/
+              /*g_object_ref (ar_prv->playhead);*/
+              /*gtk_container_remove (*/
+                /*AUDIO_ARRANGER,*/
+                /*ar_prv->playhead);*/
+              /*gtk_overlay_add_overlay (*/
+                /*AUDIO_ARRANGER,*/
+                /*ar_prv->playhead);*/
+              /*g_object_unref (ar_prv->playhead);*/
+              /*gtk_widget_queue_draw (*/
+                /*GTK_WIDGET (ar_prv->playhead));*/
+              /*gtk_widget_queue_allocate (*/
+                /*GTK_WIDGET (ar_prv->playhead));*/
+            /*gtk_widget_queue_allocate (*/
+              /*GTK_WIDGET (AUDIO_ARRANGER));*/
+            /*arranger_widget_refresh (*/
+              /*Z_ARRANGER_WIDGET (AUDIO_ARRANGER));*/
+            /*gtk_widget_queue_resize (AUDIO_ARRANGER);*/
+            /*gtk_widget_queue_draw (AUDIO_ARRANGER);*/
+              gtk_widget_queue_allocate (
+                GTK_WIDGET (AUDIO_ARRANGER));
+            }
+        }
     }
   /*aa = 1;*/
+  return FALSE;
 }
 
 static void
@@ -358,7 +391,7 @@ events_process ()
           break;
         case ET_CLIP_MARKER_POS_CHANGED:
           gtk_widget_queue_allocate (
-            GTK_WIDGET (MIDI_RULER)); // ruler widget
+            GTK_WIDGET (arg)); // ruler widget
           gtk_widget_queue_draw (
             GTK_WIDGET (
               CLIP_EDITOR->region->widget));
@@ -384,7 +417,8 @@ events_process ()
             GTK_WIDGET (MIDI_MODIFIER_ARRANGER));
           break;
         case ET_PLAYHEAD_POS_CHANGED:
-          on_playhead_changed ();
+          g_idle_add (on_playhead_changed,
+                      NULL);
           break;
         case ET_CLIP_EDITOR_REGION_CHANGED:
           on_clip_editor_region_changed ();

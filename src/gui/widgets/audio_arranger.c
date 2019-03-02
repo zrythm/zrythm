@@ -23,13 +23,11 @@
 #include "gui/widgets/region.h"
 #include "audio/automation_track.h"
 #include "audio/channel.h"
-#include "audio/instrument_track.h"
 #include "audio/audio_region.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "audio/transport.h"
-#include "audio/velocity.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_curve.h"
 #include "gui/widgets/automation_point.h"
@@ -40,10 +38,9 @@
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
-/*#include "gui/widgets/audio_arranger_bg.h"*/
 #include "gui/widgets/audio_arranger.h"
+#include "gui/widgets/audio_clip_editor.h"
 #include "gui/widgets/audio_ruler.h"
-#include "gui/widgets/piano_roll_labels.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_bg.h"
@@ -102,15 +99,11 @@ audio_arranger_widget_setup (
 {
   // set the size
   int ww, hh;
-  gtk_widget_get_size_request (
-    GTK_WIDGET (PIANO_ROLL_LABELS),
-    &ww,
-    &hh);
-  RULER_WIDGET_GET_PRIVATE (MW_RULER);
+  RULER_WIDGET_GET_PRIVATE (AUDIO_RULER);
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
     rw_prv->total_px,
-    hh);
+    -1);
 }
 
 /**
@@ -144,7 +137,8 @@ audio_arranger_widget_refresh_children (
     }
   g_list_free (children);
 
-  if (CLIP_EDITOR->region)
+  if (CLIP_EDITOR->region &&
+      CLIP_EDITOR->region->type == REGION_TYPE_AUDIO)
     {
       AudioRegion * mr =
         (AudioRegion *) CLIP_EDITOR->region;

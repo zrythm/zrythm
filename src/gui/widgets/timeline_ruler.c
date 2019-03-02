@@ -550,31 +550,31 @@ timeline_ruler_widget_init (
   /* add all the markers */
   self->song_start =
     ruler_marker_widget_new (
-      RULER_MARKER_TYPE_SONG_START);
+      self, RULER_MARKER_TYPE_SONG_START);
   gtk_overlay_add_overlay (
     GTK_OVERLAY (self),
     GTK_WIDGET (self->song_start));
   self->song_end =
     ruler_marker_widget_new (
-      RULER_MARKER_TYPE_SONG_END);
+      self, RULER_MARKER_TYPE_SONG_END);
   gtk_overlay_add_overlay (
     GTK_OVERLAY (self),
     GTK_WIDGET (self->song_end));
   self->loop_start =
     ruler_marker_widget_new (
-      RULER_MARKER_TYPE_LOOP_START);
+      self, RULER_MARKER_TYPE_LOOP_START);
   gtk_overlay_add_overlay (
     GTK_OVERLAY (self),
     GTK_WIDGET (self->loop_start));
   self->loop_end =
     ruler_marker_widget_new (
-      RULER_MARKER_TYPE_LOOP_END);
+      self, RULER_MARKER_TYPE_LOOP_END);
   gtk_overlay_add_overlay (
     GTK_OVERLAY (self),
     GTK_WIDGET (self->loop_end));
   self->cue_point =
     ruler_marker_widget_new (
-      RULER_MARKER_TYPE_CUE_POINT);
+      self, RULER_MARKER_TYPE_CUE_POINT);
   gtk_overlay_add_overlay (
     GTK_OVERLAY (self),
     GTK_WIDGET (self->cue_point));

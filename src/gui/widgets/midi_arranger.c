@@ -201,7 +201,7 @@ midi_arranger_widget_setup (
     GTK_WIDGET (PIANO_ROLL_LABELS),
     &ww,
     &hh);
-  RULER_WIDGET_GET_PRIVATE (MW_RULER);
+  RULER_WIDGET_GET_PRIVATE (MIDI_RULER);
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
     rw_prv->total_px,
@@ -678,7 +678,8 @@ midi_arranger_widget_refresh_children (
     }
   g_list_free (children);
 
-  if (CLIP_EDITOR->region)
+  if (CLIP_EDITOR->region &&
+      CLIP_EDITOR->region->type == REGION_TYPE_MIDI)
     {
       MidiRegion * mr =
         (MidiRegion *) CLIP_EDITOR->region;
