@@ -349,6 +349,22 @@ on_midi_note_changed (MidiNote * midi_note)
     gtk_widget_queue_draw (GTK_WIDGET (r->widget));
 }
 
+static int
+update_adj ()
+{
+  GtkAdjustment * adj =
+    gtk_scrolled_window_get_hadjustment (
+      MW_CENTER_DOCK->timeline_scroll);
+  gtk_adjustment_set_value (
+    adj,
+    gtk_adjustment_get_value (adj) + gtk_adjustment_get_step_increment (adj));
+  gtk_scrolled_window_set_hadjustment(
+    MW_CENTER_DOCK->timeline_scroll,
+    adj);
+
+  return FALSE;
+}
+
 /**
  * GSourceFunc to be added using idle add.
  *
@@ -383,9 +399,24 @@ events_process ()
               CLIP_EDITOR->region->widget));
           break;
         case ET_TIMELINE_LOOP_MARKER_POS_CHANGED:
+          gtk_widget_queue_allocate (
+            GTK_WIDGET (MW_RULER));
+          break;
         case ET_TIMELINE_SONG_MARKER_POS_CHANGED:
           gtk_widget_queue_allocate (
             GTK_WIDGET (MW_RULER));
+          break;
+        case ET_LAST_TIMELINE_OBJECT_CHANGED:
+          TRANSPORT->total_bars =
+            MW_TIMELINE->last_timeline_obj_bars +
+            8;
+          snap_grid_update_snap_points (
+            SNAP_GRID_TIMELINE);
+
+          timeline_ruler_widget_refresh ();
+          timeline_arranger_widget_set_size ();
+          timeline_minimap_widget_refresh (
+            MW_TIMELINE_MINIMAP);
           break;
         case ET_RANGE_SELECTION_CHANGED:
           on_range_selection_changed ();

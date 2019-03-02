@@ -41,6 +41,7 @@ typedef struct Channel Channel;
 typedef struct MidiEvents MidiEvents;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct Automatable Automatable;
+typedef struct AutomationPoint AutomationPoint;
 typedef jack_nframes_t nframes_t;
 
 typedef enum TrackType
@@ -208,6 +209,20 @@ Region *
 track_get_region_at_pos (
   Track *    track,
   Position * pos);
+
+/**
+ * Returns the last region in the track, or NULL.
+ */
+Region *
+track_get_last_region (
+  Track * track);
+
+/**
+ * Returns the last region in the track, or NULL.
+ */
+AutomationPoint *
+track_get_last_automation_point (
+  Track * track);
 
 /**
  * Wrapper.

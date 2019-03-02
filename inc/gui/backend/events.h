@@ -32,8 +32,11 @@
 #include "inc/utils/stack.h"
 
 #define EVENTS_PUSH(et, arg) \
-  STACK_PUSH (EVENTS->et_stack, et); \
-  STACK_PUSH (EVENTS->arg_stack, arg);
+  if (EVENTS->et_stack && EVENTS->arg_stack) \
+    { \
+      STACK_PUSH (EVENTS->et_stack, et); \
+      STACK_PUSH (EVENTS->arg_stack, arg); \
+    }
 #define EVENTS (&ZRYTHM->events)
 
 typedef enum EventType
@@ -49,6 +52,8 @@ typedef enum EventType
   ET_AUTOMATION_LANE_ADDED,
   ET_TIME_SIGNATURE_CHANGED,
   ET_TRACK_ADDED,
+
+  ET_LAST_TIMELINE_OBJECT_CHANGED,
 
   ET_TRACK_SELECT_CHANGED,
   ET_TRACK_BOT_PANED_VISIBILITY_CHANGED,

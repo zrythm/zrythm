@@ -1091,6 +1091,9 @@ arranger_widget_setup (ArrangerWidget *   self,
     }
   gtk_container_add (GTK_CONTAINER (self),
                      GTK_WIDGET (ar_prv->bg));
+  gtk_widget_add_events (
+    GTK_WIDGET (ar_prv->bg),
+    GDK_ALL_EVENTS_MASK);
 
 
   /* add the playhead */

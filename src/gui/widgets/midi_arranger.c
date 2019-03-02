@@ -167,6 +167,25 @@ midi_arranger_widget_select_all (
     }
 }
 
+static int
+on_motion (GtkWidget *      widget,
+           GdkEventMotion * event,
+           RegionWidget *   self)
+{
+  if (event->type == GDK_LEAVE_NOTIFY)
+    MIDI_ARRANGER->hovered_note = -1;
+  else
+    MIDI_ARRANGER->hovered_note =
+      midi_arranger_widget_get_note_at_y (
+        event->y - 2); // for line boundaries
+
+  ARRANGER_WIDGET_GET_PRIVATE (MIDI_ARRANGER);
+  gtk_widget_queue_draw (
+              GTK_WIDGET (ar_prv->bg));
+
+  return FALSE;
+}
+
 /**
  * Shows context menu.
  *
@@ -206,6 +225,12 @@ midi_arranger_widget_setup (
     GTK_WIDGET (self),
     rw_prv->total_px,
     hh);
+
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+  g_signal_connect (
+    G_OBJECT(ar_prv->bg),
+    "motion-notify-event",
+    G_CALLBACK (on_motion),  self);
 }
 
 void
@@ -694,7 +719,8 @@ midi_arranger_widget_refresh_children (
 }
 
 static void
-midi_arranger_widget_class_init (MidiArrangerWidgetClass * klass)
+midi_arranger_widget_class_init (
+  MidiArrangerWidgetClass * klass)
 {
 }
 

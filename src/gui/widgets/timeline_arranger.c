@@ -1305,6 +1305,54 @@ timeline_arranger_widget_set_size ()
     hh);
 }
 
+#define COMPARE_AND_SET(pos) \
+  if ((pos)->bars > self->last_timeline_obj_bars) \
+    self->last_timeline_obj_bars = (pos)->bars;
+/**
+ * Updates last timeline objet so that timeline can be
+ * expanded/contracted accordingly.
+ */
+static int
+update_last_timeline_object ()
+{
+  TimelineArrangerWidget * self = MW_TIMELINE;
+
+  int prev = self->last_timeline_obj_bars;
+  self->last_timeline_obj_bars = 0;
+
+  COMPARE_AND_SET (&TRANSPORT->end_marker_pos);
+
+  Track * track;
+  Region * region;
+  AutomationPoint * ap;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      track = TRACKLIST->tracks[i];
+
+      region =
+        track_get_last_region (track);
+      ap =
+        track_get_last_automation_point (track);
+
+      if (region)
+        COMPARE_AND_SET (&region->end_pos);
+
+      if (ap)
+        COMPARE_AND_SET (&ap->pos);
+    }
+
+  if (prev != self->last_timeline_obj_bars &&
+      self->last_timeline_obj_bars > 127)
+    EVENTS_PUSH (ET_LAST_TIMELINE_OBJECT_CHANGED,
+                 NULL);
+
+  g_usleep (10000);
+
+  return TRUE;
+}
+
+#undef COMPARE_AND_SET
+
 /**
  * To be called once at init time.
  */
@@ -1312,6 +1360,9 @@ void
 timeline_arranger_widget_setup ()
 {
   timeline_arranger_widget_set_size ();
+
+  g_idle_add (update_last_timeline_object,
+              NULL);
 }
 
 void

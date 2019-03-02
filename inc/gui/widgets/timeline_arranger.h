@@ -67,6 +67,9 @@ typedef struct _TimelineArrangerWidget
   Position                 chord_start_poses[600]; ///< region initial start positions, for moving regions
   Position                 ap_poses[600]; ///< for moving regions
 
+  int                      last_timeline_obj_bars;
+
+
   /**
    * 1 if resizing range.
    */

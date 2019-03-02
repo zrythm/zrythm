@@ -66,9 +66,10 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
                                 &rect);
 
   /*handle horizontal drawing*/
+  int y_offset;
   for (int i = 0; i < 128; i++)
     {
-      int y_offset =
+      y_offset =
         PIANO_ROLL_LABELS->px_per_note * i;
       if (y_offset > rect.y &&
           y_offset < (rect.y + rect.height))
@@ -78,6 +79,20 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
           rect.x,
           rect.x + rect.width,
           y_offset);
+      if (i == MIDI_ARRANGER->hovered_note)
+        {
+          y_offset +=
+            PIANO_ROLL_LABELS->px_per_note;
+          cairo_set_source_rgba (
+            cr, 1, 1, 1, 0.06);
+          cairo_rectangle (
+            cr,
+            rect.x,
+            PIANO_ROLL_LABELS->total_px - y_offset,
+            rect.width,
+            PIANO_ROLL_LABELS->px_per_note);
+          cairo_fill (cr);
+        }
     }
 
   return 0;

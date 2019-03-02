@@ -59,6 +59,9 @@ typedef struct _MidiArrangerWidget
    * used in drag_update to move the objects accordingly
    */
   Position                 midi_note_start_poses[600];
+
+  /** The note currently hovering over */
+  int                      hovered_note;
 } MidiArrangerWidget;
 
 void

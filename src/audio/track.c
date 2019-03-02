@@ -22,6 +22,8 @@
 #include "actions/edit_track_action.h"
 #include "actions/undo_manager.h"
 #include "audio/audio_track.h"
+#include "audio/automation_point.h"
+#include "audio/automation_track.h"
 #include "audio/bus_track.h"
 #include "audio/channel.h"
 #include "audio/chord_track.h"
@@ -187,6 +189,96 @@ track_set_soloed (Track * track,
       edit_track_action_do (
         (EditTrackAction *) action);
     }
+}
+
+/**
+ * Returns the last region in the track, or NULL.
+ */
+Region *
+track_get_last_region (
+  Track * track)
+{
+  int i;
+  Region * last_region = NULL, * r;
+  Position tmp;
+  position_init (&tmp);
+
+  if (track->type == TRACK_TYPE_AUDIO)
+    {
+      AudioTrack * at = (AudioTrack *) track;
+      for (i = 0; i < at->num_regions; i++)
+        {
+          r = (Region *) at->regions[i];
+          if (position_compare (
+                &r->end_pos,
+                &tmp) > 0)
+            {
+              last_region = r;
+              position_set_to_pos (
+                &tmp, &r->end_pos);
+            }
+        }
+    }
+  else if (track->type == TRACK_TYPE_INSTRUMENT)
+    {
+      InstrumentTrack * at =
+        (InstrumentTrack *) track;
+      for (i = 0; i < at->num_regions; i++)
+        {
+          r = (Region *) at->regions[i];
+          if (position_compare (
+                &r->end_pos,
+                &tmp) > 0)
+            {
+              last_region = r;
+              position_set_to_pos (
+                &tmp, &r->end_pos);
+            }
+        }
+    }
+  return last_region;
+}
+
+/**
+ * Returns the last region in the track, or NULL.
+ */
+AutomationPoint *
+track_get_last_automation_point (
+  Track * track)
+{
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
+  if (!atl)
+    return NULL;
+
+  int i;
+  AutomationPoint * last_ap = NULL, * ap;
+  AutomationTrack * at;
+  Position tmp;
+  position_init (&tmp);
+
+  for (int i = 0; i < atl->num_automation_tracks;
+       i++)
+    {
+      at = atl->automation_tracks[i];
+
+      for (int j = 0; j < at->num_automation_points;
+           j++)
+        {
+          ap = at->automation_points[j];
+
+          if (position_compare (
+                &ap->pos,
+                &tmp) > 0)
+            {
+              last_ap = ap;
+              position_set_to_pos (
+                &tmp, &ap->pos);
+            }
+        }
+    }
+
+  return last_ap;
 }
 
 /**
