@@ -399,9 +399,14 @@ region_timeline_pos_to_local (
           long loop_end_ticks =
             position_to_ticks (
               &region->loop_end_pos);
+          long clip_start_ticks =
+            position_to_ticks (
+              &region->clip_start_pos);
           long loop_size =
             region_get_loop_length_in_ticks (
               region);
+
+          diff_ticks += clip_start_ticks;
 
           while (diff_ticks >= loop_end_ticks)
             {

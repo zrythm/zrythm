@@ -81,8 +81,8 @@ on_playhead_changed ()
         }
       if (TIMELINE_ARRANGER_PLAYHEAD)
         {
-          gtk_widget_queue_allocate (
-            GTK_WIDGET (MW_TIMELINE));
+          /*gtk_widget_queue_allocate (*/
+            /*GTK_WIDGET (MW_TIMELINE));*/
         }
       if (TIMELINE_RULER_PLAYHEAD)
         {
@@ -98,13 +98,13 @@ on_playhead_changed ()
             }
           if (MIDI_ARRANGER)
             {
-              gtk_widget_queue_allocate (
-                GTK_WIDGET (MIDI_ARRANGER));
+              /*gtk_widget_queue_allocate (*/
+                /*GTK_WIDGET (MIDI_ARRANGER));*/
             }
           if (MIDI_MODIFIER_ARRANGER)
             {
-              gtk_widget_queue_allocate (
-                GTK_WIDGET (MIDI_MODIFIER_ARRANGER));
+              /*gtk_widget_queue_allocate (*/
+                /*GTK_WIDGET (MIDI_MODIFIER_ARRANGER));*/
             }
         }
       if (MW_AUDIO_CLIP_EDITOR)
@@ -350,12 +350,6 @@ on_midi_note_changed (MidiNote * midi_note)
 }
 
 /**
- * In microseconds.
- */
-#define TIME_TO_UPDATE 24000
-static gint64 last_time_updated = 0;
-
-/**
  * GSourceFunc to be added using idle add.
  *
  * This will loop indefinintely.
@@ -364,12 +358,6 @@ int
 events_process ()
 {
   gint64 curr_time = g_get_monotonic_time ();
-  /*if (curr_time - last_time_updated <*/
-      /*TIME_TO_UPDATE)*/
-    /*{*/
-      /*g_usleep (24000);*/
-      /*return G_SOURCE_CONTINUE;*/
-    /*}*/
 
   EventType et;
   void * arg;
@@ -386,8 +374,6 @@ events_process ()
             Z_ARRANGER_WIDGET (MW_TIMELINE));
           break;
         case ET_TIMELINE_SELECTIONS_CHANGED:
-          timeline_arranger_widget_refresh_children (
-            MW_TIMELINE);
           break;
         case ET_CLIP_MARKER_POS_CHANGED:
           gtk_widget_queue_allocate (
@@ -409,12 +395,6 @@ events_process ()
             Z_RULER_WIDGET (MW_RULER));
           ruler_widget_refresh (
             Z_RULER_WIDGET (MIDI_RULER));
-          gtk_widget_queue_draw (
-            GTK_WIDGET (MW_TIMELINE));
-          gtk_widget_queue_draw (
-            GTK_WIDGET (MIDI_ARRANGER));
-          gtk_widget_queue_draw (
-            GTK_WIDGET (MIDI_MODIFIER_ARRANGER));
           break;
         case ET_PLAYHEAD_POS_CHANGED:
           g_idle_add (on_playhead_changed,
@@ -424,14 +404,10 @@ events_process ()
           on_clip_editor_region_changed ();
           break;
         case ET_AUTOMATION_LANE_AUTOMATION_TRACK_CHANGED:
-          arranger_widget_refresh (
-            Z_ARRANGER_WIDGET (MW_TIMELINE));
           break;
         case ET_TRACK_BOT_PANED_VISIBILITY_CHANGED:
           tracklist_widget_soft_refresh (
             MW_TRACKLIST);
-          arranger_widget_refresh (
-            Z_ARRANGER_WIDGET (MW_TIMELINE));
           break;
         case ET_TRACK_ADDED:
           on_track_added ((Track *) arg);
@@ -445,13 +421,6 @@ events_process ()
         case ET_TIMELINE_VIEWPORT_CHANGED:
           timeline_minimap_widget_refresh (
             MW_TIMELINE_MINIMAP);
-          arranger_widget_refresh (
-            Z_ARRANGER_WIDGET (MW_TIMELINE));
-          arranger_widget_refresh (
-            Z_ARRANGER_WIDGET (MIDI_ARRANGER));
-          arranger_widget_refresh (
-            Z_ARRANGER_WIDGET (
-              MIDI_MODIFIER_ARRANGER));
           ruler_widget_refresh (
             Z_RULER_WIDGET (MW_RULER));
           ruler_widget_refresh (
@@ -485,7 +454,6 @@ events_process ()
         }
     }
 
-  last_time_updated = curr_time;
   g_usleep (2000);
 
   return TRUE;

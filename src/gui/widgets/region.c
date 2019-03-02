@@ -65,7 +65,9 @@ draw_text (cairo_t *cr, char * name)
 }
 
 static gboolean
-draw_cb (RegionWidget * self, cairo_t *cr, gpointer data)
+region_draw_cb (RegionWidget * self,
+                cairo_t *cr,
+                gpointer data)
 {
   guint width, height;
   GtkStyleContext *context;
@@ -210,7 +212,7 @@ region_widget_setup (RegionWidget * self,
   /* connect signals */
   g_signal_connect (
     G_OBJECT (rw_prv->drawing_area), "draw",
-    G_CALLBACK (draw_cb), self);
+    G_CALLBACK (region_draw_cb), self);
   g_signal_connect (
     G_OBJECT (rw_prv->drawing_area),
     "enter-notify-event",

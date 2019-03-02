@@ -31,7 +31,7 @@ G_DEFINE_TYPE (RulerPlayheadWidget,
                GTK_TYPE_DRAWING_AREA)
 
 static gboolean
-draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
+ruler_playhead_draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
 {
   GtkStyleContext *context;
 
@@ -71,9 +71,9 @@ static void
 ruler_playhead_widget_init (RulerPlayheadWidget * self)
 {
   /* connect signal */
-  g_signal_connect (GTK_WIDGET (self),
-                    "draw",
-                    G_CALLBACK (draw_cb), NULL);
+  g_signal_connect (
+    GTK_WIDGET (self), "draw",
+    G_CALLBACK (ruler_playhead_draw_cb), NULL);
 
   /* show */
   gtk_widget_set_visible (GTK_WIDGET (self),

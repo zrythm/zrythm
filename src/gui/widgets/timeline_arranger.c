@@ -133,6 +133,8 @@ timeline_arranger_widget_set_allocation (
       /*Automatable * a = ap->at->automatable;*/
 
       gint wx, wy;
+      if (!ap->at->al)
+        return;
       gtk_widget_translate_coordinates(
                 GTK_WIDGET (ap->at->al->widget),
                 GTK_WIDGET (self),
@@ -158,6 +160,8 @@ timeline_arranger_widget_set_allocation (
       /*Automatable * a = ap->at->automatable;*/
 
       gint wx, wy;
+      if (!ac->at->al)
+        return;
       gtk_widget_translate_coordinates(
                 GTK_WIDGET (ac->at->al->widget),
                 GTK_WIDGET (self),

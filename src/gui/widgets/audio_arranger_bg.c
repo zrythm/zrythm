@@ -66,13 +66,17 @@ draw_audio_clip (GtkWidget * self,
     gtk_widget_get_allocated_width (
       GTK_WIDGET (self));
 
+  long frame_interval =
+    ui_px_to_frames_audio_clip_editor (ar->channels, 0);
+
   long prev_frames = 0;
   for (double i = SPACE_BEFORE_START_D;
        i < (double) width; i+= 0.6)
     {
       long curr_frames =
-        ui_px_to_frames_audio_clip_editor (
-          i * 2.0, 1);
+        i * frame_interval;
+        /*ui_px_to_frames_audio_clip_editor (*/
+          /*i * 2.0, 1);*/
       /*g_message ("curr frames %ld, total frames %ld",*/
                  /*curr_frames,*/
                  /*ar->buff_size);*/
@@ -104,7 +108,8 @@ draw_audio_clip (GtkWidget * self,
 }
 
 static gboolean
-draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
+audio_arranger_bg_draw_cb (
+  GtkWidget *widget, cairo_t *cr, gpointer data)
 {
   AudioArrangerBgWidget * self =
     Z_AUDIO_ARRANGER_BG_WIDGET (widget);
@@ -112,6 +117,10 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   GdkRectangle rect;
   gdk_cairo_get_clip_rectangle (cr,
                                 &rect);
+
+  /*g_message ("rect %d %d %d %d",*/
+             /*rect.x, rect.y,*/
+             /*rect.width, rect.height);*/
 
   /*GtkStyleContext *context;*/
   /*context =*/
@@ -137,8 +146,9 @@ audio_arranger_bg_widget_new (RulerWidget *    ruler,
   ab_prv->ruler = ruler;
   ab_prv->arranger = arranger;
 
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), NULL);
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (audio_arranger_bg_draw_cb), NULL);
 
   return self;
 }

@@ -1036,7 +1036,6 @@ tick_cb (GtkWidget *widget,
 {
   if (gtk_widget_get_visible (widget))
     {
-      gtk_widget_queue_draw (widget);
       gtk_widget_queue_allocate (widget);
     }
 
@@ -1134,9 +1133,9 @@ arranger_widget_setup (ArrangerWidget *   self,
     G_OBJECT (self), "key-release-event",
     G_CALLBACK (on_key_action), self);
 
-  /*gtk_widget_add_tick_callback (*/
-    /*GTK_WIDGET (self), tick_cb,*/
-    /*NULL, NULL);*/
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self), tick_cb,
+    NULL, NULL);
 }
 
 /**

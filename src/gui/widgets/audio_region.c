@@ -36,7 +36,7 @@ G_DEFINE_TYPE (AudioRegionWidget,
                REGION_WIDGET_TYPE)
 
 static gboolean
-draw_cb (AudioRegionWidget * self,
+audio_region_draw_cb (AudioRegionWidget * self,
          cairo_t *cr, gpointer data)
 {
   REGION_WIDGET_GET_PRIVATE (data);
@@ -90,11 +90,11 @@ draw_cb (AudioRegionWidget * self,
     ui_pos_to_px_timeline (&r->loop_start_pos, 0);
   Position tmp;
   long frame_interval =
-    ui_px_to_frames_timeline (0.6 * ar->channels, 0);
+    ui_px_to_frames_timeline (ar->channels, 0);
   for (double i = 0.0; i < (double) width; i += 0.6)
     {
       long curr_frames =
-        ui_px_to_frames_timeline (i * ar->channels, 0);
+        i * frame_interval;
       /*if (curr_frames < loop_start_frames)*/
         curr_frames += clip_start_frames;
       /*else*/
@@ -190,7 +190,7 @@ audio_region_widget_new (AudioRegion * audio_region)
   /* connect signals */
   g_signal_connect (
     G_OBJECT (self), "draw",
-    G_CALLBACK (draw_cb), self);
+    G_CALLBACK (audio_region_draw_cb), self);
   g_signal_connect (
     G_OBJECT (self), "enter-notify-event",
     G_CALLBACK (on_motion),  self);

@@ -75,6 +75,9 @@ timeline_bg_draw_cb (
       /* draw line below widget */
       TrackWidget * tw = track->widget;
       tw_widget = GTK_WIDGET (tw);
+      if (!GTK_IS_WIDGET (tw_widget))
+        continue;
+
       gtk_widget_translate_coordinates(
                 tw_widget,
                 GTK_WIDGET (MW_TRACKLIST),
