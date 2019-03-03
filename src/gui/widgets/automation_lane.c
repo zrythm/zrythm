@@ -403,26 +403,22 @@ automation_lane_widget_get_fvalue_at_y (
             _start_y,
             &wx,
             &valy);
-  /*int miny = allocation.height;*/
 
   /* get ratio from widget */
   int widget_size = allocation.height;
-  /*int widget_value = widget_size - (_start_y - maxy);*/
   int widget_value = widget_size - valy;
-  /*g_message ("widget_size %d value %d", widget_size, widget_value);*/
-  float widget_ratio = (float) widget_value / widget_size;
-  /*g_message ("widget_ratio %f", widget_ratio);*/
-
-  /*g_message ("getting f value at y, automatable %s",*/
-             /*a->label);*/
+  float widget_ratio = CLAMP ((float) widget_value / widget_size, 0.0, 1.0);
   float automatable_value =
     automatable_normalized_val_to_real (
       a, widget_ratio);
-  g_message ("automatable value %f", automatable_value);
 
   return automatable_value;
 }
 
+/**
+ * Returns the y pixels of the automation point in
+ * the automation lane.
+ */
 double
 automation_lane_widget_get_y (
   AutomationLaneWidget * self,

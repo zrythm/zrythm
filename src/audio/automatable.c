@@ -214,8 +214,9 @@ automatable_get_maxf (Automatable * a)
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
       return lilv_node_as_float (a->control->max);
       break;
-    case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
     case AUTOMATABLE_TYPE_CHANNEL_FADER:
+      return 2.f;
+    case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
     case AUTOMATABLE_TYPE_CHANNEL_MUTE:
     case AUTOMATABLE_TYPE_CHANNEL_PAN:
       return 1.f;
@@ -317,10 +318,6 @@ automatable_normalized_val_to_real (
             {
               real_val = minf + val * (maxf - minf);
             }
-          /*g_message ("real val %f", real_val);*/
-          /*real_val /= range;*/
-          /*g_message ("real val / range = %f",*/
-                     /*real_val);*/
           return real_val;
         }
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
@@ -342,14 +339,50 @@ automatable_normalized_val_to_real (
  */
 float
 automatable_real_val_to_normalized (
-  Automatable * self,
+  Automatable * a,
   float         real_val)
 {
-  float fmax = automatable_get_maxf (self);
-  float frange = fmax - automatable_get_minf (self);
+  float fmax = automatable_get_maxf (a);
+  float fmin = automatable_get_minf (a);
+  float frange = fmax - fmin;
 
-  /* ratio of current value in the range */
-  return (frange - (fmax - real_val)) / frange;
+  Plugin * plugin;
+  switch (a->type)
+    {
+    case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
+      plugin = a->port->owner_pl;
+      if (plugin->descr->protocol == PROT_LV2)
+        {
+          Lv2ControlID * ctrl = a->control;
+          float normalized_val;
+          if (ctrl->is_logarithmic)
+            {
+              /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
+              normalized_val =
+                log (real_val / fmin) /
+                (fmax / fmin);
+            }
+          else if (ctrl->is_toggle)
+            {
+              normalized_val = real_val;
+            }
+          else
+            {
+              normalized_val =
+                (frange - (fmax - real_val)) / frange;
+            }
+          return normalized_val;
+        }
+    case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
+      return real_val;
+    case AUTOMATABLE_TYPE_CHANNEL_FADER:
+      return math_get_fader_val_from_amp (real_val);
+    case AUTOMATABLE_TYPE_CHANNEL_MUTE:
+      return real_val;
+    case AUTOMATABLE_TYPE_CHANNEL_PAN:
+      return real_val;
+    }
+  return -1.f;
 }
 
 /**
@@ -392,10 +425,6 @@ automatable_set_val_from_normalized (
             {
               real_val = minf + val * (maxf - minf);
             }
-          /*g_message ("real val %f", real_val);*/
-          /*real_val /= range;*/
-          /*g_message ("real val / range = %f",*/
-                     /*real_val);*/
           ctrl->plugin->
             ports[ctrl->index].control = real_val;
         }

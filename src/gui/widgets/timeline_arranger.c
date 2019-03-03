@@ -1193,7 +1193,8 @@ timeline_arranger_widget_move_items_x (
   long                     ticks_diff)
 {
   /* update region positions */
-  for (int i = 0; i < TIMELINE_SELECTIONS->num_regions; i++)
+  for (int i = 0; i <
+       TIMELINE_SELECTIONS->num_regions; i++)
     {
       Region * r = TIMELINE_SELECTIONS->regions[i];
       Position * prev_start_pos = &self->region_start_poses[i];
@@ -1209,7 +1210,8 @@ timeline_arranger_widget_move_items_x (
     }
 
   /* update chord positions */
-  for (int i = 0; i < TIMELINE_SELECTIONS->num_chords; i++)
+  for (int i = 0;
+       i < TIMELINE_SELECTIONS->num_chords; i++)
     {
       Chord * r = TIMELINE_SELECTIONS->chords[i];
       Position * prev_start_pos =
@@ -1470,20 +1472,19 @@ timeline_arranger_widget_move_items_y (
           /*int diff = position_to_frames (&region->start_pos) -*/
             /*position_to_frames (&self->tl_start_region->start_pos);*/
           /*position_add_frames (&region_pos, diff);*/
+
           int this_y =
-            automation_lane_widget_get_y (
-              ap->at->al->widget,
-              ap->widget);
+            automation_point_get_y_in_px (
+              ap);
           int start_ap_y =
-            automation_lane_widget_get_y (
-              self->start_ap->at->al->widget,
-              self->start_ap->widget);
+            automation_point_get_y_in_px (
+              self->start_ap);
           int diff = this_y - start_ap_y;
 
           float fval =
             automation_lane_widget_get_fvalue_at_y (
               ap->at->al->widget,
-              ar_prv->start_y + offset_y + diff);
+              ar_prv->start_y + offset_y);
           automation_point_update_fvalue (ap, fval);
         }
     }

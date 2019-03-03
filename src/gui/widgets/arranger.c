@@ -1034,10 +1034,18 @@ tick_cb (GtkWidget *widget,
          GdkFrameClock *frame_clock,
          gpointer user_data)
 {
-  if (gtk_widget_get_visible (widget))
+  ARRANGER_WIDGET_GET_PRIVATE (widget);
+
+  gint64 frame_time =
+    gdk_frame_clock_get_frame_time (frame_clock);
+
+  if (gtk_widget_get_visible (widget) &&
+      (frame_time - ar_prv->last_frame_time) >
+        15000)
     {
       gtk_widget_queue_allocate (widget);
     }
+  ar_prv->last_frame_time = frame_time;
 
   return G_SOURCE_CONTINUE;
 }

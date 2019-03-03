@@ -83,6 +83,8 @@ typedef struct
    * If shift was held down during the press.
    */
   int                      shift_held;
+
+  gint64                   last_frame_time;
 } ArrangerWidgetPrivate;
 
 typedef struct _ArrangerWidgetClass
