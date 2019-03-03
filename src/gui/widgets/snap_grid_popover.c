@@ -1,7 +1,5 @@
 /*
- * gui/widgets/snap_grid_popover.c - Snap & grid_popover selection widget
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *

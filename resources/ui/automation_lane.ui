@@ -26,9 +26,8 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <child>
-      <object class="GtkComboBox" id="selector">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+      <object class="AutomatableSelectorButtonWidget" id="selector">
+        <property name="visible">1</property>
       </object>
       <packing>
         <property name="left_attach">0</property>

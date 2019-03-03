@@ -17,39 +17,42 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_SNAP_GRID_H__
-#define __GUI_WIDGETS_SNAP_GRID_H__
+#ifndef __GUI_WIDGETS_AUTOMATABLE_SELECTOR_BUTTON_H__
+#define __GUI_WIDGETS_AUTOMATABLE_SELECTOR_BUTTON_H__
 
 #include <gtk/gtk.h>
 
-#define SNAP_GRID_WIDGET_TYPE \
-  (snap_grid_widget_get_type ())
-G_DECLARE_FINAL_TYPE (SnapGridWidget,
-                      snap_grid_widget,
-                      Z,
-                      SNAP_GRID_WIDGET,
-                      GtkMenuButton)
+#define AUTOMATABLE_SELECTOR_BUTTON_WIDGET_TYPE \
+  (automatable_selector_button_widget_get_type ())
+G_DECLARE_FINAL_TYPE (
+  AutomatableSelectorButtonWidget,
+  automatable_selector_button_widget,
+  Z, AUTOMATABLE_SELECTOR_BUTTON_WIDGET,
+  GtkMenuButton)
 
-typedef struct _SnapGridPopoverWidget SnapGridPopoverWidget;
-typedef struct SnapGrid SnapGrid;
+typedef struct _AutomatableSelectorPopoverWidget AutomatableSelectorPopoverWidget;
+typedef struct Automatable Automatable;
+typedef struct _AutomationLaneWidget
+  AutomationLaneWidget;
 
-typedef struct _SnapGridWidget
+typedef struct _AutomatableSelectorButtonWidget
 {
   GtkMenuButton           parent_instance;
   GtkBox *                box; ///< the box
   GtkImage *              img; ///< img to show next to the label
   GtkLabel                * label; ///< label to show
-  SnapGridPopoverWidget   * popover; ///< the popover to show
+  AutomatableSelectorPopoverWidget   * popover; ///< the popover to show
   GtkBox                  * content; ///< popover content holder
-  SnapGrid                * snap_grid;
-} SnapGridWidget;
+  AutomationLaneWidget *   owner;
+} AutomatableSelectorButtonWidget;
 
 void
-snap_grid_widget_setup (SnapGridWidget * self,
-                        SnapGrid * snap_grid);
+automatable_selector_button_widget_setup (
+  AutomatableSelectorButtonWidget * self,
+  AutomationLaneWidget *            owner);
 
 void
-snap_grid_widget_refresh (
-  SnapGridWidget * self);
+automatable_selector_button_widget_refresh (
+  AutomatableSelectorButtonWidget * self);
 
 #endif

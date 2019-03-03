@@ -17,51 +17,55 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/snap_grid.h"
-#include "gui/widgets/snap_grid.h"
-#include "gui/widgets/snap_grid_popover.h"
+#include "audio/automatable.h"
+#include "audio/automation_lane.h"
+#include "audio/automation_track.h"
+#include "gui/widgets/automatable_selector_button.h"
+#include "gui/widgets/automatable_selector_popover.h"
+#include "gui/widgets/automation_lane.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (SnapGridWidget,
-               snap_grid_widget,
+G_DEFINE_TYPE (AutomatableSelectorButtonWidget,
+               automatable_selector_button_widget,
                GTK_TYPE_MENU_BUTTON)
 
 static void
 on_clicked (GtkButton * button,
-            gpointer  user_data)
+            AutomatableSelectorButtonWidget * self)
 {
-  SnapGridWidget * self = Z_SNAP_GRID_WIDGET (user_data);
-  gtk_widget_show_all (GTK_WIDGET (self->popover));
+  gtk_widget_set_visible (GTK_WIDGET (self->popover),
+                          1);
 }
 
 static void
-set_label (SnapGridWidget * self)
+set_label (AutomatableSelectorButtonWidget * self)
 {
-  char * string =
-    snap_grid_stringize (
-      self->snap_grid->note_length,
-      self->snap_grid->note_type);
-  gtk_label_set_text (self->label, string);
-  g_free (string);
+  if (self->owner->al->at->automatable)
+    {
+      gtk_label_set_text (
+        self->label,
+        self->owner->al->at->automatable->label);
+    }
 }
 
 void
-snap_grid_widget_refresh (
-  SnapGridWidget * self)
+automatable_selector_button_widget_refresh (
+  AutomatableSelectorButtonWidget * self)
 {
   set_label (self);
 }
 
 void
-snap_grid_widget_setup (SnapGridWidget * self,
-                        SnapGrid * snap_grid)
+automatable_selector_button_widget_setup (
+  AutomatableSelectorButtonWidget * self,
+  AutomationLaneWidget *            owner)
 {
-  self->snap_grid = snap_grid;
+  self->owner = owner;
   self->popover =
-    snap_grid_popover_widget_new (self);
+    automatable_selector_popover_widget_new (self);
   gtk_menu_button_set_popover (
     GTK_MENU_BUTTON (self),
     GTK_WIDGET (self->popover));
@@ -70,26 +74,31 @@ snap_grid_widget_setup (SnapGridWidget * self,
 }
 
 static void
-snap_grid_widget_class_init (SnapGridWidgetClass * klass)
+automatable_selector_button_widget_class_init (AutomatableSelectorButtonWidgetClass * klass)
 {
 }
 
 static void
-snap_grid_widget_init (SnapGridWidget * self)
+automatable_selector_button_widget_init (
+  AutomatableSelectorButtonWidget * self)
 {
-  self->box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+  self->box =
+    GTK_BOX (gtk_box_new (
+              GTK_ORIENTATION_HORIZONTAL, 0));
   self->img = GTK_IMAGE (
-    resources_get_icon (ICON_TYPE_GNOME_BUILDER,
-                        "completion-snippet-symbolic-light.svg"));
-  self->label = GTK_LABEL (gtk_label_new ("Snap/Grid"));
-  gtk_widget_set_tooltip_text (GTK_WIDGET (self->box),
-                               "Snap/Grid options");
+    gtk_image_new_from_icon_name (
+      "node-type-cusp", GTK_ICON_SIZE_BUTTON));
+  self->label =
+    GTK_LABEL (gtk_label_new ("Automation"));
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self->box),
+    "Select control to automate");
   gtk_box_pack_start (self->box,
                       GTK_WIDGET (self->img),
                       Z_GTK_NO_EXPAND,
                       Z_GTK_NO_FILL,
                       1);
-  gtk_box_pack_end (self->box,
+  gtk_box_pack_start (self->box,
                     GTK_WIDGET (self->label),
                     Z_GTK_NO_EXPAND,
                     Z_GTK_NO_FILL,
@@ -103,4 +112,5 @@ snap_grid_widget_init (SnapGridWidget * self)
 
   gtk_widget_show_all (GTK_WIDGET (self));
 }
+
 

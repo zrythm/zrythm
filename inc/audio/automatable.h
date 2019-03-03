@@ -159,6 +159,15 @@ const float
 automatable_get_sizef (Automatable * automatable);
 
 /**
+ * Returns the type of its value (float, bool, etc.)
+ * as a string.
+ *
+ * Must be free'd.
+ */
+char *
+automatable_stringize_value_type (Automatable * a);
+
+/**
  * Converts real value (eg. -10.0 to 100.0) to
  * normalized value (0.0 to 1.0).
  */

@@ -35,11 +35,13 @@ typedef struct _DigitalMeterWidget DigitalMeterWidget;
 typedef struct Track Track;
 typedef struct _AutomationPointWidget AutomationPointWidget;
 typedef struct AutomationLane AutomationLane;
+typedef struct _AutomatableSelectorButtonWidget
+  AutomatableSelectorButtonWidget;
 
 typedef struct _AutomationLaneWidget
 {
   GtkGrid                 parent_instance;
-  GtkComboBox *           selector;
+  AutomatableSelectorButtonWidget * selector;
   GtkTreeModel *          selector_model;
   GtkBox *                value_box;
   DigitalMeterWidget *    value;

@@ -212,7 +212,6 @@ static GtkTreeModel *
 create_model_for_types ()
 {
   GtkListStore *list_store;
-  /*GtkTreePath *path;*/
   GtkTreeIter iter;
   gint i;
 

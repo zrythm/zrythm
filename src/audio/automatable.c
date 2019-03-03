@@ -94,7 +94,8 @@ automatable_create_lv2_control (Plugin *       plugin,
   automatable->slot_index =
     channel_get_plugin_index (plugin->channel,
                               plugin);
-  automatable->label = g_strdup (automatable->port->label);
+  automatable->label =
+    g_strdup (lv2_control_get_label (control));
 
   return automatable;
 }
@@ -138,6 +139,24 @@ automatable_is_bool (Automatable * a)
     }
   g_assert_not_reached ();
   return -1;
+}
+
+/**
+ * Returns the type of its value (float, bool, etc.)
+ * as a string.
+ *
+ * Must be free'd.
+ */
+char *
+automatable_stringize_value_type (Automatable * a)
+{
+  char * val_type = NULL;
+  if (automatable_is_float (a))
+    val_type = g_strdup ("Float");
+  else if (automatable_is_bool (a))
+    val_type = g_strdup ("Boolean");
+
+  return val_type;
 }
 
 int

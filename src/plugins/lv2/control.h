@@ -122,4 +122,10 @@ lv2_set_control(const Lv2ControlID* control,
                  LV2_URID         type,
                  const void*      body);
 
+/**
+ * Returns the human readable control label.
+ */
+const char *
+lv2_control_get_label (const Lv2ControlID * control);
+
 #endif

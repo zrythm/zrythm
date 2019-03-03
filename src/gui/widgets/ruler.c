@@ -461,7 +461,7 @@ drag_update (GtkGestureDrag * gesture,
           if (!rw_prv->shift_held)
             position_snap_simple (
               &CLIP_EDITOR->region->loop_start_pos,
-              SNAP_GRID_TIMELINE);
+              SNAP_GRID_MIDI);
           transport_update_position_frames ();
         }
       else if (rw_prv->target == RW_TARGET_LOOP_END)
@@ -473,7 +473,7 @@ drag_update (GtkGestureDrag * gesture,
           if (!rw_prv->shift_held)
             position_snap_simple (
               &CLIP_EDITOR->region->loop_end_pos,
-              SNAP_GRID_TIMELINE);
+              SNAP_GRID_MIDI);
           transport_update_position_frames ();
         }
       else if (rw_prv->target == RW_TARGET_CLIP_START)
@@ -485,7 +485,7 @@ drag_update (GtkGestureDrag * gesture,
           if (!rw_prv->shift_held)
             position_snap_simple (
               &CLIP_EDITOR->region->clip_start_pos,
-              SNAP_GRID_TIMELINE);
+              SNAP_GRID_MIDI);
           transport_update_position_frames ();
         }
 
@@ -505,7 +505,7 @@ drag_update (GtkGestureDrag * gesture,
           if (!rw_prv->shift_held)
             position_snap_simple (
               &CLIP_EDITOR->region->loop_start_pos,
-              SNAP_GRID_TIMELINE);
+              SNAP_GRID_MIDI);
           transport_update_position_frames ();
         }
       else if (rw_prv->target == RW_TARGET_LOOP_END)
@@ -517,7 +517,7 @@ drag_update (GtkGestureDrag * gesture,
           if (!rw_prv->shift_held)
             position_snap_simple (
               &CLIP_EDITOR->region->loop_end_pos,
-              SNAP_GRID_TIMELINE);
+              SNAP_GRID_MIDI);
           transport_update_position_frames ();
         }
       else if (rw_prv->target == RW_TARGET_CLIP_START)
@@ -529,7 +529,7 @@ drag_update (GtkGestureDrag * gesture,
           if (!rw_prv->shift_held)
             position_snap_simple (
               &CLIP_EDITOR->region->clip_start_pos,
-              SNAP_GRID_TIMELINE);
+              SNAP_GRID_MIDI);
           transport_update_position_frames ();
         }
 

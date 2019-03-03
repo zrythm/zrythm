@@ -29,6 +29,7 @@
 #include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/automatable_selector_button.h"
 #include "gui/widgets/automation_lane.h"
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/automation_point.h"
@@ -135,198 +136,200 @@ on_add_lane_clicked (
 /**
  * Sets selected automation lane on combo box.
  */
-static void
-set_active_al (
-  AutomationLaneWidget * self,
-  GtkTreeModel *         model,
-  AutomationLane *       al)
-{
-  GtkTreeIter iter;
-  GtkTreePath * path;
-  Automatable * a = al->at->automatable;
-  switch (a->type)
-    {
-    case AUTOMATABLE_TYPE_CHANNEL_FADER:
-      path =
-        gtk_tree_path_new_from_indices (
-          CHANNEL_FADER_INDEX,
-          -1);
-      break;
-    case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
-      path =
-        gtk_tree_path_new_from_indices (
-          a->slot_index + PLUGIN_START_INDEX,
-          a->control->index + PLUGIN_CONTROL_START_INDEX,
-          -1);
-      break;
-    case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
-      path =
-        gtk_tree_path_new_from_indices (
-          a->slot_index + PLUGIN_START_INDEX,
-          PLUGIN_ENABLED_INDEX,
-          -1);
-      break;
-    case AUTOMATABLE_TYPE_CHANNEL_MUTE:
-      path =
-        gtk_tree_path_new_from_indices (
-          CHANNEL_MUTE_INDEX,
-          -1);
-      break;
-    case AUTOMATABLE_TYPE_CHANNEL_PAN:
-      path =
-        gtk_tree_path_new_from_indices (
-          CHANNEL_PAN_INDEX,
-          -1);
-      break;
-    }
+/*static void*/
+/*set_active_al (*/
+  /*AutomationLaneWidget * self,*/
+  /*GtkTreeModel *         model,*/
+  /*AutomationLane *       al)*/
+/*{*/
+  /*GtkTreeIter iter;*/
+  /*GtkTreePath * path;*/
+  /*Automatable * a = al->at->automatable;*/
+  /*switch (a->type)*/
+    /*{*/
+    /*case AUTOMATABLE_TYPE_CHANNEL_FADER:*/
+      /*path =*/
+        /*gtk_tree_path_new_from_indices (*/
+          /*CHANNEL_FADER_INDEX,*/
+          /*-1);*/
+      /*break;*/
+    /*case AUTOMATABLE_TYPE_PLUGIN_CONTROL:*/
+      /*path =*/
+        /*gtk_tree_path_new_from_indices (*/
+          /*a->slot_index + PLUGIN_START_INDEX,*/
+          /*a->control->index + PLUGIN_CONTROL_START_INDEX,*/
+          /*-1);*/
+      /*break;*/
+    /*case AUTOMATABLE_TYPE_PLUGIN_ENABLED:*/
+      /*path =*/
+        /*gtk_tree_path_new_from_indices (*/
+          /*a->slot_index + PLUGIN_START_INDEX,*/
+          /*PLUGIN_ENABLED_INDEX,*/
+          /*-1);*/
+      /*break;*/
+    /*case AUTOMATABLE_TYPE_CHANNEL_MUTE:*/
+      /*path =*/
+        /*gtk_tree_path_new_from_indices (*/
+          /*CHANNEL_MUTE_INDEX,*/
+          /*-1);*/
+      /*break;*/
+    /*case AUTOMATABLE_TYPE_CHANNEL_PAN:*/
+      /*path =*/
+        /*gtk_tree_path_new_from_indices (*/
+          /*CHANNEL_PAN_INDEX,*/
+          /*-1);*/
+      /*break;*/
+    /*}*/
 
-  gtk_tree_model_get_iter (model, &iter, path);
-  gtk_tree_path_free (path);
-  gtk_combo_box_set_active_iter (
-    GTK_COMBO_BOX (self->selector),
-    &iter);
+  /*gtk_tree_model_get_iter (model, &iter, path);*/
+  /*gtk_tree_path_free (path);*/
+  /*gtk_combo_box_set_active_iter (*/
+    /*GTK_COMBO_BOX (self->selector),*/
+    /*&iter);*/
 
-}
+/*}*/
 
-static void
-on_at_selector_changed (
-  GtkComboBox *          widget,
-  AutomationLaneWidget * self)
-{
-  GtkTreeIter iter;
-  gtk_combo_box_get_active_iter (widget, &iter);
-  GtkTreeModel * model =
-    gtk_combo_box_get_model (widget);
-  GValue value = G_VALUE_INIT;
-  gtk_tree_model_get_value (
-    model, &iter,
-    COLUMN_AUTOMATABLE, &value);
-  Automatable * a = g_value_get_pointer (&value);
-  Track * track = self->al->at->track;
+/*static void*/
+/*on_at_selector_changed (*/
+  /*GtkComboBox *          widget,*/
+  /*AutomationLaneWidget * self)*/
+/*{*/
+  /*GtkTreeIter iter;*/
+  /*gtk_combo_box_get_active_iter (widget, &iter);*/
+  /*GtkTreeModel * model =*/
+    /*gtk_combo_box_get_model (widget);*/
+  /*GValue value = G_VALUE_INIT;*/
+  /*gtk_tree_model_get_value (*/
+    /*model, &iter,*/
+    /*COLUMN_AUTOMATABLE, &value);*/
+  /*Automatable * a = g_value_get_pointer (&value);*/
+  /*Track * track = self->al->at->track;*/
 
-  /* get selected automation track */
-  AutomationTrack * at =
-    automation_tracklist_get_at_from_automatable (
-      track_get_automation_tracklist (track),
-      a);
+  /*[> get selected automation track <]*/
+  /*AutomationTrack * at =*/
+    /*automation_tracklist_get_at_from_automatable (*/
+      /*track_get_automation_tracklist (track),*/
+      /*a);*/
 
   /* if this automation track is not already
    * in a visible lane */
-  if (!at->al || !at->al->visible)
-    automation_lane_update_automation_track (
-      self->al,
-      at);
-  else
-    {
-      set_active_al (self,
-                     self->selector_model,
-                     self->al);
-      ui_show_notification (
-        "Selected automatable already has an "
-        "automation lane");
-    }
+  /*if (!at->al || !at->al->visible)*/
+    /*automation_lane_update_automation_track (*/
+      /*self->al,*/
+      /*at);*/
+  /*else*/
+    /*{*/
+      /*set_active_al (self,*/
+                     /*self->selector_model,*/
+                     /*self->al);*/
+      /*ui_show_notification (*/
+        /*"Selected automatable already has an "*/
+        /*"automation lane");*/
+    /*}*/
 
-}
+/*}*/
 
-static GtkTreeModel *
-create_automatables_store (Track * track)
-{
-  GtkTreeIter iter, iter2;
-  GtkTreeStore *store;
-  /*gint i;*/
+/*static GtkTreeModel **/
+/*create_automatables_store (Track * track)*/
+/*{*/
+  /*GtkTreeIter iter, iter2;*/
+  /*GtkTreeStore *store;*/
+  /*[>gint i;<]*/
 
-  store = gtk_tree_store_new (NUM_COLUMNS,
-                              G_TYPE_STRING,
-                              G_TYPE_POINTER);
+  /*store = gtk_tree_store_new (NUM_COLUMNS,*/
+                              /*G_TYPE_STRING,*/
+                              /*G_TYPE_POINTER);*/
 
-  ChannelTrack * ct = (ChannelTrack *) track;
-  for (int i = 0; i < ct->channel->num_automatables; i++)
-    {
-      Automatable * a = ct->channel->automatables[i];
-      gtk_tree_store_append (store, &iter, NULL);
-      gtk_tree_store_set (store, &iter,
-                          COLUMN_LABEL, a->label,
-                          COLUMN_AUTOMATABLE, a,
-                          -1);
-    }
+  /*ChannelTrack * ct = (ChannelTrack *) track;*/
+  /*for (int i = 0; i < ct->channel->num_automatables; i++)*/
+    /*{*/
+      /*Automatable * a = ct->channel->automatables[i];*/
+      /*gtk_tree_store_append (store, &iter, NULL);*/
+      /*gtk_tree_store_set (store, &iter,*/
+                          /*COLUMN_LABEL, a->label,*/
+                          /*COLUMN_AUTOMATABLE, a,*/
+                          /*-1);*/
+    /*}*/
 
-  for (int i = 0; i < STRIP_SIZE; i++)
-    {
-      Plugin * plugin = ct->channel->plugins[i];
+  /*for (int i = 0; i < STRIP_SIZE; i++)*/
+    /*{*/
+      /*Plugin * plugin = ct->channel->plugins[i];*/
 
-      if (plugin)
-        {
-          /* add category: <slot>:<plugin name> */
-          gtk_tree_store_append (store, &iter, NULL);
-          char * label =
-            g_strdup_printf (
-              "%d:%s",
-              i,
-              plugin->descr->name);
-          gtk_tree_store_set (store, &iter,
-                              COLUMN_LABEL, label,
-                              -1);
-          g_free (label);
-          for (int j = 0; j < plugin->num_automatables; j++)
-            {
-              Automatable * a = plugin->automatables[j];
+      /*if (plugin)*/
+        /*{*/
+          /*[> add category: <slot>:<plugin name> <]*/
+          /*gtk_tree_store_append (store, &iter, NULL);*/
+          /*char * label =*/
+            /*g_strdup_printf (*/
+              /*"%d:%s",*/
+              /*i,*/
+              /*plugin->descr->name);*/
+          /*gtk_tree_store_set (store, &iter,*/
+                              /*COLUMN_LABEL, label,*/
+                              /*-1);*/
+          /*g_free (label);*/
+          /*for (int j = 0; j < plugin->num_automatables; j++)*/
+            /*{*/
+              /*Automatable * a = plugin->automatables[j];*/
 
-              /* add automatable */
-              gtk_tree_store_append (
-                store, &iter2, &iter);
-              gtk_tree_store_set (
-                store, &iter2,
-                COLUMN_LABEL, a->label,
-                COLUMN_AUTOMATABLE, a,
-                -1);
-            }
-        }
-    }
+              /*[> add automatable <]*/
+              /*gtk_tree_store_append (*/
+                /*store, &iter2, &iter);*/
+              /*gtk_tree_store_set (*/
+                /*store, &iter2,*/
+                /*COLUMN_LABEL, a->label,*/
+                /*COLUMN_AUTOMATABLE, a,*/
+                /*-1);*/
+            /*}*/
+        /*}*/
+    /*}*/
 
-  return GTK_TREE_MODEL (store);
-}
+  /*return GTK_TREE_MODEL (store);*/
+/*}*/
 
 static void
 setup_combo_box (AutomationLaneWidget * self)
 {
-  self->selector_model =
-    create_automatables_store (self->al->at->track);
-  gtk_combo_box_set_model (self->selector,
-                           self->selector_model);
-  gtk_cell_layout_clear (
-    GTK_CELL_LAYOUT (self->selector));
-  GtkCellRenderer* renderer =
-    gtk_cell_renderer_text_new ();
-  g_object_set (G_OBJECT (renderer),
-                "ellipsize",
-                PANGO_ELLIPSIZE_END,
-                NULL);
-  gtk_cell_layout_pack_start (
-    GTK_CELL_LAYOUT (self->selector),
-    renderer,
-    TRUE);
-  gtk_cell_layout_set_attributes (
-    GTK_CELL_LAYOUT (self->selector),
-    renderer,
-    "text", COLUMN_LABEL,
-    NULL);
+  /*self->selector_model =*/
+    /*create_automatables_store (self->al->at->track);*/
+  /*gtk_combo_box_set_model (self->selector,*/
+                           /*self->selector_model);*/
+  /*gtk_cell_layout_clear (*/
+    /*GTK_CELL_LAYOUT (self->selector));*/
+  /*GtkCellRenderer* renderer =*/
+    /*gtk_cell_renderer_text_new ();*/
+  /*g_object_set (G_OBJECT (renderer),*/
+                /*"ellipsize",*/
+                /*PANGO_ELLIPSIZE_END,*/
+                /*NULL);*/
+  /*gtk_cell_layout_pack_start (*/
+    /*GTK_CELL_LAYOUT (self->selector),*/
+    /*renderer,*/
+    /*TRUE);*/
+  /*gtk_cell_layout_set_attributes (*/
+    /*GTK_CELL_LAYOUT (self->selector),*/
+    /*renderer,*/
+    /*"text", COLUMN_LABEL,*/
+    /*NULL);*/
 
-  set_active_al (self,
-                 self->selector_model,
-                 self->al);
+  /*set_active_al (self,*/
+                 /*self->selector_model,*/
+                 /*self->al);*/
 }
 
 void
 automation_lane_widget_refresh (
   AutomationLaneWidget * self)
 {
-  g_signal_handler_block (
-    self->selector,
-    self->selector_changed_cb_id);
-  setup_combo_box (self);
-  g_signal_handler_unblock (
-    self->selector,
-    self->selector_changed_cb_id);
+  /*g_signal_handler_block (*/
+    /*self->selector,*/
+    /*self->selector_changed_cb_id);*/
+  /*setup_combo_box (self);*/
+  automatable_selector_button_widget_setup (
+    self->selector, self);
+  /*g_signal_handler_unblock (*/
+    /*self->selector,*/
+    /*self->selector_changed_cb_id);*/
 
 
   /* TODO do below for better performance */
@@ -359,16 +362,18 @@ automation_lane_widget_new (
   self->al = al;
   al->widget = self;
 
-  setup_combo_box (self);
+  /*setup_combo_box (self);*/
+  automatable_selector_button_widget_setup (
+    self->selector, self);
 
   /* connect signals */
   g_signal_connect (
     self, "size-allocate",
     G_CALLBACK (size_allocate_cb), NULL);
-  self->selector_changed_cb_id =
-    g_signal_connect (
-      self->selector, "changed",
-      G_CALLBACK (on_at_selector_changed), self);
+  /*self->selector_changed_cb_id =*/
+    /*g_signal_connect (*/
+      /*self->selector, "changed",*/
+      /*G_CALLBACK (on_at_selector_changed), self);*/
 
   gtk_widget_set_vexpand (
     GTK_WIDGET (self), 1);
