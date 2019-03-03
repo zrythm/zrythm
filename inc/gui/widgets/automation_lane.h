@@ -73,6 +73,15 @@ automation_lane_widget_refresh (
   AutomationLaneWidget * self);
 
 /**
+ * Returns the y pixels from the value based on the
+ * allocation of the automation lane.
+ */
+int
+automation_lane_widget_get_y_px_from_normalized_val (
+  AutomationLaneWidget * self,
+  float                  fval);
+
+/**
  * Gets the float value at the y-point of the automation track.
  */
 float

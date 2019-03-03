@@ -70,8 +70,8 @@ automation_point_new_float (AutomationTrack *   at,
 }
 
 /**
- * Returns Y in pixels from the value based on the allocation of the
- * automation track.
+ * Returns Y in pixels from the value based on the
+ * allocation of the automation track.
  */
 int
 automation_point_get_y_in_px (

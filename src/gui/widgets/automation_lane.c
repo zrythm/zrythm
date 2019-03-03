@@ -317,6 +317,24 @@ setup_combo_box (AutomationLaneWidget * self)
                  /*self->al);*/
 }
 
+/**
+ * Returns the y pixels from the value based on the
+ * allocation of the automation lane.
+ */
+int
+automation_lane_widget_get_y_px_from_normalized_val (
+  AutomationLaneWidget * self,
+  float                  normalized_val)
+{
+  int allocated_h =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
+  int point =
+    allocated_h - normalized_val * allocated_h;
+
+  return point;
+}
+
 void
 automation_lane_widget_refresh (
   AutomationLaneWidget * self)

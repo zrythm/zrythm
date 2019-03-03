@@ -25,6 +25,7 @@
 
 #include "zrythm.h"
 #include "audio/automation_lane.h"
+#include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
@@ -136,6 +137,50 @@ timeline_bg_draw_cb (
                       rect.x,
                       rect.x + rect.width,
                       0.2);
+
+                  float normalized_val =
+                    automation_track_get_normalized_val_at_pos (
+                      al->at,
+                      &PLAYHEAD);
+                  if (normalized_val < 0.f)
+                    normalized_val =
+                      automatable_real_val_to_normalized (
+                        al->at->automatable,
+                        automatable_get_val (
+                          al->at->automatable));
+
+                  int y_px =
+                    automation_lane_widget_get_y_px_from_normalized_val (
+                      al->widget,
+                      normalized_val);
+
+                  /* show line at current val */
+                  cairo_set_source_rgba (
+                    cr,
+                    track->color.red,
+                    track->color.green,
+                    track->color.blue,
+                    0.3);
+                  cairo_set_line_width (cr, 1);
+                  cairo_move_to (cr, rect.x, wy + y_px);
+                  cairo_line_to (cr, rect.x + rect.width, wy + y_px);
+                  cairo_stroke (cr);
+
+                  /* show shade under the line */
+                  /*cairo_set_source_rgba (*/
+                    /*cr,*/
+                    /*track->color.red,*/
+                    /*track->color.green,*/
+                    /*track->color.blue,*/
+                    /*0.06);*/
+                  /*int allocated_h =*/
+                    /*gtk_widget_get_allocated_height (*/
+                      /*GTK_WIDGET (al->widget));*/
+                  /*cairo_rectangle (*/
+                    /*cr,*/
+                    /*rect.x, wy + y_px,*/
+                    /*rect.width, allocated_h - y_px);*/
+                  /*cairo_fill (cr);*/
 
                 }
             }
