@@ -562,9 +562,10 @@ track_widget_on_show_automation_toggled (
   TRACK_WIDGET_GET_PRIVATE (self);
   Track * track = tw_prv->track;
 
-  /* toggle visibility flag */
+  /* set visibility flag */
   track->bot_paned_visible =
-    !track->bot_paned_visible;
+    gtk_toggle_button_get_active (
+      GTK_TOGGLE_BUTTON (widget));
 
   EVENTS_PUSH (ET_TRACK_BOT_PANED_VISIBILITY_CHANGED,
                track);

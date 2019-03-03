@@ -137,8 +137,8 @@ engine_process_prepare (uint32_t nframes)
     }
 
   /* for each automation track, update the val */
-  if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
-    {
+  /*if (TRANSPORT->play_state == PLAYSTATE_ROLLING)*/
+    /*{*/
       Track * track;
       AutomationTracklist * atl;
       AutomationTrack * at;
@@ -168,7 +168,7 @@ engine_process_prepare (uint32_t nframes)
                   val);
             }
         }
-    }
+    /*}*/
 }
 
 /**

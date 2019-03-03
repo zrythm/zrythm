@@ -161,12 +161,12 @@ create_model_for_types (
   Track * track =
     self->owner->owner->al->at->track;
   ChannelTrack * ct = (ChannelTrack *) track;
-  g_message (track_get_name (track));
+  /*g_message (track_get_name (track));*/
 
   for (int i = 0; i < STRIP_SIZE; i++)
     {
       Plugin * plugin = ct->channel->plugins[i];
-      g_message ("%p %d", plugin, i);
+      /*g_message ("%p %d", plugin, i);*/
 
       if (plugin)
         {

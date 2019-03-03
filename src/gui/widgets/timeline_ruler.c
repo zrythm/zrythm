@@ -171,12 +171,14 @@ timeline_ruler_widget_refresh ()
     rw_prv->total_px,
     -1);
 
-  gtk_widget_queue_draw (
-    GTK_WIDGET (MW_RULER));
-
   gtk_widget_set_visible (
     GTK_WIDGET (MW_RULER->range),
     PROJECT->has_range);
+
+  gtk_widget_queue_allocate (
+    GTK_WIDGET (MW_RULER));
+  EVENTS_PUSH (ET_RULER_SIZE_CHANGED,
+               MW_RULER);
 }
 
 void

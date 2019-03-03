@@ -77,6 +77,7 @@ typedef enum EventType
   ET_RANGE_SELECTION_CHANGED,
   ET_TIMELINE_LOOP_MARKER_POS_CHANGED,
   ET_TIMELINE_SONG_MARKER_POS_CHANGED,
+  ET_RULER_SIZE_CHANGED,
 
   /**
    * Zoom level or view area changed.

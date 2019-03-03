@@ -103,13 +103,28 @@ ArrangerWidgetPrivate *
 arranger_widget_get_private (ArrangerWidget * self);
 
 int
-arranger_widget_pos_to_px (ArrangerWidget * self,
-                          Position * pos);
+arranger_widget_pos_to_px (
+  ArrangerWidget * self,
+  Position * pos,
+  int        use_padding);
 
+/**
+ * Gets the corresponding scrolled window.
+ */
+GtkScrolledWindow *
+arranger_widget_get_scrolled_window (
+  ArrangerWidget * self);
+
+/**
+ * Wrapper for ui_px_to_pos depending on the arranger
+ * type.
+ */
 void
-arranger_widget_px_to_pos (ArrangerWidget * self,
-                           Position * pos,
-                           int              px);
+arranger_widget_px_to_pos (
+  ArrangerWidget * self,
+  double           px,
+  Position *       pos,
+  int              has_padding);
 
 /**
  * Refreshes all arranger backgrounds.

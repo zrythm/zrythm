@@ -241,6 +241,8 @@ refresh_midi_ruler_and_arranger ()
     Z_ARRANGER_WIDGET (
       MIDI_MODIFIER_ARRANGER));
 
+  CLIP_EDITOR->region_changed = 0;
+
   return FALSE;
 }
 
@@ -263,6 +265,8 @@ refresh_audio_ruler_and_arranger ()
   audio_ruler_widget_refresh ();
 
   /* remove all previous children and add new */
+
+  CLIP_EDITOR->region_changed = 0;
 
   return FALSE;
 }
@@ -390,6 +394,29 @@ events_process ()
             Z_ARRANGER_WIDGET (MW_TIMELINE));
           break;
         case ET_TIMELINE_SELECTIONS_CHANGED:
+          break;
+        case ET_RULER_SIZE_CHANGED:
+          gtk_widget_queue_allocate (
+            GTK_WIDGET (arg)); // ruler widget
+          if (arg == MW_RULER)
+            arranger_widget_refresh (
+              Z_ARRANGER_WIDGET (
+                MW_TIMELINE));
+          else if (arg == MIDI_RULER)
+            {
+              arranger_widget_refresh (
+                Z_ARRANGER_WIDGET (
+                  MIDI_ARRANGER));
+              arranger_widget_refresh (
+                Z_ARRANGER_WIDGET (
+                  MIDI_MODIFIER_ARRANGER));
+            }
+          else if (arg == AUDIO_RULER)
+            {
+              arranger_widget_refresh (
+                Z_ARRANGER_WIDGET (
+                  AUDIO_ARRANGER));
+            }
           break;
         case ET_CLIP_MARKER_POS_CHANGED:
           gtk_widget_queue_allocate (

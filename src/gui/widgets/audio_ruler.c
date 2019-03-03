@@ -158,11 +158,13 @@ audio_ruler_widget_refresh ()
   Region * r = CLIP_EDITOR->region;
   long total_ticks;
   int viewport_width;
-  if (r)
-    {
-      total_ticks =
-        region_get_true_length_in_ticks (r);
 
+  if (r)
+    total_ticks =
+      region_get_true_length_in_ticks (r);
+
+  if (r && CLIP_EDITOR->region_changed)
+    {
       viewport_width =
         gtk_widget_get_allocated_width (
           GTK_WIDGET (
@@ -208,6 +210,8 @@ audio_ruler_widget_refresh ()
 
   gtk_widget_queue_allocate (
     GTK_WIDGET (AUDIO_RULER));
+  EVENTS_PUSH (ET_RULER_SIZE_CHANGED,
+               AUDIO_RULER);
 }
 
 static void

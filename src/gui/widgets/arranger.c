@@ -26,6 +26,7 @@
 
 #include "zrythm.h"
 #include "gui/widgets/region.h"
+#include "actions/actions.h"
 #include "audio/automation_track.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
@@ -691,13 +692,8 @@ drag_begin (GtkGestureDrag *   gesture,
           Region * region = NULL;
 
           /* get the position */
-          if (timeline)
-            ui_px_to_pos_timeline (
-              start_x, &pos, 1);
-          else if (midi_arranger ||
-                   midi_modifier_arranger)
-            ui_px_to_pos_piano_roll (
-              start_x, &pos, 1);
+          arranger_widget_px_to_pos (
+            self, start_x, &pos, 1);
 
           if (timeline)
             {
@@ -772,6 +768,33 @@ drag_begin (GtkGestureDrag *   gesture,
   update_inspector (self);
 }
 
+/**
+ * Wrapper for ui_px_to_pos depending on the arranger
+ * type.
+ */
+void
+arranger_widget_px_to_pos (
+  ArrangerWidget * self,
+  double           px,
+  Position *       pos,
+  int              has_padding)
+{
+  GET_ARRANGER_ALIASES (self);
+
+  if (timeline)
+    ui_px_to_pos_timeline (
+      px, pos, has_padding);
+  else if (midi_arranger)
+    ui_px_to_pos_piano_roll (
+      px, pos, has_padding);
+  else if (midi_modifier_arranger)
+    ui_px_to_pos_piano_roll (
+      px, pos, has_padding);
+  else if (audio_arranger)
+    ui_px_to_pos_audio_clip_editor (
+      px, pos, has_padding);
+}
+
 static void
 drag_update (GtkGestureDrag * gesture,
                gdouble         offset_x,
@@ -841,13 +864,9 @@ drag_update (GtkGestureDrag * gesture,
 
       /* get new pos */
       Position pos;
-      if (timeline)
-        ui_px_to_pos_timeline (
-          ar_prv->start_x + offset_x, &pos, 1);
-      else if (midi_arranger ||
-               midi_modifier_arranger)
-        ui_px_to_pos_piano_roll (
-          ar_prv->start_x + offset_x, &pos, 1);
+      arranger_widget_px_to_pos (
+        self,
+        ar_prv->start_x + offset_x, &pos, 1);
 
       /* snap selections based on new pos */
       if (timeline)
@@ -866,16 +885,11 @@ drag_update (GtkGestureDrag * gesture,
   else if (ar_prv->action ==
              UI_OVERLAY_ACTION_RESIZING_R)
     {
-      Position pos;
-
       /* get position */
-      if (timeline)
-        ui_px_to_pos_timeline (
-          ar_prv->start_x + offset_x, &pos, 1);
-      else if (midi_arranger ||
-               midi_modifier_arranger)
-        ui_px_to_pos_piano_roll (
-          ar_prv->start_x + offset_x, &pos, 1);
+      Position pos;
+      arranger_widget_px_to_pos (
+        self, ar_prv->start_x + offset_x, &pos, 1);
+
 
       if (timeline)
         {
@@ -902,14 +916,10 @@ drag_update (GtkGestureDrag * gesture,
        * positions and then snap it) */
       Position diff_pos;
       int is_negative = offset_x < 0;
-      if (timeline)
-        ui_px_to_pos_timeline (
-          abs (offset_x), &diff_pos, 0);
-      else if (midi_arranger ||
-               midi_modifier_arranger)
-        ui_px_to_pos_piano_roll (
-          abs (offset_x), &diff_pos, 0);
-      long ticks_diff = position_to_ticks (&diff_pos);
+      arranger_widget_px_to_pos (
+        self, abs (offset_x), &diff_pos, 0);
+      long ticks_diff =
+        position_to_ticks (&diff_pos);
       if (is_negative)
         ticks_diff = - ticks_diff;
 
@@ -1029,6 +1039,48 @@ drag_end (GtkGestureDrag *gesture,
   gtk_widget_queue_draw (GTK_WIDGET (ar_prv->bg));
 }
 
+int
+arranger_widget_pos_to_px (
+  ArrangerWidget * self,
+  Position * pos,
+  int        use_padding)
+{
+  GET_ARRANGER_ALIASES (self);
+
+  if (timeline)
+    return ui_pos_to_px_timeline (
+             pos, use_padding);
+  else if (midi_arranger || midi_modifier_arranger)
+    return ui_pos_to_px_piano_roll (
+             pos, use_padding);
+  else if (audio_arranger)
+    return ui_pos_to_px_audio_clip_editor (
+             pos, use_padding);
+
+  return -1;
+}
+
+/**
+ * Gets the corresponding scrolled window.
+ */
+GtkScrolledWindow *
+arranger_widget_get_scrolled_window (
+  ArrangerWidget * self)
+{
+  GET_ARRANGER_ALIASES (self);
+
+  if (timeline)
+    return MW_CENTER_DOCK->timeline_scroll;
+  else if (midi_arranger)
+    return MW_PIANO_ROLL->arranger_scroll;
+  else if (midi_modifier_arranger)
+    return MW_PIANO_ROLL->modifier_arranger_scroll;
+  else if (audio_arranger)
+    return MW_AUDIO_CLIP_EDITOR->arranger_scroll;
+
+  return NULL;
+}
+
 static gboolean
 tick_cb (GtkWidget *widget,
          GdkFrameClock *frame_clock,
@@ -1048,6 +1100,88 @@ tick_cb (GtkWidget *widget,
   ar_prv->last_frame_time = frame_time;
 
   return G_SOURCE_CONTINUE;
+}
+#include "gui/widgets/center_dock_bot_box.h"
+#include "gui/widgets/timeline_minimap.h"
+
+static gboolean
+on_scroll (GtkWidget *widget,
+           GdkEventScroll  *event,
+           ArrangerWidget * self)
+{
+  GET_ARRANGER_ALIASES (widget);
+
+  g_message ("dx %f dy %f", event->delta_x,
+             event->delta_y);
+  if (!(event->state & GDK_CONTROL_MASK))
+    return FALSE;
+
+  double x = event->x,
+         y = event->y,
+         adj_val,
+         diff;
+  Position cursor_pos, adj_pos;
+  GtkScrolledWindow * scroll =
+    arranger_widget_get_scrolled_window (self);
+  GtkAdjustment * adj;
+  int new_x;
+  RulerWidget * ruler;
+  RulerWidgetPrivate * rw_prv;
+
+  if (timeline)
+    ruler = Z_RULER_WIDGET (MW_RULER);
+  else if (midi_modifier_arranger ||
+           midi_arranger)
+    ruler = Z_RULER_WIDGET (MIDI_RULER);
+  else if (audio_arranger)
+    ruler = Z_RULER_WIDGET (AUDIO_RULER);
+
+  rw_prv = ruler_widget_get_private (ruler);
+
+  /* get current adjustment so we can get the
+   * difference from the cursor */
+  adj = gtk_scrolled_window_get_hadjustment (
+    scroll);
+  adj_val = gtk_adjustment_get_value (adj);
+
+  /* get positions of cursor */
+  arranger_widget_px_to_pos (
+    self, x, &cursor_pos, 1);
+
+  /* get px diff so we can calculate the new
+   * adjustment later */
+  diff = x - adj_val;
+
+  /* scroll down, zoom out */
+  if (event->delta_y > 0)
+    {
+      ruler_widget_set_zoom_level (
+        ruler,
+        rw_prv->zoom_level / 1.3f);
+    }
+  else /* scroll up, zoom in */
+    {
+      ruler_widget_set_zoom_level (
+        ruler,
+        rw_prv->zoom_level * 1.3f);
+    }
+
+  new_x = arranger_widget_pos_to_px (
+    self, &cursor_pos, 1);
+
+  /* refresh relevant widgets */
+  if (timeline)
+    timeline_minimap_widget_refresh (
+      MW_TIMELINE_MINIMAP);
+
+  /* get updated adjustment and set its value
+   * at the same offset as before */
+  adj = gtk_scrolled_window_get_hadjustment (
+    scroll);
+  gtk_adjustment_set_value (adj,
+                            new_x - diff);
+
+  return TRUE;
 }
 
 void
@@ -1138,6 +1272,9 @@ arranger_widget_setup (ArrangerWidget *   self,
     G_OBJECT (ar_prv->right_mouse_mp), "pressed",
     G_CALLBACK (on_right_click), self);
   g_signal_connect (
+    G_OBJECT (self), "scroll-event",
+    G_CALLBACK (on_scroll), self);
+  g_signal_connect (
     G_OBJECT (self), "key-press-event",
     G_CALLBACK (on_key_action), self);
   g_signal_connect (
@@ -1156,6 +1293,7 @@ int
 arranger_widget_refresh (
   ArrangerWidget * self)
 {
+  g_message ("refreshing arranger");
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
   GET_ARRANGER_ALIASES (self);

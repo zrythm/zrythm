@@ -133,7 +133,8 @@ timeline_arranger_widget_set_allocation (
       /*Automatable * a = ap->at->automatable;*/
 
       gint wx, wy;
-      if (!ap->at->al)
+      if (!ap->at->al ||
+          !ap->at->track->bot_paned_visible)
         return;
       gtk_widget_translate_coordinates(
                 GTK_WIDGET (ap->at->al->widget),
@@ -160,7 +161,8 @@ timeline_arranger_widget_set_allocation (
       /*Automatable * a = ap->at->automatable;*/
 
       gint wx, wy;
-      if (!ac->at->al)
+      if (!ac->at->al ||
+          !ac->at->track->bot_paned_visible)
         return;
       gtk_widget_translate_coordinates(
                 GTK_WIDGET (ac->at->al->widget),
