@@ -433,11 +433,15 @@ automation_track_get_normalized_val_at_pos (
   AutomationCurve * ac =
     automation_track_get_ac_at_pos (
       self, pos);
-  if (!ac)
-    return -1.f;
   AutomationPoint * prev_ap =
     automation_track_get_ap_before_pos (
       self, pos);
+
+  /* no automation points yet, return negative
+   * (no change) */
+  if (!ac && !prev_ap)
+    return -1.f;
+
   AutomationPoint * next_ap =
     automation_track_get_next_ap (
       self, prev_ap);
@@ -447,6 +451,11 @@ automation_track_get_normalized_val_at_pos (
   float prev_ap_normalized_val =
     automation_point_get_normalized_value (
       prev_ap);
+
+  /* return value at last ap */
+  if (!next_ap)
+    return prev_ap_normalized_val;
+
   float next_ap_normalized_val =
     automation_point_get_normalized_value (
       next_ap);
