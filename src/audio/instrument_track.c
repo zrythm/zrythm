@@ -127,7 +127,8 @@ instrument_track_fill_midi_events (
         &region_end_adjusted, region_length_ticks);
 
       /* send all MIDI notes off if end of the
-       * region is within this cycle */
+       * region (at loop point or actual end) is
+       * within this cycle */
       if (position_compare (
             &region_end_adjusted,
             &local_pos) >= 0 &&
@@ -144,6 +145,30 @@ instrument_track_fill_midi_events (
             position_to_frames (
               &region_end_adjusted) -
             position_to_frames (&local_pos);
+          ev->size = 3;
+          /* status byte */
+          ev->buffer[0] = MIDI_CH1_CTRL_CHANGE;
+          /* note number 0-127 */
+          ev->buffer[1] = MIDI_ALL_NOTES_OFF;
+          /* velocity 0-127 */
+          ev->buffer[2] = 0x00;
+        }
+      else if (position_compare (
+                &r->end_pos,
+                pos) >= 0 &&
+               position_compare (
+                &r->end_pos,
+                &end_pos) <= 0)
+        {
+          jack_midi_event_t * ev =
+            &midi_events->queue->
+              jack_midi_events[
+                midi_events->queue->
+                  num_events++];
+          ev->time =
+            position_to_frames (
+              &r->end_pos) -
+            position_to_frames (pos);
           ev->size = 3;
           /* status byte */
           ev->buffer[0] = MIDI_CH1_CTRL_CHANGE;

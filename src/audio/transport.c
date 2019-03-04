@@ -167,7 +167,9 @@ transport_add_to_playhead (int frames)
 }
 
 /**
- * Moves playhead to given pos
+ * Moves playhead to given pos.
+ *
+ * This is only for moves other than while playing.
  */
 void
 transport_move_playhead (Position * target, ///< position to set to
