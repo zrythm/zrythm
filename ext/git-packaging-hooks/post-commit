@@ -1,0 +1,267 @@
+#!/bin/bash
+
+#  git-packaging-hooks - git hooks to semi-automate releases and distro packaging
+#
+#  Copyright 2017 bill-auger <https://github.com/bill-auger/git-packaging-hooks/issues>
+#
+#  git-packaging-hooks is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License version 3 as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  git-packaging-hooks is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License version 3
+#  along with git-packaging-hooks.  If not, see <http://www.gnu.org/licenses/>.
+
+
+readonly HOOKS_PATH=$(git config --local core.hooksPath)
+readonly COMMON_DEFS_FILE=$HOOKS_PATH/common.sh.inc
+source $COMMON_DEFS_FILE
+[ ! -f $COMMON_DEFS_FILE ] && TraceError "missing $COMMON_DEFS_FILE - aborting commit" && exit 1
+
+
+if (($IS_STAGING_BRANCH))
+then TraceStage "running staging-specific post-commit hooks"
+
+     # set "release" tag
+     for revision_tag in $REVISION_TAGS
+     do  TraceStep "removing un-merged revision tag '$revision_tag'"
+         git tag --delete $revision_tag > /dev/null
+     done
+     if   [ ! -f $TAGS_FILE ]
+     then TraceStep "adding revision tag '$VERSION_STRING'"
+          git tag $VERSION_STRING
+     else declare -a orphaned_tags=( $(cat $TAGS_FILE | sort | uniq) )
+          orphaned_minor_tag=${orphaned_tags[0]}
+          orphaned_rev_tag=${orphaned_tags[1]}
+          orphaned_other_tags=${orphaned_tags[@]:2}
+          [ "$orphaned_minor_tag"  ] && TraceStep "restoring minor version tag '$orphaned_minor_tag'"
+          [ "$orphaned_rev_tag"    ] && TraceStep "adding revision tag '$orphaned_rev_tag'"
+          [ "$orphaned_other_tags" ] && TraceStep "restoring other tags '$orphaned_other_tags'"
+          for orphaned_tag in "${orphaned_tags[@]}" ; do git tag $orphaned_tag ; done
+          rm $TAGS_FILE
+     fi
+
+     # re-configure autotools, rebuild, install, and verify
+     TraceStep "re-configuring autotools"
+     sudo make uninstall          2&> /dev/null
+     make distclean               2&> /dev/null
+     autoreconf --force --install
+     TraceStep "verifying re-build/install"
+     ./configure                  2&> /dev/null
+     make -j$N_MAKE_JOBS          2&> /dev/null
+     sudo make install            2&> /dev/null
+     make installcheck            2&> /dev/null
+     sudo make uninstall          2&> /dev/null
+     make distclean               2&> /dev/null
+
+     # commit automated changes, and ensure signed
+     git add --all
+     git diff --exit-code --cached > /dev/null && is_index_clean=1        || is_index_clean=0
+     git verify-commit --raw HEAD 2> /dev/null && has_trusted_signature=1 || has_trusted_signature=0
+     (($is_index_clean       )) || TraceStep "amending commit with automated changes"
+     (($has_trusted_signature)) || TraceStep "amending commit to ensure signature exists"
+     (($is_index_clean)) && (($has_trusted_signature))              || \
+     git commit --gpg-sign --amend --reuse-message=HEAD > /dev/null
+
+     TraceStage "completed staging-specific post-commit hooks"
+elif (($IS_PACKAGING_BRANCH))
+then (($IS_AMEND_COMMIT)) && exit 0
+
+     TraceStage "running packaging-specific post-commit hooks"
+
+     # implode tarball
+     TraceStep "imploding tarball"
+     rm $TARBALL_FILE $TARBALL_FILE.sig $PKGBUILD_FILE.sig 2> /dev/null
+     git archive --prefix=$TARBALL_INNER_DIR/ --output=$TARBALL_FILE $VERSION_STRING
+
+     # generate tarball metadata
+     TraceStep "generating checksums"
+     TARBALL_MD5SUM="$(   md5sum     $TARBALL_FILE | cut --delimiter=' ' --fields=1)"
+     TARBALL_SHA1SUM="$(  sha1sum    $TARBALL_FILE | cut --delimiter=' ' --fields=1)                        "
+     TARBALL_SHA256SUM="$(sha256sum  $TARBALL_FILE | cut --delimiter=' ' --fields=1)"
+     FILE_SIZE=$(         wc --bytes $TARBALL_FILE | cut --delimiter=' ' --fields=1)
+#      PKGBUILD_MD5SUMS="'$TARBALL_MD5SUM' SKIP SKIP"
+     PKGBUILD_MD5SUMS="'$TARBALL_MD5SUM'"
+
+     # inject tarball metadata into packaging files
+     TraceStep "preparing packaging files"
+     for dsc_file in ${DSC_FILES[@]}
+     do  echo "Checksums-Sha1:"                                         >> $dsc_file
+         echo " $TARBALL_SHA1SUM $FILE_SIZE $DEB_TARBALL_FILENAME"      >> $dsc_file
+         echo "Checksums-Sha256:"                                       >> $dsc_file
+         echo " $TARBALL_SHA256SUM $FILE_SIZE $DEB_TARBALL_FILENAME"    >> $dsc_file
+         echo "Files:"                                                  >> $dsc_file
+         echo " $FAUX_DSC_MD5SUM $FAUX_DSC_SIZE $DEB_TARBALL_FILENAME"  >> $dsc_file
+         echo " $FAUX_DSC_MD5SUM $FAUX_DSC_SIZE $DEB_DIFFBALL_FILENAME" >> $dsc_file
+     done
+     sed --in-place "s/^md5sums=.*$/md5sums=( $PKGBUILD_MD5SUMS )/"        $PKGBUILD_FILE
+
+     # set uniform commit message and ensure signed
+     git commit --gpg-sign --amend --allow-empty --message="$GIT_COMMIT_MSG" > /dev/null
+
+     # sign tarball and PKGBUILD
+     gpg --detach-sign --yes $TARBALL_FILE
+     gpg --detach-sign --yes $PKGBUILD_FILE
+
+
+     ### github steps ###
+
+     # create upstream tarball
+     TraceStep "pushing staging branch, packaging branch, and revision tag to github"
+     git push --force $REMOTE_NAME $STAGING_BRANCH $PACKAGING_BRANCH $VERSION_STRING 2> /dev/null
+
+     # destroy any existing github "tag release" with same tag
+     TraceStep "querying existing github \"tag release\" '$VERSION_STRING'"
+     resp_json=$(curl $CURL_RESP_ARGS $GITHUB_API_URL/tags/$VERSION_STRING)
+     release_id=$(echo $resp_json | grep '"assets_url":' | sed "$RELEASEID_REGEX")
+     error_resp=$(echo $resp_json | grep '"message": "Not Found"')
+     if [ -n "$(echo $release_id | sed 's/[^0-9]//g')" -a -z "$error_resp" ]
+     then TraceStep "deleting existing github \"tag release\" - id: '$release_id'"
+          resp_status=$(curl --request DELETE                                   \
+                             --header "Authorization: token $GITHUB_AUTH_TOKEN" \
+                             --header "Content-Type: application/json"          \
+                             --header "Accept: application/json"                \
+                             $CURL_STATUS_ARGS                                  \
+                             $GITHUB_API_URL/$release_id                        )
+         if   [ "$resp_status" == "204" ]
+         then TraceStep "deleted github \"tag release\" - id: '$release_id'"
+         else TraceStep "failed to delete github \"tag release\" - id: '$release_id'" ; exit 1 ;
+         fi
+     fi
+
+     # create github "tag release"
+     TraceStep "creating github \"tag release\" '$VERSION_STRING'"
+     resp_status=$(curl --request POST --data "$GITHUB_RELEASE_JSON"       \
+                        --header "Authorization: token $GITHUB_AUTH_TOKEN" \
+                        --header "Content-Type: application/json"          \
+                        --header "Accept: application/json"                \
+                        $CURL_STATUS_ARGS                                  \
+                        $GITHUB_API_URL                                    )
+     if   [ "$resp_status" == "201" ]
+     then TraceStep "created github \"tag release\" '$VERSION_STRING'"
+     else TraceStep "failed to create github \"tag release\" '$VERSION_STRING'" ; exit 1 ;
+     fi
+
+     # ensure the new github "tag release" is accessible via the API
+     TraceStep "confirming existence of new github \"tag release\" '$VERSION_STRING'"
+     resp_json=$(curl $CURL_RESP_ARGS $GITHUB_API_URL/tags/$VERSION_STRING)
+     release_id=$( echo $resp_json | grep '"assets_url":'          | sed "$RELEASEID_REGEX")
+     upload_url=$( echo $resp_json | grep '"upload_url":'          | sed "$UPLOADURL_REGEX")
+     error_resp=$( echo $resp_json | grep '"message": "Not Found"'                         )
+     if [ -n "$(echo $release_id | sed 's/[^0-9]//g')" -a -z "$error_resp" ]
+     then TraceStep "confirmed existence of new github \"tag release\" - id: '$release_id'"
+     else TraceStep "failed to fetch new github \"tag release\" '$VERSION_STRING'" ; exit 1 ;
+     fi
+
+     # upload signatures to github "tag release"
+     for upload_file in ${UPLOAD_FILES[@]}
+     do  filename=$(basename $upload_file)
+         TraceStep "uploading '$filename' to github \"tag release\" '$VERSION_STRING'"
+         resp_status=$(curl --request POST --data-binary "@$upload_file"       \
+                            --header "Authorization: token $GITHUB_AUTH_TOKEN" \
+                            --header "Content-Type: text/plain"                \
+                            --header "Accept: application/json"                \
+                            $CURL_STATUS_ARGS                                  \
+                            ${upload_url}?name=$filename                       )
+          if   [ "$resp_status" == "201" ]
+          then TraceStep "uploaded '$upload_file'"
+          else TraceStep "failed to upload '$upload_file'" ; exit 1 ;
+          fi
+     done
+
+     # download and verify github "tag release" tarball and PKGBUILD
+     TraceStep "downloading remote tarball, PKGBUILD, and signatures"
+     curl $CURL_FETCH_ARGS $TARBALL_URL     ; curl $CURL_FETCH_ARGS $PKGBUILD_URL     ;
+     curl $CURL_FETCH_ARGS $TARBALL_SIG_URL ; curl $CURL_FETCH_ARGS $PKGBUILD_SIG_URL ;
+     for remote_file in ${REMOTE_FILENAMES[@]}
+     do  if [ -f $remote_file -a "$(stat --printf='%s' $remote_file)" != "9" ] # 'Not Found'
+         then TraceStep "downloaded $remote_file"
+         else TraceStep "failed to download $remote_file"
+#               source $(git config --local core.hooksPath)/debug-remote-files.sh.inc
+              exit 1
+         fi
+     done
+     if   gpg --verify --verify-options no-show-photos ./$TARBALL_FILENAME.sig 2> /dev/null && \
+          diff $TARBALL_FILE     ./$TARBALL_FILENAME                            > /dev/null && \
+          diff $TARBALL_FILE.sig ./$TARBALL_FILENAME.sig                        > /dev/null && \
+          gpg --verify --verify-options no-show-photos ./PKGBUILD.sig          2> /dev/null && \
+          diff $PKGBUILD_FILE     ./PKGBUILD                                    > /dev/null && \
+          diff $PKGBUILD_FILE.sig ./PKGBUILD.sig                                > /dev/null
+     then TraceStep "verified remote tarball, PKGBUILD, and signatures"
+     else TraceStep "failed to verify remote tarball, PKGBUILD, or signatures"
+#           source $(git config --local core.hooksPath)/debug-remote-files.sh.inc
+          exit 1
+     fi
+
+
+     ### OBS steps ###
+
+     # copy OBS files to local OSC build directory and trigger remote builds
+     TraceStep "populating OSC build directory"
+     cd $OSC_DIR/ && rm ./*
+     for obs_file in ${OBS_FILES[@]}
+     do  cp $obs_file $OSC_DIR/
+         osc add ./$(basename $obs_file) > /dev/null
+     done
+     TraceStep "triggering OSC remote builds"
+     osc checkin --message=$OSC_COMMIT_MSG > /dev/null
+
+     # cleanup transient files
+     TraceStep "cleaning up transient files"
+     cd $PROJECT_DIR
+     for transient_file in ${CLEANUP_FILES[@]} ; do rm $transient_file ; done ;
+     git clean $GIT_CLEAN_OPTIONS &> /dev/null
+
+
+     ### debian steps ###
+
+     # rename tarball and prepare working tree for debain
+     rm -rf ../${DEBIAN_NAME}*${VERSION}*
+     mv $TARBALL_FILE ../$DEB_TARBALL_FILENAME
+     [ "$DEB_BUILD_TOOL" == 'gbp' -a ! -f debian/gbp.conf ] && cp $HOOKS_PATH/gbp.conf debian/
+
+     # build/validate debian package
+     TraceStep "building debian package with '$"$DEB_BUILD_TOOL"'"
+     case "$DEB_BUILD_TOOL" in
+     'debuild') debuild --unsigned-changes --unsigned-source
+                deb_file=$(ls ../${DEBIAN_NAME}_${VERSION}-*_${DEB_BUILD_ARCH}.deb 2> /dev/null)
+                sudo piuparts --save=$CHROOTBALL --basetgz=$CHROOTBALL              \
+                              --distribution=$DEB_BUILD_DIST --arch=$DEB_BUILD_ARCH \
+                              --mirror="$DEBOOTSTRAP_REPO" $deb_file
+                (($?)) && echo "piuparts failed for '$deb_file'" && exit 1
+     ;;
+     'sbuild') sudo sbuild-createchroot --make-sbuild-tarball=$CHROOTBALL $DEB_BUILD_DIST \
+                                        `mktemp --directory` "$DEBOOTSTRAP_REPO"
+               sbuild --dist=$DEB_BUILD_DIST --arch=$DEB_BUILD_ARCH          \
+                      --run-piuparts --piuparts-opts="--basetgz=$CHROOTBALL"
+     ;;
+     'gbp') DIST=$DEB_BUILD_DIST ARCH=$DEB_BUILD_ARCH git-pbuilder create --extrapackages 'eatmydata' &> $LOG_FILE
+            DIST=$DEB_BUILD_DIST ARCH=$DEB_BUILD_ARCH git-pbuilder update --extrapackages 'eatmydata' &> $LOG_FILE || true
+            [ ! -d $PIUPARTS_CHROOT ] && echo "could not create chroot '$PIUPARTS_CHROOT'" && exit 1
+
+            gbp buildpackage --git-dist=$DEB_BUILD_DIST --git-arch=$DEB_BUILD_ARCH              \
+                             --git-pbuilder --git-tag --git-retag --git-notify=off &> $LOG_FILE
+            deb_file=$(ls ../${DEBIAN_NAME}_${VERSION}-*_${DEB_BUILD_ARCH}.deb 2> /dev/null)
+            [ ! -f "$deb_file" ] && echo "package creation failed" && exit 1
+
+            TraceStep "testing debian package install/uninstall"
+            sudo piuparts --distribution=$DEB_BUILD_DIST --arch=$DEB_BUILD_ARCH     \
+                          --existing-chroot=$PIUPARTS_CHROOT $deb_file &> $LOG_FILE
+            (($?)) && echo "piuparts failed for '$deb_file'" && exit 1
+
+            debian_version=debian/$(dpkg-parsechangelog --show-field version)
+            debian_tag=$(git tag --points-at HEAD)
+            [ "$debian_version" != "$debian_tag" ] && TraceError "improper debian tag" && exit 1
+
+            TraceStep "pushing debian tag to github"
+            git push --force $REMOTE_NAME $debian_tag 2> /dev/null
+     ;;
+     esac
+
+     TraceStage "completed packaging-specific post-commit hooks"
+fi
