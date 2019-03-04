@@ -68,21 +68,22 @@ AM_COND_IF([USE_DEFAULT_PREFIX],
            [AC_SUBST([USE_DEFAULT_PREFIX], [1])])
 
 # options
-AC_ARG_ENABLE(package-mode,
-              AS_HELP_STRING([--enable-package-mode], [Used when making deb/rpm/pkg packages]),
-              [AC_SUBST([PACKAGE_MODE], [1])],
-              [AC_SUBST([PACKAGE_MODE], [0])])
 
 AC_ARG_ENABLE(profiling,
               AS_HELP_STRING([--enable-profiling], [Enables profiling with gprof]),
               [AC_SUBST([PROFILING], [1])],
               [AC_SUBST([PROFILING], [0])])
+AC_ARG_ENABLE(debug,
+              AS_HELP_STRING([--enable-debug], [Debug build with symbols]),
+              [AC_SUBST([DEBUG], [1])],
+              [AC_SUBST([DEBUG], [0])])
 
-AC_ARG_ENABLE(release,
-              AS_HELP_STRING([--enable-release], [Build for release (default is debug)]),
-              [AC_SUBST([RELEASE], [1])]
-              [AC_DEFINE([RELEASE], [1], [Compiled in release mode])],
-              [AC_SUBST([RELEASE], [0])])
+AC_ARG_WITH(ffmpeg,
+              AS_HELP_STRING([--with-ffmpeg], [Add mp3 support via ffmpeg]),
+              [PKG_CHECK_MODULES(
+  [FFMPEG],
+  [libavcodec libavutil libavformat])],
+  [echo "building without FFMPEG (mp3 support). use --with-ffmpeg to enable it instead"])
 
 # Check for a C compiler
 AC_PROG_CC([gcc])
@@ -119,13 +120,6 @@ PKG_CHECK_MODULES([QT5], [Qt5Widgets],
                   AC_SUBST([HAVE_QT5],[1])],
                   [echo "Building without QT5 support in suil"])
 #PKG_CHECK_MODULES([QT4], [QtGui])
-
-#FFMPEG stuff
-PKG_CHECK_MODULES(
-  [FFMPEG],
-  [libavcodec libavutil libavformat],
-  [AC_DEFINE([HAVE_FFMPEG],[1],[Use ffmpeg])],
-  [echo "Building without MP3 support"])
 
 
 #Checks for header files.

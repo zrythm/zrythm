@@ -39,7 +39,7 @@ build_deb_64:
   only:
     - tags
 
-build_deb_64_unstable:
+build_deb_64_unstable_no_ffmpeg:
   stage: build
   script:
     - export PACKAGE_NAME="$CI_PROJECT_NAME"_"$_DEBIAN_VER"

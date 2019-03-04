@@ -25,18 +25,13 @@ WINDOWS=@WINDOWS@
 LINUX=@LINUX@
 OSX=@OSX@
 HAVE_QT5=@HAVE_QT5@
-PACKAGE_MODE=@PACKAGE_MODE@
-RELEASE=@RELEASE@
 PROFILING=@PROFILING@
+DEBUG=@DEBUG@
 
 # -----------------------
 #  dirs/names/files
 #  ----------------------
-ifeq ($(RELEASE),1)
-	BUILD_DIR = build/release
-else
-	BUILD_DIR = build/debug
-endif
+BUILD_DIR = build
 OBJ_DIR = $(BUILD_DIR)/obj
 DEP_DIR = $(BUILD_DIR)/dep
 BIN = zrythm
@@ -129,19 +124,6 @@ X11_LIBS = @X11_LIBS@
 
 DEFAULT_INCLUDES = -I. -I./$(INC_DIR) -I./$(SRC_DIR) -I./ext
 
-ifeq ($(RELEASE),1)
-	DEFAULT_CFLAGS += -O3
-ifeq ($(PACKAGE_MODE),1)
-	DEFAULT_CFLAGS += -g
-endif
-else
-	DEFAULT_CFLAGS += -g -O0
-endif
-
-ifeq ($(PROFILING),1)
-	DEFAULT_CFLAGS += -pg
-endif
-
 # -rdynamic gcc flag
 ifeq ($(patsubst gcc%,gcc,$(CC)),gcc)
 	R_DYNAMIC = -rdynamic
@@ -155,9 +137,6 @@ ifeq ($(WINDOWS),1)
 	EXT = .exe
 	EXTRA_LD_FLAGS += -fno-stack-protector -mwindows
 else
-ifneq ($(RELEASE),1)
-#	EXTRA_LD_FLAGS += -pg
-endif
 #EXTRA_LD_FLAGS += -DGDK_DISABLE_DEPRECATED \
 #									 -DGTK_DISABLE_DEPRECATED
 endif
@@ -165,13 +144,14 @@ ifeq ($(PROFILING),1)
 	EXTRA_LD_FLAGS += -pg
 endif
 
-#$(LIBCYAML_CFLAGS) \
-
-# FIXME don't override CFLAGS
-CFLAGS = -Wall \
+CFLAGS:=$(filter-out -fstack-protector-strong,$(CFLAGS))
+CFLAGS:=$(filter-out -fstack-clash-protection,$(CFLAGS))
+CFLAGS:=$(filter-out -D_FORTIFY_SOURCE=2,$(CFLAGS))
+CFLAGS += -Wall \
 	-Werror=implicit-function-declaration \
 	-Werror=return-type \
 	-Werror=int-conversion \
+	-Werror=format-security \
 	$(DEFAULT_INCLUDES) \
 	$(FFMPEG_CFLAGS) \
 	$(GTK3_CFLAGS) \
@@ -185,10 +165,16 @@ CFLAGS = -Wall \
 	$(SAMPLERATE_CFLAGS) \
 	$(SNDFILE_CFLAGS) \
 	$(X11_CFLAGS) \
-	$(DEFAULT_CFLAGS) \
 	-fPIC
 
-LDFLAGS =	\
+ifeq ($(PROFILING),1)
+	CFLAGS += -pg
+endif
+ifeq ($(DEBUG),1)
+	CFLAGS += -g
+endif
+
+LDFLAGS +=	\
 	$(FFMPEG_LIBS) \
   $(GTK3_LIBS) \
 	$(JACK_LIBS) \
@@ -206,7 +192,9 @@ LDFLAGS =	\
 	-lrt \
 	-lasound \
 	-lm \
-	-lpthread
+	-lpthread \
+	-Wl,-as-needed
+
 
 built_src = $(BUILD_DIR)/resources.c
 built_obj = $(built_src:%.c=$(BUILD_DIR/%.o))

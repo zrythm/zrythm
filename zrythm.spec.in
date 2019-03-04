@@ -73,7 +73,7 @@ More info at https://www.zrythm.org
 
 %build
 ./autogen.sh
-%configure --enable-package-mode --enable-release
+%configure
 %{__make} %{?_smp_mflags}
 
 %install

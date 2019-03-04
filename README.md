@@ -47,7 +47,7 @@ _Note2: If some dependencies are not found, you might need to enable the univers
 sudo apt-add-repository universe
 `
 
-_Note3: For latest (unstable) version, install this directly by double clicking or by using `sudo apt install ./<filename>.deb`:_ https://git.zrythm.org/zrythm/zrythm/-/jobs/artifacts/master/download?job=build_deb_64_unstable
+_Note3: For latest (unstable) version, install this directly by double clicking or by using `sudo apt install ./<filename>.deb`:_ https://git.zrythm.org/zrythm/zrythm/-/jobs/artifacts/master/download?job=build_deb_64_unstable_no_ffmpeg
 ### rpm
 enable dnf repository
 ```

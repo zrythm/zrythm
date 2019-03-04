@@ -15,23 +15,11 @@ Build-Depends: debhelper-compat (= 10),
   libdazzle-1.0-dev,
   portaudio19-dev,
   libsamplerate0-dev,
-#  libavcodec-dev,
-#  libavutil-dev,
-#  libavformat-dev,
   libyaml-dev
-Depends: breeze-icon-theme,
-  libgtk-3-0 (>= 3.20),
-  libjack-jackd2-0 | libjack0,
-  liblilv-0-0,
-  libsmf0,
-  libsndfile1,
-  libdazzle-1.0-0,
-  portaudio0 | portaudio2,
-  libsamplerate0,
-  libyaml-0-2
 
 Package: zrythm
 Architecture: any
-Description: A free GNU/Linux Digital Audio Workstation (DAW) focused on electronic music and high modularity.
+Depends: ${shlibs:Depends}, ${misc:Depends}, breeze-icon-theme
+Description: A free DAW focused on electronic music.
  Zrythm is a free modern music production system, also known as DAW.
  It aims to be highly modular, meaning everything should be automatable and inter-connectable, making it suitable for electronic music.

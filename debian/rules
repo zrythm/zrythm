@@ -2,8 +2,8 @@
 %:
 	dh $@
 
-override_dh_auto_configure:
-	./configure --prefix=/usr --enable-package-mode --enable-release
+#override_dh_auto_configure:
+	#./configure --prefix=/usr
 
 #override_dh_auto_build:
 	#$(MAKE)
@@ -12,5 +12,5 @@ override_dh_auto_configure:
 # $(MAKE) install DESTDIR=$(CURDIR)/debian/zrythm PREFIX=/usr
 
 # ignore some dependencies installed manually (libcyaml)
-override_dh_shlibdeps:
-	dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info
+#override_dh_shlibdeps:
+	#dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info
