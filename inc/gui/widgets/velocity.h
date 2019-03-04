@@ -24,7 +24,8 @@
 #ifndef __GUI_WIDGETS_VELOCITY_H__
 #define __GUI_WIDGETS_VELOCITY_H__
 
-#include <audio/velocity.h>
+#include "audio/velocity.h"
+#include "utils/ui.h"
 
 #include <gtk/gtk.h>
 
@@ -36,21 +37,12 @@ G_DECLARE_FINAL_TYPE (VelocityWidget,
                       VELOCITY_WIDGET,
                       GtkBox)
 
-typedef enum VelocityWidgetState
-{
-  VELOCITY_WIDGET_STATE_NONE,
-  VELOCITY_WIDGET_STATE_SELECTED,
-  VELOCITY_WIDGET_STATE_RESIZE_L,
-  VELOCITY_WIDGET_STATE_RESIZE_R,
-  VELOCITY_WIDGET_STATE_HOVER
-} VelocityWidgetState;
-
 typedef struct _VelocityWidget
 {
   GtkBox                   parent_instance;
   Velocity *               velocity;   ///< the velocity associated with this
-  VelocityWidgetState      state;
   GtkDrawingArea *         drawing_area; ///< the drwaing area
+  UiCursorState            cursor_state;
 } VelocityWidget;
 
 /**
@@ -58,5 +50,10 @@ typedef struct _VelocityWidget
  */
 VelocityWidget *
 velocity_widget_new (Velocity * velocity);
+
+void
+velocity_widget_select (
+  VelocityWidget * self,
+  int              select);
 
 #endif

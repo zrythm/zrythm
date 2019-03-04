@@ -1,7 +1,5 @@
 /*
- * gui/widgets/velocity.c - velocity for MIDI notes
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -25,7 +23,13 @@
 #include "audio/channel_track.h"
 #include "audio/midi_note.h"
 #include "audio/region.h"
+#include "gui/widgets/arranger.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/clip_editor.h"
+#include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/velocity.h"
+#include "utils/ui.h"
 
 G_DEFINE_TYPE (VelocityWidget,
                velocity_widget,
@@ -40,15 +44,22 @@ draw_cb (GtkDrawingArea * da,
   guint width, height;
   GtkStyleContext *context;
 
-  context = gtk_widget_get_style_context (GTK_WIDGET (self));
+  context =
+    gtk_widget_get_style_context (GTK_WIDGET (self));
 
-  width = gtk_widget_get_allocated_width (GTK_WIDGET (self));
-  height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  width =
+    gtk_widget_get_allocated_width (
+      GTK_WIDGET (self));
+  height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
 
-  gtk_render_background (context, cr, 0, 0, width, height);
+  gtk_render_background (
+    context, cr, 0, 0, width, height);
 
   Region * region =
-    (Region *) self->velocity->midi_note->midi_region;
+    (Region *) self->velocity->midi_note->
+      midi_region;
   GdkRGBA * color = &region->track->color;
 
   cairo_set_source_rgba (cr,
@@ -62,6 +73,82 @@ draw_cb (GtkDrawingArea * da,
   cairo_fill(cr);
 
  return FALSE;
+}
+
+static int
+on_motion (GtkWidget *      widget,
+           GdkEventMotion * event,
+           VelocityWidget * self)
+{
+  GtkAllocation allocation;
+  gtk_widget_get_allocation (widget,
+                             &allocation);
+  ARRANGER_WIDGET_GET_PRIVATE (
+    MIDI_MODIFIER_ARRANGER);
+
+  if (event->type == GDK_ENTER_NOTIFY)
+    {
+      gtk_widget_set_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_PRELIGHT,
+        0);
+    }
+  if (event->type == GDK_MOTION_NOTIFY)
+    {
+      if (event->y < RESIZE_CURSOR_SPACE)
+        {
+          self->cursor_state =
+            UI_CURSOR_STATE_RESIZE_UP;
+            ui_set_cursor (widget, "n-resize");
+        }
+      else
+        {
+          self->cursor_state =
+            UI_CURSOR_STATE_DEFAULT;
+          if (ar_prv->action !=
+                UI_OVERLAY_ACTION_RESIZING_UP)
+            {
+              ui_set_cursor (widget, "default");
+            }
+        }
+    }
+  else if (event->type == GDK_LEAVE_NOTIFY)
+    {
+      if (ar_prv->action !=
+            UI_OVERLAY_ACTION_RESIZING_UP)
+        {
+          ui_set_cursor (widget, "default");
+          gtk_widget_unset_state_flags (
+            GTK_WIDGET (self),
+            GTK_STATE_FLAG_PRELIGHT);
+        }
+    }
+
+  return FALSE;
+}
+
+void
+velocity_widget_select (
+  VelocityWidget * self,
+  int              select)
+{
+  self->velocity->midi_note->selected = select;
+  if (select)
+    {
+      gtk_widget_set_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_SELECTED,
+        0);
+    }
+  else
+    {
+      gtk_widget_unset_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_SELECTED);
+    }
+  gtk_widget_queue_draw (GTK_WIDGET (self));
+  gtk_widget_queue_draw (
+    GTK_WIDGET (self->velocity->midi_note->widget));
 }
 
 /**
@@ -80,8 +167,13 @@ velocity_widget_new (Velocity * velocity)
 }
 
 static void
-velocity_widget_class_init (VelocityWidgetClass * klass)
+velocity_widget_class_init (
+  VelocityWidgetClass * _klass)
 {
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (
+    klass, "velocity");
 }
 
 static void
@@ -91,25 +183,37 @@ velocity_widget_init (VelocityWidget * self)
 
   self->drawing_area = GTK_DRAWING_AREA (
     gtk_drawing_area_new ());
-  gtk_container_add (GTK_CONTAINER (self),
-                     GTK_WIDGET (self->drawing_area));
-  gtk_widget_set_visible (GTK_WIDGET (self->drawing_area),
-                          1);
-  gtk_widget_set_hexpand (GTK_WIDGET (self->drawing_area),
-                          1);
+  gtk_container_add (
+    GTK_CONTAINER (self),
+    GTK_WIDGET (self->drawing_area));
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->drawing_area), 1);
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (self->drawing_area), 1);
+
+  gtk_widget_add_events (
+    GTK_WIDGET (self->drawing_area),
+    GDK_ALL_EVENTS_MASK);
 
   /* connect signals */
-  g_signal_connect (G_OBJECT (self->drawing_area), "draw",
-                    G_CALLBACK (draw_cb), self);
-  /*g_signal_connect (G_OBJECT (self), "enter-notify-event",*/
-                    /*G_CALLBACK (on_motion),  self);*/
-  /*g_signal_connect (G_OBJECT(self), "leave-notify-event",*/
-                    /*G_CALLBACK (on_motion),  self);*/
-  /*g_signal_connect (G_OBJECT(self), "motion-notify-event",*/
-                    /*G_CALLBACK (on_motion),  self);*/
+  g_signal_connect (
+    G_OBJECT (self->drawing_area), "draw",
+    G_CALLBACK (draw_cb), self);
+  g_signal_connect (
+    G_OBJECT (self->drawing_area),
+    "enter-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self->drawing_area),
+    "leave-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self->drawing_area),
+    "motion-notify-event",
+    G_CALLBACK (on_motion),  self);
 
-  gtk_widget_set_visible (GTK_WIDGET (self),
-                          1);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self), 1);
 
   /* set tooltip */
   gtk_widget_set_tooltip_text (GTK_WIDGET (self),

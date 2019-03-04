@@ -49,14 +49,20 @@ draw_cb (GtkDrawingArea * widget, cairo_t *cr,
   guint width, height;
   GtkStyleContext *context;
 
-  context = gtk_widget_get_style_context (GTK_WIDGET (self));
+  context =
+    gtk_widget_get_style_context (GTK_WIDGET (self));
 
-  width = gtk_widget_get_allocated_width (GTK_WIDGET (self));
-  height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  width =
+    gtk_widget_get_allocated_width (GTK_WIDGET (self));
+  height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
 
-  gtk_render_background (context, cr, 0, 0, width, height);
+  gtk_render_background (
+    context, cr, 0, 0, width, height);
 
-  Region * region = (Region *) self->midi_note->midi_region;
+  Region * region =
+    (Region *) self->midi_note->midi_region;
   Track * track = region->track;
   /*Channel * channel = track_get_channel (track);*/
   GdkRGBA * color = &track->color;
@@ -166,6 +172,7 @@ midi_note_widget_select (MidiNoteWidget * self,
         GTK_STATE_FLAG_SELECTED);
     }
   gtk_widget_queue_draw (GTK_WIDGET (self));
+  gtk_widget_queue_draw (GTK_WIDGET (self->midi_note->vel->widget));
 }
 
 MidiNoteWidget *
@@ -185,9 +192,10 @@ static void
 midi_note_widget_class_init (
   MidiNoteWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (klass,
-                                 "region");
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (
+    klass, "midi-note");
 }
 
 static void

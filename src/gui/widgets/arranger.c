@@ -299,18 +299,21 @@ update_inspector (ArrangerWidget *self)
 }
 
 /**
- * Selects the region.
+ * Selects the object.
  */
 void
-arranger_widget_toggle_select (ArrangerWidget *  self,
-               GType             type,
-               void *            child,
-               int               append)
+arranger_widget_toggle_select (
+  ArrangerWidget *  self,
+  GType             type,
+  void *            child,
+  int               append)
 {
+  GET_ARRANGER_ALIASES (self);
+
   void ** array;
   int * num;
 
-  if (ARRANGER_IS_TIMELINE (self))
+  if (timeline)
     {
       if (type == REGION_WIDGET_TYPE)
         {
@@ -330,7 +333,7 @@ arranger_widget_toggle_select (ArrangerWidget *  self,
           num = &TIMELINE_SELECTIONS->num_chords;
         }
     }
-  if (ARRANGER_IS_MIDI (self))
+  if (midi_arranger)
     {
       if (type == MIDI_NOTE_WIDGET_TYPE)
         {
@@ -578,16 +581,25 @@ drag_begin (GtkGestureDrag *   gesture,
   AutomationCurveWidget * ac_widget = NULL;
   AutomationPointWidget * ap_widget = NULL;
   ChordWidget *           chord_widget = NULL;
+  VelocityWidget *        vel_widget = NULL;
   if (midi_arranger)
     {
-      midi_arranger = Z_MIDI_ARRANGER_WIDGET (self);
       midi_note_widget =
         midi_arranger_widget_get_hit_midi_note (
           midi_arranger, start_x, start_y);
     }
+  else if (audio_arranger)
+    {
+    }
+  else if (midi_modifier_arranger)
+    {
+      vel_widget =
+        midi_modifier_arranger_widget_get_hit_velocity (
+          midi_modifier_arranger, start_x, start_y);
+      g_message ("%p", vel_widget);
+    }
   else if (timeline)
     {
-      timeline = Z_TIMELINE_ARRANGER_WIDGET (self);
       rw =
         timeline_arranger_widget_get_hit_region (
           timeline, start_x, start_y);
@@ -604,8 +616,8 @@ drag_begin (GtkGestureDrag *   gesture,
 
   /* if something is hit */
   int is_hit =
-    midi_note_widget || rw || ac_widget || ap_widget ||
-    chord_widget;
+    midi_note_widget || rw || ac_widget ||
+    ap_widget || chord_widget || vel_widget;
   if (is_hit)
     {
       /* set selections, positions, actions, cursor */
@@ -659,6 +671,14 @@ drag_begin (GtkGestureDrag *   gesture,
         {
           midi_arranger_widget_find_start_poses (
             midi_arranger);
+        }
+      else if (vel_widget)
+        {
+          midi_modifier_arranger_on_drag_begin_vel_hit (
+            midi_modifier_arranger,
+            state_mask,
+            vel_widget,
+            start_y);
         }
     }
   else /* nothing hit */
@@ -768,33 +788,6 @@ drag_begin (GtkGestureDrag *   gesture,
   update_inspector (self);
 }
 
-/**
- * Wrapper for ui_px_to_pos depending on the arranger
- * type.
- */
-void
-arranger_widget_px_to_pos (
-  ArrangerWidget * self,
-  double           px,
-  Position *       pos,
-  int              has_padding)
-{
-  GET_ARRANGER_ALIASES (self);
-
-  if (timeline)
-    ui_px_to_pos_timeline (
-      px, pos, has_padding);
-  else if (midi_arranger)
-    ui_px_to_pos_piano_roll (
-      px, pos, has_padding);
-  else if (midi_modifier_arranger)
-    ui_px_to_pos_piano_roll (
-      px, pos, has_padding);
-  else if (audio_arranger)
-    ui_px_to_pos_audio_clip_editor (
-      px, pos, has_padding);
-}
-
 static void
 drag_update (GtkGestureDrag * gesture,
                gdouble         offset_x,
@@ -849,12 +842,23 @@ drag_update (GtkGestureDrag * gesture,
             offset_x,
             offset_y);
         }
-      else if (ARRANGER_IS_MIDI (self))
+      else if (midi_arranger)
         {
           midi_arranger_widget_select (
             midi_arranger,
             offset_x,
             offset_y);
+        }
+      else if (midi_modifier_arranger)
+        {
+          midi_modifier_arranger_widget_select (
+            midi_modifier_arranger,
+            offset_x,
+            offset_y);
+        }
+      else if (audio_arranger)
+        {
+          /* TODO */
         }
     } /* endif UI_OVERLAY_ACTION_SELECTING */
 
@@ -908,7 +912,16 @@ drag_update (GtkGestureDrag * gesture,
             &pos);
         }
     } /*endif RESIZING_R */
-
+  else if (ar_prv->action ==
+             UI_OVERLAY_ACTION_RESIZING_UP)
+    {
+      if (midi_modifier_arranger)
+        {
+          midi_modifier_arranger_widget_resize_velocities (
+            midi_modifier_arranger,
+            offset_y);
+        }
+    }
   /* if moving the selection */
   else if (ar_prv->action == UI_OVERLAY_ACTION_MOVING)
     {
@@ -1018,7 +1031,8 @@ drag_end (GtkGestureDrag *gesture,
     }
   else if (midi_modifier_arranger)
     {
-      /* TODO */
+      midi_modifier_arranger_widget_on_drag_end (
+        midi_modifier_arranger);
     }
   else if (audio_arranger)
     {
@@ -1285,6 +1299,33 @@ arranger_widget_setup (ArrangerWidget *   self,
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self), tick_cb,
     NULL, NULL);
+}
+
+/**
+ * Wrapper for ui_px_to_pos depending on the arranger
+ * type.
+ */
+void
+arranger_widget_px_to_pos (
+  ArrangerWidget * self,
+  double           px,
+  Position *       pos,
+  int              has_padding)
+{
+  GET_ARRANGER_ALIASES (self);
+
+  if (timeline)
+    ui_px_to_pos_timeline (
+      px, pos, has_padding);
+  else if (midi_arranger)
+    ui_px_to_pos_piano_roll (
+      px, pos, has_padding);
+  else if (midi_modifier_arranger)
+    ui_px_to_pos_piano_roll (
+      px, pos, has_padding);
+  else if (audio_arranger)
+    ui_px_to_pos_audio_clip_editor (
+      px, pos, has_padding);
 }
 
 /**

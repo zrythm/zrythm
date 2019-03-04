@@ -51,6 +51,8 @@ typedef struct _MidiModifierArrangerWidget
   Velocity *               velocities[600];
   int                      num_velocities;
   Velocity *               start_velocity; ///< clicked velocity
+  /** 1-127 */
+  int                      start_vel_val;
 
   /* temporary start positions, set on drag_begin, and used in drag_update
    * to resize the objects accordingly */
@@ -68,14 +70,23 @@ midi_modifier_arranger_widget_set_allocation (
   GtkWidget *          widget,
   GdkRectangle *       allocation);
 
-MidiNote *
-midi_modifier_arranger_widget_get_midi_note_at_x (double x);
-
-Velocity *
+VelocityWidget *
 midi_modifier_arranger_widget_get_hit_velocity (
   MidiModifierArrangerWidget *  self,
   double                        x,
   double                        y);
+
+/**
+ * Called when in selection mode.
+ *
+ * Called by arranger widget during drag_update to find and
+ * select the midi notes enclosed in the selection area.
+ */
+void
+midi_modifier_arranger_widget_select (
+  MidiModifierArrangerWidget * self,
+  double               offset_x,
+  double               offset_y);
 
 void
 midi_modifier_arranger_widget_update_inspector (
@@ -85,12 +96,6 @@ void
 midi_modifier_arranger_widget_select_all (
   MidiModifierArrangerWidget *  self,
   int                           select);
-
-void
-midi_modifier_arranger_widget_toggle_select_velocity (
-  MidiModifierArrangerWidget * self,
-  Velocity                     vel,
-  int                          append);
 
 /**
  * Shows context menu.
@@ -102,26 +107,16 @@ midi_modifier_arranger_widget_show_context_menu (
   MidiModifierArrangerWidget * self);
 
 void
-midi_modifier_arranger_widget_on_drag_begin_velocity_hit (
-  MidiModifierArrangerWidget * self,
-  GdkModifierType              state_mask,
-  double                       start_y,
-  VelocityWidget *             vw);
-
-void
-midi_modifier_arranger_widget_find_start_poses (
-  MidiModifierArrangerWidget * self);
-
-void
-midi_modifier_arranger_widget_find_and_select_items (
-  MidiModifierArrangerWidget * self,
-  double                   offset_x,
-  double                   offset_y);
-
-void
-midi_modifier_arranger_widget_move_items_y (
+midi_modifier_arranger_widget_resize_velocities (
   MidiModifierArrangerWidget * self,
   double                       offset_y);
+
+void
+midi_modifier_arranger_on_drag_begin_vel_hit (
+  MidiModifierArrangerWidget * self,
+  GdkModifierType          state_mask,
+  VelocityWidget *             vel_w,
+  double                       start_y);
 
 void
 midi_modifier_arranger_widget_on_drag_end (

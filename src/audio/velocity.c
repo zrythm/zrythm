@@ -22,6 +22,7 @@
 #include <stdlib.h>
 
 #include "audio/velocity.h"
+#include "gui/widgets/velocity.h"
 
 /**
  * default velocity
@@ -34,6 +35,7 @@ velocity_new (int        vel)
   Velocity * self = calloc (1, sizeof (Velocity));
 
   self->vel = vel;
+  self->widget = velocity_widget_new (self);
 
   return self;
 }
