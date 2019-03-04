@@ -244,24 +244,32 @@ jack_setup (AudioEngine * self)
   const char **ports;
   const char *client_name = "Zrythm";
   const char *server_name = NULL;
-  jack_options_t options = JackNullOption;
+  jack_options_t options = JackNoStartServer;
   jack_status_t status;
 
   // open a client connection to the JACK server
-  self->client = jack_client_open (client_name, options, &status, server_name);
-  if (self->client == NULL) {
-          g_error ("jack_client_open() failed, "
-                   "status = 0x%2.0x", status);
-          if (status & JackServerFailed) {
-                  g_error ("Unable to connect to JACK server");
-          }
-          exit (1);
-  }
+  self->client =
+    jack_client_open (client_name,
+                      options,
+                      &status,
+                      server_name);
+
+  if (self->client == NULL)
+    {
+      g_warning ("jack_client_open() failed, "
+        "status = 0x%2.0x", status);
+      if (status & JackServerFailed)
+        {
+          g_error (
+            "Unable to connect to JACK server");
+        }
+      exit (1);
+    }
   if (status & JackServerStarted)
     {
       // FIXME g_info
       g_message ("JACK server started");
-  }
+    }
   if (status & JackNameNotUnique)
     {
       client_name = jack_get_client_name(self->client);

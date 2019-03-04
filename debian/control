@@ -20,6 +20,6 @@ Build-Depends: debhelper-compat (= 10),
 Package: zrythm
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, breeze-icon-theme
-Description: A free DAW focused on electronic music.
+Description: An highly automated, intuitive, Digital Audio Workstation (DAW)
  Zrythm is a free modern music production system, also known as DAW.
  It aims to be highly modular, meaning everything should be automatable and inter-connectable, making it suitable for electronic music.

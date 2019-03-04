@@ -17,7 +17,7 @@
 #  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-Summary: A free GNU/Linux Digital Audio Workstation (DAW) focused on electronic music and high modularity.
+Summary: An highly automated, intuitive, Digital Audio Workstation (DAW)
 Name: zrythm
 Version: @BRANCH@
 Release: 1%{?dist}
