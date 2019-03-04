@@ -286,8 +286,7 @@ midi_arranger_widget_on_drag_begin_note_hit (
   /* select/ deselect regions */
   MidiNote * midi_note =
     midi_note_widget->midi_note;
-  if (state_mask & GDK_SHIFT_MASK ||
-      state_mask & GDK_CONTROL_MASK)
+  if (state_mask & GDK_CONTROL_MASK)
     {
       /* if ctrl pressed toggle on/off */
       midi_arranger_widget_toggle_select_midi_note (

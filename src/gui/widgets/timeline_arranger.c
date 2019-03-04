@@ -606,15 +606,9 @@ timeline_arranger_widget_on_drag_begin_region_hit (
   ARRANGER_WIDGET_GET_PRIVATE (self);
   REGION_WIDGET_GET_PRIVATE (rw);
 
-  /* open MIDI editor */
-  if (ar_prv->n_press == 2)
-    {
-      Track * track = rw_prv->region->track;
-      clip_editor_set_region (rw_prv->region);
-      /*g_message ("region size");*/
-      /*position_print (*/
-        /*&rw_prv->region->true_end_pos);*/
-    }
+  /* open piano roll */
+  Track * track = rw_prv->region->track;
+  clip_editor_set_region (rw_prv->region);
 
   Region * region = rw_prv->region;
   self->start_region = rw_prv->region;
@@ -634,8 +628,7 @@ timeline_arranger_widget_on_drag_begin_region_hit (
     }
 
   /* select/ deselect regions */
-  if (state_mask & GDK_SHIFT_MASK ||
-      state_mask & GDK_CONTROL_MASK)
+  if (state_mask & GDK_CONTROL_MASK)
     {
       /* if ctrl pressed toggle on/off */
       timeline_arranger_widget_toggle_select_region (
@@ -695,8 +688,7 @@ timeline_arranger_widget_on_drag_begin_chord_hit (
   ui_set_cursor (GTK_WIDGET (cw), "grabbing");
 
   /* select/ deselect chords */
-  if (state_mask & GDK_SHIFT_MASK ||
-      state_mask & GDK_CONTROL_MASK)
+  if (state_mask & GDK_CONTROL_MASK)
     {
       /* if ctrl pressed toggle on/off */
       timeline_arranger_widget_toggle_select_chord (
@@ -747,8 +739,7 @@ timeline_arranger_widget_on_drag_begin_ap_hit (
     }
 
   /* update selection */
-  if (state_mask & GDK_SHIFT_MASK ||
-      state_mask & GDK_CONTROL_MASK)
+  if (state_mask & GDK_CONTROL_MASK)
     {
       timeline_arranger_widget_toggle_select_automation_point (
                                                                     self, ap, 1);

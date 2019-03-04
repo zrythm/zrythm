@@ -928,7 +928,8 @@ drag_update (GtkGestureDrag * gesture,
       position_set_to_pos (&new_start_pos,
                            &ar_prv->start_pos);
       position_add_ticks (&new_start_pos, ticks_diff);
-      if (SNAP_GRID_ANY_SNAP(ar_prv->snap_grid))
+      if (SNAP_GRID_ANY_SNAP(ar_prv->snap_grid) &&
+          !ar_prv->shift_held)
         position_snap (NULL,
                        &new_start_pos,
                        NULL,
