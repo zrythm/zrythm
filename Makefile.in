@@ -124,7 +124,7 @@ SAMPLERATE_LIBS = @SAMPLERATE_LIBS@
 SNDFILE_LIBS = @SNDFILE_LIBS@
 X11_LIBS = @X11_LIBS@
 
-DEFAULT_INCLUDES = -I. -I./$(INC_DIR) -I./$(SRC_DIR) -I./ext
+DEFAULT_INCLUDES = -I. -I./$(INC_DIR) -I./$(SRC_DIR) -I./ext -I./$(LIBSMF_INC_DIR) -I./$(CYAML_INC_DIR)
 
 # -rdynamic gcc flag
 ifeq ($(patsubst gcc%,gcc,$(CC)),gcc)
@@ -271,7 +271,7 @@ $(BUILD_DIR)/resources.c: $(BUILD_DIR)/zrythm.gresource.xml
 # the same name as the .o file.
 $(BUILD_DIR)/%.c.$(OBJEXT): %.c
 	$(MKDIR_P) $(dir $@)
-	$(CC) $(CFLAGS) -I./$(CYAML_INC_DIR) -I./$(LIBSMF_INC_DIR) -MMD -c $< -o $@
+	$(CC) $(CFLAGS) -MMD -c $< -o $@
 
 $(BUILD_DIR)/%.cpp.$(OBJEXT): %.cpp
 	$(MKDIR_P) $(dir $@)
