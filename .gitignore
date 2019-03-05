@@ -1,6 +1,6 @@
 # Build files
 build
-Makefile
+./Makefile
 config.h
 configure
 
