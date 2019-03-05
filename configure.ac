@@ -78,12 +78,25 @@ AC_ARG_ENABLE(debug,
               [AC_SUBST([DEBUG], [1])],
               [AC_SUBST([DEBUG], [0])])
 
-AC_ARG_WITH(ffmpeg,
-              AS_HELP_STRING([--with-ffmpeg], [Add mp3 support via ffmpeg]),
-              [PKG_CHECK_MODULES(
-  [FFMPEG],
-  [libavcodec libavutil libavformat])],
-  [echo "building without FFMPEG (mp3 support). use --with-ffmpeg to enable it instead"])
+AC_ARG_WITH(
+  ffmpeg,
+  AS_HELP_STRING(
+    [--with-ffmpeg], [Add mp3 support via ffmpeg]),
+  [PKG_CHECK_MODULES(
+    [FFMPEG],
+    [libavcodec libavutil libavformat])],
+    [echo "building without FFMPEG (mp3 support). use --with-ffmpeg to enable it"])
+
+AC_ARG_WITH(
+  qt5,
+  AS_HELP_STRING(
+    [--with-qt5],
+    [Add support for embedding Qt5 plugin UIs]),
+  [PKG_CHECK_MODULES(
+    [QT5], [Qt5Widgets],
+    [AC_DEFINE([HAVE_QT5],[1],[Qt5 support in suil])
+      AC_SUBST([HAVE_QT5],[1])])],
+  [echo "building without Qt5 support in suil. use --with-qt5 to enable it"])
 
 # Check for a C compiler
 AC_PROG_CC([gcc])
@@ -96,15 +109,7 @@ PKG_CHECK_MODULES([GTK3], [gtk+-3.0 >= 3.20])
 PKG_CHECK_MODULES([JACK], [jack])
 PKG_CHECK_MODULES([LILV], [lilv-0 >= 0.24.2])
 
-# SUIL 0.10.0 fails to wrap some x11 plugins in GTK3
-#PKG_CHECK_MODULES([SUIL],
-                  #[suil-0 >= 0.10.2],,
-                  #[echo "Suil version is too old and some plugin UIs will not be displayed. Please install a newer version of suil. If you still want to use your current version (with some plugin UIs not displaying) please change the version requirement in configure.ac" && exit 1])
-#PKG_CHECK_MODULES([PANGO], [pango >= 1.0])
-#PKG_CHECK_MODULES([PANGOFT2], [pangoft2 >= 1.0])
 PKG_CHECK_MODULES([LIBDAZZLE], [libdazzle-1.0 >= 3.20])
-#PKG_CHECK_MODULES([LIBXML], [libxml-2.0 >= 2.9.4])
-PKG_CHECK_MODULES([LIBSMF], [smf >= 1.3])
 PKG_CHECK_MODULES([SNDFILE], [sndfile >= 1.0.28])
 PKG_CHECK_MODULES([SAMPLERATE], [samplerate >= 0.1.9])
 AM_COND_IF([LINUX],
@@ -115,10 +120,6 @@ PKG_CHECK_MODULES([PORTAUDIO], [portaudio-2.0])
 #PKG_CHECK_MODULES([LIBCYAML], [libcyaml])
 PKG_CHECK_MODULES([LIBYAML], [yaml-0.1])
 PKG_CHECK_MODULES([X11], [x11])
-PKG_CHECK_MODULES([QT5], [Qt5Widgets],
-                  [AC_DEFINE([HAVE_QT5],[1],[QT5 support in suil])
-                  AC_SUBST([HAVE_QT5],[1])],
-                  [echo "Building without QT5 support in suil"])
 #PKG_CHECK_MODULES([QT4], [QtGui])
 
 

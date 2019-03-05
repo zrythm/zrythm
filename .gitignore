@@ -2,6 +2,7 @@
 build
 Makefile
 config.h
+configure
 
 # -- C++
 # Prerequisites
@@ -12,6 +13,7 @@ config.h
 *.lo
 *.o
 *.obj
+**/*/*.so*
 
 # Precompiled Headers
 *.gch

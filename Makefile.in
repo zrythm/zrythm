@@ -40,8 +40,16 @@ INC_DIR = inc
 DATA_DIR = data
 FONTS_DIR = resources/fonts
 ICONS_DIR = resources/icons
+# lib file here
 CYAML_BUILD_DIR = ext/libcyaml/build/release
+# execute make here
 CYAML_SRC_DIR = ext/libcyaml
+CYAML_INC_DIR = ext/libcyaml/include
+#lib file here
+LIBSMF_BUILD_DIR = ext/libsmf/src/.libs
+LIBSMF_INC_DIR = ext/libsmf/src
+# execute make here
+LIBSMF_SRC_DIR = ext/libsmf
 
 CC = @CC@
 CXX = @CXX@
@@ -89,7 +97,6 @@ sysconfdir = @sysconfdir@
 
 
 # library CFLAGS
-#LIBCYAML_CFLAGS = @LIBCYAML_CFLAGS@
 LIBYAML_CFLAGS = @LIBYAML_CFLAGS@
 FFMPEG_CFLAGS = @FFMPEG_CFLAGS@
 GTK3_CFLAGS = @GTK3_CFLAGS@
@@ -97,8 +104,6 @@ JACK_CFLAGS = @JACK_CFLAGS@
 LIBDAZZLE_CFLAGS = @LIBDAZZLE_CFLAGS@
 LILV_CFLAGS = @LILV_CFLAGS@
 LV2_CFLAGS = @LV2_CFLAGS@
-#LIBXML_CFLAGS = @LIBXML_CFLAGS@
-LIBSMF_CFLAGS = @LIBSMF_CFLAGS@
 PORTAUDIO_CFLAGS = @PORTAUDIO_CFLAGS@
 QT5_CFLAGS = @QT5_CFLAGS@
 SAMPLERATE_CFLAGS = @SAMPLERATE_CFLAGS@
@@ -106,7 +111,6 @@ SNDFILE_CFLAGS = @SNDFILE_CFLAGS@
 X11_CFLAGS = @X11_CFLAGS@
 
 # library LIBS
-#LIBCYAML_LIBS = @LIBCYAML_LIBS@
 LIBYAML_LIBS = @LIBYAML_LIBS@
 GTK3_LIBS = @GTK3_LIBS@
 FFMPEG_LIBS = @FFMPEG_LIBS@
@@ -114,8 +118,6 @@ JACK_LIBS = @JACK_LIBS@
 LIBDAZZLE_LIBS = @LIBDAZZLE_LIBS@
 LILV_LIBS = @LILV_LIBS@
 LV2_LIBS = @LV2_LIBS@
-#LIBXML_LIBS = @LIBXML_LIBS@
-LIBSMF_LIBS = @LIBSMF_LIBS@
 PORTAUDIO_LIBS = @PORTAUDIO_LIBS@
 QT5_LIBS = @QT5_LIBS@
 SAMPLERATE_LIBS = @SAMPLERATE_LIBS@
@@ -157,7 +159,6 @@ CFLAGS += -Wall \
 	$(GTK3_CFLAGS) \
 	$(JACK_CFLAGS) \
 	$(LIBDAZZLE_CFLAGS) \
-	$(LIBSMF_CFLAGS) \
 	$(LIBYAML_CFLAGS) \
 	$(LILV_CFLAGS) \
 	$(LV2_CFLAGS) \
@@ -179,7 +180,6 @@ LDFLAGS +=	\
   $(GTK3_LIBS) \
 	$(JACK_LIBS) \
 	$(LIBDAZZLE_LIBS) \
-	$(LIBSMF_LIBS) \
 	$(LIBYAML_LIBS) \
 	$(LILV_LIBS) \
 	$(LV2_LIBS) \
@@ -233,7 +233,7 @@ appicon_DATA = z.svg
 $(BIN) : $(BUILD_DIR)/$(BIN)$(EXT)
 
 # Actual target of the binary - depends on all .o files.
-$(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(OBJ_CPP) $(BUILD_DIR)/resources.o ext/libcyaml/build/release/libcyaml.a
+$(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(OBJ_CPP) $(BUILD_DIR)/resources.o $(CYAML_BUILD_DIR)/libcyaml.a $(LIBSMF_BUILD_DIR)/libsmf.a
 	# Create build directories - same structure as sources.
 	$(MKDIR_P) $(@D)
 	# Just link all the object files.
@@ -243,6 +243,10 @@ $(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(OBJ_CPP) $(BUILD_DIR)/resources.o ext/libcya
 # build libcyaml
 $(CYAML_BUILD_DIR)/libcyaml.a:
 	cd $(CYAML_SRC_DIR) && make VARIANT=release
+
+# build libsmf
+$(LIBSMF_BUILD_DIR)/libsmf.a:
+	cd $(LIBSMF_SRC_DIR) && autoreconf -i && ./configure && make
 
 $(BUILD_DIR)/zrythm.gresource.xml: resources/gen-gtk-gresources-xml.py \
 	resources/theme.css \
@@ -267,11 +271,11 @@ $(BUILD_DIR)/resources.c: $(BUILD_DIR)/zrythm.gresource.xml
 # the same name as the .o file.
 $(BUILD_DIR)/%.c.$(OBJEXT): %.c
 	$(MKDIR_P) $(dir $@)
-	$(CC) $(CFLAGS) -I./ext/libcyaml/include -MMD -c $< -o $@
+	$(CC) $(CFLAGS) -I./$(CYAML_INC_DIR) -I./$(LIBSMF_INC_DIR) -MMD -c $< -o $@
 
 $(BUILD_DIR)/%.cpp.$(OBJEXT): %.cpp
 	$(MKDIR_P) $(dir $@)
-	$(CXX) $(CFLAGS) $(QT5_CFLAGS) -lstdc++ -I./ext/libcyaml/include -MMD -c $< -o $@
+	$(CXX) $(CFLAGS) $(QT5_CFLAGS) -lstdc++ -MMD -c $< -o $@
 
 .PHONY: clean
 clean:
@@ -279,7 +283,8 @@ clean:
 	# This should remove all generated files.
 	-rm $(BUILD_DIR)/$(BIN)$(EXT) $(OBJ) $(DEP)
 	-rm $(BUILD_DIR)/zrythm.gresource.xml
-	-rm -rf $(CYAML_SRC_DIR)/build/*
+	cd $(CYAML_SRC_DIR) && make clean
+	cd $(LIBSMF_SRC_DIR) && make clean
 
 .PHONY: install
 install: $(BUILD_DIR)/$(BIN)$(EXT) install-appicon-data install-desktop-data install-gschemas install-fonts

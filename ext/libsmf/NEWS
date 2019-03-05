@@ -1,0 +1,33 @@
+Changes between 1.2 and 1.3:
+
+ - Make libsmf more tolerant for broken MIDI files - try to load as much
+   as possible instead of not loading the track at all.
+
+ - Add user pointers to smf_event_t and smf_track_t.
+
+ - Make it easier to use libsmf under Microsoft Windows.
+
+Changes between 1.1 and 1.2:
+
+ - Relaxed some overly restrictive tests that could trip asserts without
+   good reason.
+
+ - Fixed a bug that broke adding SMF events in the middle of the track
+   in some cases.
+
+ - Fixed a bug that broke removing tracks in some cases.
+
+   If you encountered failed assertion during saving, it could be one
+   of these bugs.
+
+Changes between 1.0 and 1.1:
+
+ - libsmf released separately from jack-smf-utils.
+
+ - Fixed build on SunOS.
+
+ - Add "text" command to smfsh and corresponding smf_event_new_textual() API function.
+
+ - smf_track_remove_event renamed to smf_event_remove_from_track, for consistency.
+   That won't happen anymore, I promise.  ;-)
+

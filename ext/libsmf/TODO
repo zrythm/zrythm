@@ -1,0 +1,14 @@
+Things to do:
+
+ - Implement parsing of sysexes chopped into several "packets".
+
+ - Add support for type 2 SMF files.
+
+ - Add support for SMPTE time.
+
+ - Rework removal of tempo changes.  Right now there is one scenario that is broken - when
+   you have two tempo-related events at the end of the song (i.e. there are no events following),
+   removing one of these tempo-related events will remove both tempo changes.
+
+ - Add a way to force some particular tempo during playback and ignore the following tempo changes.
+
