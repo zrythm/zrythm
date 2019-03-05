@@ -138,13 +138,11 @@ AC_CHECK_FUNC([mlock],
 # Check for breeze icons
 AM_COND_IF([USE_DEFAULT_PREFIX],
            [AC_CHECK_FILE([$ac_default_prefix/share/icons/breeze-dark],,
-              [echo "Breeze icons are required" && \
-               echo "Please install them using a package manager or manually from here https://github.com/KDE/breeze-icons" && \
-               exit 1])],
+              [echo "Breeze icons are required to show the icons properly" && \
+               echo "Please install them using a package manager or manually from here https://github.com/KDE/breeze-icons"])],
            [AC_CHECK_FILE([$prefix/share/icons/breeze-dark],,
               [echo "Breeze icons are required" && \
-               echo "Please install them using a package manager or manually from here https://github.com/KDE/breeze-icons" && \
-               exit 1])])
+               echo "Please install them using a package manager or manually from here https://github.com/KDE/breeze-icons"])])
 
 # Add GSettings support
 GLIB_GSETTINGS
