@@ -1,0 +1,19 @@
+animals:
+  - kind: cat
+    sounds:
+      - meow
+      - purr
+  - kind: hippo
+    sounds:
+      - wheeze
+      - grunt
+      - roar
+  - kind: snake
+    sounds:
+      - hiss
+cakes:
+  - salted caramel cake
+  - lemon drizzle cake
+  - victoria sponge
+  - carrot cake
+  - yule log

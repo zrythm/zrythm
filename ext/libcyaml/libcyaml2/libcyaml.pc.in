@@ -1,0 +1,10 @@
+prefix=PREFIX
+exec_prefix=${prefix}
+libdir=${exec_prefix}/LIBDIR
+includedir=${prefix}/INCLUDEDIR
+
+Name: libcyaml
+Description: Schema-based YAML parsing and serialisation
+Version: VERSION
+Libs: -L${libdir} -lcyaml -lyaml
+Cflags: -I${includedir}
