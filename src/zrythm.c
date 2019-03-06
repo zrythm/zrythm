@@ -154,7 +154,34 @@ zrythm_add_to_recent_projects (Zrythm * self,
   g_settings_set_strv (
     S_GENERAL,
     "recent-projects",
-    ZRYTHM->recent_projects);
+    (const char * const *) ZRYTHM->recent_projects);
+}
+
+void
+zrythm_remove_recent_project (
+  char * filepath)
+{
+  for (int i = 0; i < ZRYTHM->num_recent_projects;
+       i++)
+    {
+      if (!strcmp (filepath,
+                   ZRYTHM->recent_projects[i]))
+        {
+          array_delete (ZRYTHM->recent_projects,
+                        ZRYTHM->num_recent_projects,
+                        ZRYTHM->recent_projects[i]);
+
+          ZRYTHM->recent_projects[
+            ZRYTHM->num_recent_projects] = NULL;
+
+          g_settings_set_strv (
+            S_GENERAL,
+            "recent-projects",
+            (const char * const *) ZRYTHM->recent_projects);
+        }
+
+    }
+
 }
 
 static void

@@ -1,8 +1,5 @@
 /*
- * gui/widgets/project_assistant.h - Start assistant to show
- *   when launching Zrythm
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -59,6 +56,7 @@ typedef struct _ProjectAssistantWidget
   GtkTreeSelection    * projects_selection;
   GtkTreeModel        * model;
   GtkCheckButton      * create_new_project;
+  GtkButton *         remove_btn;
   ProjectInfo         project_infos[300];
   ProjectInfo         * selection;
   int                 num_project_infos;

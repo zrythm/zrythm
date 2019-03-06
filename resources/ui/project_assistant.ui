@@ -62,19 +62,48 @@
           </packing>
         </child>
         <child>
-          <object class="GtkCheckButton" id="create_new_project">
-            <property name="label" translatable="yes">Create new project</property>
+          <object class="GtkBox">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">False</property>
-            <property name="draw_indicator">True</property>
-            <signal name="toggled" handler="on_create_new_project_toggled" object="ProjectAssistantWidget" swapped="no"/>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkCheckButton" id="create_new_project">
+                <property name="label" translatable="yes">Create new project</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="hexpand">True</property>
+                <property name="draw_indicator">True</property>
+                <signal name="toggled" handler="on_create_new_project_toggled" object="ProjectAssistantWidget" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="remove_btn">
+                <property name="label" translatable="yes">Remove</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Removes selected project from the list</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">2</property>
           </packing>
+        </child>
+        <child>
+          <placeholder/>
         </child>
       </object>
       <packing>
@@ -109,6 +138,9 @@ Frame rate: 44100
       </packing>
     </child>
     <child type="titlebar">
+      <placeholder/>
+    </child>
+    <child>
       <placeholder/>
     </child>
     <child>

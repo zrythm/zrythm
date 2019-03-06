@@ -138,7 +138,12 @@ ZrythmApp *
 zrythm_app_new ();
 
 void
-zrythm_add_to_recent_projects (Zrythm * self,
-                               const char * filepath);
+zrythm_add_to_recent_projects (
+  Zrythm * self,
+  const char * filepath);
+
+void
+zrythm_remove_recent_project (
+  char * filepath);
 
 #endif /* __ZRYTHM_H__ */

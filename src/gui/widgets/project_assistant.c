@@ -26,6 +26,7 @@
  */
 #include "zrythm.h"
 #include "gui/widgets/project_assistant.h"
+#include "utils/arrays.h"
 #include "utils/io.h"
 #include "utils/resources.h"
 
@@ -164,6 +165,54 @@ add_columns (GtkTreeView *treeview)
   gtk_tree_view_append_column (treeview, column);
 }
 
+static void
+refresh_projects (
+  ProjectAssistantWidget *self)
+{
+  /* set model to tree view */
+  self->model = create_model (self);
+  gtk_tree_view_set_model (
+    GTK_TREE_VIEW (self->projects),
+    self->model);
+}
+
+static void
+on_project_remove_clicked (
+  GtkButton * btn,
+  ProjectAssistantWidget * self)
+{
+  if (self->selection)
+    {
+      /* remove from gsettings */
+      zrythm_remove_recent_project (
+        self->selection->filename);
+
+      /* remove from treeview */
+      for (int ii = 0;
+           ii < self->num_project_infos; ii++)
+        {
+          if (&self->project_infos[ii] ==
+                self->selection)
+            {
+              --self->num_project_infos;
+              for (int jj = ii;
+                   jj < self->num_project_infos;
+                   jj++)
+                {
+                  self->project_infos[jj] =
+                    self->project_infos[jj + 1];
+                }
+              break;
+            }
+        }
+
+
+        /* refresh treeview */
+        refresh_projects (self);
+    }
+}
+
+
 ProjectAssistantWidget *
 project_assistant_widget_new (GtkWindow * parent,
                             int show_create_new_project)
@@ -189,10 +238,7 @@ project_assistant_widget_new (GtkWindow * parent,
     }
 
   /* set model to tree view */
-  self->model = create_model (self);
-  gtk_tree_view_set_model (
-    GTK_TREE_VIEW (self->projects),
-    self->model);
+  refresh_projects (self);
   gtk_tree_view_set_search_column (
     GTK_TREE_VIEW (self->projects),
     COLUMN_NAME);
@@ -228,6 +274,10 @@ project_assistant_widget_class_init (
   gtk_widget_class_bind_template_child (
     klass,
     ProjectAssistantWidget,
+    remove_btn);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ProjectAssistantWidget,
     create_new_project);
   gtk_widget_class_bind_template_callback (
     klass,
@@ -242,4 +292,9 @@ project_assistant_widget_init (
   ProjectAssistantWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  g_signal_connect(
+    G_OBJECT (self->remove_btn), "clicked",
+    G_CALLBACK (on_project_remove_clicked), self);
+
 }
