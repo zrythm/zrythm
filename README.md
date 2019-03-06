@@ -13,61 +13,17 @@ More info at https://www.zrythm.org
 - LV2
 
 ## Installation
-### pacman
-Substitute `yaourt` with your AUR-compatible package manager
-```
-# stable
-yaourt -S zrythm
+For easy package installation see [Downloads](https://www.zrythm.org/download/).
 
-# latest (unstable)
-yaourt -S zrythm-git
+For manual installation,
 ```
-### apt
-add the public key
-```
-sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 1D597D35
-```
-add the repository
-```
-sudo apt-add-repository "deb https://apt.alextee.org/debian buster main"
-```
-
-install
-```
-sudo apt-get update && sudo apt-get install zrythm
-```
-
-_Note: If you don't have apt-add-repository, install it using_
-`
-sudo apt-get install software-properties-common
-`
-
-_Note2: If some dependencies are not found, you might need to enable the universe repository (before installing) using_
-`
-sudo apt-add-repository universe
-`
-
-_Note3: For latest (unstable) version, install this directly by double clicking or by using `sudo apt install ./<filename>.deb`:_ https://git.zrythm.org/zrythm/zrythm/-/jobs/artifacts/master/download?job=build_deb_64_unstable_no_ffmpeg
-### rpm
-enable dnf repository
-```
-sudo dnf -y copr enable alextee/zrythm
-```
-install
-```
-sudo dnf -y install zrythm
-```
-### Manual installation
-_Note: You will need to have the development libraries for gtk3, jack, lilv, libsmf, libsndfile, libsamplerate, ffmpeg, libdazzle and lv2 installed_
-```
-git clone --recurse-submodules https://git.zrythm.org/zrythm/zrythm.git
-cd zrythm
-git submodule update --init --recursive
 ./autogen.sh
 ./configure
-make
+make -j8
 sudo make install
 ```
+
+For more details see [INSTALL.md](INSTALL.md).
 
 ## Using
 At the moment, Zrythm assumes you have Jack installed and will only run if Jack is running. For Jack setup instructions see https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack
