@@ -154,11 +154,8 @@ typedef struct Port
   Plugin              * owner_pl;
   Channel             * owner_ch;
 
-  /**
-   * FIXME ???
-   * used in xml project file export
-   */
-  int                 exported;
+  /** used when loading projects */
+  int                 initialized;
 } Port;
 
 static const cyaml_strval_t
@@ -257,10 +254,9 @@ typedef struct StereoPorts
 } StereoPorts;
 
 /**
- * Creates port (used when loading projects).
+ * Inits ports just loaded from yml.
  */
-Port *
-port_get_or_create_blank (int id);
+port_init_loaded (Port * port);
 
 /**
  * Creates port.

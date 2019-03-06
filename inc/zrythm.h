@@ -23,6 +23,15 @@
  * The GTK application.
  */
 
+/**
+ *
+ * \mainpage Code Documentation
+ *
+ * Zrythm is the global singleton struct that
+ * contains all shared information.
+ *
+ */
+
 #ifndef __ZRYTHM_H__
 #define __ZRYTHM_H__
 

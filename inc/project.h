@@ -50,9 +50,9 @@
 
 #define PROJECT                 ZRYTHM->project
 #define DEFAULT_PROJECT_NAME    "Untitled Project"
-#define PROJECT_FILE            "project.yaml"
-#define PROJECT_REGIONS_FILE    "regions.yaml"
-#define PROJECT_PORTS_FILE      "ports.yaml"
+#define PROJECT_FILE            "project.yml"
+#define PROJECT_REGIONS_FILE    "regions.yml"
+#define PROJECT_PORTS_FILE      "ports.yml"
 #define PROJECT_REGIONS_DIR     "Regions"
 #define PROJECT_STATES_DIR      "states"
 #define PROJECT_EXPORTS_DIR     "exports"
@@ -189,6 +189,9 @@ static const cyaml_schema_field_t
   CYAML_FIELD_MAPPING (
     "quantize_timeline", CYAML_FLAG_DEFAULT,
     Project, quantize_timeline, quantize_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "audio_engine", CYAML_FLAG_DEFAULT,
+    Project, audio_engine, engine_fields_schema),
   CYAML_FIELD_MAPPING (
     "snap_grid_midi", CYAML_FLAG_DEFAULT,
     Project, snap_grid_midi, snap_grid_fields_schema),

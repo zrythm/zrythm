@@ -106,6 +106,30 @@ create_default (Project * self)
   self->loaded = 1;
 }
 
+/**
+ * Initializes the newly deserialized ports.
+ */
+static void
+init_ports ()
+{
+  Port * port;
+  for (int i = 0; i < PROJECT->num_ports; i++)
+    {
+      port = project_get_port (i);
+      port_init_loaded (port);
+    }
+}
+
+/**
+ * Initializes the newly deserialized regions.
+ */
+static void
+init_regions ()
+{
+  for (int i = 0; i < PROJECT->num_regions; i++)
+    region_init_loaded (project_get_region (i));
+}
+
 static void
 load (Project *    self,
       char * filename)
@@ -117,9 +141,30 @@ load (Project *    self,
   char * dir = io_get_dir (filename);
   update_paths (dir);
 
-  /*xml_load_ports ();*/
   /*xml_load_regions ();*/
   /*xml_load_project ();*/
+
+  gchar * yaml;
+  GError *err = NULL;
+
+  g_file_get_contents (
+    PROJECT->project_file_path,
+    &yaml,
+    NULL,
+    &err);
+  if (err != NULL)
+    {
+      // Report error to user, and free error
+      g_warning ("Unable to read file: %s",
+                 err->message);
+      g_error_free (err);
+      return;
+    }
+
+  Project * prj = project_deserialize (yaml);
+  PROJECT = prj;
+  init_ports ();
+  init_regions ();
   mixer_load_plugins ();
 
   char * filepath_noext = g_path_get_basename (dir);
@@ -131,6 +176,7 @@ load (Project *    self,
   self->filename = filename;
 
   self->loaded = 1;
+
 }
 
 /**
@@ -220,7 +266,19 @@ project_save (const char * dir)
   /*xml_write_regions ();*/
   /*xml_write_project ();*/
   char * yaml = project_serialize (PROJECT);
-  g_message ("\n%s", yaml);
+  GError *err = NULL;
+  g_file_set_contents (
+    PROJECT->project_file_path,
+    yaml,
+    -1,
+    &err);
+  if (err != NULL)
+    {
+      // Report error to user, and free error
+      g_warning ("Unable to read file: %s",
+                 err->message);
+      g_error_free (err);
+    }
 
   zrythm_add_to_recent_projects (
     ZRYTHM,

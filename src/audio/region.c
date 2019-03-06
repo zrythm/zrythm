@@ -96,6 +96,18 @@ region_init (Region *   region,
 }
 
 /**
+ * Inits freshly loaded region.
+ */
+void
+region_init_loaded (Region * region)
+{
+  region->track =
+    project_get_track (region->track_id);
+  region->linked_region =
+    project_get_region (region->linked_region_id);
+}
+
+/**
  * Clamps position then sets it.
  */
 void

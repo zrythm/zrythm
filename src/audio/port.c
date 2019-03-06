@@ -1,22 +1,20 @@
 /*
- * audio/ports.h - ports to pass when processing the audio signal
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
- * copyright (c) 2018 alexandros theodotou
+ * This file is part of Zrythm
  *
- * this file is part of zrythm
- *
- * zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the gnu general public license as published by
- * the free software foundation, either version 3 of the license, or
+ * Zrythm is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * zrythm is distributed in the hope that it will be useful,
- * but without any warranty; without even the implied warranty of
- * merchantability or fitness for a particular purpose.  see the
- * gnu general public license for more details.
+ * Zrythm is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * you should have received a copy of the gnu general public license
- * along with zrythm.  if not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 /** \file
@@ -48,30 +46,21 @@ typedef jack_default_audio_sample_t   sample_t;
 typedef jack_nframes_t                nframes_t;
 
 /**
- * Creates port (used when loading projects).
+ * Inits ports just loaded from yml.
  */
-Port *
-port_get_or_create_blank (int id)
+port_init_loaded (Port * port)
 {
-  if (PROJECT->ports[id])
-    {
-      return PROJECT->ports[id];
-    }
-  else
-    {
-      Port * port = calloc (1, sizeof (Port));
-
-      port->id = id;
-      PROJECT->ports[id] = port;
-      PROJECT->num_ports++;
-      port->buf = calloc (AUDIO_ENGINE->block_length, sizeof (sample_t));
-      port->num_dests = 0;
-      port->flow = FLOW_UNKNOWN;
-
-      g_message ("[port_new] Creating blank port %d", id);
-
-      return port;
-    }
+  /* set caches */
+  for (int j = 0; j < port->num_srcs; j++)
+    port->srcs[j] =
+      project_get_port (port->src_ids[j]);
+  for (int j = 0; j < port->num_dests; j++)
+    port->dests[j] =
+      project_get_port (port->dest_ids[j]);
+  port->owner_pl =
+    project_get_plugin (port->owner_pl_id);
+  port->owner_ch =
+    project_get_channel (port->owner_ch_id);
 }
 
 /**

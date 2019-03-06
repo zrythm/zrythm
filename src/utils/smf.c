@@ -1,7 +1,5 @@
 /*
- * utils/smf.c - SMF file writer/reader
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -110,16 +108,19 @@ smf_save_regions ()
       Position abs_start_pos;
       position_init (&abs_start_pos);
       MidiRegion * midi_region = (MidiRegion *) region;
-      midi_note_notes_to_events (midi_region->midi_notes,
-                                 midi_region->num_midi_notes,
-                                 &abs_start_pos,
-                                 events);
+      midi_note_notes_to_events (
+        midi_region->midi_notes,
+        midi_region->num_midi_notes,
+        &abs_start_pos,
+        events);
 
       for (int j = 0; j < events->num_events; j++)
         {
-          jack_midi_event_t * ev = &events->jack_midi_events[j];
-          event = smf_event_new_from_pointer (ev->buffer,
-                                              ev->size);
+          jack_midi_event_t * ev =
+            &events->jack_midi_events[j];
+          event =
+            smf_event_new_from_pointer (
+              ev->buffer, ev->size);
           if (event == NULL)
             {
               g_warning ("smf event is NULL");
@@ -156,6 +157,7 @@ smf_save_regions ()
 
       smf_delete(smf);
     }
+  g_message ("smf save succeeded");
 }
 
 /**
