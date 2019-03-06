@@ -60,13 +60,15 @@ array_index_of (void ** array, int size, void * element)
 }
 
 static int
-alphaBetize (const char *a, const char *b)
+alphaBetize (const void *a, const void *b)
 {
-  int r = strcasecmp(a, b);
+  const char * aa = (const char *) a;
+  const char * bb = (const char *) b;
+  int r = strcasecmp(aa, bb);
   if (r) return r;
   /* if equal ignoring case, use opposite of strcmp()
    * result to get lower before upper */
-  return -strcmp(a, b); /* aka: return strcmp(b, a); */
+  return -strcmp(aa, bb); /* aka: return strcmp(b, a); */
 }
 
 void

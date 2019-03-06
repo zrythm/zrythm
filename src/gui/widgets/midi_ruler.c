@@ -233,21 +233,23 @@ midi_ruler_widget_init (
     G_CALLBACK (midi_ruler_draw_cb), self);
 
   /* add all the markers */
+  RulerWidget * ruler =
+    Z_RULER_WIDGET (self);
   self->loop_start =
     ruler_marker_widget_new (
-      self, RULER_MARKER_TYPE_LOOP_START);
+      ruler, RULER_MARKER_TYPE_LOOP_START);
   gtk_overlay_add_overlay (
     GTK_OVERLAY (self),
     GTK_WIDGET (self->loop_start));
   self->loop_end =
     ruler_marker_widget_new (
-      self, RULER_MARKER_TYPE_LOOP_END);
+      ruler, RULER_MARKER_TYPE_LOOP_END);
   gtk_overlay_add_overlay (
     GTK_OVERLAY (self),
     GTK_WIDGET (self->loop_end));
   self->clip_start =
     ruler_marker_widget_new (
-      self, RULER_MARKER_TYPE_CLIP_START);
+      ruler, RULER_MARKER_TYPE_CLIP_START);
   gtk_overlay_add_overlay (
     GTK_OVERLAY (self),
     GTK_WIDGET (self->clip_start));

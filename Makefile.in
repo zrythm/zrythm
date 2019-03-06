@@ -154,6 +154,7 @@ CFLAGS += -Wall \
 	-Werror=return-type \
 	-Werror=int-conversion \
 	-Werror=format-security \
+	-Werror=incompatible-pointer-types \
 	$(DEFAULT_INCLUDES) \
 	$(FFMPEG_CFLAGS) \
 	$(GTK3_CFLAGS) \

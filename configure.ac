@@ -85,7 +85,7 @@ AC_ARG_WITH(
   [PKG_CHECK_MODULES(
     [FFMPEG],
     [libavcodec libavutil libavformat])],
-    [echo "building without FFMPEG (mp3 support). use --with-ffmpeg to enable it"])
+    [echo "** building without FFMPEG (mp3 support). use --with-ffmpeg to enable it"])
 
 AC_ARG_WITH(
   qt5,
@@ -96,7 +96,7 @@ AC_ARG_WITH(
     [QT5], [Qt5Widgets],
     [AC_DEFINE([HAVE_QT5],[1],[Qt5 support in suil])
       AC_SUBST([HAVE_QT5],[1])])],
-  [echo "building without Qt5 support in suil. use --with-qt5 to enable it"])
+  [echo "** building without Qt5 support in suil. use --with-qt5 to enable it"])
 
 # Check for a C compiler
 AC_PROG_CC([gcc])

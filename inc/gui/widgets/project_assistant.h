@@ -1,5 +1,5 @@
 /*
- * gui/widgets/start_assistant.h - Start assistant to show
+ * gui/widgets/project_assistant.h - Start assistant to show
  *   when launching Zrythm
  *
  * Copyright (C) 2019 Alexandros Theodotou
@@ -20,20 +20,20 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_START_ASSISTANT_H__
-#define __GUI_WIDGETS_START_ASSISTANT_H__
+#ifndef __GUI_WIDGETS_PROJECT_ASSISTANT_H__
+#define __GUI_WIDGETS_PROJECT_ASSISTANT_H__
 
 #include "audio/channel.h"
 #include "gui/widgets/meter.h"
 
 #include <gtk/gtk.h>
 
-#define START_ASSISTANT_WIDGET_TYPE \
-  (start_assistant_widget_get_type ())
-G_DECLARE_FINAL_TYPE (StartAssistantWidget,
-                      start_assistant_widget,
+#define PROJECT_ASSISTANT_WIDGET_TYPE \
+  (project_assistant_widget_get_type ())
+G_DECLARE_FINAL_TYPE (ProjectAssistantWidget,
+                      project_assistant_widget,
                       Z,
-                      START_ASSISTANT_WIDGET,
+                      PROJECT_ASSISTANT_WIDGET,
                       GtkAssistant)
 
 typedef struct ProjectInfo
@@ -52,7 +52,7 @@ enum
   NUM_COLUMNS
 };
 
-typedef struct _StartAssistantWidget
+typedef struct _ProjectAssistantWidget
 {
   GtkAssistant        parent_instance;
   GtkTreeView         * projects;
@@ -62,13 +62,13 @@ typedef struct _StartAssistantWidget
   ProjectInfo         project_infos[300];
   ProjectInfo         * selection;
   int                 num_project_infos;
-} StartAssistantWidget;
+} ProjectAssistantWidget;
 
 /**
  * Creates a channel widget using the given channel data.
  */
-StartAssistantWidget *
-start_assistant_widget_new (GtkWindow * parent,
+ProjectAssistantWidget *
+project_assistant_widget_new (GtkWindow * parent,
                             int show_create_new_project);
 
 #endif

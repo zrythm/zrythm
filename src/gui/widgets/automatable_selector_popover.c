@@ -338,7 +338,7 @@ tree_view_create (
 
   gtk_widget_set_visible (tree_view, 1);
 
-  return tree_view;
+  return GTK_TREE_VIEW (tree_view);
 }
 
 static void

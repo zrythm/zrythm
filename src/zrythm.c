@@ -30,10 +30,11 @@
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/splash.h"
-#include "gui/widgets/start_assistant.h"
+#include "gui/widgets/project_assistant.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/arrays.h"
 #include "utils/io.h"
 
 #include <gtk/gtk.h>
@@ -60,7 +61,7 @@ typedef enum TaskId
 
 static SplashWindowWidget * splash;
 static GApplication * app;
-static StartAssistantWidget * assistant;
+static ProjectAssistantWidget * assistant;
 static TaskId * task_id; ///< current task;
 static UpdateSplashData * data;
 
@@ -95,11 +96,6 @@ init_dirs_and_files ()
                       "Projects",
                       NULL);
   io_mkdir (ZRYTHM->projects_dir);
-
-  ZRYTHM->recent_projects_file =
-    g_build_filename (ZRYTHM->zrythm_dir,
-                      ".recent_projects",
-                      NULL);
 }
 
 /**
@@ -109,34 +105,56 @@ init_dirs_and_files ()
 static void
 init_recent_projects ()
 {
-  FILE * file = io_touch_file (ZRYTHM->recent_projects_file);
+  gchar ** recent_projects =
+    g_settings_get_strv (S_GENERAL,
+                         "recent-projects");
 
-  char line[256];
-  while (fgets(line, sizeof(line), file))
+  /* get recent projects */
+  ZRYTHM->num_recent_projects = 0;
+  while (recent_projects[
+           ZRYTHM->num_recent_projects] != NULL)
     {
-      char * tmp = g_strdup_printf ("%s", line);
-      char * project_filename = g_strstrip (tmp);
-      FILE * project_file = fopen (project_filename, "r");
-      if (project_file)
-        {
-          ZRYTHM->recent_projects [ZRYTHM->num_recent_projects++] =
-            project_filename;
-          fclose (project_file);
-        }
-  }
-
-  fclose(file);
+      ZRYTHM->recent_projects[
+        ZRYTHM->num_recent_projects++] =
+          recent_projects[
+            ZRYTHM->num_recent_projects];
+    }
 }
 
 void
 zrythm_add_to_recent_projects (Zrythm * self,
                                const char * filepath)
 {
-  FILE * file = fopen (self->recent_projects_file, "a");
+  /* if we are at max
+   * projects */
+  if (ZRYTHM->num_recent_projects ==
+        MAX_RECENT_PROJECTS)
+    {
+      /* free the last one and delete it */
+      g_free (ZRYTHM->recent_projects[
+                MAX_RECENT_PROJECTS - 1]);
+      array_delete (
+        ZRYTHM->recent_projects,
+        ZRYTHM->num_recent_projects,
+        ZRYTHM->recent_projects[
+          ZRYTHM->num_recent_projects - 1]);
+    }
 
-  fprintf (file, "%s\n", filepath);
+  array_insert (
+    ZRYTHM->recent_projects,
+    ZRYTHM->num_recent_projects,
+    0,
+    filepath);
 
-  fclose(file);
+  /* set last element to NULL because the call
+   * takes a NULL terminated array */
+  ZRYTHM->recent_projects[
+    ZRYTHM->num_recent_projects] = NULL;
+
+  g_settings_set_strv (
+    S_GENERAL,
+    "recent-projects",
+    ZRYTHM->recent_projects);
 }
 
 static void
@@ -332,16 +350,14 @@ static void on_prompt_for_project (GSimpleAction  *action,
 
       /* show the assistant */
       assistant =
-        start_assistant_widget_new (GTK_WINDOW(splash),
-                                    1);
-      g_signal_connect (G_OBJECT (assistant),
-                        "apply",
-                        G_CALLBACK (on_finish),
-                        NULL);
-      g_signal_connect (G_OBJECT (assistant),
-                        "cancel",
-                        G_CALLBACK (on_finish),
-                        (void *) 1);
+        project_assistant_widget_new (
+          GTK_WINDOW(splash), 1);
+      g_signal_connect (
+        G_OBJECT (assistant), "apply",
+        G_CALLBACK (on_finish), NULL);
+      g_signal_connect (
+        G_OBJECT (assistant), "cancel",
+        G_CALLBACK (on_finish), (void *) 1);
       gtk_window_present (GTK_WINDOW (assistant));
     }
 }

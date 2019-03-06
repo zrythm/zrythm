@@ -25,6 +25,7 @@
 #define SETTINGS (&ZRYTHM->settings)
 #define S_PREFERENCES SETTINGS->preferences
 #define S_UI SETTINGS->ui
+#define S_GENERAL SETTINGS->general
 
 typedef struct Settings
 {
@@ -35,6 +36,11 @@ typedef struct Settings
    * be edited by the user.
    */
   GSettings * preferences;
+
+  /**
+   * General settings, like recent projects list.
+   */
+  GSettings * general;
 
   /**
    * UI memory.

@@ -1,7 +1,5 @@
 /*
- * gui/widgets/start_assistant.c - Start assistant to be shown when launching Zrythm
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,19 +17,29 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Start assistant to be shown on startup to select
+ * a project.
+ * FIXME rename to project selector.
+ */
 #include "zrythm.h"
-#include "gui/widgets/start_assistant.h"
+#include "gui/widgets/project_assistant.h"
 #include "utils/io.h"
+#include "utils/resources.h"
 
-G_DEFINE_TYPE (StartAssistantWidget, start_assistant_widget, GTK_TYPE_ASSISTANT)
+G_DEFINE_TYPE (ProjectAssistantWidget,
+               project_assistant_widget,
+               GTK_TYPE_ASSISTANT)
 
 static void
 on_projects_selection_changed (GtkTreeSelection * ts,
                       gpointer         user_data)
 {
   GtkTreeIter iter;
-  StartAssistantWidget * self =
-    Z_START_ASSISTANT_WIDGET (user_data);
+  ProjectAssistantWidget * self =
+    Z_PROJECT_ASSISTANT_WIDGET (user_data);
 
   GList * selected_rows =
     gtk_tree_selection_get_selected_rows (self->projects_selection,
@@ -66,8 +74,8 @@ void
 on_create_new_project_toggled (GtkToggleButton *togglebutton,
                gpointer         user_data)
 {
-  StartAssistantWidget * self =
-    Z_START_ASSISTANT_WIDGET (user_data);
+  ProjectAssistantWidget * self =
+    Z_PROJECT_ASSISTANT_WIDGET (user_data);
 
   if (gtk_toggle_button_get_active (togglebutton))
     {
@@ -91,7 +99,7 @@ on_create_new_project_toggled (GtkToggleButton *togglebutton,
 
 
 static GtkTreeModel *
-create_model (StartAssistantWidget * self)
+create_model (ProjectAssistantWidget * self)
 {
   gint i = 0;
   GtkListStore *store;
@@ -128,96 +136,110 @@ add_columns (GtkTreeView *treeview)
 
   /* column for name */
   renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("Name",
-                                                     renderer,
-                                                     "text",
-                                                     COLUMN_NAME,
-                                                     NULL);
-  gtk_tree_view_column_set_sort_column_id (column, COLUMN_NAME);
+  column =
+    gtk_tree_view_column_new_with_attributes (
+      "Name", renderer, "text", COLUMN_NAME, NULL);
+  gtk_tree_view_column_set_sort_column_id (
+    column, COLUMN_NAME);
   gtk_tree_view_append_column (treeview, column);
 
   /* column for filename */
   renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("Path",
-                                                     renderer,
-                                                     "text",
-                                                     COLUMN_FILENAME,
-                                                     NULL);
-  gtk_tree_view_column_set_sort_column_id (column, COLUMN_FILENAME);
+  column =
+    gtk_tree_view_column_new_with_attributes (
+      "Path", renderer, "text",
+      COLUMN_FILENAME, NULL);
+  gtk_tree_view_column_set_sort_column_id (
+    column, COLUMN_FILENAME);
   gtk_tree_view_append_column (treeview, column);
 
   /* column for modified */
   renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("Last Modified",
-                                                     renderer,
-                                                     "text",
-                                                     COLUMN_MODIFIED,
-                                                     NULL);
-  gtk_tree_view_column_set_sort_column_id (column, COLUMN_MODIFIED);
+  column =
+    gtk_tree_view_column_new_with_attributes (
+      "Last Modified", renderer, "text",
+      COLUMN_MODIFIED, NULL);
+  gtk_tree_view_column_set_sort_column_id (
+    column, COLUMN_MODIFIED);
   gtk_tree_view_append_column (treeview, column);
 }
 
-StartAssistantWidget *
-start_assistant_widget_new (GtkWindow * parent,
+ProjectAssistantWidget *
+project_assistant_widget_new (GtkWindow * parent,
                             int show_create_new_project)
 {
-  StartAssistantWidget * self = g_object_new (START_ASSISTANT_WIDGET_TYPE, NULL);
+  ProjectAssistantWidget * self = g_object_new (PROJECT_ASSISTANT_WIDGET_TYPE, NULL);
 
   for (self->num_project_infos = 0;
-       self->num_project_infos < ZRYTHM->num_recent_projects;
+       self->num_project_infos <
+         ZRYTHM->num_recent_projects;
        self->num_project_infos++)
     {
       int i = self->num_project_infos;
-      char * dir = io_get_dir (ZRYTHM->recent_projects[i]);
+      char * dir =
+        io_get_dir (ZRYTHM->recent_projects[i]);
       char * project_name = g_path_get_basename (dir);
       self->project_infos[i].name = project_name;
-      self->project_infos[i].filename = ZRYTHM->recent_projects[i];
+      self->project_infos[i].filename =
+        ZRYTHM->recent_projects[i];
       self->project_infos[i].modified =
-        io_file_get_last_modified_datetime (ZRYTHM->recent_projects[i]);
+        io_file_get_last_modified_datetime (
+          ZRYTHM->recent_projects[i]);
       g_free (dir);
     }
 
   /* set model to tree view */
   self->model = create_model (self);
-  gtk_tree_view_set_model (GTK_TREE_VIEW (self->projects),
-                           self->model);
-  gtk_tree_view_set_search_column (GTK_TREE_VIEW (self->projects),
-                                   COLUMN_NAME);
+  gtk_tree_view_set_model (
+    GTK_TREE_VIEW (self->projects),
+    self->model);
+  gtk_tree_view_set_search_column (
+    GTK_TREE_VIEW (self->projects),
+    COLUMN_NAME);
 
   /* add columns to the tree view */
   add_columns (GTK_TREE_VIEW (self->projects));
 
-  gtk_window_set_position (GTK_WINDOW (self),
-                           GTK_WIN_POS_CENTER_ALWAYS);
-  gtk_window_set_transient_for (GTK_WINDOW (self),
-                                parent);
+  gtk_window_set_position (
+    GTK_WINDOW (self), GTK_WIN_POS_CENTER_ALWAYS);
+  gtk_window_set_transient_for (
+    GTK_WINDOW (self), parent);
 
   return self;
 }
 
 static void
-start_assistant_widget_class_init (StartAssistantWidgetClass * klass)
+project_assistant_widget_class_init (
+  ProjectAssistantWidgetClass * _klass)
 {
-  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
-                                               "/org/zrythm/ui/start_assistant.ui");
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (
+    klass, "project_assistant.ui");
 
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                StartAssistantWidget,
-                                                projects);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                StartAssistantWidget,
-                                                projects_selection);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (klass),
-                                                StartAssistantWidget,
-                                                create_new_project);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
-                                           on_create_new_project_toggled);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass),
-                                           on_projects_selection_changed);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ProjectAssistantWidget,
+    projects);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ProjectAssistantWidget,
+    projects_selection);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ProjectAssistantWidget,
+    create_new_project);
+  gtk_widget_class_bind_template_callback (
+    klass,
+    on_create_new_project_toggled);
+  gtk_widget_class_bind_template_callback (
+    klass,
+    on_projects_selection_changed);
 }
 
 static void
-start_assistant_widget_init (StartAssistantWidget * self)
+project_assistant_widget_init (
+  ProjectAssistantWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 }

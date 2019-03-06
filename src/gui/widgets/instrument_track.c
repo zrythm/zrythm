@@ -52,7 +52,8 @@ instument_track_ui_toggle (GtkWidget * self, InstrumentTrackWidget * data)
   Channel * channel = GET_CHANNEL(data);
   TRACK_WIDGET_GET_PRIVATE(data);
   Plugin * plugin = channel->plugins[0];
-  InstrumentTrack * it = plugin->channel->track;
+  InstrumentTrack * it =
+    (InstrumentTrack *) plugin->channel->track;
   if (!it->ui_active )
     {
       plugin_open_ui (plugin);

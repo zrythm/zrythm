@@ -50,9 +50,9 @@
 
 #define PROJECT                 ZRYTHM->project
 #define DEFAULT_PROJECT_NAME    "Untitled Project"
-#define PROJECT_FILE            "project.xml"
-#define PROJECT_REGIONS_FILE    "regions.xml"
-#define PROJECT_PORTS_FILE      "ports.xml"
+#define PROJECT_FILE            "project.yaml"
+#define PROJECT_REGIONS_FILE    "regions.yaml"
+#define PROJECT_PORTS_FILE      "ports.yaml"
 #define PROJECT_REGIONS_DIR     "Regions"
 #define PROJECT_STATES_DIR      "states"
 #define PROJECT_EXPORTS_DIR     "exports"

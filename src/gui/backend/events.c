@@ -203,8 +203,9 @@ on_track_added (Track * track)
   /* needs to be called later because tracks need
    * time to get allocated */
   if (MW_TIMELINE)
-    g_idle_add (arranger_widget_refresh,
-                Z_ARRANGER_WIDGET (MW_TIMELINE));
+    g_idle_add (
+      (GSourceFunc) arranger_widget_refresh,
+      Z_ARRANGER_WIDGET (MW_TIMELINE));
 }
 
 static void

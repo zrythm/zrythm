@@ -1,7 +1,5 @@
 /*
- * utils/io.c - IO utils
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -19,10 +17,17 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * IO utils.
+ */
+
+#include <pwd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <pwd.h>
+#include <time.h>
 
 #include "utils/io.h"
 
@@ -186,8 +191,7 @@ io_file_get_last_modified_datetime (const char * filename)
   char tmbuf[64];
   if (stat (filename, &result)==0)
     {
-      struct timespec * ts = &result.st_mtime;
-      nowtm = localtime(&ts->tv_sec);
+      nowtm = localtime (&result.st_mtime);
       strftime(tmbuf, sizeof (tmbuf), "%Y-%m-%d %H:%M:%S", nowtm);
       char * mod = g_strdup (tmbuf);
       return mod;

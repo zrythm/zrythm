@@ -51,6 +51,19 @@
     <value nick="numbers" value="1"/>
   </enum>
 
+  <!-- GENERAL schema -->
+  <schema id="org.zrythm.general"
+          path="/org/zrythm/general/">
+
+    <key name="recent-projects" type="as">
+      <default>[]</default>
+      <summary>Recent project list</summary>
+      <description>A list of recent projects to be
+        referenced on startup.</description>
+    </key>
+  </schema>
+
+
   <!-- PREFERENCES schema -->
   <schema id="org.zrythm.preferences"
           path="/org/zrythm/preferences/">

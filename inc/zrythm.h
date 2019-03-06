@@ -54,6 +54,7 @@ G_DECLARE_FINAL_TYPE (ZrythmApp,
 #define TARGET_ENTRY_TIMELINE_SELECTIONS \
   "TIMELINE_SELECTIONS"
 #define TARGET_ENTRY_ID_TIMELINE_SELECTIONS 2
+#define MAX_RECENT_PROJECTS 20
 
 typedef struct _MainWindowWidget MainWindowWidget;
 typedef struct Project Project;
@@ -93,8 +94,9 @@ typedef struct Zrythm
 
   char *                  zrythm_dir;
   char *                  projects_dir;
-  char *                  recent_projects_file;
-  char *                  recent_projects[1000];
+  /** +1 to ensure last element is NULL in case
+   * full. */
+  char *                  recent_projects[MAX_RECENT_PROJECTS + 1];
   int                     num_recent_projects;
 
   /**

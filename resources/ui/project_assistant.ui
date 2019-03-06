@@ -22,7 +22,7 @@
 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <template class="StartAssistantWidget" parent="GtkAssistant">
+  <template class="ProjectAssistantWidget" parent="GtkAssistant">
     <property name="can_focus">False</property>
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
@@ -51,7 +51,7 @@
             <property name="can_focus">True</property>
             <child internal-child="selection">
               <object class="GtkTreeSelection" id="projects_selection">
-                <signal name="changed" handler="on_projects_selection_changed" object="StartAssistantWidget" swapped="no"/>
+                <signal name="changed" handler="on_projects_selection_changed" object="ProjectAssistantWidget" swapped="no"/>
               </object>
             </child>
           </object>
@@ -68,7 +68,7 @@
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>
             <property name="draw_indicator">True</property>
-            <signal name="toggled" handler="on_create_new_project_toggled" object="StartAssistantWidget" swapped="no"/>
+            <signal name="toggled" handler="on_create_new_project_toggled" object="ProjectAssistantWidget" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
