@@ -1310,6 +1310,9 @@ timeline_arranger_widget_set_size ()
 static int
 update_last_timeline_object ()
 {
+  if (!GTK_IS_WIDGET (ZRYTHM))
+    return FALSE;
+
   TimelineArrangerWidget * self = MW_TIMELINE;
 
   int prev = self->last_timeline_obj_bars;
