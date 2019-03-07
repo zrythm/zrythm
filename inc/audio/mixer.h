@@ -48,6 +48,7 @@ typedef struct Mixer
   int            num_channels; ///< # of channels
 
   Channel        * master; ///< master channel
+  int            master_id;
 } Mixer;
 
 static const cyaml_schema_field_t
@@ -57,9 +58,9 @@ mixer_fields_schema[] =
     "channel_ids", CYAML_FLAG_DEFAULT,
     Mixer, channel_ids, num_channels,
     &int_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_MAPPING_PTR (
-    "master", CYAML_FLAG_POINTER,
-    Mixer, master, channel_fields_schema),
+	CYAML_FIELD_INT (
+    "master_id", CYAML_FLAG_DEFAULT,
+    Mixer, master_id),
 
 	CYAML_FIELD_END
 };
@@ -71,6 +72,9 @@ mixer_schema =
     CYAML_FLAG_POINTER,
 	  Mixer, mixer_fields_schema),
 };
+
+void
+mixer_init_loaded ();
 
 /**
  * Returns if mixer has soloed channels.

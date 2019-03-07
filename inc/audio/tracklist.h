@@ -89,7 +89,8 @@ tracklist_schema = {
  * each channel must be initialized at this point.
  */
 void
-tracklist_init (Tracklist * self);
+tracklist_init (Tracklist * self,
+                int loading);
 
 /**
  * Finds selected tracks and puts them in given array.

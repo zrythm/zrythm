@@ -242,6 +242,8 @@ create_audio_units_store ()
         }
     }
   gtk_tree_store_append (store, &iter2, &iter);
+  g_message ("master %p",
+             MIXER->master);
   gtk_tree_store_set (store, &iter2,
                       0, MIXER->master->track->name,
                       1, AUWT_NONE,

@@ -37,9 +37,43 @@ _create_blank ()
   Automatable * self =
     calloc (1, sizeof (Automatable));
 
+  self->port_id = -1;
+
   project_add_automatable (self);
 
   return self;
+}
+
+Lv2ControlID *
+get_lv2_control (Automatable * self)
+{
+  /* Note: plugin must be instantiated by now. */
+  if (self->type == AUTOMATABLE_TYPE_PLUGIN_CONTROL)
+    return  lv2_control_get_from_port (
+              self->port->lv2_port);
+
+  return NULL;
+}
+
+void
+automatable_init_loaded (Automatable * self)
+{
+  self->port =
+    project_get_port (self->port_id);
+
+  if (self->type ==
+        AUTOMATABLE_TYPE_PLUGIN_CONTROL)
+    {
+      Lv2Plugin * lv2_plgn =
+        self->port->owner_pl->original_plugin;
+
+      self->control = get_lv2_control (self);
+    }
+  else if (self->type ==
+             AUTOMATABLE_TYPE_PLUGIN_ENABLED)
+    {
+      /* TODO use slot index to get lv2_plgn */
+    }
 }
 
 Automatable *
@@ -82,8 +116,9 @@ automatable_create_mute (Channel * channel)
 }
 
 Automatable *
-automatable_create_lv2_control (Plugin *       plugin,
-                                Lv2ControlID * control)
+automatable_create_lv2_control (
+  Plugin *       plugin,
+  Lv2ControlID * control)
 {
   Automatable * automatable = _create_blank ();
 

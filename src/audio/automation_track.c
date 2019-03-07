@@ -33,6 +33,34 @@
 #include "project.h"
 #include "utils/arrays.h"
 
+void
+automation_track_init_loaded (
+  AutomationTrack * self)
+{
+  self->automatable =
+    project_get_automatable (
+      self->automatable_id);
+
+  self->track =
+    project_get_track (
+      self->track_id);
+
+  for (int i = 0; i < self->num_automation_points;
+       i++)
+    self->automation_points[i] =
+      project_get_automation_point (
+        self->ap_ids[i]);
+
+  for (int i = 0; i < self->num_automation_curves;
+       i++)
+    self->automation_curves[i] =
+      project_get_automation_curve (
+        self->ac_ids[i]);
+
+  self->al =
+    project_get_automation_lane (self->al_id);
+}
+
 AutomationTrack *
 automation_track_new (Automatable *   a)
 {

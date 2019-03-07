@@ -46,6 +46,7 @@ G_DEFINE_TYPE (AutomationTracklistWidget,
 #define GET_TRACK(self) Track * track = \
   self->automation_tracklist->track
 
+
 /**
  * Creates and returns an automation tracklist widget.
  */
@@ -88,8 +89,6 @@ automation_tracklist_widget_refresh (
     GTK_CONTAINER (self));
 
   /* add automation lanes */
-  g_message ("num automation lanes %d",
-             self->automation_tracklist->num_automation_lanes);
   for (int i = 0;
        i < self->automation_tracklist->
          num_automation_lanes;

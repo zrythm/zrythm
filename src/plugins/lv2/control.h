@@ -46,6 +46,7 @@
  * Internal API for LV2 controls */
 
 typedef struct Lv2Plugin Lv2Plugin;
+typedef struct LV2_Port LV2_Port;
 
 /* Controls */
 
@@ -79,6 +80,7 @@ typedef struct {
 	LilvNode*   label;           ///< Human readable label
 	LV2_URID    property;        ///< Iff type == PROPERTY
 	uint32_t    index;           ///< Iff type == PORT
+  LV2_Port *  port; ///< cache
 	LilvNode*   group;           ///< Port/control group, or NULL
 	void*       widget;          ///< Control Widget
 	size_t      n_points;        ///< Number of scale points
@@ -127,5 +129,12 @@ lv2_set_control(const Lv2ControlID* control,
  */
 const char *
 lv2_control_get_label (const Lv2ControlID * control);
+
+/**
+ * Returns the Lv2ControlID from the port index.
+ */
+Lv2ControlID *
+lv2_control_get_from_port (
+  LV2_Port * port);
 
 #endif

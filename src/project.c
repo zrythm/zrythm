@@ -93,7 +93,7 @@ update_paths (const char * dir)
 void
 create_default (Project * self)
 {
-  engine_init (&self->audio_engine);
+  engine_init (&self->audio_engine, 0);
   undo_manager_init (&self->undo_manager);
 
   self->title = g_strdup (DEFAULT_PROJECT_NAME);
@@ -106,20 +106,21 @@ create_default (Project * self)
   self->chord_track = chord_track_default ();
 
   self->loaded = 1;
-}
 
-/**
- * Initializes the newly deserialized ports.
- */
-static void
-init_ports ()
-{
-  Port * port;
-  for (int i = 0; i < PROJECT->num_ports; i++)
-    {
-      port = project_get_port (i);
-      port_init_loaded (port);
-    }
+  snap_grid_init (&PROJECT->snap_grid_timeline,
+                  NOTE_LENGTH_1_1);
+  quantize_init (&PROJECT->quantize_timeline,
+                 NOTE_LENGTH_1_1);
+  snap_grid_init (&PROJECT->snap_grid_midi,
+                  NOTE_LENGTH_1_8);
+  quantize_init (&PROJECT->quantize_midi,
+                NOTE_LENGTH_1_8);
+  clip_editor_init (&PROJECT->clip_editor);
+  snap_grid_update_snap_points (&PROJECT->snap_grid_timeline);
+  snap_grid_update_snap_points (&PROJECT->snap_grid_midi);
+  quantize_update_snap_points (&PROJECT->quantize_timeline);
+  quantize_update_snap_points (&PROJECT->quantize_midi);
+  tracklist_init (&PROJECT->tracklist, 0);
 }
 
 /** sl = singular lowercase */
@@ -136,13 +137,19 @@ INIT_LOADED (region)
 INIT_LOADED (channel)
 INIT_LOADED (plugin)
 INIT_LOADED (track)
+INIT_LOADED (automation_point)
+INIT_LOADED (automation_curve)
+INIT_LOADED (midi_note)
+INIT_LOADED (chord)
+INIT_LOADED (automatable)
+INIT_LOADED (automation_track)
+INIT_LOADED (automation_lane)
 
 static void
-load (Project *    self,
-      char * filename)
+load (char * filename)
 {
-  if (self->loaded)
-    tear_down (self);
+  if (PROJECT->loaded)
+    tear_down (PROJECT);
 
   g_assert (filename);
   char * dir = io_get_dir (filename);
@@ -167,23 +174,45 @@ load (Project *    self,
 
   Project * prj = project_deserialize (yaml);
   PROJECT = prj;
+  update_paths (dir);
   init_loaded_ports ();
+  engine_init (AUDIO_ENGINE, 1);
   init_loaded_regions ();
   init_loaded_channels ();
-  init_loaded_tracks ();
   init_loaded_plugins ();
-  mixer_load_plugins ();
+  init_loaded_tracks ();
+  init_loaded_automation_points ();
+  init_loaded_automation_curves ();
+  init_loaded_midi_notes ();
+  init_loaded_chords ();
+  init_loaded_automatables ();
+  init_loaded_automation_tracks ();
+  init_loaded_automation_lanes ();
+  /*mixer_load_plugins ();*/
 
   char * filepath_noext = g_path_get_basename (dir);
-  self->title = filepath_noext;
+  PROJECT->title = filepath_noext;
   g_free (filepath_noext);
 
   g_free (dir);
 
-  self->filename = filename;
+  PROJECT->filename = filename;
 
-  self->loaded = 1;
+  undo_manager_init (&PROJECT->undo_manager);
+  tracklist_init (&PROJECT->tracklist, 1);
 
+  snap_grid_update_snap_points (
+    &PROJECT->snap_grid_timeline);
+  snap_grid_update_snap_points (
+    &PROJECT->snap_grid_midi);
+  quantize_update_snap_points (
+    &PROJECT->quantize_timeline);
+  quantize_update_snap_points (
+    &PROJECT->quantize_midi);
+  g_message ("master 3 %p",
+             MIXER->master);
+
+  PROJECT->loaded = 1;
 }
 
 #undef INIT_LOADED(sl)
@@ -196,24 +225,9 @@ void
 project_load (char * filename)
 {
   if (filename)
-    load (PROJECT, filename);
+    load (filename);
   else
     create_default (PROJECT);
-
-  snap_grid_init (&PROJECT->snap_grid_timeline,
-                  NOTE_LENGTH_1_1);
-  quantize_init (&PROJECT->quantize_timeline,
-                 NOTE_LENGTH_1_1);
-  snap_grid_init (&PROJECT->snap_grid_midi,
-                  NOTE_LENGTH_1_8);
-  quantize_init (&PROJECT->quantize_midi,
-                NOTE_LENGTH_1_8);
-  clip_editor_init (&PROJECT->clip_editor);
-  snap_grid_update_snap_points (&PROJECT->snap_grid_timeline);
-  snap_grid_update_snap_points (&PROJECT->snap_grid_midi);
-  quantize_update_snap_points (&PROJECT->quantize_timeline);
-  quantize_update_snap_points (&PROJECT->quantize_midi);
-  tracklist_init (&PROJECT->tracklist);
 }
 
 /**
@@ -326,6 +340,9 @@ get_next_available_id (void ** array,
   camelcase * \
   project_get_##lowercase (int id) \
   { \
+    if (id < 0) \
+      return NULL; \
+    \
     return PROJECT->lowercase##s[id]; \
   }
 

@@ -28,7 +28,30 @@
 #include "gui/widgets/automation_lane.h"
 #include "gui/widgets/automation_tracklist.h"
 #include "plugins/plugin.h"
+#include "project.h"
 #include "utils/arrays.h"
+
+void
+automation_tracklist_init_loaded (
+  AutomationTracklist * self)
+{
+  for (int i = 0; i < self->num_automation_tracks;
+       i++)
+    self->automation_tracks[i] =
+      project_get_automation_track (
+        self->at_ids[i]);
+
+  for (int i = 0; i < self->num_automation_lanes;
+       i++)
+    self->automation_lanes[i] =
+      project_get_automation_lane (
+        self->al_ids[i]);
+
+  self->track =
+    project_get_track (self->track_id);
+  g_message ("inited %s",
+             self->track->name);
+}
 
 static void
 add_automation_track (AutomationTracklist * self,
@@ -37,6 +60,10 @@ add_automation_track (AutomationTracklist * self,
   array_append (self->automation_tracks,
                 self->num_automation_tracks,
                 at);
+  self->at_ids[
+    self->num_automation_tracks - 1] =
+      self->automation_tracks[
+        self->num_automation_tracks - 1]->id;
 }
 
 static void
@@ -59,6 +86,7 @@ automation_tracklist_init (
   Track *               track)
 {
   self->track = track;
+  self->track_id = track->id;
 
   /* add all automation tracks */
   automation_tracklist_update (self);
@@ -73,6 +101,10 @@ automation_tracklist_init (
   array_append (self->automation_lanes,
                 self->num_automation_lanes,
                 fader_al);
+  self->al_ids[
+    self->num_automation_lanes - 1] =
+      self->automation_lanes[
+        self->num_automation_lanes - 1]->id;
 }
 
 void

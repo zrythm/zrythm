@@ -119,8 +119,13 @@ static const cyaml_schema_value_t
 };
 
 void
-automation_tracklist_init (AutomationTracklist * self,
-                           Track *               track);
+automation_tracklist_init (
+  AutomationTracklist * self,
+  Track *               track);
+
+void
+automation_tracklist_init_loaded (
+  AutomationTracklist * self);
 
 /**
  * Finds visible tracks and puts them in given array.

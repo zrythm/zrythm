@@ -38,12 +38,6 @@
 #include "plugins/plugin.h"
 #include "project.h"
 
-/*void*/
-/*automation_point_init_loaded (*/
-  /*AutomationPoint * ap)*/
-/*{*/
-/*}*/
-
 static AutomationPoint *
 _create_new (AutomationTrack * at,
              Position *        pos)
@@ -52,12 +46,24 @@ _create_new (AutomationTrack * at,
     calloc (1, sizeof (AutomationPoint));
 
   ap->at = at;
+  ap->at_id = at->id;
   position_set_to_pos (&ap->pos,
                        pos);
 
   project_add_automation_point (ap);
 
   return ap;
+}
+
+void
+automation_point_init_loaded (
+  AutomationPoint * ap)
+{
+  ap->at =
+    project_get_automation_track (ap->at_id);
+
+  ap->widget =
+    automation_point_widget_new (ap);
 }
 
 /**

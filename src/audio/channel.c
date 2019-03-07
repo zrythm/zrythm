@@ -370,6 +370,7 @@ setup_thread (Channel * channel)
 void
 channel_init_loaded (Channel * ch)
 {
+  g_message ("initing channel");
   /* plugins */
   for (int i = 0; i < STRIP_SIZE; i++)
     ch->plugins[i] =
@@ -390,14 +391,28 @@ channel_init_loaded (Channel * ch)
     project_get_port (ch->midi_in_id);
   ch->piano_roll =
     project_get_port (ch->piano_roll_id);
+  ch->midi_in->midi_events =
+    midi_events_new (1);
+  ch->piano_roll->midi_events =
+    midi_events_new (1);
 
   /* routing */
-  ch->output =
-    project_get_channel (ch->output_id);
+  if (ch->output_id > -1)
+    ch->output =
+      project_get_channel (ch->output_id);
+
+  /* automatables */
+  for (int i = 0; i < ch->num_automatables; i++)
+    ch->automatables[i] =
+      project_get_automatable (
+        ch->automatable_ids[i]);
 
   /* track */
   ch->track =
     project_get_track (ch->track_id);
+
+  /* thread related */
+  setup_thread (ch);
 
   ch->widget = channel_widget_new (ch);
 }
@@ -435,6 +450,7 @@ _create_channel (char * name)
       TYPE_EVENT,
       FLOW_INPUT,
       pll);
+  channel->midi_in_id = channel->midi_in->id;
   channel->midi_in->midi_events =
     midi_events_new (1);
   g_free (pll);
@@ -470,6 +486,7 @@ _create_channel (char * name)
   for (int i = 0; i < STRIP_SIZE; i++)
     {
       channel->plugins[i] = NULL;
+      channel->plugin_ids[i] = -1;
     }
 
   /* set volume, phase, pan */
@@ -496,6 +513,8 @@ _create_channel (char * name)
       TYPE_EVENT,
       FLOW_INPUT,
       tmp);
+  channel->piano_roll_id =
+    channel->piano_roll->id;
   channel->piano_roll->is_piano_roll = 1;
   channel->piano_roll->owner_jack = 0;
   channel->piano_roll->owner_ch = channel;
@@ -503,6 +522,8 @@ _create_channel (char * name)
     midi_events_new (1);
 
   channel->visible = 1;
+
+  project_add_channel (channel);
 
   return channel;
 }
@@ -523,9 +544,14 @@ generate_automatables (Channel * channel)
         channel,
         AUTOMATABLE_TYPE_CHANNEL_FADER))
     {
-      array_append (channel->automatables,
-                    channel->num_automatables,
-                    automatable_create_fader (channel));
+      array_append (
+        channel->automatables,
+        channel->num_automatables,
+        automatable_create_fader (channel));
+      channel->automatable_ids[
+        channel->num_automatables - 1] =
+          channel->automatables[
+            channel->num_automatables - 1]->id;
     }
   if (!channel_get_automatable (
         channel,
@@ -534,6 +560,10 @@ generate_automatables (Channel * channel)
       array_append (channel->automatables,
                     channel->num_automatables,
                     automatable_create_pan (channel));
+      channel->automatable_ids[
+        channel->num_automatables - 1] =
+          channel->automatables[
+            channel->num_automatables - 1]->id;
     }
   if (!channel_get_automatable (
         channel,
@@ -542,6 +572,10 @@ generate_automatables (Channel * channel)
       array_append (channel->automatables,
                     channel->num_automatables,
                     automatable_create_mute (channel));
+      channel->automatable_ids[
+        channel->num_automatables - 1] =
+          channel->automatables[
+            channel->num_automatables - 1]->id;
     }
 }
 
@@ -600,12 +634,14 @@ channel_create (ChannelType type,
   if (type == CT_MASTER)
     {
       channel->output = NULL;
+      channel->output_id = -1;
       channel->id = 0;
     }
   else
     {
       channel->id = mixer_get_next_channel_id ();
       channel->output = MIXER->master;
+      channel->output_id = MIXER->master->id;
     }
 
   if (type == CT_BUS ||
@@ -803,7 +839,9 @@ channel_add_plugin (Channel * channel,    ///< the channel
   g_message ("Inserting %s at %s:%d", plugin->descr->name,
              channel->track->name, pos);
   channel->plugins[pos] = plugin;
+  channel->plugin_ids[pos] = plugin->id;
   plugin->channel = channel;
+  plugin->channel_id = channel->id;
 
   Plugin * next_plugin = NULL;
   for (int i = pos + 1; i < STRIP_SIZE; i++)

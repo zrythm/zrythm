@@ -55,6 +55,7 @@ lv2_new_port_control(Lv2Plugin* plugin, uint32_t index)
       lilv_port_get_symbol (plug, lport));
   id->label = lilv_port_get_name (plug, lport);
   id->index = index;
+  id->port = port;
   id->group =
     lilv_port_get (
       plug, lport, plugin->nodes.pg_group);
@@ -209,9 +210,13 @@ lv2_new_property_control(Lv2Plugin* plugin, const LilvNode* property)
 void
 lv2_add_control(Lv2Controls* controls, Lv2ControlID* control)
 {
-  controls->controls = (Lv2ControlID**)realloc(
-          controls->controls, (controls->n_controls + 1) * sizeof(Lv2ControlID*));
-  controls->controls[controls->n_controls++] = control;
+  controls->controls =
+    (Lv2ControlID**) realloc (
+      controls->controls,
+      (controls->n_controls + 1) *
+        sizeof(Lv2ControlID*));
+  controls->controls[controls->n_controls++] =
+    control;
 }
 
 Lv2ControlID*
@@ -270,4 +275,24 @@ lv2_control_get_label (const Lv2ControlID * control)
 {
   return lilv_node_as_string (
     control->label);
+}
+
+/**
+ * Returns the Lv2ControlID from the port index.
+ */
+Lv2ControlID *
+lv2_control_get_from_port (
+  LV2_Port * port)
+{
+  Lv2Plugin * plgn =
+    port->port->owner_pl->original_plugin;
+  Lv2Controls * ctrls =
+    &plgn->controls;
+  for (int i = 0; i < ctrls->n_controls; i++)
+    if (ctrls->controls[i]->port ==
+          port)
+      return ctrls->controls[i];
+
+  g_assert_not_reached ();
+  return NULL;
 }

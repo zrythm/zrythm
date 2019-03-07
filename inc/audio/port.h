@@ -283,6 +283,9 @@ static const cyaml_schema_value_t
 void
 port_init_loaded (Port * port);
 
+void
+stereo_ports_init_loaded (StereoPorts * sp);
+
 /**
  * Creates port.
  */

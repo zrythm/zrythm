@@ -59,6 +59,7 @@ jack_shutdown_cb (void *arg);
  * Sets up the audio engine to use jack.
  */
 void
-jack_setup (AudioEngine * engine);
+jack_setup (AudioEngine * self,
+            int           loading);
 
 #endif

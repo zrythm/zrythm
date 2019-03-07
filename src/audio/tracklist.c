@@ -39,12 +39,24 @@
  * each channel must be initialized at this point.
  */
 void
-tracklist_init (Tracklist * self)
+tracklist_init (Tracklist * self,
+                int loading)
 {
-  /* add master track */
   g_assert (MIXER);
   g_assert (MIXER->master);
   g_assert (MIXER->master->track);
+
+  if (loading)
+    {
+      for (int i = 0; i < self->num_tracks; i++)
+        self->tracks[i] =
+          project_get_track (
+            self->track_ids[i]);
+
+      return;
+    }
+
+  /* add master track */
   tracklist_append_track ((Track *) MIXER->master->track);
 
   /* add chord track */

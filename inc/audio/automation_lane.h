@@ -83,6 +83,10 @@ static const cyaml_schema_value_t
     automation_lane_fields_schema),
 };
 
+void
+automation_lane_init_loaded (
+  AutomationLane * self);
+
 /**
  * Creates an automation lane for the given
  * automation track.

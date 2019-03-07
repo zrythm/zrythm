@@ -242,13 +242,21 @@ _create_port(Lv2Plugin*   lv2_plugin,
                       lv2_plugin->nodes.lv2_ControlPort))
     {
       lv2_port->port->type    = TYPE_CONTROL;
-      lv2_port->control = isnan(default_value) ? 0.0f : default_value;
+      lv2_port->control =
+        isnan(default_value) ?
+        0.0f :
+        default_value;
       if (show_hidden ||
-          !lilv_port_has_property(lv2_plugin->lilv_plugin, lv2_port->lilv_port, lv2_plugin->nodes.pprops_notOnGUI))
+          !lilv_port_has_property (
+            lv2_plugin->lilv_plugin,
+            lv2_port->lilv_port,
+            lv2_plugin->nodes.pprops_notOnGUI))
         {
-          lv2_add_control (&lv2_plugin->controls,
-                          lv2_new_port_control(lv2_plugin,
-                                               lv2_port->index));
+          lv2_add_control (
+            &lv2_plugin->controls,
+            lv2_new_port_control (
+              lv2_plugin,
+              lv2_port->index));
         }
     }
   else if (lilv_port_is_a (lv2_plugin->lilv_plugin,

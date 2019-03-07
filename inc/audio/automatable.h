@@ -64,15 +64,16 @@ typedef struct Automatable
   int                  port_id;
 
   /**
-   * Lv2Control
+   * Control, if LV2 plugin.
+   *
+   * When loading, this can be fetched using the
+   * port.
    */
-  Lv2ControlID *       control; ///< control, if LV2 plugin
-  Track *              track; ///< associated track
+  Lv2ControlID *       control; ///< cache
 
-  /**
-   * This should be serialized instead of port.
-   */
+  /** Associated track. */
   int                  track_id;
+  Track *              track; ///< cache
 
   int                  slot_index; ///< slot index in channel, if plugin automation
                                     ///< eg. automating enabled/disabled
@@ -128,6 +129,9 @@ automatable_schema = {
     CYAML_FLAG_POINTER,
 		Automatable, automatable_fields_schema),
 };
+
+void
+automatable_init_loaded (Automatable * self);
 
 Automatable *
 automatable_create_fader (Channel * channel);

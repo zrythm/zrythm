@@ -1,7 +1,5 @@
 /*
- * audio/chord.c - Chord
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -30,6 +28,12 @@
 #include "audio/chord.h"
 #include "gui/widgets/chord.h"
 #include "project.h"
+
+void
+chord_init_loaded (Chord * self)
+{
+  self->widget = chord_widget_new (self);
+}
 
 void
 chord_set_pos (Chord *    self,

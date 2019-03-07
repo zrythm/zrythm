@@ -57,6 +57,9 @@ track_init_loaded (Track * track)
         track->chord_ids[i]);
 
   track->widget = track_widget_new (track);
+
+  automation_tracklist_init_loaded (
+    &track->automation_tracklist);
 }
 
 void
@@ -79,6 +82,7 @@ track_new (Channel * channel, char * label)
   track_init (track);
   track->name = label;
   track->channel = channel;
+  track->channel_id = channel->id;
 
   switch (channel->type)
     {

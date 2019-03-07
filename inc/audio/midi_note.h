@@ -52,7 +52,8 @@ typedef struct MidiNote
    *
    * For convenience only (cache).
    */
-  MidiRegion *    midi_region; ///< cache
+  int             region_id;
+  Region *        midi_region; ///< cache
 
   Velocity *      vel;  ///< velocity
   int             val; ///< note
@@ -90,6 +91,9 @@ static const cyaml_schema_field_t
     "vel", CYAML_FLAG_POINTER,
     MidiNote, vel, velocity_fields_schema),
 	CYAML_FIELD_INT (
+			"region_id", CYAML_FLAG_DEFAULT,
+			MidiNote, region_id),
+	CYAML_FIELD_INT (
 			"val", CYAML_FLAG_DEFAULT,
 			MidiNote, val),
 	CYAML_FIELD_INT (
@@ -105,6 +109,10 @@ midi_note_schema = {
 	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
 			MidiNote, midi_note_fields_schema),
 };
+
+void
+midi_note_init_loaded (
+  MidiNote * self);
 
 MidiNote *
 midi_note_new (MidiRegion * region,

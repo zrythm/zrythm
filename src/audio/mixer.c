@@ -74,6 +74,18 @@ mixer_process () ///< number of frames to fill in
   /*g_message ("procesing finished");*/
 }
 
+void
+mixer_init_loaded ()
+{
+  MIXER->master =
+    project_get_channel (MIXER->master_id);
+
+  for (int i = 0; i < MIXER->num_channels; i++)
+    MIXER->channels[i] =
+      project_get_channel (
+        MIXER->channel_ids[i]);
+}
+
 /**
  * Returns if mixer has soloed channels.
  */
@@ -151,6 +163,7 @@ mixer_add_channel (Channel * channel)
   if (channel->type == CT_MASTER)
     {
       MIXER->master = channel;
+      MIXER->master_id = channel->id;
     }
   else
     {
@@ -159,6 +172,10 @@ mixer_add_channel (Channel * channel)
       array_append (MIXER->channels,
                     MIXER->num_channels,
                     channel);
+      MIXER->channel_ids[
+        MIXER->num_channels - 1] =
+          MIXER->channels[
+            MIXER->num_channels - 1]->id;
     }
 
   track_setup (channel->track);

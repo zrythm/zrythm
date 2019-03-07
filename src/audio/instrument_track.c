@@ -276,6 +276,10 @@ instrument_track_add_region (InstrumentTrack      * track,
   array_append (track->regions,
                 track->num_regions,
                 region);
+  track->region_ids[
+    track->num_regions - 1] =
+      track->regions[
+        track->num_regions - 1]->id;
 }
 
 void

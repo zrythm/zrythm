@@ -35,6 +35,17 @@
 #include "plugins/plugin.h"
 #include "project.h"
 
+void
+automation_curve_init_loaded (
+  AutomationCurve * ac)
+{
+  ac->at =
+    project_get_automation_track (ac->at_id);
+
+  ac->widget =
+    automation_curve_widget_new (ac);
+}
+
 static AutomationCurve *
 _create_new (AutomationTrack * at,
              Position *        pos)
@@ -42,6 +53,7 @@ _create_new (AutomationTrack * at,
   AutomationCurve * ac = calloc (1, sizeof (AutomationCurve));
 
   ac->at = at;
+  ac->at_id = at->id;
   position_set_to_pos (&ac->pos,
                        pos);
 

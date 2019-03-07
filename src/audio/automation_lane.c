@@ -26,6 +26,18 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "project.h"
 
+void
+automation_lane_init_loaded (
+  AutomationLane * self)
+{
+  self->at =
+    project_get_automation_track (
+      self->at_id);
+
+  self->widget =
+    automation_lane_widget_new (self);
+}
+
 /**
  * Creates an automation lane for the given
  * automation track.

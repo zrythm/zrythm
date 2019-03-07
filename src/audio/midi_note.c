@@ -33,6 +33,17 @@
 #include "gui/widgets/velocity.h"
 #include "project.h"
 
+void
+midi_note_init_loaded (
+  MidiNote * self)
+{
+  self->midi_region =
+    project_get_region (self->region_id);
+
+  self->widget =
+    midi_note_widget_new (self);
+}
+
 MidiNote *
 midi_note_new (MidiRegion * midi_region,
                Position *   start_pos,
@@ -47,6 +58,8 @@ midi_note_new (MidiRegion * midi_region,
   position_set_to_pos (&midi_note->end_pos,
                        end_pos);
   midi_note->midi_region = midi_region;
+  midi_note->midi_region =
+    project_get_region (midi_region->id);
   midi_note->val = val;
   midi_note->vel = vel;
   vel->midi_note = midi_note;

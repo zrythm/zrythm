@@ -65,6 +65,7 @@ clip_editor_set_region (Region * region)
 void
 clip_editor_init (ClipEditor * self)
 {
+  self->region_id = -1;
   piano_roll_init (&self->piano_roll);
   audio_clip_editor_init (&self->audio_clip_editor);
 }

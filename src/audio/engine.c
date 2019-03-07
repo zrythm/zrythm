@@ -58,10 +58,13 @@ engine_update_frames_per_tick (int beats_per_bar,
 }
 
 /**
- * Init audio engine
+ * Init audio engine.
+ *
+ * loading is 1 if loading a project.
  */
 void
-engine_init (AudioEngine * self)
+engine_init (AudioEngine * self,
+             int           loading)
 {
   g_message ("Initializing audio engine...");
 
@@ -75,8 +78,23 @@ engine_init (AudioEngine * self)
   /* init semaphore */
   zix_sem_init (&self->port_operation_lock, 1);
 
+  /* load ports from IDs */
+  if (loading)
+    {
+      mixer_init_loaded ();
+
+      stereo_ports_init_loaded (self->stereo_in);
+      stereo_ports_init_loaded (self->stereo_out);
+      self->midi_in =
+        project_get_port (
+          self->midi_in_id);
+      self->midi_editor_manual_press =
+        project_get_port (
+          self->midi_editor_manual_press_id);
+    }
+
   if (self->backend == ENGINE_BACKEND_JACK)
-    jack_setup (self);
+    jack_setup (self, loading);
   else if (self->backend == ENGINE_BACKEND_PORT_AUDIO)
     pa_setup (self);
 

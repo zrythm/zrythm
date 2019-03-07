@@ -109,6 +109,10 @@ automation_curve_schema = {
     AutomationCurve, automation_curve_fields_schema),
 };
 
+void
+automation_curve_init_loaded (
+  AutomationCurve * ac);
+
 /**
  * Creates curviness point in given track at given Position
  */

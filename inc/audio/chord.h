@@ -1,7 +1,5 @@
 /*
- * audio/chord.h - Chord
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -155,6 +153,9 @@ chord_schema = {
 	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
 			Chord, chord_fields_schema),
 };
+
+void
+chord_init_loaded (Chord * self);
 
 /**
  * Creates a chord.

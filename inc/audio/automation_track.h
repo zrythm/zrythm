@@ -112,6 +112,10 @@ static const cyaml_schema_value_t
     automation_track_fields_schema),
 };
 
+void
+automation_track_init_loaded (
+  AutomationTrack * self);
+
 /**
  * Creates an automation track for the given automatable
  */

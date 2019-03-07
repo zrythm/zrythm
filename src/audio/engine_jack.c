@@ -237,7 +237,8 @@ jack_shutdown_cb (void *arg)
  * Sets up the audio engine to use jack.
  */
 void
-jack_setup (AudioEngine * self)
+jack_setup (AudioEngine * self,
+            int           loading)
 {
   g_message ("Setting up JACK...");
 
@@ -272,8 +273,10 @@ jack_setup (AudioEngine * self)
     }
   if (status & JackNameNotUnique)
     {
-      client_name = jack_get_client_name(self->client);
-      g_error ("JACK: unique name '%s' assigned", client_name);
+      client_name =
+        jack_get_client_name (self->client);
+      g_error ("JACK: unique name '%s' assigned",
+               client_name);
   }
 
   /* Set audio engine properties */
@@ -306,64 +309,113 @@ jack_setup (AudioEngine * self)
 #endif
 
   /* create ports */
-  Port * stereo_out_l = port_new_with_data (
+  Port * stereo_out_l, * stereo_out_r,
+       * stereo_in_l, * stereo_in_r,
+       * midi_in, * midi_editor_manual_press;
+
+  if (loading)
+    {
+      self->stereo_out->l->data =
+        (void *) jack_port_register (
+          self->client, "Stereo_out_L",
+          JACK_DEFAULT_AUDIO_TYPE,
+          JackPortIsOutput, 0);
+      self->stereo_out->r->data =
+        (void *) jack_port_register (
+          self->client, "Stereo_out_R",
+          JACK_DEFAULT_AUDIO_TYPE,
+          JackPortIsOutput, 0);
+      self->stereo_in->l->data =
+        (void *) jack_port_register (
+          self->client, "Stereo_in_L",
+          JACK_DEFAULT_AUDIO_TYPE,
+          JackPortIsInput, 0);
+      self->stereo_in->r->data =
+        (void *) jack_port_register (
+          self->client, "Stereo_in_R",
+          JACK_DEFAULT_AUDIO_TYPE,
+          JackPortIsInput, 0);
+      self->midi_in->data =
+        (void *) jack_port_register (
+          self->client, "MIDI_in",
+          JACK_DEFAULT_MIDI_TYPE,
+          JackPortIsInput, 0);
+    }
+  else
+    {
+      stereo_out_l = port_new_with_data (
         INTERNAL_JACK_PORT,
         TYPE_AUDIO,
         FLOW_OUTPUT,
         "JACK Stereo Out / L",
-        (void *) jack_port_register (self->client, "Stereo_out_L",
-                                    JACK_DEFAULT_AUDIO_TYPE,
-                                    JackPortIsOutput, 0));
-  Port * stereo_out_r = port_new_with_data (
+        (void *) jack_port_register (
+          self->client, "Stereo_out_L",
+          JACK_DEFAULT_AUDIO_TYPE,
+          JackPortIsOutput, 0));
+      stereo_out_r = port_new_with_data (
         INTERNAL_JACK_PORT,
         TYPE_AUDIO,
         FLOW_OUTPUT,
         "JACK Stereo Out / R",
-        (void *) jack_port_register (self->client, "Stereo_out_R",
-                                    JACK_DEFAULT_AUDIO_TYPE,
-                                    JackPortIsOutput, 0));
-  Port * stereo_in_l = port_new_with_data (
+        (void *) jack_port_register (
+          self->client, "Stereo_out_R",
+          JACK_DEFAULT_AUDIO_TYPE,
+          JackPortIsOutput, 0));
+      stereo_in_l = port_new_with_data (
         INTERNAL_JACK_PORT,
         TYPE_AUDIO,
         FLOW_INPUT,
         "JACK Stereo In / L",
-        (void *) jack_port_register (self->client, "Stereo_in_L",
-                                    JACK_DEFAULT_AUDIO_TYPE,
-                                    JackPortIsInput, 0));
-  Port * stereo_in_r = port_new_with_data (
+        (void *) jack_port_register (
+          self->client, "Stereo_in_L",
+          JACK_DEFAULT_AUDIO_TYPE,
+          JackPortIsInput, 0));
+      stereo_in_r = port_new_with_data (
         INTERNAL_JACK_PORT,
         TYPE_AUDIO,
         FLOW_INPUT,
         "JACK Stereo In / R",
-        (void *) jack_port_register (self->client, "Stereo_in_R",
-                                    JACK_DEFAULT_AUDIO_TYPE,
-                                    JackPortIsInput, 0));
-  Port * midi_in = port_new_with_data (
-        INTERNAL_JACK_PORT,
-        TYPE_EVENT,
-        FLOW_INPUT,
-        "JACK MIDI In",
-        (void *) jack_port_register (self->client, "MIDI_in",
-                                     JACK_DEFAULT_MIDI_TYPE,
-                                     JackPortIsInput, 0));
+        (void *) jack_port_register (
+          self->client, "Stereo_in_R",
+          JACK_DEFAULT_AUDIO_TYPE,
+          JackPortIsInput, 0));
+      midi_in =
+        port_new_with_data (
+          INTERNAL_JACK_PORT,
+          TYPE_EVENT,
+          FLOW_INPUT,
+          "JACK MIDI In",
+          (void *) jack_port_register (
+            self->client, "MIDI_in",
+            JACK_DEFAULT_MIDI_TYPE,
+            JackPortIsInput, 0));
 
-  Port * midi_editor_manual_press =
-    port_new_with_type (
-      TYPE_EVENT,
-      FLOW_INPUT,
-      "MIDI Editor Manual Press");
+      midi_editor_manual_press =
+        port_new_with_type (
+          TYPE_EVENT,
+          FLOW_INPUT,
+          "MIDI Editor Manual Press");
 
-  stereo_in_l->owner_jack = 1;
-  stereo_in_r->owner_jack = 1;
-  stereo_out_l->owner_jack = 1;
-  stereo_out_r->owner_jack = 1;
-  midi_in->owner_jack = 1;
-  midi_editor_manual_press->owner_jack = 0;
+      stereo_in_l->owner_jack = 1;
+      stereo_in_r->owner_jack = 1;
+      stereo_out_l->owner_jack = 1;
+      stereo_out_r->owner_jack = 1;
+      midi_in->owner_jack = 1;
+      midi_editor_manual_press->owner_jack = 0;
 
-  self->stereo_in  = stereo_ports_new (stereo_in_l, stereo_in_r);
-  self->stereo_out = stereo_ports_new (stereo_out_l, stereo_out_r);
-  self->midi_in    = midi_in;
-  self->midi_editor_manual_press = midi_editor_manual_press;
+      self->stereo_in =
+        stereo_ports_new (stereo_in_l,
+                          stereo_in_r);
+      self->stereo_out =
+        stereo_ports_new (stereo_out_l,
+                          stereo_out_r);
+      self->midi_in = midi_in;
+      self->midi_in_id = midi_in->id;
+      self->midi_editor_manual_press =
+        midi_editor_manual_press;
+      self->midi_editor_manual_press_id =
+        midi_editor_manual_press->id;
+    }
 
   /* init MIDI queues for manual presse/piano roll */
   self->midi_in->midi_events =
@@ -371,8 +423,10 @@ jack_setup (AudioEngine * self)
   self->midi_editor_manual_press->midi_events =
     midi_events_new (1);
 
-  if (!self->stereo_in->l->data || !self->stereo_in->r->data ||
-      !self->stereo_out->l->data || !self->stereo_out->r->data ||
+  if (!self->stereo_in->l->data ||
+      !self->stereo_in->r->data ||
+      !self->stereo_out->l->data ||
+      !self->stereo_out->r->data ||
       !self->midi_in->data)
     {
       g_error ("no more JACK ports available");
@@ -398,22 +452,29 @@ jack_setup (AudioEngine * self)
    * it.
    */
 
-  ports = jack_get_ports (self->client, NULL, NULL,
-                          JackPortIsPhysical|JackPortIsInput);
+  ports =
+    jack_get_ports (
+      self->client, NULL, NULL,
+      JackPortIsPhysical|JackPortIsInput);
   if (ports == NULL) {
           g_error ("no physical playback ports\n");
           exit (1);
   }
 
-  if (jack_connect (self->client, jack_port_name (
-              JACK_PORT_T(self->stereo_out->l->data)), ports[0])) {
-          g_error ("cannot connect output ports\n");
-  }
+  if (jack_connect (
+        self->client,
+        jack_port_name (
+          JACK_PORT_T (
+            self->stereo_out->l->data)),
+        ports[0]))
+    g_error ("cannot connect output ports\n");
 
-  if (jack_connect (self->client, jack_port_name (
-              JACK_PORT_T (self->stereo_out->r->data)), ports[1])) {
-          g_error ("cannot connect output ports\n");
-  }
+  if (jack_connect (
+        self->client,
+        jack_port_name (
+          JACK_PORT_T (self->stereo_out->r->data)),
+        ports[1]))
+    g_error ("cannot connect output ports\n");
 
   jack_free (ports);
 

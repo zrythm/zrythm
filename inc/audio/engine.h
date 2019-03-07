@@ -79,10 +79,6 @@ typedef struct AudioEngine
   /**
    * To be serialized instead of StereoPorts.
    */
-  int               stereo_in_l_id;
-  int               stereo_in_r_id;
-  int               stereo_out_l_id;
-  int               stereo_out_r_id;
   int               midi_in_id;
   int               midi_editor_manual_press_id;;
 
@@ -166,10 +162,13 @@ engine_schema =
 };
 
 /**
- * Inits audio engine.
+ * Init audio engine.
+ *
+ * loading is 1 if loading a project.
  */
 void
-engine_init (AudioEngine * self);
+engine_init (AudioEngine * self,
+             int           loading);
 
 /**
  * Updates frames per tick based on the time sig, the BPM,

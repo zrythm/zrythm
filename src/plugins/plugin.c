@@ -54,6 +54,7 @@ void
 plugin_init_loaded (Plugin * plgn)
 {
   lv2_plugin_init_loaded (plgn->original_plugin);
+  plgn->original_plugin->plugin = plgn;
 
   for (int i = 0; i < plgn->num_in_ports; i++)
     plgn->in_ports[i] =
@@ -70,6 +71,13 @@ plugin_init_loaded (Plugin * plgn)
 
   plgn->channel =
     project_get_channel (plgn->channel_id);
+
+  plugin_instantiate (plgn);
+
+  for (int i = 0; i < plgn->num_automatables; i++)
+    plgn->automatables[i] =
+      project_get_automatable (
+        plgn->automatable_ids[i]);
 }
 
 /**

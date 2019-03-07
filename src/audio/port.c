@@ -64,6 +64,17 @@ port_init_loaded (Port * port)
     project_get_channel (port->owner_ch_id);
 }
 
+void
+stereo_ports_init_loaded (StereoPorts * sp)
+{
+  sp->l =
+    project_get_port (sp->l_id);
+  port_init_loaded (sp->l);
+  sp->r =
+    project_get_port (sp->r_id);
+  port_init_loaded (sp->l);
+}
+
 /**
  * Creates port.
  *
@@ -74,14 +85,18 @@ port_new (char * label)
 {
   Port * port = calloc (1, sizeof (Port));
 
-  port->id = PROJECT->num_ports;
-  PROJECT->ports[PROJECT->num_ports++] = port;
+  port->owner_pl_id = -1;
+  port->owner_ch_id = -1;
+
   port->num_dests = 0;
-  port->buf = calloc (AUDIO_ENGINE->block_length, sizeof (sample_t));
+  port->buf =
+    calloc (AUDIO_ENGINE->block_length,
+            sizeof (sample_t));
   port->flow = FLOW_UNKNOWN;
   port->label = g_strdup (label);
 
   g_message ("[port_new] Creating port %s", port->label);
+  project_add_port (port);
 
   return port;
 }
@@ -112,7 +127,9 @@ stereo_ports_new (Port * l, Port * r)
 {
   StereoPorts * sp = calloc (1, sizeof (StereoPorts));
   sp->l = l;
+  sp->l_id = l->id;
   sp->r = r;
+  sp->r_id = r->id;
 
   return sp;
 }
