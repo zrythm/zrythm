@@ -256,6 +256,7 @@ typedef struct StereoPorts
 /**
  * Inits ports just loaded from yml.
  */
+void
 port_init_loaded (Port * port);
 
 /**

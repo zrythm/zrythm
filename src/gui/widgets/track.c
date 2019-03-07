@@ -106,7 +106,7 @@ track_widget_select (
       g_message (
         "%sselecting track %s, recording %d sa %d",
         select ? "" : "de",
-        chan->name,
+        track->name,
         track->recording,
         chan->record_set_automatically);
       /* if selecting the track and recording is not already
@@ -616,7 +616,7 @@ track_widget_on_record_toggled (
   chan->record_set_automatically = 0;
   g_message ("recording %d, %s",
              track->recording,
-             chan->name);
+             track->name);
 
   EVENTS_PUSH (ET_TRACK_STATE_CHANGED,
                track);

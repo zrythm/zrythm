@@ -35,7 +35,7 @@ G_DECLARE_FINAL_TYPE (ChordTrackWidget,
                       CHORD_TRACK_WIDGET,
                       TrackWidget)
 
-typedef struct ChordTrack ChordTrack;
+typedef struct Track ChordTrack;
 
 typedef struct _ChordTrackWidget
 {

@@ -1,8 +1,5 @@
 /*
- * gui/instrument_timeline_view.h - The view of an instrument
- *   left of its timeline counterpart
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -41,7 +38,7 @@ G_DECLARE_FINAL_TYPE (TracklistWidget,
 typedef struct _TrackWidget TrackWidget;
 typedef struct _DragDestBoxWidget DragDestBoxWidget;
 typedef struct _ChordTrackWidget ChordTrackWidget;
-typedef struct InstrumentTrack InstrumentTrack;
+typedef struct Track InstrumentTrack;
 typedef struct Tracklist Tracklist;
 
 typedef struct _TracklistWidget

@@ -39,7 +39,7 @@ typedef struct _TracklistWidget TracklistWidget;
                                  &num_selected);
 #define MAX_TRACKS 3000
 
-typedef struct ChordTrack ChordTrack;
+typedef struct Track ChordTrack;
 
 /**
  * Internal Tracklist.

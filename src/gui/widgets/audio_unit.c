@@ -1,8 +1,5 @@
 /*
- * gui/widgets/audio_unit.c - An audio entity with input and output ports, used in
- *                            audio_unit widget for connecting ports.
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -21,6 +18,7 @@
  */
 
 #include "audio/channel.h"
+#include "audio/track.h"
 #include "gui/widgets/audio_unit.h"
 #include "gui/widgets/audio_unit_label.h"
 #include "utils/gtk.h"
@@ -108,7 +106,7 @@ audio_unit_widget_set_from_channel (AudioUnitWidget * self,
   audio_unit_widget_clear_ports (self);
 
   /* set label */
-  gtk_label_set_text (self->label, chan->name);
+  gtk_label_set_text (self->label, chan->track->name);
 
   /* add ins */
   audio_unit_widget_add_port (self, AUL_TYPE_LEFT, chan->stereo_in->l);

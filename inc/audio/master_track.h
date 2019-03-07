@@ -36,8 +36,8 @@ typedef struct MasterTrack
   BusTrack              parent; ///< base track
 } MasterTrack;
 
-MasterTrack *
-master_track_new (Channel * channel);
+void
+master_track_init (Track * track);
 
 void
 master_track_setup (MasterTrack * self);

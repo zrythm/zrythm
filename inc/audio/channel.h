@@ -66,7 +66,6 @@ typedef struct Channel
    */
   int                  id;
 
-  char *               name; ///< channel name
 
   /**
    * The channel strip.
@@ -235,10 +234,6 @@ channel_fields_schema[] =
 	CYAML_FIELD_INT (
     "id", CYAML_FLAG_DEFAULT,
     Channel, id),
-  CYAML_FIELD_STRING_PTR (
-    "name", CYAML_FLAG_POINTER,
-    Channel, name,
-   	0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_FIXED (
     "plugin_ids", CYAML_FLAG_DEFAULT,
     Channel, plugin_ids,

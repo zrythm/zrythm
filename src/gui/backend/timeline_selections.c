@@ -113,7 +113,7 @@ timeline_selections_paste_to_pos (
 
   g_message ("[before loop]num regions %d num midi notes %d",
              ts->num_regions,
-             ts->regions[0]->midi_region->num_midi_notes);
+             ts->regions[0]->num_midi_notes);
 
   int curr_ticks, i;
   for (i = 0; i < ts->num_regions; i++)
@@ -132,13 +132,13 @@ timeline_selections_paste_to_pos (
                            /*&region->end_pos);*/
   g_message ("[in loop]num regions %d num midi notes %d",
              ts->num_regions,
-             ts->regions[0]->midi_region->num_midi_notes);
+             ts->regions[0]->num_midi_notes);
 
       /* same for midi notes */
       g_message ("region type %d", region->type);
       if (region->type == REGION_TYPE_MIDI)
         {
-          MidiRegion * mr = region->midi_region;
+          MidiRegion * mr = region;
           g_message ("HELLO?");
           g_message ("num midi notes here %d",
                      mr->num_midi_notes);

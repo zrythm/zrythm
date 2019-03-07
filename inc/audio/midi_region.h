@@ -24,8 +24,9 @@
 
 typedef struct Track Track;
 typedef struct Position Position;
-typedef struct MidiRegion MidiRegion;
 typedef struct MidiNote MidiNote;
+typedef struct Region Region;
+typedef Region MidiRegion;
 
 MidiRegion *
 midi_region_new (Track *    track,

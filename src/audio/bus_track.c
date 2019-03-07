@@ -1,7 +1,5 @@
 /*
- * audio/bus_track.c - bus track
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,28 +17,23 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Track logic specific to bus tracks.
+ */
+
 #include <stdlib.h>
 
 #include "audio/automation_tracklist.h"
 #include "audio/bus_track.h"
 #include "project.h"
 
-BusTrack *
-bus_track_new (Channel * channel)
+void
+bus_track_init (Track * track)
 {
-  BusTrack * self =
-    calloc (1, sizeof (BusTrack));
-
-  Track * track = (Track *) self;
   track->type = TRACK_TYPE_BUS;
   gdk_rgba_parse (&track->color, "#F9CA1B");
-  track_init (track);
-  project_add_track (track);
-
-  ChannelTrack * ct = (ChannelTrack *) self;
-  ct->channel = channel;
-
-  return self;
 }
 
 void

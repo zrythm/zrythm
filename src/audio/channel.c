@@ -235,7 +235,7 @@ channel_process (Channel * channel)
         channel->stereo_in->r);
     }
   /*g_message ("summed signal coming in %s",*/
-             /*channel->name);*/
+             /*channel->track->name);*/
 
   /* panic MIDI if necessary */
   if (AUDIO_ENGINE->panic)
@@ -374,15 +374,14 @@ static Channel *
 _create_channel (char * name)
 {
   Channel * channel = calloc (1, sizeof (Channel));
-  channel->name = g_strdup (name);
 
   /* create ports */
   char * pll =
     g_strdup_printf ("%s stereo in L",
-                     channel->name);
+                     name);
   char * plr =
     g_strdup_printf ("%s stereo in R",
-                     channel->name);
+                     name);
   channel->stereo_in =
     stereo_ports_new (
       port_new_with_type (TYPE_AUDIO,
@@ -393,7 +392,9 @@ _create_channel (char * name)
                           plr));
   g_free (pll);
   g_free (plr);
-  pll = g_strdup_printf ("%s MIDI in", channel->name);
+  pll =
+    g_strdup_printf ("%s MIDI in",
+                     name);
   channel->midi_in =
     port_new_with_type (
       TYPE_EVENT,
@@ -402,8 +403,12 @@ _create_channel (char * name)
   channel->midi_in->midi_events =
     midi_events_new (1);
   g_free (pll);
-  pll = g_strdup_printf ("%s Stereo out L", channel->name);
-  plr = g_strdup_printf ("%s Stereo out R", channel->name);
+  pll =
+    g_strdup_printf ("%s Stereo out L",
+                     name);
+  plr =
+    g_strdup_printf ("%s Stereo out R",
+                     name);
   channel->stereo_out =
     stereo_ports_new (
      port_new_with_type (TYPE_AUDIO,
@@ -447,7 +452,9 @@ _create_channel (char * name)
   setup_thread (channel);
 
   /* set up piano roll port */
-  char * tmp =g_strdup_printf ("%s Piano Roll", channel->name);
+  char * tmp =
+    g_strdup_printf ("%s Piano Roll",
+                     name);
   channel->piano_roll =
     port_new_with_type (
       TYPE_EVENT,
@@ -473,7 +480,7 @@ static void
 generate_automatables (Channel * channel)
 {
   g_message ("Generating automatables for channel %s",
-             channel->name);
+             channel->track->name);
 
   /* generate channel automatables if necessary */
   if (!channel_get_automatable (
@@ -549,7 +556,7 @@ channel_create (ChannelType type,
                          count++);
     }
 
-  Channel * channel = _create_channel (new_label);
+  Channel * channel = _create_channel (label);
 
   channel->type = type;
 
@@ -585,7 +592,7 @@ channel_create (ChannelType type,
                     MIXER->master->stereo_in->r);
     }
 
-  channel->track = track_new (channel);
+  channel->track = track_new (channel, label);
   generate_automatables (channel);
 
   g_message ("Created channel %s of type %i", label, type);
@@ -722,8 +729,9 @@ channel_remove_plugin (Channel * channel, int pos)
   Plugin * plugin = channel->plugins[pos];
   if (plugin)
     {
-      g_message ("Removing %s from %s:%d", plugin->descr->name,
-                 channel->name, pos);
+      g_message ("Removing %s from %s:%d",
+                 plugin->descr->name,
+                 channel->track->name, pos);
       channel->plugins[pos] = NULL;
       if (plugin->descr->protocol == PROT_LV2)
         {
@@ -757,7 +765,7 @@ channel_add_plugin (Channel * channel,    ///< the channel
   channel_remove_plugin (channel, pos);
 
   g_message ("Inserting %s at %s:%d", plugin->descr->name,
-             channel->name, pos);
+             channel->track->name, pos);
   channel->plugins[pos] = plugin;
   plugin->channel = channel;
 
@@ -949,7 +957,7 @@ channel_get_index (Channel * channel)
       if (MIXER->channels[i] == channel)
         return i;
     }
-  g_error ("Channel index for %s not found", channel->name);
+  g_error ("Channel index for %s not found", channel->track->name);
 }
 
 /**
@@ -1051,7 +1059,7 @@ channel_free (Channel * channel)
 {
   g_assert (channel);
 
-  g_free (channel->name);
+  g_free (channel->track->name);
   FOREACH_STRIP
     {
       Plugin * pl = channel->plugins[i];

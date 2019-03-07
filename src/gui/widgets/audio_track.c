@@ -141,7 +141,7 @@ audio_track_widget_refresh (AudioTrackWidget * self)
 
   gtk_label_set_text (
     tw_prv->name,
-    chan->name);
+    track->name);
 
   audio_track_widget_refresh_buttons (self);
 

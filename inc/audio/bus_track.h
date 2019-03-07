@@ -1,7 +1,5 @@
 /*
- * audio/bus_track.h - bus track
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -31,13 +29,10 @@ typedef struct Channel Channel;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct Automatable Automatable;
 
-typedef struct BusTrack
-{
-  ChannelTrack        parent; ///< base track
-} BusTrack;
+typedef struct Track BusTrack;
 
-BusTrack *
-bus_track_new (Channel * channel);
+void
+bus_track_init (Track * track);
 
 void
 bus_track_setup (BusTrack * self);

@@ -35,20 +35,7 @@ typedef struct Automatable Automatable;
  * variables for tracks that correspond to a channel in
  * the mixer. Should never be instantiated.
  */
-typedef struct ChannelTrack
-{
-  Track                 parent; ///< base track
-
-  /**
-   * Owner channel.
-   *
-   * 1 channel has 1 track.
-   */
-  int                   channel_id;
-  Channel *             channel; ///< cache
-
-  AutomationTracklist   automation_tracklist;
-} ChannelTrack;
+typedef struct Track ChannelTrack;
 
 void
 channel_track_setup (ChannelTrack * self);

@@ -140,7 +140,7 @@ master_track_widget_refresh (MasterTrackWidget * self)
 
   gtk_label_set_text (
     tw_prv->name,
-    chan->name);
+    chan->track->name);
 
   master_track_widget_refresh_buttons (self);
 

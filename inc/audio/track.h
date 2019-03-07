@@ -26,6 +26,7 @@
 #ifndef __AUDIO_TRACK_H__
 #define __AUDIO_TRACK_H__
 
+#include "audio/automation_tracklist.h"
 #include "utils/yaml.h"
 
 #include <gtk/gtk.h>
@@ -43,6 +44,8 @@ typedef struct AutomationTrack AutomationTrack;
 typedef struct Automatable Automatable;
 typedef struct AutomationPoint AutomationPoint;
 typedef jack_nframes_t nframes_t;
+typedef struct Chord Chord;
+typedef struct MusicalScale MusicalScale;
 
 typedef enum TrackType
 {
@@ -67,6 +70,9 @@ typedef struct Track
 
   TrackType           type; ///< the type of track this is
 
+  /** Track name, used in channel too. */
+  char *              name;
+
   /**
    * Track Widget created dynamically.
    * 1 track has 1 widget.
@@ -80,13 +86,47 @@ typedef struct Track
   int                 solo; ///< solo or not
   int                 recording; ///< recording or not
 
-
   /**
    * Track color.
    *
    * This is used in the channels as well.
    */
   GdkRGBA              color;
+
+  /* ==== INSTRUMENT & AUDIO TRACK ==== */
+  /**
+   * Regions in this track.
+   */
+  int                   region_ids[MAX_REGIONS];
+  Region *              regions[MAX_REGIONS];
+  int                   num_regions;  ///< counter
+
+  /**
+   * Instrument track only.
+   *
+   * Whether main plugin is showing or not.
+   */
+  int                   ui_active;
+  /* ==== INSTRUMENT & AUDIO TRACK END ==== */
+
+  /* ==== CHORD TRACK ==== */
+  MusicalScale *          scale;
+  Chord *                 chords[600];
+  int                     num_chords;
+  /* ==== CHORD TRACK END ==== */
+
+  /* ==== CHANNEL TRACK ==== */
+  /**
+   * Owner channel.
+   *
+   * 1 channel has 1 track.
+   */
+  int                   channel_id;
+  Channel *             channel; ///< cache
+  /* ==== CHANNEL TRACK END ==== */
+
+  AutomationTracklist   automation_tracklist;
+
 } Track;
 
 static const cyaml_strval_t
@@ -105,6 +145,10 @@ track_fields_schema[] =
 	CYAML_FIELD_INT (
     "id", CYAML_FLAG_DEFAULT,
     Track, id),
+  CYAML_FIELD_STRING_PTR (
+    "name", CYAML_FLAG_POINTER,
+    Track, name,
+   	0, CYAML_UNLIMITED),
   CYAML_FIELD_ENUM (
     "type", CYAML_FLAG_DEFAULT,
     Track, type, track_type_strings,
@@ -153,10 +197,11 @@ void
 track_init (Track * track);
 
 /**
- * Wrapper.
+ * Returns a new track for the given channel with
+ * the given label.
  */
 Track *
-track_new (Channel * channel);
+track_new (Channel * channel, char * label);
 
 /**
  * Sets track muted and optionally adds the action

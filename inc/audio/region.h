@@ -41,8 +41,6 @@ typedef struct _RegionWidget RegionWidget;
 typedef struct Channel Channel;
 typedef struct Track Track;
 typedef struct MidiNote MidiNote;
-typedef struct MidiRegion MidiRegion;
-typedef struct AudioRegion AudioRegion;
 typedef struct _AudioClipWidget AudioClipWidget;
 
 typedef enum RegionType
@@ -152,19 +150,7 @@ typedef struct Region
    */
   GdkRGBA        color;
 
-  /**
-   * This is a hack to make the region serialize its
-   * subtype.
-   *
-   * Only useful for serialization.
-   */
-  MidiRegion *         midi_region;
-  AudioRegion *        audio_region;
-} Region;
-
-typedef struct MidiRegion
-{
-  Region          parent;
+  /* ==== MIDI REGION ==== */
 
   /**
    * MIDI notes.
@@ -183,16 +169,9 @@ typedef struct MidiRegion
   MidiNote *      unended_notes[40];
   int             num_unended_notes;
 
-  /**
-   * Dummy member because serialization skips the midi
-   * region if it is all 0's.
-   */
-  int             dummy;
-} MidiRegion;
+  /* ==== MIDI REGION END ==== */
 
-typedef struct AudioRegion
-{
-  Region              parent;
+  /* ==== AUDIO REGION ==== */
 
   /** Position to fade in until. */
   Position            fade_in_pos;
@@ -214,53 +193,15 @@ typedef struct AudioRegion
    */
   char *              filename;
 
-  int                 dummy;
-} AudioRegion;
+  /* ==== AUDIO REGION END ==== */
+
+} Region;
 
 static const cyaml_strval_t
 region_type_strings[] =
 {
 	{ "Midi",          REGION_TYPE_MIDI    },
 	{ "Audio",         REGION_TYPE_AUDIO   },
-};
-
-static const cyaml_schema_field_t
-midi_region_fields_schema[] =
-{
-  CYAML_FIELD_SEQUENCE_COUNT (
-    /* default because it is an array of pointers, not a
-     * pointer to an array */
-    "midi_notes", CYAML_FLAG_DEFAULT,
-    MidiRegion, midi_notes, num_midi_notes,
-    &midi_note_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_INT (
-    "dummy", CYAML_FLAG_DEFAULT,
-    MidiRegion, dummy),
-
-	CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t
-midi_region_schema = {
-	CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-		MidiRegion, midi_region_fields_schema),
-};
-
-static const cyaml_schema_field_t
-audio_region_fields_schema[] =
-{
-  CYAML_FIELD_INT (
-    "dummy", CYAML_FLAG_DEFAULT,
-    AudioRegion, dummy),
-
-	CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t
-audio_region_schema = {
-	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
-			AudioRegion, audio_region_fields_schema),
 };
 
 static const cyaml_schema_field_t
@@ -295,12 +236,12 @@ static const cyaml_schema_field_t
 	CYAML_FIELD_INT (
     "selected", CYAML_FLAG_DEFAULT,
     Region, selected),
-  CYAML_FIELD_MAPPING_PTR (
-    "midi_region", CYAML_FLAG_POINTER,
-    Region, midi_region, midi_region_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "audio_region", CYAML_FLAG_POINTER,
-    Region, audio_region, audio_region_fields_schema),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    /* default because it is an array of pointers, not a
+     * pointer to an array */
+    "midi_notes", CYAML_FLAG_DEFAULT,
+    Region, midi_notes, num_midi_notes,
+    &midi_note_schema, 0, CYAML_UNLIMITED),
 
 	CYAML_FIELD_END
 };
@@ -310,6 +251,12 @@ region_schema = {
 	CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER,
 			Region, region_fields_schema),
 };
+
+/**
+ * Inits freshly loaded region.
+ */
+void
+region_init_loaded (Region * region);
 
 /**
  * Returns the full length as it appears on the
@@ -469,13 +416,7 @@ void
 region_free (Region * region);
 
 SERIALIZE_INC (Region, region)
-SERIALIZE_INC (MidiRegion, midi_region)
-SERIALIZE_INC (AudioRegion, audio_region)
 DESERIALIZE_INC (Region, region)
-DESERIALIZE_INC (MidiRegion, midi_region)
-DESERIALIZE_INC (AudioRegion, audio_region)
 PRINT_YAML_INC (Region, region)
-PRINT_YAML_INC (MidiRegion, midi_region)
-PRINT_YAML_INC (AudioRegion, audio_region)
 
 #endif // __AUDIO_REGION_H__

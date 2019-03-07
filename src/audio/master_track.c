@@ -25,22 +25,11 @@
 
 #include <gtk/gtk.h>
 
-MasterTrack *
-master_track_new (Channel * channel)
+void
+master_track_init (Track * track)
 {
-  MasterTrack * self =
-    calloc (1, sizeof (MasterTrack));
-
-  Track * track = (Track *) self;
   track->type = TRACK_TYPE_MASTER;
   gdk_rgba_parse (&track->color, "#f01010");
-  track_init (track);
-  project_add_track (track);
-
-  ChannelTrack * bt = (ChannelTrack *) self;
-  bt->channel = channel;
-
-  return self;
 }
 
 void

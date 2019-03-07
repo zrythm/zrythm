@@ -29,23 +29,11 @@
 #include "project.h"
 #include "utils/arrays.h"
 
-AudioTrack *
-audio_track_new (Channel * channel)
+void
+audio_track_init (Track * track)
 {
-  AudioTrack * self =
-    calloc (1, sizeof (AudioTrack));
-
-  Track * track = (Track *) self;
   track->type = TRACK_TYPE_AUDIO;
   gdk_rgba_parse (&track->color, "#19664c");
-  track_init (track);
-  project_add_track (track);
-
-  ChannelTrack * bt = (ChannelTrack *) self;
-  bt->channel = channel;
-
-  return self;
-
 }
 
 void

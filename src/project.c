@@ -240,9 +240,10 @@ project_save (const char * dir)
               if (plugin->descr->protocol == PROT_LV2)
                 {
                   char * tmp =
-                    g_strdup_printf ("%s_%d",
-                                     channel->name,
-                                     j);
+                    g_strdup_printf (
+                      "%s_%d",
+                      channel->track->name,
+                      j);
                   char * state_dir_plugin =
                     g_build_filename (PROJECT->states_dir,
                                       tmp,

@@ -39,8 +39,9 @@ G_DECLARE_FINAL_TYPE (InstrumentTrackWidget,
                       INSTRUMENT_TRACK_WIDGET,
                       TrackWidget);
 
-typedef struct _AutomationTracklistWidget AutomationTracklistWidget;
-typedef struct InstrumentTrack InstrumentTrack;
+typedef struct _AutomationTracklistWidget
+  AutomationTracklistWidget;
+typedef struct Track InstrumentTrack;
 
 /**
  * Top is the track part and bot is the automation part

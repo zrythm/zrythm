@@ -40,16 +40,7 @@ typedef struct Chord Chord;
 typedef struct _ChordTrackWidget ChordTrackWidget;
 typedef struct MusicalScale MusicalScale;
 
-typedef struct ChordTrack
-{
-  Track                   parent;
-  MusicalScale *          scale;
-  Chord *                 chords[600];
-  int                     num_chords;
-  char *                  name;
-  ChordTrackWidget *      widget;
-  GdkRGBA                 color;
-} ChordTrack;
+typedef struct Track ChordTrack;
 
 /**
  * Creates a new chord track using the given scale.

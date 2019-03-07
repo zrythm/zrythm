@@ -30,7 +30,6 @@ typedef struct Track Track;
 typedef struct MidiEvents MidiEvents;
 typedef struct Position Position;
 typedef struct Velocity Velocity;
-typedef struct MidiRegion MidiRegion;
 
 typedef enum MidiNoteCloneFlag
 {

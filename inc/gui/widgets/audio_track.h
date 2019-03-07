@@ -37,7 +37,7 @@ G_DECLARE_FINAL_TYPE (AudioTrackWidget,
 
 typedef struct _AutomationTracklistWidget
   AutomationTracklistWidget;
-typedef struct AudioTrack AudioTrack;
+typedef struct Track AudioTrack;
 
 /**
  * Top is the track part and bot is the automation part

@@ -22,7 +22,7 @@
 #ifndef __UTILS_SMF_H__
 #define __UTILS_SMF_H__
 
-typedef struct MidiRegion MidiRegion;
+typedef struct Region MidiRegion;
 
 /**
  * Saves regions into MIDI files (.smf)

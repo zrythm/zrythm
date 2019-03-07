@@ -37,23 +37,16 @@
 
 #include <gtk/gtk.h>
 
-InstrumentTrack *
-instrument_track_new (Channel * channel)
+/**
+ * Initializes an instrument track.
+ */
+void
+instrument_track_init (Track * track)
 {
-  InstrumentTrack * self =
-    calloc (1, sizeof (InstrumentTrack));
-
-  Track * track = (Track *) self;
   track->type = TRACK_TYPE_INSTRUMENT;
   gdk_rgba_parse (&track->color, "#F79616");
-  track_init ((Track *) self);
-  project_add_track (track);
 
-  ChannelTrack * ct = (ChannelTrack *) self;
-  ct->channel = channel;
-  self->ui_active = 1;
-
-  return self;
+  track->ui_active = 1;
 }
 
 void

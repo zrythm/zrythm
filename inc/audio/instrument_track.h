@@ -1,7 +1,5 @@
 /*
- * audio/instrument_track.h - instrument track
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -33,26 +31,16 @@ typedef struct Channel Channel;
 typedef struct MidiEvents MidiEvents;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct Automatable Automatable;
-typedef struct MidiRegion MidiRegion;
+typedef struct Region MidiRegion;
 typedef jack_nframes_t nframes_t;
 
+typedef struct Track InstrumentTrack;
+
 /**
- * The track struct.
+ * Initializes an instrument track.
  */
-typedef struct InstrumentTrack
-{
-  ChannelTrack          parent; ///< base track
-
-  /**
-   * MIDI regions in this track.
-   */
-  MidiRegion *          regions[800];
-  int                   num_regions;  ///< counter
-  int                   ui_active;
-} InstrumentTrack;
-
-InstrumentTrack *
-instrument_track_new (Channel * channel);
+void
+instrument_track_init (Track * track);
 
 void
 instrument_track_setup (InstrumentTrack * self);

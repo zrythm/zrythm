@@ -187,7 +187,7 @@ void
 mixer_remove_channel (Channel * channel)
 {
   g_message ("removing channel %s",
-             channel->name);
+             channel->track->name);
   AUDIO_ENGINE->run = 0;
   channel->enabled = 0;
   channel->stop_thread = 1;
@@ -244,7 +244,7 @@ mixer_get_channel_by_name (char *  name)
   for (int i = 0; i < MIXER->num_channels; i++)
     {
       Channel * chan = MIXER->channels[i];
-      if (g_strcmp0 (chan->name, name) == 0)
+      if (g_strcmp0 (chan->track->name, name) == 0)
         return chan;
     }
   return NULL;

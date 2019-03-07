@@ -143,7 +143,7 @@ bus_track_widget_refresh (BusTrackWidget * self)
 
   gtk_label_set_text (
     tw_prv->name,
-    chan->name);
+    track->name);
 
   bus_track_widget_refresh_buttons (self);
 

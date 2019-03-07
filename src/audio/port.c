@@ -48,6 +48,7 @@ typedef jack_nframes_t                nframes_t;
 /**
  * Inits ports just loaded from yml.
  */
+void
 port_init_loaded (Port * port)
 {
   /* set caches */

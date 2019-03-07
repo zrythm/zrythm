@@ -38,7 +38,7 @@ G_DECLARE_FINAL_TYPE (MidiRegionWidget,
                       MIDI_REGION_WIDGET,
                       RegionWidget);
 
-typedef struct MidiRegion MidiRegion;
+typedef struct Region MidiRegion;
 
 typedef struct _MidiRegionWidget
 {

@@ -20,6 +20,7 @@
 #include "zrythm.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "audio/audio_region.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"

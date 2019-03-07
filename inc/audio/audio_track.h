@@ -1,7 +1,5 @@
 /*
- * audio/audio_track.h - audio track
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,26 +26,15 @@
 typedef struct Position Position;
 typedef struct _TrackWidget TrackWidget;
 typedef struct Channel Channel;
-typedef struct AudioRegion AudioRegion;
+typedef struct Region AudioRegion;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct Automatable Automatable;
 typedef struct StereoPorts StereoPorts;
 
-typedef struct AudioTrack
-{
-  ChannelTrack          parent; ///< base track
+typedef struct Track AudioTrack;
 
-  /**
-   * Audio regions in this track.
-   */
-  int                   region_ids[MAX_REGIONS];
-  int                   num_regions;
-  AudioRegion *         regions[MAX_REGIONS]; ///< cache
-
-} AudioTrack;
-
-AudioTrack *
-audio_track_new (Channel * channel);
+void
+audio_track_init (Track * track);
 
 void
 audio_track_setup (AudioTrack * self);

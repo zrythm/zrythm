@@ -269,17 +269,18 @@ refresh_output (ChannelWidget * self)
     }
   if (self->channel->output)
     {
-      gtk_label_set_text (self->output,
-                          self->channel->output->name);
+      gtk_label_set_text (
+        self->output,
+        self->channel->output->track->name);
     }
 }
 
 static void
 refresh_name (ChannelWidget * self)
 {
-  g_assert (self->channel->name);
+  g_assert (self->channel->track->name);
   gtk_label_set_text (self->name,
-                      self->channel->name);
+                      self->channel->track->name);
 }
 
 static void

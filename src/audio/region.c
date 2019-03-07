@@ -64,33 +64,20 @@ region_init (Region *   region,
   /*position_print (&region->end_pos);*/
   region->track_id = track->id;
   region->track = track;
-  Channel * chan = track_get_channel (track);
   region->name = g_strdup_printf ("%s (%d)",
-                                  chan->name,
+                                  track->name,
                                   region->id);
   region->linked_region_id = -1;
   region->type = type;
   if (type == REGION_TYPE_AUDIO)
     {
-      AudioRegion * ar = (AudioRegion *) region;
-      region->audio_region = ar;
       region->widget = Z_REGION_WIDGET (
-        audio_region_widget_new (ar));
-      ar->dummy = 1;
-      region->midi_region =
-        calloc (1,sizeof (MidiRegion));
-      region->midi_region->dummy = 1;
+        audio_region_widget_new (region));
     }
   else if (type == REGION_TYPE_MIDI)
     {
-      MidiRegion * mr = (MidiRegion *) region;
-      region->midi_region = mr;
       region->widget = Z_REGION_WIDGET (
-        midi_region_widget_new (mr));
-      mr->dummy = 1;
-      region->audio_region =
-        calloc (1,sizeof (AudioRegion));
-      region->audio_region->dummy = 1;
+        midi_region_widget_new (region));
     }
   project_add_region (region);
 }
@@ -355,7 +342,7 @@ region_clone (Region *        region,
         midi_region_new (track,
                          &region->start_pos,
                          &region->end_pos);
-      MidiRegion * mr_orig = region->midi_region;
+      MidiRegion * mr_orig = region;
       if (flag == REGION_CLONE_COPY)
         {
           for (int i = 0; i < mr_orig->num_midi_notes; i++)
@@ -482,10 +469,9 @@ region_get_start_region (Region ** regions,
 char *
 region_generate_filename (Region * region)
 {
-  Channel * channel = track_get_channel (region->track);
   return g_strdup_printf (REGION_PRINTF_FILENAME,
                           region->id,
-                          channel->name,
+                          region->track->name,
                           region->name);
 }
 
@@ -496,10 +482,10 @@ region_free (Region * self)
     g_free (self->name);
   if (self->widget)
     gtk_widget_destroy (GTK_WIDGET (self->widget));
-  if (self->midi_region)
-    midi_region_free_members (self->midi_region);
-  if (self->audio_region)
-    audio_region_free_members (self->audio_region);
+  if (self->type == REGION_TYPE_MIDI)
+    midi_region_free_members (self);
+  if (self->type == REGION_TYPE_AUDIO)
+    audio_region_free_members (self);
 
   free (self);
 }

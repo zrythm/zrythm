@@ -47,26 +47,39 @@ track_init (Track * track)
   track->handle_pos = 1;
 }
 
+/**
+ * Returns a new track for the given channel with
+ * the given label.
+ */
 Track *
-track_new (Channel * channel)
+track_new (Channel * channel, char * label)
 {
+  Track * track =
+    calloc (1, sizeof (Track));
+
+  track_init (track);
+  track->name = label;
+  track->channel = channel;
+
   switch (channel->type)
     {
     case CT_MIDI:
-      return (Track *) instrument_track_new (channel);
+      instrument_track_init (track);
       break;
     case CT_AUDIO:
-      return (Track *) audio_track_new (channel);
+      audio_track_init (track);
       break;
     case CT_BUS:
-      return (Track *) bus_track_new (channel);
+      bus_track_init (track);
       break;
     case CT_MASTER:
-      return (Track *) master_track_new (channel);
+      master_track_init (track);
       break;
     }
-  g_assert_not_reached ();
-  return NULL;
+
+  project_add_track (track);
+
+  return track;
 }
 
 /**
@@ -506,23 +519,5 @@ track_get_region_at_pos (
 char *
 track_get_name (Track * track)
 {
-  switch (track->type)
-    {
-    case TRACK_TYPE_CHORD:
-        {
-          ChordTrack * ct = (ChordTrack *) track;
-          return ct->name;
-        }
-      break;
-    case TRACK_TYPE_BUS:
-    case TRACK_TYPE_AUDIO:
-    case TRACK_TYPE_MASTER:
-    case TRACK_TYPE_INSTRUMENT:
-        {
-          ChannelTrack * ct = (ChannelTrack *) track;
-          return ct->channel->name;
-        }
-    default:
-      return NULL;
-    }
+  return track->name;
 }

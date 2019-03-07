@@ -1,7 +1,5 @@
 /*
- * gui/widgets/rack_row.c - Rack row
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/track.h"
 #include "gui/widgets/automator.h"
 #include "gui/widgets/rack_plugin.h"
 #include "gui/widgets/rack_row.h"
@@ -80,7 +79,8 @@ rack_row_widget_new (RRWType              type,
       self->channel = channel;
 
       /* set explander label */
-      gtk_label_set_text (self->label, channel->name);
+      gtk_label_set_text (
+        self->label, channel->track->name);
       for (int i = 0; i < STRIP_SIZE; i++)
         {
           Plugin * plugin = channel->plugins[i];

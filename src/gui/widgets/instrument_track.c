@@ -207,7 +207,7 @@ instrument_track_widget_refresh (
 
   gtk_label_set_text (
     tw_prv->name,
-    chan->name);
+    track->name);
 
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (tw_prv->track);

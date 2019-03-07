@@ -1,6 +1,4 @@
 /*
- * gui/widgets/connections.c - Manages plugins
- *
  * Copyright (C) 2018 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -22,6 +20,7 @@
 #include "audio/channel.h"
 #include "audio/engine.h"
 #include "audio/mixer.h"
+#include "audio/track.h"
 #include "gui/widgets/audio_unit.h"
 #include "gui/widgets/audio_unit_label.h"
 #include "gui/widgets/connections.h"
@@ -207,7 +206,7 @@ create_audio_units_store ()
   FOREACH_CH
     {
       Channel * channel = MIXER->channels[i];
-      char * label = g_strdup_printf ("%d:%s", i, channel->name);
+      char * label = g_strdup_printf ("%d:%s", i, channel->track->name);
       gtk_tree_store_append (store, &iter2, &iter);
       gtk_tree_store_set (store, &iter2,
                           0, label,
@@ -215,7 +214,7 @@ create_audio_units_store ()
                           2, NULL,
                           -1);
       g_free (label);
-      label = g_strdup_printf ("%s Channel", channel->name);
+      label = g_strdup_printf ("%s Channel", channel->track->name);
       gtk_tree_store_append (store, &iter3, &iter2);
       gtk_tree_store_set (store, &iter3,
                           0, label,
@@ -229,7 +228,7 @@ create_audio_units_store ()
           if (plugin)
             {
               char * label = g_strdup_printf ("%s:%d:%s",
-                                              channel->name,
+                                              channel->track->name,
                                               j,
                                               plugin->descr->name);
               gtk_tree_store_append (store, &iter3, &iter2);
@@ -244,7 +243,7 @@ create_audio_units_store ()
     }
   gtk_tree_store_append (store, &iter2, &iter);
   gtk_tree_store_set (store, &iter2,
-                      0, MIXER->master->name,
+                      0, MIXER->master->track->name,
                       1, AUWT_NONE,
                       2, NULL,
                       -1);

@@ -70,7 +70,7 @@ typedef struct Region Region;
 typedef struct AutomationPoint AutomationPoint;
 typedef struct AutomationCurve AutomationCurve;
 typedef struct MidiNote MidiNote;
-typedef struct ChordTrack ChordTrack;
+typedef struct Track ChordTrack;
 typedef struct Tracklist Tracklist;
 
 typedef struct Project

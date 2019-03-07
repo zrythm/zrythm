@@ -1,8 +1,5 @@
 /*
- * audio/midi_region.c - A region in the timeline having a start
- *   and an end
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -69,8 +66,6 @@ midi_region_new (Track *    track,
                start_pos,
                end_pos);
 
-  midi_region->dummy = 1;
-
   return midi_region;
 }
 
@@ -121,7 +116,3 @@ midi_region_free_members (MidiRegion * self)
       midi_note_free (self->unended_notes[i]);
     }
 }
-
-SERIALIZE_SRC (MidiRegion, midi_region)
-DESERIALIZE_SRC (MidiRegion, midi_region)
-PRINT_YAML_SRC (MidiRegion, midi_region)
