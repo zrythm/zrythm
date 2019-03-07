@@ -92,6 +92,17 @@ region_init_loaded (Region * region)
     project_get_track (region->track_id);
   region->linked_region =
     project_get_region (region->linked_region_id);
+
+  if (region->type == REGION_TYPE_AUDIO)
+    {
+      region->widget = Z_REGION_WIDGET (
+        audio_region_widget_new (region));
+    }
+  else if (region->type == REGION_TYPE_MIDI)
+    {
+      region->widget = Z_REGION_WIDGET (
+        midi_region_widget_new (region));
+    }
 }
 
 /**

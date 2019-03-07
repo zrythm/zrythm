@@ -224,15 +224,38 @@ static const cyaml_schema_field_t
   CYAML_FIELD_MAPPING (
     "end_pos", CYAML_FLAG_DEFAULT,
     Region, end_pos, position_fields_schema),
-  //CYAML_FIELD_MAPPING (
-    //"unit_end_pos", CYAML_FLAG_DEFAULT,
-    //Region, unit_end_pos, position_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "true_end_pos", CYAML_FLAG_DEFAULT,
+    Region, true_end_pos, position_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "clip_start_pos", CYAML_FLAG_DEFAULT,
+    Region, clip_start_pos, position_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "loop_start_pos", CYAML_FLAG_DEFAULT,
+    Region, loop_start_pos, position_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "loop_end_pos", CYAML_FLAG_DEFAULT,
+    Region, loop_end_pos, position_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "fade_in_pos", CYAML_FLAG_DEFAULT,
+    Region, fade_in_pos, position_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "fade_out_pos", CYAML_FLAG_DEFAULT,
+    Region, fade_out_pos, position_fields_schema),
+  CYAML_FIELD_STRING_PTR (
+    "filename",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    Region, filename,
+   	0, CYAML_UNLIMITED),
 	CYAML_FIELD_INT (
     "track_id", CYAML_FLAG_DEFAULT,
     Region, track_id),
 	CYAML_FIELD_INT (
     "linked_region_id", CYAML_FLAG_DEFAULT,
     Region, linked_region_id),
+	CYAML_FIELD_INT (
+    "muted", CYAML_FLAG_DEFAULT,
+    Region, muted),
 	CYAML_FIELD_INT (
     "selected", CYAML_FLAG_DEFAULT,
     Region, selected),

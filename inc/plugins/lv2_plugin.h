@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -16,6 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
+/*
+  Copyright 2007-2016 David Robillard <http://drobilla.net>
+
+  Permission to use, copy, modify, and/or distribute this software for any
+  purpose with or without fee is hereby granted, provided that the above
+  copyright notice and this permission notice appear in all copies.
+
+  THIS SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+*/
 
 #ifndef __PLUGINS_LV2_PLUGIN_H__
 #define __PLUGINS_LV2_PLUGIN_H__
@@ -26,15 +41,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "gui/widgets/instrument_track.h"
 
 #ifdef HAVE_ISATTY
 #    include <unistd.h>
 #endif
 
-#include "audio/port.h"
 #include "audio/position.h"
-#include "plugins/plugin_manager.h"
 #include "plugins/lv2/control.h"
 #include "plugins/lv2/lv2_evbuf.h"
 #include "plugins/lv2/symap.h"
@@ -80,6 +92,9 @@
 typedef struct Lv2Plugin Lv2Plugin;
 typedef struct _GtkWidget GtkWidget;
 typedef struct _GtkCheckMenuItem GtkCheckMenuItem;
+typedef struct Port Port;
+typedef struct Plugin Plugin;
+typedef struct PluginDescriptor PluginDescriptor;
 
 typedef struct {
 	LilvNode* atom_AtomPort;
@@ -158,7 +173,9 @@ typedef struct {
 
 typedef struct LV2_Port
 {
-  Port            * port;     ///< pointer back to parent port
+  /** Pointer back to parent port. */
+  int             port_id;
+  Port *          port;     ///< cache
 	const LilvPort* lilv_port;  ///< LV2 port
   void*           sys_port;   ///< For audio/MIDI ports, otherwise NULL
 	LV2_Evbuf*      evbuf;      ///< For MIDI ports, otherwise NULL
@@ -258,6 +275,48 @@ typedef struct Lv2Plugin
   void *           host;
   void *           host_on_destroy_cb;
 } Lv2Plugin;
+
+static const cyaml_schema_field_t
+  lv2_port_fields_schema[] =
+{
+	CYAML_FIELD_INT (
+    "port_id", CYAML_FLAG_DEFAULT,
+    LV2_Port, port_id),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  lv2_port_schema =
+{
+	CYAML_VALUE_MAPPING (CYAML_FLAG_DEFAULT,
+  LV2_Port, lv2_port_fields_schema),
+};
+
+static const cyaml_schema_field_t
+  lv2_plugin_fields_schema[] =
+{
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "ports", CYAML_FLAG_POINTER,
+    Lv2Plugin, ports, num_ports,
+    &lv2_port_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_STRING_PTR (
+    "state_file", CYAML_FLAG_POINTER,
+    Lv2Plugin, state_file,
+    0, CYAML_UNLIMITED),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  lv2_plugin_schema =
+{
+	CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER,
+  Lv2Plugin, lv2_plugin_fields_schema),
+};
+
+void
+lv2_plugin_init_loaded (Lv2Plugin * lv2_plgn);
 
 int
 lv2_printf(LV2_Log_Handle handle,

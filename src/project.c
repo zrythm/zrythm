@@ -27,7 +27,9 @@
 #include "zrythm.h"
 #include "project.h"
 #include "audio/automation_curve.h"
+#include "audio/automation_lane.h"
 #include "audio/automation_point.h"
+#include "audio/automation_track.h"
 #include "audio/channel.h"
 #include "audio/chord_track.h"
 #include "audio/engine.h"
@@ -120,15 +122,20 @@ init_ports ()
     }
 }
 
-/**
- * Initializes the newly deserialized regions.
- */
-static void
-init_regions ()
-{
-  for (int i = 0; i < PROJECT->num_regions; i++)
-    region_init_loaded (project_get_region (i));
-}
+/** sl = singular lowercase */
+#define INIT_LOADED(sl) \
+  static void \
+  init_loaded_##sl##s () \
+  { \
+    for (int i = 0; i < PROJECT->num_##sl##s; i++) \
+      sl##_init_loaded (project_get_##sl (i)); \
+  }
+
+INIT_LOADED (port)
+INIT_LOADED (region)
+INIT_LOADED (channel)
+INIT_LOADED (plugin)
+INIT_LOADED (track)
 
 static void
 load (Project *    self,
@@ -140,9 +147,6 @@ load (Project *    self,
   g_assert (filename);
   char * dir = io_get_dir (filename);
   update_paths (dir);
-
-  /*xml_load_regions ();*/
-  /*xml_load_project ();*/
 
   gchar * yaml;
   GError *err = NULL;
@@ -163,8 +167,11 @@ load (Project *    self,
 
   Project * prj = project_deserialize (yaml);
   PROJECT = prj;
-  init_ports ();
-  init_regions ();
+  init_loaded_ports ();
+  init_loaded_regions ();
+  init_loaded_channels ();
+  init_loaded_tracks ();
+  init_loaded_plugins ();
   mixer_load_plugins ();
 
   char * filepath_noext = g_path_get_basename (dir);
@@ -178,6 +185,8 @@ load (Project *    self,
   self->loaded = 1;
 
 }
+
+#undef INIT_LOADED(sl)
 
 /**
  * If project has a filename set, it loads that. Otherwise
@@ -302,40 +311,49 @@ get_next_available_id (void ** array,
   return size;
 }
 
-#define PROJECT_ADD_X(camelcase, lowercase, plural) \
+#define PROJECT_ADD_X(camelcase, lowercase) \
   void \
   project_add_##lowercase (camelcase * x) \
   { \
     x->id = \
-      get_next_available_id ((void **) PROJECT->plural, \
-                             PROJECT->num_##plural); \
-    PROJECT->plural[x->id] = x; \
-    PROJECT->num_##plural++; \
+      get_next_available_id ( \
+        (void **) PROJECT->lowercase##s, \
+        PROJECT->num_##lowercase##s); \
+    PROJECT->lowercase##s[x->id] = x; \
+    PROJECT->num_##lowercase##s++; \
   }
-#define PROJECT_GET_X(camelcase, lowercase, plural) \
+#define PROJECT_GET_X(camelcase, lowercase) \
   camelcase * \
   project_get_##lowercase (int id) \
   { \
-    return PROJECT->plural[id]; \
+    return PROJECT->lowercase##s[id]; \
   }
 
 
-PROJECT_ADD_X (Region, region, regions)
-PROJECT_GET_X (Region, region, regions)
-PROJECT_ADD_X (Track, track, tracks)
-PROJECT_GET_X (Track, track, tracks)
-PROJECT_ADD_X (Channel, channel, channels)
-PROJECT_GET_X (Channel, channel, channels)
-PROJECT_ADD_X (Plugin, plugin, plugins)
-PROJECT_GET_X (Plugin, plugin, plugins)
-PROJECT_ADD_X (AutomationPoint, automation_point, automation_points)
-PROJECT_GET_X (AutomationPoint, automation_point, automation_points)
-PROJECT_ADD_X (AutomationCurve, automation_curve, automation_curves)
-PROJECT_GET_X (AutomationCurve, automation_curve, automation_curves)
-PROJECT_ADD_X (MidiNote, midi_note, midi_notes)
-PROJECT_GET_X (MidiNote, midi_note, midi_notes)
-PROJECT_ADD_X (Port, port, ports)
-PROJECT_GET_X (Port, port, ports)
+PROJECT_ADD_X (Region, region)
+PROJECT_GET_X (Region, region)
+PROJECT_ADD_X (Track, track)
+PROJECT_GET_X (Track, track)
+PROJECT_ADD_X (Channel, channel)
+PROJECT_GET_X (Channel, channel)
+PROJECT_ADD_X (Plugin, plugin)
+PROJECT_GET_X (Plugin, plugin)
+PROJECT_ADD_X (AutomationPoint, automation_point)
+PROJECT_GET_X (AutomationPoint, automation_point)
+PROJECT_ADD_X (AutomationCurve, automation_curve)
+PROJECT_GET_X (AutomationCurve, automation_curve)
+PROJECT_ADD_X (MidiNote, midi_note)
+PROJECT_GET_X (MidiNote, midi_note)
+PROJECT_ADD_X (Port, port)
+PROJECT_GET_X (Port, port)
+PROJECT_ADD_X (Chord, chord)
+PROJECT_GET_X (Chord, chord)
+PROJECT_ADD_X (Automatable, automatable)
+PROJECT_GET_X (Automatable, automatable)
+PROJECT_ADD_X (AutomationTrack, automation_track)
+PROJECT_GET_X (AutomationTrack, automation_track)
+PROJECT_ADD_X (AutomationLane, automation_lane)
+PROJECT_GET_X (AutomationLane, automation_lane)
 
 #undef PROJECT_ADD_X
 #undef PROJECT_GET_X

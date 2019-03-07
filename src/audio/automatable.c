@@ -26,6 +26,7 @@
 #include "audio/track.h"
 #include "plugins/plugin.h"
 #include "plugins/lv2_plugin.h"
+#include "project.h"
 #include "utils/math.h"
 
 #include <gtk/gtk.h>
@@ -33,8 +34,12 @@
 static Automatable *
 _create_blank ()
 {
-  Automatable * automatable = calloc (1, sizeof (Automatable));
-  return automatable;
+  Automatable * self =
+    calloc (1, sizeof (Automatable));
+
+  project_add_automatable (self);
+
+  return self;
 }
 
 Automatable *

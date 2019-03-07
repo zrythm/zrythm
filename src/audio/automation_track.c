@@ -30,6 +30,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/timeline_arranger.h"
+#include "project.h"
 #include "utils/arrays.h"
 
 AutomationTrack *
@@ -38,9 +39,12 @@ automation_track_new (Automatable *   a)
   AutomationTrack * at =
     calloc (1, sizeof (AutomationTrack));
 
+  at->track_id = a->track->id;
   at->track = a->track;
-  /*automation_track_set_automatable (at, a);*/
+  at->automatable_id = a->id;
   at->automatable = a;
+
+  project_add_automation_track (at);
 
   return at;
 }
@@ -91,7 +95,8 @@ add_and_show_curve_point (AutomationTrack * at,
                           Position        * pos)
 {
   /* create curve point at mid pos */
-  AutomationCurve * curve = automation_curve_new (at, pos);
+  AutomationCurve * curve =
+    automation_curve_new (at, pos);
   automation_track_add_automation_curve (at, curve);
 
   /* FIXME these should be in gui code */
@@ -163,13 +168,18 @@ automation_track_force_sort (AutomationTrack * at)
  * Adds automation curve.
  */
 void
-automation_track_add_automation_curve (AutomationTrack * at,
-                                       AutomationCurve * ac)
+automation_track_add_automation_curve (
+  AutomationTrack * at,
+  AutomationCurve * ac)
 {
   /* add point */
   array_append (at->automation_curves,
                 at->num_automation_curves,
                 ac);
+  at->ac_ids[
+    at->num_automation_curves - 1] =
+      at->automation_curves[
+        at->num_automation_curves - 1]->id;
 
   /* sort by position */
   qsort (at->automation_curves,
@@ -188,7 +198,13 @@ automation_track_add_automation_point (
   int               generate_curve_points)
 {
   /* add point */
-  at->automation_points[at->num_automation_points++] = ap;
+  array_append (at->automation_points,
+                at->num_automation_points,
+                ap);
+  at->ap_ids[
+    at->num_automation_points - 1] =
+      at->automation_points[
+        at->num_automation_points - 1]->id;
 
   /* sort by position */
   qsort (at->automation_points,

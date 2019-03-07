@@ -367,6 +367,41 @@ setup_thread (Channel * channel)
     }
 }
 
+void
+channel_init_loaded (Channel * ch)
+{
+  /* plugins */
+  for (int i = 0; i < STRIP_SIZE; i++)
+    ch->plugins[i] =
+      project_get_plugin (ch->plugin_ids[i]);
+
+  /* stereo in/out ports */
+  ch->stereo_in->l =
+    project_get_port (ch->stereo_in->l_id);
+  ch->stereo_in->r =
+    project_get_port (ch->stereo_in->r_id);
+  ch->stereo_out->l =
+    project_get_port (ch->stereo_out->l_id);
+  ch->stereo_out->r =
+    project_get_port (ch->stereo_out->r_id);
+
+  /* midi in / piano roll ports */
+  ch->midi_in =
+    project_get_port (ch->midi_in_id);
+  ch->piano_roll =
+    project_get_port (ch->piano_roll_id);
+
+  /* routing */
+  ch->output =
+    project_get_channel (ch->output_id);
+
+  /* track */
+  ch->track =
+    project_get_track (ch->track_id);
+
+  ch->widget = channel_widget_new (ch);
+}
+
 /**
  * Creates, inits, and returns a new channel with given info.
  */
@@ -446,7 +481,8 @@ _create_channel (char * name)
   channel->r_port_db = 0.f;
 
   /* connect MIDI in port from engine's jack port */
-  port_connect (AUDIO_ENGINE->midi_in, channel->midi_in);
+  port_connect (AUDIO_ENGINE->midi_in,
+                channel->midi_in);
 
   /* thread related */
   setup_thread (channel);

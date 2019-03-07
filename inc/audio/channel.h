@@ -105,8 +105,8 @@ typedef struct Channel
    * These should be serialized instead of
    * stereo_in.
    */
-  int                  stereo_in_l_id;
-  int                  stereo_in_r_id;
+  //int                  stereo_in_l_id;
+  //int                  stereo_in_r_id;
 
   /**
    * MIDI in port ID.
@@ -144,8 +144,8 @@ typedef struct Channel
    * These should be serialized instead of
    * stereo_out.
    */
-  int                  stereo_out_l_id;
-  int                  stereo_out_r_id;
+  //int                  stereo_out_l_id;
+  //int                  stereo_out_r_id;
 
   /**
    * Current dBFS after procesing each output port.
@@ -197,12 +197,11 @@ typedef struct Channel
   int                  enabled; ///< enabled or not
 
   /**
-   * Automatables for this channel to be generated at run
-   * time (amp, pan, mute, etc.).
-   *
-   * Not to be serialized.
+   * Automatables for this channel to be generated
+   * at run time (amp, pan, mute, etc.).
    */
-  Automatable *        automatables[40];
+  int                  automatable_ids[40];
+  Automatable *        automatables[40]; ///< cache
   int                  num_automatables;
 
   int                  visible; ///< whether visible or not
@@ -254,24 +253,20 @@ channel_fields_schema[] =
 	CYAML_FIELD_FLOAT (
     "pan", CYAML_FLAG_DEFAULT,
     Channel, pan),
-	CYAML_FIELD_INT (
-    "stereo_in_l_id", CYAML_FLAG_DEFAULT,
-    Channel, stereo_in_l_id),
-	CYAML_FIELD_INT (
-    "stereo_in_r_id", CYAML_FLAG_DEFAULT,
-    Channel, stereo_in_r_id),
+	CYAML_FIELD_MAPPING_PTR (
+    "stereo_in", CYAML_FLAG_POINTER,
+    Channel, stereo_in,
+    stereo_ports_fields_schema),
 	CYAML_FIELD_INT (
     "midi_in_id", CYAML_FLAG_DEFAULT,
     Channel, midi_in_id),
 	CYAML_FIELD_INT (
     "piano_roll_id", CYAML_FLAG_DEFAULT,
     Channel, piano_roll_id),
-	CYAML_FIELD_INT (
-    "stereo_out_l_id", CYAML_FLAG_DEFAULT,
-    Channel, stereo_out_l_id),
-	CYAML_FIELD_INT (
-    "stereo_out_r_id", CYAML_FLAG_DEFAULT,
-    Channel, stereo_out_r_id),
+	CYAML_FIELD_MAPPING_PTR (
+    "stereo_out", CYAML_FLAG_POINTER,
+    Channel, stereo_out,
+    stereo_ports_fields_schema),
 	CYAML_FIELD_INT (
     "output_id", CYAML_FLAG_DEFAULT,
     Channel, output_id),
@@ -279,11 +274,9 @@ channel_fields_schema[] =
     "track_id", CYAML_FLAG_DEFAULT,
     Channel, track_id),
   CYAML_FIELD_SEQUENCE_COUNT (
-    /* default because it is an array of pointers, not a
-     * pointer to an array */
-    "automatables", CYAML_FLAG_DEFAULT,
-    Channel, automatables, num_automatables,
-    &automatable_schema, 0, CYAML_UNLIMITED),
+    "automatable_ids", CYAML_FLAG_DEFAULT,
+    Channel, automatable_ids, num_automatables,
+    &int_schema, 0, CYAML_UNLIMITED),
 	CYAML_FIELD_INT (
     "visible", CYAML_FLAG_DEFAULT,
     Channel, track_id),
@@ -298,6 +291,9 @@ channel_schema =
     CYAML_FLAG_POINTER,
 	  Channel, channel_fields_schema),
 };
+
+void
+channel_init_loaded (Channel * channel);
 
 void
 channel_set_phase (void * channel, float phase);

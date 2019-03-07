@@ -88,6 +88,7 @@ typedef struct _ChordWidget ChordWidget;
  */
 typedef struct Chord
 {
+  int                   id;
   Position              pos; ///< chord object position (if used in chord track)
   int               has_bass; ///< has base note or not
   MusicalNote           root_note; ///< root note
@@ -122,26 +123,29 @@ static const cyaml_strval_t musical_note_strings[] = {
 static const cyaml_schema_field_t
   chord_fields_schema[] =
 {
-  CYAML_FIELD_MAPPING (
-      "pos", CYAML_FLAG_DEFAULT,
-      Chord, pos, position_fields_schema),
 	CYAML_FIELD_INT (
-			"has_bass", CYAML_FLAG_DEFAULT,
-			Chord, has_bass),
+    "id", CYAML_FLAG_DEFAULT,
+    Chord, id),
+  CYAML_FIELD_MAPPING (
+    "pos", CYAML_FLAG_DEFAULT,
+    Chord, pos, position_fields_schema),
+	CYAML_FIELD_INT (
+    "has_bass", CYAML_FLAG_DEFAULT,
+    Chord, has_bass),
   CYAML_FIELD_ENUM (
-			"root_note", CYAML_FLAG_DEFAULT,
-			Chord, root_note, musical_note_strings,
-      CYAML_ARRAY_LEN (musical_note_strings)),
+    "root_note", CYAML_FLAG_DEFAULT,
+    Chord, root_note, musical_note_strings,
+    CYAML_ARRAY_LEN (musical_note_strings)),
   CYAML_FIELD_ENUM (
-			"bass_note", CYAML_FLAG_DEFAULT,
-			Chord, bass_note, musical_note_strings,
-      CYAML_ARRAY_LEN (musical_note_strings)),
+    "bass_note", CYAML_FLAG_DEFAULT,
+    Chord, bass_note, musical_note_strings,
+    CYAML_ARRAY_LEN (musical_note_strings)),
   CYAML_FIELD_SEQUENCE_FIXED (
     "notes", CYAML_FLAG_OPTIONAL,
-      Chord, notes, &int_schema, 36),
+    Chord, notes, &int_schema, 36),
 	CYAML_FIELD_INT (
-			"inversion", CYAML_FLAG_DEFAULT,
-			Chord, inversion),
+    "inversion", CYAML_FLAG_DEFAULT,
+    Chord, inversion),
 
 	CYAML_FIELD_END
 };

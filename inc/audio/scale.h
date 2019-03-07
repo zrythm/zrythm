@@ -1,7 +1,5 @@
 /*
- * audio/scale.h - Scale
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -273,6 +271,41 @@ typedef struct MusicalScale
                                                   ///< triads with base note
   int                        num_notes; ///< number of notes (1s)
 } MusicalScale;
+
+static const cyaml_strval_t
+  musical_scale_type_strings[] =
+{
+	{ "Acoustic",     SCALE_ACOUSTIC    },
+	{ "Aeolian",      SCALE_AEOLIAN   },
+	{ "Algerian",     SCALE_ALGERIAN   },
+	{ "Altered",      SCALE_ALTERED   },
+	{ "Augmented",    SCALE_AUGMENTED   },
+};
+
+static const cyaml_schema_field_t
+  musical_scale_fields_schema[] =
+{
+  CYAML_FIELD_ENUM (
+    "type", CYAML_FLAG_DEFAULT,
+    MusicalScale, type, musical_scale_type_strings,
+    CYAML_ARRAY_LEN (musical_scale_type_strings)),
+  CYAML_FIELD_ENUM (
+    "root_key", CYAML_FLAG_DEFAULT,
+    MusicalScale, root_key, musical_note_strings,
+    CYAML_ARRAY_LEN (musical_note_strings)),
+	CYAML_FIELD_INT (
+    "num_notes", CYAML_FLAG_DEFAULT,
+    MusicalScale, num_notes),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  musical_scale_schema = {
+	CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    MusicalScale, musical_scale_fields_schema),
+};
 
 /**
  * Creates new scale using type and root note.

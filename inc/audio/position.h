@@ -88,23 +88,24 @@ static const cyaml_schema_field_t
   position_fields_schema[] =
 {
 	CYAML_FIELD_INT (
-			"bars", CYAML_FLAG_DEFAULT,
-			Position, bars),
+    "bars", CYAML_FLAG_DEFAULT,
+    Position, bars),
 	CYAML_FIELD_INT (
-			"beats", CYAML_FLAG_DEFAULT,
-			Position, beats),
+    "beats", CYAML_FLAG_DEFAULT,
+    Position, beats),
 	CYAML_FIELD_INT (
-			"sixteenths", CYAML_FLAG_DEFAULT,
-			Position, sixteenths),
+    "sixteenths", CYAML_FLAG_DEFAULT,
+    Position, sixteenths),
 	CYAML_FIELD_INT (
-			"ticks", CYAML_FLAG_DEFAULT,
-			Position, ticks),
+    "ticks", CYAML_FLAG_DEFAULT,
+    Position, ticks),
 
 	CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
-position_schema = {
+  position_schema =
+{
 	CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
     Position, position_fields_schema),

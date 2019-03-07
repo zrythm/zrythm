@@ -41,6 +41,25 @@
 #include "project.h"
 
 void
+track_init_loaded (Track * track)
+{
+  track->channel =
+    project_get_channel (track->channel_id);
+
+  int i;
+  for (i = 0; i < track->num_regions; i++)
+    track->regions[i] =
+      project_get_region (
+        track->region_ids[i]);
+  for (i = 0; i < track->num_chords; i++)
+    track->chords[i] =
+      project_get_chord (
+        track->chord_ids[i]);
+
+  track->widget = track_widget_new (track);
+}
+
+void
 track_init (Track * track)
 {
   track->visible = 1;

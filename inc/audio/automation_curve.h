@@ -47,6 +47,7 @@ typedef struct AutomationCurve
   Position                 pos;
   float                    curviness; ///< curviness, default 1
   AutomationCurveType      type;
+  int                      at_id;
   AutomationTrack *        at; ///< pointer back to parent
   AutomationCurveWidget *  widget;
 
@@ -60,12 +61,13 @@ typedef struct AutomationCurve
   /**
    * The ID of the track the automation point is in.
    */
-  int                      track_id;
+  //int                      track_id;
+
   /**
    * The label of the automatable so we know how to find
    * the corresponding automation track.
    */
-  char *                   automatable_label;
+  //char *                   automatable_label;
 } AutomationCurve;
 
 static const cyaml_strval_t
@@ -93,13 +95,9 @@ static const cyaml_schema_field_t
     AutomationCurve, type,
     automation_curve_type_strings,
     CYAML_ARRAY_LEN (automation_curve_type_strings)),
-	CYAML_FIELD_INT (
-    "track_id", CYAML_FLAG_DEFAULT,
-    AutomationCurve, track_id),
-  CYAML_FIELD_STRING_PTR (
-    "automatable_label", CYAML_FLAG_POINTER,
-    AutomationCurve, automatable_label,
-   	0, CYAML_UNLIMITED),
+  CYAML_FIELD_INT (
+    "at_id", CYAML_FLAG_DEFAULT,
+    AutomationCurve, at_id),
 
 	CYAML_FIELD_END
 };

@@ -31,7 +31,9 @@
 
 #include "actions/undo_manager.h"
 #include "audio/automation_curve.h"
+#include "audio/automation_lane.h"
 #include "audio/automation_point.h"
+#include "audio/automation_track.h"
 #include "audio/channel.h"
 #include "audio/engine.h"
 #include "audio/midi_note.h"
@@ -140,12 +142,20 @@ typedef struct Project
   int               num_plugins;
   Region            * regions [30000];
   int               num_regions;
+  Automatable *     automatables[20000];
+  int               num_automatables;
   AutomationPoint * automation_points[30000];
   int               num_automation_points;
   AutomationCurve * automation_curves[30000];
   int               num_automation_curves;
+  AutomationTrack * automation_tracks[50000];
+  int               num_automation_tracks;
+  AutomationLane *  automation_lanes[50000];
+  int               num_automation_lanes;
   MidiNote *        midi_notes[30000];
   int               num_midi_notes;
+  Chord *           chords[600];
+  int               num_chords;
   Channel *         channels[3000];
   int               num_channels;
   Track *           tracks[3000];
@@ -245,12 +255,30 @@ static const cyaml_schema_field_t
     "ports", CYAML_FLAG_DEFAULT,
     Project, ports, num_ports,
     &port_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "chords", CYAML_FLAG_DEFAULT,
+    Project, chords, num_chords,
+    &chord_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "automatables", CYAML_FLAG_DEFAULT,
+    Project, automatables, num_automatables,
+    &automatable_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "automation_tracks", CYAML_FLAG_DEFAULT,
+    Project, automation_tracks,
+    num_automation_tracks,
+    &automation_track_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "automation_lanes", CYAML_FLAG_DEFAULT,
+    Project, automation_lanes,
+    num_automation_lanes,
+    &automation_lane_schema, 0, CYAML_UNLIMITED),
 
 	CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
-project_schema =
+  project_schema =
 {
 	CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER,
   Project, project_fields_schema),
@@ -302,6 +330,14 @@ PROJECT_ADD_X (MidiNote, midi_note);
 PROJECT_GET_X (MidiNote, midi_note);
 PROJECT_ADD_X (Port, port);
 PROJECT_GET_X (Port, port);
+PROJECT_ADD_X (Chord, chord);
+PROJECT_GET_X (Chord, chord);
+PROJECT_ADD_X (Automatable, automatable)
+PROJECT_GET_X (Automatable, automatable)
+PROJECT_ADD_X (AutomationTrack, automation_track)
+PROJECT_GET_X (AutomationTrack, automation_track)
+PROJECT_ADD_X (AutomationLane, automation_lane)
+PROJECT_GET_X (AutomationLane, automation_lane)
 
 #undef PROJECT_ADD_X
 #undef PROJECT_GET_X

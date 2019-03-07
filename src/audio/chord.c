@@ -29,6 +29,7 @@
 
 #include "audio/chord.h"
 #include "gui/widgets/chord.h"
+#include "project.h"
 
 void
 chord_set_pos (Chord *    self,
@@ -99,6 +100,8 @@ chord_new (MusicalNote            root,
   self->widget = chord_widget_new (self);
 
   self->visible = 1;
+
+  project_add_chord (self);
 
   return self;
 }

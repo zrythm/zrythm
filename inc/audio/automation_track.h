@@ -41,16 +41,20 @@ typedef struct AutomationLane AutomationLane;
 
 typedef struct AutomationTrack
 {
+  int                       id;
+
   /**
    * The automatable this automation track is for.
    */
-  Automatable *             automatable;
+  int                       automatable_id;
+  Automatable *             automatable; ///< cache
 
   /**
    * Owner track.
    *
    * For convenience only.
    */
+  int                       track_id;
   Track *                   track;
 
   /**
@@ -58,17 +62,55 @@ typedef struct AutomationTrack
    *
    * Must always stay sorted by position.
    */
+  int                       ap_ids[MAX_AUTOMATION_POINTS];
   AutomationPoint *         automation_points[MAX_AUTOMATION_POINTS];
   int                       num_automation_points;
+  int                       ac_ids[MAX_AUTOMATION_POINTS];
   AutomationCurve *         automation_curves[MAX_AUTOMATION_POINTS];
   int                       num_automation_curves;
 
   /**
    * Associated lane.
    */
-  int                       al_index;
+  int                       al_id;
   AutomationLane *          al; ///< cache
 } AutomationTrack;
+
+static const cyaml_schema_field_t
+  automation_track_fields_schema[] =
+{
+	CYAML_FIELD_INT (
+    "id", CYAML_FLAG_DEFAULT,
+    AutomationTrack, id),
+	CYAML_FIELD_INT (
+    "automatable_id", CYAML_FLAG_DEFAULT,
+    AutomationTrack, automatable_id),
+	CYAML_FIELD_INT (
+    "track_id", CYAML_FLAG_DEFAULT,
+    AutomationTrack, track_id),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "ap_ids", CYAML_FLAG_DEFAULT,
+    AutomationTrack, ap_ids, num_automation_points,
+    &int_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "ac_ids", CYAML_FLAG_DEFAULT,
+    AutomationTrack, ac_ids, num_automation_curves,
+    &int_schema, 0, CYAML_UNLIMITED),
+	CYAML_FIELD_INT (
+    "al_id", CYAML_FLAG_DEFAULT,
+    AutomationTrack, al_id),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  automation_track_schema =
+{
+	CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    AutomationTrack,
+    automation_track_fields_schema),
+};
 
 /**
  * Creates an automation track for the given automatable

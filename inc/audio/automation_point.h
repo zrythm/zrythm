@@ -37,6 +37,7 @@ typedef struct AutomationPoint
    *
    * For convenience only.
    */
+  int                      at_id;
   AutomationTrack *        at;
 
   /**
@@ -54,8 +55,9 @@ typedef struct AutomationPoint
   /**
    * Port ID of the automatable so we know where to place
    * this automation point.
+   * FIXME ???
    */
-  int                      port_id;
+  //int                      port_id;
 } AutomationPoint;
 
 static const cyaml_schema_field_t
@@ -76,9 +78,9 @@ automation_point_fields_schema[] =
 	CYAML_FIELD_FLOAT (
     "fvalue", CYAML_FLAG_DEFAULT,
     AutomationPoint, fvalue),
-	CYAML_FIELD_INT (
-    "port_id", CYAML_FLAG_DEFAULT,
-    AutomationPoint, port_id),
+  CYAML_FIELD_INT (
+    "at_id", CYAML_FLAG_DEFAULT,
+    AutomationPoint, at_id),
 
 	CYAML_FIELD_END
 };
@@ -89,6 +91,10 @@ automation_point_schema = {
     CYAML_FLAG_POINTER,
     AutomationPoint, automation_point_fields_schema),
 };
+
+void
+automation_point_init_loaded (
+  AutomationPoint * ap);
 
 /**
  * Creates automation point in given track at given Position

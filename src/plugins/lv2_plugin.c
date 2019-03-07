@@ -178,16 +178,24 @@ _create_port(Lv2Plugin*   lv2_plugin,
             float    default_value,
             int            port_exists) ///< if zrythm port exists (when loading)
 {
-  LV2_Port* const lv2_port = &lv2_plugin->ports[lv2_port_index];
+  LV2_Port* const lv2_port =
+    &lv2_plugin->ports[lv2_port_index];
 
-  lv2_port->lilv_port = lilv_plugin_get_port_by_index(lv2_plugin->lilv_plugin, lv2_port_index);
+  lv2_port->lilv_port =
+    lilv_plugin_get_port_by_index (
+      lv2_plugin->lilv_plugin, lv2_port_index);
   lv2_port->sys_port  = NULL;
-  const LilvNode* sym = lilv_port_get_symbol(lv2_plugin->lilv_plugin, lv2_port->lilv_port);
+  const LilvNode* sym =
+    lilv_port_get_symbol (
+      lv2_plugin->lilv_plugin,
+      lv2_port->lilv_port);
   if (port_exists)
     {
-      /*lv2_port->port->nframes = AUDIO_ENGINE->block_length;*/
-      /*lv2_port->port->buf = calloc (AUDIO_ENGINE->block_length,*/
-                                    /*sizeof (sample_t));*/
+      lv2_port->port =
+        project_get_port (lv2_port->port_id);
+      lv2_port->port->buf =
+        calloc (AUDIO_ENGINE->block_length,
+                sizeof (sample_t));
     }
   else
     {
@@ -195,6 +203,7 @@ _create_port(Lv2Plugin*   lv2_plugin,
         g_strdup_printf ("LV2: %s",
                          lilv_node_as_string (sym));
       lv2_port->port = port_new (port_name);
+      lv2_port->port_id = lv2_port->port->id;
       g_free (port_name);
     }
   lv2_port->port->owner_pl = lv2_plugin->plugin;
@@ -305,6 +314,15 @@ _create_port(Lv2Plugin*   lv2_plugin,
   return 0;
 }
 
+void
+lv2_plugin_init_loaded (Lv2Plugin * lv2_plgn)
+{
+  for (int i = 0; i < lv2_plgn->num_ports; i++)
+    lv2_plgn->ports[i].port =
+      project_get_port (
+        lv2_plgn->ports[i].port_id);
+}
+
 /**
  * Set port structures from data (via create_port()) for all ports.
  *
@@ -313,17 +331,23 @@ _create_port(Lv2Plugin*   lv2_plugin,
 int
 lv2_set_ports(Lv2Plugin* lv2_plugin)
 {
-  float* default_values = (float*)calloc(
-                    lilv_plugin_get_num_ports(lv2_plugin->lilv_plugin),
-                    sizeof(float));
-  lilv_plugin_get_port_ranges_float(lv2_plugin->lilv_plugin,
-                                    NULL,
-                                    NULL,
-                                    default_values);
+  float* default_values =
+    (float*)calloc(
+      lilv_plugin_get_num_ports (
+        lv2_plugin->lilv_plugin),
+        sizeof(float));
+  lilv_plugin_get_port_ranges_float (
+    lv2_plugin->lilv_plugin,
+    NULL,
+    NULL,
+    default_values);
 
-  for (uint32_t i = 0; i < lv2_plugin->num_ports; ++i)
+  for (uint32_t i = 0;
+       i < lv2_plugin->num_ports; ++i)
     {
-      if (_create_port(lv2_plugin, i, default_values[i], 1) < 0)
+      if (_create_port (
+            lv2_plugin, i,
+            default_values[i], 1) < 0)
         {
           return -1;
         }

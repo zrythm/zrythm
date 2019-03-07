@@ -135,18 +135,14 @@ engine_fields_schema[] =
     "mixer", CYAML_FLAG_DEFAULT,
     AudioEngine, mixer,
     mixer_fields_schema),
-  CYAML_FIELD_INT (
-    "stereo_in_l_id", CYAML_FLAG_DEFAULT,
-    AudioEngine, stereo_in_l_id),
-  CYAML_FIELD_INT (
-    "stereo_in_r_id", CYAML_FLAG_DEFAULT,
-    AudioEngine, stereo_in_r_id),
-  CYAML_FIELD_INT (
-    "stereo_out_l_id", CYAML_FLAG_DEFAULT,
-    AudioEngine, stereo_out_l_id),
-  CYAML_FIELD_INT (
-    "stereo_out_r_id", CYAML_FLAG_DEFAULT,
-    AudioEngine, stereo_out_r_id),
+	CYAML_FIELD_MAPPING_PTR (
+    "stereo_in", CYAML_FLAG_POINTER,
+    AudioEngine, stereo_in,
+    stereo_ports_fields_schema),
+	CYAML_FIELD_MAPPING_PTR (
+    "stereo_out", CYAML_FLAG_POINTER,
+    AudioEngine, stereo_out,
+    stereo_ports_fields_schema),
   CYAML_FIELD_INT (
     "midi_in_id", CYAML_FLAG_DEFAULT,
     AudioEngine, midi_in_id),

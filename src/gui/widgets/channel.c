@@ -156,13 +156,12 @@ refresh_color (ChannelWidget * self)
 static void
 setup_phase_panel (ChannelWidget * self)
 {
-  self->phase_knob = knob_widget_new (channel_get_phase,
-                                      channel_set_phase,
-                                      self->channel,
-                                      0,
-                                      180,
-                                      20,
-                                      0.0f);
+  self->phase_knob =
+    knob_widget_new (
+      channel_get_phase,
+      channel_set_phase,
+      self->channel,
+      0, 180, 20, 0.0f);
   gtk_box_pack_end (self->phase_controls,
                        GTK_WIDGET (self->phase_knob),
                        0, 1, 0);
@@ -361,7 +360,8 @@ channel_widget_unblock_all_signal_handlers (
 ChannelWidget *
 channel_widget_new (Channel * channel)
 {
-  ChannelWidget * self = g_object_new (CHANNEL_WIDGET_TYPE, NULL);
+  ChannelWidget * self =
+    g_object_new (CHANNEL_WIDGET_TYPE, NULL);
   self->channel = channel;
 
   setup_phase_panel (self);
@@ -379,7 +379,8 @@ channel_widget_new (Channel * channel)
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self),
-    (GtkTickCallback) channel_widget_update_meter_reading,
+    (GtkTickCallback)
+      channel_widget_update_meter_reading,
     NULL,
     NULL);
 

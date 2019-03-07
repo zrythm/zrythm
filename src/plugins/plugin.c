@@ -1,8 +1,5 @@
 /*
- * plugins/plugin.c - a base plugin for plugins (lv2/vst/ladspa/etc.)
- *                         to inherit from
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -52,6 +49,28 @@
   /*ucontext_t* context = (ucontext_t*)vcontext;*/
   /*context->uc_mcontext.gregs[REG_RIP]++;*/
 /*}*/
+
+void
+plugin_init_loaded (Plugin * plgn)
+{
+  lv2_plugin_init_loaded (plgn->original_plugin);
+
+  for (int i = 0; i < plgn->num_in_ports; i++)
+    plgn->in_ports[i] =
+      project_get_port (plgn->in_port_ids[i]);
+
+  for (int i = 0; i < plgn->num_out_ports; i++)
+    plgn->out_ports[i] =
+      project_get_port (plgn->out_port_ids[i]);
+
+  for (int i = 0;
+       i < plgn->num_unknown_ports; i++)
+    plgn->unknown_ports[i] =
+      project_get_port (plgn->unknown_port_ids[i]);
+
+  plgn->channel =
+    project_get_channel (plgn->channel_id);
+}
 
 /**
  * Creates an empty plugin.
@@ -152,6 +171,10 @@ plugin_generate_automatables (Plugin * plugin)
     plugin->automatables,
     plugin->num_automatables,
     automatable_create_plugin_enabled (plugin));
+  plugin->automatable_ids[
+    plugin->num_automatables - 1] =
+    plugin->automatables[
+      plugin->num_automatables - 1]->id;
 
   /* add plugin control automatables */
   if (plugin->descr->protocol == PROT_LV2)
@@ -164,8 +187,12 @@ plugin_generate_automatables (Plugin * plugin)
           array_append (
             plugin->automatables,
             plugin->num_automatables,
-            automatable_create_lv2_control (plugin,
-                                            control));
+            automatable_create_lv2_control (
+              plugin, control));
+          plugin->automatable_ids[
+            plugin->num_automatables - 1] =
+            plugin->automatables[
+              plugin->num_automatables - 1]->id;
         }
     }
   else
@@ -285,7 +312,7 @@ plugin_open_ui (Plugin *plugin)
 
 
 /**
- * hides plugin ui 
+ * hides plugin ui
  */
 void
 plugin_close_ui (Plugin *plugin)

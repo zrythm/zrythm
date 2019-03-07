@@ -27,6 +27,7 @@
 #define __AUDIO_TRACK_H__
 
 #include "audio/automation_tracklist.h"
+#include "audio/scale.h"
 #include "utils/yaml.h"
 
 #include <gtk/gtk.h>
@@ -111,6 +112,7 @@ typedef struct Track
 
   /* ==== CHORD TRACK ==== */
   MusicalScale *          scale;
+  int                     chord_ids[600];
   Chord *                 chords[600];
   int                     num_chords;
   /* ==== CHORD TRACK END ==== */
@@ -165,9 +167,6 @@ track_fields_schema[] =
 	CYAML_FIELD_INT (
     "handle_pos", CYAML_FLAG_DEFAULT,
     Track, handle_pos),
-  CYAML_FIELD_MAPPING (
-    "color", CYAML_FLAG_DEFAULT,
-    Track, color, gdk_rgba_fields_schema),
 	CYAML_FIELD_INT (
     "mute", CYAML_FLAG_DEFAULT,
     Track, mute),
@@ -177,6 +176,31 @@ track_fields_schema[] =
 	CYAML_FIELD_INT (
     "recording", CYAML_FLAG_DEFAULT,
     Track, recording),
+  CYAML_FIELD_MAPPING (
+    "color", CYAML_FLAG_DEFAULT,
+    Track, color, gdk_rgba_fields_schema),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "region_ids", CYAML_FLAG_DEFAULT,
+    Track, region_ids, num_regions,
+    &int_schema, 0, CYAML_UNLIMITED),
+	CYAML_FIELD_INT (
+    "ui_active", CYAML_FLAG_DEFAULT,
+    Track, ui_active),
+  CYAML_FIELD_MAPPING_PTR (
+    "scale", CYAML_FLAG_DEFAULT | CYAML_FLAG_OPTIONAL,
+    Track, scale,
+    musical_scale_fields_schema),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "chord_ids", CYAML_FLAG_DEFAULT,
+    Track, chord_ids, num_chords,
+    &int_schema, 0, CYAML_UNLIMITED),
+	CYAML_FIELD_INT (
+    "channel_id", CYAML_FLAG_DEFAULT,
+    Track, channel_id),
+  CYAML_FIELD_MAPPING (
+    "automation_tracklist", CYAML_FLAG_DEFAULT,
+    Track, automation_tracklist,
+    automation_tracklist_fields_schema),
 
 	CYAML_FIELD_END
 };
@@ -187,6 +211,9 @@ track_schema = {
     CYAML_FLAG_POINTER,
     Track, track_fields_schema),
 };
+
+void
+track_init_loaded (Track * track);
 
 /**
  * Only to be used by implementing structs.

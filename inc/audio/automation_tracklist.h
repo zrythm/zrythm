@@ -27,6 +27,8 @@
 #ifndef __AUDIO_AUTOMATION_TRACKLIST_H__
 #define __AUDIO_AUTOMATION_TRACKLIST_H__
 
+#include "utils/yaml.h"
+
 #define GET_SELECTED_AUTOMATION_TRACKS \
   Track * selected_tracks[200]; \
   int num_selected = 0; \
@@ -58,6 +60,7 @@ typedef struct AutomationTracklist
    * When loading projects, these should be first generated
    * and then updated with automation points/curves.
    */
+  int                          at_ids[4000];
   AutomationTrack *            automation_tracks[4000];
   int                          num_automation_tracks;
 
@@ -71,6 +74,7 @@ typedef struct AutomationTracklist
    * They must be associated with an automation
    * track.
    */
+  int                          al_ids[400];
   AutomationLane *             automation_lanes[400];
   int                          num_automation_lanes;
 
@@ -79,10 +83,40 @@ typedef struct AutomationTracklist
    *
    * For convenience only. Not to be serialized.
    */
+  int                          track_id;
   Track *                      track; ///< cache
 
   AutomationTracklistWidget *  widget;
 } AutomationTracklist;
+
+static const cyaml_schema_field_t
+  automation_tracklist_fields_schema[] =
+{
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "at_ids", CYAML_FLAG_DEFAULT,
+    AutomationTracklist, at_ids,
+    num_automation_tracks,
+    &int_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "al_ids", CYAML_FLAG_DEFAULT,
+    AutomationTracklist, al_ids,
+    num_automation_lanes,
+    &int_schema, 0, CYAML_UNLIMITED),
+	CYAML_FIELD_INT (
+    "track_id", CYAML_FLAG_DEFAULT,
+    AutomationTracklist, track_id),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  automation_tracklist_schema =
+{
+	CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    AutomationTracklist,
+    automation_tracklist_fields_schema),
+};
 
 void
 automation_tracklist_init (AutomationTracklist * self,

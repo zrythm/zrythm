@@ -213,6 +213,10 @@ port_fields_schema[] =
     "internal_type", CYAML_FLAG_DEFAULT,
     Port, internal_type, port_internal_type_strings,
     CYAML_ARRAY_LEN (port_internal_type_strings)),
+  //CYAML_FIELD_MAPPING (
+    //"midi_events",
+    //CYAML_FLAG_DEFAULT | CYAML_FLAG_POINTER,
+    //Port, midi_events, midi_events_fields_schema),
   CYAML_FIELD_INT (
     "owner_jack", CYAML_FLAG_DEFAULT,
     Port, owner_jack),
@@ -252,6 +256,26 @@ typedef struct StereoPorts
   Port       * l;
   Port       * r;
 } StereoPorts;
+
+static const cyaml_schema_field_t
+  stereo_ports_fields_schema[] =
+{
+  CYAML_FIELD_INT (
+    "l_id", CYAML_FLAG_DEFAULT,
+    StereoPorts, l_id),
+  CYAML_FIELD_INT (
+    "r_id", CYAML_FLAG_DEFAULT,
+    StereoPorts, r_id),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  stereo_ports_schema = {
+	CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    StereoPorts, stereo_ports_fields_schema),
+};
 
 /**
  * Inits ports just loaded from yml.

@@ -23,6 +23,7 @@
 #include "audio/automatable.h"
 #include "audio/port.h"
 #include "gui/widgets/instrument_track.h"
+#include "plugins/lv2_plugin.h"
 
 #include <jack/jack.h>
 
@@ -34,8 +35,6 @@
 #define DUMMY_PLUGIN "Dummy Plugin"
 
 typedef struct Channel Channel;
-
-
 
 enum PluginCategory
 {
@@ -94,12 +93,20 @@ typedef struct PluginDescriptor
 typedef struct Plugin
 {
   int                  id;
-  void                 * original_plugin;     ///< pointer to original plugin inheriting this base plugin
-  PluginDescriptor    * descr;                 ///< descriptor
-  /* ports coming in as input */
+
+  /**
+   * Pointer back to plugin in its original format.
+   */
+  Lv2Plugin *          original_plugin;
+
+  /** Descriptor. */
+  PluginDescriptor    * descr;
+
+  /** Ports coming in as input. */
   int                  in_port_ids[MAX_IN_PORTS];
   Port                 * in_ports[MAX_IN_PORTS]; ///< cache
   int                  num_in_ports;    ///< counter
+
   int                  out_port_ids[MAX_OUT_PORTS];
   Port                 * out_ports[MAX_OUT_PORTS];           ///< ports going out as output
   int                  num_out_ports;    ///< counter
@@ -110,7 +117,10 @@ typedef struct Plugin
   Channel              * channel;        ///< pointer to channel it belongs to
   int                  processed;  ///< processed or not yet
   int                  enabled;     ///< enabled or not
-  Automatable *        automatables[900]; ///< automatables
+
+  /** Plugin automatables. */
+  int                  automatable_ids[900];
+  Automatable *        automatables[900]; ///< cache
   int                  num_automatables;
 } Plugin;
 
@@ -198,6 +208,10 @@ plugin_fields_schema[] =
     "descr", CYAML_FLAG_POINTER,
     Plugin, descr,
     descriptor_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "original_plugin", CYAML_FLAG_POINTER,
+    Plugin, original_plugin,
+    lv2_plugin_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
     "in_port_ids", CYAML_FLAG_DEFAULT,
     Plugin, in_port_ids, num_in_ports,
@@ -217,9 +231,9 @@ plugin_fields_schema[] =
     "enabled", CYAML_FLAG_DEFAULT,
     Plugin, enabled),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "automatables", CYAML_FLAG_DEFAULT,
-    Plugin, automatables, num_automatables,
-    &automatable_schema, 0, CYAML_UNLIMITED),
+    "automatable_ids", CYAML_FLAG_DEFAULT,
+    Plugin, automatable_ids, num_automatables,
+    &int_schema, 0, CYAML_UNLIMITED),
 
 	CYAML_FIELD_END
 };
@@ -231,6 +245,9 @@ plugin_schema =
     CYAML_FLAG_POINTER,
 	  Plugin, plugin_fields_schema),
 };
+
+void
+plugin_init_loaded (Plugin * plgn);
 
 /**
  * Generates automatables for the plugin.

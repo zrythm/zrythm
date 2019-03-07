@@ -35,10 +35,12 @@
  */
 typedef struct AutomationLane
 {
+  int                     id;
+
   /**
    * The automation track this automation lane is for.
    */
-  int                     automation_track_index;
+  int                     at_id;
   AutomationTrack *       at; ///< cache
 
   /** Whether visible or not. */
@@ -52,6 +54,34 @@ typedef struct AutomationLane
   /** Widget. */
   AutomationLaneWidget *  widget;
 } AutomationLane;
+
+static const cyaml_schema_field_t
+  automation_lane_fields_schema[] =
+{
+	CYAML_FIELD_INT (
+    "id", CYAML_FLAG_DEFAULT,
+    AutomationLane, id),
+	CYAML_FIELD_INT (
+    "at_id", CYAML_FLAG_DEFAULT,
+    AutomationLane, at_id),
+	CYAML_FIELD_INT (
+    "visible", CYAML_FLAG_DEFAULT,
+    AutomationLane, visible),
+	CYAML_FIELD_INT (
+    "handle_pos", CYAML_FLAG_DEFAULT,
+    AutomationLane, handle_pos),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  automation_lane_schema =
+{
+	CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    AutomationLane,
+    automation_lane_fields_schema),
+};
 
 /**
  * Creates an automation lane for the given

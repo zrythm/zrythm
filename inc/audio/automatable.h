@@ -51,6 +51,8 @@ typedef struct AutomationTrack AutomationTrack;
  */
 typedef struct Automatable
 {
+  int                  id;
+
   /**
    * Port, if plugin port.
    */
@@ -96,6 +98,9 @@ automatable_type_strings[] =
 static const cyaml_schema_field_t
 automatable_fields_schema[] =
 {
+  CYAML_FIELD_INT (
+    "id", CYAML_FLAG_DEFAULT,
+    Automatable, id),
   CYAML_FIELD_INT (
     "port_id", CYAML_FLAG_DEFAULT,
     Automatable, port_id),

@@ -44,8 +44,8 @@ _create_new (AutomationTrack * at,
   ac->at = at;
   position_set_to_pos (&ac->pos,
                        pos);
-  ac->id = PROJECT->num_automation_curves;
-  PROJECT->automation_curves[PROJECT->num_automation_curves++] = ac;
+
+  project_add_automation_curve (ac);
 
   return ac;
 }
