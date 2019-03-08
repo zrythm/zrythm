@@ -22,8 +22,9 @@
 #ifndef __GUI_WIDGETS_CENTER_DOCK_H__
 #define __GUI_WIDGETS_CENTER_DOCK_H__
 
+#include "gui/widgets/dzl/dzl-dock-bin.h"
+
 #include <gtk/gtk.h>
-#include <dazzle.h>
 
 #define CENTER_DOCK_WIDGET_TYPE \
   (center_dock_widget_get_type ())

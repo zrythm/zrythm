@@ -20,9 +20,7 @@
 #ifndef __GUI_WIDGETS_BOT_DOCK_EDGE_H__
 #define __GUI_WIDGETS_BOT_DOCK_EDGE_H__
 
-
 #include <gtk/gtk.h>
-#include <dazzle.h>
 
 #define BOT_DOCK_EDGE_WIDGET_TYPE \
   (bot_dock_edge_widget_get_type ())

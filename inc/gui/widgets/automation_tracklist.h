@@ -20,7 +20,8 @@
 #ifndef __GUI_WIDGETS_AUTOMATION_TRACKLIST_H__
 #define __GUI_WIDGETS_AUTOMATION_TRACKLIST_H__
 
-#include <dazzle.h>
+#include "gui/widgets/dzl/dzl-multi-paned.h"
+
 #include <gtk/gtk.h>
 
 #define AUTOMATION_TRACKLIST_WIDGET_TYPE                  (automation_tracklist_widget_get_type ())

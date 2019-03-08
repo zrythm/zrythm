@@ -1,0 +1,16 @@
+# build from debian by default
+image: "registry.zrythm.org/zrythm/zrythm/debian/latest:latest"
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+stages:
+  - build
+
+test_build:
+  stage: build
+  script:
+    - ./autogen.sh
+    - ./configure --with-ffmpeg --with-qt5
+    - make -j14
+    - sudo make install

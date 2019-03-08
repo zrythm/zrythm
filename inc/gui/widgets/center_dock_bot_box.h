@@ -23,7 +23,6 @@
 #define __GUI_WIDGETS_CENTER_DOCK_BOT_BOX_H__
 
 #include <gtk/gtk.h>
-#include <dazzle.h>
 
 #define CENTER_DOCK_BOT_BOX_WIDGET_TYPE \
   (center_dock_bot_box_widget_get_type ())

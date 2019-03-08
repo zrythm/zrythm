@@ -23,7 +23,6 @@
 #define __GUI_WIDGETS_LEFT_DOCK_EDGE_H__
 
 #include <gtk/gtk.h>
-#include <dazzle.h>
 
 #define LEFT_DOCK_EDGE_WIDGET_TYPE \
   (left_dock_edge_widget_get_type ())
