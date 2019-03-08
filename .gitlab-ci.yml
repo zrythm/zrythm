@@ -11,6 +11,6 @@ test_build:
   stage: build
   script:
     - ./autogen.sh
-    - ./configure --with-ffmpeg --with-qt5
+    - ./configure
     - make -j14
     - sudo make install
