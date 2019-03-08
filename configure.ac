@@ -17,7 +17,7 @@
 #  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 #
 # Initialize autoconf: package name, version, bug report address
-AC_INIT([zrythm], [0.1.009], [https://git.zrythm.org/zrythm/zrythm/issues])
+AC_INIT([zrythm], [0.1.018], [https://git.zrythm.org/zrythm/zrythm/issues])
 
 # Declare config.h as output header
 AC_CONFIG_HEADERS([config.h])
@@ -111,7 +111,7 @@ PKG_CHECK_MODULES([LILV], [lilv-0 >= 0.24.2])
 
 #PKG_CHECK_MODULES([LIBDAZZLE], [libdazzle-1.0 >= 3.20])
 PKG_CHECK_MODULES([SNDFILE], [sndfile >= 1.0.28])
-PKG_CHECK_MODULES([SAMPLERATE], [samplerate >= 0.1.9])
+PKG_CHECK_MODULES([SAMPLERATE], [samplerate >= 0.1.8])
 AM_COND_IF([LINUX],
            [PKG_CHECK_MODULES([LV2], [lv2 >= 1.14.0])])
 AM_COND_IF([WINDOWS],
