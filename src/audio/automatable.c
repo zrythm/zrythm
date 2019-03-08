@@ -74,6 +74,9 @@ automatable_init_loaded (Automatable * self)
     {
       /* TODO use slot index to get lv2_plgn */
     }
+
+  self->track =
+    project_get_track (self->track_id);
 }
 
 Automatable *

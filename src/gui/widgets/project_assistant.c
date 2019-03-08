@@ -234,6 +234,14 @@ project_assistant_widget_new (GtkWindow * parent,
       self->project_infos[i].modified =
         io_file_get_last_modified_datetime (
           ZRYTHM->recent_projects[i]);
+      if (self->project_infos[i].modified == NULL)
+        {
+          g_message (
+            "Project file for <%s> not found.",
+            self->project_infos[i].name);
+          self->project_infos[i].modified =
+            g_strdup ("<File not found>");
+        }
       g_free (dir);
     }
 

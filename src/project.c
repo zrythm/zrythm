@@ -175,15 +175,16 @@ load (char * filename)
   Project * prj = project_deserialize (yaml);
   PROJECT = prj;
   update_paths (dir);
+  undo_manager_init (&PROJECT->undo_manager);
   init_loaded_ports ();
   engine_init (AUDIO_ENGINE, 1);
   init_loaded_regions ();
   init_loaded_channels ();
   init_loaded_plugins ();
   init_loaded_tracks ();
+  init_loaded_midi_notes ();
   init_loaded_automation_points ();
   init_loaded_automation_curves ();
-  init_loaded_midi_notes ();
   init_loaded_chords ();
   init_loaded_automatables ();
   init_loaded_automation_tracks ();
@@ -198,7 +199,6 @@ load (char * filename)
 
   PROJECT->filename = filename;
 
-  undo_manager_init (&PROJECT->undo_manager);
   tracklist_init (&PROJECT->tracklist, 1);
 
   snap_grid_update_snap_points (

@@ -155,6 +155,7 @@ typedef struct Region
   /**
    * MIDI notes.
    */
+  int             midi_note_ids[200];
   MidiNote *      midi_notes[200];
 
   /**
@@ -260,11 +261,9 @@ static const cyaml_schema_field_t
     "selected", CYAML_FLAG_DEFAULT,
     Region, selected),
   CYAML_FIELD_SEQUENCE_COUNT (
-    /* default because it is an array of pointers, not a
-     * pointer to an array */
-    "midi_notes", CYAML_FLAG_DEFAULT,
-    Region, midi_notes, num_midi_notes,
-    &midi_note_schema, 0, CYAML_UNLIMITED),
+    "midi_note_ids", CYAML_FLAG_DEFAULT,
+    Region, midi_note_ids, num_midi_notes,
+    &int_schema, 0, CYAML_UNLIMITED),
 
 	CYAML_FIELD_END
 };

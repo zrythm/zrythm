@@ -51,6 +51,10 @@ audio_track_add_region (AudioTrack *  track,
   array_append (track->regions,
                 track->num_regions,
                 region);
+  track->region_ids[
+    track->num_regions - 1] =
+      track->regions[
+        track->num_regions - 1]->id;
 }
 
 void

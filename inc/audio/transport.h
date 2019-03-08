@@ -172,7 +172,8 @@ transport_schema =
  * Initialize transport
  */
 void
-transport_init (Transport * self);
+transport_init (Transport * self,
+                int         loading);
 
 /**
  * Sets BPM and does any necessary processing (like notifying interested

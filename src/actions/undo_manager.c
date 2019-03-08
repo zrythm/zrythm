@@ -113,6 +113,7 @@ undo_manager_perform (UndoManager *    self,
   STACK_PUSH (self->undo_stack,
               action);
   self->redo_stack->top = -1;
-  header_bar_widget_refresh_undo_redo_buttons (
-    MW_HEADER_BAR);
+  if (MAIN_WINDOW && MW_HEADER_BAR)
+    header_bar_widget_refresh_undo_redo_buttons (
+      MW_HEADER_BAR);
 }

@@ -196,6 +196,7 @@ io_file_get_last_modified_datetime (const char * filename)
       char * mod = g_strdup (tmbuf);
       return mod;
     }
-  g_warning ("Failed to get last modified");
+  g_message ("Failed to get last modified for %s",
+             filename);
   return NULL;
 }

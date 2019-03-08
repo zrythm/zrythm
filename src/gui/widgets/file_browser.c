@@ -17,7 +17,11 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <math.h>
+/**
+ * \file
+ *
+ * File browser.
+ */
 
 #include "zrythm.h"
 #include "audio/audio_region.h"
@@ -40,6 +44,7 @@
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/audio.h"
 #include "utils/io.h"
 #include "utils/resources.h"
 
@@ -405,63 +410,13 @@ on_row_activated (GtkTreeView       *tree_view,
 
       /* open with ad */
       struct adinfo nfo;
-      void * handle =
-        ad_open (descr->absolute_path,
-                 &nfo);
-      long in_buff_size = nfo.frames * nfo.channels;
-      /* add some extra buffer for some reason */
-      float * in_buff =
-        malloc (in_buff_size * sizeof (float));
-      long samples_read =
-        ad_read (handle,
-                 in_buff,
-                 in_buff_size);
-      g_message ("in buff size: %ld, %ld samples read",
-                 in_buff_size,
-                 samples_read);
-
-      /* resample with libsamplerate */
-      double src_ratio =
-        (1.0 * AUDIO_ENGINE->sample_rate) /
-        nfo.sample_rate ;
-      if (fabs (src_ratio - 1.0) < 1e-20)
-        {
-          g_message ("Target samplerate and input "
-                     "samplerate are the same.");
-        }
-      if (src_is_valid_ratio (src_ratio) == 0)
-        {
-          g_warning ("Sample rate change out of valid "
-                     "range.");
-        }
-      long out_buff_size =
-        in_buff_size * src_ratio;
-      /* add some extra buffer for some reason */
-      float * out_buff =
-        malloc (out_buff_size * sizeof (float));
       SRC_DATA src_data;
-      g_message ("out_buff_size %ld, sizeof float %ld, "
-                 "sizeof long %ld, src ratio %f",
-                 out_buff_size,
-                 sizeof (float),
-                 sizeof (long),
-                 src_ratio);
-      src_data.data_in = &in_buff[0];
-      src_data.data_out = &out_buff[0];
-      src_data.input_frames = nfo.frames;
-      src_data.output_frames = nfo.frames * src_ratio;
-      src_data.src_ratio = src_ratio;
+      float * out_buff;
+      long out_buff_size;
 
-      int err =
-        src_simple (&src_data,
-                    SRC_SINC_BEST_QUALITY,
-                    nfo.channels);
-      g_message ("output frames gen %ld, out buff size %ld, "
-                 "input frames used %ld, err %d",
-                 src_data.output_frames_gen,
-                 out_buff_size,
-                 src_data.input_frames_used,
-                 err);
+      audio_decode (
+        &nfo, &src_data, &out_buff, &out_buff_size,
+        descr->absolute_path);
 
       /* create a channel/track */
       Channel * chan =
@@ -492,9 +447,6 @@ on_row_activated (GtkTreeView       *tree_view,
       EVENTS_PUSH (ET_TRACK_ADDED,
                    chan->track);
 
-      /* cleanup */
-      ad_close (handle);
-      free (in_buff);
     }
 }
 

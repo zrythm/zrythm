@@ -68,7 +68,8 @@ engine_init (AudioEngine * self,
 {
   g_message ("Initializing audio engine...");
 
-  transport_init (&self->transport);
+  transport_init (&self->transport,
+                  loading);
 
   self->backend =
     g_settings_get_enum (

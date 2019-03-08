@@ -1,7 +1,5 @@
 /*
- * utils/audio.h - Audio utils
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,9 +20,21 @@
 #ifndef __UTILS_AUDIO_H__
 #define __UTILS_AUDIO_H__
 
+#include <samplerate.h>
+
 /**
  * Number of plugin slots per channel.
  */
 #define STRIP_SIZE 9
+
+struct adinfo;
+
+void
+audio_decode (
+  struct adinfo * nfo,
+  SRC_DATA *      src_data,
+  float **        out_buff,
+  long *          out_buff_size,
+  const char *    filename);
 
 #endif

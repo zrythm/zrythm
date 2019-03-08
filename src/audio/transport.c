@@ -57,31 +57,36 @@ transport_set_bpm (float bpm)
  * Initialize transport
  */
 void
-transport_init (Transport * self)
+transport_init (Transport * self,
+                int         loading)
 {
   g_message ("Initializing transport");
-  // set inital total number of beats
-  // this is applied to the ruler
-  self->total_bars = DEFAULT_TOTAL_BARS;
 
-  /* set BPM related defaults */
-  self->beats_per_bar = DEFAULT_BEATS_PER_BAR;
-  self->beat_unit = DEFAULT_BEAT_UNIT;
+  if (!loading)
+    {
+      // set inital total number of beats
+      // this is applied to the ruler
+      self->total_bars = DEFAULT_TOTAL_BARS;
 
-  // set positions of playhead, start/end markers
-  position_set_to_bar (&self->playhead_pos, 1);
-  position_set_to_bar (&self->cue_pos, 1);
-  position_set_to_bar (&self->start_marker_pos, 1);
-  position_set_to_bar (&self->end_marker_pos, 128);
-  position_set_to_bar (&self->loop_start_pos, 1);
-  position_set_to_bar (&self->loop_end_pos, 8);
+      /* set BPM related defaults */
+      self->beats_per_bar = DEFAULT_BEATS_PER_BAR;
+      self->beat_unit = DEFAULT_BEAT_UNIT;
+
+      // set positions of playhead, start/end markers
+      position_set_to_bar (&self->playhead_pos, 1);
+      position_set_to_bar (&self->cue_pos, 1);
+      position_set_to_bar (&self->start_marker_pos, 1);
+      position_set_to_bar (&self->end_marker_pos, 128);
+      position_set_to_bar (&self->loop_start_pos, 1);
+      position_set_to_bar (&self->loop_end_pos, 8);
+
+      self->loop = 1;
+
+      transport_set_bpm (DEFAULT_BPM);
+    }
 
   /* set playstate */
   self->play_state = PLAYSTATE_PAUSED;
-
-  self->loop = 1;
-
-  transport_set_bpm (DEFAULT_BPM);
 
   zix_sem_init(&self->paused, 0);
 }

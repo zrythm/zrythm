@@ -24,12 +24,17 @@
 #include "audio/instrument_track.h"
 #include "audio/region.h"
 #include "audio/track.h"
+#include "ext/audio_decoder/ad.h"
 #include "gui/widgets/audio_region.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_region.h"
 #include "gui/widgets/region.h"
 #include "project.h"
+#include "utils/audio.h"
 #include "utils/yaml.h"
+
+#include <sndfile.h>
+#include <samplerate.h>
 
 /**
  * Only to be used by implementing structs.
@@ -95,11 +100,31 @@ region_init_loaded (Region * region)
 
   if (region->type == REGION_TYPE_AUDIO)
     {
+      /* reload audio */
+      struct adinfo nfo;
+      SRC_DATA src_data;
+      long out_buff_size;
+
+      audio_decode (
+        &nfo, &src_data,
+        &region->buff, &out_buff_size,
+        region->filename);
+
+      region->buff_size =
+        src_data.output_frames_gen;
+      region->channels = nfo.channels;
+
       region->widget = Z_REGION_WIDGET (
         audio_region_widget_new (region));
     }
   else if (region->type == REGION_TYPE_MIDI)
     {
+      for (int i = 0; i < region->num_midi_notes;
+           i++)
+        region->midi_notes[i] =
+          project_get_midi_note (
+            region->midi_note_ids[i]);
+
       region->widget = Z_REGION_WIDGET (
         midi_region_widget_new (region));
     }

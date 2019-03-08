@@ -26,6 +26,7 @@
 #include "gui/widgets/midi_region.h"
 #include "gui/widgets/region.h"
 #include "project.h"
+#include "utils/arrays.h"
 #include "utils/yaml.h"
 
 /**
@@ -76,7 +77,13 @@ void
 midi_region_add_midi_note (MidiRegion * region,
                       MidiNote * midi_note)
 {
-  region->midi_notes [region->num_midi_notes++] = midi_note;
+  array_append (region->midi_notes,
+                region->num_midi_notes,
+                midi_note);
+  region->midi_note_ids[
+    region->num_midi_notes - 1] =
+      region->midi_notes[
+        region->num_midi_notes - 1]->id;
 }
 
 /**

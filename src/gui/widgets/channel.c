@@ -300,6 +300,8 @@ void
 channel_widget_refresh_buttons (
   ChannelWidget * self)
 {
+  channel_widget_block_all_signal_handlers (
+    self);
   gtk_toggle_button_set_active (
     self->record,
     self->channel->track->recording);
@@ -309,6 +311,8 @@ channel_widget_refresh_buttons (
   gtk_toggle_button_set_active (
     self->mute,
     self->channel->track->mute);
+  channel_widget_unblock_all_signal_handlers (
+    self);
 }
 
 /**
