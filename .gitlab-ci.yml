@@ -12,5 +12,5 @@ test_build:
   script:
     - ./autogen.sh
     - ./configure
-    - make -j14
+    - sudo make -j14
     - sudo make install
