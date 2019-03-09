@@ -110,7 +110,7 @@ PKG_CHECK_MODULES([JACK], [jack])
 PKG_CHECK_MODULES([LILV], [lilv-0 >= 0.24.2])
 
 #PKG_CHECK_MODULES([LIBDAZZLE], [libdazzle-1.0 >= 3.20])
-PKG_CHECK_MODULES([SNDFILE], [sndfile >= 1.0.28])
+PKG_CHECK_MODULES([SNDFILE], [sndfile >= 1.0.25])
 PKG_CHECK_MODULES([SAMPLERATE], [samplerate >= 0.1.8])
 AM_COND_IF([LINUX],
            [PKG_CHECK_MODULES([LV2], [lv2 >= 1.14.0])])
