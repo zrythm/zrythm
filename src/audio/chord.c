@@ -110,6 +110,16 @@ chord_new (MusicalNote            root,
   return self;
 }
 
+/**
+ * Returns the musical note as a string (eg. "C3").
+ */
+const char *
+chord_note_to_string (MusicalNote note)
+{
+  (void *) note_labels;
+  return note_labels[note];
+}
+
 void
 chord_free (Chord * self)
 {

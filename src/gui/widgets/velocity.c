@@ -127,6 +127,35 @@ on_motion (GtkWidget *      widget,
   return FALSE;
 }
 
+/**
+ * Updates the tooltips and shows the tooltip
+ * window (when dragging) or not.
+ */
+void
+velocity_widget_update_tooltip (
+  VelocityWidget * self,
+  int              show)
+{
+  /* set tooltip text */
+  char * tooltip =
+    g_strdup_printf ("%d", self->velocity->vel);
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self), tooltip);
+
+  /* set tooltip window */
+  if (show)
+    {
+      gtk_label_set_text (self->tooltip_label,
+                          tooltip);
+      gtk_window_present (self->tooltip_win);
+    }
+  else
+    gtk_widget_hide (
+      GTK_WIDGET (self->tooltip_win));
+
+  g_free (tooltip);
+}
+
 void
 velocity_widget_select (
   VelocityWidget * self,
@@ -162,6 +191,13 @@ velocity_widget_new (Velocity * velocity)
                   NULL);
 
   self->velocity = velocity;
+
+  /* set tooltip */
+  char * tooltip =
+    g_strdup_printf ("%d", self->velocity->vel);
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self), tooltip);
+  g_free (tooltip);
 
   return self;
 }
@@ -215,7 +251,19 @@ velocity_widget_init (VelocityWidget * self)
   gtk_widget_set_visible (
     GTK_WIDGET (self), 1);
 
-  /* set tooltip */
-  gtk_widget_set_tooltip_text (GTK_WIDGET (self),
-                               "Velocity");
+  /* set tooltip window */
+  self->tooltip_win =
+    GTK_WINDOW (gtk_window_new (GTK_WINDOW_POPUP));
+  gtk_window_set_type_hint (
+    self->tooltip_win,
+    GDK_WINDOW_TYPE_HINT_TOOLTIP);
+  self->tooltip_label =
+    GTK_LABEL (gtk_label_new ("label"));
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->tooltip_label), 1);
+  gtk_container_add (
+    GTK_CONTAINER (self->tooltip_win),
+    GTK_WIDGET (self->tooltip_label));
+  gtk_window_set_position (
+    self->tooltip_win, GTK_WIN_POS_MOUSE);
 }

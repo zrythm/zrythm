@@ -1,7 +1,5 @@
 /*
- * gui/widgets/velocity.h - velocity for MIDI notes
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,7 +17,11 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file */
+/**
+ * \file
+ *
+ * Velocity widget.
+ */
 
 #ifndef __GUI_WIDGETS_VELOCITY_H__
 #define __GUI_WIDGETS_VELOCITY_H__
@@ -43,6 +45,8 @@ typedef struct _VelocityWidget
   Velocity *               velocity;   ///< the velocity associated with this
   GtkDrawingArea *         drawing_area; ///< the drwaing area
   UiCursorState            cursor_state;
+  GtkWindow *            tooltip_win;
+  GtkLabel *             tooltip_label;
 } VelocityWidget;
 
 /**
@@ -55,5 +59,14 @@ void
 velocity_widget_select (
   VelocityWidget * self,
   int              select);
+
+/**
+ * Updates the tooltips and shows the tooltip
+ * window (when dragging) or not.
+ */
+void
+velocity_widget_update_tooltip (
+  VelocityWidget * self,
+  int              show);
 
 #endif

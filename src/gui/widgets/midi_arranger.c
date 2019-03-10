@@ -524,6 +524,10 @@ midi_arranger_widget_move_items_x (
       position_add_ticks (&tmp, ticks_diff);
       midi_note_set_start_pos (r, &tmp);
 
+      if (r->widget)
+        midi_note_widget_update_tooltip (
+          r->widget, 1);
+
       EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
                    r);
     }
@@ -634,6 +638,10 @@ midi_arranger_widget_move_items_y (
                     }
                 }
             }
+
+          if (midi_note->widget)
+            midi_note_widget_update_tooltip (
+              midi_note->widget, 1);
         }
     }
 }
@@ -657,6 +665,11 @@ midi_arranger_widget_on_drag_end (
         MIDI_ARRANGER_SELECTIONS->midi_notes[i];
       ui_set_cursor (
         GTK_WIDGET (midi_note->widget), "default");
+
+      if (midi_note->widget)
+        midi_note_widget_update_tooltip (
+          midi_note->widget, 0);
+
       EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
                    midi_note);
     }
