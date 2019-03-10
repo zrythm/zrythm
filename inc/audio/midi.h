@@ -1,7 +1,5 @@
 /*
- * audio/midi.h - MIDI related
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -53,6 +51,9 @@ typedef struct MidiEvents
   jack_midi_event_t   jack_midi_events[MAX_MIDI_EVENTS];       ///< jack midi events
   MidiEvents           * queue; ///< for queing events. engine will copy them to the
                               ///< original MIDI events when ready to be processed
+                              //
+  /** Dequeued already or not. */
+  int                 processed;
 } MidiEvents;
 
 /**
@@ -81,6 +82,22 @@ midi_events_clear (MidiEvents * midi_events);
  */
 void
 midi_events_dequeue (MidiEvents * midi_events);
+
+/**
+ * Returns if a note on event for the given note
+ * exists in the given events.
+ */
+int
+midi_events_check_for_note_on (
+  MidiEvents * midi_events, int note);
+
+/**
+ * Deletes the midi event with a note on signal
+ * from the queue, and returns if it deleted or not.
+ */
+int
+midi_events_delete_note_on (
+  MidiEvents * midi_events, int note);
 
 /**
  * Queues MIDI note off to event queue.

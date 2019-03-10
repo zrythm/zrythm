@@ -67,6 +67,13 @@ typedef enum EngineBackend
 
 typedef struct AudioEngine
 {
+  /**
+   * Cycle count to know which cycle we are in.
+   *
+   * Useful for debugging.
+   */
+  long    cycle;
+
   jack_client_t     * client;     ///< jack client
   EngineBackend      backend; ///< current backend, regardless if the selection chagned in preferences
 	uint32_t           block_length;   ///< Audio buffer size (block length)

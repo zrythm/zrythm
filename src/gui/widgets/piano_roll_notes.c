@@ -1,7 +1,5 @@
 /*
- * gui/widgets/midi_note_notes.c- The midi
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -58,17 +56,25 @@ draw_cb (PianoRollNotesWidget * self, cairo_t *cr, gpointer data)
   guint width, height;
   GtkStyleContext *context;
 
-  context = gtk_widget_get_style_context (GTK_WIDGET (self));
+  context =
+    gtk_widget_get_style_context (GTK_WIDGET (self));
 
-  width = gtk_widget_get_allocated_width (GTK_WIDGET (self));
-  height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  width =
+    gtk_widget_get_allocated_width (GTK_WIDGET (self));
+  height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
 
-  gtk_render_background (context, cr, 0, 0, PIANO_ROLL_LABELS->total_px, height);
+  gtk_render_background (
+    context, cr, 0, 0,
+    PIANO_ROLL_LABELS->total_px, height);
 
   /* draw note notes with bot lines */
   for (int i = 0; i < 128; i++)
     {
-      int top_line_px = PIANO_ROLL_LABELS->total_px - PIANO_ROLL_LABELS->px_per_note * (i + 1);
+      int top_line_px =
+        PIANO_ROLL_LABELS->total_px -
+        PIANO_ROLL_LABELS->px_per_note * (i + 1);
       int black_note = notes [i % 12] == 1;
 
       if (black_note)
@@ -79,8 +85,9 @@ draw_cb (PianoRollNotesWidget * self, cairo_t *cr, gpointer data)
         {
           cairo_set_source_rgb (cr, 1, 1, 1);
         }
-      cairo_rectangle (cr, 0, top_line_px,
-                       width, PIANO_ROLL_LABELS->px_per_note);
+      cairo_rectangle (
+        cr, 0, top_line_px,
+        width, PIANO_ROLL_LABELS->px_per_note);
       cairo_fill (cr);
 
       /* add shade if currently pressed note */
@@ -90,8 +97,9 @@ draw_cb (PianoRollNotesWidget * self, cairo_t *cr, gpointer data)
             cairo_set_source_rgba (cr, 1, 1, 1, 0.1);
           else
             cairo_set_source_rgba (cr, 0, 0, 0, 0.3);
-          cairo_rectangle (cr, 0, top_line_px,
-                           width, PIANO_ROLL_LABELS->px_per_note);
+          cairo_rectangle (
+            cr, 0, top_line_px,
+            width, PIANO_ROLL_LABELS->px_per_note);
           cairo_fill (cr);
         }
     }
@@ -99,7 +107,9 @@ draw_cb (PianoRollNotesWidget * self, cairo_t *cr, gpointer data)
   /* draw dividing lines */
   for (int i = 0; i < 128; i++)
     {
-      int bot_line_px = PIANO_ROLL_LABELS->total_px - PIANO_ROLL_LABELS->px_per_note * i;
+      int bot_line_px =
+        PIANO_ROLL_LABELS->total_px -
+        PIANO_ROLL_LABELS->px_per_note * i;
       cairo_set_source_rgba (cr, 0, 0, 0, 0.8);
       cairo_set_line_width (cr, 1.0);
       cairo_move_to (cr, 0, bot_line_px);
@@ -141,10 +151,11 @@ drag_begin (GtkGestureDrag * gesture,
   ev->buffer[1] = self->note; /* note number 0-127 */
   ev->buffer[2] = vel; /* velocity 0-127 */
   MANUAL_PRESS_QUEUE->num_events = 1;
+  /*g_message ("added note on for %d in drag beg",*/
+             /*self->note);*/
 
   self->start_y = start_y;
   gtk_widget_queue_draw (GTK_WIDGET (self));
-
 }
 
 static void
@@ -153,7 +164,8 @@ drag_update (GtkGestureDrag * gesture,
                gdouble         offset_y,
                gpointer        user_data)
 {
-  PianoRollNotesWidget * self = (PianoRollNotesWidget *) user_data;
+  PianoRollNotesWidget * self =
+    (PianoRollNotesWidget *) user_data;
 
   int prev_note = self->note;
   self->note =
@@ -178,17 +190,27 @@ drag_update (GtkGestureDrag * gesture,
       ev->buffer[1] = self->note; /* note number 0-127 */
       ev->buffer[2] = vel; /* velocity 0-127 */
       MANUAL_PRESS_QUEUE->num_events++;
+      /*g_message ("added note on for %d",*/
+                 /*self->note);*/
 
       /* add note off event for prev note */
-      ev = &MANUAL_PRESS_QUEUE->jack_midi_events[MANUAL_PRESS_QUEUE->num_events];
-      ev->time = 0;
-      ev->size = 3;
-      if (!ev->buffer)
-        ev->buffer = calloc (3, sizeof (jack_midi_data_t));
-      ev->buffer[0] = MIDI_CH1_NOTE_OFF; /* status byte */
-      ev->buffer[1] = prev_note; /* note number 0-127 */
-      ev->buffer[2] = vel; /* velocity 0-127 */
-      MANUAL_PRESS_QUEUE->num_events++;
+      /*g_message ("trying to delete note on for %d",*/
+                 /*prev_note);*/
+      if (!midi_events_delete_note_on (
+            MANUAL_PRESS_QUEUE, prev_note))
+        {
+          ev = &MANUAL_PRESS_QUEUE->jack_midi_events[MANUAL_PRESS_QUEUE->num_events];
+          ev->time = 600;
+          ev->size = 3;
+          if (!ev->buffer)
+            ev->buffer = calloc (3, sizeof (jack_midi_data_t));
+          ev->buffer[0] = MIDI_CH1_NOTE_OFF; /* status byte */
+          ev->buffer[1] = prev_note; /* note number 0-127 */
+          ev->buffer[2] = vel; /* velocity 0-127 */
+          /*g_message ("added note off for %d",*/
+                     /*prev_note);*/
+          MANUAL_PRESS_QUEUE->num_events++;
+        }
     }
 
   gtk_widget_queue_draw (GTK_WIDGET (self));
@@ -205,15 +227,21 @@ drag_end (GtkGestureDrag *gesture,
   jack_midi_event_t * ev;
 
   /* add note off event for prev note */
-  ev = &MANUAL_PRESS_QUEUE->jack_midi_events[MANUAL_PRESS_QUEUE->num_events];
-  ev->time = 0;
-  ev->size = 3;
-  if (!ev->buffer)
-    ev->buffer = calloc (3, sizeof (jack_midi_data_t));
-  ev->buffer[0] = MIDI_CH1_NOTE_OFF; /* status byte */
-  ev->buffer[1] = self->note; /* note number 0-127 */
-  ev->buffer[2] = 0; /* velocity 0-127 */
-  MANUAL_PRESS_QUEUE->num_events++;
+  if (!midi_events_delete_note_on (
+        MANUAL_PRESS_QUEUE, self->note))
+    {
+      ev = &MANUAL_PRESS_QUEUE->jack_midi_events[MANUAL_PRESS_QUEUE->num_events];
+      ev->time = 600;
+      ev->size = 3;
+      if (!ev->buffer)
+        ev->buffer = calloc (3, sizeof (jack_midi_data_t));
+      ev->buffer[0] = MIDI_CH1_NOTE_OFF; /* status byte */
+      ev->buffer[1] = self->note; /* note number 0-127 */
+      ev->buffer[2] = 0; /* velocity 0-127 */
+      MANUAL_PRESS_QUEUE->num_events++;
+          /*g_message ("added note off for %d in drag end",*/
+                     /*self->note);*/
+    }
 
   self->start_y = 0;
   self->note = -1;

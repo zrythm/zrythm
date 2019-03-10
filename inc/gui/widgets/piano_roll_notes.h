@@ -43,6 +43,9 @@ typedef struct _PianoRollNotesWidget
   GtkGestureMultiPress    * multipress;
   int                     start_y; ///< for dragging
   int                     note; ///< current note
+
+  /** Note currently clicked or not. */
+  int                     clicked;
 } PianoRollNotesWidget;
 
 void

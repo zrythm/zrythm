@@ -149,7 +149,7 @@ get_midi_event_count (
         }
     }
 }
-
+static long count = 0;
 /**
  * The process callback for this JACK application is
  * called in a special realtime thread once for each audio
@@ -164,6 +164,9 @@ jack_process_cb (
   if (!engine->run)
     return 0;
 
+  count++;
+  engine->cycle = count;
+
   /* run pre-process code */
   engine_process_prepare (nframes);
 
@@ -177,6 +180,12 @@ jack_process_cb (
     /*}*/
   midi_events_dequeue (
     engine->midi_editor_manual_press->midi_events);
+  /*if (engine->midi_editor_manual_press*/
+        /*->midi_events->num_events > 0)*/
+    /*g_message ("%d events dequeued in %ld",*/
+               /*engine->midi_editor_manual_press->*/
+                 /*midi_events->num_events,*/
+                 /*count);*/
 
   /* this will keep looping until everything was
    * processed in this cycle */

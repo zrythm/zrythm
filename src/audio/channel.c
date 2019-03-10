@@ -184,6 +184,9 @@ handle_recording (Channel * self)
 void
 channel_process (Channel * channel)
 {
+  Plugin * plugin;
+  Port * port;
+
   /* clear buffers */
   if (channel->type == CT_MASTER ||
       channel->type == CT_AUDIO ||
@@ -201,7 +204,7 @@ channel_process (Channel * channel)
   port_clear_buffer (channel->stereo_out->r);
   for (int j = 0; j < STRIP_SIZE; j++)
     {
-      Plugin * plugin = channel->plugins[j];
+      plugin = channel->plugins[j];
       if (!plugin)
         continue;
 
@@ -279,15 +282,16 @@ channel_process (Channel * channel)
   /* go through each slot (plugin) on the channel strip */
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      Plugin * plugin = channel->plugins[i];
+      plugin = channel->plugins[i];
       if (plugin)
         {
 
           /* sum incoming signals for each input port */
           for (int j = 0; j < plugin->num_in_ports; j++)
             {
-              Port * port = plugin->in_ports[j];
-
+              port = plugin->in_ports[j];
+              /*if (port->type == TYPE_EVENT)*/
+                /*g_message ("summing from inputs for %s, cycle %ld", port->label, AUDIO_ENGINE->cycle);*/
               port_sum_signal_from_inputs (port);
             }
 

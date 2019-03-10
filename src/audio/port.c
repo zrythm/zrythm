@@ -335,17 +335,31 @@ port_apply_fader (Port * port, float amp)
 void
 port_sum_signal_from_inputs (Port * port)
 {
+  Port * src_port;
+
   /*port_init_buf (port, nframes);*/
   int nframes = AUDIO_ENGINE->block_length;
 
   /* for any output port pointing to it */
   for (int k = 0; k < port->num_srcs; k++)
     {
-      Port * src_port = port->srcs[k];
+      src_port = port->srcs[k];
 
       /* wait for owner to finish processing */
       if (src_port->is_piano_roll)
         {
+          /*g_message ("%s",*/
+                     /*src_port->label);*/
+        }
+      else if (src_port ==
+               AUDIO_ENGINE->midi_editor_manual_press)
+        {
+          while (!src_port->midi_events->processed)
+            {
+              /*g_message ("waiting cycle %ld",*/
+                         /*AUDIO_ENGINE->cycle);*/
+              g_usleep (SLEEPTIME_USEC);
+            }
         }
       else if (src_port->owner_pl)
         {
@@ -386,8 +400,20 @@ port_sum_signal_from_inputs (Port * port)
         }
       else if (port->type == TYPE_EVENT)
         {
+          /*if (src_port == AUDIO_ENGINE->*/
+              /*midi_editor_manual_press &&*/
+              /*AUDIO_ENGINE->midi_editor_manual_press->midi_events->num_events > 0)*/
+            /*g_message ("attempting to add %d events, engine cycle %ld",*/
+                       /*src_port->midi_events->num_events,*/
+                       /*AUDIO_ENGINE->cycle);*/
           midi_events_append (src_port->midi_events,
                               port->midi_events);
+          /*if (port->midi_events->num_events > 0)*/
+          /*g_message ("appended %d events from %s to %s, cycle %ld",*/
+                     /*port->midi_events->num_events,*/
+                     /*src_port->label,*/
+                     /*port->label,*/
+                     /*AUDIO_ENGINE->cycle);*/
         }
     }
 }
@@ -430,7 +456,10 @@ port_clear_buffer (Port * port)
   else if (port->type == TYPE_EVENT)
     {
       if (port->midi_events)
-        port->midi_events->num_events = 0;
+        {
+          port->midi_events->num_events = 0;
+          port->midi_events->processed = 0;
+        }
     }
 }
 
