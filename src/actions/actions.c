@@ -220,6 +220,24 @@ activate_new (GSimpleAction *action,
   g_message ("ZOOMING IN");
 }
 
+int
+run_open_dialog (GtkDialog * dialog)
+{
+  int res = gtk_dialog_run (GTK_DIALOG (dialog));
+  if (res == GTK_RESPONSE_ACCEPT)
+    {
+      GtkFileChooser *chooser =
+        GTK_FILE_CHOOSER (dialog);
+      char * filename =
+        gtk_file_chooser_get_filename (chooser);
+      g_message ("filename %s", filename);
+      res = project_load (filename);
+      g_free (filename);
+    }
+
+  return res;
+}
+
 void
 activate_open (GSimpleAction *action,
                   GVariant      *variant,
@@ -229,17 +247,10 @@ activate_open (GSimpleAction *action,
     dialogs_get_open_project_dialog (
       GTK_WINDOW (MAIN_WINDOW));
 
-  int res = gtk_dialog_run (GTK_DIALOG (dialog));
-  if (res == GTK_RESPONSE_ACCEPT)
-    {
-      GtkFileChooser *chooser =
-        GTK_FILE_CHOOSER (dialog);
-      char * filename =
-        gtk_file_chooser_get_filename (chooser);
-      g_message ("filename %s", filename);
-      project_load (filename);
-      g_free (filename);
-    }
+  int res;
+  do
+    res = run_open_dialog (dialog);
+  while (res != 0);
 
   gtk_widget_destroy (GTK_WIDGET (dialog));
 }

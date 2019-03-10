@@ -291,13 +291,13 @@ static const cyaml_schema_value_t
  * If project has a filename set, it loads that. Otherwise
  * it loads the default project.
  */
-void
+int
 project_load (char * filename);
 
 /**
  * Saves project to a file.
  */
-void
+int
 project_save (const char * dir);
 
 /**

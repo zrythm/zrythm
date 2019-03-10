@@ -45,6 +45,7 @@
 #include "gui/widgets/track.h"
 #include "plugins/lv2_plugin.h"
 #include "utils/arrays.h"
+#include "utils/general.h"
 #include "utils/io.h"
 #include "utils/smf.h"
 #include "utils/ui.h"
@@ -170,7 +171,7 @@ INIT_LOADED (automatable)
 INIT_LOADED (automation_track)
 INIT_LOADED (automation_lane)
 
-static void
+static int
 load (char * filename)
 {
   g_assert (filename);
@@ -188,19 +189,27 @@ load (char * filename)
   if (err != NULL)
     {
       // Report error to user, and free error
-      g_warning ("Unable to read file: %s",
-                 err->message);
+      char * str =
+        g_strdup_printf (
+          "Unable to read file: %s",
+          err->message);
+      ui_show_error_message (
+        MAIN_WINDOW,
+        str);
+      g_free (str);
       g_error_free (err);
-      return;
+      RETURN_ERROR
     }
 
   Project * prj = project_deserialize (yaml);
 
   if (prj == NULL)
     {
-      g_warning ("failed to load project, project "
-                 "is null");
-      return;
+      ui_show_error_message (
+        MAIN_WINDOW,
+        "Failed to load project. Please check the "
+        "logs for more information.");
+      RETURN_ERROR;
     }
 
   int loading_while_running = PROJECT->loaded;
@@ -267,6 +276,8 @@ load (char * filename)
 
       AUDIO_ENGINE->run = 1;
     }
+
+  RETURN_OK;
 }
 
 #undef INIT_LOADED(sl)
@@ -274,14 +285,17 @@ load (char * filename)
 /**
  * If project has a filename set, it loads that. Otherwise
  * it loads the default project.
+ *
+ * Returns 0 if successful, non-zero otherwise.
  */
-void
+int
 project_load (char * filename)
 {
   if (filename)
-    load (filename);
+    return load (filename);
   else
     create_default (PROJECT);
+  return 0;
 }
 
 /**
@@ -295,7 +309,7 @@ project_set_has_range (int has_range)
   EVENTS_PUSH (ET_RANGE_SELECTION_CHANGED, NULL);
 }
 
-void
+int
 project_save (const char * dir)
 {
   io_mkdir (dir);
@@ -356,6 +370,7 @@ project_save (const char * dir)
       g_warning ("Unable to read file: %s",
                  err->message);
       g_error_free (err);
+      RETURN_ERROR;
     }
 
   zrythm_add_to_recent_projects (
@@ -364,6 +379,8 @@ project_save (const char * dir)
   PROJECT->title = g_path_get_basename (dir);
 
   ui_show_notification ("Project saved.");
+
+  RETURN_OK;
 }
 
 static int
