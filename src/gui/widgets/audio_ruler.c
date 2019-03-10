@@ -135,7 +135,8 @@ audio_ruler_widget_set_ruler_marker_position (
         }
       else
         allocation->x = 0;
-      if (MAIN_WINDOW && AUDIO_RULER)
+      if (MAIN_WINDOW && MW_BOT_DOCK_EDGE &&
+            AUDIO_RULER)
         {
       allocation->y =
         ((gtk_widget_get_allocated_height (

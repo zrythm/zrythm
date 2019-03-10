@@ -480,3 +480,13 @@ jack_setup (AudioEngine * self,
 
   g_message ("JACK set up");
 }
+
+void
+jack_tear_down ()
+{
+  jack_client_close (AUDIO_ENGINE->client);
+
+  /* init semaphore */
+  zix_sem_init (&AUDIO_ENGINE->port_operation_lock,
+                1);
+}

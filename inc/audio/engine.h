@@ -194,4 +194,10 @@ engine_process_prepare (uint32_t      nframes);
 void
 engine_post_process ();
 
+/**
+ * Closes any connections and free's data.
+ */
+void
+engine_tear_down ();
+
 #endif

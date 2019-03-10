@@ -1,7 +1,5 @@
 /*
- * utils/dialogs.c - Dialogs
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -30,18 +28,22 @@
 /**
  * Creates and returns an open project dialog.
  */
-GtkDialog * dialogs_get_open_project_dialog (GtkWindow * parent)
+GtkDialog * dialogs_get_open_project_dialog (
+  GtkWindow * parent)
 {
-  GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
+  GtkFileChooserAction action =
+    GTK_FILE_CHOOSER_ACTION_OPEN;
 
-  GtkWidget * dialog = gtk_file_chooser_dialog_new ("Open Project",
-                                        GTK_WINDOW (MAIN_WINDOW),
-                                        action,
-                                        "_Cancel",
-                                        GTK_RESPONSE_CANCEL,
-                                        "_Open",
-                                        GTK_RESPONSE_ACCEPT,
-                                        NULL);
+  GtkWidget * dialog =
+    gtk_file_chooser_dialog_new (
+      "Open Project",
+      GTK_WINDOW (MAIN_WINDOW),
+      action,
+      "_Cancel",
+      GTK_RESPONSE_CANCEL,
+      "_Open",
+      GTK_RESPONSE_ACCEPT,
+      NULL);
   return GTK_DIALOG (dialog);
 }
 

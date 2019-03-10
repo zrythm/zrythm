@@ -87,7 +87,6 @@ typedef struct Project
   char              * dir; ///< path to save the project
   char              * project_file_path; ///< for convenience
   char              * regions_file_path;
-  char              * ports_file_path;
   char              * regions_dir;
   char              * states_dir;
   char              * exports_dir;
@@ -169,6 +168,7 @@ typedef struct Project
    * This is a pointer because track_new, etc. do some things
    * when called.
    */
+  int               chord_track_id;
   ChordTrack *      chord_track;
 
   /**
@@ -273,6 +273,9 @@ static const cyaml_schema_field_t
     Project, automation_lanes,
     num_automation_lanes,
     &automation_lane_schema, 0, CYAML_UNLIMITED),
+	CYAML_FIELD_INT (
+    "chord_track_id", CYAML_FLAG_DEFAULT,
+    Project, chord_track_id),
 
 	CYAML_FIELD_END
 };

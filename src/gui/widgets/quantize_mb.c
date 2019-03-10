@@ -1,6 +1,4 @@
 /*
- * gui/widgets/quantize_mb.c - Snap & grid selection widget
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -36,7 +34,8 @@ static void
 on_clicked (GtkButton * button,
             gpointer  user_data)
 {
-  QuantizeMbWidget * self = Z_QUANTIZE_MB_WIDGET (user_data);
+  QuantizeMbWidget * self =
+    Z_QUANTIZE_MB_WIDGET (user_data);
   gtk_widget_show_all (GTK_WIDGET (self->popover));
 }
 

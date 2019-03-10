@@ -62,4 +62,7 @@ void
 jack_setup (AudioEngine * self,
             int           loading);
 
+void
+jack_tear_down ();
+
 #endif

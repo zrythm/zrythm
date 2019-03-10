@@ -50,6 +50,7 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
+#include "utils/dialogs.h"
 #include "utils/gtk.h"
 
 #include <gtk/gtk.h>
@@ -224,19 +225,23 @@ activate_open (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  /*GtkDialog * dialog = dialogs_get_open_project_dialog (GTK_WINDOW (MAIN_WINDOW));*/
+  GtkDialog * dialog =
+    dialogs_get_open_project_dialog (
+      GTK_WINDOW (MAIN_WINDOW));
 
-  /*int res = gtk_dialog_run (GTK_DIALOG (dialog));*/
-  /*if (res == GTK_RESPONSE_ACCEPT)*/
-    /*{*/
-      /*char *filename;*/
-      /*GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);*/
-      /*filename = gtk_file_chooser_get_filename (chooser);*/
-      /*project_load (filename);*/
-      /*g_free (filename);*/
-    /*}*/
+  int res = gtk_dialog_run (GTK_DIALOG (dialog));
+  if (res == GTK_RESPONSE_ACCEPT)
+    {
+      GtkFileChooser *chooser =
+        GTK_FILE_CHOOSER (dialog);
+      char * filename =
+        gtk_file_chooser_get_filename (chooser);
+      g_message ("filename %s", filename);
+      project_load (filename);
+      g_free (filename);
+    }
 
-  /*gtk_widget_destroy (dialog);*/
+  gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
 void

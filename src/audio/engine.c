@@ -238,3 +238,17 @@ engine_post_process (AudioEngine * self)
              /*AUDIO_ENGINE->last_time_taken,*/
              /*AUDIO_ENGINE->max_time_taken);*/
 }
+
+/**
+ * Closes any connections and free's data.
+ */
+void
+engine_tear_down ()
+{
+  g_message ("tearing down audio engine...");
+
+  if (AUDIO_ENGINE->backend == ENGINE_BACKEND_JACK)
+    jack_tear_down ();
+
+  /* TODO free data */
+}

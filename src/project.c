@@ -40,6 +40,7 @@
 #include "audio/transport.h"
 #include "gui/widgets/header_bar.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/splash.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
 #include "plugins/lv2_plugin.h"
@@ -56,24 +57,47 @@
 static void
 tear_down (Project * self)
 {
+  g_message ("tearing down the project...");
 
+  PROJECT->loaded = 0;
+
+  if (self->title)
+    g_free (self->title);
+
+  engine_tear_down ();
+
+  for (int i = 0; i < PROJECT->num_channels; i++)
+    channel_free (PROJECT->channels[i]);
+
+  track_free (PROJECT->chord_track);
+
+  free (self);
 }
 
 static void
 update_paths (const char * dir)
 {
+  if (PROJECT->filename)
+    g_free (PROJECT->filename);
+  if (PROJECT->dir)
+    g_free (PROJECT->dir);
+  if (PROJECT->project_file_path)
+    g_free (PROJECT->project_file_path);
+  if (PROJECT->states_dir)
+    g_free (PROJECT->states_dir);
+  if (PROJECT->exports_dir)
+    g_free (PROJECT->exports_dir);
+
   PROJECT->dir = g_strdup (dir);
   PROJECT->project_file_path =
     g_build_filename (PROJECT->dir,
                       PROJECT_FILE,
                       NULL);
+  g_message ("project file path %s",
+             PROJECT->project_file_path);
   PROJECT->regions_file_path =
     g_build_filename (PROJECT->dir,
                       PROJECT_REGIONS_FILE,
-                      NULL);
-  PROJECT->ports_file_path =
-    g_build_filename (PROJECT->dir,
-                      PROJECT_PORTS_FILE,
                       NULL);
   PROJECT->regions_dir =
     g_build_filename (PROJECT->dir,
@@ -104,6 +128,7 @@ create_default (Project * self)
 
   /* create chord track */
   self->chord_track = chord_track_default ();
+  self->chord_track_id = self->chord_track->id;
 
   self->loaded = 1;
 
@@ -148,9 +173,6 @@ INIT_LOADED (automation_lane)
 static void
 load (char * filename)
 {
-  if (PROJECT->loaded)
-    tear_down (PROJECT);
-
   g_assert (filename);
   char * dir = io_get_dir (filename);
   update_paths (dir);
@@ -173,6 +195,32 @@ load (char * filename)
     }
 
   Project * prj = project_deserialize (yaml);
+
+  if (prj == NULL)
+    {
+      g_warning ("failed to load project, project "
+                 "is null");
+      return;
+    }
+
+  int loading_while_running = PROJECT->loaded;
+  if (loading_while_running)
+    {
+      tear_down (PROJECT);
+      PROJECT = prj;
+
+      MainWindowWidget * mww = MAIN_WINDOW;
+
+      g_message ("recreating main window...");
+      MAIN_WINDOW =
+        main_window_widget_new (zrythm_app);
+
+      g_message ("destroying previous main "
+                 "window...");
+      gtk_widget_destroy (GTK_WIDGET (mww));
+    }
+
+  g_message ("initing loaded structures");
   PROJECT = prj;
   update_paths (dir);
   undo_manager_init (&PROJECT->undo_manager);
@@ -193,7 +241,6 @@ load (char * filename)
 
   char * filepath_noext = g_path_get_basename (dir);
   PROJECT->title = filepath_noext;
-  g_free (filepath_noext);
 
   g_free (dir);
 
@@ -209,10 +256,17 @@ load (char * filename)
     &PROJECT->quantize_timeline);
   quantize_update_snap_points (
     &PROJECT->quantize_midi);
-  g_message ("master 3 %p",
-             MIXER->master);
 
   PROJECT->loaded = 1;
+
+  /* mimic behavior when starting the app */
+  if (loading_while_running)
+    {
+      events_init (&ZRYTHM->events);
+      main_window_widget_refresh (MAIN_WINDOW);
+
+      AUDIO_ENGINE->run = 1;
+    }
 }
 
 #undef INIT_LOADED(sl)

@@ -63,7 +63,8 @@ static void
 on_main_window_destroy (MainWindowWidget * self,
                         gpointer user_data)
 {
-  g_application_quit (G_APPLICATION (zrythm_app));
+  if (PROJECT->loaded)
+    g_application_quit (G_APPLICATION (zrythm_app));
 }
 
 static void

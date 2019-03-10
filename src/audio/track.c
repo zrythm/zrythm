@@ -58,8 +58,9 @@ track_init_loaded (Track * track)
 
   track->widget = track_widget_new (track);
 
-  automation_tracklist_init_loaded (
-    &track->automation_tracklist);
+  if (track->type != TRACK_TYPE_CHORD)
+    automation_tracklist_init_loaded (
+      &track->automation_tracklist);
 }
 
 void
@@ -400,6 +401,9 @@ track_remove_region (Track * track,
 void
 track_free (Track * track)
 {
+  /* TODO delete midi notes, automation points,
+   * curves, chords, automation tracks, automation
+   * lanes, regions */
   switch (track->type)
     {
     case TRACK_TYPE_INSTRUMENT:
@@ -423,6 +427,10 @@ track_free (Track * track)
         (BusTrack *) track);
       break;
     }
+
+  if (track->widget)
+    gtk_widget_destroy (
+      GTK_WIDGET (track->widget));
 }
 
 /**

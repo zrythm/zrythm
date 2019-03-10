@@ -615,18 +615,17 @@ channel_create (ChannelType type,
   g_assert (label);
 
   int count = 1;
-  char * new_label = label;
+  char * new_label = g_strdup (label);
   while (mixer_get_channel_by_name (new_label))
     {
-      if (new_label != label)
-        g_free (new_label);
+      g_free (new_label);
       new_label =
         g_strdup_printf ("%s %d",
                          label,
                          count++);
     }
 
-  Channel * channel = _create_channel (label);
+  Channel * channel = _create_channel (new_label);
 
   channel->type = type;
 
@@ -1133,7 +1132,8 @@ channel_free (Channel * channel)
 {
   g_assert (channel);
 
-  g_free (channel->track->name);
+  /* FIXME can't free for some reason */
+  /*g_free (channel->track->name);*/
   FOREACH_STRIP
     {
       Plugin * pl = channel->plugins[i];
@@ -1156,5 +1156,9 @@ channel_free (Channel * channel)
       Automatable * a = channel->automatables[i];
       automatable_free (a);
     }
+
+  if (channel->widget)
+    gtk_widget_destroy (
+      GTK_WIDGET (channel->widget));
 }
 
