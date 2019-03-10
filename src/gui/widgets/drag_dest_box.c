@@ -32,18 +32,78 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/drag_dest_box.h"
+#include "gui/widgets/file_browser.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
+#include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
+#include "zrythm.h"
 
 G_DEFINE_TYPE (DragDestBoxWidget,
                drag_dest_box_widget,
                GTK_TYPE_EVENT_BOX)
+
+static gboolean
+on_drag_motion (GtkWidget        *widget,
+               GdkDragContext   *context,
+               gint              x,
+               gint              y,
+               guint             time,
+               gpointer          user_data)
+{
+  GdkAtom target =
+    gtk_drag_dest_find_target (
+      widget, context, NULL);
+
+  if (target == GDK_NONE)
+    {
+      gtk_drag_unhighlight (widget);
+      gdk_drag_status (context,
+                       0,
+                       time);
+      return FALSE;
+    }
+
+  /* if target atom matches FILE DESCR (see
+   * file_browser.c gtk_selection_data_set) */
+  if (target == GET_ATOM ("FILE_DESCR"))
+    {
+      FileDescriptor * fd =
+        MW_FILE_BROWSER->selected_file_descr;
+
+      if (fd->type >= FILE_TYPE_DIR)
+        {
+          gtk_drag_unhighlight (widget);
+          gdk_drag_status (context,
+                           0,
+                           time);
+          return FALSE;
+        }
+      else
+        {
+          gtk_drag_highlight (widget);
+          gdk_drag_status (context,
+                           GDK_ACTION_COPY,
+                           time);
+          return TRUE;
+        }
+    }
+  else if (target == GET_ATOM ("PLUGIN_DESCR"))
+    {
+      gtk_drag_highlight (widget);
+      gdk_drag_status (context,
+                       GDK_ACTION_COPY,
+                       time);
+      return TRUE;
+    }
+
+  return FALSE;
+}
 
 static void
 on_drag_data_received (GtkWidget        *widget,
@@ -55,13 +115,35 @@ on_drag_data_received (GtkWidget        *widget,
                guint             time,
                gpointer          user_data)
 {
-  DragDestBoxWidget * self = Z_DRAG_DEST_BOX_WIDGET (widget);
-  if (self == TRACKLIST_DRAG_DEST_BOX ||
-      self == MIXER_DRAG_DEST_BOX)
+  DragDestBoxWidget * self =
+    Z_DRAG_DEST_BOX_WIDGET (widget);
+
+  GdkAtom target =
+    gtk_drag_dest_find_target (
+      widget, context, NULL);
+
+  if (target == GDK_NONE)
+    return;
+
+  if (target == GET_ATOM ("FILE_DESCR"))
     {
-      PluginDescriptor * descr =
-        *(gpointer *) gtk_selection_data_get_data (data);
-      mixer_add_channel_from_plugin_descr (descr);
+      FileDescriptor * fd =
+        * (gpointer *)
+          gtk_selection_data_get_data (data);
+
+      /* reject the drop if not applicable */
+      if (fd->type >= FILE_TYPE_DIR)
+        return;
+
+      mixer_add_channel_from_file_descr (fd);
+    }
+  else if (target = GET_ATOM ("PLUGIN_DESCR"))
+    {
+      PluginDescriptor * pd =
+        * (gpointer *)
+          gtk_selection_data_get_data (data);
+
+      mixer_add_channel_from_plugin_descr (pd);
     }
 }
 
@@ -213,20 +295,26 @@ drag_dest_box_widget_new (GtkOrientation  orientation,
                           1);
 
   /* set as drag dest */
-  GtkTargetEntry entries[1];
+  GtkTargetEntry entries[2];
   entries[0].target = TARGET_ENTRY_PLUGIN_DESCR;
   entries[0].flags = GTK_TARGET_SAME_APP;
-  entries[0].info = 0;
+  entries[0].info = TARGET_ENTRY_ID_PLUGIN_DESCR;
+  entries[1].target = TARGET_ENTRY_FILE_DESCR;
+  entries[1].flags = GTK_TARGET_SAME_APP;
+  entries[1].info = TARGET_ENTRY_ID_FILE_DESCR;
   gtk_drag_dest_set (GTK_WIDGET (self),
                      GTK_DEST_DEFAULT_ALL,
                      entries,
-                     1,
+                     2,
                      GDK_ACTION_COPY);
 
   /* connect signal */
-  g_signal_connect (GTK_WIDGET (self),
-                    "drag-data-received",
-                    G_CALLBACK(on_drag_data_received), NULL);
+  g_signal_connect (
+    GTK_WIDGET (self), "drag-motion",
+    G_CALLBACK(on_drag_motion), NULL);
+  g_signal_connect (
+    GTK_WIDGET (self), "drag-data-received",
+    G_CALLBACK(on_drag_data_received), NULL);
 
   /* show */
   gtk_widget_set_visible (GTK_WIDGET (self),

@@ -17,7 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "zrythm.h"
 #include "audio/engine.h"
 #include "audio/mixer.h"
 #include "gui/widgets/plugin_browser.h"
@@ -28,6 +27,7 @@
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/ui.h"
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>

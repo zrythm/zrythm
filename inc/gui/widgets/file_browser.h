@@ -35,6 +35,7 @@ G_DECLARE_FINAL_TYPE (FileBrowserWidget,
 #define MW_FILE_BROWSER MW_RIGHT_DOCK_EDGE->file_browser
 
 typedef struct FileType FileType;
+typedef struct FileDescriptor FileDescriptor;
 
 typedef struct _FileBrowserWidget
 {
@@ -52,6 +53,7 @@ typedef struct _FileBrowserWidget
   GtkTreeModelFilter *   files_tree_model;
   GtkTreeView *          files_tree_view;
   GtkScrolledWindow *    file_scroll_window;
+  FileDescriptor *       selected_file_descr;
 } FileBrowserWidget;
 
 FileBrowserWidget *

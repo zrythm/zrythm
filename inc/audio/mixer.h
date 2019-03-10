@@ -31,6 +31,7 @@
 
 typedef struct Channel Channel;
 typedef struct PluginDescriptor PluginDescriptor;
+typedef struct FileDescriptor FileDescriptor;
 
 /**
  * Mixer is a single global struct defined in the Project
@@ -119,6 +120,10 @@ mixer_add_channel (Channel * channel);
  */
 void
 mixer_remove_channel (Channel * channel);
+
+void
+mixer_add_channel_from_file_descr (
+  FileDescriptor * fd);
 
 void
 mixer_add_channel_from_plugin_descr (

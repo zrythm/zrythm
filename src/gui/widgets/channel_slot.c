@@ -1,7 +1,5 @@
 /*
- * gui/widgets/channel_slot.c - Channel slot
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,6 +27,7 @@
 #include "gui/widgets/channel_slot.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
+#include "utils/ui.h"
 
 G_DEFINE_TYPE (ChannelSlotWidget, channel_slot_widget, GTK_TYPE_DRAWING_AREA)
 

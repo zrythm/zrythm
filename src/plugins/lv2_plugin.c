@@ -1136,35 +1136,46 @@ lv2_set_feature_data (Lv2Plugin * plugin)
 PluginDescriptor *
 lv2_create_descriptor_from_lilv (const LilvPlugin * lp)
 {
-  const LilvNode*  lv2_uri = lilv_plugin_get_uri (lp);
-  const char * uri_str = lilv_node_as_string (lv2_uri);
+  const LilvNode*  lv2_uri =
+    lilv_plugin_get_uri (lp);
+  const char * uri_str =
+    lilv_node_as_string (lv2_uri);
   if (!string_is_ascii (uri_str))
     {
-      g_warning ("Invalid plugin URI, skipping");
+      g_message ("Invalid plugin URI (not ascii),"
+                 " skipping");
       return NULL;
     }
 
-  LilvNode* name = lilv_plugin_get_name(lp);
+  LilvNode* name =
+    lilv_plugin_get_name(lp);
 
   /* check if we can host the Plugin */
   if (!lv2_uri)
     {
-      g_error ("Plugin URI not found, try lv2ls to get a list of all plugins");
+      g_error ("Plugin URI not found, try lv2ls "
+               "to get a list of all plugins");
       lilv_node_free (name);
       return NULL;
     }
-  if (!name || !lilv_plugin_get_port_by_index(lp, 0))
+  if (!name ||
+      !lilv_plugin_get_port_by_index(lp, 0))
     {
-      g_message ("Ignoring invalid LV2 plugin %s",
-                 lilv_node_as_string(lilv_plugin_get_uri(lp)));
+      g_message (
+        "Ignoring invalid LV2 plugin %s",
+        lilv_node_as_string (
+          lilv_plugin_get_uri(lp)));
       lilv_node_free(name);
       return NULL;
     }
 
   /* check if shared lib exists */
-  const LilvNode * lib_uri = lilv_plugin_get_library_uri (lp);
-  char * path = lilv_file_uri_parse (lilv_node_as_string (lib_uri),
-                                     NULL);
+  const LilvNode * lib_uri =
+    lilv_plugin_get_library_uri (lp);
+  char * path =
+    lilv_file_uri_parse (
+      lilv_node_as_string (lib_uri),
+      NULL);
   if (access (path, F_OK) == -1)
     {
       g_warning ("%s not found, skipping %s",
@@ -1173,9 +1184,12 @@ lv2_create_descriptor_from_lilv (const LilvPlugin * lp)
       return NULL;
     }
 
-  if (lilv_plugin_has_feature(lp, LV2_SETTINGS.lv2_inPlaceBroken))
+  if (lilv_plugin_has_feature (
+        lp, LV2_SETTINGS.lv2_inPlaceBroken))
     {
-      g_warning ("Ignoring LV2 plugin \"%s\" since it cannot do inplace processing.",
+      g_warning ("Ignoring LV2 plugin \"%s\" "
+                 "since it cannot do inplace "
+                 "processing.",
                   lilv_node_as_string(name));
       lilv_node_free(name);
       return NULL;
@@ -1203,7 +1217,8 @@ lv2_create_descriptor_from_lilv (const LilvPlugin * lp)
   lilv_nodes_free(required_features);
 
   /* set descriptor info */
-  PluginDescriptor * pd = calloc (1, sizeof (PluginDescriptor));
+  PluginDescriptor * pd =
+    calloc (1, sizeof (PluginDescriptor));
   pd->protocol = PROT_LV2;
   const char * str = lilv_node_as_string (name);
   pd->name = g_strdup (str);

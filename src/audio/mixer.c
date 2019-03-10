@@ -24,10 +24,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "audio/audio_region.h"
+#include "audio/audio_track.h"
 #include "audio/channel.h"
 #include "audio/engine.h"
 #include "audio/instrument_track.h"
 #include "audio/mixer.h"
+#include "audio/region.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -38,8 +41,11 @@
 #include "gui/widgets/tracklist.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
+#include "utils/audio.h"
 #include "utils/arrays.h"
 #include "utils/ui.h"
+
+#include "ext/audio_decoder/ad.h"
 
 #include <gtk/gtk.h>
 
@@ -212,6 +218,50 @@ mixer_remove_channel (Channel * channel)
                 MIXER->num_channels,
                 channel);
   channel_free (channel);
+}
+
+void
+mixer_add_channel_from_file_descr (
+  FileDescriptor * descr)
+{
+  /* open with ad */
+  struct adinfo nfo;
+  SRC_DATA src_data;
+  float * out_buff;
+  long out_buff_size;
+
+  audio_decode (
+    &nfo, &src_data, &out_buff, &out_buff_size,
+    descr->absolute_path);
+
+  /* create a channel/track */
+  Channel * chan =
+    channel_create (CT_AUDIO, "Audio Track");
+  mixer_add_channel (chan);
+  tracklist_append_track (chan->track);
+
+  /* create an audio region & add to track */
+  Position start_pos, end_pos;
+  position_set_to_pos (&start_pos,
+                       &PLAYHEAD);
+  position_set_to_pos (&end_pos,
+                       &PLAYHEAD);
+  position_add_frames (&end_pos,
+                       src_data.output_frames_gen /
+                       nfo.channels);
+  AudioRegion * ar =
+    audio_region_new (chan->track,
+                      out_buff,
+                      src_data.output_frames_gen,
+                      nfo.channels,
+                      descr->absolute_path,
+                      &start_pos,
+                      &end_pos);
+  audio_track_add_region (
+    (AudioTrack *) chan->track, ar);
+
+  EVENTS_PUSH (ET_TRACK_ADDED,
+               chan->track);
 }
 
 void

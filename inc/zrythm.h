@@ -52,17 +52,6 @@ G_DECLARE_FINAL_TYPE (ZrythmApp,
                       APP,
                       GtkApplication)
 
-/* Gtk target entries */
-/* Plugin descriptor, used to instantiate plugins */
-#define TARGET_ENTRY_PLUGIN_DESCR "PLUGIN_DESCR"
-#define TARGET_ENTRY_ID_PLUGIN_DESCR 0
-/* Plugin ID, used to move/copy plugins */
-#define TARGET_ENTRY_PLUGIN "PLUGIN"
-#define TARGET_ENTRY_ID_PLUGIN 1
-/* */
-#define TARGET_ENTRY_TIMELINE_SELECTIONS \
-  "TIMELINE_SELECTIONS"
-#define TARGET_ENTRY_ID_TIMELINE_SELECTIONS 2
 #define MAX_RECENT_PROJECTS 20
 
 typedef struct _MainWindowWidget MainWindowWidget;

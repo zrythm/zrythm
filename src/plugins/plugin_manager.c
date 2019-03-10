@@ -104,7 +104,8 @@ scan_plugins (PluginManager * self)
 
   /* load all plugins with lilv */
   LilvWorld * world = LILV_WORLD;
-  const LilvPlugins * plugins = lilv_world_get_all_plugins (world);
+  const LilvPlugins * plugins =
+    lilv_world_get_all_plugins (world);
   /*const LilvPluginClasses * plugin_classes =*/
                               /*lilv_world_get_plugin_classes (world);*/
   LV2_SETTINGS.lilv_plugins = plugins;

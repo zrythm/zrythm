@@ -23,13 +23,6 @@
  * File browser.
  */
 
-#include "zrythm.h"
-#include "audio/audio_region.h"
-#include "audio/audio_track.h"
-#include "audio/engine.h"
-#include "audio/mixer.h"
-#include "audio/region.h"
-#include "ext/audio_decoder/ad.h"
 #include "gui/backend/file_manager.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -44,9 +37,11 @@
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
-#include "utils/audio.h"
 #include "utils/io.h"
 #include "utils/resources.h"
+#include "zrythm.h"
+
+#include "ext/audio_decoder/ad.h"
 
 #include <gtk/gtk.h>
 
@@ -138,6 +133,7 @@ on_selection_changed (GtkTreeSelection * ts,
             file_manager_get_file_type_from_enum (
               descr->type);
 
+          self->selected_file_descr = descr;
 
           char * label;
           if (descr->type == FILE_TYPE_MP3 ||
@@ -188,22 +184,26 @@ on_drag_data_get (GtkWidget        *widget,
 {
   GtkTreeSelection * ts = (GtkTreeSelection *) user_data;
   GList * selected_rows =
-    gtk_tree_selection_get_selected_rows (ts,
-                                          NULL);
+    gtk_tree_selection_get_selected_rows (
+      ts, NULL);
   GtkTreePath * tp =
-    (GtkTreePath *) g_list_first (selected_rows)->data;
+    (GtkTreePath *) g_list_first (selected_rows)->
+      data;
   GtkTreeIter iter;
   gtk_tree_model_get_iter (
-    GTK_TREE_MODEL (MW_FILE_BROWSER->files_tree_model),
+    GTK_TREE_MODEL (
+      MW_FILE_BROWSER->files_tree_model),
     &iter,
     tp);
   GValue value = G_VALUE_INIT;
   gtk_tree_model_get_value (
-    GTK_TREE_MODEL (MW_FILE_BROWSER->files_tree_model),
+    GTK_TREE_MODEL (
+      MW_FILE_BROWSER->files_tree_model),
     &iter,
-    1,
+    COLUMN_DESCR,
     &value);
-  FileDescriptor * descr = g_value_get_pointer (&value);
+  FileDescriptor * descr =
+    g_value_get_pointer (&value);
 
   gtk_selection_data_set (
     data,
@@ -397,56 +397,7 @@ on_row_activated (GtkTreeView       *tree_view,
            descr->type == FILE_TYPE_FLAC ||
            descr->type == FILE_TYPE_MP3)
     {
-      /* open with sndfile */
-      /*SF_INFO sfinfo;*/
-      /*SNDFILE * sndfile =*/
-        /*sf_open (descr->absolute_path,*/
-                 /*SFM_READ,*/
-                 /*&sfinfo);*/
-      /*float in_buff[sfinfo.frames * sfinfo.channels];*/
-      /*sf_readf_float (sndfile,*/
-                      /*in_buff,*/
-                      /*sfinfo.frames * sfinfo.channels);*/
-
-      /* open with ad */
-      struct adinfo nfo;
-      SRC_DATA src_data;
-      float * out_buff;
-      long out_buff_size;
-
-      audio_decode (
-        &nfo, &src_data, &out_buff, &out_buff_size,
-        descr->absolute_path);
-
-      /* create a channel/track */
-      Channel * chan =
-        channel_create (CT_AUDIO, "Audio Track");
-      mixer_add_channel (chan);
-      tracklist_append_track (chan->track);
-
-      /* create an audio region & add to track */
-      Position start_pos, end_pos;
-      position_set_to_pos (&start_pos,
-                           &PLAYHEAD);
-      position_set_to_pos (&end_pos,
-                           &PLAYHEAD);
-      position_add_frames (&end_pos,
-                           src_data.output_frames_gen /
-                           nfo.channels);
-      AudioRegion * ar =
-        audio_region_new (chan->track,
-                          out_buff,
-                          src_data.output_frames_gen,
-                          nfo.channels,
-                          descr->absolute_path,
-                          &start_pos,
-                          &end_pos);
-      audio_track_add_region (
-        (AudioTrack *) chan->track, ar);
-
-      EVENTS_PUSH (ET_TRACK_ADDED,
-                   chan->track);
-
+      mixer_add_channel_from_file_descr (descr);
     }
 }
 
@@ -548,9 +499,9 @@ tree_view_create (FileBrowserWidget * self,
   if (dnd)
     {
       GtkTargetEntry entries[1];
-      entries[0].target = TARGET_ENTRY_PLUGIN_DESCR;
+      entries[0].target = TARGET_ENTRY_FILE_DESCR;
       entries[0].flags = GTK_TARGET_SAME_APP;
-      entries[0].info = TARGET_ENTRY_ID_PLUGIN_DESCR;
+      entries[0].info = TARGET_ENTRY_ID_FILE_DESCR;
       gtk_tree_view_enable_model_drag_source (
         GTK_TREE_VIEW (tree_view),
         GDK_BUTTON1_MASK,

@@ -1,7 +1,5 @@
 /*
- * gui/backend/file_manager.c - File manager
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -161,6 +159,7 @@ load_files_from_location (
   while ((file = g_dir_read_name (dir)))
     {
       fd = malloc (sizeof (FileDescriptor));
+      /*fd->dnd_type = UI_DND_TYPE_FILE_DESCRIPTOR;*/
 
       /* set absolute path & label */
       char * absolute_path =
