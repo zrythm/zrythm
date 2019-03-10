@@ -146,6 +146,14 @@ midi_note_set_end_pos (MidiNote * midi_note,
                        Position * end_pos);
 
 /**
+ * Returns if the MIDI note is hit at given pos (in the
+ * timeline).
+ */
+int
+midi_note_hit (MidiNote * midi_note,
+               Position *  pos);
+
+/**
  * Converts an array of MIDI notes to MidiEvents.
  */
 void

@@ -157,6 +157,65 @@ midi_note_notes_to_events (MidiNote     ** midi_notes, ///< array
     }
 }
 
+/**
+ * Returns if the MIDI note is hit at given pos (in the
+ * timeline).
+ */
+int
+midi_note_hit (MidiNote * midi_note,
+               Position *  pos)
+{
+  Position end_pos;
+  Position local_pos;
+  Position loop_start_adjusted,
+           loop_end_adjusted,
+           region_end_adjusted;
+  jack_midi_event_t * ev;
+  Region * region = midi_note->midi_region;
+
+  /* get local positions */
+  region_timeline_pos_to_local (
+    region, pos, &local_pos, 1);
+
+  /* add clip_start position to start from
+   * there */
+  long clip_start_ticks =
+    position_to_ticks (
+      &region->clip_start_pos);
+  /*long region_length_ticks =*/
+    /*region_get_full_length_in_ticks (*/
+      /*r);*/
+  /*position_set_to_pos (*/
+    /*&loop_start_adjusted,*/
+    /*&r->loop_start_pos);*/
+  /*position_set_to_pos (*/
+    /*&loop_end_adjusted,*/
+    /*&r->loop_end_pos);*/
+  /*position_init (&region_end_adjusted);*/
+  position_add_ticks (
+    &local_pos, clip_start_ticks);
+  /*position_add_ticks (*/
+    /*&local_end_pos, clip_start_ticks);*/
+  /*position_add_ticks (*/
+    /*&loop_start_adjusted, - clip_start_ticks);*/
+  /*position_add_ticks (*/
+    /*&loop_end_adjusted, - clip_start_ticks);*/
+  /*position_add_ticks (*/
+    /*&region_end_adjusted, region_length_ticks);*/
+
+  /* check for note on event on the
+   * boundary */
+  if (position_compare (
+        &midi_note->start_pos,
+        &local_pos) < 0 &&
+      position_compare (
+        &midi_note->end_pos,
+        &local_pos) >= 0)
+    return 1;
+
+  return 0;
+}
+
 void
 midi_note_free (MidiNote * self)
 {

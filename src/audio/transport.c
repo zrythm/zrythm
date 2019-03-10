@@ -103,58 +103,6 @@ transport_request_roll ()
   TRANSPORT->play_state = PLAYSTATE_ROLL_REQUESTED;
 }
 
-/**
- * makes the playhead_changed code only run half the times
- */
-static int aa = 0;
-static int automatic = 0;
-
-/*static int*/
-/*on_playhead_changed ()*/
-/*{*/
-  /*if (automatic && (aa++ % 2 != 0))*/
-    /*{*/
-      /*return 0;*/
-    /*}*/
-  /*if (MAIN_WINDOW)*/
-    /*{*/
-      /*if (TOP_BAR->digital_transport)*/
-        /*{*/
-          /*gtk_widget_queue_draw (*/
-            /*GTK_WIDGET (TOP_BAR->digital_transport));*/
-        /*}*/
-      /*if (TIMELINE_ARRANGER_PLAYHEAD)*/
-        /*{*/
-          /*gtk_widget_queue_allocate (*/
-            /*GTK_WIDGET (MW_TIMELINE));*/
-        /*}*/
-      /*if (TIMELINE_RULER_PLAYHEAD)*/
-        /*{*/
-          /*gtk_widget_queue_allocate (*/
-            /*GTK_WIDGET (MW_RULER));*/
-        /*}*/
-      /*if (MW_PIANO_ROLL)*/
-        /*{*/
-          /*if (MIDI_RULER)*/
-            /*{*/
-              /*gtk_widget_queue_allocate (*/
-                /*GTK_WIDGET (MIDI_RULER));*/
-            /*}*/
-          /*if (MIDI_ARRANGER)*/
-            /*{*/
-              /*gtk_widget_queue_allocate (*/
-                /*GTK_WIDGET (MIDI_ARRANGER));*/
-            /*}*/
-          /*if (MIDI_MODIFIER_ARRANGER)*/
-            /*{*/
-              /*gtk_widget_queue_allocate (*/
-                /*GTK_WIDGET (MIDI_MODIFIER_ARRANGER));*/
-            /*}*/
-        /*}*/
-    /*}*/
-  /*aa = 1;*/
-  /*return G_SOURCE_REMOVE;*/
-/*}*/
 
 /**
  * Moves the playhead by the time corresponding to given samples.
@@ -166,7 +114,6 @@ transport_add_to_playhead (int frames)
     {
       position_add_frames (&TRANSPORT->playhead_pos,
                            frames);
-      automatic = 1;
       EVENTS_PUSH (ET_PLAYHEAD_POS_CHANGED, NULL);
     }
 }
@@ -174,20 +121,76 @@ transport_add_to_playhead (int frames)
 /**
  * Moves playhead to given pos.
  *
- * This is only for moves other than while playing.
+ * This is only for moves other than while playing
+ * and for looping while playing.
  */
 void
 transport_move_playhead (Position * target, ///< position to set to
                          int      panic) ///< send MIDI panic or not
 {
-  position_set_to_pos (&TRANSPORT->playhead_pos,
-                       target);
-  if (panic)
+  /* send MIDI note off on currently playing timeline
+   * objects */
+  Track * track;
+  Region * region;
+  MidiNote * midi_note;
+  Channel * channel;
+  MidiEvents * midi_events;
+  jack_midi_event_t * ev;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      AUDIO_ENGINE->panic = 1;
+      track = TRACKLIST->tracks[i];
+      channel = track->channel;
+
+      for (int ii = 0; ii < track->num_regions; ii++)
+        {
+          region = track->regions[ii];
+
+          if (!region_is_hit (region, &PLAYHEAD))
+            continue;
+
+          for (int j = 0;
+               j < region->num_midi_notes;
+               j++)
+            {
+              midi_note = region->midi_notes[j];
+
+              if (midi_note_hit (
+                    midi_note, &PLAYHEAD))
+                {
+                  midi_events =
+                    channel->piano_roll->midi_events;
+                  ev =
+                    &midi_events->queue->
+                      jack_midi_events[
+                        midi_events->queue->
+                          num_events++];
+                  ev->time =
+                    position_to_frames (
+                      &PLAYHEAD);
+                  ev->size = 3;
+                  /* status byte */
+                  ev->buffer[0] =
+                    MIDI_CH1_NOTE_OFF;
+                  /* note number */
+                  ev->buffer[1] =
+                    midi_note->val;
+                  /* velocity */
+                  ev->buffer[2] =
+                    midi_note->vel->vel;
+
+                }
+            }
+        }
     }
 
-  automatic = 0;
+  /* move to new pos */
+  position_set_to_pos (&TRANSPORT->playhead_pos,
+                       target);
+  /*if (panic)*/
+    /*{*/
+      /*AUDIO_ENGINE->panic = 1;*/
+    /*}*/
+
   EVENTS_PUSH (ET_PLAYHEAD_POS_CHANGED, NULL);
 }
 

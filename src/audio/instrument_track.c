@@ -104,6 +104,8 @@ instrument_track_fill_midi_events (
       long region_length_ticks =
         region_get_full_length_in_ticks (
           r);
+      long loop_length_ticks =
+        region_get_loop_length_in_ticks (r);
       position_set_to_pos (
         &loop_start_adjusted,
         &r->loop_start_pos);
@@ -186,13 +188,37 @@ instrument_track_fill_midi_events (
               midi_note =
                 region->midi_notes[i];
 
+              /* add num_loops * loop_ticks to the
+               * midi note start & end poses to get
+               * last pos in region */
+              Position tmp_start, tmp_end;
+              position_set_to_pos (
+                &tmp_start,
+                &midi_note->start_pos);
+              position_set_to_pos (
+                &tmp_end,
+                &midi_note->end_pos);
+              int num_loops =
+                region_get_num_loops (r, 0);
+              for (int jj = 0;
+                   jj < num_loops;
+                   jj++)
+                {
+                  position_add_ticks (
+                    &tmp_start,
+                    loop_length_ticks);
+                  position_add_ticks (
+                    &tmp_end,
+                    loop_length_ticks);
+                }
+
               /* check for note on event on the
                * boundary */
               if (position_compare (
-                    &midi_note->start_pos,
+                    &tmp_start,
                     &region_end_adjusted) < 0 &&
                   position_compare (
-                    &midi_note->end_pos,
+                    &tmp_end,
                     &region_end_adjusted) >= 0)
                 {
                   ev =
