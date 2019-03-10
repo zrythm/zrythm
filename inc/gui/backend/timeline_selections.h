@@ -92,12 +92,27 @@ TimelineSelections *
 timeline_selections_clone ();
 
 /**
+ * Returns if there are any selections.
+ */
+int
+timeline_selections_has_any (
+  TimelineSelections * ts);
+
+/**
  * Returns the position of the leftmost object.
  */
 void
 timeline_selections_get_start_pos (
   TimelineSelections * ts,
   Position *                pos); ///< position to fill in
+
+/**
+ * Returns the position of the rightmost object.
+ */
+void
+timeline_selections_get_end_pos (
+  TimelineSelections * ts,
+  Position *           pos); ///< position to fill in
 
 void
 timeline_selections_paste_to_pos (

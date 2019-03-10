@@ -45,6 +45,38 @@ header_bar_widget_refresh_undo_redo_buttons (HeaderBarWidget * self)
     !stack_is_empty (UNDO_MANAGER->redo_stack));
 }
 
+static GtkMenuItem *
+create_selections_submenu ()
+{
+  GtkMenuItem * menu_item;
+  GtkWidget * menu;
+  GtkMenuItem * selections =
+    z_gtk_create_menu_item (
+      "Selection",
+      "select-rectangular",
+      0,
+      NULL,
+      0,
+      NULL);
+
+  menu = gtk_menu_new ();
+  gtk_menu_item_set_submenu (selections,
+                             menu);
+
+  menu_item =
+    z_gtk_create_menu_item (
+      "Loop Selection",
+      "media-repeat-album-amarok",
+      0,
+      NULL,
+      0,
+      "win.loop-selection");
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu),
+                         GTK_WIDGET (menu_item));
+
+  return selections;
+}
+
 void
 header_bar_widget_setup (HeaderBarWidget * self,
                              MainWindowWidget * mw,
@@ -220,6 +252,9 @@ header_bar_widget_setup (HeaderBarWidget * self,
       0,
       "win.select-all");
   APPEND_TO_EDIT_MENU;
+  menu_item =
+    create_selections_submenu ();
+  APPEND_TO_EDIT_MENU;
 #undef APPEND_TO_EDIT_MENU
 
   menu_item =
@@ -338,17 +373,6 @@ header_bar_widget_setup (HeaderBarWidget * self,
       NULL,
       0,
       "app.shortcuts");
-  APPEND_TO_HELP_MENU;
-  CREATE_SEPARATOR;
-  APPEND_TO_HELP_MENU;
-  menu_item =
-    z_gtk_create_menu_item (
-      "License",
-      "",
-      0,
-      NULL,
-      0,
-      "app.license");
   APPEND_TO_HELP_MENU;
   CREATE_SEPARATOR;
   APPEND_TO_HELP_MENU;

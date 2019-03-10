@@ -29,10 +29,25 @@
 #include <gtk/gtk.h>
 
 /**
+ * Returns if there are any selections.
+ */
+int
+timeline_selections_has_any (
+  TimelineSelections * ts)
+{
+  if (ts->num_regions > 0 ||
+      ts->num_automation_points > 0 ||
+      ts->num_chords > 0)
+    return 1;
+  else
+    return 0;
+}
+
+/**
  * Returns the position of the leftmost object.
  */
-static void
-get_start_pos (
+void
+timeline_selections_get_start_pos (
   TimelineSelections * ts,
   Position *           pos) ///< position to fill in
 {
@@ -61,6 +76,44 @@ get_start_pos (
       Chord * chord = ts->chords[i];
       if (position_compare (&chord->pos,
                             pos) < 0)
+        position_set_to_pos (pos,
+                             &chord->pos);
+    }
+}
+
+/**
+ * Returns the position of the rightmost object.
+ */
+void
+timeline_selections_get_end_pos (
+  TimelineSelections * ts,
+  Position *           pos) ///< position to fill in
+{
+  position_init (pos);
+
+  for (int i = 0; i < ts->num_regions; i++)
+    {
+      Region * region = ts->regions[i];
+      if (position_compare (&region->end_pos,
+                            pos) > 0)
+        position_set_to_pos (pos,
+                             &region->end_pos);
+    }
+  for (int i = 0; i < ts->num_automation_points; i++)
+    {
+      AutomationPoint * automation_point =
+        ts->automation_points[i];
+      if (position_compare (&automation_point->pos,
+                            pos) > 0)
+        position_set_to_pos (pos,
+                             &automation_point->pos);
+    }
+  for (int i = 0; i < ts->num_chords; i++)
+    {
+      Chord * chord = ts->chords[i];
+      /* FIXME take into account fixed size */
+      if (position_compare (&chord->pos,
+                            pos) > 0)
         position_set_to_pos (pos,
                              &chord->pos);
     }
@@ -99,8 +152,8 @@ timeline_selections_paste_to_pos (
 
   /* get pos of earliest object */
   Position start_pos;
-  get_start_pos (ts,
-                 &start_pos);
+  timeline_selections_get_start_pos (
+    ts, &start_pos);
   int start_pos_ticks =
     position_to_ticks (&start_pos);
 

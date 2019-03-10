@@ -226,6 +226,8 @@ static GActionEntry actions[] = {
   { "delete", activate_delete },
   { "clear-selection", activate_clear_selection },
   { "select-all", activate_select_all },
+  /* selection submenu */
+  { "loop-selection", activate_loop_selection },
 
   /* view menu */
   { "toggle-left-panel", activate_toggle_left_panel },

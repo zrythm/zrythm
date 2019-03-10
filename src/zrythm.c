@@ -515,6 +515,9 @@ zrythm_app_startup (GApplication* _app)
   accel_install_primary_action_accelerator (
     "<Control>bracketleft",
     "win.best-fit");
+  accel_install_primary_action_accelerator (
+    "<Control>l",
+    "win.loop-selection");
 }
 
 ZrythmApp *
@@ -556,7 +559,6 @@ zrythm_app_init (ZrythmApp *app)
     { "about", activate_about },
     { "fullscreen", activate_fullscreen },
     { "manual", activate_manual },
-    { "license", activate_license },
     { "iconify", activate_iconify },
     { "preferences", activate_preferences },
     { "quit", activate_quit },

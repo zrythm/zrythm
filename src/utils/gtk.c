@@ -195,12 +195,15 @@ z_gtk_create_menu_item (gchar *     label_name,
   gtk_label_set_use_underline (GTK_LABEL (label), TRUE);
   gtk_label_set_xalign (GTK_LABEL (label), 0.0);
 
-  gtk_actionable_set_action_name (
-    GTK_ACTIONABLE (menu_item),
-    action_name);
-  accel_set_accel_label_from_action (
-    GTK_ACCEL_LABEL (label),
-    action_name);
+  if (action_name)
+    {
+      gtk_actionable_set_action_name (
+        GTK_ACTIONABLE (menu_item),
+        action_name);
+      accel_set_accel_label_from_action (
+        GTK_ACCEL_LABEL (label),
+        action_name);
+    }
 
   gtk_box_pack_end (GTK_BOX (box), label, TRUE, TRUE, 0);
 

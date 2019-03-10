@@ -176,7 +176,7 @@ activate_manual (GSimpleAction *action,
                   gpointer       user_data);
 
 void
-activate_license (GSimpleAction *action,
+activate_loop_selection (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data);
 

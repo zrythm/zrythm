@@ -214,6 +214,38 @@ activate_original_size (GSimpleAction *action,
 }
 
 void
+activate_loop_selection (GSimpleAction *action,
+                  GVariant      *variant,
+                  gpointer       user_data)
+{
+  if (MAIN_WINDOW->last_focused ==
+      GTK_WIDGET (MW_TIMELINE))
+    {
+      if (!timeline_selections_has_any (
+            TIMELINE_SELECTIONS))
+        return;
+
+      Position start, end;
+      timeline_selections_get_start_pos (
+        TIMELINE_SELECTIONS, &start);
+      timeline_selections_get_end_pos (
+        TIMELINE_SELECTIONS, &end);
+
+      position_set_to_pos (
+        &TRANSPORT->loop_start_pos,
+        &start);
+      position_set_to_pos (
+        &TRANSPORT->loop_end_pos,
+        &end);
+
+      transport_update_position_frames ();
+      EVENTS_PUSH (
+        ET_TIMELINE_LOOP_MARKER_POS_CHANGED,
+        NULL);
+    }
+}
+
+void
 activate_new (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
@@ -418,7 +450,8 @@ on_timeline_clipboard_received (
   g_message ("printing deserialized");
   timeline_selections_print (ts);
 
-  if (MAIN_WINDOW->last_focused == GTK_WIDGET (MW_TIMELINE))
+  if (MAIN_WINDOW->last_focused ==
+      GTK_WIDGET (MW_TIMELINE))
     {
       timeline_selections_paste_to_pos (ts,
                                         &PLAYHEAD);
@@ -556,13 +589,6 @@ activate_fullscreen (GSimpleAction *action,
 
 void
 activate_manual (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
-{
-}
-
-void
-activate_license (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
