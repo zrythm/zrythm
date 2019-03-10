@@ -70,21 +70,27 @@ instrument_track_fill_midi_events (
   MidiEvents * midi_events) ///< midi events to fill
 {
   Position end_pos;
+  Position local_pos, local_end_pos;
+  Position loop_start_adjusted,
+           loop_end_adjusted,
+           region_end_adjusted;
+  jack_midi_event_t * ev;
+  Region * region, * r;
+  MidiNote * midi_note;
   position_set_to_pos (&end_pos, pos);
   position_add_frames (&end_pos, nframes);
 
   midi_events->queue->num_events = 0;
   for (int i = 0; i < track->num_regions; i++)
     {
-      MidiRegion * region = track->regions[i];
-      Region * r = (Region *) region;
+      region = track->regions[i];
+      r = (Region *) region;
 
       if (!region_is_hit (r,
                           pos))
         continue;
 
       /* get local positions */
-      Position local_pos, local_end_pos;
       region_timeline_pos_to_local (
         r, pos, &local_pos, 1);
       region_timeline_pos_to_local (
@@ -98,9 +104,6 @@ instrument_track_fill_midi_events (
       long region_length_ticks =
         region_get_full_length_in_ticks (
           r);
-      Position loop_start_adjusted,
-               loop_end_adjusted,
-               region_end_adjusted;
       position_set_to_pos (
         &loop_start_adjusted,
         &r->loop_start_pos);
@@ -119,7 +122,7 @@ instrument_track_fill_midi_events (
       position_add_ticks (
         &region_end_adjusted, region_length_ticks);
 
-      /* send all MIDI notes off if end of the
+      /* send all MIDI notes off if end if the
        * region (at loop point or actual end) is
        * within this cycle */
       if (position_compare (
@@ -129,23 +132,46 @@ instrument_track_fill_midi_events (
             &region_end_adjusted,
             &local_end_pos) <= 0)
         {
-          jack_midi_event_t * ev =
-            &midi_events->queue->
-              jack_midi_events[
-                midi_events->queue->
-                  num_events++];
-          ev->time =
-            position_to_frames (
-              &region_end_adjusted) -
-            position_to_frames (&local_pos);
-          ev->size = 3;
-          /* status byte */
-          ev->buffer[0] = MIDI_CH1_CTRL_CHANGE;
-          /* note number 0-127 */
-          ev->buffer[1] = MIDI_ALL_NOTES_OFF;
-          /* velocity 0-127 */
-          ev->buffer[2] = 0x00;
+          for (int i = 0;
+               i < region->num_midi_notes;
+               i++)
+            {
+              midi_note =
+                region->midi_notes[i];
+
+              /* check for note on event on the
+               * boundary */
+              if (position_compare (
+                    &midi_note->start_pos,
+                    &region_end_adjusted) < 0 &&
+                  position_compare (
+                    &midi_note->end_pos,
+                    &region_end_adjusted) >= 0)
+                {
+                  ev =
+                    &midi_events->queue->
+                      jack_midi_events[
+                        midi_events->queue->
+                          num_events++];
+                  ev->time =
+                    position_to_frames (
+                      &region_end_adjusted) -
+                    position_to_frames (&local_pos);
+                  ev->size = 3;
+                  /* status byte */
+                  ev->buffer[0] =
+                    MIDI_CH1_NOTE_OFF;
+                  /* note number */
+                  ev->buffer[1] =
+                    midi_note->val;
+                  /* velocity */
+                  ev->buffer[2] =
+                    midi_note->vel->vel;
+                }
+            }
         }
+      /* if region actually ends on the timeline
+       * within this cycle */
       else if (position_compare (
                 &r->end_pos,
                 pos) >= 0 &&
@@ -153,22 +179,43 @@ instrument_track_fill_midi_events (
                 &r->end_pos,
                 &end_pos) <= 0)
         {
-          jack_midi_event_t * ev =
-            &midi_events->queue->
-              jack_midi_events[
-                midi_events->queue->
-                  num_events++];
-          ev->time =
-            position_to_frames (
-              &r->end_pos) -
-            position_to_frames (pos);
-          ev->size = 3;
-          /* status byte */
-          ev->buffer[0] = MIDI_CH1_CTRL_CHANGE;
-          /* note number 0-127 */
-          ev->buffer[1] = MIDI_ALL_NOTES_OFF;
-          /* velocity 0-127 */
-          ev->buffer[2] = 0x00;
+          for (int i = 0;
+               i < region->num_midi_notes;
+               i++)
+            {
+              midi_note =
+                region->midi_notes[i];
+
+              /* check for note on event on the
+               * boundary */
+              if (position_compare (
+                    &midi_note->start_pos,
+                    &region_end_adjusted) < 0 &&
+                  position_compare (
+                    &midi_note->end_pos,
+                    &region_end_adjusted) >= 0)
+                {
+                  ev =
+                    &midi_events->queue->
+                      jack_midi_events[
+                        midi_events->queue->
+                          num_events++];
+                   ev->time =
+                     position_to_frames (
+                       &r->end_pos) -
+                     position_to_frames (pos);
+                  ev->size = 3;
+                  /* status byte */
+                  ev->buffer[0] =
+                    MIDI_CH1_NOTE_OFF;
+                  /* note number */
+                  ev->buffer[1] =
+                    midi_note->val;
+                  /* velocity */
+                  ev->buffer[2] =
+                    midi_note->vel->vel;
+                }
+            }
         }
 
       /* if crossing loop
@@ -178,22 +225,43 @@ instrument_track_fill_midi_events (
             &local_end_pos,
             &local_pos) <= 0)
         {
-          jack_midi_event_t * ev =
-            &midi_events->queue->
-              jack_midi_events[
-                midi_events->queue->
-                  num_events++];
-          ev->time =
-            position_to_frames (
-              &loop_end_adjusted) -
-            position_to_frames (&local_pos);
-          ev->size = 3;
-          /* status byte */
-          ev->buffer[0] = MIDI_CH1_CTRL_CHANGE;
-          /* note number 0-127 */
-          ev->buffer[1] = MIDI_ALL_NOTES_OFF;
-          /* velocity 0-127 */
-          ev->buffer[2] = 0x00;
+          for (int i = 0;
+               i < region->num_midi_notes;
+               i++)
+            {
+              midi_note =
+                region->midi_notes[i];
+
+              /* check for note on event on the
+               * boundary */
+              if (position_compare (
+                    &midi_note->start_pos,
+                    &loop_end_adjusted) < 0 &&
+                  position_compare (
+                    &midi_note->end_pos,
+                    &loop_end_adjusted) >= 0)
+                {
+                  ev =
+                    &midi_events->queue->
+                      jack_midi_events[
+                        midi_events->queue->
+                          num_events++];
+                  ev->time =
+                    position_to_frames (
+                      &loop_end_adjusted) -
+                    position_to_frames (&local_pos);
+                  ev->size = 3;
+                  /* status byte */
+                  ev->buffer[0] =
+                    MIDI_CH1_NOTE_OFF;
+                  /* note number */
+                  ev->buffer[1] =
+                    midi_note->val;
+                  /* velocity */
+                  ev->buffer[2] =
+                    midi_note->vel->vel;
+                }
+            }
         }
 
       /* readjust position */
@@ -206,7 +274,7 @@ instrument_track_fill_midi_events (
            i < region->num_midi_notes;
            i++)
         {
-          MidiNote * midi_note =
+          midi_note =
             region->midi_notes[i];
 
           /* check for note on event */
@@ -217,7 +285,7 @@ instrument_track_fill_midi_events (
                 &midi_note->start_pos,
                 &local_end_pos) <= 0)
             {
-              jack_midi_event_t * ev =
+              ev =
                 &midi_events->queue->
                   jack_midi_events[
                     midi_events->queue->
@@ -246,7 +314,7 @@ instrument_track_fill_midi_events (
                 &midi_note->end_pos,
                 &local_end_pos) <= 0)
             {
-              jack_midi_event_t * ev =
+              ev =
                 &midi_events->queue->
                   jack_midi_events[
                     midi_events->queue->
