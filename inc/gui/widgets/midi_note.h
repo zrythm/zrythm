@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -41,6 +41,8 @@ typedef struct _MidiNoteWidget
   GtkDrawingArea *         drawing_area;
   MidiNote *               midi_note; ///< the midi_note associated with this
   UiCursorState            cursor_state;
+  GtkWindow *            tooltip_win;
+  GtkLabel *             tooltip_label;
 } MidiNoteWidget;
 
 /**
@@ -52,5 +54,10 @@ midi_note_widget_new (MidiNote * midi_note);
 void
 midi_note_widget_select (MidiNoteWidget * self,
                          int              select);
+
+void
+midi_note_widget_update_tooltip (
+  MidiNoteWidget * self,
+  int              show);
 
 #endif

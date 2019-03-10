@@ -19,6 +19,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/chord.h"
 #include "gui/widgets/piano_roll_labels.h"
 #include "settings/settings.h"
 #include "zrythm.h"
@@ -34,20 +35,6 @@ enum NoteNotation
   NOTE_NOTATION_NOTES,
   NOTE_NOTATION_NUMBERS,
 };
-
-static char * notes[12] = {
-    "C",
-    "C#",
-    "D",
-    "D#",
-    "E",
-    "F",
-    "F#",
-    "G",
-    "G#",
-    "A",
-    "A#",
-    "B" };
 
 static void
 draw_text (cairo_t *cr, int x, int y, char * text)
@@ -108,12 +95,17 @@ draw_cb (PianoRollLabelsWidget * self, cairo_t *cr, gpointer data)
 
       char * text;
       if (note_notation == NOTE_NOTATION_NOTES)
-        text = g_strdup_printf ("%s%d",
-                                notes[i % 12],
-                                i / 12 - 2);
-      else if (note_notation == NOTE_NOTATION_NUMBERS)
+        text =
+          g_strdup_printf (
+            "%s%d",
+            chord_note_to_string (i % 12),
+            i / 12 - 2);
+      else if (note_notation ==
+               NOTE_NOTATION_NUMBERS)
         text = g_strdup_printf ("%d", i);
-      draw_text (cr, 3, (bot_line_px - self->px_per_note) + 3,
+      draw_text (cr, 3,
+                 (bot_line_px - self->px_per_note) +
+                   3,
                  text);
       g_free (text);
     }

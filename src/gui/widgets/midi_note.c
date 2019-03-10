@@ -154,6 +154,45 @@ on_motion (GtkWidget *      widget,
 }
 
 void
+midi_note_widget_update_tooltip (
+  MidiNoteWidget * self,
+  int              show)
+{
+  const char * note =
+    chord_note_to_string (
+      self->midi_note->val % 12);
+
+  /* set tooltip text */
+  char * tooltip =
+    g_strdup_printf (
+      "[%s%d] %d",
+      note,
+      self->midi_note->val / 12 - 2,
+      self->midi_note->vel->vel);
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self), tooltip);
+  g_free (tooltip);
+
+  /* set tooltip window */
+  if (show)
+    {
+      tooltip =
+        g_strdup_printf (
+          "%s%d",
+          note,
+          self->midi_note->val / 12 - 2);
+      gtk_label_set_text (self->tooltip_label,
+                          tooltip);
+      gtk_window_present (self->tooltip_win);
+
+      g_free (tooltip);
+    }
+  else
+    gtk_widget_hide (
+      GTK_WIDGET (self->tooltip_win));
+}
+
+void
 midi_note_widget_select (MidiNoteWidget * self,
                       int            select)
 {
@@ -184,6 +223,18 @@ midi_note_widget_new (MidiNote * midi_note)
                   NULL);
 
   self->midi_note = midi_note;
+
+  /* set tooltip text */
+  char * tooltip =
+    g_strdup_printf (
+      "[%s%d] %d",
+      chord_note_to_string (
+        self->midi_note->val % 12),
+      self->midi_note->val / 12 - 2,
+      self->midi_note->vel->vel);
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self), tooltip);
+  g_free (tooltip);
 
   return self;
 }
@@ -232,7 +283,19 @@ midi_note_widget_init (MidiNoteWidget * self)
     "motion-notify-event",
     G_CALLBACK (on_motion),  self);
 
-  /* set tooltip */
-  gtk_widget_set_tooltip_text (GTK_WIDGET (self),
-                               "Midi note");
+  /* set tooltip window */
+  self->tooltip_win =
+    GTK_WINDOW (gtk_window_new (GTK_WINDOW_POPUP));
+  gtk_window_set_type_hint (
+    self->tooltip_win,
+    GDK_WINDOW_TYPE_HINT_TOOLTIP);
+  self->tooltip_label =
+    GTK_LABEL (gtk_label_new ("label"));
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->tooltip_label), 1);
+  gtk_container_add (
+    GTK_CONTAINER (self->tooltip_win),
+    GTK_WIDGET (self->tooltip_label));
+  gtk_window_set_position (
+    self->tooltip_win, GTK_WIN_POS_MOUSE);
 }

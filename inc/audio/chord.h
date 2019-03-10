@@ -49,6 +49,20 @@ typedef enum MusicalNote
   NOTE_B
 } MusicalNote;
 
+static const char * note_labels[12] = {
+    "C",
+    "C#",
+    "D",
+    "D#",
+    "E",
+    "F",
+    "F#",
+    "G",
+    "G#",
+    "A",
+    "A#",
+    "B" };
+
 /**
  * Chord type.
  */
@@ -166,6 +180,12 @@ chord_new (MusicalNote            root,
            MusicalNote            bass,
            ChordType              type,
            int                    inversion);
+
+/**
+ * Returns the musical note as a string (eg. "C3").
+ */
+const char *
+chord_note_to_string (MusicalNote note);
 
 /**
  * Returns the chord in human readable string.

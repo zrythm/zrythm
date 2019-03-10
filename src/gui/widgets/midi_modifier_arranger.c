@@ -231,7 +231,10 @@ midi_modifier_arranger_widget_resize_velocities (
     CLAMP (ratio * 127, 1, 127);
   int diff = self->start_velocity->vel -
     self->start_vel_val;
-  g_message ("diff %d", diff);
+  if (self->start_velocity->widget)
+    velocity_widget_update_tooltip (
+      self->start_velocity->widget, 1);
+  /*g_message ("diff %d", diff);*/
   for (int i = 0; i < self->num_velocities; i++)
     {
       Velocity * vel = self->velocities[i];
@@ -240,6 +243,10 @@ midi_modifier_arranger_widget_resize_velocities (
       vel->vel = CLAMP (vel->vel + diff, 1, 127);
       g_message ("set vel to %d",
                  vel->vel);
+
+      if (vel->widget)
+        velocity_widget_update_tooltip (
+          vel->widget, 1);
     }
 }
 
@@ -261,6 +268,9 @@ midi_modifier_arranger_widget_on_drag_end (
         self->velocities[i];
       ui_set_cursor (
         GTK_WIDGET (vel->widget), "default");
+      if (vel->widget)
+        velocity_widget_update_tooltip (
+          vel->widget, 0);
     }
   self->start_velocity = NULL;
 
