@@ -114,22 +114,17 @@ activate_about (GSimpleAction *action,
                 GVariant      *variant,
                 gpointer       user_data)
 {
-  GtkAboutDialog *dialog;
-
-  dialog =
-    g_object_new (
-      GTK_TYPE_ABOUT_DIALOG,
-      "copyright", "Copyright (C) 2019 Alexandros Theodotou",
-      "logo-icon-name", "z",
-      "program-name", "Zrythm",
-      "comments", "An highly automated, intuitive, Digital Audio Workstation (DAW)",
-      "license-type", GTK_LICENSE_GPL_3_0,
-      "website", "https://www.zrythm.org",
-      "website-label", "Official Website",
-      "version", "v" PACKAGE_VERSION,
-      NULL);
-
-  gtk_window_present (GTK_WINDOW (dialog));
+  gtk_show_about_dialog (
+    GTK_WINDOW (MAIN_WINDOW),
+    "copyright", "Copyright (C) 2019 Alexandros Theodotou",
+    "logo-icon-name", "z",
+    "program-name", "Zrythm",
+    "comments", "An highly automated, intuitive, Digital Audio Workstation (DAW)",
+    "license-type", GTK_LICENSE_GPL_3_0,
+    "website", "https://www.zrythm.org",
+    "website-label", "Official Website",
+    "version", "v" PACKAGE_VERSION,
+    NULL);
 }
 
 void
