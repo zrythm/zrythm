@@ -489,10 +489,8 @@ on_right_click (GtkGestureMultiPress *gesture,
                gint                  n_press,
                gdouble               x,
                gdouble               y,
-               gpointer              user_data)
+               ArrangerWidget *      self)
 {
-  ArrangerWidget * self = (ArrangerWidget *) user_data;
-
   if (n_press == 1)
     {
       show_context_menu (self);

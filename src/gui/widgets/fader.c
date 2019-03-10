@@ -1,7 +1,5 @@
 /*
- * gui/widgets/fader.c - Fader
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -180,9 +178,20 @@ static void
 drag_begin (GtkGestureDrag *gesture,
             double           start_x,
             double           start_y,
-               gpointer        user_data)
+            gpointer        user_data)
 {
   FaderWidget * self = (FaderWidget *) user_data;
+
+  GdkEventSequence *sequence =
+    gtk_gesture_single_get_current_sequence (
+      GTK_GESTURE_SINGLE (gesture));
+  const GdkEvent * event =
+    gtk_gesture_get_last_event (
+      GTK_GESTURE (gesture), sequence);
+  GdkModifierType state_mask;
+  gdk_event_get_state (event, &state_mask);
+  if (state_mask & GDK_CONTROL_MASK)
+    SET_VAL (1.0f);
 
   char * string =
     g_strdup_printf ("%.1f",
@@ -236,6 +245,50 @@ drag_end (GtkGestureDrag *gesture,
   gtk_widget_hide (GTK_WIDGET (self->tooltip_win));
 }
 
+void
+on_reset_fader (GtkMenuItem *menuitem,
+               FaderWidget * self)
+{
+  if (self->type == FADER_TYPE_CHANNEL)
+    channel_reset_fader ((Channel *) self->object);
+}
+
+static void
+show_context_menu (
+  FaderWidget * self)
+{
+  GtkWidget *menu, *menuitem;
+
+  menu = gtk_menu_new();
+
+  menuitem = gtk_menu_item_new_with_label("Reset");
+
+  g_signal_connect (
+    menuitem, "activate",
+    G_CALLBACK (on_reset_fader), self);
+
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL(menu), menuitem);
+
+  gtk_widget_show_all(menu);
+
+  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
+
+}
+
+static void
+on_right_click (GtkGestureMultiPress *gesture,
+               gint                  n_press,
+               gdouble               x,
+               gdouble               y,
+               FaderWidget *         self)
+{
+  if (n_press == 1)
+    {
+      show_context_menu (self);
+    }
+}
+
 /**
  * Creates a new Fader widget and binds it to the given value.
  */
@@ -245,11 +298,13 @@ fader_widget_setup (
   float         (*get_val)(void *),    ///< getter function
   void          (*set_val)(void *, float),    ///< setter function
   void *        object,              ///< object to call get/set with
+  FaderType     type,
   int width)
 {
   self->getter = get_val;
   self->setter = set_val;
   self->object = object;
+  self->type = type;
 
   /* set size */
   gtk_widget_set_size_request (GTK_WIDGET (self), width, -1);
@@ -283,19 +338,37 @@ fader_widget_init (FaderWidget * self)
   gtk_window_set_position (self->tooltip_win,
                            GTK_WIN_POS_MOUSE);
 
+  /* add right mouse multipress */
+  GtkGestureMultiPress * right_mouse_mp =
+    GTK_GESTURE_MULTI_PRESS (
+      gtk_gesture_multi_press_new (
+        GTK_WIDGET (self)));
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (right_mouse_mp),
+                        GDK_BUTTON_SECONDARY);
+
   /* connect signals */
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), self);
-  g_signal_connect (G_OBJECT (self), "enter-notify-event",
-                    G_CALLBACK (on_crossing),  self);
-  g_signal_connect (G_OBJECT(self), "leave-notify-event",
-                    G_CALLBACK (on_crossing),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-begin",
-                    G_CALLBACK (drag_begin),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-update",
-                    G_CALLBACK (drag_update),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-end",
-                    G_CALLBACK (drag_end),  self);
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (draw_cb), self);
+  g_signal_connect (
+    G_OBJECT (self), "enter-notify-event",
+    G_CALLBACK (on_crossing),  self);
+  g_signal_connect (
+    G_OBJECT(self), "leave-notify-event",
+    G_CALLBACK (on_crossing),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-begin",
+    G_CALLBACK (drag_begin),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-update",
+    G_CALLBACK (drag_update),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-end",
+    G_CALLBACK (drag_end),  self);
+  g_signal_connect (
+    G_OBJECT (right_mouse_mp), "pressed",
+    G_CALLBACK (on_right_click), self);
 
 }
 

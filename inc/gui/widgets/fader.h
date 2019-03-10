@@ -35,6 +35,11 @@ G_DECLARE_FINAL_TYPE (FaderWidget,
                       FADER_WIDGET,
                       GtkDrawingArea)
 
+typedef enum FaderType
+{
+  FADER_TYPE_CHANNEL,
+} FaderType;
+
 typedef struct _FaderWidget
 {
   GtkDrawingArea         parent_instance;
@@ -49,6 +54,7 @@ typedef struct _FaderWidget
   GtkLabel *             tooltip_label;
   GdkRGBA                start_color;
   GdkRGBA                end_color;
+  FaderType              type;
 } FaderWidget;
 
 /**
@@ -60,6 +66,7 @@ fader_widget_setup (
   float         (*get_val)(void *),    ///< getter function
   void          (*set_val)(void *, float),    ///< setter function
   void *        object,              ///< object to call get/set with
+  FaderType     type,
   int width);
 
 #endif

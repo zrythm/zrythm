@@ -533,6 +533,15 @@ _create_channel (char * name)
 }
 
 /**
+ * Sets fader to 0.0.
+ */
+void
+channel_reset_fader (Channel * channel)
+{
+  channel_set_fader_amp (channel, 1.0f);
+}
+
+/**
  * Generates automatables for the channel.
  *
  * Should be called as soon as it is created

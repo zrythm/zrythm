@@ -332,6 +332,12 @@ void
 channel_set_current_r_db (Channel * channel, float val);
 
 /**
+ * Sets fader to 0.0.
+ */
+void
+channel_reset_fader (Channel * channel);
+
+/**
  * Used when loading projects.
  */
 Channel *

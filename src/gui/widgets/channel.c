@@ -375,6 +375,7 @@ channel_widget_new (Channel * channel)
                       channel_get_fader_amp,
                       channel_set_fader_amp,
                       self->channel,
+                      FADER_TYPE_CHANNEL,
                       40);
   setup_meter (self);
   setup_pan (self);
