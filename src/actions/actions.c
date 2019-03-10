@@ -23,6 +23,8 @@
  * GAction actions.
  */
 
+#include "config.h"
+
 #include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "audio/transport.h"
@@ -117,10 +119,14 @@ activate_about (GSimpleAction *action,
   dialog =
     g_object_new (
       GTK_TYPE_ABOUT_DIALOG,
-      "copyright", "Copyright 2019 Alexandros Theodotou",
+      "copyright", "Copyright (C) 2019 Alexandros Theodotou",
       "logo-icon-name", "z",
+      "program-name", "Zrythm",
+      "comments", "An highly automated, intuitive, Digital Audio Workstation (DAW)",
+      "license-type", GTK_LICENSE_GPL_3_0,
       "website", "https://www.zrythm.org",
-      "version", "unreleased",
+      "website-label", "Official Website",
+      "version", "v" PACKAGE_VERSION,
       NULL);
 
   gtk_window_present (GTK_WINDOW (dialog));
