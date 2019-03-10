@@ -71,4 +71,9 @@ midi_note_widget_update_tooltip (
  * @}
  */
 
+void
+midi_note_widget_update_tooltip (
+  MidiNoteWidget * self,
+  int              show);
+
 #endif
