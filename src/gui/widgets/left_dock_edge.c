@@ -32,17 +32,28 @@ left_dock_edge_widget_init (LeftDockEdgeWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
+  GtkWidget * img;
+
   /* setup inspector */
   self->inspector = inspector_widget_new ();
-  GtkWidget * img =
-    /*resources_get_icon (ICON_TYPE_GNOME_BUILDER,*/
-                        /*"ui-section-symbolic-light.svg");*/
+  img =
     gtk_image_new_from_icon_name (
       "document-properties",
       GTK_ICON_SIZE_SMALL_TOOLBAR);
-  gtk_notebook_prepend_page (self->inspector_notebook,
-                             GTK_WIDGET (self->inspector),
-                             img);
+  gtk_notebook_prepend_page (
+    self->inspector_notebook,
+    GTK_WIDGET (self->inspector),
+    img);
+  img =
+    gtk_image_new_from_icon_name (
+      "visibility",
+      GTK_ICON_SIZE_SMALL_TOOLBAR);
+  GtkWidget * btn = gtk_button_new ();
+  gtk_widget_set_visible (btn, 1);
+  gtk_notebook_append_page (
+    self->inspector_notebook,
+    btn,
+    img);
 }
 
 static void

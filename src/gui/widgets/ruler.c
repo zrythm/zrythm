@@ -29,7 +29,9 @@
 #include "audio/position.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/audio_clip_editor.h"
 #include "gui/widgets/audio_ruler.h"
+#include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
@@ -551,6 +553,33 @@ on_motion (GtkDrawingArea * da,
            GdkEventMotion *event,
            RulerWidget *    self)
 {
+  /* change statusbar */
+  if (event->type == GDK_MOTION_NOTIFY)
+    {
+      if (self == MW_RULER)
+        bot_bar_change_status (
+          "Timeline Ruler - Click and drag on a "
+          "marker to change its position - Click "
+          "and drag on the bot half to change the "
+          "playhead position - Click and drag on "
+          "the top half to create a range "
+          "selection (Use Shift to bypass "
+          "snapping)");
+      else if (self == MIDI_RULER)
+        bot_bar_change_status (
+          "Clip Editor Ruler - Click and drag on "
+          "a marker to change its position (Use "
+          "Shift to bypass snapping)");
+      else if (self == AUDIO_RULER)
+        bot_bar_change_status (
+          "Clip Editor Ruler - Click and drag on "
+          "a marker to change its position (Use "
+          "Shift to bypass snapping)");
+    }
+  else if (event->type == GDK_LEAVE_NOTIFY)
+    bot_bar_change_status ("");
+
+
   if (self != MW_RULER)
     return;
 
@@ -668,6 +697,9 @@ ruler_widget_init (RulerWidget * self)
     G_CALLBACK (ruler_draw_cb), self);
   g_signal_connect (
     G_OBJECT (rw_prv->bg), "motion-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT (rw_prv->bg), "leave-notify-event",
     G_CALLBACK (on_motion),  self);
   g_signal_connect (
     G_OBJECT (self), "get-child-position",

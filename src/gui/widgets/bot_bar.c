@@ -1,7 +1,5 @@
 /*
- * gui/widgets/bot_bar.c - Bottom bar
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,8 +17,14 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "gui/widgets/bot_bar.h"
+/**
+ * \file
+ *
+ * Bottomest widget holding a status bar.
+ */
 
+#include "gui/widgets/bot_bar.h"
+#include "gui/widgets/main_window.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
@@ -36,6 +40,20 @@ bot_bar_widget_refresh (BotBarWidget * self)
 
 }
 
+/**
+ * Changes the message shown in the status bar.
+ */
+void
+bot_bar_change_status (const char * message)
+{
+  gtk_statusbar_remove_all (MW_STATUS_BAR,
+                            MW_BOT_BAR->context_id);
+
+  gtk_statusbar_push (MW_STATUS_BAR,
+                      MW_BOT_BAR->context_id,
+                      message);
+}
+
 static void
 bot_bar_widget_class_init (BotBarWidgetClass * _klass)
 {
@@ -49,12 +67,16 @@ bot_bar_widget_class_init (BotBarWidgetClass * _klass)
   gtk_widget_class_bind_template_child (
     klass,
     BotBarWidget,
-    bot_bar_left);
+    status_bar);
 }
 
 static void
 bot_bar_widget_init (BotBarWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  self->context_id =
+    gtk_statusbar_get_context_id (self->status_bar,
+                                  "Main context");
 }
 

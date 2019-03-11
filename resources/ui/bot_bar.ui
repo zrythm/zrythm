@@ -23,22 +23,16 @@
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <template class="BotBarWidget" parent="GtkBox">
-    <property name="visible">1</property>
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
     <child>
-      <object class="GtkToolbar" id="bot_bar_left">
-        <property name="visible">1</property>
-        <child>
-          <object class="GtkToolButton" id="toolbutton8">
-            <property name="visible">1</property>
-            <property name="label" translatable="yes">New</property>
-          </object>
-          <packing>
-            <property name="homogeneous">1</property>
-          </packing>
-        </child>
+      <object class="GtkStatusbar" id="status_bar">
+        <property name="visible">True</property>
       </object>
       <packing>
-        <property name="expand">1</property>
+        <property name="expand">True</property>
+        <property name="fill">True</property>
+        <property name="position">0</property>
       </packing>
     </child>
   </template>

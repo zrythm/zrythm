@@ -23,18 +23,62 @@
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <template class="TracklistHeaderWidget" parent="GtkGrid">
-    <property name="visible">1</property>
     <property name="height_request">60</property>
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
     <child>
-      <object class="GtkButton" id="button1">
-        <property name="label" translatable="yes">button</property>
-        <property name="visible">1</property>
-        <property name="can-focus">1</property>
-        <property name="receives-default">1</property>
+      <object class="GtkImage">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="icon_name">application-msword</property>
       </object>
       <packing>
-        <property name="left-attach">1</property>
-        <property name="top-attach">0</property>
+        <property name="left_attach">0</property>
+        <property name="top_attach">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label">18/18</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="top_attach">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkButton" id="maximize">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="receives_default">False</property>
+        <property name="action_name">app.fullscreen</property>
+        <property name="relief">none</property>
+        <child>
+          <object class="GtkImage">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="icon_name">gtk-add</property>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="left_attach">2</property>
+        <property name="top_attach">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSearchEntry">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="primary_icon_name">edit-find-symbolic</property>
+        <property name="primary_icon_activatable">False</property>
+        <property name="primary_icon_sensitive">False</property>
+      </object>
+      <packing>
+        <property name="left_attach">3</property>
+        <property name="top_attach">0</property>
       </packing>
     </child>
   </template>

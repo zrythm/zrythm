@@ -1,7 +1,5 @@
 /*
- * gui/widgets/bot_bar.h - Bottom bar
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,10 +17,22 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Bottomest bar.
+ */
+
 #ifndef __GUI_WIDGETS_BOT_BAR_H__
 #define __GUI_WIDGETS_BOT_BAR_H__
 
 #include <gtk/gtk.h>
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 #define BOT_BAR_WIDGET_TYPE \
   (bot_bar_widget_get_type ())
@@ -32,16 +42,29 @@ G_DECLARE_FINAL_TYPE (BotBarWidget,
                       BOT_BAR_WIDGET,
                       GtkBox)
 
-#define BOT_BAR MW->bot_bar
-
+#define MW_BOT_BAR MW->bot_bar
+#define MW_STATUS_BAR MW_BOT_BAR->status_bar
 
 typedef struct _BotBarWidget
 {
-  GtkBox                    parent_instance;
-  GtkToolbar *              bot_bar_left;
+  GtkBox                parent_instance;
+  GtkStatusbar *        status_bar;
+
+  /** Status bar context id. */
+  guint                 context_id;
 } BotBarWidget;
 
 void
 bot_bar_widget_refresh (BotBarWidget * self);
+
+/**
+ * Changes the message shown in the status bar.
+ */
+void
+bot_bar_change_status (const char * message);
+
+/**
+ * @}
+ */
 
 #endif
