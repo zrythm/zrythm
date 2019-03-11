@@ -231,7 +231,6 @@ plugin_instantiate (Plugin * plugin ///< the plugin
   return 0;
 }
 
-
 /**
  * Process plugin
  */

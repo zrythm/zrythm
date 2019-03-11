@@ -335,6 +335,7 @@ region_get_num_loops (
   int i = 0;
   long loop_size =
     region_get_loop_length_in_ticks (region);
+  g_assert (loop_size > 0);
   long full_size =
     region_get_full_length_in_ticks (region);
   long loop_start =

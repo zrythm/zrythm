@@ -39,7 +39,7 @@
 #define SNAP_GRID_TIMELINE \
   (&PROJECT->snap_grid_timeline)
 #define SNAP_GRID_MIDI \
-  (&PROJECT->snap_grid_timeline)
+  (&PROJECT->snap_grid_midi)
 
 #define MAX_SNAP_POINTS 120096
 

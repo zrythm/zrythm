@@ -455,80 +455,116 @@ timeline_ruler_on_drag_update (
           EVENTS_PUSH (ET_RANGE_SELECTION_CHANGED,
                        NULL);
         }
-      else if (rw_prv->target == RW_TARGET_PLAYHEAD)
+      else
         {
-          Position pos;
+          /* set some useful positions */
+          Position tmp;
+          Position timeline_start,
+                   timeline_end;
+          position_init (&timeline_start);
+          position_init (&timeline_end);
+          position_add_bars (
+            &timeline_end,
+            TRANSPORT->total_bars);
+
+          /* convert px to position */
           ui_px_to_pos_timeline (
             rw_prv->start_x + offset_x,
-            &pos,
+            &tmp,
             1);
+
+          /* snap if not shift held */
           if (!rw_prv->shift_held)
             position_snap_simple (
-              &pos,
-              SNAP_GRID_TIMELINE);
-          transport_move_playhead (&pos, 1);
-          EVENTS_PUSH (ET_PLAYHEAD_POS_CHANGED,
-                       NULL);
-        }
-      else if (rw_prv->target == RW_TARGET_LOOP_START)
-        {
-          ui_px_to_pos_timeline (
-            rw_prv->start_x + offset_x,
-            &TRANSPORT->loop_start_pos,
-            1);
-          if (!rw_prv->shift_held)
-            position_snap_simple (
-              &TRANSPORT->loop_start_pos,
-              SNAP_GRID_TIMELINE);
-          transport_update_position_frames ();
-          EVENTS_PUSH (
-            ET_TIMELINE_LOOP_MARKER_POS_CHANGED,
-            NULL);
-        }
-      else if (rw_prv->target == RW_TARGET_LOOP_END)
-        {
-          ui_px_to_pos_timeline (
-            rw_prv->start_x + offset_x,
-            &TRANSPORT->loop_end_pos,
-            1);
-          if (!rw_prv->shift_held)
-            position_snap_simple (
-              &TRANSPORT->loop_end_pos,
-              SNAP_GRID_TIMELINE);
-          transport_update_position_frames ();
-          EVENTS_PUSH (
-            ET_TIMELINE_LOOP_MARKER_POS_CHANGED,
-            NULL);
-        }
-      else if (rw_prv->target == RW_TARGET_SONG_START)
-        {
-          ui_px_to_pos_timeline (
-            rw_prv->start_x + offset_x,
-            &TRANSPORT->start_marker_pos,
-            1);
-          if (!rw_prv->shift_held)
-            position_snap_simple (
-              &TRANSPORT->start_marker_pos,
-              SNAP_GRID_TIMELINE);
-          transport_update_position_frames ();
-          EVENTS_PUSH (
-            ET_TIMELINE_SONG_MARKER_POS_CHANGED,
-            NULL);
-        }
-      else if (rw_prv->target == RW_TARGET_SONG_END)
-        {
-          ui_px_to_pos_timeline (
-            rw_prv->start_x + offset_x,
-            &TRANSPORT->end_marker_pos,
-            1);
-          if (!rw_prv->shift_held)
-            position_snap_simple (
-              &TRANSPORT->end_marker_pos,
-              SNAP_GRID_TIMELINE);
-          transport_update_position_frames ();
-          EVENTS_PUSH (
-            ET_TIMELINE_SONG_MARKER_POS_CHANGED,
-            NULL);
+              &tmp, SNAP_GRID_TIMELINE);
+
+          if (rw_prv->target == RW_TARGET_PLAYHEAD)
+            {
+              /* if position is acceptable */
+              if (position_compare (
+                    &tmp, &timeline_start) >= 0 &&
+                  position_compare (
+                    &tmp, &timeline_end) <= 0)
+                {
+                  transport_move_playhead (&tmp, 1);
+                  EVENTS_PUSH (
+                    ET_PLAYHEAD_POS_CHANGED,
+                    NULL);
+                }
+            }
+          else if (rw_prv->target ==
+                     RW_TARGET_LOOP_START)
+            {
+              /* if position is acceptable */
+              if (position_compare (
+                    &tmp, &timeline_start) >= 0 &&
+                  position_compare (
+                    &tmp, &TRANSPORT->loop_end_pos) < 0)
+                {
+                  position_set_to_pos (
+                    &TRANSPORT->loop_start_pos, &tmp);
+                  transport_update_position_frames ();
+                  EVENTS_PUSH (
+                    ET_TIMELINE_LOOP_MARKER_POS_CHANGED,
+                    NULL);
+                }
+            }
+          else if (rw_prv->target ==
+                     RW_TARGET_LOOP_END)
+            {
+              /* if position is acceptable */
+              if (position_compare (
+                    &tmp, &timeline_end) <= 0 &&
+                  position_compare (
+                    &tmp,
+                    &TRANSPORT->loop_start_pos) > 0)
+                {
+                  position_set_to_pos (
+                    &TRANSPORT->loop_end_pos, &tmp);
+                  transport_update_position_frames ();
+                  EVENTS_PUSH (
+                    ET_TIMELINE_LOOP_MARKER_POS_CHANGED,
+                    NULL);
+                }
+            }
+          else if (rw_prv->target ==
+                     RW_TARGET_SONG_START)
+            {
+              /* if position is acceptable */
+              if (position_compare (
+                    &tmp, &timeline_start) >= 0 &&
+                  position_compare (
+                    &tmp,
+                    &TRANSPORT->end_marker_pos) < 0)
+                {
+                  position_set_to_pos (
+                    &TRANSPORT->start_marker_pos,
+                    &tmp);
+                  transport_update_position_frames ();
+                  EVENTS_PUSH (
+                    ET_TIMELINE_SONG_MARKER_POS_CHANGED,
+                    NULL);
+                }
+            }
+          else if (rw_prv->target ==
+                     RW_TARGET_SONG_END)
+            {
+              /* if position is acceptable */
+              if (position_compare (
+                    &tmp, &timeline_end) <= 0 &&
+                  position_compare (
+                    &tmp,
+                    &TRANSPORT->start_marker_pos) > 0)
+                {
+                  position_set_to_pos (
+                    &TRANSPORT->end_marker_pos,
+                    &tmp);
+                  transport_update_position_frames ();
+                  EVENTS_PUSH (
+                    ET_TIMELINE_SONG_MARKER_POS_CHANGED,
+                    NULL);
+                }
+            }
         }
     } /* endif MOVING */
 }
