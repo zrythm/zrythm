@@ -1,7 +1,5 @@
 /*
- * gui/widgets/main_window.h - Main window widget
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -25,6 +23,15 @@
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
+
+/**
+ * @defgroup widgets Widgets
+ *
+ * Widgets are custom GUI elements that reflect the
+ * backend.
+ *
+ * @{
+ */
 
 #define MAIN_WINDOW ZRYTHM->main_window
 #define MW MAIN_WINDOW
@@ -86,5 +93,9 @@ main_window_widget_open (MainWindowWidget  * win,
 
 void
 main_window_widget_quit (MainWindowWidget * self);
+
+/**
+ * @}
+ */
 
 #endif

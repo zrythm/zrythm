@@ -27,6 +27,7 @@ OSX=@OSX@
 HAVE_QT5=@HAVE_QT5@
 PROFILING=@PROFILING@
 DEBUG=@DEBUG@
+WITH_DOCS=@WITH_DOCS@
 
 # -----------------------
 #  dirs/names/files

@@ -28,6 +28,11 @@
 
 #include <gtk/gtk.h>
 
+/**
+ * @addtogroup widgets
+ * @{
+ */
+
 #define FADER_WIDGET_TYPE \
   (fader_widget_get_type ())
 G_DECLARE_FINAL_TYPE (FaderWidget,
@@ -69,5 +74,9 @@ fader_widget_setup (
   void *        object,              ///< object to call get/set with
   FaderType     type,
   int width);
+
+/**
+ * @}
+ */
 
 #endif

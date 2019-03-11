@@ -98,6 +98,14 @@ AC_ARG_WITH(
       AC_SUBST([HAVE_QT5],[1])])],
   [echo "** building without Qt5 support in suil. use --with-qt5 to enable it"])
 
+AC_ARG_WITH(
+  docs,
+  AS_HELP_STRING(
+    [--with-docs],
+    [Export documentation]),
+  [AC_SUBST([WITH_DOCS],[1])],
+  [AC_SUBST([WITH_DOCS],[0])])
+
 # Check for a C compiler
 AC_PROG_CC([gcc])
 AC_PROG_CXX([g++])
@@ -151,6 +159,7 @@ GLIB_GSETTINGS
 # Declare output files
 AC_CONFIG_FILES([
   Makefile
+  Doxyfile.cfg
 ])
 
 # Actually output all declared files

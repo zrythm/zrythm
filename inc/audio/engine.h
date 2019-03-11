@@ -26,9 +26,6 @@
 #ifndef __AUDIO_ENGINE_H__
 #define __AUDIO_ENGINE_H__
 
-#define BLOCK_LENGTH 4096 // should be set by backend
-#define MIDI_BUF_SIZE 1024 // should be set by backend
-
 #include "audio/mixer.h"
 #include "audio/transport.h"
 #include "utils/sem.h"
@@ -36,6 +33,19 @@
 #include <jack/jack.h>
 #include <jack/midiport.h>
 #include <portaudio.h>
+
+/**
+ * @defgroup audio Audio
+ *
+ * The audio module contains DSP and audio related
+ * code.
+ *
+ * @{
+ */
+
+#define BLOCK_LENGTH 4096 // should be set by backend
+#define MIDI_BUF_SIZE 1024 // should be set by backend
+
 
 #define AUDIO_ENGINE (&PROJECT->audio_engine)
 #define MANUAL_PRESS_QUEUE \
@@ -206,5 +216,9 @@ engine_post_process ();
  */
 void
 engine_tear_down ();
+
+/**
+ * @}
+ */
 
 #endif

@@ -1,6 +1,7 @@
 # Build files
 build
 /Makefile
+/Doxyfile.cfg
 config.h
 configure
 

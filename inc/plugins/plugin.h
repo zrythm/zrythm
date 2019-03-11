@@ -17,6 +17,14 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * @defgroup plugins Plugins
+ *
+ * Code related to audio Plugins (LV2).
+ *
+ * @{
+ */
+
 #ifndef __PLUGINS_BASE_PLUGIN_H__
 #define __PLUGINS_BASE_PLUGIN_H__
 
@@ -312,5 +320,9 @@ plugin_update_automatables (Plugin * plugin);
  */
 void
 plugin_free (Plugin *plugin);
+
+/**
+ * @}
+ */
 
 #endif
