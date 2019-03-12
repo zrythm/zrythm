@@ -1,8 +1,5 @@
 /*
- * gui/widgets/timeline_minimap_selection.h - Minimap
- *   selection
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -20,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "gui/widgets/bot_bar.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/timeline_minimap.h"
@@ -47,8 +45,8 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   return FALSE;
 }
 
-void
-timeline_minimap_selection_widget_on_motion (GtkWidget * widget,
+static gboolean
+on_motion (GtkWidget * widget,
            GdkEventMotion *event,
            gpointer user_data)
 {
@@ -57,6 +55,8 @@ timeline_minimap_selection_widget_on_motion (GtkWidget * widget,
   guint width =
     gtk_widget_get_allocated_width (widget);
 
+  if (event->type == GDK_ENTER_NOTIFY)
+    bot_bar_change_status ("Timeline Minimap");
   if (event->type == GDK_MOTION_NOTIFY)
     {
       gtk_widget_set_state_flags (GTK_WIDGET (self),
@@ -90,14 +90,17 @@ timeline_minimap_selection_widget_on_motion (GtkWidget * widget,
               ui_set_cursor (widget, "default");
             }
         }
-      /* if leaving */
-      if (event->type == GDK_LEAVE_NOTIFY)
-        {
-          g_message ("leaving");
-          gtk_widget_unset_state_flags (GTK_WIDGET (self),
-                                        GTK_STATE_FLAG_PRELIGHT);
-        }
     }
+  /* if leaving */
+  if (event->type == GDK_LEAVE_NOTIFY)
+    {
+      gtk_widget_unset_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_PRELIGHT);
+      bot_bar_change_status ("");
+    }
+
+  return FALSE;
 }
 
 TimelineMinimapSelectionWidget *
@@ -153,8 +156,16 @@ timeline_minimap_selection_widget_init (
                     /*"leave-notify-event",*/
                     /*G_CALLBACK (on_motion),*/
                     /*self);*/
-  g_signal_connect (G_OBJECT(self->drawing_area),
-                    "motion-notify-event",
-                    G_CALLBACK (timeline_minimap_selection_widget_on_motion),
-                    self);
+  g_signal_connect (
+    G_OBJECT(self->drawing_area),
+    "motion-notify-event",
+    G_CALLBACK (on_motion), self);
+  g_signal_connect (
+    G_OBJECT(self->drawing_area),
+    "enter-notify-event",
+    G_CALLBACK (on_motion), self);
+  g_signal_connect (
+    G_OBJECT(self->drawing_area),
+    "leave-notify-event",
+    G_CALLBACK (on_motion), self);
 }

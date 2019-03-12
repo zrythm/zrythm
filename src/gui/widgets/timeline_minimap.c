@@ -1,7 +1,5 @@
 /*
- * gui/widgets/timeline_minimap.h - Minimap
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -352,10 +350,10 @@ drag_begin (GtkGestureDrag * gesture,
 
       /* motion handler was causing drag update
        * to not get called */
-      g_signal_handlers_disconnect_by_func (
-        G_OBJECT (self->selection->drawing_area),
-        timeline_minimap_selection_widget_on_motion,
-        self->selection);
+      /*g_signal_handlers_disconnect_by_func (*/
+        /*G_OBJECT (self->selection->drawing_area),*/
+        /*timeline_minimap_selection_widget_on_motion,*/
+        /*self->selection);*/
     }
   else /* nothing hit */
     {
@@ -439,10 +437,6 @@ drag_end (GtkGestureDrag *gesture,
 
   self->action = TIMELINE_MINIMAP_ACTION_NONE;
   gtk_widget_queue_draw (GTK_WIDGET (self->bg));
-  g_signal_connect (G_OBJECT(self->selection->drawing_area),
-                    "motion-notify-event",
-                    G_CALLBACK (timeline_minimap_selection_widget_on_motion),
-                    self->selection);
 }
 
 /**
@@ -489,16 +483,22 @@ timeline_minimap_widget_init (
     GTK_GESTURE_SINGLE (self->right_mouse_mp),
                         GDK_BUTTON_SECONDARY);
 
-  g_signal_connect (G_OBJECT (self), "get-child-position",
-                    G_CALLBACK (get_child_position), NULL);
-  g_signal_connect (G_OBJECT(self->drag), "drag-begin",
-                    G_CALLBACK (drag_begin),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-update",
-                    G_CALLBACK (drag_update),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-end",
-                    G_CALLBACK (drag_end),  self);
-  g_signal_connect (G_OBJECT (self->multipress), "pressed",
-                    G_CALLBACK (multipress_pressed), self);
-  g_signal_connect (G_OBJECT (self->right_mouse_mp), "pressed",
-                    G_CALLBACK (on_right_click), self);
+  g_signal_connect (
+    G_OBJECT (self), "get-child-position",
+    G_CALLBACK (get_child_position), NULL);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-begin",
+    G_CALLBACK (drag_begin),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-update",
+    G_CALLBACK (drag_update),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-end",
+    G_CALLBACK (drag_end),  self);
+  g_signal_connect (
+    G_OBJECT (self->multipress), "pressed",
+    G_CALLBACK (multipress_pressed), self);
+  g_signal_connect (
+    G_OBJECT (self->right_mouse_mp), "pressed",
+    G_CALLBACK (on_right_click), self);
 }

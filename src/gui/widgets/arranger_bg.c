@@ -19,6 +19,7 @@
 
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
@@ -167,6 +168,28 @@ arranger_bg_draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   return 0;
 }
 
+static gboolean
+on_motion (GtkWidget *widget,
+               GdkEventMotion  *event,
+               gpointer   user_data)
+{
+  if (event->type == GDK_ENTER_NOTIFY)
+    {
+      bot_bar_change_status (
+        "Arranger - Double click inside a track "
+        "lane to create objects "
+        "(hold Shift to disable snapping) - Click "
+        "on the top half of a track lane and drag "
+        "to select objects - Click on the bottom "
+        "half of a track lane and drag to select a "
+        "range");
+    }
+  else if (event->type == GDK_LEAVE_NOTIFY)
+    bot_bar_change_status ("");
+
+  return FALSE;
+}
+
 /**
  * Draws the selection in its background.
  *
@@ -281,14 +304,28 @@ arranger_bg_widget_init (ArrangerBgWidget *self )
   gtk_widget_set_focus_on_click (GTK_WIDGET (self),
                                  1);
 
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (arranger_bg_draw_cb), NULL);
-  g_signal_connect (G_OBJECT(ab_prv->drag), "drag-begin",
-                    G_CALLBACK (drag_begin),  self);
-  g_signal_connect (G_OBJECT(ab_prv->drag), "drag-update",
-                    G_CALLBACK (drag_update),  self);
-  g_signal_connect (G_OBJECT(ab_prv->drag), "drag-end",
-                    G_CALLBACK (drag_end),  self);
-  g_signal_connect (G_OBJECT (ab_prv->multipress), "pressed",
-                    G_CALLBACK (multipress_pressed), self);
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (arranger_bg_draw_cb), NULL);
+  g_signal_connect (
+    G_OBJECT(ab_prv->drag), "drag-begin",
+    G_CALLBACK (drag_begin),  self);
+  g_signal_connect (
+    G_OBJECT(ab_prv->drag), "drag-update",
+    G_CALLBACK (drag_update),  self);
+  g_signal_connect (
+    G_OBJECT(ab_prv->drag), "drag-end",
+    G_CALLBACK (drag_end),  self);
+  g_signal_connect (
+    G_OBJECT (ab_prv->multipress), "pressed",
+    G_CALLBACK (multipress_pressed), self);
+  g_signal_connect (
+    G_OBJECT (self), "motion-notify-event",
+    G_CALLBACK (on_motion), self);
+  g_signal_connect (
+    G_OBJECT (self), "leave-notify-event",
+    G_CALLBACK (on_motion), self);
+  g_signal_connect (
+    G_OBJECT (self), "enter-notify-event",
+    G_CALLBACK (on_motion), self);
 }

@@ -31,6 +31,7 @@
 #include "gui/widgets/audio_track.h"
 #include "gui/widgets/automation_lane.h"
 #include "gui/widgets/automation_tracklist.h"
+#include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bus_track.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/color_area.h"
@@ -130,7 +131,7 @@ track_widget_select (
     }
 }
 
-static void
+static gboolean
 on_motion (GtkWidget * widget,
            GdkEventMotion *event,
            gpointer        user_data)
@@ -139,15 +140,25 @@ on_motion (GtkWidget * widget,
 
   if (event->type == GDK_ENTER_NOTIFY)
     {
-      gtk_widget_set_state_flags (GTK_WIDGET (self),
-                                  GTK_STATE_FLAG_PRELIGHT,
-                                  0);
+      gtk_widget_set_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_PRELIGHT, 0);
+      bot_bar_change_status (
+        "Track - Change track parameters like Solo/"
+        "Mute... - Click the icon on the bottom "
+        "right to bring up the automation lanes - "
+        "Double click to show corresponding channel "
+        "in Mixer (if applicable)");
     }
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
-      gtk_widget_unset_state_flags (GTK_WIDGET (self),
-                                    GTK_STATE_FLAG_PRELIGHT);
+      gtk_widget_unset_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_PRELIGHT);
+      bot_bar_change_status ("");
     }
+
+  return FALSE;
 }
 
 /**

@@ -1,8 +1,5 @@
 /*
- * gui/widgets/timeline_minimap_bg.h - Minimap
- *   bg
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -20,7 +17,13 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/track.h"
+#include "audio/tracklist.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/main_window.h"
+#include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_minimap_bg.h"
+#include "project.h"
 
 #include <gtk/gtk.h>
 
@@ -38,7 +41,79 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   width = gtk_widget_get_allocated_width (widget);
   height = gtk_widget_get_allocated_height (widget);
 
-  gtk_render_background (context, cr, 0, 0, width, height);
+  gtk_render_background (
+    context, cr, 0, 0, width, height);
+
+  int song_px =
+    ui_pos_to_px_timeline (
+      &TRANSPORT->end_marker_pos, 1) -
+    ui_pos_to_px_timeline (
+      &TRANSPORT->start_marker_pos, 1);
+  int region_px;
+
+  int total_track_height = 0;
+  Track * track;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      track = TRACKLIST->tracks[i];
+
+      if (track->widget && track->visible)
+        total_track_height +=
+          gtk_widget_get_allocated_height (
+            GTK_WIDGET (track->widget));
+    }
+  int track_height;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      track = TRACKLIST->tracks[i];
+
+      if (!(track->widget && track->visible))
+        continue;
+
+      gint wx, wy;
+      gtk_widget_translate_coordinates(
+        GTK_WIDGET (track->widget),
+        GTK_WIDGET (MW_TIMELINE),
+        0, 0,
+        &wx, &wy);
+      track_height =
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (track->widget));
+
+      GdkRGBA * color = &track->color;
+      cairo_set_source_rgba (cr,
+                             color->red,
+                             color->green,
+                             color->blue,
+                             0.2);
+
+      for (int i = 0; i < track->num_regions; i++)
+        {
+          Region * r = track->regions[i];
+
+          int px_start =
+            ui_pos_to_px_timeline (
+              &r->start_pos, 1);
+          int px_end =
+            ui_pos_to_px_timeline (
+              &r->end_pos, 1);
+          int px_length =
+            px_end - px_start;
+
+          cairo_rectangle (
+            cr,
+            ((double) px_start /
+             (double) song_px) * width,
+            ((double) wy /
+               (double) total_track_height) * height,
+            ((double) px_length /
+              (double) song_px) * width,
+            ((double) track_height /
+              (double) total_track_height) * height);
+          cairo_fill (cr);
+        }
+    }
+
 
   return FALSE;
 }

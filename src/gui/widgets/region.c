@@ -22,6 +22,7 @@
 #include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/bot_bar.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/region.h"
@@ -172,6 +173,10 @@ on_motion (GtkWidget *      widget,
         GTK_WIDGET (self),
         GTK_STATE_FLAG_PRELIGHT,
         0);
+      bot_bar_change_status (
+        "Region - Click and drag to move around ("
+        "hold Shift to disable snapping) - "
+        "Double click to bring up the clip editor");
     }
   /* if leaving */
   else if (event->type == GDK_LEAVE_NOTIFY)
@@ -185,6 +190,7 @@ on_motion (GtkWidget *      widget,
         gtk_widget_unset_state_flags (
           GTK_WIDGET (self),
           GTK_STATE_FLAG_PRELIGHT);
+      bot_bar_change_status ("");
     }
   return FALSE;
 }
