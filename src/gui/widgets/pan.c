@@ -23,6 +23,7 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "gui/widgets/bot_bar.h"
 #include "gui/widgets/pan.h"
 
 G_DEFINE_TYPE (PanWidget,
@@ -68,24 +69,29 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 }
 
 
-static void
-on_crossing (GtkWidget * widget, GdkEvent *event)
+static gboolean
+on_motion (GtkWidget * widget, GdkEvent *event,
+           PanWidget * self)
 {
-  PanWidget * self = Z_PAN_WIDGET (widget);
-
   if (gdk_event_get_event_type (event) ==
       GDK_ENTER_NOTIFY)
     {
-      gtk_widget_set_state_flags (GTK_WIDGET (self),
-                                  GTK_STATE_FLAG_PRELIGHT,
-                                  0);
+      gtk_widget_set_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_PRELIGHT, 0);
+      bot_bar_change_status (
+        "Pan - Click and drag to change value");
     }
   else if (gdk_event_get_event_type (event) ==
            GDK_LEAVE_NOTIFY)
     {
-      gtk_widget_unset_state_flags (GTK_WIDGET (self),
-                                    GTK_STATE_FLAG_PRELIGHT);
+      gtk_widget_unset_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_PRELIGHT);
+      bot_bar_change_status ("");
     }
+
+  return FALSE;
 }
 
 static double clamp
@@ -146,28 +152,30 @@ pan_widget_new (float (*get_val)(void *),    ///< getter function
                   void * object,              ///< object to call get/set with
                   int height)
 {
-  PanWidget * self = g_object_new (PAN_WIDGET_TYPE, NULL);
+  PanWidget * self =
+    g_object_new (PAN_WIDGET_TYPE,
+                  "visible", 1,
+                  "height-request", height,
+                  NULL);
   self->getter = get_val;
   self->setter = set_val;
   self->object = object;
 
-  /* set size */
-  gtk_widget_set_size_request (GTK_WIDGET (self), -1, height);
-
   /* connect signals */
   g_signal_connect (G_OBJECT (self), "draw",
                     G_CALLBACK (draw_cb), self);
-  g_signal_connect (G_OBJECT (self), "enter-notify-event",
-                    G_CALLBACK (on_crossing),  self);
-  g_signal_connect (G_OBJECT(self), "leave-notify-event",
-                    G_CALLBACK (on_crossing),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-update",
-                    G_CALLBACK (drag_update),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-end",
-                    G_CALLBACK (drag_end),  self);
-
-  gtk_widget_set_visible (GTK_WIDGET (self),
-                          1);
+  g_signal_connect (
+    G_OBJECT (self), "enter-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self), "leave-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-update",
+    G_CALLBACK (drag_update),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-end",
+    G_CALLBACK (drag_end),  self);
 
   return self;
 }

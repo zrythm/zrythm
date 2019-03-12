@@ -23,6 +23,7 @@
 #include <stdlib.h>
 
 #include "audio/channel.h"
+#include "gui/widgets/bot_bar.h"
 #include "gui/widgets/fader.h"
 #include "utils/math.h"
 
@@ -148,24 +149,30 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 }
 
 
-static void
-on_crossing (GtkWidget * widget, GdkEvent *event)
+static gboolean
+on_motion (GtkWidget * widget, GdkEvent *event)
 {
   FaderWidget * self = Z_FADER_WIDGET (widget);
 
   if (gdk_event_get_event_type (event) ==
         GDK_ENTER_NOTIFY)
     {
-      gtk_widget_set_state_flags (GTK_WIDGET (self),
-                                  GTK_STATE_FLAG_PRELIGHT,
-                                  0);
+      gtk_widget_set_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_PRELIGHT, 0);
+      bot_bar_change_status (
+        "Fader - Click and drag to change value");
     }
   else if (gdk_event_get_event_type (event) ==
              GDK_LEAVE_NOTIFY)
     {
-      gtk_widget_unset_state_flags (GTK_WIDGET (self),
-                                    GTK_STATE_FLAG_PRELIGHT);
+      gtk_widget_unset_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_PRELIGHT);
+      bot_bar_change_status ("");
     }
+
+  return FALSE;
 }
 
 static double clamp
@@ -353,10 +360,10 @@ fader_widget_init (FaderWidget * self)
     G_CALLBACK (draw_cb), self);
   g_signal_connect (
     G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_crossing),  self);
+    G_CALLBACK (on_motion),  self);
   g_signal_connect (
     G_OBJECT(self), "leave-notify-event",
-    G_CALLBACK (on_crossing),  self);
+    G_CALLBACK (on_motion),  self);
   g_signal_connect (
     G_OBJECT(self->drag), "drag-begin",
     G_CALLBACK (drag_begin),  self);

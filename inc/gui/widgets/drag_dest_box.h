@@ -51,6 +51,7 @@ typedef struct _DragDestBoxWidget
   GtkGestureDrag *        drag;
   GtkGestureMultiPress *  multipress;
   GtkGestureMultiPress *  right_mouse_mp; ///< right mouse multipress
+  DragDestBoxType         type;
 } DragDestBoxWidget;
 
 /**

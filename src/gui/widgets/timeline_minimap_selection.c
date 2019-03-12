@@ -56,7 +56,9 @@ on_motion (GtkWidget * widget,
     gtk_widget_get_allocated_width (widget);
 
   if (event->type == GDK_ENTER_NOTIFY)
-    bot_bar_change_status ("Timeline Minimap");
+    bot_bar_change_status (
+      "Minimap Selector - Click and drag to move - "
+      "Click and drag edges to resize");
   if (event->type == GDK_MOTION_NOTIFY)
     {
       gtk_widget_set_state_flags (GTK_WIDGET (self),

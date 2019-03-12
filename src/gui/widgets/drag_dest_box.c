@@ -1,7 +1,4 @@
 /*
- * gui/widgets/drag_dest_box.c - A dnd destination box used by mixer and tracklist
- *                                widgets
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -28,6 +25,7 @@
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/accel.h"
+#include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
@@ -176,6 +174,33 @@ drag_end (GtkGestureDrag *gesture,
 
 }
 
+static gboolean
+on_motion (GtkWidget * widget,
+           GdkEvent *event,
+           DragDestBoxWidget * self)
+{
+  if (gdk_event_get_event_type (event) ==
+      GDK_ENTER_NOTIFY)
+    {
+      if (self->type ==
+            DRAG_DEST_BOX_TYPE_MIXER)
+        bot_bar_change_status (
+          "Drag and drop a plugin here from the "
+          "browser");
+      else if (self->type ==
+                 DRAG_DEST_BOX_TYPE_TRACKLIST)
+        bot_bar_change_status (
+          "Drag and drop a plugin or audio file "
+          "here from the browser");
+    }
+  else if (gdk_event_get_event_type (event) ==
+           GDK_LEAVE_NOTIFY)
+    {
+      bot_bar_change_status ("");
+    }
+
+  return FALSE;
+}
 
 static void
 show_context_menu (DragDestBoxWidget * self)
@@ -276,9 +301,11 @@ drag_dest_box_widget_new (GtkOrientation  orientation,
                           DragDestBoxType type)
 {
   /* create */
-  DragDestBoxWidget * self = g_object_new (
-                            DRAG_DEST_BOX_WIDGET_TYPE,
-                            NULL);
+  DragDestBoxWidget * self =
+    g_object_new (DRAG_DEST_BOX_WIDGET_TYPE,
+                  NULL);
+
+  self->type = type;
 
   if (type == DRAG_DEST_BOX_TYPE_MIXER)
     {
@@ -348,18 +375,27 @@ drag_dest_box_widget_init (DragDestBoxWidget * self)
                          GDK_ALL_EVENTS_MASK);
 
   /* connect signals */
-  g_signal_connect (G_OBJECT (self->multipress), "pressed",
-                    G_CALLBACK (multipress_pressed), self);
-  g_signal_connect (G_OBJECT (self->right_mouse_mp),
-                    "pressed",
-                    G_CALLBACK (on_right_click),
-                    self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-begin",
-                    G_CALLBACK (drag_begin),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-update",
-                    G_CALLBACK (drag_update),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-end",
-                    G_CALLBACK (drag_end),  self);
+  g_signal_connect (
+    G_OBJECT (self->multipress), "pressed",
+    G_CALLBACK (multipress_pressed), self);
+  g_signal_connect (
+    G_OBJECT (self->right_mouse_mp), "pressed",
+    G_CALLBACK (on_right_click), self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-begin",
+    G_CALLBACK (drag_begin),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-update",
+    G_CALLBACK (drag_update),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-end",
+    G_CALLBACK (drag_end),  self);
+  g_signal_connect (
+    G_OBJECT (self), "enter-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self), "leave-notify-event",
+    G_CALLBACK (on_motion),  self);
 }
 
 static void
