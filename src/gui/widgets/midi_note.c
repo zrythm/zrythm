@@ -17,6 +17,11 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ */
+
 #include "audio/bus_track.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"

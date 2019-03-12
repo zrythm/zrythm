@@ -57,12 +57,22 @@
         } \
     }
 
+/**
+ * Macro so that no casting to void ** and void * is
+ * necessary.
+ */
+#define array_contains(array,size,element) \
+  _array_contains ((void **) array, \
+                   size, \
+                   (void *) element)
 
 /**
  * Returns 1 if element exists in array, 0 if not.
  */
 int
-array_contains (void ** array, int size, void * element);
+_array_contains (void ** array,
+                int size,
+                void * element);
 
 /**
  * Returns the index ofthe element exists in array,

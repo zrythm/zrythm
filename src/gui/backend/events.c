@@ -49,7 +49,7 @@
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/mixer.h"
-#include "gui/widgets/ruler_playhead.h"
+#include "gui/widgets/ruler_marker.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_ruler.h"
@@ -84,7 +84,7 @@ on_playhead_changed ()
           /*gtk_widget_queue_allocate (*/
             /*GTK_WIDGET (MW_TIMELINE));*/
         }
-      if (TIMELINE_RULER_PLAYHEAD)
+      if (TL_RULER_PLAYHEAD)
         {
           gtk_widget_queue_allocate (
             GTK_WIDGET (MW_RULER));
@@ -394,7 +394,7 @@ events_process ()
           arranger_widget_refresh (
             Z_ARRANGER_WIDGET (MW_TIMELINE));
           break;
-        case ET_TIMELINE_SELECTIONS_CHANGED:
+        case ET_TL_SELECTIONS_CHANGED:
           break;
         case ET_RULER_SIZE_CHANGED:
           gtk_widget_queue_allocate (

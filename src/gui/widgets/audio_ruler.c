@@ -94,8 +94,9 @@ audio_ruler_widget_set_ruler_marker_position (
   RulerMarkerWidget *    rm,
   GtkAllocation *       allocation)
 {
-  if (rm->type == RULER_MARKER_TYPE_LOOP_START)
+  switch (rm->type)
     {
+    case RULER_MARKER_TYPE_LOOP_START:
       if (CLIP_EDITOR->region)
         {
           allocation->x =
@@ -108,9 +109,8 @@ audio_ruler_widget_set_ruler_marker_position (
       allocation->y = 0;
       allocation->width = RULER_MARKER_SIZE;
       allocation->height = RULER_MARKER_SIZE;
-    }
-  else if (rm->type == RULER_MARKER_TYPE_LOOP_END)
-    {
+      break;
+    case RULER_MARKER_TYPE_LOOP_END:
       if (CLIP_EDITOR->region)
         {
           allocation->x =
@@ -123,9 +123,8 @@ audio_ruler_widget_set_ruler_marker_position (
       allocation->y = 0;
       allocation->width = RULER_MARKER_SIZE;
       allocation->height = RULER_MARKER_SIZE;
-    }
-  else if (rm->type == RULER_MARKER_TYPE_CLIP_START)
-    {
+      break;
+    case RULER_MARKER_TYPE_CLIP_START:
       if (CLIP_EDITOR->region)
         {
           allocation->x =
@@ -148,6 +147,20 @@ audio_ruler_widget_set_ruler_marker_position (
         allocation->y = RULER_MARKER_SIZE *2;
       allocation->width = CUE_MARKER_WIDTH;
       allocation->height = CUE_MARKER_HEIGHT;
+      break;
+    case RULER_MARKER_TYPE_PLAYHEAD:
+      allocation->x =
+        ui_pos_to_px_audio_clip_editor (
+          &TRANSPORT->playhead_pos,
+          1) - (PLAYHEAD_TRIANGLE_WIDTH / 2);
+      allocation->y =
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (self)) -
+          PLAYHEAD_TRIANGLE_HEIGHT;
+      allocation->width = PLAYHEAD_TRIANGLE_WIDTH;
+      allocation->height =
+        PLAYHEAD_TRIANGLE_HEIGHT;
+      break;
     }
 }
 

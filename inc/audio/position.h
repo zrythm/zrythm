@@ -219,6 +219,15 @@ position_get_midway_pos (Position * start_pos,
                          Position * end_pos,
                          Position * pos); ///< position to set to
 
+/**
+ * Creates a string in the form of "0.0.0.0" from
+ * the given position.
+ *
+ * Must be free'd by caller.
+ */
+char *
+position_stringize (Position * pos);
+
 SERIALIZE_INC (Position, position)
 DESERIALIZE_INC (Position, position)
 PRINT_YAML_INC (Position, position)

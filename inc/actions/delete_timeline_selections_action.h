@@ -17,8 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __UNDO_DELETE_TIMELINE_SELECTIONS_ACTION_H__
-#define __UNDO_DELETE_TIMELINE_SELECTIONS_ACTION_H__
+#ifndef __UNDO_DELETE_TL_SELECTIONS_ACTION_H__
+#define __UNDO_DELETE_TL_SELECTIONS_ACTION_H__
 
 #include "actions/undoable_action.h"
 

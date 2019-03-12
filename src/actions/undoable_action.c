@@ -53,7 +53,7 @@ undoable_action_do (UndoableAction * self)
       break;
     case UNDOABLE_ACTION_TYPE_MOVE_REGIONS:
       break;
-    case UNDOABLE_ACTION_TYPE_DELETE_TIMELINE_SELECTIONS:
+    case UNDOABLE_ACTION_TYPE_DELETE_TL_SELECTIONS:
       delete_timeline_selections_action_do (
         (DeleteTimelineSelectionsAction *) self);
       break;
@@ -92,7 +92,7 @@ undoable_action_undo (UndoableAction * self)
       break;
     case UNDOABLE_ACTION_TYPE_MOVE_REGIONS:
       break;
-    case UNDOABLE_ACTION_TYPE_DELETE_TIMELINE_SELECTIONS:
+    case UNDOABLE_ACTION_TYPE_DELETE_TL_SELECTIONS:
       delete_timeline_selections_action_undo (
         (DeleteTimelineSelectionsAction *) self);
       break;
@@ -122,7 +122,7 @@ undoable_action_free (UndoableAction * self)
       break;
     case UNDOABLE_ACTION_TYPE_MOVE_REGIONS:
       break;
-    case UNDOABLE_ACTION_TYPE_DELETE_TIMELINE_SELECTIONS:
+    case UNDOABLE_ACTION_TYPE_DELETE_TL_SELECTIONS:
       delete_timeline_selections_action_free (
         (DeleteTimelineSelectionsAction *) self);
       break;

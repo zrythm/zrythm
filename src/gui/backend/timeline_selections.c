@@ -128,7 +128,7 @@ timeline_selections_clone ()
   TimelineSelections * new_ts =
     calloc (1, sizeof (TimelineSelections));
 
-  TimelineSelections * src = TIMELINE_SELECTIONS;
+  TimelineSelections * src = TL_SELECTIONS;
 
   for (int i = 0; i < src->num_regions; i++)
     {

@@ -88,10 +88,6 @@ top_bar_widget_class_init (TopBarWidgetClass * _klass)
   gtk_widget_class_bind_template_child (
     klass,
     TopBarWidget,
-    top_bar_left);
-  gtk_widget_class_bind_template_child (
-    klass,
-    TopBarWidget,
     digital_meters);
   gtk_widget_class_bind_template_child (
     klass,

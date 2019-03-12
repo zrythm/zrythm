@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,14 +17,25 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file */
+/**
+ * \file
+ *
+ * Automation Point.
+ */
 
 #ifndef __GUI_WIDGETS_AUTOMATION_POINT_H__
 #define __GUI_WIDGETS_AUTOMATION_POINT_H__
 
-#include <audio/automation_point.h>
+#include "audio/automation_point.h"
+#include "utils/ui.h"
 
 #include <gtk/gtk.h>
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 #define AUTOMATION_POINT_WIDGET_TYPE \
   (automation_point_widget_get_type ())
@@ -39,35 +50,40 @@ G_DECLARE_FINAL_TYPE (AutomationPointWidget,
 #define AP_WIDGET_CURVE_W 8
 #define AP_WIDGET_PADDING 1
 
-typedef enum AutomationPointWidgetState
-{
-  APW_STATE_NONE,
-  APW_STATE_SELECTED,
-  APW_STATE_HOVER
-} AutomationPointWidgetState;
-
 typedef struct _AutomationPointWidget
 {
   GtkBox                      parent_instance;
   AutomationPoint *           ap;   ///< the automation_point associated with this
-  AutomationPointWidgetState  state;
+  UiCursorState          state;
+  GtkWindow *            tooltip_win;
+  GtkLabel *             tooltip_label;
 } AutomationPointWidget;
 
 /**
  * Creates a automation_point.
  */
 AutomationPointWidget *
-automation_point_widget_new (AutomationPoint * automation_point);
+automation_point_widget_new (
+  AutomationPoint * automation_point);
 
 /**
- * Sets hover state and queues draw.
+ * Updates the tooltips.
  */
 void
-automation_point_widget_set_state_and_queue_draw (AutomationPointWidget *    self,
-                                                  AutomationPointWidgetState state);
+automation_point_widget_update_tooltip (
+  AutomationPointWidget * self,
+  int              show);
 
-GType automation_point_widget_get_type(void);
+/**
+ * Selects or not the automation point.
+ */
+void
+automation_point_widget_select (
+  AutomationPointWidget * self,
+  int            select);
+
+/**
+ * @}
+ */
 
 #endif
-
-

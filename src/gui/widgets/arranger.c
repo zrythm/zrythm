@@ -317,20 +317,23 @@ arranger_widget_toggle_select (
     {
       if (type == REGION_WIDGET_TYPE)
         {
-          array = (void **) TIMELINE_SELECTIONS->regions;
-          num = &TIMELINE_SELECTIONS->num_regions;
+          array =
+            (void **) TL_SELECTIONS->regions;
+          num = &TL_SELECTIONS->num_regions;
         }
       else if (type == AUTOMATION_POINT_WIDGET_TYPE)
         {
           array =
-            (void **) TIMELINE_SELECTIONS->automation_points;
-          num = &TIMELINE_SELECTIONS->num_automation_points;
+            (void **)
+              TL_SELECTIONS->automation_points;
+          num = &TL_SELECTIONS->
+                  num_automation_points;
         }
       else if (type == CHORD_WIDGET_TYPE)
         {
           array =
-            (void **) TIMELINE_SELECTIONS->chords;
-          num = &TIMELINE_SELECTIONS->num_chords;
+            (void **) TL_SELECTIONS->chords;
+          num = &TL_SELECTIONS->num_chords;
         }
     }
   if (midi_arranger)
@@ -350,14 +353,19 @@ arranger_widget_toggle_select (
         {
           void * r = array[i];
           if (type == REGION_WIDGET_TYPE)
-            {
-              region_widget_select (((Region *)r)->widget, 0);
-            }
+            region_widget_select (
+              ((Region *)r)->widget, 0);
           else if (type == CHORD_WIDGET_TYPE)
-            {
-              chord_widget_select (((Chord *)r)->widget, 0);
+            chord_widget_select (
+              ((Chord *)r)->widget, 0);
 
-            }
+          else if (type ==
+                     AUTOMATION_POINT_WIDGET_TYPE)
+            automation_point_widget_select (
+              ((AutomationPoint *)r)->widget, 0);
+          else if (type == MIDI_NOTE_WIDGET_TYPE)
+            midi_note_widget_select (
+              ((MidiNote *)child)->widget, 0);
         }
       *num = 0;
     }
@@ -372,13 +380,17 @@ arranger_widget_toggle_select (
                     *num,
                     child);
       if (type == REGION_WIDGET_TYPE)
-        {
-          region_widget_select (((Region *)child)->widget, 0);
-        }
+        region_widget_select (
+          ((Region *)child)->widget, 0);
       else if (type == CHORD_WIDGET_TYPE)
-        {
-          chord_widget_select (((Chord *)child)->widget, 0);
-        }
+        chord_widget_select (
+          ((Chord *)child)->widget, 0);
+      else if (type == AUTOMATION_POINT_WIDGET_TYPE)
+        automation_point_widget_select (
+          ((AutomationPoint *)child)->widget, 0);
+      else if (type == MIDI_NOTE_WIDGET_TYPE)
+        midi_note_widget_select (
+          ((MidiNote *)child)->widget, 0);
     }
   else /* not selected */
     {
@@ -387,13 +399,17 @@ arranger_widget_toggle_select (
                     (*num),
                     child);
       if (type == REGION_WIDGET_TYPE)
-        {
-          region_widget_select (((Region *)child)->widget, 1);
-        }
+        region_widget_select (
+          ((Region *)child)->widget, 1);
       else if (type == CHORD_WIDGET_TYPE)
-        {
-          chord_widget_select (((Chord *)child)->widget, 1);
-        }
+        chord_widget_select (
+          ((Chord *)child)->widget, 1);
+      else if (type == AUTOMATION_POINT_WIDGET_TYPE)
+        automation_point_widget_select (
+          ((AutomationPoint *)child)->widget, 1);
+      else if (type == MIDI_NOTE_WIDGET_TYPE)
+        midi_note_widget_select (
+          ((MidiNote *)child)->widget, 1);
     }
 }
 
@@ -984,7 +1000,7 @@ drag_update (GtkGestureDrag * gesture,
   gtk_widget_queue_allocate(GTK_WIDGET (self));
 
   /* redraw midi ruler if region positions were changed */
-  if (timeline && TIMELINE_SELECTIONS->num_regions > 0 &&
+  if (timeline && TL_SELECTIONS->num_regions > 0 &&
       (ar_prv->action == UI_OVERLAY_ACTION_MOVING ||
       ar_prv->action == UI_OVERLAY_ACTION_RESIZING_L ||
       ar_prv->action == UI_OVERLAY_ACTION_RESIZING_R))

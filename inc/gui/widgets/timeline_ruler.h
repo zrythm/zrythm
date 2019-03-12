@@ -97,6 +97,12 @@ timeline_ruler_on_drag_begin_no_marker_hit (
   guint                  height);
 
 /**
+ * Called from ruler drag end.
+ */
+void
+timeline_ruler_on_drag_end ();
+
+/**
  * Called from ruler drag update.
  */
 void

@@ -34,7 +34,9 @@
  * TODO rename arrays to array
  */
 int
-array_contains (void ** array, int size, void * element)
+_array_contains (void ** array,
+                 int size,
+                 void * element)
 {
   for (int i = 0; i < size; i++)
     {

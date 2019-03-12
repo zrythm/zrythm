@@ -17,8 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __ACTIONS_TIMELINE_SELECTIONS_H__
-#define __ACTIONS_TIMELINE_SELECTIONS_H__
+#ifndef __ACTIONS_TL_SELECTIONS_H__
+#define __ACTIONS_TL_SELECTIONS_H__
 
 #include "audio/automation_point.h"
 #include "audio/chord.h"
@@ -26,7 +26,7 @@
 #include "audio/region.h"
 #include "utils/yaml.h"
 
-#define TIMELINE_SELECTIONS (&PROJECT->timeline_selections)
+#define TL_SELECTIONS (&PROJECT->timeline_selections)
 
 /**
  * Selections to be used for the timeline's current

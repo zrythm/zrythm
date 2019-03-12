@@ -636,7 +636,7 @@ digital_meter_widget_new (DigitalMeterType  type,
       gtk_widget_set_size_request (
         GTK_WIDGET (self),
         90,
-        -1);
+        34);
 
       break;
     case DIGITAL_METER_TYPE_POSITION:

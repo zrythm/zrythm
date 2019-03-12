@@ -222,14 +222,14 @@ activate_loop_selection (GSimpleAction *action,
       GTK_WIDGET (MW_TIMELINE))
     {
       if (!timeline_selections_has_any (
-            TIMELINE_SELECTIONS))
+            TL_SELECTIONS))
         return;
 
       Position start, end;
       timeline_selections_get_start_pos (
-        TIMELINE_SELECTIONS, &start);
+        TL_SELECTIONS, &start);
       timeline_selections_get_end_pos (
-        TIMELINE_SELECTIONS, &end);
+        TL_SELECTIONS, &end);
 
       position_set_to_pos (
         &TRANSPORT->loop_start_pos,
@@ -429,7 +429,7 @@ activate_copy (GSimpleAction *action,
       gtk_clipboard_set_text (
         DEFAULT_CLIPBOARD,
         timeline_selections_serialize (
-          TIMELINE_SELECTIONS),
+          TL_SELECTIONS),
         -1);
     }
 }

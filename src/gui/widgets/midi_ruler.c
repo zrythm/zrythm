@@ -148,6 +148,19 @@ midi_ruler_widget_set_ruler_marker_position (
       allocation->width = CUE_MARKER_WIDTH;
       allocation->height = CUE_MARKER_HEIGHT;
       break;
+    case RULER_MARKER_TYPE_PLAYHEAD:
+      allocation->x =
+        ui_pos_to_px_piano_roll (
+          &TRANSPORT->playhead_pos,
+          1) - (PLAYHEAD_TRIANGLE_WIDTH / 2);
+      allocation->y =
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (self)) -
+          PLAYHEAD_TRIANGLE_HEIGHT;
+      allocation->width = PLAYHEAD_TRIANGLE_WIDTH;
+      allocation->height =
+        PLAYHEAD_TRIANGLE_HEIGHT;
+      break;
     }
 
 }

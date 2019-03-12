@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,15 +23,19 @@
 #include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/bot_bar.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/ruler.h"
 #include "utils/ui.h"
 
-G_DEFINE_TYPE (AutomationPointWidget, automation_point_widget, GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (AutomationPointWidget,
+               automation_point_widget,
+               GTK_TYPE_DRAWING_AREA)
 
 static gboolean
-draw_cb (AutomationPointWidget * self, cairo_t *cr, gpointer data)
+draw_cb (AutomationPointWidget * self,
+         cairo_t *cr, gpointer data)
 {
   guint width, height;
   GtkStyleContext *context;
@@ -45,24 +49,8 @@ draw_cb (AutomationPointWidget * self, cairo_t *cr, gpointer data)
 
   Track * track = self->ap->at->track;
   GdkRGBA * color = &track->color;
-  if (self->state != APW_STATE_NONE)
-    {
-      cairo_set_source_rgba (cr,
-                             color->red + 0.1,
-                             color->green + 0.1,
-                             color->blue + 0.1,
-                             0.7);
-    }
-  else
-    {
-      cairo_set_source_rgba (cr, color->red, color->green, color->blue, 0.7);
-    }
-  /* TODO circle */
-  /*cairo_rectangle(cr,*/
-                  /*AP_WIDGET_PADDING,*/
-                  /*AP_WIDGET_PADDING,*/
-                  /*width - AP_WIDGET_PADDING * 2,*/
-                  /*height - AP_WIDGET_PADDING * 2);*/
+  cairo_set_source_rgba (
+    cr, color->red, color->green, color->blue, 0.7);
   cairo_arc (cr,
              width / 2,
              height / 2,
@@ -76,7 +64,8 @@ draw_cb (AutomationPointWidget * self, cairo_t *cr, gpointer data)
 }
 
 static void
-on_motion (GtkWidget * widget, GdkEventMotion *event)
+on_motion (GtkWidget * widget,
+           GdkEventMotion *event)
 {
   AutomationPointWidget * self =
     Z_AUTOMATION_POINT_WIDGET (widget);
@@ -87,26 +76,105 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
 
   if (event->type == GDK_MOTION_NOTIFY)
     {
-      if (self->state != APW_STATE_SELECTED)
-        self->state = APW_STATE_HOVER;
+      gtk_widget_set_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_PRELIGHT,
+        0);
+
+      bot_bar_change_status (
+        "Automation Point - Click and drag to move "
+        "it around (Use Shift to bypass snapping)");
     }
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
-      if (self->state != APW_STATE_SELECTED)
-        self->state = APW_STATE_NONE;
+      ui_set_cursor (widget, "default");
+      gtk_widget_unset_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_PRELIGHT);
+
+      bot_bar_change_status ("");
     }
   g_idle_add ((GSourceFunc) gtk_widget_queue_draw, GTK_WIDGET (self));
 }
 
+void
+automation_point_widget_select (
+  AutomationPointWidget * self,
+  int            select)
+{
+  self->ap->selected = select;
+  if (select)
+    {
+      gtk_widget_set_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_SELECTED,
+        0);
+    }
+  else
+    {
+      gtk_widget_unset_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_SELECTED);
+    }
+  gtk_widget_queue_draw (GTK_WIDGET (self));
+}
+
+void
+automation_point_widget_update_tooltip (
+  AutomationPointWidget * self,
+  int              show)
+{
+  /* set tooltip text */
+  char * tooltip =
+    g_strdup_printf (
+      "%s %f",
+      self->ap->at->automatable->label,
+      self->ap->fvalue);
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self), tooltip);
+  g_free (tooltip);
+
+  /* set tooltip window */
+  if (show)
+    {
+      tooltip =
+        g_strdup_printf (
+          "%f",
+          self->ap->fvalue);
+      gtk_label_set_text (self->tooltip_label,
+                          tooltip);
+      gtk_window_present (self->tooltip_win);
+
+      g_free (tooltip);
+    }
+  else
+    gtk_widget_hide (
+      GTK_WIDGET (self->tooltip_win));
+}
+
 AutomationPointWidget *
-automation_point_widget_new (AutomationPoint * automation_point)
+automation_point_widget_new (
+  AutomationPoint * ap)
 {
   g_message ("Creating automation_point widget...");
-  AutomationPointWidget * self = g_object_new (AUTOMATION_POINT_WIDGET_TYPE, NULL);
+  AutomationPointWidget * self =
+    g_object_new (
+      AUTOMATION_POINT_WIDGET_TYPE, NULL);
 
-  self->ap = automation_point;
+  self->ap = ap;
 
-  gtk_widget_add_events (GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
+  /* set tooltip text */
+  char * tooltip =
+    g_strdup_printf (
+      "%s %f",
+      ap->at->automatable->label,
+      ap->fvalue);
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self), tooltip);
+  g_free (tooltip);
+
+  gtk_widget_add_events (
+    GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
 
   /* connect signals */
   g_signal_connect (
@@ -127,12 +195,31 @@ automation_point_widget_new (AutomationPoint * automation_point)
 
 static void
 automation_point_widget_class_init (
-  AutomationPointWidgetClass * klass)
+  AutomationPointWidgetClass * _klass)
 {
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (
+    klass, "automation-point");
 }
 
 static void
 automation_point_widget_init (
   AutomationPointWidget * self)
 {
+  /* set tooltip window */
+  self->tooltip_win =
+    GTK_WINDOW (gtk_window_new (GTK_WINDOW_POPUP));
+  gtk_window_set_type_hint (
+    self->tooltip_win,
+    GDK_WINDOW_TYPE_HINT_TOOLTIP);
+  self->tooltip_label =
+    GTK_LABEL (gtk_label_new ("label"));
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->tooltip_label), 1);
+  gtk_container_add (
+    GTK_CONTAINER (self->tooltip_win),
+    GTK_WIDGET (self->tooltip_label));
+  gtk_window_set_position (
+    self->tooltip_win, GTK_WIN_POS_MOUSE);
 }

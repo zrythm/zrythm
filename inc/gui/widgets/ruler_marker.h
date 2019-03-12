@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -41,13 +41,21 @@ G_DECLARE_FINAL_TYPE (RulerMarkerWidget,
                       Z,
                       RULER_MARKER_WIDGET,
                       GtkDrawingArea)
-#define TIMELINE_RULER_MARKER \
+#define TL_RULER_PLAYHEAD \
   (ruler_widget_get_private ( \
-    Z_RULER_WIDGET (MW_RULER))->marker)
+    Z_RULER_WIDGET (MW_RULER))->playhead)
+#define MIDI_RULER_PLAYHEAD \
+  (ruler_widget_get_private ( \
+    Z_RULER_WIDGET (MIDI_RULER))->playhead)
+#define AUDIO_RULER_PLAYHEAD \
+  (ruler_widget_get_private ( \
+    Z_RULER_WIDGET (AUDIO_RULER))->playhead)
 
 #define RULER_MARKER_SIZE 8
 #define CUE_MARKER_HEIGHT 12
 #define CUE_MARKER_WIDTH 7
+#define PLAYHEAD_TRIANGLE_WIDTH 12
+#define PLAYHEAD_TRIANGLE_HEIGHT 8
 
 typedef enum RulerMarkerType
 {
@@ -57,6 +65,7 @@ typedef enum RulerMarkerType
   RULER_MARKER_TYPE_LOOP_END,
   RULER_MARKER_TYPE_CUE_POINT,
   RULER_MARKER_TYPE_CLIP_START,
+  RULER_MARKER_TYPE_PLAYHEAD,
 } RulerMarkerType;
 
 typedef struct _RulerMarkerWidget
@@ -65,10 +74,20 @@ typedef struct _RulerMarkerWidget
   UiCursorState           cursor_state;
   RulerMarkerType         type;
   RulerWidget *           ruler; ///< owner
+  GtkWindow *            tooltip_win;
+  GtkLabel *             tooltip_label;
 } RulerMarkerWidget;
 
 RulerMarkerWidget *
 ruler_marker_widget_new (RulerWidget * ruler,
                          RulerMarkerType type);
+
+/**
+ * Updates the tooltips.
+ */
+void
+ruler_marker_widget_update_tooltip (
+  RulerMarkerWidget * self,
+  int              show);
 
 #endif

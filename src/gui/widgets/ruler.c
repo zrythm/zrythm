@@ -40,7 +40,6 @@
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/ruler.h"
-#include "gui/widgets/ruler_playhead.h"
 #include "gui/widgets/ruler_marker.h"
 #include "gui/widgets/ruler_range.h"
 #include "gui/widgets/timeline_arranger.h"
@@ -79,7 +78,8 @@ G_DEFINE_TYPE_WITH_PRIVATE (RulerWidget,
   AudioRulerWidget *    audio_ruler = NULL; \
   if (Z_IS_TIMELINE_RULER_WIDGET (self)) \
     { \
-      timeline_ruler = Z_TIMELINE_RULER_WIDGET (self); \
+      timeline_ruler = \
+        Z_TIMELINE_RULER_WIDGET (self); \
     } \
   else if (Z_IS_MIDI_RULER_WIDGET (self)) \
     { \
@@ -104,27 +104,7 @@ get_child_position (GtkOverlay   *overlay,
     Z_RULER_WIDGET (overlay);
   GET_RULER_ALIASES (self);
 
-  if (Z_IS_RULER_PLAYHEAD_WIDGET (widget))
-    {
-      if (timeline_ruler)
-        allocation->x =
-          ui_pos_to_px_timeline (
-            &TRANSPORT->playhead_pos,
-            1) - (PLAYHEAD_TRIANGLE_WIDTH / 2);
-      /*else*/
-        /*allocation->x =*/
-          /*ui_pos_to_px_piano_roll (*/
-            /*&TRANSPORT->playhead_pos,*/
-            /*1) - (PLAYHEAD_TRIANGLE_WIDTH / 2);*/
-      allocation->y =
-        gtk_widget_get_allocated_height (
-          GTK_WIDGET (self)) -
-          PLAYHEAD_TRIANGLE_HEIGHT;
-      allocation->width = PLAYHEAD_TRIANGLE_WIDTH;
-      allocation->height =
-        PLAYHEAD_TRIANGLE_HEIGHT;
-    }
-  else if (Z_IS_RULER_RANGE_WIDGET (widget))
+  if (Z_IS_RULER_RANGE_WIDGET (widget))
     {
       timeline_ruler_widget_set_ruler_range_position (
         Z_TIMELINE_RULER_WIDGET (self),
@@ -250,40 +230,27 @@ multipress_pressed (
   RULER_WIDGET_GET_PRIVATE (self);
   GET_RULER_ALIASES (self);
 
-  if (n_press == 2)
-    {
-      Position pos;
-      if (midi_ruler)
-        {
-          ui_px_to_pos_piano_roll (
-            x,
-            &pos,
-            1);
-          position_snap_simple (
-            &pos,
-            SNAP_GRID_MIDI);
-        }
-      else if (timeline_ruler)
-        {
-          ui_px_to_pos_timeline (
-            x,
-            &pos,
-            1);
-          position_snap_simple (
-            &pos,
-            SNAP_GRID_TIMELINE);
-        }
-      position_set_to_pos (&TRANSPORT->cue_pos,
-                           &pos);
-
-    }
-
   GdkModifierType state_mask;
   ui_get_modifier_type_from_gesture (
     GTK_GESTURE_SINGLE (gesture),
     &state_mask);
   if (state_mask & GDK_SHIFT_MASK)
     rw_prv->shift_held = 1;
+
+  if (n_press == 2)
+    {
+      if (timeline_ruler)
+        {
+          Position pos;
+          ui_px_to_pos_timeline (
+            x, &pos, 1);
+          if (!rw_prv->shift_held)
+            position_snap_simple (
+              &pos, SNAP_GRID_TIMELINE);
+          position_set_to_pos (&TRANSPORT->cue_pos,
+                               &pos);
+        }
+    }
 
   return FALSE;
 }
@@ -546,6 +513,9 @@ drag_end (GtkGestureDrag *gesture,
   rw_prv->shift_held = 0;
 
   rw_prv->action = UI_OVERLAY_ACTION_NONE;
+
+  if (self == MW_RULER)
+    timeline_ruler_on_drag_end ();
 }
 
 static void
@@ -678,9 +648,11 @@ ruler_widget_init (RulerWidget * self)
                          GDK_ALL_EVENTS_MASK);
 
   rw_prv->playhead =
-    ruler_playhead_widget_new ();
-  gtk_overlay_add_overlay (GTK_OVERLAY (self),
-                           GTK_WIDGET (rw_prv->playhead));
+    ruler_marker_widget_new (
+      self, RULER_MARKER_TYPE_PLAYHEAD);
+  gtk_overlay_add_overlay (
+    GTK_OVERLAY (self),
+    GTK_WIDGET (rw_prv->playhead));
 
   /* make it able to notify */
   gtk_widget_add_events (GTK_WIDGET (rw_prv->bg),

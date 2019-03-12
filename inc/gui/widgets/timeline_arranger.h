@@ -158,7 +158,7 @@ timeline_arranger_widget_toggle_select_chord (
   int                      append);
 
 void
-timeline_arranger_widget_toggle_select_automation_point (
+timeline_arranger_widget_toggle_select_ap (
   TimelineArrangerWidget *  self,
   AutomationPoint * ap,
   int               append);

@@ -27,6 +27,12 @@
 
 #include <gtk/gtk.h>
 
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
 #define MIDI_NOTE_WIDGET_TYPE \
   (midi_note_widget_get_type ())
 G_DECLARE_FINAL_TYPE (MidiNoteWidget,
@@ -52,12 +58,17 @@ MidiNoteWidget *
 midi_note_widget_new (MidiNote * midi_note);
 
 void
-midi_note_widget_select (MidiNoteWidget * self,
-                         int              select);
+midi_note_widget_select (
+  MidiNoteWidget * self,
+  int              select);
 
 void
 midi_note_widget_update_tooltip (
   MidiNoteWidget * self,
   int              show);
+
+/**
+ * @}
+ */
 
 #endif

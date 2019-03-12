@@ -35,7 +35,7 @@ delete_timeline_selections_action_new ()
 
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-    UNDOABLE_ACTION_TYPE_DELETE_TIMELINE_SELECTIONS;
+    UNDOABLE_ACTION_TYPE_DELETE_TL_SELECTIONS;
 
   self->ts = timeline_selections_clone ();
 
@@ -59,7 +59,7 @@ delete_timeline_selections_action_do (
                            r,
                            1);
     }
-  EVENTS_PUSH (ET_TIMELINE_SELECTIONS_CHANGED,
+  EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
 }
 
@@ -76,7 +76,7 @@ delete_timeline_selections_action_undo (
       track_add_region (r->track,
                         r);
     }
-  EVENTS_PUSH (ET_TIMELINE_SELECTIONS_CHANGED,
+  EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
 }
 

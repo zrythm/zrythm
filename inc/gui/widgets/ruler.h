@@ -61,7 +61,7 @@ G_DECLARE_DERIVABLE_TYPE (RulerWidget,
 #define MAX_ZOOM_LEVEL 60.f
 
 typedef struct Position Position;
-typedef struct _RulerPlayheadWidget RulerPlayheadWidget;
+typedef struct _RulerMarkerWidget RulerMarkerWidget;
 
 /**
  * The ruler widget target acting upon.
@@ -79,7 +79,7 @@ typedef enum RWTarget
 
 typedef struct
 {
-  RulerPlayheadWidget *    playhead;
+  RulerMarkerWidget *      playhead;
   GtkDrawingArea *         bg;
   double                   px_per_beat;
   double                   px_per_bar;

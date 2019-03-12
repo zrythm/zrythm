@@ -140,6 +140,19 @@ timeline_ruler_widget_set_ruler_marker_position (
       allocation->width = CUE_MARKER_WIDTH;
       allocation->height = CUE_MARKER_HEIGHT;
       break;
+    case RULER_MARKER_TYPE_PLAYHEAD:
+      allocation->x =
+        ui_pos_to_px_timeline (
+          &TRANSPORT->playhead_pos,
+          1) - (PLAYHEAD_TRIANGLE_WIDTH / 2);
+      allocation->y =
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (self)) -
+          PLAYHEAD_TRIANGLE_HEIGHT;
+      allocation->width = PLAYHEAD_TRIANGLE_WIDTH;
+      allocation->height =
+        PLAYHEAD_TRIANGLE_HEIGHT;
+      break;
     }
 
 }
@@ -204,6 +217,18 @@ on_drag_begin_range_hit (TimelineRulerWidget * self,
   position_set_to_pos (
     &self->range2_start_pos,
     &PROJECT->range_2);
+}
+
+void
+timeline_ruler_on_drag_end ()
+{
+  TimelineRulerWidget * self = MW_RULER;
+  RULER_WIDGET_GET_PRIVATE (self);
+
+  /* hide tooltips */
+  if (rw_prv->target == RW_TARGET_PLAYHEAD)
+    ruler_marker_widget_update_tooltip (
+      rw_prv->playhead, 0);
 }
 
 void
@@ -491,6 +516,9 @@ timeline_ruler_on_drag_update (
                     ET_PLAYHEAD_POS_CHANGED,
                     NULL);
                 }
+
+              ruler_marker_widget_update_tooltip (
+                rw_prv->playhead, 1);
             }
           else if (rw_prv->target ==
                      RW_TARGET_LOOP_START)

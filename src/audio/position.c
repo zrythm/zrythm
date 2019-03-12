@@ -438,6 +438,23 @@ position_get_midway_pos (Position * start_pos,
   position_set_tick (pos, ticks_diff / 2);
 }
 
+/**
+ * Creates a string in the form of "0.0.0.0" from
+ * the given position.
+ *
+ * Must be free'd by caller.
+ */
+char *
+position_stringize (Position * pos)
+{
+  return g_strdup_printf (
+    "%d.%d.%d.%d",
+    pos->bars,
+    pos->beats,
+    pos->sixteenths,
+    pos->ticks);
+}
+
 SERIALIZE_SRC (Position, position)
 DESERIALIZE_SRC (Position, position)
 PRINT_YAML_SRC (Position, position)

@@ -261,7 +261,8 @@ track:selected,
 region:selected,
 chord:selected,
 midi-note:selected
-velocity:selected
+velocity:selected,
+automation-point:selected
 {
   background-color: @selection_color;
 }
@@ -272,7 +273,8 @@ chord:hover,
 fader:hover,
 pan:hover,
 ruler-playhead:hover,
-arranger-playhed:hover
+arranger-playhed:hover,
+automation-point:hover
 {
   background-color: @hover_color;
 }
