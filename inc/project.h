@@ -45,6 +45,7 @@
 #include "gui/backend/clip_editor.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/backend/timeline_selections.h"
+#include "gui/backend/tool.h"
 #include "plugins/plugin.h"
 #include "zrythm.h"
 
@@ -127,6 +128,12 @@ typedef struct Project
    * The audio backend
    */
   AudioEngine        audio_engine;
+
+  /**
+   * Currently selected tool (select - normal,
+   * select - stretch, edit, delete, ramp, audition)
+   */
+  Tool               tool;
 
   /**
    * For serializing/deserializing.

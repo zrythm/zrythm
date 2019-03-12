@@ -21,6 +21,7 @@
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/top_dock_edge.h"
 #include "gui/widgets/quantize_mb.h"
+#include "gui/widgets/toolbox.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
@@ -103,6 +104,8 @@ top_dock_edge_widget_init (TopDockEdgeWidget * self)
   gtk_widget_show_all (GTK_WIDGET (self->zoom_out));
   gtk_widget_show_all (GTK_WIDGET (self->best_fit));
   gtk_widget_show_all (GTK_WIDGET (self->original_size));
+
+  toolbox_widget_refresh (self->toolbox);
 }
 
 static void
@@ -116,6 +119,10 @@ top_dock_edge_widget_class_init (
   gtk_widget_class_set_css_name (klass,
                                  "top-dock-edge");
 
+  gtk_widget_class_bind_template_child (
+    klass,
+    TopDockEdgeWidget,
+    toolbox);
   gtk_widget_class_bind_template_child (
     klass,
     TopDockEdgeWidget,

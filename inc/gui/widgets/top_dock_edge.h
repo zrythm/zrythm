@@ -22,7 +22,6 @@
 #ifndef __GUI_WIDGETS_TOP_DOCK_EDGE_H__
 #define __GUI_WIDGETS_TOP_DOCK_EDGE_H__
 
-
 #include <gtk/gtk.h>
 
 #define TOP_DOCK_EDGE_WIDGET_TYPE \
@@ -33,13 +32,18 @@ G_DECLARE_FINAL_TYPE (TopDockEdgeWidget,
                       TOP_DOCK_EDGE_WIDGET,
                       GtkBox)
 
-#define MW_TOP_DOCK_EDGE MW_CENTER_DOCK->top_dock_edge
+#define MW_TOP_DOCK_EDGE \
+  MW_CENTER_DOCK->top_dock_edge
 
 typedef struct _QuantizeMbWidget QuantizeMbWidget;
+typedef struct _ToolboxWidget ToolboxWidget;
+typedef struct _SnapGridWidget SnapGridWidget;
 
 typedef struct _TopDockEdgeWidget
 {
   GtkBox                   parent_instance;
+
+  ToolboxWidget *          toolbox;
   GtkToolbar *             top_toolbar;
   SnapGridWidget *         snap_grid_timeline;
   GtkToggleToolButton *    snap_to_grid;
