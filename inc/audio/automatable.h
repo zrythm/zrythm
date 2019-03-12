@@ -217,7 +217,8 @@ automatable_set_val_from_normalized (
  * Gets automation track for given automatable, if any.
  */
 AutomationTrack *
-automatable_get_automation_track (Automatable * automatable);
+automatable_get_automation_track (
+  Automatable * automatable);
 
 void
 automatable_free (Automatable * automatable);

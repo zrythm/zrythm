@@ -336,6 +336,19 @@ automation_lane_widget_get_y_px_from_normalized_val (
 }
 
 void
+automation_lane_widget_update_current_val (
+  AutomationLaneWidget * self)
+{
+  char * val =
+    g_strdup_printf (
+      "%.2f",
+      automatable_get_val (
+        self->al->at->automatable));
+  gtk_label_set_text (self->current_val, val);
+  g_free (val);
+}
+
+void
 automation_lane_widget_refresh (
   AutomationLaneWidget * self)
 {
@@ -363,6 +376,9 @@ automation_lane_widget_refresh (
 
   /* add automation points/curves for the currently
    * selected automatable */
+
+  automation_lane_widget_update_current_val (
+    self);
 }
 
 /**
@@ -464,7 +480,8 @@ static void
 automation_lane_widget_class_init (
   AutomationLaneWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass,
     "automation_lane.ui");
@@ -484,6 +501,10 @@ automation_lane_widget_class_init (
     klass,
     AutomationLaneWidget,
     mute_toggle);
+  gtk_widget_class_bind_template_child (
+    klass,
+    AutomationLaneWidget,
+    current_val);
   gtk_widget_class_bind_template_callback (
     klass,
     on_add_lane_clicked);

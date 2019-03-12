@@ -471,27 +471,29 @@ automatable_set_val_from_normalized (
           ctrl->plugin->
             ports[ctrl->index].control = real_val;
         }
-      return;
+      break;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
       plugin = a->port->owner_pl;
       plugin->enabled = val > 0.5f;
-      return;
+      break;
     case AUTOMATABLE_TYPE_CHANNEL_FADER:
       ch = track_get_channel (a->track);
       channel_set_fader_amp (
         ch,
         math_get_amp_val_from_fader (val));
-      return;
+      break;
     case AUTOMATABLE_TYPE_CHANNEL_MUTE:
       track_set_muted (a->track,
                       val > 0.5f,
                       0);
-      return;
+      break;
     case AUTOMATABLE_TYPE_CHANNEL_PAN:
       ch = track_get_channel (a->track);
       channel_set_pan (ch, val);
-      return;
+      break;
     }
+  EVENTS_PUSH (ET_AUTOMATION_VALUE_CHANGED,
+               a);
 }
 
 /**

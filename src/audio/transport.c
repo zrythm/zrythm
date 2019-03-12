@@ -36,8 +36,8 @@
 #include <gtk/gtk.h>
 
 /**
- * Sets BPM and does any necessary processing (like notifying interested
- * parties).
+ * Sets BPM and does any necessary processing (like
+ * notifying interested parties).
  */
 void
 transport_set_bpm (float bpm)
@@ -47,9 +47,10 @@ transport_set_bpm (float bpm)
   else if (bpm > MAX_BPM)
     bpm = MAX_BPM;
   TRANSPORT->bpm = bpm;
-  engine_update_frames_per_tick (TRANSPORT->beats_per_bar,
-                                 bpm,
-                                 AUDIO_ENGINE->sample_rate);
+  engine_update_frames_per_tick (
+    TRANSPORT->beats_per_bar,
+    bpm,
+    AUDIO_ENGINE->sample_rate);
 }
 
 /**

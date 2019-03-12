@@ -57,6 +57,8 @@ typedef struct _AutomationLaneWidget
    * For freezing callbacks.
    */
   gulong                  selector_changed_cb_id;
+
+  GtkLabel *              current_val;
 } AutomationLaneWidget;
 
 /**
@@ -70,6 +72,10 @@ automation_lane_widget_new ();
  */
 void
 automation_lane_widget_refresh (
+  AutomationLaneWidget * self);
+
+void
+automation_lane_widget_update_current_val (
   AutomationLaneWidget * self);
 
 /**

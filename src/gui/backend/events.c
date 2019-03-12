@@ -331,6 +331,17 @@ on_clip_editor_region_changed ()
 }
 
 static void
+on_automation_value_changed (
+  Automatable * a)
+{
+  AutomationTrack * at =
+    automatable_get_automation_track (a);
+  if (at && at->al && at->al->widget)
+    automation_lane_widget_update_current_val (
+      at->al->widget);
+}
+
+static void
 on_plugin_added (Plugin * plugin)
 {
   Channel * channel = plugin->channel;
@@ -445,6 +456,10 @@ events_process ()
           timeline_arranger_widget_set_size ();
           timeline_minimap_widget_refresh (
             MW_TIMELINE_MINIMAP);
+          break;
+        case ET_AUTOMATION_VALUE_CHANGED:
+          on_automation_value_changed (
+            (Automatable *) arg);
           break;
         case ET_RANGE_SELECTION_CHANGED:
           on_range_selection_changed ();
