@@ -547,18 +547,29 @@ multipress_pressed (GtkGestureMultiPress *gesture,
   ArrangerWidget * self = (ArrangerWidget *) user_data;
   GET_PRIVATE;
 
+  /* set number of presses */
   ar_prv->n_press = n_press;
-  GdkEventSequence *sequence =
-    gtk_gesture_single_get_current_sequence (
-      GTK_GESTURE_SINGLE (gesture));
-  const GdkEvent * event =
-    gtk_gesture_get_last_event (
-      GTK_GESTURE (gesture), sequence);
-  GdkModifierType state_mask;
-  gdk_event_get_state (event, &state_mask);
+
+  /* set modifier button states */
+  UI_GET_STATE_MASK (gesture);
   if (state_mask & GDK_SHIFT_MASK)
     ar_prv->shift_held = 1;
+  if (state_mask & GDK_CONTROL_MASK)
+    ar_prv->ctrl_held = 1;
 }
+
+/*static void*/
+/*drag_begin_select_mode (*/
+  /*GtkGestureDrag * gesture,*/
+  /*gdouble          start_x,*/
+  /*gdouble          start_y,*/
+  /*ArrangerWidget * self)*/
+/*{*/
+
+/*}*/
+
+#define GET_HIT_OBJECTS \
+
 
 static void
 drag_begin (GtkGestureDrag *   gesture,
@@ -573,15 +584,6 @@ drag_begin (GtkGestureDrag *   gesture,
 
   if (!gtk_widget_has_focus (GTK_WIDGET (self)))
     gtk_widget_grab_focus (GTK_WIDGET (self));
-
-  GdkEventSequence *sequence =
-    gtk_gesture_single_get_current_sequence (
-      GTK_GESTURE_SINGLE (gesture));
-  const GdkEvent * event =
-    gtk_gesture_get_last_event (
-      GTK_GESTURE (gesture), sequence);
-  GdkModifierType state_mask;
-  gdk_event_get_state (event, &state_mask);
 
   GET_ARRANGER_ALIASES (self);
 
@@ -610,7 +612,6 @@ drag_begin (GtkGestureDrag *   gesture,
       vel_widget =
         midi_modifier_arranger_widget_get_hit_velocity (
           midi_modifier_arranger, start_x, start_y);
-      g_message ("%p", vel_widget);
     }
   else if (timeline)
     {
@@ -639,7 +640,6 @@ drag_begin (GtkGestureDrag *   gesture,
         {
           midi_arranger_widget_on_drag_begin_note_hit (
             midi_arranger,
-            state_mask,
             start_x,
             midi_note_widget);
         }
@@ -647,7 +647,6 @@ drag_begin (GtkGestureDrag *   gesture,
         {
           timeline_arranger_widget_on_drag_begin_region_hit (
             timeline,
-            state_mask,
             start_x,
             rw);
         }
@@ -655,7 +654,6 @@ drag_begin (GtkGestureDrag *   gesture,
         {
           timeline_arranger_widget_on_drag_begin_chord_hit (
             timeline,
-            state_mask,
             start_x,
             chord_widget);
         }
@@ -663,7 +661,6 @@ drag_begin (GtkGestureDrag *   gesture,
         {
           timeline_arranger_widget_on_drag_begin_ap_hit (
             timeline,
-            state_mask,
             start_x,
             ap_widget);
         }
@@ -690,7 +687,6 @@ drag_begin (GtkGestureDrag *   gesture,
         {
           midi_modifier_arranger_on_drag_begin_vel_hit (
             midi_modifier_arranger,
-            state_mask,
             vel_widget,
             start_y);
         }
@@ -700,101 +696,134 @@ drag_begin (GtkGestureDrag *   gesture,
       /* single click */
       if (ar_prv->n_press == 1)
         {
-          /* selection */
-          ar_prv->action =
-            UI_OVERLAY_ACTION_STARTING_SELECTION;
-
-          /* deselect all */
-          arranger_widget_select_all (self, 0);
-
-          /* if timeline, set either selecting
-           * objects or selecting range */
-          if (timeline)
+          if (P_TOOL == TOOL_SELECT_NORMAL ||
+              P_TOOL == TOOL_SELECT_STRETCH)
             {
-              timeline_arranger_widget_set_select_type (
-                timeline,
-                start_y);
-            }
-        }
-      /* double click, something will be created */
-      else if (ar_prv->n_press == 2)
-        {
-          Position pos;
-          Track * track = NULL;
-          AutomationTrack * at = NULL;
-          int note;
-          Region * region = NULL;
+              /* selection */
+              ar_prv->action =
+                UI_OVERLAY_ACTION_STARTING_SELECTION;
 
-          /* get the position */
-          arranger_widget_px_to_pos (
-            self, start_x, &pos, 1);
+              /* deselect all */
+              arranger_widget_select_all (self, 0);
 
-          if (timeline)
-            {
-              /* figure out if we are creating a region or
-               * automation point */
-              at =
-                timeline_arranger_widget_get_automation_track_at_y (start_y);
-              if (!at)
-                track =
-                  timeline_arranger_widget_get_track_at_y (start_y);
-
-              /* creating automation point */
-              if (at)
+              /* if timeline, set either selecting
+               * objects or selecting range */
+              if (timeline)
                 {
-                  timeline_arranger_widget_create_ap (
+                  timeline_arranger_widget_set_select_type (
                     timeline,
-                    at,
-                    track,
-                    &pos,
                     start_y);
                 }
-              /* double click inside a track */
-              else if (track)
+            }
+          else if (P_TOOL == TOOL_EDIT)
+            {
+              if (!ar_prv->ctrl_held)
                 {
-                  switch (track->type)
+                  /* something is created */
+                }
+              else
+                {
+                  /* autofill */
+                }
+            }
+          else if (P_TOOL == TOOL_ERASER)
+            {
+              /* delete selection */
+              ar_prv->action =
+                UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION;
+            }
+        }
+      /* double click */
+      else if (ar_prv->n_press == 2)
+        {
+          if (P_TOOL == TOOL_SELECT_NORMAL ||
+              P_TOOL == TOOL_SELECT_STRETCH ||
+              P_TOOL == TOOL_EDIT)
+            {
+              /* something will be created */
+              Position pos;
+              Track * track = NULL;
+              AutomationTrack * at = NULL;
+              int note;
+              Region * region = NULL;
+
+              /* get the position */
+              arranger_widget_px_to_pos (
+                self, start_x, &pos, 1);
+
+              if (timeline)
+                {
+                  /* figure out if we are creating a region or
+                   * automation point */
+                  at =
+                    timeline_arranger_widget_get_automation_track_at_y (start_y);
+                  if (!at)
+                    track =
+                      timeline_arranger_widget_get_track_at_y (start_y);
+
+                  /* creating automation point */
+                  if (at)
                     {
-                    case TRACK_TYPE_INSTRUMENT:
-                    case TRACK_TYPE_AUDIO:
-                      timeline_arranger_widget_create_region (
+                      timeline_arranger_widget_create_ap (
                         timeline,
+                        at,
                         track,
-                        &pos);
-                      break;
-                    case TRACK_TYPE_MASTER:
-                      break;
-                    case TRACK_TYPE_CHORD:
-                      timeline_arranger_widget_create_chord (
-                        timeline,
-                        track,
-                        &pos);
-                    case TRACK_TYPE_BUS:
-                      break;
+                        &pos,
+                        start_y);
+                    }
+                  /* double click inside a track */
+                  else if (track)
+                    {
+                      switch (track->type)
+                        {
+                        case TRACK_TYPE_INSTRUMENT:
+                        case TRACK_TYPE_AUDIO:
+                          timeline_arranger_widget_create_region (
+                            timeline,
+                            track,
+                            &pos);
+                          break;
+                        case TRACK_TYPE_MASTER:
+                          break;
+                        case TRACK_TYPE_CHORD:
+                          timeline_arranger_widget_create_chord (
+                            timeline,
+                            track,
+                            &pos);
+                        case TRACK_TYPE_BUS:
+                          break;
+                        }
                     }
                 }
-            }
-          else if (midi_arranger)
-            {
-              /* find the note and region at x,y */
-              note =
-                (MW_PIANO_ROLL->piano_roll_labels->total_px
-                  - start_y) /
-                MW_PIANO_ROLL->piano_roll_labels->px_per_note;
-              region = CLIP_EDITOR->region;
-
-              /* create a note */
-              if (region)
+              else if (midi_arranger)
                 {
-                  midi_arranger_widget_create_note (
-                    midi_arranger,
-                    &pos,
-                    note,
-                    (MidiRegion *) region);
-                }
-            }
+                  /* find the note and region at x,y */
+                  note =
+                    (MW_PIANO_ROLL->piano_roll_labels->total_px
+                      - start_y) /
+                    MW_PIANO_ROLL->piano_roll_labels->px_per_note;
+                  region = CLIP_EDITOR->region;
 
-          /* something is (likely) added so reallocate */
-          gtk_widget_queue_allocate (GTK_WIDGET (self));
+                  /* create a note */
+                  if (region)
+                    {
+                      midi_arranger_widget_create_note (
+                        midi_arranger,
+                        &pos,
+                        note,
+                        (MidiRegion *) region);
+                    }
+                }
+
+              /* something is (likely) added so reallocate */
+              gtk_widget_queue_allocate (GTK_WIDGET (self));
+            }
+          else if (P_TOOL == TOOL_ERASER)
+            {
+              /* delete selection */
+              ar_prv->action =
+                UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION;
+            }
         }
     }
 
@@ -812,14 +841,8 @@ drag_update (GtkGestureDrag * gesture,
     Z_ARRANGER_WIDGET (user_data);
   GET_PRIVATE;
 
-  GdkEventSequence *sequence =
-    gtk_gesture_single_get_current_sequence (
-      GTK_GESTURE_SINGLE (gesture));
-  const GdkEvent * event =
-    gtk_gesture_get_last_event (
-      GTK_GESTURE (gesture), sequence);
-  GdkModifierType state_mask;
-  gdk_event_get_state (event, &state_mask);
+  /* state mask needs to be updated */
+  UI_GET_STATE_MASK (gesture);
   if (state_mask & GDK_SHIFT_MASK)
     ar_prv->shift_held = 1;
   else
@@ -833,16 +856,16 @@ drag_update (GtkGestureDrag * gesture,
    * anything was selected */
   if (ar_prv->action ==
         UI_OVERLAY_ACTION_STARTING_SELECTION)
-    {
-      ar_prv->action =
-        UI_OVERLAY_ACTION_SELECTING;
-    }
+    ar_prv->action =
+      UI_OVERLAY_ACTION_SELECTING;
+  else if (ar_prv->action ==
+             UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION)
+    ar_prv->action =
+      UI_OVERLAY_ACTION_DELETE_SELECTING;
   else if (ar_prv->action ==
              UI_OVERLAY_ACTION_STARTING_MOVING)
-    {
-      ar_prv->action =
-        UI_OVERLAY_ACTION_MOVING;
-    }
+    ar_prv->action =
+      UI_OVERLAY_ACTION_MOVING;
 
   /* if drawing a selection */
   if (ar_prv->action ==
@@ -854,27 +877,65 @@ drag_update (GtkGestureDrag * gesture,
           timeline_arranger_widget_select (
             timeline,
             offset_x,
-            offset_y);
+            offset_y,
+            0);
         }
       else if (midi_arranger)
         {
           midi_arranger_widget_select (
             midi_arranger,
             offset_x,
-            offset_y);
+            offset_y,
+            0);
         }
       else if (midi_modifier_arranger)
         {
           midi_modifier_arranger_widget_select (
             midi_modifier_arranger,
             offset_x,
-            offset_y);
+            offset_y,
+            0);
         }
       else if (audio_arranger)
         {
           /* TODO */
         }
     } /* endif UI_OVERLAY_ACTION_SELECTING */
+
+  else if (ar_prv->action ==
+             UI_OVERLAY_ACTION_DELETE_SELECTING)
+    {
+      /* find and delete objects inside
+       * selection */
+      if (timeline)
+        {
+          timeline_arranger_widget_select (
+            timeline,
+            offset_x,
+            offset_y,
+            1);
+        }
+      else if (midi_arranger)
+        {
+          midi_arranger_widget_select (
+            midi_arranger,
+            offset_x,
+            offset_y,
+            1);
+        }
+      else if (midi_modifier_arranger)
+        {
+          midi_modifier_arranger_widget_select (
+            midi_modifier_arranger,
+            offset_x,
+            offset_y,
+            1);
+        }
+      else if (audio_arranger)
+        {
+          /* TODO */
+        }
+    } /* endif UI_OVERLAY_ACTION_DELETE_SELECTING */
 
   else if (ar_prv->action ==
              UI_OVERLAY_ACTION_RESIZING_L)
@@ -900,6 +961,12 @@ drag_update (GtkGestureDrag * gesture,
             &pos);
         }
     } /* endif RESIZING_L */
+  else if (ar_prv->action ==
+             UI_OVERLAY_ACTION_STRETCHING_L)
+    {
+      /* TODO */
+      g_message ("stretching L");
+    } /* endif STRETCHING_L */
   else if (ar_prv->action ==
              UI_OVERLAY_ACTION_RESIZING_R)
     {
@@ -927,6 +994,11 @@ drag_update (GtkGestureDrag * gesture,
         }
     } /*endif RESIZING_R */
   else if (ar_prv->action ==
+             UI_OVERLAY_ACTION_STRETCHING_R)
+    {
+      g_message ("stretching R");
+    } /*endif STRETCHING_R */
+  else if (ar_prv->action ==
              UI_OVERLAY_ACTION_RESIZING_UP)
     {
       if (midi_modifier_arranger)
@@ -937,7 +1009,8 @@ drag_update (GtkGestureDrag * gesture,
         }
     }
   /* if moving the selection */
-  else if (ar_prv->action == UI_OVERLAY_ACTION_MOVING)
+  else if (ar_prv->action ==
+             UI_OVERLAY_ACTION_MOVING)
     {
       /* get the offset pos (so we can add it to the start
        * positions and then snap it) */
@@ -995,6 +1068,18 @@ drag_update (GtkGestureDrag * gesture,
             offset_y);
         }
     } /* endif MOVING */
+  else if (ar_prv->action ==
+             UI_OVERLAY_ACTION_AUTOFILLING)
+    {
+      /* TODO */
+      g_message ("autofilling");
+    }
+  else if (ar_prv->action ==
+             UI_OVERLAY_ACTION_AUDITIONING)
+    {
+      /* TODO */
+      g_message ("auditioning");
+    }
 
   /* things have changed, reallocate */
   gtk_widget_queue_allocate(GTK_WIDGET (self));
@@ -1340,6 +1425,52 @@ arranger_widget_px_to_pos (
   else if (audio_arranger)
     ui_px_to_pos_audio_clip_editor (
       px, pos, has_padding);
+}
+
+void
+arranger_widget_refresh_cursor (
+  ArrangerWidget * self)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+  switch (P_TOOL)
+    {
+    case TOOL_SELECT_NORMAL:
+      ui_set_cursor_from_icon_name (
+        GTK_WIDGET (ar_prv->bg),
+        "edit-select",
+        3, 6);
+      break;
+    case TOOL_SELECT_STRETCH:
+      ui_set_cursor_from_icon_name (
+        GTK_WIDGET (ar_prv->bg),
+        "edit-select",
+        3, 6);
+      break;
+    case TOOL_EDIT:
+      ui_set_cursor_from_icon_name (
+        GTK_WIDGET (ar_prv->bg),
+        "editor",
+        3, 6);
+      break;
+    case TOOL_ERASER:
+      ui_set_cursor_from_icon_name (
+        GTK_WIDGET (ar_prv->bg),
+        "draw-eraser",
+        3, 6);
+      break;
+    case TOOL_RAMP:
+      ui_set_cursor_from_icon_name (
+        GTK_WIDGET (ar_prv->bg),
+        "draw-line",
+        3, 6);
+      break;
+    case TOOL_AUDITION:
+      ui_set_cursor_from_icon_name (
+        GTK_WIDGET (ar_prv->bg),
+        "audio-speakers-symbolic",
+        3, 6);
+      break;
+    }
 }
 
 /**

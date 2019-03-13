@@ -183,7 +183,7 @@ on_motion (GtkWidget * widget,
         {
           self->cursor_state =
             UI_CURSOR_STATE_RESIZE_L;
-          ui_set_cursor (widget, "w-resize");
+          ui_set_cursor_from_name (widget, "w-resize");
         }
       else if (self->type ==
                  RULER_MARKER_TYPE_SONG_END ||
@@ -192,7 +192,7 @@ on_motion (GtkWidget * widget,
         {
           self->cursor_state =
             UI_CURSOR_STATE_RESIZE_R;
-          ui_set_cursor (widget, "e-resize");
+          ui_set_cursor_from_name (widget, "e-resize");
         }
       else
         {
@@ -206,7 +206,7 @@ on_motion (GtkWidget * widget,
               rw_prv->action !=
                 UI_OVERLAY_ACTION_RESIZING_R)
             {
-              ui_set_cursor (widget, "default");
+              ui_set_cursor_from_name (widget, "default");
             }
         }
       switch (self->type)
@@ -255,7 +255,7 @@ on_motion (GtkWidget * widget,
           rw_prv->action != UI_OVERLAY_ACTION_RESIZING_L &&
           rw_prv->action != UI_OVERLAY_ACTION_RESIZING_R)
         {
-          ui_set_cursor (widget, "default");
+          ui_set_cursor_from_name (widget, "default");
         }
       bot_bar_change_status ("");
     }

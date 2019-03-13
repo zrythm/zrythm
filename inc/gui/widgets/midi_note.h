@@ -68,12 +68,30 @@ midi_note_widget_update_tooltip (
   int              show);
 
 /**
- * @}
+ * Returns if the current position is for resizing
+ * L.
  */
+int
+midi_note_widget_is_resize_l (
+  MidiNoteWidget * self,
+  int              x);
+
+/**
+ * Returns if the current position is for resizing
+ * L.
+ */
+int
+midi_note_widget_is_resize_r (
+  MidiNoteWidget * self,
+  int              x);
 
 void
 midi_note_widget_update_tooltip (
   MidiNoteWidget * self,
   int              show);
+
+/**
+ * @}
+ */
 
 #endif

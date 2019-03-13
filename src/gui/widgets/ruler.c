@@ -561,13 +561,13 @@ on_motion (GtkDrawingArea * da,
       if (event->y > (height * 1) / 4)
         {
           /* set cursor to normal */
-          ui_set_cursor (GTK_WIDGET (self),
+          ui_set_cursor_from_name (GTK_WIDGET (self),
                          "default");
         }
       else /* upper 1/4th */
         {
           /* set cursor to range selection */
-          ui_set_cursor (GTK_WIDGET (self),
+          ui_set_cursor_from_name (GTK_WIDGET (self),
                          "text");
         }
     }

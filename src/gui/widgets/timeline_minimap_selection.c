@@ -68,14 +68,14 @@ on_motion (GtkWidget * widget,
         {
           self->cursor = UI_CURSOR_STATE_RESIZE_L;
           if (self->parent->action != TIMELINE_MINIMAP_ACTION_MOVING)
-            ui_set_cursor (widget, "w-resize");
+            ui_set_cursor_from_name (widget, "w-resize");
         }
       else if (event->x > width -
                  RESIZE_CURSOR_SPACE)
         {
           self->cursor = UI_CURSOR_STATE_RESIZE_R;
           if (self->parent->action != TIMELINE_MINIMAP_ACTION_MOVING)
-            ui_set_cursor (widget, "e-resize");
+            ui_set_cursor_from_name (widget, "e-resize");
         }
       else
         {
@@ -89,7 +89,7 @@ on_motion (GtkWidget * widget,
               self->parent->action !=
                 TIMELINE_MINIMAP_ACTION_RESIZING_R)
             {
-              ui_set_cursor (widget, "default");
+              ui_set_cursor_from_name (widget, "default");
             }
         }
     }

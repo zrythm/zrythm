@@ -78,14 +78,14 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
         {
           self->cursor_state = UI_CURSOR_STATE_RESIZE_L;
           if (rw_prv->action != UI_OVERLAY_ACTION_MOVING)
-            ui_set_cursor (widget, "w-resize");
+            ui_set_cursor_from_name (widget, "w-resize");
         }
       else if (event->x > allocation.width -
                  RESIZE_CURSOR_SPACE)
         {
           self->cursor_state = UI_CURSOR_STATE_RESIZE_R;
           if (rw_prv->action != UI_OVERLAY_ACTION_MOVING)
-            ui_set_cursor (widget, "e-resize");
+            ui_set_cursor_from_name (widget, "e-resize");
         }
       else
         {
@@ -99,7 +99,7 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
               rw_prv->action !=
                 UI_OVERLAY_ACTION_RESIZING_R)
             {
-              ui_set_cursor (widget, "default");
+              ui_set_cursor_from_name (widget, "default");
             }
         }
     }
@@ -110,7 +110,7 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
           rw_prv->action != UI_OVERLAY_ACTION_RESIZING_L &&
           rw_prv->action != UI_OVERLAY_ACTION_RESIZING_R)
         {
-          ui_set_cursor (widget, "default");
+          ui_set_cursor_from_name (widget, "default");
         }
     }
 }

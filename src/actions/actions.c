@@ -50,6 +50,8 @@
 #include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_ruler.h"
+#include "gui/widgets/toolbox.h"
+#include "gui/widgets/top_dock_edge.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "utils/dialogs.h"
@@ -154,6 +156,69 @@ activate_preferences (GSimpleAction *action,
     preferences_widget_new ();
   gtk_widget_set_visible (GTK_WIDGET (widget),
                           1);
+}
+
+/**
+ * Activate audition mode.
+ */
+void
+activate_audition_mode (GSimpleAction *action,
+                      GVariant      *variant,
+                      gpointer       user_data)
+{
+  P_TOOL = TOOL_AUDITION;
+  EVENTS_PUSH (ET_TOOL_CHANGED, NULL);
+}
+
+/**
+ * Activate select mode.
+ */
+void
+activate_select_mode (GSimpleAction *action,
+                      GVariant      *variant,
+                      gpointer       user_data)
+{
+  if (P_TOOL == TOOL_SELECT_NORMAL)
+    P_TOOL = TOOL_SELECT_STRETCH;
+  else
+    P_TOOL = TOOL_SELECT_NORMAL;
+  EVENTS_PUSH (ET_TOOL_CHANGED, NULL);
+}
+
+/**
+ * Activate edit mode.
+ */
+void
+activate_edit_mode (GSimpleAction *action,
+                      GVariant      *variant,
+                      gpointer       user_data)
+{
+  P_TOOL = TOOL_EDIT;
+  EVENTS_PUSH (ET_TOOL_CHANGED, NULL);
+}
+
+/**
+ * Activate eraser mode.
+ */
+void
+activate_eraser_mode (GSimpleAction *action,
+                      GVariant      *variant,
+                      gpointer       user_data)
+{
+  P_TOOL = TOOL_ERASER;
+  EVENTS_PUSH (ET_TOOL_CHANGED, NULL);
+}
+
+/**
+ * Activate ramp mode.
+ */
+void
+activate_ramp_mode (GSimpleAction *action,
+                      GVariant      *variant,
+                      gpointer       user_data)
+{
+  P_TOOL = TOOL_RAMP;
+  EVENTS_PUSH (ET_TOOL_CHANGED, NULL);
 }
 
 /* FIXME rename to timeline zoom in */

@@ -325,7 +325,7 @@ drag_begin (GtkGestureDrag * gesture,
         {
           self->action =
             TIMELINE_MINIMAP_ACTION_STARTING_MOVING;
-          ui_set_cursor (GTK_WIDGET (self->selection),
+          ui_set_cursor_from_name (GTK_WIDGET (self->selection),
                          "grabbing");
         }
 

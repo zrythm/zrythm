@@ -84,6 +84,11 @@ typedef struct
    */
   int                      shift_held;
 
+  /**
+   * Ctrl button held.
+   */
+  int                      ctrl_held;
+
   gint64                   last_frame_time;
 } ArrangerWidgetPrivate;
 
@@ -107,6 +112,10 @@ arranger_widget_pos_to_px (
   ArrangerWidget * self,
   Position * pos,
   int        use_padding);
+
+void
+arranger_widget_refresh_cursor (
+  ArrangerWidget * self);
 
 /**
  * Gets the corresponding scrolled window.

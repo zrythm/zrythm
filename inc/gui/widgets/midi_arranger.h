@@ -115,7 +115,6 @@ midi_arranger_widget_show_context_menu (MidiArrangerWidget * self);
 void
 midi_arranger_widget_on_drag_begin_note_hit (
   MidiArrangerWidget * self,
-  GdkModifierType          state_mask,
   double                   start_x,
   MidiNoteWidget *     midi_note_widget);
 
@@ -142,12 +141,16 @@ midi_arranger_widget_setup (
  *
  * Called by arranger widget during drag_update to find and
  * select the midi notes enclosed in the selection area.
+ *
+ * @param[in] delete If this is a select-delete
+ *   operation
  */
 void
 midi_arranger_widget_select (
   MidiArrangerWidget * self,
   double               offset_x,
-  double               offset_y);
+  double               offset_y,
+  int                  delete);
 
 /**
  * Called during drag_update in parent when resizing the

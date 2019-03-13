@@ -81,12 +81,16 @@ midi_modifier_arranger_widget_get_hit_velocity (
  *
  * Called by arranger widget during drag_update to find and
  * select the midi notes enclosed in the selection area.
+ *
+ * @param[in] delete If this is a select-delete
+ *   operation
  */
 void
 midi_modifier_arranger_widget_select (
   MidiModifierArrangerWidget * self,
   double               offset_x,
-  double               offset_y);
+  double               offset_y,
+  int                  delete);
 
 void
 midi_modifier_arranger_widget_update_inspector (
@@ -114,7 +118,6 @@ midi_modifier_arranger_widget_resize_velocities (
 void
 midi_modifier_arranger_on_drag_begin_vel_hit (
   MidiModifierArrangerWidget * self,
-  GdkModifierType          state_mask,
   VelocityWidget *             vel_w,
   double                       start_y);
 

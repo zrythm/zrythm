@@ -1,6 +1,4 @@
 /*
- * actions/actions.h - Zrythm GActions
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -47,6 +45,45 @@ activate_about (GSimpleAction *action,
  */
 void
 activate_preferences (GSimpleAction *action,
+                      GVariant      *variant,
+                      gpointer       user_data);
+/**
+ * Activate audition mode.
+ */
+void
+activate_audition_mode (GSimpleAction *action,
+                      GVariant      *variant,
+                      gpointer       user_data);
+
+/**
+ * Activate select mode.
+ */
+void
+activate_select_mode (GSimpleAction *action,
+                      GVariant      *variant,
+                      gpointer       user_data);
+
+/**
+ * Activate edit mode.
+ */
+void
+activate_edit_mode (GSimpleAction *action,
+                      GVariant      *variant,
+                      gpointer       user_data);
+
+/**
+ * Activate eraser mode.
+ */
+void
+activate_eraser_mode (GSimpleAction *action,
+                      GVariant      *variant,
+                      gpointer       user_data);
+
+/**
+ * Activate ramp mode.
+ */
+void
+activate_ramp_mode (GSimpleAction *action,
                       GVariant      *variant,
                       gpointer       user_data);
 

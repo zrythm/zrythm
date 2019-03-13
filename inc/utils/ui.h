@@ -29,6 +29,12 @@
 
 #include <gtk/gtk.h>
 
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
 typedef struct Position Position;
 
 /**
@@ -85,6 +91,19 @@ typedef struct Position Position;
      GTK_WIDGET (widget)) > 1)
 
 /**
+ * Used in handlers to get the state mask.
+ */
+#define UI_GET_STATE_MASK(gesture) \
+  GdkEventSequence * _sequence = \
+    gtk_gesture_single_get_current_sequence ( \
+      GTK_GESTURE_SINGLE (gesture)); \
+  const GdkEvent * _event = \
+    gtk_gesture_get_last_event ( \
+      GTK_GESTURE (gesture), _sequence); \
+  GdkModifierType state_mask; \
+  gdk_event_get_state (_event, &state_mask)
+
+/**
  * Various cursor states to be shared.
  */
 typedef enum UiCursorState
@@ -106,6 +125,16 @@ typedef enum UiOverlayAction
   UI_OVERLAY_ACTION_RESIZING_L,
   UI_OVERLAY_ACTION_RESIZING_R,
   UI_OVERLAY_ACTION_RESIZING_UP,
+  UI_OVERLAY_ACTION_STRETCHING_L,
+  UI_OVERLAY_ACTION_STRETCHING_R,
+
+  UI_OVERLAY_ACTION_AUDITIONING,
+
+  /** Auto-filling in edit mode. */
+  UI_OVERLAY_ACTION_AUTOFILLING,
+
+  /** Erasing. */
+  UI_OVERLAY_ACTION_ERASING,
 
   /**
    * To be set in drag_start.
@@ -122,10 +151,28 @@ typedef enum UiOverlayAction
    */
   UI_OVERLAY_ACTION_STARTING_SELECTION,
   UI_OVERLAY_ACTION_SELECTING,
+
+  /** Like selecting but it auto deletes whatever
+   * touches the selection. */
+  UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION,
+  UI_OVERLAY_ACTION_DELETE_SELECTING,
 } UiOverlayAction;
 
+/**
+ * Sets cursor from icon name.
+ */
 void
-ui_set_cursor (GtkWidget * widget, char * name);
+ui_set_cursor_from_icon_name (
+  GtkWidget *  widget,
+  const char * name,
+  int          offset_x,
+  int          offset_y);
+
+/**
+ * Sets cursor from standard cursor name.
+ */
+void
+ui_set_cursor_from_name (GtkWidget * widget, char * name);
 
 void
 ui_show_error_message_full (
@@ -252,5 +299,9 @@ void
 ui_get_modifier_type_from_gesture (
   GtkGestureSingle * gesture,
   GdkModifierType *  state_mask); ///< return value
+
+/**
+ * @}
+ */
 
 #endif

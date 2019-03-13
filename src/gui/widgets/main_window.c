@@ -248,6 +248,13 @@ static GActionEntry actions[] = {
   { "create-ins-track", activate_create_ins_track },
   { "create-bus-track", activate_create_bus_track },
   { "delete-selected-tracks", activate_delete_selected_tracks },
+
+  /* modes */
+  { "select-mode", activate_select_mode },
+  { "edit-mode", activate_edit_mode },
+  { "eraser-mode", activate_eraser_mode },
+  { "ramp-mode", activate_ramp_mode },
+  { "audition-mode", activate_audition_mode },
 };
 
 static void

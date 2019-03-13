@@ -175,21 +175,18 @@ timeline_arranger_widget_show_context_menu (
 void
 timeline_arranger_widget_on_drag_begin_region_hit (
   TimelineArrangerWidget * self,
-  GdkModifierType          state_mask,
   double                   start_x,
   RegionWidget *           rw);
 
 void
 timeline_arranger_widget_on_drag_begin_chord_hit (
   TimelineArrangerWidget * self,
-  GdkModifierType          state_mask,
   double                   start_x,
   ChordWidget *            cw);
 
 void
 timeline_arranger_widget_on_drag_begin_ap_hit (
   TimelineArrangerWidget * self,
-  GdkModifierType          state_mask,
   double                   start_x,
   AutomationPointWidget *  ap_widget);
 
@@ -221,12 +218,16 @@ timeline_arranger_widget_create_chord (
  * First determines the selection type (objects/
  * range), then either finds and selects items or
  * selects a range.
+ *
+ * @param[in] delete If this is a select-delete
+ *   operation
  */
 void
 timeline_arranger_widget_select (
   TimelineArrangerWidget * self,
   double                   offset_x,
-  double                   offset_y);
+  double                   offset_y,
+  int                  delete);
 
 void
 timeline_arranger_widget_snap_regions_l (

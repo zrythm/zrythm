@@ -33,8 +33,40 @@
 #include "project.h"
 #include "utils/ui.h"
 
+/**
+ * Sets cursor from icon name.
+ */
 void
-ui_set_cursor (GtkWidget * widget, char * name)
+ui_set_cursor_from_icon_name (
+  GtkWidget *  widget,
+  const char * name,
+  int          offset_x,
+  int          offset_y)
+{
+  GdkWindow * win =
+    gtk_widget_get_parent_window (widget);
+  GdkPixbuf * pixbuf =
+    gtk_icon_theme_load_icon (
+      gtk_icon_theme_get_default (),
+      name,
+      18,
+      0,
+      NULL);
+  GdkCursor * cursor =
+    gdk_cursor_new_from_pixbuf (
+      gdk_display_get_default (),
+      pixbuf,
+      offset_x,
+      offset_y);
+  gdk_window_set_cursor(win, cursor);
+}
+
+/**
+ * Sets cursor from standard cursor name.
+ */
+void
+ui_set_cursor_from_name (
+  GtkWidget * widget, char * name)
 {
   GdkWindow * win =
     gtk_widget_get_parent_window (widget);

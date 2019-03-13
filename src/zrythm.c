@@ -518,6 +518,21 @@ zrythm_app_startup (GApplication* _app)
   accel_install_primary_action_accelerator (
     "<Control>l",
     "win.loop-selection");
+  accel_install_primary_action_accelerator (
+    "1",
+    "win.select-mode");
+  accel_install_primary_action_accelerator (
+    "2",
+    "win.edit-mode");
+  accel_install_primary_action_accelerator (
+    "3",
+    "win.eraser-mode");
+  accel_install_primary_action_accelerator (
+    "4",
+    "win.ramp-mode");
+  accel_install_primary_action_accelerator (
+    "5",
+    "win.audition-mode");
 }
 
 ZrythmApp *

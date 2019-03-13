@@ -91,9 +91,6 @@ on_motion (GtkWidget *      widget,
            GdkEventMotion * event,
            MidiNoteWidget * self)
 {
-  GtkAllocation allocation;
-  gtk_widget_get_allocation (widget,
-                             &allocation);
   ARRANGER_WIDGET_GET_PRIVATE (MIDI_ARRANGER);
 
   if (event->type == GDK_ENTER_NOTIFY)
@@ -108,23 +105,24 @@ on_motion (GtkWidget *      widget,
     }
   if (event->type == GDK_MOTION_NOTIFY)
     {
-      if (event->x < RESIZE_CURSOR_SPACE)
+      if (midi_note_widget_is_resize_l (
+            self, event->x))
         {
           self->cursor_state =
             UI_CURSOR_STATE_RESIZE_L;
           if (ar_prv->action !=
                 UI_OVERLAY_ACTION_MOVING)
-            ui_set_cursor (widget, "w-resize");
+            ui_set_cursor_from_name (widget, "w-resize");
         }
 
-      else if (event->x > allocation.width -
-                 RESIZE_CURSOR_SPACE)
+      else if (midi_note_widget_is_resize_r (
+                 self, event->x))
         {
           self->cursor_state =
             UI_CURSOR_STATE_RESIZE_R;
           if (ar_prv->action !=
                 UI_OVERLAY_ACTION_MOVING)
-            ui_set_cursor (widget, "e-resize");
+            ui_set_cursor_from_name (widget, "e-resize");
         }
       else
         {
@@ -139,7 +137,7 @@ on_motion (GtkWidget *      widget,
               ar_prv->action !=
                 UI_OVERLAY_ACTION_RESIZING_R)
             {
-              ui_set_cursor (widget, "default");
+              ui_set_cursor_from_name (widget, "default");
             }
         }
     }
@@ -152,7 +150,7 @@ on_motion (GtkWidget *      widget,
           ar_prv->action !=
             UI_OVERLAY_ACTION_RESIZING_R)
         {
-          ui_set_cursor (widget, "default");
+          ui_set_cursor_from_name (widget, "default");
           gtk_widget_unset_state_flags (
             GTK_WIDGET (self),
             GTK_STATE_FLAG_PRELIGHT);
@@ -161,6 +159,43 @@ on_motion (GtkWidget *      widget,
     }
 
   return FALSE;
+}
+
+/**
+ * Returns if the current position is for resizing
+ * L.
+ */
+int
+midi_note_widget_is_resize_l (
+  MidiNoteWidget * self,
+  int              x)
+{
+  if (x < RESIZE_CURSOR_SPACE)
+    {
+      return 1;
+    }
+  return 0;
+}
+
+/**
+ * Returns if the current position is for resizing
+ * L.
+ */
+int
+midi_note_widget_is_resize_r (
+  MidiNoteWidget * self,
+  int              x)
+{
+  GtkAllocation allocation;
+  gtk_widget_get_allocation (
+    GTK_WIDGET (self),
+    &allocation);
+
+  if (x > allocation.width - RESIZE_CURSOR_SPACE)
+    {
+      return 1;
+    }
+  return 0;
 }
 
 void

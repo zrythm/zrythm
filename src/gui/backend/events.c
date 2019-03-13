@@ -53,7 +53,9 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_ruler.h"
+#include "gui/widgets/toolbox.h"
 #include "gui/widgets/top_bar.h"
+#include "gui/widgets/top_dock_edge.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
@@ -463,6 +465,22 @@ events_process ()
           break;
         case ET_RANGE_SELECTION_CHANGED:
           on_range_selection_changed ();
+          break;
+        case ET_TOOL_CHANGED:
+          toolbox_widget_refresh (MW_TOOLBOX);
+          arranger_widget_refresh_cursor (
+            Z_ARRANGER_WIDGET (MW_TIMELINE));
+          if (MIDI_ARRANGER &&
+              gtk_widget_get_has_window (
+                GTK_WIDGET (MIDI_ARRANGER)))
+            arranger_widget_refresh_cursor (
+              Z_ARRANGER_WIDGET (MIDI_ARRANGER));
+          if (MIDI_MODIFIER_ARRANGER &&
+              gtk_widget_get_has_window (
+                GTK_WIDGET (MIDI_MODIFIER_ARRANGER)))
+            arranger_widget_refresh_cursor (
+              Z_ARRANGER_WIDGET (
+                MIDI_MODIFIER_ARRANGER));
           break;
         case ET_TIME_SIGNATURE_CHANGED:
           ruler_widget_refresh (

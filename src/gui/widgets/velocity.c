@@ -99,7 +99,7 @@ on_motion (GtkWidget *      widget,
         {
           self->cursor_state =
             UI_CURSOR_STATE_RESIZE_UP;
-            ui_set_cursor (widget, "n-resize");
+            ui_set_cursor_from_name (widget, "n-resize");
         }
       else
         {
@@ -108,7 +108,7 @@ on_motion (GtkWidget *      widget,
           if (ar_prv->action !=
                 UI_OVERLAY_ACTION_RESIZING_UP)
             {
-              ui_set_cursor (widget, "default");
+              ui_set_cursor_from_name (widget, "default");
             }
         }
     }
@@ -117,7 +117,7 @@ on_motion (GtkWidget *      widget,
       if (ar_prv->action !=
             UI_OVERLAY_ACTION_RESIZING_UP)
         {
-          ui_set_cursor (widget, "default");
+          ui_set_cursor_from_name (widget, "default");
           gtk_widget_unset_state_flags (
             GTK_WIDGET (self),
             GTK_STATE_FLAG_PRELIGHT);

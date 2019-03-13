@@ -87,7 +87,7 @@ on_motion (GtkWidget * widget,
     }
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
-      ui_set_cursor (widget, "default");
+      ui_set_cursor_from_name (widget, "default");
       gtk_widget_unset_state_flags (
         GTK_WIDGET (self),
         GTK_STATE_FLAG_PRELIGHT);

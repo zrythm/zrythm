@@ -1,7 +1,8 @@
-Zrythm is a free modern music production system, also known as DAW.
-It aims to be highly modular, meaning everything should be automatable and inter-connectable, making it suitable for electronic music.
+Zrythm is a highly automated Digital Audio Workstation (DAW) designed to be featureful and intuitive to use. Zrythm sets itself apart from other DAWs by allowing extensive automation via built-in LFOs and envelopes and intuitive MIDI or audio editing and arranging via clips.
 
-It is written in C and it uses the GTK+3 toolkit. Bits and pieces are taken from other programs like Ardour and Jalv.
+In the usual Composing -> Mixing -> Mastering workflow, Zrythm puts the most focus on the Composing part. It allows musicians to quickly lay down and process their musical ideas without taking too much time for unnecessary work.
+
+It is written in C and uses the GTK+3 toolkit, with bits and pieces taken from other programs like Ardour and Jalv. Zrythm is free software licensed under the GPLv3+.
 
 More info at https://www.zrythm.org
 
@@ -13,7 +14,7 @@ More info at https://www.zrythm.org
 - LV2
 
 ## Installation
-For easy package installation see [Downloads](https://www.zrythm.org/download/).
+For easy package installation see [Installation](https://manual.zrythm.org/zrythm-configuration/installation/intro.html) in the Manual.
 
 For manual installation,
 ```
@@ -61,11 +62,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ## Support
-Donations of any amount are welcome below:
+Zrythm and its up-to-date binaries and packages are provided at no cost.
+
+Our aim is to work on Zrythm full time, so if you like the software we’d appreciate a donation below.
+
+Thank you.
 
 ### Paypal
 https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LZWVK6228PQGE&source=url
 ### LiberaPay
-https://liberapay.com/alextee/
+https://liberapay.com/Zrythm/
 ### Bitcoin
 bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j

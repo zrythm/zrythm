@@ -599,7 +599,6 @@ timeline_arranger_widget_show_context_menu (
 void
 timeline_arranger_widget_on_drag_begin_region_hit (
   TimelineArrangerWidget * self,
-  GdkModifierType          state_mask,
   double                   start_x,
   RegionWidget *           rw)
 {
@@ -624,11 +623,11 @@ timeline_arranger_widget_on_drag_begin_region_hit (
     {
       ar_prv->action =
         UI_OVERLAY_ACTION_STARTING_MOVING;
-      ui_set_cursor (GTK_WIDGET (rw), "grabbing");
+      ui_set_cursor_from_name (GTK_WIDGET (rw), "grabbing");
     }
 
   /* select/ deselect regions */
-  if (state_mask & GDK_CONTROL_MASK)
+  if (ar_prv->ctrl_held)
     {
       /* if ctrl pressed toggle on/off */
       timeline_arranger_widget_toggle_select_region (
@@ -669,7 +668,6 @@ timeline_arranger_widget_on_drag_begin_region_hit (
 void
 timeline_arranger_widget_on_drag_begin_chord_hit (
   TimelineArrangerWidget * self,
-  GdkModifierType          state_mask,
   double                   start_x,
   ChordWidget *            cw)
 {
@@ -685,10 +683,10 @@ timeline_arranger_widget_on_drag_begin_chord_hit (
 
   /* update arranger action */
   ar_prv->action = UI_OVERLAY_ACTION_STARTING_MOVING;
-  ui_set_cursor (GTK_WIDGET (cw), "grabbing");
+  ui_set_cursor_from_name (GTK_WIDGET (cw), "grabbing");
 
   /* select/ deselect chords */
-  if (state_mask & GDK_CONTROL_MASK)
+  if (ar_prv->ctrl_held)
     {
       /* if ctrl pressed toggle on/off */
       timeline_arranger_widget_toggle_select_chord (
@@ -710,7 +708,6 @@ timeline_arranger_widget_on_drag_begin_chord_hit (
 void
 timeline_arranger_widget_on_drag_begin_ap_hit (
   TimelineArrangerWidget * self,
-  GdkModifierType          state_mask,
   double                   start_x,
   AutomationPointWidget *  ap_widget)
 {
@@ -733,11 +730,11 @@ timeline_arranger_widget_on_drag_begin_ap_hit (
   /* update arranger action */
   ar_prv->action =
     UI_OVERLAY_ACTION_STARTING_MOVING;
-  ui_set_cursor (GTK_WIDGET (ap_widget),
+  ui_set_cursor_from_name (GTK_WIDGET (ap_widget),
                  "grabbing");
 
   /* update selection */
-  if (state_mask & GDK_CONTROL_MASK)
+  if (ar_prv->ctrl_held)
     {
       timeline_arranger_widget_toggle_select_ap (
         self, ap, 1);
@@ -990,12 +987,16 @@ timeline_arranger_widget_set_select_type (
  * First determines the selection type (objects/
  * range), then either finds and selects items or
  * selects a range.
+ *
+ * @param[in] delete If this is a select-delete
+ *   operation
  */
 void
 timeline_arranger_widget_select (
   TimelineArrangerWidget * self,
   double                   offset_x,
-  double                   offset_y)
+  double                   offset_y,
+  int                      delete)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
@@ -1507,7 +1508,7 @@ timeline_arranger_widget_on_drag_end (
     {
       region =
         TL_SELECTIONS->regions[i];
-      ui_set_cursor (GTK_WIDGET (region->widget),
+      ui_set_cursor_from_name (GTK_WIDGET (region->widget),
                      "default");
     }
   for (int i = 0;
@@ -1515,7 +1516,7 @@ timeline_arranger_widget_on_drag_end (
     {
       chord =
         TL_SELECTIONS->chords[i];
-      ui_set_cursor (GTK_WIDGET (chord->widget),
+      ui_set_cursor_from_name (GTK_WIDGET (chord->widget),
                      "default");
     }
   for (int i = 0;
@@ -1524,7 +1525,7 @@ timeline_arranger_widget_on_drag_end (
     {
       ap =
         TL_SELECTIONS->automation_points[i];
-      ui_set_cursor (GTK_WIDGET (ap->widget),
+      ui_set_cursor_from_name (GTK_WIDGET (ap->widget),
                      "default");
       automation_point_widget_update_tooltip (
         ap->widget, 0);

@@ -202,28 +202,37 @@ on_motion (TimelineBgWidget * self,
         timeline_arranger_widget_get_track_at_y (
           event->y);
 
-      if (track)
+      if (P_TOOL == TOOL_SELECT_NORMAL ||
+          P_TOOL == TOOL_SELECT_STRETCH)
         {
-          if (track_widget_is_cursor_in_top_half (
-                track->widget,
-                event->y))
+          if (track)
             {
-              /* set cursor to normal */
-              ui_set_cursor (GTK_WIDGET (self),
-                             "default");
+              if (track_widget_is_cursor_in_top_half (
+                    track->widget,
+                    event->y))
+                {
+                  /* set cursor to normal */
+                  ui_set_cursor_from_icon_name (
+                    GTK_WIDGET (self),
+                    "edit-select",
+                    3, 6);
+                }
+              else
+                {
+                  /* set cursor to range selection */
+                  ui_set_cursor_from_name (
+                    GTK_WIDGET (self),
+                    "text");
+                }
             }
           else
             {
-              /* set cursor to range selection */
-              ui_set_cursor (GTK_WIDGET (self),
-                             "text");
+              /* set cursor to normal */
+              ui_set_cursor_from_icon_name (
+                GTK_WIDGET (self),
+                "edit-select",
+                3, 6);
             }
-        }
-      else
-        {
-          /* set cursor to normal */
-          ui_set_cursor (GTK_WIDGET (self),
-                         "default");
         }
     }
 }

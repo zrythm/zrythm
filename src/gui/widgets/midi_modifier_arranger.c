@@ -80,12 +80,16 @@ midi_modifier_arranger_widget_set_allocation (
  *
  * Called by arranger widget during drag_update to find and
  * select the midi notes enclosed in the selection area.
+ *
+ * @param[in] delete If this is a select-delete
+ *   operation
  */
 void
 midi_modifier_arranger_widget_select (
   MidiModifierArrangerWidget * self,
   double               offset_x,
-  double               offset_y)
+  double               offset_y,
+  int                  delete)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
@@ -141,7 +145,6 @@ midi_modifier_arranger_widget_get_hit_velocity (
 void
 midi_modifier_arranger_on_drag_begin_vel_hit (
   MidiModifierArrangerWidget * self,
-  GdkModifierType          state_mask,
   VelocityWidget *             vel_w,
   double                       start_y)
 {
@@ -161,7 +164,7 @@ midi_modifier_arranger_on_drag_begin_vel_hit (
     ar_prv->action = UI_OVERLAY_ACTION_NONE;
 
   /* select/ deselect midi_notes */
-  if (state_mask & GDK_CONTROL_MASK)
+  if (ar_prv->ctrl_held)
     {
       /* if ctrl pressed toggle on/off */
       midi_arranger_widget_toggle_select_midi_note (
@@ -266,7 +269,7 @@ midi_modifier_arranger_widget_on_drag_end (
     {
       Velocity * vel =
         self->velocities[i];
-      ui_set_cursor (
+      ui_set_cursor_from_name (
         GTK_WIDGET (vel->widget), "default");
       if (vel->widget)
         velocity_widget_update_tooltip (
