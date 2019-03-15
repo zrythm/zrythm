@@ -42,7 +42,13 @@ G_DECLARE_DERIVABLE_TYPE (RegionWidget,
 typedef struct _RegionWidgetPrivate
 {
   Region                   * region;   ///< the region associated with this
-  UiCursorState            cursor_state;
+  //UiCursorState            cursor_state;
+  //
+  /** If cursor is at resizing L. */
+  int                      resize_l;
+
+  /** If cursor is at resizing R. */
+  int                      resize_r;
   GtkDrawingArea *         drawing_area;
 } RegionWidgetPrivate;
 
@@ -58,6 +64,24 @@ region_widget_setup (RegionWidget * self,
 void
 region_widget_select (RegionWidget * self,
                       int            select);
+
+/**
+ * Returns if the current position is for resizing
+ * L.
+ */
+int
+region_widget_is_resize_l (
+  RegionWidget * self,
+  int             x);
+
+/**
+ * Returns if the current position is for resizing
+ * L.
+ */
+int
+region_widget_is_resize_r (
+  RegionWidget * self,
+  int             x);
 
 RegionWidgetPrivate *
 region_widget_get_private (RegionWidget * self);

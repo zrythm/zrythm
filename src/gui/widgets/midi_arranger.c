@@ -335,8 +335,8 @@ midi_arranger_widget_on_drag_begin_note_hit (
        P_TOOL == TOOL_SELECT_STRETCH))
     {
       /* if ctrl pressed toggle on/off */
-      midi_arranger_widget_toggle_select_midi_note (
-        self, midi_note, 1);
+      ARRANGER_WIDGET_SELECT_MIDI_NOTE (
+        self, midi_note, 1, 1);
     }
   else if (!array_contains (
             MIDI_ARRANGER_SELECTIONS->midi_notes,
@@ -345,7 +345,8 @@ midi_arranger_widget_on_drag_begin_note_hit (
     {
       /* else if not already selected select only it */
       midi_arranger_widget_select_all (self, 0);
-      midi_arranger_widget_toggle_select_midi_note (self, midi_note, 0);
+      ARRANGER_WIDGET_SELECT_MIDI_NOTE (
+        self, midi_note, 1, 0);
     }
 
   /* find highest and lowest selected regions */
@@ -475,9 +476,10 @@ midi_arranger_widget_select (
             Z_MIDI_NOTE_WIDGET (midi_note_widgets[i]);
           MidiNote * midi_note =
             midi_note_widget->midi_note;
-          midi_arranger_widget_toggle_select_midi_note (
+          ARRANGER_WIDGET_SELECT_MIDI_NOTE (
             self,
             midi_note,
+            1,
             1);
         }
     }
@@ -740,19 +742,6 @@ midi_arranger_widget_on_drag_end (
     {
       self->start_midi_note = NULL;
     }
-}
-
-void
-midi_arranger_widget_toggle_select_midi_note (
-  MidiArrangerWidget * self,
-  MidiNote *           midi_note,
-  int                  append)
-{
-  arranger_widget_toggle_select (
-    Z_ARRANGER_WIDGET (self),
-    MIDI_NOTE_WIDGET_TYPE,
-    (void *) midi_note,
-    append);
 }
 
 /**

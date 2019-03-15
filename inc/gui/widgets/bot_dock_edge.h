@@ -32,6 +32,13 @@ G_DECLARE_FINAL_TYPE (BotDockEdgeWidget,
 
 #define MW_BOT_DOCK_EDGE MW_CENTER_DOCK->bot_dock_edge
 
+/**
+ * Brings up the Clip Editor in the notebook.
+ */
+#define SHOW_CLIP_EDITOR \
+  gtk_notebook_set_current_page ( \
+    MW_BOT_DOCK_EDGE->bot_notebook, 1)
+
 typedef struct _MixerWidget MixerWidget;
 typedef struct _ClipEditorWidget ClipEditorWidget;
 typedef struct _ConnectionsWidget ConnectionsWidget;

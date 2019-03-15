@@ -186,6 +186,7 @@ draw_cb (MidiRegionWidget * self, cairo_t *cr, gpointer data)
 
 /**
  * Sets the appropriate cursor.
+ * FIXME move these to arranger's hover.
  */
 static int
 on_motion (GtkWidget * widget,
@@ -200,55 +201,6 @@ on_motion (GtkWidget * widget,
       Z_ARRANGER_WIDGET (MW_TIMELINE));
   REGION_WIDGET_GET_PRIVATE (self);
 
-  if (event->type == GDK_MOTION_NOTIFY)
-    {
-      if (event->x < RESIZE_CURSOR_SPACE)
-        {
-          rw_prv->cursor_state =
-            UI_CURSOR_STATE_RESIZE_L;
-          if (prv->action !=
-                UI_OVERLAY_ACTION_MOVING)
-            ui_set_cursor_from_name (widget, "w-resize");
-        }
-      else if (event->x > allocation.width -
-                 RESIZE_CURSOR_SPACE)
-        {
-          rw_prv->cursor_state =
-            UI_CURSOR_STATE_RESIZE_R;
-          if (prv->action !=
-                UI_OVERLAY_ACTION_MOVING)
-            ui_set_cursor_from_name (widget, "e-resize");
-        }
-      else
-        {
-          rw_prv->cursor_state =
-            UI_CURSOR_STATE_DEFAULT;
-          if (prv->action !=
-                UI_OVERLAY_ACTION_MOVING &&
-              prv->action !=
-                UI_OVERLAY_ACTION_STARTING_MOVING &&
-              prv->action !=
-                UI_OVERLAY_ACTION_RESIZING_L &&
-              prv->action !=
-                UI_OVERLAY_ACTION_RESIZING_R)
-            {
-              ui_set_cursor_from_name (widget, "default");
-            }
-        }
-    }
-  /* if leaving */
-  else if (event->type == GDK_LEAVE_NOTIFY)
-    {
-      if (prv->action !=
-            UI_OVERLAY_ACTION_MOVING &&
-          prv->action !=
-            UI_OVERLAY_ACTION_RESIZING_L &&
-          prv->action !=
-            UI_OVERLAY_ACTION_RESIZING_R)
-        {
-          ui_set_cursor_from_name (widget, "default");
-        }
-    }
   return FALSE;
 }
 

@@ -57,6 +57,11 @@ typedef struct _TimelineArrangerWidget
    * Object first clicked is stored in start_*.
    */
   Region *                 start_region;
+
+  /** Used to reference the region information
+   * at the start of the action. */
+  Region *                 start_region_clone;
+
   AutomationPoint *        start_ap;
   AutomationCurve *        start_ac;
   Chord *                  start_chord;
@@ -144,24 +149,6 @@ void
 timeline_arranger_widget_select_all (
   TimelineArrangerWidget *  self,
   int                       select);
-
-void
-timeline_arranger_widget_toggle_select_region (
-  TimelineArrangerWidget * self,
-  Region *                 region,
-  int                      append);
-
-void
-timeline_arranger_widget_toggle_select_chord (
-  TimelineArrangerWidget * self,
-  Chord *                  chord,
-  int                      append);
-
-void
-timeline_arranger_widget_toggle_select_ap (
-  TimelineArrangerWidget *  self,
-  AutomationPoint * ap,
-  int               append);
 
 /**
  * Shows context menu.

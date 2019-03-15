@@ -28,6 +28,7 @@
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
+#include "gui/widgets/midi_note.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/velocity.h"
@@ -117,9 +118,10 @@ midi_modifier_arranger_widget_select (
         Z_VELOCITY_WIDGET (velocities[i]);
       Velocity * vel =
         vel_w->velocity;
-      midi_arranger_widget_toggle_select_midi_note (
+      ARRANGER_WIDGET_SELECT_MIDI_NOTE (
         MIDI_ARRANGER,
         vel->midi_note,
+        1,
         1);
     }
 }
@@ -167,9 +169,9 @@ midi_modifier_arranger_on_drag_begin_vel_hit (
   if (ar_prv->ctrl_held)
     {
       /* if ctrl pressed toggle on/off */
-      midi_arranger_widget_toggle_select_midi_note (
+      ARRANGER_WIDGET_SELECT_MIDI_NOTE (
         MIDI_ARRANGER,
-        vel_w->velocity->midi_note, 1);
+        vel_w->velocity->midi_note, 1, 1);
     }
   else if (!array_contains (
             (void **)self->velocities,
@@ -179,9 +181,9 @@ midi_modifier_arranger_on_drag_begin_vel_hit (
       /* else if not already selected select only it */
       midi_arranger_widget_select_all (
         MIDI_ARRANGER, 0);
-      midi_arranger_widget_toggle_select_midi_note (
+      ARRANGER_WIDGET_SELECT_MIDI_NOTE (
         MIDI_ARRANGER,
-        vel_w->velocity->midi_note, 0);
+        vel_w->velocity->midi_note, 1, 0);
     }
 }
 

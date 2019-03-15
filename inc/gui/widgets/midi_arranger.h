@@ -64,12 +64,6 @@ typedef struct _MidiArrangerWidget
   int                      hovered_note;
 } MidiArrangerWidget;
 
-void
-midi_arranger_widget_toggle_select_midi_note (
-  MidiArrangerWidget * self,
-  MidiNote *           midi_note,
-  int                  append);
-
 /**
  * To be called from get_child_position in parent widget.
  *
@@ -93,8 +87,9 @@ void
 midi_arranger_widget_update_inspector (MidiArrangerWidget *self);
 
 void
-midi_arranger_widget_select_all (MidiArrangerWidget *  self,
-                                 int               select);
+midi_arranger_widget_select_all (
+  MidiArrangerWidget *  self,
+  int               select);
 
 void
 midi_arranger_widget_find_start_poses (

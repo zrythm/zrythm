@@ -166,6 +166,17 @@ on_motion (GtkWidget *      widget,
            RegionWidget *   self)
 {
   ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);
+  REGION_WIDGET_GET_PRIVATE (self);
+
+  if (event->type == GDK_MOTION_NOTIFY)
+    {
+      rw_prv->resize_l =
+        region_widget_is_resize_l (
+          self, event->x);
+      rw_prv->resize_r =
+        region_widget_is_resize_r (
+          self, event->x);
+    }
 
   if (event->type == GDK_ENTER_NOTIFY)
     {
@@ -231,6 +242,43 @@ region_widget_setup (RegionWidget * self,
     G_OBJECT(rw_prv->drawing_area),
     "motion-notify-event",
     G_CALLBACK (on_motion),  self);
+}
+
+/**
+ * Returns if the current position is for resizing
+ * L.
+ */
+int
+region_widget_is_resize_l (
+  RegionWidget * self,
+  int             x)
+{
+  if (x < RESIZE_CURSOR_SPACE)
+    {
+      return 1;
+    }
+  return 0;
+}
+
+/**
+ * Returns if the current position is for resizing
+ * L.
+ */
+int
+region_widget_is_resize_r (
+  RegionWidget * self,
+  int             x)
+{
+  GtkAllocation allocation;
+  gtk_widget_get_allocation (
+    GTK_WIDGET (self),
+    &allocation);
+
+  if (x > allocation.width - RESIZE_CURSOR_SPACE)
+    {
+      return 1;
+    }
+  return 0;
 }
 
 void

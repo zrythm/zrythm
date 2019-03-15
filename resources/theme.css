@@ -116,6 +116,9 @@ midi-note:selected,
 velocity:selected
 {
   box-shadow: 2px 2px 10px @selection_color;
+  border-color: gray;
+  border-width: 1px;
+  border-style: solid;
 }
 
 region:hover,

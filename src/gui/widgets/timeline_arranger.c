@@ -111,9 +111,9 @@ timeline_arranger_widget_set_allocation (
           1);
       allocation->y = wy;
       allocation->width =
-        ui_pos_to_px_timeline (
+        (ui_pos_to_px_timeline (
           &rw_prv->region->end_pos,
-          1) - allocation->x;
+          1) - allocation->x) - 1;
 
       allocation->height =
         gtk_widget_get_allocated_height (
@@ -215,9 +215,9 @@ timeline_arranger_widget_set_allocation (
         tmp.beats + 1);
       allocation->y = wy;
       allocation->width =
-        ui_pos_to_px_timeline (
+        (ui_pos_to_px_timeline (
           &tmp,
-          1) - allocation->x;
+          1) - allocation->x) - 1;
       allocation->height =
         gtk_widget_get_allocated_height (
           GTK_WIDGET (track->widget));
@@ -529,49 +529,6 @@ timeline_arranger_widget_select_all (
 }
 
 /**
- * Selects the region.
- */
-void
-timeline_arranger_widget_toggle_select_region (
-  TimelineArrangerWidget * self,
-  Region *                 region,
-  int                      append)
-{
-  arranger_widget_toggle_select (
-    Z_ARRANGER_WIDGET (self),
-    REGION_WIDGET_TYPE,
-    (void *) region,
-    append);
-}
-
-/* FIXME should be macro? */
-void
-timeline_arranger_widget_toggle_select_chord (
-  TimelineArrangerWidget * self,
-  Chord *                  chord,
-  int                      append)
-{
-  arranger_widget_toggle_select (
-    Z_ARRANGER_WIDGET (self),
-    CHORD_WIDGET_TYPE,
-    (void *) chord,
-    append);
-}
-
-void
-timeline_arranger_widget_toggle_select_ap (
-  TimelineArrangerWidget *  self,
-  AutomationPoint * ap,
-  int               append)
-{
-  arranger_widget_toggle_select (
-    Z_ARRANGER_WIDGET (self),
-    AUTOMATION_POINT_WIDGET_TYPE,
-    (void *) ap,
-    append);
-}
-
-/**
  * Shows context menu.
  *
  * To be called from parent on right click.
@@ -609,37 +566,77 @@ timeline_arranger_widget_on_drag_begin_region_hit (
   Track * track = rw_prv->region->track;
   clip_editor_set_region (rw_prv->region);
 
+  /* if double click bring up piano roll */
+  if (ar_prv->n_press == 2 &&
+      !ar_prv->ctrl_held)
+    SHOW_CLIP_EDITOR;
+
+  /* get x as local to the region */
+  gint wx, wy;
+  gtk_widget_translate_coordinates(
+            GTK_WIDGET (self),
+            GTK_WIDGET (rw),
+            start_x,
+            0,
+            &wx,
+            &wy);
+
   Region * region = rw_prv->region;
   self->start_region = rw_prv->region;
+  self->start_region_clone =
+    region_clone (rw_prv->region,
+                  REGION_CLONE_COPY);
 
   /* update arranger action */
-  if (rw_prv->cursor_state ==
-             UI_CURSOR_STATE_RESIZE_L)
+  if (P_TOOL == TOOL_ERASER)
+    ar_prv->action =
+      UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION;
+  else if (P_TOOL == TOOL_AUDITION)
+    ar_prv->action =
+      UI_OVERLAY_ACTION_AUDITIONING;
+  else if (region_widget_is_resize_l (rw, wx))
     ar_prv->action = UI_OVERLAY_ACTION_RESIZING_L;
-  else if (rw_prv->cursor_state ==
-              UI_CURSOR_STATE_RESIZE_R)
+  else if (region_widget_is_resize_r (rw, wx))
     ar_prv->action = UI_OVERLAY_ACTION_RESIZING_R;
-  else
+  else if (P_TOOL == TOOL_SELECT_NORMAL ||
+           P_TOOL == TOOL_SELECT_STRETCH ||
+           P_TOOL == TOOL_EDIT)
     {
-      ar_prv->action =
-        UI_OVERLAY_ACTION_STARTING_MOVING;
-      ui_set_cursor_from_name (GTK_WIDGET (rw), "grabbing");
+      if (ar_prv->ctrl_held)
+        {
+          ar_prv->action =
+            UI_OVERLAY_ACTION_STARTING_MOVING_COPY;
+        }
+      else
+        {
+          ar_prv->action =
+            UI_OVERLAY_ACTION_STARTING_MOVING;
+        }
     }
 
-  /* select/ deselect regions */
-  if (ar_prv->ctrl_held)
+  /* select region if unselected */
+  if (P_TOOL == TOOL_SELECT_NORMAL ||
+      P_TOOL == TOOL_SELECT_STRETCH)
     {
-      /* if ctrl pressed toggle on/off */
-      timeline_arranger_widget_toggle_select_region (
-        self, region, 1);
-    }
-  else if (!array_contains ((void **)TL_SELECTIONS->regions,
-                      TL_SELECTIONS->num_regions,
-                      region))
-    {
-      /* else if not already selected select only it */
-      timeline_arranger_widget_select_all (self, 0);
-      timeline_arranger_widget_toggle_select_region (self, region, 0);
+      /* if ctrl held & not selected, add to
+       * selections */
+      if (ar_prv->ctrl_held && !region->selected)
+        {
+          ARRANGER_WIDGET_SELECT_REGION (
+            self, region, 1, 1);
+        }
+      /* if ctrl not held & not selected, make it
+       * the only
+       * selection */
+      else if (!ar_prv->ctrl_held &&
+               !array_contains (
+                  (void **)TL_SELECTIONS->regions,
+                  TL_SELECTIONS->num_regions,
+                  region))
+        {
+          ARRANGER_WIDGET_SELECT_REGION (
+            self, region, 1, 0);
+        }
     }
 
   /* find highest and lowest selected regions */
@@ -676,21 +673,23 @@ timeline_arranger_widget_on_drag_begin_chord_hit (
   /* if double click */
   if (ar_prv->n_press == 2)
     {
+      /* TODO */
     }
 
   Chord * chord = cw->chord;
   self->start_chord = chord;
 
   /* update arranger action */
-  ar_prv->action = UI_OVERLAY_ACTION_STARTING_MOVING;
+  ar_prv->action =
+    UI_OVERLAY_ACTION_STARTING_MOVING;
   ui_set_cursor_from_name (GTK_WIDGET (cw), "grabbing");
 
   /* select/ deselect chords */
   if (ar_prv->ctrl_held)
     {
       /* if ctrl pressed toggle on/off */
-      timeline_arranger_widget_toggle_select_chord (
-        self, chord, 1);
+      ARRANGER_WIDGET_SELECT_CHORD (
+        self, chord, 1, 1);
     }
   else if (!array_contains (
              (void **)TL_SELECTIONS->chords,
@@ -700,8 +699,8 @@ timeline_arranger_widget_on_drag_begin_chord_hit (
       /* else if not already selected select only it */
       timeline_arranger_widget_select_all (
         self, 0);
-      timeline_arranger_widget_toggle_select_chord (
-        self, chord, 0);
+      ARRANGER_WIDGET_SELECT_CHORD (
+        self, chord, 1, 0);
     }
 }
 
@@ -736,14 +735,14 @@ timeline_arranger_widget_on_drag_begin_ap_hit (
   /* update selection */
   if (ar_prv->ctrl_held)
     {
-      timeline_arranger_widget_toggle_select_ap (
-        self, ap, 1);
+      ARRANGER_WIDGET_SELECT_AUTOMATION_POINT (
+        self, ap, 1, 1);
     }
   else
     {
       timeline_arranger_widget_select_all (self, 0);
-      timeline_arranger_widget_toggle_select_ap (
-        self, ap, 0);
+      ARRANGER_WIDGET_SELECT_AUTOMATION_POINT (
+        self, ap, 1, 0);
     }
 }
 
@@ -815,8 +814,8 @@ timeline_arranger_widget_create_ap (
                    NULL,
                    ar_prv->snap_grid);
 
-  g_message ("at here: %s",
-             at->automatable->label);
+  /*g_message ("at here: %s",*/
+             /*at->automatable->label);*/
 
   /* if the automatable is float in this automation track */
   if (automatable_is_float (at->automatable))
@@ -898,10 +897,12 @@ timeline_arranger_widget_create_region (
       instrument_track_add_region ((InstrumentTrack *)track,
                         (MidiRegion *) region);
     }
-  gtk_overlay_add_overlay (GTK_OVERLAY (self),
-                           GTK_WIDGET (region->widget));
+  gtk_overlay_add_overlay (
+    GTK_OVERLAY (self),
+    GTK_WIDGET (region->widget));
   gtk_widget_show (GTK_WIDGET (region->widget));
   ar_prv->action = UI_OVERLAY_ACTION_RESIZING_R;
+  /*g_message ("created region and resizing");*/
   TL_SELECTIONS->regions[0] = region;
   TL_SELECTIONS->num_regions = 1;
 }
@@ -1025,9 +1026,10 @@ timeline_arranger_widget_select (
         Z_REGION_WIDGET (region_widgets[i]);
       REGION_WIDGET_GET_PRIVATE (rw);
       Region * region = rw_prv->region;
-      timeline_arranger_widget_toggle_select_region (
+      ARRANGER_WIDGET_SELECT_REGION (
         self,
         region,
+        1,
         1);
     }
 
@@ -1051,9 +1053,10 @@ timeline_arranger_widget_select (
       ChordWidget * rw =
         Z_CHORD_WIDGET (chord_widgets[i]);
       Chord * chord = rw->chord;
-      timeline_arranger_widget_toggle_select_chord (
+      ARRANGER_WIDGET_SELECT_CHORD (
         self,
         chord,
+        1,
         1);
     }
 
@@ -1076,9 +1079,8 @@ timeline_arranger_widget_select (
       AutomationPointWidget * ap_widget =
         Z_AUTOMATION_POINT_WIDGET (ap_widgets[i]);
       AutomationPoint * ap = ap_widget->ap;
-      timeline_arranger_widget_toggle_select_ap (self,
-                                                      ap,
-                                                      1);
+      ARRANGER_WIDGET_SELECT_AUTOMATION_POINT (
+        self, ap, 1, 1);
     }
 }
 
@@ -1508,7 +1510,8 @@ timeline_arranger_widget_on_drag_end (
     {
       region =
         TL_SELECTIONS->regions[i];
-      ui_set_cursor_from_name (GTK_WIDGET (region->widget),
+      ui_set_cursor_from_name (
+        GTK_WIDGET (region->widget),
                      "default");
     }
   for (int i = 0;
@@ -1531,11 +1534,29 @@ timeline_arranger_widget_on_drag_end (
         ap->widget, 0);
     }
 
-  /* if didn't click on something */
-  if (ar_prv->action !=
+  /* if something was clicked with ctrl without
+   * moving*/
+  if (ar_prv->action ==
         UI_OVERLAY_ACTION_STARTING_MOVING)
     {
+      /* deselect it */
+      if (ar_prv->ctrl_held)
+        if (self->start_region_clone &&
+            self->start_region_clone->selected)
+          {
+            /*g_message ("unselecting");*/
+            ARRANGER_WIDGET_SELECT_REGION (
+              self, self->start_region,
+              0, 1);
+            /*g_message ("selecteD? %d",*/
+                       /*self->start_region->selected);*/
+          }
+    }
+  /* if didn't click on something */
+  else
+    {
       self->start_region = NULL;
+      self->start_region_clone = NULL;
       self->start_ap = NULL;
     }
 
@@ -1624,11 +1645,11 @@ add_children_from_audio_track (
   TimelineArrangerWidget * self,
   AudioTrack *             audio_track)
 {
-  g_message ("adding children");
+  /*g_message ("adding children");*/
   for (int i = 0; i < audio_track->num_regions; i++)
     {
       AudioRegion * mr = audio_track->regions[i];
-      g_message ("adding region");
+      /*g_message ("adding region");*/
       Region * r = (Region *) mr;
       gtk_overlay_add_overlay (
         GTK_OVERLAY (self),
@@ -1740,7 +1761,7 @@ static gboolean
 on_focus (GtkWidget       *widget,
           gpointer         user_data)
 {
-  g_message ("timeline focused");
+  /*g_message ("timeline focused");*/
   MAIN_WINDOW->last_focused = widget;
 
   return FALSE;

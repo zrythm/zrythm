@@ -140,7 +140,11 @@ typedef enum UiOverlayAction
    * To be set in drag_start.
    */
   UI_OVERLAY_ACTION_STARTING_MOVING,
+  UI_OVERLAY_ACTION_STARTING_MOVING_COPY,
+  UI_OVERLAY_ACTION_STARTING_MOVING_LINK,
   UI_OVERLAY_ACTION_MOVING,
+  UI_OVERLAY_ACTION_MOVING_COPY,
+  UI_OVERLAY_ACTION_MOVING_LINK,
   UI_OVERLAY_ACTION_STARTING_CHANGING_CURVE,
   UI_OVERLAY_ACTION_CHANGING_CURVE,
 
@@ -157,6 +161,36 @@ typedef enum UiOverlayAction
   UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION,
   UI_OVERLAY_ACTION_DELETE_SELECTING,
 } UiOverlayAction;
+
+#define ui_set_pointer_cursor(widget) \
+  ui_set_cursor_from_icon_name ( \
+    GTK_WIDGET (widget), \
+    "edit-select", \
+    3, 6);
+
+#define ui_set_pencil_cursor(widget) \
+  ui_set_cursor_from_icon_name ( \
+    GTK_WIDGET (widget), \
+    "editor", \
+    3, 6);
+
+#define ui_set_eraser_cursor(widget) \
+  ui_set_cursor_from_icon_name ( \
+    GTK_WIDGET (widget), \
+    "draw-eraser", \
+    3, 6);
+
+#define ui_set_line_cursor(widget) \
+  ui_set_cursor_from_icon_name ( \
+    GTK_WIDGET (widget), \
+    "draw-line", \
+    3, 6);
+
+#define ui_set_speaker_cursor(widget) \
+  ui_set_cursor_from_icon_name ( \
+    GTK_WIDGET (widget), \
+    "audio-speakers-symbolic", \
+    3, 6);
 
 /**
  * Sets cursor from icon name.

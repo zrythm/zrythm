@@ -44,6 +44,7 @@
 #include "gui/widgets/connections.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/header_bar.h"
+#include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
@@ -408,6 +409,7 @@ events_process ()
             Z_ARRANGER_WIDGET (MW_TIMELINE));
           break;
         case ET_TL_SELECTIONS_CHANGED:
+          inspector_widget_refresh ();
           break;
         case ET_RULER_SIZE_CHANGED:
           gtk_widget_queue_allocate (
@@ -471,12 +473,12 @@ events_process ()
           arranger_widget_refresh_cursor (
             Z_ARRANGER_WIDGET (MW_TIMELINE));
           if (MIDI_ARRANGER &&
-              gtk_widget_get_has_window (
+              gtk_widget_get_realized (
                 GTK_WIDGET (MIDI_ARRANGER)))
             arranger_widget_refresh_cursor (
               Z_ARRANGER_WIDGET (MIDI_ARRANGER));
           if (MIDI_MODIFIER_ARRANGER &&
-              gtk_widget_get_has_window (
+              gtk_widget_get_realized (
                 GTK_WIDGET (MIDI_MODIFIER_ARRANGER)))
             arranger_widget_refresh_cursor (
               Z_ARRANGER_WIDGET (

@@ -81,6 +81,13 @@ InspectorWidget *
 inspector_widget_new ();
 
 /**
+ * Refreshes the inspector widget (shows current
+ * selections.
+ */
+void
+inspector_widget_refresh ();
+
+/**
  * Displays info about the regions.
  *
  * If num_regions < 1, it hides the regions box.

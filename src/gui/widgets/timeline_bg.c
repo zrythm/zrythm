@@ -192,7 +192,7 @@ timeline_bg_draw_cb (
   return 0;
 }
 
-static void
+static gboolean
 on_motion (TimelineBgWidget * self,
            GdkEventMotion *event)
 {
@@ -212,29 +212,24 @@ on_motion (TimelineBgWidget * self,
                     event->y))
                 {
                   /* set cursor to normal */
-                  ui_set_cursor_from_icon_name (
-                    GTK_WIDGET (self),
-                    "edit-select",
-                    3, 6);
+                  /*ui_set_pointer_cursor (self);*/
                 }
               else
                 {
                   /* set cursor to range selection */
-                  ui_set_cursor_from_name (
-                    GTK_WIDGET (self),
-                    "text");
+                  /*ui_set_cursor_from_name (*/
+                    /*GTK_WIDGET (self),*/
+                    /*"text");*/
                 }
             }
           else
             {
               /* set cursor to normal */
-              ui_set_cursor_from_icon_name (
-                GTK_WIDGET (self),
-                "edit-select",
-                3, 6);
+              /*ui_set_pointer_cursor (self);*/
             }
         }
     }
+  return FALSE;
 }
 
 TimelineBgWidget *

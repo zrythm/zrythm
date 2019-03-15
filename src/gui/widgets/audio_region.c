@@ -135,46 +135,6 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
                              &allocation);
   ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);
   REGION_WIDGET_GET_PRIVATE (self);
-
-  if (event->type == GDK_MOTION_NOTIFY)
-    {
-      if (event->x < RESIZE_CURSOR_SPACE)
-        {
-          rw_prv->cursor_state = UI_CURSOR_STATE_RESIZE_L;
-          if (ar_prv->action != UI_OVERLAY_ACTION_MOVING)
-            ui_set_cursor_from_name (widget, "w-resize");
-        }
-
-      else if (event->x >
-                 allocation.width - RESIZE_CURSOR_SPACE)
-        {
-          rw_prv->cursor_state =
-            UI_CURSOR_STATE_RESIZE_R;
-          if (ar_prv->action != UI_OVERLAY_ACTION_MOVING)
-            ui_set_cursor_from_name (widget, "e-resize");
-        }
-      else
-        {
-          rw_prv->cursor_state = UI_CURSOR_STATE_DEFAULT;
-          if (ar_prv->action != UI_OVERLAY_ACTION_MOVING &&
-              ar_prv->action != UI_OVERLAY_ACTION_STARTING_MOVING &&
-              ar_prv->action != UI_OVERLAY_ACTION_RESIZING_L &&
-              ar_prv->action != UI_OVERLAY_ACTION_RESIZING_R)
-            {
-              ui_set_cursor_from_name (widget, "default");
-            }
-        }
-    }
-  /* if leaving */
-  else if (event->type == GDK_LEAVE_NOTIFY)
-    {
-      if (ar_prv->action != UI_OVERLAY_ACTION_MOVING &&
-          ar_prv->action != UI_OVERLAY_ACTION_RESIZING_L &&
-          ar_prv->action != UI_OVERLAY_ACTION_RESIZING_R)
-        {
-          ui_set_cursor_from_name (widget, "default");
-        }
-    }
 }
 
 AudioRegionWidget *

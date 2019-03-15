@@ -34,12 +34,40 @@ G_DECLARE_DERIVABLE_TYPE (ArrangerWidget,
                           ARRANGER_WIDGET,
                           GtkOverlay)
 
-#define ARRANGER_TOGGLE_SELECT_MIDI_NOTE(self, midi_note, append) \
-  arranger_widget_toggle_select ( \
+/** Object selection macros. */
+#define ARRANGER_WIDGET_SELECT_MIDI_NOTE( \
+  self, child, select, append) \
+  arranger_widget_select ( \
     Z_ARRANGER_WIDGET (self), \
-    ARRANGER_CHILD_TYPE_MIDI_NOTE, \
-    (void *) midi_note, \
+    MIDI_NOTE_WIDGET_TYPE, \
+    (void *) child, \
+    select, \
     append);
+#define ARRANGER_WIDGET_SELECT_REGION( \
+  self, child, select, append) \
+  arranger_widget_select ( \
+    Z_ARRANGER_WIDGET (self), \
+    REGION_WIDGET_TYPE, \
+    (void *) child, \
+    select, \
+    append);
+#define ARRANGER_WIDGET_SELECT_CHORD( \
+  self, child, select, append) \
+  arranger_widget_select ( \
+    Z_ARRANGER_WIDGET (self), \
+    CHORD_WIDGET_TYPE, \
+    (void *) child, \
+    select, \
+    append);
+#define ARRANGER_WIDGET_SELECT_AUTOMATION_POINT( \
+  self, child, select, append) \
+  arranger_widget_select ( \
+    Z_ARRANGER_WIDGET (self), \
+    AUTOMATION_POINT_WIDGET_TYPE, \
+    (void *) child, \
+    select, \
+    append);
+
 #define ARRANGER_WIDGET_GET_PRIVATE(self) \
   ArrangerWidgetPrivate * ar_prv = \
     arranger_widget_get_private (Z_ARRANGER_WIDGET (self));
@@ -58,6 +86,22 @@ typedef struct _ArrangerPlayheadWidget ArrangerPlayheadWidget;
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
 
+typedef enum ArrangerCursor
+{
+  ARRANGER_CURSOR_SELECT,
+  ARRANGER_CURSOR_EDIT,
+  ARRANGER_CURSOR_ERASER,
+  ARRANGER_CURSOR_AUDITION,
+  ARRANGER_CURSOR_RAMP,
+  ARRANGER_CURSOR_GRAB,
+  ARRANGER_CURSOR_GRABBING,
+  ARRANGER_CURSOR_RESIZING_R,
+  ARRANGER_CURSOR_RESIZING_L,
+  ARRANGER_CURSOR_GRABBING_COPY,
+  ARRANGER_CURSOR_GRABBING_LINK,
+  ARRANGER_CURSOR_RANGE,
+} ArrangerCursor;
+
 typedef struct
 {
   ArrangerBgWidget *       bg;
@@ -65,6 +109,7 @@ typedef struct
   GtkGestureDrag *         drag;
   GtkGestureMultiPress *   multipress;
   GtkGestureMultiPress *   right_mouse_mp;
+  GtkEventController *     motion_controller;
   double                   last_offset_x;  ///< for dragging regions, selections
   double                   last_offset_y;  ///< for selections
   UiOverlayAction          action;
@@ -75,6 +120,10 @@ typedef struct
 
   Position                 start_pos; ///< useful for moving
   Position                 end_pos; ///< for moving regions
+
+  /** Current hovering positions. */
+  double                   hover_x;
+  double                   hover_y;
   /* end */
 
   int                      n_press; ///< for multipress
@@ -106,6 +155,15 @@ arranger_widget_setup (ArrangerWidget *   self,
 
 ArrangerWidgetPrivate *
 arranger_widget_get_private (ArrangerWidget * self);
+
+/**
+ * Sets the cursor on the arranger and all of its
+ * children.
+ */
+void
+arranger_widget_set_cursor (
+  ArrangerWidget * self,
+  ArrangerCursor   cursor);
 
 int
 arranger_widget_pos_to_px (
@@ -162,6 +220,19 @@ void
 arranger_widget_select_all (
   ArrangerWidget *  self,
   int               select);
+
+/**
+ * Selects the object, optionally appending it to
+ * the selected items or making it the only
+ * selected item.
+ */
+void
+arranger_widget_select (
+  ArrangerWidget * self,
+  GType            type,
+  void *           child,
+  int              select,
+  int              append);
 
 /**
  * Readd children.
