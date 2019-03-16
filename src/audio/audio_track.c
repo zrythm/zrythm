@@ -44,28 +44,6 @@ audio_track_setup (AudioTrack * self)
   channel_track_setup (bt);
 }
 
-void
-audio_track_add_region (AudioTrack *  track,
-                        AudioRegion * region)
-{
-  array_append (track->regions,
-                track->num_regions,
-                region);
-  track->region_ids[
-    track->num_regions - 1] =
-      track->regions[
-        track->num_regions - 1]->id;
-}
-
-void
-audio_track_remove_region (AudioTrack *  track,
-                           AudioRegion * region)
-{
-  array_delete (track->regions,
-                track->num_regions,
-                region);
-}
-
 /**
  * Fills stereo in buffers with info from the current clip.
  */

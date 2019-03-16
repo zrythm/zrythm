@@ -361,30 +361,6 @@ instrument_track_fill_midi_events (
     }
 }
 
-void
-instrument_track_add_region (InstrumentTrack      * track,
-                  MidiRegion     * region)
-{
-  /*g_message ("midi region num notes %d",*/
-             /*region->num_midi_notes);*/
-  array_append (track->regions,
-                track->num_regions,
-                region);
-  track->region_ids[
-    track->num_regions - 1] =
-      track->regions[
-        track->num_regions - 1]->id;
-}
-
-void
-instrument_track_remove_region (InstrumentTrack    * track,
-                     MidiRegion   * region)
-{
-  array_delete (track->regions,
-                track->num_regions,
-                region);
-}
-
 /**
  * Frees the track.
  *

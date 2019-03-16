@@ -257,8 +257,8 @@ mixer_add_channel_from_file_descr (
                       descr->absolute_path,
                       &start_pos,
                       &end_pos);
-  audio_track_add_region (
-    (AudioTrack *) chan->track, ar);
+  track_add_region (
+    chan->track, ar);
 
   EVENTS_PUSH (ET_TRACK_ADDED,
                chan->track);

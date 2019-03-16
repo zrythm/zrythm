@@ -397,8 +397,11 @@ events_process ()
   EventType et;
   void * arg;
 
+  /*int i = 0;*/
+  /*g_message ("starting processing");*/
   while (!stack_is_empty (EVENTS->et_stack))
     {
+      /*i++;*/
       et = ET_POP (EVENTS);
       arg = ARG_POP (EVENTS);
 
@@ -552,8 +555,9 @@ events_process ()
           break;
         }
     }
+  /*g_message ("processed %d events", i);*/
 
-  g_usleep (2000);
+  g_usleep (4000);
 
   return TRUE;
 }

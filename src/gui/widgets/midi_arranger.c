@@ -687,20 +687,22 @@ midi_arranger_widget_move_items_x (
 static void
 calc_deltamax_for_note_movement (int *y_delta)
 {
-  for (int i = 0; i < MIDI_ARRANGER_SELECTIONS->num_midi_notes; i++){
-
+  for (int i = 0;
+       i < MIDI_ARRANGER_SELECTIONS->num_midi_notes;
+       i++)
+    {
       MidiNote * midi_note =
       MIDI_ARRANGER_SELECTIONS->midi_notes[i];
       if (midi_note->val + *y_delta < 0)
-	{
-	  *y_delta = 0;
-	}
-      if (midi_note->val + *y_delta >= 127)
-	{
-	  *y_delta = 127 - midi_note->val;
-
-	}
+        {
+          *y_delta = 0;
+        }
+      else if (midi_note->val + *y_delta >= 127)
+        {
+          *y_delta = 127 - midi_note->val;
+        }
     }
+  *y_delta = *y_delta < 0 ? -1 : 1;
 }
 /**
  * Called when moving midi notes in drag update in arranger
@@ -720,73 +722,21 @@ midi_arranger_widget_move_items_y (
       ar_prv->start_y + offset_y);
 
   y_delta = ar_end_val - ar_start_val;
+  calc_deltamax_for_note_movement (&y_delta);
   if (ar_end_val != ar_start_val)
     {
-      calc_deltamax_for_note_movement (&y_delta);
-//      g_message ("MidiNote drag: off: %2u, start_note:%3u,end_note:%4u",
-//		 offset_y, ar_start_val, ar_end_val);
       for (int i = 0;
            i < MIDI_ARRANGER_SELECTIONS->
-             num_midi_notes;
+                 num_midi_notes;
            i++)
         {
           MidiNote * midi_note =
           MIDI_ARRANGER_SELECTIONS->midi_notes[i];
-          /*midi_note_set_end_pos (midi_note,*/
-          /*&deltamax);*/
-          /* check if should be moved to new note  */
-          int old_val = midi_note->val;
-
           midi_note->val = midi_note->val + y_delta;
-          /* check if should be moved to     new note */
-          int val = midi_note->val;
-          if (val < 128 && val >= 0)
-            {
-              int pval = old_val - 1;
-              int nval = old_val + 1;
-              if (midi_note->val != val)
-                {
-                  /* if new val is lower and bot midinote is not at the lowest val */
-                  if (val == nval &&
-                        MIDI_ARRANGER_SELECTIONS->
-                          bot_midi_note->val != 0)
-                    {
-                      /* shift all selected regions to their next track */
-                      for (int i = 0;
-                           i < MIDI_ARRANGER_SELECTIONS->
-                             num_midi_notes;
-                           i++)
-                        {
-                          MidiNote * midi_note =
-                          MIDI_ARRANGER_SELECTIONS->midi_notes[i];
-                          nval = midi_note->val + 1;
-                          old_val = midi_note->val;
-                          midi_note->val = nval;
-                        }
-                    }
-                  else if (val == pval &&
-                  MIDI_ARRANGER_SELECTIONS->
-                    top_midi_note->val != 127)
-                    {
-                      /* shift all selected midi_notes to their prev track */
-                      for (int i = 0;
-                           i < MIDI_ARRANGER_SELECTIONS->
-                             num_midi_notes;
-                           i++)
-                        {
-                          MidiNote * midi_note =
-                          MIDI_ARRANGER_SELECTIONS->midi_notes[i];
-                          pval = midi_note->val - 1;
-                          old_val = midi_note->val;
-                          midi_note->val = pval;
-                        }
-                    }
-                }
-            }
-
           if (midi_note->widget)
             midi_note_widget_update_tooltip (
-              midi_note->widget, 1);
+              midi_note->widget, 0);
+
         }
     }
 }
