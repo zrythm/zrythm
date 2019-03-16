@@ -237,7 +237,7 @@ activate_zoom_in (GSimpleAction *action,
     rw_prv->zoom_level * 1.3f);
 
   EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
-               NULL)
+               NULL);
 }
 
 void
@@ -253,7 +253,7 @@ activate_zoom_out (GSimpleAction *action,
     zoom_level);
 
   EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
-               NULL)
+               NULL);
 }
 
 void
@@ -265,7 +265,7 @@ activate_best_fit (GSimpleAction *action,
   g_message ("ZOOMING IN");
 
   EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
-               NULL)
+               NULL);
 }
 
 void
@@ -278,7 +278,7 @@ activate_original_size (GSimpleAction *action,
   rw_prv->zoom_level = DEFAULT_ZOOM_LEVEL;
 
   EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
-               NULL)
+               NULL);
 }
 
 void

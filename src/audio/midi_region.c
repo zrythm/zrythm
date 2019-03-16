@@ -88,6 +88,7 @@ midi_region_add_midi_note (MidiRegion * region,
     region->num_midi_notes - 1] =
       region->midi_notes[
         region->num_midi_notes - 1]->id;
+  midi_note->midi_region = region;
 
   EVENTS_PUSH (ET_MIDI_NOTE_CREATED, NULL);
 }

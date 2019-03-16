@@ -1,6 +1,4 @@
 /*
- * audio/midi_region.h - MIDI region
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -70,6 +68,15 @@ void
 midi_region_remove_midi_note (
   Region *   region,
   MidiNote * midi_note);
+
+/**
+ * Removes all MIDI ntoes and their components
+ * completely.
+ */
+void
+midi_region_remove_all_midi_notes (
+  MidiRegion * region);
+
 
 /**
  * Returns the midi note at given position with the given

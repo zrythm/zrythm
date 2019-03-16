@@ -53,7 +53,7 @@ static const char * note_labels[12] = {
     "C",
     "Db",
     "D",
-    "Eb#",
+    "Eb",
     "E",
     "F",
     "F#",

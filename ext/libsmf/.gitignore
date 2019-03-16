@@ -1,3 +1,10 @@
 Makefile
+Makefile.in
+man/Makefile
+man/Makefile.in
+src/.libs/smfsh
+src/Makefile
+src/Makefile.in
+src/smfsh
 config.log
 api
