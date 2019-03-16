@@ -54,14 +54,6 @@ instrument_track_fill_midi_events (InstrumentTrack      * track,
                         nframes_t  nframes, ///< n of frames from start pos
                         MidiEvents * midi_events); ///< midi events to fill
 
-void
-instrument_track_add_region (InstrumentTrack      * track,
-                  MidiRegion     * region);
-
-void
-instrument_track_remove_region (InstrumentTrack    * track,
-                     MidiRegion   * region);
-
 /**
  * Frees the track.
  *

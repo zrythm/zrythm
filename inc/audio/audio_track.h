@@ -39,14 +39,6 @@ audio_track_init (Track * track);
 void
 audio_track_setup (AudioTrack * self);
 
-void
-audio_track_add_region (AudioTrack *  track,
-                        AudioRegion * region);
-
-void
-audio_track_remove_region (AudioTrack *  track,
-                           AudioRegion * region);
-
 /**
  * Fills stereo in buffers with info from the current clip.
  */

@@ -39,6 +39,7 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/track.h"
 #include "project.h"
+#include "utils/arrays.h"
 
 void
 track_init_loaded (Track * track)
@@ -354,20 +355,19 @@ void
 track_add_region (Track * track,
                   Region * region)
 {
-  region_set_track (region, track);
-  if (track->type == TRACK_TYPE_INSTRUMENT)
-    {
-      instrument_track_add_region (
-        (InstrumentTrack *) track,
-        (MidiRegion *) region);
-      EVENTS_PUSH (ET_REGION_CREATED,
-                   region);
-      return;
-    }
+  g_assert (track->type == TRACK_TYPE_INSTRUMENT ||
+            track->type == TRACK_TYPE_AUDIO);
 
-  g_warning (
-    "attempted to add region to a track type"
-    " that does not accept regions");
+  region_set_track (region, track);
+  array_append (track->regions,
+                track->num_regions,
+                region);
+  track->region_ids[
+    track->num_regions - 1] =
+      track->regions[
+        track->num_regions - 1]->id;
+  EVENTS_PUSH (ET_REGION_CREATED,
+               region);
 }
 
 /**
@@ -378,18 +378,24 @@ track_remove_region (Track * track,
                      Region * region,
                      int       delete)
 {
-  if (track->type == TRACK_TYPE_INSTRUMENT)
+  if (TL_SELECTIONS)
     {
-      instrument_track_remove_region (
-        (InstrumentTrack *) track,
-        (MidiRegion *) region);
+      array_delete (
+        TL_SELECTIONS->regions,
+        TL_SELECTIONS->num_regions,
+        region);
     }
-  else if (track->type == TRACK_TYPE_AUDIO)
-    {
-      audio_track_remove_region (
-        (AudioTrack *) track,
-        (AudioRegion *) region);
-    }
+  if (MW_TIMELINE->start_region == region)
+    MW_TIMELINE->start_region = NULL;
+
+  array_delete (track->regions,
+                track->num_regions,
+                region);
+  int size = track->num_regions + 1;
+  array_delete (track->region_ids,
+                size,
+                region->id);
+
   if (delete)
     region_free (region);
   EVENTS_PUSH (ET_REGION_REMOVED, track);

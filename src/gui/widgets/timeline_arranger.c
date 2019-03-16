@@ -992,7 +992,7 @@ timeline_arranger_widget_create_region (
                            &region->true_end_pos);
   if (track->type == TRACK_TYPE_INSTRUMENT)
     {
-      instrument_track_add_region ((InstrumentTrack *)track,
+      track_add_region ((InstrumentTrack *)track,
                         (MidiRegion *) region);
     }
   gtk_overlay_add_overlay (
@@ -1575,8 +1575,11 @@ timeline_arranger_widget_move_items_y (
                           if (nt->type ==
                                 TRACK_TYPE_INSTRUMENT)
                             {
-                              instrument_track_remove_region ((InstrumentTrack *) old_track, (MidiRegion *) region);
-                              instrument_track_add_region ((InstrumentTrack *) nt, (MidiRegion *) region);
+                              track_remove_region (
+                                old_track,
+                                region, 0);
+                              track_add_region (
+                                nt, region);
                             }
                           else if (nt->type ==
                                      TRACK_TYPE_AUDIO)
@@ -1607,8 +1610,11 @@ timeline_arranger_widget_move_items_y (
                           if (pt->type ==
                                 TRACK_TYPE_INSTRUMENT)
                             {
-                              instrument_track_remove_region ((InstrumentTrack *) old_track, (MidiRegion *) region);
-                              instrument_track_add_region ((InstrumentTrack *) pt, (MidiRegion *) region);
+                              track_remove_region (
+                                old_track,
+                                region, 0);
+                              track_add_region (
+                                pt, region);
                             }
                           else if (pt->type ==
                                      TRACK_TYPE_AUDIO)
