@@ -81,7 +81,8 @@ region_draw_cb (RegionWidget * self,
   width = gtk_widget_get_allocated_width (GTK_WIDGET (self));
   height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
 
-  gtk_render_background (context, cr, 0, 0, width, height);
+  gtk_render_background (
+    context, cr, 0, 0, width, height);
 
   GdkRGBA * color = &rw_prv->region->track->color;
   cairo_set_source_rgba (cr,

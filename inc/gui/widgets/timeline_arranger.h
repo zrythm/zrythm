@@ -21,6 +21,7 @@
 #define __GUI_WIDGETS_TIMELINE_ARRANGER_H__
 
 #include "audio/position.h"
+#include "gui/backend/tool.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
@@ -107,6 +108,15 @@ timeline_arranger_widget_get_track_at_y (double y);
 
 AutomationTrack *
 timeline_arranger_widget_get_automation_track_at_y (double y);
+
+/**
+ * Returns the appropriate cursor based on the
+ * current hover_x and y.
+ */
+ArrangerCursor
+timeline_arranger_widget_get_cursor (
+  UiOverlayAction action,
+  Tool            tool);
 
 /**
  * Determines the selection time (objects/range)

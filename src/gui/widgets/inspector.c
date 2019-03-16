@@ -105,6 +105,16 @@ inspector_widget_refresh ()
 
   gtk_widget_set_visible (
     GTK_WIDGET (self->region), 0);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->ap), 0);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->track), 0);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->midi), 0);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->chord), 0);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->no_item_label), 0);
 
   if (TL_SELECTIONS->num_regions > 0)
     {
@@ -116,67 +126,49 @@ inspector_widget_refresh ()
         GTK_WIDGET (self->region), 1);
     }
 
-  /*if (type == INSPECTOR_CHILD_REGION)*/
-    /*gtk_widget_set_visible (GTK_WIDGET (self->region), 0);*/
-  /*else if (type == INSPECTOR_CHILD_AP)*/
-    /*gtk_widget_set_visible (GTK_WIDGET (self->ap), 0);*/
-  /*else if (type == INSPECTOR_CHILD_TRACK)*/
-    /*gtk_widget_set_visible (GTK_WIDGET (self->track), 0);*/
-  /*else if (type == INSPECTOR_CHILD_MIDI)*/
-    /*gtk_widget_set_visible (GTK_WIDGET (self->midi), 0);*/
-  /*else if (type == INSPECTOR_CHILD_CHORD)*/
-    /*gtk_widget_set_visible (GTK_WIDGET (self->chord), 0);*/
-  /*gtk_widget_set_visible (*/
-    /*GTK_WIDGET (self->no_item_label), 0);*/
-  /*if (num_selections > 0)*/
-    /*{*/
-      /*if (type == INSPECTOR_CHILD_REGION)*/
-        /*{*/
-          /*inspector_region_widget_show_regions (*/
-            /*self->region,*/
-            /*(Region **) selections,*/
-            /*num_selections);*/
-          /*gtk_widget_set_visible (*/
-            /*GTK_WIDGET (self->region), 1);*/
-        /*}*/
-      /*else if (type == INSPECTOR_CHILD_AP)*/
-        /*{*/
-          /*inspector_ap_widget_show_aps (*/
-            /*self->ap,*/
-            /*(AutomationPoint **) selections,*/
-            /*num_selections);*/
-          /*gtk_widget_set_visible (*/
-            /*GTK_WIDGET (self->ap), 1);*/
-        /*}*/
-      /*else if (type == INSPECTOR_CHILD_MIDI)*/
-        /*{*/
-          /*inspector_midi_widget_show_midi (*/
-            /*self->midi,*/
-            /*(MidiNote **) selections,*/
-            /*num_selections);*/
-          /*gtk_widget_set_visible (*/
-            /*GTK_WIDGET (self->midi), 1);*/
+  if (TL_SELECTIONS->num_automation_points > 0)
+    {
+      inspector_ap_widget_show_aps (
+        self->ap,
+        (AutomationPoint **) TL_SELECTIONS->automation_points,
+        TL_SELECTIONS->num_automation_points);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->ap), 1);
+    }
+  if (MIDI_ARRANGER_SELECTIONS->num_midi_notes > 0)
+    {
+      inspector_midi_widget_show_midi (
+        self->midi,
+        (MidiNote **) MIDI_ARRANGER_SELECTIONS->midi_notes,
+        MIDI_ARRANGER_SELECTIONS->num_midi_notes);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->midi), 1);
 
-        /*}*/
-      /*else if (type == INSPECTOR_CHILD_TRACK)*/
-        /*{*/
-          /*inspector_track_widget_show_tracks (*/
-            /*self->track,*/
-            /*(Track **) selections,*/
-            /*num_selections);*/
-          /*gtk_widget_set_visible (*/
-            /*GTK_WIDGET (self->track), 1);*/
-        /*}*/
-      /*else if (type == INSPECTOR_CHILD_CHORD)*/
-        /*{*/
-          /*inspector_chord_widget_show_chords (*/
-            /*self->chord,*/
-            /*(Chord **) selections,*/
-            /*num_selections);*/
-          /*gtk_widget_set_visible (*/
-            /*GTK_WIDGET (self->chord), 1);*/
-        /*}*/
-    /*}*/
+    }
+
+  Track * selected_tracks[200];
+  int     num_selected_tracks = 0;
+  tracklist_get_selected_tracks (
+    selected_tracks, &num_selected_tracks);
+  if (num_selected_tracks > 0)
+    {
+      inspector_track_widget_show_tracks (
+        self->track,
+        (Track **) selected_tracks,
+        num_selected_tracks);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->track), 1);
+    }
+
+  if (TL_SELECTIONS->num_chords > 0)
+    {
+      inspector_chord_widget_show_chords (
+        self->chord,
+        (Chord **) TL_SELECTIONS->chords,
+        TL_SELECTIONS->num_chords);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->chord), 1);
+    }
 
   /* if nothing is visible, show "no item selected" */
   if (!gtk_widget_get_visible (GTK_WIDGET (self->region)) &&

@@ -224,6 +224,82 @@ timeline_arranger_widget_set_allocation (
     }
 }
 
+/**
+ * Returns the appropriate cursor based on the
+ * current hover_x and y.
+ */
+ArrangerCursor
+timeline_arranger_widget_get_cursor (
+  UiOverlayAction action,
+  Tool            tool)
+{
+  TimelineArrangerWidget * self =
+    MW_TIMELINE;
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  if (tool == TOOL_SELECT_NORMAL &&
+      action == UI_OVERLAY_ACTION_NONE)
+    {
+      RegionWidget * rw =
+        timeline_arranger_widget_get_hit_region (
+          self,
+          ar_prv->hover_x,
+          ar_prv->hover_y);
+
+      REGION_WIDGET_GET_PRIVATE (rw);
+      /* TODO chords, aps */
+
+      int is_hit =
+        rw != NULL;
+      int is_resize_l =
+        rw && rw_prv->resize_l;
+      int is_resize_r =
+        rw && rw_prv->resize_r;
+
+      if (is_hit && is_resize_l)
+        {
+          return ARRANGER_CURSOR_RESIZING_L;
+        }
+      else if (is_hit && is_resize_r)
+        {
+          return ARRANGER_CURSOR_RESIZING_R;
+        }
+      else if (is_hit)
+        {
+          return ARRANGER_CURSOR_GRAB;
+        }
+      else
+        {
+          Track * track =
+            timeline_arranger_widget_get_track_at_y (
+              ar_prv->hover_y);
+
+          if (track)
+            {
+              if (track_widget_is_cursor_in_top_half (
+                    track->widget,
+                    ar_prv->hover_y))
+                {
+                  /* set cursor to normal */
+                  return ARRANGER_CURSOR_SELECT;
+                }
+              else
+                {
+                  /* set cursor to range selection */
+                  return ARRANGER_CURSOR_RANGE;
+                }
+            }
+          else
+            {
+              /* set cursor to normal */
+              return ARRANGER_CURSOR_SELECT;
+            }
+        }
+    }
+  return -1;
+}
+
+
 Track *
 timeline_arranger_widget_get_track_at_y (double y)
 {
@@ -588,35 +664,55 @@ timeline_arranger_widget_on_drag_begin_region_hit (
                   REGION_CLONE_COPY);
 
   /* update arranger action */
-  if (P_TOOL == TOOL_ERASER)
-    ar_prv->action =
-      UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION;
-  else if (P_TOOL == TOOL_AUDITION)
-    ar_prv->action =
-      UI_OVERLAY_ACTION_AUDITIONING;
-  else if (region_widget_is_resize_l (rw, wx))
-    ar_prv->action = UI_OVERLAY_ACTION_RESIZING_L;
-  else if (region_widget_is_resize_r (rw, wx))
-    ar_prv->action = UI_OVERLAY_ACTION_RESIZING_R;
-  else if (P_TOOL == TOOL_SELECT_NORMAL ||
-           P_TOOL == TOOL_SELECT_STRETCH ||
-           P_TOOL == TOOL_EDIT)
+  switch (P_TOOL)
     {
-      if (ar_prv->ctrl_held)
-        {
-          ar_prv->action =
-            UI_OVERLAY_ACTION_STARTING_MOVING_COPY;
-        }
+    case TOOL_ERASER:
+      ar_prv->action =
+        UI_OVERLAY_ACTION_ERASING;
+      break;
+    case TOOL_AUDITION:
+      ar_prv->action =
+        UI_OVERLAY_ACTION_AUDITIONING;
+      break;
+    case TOOL_SELECT_NORMAL:
+      if (region_widget_is_resize_l (rw, wx))
+        ar_prv->action =
+          UI_OVERLAY_ACTION_RESIZING_L;
+      else if (region_widget_is_resize_r (rw, wx))
+        ar_prv->action =
+          UI_OVERLAY_ACTION_RESIZING_R;
       else
-        {
-          ar_prv->action =
-            UI_OVERLAY_ACTION_STARTING_MOVING;
-        }
+        ar_prv->action =
+          UI_OVERLAY_ACTION_STARTING_MOVING;
+      break;
+    case TOOL_SELECT_STRETCH:
+      if (region_widget_is_resize_l (rw, wx))
+        ar_prv->action =
+          UI_OVERLAY_ACTION_STRETCHING_L;
+      else if (region_widget_is_resize_r (rw, wx))
+        ar_prv->action =
+          UI_OVERLAY_ACTION_STRETCHING_R;
+      else
+        ar_prv->action =
+          UI_OVERLAY_ACTION_STARTING_MOVING;
+      break;
+    case TOOL_EDIT:
+      if (region_widget_is_resize_l (rw, wx))
+        ar_prv->action =
+          UI_OVERLAY_ACTION_RESIZING_L;
+      else if (region_widget_is_resize_r (rw, wx))
+        ar_prv->action =
+          UI_OVERLAY_ACTION_RESIZING_R;
+      else
+        ar_prv->action =
+          UI_OVERLAY_ACTION_STARTING_MOVING;
+      break;
     }
 
   /* select region if unselected */
   if (P_TOOL == TOOL_SELECT_NORMAL ||
-      P_TOOL == TOOL_SELECT_STRETCH)
+      P_TOOL == TOOL_SELECT_STRETCH ||
+      P_TOOL == TOOL_EDIT)
     {
       /* if ctrl held & not selected, add to
        * selections */
@@ -843,6 +939,8 @@ timeline_arranger_widget_create_ap (
         ap;
       TL_SELECTIONS->num_automation_points =
         1;
+      automation_point_widget_select (
+        ap->widget, 1);
     }
 }
 
@@ -905,6 +1003,7 @@ timeline_arranger_widget_create_region (
   /*g_message ("created region and resizing");*/
   TL_SELECTIONS->regions[0] = region;
   TL_SELECTIONS->num_regions = 1;
+  region_widget_select (region->widget, 1);
 }
 
 void
@@ -937,6 +1036,7 @@ timeline_arranger_widget_create_chord (
   ar_prv->action = UI_OVERLAY_ACTION_NONE;
   TL_SELECTIONS->chords[0] = chord;
   TL_SELECTIONS->num_chords = 1;
+  chord_widget_select (chord->widget, 1);
 }
 
 /**
@@ -999,11 +1099,19 @@ timeline_arranger_widget_select (
   double                   offset_y,
   int                      delete)
 {
+  Region * region;
+  RegionWidget * rw;
+  Chord * chord;
+  ChordWidget * cw;
+  AutomationPoint * ap;
+  AutomationPointWidget * apw;
+
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  /* deselect all */
-  arranger_widget_select_all (
-    Z_ARRANGER_WIDGET (self), 0);
+  if (!delete)
+    /* deselect all */
+    arranger_widget_select_all (
+      Z_ARRANGER_WIDGET (self), 0);
 
   /* find enclosed regions */
   GtkWidget *    region_widgets[800];
@@ -1019,18 +1127,36 @@ timeline_arranger_widget_select (
     &num_region_widgets);
 
 
-  /* select the enclosed regions */
-  for (int i = 0; i < num_region_widgets; i++)
+  if (delete)
     {
-      RegionWidget * rw =
-        Z_REGION_WIDGET (region_widgets[i]);
-      REGION_WIDGET_GET_PRIVATE (rw);
-      Region * region = rw_prv->region;
-      ARRANGER_WIDGET_SELECT_REGION (
-        self,
-        region,
-        1,
-        1);
+      /* delete the enclosed regions */
+      for (int i = 0; i < num_region_widgets; i++)
+        {
+          rw =
+            Z_REGION_WIDGET (region_widgets[i]);
+          REGION_WIDGET_GET_PRIVATE (rw);
+
+          region = rw_prv->region;
+
+          /* TODO delete region */
+          g_message ("delete region");
+      }
+    }
+  else
+    {
+      /* select the enclosed regions */
+      for (int i = 0; i < num_region_widgets; i++)
+        {
+          rw =
+            Z_REGION_WIDGET (region_widgets[i]);
+          REGION_WIDGET_GET_PRIVATE (rw);
+          region = rw_prv->region;
+          ARRANGER_WIDGET_SELECT_REGION (
+            self,
+            region,
+            1,
+            1);
+        }
     }
 
   /* find enclosed chords */
@@ -1046,18 +1172,33 @@ timeline_arranger_widget_select (
     chord_widgets,
     &num_chord_widgets);
 
-
-  /* select the enclosed chords */
-  for (int i = 0; i < num_chord_widgets; i++)
+  if (delete)
     {
-      ChordWidget * rw =
-        Z_CHORD_WIDGET (chord_widgets[i]);
-      Chord * chord = rw->chord;
-      ARRANGER_WIDGET_SELECT_CHORD (
-        self,
-        chord,
-        1,
-        1);
+      /* delete the enclosed chords */
+      for (int i = 0; i < num_chord_widgets; i++)
+        {
+          cw =
+            Z_CHORD_WIDGET (chord_widgets[i]);
+
+          chord = cw->chord;
+
+          /* TODO delete chord */
+          g_message ("delete chord");
+      }
+    }
+  else
+    {
+      /* select the enclosed chords */
+      for (int i = 0; i < num_chord_widgets; i++)
+        {
+          cw =
+            Z_CHORD_WIDGET (chord_widgets[i]);
+
+          chord = cw->chord;
+
+          ARRANGER_WIDGET_SELECT_CHORD (
+            self, chord, 1, 1);
+        }
     }
 
   /* find enclosed automation_points */
@@ -1073,14 +1214,37 @@ timeline_arranger_widget_select (
     ap_widgets,
     &num_ap_widgets);
 
-  /* select the enclosed automation_points */
-  for (int i = 0; i < num_ap_widgets; i++)
+  if (delete)
     {
-      AutomationPointWidget * ap_widget =
-        Z_AUTOMATION_POINT_WIDGET (ap_widgets[i]);
-      AutomationPoint * ap = ap_widget->ap;
-      ARRANGER_WIDGET_SELECT_AUTOMATION_POINT (
-        self, ap, 1, 1);
+      /* delete the enclosed automation points */
+      for (int i = 0;
+           i < num_ap_widgets; i++)
+        {
+          apw =
+            Z_AUTOMATION_POINT_WIDGET (
+              ap_widgets[i]);
+
+          ap = apw->ap;
+
+          /* TODO delete automation point */
+          g_message ("delete automation point");
+        }
+    }
+  else
+    {
+      /* select the enclosed automation points */
+      for (int i = 0;
+           i < num_ap_widgets; i++)
+        {
+          apw =
+            Z_AUTOMATION_POINT_WIDGET (
+              ap_widgets[i]);
+
+          ap = apw->ap;
+
+          ARRANGER_WIDGET_SELECT_AUTOMATION_POINT (
+            self, ap, 1, 1);
+        }
     }
 }
 
@@ -1307,6 +1471,7 @@ timeline_arranger_widget_set_size ()
 #define COMPARE_AND_SET(pos) \
   if ((pos)->bars > self->last_timeline_obj_bars) \
     self->last_timeline_obj_bars = (pos)->bars;
+
 /**
  * Updates last timeline objet so that timeline can be
  * expanded/contracted accordingly.
@@ -1506,30 +1671,11 @@ timeline_arranger_widget_on_drag_end (
   Chord * chord;
   AutomationPoint * ap;
   for (int i = 0;
-       i < TL_SELECTIONS->num_regions; i++)
-    {
-      region =
-        TL_SELECTIONS->regions[i];
-      ui_set_cursor_from_name (
-        GTK_WIDGET (region->widget),
-                     "default");
-    }
-  for (int i = 0;
-       i < TL_SELECTIONS->num_chords; i++)
-    {
-      chord =
-        TL_SELECTIONS->chords[i];
-      ui_set_cursor_from_name (GTK_WIDGET (chord->widget),
-                     "default");
-    }
-  for (int i = 0;
        i < TL_SELECTIONS->
              num_automation_points; i++)
     {
       ap =
         TL_SELECTIONS->automation_points[i];
-      ui_set_cursor_from_name (GTK_WIDGET (ap->widget),
-                     "default");
       automation_point_widget_update_tooltip (
         ap->widget, 0);
     }
@@ -1544,12 +1690,9 @@ timeline_arranger_widget_on_drag_end (
         if (self->start_region_clone &&
             self->start_region_clone->selected)
           {
-            /*g_message ("unselecting");*/
             ARRANGER_WIDGET_SELECT_REGION (
               self, self->start_region,
               0, 1);
-            /*g_message ("selecteD? %d",*/
-                       /*self->start_region->selected);*/
           }
     }
   /* if didn't click on something */

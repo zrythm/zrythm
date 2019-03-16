@@ -30,12 +30,15 @@
 #include "audio/transport.h"
 #include "actions/actions.h"
 #include "actions/undo_manager.h"
+#include "actions/delete_midi_arranger_selections_action.h"
 #include "actions/delete_timeline_selections_action.h"
+#include "gui/backend/midi_arranger_selections.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/center_dock_bot_box.h"
+#include "gui/widgets/clip_editor.h"
 #include "gui/widgets/export_dialog.h"
 #include "gui/widgets/header_bar.h"
 #include "gui/widgets/main_window.h"
@@ -543,12 +546,21 @@ activate_delete (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  if (MAIN_WINDOW->last_focused == GTK_WIDGET (MW_TIMELINE))
+  if (MAIN_WINDOW->last_focused ==
+        GTK_WIDGET (MW_TIMELINE))
     {
       UndoableAction * action =
         delete_timeline_selections_action_new ();
       undo_manager_perform (UNDO_MANAGER,
                             action);
+    }
+  else if (MAIN_WINDOW->last_focused ==
+             GTK_WIDGET (MIDI_ARRANGER))
+    {
+      UndoableAction * action =
+        delete_midi_arranger_selections_action_new ();
+      undo_manager_perform (
+        UNDO_MANAGER, action);
     }
 }
 

@@ -528,6 +528,11 @@ events_process ()
           header_bar_widget_refresh_undo_redo_buttons (
             MW_HEADER_BAR);
           break;
+        case ET_MIDI_NOTE_CREATED:
+        case ET_MIDI_NOTE_REMOVED:
+          arranger_widget_refresh (
+            Z_ARRANGER_WIDGET (MIDI_ARRANGER));
+          break;
         case ET_REGION_CREATED:
         case ET_CHORD_CREATED:
         case ET_CHORD_REMOVED:

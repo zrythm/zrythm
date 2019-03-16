@@ -119,6 +119,7 @@ velocity:selected
   border-color: gray;
   border-width: 1px;
   border-style: solid;
+  background-color: red;
 }
 
 region:hover,

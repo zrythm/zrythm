@@ -74,6 +74,7 @@ midi_note_new (MidiRegion * midi_region,
 
 /**
  * Deep clones the midi note.
+ * FIXME ??? clone like region
  */
 MidiNote *
 midi_note_clone (MidiNote *  src,
@@ -81,11 +82,16 @@ midi_note_clone (MidiNote *  src,
 {
   Velocity * vel = velocity_clone (src->vel);
 
-  return midi_note_new (mr,
+  MidiNote * mn = midi_note_new (mr,
                         &src->start_pos,
                         &src->end_pos,
                         src->val,
                         vel);
+
+  mn->selected = src->selected;
+  mn->actual_note = src->id;
+
+  return mn;
 }
 
 void
@@ -219,5 +225,11 @@ midi_note_hit (MidiNote * midi_note,
 void
 midi_note_free (MidiNote * self)
 {
+  if (self->widget)
+    gtk_widget_destroy (
+      GTK_WIDGET (self->widget));
+
+  velocity_free (self->vel);
+
   free (self);
 }

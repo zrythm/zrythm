@@ -272,6 +272,70 @@ midi_arranger_widget_find_start_poses (
     }
 }
 
+/**
+ * Returns the appropriate cursor based on the
+ * current hover_x and y.
+ */
+ArrangerCursor
+midi_arranger_widget_get_cursor (
+  UiOverlayAction action,
+  Tool            tool)
+{
+  MidiArrangerWidget * self =
+    MIDI_ARRANGER;
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  if (tool == TOOL_SELECT_NORMAL ||
+      tool == TOOL_SELECT_STRETCH ||
+      tool == TOOL_EDIT)
+    {
+      MidiNoteWidget * mnw =
+        midi_arranger_widget_get_hit_midi_note (
+          self,
+          ar_prv->hover_x,
+          ar_prv->hover_y);
+
+      /* TODO chords, aps */
+
+      int is_hit =
+        mnw != NULL;
+      int is_resize_l =
+        mnw && mnw->resize_l;
+      int is_resize_r =
+        mnw && mnw->resize_r;
+
+      if (is_hit && is_resize_l)
+        {
+          return ARRANGER_CURSOR_RESIZING_L;
+        }
+      else if (is_hit && is_resize_r)
+        {
+          return ARRANGER_CURSOR_RESIZING_R;
+        }
+      else if (is_hit)
+        {
+          return ARRANGER_CURSOR_GRAB;
+        }
+      else
+        {
+          /* set cursor to whatever it is */
+          if (tool == TOOL_EDIT)
+            return ARRANGER_CURSOR_EDIT;
+          else
+            return ARRANGER_CURSOR_SELECT;
+        }
+    }
+  else if (tool == TOOL_ERASER)
+    return ARRANGER_CURSOR_ERASER;
+  else if (tool == TOOL_RAMP)
+    return ARRANGER_CURSOR_RAMP;
+  else if (tool == TOOL_AUDITION)
+    return ARRANGER_CURSOR_AUDITION;
+
+  g_assert_not_reached ();
+  return -1;
+}
+
 void
 midi_arranger_widget_on_drag_begin_note_hit (
   MidiArrangerWidget * self,
@@ -280,73 +344,91 @@ midi_arranger_widget_on_drag_begin_note_hit (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
+  /* get x as local to the midi note */
+  gint wx, wy;
+  gtk_widget_translate_coordinates(
+            GTK_WIDGET (self),
+            GTK_WIDGET (mnw),
+            start_x,
+            0,
+            &wx,
+            &wy);
+
+  MidiNote * mn = mnw->midi_note;
+  self->start_midi_note = mn;
+  self->start_midi_note_clone =
+    midi_note_clone (mn, mn->midi_region);
+
   /* update arranger action */
-  if (P_TOOL == TOOL_ERASER)
-    ar_prv->action =
-      UI_OVERLAY_ACTION_ERASING;
-  else if (P_TOOL == TOOL_AUDITION)
-    ar_prv->action =
-      UI_OVERLAY_ACTION_AUDITIONING;
-  else if (midi_note_widget_is_resize_l (
-             mnw, start_x))
+  switch (P_TOOL)
     {
-      if (P_TOOL == TOOL_SELECT_NORMAL ||
-          P_TOOL == TOOL_EDIT)
+    case TOOL_ERASER:
+      ar_prv->action =
+        UI_OVERLAY_ACTION_ERASING;
+      break;
+    case TOOL_AUDITION:
+      ar_prv->action =
+        UI_OVERLAY_ACTION_AUDITIONING;
+      break;
+    case TOOL_SELECT_NORMAL:
+      if (midi_note_widget_is_resize_l (mnw, wx))
         ar_prv->action =
           UI_OVERLAY_ACTION_RESIZING_L;
-      else if (P_TOOL == TOOL_SELECT_STRETCH)
-        ar_prv->action =
-          UI_OVERLAY_ACTION_STRETCHING_L;
-    }
-  else if (midi_note_widget_is_resize_r (
-             mnw, start_x))
-    {
-      if (P_TOOL == TOOL_SELECT_NORMAL ||
-          P_TOOL == TOOL_EDIT)
+      else if (midi_note_widget_is_resize_r (mnw, wx))
         ar_prv->action =
           UI_OVERLAY_ACTION_RESIZING_R;
-      else if (P_TOOL == TOOL_SELECT_STRETCH)
+      else
+        ar_prv->action =
+          UI_OVERLAY_ACTION_STARTING_MOVING;
+      break;
+    case TOOL_SELECT_STRETCH:
+      if (midi_note_widget_is_resize_l (mnw, wx))
+        ar_prv->action =
+          UI_OVERLAY_ACTION_STRETCHING_L;
+      else if (midi_note_widget_is_resize_r (mnw, wx))
         ar_prv->action =
           UI_OVERLAY_ACTION_STRETCHING_R;
-    }
-  else
-    {
-      if (P_TOOL == TOOL_SELECT_NORMAL ||
-          P_TOOL == TOOL_SELECT_STRETCH)
-        {
-          ar_prv->action =
-            UI_OVERLAY_ACTION_STARTING_MOVING;
-          ui_set_cursor_from_name (
-            GTK_WIDGET (mnw),
-            "grabbing");
-        }
-      else if (P_TOOL == TOOL_EDIT)
-        {
-          ar_prv->action =
-            UI_OVERLAY_ACTION_AUTOFILLING;
-        }
+      else
+        ar_prv->action =
+          UI_OVERLAY_ACTION_STARTING_MOVING;
+      break;
+    case TOOL_EDIT:
+      if (midi_note_widget_is_resize_l (mnw, wx))
+        ar_prv->action =
+          UI_OVERLAY_ACTION_RESIZING_L;
+      else if (midi_note_widget_is_resize_r (mnw, wx))
+        ar_prv->action =
+          UI_OVERLAY_ACTION_RESIZING_R;
+      else
+        ar_prv->action =
+          UI_OVERLAY_ACTION_STARTING_MOVING;
+      break;
     }
 
-  /* select / deselect midi notes */
-  MidiNote * midi_note =
-    mnw->midi_note;
-  if (ar_prv->ctrl_held &&
-      (P_TOOL == TOOL_SELECT_NORMAL ||
-       P_TOOL == TOOL_SELECT_STRETCH))
+  /* select midi note if unselected */
+  if (P_TOOL == TOOL_EDIT ||
+      P_TOOL == TOOL_SELECT_NORMAL ||
+      P_TOOL == TOOL_SELECT_STRETCH)
     {
-      /* if ctrl pressed toggle on/off */
-      ARRANGER_WIDGET_SELECT_MIDI_NOTE (
-        self, midi_note, 1, 1);
-    }
-  else if (!array_contains (
-            MIDI_ARRANGER_SELECTIONS->midi_notes,
-            MIDI_ARRANGER_SELECTIONS->num_midi_notes,
-            midi_note))
-    {
-      /* else if not already selected select only it */
-      midi_arranger_widget_select_all (self, 0);
-      ARRANGER_WIDGET_SELECT_MIDI_NOTE (
-        self, midi_note, 1, 0);
+      /* if ctrl held & not selected, add to
+       * selections */
+      if (ar_prv->ctrl_held && !mn->selected)
+        {
+          ARRANGER_WIDGET_SELECT_MIDI_NOTE (
+            self, mn, 1, 1);
+        }
+      /* if ctrl not held & not selected, make it
+       * the only
+       * selection */
+      else if (!ar_prv->ctrl_held &&
+               !array_contains (
+                  MIDI_ARRANGER_SELECTIONS->midi_notes,
+                  MIDI_ARRANGER_SELECTIONS->num_midi_notes,
+                  mn))
+        {
+          ARRANGER_WIDGET_SELECT_MIDI_NOTE (
+            self, mn, 1, 0);
+        }
     }
 
   /* find highest and lowest selected regions */
@@ -416,6 +498,7 @@ midi_arranger_widget_create_note (
   MIDI_ARRANGER_SELECTIONS->midi_notes[0] =
     midi_note;
   MIDI_ARRANGER_SELECTIONS->num_midi_notes = 1;
+  midi_note_widget_select (midi_note->widget, 1);
 }
 
 /**
@@ -464,7 +547,9 @@ midi_arranger_widget_select (
           MidiNote * midi_note =
             midi_note_widget->midi_note;
 
-          g_message ("TODO: remove midi note");
+          midi_region_remove_midi_note (
+            midi_note->midi_region,
+            midi_note);
         }
     }
   else
@@ -473,7 +558,8 @@ midi_arranger_widget_select (
       for (int i = 0; i < num_midi_note_widgets; i++)
         {
           MidiNoteWidget * midi_note_widget =
-            Z_MIDI_NOTE_WIDGET (midi_note_widgets[i]);
+            Z_MIDI_NOTE_WIDGET (
+              midi_note_widgets[i]);
           MidiNote * midi_note =
             midi_note_widget->midi_note;
           ARRANGER_WIDGET_SELECT_MIDI_NOTE (
@@ -716,14 +802,14 @@ void
 midi_arranger_widget_on_drag_end (
   MidiArrangerWidget * self)
 {
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
   for (int i = 0;
        i < MIDI_ARRANGER_SELECTIONS->num_midi_notes;
        i++)
     {
       MidiNote * midi_note =
         MIDI_ARRANGER_SELECTIONS->midi_notes[i];
-      ui_set_cursor_from_name (
-        GTK_WIDGET (midi_note->widget), "default");
 
       if (midi_note->widget)
         midi_note_widget_update_tooltip (
@@ -732,13 +818,24 @@ midi_arranger_widget_on_drag_end (
       EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
                    midi_note);
     }
-  self->start_midi_note = NULL;
 
-  ARRANGER_WIDGET_GET_PRIVATE (self);
-
-  /* if didn't click on something */
-  if (ar_prv->action !=
+  /* if something was clicked with ctrl without
+   * moving*/
+  if (ar_prv->action ==
         UI_OVERLAY_ACTION_STARTING_MOVING)
+    {
+      /* deselect it */
+      if (ar_prv->ctrl_held)
+        if (self->start_midi_note_clone &&
+            self->start_midi_note_clone->selected)
+          {
+            ARRANGER_WIDGET_SELECT_MIDI_NOTE (
+              self, self->start_midi_note,
+              0, 1);
+          }
+    }
+  /* if didn't click on something */
+  else
     {
       self->start_midi_note = NULL;
     }
@@ -790,6 +887,16 @@ midi_arranger_widget_refresh_children (
     }
 }
 
+static gboolean
+on_focus (GtkWidget       *widget,
+          gpointer         user_data)
+{
+  /*g_message ("timeline focused");*/
+  MAIN_WINDOW->last_focused = widget;
+
+  return FALSE;
+}
+
 static void
 midi_arranger_widget_class_init (
   MidiArrangerWidgetClass * klass)
@@ -799,4 +906,7 @@ midi_arranger_widget_class_init (
 static void
 midi_arranger_widget_init (MidiArrangerWidget *self)
 {
+  g_signal_connect (
+    self, "grab-focus",
+    G_CALLBACK (on_focus), self);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -52,7 +52,8 @@ delete_timeline_selections_action_do (
       Region * _r = self->ts->regions[i];
 
       /* find actual region */
-      Region * r = PROJECT->regions[_r->cloned_from];
+      Region * r =
+        project_get_region (_r->cloned_from);
 
       /* remove it */
       track_remove_region (r->track,

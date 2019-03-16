@@ -45,6 +45,8 @@ ui_set_cursor_from_icon_name (
 {
   GdkWindow * win =
     gtk_widget_get_parent_window (widget);
+  if (!GDK_IS_WINDOW (win))
+    return;
   GdkPixbuf * pixbuf =
     gtk_icon_theme_load_icon (
       gtk_icon_theme_get_default (),
@@ -70,6 +72,8 @@ ui_set_cursor_from_name (
 {
   GdkWindow * win =
     gtk_widget_get_parent_window (widget);
+  if (!GDK_IS_WINDOW (win))
+    return;
   GdkCursor * cursor =
     gdk_cursor_new_from_name (
       gdk_display_get_default (),

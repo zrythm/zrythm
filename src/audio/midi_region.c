@@ -22,7 +22,11 @@
 #include "audio/midi_region.h"
 #include "audio/region.h"
 #include "audio/track.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/clip_editor.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_region.h"
 #include "gui/widgets/region.h"
 #include "project.h"
@@ -84,6 +88,8 @@ midi_region_add_midi_note (MidiRegion * region,
     region->num_midi_notes - 1] =
       region->midi_notes[
         region->num_midi_notes - 1]->id;
+
+  EVENTS_PUSH (ET_MIDI_NOTE_CREATED, NULL);
 }
 
 /**
@@ -104,6 +110,36 @@ midi_region_find_unended_note (MidiRegion * self,
     }
   g_assert_not_reached ();
   return NULL;
+}
+
+/**
+ * Removes the MIDI note and its components
+ * completely.
+ */
+void
+midi_region_remove_midi_note (
+  Region *   region,
+  MidiNote * midi_note)
+{
+  array_delete (region->midi_note_ids,
+                region->num_midi_notes,
+                midi_note->id);
+  region->num_midi_notes++;
+  array_delete (region->midi_notes,
+                region->num_midi_notes,
+                midi_note);
+
+  midi_note_free (midi_note);
+  if (MIDI_ARRANGER_SELECTIONS)
+    {
+      array_delete (MIDI_ARRANGER_SELECTIONS->midi_notes,
+                    MIDI_ARRANGER_SELECTIONS->num_midi_notes,
+                    midi_note);
+    }
+
+  if (MIDI_ARRANGER->start_midi_note ==
+        midi_note)
+    MIDI_ARRANGER->start_midi_note = NULL;
 }
 
 /**

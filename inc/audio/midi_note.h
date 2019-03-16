@@ -65,12 +65,11 @@ typedef struct MidiNote
   int             selected;
 
   /**
-   * ID cloned from.
+   * ID of note in use.
    *
-   * Used when deleting.
-   * TODO figure out a better way
+   * Used when doing/undoing.
    */
-  //int             cloned_from;
+  int             actual_note;
 } MidiNote;
 
 static const cyaml_schema_field_t
@@ -123,6 +122,7 @@ midi_note_new (MidiRegion * region,
 
 /**
  * Deep clones the midi note.
+ * FIXME is owner region necessary?
  */
 MidiNote *
 midi_note_clone (MidiNote *  src,

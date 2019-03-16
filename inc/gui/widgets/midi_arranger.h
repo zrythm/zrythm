@@ -20,6 +20,7 @@
 #ifndef __GUI_WIDGETS_MIDI_ARRANGER_H__
 #define __GUI_WIDGETS_MIDI_ARRANGER_H__
 
+#include "gui/backend/tool.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/piano_roll.h"
@@ -55,6 +56,11 @@ typedef struct _MidiArrangerWidget
    */
   MidiNote *               start_midi_note;
 
+  /** Used to reference the midi note information
+   * at the start of the action. */
+  MidiNote *               start_midi_note_clone;
+
+
   /** Temporary start positions, set on drag_begin and
    * used in drag_update to move the objects accordingly
    */
@@ -74,6 +80,15 @@ midi_arranger_widget_set_allocation (
   MidiArrangerWidget * self,
   GtkWidget *          widget,
   GdkRectangle *       allocation);
+
+/**
+ * Returns the appropriate cursor based on the
+ * current hover_x and y.
+ */
+ArrangerCursor
+midi_arranger_widget_get_cursor (
+  UiOverlayAction action,
+  Tool            tool);
 
 int
 midi_arranger_widget_get_note_at_y (double y);

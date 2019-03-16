@@ -192,6 +192,12 @@ typedef enum UiOverlayAction
     "audio-speakers-symbolic", \
     3, 6);
 
+#define ui_set_hand_cursor(widget) \
+  ui_set_cursor_from_icon_name ( \
+    GTK_WIDGET (widget), \
+    "hand", \
+    3, 6);
+
 /**
  * Sets cursor from icon name.
  */

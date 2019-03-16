@@ -49,6 +49,12 @@ typedef struct _MidiNoteWidget
   UiCursorState            cursor_state;
   GtkWindow *            tooltip_win;
   GtkLabel *             tooltip_label;
+
+  /** If cursor is at resizing L. */
+  int                      resize_l;
+
+  /** If cursor is at resizing R. */
+  int                      resize_r;
 } MidiNoteWidget;
 
 /**

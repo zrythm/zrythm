@@ -37,7 +37,7 @@ G_DECLARE_FINAL_TYPE (BotDockEdgeWidget,
  */
 #define SHOW_CLIP_EDITOR \
   gtk_notebook_set_current_page ( \
-    MW_BOT_DOCK_EDGE->bot_notebook, 1)
+    MW_BOT_DOCK_EDGE->bot_notebook, 0)
 
 typedef struct _MixerWidget MixerWidget;
 typedef struct _ClipEditorWidget ClipEditorWidget;

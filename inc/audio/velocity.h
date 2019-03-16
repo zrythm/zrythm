@@ -24,6 +24,12 @@
 
 #include <cyaml/cyaml.h>
 
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
+
 typedef struct MidiNote MidiNote;
 typedef struct _VelocityWidget VelocityWidget;
 
@@ -65,5 +71,15 @@ velocity_clone (Velocity * src);
 
 Velocity *
 velocity_default ();
+
+/**
+ * Destroys the velocity instance.
+ */
+void
+velocity_free (Velocity * self);
+
+/**
+ * @}
+ */
 
 #endif

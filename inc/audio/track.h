@@ -272,7 +272,7 @@ track_add_region (Track * track,
 void
 track_remove_region (Track * track,
                      Region * region,
-                     int      delete);
+                     int      free);
 
 /**
  * Returns the region at the given position, or NULL.

@@ -425,6 +425,15 @@ region_get_start_region (Region ** regions,
                          int       num_regions);
 
 /**
+ * Removes the MIDI note and its components
+ * completely.
+ */
+void
+region_remove_midi_note (
+  Region *   region,
+  MidiNote * midi_note);
+
+/**
  * Clone region.
  *
  * Creates a new region and either links to the original or

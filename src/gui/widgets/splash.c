@@ -1,7 +1,5 @@
 /*
- * gui/widgets/splash.c - Splash window
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -32,10 +30,11 @@ G_DEFINE_TYPE (SplashWindowWidget,
 SplashWindowWidget *
 splash_window_widget_new (ZrythmApp * app)
 {
-  SplashWindowWidget * self = g_object_new (SPLASH_WINDOW_WIDGET_TYPE,
-                                            "application",
-                                            app,
-                                            NULL);
+  SplashWindowWidget * self =
+    g_object_new (SPLASH_WINDOW_WIDGET_TYPE,
+                  "application", app,
+                  "visible", 1,
+                  NULL);
   gtk_progress_bar_set_fraction (self->progress_bar,
                                  0.0);
   /* set theme */

@@ -429,8 +429,10 @@ zrythm_app_startup (GApplication* _app)
   app = _app;
 
   /* show splash screen */
-  splash = splash_window_widget_new (ZRYTHM_APP (app));
-  gtk_window_present (GTK_WINDOW (splash));
+  splash =
+    splash_window_widget_new (ZRYTHM_APP (app));
+  gtk_window_present (
+    GTK_WINDOW (splash));
 
   /* start initialization task */
   task_id = calloc (1, sizeof (TaskId));

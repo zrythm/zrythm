@@ -213,7 +213,9 @@ arranger_bg_widget_draw_selections (
   /* if action is selecting and not selecting range
    * (in the case of timeline */
   if (ar_prv->action ==
-        UI_OVERLAY_ACTION_SELECTING)
+        UI_OVERLAY_ACTION_SELECTING ||
+      ar_prv->action ==
+        UI_OVERLAY_ACTION_DELETE_SELECTING)
     {
       z_cairo_draw_selection (cr,
                               ar_prv->start_x,

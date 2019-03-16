@@ -283,8 +283,35 @@ arranger_widget_set_cursor (
       g_list_free (children);
       break;
     case ARRANGER_CURSOR_GRAB:
+      ui_set_hand_cursor (self);
+
+      children =
+        gtk_container_get_children (
+          GTK_CONTAINER (self));
+      for (iter = children;
+           iter != NULL;
+           iter = g_list_next (iter))
+        {
+          ui_set_hand_cursor (iter->data);
+        }
+      g_list_free (children);
       break;
     case ARRANGER_CURSOR_GRABBING:
+      ui_set_cursor_from_name (
+        GTK_WIDGET (self), "grabbing");
+
+      children =
+        gtk_container_get_children (
+          GTK_CONTAINER (self));
+      for (iter = children;
+           iter != NULL;
+           iter = g_list_next (iter))
+        {
+          ui_set_cursor_from_name (
+            GTK_WIDGET (iter->data),
+            "grabbing");
+        }
+      g_list_free (children);
       break;
     case ARRANGER_CURSOR_GRABBING_COPY:
       ui_set_cursor_from_name (
@@ -353,7 +380,23 @@ arranger_widget_set_cursor (
             "e-resize");
         }
       g_list_free (children);
-      g_message ("e resiize");
+      break;
+    case ARRANGER_CURSOR_RANGE:
+      ui_set_cursor_from_name (
+        GTK_WIDGET (self), "text");
+
+      children =
+        gtk_container_get_children (
+          GTK_CONTAINER (self));
+      for (iter = children;
+           iter != NULL;
+           iter = g_list_next (iter))
+        {
+          ui_set_cursor_from_name (
+            GTK_WIDGET (iter->data),
+            "text");
+        }
+      g_list_free (children);
       break;
     }
 }
@@ -526,15 +569,13 @@ arranger_widget_select (
           else if (type == CHORD_WIDGET_TYPE)
             chord_widget_select (
               ((Chord *)r)->widget, 0);
-
           else if (type ==
                      AUTOMATION_POINT_WIDGET_TYPE)
             automation_point_widget_select (
               ((AutomationPoint *)r)->widget, 0);
           else if (type == MIDI_NOTE_WIDGET_TYPE)
             midi_note_widget_select (
-              ((MidiNote *)child)->widget, 0);
-          g_message ("deselecting selections");
+              ((MidiNote *)r)->widget, 0);
         }
       *num = 0;
     }
@@ -561,7 +602,6 @@ arranger_widget_select (
       else if (type == MIDI_NOTE_WIDGET_TYPE)
         midi_note_widget_select (
           ((MidiNote *)child)->widget, 0);
-      g_message ("deselecting selected item");
     }
   else if (select && !array_contains (array,
                       *num,
@@ -583,8 +623,6 @@ arranger_widget_select (
       else if (type == MIDI_NOTE_WIDGET_TYPE)
         midi_note_widget_select (
           ((MidiNote *)child)->widget, 1);
-
-      g_message ("selecting item");
     }
 }
 
@@ -619,8 +657,9 @@ arranger_widget_refresh_all_backgrounds ()
 }
 
 void
-arranger_widget_select_all (ArrangerWidget *  self,
-                            int               select)
+arranger_widget_select_all (
+  ArrangerWidget *  self,
+  int               select)
 {
   GET_ARRANGER_ALIASES (self);
 
@@ -1062,6 +1101,22 @@ drag_update (GtkGestureDrag * gesture,
       UI_OVERLAY_ACTION_DELETE_SELECTING;
   else if (ar_prv->action ==
              UI_OVERLAY_ACTION_STARTING_MOVING)
+    {
+      if (ar_prv->ctrl_held)
+        ar_prv->action =
+          UI_OVERLAY_ACTION_MOVING_COPY;
+      else
+        ar_prv->action =
+          UI_OVERLAY_ACTION_MOVING;
+    }
+  else if (ar_prv->action ==
+             UI_OVERLAY_ACTION_MOVING &&
+           ar_prv->ctrl_held)
+    ar_prv->action =
+      UI_OVERLAY_ACTION_MOVING_COPY;
+  else if (ar_prv->action ==
+             UI_OVERLAY_ACTION_MOVING_COPY &&
+           !ar_prv->ctrl_held)
     ar_prv->action =
       UI_OVERLAY_ACTION_MOVING;
 
@@ -1173,8 +1228,6 @@ drag_update (GtkGestureDrag * gesture,
       arranger_widget_px_to_pos (
         self, ar_prv->start_x + offset_x, &pos, 1);
 
-      g_message ("resizing r");
-
       if (timeline)
         {
           if (timeline->resizing_range)
@@ -1267,6 +1320,66 @@ drag_update (GtkGestureDrag * gesture,
             offset_y);
         }
     } /* endif MOVING */
+  /* if copy-moving the selection */
+  else if (ar_prv->action ==
+             UI_OVERLAY_ACTION_MOVING_COPY)
+    {
+      /* get the offset pos (so we can add it to the start
+       * positions and then snap it) */
+      Position diff_pos;
+      int is_negative = offset_x < 0;
+      arranger_widget_px_to_pos (
+        self, abs (offset_x), &diff_pos, 0);
+      long ticks_diff =
+        position_to_ticks (&diff_pos);
+      if (is_negative)
+        ticks_diff = - ticks_diff;
+
+      /* get new start pos and snap it */
+      Position new_start_pos;
+      position_set_to_pos (&new_start_pos,
+                           &ar_prv->start_pos);
+      position_add_ticks (&new_start_pos, ticks_diff);
+      if (SNAP_GRID_ANY_SNAP(ar_prv->snap_grid) &&
+          !ar_prv->shift_held)
+        position_snap (NULL,
+                       &new_start_pos,
+                       NULL,
+                       NULL,
+                       ar_prv->snap_grid);
+
+      /* get frames difference from snapped new position to
+       * start pos */
+      ticks_diff = position_to_ticks (&new_start_pos) -
+        position_to_ticks (&ar_prv->start_pos);
+
+      if (timeline)
+        {
+          timeline_arranger_widget_move_items_x (
+            timeline,
+            ticks_diff);
+        }
+      else if (midi_arranger)
+        {
+          midi_arranger_widget_move_items_x (
+            midi_arranger,
+            ticks_diff);
+        }
+
+      /* handle moving up/down */
+      if (timeline)
+        {
+          timeline_arranger_widget_move_items_y (
+            timeline,
+            offset_y);
+        }
+      else if (midi_arranger)
+        {
+          midi_arranger_widget_move_items_y (
+            midi_arranger,
+            offset_y);
+        }
+    } /* endif MOVING_COPY */
   else if (ar_prv->action ==
              UI_OVERLAY_ACTION_AUTOFILLING)
     {
@@ -1284,10 +1397,14 @@ drag_update (GtkGestureDrag * gesture,
   gtk_widget_queue_allocate(GTK_WIDGET (self));
 
   /* redraw midi ruler if region positions were changed */
-  if (timeline && TL_SELECTIONS->num_regions > 0 &&
-      (ar_prv->action == UI_OVERLAY_ACTION_MOVING ||
-      ar_prv->action == UI_OVERLAY_ACTION_RESIZING_L ||
-      ar_prv->action == UI_OVERLAY_ACTION_RESIZING_R))
+  if (timeline &&
+      TL_SELECTIONS->num_regions > 0 &&
+      (ar_prv->action ==
+         UI_OVERLAY_ACTION_MOVING ||
+      ar_prv->action ==
+        UI_OVERLAY_ACTION_RESIZING_L ||
+      ar_prv->action ==
+        UI_OVERLAY_ACTION_RESIZING_R))
     gtk_widget_queue_draw (GTK_WIDGET (MIDI_RULER));
 
   /* update last offsets */
@@ -1670,8 +1787,8 @@ arranger_widget_refresh_cursor (
 
   ArrangerCursor ac;
 
-  g_message ("over action %d",
-             ar_prv->action);
+  /*g_message ("over action %d",*/
+             /*ar_prv->action);*/
 
   if (ar_prv->action ==
         UI_OVERLAY_ACTION_NONE)
@@ -1681,26 +1798,17 @@ arranger_widget_refresh_cursor (
         {
           if (timeline)
             {
-              RegionWidget * rw =
-                timeline_arranger_widget_get_hit_region (
-                  timeline,
-                  ar_prv->hover_x,
-                  ar_prv->hover_y);
-              REGION_WIDGET_GET_PRIVATE (rw);
-              /* TODO chords, aps */
-
-              if (rw && rw_prv->resize_l)
-                {
-                  ac =
-                    ARRANGER_CURSOR_RESIZING_L;
-                }
-              else if (rw && rw_prv->resize_r)
-                {
-                  ac =
-                    ARRANGER_CURSOR_RESIZING_R;
-                }
-              else
-                ac = ARRANGER_CURSOR_SELECT;
+              ac =
+                timeline_arranger_widget_get_cursor (
+                  ar_prv->action,
+                  P_TOOL);
+            }
+          else if (midi_arranger)
+            {
+              ac =
+                midi_arranger_widget_get_cursor (
+                  ar_prv->action,
+                  P_TOOL);
             }
         }
       else if (P_TOOL == TOOL_EDIT)
@@ -1745,15 +1853,21 @@ arranger_widget_refresh_cursor (
   else if (ar_prv->action ==
              UI_OVERLAY_ACTION_RESIZING_L)
     {
-      ac = ARRANGER_CURSOR_RESIZING_L;
+      if (timeline && timeline->resizing_range)
+        ac = ARRANGER_CURSOR_RANGE;
+      else
+        ac = ARRANGER_CURSOR_RESIZING_L;
     }
   else if (ar_prv->action ==
              UI_OVERLAY_ACTION_RESIZING_R)
     {
-      ac = ARRANGER_CURSOR_RESIZING_R;
+      if (timeline && timeline->resizing_range)
+        ac = ARRANGER_CURSOR_RANGE;
+      else
+        ac = ARRANGER_CURSOR_RESIZING_R;
     }
 
-  g_message ("ac %d", ac);
+  /*g_message ("ac %d", ac);*/
 
   arranger_widget_set_cursor (
     self, ac);

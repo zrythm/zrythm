@@ -192,45 +192,12 @@ timeline_bg_draw_cb (
   return 0;
 }
 
-static gboolean
-on_motion (TimelineBgWidget * self,
-           GdkEventMotion *event)
-{
-  if (event->type == GDK_MOTION_NOTIFY)
-    {
-      Track * track =
-        timeline_arranger_widget_get_track_at_y (
-          event->y);
-
-      if (P_TOOL == TOOL_SELECT_NORMAL ||
-          P_TOOL == TOOL_SELECT_STRETCH)
-        {
-          if (track)
-            {
-              if (track_widget_is_cursor_in_top_half (
-                    track->widget,
-                    event->y))
-                {
-                  /* set cursor to normal */
-                  /*ui_set_pointer_cursor (self);*/
-                }
-              else
-                {
-                  /* set cursor to range selection */
-                  /*ui_set_cursor_from_name (*/
-                    /*GTK_WIDGET (self),*/
-                    /*"text");*/
-                }
-            }
-          else
-            {
-              /* set cursor to normal */
-              /*ui_set_pointer_cursor (self);*/
-            }
-        }
-    }
-  return FALSE;
-}
+/*static gboolean*/
+/*on_motion (TimelineBgWidget * self,*/
+           /*GdkEventMotion *event)*/
+/*{*/
+  /*return FALSE;*/
+/*}*/
 
 TimelineBgWidget *
 timeline_bg_widget_new (RulerWidget *    ruler,
@@ -248,7 +215,8 @@ timeline_bg_widget_new (RulerWidget *    ruler,
 }
 
 static void
-timeline_bg_widget_class_init (TimelineBgWidgetClass * _klass)
+timeline_bg_widget_class_init (
+  TimelineBgWidgetClass * _klass)
 {
 }
 
@@ -261,7 +229,7 @@ timeline_bg_widget_init (TimelineBgWidget *self )
   g_signal_connect (
     G_OBJECT (self), "draw",
     G_CALLBACK (timeline_bg_draw_cb), NULL);
-  g_signal_connect (
-    G_OBJECT(self), "motion-notify-event",
-    G_CALLBACK (on_motion),  self);
+  /*g_signal_connect (*/
+    /*G_OBJECT(self), "motion-notify-event",*/
+    /*G_CALLBACK (on_motion),  self);*/
 }

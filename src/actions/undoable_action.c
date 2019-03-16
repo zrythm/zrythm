@@ -20,6 +20,7 @@
  */
 
 #include "actions/create_chords_action.h"
+#include "actions/delete_midi_arranger_selections_action.h"
 #include "actions/delete_timeline_selections_action.h"
 #include "actions/edit_channel_action.h"
 #include "actions/edit_track_action.h"
@@ -56,6 +57,10 @@ undoable_action_do (UndoableAction * self)
     case UNDOABLE_ACTION_TYPE_DELETE_TL_SELECTIONS:
       delete_timeline_selections_action_do (
         (DeleteTimelineSelectionsAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_DELETE_MA_SELECTIONS:
+      delete_midi_arranger_selections_action_do (
+        (DeleteMidiArrangerSelectionsAction *) self);
       break;
     case UNDOABLE_ACTION_TYPE_CREATE_CHORDS:
       create_chords_action_do (
@@ -96,6 +101,10 @@ undoable_action_undo (UndoableAction * self)
       delete_timeline_selections_action_undo (
         (DeleteTimelineSelectionsAction *) self);
       break;
+    case UNDOABLE_ACTION_TYPE_DELETE_MA_SELECTIONS:
+      delete_midi_arranger_selections_action_undo (
+        (DeleteMidiArrangerSelectionsAction *) self);
+      break;
     case UNDOABLE_ACTION_TYPE_CREATE_CHORDS:
       create_chords_action_undo (
         (CreateChordsAction *) self);
@@ -125,6 +134,10 @@ undoable_action_free (UndoableAction * self)
     case UNDOABLE_ACTION_TYPE_DELETE_TL_SELECTIONS:
       delete_timeline_selections_action_free (
         (DeleteTimelineSelectionsAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_DELETE_MA_SELECTIONS:
+      delete_midi_arranger_selections_action_free (
+        (DeleteMidiArrangerSelectionsAction *) self);
       break;
     case UNDOABLE_ACTION_TYPE_CREATE_CHORDS:
       create_chords_action_free (

@@ -1,7 +1,5 @@
 /*
- * audio/velocity.c - velocity for MIDI notes
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -54,4 +52,14 @@ velocity_default ()
   self->vel = DEFAULT_VELOCITY;
 
   return self;
+}
+
+void
+velocity_free (Velocity * self)
+{
+  if (self->widget)
+    gtk_widget_destroy (
+      GTK_WIDGET (self->widget));
+
+  free (self);
 }

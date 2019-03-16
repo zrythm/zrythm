@@ -52,6 +52,7 @@ static gboolean
 draw_cb (GtkDrawingArea * widget, cairo_t *cr,
          MidiNoteWidget * self)
 {
+  /*g_message ("drawing %d", self->midi_note->id);*/
   guint width, height;
   GtkStyleContext *context;
 
@@ -86,12 +87,22 @@ draw_cb (GtkDrawingArea * widget, cairo_t *cr,
  return FALSE;
 }
 
-static int
+static gboolean
 on_motion (GtkWidget *      widget,
            GdkEventMotion * event,
            MidiNoteWidget * self)
 {
   ARRANGER_WIDGET_GET_PRIVATE (MIDI_ARRANGER);
+
+  if (event->type == GDK_MOTION_NOTIFY)
+    {
+      self->resize_l =
+        midi_note_widget_is_resize_l (
+          self, event->x);
+      self->resize_r =
+        midi_note_widget_is_resize_r (
+          self, event->x);
+    }
 
   if (event->type == GDK_ENTER_NOTIFY)
     {
@@ -103,58 +114,11 @@ on_motion (GtkWidget *      widget,
         "MIDI Note - Click and drag to move around ("
         "hold Shift to disable snapping)");
     }
-  if (event->type == GDK_MOTION_NOTIFY)
-    {
-      if (midi_note_widget_is_resize_l (
-            self, event->x))
-        {
-          self->cursor_state =
-            UI_CURSOR_STATE_RESIZE_L;
-          if (ar_prv->action !=
-                UI_OVERLAY_ACTION_MOVING)
-            ui_set_cursor_from_name (widget, "w-resize");
-        }
-
-      else if (midi_note_widget_is_resize_r (
-                 self, event->x))
-        {
-          self->cursor_state =
-            UI_CURSOR_STATE_RESIZE_R;
-          if (ar_prv->action !=
-                UI_OVERLAY_ACTION_MOVING)
-            ui_set_cursor_from_name (widget, "e-resize");
-        }
-      else
-        {
-          self->cursor_state =
-            UI_CURSOR_STATE_DEFAULT;
-          if (ar_prv->action !=
-                UI_OVERLAY_ACTION_MOVING &&
-              ar_prv->action !=
-                UI_OVERLAY_ACTION_STARTING_MOVING &&
-              ar_prv->action !=
-                UI_OVERLAY_ACTION_RESIZING_L &&
-              ar_prv->action !=
-                UI_OVERLAY_ACTION_RESIZING_R)
-            {
-              ui_set_cursor_from_name (widget, "default");
-            }
-        }
-    }
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
-      if (ar_prv->action !=
-            UI_OVERLAY_ACTION_MOVING &&
-          ar_prv->action !=
-            UI_OVERLAY_ACTION_RESIZING_L &&
-          ar_prv->action !=
-            UI_OVERLAY_ACTION_RESIZING_R)
-        {
-          ui_set_cursor_from_name (widget, "default");
-          gtk_widget_unset_state_flags (
-            GTK_WIDGET (self),
-            GTK_STATE_FLAG_PRELIGHT);
-        }
+      gtk_widget_unset_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_PRELIGHT);
       bot_bar_change_status ("");
     }
 
@@ -256,7 +220,8 @@ midi_note_widget_select (MidiNoteWidget * self,
         GTK_STATE_FLAG_SELECTED);
     }
   gtk_widget_queue_draw (GTK_WIDGET (self));
-  gtk_widget_queue_draw (GTK_WIDGET (self->midi_note->vel->widget));
+  gtk_widget_queue_draw (
+    GTK_WIDGET (self->midi_note->vel->widget));
 }
 
 MidiNoteWidget *
