@@ -17,7 +17,7 @@
 #  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 #
 # Initialize autoconf: package name, version, bug report address
-AC_INIT([zrythm], [0.1.052], [https://git.zrythm.org/zrythm/zrythm/issues])
+AC_INIT([zrythm], [0.1.057], [https://git.zrythm.org/zrythm/zrythm/issues])
 
 # Declare config.h as output header
 AC_CONFIG_HEADERS([config.h])
