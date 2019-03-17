@@ -116,11 +116,8 @@ on_add_lane_clicked (
   if (!at->al)
     {
       at->al = automation_lane_new (at);
-      array_append (atl->automation_lanes,
-                    atl->num_automation_lanes,
-                    at->al);
-      g_message ("atl num auto lanes %d",
-                 atl->num_automation_lanes);
+      automation_tracklist_add_automation_lane (
+        atl, at->al);
     }
   else
     {

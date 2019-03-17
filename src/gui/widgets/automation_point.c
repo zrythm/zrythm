@@ -27,6 +27,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/ruler.h"
+#include "project.h"
 #include "utils/ui.h"
 
 G_DEFINE_TYPE (AutomationPointWidget,
@@ -164,6 +165,10 @@ automation_point_widget_new (
   self->ap = ap;
 
   /* set tooltip text */
+  if (!ap->at->automatable)
+    ap->at->automatable =
+      project_get_automatable (
+        ap->at->automatable_id);
   char * tooltip =
     g_strdup_printf (
       "%s %f",

@@ -60,10 +60,24 @@ add_automation_track (AutomationTracklist * self,
   array_append (self->automation_tracks,
                 self->num_automation_tracks,
                 at);
-  self->at_ids[
-    self->num_automation_tracks - 1] =
-      self->automation_tracks[
-        self->num_automation_tracks - 1]->id;
+  int size = self->num_automation_tracks - 1;
+  array_append (self->at_ids,
+                size,
+                at->id);
+}
+
+void
+automation_tracklist_add_automation_lane (
+  AutomationTracklist * self,
+  AutomationLane *      al)
+{
+  array_append (self->automation_lanes,
+                self->num_automation_lanes,
+                al);
+  int size = self->num_automation_lanes - 1;
+  array_append (self->al_ids,
+                size,
+                al->id);
 }
 
 static void
@@ -98,13 +112,8 @@ automation_tracklist_init (
     automatable_get_automation_track (fader);
   AutomationLane * fader_al =
     automation_lane_new (fader_at);
-  array_append (self->automation_lanes,
-                self->num_automation_lanes,
-                fader_al);
-  self->al_ids[
-    self->num_automation_lanes - 1] =
-      self->automation_lanes[
-        self->num_automation_lanes - 1]->id;
+  automation_tracklist_add_automation_lane (
+    self, fader_al);
 }
 
 void
