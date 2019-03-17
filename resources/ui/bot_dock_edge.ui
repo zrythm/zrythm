@@ -107,7 +107,7 @@
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
-                <property name="icon-name">audio-card</property>
+                <property name="resource">/org/zrythm/icons/breeze-icons/devices/22/audio-card.svg</property>
               </object>
               <packing>
                 <property name="expand">0</property>
@@ -139,7 +139,7 @@
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
-                <property name="icon-name">emblem-symbolic-link</property>
+                <property name="resource">/org/zrythm/icons/breeze-icons/emblems/16/emblem-symbolic-link.svg</property>
               </object>
               <packing>
                 <property name="expand">0</property>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg width="64" version="1.1" xmlns="http://www.w3.org/2000/svg" height="64" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+ <defs id="defs5455">
+  <linearGradient inkscape:collect="always" id="linearGradient4326">
+   <stop id="stop4328"/>
+   <stop offset="1" style="stop-opacity:0" id="stop4330"/>
+  </linearGradient>
+  <linearGradient inkscape:collect="always" xlink:href="#linearGradient4326" id="linearGradient4434" y1="502.798" x1="439.57144" y2="512.79803" x2="429.57144" gradientUnits="userSpaceOnUse"/>
+ </defs>
+ <metadata id="metadata5458"/>
+ <g inkscape:label="Capa 1" inkscape:groupmode="layer" id="layer1" transform="matrix(1 0 0 1 -384.57143 -483.798)">
+  <path style="fill:#3b3f42;fill-rule:evenodd" id="path4422" d="M 41 5 L 35 11 L 46 22 L 35 33 L 41 39 L 58 22 L 41 5 z " transform="matrix(1 0 0 1 384.57143 483.798)"/>
+  <rect width="6.250019" x="400.32141" y="489.79797" rx="3.12501" height="6.250019" style="fill:#fa8865" id="rect4119"/>
+  <flowRoot line-height="125%" style="font-size:32.500004;font-family:sans-serif" id="flowRoot4170">
+   <flowRegion id="flowRegion4172">
+    <rect width="87.75001" x="452.32144" y="489.79807" height="48.750004" id="rect4174"/>
+   </flowRegion>
+   <flowPara id="flowPara4176">Plasm</flowPara>
+  </flowRoot>
+  <rect width="9.00002" x="390.57141" y="509.2988" rx="4.499995" height="8.999991" style="fill:#63c605" id="rect4308"/>
+  <rect width="12.999995" x="403.57144" y="528.79803" rx="6.499998" height="12.999995" style="fill:#1b89f3" id="rect4312"/>
+  <path inkscape:connector-curvature="0" style="fill:url(#linearGradient4434);opacity:0.9;fill-rule:evenodd" id="path4426" d="m 423.57143,512.798 6,6 7,-7 -6,-6 z"/>
+ </g>
+</svg>

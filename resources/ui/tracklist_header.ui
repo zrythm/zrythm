@@ -30,7 +30,7 @@
       <object class="GtkImage">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="icon_name">application-msword</property>
+        <property name="resource">/org/zrythm/icons/breeze-icons/mimetypes/16/application-msword.svg</property>
       </object>
       <packing>
         <property name="left_attach">0</property>
@@ -59,7 +59,7 @@
           <object class="GtkImage">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="icon_name">gtk-add</property>
+            <property name="resource">/org/zrythm/icons/breeze-icons/actions/16/gtk-add.svg</property>
           </object>
         </child>
       </object>

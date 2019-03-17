@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg width="64" version="1.1" xmlns="http://www.w3.org/2000/svg" height="64" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+ <defs id="defs5455">
+  <linearGradient inkscape:collect="always" id="linearGradient4172-1">
+   <stop style="stop-color:#3daee9" id="stop4174-0"/>
+   <stop offset="1" style="stop-color:#6cc1ef" id="stop4176-9"/>
+  </linearGradient>
+  <linearGradient inkscape:collect="always" id="linearGradient4178-0" xlink:href="#linearGradient4172-1" y1="541.79797" y2="499.78421" gradientUnits="userSpaceOnUse" x2="0" gradientTransform="matrix(1 0 0 0.99967455 0 0.17645)"/>
+ </defs>
+ <metadata id="metadata5458"/>
+ <g inkscape:label="Capa 1" inkscape:groupmode="layer" id="layer1" transform="matrix(1 0 0 1 -384.57143 -483.798)">
+  <g inkscape:label="Capa 1" id="layer1-82" transform="matrix(1 0 0 1 0 0.000005)">
+   <path inkscape:connector-curvature="0" style="fill:#147eb8" id="rect4180-2" d="m 388.57143,489.79812 0,5 0,22 c 0,0.55373 0.446,1 1,1 l 54,0 c 0.55399,0 1,-0.44627 1,-1 l 0,-21.99023 c 0,-0.003 -0.002,-0.006 -0.002,-0.01 l 0.002,0 0,-1 -28,0 -4,-4 -24,0 z"/>
+   <path inkscape:connector-curvature="0" style="fill:url(#linearGradient4178-0)" id="rect4113-1" d="m 410.57143,499.79812 -4,4 -19,0 0,1 0.002,0 c -5e-5,0.004 -0.002,0.008 -0.002,0.0117 l 0,35.98828 0,1 1,0 56,0 1,0 0,-1 0,-35.98828 0,-0.0117 0,-5 z"/>
+   <path inkscape:connector-curvature="0" style="fill:#ffffff;fill-opacity:0.235294;fill-rule:evenodd" id="path4224-3" d="m 387.57144,503.79812 0,1 19.99999,0 3,-5 -4,4 z"/>
+   <path inkscape:connector-curvature="0" style="fill-opacity:0.235294;fill-rule:evenodd" id="path4228-2" d="m 388.57143,502.79812 0,1 18,0 4,-4 -6,3 z"/>
+   <path inkscape:connector-curvature="0" style="fill-opacity:0.235294" id="path4151-2-4" d="m 387.57143,540.7981 0,1 1,0 56,0 1,0 0,-1 -1,0 -56,0 -1,0 z"/>
+   <path inkscape:connector-curvature="0" style="fill:#ffffff;fill-opacity:0.235294;fill-rule:evenodd" id="path4196-9" d="m 28,6 3,5 2,0 27,0 0,-1 -27,0 -1,0 z" transform="matrix(1 0 0 1 384.57143 483.798)"/>
+  </g>
+  <path style="fill:#1272a5" id="rect4282" d="M 29 27 L 29 28 L 29 34 L 30 34 L 30 28 L 34 28 L 34 34 L 35 34 L 35 27 L 29 27 z M 25.707031 34.300781 L 25 35.007812 L 29.292969 39.300781 L 29.300781 39.292969 L 32.007812 42 L 34.707031 39.300781 L 39 35.007812 L 38.292969 34.300781 L 34 38.59375 L 32 40.59375 L 30 38.59375 L 25.707031 34.300781 z M 22 44 L 22 46 L 22 47 L 23 47 L 42 47 L 42 46 L 42 44 L 41 44 L 41 46 L 23 46 L 23 44 L 22 44 z " transform="matrix(1 0 0 1 384.57143 483.798)"/>
+ </g>
+</svg>

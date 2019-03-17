@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" viewBox="0 0 256 256">
+  <defs
+     id="defs4">
+    <style
+       id="current-color-scheme"
+       type="text/css">
+      .ColorScheme-Text {
+        color:#7B7C7E;
+      }
+      .ColorScheme-Background{
+        color:#31363b;
+      }
+      .ColorScheme-Highlight{
+        color:#3DAEE6;
+      }
+      .ColorScheme-ViewText {
+        color:#7B7C7E;
+      }
+      .ColorScheme-ViewBackground{
+        color:#FCFCFC;
+      }
+      .ColorScheme-ViewHover {
+        color:#3DAEE6;
+      }
+      .ColorScheme-ViewFocus{
+        color:#1E92FF;
+      }
+      .ColorScheme-ButtonText {
+        color:#7B7C7E;
+      }
+      .ColorScheme-ButtonBackground{
+        color:#31363b;
+      }
+      .ColorScheme-ButtonHover {
+        color:#3DAEE6;
+      }
+      .ColorScheme-ButtonFocus{
+        color:#1E92FF;
+      }
+      </style>
+  </defs>
+  <path
+     style="fill:currentColor;fill-opacity:0.5;stroke:none"
+     d="m 16,10 224,0 c 3.324,0 6,2.676 6,6 l 0,224 c 0,3.324 -2.676,6 -6,6 l -224,0 c -3.324,0 -6,-2.676 -6,-6 L 10,16 c 0,-3.324 2.676,-6 6,-6 z"
+     class="ColorScheme-ButtonText"
+     id="rect4240" />
+  <path
+     style="fill:currentColor;fill-opacity:1;stroke:none"
+     d="m 16,12 224,0 c 2.216,0 4,1.784 4,4 l 0,224 c 0,2.216 -1.784,4 -4,4 l -224,0 c -2.216,0 -4,-1.784 -4,-4 L 12,16 c 0,-2.216 1.784,-4 4,-4 z"
+     class="ColorScheme-Background"
+     id="rect4238" />
+  <path
+     inkscape:connector-curvature="0"
+     style="opacity:0.5;fill:currentColor;fill-opacity:1;stroke:none"
+     d="m 22.5,57.5 0,141 1,0 209,0 1,0 0,-141 -1,0 -209,0 -1,0 z m 1,1 34,0 0,34 -34,0 0,-34 z m 35,0 34,0 0,34 -34,0 0,-34 z m 35,0 34,0 0,34 -34,0 0,-34 z m 35,0 34,0 0,34 -34,0 0,-34 z m 35,0 34,0 0,34 -34,0 0,-34 z m 35,0 34,0 0,34 -34,0 0,-34 z m -175,35 34,0 0,34 -34,0 0,-34 z m 35,0 34,0 0,34 -34,0 0,-34 z m 35,0 34,0 0,34 -34,0 0,-34 z m 35,0 34,0 0,34 -34,0 0,-34 z m 35,0 34,0 0,34 -34,0 0,-34 z m 35,0 34,0 0,34 -34,0 0,-34 z m -175,35 34,0 0,34 -34,0 0,-34 z m 35,0 34,0 0,34 -34,0 0,-34 z m 35,0 34,0 0,34 -34,0 0,-34 z m 35,0 34,0 0,34 -34,0 0,-34 z m 35,0 34,0 0,34 -34,0 0,-34 z m 35,0 34,0 0,34 -34,0 0,-34 z m -175,35 34,0 0,34 -34,0 0,-34 z m 35,0 34,0 0,34 -34,0 0,-34 z m 35,0 34,0 0,34 -34,0 0,-34 z m 35,0 34,0 0,34 -34,0 0,-34 z m 35,0 34,0 0,34 -34,0 0,-34 z m 35,0 34,0 0,34 -34,0 0,-34 z"
+     class="ColorScheme-Text"
+     id="rect4603-4" />
+  <path
+     inkscape:connector-curvature="0"
+     style="opacity:1;fill:currentColor;fill-opacity:1;stroke:none"
+     d="m 58.5,58.5 0,34 34,0 0,-34 -34,0 z m 70,35 0,34 34,0 0,-34 -34,0 z m 70,0 0,34 34,0 0,-34 -34,0 z m -105,35 0,34 34,0 0,-34 -34,0 z m 70,0 0,34 34,0 0,-34 -34,0 z m 35,0 0,34 34,0 0,-34 -34,0 z m -175,35 0,34 34,0 0,-34 -34,0 z"
+     class="ColorScheme-Text"
+     id="rect4700-4" />
+</svg>

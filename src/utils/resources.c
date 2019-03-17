@@ -1,7 +1,5 @@
 /*
- * utils/resources.h - resource utils
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -33,6 +31,8 @@ get_icon_type_str (IconType icon_type)
       return g_strdup ("zrythm");
     case ICON_TYPE_GNOME_BUILDER:
       return g_strdup_printf ("gnome-builder");
+    case ICON_TYPE_BREEZE:
+      return g_strdup_printf ("breeze-icons");
     }
   g_assert_not_reached ();
   return NULL;

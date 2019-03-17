@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" version="1.1">
+ <defs>
+  <linearGradient id="a" y1="543.8" y2="503.8" gradientUnits="userSpaceOnUse" x2="0" gradientTransform="matrix(1.125,0,0,1,-435.64001,-499.79998)">
+   <stop stop-color="#c6cdd1"/>
+   <stop offset="1" stop-color="#e0e5e7"/>
+  </linearGradient>
+  <linearGradient id="c-7" y1="513.8" x1="398.57" y2="531.8" x2="416.57" gradientUnits="userSpaceOnUse" gradientTransform="translate(-394.166,-502.8)">
+   <stop stop-color="#292c2f"/>
+   <stop offset="1" stop-opacity="0"/>
+  </linearGradient>
+ </defs>
+ <path style="fill:url(#a)" d="m 4,6 35,0 5,5 0,31 -40,0 z"/>
+ <rect style="fill:#737b81;stroke-width:2.79999995;stroke-opacity:0.55" height="40" y="4" x="-42" width="1" transform="matrix(0,-1,1,0,0,0)"/>
+ <rect style="fill:#4c5154;stroke-width:0.1;fill-opacity:1" height="3" y="40" x="-40" width="4" transform="matrix(0,-1,1,0,0,0)"/>
+ <path style="opacity:0.2;fill:url(#c-7);fill-rule:evenodd" d="M 34,6 10,18 33,42 44,42 44,16 Z"/>
+ <g>
+  <rect y="6" x="10" height="12" width="24" style="fill:#4c5154;fill-opacity:1;stroke:none"/>
+  <path d="M 14 6 L 14 18 L 34 18 L 34 6 L 14 6 z M 27 8 L 31 8 L 31 16 L 27 16 L 27 8 z" style="fill:#eef1f2;fill-opacity:1;stroke:none"/>
+ </g>
+ <rect style="fill:#abb9be;stroke-width:2.79999995;stroke-opacity:0.55;fill-opacity:1" height="20" y="10" x="-39" width="13" transform="matrix(0,-1,1,0,0,0)"/>
+ <g transform="matrix(0,1,-1,0,47.000004,-54)">
+  <rect transform="matrix(0,-1,1,0,0,0)" style="fill:#fdbc4a;stroke-width:0.1" height="11" y="81" x="-36" width="18"/>
+  <rect transform="matrix(0,-1,1,0,0,0)" width="8" x="-34" y="87" height="1" style="fill:#ffffff;stroke-width:0.1"/>
+  <rect transform="matrix(0,-1,1,0,0,0)" width="6" x="-34" y="89" height="1" style="fill:#ffffff;stroke-width:0.1"/>
+  <rect width="11" x="-34" y="85" height="1" style="fill:#ffffff;stroke-width:0.1" transform="matrix(0,-1,1,0,0,0)"/>
+ </g>
+ <rect style="fill:#eef1f2;fill-opacity:1;stroke:none" width="1" height="2" x="41" y="37"/>
+</svg>

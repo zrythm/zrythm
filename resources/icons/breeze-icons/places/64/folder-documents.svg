@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg width="64" version="1.1" xmlns="http://www.w3.org/2000/svg" height="64" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+ <defs id="defs5455">
+  <linearGradient inkscape:collect="always" id="linearGradient4172-6">
+   <stop style="stop-color:#3daee9" id="stop4174-2"/>
+   <stop offset="1" style="stop-color:#6cc1ef" id="stop4176-8"/>
+  </linearGradient>
+  <linearGradient inkscape:collect="always" id="linearGradient4178" xlink:href="#linearGradient4172-6" y1="541.79797" y2="499.78421" gradientUnits="userSpaceOnUse" x2="0" gradientTransform="matrix(1 0 0 0.99967455 0 0.17645)"/>
+ </defs>
+ <metadata id="metadata5458"/>
+ <g inkscape:label="Capa 1" inkscape:groupmode="layer" id="layer1" transform="matrix(1 0 0 1 -384.57143 -483.798)">
+  <g inkscape:label="Capa 1" id="layer1-31" transform="matrix(1 0 0 1 0 0.000005)">
+   <path inkscape:connector-curvature="0" style="fill:#147eb8" id="rect4180" d="m 388.57143,489.79812 0,5 0,22 c 0,0.55373 0.446,1 1,1 l 54,0 c 0.55399,0 1,-0.44627 1,-1 l 0,-21.99023 c 0,-0.003 -0.002,-0.006 -0.002,-0.01 l 0.002,0 0,-1 -28,0 -4,-4 -24,0 z"/>
+   <path inkscape:connector-curvature="0" style="fill:url(#linearGradient4178)" id="rect4113" d="m 410.57143,499.79812 -4,4 -19,0 0,1 0.002,0 c -5e-5,0.004 -0.002,0.008 -0.002,0.0117 l 0,35.98828 0,1 1,0 56,0 1,0 0,-1 0,-35.98828 0,-0.0117 0,-5 z"/>
+   <path inkscape:connector-curvature="0" style="fill:#ffffff;fill-opacity:0.235294;fill-rule:evenodd" id="path4224-2" d="m 387.57144,503.79812 0,1 19.99999,0 3,-5 -4,4 z"/>
+   <path inkscape:connector-curvature="0" style="fill-opacity:0.235294;fill-rule:evenodd" id="path4228-3" d="m 388.57143,502.79812 0,1 18,0 4,-4 -6,3 z"/>
+   <path inkscape:connector-curvature="0" style="fill-opacity:0.235294" id="path4151-2" d="m 387.57143,540.7981 0,1 1,0 56,0 1,0 0,-1 -1,0 -56,0 -1,0 z"/>
+   <path inkscape:connector-curvature="0" style="fill:#ffffff;fill-opacity:0.235294;fill-rule:evenodd" id="path4196" d="m 28,6 3,5 2,0 27,0 0,-1 -27,0 -1,0 z" transform="matrix(1 0 0 1 384.57143 483.798)"/>
+  </g>
+  <path style="fill:#1272a5" id="path4126" d="M 23 27 L 23 28 L 23 46 L 23 47 L 35 47 L 41 41 L 41 27 L 23 27 z M 24 28 L 40 28 L 40 41 L 35 41 L 35 46 L 24 46 L 24 28 z " transform="matrix(1 0 0 1 384.57143 483.798)"/>
+ </g>
+</svg>

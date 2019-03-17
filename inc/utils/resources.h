@@ -1,7 +1,5 @@
 /*
- * utils/resources.h - resource utils
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -31,7 +29,8 @@
 typedef enum IconType
 {
   ICON_TYPE_ZRYTHM,
-  ICON_TYPE_GNOME_BUILDER
+  ICON_TYPE_GNOME_BUILDER,
+  ICON_TYPE_BREEZE,
 } IconType;
 
 GtkWidget *
