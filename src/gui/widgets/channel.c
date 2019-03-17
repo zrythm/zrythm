@@ -493,7 +493,7 @@ channel_widget_init (ChannelWidget * self)
     GTK_CONTAINER (self->record));
   z_gtk_button_set_icon_name (
     GTK_BUTTON (self->record),
-    "media-record");
+    "z-media-record");
   context =
     gtk_widget_get_style_context (
       GTK_WIDGET (self->record));

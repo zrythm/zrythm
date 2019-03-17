@@ -78,30 +78,59 @@ for cat in ['actions', 'animations', 'applets', 'apps', 'categories', 'devices',
     if os.path.exists(os.path.join(srcdir,full_destdir)):
       for f in get_files(full_destdir, '.svg'):
         destfile = os.path.join(full_destdir,f)
-        # if (f.endswith('window-minimize.svg') or
-              # f.endswith('emblem-symbolic-link.svg') or
-              # f.endswith('audio-card.svg') or
-              # f.endswith('window-close.svg') or
-              # f.endswith('media-record.svg') or
-              # # name.endswith('media-playback-start.svg') or
-              # f.endswith('media-playback-stop.svg') or
-              # f.endswith('media-optical-audio.svg') or
-              # f.endswith('document-properties') or
-              # f.endswith('media-seek-backward.svg') or
-              # f.endswith('media-seek-forward.svg') or
-              # f.endswith('media-playlist-repeat.svg') or
-              # f.endswith('window-close-symbolic.svg') or
-              # f.endswith('edit-select.svg') or
-              # f.endswith('editor.svg') or
-              # f.endswith('draw-eraser.svg') or
-              # f.endswith('draw-line.svg') or
-              # f.endswith('audio-speakers-symbolic.svg') or
-              # f.endswith('application-msword.svg') or
-              # f.endswith('gtk-add.svg') or
-              # f.endswith('zoom-in.svg') or
-              # f.endswith('plugins.svg') or
-              # f.endswith('window-maximize.svg')):
-        xml += '    <file>{0}</file>\n'.format(remove_prefix(destfile, srcdir + os.sep))
+        if (f.endswith('window-minimize.svg') or
+              f.endswith('emblem-symbolic-link.svg') or
+              f.endswith('audio-card.svg') or
+              f.endswith('window-close.svg') or
+              f.endswith('media-record.svg') or
+              f.endswith('media-playback-start.svg') or
+              f.endswith('media-playback-stop.svg') or
+              f.endswith('media-optical-audio.svg') or
+              f.endswith('document-properties') or
+              f.endswith('media-seek-backward.svg') or
+              f.endswith('media-seek-forward.svg') or
+              f.endswith('media-playlist-repeat.svg') or
+              f.endswith('window-close-symbolic.svg') or
+              f.endswith('edit-select.svg') or
+              f.endswith('editor.svg') or
+              f.endswith('draw-eraser.svg') or
+              f.endswith('draw-line.svg') or
+              f.endswith('audio-speakers-symbolic.svg') or
+              f.endswith('application-msword.svg') or
+              f.endswith('gtk-add.svg') or
+              f.endswith('zoom-in.svg') or
+              f.endswith('zoom-out.svg') or
+              f.endswith('zoom-fit-best.svg') or
+              f.endswith('zoom-original.svg') or
+              f.endswith('document-properties.svg') or
+              f.endswith('visibility.svg') or
+              f.endswith('format-justify-fill.svg') or
+              f.endswith('media-optical-audio.svg') or
+              f.endswith('audio-midi.svg') or
+              f.endswith('audio-mp3.svg') or
+              f.endswith('audio-flac.svg') or
+              f.endswith('application-ogg.svg') or
+              f.endswith('audio-x-wav.svg') or
+              f.endswith('inode-directory.svg') or
+              f.endswith('none.svg') or
+              f.endswith('audio-card.svg') or
+              f.endswith('emblem-symbolic-link.svg') or
+              f.endswith('window-minimize.svg') or
+              f.endswith('window-close.svg') or
+              f.endswith('window-close-symbolic.svg') or
+              f.endswith('edit-select-symbolic.svg') or
+              f.endswith('editor.svg') or
+              f.endswith('draw-eraser.svg') or
+              f.endswith('draw-line.svg') or
+              f.endswith('audio-speakers-symbolic.svg') or
+              f.endswith('application-msword.svg') or
+              f.endswith('gtk-add.svg') or
+              f.endswith('distortionfx.svg') or
+              f.endswith('selection-end-symbolic.svg') or
+              f.endswith('edit-select.svg') or
+              f.endswith('plugins.svg') or
+              f.endswith('window-maximize.svg')):
+          xml += '    <file>{0}</file>\n'.format(remove_prefix(destfile, srcdir + os.sep))
 
 xml += '''
   <file>theme.css</file>
