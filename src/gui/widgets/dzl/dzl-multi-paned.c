@@ -90,7 +90,7 @@ typedef struct
    * TODO: GtkPaned now uses two gestures, one for mouse and one for touch.
    *       We should do the same as it improved things quite a bit.
    */
-  GtkGesturePan *gesture;
+  GtkGestureDrag *gesture;
 
   /*
    * For GtkOrientable:orientation.
@@ -352,7 +352,7 @@ dzl_multi_paned_calc_handle_size (DzlMultiPaned *self)
 {
   DzlMultiPanedPrivate *priv = dzl_multi_paned_get_instance_private (self);
   gint visible_children = 0;
-  gint handle_size = 1;
+  gint handle_size = 4;
   guint i;
 
   g_assert (DZL_IS_MULTI_PANED (self));
@@ -1735,15 +1735,16 @@ static void
 dzl_multi_paned_pan_gesture_drag_begin (DzlMultiPaned *self,
                                         gdouble        x,
                                         gdouble        y,
-                                        GtkGesturePan *gesture)
+                                        GtkGestureDrag *gesture)
 {
   DzlMultiPanedPrivate *priv = dzl_multi_paned_get_instance_private (self);
   GdkEventSequence *sequence;
   const GdkEvent *event;
   guint i;
+  g_message ("drag_begin");
 
   g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (GTK_IS_GESTURE_PAN (gesture));
+  g_assert (GTK_IS_GESTURE_DRAG (gesture));
   g_assert (gesture == priv->gesture);
 
   sequence = gtk_gesture_single_get_current_sequence (GTK_GESTURE_SINGLE (gesture));
@@ -1797,7 +1798,7 @@ dzl_multi_paned_pan_gesture_drag_begin (DzlMultiPaned *self,
   else
     priv->drag_begin_position = priv->drag_begin->alloc.height;
 
-  gtk_gesture_pan_set_orientation (gesture, priv->orientation);
+  /*gtk_gesture_pan_set_orientation (gesture, priv->orientation);*/
   gtk_gesture_set_state (GTK_GESTURE (gesture), GTK_EVENT_SEQUENCE_CLAIMED);
 
   g_signal_emit (self, signals [RESIZE_DRAG_BEGIN], 0, priv->drag_begin->widget);
@@ -1807,14 +1808,14 @@ static void
 dzl_multi_paned_pan_gesture_drag_end (DzlMultiPaned *self,
                                       gdouble        x,
                                       gdouble        y,
-                                      GtkGesturePan *gesture)
+                                      GtkGestureDrag *gesture)
 {
   DzlMultiPanedPrivate *priv = dzl_multi_paned_get_instance_private (self);
   GdkEventSequence *sequence;
   GtkEventSequenceState state;
 
   g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (GTK_IS_GESTURE_PAN (gesture));
+  g_assert (GTK_IS_GESTURE_DRAG (gesture));
   g_assert (gesture == priv->gesture);
 
   sequence = gtk_gesture_single_get_current_sequence (GTK_GESTURE_SINGLE (gesture));
@@ -1835,15 +1836,16 @@ cleanup:
 
 static void
 dzl_multi_paned_pan_gesture_pan (DzlMultiPaned   *self,
-                                 GtkPanDirection  direction,
-                                 gdouble          offset,
-                                 GtkGesturePan   *gesture)
+                                 gdouble          offset_x,
+                                 gdouble          offset_y,
+                                 GtkGestureDrag   *gesture)
 {
   DzlMultiPanedPrivate *priv = dzl_multi_paned_get_instance_private (self);
   GtkAllocation alloc;
+  gdouble offset;
 
   g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (GTK_IS_GESTURE_PAN (gesture));
+  g_assert (GTK_IS_GESTURE_DRAG (gesture));
   g_assert (gesture == priv->gesture);
   g_assert (priv->drag_begin != NULL);
 
@@ -1851,15 +1853,17 @@ dzl_multi_paned_pan_gesture_pan (DzlMultiPaned   *self,
 
   if (priv->orientation == GTK_ORIENTATION_HORIZONTAL)
     {
-      if (direction == GTK_PAN_DIRECTION_LEFT)
-        offset = -offset;
+      /*if (direction == GTK_PAN_DIRECTION_LEFT)*/
+        /*offset = -offset;*/
+      offset = offset_x;
     }
   else
     {
       g_assert (priv->orientation == GTK_ORIENTATION_VERTICAL);
 
-      if (direction == GTK_PAN_DIRECTION_UP)
-        offset = -offset;
+      /*if (direction == GTK_PAN_DIRECTION_UP)*/
+        /*offset = -offset;*/
+      offset = offset_y;
     }
 
   if ((priv->drag_begin_position + offset) < 0)
@@ -1882,7 +1886,7 @@ dzl_multi_paned_create_pan_gesture (DzlMultiPaned *self)
   g_assert (DZL_IS_MULTI_PANED (self));
   g_assert (priv->gesture == NULL);
 
-  gesture = gtk_gesture_pan_new (GTK_WIDGET (self), GTK_ORIENTATION_HORIZONTAL);
+  gesture = gtk_gesture_drag_new (GTK_WIDGET (self));
   gtk_gesture_single_set_touch_only (GTK_GESTURE_SINGLE (gesture), FALSE);
   gtk_event_controller_set_propagation_phase (GTK_EVENT_CONTROLLER (gesture), GTK_PHASE_CAPTURE);
 
@@ -1898,13 +1902,14 @@ dzl_multi_paned_create_pan_gesture (DzlMultiPaned *self)
                            self,
                            G_CONNECT_SWAPPED);
 
+  /* note changed from pan to drag update */
   g_signal_connect_object (gesture,
-                           "pan",
+                           "drag-update",
                            G_CALLBACK (dzl_multi_paned_pan_gesture_pan),
                            self,
                            G_CONNECT_SWAPPED);
 
-  priv->gesture = GTK_GESTURE_PAN (gesture);
+  priv->gesture = GTK_GESTURE_DRAG (gesture);
 }
 
 static void

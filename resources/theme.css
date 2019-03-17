@@ -61,6 +61,16 @@ window
   /*background-color: alpha (white, 0.40);*/
 /*}*/
 
+browser separator:hover
+{
+  background-color: @hover_color;
+}
+
+browser separator
+{
+  min-height: 6px;
+}
+
 entry:focus
 {
   border-color: @bright_orange;
