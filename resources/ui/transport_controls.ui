@@ -37,7 +37,7 @@
         <child>
           <object class="GtkImage">
             <property name="visible">1</property>
-            <property name="resource">/org/zrythm/icons/breeze-icons/actions/16/media-record.svg</property>
+            <property name="icon-name">z-media-record</property>
           </object>
         </child>
       </object>
@@ -55,7 +55,7 @@
         <child>
           <object class="GtkImage">
             <property name="visible">1</property>
-            <property name="resource">/org/zrythm/icons/breeze-icons/actions/16/media-playback-start.svg</property>
+            <property name="icon-name">z-media-playback-start</property>
           </object>
         </child>
       </object>
@@ -70,7 +70,7 @@
         <child>
           <object class="GtkImage">
             <property name="visible">1</property>
-            <property name="resource">/org/zrythm/icons/breeze-icons/actions/16/media-playback-stop.svg</property>
+            <property name="icon-name">z-media-playback-stop</property>
           </object>
         </child>
       </object>
@@ -88,7 +88,7 @@
         <child>
           <object class="GtkImage">
             <property name="visible">1</property>
-            <property name="resource">/org/zrythm/icons/breeze-icons/actions/16/media-seek-backward.svg</property>
+            <property name="icon-name">z-media-seek-backward</property>
           </object>
         </child>
       </object>
@@ -106,7 +106,7 @@
         <child>
           <object class="GtkImage">
             <property name="visible">1</property>
-            <property name="resource">/org/zrythm/icons/breeze-icons/actions/16/media-seek-forward.svg</property>
+            <property name="icon-name">z-media-seek-forward</property>
           </object>
         </child>
       </object>
@@ -123,7 +123,7 @@
         <child>
           <object class="GtkImage">
             <property name="visible">1</property>
-            <property name="resource">/org/zrythm/icons/breeze-icons/actions/16/media-playlist-repeat.svg</property>
+            <property name="icon-name">z-media-playlist-repeat</property>
           </object>
         </child>
       </object>

@@ -95,7 +95,7 @@ chord_track_widget_init (ChordTrackWidget * self)
   /* create buttons */
   self->record =
     z_gtk_toggle_button_new_with_icon (
-      "media-record");
+      "z-media-record");
   context =
     gtk_widget_get_style_context (
       GTK_WIDGET (self->record));

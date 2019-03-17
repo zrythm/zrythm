@@ -3,3 +3,11 @@
 *.directory
 *.bak
 *thumbs.db
+
+# generated hicolor dirs
+12x12
+16x16
+22x22
+24x24
+32x32
+64x64

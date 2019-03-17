@@ -83,22 +83,22 @@ top_dock_edge_widget_init (TopDockEdgeWidget * self)
   gtk_tool_button_set_icon_widget (
     GTK_TOOL_BUTTON (self->zoom_in),
     gtk_image_new_from_icon_name (
-      "zoom-in",
+      "z-zoom-in",
       GTK_ICON_SIZE_SMALL_TOOLBAR));
   gtk_tool_button_set_icon_widget (
     GTK_TOOL_BUTTON (self->zoom_out),
     gtk_image_new_from_icon_name (
-      "zoom-out",
+      "z-zoom-out",
       GTK_ICON_SIZE_SMALL_TOOLBAR));
   gtk_tool_button_set_icon_widget (
     GTK_TOOL_BUTTON (self->best_fit),
     gtk_image_new_from_icon_name (
-      "zoom-fit-best",
+      "z-zoom-fit-best",
       GTK_ICON_SIZE_SMALL_TOOLBAR));
   gtk_tool_button_set_icon_widget (
     GTK_TOOL_BUTTON (self->original_size),
     gtk_image_new_from_icon_name (
-      "zoom-original",
+      "z-zoom-original",
       GTK_ICON_SIZE_SMALL_TOOLBAR));
   gtk_widget_show_all (GTK_WIDGET (self->zoom_in));
   gtk_widget_show_all (GTK_WIDGET (self->zoom_out));

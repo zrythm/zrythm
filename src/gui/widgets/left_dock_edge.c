@@ -38,7 +38,7 @@ left_dock_edge_widget_init (LeftDockEdgeWidget * self)
   self->inspector = inspector_widget_new ();
   img =
     gtk_image_new_from_icon_name (
-      "document-properties",
+      "z-document-properties",
       GTK_ICON_SIZE_SMALL_TOOLBAR);
   gtk_notebook_prepend_page (
     self->inspector_notebook,
@@ -46,7 +46,7 @@ left_dock_edge_widget_init (LeftDockEdgeWidget * self)
     img);
   img =
     gtk_image_new_from_icon_name (
-      "visibility",
+      "z-visibility",
       GTK_ICON_SIZE_SMALL_TOOLBAR);
   GtkWidget * btn = gtk_button_new ();
   gtk_widget_set_visible (btn, 1);

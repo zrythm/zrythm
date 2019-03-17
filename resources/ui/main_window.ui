@@ -134,7 +134,7 @@
                               <object class="GtkImage" id="image2">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="resource">/org/zrythm/icons/breeze-icons/actions/symbolic/window-close-symbolic.svg</property>
+                                <property name="icon-name">z-window-close-symbolic</property>
                               </object>
                             </child>
                             <style>

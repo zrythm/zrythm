@@ -37,7 +37,7 @@
           <object class="GtkImage" id="select_img">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="resource">/org/zrythm/icons/breeze-icons/actions/16/edit-select.svg</property>
+            <property name="icon-name">z-edit-select-symbolic</property>
           </object>
         </child>
       </object>
@@ -57,7 +57,7 @@
           <object class="GtkImage">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="resource">/org/zrythm/icons/breeze-icons/actions/16/editor.svg</property>
+            <property name="icon-name">z-editor</property>
           </object>
         </child>
       </object>
@@ -77,7 +77,7 @@
           <object class="GtkImage">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="resource">/org/zrythm/icons/breeze-icons/actions/16/draw-eraser.svg</property>
+            <property name="icon-name">z-draw-eraser</property>
           </object>
         </child>
       </object>
@@ -97,7 +97,7 @@
           <object class="GtkImage">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="resource">/org/zrythm/icons/breeze-icons/actions/16/draw-line.svg</property>
+            <property name="icon-name">z-draw-line</property>
           </object>
         </child>
       </object>
@@ -117,7 +117,7 @@
           <object class="GtkImage">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="resource">/org/zrythm/icons/breeze-icons/devices/symbolic/audio-speakers-symbolic.svg</property>
+            <property name="icon-name">z-audio-speakers-symbolic</property>
           </object>
         </child>
       </object>

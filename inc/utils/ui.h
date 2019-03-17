@@ -165,37 +165,37 @@ typedef enum UiOverlayAction
 #define ui_set_pointer_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "edit-select", \
+    "z-edit-select", \
     3, 6);
 
 #define ui_set_pencil_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "editor", \
+    "z-editor", \
     3, 6);
 
 #define ui_set_eraser_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "draw-eraser", \
+    "z-draw-eraser", \
     3, 6);
 
 #define ui_set_line_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "draw-line", \
+    "z-draw-line", \
     3, 6);
 
 #define ui_set_speaker_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "audio-speakers-symbolic", \
+    "z-audio-speakers-symbolic", \
     3, 6);
 
 #define ui_set_hand_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "hand", \
+    "z-hand", \
     3, 6);
 
 /**

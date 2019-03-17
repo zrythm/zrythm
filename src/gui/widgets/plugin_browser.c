@@ -278,11 +278,11 @@ create_model_for_plugins (PluginBrowserWidget * self)
     {
       PluginDescriptor * descr =
         PLUGIN_MANAGER->plugin_descriptors[i];
-      gchar * icon_name = "plugins";
+      gchar * icon_name = "z-plugins";
       if (!strcmp (descr->category, "Instrument"))
-        icon_name = "audio-midi";
+        icon_name = "z-audio-midi";
       else if (!strcmp (descr->category, "Distortion"))
-        icon_name = "distortionfx";
+        icon_name = "z-distortionfx";
 
       // Add a new row to the model
       gtk_list_store_append (list_store, &iter);

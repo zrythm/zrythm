@@ -134,12 +134,12 @@ toolbox_widget_refresh (
   if (P_TOOL == TOOL_SELECT_STRETCH)
     gtk_image_set_from_icon_name (
       self->select_img,
-      "selection-end-symbolic",
+      "z-selection-end-symbolic",
       GTK_ICON_SIZE_BUTTON);
   else
     gtk_image_set_from_icon_name (
       self->select_img,
-      "edit-select",
+      "z-edit-select",
       GTK_ICON_SIZE_BUTTON);
 
   /* set toggled states */

@@ -161,7 +161,7 @@ bus_track_widget_init (BusTrackWidget * self)
 
   /* create buttons */
   self->record =
-    z_gtk_toggle_button_new_with_icon ("media-record");
+    z_gtk_toggle_button_new_with_icon ("z-media-record");
   context =
     gtk_widget_get_style_context (
       GTK_WIDGET (self->record));
@@ -179,7 +179,7 @@ bus_track_widget_init (BusTrackWidget * self)
       ICON_TYPE_ZRYTHM,
       "mute.svg");
   self->show_automation =
-    z_gtk_toggle_button_new_with_icon ("format-justify-fill");
+    z_gtk_toggle_button_new_with_icon ("z-format-justify-fill");
 
   /* set buttons to upper controls */
   gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),

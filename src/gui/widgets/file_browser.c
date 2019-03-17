@@ -296,28 +296,28 @@ create_model_for_files (FileBrowserWidget * self)
       switch (descr->type)
         {
         case FILE_TYPE_MIDI:
-          icon_name = "audio-midi";
+          icon_name = "z-audio-midi";
           break;
         case FILE_TYPE_MP3:
-          icon_name = "audio-mp3";
+          icon_name = "z-audio-mp3";
           break;
         case FILE_TYPE_FLAC:
-          icon_name = "audio-flac";
+          icon_name = "z-audio-flac";
           break;
         case FILE_TYPE_OGG:
-          icon_name = "application-ogg";
+          icon_name = "z-application-ogg";
           break;
         case FILE_TYPE_WAV:
-          icon_name = "audio-x-wav";
+          icon_name = "z-audio-x-wav";
           break;
         case FILE_TYPE_DIR:
-          icon_name = "inode-directory";
+          icon_name = "z-inode-directory";
           break;
         case FILE_TYPE_PARENT_DIR:
-          icon_name = "inode-directory";
+          icon_name = "z-inode-directory";
           break;
         case FILE_TYPE_OTHER:
-          icon_name = "none";
+          icon_name = "z-none";
           break;
         case NUM_FILE_TYPES:
           break;

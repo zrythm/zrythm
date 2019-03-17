@@ -41,14 +41,14 @@ right_dock_edge_widget_init (RightDockEdgeWidget * self)
     /*resources_get_icon (ICON_TYPE_ZRYTHM,*/
                         /*"plugins.svg"));*/
     gtk_image_new_from_icon_name (
-      "plugins",
+      "z-plugins",
       GTK_ICON_SIZE_SMALL_TOOLBAR));
   self->file_browser = file_browser_widget_new ();
   gtk_notebook_append_page (
     self->right_notebook,
     GTK_WIDGET (self->file_browser),
     gtk_image_new_from_icon_name (
-      "media-optical-audio",
+      "z-media-optical-audio",
       GTK_ICON_SIZE_SMALL_TOOLBAR));
   gtk_widget_show_all (GTK_WIDGET (self->right_notebook));
 }

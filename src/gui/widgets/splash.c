@@ -43,13 +43,15 @@ splash_window_widget_new (ZrythmApp * app)
                 "Matcha-dark-sea",
                 NULL);
 
-  g_object_set (gtk_settings_get_default (),
-                "gtk-icon-theme-name",
-                "breeze-dark",
-                NULL);
+  /*g_object_set (gtk_settings_get_default (),*/
+                /*"gtk-icon-theme-name",*/
+                /*"breeze-dark",*/
+                /*NULL);*/
 
-  /*const char * path[1];*/
-  /*path[0] = g_strdup_printf ("%s/icons/breeze-dark/home/alex/Documents/git/zrythm/resources/icons/breeze-dark";*/
+  gtk_icon_theme_add_resource_path (
+    gtk_icon_theme_get_default (),
+    "/org/zrythm/icons/breeze-icons");
+
   /*gtk_icon_theme_set_search_path (*/
     /*gtk_icon_theme_get_default (),*/
     /*path,*/
