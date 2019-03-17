@@ -32,7 +32,10 @@ G_DEFINE_TYPE (RulerRangeWidget,
                GTK_TYPE_DRAWING_AREA)
 
 static gboolean
-draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
+ruler_range_draw_cb (
+  GtkWidget *widget,
+  cairo_t *cr,
+  gpointer data)
 {
   GtkStyleContext *context;
 
@@ -137,7 +140,7 @@ ruler_range_widget_init (RulerRangeWidget * self)
   /* connect signals */
   g_signal_connect (
     GTK_WIDGET (self), "draw",
-    G_CALLBACK (draw_cb), NULL);
+    G_CALLBACK (ruler_range_draw_cb), NULL);
   g_signal_connect (
     G_OBJECT (self), "enter-notify-event",
     G_CALLBACK (on_motion),  self);

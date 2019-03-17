@@ -51,7 +51,10 @@ static int notes[12] = {
     0 };
 
 static gboolean
-draw_cb (PianoRollNotesWidget * self, cairo_t *cr, gpointer data)
+piano_roll_notes_draw_cb (
+  PianoRollNotesWidget * self,
+  cairo_t *cr,
+  gpointer data)
 {
   guint width, height;
   GtkStyleContext *context;
@@ -277,16 +280,19 @@ piano_roll_notes_widget_init (PianoRollNotesWidget * self)
   self->multipress = GTK_GESTURE_MULTI_PRESS (
                 gtk_gesture_multi_press_new (GTK_WIDGET (self)));
 
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), NULL);
-  /*g_signal_connect (G_OBJECT(self), "button_press_event",*/
-                    /*G_CALLBACK (button_press_cb),  self);*/
-  g_signal_connect (G_OBJECT(self->drag), "drag-begin",
-                    G_CALLBACK (drag_begin),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-update",
-                    G_CALLBACK (drag_update),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-end",
-                    G_CALLBACK (drag_end),  self);
-  g_signal_connect (G_OBJECT (self->multipress), "pressed",
-                    G_CALLBACK (multipress_pressed), self);
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (piano_roll_notes_draw_cb), NULL);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-begin",
+    G_CALLBACK (drag_begin),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-update",
+    G_CALLBACK (drag_update),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-end",
+    G_CALLBACK (drag_end),  self);
+  g_signal_connect (
+    G_OBJECT (self->multipress), "pressed",
+    G_CALLBACK (multipress_pressed), self);
 }

@@ -79,6 +79,10 @@ typedef struct Automatable
                                     ///< eg. automating enabled/disabled
   char *               label; ///< human friendly label
   AutomatableType      type; ///< volume/pan/plugin control/etc.
+
+  float                minf;
+  float                maxf;
+  float                sizef;
 } Automatable;
 
 static const cyaml_strval_t
@@ -111,6 +115,15 @@ automatable_fields_schema[] =
   CYAML_FIELD_INT (
     "slot_index", CYAML_FLAG_DEFAULT,
     Automatable, slot_index),
+  CYAML_FIELD_FLOAT (
+    "minf", CYAML_FLAG_DEFAULT,
+    Automatable, minf),
+  CYAML_FIELD_FLOAT (
+    "maxf", CYAML_FLAG_DEFAULT,
+    Automatable, maxf),
+  CYAML_FIELD_FLOAT (
+    "sizef", CYAML_FLAG_DEFAULT,
+    Automatable, sizef),
   CYAML_FIELD_STRING_PTR (
     "label", CYAML_FLAG_POINTER,
     Automatable, label,
@@ -155,11 +168,11 @@ automatable_is_bool (Automatable * automatable);
 int
 automatable_is_float (Automatable * automatable);
 
-const float
-automatable_get_minf (Automatable * automatable);
+//const float
+//automatable_get_minf (Automatable * automatable);
 
-const float
-automatable_get_maxf (Automatable * automatable);
+//const float
+//automatable_get_maxf (Automatable * automatable);
 
 /**
  * Returns max - min for the float automatable

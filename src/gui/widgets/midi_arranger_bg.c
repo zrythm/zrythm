@@ -56,7 +56,10 @@ draw_borders (MidiArrangerBgWidget * self,
 }
 
 static gboolean
-draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
+midi_arranger_draw_cb (
+  GtkWidget *widget,
+  cairo_t *cr,
+  gpointer data)
 {
   MidiArrangerBgWidget * self =
     Z_MIDI_ARRANGER_BG_WIDGET (widget);
@@ -124,8 +127,9 @@ midi_arranger_bg_widget_new (RulerWidget *    ruler,
     /*hh);*/
 
 
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), NULL);
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (midi_arranger_draw_cb), NULL);
 
   return self;
 }

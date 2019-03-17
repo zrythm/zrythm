@@ -40,7 +40,10 @@ G_DEFINE_TYPE (MidiRegionWidget,
 #define Y_HALF_PADDING 3.f
 
 static gboolean
-draw_cb (MidiRegionWidget * self, cairo_t *cr, gpointer data)
+midi_region_draw_cb (
+  MidiRegionWidget * self,
+  cairo_t *cr,
+  gpointer data)
 {
   REGION_WIDGET_GET_PRIVATE (data);
   guint width, height;
@@ -218,7 +221,7 @@ midi_region_widget_new (MidiRegion * midi_region)
   /* connect signals */
   g_signal_connect (
     G_OBJECT (rw_prv->drawing_area), "draw",
-    G_CALLBACK (draw_cb), self);
+    G_CALLBACK (midi_region_draw_cb), self);
   g_signal_connect (
     G_OBJECT (rw_prv->drawing_area),
     "enter-notify-event",

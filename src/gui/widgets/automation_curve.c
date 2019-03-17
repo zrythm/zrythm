@@ -85,16 +85,24 @@ drag_end (GtkGestureDrag *gesture,
   self->last_y = 0;
 }
 
+/* TODO cache because when the playhead covers it
+ * it has to get redrawn */
 static gboolean
-draw_cb (AutomationCurveWidget * self, cairo_t *cr, gpointer data)
+automation_curve_draw_cb (
+  AutomationCurveWidget * self,
+  cairo_t *cr,
+  gpointer data)
 {
   guint width, height;
   GtkStyleContext *context;
 
-  context = gtk_widget_get_style_context (GTK_WIDGET (self));
+  context =
+    gtk_widget_get_style_context (GTK_WIDGET (self));
 
-  width = gtk_widget_get_allocated_width (GTK_WIDGET (self));
-  height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  width =
+    gtk_widget_get_allocated_width (GTK_WIDGET (self));
+  height =
+    gtk_widget_get_allocated_height (GTK_WIDGET (self));
 
   gtk_render_background (context, cr, 0, 0, width, height);
 
@@ -222,7 +230,11 @@ AutomationCurveWidget *
 automation_curve_widget_new (AutomationCurve * ac)
 {
   g_message ("Creating automation_curve widget...");
-  AutomationCurveWidget * self = g_object_new (AUTOMATION_CURVE_WIDGET_TYPE, NULL);
+  AutomationCurveWidget * self =
+    g_object_new (
+      AUTOMATION_CURVE_WIDGET_TYPE,
+      "visible", 1,
+      NULL);
 
   self->ac = ac;
 
@@ -230,18 +242,24 @@ automation_curve_widget_new (AutomationCurve * ac)
   self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new (GTK_WIDGET (self)));
 
   /* connect signals */
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), self);
-  g_signal_connect (G_OBJECT (self), "enter-notify-event",
-                    G_CALLBACK (on_motion),  self);
-  g_signal_connect (G_OBJECT(self), "leave-notify-event",
-                    G_CALLBACK (on_motion),  self);
-  g_signal_connect (G_OBJECT(self), "motion-notify-event",
-                    G_CALLBACK (on_motion),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-update",
-                    G_CALLBACK (drag_update),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-end",
-                    G_CALLBACK (drag_end),  self);
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (automation_curve_draw_cb), self);
+  g_signal_connect (
+    G_OBJECT (self), "enter-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self), "leave-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self), "motion-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-update",
+    G_CALLBACK (drag_update),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-end",
+    G_CALLBACK (drag_end),  self);
 
   return self;
 }

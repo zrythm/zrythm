@@ -44,6 +44,43 @@ _create_blank ()
   return self;
 }
 
+static const float
+get_minf (Automatable * a)
+{
+  switch (a->type)
+    {
+    case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
+      return lilv_node_as_float (a->control->min);
+      break;
+    case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
+    case AUTOMATABLE_TYPE_CHANNEL_FADER:
+    case AUTOMATABLE_TYPE_CHANNEL_MUTE:
+    case AUTOMATABLE_TYPE_CHANNEL_PAN:
+      return 0.f;
+    }
+  g_assert_not_reached ();
+  return -1;
+}
+
+static const float
+get_maxf (Automatable * a)
+{
+  switch (a->type)
+    {
+    case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
+      return lilv_node_as_float (a->control->max);
+      break;
+    case AUTOMATABLE_TYPE_CHANNEL_FADER:
+      return 2.f;
+    case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
+    case AUTOMATABLE_TYPE_CHANNEL_MUTE:
+    case AUTOMATABLE_TYPE_CHANNEL_PAN:
+      return 1.f;
+    }
+  g_assert_not_reached ();
+  return -1;
+}
+
 Lv2ControlID *
 get_lv2_control (Automatable * self)
 {
@@ -82,40 +119,49 @@ automatable_init_loaded (Automatable * self)
 Automatable *
 automatable_create_fader (Channel * channel)
 {
-  Automatable * automatable = _create_blank ();
+  Automatable * a = _create_blank ();
 
-  automatable->track = channel->track;
-  automatable->track_id = channel->track->id;
-  automatable->label = g_strdup ("Volume");
-  automatable->type = AUTOMATABLE_TYPE_CHANNEL_FADER;
+  a->track = channel->track;
+  a->track_id = channel->track->id;
+  a->label = g_strdup ("Volume");
+  a->type = AUTOMATABLE_TYPE_CHANNEL_FADER;
+  a->minf = get_minf (a);
+  a->maxf = get_maxf (a);
+  a->sizef = a->maxf - a->minf;
 
-  return automatable;
+  return a;
 }
 
 Automatable *
 automatable_create_pan (Channel * channel)
 {
-  Automatable * automatable = _create_blank ();
+  Automatable * a = _create_blank ();
 
-  automatable->track = channel->track;
-  automatable->track_id = channel->track->id;
-  automatable->label = g_strdup ("Pan");
-  automatable->type = AUTOMATABLE_TYPE_CHANNEL_PAN;
+  a->track = channel->track;
+  a->track_id = channel->track->id;
+  a->label = g_strdup ("Pan");
+  a->type = AUTOMATABLE_TYPE_CHANNEL_PAN;
+  a->minf = get_minf (a);
+  a->maxf = get_maxf (a);
+  a->sizef = a->maxf - a->minf;
 
-  return automatable;
+  return a;
 }
 
 Automatable *
 automatable_create_mute (Channel * channel)
 {
-  Automatable * automatable = _create_blank ();
+  Automatable * a = _create_blank ();
 
-  automatable->track = channel->track;
-  automatable->track_id = channel->track->id;
-  automatable->label = g_strdup ("Mute");
-  automatable->type = AUTOMATABLE_TYPE_CHANNEL_MUTE;
+  a->track = channel->track;
+  a->track_id = channel->track->id;
+  a->label = g_strdup ("Mute");
+  a->type = AUTOMATABLE_TYPE_CHANNEL_MUTE;
+  a->minf = get_minf (a);
+  a->maxf = get_maxf (a);
+  a->sizef = a->maxf - a->minf;
 
-  return automatable;
+  return a;
 }
 
 Automatable *
@@ -123,42 +169,48 @@ automatable_create_lv2_control (
   Plugin *       plugin,
   Lv2ControlID * control)
 {
-  Automatable * automatable = _create_blank ();
+  Automatable * a = _create_blank ();
 
-  automatable->control = control;
+  a->control = control;
   LV2_Port * port = &control->plugin->ports[control->index];
-  automatable->port = port->port;
-  automatable->port_id = port->port->id;
-  /*automatable->index = control->index;*/
-  automatable->type = AUTOMATABLE_TYPE_PLUGIN_CONTROL;
-  automatable->track = plugin->channel->track;
-  automatable->track_id =
+  a->port = port->port;
+  a->port_id = port->port->id;
+  /*a->index = control->index;*/
+  a->type = AUTOMATABLE_TYPE_PLUGIN_CONTROL;
+  a->track = plugin->channel->track;
+  a->track_id =
     plugin->channel->track->id;
-  automatable->slot_index =
+  a->slot_index =
     channel_get_plugin_index (plugin->channel,
                               plugin);
-  automatable->label =
+  a->label =
     g_strdup (lv2_control_get_label (control));
+  a->minf = get_minf (a);
+  a->maxf = get_maxf (a);
+  a->sizef = a->maxf - a->minf;
 
-  return automatable;
+  return a;
 }
 
 Automatable *
 automatable_create_plugin_enabled (
   Plugin * plugin)
 {
-  Automatable * automatable = _create_blank ();
+  Automatable * a = _create_blank ();
 
-  automatable->type = AUTOMATABLE_TYPE_PLUGIN_ENABLED;
-  automatable->track = plugin->channel->track;
-  automatable->track_id =
+  a->type = AUTOMATABLE_TYPE_PLUGIN_ENABLED;
+  a->track = plugin->channel->track;
+  a->track_id =
     plugin->channel->track->id;
-  automatable->slot_index =
+  a->slot_index =
     channel_get_plugin_index (plugin->channel,
                               plugin);
-  automatable->label = g_strdup ("Enable/disable");
+  a->label = g_strdup ("Enable/disable");
+  a->minf = get_minf (a);
+  a->maxf = get_maxf (a);
+  a->sizef = a->maxf - a->minf;
 
-  return automatable;
+  return a;
 }
 
 int
@@ -231,52 +283,14 @@ automatable_is_float (Automatable * a)
   return -1;
 }
 
-const float
-automatable_get_minf (Automatable * a)
-{
-  switch (a->type)
-    {
-    case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
-      return lilv_node_as_float (a->control->min);
-      break;
-    case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
-    case AUTOMATABLE_TYPE_CHANNEL_FADER:
-    case AUTOMATABLE_TYPE_CHANNEL_MUTE:
-    case AUTOMATABLE_TYPE_CHANNEL_PAN:
-      return 0.f;
-    }
-  g_assert_not_reached ();
-  return -1;
-}
-
-const float
-automatable_get_maxf (Automatable * a)
-{
-  switch (a->type)
-    {
-    case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
-      return lilv_node_as_float (a->control->max);
-      break;
-    case AUTOMATABLE_TYPE_CHANNEL_FADER:
-      return 2.f;
-    case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
-    case AUTOMATABLE_TYPE_CHANNEL_MUTE:
-    case AUTOMATABLE_TYPE_CHANNEL_PAN:
-      return 1.f;
-    }
-  g_assert_not_reached ();
-  return -1;
-}
-
 /**
  * Returns max - min for the float automatable
  */
-const float
-automatable_get_sizef (Automatable * automatable)
-{
-  return (automatable_get_maxf (automatable) -
-          automatable_get_minf (automatable));
-}
+/*static const float*/
+/*get_sizef (Automatable * a)*/
+/*{*/
+  /*return a->maxf - a->minf;*/
+/*}*/
 
 void
 automatable_free (Automatable * automatable)
@@ -343,15 +357,13 @@ automatable_normalized_val_to_real (
       if (plugin->descr->protocol == PROT_LV2)
         {
           Lv2ControlID * ctrl = a->control;
-          float maxf =
-            automatable_get_maxf (a);
-          float minf =
-            automatable_get_minf (a);
           float real_val;
           if (ctrl->is_logarithmic)
             {
               /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
-              real_val = minf * pow (maxf / minf, val);
+              real_val =
+                a->minf *
+                  pow (a->maxf / a->minf, val);
             }
           else if (ctrl->is_toggle)
             {
@@ -359,7 +371,8 @@ automatable_normalized_val_to_real (
             }
           else
             {
-              real_val = minf + val * (maxf - minf);
+              real_val =
+                a->minf + val * (a->maxf - a->minf);
             }
           return real_val;
         }
@@ -385,10 +398,6 @@ automatable_real_val_to_normalized (
   Automatable * a,
   float         real_val)
 {
-  float fmax = automatable_get_maxf (a);
-  float fmin = automatable_get_minf (a);
-  float frange = fmax - fmin;
-
   Plugin * plugin;
   switch (a->type)
     {
@@ -402,8 +411,8 @@ automatable_real_val_to_normalized (
             {
               /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
               normalized_val =
-                log (real_val / fmin) /
-                (fmax / fmin);
+                log (real_val / a->minf) /
+                (a->maxf / a->minf);
             }
           else if (ctrl->is_toggle)
             {
@@ -412,7 +421,8 @@ automatable_real_val_to_normalized (
           else
             {
               normalized_val =
-                (frange - (fmax - real_val)) / frange;
+                (a->sizef -
+                  (a->maxf - real_val)) / a->sizef;
             }
           return normalized_val;
         }
@@ -450,15 +460,13 @@ automatable_set_val_from_normalized (
       if (plugin->descr->protocol == PROT_LV2)
         {
           Lv2ControlID * ctrl = a->control;
-          float maxf =
-            automatable_get_maxf (a);
-          float minf =
-            automatable_get_minf (a);
           float real_val;
           if (ctrl->is_logarithmic)
             {
               /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
-              real_val = minf * pow (maxf / minf, val);
+              real_val =
+                a->minf *
+                  pow (a->maxf / a->minf, val);
             }
           else if (ctrl->is_toggle)
             {
@@ -466,7 +474,8 @@ automatable_set_val_from_normalized (
             }
           else
             {
-              real_val = minf + val * (maxf - minf);
+              real_val =
+                a->minf + val * (a->maxf - a->minf);
             }
           ctrl->plugin->
             ports[ctrl->index].control = real_val;

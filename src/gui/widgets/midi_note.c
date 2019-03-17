@@ -49,8 +49,10 @@ G_DEFINE_TYPE (MidiNoteWidget,
 #define RESIZE_CURSOR_SPACE 9
 
 static gboolean
-draw_cb (GtkDrawingArea * widget, cairo_t *cr,
-         MidiNoteWidget * self)
+midi_note_draw_cb (
+  GtkDrawingArea * widget,
+  cairo_t *cr,
+  MidiNoteWidget * self)
 {
   /*g_message ("drawing %d", self->midi_note->id);*/
   guint width, height;
@@ -279,7 +281,7 @@ midi_note_widget_init (MidiNoteWidget * self)
   /* connect signals */
   g_signal_connect (
     G_OBJECT (self->drawing_area), "draw",
-    G_CALLBACK (draw_cb), self);
+    G_CALLBACK (midi_note_draw_cb), self);
   g_signal_connect (
     G_OBJECT (self->drawing_area),
     "enter-notify-event",

@@ -160,7 +160,9 @@ automation_point_widget_new (
   g_message ("Creating automation_point widget...");
   AutomationPointWidget * self =
     g_object_new (
-      AUTOMATION_POINT_WIDGET_TYPE, NULL);
+      AUTOMATION_POINT_WIDGET_TYPE,
+      "visible", 1,
+      NULL);
 
   self->ap = ap;
 

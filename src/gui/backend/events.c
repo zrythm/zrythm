@@ -557,7 +557,7 @@ events_process ()
     }
   /*g_message ("processed %d events", i);*/
 
-  g_usleep (4000);
+  g_usleep (8000);
 
   return TRUE;
 }
