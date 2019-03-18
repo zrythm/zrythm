@@ -51,7 +51,7 @@ _array_contains (void ** array,
  * -1 if not.
  */
 int
-array_index_of (void ** array, int size, void * element)
+_array_index_of (void ** array, int size, void * element)
 {
   for (int i = 0; i < size; i++)
     {

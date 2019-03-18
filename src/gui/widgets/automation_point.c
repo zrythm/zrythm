@@ -27,6 +27,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/ruler.h"
+#include "project.h"
 #include "utils/ui.h"
 
 G_DEFINE_TYPE (AutomationPointWidget,
@@ -74,7 +75,7 @@ on_motion (GtkWidget * widget,
   gtk_widget_get_allocation (widget,
                              &allocation);
 
-  if (event->type == GDK_MOTION_NOTIFY)
+  if (event->type == GDK_ENTER_NOTIFY)
     {
       gtk_widget_set_state_flags (
         GTK_WIDGET (self),
@@ -159,11 +160,17 @@ automation_point_widget_new (
   g_message ("Creating automation_point widget...");
   AutomationPointWidget * self =
     g_object_new (
-      AUTOMATION_POINT_WIDGET_TYPE, NULL);
+      AUTOMATION_POINT_WIDGET_TYPE,
+      "visible", 1,
+      NULL);
 
   self->ap = ap;
 
   /* set tooltip text */
+  if (!ap->at->automatable)
+    ap->at->automatable =
+      project_get_automatable (
+        ap->at->automatable_id);
   char * tooltip =
     g_strdup_printf (
       "%s %f",

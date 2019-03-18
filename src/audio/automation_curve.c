@@ -97,8 +97,9 @@ automation_curve_new (AutomationTrack *   at,
 int
 automation_curve_get_y_in_px (AutomationCurve * ac)
 {
-  AutomationPoint * prev_ap = automation_track_get_ap_before_curve (ac->at,
-                                                                    ac);
+  AutomationPoint * prev_ap =
+    automation_track_get_ap_before_curve (
+      ac->at, ac);
   AutomationPoint * next_ap = automation_track_get_ap_after_curve (ac->at,
                                                                    ac);
   /* ratio of current value in the range */
@@ -193,8 +194,12 @@ automation_curve_get_y_px (AutomationCurve * ac, ///< start point (0, 0)
 void
 automation_curve_set_curviness (AutomationCurve * ac, float curviness)
 {
-  ac->curviness = curviness;
+  if (ac->curviness == curviness)
+    return;
 
+  ac->curviness = curviness;
+  if (ac->widget)
+    ac->widget->cache = 0;
 }
 
 /**

@@ -22,6 +22,11 @@
 #ifndef __UTILS_ARRAYS_H__
 #define __UTILS_ARRAYS_H__
 
+#define array_index_of(array, size, element) \
+  _array_index_of ((void **) array, \
+                   size, \
+                   (void *) element)
+
 /**
  * Appends element to the end of array array and increases the size.
  */
@@ -79,7 +84,8 @@ _array_contains (void ** array,
  * -1 if not.
  */
 int
-array_index_of (void ** array, int size, void * element);
+_array_index_of (void ** array,
+                int size, void * element);
 
 void
 array_sort_alphabetically (char ** array,

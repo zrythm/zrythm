@@ -17,11 +17,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/engine.h"
-#include "gui/widgets/top_bar.h"
+#include "gui/widgets/cpu.h"
 #include "gui/widgets/digital_meter.h"
+#include "gui/widgets/top_bar.h"
 #include "gui/widgets/transport_controls.h"
-#include "project.h"
 
 #include "utils/gtk.h"
 #include "utils/resources.h"
@@ -33,42 +32,6 @@
 G_DEFINE_TYPE (TopBarWidget,
                top_bar_widget,
                GTK_TYPE_BOX)
-
-/**
- * In microseconds.
- */
-#define TIME_TO_UPDATE_DSP_LOAD 600000
-static gint64 last_time_updated = 0;
-
-/**
- * Refreshes DSP load percentage.
- */
-gboolean
-refresh_dsp_load (GtkWidget *label,
-                  GdkFrameClock *frame_clock,
-                  gpointer user_data)
-{
-  gint64 curr_time = g_get_monotonic_time ();
-  if (curr_time - last_time_updated <
-      TIME_TO_UPDATE_DSP_LOAD)
-    return G_SOURCE_CONTINUE;
-  gint64 block_latency =
-    (AUDIO_ENGINE->block_length * 1000000) /
-    AUDIO_ENGINE->sample_rate;
-  char * cpu_load =
-    g_strdup_printf ("%.2f%%",
-                    /*jack_cpu_load (AUDIO_ENGINE->client));*/
-                    (AUDIO_ENGINE->max_time_taken * 100.0) /
-                      block_latency);
-  gtk_label_set_text (GTK_LABEL (label),
-                      cpu_load);
-  g_free (cpu_load);
-
-  AUDIO_ENGINE->max_time_taken = 0;
-  last_time_updated = curr_time;
-
-  return G_SOURCE_CONTINUE;
-}
 
 void
 top_bar_widget_refresh (TopBarWidget * self)
@@ -133,9 +96,6 @@ top_bar_widget_init (TopBarWidget * self)
     GTK_WIDGET (self->digital_meters));
   gtk_widget_show_all (GTK_WIDGET (self));
 
-  gtk_widget_add_tick_callback (
-    GTK_WIDGET (self->cpu_load),
-    refresh_dsp_load,
-    NULL,
-    NULL);
+  cpu_widget_setup (
+    self->cpu_load);
 }

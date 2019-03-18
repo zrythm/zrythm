@@ -49,8 +49,8 @@ typedef struct _AutomationCurveWidget
 {
   GtkDrawingArea              parent_instance;
   AutomationCurve *           ac;   ///< the automation curve associated with this
-  int                         hover;
-  int                         selected;
+  //int                         hover;
+  //int                         selected;
 
   /* for dragging */
   GtkGestureDrag *            drag;
@@ -58,6 +58,16 @@ typedef struct _AutomationCurveWidget
   double                      last_y;
 
   ACW_CursorState             cursor_state;
+
+
+
+  /* draw caching */
+
+  int                      cache; ///< set to 0 to redraw
+
+  cairo_t *                cached_cr;
+
+  cairo_surface_t *        cached_surface;
 } AutomationCurveWidget;
 
 /**

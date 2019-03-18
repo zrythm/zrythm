@@ -127,6 +127,11 @@ void
 automation_tracklist_init_loaded (
   AutomationTracklist * self);
 
+void
+automation_tracklist_add_automation_lane (
+  AutomationTracklist * self,
+  AutomationLane *      al);
+
 /**
  * Finds visible tracks and puts them in given array.
  */

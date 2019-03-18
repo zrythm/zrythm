@@ -27,6 +27,8 @@
 
 #include <gtk/gtk.h>
 
+#include <glibtop.h>
+
 /**
  * main
  */
@@ -39,6 +41,9 @@ main (int    argc,
 
   /* init audio decoder */
   ad_init ();
+
+  /* init glibtop */
+  glibtop_init ();
 
   /* init random */
   srandom (time (NULL));

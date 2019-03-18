@@ -246,6 +246,8 @@ load (char * filename)
   init_loaded_automatables ();
   init_loaded_automation_tracks ();
   init_loaded_automation_lanes ();
+  timeline_selections_init_loaded (
+    &PROJECT->timeline_selections);
   /*mixer_load_plugins ();*/
 
   char * filepath_noext = g_path_get_basename (dir);

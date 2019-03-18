@@ -48,12 +48,9 @@
       </packing>
     </child>
     <child>
-      <placeholder/>
-    </child>
-    <child>
-      <object class="GtkLabel" id="cpu_load">
+      <object class="CpuWidget" id="cpu_load">
         <property name="visible">1</property>
-        <property name="tooltip-text">This is a running average of the time it takes to execute a full process cycle for all JACK clients as a percentage of the real time available per cycle</property>
+        <property name="width-request">80</property>
       </object>
     </child>
   </template>

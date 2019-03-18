@@ -67,7 +67,12 @@ typedef struct AutomationCurve
    * The label of the automatable so we know how to find
    * the corresponding automation track.
    */
-  //char *                   automatable_label;
+  /* char *                   automatable_label; */
+
+  /** Index in the automation track, for faster
+   * performance when getting ap before/after
+   * curve. */
+  int                       index;
 } AutomationCurve;
 
 static const cyaml_strval_t
@@ -98,6 +103,9 @@ static const cyaml_schema_field_t
   CYAML_FIELD_INT (
     "at_id", CYAML_FLAG_DEFAULT,
     AutomationCurve, at_id),
+  CYAML_FIELD_INT (
+    "index", CYAML_FLAG_DEFAULT,
+    AutomationCurve, index),
 
 	CYAML_FIELD_END
 };

@@ -130,6 +130,10 @@ automation_point_update_fvalue (
     a,
     automatable_real_val_to_normalized (a,
                                         real_val));
+  AutomationCurve * ac =
+    self->at->automation_curves[self->index];
+  if (ac && ac->widget)
+    ac->widget->cache = 0;
 }
 
 /**

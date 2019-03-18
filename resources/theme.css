@@ -61,6 +61,16 @@ window
   /*background-color: alpha (white, 0.40);*/
 /*}*/
 
+browser separator:hover
+{
+  background-color: @hover_color;
+}
+
+browser separator
+{
+  min-height: 6px;
+}
+
 entry:focus
 {
   border-color: @bright_orange;
@@ -113,7 +123,8 @@ velocity
 region:selected,
 chord:selected,
 midi-note:selected,
-velocity:selected
+velocity:selected,
+automation-point:selected
 {
   box-shadow: 2px 2px 10px @selection_color;
   border-color: gray;
@@ -125,7 +136,9 @@ velocity:selected
 region:hover,
 chord:hover,
 midi-note:hover,
-velocity:hover
+velocity:hover,
+automation-point:hover,
+automation-curve:hover
 {
   box-shadow: 2px 2px 10px @hover_color;
 }

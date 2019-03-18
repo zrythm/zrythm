@@ -36,20 +36,25 @@ typedef struct TimelineSelections
 {
   /** Regions doing action upon */
   Region *                 regions[600];
+  int                      region_ids[600];
   int                      num_regions;
 
   /** Highest selected region */
   Region *                 top_region;
+  int                      top_region_id;
 
   /** Lowest selected region */
   Region *                 bot_region;
+  int                      bot_region_id;
 
   /** Automation points acting upon */
   AutomationPoint *        automation_points[600];
+  int                      ap_ids[600];
   int                      num_automation_points;
 
   /** Chords acting upon */
   Chord *                  chords[800];
+  int                      chord_ids[800];
   int                      num_chords;
 } TimelineSelections;
 
@@ -57,25 +62,26 @@ static const cyaml_schema_field_t
   timeline_selections_fields_schema[] =
 {
   CYAML_FIELD_SEQUENCE_COUNT (
-    /* not a pointer because it is an array of region
-     * pointers, not a pointer to an array */
-    "regions", CYAML_FLAG_OPTIONAL,
-      TimelineSelections, regions, num_regions,
-      &region_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_MAPPING_PTR (
-    "top_region", CYAML_FLAG_OPTIONAL | CYAML_FLAG_POINTER,
-    TimelineSelections, top_region, region_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "bot_region", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    TimelineSelections, bot_region, region_fields_schema),
+    "region_ids", CYAML_FLAG_DEFAULT,
+    TimelineSelections, region_ids,
+    num_regions,
+    &int_schema, 0, CYAML_UNLIMITED),
+	CYAML_FIELD_INT (
+    "top_region_id", CYAML_FLAG_DEFAULT,
+    TimelineSelections, top_region_id),
+	CYAML_FIELD_INT (
+    "bot_region_id", CYAML_FLAG_DEFAULT,
+    TimelineSelections, bot_region_id),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "automation_points", CYAML_FLAG_OPTIONAL,
-      TimelineSelections, automation_points, num_automation_points,
-      &automation_point_schema, 0, CYAML_UNLIMITED),
+    "ap_ids", CYAML_FLAG_DEFAULT,
+    TimelineSelections, ap_ids,
+    num_automation_points,
+    &int_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "chords", CYAML_FLAG_OPTIONAL,
-    TimelineSelections, chords, num_chords,
-    &chord_schema, 0, CYAML_UNLIMITED),
+    "chord_ids", CYAML_FLAG_DEFAULT,
+    TimelineSelections, chord_ids,
+    num_chords,
+    &int_schema, 0, CYAML_UNLIMITED),
 
 	CYAML_FIELD_END
 };
@@ -85,6 +91,11 @@ timeline_selections_schema = {
 	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
 			TimelineSelections, timeline_selections_fields_schema),
 };
+
+void
+timeline_selections_init_loaded (
+  TimelineSelections * ts);
+
 /**
  * Clone the struct for copying, undoing, etc.
  */

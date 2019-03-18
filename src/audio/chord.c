@@ -29,6 +29,8 @@
 #include "gui/widgets/chord.h"
 #include "project.h"
 
+NOTE_LABELS;
+
 void
 chord_init_loaded (Chord * self)
 {

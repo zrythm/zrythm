@@ -260,8 +260,8 @@ on_selection_changed (
             "Max: %f",
             a->label,
             val_type ? val_type : "Unknown",
-            automatable_get_minf (a),
-            automatable_get_maxf (a));
+            a->minf,
+            a->maxf);
 
           update_info_label (self,
                              label);
