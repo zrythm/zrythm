@@ -213,6 +213,21 @@ activate_manual (GSimpleAction *action,
                   gpointer       user_data);
 
 void
+activate_forums (GSimpleAction *action,
+                  GVariant      *variant,
+                  gpointer       user_data);
+
+void
+activate_bugreport (GSimpleAction *action,
+                  GVariant      *variant,
+                  gpointer       user_data);
+
+void
+activate_donate (GSimpleAction *action,
+                  GVariant      *variant,
+                  gpointer       user_data);
+
+void
 activate_loop_selection (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data);

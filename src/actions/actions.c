@@ -36,6 +36,7 @@
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/bot_bar.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/center_dock_bot_box.h"
 #include "gui/widgets/clip_editor.h"
@@ -113,6 +114,54 @@ action_disable_app_action (
   g_simple_action_set_enabled (
     G_SIMPLE_ACTION (action),
     0);
+}
+
+void
+activate_manual (GSimpleAction *action,
+                GVariant      *variant,
+                gpointer       user_data)
+{
+  gtk_show_uri_on_window (
+    GTK_WINDOW (MAIN_WINDOW),
+    "https://manual.zrythm.org",
+    0,
+    NULL);
+}
+
+void
+activate_forums (GSimpleAction *action,
+                GVariant      *variant,
+                gpointer       user_data)
+{
+  gtk_show_uri_on_window (
+    GTK_WINDOW (MAIN_WINDOW),
+    "https://forum.zrythm.org",
+    0,
+    NULL);
+}
+
+void
+activate_donate (GSimpleAction *action,
+                GVariant      *variant,
+                gpointer       user_data)
+{
+  gtk_show_uri_on_window (
+    GTK_WINDOW (MAIN_WINDOW),
+    "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LZWVK6228PQGE&source=url",
+    0,
+    NULL);
+}
+
+void
+activate_bugreport (GSimpleAction *action,
+                GVariant      *variant,
+                gpointer       user_data)
+{
+  gtk_show_uri_on_window (
+    GTK_WINDOW (MAIN_WINDOW),
+    "https://git.zrythm.org/zrythm/zrythm/issues",
+    0,
+    NULL);
 }
 
 void
@@ -651,7 +700,10 @@ activate_toggle_status_bar (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  g_message ("ZOOMING IN");
+  gtk_widget_set_visible (
+    GTK_WIDGET (MW_BOT_BAR),
+    !gtk_widget_get_visible (
+      GTK_WIDGET (MW_BOT_BAR)));
 }
 
 void
@@ -669,13 +721,6 @@ activate_fullscreen (GSimpleAction *action,
       gtk_window_maximize (
         GTK_WINDOW (MAIN_WINDOW));
     }
-}
-
-void
-activate_manual (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
-{
 }
 
 void
