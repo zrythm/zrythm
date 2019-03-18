@@ -98,7 +98,7 @@
                     <property name="vexpand">True</property>
                     <property name="tab_pos">left</property>
                     <child>
-                      <object class="GtkGrid">
+                      <object class="GtkGrid" id="audio_grid">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
@@ -141,24 +141,21 @@
                       </object>
                     </child>
                     <child type="tab">
-                      <object class="GtkLabel">
+                      <object class="GtkLabel" id="audio_label">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Audio</property>
                       </object>
-                      <packing>
-                        <property name="tab_fill">False</property>
-                      </packing>
                     </child>
                     <child>
-                      <object class="GtkGrid">
+                      <object class="GtkGrid" id="plugins_grid">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Timeline</property>
+                            <property name="label" translatable="yes">Plugins</property>
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
@@ -167,10 +164,13 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkLabel">
+                          <object class="GtkCheckButton" id="open_plugin_uis">
+                            <property name="label" translatable="yes">Always open plugin UIs</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Default Region Size</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
+                            <property name="tooltip_text" translatable="yes">Always open the UI after creating a plugin</property>
+                            <property name="draw_indicator">True</property>
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
@@ -178,36 +178,19 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkSpinButton" id="region_size">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="max_length">2</property>
-                            <property name="placeholder_text" translatable="yes">8 bars</property>
-                            <property name="input_purpose">number</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">1</property>
-                          </packing>
+                          <placeholder/>
                         </child>
                       </object>
-                      <packing>
-                        <property name="position">1</property>
-                      </packing>
                     </child>
                     <child type="tab">
-                      <object class="GtkLabel">
+                      <object class="GtkLabel" id="plugins_label">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Editing</property>
+                        <property name="label" translatable="yes">Plugins</property>
                       </object>
-                      <packing>
-                        <property name="position">1</property>
-                        <property name="tab_fill">False</property>
-                      </packing>
                     </child>
                     <child>
-                      <object class="GtkGrid">
+                      <object class="GtkGrid" id="editing_grid">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
@@ -239,20 +222,62 @@
                           <placeholder/>
                         </child>
                       </object>
-                      <packing>
-                        <property name="position">2</property>
-                      </packing>
                     </child>
                     <child type="tab">
-                      <object class="GtkLabel">
+                      <object class="GtkLabel" id="editing_label">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Editing</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkGrid" id="gui_grid">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">Timeline</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">0</property>
+                            <property name="width">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">Default Region Size</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSpinButton" id="region_size1">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="max_length">2</property>
+                            <property name="placeholder_text" translatable="yes">8 bars</property>
+                            <property name="input_purpose">number</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="top_attach">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                    </child>
+                    <child type="tab">
+                      <object class="GtkLabel" id="gui_label">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">GUI</property>
                       </object>
-                      <packing>
-                        <property name="position">2</property>
-                        <property name="tab_fill">False</property>
-                      </packing>
                     </child>
                   </object>
                   <packing>

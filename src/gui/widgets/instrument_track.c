@@ -115,14 +115,10 @@ instrument_track_widget_new (Track * track)
     G_CALLBACK (track_widget_on_show_automation_toggled),
     self);
 
-  ChannelTrack * ct = (ChannelTrack *) track;
-  Channel * chan = ct->channel;
-  Plugin * plugin = chan->plugins[0];
-  if (plugin)
-    {
-      plugin_open_ui (plugin);
-      gtk_widget_set_visible (GTK_WIDGET(self), 1);
-    }
+  /*ChannelTrack * ct = (ChannelTrack *) track;*/
+  /*Channel * chan = ct->channel;*/
+  /*Plugin * plugin = chan->plugins[0];*/
+
   return self;
 }
 

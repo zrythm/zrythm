@@ -94,6 +94,15 @@ setup_audio (PreferencesWidget * self)
       "audio-backend"));
 }
 
+static void
+setup_plugins (PreferencesWidget * self)
+{
+  gtk_toggle_button_set_active (
+    GTK_TOGGLE_BUTTON (self->open_plugin_uis),
+    g_settings_get_int (
+      S_PREFERENCES,
+      "open-plugin-uis-on-instantiate"));
+}
 
 static void
 on_cancel_clicked (GtkWidget * widget,
@@ -118,6 +127,11 @@ on_ok_clicked (GtkWidget * widget,
     S_PREFERENCES,
     "audio-backend",
     gtk_combo_box_get_active (self->audio_backend));
+  g_settings_set_int (
+    S_PREFERENCES,
+    "open-plugin-uis-on-instantiate",
+  gtk_toggle_button_get_active (
+    GTK_TOGGLE_BUTTON (self->open_plugin_uis)));
 
   gtk_window_close (GTK_WINDOW (self));
 }
@@ -133,6 +147,7 @@ preferences_widget_new ()
                   NULL);
 
   setup_audio (self);
+  setup_plugins (self);
 
   return self;
 }
@@ -157,6 +172,10 @@ preferences_widget_class_init (
     klass,
     PreferencesWidget,
     audio_backend);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PreferencesWidget,
+    open_plugin_uis);
   gtk_widget_class_bind_template_callback (
     klass,
     on_ok_clicked);

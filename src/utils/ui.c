@@ -54,6 +54,12 @@ ui_set_cursor_from_icon_name (
       18,
       0,
       NULL);
+  if (!GDK_IS_PIXBUF (pixbuf))
+    {
+      g_warning ("no pixbuf for %s",
+                 name);
+      return;
+    }
   GdkCursor * cursor =
     gdk_cursor_new_from_pixbuf (
       gdk_display_get_default (),
