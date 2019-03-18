@@ -1,5 +1,6 @@
 # build from debian by default
-image: "registry.zrythm.org/zrythm/zrythm/debian/latest:latest"
+#image: "registry.zrythm.org/zrythm/zrythm/debian/latest:latest"
+image: "alextee12/debian9"
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
