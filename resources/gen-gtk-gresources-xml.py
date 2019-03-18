@@ -104,6 +104,7 @@ for cat in ['actions', 'animations', 'applets', 'apps', 'categories', 'devices',
               f.endswith('zoom-original.svg') or
               f.endswith('document-properties.svg') or
               f.endswith('visibility.svg') or
+              f.endswith('view-fullscreen.svg') or
               f.endswith('format-justify-fill.svg') or
               f.endswith('media-optical-audio.svg') or
               f.endswith('audio-midi.svg') or
@@ -120,6 +121,30 @@ for cat in ['actions', 'animations', 'applets', 'apps', 'categories', 'devices',
               f.endswith('window-close-symbolic.svg') or
               f.endswith('edit-select-symbolic.svg') or
               f.endswith('editor.svg') or
+              f.endswith('document-new.svg') or
+              f.endswith('document-open.svg') or
+              f.endswith('document-save.svg') or
+              f.endswith('document-save-as.svg') or
+              f.endswith('document-send.svg') or
+              f.endswith('application-x-m4.svg') or
+              f.endswith('gtk-quit.svg') or
+              f.endswith('edit-undo.svg') or
+              f.endswith('edit-redo.svg') or
+              f.endswith('edit-cut.svg') or
+              f.endswith('edit-copy.svg') or
+              f.endswith('edit-paste.svg') or
+              f.endswith('edit-delete.svg') or
+              f.endswith('edit-select-all.svg') or
+              f.endswith('kt-show-statusbar.svg') or
+              f.endswith('edit-clear.svg') or
+              f.endswith('select-rectangular.svg') or
+              f.endswith('media-repeat-album-amarok.svg') or
+              f.endswith('help-about.svg') or
+              f.endswith('help-donate.svg') or
+              f.endswith('help-contents.svg') or
+              f.endswith('configure-shortcuts.svg') or
+              f.endswith('tools-report-bug.svg') or
+              f.endswith('applications-internet.svg') or
               f.endswith('draw-eraser.svg') or
               f.endswith('draw-line.svg') or
               f.endswith('audio-speakers-symbolic.svg') or

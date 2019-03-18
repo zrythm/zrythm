@@ -53,7 +53,7 @@ create_selections_submenu ()
   GtkMenuItem * selections =
     z_gtk_create_menu_item (
       "Selection",
-      "select-rectangular",
+      "z-select-rectangular",
       0,
       NULL,
       0,
@@ -66,7 +66,7 @@ create_selections_submenu ()
   menu_item =
     z_gtk_create_menu_item (
       "Loop Selection",
-      "media-repeat-album-amarok",
+      "z-media-repeat-album-amarok",
       0,
       NULL,
       0,
@@ -108,7 +108,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "_New",
-      "document-new",
+      "z-document-new",
       0,
       NULL,
       0,
@@ -117,7 +117,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "_Open",
-      "document-open",
+      "z-document-open",
       0,
       NULL,
       0,
@@ -126,7 +126,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "_Save",
-      "document-save",
+      "z-document-save",
       0,
       NULL,
       0,
@@ -135,7 +135,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "Save _As",
-      "document-save-as",
+      "z-document-save-as",
       0,
       NULL,
       0,
@@ -146,7 +146,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "_Export As",
-      "document-send",
+      "z-document-send",
       0,
       NULL,
       0,
@@ -157,7 +157,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "_Preferences",
-      "application-x-m4",
+      "z-application-x-m4",
       0,
       NULL,
       0,
@@ -166,7 +166,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "_Quit",
-      "gtk-quit",
+      "z-gtk-quit",
       0,
       NULL,
       0,
@@ -177,7 +177,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "_Undo",
-      "edit-undo",
+      "z-edit-undo",
       0,
       NULL,
       0,
@@ -187,7 +187,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "_Redo",
-      "edit-redo",
+      "z-edit-redo",
       0,
       NULL,
       0,
@@ -199,7 +199,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "Cu_t",
-      "edit-cut",
+      "z-edit-cut",
       0,
       NULL,
       0,
@@ -208,7 +208,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "_Copy",
-      "edit-copy",
+      "z-edit-copy",
       0,
       NULL,
       0,
@@ -217,7 +217,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "_Paste",
-      "edit-paste",
+      "z-edit-paste",
       0,
       NULL,
       0,
@@ -226,7 +226,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "_Delete",
-      "edit-delete",
+      "z-edit-delete",
       0,
       NULL,
       0,
@@ -237,7 +237,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "Cle_ar Selection",
-      "edit-clear",
+      "z-edit-clear",
       0,
       NULL,
       0,
@@ -246,7 +246,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "Select A_ll",
-      "edit-select-all",
+      "z-edit-select-all",
       0,
       NULL,
       0,
@@ -296,7 +296,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "Status Bar",
-      "edit-select-all",
+      "z-kt-show-statusbar",
       0,
       NULL,
       1,
@@ -310,7 +310,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "_Zoom In",
-      "zoom-in",
+      "z-zoom-in",
       0,
       NULL,
       0,
@@ -319,7 +319,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "Zoom _Out",
-      "zoom-out",
+      "z-zoom-out",
       0,
       NULL,
       0,
@@ -328,7 +328,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "Original Size",
-      "zoom-original",
+      "z-zoom-original",
       0,
       NULL,
       0,
@@ -337,7 +337,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "Best Fit",
-      "zoom-fit-best",
+      "z-zoom-fit-best",
       0,
       NULL,
       0,
@@ -348,7 +348,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "_Fullscreen",
-      "view-fullscreen",
+      "z-view-fullscreen",
       0,
       NULL,
       0,
@@ -359,7 +359,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   menu_item =
     z_gtk_create_menu_item (
       "Manual",
-      "help-contents",
+      "z-help-contents",
       0,
       NULL,
       0,
@@ -367,19 +367,46 @@ header_bar_widget_setup (HeaderBarWidget * self,
   APPEND_TO_HELP_MENU;
   menu_item =
     z_gtk_create_menu_item (
+      "Forums",
+      "z-applications-internet",
+      0,
+      NULL,
+      0,
+      "app.forums");
+  APPEND_TO_HELP_MENU;
+  menu_item =
+    z_gtk_create_menu_item (
       "Keyboard Shortcuts",
-      "",
+      "z-configure-shortcuts",
       0,
       NULL,
       0,
       "app.shortcuts");
   APPEND_TO_HELP_MENU;
+  menu_item =
+    z_gtk_create_menu_item (
+      "Report a Bug",
+      "z-tools-report-bug",
+      0,
+      NULL,
+      0,
+      "app.bugreport");
+  APPEND_TO_HELP_MENU;
   CREATE_SEPARATOR;
   APPEND_TO_HELP_MENU;
   menu_item =
     z_gtk_create_menu_item (
+      "Donate",
+      "z-help-donate",
+      0,
+      NULL,
+      0,
+      "app.donate");
+  APPEND_TO_HELP_MENU;
+  menu_item =
+    z_gtk_create_menu_item (
       "About",
-      "help-about",
+      "z-help-about",
       0,
       NULL,
       0,
