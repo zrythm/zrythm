@@ -54,6 +54,41 @@ bot_bar_change_status (const char * message)
                       message);
 }
 
+/**
+ * Returns if the bot bar contains the given
+ * substring.
+ */
+int
+bot_bar_status_contains (const char * substr)
+{
+  GtkWidget * box =
+    gtk_statusbar_get_message_area (
+      MW_STATUS_BAR);
+
+  GList *children, *iter;
+
+  children =
+    gtk_container_get_children (
+      GTK_CONTAINER (box));
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      g_object_ref (GTK_WIDGET (iter->data));
+      if (GTK_IS_LABEL (iter->data))
+        {
+          GtkLabel * lbl = GTK_LABEL (iter->data);
+          g_list_free (children);
+          return g_str_match_string (
+            substr,
+            gtk_label_get_text (lbl),
+            0);
+        }
+    }
+  g_assert_not_reached ();
+  return 0;
+}
+
 static void
 bot_bar_widget_class_init (BotBarWidgetClass * _klass)
 {

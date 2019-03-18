@@ -54,42 +54,12 @@ instument_track_ui_toggle (GtkWidget * self, InstrumentTrackWidget * data)
   Plugin * plugin = channel->plugins[0];
   InstrumentTrack * it =
     (InstrumentTrack *) plugin->channel->track;
-  if (!it->ui_active )
-    {
-      plugin_open_ui (plugin);
-      it->ui_active = 1;
-    }
-  else
-    {
-      plugin_close_ui (plugin);
-      it->ui_active = 0;
-    }
-  instrument_track_widget_refresh_buttons (data);
+  plugin->visible = !plugin->visible;
 
+  EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED,
+               plugin);
 }
-/**
- * Updates ui_active state if instrument window is closed
- *
- */
-void
-instrument_track_widget_on_plugin_delete_event (GtkWidget *window,
-				    GdkEventKey *e,
-				    gpointer data)
-{
-  if(data){
-  TRACK_WIDGET_GET_PRIVATE(data);
-  Channel * channel = GET_CHANNEL(data);
-  Plugin * plugin = channel->plugins[0];
-  InstrumentTrack * it = (InstrumentTrack *)tw_prv->track;
 
-  if (it->ui_active == 1)
-    {
-      plugin_close_ui(plugin);
-      it->ui_active = 0;
-      instrument_track_widget_refresh_buttons (data);
-    }
-  }
-}
 /**
  * Creates a new track widget using the given track.
  *
@@ -145,14 +115,10 @@ instrument_track_widget_new (Track * track)
     G_CALLBACK (track_widget_on_show_automation_toggled),
     self);
 
-  ChannelTrack * ct = (ChannelTrack *) track;
-  Channel * chan = ct->channel;
-  Plugin * plugin = chan->plugins[0];
-  if (plugin)
-    {
-      plugin_open_ui (plugin);
-      gtk_widget_set_visible (GTK_WIDGET(self), 1);
-    }
+  /*ChannelTrack * ct = (ChannelTrack *) track;*/
+  /*Channel * chan = ct->channel;*/
+  /*Plugin * plugin = chan->plugins[0];*/
+
   return self;
 }
 
@@ -187,9 +153,11 @@ instrument_track_widget_refresh_buttons (
 
   g_signal_handler_block (
     self->show_ui, self->gui_toggled_handler_id);
-      gtk_toggle_button_set_active (
-        self->show_ui,
-	((InstrumentTrack *)tw_prv->track)->ui_active );
+  Channel * ch =
+    track_get_channel (tw_prv->track);
+  gtk_toggle_button_set_active (
+    self->show_ui,
+    ch->plugins[0]->visible);
   g_signal_handler_unblock (
     self->show_ui, self->gui_toggled_handler_id);
 }
@@ -224,6 +192,12 @@ instrument_track_widget_init (InstrumentTrackWidget * self)
   self->record =
     z_gtk_toggle_button_new_with_icon (
       "z-media-record");
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self->record),
+    "Record");
+  ui_set_hover_status_bar_signals (
+    self->record,
+    "Record - Arm track for recording");
   context =
     gtk_widget_get_style_context (
       GTK_WIDGET (self->record));
@@ -233,6 +207,11 @@ instrument_track_widget_init (InstrumentTrackWidget * self)
     z_gtk_toggle_button_new_with_resource (
       ICON_TYPE_ZRYTHM,
       "solo.svg");
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self->solo), "Solo");
+  ui_set_hover_status_bar_signals (
+    self->solo,
+    "Solo - Mutes any unsoloed tracks");
   context =
     gtk_widget_get_style_context (
       GTK_WIDGET (self->solo));
@@ -242,19 +221,51 @@ instrument_track_widget_init (InstrumentTrackWidget * self)
     z_gtk_toggle_button_new_with_resource (
       ICON_TYPE_ZRYTHM,
       "mute.svg");
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self->mute), "Mute");
+  ui_set_hover_status_bar_signals (
+    self->mute,
+    "Mute - Silences the track");
   self->show_ui =
     z_gtk_toggle_button_new_with_resource (
       ICON_TYPE_ZRYTHM,
       "instrument.svg");
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self->show_ui), "Show UI");
+  ui_set_hover_status_bar_signals (
+    self->show_ui,
+    "Show UI - Displays or hides the main plugin's "
+    "UI");
   self->show_automation =
     z_gtk_toggle_button_new_with_icon (
       "z-format-justify-fill");
+  ui_add_widget_tooltip (
+    self->show_automation,
+    "Show automation lanes");
+  ui_set_hover_status_bar_signals (
+    self->show_automation,
+    "Show Automation Lanes - Shows the track's "
+    "automation lanes"
+    "UI");
   self->lock =
     GTK_TOGGLE_BUTTON (
       gtk_toggle_button_new_with_label ("Lock"));
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self->lock),
+    "Lock track");
+  ui_set_hover_status_bar_signals (
+    self->lock,
+    "Lock - Makes the track uneditable");
   self->freeze =
     GTK_TOGGLE_BUTTON (
       gtk_toggle_button_new_with_label ("Freeze"));
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self->freeze),
+    "Freeze track");
+  ui_set_hover_status_bar_signals (
+    self->freeze,
+    "Freeze - Freezes (bounces to audio) the track "
+    "- Useful for conserving CPU/DSP consumption");
 
   /* set buttons to upper controls */
   gtk_box_pack_start (

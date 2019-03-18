@@ -102,12 +102,6 @@ typedef struct Track
   Region *              regions[MAX_REGIONS];
   int                   num_regions;  ///< counter
 
-  /**
-   * Instrument track only.
-   *
-   * Whether main plugin is showing or not.
-   */
-  int                   ui_active;
   /* ==== INSTRUMENT & AUDIO TRACK END ==== */
 
   /* ==== CHORD TRACK ==== */
@@ -183,9 +177,6 @@ track_fields_schema[] =
     "region_ids", CYAML_FLAG_DEFAULT,
     Track, region_ids, num_regions,
     &int_schema, 0, CYAML_UNLIMITED),
-	CYAML_FIELD_INT (
-    "ui_active", CYAML_FLAG_DEFAULT,
-    Track, ui_active),
   CYAML_FIELD_MAPPING_PTR (
     "scale", CYAML_FLAG_DEFAULT | CYAML_FLAG_OPTIONAL,
     Track, scale,

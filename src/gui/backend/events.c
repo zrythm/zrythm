@@ -177,6 +177,11 @@ on_range_selection_changed ()
   gtk_widget_queue_draw (
     GTK_WIDGET (
       ar_prv->bg));
+  gtk_widget_set_visible (
+    GTK_WIDGET (MW_RULER->range),
+    PROJECT->has_range);
+  gtk_widget_queue_allocate (
+    GTK_WIDGET (MW_RULER));
 }
 
 static void
@@ -368,6 +373,21 @@ on_midi_note_changed (MidiNote * midi_note)
     gtk_widget_queue_draw (GTK_WIDGET (r->widget));
 }
 
+static void
+on_plugin_visibility_changed (Plugin * pl)
+{
+  if (pl->visible)
+    plugin_open_ui (pl);
+  else if (!pl->visible)
+    plugin_close_ui (pl);
+
+  if (pl->channel->track->type ==
+      TRACK_TYPE_INSTRUMENT)
+    instrument_track_widget_refresh_buttons (
+      Z_INSTRUMENT_TRACK_WIDGET (
+        pl->channel->track->widget));
+}
+
 static int
 update_adj ()
 {
@@ -451,6 +471,10 @@ events_process ()
         case ET_TIMELINE_SONG_MARKER_POS_CHANGED:
           gtk_widget_queue_allocate (
             GTK_WIDGET (MW_RULER));
+          break;
+        case ET_PLUGIN_VISIBILITY_CHANGED:
+          on_plugin_visibility_changed (
+            (Plugin *) arg);
           break;
         case ET_LAST_TIMELINE_OBJECT_CHANGED:
           TRANSPORT->total_bars =

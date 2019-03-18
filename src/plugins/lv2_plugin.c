@@ -1964,7 +1964,7 @@ lv2_instantiate (Lv2Plugin      * lv2_plugin,   ///< plugin to instantiate
   /* Run UI (or prompt at console) */
 //  g_message ("Opening UI...");
 //  lv2_open_ui(lv2_plugin,NULL,NULL);
-  g_message ("UI opened");
+  /*g_message ("UI opened");*/
 
   return 0;
 }

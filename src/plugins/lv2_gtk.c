@@ -1210,16 +1210,26 @@ lv2_discover_ui(Lv2Plugin* plugin)
   return TRUE;
 }
 
+gboolean
+on_delete_event (GtkWidget *widget,
+               GdkEvent  *event,
+               Lv2Plugin * plugin)
+{
+  plugin->plugin->visible = 0;
+  EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED,
+               plugin->plugin);
+
+  return FALSE;
+}
+
 int
 lv2_open_ui(Lv2Plugin* plugin)
 {
   LV2_External_UI_Host extui;
   GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  /* FIXME!!!! it's not a g callback */
   g_signal_connect (
     G_OBJECT(window),  "delete-event",
-    (GCallback) instrument_track_widget_on_plugin_delete_event,
-    plugin->host);
+    G_CALLBACK (on_delete_event), plugin);
   plugin->window = window;
   extui.ui_closed = on_external_ui_closed;
   LilvNode* name = lilv_plugin_get_name(plugin->lilv_plugin);
@@ -1313,6 +1323,7 @@ lv2_open_ui(Lv2Plugin* plugin)
 int
 lv2_close_ui(Lv2Plugin* plugin)
 {
+  /*g_message ("lv2_close_ui");*/
   if (plugin->window)
     {
       g_idle_add ((GSourceFunc) gtk_window_close,

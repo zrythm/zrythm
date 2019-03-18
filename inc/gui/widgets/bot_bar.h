@@ -64,6 +64,13 @@ void
 bot_bar_change_status (const char * message);
 
 /**
+ * Returns if the bot bar contains the given
+ * substring.
+ */
+int
+bot_bar_status_contains (const char * substr);
+
+/**
  * @}
  */
 

@@ -684,8 +684,8 @@ midi_arranger_widget_move_items_x (
  *
  * calculates the max possible y movement
  */
-static void
-calc_deltamax_for_note_movement (int *y_delta)
+static int
+calc_deltamax_for_note_movement (int y_delta)
 {
   for (int i = 0;
        i < MIDI_ARRANGER_SELECTIONS->num_midi_notes;
@@ -693,16 +693,20 @@ calc_deltamax_for_note_movement (int *y_delta)
     {
       MidiNote * midi_note =
       MIDI_ARRANGER_SELECTIONS->midi_notes[i];
-      if (midi_note->val + *y_delta < 0)
+      /*g_message ("midi note val %d, y delta %d",*/
+                 /*midi_note->val, y_delta);*/
+      if (midi_note->val + y_delta < 0)
         {
-          *y_delta = 0;
+          y_delta = 0;
         }
-      else if (midi_note->val + *y_delta >= 127)
+      else if (midi_note->val + y_delta >= 127)
         {
-          *y_delta = 127 - midi_note->val;
+          y_delta = 127 - midi_note->val;
         }
     }
-  *y_delta = *y_delta < 0 ? -1 : 1;
+  /*g_message ("y delta %d", y_delta);*/
+  return y_delta;
+  /*return y_delta < 0 ? -1 : 1;*/
 }
 /**
  * Called when moving midi notes in drag update in arranger
@@ -722,7 +726,8 @@ midi_arranger_widget_move_items_y (
       ar_prv->start_y + offset_y);
 
   y_delta = ar_end_val - ar_start_val;
-  calc_deltamax_for_note_movement (&y_delta);
+  y_delta =
+    calc_deltamax_for_note_movement (y_delta);
   if (ar_end_val != ar_start_val)
     {
       for (int i = 0;

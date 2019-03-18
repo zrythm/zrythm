@@ -138,7 +138,16 @@ on_motion (GtkWidget * widget,
 {
   TrackWidget * self = Z_TRACK_WIDGET (user_data);
 
-  if (event->type == GDK_ENTER_NOTIFY)
+  if (event->type == GDK_ENTER_NOTIFY ||
+      (event->type == GDK_MOTION_NOTIFY &&
+       !bot_bar_status_contains ("Record") &&
+       !bot_bar_status_contains ("Solo") &&
+       !bot_bar_status_contains ("Mute") &&
+       !bot_bar_status_contains ("Freeze") &&
+       !bot_bar_status_contains ("Lock") &&
+       !bot_bar_status_contains ("Show UI") &&
+       !bot_bar_status_contains ("Show Automation Lanes") &&
+       !bot_bar_status_contains ("Freeze")))
     {
       gtk_widget_set_state_flags (
         GTK_WIDGET (self),

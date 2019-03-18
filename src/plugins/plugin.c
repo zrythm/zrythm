@@ -218,16 +218,20 @@ plugin_instantiate (Plugin * plugin ///< the plugin
                    )
 {
   g_message ("Instantiating %s...", plugin->descr->name);
+  AUDIO_ENGINE->run = 0;
   /* TODO */
   if (plugin->descr->protocol == PROT_LV2)
     {
       Lv2Plugin *lv2 = (Lv2Plugin *) plugin->original_plugin;
       if (lv2_instantiate (lv2, NULL) < 0)
         {
+          g_warning ("lv2 instantiate failed");
+          AUDIO_ENGINE->run = 1;
           return -1;
         }
     }
   plugin->enabled = 1;
+  AUDIO_ENGINE->run = 1;
   return 0;
 }
 
@@ -293,28 +297,24 @@ clean_ports (Port ** array, int * size)
 void
 plugin_open_ui (Plugin *plugin)
 {
+  AUDIO_ENGINE->run = 0;
   if (plugin->descr->protocol == PROT_LV2)
     {
       Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
 
       lv2_plugin->host =
 	   plugin->channel->track->widget;
-      if (lv2_plugin->window)
-	{
-	  GtkWindow *window = GTK_WINDOW(lv2_plugin->window);
-	  gtk_window_present (window);
-	    {
-	      g_signal_connect (
-		  G_OBJECT (window), "delete-event",
-		  G_CALLBACK (instrument_track_widget_on_plugin_delete_event),
-		  lv2_plugin->host);
-	    }
-	}
+      if (GTK_IS_WINDOW (lv2_plugin->window))
+        {
+          gtk_window_present (
+            GTK_WINDOW (lv2_plugin->window));
+        }
       else
-	{
-	  lv2_open_ui (lv2_plugin);
-	}
+        {
+          lv2_open_ui (lv2_plugin);
+        }
     }
+  AUDIO_ENGINE->run = 1;
 }
 
 
@@ -324,14 +324,18 @@ plugin_open_ui (Plugin *plugin)
 void
 plugin_close_ui (Plugin *plugin)
 {
+  AUDIO_ENGINE->run = 0;
   if (plugin->descr->protocol == PROT_LV2)
     {
-      Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
-      if (lv2_plugin->window)
-	gtk_window_close (GTK_WINDOW(lv2_plugin->window));
+      Lv2Plugin * lv2_plugin =
+        (Lv2Plugin *) plugin->original_plugin;
+      if (GTK_IS_WINDOW (lv2_plugin->window))
+        gtk_window_close (
+          GTK_WINDOW (lv2_plugin->window));
       else
-	lv2_close_ui (lv2_plugin);
+        lv2_close_ui (lv2_plugin);
     }
+  AUDIO_ENGINE->run = 1;
 }
 
 /**

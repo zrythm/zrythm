@@ -1340,8 +1340,8 @@ timeline_arranger_widget_snap_range_r (
     pos);
   project_set_has_range (1);
 
-  gtk_widget_queue_allocate (
-    GTK_WIDGET (MW_RULER));
+  EVENTS_PUSH (ET_RANGE_SELECTION_CHANGED,
+               NULL);
 
   arranger_widget_refresh_all_backgrounds ();
 }
