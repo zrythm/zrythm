@@ -34,9 +34,11 @@ G_DECLARE_FINAL_TYPE (TopBarWidget,
 
 #define TOP_BAR MW->top_bar
 
-typedef struct _DigitalMeterWidget DigitalMeterWidget;
+typedef struct _DigitalMeterWidget
+  DigitalMeterWidget;
 typedef struct _TransportControlsWidget
   TransportControlsWidget;
+typedef struct _CpuWidget CpuWidget;
 
 typedef struct _TopBarWidget
 {
@@ -47,7 +49,7 @@ typedef struct _TopBarWidget
   DigitalMeterWidget *      digital_transport;
   DigitalMeterWidget *      digital_timesig;
   TransportControlsWidget * transport_controls;
-  GtkLabel *                cpu_load;
+  CpuWidget *               cpu_load;
 } TopBarWidget;
 
 void
