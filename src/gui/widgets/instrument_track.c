@@ -54,42 +54,12 @@ instument_track_ui_toggle (GtkWidget * self, InstrumentTrackWidget * data)
   Plugin * plugin = channel->plugins[0];
   InstrumentTrack * it =
     (InstrumentTrack *) plugin->channel->track;
-  if (!it->ui_active )
-    {
-      plugin_open_ui (plugin);
-      it->ui_active = 1;
-    }
-  else
-    {
-      plugin_close_ui (plugin);
-      it->ui_active = 0;
-    }
-  instrument_track_widget_refresh_buttons (data);
+  plugin->visible = !plugin->visible;
 
+  EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED,
+               plugin);
 }
-/**
- * Updates ui_active state if instrument window is closed
- *
- */
-void
-instrument_track_widget_on_plugin_delete_event (GtkWidget *window,
-				    GdkEventKey *e,
-				    gpointer data)
-{
-  if(data){
-  TRACK_WIDGET_GET_PRIVATE(data);
-  Channel * channel = GET_CHANNEL(data);
-  Plugin * plugin = channel->plugins[0];
-  InstrumentTrack * it = (InstrumentTrack *)tw_prv->track;
 
-  if (it->ui_active == 1)
-    {
-      plugin_close_ui(plugin);
-      it->ui_active = 0;
-      instrument_track_widget_refresh_buttons (data);
-    }
-  }
-}
 /**
  * Creates a new track widget using the given track.
  *
@@ -187,9 +157,11 @@ instrument_track_widget_refresh_buttons (
 
   g_signal_handler_block (
     self->show_ui, self->gui_toggled_handler_id);
-      gtk_toggle_button_set_active (
-        self->show_ui,
-	((InstrumentTrack *)tw_prv->track)->ui_active );
+  Channel * ch =
+    track_get_channel (tw_prv->track);
+  gtk_toggle_button_set_active (
+    self->show_ui,
+    ch->plugins[0]->visible);
   g_signal_handler_unblock (
     self->show_ui, self->gui_toggled_handler_id);
 }

@@ -45,8 +45,6 @@ instrument_track_init (Track * track)
 {
   track->type = TRACK_TYPE_INSTRUMENT;
   gdk_rgba_parse (&track->color, "#F79616");
-
-  track->ui_active = 1;
 }
 
 void

@@ -300,7 +300,10 @@ mixer_add_channel_from_plugin_descr (
   channel_add_plugin (new_channel,
                       0,
                       plugin);
+  plugin->visible = 1;
 
+  EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED,
+               plugin);
   EVENTS_PUSH (ET_TRACK_ADDED,
                new_channel->track);
 }
