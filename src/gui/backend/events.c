@@ -177,6 +177,11 @@ on_range_selection_changed ()
   gtk_widget_queue_draw (
     GTK_WIDGET (
       ar_prv->bg));
+  gtk_widget_set_visible (
+    GTK_WIDGET (MW_RULER->range),
+    PROJECT->has_range);
+  gtk_widget_queue_allocate (
+    GTK_WIDGET (MW_RULER));
 }
 
 static void
