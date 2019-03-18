@@ -25,6 +25,7 @@
 #include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/bot_bar.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/automation_curve.h"
 #include "gui/widgets/ruler.h"
@@ -93,114 +94,132 @@ automation_curve_draw_cb (
   cairo_t *cr,
   gpointer data)
 {
-  guint width, height;
-  GtkStyleContext *context;
-
-  context =
-    gtk_widget_get_style_context (GTK_WIDGET (self));
-
-  width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (self));
-  height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
-
-  gtk_render_background (context, cr, 0, 0, width, height);
-
-  /*cairo_rectangle (cr, 0, 0, width, height);*/
-  /*cairo_fill (cr);*/
-
-  GdkRGBA * color;
-  Track * track = self->ac->at->track;
-  /*ChannelTrack * ct = (ChannelTrack *) track;*/
-  color = &track->color;
-  if (self->hover)
+  /* not cached, redraw */
+  if (!self->cache)
     {
-      cairo_set_source_rgba (cr,
-                             color->red + 0.2,
-                             color->green + 0.2,
-                             color->blue + 0.2,
-                             0.8);
-    }
-  else if (self->selected)
-    {
-      cairo_set_source_rgba (cr,
-                             color->red + 0.4,
-                             color->green + 0.4,
-                             color->blue + 0.4,
-                             0.8);
-    }
-  else
-    {
-      cairo_set_source_rgba (cr, color->red, color->green, color->blue, 0.7);
-    }
+      guint width, height;
+      GtkStyleContext *context;
 
-  AutomationPoint * next_ap = automation_track_get_ap_after_curve (self->ac->at,
-                                                              self->ac);
-  AutomationPoint * prev_ap = automation_track_get_ap_before_curve (self->ac->at,
-                                                              self->ac);
+      width =
+        gtk_widget_get_allocated_width (GTK_WIDGET (self));
+      height =
+        gtk_widget_get_allocated_height (GTK_WIDGET (self));
+      self->cached_surface =
+        cairo_surface_create_similar (
+          cairo_get_target (cr),
+          CAIRO_CONTENT_COLOR_ALPHA,
+          width,
+          height);
+      self->cached_cr =
+        cairo_create (self->cached_surface);
 
-  /*gtk_widget_translate_coordinates(*/
-            /*GTK_WIDGET (ap->widget),*/
-            /*GTK_WIDGET (MW_TRACKLIST),*/
-            /*0,*/
-            /*0,*/
-            /*&wx,*/
-            /*&wy);*/
-  /*wx = arranger_get_x_pos_in_px (&ap->pos);*/
+      context =
+        gtk_widget_get_style_context (GTK_WIDGET (self));
 
-  /*gint prev_wx, prev_wy;*/
-  /*AutomationPoint * prev_ap =*/
-    /*automation_track_get_ap_before_curve (at, self->ac);*/
-  /*gtk_widget_translate_coordinates(*/
-            /*GTK_WIDGET (prev_ap->widget),*/
-            /*GTK_WIDGET (MW_TRACKLIST),*/
-            /*0,*/
-            /*0,*/
-            /*&prev_wx,*/
-            /*&prev_wy);*/
-  /*prev_wx = arranger_get_x_pos_in_px (&prev_ap->pos);*/
-  /*int ww = wx - prev_wx;*/
-  double automation_point_y;
-  int prev_y_px = automation_point_get_y_in_px (prev_ap);
-  int next_y_px = automation_point_get_y_in_px (next_ap);
-  int prev_higher = prev_y_px < next_y_px;
-  double new_x = AC_Y_HALF_PADDING;
-  double new_y = prev_higher ? AC_Y_HALF_PADDING : height - AC_Y_HALF_PADDING;
-  cairo_move_to (cr,
-                 new_x,
-                 new_y);
-  /*int height = prev_y_px > curr_y_px ?*/
-    /*prev_y_px - curr_y_px :*/
-    /*curr_y_px - prev_y_px;*/
-  /*cairo_set_line_width (cr, 1);*/
-  /*for (int l = 0; l < ww; l++)*/
-  for (double l = AC_Y_HALF_PADDING;
-       l <= ((double) width - AC_Y_HALF_PADDING);
-       l = l + 0.1)
-    {
-      automation_point_y =
-        automation_curve_get_y_px (
-          self->ac,
-          l - AC_Y_HALF_PADDING, // this should come to 0
-          width - AC_Y_PADDING,
-          height - AC_Y_PADDING);
-      new_x = l;
-      new_y = prev_higher ? automation_point_y : height + automation_point_y;
+      gtk_render_background (context, self->cached_cr, 0, 0, width, height);
 
-      /* this is because height is 1 smaller than the actual height, so start drawing from 0.5 to actual height - 0.5 */
-      if (prev_higher)
-        new_y += AC_Y_HALF_PADDING;
-      else
-        new_y -= AC_Y_HALF_PADDING;
-      /*g_message ("new x %f , new y %f",*/
-                 /*new_x,*/
-                 /*new_y);*/
-      cairo_line_to (cr,
+      /*cairo_rectangle (self->cached_cr, 0, 0, width, height);*/
+      /*cairo_fill (self->cached_cr);*/
+
+      GdkRGBA * color;
+      Track * track = self->ac->at->track;
+      /*ChannelTrack * ct = (ChannelTrack *) track;*/
+      color = &track->color;
+      /*if (self->hover)*/
+        /*{*/
+          /*cairo_set_source_rgba (self->cached_cr,*/
+                                 /*color->red + 0.2,*/
+                                 /*color->green + 0.2,*/
+                                 /*color->blue + 0.2,*/
+                                 /*0.8);*/
+        /*}*/
+      /*else if (self->selected)*/
+        /*{*/
+          /*cairo_set_source_rgba (self->cached_cr,*/
+                                 /*color->red + 0.4,*/
+                                 /*color->green + 0.4,*/
+                                 /*color->blue + 0.4,*/
+                                 /*0.8);*/
+        /*}*/
+      /*else*/
+        /*{*/
+          cairo_set_source_rgba (self->cached_cr, color->red, color->green, color->blue, 0.7);
+        /*}*/
+
+      AutomationPoint * next_ap = automation_track_get_ap_after_curve (self->ac->at,
+                                                                  self->ac);
+      AutomationPoint * prev_ap = automation_track_get_ap_before_curve (self->ac->at,
+                                                                  self->ac);
+
+      /*gtk_widget_translate_coordinates(*/
+                /*GTK_WIDGET (ap->widget),*/
+                /*GTK_WIDGET (MW_TRACKLIST),*/
+                /*0,*/
+                /*0,*/
+                /*&wx,*/
+                /*&wy);*/
+      /*wx = arranger_get_x_pos_in_px (&ap->pos);*/
+
+      /*gint prev_wx, prev_wy;*/
+      /*AutomationPoint * prev_ap =*/
+        /*automation_track_get_ap_before_curve (at, self->ac);*/
+      /*gtk_widget_translate_coordinates(*/
+                /*GTK_WIDGET (prev_ap->widget),*/
+                /*GTK_WIDGET (MW_TRACKLIST),*/
+                /*0,*/
+                /*0,*/
+                /*&prev_wx,*/
+                /*&prev_wy);*/
+      /*prev_wx = arranger_get_x_pos_in_px (&prev_ap->pos);*/
+      /*int ww = wx - prev_wx;*/
+      double automation_point_y;
+      int prev_y_px = automation_point_get_y_in_px (prev_ap);
+      int next_y_px = automation_point_get_y_in_px (next_ap);
+      int prev_higher = prev_y_px < next_y_px;
+      double new_x = AC_Y_HALF_PADDING;
+      double new_y = prev_higher ? AC_Y_HALF_PADDING : height - AC_Y_HALF_PADDING;
+      cairo_move_to (self->cached_cr,
                      new_x,
                      new_y);
+      /*int height = prev_y_px > curr_y_px ?*/
+        /*prev_y_px - curr_y_px :*/
+        /*curr_y_px - prev_y_px;*/
+      /*cairo_set_line_width (self->cached_cr, 1);*/
+      /*for (int l = 0; l < ww; l++)*/
+      for (double l = AC_Y_HALF_PADDING;
+           l <= ((double) width - AC_Y_HALF_PADDING);
+           l = l + 0.1)
+        {
+          automation_point_y =
+            automation_curve_get_y_px (
+              self->ac,
+              l - AC_Y_HALF_PADDING, // this should come to 0
+              width - AC_Y_PADDING,
+              height - AC_Y_PADDING);
+          new_x = l;
+          new_y = prev_higher ? automation_point_y : height + automation_point_y;
+
+          /* this is because height is 1 smaller than the actual height, so start drawing from 0.5 to actual height - 0.5 */
+          if (prev_higher)
+            new_y += AC_Y_HALF_PADDING;
+          else
+            new_y -= AC_Y_HALF_PADDING;
+          /*g_message ("new x %f , new y %f",*/
+                     /*new_x,*/
+                     /*new_y);*/
+          cairo_line_to (self->cached_cr,
+                         new_x,
+                         new_y);
+        }
+
+      cairo_stroke (self->cached_cr);
+
+      self->cache = 1;
     }
 
-  cairo_stroke (cr);
+  cairo_set_source_surface (
+    cr, self->cached_surface, 0, 0);
+  cairo_paint (cr);
 
   return FALSE;
 }
@@ -215,13 +234,27 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
   gtk_widget_get_allocation (widget,
                              &allocation);
 
-  if (event->type == GDK_MOTION_NOTIFY)
+  if (event->type == GDK_ENTER_NOTIFY)
     {
-      self->hover = 1;
+      gtk_widget_set_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_PRELIGHT,
+        0);
+
+      bot_bar_change_status (
+        "Automation Curve - Click and drag to  "
+        "change curviness");
+      self->cache = 0;
     }
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
-      self->hover = 0;
+      ui_set_cursor_from_name (widget, "default");
+      gtk_widget_unset_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_PRELIGHT);
+
+      bot_bar_change_status ("");
+      self->cache = 0;
     }
   g_idle_add ((GSourceFunc) gtk_widget_queue_draw, GTK_WIDGET (self));
 }
@@ -265,8 +298,13 @@ automation_curve_widget_new (AutomationCurve * ac)
 }
 
 static void
-automation_curve_widget_class_init (AutomationCurveWidgetClass * klass)
+automation_curve_widget_class_init (
+  AutomationCurveWidgetClass * _klass)
 {
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (
+    klass, "automation-curve");
 }
 
 static void

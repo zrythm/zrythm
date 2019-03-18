@@ -60,6 +60,11 @@ typedef struct AutomationPoint
    * FIXME ???
    */
   //int                      port_id;
+
+  /** Index in the automation track, for faster
+   * performance when getting ap before/after
+   * curve. */
+  int                       index;
 } AutomationPoint;
 
 static const cyaml_schema_field_t
@@ -85,6 +90,9 @@ automation_point_fields_schema[] =
     AutomationPoint, fvalue),
   CYAML_FIELD_INT (
     "at_id", CYAML_FLAG_DEFAULT,
+    AutomationPoint, at_id),
+  CYAML_FIELD_INT (
+    "index", CYAML_FLAG_DEFAULT,
     AutomationPoint, at_id),
 
 	CYAML_FIELD_END

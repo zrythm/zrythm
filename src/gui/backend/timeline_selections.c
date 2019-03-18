@@ -28,6 +28,29 @@
 
 #include <gtk/gtk.h>
 
+void
+timeline_selections_init_loaded (
+  TimelineSelections * ts)
+{
+  int i;
+  for (i = 0; i < ts->num_regions; i++)
+    ts->regions[i] =
+      project_get_region (ts->region_ids[i]);
+
+  ts->top_region =
+    project_get_region (ts->top_region_id);
+  ts->bot_region =
+    project_get_region (ts->bot_region_id);
+
+  for (i = 0; i < ts->num_automation_points; i++)
+    ts->automation_points[i] =
+      project_get_automation_point (ts->ap_ids[i]);
+
+  for (i = 0; i < ts->num_chords; i++)
+    ts->chords[i] =
+      project_get_chord (ts->chord_ids[i]);
+}
+
 /**
  * Returns if there are any selections.
  */

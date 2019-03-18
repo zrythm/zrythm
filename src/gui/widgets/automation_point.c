@@ -75,7 +75,7 @@ on_motion (GtkWidget * widget,
   gtk_widget_get_allocation (widget,
                              &allocation);
 
-  if (event->type == GDK_MOTION_NOTIFY)
+  if (event->type == GDK_ENTER_NOTIFY)
     {
       gtk_widget_set_state_flags (
         GTK_WIDGET (self),

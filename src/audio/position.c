@@ -239,18 +239,18 @@ int
 position_compare (Position * p1,
                   Position * p2)
 {
-  if (p1->bars == p2->bars &&
-      p1->beats == p2->beats &&
-      p1->sixteenths == p2->sixteenths &&
-      p1->ticks == p2->ticks)
-    return 0;
-  else if ((p1->bars < p2->bars) ||
+  if ((p1->bars < p2->bars) ||
            (p1->bars == p2->bars && p1->beats < p2->beats) ||
            (p1->bars == p2->bars && p1->beats == p2->beats && p1->sixteenths < p2->sixteenths) ||
            (p1->bars == p2->bars && p1->beats == p2->beats && p1->sixteenths == p2->sixteenths && p1->ticks < p2->ticks))
     return -1;
-  else
+  else if ((p1->bars > p2->bars) ||
+           (p1->bars == p2->bars && p1->beats > p2->beats) ||
+           (p1->bars == p2->bars && p1->beats == p2->beats && p1->sixteenths > p2->sixteenths) ||
+           (p1->bars == p2->bars && p1->beats == p2->beats && p1->sixteenths == p2->sixteenths && p1->ticks > p2->ticks))
     return 1;
+  else
+    return 0;
 }
 
 /**

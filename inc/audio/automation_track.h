@@ -205,13 +205,13 @@ void
 automation_track_remove_ac (AutomationTrack * at,
                             AutomationCurve * ac);
 
-int
-automation_track_get_ap_index (AutomationTrack * at,
-                            AutomationPoint * ap);
+//int
+//automation_track_get_ap_index (AutomationTrack * at,
+                            //AutomationPoint * ap);
 
-int
-automation_track_get_curve_index (AutomationTrack * at,
-                                  AutomationCurve * ac);
+//int
+//automation_track_get_curve_index (AutomationTrack * at,
+                                  //AutomationCurve * ac);
 
 /**
  * Returns the automation curve at the given pos.
