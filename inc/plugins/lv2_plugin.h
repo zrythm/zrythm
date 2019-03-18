@@ -272,6 +272,8 @@ typedef struct Lv2Plugin
   LV2_Worker_Schedule sched;
   LV2_Worker_Schedule ssched;
   LV2_Log_Log         llog;
+
+  /** What are these? FIXME */
   void *           host;
   void *           host_on_destroy_cb;
 } Lv2Plugin;

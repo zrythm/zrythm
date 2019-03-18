@@ -129,6 +129,7 @@ for cat in ['actions', 'animations', 'applets', 'apps', 'categories', 'devices',
               f.endswith('selection-end-symbolic.svg') or
               f.endswith('edit-select.svg') or
               f.endswith('plugins.svg') or
+              f.endswith('hand.svg') or
               f.endswith('window-maximize.svg')):
           xml += '    <file>{0}</file>\n'.format(remove_prefix(destfile, srcdir + os.sep))
 

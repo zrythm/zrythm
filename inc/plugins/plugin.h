@@ -130,6 +130,9 @@ typedef struct Plugin
   int                  automatable_ids[900];
   Automatable *        automatables[900]; ///< cache
   int                  num_automatables;
+
+  /** Whether plugin UI is opened or not. */
+  int                  visible;
 } Plugin;
 
 static const cyaml_strval_t
@@ -242,6 +245,9 @@ plugin_fields_schema[] =
     "automatable_ids", CYAML_FLAG_DEFAULT,
     Plugin, automatable_ids, num_automatables,
     &int_schema, 0, CYAML_UNLIMITED),
+	CYAML_FIELD_INT (
+    "visible", CYAML_FLAG_DEFAULT,
+    Plugin, visible),
 
 	CYAML_FIELD_END
 };

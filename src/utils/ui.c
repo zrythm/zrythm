@@ -22,6 +22,7 @@
 #include "audio/engine.h"
 #include "gui/widgets/audio_clip_editor.h"
 #include "gui/widgets/audio_ruler.h"
+#include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
@@ -54,6 +55,12 @@ ui_set_cursor_from_icon_name (
       18,
       0,
       NULL);
+  if (!GDK_IS_PIXBUF (pixbuf))
+    {
+      g_warning ("no pixbuf for %s",
+                 name);
+      return;
+    }
   GdkCursor * cursor =
     gdk_cursor_new_from_pixbuf (
       gdk_display_get_default (),
@@ -412,6 +419,26 @@ hide_notification_async ()
   gtk_revealer_set_reveal_child (
     GTK_REVEALER (MAIN_WINDOW->revealer),
     0);
+
+  return FALSE;
+}
+
+gboolean
+ui_on_motion_set_status_bar_text_cb (
+  GtkWidget * widget,
+  GdkEvent *  event,
+  char *      text)
+{
+  if (gdk_event_get_event_type (event) ==
+        GDK_ENTER_NOTIFY)
+    {
+      bot_bar_change_status (text);
+    }
+  else if (gdk_event_get_event_type (event) ==
+             GDK_LEAVE_NOTIFY)
+    {
+      bot_bar_change_status ("");
+    }
 
   return FALSE;
 }

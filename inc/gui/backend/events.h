@@ -94,6 +94,10 @@ typedef enum EventType
   ET_TL_SELECTIONS_CHANGED,
   ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
   ET_AUTOMATION_VALUE_CHANGED,
+
+  /** Plugin visibility changed, should close/open
+   * UI. */
+  ET_PLUGIN_VISIBILITY_CHANGED,
 } EventType;
 
 typedef struct Events

@@ -42,6 +42,7 @@ typedef struct _PreferencesWidget
   GtkButton *              ok;
   GtkComboBox *            audio_backend;
   Preferences *            preferences;
+  GtkCheckButton *         open_plugin_uis;
 } PreferencesWidget;
 
 PreferencesWidget *

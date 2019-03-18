@@ -76,6 +76,16 @@
       </description>
     </key>
 
+    <key name="open-plugin-uis-on-instantiate" type="i">
+      <default>1</default>
+      <summary>Open plugin UIs when they are instantiated</summary>
+      <description>
+        Open plugin UIs when they are dragged and
+        dropped or activated in the plugin browser
+        or not.
+      </description>
+    </key>
+
     <key name="edit-region-size" type="i">
       <default>4</default>
       <summary>Region Size</summary>
