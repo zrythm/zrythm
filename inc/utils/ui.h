@@ -63,6 +63,22 @@ typedef struct Position Position;
 #define GET_ATOM(x) \
   gdk_atom_intern (x, 1)
 
+#define ui_add_widget_tooltip(widget,txt) \
+  gtk_widget_set_tooltip_text ( \
+    GTK_WIDGET (widget), txt)
+
+#define ui_set_hover_status_bar_signals(w,t) \
+  g_signal_connect ( \
+    G_OBJECT (w), "enter-notify-event", \
+    G_CALLBACK ( \
+      ui_on_motion_set_status_bar_text_cb), \
+    g_strdup (t)); \
+  g_signal_connect ( \
+    G_OBJECT(w), "leave-notify-event", \
+    G_CALLBACK ( \
+      ui_on_motion_set_status_bar_text_cb), \
+    g_strdup (t));
+
 /**
  * Shows the notification when idle.
  *
@@ -213,6 +229,12 @@ ui_set_cursor_from_icon_name (
  */
 void
 ui_set_cursor_from_name (GtkWidget * widget, char * name);
+
+gboolean
+ui_on_motion_set_status_bar_text_cb (
+  GtkWidget * widget,
+  GdkEvent *  event,
+  char *      text);
 
 void
 ui_show_error_message_full (
