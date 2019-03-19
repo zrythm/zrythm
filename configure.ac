@@ -98,6 +98,7 @@ AC_ARG_WITH(
       AC_SUBST([HAVE_QT5],[1])])],
   [echo "** building without Qt5 support in suil. use --with-qt5 to enable it"])
 
+# FIXME maybe not needed
 AC_ARG_WITH(
   docs,
   AS_HELP_STRING(

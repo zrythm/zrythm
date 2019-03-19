@@ -107,7 +107,7 @@ m4/ltversion.m4
 m4/lt~obsolete.m4
 
 # Doxygen
-/doc
+/doc/html
 
 # Backup files
 *.bak

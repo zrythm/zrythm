@@ -282,12 +282,17 @@ $(BUILD_DIR)/%.cpp.$(OBJEXT): %.cpp
 	$(MKDIR_P) $(dir $@)
 	$(CXX) $(CFLAGS) $(QT5_CFLAGS) -lstdc++ -MMD -c $< -o $@
 
+.PHONY: doc
+doc:
+	doxygen Doxyfile.cfg
+
 .PHONY: clean
 clean:
 	#rm -rf $(BUILD_DIR)/*
 	# This should remove all generated files.
 	-rm $(BUILD_DIR)/$(BIN)$(EXT) $(OBJ) $(DEP)
 	-rm $(BUILD_DIR)/zrythm.gresource.xml
+	-rm -rf doc/html
 	cd $(CYAML_SRC_DIR) && make clean
 	cd $(LIBSMF_SRC_DIR) && make clean
 
