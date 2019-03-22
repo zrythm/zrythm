@@ -32,7 +32,6 @@ shift_midi_arranger_selections_val_action_new (int delta)
 	ShiftMidiArrangerSelectionsValAction * self =
     calloc (1, sizeof (
     	ShiftMidiArrangerSelectionsValAction));
-
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
 	  UNDOABLE_ACTION_TYPE_SHIFT_MIDI_NOTES_VAL;
@@ -53,7 +52,7 @@ void
 shift_midi_arranger_selections_val_action_undo (
 	ShiftMidiArrangerSelectionsValAction * self)
 {
-	midi_arranger_selections_shift_val(self->delta*-1);	
+	midi_arranger_selections_shift_val(self->delta * -1);	
     EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
                NULL);
 }

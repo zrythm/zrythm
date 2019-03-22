@@ -32,7 +32,6 @@ shift_midi_arranger_selections_pos_action_new (int delta)
 	ShiftMidiArrangerSelectionsPosAction * self =
     calloc (1, sizeof (
     	ShiftMidiArrangerSelectionsPosAction));
-
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
 	  UNDOABLE_ACTION_TYPE_SHIFT_MIDI_NOTES_POS;
@@ -62,7 +61,6 @@ void
 shift_midi_arranger_selections_pos_action_free (
 	ShiftMidiArrangerSelectionsPosAction * self)
 {
-
   free (self);
 }
 
