@@ -780,11 +780,11 @@ on_key_action (GtkWidget *widget,
 	{
 		if (midi_arranger)
 		{
-			UndoableAction * shift_up_action =
+			UndoableAction * shift_left_action =
 				shift_midi_arranger_selections_pos_action_new 
 				(-1);
 			undo_manager_perform (
-			UNDO_MANAGER, shift_up_action);
+			UNDO_MANAGER, shift_left_action);
 		}
 	}
 	if (event->type == GDK_KEY_PRESS
@@ -792,11 +792,11 @@ on_key_action (GtkWidget *widget,
 	{
 		if (midi_arranger)
 		{
-			UndoableAction * shift_down_action =
+			UndoableAction * shift_right_action =
 				shift_midi_arranger_selections_pos_action_new 
 				(1);
 			undo_manager_perform (
-			UNDO_MANAGER, shift_down_action);
+			UNDO_MANAGER, shift_right_action);
 		}
 	}
 	return FALSE;

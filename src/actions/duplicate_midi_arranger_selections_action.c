@@ -33,13 +33,10 @@ duplicate_midi_arranger_selections_action_new ()
   DuplicateMidiArrangerSelectionsAction * self =
     calloc (1, sizeof (
                  DuplicateMidiArrangerSelectionsAction));
-
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
     UNDOABLE_ACTION_TYPE_DUPLICATE_MIDI_NOTES;
-
   self->mas = midi_arranger_selections_clone ();
-
   return ua;
 }
 
