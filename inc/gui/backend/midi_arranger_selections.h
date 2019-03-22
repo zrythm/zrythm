@@ -70,13 +70,13 @@ midi_arranger_selections_schema = {
  * Shift note pos for selected noted
  */
 void
-midi_arranger_selections_shift_pos ();
+midi_arranger_selections_shift_pos (int delta);
 
 /**
  * Shift note value for selected noted
  */
 void
-midi_arranger_selections_shift_val ();
+midi_arranger_selections_shift_val (int delta);
 /**
  * Clone the struct for copying, undoing, etc.
  */
