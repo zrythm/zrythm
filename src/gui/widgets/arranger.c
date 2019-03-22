@@ -730,74 +730,76 @@ on_right_click (GtkGestureMultiPress *gesture,
     }
 }
 
-static gboolean
-on_key_action (GtkWidget *widget,
-               GdkEventKey  *event,
-               gpointer   user_data)
+static void
+auto_scroll (ArrangerWidget * self)
 {
-  ArrangerWidget * self = (ArrangerWidget *) user_data;
+	GET_ARRANGER_ALIASES(self);
+	GtkScrolledWindow *scrolled =
+		arranger_widget_get_scrolled_window (self);
+	if (midi_arranger != 0)
+	{
+		midi_arranger_auto_scroll((MidiArrangerWidget*)midi_arranger,scrolled);
+	}
+}
+
+static gboolean
+on_key_action (
+	GtkWidget *widget,
+	GdkEventKey *event,
+	gpointer user_data)
+{
+	ArrangerWidget * self = (ArrangerWidget *) user_data;
 
 	GET_ARRANGER_ALIASES(self);
-
-	if (event->state & GDK_CONTROL_MASK
-		&& event->type == GDK_KEY_PRESS
-		&& event->keyval == GDK_KEY_d)
+	if (midi_arranger && MIDI_ARRANGER_SELECTIONS->num_midi_notes>0)
 	{
-		if (midi_arranger)
+		if (event->state & GDK_CONTROL_MASK
+			&& event->type == GDK_KEY_PRESS
+			&& event->keyval == GDK_KEY_d)
 		{
+
 			UndoableAction * duplicate_action =
 				duplicate_midi_arranger_selections_action_new ();
 			undo_manager_perform (
 			UNDO_MANAGER, duplicate_action);
 		}
-	}
-	if (event->type == GDK_KEY_PRESS
-		&& event->keyval == GDK_KEY_Up)
-	{
-		if (midi_arranger)
+		if (event->type == GDK_KEY_PRESS
+			&& event->keyval == GDK_KEY_Up)
 		{
 			UndoableAction * shift_up_action =
-				shift_midi_arranger_selections_val_action_new 
-				(1);
+				shift_midi_arranger_selections_val_action_new (
+					1);
 			undo_manager_perform (
 			UNDO_MANAGER, shift_up_action);
 		}
-	}
-	if (event->type == GDK_KEY_PRESS
-		&& event->keyval == GDK_KEY_Down)
-	{
-		if (midi_arranger)
+		if (event->type == GDK_KEY_PRESS
+			&& event->keyval == GDK_KEY_Down)
 		{
 			UndoableAction * shift_down_action =
-				shift_midi_arranger_selections_val_action_new 
-				(-1);
+				shift_midi_arranger_selections_val_action_new (
+					-1);
 			undo_manager_perform (
 			UNDO_MANAGER, shift_down_action);
 		}
-	}
-	if (event->type == GDK_KEY_PRESS
-		&& event->keyval == GDK_KEY_Left)
-	{
-		if (midi_arranger)
+		if (event->type == GDK_KEY_PRESS
+			&& event->keyval == GDK_KEY_Left)
 		{
 			UndoableAction * shift_left_action =
-				shift_midi_arranger_selections_pos_action_new 
-				(-1);
+				shift_midi_arranger_selections_pos_action_new (
+					-1);
 			undo_manager_perform (
 			UNDO_MANAGER, shift_left_action);
 		}
-	}
-	if (event->type == GDK_KEY_PRESS
-		&& event->keyval == GDK_KEY_Right)
-	{
-		if (midi_arranger)
+		if (event->type == GDK_KEY_PRESS
+			&& event->keyval == GDK_KEY_Right)
 		{
 			UndoableAction * shift_right_action =
-				shift_midi_arranger_selections_pos_action_new 
-				(1);
+				shift_midi_arranger_selections_pos_action_new (
+					1);
 			undo_manager_perform (
 			UNDO_MANAGER, shift_right_action);
 		}
+		auto_scroll(self);
 	}
 	return FALSE;
 }
@@ -1122,6 +1124,7 @@ drag_begin (GtkGestureDrag *   gesture,
   arranger_widget_refresh_cursor (self);
 }
 
+
 static void
 drag_update (GtkGestureDrag * gesture,
                gdouble         offset_x,
@@ -1356,26 +1359,21 @@ drag_update (GtkGestureDrag * gesture,
           timeline_arranger_widget_move_items_x (
             timeline,
             ticks_diff);
-        }
-      else if (midi_arranger)
-        {
-          midi_arranger_widget_move_items_x (
-            midi_arranger,
-            ticks_diff);
-        }
-
-      /* handle moving up/down */
-      if (timeline)
-        {
           timeline_arranger_widget_move_items_y (
             timeline,
             offset_y);
         }
       else if (midi_arranger)
         {
-          midi_arranger_widget_move_items_y (
+          midi_arranger_widget_move_items_x (
             midi_arranger,
-            offset_y);
+            ticks_diff);
+          midi_arranger_widget_move_items_y (
+                    midi_arranger,
+                    offset_y);
+          auto_scroll(self);
+
+          
         }
     } /* endif MOVING */
   /* if copy-moving the selection */
@@ -1422,6 +1420,8 @@ drag_update (GtkGestureDrag * gesture,
           midi_arranger_widget_move_items_x (
             midi_arranger,
             ticks_diff);
+          auto_scroll(self);
+
         }
 
       /* handle moving up/down */
@@ -1436,6 +1436,7 @@ drag_update (GtkGestureDrag * gesture,
           midi_arranger_widget_move_items_y (
             midi_arranger,
             offset_y);
+          auto_scroll(self);
         }
     } /* endif MOVING_COPY */
   else if (ar_prv->action ==
@@ -1477,7 +1478,6 @@ drag_update (GtkGestureDrag * gesture,
 
   arranger_widget_refresh_cursor (self);
 }
-
 static void
 drag_end (GtkGestureDrag *gesture,
                gdouble         offset_x,
@@ -1620,7 +1620,7 @@ on_scroll (GtkWidget *widget,
          adj_val,
          diff;
   Position cursor_pos, adj_pos;
-  GtkScrolledWindow * scroll =
+   GtkScrolledWindow * scroll =
     arranger_widget_get_scrolled_window (self);
   GtkAdjustment * adj;
   int new_x;
@@ -1947,6 +1947,9 @@ arranger_widget_refresh (
   if (midi_arranger)
     {
       RULER_WIDGET_GET_PRIVATE (MIDI_RULER);
+     
+      GtkScrolledWindow * scroll =
+       arranger_widget_get_scrolled_window (self);
       gtk_widget_set_size_request (
         GTK_WIDGET (self),
         rw_prv->total_px,

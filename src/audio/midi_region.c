@@ -134,6 +134,101 @@ midi_region_update_midi_note_val (
 }
 
 /**
+ * Gets midi notes boundaries
+ */
+void 
+midi_arranger_get_relative_midi_note_bounds (
+	MidiRegion * self,
+	MidiNote * last_note,
+	MidiNote * first_note,
+	MidiNote * lowest_note,
+	MidiNote * highest_note)
+{
+	last_note = midi_region_get_last_midi_note (self);
+	first_note = midi_region_get_first_midi_note (self);
+	lowest_note = midi_region_get_lowest_midi_note (self);
+	highest_note = midi_region_get_highest_midi_note (self);
+}
+/**
+ * Gets first midi note
+ */
+MidiNote *
+midi_region_get_first_midi_note (MidiRegion * region)
+{
+	MidiNote * result = 0;
+	for (int i = 0; 
+		i < region->num_midi_notes; 
+		i++)
+	{
+		if (result == 0
+			|| &result->end_pos.frames > &region->midi_notes[i]->end_pos.frames)
+		{
+			result = region->midi_notes[i];
+		}
+	}
+	return result;
+}
+/**
+ * Gets last midi note
+ */
+MidiNote *
+midi_region_get_last_midi_note (MidiRegion * region)
+{
+	MidiNote * result = 0;
+	for (int i = 0; 
+		i < region->num_midi_notes; 
+		i++)
+	{
+		if (result == 0
+			|| &result->end_pos.frames < &region->midi_notes[i]->end_pos.frames)
+		{
+			result = region->midi_notes[i];
+		}
+	}
+	return result;
+}
+
+/**
+ * Gets highest midi note
+ */
+MidiNote *
+midi_region_get_highest_midi_note (MidiRegion * region)
+{
+	MidiNote * result = 0;
+	for (int i = 0; 
+		i < region->num_midi_notes; 
+		i++)
+	{
+		if (result == 0
+			|| result->val < region->midi_notes[i]->val)
+		{
+			result = region->midi_notes[i];
+		}
+	}
+	return result;
+}
+
+/**
+ * Gets lowest midi note
+ */
+MidiNote *
+midi_region_get_lowest_midi_note (MidiRegion * region)
+{
+	MidiNote * result = 0;
+	for (int i = 0; 
+		i < region->num_midi_notes; 
+		i++)
+	{
+		if (result == 0
+			|| result->val > region->midi_notes[i]->val)
+		{
+			result = region->midi_notes[i];
+		}
+	}
+
+	return result;
+}
+/**
  * Removes the MIDI note and its components
  * completely.
  */
@@ -143,7 +238,9 @@ midi_region_add_midi_note_if_not_present (
   MidiNote * midi_note)
 {
 	int exists = 0;
-	for (int i = 0; i < region->num_midi_notes; i++)
+	for (int i = 0; 
+		i < region->num_midi_notes; 
+		i++)
 	    {
 		if(region->midi_notes[i]->id == midi_note->id){
 			exists = 1;

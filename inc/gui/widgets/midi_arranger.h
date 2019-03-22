@@ -201,6 +201,15 @@ midi_arranger_widget_move_items_y (
   double              offset_y);
 
 /**
+ * if midi_notes are within the min border distance grid 
+ * will auto scroll
+ */
+
+void
+midi_arranger_auto_scroll(
+	MidiArrangerWidget * self,GtkScrolledWindow * scrolled_window);
+
+/**
  * Called on drag end.
  *
  * Sets default cursors back and sets the start midi note
