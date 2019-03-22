@@ -859,7 +859,7 @@ midi_arranger_auto_scroll (
 {
   Region * region = CLIP_EDITOR->region;
   int scroll_speed = 20;
-  int border_distance = 10;
+  int border_distance = 20;
   if (region != 0)
   {
     MidiNote * first_note =
