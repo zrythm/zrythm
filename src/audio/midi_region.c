@@ -145,7 +145,8 @@ midi_region_get_first_midi_note (MidiRegion * region)
 		i++)
 	{
 		if (result == 0
-			|| &result->end_pos.frames > &region->midi_notes[i]->end_pos.frames)
+			|| position_from_ticks(&result->end_pos) > 
+		position_from_ticks(&region->midi_notes[i]->end_pos))
 		{
 			result = region->midi_notes[i];
 		}
@@ -164,7 +165,8 @@ midi_region_get_last_midi_note (MidiRegion * region)
 		i++)
 	{
 		if (result == 0
-			|| &result->end_pos.frames < &region->midi_notes[i]->end_pos.frames)
+			|| position_from_ticks(&result->end_pos) < 
+			position_from_ticks(&region->midi_notes[i]->end_pos))
 		{
 			result = region->midi_notes[i];
 		}
@@ -213,27 +215,22 @@ midi_region_get_lowest_midi_note (MidiRegion * region)
 	return result;
 }
 /**
- * Removes the MIDI note and its components
+ * Removes the MIDI note and its component
  * completely.
  */
 void
 midi_region_add_midi_note_if_not_present (
-  MidiRegion *   region,
+  MidiRegion * region,
   MidiNote * midi_note)
 {
-	int exists = 0;
-	for (int i = 0; 
-		i < region->num_midi_notes; 
-		i++)
-	    {
-		if(region->midi_notes[i]->id == midi_note->id){
-			exists = 1;
-		}
-	    }
-	    
-	if(exists == 0){
-	  midi_region_add_midi_note(region, midi_note);	
-	}
+  for (int i = 0; i < region->num_midi_notes; i++)
+  {
+    if (region->midi_notes[i]->id == midi_note->id)
+    {
+      return;
+    }
+  }
+  midi_region_add_midi_note (region, midi_note);
 }
 
 /**
