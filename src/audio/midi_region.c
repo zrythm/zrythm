@@ -114,7 +114,10 @@ midi_region_find_unended_note (MidiRegion * self,
 }
 
 /**
- * updates midi note value
+ * this method takes a midi_note clone as parameter to 
+ * change the value  * of it's origin midi_note 
+ * on the given midi_region to the clone value. the 
+ * midi_note is matched by id.
  */
 void
 midi_region_update_midi_note_val (
