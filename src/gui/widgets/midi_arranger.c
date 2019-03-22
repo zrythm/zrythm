@@ -957,7 +957,6 @@ midi_arranger_auto_scroll (
         h_delta = scroll_speed;
       }
     }
-    g_message ("v_delta:%d,h_delta:%d", v_delta, h_delta);
     if (h_delta != 0)
     {
       gtk_adjustment_set_value (
