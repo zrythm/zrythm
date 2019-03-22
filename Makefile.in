@@ -169,6 +169,7 @@ CFLAGS += -Wall \
 	$(SAMPLERATE_CFLAGS) \
 	$(SNDFILE_CFLAGS) \
 	$(X11_CFLAGS) \
+	-DDATADIR=\"$(datadir)\" \
 	-fPIC
 
 ifeq ($(PROFILING),1)
