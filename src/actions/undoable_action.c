@@ -37,50 +37,48 @@
 void
 undoable_action_do (UndoableAction * self)
 {
-	switch (self->type)
-		{
-		case UNDOABLE_ACTION_TYPE_CREATE_CHANNEL:
-			break;
-		case UNDOABLE_ACTION_TYPE_EDIT_CHANNEL:
-			edit_channel_action_do (
-				(EditChannelAction *) self);
-			break;
-		case UNDOABLE_ACTION_TYPE_DELETE_CHANNEL:
-			break;
-		case UNDOABLE_ACTION_TYPE_MOVE_CHANNEL:
-			break;
-		case UNDOABLE_ACTION_TYPE_EDIT_TRACK:
-			edit_track_action_do ((EditTrackAction *) self);
-			break;
-		case UNDOABLE_ACTION_TYPE_CREATE_REGIONS:
-			break;
-		case UNDOABLE_ACTION_TYPE_MOVE_REGIONS:
-			break;
-		case UNDOABLE_ACTION_TYPE_DELETE_TL_SELECTIONS:
-			delete_timeline_selections_action_do (
-				(DeleteTimelineSelectionsAction *) self);
-			break;
-		case UNDOABLE_ACTION_TYPE_DELETE_MA_SELECTIONS:
-			delete_midi_arranger_selections_action_do (
-				(DeleteMidiArrangerSelectionsAction *) self);
-			break;
-		case UNDOABLE_ACTION_TYPE_DUPLICATE_MIDI_NOTES:
-			duplicate_midi_arranger_selections_action_do (
-				(DuplicateMidiArrangerSelectionsAction *) self);
-			break;
-		case UNDOABLE_ACTION_TYPE_SHIFT_MIDI_NOTES_VAL:
-			shift_midi_arranger_selections_val_action_do (
-				(ShiftMidiArrangerSelectionsValAction *) self);
-			break;
-		case UNDOABLE_ACTION_TYPE_SHIFT_MIDI_NOTES_POS:
-			shift_midi_arranger_selections_pos_action_do (
-				(ShiftMidiArrangerSelectionsPosAction *) self);
-			break;
-		case UNDOABLE_ACTION_TYPE_CREATE_CHORDS:
-			create_chords_action_do (
-				(CreateChordsAction *) self);
-			break;
-		}
+  switch (self->type)
+    {
+    case UNDOABLE_ACTION_TYPE_CREATE_CHANNEL:
+      break;
+    case UNDOABLE_ACTION_TYPE_EDIT_CHANNEL:
+      edit_channel_action_do ((EditChannelAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_DELETE_CHANNEL:
+      break;
+    case UNDOABLE_ACTION_TYPE_MOVE_CHANNEL:
+      break;
+    case UNDOABLE_ACTION_TYPE_EDIT_TRACK:
+      edit_track_action_do ((EditTrackAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_CREATE_REGIONS:
+      break;
+    case UNDOABLE_ACTION_TYPE_MOVE_REGIONS:
+      break;
+    case UNDOABLE_ACTION_TYPE_DELETE_TL_SELECTIONS:
+      delete_timeline_selections_action_do (
+        (DeleteTimelineSelectionsAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_DELETE_MA_SELECTIONS:
+      delete_midi_arranger_selections_action_do (
+        (DeleteMidiArrangerSelectionsAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_DUPLICATE_MIDI_NOTES:
+      duplicate_midi_arranger_selections_action_do (
+        (DuplicateMidiArrangerSelectionsAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_SHIFT_MIDI_NOTES_VAL:
+      shift_midi_arranger_selections_val_action_do (
+        (ShiftMidiArrangerSelectionsValAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_SHIFT_MIDI_NOTES_POS:
+      shift_midi_arranger_selections_pos_action_do (
+        (ShiftMidiArrangerSelectionsPosAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_CREATE_CHORDS:
+      create_chords_action_do ((CreateChordsAction *) self);
+      break;
+    }
 }
 
 /**
@@ -91,95 +89,92 @@ undoable_action_do (UndoableAction * self)
 void
 undoable_action_undo (UndoableAction * self)
 {
-	switch (self->type)
-		{
-		case UNDOABLE_ACTION_TYPE_CREATE_CHANNEL:
-			break;
-		case UNDOABLE_ACTION_TYPE_EDIT_CHANNEL:
-			edit_channel_action_undo (
-				(EditChannelAction *) self);
-			break;
-		case UNDOABLE_ACTION_TYPE_DELETE_CHANNEL:
-			break;
-		case UNDOABLE_ACTION_TYPE_MOVE_CHANNEL:
-			break;
-		case UNDOABLE_ACTION_TYPE_EDIT_TRACK:
-			edit_track_action_undo (
-				(EditTrackAction *) self);
-			break;
-		case UNDOABLE_ACTION_TYPE_CREATE_REGIONS:
-			break;
-		case UNDOABLE_ACTION_TYPE_MOVE_REGIONS:
-			break;
-		case UNDOABLE_ACTION_TYPE_DELETE_TL_SELECTIONS:
-			delete_timeline_selections_action_undo (
-				(DeleteTimelineSelectionsAction *) self);
-			break;
-		case UNDOABLE_ACTION_TYPE_DUPLICATE_MIDI_NOTES:
-			duplicate_midi_arranger_selections_action_undo (
-				(DuplicateMidiArrangerSelectionsAction *) self);
-			break;
-		case UNDOABLE_ACTION_TYPE_SHIFT_MIDI_NOTES_VAL:
-			shift_midi_arranger_selections_val_action_undo (
-				(ShiftMidiArrangerSelectionsValAction *) self);
-			break;
-		case UNDOABLE_ACTION_TYPE_SHIFT_MIDI_NOTES_POS:
-				shift_midi_arranger_selections_pos_action_undo (
-					(ShiftMidiArrangerSelectionsPosAction *) self);
-				break;
-		case UNDOABLE_ACTION_TYPE_DELETE_MA_SELECTIONS:
-			delete_midi_arranger_selections_action_undo (
-				(DeleteMidiArrangerSelectionsAction *) self);
-			break;
-		case UNDOABLE_ACTION_TYPE_CREATE_CHORDS:
-			create_chords_action_undo (
-				(CreateChordsAction *) self);
-			break;
-		}
+  switch (self->type)
+    {
+    case UNDOABLE_ACTION_TYPE_CREATE_CHANNEL:
+      break;
+    case UNDOABLE_ACTION_TYPE_EDIT_CHANNEL:
+      edit_channel_action_undo ((EditChannelAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_DELETE_CHANNEL:
+      break;
+    case UNDOABLE_ACTION_TYPE_MOVE_CHANNEL:
+      break;
+    case UNDOABLE_ACTION_TYPE_EDIT_TRACK:
+      edit_track_action_undo ((EditTrackAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_CREATE_REGIONS:
+      break;
+    case UNDOABLE_ACTION_TYPE_MOVE_REGIONS:
+      break;
+    case UNDOABLE_ACTION_TYPE_DELETE_TL_SELECTIONS:
+      delete_timeline_selections_action_undo (
+        (DeleteTimelineSelectionsAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_DUPLICATE_MIDI_NOTES:
+      duplicate_midi_arranger_selections_action_undo (
+        (DuplicateMidiArrangerSelectionsAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_SHIFT_MIDI_NOTES_VAL:
+      shift_midi_arranger_selections_val_action_undo (
+        (ShiftMidiArrangerSelectionsValAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_SHIFT_MIDI_NOTES_POS:
+      shift_midi_arranger_selections_pos_action_undo (
+        (ShiftMidiArrangerSelectionsPosAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_DELETE_MA_SELECTIONS:
+      delete_midi_arranger_selections_action_undo (
+        (DeleteMidiArrangerSelectionsAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_CREATE_CHORDS:
+      create_chords_action_undo (
+        (CreateChordsAction *) self);
+      break;
+    }
 }
 
 void
 undoable_action_free (UndoableAction * self)
 {
-	switch (self->type)
-		{
-		case UNDOABLE_ACTION_TYPE_CREATE_CHANNEL:
-			break;
-		case UNDOABLE_ACTION_TYPE_EDIT_CHANNEL:
-			edit_channel_action_free (
-				(EditChannelAction *) self);
-			break;
-		case UNDOABLE_ACTION_TYPE_DELETE_CHANNEL:
-			break;
-		case UNDOABLE_ACTION_TYPE_MOVE_CHANNEL:
-			break;
-		case UNDOABLE_ACTION_TYPE_CREATE_REGIONS:
-			break;
-		case UNDOABLE_ACTION_TYPE_MOVE_REGIONS:
-			break;
-		case UNDOABLE_ACTION_TYPE_DELETE_TL_SELECTIONS:
-			delete_timeline_selections_action_free (
-				(DeleteTimelineSelectionsAction *) self);
-			break;
-		case UNDOABLE_ACTION_TYPE_DUPLICATE_MIDI_NOTES:
-			duplicate_midi_arranger_selections_action_free (
-				(DuplicateMidiArrangerSelectionsAction *) self);
-			break;
-		case UNDOABLE_ACTION_TYPE_SHIFT_MIDI_NOTES_VAL:
-			shift_midi_arranger_selections_val_action_free (
-				(ShiftMidiArrangerSelectionsValAction *) self);
-			break;
-		case UNDOABLE_ACTION_TYPE_SHIFT_MIDI_NOTES_POS:
-				shift_midi_arranger_selections_pos_action_free (
-					(ShiftMidiArrangerSelectionsPosAction *) self);
-				break;
-		case UNDOABLE_ACTION_TYPE_DELETE_MA_SELECTIONS:
-			delete_midi_arranger_selections_action_free (
-				(DeleteMidiArrangerSelectionsAction *) self);
-			break;
-		case UNDOABLE_ACTION_TYPE_CREATE_CHORDS:
-			create_chords_action_free (
-				(CreateChordsAction *) self);
-			break;
-		}
+  switch (self->type)
+    {
+    case UNDOABLE_ACTION_TYPE_CREATE_CHANNEL:
+      break;
+    case UNDOABLE_ACTION_TYPE_EDIT_CHANNEL:
+      edit_channel_action_free ((EditChannelAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_DELETE_CHANNEL:
+      break;
+    case UNDOABLE_ACTION_TYPE_MOVE_CHANNEL:
+      break;
+    case UNDOABLE_ACTION_TYPE_CREATE_REGIONS:
+      break;
+    case UNDOABLE_ACTION_TYPE_MOVE_REGIONS:
+      break;
+    case UNDOABLE_ACTION_TYPE_DELETE_TL_SELECTIONS:
+      delete_timeline_selections_action_free (
+        (DeleteTimelineSelectionsAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_DUPLICATE_MIDI_NOTES:
+      duplicate_midi_arranger_selections_action_free (
+        (DuplicateMidiArrangerSelectionsAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_SHIFT_MIDI_NOTES_VAL:
+      shift_midi_arranger_selections_val_action_free (
+        (ShiftMidiArrangerSelectionsValAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_SHIFT_MIDI_NOTES_POS:
+      shift_midi_arranger_selections_pos_action_free (
+        (ShiftMidiArrangerSelectionsPosAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_DELETE_MA_SELECTIONS:
+      delete_midi_arranger_selections_action_free (
+        (DeleteMidiArrangerSelectionsAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_CREATE_CHORDS:
+      create_chords_action_free (
+        (CreateChordsAction *) self);
+      break;
+    }
 }
