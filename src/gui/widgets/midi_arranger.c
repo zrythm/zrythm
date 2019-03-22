@@ -858,8 +858,8 @@ midi_arranger_auto_scroll (
   GtkScrolledWindow * scrolled_window)
 {
   Region * region = CLIP_EDITOR->region;
-  int scroll_speed = 10;
-  int border_distance = 20;
+  int scroll_speed = 20;
+  int border_distance = 10;
   if (region != 0)
   {
     MidiNote * first_note =
@@ -898,7 +898,7 @@ midi_arranger_auto_scroll (
       if (note_y + note_height + border_distance
         >= arranger_height)
       {
-        v_delta =  scroll_speed;
+        v_delta = scroll_speed;
       }
     }
     if (highest_note != 0)
@@ -917,8 +917,7 @@ midi_arranger_auto_scroll (
         GTK_WIDGET (focused));
       if (note_y - border_distance <= 1)
       {
-        v_delta = 
-          scroll_speed*-1;
+        v_delta = scroll_speed * -1;
       }
     }
     if (last_note != 0)
@@ -936,7 +935,7 @@ midi_arranger_auto_scroll (
         GTK_WIDGET (focused));
       if (note_x - border_distance <= 1)
       {
-        h_delta =scroll_speed*-1;
+        h_delta = scroll_speed * -1;
       }
     }
     if (first_note != 0)
@@ -958,14 +957,18 @@ midi_arranger_auto_scroll (
         h_delta = scroll_speed;
       }
     }
-    g_message("v_delta:%d,h_delta:%d",v_delta,h_delta);
+    g_message ("v_delta:%d,h_delta:%d", v_delta, h_delta);
     if (h_delta != 0)
     {
-      gtk_adjustment_set_value (hadj,gtk_adjustment_get_value (vadj)+ h_delta);
+      gtk_adjustment_set_value (
+        hadj,
+        gtk_adjustment_get_value (vadj) + h_delta);
     }
     if (v_delta != 0)
     {
-      gtk_adjustment_set_value (vadj,gtk_adjustment_get_value (vadj)+ v_delta);
+      gtk_adjustment_set_value (
+        vadj,
+        gtk_adjustment_get_value (vadj) + v_delta);
     }
   }
 }
