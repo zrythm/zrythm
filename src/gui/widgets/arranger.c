@@ -1373,7 +1373,9 @@ drag_update (GtkGestureDrag * gesture,
                     offset_y);
           auto_scroll(self);
 
-          
+          EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
+                       NULL);
+//arranger_widget_refresh(self);          
         }
     } /* endif MOVING */
   /* if copy-moving the selection */
@@ -1947,9 +1949,6 @@ arranger_widget_refresh (
   if (midi_arranger)
     {
       RULER_WIDGET_GET_PRIVATE (MIDI_RULER);
-     
-      GtkScrolledWindow * scroll =
-       arranger_widget_get_scrolled_window (self);
       gtk_widget_set_size_request (
         GTK_WIDGET (self),
         rw_prv->total_px,
