@@ -739,69 +739,78 @@ auto_scroll (ArrangerWidget * self)
 	if (midi_arranger != 0)
 	{
 		midi_arranger_auto_scroll((MidiArrangerWidget*)midi_arranger,scrolled);
-	}
+	};
+}
+
+static gboolean
+on_key_release_action (
+	GtkWidget *self,
+	GdkEventKey *event,
+	gpointer user_data)
+{
+  GET_PRIVATE;
+  ar_prv->key_is_pressed = 0;
+  return TRUE;
 }
 
 static gboolean
 on_key_action (
-	GtkWidget *widget,
-	GdkEventKey *event,
-	gpointer user_data)
+  GtkWidget *widget,
+  GdkEventKey *event,
+  gpointer user_data)
 {
-	ArrangerWidget * self = (ArrangerWidget *) user_data;
+  ArrangerWidget * self = (ArrangerWidget *) user_data;
+  GET_PRIVATE
+  ;
+  GET_ARRANGER_ALIASES(self);
 
-	GET_ARRANGER_ALIASES(self);
-	if (midi_arranger && MIDI_ARRANGER_SELECTIONS->num_midi_notes>0)
-	{
-		if (event->state & GDK_CONTROL_MASK
-			&& event->type == GDK_KEY_PRESS
-			&& event->keyval == GDK_KEY_d)
-		{
-
-			UndoableAction * duplicate_action =
-				duplicate_midi_arranger_selections_action_new ();
-			undo_manager_perform (
-			UNDO_MANAGER, duplicate_action);
-		}
-		if (event->type == GDK_KEY_PRESS
-			&& event->keyval == GDK_KEY_Up)
-		{
-			UndoableAction * shift_up_action =
-				move_midi_arranger_selections_val_action_new(
-					1);
-			undo_manager_perform (
-			UNDO_MANAGER, shift_up_action);
-		}
-		if (event->type == GDK_KEY_PRESS
-			&& event->keyval == GDK_KEY_Down)
-		{
-			UndoableAction * shift_down_action =
-				move_midi_arranger_selections_val_action_new (
-					-1);
-			undo_manager_perform (
-			UNDO_MANAGER, shift_down_action);
-		}
-		if (event->type == GDK_KEY_PRESS
-			&& event->keyval == GDK_KEY_Left)
-		{
-			UndoableAction * shift_left_action =
-				move_midi_arranger_selections_pos_action_new (
-					-1);
-			undo_manager_perform (
-			UNDO_MANAGER, shift_left_action);
-		}
-		if (event->type == GDK_KEY_PRESS
-			&& event->keyval == GDK_KEY_Right)
-		{
-			UndoableAction * shift_right_action =
-				move_midi_arranger_selections_pos_action_new (
-					1);
-			undo_manager_perform (
-			UNDO_MANAGER, shift_right_action);
-		}
-		auto_scroll(self);
-	}
-	return TRUE;
+  if (midi_arranger
+    && MIDI_ARRANGER_SELECTIONS->num_midi_notes > 0)
+  {
+      if (event->state & GDK_CONTROL_MASK
+        && event->type == GDK_KEY_PRESS
+        && event->keyval == GDK_KEY_d)
+      {
+        UndoableAction * duplicate_action =
+          duplicate_midi_arranger_selections_action_new ();
+        undo_manager_perform (
+        UNDO_MANAGER, duplicate_action);
+      }
+      if (event->type == GDK_KEY_PRESS
+        && event->keyval == GDK_KEY_Up)
+      {
+        UndoableAction * shift_up_action =
+          move_midi_arranger_selections_val_action_new (1);
+        undo_manager_perform (
+        UNDO_MANAGER, shift_up_action);
+      }
+      if (event->type == GDK_KEY_PRESS
+        && event->keyval == GDK_KEY_Down)
+      {
+        UndoableAction * shift_down_action =
+          move_midi_arranger_selections_val_action_new (-1);
+        undo_manager_perform (
+        UNDO_MANAGER, shift_down_action);
+      }
+      if (event->type == GDK_KEY_PRESS
+        && event->keyval == GDK_KEY_Left)
+      {
+        UndoableAction * shift_left_action =
+          move_midi_arranger_selections_pos_action_new (-1);
+        undo_manager_perform (
+        UNDO_MANAGER, shift_left_action);
+      }
+      if (event->type == GDK_KEY_PRESS
+        && event->keyval == GDK_KEY_Right)
+      {
+        UndoableAction * shift_right_action =
+          move_midi_arranger_selections_pos_action_new (1);
+        undo_manager_perform (
+        UNDO_MANAGER, shift_right_action);
+      }
+      auto_scroll (self);
+    }
+  return TRUE;
 }
 
 /**
@@ -1796,7 +1805,7 @@ arranger_widget_setup (ArrangerWidget *   self,
     G_CALLBACK (on_key_action), self);
   g_signal_connect (
     G_OBJECT (self), "key-release-event",
-    G_CALLBACK (on_key_action), self);
+    G_CALLBACK (on_key_release_action), self);
   g_signal_connect (
     G_OBJECT (ar_prv->motion_controller), "motion",
     G_CALLBACK (on_motion), self);
