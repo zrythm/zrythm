@@ -859,7 +859,7 @@ midi_arranger_auto_scroll (
 {
   Region * region = CLIP_EDITOR->region;
   int scroll_speed = 20;
-  int border_distance = 30;
+  int border_distance = 10;
   if (region != 0)
   {
     MidiNote * first_note =
@@ -913,35 +913,38 @@ midi_arranger_auto_scroll (
         0,
         &note_x,
         &note_y);
+
       int note_height = gtk_widget_get_allocated_height (
         GTK_WIDGET (focused));
+      g_message("x%d,y%d,width%d,arranger h%d",note_x,note_y,note_height,arranger_height);
+
       if (note_y - border_distance <= 1)
       {
         v_delta = scroll_speed * -1;
-      }
-    }
-    if (last_note != 0)
-    {
-      gint note_x, note_y;
-      GtkWidget *focused = GTK_WIDGET (last_note->widget);
-      gtk_widget_translate_coordinates (
-        focused,
-        GTK_WIDGET (scrolled_window),
-        0,
-        0,
-        &note_x,
-        &note_y);
-      int note_width = gtk_widget_get_allocated_width (
-        GTK_WIDGET (focused));
-      if (note_x - border_distance <= 1)
-      {
-        h_delta = scroll_speed * -1;
       }
     }
     if (first_note != 0)
     {
       gint note_x, note_y;
       GtkWidget *focused = GTK_WIDGET (first_note->widget);
+      gtk_widget_translate_coordinates (
+        focused,
+        GTK_WIDGET (self),
+        0,
+        0,
+        &note_x,
+        &note_y);
+      int note_width = gtk_widget_get_allocated_width (
+        GTK_WIDGET (focused));
+      if (note_x - border_distance <= 10)
+      {
+        h_delta = scroll_speed * -1;
+      }
+    }
+    if (last_note != 0)
+    {
+      gint note_x, note_y;
+      GtkWidget *focused = GTK_WIDGET (last_note->widget);
       gtk_widget_translate_coordinates (
         focused,
         GTK_WIDGET (scrolled_window),
@@ -961,7 +964,7 @@ midi_arranger_auto_scroll (
     {
       gtk_adjustment_set_value (
         hadj,
-        gtk_adjustment_get_value (vadj) + h_delta);
+        gtk_adjustment_get_value (hadj) + h_delta);
     }
     if (v_delta != 0)
     {
