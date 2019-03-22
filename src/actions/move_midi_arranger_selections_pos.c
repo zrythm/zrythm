@@ -18,30 +18,31 @@
  */
 
 #include "audio/track.h"
-#include "actions/shift_midi_arranger_selections_pos.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/midi_arranger.h"
+#include "actions/move_midi_arranger_selections_pos.h"
+
 
 /**
- * Note: chord addresses are to be copied.
- */
+ * Note: this action will add delta beats 
+ * to start and end pos of all selected midi_notes */
 UndoableAction *
-shift_midi_arranger_selections_pos_action_new (int delta)
+move_midi_arranger_selections_pos_action_new (int delta)
 {
-	ShiftMidiArrangerSelectionsPosAction * self =
+	MoveMidiArrangerSelectionsPosAction * self =
     calloc (1, sizeof (
-    	ShiftMidiArrangerSelectionsPosAction));
+    	MoveMidiArrangerSelectionsPosAction));
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-	  UNDOABLE_ACTION_TYPE_SHIFT_MIDI_NOTES_POS;
+	  UNDOABLE_ACTION_TYPE_MOVE_MIDI_NOTES_POS;
   self->delta = delta;
   return ua;
 }
 
 void
-shift_midi_arranger_selections_pos_action_do (
-	ShiftMidiArrangerSelectionsPosAction * self)
+move_midi_arranger_selections_pos_action_do (
+	MoveMidiArrangerSelectionsPosAction * self)
 {
 		midi_arranger_selections_shift_pos(self->delta);	
   EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
@@ -49,8 +50,8 @@ shift_midi_arranger_selections_pos_action_do (
 }
 
 void
-shift_midi_arranger_selections_pos_action_undo (
-	ShiftMidiArrangerSelectionsPosAction * self)
+move_midi_arranger_selections_pos_action_undo (
+	MoveMidiArrangerSelectionsPosAction * self)
 {
 	midi_arranger_selections_shift_pos(self->delta*-1);	
     EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
@@ -58,8 +59,8 @@ shift_midi_arranger_selections_pos_action_undo (
 }
 
 void
-shift_midi_arranger_selections_pos_action_free (
-	ShiftMidiArrangerSelectionsPosAction * self)
+move_midi_arranger_selections_pos_action_free (
+	MoveMidiArrangerSelectionsPosAction * self)
 {
   free (self);
 }

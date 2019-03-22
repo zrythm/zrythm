@@ -18,30 +18,33 @@
  */
 
 #include "audio/track.h"
-#include "actions/shift_midi_arranger_selections_val.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/midi_arranger.h"
+#include "actions/move_midi_arranger_selections_val.h"
+
+
 
 /**
- * Note: chord addresses are to be copied.
+ * Note: this action will add delta to value 
+ * 0f all selected midi_notes
  */
 UndoableAction *
-shift_midi_arranger_selections_val_action_new (int delta)
+move_midi_arranger_selections_val_action_new (int delta)
 {
-	ShiftMidiArrangerSelectionsValAction * self =
+	MoveMidiArrangerSelectionsValAction * self =
     calloc (1, sizeof (
-    	ShiftMidiArrangerSelectionsValAction));
+      MoveMidiArrangerSelectionsValAction));
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-	  UNDOABLE_ACTION_TYPE_SHIFT_MIDI_NOTES_VAL;
+	  UNDOABLE_ACTION_TYPE_MOVE_MIDI_NOTES_VAL;
   self->delta = delta;
   return ua;
 }
 
 void
-shift_midi_arranger_selections_val_action_do (
-	ShiftMidiArrangerSelectionsValAction * self)
+move_midi_arranger_selections_val_action_do (
+  MoveMidiArrangerSelectionsValAction * self)
 {
 		midi_arranger_selections_shift_val(self->delta);	
   EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
@@ -49,8 +52,8 @@ shift_midi_arranger_selections_val_action_do (
 }
 
 void
-shift_midi_arranger_selections_val_action_undo (
-	ShiftMidiArrangerSelectionsValAction * self)
+move_midi_arranger_selections_val_action_undo (
+  MoveMidiArrangerSelectionsValAction * self)
 {
 	midi_arranger_selections_shift_val(self->delta * -1);	
     EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
@@ -58,8 +61,8 @@ shift_midi_arranger_selections_val_action_undo (
 }
 
 void
-shift_midi_arranger_selections_val_action_free (
-	ShiftMidiArrangerSelectionsValAction * self)
+move_midi_arranger_selections_val_action_free (
+  MoveMidiArrangerSelectionsValAction * self)
 {
 
   free (self);

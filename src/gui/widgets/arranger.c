@@ -27,8 +27,8 @@
 #include "zrythm.h"
 #include "actions/actions.h"
 #include "actions/duplicate_midi_arranger_selections_action.h"
-#include "actions/shift_midi_arranger_selections_val.h"
-#include "actions/shift_midi_arranger_selections_pos.h"
+#include "actions/move_midi_arranger_selections_val.h"
+#include "actions/move_midi_arranger_selections_pos.h"
 #include "audio/automation_track.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
@@ -767,7 +767,7 @@ on_key_action (
 			&& event->keyval == GDK_KEY_Up)
 		{
 			UndoableAction * shift_up_action =
-				shift_midi_arranger_selections_val_action_new (
+				move_midi_arranger_selections_val_action_new(
 					1);
 			undo_manager_perform (
 			UNDO_MANAGER, shift_up_action);
@@ -776,7 +776,7 @@ on_key_action (
 			&& event->keyval == GDK_KEY_Down)
 		{
 			UndoableAction * shift_down_action =
-				shift_midi_arranger_selections_val_action_new (
+				move_midi_arranger_selections_val_action_new (
 					-1);
 			undo_manager_perform (
 			UNDO_MANAGER, shift_down_action);
@@ -785,7 +785,7 @@ on_key_action (
 			&& event->keyval == GDK_KEY_Left)
 		{
 			UndoableAction * shift_left_action =
-				shift_midi_arranger_selections_pos_action_new (
+				move_midi_arranger_selections_pos_action_new (
 					-1);
 			undo_manager_perform (
 			UNDO_MANAGER, shift_left_action);
@@ -794,14 +794,14 @@ on_key_action (
 			&& event->keyval == GDK_KEY_Right)
 		{
 			UndoableAction * shift_right_action =
-				shift_midi_arranger_selections_pos_action_new (
+				move_midi_arranger_selections_pos_action_new (
 					1);
 			undo_manager_perform (
 			UNDO_MANAGER, shift_right_action);
 		}
 		auto_scroll(self);
 	}
-	return FALSE;
+	return TRUE;
 }
 
 /**

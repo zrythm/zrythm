@@ -916,8 +916,6 @@ midi_arranger_auto_scroll (
 
       int note_height = gtk_widget_get_allocated_height (
         GTK_WIDGET (focused));
-      g_message("x%d,y%d,width%d,arranger h%d",note_x,note_y,note_height,arranger_height);
-
       if (note_y - border_distance <= 1)
       {
         v_delta = scroll_speed * -1;

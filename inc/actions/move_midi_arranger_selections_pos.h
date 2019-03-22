@@ -17,15 +17,13 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __UNDO_SHIFT_MIDI_ARRANGER_SELECTIONS_POS_ACTION_H__
-#define __UNDO_SHIFT_MIDI_ARRANGER_SELECTIONS_POS_ACTION_H__
+#ifndef __UNDO_MOVE_MIDI_ARRANGER_SELECTIONS_POS_ACTION_H__
+#define __UNDO_MOVE_MIDI_ARRANGER_SELECTIONS_POS_ACTION_H__
 
 #include "actions/undoable_action.h"
 
-typedef struct MidiArrangerSelections
-  MidiArrangerSelections;
 
-typedef struct ShiftMidiArrangerSelectionsPosAction
+typedef struct MoveMidiArrangerSelectionsPosAction
 {
   UndoableAction              parent_instance;
 
@@ -33,21 +31,21 @@ typedef struct ShiftMidiArrangerSelectionsPosAction
    * A clone of the midi_arranger selections at the time.
    */
   int         delta;
-} ShiftMidiArrangerSelectionsPosAction;
+} MoveMidiArrangerSelectionsPosAction;
 
 UndoableAction *
-shift_midi_arranger_selections_pos_action_new (int delta);
+move_midi_arranger_selections_pos_action_new (int delta);
 
 void
-shift_midi_arranger_selections_pos_action_do (
-	ShiftMidiArrangerSelectionsPosAction * self);
+move_midi_arranger_selections_pos_action_do (
+	MoveMidiArrangerSelectionsPosAction * self);
 
 void
-shift_midi_arranger_selections_pos_action_undo (
-	ShiftMidiArrangerSelectionsPosAction * self);
+move_midi_arranger_selections_pos_action_undo (
+	MoveMidiArrangerSelectionsPosAction * self);
 
 void
-shift_midi_arranger_selections_pos_action_free (
-	ShiftMidiArrangerSelectionsPosAction * self);
+move_midi_arranger_selections_pos_action_free (
+	MoveMidiArrangerSelectionsPosAction * self);
 
 #endif

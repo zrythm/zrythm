@@ -148,8 +148,8 @@ midi_region_get_first_midi_note (MidiRegion * region)
 		i++)
 	{
 		if (result == 0
-			|| position_from_ticks(&result->end_pos) > 
-		position_from_ticks(&region->midi_notes[i]->end_pos))
+			|| position_to_ticks(&result->end_pos) > 
+		position_to_ticks(&region->midi_notes[i]->end_pos))
 		{
 			result = region->midi_notes[i];
 		}
@@ -168,8 +168,8 @@ midi_region_get_last_midi_note (MidiRegion * region)
 		i++)
 	{
 		if (result == 0
-			|| position_from_ticks(&result->end_pos) < 
-			position_from_ticks(&region->midi_notes[i]->end_pos))
+			|| position_to_ticks(&result->end_pos) < 
+			position_to_ticks(&region->midi_notes[i]->end_pos))
 		{
 			result = region->midi_notes[i];
 		}
