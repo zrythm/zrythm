@@ -175,6 +175,8 @@ midi_arranger_widget_select_all (
             midi_note->vel);
         }
     }
+  arranger_widget_refresh(&self->parent_instance);
+  
 }
 
 static int

@@ -30,6 +30,7 @@
 #include "audio/transport.h"
 #include "actions/actions.h"
 #include "actions/undo_manager.h"
+#include "actions/duplicate_midi_arranger_selections_action.h"
 #include "actions/delete_midi_arranger_selections_action.h"
 #include "actions/delete_timeline_selections_action.h"
 #include "gui/backend/midi_arranger_selections.h"
@@ -629,11 +630,19 @@ activate_clear_selection (GSimpleAction *action,
 }
 
 void
-activate_select_all (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+activate_select_all (
+	GSimpleAction *action,
+	GVariant *variant,
+	gpointer user_data)
 {
-  g_message ("ZOOMING IN");
+	if (MAIN_WINDOW->last_focused
+		== GTK_WIDGET (MIDI_ARRANGER))
+	{
+		midi_arranger_widget_select_all (
+			Z_MIDI_ARRANGER_WIDGET (
+				MAIN_WINDOW->last_focused),
+			1);
+	}
 }
 
 void

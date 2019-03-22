@@ -61,6 +61,25 @@ midi_region_find_unended_note (MidiRegion * self,
                                int          pitch);
 
 /**
+ * updates midi note value * completely.
+ */
+void
+midi_region_update_midi_note_val (
+  Region *   region,
+  MidiNote * midi_note);
+
+/**
+
+/**
+ * Removes the MIDI note and its components
+ * completely.
+ */
+void
+midi_region_add_midi_note_if_not_present (
+  Region *   region,
+  MidiNote * midi_note);
+
+/**
  * Removes the MIDI note and its components
  * completely.
  */

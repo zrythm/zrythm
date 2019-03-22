@@ -18,64 +18,50 @@
  */
 
 #include "audio/track.h"
+#include "actions/shift_midi_arranger_selections_pos.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/midi_arranger.h"
-#include "project.h"
-#include "actions/duplicate_midi_arranger_selections_action.h"
 
 /**
  * Note: chord addresses are to be copied.
  */
 UndoableAction *
-duplicate_midi_arranger_selections_action_new ()
+shift_midi_arranger_selections_pos_action_new (int delta)
 {
-  DuplicateMidiArrangerSelectionsAction * self =
+	ShiftMidiArrangerSelectionsPosAction * self =
     calloc (1, sizeof (
-                 DuplicateMidiArrangerSelectionsAction));
+    	ShiftMidiArrangerSelectionsPosAction));
 
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-    UNDOABLE_ACTION_TYPE_DUPLICATE_MIDI_NOTES;
-
-  self->mas = midi_arranger_selections_clone ();
-
+	  UNDOABLE_ACTION_TYPE_SHIFT_MIDI_NOTES_POS;
+  self->delta = delta;
   return ua;
 }
 
 void
-duplicate_midi_arranger_selections_action_do (
-  DuplicateMidiArrangerSelectionsAction * self)
+shift_midi_arranger_selections_pos_action_do (
+	ShiftMidiArrangerSelectionsPosAction * self)
 {
-	for (int i = 0; i < self->mas->num_midi_notes; i++)
-    {
-		midi_region_add_midi_note_if_not_present(
-			self->mas->midi_notes[i]->midi_region,
-			self->mas->midi_notes[i]);	
-    }
+		midi_arranger_selections_shift_pos(self->delta);	
   EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
                NULL);
 }
 
 void
-duplicate_midi_arranger_selections_action_undo (
-  DuplicateMidiArrangerSelectionsAction * self)
+shift_midi_arranger_selections_pos_action_undo (
+	ShiftMidiArrangerSelectionsPosAction * self)
 {
-  for (int i = 0; i < self->mas->num_midi_notes; i++)
-    {
-      midi_region_remove_midi_note(
-		self->mas->midi_notes[i]->midi_region,
-		self->mas->midi_notes[i]);	
-    }
-  EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
+	midi_arranger_selections_shift_pos(self->delta*-1);	
+    EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
                NULL);
 }
 
 void
-duplicate_midi_arranger_selections_action_free (
-  DuplicateMidiArrangerSelectionsAction * self)
+shift_midi_arranger_selections_pos_action_free (
+	ShiftMidiArrangerSelectionsPosAction * self)
 {
-  midi_arranger_selections_free (self->mas);
 
   free (self);
 }

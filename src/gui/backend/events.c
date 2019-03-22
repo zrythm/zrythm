@@ -536,6 +536,10 @@ events_process ()
         case ET_TRACK_SELECT_CHANGED:
           on_track_select_changed ((Track *) arg);
           break;
+        case ET_MIDI_ARRANGER_SELECTIONS_CHANGED:
+            arranger_widget_refresh (
+              Z_ARRANGER_WIDGET (MIDI_ARRANGER));
+            break;
         case ET_MIDI_NOTE_CHANGED:
           on_midi_note_changed ((MidiNote *) arg);
           break;

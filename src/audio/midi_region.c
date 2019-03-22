@@ -114,6 +114,48 @@ midi_region_find_unended_note (MidiRegion * self,
 }
 
 /**
+ * updates midi note value
+ */
+void
+midi_region_update_midi_note_val (
+	MidiRegion * region,
+	MidiNote * midi_note)
+{
+	for (int i = 0; 
+		i < region->num_midi_notes; 
+		i++)
+	{
+		if (region->midi_notes[i]->id == midi_note->id)
+		{
+			region->midi_notes[i]->val =
+				midi_note->val;
+		}
+	}
+}
+
+/**
+ * Removes the MIDI note and its components
+ * completely.
+ */
+void
+midi_region_add_midi_note_if_not_present (
+  MidiRegion *   region,
+  MidiNote * midi_note)
+{
+	int exists = 0;
+	for (int i = 0; i < region->num_midi_notes; i++)
+	    {
+		if(region->midi_notes[i]->id == midi_note->id){
+			exists = 1;
+		}
+	    }
+	    
+	if(exists == 0){
+	  midi_region_add_midi_note(region, midi_note);	
+	}
+}
+
+/**
  * Removes the MIDI note and its components
  * completely.
  */

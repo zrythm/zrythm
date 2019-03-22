@@ -26,6 +26,9 @@
 
 #include "zrythm.h"
 #include "actions/actions.h"
+#include "actions/duplicate_midi_arranger_selections_action.h"
+#include "actions/shift_midi_arranger_selections_val.h"
+#include "actions/shift_midi_arranger_selections_pos.h"
 #include "audio/automation_track.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
@@ -734,14 +737,69 @@ on_key_action (GtkWidget *widget,
 {
   ArrangerWidget * self = (ArrangerWidget *) user_data;
 
-  if (event->state & GDK_CONTROL_MASK &&
-      event->type == GDK_KEY_PRESS &&
-      event->keyval == GDK_KEY_a)
-    {
-      arranger_widget_select_all (self, 1);
-    }
+	GET_ARRANGER_ALIASES(self);
 
-  return FALSE;
+	if (event->state & GDK_CONTROL_MASK
+		&& event->type == GDK_KEY_PRESS
+		&& event->keyval == GDK_KEY_d)
+	{
+		if (midi_arranger)
+		{
+			UndoableAction * duplicate_action =
+				duplicate_midi_arranger_selections_action_new ();
+			undo_manager_perform (
+			UNDO_MANAGER, duplicate_action);
+		}
+	}
+	if (event->type == GDK_KEY_PRESS
+		&& event->keyval == GDK_KEY_Up)
+	{
+		if (midi_arranger)
+		{
+			UndoableAction * shift_up_action =
+				shift_midi_arranger_selections_val_action_new 
+				(1);
+			undo_manager_perform (
+			UNDO_MANAGER, shift_up_action);
+		}
+	}
+	if (event->type == GDK_KEY_PRESS
+		&& event->keyval == GDK_KEY_Down)
+	{
+		if (midi_arranger)
+		{
+			UndoableAction * shift_down_action =
+				shift_midi_arranger_selections_val_action_new 
+				(-1);
+			undo_manager_perform (
+			UNDO_MANAGER, shift_down_action);
+		}
+	}
+	if (event->type == GDK_KEY_PRESS
+		&& event->keyval == GDK_KEY_Left)
+	{
+		if (midi_arranger)
+		{
+			UndoableAction * shift_up_action =
+				shift_midi_arranger_selections_pos_action_new 
+				(-1);
+			undo_manager_perform (
+			UNDO_MANAGER, shift_up_action);
+		}
+	}
+	if (event->type == GDK_KEY_PRESS
+		&& event->keyval == GDK_KEY_Right)
+	{
+		if (midi_arranger)
+		{
+			UndoableAction * shift_down_action =
+				shift_midi_arranger_selections_pos_action_new 
+				(1);
+			undo_manager_perform (
+			UNDO_MANAGER, shift_down_action);
+		}
+	}
+	return FALSE;
 }
 
 /**
@@ -1552,7 +1610,6 @@ on_scroll (GtkWidget *widget,
            ArrangerWidget * self)
 {
   GET_ARRANGER_ALIASES (widget);
-
   g_message ("dx %f dy %f", event->delta_x,
              event->delta_y);
   if (!(event->state & GDK_CONTROL_MASK))
@@ -1926,13 +1983,13 @@ arranger_widget_refresh (
 
     }
 
-  if (ar_prv->bg)
-    {
-      arranger_bg_widget_refresh (ar_prv->bg);
-      arranger_widget_refresh_cursor (self);
-    }
-
-  return FALSE;
+	if (ar_prv->bg)
+	{
+		arranger_bg_widget_refresh (ar_prv->bg);
+		arranger_widget_refresh_cursor (self);
+	}
+	update_inspector (self);
+	return FALSE;
 }
 
 static void
