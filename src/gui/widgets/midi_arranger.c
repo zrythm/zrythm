@@ -175,6 +175,8 @@ midi_arranger_widget_select_all (
             midi_note->vel);
         }
     }
+  arranger_widget_refresh(&self->parent_instance);
+  
 }
 
 static int
@@ -673,8 +675,6 @@ midi_arranger_widget_move_items_x (
         midi_note_widget_update_tooltip (
           r->widget, 1);
 
-      EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
-                   r);
     }
 }
 
@@ -850,6 +850,126 @@ on_focus (GtkWidget       *widget,
   MAIN_WINDOW->last_focused = widget;
 
   return FALSE;
+}
+
+void
+midi_arranger_auto_scroll (
+  MidiArrangerWidget * self,
+  GtkScrolledWindow * scrolled_window)
+{
+  Region * region = CLIP_EDITOR->region;
+  int scroll_speed = 20;
+  int border_distance = 10;
+  if (region != 0)
+  {
+    MidiNote * first_note =
+      midi_region_get_first_midi_note (region);
+    MidiNote * last_note = midi_region_get_last_midi_note (
+      region);
+    MidiNote * lowest_note =
+      midi_region_get_lowest_midi_note (region);
+    MidiNote * highest_note =
+      midi_region_get_highest_midi_note (region);
+    int arranger_width = gtk_widget_get_allocated_width (
+      GTK_WIDGET (scrolled_window));
+    int arranger_height = gtk_widget_get_allocated_height (
+      GTK_WIDGET (scrolled_window));
+    GtkAdjustment *hadj =
+      gtk_scrolled_window_get_hadjustment (
+        GTK_SCROLLED_WINDOW (scrolled_window));
+    GtkAdjustment *vadj =
+      gtk_scrolled_window_get_vadjustment (
+        GTK_SCROLLED_WINDOW (scrolled_window));
+    int v_delta = 0;
+    int h_delta = 0;
+    if (lowest_note != 0)
+    {
+      GtkWidget *focused = GTK_WIDGET (lowest_note->widget);
+      gint note_x, note_y;
+      gtk_widget_translate_coordinates (
+        focused,
+        GTK_WIDGET (scrolled_window),
+        0,
+        0,
+        &note_x,
+        &note_y);
+      int note_height = gtk_widget_get_allocated_height (
+        GTK_WIDGET (focused));
+      if (note_y + note_height + border_distance
+        >= arranger_height)
+      {
+        v_delta = scroll_speed;
+      }
+    }
+    if (highest_note != 0)
+    {
+      GtkWidget *focused = GTK_WIDGET (
+        highest_note->widget);
+      gint note_x, note_y;
+      gtk_widget_translate_coordinates (
+        focused,
+        GTK_WIDGET (scrolled_window),
+        0,
+        0,
+        &note_x,
+        &note_y);
+      int note_height = gtk_widget_get_allocated_height (
+        GTK_WIDGET (focused));
+      if (note_y - border_distance <= 1)
+      {
+        v_delta = scroll_speed * -1;
+      }
+    }
+    if (first_note != 0)
+    {
+      gint note_x, note_y;
+      GtkWidget *focused = GTK_WIDGET (first_note->widget);
+      gtk_widget_translate_coordinates (
+        focused,
+        GTK_WIDGET (self),
+        0,
+        0,
+        &note_x,
+        &note_y);
+      int note_width = gtk_widget_get_allocated_width (
+        GTK_WIDGET (focused));
+      if (note_x - border_distance <= 10)
+      {
+        h_delta = scroll_speed * -1;
+      }
+    }
+    if (last_note != 0)
+    {
+      gint note_x, note_y;
+      GtkWidget *focused = GTK_WIDGET (last_note->widget);
+      gtk_widget_translate_coordinates (
+        focused,
+        GTK_WIDGET (scrolled_window),
+        0,
+        0,
+        &note_x,
+        &note_y);
+      int note_width = gtk_widget_get_allocated_width (
+        GTK_WIDGET (focused));
+      if (note_x + note_width + border_distance
+        > arranger_width)
+      {
+        h_delta = scroll_speed;
+      }
+    }
+    if (h_delta != 0)
+    {
+      gtk_adjustment_set_value (
+        hadj,
+        gtk_adjustment_get_value (hadj) + h_delta);
+    }
+    if (v_delta != 0)
+    {
+      gtk_adjustment_set_value (
+        vadj,
+        gtk_adjustment_get_value (vadj) + v_delta);
+    }
+  }
 }
 
 static void

@@ -120,6 +120,7 @@ typedef struct
 
   Position                 start_pos; ///< useful for moving
   Position                 end_pos; ///< for moving regions
+   gboolean                 key_is_pressed;
 
   /** Current hovering positions. */
   double                   hover_x;

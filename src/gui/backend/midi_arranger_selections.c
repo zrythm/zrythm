@@ -50,6 +50,46 @@ get_start_pos (
 }
 
 /**
+ * Shift note val for selected noted
+ */
+void
+midi_arranger_selections_shift_val (int delta)
+{
+
+	MidiArrangerSelections * src =
+	MIDI_ARRANGER_SELECTIONS;
+	for (int i = 0; 
+		i < src->num_midi_notes; 
+		i++)
+	{
+		src->midi_notes[i]->val = 
+			src->midi_notes[i]->val + delta;
+	}
+}
+
+/**
+ * Shift note pos for selected noted
+ */
+void
+midi_arranger_selections_shift_pos (int delta)
+{
+
+	MidiArrangerSelections * src =
+	MIDI_ARRANGER_SELECTIONS;
+	for (int i = 0; 
+		i < src->num_midi_notes; 
+		i++)
+	{
+		position_add_beats(
+			&src->midi_notes[i]->start_pos,
+			delta);
+		position_add_beats(
+			&src->midi_notes[i]->end_pos,
+			delta);
+	}
+}
+
+/**
  * Clone the struct for copying, undoing, etc.
  */
 MidiArrangerSelections *
@@ -60,17 +100,17 @@ midi_arranger_selections_clone ()
 
   MidiArrangerSelections * src =
     MIDI_ARRANGER_SELECTIONS;
-
   for (int i = 0; i < src->num_midi_notes; i++)
     {
       MidiNote * r = src->midi_notes[i];
       MidiNote * new_r =
         midi_note_clone (r, r->midi_region);
-      array_append (new_ts->midi_notes,
+     position_add_beats(&new_r->start_pos,1);
+     position_add_beats(&new_r->end_pos,1);
+     array_append (new_ts->midi_notes,
                     new_ts->num_midi_notes,
                     new_r);
     }
-
   return new_ts;
 }
 
