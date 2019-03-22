@@ -134,22 +134,6 @@ midi_region_update_midi_note_val (
 }
 
 /**
- * Gets midi notes boundaries
- */
-void 
-midi_arranger_get_relative_midi_note_bounds (
-	MidiRegion * self,
-	MidiNote * last_note,
-	MidiNote * first_note,
-	MidiNote * lowest_note,
-	MidiNote * highest_note)
-{
-	last_note = midi_region_get_last_midi_note (self);
-	first_note = midi_region_get_first_midi_note (self);
-	lowest_note = midi_region_get_lowest_midi_note (self);
-	highest_note = midi_region_get_highest_midi_note (self);
-}
-/**
  * Gets first midi note
  */
 MidiNote *

@@ -68,23 +68,7 @@ midi_region_update_midi_note_val (
   Region *   region,
   MidiNote * midi_note);
 
-/**
 
-/**
- * Removes the MIDI note and its components
- * completely.
- */
-
-/**
- * Gets midi notes boundaries
- */
-void 
-midi_arranger_get_relative_midi_note_bounds (
-	MidiRegion * self,
-	MidiNote * last_note,
-	MidiNote * first_note,
-	MidiNote * lowest_note,
-	MidiNote * highest_note);
 /**
  * Gets first midi note
  */
