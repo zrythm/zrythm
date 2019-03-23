@@ -23,6 +23,8 @@
 
 #include "utils/string.h"
 
+#include <gtk/gtk.h>
+
 int
 string_is_ascii (const char * string)
 {
@@ -38,4 +40,26 @@ string_is_ascii (const char * string)
         }
     }
   return 1;
+}
+
+/**
+ * Returns the matched string if the string array
+ * contains the given substring.
+ */
+char *
+string_array_contains_substr (
+  char ** str_array,
+  int     num_str,
+  char *  substr)
+{
+  for (int i = 0; i < num_str; i++)
+    {
+      if (g_str_match_string (
+        substr,
+        str_array[i],
+        0))
+        return str_array[i];
+    }
+
+  return NULL;
 }

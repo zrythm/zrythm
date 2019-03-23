@@ -1,7 +1,5 @@
 /*
- * utils/string.h - string utils
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,20 +17,32 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __UTILS_STRING_H__
-#define __UTILS_STRING_H__
+/**
+ * \file
+ *
+ * Localization utils.
+ *
+ */
 
-int
-string_is_ascii (const char * string);
+#ifndef __UTILS_LOCALIZATION_H__
+#define __UTILS_LOCALIZATION_H__
+
+typedef enum UiLanguage
+{
+  UI_ENGLISH,
+  UI_GERMAN,
+  UI_FRENCH,
+  UI_ITALIAN,
+  UI_SPANISH,
+  UI_JAPANESE,
+  NUM_UI_LANGUAGES,
+} UiLanguage;
 
 /**
- * Returns the matched string if the string array
- * contains the given substring.
+ * Sets the locale to the currently selected one and
+ * inits gettext.
  */
-char *
-string_array_contains_substr (
-  char ** str_array,
-  int     num_str,
-  char *  substr);
+void
+localization_init ();
 
 #endif

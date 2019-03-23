@@ -114,3 +114,6 @@ m4/lt~obsolete.m4
 
 # Valgrind
 vgcore.*
+
+# Translated files
+*.mo

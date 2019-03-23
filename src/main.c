@@ -17,19 +17,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
-#include "config.h"
 #include "ext/audio_decoder/ad.h"
 #include "plugins/lv2/suil.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
 
-#include <glib/gi18n.h>
 #include <glibtop.h>
 
 /**
@@ -50,13 +47,6 @@ main (int    argc,
 
   /* init random */
   srandom (time (NULL));
-
-  /* init localization */
-  setlocale (LC_ALL, "");
-  bindtextdomain (
-    GETTEXT_PACKAGE, DATADIR "/locale");
-  bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-  textdomain (GETTEXT_PACKAGE);
 
   // sends activate signal
   zrythm_app = zrythm_app_new ();
