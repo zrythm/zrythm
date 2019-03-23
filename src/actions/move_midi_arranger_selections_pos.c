@@ -21,57 +21,47 @@
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/midi_arranger.h"
-#include "project.h"
-#include "actions/move_midi_arranger_selections_action.h"
+#include "actions/move_midi_arranger_selections_pos.h"
+
 
 /**
- * Note: chord addresses are to be copied.
- */
+ * Note: this action will add delta beats 
+ * to start and end pos of all selected midi_notes */
 UndoableAction *
-move_midi_arranger_selections_action_new ()
+move_midi_arranger_selections_pos_action_new (int delta)
 {
-  MoveMidiArrangerSelectionsAction * self =
+	MoveMidiArrangerSelectionsPosAction * self =
     calloc (1, sizeof (
-                 MoveMidiArrangerSelectionsAction));
-
+    	MoveMidiArrangerSelectionsPosAction));
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-    UNDOABLE_ACTION_TYPE_DELETE_MA_SELECTIONS;
-
-  self->mas = midi_arranger_selections_clone ();
-
+	  UNDOABLE_ACTION_TYPE_MOVE_MIDI_NOTES_POS;
+  self->delta = delta;
   return ua;
 }
 
 void
-move_midi_arranger_selections_action_do (
-  MoveMidiArrangerSelectionsAction * self)
+move_midi_arranger_selections_pos_action_do (
+	MoveMidiArrangerSelectionsPosAction * self)
 {
-  for (int i = 0; i < self->mas->num_midi_notes; i++)
-    {
-      /* TODO */
-    }
+		midi_arranger_selections_shift_pos(self->delta);	
   EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
                NULL);
 }
 
 void
-move_midi_arranger_selections_action_undo (
-  MoveMidiArrangerSelectionsAction * self)
+move_midi_arranger_selections_pos_action_undo (
+	MoveMidiArrangerSelectionsPosAction * self)
 {
-  for (int i = 0; i < self->mas->num_midi_notes; i++)
-    {
-      /* TODO */
-    }
-  EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
+	midi_arranger_selections_shift_pos(self->delta*-1);	
+    EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
                NULL);
 }
 
 void
-move_midi_arranger_selections_action_free (
-  MoveMidiArrangerSelectionsAction * self)
+move_midi_arranger_selections_pos_action_free (
+	MoveMidiArrangerSelectionsPosAction * self)
 {
-  midi_arranger_selections_free (self->mas);
-
   free (self);
 }
+

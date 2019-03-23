@@ -365,6 +365,16 @@ on_plugin_added (Plugin * plugin)
 }
 
 static void
+on_midi_note_selection_changed ()
+{
+ Region * region = CLIP_EDITOR->region;
+;
+
+  if (region->widget)
+    gtk_widget_queue_draw (GTK_WIDGET (region->widget));
+}
+
+static void
 on_midi_note_changed (MidiNote * midi_note)
 {
   Region * r = (Region *) midi_note->midi_region;
@@ -536,6 +546,9 @@ events_process ()
         case ET_TRACK_SELECT_CHANGED:
           on_track_select_changed ((Track *) arg);
           break;
+        case ET_MIDI_ARRANGER_SELECTIONS_CHANGED:
+           on_midi_note_selection_changed();
+            break;
         case ET_MIDI_NOTE_CHANGED:
           on_midi_note_changed ((MidiNote *) arg);
           break;
