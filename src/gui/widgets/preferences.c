@@ -26,10 +26,13 @@
 #include "audio/engine.h"
 #include "gui/widgets/preferences.h"
 #include "settings/settings.h"
+#include "utils/localization.h"
 #include "utils/resources.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
+
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (PreferencesWidget,
                preferences_widget,
@@ -57,7 +60,51 @@ create_audio_backend_model (void)
   GtkListStore *store;
   gint i;
 
-  store = gtk_list_store_new (NUM_ENGINE_BACKENDS,
+  store = gtk_list_store_new (2,
+                              G_TYPE_INT,
+                              G_TYPE_STRING);
+
+  for (i = 0; i < G_N_ELEMENTS (values); i++)
+    {
+      gtk_list_store_append (store, &iter);
+      gtk_list_store_set (store, &iter,
+                          VALUE_COL, values[i],
+                          TEXT_COL, labels[i],
+                          -1);
+    }
+
+  return GTK_TREE_MODEL (store);
+}
+
+/**
+ * TODO convert this into a macro for creating
+ * simple comboboxes.
+ */
+static GtkTreeModel *
+create_language_model (void)
+{
+  const int values[NUM_UI_LANGUAGES] = {
+    UI_ENGLISH,
+    UI_GERMAN,
+    UI_FRENCH,
+    UI_ITALIAN,
+    UI_SPANISH,
+    UI_JAPANESE,
+  };
+  const gchar *labels[NUM_UI_LANGUAGES] = {
+    _("English [en]"),
+    _("German [de])"),
+    _("French [fr])"),
+    _("Italian [it])"),
+    _("Spanish [es])"),
+    _("Japanese [ja])"),
+  };
+
+  GtkTreeIter iter;
+  GtkListStore *store;
+  gint i;
+
+  store = gtk_list_store_new (2,
                               G_TYPE_INT,
                               G_TYPE_STRING);
 
@@ -95,6 +142,30 @@ setup_audio (PreferencesWidget * self)
 }
 
 static void
+setup_language (PreferencesWidget * self)
+{
+  GtkCellRenderer *renderer;
+  gtk_combo_box_set_model (
+    self->language, create_language_model ());
+  gtk_cell_layout_clear (
+    GTK_CELL_LAYOUT (self->language));
+  renderer = gtk_cell_renderer_text_new ();
+  gtk_cell_layout_pack_start (
+    GTK_CELL_LAYOUT (self->language),
+    renderer, TRUE);
+  gtk_cell_layout_set_attributes (
+    GTK_CELL_LAYOUT (self->language), renderer,
+    "text", TEXT_COL,
+    NULL);
+
+  gtk_combo_box_set_active (
+    GTK_COMBO_BOX (self->language),
+    g_settings_get_enum (
+      S_PREFERENCES,
+      "language"));
+}
+
+static void
 setup_plugins (PreferencesWidget * self)
 {
   gtk_toggle_button_set_active (
@@ -127,6 +198,10 @@ on_ok_clicked (GtkWidget * widget,
     S_PREFERENCES,
     "audio-backend",
     gtk_combo_box_get_active (self->audio_backend));
+  g_settings_set_enum (
+    S_PREFERENCES,
+    "language",
+    gtk_combo_box_get_active (self->language));
   g_settings_set_int (
     S_PREFERENCES,
     "open-plugin-uis-on-instantiate",
@@ -147,6 +222,7 @@ preferences_widget_new ()
                   NULL);
 
   setup_audio (self);
+  setup_language (self);
   setup_plugins (self);
 
   return self;
@@ -157,8 +233,8 @@ preferences_widget_class_init (
   PreferencesWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass,
-                                "preferences.ui");
+  resources_set_class_template (
+    klass, "preferences.ui");
 
   gtk_widget_class_bind_template_child (
     klass,
@@ -172,6 +248,10 @@ preferences_widget_class_init (
     klass,
     PreferencesWidget,
     audio_backend);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PreferencesWidget,
+    language);
   gtk_widget_class_bind_template_child (
     klass,
     PreferencesWidget,

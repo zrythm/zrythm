@@ -169,6 +169,7 @@ CFLAGS += -Wall \
 	$(SAMPLERATE_CFLAGS) \
 	$(SNDFILE_CFLAGS) \
 	$(X11_CFLAGS) \
+	-DDATADIR=\"$(datadir)\" \
 	-fPIC
 
 ifeq ($(PROFILING),1)
@@ -207,6 +208,7 @@ built_dep = $(built_obj:%.o=%.d))
 SRCS = $(shell find src/ -name "*.c") \
 			 $(shell find ext/audio_decoder -name "*.c")
 SRCS_CPP = $(shell find src/ -name "*.cpp")
+SRCS_UI =	$(shell find resources/ui -name "*.ui")
 # All .o files go to build dir.
 OBJ = $(SRCS:%.c=$(BUILD_DIR)/%.c.o)
 OBJ_CPP = $(SRCS_CPP:%.cpp=$(BUILD_DIR)/%.cpp.o)
@@ -232,8 +234,34 @@ appicon_DATA = z.svg
 #  rules
 #  ----------------------------
 
-# Default target named after the binary.
-$(BIN) : $(BUILD_DIR)/$(BIN)$(EXT)
+# Default target
+all: $(BUILD_DIR)/$(BIN)$(EXT) messages
+
+messages: po/fr/$(BIN).mo po/de/$(BIN).mo po/es/$(BIN).mo po/it/$(BIN).mo po/ja/$(BIN).mo
+
+po/fr/$(BIN).mo: po/fr/$(BIN).po
+	msgfmt --output-file=$@ $<
+po/fr/$(BIN).po: po/$(BIN).pot
+	msgmerge --update $@ $<
+po/de/$(BIN).mo: po/de/$(BIN).po
+	msgfmt --output-file=$@ $<
+po/de/$(BIN).po: po/$(BIN).pot
+	msgmerge --update $@ $<
+po/es/$(BIN).mo: po/es/$(BIN).po
+	msgfmt --output-file=$@ $<
+po/es/$(BIN).po: po/$(BIN).pot
+	msgmerge --update $@ $<
+po/it/$(BIN).mo: po/it/$(BIN).po
+	msgfmt --output-file=$@ $<
+po/it/$(BIN).po: po/$(BIN).pot
+	msgmerge --update $@ $<
+po/ja/$(BIN).mo: po/ja/$(BIN).po
+	msgfmt --output-file=$@ $<
+po/ja/$(BIN).po: po/$(BIN).pot
+	msgmerge --update $@ $<
+
+po/$(BIN).pot: $(SRCS) $(SRCS_CPP) $(SRCS_UI)
+	xgettext --keyword=_ --add-comments --sort-output -o $@ $^
 
 # Actual target of the binary - depends on all .o files.
 $(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(OBJ_CPP) $(BUILD_DIR)/resources.o $(CYAML_BUILD_DIR)/libcyaml.a $(LIBSMF_BUILD_DIR)/libsmf.a
@@ -282,23 +310,46 @@ $(BUILD_DIR)/%.cpp.$(OBJEXT): %.cpp
 	$(MKDIR_P) $(dir $@)
 	$(CXX) $(CFLAGS) $(QT5_CFLAGS) -lstdc++ -MMD -c $< -o $@
 
+.PHONY: doc
+doc:
+	doxygen Doxyfile.cfg
+
 .PHONY: clean
 clean:
 	#rm -rf $(BUILD_DIR)/*
 	# This should remove all generated files.
 	-rm $(BUILD_DIR)/$(BIN)$(EXT) $(OBJ) $(DEP)
 	-rm $(BUILD_DIR)/zrythm.gresource.xml
+	-rm -rf doc/html
+	-rm po/fr/*.mo
+	-rm po/de/*.mo
+	-rm po/it/*.mo
+	-rm po/es/*.mo
+	-rm po/ja/*.mo
 	cd $(CYAML_SRC_DIR) && make clean
 	cd $(LIBSMF_SRC_DIR) && make clean
 
 .PHONY: install
-install: $(BUILD_DIR)/$(BIN)$(EXT) install-appicon-data install-desktop-data install-gschemas install-fonts
+install: $(BUILD_DIR)/$(BIN)$(EXT) install-appicon-data install-desktop-data install-gschemas install-fonts install-messages
 	$(MKDIR_P) $(DESTDIR)$(bindir)
 	$(INSTALL) $< $(DESTDIR)$(bindir)/$(BIN)$(EXT)
 
 .PHONY: uninstall
-uninstall: uninstall-appicon-data uninstall-gschemas uninstall-desktop
+uninstall: uninstall-appicon-data uninstall-gschemas uninstall-desktop uninstall-messages
 	rm -f $(bindir)/$(BIN)$(EXT)
+
+.PHONY: install-messages
+install-messages:
+	$(MKDIR_P) "$(DESTDIR)$(localedir)/fr/LC_MESSAGES"
+	$(INSTALL_DATA) po/fr/$(BIN).mo "$(DESTDIR)$(localedir)/fr/LC_MESSAGES/"
+	$(MKDIR_P) "$(DESTDIR)$(localedir)/de/LC_MESSAGES"
+	$(INSTALL_DATA) po/de/$(BIN).mo "$(DESTDIR)$(localedir)/de/LC_MESSAGES/"
+	$(MKDIR_P) "$(DESTDIR)$(localedir)/it/LC_MESSAGES"
+	$(INSTALL_DATA) po/it/$(BIN).mo "$(DESTDIR)$(localedir)/it/LC_MESSAGES/"
+	$(MKDIR_P) "$(DESTDIR)$(localedir)/es/LC_MESSAGES"
+	$(INSTALL_DATA) po/es/$(BIN).mo "$(DESTDIR)$(localedir)/es/LC_MESSAGES/"
+	$(MKDIR_P) "$(DESTDIR)$(localedir)/ja/LC_MESSAGES"
+	$(INSTALL_DATA) po/ja/$(BIN).mo "$(DESTDIR)$(localedir)/ja/LC_MESSAGES/"
 
 .PHONY: install-appicon-data
 install-appicon-data: $(appicon_DATA_srcdir)/$(appicon_DATA)
@@ -323,6 +374,14 @@ endif
 uninstall-gschemas:
 	rm -f $(gsettingsschemadir)/$(gsettings_SCHEMAS)
 	$(GLIB_COMPILE_SCHEMAS) "$(DESTDIR)$(gsettingsschemadir)"
+
+.PHONY: uninstall-messages
+uninstall-messages:
+	rm -f "$(DESTDIR)$(localedir)/fr/LC_MESSAGES/$(BIN).mo"
+	rm -f "$(DESTDIR)$(localedir)/de/LC_MESSAGES/$(BIN).mo"
+	rm -f "$(DESTDIR)$(localedir)/it/LC_MESSAGES/$(BIN).mo"
+	rm -f "$(DESTDIR)$(localedir)/es/LC_MESSAGES/$(BIN).mo"
+	rm -f "$(DESTDIR)$(localedir)/ja/LC_MESSAGES/$(BIN).mo"
 
 .PHONY: install-fonts
 install-fonts: $(FONTS_DIR)/Segment7Standard/*

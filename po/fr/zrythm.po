@@ -1,0 +1,519 @@
+# PO template file
+# Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+# This file is distributed under the same license as the Zrythm package.
+# Alexandros Theodotou <alex at zrythm dot org>, 2019
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: zrythm 0.2.003\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-03-23 15:06+0000\n"
+"PO-Revision-Date: 2019-03-22 22:30+0000\n"
+"Last-Translator: alex <alex at zrythm dot org>\n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: resources/ui/channel.ui:197
+msgid "-2"
+msgstr ""
+
+#: resources/ui/automation_lane.ui:137
+msgid "0.0"
+msgstr ""
+
+#: resources/ui/channel.ui:253
+msgid "90"
+msgstr ""
+
+#: resources/ui/snap_grid_popover.ui:47
+msgid "Adaptive Grid"
+msgstr ""
+
+#: resources/ui/preferences.ui:171
+msgid "Always open plugin UIs"
+msgstr ""
+
+#: resources/ui/preferences.ui:175
+msgid "Always open the UI after creating a plugin"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:97
+msgid "Artist"
+msgstr ""
+
+#: resources/ui/preferences.ui:147
+msgid "Audio"
+msgstr ""
+
+#: resources/ui/audio_unit.ui:32
+msgid "Audio Unit"
+msgstr ""
+
+#: resources/ui/preferences.ui:122
+msgid "Backend"
+msgstr ""
+
+#: resources/ui/transport_controls.ui:87
+msgid "Backward"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:308
+msgid "Bit depth"
+msgstr ""
+
+#: resources/ui/center_dock_bot_box.ui:54
+msgid "Bot"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:44 resources/ui/preferences.ui:58
+msgid "Cancel"
+msgstr ""
+
+#: src/gui/widgets/dzl/dzl-animation.c:752
+#, c-format
+msgid "Cannot locate property %s in class %s"
+msgstr ""
+
+#: resources/ui/plugin_browser.ui:107
+msgid "Category"
+msgstr ""
+
+#: src/audio/chord_track.c:53
+msgid "Chord Track"
+msgstr "asdasdas"
+
+#: resources/ui/inspector_chord.ui:31
+msgid "Chords"
+msgstr ""
+
+#: resources/ui/file_browser.ui:63 resources/ui/plugin_browser.ui:63
+msgid "Collection"
+msgstr ""
+
+#: resources/ui/inspector_region.ui:68 resources/ui/inspector_master.ui:67
+#: resources/ui/inspector_track.ui:66 resources/ui/inspector_ap.ui:67
+#: resources/ui/inspector_midi.ui:67
+msgid "Color"
+msgstr ""
+
+#: resources/ui/project_assistant.ui:70
+msgid "Create new project"
+msgstr "asdasda"
+
+#: resources/ui/export_dialog.ui:261
+msgid "Custom"
+msgstr ""
+
+#: resources/ui/connections.ui:98
+msgid "Dest. Audio Unit"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:160
+msgid "Dither"
+msgstr ""
+
+#: resources/ui/preferences.ui:243
+msgid "Editing"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:130
+msgid "Electronic"
+msgstr ""
+
+#: resources/ui/inspector_chord.ui:55
+msgid "Enforce scale"
+msgstr ""
+
+#: resources/ui/preferences.ui:108
+msgid "Engine"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:95
+msgid "English [en]"
+msgstr ""
+
+#: resources/ui/inspector_region.ui:45 resources/ui/inspector_master.ui:44
+#: resources/ui/inspector_track.ui:44 resources/ui/inspector_ap.ui:44
+#: resources/ui/inspector_midi.ui:44
+msgid "Enter region name..."
+msgstr ""
+
+#: resources/ui/export_dialog.ui:58
+msgid "Export"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:85
+msgid "Export Audio"
+msgstr ""
+
+#: src/gui/widgets/dzl/dzl-animation.c:1099
+#: src/gui/widgets/dzl/dzl-animation.c:1105
+#, c-format
+msgid "Failed to find property %s in %s"
+msgstr ""
+
+#: src/gui/widgets/dzl/dzl-animation.c:1113
+#, c-format
+msgid "Failed to find property %s in %s or parent %s"
+msgstr ""
+
+#: src/gui/widgets/dzl/dzl-animation.c:1123
+#, c-format
+msgid "Failed to retrieve va_list value: %s"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:217
+msgid "Filename Pattern"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:141
+msgid "Format"
+msgstr ""
+
+#: resources/ui/transport_controls.ui:105
+msgid "Forward"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:97
+msgid "French [fr])"
+msgstr ""
+
+#: resources/ui/preferences.ui:299
+msgid "GUI"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:108
+msgid "Genre"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:96
+msgid "German [de])"
+msgstr ""
+
+#: resources/ui/quantize_mb_popover.ui:37 resources/ui/snap_grid_popover.ui:37
+msgid "Grid"
+msgstr ""
+
+#: src/audio/chord_track.c:54
+msgid "Hello World\n"
+msgstr "ooff\n"
+
+#: src/zrythm.c:209
+msgid "Initializing audio engine"
+msgstr ""
+
+#: src/zrythm.c:214
+msgid "Initializing plugin manager"
+msgstr ""
+
+#: src/zrythm.c:203
+msgid "Initializing settings"
+msgstr ""
+
+#: resources/ui/splash.ui:58
+msgid "Initializing..."
+msgstr ""
+
+#: src/gui/widgets/preferences.c:98
+msgid "Italian [it])"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:100
+msgid "Japanese [ja])"
+msgstr ""
+
+#: resources/ui/automator.ui:32
+msgid "LFO 1"
+msgstr ""
+
+#: resources/ui/preferences.ui:272
+msgid "Language"
+msgstr ""
+
+#: resources/ui/center_dock_bot_box.ui:43
+msgid "Left"
+msgstr ""
+
+#: resources/ui/quantize_mb_popover.ui:88 resources/ui/inspector_region.ui:103
+#: resources/ui/inspector_master.ui:101 resources/ui/inspector_track.ui:98
+#: resources/ui/inspector_ap.ui:101 resources/ui/inspector_midi.ui:101
+#: resources/ui/snap_grid_popover.ui:88
+msgid "Length"
+msgstr ""
+
+#: src/zrythm.c:228
+#, fuzzy
+msgid "Loading project"
+msgstr "asdasda"
+
+#: resources/ui/file_browser.ui:107
+msgid "Location"
+msgstr ""
+
+#: resources/ui/transport_controls.ui:122 resources/ui/export_dialog.ui:249
+msgid "Loop"
+msgstr ""
+
+#: resources/ui/preferences.ui:210
+msgid "Main Window"
+msgstr ""
+
+#: resources/ui/channel.ui:341
+msgid "Master"
+msgstr ""
+
+#: resources/ui/inspector_region.ui:115 resources/ui/inspector_master.ui:113
+#: resources/ui/inspector_track.ui:109 resources/ui/inspector_ap.ui:113
+#: resources/ui/inspector_midi.ui:113
+msgid "Muted"
+msgstr ""
+
+#: resources/ui/control.ui:45
+msgid "Name"
+msgstr ""
+
+#: resources/ui/inspector.ui:72
+msgid "No item selected"
+msgstr ""
+
+#: resources/ui/quantize_mb_popover.ui:87
+msgid "Note length to quantize to"
+msgstr ""
+
+#: resources/ui/snap_grid_popover.ui:87
+msgid "Note length to snap to"
+msgstr ""
+
+#: resources/ui/quantize_mb_popover.ui:126
+#: resources/ui/snap_grid_popover.ui:126
+msgid "Note type"
+msgstr ""
+
+#: resources/ui/preferences.ui:44
+msgid "OK"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:205
+msgid "Output Files"
+msgstr ""
+
+#: resources/ui/transport_controls.ui:54
+msgid "Play"
+msgstr ""
+
+#: resources/ui/rack_plugin.ui:31
+msgid "Plugin 1"
+msgstr ""
+
+#: resources/ui/preferences.ui:161 resources/ui/preferences.ui:195
+msgid "Plugins"
+msgstr ""
+
+#: resources/ui/inspector_region.ui:80 resources/ui/inspector_master.ui:79
+#: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
+msgid "Position"
+msgstr ""
+
+#: resources/ui/preferences.ui:27
+msgid "Preferences"
+msgstr ""
+
+#: resources/ui/header_bar.ui:29
+msgid "Project name"
+msgstr ""
+
+#: resources/ui/project_assistant.ui:122
+msgid ""
+"Project name: name\n"
+"Path: /home/user/Zrythm/name\n"
+"Backend: JACK\n"
+"Frame rate: 44100\n"
+"(note: this text is hard coded at the moment)"
+msgstr ""
+
+#: resources/ui/automation_lane.ui:112
+msgid "R"
+msgstr ""
+
+#: resources/ui/automation_lane.ui:95
+msgid "RW"
+msgstr ""
+
+#: resources/ui/automation_lane.ui:116
+msgid "Read automation"
+msgstr ""
+
+#: resources/ui/transport_controls.ui:36
+msgid "Record"
+msgstr ""
+
+#: resources/ui/inspector_region.ui:32 resources/ui/inspector_master.ui:31
+#: resources/ui/inspector_track.ui:31 resources/ui/inspector_ap.ui:31
+#: resources/ui/inspector_midi.ui:31
+msgid "Region"
+msgstr ""
+
+#: src/gui/widgets/region.c:192
+msgid ""
+"Region - Click and drag to move around (hold Shift to disable snapping) - "
+"Double click to bring up the clip editor"
+msgstr "Bonjour region"
+
+#: resources/ui/project_assistant.ui:86
+msgid "Remove"
+msgstr ""
+
+#: resources/ui/project_assistant.ui:90
+msgid "Removes selected project from the list"
+msgstr ""
+
+#: resources/ui/center_dock_bot_box.ui:82
+msgid "Right"
+msgstr ""
+
+#: resources/ui/inspector_chord.ui:43
+msgid "Scale"
+msgstr ""
+
+#: resources/ui/project_assistant.ui:40
+msgid "Select a project..."
+msgstr ""
+
+#: src/zrythm.c:221
+msgid "Setting up backend"
+msgstr ""
+
+#: resources/ui/preferences.ui:220
+msgid "Show native decoration"
+msgstr ""
+
+#: resources/ui/quantize_mb_popover.ui:66 resources/ui/snap_grid_popover.ui:66
+msgid "Snap"
+msgstr ""
+
+#: resources/ui/top_dock_edge.ui:164
+msgid "Snap to events (regions)"
+msgstr ""
+
+#: resources/ui/top_dock_edge.ui:151
+msgid "Snaps to grid and keeps offset"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:237
+msgid "Song"
+msgstr ""
+
+#: resources/ui/connections.ui:73
+msgid "Source Audio Unit"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:99
+msgid "Spanish [es])"
+msgstr ""
+
+#: resources/ui/transport_controls.ui:69
+msgid "Stop"
+msgstr ""
+
+#: resources/ui/channel.ui:290
+msgid "Synth1 long name name"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:187
+msgid ""
+"The following files will be created:\n"
+"\n"
+"Master.wav\n"
+"\n"
+"in the directory:\n"
+"\n"
+"/home/alex/Zrythm/Projects/project1/exports/20181023"
+msgstr ""
+
+#: resources/ui/main_window.ui:119
+msgid "This is an app-notification. Click the button to dismiss"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:275
+msgid "Time Range"
+msgstr ""
+
+#: resources/ui/preferences.ui:258
+msgid "Timeline"
+msgstr ""
+
+#: resources/ui/piano_roll.ui:78
+msgid "Toggle note notation"
+msgstr ""
+
+#: resources/ui/piano_roll.ui:53 resources/ui/audio_clip_editor.ui:34
+msgid "Track name"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:287
+msgid "Tracks"
+msgstr ""
+
+#: resources/ui/quantize_mb_popover.ui:127 resources/ui/inspector_track.ui:77
+#: resources/ui/file_browser.ui:84 resources/ui/plugin_browser.ui:84
+#: resources/ui/snap_grid_popover.ui:127
+msgid "Type"
+msgstr ""
+
+#: resources/ui/quantize_mb_popover.ui:47
+msgid "Use grid"
+msgstr ""
+
+#: resources/ui/automation_lane.ui:99
+msgid "Write automation"
+msgstr ""
+
+#: resources/ui/header_bar.ui:28 resources/ui/export_dialog.ui:119
+msgid "Zrythm"
+msgstr ""
+
+#: resources/ui/header_bar.ui:69
+msgid "_Edit"
+msgstr ""
+
+#: resources/ui/header_bar.ui:55
+msgid "_File"
+msgstr ""
+
+#: resources/ui/header_bar.ui:97
+msgid "_Help"
+msgstr ""
+
+#: resources/ui/header_bar.ui:83
+msgid "_View"
+msgstr ""
+
+#: resources/ui/rack_row.ui:60
+msgid "expander"
+msgstr ""
+
+#: resources/ui/rack_plugin.ui:53
+msgid "in"
+msgstr ""
+
+#: resources/ui/track.ui:59 resources/ui/automatable_selector.ui:84
+msgid "label"
+msgstr ""
+
+#: resources/ui/rack_plugin.ui:63
+msgid "out"
+msgstr ""
+
+#: resources/ui/inspector_region.ui:44 resources/ui/inspector_master.ui:43
+#: resources/ui/inspector_track.ui:43 resources/ui/inspector_ap.ui:43
+#: resources/ui/inspector_midi.ui:43
+msgid "region_name"
+msgstr ""
+
+#: resources/ui/audio_clip_editor.ui:56 resources/ui/audio_clip_editor.ui:68
+msgid "stuff"
+msgstr ""

@@ -21,6 +21,7 @@
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
+#include "config.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/center_dock.h"
@@ -29,6 +30,8 @@
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "utils/ui.h"
+
+#include <glib/gi18n-lib.h>
 
 G_DEFINE_TYPE_WITH_PRIVATE (RegionWidget,
                             region_widget,
@@ -186,9 +189,9 @@ on_motion (GtkWidget *      widget,
         GTK_STATE_FLAG_PRELIGHT,
         0);
       bot_bar_change_status (
-        "Region - Click and drag to move around ("
+        _("Region - Click and drag to move around ("
         "hold Shift to disable snapping) - "
-        "Double click to bring up the clip editor");
+        "Double click to bring up the clip editor"));
     }
   /* if leaving */
   else if (event->type == GDK_LEAVE_NOTIFY)

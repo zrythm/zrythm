@@ -35,10 +35,12 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
+#include "utils/localization.h"
 #include "utils/io.h"
 
 #include <gtk/gtk.h>
 
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (ZrythmApp,
                zrythm_app,
@@ -198,32 +200,32 @@ task_func (GTask *task,
     {
     case TASK_START:
       data->message =
-        "Initializing settings";
+        _("Initializing settings");
       data->progress = 0.3;
       break;
     case TASK_INIT_SETTINGS:
       settings_init (&ZRYTHM->settings);
       data->message =
-        "Initializing audio engine";
+        _("Initializing audio engine");
       data->progress = 0.4;
       break;
     case TASK_INIT_AUDIO_ENGINE:
       data->message =
-        "Initializing plugin manager";
+        _("Initializing plugin manager");
       data->progress = 0.6;
       break;
     case TASK_INIT_PLUGIN_MANAGER:
       plugin_manager_init (&ZRYTHM->plugin_manager);
       file_manager_init (&ZRYTHM->file_manager);
       data->message =
-        "Setting up backend";
+        _("Setting up backend");
       data->progress = 0.7;
       break;
     case TASK_END:
       plugin_manager_scan_plugins (&ZRYTHM->plugin_manager);
       file_manager_load_files (&ZRYTHM->file_manager);
       data->message =
-        "Loading project";
+        _("Loading project");
       data->progress = 0.8;
       break;
     }
@@ -396,7 +398,10 @@ static void on_prompt_for_project (GSimpleAction  *action,
 static void
 zrythm_app_activate (GApplication * _app)
 {
-  g_message ("activate %d", *task_id);
+  /*g_message ("activate %d", *task_id);*/
+
+  /* init localization */
+  localization_init ();
 }
 
 /**
@@ -557,9 +562,12 @@ zrythm_app_new ()
 static void
 zrythm_app_class_init (ZrythmAppClass *class)
 {
-  G_APPLICATION_CLASS (class)->activate = zrythm_app_activate;
-  G_APPLICATION_CLASS (class)->startup = zrythm_app_startup;
-  G_APPLICATION_CLASS (class)->open = zrythm_app_open;
+  G_APPLICATION_CLASS (class)->activate =
+    zrythm_app_activate;
+  G_APPLICATION_CLASS (class)->startup =
+    zrythm_app_startup;
+  G_APPLICATION_CLASS (class)->open =
+    zrythm_app_open;
 }
 
 static void

@@ -35,6 +35,8 @@
 #include "project.h"
 #include "utils/arrays.h"
 
+#include <glib/gi18n.h>
+
 /**
  * Creates a new chord track using the given scale.
  */
@@ -48,7 +50,8 @@ chord_track_new (MusicalScale * scale)
   track_init (track);
   project_add_track (track);
 
-  self->name = g_strdup ("Chord Track");
+  self->name = g_strdup (_("Chord Track"));
+   g_message(_("Hello World\n"));
 
   self->scale = scale;
 
