@@ -1,7 +1,5 @@
 /*
- * audio/chord_track.c - Chord track
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -51,7 +49,6 @@ chord_track_new (MusicalScale * scale)
   project_add_track (track);
 
   self->name = g_strdup (_("Chord Track"));
-   g_message(_("Hello World\n"));
 
   self->scale = scale;
 

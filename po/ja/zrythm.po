@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-23 15:06+0000\n"
+"POT-Creation-Date: 2019-03-23 17:20+0000\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrytm dot org>\n"
 "Language-Team: Japanese\n"
@@ -82,7 +82,7 @@ msgstr ""
 msgid "Category"
 msgstr ""
 
-#: src/audio/chord_track.c:53
+#: src/audio/chord_track.c:51
 msgid "Chord Track"
 msgstr "コードトラック"
 
@@ -196,10 +196,6 @@ msgstr ""
 
 #: resources/ui/quantize_mb_popover.ui:37 resources/ui/snap_grid_popover.ui:37
 msgid "Grid"
-msgstr ""
-
-#: src/audio/chord_track.c:54
-msgid "Hello World\n"
 msgstr ""
 
 #: src/zrythm.c:209

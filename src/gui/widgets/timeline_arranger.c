@@ -1513,9 +1513,7 @@ update_last_timeline_object ()
     EVENTS_PUSH (ET_LAST_TIMELINE_OBJECT_CHANGED,
                  NULL);
 
-  g_usleep (10000);
-
-  return TRUE;
+  return G_SOURCE_CONTINUE;
 }
 
 #undef COMPARE_AND_SET
@@ -1528,8 +1526,10 @@ timeline_arranger_widget_setup ()
 {
   timeline_arranger_widget_set_size ();
 
-  g_idle_add (update_last_timeline_object,
-              NULL);
+  g_timeout_add (
+    1000,
+    update_last_timeline_object,
+    NULL);
 }
 
 void

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-23 15:06+0000\n"
+"POT-Creation-Date: 2019-03-23 17:20+0000\n"
 "PO-Revision-Date: 2019-03-22 22:30+0000\n"
 "Last-Translator: alex <alex at zrythm dot org>\n"
 "Language-Team: French\n"
@@ -82,9 +82,9 @@ msgstr ""
 msgid "Category"
 msgstr ""
 
-#: src/audio/chord_track.c:53
+#: src/audio/chord_track.c:51
 msgid "Chord Track"
-msgstr "asdasdas"
+msgstr ""
 
 #: resources/ui/inspector_chord.ui:31
 msgid "Chords"
@@ -102,7 +102,7 @@ msgstr ""
 
 #: resources/ui/project_assistant.ui:70
 msgid "Create new project"
-msgstr "asdasda"
+msgstr ""
 
 #: resources/ui/export_dialog.ui:261
 msgid "Custom"
@@ -197,10 +197,6 @@ msgstr ""
 #: resources/ui/quantize_mb_popover.ui:37 resources/ui/snap_grid_popover.ui:37
 msgid "Grid"
 msgstr ""
-
-#: src/audio/chord_track.c:54
-msgid "Hello World\n"
-msgstr "ooff\n"
 
 #: src/zrythm.c:209
 msgid "Initializing audio engine"
@@ -517,3 +513,6 @@ msgstr ""
 #: resources/ui/audio_clip_editor.ui:56 resources/ui/audio_clip_editor.ui:68
 msgid "stuff"
 msgstr ""
+
+#~ msgid "Hello World\n"
+#~ msgstr "ooff\n"

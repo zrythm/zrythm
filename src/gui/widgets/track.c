@@ -52,24 +52,6 @@ G_DEFINE_TYPE_WITH_PRIVATE (TrackWidget,
                             track_widget,
                             GTK_TYPE_GRID)
 
-static int draw_timeline_async (GtkWidget * widget)
-{
-
-  if (!ui_is_widget_revealed (widget))
-    {
-      g_usleep (1000);
-
-      return TRUE;
-    }
-
-  /*gtk_widget_queue_draw (*/
-    /*GTK_WIDGET (MW_TIMELINE));*/
-  gtk_widget_queue_allocate (
-    GTK_WIDGET (MW_TIMELINE));
-
-  return FALSE;
-}
-
 void
 track_widget_select (
   TrackWidget * self,

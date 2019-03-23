@@ -414,6 +414,35 @@ update_adj ()
   return FALSE;
 }
 
+static void
+clean_duplicates ()
+{
+  EventType et, et2;
+  void * arg, * arg2;
+  int j;
+  for (int i = 0;
+       i <= EVENTS->et_stack->top; i++)
+    {
+      et =
+        (EventType) EVENTS->et_stack->elements[i];
+      arg = EVENTS->arg_stack->elements[i];
+
+      for (j = i + 1;
+           j < EVENTS->et_stack->top; j++)
+        {
+          et2 =
+            (EventType) EVENTS->et_stack->elements[j];
+          arg2 = EVENTS->arg_stack->elements[j];
+
+          if (et == et2 && arg == arg2)
+            {
+              EVENTS->et_stack->elements[j] = (void *) -1;
+              g_message ("removed 1 duplicate");
+            }
+        }
+    }
+}
+
 /**
  * GSourceFunc to be added using idle add.
  *
@@ -427,6 +456,8 @@ events_process ()
   EventType et;
   void * arg;
 
+  clean_duplicates ();
+
   /*int i = 0;*/
   /*g_message ("starting processing");*/
   while (!stack_is_empty (EVENTS->et_stack))
@@ -434,6 +465,8 @@ events_process ()
       /*i++;*/
       et = ET_POP (EVENTS);
       arg = ARG_POP (EVENTS);
+      if (et < 0)
+        continue;
 
       switch (et)
         {
@@ -594,9 +627,9 @@ events_process ()
     }
   /*g_message ("processed %d events", i);*/
 
-  g_usleep (8000);
+  /*g_usleep (8000);*/
 
-  return TRUE;
+  return G_SOURCE_CONTINUE;
 }
 
 /**
@@ -612,5 +645,8 @@ events_init (Events * self)
     /*G_PRIORITY_HIGH_IDLE + 30,*/
     /*(GSourceFunc) events_process,*/
     /*NULL, NULL);*/
-  g_idle_add ((GSourceFunc) events_process, NULL);
+  /*g_idle_add ((GSourceFunc) events_process, NULL);*/
+  g_timeout_add (8,
+                      events_process,
+                      NULL);
 }
