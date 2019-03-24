@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-24 12:58+0000\n"
+"POT-Creation-Date: 2019-03-24 18:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -82,6 +82,11 @@ msgstr ""
 msgid "Category"
 msgstr ""
 
+#: src/gui/widgets/channel_slot.c:222
+msgid ""
+"Channel Slot - Double click to open plugin - Click and drag to move plugin"
+msgstr ""
+
 #: src/audio/chord_track.c:51
 msgid "Chord Track"
 msgstr ""
@@ -148,6 +153,10 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:85
 msgid "Export Audio"
+msgstr ""
+
+#: src/gui/widgets/fader.c:166
+msgid "Fader - Click and drag to change value"
 msgstr ""
 
 #: src/gui/widgets/dzl/dzl-animation.c:1099

@@ -396,6 +396,13 @@ on_plugin_visibility_changed (Plugin * pl)
     instrument_track_widget_refresh_buttons (
       Z_INSTRUMENT_TRACK_WIDGET (
         pl->channel->track->widget));
+
+  if (pl->channel->widget)
+    gtk_widget_queue_draw (
+      GTK_WIDGET (
+        pl->channel->widget->slots[
+          channel_get_plugin_index (
+            pl->channel, pl)]));
 }
 
 static int
