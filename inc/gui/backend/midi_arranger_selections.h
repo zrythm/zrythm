@@ -91,6 +91,14 @@ midi_arranger_selections_get_start_pos (
   MidiArrangerSelections * ts,
   Position *                pos); ///< position to fill in
 
+MidiNote *
+midi_arranger_selections_get_first_midi_note (
+  MidiArrangerSelections * mas);
+
+MidiNote *
+midi_arranger_selections_get_last_midi_note (
+  MidiArrangerSelections * mas);
+
 void
 midi_arranger_selections_paste_to_pos (
   MidiArrangerSelections * ts,

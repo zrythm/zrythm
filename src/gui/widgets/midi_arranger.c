@@ -176,7 +176,7 @@ midi_arranger_widget_select_all (
         }
     }
   arranger_widget_refresh(&self->parent_instance);
-  
+
 }
 
 static int
@@ -863,17 +863,21 @@ midi_arranger_auto_scroll (
   if (region != 0)
   {
     MidiNote * first_note =
-      midi_region_get_first_midi_note (region);
-    MidiNote * last_note = midi_region_get_last_midi_note (
-      region);
+      midi_arranger_selections_get_first_midi_note (
+        MIDI_ARRANGER_SELECTIONS);
+    MidiNote * last_note =
+      midi_arranger_selections_get_last_midi_note (
+        MIDI_ARRANGER_SELECTIONS);
     MidiNote * lowest_note =
-      midi_region_get_lowest_midi_note (region);
+      MIDI_ARRANGER_SELECTIONS->bot_midi_note;
     MidiNote * highest_note =
-      midi_region_get_highest_midi_note (region);
-    int arranger_width = gtk_widget_get_allocated_width (
-      GTK_WIDGET (scrolled_window));
-    int arranger_height = gtk_widget_get_allocated_height (
-      GTK_WIDGET (scrolled_window));
+      MIDI_ARRANGER_SELECTIONS->top_midi_note;
+    int arranger_width =
+      gtk_widget_get_allocated_width (
+        GTK_WIDGET (scrolled_window));
+    int arranger_height =
+      gtk_widget_get_allocated_height (
+        GTK_WIDGET (scrolled_window));
     GtkAdjustment *hadj =
       gtk_scrolled_window_get_hadjustment (
         GTK_SCROLLED_WINDOW (scrolled_window));
@@ -923,10 +927,11 @@ midi_arranger_auto_scroll (
     if (first_note != 0)
     {
       gint note_x, note_y;
-      GtkWidget *focused = GTK_WIDGET (first_note->widget);
+      GtkWidget *focused =
+        GTK_WIDGET (first_note->widget);
       gtk_widget_translate_coordinates (
         focused,
-        GTK_WIDGET (self),
+        GTK_WIDGET (scrolled_window),
         0,
         0,
         &note_x,

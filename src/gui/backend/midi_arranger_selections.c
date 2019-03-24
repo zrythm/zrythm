@@ -58,11 +58,11 @@ midi_arranger_selections_shift_val (int delta)
 
 	MidiArrangerSelections * src =
 	MIDI_ARRANGER_SELECTIONS;
-	for (int i = 0; 
-		i < src->num_midi_notes; 
+	for (int i = 0;
+		i < src->num_midi_notes;
 		i++)
 	{
-		src->midi_notes[i]->val = 
+		src->midi_notes[i]->val =
 			src->midi_notes[i]->val + delta;
 	}
 }
@@ -76,8 +76,8 @@ midi_arranger_selections_shift_pos (int delta)
 
 	MidiArrangerSelections * src =
 	MIDI_ARRANGER_SELECTIONS;
-	for (int i = 0; 
-		i < src->num_midi_notes; 
+	for (int i = 0;
+		i < src->num_midi_notes;
 		i++)
 	{
 		position_add_beats(
@@ -112,6 +112,44 @@ midi_arranger_selections_clone ()
                     new_r);
     }
   return new_ts;
+}
+
+MidiNote *
+midi_arranger_selections_get_first_midi_note (
+  MidiArrangerSelections * mas)
+{
+	MidiNote * result = 0;
+	for (int i = 0;
+		i < mas->num_midi_notes;
+		i++)
+	{
+		if (result == 0
+			|| position_to_ticks(&result->end_pos) >
+		position_to_ticks(&mas->midi_notes[i]->end_pos))
+		{
+			result = mas->midi_notes[i];
+		}
+	}
+	return result;
+}
+
+MidiNote *
+midi_arranger_selections_get_last_midi_note (
+  MidiArrangerSelections * mas)
+{
+	MidiNote * result = 0;
+	for (int i = 0;
+		i < mas->num_midi_notes;
+		i++)
+	{
+		if (result == 0
+			|| position_to_ticks(&result->end_pos) <
+			position_to_ticks(&mas->midi_notes[i]->end_pos))
+		{
+			result = mas->midi_notes[i];
+		}
+	}
+	return result;
 }
 
 void
