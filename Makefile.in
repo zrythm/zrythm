@@ -102,7 +102,6 @@ LIBYAML_CFLAGS = @LIBYAML_CFLAGS@
 FFMPEG_CFLAGS = @FFMPEG_CFLAGS@
 GTK3_CFLAGS = @GTK3_CFLAGS@
 JACK_CFLAGS = @JACK_CFLAGS@
-LIBGTOP_CFLAGS = @LIBGTOP_CFLAGS@
 LILV_CFLAGS = @LILV_CFLAGS@
 LV2_CFLAGS = @LV2_CFLAGS@
 PORTAUDIO_CFLAGS = @PORTAUDIO_CFLAGS@
@@ -116,7 +115,6 @@ LIBYAML_LIBS = @LIBYAML_LIBS@
 GTK3_LIBS = @GTK3_LIBS@
 FFMPEG_LIBS = @FFMPEG_LIBS@
 JACK_LIBS = @JACK_LIBS@
-LIBGTOP_LIBS = @LIBGTOP_LIBS@
 LILV_LIBS = @LILV_LIBS@
 LV2_LIBS = @LV2_LIBS@
 PORTAUDIO_LIBS = @PORTAUDIO_LIBS@
@@ -161,7 +159,6 @@ CFLAGS += -Wall \
 	$(FFMPEG_CFLAGS) \
 	$(GTK3_CFLAGS) \
 	$(JACK_CFLAGS) \
-	$(LIBGTOP_CFLAGS) \
 	$(LIBYAML_CFLAGS) \
 	$(LILV_CFLAGS) \
 	$(LV2_CFLAGS) \
@@ -183,7 +180,6 @@ LDFLAGS +=	\
 	$(FFMPEG_LIBS) \
   $(GTK3_LIBS) \
 	$(JACK_LIBS) \
-	$(LIBGTOP_LIBS) \
 	$(LIBYAML_LIBS) \
 	$(LILV_LIBS) \
 	$(LV2_LIBS) \
@@ -215,6 +211,11 @@ OBJ_CPP = $(SRCS_CPP:%.cpp=$(BUILD_DIR)/%.cpp.o)
 # Gcc/Clang will create these .d files containing dependencies.
 DEP = $(OBJ:%.o=%.d)
 DEP_CPP = $(OBJ_CPP:%.o=%.d)
+TEST_SRCS = $(shell find test/ -name "*.c")
+OBJ_NO_MAIN = $(shell sed -r 's/\build\/src\/main.c.o //; s/ build\/src\/main.c.o//' <<< "$(OBJ)")
+TEST_OBJ = $(TEST_SRCS:%.c=$(BUILD_DIR)/%.c.o)
+TEST_DEP = $(TEST_OBJ:%.o=%.d)
+TEST_BIN = $(BUILD_DIR)/zrythm-test
 
 gsettings_SCHEMAS = org.zrythm.gschema.xml
 #EXTRA_DIST = $(gsettings_SCHEMAS)
@@ -235,7 +236,7 @@ appicon_DATA = z.svg
 #  ----------------------------
 
 # Default target
-all: $(BUILD_DIR)/$(BIN)$(EXT) messages
+all: $(BUILD_DIR)/$(BIN)$(EXT) messages test
 
 messages: po/fr/$(BIN).mo po/de/$(BIN).mo po/es/$(BIN).mo po/it/$(BIN).mo po/ja/$(BIN).mo
 
@@ -296,6 +297,7 @@ $(BUILD_DIR)/resources.c: $(BUILD_DIR)/zrythm.gresource.xml
 # Include all dep files
 -include $(DEP)
 -include $(DEP_CPP)
+-include $(TEST_DEP)
 
 # Build target for every single object file.
 # The potential dependency on header files is covered
@@ -388,7 +390,7 @@ install-fonts: $(FONTS_DIR)/Segment7Standard/*
 	$(MKDIR_P) "$(DESTDIR)$(fontdir)/$(BIN)/Segment7Standard"
 	$(INSTALL_FONT) $< "$(DESTDIR)$(fontdir)/$(BIN)/Segment7Standard/"
 
-.PHONY: install-desktop
+.PHONY: install-desktop-data
 install-desktop-data: $(DATA_DIR)/$(desktop_DATA)
 	$(MKDIR_P) "$(DESTDIR)$(desktopdir)"
 	$(INSTALL_DATA) $< "$(DESTDIR)$(desktopdir)/"
@@ -396,3 +398,18 @@ install-desktop-data: $(DATA_DIR)/$(desktop_DATA)
 .PHONY: uninstall-desktop
 uninstall-desktop-data:
 	rm -f $(desktopdir)/$(desktop_DATA)
+
+.PHONY: test
+test: $(TEST_BIN)
+	$^
+
+$(TEST_BIN): $(TEST_OBJ) $(OBJ_NO_MAIN) $(OBJ_CPP) $(BUILD_DIR)/resources.o $(CYAML_BUILD_DIR)/libcyaml.a $(LIBSMF_BUILD_DIR)/libsmf.a
+	# Create build directories - same structure as sources.
+	$(MKDIR_P) $(@D)
+	# Just link all the object files.
+	$(CC) $^ $(LDFLAGS) $(QT5_LIBS) -lstdc++ -o $@
+	# done
+
+$(BUILD_DIR)/test/%.c.$(OBJEXT): test/%.c
+	$(MKDIR_P) $(dir $@)
+	$(CC) $(CFLAGS) -MMD -c $< -o $@

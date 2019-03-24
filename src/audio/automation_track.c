@@ -532,7 +532,7 @@ automation_track_get_ap_before_pos (
             self->automation_points[middle + 1];
           next_ap_is_before =
             position_compare (
-              &ap->pos, pos) <= 0;
+              &next_ap->pos, pos) <= 0;
         }
       ap_is_before =
         position_compare (
@@ -540,7 +540,7 @@ automation_track_get_ap_before_pos (
 
       /* if both too early, look in the 2nd half*/
       if (ap_is_before && (
-            !next_ap || next_ap_is_before))
+            next_ap_is_before))
         first = middle + 1;
       else if (ap_is_before)
         return ap;

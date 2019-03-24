@@ -436,8 +436,9 @@ clean_duplicates ()
 
           if (et == et2 && arg == arg2)
             {
-              EVENTS->et_stack->elements[j] = (void *) -1;
-              g_message ("removed 1 duplicate");
+              EVENTS->et_stack->elements[j] =
+                (void *) -1;
+              /*g_message ("removed 1 duplicate");*/
             }
         }
     }
@@ -646,7 +647,7 @@ events_init (Events * self)
     /*(GSourceFunc) events_process,*/
     /*NULL, NULL);*/
   /*g_idle_add ((GSourceFunc) events_process, NULL);*/
-  g_timeout_add (8,
-                      events_process,
-                      NULL);
+  g_timeout_add (32,
+                 events_process,
+                 NULL);
 }
