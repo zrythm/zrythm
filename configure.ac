@@ -146,6 +146,8 @@ AC_CHECK_HEADERS([unistd.h])
 AC_CHECK_FUNC([mlock],
               [AC_DEFINE([HAVE_MLOCK], [1],
               [Define if mlock exists.])])
+AC_CHECK_PROG(LOCALE,[locale],[yes],[no])
+test "$LOCALE" == "no" && AC_MSG_ERROR([Required program 'locale' not found.]) && exit 1
 
 #AM_COND_IF([LINUX],
            #[LDFLAGS="$LDFLAGS -L/usr/lib"])
