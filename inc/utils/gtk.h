@@ -74,6 +74,11 @@ z_gtk_container_remove_children_of_type (
   GType          type);
 
 void
+z_gtk_overlay_add_if_not_exists (
+  GtkOverlay * overlay,
+  GtkWidget *  widget);
+
+void
 z_gtk_button_set_icon_name (GtkButton * btn,
                             const char * name);
 

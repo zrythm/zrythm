@@ -60,6 +60,7 @@
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
+#include "utils/gtk.h"
 #include "utils/stack.h"
 #include "zrythm.h"
 
@@ -368,19 +369,36 @@ static void
 on_midi_note_selection_changed ()
 {
  Region * region = CLIP_EDITOR->region;
-;
 
   if (region->widget)
-    gtk_widget_queue_draw (GTK_WIDGET (region->widget));
+    gtk_widget_queue_draw (
+      GTK_WIDGET (region->widget));
 }
 
 static void
 on_midi_note_changed (MidiNote * midi_note)
 {
-  Region * r = (Region *) midi_note->midi_region;
+  if (GTK_IS_WIDGET (midi_note->widget))
+    {
+      gtk_widget_set_visible (
+        GTK_WIDGET (midi_note->widget),
+        midi_note_is_visible (midi_note));
+      if (midi_note_is_selected (midi_note))
+        gtk_widget_set_state_flags (
+          GTK_WIDGET (midi_note->widget),
+          GTK_STATE_FLAG_SELECTED,
+          0);
+      else
+        gtk_widget_unset_state_flags (
+          GTK_WIDGET (midi_note->widget),
+          GTK_STATE_FLAG_SELECTED);
+      gtk_widget_queue_draw (
+        GTK_WIDGET (midi_note->widget));
+    }
 
-  if (r->widget)
-    gtk_widget_queue_draw (GTK_WIDGET (r->widget));
+  if (midi_note->midi_region->widget)
+    gtk_widget_queue_draw (
+      GTK_WIDGET (midi_note->midi_region->widget));
 }
 
 static void
@@ -591,6 +609,8 @@ events_process ()
            on_midi_note_selection_changed();
             break;
         case ET_MIDI_NOTE_CHANGED:
+          g_message ("mn changed %p",
+                     ((MidiNote *)arg)->widget);
           on_midi_note_changed ((MidiNote *) arg);
           break;
         case ET_TIMELINE_VIEWPORT_CHANGED:
@@ -610,9 +630,28 @@ events_process ()
             MW_HEADER_BAR);
           break;
         case ET_MIDI_NOTE_CREATED:
+          /*z_gtk_overlay_add_if_not_exists (*/
+            /*GTK_OVERLAY (MIDI_ARRANGER),*/
+            /*GTK_WIDGET (((MidiNote *) arg)->widget));*/
+          /*z_gtk_overlay_add_if_not_exists (*/
+            /*GTK_OVERLAY (MIDI_MODIFIER_ARRANGER),*/
+            /*GTK_WIDGET (((MidiNote *) arg)->vel->widget));*/
+          /*gtk_widget_queue_allocate (*/
+            /*GTK_WIDGET (MIDI_ARRANGER));*/
+          /*arranger_widget_refresh (*/
+            /*Z_ARRANGER_WIDGET (MIDI_ARRANGER));*/
+          midi_arranger_widget_refresh_children (
+            MIDI_ARRANGER);
+          break;
         case ET_MIDI_NOTE_REMOVED:
-          arranger_widget_refresh (
-            Z_ARRANGER_WIDGET (MIDI_ARRANGER));
+          /*g_object_ref (((MidiNote *) arg)->widget);*/
+          /*gtk_container_remove (*/
+            /*GTK_CONTAINER (MIDI_ARRANGER),*/
+            /*GTK_WIDGET (((MidiNote *) arg)->widget));*/
+          /*arranger_widget_refresh (*/
+            /*Z_ARRANGER_WIDGET (MIDI_ARRANGER));*/
+          midi_arranger_widget_refresh_children (
+            MIDI_ARRANGER);
           break;
         case ET_REGION_CREATED:
         case ET_CHORD_CREATED:

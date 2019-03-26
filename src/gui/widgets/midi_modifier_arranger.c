@@ -122,7 +122,8 @@ midi_modifier_arranger_widget_select (
         MIDI_ARRANGER,
         vel->midi_note,
         1,
-        1);
+        1,
+        0);
     }
 }
 
@@ -171,7 +172,7 @@ midi_modifier_arranger_on_drag_begin_vel_hit (
       /* if ctrl pressed toggle on/off */
       ARRANGER_WIDGET_SELECT_MIDI_NOTE (
         MIDI_ARRANGER,
-        vel_w->velocity->midi_note, 1, 1);
+        vel_w->velocity->midi_note, 1, 1, 0);
     }
   else if (!array_contains (
             (void **)self->velocities,
@@ -183,7 +184,7 @@ midi_modifier_arranger_on_drag_begin_vel_hit (
         MIDI_ARRANGER, 0);
       ARRANGER_WIDGET_SELECT_MIDI_NOTE (
         MIDI_ARRANGER,
-        vel_w->velocity->midi_note, 1, 0);
+        vel_w->velocity->midi_note, 1, 0, 0);
     }
 }
 

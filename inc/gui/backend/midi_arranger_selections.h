@@ -32,15 +32,15 @@
  */
 typedef struct MidiArrangerSelections
 {
-  /** MIDI notes acting on */
+  /** Original selected notes. */
   MidiNote *               midi_notes[600];
   int                      num_midi_notes;
 
-  /** Highest selected MIDI note */
-  MidiNote *               top_midi_note;
-
-  /** Lowest selected MIDI note */
-  MidiNote *               bot_midi_note;
+  /** MIDI notes acting on.
+   *
+   * These are newly cloned notes (transient).
+   * Use actual_note to get the original note ID. */
+  MidiNote *               transient_notes[600];
 } MidiArrangerSelections;
 
 static const cyaml_schema_field_t
@@ -50,12 +50,6 @@ static const cyaml_schema_field_t
     "midi_notes", CYAML_FLAG_OPTIONAL,
       MidiArrangerSelections, midi_notes, num_midi_notes,
       &midi_note_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_MAPPING_PTR (
-    "top_midi_note", CYAML_FLAG_OPTIONAL | CYAML_FLAG_POINTER,
-    MidiArrangerSelections, top_midi_note, midi_note_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "bot_region", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    MidiArrangerSelections, bot_midi_note, midi_note_fields_schema),
 
 	CYAML_FIELD_END
 };
@@ -67,16 +61,13 @@ midi_arranger_selections_schema = {
 };
 
 /**
- * Shift note pos for selected noted
+ * Creates transient notes for notes added
+ * to selections without transients.
  */
 void
-midi_arranger_selections_shift_pos (int delta);
+midi_arranger_selections_create_missing_transients (
+  MidiArrangerSelections * mas);
 
-/**
- * Shift note value for selected noted
- */
-void
-midi_arranger_selections_shift_val (int delta);
 /**
  * Clone the struct for copying, undoing, etc.
  */
@@ -91,21 +82,78 @@ midi_arranger_selections_get_start_pos (
   MidiArrangerSelections * ts,
   Position *                pos); ///< position to fill in
 
+/**
+ * Gets first (position-wise) MidiNote.
+ *
+ * If transient is 1, the transient notes are
+ * checked instead.
+ */
 MidiNote *
 midi_arranger_selections_get_first_midi_note (
-  MidiArrangerSelections * mas);
+  MidiArrangerSelections * mas,
+  int                      transient);
 
+/**
+ * Gets last (position-wise) MidiNote.
+ *
+ * If transient is 1, the transient notes are
+ * checked instead.
+ */
 MidiNote *
 midi_arranger_selections_get_last_midi_note (
-  MidiArrangerSelections * mas);
+  MidiArrangerSelections * mas,
+  int                      transient);
+
+MidiNote *
+midi_arranger_selections_get_highest_note (
+  MidiArrangerSelections * mas,
+  int                      transient);
+
+MidiNote *
+midi_arranger_selections_get_lowest_note (
+  MidiArrangerSelections * mas,
+  int                      transient);
 
 void
 midi_arranger_selections_paste_to_pos (
   MidiArrangerSelections * ts,
   Position *           pos);
 
+/**
+ * Only removes transients from their regions and
+ * frees them.
+ */
 void
-midi_arranger_selections_free (MidiArrangerSelections * self);
+midi_arranger_selections_remove_transients (
+  MidiArrangerSelections * mas);
+
+/**
+ * Adds a note to the selections.
+ *
+ * Optionally adds a transient note (if moving /
+ * copy-moving).
+ */
+void
+midi_arranger_selections_add_note (
+  MidiArrangerSelections * mas,
+  MidiNote *               note,
+  int                      transient);
+
+void
+midi_arranger_selections_remove_note (
+  MidiArrangerSelections * mas,
+  MidiNote *               note);
+
+/**
+ * Clears selections.
+ */
+void
+midi_arranger_selections_clear (
+  MidiArrangerSelections * mas);
+
+void
+midi_arranger_selections_free (
+  MidiArrangerSelections * self);
 
 SERIALIZE_INC (MidiArrangerSelections,
                midi_arranger_selections)

@@ -201,13 +201,15 @@ midi_arranger_widget_move_items_y (
   double              offset_y);
 
 /**
- * if midi_notes are within the min border distance grid 
+ * if midi_notes are within the min border distance grid
  * will auto scroll
  */
 
 void
-midi_arranger_auto_scroll(
-	MidiArrangerWidget * self,GtkScrolledWindow * scrolled_window);
+midi_arranger_widget_auto_scroll(
+	MidiArrangerWidget * self,
+  GtkScrolledWindow *  scrolled_window,
+  int                  transient);
 
 /**
  * Called on drag end.

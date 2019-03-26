@@ -27,8 +27,7 @@
 #include "zrythm.h"
 #include "actions/actions.h"
 #include "actions/duplicate_midi_arranger_selections_action.h"
-#include "actions/move_midi_arranger_selections_val.h"
-#include "actions/move_midi_arranger_selections_pos.h"
+#include "actions/move_midi_arranger_selections_action.h"
 #include "audio/automation_track.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
@@ -71,6 +70,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
@@ -509,10 +509,44 @@ update_inspector (ArrangerWidget *self)
 }
 
 /**
+ * Returns if the arranger is in a moving-related
+ * operation or starting a moving-related operation.
+ *
+ * Useful to know if we need transient widgets or
+ * not.
+ */
+int
+arranger_widget_is_in_moving_operation (
+  ArrangerWidget * self)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  if (ar_prv->action ==
+        UI_OVERLAY_ACTION_STARTING_MOVING ||
+      ar_prv->action ==
+        UI_OVERLAY_ACTION_STARTING_MOVING_COPY ||
+      ar_prv->action ==
+        UI_OVERLAY_ACTION_STARTING_MOVING_LINK ||
+      ar_prv->action ==
+        UI_OVERLAY_ACTION_MOVING ||
+      ar_prv->action ==
+        UI_OVERLAY_ACTION_MOVING_COPY ||
+      ar_prv->action ==
+        UI_OVERLAY_ACTION_MOVING_LINK)
+    return 1;
+
+  return 0;
+}
+
+/**
  * Selects/deselects the object, optionally
  * appending it to
  * the selected items or making it the only
  * selected item.
+ *
+ * If create_transients is 1, the selection will
+ * create transients (e.g. when moving/copy-moving
+ * MidiNotes).
  */
 void
 arranger_widget_select (
@@ -520,7 +554,8 @@ arranger_widget_select (
   GType            type,
   void *           child,
   int              select,
-  int              append)
+  int              append,
+  int              create_transients)
 {
   GET_ARRANGER_ALIASES (self);
 
@@ -578,9 +613,9 @@ arranger_widget_select (
               ((AutomationPoint *)r)->widget, 0);
           else if (type == MIDI_NOTE_WIDGET_TYPE)
             midi_note_widget_select (
-              ((MidiNote *)r)->widget, 0);
+              ((MidiNote *)r)->widget,
+              0, create_transients);
         }
-      *num = 0;
     }
 
   /* if we are deselecting and the item is
@@ -590,9 +625,6 @@ arranger_widget_select (
                       child))
     {
       /* deselect */
-      array_delete (array,
-                    *num,
-                    child);
       if (type == REGION_WIDGET_TYPE)
         region_widget_select (
           ((Region *)child)->widget, 0);
@@ -604,16 +636,14 @@ arranger_widget_select (
           ((AutomationPoint *)child)->widget, 0);
       else if (type == MIDI_NOTE_WIDGET_TYPE)
         midi_note_widget_select (
-          ((MidiNote *)child)->widget, 0);
+          ((MidiNote *)child)->widget, 0,
+          create_transients);
     }
   else if (select && !array_contains (array,
                       *num,
                       child)) /* if selecting */
     {
       /* select */
-      array_append (array,
-                    (*num),
-                    child);
       if (type == REGION_WIDGET_TYPE)
         region_widget_select (
           ((Region *)child)->widget, 1);
@@ -625,7 +655,8 @@ arranger_widget_select (
           ((AutomationPoint *)child)->widget, 1);
       else if (type == MIDI_NOTE_WIDGET_TYPE)
         midi_note_widget_select (
-          ((MidiNote *)child)->widget, 1);
+          ((MidiNote *)child)->widget, 1,
+          create_transients);
     }
 }
 
@@ -733,23 +764,87 @@ on_right_click (GtkGestureMultiPress *gesture,
 static void
 auto_scroll (ArrangerWidget * self)
 {
+  ARRANGER_WIDGET_GET_PRIVATE (self);
 	GET_ARRANGER_ALIASES(self);
 	GtkScrolledWindow *scrolled =
 		arranger_widget_get_scrolled_window (self);
-	if (midi_arranger != 0)
+  g_message ("auto scroll");
+	if (midi_arranger)
 	{
-		midi_arranger_auto_scroll((MidiArrangerWidget*)midi_arranger,scrolled);
+		midi_arranger_widget_auto_scroll(
+      midi_arranger, scrolled,
+      ar_prv->action ==
+        UI_OVERLAY_ACTION_MOVING ||
+      ar_prv->action ==
+        UI_OVERLAY_ACTION_MOVING_COPY ||
+      ar_prv->action ==
+        UI_OVERLAY_ACTION_MOVING_LINK);
 	};
 }
 
 static gboolean
 on_key_release_action (
-	GtkWidget *self,
+	GtkWidget *widget,
 	GdkEventKey *event,
-	gpointer user_data)
+	ArrangerWidget * self)
 {
+  g_message ("release");
   GET_PRIVATE;
   ar_prv->key_is_pressed = 0;
+
+  if (event->keyval = GDK_KEY_Control_L ||
+      event->keyval == GDK_KEY_Control_R)
+    {
+      ar_prv->ctrl_held = 0;
+    }
+
+  if (ar_prv->action ==
+        UI_OVERLAY_ACTION_STARTING_MOVING)
+    {
+      if (ar_prv->ctrl_held)
+        ar_prv->action =
+          UI_OVERLAY_ACTION_MOVING_COPY;
+      else
+        ar_prv->action =
+          UI_OVERLAY_ACTION_MOVING;
+    }
+  else if (ar_prv->action ==
+             UI_OVERLAY_ACTION_MOVING &&
+           ar_prv->ctrl_held)
+    ar_prv->action =
+      UI_OVERLAY_ACTION_MOVING_COPY;
+  else if (ar_prv->action ==
+             UI_OVERLAY_ACTION_MOVING_COPY &&
+           !ar_prv->ctrl_held)
+    ar_prv->action =
+      UI_OVERLAY_ACTION_MOVING;
+
+  /* set actual notes to invisible since
+   * we are moving */
+  for (int i = 0;
+       i < MIDI_ARRANGER_SELECTIONS->
+             num_midi_notes;
+       i++)
+    {
+      MidiNote * mn =
+        MIDI_ARRANGER_SELECTIONS->
+          midi_notes[i];
+      if (ar_prv->action ==
+            UI_OVERLAY_ACTION_MOVING)
+        gtk_widget_set_visible (
+          GTK_WIDGET (mn->widget),
+          F_NOT_VISIBLE);
+      else if (ar_prv->action ==
+                 UI_OVERLAY_ACTION_MOVING_COPY ||
+                 UI_OVERLAY_ACTION_MOVING_LINK)
+        gtk_widget_set_visible (
+          GTK_WIDGET (mn->widget),
+          F_VISIBLE);
+    }
+
+  arranger_widget_refresh_cursor (
+    self);
+
   return TRUE;
 }
 
@@ -757,60 +852,124 @@ static gboolean
 on_key_action (
   GtkWidget *widget,
   GdkEventKey *event,
-  gpointer user_data)
+  ArrangerWidget * self)
 {
-  ArrangerWidget * self = (ArrangerWidget *) user_data;
-  GET_PRIVATE
-  ;
+  g_message ("key press");
+  GET_PRIVATE;
   GET_ARRANGER_ALIASES(self);
 
-  if (midi_arranger
-    && MIDI_ARRANGER_SELECTIONS->num_midi_notes > 0)
-  {
-      if (event->state & GDK_CONTROL_MASK
-        && event->type == GDK_KEY_PRESS
-        && event->keyval == GDK_KEY_d)
-      {
-        UndoableAction * duplicate_action =
-          duplicate_midi_arranger_selections_action_new ();
-        undo_manager_perform (
-        UNDO_MANAGER, duplicate_action);
-      }
-      if (event->type == GDK_KEY_PRESS
-        && event->keyval == GDK_KEY_Up)
-      {
-        UndoableAction * shift_up_action =
-          move_midi_arranger_selections_val_action_new (1);
-        undo_manager_perform (
-        UNDO_MANAGER, shift_up_action);
-      }
-      if (event->type == GDK_KEY_PRESS
-        && event->keyval == GDK_KEY_Down)
-      {
-        UndoableAction * shift_down_action =
-          move_midi_arranger_selections_val_action_new (-1);
-        undo_manager_perform (
-        UNDO_MANAGER, shift_down_action);
-      }
-      if (event->type == GDK_KEY_PRESS
-        && event->keyval == GDK_KEY_Left)
-      {
-        UndoableAction * shift_left_action =
-          move_midi_arranger_selections_pos_action_new (-1);
-        undo_manager_perform (
-        UNDO_MANAGER, shift_left_action);
-      }
-      if (event->type == GDK_KEY_PRESS
-        && event->keyval == GDK_KEY_Right)
-      {
-        UndoableAction * shift_right_action =
-          move_midi_arranger_selections_pos_action_new (1);
-        undo_manager_perform (
-        UNDO_MANAGER, shift_right_action);
-      }
-      auto_scroll (self);
+  if (midi_arranger)
+    {
+      int num =
+        MIDI_ARRANGER_SELECTIONS->num_midi_notes;
+      if (event->state & GDK_CONTROL_MASK &&
+          event->type == GDK_KEY_PRESS &&
+          event->keyval == GDK_KEY_d &&
+          num > 0)
+        {
+          /*UndoableAction * duplicate_action =*/
+            /*duplicate_midi_arranger_selections_action_new ();*/
+          /*undo_manager_perform (*/
+            /*UNDO_MANAGER, duplicate_action);*/
+          return FALSE;
+        }
+      if (event->type == GDK_KEY_PRESS &&
+          event->keyval == GDK_KEY_Up &&
+          num > 0)
+        {
+          UndoableAction * shift_up_action =
+            move_midi_arranger_selections_action_new (0, 1);
+          undo_manager_perform (
+          UNDO_MANAGER, shift_up_action);
+          return TRUE;
+        }
+      if (event->type == GDK_KEY_PRESS &&
+          event->keyval == GDK_KEY_Down &&
+          num > 0)
+        {
+          UndoableAction * shift_down_action =
+            move_midi_arranger_selections_action_new (0, -1);
+          undo_manager_perform (
+          UNDO_MANAGER, shift_down_action);
+          return TRUE;
+        }
+      if (event->type == GDK_KEY_PRESS &&
+          event->keyval == GDK_KEY_Left &&
+          num > 0)
+        {
+          /*UndoableAction * shift_left_action =*/
+            /*move_midi_arranger_selections_action_new (-1);*/
+          /*undo_manager_perform (*/
+          /*UNDO_MANAGER, shift_left_action);*/
+          return TRUE;
+        }
+      if (event->type == GDK_KEY_PRESS &&
+          event->keyval == GDK_KEY_Right &&
+          num > 0)
+        {
+          /*UndoableAction * shift_right_action =*/
+            /*move_midi_arranger_selections_pos_action_new (1);*/
+          /*undo_manager_perform (*/
+          /*UNDO_MANAGER, shift_right_action);*/
+        }
+      if (event->type == GDK_KEY_PRESS &&
+          (event->keyval = GDK_KEY_Control_L ||
+           event->keyval == GDK_KEY_Control_R))
+        {
+          ar_prv->ctrl_held = 1;
+        }
+
+      if (ar_prv->action ==
+            UI_OVERLAY_ACTION_STARTING_MOVING)
+        {
+          if (ar_prv->ctrl_held)
+            ar_prv->action =
+              UI_OVERLAY_ACTION_MOVING_COPY;
+          else
+            ar_prv->action =
+              UI_OVERLAY_ACTION_MOVING;
+        }
+      else if (ar_prv->action ==
+                 UI_OVERLAY_ACTION_MOVING &&
+               ar_prv->ctrl_held)
+        ar_prv->action =
+          UI_OVERLAY_ACTION_MOVING_COPY;
+      else if (ar_prv->action ==
+                 UI_OVERLAY_ACTION_MOVING_COPY &&
+               !ar_prv->ctrl_held)
+        ar_prv->action =
+          UI_OVERLAY_ACTION_MOVING;
+
+      /* set actual notes to invisible since
+       * we are moving */
+      for (int i = 0;
+           i < MIDI_ARRANGER_SELECTIONS->
+                 num_midi_notes;
+           i++)
+        {
+          MidiNote * mn =
+            MIDI_ARRANGER_SELECTIONS->
+              midi_notes[i];
+          if (ar_prv->action ==
+                UI_OVERLAY_ACTION_MOVING)
+            gtk_widget_set_visible (
+              GTK_WIDGET (mn->widget),
+              F_NOT_VISIBLE);
+          else if (ar_prv->action ==
+                     UI_OVERLAY_ACTION_MOVING_COPY ||
+                     UI_OVERLAY_ACTION_MOVING_LINK)
+            gtk_widget_set_visible (
+              GTK_WIDGET (mn->widget),
+              F_VISIBLE);
+        }
+
+      arranger_widget_refresh_cursor (
+        self);
+
+      if (num > 0)
+        auto_scroll (self);
     }
-  return TRUE;
+  return FALSE;
 }
 
 /**
@@ -840,16 +999,6 @@ multipress_pressed (GtkGestureMultiPress *gesture,
   if (state_mask & GDK_CONTROL_MASK)
     ar_prv->ctrl_held = 1;
 }
-
-/*static void*/
-/*drag_begin_select_mode (*/
-  /*GtkGestureDrag * gesture,*/
-  /*gdouble          start_x,*/
-  /*gdouble          start_y,*/
-  /*ArrangerWidget * self)*/
-/*{*/
-
-/*}*/
 
 /**
  * Called when an item needs to be created at the
@@ -1130,6 +1279,8 @@ drag_begin (GtkGestureDrag *   gesture,
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
 
+  /*g_message ("drag begin %d",*/
+             /*MIDI_ARRANGER_SELECTIONS->num_midi_notes);*/
   arranger_widget_refresh_cursor (self);
 }
 
@@ -1140,6 +1291,8 @@ drag_update (GtkGestureDrag * gesture,
                gdouble         offset_y,
                gpointer        user_data)
 {
+  g_message ("drag update %d",
+             MIDI_ARRANGER_SELECTIONS->num_midi_notes);
   ArrangerWidget * self =
     Z_ARRANGER_WIDGET (user_data);
   GET_PRIVATE;
@@ -1374,17 +1527,37 @@ drag_update (GtkGestureDrag * gesture,
         }
       else if (midi_arranger)
         {
+          /* set actual notes to invisible since
+           * we are moving */
+          for (int i = 0;
+               i < MIDI_ARRANGER_SELECTIONS->
+                     num_midi_notes;
+               i++)
+            {
+              MidiNote * mn =
+                MIDI_ARRANGER_SELECTIONS->
+                  midi_notes[i];
+              MidiNote * transient =
+                MIDI_ARRANGER_SELECTIONS->
+                  transient_notes[i];
+              gtk_widget_set_visible (
+                GTK_WIDGET (mn->widget),
+                F_NOT_VISIBLE);
+              gtk_widget_set_visible (
+                GTK_WIDGET (transient->widget),
+                F_VISIBLE);
+            }
           midi_arranger_widget_move_items_x (
             midi_arranger,
             ticks_diff);
           midi_arranger_widget_move_items_y (
-                    midi_arranger,
-                    offset_y);
-          auto_scroll(self);
+            midi_arranger,
+            offset_y);
+          auto_scroll (self);
 
           EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
                        NULL);
-//arranger_widget_refresh(self);          
+//arranger_widget_refresh(self);
         }
     } /* endif MOVING */
   /* if copy-moving the selection */
@@ -1425,25 +1598,27 @@ drag_update (GtkGestureDrag * gesture,
           timeline_arranger_widget_move_items_x (
             timeline,
             ticks_diff);
-        }
-      else if (midi_arranger)
-        {
-          midi_arranger_widget_move_items_x (
-            midi_arranger,
-            ticks_diff);
-          auto_scroll(self);
-
-        }
-
-      /* handle moving up/down */
-      if (timeline)
-        {
           timeline_arranger_widget_move_items_y (
             timeline,
             offset_y);
         }
       else if (midi_arranger)
         {
+          /* set actual notes to visible since
+           * we are copy-moving */
+          for (int i = 0;
+               i < MIDI_ARRANGER_SELECTIONS->num_midi_notes;
+               i++)
+            {
+              MidiNote * mn =
+                MIDI_ARRANGER_SELECTIONS->midi_notes[i];
+              gtk_widget_set_visible (
+                GTK_WIDGET (mn->widget), 1);
+            }
+
+          midi_arranger_widget_move_items_x (
+            midi_arranger,
+            ticks_diff);
           midi_arranger_widget_move_items_y (
             midi_arranger,
             offset_y);
@@ -1488,6 +1663,8 @@ drag_update (GtkGestureDrag * gesture,
                NULL);
 
   arranger_widget_refresh_cursor (self);
+
+  g_message ("finished drag update");
 }
 static void
 drag_end (GtkGestureDrag *gesture,
@@ -1495,6 +1672,7 @@ drag_end (GtkGestureDrag *gesture,
                gdouble         offset_y,
                gpointer        user_data)
 {
+  g_message ("drag end");
   ArrangerWidget * self = (ArrangerWidget *) user_data;
   GET_PRIVATE;
 
@@ -1691,7 +1869,7 @@ on_scroll (GtkWidget *widget,
   gtk_adjustment_set_value (adj,
                             new_x - diff);
 
-  return TRUE;
+  return FALSE;
 }
 
 static gboolean
@@ -1701,6 +1879,7 @@ on_motion (GtkEventControllerMotion * event,
            ArrangerWidget * self)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
+  g_message ("on motion");
 
   ar_prv->hover_x = x;
   ar_prv->hover_y = y;

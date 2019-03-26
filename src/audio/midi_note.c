@@ -28,10 +28,17 @@
 #include "audio/position.h"
 #include "audio/track.h"
 #include "audio/velocity.h"
+#include "gui/backend/midi_arranger_selections.h"
+#include "gui/widgets/arranger.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/clip_editor.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/velocity.h"
 #include "project.h"
+#include "utils/arrays.h"
 
 void
 midi_note_init_loaded (
@@ -88,10 +95,69 @@ midi_note_clone (MidiNote *  src,
                         src->val,
                         vel);
 
-  mn->selected = src->selected;
   mn->actual_note = src->id;
 
   return mn;
+}
+
+/**
+ * Returns if MidiNote is in MidiArrangerSelections.
+ */
+int
+midi_note_is_selected (MidiNote * self)
+{
+  if (array_contains (
+        MIDI_ARRANGER_SELECTIONS->midi_notes,
+        MIDI_ARRANGER_SELECTIONS->num_midi_notes,
+        self) ||
+      array_contains (
+        MIDI_ARRANGER_SELECTIONS->transient_notes,
+        MIDI_ARRANGER_SELECTIONS->num_midi_notes,
+        self))
+    return 1;
+
+  return 0;
+}
+
+/**
+ * Returns if MidiNote is (should be) visible.
+ */
+int
+midi_note_is_visible (MidiNote * self)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (MIDI_ARRANGER);
+
+  if (ar_prv->action ==
+        UI_OVERLAY_ACTION_MOVING &&
+      array_contains (
+        MIDI_ARRANGER_SELECTIONS->midi_notes,
+        MIDI_ARRANGER_SELECTIONS->num_midi_notes,
+        self))
+    return 0;
+
+  return 1;
+}
+
+/**
+ * Shifts MidiNote's position and/or value.
+ */
+void
+midi_note_shift (
+  MidiNote * self,
+  long       ticks, ///< x (Position)
+  int        delta) ///< y (0-127)
+{
+  if (ticks)
+    {
+      position_add_ticks (
+        &self->start_pos,
+        ticks);
+      position_add_ticks (
+        &self->end_pos,
+        ticks);
+    }
+  if (delta)
+    self->val += delta;
 }
 
 void
@@ -226,8 +292,14 @@ void
 midi_note_free (MidiNote * self)
 {
   if (self->widget)
-    gtk_widget_destroy (
-      GTK_WIDGET (self->widget));
+    {
+      g_message ("destroying %p",
+                 self->widget);
+      /*gtk_widget_destroy (*/
+        /*GTK_WIDGET (self->widget->tooltip_win));*/
+      gtk_widget_destroy (
+        GTK_WIDGET (self->widget));
+    }
 
   velocity_free (self->vel);
 

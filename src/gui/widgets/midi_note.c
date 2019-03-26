@@ -27,6 +27,7 @@
 #include "audio/instrument_track.h"
 #include "audio/region.h"
 #include "audio/track.h"
+#include "gui/backend/midi_arranger_selections.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -37,6 +38,7 @@
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/ruler.h"
+#include "project.h"
 #include "utils/ui.h"
 
 G_DEFINE_TYPE (MidiNoteWidget,
@@ -54,6 +56,9 @@ midi_note_draw_cb (
   cairo_t *cr,
   MidiNoteWidget * self)
 {
+  if (!GTK_IS_WIDGET (self))
+    return FALSE;
+
   /*g_message ("drawing %d", self->midi_note->id);*/
   guint width, height;
   GtkStyleContext *context;
@@ -75,11 +80,12 @@ midi_note_draw_cb (
   Track * track = region->track;
   /*Channel * channel = track_get_channel (track);*/
   GdkRGBA * color = &track->color;
-  cairo_set_source_rgba (cr,
-                         color->red,
-                         color->green,
-                         color->blue,
-                         0.7);
+  cairo_set_source_rgba (
+    cr, color->red, color->green, color->blue, 0.7);
+  if (self->midi_note->transient)
+    cairo_set_source_rgba (
+      cr, 0, 1, 0,
+      0.7);
   cairo_rectangle(cr, 0, 0, width, height);
   cairo_stroke_preserve(cr);
   cairo_fill(cr);
@@ -185,41 +191,68 @@ midi_note_widget_update_tooltip (
   g_free (tooltip);
 
   /* set tooltip window */
-  if (show)
-    {
-      tooltip =
-        g_strdup_printf (
-          "%s%d",
-          note,
-          self->midi_note->val / 12 - 2);
-      gtk_label_set_text (self->tooltip_label,
-                          tooltip);
-      gtk_window_present (self->tooltip_win);
+  /*if (show)*/
+    /*{*/
+      /*tooltip =*/
+        /*g_strdup_printf (*/
+          /*"%s%d",*/
+          /*note,*/
+          /*self->midi_note->val / 12 - 2);*/
+      /*gtk_label_set_text (self->tooltip_label,*/
+                          /*tooltip);*/
+      /*gtk_window_present (self->tooltip_win);*/
 
-      g_free (tooltip);
-    }
-  else
-    gtk_widget_hide (
-      GTK_WIDGET (self->tooltip_win));
+      /*g_free (tooltip);*/
+    /*}*/
+  /*else*/
+    /*gtk_widget_hide (*/
+      /*GTK_WIDGET (self->tooltip_win));*/
 }
 
+/*static void*/
+/*on_destroy (*/
+  /*GtkWidget * widget,*/
+  /*MidiNoteWidget * self)*/
+/*{*/
+  /*g_message ("on destroy %p", widget);*/
+  /*[>if (GTK_IS_WIDGET (self->tooltip_win))<]*/
+    /*[>gtk_widget_destroy (<]*/
+      /*[>GTK_WIDGET (self->tooltip_win));<]*/
+/*}*/
+
+/**
+ * Sets the "selected" GTK state flag and adds the
+ * note to midi arranger selections.
+ *
+ * Optionally creates transient notes in the
+ * MidiArrangerSelections (if moving/copy-moving).
+ */
 void
-midi_note_widget_select (MidiNoteWidget * self,
-                      int            select)
+midi_note_widget_select (
+  MidiNoteWidget * self,
+  int              select,
+  int              with_transients)
 {
-  self->midi_note->selected = select;
+  /*self->midi_note->selected = select;*/
   if (select)
     {
-      gtk_widget_set_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_SELECTED,
-        0);
+      /*gtk_widget_set_state_flags (*/
+        /*GTK_WIDGET (self),*/
+        /*GTK_STATE_FLAG_SELECTED,*/
+        /*0);*/
+      midi_arranger_selections_add_note (
+        MIDI_ARRANGER_SELECTIONS,
+        self->midi_note,
+        with_transients);
     }
   else
     {
-      gtk_widget_unset_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_SELECTED);
+      /*gtk_widget_unset_state_flags (*/
+        /*GTK_WIDGET (self),*/
+        /*GTK_STATE_FLAG_SELECTED);*/
+      midi_arranger_selections_remove_note (
+        MIDI_ARRANGER_SELECTIONS,
+        self->midi_note);
     }
   gtk_widget_queue_draw (GTK_WIDGET (self));
   gtk_widget_queue_draw (
@@ -235,6 +268,8 @@ midi_note_widget_new (MidiNote * midi_note)
                   NULL);
 
   self->midi_note = midi_note;
+  g_message ("new widget: %p midi note %p widget",
+             self->midi_note, self);
 
   /* set tooltip text */
   char * tooltip =
@@ -247,6 +282,8 @@ midi_note_widget_new (MidiNote * midi_note)
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self), tooltip);
   g_free (tooltip);
+
+  g_object_ref (self);
 
   return self;
 }
@@ -276,7 +313,9 @@ midi_note_widget_init (MidiNoteWidget * self)
 
   gtk_widget_add_events (
     GTK_WIDGET (self->drawing_area),
-    GDK_ALL_EVENTS_MASK);
+    GDK_POINTER_MOTION_MASK |
+    GDK_ENTER_NOTIFY_MASK |
+    GDK_LEAVE_NOTIFY_MASK);
 
   /* connect signals */
   g_signal_connect (
@@ -296,18 +335,18 @@ midi_note_widget_init (MidiNoteWidget * self)
     G_CALLBACK (on_motion),  self);
 
   /* set tooltip window */
-  self->tooltip_win =
-    GTK_WINDOW (gtk_window_new (GTK_WINDOW_POPUP));
-  gtk_window_set_type_hint (
-    self->tooltip_win,
-    GDK_WINDOW_TYPE_HINT_TOOLTIP);
-  self->tooltip_label =
-    GTK_LABEL (gtk_label_new ("label"));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->tooltip_label), 1);
-  gtk_container_add (
-    GTK_CONTAINER (self->tooltip_win),
-    GTK_WIDGET (self->tooltip_label));
-  gtk_window_set_position (
-    self->tooltip_win, GTK_WIN_POS_MOUSE);
+  /*self->tooltip_win =*/
+    /*GTK_WINDOW (gtk_window_new (GTK_WINDOW_POPUP));*/
+  /*gtk_window_set_type_hint (*/
+    /*self->tooltip_win,*/
+    /*GDK_WINDOW_TYPE_HINT_TOOLTIP);*/
+  /*self->tooltip_label =*/
+    /*GTK_LABEL (gtk_label_new ("label"));*/
+  /*gtk_widget_set_visible (*/
+    /*GTK_WIDGET (self->tooltip_label), 1);*/
+  /*gtk_container_add (*/
+    /*GTK_CONTAINER (self->tooltip_win),*/
+    /*GTK_WIDGET (self->tooltip_label));*/
+  /*gtk_window_set_position (*/
+    /*self->tooltip_win, GTK_WIN_POS_MOUSE);*/
 }

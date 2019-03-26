@@ -23,12 +23,15 @@
 #include "audio/channel_track.h"
 #include "audio/midi_note.h"
 #include "audio/region.h"
+#include "gui/backend/midi_arranger_selections.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/velocity.h"
+#include "project.h"
+#include "utils/flags.h"
 #include "utils/ui.h"
 
 G_DEFINE_TYPE (VelocityWidget,
@@ -161,7 +164,10 @@ velocity_widget_select (
   VelocityWidget * self,
   int              select)
 {
-  self->velocity->midi_note->selected = select;
+  midi_arranger_selections_add_note (
+    MIDI_ARRANGER_SELECTIONS,
+    self->velocity->midi_note,
+    F_NO_TRANSIENTS);
   if (select)
     {
       gtk_widget_set_state_flags (

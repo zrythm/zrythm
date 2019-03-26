@@ -21,6 +21,8 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "gui/widgets/region.h"
+#include "actions/duplicate_midi_arranger_selections_action.h"
+#include "actions/move_midi_arranger_selections_action.h"
 #include "audio/automation_track.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
@@ -53,6 +55,7 @@
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
@@ -139,8 +142,8 @@ midi_arranger_widget_select_all (
   if (!CLIP_EDITOR->region)
     return;
 
-  MIDI_ARRANGER_SELECTIONS->num_midi_notes = 0;
-  MIDI_MODIFIER_ARRANGER->num_velocities = 0;
+  /*midi_arranger_selections_clear (*/
+    /*MIDI_ARRANGER_SELECTIONS);*/
 
   /* select midi notes */
   MidiRegion * mr =
@@ -149,34 +152,9 @@ midi_arranger_widget_select_all (
     {
       MidiNote * midi_note = mr->midi_notes[i];
       midi_note_widget_select (
-        midi_note->widget, select);
-
-      if (select)
-        {
-          /* select  */
-          array_append (
-            MIDI_ARRANGER_SELECTIONS->midi_notes,
-            MIDI_ARRANGER_SELECTIONS->num_midi_notes,
-            midi_note);
-          array_append (
-            MIDI_MODIFIER_ARRANGER->velocities,
-            MIDI_MODIFIER_ARRANGER->num_velocities,
-            midi_note->vel);
-        }
-      else
-        {
-          array_delete (
-            MIDI_ARRANGER_SELECTIONS->midi_notes,
-            MIDI_ARRANGER_SELECTIONS->num_midi_notes,
-            midi_note);
-          array_delete (
-            MIDI_MODIFIER_ARRANGER->velocities,
-            MIDI_MODIFIER_ARRANGER->num_velocities,
-            midi_note->vel);
-        }
+        midi_note->widget, select, 0);
     }
-  arranger_widget_refresh(&self->parent_instance);
-
+  /*arranger_widget_refresh(&self->parent_instance);*/
 }
 
 static int
@@ -407,52 +385,50 @@ midi_arranger_widget_on_drag_begin_note_hit (
       break;
     }
 
+  int selected = midi_note_is_selected (mn);
+
   /* select midi note if unselected */
   if (P_TOOL == TOOL_EDIT ||
       P_TOOL == TOOL_SELECT_NORMAL ||
       P_TOOL == TOOL_SELECT_STRETCH)
     {
+      int moving =
+        arranger_widget_is_in_moving_operation (
+          Z_ARRANGER_WIDGET (self));
       /* if ctrl held & not selected, add to
        * selections */
-      if (ar_prv->ctrl_held && !mn->selected)
+      if (ar_prv->ctrl_held &&
+          !selected)
         {
           ARRANGER_WIDGET_SELECT_MIDI_NOTE (
-            self, mn, 1, 1);
+            self, mn, F_SELECT, F_APPEND,
+            moving ?
+            F_TRANSIENTS :
+            F_NO_TRANSIENTS);
         }
       /* if ctrl not held & not selected, make it
        * the only
        * selection */
       else if (!ar_prv->ctrl_held &&
-               !array_contains (
-                  MIDI_ARRANGER_SELECTIONS->midi_notes,
-                  MIDI_ARRANGER_SELECTIONS->num_midi_notes,
-                  mn))
+               !selected)
         {
           ARRANGER_WIDGET_SELECT_MIDI_NOTE (
-            self, mn, 1, 0);
+            self, mn, F_SELECT, F_NO_APPEND,
+            moving ?
+            F_TRANSIENTS :
+            F_NO_TRANSIENTS);
         }
-    }
-
-  /* find highest and lowest selected regions */
-  MIDI_ARRANGER_SELECTIONS->top_midi_note =
-    MIDI_ARRANGER_SELECTIONS->midi_notes[0];
-  MIDI_ARRANGER_SELECTIONS->bot_midi_note =
-    MIDI_ARRANGER_SELECTIONS->midi_notes[0];
-  for (int i = 0;
-       i < MIDI_ARRANGER_SELECTIONS->num_midi_notes;
-       i++)
-    {
-      MidiNote * midi_note =
-        MIDI_ARRANGER_SELECTIONS->midi_notes[i];
-      if (midi_note->val >
-            MIDI_ARRANGER_SELECTIONS->top_midi_note->val)
+      /* if selected, create transients */
+      else if (selected)
         {
-          MIDI_ARRANGER_SELECTIONS->top_midi_note = midi_note;
-        }
-      if (midi_note->val <
-          MIDI_ARRANGER_SELECTIONS->bot_midi_note->val)
-        {
-          MIDI_ARRANGER_SELECTIONS->bot_midi_note = midi_note;
+          midi_arranger_selections_create_missing_transients (
+            MIDI_ARRANGER_SELECTIONS);
+          g_assert (
+            MIDI_ARRANGER_SELECTIONS->
+              transient_notes[0] &&
+            GTK_IS_WIDGET (
+              MIDI_ARRANGER_SELECTIONS->
+                transient_notes[0]->widget));
         }
     }
 }
@@ -490,17 +466,11 @@ midi_arranger_widget_create_note (
                          ar_prv->snap_grid);
   midi_region_add_midi_note (region,
                         midi_note);
-  gtk_overlay_add_overlay (
-    GTK_OVERLAY (self),
-    GTK_WIDGET (midi_note->widget));
-  gtk_overlay_add_overlay (
-    GTK_OVERLAY (MIDI_MODIFIER_ARRANGER),
-    GTK_WIDGET (midi_note->vel->widget));
+  EVENTS_PUSH (ET_MIDI_NOTE_CREATED,
+               midi_note);
   ar_prv->action = UI_OVERLAY_ACTION_RESIZING_R;
-  MIDI_ARRANGER_SELECTIONS->midi_notes[0] =
-    midi_note;
-  MIDI_ARRANGER_SELECTIONS->num_midi_notes = 1;
-  midi_note_widget_select (midi_note->widget, 1);
+  midi_note_widget_select (
+    midi_note->widget, 1, 0);
 }
 
 /**
@@ -567,8 +537,9 @@ midi_arranger_widget_select (
           ARRANGER_WIDGET_SELECT_MIDI_NOTE (
             self,
             midi_note,
-            1,
-            1);
+            F_SELECT,
+            F_APPEND,
+            F_NO_TRANSIENTS);
         }
     }
 }
@@ -656,7 +627,8 @@ midi_arranger_widget_move_items_x (
        i++)
     {
       MidiNote * r =
-        MIDI_ARRANGER_SELECTIONS->midi_notes[i];
+        MIDI_ARRANGER_SELECTIONS->
+          transient_notes[i];
       Position * prev_start_pos =
         &self->midi_note_start_poses[i];
       long length_ticks =
@@ -674,7 +646,6 @@ midi_arranger_widget_move_items_x (
       if (r->widget)
         midi_note_widget_update_tooltip (
           r->widget, 1);
-
     }
 }
 
@@ -692,7 +663,7 @@ calc_deltamax_for_note_movement (int y_delta)
        i++)
     {
       MidiNote * midi_note =
-      MIDI_ARRANGER_SELECTIONS->midi_notes[i];
+      MIDI_ARRANGER_SELECTIONS->transient_notes[i];
       /*g_message ("midi note val %d, y delta %d",*/
                  /*midi_note->val, y_delta);*/
       if (midi_note->val + y_delta < 0)
@@ -720,7 +691,9 @@ midi_arranger_widget_move_items_y (
   ARRANGER_WIDGET_GET_PRIVATE(self);
 
   int y_delta;
-  int ar_start_val = self->start_midi_note->val;
+  int ar_start_val =
+    MIDI_ARRANGER_SELECTIONS->
+      transient_notes[0]->val;
   int ar_end_val =
     midi_arranger_widget_get_note_at_y (
       ar_prv->start_y + offset_y);
@@ -736,7 +709,8 @@ midi_arranger_widget_move_items_y (
            i++)
         {
           MidiNote * midi_note =
-          MIDI_ARRANGER_SELECTIONS->midi_notes[i];
+            MIDI_ARRANGER_SELECTIONS->
+              transient_notes[i];
           midi_note->val = midi_note->val + y_delta;
           if (midi_note->widget)
             midi_note_widget_update_tooltip (
@@ -759,11 +733,12 @@ midi_arranger_widget_on_drag_end (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
+  MidiNote * midi_note;
   for (int i = 0;
        i < MIDI_ARRANGER_SELECTIONS->num_midi_notes;
        i++)
     {
-      MidiNote * midi_note =
+      midi_note =
         MIDI_ARRANGER_SELECTIONS->midi_notes[i];
 
       if (midi_note->widget)
@@ -774,25 +749,92 @@ midi_arranger_widget_on_drag_end (
                    midi_note);
     }
 
-  /* if something was clicked with ctrl without
-   * moving*/
   if (ar_prv->action ==
         UI_OVERLAY_ACTION_STARTING_MOVING)
     {
-      /* deselect it */
+      /* if something was clicked with ctrl without
+       * moving*/
       if (ar_prv->ctrl_held)
         if (self->start_midi_note_clone &&
-            self->start_midi_note_clone->selected)
+            midi_note_is_selected (
+              self->start_midi_note_clone))
           {
+            /* deselect it */
             ARRANGER_WIDGET_SELECT_MIDI_NOTE (
               self, self->start_midi_note,
-              0, 1);
+              F_NO_SELECT, F_APPEND,
+              F_NO_TRANSIENTS);
           }
+    }
+  else if (ar_prv->action ==
+             UI_OVERLAY_ACTION_MOVING)
+    {
+      UndoableAction * ua =
+        (UndoableAction *)
+        move_midi_arranger_selections_action_new (
+          position_to_ticks (
+            &MIDI_ARRANGER_SELECTIONS->
+              transient_notes[0]->start_pos) -
+          position_to_ticks (
+            &MIDI_ARRANGER_SELECTIONS->
+              midi_notes[0]->start_pos),
+          MIDI_ARRANGER_SELECTIONS->
+            transient_notes[0]->val -
+          MIDI_ARRANGER_SELECTIONS->
+            midi_notes[0]->val);
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
+    }
+  /* if copy/link-moved */
+  else if (ar_prv->action ==
+             UI_OVERLAY_ACTION_MOVING_COPY ||
+           ar_prv->action ==
+             UI_OVERLAY_ACTION_MOVING_LINK)
+    {
+      UndoableAction * ua =
+        (UndoableAction *)
+        duplicate_midi_arranger_selections_action_new (
+          position_to_ticks (
+            &MIDI_ARRANGER_SELECTIONS->
+              transient_notes[0]->start_pos) -
+          position_to_ticks (
+            &MIDI_ARRANGER_SELECTIONS->
+              midi_notes[0]->start_pos),
+          MIDI_ARRANGER_SELECTIONS->
+            transient_notes[0]->val -
+          MIDI_ARRANGER_SELECTIONS->
+            midi_notes[0]->val);
+      midi_arranger_selections_clear (
+        MIDI_ARRANGER_SELECTIONS);
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
+    }
+  else if (ar_prv->action ==
+             UI_OVERLAY_ACTION_NONE)
+    {
+      midi_arranger_selections_clear (
+        MIDI_ARRANGER_SELECTIONS);
     }
   /* if didn't click on something */
   else
     {
       self->start_midi_note = NULL;
+    }
+  midi_arranger_selections_remove_transients (
+    MIDI_ARRANGER_SELECTIONS);
+
+  /* FIXME temporary, should be removed */
+  for (int i = 0;
+       i < CLIP_EDITOR->region->num_midi_notes;
+       i++)
+    {
+      midi_note =
+        CLIP_EDITOR->region->midi_notes[i];
+
+      if (!midi_note_is_selected (midi_note))
+        EVENTS_PUSH (
+          ET_MIDI_NOTE_CHANGED,
+          CLIP_EDITOR->region->midi_notes[i]);
     }
 }
 
@@ -835,6 +877,8 @@ midi_arranger_widget_refresh_children (
       for (int j = 0; j < mr->num_midi_notes; j++)
         {
           MidiNote * midi_note = mr->midi_notes[j];
+          g_message ("adding overlay for %p wid %p",
+                     midi_note, midi_note->widget);
           gtk_overlay_add_overlay (
             GTK_OVERLAY (self),
             GTK_WIDGET (midi_note->widget));
@@ -853,25 +897,35 @@ on_focus (GtkWidget       *widget,
 }
 
 void
-midi_arranger_auto_scroll (
+midi_arranger_widget_auto_scroll (
   MidiArrangerWidget * self,
-  GtkScrolledWindow * scrolled_window)
+  GtkScrolledWindow *  scrolled_window,
+  int                  transient)
 {
   Region * region = CLIP_EDITOR->region;
   int scroll_speed = 20;
   int border_distance = 10;
+  g_message ("midi auto scrolling");
   if (region != 0)
   {
     MidiNote * first_note =
       midi_arranger_selections_get_first_midi_note (
-        MIDI_ARRANGER_SELECTIONS);
+        MIDI_ARRANGER_SELECTIONS, transient);
     MidiNote * last_note =
       midi_arranger_selections_get_last_midi_note (
-        MIDI_ARRANGER_SELECTIONS);
+        MIDI_ARRANGER_SELECTIONS, transient);
     MidiNote * lowest_note =
-      MIDI_ARRANGER_SELECTIONS->bot_midi_note;
+      midi_arranger_selections_get_lowest_note (
+        MIDI_ARRANGER_SELECTIONS, transient);
     MidiNote * highest_note =
-      MIDI_ARRANGER_SELECTIONS->top_midi_note;
+      midi_arranger_selections_get_highest_note (
+        MIDI_ARRANGER_SELECTIONS, transient);
+    g_assert (first_note && last_note &&
+              lowest_note && highest_note &&
+              first_note->widget &&
+              last_note->widget &&
+              lowest_note->widget &&
+              highest_note->widget);
     int arranger_width =
       gtk_widget_get_allocated_width (
         GTK_WIDGET (scrolled_window));
@@ -888,7 +942,8 @@ midi_arranger_auto_scroll (
     int h_delta = 0;
     if (lowest_note != 0)
     {
-      GtkWidget *focused = GTK_WIDGET (lowest_note->widget);
+      GtkWidget *focused =
+        GTK_WIDGET (lowest_note->widget);
       gint note_x, note_y;
       gtk_widget_translate_coordinates (
         focused,

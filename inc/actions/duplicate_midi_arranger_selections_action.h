@@ -33,10 +33,18 @@ typedef struct DuplicateMidiArrangerSelectionsAction
    * A clone of the midi_arranger selections at the time.
    */
   MidiArrangerSelections *        mas;
+
+  /** Ticks diff. */
+  long   ticks;
+
+  /** Value diff. */
+  int    delta;
 } DuplicateMidiArrangerSelectionsAction;
 
 UndoableAction *
-duplicate_midi_arranger_selections_action_new ();
+duplicate_midi_arranger_selections_action_new (
+  long ticks,
+  int  delta);
 
 void
 duplicate_midi_arranger_selections_action_do (

@@ -719,7 +719,7 @@ timeline_arranger_widget_on_drag_begin_region_hit (
       if (ar_prv->ctrl_held && !region->selected)
         {
           ARRANGER_WIDGET_SELECT_REGION (
-            self, region, 1, 1);
+            self, region, 1, 1, 0);
         }
       /* if ctrl not held & not selected, make it
        * the only
@@ -731,7 +731,7 @@ timeline_arranger_widget_on_drag_begin_region_hit (
                   region))
         {
           ARRANGER_WIDGET_SELECT_REGION (
-            self, region, 1, 0);
+            self, region, 1, 0, 0);
         }
     }
 
@@ -785,7 +785,7 @@ timeline_arranger_widget_on_drag_begin_chord_hit (
     {
       /* if ctrl pressed toggle on/off */
       ARRANGER_WIDGET_SELECT_CHORD (
-        self, chord, 1, 1);
+        self, chord, 1, 1, 0);
     }
   else if (!array_contains (
              (void **)TL_SELECTIONS->chords,
@@ -796,7 +796,7 @@ timeline_arranger_widget_on_drag_begin_chord_hit (
       timeline_arranger_widget_select_all (
         self, 0);
       ARRANGER_WIDGET_SELECT_CHORD (
-        self, chord, 1, 0);
+        self, chord, 1, 0, 0);
     }
 }
 
@@ -832,13 +832,13 @@ timeline_arranger_widget_on_drag_begin_ap_hit (
   if (ar_prv->ctrl_held)
     {
       ARRANGER_WIDGET_SELECT_AUTOMATION_POINT (
-        self, ap, 1, 1);
+        self, ap, 1, 1, 0);
     }
   else
     {
       timeline_arranger_widget_select_all (self, 0);
       ARRANGER_WIDGET_SELECT_AUTOMATION_POINT (
-        self, ap, 1, 0);
+        self, ap, 1, 0, 0);
     }
 }
 
@@ -1155,7 +1155,7 @@ timeline_arranger_widget_select (
             self,
             region,
             1,
-            1);
+            1, 0);
         }
     }
 
@@ -1197,7 +1197,7 @@ timeline_arranger_widget_select (
           chord = cw->chord;
 
           ARRANGER_WIDGET_SELECT_CHORD (
-            self, chord, 1, 1);
+            self, chord, 1, 1, 0);
         }
     }
 
@@ -1243,7 +1243,7 @@ timeline_arranger_widget_select (
           ap = apw->ap;
 
           ARRANGER_WIDGET_SELECT_AUTOMATION_POINT (
-            self, ap, 1, 1);
+            self, ap, 1, 1, 0);
         }
     }
 }
@@ -1698,7 +1698,7 @@ timeline_arranger_widget_on_drag_end (
           {
             ARRANGER_WIDGET_SELECT_REGION (
               self, self->start_region,
-              0, 1);
+              0, 1, 0);
           }
     }
   /* if didn't click on something */

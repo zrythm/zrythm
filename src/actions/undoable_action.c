@@ -19,8 +19,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "actions/move_midi_arranger_selections_pos.h"
-#include "actions/move_midi_arranger_selections_val.h"
+#include "actions/move_midi_arranger_selections_action.h"
 #include "actions/create_chords_action.h"
 #include "actions/delete_midi_arranger_selections_action.h"
 #include "actions/duplicate_midi_arranger_selections_action.h"
@@ -67,13 +66,9 @@ undoable_action_do (UndoableAction * self)
       duplicate_midi_arranger_selections_action_do (
         (DuplicateMidiArrangerSelectionsAction *) self);
       break;
-    case UNDOABLE_ACTION_TYPE_MOVE_MIDI_NOTES_VAL:
-      move_midi_arranger_selections_val_action_do(
-        (MoveMidiArrangerSelectionsValAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_MOVE_MIDI_NOTES_POS:
-      move_midi_arranger_selections_pos_action_do (
-        (MoveMidiArrangerSelectionsPosAction *) self);
+    case UNDOABLE_ACTION_TYPE_MOVE_MIDI_NOTES:
+      move_midi_arranger_selections_action_do(
+        (MoveMidiArrangerSelectionsAction *) self);
       break;
     case UNDOABLE_ACTION_TYPE_CREATE_CHORDS:
       create_chords_action_do ((CreateChordsAction *) self);
@@ -115,13 +110,9 @@ undoable_action_undo (UndoableAction * self)
       duplicate_midi_arranger_selections_action_undo (
         (DuplicateMidiArrangerSelectionsAction *) self);
       break;
-    case UNDOABLE_ACTION_TYPE_MOVE_MIDI_NOTES_VAL:
-     move_midi_arranger_selections_val_action_undo (
-       (MoveMidiArrangerSelectionsValAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_MOVE_MIDI_NOTES_POS:
-      move_midi_arranger_selections_pos_action_undo (
-        (MoveMidiArrangerSelectionsPosAction *) self);
+    case UNDOABLE_ACTION_TYPE_MOVE_MIDI_NOTES:
+     move_midi_arranger_selections_action_undo (
+       (MoveMidiArrangerSelectionsAction *) self);
       break;
     case UNDOABLE_ACTION_TYPE_DELETE_MA_SELECTIONS:
       delete_midi_arranger_selections_action_undo (
@@ -160,13 +151,9 @@ undoable_action_free (UndoableAction * self)
       duplicate_midi_arranger_selections_action_free (
         (DuplicateMidiArrangerSelectionsAction *) self);
       break;
-    case UNDOABLE_ACTION_TYPE_MOVE_MIDI_NOTES_VAL:
-      move_midi_arranger_selections_val_action_free (
-        (MoveMidiArrangerSelectionsValAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_MOVE_MIDI_NOTES_POS:
-      move_midi_arranger_selections_pos_action_free (
-        (MoveMidiArrangerSelectionsPosAction *) self);
+    case UNDOABLE_ACTION_TYPE_MOVE_MIDI_NOTES:
+      move_midi_arranger_selections_action_free (
+        (MoveMidiArrangerSelectionsAction *) self);
       break;
     case UNDOABLE_ACTION_TYPE_DELETE_MA_SELECTIONS:
       delete_midi_arranger_selections_action_free (

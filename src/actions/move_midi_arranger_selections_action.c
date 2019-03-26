@@ -17,73 +17,86 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "actions/move_midi_arranger_selections_action.h"
 #include "audio/track.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/midi_arranger.h"
 #include "project.h"
-#include "actions/duplicate_midi_arranger_selections_action.h"
 
 /**
- * Note: chord addresses are to be copied.
- */
+ * Note: this action will add delta beats
+ * to start and end pos of all selected midi_notes */
 UndoableAction *
-duplicate_midi_arranger_selections_action_new (
+move_midi_arranger_selections_action_new (
   long ticks,
   int  delta)
 {
-  DuplicateMidiArrangerSelectionsAction * self =
+	MoveMidiArrangerSelectionsAction * self =
     calloc (1, sizeof (
-                 DuplicateMidiArrangerSelectionsAction));
+    	MoveMidiArrangerSelectionsAction));
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-    UNDOABLE_ACTION_TYPE_DUPLICATE_MIDI_NOTES;
-  self->mas = midi_arranger_selections_clone ();
-  self->ticks = ticks;
+	  UNDOABLE_ACTION_TYPE_MOVE_MIDI_NOTES;
+  int i;
+  for (i = 0;
+       i < MIDI_ARRANGER_SELECTIONS->num_midi_notes;
+       i++)
+    {
+      self->note_ids[i] =
+        MIDI_ARRANGER_SELECTIONS->midi_notes[i]->id;
+    }
+  self->num_notes = i;
   self->delta = delta;
+  self->ticks = ticks;
   return ua;
 }
 
 void
-duplicate_midi_arranger_selections_action_do (
-  DuplicateMidiArrangerSelectionsAction * self)
+move_midi_arranger_selections_action_do (
+	MoveMidiArrangerSelectionsAction * self)
 {
   MidiNote * mn;
-	for (int i = 0; i < self->mas->num_midi_notes; i++)
+  for (int i = 0;
+       i < self->num_notes;
+       i++)
     {
-      mn = self->mas->midi_notes[i];
-      midi_region_add_midi_note (
-        mn->midi_region,
-        mn);
+      mn =
+        project_get_midi_note (self->note_ids[i]);
+      g_message ("shifting %p",
+                 mn->widget);
       midi_note_shift (
-        mn, self->ticks, self->delta);
+        mn,
+        self->ticks,
+        self->delta);
     }
   EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
                NULL);
 }
 
 void
-duplicate_midi_arranger_selections_action_undo (
-  DuplicateMidiArrangerSelectionsAction * self)
+move_midi_arranger_selections_action_undo (
+	MoveMidiArrangerSelectionsAction * self)
 {
   MidiNote * mn;
-  for (int i = 0; i < self->mas->num_midi_notes; i++)
+  for (int i = 0;
+       i < self->num_notes;
+       i++)
     {
-      mn = self->mas->midi_notes[i];
-      midi_region_remove_midi_note (
-        mn->midi_region,
-        mn);
+      mn =
+        project_get_midi_note (self->note_ids[i]);
+      midi_note_shift (
+        mn,
+        - self->ticks,
+        - self->delta);
     }
   EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
                NULL);
 }
 
 void
-duplicate_midi_arranger_selections_action_free (
-  DuplicateMidiArrangerSelectionsAction * self)
+move_midi_arranger_selections_action_free (
+	MoveMidiArrangerSelectionsAction * self)
 {
-  midi_arranger_selections_free (self->mas);
-
   free (self);
 }
-
