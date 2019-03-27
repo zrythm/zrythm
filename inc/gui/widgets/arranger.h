@@ -36,37 +36,37 @@ G_DECLARE_DERIVABLE_TYPE (ArrangerWidget,
 
 /** Object selection macros. */
 #define ARRANGER_WIDGET_SELECT_MIDI_NOTE( \
-  self, child, select, append) \
+  self, child, select, append, transients) \
   arranger_widget_select ( \
     Z_ARRANGER_WIDGET (self), \
     MIDI_NOTE_WIDGET_TYPE, \
     (void *) child, \
     select, \
-    append);
+    append, transients);
 #define ARRANGER_WIDGET_SELECT_REGION( \
-  self, child, select, append) \
+  self, child, select, append, transients) \
   arranger_widget_select ( \
     Z_ARRANGER_WIDGET (self), \
     REGION_WIDGET_TYPE, \
     (void *) child, \
     select, \
-    append);
+    append, transients);
 #define ARRANGER_WIDGET_SELECT_CHORD( \
-  self, child, select, append) \
+  self, child, select, append, transients) \
   arranger_widget_select ( \
     Z_ARRANGER_WIDGET (self), \
     CHORD_WIDGET_TYPE, \
     (void *) child, \
     select, \
-    append);
+    append, transients);
 #define ARRANGER_WIDGET_SELECT_AUTOMATION_POINT( \
-  self, child, select, append) \
+  self, child, select, append, transients) \
   arranger_widget_select ( \
     Z_ARRANGER_WIDGET (self), \
     AUTOMATION_POINT_WIDGET_TYPE, \
     (void *) child, \
     select, \
-    append);
+    append, transients);
 
 #define ARRANGER_WIDGET_GET_PRIVATE(self) \
   ArrangerWidgetPrivate * ar_prv = \
@@ -120,6 +120,7 @@ typedef struct
 
   Position                 start_pos; ///< useful for moving
   Position                 end_pos; ///< for moving regions
+   gboolean                 key_is_pressed;
 
   /** Current hovering positions. */
   double                   hover_x;
@@ -211,20 +212,29 @@ arranger_widget_get_hit_widgets_in_range (
   int *             array_size); ///< array_size to fill
 
 void
-arranger_widget_toggle_select (ArrangerWidget *  self,
-               GType             type,
-               void *            child,
-               int               append);
-
-void
 arranger_widget_select_all (
   ArrangerWidget *  self,
   int               select);
 
 /**
+ * Returns if the arranger is in a moving-related
+ * operation or starting a moving-related operation.
+ *
+ * Useful to know if we need transient widgets or
+ * not.
+ */
+int
+arranger_widget_is_in_moving_operation (
+  ArrangerWidget * self);
+
+/**
  * Selects the object, optionally appending it to
  * the selected items or making it the only
  * selected item.
+ *
+ * If create_transients is 1, the selection will
+ * create transients (e.g. when moving/copy-moving
+ * MidiNotes).
  */
 void
 arranger_widget_select (
@@ -232,7 +242,8 @@ arranger_widget_select (
   GType            type,
   void *           child,
   int              select,
-  int              append);
+  int              append,
+  int              create_transients);
 
 /**
  * Readd children.

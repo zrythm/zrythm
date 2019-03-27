@@ -105,6 +105,9 @@ midi_region_draw_cb (
     {
       MidiNote * mn = mr->midi_notes[i];
 
+      if (!midi_note_is_visible (mn))
+        continue;
+
       /* get ratio (0.0 - 1.0) on x where midi note starts
        * & ends */
       int mn_start_ticks =

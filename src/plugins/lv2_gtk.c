@@ -1227,10 +1227,11 @@ lv2_open_ui(Lv2Plugin* plugin)
 {
   LV2_External_UI_Host extui;
   GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  g_signal_connect (
-    G_OBJECT(window),  "delete-event",
-    G_CALLBACK (on_delete_event), plugin);
+
   plugin->window = window;
+  g_signal_connect (
+    G_OBJECT (window), "delete-event",
+    G_CALLBACK (on_delete_event), plugin);
   extui.ui_closed = on_external_ui_closed;
   LilvNode* name = lilv_plugin_get_name(plugin->lilv_plugin);
   extui.plugin_human_id = lv2_strdup(lilv_node_as_string(name));
@@ -1323,7 +1324,6 @@ lv2_open_ui(Lv2Plugin* plugin)
 int
 lv2_close_ui(Lv2Plugin* plugin)
 {
-  /*g_message ("lv2_close_ui");*/
   if (plugin->window)
     {
       g_idle_add ((GSourceFunc) gtk_window_close,

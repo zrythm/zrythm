@@ -19,8 +19,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "actions/move_midi_arranger_selections_action.h"
 #include "actions/create_chords_action.h"
 #include "actions/delete_midi_arranger_selections_action.h"
+#include "actions/duplicate_midi_arranger_selections_action.h"
 #include "actions/delete_timeline_selections_action.h"
 #include "actions/edit_channel_action.h"
 #include "actions/edit_track_action.h"
@@ -39,16 +41,14 @@ undoable_action_do (UndoableAction * self)
     case UNDOABLE_ACTION_TYPE_CREATE_CHANNEL:
       break;
     case UNDOABLE_ACTION_TYPE_EDIT_CHANNEL:
-      edit_channel_action_do (
-        (EditChannelAction *) self);
+      edit_channel_action_do ((EditChannelAction *) self);
       break;
     case UNDOABLE_ACTION_TYPE_DELETE_CHANNEL:
       break;
     case UNDOABLE_ACTION_TYPE_MOVE_CHANNEL:
       break;
     case UNDOABLE_ACTION_TYPE_EDIT_TRACK:
-      edit_track_action_do (
-        (EditTrackAction *) self);
+      edit_track_action_do ((EditTrackAction *) self);
       break;
     case UNDOABLE_ACTION_TYPE_CREATE_REGIONS:
       break;
@@ -62,9 +62,16 @@ undoable_action_do (UndoableAction * self)
       delete_midi_arranger_selections_action_do (
         (DeleteMidiArrangerSelectionsAction *) self);
       break;
+    case UNDOABLE_ACTION_TYPE_DUPLICATE_MIDI_NOTES:
+      duplicate_midi_arranger_selections_action_do (
+        (DuplicateMidiArrangerSelectionsAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_MOVE_MIDI_NOTES:
+      move_midi_arranger_selections_action_do(
+        (MoveMidiArrangerSelectionsAction *) self);
+      break;
     case UNDOABLE_ACTION_TYPE_CREATE_CHORDS:
-      create_chords_action_do (
-        (CreateChordsAction *) self);
+      create_chords_action_do ((CreateChordsAction *) self);
       break;
     }
 }
@@ -82,16 +89,14 @@ undoable_action_undo (UndoableAction * self)
     case UNDOABLE_ACTION_TYPE_CREATE_CHANNEL:
       break;
     case UNDOABLE_ACTION_TYPE_EDIT_CHANNEL:
-      edit_channel_action_undo (
-        (EditChannelAction *) self);
+      edit_channel_action_undo ((EditChannelAction *) self);
       break;
     case UNDOABLE_ACTION_TYPE_DELETE_CHANNEL:
       break;
     case UNDOABLE_ACTION_TYPE_MOVE_CHANNEL:
       break;
     case UNDOABLE_ACTION_TYPE_EDIT_TRACK:
-      edit_track_action_undo (
-        (EditTrackAction *) self);
+      edit_track_action_undo ((EditTrackAction *) self);
       break;
     case UNDOABLE_ACTION_TYPE_CREATE_REGIONS:
       break;
@@ -100,6 +105,14 @@ undoable_action_undo (UndoableAction * self)
     case UNDOABLE_ACTION_TYPE_DELETE_TL_SELECTIONS:
       delete_timeline_selections_action_undo (
         (DeleteTimelineSelectionsAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_DUPLICATE_MIDI_NOTES:
+      duplicate_midi_arranger_selections_action_undo (
+        (DuplicateMidiArrangerSelectionsAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_MOVE_MIDI_NOTES:
+     move_midi_arranger_selections_action_undo (
+       (MoveMidiArrangerSelectionsAction *) self);
       break;
     case UNDOABLE_ACTION_TYPE_DELETE_MA_SELECTIONS:
       delete_midi_arranger_selections_action_undo (
@@ -120,8 +133,7 @@ undoable_action_free (UndoableAction * self)
     case UNDOABLE_ACTION_TYPE_CREATE_CHANNEL:
       break;
     case UNDOABLE_ACTION_TYPE_EDIT_CHANNEL:
-      edit_channel_action_free (
-        (EditChannelAction *) self);
+      edit_channel_action_free ((EditChannelAction *) self);
       break;
     case UNDOABLE_ACTION_TYPE_DELETE_CHANNEL:
       break;
@@ -134,6 +146,14 @@ undoable_action_free (UndoableAction * self)
     case UNDOABLE_ACTION_TYPE_DELETE_TL_SELECTIONS:
       delete_timeline_selections_action_free (
         (DeleteTimelineSelectionsAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_DUPLICATE_MIDI_NOTES:
+      duplicate_midi_arranger_selections_action_free (
+        (DuplicateMidiArrangerSelectionsAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_MOVE_MIDI_NOTES:
+      move_midi_arranger_selections_action_free (
+        (MoveMidiArrangerSelectionsAction *) self);
       break;
     case UNDOABLE_ACTION_TYPE_DELETE_MA_SELECTIONS:
       delete_midi_arranger_selections_action_free (

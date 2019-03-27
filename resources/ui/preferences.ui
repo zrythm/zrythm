@@ -146,6 +146,9 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Audio</property>
                       </object>
+                      <packing>
+                        <property name="tab_fill">False</property>
+                      </packing>
                     </child>
                     <child>
                       <object class="GtkGrid" id="plugins_grid">
@@ -181,6 +184,9 @@
                           <placeholder/>
                         </child>
                       </object>
+                      <packing>
+                        <property name="position">1</property>
+                      </packing>
                     </child>
                     <child type="tab">
                       <object class="GtkLabel" id="plugins_label">
@@ -188,6 +194,10 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Plugins</property>
                       </object>
+                      <packing>
+                        <property name="position">1</property>
+                        <property name="tab_fill">False</property>
+                      </packing>
                     </child>
                     <child>
                       <object class="GtkGrid" id="editing_grid">
@@ -222,6 +232,9 @@
                           <placeholder/>
                         </child>
                       </object>
+                      <packing>
+                        <property name="position">2</property>
+                      </packing>
                     </child>
                     <child type="tab">
                       <object class="GtkLabel" id="editing_label">
@@ -229,6 +242,10 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Editing</property>
                       </object>
+                      <packing>
+                        <property name="position">2</property>
+                        <property name="tab_fill">False</property>
+                      </packing>
                     </child>
                     <child>
                       <object class="GtkGrid" id="gui_grid">
@@ -250,7 +267,9 @@
                           <object class="GtkLabel">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Default Region Size</property>
+                            <property name="margin_left">4</property>
+                            <property name="margin_right">4</property>
+                            <property name="label" translatable="yes">Language</property>
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
@@ -258,12 +277,10 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkSpinButton" id="region_size1">
+                          <object class="GtkComboBox" id="language">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="max_length">2</property>
-                            <property name="placeholder_text" translatable="yes">8 bars</property>
-                            <property name="input_purpose">number</property>
+                            <property name="can_focus">False</property>
+                            <property name="hexpand">True</property>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
@@ -271,6 +288,9 @@
                           </packing>
                         </child>
                       </object>
+                      <packing>
+                        <property name="position">3</property>
+                      </packing>
                     </child>
                     <child type="tab">
                       <object class="GtkLabel" id="gui_label">
@@ -278,6 +298,10 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">GUI</property>
                       </object>
+                      <packing>
+                        <property name="position">3</property>
+                        <property name="tab_fill">False</property>
+                      </packing>
                     </child>
                   </object>
                   <packing>

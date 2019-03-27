@@ -63,10 +63,18 @@ typedef struct _MidiNoteWidget
 MidiNoteWidget *
 midi_note_widget_new (MidiNote * midi_note);
 
+/**
+ * Sets the "selected" GTK state flag and adds the
+ * note to midi arranger selections.
+ *
+ * Optionally creates transient notes in the
+ * MidiArrangerSelections (if moving/copy-moving).
+ */
 void
 midi_note_widget_select (
   MidiNoteWidget * self,
-  int              select);
+  int              select,
+  int              with_transients);
 
 void
 midi_note_widget_update_tooltip (

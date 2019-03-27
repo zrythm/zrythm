@@ -30,6 +30,14 @@
     <value nick="jack" value="0"/>
     <value nick="port-audio" value="1"/>
   </enum>
+  <enum id="org.zrythm.preferences.language-enum">
+    <value nick="english" value="0"/>
+    <value nick="german" value="1"/>
+    <value nick="french" value="2"/>
+    <value nick="italian" value="3"/>
+    <value nick="spanish" value="4"/>
+    <value nick="japanese" value="5"/>
+  </enum>
   <enum id="org.zrythm.preferences.export-time-range-enum">
     <value nick="song" value="0"/>
     <value nick="loop" value="1"/>
@@ -73,6 +81,16 @@
       <summary>Audio Backend</summary>
       <description>
         The audio back end to use
+      </description>
+    </key>
+
+    <!-- Selected language -->
+    <key name="language"
+      enum="org.zrythm.preferences.language-enum">
+      <default>"english"</default>
+      <summary>UI interface language</summary>
+      <description>
+        The interface language.
       </description>
     </key>
 

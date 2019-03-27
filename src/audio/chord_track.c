@@ -1,7 +1,5 @@
 /*
- * audio/chord_track.c - Chord track
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -35,6 +33,8 @@
 #include "project.h"
 #include "utils/arrays.h"
 
+#include <glib/gi18n.h>
+
 /**
  * Creates a new chord track using the given scale.
  */
@@ -48,7 +48,7 @@ chord_track_new (MusicalScale * scale)
   track_init (track);
   project_add_track (track);
 
-  self->name = g_strdup ("Chord Track");
+  self->name = g_strdup (_("Chord Track"));
 
   self->scale = scale;
 

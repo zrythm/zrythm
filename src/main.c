@@ -27,7 +27,7 @@
 
 #include <gtk/gtk.h>
 
-#include <glibtop.h>
+/*#include <glibtop.h>*/
 
 /**
  * main
@@ -43,7 +43,7 @@ main (int    argc,
   ad_init ();
 
   /* init glibtop */
-  glibtop_init ();
+  /*glibtop_init ();*/
 
   /* init random */
   srandom (time (NULL));

@@ -59,10 +59,14 @@ typedef struct MidiNote
   int             val; ///< note
 
   /** Muted or not */
-  int                muted;
+  int             muted;
 
-  /** Selected or not */
-  int             selected;
+  /**
+   * Transient or not.
+   *
+   * Transient notes are notes that are cloned
+   * and used during moving, then discarded.  */
+  int             transient;
 
   /**
    * ID of note in use.
@@ -132,6 +136,18 @@ void
 midi_note_delete (MidiNote * midi_note);
 
 /**
+ * Returns if MidiNote is in MidiArrangerSelections.
+ */
+int
+midi_note_is_selected (MidiNote * self);
+
+/**
+ * Returns if MidiNote is (should be) visible.
+ */
+int
+midi_note_is_visible (MidiNote * self);
+
+/**
  * Checks if position is valid then sets it.
  */
 void
@@ -144,6 +160,24 @@ midi_note_set_start_pos (MidiNote * midi_note,
 void
 midi_note_set_end_pos (MidiNote * midi_note,
                        Position * end_pos);
+
+/**
+ * Sets note's visible flag and makes its widget
+ * visible or not.
+ */
+//void
+//midi_note_set_visible (
+  //MidiNote * midi_note,
+  //int        visible);
+
+/**
+ * Shifts MidiNote's position and/or value.
+ */
+void
+midi_note_shift (
+  MidiNote * self,
+  long       ticks, ///< x (Position)
+  int        delta); ///< y (0-127)
 
 /**
  * Returns if the MIDI note is hit at given pos (in the

@@ -63,6 +63,26 @@
     }
 
 /**
+ * Same as array_delete but sets the deleted element
+ * index to pos.
+ */
+#define array_delete_return_pos(array,size,element,pos) \
+  for (int ii = 0; ii < size; ii++) \
+    { \
+      if (array[ii] == element) \
+        { \
+          pos = ii; \
+          --size; \
+          for (int jj = ii; jj < size; jj++) \
+            { \
+              array[jj] = array[jj + 1]; \
+            } \
+          break; \
+        } \
+    }
+
+
+/**
  * Macro so that no casting to void ** and void * is
  * necessary.
  */

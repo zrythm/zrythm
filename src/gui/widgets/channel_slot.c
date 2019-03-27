@@ -23,11 +23,14 @@
 #include "audio/channel.h"
 #include "audio/engine.h"
 #include "plugins/lv2_plugin.h"
+#include "gui/widgets/bot_bar.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/channel_slot.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/ui.h"
+
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (ChannelSlotWidget, channel_slot_widget, GTK_TYPE_DRAWING_AREA)
 
@@ -82,7 +85,8 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   width = gtk_widget_get_allocated_width (widget);
   height = gtk_widget_get_allocated_height (widget);
 
-  gtk_render_background (context, cr, 0, 0, width, height);
+  gtk_render_background (
+    context, cr, 0, 0, width, height);
 
 
   int padding = 2;
@@ -90,8 +94,23 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   Plugin * plugin = self->channel->plugins[self->slot_index];
   if (plugin)
     {
+      GdkRGBA c;
+      if (!plugin->enabled)
+        /* matcha */
+        gdk_rgba_parse (&c,
+                        "#2eb398");
+      if (plugin->visible)
+        /* bright green */
+        gdk_rgba_parse (&c,
+                        "#1DDD6A");
+      else
+        /* darkish green */
+        gdk_rgba_parse (&c,
+                        "#1A884c");
+
       /* fill background */
-      cairo_set_source_rgba (cr, 0.4, 1.0, 0.4, 1.0);
+      cairo_set_source_rgba (
+        cr, c.red, c.green, c.blue, 1.0);
       cairo_move_to (cr, padding, padding);
       cairo_line_to (cr, padding, height - padding);
       cairo_line_to (cr, width - padding, height - padding);
@@ -162,8 +181,9 @@ button_press_cb (GtkWidget * widget,
 	  if (plugin->descr->protocol == PROT_LV2)
 	    {
 	      Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
-	      instument_track_ui_toggle (widget, lv2_plugin->host);
-
+	      plugin->visible = !plugin->visible;
+	      EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED,
+	                   plugin);
 	    }
 	  else
 	    {
@@ -186,6 +206,33 @@ on_drag_data_get (GtkWidget        *widget,
   g_message ("aaaaaaaaa");
 }
 
+static gboolean
+on_motion (
+  GtkWidget * widget,
+  GdkEvent *event,
+  ChannelSlotWidget * self)
+{
+  if (gdk_event_get_event_type (event) ==
+        GDK_ENTER_NOTIFY)
+    {
+      gtk_widget_set_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_PRELIGHT, 0);
+      bot_bar_change_status (
+        _("Channel Slot - Double click to open "
+          "plugin - Click and drag to move plugin"));
+    }
+  else if (gdk_event_get_event_type (event) ==
+             GDK_LEAVE_NOTIFY)
+    {
+      gtk_widget_unset_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_PRELIGHT);
+      bot_bar_change_status ("");
+    }
+
+  return FALSE;
+}
 
 /**
  * Creates a new ChannelSlot widget and binds it to the given value.
@@ -199,9 +246,6 @@ channel_slot_widget_new (int slot_index,
   self->channel = cw->channel;
 
   gtk_widget_set_size_request (GTK_WIDGET (self), -1, 24);
-
-  /* make it able to notify */
-  gtk_widget_add_events (GTK_WIDGET (self), GDK_BUTTON_PRESS_MASK);
 
   /* connect signals */
   g_signal_connect (G_OBJECT (self), "draw",
@@ -242,9 +286,26 @@ channel_slot_widget_new (int slot_index,
 static void
 channel_slot_widget_init (ChannelSlotWidget * self)
 {
+  /* make it able to notify */
+  gtk_widget_add_events (
+    GTK_WIDGET (self),
+    GDK_BUTTON_PRESS_MASK |
+    GDK_ENTER_NOTIFY_MASK |
+    GDK_LEAVE_NOTIFY_MASK);
+
+  g_signal_connect (
+    G_OBJECT (self), "enter-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self), "leave-notify-event",
+    G_CALLBACK (on_motion),  self);
 }
 
 static void
-channel_slot_widget_class_init (ChannelSlotWidgetClass * klass)
+channel_slot_widget_class_init (
+  ChannelSlotWidgetClass * _klass)
 {
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (
+    klass, "channel-slot");
 }

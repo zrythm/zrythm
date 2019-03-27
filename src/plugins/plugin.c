@@ -301,9 +301,6 @@ plugin_open_ui (Plugin *plugin)
   if (plugin->descr->protocol == PROT_LV2)
     {
       Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
-
-      lv2_plugin->host =
-	   plugin->channel->track->widget;
       if (GTK_IS_WINDOW (lv2_plugin->window))
         {
           gtk_window_present (

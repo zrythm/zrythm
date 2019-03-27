@@ -25,4 +25,14 @@
 int
 string_is_ascii (const char * string);
 
+/**
+ * Returns the matched string if the string array
+ * contains the given substring.
+ */
+char *
+string_array_contains_substr (
+  char ** str_array,
+  int     num_str,
+  char *  substr);
+
 #endif

@@ -156,8 +156,9 @@ Automatable *
 automatable_create_pan (Channel * channel);
 
 Automatable *
-automatable_create_lv2_control (Plugin *       plugin,
-                                Lv2ControlID * control);
+automatable_create_lv2_control (
+  Plugin *       plugin,
+  Lv2ControlID * control);
 
 Automatable *
 automatable_create_plugin_enabled (Plugin * plugin);

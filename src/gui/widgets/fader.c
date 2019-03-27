@@ -27,6 +27,8 @@
 #include "gui/widgets/fader.h"
 #include "utils/math.h"
 
+#include <glib/gi18n.h>
+
 G_DEFINE_TYPE (FaderWidget,
                fader_widget,
                GTK_TYPE_DRAWING_AREA)
@@ -161,7 +163,7 @@ on_motion (GtkWidget * widget, GdkEvent *event)
         GTK_WIDGET (self),
         GTK_STATE_FLAG_PRELIGHT, 0);
       bot_bar_change_status (
-        "Fader - Click and drag to change value");
+        _("Fader - Click and drag to change value"));
     }
   else if (gdk_event_get_event_type (event) ==
              GDK_LEAVE_NOTIFY)
@@ -383,6 +385,6 @@ static void
 fader_widget_class_init (FaderWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (klass,
-                                 "fader");
+  gtk_widget_class_set_css_name (
+    klass, "fader");
 }

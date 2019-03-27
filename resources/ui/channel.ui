@@ -370,6 +370,7 @@
         <property name="can_focus">True</property>
         <property name="vexpand">True</property>
         <property name="shadow_type">in</property>
+        <property name="height-request">124</property>
         <child>
           <object class="GtkViewport">
             <property name="visible">True</property>

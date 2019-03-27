@@ -44,6 +44,33 @@ z_gtk_container_remove_all_children (GtkContainer * container)
 }
 
 void
+z_gtk_overlay_add_if_not_exists (
+  GtkOverlay * overlay,
+  GtkWidget *  widget)
+{
+  GList *children, *iter;
+
+  children =
+    gtk_container_get_children (
+      GTK_CONTAINER (overlay));
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      if (iter->data == widget)
+        {
+          g_message ("exists");
+          g_list_free (children);
+          return;
+        }
+    }
+  g_list_free (children);
+
+  g_message ("not exists, adding");
+  gtk_overlay_add_overlay (overlay, widget);
+}
+
+void
 z_gtk_container_destroy_all_children (GtkContainer * container)
 {
   GList *children, *iter;

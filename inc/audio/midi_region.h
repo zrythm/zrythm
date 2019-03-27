@@ -61,6 +61,51 @@ midi_region_find_unended_note (MidiRegion * self,
                                int          pitch);
 
 /**
+ * updates midi note value * completely.
+ */
+void
+midi_region_update_midi_note_val (
+  Region *   region,
+  MidiNote * midi_note);
+
+
+/**
+ * Gets first midi note
+ */
+MidiNote *
+midi_region_get_first_midi_note (
+	MidiRegion * region);
+
+/**
+ * Gets last midi note
+ */
+MidiNote *
+midi_region_get_last_midi_note (
+	MidiRegion * region);
+
+/**
+ * Gets highest midi note
+ */
+MidiNote *
+midi_region_get_highest_midi_note (
+	MidiRegion * region);
+
+/**
+ * Gets lowest midi note
+ */
+MidiNote *
+midi_region_get_lowest_midi_note (
+	MidiRegion * region);
+
+/**
+ * Adds midi if not present
+ */
+void
+midi_region_add_midi_note_if_not_present (
+  Region *   region,
+  MidiNote * midi_note);
+
+/**
  * Removes the MIDI note and its components
  * completely.
  */

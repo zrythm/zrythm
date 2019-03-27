@@ -18,36 +18,41 @@
  */
 
 #ifndef __UNDO_MOVE_MIDI_ARRANGER_SELECTIONS_ACTION_H__
-#define __UNDO_MOVE_MIDI_ARRANGER_SELECTIONS_ACTION_H__
+#define __UNDO_MOVE_MIDI_ARRANGER_SELECTIONS_POS_ACTION_H__
 
 #include "actions/undoable_action.h"
 
-typedef struct MidiArrangerSelections
-  MidiArrangerSelections;
 
 typedef struct MoveMidiArrangerSelectionsAction
 {
   UndoableAction              parent_instance;
 
-  /**
-   * A clone of the midi_arranger selections at the time.
-   */
-  MidiArrangerSelections *        mas;
+  /** Ticks moved. */
+  long        ticks;
+
+  /** Delta of note value. */
+  int         delta;
+
+  /** Notes acting upon. */
+  int         note_ids[600];
+  int         num_notes;
 } MoveMidiArrangerSelectionsAction;
 
 UndoableAction *
-move_midi_arranger_selections_action_new ();
+move_midi_arranger_selections_action_new (
+  long ticks,
+  int  delta);
 
 void
 move_midi_arranger_selections_action_do (
-  MoveMidiArrangerSelectionsAction * self);
+	MoveMidiArrangerSelectionsAction * self);
 
 void
 move_midi_arranger_selections_action_undo (
-  MoveMidiArrangerSelectionsAction * self);
+	MoveMidiArrangerSelectionsAction * self);
 
 void
 move_midi_arranger_selections_action_free (
-  MoveMidiArrangerSelectionsAction * self);
+	MoveMidiArrangerSelectionsAction * self);
 
 #endif

@@ -28,18 +28,19 @@
  * Note: chord addresses are to be copied.
  */
 UndoableAction *
-duplicate_midi_arranger_selections_action_new ()
+duplicate_midi_arranger_selections_action_new (
+  long ticks,
+  int  delta)
 {
   DuplicateMidiArrangerSelectionsAction * self =
     calloc (1, sizeof (
                  DuplicateMidiArrangerSelectionsAction));
-
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-    UNDOABLE_ACTION_TYPE_DELETE_MA_SELECTIONS;
-
+    UNDOABLE_ACTION_TYPE_DUPLICATE_MIDI_NOTES;
   self->mas = midi_arranger_selections_clone ();
-
+  self->ticks = ticks;
+  self->delta = delta;
   return ua;
 }
 
@@ -47,9 +48,15 @@ void
 duplicate_midi_arranger_selections_action_do (
   DuplicateMidiArrangerSelectionsAction * self)
 {
-  for (int i = 0; i < self->mas->num_midi_notes; i++)
+  MidiNote * mn;
+	for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
-      /* TODO */
+      mn = self->mas->midi_notes[i];
+      midi_region_add_midi_note (
+        mn->midi_region,
+        mn);
+      midi_note_shift (
+        mn, self->ticks, self->delta);
     }
   EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
                NULL);
@@ -59,9 +66,13 @@ void
 duplicate_midi_arranger_selections_action_undo (
   DuplicateMidiArrangerSelectionsAction * self)
 {
+  MidiNote * mn;
   for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
-      /* TODO */
+      mn = self->mas->midi_notes[i];
+      midi_region_remove_midi_note (
+        mn->midi_region,
+        mn);
     }
   EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
                NULL);

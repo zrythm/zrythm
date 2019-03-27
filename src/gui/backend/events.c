@@ -60,6 +60,7 @@
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
+#include "utils/gtk.h"
 #include "utils/stack.h"
 #include "zrythm.h"
 
@@ -365,12 +366,39 @@ on_plugin_added (Plugin * plugin)
 }
 
 static void
+on_midi_note_selection_changed ()
+{
+ Region * region = CLIP_EDITOR->region;
+
+  if (region->widget)
+    gtk_widget_queue_draw (
+      GTK_WIDGET (region->widget));
+}
+
+static void
 on_midi_note_changed (MidiNote * midi_note)
 {
-  Region * r = (Region *) midi_note->midi_region;
+  if (GTK_IS_WIDGET (midi_note->widget))
+    {
+      gtk_widget_set_visible (
+        GTK_WIDGET (midi_note->widget),
+        midi_note_is_visible (midi_note));
+      if (midi_note_is_selected (midi_note))
+        gtk_widget_set_state_flags (
+          GTK_WIDGET (midi_note->widget),
+          GTK_STATE_FLAG_SELECTED,
+          0);
+      else
+        gtk_widget_unset_state_flags (
+          GTK_WIDGET (midi_note->widget),
+          GTK_STATE_FLAG_SELECTED);
+      gtk_widget_queue_draw (
+        GTK_WIDGET (midi_note->widget));
+    }
 
-  if (r->widget)
-    gtk_widget_queue_draw (GTK_WIDGET (r->widget));
+  if (midi_note->midi_region->widget)
+    gtk_widget_queue_draw (
+      GTK_WIDGET (midi_note->midi_region->widget));
 }
 
 static void
@@ -386,6 +414,13 @@ on_plugin_visibility_changed (Plugin * pl)
     instrument_track_widget_refresh_buttons (
       Z_INSTRUMENT_TRACK_WIDGET (
         pl->channel->track->widget));
+
+  if (pl->channel->widget)
+    gtk_widget_queue_draw (
+      GTK_WIDGET (
+        pl->channel->widget->slots[
+          channel_get_plugin_index (
+            pl->channel, pl)]));
 }
 
 static int
@@ -404,6 +439,36 @@ update_adj ()
   return FALSE;
 }
 
+static void
+clean_duplicates ()
+{
+  EventType et, et2;
+  void * arg, * arg2;
+  int j;
+  for (int i = 0;
+       i <= EVENTS->et_stack->top; i++)
+    {
+      et =
+        (EventType) EVENTS->et_stack->elements[i];
+      arg = EVENTS->arg_stack->elements[i];
+
+      for (j = i + 1;
+           j < EVENTS->et_stack->top; j++)
+        {
+          et2 =
+            (EventType) EVENTS->et_stack->elements[j];
+          arg2 = EVENTS->arg_stack->elements[j];
+
+          if (et == et2 && arg == arg2)
+            {
+              EVENTS->et_stack->elements[j] =
+                (void *) -1;
+              /*g_message ("removed 1 duplicate");*/
+            }
+        }
+    }
+}
+
 /**
  * GSourceFunc to be added using idle add.
  *
@@ -417,6 +482,8 @@ events_process ()
   EventType et;
   void * arg;
 
+  clean_duplicates ();
+
   /*int i = 0;*/
   /*g_message ("starting processing");*/
   while (!stack_is_empty (EVENTS->et_stack))
@@ -424,6 +491,8 @@ events_process ()
       /*i++;*/
       et = ET_POP (EVENTS);
       arg = ARG_POP (EVENTS);
+      if (et < 0)
+        continue;
 
       switch (et)
         {
@@ -536,7 +605,12 @@ events_process ()
         case ET_TRACK_SELECT_CHANGED:
           on_track_select_changed ((Track *) arg);
           break;
+        case ET_MIDI_ARRANGER_SELECTIONS_CHANGED:
+           on_midi_note_selection_changed();
+            break;
         case ET_MIDI_NOTE_CHANGED:
+          g_message ("mn changed %p",
+                     ((MidiNote *)arg)->widget);
           on_midi_note_changed ((MidiNote *) arg);
           break;
         case ET_TIMELINE_VIEWPORT_CHANGED:
@@ -556,9 +630,28 @@ events_process ()
             MW_HEADER_BAR);
           break;
         case ET_MIDI_NOTE_CREATED:
+          /*z_gtk_overlay_add_if_not_exists (*/
+            /*GTK_OVERLAY (MIDI_ARRANGER),*/
+            /*GTK_WIDGET (((MidiNote *) arg)->widget));*/
+          /*z_gtk_overlay_add_if_not_exists (*/
+            /*GTK_OVERLAY (MIDI_MODIFIER_ARRANGER),*/
+            /*GTK_WIDGET (((MidiNote *) arg)->vel->widget));*/
+          /*gtk_widget_queue_allocate (*/
+            /*GTK_WIDGET (MIDI_ARRANGER));*/
+          /*arranger_widget_refresh (*/
+            /*Z_ARRANGER_WIDGET (MIDI_ARRANGER));*/
+          midi_arranger_widget_refresh_children (
+            MIDI_ARRANGER);
+          break;
         case ET_MIDI_NOTE_REMOVED:
-          arranger_widget_refresh (
-            Z_ARRANGER_WIDGET (MIDI_ARRANGER));
+          /*g_object_ref (((MidiNote *) arg)->widget);*/
+          /*gtk_container_remove (*/
+            /*GTK_CONTAINER (MIDI_ARRANGER),*/
+            /*GTK_WIDGET (((MidiNote *) arg)->widget));*/
+          /*arranger_widget_refresh (*/
+            /*Z_ARRANGER_WIDGET (MIDI_ARRANGER));*/
+          midi_arranger_widget_refresh_children (
+            MIDI_ARRANGER);
           break;
         case ET_REGION_CREATED:
         case ET_CHORD_CREATED:
@@ -581,9 +674,9 @@ events_process ()
     }
   /*g_message ("processed %d events", i);*/
 
-  g_usleep (8000);
+  /*g_usleep (8000);*/
 
-  return TRUE;
+  return G_SOURCE_CONTINUE;
 }
 
 /**
@@ -599,5 +692,8 @@ events_init (Events * self)
     /*G_PRIORITY_HIGH_IDLE + 30,*/
     /*(GSourceFunc) events_process,*/
     /*NULL, NULL);*/
-  g_idle_add ((GSourceFunc) events_process, NULL);
+  /*g_idle_add ((GSourceFunc) events_process, NULL);*/
+  g_timeout_add (32,
+                 events_process,
+                 NULL);
 }

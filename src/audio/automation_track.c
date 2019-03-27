@@ -498,15 +498,57 @@ automation_track_get_ap_before_pos (
   Position *        pos)
 {
   AutomationPoint * ap;
-  for (int i = self->num_automation_points - 1;
-       i >= 0;
-       i--)
+
+  /*for (int i = self->num_automation_points - 1;*/
+       /*i >= 0;*/
+       /*i--)*/
+    /*{*/
+      /*ap = self->automation_points[i];*/
+      /*if (position_compare (&ap->pos,*/
+                            /*pos) <= 0)*/
+        /*return ap;*/
+    /*}*/
+  /*return NULL;*/
+
+  /* binary search */
+  int first = 0;
+  /*g_message ("num autom %d",*/
+             /*self->num_automation_points);*/
+  int last = self->num_automation_points - 1;
+  if (first == last)
+    return NULL;
+  int middle = (first+last)/2;
+  AutomationPoint * next_ap;
+  int ap_is_before, next_ap_is_before;
+
+  while (first <= last)
     {
-      ap = self->automation_points[i];
-      if (position_compare (&ap->pos,
-                            pos) <= 0)
+      ap = self->automation_points[middle];
+      next_ap = NULL;
+      next_ap_is_before = 0;
+      if (middle < last)
+        {
+          next_ap =
+            self->automation_points[middle + 1];
+          next_ap_is_before =
+            position_compare (
+              &next_ap->pos, pos) <= 0;
+        }
+      ap_is_before =
+        position_compare (
+          &ap->pos, pos) <= 0;
+
+      /* if both too early, look in the 2nd half*/
+      if (ap_is_before && (
+            next_ap_is_before))
+        first = middle + 1;
+      else if (ap_is_before)
         return ap;
-    }
+      else
+        last = middle - 1;
+
+      middle = (first + last)/2;
+   }
   return NULL;
 }
 

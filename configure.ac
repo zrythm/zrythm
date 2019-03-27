@@ -17,7 +17,7 @@
 #  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 #
 # Initialize autoconf: package name, version, bug report address
-AC_INIT([zrythm], [0.2.003], [https://git.zrythm.org/zrythm/zrythm/issues])
+AC_INIT([zrythm], [0.2.038], [https://git.zrythm.org/zrythm/zrythm/issues])
 
 # Declare config.h as output header
 AC_CONFIG_HEADERS([config.h])
@@ -98,6 +98,11 @@ AC_ARG_WITH(
       AC_SUBST([HAVE_QT5],[1])])],
   [echo "** building without Qt5 support in suil. use --with-qt5 to enable it"])
 
+# needed for localization
+AC_DEFINE([GETTEXT_PACKAGE],["zrythm"],
+          [Gettext package name])
+
+# FIXME maybe not needed
 AC_ARG_WITH(
   docs,
   AS_HELP_STRING(
@@ -128,7 +133,7 @@ PKG_CHECK_MODULES([PORTAUDIO], [portaudio-2.0])
 #PKG_CHECK_MODULES([LIBCYAML], [libcyaml])
 PKG_CHECK_MODULES([LIBYAML], [yaml-0.1])
 PKG_CHECK_MODULES([X11], [x11])
-PKG_CHECK_MODULES([LIBGTOP], [libgtop-2.0])
+#PKG_CHECK_MODULES([LIBGTOP], [libgtop-2.0])
 #PKG_CHECK_MODULES([QT4], [QtGui])
 
 
@@ -141,6 +146,8 @@ AC_CHECK_HEADERS([unistd.h])
 AC_CHECK_FUNC([mlock],
               [AC_DEFINE([HAVE_MLOCK], [1],
               [Define if mlock exists.])])
+AC_CHECK_PROG(LOCALE,[locale],[yes],[no])
+test "$LOCALE" == "no" && AC_MSG_ERROR([Required program 'locale' not found.]) && exit 1
 
 #AM_COND_IF([LINUX],
            #[LDFLAGS="$LDFLAGS -L/usr/lib"])
