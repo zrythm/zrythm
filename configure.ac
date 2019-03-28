@@ -17,7 +17,7 @@
 #  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 #
 # Initialize autoconf: package name, version, bug report address
-AC_INIT([zrythm], [0.2.038], [https://git.zrythm.org/zrythm/zrythm/issues])
+AC_INIT([zrythm], [0.2.039], [https://git.zrythm.org/zrythm/zrythm/issues])
 
 # Declare config.h as output header
 AC_CONFIG_HEADERS([config.h])
@@ -148,6 +148,8 @@ AC_CHECK_FUNC([mlock],
               [Define if mlock exists.])])
 AC_CHECK_PROG(LOCALE,[locale],[yes],[no])
 test "$LOCALE" == "no" && AC_MSG_ERROR([Required program 'locale' not found.]) && exit 1
+AC_CHECK_PROG(SED,[sed],[yes],[no])
+test "$SED" == "no" && AC_MSG_ERROR([Required program 'sed' not found.]) && exit 1
 
 #AM_COND_IF([LINUX],
            #[LDFLAGS="$LDFLAGS -L/usr/lib"])
