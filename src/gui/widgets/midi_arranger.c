@@ -55,8 +55,10 @@
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "utils/arrays.h"
+#include "utils/gtk.h"
 #include "utils/flags.h"
 #include "utils/ui.h"
+#include "utils/resources.h"
 
 #include <gtk/gtk.h>
 
@@ -152,7 +154,8 @@ midi_arranger_widget_select_all (
     {
       MidiNote * midi_note = mr->midi_notes[i];
       midi_note_widget_select (
-        midi_note->widget, select, 0);
+        midi_note->widget, select,
+        F_NO_TRANSIENTS);
     }
   /*arranger_widget_refresh(&self->parent_instance);*/
 }
@@ -174,30 +177,6 @@ on_motion (GtkWidget *      widget,
               GTK_WIDGET (ar_prv->bg));
 
   return FALSE;
-}
-
-/**
- * Shows context menu.
- *
- * To be called from parent on right click.
- */
-void
-midi_arranger_widget_show_context_menu (MidiArrangerWidget * self)
-{
-  GtkWidget *menu, *menuitem;
-
-  menu = gtk_menu_new();
-
-  menuitem = gtk_menu_item_new_with_label("Do something");
-
-  /*g_signal_connect(menuitem, "activate",*/
-                   /*(GCallback) view_popup_menu_onDoSomething, treeview);*/
-
-  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
-
-  gtk_widget_show_all(menu);
-
-  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
 }
 
 void
@@ -312,8 +291,95 @@ midi_arranger_widget_get_cursor (
   else if (tool == TOOL_AUDITION)
     return ARRANGER_CURSOR_AUDITION;
 
-  g_assert_not_reached ();
+  g_warn_if_reached ();
   return -1;
+}
+
+/**
+ * Shows context menu.
+ *
+ * To be called from parent on right click.
+ */
+void
+midi_arranger_widget_show_context_menu (
+  MidiArrangerWidget * self,
+  gdouble              x,
+  gdouble              y)
+{
+  GtkWidget *menu;
+  GtkMenuItem * menu_item;
+
+  MidiNoteWidget * clicked_note =
+    midi_arranger_widget_get_hit_midi_note (
+      self, x, y);
+
+  if (clicked_note)
+    {
+      int selected =
+        midi_note_is_selected (
+          clicked_note->midi_note);
+      if (!selected)
+        ARRANGER_WIDGET_SELECT_MIDI_NOTE (
+          self, clicked_note->midi_note,
+          F_SELECT, F_NO_APPEND,
+          F_NO_TRANSIENTS);
+    }
+  else
+    {
+      midi_arranger_widget_select_all (
+        self, F_NO_SELECT);
+      midi_arranger_selections_clear (
+        MIDI_ARRANGER_SELECTIONS);
+    }
+
+#define APPEND_TO_MENU \
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), \
+                         GTK_WIDGET (menu_item))
+
+  menu = gtk_menu_new();
+
+  menu_item = CREATE_CUT_MENU_ITEM;
+  APPEND_TO_MENU;
+  menu_item = CREATE_COPY_MENU_ITEM;
+  APPEND_TO_MENU;
+  menu_item = CREATE_PASTE_MENU_ITEM;
+  APPEND_TO_MENU;
+  menu_item = CREATE_DELETE_MENU_ITEM;
+  APPEND_TO_MENU;
+  menu_item = CREATE_DUPLICATE_MENU_ITEM;
+  APPEND_TO_MENU;
+  menu_item =
+    GTK_MENU_ITEM (gtk_separator_menu_item_new ());
+  APPEND_TO_MENU;
+  menu_item = CREATE_CLEAR_SELECTION_MENU_ITEM;
+  APPEND_TO_MENU;
+  menu_item = CREATE_SELECT_ALL_MENU_ITEM;
+  APPEND_TO_MENU;
+
+#undef APPEND_TO_MENU
+
+  gtk_widget_show_all(menu);
+
+  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
+}
+
+/**
+ * Sets transient notes and actual notes
+ * visibility based on the current action.
+ */
+void
+midi_arranger_widget_update_visibility (
+  MidiArrangerWidget * self)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  MidiNote * mn, * transient;
+  ARRANGER_SET_SELECTION_VISIBILITY (
+    MIDI_ARRANGER_SELECTIONS->midi_notes,
+    MIDI_ARRANGER_SELECTIONS->transient_notes,
+    MIDI_ARRANGER_SELECTIONS->num_midi_notes,
+    mn,
+    transient);
 }
 
 void
@@ -392,9 +458,10 @@ midi_arranger_widget_on_drag_begin_note_hit (
       P_TOOL == TOOL_SELECT_NORMAL ||
       P_TOOL == TOOL_SELECT_STRETCH)
     {
-      int moving =
+      int transients =
         arranger_widget_is_in_moving_operation (
           Z_ARRANGER_WIDGET (self));
+
       /* if ctrl held & not selected, add to
        * selections */
       if (ar_prv->ctrl_held &&
@@ -402,9 +469,7 @@ midi_arranger_widget_on_drag_begin_note_hit (
         {
           ARRANGER_WIDGET_SELECT_MIDI_NOTE (
             self, mn, F_SELECT, F_APPEND,
-            moving ?
-            F_TRANSIENTS :
-            F_NO_TRANSIENTS);
+            transients);
         }
       /* if ctrl not held & not selected, make it
        * the only
@@ -414,16 +479,14 @@ midi_arranger_widget_on_drag_begin_note_hit (
         {
           ARRANGER_WIDGET_SELECT_MIDI_NOTE (
             self, mn, F_SELECT, F_NO_APPEND,
-            moving ?
-            F_TRANSIENTS :
-            F_NO_TRANSIENTS);
+            transients);
         }
       /* if selected, create transients */
       else if (selected)
         {
           midi_arranger_selections_create_missing_transients (
             MIDI_ARRANGER_SELECTIONS);
-          g_assert (
+          g_warn_if_fail (
             MIDI_ARRANGER_SELECTIONS->
               transient_notes[0] &&
             GTK_IS_WIDGET (
@@ -470,7 +533,7 @@ midi_arranger_widget_create_note (
                midi_note);
   ar_prv->action = UI_OVERLAY_ACTION_RESIZING_R;
   midi_note_widget_select (
-    midi_note->widget, 1, 0);
+    midi_note->widget, F_SELECT, F_NO_TRANSIENTS);
 }
 
 /**
@@ -622,30 +685,25 @@ midi_arranger_widget_move_items_x (
   long                 ticks_diff)
 {
   /* update region positions */
+  MidiNote * mn;
+  Position tmp;
+  long length_ticks;
   for (int i = 0;
        i < MIDI_ARRANGER_SELECTIONS->num_midi_notes;
        i++)
     {
-      MidiNote * r =
+      mn =
         MIDI_ARRANGER_SELECTIONS->
           transient_notes[i];
-      Position * prev_start_pos =
-        &self->midi_note_start_poses[i];
-      long length_ticks =
-        position_to_ticks (&r->end_pos) -
-          position_to_ticks (&r->start_pos);
-      Position tmp;
-      position_set_to_pos (&tmp, prev_start_pos);
-      position_add_ticks (&tmp,
-                          ticks_diff + length_ticks);
-      midi_note_set_end_pos (r, &tmp);
-      position_set_to_pos (&tmp, prev_start_pos);
-      position_add_ticks (&tmp, ticks_diff);
-      midi_note_set_start_pos (r, &tmp);
 
-      if (r->widget)
+      ARRANGER_MOVE_OBJ_BY_TICKS_W_LENGTH (
+        mn, midi_note,
+        &self->midi_note_start_poses[i],
+        ticks_diff, &tmp, length_ticks);
+
+      if (mn->widget)
         midi_note_widget_update_tooltip (
-          r->widget, 1);
+          mn->widget, 1);
     }
 }
 
@@ -920,7 +978,7 @@ midi_arranger_widget_auto_scroll (
     MidiNote * highest_note =
       midi_arranger_selections_get_highest_note (
         MIDI_ARRANGER_SELECTIONS, transient);
-    g_assert (first_note && last_note &&
+    g_warn_if_fail (first_note && last_note &&
               lowest_note && highest_note &&
               first_note->widget &&
               last_note->widget &&

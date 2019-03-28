@@ -53,7 +53,7 @@ create_chords_action_do (CreateChordsAction * self)
   for (int i = 0; i < self->num_chords; i++)
     {
       Chord * chord = self->chords[i];
-      chord_track_add_chord (CHORD_TRACK,
+      chord_track_add_chord (P_CHORD_TRACK,
                              chord);
 
       EVENTS_PUSH (ET_CHORD_CREATED, chord);
@@ -66,7 +66,7 @@ create_chords_action_undo (CreateChordsAction * self)
   for (int i = 0; i < self->num_chords; i++)
     {
       Chord * chord = self->chords[i];
-      chord_track_remove_chord (CHORD_TRACK,
+      chord_track_remove_chord (P_CHORD_TRACK,
                                 chord);
 
       EVENTS_PUSH (ET_CHORD_REMOVED, chord);

@@ -209,7 +209,7 @@ dzl_multi_paned_reset_positions (DzlMultiPaned *self)
   DzlMultiPanedPrivate *priv = dzl_multi_paned_get_instance_private (self);
   guint i;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
 
   for (i = 0; i < priv->children->len; i++)
     {
@@ -233,10 +233,10 @@ dzl_multi_paned_get_next_visible_child (DzlMultiPaned      *self,
   DzlMultiPanedPrivate *priv = dzl_multi_paned_get_instance_private (self);
   guint i;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (child != NULL);
-  g_assert (priv->children != NULL);
-  g_assert (priv->children->len > 0);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (child != NULL);
+  g_warn_if_fail (priv->children != NULL);
+  g_warn_if_fail (priv->children->len > 0);
 
   i = child - ((DzlMultiPanedChild *)(gpointer)priv->children->data);
 
@@ -255,8 +255,8 @@ static gboolean
 dzl_multi_paned_is_last_visible_child (DzlMultiPaned      *self,
                                        DzlMultiPanedChild *child)
 {
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (child != NULL);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (child != NULL);
 
   return !dzl_multi_paned_get_next_visible_child (self, child);
 }
@@ -269,9 +269,9 @@ dzl_multi_paned_get_handle_rect (DzlMultiPaned      *self,
   DzlMultiPanedPrivate *priv = dzl_multi_paned_get_instance_private (self);
   GtkAllocation alloc;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (child != NULL);
-  g_assert (handle_rect != NULL);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (child != NULL);
+  g_warn_if_fail (handle_rect != NULL);
 
   handle_rect->x = -1;
   handle_rect->y = -1;
@@ -314,9 +314,9 @@ dzl_multi_paned_create_child_handle (DzlMultiPaned      *self,
   const char *cursor_name;
   GdkRectangle handle_rect;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (child != NULL);
-  g_assert (child->handle == NULL);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (child != NULL);
+  g_warn_if_fail (child->handle == NULL);
 
   display = gtk_widget_get_display (GTK_WIDGET (self));
   parent = gtk_widget_get_window (GTK_WIDGET (self));
@@ -355,7 +355,7 @@ dzl_multi_paned_calc_handle_size (DzlMultiPaned *self)
   gint handle_size = 4;
   guint i;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
 
   gtk_widget_style_get (GTK_WIDGET (self), "handle-size", &handle_size, NULL);
 
@@ -374,8 +374,8 @@ static void
 dzl_multi_paned_destroy_child_handle (DzlMultiPaned      *self,
                                       DzlMultiPanedChild *child)
 {
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (child != NULL);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (child != NULL);
 
   if (child->handle != NULL)
     {
@@ -422,8 +422,8 @@ dzl_multi_paned_get_child (DzlMultiPaned *self,
 {
   DzlMultiPanedPrivate *priv = dzl_multi_paned_get_instance_private (self);
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
 
   for (guint i = 0; i < priv->children->len; i++)
     {
@@ -433,7 +433,7 @@ dzl_multi_paned_get_child (DzlMultiPaned *self,
         return child;
     }
 
-  g_assert_not_reached ();
+  g_warn_if_reached ();
 
   return NULL;
 }
@@ -444,8 +444,8 @@ dzl_multi_paned_get_child_index (DzlMultiPaned *self,
 {
   DzlMultiPanedPrivate *priv = dzl_multi_paned_get_instance_private (self);
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
 
   for (guint i = 0; i < priv->children->len; i++)
     {
@@ -465,10 +465,10 @@ dzl_multi_paned_set_child_index (DzlMultiPaned *self,
 {
   DzlMultiPanedPrivate *priv = dzl_multi_paned_get_instance_private (self);
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (GTK_IS_WIDGET (widget));
-  g_assert (index >= -1);
-  g_assert (priv->children->len > 0);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (index >= -1);
+  g_warn_if_fail (priv->children->len > 0);
 
   if (index < 0)
     index = priv->children->len - 1;
@@ -505,8 +505,8 @@ dzl_multi_paned_get_child_position (DzlMultiPaned *self,
 {
   DzlMultiPanedChild *child;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
 
   child = dzl_multi_paned_get_child (self, widget);
 
@@ -520,9 +520,9 @@ dzl_multi_paned_set_child_position (DzlMultiPaned *self,
 {
   DzlMultiPanedChild *child;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (GTK_IS_WIDGET (widget));
-  g_assert (position >= -1);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (position >= -1);
 
   child = dzl_multi_paned_get_child (self, widget);
 
@@ -544,8 +544,8 @@ dzl_multi_paned_add (GtkContainer *container,
   DzlMultiPanedPrivate *priv = dzl_multi_paned_get_instance_private (self);
   DzlMultiPanedChild child = { 0 };
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
 
   child.widget = g_object_ref_sink (widget);
   child.position = -1;
@@ -572,8 +572,8 @@ dzl_multi_paned_remove (GtkContainer *container,
   DzlMultiPanedPrivate *priv = dzl_multi_paned_get_instance_private (self);
   guint i;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
 
   for (i = 0; i < priv->children->len; i++)
     {
@@ -610,8 +610,8 @@ dzl_multi_paned_forall (GtkContainer *container,
   DzlMultiPanedPrivate *priv = dzl_multi_paned_get_instance_private (self);
   gint i;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (callback != NULL);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (callback != NULL);
 
   for (i = priv->children->len; i > 0; i--)
     {
@@ -627,7 +627,7 @@ dzl_multi_paned_get_request_mode (GtkWidget *widget)
   DzlMultiPaned *self = (DzlMultiPaned *)widget;
   DzlMultiPanedPrivate *priv = dzl_multi_paned_get_instance_private (self);
 
-  g_assert (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
 
   return (priv->orientation == GTK_ORIENTATION_HORIZONTAL) ? GTK_SIZE_REQUEST_WIDTH_FOR_HEIGHT
                                                            : GTK_SIZE_REQUEST_HEIGHT_FOR_WIDTH;
@@ -646,9 +646,9 @@ dzl_multi_paned_get_preferred_height (GtkWidget *widget,
   gint real_min_height = 0;
   gint real_nat_height = 0;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (min_height != NULL);
-  g_assert (nat_height != NULL);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (min_height != NULL);
+  g_warn_if_fail (nat_height != NULL);
 
   for (i = 0; i < priv->children->len; i++)
     {
@@ -706,10 +706,10 @@ dzl_multi_paned_get_child_preferred_height_for_width (DzlMultiPaned      *self,
   gint neighbor_min_height = 0;
   gint neighbor_nat_height = 0;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (n_children == 0 || children != NULL);
-  g_assert (min_height != NULL);
-  g_assert (nat_height != NULL);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (n_children == 0 || children != NULL);
+  g_warn_if_fail (min_height != NULL);
+  g_warn_if_fail (nat_height != NULL);
 
   *min_height = 0;
   *nat_height = 0;
@@ -753,9 +753,9 @@ dzl_multi_paned_get_preferred_height_for_width (GtkWidget *widget,
   GtkStyleContext *style_context;
   GtkBorder borders;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (min_height != NULL);
-  g_assert (nat_height != NULL);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (min_height != NULL);
+  g_warn_if_fail (nat_height != NULL);
 
   *min_height = 0;
   *nat_height = 0;
@@ -795,9 +795,9 @@ dzl_multi_paned_get_preferred_width (GtkWidget *widget,
   gint real_min_width = 0;
   gint real_nat_width = 0;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (min_width != NULL);
-  g_assert (nat_width != NULL);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (min_width != NULL);
+  g_warn_if_fail (nat_width != NULL);
 
   for (i = 0; i < priv->children->len; i++)
     {
@@ -855,10 +855,10 @@ dzl_multi_paned_get_child_preferred_width_for_height (DzlMultiPaned      *self,
   gint neighbor_min_width = 0;
   gint neighbor_nat_width = 0;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (n_children == 0 || children != NULL);
-  g_assert (min_width != NULL);
-  g_assert (nat_width != NULL);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (n_children == 0 || children != NULL);
+  g_warn_if_fail (min_width != NULL);
+  g_warn_if_fail (nat_width != NULL);
 
   *min_width = 0;
   *nat_width = 0;
@@ -902,9 +902,9 @@ dzl_multi_paned_get_preferred_width_for_height (GtkWidget *widget,
   GtkStyleContext *style_context;
   GtkBorder borders;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (min_width != NULL);
-  g_assert (nat_width != NULL);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (min_width != NULL);
+  g_warn_if_fail (nat_width != NULL);
 
   dzl_multi_paned_get_child_preferred_width_for_height (self,
                                                         (DzlMultiPanedChild *)(gpointer)priv->children->data,
@@ -934,10 +934,10 @@ allocation_stage_handles (DzlMultiPaned   *self,
 {
   guint i;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (state != NULL);
-  g_assert (state->children != NULL);
-  g_assert (state->n_children > 0);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (state != NULL);
+  g_warn_if_fail (state->children != NULL);
+  g_warn_if_fail (state->n_children > 0);
 
   /*
    * Push each child allocation forward by the sum handle widths up to
@@ -968,10 +968,10 @@ allocation_stage_minimums (DzlMultiPaned   *self,
   gint next_y;
   guint i;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (state != NULL);
-  g_assert (state->children != NULL);
-  g_assert (state->n_children > 0);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (state != NULL);
+  g_warn_if_fail (state->children != NULL);
+  g_warn_if_fail (state->n_children > 0);
 
   next_x = state->top_alloc.x;
   next_y = state->top_alloc.y;
@@ -1012,10 +1012,10 @@ allocation_stage_naturals (DzlMultiPaned   *self,
   gint x_adjust = 0;
   gint y_adjust = 0;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (state != NULL);
-  g_assert (state->children != NULL);
-  g_assert (state->n_children > 0);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (state != NULL);
+  g_warn_if_fail (state->children != NULL);
+  g_warn_if_fail (state->n_children > 0);
 
   for (guint i = 0; i < state->n_children; i++)
     {
@@ -1059,10 +1059,10 @@ allocation_stage_borders (DzlMultiPaned   *self,
   GtkStyleContext *style_context;
   GtkBorder borders;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (state != NULL);
-  g_assert (state->children != NULL);
-  g_assert (state->n_children > 0);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (state != NULL);
+  g_warn_if_fail (state->children != NULL);
+  g_warn_if_fail (state->n_children > 0);
 
   /*
    * This subtracts the border+padding from the allocation area so the
@@ -1093,10 +1093,10 @@ allocation_stage_cache_request (DzlMultiPaned   *self,
 {
   guint i;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (state != NULL);
-  g_assert (state->children != NULL);
-  g_assert (state->n_children > 0);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (state != NULL);
+  g_warn_if_fail (state->children != NULL);
+  g_warn_if_fail (state->n_children > 0);
 
   for (i = 0; i < state->n_children; i++)
     {
@@ -1123,10 +1123,10 @@ allocation_stage_positions (DzlMultiPaned   *self,
   gint y_adjust = 0;
   guint i;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (state != NULL);
-  g_assert (state->children != NULL);
-  g_assert (state->n_children > 0);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (state != NULL);
+  g_warn_if_fail (state->children != NULL);
+  g_warn_if_fail (state->n_children > 0);
 
   /*
    * Child may have a position set, which happens when dragging the input
@@ -1178,10 +1178,10 @@ allocation_stage_drag_overflow (DzlMultiPaned   *self,
   gint j;
   gint drag_overflow;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (state != NULL);
-  g_assert (state->children != NULL);
-  g_assert (state->n_children > 0);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (state != NULL);
+  g_warn_if_fail (state->children != NULL);
+  g_warn_if_fail (state->n_children > 0);
 
   if (priv->drag_begin == NULL)
     return;
@@ -1281,10 +1281,10 @@ allocation_stage_expand (DzlMultiPaned   *self,
   gint y_adjust = 0;
   gint adjust;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (state != NULL);
-  g_assert (state->children != NULL);
-  g_assert (state->n_children > 0);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (state != NULL);
+  g_warn_if_fail (state->children != NULL);
+  g_warn_if_fail (state->n_children > 0);
 
   if (state->n_children == 1)
     {
@@ -1345,7 +1345,7 @@ allocation_stage_expand (DzlMultiPaned   *self,
    * dont hand out more than we have).
    */
 
-  g_assert (expanding->len > 0);
+  g_warn_if_fail (expanding->len > 0);
 
   for (guint i = 0; i < expanding->len - 1; i++)
     {
@@ -1356,7 +1356,7 @@ allocation_stage_expand (DzlMultiPaned   *self,
         {
           guint j;
 
-          g_assert (next->alloc.width >= child->alloc.width);
+          g_warn_if_fail (next->alloc.width >= child->alloc.width);
 
           adjust = next->alloc.width - child->alloc.width;
           if (adjust > state->avail_width)
@@ -1372,7 +1372,7 @@ allocation_stage_expand (DzlMultiPaned   *self,
           for (++j; j < state->n_children; j++)
             state->children[j]->alloc.x += adjust;
 
-          g_assert (state->avail_width >= 0);
+          g_warn_if_fail (state->avail_width >= 0);
 
           if (state->avail_width == 0)
             break;
@@ -1381,7 +1381,7 @@ allocation_stage_expand (DzlMultiPaned   *self,
         {
           guint j;
 
-          g_assert (next->alloc.height >= child->alloc.height);
+          g_warn_if_fail (next->alloc.height >= child->alloc.height);
 
           adjust = next->alloc.height - child->alloc.height;
           if (adjust > state->avail_height)
@@ -1397,7 +1397,7 @@ allocation_stage_expand (DzlMultiPaned   *self,
           for (++j; j < state->n_children; j++)
             state->children[j]->alloc.y += adjust;
 
-          g_assert (state->avail_height >= 0);
+          g_warn_if_fail (state->avail_height >= 0);
 
           if (state->avail_height == 0)
             break;
@@ -1466,10 +1466,10 @@ static void
 allocation_stage_allocate (DzlMultiPaned   *self,
                            AllocationState *state)
 {
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (state != NULL);
-  g_assert (state->children != NULL);
-  g_assert (state->n_children > 0);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (state != NULL);
+  g_warn_if_fail (state->children != NULL);
+  g_warn_if_fail (state->n_children > 0);
 
   for (guint i = 0; i < state->n_children; i++)
     {
@@ -1517,8 +1517,8 @@ dzl_multi_paned_size_allocate (GtkWidget     *widget,
   AllocationState state = { 0 };
   g_autoptr(GPtrArray) children = NULL;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (allocation != NULL);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (allocation != NULL);
 
   GTK_WIDGET_CLASS (dzl_multi_paned_parent_class)->size_allocate (widget, allocation);
 
@@ -1572,7 +1572,7 @@ dzl_multi_paned_realize (GtkWidget *widget)
   DzlMultiPanedPrivate *priv = dzl_multi_paned_get_instance_private (self);
   guint i;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
 
   GTK_WIDGET_CLASS (dzl_multi_paned_parent_class)->realize (widget);
 
@@ -1591,7 +1591,7 @@ dzl_multi_paned_unrealize (GtkWidget *widget)
   DzlMultiPanedPrivate *priv = dzl_multi_paned_get_instance_private (self);
   guint i;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
 
   for (i = 0; i < priv->children->len; i++)
     {
@@ -1610,7 +1610,7 @@ dzl_multi_paned_map (GtkWidget *widget)
   DzlMultiPanedPrivate *priv = dzl_multi_paned_get_instance_private (self);
   guint i;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
 
   GTK_WIDGET_CLASS (dzl_multi_paned_parent_class)->map (widget);
 
@@ -1629,7 +1629,7 @@ dzl_multi_paned_unmap (GtkWidget *widget)
   DzlMultiPanedPrivate *priv = dzl_multi_paned_get_instance_private (self);
   guint i;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
 
   for (i = 0; i < priv->children->len; i++)
     {
@@ -1655,8 +1655,8 @@ dzl_multi_paned_draw (GtkWidget *widget,
   gint handle_size = 1;
   guint i;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (cr != NULL);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (cr != NULL);
 
   gtk_widget_get_allocation (widget, &alloc);
 
@@ -1743,9 +1743,9 @@ dzl_multi_paned_pan_gesture_drag_begin (DzlMultiPaned *self,
   guint i;
   g_message ("drag_begin");
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (GTK_IS_GESTURE_DRAG (gesture));
-  g_assert (gesture == priv->gesture);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (GTK_IS_GESTURE_DRAG (gesture));
+  g_warn_if_fail (gesture == priv->gesture);
 
   sequence = gtk_gesture_single_get_current_sequence (GTK_GESTURE_SINGLE (gesture));
   event = gtk_gesture_get_last_event (GTK_GESTURE (gesture), sequence);
@@ -1814,9 +1814,9 @@ dzl_multi_paned_pan_gesture_drag_end (DzlMultiPaned *self,
   GdkEventSequence *sequence;
   GtkEventSequenceState state;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (GTK_IS_GESTURE_DRAG (gesture));
-  g_assert (gesture == priv->gesture);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (GTK_IS_GESTURE_DRAG (gesture));
+  g_warn_if_fail (gesture == priv->gesture);
 
   sequence = gtk_gesture_single_get_current_sequence (GTK_GESTURE_SINGLE (gesture));
   state = gtk_gesture_get_sequence_state (GTK_GESTURE (gesture), sequence);
@@ -1824,7 +1824,7 @@ dzl_multi_paned_pan_gesture_drag_end (DzlMultiPaned *self,
   if (state != GTK_EVENT_SEQUENCE_CLAIMED)
     goto cleanup;
 
-  g_assert (priv->drag_begin != NULL);
+  g_warn_if_fail (priv->drag_begin != NULL);
 
   g_signal_emit (self, signals [RESIZE_DRAG_END], 0, priv->drag_begin->widget);
 
@@ -1844,10 +1844,10 @@ dzl_multi_paned_pan_gesture_pan (DzlMultiPaned   *self,
   GtkAllocation alloc;
   gdouble offset;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (GTK_IS_GESTURE_DRAG (gesture));
-  g_assert (gesture == priv->gesture);
-  g_assert (priv->drag_begin != NULL);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (GTK_IS_GESTURE_DRAG (gesture));
+  g_warn_if_fail (gesture == priv->gesture);
+  g_warn_if_fail (priv->drag_begin != NULL);
 
   gtk_widget_get_allocation (GTK_WIDGET (self), &alloc);
 
@@ -1859,7 +1859,7 @@ dzl_multi_paned_pan_gesture_pan (DzlMultiPaned   *self,
     }
   else
     {
-      g_assert (priv->orientation == GTK_ORIENTATION_VERTICAL);
+      g_warn_if_fail (priv->orientation == GTK_ORIENTATION_VERTICAL);
 
       /*if (direction == GTK_PAN_DIRECTION_UP)*/
         /*offset = -offset;*/
@@ -1883,8 +1883,8 @@ dzl_multi_paned_create_pan_gesture (DzlMultiPaned *self)
   DzlMultiPanedPrivate *priv = dzl_multi_paned_get_instance_private (self);
   GtkGesture *gesture;
 
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (priv->gesture == NULL);
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (priv->gesture == NULL);
 
   gesture = gtk_gesture_drag_new (GTK_WIDGET (self));
   gtk_gesture_single_set_touch_only (GTK_GESTURE_SINGLE (gesture), FALSE);
@@ -1916,8 +1916,8 @@ static void
 dzl_multi_paned_resize_drag_begin (DzlMultiPaned *self,
                                    GtkWidget     *child)
 {
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (GTK_IS_WIDGET (child));
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (GTK_IS_WIDGET (child));
 
 }
 
@@ -1925,8 +1925,8 @@ static void
 dzl_multi_paned_resize_drag_end (DzlMultiPaned *self,
                                  GtkWidget     *child)
 {
-  g_assert (DZL_IS_MULTI_PANED (self));
-  g_assert (GTK_IS_WIDGET (child));
+  g_warn_if_fail (DZL_IS_MULTI_PANED (self));
+  g_warn_if_fail (GTK_IS_WIDGET (child));
 
 }
 
@@ -1984,7 +1984,7 @@ dzl_multi_paned_finalize (GObject *object)
   DzlMultiPaned *self = (DzlMultiPaned *)object;
   DzlMultiPanedPrivate *priv = dzl_multi_paned_get_instance_private (self);
 
-  g_assert (priv->children->len == 0);
+  g_warn_if_fail (priv->children->len == 0);
 
   g_clear_pointer (&priv->children, g_array_unref);
   g_clear_object (&priv->gesture);

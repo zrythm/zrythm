@@ -110,7 +110,7 @@ midi_region_find_unended_note (MidiRegion * self,
       if (mn->val == pitch)
         return mn;
     }
-  g_assert_not_reached ();
+  g_warn_if_reached ();
   return NULL;
 }
 

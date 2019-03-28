@@ -17,43 +17,43 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __UNDO_MOVE_MIDI_ARRANGER_SELECTIONS_ACTION_H__
-#define __UNDO_MOVE_MIDI_ARRANGER_SELECTIONS_POS_ACTION_H__
+#ifndef __UNDO_MOVE_TIMELINE_SELECTIONS_ACTION_H__
+#define __UNDO_MOVE_TIMELINE_SELECTIONS_POS_ACTION_H__
 
 #include "actions/undoable_action.h"
 
-typedef struct MidiArrangerSelections
-  MidiArrangerSelections;
+typedef struct TimelineSelections
+  TimelineSelections;
 
-typedef struct MoveMidiArrangerSelectionsAction
+typedef struct MoveTimelineSelectionsAction
 {
   UndoableAction              parent_instance;
 
   /** Ticks moved. */
   long        ticks;
 
-  /** Delta of note value. */
+  /** Tracks moved. */
   int         delta;
 
-  /** Clone of selections. */
-  MidiArrangerSelections * mas;
-} MoveMidiArrangerSelectionsAction;
+  /** Timeline selections clone. */
+  TimelineSelections * ts;
+} MoveTimelineSelectionsAction;
 
 UndoableAction *
-move_midi_arranger_selections_action_new (
+move_timeline_selections_action_new (
   long ticks,
   int  delta);
 
 void
-move_midi_arranger_selections_action_do (
-	MoveMidiArrangerSelectionsAction * self);
+move_timeline_selections_action_do (
+	MoveTimelineSelectionsAction * self);
 
 void
-move_midi_arranger_selections_action_undo (
-	MoveMidiArrangerSelectionsAction * self);
+move_timeline_selections_action_undo (
+	MoveTimelineSelectionsAction * self);
 
 void
-move_midi_arranger_selections_action_free (
-	MoveMidiArrangerSelectionsAction * self);
+move_timeline_selections_action_free (
+	MoveTimelineSelectionsAction * self);
 
 #endif

@@ -85,7 +85,7 @@ bot_bar_status_contains (const char * substr)
             0);
         }
     }
-  g_assert_not_reached ();
+  g_warn_if_reached ();
   return 0;
 }
 

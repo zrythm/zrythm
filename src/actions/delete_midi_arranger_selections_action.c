@@ -47,13 +47,14 @@ void
 delete_midi_arranger_selections_action_do (
   DeleteMidiArrangerSelectionsAction * self)
 {
+  MidiNote * _mn, *mn;
   for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
       /* this is a clone */
-      MidiNote * _mn = self->mas->midi_notes[i];
+      _mn = self->mas->midi_notes[i];
 
       /* find actual midi note */
-      MidiNote * mn =
+      mn =
         project_get_midi_note (_mn->actual_note);
 
       /* remove it */
@@ -68,13 +69,14 @@ void
 delete_midi_arranger_selections_action_undo (
   DeleteMidiArrangerSelectionsAction * self)
 {
+  MidiNote * mn_clone, * mn;
   for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
       /* this is a clone */
-      MidiNote * mn = self->mas->midi_notes[i];
+      mn = self->mas->midi_notes[i];
 
       /* clone the clone */
-      MidiNote * mn_clone =
+      mn_clone =
         midi_note_clone (mn, mn->midi_region);
 
       /* set actual note to the orig clone */

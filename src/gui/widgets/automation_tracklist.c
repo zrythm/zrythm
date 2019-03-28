@@ -101,7 +101,7 @@ automation_tracklist_widget_refresh (
       /* show automation track */
       if (al->visible)
         {
-          g_assert (GTK_IS_WIDGET (al->widget));
+          g_warn_if_fail (GTK_IS_WIDGET (al->widget));
           /*g_message ("self %p, al %p, al widget %p",*/
                      /*self,*/
                      /*al,*/

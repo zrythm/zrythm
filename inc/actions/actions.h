@@ -173,6 +173,11 @@ activate_delete (GSimpleAction *action,
                   gpointer       user_data);
 
 void
+activate_duplicate (GSimpleAction *action,
+                  GVariant      *variant,
+                  gpointer       user_data);
+
+void
 activate_clear_selection (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data);

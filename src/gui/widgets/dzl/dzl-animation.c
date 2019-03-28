@@ -250,7 +250,7 @@ dzl_animation_load_begin_values (DzlAnimation *animation)
   Tween *tween;
   guint i;
 
-  g_assert (DZL_IS_ANIMATION (animation));
+  g_warn_if_fail (DZL_IS_ANIMATION (animation));
 
   for (i = 0; i < animation->tweens->len; i++)
     {
@@ -289,7 +289,7 @@ dzl_animation_unload_begin_values (DzlAnimation *animation)
   Tween *tween;
   guint i;
 
-  g_assert (DZL_IS_ANIMATION (animation));
+  g_warn_if_fail (DZL_IS_ANIMATION (animation));
 
   for (i = 0; i < animation->tweens->len; i++)
     {
@@ -314,7 +314,7 @@ static gdouble
 dzl_animation_get_offset (DzlAnimation *animation,
                           gint64        frame_time)
 {
-  g_assert (DZL_IS_ANIMATION (animation));
+  g_warn_if_fail (DZL_IS_ANIMATION (animation));
 
   if (frame_time == 0)
     {
@@ -353,10 +353,10 @@ dzl_animation_update_property (DzlAnimation  *animation,
                               Tween        *tween,
                               const GValue *value)
 {
-  g_assert (DZL_IS_ANIMATION (animation));
-  g_assert (G_IS_OBJECT (target));
-  g_assert (tween);
-  g_assert (value);
+  g_warn_if_fail (DZL_IS_ANIMATION (animation));
+  g_warn_if_fail (G_IS_OBJECT (target));
+  g_warn_if_fail (tween);
+  g_warn_if_fail (value);
 
   g_object_set_property (target, tween->pspec->name, value);
 }
@@ -381,10 +381,10 @@ dzl_animation_update_child_property (DzlAnimation *animation,
 {
   GtkWidget *parent;
 
-  g_assert (DZL_IS_ANIMATION (animation));
-  g_assert (G_IS_OBJECT (target));
-  g_assert (tween);
-  g_assert (value);
+  g_warn_if_fail (DZL_IS_ANIMATION (animation));
+  g_warn_if_fail (G_IS_OBJECT (target));
+  g_warn_if_fail (tween);
+  g_warn_if_fail (value);
 
   parent = gtk_widget_get_parent (GTK_WIDGET (target));
   gtk_container_child_set_property (GTK_CONTAINER (parent),
@@ -411,10 +411,10 @@ dzl_animation_get_value_at_offset (DzlAnimation *animation,
                                    Tween        *tween,
                                    GValue       *value)
 {
-  g_assert (DZL_IS_ANIMATION (animation));
-  g_assert (tween != NULL);
-  g_assert (value != NULL);
-  g_assert (value->g_type == tween->pspec->value_type);
+  g_warn_if_fail (DZL_IS_ANIMATION (animation));
+  g_warn_if_fail (tween != NULL);
+  g_warn_if_fail (value != NULL);
+  g_warn_if_fail (value->g_type == tween->pspec->value_type);
 
   if (value->g_type < LAST_FUNDAMENTAL)
     {
@@ -422,7 +422,7 @@ dzl_animation_get_value_at_offset (DzlAnimation *animation,
        * If you hit the following assertion, you need to add a function
        * to create the new value at the given offset.
        */
-      g_assert (tween_funcs[value->g_type]);
+      g_warn_if_fail (tween_funcs[value->g_type]);
       tween_funcs[value->g_type](&tween->begin, &tween->end, value, offset);
     }
   else
@@ -450,7 +450,7 @@ static void
 dzl_animation_set_target (DzlAnimation *animation,
                           gpointer      target)
 {
-  g_assert (!animation->target);
+  g_warn_if_fail (!animation->target);
 
   animation->target = g_object_ref (target);
 
@@ -478,7 +478,7 @@ dzl_animation_tick (DzlAnimation *animation,
   Tween *tween;
   guint i;
 
-  g_assert (DZL_IS_ANIMATION (animation));
+  g_warn_if_fail (DZL_IS_ANIMATION (animation));
 
   if (offset == animation->last_offset)
     return offset < 1.0;
@@ -565,8 +565,8 @@ dzl_animation_widget_tick_cb (GdkFrameClock *frame_clock,
 {
   gboolean ret = G_SOURCE_REMOVE;
 
-  g_assert (GDK_IS_FRAME_CLOCK (frame_clock));
-  g_assert (DZL_IS_ANIMATION (animation));
+  g_warn_if_fail (GDK_IS_FRAME_CLOCK (frame_clock));
+  g_warn_if_fail (DZL_IS_ANIMATION (animation));
 
   if (animation->tween_handler)
     {
@@ -591,8 +591,8 @@ dzl_animation_widget_after_paint_cb (GdkFrameClock *frame_clock,
   gint64 next_frame_time;
   gdouble offset;
 
-  g_assert (GDK_IS_FRAME_CLOCK (frame_clock));
-  g_assert (DZL_IS_ANIMATION (animation));
+  g_warn_if_fail (GDK_IS_FRAME_CLOCK (frame_clock));
+  g_warn_if_fail (DZL_IS_ANIMATION (animation));
 
   base_time = gdk_frame_clock_get_frame_time (frame_clock);
   gdk_frame_clock_get_refresh_info (frame_clock, base_time, &interval, &next_frame_time);
@@ -658,7 +658,7 @@ dzl_animation_start (DzlAnimation *animation)
 static void
 dzl_animation_notify (DzlAnimation *self)
 {
-  g_assert (DZL_IS_ANIMATION (self));
+  g_warn_if_fail (DZL_IS_ANIMATION (self));
 
   if (self->notify != NULL)
     {
@@ -1227,9 +1227,9 @@ dzl_animation_calculate_duration (GdkMonitor *monitor,
 #define MIN_FRAMES_PER_ANIM (5)
 #define MAX_FRAMES_PER_ANIM (500)
 
-  g_assert (GDK_IS_MONITOR (monitor));
-  g_assert (from_value >= 0.0);
-  g_assert (to_value >= 0.0);
+  g_warn_if_fail (GDK_IS_MONITOR (monitor));
+  g_warn_if_fail (from_value >= 0.0);
+  g_warn_if_fail (to_value >= 0.0);
 
   /*
    * Get various monitor information we'll need to calculate the duration of

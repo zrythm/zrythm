@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Zrythm
 Version=1.0
-Comment=Music production system
+Comment=An highly automated, intuitive, Digital Audio Workstation (DAW)
 Exec=zrythm
 Icon=zrythm
 Type=Application

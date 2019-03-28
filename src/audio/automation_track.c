@@ -140,9 +140,9 @@ create_curve_point_before (AutomationTrack * at,
   position_get_midway_pos (&prev_ap->pos,
                            &ap->pos,
                            &mid_pos);
-  g_assert (position_compare (&mid_pos,
+  g_warn_if_fail (position_compare (&mid_pos,
                               &ap->pos) <= 0);
-  g_assert (position_compare (&mid_pos,
+  g_warn_if_fail (position_compare (&mid_pos,
                               &prev_ap->pos) >= 0);
 
   add_and_show_curve_point (at, &mid_pos);
@@ -359,7 +359,7 @@ automation_track_get_prev_ap (AutomationTrack * at,
                               AutomationPoint * _ap)
 {
   /*int index = automation_track_get_ap_index (at, _ap);*/
-  /*g_assert (index > -1);*/
+  /*g_warn_if_fail (index > -1);*/
   /*for (int i = index - 1; i >= 0; i--)*/
     /*{*/
       /*AutomationPoint * ap = at->automation_points[i];*/
@@ -384,7 +384,7 @@ automation_track_get_next_ap (AutomationTrack * at,
                               AutomationPoint * _ap)
 {
   /*int index = automation_track_get_ap_index (at, _ap);*/
-  /*g_assert (index > -1);*/
+  /*g_warn_if_fail (index > -1);*/
   /*for (int i = index + 1; i < at->num_automation_points; i++)*/
     /*{*/
       /*AutomationPoint * ap = at->automation_points[i];*/

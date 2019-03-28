@@ -416,7 +416,7 @@ zrythm_app_open (GApplication  *app,
              gint           n_files,
              const gchar   *hint)
 {
-  g_assert (n_files == 1);
+  g_warn_if_fail (n_files == 1);
 
   GFile * file = files[0];
   zrythm->open_filename = g_file_get_path (file);

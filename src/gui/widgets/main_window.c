@@ -224,6 +224,7 @@ static GActionEntry actions[] = {
   { "copy", activate_copy },
   { "paste", activate_paste },
   { "delete", activate_delete },
+  { "duplicate", activate_duplicate },
   { "clear-selection", activate_clear_selection },
   { "select-all", activate_select_all },
   /* selection submenu */

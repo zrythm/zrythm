@@ -625,7 +625,7 @@ Channel *
 channel_create (ChannelType type,
                 char *      label)
 {
-  g_assert (label);
+  g_warn_if_fail (label);
 
   int count = 1;
   char * new_label = g_strdup (label);
@@ -1143,7 +1143,7 @@ channel_get_automatable (Channel *       channel,
 void
 channel_free (Channel * channel)
 {
-  g_assert (channel);
+  g_warn_if_fail (channel);
 
   /* FIXME can't free for some reason */
   /*g_free (channel->track->name);*/

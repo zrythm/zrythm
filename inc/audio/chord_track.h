@@ -34,7 +34,7 @@
 
 #include "audio/track.h"
 
-#define CHORD_TRACK PROJECT->chord_track
+#define P_CHORD_TRACK (PROJECT->chord_track)
 
 typedef struct Chord Chord;
 typedef struct _ChordTrackWidget ChordTrackWidget;

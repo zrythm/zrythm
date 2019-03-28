@@ -49,7 +49,7 @@ dzl_dock_transient_grab_weak_notify (gpointer  data,
 {
   DzlDockTransientGrab *self = data;
 
-  g_assert (DZL_IS_DOCK_TRANSIENT_GRAB (self));
+  g_warn_if_fail (DZL_IS_DOCK_TRANSIENT_GRAB (self));
 
   g_ptr_array_remove (self->items, where_object_was);
 }

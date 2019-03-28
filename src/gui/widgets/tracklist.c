@@ -264,7 +264,7 @@ void
 tracklist_widget_setup (TracklistWidget * self,
                         Tracklist * tracklist)
 {
-  g_assert (tracklist);
+  g_warn_if_fail (tracklist);
   self->tracklist = tracklist;
   tracklist->widget = self;
 

@@ -263,7 +263,7 @@ po/ja/$(BIN).po: po/$(BIN).pot
 	msgmerge --update $@ $<
 
 po/$(BIN).pot: $(SRCS) $(SRCS_CPP) $(SRCS_UI)
-	xgettext --keyword=_ --add-comments --sort-output -o $@ $^
+	xgettext --join-existing --keyword=_ --add-comments --sort-output -o $@ $^
 
 # Actual target of the binary - depends on all .o files.
 $(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(OBJ_CPP) $(BUILD_DIR)/resources.o $(CYAML_BUILD_DIR)/libcyaml.a $(LIBSMF_BUILD_DIR)/libsmf.a

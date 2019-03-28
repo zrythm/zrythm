@@ -150,6 +150,7 @@ for cat in ['actions', 'animations', 'applets', 'apps', 'categories', 'devices',
               f.endswith('audio-speakers-symbolic.svg') or
               f.endswith('application-msword.svg') or
               f.endswith('gtk-add.svg') or
+              f.endswith('document-duplicate.svg') or
               f.endswith('distortionfx.svg') or
               f.endswith('selection-end-symbolic.svg') or
               f.endswith('edit-select.svg') or

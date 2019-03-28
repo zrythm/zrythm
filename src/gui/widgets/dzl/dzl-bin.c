@@ -41,7 +41,7 @@ dzl_bin_draw (GtkWidget *widget,
   GtkStateFlags state;
   GtkBorder margin;
 
-  g_assert (DZL_IS_BIN (widget));
+  g_warn_if_fail (DZL_IS_BIN (widget));
 
   gtk_widget_get_allocation (widget, &alloc);
   alloc.x = 0;
@@ -72,8 +72,8 @@ dzl_bin_size_allocate (GtkWidget     *widget,
   GtkAllocation child_alloc = { 0 };
   GtkWidget *child;
 
-  g_assert (DZL_IS_BIN (self));
-  g_assert (alloc != NULL);
+  g_warn_if_fail (DZL_IS_BIN (self));
+  g_warn_if_fail (alloc != NULL);
 
   child = gtk_bin_get_child (GTK_BIN (self));
 
@@ -111,7 +111,7 @@ dzl_bin_get_preferred_width (GtkWidget *widget,
   GtkWidget *child;
   GtkBorder borders;
 
-  g_assert (DZL_IS_BIN (widget));
+  g_warn_if_fail (DZL_IS_BIN (widget));
 
   *min_width = 0;
   *nat_width = 0;
@@ -137,7 +137,7 @@ dzl_bin_get_preferred_height (GtkWidget *widget,
   GtkWidget *child;
   GtkBorder borders;
 
-  g_assert (DZL_IS_BIN (widget));
+  g_warn_if_fail (DZL_IS_BIN (widget));
 
   *min_height = 0;
   *nat_height = 0;

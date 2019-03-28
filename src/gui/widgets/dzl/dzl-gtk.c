@@ -474,12 +474,12 @@ list_store_iter_middle (GtkListStore      *store,
                         const GtkTreeIter *end,
                         GtkTreeIter       *middle)
 {
-  g_assert (store != NULL);
-  g_assert (begin != NULL);
-  g_assert (end != NULL);
-  g_assert (middle != NULL);
-  g_assert (middle->stamp == begin->stamp);
-  g_assert (middle->stamp == end->stamp);
+  g_warn_if_fail (store != NULL);
+  g_warn_if_fail (begin != NULL);
+  g_warn_if_fail (end != NULL);
+  g_warn_if_fail (middle != NULL);
+  g_warn_if_fail (middle->stamp == begin->stamp);
+  g_warn_if_fail (middle->stamp == end->stamp);
 
   /*
    * middle MUST ALREADY BE VALID as it saves us some copying
@@ -577,7 +577,7 @@ dzl_gtk_list_store_insert_sorted (GtkListStore     *store,
 
   n_children = gtk_tree_model_iter_n_children (model, NULL);
   if (!gtk_tree_model_iter_nth_child (model, &end, NULL, n_children - 1))
-    g_assert_not_reached ();
+    g_warn_if_reached ();
 
   middle = begin;
 
@@ -607,7 +607,7 @@ dzl_gtk_list_store_insert_sorted (GtkListStore     *store,
             break;
         }
       else
-        g_assert_not_reached ();
+        g_warn_if_reached ();
     }
 
   if (cmpval < 0)
@@ -621,7 +621,7 @@ get_parent_or_relative (GtkWidget *widget)
 {
   GtkWidget *parent = NULL;
 
-  g_assert (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
 
   if (GTK_IS_POPOVER (widget))
     parent = gtk_popover_get_relative_to (GTK_POPOVER (widget));

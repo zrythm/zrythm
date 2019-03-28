@@ -123,7 +123,7 @@ dzl_child_property_action_get_state (GAction *action)
 {
   DzlChildPropertyAction *self = DZL_CHILD_PROPERTY_ACTION (action);
 
-  g_assert (DZL_IS_CHILD_PROPERTY_ACTION (self));
+  g_warn_if_fail (DZL_IS_CHILD_PROPERTY_ACTION (self));
 
   if (self->container != NULL &&
       self->child != NULL &&
@@ -268,7 +268,7 @@ dzl_child_property_action_activate (GAction  *action,
 {
   DzlChildPropertyAction *self = (DzlChildPropertyAction *)action;
 
-  g_assert (DZL_IS_CHILD_PROPERTY_ACTION (self));
+  g_warn_if_fail (DZL_IS_CHILD_PROPERTY_ACTION (self));
 
   if (self->container != NULL &&
       self->child != NULL &&
@@ -357,9 +357,9 @@ child_notify_cb (DzlChildPropertyAction *self,
                  GParamSpec             *pspec,
                  GtkWidget              *child)
 {
-  g_assert (DZL_IS_CHILD_PROPERTY_ACTION (self));
-  g_assert (pspec != NULL);
-  g_assert (GTK_IS_WIDGET (child));
+  g_warn_if_fail (DZL_IS_CHILD_PROPERTY_ACTION (self));
+  g_warn_if_fail (pspec != NULL);
+  g_warn_if_fail (GTK_IS_WIDGET (child));
 
   g_object_notify (G_OBJECT (self), "state");
 }

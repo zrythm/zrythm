@@ -520,7 +520,7 @@ multipress_pressed (GtkGestureMultiPress *gesture,
 TrackWidget *
 track_widget_new (Track * track)
 {
-  g_assert (track);
+  g_warn_if_fail (track);
 
   TrackWidget * self;
 
@@ -548,7 +548,7 @@ track_widget_new (Track * track)
       break;
     }
 
-  g_assert (Z_IS_TRACK_WIDGET (self));
+  g_warn_if_fail (Z_IS_TRACK_WIDGET (self));
 
   TRACK_WIDGET_GET_PRIVATE (self);
   tw_prv->track = track;

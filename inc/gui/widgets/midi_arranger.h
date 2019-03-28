@@ -101,6 +101,14 @@ midi_arranger_widget_get_hit_midi_note (MidiArrangerWidget *  self,
 void
 midi_arranger_widget_update_inspector (MidiArrangerWidget *self);
 
+/**
+ * Sets transient notes and actual notes
+ * visibility based on the current action.
+ */
+void
+midi_arranger_widget_update_visibility (
+  MidiArrangerWidget * self);
+
 void
 midi_arranger_widget_select_all (
   MidiArrangerWidget *  self,
@@ -116,7 +124,10 @@ midi_arranger_widget_find_start_poses (
  * To be called from parent on right click.
  */
 void
-midi_arranger_widget_show_context_menu (MidiArrangerWidget * self);
+midi_arranger_widget_show_context_menu (
+  MidiArrangerWidget * self,
+  gdouble              x,
+  gdouble              y);
 
 /**
  * Called on drag begin in parent when a note is hit and the

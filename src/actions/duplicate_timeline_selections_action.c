@@ -17,73 +17,72 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "actions/duplicate_timeline_selections_action.h"
 #include "audio/track.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "project.h"
-#include "actions/delete_timeline_selections_action.h"
+#include "utils/flags.h"
 
 /**
  * Note: chord addresses are to be copied.
  */
 UndoableAction *
-delete_timeline_selections_action_new ()
+duplicate_timeline_selections_action_new (
+  long ticks,
+  int  delta)
 {
-  DeleteTimelineSelectionsAction * self =
-    calloc (1, sizeof (DeleteTimelineSelectionsAction));
-
+  DuplicateTimelineSelectionsAction * self =
+    calloc (1, sizeof (
+                 DuplicateTimelineSelectionsAction));
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-    UNDOABLE_ACTION_TYPE_DELETE_TL_SELECTIONS;
-
+    UNDOABLE_ACTION_TYPE_DUPLICATE_MIDI_NOTES;
   self->ts = timeline_selections_clone ();
-
+  self->ticks = ticks;
+  self->delta = delta;
   return ua;
 }
 
 void
-delete_timeline_selections_action_do (
-  DeleteTimelineSelectionsAction * self)
+duplicate_timeline_selections_action_do (
+  DuplicateTimelineSelectionsAction * self)
 {
-  for (int i = 0; i < self->ts->num_regions; i++)
+  Region * r;
+	for (int i = 0; i < self->ts->num_regions; i++)
     {
-      /* this is a clone */
-      Region * _r = self->ts->regions[i];
-
-      /* find actual region */
-      Region * r =
-        project_get_region (_r->actual_id);
-
-      /* remove it */
-      track_remove_region (r->track,
-                           r,
-                           1);
+      r = self->ts->regions[i];
+      track_add_region (
+        r->track,
+        r);
+      region_shift (
+        r, self->ticks, self->delta);
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
 }
 
 void
-delete_timeline_selections_action_undo (
-  DeleteTimelineSelectionsAction * self)
+duplicate_timeline_selections_action_undo (
+  DuplicateTimelineSelectionsAction * self)
 {
+  Region * r;
   for (int i = 0; i < self->ts->num_regions; i++)
     {
-      /* this is a clone */
-      Region * r = self->ts->regions[i];
-
-      /* add it to track */
-      track_add_region (r->track,
-                        r);
+      r = self->ts->regions[i];
+      track_remove_region (
+        r->track,
+        r,
+        F_FREE);
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
 }
 
 void
-delete_timeline_selections_action_free (
-  DeleteTimelineSelectionsAction * self)
+duplicate_timeline_selections_action_free (
+  DuplicateTimelineSelectionsAction * self)
 {
   timeline_selections_free (self->ts);
 

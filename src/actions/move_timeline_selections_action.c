@@ -17,86 +17,86 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "actions/move_midi_arranger_selections_action.h"
+#include "actions/move_timeline_selections_action.h"
 #include "audio/track.h"
-#include "gui/backend/midi_arranger_selections.h"
+#include "gui/backend/timeline_selections.h"
 #include "gui/widgets/center_dock.h"
-#include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/timeline_arranger.h"
 #include "project.h"
 
 /**
  * Note: this action will add delta beats
  * to start and end pos of all selected midi_notes */
 UndoableAction *
-move_midi_arranger_selections_action_new (
+move_timeline_selections_action_new (
   long ticks,
   int  delta)
 {
-	MoveMidiArrangerSelectionsAction * self =
+	MoveTimelineSelectionsAction * self =
     calloc (1, sizeof (
-    	MoveMidiArrangerSelectionsAction));
+    	MoveTimelineSelectionsAction));
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
 	  UNDOABLE_ACTION_TYPE_MOVE_MIDI_NOTES;
-  self->mas = midi_arranger_selections_clone ();
+  self->ts = timeline_selections_clone ();
   self->delta = delta;
   self->ticks = ticks;
   return ua;
 }
 
 void
-move_midi_arranger_selections_action_do (
-	MoveMidiArrangerSelectionsAction * self)
+move_timeline_selections_action_do (
+	MoveTimelineSelectionsAction * self)
 {
-  MidiNote * _mn, *mn;
-  for (int i = 0; i < self->mas->num_midi_notes; i++)
+  Region * _r, * r;
+  for (int i = 0; i < self->ts->num_regions; i++)
     {
       /* this is a clone */
-      _mn = self->mas->midi_notes[i];
+      _r = self->ts->regions[i];
 
-      /* find actual midi note */
-      mn =
-        project_get_midi_note (_mn->actual_note);
+      /* find actual region */
+      r =
+        project_get_region (_r->actual_id);
 
       /* shift it */
-      midi_note_shift (
-        mn,
+      region_shift (
+        r,
         self->ticks,
         self->delta);
     }
-  EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
+  EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
 }
 
 void
-move_midi_arranger_selections_action_undo (
-	MoveMidiArrangerSelectionsAction * self)
+move_timeline_selections_action_undo (
+	MoveTimelineSelectionsAction * self)
 {
-  MidiNote * _mn, *mn;
-  for (int i = 0; i < self->mas->num_midi_notes; i++)
+  Region * _r, * r;
+  for (int i = 0; i < self->ts->num_regions; i++)
     {
       /* this is a clone */
-      _mn = self->mas->midi_notes[i];
+      _r = self->ts->regions[i];
 
       /* find actual midi note */
-      mn =
-        project_get_midi_note (_mn->actual_note);
+      r =
+        project_get_region (_r->actual_id);
 
       /* shift it */
-      midi_note_shift (
-        mn,
+      region_shift (
+        r,
         - self->ticks,
         - self->delta);
     }
-  EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
+  EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
 }
 
 void
-move_midi_arranger_selections_action_free (
-	MoveMidiArrangerSelectionsAction * self)
+move_timeline_selections_action_free (
+	MoveTimelineSelectionsAction * self)
 {
-  midi_arranger_selections_free (self->mas);
+  timeline_selections_free (self->ts);
 
   free (self);
 }

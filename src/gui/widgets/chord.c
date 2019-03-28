@@ -81,7 +81,7 @@ draw_cb (ChordWidget * self,
 
   gtk_render_background (context, cr, 0, 0, width, height);
 
-  GdkRGBA * color = &CHORD_TRACK->color;
+  GdkRGBA * color = &P_CHORD_TRACK->color;
   cairo_set_source_rgba (cr,
                          color->red - 0.06,
                          color->green - 0.06,

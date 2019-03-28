@@ -37,4 +37,7 @@
 #define F_APPEND 1
 #define F_NO_APPEND 0
 
+#define F_FREE 1
+#define F_NO_FREE 0
+
 #endif

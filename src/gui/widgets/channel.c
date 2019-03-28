@@ -277,7 +277,7 @@ refresh_output (ChannelWidget * self)
 static void
 refresh_name (ChannelWidget * self)
 {
-  g_assert (self->channel->track->name);
+  g_warn_if_fail (self->channel->track->name);
   gtk_label_set_text (self->name,
                       self->channel->track->name);
 }

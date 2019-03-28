@@ -42,8 +42,8 @@ dzl_dock_item_real_set_manager (DzlDockItem    *self,
 {
   DzlDockManager *old_manager;
 
-  g_assert (DZL_IS_DOCK_ITEM (self));
-  g_assert (!manager || DZL_IS_DOCK_MANAGER (manager));
+  g_warn_if_fail (DZL_IS_DOCK_ITEM (self));
+  g_warn_if_fail (!manager || DZL_IS_DOCK_MANAGER (manager));
 
   if (NULL != (old_manager = dzl_dock_item_get_manager (self)))
     {
@@ -69,7 +69,7 @@ dzl_dock_item_real_set_manager (DzlDockItem    *self,
 static DzlDockManager *
 dzl_dock_item_real_get_manager (DzlDockItem *self)
 {
-  g_assert (DZL_IS_DOCK_ITEM (self));
+  g_warn_if_fail (DZL_IS_DOCK_ITEM (self));
 
   return g_object_get_data (G_OBJECT (self), "DZL_DOCK_MANAGER");
 }
@@ -109,8 +109,8 @@ static void
 dzl_dock_item_real_manager_set (DzlDockItem    *self,
                                 DzlDockManager *manager)
 {
-  g_assert (DZL_IS_DOCK_ITEM (self));
-  g_assert (!manager || DZL_IS_DOCK_MANAGER (manager));
+  g_warn_if_fail (DZL_IS_DOCK_ITEM (self));
+  g_warn_if_fail (!manager || DZL_IS_DOCK_MANAGER (manager));
 
   dzl_dock_item_propagate_manager (self);
 }
@@ -119,8 +119,8 @@ static void
 dzl_dock_item_real_release (DzlDockItem *self,
                             DzlDockItem *child)
 {
-  g_assert (DZL_IS_DOCK_ITEM (self));
-  g_assert (DZL_IS_DOCK_ITEM (child));
+  g_warn_if_fail (DZL_IS_DOCK_ITEM (self));
+  g_warn_if_fail (DZL_IS_DOCK_ITEM (child));
 
   g_warning ("%s does not know how to release child %s",
              G_OBJECT_TYPE_NAME (self),
@@ -232,7 +232,7 @@ dzl_dock_item_child_weak_notify (gpointer  data,
   DzlDockItem *self = data;
   GPtrArray *descendants;
 
-  g_assert (DZL_IS_DOCK_ITEM (self));
+  g_warn_if_fail (DZL_IS_DOCK_ITEM (self));
 
   descendants = g_object_get_data (G_OBJECT (self), "DZL_DOCK_ITEM_DESCENDANTS");
 
@@ -248,7 +248,7 @@ dzl_dock_item_destroy (DzlDockItem *self)
   GPtrArray *descendants;
   guint i;
 
-  g_assert (DZL_IS_DOCK_ITEM (self));
+  g_warn_if_fail (DZL_IS_DOCK_ITEM (self));
 
   descendants = g_object_get_data (G_OBJECT (self), "DZL_DOCK_ITEM_DESCENDANTS");
 
@@ -275,8 +275,8 @@ dzl_dock_item_track_child (DzlDockItem *self,
   GPtrArray *descendants;
   guint i;
 
-  g_assert (DZL_IS_DOCK_ITEM (self));
-  g_assert (DZL_IS_DOCK_ITEM (child));
+  g_warn_if_fail (DZL_IS_DOCK_ITEM (self));
+  g_warn_if_fail (DZL_IS_DOCK_ITEM (child));
 
   descendants = g_object_get_data (G_OBJECT (self), "DZL_DOCK_ITEM_DESCENDANTS");
 
@@ -335,8 +335,8 @@ void
 dzl_dock_item_present_child (DzlDockItem *self,
                              DzlDockItem *child)
 {
-  g_assert (DZL_IS_DOCK_ITEM (self));
-  g_assert (DZL_IS_DOCK_ITEM (child));
+  g_warn_if_fail (DZL_IS_DOCK_ITEM (self));
+  g_warn_if_fail (DZL_IS_DOCK_ITEM (child));
 
 #if 0
   g_print ("present_child (%s, %s)\n",
@@ -421,8 +421,8 @@ dzl_dock_item_printf_internal (DzlDockItem *self,
   GPtrArray *ar;
   guint i;
 
-  g_assert (DZL_IS_DOCK_ITEM (self));
-  g_assert (str != NULL);
+  g_warn_if_fail (DZL_IS_DOCK_ITEM (self));
+  g_warn_if_fail (str != NULL);
 
 
   for (i = 0; i < depth; i++)

@@ -162,7 +162,8 @@ snap_grid_get_note_ticks (NoteLength note_length,
         }
       break;
     }
-  g_assert_not_reached ();
+  g_warn_if_reached ();
+  return -1;
 }
 
 /**

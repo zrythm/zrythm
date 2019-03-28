@@ -78,6 +78,75 @@ G_DECLARE_DERIVABLE_TYPE (ArrangerWidget,
 #define ARRANGER_IS_MIDI_MODIFIER(self) \
   (Z_IS_MIDI_MODIFIER_ARRANGER_WIDGET (self))
 
+#define ARRANGER_SET_SELECTION_VISIBILITY(array, \
+  transient_array,size,obj,transient_obj) \
+  for (int i = 0; \
+       i < size; \
+       i++) \
+    { \
+      obj = array[i]; \
+      transient_obj = transient_array[i]; \
+      if (ar_prv->action == \
+            UI_OVERLAY_ACTION_MOVING) \
+        { \
+          /* set actual items to invisible since \
+           * we are moving */ \
+          gtk_widget_set_visible ( \
+            GTK_WIDGET (obj->widget), \
+            F_NOT_VISIBLE); \
+          gtk_widget_set_visible ( \
+            GTK_WIDGET (transient_obj->widget), \
+            F_VISIBLE); \
+        } \
+      else if (ar_prv->action == \
+                 UI_OVERLAY_ACTION_MOVING_COPY || \
+               ar_prv->action == \
+                 UI_OVERLAY_ACTION_MOVING_LINK) \
+        { \
+          /* set actual items to visible since \
+           * we are copy-moving */ \
+          gtk_widget_set_visible ( \
+            GTK_WIDGET (obj->widget), \
+            F_VISIBLE); \
+        } \
+    }
+
+/**
+ * Moves an object with length (Region, MidiNote,
+ * etc.) by the given ticks_diff.
+ */
+#define ARRANGER_MOVE_OBJ_BY_TICKS_W_LENGTH( \
+  obj, obj_name, prev_start_pos, ticks_diff, \
+  tmp_pos, tmp_length_ticks) \
+  tmp_length_ticks = \
+    position_to_ticks (&obj->end_pos) - \
+    position_to_ticks (&obj->start_pos); \
+  position_set_to_pos ((tmp_pos), \
+                       (prev_start_pos)); \
+  position_add_ticks ( \
+    (tmp_pos), \
+    ticks_diff + tmp_length_ticks); \
+  obj_name##_set_end_pos (obj, (tmp_pos)); \
+  position_set_to_pos ((tmp_pos), \
+                       (prev_start_pos)); \
+  position_add_ticks ((tmp_pos), \
+                      ticks_diff); \
+  obj_name##_set_start_pos (obj, (tmp_pos));
+
+/**
+ * Moves an object without length (AutomationPoint,
+ * Chord, etc.) by the given ticks_diff.
+ */
+#define ARRANGER_MOVE_OBJ_BY_TICKS( \
+  obj, obj_name, prev_start_pos, ticks_diff, \
+  tmp_pos) \
+  position_set_to_pos ((tmp_pos), \
+                       (prev_start_pos)); \
+  position_add_ticks ((tmp_pos), \
+                      ticks_diff); \
+  obj_name##_set_pos (obj, (tmp_pos));
+
+
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote MidiNote;
 typedef struct SnapGrid SnapGrid;

@@ -727,8 +727,8 @@ digital_meter_widget_init (DigitalMeterWidget * self)
   /*pango_fc_font_map_set_config (PANGO_FC_FONT_MAP (font_map), font_config);*/
   /*gtk_widget_set_font_map (GTK_WIDGET (self), font_map);*/
 
-  /*g_assert (font_config != NULL);*/
-  /*g_assert (font_map != NULL);*/
+  /*g_warn_if_fail (font_config != NULL);*/
+  /*g_warn_if_fail (font_map != NULL);*/
 
   /*g_object_unref (font_map);*/
 

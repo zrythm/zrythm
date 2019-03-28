@@ -35,7 +35,7 @@ G_DEFINE_TYPE (HeaderBarWidget,
 void
 header_bar_widget_refresh_undo_redo_buttons (HeaderBarWidget * self)
 {
-  g_assert (UNDO_MANAGER);
+  g_warn_if_fail (UNDO_MANAGER);
 
   gtk_widget_set_sensitive (
     GTK_WIDGET (self->edit_undo),
@@ -196,61 +196,19 @@ header_bar_widget_setup (HeaderBarWidget * self,
   self->edit_redo = menu_item;
   CREATE_SEPARATOR;
   APPEND_TO_EDIT_MENU;
-  menu_item =
-    z_gtk_create_menu_item (
-      "Cu_t",
-      "z-edit-cut",
-      0,
-      NULL,
-      0,
-      "win.cut");
+  menu_item = CREATE_CUT_MENU_ITEM;
   APPEND_TO_EDIT_MENU;
-  menu_item =
-    z_gtk_create_menu_item (
-      "_Copy",
-      "z-edit-copy",
-      0,
-      NULL,
-      0,
-      "win.copy");
+  menu_item = CREATE_COPY_MENU_ITEM;
   APPEND_TO_EDIT_MENU;
-  menu_item =
-    z_gtk_create_menu_item (
-      "_Paste",
-      "z-edit-paste",
-      0,
-      NULL,
-      0,
-      "win.paste");
+  menu_item = CREATE_PASTE_MENU_ITEM;
   APPEND_TO_EDIT_MENU;
-  menu_item =
-    z_gtk_create_menu_item (
-      "_Delete",
-      "z-edit-delete",
-      0,
-      NULL,
-      0,
-      "win.delete");
+  menu_item = CREATE_DELETE_MENU_ITEM;
   APPEND_TO_EDIT_MENU;
   CREATE_SEPARATOR;
   APPEND_TO_EDIT_MENU;
-  menu_item =
-    z_gtk_create_menu_item (
-      "Cle_ar Selection",
-      "z-edit-clear",
-      0,
-      NULL,
-      0,
-      "win.clear-selection");
+  menu_item = CREATE_CLEAR_SELECTION_MENU_ITEM;
   APPEND_TO_EDIT_MENU;
-  menu_item =
-    z_gtk_create_menu_item (
-      "Select A_ll",
-      "z-edit-select-all",
-      0,
-      NULL,
-      0,
-      "win.select-all");
+  menu_item = CREATE_SELECT_ALL_MENU_ITEM;
   APPEND_TO_EDIT_MENU;
   menu_item =
     create_selections_submenu ();
@@ -417,6 +375,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
 #undef APPEND_TO_MENU_SHELL
 #undef CREATE_SEPARATOR
 
+  /* FIXME activate/deactivate actions instead */
   header_bar_widget_refresh_undo_redo_buttons (self);
 }
 

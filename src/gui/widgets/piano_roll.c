@@ -73,8 +73,8 @@ link_scrolls (
   /* link arranger h scroll to timeline h scroll */
   /*if (self->arranger_scroll)*/
     /*{*/
-      /*g_assert (MW_CENTER_DOCK);*/
-      /*g_assert (MW_CENTER_DOCK->timeline_scroll);*/
+      /*g_warn_if_fail (MW_CENTER_DOCK);*/
+      /*g_warn_if_fail (MW_CENTER_DOCK->timeline_scroll);*/
       /*gtk_scrolled_window_set_hadjustment (*/
         /*self->arranger_scroll,*/
         /*gtk_scrolled_window_get_hadjustment (*/

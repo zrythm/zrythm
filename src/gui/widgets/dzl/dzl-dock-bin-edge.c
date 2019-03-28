@@ -58,7 +58,7 @@ dzl_dock_bin_edge_update_edge (DzlDockBinEdge *self)
   GtkWidget *child;
   GtkOrientation orientation;
 
-  g_assert (DZL_IS_DOCK_BIN_EDGE (self));
+  g_warn_if_fail (DZL_IS_DOCK_BIN_EDGE (self));
 
   style_context = gtk_widget_get_style_context (GTK_WIDGET (self));
 
@@ -93,7 +93,7 @@ dzl_dock_bin_edge_update_edge (DzlDockBinEdge *self)
     }
   else
     {
-      g_assert_not_reached ();
+      g_warn_if_reached ();
       return;
     }
 
@@ -138,8 +138,8 @@ dzl_dock_bin_edge_add (GtkContainer *container,
 {
   GtkWidget *child;
 
-  g_assert (GTK_IS_CONTAINER (container));
-  g_assert (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (GTK_IS_CONTAINER (container));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
 
   child = gtk_bin_get_child (GTK_BIN (container));
   gtk_container_add (GTK_CONTAINER (child), widget);
@@ -155,7 +155,7 @@ dzl_dock_bin_edge_real_move_to_bin_child (DzlDockBinEdge *self)
 {
   GtkWidget *parent;
 
-  g_assert (DZL_IS_DOCK_BIN_EDGE (self));
+  g_warn_if_fail (DZL_IS_DOCK_BIN_EDGE (self));
 
   parent = gtk_widget_get_parent (GTK_WIDGET (self));
 
@@ -270,7 +270,7 @@ dzl_dock_bin_edge_update_visibility (DzlDockItem *item)
   GtkWidget *child;
   gboolean visible = FALSE;
 
-  g_assert (DZL_IS_DOCK_BIN_EDGE (self));
+  g_warn_if_fail (DZL_IS_DOCK_BIN_EDGE (self));
 
   if (NULL != (child = gtk_bin_get_child (GTK_BIN (self))))
     visible = dzl_dock_item_has_widgets (DZL_DOCK_ITEM (child));

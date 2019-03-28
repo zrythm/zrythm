@@ -293,6 +293,6 @@ lv2_control_get_from_port (
           port)
       return ctrls->controls[i];
 
-  g_assert_not_reached ();
+  g_warn_if_reached ();
   return NULL;
 }

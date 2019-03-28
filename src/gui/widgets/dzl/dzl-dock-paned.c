@@ -37,7 +37,7 @@ dzl_dock_paned_add (GtkContainer *container,
   DzlDockPaned *self = (DzlDockPaned *)container;
   DzlDockPanedPrivate *priv = dzl_dock_paned_get_instance_private (self);
 
-  g_assert (DZL_IS_DOCK_PANED (self));
+  g_warn_if_fail (DZL_IS_DOCK_PANED (self));
 
   if (DZL_IS_DOCK_STACK (widget))
     dzl_dock_stack_set_edge (DZL_DOCK_STACK (widget), priv->child_edge);
@@ -84,7 +84,7 @@ dzl_dock_paned_update_child_edge (GtkWidget *widget,
 {
   GtkPositionType child_edge = GPOINTER_TO_INT (user_data);
 
-  g_assert (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
 
   if (DZL_IS_DOCK_STACK (widget))
     dzl_dock_stack_set_edge (DZL_DOCK_STACK (widget), child_edge);

@@ -62,8 +62,8 @@ split_action_name (const gchar  *action_name,
 {
   const gchar *dot;
 
-  g_assert (prefix != NULL);
-  g_assert (name != NULL);
+  g_warn_if_fail (prefix != NULL);
+  g_warn_if_fail (name != NULL);
 
   *prefix = NULL;
   *name = NULL;
@@ -177,8 +177,8 @@ find_group_with_action (GtkWidget   *widget,
 {
   GActionGroup *group;
 
-  g_assert (GTK_IS_WIDGET (widget));
-  g_assert (name != NULL);
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (name != NULL);
 
   /*
    * GtkWidget does not provide a way to get group names,

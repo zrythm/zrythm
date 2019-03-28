@@ -54,7 +54,7 @@ undo_manager_init (UndoManager * self)
 void
 undo_manager_undo (UndoManager * self)
 {
-  g_assert (!stack_is_empty (self->undo_stack));
+  g_warn_if_fail (!stack_is_empty (self->undo_stack));
 
   /* pop the action from the undo stack and undo it */
   UndoableAction * action =
@@ -81,7 +81,7 @@ undo_manager_undo (UndoManager * self)
 void
 undo_manager_redo (UndoManager * self)
 {
-  g_assert (!stack_is_empty (self->redo_stack));
+  g_warn_if_fail (!stack_is_empty (self->redo_stack));
 
   /* pop the action from the redo stack and execute it */
   UndoableAction * action =

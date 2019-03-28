@@ -34,7 +34,7 @@ get_icon_type_str (IconType icon_type)
     case ICON_TYPE_BREEZE:
       return g_strdup_printf ("breeze-icons");
     }
-  g_assert_not_reached ();
+  g_warn_if_reached ();
   return NULL;
 }
 

@@ -58,7 +58,7 @@ get_minf (Automatable * a)
     case AUTOMATABLE_TYPE_CHANNEL_PAN:
       return 0.f;
     }
-  g_assert_not_reached ();
+  g_warn_if_reached ();
   return -1;
 }
 
@@ -77,7 +77,7 @@ get_maxf (Automatable * a)
     case AUTOMATABLE_TYPE_CHANNEL_PAN:
       return 1.f;
     }
-  g_assert_not_reached ();
+  g_warn_if_reached ();
   return -1;
 }
 
@@ -232,7 +232,7 @@ automatable_is_bool (Automatable * a)
     case AUTOMATABLE_TYPE_CHANNEL_PAN:
       return 0;
     }
-  g_assert_not_reached ();
+  g_warn_if_reached ();
   return -1;
 }
 
@@ -279,7 +279,7 @@ automatable_is_float (Automatable * a)
     case AUTOMATABLE_TYPE_CHANNEL_PAN:
       return 1;
     }
-  g_assert_not_reached ();
+  g_warn_if_reached ();
   return -1;
 }
 
@@ -336,7 +336,7 @@ automatable_get_val (Automatable * a)
       ch = track_get_channel (a->track);
       return ch->pan;
     }
-  g_assert_not_reached ();
+  g_warn_if_reached ();
   return -1;
 }
 
@@ -450,7 +450,7 @@ automatable_set_val_from_normalized (
   Automatable * a,
   float         val)
 {
-  /*g_assert (val <= 1.f && val >= 0.f);*/
+  /*g_warn_if_fail (val <= 1.f && val >= 0.f);*/
   Plugin * plugin;
   Channel * ch;
   switch (a->type)

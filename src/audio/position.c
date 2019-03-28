@@ -355,7 +355,7 @@ position_snap (Position * prev_pos, ///< prev pos
 {
   /* this should only be called if snap is on.
    * the check should be done before calling */
-  g_assert (SNAP_GRID_ANY_SNAP (sg));
+  g_warn_if_fail (SNAP_GRID_ANY_SNAP (sg));
 
   if ((sg->snap_to_grid &&
        !sg->snap_to_grid_keep_offset &&
@@ -367,7 +367,7 @@ position_snap (Position * prev_pos, ///< prev pos
   else if (!sg->snap_to_grid && sg->snap_to_grid_keep_offset &&
            !sg->snap_to_events)
     {
-      g_assert (prev_pos);
+      g_warn_if_fail (prev_pos);
       /* TODO */
       /* get closest snap point to prev_pos */
 

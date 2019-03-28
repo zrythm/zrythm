@@ -252,7 +252,7 @@ automation_tracklist_get_at_from_automatable (
           return at;
         }
     }
-  g_assert_not_reached ();
+  g_warn_if_reached ();
   return NULL;
 }
 

@@ -58,7 +58,7 @@ dzl_dock_stack_add (GtkContainer *container,
   g_autofree gchar *icon_name = NULL;
   g_autofree gchar *title = NULL;
 
-  g_assert (DZL_IS_DOCK_STACK (self));
+  g_warn_if_fail (DZL_IS_DOCK_STACK (self));
 
   if (DZL_IS_DOCK_ITEM (widget))
     {
@@ -82,7 +82,7 @@ dzl_dock_stack_grab_focus (GtkWidget *widget)
   DzlDockStackPrivate *priv = dzl_dock_stack_get_instance_private (self);
   GtkWidget *child;
 
-  g_assert (DZL_IS_DOCK_STACK (self));
+  g_warn_if_fail (DZL_IS_DOCK_STACK (self));
 
   child = gtk_stack_get_visible_child (priv->stack);
 
@@ -99,8 +99,8 @@ dzl_dock_stack_notify_visible_child_cb (DzlDockStack *self,
 {
   GtkWidget *visible_child;
 
-  g_assert (DZL_IS_DOCK_STACK (self));
-  g_assert (GTK_IS_STACK (stack));
+  g_warn_if_fail (DZL_IS_DOCK_STACK (self));
+  g_warn_if_fail (GTK_IS_STACK (stack));
 
   if (gtk_widget_in_destruction (GTK_WIDGET (self)) ||
       gtk_widget_in_destruction (GTK_WIDGET (stack)))
@@ -330,7 +330,7 @@ dzl_dock_stack_set_edge (DzlDockStack    *self,
           break;
 
         default:
-          g_assert_not_reached ();
+          g_warn_if_reached ();
         }
 
       g_object_notify_by_pspec (G_OBJECT (self), properties [PROP_EDGE]);
@@ -344,8 +344,8 @@ dzl_dock_stack_present_child (DzlDockItem *item,
   DzlDockStack *self = (DzlDockStack *)item;
   DzlDockStackPrivate *priv = dzl_dock_stack_get_instance_private (self);
 
-  g_assert (DZL_IS_DOCK_STACK (self));
-  g_assert (DZL_IS_DOCK_ITEM (child));
+  g_warn_if_fail (DZL_IS_DOCK_STACK (self));
+  g_warn_if_fail (DZL_IS_DOCK_ITEM (child));
 
   gtk_stack_set_visible_child (priv->stack, GTK_WIDGET (child));
 }
@@ -358,8 +358,8 @@ dzl_dock_stack_get_child_visible (DzlDockItem *item,
   DzlDockStackPrivate *priv = dzl_dock_stack_get_instance_private (self);
   GtkWidget *visible_child;
 
-  g_assert (DZL_IS_DOCK_STACK (self));
-  g_assert (DZL_IS_DOCK_ITEM (child));
+  g_warn_if_fail (DZL_IS_DOCK_STACK (self));
+  g_warn_if_fail (DZL_IS_DOCK_ITEM (child));
 
   visible_child = gtk_stack_get_visible_child (priv->stack);
 
@@ -379,8 +379,8 @@ dzl_dock_stack_set_child_visible (DzlDockItem *item,
   GtkWidget *parent;
   GtkWidget *last_parent = (GtkWidget *)child;
 
-  g_assert (DZL_IS_DOCK_STACK (self));
-  g_assert (DZL_IS_DOCK_ITEM (child));
+  g_warn_if_fail (DZL_IS_DOCK_STACK (self));
+  g_warn_if_fail (DZL_IS_DOCK_ITEM (child));
 
   for (parent = gtk_widget_get_parent (GTK_WIDGET (child));
        parent != NULL;
@@ -398,7 +398,7 @@ static void
 update_tab_controls (GtkWidget *widget,
                      gpointer   unused)
 {
-  g_assert (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
 
   if (DZL_IS_TAB (widget))
     _dzl_tab_update_controls (DZL_TAB (widget));
@@ -410,7 +410,7 @@ dzl_dock_stack_update_visibility (DzlDockItem *item)
   DzlDockStack *self = (DzlDockStack *)item;
   DzlDockStackPrivate *priv = dzl_dock_stack_get_instance_private (self);
 
-  g_assert (DZL_IS_DOCK_STACK (self));
+  g_warn_if_fail (DZL_IS_DOCK_STACK (self));
 
   gtk_container_foreach (GTK_CONTAINER (priv->tab_strip),
                          update_tab_controls,
@@ -429,8 +429,8 @@ dzl_dock_stack_release (DzlDockItem *item,
   DzlDockStack *self = (DzlDockStack *)item;
   DzlDockStackPrivate *priv = dzl_dock_stack_get_instance_private (self);
 
-  g_assert (DZL_IS_DOCK_STACK (self));
-  g_assert (DZL_IS_DOCK_ITEM (child));
+  g_warn_if_fail (DZL_IS_DOCK_STACK (self));
+  g_warn_if_fail (DZL_IS_DOCK_ITEM (child));
 
   gtk_container_remove (GTK_CONTAINER (priv->stack), GTK_WIDGET (child));
 }

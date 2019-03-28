@@ -159,7 +159,7 @@ dzl_dock_revealer_animation_done (gpointer user_data)
   gboolean child_revealed = FALSE;
   gboolean child_visible = FALSE;
 
-  g_assert (DZL_DOCK_REVEALER (self));
+  g_warn_if_fail (DZL_DOCK_REVEALER (self));
 
   child = gtk_bin_get_child (GTK_BIN (self));
 
@@ -182,7 +182,7 @@ static guint
 size_to_duration (GdkMonitor *monitor,
                   gint        size)
 {
-  g_assert (!monitor || GDK_IS_MONITOR (monitor));
+  g_warn_if_fail (!monitor || GDK_IS_MONITOR (monitor));
 
   if (monitor != NULL)
     return dzl_animation_calculate_duration (monitor, 0, size);
@@ -201,7 +201,7 @@ dzl_dock_revealer_calculate_duration (DzlDockRevealer *self)
   GtkRequisition min_size;
   GtkRequisition nat_size;
 
-  g_assert (DZL_IS_DOCK_REVEALER (self));
+  g_warn_if_fail (DZL_IS_DOCK_REVEALER (self));
 
   if (!gtk_widget_get_realized (GTK_WIDGET (self)))
     return 0;
@@ -374,9 +374,9 @@ dzl_dock_revealer_get_child_preferred_width (DzlDockRevealer *self,
   DzlDockRevealerPrivate *priv = dzl_dock_revealer_get_instance_private (self);
   GtkWidget *child;
 
-  g_assert (DZL_IS_DOCK_REVEALER (self));
-  g_assert (min_width != NULL);
-  g_assert (nat_width != NULL);
+  g_warn_if_fail (DZL_IS_DOCK_REVEALER (self));
+  g_warn_if_fail (min_width != NULL);
+  g_warn_if_fail (nat_width != NULL);
 
   *min_width = 0;
   *nat_width = 0;
@@ -409,9 +409,9 @@ dzl_dock_revealer_get_preferred_width (GtkWidget *widget,
   GtkWidget *child;
   GtkBorder borders;
 
-  g_assert (DZL_IS_DOCK_REVEALER (self));
-  g_assert (min_width != NULL);
-  g_assert (nat_width != NULL);
+  g_warn_if_fail (DZL_IS_DOCK_REVEALER (self));
+  g_warn_if_fail (min_width != NULL);
+  g_warn_if_fail (nat_width != NULL);
 
   style_context = gtk_widget_get_style_context (widget);
   dzl_gtk_style_context_get_borders (style_context, &borders);
@@ -460,9 +460,9 @@ dzl_dock_revealer_get_child_preferred_height (DzlDockRevealer *self,
   DzlDockRevealerPrivate *priv = dzl_dock_revealer_get_instance_private (self);
   GtkWidget *child;
 
-  g_assert (DZL_IS_DOCK_REVEALER (self));
-  g_assert (min_height != NULL);
-  g_assert (nat_height != NULL);
+  g_warn_if_fail (DZL_IS_DOCK_REVEALER (self));
+  g_warn_if_fail (min_height != NULL);
+  g_warn_if_fail (nat_height != NULL);
 
   *min_height = 0;
   *nat_height = 0;
@@ -495,9 +495,9 @@ dzl_dock_revealer_get_preferred_height (GtkWidget *widget,
   GtkWidget *child;
   GtkBorder borders;
 
-  g_assert (DZL_IS_DOCK_REVEALER (self));
-  g_assert (min_height != NULL);
-  g_assert (nat_height != NULL);
+  g_warn_if_fail (DZL_IS_DOCK_REVEALER (self));
+  g_warn_if_fail (min_height != NULL);
+  g_warn_if_fail (nat_height != NULL);
 
   style_context = gtk_widget_get_style_context (widget);
   dzl_gtk_style_context_get_borders (style_context, &borders);
@@ -551,7 +551,7 @@ dzl_dock_revealer_size_allocate (GtkWidget     *widget,
   GtkWidget *child;
   GtkBorder borders;
 
-  g_assert (DZL_IS_DOCK_REVEALER (self));
+  g_warn_if_fail (DZL_IS_DOCK_REVEALER (self));
 
   gtk_widget_set_allocation (widget, allocation);
 
@@ -603,8 +603,8 @@ dzl_dock_revealer_add (GtkContainer *container,
   DzlDockRevealer *self = (DzlDockRevealer *)container;
   DzlDockRevealerPrivate *priv = dzl_dock_revealer_get_instance_private (self);
 
-  g_assert (DZL_IS_DOCK_REVEALER (self));
-  g_assert (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (DZL_IS_DOCK_REVEALER (self));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
 
   GTK_CONTAINER_CLASS (dzl_dock_revealer_parent_class)->add (container, widget);
 
@@ -624,7 +624,7 @@ dzl_dock_revealer_draw (GtkWidget *widget,
   GtkBorder margin;
   GtkStateFlags state;
 
-  g_assert (DZL_IS_DOCK_REVEALER (self));
+  g_warn_if_fail (DZL_IS_DOCK_REVEALER (self));
 
   gtk_widget_get_allocation (widget, &alloc);
 
@@ -682,7 +682,7 @@ dzl_dock_revealer_realize (GtkWidget *widget)
   GtkAllocation alloc;
   gint attributes_mask = 0;
 
-  g_assert (DZL_IS_DOCK_REVEALER (widget));
+  g_warn_if_fail (DZL_IS_DOCK_REVEALER (widget));
 
   gtk_widget_get_allocation (GTK_WIDGET (self), &alloc);
 
@@ -927,7 +927,7 @@ dzl_dock_revealer_animate_to_position_done (gpointer user_data)
   g_autoptr(DzlDockRevealer) self = user_data;
   DzlDockRevealerPrivate *priv = dzl_dock_revealer_get_instance_private (self);
 
-  g_assert (DZL_DOCK_REVEALER (self));
+  g_warn_if_fail (DZL_DOCK_REVEALER (self));
 
   if (priv->adjustment != NULL)
     {

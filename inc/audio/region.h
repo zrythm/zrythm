@@ -130,16 +130,6 @@ typedef struct Region
   int             linked_region_id;
   struct Region * linked_region; ///< cache
 
-  int                      selected;
-
-  /**
-   * ID cloned from.
-   *
-   * Used when deleting.
-   * TODO figure out a better way
-   */
-  int               cloned_from;
-
   /** Muted or not */
   int                muted;
 
@@ -196,6 +186,12 @@ typedef struct Region
 
   /* ==== AUDIO REGION END ==== */
 
+  /**
+   * ID of region in use.
+   *
+   * Used when doing/undoing.
+   */
+  int             actual_id;
 } Region;
 
 static const cyaml_strval_t
@@ -257,9 +253,9 @@ static const cyaml_schema_field_t
 	CYAML_FIELD_INT (
     "muted", CYAML_FLAG_DEFAULT,
     Region, muted),
-	CYAML_FIELD_INT (
-    "selected", CYAML_FLAG_DEFAULT,
-    Region, selected),
+	//CYAML_FIELD_INT (
+    //"selected", CYAML_FLAG_DEFAULT,
+    //Region, selected),
   CYAML_FIELD_SEQUENCE_COUNT (
     "midi_note_ids", CYAML_FLAG_DEFAULT,
     Region, midi_note_ids, num_midi_notes,
@@ -336,6 +332,12 @@ region_get_num_loops (
   Region * region,
   int      count_incomplete_loops);
 
+void
+region_shift (
+  Region * region,
+  long ticks,
+  int  delta);
+
 /**
  * Only to be used by implementing structs.
  */
@@ -350,10 +352,9 @@ region_init (Region *   region,
  * Clamps position then sets it.
  */
 void
-region_set_start_pos (Region * region,
-                      Position * pos,
-                      int      moved); ///< region moved or not (to move notes as
-                                          ///< well)
+region_set_start_pos (
+  Region * region,
+  Position * pos);
 
 /**
  * Checks if position is valid then sets it.
@@ -389,6 +390,18 @@ region_set_loop_start_pos (Region * region,
 void
 region_set_clip_start_pos (Region * region,
                          Position * pos);
+
+/**
+ * Returns if Region is in MidiArrangerSelections.
+ */
+int
+region_is_selected (Region * self);
+
+/**
+ * Returns if Region is (should be) visible.
+ */
+int
+region_is_visible (Region * self);
 
 /**
  * Returns if the position is inside the region

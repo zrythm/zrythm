@@ -42,9 +42,9 @@ void
 tracklist_init (Tracklist * self,
                 int loading)
 {
-  g_assert (MIXER);
-  g_assert (MIXER->master);
-  g_assert (MIXER->master->track);
+  g_warn_if_fail (MIXER);
+  g_warn_if_fail (MIXER->master);
+  g_warn_if_fail (MIXER->master->track);
 
   if (loading)
     {
@@ -60,15 +60,15 @@ tracklist_init (Tracklist * self,
   tracklist_append_track ((Track *) MIXER->master->track);
 
   /* add chord track */
-  g_assert (CHORD_TRACK);
-  tracklist_append_track ((Track *) CHORD_TRACK);
+  g_warn_if_fail (P_CHORD_TRACK);
+  tracklist_append_track (P_CHORD_TRACK);
 
   /* add each channel */
   for (int i = 0; i < MIXER->num_channels; i++)
     {
       Channel * channel = MIXER->channels[i];
-      g_assert (channel);
-      g_assert (channel->track);
+      g_warn_if_fail (channel);
+      g_warn_if_fail (channel->track);
       tracklist_append_track (channel->track);
     }
 }
@@ -161,7 +161,8 @@ tracklist_get_chord_track ()
           return (ChordTrack *) track;
         }
     }
-  g_assert_not_reached ();
+  g_warn_if_reached ();
+  return NULL;
 }
 
 void
@@ -192,7 +193,7 @@ tracklist_get_last_visible_pos ()
           return i;
         }
     }
-  g_assert_not_reached ();
+  g_warn_if_reached ();
   return -1;
 }
 
@@ -206,7 +207,7 @@ tracklist_get_last_visible_track ()
           return TRACKLIST->tracks[i];
         }
     }
-  g_assert_not_reached ();
+  g_warn_if_reached ();
   return NULL;
 }
 
@@ -220,7 +221,7 @@ tracklist_get_first_visible_track ()
           return TRACKLIST->tracks[i];
         }
     }
-  g_assert_not_reached ();
+  g_warn_if_reached ();
   return NULL;
 }
 
@@ -235,7 +236,7 @@ tracklist_get_prev_visible_track (Track * track)
           return TRACKLIST->tracks[i];
         }
     }
-  g_assert_not_reached ();
+  g_warn_if_reached ();
   return NULL;
 }
 
@@ -250,7 +251,7 @@ tracklist_get_next_visible_track (Track * track)
           return TRACKLIST->tracks[i];
         }
     }
-  g_assert_not_reached ();
+  g_warn_if_reached ();
   return NULL;
 }
 

@@ -255,7 +255,7 @@ file_manager_get_file_type_from_enum (
       if (fte == FILE_MANAGER->file_types[i]->type)
         return FILE_MANAGER->file_types[i];
     }
-  g_assert_not_reached ();
+  g_warn_if_reached ();
   return NULL;
 }
 

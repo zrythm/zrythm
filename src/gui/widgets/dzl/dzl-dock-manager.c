@@ -48,9 +48,9 @@ dzl_dock_manager_do_set_focus (DzlDockManager *self,
   g_autoptr(DzlDockTransientGrab) grab = NULL;
   GtkWidget *parent;
 
-  g_assert (DZL_IS_DOCK_MANAGER (self));
-  g_assert (GTK_IS_WIDGET (focus));
-  g_assert (GTK_IS_WIDGET (toplevel));
+  g_warn_if_fail (DZL_IS_DOCK_MANAGER (self));
+  g_warn_if_fail (GTK_IS_WIDGET (focus));
+  g_warn_if_fail (GTK_IS_WIDGET (toplevel));
 
   if (priv->pause_count > 0)
     return;
@@ -104,7 +104,7 @@ dzl_dock_manager_do_set_focus (DzlDockManager *self,
       g_clear_object (&priv->grab);
     }
 
-  g_assert (priv->grab == NULL);
+  g_warn_if_fail (priv->grab == NULL);
 
   /* Start the grab process */
   if (grab != NULL)
@@ -124,7 +124,7 @@ do_delayed_focus_update (gpointer user_data)
   GtkWidget *toplevel;
   GtkWidget *focus;
 
-  g_assert (DZL_IS_DOCK_MANAGER (self));
+  g_warn_if_fail (DZL_IS_DOCK_MANAGER (self));
 
   priv->queued_handler = 0;
 
@@ -143,8 +143,8 @@ dzl_dock_manager_set_focus (DzlDockManager *self,
 {
   DzlDockManagerPrivate *priv = dzl_dock_manager_get_instance_private (self);
 
-  g_assert (DZL_IS_DOCK_MANAGER (self));
-  g_assert (GTK_IS_WINDOW (toplevel));
+  g_warn_if_fail (DZL_IS_DOCK_MANAGER (self));
+  g_warn_if_fail (GTK_IS_WINDOW (toplevel));
 
   if (priv->queued_focus_by_toplevel == NULL)
     priv->queued_focus_by_toplevel = g_hash_table_new (NULL, NULL);
@@ -176,9 +176,9 @@ dzl_dock_manager_hierarchy_changed (DzlDockManager *self,
 {
   GtkWidget *toplevel;
 
-  g_assert (DZL_IS_DOCK_MANAGER (self));
-  g_assert (!old_toplevel || GTK_IS_WIDGET (old_toplevel));
-  g_assert (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (DZL_IS_DOCK_MANAGER (self));
+  g_warn_if_fail (!old_toplevel || GTK_IS_WIDGET (old_toplevel));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
 
   if (GTK_IS_WINDOW (old_toplevel))
     g_signal_handlers_disconnect_by_func (old_toplevel,
@@ -199,8 +199,8 @@ static void
 dzl_dock_manager_watch_toplevel (DzlDockManager *self,
                                  GtkWidget      *widget)
 {
-  g_assert (DZL_IS_DOCK_MANAGER (self));
-  g_assert (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (DZL_IS_DOCK_MANAGER (self));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
 
   g_signal_connect_object (widget,
                            "hierarchy-changed",
@@ -218,7 +218,7 @@ dzl_dock_manager_weak_notify (gpointer  data,
   DzlDockManager *self = data;
   DzlDockManagerPrivate *priv = dzl_dock_manager_get_instance_private (self);
 
-  g_assert (DZL_IS_DOCK_MANAGER (self));
+  g_warn_if_fail (DZL_IS_DOCK_MANAGER (self));
 
   g_ptr_array_remove (priv->docks, where_the_object_was);
 }

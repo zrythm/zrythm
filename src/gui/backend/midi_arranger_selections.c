@@ -67,9 +67,7 @@ midi_arranger_selections_clear (
       EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
                    mn);
     }
-  g_message ("cleared midi arranger selections");
-
-
+  /*g_message ("cleared midi arranger selections");*/
 }
 
 static void
@@ -83,7 +81,7 @@ remove_transient (
   if (!transient || !transient->widget)
     return;
 
-  g_assert (
+  g_warn_if_fail (
     GTK_IS_WIDGET (transient->widget));
 
   g_message ("removing transient %p at %d",
@@ -102,7 +100,6 @@ void
 midi_arranger_selections_remove_transients (
   MidiArrangerSelections * mas)
 {
-  MidiNote * transient;
   for (int i = 0; i < mas->num_midi_notes; i++)
     {
       remove_transient (mas, i);
@@ -150,7 +147,7 @@ midi_arranger_selections_create_missing_transients (
     {
       note = mas->midi_notes[i];
       if (mas->transient_notes[i])
-        g_assert (
+        g_warn_if_fail (
           GTK_IS_WIDGET (
             mas->transient_notes[i]->widget));
       else if (!mas->transient_notes[i])

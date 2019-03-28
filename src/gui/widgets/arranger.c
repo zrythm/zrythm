@@ -603,7 +603,8 @@ arranger_widget_select (
           void * r = array[i];
           if (type == REGION_WIDGET_TYPE)
             region_widget_select (
-              ((Region *)r)->widget, 0);
+              ((Region *)r)->widget,
+              0, create_transients);
           else if (type == CHORD_WIDGET_TYPE)
             chord_widget_select (
               ((Chord *)r)->widget, 0);
@@ -627,7 +628,8 @@ arranger_widget_select (
       /* deselect */
       if (type == REGION_WIDGET_TYPE)
         region_widget_select (
-          ((Region *)child)->widget, 0);
+          ((Region *)child)->widget, 0,
+          create_transients);
       else if (type == CHORD_WIDGET_TYPE)
         chord_widget_select (
           ((Chord *)child)->widget, 0);
@@ -646,7 +648,8 @@ arranger_widget_select (
       /* select */
       if (type == REGION_WIDGET_TYPE)
         region_widget_select (
-          ((Region *)child)->widget, 1);
+          ((Region *)child)->widget, 1,
+          create_transients);
       else if (type == CHORD_WIDGET_TYPE)
         chord_widget_select (
           ((Chord *)child)->widget, 1);
@@ -721,26 +724,28 @@ arranger_widget_select_all (
   update_inspector (self);
 }
 
-
 static void
-show_context_menu (ArrangerWidget * self)
+show_context_menu (
+  ArrangerWidget * self,
+  gdouble          x,
+  gdouble          y)
 {
   GET_ARRANGER_ALIASES (self);
 
   if (midi_arranger)
     {
       midi_arranger_widget_show_context_menu (
-        Z_MIDI_ARRANGER_WIDGET (self));
+        midi_arranger, x, y);
     }
   else if (timeline)
     {
       timeline_arranger_widget_show_context_menu (
-        Z_TIMELINE_ARRANGER_WIDGET (self));
+        timeline, x, y);
     }
   else if (audio_arranger)
     {
-      audio_arranger_widget_show_context_menu (
-        Z_AUDIO_ARRANGER_WIDGET (self));
+      /*audio_arranger_widget_show_context_menu (*/
+        /*Z_AUDIO_ARRANGER_WIDGET (self));*/
     }
   else if (midi_modifier_arranger)
     {
@@ -755,10 +760,12 @@ on_right_click (GtkGestureMultiPress *gesture,
                gdouble               y,
                ArrangerWidget *      self)
 {
-  if (n_press == 1)
-    {
-      show_context_menu (self);
-    }
+  if (n_press != 1)
+    return;
+
+  GET_ARRANGER_ALIASES (self);
+
+  show_context_menu (self, x, y);
 }
 
 static void
@@ -1518,6 +1525,8 @@ drag_update (GtkGestureDrag * gesture,
 
       if (timeline)
         {
+          timeline_arranger_widget_update_visibility (
+            timeline);
           timeline_arranger_widget_move_items_x (
             timeline,
             ticks_diff);
@@ -1527,26 +1536,8 @@ drag_update (GtkGestureDrag * gesture,
         }
       else if (midi_arranger)
         {
-          /* set actual notes to invisible since
-           * we are moving */
-          for (int i = 0;
-               i < MIDI_ARRANGER_SELECTIONS->
-                     num_midi_notes;
-               i++)
-            {
-              MidiNote * mn =
-                MIDI_ARRANGER_SELECTIONS->
-                  midi_notes[i];
-              MidiNote * transient =
-                MIDI_ARRANGER_SELECTIONS->
-                  transient_notes[i];
-              gtk_widget_set_visible (
-                GTK_WIDGET (mn->widget),
-                F_NOT_VISIBLE);
-              gtk_widget_set_visible (
-                GTK_WIDGET (transient->widget),
-                F_VISIBLE);
-            }
+          midi_arranger_widget_update_visibility (
+            midi_arranger);
           midi_arranger_widget_move_items_x (
             midi_arranger,
             ticks_diff);
@@ -1595,6 +1586,8 @@ drag_update (GtkGestureDrag * gesture,
 
       if (timeline)
         {
+          timeline_arranger_widget_update_visibility (
+            timeline);
           timeline_arranger_widget_move_items_x (
             timeline,
             ticks_diff);
@@ -1604,18 +1597,8 @@ drag_update (GtkGestureDrag * gesture,
         }
       else if (midi_arranger)
         {
-          /* set actual notes to visible since
-           * we are copy-moving */
-          for (int i = 0;
-               i < MIDI_ARRANGER_SELECTIONS->num_midi_notes;
-               i++)
-            {
-              MidiNote * mn =
-                MIDI_ARRANGER_SELECTIONS->midi_notes[i];
-              gtk_widget_set_visible (
-                GTK_WIDGET (mn->widget), 1);
-            }
-
+          midi_arranger_widget_update_visibility (
+            midi_arranger);
           midi_arranger_widget_move_items_x (
             midi_arranger,
             ticks_diff);

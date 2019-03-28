@@ -174,7 +174,7 @@ INIT_LOADED (automation_lane)
 static int
 load (char * filename)
 {
-  g_assert (filename);
+  g_warn_if_fail (filename);
   char * dir = io_get_dir (filename);
   update_paths (dir);
 

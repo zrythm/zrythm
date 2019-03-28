@@ -355,7 +355,7 @@ void
 track_add_region (Track * track,
                   Region * region)
 {
-  g_assert (track->type == TRACK_TYPE_INSTRUMENT ||
+  g_warn_if_fail (track->type == TRACK_TYPE_INSTRUMENT ||
             track->type == TRACK_TYPE_AUDIO);
 
   region_set_track (region, track);

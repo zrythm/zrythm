@@ -60,6 +60,7 @@
 #include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "utils/dialogs.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
@@ -352,9 +353,9 @@ activate_loop_selection (GSimpleAction *action,
 
       Position start, end;
       timeline_selections_get_start_pos (
-        TL_SELECTIONS, &start);
+        TL_SELECTIONS, &start, F_NO_TRANSIENTS);
       timeline_selections_get_end_pos (
-        TL_SELECTIONS, &end);
+        TL_SELECTIONS, &end, F_NO_TRANSIENTS);
 
       position_set_to_pos (
         &TRANSPORT->loop_start_pos,
@@ -618,6 +619,21 @@ activate_delete (GSimpleAction *action,
         delete_midi_arranger_selections_action_new ();
       undo_manager_perform (
         UNDO_MANAGER, action);
+    }
+}
+
+void
+activate_duplicate (GSimpleAction *action,
+                  GVariant      *variant,
+                  gpointer       user_data)
+{
+  if (MAIN_WINDOW->last_focused ==
+        GTK_WIDGET (MW_TIMELINE))
+    {
+    }
+  else if (MAIN_WINDOW->last_focused ==
+             GTK_WIDGET (MIDI_ARRANGER))
+    {
     }
 }
 

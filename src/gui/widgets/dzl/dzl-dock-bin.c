@@ -187,9 +187,9 @@ dzl_dock_bin_get_child_typed (DzlDockBin          *self,
 {
   DzlDockBinPrivate *priv = dzl_dock_bin_get_instance_private (self);
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (type >= DZL_DOCK_BIN_CHILD_LEFT);
-  g_assert (type < LAST_DZL_DOCK_BIN_CHILD);
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (type >= DZL_DOCK_BIN_CHILD_LEFT);
+  g_warn_if_fail (type < LAST_DZL_DOCK_BIN_CHILD);
 
   for (guint i = 0; i < G_N_ELEMENTS (priv->children); i++)
     {
@@ -197,7 +197,7 @@ dzl_dock_bin_get_child_typed (DzlDockBin          *self,
         return &priv->children[i];
     }
 
-  g_assert_not_reached ();
+  g_warn_if_reached ();
 
   return NULL;
 }
@@ -233,9 +233,9 @@ get_visible (DzlDockBin          *self,
 {
   GtkWidget *child;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (type >= DZL_DOCK_BIN_CHILD_LEFT);
-  g_assert (type <= DZL_DOCK_BIN_CHILD_BOTTOM);
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (type >= DZL_DOCK_BIN_CHILD_LEFT);
+  g_warn_if_fail (type <= DZL_DOCK_BIN_CHILD_BOTTOM);
 
   child = get_child_widget (self, type);
 
@@ -251,9 +251,9 @@ set_visible (DzlDockBin          *self,
   DzlDockBinPrivate *priv = dzl_dock_bin_get_instance_private (self);
   GtkWidget *widget;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (type >= DZL_DOCK_BIN_CHILD_LEFT);
-  g_assert (type <= DZL_DOCK_BIN_CHILD_BOTTOM);
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (type >= DZL_DOCK_BIN_CHILD_LEFT);
+  g_warn_if_fail (type <= DZL_DOCK_BIN_CHILD_BOTTOM);
 
   /* Ensure the panel is created */
   widget = get_child_widget (self, type);
@@ -328,7 +328,7 @@ dzl_dock_bin_resort_children (DzlDockBin *self)
 {
   DzlDockBinPrivate *priv = dzl_dock_bin_get_instance_private (self);
 
-  g_assert (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
 
   /*
    * Sort the children by priority/pinned status, but do not change
@@ -352,8 +352,8 @@ dzl_dock_bin_get_child (DzlDockBin *self,
   DzlDockBinPrivate *priv = dzl_dock_bin_get_instance_private (self);
   guint i;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
 
   for (i = 0; i < G_N_ELEMENTS (priv->children); i++)
     {
@@ -363,7 +363,7 @@ dzl_dock_bin_get_child (DzlDockBin *self,
         return child;
     }
 
-  g_assert_not_reached ();
+  g_warn_if_reached ();
 
   return NULL;
 }
@@ -378,7 +378,7 @@ dzl_dock_bin_focus (GtkWidget        *widget,
   DzlDockBinChild *child = NULL;
   GtkWidget *focus_child;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
 
   if (!gtk_widget_get_can_focus (widget))
     return GTK_WIDGET_CLASS (dzl_dock_bin_parent_class)->focus (widget, dir);
@@ -387,7 +387,7 @@ dzl_dock_bin_focus (GtkWidget        *widget,
     {
       child = dzl_dock_bin_get_child_typed (self, DZL_DOCK_BIN_CHILD_CENTER);
 
-      g_assert (child != NULL);
+      g_warn_if_fail (child != NULL);
 
       if (child->widget != NULL)
         {
@@ -457,8 +457,8 @@ dzl_dock_bin_focus (GtkWidget        *widget,
       return FALSE;
     }
 
-  g_assert (next_child != NULL);
-  g_assert (next_child->widget != NULL);
+  g_warn_if_fail (next_child != NULL);
+  g_warn_if_fail (next_child->widget != NULL);
 
   return gtk_widget_child_focus (next_child->widget, dir);
 }
@@ -470,8 +470,8 @@ dzl_dock_bin_add (GtkContainer *container,
   DzlDockBin *self = (DzlDockBin *)container;
   DzlDockBinChild *child;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
 
   child = dzl_dock_bin_get_child_typed (self, DZL_DOCK_BIN_CHILD_CENTER);
 
@@ -508,8 +508,8 @@ dzl_dock_bin_notify_reveal_child (DzlDockBin *self,
 {
   DzlDockBinPrivate *priv = dzl_dock_bin_get_instance_private (self);
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (GTK_IS_WIDGET (child));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (GTK_IS_WIDGET (child));
 
   for (guint i = 0; i < G_N_ELEMENTS (priv->children); i++)
     {
@@ -527,8 +527,8 @@ dzl_dock_bin_notify_child_revealed (DzlDockBin *self,
 {
   DzlDockBinPrivate *priv = dzl_dock_bin_get_instance_private (self);
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (GTK_IS_WIDGET (child));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (GTK_IS_WIDGET (child));
 
   for (guint i = 0; i < G_N_ELEMENTS (priv->children); i++)
     {
@@ -581,8 +581,8 @@ dzl_dock_bin_forall (GtkContainer *container,
   DzlDockBinChild *child;
   guint i;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (callback != NULL);
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (callback != NULL);
 
   /*
    * Always call the "center" child callback first. This helps ensure that
@@ -625,11 +625,11 @@ dzl_dock_bin_get_children_preferred_width (DzlDockBin      *self,
   gint neighbor_min_width = 0;
   gint neighbor_nat_width = 0;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (children != NULL);
-  g_assert (n_children > 0);
-  g_assert (min_width != NULL);
-  g_assert (nat_width != NULL);
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (children != NULL);
+  g_warn_if_fail (n_children > 0);
+  g_warn_if_fail (min_width != NULL);
+  g_warn_if_fail (nat_width != NULL);
 
   *min_width = 0;
   *nat_width = 0;
@@ -719,7 +719,7 @@ dzl_dock_bin_get_children_preferred_width (DzlDockBin      *self,
 
     case LAST_DZL_DOCK_BIN_CHILD:
     default:
-      g_assert_not_reached ();
+      g_warn_if_reached ();
     }
 
   child->min_req.width = *min_width;
@@ -734,9 +734,9 @@ dzl_dock_bin_get_preferred_width (GtkWidget *widget,
   DzlDockBin *self = (DzlDockBin *)widget;
   DzlDockBinPrivate *priv = dzl_dock_bin_get_instance_private (self);
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (min_width != NULL);
-  g_assert (nat_width != NULL);
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (min_width != NULL);
+  g_warn_if_fail (nat_width != NULL);
 
   dzl_dock_bin_get_children_preferred_width (self,
                                              priv->children,
@@ -759,11 +759,11 @@ dzl_dock_bin_get_children_preferred_height (DzlDockBin      *self,
   gint neighbor_min_height = 0;
   gint neighbor_nat_height = 0;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (children != NULL);
-  g_assert (n_children > 0);
-  g_assert (min_height != NULL);
-  g_assert (nat_height != NULL);
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (children != NULL);
+  g_warn_if_fail (n_children > 0);
+  g_warn_if_fail (min_height != NULL);
+  g_warn_if_fail (nat_height != NULL);
 
   *min_height = 0;
   *nat_height = 0;
@@ -817,7 +817,7 @@ dzl_dock_bin_get_children_preferred_height (DzlDockBin      *self,
 
     case LAST_DZL_DOCK_BIN_CHILD:
     default:
-      g_assert_not_reached ();
+      g_warn_if_reached ();
     }
 
   child->min_req.height = *min_height;
@@ -832,9 +832,9 @@ dzl_dock_bin_get_preferred_height (GtkWidget *widget,
   DzlDockBin *self = (DzlDockBin *)widget;
   DzlDockBinPrivate *priv = dzl_dock_bin_get_instance_private (self);
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (min_height != NULL);
-  g_assert (nat_height != NULL);
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (min_height != NULL);
+  g_warn_if_fail (nat_height != NULL);
 
   dzl_dock_bin_get_children_preferred_height (self,
                                               priv->children,
@@ -852,13 +852,13 @@ dzl_dock_bin_negotiate_size (DzlDockBin           *self,
                              const GtkRequisition *neighbor_nat,
                              GtkAllocation        *child_alloc)
 {
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (allocation != NULL);
-  g_assert (child_min != NULL);
-  g_assert (child_nat != NULL);
-  g_assert (neighbor_min != NULL);
-  g_assert (neighbor_nat != NULL);
-  g_assert (child_alloc != NULL);
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (allocation != NULL);
+  g_warn_if_fail (child_min != NULL);
+  g_warn_if_fail (child_nat != NULL);
+  g_warn_if_fail (neighbor_min != NULL);
+  g_warn_if_fail (neighbor_nat != NULL);
+  g_warn_if_fail (child_alloc != NULL);
 
   if (allocation->width - child_nat->width < neighbor_min->width)
     child_alloc->width = allocation->width - neighbor_min->width;
@@ -879,14 +879,14 @@ dzl_dock_bin_child_size_allocate (DzlDockBin      *self,
 {
   DzlDockBinChild *child = children;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (children != NULL);
-  g_assert (n_children >= 1);
-  g_assert (allocation != NULL);
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (children != NULL);
+  g_warn_if_fail (n_children >= 1);
+  g_warn_if_fail (allocation != NULL);
 
   if (n_children == 1)
     {
-      g_assert (child->type == DZL_DOCK_BIN_CHILD_CENTER);
+      g_warn_if_fail (child->type == DZL_DOCK_BIN_CHILD_CENTER);
 
       if (child->widget != NULL && gtk_widget_get_visible (child->widget))
         gtk_widget_size_allocate (child->widget, allocation);
@@ -994,7 +994,7 @@ dzl_dock_bin_child_size_allocate (DzlDockBin      *self,
         case DZL_DOCK_BIN_CHILD_CENTER:
         case LAST_DZL_DOCK_BIN_CHILD:
         default:
-          g_assert_not_reached ();
+          g_warn_if_reached ();
           break;
         }
 
@@ -1072,8 +1072,8 @@ dzl_dock_bin_size_allocate (GtkWidget     *widget,
   GtkAllocation child_allocation;
   guint i;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (allocation != NULL);
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (allocation != NULL);
 
   gtk_widget_set_allocation (widget, allocation);
 
@@ -1131,8 +1131,8 @@ dzl_dock_bin_set_child_pinned (DzlDockBin *self,
   DzlDockBinChild *child;
   GtkStyleContext *style_context;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
 
   child = dzl_dock_bin_get_child (self, widget);
 
@@ -1166,8 +1166,8 @@ dzl_dock_bin_set_child_priority (DzlDockBin *self,
 {
   DzlDockBinChild *child;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
 
   child = dzl_dock_bin_get_child (self, widget);
   child->priority = priority;
@@ -1190,10 +1190,10 @@ dzl_dock_bin_create_child_handle (DzlDockBin      *self,
   GdkWindow *parent;
   const gchar *cursor_name;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (child != NULL);
-  g_assert (child->type < DZL_DOCK_BIN_CHILD_CENTER);
-  g_assert (child->handle == NULL);
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (child != NULL);
+  g_warn_if_fail (child->type < DZL_DOCK_BIN_CHILD_CENTER);
+  g_warn_if_fail (child->handle == NULL);
 
   display = gtk_widget_get_display (GTK_WIDGET (self));
   parent = gtk_widget_get_window (GTK_WIDGET (self));
@@ -1226,9 +1226,9 @@ static void
 dzl_dock_bin_destroy_child_handle (DzlDockBin      *self,
                                    DzlDockBinChild *child)
 {
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (child != NULL);
-  g_assert (child->type < DZL_DOCK_BIN_CHILD_CENTER);
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (child != NULL);
+  g_warn_if_fail (child->type < DZL_DOCK_BIN_CHILD_CENTER);
 
   if (child->handle != NULL)
     {
@@ -1250,7 +1250,7 @@ dzl_dock_bin_realize (GtkWidget *widget)
   gint attributes_mask = 0;
   guint i;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
 
   gtk_widget_get_allocation (GTK_WIDGET (self), &alloc);
 
@@ -1288,7 +1288,7 @@ dzl_dock_bin_unrealize (GtkWidget *widget)
   DzlDockBinPrivate *priv = dzl_dock_bin_get_instance_private (self);
   guint i;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
 
   for (i = 0; i < DZL_DOCK_BIN_CHILD_CENTER; i++)
     {
@@ -1307,7 +1307,7 @@ dzl_dock_bin_map (GtkWidget *widget)
   DzlDockBinPrivate *priv = dzl_dock_bin_get_instance_private (self);
   guint i;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
 
   GTK_WIDGET_CLASS (dzl_dock_bin_parent_class)->map (widget);
 
@@ -1327,7 +1327,7 @@ dzl_dock_bin_unmap (GtkWidget *widget)
   DzlDockBinPrivate *priv = dzl_dock_bin_get_instance_private (self);
   guint i;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
 
   for (i = 0; i < DZL_DOCK_BIN_CHILD_CENTER; i++)
     {
@@ -1353,8 +1353,8 @@ dzl_dock_bin_pan_gesture_drag_begin (DzlDockBin    *self,
   const GdkEvent *event;
   guint i;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (GTK_IS_GESTURE_PAN (gesture));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (GTK_IS_GESTURE_PAN (gesture));
 
   sequence = gtk_gesture_single_get_current_sequence (GTK_GESTURE_SINGLE (gesture));
   event = gtk_gesture_get_last_event (GTK_GESTURE (gesture), sequence);
@@ -1405,8 +1405,8 @@ dzl_dock_bin_pan_gesture_drag_end (DzlDockBin    *self,
   GtkAllocation child_alloc;
   gint position;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (GTK_IS_GESTURE_PAN (gesture));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (GTK_IS_GESTURE_PAN (gesture));
 
   sequence = gtk_gesture_single_get_current_sequence (GTK_GESTURE_SINGLE (gesture));
   state = gtk_gesture_get_sequence_state (GTK_GESTURE (gesture), sequence);
@@ -1414,8 +1414,8 @@ dzl_dock_bin_pan_gesture_drag_end (DzlDockBin    *self,
   if (state == GTK_EVENT_SEQUENCE_DENIED)
     goto cleanup;
 
-  g_assert (priv->drag_child != NULL);
-  g_assert (DZL_IS_DOCK_BIN_EDGE (priv->drag_child->widget));
+  g_warn_if_fail (priv->drag_child != NULL);
+  g_warn_if_fail (DZL_IS_DOCK_BIN_EDGE (priv->drag_child->widget));
 
   gtk_widget_get_allocation (priv->drag_child->widget, &child_alloc);
 
@@ -1445,10 +1445,10 @@ dzl_dock_bin_pan_gesture_pan (DzlDockBin      *self,
   DzlDockBinPrivate *priv = dzl_dock_bin_get_instance_private (self);
   gint position;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (GTK_IS_GESTURE_PAN (gesture));
-  g_assert (priv->drag_child != NULL);
-  g_assert (priv->drag_child->type < DZL_DOCK_BIN_CHILD_CENTER);
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (GTK_IS_GESTURE_PAN (gesture));
+  g_warn_if_fail (priv->drag_child != NULL);
+  g_warn_if_fail (priv->drag_child->type < DZL_DOCK_BIN_CHILD_CENTER);
 
   /*
    * This callback is used to adjust the size allocation of the edge in
@@ -1495,8 +1495,8 @@ dzl_dock_bin_create_pan_gesture (DzlDockBin *self)
   DzlDockBinPrivate *priv = dzl_dock_bin_get_instance_private (self);
   GtkGesture *gesture;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (priv->pan_gesture == NULL);
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (priv->pan_gesture == NULL);
 
   gesture = gtk_gesture_pan_new (GTK_WIDGET (self), GTK_ORIENTATION_HORIZONTAL);
   gtk_gesture_single_set_touch_only (GTK_GESTURE_SINGLE (gesture), FALSE);
@@ -1530,8 +1530,8 @@ dzl_dock_bin_drag_enter (DzlDockBin     *self,
                          gint            y,
                          guint           time_)
 {
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (GDK_IS_DRAG_CONTEXT (drag_context));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (GDK_IS_DRAG_CONTEXT (drag_context));
 
 }
 
@@ -1545,8 +1545,8 @@ dzl_dock_bin_drag_motion (GtkWidget      *widget,
   DzlDockBin *self = (DzlDockBin *)widget;
   DzlDockBinPrivate *priv = dzl_dock_bin_get_instance_private (self);
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (GDK_IS_DRAG_CONTEXT (drag_context));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (GDK_IS_DRAG_CONTEXT (drag_context));
 
   /*
    * The purpose of this function is to determine of the location for which
@@ -1574,8 +1574,8 @@ dzl_dock_bin_drag_leave (GtkWidget      *widget,
   DzlDockBin *self = (DzlDockBin *)widget;
   DzlDockBinPrivate *priv = dzl_dock_bin_get_instance_private (self);
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (GDK_IS_DRAG_CONTEXT (context));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (GDK_IS_DRAG_CONTEXT (context));
 
   priv->dnd_drag_x = -1;
   priv->dnd_drag_y = -1;
@@ -1589,7 +1589,7 @@ dzl_dock_bin_grab_focus (GtkWidget *widget)
   DzlDockBinChild *child;
   guint i;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
 
   child = dzl_dock_bin_get_child_typed (self, DZL_DOCK_BIN_CHILD_CENTER);
 
@@ -1618,7 +1618,7 @@ static GtkWidget *
 dzl_dock_bin_real_create_edge (DzlDockBin      *self,
                                GtkPositionType  edge)
 {
-  g_assert (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
 
   return g_object_new (DZL_TYPE_DOCK_BIN_EDGE,
                        "edge", edge,
@@ -1639,10 +1639,10 @@ dzl_dock_bin_create_edge (DzlDockBin          *self,
   const gchar *visible_name;
   const gchar *pinned_name;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (child != NULL);
-  g_assert (type >= DZL_DOCK_BIN_CHILD_LEFT);
-  g_assert (type < DZL_DOCK_BIN_CHILD_CENTER);
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (child != NULL);
+  g_warn_if_fail (type >= DZL_DOCK_BIN_CHILD_LEFT);
+  g_warn_if_fail (type < DZL_DOCK_BIN_CHILD_CENTER);
 
   child->widget = DZL_DOCK_BIN_GET_CLASS (self)->create_edge (self, (GtkPositionType)type);
 
@@ -1721,10 +1721,10 @@ dzl_dock_bin_init_child (DzlDockBin          *self,
                          DzlDockBinChild     *child,
                          DzlDockBinChildType  type)
 {
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (child != NULL);
-  g_assert (type >= DZL_DOCK_BIN_CHILD_LEFT);
-  g_assert (type < LAST_DZL_DOCK_BIN_CHILD);
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (child != NULL);
+  g_warn_if_fail (type >= DZL_DOCK_BIN_CHILD_LEFT);
+  g_warn_if_fail (type < LAST_DZL_DOCK_BIN_CHILD);
 
   child->type = type;
   child->priority = (int)type * 100;
@@ -1744,8 +1744,8 @@ dzl_dock_bin_draw (GtkWidget *widget,
                                DZL_DOCK_BIN_CHILD_TOP,
                                DZL_DOCK_BIN_CHILD_BOTTOM };
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (cr != NULL);
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (cr != NULL);
 
   /* All pinned children, in proper draw order */
   for (guint i = 0; i < G_N_ELEMENTS (draw_order); i++)
@@ -2154,9 +2154,9 @@ dzl_dock_bin_add_child (GtkBuildable *buildable,
   DzlDockBin *self = (DzlDockBin *)buildable;
   GtkWidget *parent;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (GTK_IS_BUILDER (builder));
-  g_assert (G_IS_OBJECT (child));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (GTK_IS_BUILDER (builder));
+  g_warn_if_fail (G_IS_OBJECT (child));
 
   if (!GTK_IS_WIDGET (child))
     {
@@ -2198,8 +2198,8 @@ dzl_dock_bin_get_internal_child (GtkBuildable *buildable,
 {
   DzlDockBin *self = (DzlDockBin *)buildable;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (GTK_IS_BUILDER (builder));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (GTK_IS_BUILDER (builder));
 
   if (g_strcmp0 ("top", childname) == 0)
     return G_OBJECT (dzl_dock_bin_get_top_edge (self));
@@ -2228,9 +2228,9 @@ dzl_dock_bin_present_child (DzlDockItem *item,
   DzlDockBinPrivate *priv = dzl_dock_bin_get_instance_private (self);
   guint i;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (DZL_IS_DOCK_ITEM (widget));
-  g_assert (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (DZL_IS_DOCK_ITEM (widget));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
 
   for (i = 0; i < G_N_ELEMENTS (priv->children); i++)
     {
@@ -2253,8 +2253,8 @@ dzl_dock_bin_get_child_visible (DzlDockItem *item,
   DzlDockBinPrivate *priv = dzl_dock_bin_get_instance_private (self);
   GtkWidget *ancestor;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (DZL_IS_DOCK_ITEM (item));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (DZL_IS_DOCK_ITEM (item));
 
   ancestor = gtk_widget_get_ancestor (GTK_WIDGET (child), DZL_TYPE_DOCK_BIN_EDGE);
 
@@ -2278,8 +2278,8 @@ dzl_dock_bin_set_child_visible (DzlDockItem *item,
   DzlDockBin *self = (DzlDockBin *)item;
   GtkWidget *ancestor;
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (DZL_IS_DOCK_ITEM (item));
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (DZL_IS_DOCK_ITEM (item));
 
   ancestor = gtk_widget_get_ancestor (GTK_WIDGET (child), DZL_TYPE_DOCK_BIN_EDGE);
 
@@ -2295,9 +2295,9 @@ dzl_dock_bin_minimize (DzlDockItem     *item,
   DzlDockBin *self = (DzlDockBin *)item;
   DzlDockBinPrivate *priv = dzl_dock_bin_get_instance_private (self);
 
-  g_assert (DZL_IS_DOCK_BIN (self));
-  g_assert (DZL_IS_DOCK_ITEM (child));
-  g_assert (position != NULL);
+  g_warn_if_fail (DZL_IS_DOCK_BIN (self));
+  g_warn_if_fail (DZL_IS_DOCK_ITEM (child));
+  g_warn_if_fail (position != NULL);
 
   for (guint i = 0; i < LAST_DZL_DOCK_BIN_CHILD; i++)
     {

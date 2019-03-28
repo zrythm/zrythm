@@ -29,6 +29,7 @@
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
+#include "project.h"
 #include "utils/ui.h"
 
 #include <glib/gi18n-lib.h>
@@ -286,24 +287,33 @@ region_widget_is_resize_r (
 }
 
 void
-region_widget_select (RegionWidget * self,
-                      int            select)
+region_widget_select (
+  RegionWidget * self,
+  int            select,
+  int            with_transients)
 {
   RegionWidgetPrivate * prv =
     region_widget_get_instance_private (self);
-  prv->region->selected = select;
+  /*prv->region->selected = select;*/
   if (select)
     {
-      gtk_widget_set_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_SELECTED,
-        0);
+      /*gtk_widget_set_state_flags (*/
+        /*GTK_WIDGET (self),*/
+        /*GTK_STATE_FLAG_SELECTED,*/
+        /*0);*/
+      timeline_selections_add_region (
+        TL_SELECTIONS,
+        prv->region,
+        with_transients);
     }
   else
     {
-      gtk_widget_unset_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_SELECTED);
+      /*gtk_widget_unset_state_flags (*/
+        /*GTK_WIDGET (self),*/
+        /*GTK_STATE_FLAG_SELECTED);*/
+      timeline_selections_remove_region (
+        TL_SELECTIONS,
+        prv->region);
     }
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }

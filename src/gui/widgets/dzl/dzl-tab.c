@@ -122,8 +122,8 @@ dzl_tab_get_inner_allocation (DzlTab        *self,
   GtkStyleContext *style_context;
   GtkStateFlags flags;
 
-  g_assert (DZL_IS_TAB (self));
-  g_assert (alloc != NULL);
+  g_warn_if_fail (DZL_IS_TAB (self));
+  g_warn_if_fail (alloc != NULL);
 
   gtk_widget_get_allocation (GTK_WIDGET (self), alloc);
 
@@ -151,7 +151,7 @@ dzl_tab_apply_state (DzlTab *self)
 {
   DzlTabPrivate *priv = dzl_tab_get_instance_private (self);
 
-  g_assert (DZL_IS_TAB (self));
+  g_warn_if_fail (DZL_IS_TAB (self));
 
   if (priv->active)
     gtk_widget_set_state_flags (GTK_WIDGET (self), GTK_STATE_FLAG_CHECKED, FALSE);
@@ -165,7 +165,7 @@ dzl_tab_activate (DzlTab *self)
   DzlTabPrivate *priv = dzl_tab_get_instance_private (self);
   g_autoptr(GVariant) value = NULL;
 
-  g_assert (DZL_IS_TAB (self));
+  g_warn_if_fail (DZL_IS_TAB (self));
 
   if (priv->in_activate ||
       priv->action_name == NULL ||
@@ -207,7 +207,7 @@ dzl_tab_update_edge (DzlTab *self)
 {
   DzlTabPrivate *priv = dzl_tab_get_instance_private (self);
 
-  g_assert (DZL_IS_TAB (self));
+  g_warn_if_fail (DZL_IS_TAB (self));
 
   switch (priv->edge)
     {
@@ -248,7 +248,7 @@ dzl_tab_update_edge (DzlTab *self)
       break;
 
     default:
-      g_assert_not_reached ();
+      g_warn_if_reached ();
     }
 }
 
@@ -294,8 +294,8 @@ dzl_tab_update_prelight (DzlTab   *self,
   DzlTabPrivate *priv = dzl_tab_get_instance_private (self);
   gdouble x, y;
 
-  g_assert (DZL_IS_TAB (self));
-  g_assert (event != NULL);
+  g_warn_if_fail (DZL_IS_TAB (self));
+  g_warn_if_fail (event != NULL);
 
   if (get_widget_coordinates (GTK_WIDGET (self), (GdkEvent *)event, &x, &y))
     {
@@ -331,8 +331,8 @@ dzl_tab_motion_notify_event (GtkWidget      *widget,
 {
   DzlTab *self = (DzlTab *)widget;
 
-  g_assert (DZL_IS_TAB (self));
-  g_assert (event != NULL);
+  g_warn_if_fail (DZL_IS_TAB (self));
+  g_warn_if_fail (event != NULL);
 
   dzl_tab_update_prelight (self, (GdkEvent *)event);
 
@@ -345,8 +345,8 @@ dzl_tab_enter_notify_event (GtkWidget        *widget,
 {
   DzlTab *self = (DzlTab *)widget;
 
-  g_assert (DZL_IS_TAB (self));
-  g_assert (event != NULL);
+  g_warn_if_fail (DZL_IS_TAB (self));
+  g_warn_if_fail (event != NULL);
 
   dzl_tab_update_prelight (self, (GdkEvent *)event);
 
@@ -422,7 +422,7 @@ dzl_tab_realize (GtkWidget *widget)
   GtkAllocation alloc;
   gint attributes_mask = 0;
 
-  g_assert (DZL_IS_TAB (widget));
+  g_warn_if_fail (DZL_IS_TAB (widget));
 
   gtk_widget_get_allocation (GTK_WIDGET (self), &alloc);
 
@@ -461,9 +461,9 @@ dzl_tab_action_state_changed (DzlTab       *self,
   DzlTabPrivate *priv = dzl_tab_get_instance_private (self);
   gboolean active;
 
-  g_assert (DZL_IS_TAB (self));
-  g_assert (action_name != NULL);
-  g_assert (G_IS_ACTION_GROUP (group));
+  g_warn_if_fail (DZL_IS_TAB (self));
+  g_warn_if_fail (action_name != NULL);
+  g_warn_if_fail (G_IS_ACTION_GROUP (group));
 
   active = (value != NULL &&
             priv->action_target_value != NULL &&
@@ -533,8 +533,8 @@ dzl_tab_hierarchy_changed (GtkWidget *widget,
   DzlTabPrivate *priv = dzl_tab_get_instance_private (self);
   GActionGroup *group;
 
-  g_assert (GTK_IS_WIDGET (widget));
-  g_assert (!old_toplevel || GTK_IS_WIDGET (old_toplevel));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (!old_toplevel || GTK_IS_WIDGET (old_toplevel));
 
   group = dzl_gtk_widget_find_group_for_action (widget, priv->action_name);
   dzl_tab_monitor_action_group (self, group);
@@ -544,7 +544,7 @@ static void
 dzl_tab_size_allocate (GtkWidget     *widget,
                        GtkAllocation *allocation)
 {
-  g_assert (DZL_IS_TAB (widget));
+  g_warn_if_fail (DZL_IS_TAB (widget));
 
   GTK_WIDGET_CLASS (dzl_tab_parent_class)->size_allocate (widget, allocation);
 
@@ -562,8 +562,8 @@ dzl_tab_close_clicked (DzlTab    *self,
 {
   DzlTabPrivate *priv = dzl_tab_get_instance_private (self);
 
-  g_assert (DZL_IS_TAB (self));
-  g_assert (GTK_IS_BUTTON (button));
+  g_warn_if_fail (DZL_IS_TAB (self));
+  g_warn_if_fail (GTK_IS_BUTTON (button));
 
   g_object_ref (self);
 
@@ -581,8 +581,8 @@ dzl_tab_minimize_clicked (DzlTab    *self,
   DzlTabPrivate *priv = dzl_tab_get_instance_private (self);
   GtkPositionType position = GTK_POS_LEFT;
 
-  g_assert (DZL_IS_TAB (self));
-  g_assert (GTK_IS_BUTTON (button));
+  g_warn_if_fail (DZL_IS_TAB (self));
+  g_warn_if_fail (GTK_IS_BUTTON (button));
 
   g_object_ref (self);
 
@@ -613,8 +613,8 @@ dzl_tab_query_tooltip (GtkWidget  *widget,
   DzlTabPrivate *priv = dzl_tab_get_instance_private (self);
   const gchar *title;
 
-  g_assert (DZL_IS_TAB (self));
-  g_assert (GTK_IS_TOOLTIP (tooltip));
+  g_warn_if_fail (DZL_IS_TAB (self));
+  g_warn_if_fail (GTK_IS_TOOLTIP (tooltip));
 
   title = gtk_label_get_label (priv->title);
 

@@ -110,6 +110,14 @@ AutomationTrack *
 timeline_arranger_widget_get_automation_track_at_y (double y);
 
 /**
+ * Sets transient object and actual object
+ * visibility based on the current action.
+ */
+void
+timeline_arranger_widget_update_visibility (
+  TimelineArrangerWidget * self);
+
+/**
  * Returns the appropriate cursor based on the
  * current hover_x and y.
  */
@@ -167,7 +175,9 @@ timeline_arranger_widget_select_all (
  */
 void
 timeline_arranger_widget_show_context_menu (
-  TimelineArrangerWidget * self);
+  TimelineArrangerWidget * self,
+  gdouble              x,
+  gdouble              y);
 
 void
 timeline_arranger_widget_on_drag_begin_region_hit (

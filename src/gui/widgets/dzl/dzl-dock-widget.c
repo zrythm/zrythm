@@ -100,7 +100,7 @@ dzl_dock_widget_grab_focus (GtkWidget *widget)
   DzlDockWidget *self = (DzlDockWidget *)widget;
   GtkWidget *child;
 
-  g_assert (DZL_IS_DOCK_WIDGET (self));
+  g_warn_if_fail (DZL_IS_DOCK_WIDGET (self));
 
   dzl_dock_item_present (DZL_DOCK_ITEM (self));
 

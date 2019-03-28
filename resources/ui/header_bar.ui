@@ -36,7 +36,7 @@
             <property name="width_request">20</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="resource">/org/zrythm/icons/zrythm/z.svg</property>
+            <property name="resource">/org/zrythm/icons/zrythm/zrythm.svg</property>
           </object>
           <packing>
             <property name="expand">False</property>

@@ -62,8 +62,10 @@ region_widget_setup (RegionWidget * self,
                      Region *       region);
 
 void
-region_widget_select (RegionWidget * self,
-                      int            select);
+region_widget_select (
+  RegionWidget * self,
+  int            select,
+  int            with_transients);
 
 /**
  * Returns if the current position is for resizing

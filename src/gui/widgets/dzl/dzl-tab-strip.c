@@ -59,10 +59,10 @@ set_tab_state (GSimpleAction *action,
   GList *list;
   gint stateval;
 
-  g_assert (G_IS_SIMPLE_ACTION (action));
-  g_assert (DZL_IS_TAB_STRIP (self));
-  g_assert (state != NULL);
-  g_assert (g_variant_is_of_type (state, G_VARIANT_TYPE_INT32));
+  g_warn_if_fail (G_IS_SIMPLE_ACTION (action));
+  g_warn_if_fail (DZL_IS_TAB_STRIP (self));
+  g_warn_if_fail (state != NULL);
+  g_warn_if_fail (g_variant_is_of_type (state, G_VARIANT_TYPE_INT32));
 
   g_simple_action_set_state (action, state);
 
@@ -93,7 +93,7 @@ dzl_tab_strip_update_action_targets (DzlTabStrip *self)
   GList *list;
   gint i;
 
-  g_assert (DZL_IS_TAB_STRIP (self));
+  g_warn_if_fail (DZL_IS_TAB_STRIP (self));
 
   list = gtk_container_get_children (GTK_CONTAINER (self));
 
@@ -116,8 +116,8 @@ dzl_tab_strip_add (GtkContainer *container,
   DzlTabStrip *self = (DzlTabStrip *)container;
   DzlTabStripPrivate *priv = dzl_tab_strip_get_instance_private (self);
 
-  g_assert (DZL_IS_TAB_STRIP (self));
-  g_assert (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (DZL_IS_TAB_STRIP (self));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
 
   if (DZL_IS_TAB (widget))
     dzl_tab_set_edge (DZL_TAB (widget), priv->edge);
@@ -133,8 +133,8 @@ dzl_tab_strip_remove (GtkContainer *container,
 {
   DzlTabStrip *self = (DzlTabStrip *)container;
 
-  g_assert (DZL_IS_TAB_STRIP (self));
-  g_assert (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (DZL_IS_TAB_STRIP (self));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
 
   GTK_CONTAINER_CLASS (dzl_tab_strip_parent_class)->remove (container, widget);
 
@@ -147,7 +147,7 @@ dzl_tab_strip_destroy (GtkWidget *widget)
   DzlTabStrip *self = (DzlTabStrip *)widget;
   DzlTabStripPrivate *priv = dzl_tab_strip_get_instance_private (self);
 
-  g_assert (DZL_IS_TAB_STRIP (self));
+  g_warn_if_fail (DZL_IS_TAB_STRIP (self));
 
   gtk_widget_insert_action_group (GTK_WIDGET (self), "tab-strip", NULL);
 
@@ -288,8 +288,8 @@ dzl_tab_strip_child_position_changed (DzlTabStrip *self,
   DzlTab *tab;
   gint position = -1;
 
-  g_assert (DZL_IS_TAB_STRIP (self));
-  g_assert (GTK_IS_WIDGET (child));
+  g_warn_if_fail (DZL_IS_TAB_STRIP (self));
+  g_warn_if_fail (GTK_IS_WIDGET (child));
 
   tab = g_object_get_data (G_OBJECT (child), "DZL_TAB");
 
@@ -302,7 +302,7 @@ dzl_tab_strip_child_position_changed (DzlTabStrip *self,
 
   parent = gtk_widget_get_parent (child);
 
-  g_assert (GTK_IS_STACK (parent));
+  g_warn_if_fail (GTK_IS_STACK (parent));
 
   gtk_container_child_get (GTK_CONTAINER (parent), child,
                            "position", &position,
@@ -333,8 +333,8 @@ dzl_tab_strip_child_title_changed (DzlTabStrip *self,
   GtkWidget *parent;
   DzlTab *tab;
 
-  g_assert (DZL_IS_TAB_STRIP (self));
-  g_assert (GTK_IS_WIDGET (child));
+  g_warn_if_fail (DZL_IS_TAB_STRIP (self));
+  g_warn_if_fail (GTK_IS_WIDGET (child));
 
   tab = g_object_get_data (G_OBJECT (child), "DZL_TAB");
 
@@ -343,7 +343,7 @@ dzl_tab_strip_child_title_changed (DzlTabStrip *self,
 
   parent = gtk_widget_get_parent (child);
 
-  g_assert (GTK_IS_STACK (parent));
+  g_warn_if_fail (GTK_IS_STACK (parent));
 
   gtk_container_child_get (GTK_CONTAINER (parent), child,
                            "title", &title,
@@ -363,8 +363,8 @@ dzl_tab_strip_child_icon_name_changed (DzlTabStrip *self,
   GtkWidget *parent;
   DzlTab *tab;
 
-  g_assert (DZL_IS_TAB_STRIP (self));
-  g_assert (GTK_IS_WIDGET (child));
+  g_warn_if_fail (DZL_IS_TAB_STRIP (self));
+  g_warn_if_fail (GTK_IS_WIDGET (child));
 
   tab = g_object_get_data (G_OBJECT (child), "DZL_TAB");
 
@@ -373,7 +373,7 @@ dzl_tab_strip_child_icon_name_changed (DzlTabStrip *self,
 
   parent = gtk_widget_get_parent (child);
 
-  g_assert (GTK_IS_STACK (parent));
+  g_warn_if_fail (GTK_IS_STACK (parent));
 
   gtk_container_child_get (GTK_CONTAINER (parent), child,
                            "icon-name", &icon_name,
@@ -391,8 +391,8 @@ dzl_tab_strip_stack_notify_visible_child (DzlTabStrip *self,
 {
   GtkWidget *visible;
 
-  g_assert (DZL_IS_TAB_STRIP (self));
-  g_assert (GTK_IS_STACK (stack));
+  g_warn_if_fail (DZL_IS_TAB_STRIP (self));
+  g_warn_if_fail (GTK_IS_STACK (stack));
 
   visible = gtk_stack_get_visible_child (stack);
 
@@ -411,8 +411,8 @@ dzl_tab_strip_tab_clicked (DzlTabStrip *self,
 {
   GtkWidget *widget;
 
-  g_assert (DZL_IS_TAB_STRIP (self));
-  g_assert (DZL_IS_TAB (tab));
+  g_warn_if_fail (DZL_IS_TAB_STRIP (self));
+  g_warn_if_fail (DZL_IS_TAB (tab));
 
   if (NULL != (widget = dzl_tab_get_widget (tab)))
     {
@@ -431,9 +431,9 @@ dzl_tab_strip_stack_add (DzlTabStrip *self,
   DzlTab *tab;
   gboolean can_close = FALSE;
 
-  g_assert (DZL_IS_TAB_STRIP (self));
-  g_assert (GTK_IS_WIDGET (widget));
-  g_assert (GTK_IS_STACK (stack));
+  g_warn_if_fail (DZL_IS_TAB_STRIP (self));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (GTK_IS_STACK (stack));
 
   if (DZL_IS_DOCK_ITEM (widget))
     can_close = dzl_dock_item_get_can_close (DZL_DOCK_ITEM (widget));
@@ -496,9 +496,9 @@ dzl_tab_strip_stack_remove (DzlTabStrip *self,
 {
   DzlTab *tab;
 
-  g_assert (DZL_IS_TAB_STRIP (self));
-  g_assert (GTK_IS_WIDGET (widget));
-  g_assert (GTK_IS_STACK (stack));
+  g_warn_if_fail (DZL_IS_TAB_STRIP (self));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (GTK_IS_STACK (stack));
 
   tab = g_object_get_data (G_OBJECT (widget), "DZL_TAB");
 
@@ -537,8 +537,8 @@ dzl_tab_strip_cold_plug (GtkWidget *widget,
   DzlTabStrip *self = user_data;
   DzlTabStripPrivate *priv = dzl_tab_strip_get_instance_private (self);
 
-  g_assert (DZL_IS_TAB_STRIP (self));
-  g_assert (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (DZL_IS_TAB_STRIP (self));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
 
   dzl_tab_strip_stack_add (self, widget, priv->stack);
 }
@@ -608,7 +608,7 @@ dzl_tab_strip_update_edge (GtkWidget *widget,
 {
   GtkPositionType edge = GPOINTER_TO_INT (user_data);
 
-  g_assert (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
 
   if (DZL_IS_TAB (widget))
     dzl_tab_set_edge (DZL_TAB (widget), edge);
@@ -671,7 +671,7 @@ dzl_tab_strip_set_edge (DzlTabStrip     *self,
           break;
 
         default:
-          g_assert_not_reached ();
+          g_warn_if_reached ();
         }
 
       gtk_style_context_add_class (style_context, class_name);
@@ -686,7 +686,7 @@ apply_style (GtkWidget *widget,
 {
   DzlTabStyle style = GPOINTER_TO_UINT (user_data);
 
-  g_assert (GTK_IS_WIDGET (widget));
+  g_warn_if_fail (GTK_IS_WIDGET (widget));
 
   if (DZL_IS_TAB (widget))
     dzl_tab_set_style (DZL_TAB (widget), style);
@@ -742,9 +742,9 @@ dzl_tab_strip_add_child (GtkBuildable *buildable,
 {
   DzlTabStrip *self = (DzlTabStrip *)buildable;
 
-  g_assert (DZL_IS_TAB_STRIP (self));
-  g_assert (GTK_IS_BUILDER (builder));
-  g_assert (G_IS_OBJECT (child));
+  g_warn_if_fail (DZL_IS_TAB_STRIP (self));
+  g_warn_if_fail (GTK_IS_BUILDER (builder));
+  g_warn_if_fail (G_IS_OBJECT (child));
 
   if (g_strcmp0 (child_type, "control") == 0 && GTK_IS_WIDGET (child))
     dzl_tab_strip_add_control (self, GTK_WIDGET (child));

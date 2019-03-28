@@ -33,6 +33,7 @@
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_region.h"
 #include "gui/widgets/region.h"
+#include "gui/widgets/timeline_arranger.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/audio.h"
@@ -139,33 +140,15 @@ region_init_loaded (Region * region)
  * Clamps position then sets it.
  */
 void
-region_set_start_pos (Region * region,
-                      Position * pos,
-                      int      moved) ///< region moved or not (to move notes as
-                                          ///< well)
+region_set_start_pos (
+  Region * region,
+  Position * pos)
 {
   Position prev;
   position_set_to_pos (&prev, &region->start_pos);
 
   position_set_to_pos (&region->start_pos,
                        pos);
-  /*if (moved && region->type == REGION_TYPE_MIDI)*/
-    /*{*/
-      /*MidiRegion * midi_region = (MidiRegion *) region;*/
-      /*int prev_frames = position_to_frames (&prev);*/
-      /*int now_frames = position_to_frames (pos);*/
-      /*int frames = now_frames - prev_frames;*/
-      /*for (int i = 0; i < midi_region->num_midi_notes; i++)*/
-        /*{*/
-          /*MidiNote * note = midi_region->midi_notes[i];*/
-          /*position_add_frames (&note->start_pos, frames);*/
-          /*position_add_frames (&note->end_pos, frames);*/
-        /*}*/
-    /*}*/
-  /*long length =*/
-    /*region_get_full_length_in_ticks (region);*/
-  /*position_from_ticks (&region->true_end_pos,*/
-                       /*length);*/
 }
 
 /**
@@ -272,6 +255,44 @@ region_set_clip_start_pos (Region * region,
 }
 
 /**
+ * Returns if Region is in MidiArrangerSelections.
+ */
+int
+region_is_selected (Region * self)
+{
+  if (array_contains (
+        TL_SELECTIONS->regions,
+        TL_SELECTIONS->num_regions,
+        self) ||
+      array_contains (
+        TL_SELECTIONS->transient_regions,
+        TL_SELECTIONS->num_regions,
+        self))
+    return 1;
+
+  return 0;
+}
+
+/**
+ * Returns if Region is (should be) visible.
+ */
+int
+region_is_visible (Region * self)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);
+
+  if (ar_prv->action ==
+        UI_OVERLAY_ACTION_MOVING &&
+      array_contains (
+        TL_SELECTIONS->regions,
+        TL_SELECTIONS->num_regions,
+        self))
+    return 0;
+
+  return 1;
+}
+
+/**
  * Returns the region at the given position in the given channel
  */
 Region *
@@ -340,7 +361,7 @@ region_get_num_loops (
   int i = 0;
   long loop_size =
     region_get_loop_length_in_ticks (region);
-  g_assert (loop_size > 0);
+  g_warn_if_fail (loop_size > 0);
   long full_size =
     region_get_full_length_in_ticks (region);
   long loop_start =
@@ -362,6 +383,27 @@ region_get_num_loops (
     /*i++;*/
 
   return i;
+}
+
+void
+region_shift (
+  Region * self,
+  long ticks,
+  int  delta) ///< # of tracks
+{
+  if (ticks)
+    {
+      position_add_ticks (
+        &self->start_pos,
+        ticks);
+      position_add_ticks (
+        &self->end_pos,
+        ticks);
+    }
+  if (delta)
+    {
+      // TODO
+    }
 }
 
 /**
@@ -405,8 +447,7 @@ region_clone (Region *        region,
 
     }
 
-  new_region->selected = region->selected;
-  new_region->cloned_from = region->id;
+  new_region->actual_id = region->id;
 
   return new_region;
 }

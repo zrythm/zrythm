@@ -231,6 +231,6 @@ transport_get_beat_unit ()
     case BEAT_UNIT_16:
       return 16;
     }
-  g_assert_not_reached ();
+  g_warn_if_reached ();
   return -1;
 }

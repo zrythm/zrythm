@@ -434,7 +434,7 @@ port_print_connections_all ()
       for (int j = 0; j < src->num_dests; j++)
         {
           Port * dest = src->dests[j];
-          g_assert (dest);
+          g_warn_if_fail (dest);
           g_message ("%s connected to %s", src->label, dest->label);
         }
     }

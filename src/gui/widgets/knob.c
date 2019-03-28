@@ -330,7 +330,7 @@ knob_widget_new (float (*get_val)(void *),    ///< getter function
                     int         size,
                     float       zero)
 {
-  g_assert (object);
+  g_warn_if_fail (object);
 
   KnobWidget * self = g_object_new (KNOB_WIDGET_TYPE, NULL);
   /*self->value = value;*/

@@ -17,13 +17,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/chord_track.h"
 #include "audio/engine.h"
 #include "audio/position.h"
 #include "audio/track.h"
 #include "audio/transport.h"
+#include "gui/backend/events.h"
 #include "gui/backend/timeline_selections.h"
+#include "gui/widgets/audio_region.h"
+#include "gui/widgets/midi_region.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 #include "utils/yaml.h"
 
 #include <gtk/gtk.h>
@@ -37,11 +42,6 @@ timeline_selections_init_loaded (
     ts->regions[i] =
       project_get_region (ts->region_ids[i]);
 
-  ts->top_region =
-    project_get_region (ts->top_region_id);
-  ts->bot_region =
-    project_get_region (ts->bot_region_id);
-
   for (i = 0; i < ts->num_automation_points; i++)
     ts->automation_points[i] =
       project_get_automation_point (ts->ap_ids[i]);
@@ -49,6 +49,53 @@ timeline_selections_init_loaded (
   for (i = 0; i < ts->num_chords; i++)
     ts->chords[i] =
       project_get_chord (ts->chord_ids[i]);
+}
+
+/**
+ * Creates transient objects for objects added
+ * to selections without transients.
+ */
+void
+timeline_selections_create_missing_transients (
+  TimelineSelections * ts)
+{
+  Region * r = NULL, * transient = NULL;
+  for (int i = 0; i < ts->num_regions; i++)
+    {
+      r = ts->regions[i];
+      if (ts->transient_regions[i])
+        g_warn_if_fail (
+          GTK_IS_WIDGET (
+            ts->transient_regions[i]->widget));
+      else if (!ts->transient_regions[i])
+        {
+          /* create the transient */
+          transient =
+            region_clone (
+              r, REGION_CLONE_COPY);
+          if (r->type == REGION_TYPE_MIDI)
+            transient->widget =
+              Z_REGION_WIDGET (
+                midi_region_widget_new (transient));
+          else if (r->type == REGION_TYPE_AUDIO)
+            transient->widget =
+              Z_REGION_WIDGET (
+                audio_region_widget_new (transient));
+          gtk_widget_set_visible (
+            GTK_WIDGET (transient->widget),
+            F_NOT_VISIBLE);
+
+          /* add it to selections and to track */
+          ts->transient_regions[i] =
+            transient;
+          track_add_region (
+            transient->track, transient);
+        }
+      EVENTS_PUSH (ET_REGION_CHANGED,
+                   r);
+      EVENTS_PUSH (ET_REGION_CHANGED,
+                   ts->transient_regions[i]);
+    }
 }
 
 /**
@@ -68,18 +115,27 @@ timeline_selections_has_any (
 
 /**
  * Returns the position of the leftmost object.
+ *
+ * If transient is 1, the transient objects are
+ * checked instead.
+ *
+ * The return value will be stored in pos.
  */
 void
 timeline_selections_get_start_pos (
   TimelineSelections * ts,
-  Position *           pos) ///< position to fill in
+  Position *           pos,
+  int                  transient)
 {
   position_set_to_bar (pos,
                        TRANSPORT->total_bars);
 
   for (int i = 0; i < ts->num_regions; i++)
     {
-      Region * region = ts->regions[i];
+      Region * region =
+        transient ?
+        ts->transient_regions[i] :
+        ts->regions[i];
       if (position_compare (&region->start_pos,
                             pos) < 0)
         position_set_to_pos (pos,
@@ -88,6 +144,8 @@ timeline_selections_get_start_pos (
   for (int i = 0; i < ts->num_automation_points; i++)
     {
       AutomationPoint * automation_point =
+        transient ?
+        ts->transient_aps[i] :
         ts->automation_points[i];
       if (position_compare (&automation_point->pos,
                             pos) < 0)
@@ -96,7 +154,10 @@ timeline_selections_get_start_pos (
     }
   for (int i = 0; i < ts->num_chords; i++)
     {
-      Chord * chord = ts->chords[i];
+      Chord * chord =
+        transient ?
+        ts->transient_chords :
+        ts->chords[i];
       if (position_compare (&chord->pos,
                             pos) < 0)
         position_set_to_pos (pos,
@@ -106,17 +167,26 @@ timeline_selections_get_start_pos (
 
 /**
  * Returns the position of the rightmost object.
+ *
+ * If transient is 1, the transient objects are
+ * checked instead.
+ *
+ * The return value will be stored in pos.
  */
 void
 timeline_selections_get_end_pos (
   TimelineSelections * ts,
-  Position *           pos) ///< position to fill in
+  Position *           pos,
+  int                  transient)
 {
   position_init (pos);
 
   for (int i = 0; i < ts->num_regions; i++)
     {
-      Region * region = ts->regions[i];
+      Region * region =
+        transient ?
+        ts->transient_regions[i] :
+        ts->regions[i];
       if (position_compare (&region->end_pos,
                             pos) > 0)
         position_set_to_pos (pos,
@@ -125,6 +195,8 @@ timeline_selections_get_end_pos (
   for (int i = 0; i < ts->num_automation_points; i++)
     {
       AutomationPoint * automation_point =
+        transient ?
+        ts->transient_aps[i] :
         ts->automation_points[i];
       if (position_compare (&automation_point->pos,
                             pos) > 0)
@@ -133,13 +205,490 @@ timeline_selections_get_end_pos (
     }
   for (int i = 0; i < ts->num_chords; i++)
     {
-      Chord * chord = ts->chords[i];
+      Chord * chord =
+        transient ?
+        ts->transient_chords[i] :
+        ts->chords[i];
       /* FIXME take into account fixed size */
       if (position_compare (&chord->pos,
                             pos) > 0)
         position_set_to_pos (pos,
                              &chord->pos);
     }
+}
+
+/**
+ * Gets first object's widget.
+ *
+ * If transient is 1, transient objects rae checked
+ * instead.
+ */
+GtkWidget *
+timeline_selections_get_first_object (
+  TimelineSelections * ts,
+  int                  transient)
+{
+  Position pos;
+  GtkWidget * widget = NULL;
+  position_set_to_bar (&pos,
+                       TRANSPORT->total_bars);
+
+  for (int i = 0; i < ts->num_regions; i++)
+    {
+      Region * region =
+        transient ?
+        ts->transient_regions[i] :
+        ts->regions[i];
+      if (position_compare (&region->start_pos,
+                            &pos) < 0)
+        {
+          position_set_to_pos (&pos,
+                               &region->start_pos);
+          widget = GTK_WIDGET (region->widget);
+        }
+    }
+  for (int i = 0; i < ts->num_automation_points; i++)
+    {
+      AutomationPoint * automation_point =
+        transient ?
+        ts->transient_aps[i] :
+        ts->automation_points[i];
+      if (position_compare (&automation_point->pos,
+                            &pos) < 0)
+        {
+          position_set_to_pos (
+            &pos, &automation_point->pos);
+          widget =
+            GTK_WIDGET (automation_point->widget);
+        }
+    }
+  for (int i = 0; i < ts->num_chords; i++)
+    {
+      Chord * chord =
+        transient ?
+        ts->transient_chords :
+        ts->chords[i];
+      if (position_compare (&chord->pos,
+                            &pos) < 0)
+        {
+          position_set_to_pos (&pos,
+                               &chord->pos);
+          widget =
+            GTK_WIDGET (chord->widget);
+        }
+    }
+  return widget;
+}
+
+/**
+ * Gets last object's widget.
+ *
+ * If transient is 1, transient objects rae checked
+ * instead.
+ */
+GtkWidget *
+timeline_selections_get_last_object (
+  TimelineSelections * ts,
+  int                  transient)
+{
+  Position pos;
+  GtkWidget * widget = NULL;
+  position_init (&pos);
+
+  for (int i = 0; i < ts->num_regions; i++)
+    {
+      Region * region =
+        transient ?
+        ts->transient_regions[i] :
+        ts->regions[i];
+      if (position_compare (&region->end_pos,
+                            &pos) > 0)
+        {
+          position_set_to_pos (&pos,
+                               &region->end_pos);
+          widget =
+            GTK_WIDGET (region->widget);
+        }
+    }
+  for (int i = 0; i < ts->num_automation_points; i++)
+    {
+      AutomationPoint * automation_point =
+        transient ?
+        ts->transient_aps[i] :
+        ts->automation_points[i];
+      if (position_compare (&automation_point->pos,
+                            &pos) > 0)
+        {
+          position_set_to_pos (
+            &pos, &automation_point->pos);
+          widget =
+            GTK_WIDGET (automation_point->widget);
+        }
+    }
+  for (int i = 0; i < ts->num_chords; i++)
+    {
+      Chord * chord =
+        transient ?
+        ts->transient_chords[i] :
+        ts->chords[i];
+      /* FIXME take into account fixed size */
+      if (position_compare (&chord->pos,
+                            &pos) > 0)
+        {
+          position_set_to_pos (
+            &pos, &chord->pos);
+          widget = GTK_WIDGET (chord->widget);
+        }
+    }
+  return widget;
+}
+
+/**
+ * Gets highest track in the selections.
+ *
+ * If transient is 1, transient objects rae checked
+ * instead.
+ */
+Track *
+timeline_selections_get_highest_track (
+  TimelineSelections * ts,
+  int                  transient)
+{
+  int track_pos = -1;
+  Track * track = NULL;
+  int tmp_pos;
+  Track * tmp_track;
+
+#define CHECK_POS(_track) \
+  tmp_track = _track; \
+  tmp_pos = \
+    tracklist_get_track_pos ( \
+      tmp_track); \
+  if (tmp_pos > track_pos) \
+    { \
+      track_pos = tmp_pos; \
+      track = tmp_track; \
+    }
+
+  for (int i = 0; i < ts->num_regions; i++)
+    {
+      Region * region =
+        transient ?
+        ts->transient_regions[i] :
+        ts->regions[i];
+      CHECK_POS (region->track);
+    }
+  for (int i = 0; i < ts->num_automation_points; i++)
+    {
+      AutomationPoint * automation_point =
+        transient ?
+        ts->transient_aps[i] :
+        ts->automation_points[i];
+      CHECK_POS (automation_point->at->track);
+    }
+  CHECK_POS (P_CHORD_TRACK);
+
+  return track;
+#undef CHECK_POS
+}
+
+/**
+ * Gets lowest track in the selections.
+ *
+ * If transient is 1, transient objects rae checked
+ * instead.
+ */
+Track *
+timeline_selections_get_lowest_track (
+  TimelineSelections * ts,
+  int                  transient)
+{
+  int track_pos = 8000;
+  Track * track = NULL;
+  int tmp_pos;
+  Track * tmp_track;
+
+#define CHECK_POS(_track) \
+  tmp_track = _track; \
+  tmp_pos = \
+    tracklist_get_track_pos ( \
+      tmp_track); \
+  if (tmp_pos < track_pos) \
+    { \
+      track_pos = tmp_pos; \
+      track = tmp_track; \
+    }
+
+  for (int i = 0; i < ts->num_regions; i++)
+    {
+      Region * region =
+        transient ?
+        ts->transient_regions[i] :
+        ts->regions[i];
+      CHECK_POS (region->track);
+    }
+  for (int i = 0; i < ts->num_automation_points; i++)
+    {
+      AutomationPoint * automation_point =
+        transient ?
+        ts->transient_aps[i] :
+        ts->automation_points[i];
+      CHECK_POS (automation_point->at->track);
+    }
+  CHECK_POS (P_CHORD_TRACK);
+
+  return track;
+#undef CHECK_POS
+}
+
+static void
+remove_transient_region (
+  TimelineSelections * ts,
+  int                  index)
+{
+  Region * transient =
+    ts->transient_regions[index];
+
+  if (!transient || !transient->widget)
+    return;
+
+  g_warn_if_fail (
+    GTK_IS_WIDGET (transient->widget));
+
+  ts->transient_regions[index] = NULL;
+  track_remove_region (
+    transient->track,
+    transient,
+    F_FREE);
+}
+
+static void
+remove_transient_ap (
+  TimelineSelections * ts,
+  int                  index)
+{
+  AutomationPoint * transient =
+    ts->transient_aps[index];
+
+  if (!transient || !transient->widget)
+    return;
+
+  g_warn_if_fail (
+    GTK_IS_WIDGET (transient->widget));
+
+  ts->transient_aps[index] = NULL;
+  automation_track_remove_ap (
+    transient->at,
+    transient);
+}
+
+static void
+remove_transient_chord (
+  TimelineSelections * ts,
+  int                  index)
+{
+  Chord * transient =
+    ts->transient_chords[index];
+
+  if (!transient || !transient->widget)
+    return;
+
+  g_warn_if_fail (
+    GTK_IS_WIDGET (transient->widget));
+
+  ts->transient_chords[index] = NULL;
+  chord_track_remove_chord (
+    P_CHORD_TRACK,
+    transient);
+}
+
+/**
+ * Only removes transients from their tracks and
+ * frees them.
+ */
+void
+timeline_selections_remove_transients (
+  TimelineSelections * ts)
+{
+  for (int i = 0; i < ts->num_regions; i++)
+    remove_transient_region (ts, i);
+  for (int i = 0; i < ts->num_automation_points; i++)
+    remove_transient_ap (ts, i);
+  for (int i = 0; i < ts->num_chords; i++)
+    remove_transient_chord (ts, i);
+}
+
+/**
+ * Adds an object to the selections.
+ *
+ * Optionally adds a transient object (if moving/
+ * copy-moving).
+ */
+void
+timeline_selections_add_region (
+  TimelineSelections * ts,
+  Region *             r,
+  int                  transient)
+{
+  if (!array_contains (ts->regions,
+                      ts->num_regions,
+                      r))
+    {
+      array_append (ts->regions,
+                    ts->num_regions,
+                    r);
+      EVENTS_PUSH (ET_REGION_CHANGED,
+                   r);
+    }
+
+  if (transient)
+    timeline_selections_create_missing_transients (ts);
+
+}
+
+void
+timeline_selections_add_chord (
+  TimelineSelections * ts,
+  Chord *             r,
+  int                  transient)
+{
+  if (!array_contains (ts->chords,
+                      ts->num_chords,
+                      r))
+    {
+      array_append (ts->chords,
+                    ts->num_chords,
+                    r);
+      EVENTS_PUSH (ET_CHORD_CHANGED,
+                   r);
+    }
+
+  if (transient)
+    timeline_selections_create_missing_transients (ts);
+}
+
+void
+timeline_selections_add_ap (
+  TimelineSelections * ts,
+  AutomationPoint *    ap,
+  int                  transient)
+{
+  if (!array_contains (ts->automation_points,
+                      ts->num_automation_points,
+                      ap))
+    {
+      array_append (ts->automation_points,
+                    ts->num_automation_points,
+                    ap);
+      EVENTS_PUSH (ET_AUTOMATION_POINT_CHANGED,
+                   ap);
+    }
+
+  if (transient)
+    timeline_selections_create_missing_transients (ts);
+}
+
+void
+timeline_selections_remove_region (
+  TimelineSelections * ts,
+  Region *             r)
+{
+  if (!array_contains (ts->regions,
+                       ts->num_regions,
+                       r))
+    return;
+
+  int idx;
+  array_delete_return_pos (ts->regions,
+                ts->num_regions,
+                r,
+                idx);
+  EVENTS_PUSH (ET_REGION_REMOVED,
+               r);
+
+  /* remove the transient */
+  remove_transient_region (ts, idx);
+}
+
+void
+timeline_selections_remove_chord (
+  TimelineSelections * ts,
+  Chord *              c)
+{
+  if (!array_contains (ts->chords,
+                       ts->num_chords,
+                       c))
+    return;
+
+  int idx;
+  array_delete_return_pos (ts->chords,
+                ts->num_chords,
+                c,
+                idx);
+  EVENTS_PUSH (ET_CHORD_REMOVED,
+               c);
+
+  /* remove the transient */
+  remove_transient_chord (ts, idx);
+}
+
+void
+timeline_selections_remove_ap (
+  TimelineSelections * ts,
+  AutomationPoint *    ap)
+{
+  if (!array_contains (ts->automation_points,
+                       ts->num_automation_points,
+                       ap))
+    return;
+
+  int idx;
+  array_delete_return_pos (ts->automation_points,
+                ts->num_automation_points,
+                ap,
+                idx);
+  EVENTS_PUSH (ET_AUTOMATION_POINT_REMOVED,
+               ap);
+
+  /* remove the transient */
+  remove_transient_ap (ts, idx);
+}
+
+/**
+ * Clears selections.
+ */
+void
+timeline_selections_clear (
+  TimelineSelections * ts)
+{
+  Region * r;
+  Chord * c;
+  AutomationPoint * ap;
+  for (int i = 0; i < ts->num_regions; i++)
+    {
+      r = ts->regions[i];
+      timeline_selections_remove_region (
+        ts, r);
+      EVENTS_PUSH (ET_REGION_CHANGED,
+                   r);
+    }
+  for (int i = 0; i < ts->num_chords; i++)
+    {
+      c = ts->chords[i];
+      timeline_selections_remove_chord (
+        ts, c);
+      EVENTS_PUSH (ET_CHORD_CHANGED,
+                   c);
+    }
+  for (int i = 0; i < ts->num_automation_points; i++)
+    {
+      ap = ts->automation_points[i];
+      timeline_selections_remove_ap (
+        ts, ap);
+      EVENTS_PUSH (ET_AUTOMATION_POINT_CHANGED,
+                   ap);
+    }
+  g_message ("cleared timeline selections");
 }
 
 /**
@@ -176,7 +725,7 @@ timeline_selections_paste_to_pos (
   /* get pos of earliest object */
   Position start_pos;
   timeline_selections_get_start_pos (
-    ts, &start_pos);
+    ts, &start_pos, F_NO_TRANSIENTS);
   int start_pos_ticks =
     position_to_ticks (&start_pos);
 

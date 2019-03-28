@@ -163,8 +163,8 @@ mixer_get_next_channel_id ()
 void
 mixer_add_channel (Channel * channel)
 {
-  g_assert (channel);
-  g_assert (channel->track);
+  g_warn_if_fail (channel);
+  g_warn_if_fail (channel->track);
 
   if (channel->type == CT_MASTER)
     {
