@@ -69,6 +69,7 @@ midi_arranger_selections_clear (
     }
   g_message ("cleared midi arranger selections");
 
+
 }
 
 static void
