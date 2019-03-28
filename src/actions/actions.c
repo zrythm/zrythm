@@ -427,9 +427,11 @@ activate_save (GSimpleAction *action,
                          user_data);
        return;
      }
-   g_message ("%s project dir ", PROJECT->dir);
+   g_message ("%s project dir", PROJECT->dir);
 
-   project_save (PROJECT->dir);
+   char * dir = g_strdup (PROJECT->dir);
+   project_save (dir);
+   g_free (dir);
 }
 
 void
@@ -466,7 +468,8 @@ activate_save_as (GSimpleAction *action,
     {
       char *filename;
 
-      filename = gtk_file_chooser_get_filename (chooser);
+      filename =
+        gtk_file_chooser_get_filename (chooser);
       project_save (filename);
       g_free (filename);
     }

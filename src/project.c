@@ -279,6 +279,10 @@ load (char * filename)
       AUDIO_ENGINE->run = 1;
     }
 
+  header_bar_widget_set_subtitle (
+    MW_HEADER_BAR,
+    PROJECT->title);
+
   RETURN_OK;
 }
 
@@ -381,6 +385,10 @@ project_save (const char * dir)
   PROJECT->title = g_path_get_basename (dir);
 
   ui_show_notification ("Project saved.");
+
+  header_bar_widget_set_subtitle (
+    MW_HEADER_BAR,
+    PROJECT->title);
 
   RETURN_OK;
 }

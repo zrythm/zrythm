@@ -64,4 +64,9 @@ header_bar_widget_setup (HeaderBarWidget * self,
                          MainWindowWidget * mw,
                          const char * title);
 
+void
+header_bar_widget_set_subtitle (
+  HeaderBarWidget * self,
+  const char * subtitle);
+
 #endif

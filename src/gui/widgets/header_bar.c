@@ -379,6 +379,16 @@ header_bar_widget_setup (HeaderBarWidget * self,
   header_bar_widget_refresh_undo_redo_buttons (self);
 }
 
+void
+header_bar_widget_set_subtitle (
+  HeaderBarWidget * self,
+  const char * subtitle)
+{
+  gtk_header_bar_set_subtitle (
+    GTK_HEADER_BAR (self),
+    subtitle);
+}
+
 static void
 header_bar_widget_init (HeaderBarWidget * self)
 {
