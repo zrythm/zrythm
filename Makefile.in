@@ -226,8 +226,9 @@ desktop_DATA = zrythm.desktop
 
 #the application icon
 appicondir=$(datadir)/icons/hicolor/scalable/apps
+appicondir2=$(datadir)/icons/hicolor/48x48/apps
 appicon_DATA_srcdir = resources/icons/zrythm
-appicon_DATA = z.svg
+appicon_DATA = zrythm.svg
 
 # static libs
 
@@ -357,6 +358,8 @@ install-messages:
 install-appicon-data: $(appicon_DATA_srcdir)/$(appicon_DATA)
 	$(MKDIR_P) "$(DESTDIR)$(appicondir)"
 	$(INSTALL_DATA) $< "$(DESTDIR)$(appicondir)/"
+	$(MKDIR_P) "$(DESTDIR)$(appicondir2)"
+	$(INSTALL_DATA) $< "$(DESTDIR)$(appicondir2)/"
 
 .PHONY: uninstall-appicon-data
 uninstall-appicon-data:
