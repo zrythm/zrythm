@@ -157,7 +157,9 @@ instrument_track_widget_refresh_buttons (
     track_get_channel (tw_prv->track);
   gtk_toggle_button_set_active (
     self->show_ui,
-    ch->plugins[0]->visible);
+    ch->plugins[0] ?
+    ch->plugins[0]->visible :
+    0);
   g_signal_handler_unblock (
     self->show_ui, self->gui_toggled_handler_id);
 }
