@@ -212,7 +212,7 @@ OBJ_CPP = $(SRCS_CPP:%.cpp=$(BUILD_DIR)/%.cpp.o)
 DEP = $(OBJ:%.o=%.d)
 DEP_CPP = $(OBJ_CPP:%.o=%.d)
 TEST_SRCS = $(shell find test/ -name "*.c")
-OBJ_NO_MAIN = $(shell sed -r 's/\build\/src\/main.c.o //; s/ build\/src\/main.c.o//' <<< "$(OBJ)")
+OBJ_NO_MAIN = $(shell echo "$(OBJ)" | sed 's|build/src/main.c.o| |g')
 TEST_OBJ = $(TEST_SRCS:%.c=$(BUILD_DIR)/%.c.o)
 TEST_DEP = $(TEST_OBJ:%.o=%.d)
 TEST_BIN = $(BUILD_DIR)/zrythm-test
