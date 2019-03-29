@@ -48,15 +48,25 @@ void
 duplicate_midi_arranger_selections_action_do (
   DuplicateMidiArrangerSelectionsAction * self)
 {
-  MidiNote * mn;
+  MidiNote * mn, * _mn;
 	for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
+      /* this is a clone, must not be used */
       mn = self->mas->midi_notes[i];
+
+      /* clone the clone */
+      _mn = midi_note_clone (mn, mn->midi_region);
+      _mn->actual_id = _mn->id;
+
+      /* add and shift the new clone */
       midi_region_add_midi_note (
-        mn->midi_region,
-        mn);
+        _mn->midi_region,
+        _mn);
       midi_note_shift (
-        mn, self->ticks, self->delta);
+        _mn, self->ticks, self->delta);
+
+      /* remember the new clone id */
+      mn->actual_id = _mn->id;
     }
   EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
                NULL);
@@ -66,13 +76,19 @@ void
 duplicate_midi_arranger_selections_action_undo (
   DuplicateMidiArrangerSelectionsAction * self)
 {
-  MidiNote * mn;
+  MidiNote * mn, * _mn;
   for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
+      /* this is a clone, must not be used */
       mn = self->mas->midi_notes[i];
+
+      /* find the MidiNote with the actual id */
+      _mn = project_get_midi_note (mn->actual_id);
+
+      /* remove it */
       midi_region_remove_midi_note (
-        mn->midi_region,
-        mn);
+        _mn->midi_region,
+        _mn);
     }
   EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
                NULL);

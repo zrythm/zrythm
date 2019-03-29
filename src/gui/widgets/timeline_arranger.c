@@ -495,88 +495,57 @@ timeline_arranger_widget_select_all (
     }
 
   /* select everything else */
+  Region * r;
+  Track * track;
+  Channel * chan;
+  AutomationPoint * ap;
+  AutomationLane * al;
   for (int i = 0; i < MIXER->num_channels; i++)
     {
-      Channel * chan = MIXER->channels[i];
+      chan = MIXER->channels[i];
 
-      if (chan->visible)
+      if (!chan->visible)
+        continue;
+
+      track = chan->track;
+      AutomationTracklist *
+        automation_tracklist =
+          track_get_automation_tracklist (
+            track);
+
+      for (int j = 0;
+           j < track->num_regions; j++)
         {
-          int num_regions;
-          InstrumentTrack * it;
-          AudioTrack *      at;
-          AutomationTracklist *
-            automation_tracklist =
-              track_get_automation_tracklist (
-                chan->track);
+          r = track->regions[j];
 
-          if (chan->track->type ==
-                TRACK_TYPE_INSTRUMENT)
+          region_widget_select (
+            r->widget, select, F_NO_TRANSIENTS);
+        }
+
+      if (!track->bot_paned_visible)
+        continue;
+
+      for (int j = 0;
+           j < automation_tracklist->
+             num_automation_lanes;
+           j++)
+        {
+          al =
+            automation_tracklist->
+              automation_lanes[j];
+          if (al->visible)
             {
-              it = (InstrumentTrack *) chan->track;
-              num_regions = it->num_regions;
-            }
-          else if (chan->track->type ==
-                    TRACK_TYPE_AUDIO)
-            {
-              at = (AudioTrack *) chan->track;
-              num_regions = at->num_regions;
-            }
-          else
-            num_regions = 0;
-
-          for (int j = 0; j < num_regions; j++)
-            {
-              Region * r;
-
-              if (chan->track->type ==
-                    TRACK_TYPE_INSTRUMENT)
-                r = (Region *) it->regions[j];
-              else if (chan->track->type ==
-                         TRACK_TYPE_AUDIO)
-                r = (Region *) at->regions[j];
-
-              region_widget_select (
-                r->widget, select, F_NO_TRANSIENTS);
-
-              if (select)
+              for (int k = 0;
+                   k < al->at->
+                     num_automation_points;
+                   k++)
                 {
-                  /* select  */
-                  array_append (
-                    TL_SELECTIONS->regions,
-                    TL_SELECTIONS->num_regions,
-                    r);
-                }
-            }
-          if (chan->track->bot_paned_visible)
-            {
-              for (int j = 0;
-                   j < automation_tracklist->
-                     num_automation_lanes;
-                   j++)
-                {
-                  AutomationLane * al =
-                    automation_tracklist->
-                      automation_lanes[j];
-                  if (al->visible)
-                    {
-                      for (int k = 0;
-                           k < al->at->
-                             num_automation_points;
-                           k++)
-                        {
-                          /*AutomationPoint * ap = at->automation_points[k];*/
+                  ap =
+                    al->at->automation_points[k];
 
-                          /*ap_widget_select (ap->widget, select);*/
-
-                          /*if (select)*/
-                            /*{*/
-                              /*[> select  <]*/
-                              /*array_append ((void **)self->tl_automation_points,*/
-                                            /*&self->num_tl_automation_points,*/
-                                            /*ap);*/
-                            /*}*/
-                        }
-                    }
+                  automation_point_widget_select (
+                    ap->widget, select,
+                    F_NO_TRANSIENTS);
                 }
             }
         }
@@ -966,12 +935,8 @@ timeline_arranger_widget_create_ap (
         GTK_OVERLAY (self),
         GTK_WIDGET (ap->widget));
       gtk_widget_show (GTK_WIDGET (ap->widget));
-      TL_SELECTIONS->automation_points[0] =
-        ap;
-      TL_SELECTIONS->num_automation_points =
-        1;
       automation_point_widget_select (
-        ap->widget, 1);
+        ap->widget, F_SELECT, F_NO_TRANSIENTS);
     }
 }
 
@@ -1126,6 +1091,7 @@ timeline_arranger_widget_select (
   double                   offset_y,
   int                      delete)
 {
+  int i, j;
   Region * region;
   RegionWidget * rw;
   Chord * chord;
@@ -1153,11 +1119,10 @@ timeline_arranger_widget_select (
     region_widgets,
     &num_region_widgets);
 
-
   if (delete)
     {
       /* delete the enclosed regions */
-      for (int i = 0; i < num_region_widgets; i++)
+      for (i = 0; i < num_region_widgets; i++)
         {
           rw =
             Z_REGION_WIDGET (region_widgets[i]);
@@ -1165,14 +1130,14 @@ timeline_arranger_widget_select (
 
           region = rw_prv->region;
 
-          /* TODO delete region */
-          g_message ("delete region");
+          track_remove_region (
+            region->track, region, F_FREE);
       }
     }
   else
     {
       /* select the enclosed regions */
-      for (int i = 0; i < num_region_widgets; i++)
+      for (i = 0; i < num_region_widgets; i++)
         {
           rw =
             Z_REGION_WIDGET (region_widgets[i]);
@@ -1181,8 +1146,8 @@ timeline_arranger_widget_select (
           ARRANGER_WIDGET_SELECT_REGION (
             self,
             region,
-            1,
-            1, 0);
+            F_SELECT,
+            F_APPEND, F_NO_TRANSIENTS);
         }
     }
 
@@ -1202,21 +1167,22 @@ timeline_arranger_widget_select (
   if (delete)
     {
       /* delete the enclosed chords */
-      for (int i = 0; i < num_chord_widgets; i++)
+      for (i = 0; i < num_chord_widgets; i++)
         {
           cw =
             Z_CHORD_WIDGET (chord_widgets[i]);
 
           chord = cw->chord;
 
-          /* TODO delete chord */
-          g_message ("delete chord");
+          chord_track_remove_chord (
+            P_CHORD_TRACK,
+            chord);
       }
     }
   else
     {
       /* select the enclosed chords */
-      for (int i = 0; i < num_chord_widgets; i++)
+      for (i = 0; i < num_chord_widgets; i++)
         {
           cw =
             Z_CHORD_WIDGET (chord_widgets[i]);
@@ -1224,7 +1190,8 @@ timeline_arranger_widget_select (
           chord = cw->chord;
 
           ARRANGER_WIDGET_SELECT_CHORD (
-            self, chord, 1, 1, 0);
+            self, chord, F_SELECT, F_APPEND,
+            F_NO_TRANSIENTS);
         }
     }
 
@@ -1244,7 +1211,7 @@ timeline_arranger_widget_select (
   if (delete)
     {
       /* delete the enclosed automation points */
-      for (int i = 0;
+      for (i = 0;
            i < num_ap_widgets; i++)
         {
           apw =
@@ -1253,14 +1220,15 @@ timeline_arranger_widget_select (
 
           ap = apw->ap;
 
-          /* TODO delete automation point */
-          g_message ("delete automation point");
+          automation_track_remove_ap (
+            ap->at,
+            ap);
         }
     }
   else
     {
       /* select the enclosed automation points */
-      for (int i = 0;
+      for (i = 0;
            i < num_ap_widgets; i++)
         {
           apw =
@@ -1270,7 +1238,8 @@ timeline_arranger_widget_select (
           ap = apw->ap;
 
           ARRANGER_WIDGET_SELECT_AUTOMATION_POINT (
-            self, ap, 1, 1, 0);
+            self, ap, F_SELECT, F_APPEND,
+            F_NO_TRANSIENTS);
         }
     }
 }
@@ -1788,7 +1757,9 @@ timeline_arranger_widget_on_drag_end (
         UNDO_MANAGER, ua);
     }
   else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_NONE)
+             UI_OVERLAY_ACTION_NONE ||
+           ar_prv->action ==
+             UI_OVERLAY_ACTION_STARTING_SELECTION)
     {
       timeline_selections_clear (
         TL_SELECTIONS);

@@ -73,7 +73,7 @@ typedef struct MidiNote
    *
    * Used when doing/undoing.
    */
-  int             actual_note;
+  int             actual_id;
 } MidiNote;
 
 static const cyaml_schema_field_t

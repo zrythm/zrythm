@@ -89,11 +89,25 @@ region_draw_cb (RegionWidget * self,
     context, cr, 0, 0, width, height);
 
   GdkRGBA * color = &rw_prv->region->track->color;
-  cairo_set_source_rgba (cr,
-                         color->red - 0.06,
-                         color->green - 0.06,
-                         color->blue - 0.06,
-                         0.7);
+  cairo_set_source_rgba (
+    cr,
+    color->red - 0.06,
+    color->green - 0.06,
+    color->blue - 0.06,
+    0.7);
+  if (r->transient)
+    cairo_set_source_rgba (
+      cr, 0, 1, 0,
+      0.7);
+  else if (region_is_selected (r))
+    {
+      cairo_set_source_rgba (
+        cr,
+        1,
+        color->green + 0.1,
+        color->blue + 0.1,
+        0.7);
+    }
   cairo_rectangle(cr, 0, 0, width, height);
   cairo_fill(cr);
   cairo_set_source_rgba (cr,
@@ -160,15 +174,7 @@ region_draw_cb (RegionWidget * self,
         }
     }
 
-  char * str = NULL;
-  if (rw_prv->region->transient)
-    str =
-      g_strdup_printf (
-        "transient [%d - actual %d]",
-        rw_prv->region->id,
-        rw_prv->region->actual_id);
-  else
-    str =
+  char * str =
       g_strdup_printf (
         "%s [%d - actual %d]",
         rw_prv->region->name,
@@ -310,6 +316,8 @@ region_widget_select (
   RegionWidgetPrivate * prv =
     region_widget_get_instance_private (self);
   /*prv->region->selected = select;*/
+  g_message ("region widget select %d",
+             select);
   if (select)
     {
       /*gtk_widget_set_state_flags (*/
@@ -330,7 +338,9 @@ region_widget_select (
         TL_SELECTIONS,
         prv->region);
     }
-  gtk_widget_queue_draw (GTK_WIDGET (self));
+  /*gtk_widget_queue_draw (GTK_WIDGET (self));*/
+  EVENTS_PUSH (ET_REGION_CHANGED,
+               prv->region);
 }
 
 RegionWidgetPrivate *

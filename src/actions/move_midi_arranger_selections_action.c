@@ -56,7 +56,7 @@ move_midi_arranger_selections_action_do (
 
       /* find actual midi note */
       mn =
-        project_get_midi_note (_mn->actual_note);
+        project_get_midi_note (_mn->actual_id);
 
       /* shift it */
       midi_note_shift (
@@ -80,7 +80,7 @@ move_midi_arranger_selections_action_undo (
 
       /* find actual midi note */
       mn =
-        project_get_midi_note (_mn->actual_note);
+        project_get_midi_note (_mn->actual_id);
 
       /* shift it */
       midi_note_shift (

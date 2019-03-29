@@ -40,4 +40,7 @@
 #define F_FREE 1
 #define F_NO_FREE 0
 
+#define F_DELETE 1
+#define F_NO_DELETE 0
+
 #endif

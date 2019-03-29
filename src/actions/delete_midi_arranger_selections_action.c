@@ -55,7 +55,7 @@ delete_midi_arranger_selections_action_do (
 
       /* find actual midi note */
       mn =
-        project_get_midi_note (_mn->actual_note);
+        project_get_midi_note (_mn->actual_id);
 
       /* remove it */
       midi_region_remove_midi_note (
@@ -79,8 +79,9 @@ delete_midi_arranger_selections_action_undo (
       mn_clone =
         midi_note_clone (mn, mn->midi_region);
 
-      /* set actual note to the orig clone */
-      mn->actual_note = mn_clone->id;
+      /* move the new clone to the original id */
+      project_move_midi_note (
+        mn_clone, mn->actual_id);
 
       /* add the new clone to the region */
       midi_region_add_midi_note (

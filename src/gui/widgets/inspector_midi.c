@@ -25,6 +25,38 @@
 
 G_DEFINE_TYPE (InspectorMidiWidget, inspector_midi_widget, GTK_TYPE_GRID)
 
+InspectorMidiWidget *
+inspector_midi_widget_new ()
+{
+  InspectorMidiWidget * self = g_object_new (INSPECTOR_MIDI_WIDGET_TYPE, NULL);
+  gtk_widget_show_all (GTK_WIDGET (self));
+
+  return self;
+}
+
+void
+inspector_midi_widget_show_midi (
+  InspectorMidiWidget * self,
+  MidiNote **           midis,
+  int                   num_midis)
+{
+  if (num_midis == 1)
+    {
+      gtk_label_set_text (self->header, "Midi");
+    }
+  else
+    {
+      char * string = g_strdup_printf ("Midis (%d)", num_midis);
+      gtk_label_set_text (self->header, string);
+      g_free (string);
+
+      for (int i = 0; i < num_midis; i++)
+      {
+
+      }
+    }
+}
+
 
 static void
 inspector_midi_widget_class_init (InspectorMidiWidgetClass * klass)
@@ -54,35 +86,3 @@ inspector_midi_widget_init (InspectorMidiWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 }
-
-InspectorMidiWidget *
-inspector_midi_widget_new ()
-{
-  InspectorMidiWidget * self = g_object_new (INSPECTOR_MIDI_WIDGET_TYPE, NULL);
-  gtk_widget_show_all (GTK_WIDGET (self));
-
-  return self;
-}
-
-void
-inspector_midi_widget_show_midi (InspectorMidiWidget * self,
-                                      MidiNote **               midis,
-                                      int                     num_midis)
-{
-  if (num_midis == 1)
-    {
-      gtk_label_set_text (self->header, "Midi");
-    }
-  else
-    {
-      char * string = g_strdup_printf ("Midis (%d)", num_midis);
-      gtk_label_set_text (self->header, string);
-      g_free (string);
-
-      for (int i = 0; i < num_midis; i++)
-      {
-
-      }
-    }
-}
-

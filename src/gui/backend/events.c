@@ -402,6 +402,32 @@ on_midi_note_changed (MidiNote * midi_note)
 }
 
 static void
+on_region_changed (Region * region)
+{
+  if (GTK_IS_WIDGET (region->widget))
+    {
+      gtk_widget_set_visible (
+        GTK_WIDGET (region->widget),
+        region_is_visible (region));
+      if (region_is_selected (region))
+        {
+          gtk_widget_set_state_flags (
+            GTK_WIDGET (region->widget),
+            GTK_STATE_FLAG_SELECTED,
+            0);
+        }
+      else
+        {
+          gtk_widget_unset_state_flags (
+            GTK_WIDGET (region->widget),
+            GTK_STATE_FLAG_SELECTED);
+        }
+      gtk_widget_queue_draw (
+        GTK_WIDGET (region->widget));
+    }
+}
+
+static void
 on_plugin_visibility_changed (Plugin * pl)
 {
   if (pl->visible)
@@ -609,9 +635,12 @@ events_process ()
            on_midi_note_selection_changed();
             break;
         case ET_MIDI_NOTE_CHANGED:
-          g_message ("mn changed %p",
-                     ((MidiNote *)arg)->widget);
+          /*g_message ("mn changed %p",*/
+                     /*((MidiNote *)arg)->widget);*/
           on_midi_note_changed ((MidiNote *) arg);
+          break;
+        case ET_REGION_CHANGED:
+          on_region_changed ((Region *) arg);
           break;
         case ET_TIMELINE_VIEWPORT_CHANGED:
           timeline_minimap_widget_refresh (

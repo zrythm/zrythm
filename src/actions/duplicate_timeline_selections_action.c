@@ -49,15 +49,25 @@ void
 duplicate_timeline_selections_action_do (
   DuplicateTimelineSelectionsAction * self)
 {
-  Region * r;
+  Region * r, * _r;
 	for (int i = 0; i < self->ts->num_regions; i++)
     {
+      /* this is a clone, must not be used */
       r = self->ts->regions[i];
+
+      /* clone the clone */
+      _r = region_clone (r, REGION_CLONE_COPY);
+      _r->actual_id = _r->id;
+
+      /* add and shift the new clone */
       track_add_region (
-        r->track,
-        r);
+        _r->track,
+        _r);
       region_shift (
-        r, self->ticks, self->delta);
+        _r, self->ticks, self->delta);
+
+      /* remember the new clone's id */
+      r->actual_id = _r->id;
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
@@ -67,16 +77,19 @@ void
 duplicate_timeline_selections_action_undo (
   DuplicateTimelineSelectionsAction * self)
 {
-  Region * r;
+  Region * r, * _r;
   for (int i = 0; i < self->ts->num_regions; i++)
     {
       /* this is a clone */
       r = self->ts->regions[i];
 
       /* find the region with the actual id */
+      _r = project_get_region (r->actual_id);
+
+      /* remove it */
       track_remove_region (
-        r->track,
-        r,
+        _r->track,
+        _r,
         F_FREE);
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,

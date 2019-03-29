@@ -98,26 +98,33 @@ on_motion (GtkWidget * widget,
   g_idle_add ((GSourceFunc) gtk_widget_queue_draw, GTK_WIDGET (self));
 }
 
+/**
+ * FIXME move to backend.
+ */
 void
 automation_point_widget_select (
   AutomationPointWidget * self,
-  int            select)
+  int            select,
+  int            with_transients)
 {
-  self->ap->selected = select;
   if (select)
     {
-      gtk_widget_set_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_SELECTED,
-        0);
+      /*gtk_widget_set_state_flags (*/
+        /*GTK_WIDGET (self),*/
+        /*GTK_STATE_FLAG_SELECTED,*/
+        /*0);*/
+      timeline_selections_add_ap (
+        TL_SELECTIONS, self->ap, with_transients);
     }
   else
     {
-      gtk_widget_unset_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_SELECTED);
+      /*gtk_widget_unset_state_flags (*/
+        /*GTK_WIDGET (self),*/
+        /*GTK_STATE_FLAG_SELECTED);*/
+      timeline_selections_remove_ap (
+        TL_SELECTIONS, self->ap);
     }
-  gtk_widget_queue_draw (GTK_WIDGET (self));
+  /*gtk_widget_queue_draw (GTK_WIDGET (self));*/
 }
 
 void

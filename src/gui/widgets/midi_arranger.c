@@ -254,8 +254,6 @@ midi_arranger_widget_get_cursor (
           ar_prv->hover_x,
           ar_prv->hover_y);
 
-      /* TODO chords, aps */
-
       int is_hit =
         mnw != NULL;
       int is_resize_l =
@@ -572,14 +570,16 @@ midi_arranger_widget_select (
     midi_note_widgets,
     &num_midi_note_widgets);
 
+  MidiNoteWidget * midi_note_widget;
+  MidiNote * midi_note;
   if (delete)
     {
       /* delete the enclosed midi notes */
       for (int i = 0; i < num_midi_note_widgets; i++)
         {
-          MidiNoteWidget * midi_note_widget =
+          midi_note_widget =
             Z_MIDI_NOTE_WIDGET (midi_note_widgets[i]);
-          MidiNote * midi_note =
+          midi_note =
             midi_note_widget->midi_note;
 
           midi_region_remove_midi_note (
@@ -592,10 +592,10 @@ midi_arranger_widget_select (
       /* select the enclosed midi_notes */
       for (int i = 0; i < num_midi_note_widgets; i++)
         {
-          MidiNoteWidget * midi_note_widget =
+          midi_note_widget =
             Z_MIDI_NOTE_WIDGET (
               midi_note_widgets[i]);
-          MidiNote * midi_note =
+          midi_note =
             midi_note_widget->midi_note;
           ARRANGER_WIDGET_SELECT_MIDI_NOTE (
             self,
