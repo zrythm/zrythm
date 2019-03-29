@@ -91,6 +91,7 @@ region_init (Region *   region,
         midi_region_widget_new (region));
     }
   project_add_region (region);
+  region->actual_id = region->id;
 }
 
 /**
@@ -569,6 +570,8 @@ region_free (Region * self)
     midi_region_free_members (self);
   if (self->type == REGION_TYPE_AUDIO)
     audio_region_free_members (self);
+
+  project_remove_region (self);
 
   free (self);
 }

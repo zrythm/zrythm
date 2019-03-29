@@ -160,7 +160,22 @@ region_draw_cb (RegionWidget * self,
         }
     }
 
-  draw_text (cr, rw_prv->region->name);
+  char * str = NULL;
+  if (rw_prv->region->transient)
+    str =
+      g_strdup_printf (
+        "transient [%d - actual %d]",
+        rw_prv->region->id,
+        rw_prv->region->actual_id);
+  else
+    str =
+      g_strdup_printf (
+        "%s [%d - actual %d]",
+        rw_prv->region->name,
+        rw_prv->region->id,
+        rw_prv->region->actual_id);
+  draw_text (cr, str);
+  g_free (str);
 
  return FALSE;
 }

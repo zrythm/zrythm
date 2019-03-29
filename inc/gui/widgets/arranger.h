@@ -84,6 +84,7 @@ G_DECLARE_DERIVABLE_TYPE (ArrangerWidget,
        i < size; \
        i++) \
     { \
+      g_message ("aaa"); \
       obj = array[i]; \
       transient_obj = transient_array[i]; \
       if (ar_prv->action == \
@@ -105,6 +106,12 @@ G_DECLARE_DERIVABLE_TYPE (ArrangerWidget,
         { \
           /* set actual items to visible since \
            * we are copy-moving */ \
+          gtk_widget_set_visible ( \
+            GTK_WIDGET (obj->widget), \
+            F_VISIBLE); \
+        } \
+      else \
+        { \
           gtk_widget_set_visible ( \
             GTK_WIDGET (obj->widget), \
             F_VISIBLE); \

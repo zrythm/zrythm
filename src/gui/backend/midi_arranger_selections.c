@@ -157,6 +157,7 @@ midi_arranger_selections_create_missing_transients (
             midi_note_clone (
               note, note->midi_region);
           /*transient->visible = 0;*/
+          transient->transient = 1;
           transient->widget =
             midi_note_widget_new (transient);
           gtk_widget_set_visible (

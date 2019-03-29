@@ -38,7 +38,7 @@ duplicate_timeline_selections_action_new (
                  DuplicateTimelineSelectionsAction));
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-    UNDOABLE_ACTION_TYPE_DUPLICATE_MIDI_NOTES;
+    UNDOABLE_ACTION_TYPE_DUPLICATE_TL_SELECTIONS;
   self->ts = timeline_selections_clone ();
   self->ticks = ticks;
   self->delta = delta;
@@ -70,7 +70,10 @@ duplicate_timeline_selections_action_undo (
   Region * r;
   for (int i = 0; i < self->ts->num_regions; i++)
     {
+      /* this is a clone */
       r = self->ts->regions[i];
+
+      /* find the region with the actual id */
       track_remove_region (
         r->track,
         r,

@@ -397,12 +397,13 @@ static int
 get_next_available_id (void ** array,
                        int     size)
 {
-  for (int i = 0; i < size; i++)
-    {
-      /* if region doesn't exist at this index, use it */
-      if (!array[i])
-        return i;
-    }
+  /*for (int i = 0; i < size; i++)*/
+    /*{*/
+      /* if item doesn't exist at this index,
+       * use it */
+      /*if (!array[i])*/
+        /*return i;*/
+    /*}*/
   return size;
 }
 
@@ -426,35 +427,53 @@ get_next_available_id (void ** array,
     \
     return PROJECT->lowercase##s[id]; \
   }
+#define PROJECT_REMOVE_X(camelcase, lowercase) \
+  void \
+  project_remove_##lowercase (camelcase * x) \
+  { \
+    g_message ("setting %d to NULL", \
+               x->id); \
+    PROJECT->lowercase##s[x->id] = NULL; \
+  }
+/** Moves the object to the given index. */
+#define PROJECT_MOVE_X_TO(camelcase, lowercase) \
+  void \
+  project_move_##lowercase (camelcase * x, int id) \
+  { \
+    g_warn_if_fail ( \
+      PROJECT->lowercase##s[id] == NULL); \
+    g_message ("moving %d to %d", \
+               x->id, id); \
+    PROJECT->lowercase##s[x->id] = NULL; \
+    PROJECT->lowercase##s[id] = x; \
+    x->id = id; \
+  }
 
 
-PROJECT_ADD_X (Region, region)
-PROJECT_GET_X (Region, region)
-PROJECT_ADD_X (Track, track)
-PROJECT_GET_X (Track, track)
-PROJECT_ADD_X (Channel, channel)
-PROJECT_GET_X (Channel, channel)
-PROJECT_ADD_X (Plugin, plugin)
-PROJECT_GET_X (Plugin, plugin)
-PROJECT_ADD_X (AutomationPoint, automation_point)
-PROJECT_GET_X (AutomationPoint, automation_point)
-PROJECT_ADD_X (AutomationCurve, automation_curve)
-PROJECT_GET_X (AutomationCurve, automation_curve)
-PROJECT_ADD_X (MidiNote, midi_note)
-PROJECT_GET_X (MidiNote, midi_note)
-PROJECT_ADD_X (Port, port)
-PROJECT_GET_X (Port, port)
-PROJECT_ADD_X (Chord, chord)
-PROJECT_GET_X (Chord, chord)
-PROJECT_ADD_X (Automatable, automatable)
-PROJECT_GET_X (Automatable, automatable)
-PROJECT_ADD_X (AutomationTrack, automation_track)
-PROJECT_GET_X (AutomationTrack, automation_track)
-PROJECT_ADD_X (AutomationLane, automation_lane)
-PROJECT_GET_X (AutomationLane, automation_lane)
+#define P_DECLARE_FUNCS_X(camelcase, lowercase) \
+  PROJECT_ADD_X (camelcase, lowercase) \
+  PROJECT_GET_X (camelcase, lowercase) \
+  PROJECT_REMOVE_X (camelcase, lowercase) \
+  PROJECT_MOVE_X_TO (camelcase, lowercase);
+
+P_DECLARE_FUNCS_X (Region, region)
+P_DECLARE_FUNCS_X (Track, track)
+P_DECLARE_FUNCS_X (Channel, channel)
+P_DECLARE_FUNCS_X (Plugin, plugin)
+P_DECLARE_FUNCS_X (AutomationPoint, automation_point)
+P_DECLARE_FUNCS_X (AutomationCurve, automation_curve)
+P_DECLARE_FUNCS_X (MidiNote, midi_note)
+P_DECLARE_FUNCS_X (Port, port)
+P_DECLARE_FUNCS_X (Chord, chord)
+P_DECLARE_FUNCS_X (Automatable, automatable)
+P_DECLARE_FUNCS_X (AutomationTrack, automation_track)
+P_DECLARE_FUNCS_X (AutomationLane, automation_lane)
 
 #undef PROJECT_ADD_X
 #undef PROJECT_GET_X
+#undef PROJECT_REMOVE_X
+#undef PROJECT_MOVE_X_TO
+#undef P_DECLARE_FUNCS_X
 
 SERIALIZE_SRC (Project, project)
 DESERIALIZE_SRC (Project, project)

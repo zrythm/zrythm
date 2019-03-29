@@ -192,6 +192,13 @@ typedef struct Region
    * Used when doing/undoing.
    */
   int             actual_id;
+
+  /**
+   * Transient or not.
+   *
+   * Transient regions are regions that are cloned
+   * and used during moving, then discarded.  */
+  int             transient;
 } Region;
 
 static const cyaml_strval_t

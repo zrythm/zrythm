@@ -60,9 +60,6 @@
 #define PROJECT_STATES_DIR      "states"
 #define PROJECT_EXPORTS_DIR     "exports"
 
-/* project xml version */
-#define PROJECT_XML_VER "0.1"
-
 typedef struct Timeline Timeline;
 typedef struct Transport Transport;
 typedef struct Port Port;
@@ -323,34 +320,37 @@ project_set_has_range (int has_range);
 #define PROJECT_GET_X(camelcase, lowercase) \
   camelcase * \
   project_get_##lowercase (int id);
+#define PROJECT_REMOVE_X(camelcase, lowercase) \
+  void \
+  project_remove_##lowercase (camelcase * x);
+/** Moves the object to the given index. */
+#define PROJECT_MOVE_X_TO(camelcase, lowercase) \
+  void \
+  project_move_##lowercase (camelcase * x, int id);
+#define P_DEFINE_FUNCS_X(camelcase, lowercase) \
+  PROJECT_ADD_X (camelcase, lowercase); \
+  PROJECT_GET_X (camelcase, lowercase); \
+  PROJECT_REMOVE_X (camelcase, lowercase); \
+  PROJECT_MOVE_X_TO (camelcase, lowercase);
 
-PROJECT_ADD_X (Region, region);
-PROJECT_GET_X (Region, region);
-PROJECT_ADD_X (Track, track);
-PROJECT_GET_X (Track, track);
-PROJECT_ADD_X (Channel, channel);
-PROJECT_GET_X (Channel, channel);
-PROJECT_ADD_X (Plugin, plugin);
-PROJECT_GET_X (Plugin, plugin);
-PROJECT_ADD_X (AutomationPoint, automation_point);
-PROJECT_GET_X (AutomationPoint, automation_point);
-PROJECT_ADD_X (AutomationCurve, automation_curve);
-PROJECT_GET_X (AutomationCurve, automation_curve);
-PROJECT_ADD_X (MidiNote, midi_note);
-PROJECT_GET_X (MidiNote, midi_note);
-PROJECT_ADD_X (Port, port);
-PROJECT_GET_X (Port, port);
-PROJECT_ADD_X (Chord, chord);
-PROJECT_GET_X (Chord, chord);
-PROJECT_ADD_X (Automatable, automatable)
-PROJECT_GET_X (Automatable, automatable)
-PROJECT_ADD_X (AutomationTrack, automation_track)
-PROJECT_GET_X (AutomationTrack, automation_track)
-PROJECT_ADD_X (AutomationLane, automation_lane)
-PROJECT_GET_X (AutomationLane, automation_lane)
+P_DEFINE_FUNCS_X (Region, region);
+P_DEFINE_FUNCS_X (Track, track);
+P_DEFINE_FUNCS_X (Channel, channel);
+P_DEFINE_FUNCS_X (Plugin, plugin);
+P_DEFINE_FUNCS_X (AutomationPoint, automation_point);
+P_DEFINE_FUNCS_X (AutomationCurve, automation_curve);
+P_DEFINE_FUNCS_X (MidiNote, midi_note);
+P_DEFINE_FUNCS_X (Port, port);
+P_DEFINE_FUNCS_X (Chord, chord);
+P_DEFINE_FUNCS_X (Automatable, automatable)
+P_DEFINE_FUNCS_X (AutomationTrack, automation_track)
+P_DEFINE_FUNCS_X (AutomationLane, automation_lane)
 
 #undef PROJECT_ADD_X
 #undef PROJECT_GET_X
+#undef PROJECT_REMOVE_X
+#undef PROJECT_MOVE_X_TO
+#undef P_DEFINE_FUNCS_X
 
 SERIALIZE_INC (Project, project)
 DESERIALIZE_INC (Project, project)

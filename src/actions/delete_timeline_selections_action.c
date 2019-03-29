@@ -68,14 +68,22 @@ void
 delete_timeline_selections_action_undo (
   DeleteTimelineSelectionsAction * self)
 {
+  Region * r, * _r;
   for (int i = 0; i < self->ts->num_regions; i++)
     {
-      /* this is a clone */
-      Region * r = self->ts->regions[i];
+      /* this is a clone, must never be used */
+      r = self->ts->regions[i];
+
+      /* clone the clone */
+      _r = region_clone (
+        r, REGION_CLONE_COPY);
+
+      /* move the new clone to the original id */
+      project_move_region (_r, r->actual_id);
 
       /* add it to track */
-      track_add_region (r->track,
-                        r);
+      track_add_region (_r->track,
+                        _r);
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);

@@ -378,6 +378,12 @@ track_remove_region (Track * track,
                      Region * region,
                      int       delete)
 {
+  if (CLIP_EDITOR->region == region)
+    {
+      CLIP_EDITOR->region = NULL;
+      EVENTS_PUSH (ET_CLIP_EDITOR_REGION_CHANGED,
+                   NULL);
+    }
   if (TL_SELECTIONS)
     {
       array_delete (

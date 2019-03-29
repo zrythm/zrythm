@@ -73,6 +73,7 @@ timeline_selections_create_missing_transients (
           transient =
             region_clone (
               r, REGION_CLONE_COPY);
+          transient->transient = 1;
           if (r->type == REGION_TYPE_MIDI)
             transient->widget =
               Z_REGION_WIDGET (

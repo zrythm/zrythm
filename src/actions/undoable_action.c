@@ -19,13 +19,15 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "actions/move_midi_arranger_selections_action.h"
 #include "actions/create_chords_action.h"
 #include "actions/delete_midi_arranger_selections_action.h"
-#include "actions/duplicate_midi_arranger_selections_action.h"
 #include "actions/delete_timeline_selections_action.h"
+#include "actions/duplicate_midi_arranger_selections_action.h"
+#include "actions/duplicate_timeline_selections_action.h"
 #include "actions/edit_channel_action.h"
 #include "actions/edit_track_action.h"
+#include "actions/move_midi_arranger_selections_action.h"
+#include "actions/move_timeline_selections_action.h"
 #include "actions/undoable_action.h"
 
 /**
@@ -57,6 +59,14 @@ undoable_action_do (UndoableAction * self)
     case UNDOABLE_ACTION_TYPE_DELETE_TL_SELECTIONS:
       delete_timeline_selections_action_do (
         (DeleteTimelineSelectionsAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_MOVE_TL_SELECTIONS:
+      move_timeline_selections_action_do (
+        (MoveTimelineSelectionsAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_DUPLICATE_TL_SELECTIONS:
+      duplicate_timeline_selections_action_do (
+        (DuplicateTimelineSelectionsAction *) self);
       break;
     case UNDOABLE_ACTION_TYPE_DELETE_MA_SELECTIONS:
       delete_midi_arranger_selections_action_do (
@@ -106,6 +116,14 @@ undoable_action_undo (UndoableAction * self)
       delete_timeline_selections_action_undo (
         (DeleteTimelineSelectionsAction *) self);
       break;
+    case UNDOABLE_ACTION_TYPE_MOVE_TL_SELECTIONS:
+      move_timeline_selections_action_undo (
+        (MoveTimelineSelectionsAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_DUPLICATE_TL_SELECTIONS:
+      duplicate_timeline_selections_action_undo (
+        (DuplicateTimelineSelectionsAction *) self);
+      break;
     case UNDOABLE_ACTION_TYPE_DUPLICATE_MIDI_NOTES:
       duplicate_midi_arranger_selections_action_undo (
         (DuplicateMidiArrangerSelectionsAction *) self);
@@ -146,6 +164,14 @@ undoable_action_free (UndoableAction * self)
     case UNDOABLE_ACTION_TYPE_DELETE_TL_SELECTIONS:
       delete_timeline_selections_action_free (
         (DeleteTimelineSelectionsAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_MOVE_TL_SELECTIONS:
+      move_timeline_selections_action_free (
+        (MoveTimelineSelectionsAction *) self);
+      break;
+    case UNDOABLE_ACTION_TYPE_DUPLICATE_TL_SELECTIONS:
+      duplicate_timeline_selections_action_free (
+        (DuplicateTimelineSelectionsAction *) self);
       break;
     case UNDOABLE_ACTION_TYPE_DUPLICATE_MIDI_NOTES:
       duplicate_midi_arranger_selections_action_free (

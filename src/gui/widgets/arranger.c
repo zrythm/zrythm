@@ -797,6 +797,7 @@ on_key_release_action (
 {
   g_message ("release");
   GET_PRIVATE;
+  GET_ARRANGER_ALIASES (self);
   ar_prv->key_is_pressed = 0;
 
   if (event->keyval = GDK_KEY_Control_L ||
@@ -826,28 +827,12 @@ on_key_release_action (
     ar_prv->action =
       UI_OVERLAY_ACTION_MOVING;
 
-  /* set actual notes to invisible since
-   * we are moving */
-  for (int i = 0;
-       i < MIDI_ARRANGER_SELECTIONS->
-             num_midi_notes;
-       i++)
-    {
-      MidiNote * mn =
-        MIDI_ARRANGER_SELECTIONS->
-          midi_notes[i];
-      if (ar_prv->action ==
-            UI_OVERLAY_ACTION_MOVING)
-        gtk_widget_set_visible (
-          GTK_WIDGET (mn->widget),
-          F_NOT_VISIBLE);
-      else if (ar_prv->action ==
-                 UI_OVERLAY_ACTION_MOVING_COPY ||
-                 UI_OVERLAY_ACTION_MOVING_LINK)
-        gtk_widget_set_visible (
-          GTK_WIDGET (mn->widget),
-          F_VISIBLE);
-    }
+  if (midi_arranger)
+    midi_arranger_widget_update_visibility (
+      midi_arranger);
+  else if (timeline)
+    timeline_arranger_widget_update_visibility (
+      timeline);
 
   arranger_widget_refresh_cursor (
     self);
@@ -947,28 +932,12 @@ on_key_action (
         ar_prv->action =
           UI_OVERLAY_ACTION_MOVING;
 
-      /* set actual notes to invisible since
-       * we are moving */
-      for (int i = 0;
-           i < MIDI_ARRANGER_SELECTIONS->
-                 num_midi_notes;
-           i++)
-        {
-          MidiNote * mn =
-            MIDI_ARRANGER_SELECTIONS->
-              midi_notes[i];
-          if (ar_prv->action ==
-                UI_OVERLAY_ACTION_MOVING)
-            gtk_widget_set_visible (
-              GTK_WIDGET (mn->widget),
-              F_NOT_VISIBLE);
-          else if (ar_prv->action ==
-                     UI_OVERLAY_ACTION_MOVING_COPY ||
-                     UI_OVERLAY_ACTION_MOVING_LINK)
-            gtk_widget_set_visible (
-              GTK_WIDGET (mn->widget),
-              F_VISIBLE);
-        }
+      if (midi_arranger)
+        midi_arranger_widget_update_visibility (
+          midi_arranger);
+      else if (timeline)
+        timeline_arranger_widget_update_visibility (
+          timeline);
 
       arranger_widget_refresh_cursor (
         self);

@@ -1800,6 +1800,11 @@ timeline_arranger_widget_on_drag_end (
       self->start_region_clone = NULL;
       self->start_ap = NULL;
     }
+  timeline_selections_remove_transients (
+    TL_SELECTIONS);
+  ar_prv->action = UI_OVERLAY_ACTION_NONE;
+  timeline_arranger_widget_update_visibility (
+    self);
 
   self->resizing_range = 0;
   self->resizing_range_start = 0;
