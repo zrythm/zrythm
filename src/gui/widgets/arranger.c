@@ -604,18 +604,20 @@ arranger_widget_select (
           if (type == REGION_WIDGET_TYPE)
             region_widget_select (
               ((Region *)r)->widget,
-              0, create_transients);
+              F_NO_SELECT, create_transients);
           else if (type == CHORD_WIDGET_TYPE)
             chord_widget_select (
-              ((Chord *)r)->widget, 0);
+              ((Chord *)r)->widget,
+              F_NO_SELECT);
           else if (type ==
                      AUTOMATION_POINT_WIDGET_TYPE)
             automation_point_widget_select (
-              ((AutomationPoint *)r)->widget, 0);
+              ((AutomationPoint *)r)->widget,
+              F_NO_SELECT, create_transients);
           else if (type == MIDI_NOTE_WIDGET_TYPE)
             midi_note_widget_select (
               ((MidiNote *)r)->widget,
-              0, create_transients);
+              F_NO_SELECT, create_transients);
         }
     }
 
@@ -628,18 +630,20 @@ arranger_widget_select (
       /* deselect */
       if (type == REGION_WIDGET_TYPE)
         region_widget_select (
-          ((Region *)child)->widget, 0,
-          create_transients);
+          ((Region *)child)->widget,
+          F_NO_SELECT, create_transients);
       else if (type == CHORD_WIDGET_TYPE)
         chord_widget_select (
-          ((Chord *)child)->widget, 0);
+          ((Chord *)child)->widget,
+          F_NO_SELECT);
       else if (type == AUTOMATION_POINT_WIDGET_TYPE)
         automation_point_widget_select (
-          ((AutomationPoint *)child)->widget, 0);
+          ((AutomationPoint *)child)->widget,
+          F_NO_SELECT, create_transients);
       else if (type == MIDI_NOTE_WIDGET_TYPE)
         midi_note_widget_select (
-          ((MidiNote *)child)->widget, 0,
-          create_transients);
+          ((MidiNote *)child)->widget,
+          F_NO_SELECT, create_transients);
     }
   else if (select && !array_contains (array,
                       *num,
@@ -648,18 +652,20 @@ arranger_widget_select (
       /* select */
       if (type == REGION_WIDGET_TYPE)
         region_widget_select (
-          ((Region *)child)->widget, 1,
-          create_transients);
+          ((Region *)child)->widget,
+          F_SELECT, create_transients);
       else if (type == CHORD_WIDGET_TYPE)
         chord_widget_select (
-          ((Chord *)child)->widget, 1);
+          ((Chord *)child)->widget,
+          F_SELECT);
       else if (type == AUTOMATION_POINT_WIDGET_TYPE)
         automation_point_widget_select (
-          ((AutomationPoint *)child)->widget, 1);
+          ((AutomationPoint *)child)->widget,
+          F_SELECT, create_transients);
       else if (type == MIDI_NOTE_WIDGET_TYPE)
         midi_note_widget_select (
-          ((MidiNote *)child)->widget, 1,
-          create_transients);
+          ((MidiNote *)child)->widget,
+          F_SELECT, create_transients);
     }
 }
 
@@ -850,9 +856,18 @@ on_key_action (
   GET_PRIVATE;
   GET_ARRANGER_ALIASES(self);
 
+  int num = 0;
+
+  if (event->type == GDK_KEY_PRESS &&
+      (event->keyval = GDK_KEY_Control_L ||
+       event->keyval == GDK_KEY_Control_R))
+    {
+      ar_prv->ctrl_held = 1;
+    }
+
   if (midi_arranger)
     {
-      int num =
+      num =
         MIDI_ARRANGER_SELECTIONS->num_midi_notes;
       if (event->state & GDK_CONTROL_MASK &&
           event->type == GDK_KEY_PRESS &&
@@ -904,47 +919,47 @@ on_key_action (
           /*undo_manager_perform (*/
           /*UNDO_MANAGER, shift_right_action);*/
         }
-      if (event->type == GDK_KEY_PRESS &&
-          (event->keyval = GDK_KEY_Control_L ||
-           event->keyval == GDK_KEY_Control_R))
-        {
-          ar_prv->ctrl_held = 1;
-        }
+    }
+  else if (timeline)
+    {
+      /* TODO */
 
-      if (ar_prv->action ==
-            UI_OVERLAY_ACTION_STARTING_MOVING)
-        {
-          if (ar_prv->ctrl_held)
-            ar_prv->action =
-              UI_OVERLAY_ACTION_MOVING_COPY;
-          else
-            ar_prv->action =
-              UI_OVERLAY_ACTION_MOVING;
-        }
-      else if (ar_prv->action ==
-                 UI_OVERLAY_ACTION_MOVING &&
-               ar_prv->ctrl_held)
+    }
+
+  if (ar_prv->action ==
+        UI_OVERLAY_ACTION_STARTING_MOVING)
+    {
+      if (ar_prv->ctrl_held)
         ar_prv->action =
           UI_OVERLAY_ACTION_MOVING_COPY;
-      else if (ar_prv->action ==
-                 UI_OVERLAY_ACTION_MOVING_COPY &&
-               !ar_prv->ctrl_held)
+      else
         ar_prv->action =
           UI_OVERLAY_ACTION_MOVING;
-
-      if (midi_arranger)
-        midi_arranger_widget_update_visibility (
-          midi_arranger);
-      else if (timeline)
-        timeline_arranger_widget_update_visibility (
-          timeline);
-
-      arranger_widget_refresh_cursor (
-        self);
-
-      if (num > 0)
-        auto_scroll (self);
     }
+  else if (ar_prv->action ==
+             UI_OVERLAY_ACTION_MOVING &&
+           ar_prv->ctrl_held)
+    ar_prv->action =
+      UI_OVERLAY_ACTION_MOVING_COPY;
+  else if (ar_prv->action ==
+             UI_OVERLAY_ACTION_MOVING_COPY &&
+           !ar_prv->ctrl_held)
+    ar_prv->action =
+      UI_OVERLAY_ACTION_MOVING;
+
+  if (midi_arranger)
+    midi_arranger_widget_update_visibility (
+      midi_arranger);
+  else if (timeline)
+    timeline_arranger_widget_update_visibility (
+      timeline);
+
+  arranger_widget_refresh_cursor (
+    self);
+
+  if (num > 0)
+    auto_scroll (self);
+
   return FALSE;
 }
 
@@ -1267,8 +1282,6 @@ drag_update (GtkGestureDrag * gesture,
                gdouble         offset_y,
                gpointer        user_data)
 {
-  g_message ("drag update %d",
-             MIDI_ARRANGER_SELECTIONS->num_midi_notes);
   ArrangerWidget * self =
     Z_ARRANGER_WIDGET (user_data);
   GET_PRIVATE;
@@ -1330,7 +1343,7 @@ drag_update (GtkGestureDrag * gesture,
             timeline,
             offset_x,
             offset_y,
-            0);
+            F_NO_DELETE);
         }
       else if (midi_arranger)
         {
@@ -1338,7 +1351,7 @@ drag_update (GtkGestureDrag * gesture,
             midi_arranger,
             offset_x,
             offset_y,
-            0);
+            F_NO_DELETE);
         }
       else if (midi_modifier_arranger)
         {
@@ -1346,7 +1359,7 @@ drag_update (GtkGestureDrag * gesture,
             midi_modifier_arranger,
             offset_x,
             offset_y,
-            0);
+            F_NO_DELETE);
         }
       else if (audio_arranger)
         {
@@ -1615,8 +1628,6 @@ drag_update (GtkGestureDrag * gesture,
                NULL);
 
   arranger_widget_refresh_cursor (self);
-
-  g_message ("finished drag update");
 }
 static void
 drag_end (GtkGestureDrag *gesture,
@@ -1831,7 +1842,7 @@ on_motion (GtkEventControllerMotion * event,
            ArrangerWidget * self)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
-  g_message ("on motion");
+  /*g_message ("on motion");*/
 
   ar_prv->hover_x = x;
   ar_prv->hover_y = y;

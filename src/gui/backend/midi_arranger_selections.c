@@ -195,11 +195,11 @@ midi_arranger_selections_remove_note (
                 mas->num_midi_notes,
                 note,
                 idx);
-  EVENTS_PUSH (ET_MIDI_NOTE_REMOVED,
+  EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
                note);
 
   /* remove the transient */
-  g_message ("idx %d", idx);
+  /*g_message ("idx %d", idx);*/
   remove_transient (mas, idx);
 }
 

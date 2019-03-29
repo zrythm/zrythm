@@ -103,19 +103,6 @@ inspector_widget_refresh ()
 {
   InspectorWidget * self = MW_INSPECTOR;
 
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->region), 0);
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->ap), 0);
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->track), 0);
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->midi), 0);
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->chord), 0);
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->no_item_label), 0);
-
   if (TL_SELECTIONS->num_regions > 0)
     {
       inspector_region_widget_show_regions (
@@ -125,6 +112,9 @@ inspector_widget_refresh ()
       gtk_widget_set_visible (
         GTK_WIDGET (self->region), 1);
     }
+  else
+    gtk_widget_set_visible (
+      GTK_WIDGET (self->region), 0);
 
   if (TL_SELECTIONS->num_automation_points > 0)
     {
@@ -135,16 +125,24 @@ inspector_widget_refresh ()
       gtk_widget_set_visible (
         GTK_WIDGET (self->ap), 1);
     }
+  else
+    gtk_widget_set_visible (
+      GTK_WIDGET (self->ap), 0);
+
   if (MIDI_ARRANGER_SELECTIONS->num_midi_notes > 0)
     {
+      g_message ("showing %d",
+                 MIDI_ARRANGER_SELECTIONS->num_midi_notes);
       inspector_midi_widget_show_midi (
         self->midi,
         (MidiNote **) MIDI_ARRANGER_SELECTIONS->midi_notes,
         MIDI_ARRANGER_SELECTIONS->num_midi_notes);
       gtk_widget_set_visible (
         GTK_WIDGET (self->midi), 1);
-
     }
+  else
+    gtk_widget_set_visible (
+      GTK_WIDGET (self->midi), 0);
 
   Track * selected_tracks[200];
   int     num_selected_tracks = 0;
@@ -159,6 +157,9 @@ inspector_widget_refresh ()
       gtk_widget_set_visible (
         GTK_WIDGET (self->track), 1);
     }
+  else
+    gtk_widget_set_visible (
+      GTK_WIDGET (self->track), 0);
 
   if (TL_SELECTIONS->num_chords > 0)
     {
@@ -169,6 +170,9 @@ inspector_widget_refresh ()
       gtk_widget_set_visible (
         GTK_WIDGET (self->chord), 1);
     }
+  else
+    gtk_widget_set_visible (
+      GTK_WIDGET (self->chord), 0);
 
   /* if nothing is visible, show "no item selected" */
   if (!gtk_widget_get_visible (GTK_WIDGET (self->region)) &&
@@ -178,6 +182,9 @@ inspector_widget_refresh ()
       !gtk_widget_get_visible (GTK_WIDGET (self->ap)))
     gtk_widget_set_visible (
       GTK_WIDGET (self->no_item_label), 1);
+  else
+    gtk_widget_set_visible (
+      GTK_WIDGET (self->no_item_label), 0);
 }
 
 /**
@@ -193,18 +200,18 @@ inspector_widget_show_selections (
 {
 
   InspectorWidget * self = MW_INSPECTOR;
-  if (type == INSPECTOR_CHILD_REGION)
-    gtk_widget_set_visible (GTK_WIDGET (self->region), 0);
-  else if (type == INSPECTOR_CHILD_AP)
-    gtk_widget_set_visible (GTK_WIDGET (self->ap), 0);
-  else if (type == INSPECTOR_CHILD_TRACK)
-    gtk_widget_set_visible (GTK_WIDGET (self->track), 0);
-  else if (type == INSPECTOR_CHILD_MIDI)
-    gtk_widget_set_visible (GTK_WIDGET (self->midi), 0);
-  else if (type == INSPECTOR_CHILD_CHORD)
-    gtk_widget_set_visible (GTK_WIDGET (self->chord), 0);
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->no_item_label), 0);
+  /*if (type == INSPECTOR_CHILD_REGION)*/
+    /*gtk_widget_set_visible (GTK_WIDGET (self->region), 0);*/
+  /*else if (type == INSPECTOR_CHILD_AP)*/
+    /*gtk_widget_set_visible (GTK_WIDGET (self->ap), 0);*/
+  /*else if (type == INSPECTOR_CHILD_TRACK)*/
+    /*gtk_widget_set_visible (GTK_WIDGET (self->track), 0);*/
+  /*else if (type == INSPECTOR_CHILD_MIDI)*/
+    /*gtk_widget_set_visible (GTK_WIDGET (self->midi), 0);*/
+  /*else if (type == INSPECTOR_CHILD_CHORD)*/
+    /*gtk_widget_set_visible (GTK_WIDGET (self->chord), 0);*/
+  /*gtk_widget_set_visible (*/
+    /*GTK_WIDGET (self->no_item_label), 0);*/
   if (num_selections > 0)
     {
       if (type == INSPECTOR_CHILD_REGION)

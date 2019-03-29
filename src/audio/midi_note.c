@@ -76,6 +76,8 @@ midi_note_new (MidiRegion * midi_region,
 
   project_add_midi_note (midi_note);
 
+  midi_note->actual_id = midi_note->id;
+
   return midi_note;
 }
 
@@ -95,7 +97,7 @@ midi_note_clone (MidiNote *  src,
                         src->val,
                         vel);
 
-  mn->actual_note = src->id;
+  mn->actual_id = src->id;
 
   return mn;
 }
@@ -302,6 +304,8 @@ midi_note_free (MidiNote * self)
     }
 
   velocity_free (self->vel);
+
+  project_remove_midi_note (self);
 
   free (self);
 }

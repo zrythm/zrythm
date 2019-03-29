@@ -50,6 +50,37 @@ G_DEFINE_TYPE (MidiNoteWidget,
  */
 #define RESIZE_CURSOR_SPACE 9
 
+static void
+draw_text (cairo_t *cr, char * name)
+{
+#define FONT "Sans Bold 9"
+
+  PangoLayout *layout;
+  PangoFontDescription *desc;
+
+  cairo_translate (cr, 2, 2);
+
+  /* Create a PangoLayout, set the font and text */
+  layout = pango_cairo_create_layout (cr);
+
+  pango_layout_set_text (layout, name, -1);
+  desc = pango_font_description_from_string (FONT);
+  pango_layout_set_font_description (layout, desc);
+  pango_font_description_free (desc);
+
+  cairo_set_source_rgb (cr, 0, 0, 0);
+
+  /* Inform Pango to re-layout the text with the new transformation */
+  /*pango_cairo_update_layout (cr, layout);*/
+
+  /*pango_layout_get_size (layout, &width, &height);*/
+  /*cairo_move_to (cr, - ((double)width / PANGO_SCALA) / 2, - RADIUS);*/
+  pango_cairo_show_layout (cr, layout);
+
+  /* free the layout object */
+  g_object_unref (layout);
+}
+
 static gboolean
 midi_note_draw_cb (
   GtkDrawingArea * widget,
@@ -81,16 +112,34 @@ midi_note_draw_cb (
   /*Channel * channel = track_get_channel (track);*/
   GdkRGBA * color = &track->color;
   cairo_set_source_rgba (
-    cr, color->red, color->green, color->blue, 0.7);
+    cr,
+    color->red - 0.06,
+    color->green - 0.06,
+    color->blue - 0.06,
+    0.7);
   if (self->midi_note->transient)
     cairo_set_source_rgba (
       cr, 0, 1, 0,
       0.7);
+  else if (midi_note_is_selected (self->midi_note))
+    {
+      cairo_set_source_rgba (
+        cr,
+        1,
+        color->green + 0.1,
+        color->blue + 0.1,
+        0.7);
+    }
   cairo_rectangle(cr, 0, 0, width, height);
   cairo_stroke_preserve(cr);
   cairo_fill(cr);
 
-  /*draw_text (cr, self->midi_note->name);*/
+  char * str =
+    g_strdup_printf (
+      "[%d - actual %d]",
+      self->midi_note->id,
+      self->midi_note->actual_id);
+  draw_text (cr, str);
 
  return FALSE;
 }
@@ -254,9 +303,11 @@ midi_note_widget_select (
         MIDI_ARRANGER_SELECTIONS,
         self->midi_note);
     }
-  gtk_widget_queue_draw (GTK_WIDGET (self));
-  gtk_widget_queue_draw (
-    GTK_WIDGET (self->midi_note->vel->widget));
+  /*gtk_widget_queue_draw (GTK_WIDGET (self));*/
+  /*gtk_widget_queue_draw (*/
+    /*GTK_WIDGET (self->midi_note->vel->widget));*/
+  EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
+               self->midi_note);
 }
 
 MidiNoteWidget *

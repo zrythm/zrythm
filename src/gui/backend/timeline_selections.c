@@ -597,15 +597,17 @@ timeline_selections_remove_region (
   if (!array_contains (ts->regions,
                        ts->num_regions,
                        r))
-    return;
+    {
+      EVENTS_PUSH (ET_REGION_CHANGED,
+                   r);
+      return;
+    }
 
   int idx;
   array_delete_return_pos (ts->regions,
                 ts->num_regions,
                 r,
                 idx);
-  EVENTS_PUSH (ET_REGION_REMOVED,
-               r);
 
   /* remove the transient */
   remove_transient_region (ts, idx);
@@ -626,7 +628,7 @@ timeline_selections_remove_chord (
                 ts->num_chords,
                 c,
                 idx);
-  EVENTS_PUSH (ET_CHORD_REMOVED,
+  EVENTS_PUSH (ET_CHORD_CHANGED,
                c);
 
   /* remove the transient */
@@ -648,7 +650,7 @@ timeline_selections_remove_ap (
                 ts->num_automation_points,
                 ap,
                 idx);
-  EVENTS_PUSH (ET_AUTOMATION_POINT_REMOVED,
+  EVENTS_PUSH (ET_AUTOMATION_POINT_CHANGED,
                ap);
 
   /* remove the transient */

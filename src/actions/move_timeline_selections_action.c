@@ -78,7 +78,7 @@ move_timeline_selections_action_undo (
       /* this is a clone */
       _r = self->ts->regions[i];
 
-      /* find actual midi note */
+      /* find actual region */
       r =
         project_get_region (_r->actual_id);
 

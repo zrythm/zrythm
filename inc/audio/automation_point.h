@@ -40,8 +40,6 @@ typedef struct AutomationPoint
   int                      at_id;
   AutomationTrack *        at;
 
-  int                      selected;
-
   /**
    * GUI Widget.
    */
@@ -76,9 +74,6 @@ automation_point_fields_schema[] =
   CYAML_FIELD_MAPPING (
     "pos", CYAML_FLAG_DEFAULT,
     AutomationPoint, pos, position_fields_schema),
-	CYAML_FIELD_INT (
-    "selected", CYAML_FLAG_DEFAULT,
-    AutomationPoint, selected),
 	CYAML_FIELD_INT (
     "svalue", CYAML_FLAG_DEFAULT,
     AutomationPoint, svalue),
