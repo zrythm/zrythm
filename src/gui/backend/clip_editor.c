@@ -44,11 +44,9 @@ clip_editor_set_region (Region * region)
 
   if (self->region && self->region->type ==
         REGION_TYPE_MIDI)
-    {
-      channel_reattach_midi_editor_manual_press_port (
-        track_get_channel (region->track),
-        0);
-    }
+    channel_reattach_midi_editor_manual_press_port (
+      track_get_channel (self->region->track),
+      0);
   if (region->type == REGION_TYPE_MIDI)
     channel_reattach_midi_editor_manual_press_port (
       track_get_channel (region->track),
