@@ -89,6 +89,9 @@
 #    define REALTIME
 #endif
 
+#define LV2_PLUGIN_NATIVE_UI_TYPE \
+  "http://lv2plug.in/ns/extensions/ui#Gtk3UI"
+
 typedef struct Lv2Plugin Lv2Plugin;
 typedef struct _GtkWidget GtkWidget;
 typedef struct _GtkCheckMenuItem GtkCheckMenuItem;
@@ -431,9 +434,6 @@ lv2_ui_write(SuilController controller,
 uint32_t
 lv2_ui_port_index(SuilController controller, const char* symbol);
 
-const char*
-lv2_native_ui_type(Lv2Plugin* plugin);
-
 bool
 lv2_discover_ui(Lv2Plugin* plugin);
 
@@ -467,13 +467,6 @@ lv2_apply_ui_events(Lv2Plugin* plugin, uint32_t nframes);
 uint32_t
 lv2_ui_port_index(SuilController controller, const char* symbol);
 
-void
-lv2_ui_port_event(Lv2Plugin*       plugin,
-                   uint32_t    port_index,
-                   uint32_t    buffer_size,
-                   uint32_t    protocol,
-                   const void* buffer);
-
 bool
 lv2_send_to_ui(Lv2Plugin*       plugin,
                 uint32_t    port_index,
@@ -481,15 +474,11 @@ lv2_send_to_ui(Lv2Plugin*       plugin,
                 uint32_t    size,
                 const void* body);
 
-/* FIXME make separate header for UI stuff */
-void
-lv2_gtk_set_float_control(const Lv2ControlID* control, float value);
+bool
+lv2_plugin_run(Lv2Plugin* plugin, uint32_t nframes);
 
 bool
-lv2_run(Lv2Plugin* plugin, uint32_t nframes);
-
-bool
-lv2_update(Lv2Plugin* plugin);
+lv2_plugin_update(Lv2Plugin* plugin);
 
 int
 lv2_ui_resize(Lv2Plugin* plugin, int width, int height);

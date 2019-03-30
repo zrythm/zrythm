@@ -173,6 +173,8 @@ plugin_manager_init (PluginManager * self)
   opts->show_ui = 1;
   opts->print_controls = 1;
   opts->non_interactive = 1;
+  /* TODO add option in preferences */
+  opts->update_rate = 40.f;
 
   LV2_Settings * settings = &self->lv2_settings;
   settings->atom_AtomPort =

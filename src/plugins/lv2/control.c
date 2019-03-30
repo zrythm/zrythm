@@ -231,17 +231,25 @@ lv2_get_property_control(const Lv2Controls* controls, LV2_URID property)
 	return NULL;
 }
 
+/**
+ * Called when a generic UI control changes.
+ */
 void
-lv2_set_control(const Lv2ControlID* control,
+lv2_control_set_control(const Lv2ControlID* control,
                  uint32_t         size,
                  LV2_URID         type,
                  const void*      body)
 {
+  /*g_message ("lv2_control_set_control");*/
   Lv2Plugin* plugin = control->plugin;
-  if (control->type == PORT && type == plugin->forge.Float)
+  if (control->type == PORT &&
+      type == plugin->forge.Float)
     {
-      LV2_Port* port = &control->plugin->ports[control->index];
+      LV2_Port* port =
+        &control->plugin->ports[control->index];
       port->control = *(float*)body;
+      /*g_message ("set to %f",*/
+                 /*port->control);*/
     }
   else if (control->type == PROPERTY)
     {

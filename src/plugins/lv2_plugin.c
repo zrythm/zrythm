@@ -66,12 +66,13 @@
 
 #include "audio/engine.h"
 #include "audio/transport.h"
+#include "plugins/lv2_gtk.h"
 #include "plugins/lv2_plugin.h"
-#include "plugins/plugin_manager.h"
 #include "plugins/lv2/control.h"
 #include "plugins/lv2/suil.h"
 #include "plugins/lv2/symap.h"
 #include "plugins/plugin.h"
+#include "plugins/plugin_manager.h"
 #include "project.h"
 #include "utils/io.h"
 #include "utils/string.h"
@@ -780,31 +781,49 @@ lv2_apply_ui_events(Lv2Plugin* plugin, uint32_t nframes)
     }
 
   Lv2ControlChange ev;
-  const size_t  space = zix_ring_read_space(plugin->ui_events);
-  for (size_t i = 0; i < space; i += sizeof(ev) + ev.size)
+  const size_t space =
+    zix_ring_read_space (plugin->ui_events);
+  for (size_t i = 0; i < space;
+       i += sizeof(ev) + ev.size)
     {
-      zix_ring_read(plugin->ui_events, (char*)&ev, sizeof(ev));
+      zix_ring_read (
+        plugin->ui_events,
+        (char*)&ev, sizeof(ev));
       char body[ev.size];
-      if (zix_ring_read(plugin->ui_events, body, ev.size) != ev.size) {
-              fprintf(stderr, "error: Error reading from UI ring buffer\n");
-              break;
-      }
-      assert(ev.index < plugin->num_ports);
-      LV2_Port* const port = &plugin->ports[ev.index];
-      if (ev.protocol == 0) {
-              assert(ev.size == sizeof(float));
-              port->control = *(float*)body;
-        }
-      else if (ev.protocol == plugin->urids.atom_eventTransfer)
+      if (zix_ring_read (
+            plugin->ui_events, body, ev.size) !=
+          ev.size)
         {
-          LV2_Evbuf_Iterator    e    = lv2_evbuf_end(port->evbuf);
-          const LV2_Atom* const atom = (const LV2_Atom*)body;
-          lv2_evbuf_write(&e, nframes, 0, atom->type, atom->size,
-                          (const uint8_t*)LV2_ATOM_BODY_CONST(atom));
+          g_warning (
+            "Error reading from UI ring buffer");
+          break;
+        }
+      assert (ev.index < plugin->num_ports);
+      LV2_Port* const port =
+        &plugin->ports[ev.index];
+      if (ev.protocol == 0)
+        {
+          assert(ev.size == sizeof(float));
+          port->control = *(float*)body;
+          /*g_message ("apply_ui_events %f",*/
+                     /*port->control);*/
+        }
+      else if (ev.protocol ==
+               plugin->urids.atom_eventTransfer)
+        {
+          LV2_Evbuf_Iterator e =
+            lv2_evbuf_end (port->evbuf);
+          const LV2_Atom* const atom =
+            (const LV2_Atom*)body;
+          lv2_evbuf_write (
+            &e, nframes, 0, atom->type, atom->size,
+            (const uint8_t*)
+              LV2_ATOM_BODY_CONST(atom));
         }
       else
         {
-          g_warning ("error: Unknown control change protocol %d",
+          g_warning ("error: Unknown control "
+                     "change protocol %d",
                      ev.protocol);
         }
     }
@@ -826,7 +845,7 @@ lv2_init_ui(Lv2Plugin* plugin)
   for (uint32_t i = 0; i < plugin->num_ports; ++i)
     {
       if (plugin->ports[i].port->type == TYPE_CONTROL) {
-              lv2_ui_port_event(plugin, i,
+              lv2_gtk_ui_port_event(plugin, i,
                                  sizeof(float), 0,
                                  &plugin->ports[i].control);
       }
@@ -883,7 +902,8 @@ lv2_send_to_ui(Lv2Plugin*       plugin,
 }
 
 bool
-lv2_run(Lv2Plugin* plugin, uint32_t nframes)
+lv2_plugin_run (
+  Lv2Plugin* plugin, uint32_t nframes)
 {
     /* Read and apply control change events from UI */
   if (plugin->window)
@@ -915,7 +935,7 @@ lv2_run(Lv2Plugin* plugin, uint32_t nframes)
 }
 
 bool
-lv2_update(Lv2Plugin* plugin)
+lv2_plugin_update (Lv2Plugin* plugin)
 {
   /* Check quit flag and close if set. */
   if (zix_sem_try_wait(&plugin->exit_sem))
@@ -943,31 +963,35 @@ lv2_update(Lv2Plugin* plugin)
           /* Read event body */
           zix_ring_read(plugin->plugin_events, (char*)buf, ev.size);
 
-          if (dump && ev.protocol == plugin->urids.atom_eventTransfer) {
-                  /* Dump event in Turtle to the console */
-                  LV2_Atom* atom = (LV2_Atom*)buf;
-                  char*     str  = sratom_to_turtle(
-                          plugin->ui_sratom, &plugin->unmap, "plugin:", NULL, NULL,
-                          atom->type, atom->size, LV2_ATOM_BODY(atom));
-                  lv2_ansi_start(stdout, 35);
-                  printf("\n## Plugin => UI (%u bytes) ##\n%s\n", atom->size, str);
-                  lv2_ansi_reset(stdout);
-                  free(str);
-          }
+          if (dump && ev.protocol ==
+              plugin->urids.atom_eventTransfer)
+            {
+              /* Dump event in Turtle to the console */
+              LV2_Atom* atom = (LV2_Atom*)buf;
+              char*     str  = sratom_to_turtle(
+                      plugin->ui_sratom, &plugin->unmap, "plugin:", NULL, NULL,
+                      atom->type, atom->size, LV2_ATOM_BODY(atom));
+              lv2_ansi_start(stdout, 35);
+              printf("\n## Plugin => UI (%u bytes) ##\n%s\n", atom->size, str);
+              lv2_ansi_reset(stdout);
+              free(str);
+            }
 
-          if (plugin->ui_instance)
-            {
-              suil_instance_port_event(plugin->ui_instance, ev.index,
-                                       ev.size, ev.protocol, buf);
-            }
-          else
-            {
-              lv2_ui_port_event(plugin, ev.index, ev.size, ev.protocol, buf);
-            }
+          if (ev.index == 2)
+            g_message ("lv2_gtk_ui_port_event from "
+                       "lv2 update");
+          lv2_gtk_ui_port_event (
+            plugin, ev.index,
+            ev.size, ev.protocol,
+            ev.protocol == 0 ?
+            (void *) &plugin->ports[ev.index].control :
+            buf);
 
           if (ev.protocol == 0 && print_controls)
             {
-              _print_control_value(plugin, &plugin->ports[ev.index], *(float*)buf);
+              _print_control_value (
+                plugin, &plugin->ports[ev.index],
+                *(float*)buf);
             }
       }
 
@@ -997,7 +1021,7 @@ _apply_control_arg(Lv2Plugin* plugin, const char* s)
       return false;
     }
 
-  lv2_set_control(control, sizeof(float), plugin->urids.atom_Float, &val);
+  lv2_control_set_control(control, sizeof(float), plugin->urids.atom_Float, &val);
   g_message ("%-*s = %f\n", plugin->longest_sym, sym, val);
 
   return true;
@@ -1731,26 +1755,34 @@ lv2_instantiate (Lv2Plugin      * lv2_plugin,   ///< plugin to instantiate
   /* Get a lv2_plugin->UI */
   g_message (
     "Looking for native UI");
-  const char* native_ui_type_uri = lv2_native_ui_type (lv2_plugin);
-  lv2_plugin->uis = lilv_plugin_get_uis (lv2_plugin->lilv_plugin);
-  if (!LV2_SETTINGS.opts.generic_ui && native_ui_type_uri)
+  const char* native_ui_type_uri =
+    LV2_PLUGIN_NATIVE_UI_TYPE;
+  lv2_plugin->uis =
+    lilv_plugin_get_uis (lv2_plugin->lilv_plugin);
+  if (!LV2_SETTINGS.opts.generic_ui &&
+      native_ui_type_uri)
     {
-      const LilvNode* native_ui_type = lilv_new_uri(LILV_WORLD,
-                                                    native_ui_type_uri);
-      LILV_FOREACH(uis, u, lv2_plugin->uis)
+      const LilvNode* native_ui_type =
+        lilv_new_uri (
+          LILV_WORLD, native_ui_type_uri);
+      LILV_FOREACH (uis, u, lv2_plugin->uis)
         {
-          const LilvUI* this_ui = lilv_uis_get(lv2_plugin->uis, u);
-          const LilvNodes* types = lilv_ui_get_classes(this_ui);
-          LILV_FOREACH(nodes, t, types)
+          const LilvUI* this_ui =
+            lilv_uis_get (lv2_plugin->uis, u);
+          const LilvNodes* types =
+            lilv_ui_get_classes (this_ui);
+          LILV_FOREACH (nodes, t, types)
             {
-              const char * pt = lilv_node_as_uri (
-                              lilv_nodes_get(types, t));
+              const char * pt =
+                lilv_node_as_uri (
+                  lilv_nodes_get (types, t));
               g_message ("Found UI: %s", pt);
             }
-          if (lilv_ui_is_supported(this_ui,
-                                   suil_ui_supported,
-                                   native_ui_type,
-                                   &lv2_plugin->ui_type))
+          if (lilv_ui_is_supported (
+                this_ui,
+                suil_ui_supported,
+                native_ui_type,
+                &lv2_plugin->ui_type))
             {
               /* TODO: Multiple UI support */
               g_message ("UI is supported");
@@ -1927,11 +1959,12 @@ lv2_instantiate (Lv2Plugin      * lv2_plugin,   ///< plugin to instantiate
       lv2_apply_state(lv2_plugin, lv2_plugin->state);
   }
 
-  if (LV2_SETTINGS.opts.controls) {
-          for (char** c = LV2_SETTINGS.opts.controls; *c; ++c) {
-                  _apply_control_arg(lv2_plugin, *c);
-          }
-  }
+  if (LV2_SETTINGS.opts.controls)
+    {
+      for (char** c = LV2_SETTINGS.opts.controls;
+           *c; ++c)
+        _apply_control_arg(lv2_plugin, *c);
+    }
 
   /* Set Jack callbacks */
   /*lv2_backend_init(lv2_plugin);*/
@@ -2154,57 +2187,84 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
   lv2_plugin->request_update = false;
 
   /* Run plugin for this cycle */
-  const bool send_ui_updates = lv2_run (lv2_plugin, nframes);
+  const bool send_ui_updates =
+    lv2_plugin_run (lv2_plugin, nframes);
 
   /* Deliver MIDI output and UI events */
-  for (uint32_t p = 0; p < lv2_plugin->num_ports; ++p)
+  for (uint32_t p = 0; p < lv2_plugin->num_ports;
+       ++p)
     {
-      LV2_Port* const lv2_port = &lv2_plugin->ports[p];
+      LV2_Port* const lv2_port =
+        &lv2_plugin->ports[p];
       Port * port = lv2_port->port;
-      if (port->flow == FLOW_OUTPUT && port->type == TYPE_CONTROL &&
-            lilv_port_has_property(lv2_plugin->lilv_plugin,
-                                   lv2_port->lilv_port,
-                                   lv2_plugin->nodes.lv2_reportsLatency))
+      if (port->flow == FLOW_OUTPUT &&
+          port->type == TYPE_CONTROL &&
+          lilv_port_has_property(
+            lv2_plugin->lilv_plugin,
+            lv2_port->lilv_port,
+            lv2_plugin->nodes.lv2_reportsLatency))
         {
-          if (lv2_plugin->plugin_latency != lv2_port->control)
+          if (lv2_plugin->plugin_latency !=
+              lv2_port->control)
             {
-              lv2_plugin->plugin_latency = lv2_port->control;
-              jack_recompute_total_latencies(client);
+              lv2_plugin->plugin_latency =
+                lv2_port->control;
+              jack_recompute_total_latencies (
+                client);
             }
         }
-      else if (port->flow == FLOW_OUTPUT && port->type == TYPE_EVENT)
+      else if (port->flow == FLOW_OUTPUT &&
+               port->type == TYPE_EVENT)
           {
             void* buf = NULL;
 
-            for (LV2_Evbuf_Iterator i = lv2_evbuf_begin(lv2_port->evbuf);
+            for (LV2_Evbuf_Iterator i =
+                   lv2_evbuf_begin(lv2_port->evbuf);
                  lv2_evbuf_is_valid(i);
-                 i = lv2_evbuf_next(i)) {
-                    // Get event from LV2 buffer
-                    uint32_t frames, subframes, type, size;
-                    uint8_t* body;
-                    lv2_evbuf_get(i, &frames, &subframes, &type, &size, &body);
+                 i = lv2_evbuf_next(i))
+              {
+                // Get event from LV2 buffer
+                uint32_t frames, subframes,
+                         type, size;
+                uint8_t* body;
+                lv2_evbuf_get (
+                  i, &frames, &subframes,
+                  &type, &size, &body);
 
-                    if (buf && type == lv2_plugin->urids.midi_MidiEvent) {
-                        /* Write MIDI event to port TODO */
-                        /*jack_midi_event_write(buf, frames, body, size);*/
-                    }
+                if (buf && type ==
+                    lv2_plugin->urids.
+                      midi_MidiEvent)
+                  {
+                    /* Write MIDI event to port */
+                    /*jack_midi_event_write(buf, frames, body, size);*/
+                    jack_midi_event_t * ev =
+                      &lv2_port->port->midi_events->queue->jack_midi_events[lv2_port->port->midi_events->queue->num_events++];
+                    ev->time = frames;
+                    ev->buffer = body;
+                    ev->size = size;
+                  }
 
-                    if (lv2_plugin->has_ui && !lv2_port->old_api) {
-                      // Forward event to UI
-                      lv2_send_to_ui(lv2_plugin, p, type, size, body);
-                    }
-            }
+                if (lv2_plugin->has_ui &&
+                    !lv2_port->old_api)
+                  {
+                    // Forward event to UI
+                    lv2_send_to_ui(lv2_plugin, p, type, size, body);
+                  }
+              }
           }
         else if (send_ui_updates &&
                  port->type == TYPE_CONTROL)
           {
             char buf[sizeof(Lv2ControlChange) +
               sizeof(float)];
-            Lv2ControlChange* ev = (Lv2ControlChange*)buf;
+            Lv2ControlChange* ev =
+              (Lv2ControlChange*)buf;
             ev->index    = p;
             ev->protocol = 0;
             ev->size     = sizeof(float);
             *(float*)ev->body = lv2_port->control;
+            /*g_message ("writing ui event %f",*/
+                       /*lv2_port->control);*/
             if (zix_ring_write (
                   lv2_plugin->plugin_events,
                   buf,
@@ -2218,7 +2278,7 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
                            descr->uri);
               }
           }
-  }
+    }
 
 
 }

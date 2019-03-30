@@ -116,13 +116,15 @@ lv2_get_property_control(const Lv2Controls* controls, LV2_URID property);
 
 /** Order scale points by value. */
 int
-lv2_scale_point_cmp(const Lv2ScalePoint* a, const Lv2ScalePoint* b);
+lv2_scale_point_cmp (
+  const Lv2ScalePoint* a, const Lv2ScalePoint* b);
 
 void
-lv2_set_control(const Lv2ControlID* control,
-                 uint32_t         size,
-                 LV2_URID         type,
-                 const void*      body);
+lv2_control_set_control (
+  const Lv2ControlID * control,
+  uint32_t             size,
+  LV2_URID             type,
+  const void*          body);
 
 /**
  * Returns the human readable control label.

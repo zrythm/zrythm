@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-30 15:41+0000\n"
+"POT-Creation-Date: 2019-03-30 20:38+0000\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrytm dot org>\n"
 "Language-Team: Japanese\n"
@@ -105,6 +105,13 @@ msgstr ""
 msgid "Click to enable MIDI controllers to be connected automatically"
 msgstr ""
 
+#: src/plugins/lv2_gtk.c:1421 src/plugins/lv2_gtk.c:1422
+#: src/plugins/lv2_gtk.c:1424 src/plugins/lv2_gtk.c:1425
+#: src/plugins/lv2_gtk.c:1426 src/plugins/lv2_gtk.c:1428
+#: src/plugins/lv2_gtk.c:1427
+msgid "Close"
+msgstr ""
+
 #: resources/ui/file_browser.ui:63 resources/ui/plugin_browser.ui:63
 msgid "Collection"
 msgstr ""
@@ -125,6 +132,10 @@ msgstr "新ぷろじぇくと"
 
 #: resources/ui/export_dialog.ui:261
 msgid "Custom"
+msgstr ""
+
+#: src/plugins/lv2_gtk.c:556 src/plugins/lv2_gtk.c:557
+msgid "Delete Preset?"
 msgstr ""
 
 #: resources/ui/connections.ui:98
@@ -426,6 +437,10 @@ msgstr ""
 msgid "Right"
 msgstr ""
 
+#: src/plugins/lv2_gtk.c:141 src/plugins/lv2_gtk.c:142
+msgid "Save State"
+msgstr ""
+
 #: resources/ui/inspector_chord.ui:43
 msgid "Scale"
 msgstr ""
@@ -535,6 +550,20 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
+#: src/plugins/lv2_gtk.c:461 src/plugins/lv2_gtk.c:462
+msgid "URI (Optional):"
+msgstr ""
+
+#: src/plugins/lv2_gtk.c:774 src/plugins/lv2_gtk.c:775
+#: src/plugins/lv2_gtk.c:776 src/plugins/lv2_gtk.c:778
+msgid "Unknown widget type for value"
+msgstr ""
+
+#: src/plugins/lv2_gtk.c:800 src/plugins/lv2_gtk.c:801
+#: src/plugins/lv2_gtk.c:802 src/plugins/lv2_gtk.c:804
+msgid "Unknown widget type for value\n"
+msgstr ""
+
 #: resources/ui/quantize_mb_popover.ui:47
 msgid "Use grid"
 msgstr ""
@@ -547,6 +576,11 @@ msgstr ""
 msgid "Zrythm"
 msgstr ""
 
+#: src/plugins/lv2_gtk.c:144 src/plugins/lv2_gtk.c:561
+#: src/plugins/lv2_gtk.c:145 src/plugins/lv2_gtk.c:562
+msgid "_Cancel"
+msgstr ""
+
 #: resources/ui/header_bar.ui:69
 msgid "_Edit"
 msgstr ""
@@ -557,6 +591,18 @@ msgstr ""
 
 #: resources/ui/header_bar.ui:97
 msgid "_Help"
+msgstr ""
+
+#: src/plugins/lv2_gtk.c:562 src/plugins/lv2_gtk.c:563
+msgid "_OK"
+msgstr ""
+
+#: src/plugins/lv2_gtk.c:465 src/plugins/lv2_gtk.c:466
+msgid "_Prefix plugin name"
+msgstr ""
+
+#: src/plugins/lv2_gtk.c:145 src/plugins/lv2_gtk.c:146
+msgid "_Save"
 msgstr ""
 
 #: resources/ui/header_bar.ui:83
