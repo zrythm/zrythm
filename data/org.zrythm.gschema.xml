@@ -71,7 +71,6 @@
     </key>
   </schema>
 
-
   <!-- PREFERENCES schema -->
   <schema id="org.zrythm.preferences"
           path="/org/zrythm/preferences/">
@@ -82,6 +81,16 @@
       <description>
         The audio back end to use
       </description>
+    </key>
+
+  <!-- KEY: midi-controllers -->
+    <key name="midi-controllers" type="as">
+      <default>[]</default>
+      <summary>A list of controllers that should be
+        auto-connected.</summary>
+      <description>A list of controllers that
+        should
+        be auto-connected.</description>
     </key>
 
     <!-- Selected language -->

@@ -98,5 +98,3 @@ snap_grid_popover_widget_init (SnapGridPopoverWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 }
-
-

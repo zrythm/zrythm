@@ -34,6 +34,58 @@
 
 #include <jack/statistics.h>
 
+void
+engine_jack_autoconnect_midi_controllers (
+  AudioEngine * self)
+{
+  /* get all output ports */
+  const char ** ports =
+    jack_get_ports (
+      self->client,
+      NULL, NULL,
+      JackPortIsPhysical |
+      JackPortIsOutput);
+
+  /* get selected MIDI devices */
+  char ** devices =
+    g_settings_get_strv (
+      S_PREFERENCES,
+      "midi-controllers");
+
+  int i = 0;
+  int j;
+  char * pname;
+  char * device;
+  jack_port_t * port;
+  while ((pname = ports[i]) != NULL)
+    {
+      /* if port matches one of the selected
+       * MIDI devices, connect it to Zrythm
+       * MIDI In */
+      j = 0;
+      while ((device = devices[j]) != NULL)
+        {
+          if (g_str_match_string (
+                device, pname, 1))
+            {
+              if (jack_connect (
+                    self->client,
+                    pname,
+                    jack_port_name (
+                      JACK_PORT_T (
+                        self->midi_in->data))))
+                g_warning ("Failed connecting \"%s\" to \"%s\"",
+                           pname,
+                           self->midi_in->label);
+
+
+              break;
+            }
+          j++;
+        }
+      i++;
+    }
+}
 
 /** Jack sample rate callback. */
 int
@@ -486,6 +538,10 @@ jack_setup (AudioEngine * self,
     g_error ("cannot connect output ports\n");
 
   jack_free (ports);
+
+  /* autoconnect MIDI controllers */
+  engine_jack_autoconnect_midi_controllers (
+    AUDIO_ENGINE);
 
   g_message ("JACK set up");
 }

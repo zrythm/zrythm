@@ -41,8 +41,6 @@
 void
 localization_init ()
 {
-  int status = system ("locale -a");
-
   /* get available locales on the system */
   FILE *fp;
   char path[1035];

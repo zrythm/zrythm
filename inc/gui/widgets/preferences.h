@@ -33,6 +33,8 @@ G_DECLARE_FINAL_TYPE (PreferencesWidget,
 #define MW_PREFERENCES ZRYTHM->preferences
 
 typedef struct Preferences Preferences;
+typedef struct _MidiControllerMbWidget
+  MidiControllerMbWidget;
 
 typedef struct _PreferencesWidget
 {
@@ -41,6 +43,7 @@ typedef struct _PreferencesWidget
   GtkButton *              cancel;
   GtkButton *              ok;
   GtkComboBox *            audio_backend;
+  MidiControllerMbWidget * midi_controllers;
   Preferences *            preferences;
   GtkCheckButton *         open_plugin_uis;
   GtkComboBox *            language;

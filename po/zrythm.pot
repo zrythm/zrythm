@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-29 21:35+0000\n"
+"POT-Creation-Date: 2019-03-30 15:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,6 +25,10 @@ msgstr ""
 msgid "0.0"
 msgstr ""
 
+#: src/gui/widgets/midi_controller_mb.c:46
+msgid "2 Devices selected"
+msgstr ""
+
 #: resources/ui/channel.ui:253
 msgid "90"
 msgstr ""
@@ -33,11 +37,11 @@ msgstr ""
 msgid "Adaptive Grid"
 msgstr ""
 
-#: resources/ui/preferences.ui:171
+#: resources/ui/preferences.ui:171 resources/ui/preferences.ui:193
 msgid "Always open plugin UIs"
 msgstr ""
 
-#: resources/ui/preferences.ui:175
+#: resources/ui/preferences.ui:175 resources/ui/preferences.ui:197
 msgid "Always open the UI after creating a plugin"
 msgstr ""
 
@@ -45,7 +49,7 @@ msgstr ""
 msgid "Artist"
 msgstr ""
 
-#: resources/ui/preferences.ui:147
+#: resources/ui/preferences.ui:147 resources/ui/preferences.ui:169
 msgid "Audio"
 msgstr ""
 
@@ -95,6 +99,12 @@ msgstr ""
 msgid "Chords"
 msgstr ""
 
+#: src/gui/widgets/midi_controller_mb.c:84
+#: src/gui/widgets/midi_controller_mb.c:123
+#: src/gui/widgets/midi_controller_mb.c:119
+msgid "Click to enable MIDI controllers to be connected automatically"
+msgstr ""
+
 #: resources/ui/file_browser.ui:63 resources/ui/plugin_browser.ui:63
 msgid "Collection"
 msgstr ""
@@ -103,6 +113,10 @@ msgstr ""
 #: resources/ui/inspector_track.ui:66 resources/ui/inspector_ap.ui:67
 #: resources/ui/inspector_midi.ui:67
 msgid "Color"
+msgstr ""
+
+#: resources/ui/midi_controller_popover.ui:37
+msgid "Controllers found"
 msgstr ""
 
 #: resources/ui/project_assistant.ui:70
@@ -121,7 +135,7 @@ msgstr ""
 msgid "Dither"
 msgstr ""
 
-#: resources/ui/preferences.ui:243
+#: resources/ui/preferences.ui:243 resources/ui/preferences.ui:265
 msgid "Editing"
 msgstr ""
 
@@ -137,7 +151,7 @@ msgstr ""
 msgid "Engine"
 msgstr ""
 
-#: src/gui/widgets/preferences.c:95
+#: src/gui/widgets/preferences.c:95 src/gui/widgets/preferences.c:96
 msgid "English [en]"
 msgstr ""
 
@@ -187,16 +201,28 @@ msgstr ""
 msgid "Forward"
 msgstr ""
 
+#: src/gui/widgets/preferences.c:97 src/gui/widgets/preferences.c:98
+msgid "French [fr]"
+msgstr ""
+
 #: src/gui/widgets/preferences.c:97
 msgid "French [fr])"
 msgstr ""
 
-#: resources/ui/preferences.ui:299
+#: resources/ui/preferences.ui:299 resources/ui/preferences.ui:321
 msgid "GUI"
+msgstr ""
+
+#: resources/ui/preferences.ui:169
+msgid "General"
 msgstr ""
 
 #: resources/ui/export_dialog.ui:108
 msgid "Genre"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:96 src/gui/widgets/preferences.c:97
+msgid "German [de]"
 msgstr ""
 
 #: src/gui/widgets/preferences.c:96
@@ -223,8 +249,16 @@ msgstr ""
 msgid "Initializing..."
 msgstr ""
 
+#: src/gui/widgets/preferences.c:98 src/gui/widgets/preferences.c:99
+msgid "Italian [it]"
+msgstr ""
+
 #: src/gui/widgets/preferences.c:98
 msgid "Italian [it])"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:100 src/gui/widgets/preferences.c:101
+msgid "Japanese [ja]"
 msgstr ""
 
 #: src/gui/widgets/preferences.c:100
@@ -235,7 +269,7 @@ msgstr ""
 msgid "LFO 1"
 msgstr ""
 
-#: resources/ui/preferences.ui:272
+#: resources/ui/preferences.ui:272 resources/ui/preferences.ui:294
 msgid "Language"
 msgstr ""
 
@@ -262,7 +296,11 @@ msgstr ""
 msgid "Loop"
 msgstr ""
 
-#: resources/ui/preferences.ui:210
+#: resources/ui/preferences.ui:145
+msgid "MIDI Controllers"
+msgstr ""
+
+#: resources/ui/preferences.ui:210 resources/ui/preferences.ui:232
 msgid "Main Window"
 msgstr ""
 
@@ -314,6 +352,7 @@ msgid "Plugin 1"
 msgstr ""
 
 #: resources/ui/preferences.ui:161 resources/ui/preferences.ui:195
+#: resources/ui/preferences.ui:183 resources/ui/preferences.ui:217
 msgid "Plugins"
 msgstr ""
 
@@ -378,6 +417,10 @@ msgstr ""
 msgid "Removes selected project from the list"
 msgstr ""
 
+#: resources/ui/midi_controller_popover.ui:79
+msgid "Rescan"
+msgstr ""
+
 #: resources/ui/center_dock_bot_box.ui:82
 msgid "Right"
 msgstr ""
@@ -386,15 +429,27 @@ msgstr ""
 msgid "Scale"
 msgstr ""
 
+#: resources/ui/midi_controller_popover.ui:83
+msgid "Scan again for MIDI controllers"
+msgstr ""
+
 #: resources/ui/project_assistant.ui:40
 msgid "Select a project..."
+msgstr ""
+
+#: src/gui/widgets/midi_controller_mb.c:44
+#: src/gui/widgets/midi_controller_mb.c:81
+#: src/gui/widgets/midi_controller_mb.c:120
+#: src/gui/widgets/midi_controller_mb.c:46
+#: src/gui/widgets/midi_controller_mb.c:116
+msgid "Select..."
 msgstr ""
 
 #: src/zrythm.c:221
 msgid "Setting up backend"
 msgstr ""
 
-#: resources/ui/preferences.ui:220
+#: resources/ui/preferences.ui:220 resources/ui/preferences.ui:242
 msgid "Show native decoration"
 msgstr ""
 
@@ -404,6 +459,10 @@ msgstr ""
 
 #: resources/ui/top_dock_edge.ui:164
 msgid "Snap to events (regions)"
+msgstr ""
+
+#: src/gui/widgets/snap_grid.c:94
+msgid "Snap/Grid options"
 msgstr ""
 
 #: resources/ui/top_dock_edge.ui:151
@@ -416,6 +475,10 @@ msgstr ""
 
 #: resources/ui/connections.ui:73
 msgid "Source Audio Unit"
+msgstr ""
+
+#: src/gui/widgets/preferences.c:99 src/gui/widgets/preferences.c:100
+msgid "Spanish [es]"
 msgstr ""
 
 #: src/gui/widgets/preferences.c:99
@@ -449,7 +512,7 @@ msgstr ""
 msgid "Time Range"
 msgstr ""
 
-#: resources/ui/preferences.ui:258
+#: resources/ui/preferences.ui:258 resources/ui/preferences.ui:280
 msgid "Timeline"
 msgstr ""
 

@@ -25,7 +25,8 @@
  * NOTE: bumps reference, must be decremented after calling.
  */
 void
-z_gtk_container_remove_all_children (GtkContainer * container)
+z_gtk_container_remove_all_children (
+  GtkContainer * container)
 {
   GList *children, *iter;
 
@@ -71,7 +72,8 @@ z_gtk_overlay_add_if_not_exists (
 }
 
 void
-z_gtk_container_destroy_all_children (GtkContainer * container)
+z_gtk_container_destroy_all_children (
+  GtkContainer * container)
 {
   GList *children, *iter;
 

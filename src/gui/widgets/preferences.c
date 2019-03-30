@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -24,6 +24,7 @@
  */
 
 #include "audio/engine.h"
+#include "gui/widgets/midi_controller_mb.h"
 #include "gui/widgets/preferences.h"
 #include "settings/settings.h"
 #include "utils/localization.h"
@@ -93,11 +94,11 @@ create_language_model (void)
   };
   const gchar *labels[NUM_UI_LANGUAGES] = {
     _("English [en]"),
-    _("German [de])"),
-    _("French [fr])"),
-    _("Italian [it])"),
-    _("Spanish [es])"),
-    _("Japanese [ja])"),
+    _("German [de]"),
+    _("French [fr]"),
+    _("Italian [it]"),
+    _("Spanish [es]"),
+    _("Japanese [ja]"),
   };
 
   GtkTreeIter iter;
@@ -207,6 +208,8 @@ on_ok_clicked (GtkWidget * widget,
     "open-plugin-uis-on-instantiate",
   gtk_toggle_button_get_active (
     GTK_TOGGLE_BUTTON (self->open_plugin_uis)));
+  midi_controller_mb_widget_save_settings (
+    self->midi_controllers);
 
   gtk_window_close (GTK_WINDOW (self));
 }
@@ -224,6 +227,8 @@ preferences_widget_new ()
   setup_audio (self);
   setup_language (self);
   setup_plugins (self);
+  midi_controller_mb_widget_setup (
+    self->midi_controllers);
 
   return self;
 }
@@ -248,6 +253,10 @@ preferences_widget_class_init (
     klass,
     PreferencesWidget,
     audio_backend);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PreferencesWidget,
+    midi_controllers);
   gtk_widget_class_bind_template_child (
     klass,
     PreferencesWidget,

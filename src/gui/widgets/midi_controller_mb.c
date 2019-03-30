@@ -17,89 +17,110 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/snap_grid.h"
-#include "gui/widgets/snap_grid.h"
-#include "gui/widgets/snap_grid_popover.h"
+#include "gui/widgets/midi_controller_mb.h"
+#include "gui/widgets/midi_controller_popover.h"
+#include "settings/settings.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
+#include "zrythm.h"
 
 #include <gtk/gtk.h>
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (SnapGridWidget,
-               snap_grid_widget,
+G_DEFINE_TYPE (MidiControllerMbWidget,
+               midi_controller_mb_widget,
                GTK_TYPE_MENU_BUTTON)
 
 static void
 on_clicked (GtkButton * button,
-            SnapGridWidget * self)
+            MidiControllerMbWidget * self)
 {
   gtk_widget_show_all (GTK_WIDGET (self->popover));
 }
 
 static void
-set_label (SnapGridWidget * self)
+set_label (MidiControllerMbWidget * self)
 {
-  char * string =
-    snap_grid_stringize (
-      self->snap_grid->note_length,
-      self->snap_grid->note_type);
-  gtk_label_set_text (self->label, string);
-  g_free (string);
+  gtk_label_set_text (
+    self->label, _("Select..."));
 }
 
 void
-snap_grid_widget_refresh (
-  SnapGridWidget * self)
+midi_controller_mb_widget_refresh (
+  MidiControllerMbWidget * self)
 {
   set_label (self);
 }
 
 void
-snap_grid_widget_setup (
-  SnapGridWidget * self,
-  SnapGrid * snap_grid)
+midi_controller_mb_widget_save_settings (
+  MidiControllerMbWidget * self)
 {
-  self->snap_grid = snap_grid;
+  GList *children, *iter;
+  GtkToggleButton * chkbtn;
+  char * controllers[40];
+  int num_controllers = 0;
+
+  children =
+    gtk_container_get_children (
+      GTK_CONTAINER (self->popover->controllers_box));
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      if (!GTK_IS_CHECK_BUTTON (iter->data))
+        continue;
+
+      chkbtn = GTK_TOGGLE_BUTTON (iter->data);
+      if (gtk_toggle_button_get_active (chkbtn))
+        controllers[num_controllers++] =
+          gtk_button_get_label (
+            GTK_BUTTON (chkbtn));
+    }
+  controllers[num_controllers] = NULL;
+
+  int res =
+    g_settings_set_strv (
+      S_PREFERENCES,
+      "midi-controllers",
+      (const char * const*) controllers);
+  g_warn_if_fail (res == 1);
+
+  g_list_free (children);
+}
+
+void
+midi_controller_mb_widget_setup (
+  MidiControllerMbWidget * self)
+{
   self->popover =
-    snap_grid_popover_widget_new (self);
+    midi_controller_popover_widget_new (self);
   gtk_menu_button_set_popover (
     GTK_MENU_BUTTON (self),
     GTK_WIDGET (self->popover));
-
-  set_label (self);
 }
 
 static void
-snap_grid_widget_class_init (
-  SnapGridWidgetClass * klass)
+midi_controller_mb_widget_class_init (MidiControllerMbWidgetClass * klass)
 {
 }
 
 static void
-snap_grid_widget_init (SnapGridWidget * self)
+midi_controller_mb_widget_init (MidiControllerMbWidget * self)
 {
   self->box =
     GTK_BOX (gtk_box_new (
                GTK_ORIENTATION_HORIZONTAL, 0));
-  self->img = GTK_IMAGE (
-    resources_get_icon (
-      ICON_TYPE_GNOME_BUILDER,
-      "completion-snippet-symbolic-light.svg"));
   self->label =
-    GTK_LABEL (gtk_label_new (""));
+    GTK_LABEL (gtk_label_new (_("Select...")));
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->box),
-    _("Snap/Grid options"));
+    _("Click to enable MIDI controllers to be "
+      "connected automatically"));
   gtk_box_pack_start (self->box,
-                      GTK_WIDGET (self->img),
-                      Z_GTK_NO_EXPAND,
-                      Z_GTK_NO_FILL,
-                      1);
-  gtk_box_pack_end (self->box,
                     GTK_WIDGET (self->label),
-                    Z_GTK_NO_EXPAND,
+                    Z_GTK_EXPAND,
                     Z_GTK_NO_FILL,
                     1);
   gtk_container_add (GTK_CONTAINER (self),
@@ -111,4 +132,3 @@ snap_grid_widget_init (SnapGridWidget * self)
 
   gtk_widget_show_all (GTK_WIDGET (self));
 }
-
