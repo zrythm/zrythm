@@ -81,8 +81,13 @@ typedef struct Zrythm
    */
   Project *               project;
 
+  /** /home/user/zrythm */
   char *                  zrythm_dir;
+  /** <zrythm_dir>/Projects */
   char *                  projects_dir;
+  /** <zrythm_dir>/Templates */
+  char *                  templates_dir;
+
   /** +1 to ensure last element is NULL in case
    * full. */
   char *                  recent_projects[MAX_RECENT_PROJECTS + 1];
@@ -134,5 +139,15 @@ zrythm_add_to_recent_projects (
 void
 zrythm_remove_recent_project (
   char * filepath);
+
+/**
+ * Gets the zrythm directory (by default
+ * /home/user/zrythm).
+ *
+ * Must be free'd by caler.
+ */
+char *
+zrythm_get_dir (
+  Zrythm * self);
 
 #endif /* __ZRYTHM_H__ */

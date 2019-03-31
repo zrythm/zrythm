@@ -445,7 +445,13 @@ region_clone (Region *        region,
     }
   else if (region->type == REGION_TYPE_AUDIO)
     {
+      Region * ar =
+        audio_region_new (
+          region->track,
+          region->filename,
+          &region->start_pos);
 
+      new_region = ar;
     }
 
   new_region->actual_id = region->id;

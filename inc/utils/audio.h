@@ -23,12 +23,21 @@
 #include <samplerate.h>
 
 /**
+ * @addtogroup utils
+ *
+ * @{
+ */
+
+/**
  * Number of plugin slots per channel.
  */
 #define STRIP_SIZE 9
 
 struct adinfo;
 
+/**
+ * Decodes the given filename (absolute path).
+ */
 void
 audio_decode (
   struct adinfo * nfo,
@@ -36,5 +45,21 @@ audio_decode (
   float **        out_buff,
   long *          out_buff_size,
   const char *    filename);
+
+/**
+ * Writes the buffer as a raw file to the given
+ * path.
+ */
+void
+audio_write_raw_file (
+  float * buff,
+  long    size,
+  int     samplerate,
+  int     channels,
+  const char * filename);
+
+/**
+ * @}
+ */
 
 #endif

@@ -454,11 +454,15 @@ activate_save_as (GSimpleAction *action,
                                         NULL);
   chooser = GTK_FILE_CHOOSER (dialog);
 
-  gtk_file_chooser_set_do_overwrite_confirmation (chooser, TRUE);
+  gtk_file_chooser_set_do_overwrite_confirmation (
+    chooser, TRUE);
+  gtk_file_chooser_set_action (
+    GTK_FILE_CHOOSER (chooser),
+    GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER);
 
   if (PROJECT->title)
-    gtk_file_chooser_set_current_name (chooser,
-                                       PROJECT->title);
+    gtk_file_chooser_set_current_name (
+      chooser, PROJECT->title);
   else
     gtk_file_chooser_set_filename (chooser,
                                    "Untitled project");

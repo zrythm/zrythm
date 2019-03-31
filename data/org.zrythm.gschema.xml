@@ -69,6 +69,20 @@
       <description>A list of recent projects to be
         referenced on startup.</description>
     </key>
+
+    <key name="first-run" type="i">
+      <default>1</default>
+      <summary>First run</summary>
+      <description>Whether this is the first
+        run or not.</description>
+    </key>
+
+    <key name="dir" type="s">
+      <default>""</default>
+      <summary>Zrythm directory</summary>
+      <description>This is the directory used to
+        save projects and other files in.</description>
+    </key>
   </schema>
 
   <!-- PREFERENCES schema -->

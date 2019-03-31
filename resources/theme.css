@@ -82,7 +82,8 @@ entry selection
 }
 
 treeview.view:hover,
-scrollbar
+scrollbar,
+box.sidebar
 {
   background-color: @bg_light_variant1;
 }

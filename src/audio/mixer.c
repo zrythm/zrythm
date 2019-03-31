@@ -45,8 +45,6 @@
 #include "utils/arrays.h"
 #include "utils/ui.h"
 
-#include "ext/audio_decoder/ad.h"
-
 #include <gtk/gtk.h>
 
 /**
@@ -224,16 +222,6 @@ void
 mixer_add_channel_from_file_descr (
   FileDescriptor * descr)
 {
-  /* open with ad */
-  struct adinfo nfo;
-  SRC_DATA src_data;
-  float * out_buff;
-  long out_buff_size;
-
-  audio_decode (
-    &nfo, &src_data, &out_buff, &out_buff_size,
-    descr->absolute_path);
-
   /* create a channel/track */
   Channel * chan =
     channel_create (CT_AUDIO, "Audio Track");
@@ -241,22 +229,13 @@ mixer_add_channel_from_file_descr (
   tracklist_append_track (chan->track);
 
   /* create an audio region & add to track */
-  Position start_pos, end_pos;
+  Position start_pos;
   position_set_to_pos (&start_pos,
                        &PLAYHEAD);
-  position_set_to_pos (&end_pos,
-                       &PLAYHEAD);
-  position_add_frames (&end_pos,
-                       src_data.output_frames_gen /
-                       nfo.channels);
   AudioRegion * ar =
     audio_region_new (chan->track,
-                      out_buff,
-                      src_data.output_frames_gen,
-                      nfo.channels,
                       descr->absolute_path,
-                      &start_pos,
-                      &end_pos);
+                      &start_pos);
   track_add_region (
     chan->track, ar);
 

@@ -48,7 +48,7 @@ draw_audio_clip (GtkWidget * self,
                  cairo_t * cr,
                  GdkRectangle * rect)
 {
-  g_message ("start");
+  /*g_message ("start");*/
   AudioRegion * ar =
     (AudioRegion *) CLIP_EDITOR->region;
   GdkRGBA * color =
@@ -107,10 +107,10 @@ draw_audio_clip (GtkWidget * self,
         MIN (max * height, height));
 
       prev_frames = curr_frames;
-      g_message ("i %f width %f",
-                 i, (double) width);
+      /*g_message ("i %f width %f",*/
+                 /*i, (double) width);*/
     }
-  g_message ("end");
+  /*g_message ("end");*/
 }
 
 static gboolean
