@@ -95,6 +95,16 @@
     0, \
     "win.duplicate")
 
+#define z_gtk_assistant_set_current_page_complete( \
+  assistant, complete) \
+  gtk_assistant_set_page_complete ( \
+    GTK_ASSISTANT (assistant), \
+    gtk_assistant_get_nth_page ( \
+      GTK_ASSISTANT (assistant), \
+      gtk_assistant_get_current_page ( \
+        GTK_ASSISTANT (assistant))), \
+    complete);
+
 typedef enum IconType IconType;
 /**
  * For readability, instead of using 0s and 1s.

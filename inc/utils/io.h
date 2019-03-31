@@ -27,6 +27,18 @@
 #include <stdio.h>
 
 /**
+ * @addtogroup utils
+ *
+ * @{
+ */
+
+/**
+ * Returns 1 if the file/dir exists.
+ */
+#define io_file_exists(file) \
+  g_file_test (file, G_FILE_TEST_EXISTS)
+
+/**
  * Gets directory part of filename. MUST be freed.
  */
 char *
@@ -74,9 +86,15 @@ char *
 io_path_get_basename (const char * filename);
 
 char *
-io_file_get_creation_datetime (const char * filename);
+io_file_get_creation_datetime (
+  const char * filename);
 
 char *
-io_file_get_last_modified_datetime (const char * filename);
+io_file_get_last_modified_datetime (
+  const char * filename);
+
+/**
+ * @}
+ */
 
 #endif

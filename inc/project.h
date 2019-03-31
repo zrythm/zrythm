@@ -59,6 +59,7 @@
 #define PROJECT_REGIONS_DIR     "Regions"
 #define PROJECT_STATES_DIR      "states"
 #define PROJECT_EXPORTS_DIR     "exports"
+#define PROJECT_AUDIO_DIR       "audio"
 
 typedef struct Timeline Timeline;
 typedef struct Transport Transport;
@@ -88,6 +89,7 @@ typedef struct Project
   char              * regions_dir;
   char              * states_dir;
   char              * exports_dir;
+  char *              audio_dir;
 
   UndoManager         undo_manager;
 

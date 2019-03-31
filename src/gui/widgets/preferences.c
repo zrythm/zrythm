@@ -29,6 +29,7 @@
 #include "settings/settings.h"
 #include "utils/localization.h"
 #include "utils/resources.h"
+#include "utils/ui.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
@@ -77,50 +78,6 @@ create_audio_backend_model (void)
   return GTK_TREE_MODEL (store);
 }
 
-/**
- * TODO convert this into a macro for creating
- * simple comboboxes.
- */
-static GtkTreeModel *
-create_language_model (void)
-{
-  const int values[NUM_UI_LANGUAGES] = {
-    UI_ENGLISH,
-    UI_GERMAN,
-    UI_FRENCH,
-    UI_ITALIAN,
-    UI_SPANISH,
-    UI_JAPANESE,
-  };
-  const gchar *labels[NUM_UI_LANGUAGES] = {
-    _("English [en]"),
-    _("German [de]"),
-    _("French [fr]"),
-    _("Italian [it]"),
-    _("Spanish [es]"),
-    _("Japanese [ja]"),
-  };
-
-  GtkTreeIter iter;
-  GtkListStore *store;
-  gint i;
-
-  store = gtk_list_store_new (2,
-                              G_TYPE_INT,
-                              G_TYPE_STRING);
-
-  for (i = 0; i < G_N_ELEMENTS (values); i++)
-    {
-      gtk_list_store_append (store, &iter);
-      gtk_list_store_set (store, &iter,
-                          VALUE_COL, values[i],
-                          TEXT_COL, labels[i],
-                          -1);
-    }
-
-  return GTK_TREE_MODEL (store);
-}
-
 static void
 setup_audio (PreferencesWidget * self)
 {
@@ -140,30 +97,6 @@ setup_audio (PreferencesWidget * self)
     g_settings_get_enum (
       S_PREFERENCES,
       "audio-backend"));
-}
-
-static void
-setup_language (PreferencesWidget * self)
-{
-  GtkCellRenderer *renderer;
-  gtk_combo_box_set_model (
-    self->language, create_language_model ());
-  gtk_cell_layout_clear (
-    GTK_CELL_LAYOUT (self->language));
-  renderer = gtk_cell_renderer_text_new ();
-  gtk_cell_layout_pack_start (
-    GTK_CELL_LAYOUT (self->language),
-    renderer, TRUE);
-  gtk_cell_layout_set_attributes (
-    GTK_CELL_LAYOUT (self->language), renderer,
-    "text", TEXT_COL,
-    NULL);
-
-  gtk_combo_box_set_active (
-    GTK_COMBO_BOX (self->language),
-    g_settings_get_enum (
-      S_PREFERENCES,
-      "language"));
 }
 
 static void
@@ -225,7 +158,7 @@ preferences_widget_new ()
                   NULL);
 
   setup_audio (self);
-  setup_language (self);
+  ui_setup_language_combo_box (self->language);
   setup_plugins (self);
   midi_controller_mb_widget_setup (
     self->midi_controllers);

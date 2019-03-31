@@ -17,7 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 /**
  * \file
  *
@@ -108,4 +107,36 @@ audio_decode (
   free (in_buff);
 
   return;
+}
+
+/**
+ * Writes the buffer as a raw file to the given
+ * path.
+ */
+void
+audio_write_raw_file (
+  float * buff,
+  long    size,
+  int     samplerate,
+  int     channels,
+  const char * filename)
+{
+  SF_INFO info;
+
+  memset (&info, 0, sizeof (info));
+  info.frames = size;
+  info.channels = channels;
+  info.samplerate = samplerate;
+  info.format = SF_FORMAT_WAV | SF_FORMAT_FLOAT;
+  info.seekable = 1;
+  info.sections = 1;
+
+  SNDFILE * sndfile =
+    sf_open (filename, SFM_WRITE, &info);
+
+  sf_write_float (sndfile, buff, size);
+
+  sf_close (sndfile);
+
+  g_message ("wrote %s", filename);
 }

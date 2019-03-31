@@ -35,10 +35,54 @@
 #include <glib/gi18n.h>
 
 /**
- * Sets the locale to the currently selected one and
- * inits gettext.
+ * Returns the 2-character string code for the
+ * language (e.g. "fr").
+ *
+ * @param str is a preallocated buffer.
  */
 void
+localization_get_string_code (
+  UiLanguage lang,
+  char *     str)
+{
+  switch (lang)
+    {
+    case UI_ENGLISH:
+      str[0] = 'e';
+      str[1] = 'n';
+      break;
+    case UI_GERMAN:
+      str[0] = 'd';
+      str[1] = 'e';
+      break;
+    case UI_FRENCH:
+      str[0] = 'f';
+      str[1] = 'r';
+      break;
+    case UI_ITALIAN:
+      str[0] = 'i';
+      str[1] = 't';
+      break;
+    case UI_SPANISH:
+      str[0] = 'e';
+      str[1] = 's';
+      break;
+    case UI_JAPANESE:
+      str[0] = 'j';
+      str[1] = 'a';
+      break;
+    }
+  str[2] = '\0';
+}
+
+/**
+ * Sets the locale to the currently selected one and
+ * inits gettext.
+ *
+ * Returns if a locale for the selected language
+ * exists on the system or not.
+ */
+int
 localization_init ()
 {
   /* get available locales on the system */
@@ -130,4 +174,6 @@ localization_init ()
     GETTEXT_PACKAGE, DATADIR "/locale");
   bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
   textdomain (GETTEXT_PACKAGE);
+
+  return match != NULL;
 }

@@ -25,7 +25,6 @@
   <template class="ProjectAssistantWidget" parent="GtkAssistant">
     <property name="can_focus">False</property>
     <property name="modal">True</property>
-    <property name="type_hint">dialog</property>
     <property name="urgency_hint">True</property>
     <property name="use_header_bar">0</property>
     <child>
@@ -138,6 +137,9 @@ Frame rate: 44100
       </packing>
     </child>
     <child type="titlebar">
+      <placeholder/>
+    </child>
+    <child>
       <placeholder/>
     </child>
     <child>

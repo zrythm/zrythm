@@ -27,6 +27,12 @@
 #ifndef __UTILS_LOCALIZATION_H__
 #define __UTILS_LOCALIZATION_H__
 
+/**
+ * @addtogroup utils
+ *
+ * @{
+ */
+
 typedef enum UiLanguage
 {
   UI_ENGLISH,
@@ -39,10 +45,28 @@ typedef enum UiLanguage
 } UiLanguage;
 
 /**
- * Sets the locale to the currently selected one and
- * inits gettext.
+ * Returns the 2-character string code for the
+ * language (e.g. "fr").
+ *
+ * @param str is a preallocated buffer.
  */
 void
+localization_get_string_code (
+  UiLanguage lang,
+  char *     str);
+
+/**
+ * Sets the locale to the currently selected one and
+ * inits gettext.
+ *
+ * Returns if a locale for the selected language
+ * exists on the system or not.
+ */
+int
 localization_init ();
+
+/**
+ * @}
+ */
 
 #endif

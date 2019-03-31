@@ -24,6 +24,10 @@
 #include "gui/widgets/audio_region.h"
 #include "gui/widgets/region.h"
 #include "project.h"
+#include "utils/audio.h"
+#include "utils/io.h"
+
+#include "ext/audio_decoder/ad.h"
 
 /**
  * Creates region (used when loading projects).
@@ -52,26 +56,75 @@ audio_region_get_or_create_blank (int id)
 
 AudioRegion *
 audio_region_new (Track *    track,
-                  float *    buff,
-                  long       buff_size,
-                  int        channels,
                   char *     filename,
-                  Position * start_pos,
-                  Position * end_pos)
+                  Position * start_pos)
 {
   AudioRegion * self =
     calloc (1, sizeof (AudioRegion));
 
+  /* open with ad */
+  struct adinfo nfo;
+  SRC_DATA src_data;
+  float * out_buff;
+  long out_buff_size;
+
+  /* decode */
+  audio_decode (
+    &nfo, &src_data, &out_buff, &out_buff_size,
+    filename);
+
+  /* set end pos to sample end */
+  position_set_to_pos (&self->end_pos,
+                       &self->start_pos);
+  position_add_frames (&self->end_pos,
+                       src_data.output_frames_gen /
+                       nfo.channels);
+
+  /* init */
   region_init ((Region *) self,
                REGION_TYPE_AUDIO,
                track,
                start_pos,
-               end_pos);
+               &self->end_pos);
 
-  self->buff = buff;
-  self->buff_size = buff_size;
-  self->channels = channels;
-  self->filename = strdup (filename);
+  /* generate a copy of the given filename in the
+   * project dir */
+  g_warn_if_fail (
+    io_file_exists (PROJECT->audio_dir));
+  GFile * file =
+    g_file_new_for_path (filename);
+  char * basename =
+    g_file_get_basename (file);
+  char * new_path =
+    g_build_filename (
+      PROJECT->audio_dir,
+      basename);
+  char * tmp;
+  int i = 0;
+  while (io_file_exists (new_path))
+    {
+      g_free (new_path);
+      tmp =
+        g_strdup_printf (
+          "%s(%d)",
+          basename, i++);
+      new_path =
+        g_build_filename (
+          PROJECT->audio_dir,
+          tmp);
+      g_free (tmp);
+    }
+  audio_write_raw_file (
+    out_buff, src_data.output_frames_gen,
+    AUDIO_ENGINE->sample_rate,
+    nfo.channels, new_path);
+  g_free (basename);
+  g_free (file);
+
+  /*self->buff = buff;*/
+  /*self->buff_size = buff_size;*/
+  /*self->channels = channels;*/
+  /*self->filename = strdup (filename);*/
 
   return self;
 }

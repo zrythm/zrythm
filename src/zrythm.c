@@ -28,9 +28,10 @@
 #include "gui/accel.h"
 #include "gui/backend/file_manager.h"
 #include "gui/backend/piano_roll.h"
+#include "gui/widgets/first_run_assistant.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/splash.h"
 #include "gui/widgets/project_assistant.h"
+#include "gui/widgets/splash.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
@@ -63,6 +64,7 @@ typedef enum TaskId
 
 static SplashWindowWidget * splash;
 static GApplication * app;
+static FirstRunAssistantWidget * first_run_assistant;
 static ProjectAssistantWidget * assistant;
 static TaskId * task_id; ///< current task;
 static UpdateSplashData * data;
@@ -82,20 +84,38 @@ update_splash (UpdateSplashData *data)
 }
 
 /**
+ * Gets the zrythm directory (by default
+ * /home/user/zrythm).
+ *
+ * Must be free'd by caler.
+ */
+char *
+zrythm_get_dir (
+  Zrythm * self)
+{
+  g_warn_if_fail (S_PREFERENCES != NULL);
+
+  char * dir =
+    g_settings_get_string (
+      S_GENERAL,
+      "dir");
+  return dir;
+}
+
+/**
  * Initializes/creates the default dirs/files.
  */
 static void
 init_dirs_and_files ()
 {
+  g_message ("initing dirs and files");
   ZRYTHM->zrythm_dir =
-    g_build_filename (io_get_home_dir (),
-                      "zrythm",
-                      NULL);
+    zrythm_get_dir (ZRYTHM);
   io_mkdir (ZRYTHM->zrythm_dir);
 
   ZRYTHM->projects_dir =
     g_build_filename (ZRYTHM->zrythm_dir,
-                      "Projects",
+                      _("Projects"),
                       NULL);
   io_mkdir (ZRYTHM->projects_dir);
 }
@@ -350,6 +370,28 @@ on_finish (GtkAssistant * _assistant,
     NULL);
 }
 
+static void
+on_first_run_assistant_apply (
+  GtkAssistant * assistant)
+{
+  g_message ("apply");
+
+  g_settings_set_int (
+    S_GENERAL, "first-run", 0);
+
+  g_action_group_activate_action (
+  G_ACTION_GROUP (zrythm_app),
+  "prompt_for_project",
+  NULL);
+}
+
+static void
+on_first_run_assistant_cancel ()
+{
+  g_message ("cancel");
+
+  exit (0);
+}
 
 /**
  * Called before on_load_project.
@@ -373,6 +415,34 @@ static void on_prompt_for_project (GSimpleAction  *action,
     }
   else
     {
+      if (g_settings_get_int (
+            S_GENERAL,
+            "first-run"))
+        {
+          first_run_assistant =
+            first_run_assistant_widget_new (
+              GTK_WINDOW (splash));
+          g_signal_connect (
+            G_OBJECT (first_run_assistant), "apply",
+            G_CALLBACK (on_first_run_assistant_apply), NULL);
+          g_signal_connect (
+            G_OBJECT (first_run_assistant), "cancel",
+            G_CALLBACK (on_first_run_assistant_cancel), NULL);
+          gtk_window_present (GTK_WINDOW (first_run_assistant));
+
+          return;
+        }
+
+      /* close the first run assistant if it ran
+       * before */
+      if (first_run_assistant)
+        {
+        g_idle_add ((GSourceFunc)gtk_widget_destroy,
+        GTK_WIDGET (first_run_assistant));
+        g_message ("hawawgea");
+        }
+
+
       /* init zrythm folders ~/Zrythm */
       init_dirs_and_files ();
       init_recent_projects ();
@@ -387,7 +457,9 @@ static void on_prompt_for_project (GSimpleAction  *action,
       g_signal_connect (
         G_OBJECT (assistant), "cancel",
         G_CALLBACK (on_finish), (void *) 1);
-      gtk_window_present (GTK_WINDOW (assistant));
+      g_idle_add (
+        (GSourceFunc) gtk_window_present,
+        GTK_WINDOW (assistant));
     }
 }
 

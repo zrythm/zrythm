@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-30 20:38+0000\n"
+"POT-Creation-Date: 2019-03-31 14:16+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrythm dot org>\n"
 "Language-Team: Italian\n"
@@ -31,6 +31,88 @@ msgstr ""
 
 #: resources/ui/channel.ui:253
 msgid "90"
+msgstr ""
+
+#: src/gui/widgets/first_run_assistant.c:55
+#, c-format
+msgid ""
+"A locale for the language you have selected is  not available. Please enable "
+"one first using  the steps below and try again.\n"
+"  1. Uncomment any locale starting with the  language code \"%s\" in /etc/"
+"locale.gen (needs  root privileges)\n"
+"  2. Run `locale-gen` as root"
+msgstr ""
+
+#: src/gui/widgets/first_run_assistant.c:55
+#, c-format
+msgid ""
+"A locale for the language you have selected is not available. Please enable "
+"one first using the steps below and try again.\n"
+"1. Uncomment any locale starting with the language code \"%s\" in /etc/"
+"locale.gen (needs root privileges)\n"
+"2. Run <code>locale-gen</code> as root\n"
+"3. Restart Zrythm"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:69
+#: src/gui/widgets/first_run_assistant.c:55
+#, c-format
+msgid ""
+"A locale for the language you have selected is not available. Please enable "
+"one first using the steps below and try again.\n"
+"1. Uncomment any locale starting with the language code \"%s\" in /etc/"
+"locale.gen (needs root privileges)\n"
+"2. Run `locale-gen` as root"
+msgstr ""
+
+#: src/gui/widgets/first_run_assistant.c:55
+#, c-format
+msgid ""
+"A locale for the language you have selected is not available. Please enable "
+"one first using the steps below and try again.\n"
+"1. Uncomment any locale starting with the language code \"%s\" in /etc/"
+"locale.gen (needs root privileges)\n"
+"2. Run `locale-gen` as root\n"
+"3. Restart Zrythm"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:69
+#: resources/ui/first_run_assistant.ui:70
+#: resources/ui/first_run_assistant.ui:71
+msgid ""
+"A locale for the language you have selected is not available. Please enable "
+"one first using the steps below and try again.\n"
+"1. Uncomment any locale starting with the language code (e.g. \"fr\") in /"
+"etc/locale.gen (needs root privileges)\n"
+"2. Run `locale-gen` as root"
+msgstr ""
+
+#: src/gui/widgets/first_run_assistant.c:55
+#: src/gui/widgets/first_run_assistant.c:62
+#: src/gui/widgets/first_run_assistant.c:74
+#: src/gui/widgets/first_run_assistant.c:80
+#: src/gui/widgets/first_run_assistant.c:94
+#: src/gui/widgets/first_run_assistant.c:96
+#: src/gui/widgets/first_run_assistant.c:99
+#: src/gui/widgets/first_run_assistant.c:98
+#, c-format
+msgid ""
+"A locale for the language you have selected is not available. Please enable "
+"one first using the steps below and try again.\n"
+"1. Uncomment any locale starting with the language code <b>%s</b> in <b>/etc/"
+"locale.gen</b> (needs root privileges)\n"
+"2. Run <b>locale-gen</b> as root\n"
+"3. Restart Zrythm"
+msgstr ""
+
+#: src/gui/widgets/first_run_assistant.c:55
+#, c-format
+msgid ""
+"A locale for the language you have selected isnot available. Please enable "
+"one first usingthe steps below and try again.\n"
+"1. Uncomment any locale starting with thelanguage code \"%s\" in /etc/locale."
+"gen (needsroot privileges)\n"
+"2. Run `locale-gen` as root"
 msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:47
@@ -126,7 +208,7 @@ msgstr ""
 msgid "Controllers found"
 msgstr ""
 
-#: resources/ui/project_assistant.ui:70
+#: resources/ui/project_assistant.ui:70 resources/ui/project_assistant.ui:69
 msgid "Create new project"
 msgstr ""
 
@@ -163,6 +245,7 @@ msgid "Engine"
 msgstr ""
 
 #: src/gui/widgets/preferences.c:95 src/gui/widgets/preferences.c:96
+#: src/utils/ui.c:519
 msgid "English [en]"
 msgstr ""
 
@@ -204,6 +287,17 @@ msgstr ""
 msgid "Filename Pattern"
 msgstr ""
 
+#: resources/ui/first_run_assistant.ui:154
+#: resources/ui/first_run_assistant.ui:156
+#: resources/ui/first_run_assistant.ui:153
+#: resources/ui/first_run_assistant.ui:155
+#: resources/ui/first_run_assistant.ui:159
+#: resources/ui/first_run_assistant.ui:160
+msgid ""
+"Finally, select the MIDI devices you wish to auto-connect when Zrythm starts "
+"(You can skip this step and set them up later)"
+msgstr ""
+
 #: resources/ui/export_dialog.ui:141
 msgid "Format"
 msgstr ""
@@ -213,6 +307,7 @@ msgid "Forward"
 msgstr ""
 
 #: src/gui/widgets/preferences.c:97 src/gui/widgets/preferences.c:98
+#: src/utils/ui.c:521
 msgid "French [fr]"
 msgstr ""
 
@@ -233,6 +328,7 @@ msgid "Genre"
 msgstr ""
 
 #: src/gui/widgets/preferences.c:96 src/gui/widgets/preferences.c:97
+#: src/utils/ui.c:520
 msgid "German [de]"
 msgstr ""
 
@@ -244,15 +340,15 @@ msgstr ""
 msgid "Grid"
 msgstr ""
 
-#: src/zrythm.c:209
+#: src/zrythm.c:209 src/zrythm.c:211 src/zrythm.c:228 src/zrythm.c:229
 msgid "Initializing audio engine"
 msgstr ""
 
-#: src/zrythm.c:214
+#: src/zrythm.c:214 src/zrythm.c:216 src/zrythm.c:233 src/zrythm.c:234
 msgid "Initializing plugin manager"
 msgstr ""
 
-#: src/zrythm.c:203
+#: src/zrythm.c:203 src/zrythm.c:205 src/zrythm.c:222 src/zrythm.c:223
 msgid "Initializing settings"
 msgstr ""
 
@@ -261,6 +357,7 @@ msgid "Initializing..."
 msgstr ""
 
 #: src/gui/widgets/preferences.c:98 src/gui/widgets/preferences.c:99
+#: src/utils/ui.c:522
 msgid "Italian [it]"
 msgstr ""
 
@@ -269,6 +366,7 @@ msgid "Italian [it])"
 msgstr ""
 
 #: src/gui/widgets/preferences.c:100 src/gui/widgets/preferences.c:101
+#: src/utils/ui.c:524
 msgid "Japanese [ja]"
 msgstr ""
 
@@ -281,6 +379,10 @@ msgid "LFO 1"
 msgstr ""
 
 #: resources/ui/preferences.ui:272 resources/ui/preferences.ui:294
+#: resources/ui/first_run_assistant.ui:81
+#: resources/ui/first_run_assistant.ui:82
+#: resources/ui/first_run_assistant.ui:85
+#: resources/ui/first_run_assistant.ui:86
 msgid "Language"
 msgstr ""
 
@@ -295,7 +397,7 @@ msgstr ""
 msgid "Length"
 msgstr ""
 
-#: src/zrythm.c:228
+#: src/zrythm.c:228 src/zrythm.c:230 src/zrythm.c:247 src/zrythm.c:248
 msgid "Loading project"
 msgstr ""
 
@@ -309,6 +411,13 @@ msgstr ""
 
 #: resources/ui/preferences.ui:145
 msgid "MIDI Controllers"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:182
+#: resources/ui/first_run_assistant.ui:183
+#: resources/ui/first_run_assistant.ui:186
+#: resources/ui/first_run_assistant.ui:187
+msgid "MIDI Devices"
 msgstr ""
 
 #: resources/ui/preferences.ui:210 resources/ui/preferences.ui:232
@@ -327,6 +436,17 @@ msgstr ""
 
 #: resources/ui/control.ui:45
 msgid "Name"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:98
+#: resources/ui/first_run_assistant.ui:99
+#: resources/ui/first_run_assistant.ui:100
+#: resources/ui/first_run_assistant.ui:95
+#: resources/ui/first_run_assistant.ui:103
+#: resources/ui/first_run_assistant.ui:104
+msgid ""
+"Next, choose the  location to use for saving temporary files and projects "
+"(or accept the default)"
 msgstr ""
 
 #: resources/ui/inspector.ui:72
@@ -380,13 +500,17 @@ msgstr ""
 msgid "Project name"
 msgstr ""
 
-#: resources/ui/project_assistant.ui:122
+#: resources/ui/project_assistant.ui:122 resources/ui/project_assistant.ui:121
 msgid ""
 "Project name: name\n"
 "Path: /home/user/Zrythm/name\n"
 "Backend: JACK\n"
 "Frame rate: 44100\n"
 "(note: this text is hard coded at the moment)"
+msgstr ""
+
+#: src/zrythm.c:117 src/zrythm.c:118
+msgid "Projects"
 msgstr ""
 
 #: resources/ui/automation_lane.ui:112
@@ -420,16 +544,36 @@ msgid ""
 "Double click to bring up the clip editor"
 msgstr ""
 
-#: resources/ui/project_assistant.ui:86
+#: resources/ui/project_assistant.ui:86 resources/ui/project_assistant.ui:85
 msgid "Remove"
 msgstr ""
 
-#: resources/ui/project_assistant.ui:90
+#: resources/ui/project_assistant.ui:90 resources/ui/project_assistant.ui:89
 msgid "Removes selected project from the list"
 msgstr ""
 
 #: resources/ui/midi_controller_popover.ui:79
 msgid "Rescan"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:119
+#: resources/ui/first_run_assistant.ui:118
+#: resources/ui/first_run_assistant.ui:122
+#: resources/ui/first_run_assistant.ui:121
+#: resources/ui/first_run_assistant.ui:123
+#: resources/ui/first_run_assistant.ui:126
+#: resources/ui/first_run_assistant.ui:127
+msgid "Reset"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:123
+#: resources/ui/first_run_assistant.ui:122
+#: resources/ui/first_run_assistant.ui:126
+#: resources/ui/first_run_assistant.ui:125
+#: resources/ui/first_run_assistant.ui:127
+#: resources/ui/first_run_assistant.ui:130
+#: resources/ui/first_run_assistant.ui:131
+msgid "Resets the path to the default"
 msgstr ""
 
 #: resources/ui/center_dock_bot_box.ui:82
@@ -448,7 +592,36 @@ msgstr ""
 msgid "Scan again for MIDI controllers"
 msgstr ""
 
-#: resources/ui/project_assistant.ui:40
+#: resources/ui/first_run_assistant.ui:181
+#: resources/ui/first_run_assistant.ui:182
+msgid "Select MIDI Devices"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:136
+#: resources/ui/first_run_assistant.ui:137
+msgid "Select Zrythm Directory"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:81
+#: resources/ui/first_run_assistant.ui:82
+msgid "Select a Language"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:108
+msgid "Select a file"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:108
+#: resources/ui/first_run_assistant.ui:109
+#: resources/ui/first_run_assistant.ui:112
+#: resources/ui/first_run_assistant.ui:111
+#: resources/ui/first_run_assistant.ui:113
+#: resources/ui/first_run_assistant.ui:116
+#: resources/ui/first_run_assistant.ui:117
+msgid "Select a folder"
+msgstr ""
+
+#: resources/ui/project_assistant.ui:40 resources/ui/project_assistant.ui:39
 msgid "Select a project..."
 msgstr ""
 
@@ -460,7 +633,7 @@ msgstr ""
 msgid "Select..."
 msgstr ""
 
-#: src/zrythm.c:221
+#: src/zrythm.c:221 src/zrythm.c:223 src/zrythm.c:240 src/zrythm.c:241
 msgid "Setting up backend"
 msgstr ""
 
@@ -493,6 +666,7 @@ msgid "Source Audio Unit"
 msgstr ""
 
 #: src/gui/widgets/preferences.c:99 src/gui/widgets/preferences.c:100
+#: src/utils/ui.c:523
 msgid "Spanish [es]"
 msgstr ""
 
@@ -567,12 +741,35 @@ msgstr ""
 msgid "Use grid"
 msgstr ""
 
+#: resources/ui/first_run_assistant.ui:45
+msgid ""
+"Welcome to Zrythm!\n"
+" This will guide you through the basic setup of Zrythm. First, choose your "
+"language."
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:45
+#: resources/ui/first_run_assistant.ui:44
+#: resources/ui/first_run_assistant.ui:48
+msgid ""
+"Welcome to Zrythm.\n"
+" This will guide you through the basic setup of Zrythm. First, choose your "
+"language."
+msgstr ""
+
 #: resources/ui/automation_lane.ui:99
 msgid "Write automation"
 msgstr ""
 
 #: resources/ui/header_bar.ui:28 resources/ui/export_dialog.ui:119
 msgid "Zrythm"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:136
+#: resources/ui/first_run_assistant.ui:137
+#: resources/ui/first_run_assistant.ui:140
+#: resources/ui/first_run_assistant.ui:141
+msgid "Zrythm Directory"
 msgstr ""
 
 #: src/plugins/lv2_gtk.c:144 src/plugins/lv2_gtk.c:561

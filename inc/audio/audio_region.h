@@ -32,12 +32,8 @@ typedef struct Region AudioRegion;
 
 AudioRegion *
 audio_region_new (Track *    track,
-                  float *    buff,
-                  long       buff_size,
-                  int        channels,
                   char *     filename,
-                  Position * start_pos,
-                  Position * end_pos);
+                  Position * start_pos);
 
 /**
  * Creates region (used when loading projects).

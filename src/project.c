@@ -88,6 +88,8 @@ update_paths (const char * dir)
     g_free (PROJECT->states_dir);
   if (PROJECT->exports_dir)
     g_free (PROJECT->exports_dir);
+  if (PROJECT->audio_dir)
+    g_free (PROJECT->audio_dir);
 
   PROJECT->dir = g_strdup (dir);
   PROJECT->project_file_path =
@@ -111,6 +113,10 @@ update_paths (const char * dir)
   PROJECT->exports_dir =
     g_build_filename (PROJECT->dir,
                       PROJECT_EXPORTS_DIR,
+                      NULL);
+  PROJECT->audio_dir =
+    g_build_filename (PROJECT->dir,
+                      PROJECT_AUDIO_DIR,
                       NULL);
   g_message ("updated paths %s", PROJECT->dir);
 }

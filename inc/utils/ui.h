@@ -363,6 +363,14 @@ ui_get_modifier_type_from_gesture (
   GdkModifierType *  state_mask); ///< return value
 
 /**
+ * Sets up a combo box to have a selection of
+ * languages.
+ */
+void
+ui_setup_language_combo_box (
+  GtkComboBox * language);
+
+/**
  * @}
  */
 
