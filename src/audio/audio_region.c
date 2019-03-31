@@ -98,7 +98,8 @@ audio_region_new (Track *    track,
   char * new_path =
     g_build_filename (
       PROJECT->audio_dir,
-      basename);
+      basename,
+      NULL);
   char * tmp;
   int i = 0;
   while (io_file_exists (new_path))
