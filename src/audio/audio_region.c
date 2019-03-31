@@ -112,7 +112,8 @@ audio_region_new (Track *    track,
       new_path =
         g_build_filename (
           PROJECT->audio_dir,
-          tmp);
+          tmp,
+          NULL);
       g_free (tmp);
     }
   audio_write_raw_file (
