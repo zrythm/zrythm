@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-31 15:01+0100\n"
+"POT-Creation-Date: 2019-04-01 15:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -94,6 +94,10 @@ msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
 
+#: resources/ui/donate_dialog.ui:49
+msgid "Choose a method to donate"
+msgstr ""
+
 #: src/audio/chord_track.c:51
 msgid "Chord Track"
 msgstr ""
@@ -142,6 +146,10 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:160
 msgid "Dither"
+msgstr ""
+
+#: resources/ui/donate_dialog.ui:7
+msgid "Donate"
 msgstr ""
 
 #: resources/ui/preferences.ui:265

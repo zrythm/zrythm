@@ -83,7 +83,8 @@ entry selection
 
 treeview.view:hover,
 scrollbar,
-box.sidebar
+box.sidebar,
+filechooser list
 {
   background-color: @bg_light_variant1;
 }
@@ -162,7 +163,8 @@ notebook stack
 tracklist,
 ruler,
 piano-roll-labels,
-window
+window,
+filechooser #pathbarbox
 {
 background-color: @bg_dark_variant1;
 }
@@ -187,6 +189,7 @@ dialog
 background-color: @bg_dark_variant2;
 }
 
+headerbar,
 header-bar,
 menubar
 {
@@ -216,6 +219,11 @@ button.text-button:hover,
 tooltip.background
 {
   background-color: @bg_lighter_variant1;
+}
+
+entry selection
+{
+  color: @bg_lighter_variant1;
 }
 
 menu,
@@ -250,6 +258,11 @@ button.toggle.record-button:active
   background-color: #FF2400;
 }
 
+button.donate-button
+{
+  border-radius: 8px;
+}
+
 button.toggle.solo-button:active
 {
   background-color: @matcha_green;
@@ -282,6 +295,12 @@ velocity:selected,
 automation-point:selected
 {
   background-color: @selection_color;
+}
+
+filechooser button:checked,
+filechooser button:active
+{
+  border-color: @selection_color;
 }
 
 track:hover,

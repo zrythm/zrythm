@@ -41,6 +41,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/center_dock_bot_box.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/donate_dialog.h"
 #include "gui/widgets/export_dialog.h"
 #include "gui/widgets/header_bar.h"
 #include "gui/widgets/main_window.h"
@@ -147,11 +148,13 @@ activate_donate (GSimpleAction *action,
                 GVariant      *variant,
                 gpointer       user_data)
 {
-  gtk_show_uri_on_window (
-    GTK_WINDOW (MAIN_WINDOW),
-    "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LZWVK6228PQGE&source=url",
-    0,
-    NULL);
+  DonateDialogWidget * donate =
+    donate_dialog_widget_new ();
+  gtk_window_set_transient_for (
+    GTK_WINDOW (donate),
+    GTK_WINDOW (MAIN_WINDOW));
+  gtk_dialog_run (GTK_DIALOG (donate));
+  gtk_widget_destroy (GTK_WIDGET (donate));
 }
 
 void
@@ -215,6 +218,9 @@ activate_preferences (GSimpleAction *action,
 {
   PreferencesWidget * widget =
     preferences_widget_new ();
+  gtk_window_set_transient_for (
+    GTK_WINDOW (widget),
+    GTK_WINDOW (MAIN_WINDOW));
   gtk_widget_set_visible (GTK_WIDGET (widget),
                           1);
 }

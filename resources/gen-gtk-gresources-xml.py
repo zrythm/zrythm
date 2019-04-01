@@ -25,7 +25,25 @@ import os, sys
 
 srcdir = sys.argv[1]
 
-xml = '''<?xml version='1.0' encoding='UTF-8'?>
+xml = '''<!--
+  Copyright (C) 2018-2019 Alexandros Theodotou
+
+  This file is part of Zrythm
+
+  Zrythm is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  Zrythm is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+-->
+<?xml version='1.0' encoding='UTF-8'?>
 <gresources>
   <gresource prefix='/org/gtk/libgtk'>
 '''
@@ -59,10 +77,12 @@ for f in get_files('ui', '.ui'):
 xml += '\n'
 
 # add icons
-for c in ['zrythm', 'gnome-builder']:
+for c in ['zrythm', 'gnome-builder', 'ext']:
   icons_dir = 'icons/{0}'.format(c)
   if os.path.exists(os.path.join(srcdir,icons_dir)):
     for f in get_files(icons_dir, '.svg'):
+      xml += '    <file>icons/{0}/{1}</file>\n'.format(c,f)
+    for f in get_files(icons_dir, '.png'):
       xml += '    <file>icons/{0}/{1}</file>\n'.format(c,f)
 
 def remove_prefix(text, prefix):

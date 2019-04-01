@@ -1,8 +1,2 @@
-# see https://www.gnu.org/prep/maintain/html_node/Recording-Contributors.html
-
-Alexandros Theodotou  all files except those mentioned below.
-David Robillard       all files inside zix, most of
-  lv2_plugin.c, most of lv2/control.c, parts of
-  plugin_manager.c
-Paul Davis            most of knob.c, parts of
-  plugin_manager.c
+Alexandros Theodotou <alex at zrythm dot org>
+Sascha Bast
