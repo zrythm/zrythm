@@ -132,6 +132,18 @@ activate_manual (GSimpleAction *action,
 }
 
 void
+activate_chat (GSimpleAction *action,
+                GVariant      *variant,
+                gpointer       user_data)
+{
+  gtk_show_uri_on_window (
+    GTK_WINDOW (MAIN_WINDOW),
+    "https://riot.im/app/#/room/#freenode_#zrythm:matrix.org",
+    0,
+    NULL);
+}
+
+void
 activate_forums (GSimpleAction *action,
                 GVariant      *variant,
                 gpointer       user_data)
@@ -206,6 +218,20 @@ activate_shortcuts (GSimpleAction *action,
                     GVariant      *variant,
                     gpointer       user_data)
 {
+  GtkBuilder *builder;
+  GtkWidget *overlay;
+
+  builder =
+    gtk_builder_new_from_resource (
+      "/org/zrythm/ui/shortcuts.ui");
+  overlay =
+    GTK_WIDGET (
+      gtk_builder_get_object (builder, "shortcuts-builder"));
+  gtk_window_set_transient_for (
+    GTK_WINDOW (overlay),
+    GTK_WINDOW (MAIN_WINDOW));
+  gtk_widget_show (overlay);
+  g_object_unref (builder);
 }
 
 /**

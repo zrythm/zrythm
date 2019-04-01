@@ -316,6 +316,15 @@ header_bar_widget_setup (HeaderBarWidget * self,
 
   menu_item =
     z_gtk_create_menu_item (
+      "Chat",
+      "z-dialog-messages",
+      0,
+      NULL,
+      0,
+      "app.chat");
+  APPEND_TO_HELP_MENU;
+  menu_item =
+    z_gtk_create_menu_item (
       "Manual",
       "z-help-contents",
       0,

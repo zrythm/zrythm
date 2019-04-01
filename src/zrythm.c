@@ -526,7 +526,7 @@ zrythm_app_startup (GApplication* _app)
 
   /* install accelerators for each action */
   accel_install_primary_action_accelerator (
-    "<Control>q",
+    "<Alt>F4",
     "app.quit");
   accel_install_primary_action_accelerator (
     "F11",
@@ -534,6 +534,9 @@ zrythm_app_startup (GApplication* _app)
   accel_install_primary_action_accelerator (
     "<Control><Shift>p",
     "app.preferences");
+  accel_install_primary_action_accelerator (
+    "<Control><Shift>question",
+    "app.shortcuts");
   accel_install_primary_action_accelerator (
     "<Control>n",
     "win.new");
@@ -568,7 +571,7 @@ zrythm_app_startup (GApplication* _app)
     "Delete",
     "win.delete");
   accel_install_primary_action_accelerator (
-    "<Control><Shift>a",
+    "<Control>backslash",
     "win.clear-selection");
   accel_install_primary_action_accelerator (
     "<Control>a",
@@ -655,6 +658,7 @@ zrythm_app_init (ZrythmApp *app)
     { "load_project", on_load_project },
     { "about", activate_about },
     { "fullscreen", activate_fullscreen },
+    { "chat", activate_chat },
     { "manual", activate_manual },
     { "forums", activate_forums },
     { "bugreport", activate_bugreport },

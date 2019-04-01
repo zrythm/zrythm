@@ -218,6 +218,11 @@ activate_manual (GSimpleAction *action,
                   gpointer       user_data);
 
 void
+activate_chat (GSimpleAction *action,
+                GVariant      *variant,
+                gpointer       user_data);
+
+void
 activate_forums (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data);

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-01 15:26+0100\n"
+"POT-Creation-Date: 2019-04-01 17:24+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrythm dot org>\n"
 "Language-Team: Italian\n"
@@ -60,12 +60,20 @@ msgstr ""
 msgid "Audio Unit"
 msgstr ""
 
+#: resources/ui/shortcuts.ui:216
+msgid "Audition tool"
+msgstr ""
+
 #: resources/ui/preferences.ui:122
 msgid "Backend"
 msgstr ""
 
 #: resources/ui/transport_controls.ui:87
 msgid "Backward"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:245
+msgid "Best fit"
 msgstr ""
 
 #: resources/ui/export_dialog.ui:308
@@ -128,12 +136,24 @@ msgstr ""
 msgid "Controllers found"
 msgstr ""
 
-#: resources/ui/project_assistant.ui:69
+#: resources/ui/shortcuts.ui:107
+msgid "Copy and Paste"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:112
+msgid "Copy selection to clipboard"
+msgstr ""
+
+#: resources/ui/project_assistant.ui:69 resources/ui/shortcuts.ui:84
 msgid "Create new project"
 msgstr ""
 
 #: resources/ui/export_dialog.ui:261
 msgid "Custom"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:119
+msgid "Cut selection to clipboard"
 msgstr ""
 
 #: src/plugins/lv2_gtk.c:557
@@ -156,6 +176,10 @@ msgstr ""
 msgid "Editing"
 msgstr ""
 
+#: resources/ui/shortcuts.ui:180
+msgid "Editor Shortcuts"
+msgstr ""
+
 #: resources/ui/export_dialog.ui:130
 msgid "Electronic"
 msgstr ""
@@ -176,6 +200,10 @@ msgstr ""
 #: resources/ui/inspector_track.ui:44 resources/ui/inspector_ap.ui:44
 #: resources/ui/inspector_midi.ui:44
 msgid "Enter region name..."
+msgstr ""
+
+#: resources/ui/shortcuts.ui:202
+msgid "Eraser tool"
 msgstr ""
 
 #: resources/ui/export_dialog.ui:58
@@ -232,7 +260,7 @@ msgstr ""
 msgid "GUI"
 msgstr ""
 
-#: resources/ui/preferences.ui:169
+#: resources/ui/shortcuts.ui:16 resources/ui/preferences.ui:169
 msgid "General"
 msgstr ""
 
@@ -242,6 +270,10 @@ msgstr ""
 
 #: src/utils/ui.c:520
 msgid "German [de]"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:11
+msgid "Global Shortcuts"
 msgstr ""
 
 #: resources/ui/quantize_mb_popover.ui:37 resources/ui/snap_grid_popover.ui:37
@@ -270,6 +302,10 @@ msgstr ""
 
 #: src/utils/ui.c:524
 msgid "Japanese [ja]"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:27
+msgid "Keyboard Shortcuts"
 msgstr ""
 
 #: resources/ui/automator.ui:32
@@ -301,6 +337,14 @@ msgstr ""
 
 #: resources/ui/transport_controls.ui:122 resources/ui/export_dialog.ui:249
 msgid "Loop"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:287
+msgid "Loop selection"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:282
+msgid "Looping"
 msgstr ""
 
 #: resources/ui/preferences.ui:145
@@ -356,8 +400,28 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
+#: resources/ui/shortcuts.ui:91
+msgid "Open a project"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:252
+msgid "Original size"
+msgstr ""
+
 #: resources/ui/export_dialog.ui:205
 msgid "Output Files"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:51
+msgid "Panels"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:126
+msgid "Paste from clipboard"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:195
+msgid "Pencil tool"
 msgstr ""
 
 #: resources/ui/transport_controls.ui:54
@@ -377,8 +441,12 @@ msgstr ""
 msgid "Position"
 msgstr ""
 
-#: resources/ui/preferences.ui:27
+#: resources/ui/shortcuts.ui:20 resources/ui/preferences.ui:27
 msgid "Preferences"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:79
+msgid "Project"
 msgstr ""
 
 #: resources/ui/header_bar.ui:29
@@ -398,6 +466,22 @@ msgstr ""
 msgid "Projects"
 msgstr ""
 
+#: resources/ui/shortcuts.ui:273
+msgid "Quantize"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:261
+msgid "Quantizing"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:266
+msgid "Quick Quantize"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:41
+msgid "Quit"
+msgstr ""
+
 #: resources/ui/automation_lane.ui:112
 msgid "R"
 msgstr ""
@@ -406,12 +490,20 @@ msgstr ""
 msgid "RW"
 msgstr ""
 
+#: resources/ui/shortcuts.ui:209
+msgid "Ramp tool"
+msgstr ""
+
 #: resources/ui/automation_lane.ui:116
 msgid "Read automation"
 msgstr ""
 
 #: resources/ui/transport_controls.ui:36
 msgid "Record"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:147
+msgid "Redo previous command"
 msgstr ""
 
 #: resources/ui/inspector_region.ui:32 resources/ui/inspector_master.ui:31
@@ -454,6 +546,10 @@ msgstr ""
 msgid "Save State"
 msgstr ""
 
+#: resources/ui/shortcuts.ui:98
+msgid "Save the project"
+msgstr ""
+
 #: resources/ui/inspector_chord.ui:43
 msgid "Scale"
 msgstr ""
@@ -470,9 +566,21 @@ msgstr ""
 msgid "Select a project..."
 msgstr ""
 
+#: resources/ui/shortcuts.ui:161
+msgid "Select all"
+msgstr ""
+
 #: src/gui/widgets/midi_controller_mb.c:46
 #: src/gui/widgets/midi_controller_mb.c:116
 msgid "Select..."
+msgstr ""
+
+#: resources/ui/shortcuts.ui:188
+msgid "Select/Stretch tool"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:156
+msgid "Selections"
 msgstr ""
 
 #: src/zrythm.c:241
@@ -542,8 +650,28 @@ msgstr ""
 msgid "Timeline"
 msgstr ""
 
+#: resources/ui/shortcuts.ui:34
+msgid "Toggle Fullscreen"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:69
+msgid "Toggle bottom panel"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:55
+msgid "Toggle left panel"
+msgstr ""
+
 #: resources/ui/piano_roll.ui:78
 msgid "Toggle note notation"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:62
+msgid "Toggle right panel"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:184
+msgid "Tool"
 msgstr ""
 
 #: resources/ui/piano_roll.ui:53 resources/ui/audio_clip_editor.ui:34
@@ -564,12 +692,24 @@ msgstr ""
 msgid "URI (Optional):"
 msgstr ""
 
+#: resources/ui/shortcuts.ui:135
+msgid "Undo and Redo"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:140
+msgid "Undo previous command"
+msgstr ""
+
 #: src/plugins/lv2_gtk.c:776
 msgid "Unknown widget type for value"
 msgstr ""
 
 #: src/plugins/lv2_gtk.c:802
 msgid "Unknown widget type for value\n"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:168
+msgid "Unselect all"
 msgstr ""
 
 #: resources/ui/quantize_mb_popover.ui:47
@@ -585,6 +725,18 @@ msgstr ""
 
 #: resources/ui/automation_lane.ui:99
 msgid "Write automation"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:231
+msgid "Zoom in"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:238
+msgid "Zoom out"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:226
+msgid "Zooming"
 msgstr ""
 
 #: resources/ui/header_bar.ui:28 resources/ui/export_dialog.ui:119

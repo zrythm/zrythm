@@ -131,6 +131,7 @@ for cat in ['actions', 'animations', 'applets', 'apps', 'categories', 'devices',
               f.endswith('audio-mp3.svg') or
               f.endswith('audio-flac.svg') or
               f.endswith('application-ogg.svg') or
+              f.endswith('dialog-messages.svg') or
               f.endswith('audio-x-wav.svg') or
               f.endswith('inode-directory.svg') or
               f.endswith('none.svg') or
