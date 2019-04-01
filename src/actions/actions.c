@@ -63,9 +63,12 @@
 #include "utils/dialogs.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
+#include "utils/io.h"
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
+
+#include <glib/gi18n.h>
 
 void
 action_enable_window_action (
@@ -473,31 +476,34 @@ activate_save_as (GSimpleAction *action,
 {
   GtkWidget *dialog;
   GtkFileChooser *chooser;
-  GtkFileChooserAction _action = GTK_FILE_CHOOSER_ACTION_SAVE;
+  GtkFileChooserAction _action =
+    GTK_FILE_CHOOSER_ACTION_SAVE;
   gint res;
 
-  dialog = gtk_file_chooser_dialog_new ("Save Project",
-                                        GTK_WINDOW (MAIN_WINDOW),
-                                        _action,
-                                        "_Cancel",
-                                        GTK_RESPONSE_CANCEL,
-                                        "_Save",
-                                        GTK_RESPONSE_ACCEPT,
-                                        NULL);
+  dialog =
+    gtk_file_chooser_dialog_new (
+      _("Save Project"),
+      GTK_WINDOW (MAIN_WINDOW),
+      _action,
+      _("_Cancel"),
+      GTK_RESPONSE_CANCEL,
+      _("_Save"),
+      GTK_RESPONSE_ACCEPT,
+      NULL);
   chooser = GTK_FILE_CHOOSER (dialog);
 
   gtk_file_chooser_set_do_overwrite_confirmation (
     chooser, TRUE);
-  gtk_file_chooser_set_action (
-    GTK_FILE_CHOOSER (chooser),
-    GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER);
 
-  if (PROJECT->title)
-    gtk_file_chooser_set_current_name (
-      chooser, PROJECT->title);
-  else
-    gtk_file_chooser_set_filename (chooser,
-                                   "Untitled project");
+  char * str =
+    io_path_get_parent_dir (
+      PROJECT->project_file_path);
+  gtk_file_chooser_select_filename (
+    chooser,
+    str);
+  g_free (str);
+  gtk_file_chooser_set_current_name (
+    chooser, PROJECT->title);
 
   res = gtk_dialog_run (GTK_DIALOG (dialog));
   if (res == GTK_RESPONSE_ACCEPT)

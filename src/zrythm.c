@@ -115,9 +115,15 @@ init_dirs_and_files ()
 
   ZRYTHM->projects_dir =
     g_build_filename (ZRYTHM->zrythm_dir,
-                      _("Projects"),
+                      "Projects",
                       NULL);
   io_mkdir (ZRYTHM->projects_dir);
+
+  ZRYTHM->templates_dir =
+    g_build_filename (ZRYTHM->zrythm_dir,
+                      "Templates",
+                      NULL);
+  io_mkdir (ZRYTHM->templates_dir);
 }
 
 /**
@@ -437,9 +443,9 @@ static void on_prompt_for_project (GSimpleAction  *action,
        * before */
       if (first_run_assistant)
         {
-        g_idle_add ((GSourceFunc)gtk_widget_destroy,
-        GTK_WIDGET (first_run_assistant));
-        g_message ("hawawgea");
+          g_idle_add (
+            (GSourceFunc)gtk_widget_destroy,
+            GTK_WIDGET (first_run_assistant));
         }
 
 

@@ -78,11 +78,6 @@ typedef struct Project
 {
   char              * title; ///< project title
 
-  /**
-   * Absolute path to project xml.
-   */
-  char              * filename;
-
   char              * dir; ///< path to save the project
   char              * project_file_path; ///< for convenience
   char              * regions_file_path;

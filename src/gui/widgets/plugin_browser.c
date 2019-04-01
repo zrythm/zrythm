@@ -38,10 +38,16 @@ G_DEFINE_TYPE (PluginBrowserWidget,
 
 enum
 {
-  COLUMN_ICON,
-  COLUMN_NAME,
-  COLUMN_DESCR,
-  NUM_COLUMNS
+  CAT_COLUMN_NAME,
+  CAT_NUM_COLUMNS,
+};
+
+enum
+{
+  PL_COLUMN_ICON,
+  PL_COLUMN_NAME,
+  PL_COLUMN_DESCR,
+  PL_NUM_COLUMNS
 };
 
 /**
@@ -63,7 +69,7 @@ on_row_activated (GtkTreeView       *tree_view,
   gtk_tree_model_get_value (
     model,
     &iter,
-    COLUMN_DESCR,
+    PL_COLUMN_DESCR,
     &value);
   PluginDescriptor * descr =
     g_value_get_pointer (&value);
@@ -86,13 +92,15 @@ visible_func (GtkTreeModel *model,
   PluginDescriptor *descr;
   gboolean visible = FALSE;
 
-  gtk_tree_model_get (model, iter, 1, &descr, -1);
+  gtk_tree_model_get (
+    model, iter, PL_COLUMN_DESCR, &descr, -1);
   if (!self->selected_category)
     {
       visible = TRUE;
     }
   else if (descr->category &&
-      strcmp (descr->category, self->selected_category) == 0)
+           strcmp (descr->category,
+                   self->selected_category) == 0)
     {
       visible = TRUE;
     }
@@ -137,7 +145,7 @@ on_selection_changed (GtkTreeSelection * ts,
         {
           gtk_tree_model_get_value (model,
                                     &iter,
-                                    COLUMN_NAME,
+                                    0,
                                     &value);
           self->selected_category =
             g_value_get_string (&value);
@@ -149,7 +157,7 @@ on_selection_changed (GtkTreeSelection * ts,
         {
           gtk_tree_model_get_value (model,
                                     &iter,
-                                    COLUMN_DESCR,
+                                    PL_COLUMN_DESCR,
                                     &value);
           PluginDescriptor * descr =
             g_value_get_pointer (&value);
@@ -193,7 +201,7 @@ on_drag_data_get (GtkWidget        *widget,
   gtk_tree_model_get_value (
     GTK_TREE_MODEL (MW_PLUGIN_BROWSER->plugins_tree_model),
     &iter,
-    COLUMN_DESCR,
+    PL_COLUMN_DESCR,
     &value);
   PluginDescriptor * descr = g_value_get_pointer (&value);
 
@@ -269,7 +277,7 @@ create_model_for_plugins (PluginBrowserWidget * self)
   gint i;
 
   /* plugin name, index */
-  list_store = gtk_list_store_new (NUM_COLUMNS,
+  list_store = gtk_list_store_new (PL_NUM_COLUMNS,
                                    G_TYPE_STRING,
                                    G_TYPE_STRING,
                                    G_TYPE_POINTER);
@@ -288,9 +296,9 @@ create_model_for_plugins (PluginBrowserWidget * self)
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
         list_store, &iter,
-        COLUMN_ICON, icon_name,
-        COLUMN_NAME, descr->name,
-        COLUMN_DESCR, descr,
+        PL_COLUMN_ICON, icon_name,
+        PL_COLUMN_NAME, descr->name,
+        PL_COLUMN_DESCR, descr,
         -1);
     }
 
@@ -350,7 +358,7 @@ tree_view_create (PluginBrowserWidget * self,
       column =
         gtk_tree_view_column_new_with_attributes (
           "icon", renderer,
-          "icon-name", COLUMN_ICON,
+          "icon-name", PL_COLUMN_ICON,
           NULL);
       gtk_tree_view_append_column (
         GTK_TREE_VIEW (tree_view),
@@ -362,7 +370,7 @@ tree_view_create (PluginBrowserWidget * self,
       column =
         gtk_tree_view_column_new_with_attributes (
           "name", renderer,
-          "text", COLUMN_NAME,
+          "text", PL_COLUMN_NAME,
           NULL);
       gtk_tree_view_append_column (
         GTK_TREE_VIEW (tree_view),
@@ -371,7 +379,7 @@ tree_view_create (PluginBrowserWidget * self,
       /* set search column */
       gtk_tree_view_set_search_column (
         GTK_TREE_VIEW (tree_view),
-        COLUMN_NAME);
+        PL_COLUMN_NAME);
     }
   else
     {

@@ -48,6 +48,8 @@
 
 #include <gtk/gtk.h>
 
+#include <glib/gi18n.h>
+
 G_DEFINE_TYPE_WITH_PRIVATE (TrackWidget,
                             track_widget,
                             GTK_TYPE_GRID)
@@ -409,19 +411,51 @@ show_context_menu (TrackWidget * self)
 
   if (num_selected > 0)
     {
-      /* FIXME move to track */
       char * str;
+
+      /* delete track */
       if (num_selected == 1)
-        str = g_strdup_printf ("_Delete Track");
+        str =
+          g_strdup_printf (_("_Delete Track"));
       else
-        str = g_strdup_printf ("_Delete %d Tracks",
-                               num_selected);
-      menuitem = gtk_menu_item_new_with_mnemonic (str);
+        str =
+          g_strdup_printf (_("_Delete %d Tracks"),
+                           num_selected);
+      menuitem =
+        gtk_menu_item_new_with_mnemonic (str);
       g_free (str);
       gtk_actionable_set_action_name (
         GTK_ACTIONABLE (menuitem),
         "win.delete-selected-tracks");
-      gtk_menu_shell_append (GTK_MENU_SHELL(menu), menuitem);
+      gtk_menu_shell_append (
+        GTK_MENU_SHELL(menu), menuitem);
+
+      /* duplicate track */
+      if (num_selected == 1)
+        str =
+          g_strdup_printf (_("_Duplicate Track"));
+      else
+        str =
+          g_strdup_printf (
+            _("_Duplicate %d Tracks"),
+            num_selected);
+      menuitem =
+        gtk_menu_item_new_with_mnemonic (str);
+      g_free (str);
+      gtk_actionable_set_action_name (
+        GTK_ACTIONABLE (menuitem),
+        "win.delete-selected-tracks");
+      gtk_menu_shell_append (
+        GTK_MENU_SHELL(menu), menuitem);
+
+      menuitem =
+        gtk_menu_item_new_with_mnemonic (
+          _("Add _Region"));
+      gtk_actionable_set_action_name (
+        GTK_ACTIONABLE (menuitem),
+        "win.add-region-to-track");
+      gtk_menu_shell_append (
+        GTK_MENU_SHELL(menu), menuitem);
     }
 
   gtk_widget_show_all(menu);

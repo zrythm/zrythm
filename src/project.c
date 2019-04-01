@@ -52,6 +52,8 @@
 
 #include <gtk/gtk.h>
 
+#include <glib/gi18n.h>
+
 /**
  * Tears down the project before loading another one.
  */
@@ -78,8 +80,6 @@ tear_down (Project * self)
 static void
 update_paths (const char * dir)
 {
-  if (PROJECT->filename)
-    g_free (PROJECT->filename);
   if (PROJECT->dir)
     g_free (PROJECT->dir);
   if (PROJECT->project_file_path)
@@ -137,6 +137,32 @@ create_default (Project * self)
   self->chord_track = chord_track_default ();
   self->chord_track_id = self->chord_track->id;
 
+  /* create untitled project */
+  char * untitled_project = _("Untitled Project");
+  char * dir =
+    g_strdup_printf ("%s%s%s",
+                     ZRYTHM->projects_dir,
+                     G_DIR_SEPARATOR_S,
+                     untitled_project);
+  update_paths (dir);
+  int i = 1;
+  while (io_file_exists (dir) &&
+         PROJECT->project_file_path &&
+         io_file_exists (PROJECT->project_file_path))
+    {
+      g_free (dir);
+      dir =
+        g_strdup_printf ("%s%s%s (%d)",
+                         ZRYTHM->projects_dir,
+                         G_DIR_SEPARATOR_S,
+                         untitled_project,
+                         i++);
+      update_paths (dir);
+    }
+  io_mkdir (dir);
+  char * filepath_noext = g_path_get_basename (dir);
+  PROJECT->title = filepath_noext;
+
   self->loaded = 1;
 
   snap_grid_init (&PROJECT->snap_grid_timeline,
@@ -153,6 +179,10 @@ create_default (Project * self)
   quantize_update_snap_points (&PROJECT->quantize_timeline);
   quantize_update_snap_points (&PROJECT->quantize_midi);
   tracklist_init (&PROJECT->tracklist, 0);
+
+  header_bar_widget_set_subtitle (
+    MW_HEADER_BAR,
+    PROJECT->title);
 }
 
 /** sl = singular lowercase */
@@ -260,8 +290,6 @@ load (char * filename)
   PROJECT->title = filepath_noext;
 
   g_free (dir);
-
-  PROJECT->filename = filename;
 
   tracklist_init (&PROJECT->tracklist, 1);
 

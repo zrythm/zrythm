@@ -34,6 +34,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="vexpand">True</property>
+        <property name="height-request">240</property>
         <child>
           <object class="GtkSearchEntry" id="browser_search">
             <property name="visible">True</property>

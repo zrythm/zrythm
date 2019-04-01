@@ -43,7 +43,8 @@
 
 #include <gtk/gtk.h>
 
-#include <pango/pangofc-fontmap.h>
+#include <glib/gi18n.h>
+/*#include <pango/pangofc-fontmap.h>*/
 
 
 G_DEFINE_TYPE (DigitalMeterWidget,
@@ -632,7 +633,9 @@ digital_meter_widget_new (DigitalMeterType  type,
   switch (type)
     {
     case DIGITAL_METER_TYPE_BPM:
-      // set the size
+      gtk_widget_set_tooltip_text (
+        GTK_WIDGET (self),
+        _("BPM - Click and drag up/down to set"));
       gtk_widget_set_size_request (
         GTK_WIDGET (self),
         90,
@@ -640,7 +643,10 @@ digital_meter_widget_new (DigitalMeterType  type,
 
       break;
     case DIGITAL_METER_TYPE_POSITION:
-      // set the size
+      gtk_widget_set_tooltip_text (
+        GTK_WIDGET (self),
+        _("Playhead Position - Click and drag up/down \
+to change"));
       gtk_widget_set_size_request (
         GTK_WIDGET (self),
         160,
@@ -648,7 +654,6 @@ digital_meter_widget_new (DigitalMeterType  type,
 
       break;
     case DIGITAL_METER_TYPE_NOTE_LENGTH:
-      // set the size
       gtk_widget_set_size_request (
         GTK_WIDGET (self),
         -1,
@@ -658,7 +663,6 @@ digital_meter_widget_new (DigitalMeterType  type,
       break;
 
     case DIGITAL_METER_TYPE_NOTE_TYPE:
-      // set the size
       gtk_widget_set_size_request (
         GTK_WIDGET (self),
         -1,
@@ -667,7 +671,10 @@ digital_meter_widget_new (DigitalMeterType  type,
       self->note_type = note_type;
       break;
     case DIGITAL_METER_TYPE_TIMESIG:
-      // set the size
+      gtk_widget_set_tooltip_text (
+        GTK_WIDGET (self),
+        _("Time Signature - Click and drag up/down \
+to change"));
       gtk_widget_set_size_request (
         GTK_WIDGET (self),
         78,
