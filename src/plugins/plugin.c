@@ -119,33 +119,6 @@ plugin_create_from_descr (PluginDescriptor * descr)
 }
 
 /**
- * Used when loading projects.
- */
-Plugin *
-plugin_get_or_create_blank (int id)
-{
-  if (PROJECT->plugins[id])
-    {
-      return PROJECT->plugins[id];
-    }
-  else
-    {
-      Plugin * plugin = calloc (1, sizeof (Plugin));
-
-      plugin->processed = 1;
-
-      plugin->id = id;
-      PROJECT->plugins[id] = plugin;
-      PROJECT->num_plugins++;
-
-      g_message ("[plugin_new] Creating blank plugin %d", id);
-
-      return plugin;
-    }
-}
-
-
-/**
  * Loads the plugin from its state file.
  */
 /*void*/
@@ -231,7 +204,10 @@ plugin_instantiate (Plugin * plugin ///< the plugin
         }
     }
   plugin->enabled = 1;
-  AUDIO_ENGINE->run = 1;
+
+  if (PROJECT->loaded)
+    AUDIO_ENGINE->run = 1;
+
   return 0;
 }
 
@@ -286,6 +262,7 @@ clean_ports (Port ** array, int * size)
                 port_disconnect (port, port->dests[j]);
               }
           }
+      project_remove_port (port);
       port_free (port);
     }
   (* size) = 0;
@@ -349,7 +326,9 @@ plugin_free (Plugin *plugin)
   /* delete automatables */
   for (int i = 0; i < plugin->num_automatables; i++)
     {
-      Automatable * automatable = plugin->automatables[i];
+      Automatable * automatable =
+        plugin->automatables[i];
+      project_remove_automatable (automatable);
       automatable_free (automatable);
     }
 

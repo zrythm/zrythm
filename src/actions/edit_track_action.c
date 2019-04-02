@@ -69,7 +69,8 @@ edit_track_action_new_mute (Track * track,
 void
 edit_track_action_do (EditTrackAction * self)
 {
-  Track * track = PROJECT->tracks[self->track_id];
+  Track * track =
+    project_get_track (self->track_id);
   switch (self->type)
     {
     case EDIT_TRACK_ACTION_TYPE_SOLO:
@@ -88,7 +89,8 @@ edit_track_action_do (EditTrackAction * self)
 void
 edit_track_action_undo (EditTrackAction * self)
 {
-  Track * track = PROJECT->tracks[self->track_id];
+  Track * track =
+    project_get_track (self->track_id);
   switch (self->type)
     {
     case EDIT_TRACK_ACTION_TYPE_SOLO:

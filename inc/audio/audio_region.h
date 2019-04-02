@@ -36,12 +36,6 @@ audio_region_new (Track *    track,
                   Position * start_pos);
 
 /**
- * Creates region (used when loading projects).
- */
-AudioRegion *
-audio_region_get_or_create_blank (int id);
-
-/**
  * Frees members only but not the audio region itself.
  *
  * Regions should be free'd using region_free.

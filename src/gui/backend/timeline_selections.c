@@ -535,9 +535,12 @@ timeline_selections_add_region (
                       ts->num_regions,
                       r))
     {
+      ts->region_ids[ts->num_regions] =
+        r->id;
       array_append (ts->regions,
                     ts->num_regions,
                     r);
+
       EVENTS_PUSH (ET_REGION_CHANGED,
                    r);
     }
@@ -557,9 +560,12 @@ timeline_selections_add_chord (
                       ts->num_chords,
                       r))
     {
+      ts->chord_ids[ts->num_chords] =
+        r->id;
       array_append (ts->chords,
                     ts->num_chords,
                     r);
+
       EVENTS_PUSH (ET_CHORD_CHANGED,
                    r);
     }
@@ -578,9 +584,12 @@ timeline_selections_add_ap (
                       ts->num_automation_points,
                       ap))
     {
+      ts->ap_ids[ts->num_automation_points] =
+        ap->id;
       array_append (ts->automation_points,
                     ts->num_automation_points,
                     ap);
+
       EVENTS_PUSH (ET_AUTOMATION_POINT_CHANGED,
                    ap);
     }
@@ -608,6 +617,10 @@ timeline_selections_remove_region (
                 ts->num_regions,
                 r,
                 idx);
+  int size = ts->num_regions + 1;
+  array_delete (ts->region_ids,
+                size,
+                r->id);
 
   /* remove the transient */
   remove_transient_region (ts, idx);
@@ -628,6 +641,11 @@ timeline_selections_remove_chord (
                 ts->num_chords,
                 c,
                 idx);
+  int size = ts->num_chords + 1;
+  array_delete (ts->chord_ids,
+                size,
+                c->id);
+
   EVENTS_PUSH (ET_CHORD_CHANGED,
                c);
 
@@ -650,6 +668,11 @@ timeline_selections_remove_ap (
                 ts->num_automation_points,
                 ap,
                 idx);
+  int size = ts->num_automation_points + 1;
+  array_delete (ts->ap_ids,
+                size,
+                ap->id);
+
   EVENTS_PUSH (ET_AUTOMATION_POINT_CHANGED,
                ap);
 

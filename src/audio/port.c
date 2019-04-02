@@ -178,23 +178,6 @@ port_set_owner_plugin (Port *   port,
 }
 
 /**
- * Deletes port, doing required cleanup and updating counters.
- */
-void
-port_free (Port * port)
-{
-  port_disconnect_all (port);
-
-  if (port->label)
-    g_free (port->label);
-  if (port->buf)
-    free (port->buf);
-
-  array_delete (PROJECT->ports, PROJECT->num_ports, port);
-  free (port);
-}
-
-/**
  */
 /*void*/
 /*port_init (Port * port)*/
@@ -254,8 +237,13 @@ port_disconnect (Port * src, Port * dest)
     g_warning ("port_disconnect: src or dest is NULL");
 
   /* disconnect dest from src */
+  int size;
   array_delete (src->dests, src->num_dests, dest);
+  size = src->num_dests;
+  array_delete (src->dest_ids, size, dest->id);
+  size = src->num_srcs;
   array_delete (dest->srcs, dest->num_srcs, src);
+  array_delete (src->src_ids, size, src->id);
   return 0;
 }
 
@@ -424,16 +412,22 @@ port_sum_signal_from_inputs (Port * port)
 void
 port_print_connections_all ()
 {
-  for (int i = 0; i < PROJECT->num_ports; i++)
+  Port * src, * dest;
+  int i, j;
+
+  for (i = 0; i < PROJECT->num_ports; i++)
     {
-      Port * src = PROJECT->ports[i];
-      if (!src->owner_pl && !src->owner_ch && !src->owner_jack)
+      src = project_get_port (i);
+      if (!src->owner_pl &&
+          !src->owner_ch &&
+          !src->owner_jack)
         {
-          g_warning ("Port %s has no owner", src->label);
+          g_warning ("Port %s has no owner",
+                     src->label);
         }
-      for (int j = 0; j < src->num_dests; j++)
+      for (j = 0; j < src->num_dests; j++)
         {
-          Port * dest = src->dests[j];
+          dest = src->dests[j];
           g_warn_if_fail (dest);
           g_message ("%s connected to %s", src->label, dest->label);
         }
@@ -487,3 +481,22 @@ port_apply_pan_stereo (Port *       l,
     }
 }
 
+/**
+ * Deletes port, doing required cleanup and updating counters.
+ */
+void
+port_free (Port * port)
+{
+  port_disconnect_all (port);
+
+  if (port->label)
+    g_free (port->label);
+  if (port->buf)
+    free (port->buf);
+
+  free (port);
+
+  for (int i = 0; i < MIXER->master->stereo_in->l->num_srcs; i++)
+    if (MIXER->master->stereo_in->l->srcs[i] == NULL)
+      g_warning ("is null");
+}

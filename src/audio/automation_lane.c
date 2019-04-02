@@ -96,5 +96,8 @@ automation_lane_update_automation_track (
 void
 automation_lane_free (AutomationLane * self)
 {
-  /* TODO */
+  if (self->widget && GTK_IS_WIDGET (self->widget))
+    gtk_widget_destroy (GTK_WIDGET (self->widget));
+
+  free (self);
 }

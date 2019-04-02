@@ -63,6 +63,7 @@ typedef enum PortType {
  */
 typedef enum PortInternalType
 {
+  INTERNAL_NONE,
   INTERNAL_LV2_PORT,                ///< LV2_Port (see lv2_plugin.c)
   INTERNAL_JACK_PORT                ///< jack_port_t
 } PortInternalType;

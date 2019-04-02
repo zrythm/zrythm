@@ -807,8 +807,18 @@ channel_set_current_r_db (Channel * channel, float val)
   channel->r_port_db = val;
 }
 
+/**
+ * Removes a plugin at pos from the channel.
+ *
+ * If deleting_channel is 1, the automation tracks
+ * associated with he plugin are not deleted at
+ * this time.
+ */
 void
-channel_remove_plugin (Channel * channel, int pos)
+channel_remove_plugin (
+  Channel * channel,
+  int pos,
+  int deleting_channel)
 {
   Plugin * plugin = channel->plugins[pos];
   if (plugin)
@@ -817,16 +827,19 @@ channel_remove_plugin (Channel * channel, int pos)
                  plugin->descr->name,
                  channel->track->name, pos);
       channel->plugins[pos] = NULL;
+      channel->plugin_ids[pos] = -1;
       if (plugin->descr->protocol == PROT_LV2)
         {
           lv2_close_ui ((Lv2Plugin *) plugin->original_plugin);
 
         }
+      project_remove_plugin (plugin);
       plugin_free (plugin);
     }
-  AutomationTracklist * automation_tracklist =
-    track_get_automation_tracklist (channel->track);
-  automation_tracklist_update (automation_tracklist);
+
+  if (!deleting_channel)
+    automation_tracklist_update (
+      &channel->track->automation_tracklist);
 }
 
 /**
@@ -846,7 +859,7 @@ channel_add_plugin (Channel * channel,    ///< the channel
 
   /* free current plugin */
   /*Plugin * old = channel->plugins[pos];*/
-  channel_remove_plugin (channel, pos);
+  channel_remove_plugin (channel, pos, 0);
 
   g_message ("Inserting %s at %s:%d", plugin->descr->name,
              channel->track->name, pos);
@@ -1137,6 +1150,27 @@ channel_get_automatable (Channel *       channel,
   return NULL;
 }
 
+/*static void*/
+/*remove_automatable (*/
+  /*Channel * self,*/
+  /*Automatable * a)*/
+/*{*/
+  /*AutomationTracklist * atl =*/
+    /*&self->track->automation_tracklist;*/
+
+  /*for (int i = 0;*/
+       /*i < atl->num_automation_tracks; i++)*/
+    /*{*/
+      /*if (atl->automation_tracks[i]->*/
+            /*automatable == a)*/
+        /*automation_tracklist_remove_*/
+
+    /*}*/
+
+  /*project_remove_automatable (a);*/
+  /*automatable_free (a);*/
+/*}*/
+
 /**
  * Frees the channel.
  */
@@ -1145,28 +1179,33 @@ channel_free (Channel * channel)
 {
   g_warn_if_fail (channel);
 
-  /* FIXME can't free for some reason */
-  /*g_free (channel->track->name);*/
   FOREACH_STRIP
     {
-      Plugin * pl = channel->plugins[i];
-      if (pl)
+      if (channel->plugins[i])
         {
-          plugin_free (pl);
+          channel_remove_plugin (channel, i, 1);
         }
     }
+
+  project_remove_port (channel->stereo_in->l);
   port_free (channel->stereo_in->l);
+  project_remove_port (channel->stereo_in->r);
   port_free (channel->stereo_in->r);
+  project_remove_port (channel->midi_in);
   port_free (channel->midi_in);
+  project_remove_port (channel->piano_roll);
   port_free (channel->piano_roll);
+  project_remove_port (channel->stereo_out->l);
   port_free (channel->stereo_out->l);
+  project_remove_port (channel->stereo_out->r);
   port_free (channel->stereo_out->r);
 
-  track_free (channel->track);
-
+  Automatable * a;
   FOREACH_AUTOMATABLE (channel)
     {
-      Automatable * a = channel->automatables[i];
+      a = channel->automatables[i];
+      /*remove_automatable (channel, a);*/
+      project_remove_automatable (a);
       automatable_free (a);
     }
 

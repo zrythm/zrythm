@@ -33,37 +33,13 @@
 #include "utils/arrays.h"
 #include "utils/yaml.h"
 
-/**
- * Creates region (used when loading projects).
- */
-MidiRegion *
-midi_region_get_or_create_blank (int id)
-{
-  if (PROJECT->regions[id])
-    {
-      return (MidiRegion *) PROJECT->regions[id];
-    }
-  else
-    {
-      MidiRegion * midi_region = calloc (1, sizeof (MidiRegion));
-      Region * region = (Region *) midi_region;
-
-      region->id = id;
-      PROJECT->regions[id] = region;
-      PROJECT->num_regions++;
-
-      g_message ("[region_new] Creating blank region %d", id);
-
-      return midi_region;
-    }
-}
-
 MidiRegion *
 midi_region_new (Track *    track,
                  Position * start_pos,
                  Position * end_pos)
 {
-  MidiRegion * midi_region = calloc (1, sizeof (MidiRegion));
+  MidiRegion * midi_region =
+    calloc (1, sizeof (MidiRegion));
 
   region_init ((Region *) midi_region,
                REGION_TYPE_MIDI,
@@ -88,7 +64,7 @@ midi_region_add_midi_note (MidiRegion * region,
     region->num_midi_notes - 1] =
       region->midi_notes[
         region->num_midi_notes - 1]->id;
-  midi_note->midi_region = region;
+  midi_note->region = region;
 
   EVENTS_PUSH (ET_MIDI_NOTE_CREATED,
                midi_note);

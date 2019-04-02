@@ -355,17 +355,18 @@ void
 track_add_region (Track * track,
                   Region * region)
 {
-  g_warn_if_fail (track->type == TRACK_TYPE_INSTRUMENT ||
-            track->type == TRACK_TYPE_AUDIO);
+  g_warn_if_fail (
+    (track->type == TRACK_TYPE_INSTRUMENT ||
+    track->type == TRACK_TYPE_AUDIO) &&
+    region->id >= 0);
 
   region_set_track (region, track);
+  track->region_ids[track->num_regions] =
+    region->id;
   array_append (track->regions,
                 track->num_regions,
                 region);
-  track->region_ids[
-    track->num_regions - 1] =
-      track->regions[
-        track->num_regions - 1]->id;
+
   EVENTS_PUSH (ET_REGION_CREATED,
                region);
 }
@@ -403,7 +404,11 @@ track_remove_region (Track * track,
                 region->id);
 
   if (delete)
-    region_free (region);
+    {
+      project_remove_region (region);
+      region_free (region);
+    }
+
   EVENTS_PUSH (ET_REGION_REMOVED, track);
 }
 
@@ -413,9 +418,23 @@ track_remove_region (Track * track,
 void
 track_free (Track * track)
 {
-  /* TODO delete midi notes, automation points,
-   * curves, chords, automation tracks, automation
-   * lanes, regions */
+  int i;
+
+  /* remove automation points, curves, tracks,
+   * lanes*/
+  automation_tracklist_free_members (
+    &track->automation_tracklist);
+
+  /* remove regions */
+  for (i = 0; i < track->num_regions; i++)
+    track_remove_region (
+      track, track->regions[i], 1);
+
+  /* remove chords */
+  for (i = 0; i < track->num_chords; i++)
+    chord_track_remove_chord (
+      track, track->chords[i]);
+
   switch (track->type)
     {
     case TRACK_TYPE_INSTRUMENT:
@@ -440,9 +459,11 @@ track_free (Track * track)
       break;
     }
 
-  if (track->widget)
+  if (track->widget && GTK_IS_WIDGET (track->widget))
     gtk_widget_destroy (
       GTK_WIDGET (track->widget));
+
+  free (track);
 }
 
 /**

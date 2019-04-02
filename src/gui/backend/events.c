@@ -396,9 +396,9 @@ on_midi_note_changed (MidiNote * midi_note)
         GTK_WIDGET (midi_note->widget));
     }
 
-  if (midi_note->midi_region->widget)
+  if (midi_note->region->widget)
     gtk_widget_queue_draw (
-      GTK_WIDGET (midi_note->midi_region->widget));
+      GTK_WIDGET (midi_note->region->widget));
 }
 
 static void
@@ -522,6 +522,14 @@ events_process ()
 
       switch (et)
         {
+        case ET_TRACK_REMOVED:
+          tracklist_widget_hard_refresh (
+            MW_TRACKLIST);
+          break;
+        case ET_CHANNEL_REMOVED:
+          mixer_widget_refresh (
+            MW_MIXER);
+          break;
         case ET_REGION_REMOVED:
           arranger_widget_refresh (
             Z_ARRANGER_WIDGET (MW_TIMELINE));
@@ -704,6 +712,7 @@ events_process ()
   /*g_message ("processed %d events", i);*/
 
   /*g_usleep (8000);*/
+  project_sanity_check (PROJECT);
 
   return G_SOURCE_CONTINUE;
 }

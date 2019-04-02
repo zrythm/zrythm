@@ -44,7 +44,7 @@ void
 midi_note_init_loaded (
   MidiNote * self)
 {
-  self->midi_region =
+  self->region =
     project_get_region (self->region_id);
 
   self->widget =
@@ -52,7 +52,7 @@ midi_note_init_loaded (
 }
 
 MidiNote *
-midi_note_new (MidiRegion * midi_region,
+midi_note_new (MidiRegion * region,
                Position *   start_pos,
                Position *   end_pos,
                int          val,
@@ -64,9 +64,8 @@ midi_note_new (MidiRegion * midi_region,
                        start_pos);
   position_set_to_pos (&midi_note->end_pos,
                        end_pos);
-  midi_note->midi_region = midi_region;
-  midi_note->midi_region =
-    project_get_region (midi_region->id);
+  midi_note->region = region;
+  midi_note->region_id = region->id;
   midi_note->val = val;
   midi_note->vel = vel;
   vel->midi_note = midi_note;
@@ -245,7 +244,7 @@ midi_note_hit (MidiNote * midi_note,
            loop_end_adjusted,
            region_end_adjusted;
   jack_midi_event_t * ev;
-  Region * region = midi_note->midi_region;
+  Region * region = midi_note->region;
 
   /* get local positions */
   region_timeline_pos_to_local (
@@ -299,7 +298,8 @@ midi_note_free (MidiNote * self)
                  self->widget);
       /*gtk_widget_destroy (*/
         /*GTK_WIDGET (self->widget->tooltip_win));*/
-      gtk_widget_destroy (
+      g_idle_add (
+        (GSourceFunc) gtk_widget_destroy,
         GTK_WIDGET (self->widget));
     }
 

@@ -176,10 +176,6 @@ mixer_add_channel (Channel * channel)
       array_append (MIXER->channels,
                     MIXER->num_channels,
                     channel);
-      MIXER->channel_ids[
-        MIXER->num_channels - 1] =
-          MIXER->channels[
-            MIXER->num_channels - 1]->id;
     }
 
   track_setup (channel->track);
@@ -209,13 +205,25 @@ mixer_remove_channel (Channel * channel)
 {
   g_message ("removing channel %s",
              channel->track->name);
-  AUDIO_ENGINE->run = 0;
   channel->enabled = 0;
   channel->stop_thread = 1;
+
+  g_message ("mixer num channels before %d",
+             MIXER->num_channels);
   array_delete (MIXER->channels,
                 MIXER->num_channels,
                 channel);
+  int size = MIXER->num_channels + 1;
+  array_delete (MIXER->channel_ids,
+                size,
+                channel->id);
+  project_remove_channel (channel);
   channel_free (channel);
+  g_message ("mixer num channels after %d",
+             MIXER->num_channels);
+
+  EVENTS_PUSH (ET_CHANNEL_REMOVED,
+               NULL);
 }
 
 void

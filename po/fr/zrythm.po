@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-01 20:30+0100\n"
+"POT-Creation-Date: 2019-04-02 14:15+0100\n"
 "PO-Revision-Date: 2019-03-22 22:30+0000\n"
 "Last-Translator: alex <alex at zrythm dot org>\n"
 "Language-Team: French\n"
@@ -44,8 +44,8 @@ msgstr ""
 msgid "Adaptive Grid"
 msgstr ""
 
-#: src/gui/widgets/track.c:453
-msgid "Add _Region"
+#: src/gui/widgets/track.c:471
+msgid "Add Region"
 msgstr ""
 
 #: resources/ui/preferences.ui:193
@@ -152,7 +152,7 @@ msgstr ""
 msgid "Copy selection to clipboard"
 msgstr ""
 
-#: resources/ui/project_assistant.ui:69 resources/ui/shortcuts.ui:84
+#: resources/ui/project_assistant.ui:61 resources/ui/shortcuts.ui:84
 msgid "Create new project"
 msgstr ""
 
@@ -467,7 +467,7 @@ msgstr ""
 msgid "Project name"
 msgstr ""
 
-#: resources/ui/project_assistant.ui:121
+#: resources/ui/project_assistant.ui:113
 msgid ""
 "Project name: name\n"
 "Path: /home/user/Zrythm/name\n"
@@ -528,11 +528,11 @@ msgid ""
 "Double click to bring up the clip editor"
 msgstr "Bonjour region"
 
-#: resources/ui/project_assistant.ui:85
+#: resources/ui/project_assistant.ui:77
 msgid "Remove"
 msgstr ""
 
-#: resources/ui/project_assistant.ui:89
+#: resources/ui/project_assistant.ui:81
 msgid "Removes selected project from the list"
 msgstr ""
 
@@ -552,7 +552,7 @@ msgstr ""
 msgid "Right"
 msgstr ""
 
-#: src/actions/actions.c:485
+#: src/actions/actions.c:489
 #, fuzzy
 msgid "Save Project"
 msgstr "asdasda"
@@ -573,12 +573,13 @@ msgstr ""
 msgid "Scan again for MIDI controllers"
 msgstr ""
 
+#: resources/ui/project_assistant.ui:27
+#, fuzzy
+msgid "Select Project"
+msgstr "asdasda"
+
 #: resources/ui/first_run_assistant.ui:117
 msgid "Select a folder"
-msgstr ""
-
-#: resources/ui/project_assistant.ui:39
-msgid "Select a project..."
 msgstr ""
 
 #: resources/ui/shortcuts.ui:161
@@ -732,7 +733,7 @@ msgid "Unselect all"
 msgstr ""
 
 #. create untitled project
-#: src/project.c:141
+#: src/project.c:167
 msgid "Untitled Project"
 msgstr ""
 
@@ -772,25 +773,25 @@ msgid "Zrythm Directory"
 msgstr ""
 
 #: src/plugins/lv2_gtk.c:145 src/plugins/lv2_gtk.c:562
-#: src/actions/actions.c:488
+#: src/actions/actions.c:492
 msgid "_Cancel"
 msgstr ""
 
-#: src/gui/widgets/track.c:422
+#: src/gui/widgets/track.c:432
 #, c-format
 msgid "_Delete %d Tracks"
 msgstr ""
 
-#: src/gui/widgets/track.c:419
+#: src/gui/widgets/track.c:429
 msgid "_Delete Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:440
+#: src/gui/widgets/track.c:452
 #, c-format
 msgid "_Duplicate %d Tracks"
 msgstr ""
 
-#: src/gui/widgets/track.c:436
+#: src/gui/widgets/track.c:448
 msgid "_Duplicate Track"
 msgstr ""
 
@@ -814,7 +815,7 @@ msgstr ""
 msgid "_Prefix plugin name"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:146 src/actions/actions.c:490
+#: src/plugins/lv2_gtk.c:146 src/actions/actions.c:494
 msgid "_Save"
 msgstr ""
 

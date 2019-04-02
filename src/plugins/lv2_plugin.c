@@ -978,8 +978,8 @@ lv2_plugin_update (Lv2Plugin* plugin)
             }
 
           if (ev.index == 2)
-            g_message ("lv2_gtk_ui_port_event from "
-                       "lv2 update");
+            /*g_message ("lv2_gtk_ui_port_event from "*/
+                       /*"lv2 update");*/
           lv2_gtk_ui_port_event (
             plugin, ev.index,
             ev.size, ev.protocol,

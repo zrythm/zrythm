@@ -260,13 +260,13 @@ static const cyaml_schema_field_t
 	CYAML_FIELD_INT (
     "muted", CYAML_FLAG_DEFAULT,
     Region, muted),
-	//CYAML_FIELD_INT (
-    //"selected", CYAML_FLAG_DEFAULT,
-    //Region, selected),
   CYAML_FIELD_SEQUENCE_COUNT (
     "midi_note_ids", CYAML_FLAG_DEFAULT,
     Region, midi_note_ids, num_midi_notes,
     &int_schema, 0, CYAML_UNLIMITED),
+	CYAML_FIELD_INT (
+    "actual_id", CYAML_FLAG_DEFAULT,
+    Region, actual_id),
 
 	CYAML_FIELD_END
 };

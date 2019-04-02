@@ -292,14 +292,6 @@ automatable_is_float (Automatable * a)
   /*return a->maxf - a->minf;*/
 /*}*/
 
-void
-automatable_free (Automatable * automatable)
-{
-  /* TODO go through every track and plugins
-   * and set associated automatables to NULL */
-
-}
-
 /**
  * Gets the current value of the parameter the
  * automatable is for.
@@ -529,3 +521,12 @@ automatable_get_automation_track (Automatable * automatable)
   return NULL;
 }
 
+void
+automatable_free (Automatable * self)
+{
+  /* TODO go through every track and plugins
+   * and set associated automatables to NULL */
+  g_free (self->label);
+
+  free (self);
+}

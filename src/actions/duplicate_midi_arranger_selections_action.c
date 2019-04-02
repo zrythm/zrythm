@@ -55,12 +55,12 @@ duplicate_midi_arranger_selections_action_do (
       mn = self->mas->midi_notes[i];
 
       /* clone the clone */
-      _mn = midi_note_clone (mn, mn->midi_region);
+      _mn = midi_note_clone (mn, mn->region);
       _mn->actual_id = _mn->id;
 
       /* add and shift the new clone */
       midi_region_add_midi_note (
-        _mn->midi_region,
+        _mn->region,
         _mn);
       midi_note_shift (
         _mn, self->ticks, self->delta);
@@ -87,7 +87,7 @@ duplicate_midi_arranger_selections_action_undo (
 
       /* remove it */
       midi_region_remove_midi_note (
-        _mn->midi_region,
+        _mn->region,
         _mn);
     }
   EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,

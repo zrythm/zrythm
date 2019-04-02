@@ -293,3 +293,68 @@ automation_tracklist_get_first_invisible_at (
   /* all visible */
   return NULL;
 }
+
+static void
+remove_automation_track (
+  AutomationTracklist * self,
+  AutomationTrack *     at)
+{
+  array_delete (self->automation_tracks,
+                self->num_automation_tracks,
+                at);
+  int size = self->num_automation_tracks + 1;
+  array_delete (self->automation_tracks,
+                size,
+                at->id);
+  project_remove_automation_track (at);
+  automation_track_free (at);
+}
+
+static void
+remove_automation_lane (
+  AutomationTracklist * self,
+  AutomationLane *     al)
+{
+  array_delete (self->automation_lanes,
+                self->num_automation_lanes,
+                al);
+  int size = self->num_automation_lanes + 1;
+  array_delete (self->automation_lanes,
+                size,
+                al->id);
+  project_remove_automation_lane (al);
+  automation_lane_free (al);
+}
+
+void
+automation_tracklist_free_members (
+  AutomationTracklist * self)
+{
+  int i, size;
+  size = self->num_automation_tracks;
+  self->num_automation_tracks = 0;
+  AutomationTrack * at;
+  for (i = 0; i < size; i++)
+    {
+      at = self->automation_tracks[i];
+      /*g_message ("removing %d %s",*/
+                 /*at->id,*/
+                 /*at->automatable->label);*/
+      /*g_message ("actual automation track index %d",*/
+        /*PROJECT->automation_tracks[at->id]);*/
+      project_remove_automation_track (
+        at);
+      automation_track_free (
+        at);
+    }
+
+  size = self->num_automation_lanes;
+  self->num_automation_lanes = 0;
+  for (i = 0; i < size; i++)
+    {
+      project_remove_automation_lane (
+        self->automation_lanes[i]);
+      automation_lane_free (
+        self->automation_lanes[i]);
+    }
+}

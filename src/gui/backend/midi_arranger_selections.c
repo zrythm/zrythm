@@ -30,6 +30,17 @@
 
 #include <gtk/gtk.h>
 
+void
+midi_arranger_selections_init_loaded (
+  MidiArrangerSelections * self)
+{
+  int i;
+  for (i = 0; i < self->num_midi_notes; i++)
+    self->midi_notes[i] =
+      project_get_midi_note (
+        self->midi_note_ids[i]);
+}
+
 /**
  * Returns the position of the leftmost object.
  */
@@ -88,7 +99,7 @@ remove_transient (
              transient->widget, index);
   mas->transient_notes[index] = NULL;
   midi_region_remove_midi_note (
-    transient->midi_region,
+    transient->region,
     transient);
 }
 
@@ -122,9 +133,12 @@ midi_arranger_selections_add_note (
                       mas->num_midi_notes,
                       note))
     {
+      mas->midi_note_ids[mas->num_midi_notes] =
+        note->id;
       array_append (mas->midi_notes,
                     mas->num_midi_notes,
                     note);
+
       EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
                    note);
     }
@@ -155,7 +169,7 @@ midi_arranger_selections_create_missing_transients (
           /* create the transient */
           transient =
             midi_note_clone (
-              note, note->midi_region);
+              note, note->region);
           /*transient->visible = 0;*/
           transient->transient = 1;
           transient->widget =
@@ -168,7 +182,7 @@ midi_arranger_selections_create_missing_transients (
           mas->transient_notes[i] =
             transient;
           midi_region_add_midi_note (
-            transient->midi_region, transient);
+            transient->region, transient);
           g_message ("created %p transient",
                      transient->widget);
         }
@@ -195,6 +209,11 @@ midi_arranger_selections_remove_note (
                 mas->num_midi_notes,
                 note,
                 idx);
+  int size = mas->num_midi_notes + 1;
+  array_delete (mas->midi_note_ids,
+                size,
+                note->id);
+
   EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
                note);
 
@@ -218,7 +237,7 @@ midi_arranger_selections_clone ()
     {
       MidiNote * r = src->midi_notes[i];
       MidiNote * new_r =
-        midi_note_clone (r, r->midi_region);
+        midi_note_clone (r, r->region);
      array_append (new_ts->midi_notes,
                     new_ts->num_midi_notes,
                     new_r);
@@ -382,7 +401,7 @@ midi_arranger_selections_paste_to_pos (
                       MIDI_NOTE_CLONE_COPY);
       /*midi_note_print (cp);*/
       midi_region_add_midi_note (
-        cp->midi_region,
+        cp->region,
         cp);
     }
 #undef DIFF
