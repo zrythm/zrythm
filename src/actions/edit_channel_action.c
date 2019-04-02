@@ -71,7 +71,7 @@ void
 edit_channel_action_do (EditChannelAction * self)
 {
   Channel * channel =
-    PROJECT->channels[self->channel_id];
+    project_get_channel (self->channel_id);
   switch (self->type)
     {
     case EDIT_CHANNEL_ACTION_TYPE_CHANGE_VOLUME:
@@ -89,7 +89,7 @@ void
 edit_channel_action_undo (EditChannelAction * self)
 {
   Channel * channel =
-    PROJECT->channels[self->channel_id];
+    project_get_channel (self->channel_id);
   switch (self->type)
     {
     case EDIT_CHANNEL_ACTION_TYPE_CHANGE_VOLUME:

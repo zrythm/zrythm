@@ -404,62 +404,86 @@ track_widget_get_private (TrackWidget * self)
 static void
 show_context_menu (TrackWidget * self)
 {
-  GtkWidget *menu, *menuitem;
+  GtkWidget *menu;
+  GtkMenuItem *menuitem;
   menu = gtk_menu_new();
+  TRACK_WIDGET_GET_PRIVATE (self);
+  Track * track = tw_prv->track;
 
   GET_SELECTED_TRACKS;
+
+#define APPEND(mi) \
+  gtk_menu_shell_append ( \
+    GTK_MENU_SHELL (menu), \
+    GTK_WIDGET (menuitem));
 
   if (num_selected > 0)
     {
       char * str;
 
-      /* delete track */
-      if (num_selected == 1)
-        str =
-          g_strdup_printf (_("_Delete Track"));
-      else
-        str =
-          g_strdup_printf (_("_Delete %d Tracks"),
-                           num_selected);
-      menuitem =
-        gtk_menu_item_new_with_mnemonic (str);
-      g_free (str);
-      gtk_actionable_set_action_name (
-        GTK_ACTIONABLE (menuitem),
-        "win.delete-selected-tracks");
-      gtk_menu_shell_append (
-        GTK_MENU_SHELL(menu), menuitem);
+      if (track->type != TRACK_TYPE_MASTER)
+        {
+          /* delete track */
+          if (num_selected == 1)
+            str =
+              g_strdup_printf (_("_Delete Track"));
+          else
+            str =
+              g_strdup_printf (_("_Delete %d Tracks"),
+                               num_selected);
+          menuitem =
+            z_gtk_create_menu_item (
+              str,
+              "z-delete",
+              0,
+              NULL,
+              0,
+              "win.delete-selected-tracks");
+          g_free (str);
+          APPEND (menuitem);
 
-      /* duplicate track */
-      if (num_selected == 1)
-        str =
-          g_strdup_printf (_("_Duplicate Track"));
-      else
-        str =
-          g_strdup_printf (
-            _("_Duplicate %d Tracks"),
-            num_selected);
-      menuitem =
-        gtk_menu_item_new_with_mnemonic (str);
-      g_free (str);
-      gtk_actionable_set_action_name (
-        GTK_ACTIONABLE (menuitem),
-        "win.delete-selected-tracks");
-      gtk_menu_shell_append (
-        GTK_MENU_SHELL(menu), menuitem);
+          /* duplicate track */
+          if (num_selected == 1)
+            str =
+              g_strdup_printf (_("_Duplicate Track"));
+          else
+            str =
+              g_strdup_printf (
+                _("_Duplicate %d Tracks"),
+                num_selected);
+          menuitem =
+            z_gtk_create_menu_item (
+              str,
+              "z-edit-duplicate",
+              0,
+              NULL,
+              0,
+              "win.duplicate-selected-tracks");
+          g_free (str);
+          APPEND (menuitem);
+        }
 
-      menuitem =
-        gtk_menu_item_new_with_mnemonic (
-          _("Add _Region"));
-      gtk_actionable_set_action_name (
-        GTK_ACTIONABLE (menuitem),
-        "win.add-region-to-track");
-      gtk_menu_shell_append (
-        GTK_MENU_SHELL(menu), menuitem);
+      /* add regions */
+      if (track->type == TRACK_TYPE_INSTRUMENT)
+        {
+          menuitem =
+            z_gtk_create_menu_item (
+              _("Add Region"),
+              "z-gtk-add",
+              0,
+              NULL,
+              0,
+              "win.duplicate-selected-tracks");
+          APPEND (menuitem);
+        }
     }
 
-  gtk_widget_show_all(menu);
-  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
+#undef APPEND
+
+  gtk_menu_attach_to_widget (
+    GTK_MENU (menu),
+    GTK_WIDGET (self), NULL);
+  gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
 }
 
 static void

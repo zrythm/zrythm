@@ -21,6 +21,7 @@
 #define __UTILS_DIALOGS_H__
 
 #include "gui/widgets/main_window.h"
+#include "project.h"
 #include "utils/dialogs.h"
 
 #include <gtk/gtk.h>
@@ -44,6 +45,11 @@ GtkDialog * dialogs_get_open_project_dialog (
       "_Open",
       GTK_RESPONSE_ACCEPT,
       NULL);
+
+  gtk_file_chooser_set_filename (
+    GTK_FILE_CHOOSER (dialog),
+    PROJECT->dir);
+
   return GTK_DIALOG (dialog);
 }
 

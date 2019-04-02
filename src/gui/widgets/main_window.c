@@ -256,6 +256,10 @@ static GActionEntry actions[] = {
   { "eraser-mode", activate_eraser_mode },
   { "ramp-mode", activate_ramp_mode },
   { "audition-mode", activate_audition_mode },
+
+  /* tracks */
+  { "delete-selected-tracks", activate_delete_selected_tracks },
+  { "duplicate-selected-tracks", activate_duplicate_selected_tracks },
 };
 
 static void

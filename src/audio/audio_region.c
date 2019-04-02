@@ -29,31 +29,6 @@
 
 #include "ext/audio_decoder/ad.h"
 
-/**
- * Creates region (used when loading projects).
- */
-AudioRegion *
-audio_region_get_or_create_blank (int id)
-{
-  if (PROJECT->regions[id])
-    {
-      return (AudioRegion *) PROJECT->regions[id];
-    }
-  else
-    {
-      AudioRegion * audio_region = calloc (1, sizeof (AudioRegion));
-      Region * region = (Region *) audio_region;
-
-      region->id = id;
-      PROJECT->regions[id] = region;
-      PROJECT->num_regions++;
-
-      g_message ("Creating blank audio region %d", id);
-
-      return audio_region;
-    }
-}
-
 AudioRegion *
 audio_region_new (Track *    track,
                   char *     filename,

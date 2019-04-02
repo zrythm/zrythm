@@ -140,13 +140,19 @@ void
 tracklist_add_track (Track *     track,
                      int         pos)
 {
-  TRACKLIST->track_ids[pos] =
-    track->id;
+  g_warn_if_fail (track->id > -1);
+
   array_insert (TRACKLIST->tracks,
                 TRACKLIST->num_tracks,
                 pos,
                 track);
-      EVENTS_PUSH (ET_TRACK_ADDED, track);
+  int size = TRACKLIST->num_tracks - 1;
+  array_insert (TRACKLIST->track_ids,
+                size,
+                pos,
+                track->id);
+
+  EVENTS_PUSH (ET_TRACK_ADDED, track);
 }
 
 ChordTrack *
@@ -173,6 +179,9 @@ tracklist_append_track (Track *     track)
   array_append (TRACKLIST->tracks,
                 TRACKLIST->num_tracks,
                 track);
+
+  g_message ("track id %d", track->id);
+  g_warn_if_fail (track->id > -1);
 }
 
 int
@@ -258,7 +267,21 @@ tracklist_get_next_visible_track (Track * track)
 void
 tracklist_remove_track (Track *     track)
 {
+  AUDIO_ENGINE->run = 0;
+
+  mixer_remove_channel (track->channel);
   array_delete (TRACKLIST->tracks,
                 TRACKLIST->num_tracks,
                 track);
+  int size = TRACKLIST->num_tracks + 1;
+  array_delete (TRACKLIST->track_ids,
+                size,
+                track->id);
+  project_remove_track (track);
+  track_free (track);
+
+  EVENTS_PUSH (ET_TRACK_REMOVED,
+               NULL);
+
+  AUDIO_ENGINE->run = 1;
 }

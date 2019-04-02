@@ -441,10 +441,14 @@ activate_open (GSimpleAction *action,
     dialogs_get_open_project_dialog (
       GTK_WINDOW (MAIN_WINDOW));
 
-  int res;
-  do
-    res = run_open_dialog (dialog);
-  while (res != 0);
+  int res = run_open_dialog (dialog);
+  if (res == GTK_RESPONSE_ACCEPT)
+    {
+      char *filename =
+        gtk_file_chooser_get_filename (
+          GTK_FILE_CHOOSER (dialog));
+      project_load (filename);
+    }
 
   gtk_widget_destroy (GTK_WIDGET (dialog));
 }
@@ -860,10 +864,22 @@ activate_create_bus_track (GSimpleAction *action,
 }
 
 void
-activate_delete_selected_tracks (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+activate_duplicate_selected_tracks (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
 {
+  g_message ("duplicating selected tracks");
+
+}
+
+void
+activate_delete_selected_tracks (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  g_message ("deleeting selected tracks");
   GET_SELECTED_TRACKS;
 
   for (int i = 0; i < num_selected; i++)
@@ -878,8 +894,6 @@ activate_delete_selected_tracks (GSimpleAction *action,
         case TRACK_TYPE_BUS:
         case TRACK_TYPE_AUDIO:
             {
-              ChannelTrack * ct = (ChannelTrack *) track;
-              mixer_remove_channel (ct->channel);
               tracklist_remove_track (track);
               break;
             }

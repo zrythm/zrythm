@@ -256,7 +256,7 @@ static const cyaml_schema_value_t
 plugin_schema =
 {
 	CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
 	  Plugin, plugin_fields_schema),
 };
 
@@ -271,12 +271,6 @@ plugin_init_loaded (Plugin * plgn);
  */
 void
 plugin_generate_automatables (Plugin * plugin);
-
-/**
- * Used when loading projects.
- */
-Plugin *
-plugin_get_or_create_blank (int id);
 
 /**
  * Creates/initializes a plugin and its internal plugin (LV2, etc.)

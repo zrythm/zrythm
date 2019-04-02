@@ -165,6 +165,8 @@ for cat in ['actions', 'animations', 'applets', 'apps', 'categories', 'devices',
               f.endswith('help-contents.svg') or
               f.endswith('configure-shortcuts.svg') or
               f.endswith('tools-report-bug.svg') or
+              f.endswith('delete.svg') or
+              f.endswith('edit-duplicate.svg') or
               f.endswith('applications-internet.svg') or
               f.endswith('draw-eraser.svg') or
               f.endswith('draw-line.svg') or

@@ -40,6 +40,7 @@
 #include "audio/transport.h"
 #include "gui/widgets/header_bar.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/region.h"
 #include "gui/widgets/splash.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
@@ -70,7 +71,7 @@ tear_down (Project * self)
   engine_tear_down ();
 
   for (int i = 0; i < PROJECT->num_channels; i++)
-    channel_free (PROJECT->channels[i]);
+    channel_free (project_get_channel (i));
 
   track_free (PROJECT->chord_track);
 
@@ -119,6 +120,31 @@ update_paths (const char * dir)
                       PROJECT_AUDIO_DIR,
                       NULL);
   g_message ("updated paths %s", PROJECT->dir);
+}
+
+/**
+ * Checks that everything is okay with the project.
+ */
+void
+project_sanity_check (Project * self)
+{
+  int i, j;
+
+  RegionWidgetPrivate * rw_prv;
+  Region * region;
+  for (i = 0; i < self->num_regions; i++)
+    {
+      region = self->regions[i];
+      if (!region)
+        continue;
+
+      rw_prv =
+        region_widget_get_private (
+          region->widget);
+      g_warn_if_fail (
+        rw_prv->region == region &&
+        rw_prv->region->id < self->num_regions);
+    }
 }
 
 void
@@ -185,27 +211,71 @@ create_default (Project * self)
     PROJECT->title);
 }
 
-/** sl = singular lowercase */
-#define INIT_LOADED(sl) \
+/** sl = singular lowercase,
+ * cc = camel case */
+#define INIT_LOADED(cc, sl) \
   static void \
   init_loaded_##sl##s () \
   { \
+    cc * sl; \
     for (int i = 0; i < PROJECT->num_##sl##s; i++) \
-      sl##_init_loaded (project_get_##sl (i)); \
+      { \
+        sl = project_get_##sl (i); \
+        if (sl) \
+          sl##_init_loaded (project_get_##sl (i)); \
+      } \
   }
 
-INIT_LOADED (port)
-INIT_LOADED (region)
-INIT_LOADED (channel)
-INIT_LOADED (plugin)
-INIT_LOADED (track)
-INIT_LOADED (automation_point)
-INIT_LOADED (automation_curve)
-INIT_LOADED (midi_note)
-INIT_LOADED (chord)
-INIT_LOADED (automatable)
-INIT_LOADED (automation_track)
-INIT_LOADED (automation_lane)
+INIT_LOADED (Port, port)
+INIT_LOADED (Region, region)
+INIT_LOADED (Channel, channel)
+INIT_LOADED (Plugin, plugin)
+INIT_LOADED (Track, track)
+INIT_LOADED (AutomationPoint, automation_point)
+INIT_LOADED (AutomationCurve, automation_curve)
+INIT_LOADED (MidiNote, midi_note)
+INIT_LOADED (Chord, chord)
+INIT_LOADED (Automatable, automatable)
+INIT_LOADED (AutomationTrack, automation_track)
+INIT_LOADED (AutomationLane, automation_lane)
+
+static void
+populate_arrays_from_aggregated (Project * self)
+{
+  int i;
+
+  /* populate from aggregated */
+#define POP_FROM_AGG(camelcase, lowercase) \
+  camelcase * lowercase; \
+  for (i = 0; \
+       i < self->num_aggregated_##lowercase##s; \
+       i++) \
+    { \
+      lowercase = \
+        self->aggregated_##lowercase##s[i]; \
+      self->lowercase##s[lowercase->id] = \
+        lowercase; \
+      if (lowercase->id >=  \
+            self->num_##lowercase##s) \
+        self->num_##lowercase##s = \
+          lowercase->id + 1; \
+    }
+
+  POP_FROM_AGG (Region, region)
+  POP_FROM_AGG (Track, track)
+  POP_FROM_AGG (Channel, channel)
+  POP_FROM_AGG (Plugin, plugin)
+  POP_FROM_AGG (AutomationPoint, automation_point)
+  POP_FROM_AGG (AutomationCurve, automation_curve)
+  POP_FROM_AGG (MidiNote, midi_note)
+  POP_FROM_AGG (Port, port)
+  POP_FROM_AGG (Chord, chord)
+  POP_FROM_AGG (Automatable, automatable)
+  POP_FROM_AGG (AutomationTrack, automation_track)
+  POP_FROM_AGG (AutomationLane, automation_lane)
+
+#undef POP_FROM_AGG
+}
 
 static int
 load (char * filename)
@@ -265,6 +335,8 @@ load (char * filename)
       gtk_widget_destroy (GTK_WIDGET (mww));
     }
 
+  populate_arrays_from_aggregated (prj);
+
   g_message ("initing loaded structures");
   PROJECT = prj;
   update_paths (dir);
@@ -284,7 +356,9 @@ load (char * filename)
   init_loaded_automation_lanes ();
   timeline_selections_init_loaded (
     &PROJECT->timeline_selections);
-  /*mixer_load_plugins ();*/
+  midi_arranger_selections_init_loaded (
+    &PROJECT->midi_arranger_selections);
+  g_message ("loaded structures");
 
   char * filepath_noext = g_path_get_basename (dir);
   PROJECT->title = filepath_noext;
@@ -302,7 +376,11 @@ load (char * filename)
   quantize_update_snap_points (
     &PROJECT->quantize_midi);
 
+  /* sanity check */
+  project_sanity_check (PROJECT);
+
   PROJECT->loaded = 1;
+  g_message ("project loaded");
 
   /* mimic behavior when starting the app */
   if (loading_while_running)
@@ -321,6 +399,43 @@ load (char * filename)
 }
 
 #undef INIT_LOADED(sl)
+
+static void
+generate_aggregated_arrays (Project * self)
+{
+  int i;
+
+#define GEN_AGGREGATED(camelcase, lowercase) \
+  camelcase * lowercase; \
+  self->num_aggregated_##lowercase##s = 0; \
+  for (i = 0; i < self->num_##lowercase##s; i++) \
+    { \
+      lowercase = self->lowercase##s[i]; \
+      if (lowercase) \
+        { \
+          g_warn_if_fail (lowercase->id > -1); \
+          array_append ( \
+            self->aggregated_##lowercase##s, \
+            self->num_aggregated_##lowercase##s, \
+            lowercase); \
+        } \
+    }
+
+  GEN_AGGREGATED (Region, region)
+  GEN_AGGREGATED (Track, track)
+  GEN_AGGREGATED (Channel, channel)
+  GEN_AGGREGATED (Plugin, plugin)
+  GEN_AGGREGATED (AutomationPoint, automation_point)
+  GEN_AGGREGATED (AutomationCurve, automation_curve)
+  GEN_AGGREGATED (MidiNote, midi_note)
+  GEN_AGGREGATED (Port, port)
+  GEN_AGGREGATED (Chord, chord)
+  GEN_AGGREGATED (Automatable, automatable)
+  GEN_AGGREGATED (AutomationTrack, automation_track)
+  GEN_AGGREGATED (AutomationLane, automation_lane)
+
+#undef GEN_AGGREGATED
+}
 
 /**
  * If project has a filename set, it loads that. Otherwise
@@ -356,7 +471,7 @@ project_save (const char * dir)
   update_paths (dir);
   PROJECT->title = io_path_get_basename (dir);
 
-  smf_save_regions ();
+  /*smf_save_regions ();*/
 
   /* write plugin states */
   for (int i = 0; i < MIXER->num_channels; i++)
@@ -394,9 +509,8 @@ project_save (const char * dir)
         }
     }
 
-  /*xml_write_ports ();*/
-  /*xml_write_regions ();*/
-  /*xml_write_project ();*/
+  generate_aggregated_arrays (PROJECT);
+
   char * yaml = project_serialize (PROJECT);
   GError *err = NULL;
   g_file_set_contents (

@@ -110,6 +110,8 @@ int
 jack_buffer_size_cb (uint32_t nframes,
                      void *   data)
 {
+  int i, j;
+
   AUDIO_ENGINE->block_length = nframes;
   AUDIO_ENGINE->buf_size_set = true;
 #ifdef HAVE_JACK_PORT_TYPE_GET_BUFFER_SIZE
@@ -124,16 +126,21 @@ jack_buffer_size_cb (uint32_t nframes,
 
   /** reallocate port buffers to new size */
   g_message ("Reallocating port buffers to %d", nframes);
-  for (int i = 0; i < PROJECT->num_ports; i++)
+  Port * port;
+  Channel * channel;
+  for (i = 0; i < PROJECT->num_ports; i++)
     {
-      Port * port = PROJECT->ports[i];
-      port->buf = realloc (port->buf, nframes * sizeof (float));
+      port = project_get_port (i);
+      if (port)
+        port->buf =
+          realloc (port->buf,
+                   nframes * sizeof (float));
       /* TODO memset */
     }
-  for (int i = 0; i < MIXER->num_channels; i++)
+  for (i = 0; i < MIXER->num_channels; i++)
     {
-      Channel * channel = MIXER->channels[i];
-      for (int j = 0; j < STRIP_SIZE; j++)
+      channel = MIXER->channels[i];
+      for (j = 0; j < STRIP_SIZE; j++)
         {
           if (channel->plugins[j])
             {

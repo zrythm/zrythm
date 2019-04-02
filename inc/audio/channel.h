@@ -413,8 +413,18 @@ Automatable *
 channel_get_automatable (Channel *       channel,
                          AutomatableType type);
 
+/**
+ * Removes a plugin at pos from the channel.
+ *
+ * If deleting_channel is 1, the automation tracks
+ * associated with he plugin are not deleted at
+ * this time.
+ */
 void
-channel_remove_plugin (Channel * channel, int pos);
+channel_remove_plugin (
+  Channel * channel,
+  int pos,
+  int deleting_channel);
 
 /**
  * Frees the channel.

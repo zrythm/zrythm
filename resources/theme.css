@@ -76,6 +76,11 @@ entry:focus
   border-color: @bright_orange;
 }
 
+spinbutton button:focus
+{
+  border-left-color: @bright_orange;
+}
+
 entry selection
 {
   background-color: @z_yellow;

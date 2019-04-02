@@ -401,7 +401,7 @@ midi_arranger_widget_on_drag_begin_note_hit (
   MidiNote * mn = mnw->midi_note;
   self->start_midi_note = mn;
   self->start_midi_note_clone =
-    midi_note_clone (mn, mn->midi_region);
+    midi_note_clone (mn, mn->region);
 
   /* update arranger action */
   switch (P_TOOL)
@@ -583,7 +583,7 @@ midi_arranger_widget_select (
             midi_note_widget->midi_note;
 
           midi_region_remove_midi_note (
-            midi_note->midi_region,
+            midi_note->region,
             midi_note);
         }
     }
@@ -629,7 +629,7 @@ midi_arranger_widget_snap_midi_notes_l (
         position_snap (NULL,
                        pos,
                        NULL,
-                       (Region *) midi_note->midi_region,
+                       (Region *) midi_note->region,
                        ar_prv->snap_grid);
       midi_note_set_start_pos (midi_note,
                                pos);
@@ -662,7 +662,7 @@ midi_arranger_widget_snap_midi_notes_r (
         position_snap (NULL,
                        pos,
                        NULL,
-                       (Region *) midi_note->midi_region,
+                       (Region *) midi_note->region,
                        ar_prv->snap_grid);
       if (position_compare (
             pos, &midi_note->start_pos) > 0)

@@ -44,11 +44,13 @@ void
 smf_save_regions ()
 {
   int ret;
+  Region * region;
   io_mkdir (PROJECT->regions_dir);
 
   for (int i = 0; i < PROJECT->num_regions; i++)
     {
-      Region * region = PROJECT->regions[i];
+      region =
+        project_get_region (i);
 
       if (region->linked_region ||
           region->track->type != TRACK_TYPE_INSTRUMENT)

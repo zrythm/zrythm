@@ -149,7 +149,8 @@ automation_tracklist_get_visible_tracks (
  * unless it already exists.
  */
 void
-automation_tracklist_update (AutomationTracklist * self);
+automation_tracklist_update (
+  AutomationTracklist * self);
 
 AutomationTrack *
 automation_tracklist_get_at_from_automatable (
@@ -159,4 +160,9 @@ automation_tracklist_get_at_from_automatable (
 AutomationTrack *
 automation_tracklist_get_first_invisible_at (
   AutomationTracklist * self);
+
+void
+automation_tracklist_free_members (
+  AutomationTracklist * self);
+
 #endif

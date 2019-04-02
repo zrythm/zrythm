@@ -53,7 +53,7 @@ typedef struct MidiNote
    * For convenience only (cache).
    */
   int             region_id;
-  Region *        midi_region; ///< cache
+  Region *        region; ///< cache
 
   Velocity *      vel;  ///< velocity
   int             val; ///< note
@@ -80,28 +80,31 @@ static const cyaml_schema_field_t
   midi_note_fields_schema[] =
 {
 	CYAML_FIELD_INT (
-			"id", CYAML_FLAG_DEFAULT,
-			MidiNote, id),
+    "id", CYAML_FLAG_DEFAULT,
+    MidiNote, id),
   CYAML_FIELD_MAPPING (
-      "start_pos",
-      /* direct struct inside struct -> default */
-      CYAML_FLAG_DEFAULT,
-      MidiNote, start_pos, position_fields_schema),
+    "start_pos",
+    /* direct struct inside struct -> default */
+    CYAML_FLAG_DEFAULT,
+    MidiNote, start_pos, position_fields_schema),
   CYAML_FIELD_MAPPING (
-      "end_pos", CYAML_FLAG_DEFAULT,
-      MidiNote, end_pos, position_fields_schema),
+    "end_pos", CYAML_FLAG_DEFAULT,
+    MidiNote, end_pos, position_fields_schema),
   CYAML_FIELD_MAPPING_PTR (
-    "vel", CYAML_FLAG_POINTER,
-    MidiNote, vel, velocity_fields_schema),
+  "vel", CYAML_FLAG_POINTER,
+  MidiNote, vel, velocity_fields_schema),
 	CYAML_FIELD_INT (
-			"region_id", CYAML_FLAG_DEFAULT,
-			MidiNote, region_id),
+    "region_id", CYAML_FLAG_DEFAULT,
+    MidiNote, region_id),
 	CYAML_FIELD_INT (
-			"val", CYAML_FLAG_DEFAULT,
-			MidiNote, val),
+    "val", CYAML_FLAG_DEFAULT,
+    MidiNote, val),
 	CYAML_FIELD_INT (
-			"muted", CYAML_FLAG_DEFAULT,
-			MidiNote, muted),
+    "muted", CYAML_FLAG_DEFAULT,
+    MidiNote, muted),
+	CYAML_FIELD_INT (
+    "actual_id", CYAML_FLAG_DEFAULT,
+    MidiNote, actual_id),
 
 	CYAML_FIELD_END
 };
@@ -109,7 +112,7 @@ static const cyaml_schema_field_t
 static const cyaml_schema_value_t
 midi_note_schema = {
     /* wherever it is used it will be a pointer */
-	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+	CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
 			MidiNote, midi_note_fields_schema),
 };
 

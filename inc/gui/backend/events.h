@@ -105,6 +105,9 @@ typedef enum EventType
   /** Plugin visibility changed, should close/open
    * UI. */
   ET_PLUGIN_VISIBILITY_CHANGED,
+
+  ET_TRACK_REMOVED,
+  ET_CHANNEL_REMOVED,
 } EventType;
 
 typedef struct Events

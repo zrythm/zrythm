@@ -106,8 +106,7 @@ midi_note_draw_cb (
   gtk_render_background (
     context, cr, 0, 0, width, height);
 
-  Region * region =
-    (Region *) self->midi_note->midi_region;
+  Region * region = self->midi_note->region;
   Track * track = region->track;
   /*Channel * channel = track_get_channel (track);*/
   GdkRGBA * color = &track->color;

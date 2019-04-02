@@ -432,6 +432,7 @@ automation_track_remove_ap (AutomationTrack * at,
   array_delete (at->ap_ids,
                 size,
                 ap->id);
+  project_remove_automation_point (ap);
   automation_point_free (ap);
 }
 
@@ -449,6 +450,7 @@ automation_track_remove_ac (AutomationTrack * at,
   array_delete (at->ac_ids,
                 size,
                 ac->id);
+  project_remove_automation_curve (ac);
   automation_curve_free (ac);
 }
 
@@ -642,8 +644,16 @@ automation_track_get_normalized_val_at_pos (
 /*}*/
 
 void
-automation_track_free (AutomationTrack * at)
+automation_track_free (AutomationTrack * self)
 {
-  /* FIXME free allocated members too */
-  free (at);
+  int i;
+  for (i = 0; i < self->num_automation_points; i++)
+    automation_track_remove_ap (
+      self, self->automation_points[i]);
+
+  for (i = 0; i < self->num_automation_curves; i++)
+    automation_track_remove_ac (
+      self, self->automation_curves[i]);
+
+  free (self);
 }

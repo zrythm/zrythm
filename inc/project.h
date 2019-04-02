@@ -135,31 +135,60 @@ typedef struct Project
    * These are stored here when created so that they can
    * easily be serialized/deserialized.
    *
+   * Explanation: the aggregated objects are to be
+   * serialized because the normal arrays can
+   * contain NULLs which means they can't be
+   * serialized as is.
+   *
    * Note: when objects get deleted they are responsible
    * for setting their position to NULL.
    */
-  Plugin *          plugins[2000];
+  Plugin *          aggregated_plugins[2000];
+  int               num_aggregated_plugins;
+  Plugin *          plugins[8000];
   int               num_plugins;
-  Region            * regions [30000];
+  Region *          aggregated_regions [10000];
+  int               num_aggregated_regions;
+  Region *          regions[30000];
   int               num_regions;
+  Automatable *     aggregated_automatables[60000];
+  int               num_aggregated_automatables;
   Automatable *     automatables[20000];
   int               num_automatables;
+  AutomationPoint * aggregated_automation_points[30000];
+  int               num_aggregated_automation_points;
   AutomationPoint * automation_points[30000];
   int               num_automation_points;
+  AutomationCurve * aggregated_automation_curves[30000];
+  int               num_aggregated_automation_curves;
   AutomationCurve * automation_curves[30000];
   int               num_automation_curves;
+  AutomationTrack * aggregated_automation_tracks[50000];
+  int               num_aggregated_automation_tracks;
   AutomationTrack * automation_tracks[50000];
   int               num_automation_tracks;
+  AutomationLane *  aggregated_automation_lanes[50000];
+  int               num_aggregated_automation_lanes;
   AutomationLane *  automation_lanes[50000];
   int               num_automation_lanes;
-  MidiNote *        midi_notes[30000];
+  MidiNote *        aggregated_midi_notes[30000];
+  int               num_aggregated_midi_notes;
+  MidiNote *        midi_notes[100000];
   int               num_midi_notes;
-  Chord *           chords[600];
+  Chord *           aggregated_chords[600];
+  int               num_aggregated_chords;
+  Chord *           chords[60000];
   int               num_chords;
-  Channel *         channels[3000];
+  Channel *         aggregated_channels[3000];
+  int               num_aggregated_channels;
+  Channel *         channels[8000];
   int               num_channels;
-  Track *           tracks[3000];
+  Track *           aggregated_tracks[3000];
+  int               num_aggregated_tracks;
+  Track *           tracks[50000];
   int               num_tracks;
+  Port *            aggregated_ports[600000];
+  int               num_aggregated_ports;
   Port *            ports[600000];
   int               num_ports;
 
@@ -225,54 +254,54 @@ static const cyaml_schema_field_t
     "has_range", CYAML_FLAG_DEFAULT,
     Project, has_range),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "plugins", CYAML_FLAG_DEFAULT,
-    Project, plugins, num_plugins,
+    "aggregated_plugins", CYAML_FLAG_DEFAULT,
+    Project, aggregated_plugins, num_aggregated_plugins,
     &plugin_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "regions", CYAML_FLAG_DEFAULT,
-    Project, regions, num_regions,
+    "aggregated_regions", CYAML_FLAG_DEFAULT,
+    Project, aggregated_regions, num_aggregated_regions,
     &region_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "automation_points", CYAML_FLAG_DEFAULT,
-    Project, automation_points, num_automation_points,
+    "aggregated_automation_points", CYAML_FLAG_DEFAULT,
+    Project, aggregated_automation_points, num_aggregated_automation_points,
     &automation_point_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "automation_curves", CYAML_FLAG_DEFAULT,
-    Project, automation_curves, num_automation_curves,
+    "aggregated_automation_curves", CYAML_FLAG_DEFAULT,
+    Project, aggregated_automation_curves, num_aggregated_automation_curves,
     &automation_curve_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "midi_notes", CYAML_FLAG_DEFAULT,
-    Project, midi_notes, num_midi_notes,
+    "aggregated_midi_notes", CYAML_FLAG_DEFAULT,
+    Project, aggregated_midi_notes, num_aggregated_midi_notes,
     &midi_note_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "channels", CYAML_FLAG_DEFAULT,
-    Project, channels, num_channels,
+    "aggregated_channels", CYAML_FLAG_DEFAULT,
+    Project, aggregated_channels, num_aggregated_channels,
     &channel_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "tracks", CYAML_FLAG_DEFAULT,
-    Project, tracks, num_tracks,
+    "aggregated_tracks", CYAML_FLAG_DEFAULT,
+    Project, aggregated_tracks, num_aggregated_tracks,
     &track_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "ports", CYAML_FLAG_DEFAULT,
-    Project, ports, num_ports,
+    "aggregated_ports", CYAML_FLAG_DEFAULT,
+    Project, aggregated_ports, num_aggregated_ports,
     &port_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "chords", CYAML_FLAG_DEFAULT,
-    Project, chords, num_chords,
+    "aggregated_chords", CYAML_FLAG_DEFAULT,
+    Project, aggregated_chords, num_aggregated_chords,
     &chord_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "automatables", CYAML_FLAG_DEFAULT,
-    Project, automatables, num_automatables,
+    "aggregated_automatables", CYAML_FLAG_DEFAULT,
+    Project, aggregated_automatables, num_aggregated_automatables,
     &automatable_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "automation_tracks", CYAML_FLAG_DEFAULT,
-    Project, automation_tracks,
-    num_automation_tracks,
+    "aggregated_automation_tracks", CYAML_FLAG_DEFAULT,
+    Project, aggregated_automation_tracks,
+    num_aggregated_automation_tracks,
     &automation_track_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "automation_lanes", CYAML_FLAG_DEFAULT,
-    Project, automation_lanes,
-    num_automation_lanes,
+    "aggregated_automation_lanes", CYAML_FLAG_DEFAULT,
+    Project, aggregated_automation_lanes,
+    num_aggregated_automation_lanes,
     &automation_lane_schema, 0, CYAML_UNLIMITED),
 	CYAML_FIELD_INT (
     "chord_track_id", CYAML_FLAG_DEFAULT,
@@ -287,6 +316,12 @@ static const cyaml_schema_value_t
 	CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER,
   Project, project_fields_schema),
 };
+
+/**
+ * Checks that everything is okay with the project.
+ */
+void
+project_sanity_check (Project * self);
 
 /**
  * If project has a filename set, it loads that. Otherwise
