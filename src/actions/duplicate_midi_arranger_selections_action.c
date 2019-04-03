@@ -37,7 +37,7 @@ duplicate_midi_arranger_selections_action_new (
                  DuplicateMidiArrangerSelectionsAction));
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-    UNDOABLE_ACTION_TYPE_DUPLICATE_MIDI_NOTES;
+    UNDOABLE_ACTION_TYPE_DUPLICATE_MA_SELECTIONS;
   self->mas = midi_arranger_selections_clone ();
   self->ticks = ticks;
   self->delta = delta;

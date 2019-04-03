@@ -1433,7 +1433,9 @@ drag_update (GtkGestureDrag * gesture,
       g_message ("stretching L");
     } /* endif STRETCHING_L */
   else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_RESIZING_R)
+             UI_OVERLAY_ACTION_RESIZING_R ||
+           ar_prv->action ==
+             UI_OVERLAY_ACTION_CREATING_RESIZING_R)
     {
       /* get position */
       Position pos;
@@ -1474,7 +1476,9 @@ drag_update (GtkGestureDrag * gesture,
     }
   /* if moving the selection */
   else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_MOVING)
+             UI_OVERLAY_ACTION_MOVING ||
+           ar_prv->action ==
+             UI_OVERLAY_ACTION_CREATING_MOVING)
     {
       /* get the offset pos (so we can add it to the start
        * positions and then snap it) */

@@ -37,7 +37,7 @@ move_midi_arranger_selections_action_new (
     	MoveMidiArrangerSelectionsAction));
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-	  UNDOABLE_ACTION_TYPE_MOVE_MIDI_NOTES;
+	  UNDOABLE_ACTION_TYPE_MOVE_MA_SELECTIONS;
   self->mas = midi_arranger_selections_clone ();
   self->delta = delta;
   self->ticks = ticks;

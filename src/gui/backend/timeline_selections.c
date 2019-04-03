@@ -728,6 +728,7 @@ timeline_selections_clone ()
 
   TimelineSelections * src = TL_SELECTIONS;
 
+  /* FIXME only does regions */
   for (int i = 0; i < src->num_regions; i++)
     {
       Region * r = src->regions[i];

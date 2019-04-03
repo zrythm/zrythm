@@ -27,59 +27,59 @@
 /**
  * Note: chord addresses are to be copied.
  */
-UndoableAction *
-create_chords_action_new (Chord **  chords,
-                          int       num_chords)
-{
-  CreateChordsAction * self =
-    calloc (1, sizeof (CreateChordsAction));
+/*UndoableAction **/
+/*create_chords_action_new (Chord **  chords,*/
+                          /*int       num_chords)*/
+/*{*/
+  /*CreateChordsAction * self =*/
+    /*calloc (1, sizeof (CreateChordsAction));*/
 
-  UndoableAction * ua = (UndoableAction *) self;
-  ua->type =
-    UNDOABLE_ACTION_TYPE_CREATE_CHORDS;
+  /*UndoableAction * ua = (UndoableAction *) self;*/
+  /*ua->type =*/
+    /*UNDOABLE_ACTION_TYPE_CREATE_CHORDS;*/
 
-  self->num_chords = num_chords;
-  for (int i = 0; i < num_chords; i++)
-    {
-      self->chords[i] = chords[i];
-    }
+  /*self->num_chords = num_chords;*/
+  /*for (int i = 0; i < num_chords; i++)*/
+    /*{*/
+      /*self->chords[i] = chords[i];*/
+    /*}*/
 
-  return ua;
-}
+  /*return ua;*/
+/*}*/
 
-void
-create_chords_action_do (CreateChordsAction * self)
-{
-  for (int i = 0; i < self->num_chords; i++)
-    {
-      Chord * chord = self->chords[i];
-      chord_track_add_chord (P_CHORD_TRACK,
-                             chord);
+/*void*/
+/*create_chords_action_do (CreateChordsAction * self)*/
+/*{*/
+  /*for (int i = 0; i < self->num_chords; i++)*/
+    /*{*/
+      /*Chord * chord = self->chords[i];*/
+      /*chord_track_add_chord (P_CHORD_TRACK,*/
+                             /*chord);*/
 
-      EVENTS_PUSH (ET_CHORD_CREATED, chord);
-    }
-}
+      /*EVENTS_PUSH (ET_CHORD_CREATED, chord);*/
+    /*}*/
+/*}*/
 
-void
-create_chords_action_undo (CreateChordsAction * self)
-{
-  for (int i = 0; i < self->num_chords; i++)
-    {
-      Chord * chord = self->chords[i];
-      chord_track_remove_chord (P_CHORD_TRACK,
-                                chord);
+/*void*/
+/*create_chords_action_undo (CreateChordsAction * self)*/
+/*{*/
+  /*for (int i = 0; i < self->num_chords; i++)*/
+    /*{*/
+      /*Chord * chord = self->chords[i];*/
+      /*chord_track_remove_chord (P_CHORD_TRACK,*/
+                                /*chord);*/
 
-      EVENTS_PUSH (ET_CHORD_REMOVED, chord);
-    }
-}
+      /*EVENTS_PUSH (ET_CHORD_REMOVED, chord);*/
+    /*}*/
+/*}*/
 
-void
-create_chords_action_free (CreateChordsAction * self)
-{
-  for (int i = 0; i < self->num_chords; i++)
-    {
-      Chord * chord = self->chords[i];
-      chord_free (chord);
-    }
+/*void*/
+/*create_chords_action_free (CreateChordsAction * self)*/
+/*{*/
+  /*for (int i = 0; i < self->num_chords; i++)*/
+    /*{*/
+      /*Chord * chord = self->chords[i];*/
+      /*chord_free (chord);*/
+    /*}*/
 
-}
+/*}*/

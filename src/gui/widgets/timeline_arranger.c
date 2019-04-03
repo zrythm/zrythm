@@ -25,7 +25,7 @@
  */
 
 #include "actions/undoable_action.h"
-#include "actions/create_chords_action.h"
+#include "actions/create_timeline_selections_action.h"
 #include "actions/undo_manager.h"
 #include "actions/duplicate_timeline_selections_action.h"
 #include "actions/move_timeline_selections_action.h"
@@ -913,31 +913,30 @@ timeline_arranger_widget_create_ap (
   /*g_message ("at here: %s",*/
              /*at->automatable->label);*/
 
-  /* if the automatable is float in this automation track */
-  if (automatable_is_float (at->automatable))
-    {
-      /* add automation point to automation track */
-      float value =
-        automation_lane_widget_get_fvalue_at_y (
-          at->al->widget,
-          start_y);
+  /* add automation point to automation track */
+  float value =
+    automation_lane_widget_get_fvalue_at_y (
+      at->al->widget,
+      start_y);
 
-      AutomationPoint * ap =
-        automation_point_new_float (
-          at,
-          value,
-          pos);
-      automation_track_add_automation_point (
-        at,
-        ap,
-        GENERATE_CURVE_POINTS);
-      gtk_overlay_add_overlay (
-        GTK_OVERLAY (self),
-        GTK_WIDGET (ap->widget));
-      gtk_widget_show (GTK_WIDGET (ap->widget));
-      automation_point_widget_select (
-        ap->widget, F_SELECT, F_NO_TRANSIENTS);
-    }
+  AutomationPoint * ap =
+    automation_point_new_float (
+      at,
+      value,
+      pos);
+  automation_track_add_automation_point (
+    at,
+    ap,
+    GENERATE_CURVE_POINTS);
+  gtk_overlay_add_overlay (
+    GTK_OVERLAY (self),
+    GTK_WIDGET (ap->widget));
+  gtk_widget_show (GTK_WIDGET (ap->widget));
+  ar_prv->action =
+    UI_OVERLAY_ACTION_CREATING_RESIZING_R;
+  ARRANGER_WIDGET_SELECT_AUTOMATION_POINT (
+    self, ap, F_SELECT,
+    F_NO_APPEND, F_NO_TRANSIENTS);
 }
 
 void
@@ -993,9 +992,11 @@ timeline_arranger_widget_create_region (
     }
   EVENTS_PUSH (ET_REGION_CREATED,
                region);
-  ar_prv->action = UI_OVERLAY_ACTION_RESIZING_R;
-  region_widget_select (
-    region->widget, F_SELECT, F_NO_TRANSIENTS);
+  ar_prv->action =
+    UI_OVERLAY_ACTION_CREATING_RESIZING_R;
+  ARRANGER_WIDGET_SELECT_REGION (
+    self, region, F_SELECT,
+    F_NO_APPEND, F_NO_TRANSIENTS);
 }
 
 void
@@ -1021,14 +1022,15 @@ timeline_arranger_widget_create_chord (
  position_set_to_pos (&chord->pos,
                       pos);
  Chord * chords[1] = { chord };
- UndoableAction * action =
-   create_chords_action_new (chords, 1);
- undo_manager_perform (UNDO_MANAGER,
-                       action);
-  ar_prv->action = UI_OVERLAY_ACTION_NONE;
-  TL_SELECTIONS->chords[0] = chord;
-  TL_SELECTIONS->num_chords = 1;
-  chord_widget_select (chord->widget, 1);
+ /*UndoableAction * action =*/
+   /*create_chords_action_new (chords, 1);*/
+ /*undo_manager_perform (UNDO_MANAGER,*/
+                       /*action);*/
+  ar_prv->action =
+    UI_OVERLAY_ACTION_CREATING_MOVING;
+  ARRANGER_WIDGET_SELECT_CHORD (
+    self, chord, F_SELECT,
+    F_NO_APPEND, F_NO_TRANSIENTS);
 }
 
 /**
@@ -1293,6 +1295,25 @@ timeline_arranger_widget_snap_regions_r (
         {
           region_set_end_pos (region,
                               pos);
+
+          /* if creating also set the loop points
+           * appropriately */
+          if (ar_prv->action ==
+                UI_OVERLAY_ACTION_CREATING_RESIZING_R)
+            {
+              long full_size =
+                region_get_full_length_in_ticks (
+                  region);
+              position_set_to_pos (
+                &region->true_end_pos,
+                &region->loop_start_pos);
+              position_add_ticks (
+                &region->true_end_pos,
+                full_size);
+              position_set_to_pos (
+                &region->loop_end_pos,
+                &region->true_end_pos);
+            }
         }
     }
 }
@@ -1763,6 +1784,18 @@ timeline_arranger_widget_on_drag_end (
     {
       timeline_selections_clear (
         TL_SELECTIONS);
+    }
+  /* if something was created */
+  else if (ar_prv->action ==
+             UI_OVERLAY_ACTION_CREATING_MOVING ||
+           ar_prv->action ==
+             UI_OVERLAY_ACTION_CREATING_RESIZING_R)
+    {
+      UndoableAction * ua =
+        (UndoableAction *)
+        create_timeline_selections_action_new ();
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
     }
   /* if didn't click on something */
   else
