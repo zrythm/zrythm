@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-02 14:15+0100\n"
+"POT-Creation-Date: 2019-04-04 12:43+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: alex <alex at zrythm dot org>\n"
 "Language-Team: German\n"
@@ -44,7 +44,7 @@ msgstr ""
 msgid "Adaptive Grid"
 msgstr ""
 
-#: src/gui/widgets/track.c:471
+#: src/gui/widgets/track.c:480
 msgid "Add Region"
 msgstr ""
 
@@ -260,6 +260,10 @@ msgstr ""
 msgid "Forward"
 msgstr ""
 
+#: src/gui/widgets/track.c:139 src/gui/widgets/track.c:143
+msgid "Freeze"
+msgstr ""
+
 #: src/utils/ui.c:521
 msgid "French [fr]"
 msgstr ""
@@ -343,6 +347,10 @@ msgstr ""
 msgid "Location"
 msgstr ""
 
+#: src/gui/widgets/track.c:140
+msgid "Lock"
+msgstr ""
+
 #: resources/ui/transport_controls.ui:122 resources/ui/export_dialog.ui:249
 msgid "Loop"
 msgstr ""
@@ -369,6 +377,10 @@ msgstr ""
 
 #: resources/ui/channel.ui:341
 msgid "Master"
+msgstr ""
+
+#: src/gui/widgets/track.c:138
+msgid "Mute"
 msgstr ""
 
 #: resources/ui/inspector_region.ui:115 resources/ui/inspector_master.ui:113
@@ -506,7 +518,7 @@ msgstr ""
 msgid "Read automation"
 msgstr ""
 
-#: resources/ui/transport_controls.ui:36
+#: src/gui/widgets/track.c:136 resources/ui/transport_controls.ui:36
 msgid "Record"
 msgstr ""
 
@@ -520,7 +532,7 @@ msgstr ""
 msgid "Region"
 msgstr ""
 
-#: src/gui/widgets/region.c:214
+#: src/gui/widgets/region.c:219
 msgid ""
 "Region - Click and drag to move around (hold Shift to disable snapping) - "
 "Double click to bring up the clip editor"
@@ -550,7 +562,7 @@ msgstr ""
 msgid "Right"
 msgstr ""
 
-#: src/actions/actions.c:489
+#: src/actions/actions.c:490
 msgid "Save Project"
 msgstr ""
 
@@ -599,6 +611,14 @@ msgstr ""
 msgid "Setting up backend"
 msgstr ""
 
+#: src/gui/widgets/track.c:142
+msgid "Show Automation Lanes"
+msgstr ""
+
+#: src/gui/widgets/track.c:141
+msgid "Show UI"
+msgstr ""
+
 #: resources/ui/preferences.ui:242
 msgid "Show native decoration"
 msgstr ""
@@ -617,6 +637,10 @@ msgstr ""
 
 #: resources/ui/top_dock_edge.ui:151
 msgid "Snaps to grid and keeps offset"
+msgstr ""
+
+#: src/gui/widgets/track.c:137
+msgid "Solo"
 msgstr ""
 
 #: resources/ui/export_dialog.ui:237
@@ -688,6 +712,13 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:184
 msgid "Tool"
+msgstr ""
+
+#: src/gui/widgets/track.c:149
+msgid ""
+"Track - Change track parameters like Solo/Mute... - Click the icon on the "
+"bottom right to bring up the automation lanes - Double click to show "
+"corresponding channel in Mixer (if applicable)"
 msgstr ""
 
 #: resources/ui/piano_roll.ui:53 resources/ui/audio_clip_editor.ui:34
@@ -769,25 +800,25 @@ msgid "Zrythm Directory"
 msgstr ""
 
 #: src/plugins/lv2_gtk.c:145 src/plugins/lv2_gtk.c:562
-#: src/actions/actions.c:492
+#: src/actions/actions.c:493
 msgid "_Cancel"
 msgstr ""
 
-#: src/gui/widgets/track.c:432
+#: src/gui/widgets/track.c:441
 #, c-format
 msgid "_Delete %d Tracks"
 msgstr ""
 
-#: src/gui/widgets/track.c:429
+#: src/gui/widgets/track.c:438
 msgid "_Delete Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:452
+#: src/gui/widgets/track.c:461
 #, c-format
 msgid "_Duplicate %d Tracks"
 msgstr ""
 
-#: src/gui/widgets/track.c:448
+#: src/gui/widgets/track.c:457
 msgid "_Duplicate Track"
 msgstr ""
 
@@ -811,7 +842,7 @@ msgstr ""
 msgid "_Prefix plugin name"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:146 src/actions/actions.c:494
+#: src/plugins/lv2_gtk.c:146 src/actions/actions.c:495
 msgid "_Save"
 msgstr ""
 

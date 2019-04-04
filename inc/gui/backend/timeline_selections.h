@@ -26,7 +26,8 @@
 #include "audio/region.h"
 #include "utils/yaml.h"
 
-#define TL_SELECTIONS (&PROJECT->timeline_selections)
+#define TL_SELECTIONS \
+  (&PROJECT->timeline_selections)
 
 /**
  * Selections to be used for the timeline's current
@@ -216,6 +217,17 @@ timeline_selections_remove_transients (
   //TimelineSelections * ts,
   //GtkWidget *          object,
   //int                  transient);
+  //
+
+/**
+ * Returns if the region is selected or not,
+ * optionally checking in the transients as well.
+ */
+int
+timeline_selections_contains_region (
+  TimelineSelections * self,
+  Region *             r,
+  int                  check_transients);
 
 void
 timeline_selections_add_region (

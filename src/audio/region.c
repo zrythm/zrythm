@@ -256,19 +256,13 @@ region_set_clip_start_pos (Region * region,
 }
 
 /**
- * Returns if Region is in MidiArrangerSelections.
+ * Returns if Region is in TimelineSelections.
  */
 int
 region_is_selected (Region * self)
 {
-  if (array_contains (
-        TL_SELECTIONS->regions,
-        TL_SELECTIONS->num_regions,
-        self) ||
-      array_contains (
-        TL_SELECTIONS->transient_regions,
-        TL_SELECTIONS->num_regions,
-        self))
+  if (timeline_selections_contains_region (
+        TL_SELECTIONS, self, 1))
     return 1;
 
   return 0;

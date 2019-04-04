@@ -32,11 +32,6 @@ typedef struct Track Track;
 typedef struct _TracklistWidget TracklistWidget;
 
 #define TRACKLIST (&PROJECT->tracklist)
-#define GET_SELECTED_TRACKS \
-  Track * selected_tracks[200]; \
-  int num_selected = 0; \
-  tracklist_get_selected_tracks (selected_tracks,\
-                                 &num_selected);
 #define MAX_TRACKS 3000
 
 typedef struct Track ChordTrack;
@@ -93,18 +88,12 @@ tracklist_init (Tracklist * self,
                 int loading);
 
 /**
- * Finds selected tracks and puts them in given array.
- */
-void
-tracklist_get_selected_tracks (Track **    selected_tracks,
-                               int *       num_selected);
-
-/**
  * Finds visible tracks and puts them in given array.
  */
 void
-tracklist_get_visible_tracks (Track **    visible_tracks,
-                              int *       num_visible);
+tracklist_get_visible_tracks (
+  Track **    visible_tracks,
+  int *       num_visible);
 
 int
 tracklist_contains_master_track ();

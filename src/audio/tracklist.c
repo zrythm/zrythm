@@ -74,24 +74,6 @@ tracklist_init (Tracklist * self,
 }
 
 /**
- * Finds selected tracks and puts them in given array.
- */
-void
-tracklist_get_selected_tracks (Track **    selected_tracks,
-                               int *       num_selected)
-{
-  *num_selected = 0;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
-    {
-      Track * track = TRACKLIST->tracks[i];
-      if (track->selected)
-        {
-          selected_tracks[(*num_selected)++] = track;
-        }
-    }
-}
-
-/**
  * Finds visible tracks and puts them in given array.
  */
 void

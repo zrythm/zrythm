@@ -152,6 +152,15 @@ void
 automation_tracklist_update (
   AutomationTracklist * self);
 
+/**
+ * Clones the automation tracklist elements from
+ * src to dest.
+ */
+void
+automation_tracklist_clone (
+  AutomationTracklist * src,
+  AutomationTracklist * dest);
+
 AutomationTrack *
 automation_tracklist_get_at_from_automatable (
   AutomationTracklist * self,

@@ -85,11 +85,18 @@ inspector_widget_new ()
                                min_size.width,
                                -1);
 
-  gtk_widget_set_visible (GTK_WIDGET (self->region), 0);
-  gtk_widget_set_visible (GTK_WIDGET (self->ap), 0);
-  gtk_widget_set_visible (GTK_WIDGET (self->track), 0);
-  gtk_widget_set_visible (GTK_WIDGET (self->midi), 0);
-  gtk_widget_set_visible (GTK_WIDGET (self->no_item_label), 1);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->region), 0);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->chord), 0);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->ap), 0);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->track), 0);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->midi), 0);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->no_item_label), 1);
 
   return self;
 }
@@ -144,16 +151,12 @@ inspector_widget_refresh ()
     gtk_widget_set_visible (
       GTK_WIDGET (self->midi), 0);
 
-  Track * selected_tracks[200];
-  int     num_selected_tracks = 0;
-  tracklist_get_selected_tracks (
-    selected_tracks, &num_selected_tracks);
-  if (num_selected_tracks > 0)
+  if (TRACKLIST_SELECTIONS->num_tracks > 0)
     {
       inspector_track_widget_show_tracks (
         self->track,
-        (Track **) selected_tracks,
-        num_selected_tracks);
+        (Track **) TRACKLIST_SELECTIONS->tracks,
+        TRACKLIST_SELECTIONS->num_tracks);
       gtk_widget_set_visible (
         GTK_WIDGET (self->track), 1);
     }

@@ -81,7 +81,6 @@ typedef struct Track
   TrackWidget *       widget;
   int                 bot_paned_visible; ///< flag to set automations visible or not
   int                 visible;
-  int                 selected;
   int                 handle_pos; ///< position of multipane handle
   int                 mute; ///< muted or not
   int                 solo; ///< solo or not
@@ -123,6 +122,11 @@ typedef struct Track
 
   AutomationTracklist   automation_tracklist;
 
+  /**
+   * Used when undoing/redoing.
+   */
+  int                   actual_id;
+
 } Track;
 
 static const cyaml_strval_t
@@ -155,9 +159,6 @@ track_fields_schema[] =
 	CYAML_FIELD_INT (
     "visible", CYAML_FLAG_DEFAULT,
     Track, visible),
-	CYAML_FIELD_INT (
-    "selected", CYAML_FLAG_DEFAULT,
-    Track, selected),
 	CYAML_FIELD_INT (
     "handle_pos", CYAML_FLAG_DEFAULT,
     Track, handle_pos),
@@ -222,6 +223,12 @@ Track *
 track_new (Channel * channel, char * label);
 
 /**
+ * Clones the track and returns the clone.
+ */
+Track *
+track_clone (Track * track);
+
+/**
  * Sets track muted and optionally adds the action
  * to the undo stack.
  */
@@ -246,6 +253,12 @@ void
 track_set_soloed (Track * track,
                   int     solo,
                   int     trigger_undo);
+
+/**
+ * Returns if Track is in TracklistSelections.
+ */
+int
+track_is_selected (Track * self);
 
 /**
  * Wrapper.

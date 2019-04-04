@@ -40,6 +40,7 @@
 #include "gui/widgets/track.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/ui.h"
 
@@ -117,7 +118,8 @@ on_key_action (GtkWidget *widget,
       event->type == GDK_KEY_PRESS &&
       event->keyval == GDK_KEY_a)
     {
-      tracklist_widget_toggle_select_all_tracks (self, 1);
+      tracklist_widget_select_all_tracks (
+        self, F_SELECT);
     }
 
   return FALSE;
@@ -127,7 +129,7 @@ on_key_action (GtkWidget *widget,
  * Selects or deselects all tracks.
  */
 void
-tracklist_widget_toggle_select_all_tracks (
+tracklist_widget_select_all_tracks (
   TracklistWidget *self,
   int              select)
 {
@@ -141,57 +143,58 @@ tracklist_widget_toggle_select_all_tracks (
 
       track_widget_select (tw, select);
     }
-
-  GET_SELECTED_TRACKS;
-
-  /* show the selected tracks in the inspector */
-  inspector_widget_show_selections (INSPECTOR_CHILD_TRACK,
-                                    (void **) selected_tracks,
-                                    num_selected);
+  EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
+               NULL);
 }
 
 /**
- * Toggles selecting the track, with the option to either
- * add the track to the current selection or to select it
- * exclusively.
+ * Selects the track, with the option to either
+ * add the track to the current selection or to
+ * select it exclusively.
  */
 void
-tracklist_widget_toggle_select_track (
+tracklist_widget_select_track (
   TracklistWidget * self,
   Track *           track,
-  int               append) ///< append to selections
+  int               select,
+  int               append)
 {
-  GET_SELECTED_TRACKS;
+  Track ** array =
+    TRACKLIST_SELECTIONS->tracks;
+  int * num =
+    &TRACKLIST_SELECTIONS->num_tracks;
 
-  if (!append)
+  if (select && !append)
     {
       /* deselect existing selections */
-      for (int i = 0; i < num_selected; i++)
+      for (int i = 0; i < (*num); i++)
         {
-          Track * t = selected_tracks[i];
-          track_widget_select (t->widget, 0);
+          Track * t = array[i];
+          track_widget_select (
+            t->widget, F_NO_SELECT);
         }
-      num_selected = 0;
     }
 
-  /* if already selected */
-  if (array_contains ((void **) selected_tracks,
-                       num_selected,
+  /* if we are deselecting and the item is
+   * selected */
+  if (!select &&
+      array_contains ((void **) array,
+                       *num,
                        track))
     {
       /* deselect track */
-      track_widget_select (track->widget, 0);
+      track_widget_select (
+        track->widget, F_NO_SELECT);
     }
-  else /* not selected */
+  /* if selecting */
+  else if (select &&
+           !array_contains ((void **) array,
+                            *num,
+                            track))
     {
-      /* select track */
-      track_widget_select (track->widget, 1);
+      track_widget_select (
+        track->widget, F_SELECT);
     }
-
-  /* show the selected tracks in the inspector */
-  inspector_widget_show_selections (INSPECTOR_CHILD_TRACK,
-                                    (void **) selected_tracks,
-                                    num_selected);
 }
 
 void

@@ -35,6 +35,7 @@
 #include "actions/delete_timeline_selections_action.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/backend/timeline_selections.h"
+#include "gui/backend/tracklist_selections.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/bot_bar.h"
@@ -879,12 +880,13 @@ activate_delete_selected_tracks (
   GVariant      *variant,
   gpointer       user_data)
 {
-  g_message ("deleeting selected tracks");
-  GET_SELECTED_TRACKS;
+  g_message ("deleting selected tracks");
 
-  for (int i = 0; i < num_selected; i++)
+  for (int i = 0;
+       i < TRACKLIST_SELECTIONS->num_tracks; i++)
     {
-      Track * track = selected_tracks[i];
+      Track * track =
+        TRACKLIST_SELECTIONS->tracks[i];
       switch (track->type)
         {
         case TRACK_TYPE_CHORD:

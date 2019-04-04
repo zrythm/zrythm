@@ -108,6 +108,62 @@ track_new (Channel * channel, char * label)
 }
 
 /**
+ * Clones the track and returns the clone.
+ */
+Track *
+track_clone (Track * track)
+{
+  int i;
+  Track * new_track =
+    track_new (
+      project_get_channel (track->channel_id),
+      track->name);
+
+#define COPY_MEMBER(a) \
+  new_track->a = track->a
+
+  COPY_MEMBER (type);
+  COPY_MEMBER (bot_paned_visible);
+  COPY_MEMBER (visible);
+  COPY_MEMBER (handle_pos);
+  COPY_MEMBER (mute);
+  COPY_MEMBER (solo);
+  COPY_MEMBER (recording);
+  COPY_MEMBER (color.red);
+  COPY_MEMBER (color.green);
+  COPY_MEMBER (color.blue);
+  COPY_MEMBER (color.alpha);
+
+  Region * region, * new_region;
+  for (i = 0; i < track->num_regions; i++)
+    {
+      /* clone region */
+      region =
+        project_get_region (track->region_ids[i]);
+      new_region =
+        region_clone (region, REGION_CLONE_COPY);
+      new_region->actual_id = region->id;
+
+      /* add to new track */
+      new_track->region_ids[new_track->num_regions] =
+        new_region->id;
+      array_append (new_track->regions,
+                    new_track->num_regions,
+                    new_region);
+    }
+
+  automation_tracklist_clone (
+    &track->automation_tracklist,
+    &new_track->automation_tracklist);
+
+#undef COPY_MEMBER
+
+  new_track->actual_id = track->id;
+
+  return new_track;
+}
+
+/**
  * Sets recording and connects/disconnects the JACK ports.
  */
 void
@@ -227,6 +283,19 @@ track_set_soloed (Track * track,
       edit_track_action_do (
         (EditTrackAction *) action);
     }
+}
+
+/**
+ * Returns if Track is in TracklistSelections.
+ */
+int
+track_is_selected (Track * self)
+{
+  if (tracklist_selections_contains_track (
+        TRACKLIST_SELECTIONS, self))
+    return 1;
+
+  return 0;
 }
 
 /**

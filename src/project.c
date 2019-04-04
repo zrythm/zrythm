@@ -358,6 +358,8 @@ load (char * filename)
     &PROJECT->timeline_selections);
   midi_arranger_selections_init_loaded (
     &PROJECT->midi_arranger_selections);
+  tracklist_selections_init_loaded (
+    &PROJECT->tracklist_selections);
   g_message ("loaded structures");
 
   char * filepath_noext = g_path_get_basename (dir);

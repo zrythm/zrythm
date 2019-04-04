@@ -217,14 +217,6 @@ on_track_added (Track * track)
       Z_ARRANGER_WIDGET (MW_TIMELINE));
 }
 
-static void
-on_track_select_changed (Track * track)
-{
-  if (track->widget)
-    track_widget_select (track->widget,
-                         track->selected);
-}
-
 /**
  * Called when setting clip editor region using
  * g_idle_add to give the widgets time to have
@@ -428,6 +420,32 @@ on_region_changed (Region * region)
 }
 
 static void
+on_track_changed (Track * track)
+{
+  if (GTK_IS_WIDGET (track->widget))
+    {
+      gtk_widget_set_visible (
+        GTK_WIDGET (track->widget),
+        track->visible);
+      if (track_is_selected (track))
+        {
+          gtk_widget_set_state_flags (
+            GTK_WIDGET (track->widget),
+            GTK_STATE_FLAG_SELECTED,
+            0);
+        }
+      else
+        {
+          gtk_widget_unset_state_flags (
+            GTK_WIDGET (track->widget),
+            GTK_STATE_FLAG_SELECTED);
+        }
+      gtk_widget_queue_draw (
+        GTK_WIDGET (track->widget));
+    }
+}
+
+static void
 on_plugin_visibility_changed (Plugin * pl)
 {
   if (pl->visible)
@@ -537,6 +555,9 @@ events_process ()
         case ET_TL_SELECTIONS_CHANGED:
           inspector_widget_refresh ();
           break;
+        case ET_TRACKLIST_SELECTIONS_CHANGED:
+          inspector_widget_refresh ();
+          break;
         case ET_RULER_SIZE_CHANGED:
           gtk_widget_queue_allocate (
             GTK_WIDGET (arg)); // ruler widget
@@ -636,9 +657,6 @@ events_process ()
         case ET_TRACK_ADDED:
           on_track_added ((Track *) arg);
           break;
-        case ET_TRACK_SELECT_CHANGED:
-          on_track_select_changed ((Track *) arg);
-          break;
         case ET_MIDI_ARRANGER_SELECTIONS_CHANGED:
            on_midi_note_selection_changed();
             break;
@@ -649,6 +667,9 @@ events_process ()
           break;
         case ET_REGION_CHANGED:
           on_region_changed ((Region *) arg);
+          break;
+        case ET_TRACK_CHANGED:
+          on_track_changed ((Track *) arg);
           break;
         case ET_TIMELINE_VIEWPORT_CHANGED:
           timeline_minimap_widget_refresh (

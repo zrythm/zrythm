@@ -27,6 +27,7 @@
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "audio/region.h"
+#include "gui/backend/tracklist_selections.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/audio_track.h"
 #include "gui/widgets/automation_lane.h"
@@ -43,6 +44,8 @@
 #include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
+#include "project.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
@@ -62,23 +65,27 @@ track_widget_select (
   TRACK_WIDGET_GET_PRIVATE (self);
   Track * track = tw_prv->track;
 
-  track->selected = select;
   if (select)
     {
-      gtk_widget_set_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_SELECTED,
-        0);
+      /*gtk_widget_set_state_flags (*/
+        /*GTK_WIDGET (self),*/
+        /*GTK_STATE_FLAG_SELECTED,*/
+        /*0);*/
+      tracklist_selections_add_track (
+        TRACKLIST_SELECTIONS,
+        track);
     }
   else
     {
-      gtk_widget_unset_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_SELECTED);
+      /*gtk_widget_unset_state_flags (*/
+        /*GTK_WIDGET (self),*/
+        /*GTK_STATE_FLAG_SELECTED);*/
+      tracklist_selections_remove_track (
+        TRACKLIST_SELECTIONS,
+        track);
     }
 
   /* auto-set recording mode */
-  ChannelTrack * ct;
   Channel * chan;
   switch (track->type)
     {
@@ -86,8 +93,7 @@ track_widget_select (
     case TRACK_TYPE_AUDIO:
     case TRACK_TYPE_MASTER:
     case TRACK_TYPE_BUS:
-      ct = (ChannelTrack *)track;
-      chan = ct->channel;
+      chan = track->channel;
       g_message (
         "%sselecting track %s, recording %d sa %d",
         select ? "" : "de",
@@ -113,6 +119,9 @@ track_widget_select (
     case TRACK_TYPE_CHORD:
       break;
     }
+
+  EVENTS_PUSH (ET_TRACK_CHANGED,
+               track);
 }
 
 static gboolean
@@ -124,24 +133,23 @@ on_motion (GtkWidget * widget,
 
   if (event->type == GDK_ENTER_NOTIFY ||
       (event->type == GDK_MOTION_NOTIFY &&
-       !bot_bar_status_contains ("Record") &&
-       !bot_bar_status_contains ("Solo") &&
-       !bot_bar_status_contains ("Mute") &&
-       !bot_bar_status_contains ("Freeze") &&
-       !bot_bar_status_contains ("Lock") &&
-       !bot_bar_status_contains ("Show UI") &&
-       !bot_bar_status_contains ("Show Automation Lanes") &&
-       !bot_bar_status_contains ("Freeze")))
+       !bot_bar_status_contains (_("Record")) &&
+       !bot_bar_status_contains (_("Solo")) &&
+       !bot_bar_status_contains (_("Mute")) &&
+       !bot_bar_status_contains (_("Freeze")) &&
+       !bot_bar_status_contains (_("Lock")) &&
+       !bot_bar_status_contains (_("Show UI")) &&
+       !bot_bar_status_contains (_("Show Automation Lanes")) &&
+       !bot_bar_status_contains (_("Freeze"))))
     {
       gtk_widget_set_state_flags (
         GTK_WIDGET (self),
         GTK_STATE_FLAG_PRELIGHT, 0);
       bot_bar_change_status (
-        "Track - Change track parameters like Solo/"
-        "Mute... - Click the icon on the bottom "
-        "right to bring up the automation lanes - "
-        "Double click to show corresponding channel "
-        "in Mixer (if applicable)");
+        _("Track - Change track parameters like \
+Solo/Mute... - Click the icon on the bottom right \
+to bring up the automation lanes - Double click to \
+show corresponding channel in Mixer (if applicable)"));
     }
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
@@ -410,12 +418,13 @@ show_context_menu (TrackWidget * self)
   TRACK_WIDGET_GET_PRIVATE (self);
   Track * track = tw_prv->track;
 
-  GET_SELECTED_TRACKS;
-
 #define APPEND(mi) \
   gtk_menu_shell_append ( \
     GTK_MENU_SHELL (menu), \
     GTK_WIDGET (menuitem));
+
+  int num_selected =
+    TRACKLIST_SELECTIONS->num_tracks;
 
   if (num_selected > 0)
     {
@@ -496,30 +505,25 @@ on_right_click (GtkGestureMultiPress *gesture,
   TrackWidget * tw = Z_TRACK_WIDGET (user_data);
   TRACK_WIDGET_GET_PRIVATE (tw);
 
-  GdkEventSequence *sequence =
-    gtk_gesture_single_get_current_sequence (
-      GTK_GESTURE_SINGLE (gesture));
-  const GdkEvent * event =
-    gtk_gesture_get_last_event (
-      GTK_GESTURE (gesture), sequence);
-  GdkModifierType state_mask;
-  gdk_event_get_state (event, &state_mask);
+  UI_GET_STATE_MASK (gesture);
 
   Track * track = tw_prv->track;
-  if (!track->selected)
+  if (!track_is_selected (track))
     {
       if (state_mask & GDK_SHIFT_MASK ||
           state_mask & GDK_CONTROL_MASK)
         {
-          tracklist_widget_toggle_select_track (MW_TRACKLIST,
-                                                track,
-                                                1);
+          tracklist_widget_select_track (
+            MW_TRACKLIST,
+            track,
+            F_SELECT, F_APPEND);
         }
       else
         {
-          tracklist_widget_toggle_select_track (MW_TRACKLIST,
-                                                track,
-                                                0);
+          tracklist_widget_select_track (
+            MW_TRACKLIST,
+            track,
+            F_SELECT, F_NO_APPEND);
         }
     }
   if (n_press == 1)
@@ -542,32 +546,18 @@ multipress_pressed (GtkGestureMultiPress *gesture,
   /*if (!gtk_widget_has_focus (GTK_WIDGET (self)))*/
     /*gtk_widget_grab_focus (GTK_WIDGET (self));*/
 
-  GdkEventSequence *sequence =
-    gtk_gesture_single_get_current_sequence (
-      GTK_GESTURE_SINGLE (gesture));
-  const GdkEvent * event =
-    gtk_gesture_get_last_event (
-      GTK_GESTURE (gesture),
-      sequence);
-  GdkModifierType state_mask;
-  gdk_event_get_state (event, &state_mask);
+  UI_GET_STATE_MASK (gesture);
 
   TRACK_WIDGET_GET_PRIVATE (self);
   Track * track = tw_prv->track;
 
-  if (state_mask & GDK_SHIFT_MASK ||
-      state_mask & GDK_CONTROL_MASK)
-    {
-      tracklist_widget_toggle_select_track (MW_TRACKLIST,
-                                            track,
-                                            1);
-    }
-  else
-    {
-      tracklist_widget_toggle_select_track (MW_TRACKLIST,
-                                            track,
-                                            0);
-    }
+  tracklist_widget_select_track (
+    MW_TRACKLIST, track,
+    track_is_selected (track) ?
+      F_NO_SELECT: F_SELECT,
+    (state_mask & GDK_SHIFT_MASK ||
+      state_mask & GDK_CONTROL_MASK) ?
+      F_APPEND : F_NO_APPEND);
 }
 
 /**

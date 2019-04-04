@@ -45,6 +45,7 @@
 #include "gui/backend/clip_editor.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/backend/timeline_selections.h"
+#include "gui/backend/tracklist_selections.h"
 #include "gui/backend/tool.h"
 #include "plugins/plugin.h"
 #include "zrythm.h"
@@ -100,6 +101,7 @@ typedef struct Project
 
   TimelineSelections       timeline_selections;
   MidiArrangerSelections   midi_arranger_selections;
+  TracklistSelections   tracklist_selections;
 
   /** Zoom levels. TODO & move to clip_editor */
   double             timeline_zoom;
@@ -240,10 +242,16 @@ static const cyaml_schema_field_t
     Project, quantize_midi, quantize_fields_schema),
   CYAML_FIELD_MAPPING (
     "timeline_selections", CYAML_FLAG_DEFAULT,
-    Project, timeline_selections, timeline_selections_fields_schema),
+    Project, timeline_selections,
+    timeline_selections_fields_schema),
   CYAML_FIELD_MAPPING (
     "midi_arranger_selections", CYAML_FLAG_DEFAULT,
-    Project, midi_arranger_selections, midi_arranger_selections_fields_schema),
+    Project, midi_arranger_selections,
+    midi_arranger_selections_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "tracklist_selections", CYAML_FLAG_DEFAULT,
+    Project, tracklist_selections,
+    tracklist_selections_fields_schema),
   CYAML_FIELD_MAPPING (
     "range_1", CYAML_FLAG_DEFAULT,
     Project, range_1, position_fields_schema),

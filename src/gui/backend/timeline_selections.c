@@ -680,6 +680,26 @@ timeline_selections_remove_ap (
   remove_transient_ap (ts, idx);
 }
 
+int
+timeline_selections_contains_region (
+  TimelineSelections * self,
+  Region *             region,
+  int                  check_transients)
+{
+  if (array_contains (self->regions,
+                      self->num_regions,
+                      region))
+    return 1;
+
+  if (check_transients &&
+      array_contains (self->transient_regions,
+                      self->num_regions,
+                      region))
+    return 1;
+
+  return 0;
+}
+
 /**
  * Clears selections.
  */
@@ -844,6 +864,9 @@ timeline_selections_free (TimelineSelections * self)
   free (self);
 }
 
-SERIALIZE_SRC (TimelineSelections, timeline_selections)
-DESERIALIZE_SRC (TimelineSelections, timeline_selections)
-PRINT_YAML_SRC (TimelineSelections, timeline_selections)
+SERIALIZE_SRC (
+  TimelineSelections, timeline_selections)
+DESERIALIZE_SRC (
+  TimelineSelections, timeline_selections)
+PRINT_YAML_SRC (
+  TimelineSelections, timeline_selections)

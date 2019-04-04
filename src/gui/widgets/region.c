@@ -80,10 +80,15 @@ region_draw_cb (RegionWidget * self,
   REGION_WIDGET_GET_PRIVATE (data);
   Region * r = rw_prv->region;
 
-  context = gtk_widget_get_style_context (GTK_WIDGET (self));
-
-  width = gtk_widget_get_allocated_width (GTK_WIDGET (self));
-  height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  context =
+    gtk_widget_get_style_context (
+      GTK_WIDGET (self));
+  width =
+    gtk_widget_get_allocated_width (
+      GTK_WIDGET (self));
+  height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
 
   gtk_render_background (
     context, cr, 0, 0, width, height);

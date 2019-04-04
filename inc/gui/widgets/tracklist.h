@@ -62,16 +62,23 @@ void
 tracklist_widget_setup (TracklistWidget * self,
                         Tracklist * tracklist);
 
+/**
+ * Selects the track, with the option to either
+ * add the track to the current selection or to
+ * select it exclusively.
+ */
 void
-tracklist_widget_toggle_select_track (TracklistWidget * self,
-                               Track *           track,
-                               int               append); ///< append to selections
+tracklist_widget_select_track (
+  TracklistWidget * self,
+  Track *           track,
+  int               select,
+  int               append);
 
 /**
  * Selects or deselects all tracks.
  */
 void
-tracklist_widget_toggle_select_all_tracks (
+tracklist_widget_select_all_tracks (
   TracklistWidget *self,
   int              select);
 

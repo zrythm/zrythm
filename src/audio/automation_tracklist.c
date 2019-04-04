@@ -216,6 +216,19 @@ automation_tracklist_update (
     }
 }
 
+/**
+ * Clones the automation tracklist elements from
+ * src to dest.
+ */
+void
+automation_tracklist_clone (
+  AutomationTracklist * src,
+  AutomationTracklist * dest)
+{
+  /* TODO */
+  g_warn_if_reached ();
+}
+
 void
 automation_tracklist_get_visible_tracks (
   AutomationTracklist * self,
