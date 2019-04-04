@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-04 12:52+0100\n"
+"POT-Creation-Date: 2019-04-04 13:38+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -135,7 +135,7 @@ msgid "Collection"
 msgstr ""
 
 #: resources/ui/inspector_region.ui:68 resources/ui/inspector_master.ui:67
-#: resources/ui/inspector_track.ui:66 resources/ui/inspector_ap.ui:67
+#: resources/ui/inspector_track.ui:73 resources/ui/inspector_ap.ui:67
 #: resources/ui/inspector_midi.ui:67
 msgid "Color"
 msgstr ""
@@ -205,7 +205,7 @@ msgid "English [en]"
 msgstr ""
 
 #: resources/ui/inspector_region.ui:45 resources/ui/inspector_master.ui:44
-#: resources/ui/inspector_track.ui:44 resources/ui/inspector_ap.ui:44
+#: resources/ui/inspector_track.ui:47 resources/ui/inspector_ap.ui:44
 #: resources/ui/inspector_midi.ui:44
 msgid "Enter region name..."
 msgstr ""
@@ -333,7 +333,7 @@ msgid "Left"
 msgstr ""
 
 #: resources/ui/quantize_mb_popover.ui:88 resources/ui/inspector_region.ui:103
-#: resources/ui/inspector_master.ui:101 resources/ui/inspector_track.ui:98
+#: resources/ui/inspector_master.ui:101 resources/ui/inspector_track.ui:114
 #: resources/ui/inspector_ap.ui:101 resources/ui/inspector_midi.ui:101
 #: resources/ui/snap_grid_popover.ui:88
 msgid "Length"
@@ -384,12 +384,12 @@ msgid "Mute"
 msgstr ""
 
 #: resources/ui/inspector_region.ui:115 resources/ui/inspector_master.ui:113
-#: resources/ui/inspector_track.ui:109 resources/ui/inspector_ap.ui:113
+#: resources/ui/inspector_track.ui:128 resources/ui/inspector_ap.ui:113
 #: resources/ui/inspector_midi.ui:113
 msgid "Muted"
 msgstr ""
 
-#: resources/ui/control.ui:45
+#: resources/ui/inspector_track.ui:190 resources/ui/control.ui:45
 msgid "Name"
 msgstr ""
 
@@ -527,7 +527,7 @@ msgid "Redo previous command"
 msgstr ""
 
 #: resources/ui/inspector_region.ui:32 resources/ui/inspector_master.ui:31
-#: resources/ui/inspector_track.ui:31 resources/ui/inspector_ap.ui:31
+#: resources/ui/inspector_track.ui:32 resources/ui/inspector_ap.ui:31
 #: resources/ui/inspector_midi.ui:31
 msgid "Region"
 msgstr ""
@@ -714,6 +714,10 @@ msgstr ""
 msgid "Tool"
 msgstr ""
 
+#: src/gui/widgets/inspector_track.c:87
+msgid "Track"
+msgstr ""
+
 #: src/gui/widgets/track.c:149
 msgid ""
 "Track - Change track parameters like Solo/Mute... - Click the icon on the "
@@ -729,7 +733,12 @@ msgstr ""
 msgid "Tracks"
 msgstr ""
 
-#: resources/ui/quantize_mb_popover.ui:127 resources/ui/inspector_track.ui:77
+#: src/gui/widgets/inspector_track.c:92
+#, c-format
+msgid "Tracks (%d)"
+msgstr ""
+
+#: resources/ui/quantize_mb_popover.ui:127 resources/ui/inspector_track.ui:87
 #: resources/ui/file_browser.ui:84 resources/ui/plugin_browser.ui:85
 #: resources/ui/snap_grid_popover.ui:127
 msgid "Type"
@@ -867,7 +876,7 @@ msgid "out"
 msgstr ""
 
 #: resources/ui/inspector_region.ui:44 resources/ui/inspector_master.ui:43
-#: resources/ui/inspector_track.ui:43 resources/ui/inspector_ap.ui:43
+#: resources/ui/inspector_track.ui:46 resources/ui/inspector_ap.ui:43
 #: resources/ui/inspector_midi.ui:43
 msgid "region_name"
 msgstr ""

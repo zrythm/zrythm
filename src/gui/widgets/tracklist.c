@@ -307,12 +307,15 @@ tracklist_widget_init (TracklistWidget * self)
   gtk_widget_add_events (GTK_WIDGET (self),
                          GDK_ALL_EVENTS_MASK);
 
-  g_signal_connect (G_OBJECT (self), "key-press-event",
-                    G_CALLBACK (on_key_action), self);
-  g_signal_connect (G_OBJECT (self), "key-release-event",
-                    G_CALLBACK (on_key_action), self);
-  g_signal_connect (G_OBJECT (self), "resize-drag-end",
-                    G_CALLBACK (on_resize_end), NULL);
+  g_signal_connect (
+    G_OBJECT (self), "key-press-event",
+    G_CALLBACK (on_key_action), self);
+  g_signal_connect (
+    G_OBJECT (self), "key-release-event",
+    G_CALLBACK (on_key_action), self);
+  g_signal_connect (
+    G_OBJECT (self), "resize-drag-end",
+    G_CALLBACK (on_resize_end), NULL);
 }
 
 static void

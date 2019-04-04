@@ -155,8 +155,7 @@ inspector_widget_refresh ()
     {
       inspector_track_widget_show_tracks (
         self->track,
-        (Track **) TRACKLIST_SELECTIONS->tracks,
-        TRACKLIST_SELECTIONS->num_tracks);
+        TRACKLIST_SELECTIONS);
       gtk_widget_set_visible (
         GTK_WIDGET (self->track), 1);
     }
@@ -249,8 +248,7 @@ inspector_widget_show_selections (
         {
           inspector_track_widget_show_tracks (
             self->track,
-            (Track **) selections,
-            num_selections);
+            TRACKLIST_SELECTIONS);
           gtk_widget_set_visible (
             GTK_WIDGET (self->track), 1);
         }
