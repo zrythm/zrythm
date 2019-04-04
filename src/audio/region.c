@@ -448,6 +448,17 @@ region_clone (Region *        region,
       new_region = ar;
     }
 
+  /* set loop points */
+  position_set_to_pos (
+    &new_region->clip_start_pos,
+    &region->clip_start_pos);
+  position_set_to_pos (
+    &new_region->loop_start_pos,
+    &region->loop_start_pos);
+  position_set_to_pos (
+    &new_region->loop_end_pos,
+    &region->loop_end_pos);
+
   new_region->actual_id = region->id;
 
   return new_region;

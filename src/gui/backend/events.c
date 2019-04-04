@@ -420,6 +420,20 @@ on_region_changed (Region * region)
 }
 
 static void
+on_track_color_changed (Track * track)
+{
+
+  /* TODO */
+}
+
+static void
+on_track_name_changed (Track * track)
+{
+
+  /* TODO */
+}
+
+static void
 on_track_changed (Track * track)
 {
   if (GTK_IS_WIDGET (track->widget))
@@ -670,6 +684,12 @@ events_process ()
           break;
         case ET_TRACK_CHANGED:
           on_track_changed ((Track *) arg);
+          break;
+        case ET_TRACK_COLOR_CHANGED:
+          on_track_color_changed ((Track *) arg);
+          break;
+        case ET_TRACK_NAME_CHANGED:
+          on_track_name_changed ((Track *) arg);
           break;
         case ET_TIMELINE_VIEWPORT_CHANGED:
           timeline_minimap_widget_refresh (

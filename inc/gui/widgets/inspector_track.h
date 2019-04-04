@@ -31,11 +31,14 @@ G_DECLARE_FINAL_TYPE (InspectorTrackWidget,
                       GtkGrid)
 
 typedef struct Track Track;
+typedef struct TracklistSelections
+  TracklistSelections;
 
 typedef struct _InspectorTrackWidget
 {
   GtkGrid             parent_instance;
   GtkLabel *          header;
+  GtkEntry *          name;
   GtkBox *            position_box;
   GtkBox *            length_box;
   GtkColorButton *    color;
@@ -53,7 +56,6 @@ inspector_track_widget_new ();
 void
 inspector_track_widget_show_tracks (
   InspectorTrackWidget * self,
-  Track **               tracks,
-  int                    num_tracks);
+  TracklistSelections *  tls);
 
 #endif

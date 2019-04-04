@@ -69,7 +69,8 @@ typedef struct Track
    */
   int                 id;
 
-  TrackType           type; ///< the type of track this is
+  /** The type of track this is. */
+  TrackType           type;
 
   /** Track name, used in channel too. */
   char *              name;
@@ -79,7 +80,9 @@ typedef struct Track
    * 1 track has 1 widget.
    */
   TrackWidget *       widget;
-  int                 bot_paned_visible; ///< flag to set automations visible or not
+
+  /** Flag to set automations visible or not. */
+  int                 bot_paned_visible;
   int                 visible;
   int                 handle_pos; ///< position of multipane handle
   int                 mute; ///< muted or not
