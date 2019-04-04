@@ -59,7 +59,8 @@ delete_midi_arranger_selections_action_do (
 
       /* remove it */
       midi_region_remove_midi_note (
-        mn->region, mn);
+        project_get_region (mn->region_id),
+        mn);
     }
   EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
                NULL);
@@ -77,7 +78,8 @@ delete_midi_arranger_selections_action_undo (
 
       /* clone the clone */
       mn_clone =
-        midi_note_clone (mn, mn->region);
+        midi_note_clone (
+          mn, project_get_region (mn->region_id));
 
       /* move the new clone to the original id */
       project_move_midi_note (
@@ -85,7 +87,8 @@ delete_midi_arranger_selections_action_undo (
 
       /* add the new clone to the region */
       midi_region_add_midi_note (
-        mn->region, mn_clone);
+        project_get_region (mn->region_id),
+        mn_clone);
     }
   EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
                NULL);

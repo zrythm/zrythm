@@ -933,7 +933,7 @@ timeline_arranger_widget_create_ap (
     GTK_WIDGET (ap->widget));
   gtk_widget_show (GTK_WIDGET (ap->widget));
   ar_prv->action =
-    UI_OVERLAY_ACTION_CREATING_RESIZING_R;
+    UI_OVERLAY_ACTION_CREATING_MOVING;
   ARRANGER_WIDGET_SELECT_AUTOMATION_POINT (
     self, ap, F_SELECT,
     F_NO_APPEND, F_NO_TRANSIENTS);

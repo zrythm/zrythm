@@ -370,7 +370,7 @@ on_midi_note_selection_changed ()
 {
  Region * region = CLIP_EDITOR->region;
 
-  if (region->widget)
+  if (region && region->widget)
     gtk_widget_queue_draw (
       GTK_WIDGET (region->widget));
 }

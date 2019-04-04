@@ -61,7 +61,7 @@ duplicate_timeline_selections_action_do (
 
       /* add and shift the new clone */
       track_add_region (
-        _r->track,
+        project_get_track (_r->track_id),
         _r);
       region_shift (
         _r, self->ticks, self->delta);
@@ -88,7 +88,7 @@ duplicate_timeline_selections_action_undo (
 
       /* remove it */
       track_remove_region (
-        _r->track,
+        project_get_track (_r->track_id),
         _r,
         F_FREE);
     }

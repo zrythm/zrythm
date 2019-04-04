@@ -56,9 +56,10 @@ delete_timeline_selections_action_do (
         project_get_region (_r->actual_id);
 
       /* remove it */
-      track_remove_region (r->track,
-                           r,
-                           1);
+      track_remove_region (
+        project_get_track (r->track_id),
+        r,
+        1);
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
@@ -82,8 +83,9 @@ delete_timeline_selections_action_undo (
       project_move_region (_r, r->actual_id);
 
       /* add it to track */
-      track_add_region (_r->track,
-                        _r);
+      track_add_region (
+        project_get_track (_r->track_id),
+        _r);
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);

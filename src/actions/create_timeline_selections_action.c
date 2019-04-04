@@ -67,7 +67,7 @@ create_timeline_selections_action_do (
 
       /* add the new clone */
       track_add_region (
-        rc->track,
+        project_get_track (rc->track_id),
         rc);
     }
   /* TODO chords */
@@ -91,7 +91,7 @@ create_timeline_selections_action_undo (
 
       /* remove it */
       track_remove_region (
-        _r->track,
+        project_get_track (_r->track_id),
         _r,
         F_FREE);
     }

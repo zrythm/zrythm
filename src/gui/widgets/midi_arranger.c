@@ -17,10 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "zrythm.h"
-#include "project.h"
-#include "settings/settings.h"
-#include "gui/widgets/region.h"
+#include "actions/create_midi_arranger_selections_action.h"
 #include "actions/duplicate_midi_arranger_selections_action.h"
 #include "actions/move_midi_arranger_selections_action.h"
 #include "audio/automation_track.h"
@@ -54,11 +51,14 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
+#include "project.h"
 #include "utils/arrays.h"
 #include "utils/gtk.h"
 #include "utils/flags.h"
 #include "utils/ui.h"
 #include "utils/resources.h"
+#include "settings/settings.h"
+#include "zrythm.h"
 
 #include <gtk/gtk.h>
 
@@ -529,9 +529,11 @@ midi_arranger_widget_create_note (
                         midi_note);
   EVENTS_PUSH (ET_MIDI_NOTE_CREATED,
                midi_note);
-  ar_prv->action = UI_OVERLAY_ACTION_RESIZING_R;
-  midi_note_widget_select (
-    midi_note->widget, F_SELECT, F_NO_TRANSIENTS);
+  ar_prv->action =
+    UI_OVERLAY_ACTION_CREATING_RESIZING_R;
+  ARRANGER_WIDGET_SELECT_MIDI_NOTE (
+    self, midi_note, F_SELECT, F_NO_APPEND,
+    F_NO_TRANSIENTS);
 }
 
 /**
@@ -872,6 +874,16 @@ midi_arranger_widget_on_drag_end (
     {
       midi_arranger_selections_clear (
         MIDI_ARRANGER_SELECTIONS);
+    }
+  /* if something was created */
+  else if (ar_prv->action ==
+             UI_OVERLAY_ACTION_CREATING_RESIZING_R)
+    {
+      UndoableAction * ua =
+        (UndoableAction *)
+        create_midi_arranger_selections_action_new ();
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
     }
   /* if didn't click on something */
   else
