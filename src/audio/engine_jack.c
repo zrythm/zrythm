@@ -45,13 +45,17 @@ engine_jack_autoconnect_midi_controllers (
       NULL, NULL,
       JackPortIsPhysical |
       JackPortIsOutput);
+      
+  if(!ports) return;
 
   /* get selected MIDI devices */
   char ** devices =
     g_settings_get_strv (
       S_PREFERENCES,
       "midi-controllers");
-
+      
+  if(!devices) return;
+  
   int i = 0;
   int j;
   char * pname;
@@ -85,6 +89,8 @@ engine_jack_autoconnect_midi_controllers (
         }
       i++;
     }
+    jack_free(ports);
+    g_strfreev(devices);
 }
 
 /** Jack sample rate callback. */
