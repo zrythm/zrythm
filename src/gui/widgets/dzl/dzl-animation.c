@@ -1223,7 +1223,8 @@ dzl_animation_calculate_duration (GdkMonitor *monitor,
   gint n_frames;
   guint ret;
 
-#define MM_PER_SECOND       (150.0)
+/*#define MM_PER_SECOND       (150.0)*/
+#define MM_PER_SECOND       (400.0)
 #define MIN_FRAMES_PER_ANIM (5)
 #define MAX_FRAMES_PER_ANIM (500)
 

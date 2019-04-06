@@ -17,6 +17,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <time.h>
+#include <sys/time.h>
+
 #include "zrythm.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
@@ -38,8 +41,7 @@
 
 #include <gtk/gtk.h>
 
-#include <time.h>
-#include <sys/time.h>
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (ChannelWidget, channel_widget, GTK_TYPE_GRID)
 
@@ -254,16 +256,16 @@ refresh_output (ChannelWidget * self)
     {
     case CT_MIDI:
       gtk_label_set_text (self->output,
-                          "Master");
+                          _("Master"));
       break;
     case CT_MASTER:
       gtk_label_set_text (self->output,
-                          "Stereo out");
+                          _("Stereo out"));
       break;
     case CT_AUDIO:
     case CT_BUS:
       gtk_label_set_text (self->output,
-                          "Master");
+                          _("Master"));
       break;
     }
   if (self->channel->output)

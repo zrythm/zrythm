@@ -540,15 +540,20 @@ activate_export_as (GSimpleAction *action,
   /* if project is loaded */
   if (PROJECT->project_file_path)
     {
-      ExportDialogWidget * export = export_dialog_widget_new ();
+      ExportDialogWidget * export =
+        export_dialog_widget_new ();
+      gtk_window_set_transient_for (
+        GTK_WINDOW (export),
+        GTK_WINDOW (MAIN_WINDOW));
       gtk_dialog_run (GTK_DIALOG (export));
+      gtk_widget_destroy (GTK_WIDGET (export));
     }
   else
     {
       ui_show_error_message (
         MAIN_WINDOW,
-        "Project doesn't have a path yet. Please"
-        " save the project before exporting.");
+        _("Project doesn't have a path yet. Please \
+save the project before exporting."));
     }
 }
 
@@ -831,7 +836,7 @@ activate_create_audio_track (GSimpleAction *action,
                   gpointer       user_data)
 {
   Channel * chan =
-    channel_create (CT_AUDIO, "Audio Track");
+    channel_create (CT_AUDIO, _("Audio Track"));
   mixer_add_channel (chan);
   tracklist_append_track (chan->track);
 
@@ -844,7 +849,7 @@ activate_create_ins_track (GSimpleAction *action,
                   gpointer       user_data)
 {
   Channel * chan =
-    channel_create (CT_MIDI, "Instrument Track");
+    channel_create (CT_MIDI, _("Instrument Track"));
   mixer_add_channel (chan);
   tracklist_append_track (chan->track);
 
@@ -857,7 +862,7 @@ activate_create_bus_track (GSimpleAction *action,
                   gpointer       user_data)
 {
   Channel * chan =
-    channel_create (CT_BUS, "Bus Track");
+    channel_create (CT_BUS, _("Bus Track"));
   mixer_add_channel (chan);
   tracklist_append_track (chan->track);
 

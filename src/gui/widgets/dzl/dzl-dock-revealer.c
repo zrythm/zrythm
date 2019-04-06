@@ -187,7 +187,8 @@ size_to_duration (GdkMonitor *monitor,
   if (monitor != NULL)
     return dzl_animation_calculate_duration (monitor, 0, size);
 
-  return MAX (150, size * 1.2);
+  /*return MAX (150, size * 1.2);*/
+  return MAX (150, size * 0.7);
 }
 
 static guint
