@@ -303,9 +303,10 @@ mixer_add_channel_from_plugin_descr (
 Channel *
 mixer_get_channel_by_name (char *  name)
 {
+  Channel * chan;
   for (int i = 0; i < MIXER->num_channels; i++)
     {
-      Channel * chan = MIXER->channels[i];
+      chan = MIXER->channels[i];
       if (g_strcmp0 (chan->track->name, name) == 0)
         return chan;
     }

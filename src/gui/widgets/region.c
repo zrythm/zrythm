@@ -30,6 +30,7 @@
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/ui.h"
 
 #include <glib/gi18n-lib.h>
@@ -179,12 +180,19 @@ region_draw_cb (RegionWidget * self,
         }
     }
 
-  char * str =
+  char * str;
+
+  if (S_IS_DEBUG)
+    str =
       g_strdup_printf (
         "%s [%d - actual %d]",
         rw_prv->region->name,
         rw_prv->region->id,
         rw_prv->region->actual_id);
+  else
+    str =
+      g_strdup (rw_prv->region->name);
+
   draw_text (cr, str);
   g_free (str);
 

@@ -157,7 +157,7 @@ create_default (Project * self)
 
   /* add master channel to mixer */
   mixer_add_channel (
-    channel_create (CT_MASTER, "Master"));
+    channel_create (CT_MASTER, _("Master")));
 
   /* create chord track */
   self->chord_track = chord_track_default ();
@@ -534,7 +534,7 @@ project_save (const char * dir)
     PROJECT->project_file_path);
   PROJECT->title = g_path_get_basename (dir);
 
-  ui_show_notification ("Project saved.");
+  ui_show_notification (_("Project saved."));
 
   header_bar_widget_set_subtitle (
     MW_HEADER_BAR,

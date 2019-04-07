@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-04 13:38+0100\n"
+"POT-Creation-Date: 2019-04-07 01:21+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -40,6 +40,10 @@ msgid ""
 "3. Restart Zrythm"
 msgstr ""
 
+#: src/gui/widgets/header_bar.c:377
+msgid "About"
+msgstr ""
+
 #: resources/ui/snap_grid_popover.ui:47
 msgid "Adaptive Grid"
 msgstr ""
@@ -56,8 +60,12 @@ msgstr ""
 msgid "Always open the UI after creating a plugin"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:97
+#: resources/ui/export_dialog.ui:98
 msgid "Artist"
+msgstr ""
+
+#: src/actions/actions.c:839
+msgid "Audio Track"
 msgstr ""
 
 #: resources/ui/audio_unit.ui:32
@@ -80,11 +88,15 @@ msgstr ""
 msgid "Backward"
 msgstr ""
 
+#: src/gui/widgets/header_bar.c:299
+msgid "Best Fit"
+msgstr ""
+
 #: resources/ui/shortcuts.ui:245
 msgid "Best fit"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:308
+#: resources/ui/export_dialog.ui:309
 msgid "Bit depth"
 msgstr ""
 
@@ -92,7 +104,15 @@ msgstr ""
 msgid "Bot"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:44 resources/ui/preferences.ui:58
+#: src/gui/widgets/header_bar.c:246
+msgid "Bottom Panel"
+msgstr ""
+
+#: src/actions/actions.c:865
+msgid "Bus Track"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:45 resources/ui/preferences.ui:58
 msgid "Cancel"
 msgstr ""
 
@@ -108,6 +128,10 @@ msgstr ""
 #: src/gui/widgets/channel_slot.c:222
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
+msgstr ""
+
+#: src/gui/widgets/header_bar.c:321
+msgid "Chat"
 msgstr ""
 
 #: resources/ui/donate_dialog.ui:49
@@ -140,6 +164,10 @@ msgstr ""
 msgid "Color"
 msgstr ""
 
+#: resources/ui/bot_dock_edge.ui:153
+msgid "Connections"
+msgstr ""
+
 #: resources/ui/midi_controller_popover.ui:37
 msgid "Controllers found"
 msgstr ""
@@ -152,11 +180,11 @@ msgstr ""
 msgid "Copy selection to clipboard"
 msgstr ""
 
-#: resources/ui/project_assistant.ui:61 resources/ui/shortcuts.ui:84
+#: resources/ui/project_assistant.ui:62 resources/ui/shortcuts.ui:84
 msgid "Create new project"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:261
+#: resources/ui/export_dialog.ui:262
 msgid "Custom"
 msgstr ""
 
@@ -172,11 +200,11 @@ msgstr ""
 msgid "Dest. Audio Unit"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:160
+#: resources/ui/export_dialog.ui:161
 msgid "Dither"
 msgstr ""
 
-#: resources/ui/donate_dialog.ui:7
+#: src/gui/widgets/header_bar.c:368 resources/ui/donate_dialog.ui:7
 msgid "Donate"
 msgstr ""
 
@@ -188,7 +216,7 @@ msgstr ""
 msgid "Editor Shortcuts"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:130
+#: resources/ui/export_dialog.ui:131
 msgid "Electronic"
 msgstr ""
 
@@ -214,11 +242,15 @@ msgstr ""
 msgid "Eraser tool"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:58
+#: resources/ui/export_dialog.ui:59
 msgid "Export"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:85
+#: resources/ui/export_dialog.ui:30
+msgid "Export As..."
+msgstr ""
+
+#: resources/ui/export_dialog.ui:86
 msgid "Export Audio"
 msgstr ""
 
@@ -242,18 +274,22 @@ msgstr ""
 msgid "Failed to retrieve va_list value: %s"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:217
+#: resources/ui/export_dialog.ui:218
 msgid "Filename Pattern"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:160
+#: resources/ui/first_run_assistant.ui:162
 msgid ""
 "Finally, select the MIDI devices you wish to auto-connect when Zrythm starts "
 "(You can skip this step and set them up later)"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:141
+#: resources/ui/export_dialog.ui:142
 msgid "Format"
+msgstr ""
+
+#: src/gui/widgets/header_bar.c:339
+msgid "Forums"
 msgstr ""
 
 #: resources/ui/transport_controls.ui:105
@@ -276,7 +312,7 @@ msgstr ""
 msgid "General"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:108
+#: resources/ui/export_dialog.ui:109
 msgid "Genre"
 msgstr ""
 
@@ -308,6 +344,10 @@ msgstr ""
 msgid "Initializing..."
 msgstr ""
 
+#: src/actions/actions.c:852
+msgid "Instrument Track"
+msgstr ""
+
 #: src/utils/ui.c:522
 msgid "Italian [it]"
 msgstr ""
@@ -316,7 +356,7 @@ msgstr ""
 msgid "Japanese [ja]"
 msgstr ""
 
-#: resources/ui/shortcuts.ui:27
+#: src/gui/widgets/header_bar.c:348 resources/ui/shortcuts.ui:27
 msgid "Keyboard Shortcuts"
 msgstr ""
 
@@ -324,12 +364,16 @@ msgstr ""
 msgid "LFO 1"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:86 resources/ui/preferences.ui:294
+#: resources/ui/first_run_assistant.ui:88 resources/ui/preferences.ui:294
 msgid "Language"
 msgstr ""
 
 #: resources/ui/center_dock_bot_box.ui:43
 msgid "Left"
+msgstr ""
+
+#: src/gui/widgets/header_bar.c:222
+msgid "Left Panel"
 msgstr ""
 
 #: resources/ui/quantize_mb_popover.ui:88 resources/ui/inspector_region.ui:103
@@ -351,8 +395,12 @@ msgstr ""
 msgid "Lock"
 msgstr ""
 
-#: resources/ui/transport_controls.ui:122 resources/ui/export_dialog.ui:249
+#: resources/ui/transport_controls.ui:122 resources/ui/export_dialog.ui:250
 msgid "Loop"
+msgstr ""
+
+#: src/gui/widgets/header_bar.c:70
+msgid "Loop Selection"
 msgstr ""
 
 #: resources/ui/shortcuts.ui:287
@@ -367,7 +415,7 @@ msgstr ""
 msgid "MIDI Controllers"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:187
+#: resources/ui/first_run_assistant.ui:189
 msgid "MIDI Devices"
 msgstr ""
 
@@ -375,8 +423,21 @@ msgstr ""
 msgid "Main Window"
 msgstr ""
 
-#: resources/ui/channel.ui:341
+#: src/gui/widgets/header_bar.c:330
+msgid "Manual"
+msgstr ""
+
+#: src/project.c:160 src/gui/widgets/channel.c:259
+#: src/gui/widgets/channel.c:268 resources/ui/channel.ui:341
 msgid "Master"
+msgstr ""
+
+#: resources/ui/bot_dock_edge.ui:89
+msgid "Mixer"
+msgstr ""
+
+#: resources/ui/bot_dock_edge.ui:74
+msgid "Mixer panel"
 msgstr ""
 
 #: src/gui/widgets/track.c:138
@@ -393,7 +454,7 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:104
+#: resources/ui/first_run_assistant.ui:106
 msgid ""
 "Next, choose the  location to use for saving temporary files and projects "
 "(or accept the default)"
@@ -424,11 +485,15 @@ msgstr ""
 msgid "Open a project"
 msgstr ""
 
+#: src/gui/widgets/header_bar.c:290
+msgid "Original Size"
+msgstr ""
+
 #: resources/ui/shortcuts.ui:252
 msgid "Original size"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:205
+#: resources/ui/export_dialog.ui:206
 msgid "Output Files"
 msgstr ""
 
@@ -442,6 +507,14 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:195
 msgid "Pencil tool"
+msgstr ""
+
+#: resources/ui/bot_dock_edge.ui:56
+msgid "Piano Roll"
+msgstr ""
+
+#: resources/ui/bot_dock_edge.ui:41
+msgid "Piano roll panel"
 msgstr ""
 
 #: resources/ui/transport_controls.ui:54
@@ -473,17 +546,26 @@ msgstr ""
 msgid "Project"
 msgstr ""
 
+#: src/actions/actions.c:555
+msgid ""
+"Project doesn't have a path yet. Please save the project before exporting."
+msgstr ""
+
 #: resources/ui/header_bar.ui:29
 msgid "Project name"
 msgstr ""
 
-#: resources/ui/project_assistant.ui:113
+#: resources/ui/project_assistant.ui:114
 msgid ""
 "Project name: name\n"
 "Path: /home/user/Zrythm/name\n"
 "Backend: JACK\n"
 "Frame rate: 44100\n"
 "(note: this text is hard coded at the moment)"
+msgstr ""
+
+#: src/project.c:537
+msgid "Project saved."
 msgstr ""
 
 #: resources/ui/shortcuts.ui:273
@@ -510,6 +592,10 @@ msgstr ""
 msgid "RW"
 msgstr ""
 
+#: resources/ui/bot_dock_edge.ui:121
+msgid "Rack"
+msgstr ""
+
 #: resources/ui/shortcuts.ui:209
 msgid "Ramp tool"
 msgstr ""
@@ -532,34 +618,42 @@ msgstr ""
 msgid "Region"
 msgstr ""
 
-#: src/gui/widgets/region.c:219
+#: src/gui/widgets/region.c:227
 msgid ""
 "Region - Click and drag to move around (hold Shift to disable snapping) - "
 "Double click to bring up the clip editor"
 msgstr ""
 
-#: resources/ui/project_assistant.ui:77
+#: resources/ui/project_assistant.ui:78
 msgid "Remove"
 msgstr ""
 
-#: resources/ui/project_assistant.ui:81
+#: resources/ui/project_assistant.ui:82
 msgid "Removes selected project from the list"
+msgstr ""
+
+#: src/gui/widgets/header_bar.c:357
+msgid "Report a Bug"
 msgstr ""
 
 #: resources/ui/midi_controller_popover.ui:79
 msgid "Rescan"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:127
+#: resources/ui/first_run_assistant.ui:129
 msgid "Reset"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:131
+#: resources/ui/first_run_assistant.ui:133
 msgid "Resets the path to the default"
 msgstr ""
 
 #: resources/ui/center_dock_bot_box.ui:82
 msgid "Right"
+msgstr ""
+
+#: src/gui/widgets/header_bar.c:234
+msgid "Right Panel"
 msgstr ""
 
 #: src/actions/actions.c:490
@@ -568,6 +662,10 @@ msgstr ""
 
 #: src/plugins/lv2_gtk.c:142
 msgid "Save State"
+msgstr ""
+
+#: src/gui/widgets/header_bar.c:139
+msgid "Save _As"
 msgstr ""
 
 #: resources/ui/shortcuts.ui:98
@@ -586,7 +684,7 @@ msgstr ""
 msgid "Select Project"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:117
+#: resources/ui/first_run_assistant.ui:119
 msgid "Select a folder"
 msgstr ""
 
@@ -603,12 +701,20 @@ msgstr ""
 msgid "Select/Stretch tool"
 msgstr ""
 
+#: src/gui/widgets/header_bar.c:57
+msgid "Selection"
+msgstr ""
+
 #: resources/ui/shortcuts.ui:156
 msgid "Selections"
 msgstr ""
 
 #: src/zrythm.c:247
 msgid "Setting up backend"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:29
+msgid "Setup Zrythm"
 msgstr ""
 
 #: src/gui/widgets/track.c:142
@@ -643,7 +749,7 @@ msgstr ""
 msgid "Solo"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:237
+#: resources/ui/export_dialog.ui:238
 msgid "Song"
 msgstr ""
 
@@ -655,6 +761,14 @@ msgstr ""
 msgid "Spanish [es]"
 msgstr ""
 
+#: src/gui/widgets/header_bar.c:258
+msgid "Status Bar"
+msgstr ""
+
+#: src/gui/widgets/channel.c:263
+msgid "Stereo out"
+msgstr ""
+
 #: resources/ui/transport_controls.ui:69
 msgid "Stop"
 msgstr ""
@@ -663,7 +777,7 @@ msgstr ""
 msgid "Synth1 long name name"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:187
+#: resources/ui/export_dialog.ui:188
 msgid ""
 "The following files will be created:\n"
 "\n"
@@ -678,7 +792,7 @@ msgstr ""
 msgid "This is an app-notification. Click the button to dismiss"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:275
+#: resources/ui/export_dialog.ui:276
 msgid "Time Range"
 msgstr ""
 
@@ -729,7 +843,7 @@ msgstr ""
 msgid "Track name"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:287
+#: resources/ui/export_dialog.ui:288
 msgid "Tracks"
 msgstr ""
 
@@ -777,7 +891,7 @@ msgstr ""
 msgid "Use grid"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:48
+#: resources/ui/first_run_assistant.ui:50
 msgid ""
 "Welcome to Zrythm.\n"
 " This will guide you through the basic setup of Zrythm. First, choose your "
@@ -786,6 +900,10 @@ msgstr ""
 
 #: resources/ui/automation_lane.ui:99
 msgid "Write automation"
+msgstr ""
+
+#: src/gui/widgets/header_bar.c:281
+msgid "Zoom _Out"
 msgstr ""
 
 #: resources/ui/shortcuts.ui:231
@@ -800,11 +918,11 @@ msgstr ""
 msgid "Zooming"
 msgstr ""
 
-#: resources/ui/header_bar.ui:28 resources/ui/export_dialog.ui:119
+#: resources/ui/header_bar.ui:28 resources/ui/export_dialog.ui:120
 msgid "Zrythm"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:141
+#: resources/ui/first_run_assistant.ui:143
 msgid "Zrythm Directory"
 msgstr ""
 
@@ -835,28 +953,65 @@ msgstr ""
 msgid "_Edit"
 msgstr ""
 
+#: src/gui/widgets/header_bar.c:150
+msgid "_Export As"
+msgstr ""
+
 #: resources/ui/header_bar.ui:55
 msgid "_File"
+msgstr ""
+
+#: src/gui/widgets/header_bar.c:310
+msgid "_Fullscreen"
 msgstr ""
 
 #: resources/ui/header_bar.ui:97
 msgid "_Help"
 msgstr ""
 
+#: src/gui/widgets/header_bar.c:112
+msgid "_New"
+msgstr ""
+
 #: src/plugins/lv2_gtk.c:563
 msgid "_OK"
+msgstr ""
+
+#: src/gui/widgets/header_bar.c:121
+msgid "_Open"
+msgstr ""
+
+#: src/gui/widgets/header_bar.c:161
+msgid "_Preferences"
 msgstr ""
 
 #: src/plugins/lv2_gtk.c:466
 msgid "_Prefix plugin name"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:146 src/actions/actions.c:495
+#: src/gui/widgets/header_bar.c:170
+msgid "_Quit"
+msgstr ""
+
+#: src/gui/widgets/header_bar.c:191
+msgid "_Redo"
+msgstr ""
+
+#: src/plugins/lv2_gtk.c:146 src/gui/widgets/header_bar.c:130
+#: src/actions/actions.c:495
 msgid "_Save"
+msgstr ""
+
+#: src/gui/widgets/header_bar.c:181
+msgid "_Undo"
 msgstr ""
 
 #: resources/ui/header_bar.ui:83
 msgid "_View"
+msgstr ""
+
+#: src/gui/widgets/header_bar.c:272
+msgid "_Zoom In"
 msgstr ""
 
 #: resources/ui/rack_row.ui:60

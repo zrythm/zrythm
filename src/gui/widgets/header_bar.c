@@ -26,6 +26,8 @@
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
+#include <glib/gi18n.h>
+
 G_DEFINE_TYPE (HeaderBarWidget,
                header_bar_widget,
                GTK_TYPE_HEADER_BAR)
@@ -52,7 +54,7 @@ create_selections_submenu ()
   GtkWidget * menu;
   GtkMenuItem * selections =
     z_gtk_create_menu_item (
-      "Selection",
+      _("Selection"),
       "z-select-rectangular",
       0,
       NULL,
@@ -65,7 +67,7 @@ create_selections_submenu ()
 
   menu_item =
     z_gtk_create_menu_item (
-      "Loop Selection",
+      _("Loop Selection"),
       "z-media-repeat-album-amarok",
       0,
       NULL,
@@ -107,7 +109,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   GtkMenuItem * menu_item;
   menu_item =
     z_gtk_create_menu_item (
-      "_New",
+      _("_New"),
       "z-document-new",
       0,
       NULL,
@@ -116,7 +118,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   APPEND_TO_FILE_MENU;
   menu_item =
     z_gtk_create_menu_item (
-      "_Open",
+      _("_Open"),
       "z-document-open",
       0,
       NULL,
@@ -125,7 +127,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   APPEND_TO_FILE_MENU;
   menu_item =
     z_gtk_create_menu_item (
-      "_Save",
+      _("_Save"),
       "z-document-save",
       0,
       NULL,
@@ -134,7 +136,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   APPEND_TO_FILE_MENU;
   menu_item =
     z_gtk_create_menu_item (
-      "Save _As",
+      _("Save _As"),
       "z-document-save-as",
       0,
       NULL,
@@ -145,7 +147,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   APPEND_TO_FILE_MENU;
   menu_item =
     z_gtk_create_menu_item (
-      "_Export As",
+      _("_Export As"),
       "z-document-send",
       0,
       NULL,
@@ -156,7 +158,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   APPEND_TO_FILE_MENU;
   menu_item =
     z_gtk_create_menu_item (
-      "_Preferences",
+      _("_Preferences"),
       "z-application-x-m4",
       0,
       NULL,
@@ -165,7 +167,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   APPEND_TO_FILE_MENU;
   menu_item =
     z_gtk_create_menu_item (
-      "_Quit",
+      _("_Quit"),
       "z-gtk-quit",
       0,
       NULL,
@@ -176,7 +178,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
 
   menu_item =
     z_gtk_create_menu_item (
-      "_Undo",
+      _("_Undo"),
       "z-edit-undo",
       0,
       NULL,
@@ -186,7 +188,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   self->edit_undo = menu_item;
   menu_item =
     z_gtk_create_menu_item (
-      "_Redo",
+      _("_Redo"),
       "z-edit-redo",
       0,
       NULL,
@@ -217,7 +219,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
 
   menu_item =
     z_gtk_create_menu_item (
-      "Left Panel",
+      _("Left Panel"),
       NULL,
       ICON_TYPE_GNOME_BUILDER,
       "builder-view-left-pane-symbolic-light.svg",
@@ -229,7 +231,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   APPEND_TO_VIEW_MENU;
   menu_item =
     z_gtk_create_menu_item (
-      "Right Panel",
+      _("Right Panel"),
       NULL,
       ICON_TYPE_GNOME_BUILDER,
       "builder-view-right-pane-symbolic-light.svg",
@@ -241,7 +243,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   APPEND_TO_VIEW_MENU;
   menu_item =
     z_gtk_create_menu_item (
-      "Bottom Panel",
+      _("Bottom Panel"),
       NULL,
       ICON_TYPE_GNOME_BUILDER,
       "builder-view-bottom-pane-symbolic-light.svg",
@@ -253,7 +255,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   APPEND_TO_VIEW_MENU;
   menu_item =
     z_gtk_create_menu_item (
-      "Status Bar",
+      _("Status Bar"),
       "z-kt-show-statusbar",
       0,
       NULL,
@@ -267,7 +269,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   APPEND_TO_VIEW_MENU;
   menu_item =
     z_gtk_create_menu_item (
-      "_Zoom In",
+      _("_Zoom In"),
       "z-zoom-in",
       0,
       NULL,
@@ -276,7 +278,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   APPEND_TO_VIEW_MENU;
   menu_item =
     z_gtk_create_menu_item (
-      "Zoom _Out",
+      _("Zoom _Out"),
       "z-zoom-out",
       0,
       NULL,
@@ -285,7 +287,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   APPEND_TO_VIEW_MENU;
   menu_item =
     z_gtk_create_menu_item (
-      "Original Size",
+      _("Original Size"),
       "z-zoom-original",
       0,
       NULL,
@@ -294,7 +296,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   APPEND_TO_VIEW_MENU;
   menu_item =
     z_gtk_create_menu_item (
-      "Best Fit",
+      _("Best Fit"),
       "z-zoom-fit-best",
       0,
       NULL,
@@ -305,7 +307,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   APPEND_TO_VIEW_MENU;
   menu_item =
     z_gtk_create_menu_item (
-      "_Fullscreen",
+      _("_Fullscreen"),
       "z-view-fullscreen",
       0,
       NULL,
@@ -316,7 +318,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
 
   menu_item =
     z_gtk_create_menu_item (
-      "Chat",
+      _("Chat"),
       "z-dialog-messages",
       0,
       NULL,
@@ -325,7 +327,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   APPEND_TO_HELP_MENU;
   menu_item =
     z_gtk_create_menu_item (
-      "Manual",
+      _("Manual"),
       "z-help-contents",
       0,
       NULL,
@@ -334,7 +336,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   APPEND_TO_HELP_MENU;
   menu_item =
     z_gtk_create_menu_item (
-      "Forums",
+      _("Forums"),
       "z-applications-internet",
       0,
       NULL,
@@ -343,7 +345,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   APPEND_TO_HELP_MENU;
   menu_item =
     z_gtk_create_menu_item (
-      "Keyboard Shortcuts",
+      _("Keyboard Shortcuts"),
       "z-configure-shortcuts",
       0,
       NULL,
@@ -352,7 +354,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   APPEND_TO_HELP_MENU;
   menu_item =
     z_gtk_create_menu_item (
-      "Report a Bug",
+      _("Report a Bug"),
       "z-tools-report-bug",
       0,
       NULL,
@@ -363,7 +365,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   APPEND_TO_HELP_MENU;
   menu_item =
     z_gtk_create_menu_item (
-      "Donate",
+      _("Donate"),
       "z-help-donate",
       0,
       NULL,
@@ -372,7 +374,7 @@ header_bar_widget_setup (HeaderBarWidget * self,
   APPEND_TO_HELP_MENU;
   menu_item =
     z_gtk_create_menu_item (
-      "About",
+      _("About"),
       "z-help-about",
       0,
       NULL,

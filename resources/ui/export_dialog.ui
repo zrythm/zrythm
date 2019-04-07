@@ -27,6 +27,7 @@
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
     <property name="urgency_hint">True</property>
+    <property name="title" translatable="yes">Export As...</property>
     <child>
       <placeholder/>
     </child>

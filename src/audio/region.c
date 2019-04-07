@@ -75,9 +75,10 @@ region_init (Region *   region,
   /*position_print (&region->end_pos);*/
   region->track_id = track->id;
   region->track = track;
-  region->name = g_strdup_printf ("%s (%d)",
-                                  track->name,
-                                  region->id);
+  /*region->name = g_strdup_printf ("%s (%d)",*/
+                                  /*track->name,*/
+                                  /*region->id);*/
+  /*region->name = g_strdup (track->name);*/
   region->linked_region_id = -1;
   region->type = type;
   if (type == REGION_TYPE_AUDIO)

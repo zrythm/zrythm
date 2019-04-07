@@ -38,7 +38,7 @@
         <child type="tab">
           <object class="GtkBox">
             <property name="visible">1</property>
-            <property name="tooltip-text">Piano roll panel</property>
+            <property name="tooltip-text" translatable="yes">Piano roll panel</property>
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
@@ -53,7 +53,7 @@
             <child>
               <object class="GtkLabel">
                 <property name="visible">1</property>
-                <property name="label">Piano Roll</property>
+                <property name="label" translatable="yes">Piano Roll</property>
               </object>
               <packing>
                 <property name="expand">0</property>
@@ -71,7 +71,7 @@
         <child type="tab">
           <object class="GtkBox">
             <property name="visible">1</property>
-            <property name="tooltip-text">Mixer panel</property>
+            <property name="tooltip-text" translatable="yes">Mixer panel</property>
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
@@ -86,7 +86,7 @@
             <child>
               <object class="GtkLabel">
                 <property name="visible">1</property>
-                <property name="label">Mixer</property>
+                <property name="label" translatable="yes">Mixer</property>
               </object>
               <packing>
                 <property name="expand">0</property>
@@ -118,7 +118,7 @@
             <child>
               <object class="GtkLabel">
                 <property name="visible">1</property>
-                <property name="label">Rack</property>
+                <property name="label" translatable="yes">Rack</property>
               </object>
               <packing>
                 <property name="expand">0</property>
@@ -150,7 +150,7 @@
             <child>
               <object class="GtkLabel">
                 <property name="visible">1</property>
-                <property name="label">Connections</property>
+                <property name="label" translatable="yes">Connections</property>
               </object>
               <packing>
                 <property name="expand">0</property>
