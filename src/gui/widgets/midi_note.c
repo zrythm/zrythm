@@ -39,6 +39,7 @@
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/ui.h"
 
 G_DEFINE_TYPE (MidiNoteWidget,
@@ -138,7 +139,25 @@ midi_note_draw_cb (
       "[%d - actual %d]",
       self->midi_note->id,
       self->midi_note->actual_id);
+  if (S_IS_DEBUG)
+    str =
+      g_strdup_printf (
+        "%s%d [%d - actual %d]",
+        chord_note_to_string (
+          self->midi_note->val % 12),
+        self->midi_note->val / 12 - 2,
+        self->midi_note->id,
+        self->midi_note->actual_id);
+  else
+    str =
+      g_strdup_printf (
+        "%s%d",
+        chord_note_to_string (
+          self->midi_note->val % 12),
+        self->midi_note->val / 12 - 2);
+
   draw_text (cr, str);
+  g_free (str);
 
  return FALSE;
 }

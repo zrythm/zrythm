@@ -417,6 +417,19 @@ track_setup (Track * track)
     }
 }
 
+static Region *
+get_region_by_name (Track * track, char * name)
+{
+  Region * region;
+  for (int i = 0; i < track->num_regions; i++)
+    {
+      region = track->regions[i];
+      if (g_strcmp0 (region->name, name) == 0)
+        return region;
+    }
+  return NULL;
+}
+
 /**
  * Wrapper.
  */
@@ -428,6 +441,18 @@ track_add_region (Track * track,
     (track->type == TRACK_TYPE_INSTRUMENT ||
     track->type == TRACK_TYPE_AUDIO) &&
     region->id >= 0);
+
+  int count = 1;
+  region->name = g_strdup (track->name);
+  while (get_region_by_name (
+          track, region->name))
+    {
+      g_free (region->name);
+      region->name =
+        g_strdup_printf ("%s %d",
+                         track->name,
+                         count++);
+    }
 
   region_set_track (region, track);
   track->region_ids[track->num_regions] =

@@ -115,6 +115,38 @@ tracklist_contains_chord_track ()
   return 0;
 }
 
+Track *
+get_track_by_name (
+  Tracklist * self,
+  const char * name)
+{
+  Track * track;
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      track = self->tracks[i];
+      if (g_strcmp0 (track->name, name) == 0)
+        return track;
+    }
+  return NULL;
+
+}
+
+void
+set_track_name (Tracklist * self, Track * track)
+{
+  int count = 1;
+  char * new_label = g_strdup (track->name);
+  while (get_track_by_name (self, new_label))
+    {
+      g_free (new_label);
+      new_label =
+        g_strdup_printf ("%s %d",
+                         track->name,
+                         count++);
+    }
+  track->name = new_label;
+}
+
 /**
  * Adds given track to given spot in tracklist.
  */
@@ -123,6 +155,8 @@ tracklist_add_track (Track *     track,
                      int         pos)
 {
   g_warn_if_fail (track->id > -1);
+
+  set_track_name (TRACKLIST, track);
 
   array_insert (TRACKLIST->tracks,
                 TRACKLIST->num_tracks,
@@ -156,6 +190,8 @@ tracklist_get_chord_track ()
 void
 tracklist_append_track (Track *     track)
 {
+  set_track_name (TRACKLIST, track);
+
   TRACKLIST->track_ids[TRACKLIST->num_tracks] =
     track->id;
   array_append (TRACKLIST->tracks,
