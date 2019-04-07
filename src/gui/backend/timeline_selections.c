@@ -707,28 +707,50 @@ void
 timeline_selections_clear (
   TimelineSelections * ts)
 {
+  int i, num_regions, num_chords, num_aps;
   Region * r;
   Chord * c;
   AutomationPoint * ap;
-  for (int i = 0; i < ts->num_regions; i++)
+
+  /* use caches because ts->* will be operated on. */
+  static Region * regions[600];
+  static Chord * chords[600];
+  static AutomationPoint * aps[600];
+  for (i = 0; i < ts->num_regions; i++)
     {
-      r = ts->regions[i];
+      regions[i] = ts->regions[i];
+    }
+  num_regions = ts->num_regions;
+  for (i = 0; i < ts->num_chords; i++)
+    {
+      chords[i] = ts->chords[i];
+    }
+  num_chords = ts->num_chords;
+  for (i = 0; i < ts->num_automation_points; i++)
+    {
+      aps[i] = ts->automation_points[i];
+    }
+  num_aps = ts->num_automation_points;
+
+  for (i = 0; i < num_regions; i++)
+    {
+      r = regions[i];
       timeline_selections_remove_region (
         ts, r);
       EVENTS_PUSH (ET_REGION_CHANGED,
                    r);
     }
-  for (int i = 0; i < ts->num_chords; i++)
+  for (i = 0; i < num_chords; i++)
     {
-      c = ts->chords[i];
+      c = chords[i];
       timeline_selections_remove_chord (
         ts, c);
       EVENTS_PUSH (ET_CHORD_CHANGED,
                    c);
     }
-  for (int i = 0; i < ts->num_automation_points; i++)
+  for (i = 0; i < num_aps; i++)
     {
-      ap = ts->automation_points[i];
+      ap = aps[i];
       timeline_selections_remove_ap (
         ts, ap);
       EVENTS_PUSH (ET_AUTOMATION_POINT_CHANGED,

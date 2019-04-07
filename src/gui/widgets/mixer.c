@@ -43,6 +43,9 @@ G_DEFINE_TYPE (MixerWidget,
 void
 mixer_widget_refresh (MixerWidget * self)
 {
+  g_object_ref (self->ddbox);
+  g_object_ref (self->channels_add);
+
   /* remove all things in the container */
   z_gtk_container_remove_all_children (
     GTK_CONTAINER (self->channels_box));
@@ -57,7 +60,7 @@ mixer_widget_refresh (MixerWidget * self)
         channel = MIXER->channels[i];
 
       /* create chan widget if necessary */
-      if (!channel->widget)
+      if (!GTK_IS_WIDGET (channel->widget))
         channel->widget = channel_widget_new (channel);
 
       channel_widget_refresh (channel->widget);
@@ -81,6 +84,11 @@ mixer_widget_refresh (MixerWidget * self)
                       0);
 
   /* re-add dummy box for dnd */
+  if (!GTK_IS_WIDGET (self->ddbox))
+    self->ddbox = drag_dest_box_widget_new (
+      GTK_ORIENTATION_HORIZONTAL,
+      0,
+      DRAG_DEST_BOX_TYPE_MIXER);
   gtk_box_pack_start (self->channels_box,
                       GTK_WIDGET (self->ddbox),
                       1, 1, 0);

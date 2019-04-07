@@ -85,6 +85,12 @@ region_widget_is_resize_r (
   RegionWidget * self,
   int             x);
 
+/**
+ * Destroys the widget completely.
+ */
+void
+region_widget_delete (RegionWidget *self);
+
 RegionWidgetPrivate *
 region_widget_get_private (RegionWidget * self);
 

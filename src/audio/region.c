@@ -576,14 +576,11 @@ region_free (Region * self)
 {
   if (self->name)
     g_free (self->name);
-  if (self->widget)
+  if (GTK_IS_WIDGET (self->widget))
     {
-      /* without g_idle_add some events continue after
-       * it's deleted */
-      g_idle_add (
-        (GSourceFunc) gtk_widget_destroy,
-        GTK_WIDGET (self->widget));
+      RegionWidget * widget = self->widget;
       self->widget = NULL;
+      region_widget_delete (widget);
     }
   if (self->type == REGION_TYPE_MIDI)
     midi_region_free_members (self);

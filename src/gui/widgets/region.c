@@ -362,6 +362,27 @@ region_widget_get_private (RegionWidget * self)
   return region_widget_get_instance_private (self);
 }
 
+/**
+ * Destroys the widget completely.
+ */
+void
+region_widget_delete (RegionWidget *self)
+{
+  REGION_WIDGET_GET_PRIVATE (self);
+
+  gtk_widget_set_sensitive (
+    GTK_WIDGET (self), 0);
+  gtk_container_remove (
+    GTK_CONTAINER (self),
+    GTK_WIDGET (rw_prv->drawing_area));
+
+  gtk_container_remove (
+    GTK_CONTAINER (MW_TIMELINE),
+    GTK_WIDGET (self));
+
+  g_object_unref (self);
+}
+
 static void
 region_widget_class_init (RegionWidgetClass * _klass)
 {
@@ -374,4 +395,5 @@ static void
 region_widget_init (RegionWidget * self)
 {
   gtk_widget_set_visible (GTK_WIDGET (self), 1);
+  g_object_ref (self);
 }

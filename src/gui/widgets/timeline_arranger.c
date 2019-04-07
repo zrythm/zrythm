@@ -1881,10 +1881,14 @@ add_children_from_instrument_track (
 {
   for (int i = 0; i < it->num_regions; i++)
     {
-      MidiRegion * mr = it->regions[i];
-      Region * r = (Region *) mr;
-      gtk_overlay_add_overlay (GTK_OVERLAY (self),
-                               GTK_WIDGET (r->widget));
+      Region * r = it->regions[i];
+      if (!GTK_IS_WIDGET (r->widget))
+        r->widget =
+          Z_REGION_WIDGET (
+            midi_region_widget_new (r));
+      gtk_overlay_add_overlay (
+        GTK_OVERLAY (self),
+        GTK_WIDGET (r->widget));
     }
   ChannelTrack * ct = (ChannelTrack *) it;
   add_children_from_channel_track (ct);
@@ -1949,7 +1953,7 @@ timeline_arranger_widget_refresh_children (
       if (widget != (GtkWidget *) ar_prv->bg &&
           widget != (GtkWidget *) ar_prv->playhead)
         {
-          g_object_ref (widget);
+          /*g_object_ref (widget);*/
           gtk_container_remove (
             GTK_CONTAINER (self),
             widget);

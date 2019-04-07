@@ -36,7 +36,7 @@ z_gtk_container_remove_all_children (
        iter != NULL;
        iter = g_list_next (iter))
     {
-      g_object_ref (GTK_WIDGET (iter->data));
+      /*g_object_ref (GTK_WIDGET (iter->data));*/
       gtk_container_remove (
         container,
         GTK_WIDGET (iter->data));
@@ -103,7 +103,7 @@ z_gtk_container_remove_children_of_type (
       if (G_TYPE_CHECK_INSTANCE_TYPE (
             widget, type))
         {
-          g_object_ref (widget);
+          /*g_object_ref (widget);*/
           gtk_container_remove (
             container,
             widget);

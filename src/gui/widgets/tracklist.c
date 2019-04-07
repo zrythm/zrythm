@@ -217,7 +217,7 @@ tracklist_widget_hard_refresh (TracklistWidget * self)
       if (track->visible)
         {
           /* create widget */
-          if (!track->widget)
+          if (!GTK_IS_WIDGET (track->widget))
             track->widget = track_widget_new (track);
 
           g_message ("track widget %p",

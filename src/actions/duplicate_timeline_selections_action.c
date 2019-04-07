@@ -21,6 +21,7 @@
 #include "audio/track.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/region.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "project.h"
 #include "utils/flags.h"
@@ -65,6 +66,11 @@ duplicate_timeline_selections_action_do (
         _r);
       region_shift (
         _r, self->ticks, self->delta);
+
+      /* select the new clone */
+      region_widget_select (_r->widget,
+                            F_SELECT,
+                            F_NO_TRANSIENTS);
 
       /* remember the new clone's id */
       r->actual_id = _r->id;
