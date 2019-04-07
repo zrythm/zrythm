@@ -75,7 +75,7 @@ midi_controller_mb_widget_save_settings (
       chkbtn = GTK_TOGGLE_BUTTON (iter->data);
       if (gtk_toggle_button_get_active (chkbtn))
         controllers[num_controllers++] =
-          gtk_button_get_label (
+          (char *) gtk_button_get_label (
             GTK_BUTTON (chkbtn));
     }
   controllers[num_controllers] = NULL;

@@ -172,7 +172,7 @@ zrythm_add_to_recent_projects (Zrythm * self,
     ZRYTHM->recent_projects,
     ZRYTHM->num_recent_projects,
     0,
-    filepath);
+    (char *) filepath);
 
   /* set last element to NULL because the call
    * takes a NULL terminated array */

@@ -45,7 +45,7 @@ engine_jack_autoconnect_midi_controllers (
       NULL, NULL,
       JackPortIsPhysical |
       JackPortIsOutput);
-      
+
   if(!ports) return;
 
   /* get selected MIDI devices */
@@ -53,15 +53,15 @@ engine_jack_autoconnect_midi_controllers (
     g_settings_get_strv (
       S_PREFERENCES,
       "midi-controllers");
-      
+
   if(!devices) return;
-  
+
   int i = 0;
   int j;
   char * pname;
   char * device;
   jack_port_t * port;
-  while ((pname = ports[i]) != NULL)
+  while ((pname = (char *) ports[i]) != NULL)
     {
       /* if port matches one of the selected
        * MIDI devices, connect it to Zrythm
