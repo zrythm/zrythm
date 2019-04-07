@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-07 00:30+0100\n"
+"POT-Creation-Date: 2019-04-07 01:21+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -618,7 +618,7 @@ msgstr ""
 msgid "Region"
 msgstr ""
 
-#: src/gui/widgets/region.c:219
+#: src/gui/widgets/region.c:227
 msgid ""
 "Region - Click and drag to move around (hold Shift to disable snapping) - "
 "Double click to bring up the clip editor"

@@ -627,18 +627,7 @@ channel_create (ChannelType type,
 {
   g_warn_if_fail (label);
 
-  int count = 1;
-  char * new_label = g_strdup (label);
-  while (mixer_get_channel_by_name (new_label))
-    {
-      g_free (new_label);
-      new_label =
-        g_strdup_printf ("%s %d",
-                         label,
-                         count++);
-    }
-
-  Channel * channel = _create_channel (new_label);
+  Channel * channel = _create_channel (label);
 
   channel->type = type;
 
