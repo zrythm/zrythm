@@ -99,7 +99,7 @@ AC_ARG_WITH(
   [echo "** building without Qt5 support in suil. use --with-qt5 to enable it"])
 
 AC_ARG_WITH(
-  qt5,
+  port-audio,
   AS_HELP_STRING(
     [--with-port-audio],
     [Add support for port audio backend]),
