@@ -237,6 +237,9 @@ typedef struct Lv2Plugin
 	SuilHost*          ui_host;        ///< Plugin UI host support
 	SuilInstance*      ui_instance;    ///< Plugin UI instance (shared library)
 	void*              window;         ///< Window (if applicable) (GtkWindow)
+  /** ID of the delete-event signal so that we can
+   * deactivate before freeing the plugin. */
+  gulong             delete_event_id;
 	LV2_Port*          ports;          ///< Port array of size num_ports
 	Lv2Controls        controls;       ///< Available plugin controls
 	uint32_t           num_ports;      ///< Size of the two following arrays:
