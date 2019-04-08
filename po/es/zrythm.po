@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-08 11:32+0100\n"
+"POT-Creation-Date: 2019-04-08 12:04+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrythm dot org>\n"
 "Language-Team: Spanish\n"
@@ -150,7 +150,7 @@ msgstr ""
 msgid "Click to enable MIDI controllers to be connected automatically"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:1430
+#: src/plugins/lv2_gtk.c:1432
 msgid "Close"
 msgstr ""
 

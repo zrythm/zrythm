@@ -610,7 +610,7 @@ set_control (
   LV2_URID         type,
   const void*      body)
 {
-  g_message ("set_control");
+  /*g_message ("set_control");*/
   if (!control->plugin->updating)
     {
       lv2_control_set_control (
@@ -633,7 +633,7 @@ lv2_gtk_set_float_control (
   const Lv2ControlID* control,
   float value)
 {
-  g_message ("lv2_gtk_set_float_control");
+  /*g_message ("lv2_gtk_set_float_control");*/
   if (control->value_type ==
       control->plugin->forge.Int)
     {
@@ -893,7 +893,9 @@ lv2_gtk_ui_port_event(Lv2Plugin*       plugin,
                    const void* buffer)
 {
   if (port_index == 2)
-    /*g_message ("ui port event");*/
+    {
+      /*g_message ("ui port event");*/
+    }
 	if (plugin->ui_instance)
     {
       suil_instance_port_event (

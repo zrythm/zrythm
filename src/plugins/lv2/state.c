@@ -192,8 +192,9 @@ lv2_apply_state(Lv2Plugin* plugin, LilvState* state)
     {
       if (must_pause)
         {
-          TRANSPORT->play_state = PLAYSTATE_PAUSE_REQUESTED;
-          zix_sem_wait(&TRANSPORT->paused);
+          g_message ("must pause");
+          /*TRANSPORT->play_state = PLAYSTATE_PAUSE_REQUESTED;*/
+          /*zix_sem_wait(&TRANSPORT->paused);*/
         }
 
       g_message ("applying state...");

@@ -127,8 +127,9 @@ engine_process_prepare (uint32_t nframes)
 
   if (TRANSPORT->play_state == PLAYSTATE_PAUSE_REQUESTED)
     {
-      TRANSPORT->play_state = PLAYSTATE_PAUSED;
-      zix_sem_post (&TRANSPORT->paused);
+      g_message ("pause requested handled");
+      /*TRANSPORT->play_state = PLAYSTATE_PAUSED;*/
+      /*zix_sem_post (&TRANSPORT->paused);*/
     }
   else if (TRANSPORT->play_state == PLAYSTATE_ROLL_REQUESTED)
     {

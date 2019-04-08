@@ -359,7 +359,7 @@ wrapper_wrap(SuilWrapper*  wrapper,
 static void
 wrapper_free(SuilWrapper* wrapper)
 {
-  /*g_message ("freeing wrapper");*/
+  g_message ("freeing wrapper");
 	if (wrapper->impl) {
 		SuilX11Wrapper* const wrap = Z_SUIL_X11_WRAPPER(wrapper->impl);
     /*g_message ("destroying wrapper");*/
