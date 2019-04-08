@@ -17,7 +17,7 @@
 #  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 #
 # Initialize autoconf: package name, version, bug report address
-AC_INIT([zrythm], [0.3.026], [https://git.zrythm.org/zrythm/zrythm/issues])
+AC_INIT([zrythm], [0.3.029], [https://git.zrythm.org/zrythm/zrythm/issues])
 
 # Declare config.h as output header
 AC_CONFIG_HEADERS([config.h])
@@ -99,7 +99,7 @@ AC_ARG_WITH(
   [echo "** building without Qt5 support in suil. use --with-qt5 to enable it"])
 
 AC_ARG_WITH(
-  qt5,
+  port-audio,
   AS_HELP_STRING(
     [--with-port-audio],
     [Add support for port audio backend]),
