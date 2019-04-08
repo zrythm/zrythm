@@ -19,6 +19,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
+#ifdef HAVE_PORT_AUDIO
+
 #ifndef __AUDIO_ENGINE_PA_H__
 #define __AUDIO_ENGINE_PA_H__
 
@@ -59,3 +63,5 @@ void
 pa_terminate (AudioEngine * engine);
 
 #endif
+
+#endif // HAVE_PORT_AUDIO

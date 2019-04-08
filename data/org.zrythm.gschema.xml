@@ -28,7 +28,8 @@
 
   <enum id="org.zrythm.preferences.audio-backend-enum">
     <value nick="jack" value="0"/>
-    <value nick="port-audio" value="1"/>
+    <!--<value nick="alsa" value="1"/>-->
+    <!--<value nick="port-audio" value="2"/>-->
   </enum>
   <enum id="org.zrythm.preferences.language-enum">
     <value nick="english" value="0"/>

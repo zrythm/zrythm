@@ -19,6 +19,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
+#ifdef HAVE_PORT_AUDIO
+
 #include "audio/channel.h"
 #include "audio/engine.h"
 #include "audio/engine_pa.h"
@@ -238,3 +242,5 @@ pa_terminate (AudioEngine * engine)
     g_warning ("error terminating Port Audio: %s",
                Pa_GetErrorText (err));
 }
+
+#endif

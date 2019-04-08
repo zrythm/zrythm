@@ -98,6 +98,17 @@ AC_ARG_WITH(
       AC_SUBST([HAVE_QT5],[1])])],
   [echo "** building without Qt5 support in suil. use --with-qt5 to enable it"])
 
+AC_ARG_WITH(
+  qt5,
+  AS_HELP_STRING(
+    [--with-port-audio],
+    [Add support for port audio backend]),
+  [PKG_CHECK_MODULES(
+    [PORT_AUDIO], [portaudio-2.0],
+    [AC_DEFINE([HAVE_PORT_AUDIO],[1],[Have port audio backend])
+      AC_SUBST([HAVE_PORT_AUDIO],[1])])],
+  [echo "** building without port audio support. use --with-port-audio to enable it"])
+
 # needed for localization
 AC_DEFINE([GETTEXT_PACKAGE],["zrythm"],
           [Gettext package name])
@@ -129,7 +140,6 @@ AM_COND_IF([LINUX],
            [PKG_CHECK_MODULES([LV2], [lv2 >= 1.14.0])])
 AM_COND_IF([WINDOWS],
            [PKG_CHECK_MODULES([LV2], [lv2 >= 1.14.0])])
-PKG_CHECK_MODULES([PORTAUDIO], [portaudio-2.0])
 #PKG_CHECK_MODULES([LIBCYAML], [libcyaml])
 PKG_CHECK_MODULES([LIBYAML], [yaml-0.1])
 PKG_CHECK_MODULES([X11], [x11])

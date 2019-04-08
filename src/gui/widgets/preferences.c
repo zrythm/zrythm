@@ -51,11 +51,11 @@ create_audio_backend_model (void)
 {
   const int values[NUM_ENGINE_BACKENDS] = {
     ENGINE_BACKEND_JACK,
-    ENGINE_BACKEND_PORT_AUDIO,
+    /*ENGINE_BACKEND_PORT_AUDIO,*/
   };
   const gchar *labels[NUM_ENGINE_BACKENDS] = {
     "Jack",
-    "Port Audio",
+    /*"Port Audio",*/
   };
 
   GtkTreeIter iter;

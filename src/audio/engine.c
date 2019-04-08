@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <signal.h>
 
-#include "zrythm.h"
+#include "config.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
@@ -38,6 +38,7 @@
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"
+#include "zrythm.h"
 
 #include <gtk/gtk.h>
 
@@ -96,8 +97,10 @@ engine_init (AudioEngine * self,
 
   if (self->backend == ENGINE_BACKEND_JACK)
     jack_setup (self, loading);
+#ifdef HAVE_PORT_AUDIO
   else if (self->backend == ENGINE_BACKEND_PORT_AUDIO)
     pa_setup (self);
+#endif
 
   self->buf_size_set = false;
 }
@@ -109,8 +112,10 @@ close_audio_engine ()
 
   if (AUDIO_ENGINE->backend == ENGINE_BACKEND_JACK)
     jack_client_close (AUDIO_ENGINE->client);
+#ifdef HAVE_PORT_AUDIO
   else if (AUDIO_ENGINE->backend == ENGINE_BACKEND_PORT_AUDIO)
     pa_terminate (AUDIO_ENGINE);
+#endif
 }
 
 /**

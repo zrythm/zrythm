@@ -26,13 +26,17 @@
 #ifndef __AUDIO_ENGINE_H__
 #define __AUDIO_ENGINE_H__
 
+#include "config.h"
 #include "audio/mixer.h"
 #include "audio/transport.h"
 #include "utils/sem.h"
 
 #include <jack/jack.h>
 #include <jack/midiport.h>
+
+#ifdef HAVE_PORT_AUDIO
 #include <portaudio.h>
+#endif
 
 /**
  * @defgroup audio Audio
@@ -71,7 +75,9 @@ typedef struct Tracklist Tracklist;
 typedef enum EngineBackend
 {
   ENGINE_BACKEND_JACK,
+#ifdef HAVE_PORT_AUDIO
   ENGINE_BACKEND_PORT_AUDIO,
+#endif
   NUM_ENGINE_BACKENDS,
 } EngineBackend;
 
@@ -115,6 +121,7 @@ typedef struct AudioEngine
    */
   void *            port_buf;
 
+#ifdef HAVE_PORT_AUDIO
   /**
    * Port Audio output buffer.
    *
@@ -123,6 +130,7 @@ typedef struct AudioEngine
   float *            pa_out_buf;
 
   PaStream *         pa_stream;
+#endif
 
   /**
    * Timeline metadata like BPM, time signature, etc.
