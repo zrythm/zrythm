@@ -26,8 +26,6 @@
     <property name="visible">True</property>
     <property name="can_focus">True</property>
     <property name="window_position">center</property>
-    <property name="default_width">1800</property>
-    <property name="default_height">1100</property>
     <property name="gravity">center</property>
     <property name="show_menubar">False</property>
     <signal name="destroy" handler="on_main_window_destroy" swapped="no"/>

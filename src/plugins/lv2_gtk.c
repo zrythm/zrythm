@@ -36,6 +36,7 @@
 
 #include <math.h>
 
+#include "audio/track.h"
 #include "lv2/lv2plug.in/ns/ext/patch/patch.h"
 #include "lv2/lv2plug.in/ns/ext/port-props/port-props.h"
 
@@ -192,12 +193,10 @@ symbolify (const char* in)
 static void
 set_window_title (Lv2Plugin* plugin)
 {
-	LilvNode * name =
-    lilv_plugin_get_name (plugin->lilv_plugin);
-	const char* name_str =
-    lilv_node_as_string(name);
+  const char* name_str =
+    plugin->plugin->channel->track->name;
 
-	if (plugin->preset)
+  if (plugin->preset)
     {
       const char* preset_label =
         lilv_state_get_label(plugin->preset);
@@ -208,11 +207,10 @@ set_window_title (Lv2Plugin* plugin)
         GTK_WINDOW(plugin->window), title);
       free(title);
     }
-  else
-		gtk_window_set_title (
-      GTK_WINDOW(plugin->window), name_str);
-
-	lilv_node_free(name);
+else
+  gtk_window_set_title (
+    GTK_WINDOW(plugin->window),
+    name_str);
 }
 
 static void
@@ -244,9 +242,10 @@ static void
 on_preset_destroy (
   gpointer data, GClosure* closure)
 {
-	PresetRecord* record = (PresetRecord*)data;
-	lilv_node_free(record->preset);
-	free(record);
+  PresetRecord* record =
+    (PresetRecord*)data;
+  lilv_node_free(record->preset);
+  free(record);
 }
 
 typedef struct {
@@ -1522,6 +1521,9 @@ lv2_open_ui(Lv2Plugin* plugin)
 {
   LV2_External_UI_Host extui;
   GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_icon_name (
+    GTK_WINDOW (window),
+    "zrythm");
 
   plugin->window = window;
   g_signal_connect (

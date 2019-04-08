@@ -151,6 +151,9 @@ main_window_widget_refresh (MainWindowWidget * self)
   /* setup mixer */
   mixer_widget_setup (MW_MIXER,
                       MIXER->master);
+
+  gtk_window_maximize (
+    GTK_WINDOW (self));
 }
 
 static void

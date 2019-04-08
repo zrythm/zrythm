@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-08 01:51+0100\n"
+"POT-Creation-Date: 2019-04-08 02:27+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrytm dot org>\n"
 "Language-Team: Japanese\n"
@@ -154,7 +154,7 @@ msgstr "コード"
 msgid "Click to enable MIDI controllers to be connected automatically"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:1427
+#: src/plugins/lv2_gtk.c:1426
 msgid "Close"
 msgstr "閉じる"
 
@@ -197,7 +197,7 @@ msgstr "カスタム"
 msgid "Cut selection to clipboard"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:557
+#: src/plugins/lv2_gtk.c:556
 msgid "Delete Preset?"
 msgstr "プリセットを削除する？"
 
@@ -672,7 +672,7 @@ msgstr "右パネル"
 msgid "Save Project"
 msgstr "プロジェクトを保存"
 
-#: src/plugins/lv2_gtk.c:142
+#: src/plugins/lv2_gtk.c:143
 msgid "Save State"
 msgstr ""
 
@@ -803,7 +803,7 @@ msgid ""
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 msgstr ""
 
-#: resources/ui/main_window.ui:119
+#: resources/ui/main_window.ui:117
 msgid "This is an app-notification. Click the button to dismiss"
 msgstr ""
 
@@ -874,7 +874,7 @@ msgstr "トラック(%d)"
 msgid "Type"
 msgstr "種類"
 
-#: src/plugins/lv2_gtk.c:462
+#: src/plugins/lv2_gtk.c:461
 msgid "URI (Optional):"
 msgstr ""
 
@@ -886,11 +886,11 @@ msgstr ""
 msgid "Undo previous command"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:776
+#: src/plugins/lv2_gtk.c:775
 msgid "Unknown widget type for value"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:802
+#: src/plugins/lv2_gtk.c:801
 msgid "Unknown widget type for value\n"
 msgstr ""
 
@@ -944,7 +944,7 @@ msgstr ""
 msgid "Zrythm Directory"
 msgstr "Zrythmのパス"
 
-#: src/plugins/lv2_gtk.c:145 src/plugins/lv2_gtk.c:562
+#: src/plugins/lv2_gtk.c:146 src/plugins/lv2_gtk.c:561
 #: src/actions/actions.c:493
 msgid "_Cancel"
 msgstr "キャンセル(_C)"
@@ -992,7 +992,7 @@ msgstr "ヘルプ(_H)"
 msgid "_New"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:563
+#: src/plugins/lv2_gtk.c:562
 msgid "_OK"
 msgstr ""
 
@@ -1004,7 +1004,7 @@ msgstr "開く(_O)"
 msgid "_Preferences"
 msgstr "設定(_P)"
 
-#: src/plugins/lv2_gtk.c:466
+#: src/plugins/lv2_gtk.c:465
 msgid "_Prefix plugin name"
 msgstr ""
 
@@ -1016,7 +1016,7 @@ msgstr ""
 msgid "_Redo"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:146 src/actions/actions.c:495
+#: src/plugins/lv2_gtk.c:147 src/actions/actions.c:495
 #: src/gui/widgets/header_bar.c:130
 msgid "_Save"
 msgstr ""
