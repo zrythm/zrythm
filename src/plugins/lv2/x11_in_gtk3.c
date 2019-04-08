@@ -190,9 +190,16 @@ forward_key_event(SuilX11Wrapper* socket,
 static gboolean
 idle_size_request(gpointer user_data)
 {
-	GtkWidget* w = GTK_WIDGET(user_data);
-	gtk_widget_queue_resize(w);
-	return FALSE;
+  /* fix-edit when destroying */
+  if (!GTK_IS_WIDGET (user_data))
+    {
+      g_message ("idle_size_request: \
+not a widget");
+      return TRUE;
+    }
+  GtkWidget* w = GTK_WIDGET(user_data);
+  gtk_widget_queue_resize(w);
+  return FALSE;
 }
 
 static void

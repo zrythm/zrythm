@@ -378,6 +378,17 @@ automation_lane_widget_refresh (
     self);
 }
 
+static void
+on_destroy (
+  AutomationLaneWidget * self)
+{
+  AutomationLane * al = self->al;
+
+  g_object_unref (self);
+
+  al->widget = NULL;
+}
+
 /**
  * Creates a new Fader widget and binds it to the given value.
  */
@@ -410,6 +421,8 @@ automation_lane_widget_new (
     GTK_WIDGET (self), 1);
   gtk_widget_set_visible (
     GTK_WIDGET (self), 1);
+
+  g_object_ref (self);
 
   return self;
 }
@@ -471,6 +484,10 @@ static void
 automation_lane_widget_init (AutomationLaneWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  g_signal_connect (
+    self, "destroy",
+    G_CALLBACK (on_destroy), NULL);
 }
 
 static void

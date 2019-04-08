@@ -362,6 +362,14 @@ channel_widget_unblock_all_signal_handlers (
     self->mute_toggled_handler_id);
 }
 
+static void
+on_destroy (
+  ChannelWidget * self)
+{
+  self->channel->widget = NULL;
+
+  g_object_unref (self);
+}
 
 ChannelWidget *
 channel_widget_new (Channel * channel)
@@ -390,6 +398,12 @@ channel_widget_new (Channel * channel)
       channel_widget_update_meter_reading,
     NULL,
     NULL);
+
+  g_signal_connect (
+    self, "destroy",
+    G_CALLBACK (on_destroy), NULL);
+
+  g_object_ref (self);
 
   return self;
 }

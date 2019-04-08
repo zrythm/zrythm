@@ -681,6 +681,19 @@ track_widget_get_bottom_paned (TrackWidget * self)
 }
 
 static void
+on_destroy (
+  TrackWidget * self)
+{
+  TRACK_WIDGET_GET_PRIVATE (self);
+
+  Track * track = tw_prv->track;
+
+  g_object_unref (self);
+
+  track->widget = NULL;
+}
+
+static void
 track_widget_init (TrackWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
@@ -719,6 +732,11 @@ track_widget_init (TrackWidget * self)
     G_OBJECT(tw_prv->event_box),
     "motion-notify-event",
     G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self), "destroy",
+    G_CALLBACK (on_destroy),  NULL);
+
+  g_object_ref (self);
 }
 
 static void

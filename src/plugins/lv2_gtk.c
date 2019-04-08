@@ -43,6 +43,7 @@
 #include "gui/widgets/instrument_track.h"
 #include "plugins/lv2_gtk.h"
 #include "plugins/lv2_plugin.h"
+#include "plugins/lv2/suil.h"
 #include "plugins/plugin_manager.h"
 #include "zrythm.h"
 
@@ -1624,8 +1625,17 @@ lv2_close_ui(Lv2Plugin* plugin)
 {
   if (plugin->window)
     {
-      g_idle_add ((GSourceFunc) gtk_window_close,
-                  plugin->window);
+      gtk_widget_set_sensitive (
+        GTK_WIDGET (plugin->window),
+        0);
+      /*suil_instance_free (plugin->ui_instance);*/
+      gtk_window_close (
+        GTK_WINDOW (plugin->window));
+      /*gtk_widget_destroy (*/
+        /*GTK_WIDGET (plugin->window));*/
+      /*gtk_widget_destroy (*/
+        /*GTK_WIDGET (plugin->window));*/
+      /*g_message ("destroy");*/
     }
   plugin->window = NULL;
   return TRUE;
