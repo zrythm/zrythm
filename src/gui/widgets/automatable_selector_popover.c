@@ -88,7 +88,7 @@ create_model_for_automatables (
               gtk_list_store_append (list_store, &iter);
               gtk_list_store_set (
                 list_store, &iter,
-                0, "text-x-csrc",
+                0, "z-text-x-csrc",
                 1, a->label,
                 2, a,
                 -1);
@@ -123,7 +123,7 @@ create_model_for_automatables (
                     list_store, &iter);
                   gtk_list_store_set (
                     list_store, &iter,
-                    0, "plugins",
+                    0, "z-plugins",
                     1, a->label,
                     2, a,
                     -1);
@@ -153,7 +153,7 @@ create_model_for_types (
   gtk_list_store_append (list_store, &iter);
   gtk_list_store_set (
     list_store, &iter,
-    0, "text-x-csrc",
+    0, "z-text-x-csrc",
     1, "Channel",
     2, AS_TYPE_CHANNEL,
     -1);
@@ -178,7 +178,7 @@ create_model_for_types (
           gtk_list_store_append (list_store, &iter);
           gtk_list_store_set (
             list_store, &iter,
-            0, "plugins",
+            0, "z-plugins",
             1, label,
             2, AS_TYPE_PLUGIN_0 + i,
             -1);
