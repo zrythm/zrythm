@@ -66,6 +66,7 @@
 
 #include "audio/engine.h"
 #include "audio/transport.h"
+#include "gui/widgets/main_window.h"
 #include "plugins/lv2_gtk.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/control.h"
@@ -1866,14 +1867,22 @@ lv2_instantiate (Lv2Plugin      * lv2_plugin,   ///< plugin to instantiate
   if (LV2_SETTINGS.opts.update_rate == 0.0)
     {
       /* Calculate a reasonable UI update frequency. */
-      lv2_plugin->ui_update_hz = (float)AUDIO_ENGINE->sample_rate /
-        AUDIO_ENGINE->midi_buf_size * 2.0f;
-      lv2_plugin->ui_update_hz = MAX(25.0f, lv2_plugin->ui_update_hz);
+      /*lv2_plugin->ui_update_hz = (float)AUDIO_ENGINE->sample_rate /*/
+        /*AUDIO_ENGINE->midi_buf_size * 2.0f;*/
+      /*lv2_plugin->ui_update_hz = MAX(25.0f, lv2_plugin->ui_update_hz);*/
+
+      lv2_plugin->ui_update_hz =
+        gdk_monitor_get_refresh_rate (
+          gdk_display_get_monitor_at_window (
+            gdk_display_get_default (),
+            gtk_widget_get_window (
+              GTK_WIDGET (MAIN_WINDOW))));
     }
   else
     {
       /* Use user-specified UI update rate. */
-      lv2_plugin->ui_update_hz = LV2_SETTINGS.opts.update_rate;
+      lv2_plugin->ui_update_hz =
+        LV2_SETTINGS.opts.update_rate;
       lv2_plugin->ui_update_hz = MAX(1.0f, lv2_plugin->ui_update_hz);
     }
 
