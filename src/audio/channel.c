@@ -819,8 +819,13 @@ channel_remove_plugin (
       channel->plugin_ids[pos] = -1;
       if (plugin->descr->protocol == PROT_LV2)
         {
-          lv2_close_ui ((Lv2Plugin *) plugin->original_plugin);
-
+          Lv2Plugin * lv2_plugin =
+            (Lv2Plugin *) plugin->original_plugin;
+          if (GTK_IS_WIDGET (lv2_plugin->window))
+            g_signal_handler_disconnect (
+              lv2_plugin->window,
+              lv2_plugin->delete_event_id);
+          lv2_close_ui (lv2_plugin);
         }
       project_remove_plugin (plugin);
       plugin_free (plugin);

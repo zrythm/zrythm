@@ -71,6 +71,15 @@ on_drag_data_received (GtkWidget        *widget,
   zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
   channel_add_plugin (channel, channel_slot->slot_index, plugin);
   zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
+
+  if (g_settings_get_int (
+        S_PREFERENCES,
+        "open-plugin-uis-on-instantiate"))
+    {
+      plugin->visible = 1;
+      EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED,
+                   plugin);
+    }
   gtk_widget_queue_draw (widget);
 }
 

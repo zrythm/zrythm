@@ -295,6 +295,8 @@ tracklist_remove_track (Track *     track)
   array_delete (TRACKLIST->track_ids,
                 size,
                 track->id);
+  tracklist_selections_remove_track (
+    TRACKLIST_SELECTIONS, track);
   project_remove_track (track);
   track_free (track);
 

@@ -553,6 +553,20 @@ track_free (Track * track)
       break;
     }
 
+  if (track->channel)
+    {
+      Plugin * pl;
+      for (int i = 0; i < STRIP_SIZE; i++)
+        {
+          pl = track->channel->plugins[i];
+          if (!pl)
+            continue;
+
+          channel_remove_plugin (track->channel,
+                                 i, 0);
+        }
+    }
+
   if (track->widget && GTK_IS_WIDGET (track->widget))
     gtk_widget_destroy (
       GTK_WIDGET (track->widget));

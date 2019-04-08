@@ -1516,6 +1516,7 @@ on_delete_event (GtkWidget *widget,
                Lv2Plugin * plugin)
 {
   plugin->plugin->visible = 0;
+  plugin->window = NULL;
   EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED,
                plugin->plugin);
 
@@ -1532,9 +1533,10 @@ lv2_open_ui(Lv2Plugin* plugin)
     "zrythm");
 
   plugin->window = window;
-  g_signal_connect (
-    G_OBJECT (window), "delete-event",
-    G_CALLBACK (on_delete_event), plugin);
+  plugin->delete_event_id =
+    g_signal_connect (
+      G_OBJECT (window), "delete-event",
+      G_CALLBACK (on_delete_event), plugin);
   extui.ui_closed = on_external_ui_closed;
   LilvNode* name = lilv_plugin_get_name(plugin->lilv_plugin);
   extui.plugin_human_id = lv2_strdup(lilv_node_as_string(name));
@@ -1647,7 +1649,6 @@ lv2_close_ui(Lv2Plugin* plugin)
         /*GTK_WIDGET (plugin->window));*/
       /*g_message ("destroy");*/
     }
-  plugin->window = NULL;
   return TRUE;
 }
 
