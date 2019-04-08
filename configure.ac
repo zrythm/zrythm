@@ -150,6 +150,10 @@ AC_CHECK_PROG(LOCALE,[locale],[yes],[no])
 test "$LOCALE" == "no" && AC_MSG_ERROR([Required program 'locale' not found.]) && exit 1
 AC_CHECK_PROG(SED,[sed],[yes],[no])
 test "$SED" == "no" && AC_MSG_ERROR([Required program 'sed' not found.]) && exit 1
+AC_CHECK_PROG(LIBTOOLIZE,[libtoolize],[yes],[no])
+test "$LIBTOOLIZE" == "no" && AC_MSG_ERROR([Required program 'libtoolize' not found. libtool must be installed.]) && exit 1
+AC_CHECK_PROG(XGETTEXT,[xgettext],[yes],[no])
+test "$XGETTEXT" == "no" && AC_MSG_ERROR([Required program 'xgettext' not found. gettext must be installed.]) && exit 1
 
 #AM_COND_IF([LINUX],
            #[LDFLAGS="$LDFLAGS -L/usr/lib"])
