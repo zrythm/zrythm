@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-08 03:40+0100\n"
+"POT-Creation-Date: 2019-04-08 11:32+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrythm dot org>\n"
 "Language-Team: Spanish\n"
@@ -150,7 +150,7 @@ msgstr ""
 msgid "Click to enable MIDI controllers to be connected automatically"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:1427
+#: src/plugins/lv2_gtk.c:1430
 msgid "Close"
 msgstr ""
 
@@ -158,9 +158,9 @@ msgstr ""
 msgid "Collection"
 msgstr ""
 
-#: resources/ui/inspector_track.ui:73 resources/ui/inspector_midi.ui:67
-#: resources/ui/inspector_region.ui:68 resources/ui/inspector_ap.ui:67
-#: resources/ui/inspector_master.ui:67
+#: resources/ui/inspector_region.ui:68 resources/ui/inspector_master.ui:67
+#: resources/ui/inspector_track.ui:73 resources/ui/inspector_ap.ui:67
+#: resources/ui/inspector_midi.ui:67
 msgid "Color"
 msgstr ""
 
@@ -180,7 +180,7 @@ msgstr ""
 msgid "Copy selection to clipboard"
 msgstr ""
 
-#: resources/ui/shortcuts.ui:84 resources/ui/project_assistant.ui:62
+#: resources/ui/project_assistant.ui:62 resources/ui/shortcuts.ui:84
 msgid "Create new project"
 msgstr ""
 
@@ -192,7 +192,7 @@ msgstr ""
 msgid "Cut selection to clipboard"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:557
+#: src/plugins/lv2_gtk.c:560
 msgid "Delete Preset?"
 msgstr ""
 
@@ -232,9 +232,9 @@ msgstr ""
 msgid "English [en]"
 msgstr ""
 
-#: resources/ui/inspector_track.ui:47 resources/ui/inspector_midi.ui:44
-#: resources/ui/inspector_region.ui:45 resources/ui/inspector_ap.ui:44
-#: resources/ui/inspector_master.ui:44
+#: resources/ui/inspector_region.ui:45 resources/ui/inspector_master.ui:44
+#: resources/ui/inspector_track.ui:47 resources/ui/inspector_ap.ui:44
+#: resources/ui/inspector_midi.ui:44
 msgid "Enter region name..."
 msgstr ""
 
@@ -364,7 +364,7 @@ msgstr ""
 msgid "LFO 1"
 msgstr ""
 
-#: resources/ui/preferences.ui:294 resources/ui/first_run_assistant.ui:88
+#: resources/ui/first_run_assistant.ui:88 resources/ui/preferences.ui:294
 msgid "Language"
 msgstr ""
 
@@ -376,10 +376,10 @@ msgstr ""
 msgid "Left Panel"
 msgstr ""
 
-#: resources/ui/inspector_track.ui:114 resources/ui/inspector_midi.ui:101
-#: resources/ui/inspector_region.ui:103 resources/ui/quantize_mb_popover.ui:88
-#: resources/ui/inspector_ap.ui:101 resources/ui/snap_grid_popover.ui:88
-#: resources/ui/inspector_master.ui:101
+#: resources/ui/quantize_mb_popover.ui:88 resources/ui/inspector_region.ui:103
+#: resources/ui/inspector_master.ui:101 resources/ui/inspector_track.ui:114
+#: resources/ui/inspector_ap.ui:101 resources/ui/inspector_midi.ui:101
+#: resources/ui/snap_grid_popover.ui:88
 msgid "Length"
 msgstr ""
 
@@ -444,9 +444,9 @@ msgstr ""
 msgid "Mute"
 msgstr ""
 
-#: resources/ui/inspector_track.ui:128 resources/ui/inspector_midi.ui:113
-#: resources/ui/inspector_region.ui:115 resources/ui/inspector_ap.ui:113
-#: resources/ui/inspector_master.ui:113
+#: resources/ui/inspector_region.ui:115 resources/ui/inspector_master.ui:113
+#: resources/ui/inspector_track.ui:128 resources/ui/inspector_ap.ui:113
+#: resources/ui/inspector_midi.ui:113
 msgid "Muted"
 msgstr ""
 
@@ -533,8 +533,8 @@ msgstr ""
 msgid "Plugins"
 msgstr ""
 
-#: resources/ui/inspector_midi.ui:79 resources/ui/inspector_region.ui:80
-#: resources/ui/inspector_ap.ui:79 resources/ui/inspector_master.ui:79
+#: resources/ui/inspector_region.ui:80 resources/ui/inspector_master.ui:79
+#: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
 msgid "Position"
 msgstr ""
 
@@ -612,9 +612,9 @@ msgstr ""
 msgid "Redo previous command"
 msgstr ""
 
-#: resources/ui/inspector_track.ui:32 resources/ui/inspector_midi.ui:31
-#: resources/ui/inspector_region.ui:32 resources/ui/inspector_ap.ui:31
-#: resources/ui/inspector_master.ui:31
+#: resources/ui/inspector_region.ui:32 resources/ui/inspector_master.ui:31
+#: resources/ui/inspector_track.ui:32 resources/ui/inspector_ap.ui:31
+#: resources/ui/inspector_midi.ui:31
 msgid "Region"
 msgstr ""
 
@@ -660,7 +660,7 @@ msgstr ""
 msgid "Save Project"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:144
+#: src/plugins/lv2_gtk.c:147
 msgid "Save State"
 msgstr ""
 
@@ -852,13 +852,13 @@ msgstr ""
 msgid "Tracks (%d)"
 msgstr ""
 
-#: resources/ui/file_browser.ui:84 resources/ui/inspector_track.ui:87
-#: resources/ui/quantize_mb_popover.ui:127 resources/ui/plugin_browser.ui:85
+#: resources/ui/quantize_mb_popover.ui:127 resources/ui/inspector_track.ui:87
+#: resources/ui/file_browser.ui:84 resources/ui/plugin_browser.ui:85
 #: resources/ui/snap_grid_popover.ui:127
 msgid "Type"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:462
+#: src/plugins/lv2_gtk.c:465
 msgid "URI (Optional):"
 msgstr ""
 
@@ -870,11 +870,11 @@ msgstr ""
 msgid "Undo previous command"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:776
+#: src/plugins/lv2_gtk.c:779
 msgid "Unknown widget type for value"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:802
+#: src/plugins/lv2_gtk.c:805
 msgid "Unknown widget type for value\n"
 msgstr ""
 
@@ -926,7 +926,7 @@ msgstr ""
 msgid "Zrythm Directory"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:147 src/plugins/lv2_gtk.c:562
+#: src/plugins/lv2_gtk.c:150 src/plugins/lv2_gtk.c:565
 #: src/actions/actions.c:493
 msgid "_Cancel"
 msgstr ""
@@ -973,7 +973,7 @@ msgstr ""
 msgid "_New"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:563
+#: src/plugins/lv2_gtk.c:566
 msgid "_OK"
 msgstr ""
 
@@ -985,7 +985,7 @@ msgstr ""
 msgid "_Preferences"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:466
+#: src/plugins/lv2_gtk.c:469
 msgid "_Prefix plugin name"
 msgstr ""
 
@@ -997,8 +997,8 @@ msgstr ""
 msgid "_Redo"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:148 src/actions/actions.c:495
-#: src/gui/widgets/header_bar.c:130
+#: src/plugins/lv2_gtk.c:151 src/gui/widgets/header_bar.c:130
+#: src/actions/actions.c:495
 msgid "_Save"
 msgstr ""
 
@@ -1022,7 +1022,7 @@ msgstr ""
 msgid "in"
 msgstr ""
 
-#: resources/ui/automatable_selector.ui:84 resources/ui/track.ui:59
+#: resources/ui/track.ui:59 resources/ui/automatable_selector.ui:84
 msgid "label"
 msgstr ""
 
@@ -1030,9 +1030,9 @@ msgstr ""
 msgid "out"
 msgstr ""
 
-#: resources/ui/inspector_track.ui:46 resources/ui/inspector_midi.ui:43
-#: resources/ui/inspector_region.ui:44 resources/ui/inspector_ap.ui:43
-#: resources/ui/inspector_master.ui:43
+#: resources/ui/inspector_region.ui:44 resources/ui/inspector_master.ui:43
+#: resources/ui/inspector_track.ui:46 resources/ui/inspector_ap.ui:43
+#: resources/ui/inspector_midi.ui:43
 msgid "region_name"
 msgstr ""
 

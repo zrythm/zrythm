@@ -2245,6 +2245,7 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
                   }
 
                 if (lv2_plugin->has_ui &&
+                    lv2_plugin->window &&
                     !lv2_port->old_api)
                   {
                     // Forward event to UI

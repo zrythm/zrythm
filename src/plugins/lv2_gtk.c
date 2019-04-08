@@ -115,6 +115,7 @@ on_window_destroy(
 {
   Lv2Plugin * plugin = (Lv2Plugin *) data;
   plugin->window = NULL;
+  g_message ("destroying");
 
   /* reinit widget in plugin ports and controls */
   for (int i = 0; i < plugin->controls.n_controls;
@@ -133,6 +134,8 @@ on_window_destroy(
 
       port->widget = NULL;
     }
+
+  suil_instance_free (plugin->ui_instance);
 }
 
 static void
@@ -1628,7 +1631,12 @@ lv2_close_ui(Lv2Plugin* plugin)
       gtk_widget_set_sensitive (
         GTK_WIDGET (plugin->window),
         0);
-      /*suil_instance_free (plugin->ui_instance);*/
+      /*GtkWidget * widget =*/
+        /*GTK_WIDGET (*/
+          /*suil_instance_get_widget (*/
+            /*(SuilInstance *) plugin->ui_instance));*/
+      /*if (widget)*/
+        /*gtk_widget_destroy (widget);*/
       gtk_window_close (
         GTK_WINDOW (plugin->window));
       /*gtk_widget_destroy (*/

@@ -214,6 +214,7 @@ suil_instance_new(SuilHost*                 host,
 void
 suil_instance_free(SuilInstance* instance)
 {
+  g_message ("freeing %p", instance);
 	if (instance) {
 		for (unsigned i = 0; instance->features[i]; ++i) {
 			free(instance->features[i]);
@@ -222,11 +223,13 @@ suil_instance_free(SuilInstance* instance)
 
 		// Call wrapper free function to destroy widgets and drop references
 		if (instance->wrapper && instance->wrapper->free) {
+        g_message ("freeing wrapper");
 			instance->wrapper->free(instance->wrapper);
 		}
 
 		// Call cleanup to destroy UI (if it still exists at this point)
 		if (instance->handle) {
+        g_message ("cleaning up UI");
 			instance->descriptor->cleanup(instance->handle);
 		}
 

@@ -193,9 +193,9 @@ idle_size_request(gpointer user_data)
   /* fix-edit when destroying */
   if (!GTK_IS_WIDGET (user_data))
     {
-      g_message ("idle_size_request: \
-not a widget");
-      return TRUE;
+      /*g_message ("idle_size_request: \*/
+/*not a widget");*/
+      return G_SOURCE_REMOVE;
     }
   GtkWidget* w = GTK_WIDGET(user_data);
   gtk_widget_queue_resize(w);
@@ -271,9 +271,10 @@ static void
 suil_x11_on_size_allocate(GtkWidget*     widget,
                           GtkAllocation* a)
 {
-	SuilX11Wrapper* const self = Z_SUIL_X11_WRAPPER(widget);
+	SuilX11Wrapper* const self =
+    Z_SUIL_X11_WRAPPER(widget);
 
-	if (self->plug
+	if (GTK_IS_WIDGET (self->plug)
 	    && gtk_widget_get_realized(widget)
 	    && gtk_widget_get_mapped(widget)
 	    && gtk_widget_get_visible(widget)) {
@@ -358,9 +359,13 @@ wrapper_wrap(SuilWrapper*  wrapper,
 static void
 wrapper_free(SuilWrapper* wrapper)
 {
+  /*g_message ("freeing wrapper");*/
 	if (wrapper->impl) {
 		SuilX11Wrapper* const wrap = Z_SUIL_X11_WRAPPER(wrapper->impl);
+    /*g_message ("destroying wrapper");*/
 		gtk_widget_destroy(GTK_WIDGET(wrap));
+    /*g_message ("is widget? %d",*/
+               /*GTK_IS_WIDGET (wrap));*/
 	}
 }
 
