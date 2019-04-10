@@ -240,6 +240,7 @@ midi_region_remove_midi_note (
                 size,
                 midi_note);
 
+  project_remove_midi_note (midi_note);
   midi_note_free (midi_note);
 }
 

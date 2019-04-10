@@ -328,6 +328,24 @@ midi_note_widget_select (
                self->midi_note);
 }
 
+/**
+ * Destroys the widget completely.
+ */
+void
+midi_note_widget_destroy (MidiNoteWidget *self)
+{
+  gtk_widget_set_sensitive (
+    GTK_WIDGET (self), 0);
+  gtk_container_remove (
+    GTK_CONTAINER (self),
+    GTK_WIDGET (self->drawing_area));
+
+  gtk_widget_destroy (
+    GTK_WIDGET (self));
+
+  g_object_unref (self);
+}
+
 MidiNoteWidget *
 midi_note_widget_new (MidiNote * midi_note)
 {

@@ -64,6 +64,12 @@ MidiNoteWidget *
 midi_note_widget_new (MidiNote * midi_note);
 
 /**
+ * Destroys the widget completely.
+ */
+void
+midi_note_widget_destroy (MidiNoteWidget *self);
+
+/**
  * Sets the "selected" GTK state flag and adds the
  * note to midi arranger selections.
  *

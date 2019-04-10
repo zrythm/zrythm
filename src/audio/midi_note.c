@@ -296,16 +296,11 @@ midi_note_free (MidiNote * self)
     {
       g_message ("destroying %p",
                  self->widget);
-      /*gtk_widget_destroy (*/
-        /*GTK_WIDGET (self->widget->tooltip_win));*/
-      g_idle_add (
-        (GSourceFunc) gtk_widget_destroy,
-        GTK_WIDGET (self->widget));
+      midi_note_widget_destroy (
+        self->widget);
     }
 
   velocity_free (self->vel);
-
-  project_remove_midi_note (self);
 
   free (self);
 }

@@ -894,18 +894,18 @@ midi_arranger_widget_on_drag_end (
     MIDI_ARRANGER_SELECTIONS);
 
   /* FIXME temporary, should be removed */
-  for (int i = 0;
-       i < CLIP_EDITOR->region->num_midi_notes;
-       i++)
-    {
-      midi_note =
-        CLIP_EDITOR->region->midi_notes[i];
+  /*for (int i = 0;*/
+       /*i < CLIP_EDITOR->region->num_midi_notes;*/
+       /*i++)*/
+    /*{*/
+      /*midi_note =*/
+        /*CLIP_EDITOR->region->midi_notes[i];*/
 
-      if (!midi_note_is_selected (midi_note))
-        EVENTS_PUSH (
-          ET_MIDI_NOTE_CHANGED,
-          CLIP_EDITOR->region->midi_notes[i]);
-    }
+      /*if (!midi_note_is_selected (midi_note))*/
+        /*EVENTS_PUSH (*/
+          /*ET_MIDI_NOTE_CHANGED,*/
+          /*CLIP_EDITOR->region->midi_notes[i]);*/
+    /*}*/
 }
 
 /**

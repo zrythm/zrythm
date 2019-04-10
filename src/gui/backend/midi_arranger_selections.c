@@ -69,16 +69,25 @@ void
 midi_arranger_selections_clear (
   MidiArrangerSelections * mas)
 {
+  int i, num_midi_notes;
   MidiNote * mn;
-  for (int i = 0; i < mas->num_midi_notes; i++)
+
+  /* use caches because mas->* will be operated on */
+  static MidiNote * midi_notes[600];
+  for (i = 0; i < mas->num_midi_notes; i++)
     {
-      mn = mas->midi_notes[i];
+      midi_notes[i] = mas->midi_notes[i];
+    }
+  for (i = 0; i < num_midi_notes; i++)
+    {
+      mn = midi_notes[i];
       midi_arranger_selections_remove_note (
         mas, mn);
       EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
                    mn);
     }
-  /*g_message ("cleared midi arranger selections");*/
+
+  g_message ("cleared midi arranger selections");
 }
 
 static void
