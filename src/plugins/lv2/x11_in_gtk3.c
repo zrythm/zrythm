@@ -14,6 +14,10 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#include "config.h"
+
+#ifdef HAVE_X11
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -420,3 +424,4 @@ suil_wrapper_new_x11(SuilHost*      host,
 	return wrapper;
 }
 
+#endif

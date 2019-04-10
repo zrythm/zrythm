@@ -30,8 +30,14 @@ suil_ui_supported(const char* host_type_uri,
 	};
 	if (!strcmp(GTK3_UI_URI, ui_type_uri))
 		return SUIL_WRAPPING_NATIVE;
+#ifdef WINDOWS
+  else if (!strcmp(ui_type_uri, WIN_UI_URI))
+		return SUIL_WRAPPING_EMBEDDED;
+#endif
+#ifdef HAVE_X11
   else if (!strcmp(ui_type_uri, X11_UI_URI))
 		return SUIL_WRAPPING_EMBEDDED;
+#endif
 #ifdef HAVE_QT5
   else if (!strcmp (ui_type_uri, QT5_UI_URI))
     return SUIL_WRAPPING_EMBEDDED;
@@ -48,6 +54,8 @@ open_wrapper(SuilHost*      host,
              unsigned       n_features)
 {
 	SuilWrapper* wrapper = NULL;
+
+#ifdef HAVE_X11
 	if (!strcmp(ui_type_uri, X11_UI_URI))
     {
       wrapper = suil_wrapper_new_x11(host,
@@ -56,8 +64,22 @@ open_wrapper(SuilHost*      host,
                       features,
                       n_features);
     }
+#endif
+
+  /* TODO write wrapper */
+#ifdef SUIL_WITH_WIN_IN_GTK3
+  if (!strcmp(ui_type_uri, WIN_UI_URI))
+    {
+      wrapper = suil_wrapper_new_win(host,
+                      container_type_uri,
+                      ui_type_uri,
+                      features,
+                      n_features);
+    }
+#endif
+
 #ifdef HAVE_QT5
-  else if (!strcmp(ui_type_uri, QT5_UI_URI))
+  if (!strcmp(ui_type_uri, QT5_UI_URI))
     {
       wrapper = suil_wrapper_new_qt5(host,
                       container_type_uri,

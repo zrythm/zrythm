@@ -17,6 +17,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
+#ifdef HAVE_JACK
+
 #ifndef __AUDIO_ENGINE_JACK_H__
 #define __AUDIO_ENGINE_JACK_H__
 
@@ -66,3 +70,4 @@ void
 jack_tear_down ();
 
 #endif
+#endif /* HAVE_JACK */

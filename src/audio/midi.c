@@ -43,10 +43,12 @@ midi_events_new (int init_queue)
     calloc (1, sizeof (MidiEvents));
   for (int i = 0; i < MAX_MIDI_EVENTS; i++)
     {
+#ifdef HAVE_JACK
       jack_midi_event_t * ev =
         &self->jack_midi_events[i];
       ev->buffer =
         calloc (3, sizeof (jack_midi_data_t));
+#endif
     }
   if (init_queue)
     self->queue = midi_events_new (0);
@@ -63,6 +65,7 @@ midi_events_append (MidiEvents * src, MidiEvents * dest)
   int dest_index = dest->num_events;
   for (int i = 0; i < src->num_events; i++)
     {
+#ifdef HAVE_JACK
       jack_midi_event_t * se =
         &src->jack_midi_events[i];
       jack_midi_event_t * de =
@@ -70,6 +73,7 @@ midi_events_append (MidiEvents * src, MidiEvents * dest)
       de->time = se->time;
       de->size = se->size;
       de->buffer = se->buffer;
+#endif
     }
   dest->num_events += src->num_events;
 }
@@ -91,6 +95,7 @@ int
 midi_events_check_for_note_on (
   MidiEvents * midi_events, int note)
 {
+#ifdef HAVE_JACK
   jack_midi_event_t * ev;
   for (int i = 0; i < midi_events->num_events; i++)
     {
@@ -99,6 +104,7 @@ midi_events_check_for_note_on (
           ev->buffer[1] == note)
         return 1;
     }
+#endif
   return 0;
 }
 
@@ -110,6 +116,7 @@ int
 midi_events_delete_note_on (
   MidiEvents * midi_events, int note)
 {
+#ifdef HAVE_JACK
   jack_midi_event_t * ev;
   for (int i = 0; i < midi_events->num_events; i++)
     {
@@ -138,6 +145,7 @@ midi_events_delete_note_on (
           break;
         }
     }
+#endif
 
   return 0;
 }
@@ -152,12 +160,14 @@ midi_events_dequeue (MidiEvents * midi_events)
   midi_events->num_events = midi_events->queue->num_events;
   for (int i = 0; i < midi_events->num_events; i++)
     {
+#ifdef HAVE_JACK
       midi_events->jack_midi_events[i].time =
         midi_events->queue->jack_midi_events[i].time;
       midi_events->jack_midi_events[i].size =
         midi_events->queue->jack_midi_events[i].size;
       midi_events->jack_midi_events[i].buffer =
         midi_events->queue->jack_midi_events[i].buffer;
+#endif
     }
   midi_events->processed = 1;
 
@@ -172,6 +182,7 @@ midi_panic (MidiEvents * events)
 {
   MidiEvents * queue = events->queue;
   queue->num_events = 1;
+#ifdef HAVE_JACK
   jack_midi_event_t * ev = &queue->jack_midi_events[0];
   ev->time = 0;
   ev->size = 3;
@@ -180,6 +191,7 @@ midi_panic (MidiEvents * events)
   ev->buffer[0] = MIDI_CH1_CTRL_CHANGE;
   ev->buffer[1] = MIDI_ALL_NOTES_OFF;
   ev->buffer[2] = 0x00;
+#endif
 }
 
 /**

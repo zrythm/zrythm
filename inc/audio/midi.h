@@ -20,6 +20,8 @@
 /** \file
  */
 
+#include "config.h"
+
 #ifndef __AUDIO_MIDI_H__
 #define __AUDIO_MIDI_H__
 
@@ -37,7 +39,9 @@
 #define MIDI_ALL_SOUND_OFF 0x78
 #define MAX_MIDI_EVENTS 128
 
+#ifdef HAVE_JACK
 #include <jack/midiport.h>
+#endif
 
 typedef struct MidiEvents MidiEvents;
 
@@ -48,7 +52,9 @@ typedef struct MidiEvents MidiEvents;
 typedef struct MidiEvents
 {
   int        num_events;       ///< number of events
+#ifdef HAVE_JACK
   jack_midi_event_t   jack_midi_events[MAX_MIDI_EVENTS];       ///< jack midi events
+#endif
   MidiEvents           * queue; ///< for queing events. engine will copy them to the
                               ///< original MIDI events when ready to be processed
                               //

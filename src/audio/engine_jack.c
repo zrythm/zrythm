@@ -17,6 +17,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
+#ifdef HAVE_JACK
+
 #include "audio/channel.h"
 #include "audio/engine.h"
 #include "audio/engine_jack.h"
@@ -568,3 +572,5 @@ jack_tear_down ()
   zix_sem_init (&AUDIO_ENGINE->port_operation_lock,
                 1);
 }
+
+#endif /* HAVE_JACK */

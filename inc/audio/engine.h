@@ -59,7 +59,9 @@
   (AUDIO_ENGINE->midi_editor_manual_press-> \
   midi_events)
 
+#ifdef HAVE_JACK
 typedef jack_nframes_t                nframes_t;
+#endif
 
 //typedef struct MIDI_Controller
 //{
@@ -74,7 +76,9 @@ typedef struct Tracklist Tracklist;
 
 typedef enum EngineBackend
 {
+#ifdef HAVE_JACK
   ENGINE_BACKEND_JACK,
+#endif
 #ifdef HAVE_PORT_AUDIO
   ENGINE_BACKEND_PORT_AUDIO,
 #endif
@@ -90,7 +94,9 @@ typedef struct AudioEngine
    */
   long    cycle;
 
+#ifdef HAVE_JACK
   jack_client_t     * client;     ///< jack client
+#endif
   EngineBackend      backend; ///< current backend, regardless if the selection chagned in preferences
 	uint32_t           block_length;   ///< Audio buffer size (block length)
 	size_t             midi_buf_size;  ///< Size of MIDI port buffers

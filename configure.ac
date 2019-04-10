@@ -98,16 +98,24 @@ AC_ARG_WITH(
       AC_SUBST([HAVE_QT5],[1])])],
   [echo "** building without Qt5 support in suil. use --with-qt5 to enable it"])
 
-AC_ARG_WITH(
-  port-audio,
-  AS_HELP_STRING(
-    [--with-port-audio],
-    [Add support for port audio backend]),
+# make port audio mandatory on windows, optional on
+# other OSes
+AM_COND_IF(
+  [WINDOWS],
   [PKG_CHECK_MODULES(
-    [PORT_AUDIO], [portaudio-2.0],
-    [AC_DEFINE([HAVE_PORT_AUDIO],[1],[Have port audio backend])
-      AC_SUBST([HAVE_PORT_AUDIO],[1])])],
-  [echo "** building without port audio support. use --with-port-audio to enable it"])
+      [PORT_AUDIO], [portaudio-2.0],
+      [AC_DEFINE([HAVE_PORT_AUDIO],[1],[Have port audio backend])
+        AC_SUBST([HAVE_PORT_AUDIO],[1])])],
+  [AC_ARG_WITH(
+    port-audio,
+    AS_HELP_STRING(
+      [--with-port-audio],
+      [Add support for port audio backend]),
+    [PKG_CHECK_MODULES(
+      [PORT_AUDIO], [portaudio-2.0],
+      [AC_DEFINE([HAVE_PORT_AUDIO],[1],[Have port audio backend])
+        AC_SUBST([HAVE_PORT_AUDIO],[1])])],
+    [echo "** building without port audio support. use --with-port-audio to enable it"])])
 
 # needed for localization
 AC_DEFINE([GETTEXT_PACKAGE],["zrythm"],
@@ -123,29 +131,31 @@ AC_ARG_WITH(
   [AC_SUBST([WITH_DOCS],[0])])
 
 # Check for a C compiler
-AC_PROG_CC([gcc])
+AC_PROG_CC([gcc clang])
 AC_PROG_CXX([g++])
 
 AC_PREFIX_DEFAULT([/usr])
 
-#Checks for libraries.
+#Check for libraries.
 PKG_CHECK_MODULES([GTK3], [gtk+-3.0 >= 3.20])
-PKG_CHECK_MODULES([JACK], [jack])
+AM_COND_IF(
+  [LINUX],
+  [PKG_CHECK_MODULES(
+     [JACK], [jack],
+     [AC_DEFINE([HAVE_JACK],[1],[Have jack backend])
+        AC_SUBST([HAVE_JACK],[1])])])
 PKG_CHECK_MODULES([LILV], [lilv-0 >= 0.24.2])
-
-#PKG_CHECK_MODULES([LIBDAZZLE], [libdazzle-1.0 >= 3.20])
 PKG_CHECK_MODULES([SNDFILE], [sndfile >= 1.0.25])
-PKG_CHECK_MODULES([SAMPLERATE], [samplerate >= 0.1.8])
-AM_COND_IF([LINUX],
-           [PKG_CHECK_MODULES([LV2], [lv2 >= 1.14.0])])
-AM_COND_IF([WINDOWS],
-           [PKG_CHECK_MODULES([LV2], [lv2 >= 1.14.0])])
-#PKG_CHECK_MODULES([LIBCYAML], [libcyaml])
+PKG_CHECK_MODULES(
+  [SAMPLERATE], [samplerate >= 0.1.8])
+PKG_CHECK_MODULES([LV2], [lv2 >= 1.14.0])
 PKG_CHECK_MODULES([LIBYAML], [yaml-0.1])
-PKG_CHECK_MODULES([X11], [x11])
-#PKG_CHECK_MODULES([LIBGTOP], [libgtop-2.0])
-#PKG_CHECK_MODULES([QT4], [QtGui])
-
+AM_COND_IF(
+  [LINUX],
+  [PKG_CHECK_MODULES(
+     [X11], [x11],
+     [AC_DEFINE([HAVE_X11],[1],[Have x11])
+        AC_SUBST([HAVE_X11],[1])])])
 
 #Checks for header files.
 #Checks for typedefs, structures, and compiler characteristics.
@@ -167,15 +177,6 @@ test "$XGETTEXT" == "no" && AC_MSG_ERROR([Required program 'xgettext' not found.
 
 #AM_COND_IF([LINUX],
            #[LDFLAGS="$LDFLAGS -L/usr/lib"])
-
-# Check for breeze icons
-AM_COND_IF([USE_DEFAULT_PREFIX],
-           [AC_CHECK_FILE([$ac_default_prefix/share/icons/breeze-dark],,
-              [echo "Breeze icons are required to show the icons properly" && \
-               echo "Please install them using a package manager or manually from here https://github.com/KDE/breeze-icons"])],
-           [AC_CHECK_FILE([$prefix/share/icons/breeze-dark],,
-              [echo "Breeze icons are required" && \
-               echo "Please install them using a package manager or manually from here https://github.com/KDE/breeze-icons"])])
 
 # Add GSettings support
 GLIB_GSETTINGS

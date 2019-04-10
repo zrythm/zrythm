@@ -15,9 +15,12 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#include "config.h"
 #include "plugins/lv2/suil.h"
 
+#ifdef HAVE_X11
 #include <X11/Xlib.h>
+#endif
 
 SuilHost*
 suil_host_new(SuilPortWriteFunc       write_func,
@@ -54,5 +57,7 @@ suil_host_free(SuilHost* host)
 void
 suil_init(int* argc, char*** argv, SuilArg key, ...)
 {
+#ifdef HAVE_X11
   XInitThreads ();
+#endif
 }
