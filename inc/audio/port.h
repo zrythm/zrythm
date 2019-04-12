@@ -28,8 +28,6 @@
 #include "audio/midi.h"
 #include "utils/yaml.h"
 
-#include <jack/jack.h>
-
 #define MAX_DESTINATIONS 600
 #define FOREACH_SRCS(port) \
   for (int i = 0; i < port->num_srcs; i++)
@@ -67,9 +65,6 @@ typedef enum PortInternalType
   INTERNAL_LV2_PORT,                ///< LV2_Port (see lv2_plugin.c)
   INTERNAL_JACK_PORT                ///< jack_port_t
 } PortInternalType;
-
-typedef jack_default_audio_sample_t   sample_t;
-typedef jack_nframes_t                nframes_t;
 
 typedef struct LV2_Port LV2_Port;
 typedef struct Channel Channel;

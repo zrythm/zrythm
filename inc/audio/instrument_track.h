@@ -23,8 +23,6 @@
 #include "audio/channel_track.h"
 #include "audio/track.h"
 
-#include <jack/jack.h>
-
 typedef struct Position Position;
 typedef struct _TrackWidget TrackWidget;
 typedef struct Channel Channel;
@@ -32,7 +30,6 @@ typedef struct MidiEvents MidiEvents;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct Automatable Automatable;
 typedef struct Region MidiRegion;
-typedef jack_nframes_t nframes_t;
 
 typedef struct Track InstrumentTrack;
 
@@ -51,7 +48,7 @@ instrument_track_setup (InstrumentTrack * self);
 void
 instrument_track_fill_midi_events (InstrumentTrack      * track,
                         Position   * pos, ///< start position to check
-                        nframes_t  nframes, ///< n of frames from start pos
+                        uint32_t  nframes, ///< n of frames from start pos
                         MidiEvents * midi_events); ///< midi events to fill
 
 /**

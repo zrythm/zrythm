@@ -25,6 +25,7 @@
 #include <signal.h>
 
 #include "config.h"
+
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
@@ -42,8 +43,10 @@
 
 #include <gtk/gtk.h>
 
+#ifdef HAVE_JACK
 #include <jack/jack.h>
 #include <jack/midiport.h>
+#endif
 
  void
 engine_update_frames_per_tick (int beats_per_bar,
@@ -95,10 +98,12 @@ engine_init (AudioEngine * self,
           self->midi_editor_manual_press_id);
     }
 
+#ifdef HAVE_JACK
   if (self->backend == ENGINE_BACKEND_JACK)
     jack_setup (self, loading);
+#endif
 #ifdef HAVE_PORT_AUDIO
-  else if (self->backend == ENGINE_BACKEND_PORT_AUDIO)
+  if (self->backend == ENGINE_BACKEND_PORT_AUDIO)
     pa_setup (self);
 #endif
 
@@ -110,10 +115,12 @@ close_audio_engine ()
 {
   g_message ("closing audio engine...");
 
+#ifdef HAVE_JACK
   if (AUDIO_ENGINE->backend == ENGINE_BACKEND_JACK)
     jack_client_close (AUDIO_ENGINE->client);
+#endif
 #ifdef HAVE_PORT_AUDIO
-  else if (AUDIO_ENGINE->backend == ENGINE_BACKEND_PORT_AUDIO)
+  if (AUDIO_ENGINE->backend == ENGINE_BACKEND_PORT_AUDIO)
     pa_terminate (AUDIO_ENGINE);
 #endif
 }
@@ -253,8 +260,10 @@ engine_tear_down ()
 {
   g_message ("tearing down audio engine...");
 
+#ifdef HAVE_JACK
   if (AUDIO_ENGINE->backend == ENGINE_BACKEND_JACK)
     jack_tear_down ();
+#endif
 
   /* TODO free data */
 }

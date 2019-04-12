@@ -19,6 +19,8 @@
 
 #include <stdlib.h>
 
+#include "config.h"
+
 #include "audio/automatable.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
@@ -148,6 +150,7 @@ instrument_track_fill_midi_events (
                     &midi_note->end_pos,
                     &region_end_adjusted) >= 0)
                 {
+#ifdef HAVE_JACK
                   ev =
                     &midi_events->queue->
                       jack_midi_events[
@@ -167,6 +170,7 @@ instrument_track_fill_midi_events (
                   /* velocity */
                   ev->buffer[2] =
                     midi_note->vel->vel;
+#endif
                 }
             }
         }
@@ -219,6 +223,7 @@ instrument_track_fill_midi_events (
                     &tmp_end,
                     &region_end_adjusted) >= 0)
                 {
+#ifdef HAVE_JACK
                   ev =
                     &midi_events->queue->
                       jack_midi_events[
@@ -238,6 +243,7 @@ instrument_track_fill_midi_events (
                   /* velocity */
                   ev->buffer[2] =
                     midi_note->vel->vel;
+#endif
                 }
             }
         }
@@ -265,6 +271,7 @@ instrument_track_fill_midi_events (
                     &midi_note->end_pos,
                     &loop_end_adjusted) >= 0)
                 {
+#ifdef HAVE_JACK
                   ev =
                     &midi_events->queue->
                       jack_midi_events[
@@ -284,6 +291,7 @@ instrument_track_fill_midi_events (
                   /* velocity */
                   ev->buffer[2] =
                     midi_note->vel->vel;
+#endif
                 }
             }
         }
@@ -309,6 +317,7 @@ instrument_track_fill_midi_events (
                 &midi_note->start_pos,
                 &local_end_pos) <= 0)
             {
+#ifdef HAVE_JACK
               ev =
                 &midi_events->queue->
                   jack_midi_events[
@@ -328,6 +337,7 @@ instrument_track_fill_midi_events (
               /* velocity */
               ev->buffer[2] =
                 midi_note->vel->vel;
+#endif
             }
 
           /* note off event */
@@ -338,6 +348,7 @@ instrument_track_fill_midi_events (
                 &midi_note->end_pos,
                 &local_end_pos) <= 0)
             {
+#ifdef HAVE_JACK
               ev =
                 &midi_events->queue->
                   jack_midi_events[
@@ -354,6 +365,7 @@ instrument_track_fill_midi_events (
               ev->buffer[1] = midi_note->val;
               /* velocity 0-127 */
               ev->buffer[2] = midi_note->vel->vel;
+#endif
             }
         }
     }

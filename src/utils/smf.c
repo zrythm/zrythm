@@ -118,6 +118,7 @@ smf_save_regions ()
 
       for (int j = 0; j < events->num_events; j++)
         {
+#ifdef HAVE_JACK
           jack_midi_event_t * ev =
             &events->jack_midi_events[j];
           event =
@@ -133,6 +134,7 @@ smf_save_regions ()
             track,
             event,
             ev->time / AUDIO_ENGINE->frames_per_tick);
+#endif
           /*g_message ("event at %d", ev->time / AUDIO_ENGINE->frames_per_tick);*/
         }
 

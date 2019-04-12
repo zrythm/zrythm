@@ -23,8 +23,6 @@
 #include "audio/channel.h"
 #include "utils/audio.h"
 
-#include <jack/jack.h>
-
 #define MIXER (&AUDIO_ENGINE->mixer)
 #define FOREACH_CH for (int i = 0; i < MIXER->num_channels; i++)
 #define MAX_CHANNELS 3000

@@ -26,13 +26,17 @@
  * API for Channel, representing a channel strip on the mixer.
  */
 
+#include "config.h"
+
 #include "plugins/plugin.h"
 #include "utils/audio.h"
 #include "utils/yaml.h"
 
 #include <gdk/gdk.h>
 
+#ifdef HAVE_JACK
 #include <jack/jack.h>
+#endif
 
 #define MASTER_POS -1 /* master channel special position */
 #define FOREACH_STRIP for (int i = 0; i < STRIP_SIZE; i++)
@@ -41,9 +45,6 @@
 #define channel_get_fader_automatable(ch) \
   channel_get_automatable (ch, \
                            AUTOMATABLE_TYPE_CHANNEL_FADER)
-
-typedef jack_default_audio_sample_t   sample_t;
-typedef jack_nframes_t                nframes_t;
 
 typedef struct _ChannelWidget ChannelWidget;
 typedef struct Track Track;
@@ -163,7 +164,8 @@ typedef struct Channel
 
   //pthread_t         thread;     ///< the channel processing thread.
                           ///< each channel does processing on a separate thread
-                          //
+
+#ifdef HAVE_JACK
   /**
    * Jack special thread for the channel.
    *
@@ -172,6 +174,8 @@ typedef struct Channel
    * NUM_CORES - 1 threads and using those.
    */
   jack_native_thread_t thread;
+#endif
+
   int                  stop_thread; ///< flag to stop the thread
 
   /**

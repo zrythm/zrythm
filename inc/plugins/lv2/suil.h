@@ -21,6 +21,7 @@
 #ifndef SUIL_SUIL_H
 #define SUIL_SUIL_H
 
+#include "config.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -32,7 +33,12 @@
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
 #include "lv2/lv2plug.in/ns/extensions/ui/ui.h"
 
+#ifdef WINDOWS
+
+#else
 #include <dlfcn.h>
+#endif
+
 #include <gtk/gtk.h>
 
 #define GTK2_UI_URI  LV2_UI__GtkUI
@@ -372,7 +378,7 @@ typedef void (*SuilVoidFunc)(void);
 static inline SuilVoidFunc
 suil_dlfunc(void* handle, const char* symbol)
 {
-#ifdef _WIN32
+#ifdef WINDOWS
 	 return (SuilVoidFunc)GetProcAddress((HMODULE)handle, symbol);
 #else
 	typedef SuilVoidFunc (*VoidFuncGetter)(void*, const char*);

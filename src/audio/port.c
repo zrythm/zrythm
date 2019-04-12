@@ -38,12 +38,7 @@
 
 #include <gtk/gtk.h>
 
-#include <jack/jack.h>
-
 #define SLEEPTIME_USEC 60
-
-typedef jack_default_audio_sample_t   sample_t;
-typedef jack_nframes_t                nframes_t;
 
 /**
  * Inits ports just loaded from yml.
@@ -91,7 +86,7 @@ port_new (char * label)
   port->num_dests = 0;
   port->buf =
     calloc (AUDIO_ENGINE->block_length,
-            sizeof (sample_t));
+            sizeof (float));
   port->flow = FLOW_UNKNOWN;
   port->label = g_strdup (label);
 

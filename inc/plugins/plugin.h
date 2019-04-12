@@ -33,8 +33,6 @@
 #include "gui/widgets/instrument_track.h"
 #include "plugins/lv2_plugin.h"
 
-#include <jack/jack.h>
-
 /* FIXME allocate dynamically */
 #define MAX_IN_PORTS 400000
 #define MAX_OUT_PORTS 14000

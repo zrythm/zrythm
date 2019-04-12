@@ -197,7 +197,7 @@ _create_port(Lv2Plugin*   lv2_plugin,
         project_get_port (lv2_port->port_id);
       lv2_port->port->buf =
         calloc (AUDIO_ENGINE->block_length,
-                sizeof (sample_t));
+                sizeof (float));
     }
   else
     {
@@ -1056,6 +1056,7 @@ lv2_backend_activate_port(Lv2Plugin * lv2_plugin, uint32_t port_index)
             /*JACK_DEFAULT_AUDIO_TYPE, jack_flags, 0);*/
     /* already connected to Port */
     break;
+#ifdef HAVE_JACK
 #ifdef HAVE_JACK_METADATA
   case TYPE_CV:
           lv2_port->sys_port = jack_port_register(
@@ -1067,6 +1068,7 @@ lv2_backend_activate_port(Lv2Plugin * lv2_plugin, uint32_t port_index)
                                     "text/plain");
           }
           break;
+#endif
 #endif
   case TYPE_EVENT:
           if (lilv_port_supports_event(
@@ -1082,6 +1084,7 @@ lv2_backend_activate_port(Lv2Plugin * lv2_plugin, uint32_t port_index)
           break;
   }
 
+#ifdef HAVE_JACK
 #ifdef HAVE_JACK_METADATA
   if (lv2_port->sys_port) {
           // Set port order to index
@@ -1098,6 +1101,7 @@ lv2_backend_activate_port(Lv2Plugin * lv2_plugin, uint32_t port_index)
                             "text/plain");
           lilv_node_free(name);
   }
+#endif
 #endif
 }
 
@@ -2016,7 +2020,9 @@ void
 lv2_plugin_process (Lv2Plugin * lv2_plugin)
 {
   int nframes = AUDIO_ENGINE->nframes;
+#ifdef HAVE_JACK
   jack_client_t * client = AUDIO_ENGINE->client;
+#endif
 
   /* If transport state is not as expected, then something has changed */
   const bool xport_changed = (
@@ -2179,6 +2185,7 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
                    i < port->midi_events->num_events;
                    ++i)
                 {
+#ifdef HAVE_JACK
                   jack_midi_event_t * ev =
                     &port->midi_events->jack_midi_events[i];
                   lv2_evbuf_write (
@@ -2186,6 +2193,7 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
                     ev->time, 0,
                     lv2_plugin->urids.midi_MidiEvent,
                     ev->size, ev->buffer);
+#endif
                 }
             }
           midi_events_clear (port->midi_events);
@@ -2219,8 +2227,10 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
             {
               lv2_plugin->plugin_latency =
                 lv2_port->control;
+#ifdef HAVE_JACK
               jack_recompute_total_latencies (
                 client);
+#endif
             }
         }
       else if (port->flow == FLOW_OUTPUT &&
@@ -2245,6 +2255,7 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
                     lv2_plugin->urids.
                       midi_MidiEvent)
                   {
+#ifdef HAVE_JACK
                     /* Write MIDI event to port */
                     /*jack_midi_event_write(buf, frames, body, size);*/
                     jack_midi_event_t * ev =
@@ -2252,6 +2263,7 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
                     ev->time = frames;
                     ev->buffer = body;
                     ev->size = size;
+#endif
                   }
 
                 if (lv2_plugin->has_ui &&

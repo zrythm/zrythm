@@ -27,6 +27,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#include "config.h"
+
 #include "audio/audio_track.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
@@ -51,7 +53,9 @@
 #include "utils/math.h"
 
 #include <gtk/gtk.h>
+#ifdef HAVE_JACK
 #include <jack/thread.h>
+#endif
 
 /* microseconds */
 #define SLEEPTIME_USEC 60
@@ -124,6 +128,7 @@ handle_recording (Channel * self)
         }
 
       /* convert MIDI data to midi notes */
+#ifdef HAVE_JACK
       if (MIDI_IN_NUM_EVENTS > 0)
         {
           MidiNote * mn;
@@ -170,6 +175,7 @@ handle_recording (Channel * self)
                 }
             } /* for loop num events */
         } /* if have midi events */
+#endif
     } /* if channel type MIDI */
 }
 
@@ -356,6 +362,7 @@ setup_thread (Channel * channel)
 {
   channel->stop_thread = 0;
   channel->processed = 1;
+#ifdef HAVE_JACK
   jack_client_create_thread (
          AUDIO_ENGINE->client,
          &channel->thread,
@@ -369,6 +376,7 @@ setup_thread (Channel * channel)
       g_error ("%lu: Failed creating thread for channel %d",
                channel->thread, channel->id);
     }
+#endif
 }
 
 void

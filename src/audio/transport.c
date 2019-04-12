@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
 #include "audio/engine.h"
 #include "audio/transport.h"
 #include "project.h"
@@ -135,7 +137,9 @@ transport_move_playhead (Position * target, ///< position to set to
   MidiNote * midi_note;
   Channel * channel;
   MidiEvents * midi_events;
+#ifdef HAVE_JACK
   jack_midi_event_t * ev;
+#endif
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
@@ -159,6 +163,7 @@ transport_move_playhead (Position * target, ///< position to set to
                 {
                   midi_events =
                     channel->piano_roll->midi_events;
+#ifdef HAVE_JACK
                   ev =
                     &midi_events->queue->
                       jack_midi_events[
@@ -177,7 +182,7 @@ transport_move_playhead (Position * target, ///< position to set to
                   /* velocity */
                   ev->buffer[2] =
                     midi_note->vel->vel;
-
+#endif
                 }
             }
         }

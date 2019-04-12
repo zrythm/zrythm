@@ -27,8 +27,6 @@
 
 #include <gtk/gtk.h>
 
-#include <jack/jack.h>
-
 G_DEFINE_TYPE (TopBarWidget,
                top_bar_widget,
                GTK_TYPE_BOX)

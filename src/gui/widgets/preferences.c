@@ -50,12 +50,20 @@ static GtkTreeModel *
 create_audio_backend_model (void)
 {
   const int values[NUM_ENGINE_BACKENDS] = {
+#ifdef HAVE_JACK
     ENGINE_BACKEND_JACK,
-    /*ENGINE_BACKEND_PORT_AUDIO,*/
+#endif
+#ifdef HAVE_PORT_AUDIO
+    ENGINE_BACKEND_PORT_AUDIO,
+#endif
   };
   const gchar *labels[NUM_ENGINE_BACKENDS] = {
+#ifdef HAVE_JACK
     "Jack",
-    /*"Port Audio",*/
+#endif
+#ifdef HAVE_PORT_AUDIO
+    "Port Audio",
+#endif
   };
 
   GtkTreeIter iter;

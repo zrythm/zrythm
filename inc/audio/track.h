@@ -31,7 +31,6 @@
 #include "utils/yaml.h"
 
 #include <gtk/gtk.h>
-#include <jack/jack.h>
 
 #define MAX_REGIONS 300
 
@@ -44,7 +43,6 @@ typedef struct MidiEvents MidiEvents;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct Automatable Automatable;
 typedef struct AutomationPoint AutomationPoint;
-typedef jack_nframes_t nframes_t;
 typedef struct Chord Chord;
 typedef struct MusicalScale MusicalScale;
 

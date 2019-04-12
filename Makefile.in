@@ -145,6 +145,10 @@ ifeq ($(PROFILING),1)
 	EXTRA_LD_FLAGS += -pg
 endif
 
+ifeq ($(LINUX),1)
+	EXTRA_LD_FLAGS+= -lasound
+endif
+
 CFLAGS:=$(filter-out -fstack-protector-strong,$(CFLAGS))
 CFLAGS:=$(filter-out -fstack-clash-protection,$(CFLAGS))
 CFLAGS:=$(filter-out -D_FORTIFY_SOURCE=2,$(CFLAGS))
@@ -190,7 +194,6 @@ LDFLAGS +=	\
 	$(EXTRA_LD_FLAGS) \
  	$(R_DYNAMIC) \
 	-lrt \
-	-lasound \
 	-lm \
 	-lpthread \
 	-Wl,-as-needed

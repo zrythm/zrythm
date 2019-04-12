@@ -142,6 +142,7 @@ drag_begin (GtkGestureDrag * gesture,
 
   /* add midi event to engine midi_editor_manual_press port */
 
+#ifdef HAVE_JACK
   jack_midi_event_t * ev = &MANUAL_PRESS_QUEUE->jack_midi_events[0];
   ev->time = 0;
   ev->size = 3;
@@ -153,6 +154,8 @@ drag_begin (GtkGestureDrag * gesture,
   ev->buffer[0] = MIDI_CH1_NOTE_ON; /* status byte */
   ev->buffer[1] = self->note; /* note number 0-127 */
   ev->buffer[2] = vel; /* velocity 0-127 */
+#endif
+
   MANUAL_PRESS_QUEUE->num_events = 1;
   /*g_message ("added note on for %d in drag beg",*/
              /*self->note);*/
@@ -181,6 +184,7 @@ drag_update (GtkGestureDrag * gesture,
   /* if note changed */
   if (prev_note != self->note)
     {
+#ifdef HAVE_JACK
       jack_midi_event_t * ev;
 
       /* add note on event for new note */
@@ -192,6 +196,7 @@ drag_update (GtkGestureDrag * gesture,
       ev->buffer[0] = MIDI_CH1_NOTE_ON; /* status byte */
       ev->buffer[1] = self->note; /* note number 0-127 */
       ev->buffer[2] = vel; /* velocity 0-127 */
+#endif
       MANUAL_PRESS_QUEUE->num_events++;
       /*g_message ("added note on for %d",*/
                  /*self->note);*/
@@ -202,6 +207,7 @@ drag_update (GtkGestureDrag * gesture,
       if (!midi_events_delete_note_on (
             MANUAL_PRESS_QUEUE, prev_note))
         {
+#ifdef HAVE_JACK
           ev = &MANUAL_PRESS_QUEUE->jack_midi_events[MANUAL_PRESS_QUEUE->num_events];
           ev->time = 600;
           ev->size = 3;
@@ -210,6 +216,7 @@ drag_update (GtkGestureDrag * gesture,
           ev->buffer[0] = MIDI_CH1_NOTE_OFF; /* status byte */
           ev->buffer[1] = prev_note; /* note number 0-127 */
           ev->buffer[2] = vel; /* velocity 0-127 */
+#endif
           /*g_message ("added note off for %d",*/
                      /*prev_note);*/
           MANUAL_PRESS_QUEUE->num_events++;
@@ -227,12 +234,15 @@ drag_end (GtkGestureDrag *gesture,
                gpointer        user_data)
 {
   PianoRollNotesWidget * self = (PianoRollNotesWidget *) user_data;
+#ifdef HAVE_JACK
   jack_midi_event_t * ev;
+#endif
 
   /* add note off event for prev note */
   if (!midi_events_delete_note_on (
         MANUAL_PRESS_QUEUE, self->note))
     {
+#ifdef HAVE_JACK
       ev = &MANUAL_PRESS_QUEUE->jack_midi_events[MANUAL_PRESS_QUEUE->num_events];
       ev->time = 600;
       ev->size = 3;
@@ -241,6 +251,7 @@ drag_end (GtkGestureDrag *gesture,
       ev->buffer[0] = MIDI_CH1_NOTE_OFF; /* status byte */
       ev->buffer[1] = self->note; /* note number 0-127 */
       ev->buffer[2] = 0; /* velocity 0-127 */
+#endif
       MANUAL_PRESS_QUEUE->num_events++;
           /*g_message ("added note off for %d in drag end",*/
                      /*self->note);*/
