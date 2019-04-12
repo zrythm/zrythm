@@ -171,7 +171,7 @@ localization_init ()
     }
 
   bindtextdomain (
-    GETTEXT_PACKAGE, DATADIR "/locale");
+    GETTEXT_PACKAGE, CONFIGURE_DATADIR "/locale");
   bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
   textdomain (GETTEXT_PACKAGE);
 
