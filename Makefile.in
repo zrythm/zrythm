@@ -53,7 +53,6 @@ LIBSMF_INC_DIR = ext/libsmf/src
 LIBSMF_SRC_DIR = ext/libsmf
 
 CC = @CC@
-AR = @AR@
 CXX = @CXX@
 DEFS = @DEFS@
 INSTALL = install
@@ -236,6 +235,20 @@ appicon_DATA = zrythm.svg
 
 # static libs
 
+# libyaml
+ifeq ($(WINDOWS),1)
+	CYAML_AR=$(subst gcc,ar,$(CC))
+else
+	CYAML_AR=ar
+endif
+
+# libsmf
+ifeq ($(WINDOWS),1)
+	LIBSMF_CONFIGURE=$(subst gcc,configure,$(CC)) .
+else
+	LIBSMF_CONFIGURE=./configure
+endif
+
 # -----------------------------
 #  rules
 #  ----------------------------
@@ -278,21 +291,13 @@ $(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(OBJ_CPP) $(BUILD_DIR)/resources.o $(CYAML_BU
 	# done
 
 # build libcyaml
-ifeq ($(WINDOWS),1)
-	CYAML_AR=$(CC::-4)-ar
-else
-	CYAML_AR=$(AR)
-endif
 $(CYAML_BUILD_DIR)/libcyaml.a:
 	cd $(CYAML_SRC_DIR) && \
-		make VARIANT=release PREFIX=$(prefix) CC=$(CC) AR=$(AR)
+		make build/release/libcyaml.a VARIANT=release \
+		PREFIX=$(prefix) CC=$(CC) AR=$(CYAML_AR) \
+		LDFLAGS="$(shell $(PKG_CONFIG) --libs yaml-0.1)"
 
 # build libsmf
-ifeq ($(WINDOWS),1)
-	LIBSMF_CONFIGURE=$(CC::-4)-configure
-else
-	LIBSMF_CONFIGURE=./configure
-endif
 $(LIBSMF_BUILD_DIR)/libsmf.a:
 	cd $(LIBSMF_SRC_DIR) && autoreconf -i && \
 		ac_cv_func_malloc_0_nonnull=yes ac_cv_func_realloc_0_nonnull=yes $(LIBSMF_CONFIGURE) && make
