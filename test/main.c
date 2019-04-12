@@ -15,6 +15,7 @@ main (int argc, char *argv[])
 
   ZRYTHM = calloc (1, sizeof (Zrythm));
   PROJECT = calloc (1, sizeof (Project));
+  g_message ("test message");
 
   // Define the tests.
   g_test_add (

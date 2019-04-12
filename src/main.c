@@ -59,18 +59,22 @@ main (int    argc,
       char **argv)
 {
   /* install segfault handler */
+  g_message ("Installing signal handler...");
   signal(SIGSEGV, handler);
 
   /* init suil */
+  g_message ("Initing suil...");
   suil_init(&argc, &argv, SUIL_ARG_NONE);
 
   /* init audio decoder */
+  g_message ("Initing audio decoder...");
   ad_init ();
 
   /* init glibtop */
   /*glibtop_init ();*/
 
   /* init random */
+  g_message ("Initing random...");
 #ifdef _WIN32
   srand (time (NULL));
 #else
@@ -78,7 +82,9 @@ main (int    argc,
 #endif
 
   // sends activate signal
+  g_message ("Initing Zrythm app...");
   zrythm_app = zrythm_app_new ();
+  g_message ("running Zrythm...");
   return g_application_run (
     G_APPLICATION (zrythm_app),
     argc,

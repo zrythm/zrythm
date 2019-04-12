@@ -507,15 +507,20 @@ zrythm_app_open (GApplication  *app,
 static void
 zrythm_app_startup (GApplication* _app)
 {
-  G_APPLICATION_CLASS (zrythm_app_parent_class)->startup (_app);
+  g_message ("startup");
+  G_APPLICATION_CLASS (zrythm_app_parent_class)->
+    startup (_app);
+  g_message ("called startup on G_APPLICATION_CLASS");
 
   app = _app;
 
   /* show splash screen */
   splash =
     splash_window_widget_new (ZRYTHM_APP (app));
+  g_message ("created splash widget");
   gtk_window_present (
     GTK_WINDOW (splash));
+  g_message ("presented splash widget");
 
   /* start initialization task */
   task_id = calloc (1, sizeof (TaskId));
@@ -637,6 +642,12 @@ zrythm_app_new ()
   ZRYTHM = self->zrythm;
   ZRYTHM->project = calloc (1, sizeof (Project));
 
+  GValue value;
+  g_value_init (&value, G_TYPE_STRING);
+  char * str = g_value_get_string (&value);
+  g_message ("zrythm property name %s",
+             str);
+
   return self;
 }
 
@@ -654,8 +665,13 @@ zrythm_app_class_init (ZrythmAppClass *class)
 static void
 zrythm_app_init (ZrythmApp *app)
 {
+  g_message ("initing zrythm app");
+
+#ifdef _WIN32
+#else
   /* prefer x11 backend because plugin UIs need it to load */
   gdk_set_allowed_backends ("x11,*");
+#endif
 
   const GActionEntry entries[] = {
     { "prompt_for_project", on_prompt_for_project },
@@ -680,4 +696,6 @@ zrythm_app_init (ZrythmApp *app)
     entries,
     G_N_ELEMENTS (entries),
     app);
+
+  g_message ("added action entries");
 }

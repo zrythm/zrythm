@@ -117,6 +117,13 @@ AM_COND_IF(
         AC_SUBST([HAVE_PORT_AUDIO],[1])])],
     [echo "** building without port audio support. use --with-port-audio to enable it"])])
 
+AM_COND_IF(
+  [WINDOWS],
+  [AC_CHECK_HEADERS([dlfcn.h],
+    [found_dlfcn_header=yes; break;])
+  AS_IF([test "x$found_dlfcn_header" != "xyes"],
+        [AC_MSG_ERROR([Unable to find dlfcn.h. Please install mingw-w64-dlfcn])])])
+
 # needed for localization
 AC_DEFINE([GETTEXT_PACKAGE],["zrythm"],
           [Gettext package name])

@@ -136,7 +136,11 @@ endif
 
 ifeq ($(WINDOWS),1)
 	EXT = .exe
-	#EXTRA_LD_FLAGS += -fno-stack-protector -mwindows
+	#EXTRA_LD_FLAGS += -mwindows
+	EXTRA_LD_FLAGS += -fno-stack-protector \
+										-l ws2_32 -static \
+										-static-libgcc \
+										-static-libstdc++
 else
 #EXTRA_LD_FLAGS += -DGDK_DISABLE_DEPRECATED \
 #									 -DGTK_DISABLE_DEPRECATED
@@ -148,6 +152,12 @@ endif
 
 ifeq ($(LINUX),1)
 	EXTRA_LD_FLAGS+= -lasound
+endif
+
+ifeq ($(WINDOWS),1)
+	FPIC=-mms-bitfields
+else
+	FPIC=-fPIC
 endif
 
 CFLAGS:=$(filter-out -fstack-protector-strong,$(CFLAGS))
@@ -172,7 +182,7 @@ CFLAGS += -Wall \
 	$(SNDFILE_CFLAGS) \
 	$(X11_CFLAGS) \
 	-DCONFIGURE_DATADIR=\"$(datadir)\" \
-	-fPIC
+	$(FPIC)
 
 ifeq ($(PROFILING),1)
 	CFLAGS += -pg
@@ -181,7 +191,13 @@ ifeq ($(DEBUG),1)
 	CFLAGS += -g
 endif
 
+ifeq ($(LINUX),1)
+	LM=-lm
+endif
+
 LDFLAGS +=	\
+	$(EXTRA_LD_FLAGS) \
+	-Wl,-Bdynamic \
 	$(FFMPEG_LIBS) \
   $(GTK3_LIBS) \
 	$(JACK_LIBS) \
@@ -192,9 +208,9 @@ LDFLAGS +=	\
 	$(SAMPLERATE_LIBS) \
 	$(SNDFILE_LIBS) \
 	$(X11_LIBS) \
-	$(EXTRA_LD_FLAGS) \
  	$(R_DYNAMIC) \
-	-lm \
+	$(LM) \
+	$(FPIC) \
 	-lpthread \
 	-Wl,-as-needed
 
@@ -233,7 +249,10 @@ appicondir2=$(datadir)/icons/hicolor/48x48/apps
 appicon_DATA_srcdir = resources/icons/zrythm
 appicon_DATA = zrythm.svg
 
-# static libs
+# dlfcn
+ifeq ($(WINDOWS),1)
+	DLFCN_LIB=$(libdir)/libdl.dll.a
+endif
 
 # libyaml
 ifeq ($(WINDOWS),1)
@@ -245,8 +264,16 @@ endif
 # libsmf
 ifeq ($(WINDOWS),1)
 	LIBSMF_CONFIGURE=$(subst gcc,configure,$(CC)) .
+	LIBSMF_LDFLAGS="-lws2_32 "
 else
 	LIBSMF_CONFIGURE=./configure
+endif
+
+# static libs
+STATIC_LIBS=$(CYAML_BUILD_DIR)/libcyaml.a $(LIBSMF_BUILD_DIR)/libsmf.a $(DLFCN_LIB)
+
+ifeq ($(WINDOWS),1)
+	RUN_TEST_CMD=wine
 endif
 
 # -----------------------------
@@ -283,11 +310,13 @@ po/$(BIN).pot: $(SRCS) $(SRCS_CPP) $(SRCS_UI)
 	xgettext --keyword=_ --add-comments --sort-output -o $@ $^
 
 # Actual target of the binary - depends on all .o files.
-$(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(OBJ_CPP) $(BUILD_DIR)/resources.o $(CYAML_BUILD_DIR)/libcyaml.a $(LIBSMF_BUILD_DIR)/libsmf.a
+$(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(OBJ_CPP) $(BUILD_DIR)/resources.o $(STATIC_LIBS)
 	# Create build directories - same structure as sources.
 	$(MKDIR_P) $(@D)
 	# Just link all the object files.
 	$(CC) $^ $(LDFLAGS) $(QT5_LIBS) -lstdc++ -o $@
+	# Copy dlls if windows
+	scripts/copy_dlls.sh $(prefix) $(WINDOWS)
 	# done
 
 # build libcyaml
@@ -295,12 +324,12 @@ $(CYAML_BUILD_DIR)/libcyaml.a:
 	cd $(CYAML_SRC_DIR) && \
 		make build/release/libcyaml.a VARIANT=release \
 		PREFIX=$(prefix) CC=$(CC) AR=$(CYAML_AR) \
-		LDFLAGS="$(shell $(PKG_CONFIG) --libs yaml-0.1)"
+		LDFLAGS+="$(shell $(PKG_CONFIG) --libs yaml-0.1)"
 
 # build libsmf
 $(LIBSMF_BUILD_DIR)/libsmf.a:
-	cd $(LIBSMF_SRC_DIR) && autoreconf -i && \
-		ac_cv_func_malloc_0_nonnull=yes ac_cv_func_realloc_0_nonnull=yes $(LIBSMF_CONFIGURE) && make
+	cd $(LIBSMF_SRC_DIR) && autoreconf -fi && \
+		LDFLAGS+=$(LIBSMF_LDFLAGS) ac_cv_func_malloc_0_nonnull=yes ac_cv_func_realloc_0_nonnull=yes $(LIBSMF_CONFIGURE) && make
 
 $(BUILD_DIR)/zrythm.gresource.xml: resources/gen-gtk-gresources-xml.py \
 	resources/icons/breeze-icons/gen-hicolor.py \
@@ -332,7 +361,7 @@ $(BUILD_DIR)/%.c.$(OBJEXT): %.c
 
 $(BUILD_DIR)/%.cpp.$(OBJEXT): %.cpp
 	$(MKDIR_P) $(dir $@)
-	$(CXX) $(CFLAGS) $(QT5_CFLAGS) -lstdc++ -MMD -c $< -o $@
+	$(CXX) $(CFLAGS) $(QT5_CFLAGS) -MMD -c $< -o $@
 
 .PHONY: doc
 doc:
@@ -342,8 +371,9 @@ doc:
 clean:
 	#rm -rf $(BUILD_DIR)/*
 	# This should remove all generated files.
-	-rm $(BUILD_DIR)/$(BIN)$(EXT) $(OBJ) $(DEP)
-	-rm $(BUILD_DIR)/zrythm.gresource.xml
+	#-rm $(BUILD_DIR)/$(BIN)$(EXT) $(OBJ) $(DEP)
+	#-rm $(BUILD_DIR)/zrythm.gresource.xml
+	-rm -rf $(BUILD_DIR)
 	-rm -rf doc/html
 	-rm po/fr/*.mo
 	-rm po/de/*.mo
@@ -351,7 +381,9 @@ clean:
 	-rm po/es/*.mo
 	-rm po/ja/*.mo
 	cd $(CYAML_SRC_DIR) && make clean
-	cd $(LIBSMF_SRC_DIR) && make clean
+	-rm -rf $(CYAML_BUILD_DIR)
+	cd $(LIBSMF_SRC_DIR) && autoreconf -i && \
+		$(LIBSMF_CONFIGURE) && make clean
 
 .PHONY: install
 install: $(BUILD_DIR)/$(BIN)$(EXT) install-appicon-data install-desktop-data install-gschemas install-fonts install-messages
@@ -424,10 +456,10 @@ uninstall-desktop-data:
 	rm -f $(desktopdir)/$(desktop_DATA)
 
 .PHONY: test
-test: $(TEST_BIN)
-	$^
+test: $(TEST_BIN)$(EXT)
+	$(RUN_TEST_CMD) $^
 
-$(TEST_BIN): $(TEST_OBJ) $(OBJ_NO_MAIN) $(OBJ_CPP) $(BUILD_DIR)/resources.o $(CYAML_BUILD_DIR)/libcyaml.a $(LIBSMF_BUILD_DIR)/libsmf.a
+$(TEST_BIN)$(EXT): $(TEST_OBJ) $(OBJ_NO_MAIN) $(OBJ_CPP) $(BUILD_DIR)/resources.o $(STATIC_LIBS)
 	# Create build directories - same structure as sources.
 	$(MKDIR_P) $(@D)
 	# Just link all the object files.
