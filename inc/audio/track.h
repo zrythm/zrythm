@@ -43,7 +43,7 @@ typedef struct MidiEvents MidiEvents;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct Automatable Automatable;
 typedef struct AutomationPoint AutomationPoint;
-typedef struct Chord Chord;
+typedef struct ZChord ZChord;
 typedef struct MusicalScale MusicalScale;
 
 typedef enum TrackType
@@ -107,7 +107,7 @@ typedef struct Track
   /* ==== CHORD TRACK ==== */
   MusicalScale *          scale;
   int                     chord_ids[600];
-  Chord *                 chords[600];
+  ZChord *                 chords[600];
   int                     num_chords;
   /* ==== CHORD TRACK END ==== */
 

@@ -177,9 +177,9 @@ typedef struct Project
   int               num_aggregated_midi_notes;
   MidiNote *        midi_notes[100000];
   int               num_midi_notes;
-  Chord *           aggregated_chords[600];
+  ZChord *           aggregated_chords[600];
   int               num_aggregated_chords;
-  Chord *           chords[60000];
+  ZChord *           chords[60000];
   int               num_chords;
   Channel *         aggregated_channels[3000];
   int               num_aggregated_channels;
@@ -381,7 +381,7 @@ P_DEFINE_FUNCS_X (AutomationPoint, automation_point);
 P_DEFINE_FUNCS_X (AutomationCurve, automation_curve);
 P_DEFINE_FUNCS_X (MidiNote, midi_note);
 P_DEFINE_FUNCS_X (Port, port);
-P_DEFINE_FUNCS_X (Chord, chord);
+P_DEFINE_FUNCS_X (ZChord, chord);
 P_DEFINE_FUNCS_X (Automatable, automatable)
 P_DEFINE_FUNCS_X (AutomationTrack, automation_track)
 P_DEFINE_FUNCS_X (AutomationLane, automation_lane)

@@ -99,7 +99,7 @@ typedef struct _ChordWidget ChordWidget;
 /**
  * Chords are to be generated on demand.
  */
-typedef struct Chord
+typedef struct ZChord
 {
   int                   id;
   Position              pos; ///< chord object position (if used in chord track)
@@ -116,7 +116,7 @@ typedef struct Chord
   int                   selected; ///< selected in timeline
   int                   visible;
   ChordWidget *         widget;
-} Chord;
+} ZChord;
 
 static const cyaml_strval_t musical_note_strings[] = {
 	{ "C",          NOTE_C    },
@@ -138,27 +138,27 @@ static const cyaml_schema_field_t
 {
 	CYAML_FIELD_INT (
     "id", CYAML_FLAG_DEFAULT,
-    Chord, id),
+    ZChord, id),
   CYAML_FIELD_MAPPING (
     "pos", CYAML_FLAG_DEFAULT,
-    Chord, pos, position_fields_schema),
+    ZChord, pos, position_fields_schema),
 	CYAML_FIELD_INT (
     "has_bass", CYAML_FLAG_DEFAULT,
-    Chord, has_bass),
+    ZChord, has_bass),
   CYAML_FIELD_ENUM (
     "root_note", CYAML_FLAG_DEFAULT,
-    Chord, root_note, musical_note_strings,
+    ZChord, root_note, musical_note_strings,
     CYAML_ARRAY_LEN (musical_note_strings)),
   CYAML_FIELD_ENUM (
     "bass_note", CYAML_FLAG_DEFAULT,
-    Chord, bass_note, musical_note_strings,
+    ZChord, bass_note, musical_note_strings,
     CYAML_ARRAY_LEN (musical_note_strings)),
   CYAML_FIELD_SEQUENCE_FIXED (
     "notes", CYAML_FLAG_OPTIONAL,
-    Chord, notes, &int_schema, 36),
+    ZChord, notes, &int_schema, 36),
 	CYAML_FIELD_INT (
     "inversion", CYAML_FLAG_DEFAULT,
-    Chord, inversion),
+    ZChord, inversion),
 
 	CYAML_FIELD_END
 };
@@ -166,16 +166,16 @@ static const cyaml_schema_field_t
 static const cyaml_schema_value_t
 chord_schema = {
 	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
-			Chord, chord_fields_schema),
+			ZChord, chord_fields_schema),
 };
 
 void
-chord_init_loaded (Chord * self);
+chord_init_loaded (ZChord * self);
 
 /**
  * Creates a chord.
  */
-Chord *
+ZChord *
 chord_new (MusicalNote            root,
            uint8_t                has_bass,
            MusicalNote            bass,
@@ -194,13 +194,13 @@ chord_note_to_string (MusicalNote note);
  * MUST be free'd by caller.
  */
 char *
-chord_as_string (Chord * chord);
+chord_as_string (ZChord * chord);
 
 void
-chord_set_pos (Chord *    self,
+chord_set_pos (ZChord *    self,
                Position * pos);
 
 void
-chord_free (Chord * self);
+chord_free (ZChord * self);
 
 #endif

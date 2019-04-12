@@ -56,8 +56,8 @@ typedef struct TimelineSelections
   int                      num_automation_points;
 
   /** Chords acting upon */
-  Chord *                  chords[800];
-  Chord *                  transient_chords[800];
+  ZChord *                  chords[800];
+  ZChord *                  transient_chords[800];
   int                      chord_ids[800];
   int                      num_chords;
 } TimelineSelections;
@@ -238,7 +238,7 @@ timeline_selections_add_region (
 void
 timeline_selections_add_chord (
   TimelineSelections * ts,
-  Chord *              c,
+  ZChord *              c,
   int                  transient);
 
 void
@@ -260,7 +260,7 @@ timeline_selections_remove_region (
 void
 timeline_selections_remove_chord (
   TimelineSelections * ts,
-  Chord *              c);
+  ZChord *              c);
 
 void
 timeline_selections_remove_ap (

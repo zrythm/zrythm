@@ -59,7 +59,7 @@ chord_track_new (MusicalScale * scale)
 
 void
 chord_track_add_chord (ChordTrack * self,
-                       Chord *      chord)
+                       ZChord *      chord)
 {
   array_append (self->chords,
                 self->num_chords,
@@ -72,7 +72,7 @@ chord_track_add_chord (ChordTrack * self,
 
 void
 chord_track_remove_chord (ChordTrack * self,
-                          Chord *      chord)
+                          ZChord *      chord)
 {
   array_delete (self->chords,
                 self->num_chords,

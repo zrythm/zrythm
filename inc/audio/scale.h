@@ -266,7 +266,7 @@ typedef struct MusicalScale
                                         ///< is 1
   int                    notes_asc[12]; ///< notes when ascending
   int                     notes_desc[12]; ///< notes when descending
-  Chord *                    default_chords[12]; ///< default chords, as many as
+  ZChord *                    default_chords[12]; ///< default chords, as many as
                                                   ///< the notes in the scale
                                                   ///< triads with base note
   int                        num_notes; ///< number of notes (1s)

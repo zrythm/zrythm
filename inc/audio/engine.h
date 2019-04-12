@@ -31,8 +31,10 @@
 #include "audio/transport.h"
 #include "utils/sem.h"
 
+#ifdef HAVE_JACK
 #include <jack/jack.h>
 #include <jack/midiport.h>
+#endif
 
 #ifdef HAVE_PORT_AUDIO
 #include <portaudio.h>

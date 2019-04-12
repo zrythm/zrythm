@@ -142,7 +142,7 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
 }
 
 ChordWidget *
-chord_widget_new (Chord * chord)
+chord_widget_new (ZChord * chord)
 {
   ChordWidget * self =
     g_object_new (CHORD_WIDGET_TYPE, NULL);

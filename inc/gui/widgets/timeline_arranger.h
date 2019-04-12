@@ -48,7 +48,7 @@ typedef struct _AutomationCurveWidget AutomationCurveWidget;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct AutomationCurve AutomationCurve;
 typedef struct _RegionWidget RegionWidget;
-typedef struct Chord Chord;
+typedef struct ZChord ZChord;
 
 typedef struct _TimelineArrangerWidget
 {
@@ -65,7 +65,7 @@ typedef struct _TimelineArrangerWidget
 
   AutomationPoint *        start_ap;
   AutomationCurve *        start_ac;
-  Chord *                  start_chord;
+  ZChord *                  start_chord;
 
   /* temporary start positions, set on drag_begin, and used in drag_update
    * to move the objects accordingly */

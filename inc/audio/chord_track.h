@@ -36,7 +36,7 @@
 
 #define P_CHORD_TRACK (PROJECT->chord_track)
 
-typedef struct Chord Chord;
+typedef struct ZChord ZChord;
 typedef struct _ChordTrackWidget ChordTrackWidget;
 typedef struct MusicalScale MusicalScale;
 
@@ -56,11 +56,11 @@ chord_track_default ();
 
 void
 chord_track_add_chord (ChordTrack * self,
-                       Chord *      chord);
+                       ZChord *      chord);
 
 void
 chord_track_remove_chord (ChordTrack * self,
-                          Chord *      chord);
+                          ZChord *      chord);
 
 void
 chord_track_free (ChordTrack * self);

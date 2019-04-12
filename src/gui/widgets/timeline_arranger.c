@@ -486,7 +486,7 @@ timeline_arranger_widget_select_all (
   ChordTrack * ct = tracklist_get_chord_track ();
   for (int i = 0; i < ct->num_chords; i++)
     {
-      Chord * chord = ct->chords[i];
+      ZChord * chord = ct->chords[i];
       if (chord->visible)
         {
           chord_widget_select (
@@ -606,8 +606,8 @@ timeline_arranger_widget_update_visibility (
 {
   Region * r;
   Region * r_transient;
-  Chord * c;
-  Chord * c_transient;
+  ZChord * c;
+  ZChord * c_transient;
   AutomationPoint * ap;
   AutomationPoint * ap_transient;
 
@@ -772,7 +772,7 @@ timeline_arranger_widget_on_drag_begin_chord_hit (
       /* TODO */
     }
 
-  Chord * chord = cw->chord;
+  ZChord * chord = cw->chord;
   self->start_chord = chord;
 
   /* update arranger action */
@@ -864,7 +864,7 @@ timeline_arranger_widget_find_start_poses (
     }
   for (int i = 0; i < TL_SELECTIONS->num_chords; i++)
     {
-      Chord * r = TL_SELECTIONS->chords[i];
+      ZChord * r = TL_SELECTIONS->chords[i];
       if (position_compare (&r->pos,
                             &ar_prv->start_pos) <= 0)
         {
@@ -1014,14 +1014,14 @@ timeline_arranger_widget_create_chord (
                    track,
                    NULL,
                    ar_prv->snap_grid);
- Chord * chord = chord_new (NOTE_A,
+ ZChord * chord = chord_new (NOTE_A,
                             1,
                             NOTE_A,
                             CHORD_TYPE_MIN,
                             0);
  position_set_to_pos (&chord->pos,
                       pos);
- Chord * chords[1] = { chord };
+ ZChord * chords[1] = { chord };
  /*UndoableAction * action =*/
    /*create_chords_action_new (chords, 1);*/
  /*undo_manager_perform (UNDO_MANAGER,*/
@@ -1096,7 +1096,7 @@ timeline_arranger_widget_select (
   int i, j;
   Region * region;
   RegionWidget * rw;
-  Chord * chord;
+  ZChord * chord;
   ChordWidget * cw;
   AutomationPoint * ap;
   AutomationPointWidget * apw;
@@ -1384,7 +1384,7 @@ timeline_arranger_widget_move_items_x (
     }
 
   /* update chord positions */
-  Chord * c;
+  ZChord * c;
   for (int i = 0;
        i < TL_SELECTIONS->num_chords; i++)
     {
@@ -1704,7 +1704,7 @@ timeline_arranger_widget_on_drag_end (
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
   Region * region;
-  Chord * chord;
+  ZChord * chord;
   AutomationPoint * ap;
   for (int i = 0;
        i < TL_SELECTIONS->
@@ -1867,7 +1867,7 @@ add_children_from_chord_track (
 {
   for (int i = 0; i < ct->num_chords; i++)
     {
-      Chord * chord = ct->chords[i];
+      ZChord * chord = ct->chords[i];
       gtk_overlay_add_overlay (
         GTK_OVERLAY (self),
         GTK_WIDGET (chord->widget));

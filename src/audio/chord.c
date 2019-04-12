@@ -32,13 +32,13 @@
 NOTE_LABELS;
 
 void
-chord_init_loaded (Chord * self)
+chord_init_loaded (ZChord * self)
 {
   self->widget = chord_widget_new (self);
 }
 
 void
-chord_set_pos (Chord *    self,
+chord_set_pos (ZChord *    self,
                Position * pos)
 {
   position_set_to_pos (&self->pos, pos);
@@ -47,14 +47,14 @@ chord_set_pos (Chord *    self,
 /**
  * Creates a chord.
  */
-Chord *
+ZChord *
 chord_new (MusicalNote            root,
            uint8_t                has_bass,
            MusicalNote            bass,
            ChordType              type,
            int                    inversion)
 {
-  Chord * self = calloc (1, sizeof (Chord));
+  ZChord * self = calloc (1, sizeof (ZChord));
 
   self->root_note = root;
   self->has_bass = has_bass;
@@ -123,7 +123,7 @@ chord_note_to_string (MusicalNote note)
 }
 
 void
-chord_free (Chord * self)
+chord_free (ZChord * self)
 {
   free (self);
 }

@@ -33,7 +33,7 @@
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
 #include "lv2/lv2plug.in/ns/extensions/ui/ui.h"
 
-#ifdef WINDOWS
+#ifdef _WIN32
 
 #else
 #include <dlfcn.h>
@@ -378,7 +378,7 @@ typedef void (*SuilVoidFunc)(void);
 static inline SuilVoidFunc
 suil_dlfunc(void* handle, const char* symbol)
 {
-#ifdef WINDOWS
+#ifdef _WIN32
 	 return (SuilVoidFunc)GetProcAddress((HMODULE)handle, symbol);
 #else
 	typedef SuilVoidFunc (*VoidFuncGetter)(void*, const char*);

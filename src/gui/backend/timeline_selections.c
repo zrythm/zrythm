@@ -155,7 +155,7 @@ timeline_selections_get_start_pos (
     }
   for (int i = 0; i < ts->num_chords; i++)
     {
-      Chord * chord =
+      ZChord * chord =
         transient ?
         ts->transient_chords :
         ts->chords[i];
@@ -206,7 +206,7 @@ timeline_selections_get_end_pos (
     }
   for (int i = 0; i < ts->num_chords; i++)
     {
-      Chord * chord =
+      ZChord * chord =
         transient ?
         ts->transient_chords[i] :
         ts->chords[i];
@@ -265,7 +265,7 @@ timeline_selections_get_first_object (
     }
   for (int i = 0; i < ts->num_chords; i++)
     {
-      Chord * chord =
+      ZChord * chord =
         transient ?
         ts->transient_chords :
         ts->chords[i];
@@ -328,7 +328,7 @@ timeline_selections_get_last_object (
     }
   for (int i = 0; i < ts->num_chords; i++)
     {
-      Chord * chord =
+      ZChord * chord =
         transient ?
         ts->transient_chords[i] :
         ts->chords[i];
@@ -488,7 +488,7 @@ remove_transient_chord (
   TimelineSelections * ts,
   int                  index)
 {
-  Chord * transient =
+  ZChord * transient =
     ts->transient_chords[index];
 
   if (!transient || !transient->widget)
@@ -553,7 +553,7 @@ timeline_selections_add_region (
 void
 timeline_selections_add_chord (
   TimelineSelections * ts,
-  Chord *             r,
+  ZChord *             r,
   int                  transient)
 {
   if (!array_contains (ts->chords,
@@ -629,7 +629,7 @@ timeline_selections_remove_region (
 void
 timeline_selections_remove_chord (
   TimelineSelections * ts,
-  Chord *              c)
+  ZChord *              c)
 {
   if (!array_contains (ts->chords,
                        ts->num_chords,
@@ -709,12 +709,12 @@ timeline_selections_clear (
 {
   int i, num_regions, num_chords, num_aps;
   Region * r;
-  Chord * c;
+  ZChord * c;
   AutomationPoint * ap;
 
   /* use caches because ts->* will be operated on. */
   static Region * regions[600];
-  static Chord * chords[600];
+  static ZChord * chords[600];
   static AutomationPoint * aps[600];
   for (i = 0; i < ts->num_regions; i++)
     {
@@ -871,7 +871,7 @@ timeline_selections_paste_to_pos (
     }
   for (i = 0; i < ts->num_chords; i++)
     {
-      Chord * chord = ts->chords[i];
+      ZChord * chord = ts->chords[i];
 
       curr_ticks = position_to_ticks (&chord->pos);
       position_from_ticks (&chord->pos,

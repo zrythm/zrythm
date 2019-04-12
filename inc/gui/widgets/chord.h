@@ -34,19 +34,19 @@ G_DECLARE_FINAL_TYPE (ChordWidget,
                       CHORD_WIDGET,
                       GtkDrawingArea);
 
-typedef struct Chord Chord;
+typedef struct ZChord ZChord;
 
 typedef struct _ChordWidget
 {
   GtkDrawingArea           parent_instance;
-  Chord *                  chord;
+  ZChord *                  chord;
 } ChordWidget;
 
 /**
  * Creates a chord widget.
  */
 ChordWidget *
-chord_widget_new (Chord * chord);
+chord_widget_new (ZChord * chord);
 
 void
 chord_widget_select (ChordWidget * self,

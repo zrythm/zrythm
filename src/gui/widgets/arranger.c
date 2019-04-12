@@ -607,7 +607,7 @@ arranger_widget_select (
               F_NO_SELECT, create_transients);
           else if (type == CHORD_WIDGET_TYPE)
             chord_widget_select (
-              ((Chord *)r)->widget,
+              ((ZChord *)r)->widget,
               F_NO_SELECT);
           else if (type ==
                      AUTOMATION_POINT_WIDGET_TYPE)
@@ -634,7 +634,7 @@ arranger_widget_select (
           F_NO_SELECT, create_transients);
       else if (type == CHORD_WIDGET_TYPE)
         chord_widget_select (
-          ((Chord *)child)->widget,
+          ((ZChord *)child)->widget,
           F_NO_SELECT);
       else if (type == AUTOMATION_POINT_WIDGET_TYPE)
         automation_point_widget_select (
@@ -656,7 +656,7 @@ arranger_widget_select (
           F_SELECT, create_transients);
       else if (type == CHORD_WIDGET_TYPE)
         chord_widget_select (
-          ((Chord *)child)->widget,
+          ((ZChord *)child)->widget,
           F_SELECT);
       else if (type == AUTOMATION_POINT_WIDGET_TYPE)
         automation_point_widget_select (
