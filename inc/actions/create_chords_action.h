@@ -22,18 +22,18 @@
 
 #include "actions/undoable_action.h"
 
-typedef struct Chord Chord;
+typedef struct ZChord ZChord;
 
 typedef struct CreateChordsAction
 {
   UndoableAction              parent_instance;
 
-  Chord *                     chords[800];
+  ZChord *                     chords[800];
   int                         num_chords;
 } CreateChordsAction;
 
 UndoableAction *
-create_chords_action_new (Chord ** chords,
+create_chords_action_new (ZChord ** chords,
                           int       num_chords);
 
 void

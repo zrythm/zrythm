@@ -30,7 +30,7 @@ G_DECLARE_FINAL_TYPE (InspectorChordWidget,
                       INSPECTOR_CHORD_WIDGET,
                       GtkGrid)
 
-typedef struct Chord Chord;
+typedef struct ZChord ZChord;
 
 typedef struct _InspectorChordWidget
 {
@@ -53,7 +53,7 @@ inspector_chord_widget_new ();
 void
 inspector_chord_widget_show_chords (
   InspectorChordWidget * self,
-  Chord **               chords,
+  ZChord **               chords,
   int                    num_chords);
 
 #endif

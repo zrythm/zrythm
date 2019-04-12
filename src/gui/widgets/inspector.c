@@ -167,7 +167,7 @@ inspector_widget_refresh ()
     {
       inspector_chord_widget_show_chords (
         self->chord,
-        (Chord **) TL_SELECTIONS->chords,
+        (ZChord **) TL_SELECTIONS->chords,
         TL_SELECTIONS->num_chords);
       gtk_widget_set_visible (
         GTK_WIDGET (self->chord), 1);
@@ -256,7 +256,7 @@ inspector_widget_show_selections (
         {
           inspector_chord_widget_show_chords (
             self->chord,
-            (Chord **) selections,
+            (ZChord **) selections,
             num_selections);
           gtk_widget_set_visible (
             GTK_WIDGET (self->chord), 1);

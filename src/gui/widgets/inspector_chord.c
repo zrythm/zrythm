@@ -40,7 +40,7 @@ inspector_chord_widget_new ()
 void
 inspector_chord_widget_show_chords (
   InspectorChordWidget * self,
-  Chord **               chords,
+  ZChord **               chords,
   int                     num_chords)
 {
   if (num_chords == 1)

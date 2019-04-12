@@ -66,7 +66,7 @@ void
 instrument_track_fill_midi_events (
   InstrumentTrack      * track,
   Position   * pos, ///< start position to check
-  nframes_t  nframes, ///< n of frames from start po
+  uint32_t  nframes, ///< n of frames from start po
   MidiEvents * midi_events) ///< midi events to fill
 {
   Position end_pos;
@@ -74,7 +74,9 @@ instrument_track_fill_midi_events (
   Position loop_start_adjusted,
            loop_end_adjusted,
            region_end_adjusted;
+#ifdef HAVE_JACK
   jack_midi_event_t * ev;
+#endif
   Region * region, * r;
   MidiNote * midi_note;
   position_set_to_pos (&end_pos, pos);

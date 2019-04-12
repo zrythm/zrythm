@@ -84,6 +84,7 @@ smf_save_regions ()
 
       /* add tempo event */
       smf_add_track(smf, track);
+#ifdef HAVE_JACK
       jack_midi_event_t ev;
       /* see
        * http://www.mixagesoftware.com/en/midikit/help/HTML/meta_events.html
@@ -105,6 +106,7 @@ smf_save_regions ()
         event,
         0);
       free (ev.buffer);
+#endif
 
       MidiEvents * events = calloc (1, sizeof (MidiEvents));
       Position abs_start_pos;

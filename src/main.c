@@ -17,7 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifdef _WIN32
+#else
 #include <execinfo.h>
+#endif
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,6 +35,9 @@
 /** SIGSEGV handler. */
 static void
 handler (int sig) {
+#ifdef _WIN32
+    /* TODO */
+#else
   void *array[20];
   size_t size;
 
@@ -41,6 +47,7 @@ handler (int sig) {
   // print out all the frames to stderr
   fprintf(stderr, "Error: signal %d:\n", sig);
   backtrace_symbols_fd(array, size, STDERR_FILENO);
+#endif
   exit(1);
 }
 
@@ -64,7 +71,11 @@ main (int    argc,
   /*glibtop_init ();*/
 
   /* init random */
+#ifdef _WIN32
+  srand (time (NULL));
+#else
   srandom (time (NULL));
+#endif
 
   // sends activate signal
   zrythm_app = zrythm_app_new ();

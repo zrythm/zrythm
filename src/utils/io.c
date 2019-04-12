@@ -23,7 +23,6 @@
  * IO utils.
  */
 
-#include <pwd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -53,7 +52,7 @@ io_mkdir (const char * dir)
   struct stat st = {0};
   if (stat(dir, &st) == -1)
     {
-      mkdir(dir, 0700);
+      g_mkdir_with_parents (dir, 0700);
     }
 }
 

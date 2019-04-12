@@ -133,6 +133,7 @@ AC_ARG_WITH(
 # Check for a C compiler
 AC_PROG_CC([gcc clang])
 AC_PROG_CXX([g++])
+AC_PROG_AR([ar])
 
 AC_PREFIX_DEFAULT([/usr])
 

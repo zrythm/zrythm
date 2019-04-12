@@ -245,7 +245,6 @@ midi_note_hit (MidiNote * midi_note,
   Position loop_start_adjusted,
            loop_end_adjusted,
            region_end_adjusted;
-  jack_midi_event_t * ev;
   Region * region = midi_note->region;
 
   /* get local positions */

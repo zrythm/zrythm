@@ -34,10 +34,9 @@
 #include "lv2/lv2plug.in/ns/extensions/ui/ui.h"
 
 #ifdef _WIN32
-
-#else
-#include <dlfcn.h>
+#include <windows.h>
 #endif
+#include <dlfcn.h>
 
 #include <gtk/gtk.h>
 

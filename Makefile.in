@@ -53,6 +53,7 @@ LIBSMF_INC_DIR = ext/libsmf/src
 LIBSMF_SRC_DIR = ext/libsmf
 
 CC = @CC@
+AR = @AR@
 CXX = @CXX@
 DEFS = @DEFS@
 INSTALL = install
@@ -136,10 +137,11 @@ endif
 
 ifeq ($(WINDOWS),1)
 	EXT = .exe
-	EXTRA_LD_FLAGS += -fno-stack-protector -mwindows
+	#EXTRA_LD_FLAGS += -fno-stack-protector -mwindows
 else
 #EXTRA_LD_FLAGS += -DGDK_DISABLE_DEPRECATED \
 #									 -DGTK_DISABLE_DEPRECATED
+  EXTRA_LD_FLAGS += -lrt
 endif
 ifeq ($(PROFILING),1)
 	EXTRA_LD_FLAGS += -pg
@@ -193,7 +195,6 @@ LDFLAGS +=	\
 	$(X11_LIBS) \
 	$(EXTRA_LD_FLAGS) \
  	$(R_DYNAMIC) \
-	-lrt \
 	-lm \
 	-lpthread \
 	-Wl,-as-needed
@@ -277,12 +278,24 @@ $(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(OBJ_CPP) $(BUILD_DIR)/resources.o $(CYAML_BU
 	# done
 
 # build libcyaml
+ifeq ($(WINDOWS),1)
+	CYAML_AR=$(CC::-4)-ar
+else
+	CYAML_AR=$(AR)
+endif
 $(CYAML_BUILD_DIR)/libcyaml.a:
-	cd $(CYAML_SRC_DIR) && make VARIANT=release
+	cd $(CYAML_SRC_DIR) && \
+		make VARIANT=release PREFIX=$(prefix) CC=$(CC) AR=$(AR)
 
 # build libsmf
+ifeq ($(WINDOWS),1)
+	LIBSMF_CONFIGURE=$(CC::-4)-configure
+else
+	LIBSMF_CONFIGURE=./configure
+endif
 $(LIBSMF_BUILD_DIR)/libsmf.a:
-	cd $(LIBSMF_SRC_DIR) && autoreconf -i && ./configure && make
+	cd $(LIBSMF_SRC_DIR) && autoreconf -i && \
+		ac_cv_func_malloc_0_nonnull=yes ac_cv_func_realloc_0_nonnull=yes $(LIBSMF_CONFIGURE) && make
 
 $(BUILD_DIR)/zrythm.gresource.xml: resources/gen-gtk-gresources-xml.py \
 	resources/icons/breeze-icons/gen-hicolor.py \
