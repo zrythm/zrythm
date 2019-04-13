@@ -281,7 +281,11 @@ endif
 #  ----------------------------
 
 # Default target
+ifeq ($(WINDOWS),1)
+all: $(BUILD_DIR)/$(BIN)$(EXT) messages package-win test
+else
 all: $(BUILD_DIR)/$(BIN)$(EXT) messages test
+endif
 
 messages: po/fr/$(BIN).mo po/de/$(BIN).mo po/es/$(BIN).mo po/it/$(BIN).mo po/ja/$(BIN).mo
 
@@ -315,9 +319,17 @@ $(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(OBJ_CPP) $(BUILD_DIR)/resources.o $(STATIC_L
 	$(MKDIR_P) $(@D)
 	# Just link all the object files.
 	$(CC) $^ $(LDFLAGS) $(QT5_LIBS) -lstdc++ -o $@
-	# Copy dlls if windows
-	scripts/copy_dlls.sh $(prefix) $(WINDOWS)
 	# done
+
+# creates a redistributable windows folder after the
+# build finishes
+.PHONY: package-win
+package-win: $(BUILD_DIR)/$(BIN)$(EXT)
+	$(MKDIR_P) "$(BUILD_DIR)/schemas"
+	$(INSTALL_DATA) $(DATA_DIR)/$(gsettings_SCHEMAS) \
+	  "$(BUILD_DIR)/schemas/"
+	$(GLIB_COMPILE_SCHEMAS) "$(BUILD_DIR)/schemas"
+	scripts/package_win.sh $(prefix)
 
 # build libcyaml
 $(CYAML_BUILD_DIR)/libcyaml.a:
@@ -422,10 +434,8 @@ uninstall-appicon-data:
 install-gschemas: $(DATA_DIR)/$(gsettings_SCHEMAS)
 	$(MKDIR_P) "$(DESTDIR)$(gsettingsschemadir)"
 	$(INSTALL_DATA) $< "$(DESTDIR)$(gsettingsschemadir)/"
-ifneq ($(PACKAGE_MODE),1)
 ifeq ($(DESTDIR),)
 	$(GLIB_COMPILE_SCHEMAS) "$(DESTDIR)$(gsettingsschemadir)"
-endif
 endif
 
 .PHONY: uninstall-gschemas

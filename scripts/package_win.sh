@@ -1,16 +1,11 @@
 #! /bin/bash
 
-if [[ $2 -ne 1 ]]
-then
-  echo "No dlls to copy."
-  exit 0
-fi
+BUILD_DIR=build
+WINDIR=$BUILD_DIR/win
+mkdir $WINDIR
 
+# ******************************
 echo "Copying dlls..."
-
-# note: libpixman only works from msys installation
-# for some reason
-
 DLLS=" \
   libatk-1.0-0.dll \
   libbz2-1.dll \
@@ -64,9 +59,33 @@ DLLS=" \
   zlib1.dll"
 
 for file in $DLLS; do
-  cp $1/bin/$file build/
   echo "copying $file"
+  cp $1/bin/$file $WINDIR
 done
 
 # pixman doesn't work unless the mSYS one is used
-cp dlls/libpixman-1-0.dll build/
+echo "copying libpixman-1-0.dll"
+cp data/dlls/libpixman-1-0.dll $WINDIR
+# ******************************
+
+# ******************************
+echo "packaging settings.ini"
+ETC_GTK_DIR="$WINDIR/etc/gtk-3.0"
+mkdir -p $ETC_GTK_DIR
+cp data/settings.ini $ETC_GTK_DIR/
+# ******************************
+
+# ******************************
+echo "packaging glib schema"
+SCHEMAS_DIR="$WINDIR/share/glib-2.0/schemas"
+mkdir -p "$SCHEMAS_DIR"
+cp "$BUILD_DIR/schemas/gschemas.compiled" \
+  "$SCHEMAS_DIR/"
+# ******************************
+
+# ******************************
+echo "packaging Adwaita icons"
+ICONS_DIR="$WINDIR/share/icons"
+mkdir -p "$ICONS_DIR"
+cp -R "$1/share/icons/Adwaita" "$ICONS_DIR/"
+# ******************************
