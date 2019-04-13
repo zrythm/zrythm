@@ -29,6 +29,7 @@
 #include "gui/widgets/piano_roll.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
+#include "gui/widgets/midi_modifier_chooser.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/piano_roll.h"
@@ -164,6 +165,28 @@ piano_roll_widget_setup (
 static void
 piano_roll_widget_init (PianoRollWidget * self)
 {
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      COLOR_AREA_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      MIDI_RULER_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      PIANO_ROLL_LABELS_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      PIANO_ROLL_NOTES_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      MIDI_ARRANGER_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      MIDI_MODIFIER_ARRANGER_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      MIDI_MODIFIER_CHOOSER_WIDGET_TYPE, NULL)));
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
   gtk_label_set_text (self->midi_name_label,

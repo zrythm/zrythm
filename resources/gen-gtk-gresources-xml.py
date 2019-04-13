@@ -183,6 +183,7 @@ for cat in ['actions', 'animations', 'applets', 'apps', 'categories', 'devices',
               f.endswith('hand.svg') or
               f.endswith('window-maximize.svg')):
           xml += '    <file>{0}</file>\n'.format(remove_prefix(destfile, srcdir + os.sep))
+    full_destdir = os.path.join(icons_dir,destdir)
 
 xml += '''
   <file>theme.css</file>

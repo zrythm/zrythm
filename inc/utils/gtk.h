@@ -29,8 +29,14 @@
 
 #include <gtk/gtk.h>
 
+#define DESTROY_LATER(x) \
+  g_idle_add ( \
+    (GSourceFunc) z_gtk_widget_destroy_idle, \
+      GTK_WIDGET (x));
+
 #define DEFAULT_CLIPBOARD \
-  gtk_clipboard_get_default (gdk_display_get_default ())
+  gtk_clipboard_get_default ( \
+    gdk_display_get_default ())
 
 #define CREATE_CUT_MENU_ITEM \
   z_gtk_create_menu_item ( \
@@ -132,6 +138,10 @@ enum ZGtkShrink
   Z_GTK_NO_SHRINK,
   Z_GTK_SHRINK
 };
+
+int
+z_gtk_widget_destroy_idle (
+  GtkWidget * widget);
 
 void
 z_gtk_container_remove_all_children (

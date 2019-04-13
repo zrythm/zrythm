@@ -36,6 +36,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
+#include "utils/gtk.h"
 #include "utils/localization.h"
 #include "utils/io.h"
 
@@ -74,7 +75,8 @@ update_splash (UpdateSplashData *data)
 {
   /* sometimes this gets called after the splash window
    * gets deleted so added for safety */
-  if (splash && GTK_IS_WIDGET (splash))
+  if (!first_run_assistant &&
+      splash && GTK_IS_WIDGET (splash))
     {
       splash_widget_update (splash,
                             data->message,
@@ -213,10 +215,11 @@ zrythm_remove_recent_project (
 }
 
 static void
-task_func (GTask *task,
-                    gpointer source_object,
-                    gpointer task_data,
-                    GCancellable *cancellable)
+task_func (
+  GTask *task,
+  gpointer source_object,
+  gpointer task_data,
+  GCancellable *cancellable)
 {
   /* sleep to give the splash screen time to open.
    * for some reason it delays if no sleep */
@@ -389,6 +392,14 @@ on_first_run_assistant_apply (
   G_ACTION_GROUP (zrythm_app),
   "prompt_for_project",
   NULL);
+
+  /* close the first run assistant if it ran
+   * before */
+  if (assistant)
+    {
+      DESTROY_LATER (assistant);
+      first_run_assistant = NULL;
+    }
 }
 
 static void
@@ -439,16 +450,6 @@ static void on_prompt_for_project (GSimpleAction  *action,
           return;
         }
 
-      /* close the first run assistant if it ran
-       * before */
-      if (first_run_assistant)
-        {
-          g_idle_add (
-            (GSourceFunc)gtk_widget_destroy,
-            GTK_WIDGET (first_run_assistant));
-        }
-
-
       /* init zrythm folders ~/Zrythm */
       init_dirs_and_files ();
       init_recent_projects ();
@@ -463,9 +464,10 @@ static void on_prompt_for_project (GSimpleAction  *action,
       g_signal_connect (
         G_OBJECT (assistant), "cancel",
         G_CALLBACK (on_finish), (void *) 1);
-      g_idle_add (
-        (GSourceFunc) gtk_window_present,
-        GTK_WINDOW (assistant));
+      /*g_idle_add (*/
+        /*(GSourceFunc) gtk_window_present,*/
+        /*GTK_WINDOW (assistant));*/
+      gtk_window_present (GTK_WINDOW (assistant));
     }
 }
 
@@ -641,12 +643,6 @@ zrythm_app_new ()
   self->zrythm = calloc (1, sizeof (Zrythm));
   ZRYTHM = self->zrythm;
   ZRYTHM->project = calloc (1, sizeof (Project));
-
-  GValue value;
-  g_value_init (&value, G_TYPE_STRING);
-  char * str = g_value_get_string (&value);
-  g_message ("zrythm property name %s",
-             str);
 
   return self;
 }

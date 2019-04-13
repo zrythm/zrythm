@@ -217,7 +217,12 @@ ProjectAssistantWidget *
 project_assistant_widget_new (GtkWindow * parent,
                             int show_create_new_project)
 {
-  ProjectAssistantWidget * self = g_object_new (PROJECT_ASSISTANT_WIDGET_TYPE, NULL);
+  ProjectAssistantWidget * self =
+    g_object_new (
+      PROJECT_ASSISTANT_WIDGET_TYPE,
+      "modal", 1,
+      "urgency-hint", 1,
+      NULL);
 
   for (self->num_project_infos = 0;
        self->num_project_infos <
@@ -258,6 +263,10 @@ project_assistant_widget_new (GtkWindow * parent,
     GTK_WINDOW (self), GTK_WIN_POS_CENTER_ALWAYS);
   gtk_window_set_transient_for (
     GTK_WINDOW (self), parent);
+  gtk_window_set_attached_to (
+    GTK_WINDOW (self), GTK_WIDGET (parent));
+  gtk_window_set_keep_above (
+    GTK_WINDOW (self), 1);
 
   return self;
 }

@@ -117,3 +117,9 @@ vgcore.*
 
 # Translated files
 *.mo
+
+# Packaging hook credentials
+project-defs.sh.inc
+
+# Packaging files
+scripts/package_win.sh

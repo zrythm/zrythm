@@ -156,6 +156,7 @@ endif
 
 ifeq ($(WINDOWS),1)
 	FPIC=-mms-bitfields
+	MWINDOWS=-mwindows
 else
 	FPIC=-fPIC
 endif
@@ -182,7 +183,8 @@ CFLAGS += -Wall \
 	$(SNDFILE_CFLAGS) \
 	$(X11_CFLAGS) \
 	-DCONFIGURE_DATADIR=\"$(datadir)\" \
-	$(FPIC)
+	$(FPIC) \
+	$(MWINDOWS)
 
 ifeq ($(PROFILING),1)
 	CFLAGS += -pg
@@ -212,7 +214,8 @@ LDFLAGS +=	\
 	$(LM) \
 	$(FPIC) \
 	-lpthread \
-	-Wl,-as-needed
+	-Wl,-as-needed \
+	$(MWINDOWS)
 
 
 built_src = $(BUILD_DIR)/resources.c
@@ -272,17 +275,13 @@ endif
 # static libs
 STATIC_LIBS=$(CYAML_BUILD_DIR)/libcyaml.a $(LIBSMF_BUILD_DIR)/libsmf.a $(DLFCN_LIB)
 
-ifeq ($(WINDOWS),1)
-	RUN_TEST_CMD=wine
-endif
-
 # -----------------------------
 #  rules
 #  ----------------------------
 
 # Default target
 ifeq ($(WINDOWS),1)
-all: $(BUILD_DIR)/$(BIN)$(EXT) messages package-win test
+all: $(BUILD_DIR)/data/icon.o $(BUILD_DIR)/$(BIN)$(EXT) messages package-win test
 else
 all: $(BUILD_DIR)/$(BIN)$(EXT) messages test
 endif
@@ -313,22 +312,43 @@ po/ja/$(BIN).po: po/$(BIN).pot
 po/$(BIN).pot: $(SRCS) $(SRCS_CPP) $(SRCS_UI)
 	xgettext --keyword=_ --add-comments --sort-output -o $@ $^
 
+# for windows .exe icon
+$(BUILD_DIR)/data/icon.o: data/zrythm.ico
+	$(MKDIR_P) "$(BUILD_DIR)/data"
+	cp data/zrythm.ico "$(BUILD_DIR)/data/"
+	echo "id ICON $(BUILD_DIR)/data/zrythm.ico" > "$(BUILD_DIR)/data/icon.rc"
+	$(subst gcc,windres,$(CC)) -o \
+		$(BUILD_DIR)/data/icon.o \
+		$(BUILD_DIR)/data/icon.rc
+
 # Actual target of the binary - depends on all .o files.
+ifeq ($(WINDOWS),1)
+$(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(OBJ_CPP) $(BUILD_DIR)/resources.o $(BUILD_DIR)/data/icon.o $(STATIC_LIBS)
+	# Create build directories - same structure as sources.
+	$(MKDIR_P) $(@D)
+	# Just link all the object files.
+	$(CC) $^ $(LDFLAGS) $(QT5_LIBS) -lstdc++ -o $@
+	# done
+else
 $(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(OBJ_CPP) $(BUILD_DIR)/resources.o $(STATIC_LIBS)
 	# Create build directories - same structure as sources.
 	$(MKDIR_P) $(@D)
 	# Just link all the object files.
 	$(CC) $^ $(LDFLAGS) $(QT5_LIBS) -lstdc++ -o $@
 	# done
+endif
 
 # creates a redistributable windows folder after the
 # build finishes
 .PHONY: package-win
 package-win: $(BUILD_DIR)/$(BIN)$(EXT)
+	# schemas
 	$(MKDIR_P) "$(BUILD_DIR)/schemas"
 	$(INSTALL_DATA) $(DATA_DIR)/$(gsettings_SCHEMAS) \
 	  "$(BUILD_DIR)/schemas/"
+	cp $(prefix)/share/glib-2.0/schemas/org.gtk.Settings.* $(BUILD_DIR)/schemas
 	$(GLIB_COMPILE_SCHEMAS) "$(BUILD_DIR)/schemas"
+	chmod +x scripts/package_win.sh
 	scripts/package_win.sh $(prefix)
 
 # build libcyaml
@@ -466,8 +486,13 @@ uninstall-desktop-data:
 	rm -f $(desktopdir)/$(desktop_DATA)
 
 .PHONY: test
+ifeq ($(WINDOWS),1)
+test: $(TEST_BIN)$(EXT) package-win
+	wine $^
+else
 test: $(TEST_BIN)$(EXT)
-	$(RUN_TEST_CMD) $^
+	$^
+endif
 
 $(TEST_BIN)$(EXT): $(TEST_OBJ) $(OBJ_NO_MAIN) $(OBJ_CPP) $(BUILD_DIR)/resources.o $(STATIC_LIBS)
 	# Create build directories - same structure as sources.

@@ -141,7 +141,10 @@ first_run_assistant_widget_new (
 {
   FirstRunAssistantWidget * self =
     g_object_new (
-      FIRST_RUN_ASSISTANT_WIDGET_TYPE, NULL);
+      FIRST_RUN_ASSISTANT_WIDGET_TYPE,
+      "modal", 1,
+      "urgency-hint", 1,
+      NULL);
 
   /* setup languages */
   ui_setup_language_combo_box (
@@ -176,6 +179,10 @@ first_run_assistant_widget_new (
     GTK_WINDOW (self), GTK_WIN_POS_CENTER_ALWAYS);
   gtk_window_set_transient_for (
     GTK_WINDOW (self), parent);
+  gtk_window_set_attached_to (
+    GTK_WINDOW (self), GTK_WIDGET (parent));
+  gtk_window_set_keep_above (
+    GTK_WINDOW (self), 1);
 
   return self;
 }

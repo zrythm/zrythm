@@ -25,7 +25,10 @@
  */
 
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/audio_arranger.h"
 #include "gui/widgets/audio_clip_editor.h"
+#include "gui/widgets/audio_ruler.h"
+#include "gui/widgets/piano_roll.h"
 #include "project.h"
 #include "utils/resources.h"
 
@@ -75,6 +78,13 @@ static void
 audio_clip_editor_widget_init (
   AudioClipEditorWidget * self)
 {
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      AUDIO_RULER_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      AUDIO_ARRANGER_WIDGET_TYPE, NULL)));
+
   gtk_widget_init_template (GTK_WIDGET (self));
 }
 

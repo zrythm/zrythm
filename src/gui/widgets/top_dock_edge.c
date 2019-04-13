@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -44,6 +44,13 @@ top_dock_edge_widget_refresh (
 static void
 top_dock_edge_widget_init (TopDockEdgeWidget * self)
 {
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      TOOLBOX_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      QUANTIZE_MB_WIDGET_TYPE, NULL)));
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
   /* setup top toolbar */
@@ -112,12 +119,13 @@ static void
 top_dock_edge_widget_class_init (
   TopDockEdgeWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass,
-                                "top_dock_edge.ui");
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (
+    klass, "top_dock_edge.ui");
 
-  gtk_widget_class_set_css_name (klass,
-                                 "top-dock-edge");
+  gtk_widget_class_set_css_name (
+    klass, "top-dock-edge");
 
   gtk_widget_class_bind_template_child (
     klass,

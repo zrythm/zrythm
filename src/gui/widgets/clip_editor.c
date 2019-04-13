@@ -50,6 +50,13 @@ clip_editor_widget_setup (
 static void
 clip_editor_widget_init (ClipEditorWidget * self)
 {
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      PIANO_ROLL_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      AUDIO_CLIP_EDITOR_WIDGET_TYPE, NULL)));
+
   gtk_widget_init_template (GTK_WIDGET (self));
 }
 

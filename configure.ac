@@ -17,7 +17,7 @@
 #  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 #
 # Initialize autoconf: package name, version, bug report address
-AC_INIT([zrythm], [0.3.029], [https://git.zrythm.org/zrythm/zrythm/issues])
+AC_INIT([zrythm], [0.4.000], [https://git.zrythm.org/zrythm/zrythm/issues])
 
 # Declare config.h as output header
 AC_CONFIG_HEADERS([config.h])
@@ -192,6 +192,7 @@ GLIB_GSETTINGS
 AC_CONFIG_FILES([
   Makefile
   Doxyfile.cfg
+  scripts/package_win.sh
 ])
 
 # Actually output all declared files
