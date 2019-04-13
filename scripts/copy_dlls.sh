@@ -1,6 +1,6 @@
-#! /bin/sh
+#! /bin/bash
 
-if [ -n "$1" ]
+if [[ $2 -ne 1 ]]
 then
   echo "No dlls to copy."
   exit 0
@@ -8,7 +8,10 @@ fi
 
 echo "Copying dlls..."
 
-DLLS= \
+# note: libpixman only works from msys installation
+# for some reason
+
+DLLS=" \
   libatk-1.0-0.dll \
   libbz2-1.dll \
   libcairo-2.dll \
@@ -43,22 +46,27 @@ DLLS= \
   libpangoft2-1.0-0.dll \
   libpangowin32-1.0-0.dll \
   libpcre-1.dll \
-  libpixman-1.0.dll \
   libpng16-16.dll \
+  libportaudio-2.dll \
+  libsamplerate-0.dll \
   libsndfile-1.dll \
   libstdc++-6.dll \
   libthai-0.dll \
   libtiff-5.dll \
   libvorbis-0.dll \
   libvorbisenc-2.dll \
+  libvorbisfile-3.dll \
   libwinpthread-1.dll \
   lilv-0.dll \
   serd-0.dll \
   sord-0.dll \
   sratom-0.dll \
-  zlib1.dll
+  zlib1.dll"
 
 for file in $DLLS; do
   cp $1/bin/$file build/
   echo "copying $file"
 done
+
+# pixman doesn't work unless the mSYS one is used
+cp dlls/libpixman-1-0.dll build/

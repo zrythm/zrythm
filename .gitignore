@@ -23,7 +23,7 @@ configure
 # Compiled Dynamic libraries
 *.so
 *.dylib
-*.dll
+build/*.dll
 
 # Fortran module files
 *.mod

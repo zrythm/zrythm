@@ -215,6 +215,13 @@ static void
 first_run_assistant_widget_init (
   FirstRunAssistantWidget * self)
 {
+  /* needed on windows at least so the template
+   * engine knows what the widget is */
+  MidiControllerMbWidget * w =
+    g_object_new (
+      MIDI_CONTROLLER_MB_WIDGET_TYPE, NULL);
+  gtk_widget_destroy (GTK_WIDGET (w));
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
   g_signal_connect (
