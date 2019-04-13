@@ -483,11 +483,10 @@ automation_lane_widget_get_y (
 static void
 automation_lane_widget_init (AutomationLaneWidget * self)
 {
-  HeaderBarWidget * w =
-    g_object_new (
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
       AUTOMATABLE_SELECTOR_BUTTON_WIDGET_TYPE,
-      NULL);
-  gtk_widget_destroy (GTK_WIDGET (w));
+      NULL)));
 
   gtk_widget_init_template (GTK_WIDGET (self));
 

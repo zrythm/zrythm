@@ -137,6 +137,10 @@ mixer_widget_class_init (MixerWidgetClass * _klass)
 static void
 mixer_widget_init (MixerWidget * self)
 {
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      DRAG_DEST_BOX_WIDGET_TYPE, NULL)));
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
   /* add dummy box for dnd */

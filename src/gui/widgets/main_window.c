@@ -274,10 +274,18 @@ main_window_widget_init (MainWindowWidget * self)
     G_N_ELEMENTS (actions),
     self);
 
-  HeaderBarWidget * w =
-    g_object_new (
-      HEADER_BAR_WIDGET_TYPE, NULL);
-  gtk_widget_destroy (GTK_WIDGET (w));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      HEADER_BAR_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      TOP_BAR_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      CENTER_DOCK_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      BOT_BAR_WIDGET_TYPE, NULL)));
 
   gtk_widget_init_template (GTK_WIDGET (self));
 

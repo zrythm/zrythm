@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -18,6 +18,7 @@
  */
 
 #include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/clip_editor.h"
 #include "gui/widgets/connections.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/piano_roll.h"
@@ -32,6 +33,19 @@ G_DEFINE_TYPE (BotDockEdgeWidget,
 static void
 bot_dock_edge_widget_init (BotDockEdgeWidget * self)
 {
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      RACK_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      CONNECTIONS_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      CLIP_EDITOR_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      MIXER_WIDGET_TYPE, NULL)));
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
   /* set icons */

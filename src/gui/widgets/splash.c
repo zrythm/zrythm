@@ -67,6 +67,9 @@ splash_window_widget_new (ZrythmApp * app)
           800);
   g_object_unref (css_provider);
 
+  gtk_window_set_keep_below (
+    GTK_WINDOW (self), 1);
+
   return self;
 }
 

@@ -128,11 +128,18 @@ activate_manual (GSimpleAction *action,
                 GVariant      *variant,
                 gpointer       user_data)
 {
+#ifdef _WIN32
+  ShellExecute (
+    0, (LPCSTR)"open",
+    (LPCSTR) "https://manual.zrythm.org",
+    0, 0, SW_SHOWNORMAL);
+#else
   gtk_show_uri_on_window (
     GTK_WINDOW (MAIN_WINDOW),
     "https://manual.zrythm.org",
     0,
     NULL);
+#endif
 }
 
 void
@@ -140,11 +147,18 @@ activate_chat (GSimpleAction *action,
                 GVariant      *variant,
                 gpointer       user_data)
 {
+#ifdef _WIN32
+  ShellExecute (
+    0, (LPCSTR)"open",
+    (LPCSTR) "https://riot.im/app/#/room/#freenode_#zrythm:matrix.org",
+    0, 0, SW_SHOWNORMAL);
+#else
   gtk_show_uri_on_window (
     GTK_WINDOW (MAIN_WINDOW),
     "https://riot.im/app/#/room/#freenode_#zrythm:matrix.org",
     0,
     NULL);
+#endif
 }
 
 void
@@ -152,11 +166,18 @@ activate_forums (GSimpleAction *action,
                 GVariant      *variant,
                 gpointer       user_data)
 {
+#ifdef _WIN32
+  ShellExecute (
+    0, (LPCSTR)"open",
+    (LPCSTR) "https://forum.zrythm.org",
+    0, 0, SW_SHOWNORMAL);
+#else
   gtk_show_uri_on_window (
     GTK_WINDOW (MAIN_WINDOW),
     "https://forum.zrythm.org",
     0,
     NULL);
+#endif
 }
 
 void
@@ -178,11 +199,18 @@ activate_bugreport (GSimpleAction *action,
                 GVariant      *variant,
                 gpointer       user_data)
 {
+#ifdef _WIN32
+  ShellExecute (
+    0, (LPCSTR)"open",
+    (LPCSTR) "https://git.zrythm.org/zrythm/zrythm/issues",
+    0, 0, SW_SHOWNORMAL);
+#else
   gtk_show_uri_on_window (
     GTK_WINDOW (MAIN_WINDOW),
     "https://git.zrythm.org/zrythm/zrythm/issues",
     0,
     NULL);
+#endif
 }
 
 void

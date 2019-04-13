@@ -24,9 +24,10 @@
  *
  */
 
+#include "config.h"
+
 #include <locale.h>
 
-#include "config.h"
 #include "settings/settings.h"
 #include "utils/localization.h"
 #include "utils/string.h"
@@ -85,6 +86,10 @@ localization_get_string_code (
 int
 localization_init ()
 {
+#ifdef _WIN32
+  /* TODO */
+  setlocale (LC_ALL, "C");
+#else
   /* get available locales on the system */
   FILE *fp;
   char path[1035];
@@ -169,11 +174,21 @@ localization_init ()
                  "installed, using default");
       setlocale (LC_ALL, "C");
     }
+#endif
 
+#ifdef _WIN32
+  bindtextdomain (
+    GETTEXT_PACKAGE, "share/locale");
+#else
   bindtextdomain (
     GETTEXT_PACKAGE, CONFIGURE_DATADIR "/locale");
+#endif
   bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
   textdomain (GETTEXT_PACKAGE);
 
+#ifdef _WIN32
+  return 1;
+#else
   return match != NULL;
+#endif
 }

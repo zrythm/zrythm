@@ -25,26 +25,34 @@
   <template class="SplashWindowWidget" parent="GtkWindow">
     <property name="visible">True</property>
     <property name="sensitive">False</property>
-    <property name="can-focus">False</property>
-    <property name="can-default">True</property>
-    <property name="has-default">True</property>
+    <property name="can_focus">False</property>
+    <property name="can_default">True</property>
+    <property name="has_default">True</property>
     <property name="resizable">False</property>
-    <property name="window-position">center-always</property>
-    <property name="default-width">580</property>
-    <property name="default-height">300</property>
-    <property name="type-hint">utility</property>
+    <property name="window_position">center-always</property>
+    <property name="default_width">580</property>
+    <property name="default_height">300</property>
+    <property name="type_hint">utility</property>
+    <property name="accept_focus">False</property>
+    <property name="focus_on_map">False</property>
     <property name="decorated">False</property>
     <property name="deletable">False</property>
     <child>
+      <placeholder/>
+    </child>
+    <child>
       <object class="GtkBox">
-        <property name="visible">1</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkOverlay">
-            <property name="visible">1</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <child>
               <object class="GtkImage">
-                <property name="visible">1</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="resource">/org/zrythm/icons/zrythm/z-splash.svg</property>
               </object>
               <packing>
@@ -53,22 +61,28 @@
             </child>
             <child type="overlay">
               <object class="GtkLabel" id="label">
-                <property name="visible">1</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="valign">end</property>
                 <property name="label" translatable="yes">Initializing...</property>
               </object>
             </child>
           </object>
           <packing>
-            <property name="expand">1</property>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
           </packing>
         </child>
         <child>
           <object class="GtkProgressBar" id="progress_bar">
-            <property name="visible">1</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="fraction">0.02</property>
           </object>
           <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
         </child>

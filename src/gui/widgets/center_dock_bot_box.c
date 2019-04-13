@@ -1,7 +1,5 @@
 /*
- * gui/widgets/center_dock_bot_box.c - Main window widget
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,6 +21,7 @@
 #include "gui/widgets/center_dock_bot_box.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/left_dock_edge.h"
+#include "gui/widgets/snap_grid.h"
 #include "gui/widgets/timeline_minimap.h"
 #include "utils/resources.h"
 
@@ -34,6 +33,13 @@ static void
 center_dock_bot_box_widget_init (
   CenterDockBotBoxWidget * self)
 {
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      SNAP_GRID_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      TIMELINE_MINIMAP_WIDGET_TYPE, NULL)));
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
   // set icons
@@ -60,12 +66,13 @@ static void
 center_dock_bot_box_widget_class_init (
   CenterDockBotBoxWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass,
-                                "center_dock_bot_box.ui");
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (
+    klass, "center_dock_bot_box.ui");
 
-  gtk_widget_class_set_css_name (klass,
-                                 "center-dock-bot-box");
+  gtk_widget_class_set_css_name (
+    klass, "center-dock-bot-box");
 
   gtk_widget_class_bind_template_child (
     klass,

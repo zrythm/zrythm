@@ -7,6 +7,7 @@ variables:
 
 stages:
   - build
+  - package
 
 test_build:
   stage: build
@@ -15,3 +16,27 @@ test_build:
     - ./configure
     - sudo make -j14
     - sudo make install
+
+build_win_64:
+  stage: build
+  image: "alextee12/arch-yaourt"
+  script:
+    - ./autogen.sh
+    - x86_64-w64-mingw32-configure .
+    - make -j14
+
+package_win_64:
+  stage: package
+  image: "alextee12/arch-yaourt"
+  script:
+    - ./autogen.sh
+    - x86_64-w64-mingw32-configure .
+    - make -j14
+    - mkdir -p /home/builduser/artifacts
+    - cp build/win/Install.exe /home/builduser/artifacts/
+  artifacts:
+    paths:
+      - /home/builduser/artifacts/Install.exe
+    expire_in: 1 week
+  only:
+    - tags

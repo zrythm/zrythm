@@ -21,6 +21,15 @@
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
+int
+z_gtk_widget_destroy_idle (
+  GtkWidget * widget)
+{
+  gtk_widget_destroy (widget);
+
+  return G_SOURCE_REMOVE;
+}
+
 /**
  * NOTE: bumps reference, must be decremented after calling.
  */

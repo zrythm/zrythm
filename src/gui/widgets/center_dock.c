@@ -98,6 +98,34 @@ center_dock_widget_setup (CenterDockWidget * self)
 static void
 center_dock_widget_init (CenterDockWidget * self)
 {
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      TRACKLIST_HEADER_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      TRACKLIST_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      TIMELINE_RULER_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      CENTER_DOCK_BOT_BOX_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      TIMELINE_ARRANGER_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      LEFT_DOCK_EDGE_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      RIGHT_DOCK_EDGE_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      TOP_DOCK_EDGE_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      BOT_DOCK_EDGE_WIDGET_TYPE, NULL)));
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
   GValue a = G_VALUE_INIT;

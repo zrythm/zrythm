@@ -502,6 +502,16 @@ channel_widget_class_init (ChannelWidgetClass * _klass)
 static void
 channel_widget_init (ChannelWidget * self)
 {
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      FADER_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      METER_WIDGET_TYPE, NULL)));
+  gtk_widget_destroy (
+    GTK_WIDGET (g_object_new (
+      COLOR_AREA_WIDGET_TYPE, NULL)));
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
   GtkStyleContext * context;

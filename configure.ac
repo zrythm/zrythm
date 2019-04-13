@@ -192,6 +192,7 @@ GLIB_GSETTINGS
 AC_CONFIG_FILES([
   Makefile
   Doxyfile.cfg
+  scripts/package_win.sh
 ])
 
 # Actually output all declared files
