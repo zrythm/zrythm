@@ -212,7 +212,7 @@ msgstr "Faire un don"
 
 #: resources/ui/preferences.ui:265
 msgid "Editing"
-msgstr "Édité"
+msgstr "Édition"
 
 #: resources/ui/shortcuts.ui:180
 msgid "Editor Shortcuts"
@@ -385,181 +385,184 @@ msgstr "Panneau de gauche"
 #: resources/ui/inspector_ap.ui:101 resources/ui/inspector_midi.ui:101
 #: resources/ui/snap_grid_popover.ui:88
 msgid "Length"
-msgstr ""
+msgstr "Longueur"
 
 #: src/zrythm.c:254
 #, fuzzy
 msgid "Loading project"
-msgstr "asdasda"
+msgstr "Chargement du projet"
 
 #: resources/ui/file_browser.ui:107
 msgid "Location"
-msgstr ""
+msgstr "Emplacement"
 
 #: src/gui/widgets/track.c:140
 msgid "Lock"
-msgstr ""
+msgstr "Verrouillage"
 
 #: resources/ui/transport_controls.ui:122 resources/ui/export_dialog.ui:250
 msgid "Loop"
-msgstr ""
+msgstr "Boucle"
 
 #: src/gui/widgets/header_bar.c:70
 msgid "Loop Selection"
-msgstr ""
+msgstr "Sélection de la boucle"
 
 #: resources/ui/shortcuts.ui:287
 msgid "Loop selection"
-msgstr ""
+msgstr "Sélection de la boucle"
 
 #: resources/ui/shortcuts.ui:282
 msgid "Looping"
-msgstr ""
+msgstr "Bouclage"
 
 #: resources/ui/preferences.ui:145
 msgid "MIDI Controllers"
-msgstr ""
+msgstr "Contrôleurs MIDI"
 
 #: resources/ui/first_run_assistant.ui:189
 msgid "MIDI Devices"
-msgstr ""
+msgstr "Périphériques MIDI"
 
 #: resources/ui/preferences.ui:232
 msgid "Main Window"
-msgstr ""
+msgstr "Fenêtre principal"
 
 #: src/gui/widgets/header_bar.c:330
 msgid "Manual"
-msgstr ""
+msgstr "Manuel"
 
 #: src/project.c:160 src/gui/widgets/channel.c:259
 #: src/gui/widgets/channel.c:268 resources/ui/channel.ui:341
 msgid "Master"
-msgstr ""
+msgstr "Master"
 
 #: resources/ui/bot_dock_edge.ui:89
 msgid "Mixer"
-msgstr ""
+msgstr "Mixeur"
 
 #: resources/ui/bot_dock_edge.ui:74
 msgid "Mixer panel"
-msgstr ""
+msgstr "Panneau du mixeur"
 
 #: src/gui/widgets/track.c:138
 msgid "Mute"
-msgstr ""
+msgstr "Muet"
 
 #: resources/ui/inspector_region.ui:115 resources/ui/inspector_master.ui:113
 #: resources/ui/inspector_track.ui:128 resources/ui/inspector_ap.ui:113
 #: resources/ui/inspector_midi.ui:113
 msgid "Muted"
-msgstr ""
+msgstr "Muet"
 
 #: resources/ui/inspector_track.ui:190 resources/ui/control.ui:45
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
 #: resources/ui/first_run_assistant.ui:106
 msgid ""
 "Next, choose the  location to use for saving temporary files and projects "
 "(or accept the default)"
 msgstr ""
+"Ensuite, choisissez l'emplacement à utiliser pour enregistrer les fichiers temporaires et les projets "
+"(ou accepter l'emplacement par défaut)"
 
 #: resources/ui/inspector.ui:72
 msgid "No item selected"
-msgstr ""
+msgstr "Aucun item sélectionné"
 
 #: resources/ui/quantize_mb_popover.ui:87
 msgid "Note length to quantize to"
-msgstr ""
+msgstr "Longueur de la note à quantifier à"
 
 #: resources/ui/snap_grid_popover.ui:87
 msgid "Note length to snap to"
-msgstr ""
+msgstr "Longueur de note à enclencher"
 
 #: resources/ui/quantize_mb_popover.ui:126
 #: resources/ui/snap_grid_popover.ui:126
 msgid "Note type"
-msgstr ""
+msgstr "Type de note"
 
 #: resources/ui/preferences.ui:44
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: resources/ui/shortcuts.ui:91
 #, fuzzy
 msgid "Open a project"
-msgstr "asdasda"
+msgstr "Ouvrir un projet"
 
 #: src/gui/widgets/header_bar.c:290
 msgid "Original Size"
-msgstr ""
+msgstr "Taille originale"
 
 #: resources/ui/shortcuts.ui:252
 msgid "Original size"
-msgstr ""
+msgstr "Taille originale"
 
 #: resources/ui/export_dialog.ui:206
 msgid "Output Files"
-msgstr ""
+msgstr "Fichiers de sortie"
 
 #: resources/ui/shortcuts.ui:51
 msgid "Panels"
-msgstr ""
+msgstr "Panneaux"
 
 #: resources/ui/shortcuts.ui:126
 msgid "Paste from clipboard"
-msgstr ""
+msgstr "Coller à partir le presse-papier"
 
 #: resources/ui/shortcuts.ui:195
 msgid "Pencil tool"
-msgstr ""
+msgstr "Outil Crayon"
 
 #: resources/ui/bot_dock_edge.ui:56
 msgid "Piano Roll"
-msgstr ""
+msgstr "Piano Roll"
 
 #: resources/ui/bot_dock_edge.ui:41
 msgid "Piano roll panel"
-msgstr ""
+msgstr "Panneau du Piano Roll"
 
 #: resources/ui/transport_controls.ui:54
 msgid "Play"
-msgstr ""
+msgstr "Lecture"
 
 #: src/gui/widgets/digital_meter.c:648
 msgid "Playhead Position - Click and drag up/down to change"
-msgstr ""
+msgstr "Position de la tête de lecture - Cliquez et faites glisser vers le haut/le bas pour changer"
 
 #: resources/ui/rack_plugin.ui:31
 msgid "Plugin 1"
-msgstr ""
+msgstr "Greffon 1"
 
 #: resources/ui/preferences.ui:183 resources/ui/preferences.ui:217
 msgid "Plugins"
-msgstr ""
+msgstr "Greffons"
 
 #: resources/ui/inspector_region.ui:80 resources/ui/inspector_master.ui:79
 #: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
 msgid "Position"
-msgstr ""
+msgstr "Position"
 
 #: resources/ui/shortcuts.ui:20 resources/ui/preferences.ui:27
 msgid "Preferences"
-msgstr ""
+msgstr "Préférences"
 
 #: resources/ui/shortcuts.ui:79
 msgid "Project"
-msgstr ""
+msgstr "Projet"
 
 #: src/actions/actions.c:555
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
+"Le projet n'a pas encore d'emplacement. S'il vous plaît, sauvegardez le projet avant d'exporter."
 
 #: resources/ui/header_bar.ui:29
 msgid "Project name"
-msgstr ""
+msgstr "Nom du projet"
 
 #: resources/ui/project_assistant.ui:114
 msgid ""
@@ -569,222 +572,229 @@ msgid ""
 "Frame rate: 44100\n"
 "(note: this text is hard coded at the moment)"
 msgstr ""
+"Nom du projet: name\n"
+"Emplacement: /home/user/Zrythm/name\n"
+"Moteur Audio: JACK\n"
+"Fréquence d'échantillonnage: 44100\n"
+"(note: ce texte est codé en dur pour le moment)"
 
 #: src/project.c:537
 msgid "Project saved."
-msgstr ""
+msgstr "Projet sauvegardé"
 
 #: resources/ui/shortcuts.ui:273
 msgid "Quantize"
-msgstr ""
+msgstr "Quantifier"
 
 #: resources/ui/shortcuts.ui:261
 msgid "Quantizing"
-msgstr ""
+msgstr "Quantification"
 
 #: resources/ui/shortcuts.ui:266
 msgid "Quick Quantize"
-msgstr ""
+msgstr "Quantification rapide"
 
 #: resources/ui/shortcuts.ui:41
 msgid "Quit"
-msgstr ""
+msgstr "Quitter"
 
 #: resources/ui/automation_lane.ui:112
 msgid "R"
-msgstr ""
+msgstr "R"
 
 #: resources/ui/automation_lane.ui:95
 msgid "RW"
-msgstr ""
+msgstr "RW"
 
 #: resources/ui/bot_dock_edge.ui:121
 msgid "Rack"
-msgstr ""
+msgstr "Rack"
 
 #: resources/ui/shortcuts.ui:209
 msgid "Ramp tool"
-msgstr ""
+msgstr "Outil Rampe"
 
 #: resources/ui/automation_lane.ui:116
 msgid "Read automation"
-msgstr ""
+msgstr "Lire l'automation"
 
 #: src/gui/widgets/track.c:136 resources/ui/transport_controls.ui:36
 msgid "Record"
-msgstr ""
+msgstr "Enregistrer"
 
 #: resources/ui/shortcuts.ui:147
 msgid "Redo previous command"
-msgstr ""
+msgstr "Refaire la commande précédente"
 
 #: resources/ui/inspector_region.ui:32 resources/ui/inspector_master.ui:31
 #: resources/ui/inspector_track.ui:32 resources/ui/inspector_ap.ui:31
 #: resources/ui/inspector_midi.ui:31
 msgid "Region"
-msgstr ""
+msgstr "Région"
 
 #: src/gui/widgets/region.c:227
 msgid ""
 "Region - Click and drag to move around (hold Shift to disable snapping) - "
 "Double click to bring up the clip editor"
-msgstr "Bonjour region"
+msgstr ""
+"Région - Cliquez et faites glisser pour vous déplacer (maintenez la touche Maj enfoncée pour désactiver l'accrochage) - "
+"Double-cliquez pour afficher l'éditeur de clips"
 
 #: resources/ui/project_assistant.ui:78
 msgid "Remove"
-msgstr ""
+msgstr "Supprimer"
 
 #: resources/ui/project_assistant.ui:82
 msgid "Removes selected project from the list"
-msgstr ""
+msgstr "Supprimer les projets sélectionnés de la liste"
 
 #: src/gui/widgets/header_bar.c:357
 msgid "Report a Bug"
-msgstr ""
+msgstr "Rapporter un bogue"
 
 #: resources/ui/midi_controller_popover.ui:79
 msgid "Rescan"
-msgstr ""
+msgstr "Rescanner"
 
 #: resources/ui/first_run_assistant.ui:129
 msgid "Reset"
-msgstr ""
+msgstr "Réinitialiser"
 
 #: resources/ui/first_run_assistant.ui:133
 msgid "Resets the path to the default"
-msgstr ""
+msgstr "Réinitialiser l'emplacement par défaut"
 
 #: resources/ui/center_dock_bot_box.ui:82
 msgid "Right"
-msgstr ""
+msgstr "Droite"
 
 #: src/gui/widgets/header_bar.c:234
 msgid "Right Panel"
-msgstr ""
+msgstr "Panneau droit"
 
 #: src/actions/actions.c:490
 #, fuzzy
 msgid "Save Project"
-msgstr "asdasda"
+msgstr "Sauvegarder le projet"
 
 #: src/plugins/lv2_gtk.c:147
 msgid "Save State"
-msgstr ""
+msgstr "Sauvegarder l'état"
 
 #: src/gui/widgets/header_bar.c:139
 msgid "Save _As"
-msgstr ""
+msgstr "Sauvegarder sous"
 
 #: resources/ui/shortcuts.ui:98
 msgid "Save the project"
-msgstr ""
+msgstr "Sauvegarder le projet"
 
 #: resources/ui/inspector_chord.ui:43
 msgid "Scale"
-msgstr ""
+msgstr "Gamme"
 
 #: resources/ui/midi_controller_popover.ui:83
 msgid "Scan again for MIDI controllers"
-msgstr ""
+msgstr "Scanner encore les contrôleurs MIDI"
 
 #: resources/ui/project_assistant.ui:27
 #, fuzzy
 msgid "Select Project"
-msgstr "asdasda"
+msgstr "Sélectionner un projet"
 
 #: resources/ui/first_run_assistant.ui:119
 msgid "Select a folder"
-msgstr ""
+msgstr "Sélectionner un dossier"
 
 #: resources/ui/shortcuts.ui:161
 msgid "Select all"
-msgstr ""
+msgstr "Sélectionner tout"
 
 #: src/gui/widgets/midi_controller_mb.c:46
 #: src/gui/widgets/midi_controller_mb.c:116
 msgid "Select..."
-msgstr ""
+msgstr "Sélectionner..."
 
 #: resources/ui/shortcuts.ui:188
 msgid "Select/Stretch tool"
-msgstr ""
+msgstr "Sélectionner l'outil Étirement"
 
 #: src/gui/widgets/header_bar.c:57
 #, fuzzy
 msgid "Selection"
-msgstr "asdasda"
+msgstr "Sélection"
 
 #: resources/ui/shortcuts.ui:156
 msgid "Selections"
-msgstr ""
+msgstr "Sélections"
 
 #: src/zrythm.c:247
 msgid "Setting up backend"
-msgstr ""
+msgstr "Configuration du moteur"
 
 #: resources/ui/first_run_assistant.ui:29
 msgid "Setup Zrythm"
-msgstr ""
+msgstr "Configurer Zrythm"
 
 #: src/gui/widgets/track.c:142
 msgid "Show Automation Lanes"
-msgstr ""
+msgstr "Montrer les files d'automations"
 
 #: src/gui/widgets/track.c:141
 msgid "Show UI"
-msgstr ""
+msgstr "Afficher l'interface utilisateur"
 
 #: resources/ui/preferences.ui:242
 msgid "Show native decoration"
-msgstr ""
+msgstr "Montrer la décoration native"
 
 #: resources/ui/quantize_mb_popover.ui:66 resources/ui/snap_grid_popover.ui:66
 msgid "Snap"
-msgstr ""
+msgstr "Accrocher"
 
 #: resources/ui/top_dock_edge.ui:164
 msgid "Snap to events (regions)"
-msgstr ""
+msgstr "Accrocher aux évènements (régions)"
 
 #: src/gui/widgets/snap_grid.c:94
 msgid "Snap/Grid options"
-msgstr ""
+msgstr "Accrocher/Options de la grille"
 
 #: resources/ui/top_dock_edge.ui:151
 msgid "Snaps to grid and keeps offset"
-msgstr ""
+msgstr "Accrocher à la grille et garder le décalage"
 
 #: src/gui/widgets/track.c:137
 msgid "Solo"
-msgstr ""
+msgstr "Solo"
 
 #: resources/ui/export_dialog.ui:238
 msgid "Song"
-msgstr ""
+msgstr "Chanson"
 
 #: resources/ui/connections.ui:73
 msgid "Source Audio Unit"
-msgstr ""
+msgstr "Unité de source Audio"
 
 #: src/utils/ui.c:523
 msgid "Spanish [es]"
-msgstr ""
+msgstr "Espagnol [es]"
 
 #: src/gui/widgets/header_bar.c:258
 msgid "Status Bar"
-msgstr ""
+msgstr "Barre d'état"
 
 #: src/gui/widgets/channel.c:263
 msgid "Stereo out"
-msgstr ""
+msgstr "Sortie Stéréo"
 
 #: resources/ui/transport_controls.ui:69
 msgid "Stop"
-msgstr ""
+msgstr "Arrêter"
 
 #: resources/ui/channel.ui:290
 msgid "Synth1 long name name"
-msgstr ""
+msgstr "Synthétiseur 1 "
 
 #: resources/ui/export_dialog.ui:188
 msgid ""
