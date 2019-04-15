@@ -143,7 +143,7 @@ msgstr "Discussion"
 
 #: resources/ui/donate_dialog.ui:49
 msgid "Choose a method to donate"
-msgstr "Choisir une méthode pour un don"
+msgstr "Choisir une méthode pour faire un don"
 
 #: src/audio/chord_track.c:51
 msgid "Chord Track"
@@ -186,7 +186,7 @@ msgstr "Copier et Coller"
 
 #: resources/ui/shortcuts.ui:112
 msgid "Copy selection to clipboard"
-msgstr "Copier la sélection dans le presse-papiers"
+msgstr "Copier la sélection dans le presse-papier"
 
 #: resources/ui/project_assistant.ui:62 resources/ui/shortcuts.ui:84
 msgid "Create new project"
@@ -198,7 +198,7 @@ msgstr "Personnalisé"
 
 #: resources/ui/shortcuts.ui:119
 msgid "Cut selection to clipboard"
-msgstr "Couper la sélection dans le presse-papiers"
+msgstr "Couper la sélection dans le presse-papier"
 
 #: src/plugins/lv2_gtk.c:560
 msgid "Delete Preset?"
@@ -316,7 +316,7 @@ msgstr "Français [fr]"
 
 #: resources/ui/preferences.ui:321
 msgid "GUI"
-msgstr "interface graphique"
+msgstr "Interface Graphique utilisateur"
 
 #: resources/ui/shortcuts.ui:16 resources/ui/preferences.ui:169
 msgid "General"
@@ -340,11 +340,11 @@ msgstr "Grille"
 
 #: src/zrythm.c:235
 msgid "Initializing audio engine"
-msgstr ""
+msgstr "Initialisation du moteur audio"
 
 #: src/zrythm.c:240
 msgid "Initializing plugin manager"
-msgstr "Initialisation du moteur audio"
+msgstr "Initialisation du gestionnaire  de greffon"
 
 #: src/zrythm.c:229
 msgid "Initializing settings"
@@ -483,7 +483,7 @@ msgstr "Longueur de la note à quantifier à"
 
 #: resources/ui/snap_grid_popover.ui:87
 msgid "Note length to snap to"
-msgstr "Longueur de note à enclencher"
+msgstr "Longueur de note à accrocher"
 
 #: resources/ui/quantize_mb_popover.ui:126
 #: resources/ui/snap_grid_popover.ui:126
@@ -517,7 +517,7 @@ msgstr "Panneaux"
 
 #: resources/ui/shortcuts.ui:126
 msgid "Paste from clipboard"
-msgstr "Coller à partir le presse-papier"
+msgstr "Coller à partir du presse-papier"
 
 #: resources/ui/shortcuts.ui:195
 msgid "Pencil tool"
@@ -829,8 +829,8 @@ msgid "Time Range"
 msgstr "intervalle de temps"
 
 #: src/gui/widgets/digital_meter.c:676
-msgid "Signature rythmique - Cliquez et faites glisser vers le haut/le bas pour la modifier"
-msgstr ""
+msgid "Time Signature - Click and drag up/down to change"
+msgstr "Signature rythmique - Cliquez et faites glisser vers le haut/le bas pour la modifier"
 
 #: resources/ui/preferences.ui:280
 msgid "Timeline"
@@ -858,11 +858,11 @@ msgstr "Basculer sur le panneau de droite"
 
 #: resources/ui/shortcuts.ui:184
 msgid "Tool"
-msgstr ""
+msgstr "Outil"
 
 #: src/gui/widgets/inspector_track.c:87
 msgid "Track"
-msgstr "Outil"
+msgstr "Piste"
 
 #: src/gui/widgets/track.c:149
 msgid ""
@@ -932,7 +932,7 @@ msgid ""
 " This will guide you through the basic setup of Zrythm. First, choose your "
 "language."
 msgstr ""
-"Bienvenue chez Zrythm.\n"
+"Bienvenue sur Zrythm.\n"
 " Ceci vous guidera pour la configuration de base de Zrythm. Tout d'abord, choisissez votre "
 "langue."
 
