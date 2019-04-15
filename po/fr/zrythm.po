@@ -812,42 +812,49 @@ msgid ""
 "\n"
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 msgstr ""
+"Les fichiers suivants seront créés:\n"
+"\n"
+"Master.wav\n"
+"\n"
+"Dans le répertoire:\n"
+"\n"
+"/home/alex/Zrythm/Projects/project1/exports/20181023"
 
 #: resources/ui/main_window.ui:117
 msgid "This is an app-notification. Click the button to dismiss"
-msgstr ""
+msgstr "Ceci est une notification d'application. Cliquez sur le bouton pour annuler"
 
 #: resources/ui/export_dialog.ui:276
 msgid "Time Range"
-msgstr ""
+msgstr "intervalle de temps"
 
 #: src/gui/widgets/digital_meter.c:676
-msgid "Time Signature - Click and drag up/down to change"
+msgid "Signature rythmique - Cliquez et faites glisser vers le haut/le bas pour la modifier"
 msgstr ""
 
 #: resources/ui/preferences.ui:280
 msgid "Timeline"
-msgstr ""
+msgstr "ligne du temps"
 
 #: resources/ui/shortcuts.ui:34
 msgid "Toggle Fullscreen"
-msgstr ""
+msgstr "Basculer plein écran"
 
 #: resources/ui/shortcuts.ui:69
 msgid "Toggle bottom panel"
-msgstr ""
+msgstr "Basculer sur le panneau inférieur"
 
 #: resources/ui/shortcuts.ui:55
 msgid "Toggle left panel"
-msgstr ""
+msgstr "Basculer sur le panneau de gauche"
 
 #: resources/ui/piano_roll.ui:78
 msgid "Toggle note notation"
-msgstr ""
+msgstr "Basculer sur la notation de note"
 
 #: resources/ui/shortcuts.ui:62
 msgid "Toggle right panel"
-msgstr ""
+msgstr "Basculer sur le panneau de droite"
 
 #: resources/ui/shortcuts.ui:184
 msgid "Tool"
@@ -855,7 +862,7 @@ msgstr ""
 
 #: src/gui/widgets/inspector_track.c:87
 msgid "Track"
-msgstr ""
+msgstr "Outil"
 
 #: src/gui/widgets/track.c:149
 msgid ""
@@ -863,58 +870,61 @@ msgid ""
 "bottom right to bring up the automation lanes - Double click to show "
 "corresponding channel in Mixer (if applicable)"
 msgstr ""
+"Piste - Modifier les paramètres de piste comme Solo/Muet..... - Cliquez sur l'icône de "
+"en bas à droite pour faire apparaître les lignes d'automatisation - Double-cliquer pour afficher "
+"canal correspondant dans le Mixeur (le cas échéant)"
 
 #: resources/ui/piano_roll.ui:53 resources/ui/audio_clip_editor.ui:34
 msgid "Track name"
-msgstr ""
+msgstr "Nom de piste"
 
 #: resources/ui/export_dialog.ui:288
 msgid "Tracks"
-msgstr ""
+msgstr "Pistes"
 
 #: src/gui/widgets/inspector_track.c:92
 #, c-format
 msgid "Tracks (%d)"
-msgstr ""
+msgstr "Pistes (%d)"
 
 #: resources/ui/quantize_mb_popover.ui:127 resources/ui/inspector_track.ui:87
 #: resources/ui/file_browser.ui:84 resources/ui/plugin_browser.ui:85
 #: resources/ui/snap_grid_popover.ui:127
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: src/plugins/lv2_gtk.c:465
 msgid "URI (Optional):"
-msgstr ""
+msgstr "Identifiant Uniforme de Ressource (Optional):"
 
 #: resources/ui/shortcuts.ui:135
 msgid "Undo and Redo"
-msgstr ""
+msgstr "Annuler et refaire"
 
 #: resources/ui/shortcuts.ui:140
 msgid "Undo previous command"
-msgstr ""
+msgstr "Annuler la commande précédente"
 
 #: src/plugins/lv2_gtk.c:779
 msgid "Unknown widget type for value"
-msgstr ""
+msgstr "Type de widget inconnu pour la valeur"
 
 #: src/plugins/lv2_gtk.c:805
 msgid "Unknown widget type for value\n"
-msgstr ""
+msgstr "Type de widget inconnu pour value\n"
 
 #: resources/ui/shortcuts.ui:168
 msgid "Unselect all"
-msgstr ""
+msgstr "Désélectionner tout"
 
 #. create untitled project
 #: src/project.c:167
 msgid "Untitled Project"
-msgstr ""
+msgstr "Projet sans titre"
 
 #: resources/ui/quantize_mb_popover.ui:47
 msgid "Use grid"
-msgstr ""
+msgstr "Utiliser la grille"
 
 #: resources/ui/first_run_assistant.ui:50
 msgid ""
@@ -922,145 +932,148 @@ msgid ""
 " This will guide you through the basic setup of Zrythm. First, choose your "
 "language."
 msgstr ""
+"Bienvenue chez Zrythm.\n"
+" Ceci vous guidera pour la configuration de base de Zrythm. Tout d'abord, choisissez votre "
+"langue."
 
 #: resources/ui/automation_lane.ui:99
 msgid "Write automation"
-msgstr ""
+msgstr "Écrire une automation"
 
 #: src/gui/widgets/header_bar.c:281
 msgid "Zoom _Out"
-msgstr ""
+msgstr "Zoom _Arrière"
 
 #: resources/ui/shortcuts.ui:231
 msgid "Zoom in"
-msgstr ""
+msgstr "Zoom avant"
 
 #: resources/ui/shortcuts.ui:238
 msgid "Zoom out"
-msgstr ""
+msgstr "Zoom arrière"
 
 #: resources/ui/shortcuts.ui:226
 msgid "Zooming"
-msgstr ""
+msgstr "Zoomer"
 
 #: resources/ui/header_bar.ui:28 resources/ui/export_dialog.ui:120
 msgid "Zrythm"
-msgstr ""
+msgstr "Zrythm"
 
 #: resources/ui/first_run_assistant.ui:143
 msgid "Zrythm Directory"
-msgstr ""
+msgstr "Répertoire Zrythm"
 
 #: src/plugins/lv2_gtk.c:150 src/plugins/lv2_gtk.c:565
 #: src/actions/actions.c:493
 msgid "_Cancel"
-msgstr ""
+msgstr "_Annuler"
 
 #: src/gui/widgets/track.c:441
 #, c-format
 msgid "_Delete %d Tracks"
-msgstr ""
+msgstr "_Supprimer %d Pistes"
 
 #: src/gui/widgets/track.c:438
 msgid "_Delete Track"
-msgstr ""
+msgstr "_Supprimer la piste"
 
 #: src/gui/widgets/track.c:461
 #, c-format
 msgid "_Duplicate %d Tracks"
-msgstr ""
+msgstr "_Copier %d pistes"
 
 #: src/gui/widgets/track.c:457
 msgid "_Duplicate Track"
-msgstr ""
+msgstr "_Copier la Piste"
 
 #: resources/ui/header_bar.ui:69
 msgid "_Edit"
-msgstr ""
+msgstr "_Éditer"
 
 #: src/gui/widgets/header_bar.c:150
 msgid "_Export As"
-msgstr ""
+msgstr "_Exporter sous"
 
 #: resources/ui/header_bar.ui:55
 msgid "_File"
-msgstr ""
+msgstr "_Fichier"
 
 #: src/gui/widgets/header_bar.c:310
 msgid "_Fullscreen"
-msgstr ""
+msgstr "_ Plein écran"
 
 #: resources/ui/header_bar.ui:97
 msgid "_Help"
-msgstr ""
+msgstr "_Aide"
 
 #: src/gui/widgets/header_bar.c:112
 msgid "_New"
-msgstr ""
+msgstr "_Nouveau"
 
 #: src/plugins/lv2_gtk.c:566
 msgid "_OK"
-msgstr ""
+msgstr "_OK"
 
 #: src/gui/widgets/header_bar.c:121
 msgid "_Open"
-msgstr ""
+msgstr "_Ouvrir"
 
 #: src/gui/widgets/header_bar.c:161
 msgid "_Preferences"
-msgstr ""
+msgstr "_Préférences"
 
 #: src/plugins/lv2_gtk.c:469
 msgid "_Prefix plugin name"
-msgstr ""
+msgstr "_Préfixe du nom du greffon"
 
 #: src/gui/widgets/header_bar.c:170
 msgid "_Quit"
-msgstr ""
+msgstr "_Quitter"
 
 #: src/gui/widgets/header_bar.c:191
 msgid "_Redo"
-msgstr ""
+msgstr "_Refaire"
 
 #: src/plugins/lv2_gtk.c:151 src/gui/widgets/header_bar.c:130
 #: src/actions/actions.c:495
 msgid "_Save"
-msgstr ""
+msgstr "_Sauvegarder"
 
 #: src/gui/widgets/header_bar.c:181
 msgid "_Undo"
-msgstr ""
+msgstr "_Annuler"
 
 #: resources/ui/header_bar.ui:83
 msgid "_View"
-msgstr ""
+msgstr "_Vue"
 
 #: src/gui/widgets/header_bar.c:272
 msgid "_Zoom In"
-msgstr ""
+msgstr "_Zoom Avant"
 
 #: resources/ui/rack_row.ui:60
 msgid "expander"
-msgstr ""
+msgstr "expander"
 
 #: resources/ui/rack_plugin.ui:53
 msgid "in"
-msgstr ""
+msgstr "entrée"
 
 #: resources/ui/track.ui:59 resources/ui/automatable_selector.ui:84
 msgid "label"
-msgstr ""
+msgstr "label"
 
 #: resources/ui/rack_plugin.ui:63
 msgid "out"
-msgstr ""
+msgstr "sortie"
 
 #: resources/ui/inspector_region.ui:44 resources/ui/inspector_master.ui:43
 #: resources/ui/inspector_track.ui:46 resources/ui/inspector_ap.ui:43
 #: resources/ui/inspector_midi.ui:43
 msgid "region_name"
-msgstr ""
+msgstr "nom_de_région"
 
 #: resources/ui/audio_clip_editor.ui:56 resources/ui/audio_clip_editor.ui:68
 msgid "stuff"
-msgstr ""
+msgstr "substance"
