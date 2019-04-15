@@ -32,11 +32,9 @@ package_win_64:
     - ./autogen.sh
     - x86_64-w64-mingw32-configure .
     - make -j14
-    - mkdir -p /home/builduser/artifacts
-    - cp build/win/Install.exe /home/builduser/artifacts/
   artifacts:
     paths:
-      - /home/builduser/artifacts/Install.exe
+      - build/win/Install_$CI_COMMIT_TAG.exe
     expire_in: 1 week
   only:
     - tags
