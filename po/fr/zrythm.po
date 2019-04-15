@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-08 13:22+0100\n"
 "PO-Revision-Date: 2019-03-22 22:30+0000\n"
-"Last-Translator: alex <alex at zrythm dot org>\n"
+"Last-Translators: alex <alex at zrythm dot org> Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -88,7 +88,7 @@ msgstr "BPM - Cliquez et faites glisser vers le haut/bas pour définir"
 
 #: resources/ui/preferences.ui:122
 msgid "Backend"
-msgstr "arrière-plan"
+msgstr "Système Audio"
 
 #: resources/ui/transport_controls.ui:87
 msgid "Backward"
@@ -580,7 +580,7 @@ msgid ""
 msgstr ""
 "Nom du projet: name\n"
 "Emplacement: /home/user/Zrythm/name\n"
-"Moteur Audio: JACK\n"
+"Système Audio: JACK\n"
 "Fréquence d'échantillonnage: 44100\n"
 "(note: ce texte est codé en dur pour le moment)"
 
