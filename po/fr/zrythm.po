@@ -19,15 +19,15 @@ msgstr ""
 
 #: resources/ui/channel.ui:197
 msgid "-2"
-msgstr ""
+msgstr "-2"
 
 #: resources/ui/automation_lane.ui:137
 msgid "0.0"
-msgstr ""
+msgstr "0.0"
 
 #: resources/ui/channel.ui:253
 msgid "90"
-msgstr ""
+msgstr "90"
 
 #: src/gui/widgets/first_run_assistant.c:99
 #, c-format
@@ -39,6 +39,12 @@ msgid ""
 "2. Run <b>locale-gen</b> as root\n"
 "3. Restart Zrythm"
 msgstr ""
+"Un emplacement pour le langage que vous avez sélectionné n'est pas disponible. S'il vous plaît, autorisez-le "
+"D'abord en suivant les étapes ci-dessous et réessayez.\n"
+"1. Dé-commentez tout emplacement commençant par le code de langue <b>%s</b> dans <b>/etc"
+"locale.gen</b> (nécessite les droits 'root')\n"
+"2. Lancez <b>locale-gen</b> en root\n"
+"3. Redémarrez Zrythm"
 
 #: src/gui/widgets/header_bar.c:377
 msgid "About"
@@ -794,7 +800,7 @@ msgstr "Arrêter"
 
 #: resources/ui/channel.ui:290
 msgid "Synth1 long name name"
-msgstr "Synthétiseur 1 "
+msgstr " nom du long nom du Synthétiseur 1 "
 
 #: resources/ui/export_dialog.ui:188
 msgid ""
