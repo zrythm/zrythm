@@ -75,9 +75,8 @@
   The project uses autoconf and a custom Makefile.in, so the steps are
   1. `./autogen.sh`. This will generate the configure script
   2. `./configure`. This will generate the Makefile. Type `./configure --help` for available options
-  3. `make -jN` (where N is the number of cores you want to use. the higher the number the faster it will build). Once the program is built, it will need to be installed the first time before it can run (to install the GSettings). After that it can just be built and run.
-  The built program will be in build/debug/zrythm by default.
-  4. `sudo make install` to install the program
+  3. `make -jN` (where N is the number of cores you want to use. the higher the number the faster it will build). Once the program is built, it will need to be installed the first time before it can run (to install the GSettings). Alternatively if you don't want to install anything on your system you can run `glib-compile-schemas data/` and then run zrythm using `GSETTINGS_SCHEMA_DIR=data ./build/zrythm`. The built program will be in build/zrythm by default.
+  4. `sudo make install` to optionally install the program
 
 # DEBUGGING
   Use `gdb build/debug/zrythm`

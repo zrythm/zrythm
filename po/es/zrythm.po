@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-08 13:22+0100\n"
+"POT-Creation-Date: 2019-04-15 08:24+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrythm dot org>\n"
 "Language-Team: Spanish\n"
@@ -64,7 +64,7 @@ msgstr ""
 msgid "Artist"
 msgstr ""
 
-#: src/actions/actions.c:839
+#: src/actions/actions.c:867
 msgid "Audio Track"
 msgstr ""
 
@@ -108,7 +108,7 @@ msgstr ""
 msgid "Bottom Panel"
 msgstr ""
 
-#: src/actions/actions.c:865
+#: src/actions/actions.c:893
 msgid "Bus Track"
 msgstr ""
 
@@ -328,23 +328,23 @@ msgstr ""
 msgid "Grid"
 msgstr ""
 
-#: src/zrythm.c:235
+#: src/zrythm.c:238
 msgid "Initializing audio engine"
 msgstr ""
 
-#: src/zrythm.c:240
+#: src/zrythm.c:243
 msgid "Initializing plugin manager"
 msgstr ""
 
-#: src/zrythm.c:229
+#: src/zrythm.c:232
 msgid "Initializing settings"
 msgstr ""
 
-#: resources/ui/splash.ui:58
+#: resources/ui/splash.ui:67
 msgid "Initializing..."
 msgstr ""
 
-#: src/actions/actions.c:852
+#: src/actions/actions.c:880
 msgid "Instrument Track"
 msgstr ""
 
@@ -383,7 +383,7 @@ msgstr ""
 msgid "Length"
 msgstr ""
 
-#: src/zrythm.c:254
+#: src/zrythm.c:257
 msgid "Loading project"
 msgstr ""
 
@@ -546,7 +546,7 @@ msgstr ""
 msgid "Project"
 msgstr ""
 
-#: src/actions/actions.c:555
+#: src/actions/actions.c:583
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
@@ -656,7 +656,7 @@ msgstr ""
 msgid "Right Panel"
 msgstr ""
 
-#: src/actions/actions.c:490
+#: src/actions/actions.c:518
 msgid "Save Project"
 msgstr ""
 
@@ -709,7 +709,7 @@ msgstr ""
 msgid "Selections"
 msgstr ""
 
-#: src/zrythm.c:247
+#: src/zrythm.c:250
 msgid "Setting up backend"
 msgstr ""
 
@@ -927,7 +927,7 @@ msgid "Zrythm Directory"
 msgstr ""
 
 #: src/plugins/lv2_gtk.c:150 src/plugins/lv2_gtk.c:565
-#: src/actions/actions.c:493
+#: src/actions/actions.c:521
 msgid "_Cancel"
 msgstr ""
 
@@ -998,7 +998,7 @@ msgid "_Redo"
 msgstr ""
 
 #: src/plugins/lv2_gtk.c:151 src/gui/widgets/header_bar.c:130
-#: src/actions/actions.c:495
+#: src/actions/actions.c:523
 msgid "_Save"
 msgstr ""
 

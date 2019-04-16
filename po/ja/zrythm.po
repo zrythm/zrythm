@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-08 13:22+0100\n"
+"POT-Creation-Date: 2019-04-15 08:24+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrytm dot org>\n"
 "Language-Team: Japanese\n"
@@ -64,7 +64,7 @@ msgstr ""
 msgid "Artist"
 msgstr "作者"
 
-#: src/actions/actions.c:839
+#: src/actions/actions.c:867
 #, fuzzy
 msgid "Audio Track"
 msgstr "オーディオトラック"
@@ -109,7 +109,7 @@ msgstr ""
 msgid "Bottom Panel"
 msgstr ""
 
-#: src/actions/actions.c:865
+#: src/actions/actions.c:893
 #, fuzzy
 msgid "Bus Track"
 msgstr "バストラック"
@@ -334,23 +334,23 @@ msgstr "一般なショートカット"
 msgid "Grid"
 msgstr "グリッド"
 
-#: src/zrythm.c:235
+#: src/zrythm.c:238
 msgid "Initializing audio engine"
 msgstr ""
 
-#: src/zrythm.c:240
+#: src/zrythm.c:243
 msgid "Initializing plugin manager"
 msgstr ""
 
-#: src/zrythm.c:229
+#: src/zrythm.c:232
 msgid "Initializing settings"
 msgstr ""
 
-#: resources/ui/splash.ui:58
+#: resources/ui/splash.ui:67
 msgid "Initializing..."
 msgstr ""
 
-#: src/actions/actions.c:852
+#: src/actions/actions.c:880
 msgid "Instrument Track"
 msgstr ""
 
@@ -389,7 +389,7 @@ msgstr "左パネル"
 msgid "Length"
 msgstr "長さ"
 
-#: src/zrythm.c:254
+#: src/zrythm.c:257
 #, fuzzy
 msgid "Loading project"
 msgstr "プロジェクトをロード中"
@@ -556,7 +556,7 @@ msgstr "設定"
 msgid "Project"
 msgstr "プロジェクト"
 
-#: src/actions/actions.c:555
+#: src/actions/actions.c:583
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
@@ -667,7 +667,7 @@ msgstr "右"
 msgid "Right Panel"
 msgstr "右パネル"
 
-#: src/actions/actions.c:490
+#: src/actions/actions.c:518
 #, fuzzy
 msgid "Save Project"
 msgstr "プロジェクトを保存"
@@ -724,7 +724,7 @@ msgstr "選択"
 msgid "Selections"
 msgstr ""
 
-#: src/zrythm.c:247
+#: src/zrythm.c:250
 msgid "Setting up backend"
 msgstr ""
 
@@ -945,7 +945,7 @@ msgid "Zrythm Directory"
 msgstr "Zrythmのパス"
 
 #: src/plugins/lv2_gtk.c:150 src/plugins/lv2_gtk.c:565
-#: src/actions/actions.c:493
+#: src/actions/actions.c:521
 msgid "_Cancel"
 msgstr "キャンセル(_C)"
 
@@ -1017,7 +1017,7 @@ msgid "_Redo"
 msgstr ""
 
 #: src/plugins/lv2_gtk.c:151 src/gui/widgets/header_bar.c:130
-#: src/actions/actions.c:495
+#: src/actions/actions.c:523
 msgid "_Save"
 msgstr ""
 

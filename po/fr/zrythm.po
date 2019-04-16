@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-08 13:22+0100\n"
+"POT-Creation-Date: 2019-04-15 08:24+0100\n"
 "PO-Revision-Date: 2019-03-22 22:30+0000\n"
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French\n"
@@ -70,7 +70,7 @@ msgstr "Toujours ouvrir la fenêtre après avoir créé un greffon"
 msgid "Artist"
 msgstr "Artiste"
 
-#: src/actions/actions.c:839
+#: src/actions/actions.c:867
 msgid "Audio Track"
 msgstr "Piste Audio"
 
@@ -114,7 +114,7 @@ msgstr "Bouteille"
 msgid "Bottom Panel"
 msgstr "Panneau du bas"
 
-#: src/actions/actions.c:865
+#: src/actions/actions.c:893
 msgid "Bus Track"
 msgstr "Piste de Bus"
 
@@ -338,23 +338,23 @@ msgstr "Raccourcis globaux"
 msgid "Grid"
 msgstr "Grille"
 
-#: src/zrythm.c:235
+#: src/zrythm.c:238
 msgid "Initializing audio engine"
 msgstr "Initialisation du moteur audio"
 
-#: src/zrythm.c:240
+#: src/zrythm.c:243
 msgid "Initializing plugin manager"
 msgstr "Initialisation du gestionnaire  de greffon"
 
-#: src/zrythm.c:229
+#: src/zrythm.c:232
 msgid "Initializing settings"
 msgstr "Initialisation des paramètres"
 
-#: resources/ui/splash.ui:58
+#: resources/ui/splash.ui:67
 msgid "Initializing..."
 msgstr "Initialisation..."
 
-#: src/actions/actions.c:852
+#: src/actions/actions.c:880
 msgid "Instrument Track"
 msgstr "Piste Instrument"
 
@@ -393,7 +393,7 @@ msgstr "Panneau de gauche"
 msgid "Length"
 msgstr "Longueur"
 
-#: src/zrythm.c:254
+#: src/zrythm.c:257
 #, fuzzy
 msgid "Loading project"
 msgstr "Chargement du projet"
@@ -560,7 +560,7 @@ msgstr "Préférences"
 msgid "Project"
 msgstr "Projet"
 
-#: src/actions/actions.c:555
+#: src/actions/actions.c:583
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
@@ -678,7 +678,7 @@ msgstr "Droite"
 msgid "Right Panel"
 msgstr "Panneau droit"
 
-#: src/actions/actions.c:490
+#: src/actions/actions.c:518
 #, fuzzy
 msgid "Save Project"
 msgstr "Sauvegarder le projet"
@@ -734,7 +734,7 @@ msgstr "Sélection"
 msgid "Selections"
 msgstr "Sélections"
 
-#: src/zrythm.c:247
+#: src/zrythm.c:250
 msgid "Setting up backend"
 msgstr "Configuration du moteur"
 
@@ -965,7 +965,7 @@ msgid "Zrythm Directory"
 msgstr "Répertoire Zrythm"
 
 #: src/plugins/lv2_gtk.c:150 src/plugins/lv2_gtk.c:565
-#: src/actions/actions.c:493
+#: src/actions/actions.c:521
 msgid "_Cancel"
 msgstr "_Annuler"
 
@@ -1036,7 +1036,7 @@ msgid "_Redo"
 msgstr "_Refaire"
 
 #: src/plugins/lv2_gtk.c:151 src/gui/widgets/header_bar.c:130
-#: src/actions/actions.c:495
+#: src/actions/actions.c:523
 msgid "_Save"
 msgstr "_Sauvegarder"
 
