@@ -156,12 +156,16 @@ refresh_dsp_load (GtkWidget * widget,
 
   CpuWidget * self = Z_CPU_WIDGET (widget);
 
+#ifdef __APPLE__
+  /* TODO engine not working yet */
+#else
   gint64 block_latency =
     (AUDIO_ENGINE->block_length * 1000000) /
     AUDIO_ENGINE->sample_rate;
   self->dsp =
     AUDIO_ENGINE->max_time_taken * 100.0 /
     block_latency;
+#endif
 
   AUDIO_ENGINE->max_time_taken = 0;
   last_time_updated_dsp = curr_time;
@@ -186,6 +190,8 @@ refresh_cpu_load (GtkWidget * widget,
 
   CpuWidget * self = Z_CPU_WIDGET (widget);
 
+#ifdef __APPLE__
+#else
   /* ======= non libgtop ====== */
   FILE *fp;
   char dump[50];
@@ -221,6 +227,7 @@ refresh_cpu_load (GtkWidget * widget,
   gtk_widget_set_tooltip_text (
     widget, ttip);
   g_free (ttip);
+#endif
 
   return G_SOURCE_CONTINUE;
 }

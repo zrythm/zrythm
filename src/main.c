@@ -58,6 +58,10 @@ int
 main (int    argc,
       char **argv)
 {
+  /* unset GTK_THEME */
+  g_message ("GTK_THEME=%s", getenv ("GTK_THEME"));
+  putenv ("GTK_THEME=");
+
   /* install segfault handler */
   g_message ("Installing signal handler...");
   signal(SIGSEGV, handler);

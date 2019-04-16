@@ -59,7 +59,7 @@ extern "C" {
    does not block and will not be interrupted.  If you need to signal from
    a realtime thread, this is the most appropriate primitive to use.
 */
-typedef struct ZixSem ZixSem;
+typedef struct ZixSemImpl ZixSem;
 
 /**
    Create and initialize `sem` to `initial`.
@@ -142,7 +142,7 @@ zix_sem_try_wait(ZixSem* sem)
 
 #elif defined(_WIN32)
 
-struct ZixSem {
+struct ZixSemImpl {
 	HANDLE sem;
 };
 
@@ -182,7 +182,7 @@ zix_sem_try_wait(ZixSem* sem)
 
 #else  /* !defined(__APPLE__) && !defined(_WIN32) */
 
-struct ZixSem {
+struct ZixSemImpl {
 	sem_t sem;
 };
 

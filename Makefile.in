@@ -144,7 +144,9 @@ ifeq ($(WINDOWS),1)
 else
 #EXTRA_LD_FLAGS += -DGDK_DISABLE_DEPRECATED \
 #									 -DGTK_DISABLE_DEPRECATED
+ifeq ($(LINUX),1)
   EXTRA_LD_FLAGS += -lrt
+endif
 endif
 ifeq ($(PROFILING),1)
 	EXTRA_LD_FLAGS += -pg
@@ -197,9 +199,14 @@ ifeq ($(LINUX),1)
 	LM=-lm
 endif
 
+ifeq ($(WINDOWS),1)
+	BDYNAMIC=-Wl,-Bdynamic
+	AS_NEEDED=-Wl,-as-needed
+endif
+
 LDFLAGS +=	\
 	$(EXTRA_LD_FLAGS) \
-	-Wl,-Bdynamic \
+	$(BDYNAMIC) \
 	$(FFMPEG_LIBS) \
   $(GTK3_LIBS) \
 	$(JACK_LIBS) \
@@ -214,7 +221,7 @@ LDFLAGS +=	\
 	$(LM) \
 	$(FPIC) \
 	-lpthread \
-	-Wl,-as-needed \
+	$(AS_NEEDED) \
 	$(MWINDOWS)
 
 

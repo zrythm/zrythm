@@ -510,8 +510,13 @@ _create_channel (char * name)
   channel->r_port_db = 0.f;
 
   /* connect MIDI in port from engine's jack port */
+#ifdef __APPLE__
+  /* TODO: temporarily don't connect until a backend is
+   * working */
+#else
   port_connect (AUDIO_ENGINE->midi_in,
                 channel->midi_in);
+#endif
 
   /* thread related */
   setup_thread (channel);

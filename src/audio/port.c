@@ -187,6 +187,8 @@ port_set_owner_plugin (Port *   port,
 int
 port_connect (Port * src, Port * dest)
 {
+  g_warn_if_fail (src != NULL);
+  g_warn_if_fail (dest != NULL);
   port_disconnect (src, dest);
   if (src->type != dest->type)
     {
