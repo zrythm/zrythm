@@ -152,6 +152,7 @@ AM_COND_IF(
      [AC_DEFINE([HAVE_JACK],[1],[Have jack backend])
         AC_SUBST([HAVE_JACK],[1])])])
 PKG_CHECK_MODULES([LILV], [lilv-0 >= 0.24.2])
+PKG_CHECK_MODULES([GTOP], [libgtop-2.0])
 PKG_CHECK_MODULES([SNDFILE], [sndfile >= 1.0.25])
 PKG_CHECK_MODULES(
   [SAMPLERATE], [samplerate >= 0.1.8])

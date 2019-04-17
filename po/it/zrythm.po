@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-15 08:24+0100\n"
+"POT-Creation-Date: 2019-04-17 23:00+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrythm dot org>\n"
 "Language-Team: Italian\n"
@@ -54,10 +54,6 @@ msgstr ""
 
 #: resources/ui/preferences.ui:193
 msgid "Always open plugin UIs"
-msgstr ""
-
-#: resources/ui/preferences.ui:197
-msgid "Always open the UI after creating a plugin"
 msgstr ""
 
 #: resources/ui/export_dialog.ui:98
@@ -896,6 +892,10 @@ msgid ""
 "Welcome to Zrythm.\n"
 " This will guide you through the basic setup of Zrythm. First, choose your "
 "language."
+msgstr ""
+
+#: resources/ui/preferences.ui:197
+msgid "When instantiating a plugin always show its UI"
 msgstr ""
 
 #: resources/ui/automation_lane.ui:99

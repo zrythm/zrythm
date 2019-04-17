@@ -7,14 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-15 08:24+0100\n"
+"POT-Creation-Date: 2019-04-17 23:00+0100\n"
 "PO-Revision-Date: 2019-03-22 22:30+0000\n"
-"Last-Translators: alex <alex at zrythm dot org> Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
+"<sub26nico@laposte.net>\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: resources/ui/channel.ui:197
@@ -39,10 +40,11 @@ msgid ""
 "2. Run <b>locale-gen</b> as root\n"
 "3. Restart Zrythm"
 msgstr ""
-"Un emplacement pour le langage que vous avez sélectionné n'est pas disponible. S'il vous plaît, autorisez-le "
-"D'abord en suivant les étapes ci-dessous et réessayez.\n"
-"1. Dé-commentez tout emplacement commençant par le code de langue <b>%s</b> dans <b>/etc"
-"locale.gen</b> (nécessite les droits 'root')\n"
+"Un emplacement pour le langage que vous avez sélectionné n'est pas "
+"disponible. S'il vous plaît, autorisez-le D'abord en suivant les étapes ci-"
+"dessous et réessayez.\n"
+"1. Dé-commentez tout emplacement commençant par le code de langue <b>%s</b> "
+"dans <b>/etclocale.gen</b> (nécessite les droits 'root')\n"
 "2. Lancez <b>locale-gen</b> en root\n"
 "3. Redémarrez Zrythm"
 
@@ -61,10 +63,6 @@ msgstr "Ajouter une région"
 #: resources/ui/preferences.ui:193
 msgid "Always open plugin UIs"
 msgstr "Toujours ouvrir la fenêtre des greffons"
-
-#: resources/ui/preferences.ui:197
-msgid "Always open the UI after creating a plugin"
-msgstr "Toujours ouvrir la fenêtre après avoir créé un greffon"
 
 #: resources/ui/export_dialog.ui:98
 msgid "Artist"
@@ -135,7 +133,8 @@ msgstr "Catégorie"
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
-"Emplacement du canal - Double-clic pour ouvrir le greffon - Cliquer et faire glisser pour déplacer le greffon"
+"Emplacement du canal - Double-clic pour ouvrir le greffon - Cliquer et faire "
+"glisser pour déplacer le greffon"
 
 #: src/gui/widgets/header_bar.c:321
 msgid "Chat"
@@ -155,7 +154,8 @@ msgstr "Accords"
 
 #: src/gui/widgets/midi_controller_mb.c:119
 msgid "Click to enable MIDI controllers to be connected automatically"
-msgstr "Cliquez pour permettre aux contrôleurs MIDI de se connecter automatiquement"
+msgstr ""
+"Cliquez pour permettre aux contrôleurs MIDI de se connecter automatiquement"
 
 #: src/plugins/lv2_gtk.c:1432
 msgid "Close"
@@ -264,7 +264,7 @@ msgstr "Exporter l'Audio"
 
 #: src/gui/widgets/fader.c:166
 msgid "Fader - Click and drag to change value"
-msgstr "Charriot - Cliquer et faire glisser pour changer la valeur" 
+msgstr "Charriot - Cliquer et faire glisser pour changer la valeur"
 
 #: src/gui/widgets/dzl/dzl-animation.c:1099
 #: src/gui/widgets/dzl/dzl-animation.c:1105
@@ -291,8 +291,9 @@ msgid ""
 "Finally, select the MIDI devices you wish to auto-connect when Zrythm starts "
 "(You can skip this step and set them up later)"
 msgstr ""
-"Enfin, sélectionnez les périphériques MIDI que vous souhaitez connecter automatiquement lorsque Zrythm démarre"
-"(Vous pouvez sauter cette étape et les configurer plus tard)"
+"Enfin, sélectionnez les périphériques MIDI que vous souhaitez connecter "
+"automatiquement lorsque Zrythm démarre(Vous pouvez sauter cette étape et les "
+"configurer plus tard)"
 
 #: resources/ui/export_dialog.ui:142
 msgid "Format"
@@ -470,8 +471,8 @@ msgid ""
 "Next, choose the  location to use for saving temporary files and projects "
 "(or accept the default)"
 msgstr ""
-"Ensuite, choisissez l'emplacement à utiliser pour enregistrer les fichiers temporaires et les projets "
-"(ou accepter l'emplacement par défaut)"
+"Ensuite, choisissez l'emplacement à utiliser pour enregistrer les fichiers "
+"temporaires et les projets (ou accepter l'emplacement par défaut)"
 
 #: resources/ui/inspector.ui:72
 msgid "No item selected"
@@ -537,7 +538,9 @@ msgstr "Lecture"
 
 #: src/gui/widgets/digital_meter.c:648
 msgid "Playhead Position - Click and drag up/down to change"
-msgstr "Position de la tête de lecture - Cliquez et faites glisser vers le haut/le bas pour changer"
+msgstr ""
+"Position de la tête de lecture - Cliquez et faites glisser vers le haut/le "
+"bas pour changer"
 
 #: resources/ui/rack_plugin.ui:31
 msgid "Plugin 1"
@@ -564,7 +567,8 @@ msgstr "Projet"
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
-"Le projet n'a pas encore d'emplacement. S'il vous plaît, sauvegardez le projet avant d'exporter."
+"Le projet n'a pas encore d'emplacement. S'il vous plaît, sauvegardez le "
+"projet avant d'exporter."
 
 #: resources/ui/header_bar.ui:29
 msgid "Project name"
@@ -643,8 +647,9 @@ msgid ""
 "Region - Click and drag to move around (hold Shift to disable snapping) - "
 "Double click to bring up the clip editor"
 msgstr ""
-"Région - Cliquez et faites glisser pour vous déplacer (maintenez la touche Maj enfoncée pour désactiver l'accrochage) - "
-"Double-cliquez pour afficher l'éditeur de clips"
+"Région - Cliquez et faites glisser pour vous déplacer (maintenez la touche "
+"Maj enfoncée pour désactiver l'accrochage) - Double-cliquez pour afficher "
+"l'éditeur de clips"
 
 #: resources/ui/project_assistant.ui:78
 msgid "Remove"
@@ -822,7 +827,8 @@ msgstr ""
 
 #: resources/ui/main_window.ui:117
 msgid "This is an app-notification. Click the button to dismiss"
-msgstr "Ceci est une notification d'application. Cliquez sur le bouton pour annuler"
+msgstr ""
+"Ceci est une notification d'application. Cliquez sur le bouton pour annuler"
 
 #: resources/ui/export_dialog.ui:276
 msgid "Time Range"
@@ -830,7 +836,9 @@ msgstr "intervalle de temps"
 
 #: src/gui/widgets/digital_meter.c:676
 msgid "Time Signature - Click and drag up/down to change"
-msgstr "Signature rythmique - Cliquez et faites glisser vers le haut/le bas pour la modifier"
+msgstr ""
+"Signature rythmique - Cliquez et faites glisser vers le haut/le bas pour la "
+"modifier"
 
 #: resources/ui/preferences.ui:280
 msgid "Timeline"
@@ -870,9 +878,10 @@ msgid ""
 "bottom right to bring up the automation lanes - Double click to show "
 "corresponding channel in Mixer (if applicable)"
 msgstr ""
-"Piste - Modifier les paramètres de piste comme Solo/Muet..... - Cliquez sur l'icône de "
-"en bas à droite pour faire apparaître les lignes d'automatisation - Double-cliquer pour afficher "
-"canal correspondant dans le Mixeur (le cas échéant)"
+"Piste - Modifier les paramètres de piste comme Solo/Muet..... - Cliquez sur "
+"l'icône de en bas à droite pour faire apparaître les lignes d'automatisation "
+"- Double-cliquer pour afficher canal correspondant dans le Mixeur (le cas "
+"échéant)"
 
 #: resources/ui/piano_roll.ui:53 resources/ui/audio_clip_editor.ui:34
 msgid "Track name"
@@ -933,8 +942,12 @@ msgid ""
 "language."
 msgstr ""
 "Bienvenue sur Zrythm.\n"
-" Ceci vous guidera pour la configuration de base de Zrythm. Tout d'abord, choisissez votre "
-"langue."
+" Ceci vous guidera pour la configuration de base de Zrythm. Tout d'abord, "
+"choisissez votre langue."
+
+#: resources/ui/preferences.ui:197
+msgid "When instantiating a plugin always show its UI"
+msgstr ""
 
 #: resources/ui/automation_lane.ui:99
 msgid "Write automation"
@@ -1077,3 +1090,6 @@ msgstr "nom_de_région"
 #: resources/ui/audio_clip_editor.ui:56 resources/ui/audio_clip_editor.ui:68
 msgid "stuff"
 msgstr "substance"
+
+#~ msgid "Always open the UI after creating a plugin"
+#~ msgstr "Toujours ouvrir la fenêtre après avoir créé un greffon"

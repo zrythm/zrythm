@@ -26,9 +26,9 @@
 #include "project.h"
 
 #include <stdio.h>
-/*#include <glibtop.h>*/
-/*#include <glibtop/cpu.h>*/
-/*#include <glibtop/loadavg.h>*/
+#include <glibtop.h>
+#include <glibtop/cpu.h>
+#include <glibtop/loadavg.h>
 
 G_DEFINE_TYPE (CpuWidget,
                cpu_widget,
@@ -193,32 +193,32 @@ refresh_cpu_load (GtkWidget * widget,
 #ifdef __APPLE__
 #else
   /* ======= non libgtop ====== */
-  FILE *fp;
-  char dump[50];
+  /*FILE *fp;*/
+  /*char dump[50];*/
 
-  fp = fopen("/proc/stat","r");
-  fscanf(fp,"%*s %Lf %Lf %Lf %Lf",&a[0],&a[1],&a[2],&a[3]);
-  fclose(fp);
+  /*fp = fopen("/proc/stat","r");*/
+  /*fscanf(fp,"%*s %Lf %Lf %Lf %Lf",&a[0],&a[1],&a[2],&a[3]);*/
+  /*fclose(fp);*/
 
-  loadavg = ((a[0]+a[1]+a[2]) - (b[0]+b[1]+b[2])) / ((a[0]+a[1]+a[2]+a[3]) - (b[0]+b[1]+b[2]+b[3]));
-  self->cpu = loadavg * 100;
+  /*loadavg = ((a[0]+a[1]+a[2]) - (b[0]+b[1]+b[2])) / ((a[0]+a[1]+a[2]+a[3]) - (b[0]+b[1]+b[2]+b[3]));*/
+  /*self->cpu = loadavg * 100;*/
 
-  b[0] = a[0];
-  b[1] = a[1];
-  b[2] = a[2];
-  b[3] = a[3];
+  /*b[0] = a[0];*/
+  /*b[1] = a[1];*/
+  /*b[2] = a[2];*/
+  /*b[3] = a[3];*/
   /* ========== end ========= */
 
-  /*glibtop_cpu cpu;*/
-  /*glibtop_get_cpu (&cpu);*/
-  /*self->cpu =*/
-    /*100 -*/
-    /*(float) (cpu.idle - prev_idle) /*/
-    /*(float) (cpu.total - prev_total) * 100;*/
+  glibtop_cpu cpu;
+  glibtop_get_cpu (&cpu);
+  self->cpu =
+    100 -
+    (float) (cpu.idle - prev_idle) /
+    (float) (cpu.total - prev_total) * 100;
 
   last_time_updated_cpu = curr_time;
-  /*prev_total = cpu.total;*/
-  /*prev_idle = cpu.idle;*/
+  prev_total = cpu.total;
+  prev_idle = cpu.idle;
 
   char * ttip =
     g_strdup_printf (
