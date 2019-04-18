@@ -121,8 +121,15 @@ typedef struct AudioEngine
   //MIDI_Controller    * midi_controller; ///< the midi input on JACK
   //Port_Manager      * port_manager;  ///< manages all ports created for/by plugins
   ZixSem            port_operation_lock;  ///< semaphore for blocking DSP while plugin and its ports are deleted
-  int               run;    ///< ok to process or not
-  int               panic; ///< send note off MIDI everywhere
+
+  /** Ok to process or not. */
+  gint               run;
+
+  /** Skip mid-cycle. */
+  gint               skip_cycle;
+
+  /** Send note off MIDI everywhere. */
+  gint               panic;
 
   /**
    * Port buffer for raw MIDI data.

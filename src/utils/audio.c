@@ -33,6 +33,8 @@
 #include <sndfile.h>
 #include <samplerate.h>
 
+static int num_cores = 2;
+
 /**
  * Decodes the given filename (absolute path).
  */
@@ -139,4 +141,50 @@ audio_write_raw_file (
   sf_close (sndfile);
 
   g_message ("wrote %s", filename);
+}
+
+/**
+ * Returns the number of CPU cores.
+ */
+int
+audio_get_num_cores ()
+{
+  if (num_cores > 0)
+    return num_cores;
+
+#ifdef _WIN32
+  SYSTEM_INFO sysinfo;
+  GetSystemInfo(&sysinfo);
+  num_cores = sysinfo.dwNumberOfProcessors;
+#endif
+
+#ifdef __linux__
+  num_cores = sysconf(_SC_NPROCESSORS_ONLN);
+#endif
+
+#ifdef __FreeBSD__
+  int mib[4];
+  std::size_t len = sizeof(num_cores);
+
+  /* set the mib for hw.ncpu */
+  mib[0] = CTL_HW;
+  mib[1] = HW_AVAILCPU;  // alternatively, try HW_NCPU;
+
+  /* get the number of CPUs from the system */
+  sysctl(mib, 2, &num_cores, &len, NULL, 0);
+
+  if (num_cores < 1)
+  {
+      mib[1] = HW_NCPU;
+      sysctl(mib, 2, &num_cores, &len, NULL, 0);
+      if (num_cores < 1)
+          num_cores = 1;
+  }
+#endif
+
+#ifdef __APPLE__
+  num_cores = sysconf(_SC_NPROCESSORS_ONLN);
+#endif
+
+  return num_cores;
 }

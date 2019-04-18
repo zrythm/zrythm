@@ -244,7 +244,8 @@ exporter_export (ExportSettings * info)
             }
 
           /* process master channel */
-          channel_process (MIXER->master);
+          /* FIXME */
+          /*channel_process (MIXER->master);*/
 
 
           /* by this time, the Master channel should have its Stereo Out ports filled.

@@ -30,6 +30,7 @@
 typedef struct Channel Channel;
 typedef struct PluginDescriptor PluginDescriptor;
 typedef struct FileDescriptor FileDescriptor;
+typedef struct Router Router;
 
 /**
  * Mixer is a single global struct defined in the Project
@@ -47,6 +48,15 @@ typedef struct Mixer
   int            num_channels; ///< # of channels
 
   Channel        * master; ///< master channel
+
+  /** Only to be changed on graph changes. */
+  Router *       graph;
+  /** To be used on every cycle. */
+  //Router *       router_cache;
+
+  /** Semaphore to be posted by each channel when
+   * processed so that no sleep is necessary. */
+  //ZixSem         channel_process_sem;
   int            master_id;
 } Mixer;
 
@@ -74,6 +84,14 @@ mixer_schema =
 
 void
 mixer_init_loaded ();
+
+/**
+ * Recalculates the process acyclic directed graph.
+ */
+void
+mixer_recalculate_graph (
+  Mixer * mixer,
+  int     force);
 
 /**
  * Returns if mixer has soloed channels.

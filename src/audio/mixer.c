@@ -31,6 +31,7 @@
 #include "audio/instrument_track.h"
 #include "audio/mixer.h"
 #include "audio/region.h"
+#include "audio/routing.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -54,28 +55,70 @@ void
 mixer_process () ///< number of frames to fill in
 {
   /*g_message ("procesing mixer");*/
-  int loop = 1;
+  int i;
 
   /* wait for channels to finish processing */
-  while (loop)
-    {
-      loop = 0;
-      for (int i = 0; i < MIXER->num_channels; i++)
-        {
-          if (!MIXER->channels[i]->processed)
-            {
-              loop = 1;
-              break;
-            }
-        }
-      g_usleep (1000);
-    }
-
+  /*while (loop)*/
+    /*{*/
+      /*loop = 0;*/
+      /*for (int i = 0; i < MIXER->num_channels; i++)*/
+        /*{*/
+          /*if (!MIXER->channels[i]->processed)*/
+            /*{*/
+              /*loop = 1;*/
+              /*break;*/
+            /*}*/
+        /*}*/
+      /*g_usleep (1000);*/
+    /*}*/
+  /*for (i = 0; i < MIXER->num_channels; i++)*/
+    /*{*/
+      /*zix_sem_wait (&MIXER->channel_process_sem);*/
+    /*}*/
 
   /* process master channel */
   /*g_message ("procesing master");*/
-  channel_process (MIXER->master);
+  /*g_message ("posting for master");*/
+  /*zix_sem_post (&MIXER->master->*/
+                  /*start_processing_sem);*/
   /*g_message ("procesing finished");*/
+}
+
+/**
+ * Recalculates the process acyclic directed graph.
+ */
+void
+mixer_recalculate_graph (
+  Mixer * mixer,
+  int     force)
+{
+  if (!g_atomic_int_get (
+        &AUDIO_ENGINE->run) &&
+      !force)
+    return;
+
+  g_atomic_int_set (
+    &AUDIO_ENGINE->run, 0);
+  g_usleep (1000);
+
+  Router * router;
+  if (router = mixer->graph)
+    {
+      mixer->graph = NULL;
+      router_destroy (router);
+    }
+  mixer->graph =
+    router_new ();
+  /*if (router = mixer->router_cache)*/
+    /*{*/
+      /*mixer->router_cache = NULL;*/
+      /*router_destroy (router);*/
+    /*}*/
+  /*mixer->router_cache =*/
+    /*router_new (0);*/
+
+  g_atomic_int_set (
+    &AUDIO_ENGINE->run, 1);
 }
 
 void
@@ -164,6 +207,13 @@ mixer_add_channel (Channel * channel)
   g_warn_if_fail (channel);
   g_warn_if_fail (channel->track);
 
+  /* stop engine and give it some time to stop
+   * running */
+  int prev =
+    g_atomic_int_get (&AUDIO_ENGINE->run);
+  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
+  g_usleep (1000);
+
   if (channel->type == CT_MASTER)
     {
       MIXER->master = channel;
@@ -179,6 +229,10 @@ mixer_add_channel (Channel * channel)
     }
 
   track_setup (channel->track);
+
+  mixer_recalculate_graph (MIXER, 0);
+
+  g_atomic_int_set (&AUDIO_ENGINE->run, prev);
 }
 
 /**

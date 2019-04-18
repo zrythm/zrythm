@@ -121,8 +121,19 @@ typedef struct Plugin
   int                  num_unknown_ports;    ///< counter
   int                  channel_id;
   Channel              * channel;        ///< pointer to channel it belongs to
-  int                  processed;  ///< processed or not yet
-  int                  enabled;     ///< enabled or not
+
+  /** Processed or not.
+   *
+   * NOTE: should only be read/written to using
+   * g_atomic_int_*.
+   */
+  int                  processed;
+
+  /** Enabled or not. */
+  int                  enabled;
+
+  /** Processed semaphore. */
+  //ZixSem               processed_sem;
 
   /** Plugin automatables. */
   int                  automatable_ids[900];

@@ -321,12 +321,12 @@ automatable_get_val (Automatable * a)
       return plugin->enabled;
     case AUTOMATABLE_TYPE_CHANNEL_FADER:
       ch = track_get_channel (a->track);
-      return ch->fader_amp;
+      return ch->fader.amp;
     case AUTOMATABLE_TYPE_CHANNEL_MUTE:
       return a->track->mute;
     case AUTOMATABLE_TYPE_CHANNEL_PAN:
       ch = track_get_channel (a->track);
-      return ch->pan;
+      return ch->fader.pan;
     }
   g_warn_if_reached ();
   return -1;
@@ -479,8 +479,8 @@ automatable_set_val_from_normalized (
       break;
     case AUTOMATABLE_TYPE_CHANNEL_FADER:
       ch = track_get_channel (a->track);
-      channel_set_fader_amp (
-        ch,
+      fader_set_amp (
+        &ch->fader,
         math_get_amp_val_from_fader (val));
       break;
     case AUTOMATABLE_TYPE_CHANNEL_MUTE:

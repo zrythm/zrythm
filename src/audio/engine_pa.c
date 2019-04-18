@@ -119,7 +119,7 @@ pa_stream_cb (const void *                    in,
               void *                          user_data)
 {
   AudioEngine * engine = (AudioEngine *) user_data;
-  if (!engine->run)
+  if (!g_atomic_int_get (&engine->run))
     return 0;
 
   g_message ("calling stream");

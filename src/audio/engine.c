@@ -34,6 +34,7 @@
 #include "audio/engine_pa.h"
 #include "audio/midi.h"
 #include "audio/mixer.h"
+#include "audio/routing.h"
 #include "audio/transport.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
@@ -80,8 +81,9 @@ engine_init (AudioEngine * self,
       S_PREFERENCES,
       "audio-backend");
 
-  /* init semaphore */
+  /* init semaphores */
   zix_sem_init (&self->port_operation_lock, 1);
+  /*zix_sem_init (&MIXER->channel_process_sem, 1);*/
 
   /* load ports from IDs */
   if (loading)
@@ -134,7 +136,8 @@ close_audio_engine ()
 void
 engine_process_prepare (uint32_t nframes)
 {
-  AUDIO_ENGINE->last_time_taken = g_get_monotonic_time ();
+  AUDIO_ENGINE->last_time_taken =
+    g_get_monotonic_time ();
   AUDIO_ENGINE->nframes = nframes;
 
   if (TRANSPORT->play_state == PLAYSTATE_PAUSE_REQUESTED)
@@ -148,59 +151,81 @@ engine_process_prepare (uint32_t nframes)
       TRANSPORT->play_state = PLAYSTATE_ROLLING;
     }
 
-  zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
+  /* FIXME use zix_sem_try_wait */
+  int ret =
+    zix_sem_try_wait (
+      &AUDIO_ENGINE->port_operation_lock);
+  if (!ret)
+    {
+      AUDIO_ENGINE->skip_cycle = 1;
+      return;
+    }
 
   /* reset all buffers */
   port_clear_buffer (AUDIO_ENGINE->midi_in);
-  port_clear_buffer (AUDIO_ENGINE->midi_editor_manual_press);
+  port_clear_buffer (
+    AUDIO_ENGINE->midi_editor_manual_press);
 
-  /* set all to unprocessed for this cycle */
-  for (int i = 0; i < MIXER->num_channels; i++)
+  /* prepare channels for this cycle */
+  for (int i = -1; i < MIXER->num_channels; i++)
     {
-      Channel * channel = MIXER->channels[i];
-      channel->processed = 0;
+      Channel * channel;
+      if (i == -1)
+        channel = MIXER->master;
+      else
+        channel = MIXER->channels[i];
       for (int j = 0; j < STRIP_SIZE; j++)
         {
           if (channel->plugins[j])
             {
-              channel->plugins[j]->processed = 0;
+              g_atomic_int_set (
+                &channel->plugins[j]->processed, 0);
             }
         }
+      g_atomic_int_set (
+        &channel->processed, 0);
+      channel_prepare_process (channel);
     }
 
   /* for each automation track, update the val */
   /*if (TRANSPORT->play_state == PLAYSTATE_ROLLING)*/
     /*{*/
-      Track * track;
-      AutomationTracklist * atl;
-      AutomationTrack * at;
-      for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  Track * track;
+  AutomationTracklist * atl;
+  AutomationTrack * at;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      track = TRACKLIST->tracks[i];
+      atl =
+        track_get_automation_tracklist (track);
+      if (!atl)
+        continue;
+      for (int j = 0;
+           j < atl->num_automation_tracks;
+           j++)
         {
-          track = TRACKLIST->tracks[i];
-          atl =
-            track_get_automation_tracklist (track);
-          if (!atl)
-            continue;
-          for (int j = 0;
-               j < atl->num_automation_tracks;
-               j++)
-            {
-              at = atl->automation_tracks[j];
-              float val =
-                automation_track_get_normalized_val_at_pos (
-                  at, &PLAYHEAD);
-              /*g_message ("val received %f",*/
-                         /*val);*/
-              /* if there was an automation event
-               * at the playhead position, val is
-               * positive */
-              if (val >= 0.f)
-                automatable_set_val_from_normalized (
-                  at->automatable,
-                  val);
-            }
+          at = atl->automation_tracks[j];
+          float val =
+            automation_track_get_normalized_val_at_pos (
+              at, &PLAYHEAD);
+          /*g_message ("val received %f",*/
+                     /*val);*/
+          /* if there was an automation event
+           * at the playhead position, val is
+           * positive */
+          if (val >= 0.f)
+            automatable_set_val_from_normalized (
+              at->automatable,
+              val);
         }
+    }
     /*}*/
+
+  /* prepare router */
+  /*g_warn_if_fail (MIXER->graph != NULL);*/
+  /*router_refresh_from (*/
+    /*MIXER->router_cache,*/
+    /*MIXER->graph);*/
 }
 
 /**

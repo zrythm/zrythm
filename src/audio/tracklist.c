@@ -285,7 +285,12 @@ tracklist_get_next_visible_track (Track * track)
 void
 tracklist_remove_track (Track *     track)
 {
-  AUDIO_ENGINE->run = 0;
+  /* stop engine and give it some time to stop
+   * running */
+  int prev = g_atomic_int_get (&AUDIO_ENGINE->run);
+  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
+  if (prev)
+    g_usleep (1000);
 
   mixer_remove_channel (track->channel);
   array_delete (TRACKLIST->tracks,
@@ -303,5 +308,5 @@ tracklist_remove_track (Track *     track)
   EVENTS_PUSH (ET_TRACK_REMOVED,
                NULL);
 
-  AUDIO_ENGINE->run = 1;
+  g_atomic_int_set (&AUDIO_ENGINE->run, prev);
 }

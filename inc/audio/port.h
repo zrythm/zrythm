@@ -56,6 +56,16 @@ typedef enum PortType {
 	TYPE_CV
 } PortType;
 
+typedef enum PortFlags
+{
+  PORT_FLAG_STEREO_L = 0x01,
+  PORT_FLAG_STEREO_R = 0x02,
+  PORT_FLAG_PIANO_ROLL = 0x04,
+  OPT_D = 0x08,
+  OPT_E = 0x10,
+  OPT_F = 0x20,
+} PortFlags;
+
 /**
  * What the internal data is
  */
@@ -98,6 +108,7 @@ typedef struct Port
 
 	PortType            type; ///< Data type
 	PortFlow            flow; ///< Data flow direction
+  PortFlags           flags;
 
   /**
    * Inputs and Outputs.
@@ -393,5 +404,15 @@ port_apply_pan_stereo (Port *       l,
                        float        pan,
                        PanLaw       pan_law,
                        PanAlgorithm pan_algo);
+
+/**
+ * Applies the pan to the given L/R ports.
+ */
+void
+port_apply_pan (
+  Port *       self,
+  float        pan,
+  PanLaw       pan_law,
+  PanAlgorithm pan_algo);
 
 #endif

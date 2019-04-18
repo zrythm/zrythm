@@ -302,7 +302,8 @@ static void on_setup_main_window (GSimpleAction  *action,
   events_init (&ZRYTHM->events);
   main_window_widget_refresh (MAIN_WINDOW);
 
-  AUDIO_ENGINE->run = 1;
+  mixer_recalculate_graph (MIXER, 1);
+  g_atomic_int_set (&AUDIO_ENGINE->run, 1);
 
   free (data);
 }

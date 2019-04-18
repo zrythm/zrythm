@@ -27,6 +27,7 @@
 #include "audio/midi.h"
 #include "audio/mixer.h"
 #include "audio/port.h"
+#include "audio/routing.h"
 #include "audio/transport.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
@@ -230,7 +231,7 @@ jack_process_cb (
   void *    data) ///< user data
 {
   AudioEngine * engine = (AudioEngine *) data;
-  if (!engine->run)
+  if (!g_atomic_int_get (&engine->run))
     return 0;
 
   count++;
@@ -238,6 +239,15 @@ jack_process_cb (
 
   /* run pre-process code */
   engine_process_prepare (nframes);
+
+  if (AUDIO_ENGINE->skip_cycle)
+    {
+      AUDIO_ENGINE->skip_cycle = 0;
+      return;
+    }
+  /*g_message ("prepared");*/
+  /*g_message ("printing router right after preparing");*/
+  /*router_print (MIXER->router_cache);*/
 
   /* get num of midi events in JACK's midi in buffer */
   get_midi_event_count (engine, nframes, 1);
@@ -258,30 +268,34 @@ jack_process_cb (
 
   /* this will keep looping until everything was
    * processed in this cycle */
-  mixer_process (nframes);
+  /*mixer_process (nframes);*/
+  /*g_message ("==========================================================================");*/
+  router_start_cycle (MIXER->graph);
+  /*g_message ("end==========================================================================");*/
+  /*g_message ("done cycle");*/
 
   /* get jack's buffers with nframes frames for left &
    * right */
-  float * stereo_out_l, * stereo_out_r;
-  stereo_out_l = (float *)
-    jack_port_get_buffer (
-      JACK_PORT_T (engine->stereo_out->l->data),
-      nframes);
-  stereo_out_r = (float *)
-    jack_port_get_buffer (
-      JACK_PORT_T (engine->stereo_out->r->data),
-      nframes);
+  /*float * stereo_out_l, * stereo_out_r;*/
+  /*stereo_out_l = (float *)*/
+    /*jack_port_get_buffer (*/
+      /*JACK_PORT_T (engine->stereo_out->l->data),*/
+      /*nframes);*/
+  /*stereo_out_r = (float *)*/
+    /*jack_port_get_buffer (*/
+      /*JACK_PORT_T (engine->stereo_out->r->data),*/
+      /*nframes);*/
 
   /* by this time, the Master channel should have its
    * Stereo Out ports filled. pass their buffers to JACK's
    * buffers */
-  for (int i = 0; i < nframes; i++)
-    {
-      stereo_out_l[i] = MIXER->master->stereo_out->l->buf[i];
-      stereo_out_r[i] = MIXER->master->stereo_out->r->buf[i];
-    }
-  (void) stereo_out_l; /* avoid unused warnings */
-  (void) stereo_out_r;
+  /*for (int i = 0; i < nframes; i++)*/
+    /*{*/
+      /*stereo_out_l[i] = MIXER->master->stereo_out->l->buf[i];*/
+      /*stereo_out_r[i] = MIXER->master->stereo_out->r->buf[i];*/
+    /*}*/
+  /*(void) stereo_out_l; [> avoid unused warnings <]*/
+  /*(void) stereo_out_r;*/
 
   /* run post-process code */
   engine_post_process (engine);

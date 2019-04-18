@@ -147,7 +147,7 @@ ruler_draw_cb (GtkWidget * widget,
   /* engine is run only set after everything is set up
    * so this is a good way to decide if we should draw
    * or not */
-  if (!AUDIO_ENGINE->run)
+  if (!g_atomic_int_get (&AUDIO_ENGINE->run))
     return FALSE;
 
   GdkRectangle rect;

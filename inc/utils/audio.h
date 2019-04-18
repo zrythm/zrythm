@@ -59,6 +59,12 @@ audio_write_raw_file (
   const char * filename);
 
 /**
+ * Returns the number of CPU cores.
+ */
+int
+audio_get_num_cores ();
+
+/**
  * @}
  */
 

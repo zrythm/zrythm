@@ -28,6 +28,7 @@
 
 #include "config.h"
 
+#include "audio/fader.h"
 #include "plugins/plugin.h"
 #include "utils/audio.h"
 #include "utils/yaml.h"
@@ -81,17 +82,7 @@ typedef struct Channel
    */
   ChannelType          type;
 
-  /**
-   * Volume in dBFS. (-inf ~ +6)
-   */
-  float                volume;
-
-  /**
-   * Volume in amplitude (0.0 ~ 1.5)
-   */
-  float                fader_amp;
-  float                phase;        ///< used by the phase knob (0.0-360.0 value)
-  float                pan; ///< (0~1) 0.5 is center
+  Fader                fader;
 
   /* These are for plugins to connect to.
    *
@@ -132,6 +123,10 @@ typedef struct Channel
   Port *               midi_in;
   Port *               piano_roll;
 
+  /** Flag used while processing. */
+  int                   filled_stereo_in_bufs;
+
+
   /*
    * The last plugin should connect to this.
    *
@@ -149,18 +144,16 @@ typedef struct Channel
   //int                  stereo_out_r_id;
 
   /**
-   * Current dBFS after procesing each output port.
-   *
-   * Transient variables only used by the GUI.
-   */
-  float                l_port_db;
-  float                r_port_db;
-
-  /**
    * Flag to indicate if channel has been processed in
    * this cycle or not.
    */
   int                  processed;
+
+  /** Processed semaphore. */
+  //ZixSem               processed_sem;
+
+  /** Start processing semaphore. */
+  //ZixSem               start_processing_sem;
 
   //pthread_t         thread;     ///< the channel processing thread.
                           ///< each channel does processing on a separate thread
@@ -245,18 +238,9 @@ channel_fields_schema[] =
     "type", CYAML_FLAG_DEFAULT,
     Channel, type, channel_type_strings,
     CYAML_ARRAY_LEN (channel_type_strings)),
-	CYAML_FIELD_FLOAT (
-    "volume", CYAML_FLAG_DEFAULT,
-    Channel, volume),
-	CYAML_FIELD_FLOAT (
-    "fader_amp", CYAML_FLAG_DEFAULT,
-    Channel, fader_amp),
-	CYAML_FIELD_FLOAT (
-    "phase", CYAML_FLAG_DEFAULT,
-    Channel, phase),
-	CYAML_FIELD_FLOAT (
-    "pan", CYAML_FLAG_DEFAULT,
-    Channel, pan),
+  CYAML_FIELD_MAPPING (
+    "fader", CYAML_FLAG_DEFAULT,
+    Channel, fader, fader_fields_schema),
 	CYAML_FIELD_MAPPING_PTR (
     "stereo_in", CYAML_FLAG_POINTER,
     Channel, stereo_in,
@@ -299,23 +283,18 @@ channel_schema =
 void
 channel_init_loaded (Channel * channel);
 
+/**
+ * Handles the recording logic inside the process cycle.
+ */
+void
+channel_handle_recording (Channel * self);
+
 void
 channel_set_phase (void * channel, float phase);
 
 float
 channel_get_phase (void * channel);
 
-/**
- * Sets the fader amplitude (not db)
- */
-void
-channel_set_fader_amp (void * _channel, float amp);
-
-/**
- * Gets the fader amplitude (not db)
- */
-float
-channel_get_fader_amp (void * _channel);
 
 void
 channel_set_pan (void * _channel, float pan);
@@ -340,6 +319,9 @@ channel_set_current_r_db (Channel * channel, float val);
  */
 void
 channel_reset_fader (Channel * channel);
+
+void
+channel_prepare_process (Channel * channel);
 
 /**
  * Used when loading projects.

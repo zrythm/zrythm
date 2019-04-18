@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-17 23:00+0100\n"
+"POT-Creation-Date: 2019-04-18 12:43+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: alex <alex at zrythm dot org>\n"
 "Language-Team: German\n"
@@ -423,8 +423,8 @@ msgstr ""
 msgid "Manual"
 msgstr ""
 
-#: src/project.c:160 src/gui/widgets/channel.c:259
-#: src/gui/widgets/channel.c:268 resources/ui/channel.ui:341
+#: src/project.c:160 src/gui/widgets/channel.c:261
+#: src/gui/widgets/channel.c:270 resources/ui/channel.ui:341
 msgid "Master"
 msgstr ""
 
@@ -761,7 +761,7 @@ msgstr ""
 msgid "Status Bar"
 msgstr ""
 
-#: src/gui/widgets/channel.c:263
+#: src/gui/widgets/channel.c:265
 msgid "Stereo out"
 msgstr ""
 

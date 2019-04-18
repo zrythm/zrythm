@@ -167,8 +167,10 @@ setup_phase_panel (ChannelWidget * self)
   gtk_box_pack_end (self->phase_controls,
                        GTK_WIDGET (self->phase_knob),
                        0, 1, 0);
-  gtk_label_set_text (self->phase_reading,
-                      g_strdup_printf ("%.1f", self->channel->phase));
+  gtk_label_set_text (
+    self->phase_reading,
+    g_strdup_printf ("%.1f",
+                     self->channel->fader.phase));
 }
 
 static void
@@ -382,9 +384,9 @@ channel_widget_new (Channel * channel)
   /*setup_pan (self);*/
   setup_slots (self);
   fader_widget_setup (self->fader,
-                      channel_get_fader_amp,
-                      channel_set_fader_amp,
-                      self->channel,
+                      fader_get_amp,
+                      fader_set_amp,
+                      &self->channel->fader,
                       FADER_TYPE_CHANNEL,
                       40);
   setup_meter (self);

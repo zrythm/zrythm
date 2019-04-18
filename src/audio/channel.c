@@ -53,48 +53,55 @@
 #include "utils/math.h"
 
 #include <gtk/gtk.h>
-#ifdef HAVE_JACK
-#include <jack/thread.h>
-#endif
-
-/* microseconds */
-#define SLEEPTIME_USEC 60
 
 /**
  * Thread work
  * Pass the L/R to each channel strip and let them handle it
  */
-static void *
-process_channel_work (void * argument)
-{
-  Channel * channel = (Channel *) argument;
+/*static void **/
+/*process_channel_work (void * argument)*/
+/*{*/
+  /*Channel * channel = (Channel *) argument;*/
 
-  while (!channel->stop_thread)
-    {
-      if (!channel->processed)
-        {
-          if (AUDIO_ENGINE->nframes > 0)
-            {
-              /*g_message ("calling channel process %s",*/
-                         /*channel->name);*/
-              channel_process (channel);
-              /*g_message ("done calling channel process %s",*/
-                         /*channel->name);*/
-              channel->processed = 1;
-            }
-        }
+  /*while (!channel->stop_thread)*/
+    /*{*/
+      /*if (channel->track && channel->track->name)*/
+        /*g_message ("waiting to start processing %s",*/
+                   /*channel->track->name);*/
+      /*zix_sem_wait (&channel->start_processing_sem);*/
+      /*if (channel->track && channel->track->name)*/
+        /*g_message ("started processing %s",*/
+                   /*channel->track->name);*/
 
-      g_usleep (SLEEPTIME_USEC);
-    }
+      /*[>g_message ("calling channel process %s",<]*/
+                 /*[>channel->name);<]*/
+      /*channel_process (channel);*/
+      /*[>g_message ("done calling channel process %s",<]*/
+                 /*[>channel->name);<]*/
+      /*g_atomic_int_set (*/
+        /*&channel->processed, 1);*/
 
-  return 0;
-}
+      /*if (channel != MIXER->master)*/
+        /*{*/
+          /*[>g_message ("decrementing mixer sem");<]*/
+          /*[>zix_sem_post (&<]*/
+            /*[>MIXER->channel_process_sem);<]*/
+        /*}*/
+      /*[>if (channel->track && channel->track->name)<]*/
+        /*[>g_message ("posting processed %s",<]*/
+                   /*[>channel->track->name);<]*/
+      /*[>zix_sem_post (&<]*/
+        /*[>channel->processed_sem);<]*/
+    /*}*/
+
+  /*return 0;*/
+/*}*/
 
 /**
  * Handles the recording logic inside the process cycle.
  */
-static void
-handle_recording (Channel * self)
+void
+channel_handle_recording (Channel * self)
 {
   Region * region =
     track_get_region_at_pos (self->track,
@@ -180,18 +187,16 @@ handle_recording (Channel * self)
 }
 
 /**
- * For each plugin
- *   -> for each input port it owns
- *     -> check if any output ports point to it (including of the previous slot)
- *       -> 1. wait for their owner to finish
- *       -> 2. sum their signals
- *     -> process plugin
+ * Prepares the channel for processing.
+ *
+ * To be called before the main cycle each time on
+ * all channels.
  */
 void
-channel_process (Channel * channel)
+channel_prepare_process (Channel * channel)
 {
   Plugin * plugin;
-  Port * port;
+  int i,j;
 
   /* clear buffers */
   if (channel->type == CT_MASTER ||
@@ -208,175 +213,31 @@ channel_process (Channel * channel)
     }
   port_clear_buffer (channel->stereo_out->l);
   port_clear_buffer (channel->stereo_out->r);
-  for (int j = 0; j < STRIP_SIZE; j++)
+  for (j = 0; j < STRIP_SIZE; j++)
     {
       plugin = channel->plugins[j];
       if (!plugin)
         continue;
 
-      for (int i = 0; i < plugin->num_in_ports;
+      for (i = 0; i < plugin->num_in_ports;
            i++)
         {
           port_clear_buffer (plugin->in_ports[i]);
         }
-      for (int i = 0; i < plugin->num_out_ports;
+      for (i = 0; i < plugin->num_out_ports;
            i++)
         {
           port_clear_buffer (plugin->out_ports[i]);
         }
-      for (int i = 0;
+      for (i = 0;
            i < plugin->num_unknown_ports; i++)
         {
           port_clear_buffer (
             plugin->unknown_ports[i]);
         }
     }
-  /*g_message ("buffers cleared %s",*/
-             /*channel->name);*/
 
-  /* sum AUDIO IN coming to the channel */
-  if (channel->type == CT_MASTER ||
-      channel->type == CT_BUS)
-    {
-      port_sum_signal_from_inputs (
-        channel->stereo_in->l);
-      port_sum_signal_from_inputs (
-        channel->stereo_in->r);
-    }
-  /*g_message ("summed signal coming in %s",*/
-             /*channel->track->name);*/
 
-  /* panic MIDI if necessary */
-  if (AUDIO_ENGINE->panic)
-    {
-      midi_panic (
-        channel->piano_roll->midi_events);
-    }
-  /* get events from track if playing */
-  else if (TRANSPORT->play_state ==
-           PLAYSTATE_ROLLING)
-    {
-      if (channel->track->type ==
-          TRACK_TYPE_INSTRUMENT)
-        {
-          if (TRANSPORT->recording &&
-                channel->track->recording)
-            {
-              handle_recording (channel);
-            }
-
-          /* fill midi events to pass to ins plugin */
-          instrument_track_fill_midi_events (
-            (InstrumentTrack *)channel->track,
-            &PLAYHEAD,
-            AUDIO_ENGINE->block_length,
-            channel->piano_roll->midi_events);
-        }
-      /* fill stereo in buffers with info from the current
-       * clip */
-      else if (channel->track->type ==
-                 TRACK_TYPE_AUDIO)
-        {
-          audio_track_fill_stereo_in_buffers (
-            (AudioTrack *)channel->track,
-            channel->stereo_in);
-        }
-    }
-  midi_events_dequeue (
-    channel->piano_roll->midi_events);
-
-  /* go through each slot (plugin) on the channel strip */
-  for (int i = 0; i < STRIP_SIZE; i++)
-    {
-      plugin = channel->plugins[i];
-      if (plugin)
-        {
-
-          /* sum incoming signals for each input port */
-          for (int j = 0; j < plugin->num_in_ports; j++)
-            {
-              port = plugin->in_ports[j];
-              /*if (port->type == TYPE_EVENT)*/
-                /*g_message ("summing from inputs for %s, cycle %ld", port->label, AUDIO_ENGINE->cycle);*/
-              port_sum_signal_from_inputs (port);
-            }
-
-          /*g_message ("summed plugin signals coming in %s",*/
-                     /*plugin->descr->name);*/
-
-            /* run plugin processing
-             * this should put the appropriate result in the plugin's audio out */
-            plugin_process (plugin);
-
-          /*g_message ("processed plugin %s",*/
-                     /*plugin->descr->name);*/
-        }
-    }
-
-  /* same for channel ports */
-  /*g_message ("summing stereo out ports %s",*/
-             /*channel->name);*/
-  /* if muted, clear output ports */
-  if (channel->track->mute ||
-        (mixer_has_soloed_channels () &&
-           !channel->track->solo &&
-           channel != MIXER->master))
-    {
-      port_clear_buffer (channel->stereo_out->l);
-      port_clear_buffer (channel->stereo_out->r);
-    }
-  else /* not muted or is soloed */
-    {
-      port_sum_signal_from_inputs (
-        channel->stereo_out->l);
-      port_sum_signal_from_inputs (
-        channel->stereo_out->r);
-      /*g_message ("summed stereo out ports %s",*/
-                 /*channel->name);*/
-
-      /* apply pan */
-      port_apply_pan_stereo (
-        channel->stereo_out->l,
-        channel->stereo_out->r,
-        channel->pan,
-        PAN_LAW_MINUS_3DB,
-        PAN_ALGORITHM_SINE_LAW);
-      /*g_message ("applied pan %s",*/
-                 /*channel->name);*/
-
-      /* apply faders */
-      port_apply_fader (channel->stereo_out->l, channel->fader_amp);
-      port_apply_fader (channel->stereo_out->r, channel->fader_amp);
-      /*g_message ("applied fader %s",*/
-                 /*channel->name);*/
-    }
-
-  /* mark as processed */
-  channel->processed = 1;
-  /*g_message ("marked as processed %s",*/
-             /*channel->name);*/
-}
-
-static void
-setup_thread (Channel * channel)
-{
-  channel->stop_thread = 0;
-  channel->processed = 1;
-#ifdef HAVE_JACK
-  jack_client_create_thread (
-         AUDIO_ENGINE->client,
-         &channel->thread,
-         jack_client_real_time_priority (AUDIO_ENGINE->client),
-         jack_is_realtime (AUDIO_ENGINE->client),
-         process_channel_work,
-         channel);
-
-  if (channel->thread == -1)
-    {
-      g_error ("%lu: Failed creating thread for channel %d",
-               channel->thread, channel->id);
-    }
-#endif
 }
 
 void
@@ -387,6 +248,9 @@ channel_init_loaded (Channel * ch)
   for (int i = 0; i < STRIP_SIZE; i++)
     ch->plugins[i] =
       project_get_plugin (ch->plugin_ids[i]);
+
+  /* fader */
+  ch->fader.channel = ch;
 
   /* stereo in/out ports */
   ch->stereo_in->l =
@@ -403,6 +267,7 @@ channel_init_loaded (Channel * ch)
     project_get_port (ch->midi_in_id);
   ch->piano_roll =
     project_get_port (ch->piano_roll_id);
+  ch->piano_roll->flags = PORT_FLAG_PIANO_ROLL;
   ch->midi_in->midi_events =
     midi_events_new (1);
   ch->piano_roll->midi_events =
@@ -423,8 +288,8 @@ channel_init_loaded (Channel * ch)
   ch->track =
     project_get_track (ch->track_id);
 
-  /* thread related */
-  setup_thread (ch);
+  /*zix_sem_init (&ch->processed_sem, 1);*/
+  /*zix_sem_init (&ch->start_processing_sem, 0);*/
 
   ch->widget = channel_widget_new (ch);
 }
@@ -501,13 +366,7 @@ _create_channel (char * name)
       channel->plugin_ids[i] = -1;
     }
 
-  /* set volume, phase, pan */
-  channel->volume = 0.0f;
-  channel->fader_amp = 1.0f;
-  channel->phase = 0.0f;
-  channel->pan = 0.5f;
-  channel->l_port_db = 0.f;
-  channel->r_port_db = 0.f;
+  fader_init (&channel->fader, channel);
 
   /* connect MIDI in port from engine's jack port */
 #ifdef __APPLE__
@@ -518,8 +377,9 @@ _create_channel (char * name)
                 channel->midi_in);
 #endif
 
-  /* thread related */
-  setup_thread (channel);
+  /* init semaphores */
+  /*zix_sem_init (&channel->processed_sem, 1);*/
+  /*zix_sem_init (&channel->start_processing_sem, 0);*/
 
   /* set up piano roll port */
   char * tmp =
@@ -530,6 +390,7 @@ _create_channel (char * name)
       TYPE_EVENT,
       FLOW_INPUT,
       tmp);
+  channel->piano_roll->flags = PORT_FLAG_PIANO_ROLL;
   channel->piano_roll_id =
     channel->piano_roll->id;
   channel->piano_roll->is_piano_roll = 1;
@@ -549,9 +410,9 @@ _create_channel (char * name)
  * Sets fader to 0.0.
  */
 void
-channel_reset_fader (Channel * channel)
+channel_reset_fader (Channel * self)
 {
-  channel_set_fader_amp (channel, 1.0f);
+  fader_set_amp (&self->fader, 1.0f);
 }
 
 /**
@@ -621,7 +482,7 @@ channel_get_or_create_blank (int id)
   channel->id = id;
 
   /* thread related */
-  setup_thread (channel);
+  /*setup_thread (channel);*/
 
   MIXER->channels[id] = channel;
   MIXER->num_channels++;
@@ -650,6 +511,12 @@ channel_create (ChannelType type,
       channel->output = NULL;
       channel->output_id = -1;
       channel->id = 0;
+      port_connect (
+        channel->stereo_out->l,
+        AUDIO_ENGINE->stereo_out->l);
+      port_connect (
+        channel->stereo_out->r,
+        AUDIO_ENGINE->stereo_out->r);
     }
   else
     {
@@ -690,18 +557,19 @@ void
 channel_set_phase (void * _channel, float phase)
 {
   Channel * channel = (Channel *) _channel;
-  channel->phase = phase;
+  channel->fader.phase = phase;
 
-  if (channel->widget)
-    gtk_label_set_text (channel->widget->phase_reading,
-                        g_strdup_printf ("%.1f", phase));
+  /* FIXME use an event */
+  /*if (channel->widget)*/
+    /*gtk_label_set_text (channel->widget->phase_reading,*/
+                        /*g_strdup_printf ("%.1f", phase));*/
 }
 
 float
 channel_get_phase (void * _channel)
 {
   Channel * channel = (Channel *) _channel;
-  return channel->phase;
+  return channel->fader.phase;
 }
 
 /*void*/
@@ -732,31 +600,6 @@ redraw_fader_asnyc (Channel * channel)
   return FALSE;
 }
 
-/**
- * Sets the amplitude of the fader. (0.0 to 2.0)
- */
-void
-channel_set_fader_amp (void * _channel, float amp)
-{
-  Channel * channel = (Channel *) _channel;
-  channel->fader_amp = amp;
-
-  /* calculate volume */
-  channel->volume = math_amp_to_dbfs (amp);
-
-  /* TODO update tooltip */
-  gtk_label_set_text (channel->widget->phase_reading,
-                      g_strdup_printf ("%.1f", channel->volume));
-  g_idle_add ((GSourceFunc) redraw_fader_asnyc,
-              channel);
-}
-
-float
-channel_get_fader_amp (void * _channel)
-{
-  Channel * channel = (Channel *) _channel;
-  return channel->fader_amp;
-}
 
 static int
 redraw_pan_async (Channel * channel)
@@ -771,42 +614,42 @@ void
 channel_set_pan (void * _channel, float pan)
 {
   Channel * channel = (Channel *) _channel;
-  channel->pan = pan;
-  g_idle_add ((GSourceFunc) redraw_pan_async,
-              channel);
+  channel->fader.pan = pan;
+  /*g_idle_add ((GSourceFunc) redraw_pan_async,*/
+              /*channel);*/
 }
 
 float
 channel_get_pan (void * _channel)
 {
   Channel * channel = (Channel *) _channel;
-  return channel->pan;
+  return channel->fader.pan;
 }
 
 float
 channel_get_current_l_db (void * _channel)
 {
   Channel * channel = (Channel *) _channel;
-  return channel->l_port_db;
+  return channel->fader.l_port_db;
 }
 
 float
 channel_get_current_r_db (void * _channel)
 {
   Channel * channel = (Channel *) _channel;
-  return channel->r_port_db;
+  return channel->fader.r_port_db;
 }
 
 void
 channel_set_current_l_db (Channel * channel, float val)
 {
-  channel->l_port_db = val;
+  channel->fader.l_port_db = val;
 }
 
 void
 channel_set_current_r_db (Channel * channel, float val)
 {
-  channel->r_port_db = val;
+  channel->fader.r_port_db = val;
 }
 
 /**
@@ -1035,6 +878,8 @@ channel_add_plugin (Channel * channel,    ///< the channel
 
   EVENTS_PUSH (ET_PLUGIN_ADDED,
                plugin);
+
+  mixer_recalculate_graph (MIXER, 0);
 }
 
 /**

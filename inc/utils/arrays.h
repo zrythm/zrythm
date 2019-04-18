@@ -1,6 +1,4 @@
 /*
- * utils/arrays.h - Array helpers
- *
  * Copyright (C) 2018-2019 Alexandros Theodotou <alex@zrythm.org>
  *
  * This file is part of Zrythm

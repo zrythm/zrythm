@@ -390,7 +390,7 @@ load (char * filename)
       events_init (&ZRYTHM->events);
       main_window_widget_refresh (MAIN_WINDOW);
 
-      AUDIO_ENGINE->run = 1;
+      g_atomic_int_set (&AUDIO_ENGINE->run, 1);
     }
 
   header_bar_widget_set_subtitle (

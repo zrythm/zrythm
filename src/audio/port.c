@@ -339,21 +339,21 @@ port_sum_signal_from_inputs (Port * port)
       else if (src_port ==
                AUDIO_ENGINE->midi_editor_manual_press)
         {
-          while (!src_port->midi_events->processed)
-            {
-              /*g_message ("waiting cycle %ld",*/
-                         /*AUDIO_ENGINE->cycle);*/
-              g_usleep (SLEEPTIME_USEC);
-            }
+          /*g_message ("waiting for midi events");*/
+          /*zix_sem_wait (*/
+            /*&src_port->midi_events->processed_sem);*/
+          /*g_message ("done waiting for midi events");*/
         }
       else if (src_port->owner_pl)
         {
           /*g_message ("%s owner port",*/
                      /*src_port->owner_pl->descr->name);*/
-          while (!src_port->owner_pl->processed)
-            {
-              g_usleep (SLEEPTIME_USEC);
-            }
+          /*if (!g_atomic_int_get (*/
+                /*&src_port->owner_pl->processed))*/
+            /*{*/
+              /*zix_sem_wait (*/
+                /*&src_port->owner_pl->processed_sem);*/
+            /*}*/
           /*g_message ("%s owner port done",*/
                      /*src_port->owner_pl->descr->name);*/
         }
@@ -362,14 +362,29 @@ port_sum_signal_from_inputs (Port * port)
           /*g_message ("%s port, %s owner channel",*/
                      /*src_port->label,*/
                      /*src_port->owner_ch->name);*/
-          while (!src_port->owner_ch->processed &&
-                 src_port !=
-                   src_port->owner_ch->stereo_in->l &&
-                 src_port !=
-                   src_port->owner_ch->stereo_in->r)
-            {
-              g_usleep (SLEEPTIME_USEC);
-            }
+          /*if (!g_atomic_int_get (*/
+                /*&src_port->owner_ch->processed) &&*/
+              /*src_port !=*/
+                /*src_port->owner_ch->stereo_in->l &&*/
+              /*src_port !=*/
+                /*src_port->owner_ch->stereo_in->r)*/
+            /*{*/
+              /*g_message (*/
+                /*"waiting for channel, port %s",*/
+                /*src_port->label);*/
+              /*zix_sem_wait (*/
+                /*&src_port->owner_ch->processed_sem);*/
+              /*g_message ("done waiting for channel");*/
+            /*}*/
+
+          /*while (src_port !=*/
+                   /*src_port->owner_ch->stereo_in->l &&*/
+                 /*src_port !=*/
+                   /*src_port->owner_ch->stereo_in->r)*/
+            /*{*/
+              /*g_warning ("port_sum_signal_from_inputs: what is this??");*/
+              /*g_usleep (SLEEPTIME_USEC);*/
+            /*}*/
           /*g_message ("%s port, %s owner channel done",*/
                      /*src_port->label,*/
                      /*src_port->owner_ch->name);*/
@@ -449,7 +464,8 @@ port_clear_buffer (Port * port)
       if (port->midi_events)
         {
           port->midi_events->num_events = 0;
-          port->midi_events->processed = 0;
+          g_atomic_int_set (
+            &port->midi_events->processed, 0);
         }
     }
 }
@@ -475,6 +491,34 @@ port_apply_pan_stereo (Port *       l,
             l->buf[i] *= sinf ((1.f - pan) * (M_PIF / 2.f));
         }
 
+    }
+}
+
+/**
+ * Applies the pan to the given L/R ports.
+ */
+void
+port_apply_pan (
+  Port *       port,
+  float        pan,
+  PanLaw       pan_law,
+  PanAlgorithm pan_algo)
+{
+  int nframes = AUDIO_ENGINE->block_length;
+  if (pan_algo == PAN_ALGORITHM_SINE_LAW)
+    {
+      for (int i = 0; i < nframes; i++)
+        {
+          if (port->buf[i] == 0.f)
+            continue;
+
+          if (port->flags & PORT_FLAG_STEREO_R)
+            port->buf[i] *=
+              sinf (pan * (M_PIF / 2.f));
+          else
+            port->buf[i] *=
+              sinf ((1.f - pan) * (M_PIF / 2.f));
+        }
     }
 }
 

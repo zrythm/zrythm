@@ -75,8 +75,8 @@ edit_channel_action_do (EditChannelAction * self)
   switch (self->type)
     {
     case EDIT_CHANNEL_ACTION_TYPE_CHANGE_VOLUME:
-      channel_set_fader_amp (channel,
-                             self->vol_new);
+      fader_set_amp (&channel->fader,
+                     self->vol_new);
       break;
     case EDIT_CHANNEL_ACTION_TYPE_CHANGE_PAN:
       channel_set_pan (channel,
@@ -93,7 +93,7 @@ edit_channel_action_undo (EditChannelAction * self)
   switch (self->type)
     {
     case EDIT_CHANNEL_ACTION_TYPE_CHANGE_VOLUME:
-      channel_set_fader_amp (channel,
+      fader_set_amp (&channel->fader,
                              self->vol_prev);
       break;
     case EDIT_CHANNEL_ACTION_TYPE_CHANGE_PAN:

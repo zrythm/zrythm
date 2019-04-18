@@ -53,6 +53,8 @@ midi_events_new (int init_queue)
   if (init_queue)
     self->queue = midi_events_new (0);
 
+  /*zix_sem_init (&self->processed_sem, 1);*/
+
   return self;
 }
 
@@ -157,7 +159,8 @@ midi_events_delete_note_on (
 void
 midi_events_dequeue (MidiEvents * midi_events)
 {
-  midi_events->num_events = midi_events->queue->num_events;
+  midi_events->num_events =
+    midi_events->queue->num_events;
   for (int i = 0; i < midi_events->num_events; i++)
     {
 #ifdef HAVE_JACK
@@ -169,7 +172,9 @@ midi_events_dequeue (MidiEvents * midi_events)
         midi_events->queue->jack_midi_events[i].buffer;
 #endif
     }
-  midi_events->processed = 1;
+  g_atomic_int_set (
+    &midi_events->processed, 1);
+  /*zix_sem_post (&midi_events->processed_sem);*/
 
   midi_events->queue->num_events = 0;
 }

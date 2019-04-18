@@ -414,9 +414,17 @@ on_export_clicked (GtkButton * btn,
   io_mkdir (PROJECT->exports_dir);
   g_message ("exporting %s",
              info.file_uri);
-  AUDIO_ENGINE->run = 0;
+
+  /* stop engine and give it some time to stop
+   * running */
+  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
+  g_usleep (1000);
+
+  /* export */
   exporter_export (&info);
-  AUDIO_ENGINE->run = 1;
+
+  /* restart engine */
+  g_atomic_int_set (&AUDIO_ENGINE->run, 1);
   g_message ("exported");
   g_free (info.file_uri);
 }
