@@ -345,8 +345,19 @@ process_trigger_node (
             }
 
         }
+
+      /* if midi editor manual press */
+      else if (port == AUDIO_ENGINE->
+            midi_editor_manual_press)
+        {
+          midi_events_dequeue (
+            AUDIO_ENGINE->
+              midi_editor_manual_press->
+                midi_events);
+        }
+
       /* if channel stereo in */
-      if (port->type == TYPE_AUDIO &&
+      else if (port->type == TYPE_AUDIO &&
           port->flow == FLOW_INPUT &&
           port->owner_ch)
         {
@@ -379,7 +390,7 @@ process_trigger_node (
         }
 
       /* if channel stereo out port */
-      if (port->owner_ch &&
+      else if (port->owner_ch &&
           port->type == TYPE_AUDIO &&
           port->flow == FLOW_OUTPUT)
         {
@@ -414,7 +425,7 @@ process_trigger_node (
         }
 
       /* if JACK stereo out */
-      if (port->owner_jack &&
+      else if (port->owner_jack &&
           port->type == TYPE_AUDIO &&
           port->flow == FLOW_OUTPUT)
         {
@@ -434,6 +445,11 @@ process_trigger_node (
 
           /* avoid unused warnings */
           (void) out;
+        }
+
+      else
+        {
+          port_sum_signal_from_inputs (port);
         }
     }
 

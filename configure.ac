@@ -151,8 +151,13 @@ AM_COND_IF(
      [JACK], [jack],
      [AC_DEFINE([HAVE_JACK],[1],[Have jack backend])
         AC_SUBST([HAVE_JACK],[1])])])
+AM_COND_IF(
+  [LINUX],
+  [PKG_CHECK_MODULES(
+    [GTOP], [libgtop-2.0],
+    [AC_DEFINE([HAVE_LIBGTOP],[1],[Have libgtop])
+     AC_SUBST([HAVE_LIBGTOP],[1])])])
 PKG_CHECK_MODULES([LILV], [lilv-0 >= 0.24.2])
-PKG_CHECK_MODULES([GTOP], [libgtop-2.0])
 PKG_CHECK_MODULES([SNDFILE], [sndfile >= 1.0.25])
 PKG_CHECK_MODULES(
   [SAMPLERATE], [samplerate >= 0.1.8])

@@ -20,15 +20,21 @@
 /** \file
  */
 
+#include "config.h"
+
 #include "audio/engine.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/cpu.h"
 #include "project.h"
 
 #include <stdio.h>
+#ifdef HAVE_LIBGTOP
 #include <glibtop.h>
 #include <glibtop/cpu.h>
 #include <glibtop/loadavg.h>
+#elif defined(_WIN32)
+#include <windows.h>
+#endif
 
 G_DEFINE_TYPE (CpuWidget,
                cpu_widget,
@@ -175,6 +181,16 @@ refresh_dsp_load (GtkWidget * widget,
 
 static long double a[4], b[4] = {0,0,0,0}, loadavg;
 
+#ifdef _WIN32
+static unsigned long long
+FileTimeToInt64 (const FILETIME * ft)
+{
+  return
+    (((unsigned long long)(ft->dwHighDateTime))<<32) |
+    ((unsigned long long)ft->dwLowDateTime);
+}
+#endif
+
 /**
  * Refreshes CPU load percentage.
  */
@@ -190,25 +206,7 @@ refresh_cpu_load (GtkWidget * widget,
 
   CpuWidget * self = Z_CPU_WIDGET (widget);
 
-#ifdef __APPLE__
-#else
-  /* ======= non libgtop ====== */
-  /*FILE *fp;*/
-  /*char dump[50];*/
-
-  /*fp = fopen("/proc/stat","r");*/
-  /*fscanf(fp,"%*s %Lf %Lf %Lf %Lf",&a[0],&a[1],&a[2],&a[3]);*/
-  /*fclose(fp);*/
-
-  /*loadavg = ((a[0]+a[1]+a[2]) - (b[0]+b[1]+b[2])) / ((a[0]+a[1]+a[2]+a[3]) - (b[0]+b[1]+b[2]+b[3]));*/
-  /*self->cpu = loadavg * 100;*/
-
-  /*b[0] = a[0];*/
-  /*b[1] = a[1];*/
-  /*b[2] = a[2];*/
-  /*b[3] = a[3];*/
-  /* ========== end ========= */
-
+#ifdef HAVE_LIBGTOP
   glibtop_cpu cpu;
   glibtop_get_cpu (&cpu);
   self->cpu =
@@ -219,6 +217,48 @@ refresh_cpu_load (GtkWidget * widget,
   last_time_updated_cpu = curr_time;
   prev_total = cpu.total;
   prev_idle = cpu.idle;
+#elif defined(__linux__)
+  /* ======= non libgtop ====== */
+  FILE *fp;
+  char dump[50];
+
+  fp = fopen("/proc/stat","r");
+  fscanf(fp,"%*s %Lf %Lf %Lf %Lf",&a[0],&a[1],&a[2],&a[3]);
+  fclose(fp);
+
+  loadavg = ((a[0]+a[1]+a[2]) - (b[0]+b[1]+b[2])) / ((a[0]+a[1]+a[2]+a[3]) - (b[0]+b[1]+b[2]+b[3]));
+  self->cpu = loadavg * 100;
+
+  b[0] = a[0];
+  b[1] = a[1];
+  b[2] = a[2];
+  b[3] = a[3];
+  /* ========== end ========= */
+#elif defined(_WIN32)
+  FILETIME idleTime, kernelTime, userTime;
+
+  if (GetSystemTimes (
+        &idleTime, &kernelTime, &userTime))
+    {
+      unsigned long long idleTicks =
+        FileTimeToInt64(&idleTime);
+      unsigned long long totalTicks =
+        FileTimeToInt64(&kernelTime) +
+        FileTimeToInt64(&userTime);
+      static unsigned long long _previousTotalTicks = 0;
+      static unsigned long long _previousIdleTicks = 0;
+
+      unsigned long long totalTicksSinceLastTime = totalTicks-_previousTotalTicks;
+      unsigned long long idleTicksSinceLastTime  = idleTicks-_previousIdleTicks;
+
+      self->cpu = 1.0f-((totalTicksSinceLastTime > 0) ? ((float)idleTicksSinceLastTime)/totalTicksSinceLastTime : 0);
+
+      _previousTotalTicks = totalTicks;
+      _previousIdleTicks  = idleTicks;
+    }
+  else
+    self->cpu = -1.0f;
+#endif
 
   char * ttip =
     g_strdup_printf (
@@ -227,7 +267,6 @@ refresh_cpu_load (GtkWidget * widget,
   gtk_widget_set_tooltip_text (
     widget, ttip);
   g_free (ttip);
-#endif
 
   return G_SOURCE_CONTINUE;
 }
