@@ -180,9 +180,11 @@ get_midi_event_count (
   nframes_t     nframes,
   int           print)
 {
-  self->port_buf = jack_port_get_buffer (
-        JACK_PORT_T (self->midi_in->data), nframes);
-  MIDI_IN_NUM_EVENTS = jack_midi_get_event_count (self->port_buf);
+  self->port_buf =
+    jack_port_get_buffer (
+      JACK_PORT_T (self->midi_in->data), nframes);
+  MIDI_IN_NUM_EVENTS =
+    jack_midi_get_event_count (self->port_buf);
 
   if (!print)
     return;
@@ -257,8 +259,6 @@ jack_process_cb (
     /*{*/
       /*midi_panic (&engine->midi_editor_manual_press->midi_events);*/
     /*}*/
-  midi_events_dequeue (
-    engine->midi_editor_manual_press->midi_events);
   /*if (engine->midi_editor_manual_press*/
         /*->midi_events->num_events > 0)*/
     /*g_message ("%d events dequeued in %ld",*/

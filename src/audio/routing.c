@@ -387,6 +387,10 @@ process_trigger_node (
               port_sum_signal_from_inputs (
                 port);
             }
+          else
+            {
+              port_sum_signal_from_inputs (port);
+            }
         }
 
       /* if channel stereo out port */
