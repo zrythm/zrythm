@@ -332,7 +332,8 @@ static void
 on_cancel_clicked (GtkButton * btn,
                    ExportDialogWidget * self)
 {
-  gtk_widget_destroy (GTK_WIDGET (self));
+  gtk_window_close (GTK_WINDOW (self));
+  /*gtk_widget_destroy (GTK_WIDGET (self));*/
 }
 
 static void
@@ -419,11 +420,16 @@ on_export_clicked (GtkButton * btn,
    * running */
   g_atomic_int_set (&AUDIO_ENGINE->run, 0);
   g_usleep (1000);
+  AUDIO_ENGINE->exporting = 1;
+  int prev_loop = TRANSPORT->loop;
+  TRANSPORT->loop = 0;
 
   /* export */
   exporter_export (&info);
 
   /* restart engine */
+  AUDIO_ENGINE->exporting = 0;
+  TRANSPORT->loop = prev_loop;
   g_atomic_int_set (&AUDIO_ENGINE->run, 1);
   g_message ("exported");
   g_free (info.file_uri);

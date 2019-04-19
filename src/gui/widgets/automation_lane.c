@@ -26,6 +26,7 @@
 #include "audio/automation_tracklist.h"
 #include "audio/bus_track.h"
 #include "audio/channel.h"
+#include "audio/engine.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
@@ -39,6 +40,7 @@
 #include "gui/widgets/region.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/track.h"
+#include "project.h"
 #include "utils/arrays.h"
 #include "utils/resources.h"
 

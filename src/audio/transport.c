@@ -109,8 +109,9 @@ transport_request_roll ()
 /**
  * Moves the playhead by the time corresponding to given samples.
  */
-void
-transport_add_to_playhead (int frames)
+inline void
+transport_add_to_playhead (
+  int frames)
 {
   if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
     {

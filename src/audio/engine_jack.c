@@ -247,24 +247,9 @@ jack_process_cb (
       AUDIO_ENGINE->skip_cycle = 0;
       return;
     }
-  /*g_message ("prepared");*/
-  /*g_message ("printing router right after preparing");*/
-  /*router_print (MIXER->router_cache);*/
 
   /* get num of midi events in JACK's midi in buffer */
   get_midi_event_count (engine, nframes, 1);
-
-  /* get MIDI events from other sources */
-  /*if (engine->panic)*/
-    /*{*/
-      /*midi_panic (&engine->midi_editor_manual_press->midi_events);*/
-    /*}*/
-  /*if (engine->midi_editor_manual_press*/
-        /*->midi_events->num_events > 0)*/
-    /*g_message ("%d events dequeued in %ld",*/
-               /*engine->midi_editor_manual_press->*/
-                 /*midi_events->num_events,*/
-                 /*count);*/
 
   /* this will keep looping until everything was
    * processed in this cycle */
@@ -272,30 +257,6 @@ jack_process_cb (
   /*g_message ("==========================================================================");*/
   router_start_cycle (MIXER->graph);
   /*g_message ("end==========================================================================");*/
-  /*g_message ("done cycle");*/
-
-  /* get jack's buffers with nframes frames for left &
-   * right */
-  /*float * stereo_out_l, * stereo_out_r;*/
-  /*stereo_out_l = (float *)*/
-    /*jack_port_get_buffer (*/
-      /*JACK_PORT_T (engine->stereo_out->l->data),*/
-      /*nframes);*/
-  /*stereo_out_r = (float *)*/
-    /*jack_port_get_buffer (*/
-      /*JACK_PORT_T (engine->stereo_out->r->data),*/
-      /*nframes);*/
-
-  /* by this time, the Master channel should have its
-   * Stereo Out ports filled. pass their buffers to JACK's
-   * buffers */
-  /*for (int i = 0; i < nframes; i++)*/
-    /*{*/
-      /*stereo_out_l[i] = MIXER->master->stereo_out->l->buf[i];*/
-      /*stereo_out_r[i] = MIXER->master->stereo_out->r->buf[i];*/
-    /*}*/
-  /*(void) stereo_out_l; [> avoid unused warnings <]*/
-  /*(void) stereo_out_r;*/
 
   /* run post-process code */
   engine_post_process (engine);

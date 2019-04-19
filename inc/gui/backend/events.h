@@ -29,10 +29,12 @@
 #ifndef __GUI_BACKEND_EVENTS_H__
 #define __GUI_BACKEND_EVENTS_H__
 
+#include "inc/utils/sem.h"
 #include "inc/utils/stack.h"
 
 #define EVENTS_PUSH(et, arg) \
-  if (EVENTS->et_stack && EVENTS->arg_stack) \
+  if (EVENTS->et_stack && EVENTS->arg_stack && \
+      !AUDIO_ENGINE->exporting) \
     { \
       STACK_PUSH (EVENTS->et_stack, et); \
       STACK_PUSH (EVENTS->arg_stack, arg); \

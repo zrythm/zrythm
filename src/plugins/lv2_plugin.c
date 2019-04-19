@@ -2206,7 +2206,8 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
 
   /* Run plugin for this cycle */
   const bool send_ui_updates =
-    lv2_plugin_run (lv2_plugin, nframes);
+    lv2_plugin_run (lv2_plugin, nframes) &&
+    !AUDIO_ENGINE->exporting;
 
   /* Deliver MIDI output and UI events */
   for (uint32_t p = 0; p < lv2_plugin->num_ports;

@@ -25,6 +25,7 @@
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/bus_track.h"
+#include "audio/engine.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "audio/region.h"
@@ -38,6 +39,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
+#include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 

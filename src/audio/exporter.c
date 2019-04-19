@@ -28,11 +28,17 @@
 
 #include <stdio.h>
 
+#include "config.h"
+
 #include "audio/channel.h"
 #include "audio/engine.h"
+#ifdef HAVE_JACK
+#include "audio/engine_jack.h"
+#endif
 #include "audio/exporter.h"
 #include "audio/mixer.h"
 #include "audio/position.h"
+#include "audio/routing.h"
 #include "audio/transport.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
@@ -212,45 +218,14 @@ exporter_export (ExportSettings * info)
 
       do
         {
-
-          /* FIXME use new system */
-          /* set all to unprocessed for this cycle */
-          /*for (int i = 0; i < MIXER->num_channels; i++)*/
-            /*{*/
-              /*Channel * channel = MIXER->channels[i];*/
-              /*channel->processed = 0;*/
-              /*for (int j = 0; j < STRIP_SIZE; j++)*/
-                /*{*/
-                  /*if (channel->plugins[j])*/
-                    /*{*/
-                      /*channel->plugins[j]->processed = 0;*/
-                    /*}*/
-                /*}*/
-            /*}*/
-
-          /*int loop = 1;*/
-
-          /*[> wait for channels to finish processing <]*/
-          /*while (loop)*/
-            /*{*/
-              /*loop = 0;*/
-              /*for (int i = 0; i < MIXER->num_channels; i++)*/
-                /*{*/
-                  /*if (!MIXER->channels[i]->processed)*/
-                    /*{*/
-                      /*loop = 1;*/
-                      /*break;*/
-                    /*}*/
-                /*}*/
-            /*}*/
-
-          /* process master channel */
-          /* FIXME */
-          /*channel_process (MIXER->master);*/
-
+          /* run process code */
+          engine_process_prepare (
+            AUDIO_ENGINE->nframes);
+          router_start_cycle (MIXER->graph);
+          engine_post_process (AUDIO_ENGINE);
 
           /* by this time, the Master channel should have its Stereo Out ports filled.
-           * pass their buffers to jack's buffers */
+           * pass its buffers to the output */
           int count= 0;
           int out_ptr[AUDIO_ENGINE->nframes * 2];
           for (int i = 0; i < AUDIO_ENGINE->nframes; i++)
@@ -267,7 +242,12 @@ exporter_export (ExportSettings * info)
           sf_write_int (sndfile, out_ptr, count);
 
           /* move playhead as many samples as processed */
-          transport_add_to_playhead (AUDIO_ENGINE->nframes);
+          /*transport_add_to_playhead (*/
+            /*AUDIO_ENGINE->nframes);*/
+          position_add_frames (
+            &TRANSPORT->playhead_pos,
+            AUDIO_ENGINE->nframes);
+          /*g_message ("bars %d", TRANSPORT->playhead_pos.bars);*/
         } while (
             position_compare (
               &TRANSPORT->playhead_pos,

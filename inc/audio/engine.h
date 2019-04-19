@@ -125,6 +125,9 @@ typedef struct AudioEngine
   /** Ok to process or not. */
   gint               run;
 
+  /** 1 if currently exporting. */
+  gint               exporting;
+
   /** Skip mid-cycle. */
   gint               skip_cycle;
 

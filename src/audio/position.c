@@ -207,7 +207,7 @@ position_set_tick (Position * position,
 /**
  * Sets position to target position
  */
-void
+inline void
 position_set_to_pos (Position * pos,
                 Position * target)
 {
@@ -218,7 +218,7 @@ position_set_to_pos (Position * pos,
   pos->frames = position_to_frames (pos);
 }
 
-void
+inline void
 position_add_frames (Position * position,
                      long       frames)
 {
@@ -235,19 +235,31 @@ position_add_frames (Position * position,
  * 0 = equal
  * positive = p1 > p2
  */
-int
+inline int
 position_compare (Position * p1,
                   Position * p2)
 {
   if ((p1->bars < p2->bars) ||
-           (p1->bars == p2->bars && p1->beats < p2->beats) ||
-           (p1->bars == p2->bars && p1->beats == p2->beats && p1->sixteenths < p2->sixteenths) ||
-           (p1->bars == p2->bars && p1->beats == p2->beats && p1->sixteenths == p2->sixteenths && p1->ticks < p2->ticks))
+      (p1->bars == p2->bars &&
+         p1->beats < p2->beats) ||
+      (p1->bars == p2->bars &&
+         p1->beats == p2->beats &&
+         p1->sixteenths < p2->sixteenths) ||
+      (p1->bars == p2->bars &&
+         p1->beats == p2->beats &&
+         p1->sixteenths == p2->sixteenths &&
+         p1->ticks < p2->ticks))
     return -1;
   else if ((p1->bars > p2->bars) ||
-           (p1->bars == p2->bars && p1->beats > p2->beats) ||
-           (p1->bars == p2->bars && p1->beats == p2->beats && p1->sixteenths > p2->sixteenths) ||
-           (p1->bars == p2->bars && p1->beats == p2->beats && p1->sixteenths == p2->sixteenths && p1->ticks > p2->ticks))
+           (p1->bars == p2->bars &&
+              p1->beats > p2->beats) ||
+           (p1->bars == p2->bars &&
+              p1->beats == p2->beats &&
+              p1->sixteenths > p2->sixteenths) ||
+           (p1->bars == p2->bars &&
+              p1->beats == p2->beats &&
+              p1->sixteenths == p2->sixteenths &&
+              p1->ticks > p2->ticks))
     return 1;
   else
     return 0;
@@ -256,7 +268,7 @@ position_compare (Position * p1,
 /**
  * Returns closest snap point.
  */
-static Position *
+static inline Position *
 closest_snap_point (Position * pos, ///< position
                     Position * p1, ///< snap point 1
                     Position * p2) ///< snap point 2
@@ -275,7 +287,7 @@ closest_snap_point (Position * pos, ///< position
     }
 }
 
-static void
+static inline void
 get_prev_snap_point (Position * pos, ///< the position
                      SnapGrid * sg, ///< snap grid options
                      Position * prev_snap_point) ///< position to set
@@ -293,7 +305,7 @@ get_prev_snap_point (Position * pos, ///< the position
     }
 }
 
-static void
+static inline void
 get_next_snap_point (Position * pos,
                      SnapGrid *sg,
                      Position * next_snap_point)
@@ -391,7 +403,7 @@ position_from_seconds (Position * position, double secs)
 
 }
 
-int
+inline int
 position_to_ticks (Position * pos)
 {
   int ticks = (pos->bars - 1) * TICKS_PER_BAR;
@@ -409,7 +421,7 @@ position_to_ticks (Position * pos)
 /**
  * Sets position to the given total tick count.
  */
-void
+inline void
 position_from_ticks (Position * pos,
                      long       ticks)
 {
@@ -425,7 +437,7 @@ position_from_ticks (Position * pos,
 /**
  * Calculates the midway point between the two positions and sets it on pos.
  */
-void
+inline void
 position_get_midway_pos (Position * start_pos,
                          Position * end_pos,
                          Position * pos) ///< position to set to

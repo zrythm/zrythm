@@ -155,7 +155,7 @@ engine_process_prepare (uint32_t nframes)
   int ret =
     zix_sem_try_wait (
       &AUDIO_ENGINE->port_operation_lock);
-  if (!ret)
+  if (!ret && !AUDIO_ENGINE->exporting)
     {
       AUDIO_ENGINE->skip_cycle = 1;
       return;

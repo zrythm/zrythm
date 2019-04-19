@@ -345,23 +345,26 @@ process_trigger_node (
           port->type == TYPE_AUDIO &&
           port->flow == FLOW_OUTPUT)
         {
-#ifdef HAVE_JACK
-          float * out =
-            (float *)
-            jack_port_get_buffer (
-              JACK_PORT_T (port->data),
-              AUDIO_ENGINE->nframes);
-
-          /* by this time, the Master channel should have its
-           * Stereo Out ports filled. pass their buffers to JACK's
-           * buffers */
-          for (int i = 0; i < AUDIO_ENGINE->nframes; i++)
+          if (!AUDIO_ENGINE->exporting)
             {
-              out[i] = port->srcs[0]->buf[i];
-            }
+#ifdef HAVE_JACK
+              float * out =
+                (float *)
+                jack_port_get_buffer (
+                  JACK_PORT_T (port->data),
+                  AUDIO_ENGINE->nframes);
 
-          /* avoid unused warnings */
-          (void) out;
+              /* by this time, the Master channel should have its
+               * Stereo Out ports filled. pass their buffers to JACK's
+               * buffers */
+              for (int i = 0; i < AUDIO_ENGINE->nframes; i++)
+                {
+                  out[i] = port->srcs[0]->buf[i];
+                }
+
+              /* avoid unused warnings */
+              (void) out;
+            }
 #endif
         }
 
