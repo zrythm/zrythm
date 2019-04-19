@@ -156,7 +156,8 @@ AM_COND_IF(
   [PKG_CHECK_MODULES(
     [GTOP], [libgtop-2.0],
     [AC_DEFINE([HAVE_LIBGTOP],[1],[Have libgtop])
-     AC_SUBST([HAVE_LIBGTOP],[1])])])
+     AC_SUBST([HAVE_LIBGTOP],[1])],
+    [echo "**building without libgtop"])])
 PKG_CHECK_MODULES([LILV], [lilv-0 >= 0.24.2])
 PKG_CHECK_MODULES([SNDFILE], [sndfile >= 1.0.25])
 PKG_CHECK_MODULES(

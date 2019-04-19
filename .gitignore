@@ -123,3 +123,4 @@ project-defs.sh.inc
 
 # Packaging files
 scripts/package_win.sh
+scripts/package_osx.sh
