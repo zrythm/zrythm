@@ -234,9 +234,9 @@ built_obj = $(built_src:%.c=$(BUILD_DIR/%.o))
 built_dep = $(built_obj:%.o=%.d))
 
 #Find all the C++ files in the src/ directory
-SRCS = $(shell find src/ -name "*.c") \
+SRCS = $(shell find src -name "*.c") \
 			 $(shell find ext/audio_decoder -name "*.c")
-SRCS_CPP = $(shell find src/ -name "*.cpp")
+SRCS_CPP = $(shell find src -name "*.cpp")
 SRCS_UI =	$(shell find resources/ui -name "*.ui")
 # All .o files go to build dir.
 OBJ = $(SRCS:%.c=$(BUILD_DIR)/%.c.o)
@@ -244,7 +244,7 @@ OBJ_CPP = $(SRCS_CPP:%.cpp=$(BUILD_DIR)/%.cpp.o)
 # Gcc/Clang will create these .d files containing dependencies.
 DEP = $(OBJ:%.o=%.d)
 DEP_CPP = $(OBJ_CPP:%.o=%.d)
-TEST_SRCS = $(shell find test/ -name "*.c")
+TEST_SRCS = $(shell find test -name "*.c")
 OBJ_NO_MAIN = $(shell echo "$(OBJ)" | sed 's|build/src/main.c.o| |g')
 TEST_OBJ = $(TEST_SRCS:%.c=$(BUILD_DIR)/%.c.o)
 TEST_DEP = $(TEST_OBJ:%.o=%.d)

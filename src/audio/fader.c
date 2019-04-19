@@ -34,8 +34,6 @@ fader_init (
   self->pan = 0.5f;
   self->l_port_db = 0.f;
   self->r_port_db = 0.f;
-
-  return self;
 }
 
 /**

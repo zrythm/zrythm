@@ -141,8 +141,6 @@ AC_ARG_WITH(
 AC_PROG_CC([gcc clang])
 AC_PROG_CXX([g++])
 
-AC_PREFIX_DEFAULT([/usr])
-
 #Check for libraries.
 PKG_CHECK_MODULES([GTK3], [gtk+-3.0 >= 3.20])
 AM_COND_IF(
