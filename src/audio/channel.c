@@ -236,8 +236,6 @@ channel_prepare_process (Channel * channel)
             plugin->unknown_ports[i]);
         }
     }
-
-
 }
 
 void

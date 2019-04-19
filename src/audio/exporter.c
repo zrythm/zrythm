@@ -213,35 +213,36 @@ exporter_export (ExportSettings * info)
       do
         {
 
+          /* FIXME use new system */
           /* set all to unprocessed for this cycle */
-          for (int i = 0; i < MIXER->num_channels; i++)
-            {
-              Channel * channel = MIXER->channels[i];
-              channel->processed = 0;
-              for (int j = 0; j < STRIP_SIZE; j++)
-                {
-                  if (channel->plugins[j])
-                    {
-                      channel->plugins[j]->processed = 0;
-                    }
-                }
-            }
+          /*for (int i = 0; i < MIXER->num_channels; i++)*/
+            /*{*/
+              /*Channel * channel = MIXER->channels[i];*/
+              /*channel->processed = 0;*/
+              /*for (int j = 0; j < STRIP_SIZE; j++)*/
+                /*{*/
+                  /*if (channel->plugins[j])*/
+                    /*{*/
+                      /*channel->plugins[j]->processed = 0;*/
+                    /*}*/
+                /*}*/
+            /*}*/
 
-          int loop = 1;
+          /*int loop = 1;*/
 
-          /* wait for channels to finish processing */
-          while (loop)
-            {
-              loop = 0;
-              for (int i = 0; i < MIXER->num_channels; i++)
-                {
-                  if (!MIXER->channels[i]->processed)
-                    {
-                      loop = 1;
-                      break;
-                    }
-                }
-            }
+          /*[> wait for channels to finish processing <]*/
+          /*while (loop)*/
+            /*{*/
+              /*loop = 0;*/
+              /*for (int i = 0; i < MIXER->num_channels; i++)*/
+                /*{*/
+                  /*if (!MIXER->channels[i]->processed)*/
+                    /*{*/
+                      /*loop = 1;*/
+                      /*break;*/
+                    /*}*/
+                /*}*/
+            /*}*/
 
           /* process master channel */
           /* FIXME */

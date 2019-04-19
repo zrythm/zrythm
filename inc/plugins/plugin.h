@@ -127,7 +127,7 @@ typedef struct Plugin
    * NOTE: should only be read/written to using
    * g_atomic_int_*.
    */
-  int                  processed;
+  //int                  processed;
 
   /** Enabled or not. */
   int                  enabled;

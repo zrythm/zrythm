@@ -302,11 +302,11 @@ port_disconnect_all (Port * port)
 /**
  * Apply given fader value to port.
  */
-void
+void inline
 port_apply_fader (Port * port, float amp)
 {
-  int nframes = AUDIO_ENGINE->block_length;
-  for (int i = 0; i < nframes; i++)
+  for (int i = 0; i < AUDIO_ENGINE->block_length;
+       i++)
     {
       if (port->buf[i] != 0.f)
         port->buf[i] *= amp;
@@ -322,78 +322,16 @@ port_sum_signal_from_inputs (Port * port)
 {
   Port * src_port;
 
-  /*port_init_buf (port, nframes);*/
-  int nframes = AUDIO_ENGINE->block_length;
-
   /* for any output port pointing to it */
   for (int k = 0; k < port->num_srcs; k++)
     {
       src_port = port->srcs[k];
 
-      /* wait for owner to finish processing */
-      if (src_port->is_piano_roll)
-        {
-          /*g_message ("%s",*/
-                     /*src_port->label);*/
-        }
-      else if (src_port ==
-               AUDIO_ENGINE->midi_editor_manual_press)
-        {
-          /*g_message ("waiting for midi events");*/
-          /*zix_sem_wait (*/
-            /*&src_port->midi_events->processed_sem);*/
-          /*g_message ("done waiting for midi events");*/
-        }
-      else if (src_port->owner_pl)
-        {
-          /*g_message ("%s owner port",*/
-                     /*src_port->owner_pl->descr->name);*/
-          /*if (!g_atomic_int_get (*/
-                /*&src_port->owner_pl->processed))*/
-            /*{*/
-              /*zix_sem_wait (*/
-                /*&src_port->owner_pl->processed_sem);*/
-            /*}*/
-          /*g_message ("%s owner port done",*/
-                     /*src_port->owner_pl->descr->name);*/
-        }
-      else if (src_port->owner_ch)
-        {
-          /*g_message ("%s port, %s owner channel",*/
-                     /*src_port->label,*/
-                     /*src_port->owner_ch->name);*/
-          /*if (!g_atomic_int_get (*/
-                /*&src_port->owner_ch->processed) &&*/
-              /*src_port !=*/
-                /*src_port->owner_ch->stereo_in->l &&*/
-              /*src_port !=*/
-                /*src_port->owner_ch->stereo_in->r)*/
-            /*{*/
-              /*g_message (*/
-                /*"waiting for channel, port %s",*/
-                /*src_port->label);*/
-              /*zix_sem_wait (*/
-                /*&src_port->owner_ch->processed_sem);*/
-              /*g_message ("done waiting for channel");*/
-            /*}*/
-
-          /*while (src_port !=*/
-                   /*src_port->owner_ch->stereo_in->l &&*/
-                 /*src_port !=*/
-                   /*src_port->owner_ch->stereo_in->r)*/
-            /*{*/
-              /*g_warning ("port_sum_signal_from_inputs: what is this??");*/
-              /*g_usleep (SLEEPTIME_USEC);*/
-            /*}*/
-          /*g_message ("%s port, %s owner channel done",*/
-                     /*src_port->label,*/
-                     /*src_port->owner_ch->name);*/
-        }
-
       /* sum the signals */
       if (port->type == TYPE_AUDIO)
         {
-          for (int l = 0; l < nframes; l++)
+          for (int l = 0;
+               l < AUDIO_ENGINE->block_length; l++)
             {
               port->buf[l] += src_port->buf[l];
             }
@@ -452,14 +390,15 @@ port_print_connections_all ()
 void
 port_clear_buffer (Port * port)
 {
-  if (port->type == TYPE_AUDIO)
+  if (port->type == TYPE_AUDIO && port->buf)
     {
-      if (port->buf)
-        memset (port->buf,
-                0,
-                AUDIO_ENGINE->block_length * sizeof (float));
+      memset (
+        port->buf, 0,
+        AUDIO_ENGINE->block_length *
+          sizeof (float));
+      return;
     }
-  else if (port->type == TYPE_EVENT)
+  if (port->type == TYPE_EVENT)
     {
       if (port->midi_events)
         {
@@ -497,27 +436,30 @@ port_apply_pan_stereo (Port *       l,
 /**
  * Applies the pan to the given L/R ports.
  */
-void
+inline void
 port_apply_pan (
   Port *       port,
   float        pan,
   PanLaw       pan_law,
   PanAlgorithm pan_algo)
 {
-  int nframes = AUDIO_ENGINE->block_length;
   if (pan_algo == PAN_ALGORITHM_SINE_LAW)
     {
-      for (int i = 0; i < nframes; i++)
+      for (int i = 0; i < AUDIO_ENGINE->block_length;
+           i++)
         {
           if (port->buf[i] == 0.f)
             continue;
 
           if (port->flags & PORT_FLAG_STEREO_R)
-            port->buf[i] *=
-              sinf (pan * (M_PIF / 2.f));
-          else
-            port->buf[i] *=
-              sinf ((1.f - pan) * (M_PIF / 2.f));
+            {
+              port->buf[i] *=
+                sinf (pan * (M_PIF / 2.f));
+              continue;
+            }
+
+          port->buf[i] *=
+            sinf ((1.f - pan) * (M_PIF / 2.f));
         }
     }
 }

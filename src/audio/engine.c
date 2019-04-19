@@ -136,6 +136,7 @@ close_audio_engine ()
 void
 engine_process_prepare (uint32_t nframes)
 {
+  int i, j;
   AUDIO_ENGINE->last_time_taken =
     g_get_monotonic_time ();
   AUDIO_ENGINE->nframes = nframes;
@@ -151,7 +152,6 @@ engine_process_prepare (uint32_t nframes)
       TRANSPORT->play_state = PLAYSTATE_ROLLING;
     }
 
-  /* FIXME use zix_sem_try_wait */
   int ret =
     zix_sem_try_wait (
       &AUDIO_ENGINE->port_operation_lock);
@@ -163,49 +163,46 @@ engine_process_prepare (uint32_t nframes)
 
   /* reset all buffers */
   port_clear_buffer (AUDIO_ENGINE->midi_in);
-  port_clear_buffer (
-    AUDIO_ENGINE->midi_editor_manual_press);
 
   /* prepare channels for this cycle */
-  for (int i = -1; i < MIXER->num_channels; i++)
+  for (i = -1; i < MIXER->num_channels; i++)
     {
       Channel * channel;
       if (i == -1)
         channel = MIXER->master;
       else
         channel = MIXER->channels[i];
-      for (int j = 0; j < STRIP_SIZE; j++)
-        {
-          if (channel->plugins[j])
-            {
-              g_atomic_int_set (
-                &channel->plugins[j]->processed, 0);
-            }
-        }
-      g_atomic_int_set (
-        &channel->processed, 0);
+      /*for (int j = 0; j < STRIP_SIZE; j++)*/
+        /*{*/
+          /*if (channel->plugins[j])*/
+            /*{*/
+              /*g_atomic_int_set (*/
+                /*&channel->plugins[j]->processed, 0);*/
+            /*}*/
+        /*}*/
+      /*g_atomic_int_set (*/
+        /*&channel->processed, 0);*/
       channel_prepare_process (channel);
     }
 
   /* for each automation track, update the val */
-  /*if (TRANSPORT->play_state == PLAYSTATE_ROLLING)*/
-    /*{*/
-  Track * track;
+  /* TODO move to routing process node */
   AutomationTracklist * atl;
   AutomationTrack * at;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  float val;
+  for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      track = TRACKLIST->tracks[i];
       atl =
-        track_get_automation_tracklist (track);
+        track_get_automation_tracklist (
+          TRACKLIST->tracks[i]);
       if (!atl)
         continue;
-      for (int j = 0;
+      for (j = 0;
            j < atl->num_automation_tracks;
            j++)
         {
           at = atl->automation_tracks[j];
-          float val =
+          val =
             automation_track_get_normalized_val_at_pos (
               at, &PLAYHEAD);
           /*g_message ("val received %f",*/
@@ -219,13 +216,6 @@ engine_process_prepare (uint32_t nframes)
               val);
         }
     }
-    /*}*/
-
-  /* prepare router */
-  /*g_warn_if_fail (MIXER->graph != NULL);*/
-  /*router_refresh_from (*/
-    /*MIXER->router_cache,*/
-    /*MIXER->graph);*/
 }
 
 /**

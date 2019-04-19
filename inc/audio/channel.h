@@ -147,7 +147,7 @@ typedef struct Channel
    * Flag to indicate if channel has been processed in
    * this cycle or not.
    */
-  int                  processed;
+  //int                  processed;
 
   /** Processed semaphore. */
   //ZixSem               processed_sem;

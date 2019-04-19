@@ -90,7 +90,7 @@ _plugin_new ()
 {
   Plugin * plugin = calloc (1, sizeof (Plugin));
 
-  g_atomic_int_set (&plugin->processed, 1);
+  /*g_atomic_int_set (&plugin->processed, 1);*/
 
   project_add_plugin (plugin);
 
@@ -241,7 +241,7 @@ plugin_process (Plugin * plugin)
         (Lv2Plugin *) plugin->original_plugin);
     }
 
-  g_atomic_int_set (&plugin->processed, 1);
+  /*g_atomic_int_set (&plugin->processed, 1);*/
   /*zix_sem_post (&plugin->processed_sem);*/
 }
 

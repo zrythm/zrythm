@@ -173,7 +173,7 @@ nodes_disconnect (
  * Gets next unclaimed trigger node in the array and
  * marks it as claimed.
  */
-static RouteNode *
+static inline RouteNode *
 get_next_trigger_node (
   Router * router,
   int      pop)
@@ -196,107 +196,13 @@ get_next_trigger_node (
       return router->trigger_nodes[
         router->num_trigger_nodes - 1];
     }
-  /*int claimed = 1;*/
-  /*int ret;*/
-  /*int last_trg_idx =*/
-    /*router->num_trigger_nodes - 1;*/
-
-  /*while (claimed && last_trg_idx >= 0)*/
-    /*{*/
-      /* return from the trigger nodes if they are
-       * available */
-      /*node = router->trigger_nodes[last_trg_idx];*/
-      /*[>g_message ("checking %s",<]*/
-                 /*[>node->type == ROUTE_NODE_TYPE_PLUGIN ?<]*/
-                 /*[>node->pl->descr->name :<]*/
-                 /*[>node->port->label);<]*/
-      /*if (claimed = node->claimed)*/
-        /*{*/
-          /*g_warning ("claimed node should not be in"*/
-                     /*" trigger nodes");*/
-          /*--last_trg_idx;*/
-          /*continue;*/
-        /*}*/
-
-      /*if (pop)*/
-        /*{*/
-          /*[> try to pop it and return it <]*/
-          /*ret =*/
-            /*g_atomic_int_compare_and_exchange (*/
-              /*&node->claimed, 0, 1);*/
-          /*g_warn_if_fail (ret == 1);*/
-          /*if (ret)*/
-            /*{*/
-              /*[>g_message ("managed to claim trigger node, returning it. node:");<]*/
-              /*[>print_node (node, -2);<]*/
-              /*[> remove and return <]*/
-      /*[>g_message ("claiming and returning %s",<]*/
-                 /*[>node->type == ROUTE_NODE_TYPE_PLUGIN ?<]*/
-                 /*[>node->pl->descr->name :<]*/
-                 /*[>node->port->label);<]*/
-              /*router->num_trigger_nodes--;*/
-              /*return node;*/
-            /*}*/
-        /*}*/
-      /*else*/
-        /*{*/
-          /*[> return <]*/
-      /*[>g_message ("returning without claiming %s",<]*/
-                 /*[>node->type == ROUTE_NODE_TYPE_PLUGIN ?<]*/
-                 /*[>node->pl->descr->name :<]*/
-                 /*[>node->port->label);<]*/
-          /*return node;*/
-        /*}*/
-    /*}*/
-
-  /*g_message ("HARD MODE -> trig nodes %d",*/
-             /*router->num_trigger_nodes);*/
-  /*[>router_print (router);<]*/
-
-  /*[>g_message ("looking for the next trigger node");<]*/
-  /*for (int i = 0; i < router->registry->len; i++)*/
-    /*{*/
-      /*node =*/
-        /*g_array_index (router->registry,*/
-                       /*RouteNode *, i);*/
-      /*if (node->srcs->len == 0)*/
-        /*{*/
-          /*if (node->claimed)*/
-            /*{*/
-              /*[>g_message ("note is claimed");<]*/
-              /*[>print_node (node, -32);<]*/
-            /*}*/
-          /*if (mark_claimed)*/
-            /*{*/
-              /*[> try to claim it and return it <]*/
-              /*claimed =*/
-                /*g_atomic_int_compare_and_exchange (*/
-                  /*&node->claimed, 0, 1);*/
-              /*if (claimed)*/
-                /*{*/
-                  /*[>g_message ("managed to claim trigger node, returning it. node:");<]*/
-                  /*[>print_node (node, -2);<]*/
-                  /*return node;*/
-                /*}*/
-            /*}*/
-          /*[> if not claimed this is a trigger note <]*/
-          /*else if (!g_atomic_int_get (&node->claimed))*/
-            /*{*/
-              /*[>g_message ("found unclaimed trigger node:");<]*/
-              /*[>print_node (node, -2);<]*/
-              /*return node;*/
-            /*}*/
-        /*}*/
-    /*}*/
-
-  /*return NULL;*/
 }
 
 /**
  * Processes the RouteNode and returns a new trigger
  * node.
  */
-static RouteNode *
+static void
 process_trigger_node (
   Router * router,
   RouteNode * node)
@@ -354,6 +260,7 @@ process_trigger_node (
       else if (port == AUDIO_ENGINE->
             midi_editor_manual_press)
         {
+          port_clear_buffer (port);
           midi_events_dequeue (
             AUDIO_ENGINE->
               midi_editor_manual_press->
@@ -369,12 +276,14 @@ process_trigger_node (
 
           /* fill stereo in buffers with info from
            * the current clip */
-          if (chan->track->type ==
-                TRACK_TYPE_AUDIO &&
-              !g_atomic_int_get (
-                &chan->filled_stereo_in_bufs))
+          int ret;
+          switch (chan->track->type)
             {
-              int ret =
+            case TRACK_TYPE_AUDIO:
+              if (g_atomic_int_get (
+                &chan->filled_stereo_in_bufs))
+                break;
+              ret =
                 g_atomic_int_compare_and_exchange (
                   &chan->filled_stereo_in_bufs,
                   0, 1);
@@ -382,18 +291,16 @@ process_trigger_node (
                 audio_track_fill_stereo_in_buffers (
                   (AudioTrack *)chan->track,
                   chan->stereo_in);
-            }
-          else if (chan->track->type ==
-                     TRACK_TYPE_MASTER ||
-                   chan->track->type ==
-                     TRACK_TYPE_BUS)
-            {
+              break;
+            case TRACK_TYPE_MASTER:
+            case TRACK_TYPE_BUS:
               port_sum_signal_from_inputs (
                 port);
-            }
-          else
-            {
+              break;
+            case TRACK_TYPE_INSTRUMENT:
+            case TRACK_TYPE_CHORD:
               port_sum_signal_from_inputs (port);
+              break;
             }
         }
 
@@ -408,7 +315,8 @@ process_trigger_node (
                    !port->owner_ch->track->solo &&
                    port->owner_ch != MIXER->master))
             {
-              port_clear_buffer (port);
+              /* (already cleared) */
+              /*port_clear_buffer (port);*/
             }
           /* if not muted/soloed process it */
           else
@@ -428,8 +336,8 @@ process_trigger_node (
                 port,
                 port->owner_ch->fader.amp);
             }
-          g_atomic_int_set (
-            &port->owner_ch->processed, 1);
+          /*g_atomic_int_set (*/
+            /*&port->owner_ch->processed, 1);*/
         }
 
       /* if JACK stereo out */
@@ -480,48 +388,9 @@ process_trigger_node (
             node->dests[i]);
         }
     }
-
-  return NULL;
-
-  /* set its refcount to negative and decrement the
-   * refcount of each dest */
-  /*int claimed = 0;*/
-  /*RouteNode * ret = NULL;*/
-  /*[>g_message ("---- dests of processed node:");<]*/
-  /*[>for (int i = 0; i < node->dests->len; i++)<]*/
-    /*[>{<]*/
-      /*[>print_node (node->dests[i], -300);<]*/
-    /*[>}<]*/
-  /*[>g_message ("----- end");<]*/
-  /*for (int i = 0; i < node->dests->len; i++)*/
-    /*{*/
-      /*[>g_message ("dest (below) num srcs before %d",<]*/
-                 /*[>node->dests[i]->srcs->len);<]*/
-      /*RouteNode * dest = node->dests[i];*/
-      /*nodes_disconnect (router,*/
-                        /*node,*/
-                        /*node->dests[i--]);*/
-      /*[>g_message ("decrementing dest of processed node:");<]*/
-      /*[>print_node (dest, -300);<]*/
-      /*[>g_message ("dest (below) num srcs after %d",<]*/
-                 /*[>node->dests[i]->srcs->len);<]*/
-      /*[>print_node (node->dests[i], -200);<]*/
-
-      /* also check if it's a trigger node to save
-       * time */
-      /*[>if (!claimed && node->dests[i]->srcs->len == 0)<]*/
-        /*[>{<]*/
-          /*[>claimed =<]*/
-            /*[>g_atomic_int_compare_and_exchange (<]*/
-              /*[>&node->dests[i]->claimed, 0, 1);<]*/
-          /*[>if (claimed)<]*/
-            /*[>ret = node->dests[i];<]*/
-        /*[>}<]*/
-    /*}*/
-  /*return ret;*/
 }
 
-static void
+static inline void
 dec_and_test (Router * router)
 {
   /*g_message ("***** no new trigger nodes found, finishing this thread ****");*/
@@ -529,16 +398,8 @@ dec_and_test (Router * router)
   if (g_atomic_int_dec_and_test (
     &router->num_active_threads))
     {
-
       zix_sem_post (&router->finish_sem);
-
-      /*for (int i = 0; i < router->num_threads; i++)*/
-        /*zix_sem_post (&router->trigger_sem);*/
     }
-
-  /*g_message ("active threads left: %d",*/
-             /*g_atomic_int_get (*/
-                /*&router->num_active_threads));*/
 }
 
 static void *
@@ -547,16 +408,9 @@ work (void * arg)
   RouteNode * node;
   Router * router = (Router *) arg;
 
-  /* wait for initialization */
-  /*zix_sem_wait (&router->initing_sem);*/
-
   /* loop forever */
   while (1)
     {
-      /*g_message ("waiting for trigger");*/
-      /* wait for a trigger node post */
-      /*g_message ("waiting trigger sem");*/
-      /*zix_sem_wait (&router->trigger_sem);*/
       /*g_message ("waiting for start");*/
       zix_sem_wait (&router->start_cycle_sem);
       /*g_message ("waited for start");*/
@@ -574,13 +428,9 @@ work (void * arg)
                      /*node->type == ROUTE_NODE_TYPE_PLUGIN ?*/
                      /*node->pl->descr->name :*/
                      /*node->port->label);*/
-          /*g_message ("got a trigger node:");*/
-          /*print_node (node, -100);*/
           if (node)
             {
-              /* process trigger node and get next */
-              /*g_message ("processing trigger node:");*/
-              /*print_node (node, -100);*/
+              /* process trigger node */
               process_trigger_node (router, node);
               /*g_message ("processed trigger node");*/
 
@@ -588,29 +438,19 @@ work (void * arg)
               node =
                 get_next_trigger_node (router, 0);
 
-              /* if any, post it */
-              /*if (node)*/
-                /*{*/
-                  /*zix_sem_post (&router->trigger_sem);*/
-                  /*g_message ("posting");*/
-                /*}*/
-              /*else*/
-                /*{*/
-                  /*dec_and_test (router);*/
-                /*}*/
+              /* decrement num active threads if
+               * no more trigger nodes */
               if (!node)
                 {
                   dec_and_test (router);
                   break;
                 }
-
             }
           else
             {
               dec_and_test (router);
               break;
             }
-          /*g_message ("printing router from work");*/
           /*router_print (router);*/
         }
       /*router_print (router);*/
