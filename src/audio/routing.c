@@ -364,8 +364,8 @@ process_trigger_node (
 
               /* avoid unused warnings */
               (void) out;
-            }
 #endif
+            }
         }
 
       else
