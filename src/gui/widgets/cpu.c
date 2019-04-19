@@ -33,6 +33,7 @@
 #include <glibtop/cpu.h>
 #include <glibtop/loadavg.h>
 #elif defined(_WIN32)
+#include <winsock2.h>
 #include <windows.h>
 #endif
 
