@@ -158,7 +158,7 @@ audio_get_num_cores ()
   num_cores = sysinfo.dwNumberOfProcessors;
 #endif
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
   num_cores = sysconf(_SC_NPROCESSORS_ONLN);
 #endif
 
@@ -180,10 +180,6 @@ audio_get_num_cores ()
       if (num_cores < 1)
           num_cores = 1;
   }
-#endif
-
-#ifdef __APPLE__
-  num_cores = sysconf(_SC_NPROCESSORS_ONLN);
 #endif
 
   return num_cores;

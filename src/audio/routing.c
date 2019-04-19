@@ -17,9 +17,13 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
 #include "audio/audio_track.h"
 #include "audio/engine.h"
+#ifdef HAVE_JACK
 #include "audio/engine_jack.h"
+#endif
 #include "audio/instrument_track.h"
 #include "audio/pan.h"
 #include "audio/port.h"
@@ -433,6 +437,7 @@ process_trigger_node (
           port->type == TYPE_AUDIO &&
           port->flow == FLOW_OUTPUT)
         {
+#ifdef HAVE_JACK
           float * out =
             (float *)
             jack_port_get_buffer (
@@ -449,6 +454,7 @@ process_trigger_node (
 
           /* avoid unused warnings */
           (void) out;
+#endif
         }
 
       else
