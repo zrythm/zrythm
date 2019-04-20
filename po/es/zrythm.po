@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-18 12:43+0100\n"
+"POT-Creation-Date: 2019-04-19 12:14+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrythm dot org>\n"
 "Language-Team: Spanish\n"
@@ -146,7 +146,7 @@ msgstr ""
 msgid "Click to enable MIDI controllers to be connected automatically"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:1432
+#: src/plugins/lv2_gtk.c:1433
 msgid "Close"
 msgstr ""
 
@@ -188,7 +188,7 @@ msgstr ""
 msgid "Cut selection to clipboard"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:560
+#: src/plugins/lv2_gtk.c:561
 msgid "Delete Preset?"
 msgstr ""
 
@@ -656,7 +656,7 @@ msgstr ""
 msgid "Save Project"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:147
+#: src/plugins/lv2_gtk.c:148
 msgid "Save State"
 msgstr ""
 
@@ -854,7 +854,7 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:465
+#: src/plugins/lv2_gtk.c:466
 msgid "URI (Optional):"
 msgstr ""
 
@@ -866,11 +866,11 @@ msgstr ""
 msgid "Undo previous command"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:779
+#: src/plugins/lv2_gtk.c:780
 msgid "Unknown widget type for value"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:805
+#: src/plugins/lv2_gtk.c:806
 msgid "Unknown widget type for value\n"
 msgstr ""
 
@@ -926,7 +926,7 @@ msgstr ""
 msgid "Zrythm Directory"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:150 src/plugins/lv2_gtk.c:565
+#: src/plugins/lv2_gtk.c:151 src/plugins/lv2_gtk.c:566
 #: src/actions/actions.c:521
 msgid "_Cancel"
 msgstr ""
@@ -973,7 +973,7 @@ msgstr ""
 msgid "_New"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:566
+#: src/plugins/lv2_gtk.c:567
 msgid "_OK"
 msgstr ""
 
@@ -985,7 +985,7 @@ msgstr ""
 msgid "_Preferences"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:469
+#: src/plugins/lv2_gtk.c:470
 msgid "_Prefix plugin name"
 msgstr ""
 
@@ -997,7 +997,7 @@ msgstr ""
 msgid "_Redo"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:151 src/gui/widgets/header_bar.c:130
+#: src/plugins/lv2_gtk.c:152 src/gui/widgets/header_bar.c:130
 #: src/actions/actions.c:523
 msgid "_Save"
 msgstr ""

@@ -245,7 +245,7 @@ jack_process_cb (
   if (AUDIO_ENGINE->skip_cycle)
     {
       AUDIO_ENGINE->skip_cycle = 0;
-      return;
+      return 0;
     }
 
   /* get num of midi events in JACK's midi in buffer */

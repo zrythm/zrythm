@@ -36,14 +36,17 @@
 #include <jack/thread.h>
 #endif
 
-#define add_initial_trigger_node(router,node) \
-  array_append ((router)->initial_trigger_nodes, \
-                (router)->num_initial_trigger_nodes, \
-                node);
-#define add_trigger_node(router,node) \
-  array_append ((router)->trigger_nodes, \
-                (router)->num_trigger_nodes, \
-                node);
+#define MAGIC_NUMBER 76322
+
+static inline void
+add_trigger_node (
+  Router * router,
+  RouteNode * node)
+{
+  router->trigger_nodes[
+    g_atomic_int_add (
+      &router->num_trigger_nodes, 1)] = node;
+}
 
 static void
 print_node (RouteNode * node, int i)
@@ -97,27 +100,6 @@ print_node (RouteNode * node, int i)
   g_free (str1);
 }
 
-/*static RouteNode **/
-/*find_matching_node (*/
-  /*Router * router,*/
-  /*RouteNode * in)*/
-/*{*/
-  /*RouteNode * node;*/
-  /*for (int i = 0; i < router->registry->len; i++)*/
-    /*{*/
-      /*node =*/
-        /*g_array_index (router->registry,*/
-                       /*RouteNode *, i);*/
-      /*if ((node->type == ROUTE_NODE_TYPE_PORT &&*/
-           /*node->port == in->port) ||*/
-          /*(node->type == ROUTE_NODE_TYPE_PLUGIN &&*/
-           /*node->pl == in->pl))*/
-        /*return node;*/
-    /*}*/
-  /*g_warn_if_reached ();*/
-  /*return NULL;*/
-/*}*/
-
 static void
 nodes_disconnect (
   Router * router,
@@ -127,11 +109,6 @@ nodes_disconnect (
   g_warn_if_fail (src != NULL);
   g_warn_if_fail (dest != NULL);
 
-  /*[>int dests->len = src->dests->len;<]*/
-  /*[>int srcs->len = dest->srcs->len;<]*/
-  /*[>g_message ("num srcs before: %d", srcs->len);<]*/
-  /*[>zix_sem_wait (&router->route_operation_sem);<]*/
-
   /*[> disconnect dest from src <]*/
   if (array_contains (src->dests,
                       src->num_dests,
@@ -140,33 +117,13 @@ nodes_disconnect (
       array_delete (src->dests,
                     src->num_dests, dest);
     }
-  /*[> disconnect src from dest <]*/
-  /*[>for (int i = 0; i < dest->srcs->len; i++)<]*/
-    /*[>{<]*/
-      /*[>g_message ("src %d: %p", i, dest->srcs[i]);<]*/
-      /*[>print_node (dest->srcs[i], -300);<]*/
-      /*[>g_message ("given src: %p", src);<]*/
-      /*[>print_node (src, -300);<]*/
-    /*[>}<]*/
-    if (array_contains (dest->srcs,
+  if (array_contains (dest->srcs,
                       dest->init_refcount,
                       src))
     {
-       /*FIXME srcs->len should be atomic */
-      array_delete (dest->srcs, dest->init_refcount, src);
+      array_delete (dest->srcs,
+                    dest->init_refcount, src);
     }
-      /*g_array_remove_index_fast (*/
-        /*dest->srcs, dest_idx);*/
-
-      /*[> add trigger node <]*/
-      /*if (dest->srcs->len == 0)*/
-        /*array_append (router->trigger_nodes,*/
-                      /*router->num_trigger_nodes,*/
-                      /*dest);*/
-    /*[>}<]*/
-
-  /*[>zix_sem_post (&router->route_operation_sem);<]*/
-  /*[>g_message ("num srcs after: %d", dest->srcs->len);<]*/
 }
 
 /**
@@ -178,23 +135,75 @@ get_next_trigger_node (
   Router * router,
   int      pop)
 {
-  if (router->num_trigger_nodes == 0)
+  if (g_atomic_int_get (
+        &router->num_trigger_nodes) == 0)
     {
       /*g_message ("no trigger nodes");*/
       return NULL;
     }
 
-  if (pop)
+  RouteNode * node;
+  int num, new_num;
+  while (1)
     {
-      g_atomic_int_dec_and_test (
-        &router->num_trigger_nodes);
-      return router->trigger_nodes[
-          router->num_trigger_nodes];
-    }
-  else
-    {
-      return router->trigger_nodes[
-        router->num_trigger_nodes - 1];
+      /*g_usleep (1000);*/
+      num =
+        g_atomic_int_get (
+          &router->num_trigger_nodes);
+      /*g_message ("first num %d",*/
+                 /*num);*/
+      if (num == 0)
+        return NULL;
+      RouteNode * node =
+        router->trigger_nodes[num - 1];
+      g_warn_if_fail (
+        node->validate == MAGIC_NUMBER);
+      if (pop)
+        {
+          /* try decrementing */
+          g_atomic_int_dec_and_test (
+            &router->num_trigger_nodes);
+          /* check that current num is exactly 1
+           * less than what it was */
+          new_num =
+            g_atomic_int_get (
+              &router->num_trigger_nodes);
+          /*g_message ("new num %d, node claimed %d", new_num, node->claimed);*/
+          /*if (!node->claimed)*/
+            /*g_warning ("not claimed");*/
+          if ((new_num == num - 1))
+            {
+              /*g_message ("claiming %d",*/
+                         /*num - 1);*/
+              /* claim node */
+              /*node->claimed = 1;*/
+              return node;
+            }
+          else
+            {
+              /* revert */
+              g_atomic_int_inc (
+                &router->num_trigger_nodes);
+              /*g_message ("reverting to %d",*/
+                         /*num);*/
+              continue;
+            }
+        }
+      else
+        {
+          /* check that current num is exactly as
+           * it was */
+          new_num =
+            g_atomic_int_get (
+              &router->num_trigger_nodes);
+          if (new_num == num)
+            {
+              /*g_message ("returning %d",*/
+                         /*num - 1);*/
+              return router->trigger_nodes[
+                num - 1];
+            }
+        }
     }
 }
 
@@ -207,6 +216,8 @@ process_trigger_node (
   Router * router,
   RouteNode * node)
 {
+      g_warn_if_fail (
+        node->validate == MAGIC_NUMBER);
   Channel * chan;
 
   if (node->type == ROUTE_NODE_TYPE_PLUGIN)
@@ -376,16 +387,21 @@ process_trigger_node (
 
   /* set the processed node's refcount to
    * init_refcount */
-  g_atomic_int_set (&node->refcount,
-                    node->init_refcount);
+  g_atomic_int_set (
+    &node->refcount,
+    node->init_refcount);
 
   /* decrement ref count of dests */
-  for (int i = 0; i < node->num_dests; i++)
+  for (int i = 0;
+       i < node->num_dests; i++)
     {
       /* if became 0 */
       if (g_atomic_int_dec_and_test (
             &node->dests[i]->refcount))
         {
+          g_warn_if_fail (
+            node->dests[i]->validate ==
+              MAGIC_NUMBER);
           add_trigger_node (
             router,
             node->dests[i]);
@@ -405,6 +421,7 @@ dec_and_test (Router * router)
     }
 }
 
+__attribute__((annotate("realtime")))
 static void *
 work (void * arg)
 {
@@ -596,6 +613,7 @@ add_plugin_node (
 
   RouteNode * node = calloc (1, sizeof (RouteNode));
   node->pl = pl;
+  node->validate = MAGIC_NUMBER;
   node->type = ROUTE_NODE_TYPE_PLUGIN;
   add_node_to_registry (router, node);
 }
@@ -623,15 +641,10 @@ add_port_node (
   int i;
 
   RouteNode * node = calloc (1, sizeof (RouteNode));
+  node->validate = MAGIC_NUMBER;
   node->port = port;
   node->type = ROUTE_NODE_TYPE_PORT;
   add_node_to_registry (router, node);
-
-  /* add to trigger nodes if no srcs */
-  /*if (port->srcs->len == 0 &&*/
-      /*!(port->owner_pl && port->flow == FLOW_OUTPUT))*/
-    /*add_initial_trigger_node (*/
-      /*router, node);*/
 
   RouteNode * src, * dest;
   for (i = 0; i < port->num_srcs; i++)
@@ -685,20 +698,6 @@ add_port_node (
                                port->owner_pl));
     }
 
-  /*g_message ("***** this node ******");*/
-  /*print_node (node, -500);*/
-  /*g_message ("***** end ******");*/
-  /*g_message ("**srcs ");*/
-  /*for (int i = 0; i < node->srcs->len; i++)*/
-    /*{*/
-      /*print_node (node->srcs[i], -500);*/
-    /*}*/
-  /*g_message ("**dests ");*/
-  /*for (int i = 0; i < node->dests->len; i++)*/
-    /*{*/
-      /*print_node (node->dests[i], -500);*/
-    /*}*/
-  /*g_message ("**end ");*/
   return node;
 }
 
@@ -718,98 +717,6 @@ router_destroy (
   free (router);
 }
 
-/*void*/
-/*router_refresh_from (*/
-  /*Router * router,*/
-  /*Router * graph)*/
-/*{*/
-  /*[>g_message ("**REFRESHING**");<]*/
-  /*RouteNode * orig, * cache;*/
-  /*int i, j;*/
-  /*router->num_trigger_nodes = 0;*/
-  /*for (i = 0; i < router->registry->len; i++)*/
-    /*{*/
-      /*orig =*/
-        /*g_array_index (graph->registry,*/
-                       /*RouteNode *, i);*/
-      /*cache =*/
-        /*g_array_index (router->registry,*/
-                       /*RouteNode *, i);*/
-      /*[>g_message ("1a");<]*/
-      /*[>print_node (orig, -500);<]*/
-      /*[>g_message ("2a");<]*/
-      /*[>print_node (cache, -500);<]*/
-      /*cache->claimed = 0;*/
-      /*for (j = 0; j < orig->srcs->len; j++)*/
-        /*{*/
-          /*if (orig->srcs[j]->type ==*/
-                /*ROUTE_NODE_TYPE_PLUGIN)*/
-            /*cache->srcs[j] =*/
-              /*g_hash_table_lookup (*/
-                /*router->plugin_nodes,*/
-                /*&orig->srcs[j]->pl->id);*/
-              /*[>find_node_from_plugin (<]*/
-                /*[>router, orig->srcs[j]->pl);<]*/
-          /*else if (orig->srcs[j]->type ==*/
-                     /*ROUTE_NODE_TYPE_PORT)*/
-            /*cache->srcs[j] =*/
-              /*g_hash_table_lookup (*/
-                /*router->port_nodes,*/
-                /*&orig->srcs[j]->port->id);*/
-              /*[>find_node_from_port (<]*/
-                /*[>router, orig->srcs[j]->port);<]*/
-        /*}*/
-      /*cache->srcs->len = orig->srcs->len;*/
-      /*[>g_message ("--dests of node above:");<]*/
-      /*for (j = 0; j < orig->dests->len; j++)*/
-        /*{*/
-          /*[>cache->dests[j] =<]*/
-            /*[>find_matching_node (router,<]*/
-                                /*[>orig->dests[j]);<]*/
-            /*[>find_node_by_id (router,<]*/
-                             /*[>orig->dests[j]->id);<]*/
-          /*[>print_node (cache->dests[j], -400);<]*/
-          /*if (orig->dests[j]->type ==*/
-                /*ROUTE_NODE_TYPE_PLUGIN)*/
-            /*cache->dests[j] =*/
-              /*g_hash_table_lookup (*/
-                /*router->plugin_nodes,*/
-                /*&orig->dests[j]->pl->id);*/
-              /*[>find_node_from_plugin (<]*/
-                /*[>router, orig->dests[j]->pl);<]*/
-          /*else if (orig->dests[j]->type ==*/
-                     /*ROUTE_NODE_TYPE_PORT)*/
-            /*cache->dests[j] =*/
-              /*g_hash_table_lookup (*/
-                /*router->port_nodes,*/
-                /*&orig->dests[j]->port->id);*/
-              /*[>find_node_from_port (<]*/
-                /*[>router, orig->dests[j]->port);<]*/
-        /*}*/
-      /*[>g_message ("--end");<]*/
-      /*cache->dests->len = orig->dests->len;*/
-
-      /*if (cache->srcs->len == 0)*/
-        /*array_append (router->trigger_nodes,*/
-                      /*router->num_trigger_nodes,*/
-                      /*cache);*/
-
-      /*[>g_message ("1b");<]*/
-      /*[>print_node (orig, -500);<]*/
-      /*[>g_message ("2b");<]*/
-      /*[>print_node (cache, -500);<]*/
-    /*}*/
-  /*g_message ("finish refreshing, num trigger nodes %d",*/
-             /*router->num_trigger_nodes);*/
-  /*[>g_message ("**FINISHED REFRESHING**");<]*/
-/*}*/
-
-/*static int cmpfunc (const void * a, const void * b)*/
-/*{*/
-  /*return ((*(RouteNode* const *)a)->refcount -*/
-          /*(*(RouteNode* const *)b)->refcount);*/
-/*}*/
-
 /**
  * Starts a new cycle.
  */
@@ -822,28 +729,18 @@ router_start_cycle (
     {
       cache->trigger_nodes[i] =
         cache->init_trigger_nodes[i];
+      /*cache->trigger_nodes[i]->claimed = 0;*/
     }
   cache->num_trigger_nodes =
     cache->num_init_trigger_nodes;
-  /*g_message ("starting cycle");*/
   g_atomic_int_set (&cache->num_active_threads,
                     cache->num_threads);
   for (int i = 0; i < cache->num_threads; i++)
     {
-      /*g_message ("posting %d", i);*/
-      /*zix_sem_post (&cache->trigger_sem);*/
       zix_sem_post (&cache->start_cycle_sem);
     }
 
-  /*RouteNode * node;*/
-  /*while (node = get_next_trigger_node (cache, 0))*/
-    /*{*/
-      /*zix_sem_post (&cache->trigger_sem);*/
-    /*}*/
-
-  /*g_message ("waiting for finish");*/
   zix_sem_wait (&cache->finish_sem);
-  /*g_message ("finished waiting for finish");*/
 }
 
 void
@@ -914,14 +811,6 @@ router_new ()
   g_message ("num trigger nodes %d",
              self->num_init_trigger_nodes);
 
-  /*router_print (self);*/
-  /*qsort (self->registry,*/
-         /*self->num_nodes,*/
-         /*sizeof (RouteNode *),*/
-         /*cmpfunc);*/
-
-  /*zix_sem_init (&self->trigger_sem, 0);*/
-  /*zix_sem_init (&self->initing_sem, 0);*/
   router_init_threads (self);
 
   zix_sem_init (&self->finish_sem, 0);

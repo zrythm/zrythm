@@ -191,8 +191,6 @@ midi_panic (MidiEvents * events)
   jack_midi_event_t * ev = &queue->jack_midi_events[0];
   ev->time = 0;
   ev->size = 3;
-  if (!ev->buffer)
-    ev->buffer = calloc (3, sizeof (jack_midi_data_t));
   ev->buffer[0] = MIDI_CH1_CTRL_CHANGE;
   ev->buffer[1] = MIDI_ALL_NOTES_OFF;
   ev->buffer[2] = 0x00;

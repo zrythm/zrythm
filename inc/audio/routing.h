@@ -34,17 +34,17 @@ typedef enum RouteNodeType
 typedef struct RouteNode RouteNode;
 typedef struct RouteNode
 {
-  int         id;
+  gint         id;
 
   /* FIXME do we need the srcs? */
   RouteNode * srcs[1200];
   //GArray *    srcs;
-  int         refcount;
-  int         init_refcount;
+  volatile gint  refcount;
+  gint         init_refcount;
   /** AKA refcount. */
   //int         num_srcs;
   RouteNode * dests[1200];
-  int         num_dests;
+  gint         num_dests;
   //GArray *     dests;
 
   /** Port, if not a plugin or fader. */
@@ -55,6 +55,10 @@ typedef struct RouteNode
 
   /** Plugin, if plugin. */
   Plugin * pl;
+
+  /** Set to a specific number and checked to see
+   * if this is a valid node. */
+  int  validate;
 
   /**
    * Claimed or not.
@@ -94,15 +98,15 @@ typedef struct Router
   /** Working trigger nodes to be updated while
    * processing. These are unclaimed. */
   RouteNode * trigger_nodes[6000];
-  int         num_trigger_nodes;
+  volatile gint  num_trigger_nodes;
 
   RouteNode * init_trigger_nodes[6000];
-  int         num_init_trigger_nodes;
+  gint         num_init_trigger_nodes;
 
 #ifdef HAVE_JACK
   jack_native_thread_t threads[16];
 #endif
-  int                  num_threads;
+  gint                  num_threads;
 
   /** Set to 1 when ready to start processing for
    * this cycle. */
@@ -119,9 +123,9 @@ typedef struct Router
   //ZixSem          route_operation_sem;
   ZixSem          start_cycle_sem;
 
-  int              num_active_threads;
+  gint              num_active_threads;
 
-  int         stop_threads;
+  gint         stop_threads;
 } Router;
 
 /**

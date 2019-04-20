@@ -74,8 +74,8 @@ cpu_draw_cb (
 
   /*cairo_translate(cr, 0, 7);*/
 
-  cairo_set_source_rgba(cr, 0, 0, 0, 0.1);
-  cairo_paint(cr);
+  /*cairo_set_source_rgba(cr, 0, 0, 0, 0.1);*/
+  /*cairo_paint(cr);*/
 
   cairo_text_extents_t te;
   cairo_set_source_rgb(cr, 0.6, 1.0, 0);
@@ -268,6 +268,7 @@ refresh_cpu_load (GtkWidget * widget,
   gtk_widget_set_tooltip_text (
     widget, ttip);
   g_free (ttip);
+  gtk_widget_queue_draw (widget);
 
   return G_SOURCE_CONTINUE;
 }
