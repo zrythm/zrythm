@@ -119,7 +119,7 @@
         <property name="can_focus">False</property>
         <child>
           <object class="GtkButton" id="minimize">
-            <property name="visible">True</property>
+            <property name="visible">0</property>
             <property name="can_focus">False</property>
             <property name="receives_default">False</property>
             <property name="relief">none</property>
@@ -139,7 +139,7 @@
         </child>
         <child>
           <object class="GtkButton" id="maximize">
-            <property name="visible">True</property>
+            <property name="visible">0</property>
             <property name="can_focus">False</property>
             <property name="receives_default">False</property>
             <property name="relief">none</property>
@@ -159,7 +159,7 @@
         </child>
         <child>
           <object class="GtkButton" id="close">
-            <property name="visible">True</property>
+            <property name="visible">0</property>
             <property name="can_focus">False</property>
             <property name="receives_default">False</property>
             <property name="relief">none</property>

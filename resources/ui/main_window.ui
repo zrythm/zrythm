@@ -27,15 +27,8 @@
     <property name="can_focus">True</property>
     <property name="window_position">center</property>
     <property name="gravity">center</property>
-    <property name="show_menubar">False</property>
     <signal name="destroy" handler="on_main_window_destroy" swapped="no"/>
     <signal name="window-state-event" handler="on_state_changed" swapped="no"/>
-    <child type="titlebar">
-      <object class="HeaderBarWidget" id="header_bar">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-      </object>
-    </child>
     <child>
       <object class="GtkOverlay" id="overlay">
         <property name="visible">True</property>
@@ -45,6 +38,12 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
+            <child>
+              <object class="HeaderBarWidget" id="header_bar">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+              </object>
+            </child>
             <child>
               <object class="TopBarWidget" id="top_bar">
                 <property name="visible">1</property>
@@ -88,6 +87,9 @@
               </packing>
             </child>
           </object>
+          <packing>
+            <property name="index">-1</property>
+          </packing>
         </child>
         <child type="overlay">
           <object class="GtkOverlay" id="overlay2">
@@ -132,7 +134,7 @@
                               <object class="GtkImage" id="image2">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="icon-name">z-window-close-symbolic</property>
+                                <property name="icon_name">z-window-close-symbolic</property>
                               </object>
                             </child>
                             <style>
