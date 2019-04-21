@@ -117,66 +117,6 @@
       <object class="GtkBox" id="window_buttons">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <child>
-          <object class="GtkButton" id="minimize">
-            <property name="visible">0</property>
-            <property name="can_focus">False</property>
-            <property name="receives_default">False</property>
-            <property name="relief">none</property>
-            <property name="action-name">app.iconify</property>
-            <child>
-              <object class="GtkImage">
-                <property name="visible">1</property>
-                <property name="icon-name">z-window-minimize</property>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkButton" id="maximize">
-            <property name="visible">0</property>
-            <property name="can_focus">False</property>
-            <property name="receives_default">False</property>
-            <property name="relief">none</property>
-            <property name="action-name">app.fullscreen</property>
-            <child>
-              <object class="GtkImage">
-                <property name="visible">1</property>
-                <property name="icon-name">z-window-maximize</property>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkButton" id="close">
-            <property name="visible">0</property>
-            <property name="can_focus">False</property>
-            <property name="receives_default">False</property>
-            <property name="relief">none</property>
-            <property name="action-name">app.quit</property>
-            <child>
-              <object class="GtkImage">
-                <property name="visible">1</property>
-                <property name="icon-name">z-window-close</property>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">2</property>
-          </packing>
-        </child>
       </object>
       <packing>
         <property name="pack_type">end</property>

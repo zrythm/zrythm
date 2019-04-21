@@ -47,9 +47,6 @@ typedef struct _HeaderBarWidget
   GtkMenu *                view_menu;
   GtkMenu *                help_menu;
   GtkBox *                 window_buttons;
-  GtkButton *              minimize;
-  GtkButton *              maximize;
-  GtkButton *              close;
 } HeaderBarWidget;
 
 HeaderBarWidget *

@@ -258,6 +258,7 @@ engine_post_process (AudioEngine * self)
 
   AUDIO_ENGINE->last_time_taken =
     g_get_monotonic_time () - AUDIO_ENGINE->last_time_taken;
+  /*g_message ("last time taken: %ld");*/
   if (AUDIO_ENGINE->max_time_taken <
       AUDIO_ENGINE->last_time_taken)
     AUDIO_ENGINE->max_time_taken =

@@ -289,11 +289,6 @@ main_window_widget_init (MainWindowWidget * self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  gtk_window_set_decorated (
-    GTK_WINDOW (self), 1);
-  gtk_application_window_set_show_menubar (
-    GTK_APPLICATION_WINDOW (self), 1);
-
   g_signal_connect (
     G_OBJECT (self->close_notification_button),
     "clicked",

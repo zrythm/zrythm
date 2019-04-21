@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2017, 2019 Robin Gareus <robin@gareus.org>
  *
  * This file is part of Zrythm
  *
@@ -39,19 +40,85 @@
 #define MAGIC_NUMBER 76322
 
 static inline void
-add_trigger_node (
-  Router * router,
-  RouteNode * node)
+graph_reached_terminal_node (Graph* self);
+
+/* called from a node when all its incoming edges have
+ * completed processing and the node can run.
+ * It is added to the "work queue" */
+static inline void
+graph_trigger (Graph* self, GraphNode* n)
 {
-  router->trigger_nodes[
-    g_atomic_int_add (
-      &router->num_trigger_nodes, 1)] = node;
+  /*g_message ("locking trigger mutex in graph trigger");*/
+	pthread_mutex_lock (&self->trigger_mutex);
+	g_warn_if_fail (
+    self->n_trigger_queue <
+    self->trigger_queue_size);
+  /*g_message ("appending %s to trigger nodes",*/
+             /*n->type == ROUTE_NODE_TYPE_PORT ?*/
+             /*n->port->label :*/
+             /*n->pl->descr->name);*/
+	self->trigger_queue[
+    self->n_trigger_queue++] = n;
+  pthread_mutex_unlock (&self->trigger_mutex);
+}
+
+/**
+ * Called by an upstream node when it has completed
+ * processing.
+ */
+static inline void
+node_trigger (
+  GraphNode * self)
+{
+  /*g_message ("triggering %s",*/
+             /*self->type == ROUTE_NODE_TYPE_PORT ?*/
+             /*self->port->label :*/
+             /*self->pl->descr->name);*/
+  /* check if we can run */
+	if (g_atomic_int_dec_and_test (&self->refcount))
+    {
+      /*g_message ("all nodes that feed it have completed");*/
+        /* reset reference count for next cycle */
+      g_atomic_int_set (&self->refcount,
+                        self->init_refcount);
+      /*if (self->type == ROUTE_NODE_TYPE_PLUGIN)*/
+      /*g_message ("reset refcount to %d",*/
+                 /*self->refcount);*/
+      /* all nodes that feed this node have
+       * completed, so this node be processed
+       * now. */
+      graph_trigger (self->graph, self);
+    }
+}
+
+static inline void
+node_finish (
+  GraphNode * self)
+{
+  int feeds = 0;
+
+	/* notify downstream nodes that depend on this
+   * node */
+	for (int i = 0; i < self->n_childnodes; ++i)
+    {
+      /*g_message ("notifying dest %d", i);*/
+      node_trigger (self->childnodes[i]);
+      feeds = 1;
+    }
+
+	/* if there are no outgoing edges, this is a
+   * terminal node */
+	if (!feeds)
+    {
+      /* notify parent graph */
+      graph_reached_terminal_node (self->graph);
+    }
 }
 
 static void
-print_node (RouteNode * node, int i)
+print_node (GraphNode * node)
 {
-  RouteNode * src, * dest;
+  GraphNode * src, * dest;
   if (!node)
     {
       g_message ("(null) node");
@@ -60,31 +127,18 @@ print_node (RouteNode * node, int i)
 
   char * str1 =
     g_strdup_printf (
-      "node %d [(%d) %s] refcount: %d",
-      i,
+      "node [(%d) %s] refcount: %d | terminal: %s | initial: %s",
       node->id,
       node->type == ROUTE_NODE_TYPE_PLUGIN ?
         node->pl->descr->name :
         node->port->label,
-      node->refcount);
+      node->refcount,
+      node->terminal ? "yes" : "no",
+      node->initial ? "yes" : "no");
   char * str2;
-  for (int j = 0; j < node->refcount; j++)
+  for (int j = 0; j < node->n_childnodes; j++)
     {
-      src = node->srcs[j];
-      str2 =
-        g_strdup_printf ("%s (src [(%d) %s])",
-          str1,
-          src->id,
-          src->type ==
-            ROUTE_NODE_TYPE_PLUGIN ?
-              src->pl->descr->name :
-              src->port->label);
-      g_free (str1);
-      str1 = str2;
-    }
-  for (int j = 0; j < node->num_dests; j++)
-    {
-      dest = node->dests[j];
+      dest = node->childnodes[j];
       str2 =
         g_strdup_printf ("%s (dest [(%d) %s])",
           str1,
@@ -100,134 +154,39 @@ print_node (RouteNode * node, int i)
   g_free (str1);
 }
 
-static void
-nodes_disconnect (
-  Router * router,
-  RouteNode * src,
-  RouteNode * dest)
-{
-  g_warn_if_fail (src != NULL);
-  g_warn_if_fail (dest != NULL);
-
-  /*[> disconnect dest from src <]*/
-  if (array_contains (src->dests,
-                      src->num_dests,
-                      dest))
-    {
-      array_delete (src->dests,
-                    src->num_dests, dest);
-    }
-  if (array_contains (dest->srcs,
-                      dest->init_refcount,
-                      src))
-    {
-      array_delete (dest->srcs,
-                    dest->init_refcount, src);
-    }
-}
-
 /**
- * Gets next unclaimed trigger node in the array and
- * marks it as claimed.
- */
-static inline RouteNode *
-get_next_trigger_node (
-  Router * router,
-  int      pop)
-{
-  if (g_atomic_int_get (
-        &router->num_trigger_nodes) == 0)
-    {
-      /*g_message ("no trigger nodes");*/
-      return NULL;
-    }
-
-  RouteNode * node;
-  int num, new_num;
-  while (1)
-    {
-      /*g_usleep (1000);*/
-      num =
-        g_atomic_int_get (
-          &router->num_trigger_nodes);
-      /*g_message ("first num %d",*/
-                 /*num);*/
-      if (num == 0)
-        return NULL;
-      RouteNode * node =
-        router->trigger_nodes[num - 1];
-      g_warn_if_fail (
-        node->validate == MAGIC_NUMBER);
-      if (pop)
-        {
-          /* try decrementing */
-          g_atomic_int_dec_and_test (
-            &router->num_trigger_nodes);
-          /* check that current num is exactly 1
-           * less than what it was */
-          new_num =
-            g_atomic_int_get (
-              &router->num_trigger_nodes);
-          /*g_message ("new num %d, node claimed %d", new_num, node->claimed);*/
-          /*if (!node->claimed)*/
-            /*g_warning ("not claimed");*/
-          if ((new_num == num - 1))
-            {
-              /*g_message ("claiming %d",*/
-                         /*num - 1);*/
-              /* claim node */
-              /*node->claimed = 1;*/
-              return node;
-            }
-          else
-            {
-              /* revert */
-              g_atomic_int_inc (
-                &router->num_trigger_nodes);
-              /*g_message ("reverting to %d",*/
-                         /*num);*/
-              continue;
-            }
-        }
-      else
-        {
-          /* check that current num is exactly as
-           * it was */
-          new_num =
-            g_atomic_int_get (
-              &router->num_trigger_nodes);
-          if (new_num == num)
-            {
-              /*g_message ("returning %d",*/
-                         /*num - 1);*/
-              return router->trigger_nodes[
-                num - 1];
-            }
-        }
-    }
-}
-
-/**
- * Processes the RouteNode and returns a new trigger
+ * Processes the GraphNode and returns a new trigger
  * node.
  */
 static void
-process_trigger_node (
-  Router * router,
-  RouteNode * node)
+node_process (
+  GraphNode * node)
 {
-      g_warn_if_fail (
-        node->validate == MAGIC_NUMBER);
   Channel * chan;
+
+  /*g_message ("num trigger nodes %d, max_trigger nodes %d", node->graph->n_trigger_queue, node->graph->trigger_queue_size);*/
+  for (int i = 0; i < node->graph->n_trigger_queue; i++)
+    {
+      GraphNode * n = node->graph->trigger_queue[i];
+      /*g_message ("trigger node %d: %s",*/
+                 /*i,*/
+                 /*n->type == ROUTE_NODE_TYPE_PORT ?*/
+                 /*n->port->label :*/
+                 /*n->pl->descr->name);*/
+    }
 
   if (node->type == ROUTE_NODE_TYPE_PLUGIN)
     {
+      /*g_message ("processing plugin %s",*/
+                 /*node->pl->descr->name);*/
       plugin_process (node->pl);
     }
   else if (node->type == ROUTE_NODE_TYPE_PORT)
     {
       /* decide what to do based on what port it is */
       Port * port = node->port;
+      /*g_message ("processing port %s",*/
+                 /*node->port->label);*/
 
       /* if piano roll */
       if (port->flags & PORT_FLAG_PIANO_ROLL)
@@ -384,156 +343,254 @@ process_trigger_node (
           port_sum_signal_from_inputs (port);
         }
     }
-
-  /* set the processed node's refcount to
-   * init_refcount */
-  g_atomic_int_set (
-    &node->refcount,
-    node->init_refcount);
-
-  /* decrement ref count of dests */
-  for (int i = 0;
-       i < node->num_dests; i++)
-    {
-      /* if became 0 */
-      if (g_atomic_int_dec_and_test (
-            &node->dests[i]->refcount))
-        {
-          g_warn_if_fail (
-            node->dests[i]->validate ==
-              MAGIC_NUMBER);
-          add_trigger_node (
-            router,
-            node->dests[i]);
-        }
-    }
 }
 
 static inline void
-dec_and_test (Router * router)
+node_run (GraphNode * self)
 {
-  /*g_message ("***** no new trigger nodes found, finishing this thread ****");*/
+  /*graph_print (self->graph);*/
+  node_process (self);
+  node_finish (self);
+}
 
-  if (g_atomic_int_dec_and_test (
-    &router->num_active_threads))
+static inline void
+add_feeds (
+  GraphNode * self,
+  GraphNode * dest)
+{
+  for (int i = 0; i < self->n_childnodes; i++)
+    if (self->childnodes[i] == dest)
+      return;
+
+  self->childnodes =
+    (GraphNode **) realloc (
+      self->childnodes,
+      (1 + self->n_childnodes) *
+        sizeof (GraphNode *));
+  self->childnodes[self->n_childnodes++] = dest;
+}
+
+static inline void
+add_depends (
+  GraphNode * self)
+{
+  ++self->init_refcount;
+  self->refcount = self->init_refcount;
+}
+
+static inline void
+graph_init (
+  Graph * self)
+{
+  zix_sem_init (&self->callback_start, 0);
+  zix_sem_init (&self->callback_done, 0);
+  zix_sem_init (&self->trigger, 0);
+
+  pthread_mutex_init (&self->trigger_mutex, NULL);
+}
+
+static int cnt = 0;
+
+static void *
+graph_worker_thread (void * g)
+{
+	Graph* self = (Graph*)g;
+  GraphNode* to_run = NULL;
+  int wakeup, i;
+	do
     {
-      zix_sem_post (&router->finish_sem);
-    }
+      /*g_usleep (5000);*/
+      /*graph_print (self);*/
+
+      to_run = NULL;
+
+      /*g_message ("locking trigger mutex in worker thread");*/
+      pthread_mutex_lock (&self->trigger_mutex);
+
+      if (self->terminate)
+        {
+          pthread_mutex_unlock (&self->trigger_mutex);
+          return 0;
+        }
+
+      if (self->n_trigger_queue > 0)
+        to_run =
+          self->trigger_queue[
+            --self->n_trigger_queue];
+      /*g_message ("acquired trig node, num_trig_nodes now: %d", self->n_trigger_queue);*/
+
+      /*g_message ("idle threads: %d, trigger nodes: %d",*/
+                 /*self->idle_thread_cnt,*/
+                 /*self->n_trigger_queue);*/
+      wakeup =
+        MIN (self->idle_thread_cnt,
+             self->n_trigger_queue);
+
+      /* wake up threads */
+      self->idle_thread_cnt -= wakeup;
+      /*g_message ("wake up %d", wakeup);*/
+      for (i = 0; i < wakeup; i++)
+        {
+          /*g_message ("posting trigger for wakeup %d",*/
+                     /*i);*/
+          zix_sem_post (&self->trigger);
+        }
+
+      while (!to_run)
+        {
+          /* wait for work, fall asleep */
+          /*g_message ("incrementing idle thread count");*/
+          self->idle_thread_cnt++;
+          g_warn_if_fail (self->idle_thread_cnt <= self->num_threads);
+          pthread_mutex_unlock (&self->trigger_mutex);
+          /*g_message ("waiting trigger");*/
+          zix_sem_wait (&self->trigger);
+          /*g_message ("waited");*/
+
+          if (self->terminate)
+            return 0;
+
+          /* try to find some work to do */
+          /*g_message ("locking to find some work");*/
+          pthread_mutex_lock (&self->trigger_mutex);
+          if (self->n_trigger_queue > 0)
+            to_run =
+              self->trigger_queue[
+                --self->n_trigger_queue];
+        }
+      pthread_mutex_unlock (&self->trigger_mutex);
+
+      /* process graph-node */
+      node_run (to_run);
+
+    } while (!self->terminate);
+	return 0;
 }
 
 __attribute__((annotate("realtime")))
 static void *
-work (void * arg)
+graph_main_thread (void * arg)
 {
-  RouteNode * node;
-  Router * router = (Router *) arg;
+  g_message ("THREAD CREATED");
+  GraphNode * node;
+  Graph * self = (Graph *) arg;
 
-  /* loop forever */
-  while (1)
+  /* wait for initial process callback */
+          g_message ("waiting callback start");
+  zix_sem_wait (&self->callback_start);
+
+  g_message ("locking in main thread");
+  pthread_mutex_lock (&self->trigger_mutex);
+
+	/* Can't run without a graph */
+	g_warn_if_fail (self->n_graph_nodes > 0);
+	g_warn_if_fail (self->n_init_triggers > 0);
+	g_warn_if_fail (self->terminal_node_count > 0);
+
+	/* bootstrap trigger-list.
+	 * (later this is done by
+   * Graph_reached_terminal_node)*/
+	for (int i = 0;
+       i < self->n_init_triggers; ++i)
     {
-      /*g_message ("waiting for start");*/
-      zix_sem_wait (&router->start_cycle_sem);
-      /*g_message ("waited for start");*/
-
-      /* loop in the current cycle */
-      while (1)
-        {
-          if (g_atomic_int_get (
-            &router->stop_threads))
-            break;
-
-          /* get trigger node */
-          node = get_next_trigger_node (router, 1);
-          /*g_message ("trig node %s",*/
-                     /*node->type == ROUTE_NODE_TYPE_PLUGIN ?*/
-                     /*node->pl->descr->name :*/
-                     /*node->port->label);*/
-          if (node)
-            {
-              /* process trigger node */
-              process_trigger_node (router, node);
-              /*g_message ("processed trigger node");*/
-
-              /* find next trigger node */
-              node =
-                get_next_trigger_node (router, 0);
-
-              /* decrement num active threads if
-               * no more trigger nodes */
-              if (!node)
-                {
-                  dec_and_test (router);
-                  break;
-                }
-            }
-          else
-            {
-              dec_and_test (router);
-              break;
-            }
-          /*router_print (router);*/
-        }
-      /*router_print (router);*/
+      g_warn_if_fail (
+        self->n_trigger_queue <
+        self->trigger_queue_size);
+      /*g_message ("init trigger node %d, num trigger nodes %d, max_trigger nodes %d", i, self->n_trigger_queue, self->trigger_queue_size);*/
+      self->trigger_queue[
+        self->n_trigger_queue++] =
+          self->init_trigger_list[i];
     }
-  return 0;
+	pthread_mutex_unlock (&self->trigger_mutex);
+
+	/* after setup, the main-thread just becomes
+   * a normal worker */
+  return graph_worker_thread (self);
 }
 
 void
-router_init_threads (
-  Router * router)
+graph_init_threads (
+  Graph * graph)
 {
   int num_cores = audio_get_num_cores ();
-  /*int num_cores = 2;*/
+  /*g_message ("num cores %d", num_cores);*/
+  /*int num_cores = 16;*/
 
-    for (int i = 0; i < num_cores - 1; i++)
+  /* create worker threads (num cores - 2 because
+   * the main thread will become a worker too, so
+   * in total N_CORES - 1 threads */
+    for (int i = 0; i < num_cores - 2; i++)
     {
+      graph->num_threads++;
+      /*zix_sem_post (&graph->callback_start);*/
+      /*zix_sem_post (&graph->callback_done);*/
 #ifdef HAVE_JACK
       jack_client_create_thread (
         AUDIO_ENGINE->client,
-        &router->threads[i],
+        &graph->threads[i],
         jack_client_real_time_priority (
           AUDIO_ENGINE->client),
         jack_is_realtime (AUDIO_ENGINE->client),
-        work,
-        router);
+        graph_worker_thread,
+        graph);
 
-      if (router->threads[i] == -1)
+      if (graph->threads[i] == -1)
         {
           g_warning ("%lu: Failed creating thread %d",
-                   router->threads[i], i);
+                   graph->threads[i], i);
           return;
         }
-      router->num_threads++;
+      g_message ("created thread %d", i);
 #endif
     }
+
+    /* and the main thread */
+#ifdef HAVE_JACK
+  jack_client_create_thread (
+    AUDIO_ENGINE->client,
+    &graph->main_thread,
+    jack_client_real_time_priority (
+      AUDIO_ENGINE->client),
+    jack_is_realtime (AUDIO_ENGINE->client),
+    graph_main_thread,
+    graph);
+
+  if (graph->main_thread == -1)
+    {
+      g_warning ("%lu: Failed creating main thread",
+               graph->main_thread);
+      return;
+    }
+#endif
+
+  /* breathe */
+  sched_yield ();
+
 }
 
 static void
-nodes_connect (
-  Router * router,
-  RouteNode * src,
-  RouteNode * dest)
+connect (
+  GraphNode * from,
+  GraphNode * to)
 {
-  g_warn_if_fail (src != NULL);
-  g_warn_if_fail (dest != NULL);
-  /*zix_sem_wait (&router->route_operation_sem);*/
-  nodes_disconnect (router, src, dest);
-  src->dests[src->num_dests++] = dest;
-  dest->srcs[dest->init_refcount++] = src;
-  /*zix_sem_post (&router->route_operation_sem);*/
+  if (array_contains (from->childnodes,
+                      from->n_childnodes,
+                      to))
+    return;
+
+  add_feeds (from, to);
+  add_depends (to);
 }
 
-static RouteNode *
+static GraphNode *
 find_node_from_port (
-  Router * router,
+  Graph * graph,
   Port * port)
 {
-  RouteNode * node;
-  for (int i = 0; i < router->registry->len; i++)
+  GraphNode * node;
+  for (int i = 0; i < graph->n_graph_nodes; i++)
     {
-      node =
-        g_array_index (router->registry,
-                       RouteNode *, i);
+      node = graph->graph_nodes[i];
       if (node->type == ROUTE_NODE_TYPE_PORT &&
           node->port->id == port->id)
         return node;
@@ -541,17 +598,15 @@ find_node_from_port (
   return NULL;
 }
 
-static RouteNode *
+static GraphNode *
 find_node_from_plugin (
-  Router * router,
+  Graph * graph,
   Plugin * pl)
 {
-  RouteNode * node;
-  for (int i = 0; i < router->registry->len; i++)
+  GraphNode * node;
+  for (int i = 0; i < graph->n_graph_nodes; i++)
     {
-      node =
-        g_array_index (router->registry,
-                       RouteNode *, i);
+      node = graph->graph_nodes[i];
       if (node->type == ROUTE_NODE_TYPE_PLUGIN &&
           node->pl->id == pl->id)
         return node;
@@ -559,162 +614,235 @@ find_node_from_plugin (
   return NULL;
 }
 
-/*static RouteNode **/
-/*find_node_by_id (*/
-  /*Router * router,*/
-  /*int      id)*/
-/*{*/
-  /*return*/
-    /*g_array_index (router->registry,*/
-                   /*RouteNode *, id);*/
-/*}*/
-
-static void
-add_node_to_registry (
-  Router * router,
-  RouteNode * node)
+static inline GraphNode *
+graph_node_new (
+  Graph * graph,
+  GraphNodeType type,
+  void *   data)
 {
-  /*zix_sem_wait (&router->route_operation_sem);*/
-  node->id = router->registry->len;
-  g_array_append_val (
-    router->registry, node);
-
-  /*zix_sem_post (&router->route_operation_sem);*/
-
-  if (node->type == ROUTE_NODE_TYPE_PORT)
-    g_hash_table_insert (
-      router->port_nodes,
-      &node->port->id,
-      node);
-  else if (node->type == ROUTE_NODE_TYPE_PLUGIN)
-    g_hash_table_insert (
-      router->plugin_nodes,
-      &node->pl->id,
-      node);
-}
-
-/**
- * Creates a RouteNode out of a Port and connects it
- * to dests/srcs.
- *
- * If it has no inputs, the node is also added in the
- * trigger nodes.
- */
-static void
-add_plugin_node (
-  Router * router,
-  Plugin * pl)
-{
-  /* if node exists return */
-  if (find_node_from_plugin (router, pl))
-    return;
-
-  int i;
-
-  RouteNode * node = calloc (1, sizeof (RouteNode));
-  node->pl = pl;
-  node->validate = MAGIC_NUMBER;
-  node->type = ROUTE_NODE_TYPE_PLUGIN;
-  add_node_to_registry (router, node);
-}
-
-/**
- * Creates a RouteNode out of a Port and connects it
- * to dests/srcs.
- *
- * If it has no inputs, the node is also added in the
- * trigger nodes.
- */
-static RouteNode *
-add_port_node (
-  Router * router,
-  Port *   port)
-{
-  /* if node exists return */
-  /*router_print (router);*/
-  if (find_node_from_port (router, port))
-    return NULL;
-
-  /*g_message ("node for %s not found, adding",*/
-             /*port->label);*/
-
-  int i;
-
-  RouteNode * node = calloc (1, sizeof (RouteNode));
-  node->validate = MAGIC_NUMBER;
-  node->port = port;
-  node->type = ROUTE_NODE_TYPE_PORT;
-  add_node_to_registry (router, node);
-
-  RouteNode * src, * dest;
-  for (i = 0; i < port->num_srcs; i++)
-    {
-      src =
-        find_node_from_port (router, port->srcs[i]);
-
-      /* create node if doesn't exist */
-      if (!src)
-        src = add_port_node (router, port->srcs[i]);
-
-      /* connect nodes */
-      nodes_connect (router, src, node);
-    }
-  for (i = 0; i < port->num_dests; i++)
-    {
-      dest =
-        find_node_from_port (router, port->dests[i]);
-
-      /* create node if doesn't exist */
-      if (!dest)
-        dest = add_port_node (router, port->dests[i]);
-
-      /* connect nodes */
-      nodes_connect (router, node, dest);
-    }
-
-  /* if port is outgoing from a plugin, the plugin is
-   * its source */
-  if (port->owner_pl &&
-      port->flow == FLOW_OUTPUT)
-    {
-      add_plugin_node (router, port->owner_pl);
-      nodes_connect (
-        router,
-        find_node_from_plugin (router,
-                               port->owner_pl),
-        node);
-    }
-
-  /* if port is going into a plugin, the plugin is
-   * its dest */
-  if (port->owner_pl &&
-      port->flow == FLOW_INPUT)
-    {
-      add_plugin_node (router, port->owner_pl);
-      nodes_connect (
-        router,
-        node,
-        find_node_from_plugin (router,
-                               port->owner_pl));
-    }
+  GraphNode * node =
+    calloc (1, sizeof (GraphNode));
+  node->id = graph->n_graph_nodes;
+  node->graph = graph;
+  node->type = type;
+  if (type == ROUTE_NODE_TYPE_PLUGIN)
+    node->pl = (Plugin *) data;
+  else if (type == ROUTE_NODE_TYPE_PORT)
+    node->port = (Port *) data;
 
   return node;
 }
 
+static inline GraphNode *
+graph_add_node (
+  Graph * graph,
+  GraphNodeType type,
+  void * data)
+{
+  free (graph->trigger_queue);
+  graph->trigger_queue =
+    (GraphNode **) malloc (
+      ++graph->trigger_queue_size *
+      sizeof (GraphNode *));
+  graph->graph_nodes =
+    (GraphNode **) realloc (
+      graph->graph_nodes,
+      (1 + graph->n_graph_nodes) *
+      sizeof (GraphNode *));
+
+  graph->graph_nodes[graph->n_graph_nodes] =
+    graph_node_new (graph, type, data);
+  return graph->graph_nodes[graph->n_graph_nodes++];
+}
+
+static inline GraphNode *
+graph_add_terminal_node (
+  Graph * self,
+  GraphNodeType type,
+  void * data)
+{
+  self->terminal_refcnt =
+    ++self->terminal_node_count;
+  GraphNode * node =
+    graph_add_node (self, type, data);
+  node->terminal = 1;
+  /*g_message ("adding terminal node %d",*/
+             /*node->id);*/
+  return node;
+}
+
+static inline GraphNode *
+graph_add_initial_node (
+  Graph * self,
+  GraphNodeType type,
+  void * data)
+{
+  self->init_trigger_list =
+    (GraphNode**)realloc (
+      self->init_trigger_list,
+      (1 + self->n_init_triggers) *
+        sizeof (GraphNode*));
+
+  self->init_trigger_list[
+    self->n_init_triggers] =
+      graph_add_node (self, type, data);
+	GraphNode * node =
+    self->init_trigger_list[
+      self->n_init_triggers++];
+  node->initial = 1;
+  return node;
+}
+
+static inline GraphNode *
+graph_add_terminal_and_initial_node (
+  Graph * self,
+  GraphNodeType type,
+  void * data)
+{
+  /* terminal */
+  self->terminal_refcnt =
+    ++self->terminal_node_count;
+  GraphNode * node =
+    graph_add_node (self, type, data);
+  node->terminal = 1;
+
+  /* initial */
+  self->init_trigger_list =
+    (GraphNode**)realloc (
+      self->init_trigger_list,
+      (1 + self->n_init_triggers) *
+        sizeof (GraphNode*));
+
+  self->n_init_triggers++;
+  node->initial = 1;
+
+  return node;
+}
+
+static inline void
+node_free (
+  GraphNode * node)
+{
+  free (node->childnodes);
+  free (node);
+}
+
+static inline void
+graph_free (
+  Graph * self)
+{
+  int i;
+  for (i = 0; i < self->n_graph_nodes; ++i)
+    {
+		node_free (self->graph_nodes[i]);
+    }
+	free (self->graph_nodes);
+
+	pthread_mutex_destroy (&self->trigger_mutex);
+
+	zix_sem_destroy (&self->callback_start);
+	zix_sem_destroy (&self->callback_done);
+  zix_sem_destroy (&self->trigger);
+}
+
+void
+graph_terminate (
+  Graph * self)
+{
+  /*g_message ("locking to destroy");*/
+  pthread_mutex_lock (&self->trigger_mutex);
+  self->terminate = 1;
+	self->init_trigger_list = NULL;
+	self->n_init_triggers   = 0;
+	self->trigger_queue     = NULL;
+	self->n_trigger_queue   = 0;
+	free (self->init_trigger_list);
+	free (self->trigger_queue);
+
+	int tc = self->idle_thread_cnt;
+  g_warn_if_fail (tc == self->num_threads);
+	pthread_mutex_unlock (&self->trigger_mutex);
+
+	/* wake-up sleeping threads */
+	for (int i = 0; i < tc; ++i) {
+		zix_sem_post (&self->trigger);
+	}
+	/* and the main thread */
+  /*g_message ("locking trigger mutex to post callback");*/
+	pthread_mutex_lock (&self->trigger_mutex);
+	zix_sem_post (&self->callback_start);
+  pthread_mutex_unlock (&self->trigger_mutex);
+}
+
 void
 router_destroy (
-  Router * router)
+  Graph * self)
 {
-  g_atomic_int_set (&router->stop_threads, 1);
-  for (int i = 0; i < router->num_threads; i++)
+  int i;
+
+  graph_terminate (self);
+
+  /* wait for threads to finish */
+  g_usleep (5000);
+
+  for (i = 0; i < self->num_threads; ++i) {
+		/*pthread_join (workers[i], NULL);*/
+  }
+
+  graph_free (self);
+}
+
+/* called from a terminal node (from the Graph worked-thread)
+ * to indicate it has completed processing.
+ *
+ * The thread of the last terminal node that reaches here
+ * will inform the main-thread, wait, and kick off the next process cycle.
+ */
+static inline void
+graph_reached_terminal_node (Graph * self)
+{
+  /*g_message ("reached terminal node");*/
+	if (g_atomic_int_dec_and_test (
+        &self->terminal_refcnt))
     {
-      zix_sem_post (&router->start_cycle_sem);
+      /*g_message ("all terminal nodes completed");*/
+      /* all terminal nodes have completed,
+       * we're done with this cycle.
+       */
+      zix_sem_post (&self->callback_done);
+
+      /* now wait for the next cycle to begin */
+      /*g_message ("waiting callback start");*/
+      zix_sem_wait (&self->callback_start);
+
+      if (self->terminate) {
+        return;
+      }
+
+      /* reset terminal reference count */
+      g_atomic_int_set (
+        &self->terminal_refcnt,
+        self->terminal_node_count);
+
+      /* and start the initial nodes */
+      /*g_message ("locking trigger mutex to start initial nodes");*/
+      pthread_mutex_lock (&self->trigger_mutex);
+      for (int i = 0;
+           i < self->n_init_triggers; ++i)
+        {
+          g_warn_if_fail (
+            self->n_trigger_queue <
+            self->trigger_queue_size);
+          self->trigger_queue[
+            self->n_trigger_queue++] =
+              self->init_trigger_list[i];
+        }
+      pthread_mutex_unlock (&self->trigger_mutex);
+      /* continue in worker-thread */
     }
-
-  /* wait for threads to stop */
-  g_usleep (1000);
-
-  free (router);
+  /*g_message ("terminal refcount: %d",*/
+             /*g_atomic_int_get (*/
+               /*&self->terminal_refcnt));*/
 }
 
 /**
@@ -722,48 +850,45 @@ router_destroy (
  */
 void
 router_start_cycle (
-  Router * cache)
+  Graph * self)
 {
-  for (int i = 0; i < cache->num_init_trigger_nodes;
-       i++)
-    {
-      cache->trigger_nodes[i] =
-        cache->init_trigger_nodes[i];
-      /*cache->trigger_nodes[i]->claimed = 0;*/
-    }
-  cache->num_trigger_nodes =
-    cache->num_init_trigger_nodes;
-  g_atomic_int_set (&cache->num_active_threads,
-                    cache->num_threads);
-  for (int i = 0; i < cache->num_threads; i++)
-    {
-      zix_sem_post (&cache->start_cycle_sem);
-    }
-
-  zix_sem_wait (&cache->finish_sem);
+  /*self->n_trigger_queue = 0;*/
+  /*g_message ("num trigger nodes at start: %d, num init trigger nodes at start: %d, num_max trigger nodes at start: %d",*/
+             /*self->n_trigger_queue,*/
+             /*self->n_init_triggers,*/
+             /*self->trigger_queue_size);*/
+  /*for (int i = 0; i < self->num_threads; i++)*/
+    zix_sem_post (&self->callback_start);
+  /*g_message ("waiting callback done");*/
+  /*for (int i = 0; i < self->num_threads; i++)*/
+    zix_sem_wait (&self->callback_done);
+  /*g_message ("num trigger nodes at end: %d, num init trigger nodes at end %d, num_max trigger nodes at end: %d",*/
+             /*self->n_trigger_queue,*/
+             /*self->n_init_triggers,*/
+             /*self->trigger_queue_size);*/
 }
 
 void
-router_print (
-  Router * router)
+graph_print (
+  Graph * graph)
 {
-  g_message ("==printing router");
-  RouteNode * node;
-  for (int i = 0; i < router->registry->len; i++)
+  g_message ("==printing graph");
+  GraphNode * node;
+  for (int i = 0; i < graph->n_graph_nodes; i++)
     {
-      print_node (
-        g_array_index (router->registry,
-                       RouteNode *, i),
-        i);
+      print_node (graph->graph_nodes[i]);
     }
-  g_message ("==finish printing router");
+  g_message ("==finish printing graph");
 }
 
-Router *
+Graph *
 router_new ()
 {
-  Router * self = calloc (1, sizeof (Router));
-  /*zix_sem_init (&self->route_operation_sem, 1);*/
+  int i, j;
+  GraphNode * node, * node2;
+  Graph * self = calloc (1, sizeof (Graph));
+
+  graph_init (self);
 
   self->port_nodes =
     g_hash_table_new (
@@ -773,47 +898,140 @@ router_new ()
     g_hash_table_new (
       g_int_hash,
       g_int_equal);
-  self->registry =
-    g_array_new (0, 0, sizeof (RouteNode *));
+
+  /* ========================
+   * first add all the nodes
+   * ======================== */
+
+  /* add plugins */
+  Plugin * plugin;
+  for (i = 0; i < PROJECT->num_plugins; i++)
+    {
+      plugin = project_get_plugin (i);
+      if (!plugin) continue;
+
+      if (plugin->num_in_ports == 0 &&
+          plugin->num_out_ports > 0)
+        graph_add_initial_node (
+          self, ROUTE_NODE_TYPE_PLUGIN, plugin);
+      else if (plugin->num_out_ports == 0 &&
+               plugin->num_in_ports > 0)
+        graph_add_terminal_node (
+          self, ROUTE_NODE_TYPE_PLUGIN, plugin);
+      else if (plugin->num_out_ports == 0 &&
+               plugin->num_in_ports == 0)
+        {
+        }
+      else
+        graph_add_node (
+          self, ROUTE_NODE_TYPE_PLUGIN, plugin);
+    }
 
   /* add ports */
   Port * port;
-  for (int i = 0; i < PROJECT->num_ports; i++)
+  for (i = 0; i < PROJECT->num_ports; i++)
     {
+      /* FIXME project arrays should be hashtables
+       */
       port = project_get_port (i);
       if (!port) continue;
 
       /*g_message ("adding port node %s",*/
                  /*port->label);*/
-      add_port_node (self, port);
+      /*add_port_node (self, port);*/
+      if (port->num_dests == 0 &&
+          port->num_srcs == 0 &&
+          port->owner_pl)
+        {
+          if (port->flow == FLOW_INPUT)
+            graph_add_initial_node (
+              self, ROUTE_NODE_TYPE_PORT, port);
+          else if (port->flow == FLOW_OUTPUT)
+            graph_add_terminal_node (
+              self, ROUTE_NODE_TYPE_PORT, port);
+        }
+      else if (port->num_dests == 0 &&
+               port->num_srcs == 0 &&
+               !port->owner_pl)
+        {
+        }
+      else if (port->num_srcs == 0 &&
+          !(port->owner_pl &&
+            port->flow == FLOW_OUTPUT))
+        graph_add_initial_node (
+          self, ROUTE_NODE_TYPE_PORT, port);
+      else if (port->num_dests == 0 &&
+               port->num_srcs > 0 &&
+               !(port->owner_pl &&
+                 port->flow == FLOW_INPUT))
+        graph_add_terminal_node (
+          self, ROUTE_NODE_TYPE_PORT, port);
+      else
+        graph_add_node (
+          self, ROUTE_NODE_TYPE_PORT, port);
     }
 
-  RouteNode * node;
-  for (int i = 0; i < self->registry->len; i++)
+  /* ========================
+   * now connect them
+   * ======================== */
+  for (i = 0; i < PROJECT->num_plugins; i++)
     {
-      node =
-        g_array_index (self->registry,
-                       RouteNode *, i);
+      plugin = project_get_plugin (i);
+      if (!plugin)
+        continue;
 
-      /* add trigger node */
-      if (node->init_refcount == 0)
+      node = find_node_from_plugin (self, plugin);
+      for (j = 0; j < plugin->num_in_ports; j++)
         {
-          array_append (self->init_trigger_nodes,
-                        self->num_init_trigger_nodes,
-                        node);
-          array_append (self->trigger_nodes,
-                        self->num_trigger_nodes,
-                        node);
+          port = plugin->in_ports[j];
+          g_warn_if_fail (port->owner_pl != NULL);
+          node2 = find_node_from_port (self, port);
+          connect (node2, node);
         }
-      node->refcount = node->init_refcount;
+      for (j = 0; j < plugin->num_out_ports; j++)
+        {
+          port = plugin->out_ports[j];
+          g_warn_if_fail (port->owner_pl != NULL);
+          node2 = find_node_from_port (self, port);
+          connect (node, node2);
+        }
+    }
+
+  Port * src, * dest;
+  for (i = 0; i < PROJECT->num_ports; i++)
+    {
+      port = project_get_port (i);
+      if (!port ||
+          port->owner_pl) // processed in prev step
+        continue;
+
+      node = find_node_from_port (self, port);
+      for (j = 0; j < port->num_srcs; j++)
+        {
+          src = port->srcs[j];
+          node2 = find_node_from_port (self, src);
+          connect (node2, node);
+        }
+      for (j = 0; j < port->num_dests; j++)
+        {
+          dest = port->dests[j];
+          node2 = find_node_from_port (self, dest);
+          connect (node, node2);
+        }
     }
 
   g_message ("num trigger nodes %d",
-             self->num_init_trigger_nodes);
+             self->n_init_triggers);
+  g_message ("num max trigger nodes %d",
+             self->trigger_queue_size);
+  g_message ("num terminal nodes %d",
+             self->terminal_node_count);
+  graph_print (self);
+  /*if (self->terminal_node_count > 3)*/
+    /*exit (0);*/
 
-  router_init_threads (self);
-
-  zix_sem_init (&self->finish_sem, 0);
+  /* create worker threads */
+  graph_init_threads (self);
 
   return self;
 }

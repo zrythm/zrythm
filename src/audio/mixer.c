@@ -109,13 +109,6 @@ mixer_recalculate_graph (
     }
   mixer->graph =
     router_new ();
-  /*if (router = mixer->router_cache)*/
-    /*{*/
-      /*mixer->router_cache = NULL;*/
-      /*router_destroy (router);*/
-    /*}*/
-  /*mixer->router_cache =*/
-    /*router_new (0);*/
 
   g_atomic_int_set (
     &AUDIO_ENGINE->run, 1);

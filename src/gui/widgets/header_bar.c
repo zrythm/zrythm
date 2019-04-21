@@ -443,16 +443,4 @@ header_bar_widget_class_init (HeaderBarWidgetClass * _klass)
     klass,
     HeaderBarWidget,
     window_buttons);
-  gtk_widget_class_bind_template_child (
-    klass,
-    HeaderBarWidget,
-    minimize);
-  gtk_widget_class_bind_template_child (
-    klass,
-    HeaderBarWidget,
-    maximize);
-  gtk_widget_class_bind_template_child (
-    klass,
-    HeaderBarWidget,
-    close);
 }

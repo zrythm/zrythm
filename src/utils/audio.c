@@ -24,6 +24,7 @@
  */
 
 #include <math.h>
+#include <unistd.h>
 
 #include "audio/engine.h"
 #include "ext/audio_decoder/ad.h"
@@ -33,7 +34,7 @@
 #include <sndfile.h>
 #include <samplerate.h>
 
-static int num_cores = 2;
+static int num_cores = 0;
 
 /**
  * Decodes the given filename (absolute path).
@@ -160,6 +161,7 @@ audio_get_num_cores ()
 
 #if defined(__linux__) || defined(__APPLE__)
   num_cores = sysconf(_SC_NPROCESSORS_ONLN);
+  g_message ("yes");
 #endif
 
 #ifdef __FreeBSD__

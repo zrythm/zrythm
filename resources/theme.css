@@ -40,10 +40,10 @@
 @define-color selection_color alpha (white, 0.07);
 /* see https://coolors.co/ to generate more */
 
-/*window*/
-/*{*/
-  /*-GtkWidget-window-dragging: true;*/
-/*}*/
+window
+{
+  -GtkWidget-window-dragging: true;
+}
 
 /*paned separator {*/
   /*background-color: alpha(white, 0.80);*/

@@ -30,7 +30,7 @@
 typedef struct Channel Channel;
 typedef struct PluginDescriptor PluginDescriptor;
 typedef struct FileDescriptor FileDescriptor;
-typedef struct Router Router;
+typedef struct Graph Router;
 
 /**
  * Mixer is a single global struct defined in the Project
