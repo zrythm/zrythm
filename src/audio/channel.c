@@ -55,49 +55,6 @@
 #include <gtk/gtk.h>
 
 /**
- * Thread work
- * Pass the L/R to each channel strip and let them handle it
- */
-/*static void **/
-/*process_channel_work (void * argument)*/
-/*{*/
-  /*Channel * channel = (Channel *) argument;*/
-
-  /*while (!channel->stop_thread)*/
-    /*{*/
-      /*if (channel->track && channel->track->name)*/
-        /*g_message ("waiting to start processing %s",*/
-                   /*channel->track->name);*/
-      /*zix_sem_wait (&channel->start_processing_sem);*/
-      /*if (channel->track && channel->track->name)*/
-        /*g_message ("started processing %s",*/
-                   /*channel->track->name);*/
-
-      /*[>g_message ("calling channel process %s",<]*/
-                 /*[>channel->name);<]*/
-      /*channel_process (channel);*/
-      /*[>g_message ("done calling channel process %s",<]*/
-                 /*[>channel->name);<]*/
-      /*g_atomic_int_set (*/
-        /*&channel->processed, 1);*/
-
-      /*if (channel != MIXER->master)*/
-        /*{*/
-          /*[>g_message ("decrementing mixer sem");<]*/
-          /*[>zix_sem_post (&<]*/
-            /*[>MIXER->channel_process_sem);<]*/
-        /*}*/
-      /*[>if (channel->track && channel->track->name)<]*/
-        /*[>g_message ("posting processed %s",<]*/
-                   /*[>channel->track->name);<]*/
-      /*[>zix_sem_post (&<]*/
-        /*[>channel->processed_sem);<]*/
-    /*}*/
-
-  /*return 0;*/
-/*}*/
-
-/**
  * Handles the recording logic inside the process cycle.
  */
 void
@@ -877,7 +834,7 @@ channel_add_plugin (Channel * channel,    ///< the channel
   EVENTS_PUSH (ET_PLUGIN_ADDED,
                plugin);
 
-  mixer_recalculate_graph (MIXER, 0);
+  mixer_recalculate_graph (MIXER, 1);
 }
 
 /**

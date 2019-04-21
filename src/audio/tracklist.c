@@ -308,5 +308,7 @@ tracklist_remove_track (Track *     track)
   EVENTS_PUSH (ET_TRACK_REMOVED,
                NULL);
 
+  mixer_recalculate_graph (MIXER, 1);
+
   g_atomic_int_set (&AUDIO_ENGINE->run, prev);
 }

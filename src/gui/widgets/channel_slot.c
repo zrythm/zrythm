@@ -50,17 +50,25 @@ on_drag_data_received (GtkWidget        *widget,
 
   PluginDescriptor * descr = *(gpointer *) gtk_selection_data_get_data (data);
 
+  /* stop engine */
+  int prev_run =
+    g_atomic_int_get (&AUDIO_ENGINE->run);
+  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
+  g_usleep (5000);
+
   Plugin * plugin = plugin_create_from_descr (descr);
 
   if (plugin_instantiate (plugin) < 0)
     {
       GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
-      GtkWidget * dialog = gtk_message_dialog_new (GTK_WINDOW (MAIN_WINDOW),
-                                       flags,
-                                       GTK_MESSAGE_ERROR,
-                                       GTK_BUTTONS_CLOSE,
-                                       "Error instantiating plugin “%s”. Please see log for details.",
-                                       plugin->descr->name);
+      GtkWidget * dialog =
+        gtk_message_dialog_new (
+          GTK_WINDOW (MAIN_WINDOW),
+          flags,
+          GTK_MESSAGE_ERROR,
+          GTK_BUTTONS_CLOSE,
+          "Error instantiating plugin “%s”. Please see log for details.",
+          plugin->descr->name);
       gtk_dialog_run (GTK_DIALOG (dialog));
       gtk_widget_destroy (dialog);
       plugin_free (plugin);
@@ -69,8 +77,11 @@ on_drag_data_received (GtkWidget        *widget,
 
   /* add to specific channel */
   zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
-  channel_add_plugin (channel, channel_slot->slot_index, plugin);
+  channel_add_plugin (
+    channel, channel_slot->slot_index, plugin);
   zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
+
+  g_atomic_int_set (&AUDIO_ENGINE->run, prev_run);
 
   if (g_settings_get_int (
         S_PREFERENCES,

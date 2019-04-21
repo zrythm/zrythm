@@ -169,8 +169,6 @@ typedef struct Channel
   jack_native_thread_t thread;
 #endif
 
-  int                  stop_thread; ///< flag to stop the thread
-
   /**
    * Output channel to route signal to.
    */

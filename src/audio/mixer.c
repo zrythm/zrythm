@@ -97,6 +97,9 @@ mixer_recalculate_graph (
       !force)
     return;
 
+  int prev_run =
+    g_atomic_int_get (
+      &AUDIO_ENGINE->run);
   g_atomic_int_set (
     &AUDIO_ENGINE->run, 0);
   g_usleep (1000);
@@ -111,7 +114,7 @@ mixer_recalculate_graph (
     router_new ();
 
   g_atomic_int_set (
-    &AUDIO_ENGINE->run, 1);
+    &AUDIO_ENGINE->run, prev_run);
 }
 
 void
@@ -253,7 +256,6 @@ mixer_remove_channel (Channel * channel)
   g_message ("removing channel %s",
              channel->track->name);
   channel->enabled = 0;
-  channel->stop_thread = 1;
 
   g_message ("mixer num channels before %d",
              MIXER->num_channels);
@@ -304,6 +306,12 @@ mixer_add_channel_from_plugin_descr (
 {
   Plugin * plugin = plugin_create_from_descr (descr);
 
+  /* stop engine */
+  int prev_run =
+    g_atomic_int_get (&AUDIO_ENGINE->run);
+  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
+  g_usleep (4000);
+
   if (plugin_instantiate (plugin) < 0)
     {
       char * message =
@@ -334,6 +342,8 @@ mixer_add_channel_from_plugin_descr (
   channel_add_plugin (new_channel,
                       0,
                       plugin);
+
+  g_atomic_int_set (&AUDIO_ENGINE->run, prev_run);
 
   if (g_settings_get_int (
         S_PREFERENCES,

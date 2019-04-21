@@ -1001,8 +1001,7 @@ router_new ()
   for (i = 0; i < PROJECT->num_ports; i++)
     {
       port = project_get_port (i);
-      if (!port ||
-          port->owner_pl) // processed in prev step
+      if (!port)
         continue;
 
       node = find_node_from_port (self, port);
