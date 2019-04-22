@@ -150,7 +150,7 @@ AM_COND_IF(
      [AC_DEFINE([HAVE_JACK],[1],[Have jack backend])
         AC_SUBST([HAVE_JACK],[1])])])
 AM_COND_IF(
-  [LINUX],
+  [WINDOWS],,
   [PKG_CHECK_MODULES(
     [GTOP], [libgtop-2.0],
     [AC_DEFINE([HAVE_LIBGTOP],[1],[Have libgtop])
