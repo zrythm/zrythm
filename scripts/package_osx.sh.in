@@ -65,6 +65,7 @@ fi
 
 # setup directory structure
 
+DATA_OSX_DIR=data/osx
 OSXDIR=$BUILD_ROOT/osx
 APPDIR=$OSXDIR/${BUNDLENAME}.app
 TMPDIR=$OSXDIR/tmp
@@ -112,32 +113,12 @@ mkdir -p $Locale
 mkdir -p $Lib
 mkdir -p $Bin
 
-
 EXECUTABLE=${BUNDLENAME}
-
-env=""
-info_string="$PROGRAM_VERSION, (C) 2018-2019 Alexandros Theodotou https://www.zrythm.org"
-
-echo "updating plists"
-# edit plist
-sed -e "s?@ENV@?$env?g" \
-    -e "s?@VERSION@?$PROGRAM_VERSION?g" \
-    -e "s?@INFOSTRING@?$info_string?g" \
-    -e "s?@IDSUFFIX@?$EXECUTABLE?g" \
-    -e "s?@BUNDLENAME@?$BUNDLENAME?g" \
-    -e "s?@EXECUTABLE@?$EXECUTABLE?g" < data/Info.plist.in > $TMPDIR/Info.plist
-# and plist strings
-mkdir -p $TMPDIR/Resources
-sed -e "s?@APPNAME@?$appname?" \
-    -e "s?@ENV@?$env?g" \
-    -e "s?@VERSION@?$major_version?g" \
-    -e "s?@INFOSTRING@?$info_string?g" < data/InfoPlist.strings.in > $TMPDIR/Resources/InfoPlist.strings || exit 1
 
 # copy static files
 
 echo "copying plists"
-cp $TMPDIR/Info.plist $APPROOT
-cp -R $TMPDIR/Resources $APPROOT
+cp $DATA_OSX_DIR/Info.plist $APPROOT
 
 # ..and clean up
 rm -f $TMPDIR/Info.plist
@@ -150,13 +131,13 @@ rm -f $TMPDIR/Resources/InfoPlist.strings
 # installed.
 #
 
-cp scripts/osx_startup_script.sh $APPROOT/MacOS/$EXECUTABLE
+cp $DATA_OSX_DIR/osx_startup_script.sh $APPROOT/MacOS/$EXECUTABLE
 chmod 775 $APPROOT/MacOS/$EXECUTABLE
 MAIN_EXECUTABLE=zrythm  ## used in startup_script
 
 echo "Copying zrythm executable ...."
 cp $BUILD_ROOT/zrythm $Bin/
-cp data/zrythm.icns $Resources/
+cp $DATA_OSX_DIR/zrythm.icns $Resources/
 
 set +e # things below are not error-free (optional files etc) :(
 
@@ -174,8 +155,7 @@ cp -RL $GTKSTACK_ROOT/lib/charset.alias $Lib/
 echo "copying gdk pixbuf loaders"
 GDK_PIXBUF_DIR=gdk-pixbuf-2.0/2.10.0
 mkdir -p $Lib/$GDK_PIXBUF_DIR
-cp -RL $GTKSTACK_ROOT/lib/$GDK_PIXBUF_DIR/loaders.cache $Lib/$GDK_PIXBUF_DIR/
-cp -RL $GTKSTACK_ROOT/lib/$GDK_PIXBUF_DIR/loaders $Lib/$GDK_PIXBUF_DIR/
+cp -RL $GTKSTACK_ROOT/lib/$GDK_PIXBUF_DIR/* $Lib/$GDK_PIXBUF_DIR/
 
 # localization
 echo "copying languages"
@@ -200,8 +180,14 @@ cp -RL "$GTKSTACK_ROOT/share/icons/hicolor" "$ICONS_DIR/"
 echo "copying app icon"
 APPICON_DIR1=$ICONS_DIR/hicolor/scalable/apps
 APPICON_DIR2=$ICONS_DIR/hicolor/48x48/apps
+mkdir -p $APPICON_DIR1
+mkdir -p $APPICON_DIR2
 cp resources/icons/zrythm/zrythm.svg $APPICON_DIR1/
 cp resources/icons/zrythm/zrythm.svg $APPICON_DIR2/
+
+echo "copying themes"
+#rsync -a --copy-links /usr/local/share/ $Share/
+cp -RL "$GTKSTACK_ROOT/share/themes" "$Share/"
 
 echo "copying fonts"
 cp -R resources/fonts "$Share/"
@@ -258,7 +244,7 @@ done
 
 # make dmg
 rm -f Zrythm.dmg
-appdmg data/appdmg.json Zrythm.dmg
+appdmg $DATA_OSX_DIR/appdmg.json Zrythm.dmg
 
 echo "Done."
 exit

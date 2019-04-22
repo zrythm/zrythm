@@ -165,6 +165,10 @@ else
 	FPIC=-fPIC
 endif
 
+ifeq ($(OSX),1)
+	OSX_LIBS += -lobjc -framework Foundation -framework Cocoa -framework AppKit 
+endif
+
 CFLAGS:=$(filter-out -fstack-protector-strong,$(CFLAGS))
 CFLAGS:=$(filter-out -fstack-clash-protection,$(CFLAGS))
 CFLAGS:=$(filter-out -D_FORTIFY_SOURCE=2,$(CFLAGS))
@@ -237,10 +241,14 @@ built_dep = $(built_obj:%.o=%.d))
 SRCS = $(shell find src -name "*.c") \
 			 $(shell find ext/audio_decoder -name "*.c")
 SRCS_CPP = $(shell find src -name "*.cpp")
+ifeq ($(OSX),1)
+SRCS_OBJC = $(shell find src -name "*.m")
+endif
 SRCS_UI =	$(shell find resources/ui -name "*.ui")
 # All .o files go to build dir.
 OBJ = $(SRCS:%.c=$(BUILD_DIR)/%.c.o)
 OBJ_CPP = $(SRCS_CPP:%.cpp=$(BUILD_DIR)/%.cpp.o)
+OBJ_OBJC = $(SRCS_OBJC:%.cpp=$(BUILD_DIR)/%.m.o)
 # Gcc/Clang will create these .d files containing dependencies.
 DEP = $(OBJ:%.o=%.d)
 DEP_CPP = $(OBJ_CPP:%.o=%.d)
@@ -324,30 +332,25 @@ po/$(BIN).pot: $(SRCS) $(SRCS_CPP) $(SRCS_UI)
 	xgettext --keyword=_ --add-comments --sort-output -o $@ $^
 
 # for windows .exe icon
-$(BUILD_DIR)/data/icon.o: data/zrythm.ico
+ifeq ($(WINDOWS),1)
+EXEICON=$(BUILD_DIR)/data/icon.o
+$(EXEICON): data/zrythm.ico
 	$(MKDIR_P) "$(BUILD_DIR)/data"
 	cp data/zrythm.ico "$(BUILD_DIR)/data/"
 	echo "id ICON $(BUILD_DIR)/data/zrythm.ico" > "$(BUILD_DIR)/data/icon.rc"
 	$(subst gcc,windres,$(CC)) -o \
 		$(BUILD_DIR)/data/icon.o \
 		$(BUILD_DIR)/data/icon.rc
+endif
 
 # Actual target of the binary - depends on all .o files.
-ifeq ($(WINDOWS),1)
-$(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(OBJ_CPP) $(BUILD_DIR)/resources.o $(BUILD_DIR)/data/icon.o $(STATIC_LIBS)
+$(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(OBJ_CPP) $(OBJ_OBJC) $(BUILD_DIR)/resources.o $(EXEICON) $(STATIC_LIBS)
 	# Create build directories - same structure as sources.
 	$(MKDIR_P) $(@D)
 	# Just link all the object files.
-	$(CC) $^ $(LDFLAGS) $(QT5_LIBS) -lstdc++ -o $@
+	 
+	$(CC) $^ $(LDFLAGS) $(QT5_LIBS) -lstdc++ $(OSX_LIBS) -o $@
 	# done
-else
-$(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(OBJ_CPP) $(BUILD_DIR)/resources.o $(STATIC_LIBS)
-	# Create build directories - same structure as sources.
-	$(MKDIR_P) $(@D)
-	# Just link all the object files.
-	$(CC) $^ $(LDFLAGS) $(QT5_LIBS) -lstdc++ -o $@
-	# done
-endif
 
 # creates a redistributable windows folder after the
 # build finishes
@@ -405,6 +408,10 @@ $(BUILD_DIR)/%.c.$(OBJEXT): %.c
 $(BUILD_DIR)/%.cpp.$(OBJEXT): %.cpp
 	$(MKDIR_P) $(dir $@)
 	$(CXX) $(CFLAGS) $(QT5_CFLAGS) -MMD -c $< -o $@
+
+$(BUILD_DIR)/%.m.$(OBJEXT): %.m
+	$(MKDIR_P) $(dir $@)
+	$(CC) $(CFLAGS) $(OSX_LIBS) -c $< -o $@
 
 .PHONY: doc
 doc:
@@ -505,11 +512,11 @@ test: $(TEST_BIN)$(EXT)
 	$^
 endif
 
-$(TEST_BIN)$(EXT): $(TEST_OBJ) $(OBJ_NO_MAIN) $(OBJ_CPP) $(BUILD_DIR)/resources.o $(STATIC_LIBS)
+$(TEST_BIN)$(EXT): $(TEST_OBJ) $(OBJ_NO_MAIN) $(OBJ_CPP) $(OBJ_OBJC) $(BUILD_DIR)/resources.o $(STATIC_LIBS)
 	# Create build directories - same structure as sources.
 	$(MKDIR_P) $(@D)
 	# Just link all the object files.
-	$(CC) $^ $(LDFLAGS) $(QT5_LIBS) -lstdc++ -o $@
+	$(CC) $^ $(LDFLAGS) $(QT5_LIBS) -lstdc++ $(OSX_LIBS) -o $@
 	# done
 
 $(BUILD_DIR)/test/%.c.$(OBJEXT): test/%.c

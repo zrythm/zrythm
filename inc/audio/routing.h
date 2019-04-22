@@ -23,6 +23,7 @@
 #ifndef __AUDIO_ROUTING_H__
 #define __AUDIO_ROUTING_H__
 
+#include <pthread.h>
 #include "utils/sem.h"
 
 typedef struct Graph Router;

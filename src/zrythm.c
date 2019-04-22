@@ -40,6 +40,8 @@
 #include "utils/localization.h"
 #include "utils/io.h"
 
+#include "Wrapper.h"
+
 #include <gtk/gtk.h>
 
 #include <glib/gi18n.h>
@@ -469,6 +471,12 @@ static void on_prompt_for_project (GSimpleAction  *action,
         /*(GSourceFunc) gtk_window_present,*/
         /*GTK_WINDOW (assistant));*/
       gtk_window_present (GTK_WINDOW (assistant));
+
+#ifdef __APPLE__
+  /* possibly not necessary / working, forces app *
+   * window on top */
+  show_on_top();
+#endif
     }
 }
 

@@ -569,7 +569,7 @@ graph_init_threads (
 }
 
 static void
-connect (
+node_connect (
   GraphNode * from,
   GraphNode * to)
 {
@@ -986,14 +986,14 @@ router_new ()
           port = plugin->in_ports[j];
           g_warn_if_fail (port->owner_pl != NULL);
           node2 = find_node_from_port (self, port);
-          connect (node2, node);
+          node_connect (node2, node);
         }
       for (j = 0; j < plugin->num_out_ports; j++)
         {
           port = plugin->out_ports[j];
           g_warn_if_fail (port->owner_pl != NULL);
           node2 = find_node_from_port (self, port);
-          connect (node, node2);
+          node_connect (node, node2);
         }
     }
 
@@ -1009,13 +1009,13 @@ router_new ()
         {
           src = port->srcs[j];
           node2 = find_node_from_port (self, src);
-          connect (node2, node);
+          node_connect (node2, node);
         }
       for (j = 0; j < port->num_dests; j++)
         {
           dest = port->dests[j];
           node2 = find_node_from_port (self, dest);
-          connect (node, node2);
+          node_connect (node, node2);
         }
     }
 

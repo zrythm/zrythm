@@ -1,4 +1,0 @@
-CFBundleName = "@APPNAME@";
-CFBundleShortVersionString = "@VERSION@";
-CFBundleGetInfoString = "@APPNAME@ v @VERSION@ Copyright 2018-2019 Alexandros Theodotou";
-NSHumanReadableCopyright = "Copyright 2018-2019 Alexandros Theodotou";

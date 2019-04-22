@@ -203,6 +203,7 @@ AC_CONFIG_FILES([
   Doxyfile.cfg
   scripts/package_win.sh
   scripts/package_osx.sh
+	data/osx/Info.plist
 ])
 
 # Actually output all declared files

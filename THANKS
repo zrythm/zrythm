@@ -2,8 +2,9 @@
 # (for copyright purposes) significant amounts of code but
 # should be thanked anyway for their contributions and support
 
-Daniel Peterson   minor undo/redo fixes
+Daniel Peterson   minor fixes
 Yustin            minor GSource fixes, helping with
   optimization
 Adam Kosmin       ideas, financial contributions
 bill-auger        coming up with the Zrythm tagline
+sub26nico         French translations

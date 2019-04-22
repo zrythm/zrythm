@@ -23,33 +23,40 @@
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
-	<string>@EXECUTABLE@</string>
+	<string>zrythm</string>
 	<key>CFBundleGetInfoString</key>
-	<string>@INFOSTRING@</string>
+	<string>0.4.027, (C) 2018-2019 Alexandros Theodotou https://www.zrythm.org</string>
 	<key>CFBundleIconFile</key>
-	<string>appIcon.icns</string>
+	<string>zrythm.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.ardour.@IDSUFFIX@</string>
+	<string>org.zrythm.Zrythm</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>@BUNDLENAME@</string>
+	<string>Zrythm</string>
 	<key>CFBundleDisplayName</key>
-	<string>@BUNDLENAME@</string>
+	<string>Zrythm</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersions</key>
-	<string>@VERSION@</string>
+	<string>0.4.027</string>
 	<key>CFBundleSignature</key>
-	<string>ArDr</string>
+	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>@VERSION@</string>
+	<string>0.4.027</string>
 	<key>LSUIElement</key>
 	<string>0</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	@ENV@
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright 2018 - 2019 Alexandros Theodotou, GNU General Public LIcense.</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.4</string>
+	<key>GtkOSXLaunchScriptFile</key>
+	<string>gtk3-launcher.sh</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
 </dict>
 </plist>
