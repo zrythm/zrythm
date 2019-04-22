@@ -76,16 +76,21 @@ typedef struct Channel Channel;
 typedef struct Plugin Plugin;
 typedef struct Tracklist Tracklist;
 
-typedef enum EngineBackend
+typedef enum AudioBackend
 {
-#ifdef HAVE_JACK
-  ENGINE_BACKEND_JACK,
-#endif
-#ifdef HAVE_PORT_AUDIO
-  ENGINE_BACKEND_PORT_AUDIO,
-#endif
-  NUM_ENGINE_BACKENDS,
-} EngineBackend;
+  AUDIO_BACKEND_NONE,
+  AUDIO_BACKEND_JACK,
+  AUDIO_BACKEND_ALSA,
+  AUDIO_BACKEND_PORT_AUDIO,
+  NUM_AUDIO_BACKENDS,
+} AudioBackend;
+
+typedef enum MidiBackend
+{
+  MIDI_BACKEND_NONE,
+  MIDI_BACKEND_JACK,
+  NUM_MIDI_BACKENDS,
+} MidiBackend;
 
 typedef struct AudioEngine
 {
@@ -99,7 +104,12 @@ typedef struct AudioEngine
 #ifdef HAVE_JACK
   jack_client_t     * client;     ///< jack client
 #endif
-  EngineBackend      backend; ///< current backend, regardless if the selection chagned in preferences
+
+  /** Current audio backend. */
+  AudioBackend       audio_backend;
+
+  /** Current MIDI backend. */
+  MidiBackend        midi_backend;
 	uint32_t           block_length;   ///< Audio buffer size (block length)
 	size_t             midi_buf_size;  ///< Size of MIDI port buffers
 	uint32_t           sample_rate;    ///< Sample rate
@@ -113,8 +123,11 @@ typedef struct AudioEngine
   int               midi_in_id;
   int               midi_editor_manual_press_id;;
 
-  StereoPorts       * stereo_in;  ///< stereo in ports from JACK
-  StereoPorts       * stereo_out;  ///< stereo out ports to JACK
+  /** stereo in ports from the backend. */
+  StereoPorts       * stereo_in;
+
+  /** stereo out ports to the backend. */
+  StereoPorts       * stereo_out;
   Port              * midi_in;     ///< MIDI in port from JACK
   Port              * midi_editor_manual_press; ///< manual note press in editor
   uint32_t          nframes;     ///< nframes for current cycle
@@ -138,6 +151,9 @@ typedef struct AudioEngine
    * Port buffer for raw MIDI data.
    */
   void *            port_buf;
+
+  /** Flag used when processing in some backends. */
+  volatile gint     filled_stereo_out_bufs;
 
 #ifdef HAVE_PORT_AUDIO
   /**
@@ -230,6 +246,17 @@ engine_update_frames_per_tick (int beats_per_bar,
  */
 void
 engine_process_prepare (uint32_t      nframes);
+
+/**
+ * Processes current cycle.
+ *
+ * To be called by each implementation in its
+ * callback.
+ */
+int
+engine_process (
+  AudioEngine * self,
+  uint32_t      nframes);
 
 /**
  * To be called after processing for common logic.

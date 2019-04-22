@@ -44,6 +44,16 @@ int
 jack_buffer_size_cb (uint32_t nframes, void* data);
 
 /**
+ * Receives MIDI events from JACK MIDI and puts them
+ * in the JACK MIDI in port.
+ */
+void
+engine_jack_receive_midi_events (
+  AudioEngine * self,
+  uint32_t      nframes,
+  int           print);
+
+/**
  * The process callback for this JACK application is
  * called in a special realtime thread once for each audio
  * cycle.

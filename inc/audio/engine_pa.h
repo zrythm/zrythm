@@ -36,19 +36,26 @@ typedef struct AudioEngine AudioEngine;
 void
 pa_setup (AudioEngine * engine);
 
+void
+engine_pa_fill_stereo_out_buffs (
+  AudioEngine * engine);
+
 /**
- * This routine will be called by the PortAudio engine when
- * audio is needed. It may called at interrupt level on some
- * machines so don't do anything that could mess up the system
- * like calling malloc() or free().
+ * This routine will be called by the PortAudio
+ * engine when audio is needed.
+ *
+ * It may called at interrupt level on some
+ * machines so don't do anything that could mess up
+ * the system like calling malloc() or free().
 */
 int
-pa_stream_cb (const void *                    input,
-              void *                          output,
-              unsigned long                   nframes,
-              const PaStreamCallbackTimeInfo* time_info,
-              PaStreamCallbackFlags           status_flags,
-              void *                          user_data);
+pa_stream_cb (
+  const void *                    in,
+  void *                          out,
+  unsigned long                   nframes,
+  const PaStreamCallbackTimeInfo* time_info,
+  PaStreamCallbackFlags           status_flags,
+  void *                          user_data);
 
 /**
  * Opens a Port Audio stream.

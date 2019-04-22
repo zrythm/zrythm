@@ -25,6 +25,9 @@
 #ifdef HAVE_JACK
 #include "audio/engine_jack.h"
 #endif
+#ifdef HAVE_PORT_AUDIO
+#include "audio/engine_pa.h"
+#endif
 #include "audio/instrument_track.h"
 #include "audio/pan.h"
 #include "audio/port.h"
@@ -162,10 +165,11 @@ static void
 node_process (
   GraphNode * node)
 {
+  int i;
   Channel * chan;
 
   /*g_message ("num trigger nodes %d, max_trigger nodes %d", node->graph->n_trigger_queue, node->graph->trigger_queue_size);*/
-  for (int i = 0; i < node->graph->n_trigger_queue; i++)
+  for (i = 0; i < node->graph->n_trigger_queue; i++)
     {
       GraphNode * n = node->graph->trigger_queue[i];
       /*g_message ("trigger node %d: %s",*/
@@ -311,30 +315,56 @@ node_process (
         }
 
       /* if JACK stereo out */
-      else if (port->owner_jack &&
+      else if (port->owner_backend &&
           port->type == TYPE_AUDIO &&
           port->flow == FLOW_OUTPUT)
         {
           if (!AUDIO_ENGINE->exporting)
             {
-#ifdef HAVE_JACK
-              float * out =
-                (float *)
-                jack_port_get_buffer (
-                  JACK_PORT_T (port->data),
-                  AUDIO_ENGINE->nframes);
-
-              /* by this time, the Master channel should have its
-               * Stereo Out ports filled. pass their buffers to JACK's
-               * buffers */
-              for (int i = 0; i < AUDIO_ENGINE->nframes; i++)
+              int ret;
+              float * out;
+              switch (AUDIO_ENGINE->audio_backend)
                 {
-                  out[i] = port->srcs[0]->buf[i];
-                }
+#ifdef HAVE_JACK
+                case AUDIO_BACKEND_JACK:
+                  out =
+                    (float *)
+                    jack_port_get_buffer (
+                      JACK_PORT_T (port->data),
+                      AUDIO_ENGINE->nframes);
 
-              /* avoid unused warnings */
-              (void) out;
+                  /* by this time, the Master channel should have its
+                   * Stereo Out ports filled. pass their buffers to JACK's
+                   * buffers */
+                  for (i = 0;
+                       i < AUDIO_ENGINE->nframes;
+                       i++)
+                    {
+                      out[i] = port->srcs[0]->buf[i];
+                    }
+
+                  /* avoid unused warnings */
+                  (void) out;
+
+                  break;
 #endif
+#ifdef HAVE_PORT_AUDIO
+                case AUDIO_BACKEND_PORT_AUDIO:
+                  if (g_atomic_int_get (
+                    &AUDIO_ENGINE->
+                      filled_stereo_out_bufs))
+                    break;
+                  ret =
+                    g_atomic_int_compare_and_exchange (
+                      &AUDIO_ENGINE->
+                        filled_stereo_out_bufs,
+                      0, 1);
+                  if (ret)
+                    engine_pa_fill_stereo_out_buffs (
+                      AUDIO_ENGINE);
+                  break;
+#endif
+                }
             }
         }
 
@@ -525,47 +555,73 @@ graph_init_threads (
       /*zix_sem_post (&graph->callback_start);*/
       /*zix_sem_post (&graph->callback_done);*/
 #ifdef HAVE_JACK
-      jack_client_create_thread (
-        AUDIO_ENGINE->client,
-        &graph->threads[i],
-        jack_client_real_time_priority (
-          AUDIO_ENGINE->client),
-        jack_is_realtime (AUDIO_ENGINE->client),
-        graph_worker_thread,
-        graph);
-
-      if (graph->threads[i] == -1)
+      if (AUDIO_ENGINE->audio_backend ==
+            AUDIO_BACKEND_JACK)
         {
-          g_warning ("%lu: Failed creating thread %d",
-                   graph->threads[i], i);
-          return;
+          jack_client_create_thread (
+            AUDIO_ENGINE->client,
+            &graph->jthreads[i],
+            jack_client_real_time_priority (
+              AUDIO_ENGINE->client),
+            jack_is_realtime (AUDIO_ENGINE->client),
+            graph_worker_thread,
+            graph);
+
+          if (graph->jthreads[i] == -1)
+            {
+              g_warning (
+                "%lu: Failed creating thread %d",
+                graph->jthreads[i], i);
+              return;
+            }
         }
-      g_message ("created thread %d", i);
+      else
+        {
+#endif
+          pthread_create (
+            &graph->threads[i], NULL,
+            &graph_worker_thread, graph);
+          g_message ("created thread %d", i);
+#ifdef HAVE_JACK
+        }
 #endif
     }
 
-    /* and the main thread */
+  /* and the main thread */
 #ifdef HAVE_JACK
-  jack_client_create_thread (
-    AUDIO_ENGINE->client,
-    &graph->main_thread,
-    jack_client_real_time_priority (
-      AUDIO_ENGINE->client),
-    jack_is_realtime (AUDIO_ENGINE->client),
-    graph_main_thread,
-    graph);
-
-  if (graph->main_thread == -1)
+  if (AUDIO_ENGINE->audio_backend ==
+        AUDIO_BACKEND_JACK)
     {
-      g_warning ("%lu: Failed creating main thread",
-               graph->main_thread);
-      return;
+      jack_client_create_thread (
+        AUDIO_ENGINE->client,
+        &graph->jmain_thread,
+        jack_client_real_time_priority (
+          AUDIO_ENGINE->client),
+        jack_is_realtime (AUDIO_ENGINE->client),
+        graph_main_thread,
+        graph);
+
+      if (graph->jmain_thread == -1)
+        {
+          g_warning (
+            "%lu: Failed creating main thread",
+            graph->jmain_thread);
+          return;
+        }
+    }
+  else
+    {
+#endif
+      pthread_create (
+        &graph->main_thread, NULL,
+        &graph_main_thread, graph);
+      g_message ("created main thread");
+#ifdef HAVE_JACK
     }
 #endif
 
   /* breathe */
   sched_yield ();
-
 }
 
 static void

@@ -119,11 +119,18 @@ typedef struct Graph
 
   /* ------------------------------------ */
 
+  /**
+   * Threads.
+   *
+   * If backend is JACK, jack threads are used.
+   * */
 #ifdef HAVE_JACK
-  jack_native_thread_t threads[16];
-  jack_native_thread_t main_thread;
+  jack_native_thread_t jthreads[16];
+  jack_native_thread_t jmain_thread;
 #endif
-  gint                  num_threads;
+  pthread_t            main_thread;
+  pthread_t            threads[16];
+  gint                 num_threads;
 
   /** Hash tables for quick finding of nodes based on
    * the ID of the plugin/port. */

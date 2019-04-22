@@ -72,8 +72,9 @@ typedef enum PortFlags
 typedef enum PortInternalType
 {
   INTERNAL_NONE,
-  INTERNAL_LV2_PORT,                ///< LV2_Port (see lv2_plugin.c)
-  INTERNAL_JACK_PORT                ///< jack_port_t
+  INTERNAL_LV2_PORT, ///< LV2_Port
+  INTERNAL_JACK_PORT, ///< jack_port_t
+  INTERNAL_PA_PORT, ///< port audio
 } PortInternalType;
 
 typedef struct LV2_Port LV2_Port;
@@ -138,7 +139,10 @@ typedef struct Port
   void *              data;
 
   /* ====== flags to indicate port owner ====== */
-  int                 owner_jack; ///< 1 if owner is JACK
+
+  /** Owner is the backend (JACK/PortAudio/ALSA). */
+  int                 owner_backend;
+
   int                 is_piano_roll; ///< 1 if piano roll
 
   /**
@@ -225,8 +229,8 @@ port_fields_schema[] =
     //CYAML_FLAG_DEFAULT | CYAML_FLAG_POINTER,
     //Port, midi_events, midi_events_fields_schema),
   CYAML_FIELD_INT (
-    "owner_jack", CYAML_FLAG_DEFAULT,
-    Port, owner_jack),
+    "owner_backend", CYAML_FLAG_DEFAULT,
+    Port, owner_backend),
   CYAML_FIELD_INT (
     "is_piano_roll", CYAML_FLAG_DEFAULT,
     Port, is_piano_roll),

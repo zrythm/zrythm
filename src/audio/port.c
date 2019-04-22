@@ -370,7 +370,7 @@ port_print_connections_all ()
       src = project_get_port (i);
       if (!src->owner_pl &&
           !src->owner_ch &&
-          !src->owner_jack)
+          !src->owner_backend)
         {
           g_warning ("Port %s has no owner",
                      src->label);

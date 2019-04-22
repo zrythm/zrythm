@@ -193,6 +193,7 @@ channel_prepare_process (Channel * channel)
             plugin->unknown_ports[i]);
         }
     }
+  channel->filled_stereo_in_bufs = 0;
 }
 
 void
@@ -349,7 +350,7 @@ _create_channel (char * name)
   channel->piano_roll_id =
     channel->piano_roll->id;
   channel->piano_roll->is_piano_roll = 1;
-  channel->piano_roll->owner_jack = 0;
+  channel->piano_roll->owner_backend = 0;
   channel->piano_roll->owner_ch = channel;
   channel->piano_roll->midi_events =
     midi_events_new (1);

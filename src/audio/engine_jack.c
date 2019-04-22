@@ -170,12 +170,11 @@ jack_buffer_size_cb (uint32_t nframes,
 }
 
 /**
- * Gets MIDI event count from JACK.
- *
- * The events stay in the JACK port.
+ * Receives MIDI events from JACK MIDI and puts them
+ * in the JACK MIDI in port.
  */
-static void
-get_midi_event_count (
+void
+engine_jack_receive_midi_events (
   AudioEngine * self,
   nframes_t     nframes,
   int           print)
@@ -221,7 +220,6 @@ get_midi_event_count (
         }
     }
 }
-static long count = 0;
 /**
  * The process callback for this JACK application is
  * called in a special realtime thread once for each audio
@@ -232,39 +230,9 @@ jack_process_cb (
   nframes_t nframes, ///< the number of frames to fill
   void *    data) ///< user data
 {
-  AudioEngine * engine = (AudioEngine *) data;
-  if (!g_atomic_int_get (&engine->run))
-    return 0;
-
-  count++;
-  engine->cycle = count;
-
-  /* run pre-process code */
-  engine_process_prepare (nframes);
-
-  if (AUDIO_ENGINE->skip_cycle)
-    {
-      AUDIO_ENGINE->skip_cycle = 0;
-      return 0;
-    }
-
-  /* get num of midi events in JACK's midi in buffer */
-  get_midi_event_count (engine, nframes, 1);
-
-  /* this will keep looping until everything was
-   * processed in this cycle */
-  /*mixer_process (nframes);*/
-  /*g_message ("==========================================================================");*/
-  router_start_cycle (MIXER->graph);
-  /*g_message ("end==========================================================================");*/
-
-  /* run post-process code */
-  engine_post_process (engine);
-
-  /*
-   * processing finished, return 0 (OK)
-   */
-  return 0;
+  return
+    engine_process (
+      (AudioEngine *) data, nframes);
 }
 
 int
@@ -449,12 +417,12 @@ jack_setup (AudioEngine * self,
           FLOW_INPUT,
           "MIDI Editor Manual Press");
 
-      stereo_in_l->owner_jack = 1;
-      stereo_in_r->owner_jack = 1;
-      stereo_out_l->owner_jack = 1;
-      stereo_out_r->owner_jack = 1;
-      midi_in->owner_jack = 1;
-      midi_editor_manual_press->owner_jack = 0;
+      stereo_in_l->owner_backend = 1;
+      stereo_in_r->owner_backend = 1;
+      stereo_out_l->owner_backend = 1;
+      stereo_out_r->owner_backend = 1;
+      midi_in->owner_backend = 1;
+      midi_editor_manual_press->owner_backend = 0;
 
       self->stereo_in =
         stereo_ports_new (stereo_in_l,

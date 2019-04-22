@@ -32,7 +32,7 @@
 
 #include <gtk/gtk.h>
 
-#define SAMPLE_RATE (44100)
+#define SAMPLE_RATE (48000)
 
 /**
  * Set up Port Audio.
@@ -45,7 +45,8 @@ pa_setup (AudioEngine * self)
   if (err != paNoError)
     g_warning ("error initializing Port Audio: %s",
                Pa_GetErrorText (err));
-
+  else
+    g_message ("Initialized Port Audio");
 
   /* Set audio engine properties */
   self->sample_rate   = 44100;
@@ -53,31 +54,48 @@ pa_setup (AudioEngine * self)
   self->midi_buf_size = 4096;
 
   /* create ports */
-  Port * stereo_out_l = port_new_with_type (
-        TYPE_AUDIO,
-        FLOW_OUTPUT,
-        "PortAudio Stereo Out / L");
-  Port * stereo_out_r = port_new_with_type (
-        TYPE_AUDIO,
-        FLOW_OUTPUT,
-        "PortAudio Stereo Out / R");
-  Port * stereo_in_l = port_new_with_type (
-        TYPE_AUDIO,
-        FLOW_INPUT,
-        "PortAudio Stereo In / L");
-  Port * stereo_in_r = port_new_with_type (
-        TYPE_AUDIO,
-        FLOW_INPUT,
-        "PortAudio Stereo In / R");
-  Port * midi_in = port_new_with_type (
-        TYPE_EVENT,
-        FLOW_INPUT,
-        "PortAudio MIDI In");
+  Port * stereo_out_l =
+    port_new_with_data (
+      INTERNAL_PA_PORT,
+      TYPE_AUDIO,
+      FLOW_OUTPUT,
+      "PortAudio Stereo Out / L",
+      NULL);
+  Port * stereo_out_r =
+    port_new_with_data (
+      INTERNAL_PA_PORT,
+      TYPE_AUDIO,
+      FLOW_OUTPUT,
+      "PortAudio Stereo Out / R",
+      NULL);
+  Port * stereo_in_l =
+    port_new_with_data (
+      INTERNAL_PA_PORT,
+      TYPE_AUDIO,
+      FLOW_INPUT,
+      "PortAudio Stereo In / L",
+      NULL);
+  Port * stereo_in_r =
+    port_new_with_data (
+      INTERNAL_PA_PORT,
+      TYPE_AUDIO,
+      FLOW_INPUT,
+      "PortAudio Stereo In / R",
+      NULL);
+  Port * midi_in =
+    port_new_with_data (
+      INTERNAL_PA_PORT,
+      TYPE_EVENT,
+      FLOW_INPUT,
+      "PortAudio MIDI In",
+      NULL);
 
-  Port * midi_editor_manual_press = port_new_with_type (
-        TYPE_EVENT,
-        FLOW_INPUT,
-        "MIDI Editor Manual Press");
+  /* FIXME is this backend-specific? */
+  Port * midi_editor_manual_press =
+    port_new_with_type (
+      TYPE_EVENT,
+      FLOW_INPUT,
+      "MIDI Editor Manual Press");
 
 
   self->stereo_in  =
@@ -94,68 +112,54 @@ pa_setup (AudioEngine * self)
     queue =
       calloc (1, sizeof (MidiEvents));
 
-  self->pa_stream = pa_open_stream (self);
+  self->pa_stream =
+    pa_open_stream (self);
 
+  g_message ("Starting Port Audio stream...");
   err = Pa_StartStream( self->pa_stream );
   if( err != paNoError )
-    g_warning ("error starting Port Audio stream: %s",
-               Pa_GetErrorText (err));
+    g_warning (
+      "error starting Port Audio stream: %s",
+      Pa_GetErrorText (err));
+  else
+    g_message ("Started Port Audio stream");
 
   g_message ("Port Audio set up");
 }
 
-/**
- * This routine will be called by the PortAudio engine when
- * audio is needed. It may called at interrupt level on some
- * machines so don't do anything that could mess up the system
- * like calling malloc() or free().
-*/
-int
-pa_stream_cb (const void *                    in,
-              void *                          out,
-              unsigned long                   nframes,
-              const PaStreamCallbackTimeInfo* time_info,
-              PaStreamCallbackFlags           status_flags,
-              void *                          user_data)
+void
+engine_pa_fill_stereo_out_buffs (
+  AudioEngine * engine)
 {
-  AudioEngine * engine = (AudioEngine *) user_data;
-  if (!g_atomic_int_get (&engine->run))
-    return 0;
-
-  g_message ("calling stream");
-
-  engine_process_prepare (nframes);
-
-  engine->pa_out_buf = (float *) out;
-  (void) in; /* prevent unused variable warning */
-
-
-  /* get MIDI events from PA and store to engine MIDI
-   * in port TODO
-   */
-  /*midi_events_dequeue (&engine->midi_editor_manual_press->midi_events);*/
-
-  /*
-   * process
-   */
-  mixer_process ();
-
-  /* by this time, the Master channel should have its Stereo Out ports filled.
-   * pass their buffers to PA's buffers */
-  for (int i = 0; i < nframes; i++)
+  for (int i = 0;
+       i < AUDIO_ENGINE->nframes;
+       i++)
     {
       *engine->pa_out_buf++ =
         MIXER->master->stereo_out->l->buf[i];
       *engine->pa_out_buf++ =
         MIXER->master->stereo_out->r->buf[i];
     }
+}
 
-  engine_post_process ();
-
-  /*
-   * processing finished, return 0
-   */
-  return 0;
+/**
+ * This routine will be called by the PortAudio
+ * engine when audio is needed.
+ *
+ * It may called at interrupt level on some
+ * machines so don't do anything that could mess up
+ * the system like calling malloc() or free().
+*/
+int
+pa_stream_cb (
+  const void *                    in,
+  void *                          out,
+  unsigned long                   nframes,
+  const PaStreamCallbackTimeInfo* time_info,
+  PaStreamCallbackFlags           status_flags,
+  void *                          user_data)
+{
+  return engine_process (AUDIO_ENGINE, nframes);
 }
 
 /**
@@ -174,14 +178,15 @@ pa_open_stream (AudioEngine * engine)
                  info->name,
 		 i);
     }
-  g_message ("using default host api %s (%d)",
-	     Pa_GetHostApiInfo (Pa_GetDefaultHostApi ())->name,
-	     Pa_GetDefaultHostApi ());
+  int api = Pa_GetDefaultHostApi ();
+  /*int api = 2;*/
+  g_message ("using api %s (%d)",
+	  Pa_GetHostApiInfo (api)->name, api);
 
   PaStreamParameters in_param;
   in_param.device =
     Pa_GetHostApiInfo (
-      Pa_GetDefaultHostApi ())->defaultInputDevice;
+      api)->defaultInputDevice;
   in_param.channelCount = 2;
   in_param.sampleFormat = paFloat32;
   in_param.suggestedLatency = 10.0;
@@ -190,7 +195,7 @@ pa_open_stream (AudioEngine * engine)
   PaStreamParameters out_param;
   out_param.device =
     Pa_GetHostApiInfo (
-      Pa_GetDefaultHostApi ())->defaultOutputDevice;
+      api)->defaultOutputDevice;
   out_param.channelCount = 2;
   out_param.sampleFormat = paFloat32;
   out_param.suggestedLatency = 10.0;

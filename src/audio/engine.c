@@ -76,10 +76,37 @@ engine_init (AudioEngine * self,
   transport_init (&self->transport,
                   loading);
 
-  self->backend =
+  int ab_code =
     g_settings_get_enum (
       S_PREFERENCES,
       "audio-backend");
+  self->audio_backend = AUDIO_BACKEND_NONE;
+  switch (ab_code)
+    {
+    case 1:
+      self->audio_backend = AUDIO_BACKEND_JACK;
+      break;
+    case 3:
+      self->audio_backend = AUDIO_BACKEND_PORT_AUDIO;
+      break;
+    default:
+      g_warn_if_reached ();
+      break;
+    }
+
+  int mb_code =
+    g_settings_get_enum (
+      S_PREFERENCES,
+      "midi-backend");
+  self->midi_backend = MIDI_BACKEND_NONE;
+  switch (mb_code)
+    {
+    case 1:
+      self->midi_backend = MIDI_BACKEND_JACK;
+      break;
+    default:
+      break;
+    }
 
   /* init semaphores */
   zix_sem_init (&self->port_operation_lock, 1);
@@ -100,31 +127,49 @@ engine_init (AudioEngine * self,
           self->midi_editor_manual_press_id);
     }
 
+  switch (self->audio_backend)
+    {
 #ifdef HAVE_JACK
-  if (self->backend == ENGINE_BACKEND_JACK)
-    jack_setup (self, loading);
+    case AUDIO_BACKEND_JACK:
+      jack_setup (self, loading);
+      break;
 #endif
 #ifdef HAVE_PORT_AUDIO
-  if (self->backend == ENGINE_BACKEND_PORT_AUDIO)
-    pa_setup (self);
+    case AUDIO_BACKEND_PORT_AUDIO:
+      pa_setup (self);
+      break;
 #endif
+    case NUM_AUDIO_BACKENDS:
+    default:
+      g_warn_if_reached ();
+      break;
+    }
 
   self->buf_size_set = false;
 }
 
 void
-close_audio_engine ()
+audio_engine_close (AudioEngine * self)
 {
   g_message ("closing audio engine...");
 
+  switch (self->audio_backend)
+    {
 #ifdef HAVE_JACK
-  if (AUDIO_ENGINE->backend == ENGINE_BACKEND_JACK)
-    jack_client_close (AUDIO_ENGINE->client);
+    case AUDIO_BACKEND_JACK:
+      jack_client_close (AUDIO_ENGINE->client);
+      break;
 #endif
 #ifdef HAVE_PORT_AUDIO
-  if (AUDIO_ENGINE->backend == ENGINE_BACKEND_PORT_AUDIO)
-    pa_terminate (AUDIO_ENGINE);
+    case AUDIO_BACKEND_PORT_AUDIO:
+      pa_terminate (AUDIO_ENGINE);
+      break;
 #endif
+    case NUM_AUDIO_BACKENDS:
+    default:
+      g_warn_if_reached ();
+      break;
+    }
 }
 
 /**
@@ -216,6 +261,74 @@ engine_process_prepare (uint32_t nframes)
               val);
         }
     }
+
+  AUDIO_ENGINE->filled_stereo_out_bufs = 0;
+}
+
+static void
+receive_midi_events (
+  AudioEngine * self,
+  uint32_t      nframes,
+  int           print)
+{
+  switch (self->midi_backend)
+    {
+#ifdef HAVE_JACK
+    case MIDI_BACKEND_JACK:
+      engine_jack_receive_midi_events (
+        self, nframes, print);
+      break;
+#endif
+    case NUM_MIDI_BACKENDS:
+    default:
+      break;
+    }
+}
+
+static long count = 0;
+/**
+ * Processes current cycle.
+ *
+ * To be called by each implementation in its
+ * callback.
+ */
+int
+engine_process (
+  AudioEngine * self,
+  uint32_t      nframes)
+{
+  if (!g_atomic_int_get (&self->run))
+    return 0;
+
+  count++;
+  self->cycle = count;
+
+  /* run pre-process code */
+  engine_process_prepare (nframes);
+
+  if (AUDIO_ENGINE->skip_cycle)
+    {
+      AUDIO_ENGINE->skip_cycle = 0;
+      return 0;
+    }
+
+  /* puts MIDI in events in the MIDI in port */
+  receive_midi_events (self, nframes, 1);
+
+  /* this will keep looping until everything was
+   * processed in this cycle */
+  /*mixer_process (nframes);*/
+  /*g_message ("==========================================================================");*/
+  router_start_cycle (MIXER->graph);
+  /*g_message ("end==========================================================================");*/
+
+  /* run post-process code */
+  engine_post_process (self);
+
+  /*
+   * processing finished, return 0 (OK)
+   */
+  return 0;
 }
 
 /**
@@ -277,7 +390,8 @@ engine_tear_down ()
   g_message ("tearing down audio engine...");
 
 #ifdef HAVE_JACK
-  if (AUDIO_ENGINE->backend == ENGINE_BACKEND_JACK)
+  if (AUDIO_ENGINE->audio_backend ==
+        AUDIO_BACKEND_JACK)
     jack_tear_down ();
 #endif
 

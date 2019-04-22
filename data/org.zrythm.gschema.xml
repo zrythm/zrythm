@@ -27,9 +27,14 @@
   </schema>
 
   <enum id="org.zrythm.preferences.audio-backend-enum">
-    <value nick="jack" value="0"/>
-    <!--<value nick="alsa" value="1"/>-->
-    <!--<value nick="port-audio" value="2"/>-->
+    <value nick="none" value="0"/>
+    <value nick="jack" value="1"/>
+    <value nick="alsa" value="2"/>
+    <value nick="port-audio" value="3"/>
+  </enum>
+  <enum id="org.zrythm.preferences.midi-backend-enum">
+    <value nick="none" value="0"/>
+    <value nick="jack" value="1"/>
   </enum>
   <enum id="org.zrythm.preferences.language-enum">
     <value nick="english" value="0"/>
@@ -97,6 +102,7 @@
   <schema id="org.zrythm.preferences"
           path="/org/zrythm/preferences/">
 
+    <!-- KEY: audio-backend -->
     <key name="audio-backend" enum="org.zrythm.preferences.audio-backend-enum">
       <default>"jack"</default>
       <summary>Audio Backend</summary>
@@ -105,7 +111,16 @@
       </description>
     </key>
 
-  <!-- KEY: midi-controllers -->
+    <!-- KEY: midi-backend -->
+    <key name="midi-backend" enum="org.zrythm.preferences.midi-backend-enum">
+      <default>"jack"</default>
+      <summary>MIDI Backend</summary>
+      <description>
+        The MIDI backend to use
+      </description>
+    </key>
+
+    <!-- KEY: midi-controllers -->
     <key name="midi-controllers" type="as">
       <default>[]</default>
       <summary>A list of controllers that should be

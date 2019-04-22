@@ -24,6 +24,10 @@ build_win_64:
     - ./autogen.sh
     - x86_64-w64-mingw32-configure .
     - make -j14
+  artifacts:
+    paths:
+      - build/win/Install_*.exe
+    expire_in: 2 days
 
 package_win_64:
   stage: package

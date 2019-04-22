@@ -49,21 +49,17 @@ enum
 static GtkTreeModel *
 create_audio_backend_model (void)
 {
-  const int values[NUM_ENGINE_BACKENDS] = {
-#ifdef HAVE_JACK
-    ENGINE_BACKEND_JACK,
-#endif
-#ifdef HAVE_PORT_AUDIO
-    ENGINE_BACKEND_PORT_AUDIO,
-#endif
+  const int values[NUM_AUDIO_BACKENDS] = {
+    AUDIO_BACKEND_NONE,
+    AUDIO_BACKEND_JACK,
+    AUDIO_BACKEND_ALSA,
+    AUDIO_BACKEND_PORT_AUDIO,
   };
-  const gchar *labels[NUM_ENGINE_BACKENDS] = {
-#ifdef HAVE_JACK
+  const gchar *labels[NUM_AUDIO_BACKENDS] = {
+    "- None -"
     "Jack",
-#endif
-#ifdef HAVE_PORT_AUDIO
+    "Alsa (not implemented yet)",
     "Port Audio",
-#endif
   };
 
   GtkTreeIter iter;
