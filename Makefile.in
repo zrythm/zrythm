@@ -494,6 +494,10 @@ install-fonts: $(FONTS_DIR)/Segment7Standard/*
 	$(MKDIR_P) "$(DESTDIR)$(fontdir)/$(BIN)/Segment7Standard"
 	$(INSTALL_FONT) $< "$(DESTDIR)$(fontdir)/$(BIN)/Segment7Standard/"
 
+.PHONY: install-plugins
+install-plugins:
+	# TODO
+
 .PHONY: install-desktop-data
 install-desktop-data: $(DATA_DIR)/$(desktop_DATA)
 	$(MKDIR_P) "$(DESTDIR)$(desktopdir)"
