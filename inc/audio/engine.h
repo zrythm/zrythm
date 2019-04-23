@@ -78,7 +78,7 @@ typedef struct Tracklist Tracklist;
 
 typedef enum AudioBackend
 {
-  AUDIO_BACKEND_NONE,
+  AUDIO_BACKEND_DUMMY,
   AUDIO_BACKEND_JACK,
   AUDIO_BACKEND_ALSA,
   AUDIO_BACKEND_PORT_AUDIO,
@@ -87,7 +87,7 @@ typedef enum AudioBackend
 
 typedef enum MidiBackend
 {
-  MIDI_BACKEND_NONE,
+  MIDI_BACKEND_DUMMY,
   MIDI_BACKEND_JACK,
   NUM_MIDI_BACKENDS,
 } MidiBackend;

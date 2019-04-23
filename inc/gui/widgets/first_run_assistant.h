@@ -44,6 +44,9 @@ typedef struct _FirstRunAssistantWidget
   GtkFileChooserButton * fc_btn;
   GtkButton *         reset;
   MidiControllerMbWidget * midi_devices;
+  GtkButton *          test_backends;
+  GtkComboBox *        audio_backend;
+  GtkComboBox *        midi_backend;
 } FirstRunAssistantWidget;
 
 /**

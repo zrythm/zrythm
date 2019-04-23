@@ -1,7 +1,5 @@
 /*
- * audio/engine_pa.c - Port Audio engine
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,16 +27,19 @@
 #include "audio/mixer.h"
 #include "audio/port.h"
 #include "project.h"
+#include "utils/ui.h"
 
 #include <gtk/gtk.h>
 
-#define SAMPLE_RATE (48000)
+#include <glib/gi18n.h>
 
 /**
  * Set up Port Audio.
  */
 void
-pa_setup (AudioEngine * self)
+pa_setup (
+  AudioEngine * self,
+  int           loading)
 {
   g_message ("Setting up Port Audio...");
   PaError err = Pa_Initialize();
@@ -51,66 +52,60 @@ pa_setup (AudioEngine * self)
   /* Set audio engine properties */
   self->sample_rate   = 44100;
   self->block_length  = 256;
-  self->midi_buf_size = 4096;
+
+  g_warn_if_fail (TRANSPORT &&
+                  TRANSPORT->beats_per_bar > 1);
+
+  engine_update_frames_per_tick (
+    TRANSPORT->beats_per_bar,
+    TRANSPORT->bpm,
+    self->sample_rate);
 
   /* create ports */
-  Port * stereo_out_l =
-    port_new_with_data (
-      INTERNAL_PA_PORT,
-      TYPE_AUDIO,
-      FLOW_OUTPUT,
-      "PortAudio Stereo Out / L",
-      NULL);
-  Port * stereo_out_r =
-    port_new_with_data (
-      INTERNAL_PA_PORT,
-      TYPE_AUDIO,
-      FLOW_OUTPUT,
-      "PortAudio Stereo Out / R",
-      NULL);
-  Port * stereo_in_l =
-    port_new_with_data (
-      INTERNAL_PA_PORT,
-      TYPE_AUDIO,
-      FLOW_INPUT,
-      "PortAudio Stereo In / L",
-      NULL);
-  Port * stereo_in_r =
-    port_new_with_data (
-      INTERNAL_PA_PORT,
-      TYPE_AUDIO,
-      FLOW_INPUT,
-      "PortAudio Stereo In / R",
-      NULL);
-  Port * midi_in =
-    port_new_with_data (
-      INTERNAL_PA_PORT,
-      TYPE_EVENT,
-      FLOW_INPUT,
-      "PortAudio MIDI In",
-      NULL);
+  Port * stereo_out_l, * stereo_out_r,
+       * stereo_in_l, * stereo_in_r;
 
-  /* FIXME is this backend-specific? */
-  Port * midi_editor_manual_press =
-    port_new_with_type (
-      TYPE_EVENT,
-      FLOW_INPUT,
-      "MIDI Editor Manual Press");
+  if (loading)
+    {
+    }
+  else
+    {
+      stereo_out_l =
+        port_new_with_data (
+          INTERNAL_PA_PORT,
+          TYPE_AUDIO,
+          FLOW_OUTPUT,
+          "PortAudio Stereo Out / L",
+          NULL);
+      stereo_out_r =
+        port_new_with_data (
+          INTERNAL_PA_PORT,
+          TYPE_AUDIO,
+          FLOW_OUTPUT,
+          "PortAudio Stereo Out / R",
+          NULL);
+      stereo_in_l =
+        port_new_with_data (
+          INTERNAL_PA_PORT,
+          TYPE_AUDIO,
+          FLOW_INPUT,
+          "PortAudio Stereo In / L",
+          NULL);
+      stereo_in_r =
+        port_new_with_data (
+          INTERNAL_PA_PORT,
+          TYPE_AUDIO,
+          FLOW_INPUT,
+          "PortAudio Stereo In / R",
+          NULL);
 
-
-  self->stereo_in  =
-    stereo_ports_new (stereo_in_l,
-                      stereo_in_r);
-  self->stereo_out =
-    stereo_ports_new (stereo_out_l,
-                      stereo_out_r);
-  self->midi_in    = midi_in;
-  self->midi_editor_manual_press = midi_editor_manual_press;
-
-  /* init MIDI queues for manual presse/piano roll */
-  self->midi_editor_manual_press->midi_events->
-    queue =
-      calloc (1, sizeof (MidiEvents));
+      self->stereo_in  =
+        stereo_ports_new (stereo_in_l,
+                          stereo_in_r);
+      self->stereo_out =
+        stereo_ports_new (stereo_out_l,
+                          stereo_out_r);
+    }
 
   self->pa_stream =
     pa_open_stream (self);
@@ -166,7 +161,7 @@ pa_stream_cb (
  * Opens a Port Audio stream.
  */
 PaStream *
-pa_open_stream (AudioEngine * engine)
+pa_open_stream (AudioEngine * self)
 {
   PaStream *stream;
   PaError err;
@@ -207,7 +202,7 @@ pa_open_stream (AudioEngine * engine)
       &stream,
       &in_param,          /* stereo input */
       &out_param,          /* stereo output */
-      SAMPLE_RATE,
+      self->sample_rate,
       256,        /* frames per buffer, i.e. the number
       of sample frames that PortAudio will
       request from the callback. Many apps
@@ -216,14 +211,76 @@ pa_open_stream (AudioEngine * engine)
       tells PortAudio to pick the best,
       possibly changing, buffer size.*/
       0,
-      pa_stream_cb, /* this is your callback function */
-      engine ); /*This is a pointer that will be passed to
+      /* this is your callback function */
+      pa_stream_cb,
+      /*This is a pointer that will be passed to
       your callback*/
+      self);
   if( err != paNoError )
     g_warning ("error opening Port Audio stream: %s",
                Pa_GetErrorText (err));
 
   return stream;
+}
+
+/**
+ * Tests if PortAudio is working properly.
+ *
+ * Returns 0 if ok, non-null if has errors.
+ *
+ * If win is not null, it displays error messages
+ * to it.
+ */
+int
+engine_pa_test (
+  GtkWindow * win)
+{
+  char *msg;
+
+  PaError err = Pa_Initialize ();
+  if (err != paNoError)
+    {
+      msg =
+        g_strdup_printf (
+          _("PortAudio Error: %s"),
+          Pa_GetErrorText (err));
+      ui_show_error_message (
+        win, msg);
+      g_free (msg);
+      return 1;
+    }
+
+  PaStream * stream;
+  err =
+    Pa_OpenDefaultStream (
+      &stream,
+      2, 2, paFloat32,
+      48000,
+      512,
+      NULL, NULL);
+  if (err != paNoError)
+    {
+      msg =
+        g_strdup_printf (
+          _("PortAudio Error: %s"),
+          Pa_GetErrorText (err));
+      ui_show_error_message (
+        win, msg);
+      g_free (msg);
+      return 1;
+    }
+  else if (err = Pa_Terminate () != paNoError)
+    {
+      msg =
+        g_strdup_printf (
+          _("PortAudio Error: %s"),
+          Pa_GetErrorText (err));
+      ui_show_error_message (
+        win, msg);
+      g_free (msg);
+      return 1;
+    }
+  return 0;
 }
 
 /**

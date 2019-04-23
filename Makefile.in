@@ -166,7 +166,7 @@ else
 endif
 
 ifeq ($(OSX),1)
-	OSX_LIBS += -lobjc -framework Foundation -framework Cocoa -framework AppKit 
+	OSX_LIBS += -lobjc -framework Foundation -framework Cocoa -framework AppKit
 endif
 
 CFLAGS:=$(filter-out -fstack-protector-strong,$(CFLAGS))
@@ -329,7 +329,7 @@ po/ja/$(BIN).po: po/$(BIN).pot
 	msgmerge --update $@ $<
 
 po/$(BIN).pot: $(SRCS) $(SRCS_CPP) $(SRCS_UI)
-	xgettext --keyword=_ --add-comments --sort-output -o $@ $^
+	xgettext --keyword=_ --add-comments=TRANSLATORS: --sort-output -o $@ $^
 
 # for windows .exe icon
 ifeq ($(WINDOWS),1)
@@ -348,7 +348,7 @@ $(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(OBJ_CPP) $(OBJ_OBJC) $(BUILD_DIR)/resources.
 	# Create build directories - same structure as sources.
 	$(MKDIR_P) $(@D)
 	# Just link all the object files.
-	 
+
 	$(CC) $^ $(LDFLAGS) $(QT5_LIBS) -lstdc++ $(OSX_LIBS) -o $@
 	# done
 

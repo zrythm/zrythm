@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-19 12:14+0100\n"
+"POT-Creation-Date: 2019-04-23 01:05+0100\n"
 "PO-Revision-Date: 2019-03-22 22:30+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -30,7 +30,7 @@ msgstr "0.0"
 msgid "90"
 msgstr "90"
 
-#: src/gui/widgets/first_run_assistant.c:99
+#: src/gui/widgets/first_run_assistant.c:206
 #, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
@@ -60,13 +60,18 @@ msgstr "Grille adaptative"
 msgid "Add Region"
 msgstr "Ajouter une région"
 
-#: resources/ui/preferences.ui:193
+#: resources/ui/preferences.ui:215
 msgid "Always open plugin UIs"
 msgstr "Toujours ouvrir la fenêtre des greffons"
 
 #: resources/ui/export_dialog.ui:98
 msgid "Artist"
 msgstr "Artiste"
+
+#: resources/ui/first_run_assistant.ui:191 resources/ui/preferences.ui:122
+#, fuzzy
+msgid "Audio Backend"
+msgstr "Piste Audio"
 
 #: src/actions/actions.c:867
 msgid "Audio Track"
@@ -84,8 +89,14 @@ msgstr "Outil d'écoute"
 msgid "BPM - Click and drag up/down to set"
 msgstr "BPM - Cliquez et faites glisser vers le haut/bas pour définir"
 
-#: resources/ui/preferences.ui:122
-msgid "Backend"
+#: src/audio/engine_jack.c:595
+#, fuzzy
+msgid "Backend error"
+msgstr "Système Audio"
+
+#: resources/ui/first_run_assistant.ui:242
+#, fuzzy
+msgid "Backends"
 msgstr "Système Audio"
 
 #: resources/ui/transport_controls.ui:87
@@ -129,7 +140,7 @@ msgstr "Impossible de localiser la propriété %s dans la classe %s"
 msgid "Category"
 msgstr "Catégorie"
 
-#: src/gui/widgets/channel_slot.c:231
+#: src/gui/widgets/channel_slot.c:242
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -157,6 +168,14 @@ msgid "Click to enable MIDI controllers to be connected automatically"
 msgstr ""
 "Cliquez pour permettre aux contrôleurs MIDI de se connecter automatiquement"
 
+#: src/audio/engine_jack.c:598
+msgid "Client zombie"
+msgstr ""
+
+#: src/audio/engine_jack.c:592
+msgid "Client's protocol version does not match"
+msgstr ""
+
 #: src/plugins/lv2_gtk.c:1433
 msgid "Close"
 msgstr "Fermer"
@@ -170,6 +189,10 @@ msgstr "Collection"
 #: resources/ui/inspector_midi.ui:67
 msgid "Color"
 msgstr "Couleur"
+
+#: src/audio/engine_jack.c:577
+msgid "Communication error with the JACK server"
+msgstr ""
 
 #: resources/ui/bot_dock_edge.ui:153
 #, fuzzy
@@ -216,7 +239,12 @@ msgstr "Bruit de dispersion"
 msgid "Donate"
 msgstr "Faire un don"
 
-#: resources/ui/preferences.ui:265
+#. TRANSLATORS: Dummy audio backend
+#: src/utils/ui.c:565 src/utils/ui.c:606
+msgid "Dummy"
+msgstr ""
+
+#: resources/ui/preferences.ui:287
 msgid "Editing"
 msgstr "Édition"
 
@@ -236,7 +264,7 @@ msgstr "Appliquer l'échelle"
 msgid "Engine"
 msgstr "Moteur"
 
-#: src/utils/ui.c:519
+#: src/utils/ui.c:520
 msgid "English [en]"
 msgstr "Anglais [en]"
 
@@ -286,7 +314,7 @@ msgstr "Échec pour récupérer la valeur va_list : %s"
 msgid "Filename Pattern"
 msgstr "Motif du nom de fichier"
 
-#: resources/ui/first_run_assistant.ui:162
+#: resources/ui/first_run_assistant.ui:260
 msgid ""
 "Finally, select the MIDI devices you wish to auto-connect when Zrythm starts "
 "(You can skip this step and set them up later)"
@@ -311,15 +339,15 @@ msgstr "Avancer"
 msgid "Freeze"
 msgstr "Geler"
 
-#: src/utils/ui.c:521
+#: src/utils/ui.c:522
 msgid "French [fr]"
 msgstr "Français [fr]"
 
-#: resources/ui/preferences.ui:321
+#: resources/ui/preferences.ui:343
 msgid "GUI"
 msgstr "Interface Graphique utilisateur"
 
-#: resources/ui/shortcuts.ui:16 resources/ui/preferences.ui:169
+#: resources/ui/shortcuts.ui:16 resources/ui/preferences.ui:191
 msgid "General"
 msgstr "Général"
 
@@ -327,7 +355,7 @@ msgstr "Général"
 msgid "Genre"
 msgstr "Genre"
 
-#: src/utils/ui.c:520
+#: src/utils/ui.c:521
 msgid "German [de]"
 msgstr "Allemand [de]"
 
@@ -339,15 +367,15 @@ msgstr "Raccourcis globaux"
 msgid "Grid"
 msgstr "Grille"
 
-#: src/zrythm.c:238
+#: src/zrythm.c:240
 msgid "Initializing audio engine"
 msgstr "Initialisation du moteur audio"
 
-#: src/zrythm.c:243
+#: src/zrythm.c:245
 msgid "Initializing plugin manager"
 msgstr "Initialisation du gestionnaire  de greffon"
 
-#: src/zrythm.c:232
+#: src/zrythm.c:234
 msgid "Initializing settings"
 msgstr "Initialisation des paramètres"
 
@@ -359,11 +387,25 @@ msgstr "Initialisation..."
 msgid "Instrument Track"
 msgstr "Piste Instrument"
 
-#: src/utils/ui.c:522
+#: resources/ui/preferences.ui:302
+msgid "Interface"
+msgstr ""
+
+#: src/utils/ui.c:523
 msgid "Italian [it]"
 msgstr "Italien [it]"
 
-#: src/utils/ui.c:524
+#: src/audio/engine_jack.c:351
+#, c-format
+msgid "JACK Error: %s"
+msgstr ""
+
+#: src/gui/widgets/first_run_assistant.c:85
+#: src/gui/widgets/first_run_assistant.c:119
+msgid "JACK functionality is disabled"
+msgstr ""
+
+#: src/utils/ui.c:525
 msgid "Japanese [ja]"
 msgstr "Japonais [ja]"
 
@@ -375,7 +417,7 @@ msgstr "Raccourcis clavier"
 msgid "LFO 1"
 msgstr "LFO 1"
 
-#: resources/ui/first_run_assistant.ui:88 resources/ui/preferences.ui:294
+#: resources/ui/first_run_assistant.ui:88 resources/ui/preferences.ui:316
 msgid "Language"
 msgstr "Langue"
 
@@ -394,7 +436,7 @@ msgstr "Panneau de gauche"
 msgid "Length"
 msgstr "Longueur"
 
-#: src/zrythm.c:257
+#: src/zrythm.c:259
 #, fuzzy
 msgid "Loading project"
 msgstr "Chargement du projet"
@@ -423,15 +465,21 @@ msgstr "Sélection de la boucle"
 msgid "Looping"
 msgstr "Bouclage"
 
+#: resources/ui/first_run_assistant.ui:178 resources/ui/preferences.ui:167
+#, fuzzy
+msgid "MIDI Backend"
+msgstr "Système Audio"
+
 #: resources/ui/preferences.ui:145
 msgid "MIDI Controllers"
 msgstr "Contrôleurs MIDI"
 
-#: resources/ui/first_run_assistant.ui:189
+#: resources/ui/first_run_assistant.ui:287
+#, fuzzy
 msgid "MIDI Devices"
 msgstr "Périphériques MIDI"
 
-#: resources/ui/preferences.ui:232
+#: resources/ui/preferences.ui:254
 msgid "Main Window"
 msgstr "Fenêtre principal"
 
@@ -512,6 +560,11 @@ msgstr "Taille originale"
 msgid "Output Files"
 msgstr "Fichiers de sortie"
 
+#. TRANSLATORS: JACK failure messages
+#: src/audio/engine_jack.c:564
+msgid "Overall operation failed"
+msgstr ""
+
 #: resources/ui/shortcuts.ui:51
 msgid "Panels"
 msgstr "Panneaux"
@@ -519,6 +572,10 @@ msgstr "Panneaux"
 #: resources/ui/shortcuts.ui:126
 msgid "Paste from clipboard"
 msgstr "Coller à partir du presse-papier"
+
+#: resources/ui/first_run_assistant.ui:143
+msgid "Path"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:195
 msgid "Pencil tool"
@@ -546,9 +603,19 @@ msgstr ""
 msgid "Plugin 1"
 msgstr "Greffon 1"
 
-#: resources/ui/preferences.ui:183 resources/ui/preferences.ui:217
+#: resources/ui/preferences.ui:205 resources/ui/preferences.ui:239
 msgid "Plugins"
 msgstr "Greffons"
+
+#: src/audio/engine_pa.c:245 src/audio/engine_pa.c:265
+#: src/audio/engine_pa.c:276
+#, c-format
+msgid "PortAudio Error: %s"
+msgstr ""
+
+#: src/gui/widgets/first_run_assistant.c:104
+msgid "PortAudio functionality is disabled"
+msgstr ""
 
 #: resources/ui/inspector_region.ui:80 resources/ui/inspector_master.ui:79
 #: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
@@ -663,6 +730,10 @@ msgstr "Supprimer les projets sélectionnés de la liste"
 msgid "Report a Bug"
 msgstr "Rapporter un bogue"
 
+#: src/audio/engine_jack.c:580
+msgid "Requested client does not exist"
+msgstr ""
+
 #: resources/ui/midi_controller_popover.ui:79
 msgid "Rescan"
 msgstr "Rescanner"
@@ -708,6 +779,7 @@ msgstr "Gamme"
 msgid "Scan again for MIDI controllers"
 msgstr "Scanner encore les contrôleurs MIDI"
 
+#. property name="can_focus">False</property
 #: resources/ui/project_assistant.ui:27
 #, fuzzy
 msgid "Select Project"
@@ -720,6 +792,10 @@ msgstr "Sélectionner un dossier"
 #: resources/ui/shortcuts.ui:161
 msgid "Select all"
 msgstr "Sélectionner tout"
+
+#: resources/ui/first_run_assistant.ui:160
+msgid "Select the audio and MIDI engine backends to use"
+msgstr ""
 
 #: src/gui/widgets/midi_controller_mb.c:46
 #: src/gui/widgets/midi_controller_mb.c:116
@@ -739,11 +815,11 @@ msgstr "Sélection"
 msgid "Selections"
 msgstr "Sélections"
 
-#: src/zrythm.c:250
+#: src/zrythm.c:252
 msgid "Setting up backend"
 msgstr "Configuration du moteur"
 
-#: resources/ui/first_run_assistant.ui:29
+#: resources/ui/first_run_assistant.ui:27
 msgid "Setup Zrythm"
 msgstr "Configurer Zrythm"
 
@@ -755,7 +831,7 @@ msgstr "Montrer les files d'automations"
 msgid "Show UI"
 msgstr "Afficher l'interface utilisateur"
 
-#: resources/ui/preferences.ui:242
+#: resources/ui/preferences.ui:264
 msgid "Show native decoration"
 msgstr "Montrer la décoration native"
 
@@ -787,7 +863,7 @@ msgstr "Chanson"
 msgid "Source Audio Unit"
 msgstr "Unité de source Audio"
 
-#: src/utils/ui.c:523
+#: src/utils/ui.c:524
 msgid "Spanish [es]"
 msgstr "Espagnol [es]"
 
@@ -807,6 +883,19 @@ msgstr "Arrêter"
 msgid "Synth1 long name name"
 msgstr " nom du long nom du Synthétiseur 1 "
 
+#: resources/ui/first_run_assistant.ui:228
+msgid "Test"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:232
+#, fuzzy
+msgid "Tests the backends"
+msgstr "Configuration du moteur"
+
+#: src/audio/engine_jack.c:571
+msgid "The desired client name was not unique"
+msgstr ""
+
 #: resources/ui/export_dialog.ui:188
 msgid ""
 "The following files will be created:\n"
@@ -825,7 +914,11 @@ msgstr ""
 "\n"
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 
-#: resources/ui/main_window.ui:117
+#: src/audio/engine_jack.c:567
+msgid "The operation contained an invalid or unsupported option"
+msgstr ""
+
+#: resources/ui/main_window.ui:119
 msgid "This is an app-notification. Click the button to dismiss"
 msgstr ""
 "Ceci est une notification d'application. Cliquez sur le bouton pour annuler"
@@ -839,10 +932,6 @@ msgid "Time Signature - Click and drag up/down to change"
 msgstr ""
 "Signature rythmique - Cliquez et faites glisser vers le haut/le bas pour la "
 "modifier"
-
-#: resources/ui/preferences.ui:280
-msgid "Timeline"
-msgstr "ligne du temps"
 
 #: resources/ui/shortcuts.ui:34
 msgid "Toggle Fullscreen"
@@ -879,8 +968,8 @@ msgid ""
 "corresponding channel in Mixer (if applicable)"
 msgstr ""
 "Piste - Modifier les paramètres de piste comme Solo/Muet..... - Cliquez sur "
-"l'icône en bas à droite pour faire apparaître les lignes d'automatisation "
-"- Double-cliquer pour afficher le canal correspondant dans le Mixeur (le cas "
+"l'icône en bas à droite pour faire apparaître les lignes d'automatisation - "
+"Double-cliquer pour afficher le canal correspondant dans le Mixeur (le cas "
 "échéant)"
 
 #: resources/ui/piano_roll.ui:53 resources/ui/audio_clip_editor.ui:34
@@ -906,6 +995,22 @@ msgstr "Type"
 msgid "URI (Optional):"
 msgstr "Identifiant Uniforme de Ressource (Optional):"
 
+#: src/audio/engine_jack.c:589
+msgid "Unable to access shared memory"
+msgstr ""
+
+#: src/audio/engine_jack.c:574
+msgid "Unable to connect to the JACK server"
+msgstr ""
+
+#: src/audio/engine_jack.c:586
+msgid "Unable to initialize client"
+msgstr ""
+
+#: src/audio/engine_jack.c:583
+msgid "Unable to load internal client"
+msgstr ""
+
 #: resources/ui/shortcuts.ui:135
 msgid "Undo and Redo"
 msgstr "Annuler et refaire"
@@ -926,7 +1031,6 @@ msgstr "Type de widget inconnu pour value\n"
 msgid "Unselect all"
 msgstr "Désélectionner tout"
 
-#. create untitled project
 #: src/project.c:167
 msgid "Untitled Project"
 msgstr "Projet sans titre"
@@ -945,7 +1049,7 @@ msgstr ""
 " Ceci vous guidera pour la configuration de base de Zrythm. Tout d'abord, "
 "choisissez votre langue."
 
-#: resources/ui/preferences.ui:197
+#: resources/ui/preferences.ui:219
 msgid "When instantiating a plugin always show its UI"
 msgstr ""
 
@@ -972,10 +1076,6 @@ msgstr "Zoomer"
 #: resources/ui/header_bar.ui:28 resources/ui/export_dialog.ui:120
 msgid "Zrythm"
 msgstr "Zrythm"
-
-#: resources/ui/first_run_assistant.ui:143
-msgid "Zrythm Directory"
-msgstr "Répertoire Zrythm"
 
 #: src/plugins/lv2_gtk.c:151 src/plugins/lv2_gtk.c:566
 #: src/actions/actions.c:521
@@ -1090,6 +1190,23 @@ msgstr "nom_de_région"
 #: resources/ui/audio_clip_editor.ui:56 resources/ui/audio_clip_editor.ui:68
 msgid "stuff"
 msgstr "substance"
+
+#~ msgid "Timeline"
+#~ msgstr "ligne du temps"
+
+#~ msgid "Backend"
+#~ msgstr "Système Audio"
+
+#, fuzzy
+#~ msgid "Zrythm - Language"
+#~ msgstr "Langue"
+
+#, fuzzy
+#~ msgid "Zrythm - Path"
+#~ msgstr "Zrythm"
+
+#~ msgid "Zrythm Directory"
+#~ msgstr "Répertoire Zrythm"
 
 #~ msgid "Always open the UI after creating a plugin"
 #~ msgstr "Toujours ouvrir la fenêtre après avoir créé un greffon"

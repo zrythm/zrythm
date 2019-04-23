@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-19 12:14+0100\n"
+"POT-Creation-Date: 2019-04-23 01:05+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrytm dot org>\n"
 "Language-Team: Japanese\n"
@@ -29,7 +29,7 @@ msgstr ""
 msgid "90"
 msgstr ""
 
-#: src/gui/widgets/first_run_assistant.c:99
+#: src/gui/widgets/first_run_assistant.c:206
 #, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
@@ -52,13 +52,18 @@ msgstr ""
 msgid "Add Region"
 msgstr "リージョン追加"
 
-#: resources/ui/preferences.ui:193
+#: resources/ui/preferences.ui:215
 msgid "Always open plugin UIs"
 msgstr "毎回プラグイン画面を開く"
 
 #: resources/ui/export_dialog.ui:98
 msgid "Artist"
 msgstr "作者"
+
+#: resources/ui/first_run_assistant.ui:191 resources/ui/preferences.ui:122
+#, fuzzy
+msgid "Audio Backend"
+msgstr "オーディオトラック"
 
 #: src/actions/actions.c:867
 #, fuzzy
@@ -77,8 +82,14 @@ msgstr ""
 msgid "BPM - Click and drag up/down to set"
 msgstr "BPM"
 
-#: resources/ui/preferences.ui:122
-msgid "Backend"
+#: src/audio/engine_jack.c:595
+#, fuzzy
+msgid "Backend error"
+msgstr "バックエンド"
+
+#: resources/ui/first_run_assistant.ui:242
+#, fuzzy
+msgid "Backends"
 msgstr "バックエンド"
 
 #: resources/ui/transport_controls.ui:87
@@ -123,7 +134,7 @@ msgstr ""
 msgid "Category"
 msgstr "カテゴリー"
 
-#: src/gui/widgets/channel_slot.c:231
+#: src/gui/widgets/channel_slot.c:242
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -150,6 +161,14 @@ msgstr "コード"
 msgid "Click to enable MIDI controllers to be connected automatically"
 msgstr ""
 
+#: src/audio/engine_jack.c:598
+msgid "Client zombie"
+msgstr ""
+
+#: src/audio/engine_jack.c:592
+msgid "Client's protocol version does not match"
+msgstr ""
+
 #: src/plugins/lv2_gtk.c:1433
 msgid "Close"
 msgstr "閉じる"
@@ -163,6 +182,10 @@ msgstr "コレクション"
 #: resources/ui/inspector_midi.ui:67
 msgid "Color"
 msgstr "色"
+
+#: src/audio/engine_jack.c:577
+msgid "Communication error with the JACK server"
+msgstr ""
 
 #: resources/ui/bot_dock_edge.ui:153
 #, fuzzy
@@ -209,7 +232,12 @@ msgstr "ディザ"
 msgid "Donate"
 msgstr "寄付する"
 
-#: resources/ui/preferences.ui:265
+#. TRANSLATORS: Dummy audio backend
+#: src/utils/ui.c:565 src/utils/ui.c:606
+msgid "Dummy"
+msgstr ""
+
+#: resources/ui/preferences.ui:287
 msgid "Editing"
 msgstr "編集"
 
@@ -229,7 +257,7 @@ msgstr "スケールを摘要する"
 msgid "Engine"
 msgstr "エンジン"
 
-#: src/utils/ui.c:519
+#: src/utils/ui.c:520
 msgid "English [en]"
 msgstr "英語[en]"
 
@@ -280,7 +308,7 @@ msgstr ""
 msgid "Filename Pattern"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:162
+#: resources/ui/first_run_assistant.ui:260
 msgid ""
 "Finally, select the MIDI devices you wish to auto-connect when Zrythm starts "
 "(You can skip this step and set them up later)"
@@ -302,15 +330,15 @@ msgstr ""
 msgid "Freeze"
 msgstr "フリーズ"
 
-#: src/utils/ui.c:521
+#: src/utils/ui.c:522
 msgid "French [fr]"
 msgstr "フランス語[fr]"
 
-#: resources/ui/preferences.ui:321
+#: resources/ui/preferences.ui:343
 msgid "GUI"
 msgstr "画面"
 
-#: resources/ui/shortcuts.ui:16 resources/ui/preferences.ui:169
+#: resources/ui/shortcuts.ui:16 resources/ui/preferences.ui:191
 msgid "General"
 msgstr "一般"
 
@@ -318,7 +346,7 @@ msgstr "一般"
 msgid "Genre"
 msgstr "ジャンル"
 
-#: src/utils/ui.c:520
+#: src/utils/ui.c:521
 msgid "German [de]"
 msgstr "ドイツ語[de]"
 
@@ -330,15 +358,15 @@ msgstr "一般なショートカット"
 msgid "Grid"
 msgstr "グリッド"
 
-#: src/zrythm.c:238
+#: src/zrythm.c:240
 msgid "Initializing audio engine"
 msgstr ""
 
-#: src/zrythm.c:243
+#: src/zrythm.c:245
 msgid "Initializing plugin manager"
 msgstr ""
 
-#: src/zrythm.c:232
+#: src/zrythm.c:234
 msgid "Initializing settings"
 msgstr ""
 
@@ -350,11 +378,25 @@ msgstr ""
 msgid "Instrument Track"
 msgstr ""
 
-#: src/utils/ui.c:522
+#: resources/ui/preferences.ui:302
+msgid "Interface"
+msgstr ""
+
+#: src/utils/ui.c:523
 msgid "Italian [it]"
 msgstr ""
 
-#: src/utils/ui.c:524
+#: src/audio/engine_jack.c:351
+#, c-format
+msgid "JACK Error: %s"
+msgstr ""
+
+#: src/gui/widgets/first_run_assistant.c:85
+#: src/gui/widgets/first_run_assistant.c:119
+msgid "JACK functionality is disabled"
+msgstr ""
+
+#: src/utils/ui.c:525
 msgid "Japanese [ja]"
 msgstr "日本語[ja]"
 
@@ -366,7 +408,7 @@ msgstr "キーボードのショートカット"
 msgid "LFO 1"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:88 resources/ui/preferences.ui:294
+#: resources/ui/first_run_assistant.ui:88 resources/ui/preferences.ui:316
 msgid "Language"
 msgstr "言語"
 
@@ -385,7 +427,7 @@ msgstr "左パネル"
 msgid "Length"
 msgstr "長さ"
 
-#: src/zrythm.c:257
+#: src/zrythm.c:259
 #, fuzzy
 msgid "Loading project"
 msgstr "プロジェクトをロード中"
@@ -414,15 +456,21 @@ msgstr "選択したものをループする"
 msgid "Looping"
 msgstr ""
 
+#: resources/ui/first_run_assistant.ui:178 resources/ui/preferences.ui:167
+#, fuzzy
+msgid "MIDI Backend"
+msgstr "バックエンド"
+
 #: resources/ui/preferences.ui:145
 msgid "MIDI Controllers"
 msgstr "MIDIコントローラー"
 
-#: resources/ui/first_run_assistant.ui:189
+#: resources/ui/first_run_assistant.ui:287
+#, fuzzy
 msgid "MIDI Devices"
 msgstr "MIDIデバイス"
 
-#: resources/ui/preferences.ui:232
+#: resources/ui/preferences.ui:254
 msgid "Main Window"
 msgstr "メイン画面"
 
@@ -503,6 +551,11 @@ msgstr ""
 msgid "Output Files"
 msgstr "出力ファイル"
 
+#. TRANSLATORS: JACK failure messages
+#: src/audio/engine_jack.c:564
+msgid "Overall operation failed"
+msgstr ""
+
 #: resources/ui/shortcuts.ui:51
 msgid "Panels"
 msgstr "パネル"
@@ -510,6 +563,10 @@ msgstr "パネル"
 #: resources/ui/shortcuts.ui:126
 msgid "Paste from clipboard"
 msgstr "クリップボードからペースト"
+
+#: resources/ui/first_run_assistant.ui:143
+msgid "Path"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:195
 msgid "Pencil tool"
@@ -535,9 +592,19 @@ msgstr "プレイヘッド - クリック＆ドラッグで変更する"
 msgid "Plugin 1"
 msgstr ""
 
-#: resources/ui/preferences.ui:183 resources/ui/preferences.ui:217
+#: resources/ui/preferences.ui:205 resources/ui/preferences.ui:239
 msgid "Plugins"
 msgstr "プラグイン"
+
+#: src/audio/engine_pa.c:245 src/audio/engine_pa.c:265
+#: src/audio/engine_pa.c:276
+#, c-format
+msgid "PortAudio Error: %s"
+msgstr ""
+
+#: src/gui/widgets/first_run_assistant.c:104
+msgid "PortAudio functionality is disabled"
+msgstr ""
 
 #: resources/ui/inspector_region.ui:80 resources/ui/inspector_master.ui:79
 #: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
@@ -643,6 +710,10 @@ msgstr "選択したプロジェクトをリストから削除する"
 msgid "Report a Bug"
 msgstr "不具合を報告する"
 
+#: src/audio/engine_jack.c:580
+msgid "Requested client does not exist"
+msgstr ""
+
 #: resources/ui/midi_controller_popover.ui:79
 msgid "Rescan"
 msgstr "再スキャン"
@@ -689,6 +760,7 @@ msgstr "スケール"
 msgid "Scan again for MIDI controllers"
 msgstr ""
 
+#. property name="can_focus">False</property
 #: resources/ui/project_assistant.ui:27
 #, fuzzy
 msgid "Select Project"
@@ -701,6 +773,10 @@ msgstr "フォルダーを選択してください"
 #: resources/ui/shortcuts.ui:161
 msgid "Select all"
 msgstr "全部選択"
+
+#: resources/ui/first_run_assistant.ui:160
+msgid "Select the audio and MIDI engine backends to use"
+msgstr ""
 
 #: src/gui/widgets/midi_controller_mb.c:46
 #: src/gui/widgets/midi_controller_mb.c:116
@@ -720,11 +796,11 @@ msgstr "選択"
 msgid "Selections"
 msgstr ""
 
-#: src/zrythm.c:250
+#: src/zrythm.c:252
 msgid "Setting up backend"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:29
+#: resources/ui/first_run_assistant.ui:27
 msgid "Setup Zrythm"
 msgstr "Zrythmを設定しています"
 
@@ -736,7 +812,7 @@ msgstr ""
 msgid "Show UI"
 msgstr "画面を開く"
 
-#: resources/ui/preferences.ui:242
+#: resources/ui/preferences.ui:264
 msgid "Show native decoration"
 msgstr ""
 
@@ -768,7 +844,7 @@ msgstr "曲名"
 msgid "Source Audio Unit"
 msgstr ""
 
-#: src/utils/ui.c:523
+#: src/utils/ui.c:524
 msgid "Spanish [es]"
 msgstr "スペイン語[es]"
 
@@ -788,6 +864,18 @@ msgstr "ストップ"
 msgid "Synth1 long name name"
 msgstr ""
 
+#: resources/ui/first_run_assistant.ui:228
+msgid "Test"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:232
+msgid "Tests the backends"
+msgstr ""
+
+#: src/audio/engine_jack.c:571
+msgid "The desired client name was not unique"
+msgstr ""
+
 #: resources/ui/export_dialog.ui:188
 msgid ""
 "The following files will be created:\n"
@@ -799,7 +887,11 @@ msgid ""
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 msgstr ""
 
-#: resources/ui/main_window.ui:117
+#: src/audio/engine_jack.c:567
+msgid "The operation contained an invalid or unsupported option"
+msgstr ""
+
+#: resources/ui/main_window.ui:119
 msgid "This is an app-notification. Click the button to dismiss"
 msgstr ""
 
@@ -810,10 +902,6 @@ msgstr ""
 #: src/gui/widgets/digital_meter.c:676
 msgid "Time Signature - Click and drag up/down to change"
 msgstr ""
-
-#: resources/ui/preferences.ui:280
-msgid "Timeline"
-msgstr "タイムライン"
 
 #: resources/ui/shortcuts.ui:34
 msgid "Toggle Fullscreen"
@@ -874,6 +962,22 @@ msgstr "種類"
 msgid "URI (Optional):"
 msgstr ""
 
+#: src/audio/engine_jack.c:589
+msgid "Unable to access shared memory"
+msgstr ""
+
+#: src/audio/engine_jack.c:574
+msgid "Unable to connect to the JACK server"
+msgstr ""
+
+#: src/audio/engine_jack.c:586
+msgid "Unable to initialize client"
+msgstr ""
+
+#: src/audio/engine_jack.c:583
+msgid "Unable to load internal client"
+msgstr ""
+
 #: resources/ui/shortcuts.ui:135
 msgid "Undo and Redo"
 msgstr ""
@@ -894,7 +998,6 @@ msgstr ""
 msgid "Unselect all"
 msgstr ""
 
-#. create untitled project
 #: src/project.c:167
 msgid "Untitled Project"
 msgstr "新プロジェクト"
@@ -912,7 +1015,7 @@ msgstr ""
 "Zrythmへようこそ。このガイドは最初の設定を行います。まずは、言語を選択してく"
 "ださい。"
 
-#: resources/ui/preferences.ui:197
+#: resources/ui/preferences.ui:219
 msgid "When instantiating a plugin always show its UI"
 msgstr ""
 
@@ -939,10 +1042,6 @@ msgstr "ズーム"
 #: resources/ui/header_bar.ui:28 resources/ui/export_dialog.ui:120
 msgid "Zrythm"
 msgstr ""
-
-#: resources/ui/first_run_assistant.ui:143
-msgid "Zrythm Directory"
-msgstr "Zrythmのパス"
 
 #: src/plugins/lv2_gtk.c:151 src/plugins/lv2_gtk.c:566
 #: src/actions/actions.c:521
@@ -1058,3 +1157,16 @@ msgstr ""
 #: resources/ui/audio_clip_editor.ui:56 resources/ui/audio_clip_editor.ui:68
 msgid "stuff"
 msgstr ""
+
+#~ msgid "Timeline"
+#~ msgstr "タイムライン"
+
+#~ msgid "Backend"
+#~ msgstr "バックエンド"
+
+#, fuzzy
+#~ msgid "Zrythm - Language"
+#~ msgstr "言語"
+
+#~ msgid "Zrythm Directory"
+#~ msgstr "Zrythmのパス"

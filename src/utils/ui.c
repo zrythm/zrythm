@@ -32,6 +32,7 @@
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "project.h"
+#include "utils/gtk.h"
 #include "utils/localization.h"
 #include "utils/ui.h"
 
@@ -544,6 +545,88 @@ ui_create_language_model ()
   return GTK_TREE_MODEL (store);
 }
 
+static GtkTreeModel *
+ui_create_audio_backends_model (void)
+{
+  enum
+  {
+    VALUE_COL,
+    TEXT_COL
+  };
+
+  const int values[NUM_AUDIO_BACKENDS] = {
+    AUDIO_BACKEND_DUMMY,
+    AUDIO_BACKEND_JACK,
+    AUDIO_BACKEND_ALSA,
+    AUDIO_BACKEND_PORT_AUDIO,
+  };
+  const gchar *labels[NUM_AUDIO_BACKENDS] = {
+    /* TRANSLATORS: Dummy audio backend */
+    _("Dummy"),
+    "Jack",
+    "ALSA",
+    "PortAudio",
+  };
+
+  GtkTreeIter iter;
+  GtkListStore *store;
+  gint i;
+
+  store = gtk_list_store_new (2,
+                              G_TYPE_INT,
+                              G_TYPE_STRING);
+
+  for (i = 0; i < G_N_ELEMENTS (values); i++)
+    {
+      gtk_list_store_append (store, &iter);
+      gtk_list_store_set (store, &iter,
+                          VALUE_COL, values[i],
+                          TEXT_COL, labels[i],
+                          -1);
+    }
+
+  return GTK_TREE_MODEL (store);
+}
+
+static GtkTreeModel *
+ui_create_midi_backends_model (void)
+{
+  enum
+  {
+    VALUE_COL,
+    TEXT_COL
+  };
+
+  const int values[NUM_MIDI_BACKENDS] = {
+    MIDI_BACKEND_DUMMY,
+    MIDI_BACKEND_JACK,
+  };
+  const gchar *labels[NUM_AUDIO_BACKENDS] = {
+    /* TRANSLATORS: Dummy audio backend */
+    _("Dummy"),
+    "Jack MIDI",
+  };
+
+  GtkTreeIter iter;
+  GtkListStore *store;
+  gint i;
+
+  store = gtk_list_store_new (2,
+                              G_TYPE_INT,
+                              G_TYPE_STRING);
+
+  for (i = 0; i < G_N_ELEMENTS (values); i++)
+    {
+      gtk_list_store_append (store, &iter);
+      gtk_list_store_set (store, &iter,
+                          VALUE_COL, values[i],
+                          TEXT_COL, labels[i],
+                          -1);
+    }
+
+  return GTK_TREE_MODEL (store);
+}
+
 /**
  * Sets up a combo box to have a selection of
  * languages.
@@ -552,29 +635,46 @@ void
 ui_setup_language_combo_box (
   GtkComboBox * language)
 {
-  enum
-  {
-    VALUE_COL,
-    TEXT_COL
-  };
-
-  GtkCellRenderer *renderer;
-  gtk_combo_box_set_model (
+  z_gtk_configure_simple_combo_box (
     language, ui_create_language_model ());
-  gtk_cell_layout_clear (
-    GTK_CELL_LAYOUT (language));
-  renderer = gtk_cell_renderer_text_new ();
-  gtk_cell_layout_pack_start (
-    GTK_CELL_LAYOUT (language),
-    renderer, TRUE);
-  gtk_cell_layout_set_attributes (
-    GTK_CELL_LAYOUT (language), renderer,
-    "text", TEXT_COL,
-    NULL);
 
   gtk_combo_box_set_active (
     GTK_COMBO_BOX (language),
     g_settings_get_enum (
       S_PREFERENCES,
       "language"));
+}
+
+/**
+ * Sets up an audio backends combo box.
+ */
+void
+ui_setup_audio_backends_combo_box (
+  GtkComboBox * cb)
+{
+  z_gtk_configure_simple_combo_box (
+    cb, ui_create_audio_backends_model ());
+
+  gtk_combo_box_set_active (
+    GTK_COMBO_BOX (cb),
+    g_settings_get_enum (
+      S_PREFERENCES,
+      "audio-backend"));
+}
+
+/**
+ * Sets up a MIDI backends combo box.
+ */
+void
+ui_setup_midi_backends_combo_box (
+  GtkComboBox * cb)
+{
+  z_gtk_configure_simple_combo_box (
+    cb, ui_create_midi_backends_model ());
+
+  gtk_combo_box_set_active (
+    GTK_COMBO_BOX (cb),
+    g_settings_get_enum (
+      S_PREFERENCES,
+      "midi-backend"));
 }

@@ -373,6 +373,20 @@ ui_setup_language_combo_box (
   GtkComboBox * language);
 
 /**
+ * Sets up an audio backends combo box.
+ */
+void
+ui_setup_audio_backends_combo_box (
+  GtkComboBox * cb);
+
+/**
+ * Sets up a MIDI backends combo box.
+ */
+void
+ui_setup_midi_backends_combo_box (
+  GtkComboBox * cb);
+
+/**
  * @}
  */
 

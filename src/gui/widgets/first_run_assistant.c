@@ -22,6 +22,9 @@
  *
  */
 
+#include "audio/engine.h"
+#include "audio/engine_jack.h"
+#include "audio/engine_pa.h"
 #include "gui/widgets/first_run_assistant.h"
 #include "gui/widgets/midi_controller_mb.h"
 #include "utils/arrays.h"
@@ -55,6 +58,110 @@ on_reset_clicked (
   g_settings_set_string (
     S_GENERAL, "dir", dir);
   g_free (dir);
+}
+
+/**
+ * Validates the current audio/MIDI backend selection.
+ */
+static int
+audio_midi_backend_selection_validate (
+  FirstRunAssistantWidget * self)
+{
+  AudioBackend ab =
+    gtk_combo_box_get_active (self->audio_backend);
+  MidiBackend mb =
+    gtk_combo_box_get_active (self->midi_backend);
+
+  char * msg;
+
+  /* test audio backends */
+  if (ab == AUDIO_BACKEND_JACK)
+    {
+#ifdef HAVE_JACK
+      if (engine_jack_test (GTK_WINDOW (self)))
+        return 1;
+#else
+      msg =
+        _("JACK functionality is disabled");
+      ui_show_error_message (
+        self, msg);
+      return 1;
+#endif
+    }
+  else if (ab == AUDIO_BACKEND_ALSA)
+    {
+      ui_show_error_message (
+        self, "ALSA backend not implemented");
+      return 1;
+    }
+  else if (ab == AUDIO_BACKEND_PORT_AUDIO)
+    {
+#ifdef HAVE_PORT_AUDIO
+      if (engine_pa_test (GTK_WINDOW (self)))
+        return 1;
+#else
+      msg =
+        _("PortAudio functionality is disabled");
+      ui_show_error_message (
+        self, msg);
+      return 1;
+#endif
+    }
+
+  /* test MIDI backends */
+  if (mb == MIDI_BACKEND_JACK)
+    {
+#ifdef HAVE_JACK
+      if (engine_jack_test (GTK_WINDOW (self)))
+        return 1;
+#else
+      msg =
+        _("JACK functionality is disabled");
+      ui_show_error_message (
+        self, msg);
+      return 1;
+#endif
+    }
+
+  return 0;
+}
+
+static void
+on_test_backends_clicked (
+  GtkButton * widget,
+  FirstRunAssistantWidget * self)
+{
+  audio_midi_backend_selection_validate (self);
+}
+
+static void
+on_audio_backend_changed (
+  GtkComboBox *widget,
+  FirstRunAssistantWidget * self)
+{
+  AudioBackend ab =
+    gtk_combo_box_get_active (widget);
+
+  /* update settings */
+  g_settings_set_enum (
+    S_PREFERENCES,
+    "audio-backend",
+    ab);
+}
+
+static void
+on_midi_backend_changed (
+  GtkComboBox *widget,
+  FirstRunAssistantWidget * self)
+{
+  MidiBackend mb =
+    gtk_combo_box_get_active (widget);
+
+  /* update settings */
+  g_settings_set_enum (
+    S_PREFERENCES,
+    "midi-backend",
+    mb);
 }
 
 static void
@@ -150,6 +257,12 @@ first_run_assistant_widget_new (
   ui_setup_language_combo_box (
     self->language_cb);
 
+  /* setup backends */
+  ui_setup_audio_backends_combo_box (
+    self->audio_backend);
+  ui_setup_midi_backends_combo_box (
+    self->midi_backend);
+
   /* set zrythm dir */
   char * dir;
   dir = zrythm_get_dir (ZRYTHM);
@@ -203,6 +316,14 @@ first_run_assistant_widget_class_init (
   gtk_widget_class_bind_template_child (
     klass,
     FirstRunAssistantWidget,
+    audio_backend);
+  gtk_widget_class_bind_template_child (
+    klass,
+    FirstRunAssistantWidget,
+    midi_backend);
+  gtk_widget_class_bind_template_child (
+    klass,
+    FirstRunAssistantWidget,
     locale_not_available);
   gtk_widget_class_bind_template_child (
     klass,
@@ -212,6 +333,10 @@ first_run_assistant_widget_class_init (
     klass,
     FirstRunAssistantWidget,
     reset);
+  gtk_widget_class_bind_template_child (
+    klass,
+    FirstRunAssistantWidget,
+    test_backends);
   gtk_widget_class_bind_template_child (
     klass,
     FirstRunAssistantWidget,
@@ -235,9 +360,21 @@ first_run_assistant_widget_init (
     G_OBJECT (self->language_cb), "changed",
     G_CALLBACK (on_language_changed), self);
   g_signal_connect (
+    G_OBJECT (self->audio_backend), "changed",
+    G_CALLBACK (on_audio_backend_changed), self);
+  g_signal_connect (
+    G_OBJECT (self->midi_backend), "changed",
+    G_CALLBACK (on_midi_backend_changed), self);
+  g_signal_connect (
+    G_OBJECT (self->language_cb), "changed",
+    G_CALLBACK (on_language_changed), self);
+  g_signal_connect (
     G_OBJECT (self->fc_btn), "file-set",
     G_CALLBACK (on_file_set), self);
   g_signal_connect (
     G_OBJECT (self->reset), "clicked",
     G_CALLBACK (on_reset_clicked), self);
+  g_signal_connect (
+    G_OBJECT (self->test_backends), "clicked",
+    G_CALLBACK (on_test_backends_clicked), self);
 }

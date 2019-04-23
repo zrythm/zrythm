@@ -163,16 +163,22 @@ refresh_dsp_load (GtkWidget * widget,
 
   CpuWidget * self = Z_CPU_WIDGET (widget);
 
+  if (g_atomic_int_get (&AUDIO_ENGINE->run))
+    {
+
 #ifdef __APPLE__
-  /* TODO engine not working yet */
+      /* TODO engine not working yet */
 #else
-  gint64 block_latency =
-    (AUDIO_ENGINE->block_length * 1000000) /
-    AUDIO_ENGINE->sample_rate;
-  self->dsp =
-    AUDIO_ENGINE->max_time_taken * 100.0 /
-    block_latency;
+      gint64 block_latency =
+        (AUDIO_ENGINE->block_length * 1000000) /
+        AUDIO_ENGINE->sample_rate;
+      self->dsp =
+        AUDIO_ENGINE->max_time_taken * 100.0 /
+        block_latency;
 #endif
+    }
+  else
+    self->dsp = 0;
 
   AUDIO_ENGINE->max_time_taken = 0;
   last_time_updated_dsp = curr_time;

@@ -1,7 +1,5 @@
 /*
- * audio/engine_pa.c - Port Audio engine
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,7 +32,9 @@ typedef struct AudioEngine AudioEngine;
  * Set up Port Audio.
  */
 void
-pa_setup (AudioEngine * engine);
+pa_setup (
+  AudioEngine * self,
+  int           loading);
 
 void
 engine_pa_fill_stereo_out_buffs (
@@ -62,6 +62,18 @@ pa_stream_cb (
  */
 PaStream *
 pa_open_stream (AudioEngine * engine);
+
+/**
+ * Tests if PortAudio is working properly.
+ *
+ * Returns 0 if ok, non-null if has errors.
+ *
+ * If win is not null, it displays error messages
+ * to it.
+ */
+int
+engine_pa_test (
+  GtkWindow * win);
 
 /**
  * Closes Port Audio.

@@ -325,13 +325,12 @@ _create_channel (char * name)
   fader_init (&channel->fader, channel);
 
   /* connect MIDI in port from engine's jack port */
-#ifdef __APPLE__
-  /* TODO: temporarily don't connect until a backend is
-   * working */
-#else
-  port_connect (AUDIO_ENGINE->midi_in,
-                channel->midi_in);
-#endif
+  if (AUDIO_ENGINE->midi_backend !=
+        MIDI_BACKEND_DUMMY)
+    {
+      port_connect (AUDIO_ENGINE->midi_in,
+                    channel->midi_in);
+    }
 
   /* init semaphores */
   /*zix_sem_init (&channel->processed_sem, 1);*/

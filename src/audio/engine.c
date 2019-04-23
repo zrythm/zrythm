@@ -30,6 +30,7 @@
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
 #include "audio/engine.h"
+#include "audio/engine_dummy.h"
 #include "audio/engine_jack.h"
 #include "audio/engine_pa.h"
 #include "audio/midi.h"
@@ -62,6 +63,61 @@ engine_update_frames_per_tick (int beats_per_bar,
   transport_update_position_frames (&AUDIO_ENGINE->transport);
 }
 
+static void
+init_midi (
+  AudioEngine * self,
+  int           loading)
+{
+  g_message ("initializing MIDI...");
+
+  if (loading)
+    {
+
+      self->midi_in =
+        project_get_port (
+          self->midi_in_id);
+      self->midi_editor_manual_press =
+        project_get_port (
+          self->midi_editor_manual_press_id);
+    }
+  else
+    {
+      Port * midi_editor_manual_press =
+        port_new_with_type (
+          TYPE_EVENT,
+          FLOW_INPUT,
+          "MIDI Editor Manual Press");
+      self->midi_editor_manual_press =
+        midi_editor_manual_press;
+      self->midi_editor_manual_press_id =
+        midi_editor_manual_press->id;
+
+    }
+
+  /* init MIDI queues for manual press */
+  self->midi_editor_manual_press->midi_events =
+    midi_events_new (1);
+}
+
+static void
+init_audio (
+  AudioEngine * self,
+  int           loading)
+{
+  g_message ("initializing audio...");
+
+  if (loading)
+    {
+      stereo_ports_init_loaded (self->stereo_in);
+      stereo_ports_init_loaded (self->stereo_out);
+
+    }
+  else
+    {
+
+    }
+}
+
 /**
  * Init audio engine.
  *
@@ -76,13 +132,16 @@ engine_init (AudioEngine * self,
   transport_init (&self->transport,
                   loading);
 
+  /* get audio backend */
   int ab_code =
     g_settings_get_enum (
       S_PREFERENCES,
       "audio-backend");
-  self->audio_backend = AUDIO_BACKEND_NONE;
+  self->audio_backend = AUDIO_BACKEND_DUMMY;
   switch (ab_code)
     {
+    case 0: // no backend
+      break;
     case 1:
       self->audio_backend = AUDIO_BACKEND_JACK;
       break;
@@ -94,13 +153,16 @@ engine_init (AudioEngine * self,
       break;
     }
 
+  /* get midi backend */
   int mb_code =
     g_settings_get_enum (
       S_PREFERENCES,
       "midi-backend");
-  self->midi_backend = MIDI_BACKEND_NONE;
+  self->midi_backend = MIDI_BACKEND_DUMMY;
   switch (mb_code)
     {
+    case 0: // no backend
+      break;
     case 1:
       self->midi_backend = MIDI_BACKEND_JACK;
       break;
@@ -110,25 +172,21 @@ engine_init (AudioEngine * self,
 
   /* init semaphores */
   zix_sem_init (&self->port_operation_lock, 1);
-  /*zix_sem_init (&MIXER->channel_process_sem, 1);*/
 
-  /* load ports from IDs */
   if (loading)
     {
+      /* load */
       mixer_init_loaded ();
-
-      stereo_ports_init_loaded (self->stereo_in);
-      stereo_ports_init_loaded (self->stereo_out);
-      self->midi_in =
-        project_get_port (
-          self->midi_in_id);
-      self->midi_editor_manual_press =
-        project_get_port (
-          self->midi_editor_manual_press_id);
     }
+
+  /* init audio */
+  init_audio (self, loading);
 
   switch (self->audio_backend)
     {
+    case AUDIO_BACKEND_DUMMY:
+      engine_dummy_setup (self, loading);
+      break;
 #ifdef HAVE_JACK
     case AUDIO_BACKEND_JACK:
       jack_setup (self, loading);
@@ -136,10 +194,30 @@ engine_init (AudioEngine * self,
 #endif
 #ifdef HAVE_PORT_AUDIO
     case AUDIO_BACKEND_PORT_AUDIO:
-      pa_setup (self);
+      pa_setup (self, loading);
       break;
 #endif
     case NUM_AUDIO_BACKENDS:
+    default:
+      g_warn_if_reached ();
+      break;
+    }
+
+  /* init midi */
+  init_midi (self, loading);
+
+  /* set up midi */
+  switch (self->midi_backend)
+    {
+    case MIDI_BACKEND_DUMMY:
+      engine_dummy_midi_setup (self, loading);
+      break;
+#ifdef HAVE_JACK
+    case MIDI_BACKEND_JACK:
+      jack_midi_setup (self, loading);
+      break;
+#endif
+    case NUM_MIDI_BACKENDS:
     default:
       g_warn_if_reached ();
       break;
@@ -155,6 +233,8 @@ audio_engine_close (AudioEngine * self)
 
   switch (self->audio_backend)
     {
+    case AUDIO_BACKEND_DUMMY:
+      break;
 #ifdef HAVE_JACK
     case AUDIO_BACKEND_JACK:
       jack_client_close (AUDIO_ENGINE->client);

@@ -70,11 +70,35 @@ void
 jack_shutdown_cb (void *arg);
 
 /**
+ * Tests if JACK is working properly.
+ *
+ * Returns 0 if ok, non-null if has errors.
+ *
+ * If win is not null, it displays error messages
+ * to it.
+ */
+int
+engine_jack_test (
+  GtkWindow * win);
+
+/**
+ * Sets up the MIDI engine to use jack.
+ */
+int
+jack_midi_setup (
+  AudioEngine * self,
+  int           loading);
+
+/**
  * Sets up the audio engine to use jack.
  */
-void
+int
 jack_setup (AudioEngine * self,
             int           loading);
+
+const char *
+engine_jack_get_error_message (
+  jack_status_t status);
 
 void
 jack_tear_down ();

@@ -36,6 +36,7 @@
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 #include <jack/statistics.h>
 
@@ -104,13 +105,10 @@ jack_sample_rate_cb(uint32_t nframes, void * data)
 {
   AUDIO_ENGINE->sample_rate = nframes;
 
-  if (PROJECT)
-    engine_update_frames_per_tick (
-      TRANSPORT->beats_per_bar,
-      TRANSPORT->bpm,
-      AUDIO_ENGINE->sample_rate);
-  else
-    engine_update_frames_per_tick (4, 120, 44000);
+  engine_update_frames_per_tick (
+    TRANSPORT->beats_per_bar,
+    TRANSPORT->bpm,
+    AUDIO_ENGINE->sample_rate);
 
   g_message ("JACK: Sample rate changed to %d", nframes);
   return 0;
@@ -255,9 +253,118 @@ jack_shutdown_cb (void *arg)
 }
 
 /**
+ * Sets up the MIDI engine to use jack.
+ */
+int
+jack_midi_setup (
+  AudioEngine * self,
+  int           loading)
+{
+  /* TODO: case 1 - no jack client (using another
+   * backend)
+   *
+   * create a client and attach midi. */
+
+  /* case 2 - jack client exists, just attach to
+   * it */
+  self->midi_buf_size = 4096;
+#ifdef HAVE_JACK_PORT_TYPE_GET_BUFFER_SIZE
+  self->midi_buf_size =
+    jack_port_type_get_buffer_size (
+      self->client, JACK_DEFAULT_MIDI_TYPE);
+#endif
+
+  if (loading)
+    {
+      self->midi_in->data =
+        (void *) jack_port_register (
+          self->client, "MIDI_in",
+          JACK_DEFAULT_MIDI_TYPE,
+          JackPortIsInput, 0);
+    }
+  else
+    {
+      self->midi_in =
+        port_new_with_data (
+          INTERNAL_JACK_PORT,
+          TYPE_EVENT,
+          FLOW_INPUT,
+          "JACK MIDI In",
+          (void *) jack_port_register (
+            self->client, "MIDI_in",
+            JACK_DEFAULT_MIDI_TYPE,
+            JackPortIsInput, 0));
+      self->midi_in->owner_backend = 1;
+      self->midi_in_id = self->midi_in->id;
+    }
+
+  /* init queue */
+  self->midi_in->midi_events =
+    midi_events_new (1);
+
+  if (!self->midi_in->data)
+    {
+      g_warning ("no more JACK ports available");
+    }
+
+  /* autoconnect MIDI controllers */
+  engine_jack_autoconnect_midi_controllers (
+    AUDIO_ENGINE);
+
+  return 0;
+}
+
+/**
+ * Tests if JACK is working properly.
+ *
+ * Returns 0 if ok, non-null if has errors.
+ *
+ * If win is not null, it displays error messages
+ * to it.
+ */
+int
+engine_jack_test (
+  GtkWindow * win)
+{
+  const char *client_name = "Zrythm";
+  const char *server_name = NULL;
+  jack_options_t options = JackNoStartServer;
+  jack_status_t status;
+  char * msg;
+
+  // open a client connection to the JACK server
+  jack_client_t * client =
+    jack_client_open (client_name,
+                      options,
+                      &status,
+                      server_name);
+
+  if (client)
+    {
+      jack_client_close (client);
+      return 0;
+    }
+  else
+    {
+      msg =
+        g_strdup_printf (
+          _("JACK Error: %s"),
+          msg,
+          engine_jack_get_error_message (
+            status));
+      ui_show_error_message (
+        win, msg);
+      g_free (msg);
+      return 1;
+    }
+
+  return 0;
+}
+
+/**
  * Sets up the audio engine to use jack.
  */
-void
+int
 jack_setup (AudioEngine * self,
             int           loading)
 {
@@ -276,38 +383,22 @@ jack_setup (AudioEngine * self,
                       &status,
                       server_name);
 
-  if (self->client == NULL)
+  if (!self->client)
     {
-      g_warning ("jack_client_open() failed, "
-        "status = 0x%2.0x", status);
-      if (status & JackServerFailed)
-        {
-          g_error (
-            "Unable to connect to JACK server");
-        }
-      exit (1);
+      char * msg =
+        g_strdup_printf (
+          "JACK Error: %s",
+          engine_jack_get_error_message (status));
+      ui_show_error_message (
+        NULL, msg);
+      g_free (msg);
+
+      return -1;
     }
-  if (status & JackServerStarted)
-    {
-      // FIXME g_info
-      g_message ("JACK server started");
-    }
-  if (status & JackNameNotUnique)
-    {
-      client_name =
-        jack_get_client_name (self->client);
-      g_error ("JACK: unique name '%s' assigned",
-               client_name);
-  }
 
   /* Set audio engine properties */
   self->sample_rate   = jack_get_sample_rate (self->client);
   self->block_length  = jack_get_buffer_size (self->client);
-  self->midi_buf_size = 4096;
-#ifdef HAVE_JACK_PORT_TYPE_GET_BUFFER_SIZE
-  self->midi_buf_size = jack_port_type_get_buffer_size (
-        self->client, JACK_DEFAULT_MIDI_TYPE);
-#endif
 
 
   /* set jack callbacks */
@@ -331,8 +422,7 @@ jack_setup (AudioEngine * self,
 
   /* create ports */
   Port * stereo_out_l, * stereo_out_r,
-       * stereo_in_l, * stereo_in_r,
-       * midi_in, * midi_editor_manual_press;
+       * stereo_in_l, * stereo_in_r;
 
   if (loading)
     {
@@ -355,11 +445,6 @@ jack_setup (AudioEngine * self,
         (void *) jack_port_register (
           self->client, "Stereo_in_R",
           JACK_DEFAULT_AUDIO_TYPE,
-          JackPortIsInput, 0);
-      self->midi_in->data =
-        (void *) jack_port_register (
-          self->client, "MIDI_in",
-          JACK_DEFAULT_MIDI_TYPE,
           JackPortIsInput, 0);
     }
   else
@@ -400,29 +485,11 @@ jack_setup (AudioEngine * self,
           self->client, "Stereo_in_R",
           JACK_DEFAULT_AUDIO_TYPE,
           JackPortIsInput, 0));
-      midi_in =
-        port_new_with_data (
-          INTERNAL_JACK_PORT,
-          TYPE_EVENT,
-          FLOW_INPUT,
-          "JACK MIDI In",
-          (void *) jack_port_register (
-            self->client, "MIDI_in",
-            JACK_DEFAULT_MIDI_TYPE,
-            JackPortIsInput, 0));
-
-      midi_editor_manual_press =
-        port_new_with_type (
-          TYPE_EVENT,
-          FLOW_INPUT,
-          "MIDI Editor Manual Press");
 
       stereo_in_l->owner_backend = 1;
       stereo_in_r->owner_backend = 1;
       stereo_out_l->owner_backend = 1;
       stereo_out_r->owner_backend = 1;
-      midi_in->owner_backend = 1;
-      midi_editor_manual_press->owner_backend = 0;
 
       self->stereo_in =
         stereo_ports_new (stereo_in_l,
@@ -430,31 +497,15 @@ jack_setup (AudioEngine * self,
       self->stereo_out =
         stereo_ports_new (stereo_out_l,
                           stereo_out_r);
-      self->midi_in = midi_in;
-      self->midi_in_id = midi_in->id;
-      self->midi_editor_manual_press =
-        midi_editor_manual_press;
-      self->midi_editor_manual_press_id =
-        midi_editor_manual_press->id;
     }
-
-  /* init MIDI queues for manual presse/piano roll */
-  self->midi_in->midi_events =
-    midi_events_new (1);
-  self->midi_editor_manual_press->midi_events =
-    midi_events_new (1);
 
   if (!self->stereo_in->l->data ||
       !self->stereo_in->r->data ||
       !self->stereo_out->l->data ||
-      !self->stereo_out->r->data ||
-      !self->midi_in->data)
+      !self->stereo_out->r->data)
     {
       g_error ("no more JACK ports available");
     }
-
-  /* init semaphore */
-  zix_sem_init (&self->port_operation_lock, 1);
 
   /* Tell the JACK server that we are ready to roll.  Our
    * process() callback will start running now. */
@@ -499,11 +550,79 @@ jack_setup (AudioEngine * self,
 
   jack_free (ports);
 
-  /* autoconnect MIDI controllers */
-  engine_jack_autoconnect_midi_controllers (
-    AUDIO_ENGINE);
-
   g_message ("JACK set up");
+  return 0;
+}
+
+
+const char *
+engine_jack_get_error_message (
+  jack_status_t status)
+{
+  const char *
+    jack_failure =
+    /* TRANSLATORS: JACK failure messages */
+      _("Overall operation failed");
+  const char *
+    jack_invalid_option =
+      _("The operation contained an invalid or "
+      "unsupported option");
+  const char *
+    jack_name_not_unique =
+      _("The desired client name was not unique");
+  const char *
+    jack_server_failed =
+      _("Unable to connect to the JACK server");
+  const char *
+    jack_server_error =
+      _("Communication error with the JACK server");
+  const char *
+    jack_no_such_client =
+      _("Requested client does not exist");
+  const char *
+    jack_load_failure =
+      _("Unable to load internal client");
+  const char *
+    jack_init_failure =
+      _("Unable to initialize client");
+  const char *
+    jack_shm_failure =
+      _("Unable to access shared memory");
+  const char *
+    jack_version_error =
+      _("Client's protocol version does not match");
+  const char *
+    jack_backend_error =
+      _("Backend error");
+  const char *
+    jack_client_zombie =
+      _("Client zombie");
+
+  if (status & JackFailure)
+    return jack_failure;
+  if (status & JackInvalidOption)
+    return jack_invalid_option;
+  if (status & JackNameNotUnique)
+    return jack_name_not_unique;
+  if (status & JackServerFailed)
+    return jack_server_failed;
+  if (status & JackServerError)
+    return jack_server_error;
+  if (status & JackNoSuchClient)
+    return jack_no_such_client;
+  if (status & JackLoadFailure)
+    return jack_load_failure;
+  if (status & JackInitFailure)
+    return jack_init_failure;
+  if (status & JackShmFailure)
+    return jack_shm_failure;
+  if (status & JackVersionError)
+    return jack_version_error;
+  if (status & JackBackendError)
+    return jack_backend_error;
+  if (status & JackClientZombie)
+    return jack_client_zombie;
+  return NULL;
 }
 
 void

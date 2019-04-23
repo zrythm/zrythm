@@ -40,68 +40,16 @@ G_DEFINE_TYPE (PreferencesWidget,
                preferences_widget,
                GTK_TYPE_DIALOG)
 
+#define SETUP_AUDIO_BACKENDS(self) \
+  ui_setup_audio_backends_combo_box (\
+    self->audio_backend);
+
 enum
 {
   VALUE_COL,
   TEXT_COL
 };
 
-static GtkTreeModel *
-create_audio_backend_model (void)
-{
-  const int values[NUM_AUDIO_BACKENDS] = {
-    AUDIO_BACKEND_NONE,
-    AUDIO_BACKEND_JACK,
-    AUDIO_BACKEND_ALSA,
-    AUDIO_BACKEND_PORT_AUDIO,
-  };
-  const gchar *labels[NUM_AUDIO_BACKENDS] = {
-    "- None -"
-    "Jack",
-    "Alsa (not implemented yet)",
-    "Port Audio",
-  };
-
-  GtkTreeIter iter;
-  GtkListStore *store;
-  gint i;
-
-  store = gtk_list_store_new (2,
-                              G_TYPE_INT,
-                              G_TYPE_STRING);
-
-  for (i = 0; i < G_N_ELEMENTS (values); i++)
-    {
-      gtk_list_store_append (store, &iter);
-      gtk_list_store_set (store, &iter,
-                          VALUE_COL, values[i],
-                          TEXT_COL, labels[i],
-                          -1);
-    }
-
-  return GTK_TREE_MODEL (store);
-}
-
-static void
-setup_audio (PreferencesWidget * self)
-{
-  GtkCellRenderer *renderer;
-  gtk_combo_box_set_model (self->audio_backend,
-                           create_audio_backend_model ());
-  gtk_cell_layout_clear (GTK_CELL_LAYOUT (self->audio_backend));
-  renderer = gtk_cell_renderer_text_new ();
-  gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (self->audio_backend), renderer, TRUE);
-  gtk_cell_layout_set_attributes (
-    GTK_CELL_LAYOUT (self->audio_backend), renderer,
-    "text", TEXT_COL,
-    NULL);
-
-  gtk_combo_box_set_active (
-    GTK_COMBO_BOX (self->audio_backend),
-    g_settings_get_enum (
-      S_PREFERENCES,
-      "audio-backend"));
-}
 
 static void
 setup_plugins (PreferencesWidget * self)
@@ -138,6 +86,10 @@ on_ok_clicked (GtkWidget * widget,
     gtk_combo_box_get_active (self->audio_backend));
   g_settings_set_enum (
     S_PREFERENCES,
+    "midi-backend",
+    gtk_combo_box_get_active (self->midi_backend));
+  g_settings_set_enum (
+    S_PREFERENCES,
     "language",
     gtk_combo_box_get_active (self->language));
   g_settings_set_int (
@@ -161,7 +113,9 @@ preferences_widget_new ()
     g_object_new (PREFERENCES_WIDGET_TYPE,
                   NULL);
 
-  setup_audio (self);
+  SETUP_AUDIO_BACKENDS (self);
+  ui_setup_midi_backends_combo_box (
+    self->midi_backend);
   ui_setup_language_combo_box (self->language);
   setup_plugins (self);
   midi_controller_mb_widget_setup (
@@ -190,6 +144,10 @@ preferences_widget_class_init (
     klass,
     PreferencesWidget,
     audio_backend);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PreferencesWidget,
+    midi_backend);
   gtk_widget_class_bind_template_child (
     klass,
     PreferencesWidget,

@@ -161,6 +161,15 @@ z_gtk_overlay_add_if_not_exists (
   GtkOverlay * overlay,
   GtkWidget *  widget);
 
+/**
+ * Configures a simple value-text combo box using
+ * the given model.
+ */
+void
+z_gtk_configure_simple_combo_box (
+  GtkComboBox * cb,
+  GtkTreeModel * model);
+
 void
 z_gtk_button_set_icon_name (GtkButton * btn,
                             const char * name);

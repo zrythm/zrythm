@@ -121,6 +121,36 @@ z_gtk_container_remove_children_of_type (
   g_list_free (children);
 }
 
+/**
+ * Configures a simple value-text combo box using
+ * the given model.
+ */
+void
+z_gtk_configure_simple_combo_box (
+  GtkComboBox * cb,
+  GtkTreeModel * model)
+{
+  enum
+  {
+    VALUE_COL,
+    TEXT_COL
+  };
+
+  GtkCellRenderer *renderer;
+  gtk_combo_box_set_model (
+    cb, model);
+  gtk_cell_layout_clear (
+    GTK_CELL_LAYOUT (cb));
+  renderer = gtk_cell_renderer_text_new ();
+  gtk_cell_layout_pack_start (
+    GTK_CELL_LAYOUT (cb),
+    renderer, TRUE);
+  gtk_cell_layout_set_attributes (
+    GTK_CELL_LAYOUT (cb), renderer,
+    "text", TEXT_COL,
+    NULL);
+}
+
 void
 z_gtk_button_set_icon_name (GtkButton * btn,
                             const char * name)
