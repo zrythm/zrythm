@@ -24,9 +24,6 @@ AC_INIT([zrythm], [0.4.048], [https://git.zrythm.org/zrythm/zrythm/issues])
 AC_DEFINE([GETTEXT_PACKAGE],["zrythm"],
           [Gettext package name])
 
-# Add GSettings support
-GLIB_GSETTINGS
-
 # =========== Detect OS ================
 
 # AC_CANONICAL_HOST is needed to access the
@@ -71,6 +68,8 @@ AM_CONDITIONAL([OSX], [test "$build_mac" = "yes"])
 AM_COND_IF([OSX],
            [AC_SUBST([OSX], [1])])
 
+# Add GSettings support
+GLIB_GSETTINGS
 
 # ========== Check for other conditionals ========
 
