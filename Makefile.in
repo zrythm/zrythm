@@ -183,6 +183,7 @@ CFLAGS:=$(filter-out -fstack-clash-protection,$(CFLAGS))
 CFLAGS:=$(filter-out -D_FORTIFY_SOURCE=2,$(CFLAGS))
 CFLAGS += -Wall \
 	-Wextra \
+	-Wignored-qualifiers \
 	-Werror=implicit-function-declaration \
 	-Werror=return-type \
 	-Werror=int-conversion \

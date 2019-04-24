@@ -168,42 +168,46 @@ plugin_manager_init (PluginManager * self)
   GError * err;
   const char * path =
     CONFIGURE_LIBDIR "/zrythm/lv2";
-  GDir * bundle_lv2_dir =
-    g_dir_open (path, 0, &err);
-  if (bundle_lv2_dir)
+  if (g_file_test (path,
+                   G_FILE_TEST_EXISTS |
+                   G_FILE_TEST_IS_DIR))
     {
-      char * dir;
-      while (dir = g_dir_read_name (bundle_lv2_dir))
+      GDir * bundle_lv2_dir =
+        g_dir_open (path, 0, &err);
+      if (bundle_lv2_dir)
         {
-          dir =
-            g_strdup_printf (
-              "file://%s%s%s%smanifest.ttl",
-              path,
-              G_DIR_SEPARATOR_S,
-              dir,
-              G_DIR_SEPARATOR_S);
-          LilvNode * uri =
-            lilv_new_uri (world, dir);
-          lilv_world_load_bundle (
-            world, uri);
-          g_message ("Loaded bundled plugin at %s",
-                     dir);
-          g_free (dir);
-          lilv_node_free (uri);
+          char * dir;
+          while (dir = g_dir_read_name (bundle_lv2_dir))
+            {
+              dir =
+                g_strdup_printf (
+                  "file://%s%s%s%smanifest.ttl",
+                  path,
+                  G_DIR_SEPARATOR_S,
+                  dir,
+                  G_DIR_SEPARATOR_S);
+              LilvNode * uri =
+                lilv_new_uri (world, dir);
+              lilv_world_load_bundle (
+                world, uri);
+              g_message ("Loaded bundled plugin at %s",
+                         dir);
+              g_free (dir);
+              lilv_node_free (uri);
+            }
+        }
+      else
+        {
+          char * msg =
+            g_strdup_printf ("%s%s",
+            _("Error loading LV2 bundle dir: "),
+            err->message);
+          ui_show_error_message (
+            MAIN_WINDOW ? MAIN_WINDOW : NULL,
+            msg);
+          g_free (msg);
         }
     }
-  else
-    {
-      char * msg =
-        g_strdup_printf ("%s%s",
-        _("Error loading LV2 bundle dir: "),
-        err->message);
-      ui_show_error_message (
-        MAIN_WINDOW ? MAIN_WINDOW : NULL,
-        msg);
-      g_free (msg);
-    }
-
 
   g_message ("Initializing LV2 settings...");
   LV2_Defaults * opts = &self->lv2_settings.opts;

@@ -1022,8 +1022,9 @@ midi_arranger_widget_auto_scroll (
         0,
         &note_x,
         &note_y);
-      int note_height = gtk_widget_get_allocated_height (
-        GTK_WIDGET (focused));
+      int note_height =
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (focused));
       if (note_y + note_height + border_distance
         >= arranger_height)
       {
