@@ -1,0 +1,79 @@
+diff --git a/modules/juce_core/juce_core.cpp b/modules/juce_core/juce_core.cpp
+index 7d10dfa..a2d6a97 100644
+--- a/modules/juce_core/juce_core.cpp
++++ b/modules/juce_core/juce_core.cpp
+@@ -60,6 +60,7 @@
+ 
+  #if JUCE_MINGW
+   #include <ws2spi.h>
++  _locale_t _create_locale(int, const char*) { _locale_t loc; juce::zeromem(&loc, sizeof(loc)); return loc; }
+  #endif
+ 
+ #else
+diff --git a/modules/juce_core/native/juce_win32_Files.cpp b/modules/juce_core/native/juce_win32_Files.cpp
+index 5185d12..17c2e34 100644
+--- a/modules/juce_core/native/juce_win32_Files.cpp
++++ b/modules/juce_core/native/juce_win32_Files.cpp
+@@ -682,7 +682,7 @@ File File::getLinkedTarget() const
+                     CloseHandle (h);
+ 
+                     const StringRef prefix ("\\\\?\\");
+-                    const String path (buffer);
++                    const String path (buffer.getData());
+ 
+                     // It turns out that GetFinalPathNameByHandleW prepends \\?\ to the path.
+                     // This is not a bug, it's feature. See MSDN for more information.
+diff --git a/modules/juce_core/text/juce_CharacterFunctions.h b/modules/juce_core/text/juce_CharacterFunctions.h
+index e4b2337..00d02d0 100644
+--- a/modules/juce_core/text/juce_CharacterFunctions.h
++++ b/modules/juce_core/text/juce_CharacterFunctions.h
+@@ -218,7 +218,7 @@ public:
+                 *currentCharacter++ = '0';
+         }
+ 
+-      #if JUCE_MSVC
++      #if JUCE_WINDOWS
+         static _locale_t locale = _create_locale (LC_ALL, "C");
+         return _strtod_l (&buffer[0], nullptr, locale);
+       #else
+diff --git a/modules/juce_gui_basics/native/juce_win32_FileChooser.cpp b/modules/juce_gui_basics/native/juce_win32_FileChooser.cpp
+index 728a4c6..353263a 100644
+--- a/modules/juce_gui_basics/native/juce_win32_FileChooser.cpp
++++ b/modules/juce_gui_basics/native/juce_win32_FileChooser.cpp
+@@ -202,7 +202,7 @@ void FileChooser::showPlatformDialog (Array<File>& results, const String& title_
+ 
+         if (info.returnedString.isNotEmpty())
+         {
+-            results.add (File (String (files)).getSiblingFile (info.returnedString));
++            results.add (File (String (files.getData())).getSiblingFile (info.returnedString));
+             return;
+         }
+     }
+@@ -287,12 +287,12 @@ void FileChooser::showPlatformDialog (Array<File>& results, const String& title_
+ 
+         while (*filename != 0)
+         {
+-            results.add (File (String (files)).getChildFile (String (filename)));
++            results.add (File (String (files.getData())).getChildFile (String (filename)));
+             filename += wcslen (filename) + 1;
+         }
+     }
+     else if (files[0] != 0)
+     {
+-        results.add (File (String (files)));
++        results.add (File (String (files.getData())));
+     }
+ }
+diff --git a/modules/juce_gui_basics/native/juce_win32_Windowing.cpp b/modules/juce_gui_basics/native/juce_win32_Windowing.cpp
+index 22e783b..607d11b 100644
+--- a/modules/juce_gui_basics/native/juce_win32_Windowing.cpp
++++ b/modules/juce_gui_basics/native/juce_win32_Windowing.cpp
+@@ -3440,7 +3440,7 @@ private:
+                 HeapBlock<TCHAR> buffer;
+                 buffer.calloc (stringSizeBytes / sizeof (TCHAR) + 1);
+                 ImmGetCompositionString (hImc, type, buffer, (DWORD) stringSizeBytes);
+-                return String (buffer);
++                return String (buffer.getData());
+             }
+ 
+             return {};

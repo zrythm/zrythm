@@ -1,0 +1,54 @@
+diff --git a/modules/juce_audio_plugin_client/VST/juce_VST_Wrapper.cpp b/modules/juce_audio_plugin_client/VST/juce_VST_Wrapper.cpp
+index ecab10a..e9d8f4a 100644
+--- a/modules/juce_audio_plugin_client/VST/juce_VST_Wrapper.cpp
++++ b/modules/juce_audio_plugin_client/VST/juce_VST_Wrapper.cpp
+@@ -60,6 +60,7 @@
+ #endif
+ 
+ #include "../../juce_audio_processors/format_types/juce_VSTInterface.h"
++#include "../../juce_audio_processors/format_types/juce_VSTMidiEventList.h"
+ 
+ #ifdef _MSC_VER
+  #pragma warning (pop)
+@@ -179,9 +180,9 @@ struct SharedMessageThread  : public Thread
+     void run() override
+     {
+         initialiseJuce_GUI();
+-        initialised = true;
+ 
+         MessageManager::getInstance()->setCurrentThreadAsMessageThread();
++        initialised = true;
+ 
+         ScopedXDisplay xDisplay;
+ 
+@@ -268,9 +269,6 @@ public:
+         // You must at least have some channels
+         jassert (processor->isMidiEffect() || (maxNumInChannels > 0 || maxNumOutChannels > 0));
+ 
+-        if (processor->isMidiEffect())
+-            maxNumInChannels = maxNumOutChannels = 2;
+-
+        #ifdef JucePlugin_PreferredChannelConfigurations
+         processor->setPlayConfigDetails (maxNumInChannels, maxNumOutChannels, 44100.0, 1024);
+        #endif
+@@ -1887,7 +1885,7 @@ private:
+ 
+     pointer_sized_int handleGetPlugInName (VstOpCodeArguments args)
+     {
+-        String (JucePlugin_Name).copyToUTF8 ((char*) args.ptr, 64 + 1);
++        String (processor->getName()).copyToUTF8 ((char*) args.ptr, 64 + 1);
+         return 1;
+     }
+ 
+diff --git a/modules/juce_audio_plugin_client/utility/juce_PluginUtilities.cpp b/modules/juce_audio_plugin_client/utility/juce_PluginUtilities.cpp
+index 4380839..757feae 100644
+--- a/modules/juce_audio_plugin_client/utility/juce_PluginUtilities.cpp
++++ b/modules/juce_audio_plugin_client/utility/juce_PluginUtilities.cpp
+@@ -29,7 +29,6 @@
+ #endif
+ 
+ #include "../../juce_core/system/juce_TargetPlatform.h"
+-#include "../utility/juce_CheckSettingMacros.h"
+ #include "juce_IncludeModuleHeaders.h"
+ 
+ namespace juce

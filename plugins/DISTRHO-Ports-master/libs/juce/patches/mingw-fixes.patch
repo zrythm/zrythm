@@ -1,0 +1,44 @@
+diff --git a/modules/juce_audio_devices/native/juce_win32_ASIO.cpp b/modules/juce_audio_devices/native/juce_win32_ASIO.cpp
+index c919767..e6d88aa 100644
+--- a/modules/juce_audio_devices/native/juce_win32_ASIO.cpp
++++ b/modules/juce_audio_devices/native/juce_win32_ASIO.cpp
+@@ -1413,7 +1413,11 @@ private:
+ 
+     void setCallbackFunctions() noexcept
+     {
+-        ASIOCallbackFunctions<0>::setCallbacksForDevice (callbacks, this);
++        /**/ if (currentASIODev[0] == this) ASIOCallbackFunctions<0>::setCallbacks (callbacks);
++        else if (currentASIODev[1] == this) ASIOCallbackFunctions<1>::setCallbacks (callbacks);
++        else if (currentASIODev[2] == this) ASIOCallbackFunctions<2>::setCallbacks (callbacks);
++        else if (currentASIODev[3] == this) ASIOCallbackFunctions<3>::setCallbacks (callbacks);
++        else jassertfalse;
+     }
+ 
+     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ASIOAudioIODevice)
+diff --git a/modules/juce_audio_processors/format_types/juce_VST3Headers.h b/modules/juce_audio_processors/format_types/juce_VST3Headers.h
+index 1eec325..de33170 100644
+--- a/modules/juce_audio_processors/format_types/juce_VST3Headers.h
++++ b/modules/juce_audio_processors/format_types/juce_VST3Headers.h
+@@ -86,6 +86,9 @@
+  #include <public.sdk/source/common/memorystream.h>
+  #include <public.sdk/source/vst/vsteditcontroller.h>
+ #else
++ #if JUCE_MINGW
++  #define _set_abort_behavior(...)
++ #endif
+  #include <base/source/baseiids.cpp>
+  #include <base/source/fbuffer.cpp>
+  #include <base/source/fdebug.cpp>
+diff --git a/modules/juce_core/native/juce_BasicNativeHeaders.h b/modules/juce_core/native/juce_BasicNativeHeaders.h
+index 088832b..9ce110c 100644
+--- a/modules/juce_core/native/juce_BasicNativeHeaders.h
++++ b/modules/juce_core/native/juce_BasicNativeHeaders.h
+@@ -117,7 +117,7 @@
+  #define STRICT 1
+  #define WIN32_LEAN_AND_MEAN 1
+  #if JUCE_MINGW
+-  #define _WIN32_WINNT 0x0501
++  #define _WIN32_WINNT 0x0502
+  #else
+   #define _WIN32_WINNT 0x0602
+  #endif

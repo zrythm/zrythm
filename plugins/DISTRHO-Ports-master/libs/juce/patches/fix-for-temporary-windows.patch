@@ -1,0 +1,16 @@
+diff --git a/modules/juce_gui_basics/native/juce_linux_X11_Windowing.cpp b/modules/juce_gui_basics/native/juce_linux_X11_Windowing.cpp
+index 1ed776f..670c1de 100644
+--- a/modules/juce_gui_basics/native/juce_linux_X11_Windowing.cpp
++++ b/modules/juce_gui_basics/native/juce_linux_X11_Windowing.cpp
+@@ -2970,8 +2970,9 @@ private:
+     {
+         Atom netHints [2];
+ 
+-        if ((styleFlags & windowIsTemporary) != 0
+-             || ((styleFlags & windowHasDropShadow) == 0 && Desktop::canUseSemiTransparentWindows()))
++        if (styleFlags & windowIsTemporary)
++            netHints [0] = Atoms::getIfExists (display, "_NET_WM_WINDOW_TYPE_TOOLTIP");
++        else if ((styleFlags & windowHasDropShadow) == 0 && Desktop::canUseSemiTransparentWindows())
+             netHints [0] = Atoms::getIfExists (display, "_NET_WM_WINDOW_TYPE_COMBO");
+         else
+             netHints [0] = Atoms::getIfExists (display, "_NET_WM_WINDOW_TYPE_NORMAL");

@@ -1,0 +1,101 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH jack-dssi-host 1 "January 5th, 2009"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+jack-dssi-host
+.SH SYNOPSIS
+.B jack-dssi-host
+.I [-v] [-a] [-n] [-p <projdir>] [-<i>] <libname>[:<label>] [...]
+.SH DESCRIPTION
+.B jack-dssi-host
+is a simple DSSI host that listens for MIDI events on an ALSA
+sequencer port, delivers them to DSSI synths plugins, and outputs
+the resulting audio via JACK.
+.br
+.B jack-dssi-host
+can host up to 16 instances of DSSI synth plugins, each of which is
+sequentially assigned a MIDI channel from 1 to 16.  Plugin outputs
+(if `-a' is not specified) are connectioned sequentially to the
+available JACK physical output ports, wrapping back to the first
+JACK port whenever the available ports are exhausted.  Plugin user
+interfaces (UIs) are started for each instance (if '-n' is not specified.)
+.B jack-dssi-host
+will exit when the last plugin UI has exited.
+.br
+As a special case, if
+.B jack-dssi-host
+is started with a name other than `jack-dssi-host', and if that name
+(plus an `.so' suffix) can be found in
+the DSSI_PATH search path (see
+.B ENVIRONMENT
+below) as a valid plugin shared library, and if no further command line
+arguments are given, then the first plugin in that library will be
+loaded automatically. This provides a convenient way to run a plugin
+by simply symlinking the plugin's basename to jack-dssi-host.
+.br
+.SH OPTIONS
+.TP
+.B -v
+Verbose mode.
+.TP
+.B -a
+Disable automatic connection of outputs to JACK physical outputs.
+.TP
+.B -n
+Disable automatic starting of plugin user interfaces (UIs).
+.TP
+.B -p <projdir>
+The project directory to pass to both plugin and UI.
+.TP
+.B -<i>
+Number of instances of the following plugin to run (max 16 total,
+default 1).
+.TP
+.B <libname>
+Name of the DSSI plugin shared library (.so) to load. This may be an
+absolute path to the library file, or just the filename itself, in
+which case the DSSI search path is searched (see ENVIRONMENT below).
+.TP
+.B <label>
+the label of the plugin to load from the library.  If this is
+omitted, the first plugin in the library is used.
+.TP
+.B [...]
+Optionally more instance counts, plugins and labels.
+.br
+.SH EXAMPLE
+.B jack-dssi-host -2 lib1.so -1 lib2.so:fuzzy
+.br
+Runs two instances of the first plugin found in lib1.so, assigned to MIDI
+channels 0 and 1 and connected to the first available JACK outputs, and one
+instance of the "fuzzy" plugin in lib2.so with MIDI channels 2 and 3 and
+connected to the next available JACK outputs.
+.SH ENVIRONMENT
+.B jack-dssi-host
+will search for plugin shared libraries in the directories specified
+by the environment variable
+.B DSSI_PATH,
+which is a colon-separated list of directories. If
+.B DSSI_PATH
+is not set, a default search path of /usr/lib/dssi,
+/usr/local/lib/dssi, and (assuming the environment variable HOME is
+set,) $HOME/.dssi is used.
+.br
+.SH AUTHOR
+This manual page was originally created by Mark Hymers from the help
+text of the application, for the Debian project (but may be freely
+used by others).

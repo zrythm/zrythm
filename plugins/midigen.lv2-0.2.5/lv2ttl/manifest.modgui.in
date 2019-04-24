@@ -1,0 +1,24 @@
+
+<http://gareus.org/oss/lv2/@LV2NAME@>
+    modgui:gui [
+        modgui:resourcesDirectory <modgui> ;
+        modgui:iconTemplate <modgui/icon-midi-generator.html> ;
+        modgui:stylesheet <modgui/stylesheet-midi-generator.css> ;
+        modgui:screenshot <modgui/screenshot-midi-generator.png> ;
+        modgui:thumbnail <modgui/thumbnail-midi-generator.png> ;
+        modgui:brand "x42" ;
+        modgui:label "MIDI Generator" ;
+        modgui:model "boxy" ;
+        modgui:panel "1-select-3-knobs" ;
+        modgui:color "gray" ;
+        modgui:knob "steel" ;
+        modgui:port [
+            lv2:index 0 ;
+            lv2:symbol "sequence" ;
+            lv2:name "Select Sequence" ;
+        ] , [
+            lv2:index 1 ;
+            lv2:symbol "bpm" ;
+            lv2:name "BPM" ;
+        ] ;
+    ] .

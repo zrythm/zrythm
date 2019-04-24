@@ -1,0 +1,169 @@
+libdssialsacompat 1.0.8a
+========================
+libdssialsacompat is simply an extraction from and repackaging of
+the code from alsa-lib 1.0.8, necessary to support DSSI on non-ALSA
+systems.  It is copyright (c)2005 under the GNU Lesser General
+Public License, version 2.1 or later.  See the enclosed file COPYING
+for details.
+
+More information on DSSI can be found at:
+
+  http://dssi.sourceforge.net/
+
+Introduction
+============
+The DSSI specification makes use of the ALSA snd_seq_event_t
+structure for passing MIDI events.  This has the advantage of making
+it immediately familiar to developers familiar with ALSA, but the
+disadvantage of making porting DSSI applications and plugins to
+systems that lack ALSA more difficult.
+
+libdssialsacompat is intended to provide the snd_seq_event_t
+declarations and handling code necessary to compile and use DSSI on
+non-ALSA systems.  It aims to allows compiling DSSI code with as
+little change as possible, while not presenting itself in such a way
+as to fool other autoconf-enabled code into thinking a system has
+ALSA.
+
+libdssialsacompat is simply an extraction of the relevant
+snd_seq_event_t declarations, and raw MIDI stream to snd_seq_event_t
+encoder code, from alsa-lib version 1.0.8, packaged into a
+convenient library.
+
+This library does NOT provide any sort of emulation of the ALSA
+audio, MIDI, or sequencer devices.  The only part of ALSA that is
+required by the DSSI specification is the snd_seq_event_t definition
+and handling, and that is all libdssialsacompat is intended to
+replace.  Other ALSA code should be ported to native facilities.
+
+Installation
+============
+libdssialsacompat uses GNU autoconf and automake, so installation can
+be a simple as `./configure && make && make install'.  See the
+enclosed file INSTALL for more information.
+
+The library itself is installed to <prefix>/lib; for example, on Mac
+OS X, the following files are installed:
+
+    <prefix>/lib/libdssialsacompat.0.0.0.dylib
+    <prefix>/lib/libdssialsacompat.0.dylib
+    <prefix>/lib/libdssialsacompat.a
+    <prefix>/lib/libdssialsacompat.dylib
+    <prefix>/lib/libdssialsacompat.la
+
+The header files are installed to <prefix>/include/dssi/alsa:
+
+    <prefix>/include/dssi/alsa/asoundef.h
+    <prefix>/include/dssi/alsa/asoundlib.h
+    <prefix>/include/dssi/alsa/seq.h
+    <prefix>/include/dssi/alsa/seq_event.h
+    <prefix>/include/dssi/alsa/seq_midi_event.h
+    <prefix>/include/dssi/alsa/sound/asequencer.h
+
+Note that they are NOT installed to <prefix>/include/alsa, which
+could make them visible to non-libdssialsacompat-aware autoconf
+configure scripts, possibly fooling them into thinking the full ALSA
+was available.
+
+Finally, a pkgconfig configuration file is installed:
+
+    <prefix>/lib/pkgconfig/libdssialsacompat.pc
+
+Use
+===
+At its most basic, compiling with gcc and libdssialsacompat consists
+of adding '-I<prefix>/include/dssi -L<prefix>/lib -ldssialsacompat'
+to your gcc command line.  Note that the '-I' directive will cause
+code like to following:
+
+    #include <alsa/asoundlib.h>
+    #include <alsa/seq_event.h>
+
+to find the libdssialsacompat header files, even though they are not
+installed in the usual location for ALSA headers.
+
+libdssialsacompat is easiest to use with autoconf/automake/pkgconfig-
+enabled code.  In which case, editing the configure.in or configure.ac
+file and changing:
+
+    PKG_CHECK_MODULES(ALSA, alsa)
+
+to:
+
+    PKG_CHECK_MODULES(ALSA, alsa, , [PKG_CHECK_MODULES(ALSA, libdssialsacompat)])
+
+then doing 'autoreconf', may be all that is needed to get the
+snd_seq_event_t-using code to compile cleanly.  Of course, if the
+code uses other ALSA features, libdssialsacompat won't help with
+them....
+
+DSSI Installation
+=================
+Installation of DSSI itself (at least as recently as 2005/4/6 CVS)
+must be done by hand, which goes something like this (assuming
+you're running OS X 10.3 and want to install to /usr/local):
+
+$ tar xpzf dssi-0.9.tar.gz
+$ cd dssi-0.9
+$ sudo mkdir -p /usr/local/include
+$ sudo cp dssi/dssi.h /usr/local/include/
+$ sed s:.PREFIX.:/usr/local: dssi.pc >dssi.pc.new
+$ sudo mkdir -p /usr/local/lib/pkgconfig
+$ sudo mv dssi.pc.new /usr/local/lib/pkgconfig/dssi.pc
+
+(You may stop here if you're not interested in the example plugins.)
+
+$ cd examples
+$ PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+$ export PKG_CONFIG_PATH
+$ make dssi_osc_send
+$ sudo cp -p dssi_osc_send /usr/local/bin
+$ gcc -Wall -fno-common -O2 `pkg-config libdssialsacompat dssi --cflags` \
+    trivial_synth.c -c -o trivial_synth.o
+$ gcc -Wall -fno-common -O2 -c -o message_buffer.o \
+    ../message_buffer/message_buffer.c
+$ gcc -bundle -flat_namespace -undefined suppress -o trivial_synth.so \
+    trivial_synth.o message_buffer.o \
+    `pkg-config libdssialsacompat dssi --libs`
+$ sudo mkdir -p /usr/local/lib/dssi
+$ sudo cp -p trivial_synth.so /usr/local/lib/dssi
+
+Building the rest of the DSSI distribution's plugins is left as an
+exercise to the reader.  Note that (as of 2005/4/6) jack-dssi-host
+will not build without patching since it uses the ALSA sequencer.
+
+What Works (Or Doesn't)
+=======================
+libdssialsacompat 1.0.8a was tested on Mac OS X 10.3.8, using the
+Apple Developer Tools, Gentoo-installed versions of pkgconfig and
+liblo 0.18, hand-installed GTK+ 1.2 and LADSPA SDK, and JackOSX
+0.6.1.  Under this configuration, the following are known to work:
+
+- ghostess (from the 20050411 release, which includes a clumsy but
+    working CoreMIDI driver.)  ghostess can be found at:
+
+    http://home.jps.net/~musound/
+
+- trivial_synth.so (DSSI 0.9 release)
+
+- fluidsynth-dssi.so and FluidSynth-DSSI_gtk (DSSI 0.9 release,
+    using a statically compiled libfluidsynth 1.0.3)
+
+- Xsynth-DSSI (CVS as of 2005/4/11)
+
+- hexter (CVS as of 2005/4/11, note that sys-ex patch editing isn't
+    supported on non-ALSA systems)
+
+The following problems are known to exist:
+
+- less_trivial_synth.so (DSSI 0.9) plays at the wrong pitch on
+    big-endian systems due the little-endian assumption of the
+    typedef union fixp in less_trivial_synth.c (line 69).  Otherwise
+    works fine.
+
+- I have not tested any of the DSSI 0.9 Qt GUIs, or
+    trivial_sampler.so.
+
+- jack-dssi-host (DSSI 0.9) works as an OSC-driven host if you
+    comment out all the ALSA seqeuncer code.
+

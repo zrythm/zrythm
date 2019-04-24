@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: libdssialsacompat
+Description: Supplies DSSI with the necessary subset of ALSA on systems without ALSA.
+Version: @VERSION@
+Libs: -L${libdir} -ldssialsacompat
+Cflags: -I${includedir}/dssi

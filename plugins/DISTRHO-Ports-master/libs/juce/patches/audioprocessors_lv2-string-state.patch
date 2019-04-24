@@ -1,0 +1,16 @@
+diff --git a/modules/juce_audio_processors/processors/juce_AudioProcessor.h b/modules/juce_audio_processors/processors/juce_AudioProcessor.h
+index 3aea53a..abde506 100644
+--- a/modules/juce_audio_processors/processors/juce_AudioProcessor.h
++++ b/modules/juce_audio_processors/processors/juce_AudioProcessor.h
+@@ -1247,6 +1247,11 @@ public:
+     virtual void processorLayoutsChanged();
+ 
+     //==============================================================================
++    /** LV2 specific calls, saving/restore as string. */
++    virtual String getStateInformationString () { return String(); }
++    virtual void setStateInformationString (const String&) {}
++
++    //==============================================================================
+     /** Adds a listener that will be called when an aspect of this processor changes. */
+     virtual void addListener (AudioProcessorListener* newListener);
+ 

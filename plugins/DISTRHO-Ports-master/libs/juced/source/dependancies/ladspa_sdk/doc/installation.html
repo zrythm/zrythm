@@ -1,0 +1,19 @@
+<H1>Installation</H1>
+
+<P>This distribution includes both the ladspa.h API header file and a
+number of hosts and example plugins. Go to the <CODE>src/</CODE>
+directory and type <CODE>make</CODE> to build and test them.</P>
+
+<P>The <A HREF="ladspa.h.txt"><CODE>ladspa.h</CODE> API header
+file</A> is needed to build hosts and plugins. It may be useful to
+install it in <CODE>/usr/local/include/</CODE> or
+<CODE>/usr/include/</CODE>. The programs generated in the
+<CODE>bin/</CODE> directory may be moved to
+<CODE>/usr/local/bin/</CODE> or <CODE>/usr/bin/</CODE> and the plugins
+generated in the <CODE>plugins/</CODE> directory may be moved to
+<CODE>/usr/local/lib/ladspa/</CODE> or
+<CODE>/usr/lib/ladspa/</CODE>.</P>
+
+<P>To perform automatic installation, log in as root and run
+<CODE>make install</CODE>. This by default will install plugins, hosts
+and the header file into the <CODE>/usr/local/</CODE> tree.</P>

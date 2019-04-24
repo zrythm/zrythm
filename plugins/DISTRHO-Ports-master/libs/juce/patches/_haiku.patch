@@ -1,0 +1,205 @@
+diff --git a/modules/juce_core/juce_core.cpp b/modules/juce_core/juce_core.cpp
+index c992d50..8cc0b36 100644
+--- a/modules/juce_core/juce_core.cpp
++++ b/modules/juce_core/juce_core.cpp
+@@ -69,18 +69,16 @@
+  #endif
+ 
+ #else
+- #if JUCE_LINUX || JUCE_ANDROID
++ #if JUCE_LINUX || JUCE_ANDROID || JUCE_HAIKU
+   #include <sys/types.h>
+   #include <sys/socket.h>
+-  #include <sys/errno.h>
++  #if ! JUCE_HAIKU
++   #include <sys/errno.h>
++  #endif
+   #include <unistd.h>
+   #include <netinet/in.h>
+  #endif
+ 
+- #if JUCE_LINUX
+-  #include <langinfo.h>
+- #endif
+-
+  #include <pwd.h>
+  #include <fcntl.h>
+  #include <netdb.h>
+@@ -90,8 +88,9 @@
+  #include <net/if.h>
+  #include <sys/ioctl.h>
+ 
+- #if ! JUCE_ANDROID
++ #if JUCE_LINUX
+   #include <execinfo.h>
++  #include <langinfo.h>
+  #endif
+ #endif
+ 
+@@ -214,6 +213,10 @@ namespace juce
+ #include "native/juce_android_SystemStats.cpp"
+ #include "native/juce_android_Threads.cpp"
+ 
++//==============================================================================
++#elif JUCE_HAIKU
++// TODO
++
+ #endif
+ 
+ #include "threads/juce_ChildProcess.cpp"
+diff --git a/modules/juce_core/native/juce_BasicNativeHeaders.h b/modules/juce_core/native/juce_BasicNativeHeaders.h
+index 55c0c8c..3bdb384 100644
+--- a/modules/juce_core/native/juce_BasicNativeHeaders.h
++++ b/modules/juce_core/native/juce_BasicNativeHeaders.h
+@@ -212,6 +212,33 @@
+  #include <dirent.h>
+  #include <fnmatch.h>
+  #include <sys/wait.h>
++
++//==============================================================================
++#elif JUCE_HAIKU
++ #include <sched.h>
++ #include <pthread.h>
++ #include <sys/time.h>
++ #include <errno.h>
++ #include <sys/stat.h>
++ #include <sys/statvfs.h>
++ #include <sys/wait.h>
++ #include <sys/mman.h>
++ #include <fnmatch.h>
++ #include <utime.h>
++ #include <pwd.h>
++ #include <fcntl.h>
++ #include <dlfcn.h>
++ #include <netdb.h>
++ #include <arpa/inet.h>
++ #include <netinet/in.h>
++ #include <sys/types.h>
++ #include <sys/ioctl.h>
++ #include <sys/socket.h>
++ #include <sys/sockio.h>
++ #include <net/if.h>
++ #include <sys/file.h>
++ #include <signal.h>
++ #include <stddef.h>
+ #endif
+ 
+ // Need to clear various moronic redefinitions made by system headers..
+diff --git a/modules/juce_core/native/juce_posix_SharedCode.h b/modules/juce_core/native/juce_posix_SharedCode.h
+index 9823d25..a391a00 100644
+--- a/modules/juce_core/native/juce_posix_SharedCode.h
++++ b/modules/juce_core/native/juce_posix_SharedCode.h
+@@ -142,7 +142,7 @@ void JUCE_CALLTYPE Thread::sleep (int millisecs)
+ 
+ void JUCE_CALLTYPE Process::terminate()
+ {
+-   #if JUCE_ANDROID
++   #if JUCE_ANDROID || JUCE_HAIKU
+     _exit (EXIT_FAILURE);
+    #else
+     std::_Exit (EXIT_FAILURE);
+@@ -203,6 +203,10 @@ namespace
+     #define JUCE_STAT     stat
+    #endif
+ 
++   #if JUCE_HAIKU
++    #define statfs statvfs
++   #endif
++
+     bool juce_stat (const String& fileName, juce_statStruct& info)
+     {
+         return fileName.isNotEmpty()
+@@ -542,7 +546,11 @@ void MemoryMappedFile::openInternal (const File& file, AccessMode mode)
+         if (m != MAP_FAILED)
+         {
+             address = m;
+-            madvise (m, (size_t) range.getLength(), MADV_SEQUENTIAL);
++            #if JUCE_HAIKU
++             posix_madvise (m, (size_t) range.getLength(), POSIX_MADV_SEQUENTIAL);
++            #else
++             madvise (m, (size_t) range.getLength(), MADV_SEQUENTIAL);
++            #endif
+         }
+         else
+         {
+@@ -663,6 +671,10 @@ int File::getVolumeSerialNumber() const
+     return result;
+ }
+ 
++#if JUCE_HAIKU
++ #undef statvfs
++#endif
++
+ //==============================================================================
+ void juce_runSystemCommand (const String&);
+ void juce_runSystemCommand (const String& command)
+diff --git a/modules/juce_core/network/juce_URL.cpp b/modules/juce_core/network/juce_URL.cpp
+index 49db1f9..8b3afbd 100644
+--- a/modules/juce_core/network/juce_URL.cpp
++++ b/modules/juce_core/network/juce_URL.cpp
+@@ -342,6 +342,7 @@ InputStream* URL::createInputStream (const bool usePostCommand,
+     if (! headers.endsWithChar ('\n'))
+         headers << "\r\n";
+ 
++   #if ! JUCE_HAIKU
+     ScopedPointer<WebInputStream> wi (new WebInputStream (toString (! usePostCommand),
+                                                           usePostCommand, headersAndPostData,
+                                                           progressCallback, progressCallbackContext,
+@@ -351,6 +352,9 @@ InputStream* URL::createInputStream (const bool usePostCommand,
+         *statusCode = wi->statusCode;
+ 
+     return wi->isError() ? nullptr : wi.release();
++   #else
++    return nullptr; // TODO
++   #endif
+ }
+ 
+ //==============================================================================
+diff --git a/modules/juce_core/system/juce_SystemStats.cpp b/modules/juce_core/system/juce_SystemStats.cpp
+index 365e94d..6b56569 100644
+--- a/modules/juce_core/system/juce_SystemStats.cpp
++++ b/modules/juce_core/system/juce_SystemStats.cpp
+@@ -97,7 +97,7 @@ String SystemStats::getStackBacktrace()
+ {
+     String result;
+ 
+-   #if JUCE_ANDROID || JUCE_MINGW
++   #if JUCE_ANDROID || JUCE_MINGW || JUCE_HAIKU
+     jassertfalse; // sorry, not implemented yet!
+ 
+    #elif JUCE_WINDOWS
+diff --git a/modules/juce_core/system/juce_TargetPlatform.h b/modules/juce_core/system/juce_TargetPlatform.h
+index 86adc38..0d12d7d 100644
+--- a/modules/juce_core/system/juce_TargetPlatform.h
++++ b/modules/juce_core/system/juce_TargetPlatform.h
+@@ -51,6 +51,8 @@
+   #define       JUCE_ANDROID 1
+ #elif defined (LINUX) || defined (__linux__)
+   #define     JUCE_LINUX 1
++#elif defined (__HAIKU__)
++  #define     JUCE_HAIKU 1
+ #elif defined (__APPLE_CPP__) || defined(__APPLE_CC__)
+   #define Point CarbonDummyPointName // (workaround to avoid definition of "Point" by old Carbon headers)
+   #define Component CarbonDummyCompName
+@@ -140,7 +142,7 @@
+ #endif
+ 
+ //==============================================================================
+-#if JUCE_LINUX || JUCE_ANDROID
++#if JUCE_LINUX || JUCE_ANDROID || JUCE_HAIKU
+ 
+   #ifdef _DEBUG
+     #define JUCE_DEBUG 1
+diff --git a/modules/juce_data_structures/app_properties/juce_PropertiesFile.cpp b/modules/juce_data_structures/app_properties/juce_PropertiesFile.cpp
+index ece2121..7b1fa73 100644
+--- a/modules/juce_data_structures/app_properties/juce_PropertiesFile.cpp
++++ b/modules/juce_data_structures/app_properties/juce_PropertiesFile.cpp
+@@ -82,7 +82,7 @@ File PropertiesFile::Options::getDefaultFile() const
+     if (folderName.isNotEmpty())
+         dir = dir.getChildFile (folderName);
+ 
+-   #elif JUCE_LINUX || JUCE_ANDROID
++   #elif JUCE_LINUX || JUCE_ANDROID || JUCE_HAIKU
+     const File dir (File (commonToAllUsers ? "/var" : "~")
+                      .getChildFile (folderName.isNotEmpty() ? folderName
+                                                             : ("." + applicationName)));

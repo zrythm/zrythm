@@ -1,0 +1,12 @@
+diff --git a/modules/juce_audio_processors/processors/juce_AudioProcessor.h b/modules/juce_audio_processors/processors/juce_AudioProcessor.h
+index abde506..8c4a141 100644
+--- a/modules/juce_audio_processors/processors/juce_AudioProcessor.h
++++ b/modules/juce_audio_processors/processors/juce_AudioProcessor.h
+@@ -1307,6 +1307,7 @@ public:
+         wrapperType_AudioUnitv3,
+         wrapperType_RTAS,
+         wrapperType_AAX,
++        wrapperType_LV2,
+         wrapperType_Standalone
+     };
+ 

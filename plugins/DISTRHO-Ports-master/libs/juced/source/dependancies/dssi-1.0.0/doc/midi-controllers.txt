@@ -1,0 +1,132 @@
+
+This document is intended for any DSSI plugin authors who are confused
+about which MIDI continuous controller (CC) numbers they might want to
+map to their plugin controls.
+
+
+Controllers Commonly Found
+--------------------------
+
+These controllers are listed in the MIDI 1.0 specification:
+
+  1 Modulation wheel or level
+  2 Breath controller
+  4 Foot controller
+  5 Portamento time
+  6 Data entry MSB
+  7 Main volume
+  8 Balance
+ 10 Pan
+ 11 Expression Controller
+ 16-19 General Purpose Controllers
+ 64 Damper pedal (sustain)
+ 65 Portamento
+ 66 Sostenuto
+ 67 Soft pedal
+ 69 "Hold 2", whatever that means
+ 80-83 General Purpose Controllers
+ 91 External Effects Depth
+ 92 Tremelo Depth
+ 93 Chorus Depth
+ 94 Celeste (Detune) Depth
+ 95 Phaser Depth
+ 96 Data increment
+ 97 Data decrement
+ 98 NRPN LSB
+ 99 NRPN MSB
+100 RPN LSB
+101 RPN MSB
+121-127 Reserved for Channel Mode Messages
+
+These controllers are required for General MIDI (GM) level 1
+conformance:
+
+  1 Modulation
+  7 Volume
+ 10 Pan
+ 11 Expression/LFO
+ 64 Sustain
+
+as well as two that fit into the Controllers To Avoid section (below):
+
+121 Reset all controllers
+123 All notes off
+
+These are some of the controllers required for General MIDI level 2
+conformance:
+
+  5 Portamento
+ 65 Portamento on/off
+ 66 Sostenuto
+ 67 Soft pedal
+ 71 Filter resonance
+ 72 Release
+ 73 Attack
+ 74 Brightness
+ 75 Decay
+ 91 Reverb
+ 93 Chorus
+
+as well as
+
+  0 Bank select MSB
+ 32 Bank select LSB
+
+In practice, those in the above list in the 60-70s range (apart from
+the standard 64 Sustain) are often used for quite different things by
+non-GM2 (i.e. most) synths.
+
+If you are wanting to allocate controllers for other dedicated uses,
+go for those in the range 12-31 which are usually undefined,
+assignable, or simply highly nonstandard.
+
+
+Controllers To Avoid
+--------------------
+
+DSSI will not permit you to request a mapping for controllers 0 or 32
+(the Bank Select controllers).  Other controllers that by convention
+you would be most unwise to map include the (N)RPN controllers:
+
+  6 Data entry MSB
+ 38 Data entry LSB
+ 96 Data button increment
+ 97 Data button decrement
+ 98 Non-registered parameter LSB 
+ 99 Non-registered parameter MSB
+100 Registered parameter LSB
+101 Registered parameter MSB
+
+and the keyboard mode controllers, unless you know what you're doing:
+
+120 All sound off
+121 Reset all controllers
+122 Local keyboard power switch
+123 All notes off
+124 Omni on
+125 Omni off
+126 Monophonic mode
+127 Polyphonic mode
+
+Otherwise, it's probably wise to avoid mapping the controllers listed
+in MIDI 1.0 (the first list in this file) to anything other than the
+meanings given in that list.
+
+
+About NRPNs
+-----------
+
+Plain MIDI continuous controllers have a value range of only 0-127,
+and of course there is a limited number of controllers.  An NRPN
+(non-registered parameter number) is a way of providing a larger
+number of higher resolution controls.  To adjust an NRPN control, a
+device first identifies the parameter number via the two NRPN
+controllers 98 and 99, and then adjusts the value via controllers 96
+or 97, or 6 and 38.  The end result is a 14 bit resolution (0-16383)
+for both parameter numbers and values.  There is no standard for the
+parameter numbers (hence the first N in NRPN), so if you want more
+finely adjustable MIDI controls, feel free to assign ports to any NRPN
+numbers you want.  Just bear in mind that you have to be using a
+source of NRPN parameter adjustments (such as a controller keyboard
+that supports NRPNs) for this to be of any relevance.
+

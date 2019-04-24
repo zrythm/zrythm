@@ -1,0 +1,14 @@
+diff --git a/modules/juce_audio_devices/audio_io/juce_AudioDeviceManager.cpp b/modules/juce_audio_devices/audio_io/juce_AudioDeviceManager.cpp
+index 32108d4..89eb7cf 100644
+--- a/modules/juce_audio_devices/audio_io/juce_AudioDeviceManager.cpp
++++ b/modules/juce_audio_devices/audio_io/juce_AudioDeviceManager.cpp
+@@ -154,8 +154,8 @@ void AudioDeviceManager::createAudioDeviceTypes (OwnedArray<AudioIODeviceType>&
+     addIfNotNull (list, AudioIODeviceType::createAudioIODeviceType_ASIO());
+     addIfNotNull (list, AudioIODeviceType::createAudioIODeviceType_CoreAudio());
+     addIfNotNull (list, AudioIODeviceType::createAudioIODeviceType_iOSAudio());
+-    addIfNotNull (list, AudioIODeviceType::createAudioIODeviceType_ALSA());
+     addIfNotNull (list, AudioIODeviceType::createAudioIODeviceType_JACK());
++    addIfNotNull (list, AudioIODeviceType::createAudioIODeviceType_ALSA());
+     addIfNotNull (list, AudioIODeviceType::createAudioIODeviceType_OpenSLES());
+     addIfNotNull (list, AudioIODeviceType::createAudioIODeviceType_Android());
+ }

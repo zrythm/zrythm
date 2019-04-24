@@ -1,0 +1,82 @@
+20090109 CVS commit and 1.0.0 release, smbolton
+
+ * Added manpages (thanks to Mark Hymers and Debian!)
+ * Freshening URLs, etc., for 2009.
+ * Small dssi_osc_update fixes.
+
+20081214 CVS commit smbolton
+
+ * Implemented the 'sample-rate' OSC method in both jack-dssi-host
+     and the example plugins, and described it in RFC.txt. 
+
+20081212 CVS commit smbolton
+
+ * jack-dssi-host: changed to use jack_client_open() instead of
+     deprecated jack_client_new() (requires jack >=0.99.14).
+
+ * jack-dssi-host: fixed audio output port connection to avoid
+     JACK MIDI ports.
+
+ * Example plugins: use gcc/glibc 'constructor' and 'destructor'
+     attributes instead of the deprecated _init() and _fini()
+     functions (needed for OS X 10.4 'Tiger').
+
+ * Multiple clarifications in RFC.txt: configure, program, and
+     control OSC messages are not echoed back to the originator;
+     argv[0] supplied to the UI should include the full path (all
+     existing hosts do this, to the best of my knowledge);
+     eliminated some inconsistency between use of 'PLUGINS' and
+     'MYPLUGINS' in examples.
+
+20061213 CVS commit cannam
+
+ * Add another simple example -- the basic Karplus and Strong synth.
+
+20051012 CVS commit and 0.9.1 release, smbolton
+
+ * Updated examples/dssi_osc_update.c so it works again.
+
+ * jack-dssi-host: upstreamed gcc4 fix from Gentoo ebuild.
+
+20051006 CVS commit smbolton
+
+ * Added an '-a' option to jack-dssi-host, to disable automatic
+     connection of audio output ports to JACK physical output ports.
+
+ * Updated why-use.txt to reflect currently available plugins.
+
+20050723 CVS commit cannam
+
+ * jack-dssi-host: send updates out to UI if received from
+     elsewhere.
+
+20050525 CVS commit smbolton
+
+ * Version bump to 0.9.1.
+
+ * Replaced static makefiles with a full autoconf/automake/libtool
+     build system.  Hope it solves more problems than it creates....
+
+ * Dropped message_buffer.[ch] use from less_trivial_synth.c, since
+     it's been commented out, and crashes some hosts.
+
+ * Conditionally omit the ALSA sequencer client code from
+     jack-dssi-host.c if building on a system without ALSA.
+
+ * Updated documentation to reflect FluidSynth-DSSI move and
+     autotools build system.
+
+20050516 CVS commit smbolton
+
+ * Moved FluidSynth-DSSI to its own separate CVS module.
+
+Summary of changes, version 0.9 (20041103) through 20050510
+
+ * Numerous clarifications in the documentation.
+
+ * Fixed less_trivial_synth.c for use on big-endian systems.
+
+ * jack-dssi-host: better handling of LADSPA hinting, support for
+     audio inputs, support for LADSPA-only plugins, better signal
+     handling with cleaner shutdown, several smaller bug fixes.
+

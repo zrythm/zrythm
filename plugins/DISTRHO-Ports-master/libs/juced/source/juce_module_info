@@ -1,0 +1,37 @@
+{
+  "id":             "juced",
+  "name":           "JUCED classes",
+  "version":        "2.0.8",
+  "description":    "Miscellaneous classes from the JUCETICE project.",
+  "website":        "http://code.google.com/p/juced/",
+  "license":        "GPL/Commercial",
+
+  "dependencies":   [ { "id": "juce_audio_basics",    	     "version": "matching" },
+                      { "id": "juce_audio_devices",          "version": "matching" },
+                      { "id": "juce_audio_formats", 	     "version": "matching" },
+                      { "id": "juce_audio_processors",       "version": "matching" },
+                      { "id": "juce_audio_utils",            "version": "matching" },
+                      { "id": "juce_core",                   "version": "matching" },
+                      { "id": "juce_data_structures",        "version": "matching" },
+                      { "id": "juce_events",                 "version": "matching" },
+                      { "id": "juce_graphics",               "version": "matching" },
+                      { "id": "juce_gui_basics",             "version": "matching" },
+                      { "id": "juce_gui_extra",              "version": "matching" } ],
+
+  "include":        "juced.h",
+
+  "compile":        [ { "file": "juced.cpp", "target": "! xcode" },
+                      { "file": "juced.mm",  "target": "xcode" } ],
+
+  "browse":         [ "audio/*",
+                      "base/*",
+                      "containers/*",
+                      "controls/*",
+                      "database/*",
+                      "dependancies/*",
+		      "lookandfeel/*",
+                      "network/*",
+                      "scripting/*",
+                      "testing/*",
+                      "utils/*" ]
+}

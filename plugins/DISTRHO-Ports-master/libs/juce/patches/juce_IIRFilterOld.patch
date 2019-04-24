@@ -1,0 +1,24 @@
+diff --git a/modules/juce_audio_basics/juce_audio_basics.cpp b/modules/juce_audio_basics/juce_audio_basics.cpp
+index 258de8f..c5a6bfa 100644
+--- a/modules/juce_audio_basics/juce_audio_basics.cpp
++++ b/modules/juce_audio_basics/juce_audio_basics.cpp
+@@ -83,6 +83,7 @@ namespace juce
+ #include "buffers/juce_FloatVectorOperations.cpp"
+ #include "buffers/juce_AudioChannelSet.cpp"
+ #include "effects/juce_IIRFilter.cpp"
++#include "effects/juce_IIRFilterOld.cpp"
+ #include "effects/juce_LagrangeInterpolator.cpp"
+ #include "effects/juce_CatmullRomInterpolator.cpp"
+ #include "midi/juce_MidiBuffer.cpp"
+diff --git a/modules/juce_audio_basics/juce_audio_basics.h b/modules/juce_audio_basics/juce_audio_basics.h
+index feb2a6e..ce6c8f4 100644
+--- a/modules/juce_audio_basics/juce_audio_basics.h
++++ b/modules/juce_audio_basics/juce_audio_basics.h
+@@ -63,6 +63,7 @@ namespace juce
+ #include "buffers/juce_AudioChannelSet.h"
+ #include "effects/juce_Decibels.h"
+ #include "effects/juce_IIRFilter.h"
++#include "effects/juce_IIRFilterOld.h"
+ #include "effects/juce_LagrangeInterpolator.h"
+ #include "effects/juce_CatmullRomInterpolator.h"
+ #include "effects/juce_LinearSmoothedValue.h"

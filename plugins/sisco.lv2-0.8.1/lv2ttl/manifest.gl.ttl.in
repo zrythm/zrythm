@@ -1,0 +1,4 @@
+sisco:ui_gl
+	a @UI_TYPE@ ;
+	ui:binary <@LV2GUI@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .

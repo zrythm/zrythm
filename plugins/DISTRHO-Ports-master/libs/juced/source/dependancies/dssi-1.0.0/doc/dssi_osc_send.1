@@ -1,0 +1,81 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH dssi_osc_send 1 "January 5th, 2009"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+dssi_osc_send \- send OSC messages to DSSI applications.
+.SH SYNOPSIS
+.B dssi_osc_send
+.I <option> <OSC URL> <values>
+.SH DESCRIPTION
+.B dssi_osc_send
+sends DSSI OSC methods to DSSI applications.
+.B dssi_osc_send
+is typically used to control DSSI hosts (possibly for scripted
+operation), or to test DSSI user interfaces.
+.SH OPTIONS
+.TP
+.B -c
+Send a `control' message.  Requires two values to be supplied
+in the <values> section: control port and value.
+For example, to set control port 1 to 0.1:
+  dssi_osc_send -c <OSC URL> 1 0.1
+.TP
+.B -p
+Send a `program' message.  Requires two values to be supplied
+in the <values> section: bank and program number.
+For example, to select bank 0 program number 7:
+  dssi_osc_send -p <OSC URL> 0 7
+.TP
+.B -m
+Send `midi' message.  Requires four numbers to be supplied
+in the <values> section.
+For example, to  send a note on, middle C, velocity 64:
+  dssi_osc_send -m <OSC URL> 0 144 60 64
+.TP
+.B -C
+Send a `configure' message. The <values> are the key and
+value pair. For example, to send key `load' and value
+`/tmp/patches.pat':
+  dssi_osc_send -C <OSC URL> load /tmp/patches.pat
+.TP
+.B -s
+Send a `show' message.
+  dssi_osc_send -s <OSC URL>
+.TP
+.B -h
+Send a `hide' message.
+  dssi_osc_send -h <OSC URL>
+.TP
+.B -q
+Send a `quit' message.
+  dssi_osc_send -q <OSC URL>
+.TP
+.B -e
+Send a `exiting' message.
+  dssi_osc_send -e <OSC URL>
+.TP
+.B <OSC URL>
+The URL to connect to.  For example:
+  osc.udp://localhost:19383/dssi/test.1
+  osc.udp://my.host.org:10886/dssi/xsynth-dssi/Xsynth/chan00
+.SH SEE ALSO
+.BR dssi_osc_update (1).
+.br
+.SH AUTHOR
+This manual page was originally created by Mark Hymers from the help
+text of the application, for the Debian project (but may be freely
+used by others).

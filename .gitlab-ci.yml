@@ -1,6 +1,7 @@
 # build from debian by default
 #image: "registry.zrythm.org/zrythm/zrythm/debian/latest:latest"
-image: "alextee12/debian9"
+#image: "alextee12/debian-9"
+image: "alextee12/arch-yaourt"
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -13,7 +14,7 @@ test_build:
   stage: build
   script:
     - ./autogen.sh
-    - ./configure
+    - ./configure --with-distrho-ports --with-x42-plugins
     - sudo make -j14
     - sudo make install
 
@@ -22,7 +23,7 @@ build_win_64:
   image: "alextee12/arch-yaourt"
   script:
     - ./autogen.sh
-    - x86_64-w64-mingw32-configure .
+    - x86_64-w64-mingw32-configure --with-distrho-ports --with-x42-plugins .
     - make -j14
   artifacts:
     paths:
@@ -34,7 +35,7 @@ package_win_64:
   image: "alextee12/arch-yaourt"
   script:
     - ./autogen.sh
-    - x86_64-w64-mingw32-configure .
+    - x86_64-w64-mingw32-configure --with-distrho-ports --with-x42-plugins .
     - make -j14
   artifacts:
     paths:

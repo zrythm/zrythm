@@ -1,0 +1,132 @@
+diff --git a/modules/juce_audio_formats/codecs/juce_FlacAudioFormat.cpp b/modules/juce_audio_formats/codecs/juce_FlacAudioFormat.cpp
+index 05c3c44..2f03506 100644
+--- a/modules/juce_audio_formats/codecs/juce_FlacAudioFormat.cpp
++++ b/modules/juce_audio_formats/codecs/juce_FlacAudioFormat.cpp
+@@ -117,6 +117,9 @@ namespace FlacNamespace
+   #pragma clang diagnostic ignored "-Wconversion"
+   #pragma clang diagnostic ignored "-Wshadow"
+   #pragma clang diagnostic ignored "-Wdeprecated-register"
++ #elif JUCE_GCC && (__GNUC__ >= 7)
++  #pragma GCC diagnostic push
++  #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
+  #endif
+ 
+  #if JUCE_INTEL
+@@ -157,6 +160,8 @@ namespace FlacNamespace
+ 
+  #if JUCE_CLANG
+   #pragma clang diagnostic pop
++ #elif JUCE_GCC && (__GNUC__ >= 7)
++  #pragma GCC diagnostic pop
+  #endif
+ }
+ 
+diff --git a/modules/juce_audio_formats/codecs/juce_OggVorbisAudioFormat.cpp b/modules/juce_audio_formats/codecs/juce_OggVorbisAudioFormat.cpp
+index 0a2737b..e2ebd13 100644
+--- a/modules/juce_audio_formats/codecs/juce_OggVorbisAudioFormat.cpp
++++ b/modules/juce_audio_formats/codecs/juce_OggVorbisAudioFormat.cpp
+@@ -47,6 +47,12 @@ namespace OggVorbisNamespace
+  #elif JUCE_GCC
+   #pragma GCC diagnostic push
+   #pragma GCC diagnostic ignored "-Wshadow"
++  #if (__GNUC__ >= 6)
++   #pragma GCC diagnostic ignored "-Wmisleading-indentation"
++   #if (__GNUC__ >= 7)
++    #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
++   #endif
++  #endif
+  #endif
+ 
+  #include "oggvorbis/vorbisenc.h"
+diff --git a/modules/juce_core/native/juce_linux_Files.cpp b/modules/juce_core/native/juce_linux_Files.cpp
+index d022175..1edbfe8 100644
+--- a/modules/juce_core/native/juce_linux_Files.cpp
++++ b/modules/juce_core/native/juce_linux_Files.cpp
+@@ -136,14 +136,14 @@ File File::getSpecialLocation (const SpecialLocationType type)
+         case invokedExecutableFile:
+             if (juce_argv != nullptr && juce_argc > 0)
+                 return File (CharPointer_UTF8 (juce_argv[0]));
+-            // deliberate fall-through...
++            // fall-through
+ 
+         case currentExecutableFile:
+         case currentApplicationFile:
+            #if ! JUCE_STANDALONE_APPLICATION
+             return juce_getExecutableFile();
+            #endif
+-            // deliberate fall-through if this is not a shared-library
++            // fall-through
+ 
+         case hostApplicationPath:
+         {
+diff --git a/modules/juce_core/native/juce_posix_SharedCode.h b/modules/juce_core/native/juce_posix_SharedCode.h
+index 67c884a..100d41a 100644
+--- a/modules/juce_core/native/juce_posix_SharedCode.h
++++ b/modules/juce_core/native/juce_posix_SharedCode.h
+@@ -1205,6 +1205,8 @@ public:
+                 close (pipeHandles[1]); // close the write handle
+             }
+         }
++
++        ignoreUnused (streamFlags);
+     }
+ 
+     ~ActiveProcess()
+diff --git a/modules/juce_core/xml/juce_XmlElement.cpp b/modules/juce_core/xml/juce_XmlElement.cpp
+index b04e307..5c86674 100644
+--- a/modules/juce_core/xml/juce_XmlElement.cpp
++++ b/modules/juce_core/xml/juce_XmlElement.cpp
+@@ -241,7 +241,7 @@ namespace XmlOutputFunctions
+                         outputStream << (char) character;
+                         break;
+                     }
+-                    // Note: deliberate fall-through here!
++                    // fall-through
+                 default:
+                     outputStream << "&#" << ((int) character) << ';';
+                     break;
+diff --git a/modules/juce_core/zip/juce_GZIPCompressorOutputStream.cpp b/modules/juce_core/zip/juce_GZIPCompressorOutputStream.cpp
+index df64f23..45087c6 100644
+--- a/modules/juce_core/zip/juce_GZIPCompressorOutputStream.cpp
++++ b/modules/juce_core/zip/juce_GZIPCompressorOutputStream.cpp
+@@ -92,7 +92,7 @@ private:
+             {
+                 case Z_STREAM_END:
+                     finished = true;
+-                    // Deliberate fall-through..
++                    // fall-through..
+                 case Z_OK:
+                 {
+                     data += dataSize - stream.avail_in;
+diff --git a/modules/juce_core/zip/juce_GZIPDecompressorInputStream.cpp b/modules/juce_core/zip/juce_GZIPDecompressorInputStream.cpp
+index 0bae4d3..bd33e93 100644
+--- a/modules/juce_core/zip/juce_GZIPDecompressorInputStream.cpp
++++ b/modules/juce_core/zip/juce_GZIPDecompressorInputStream.cpp
+@@ -39,6 +39,9 @@ namespace zlibNamespace
+    #if __has_warning("-Wcomma")
+     #pragma clang diagnostic ignored "-Wcomma"
+    #endif
++  #elif JUCE_GCC && (__GNUC__ >= 7)
++   #pragma GCC diagnostic push
++   #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
+   #endif
+ 
+   #undef OS_CODE
+@@ -74,6 +77,8 @@ namespace zlibNamespace
+ 
+   #if JUCE_CLANG
+    #pragma clang diagnostic pop
++  #elif JUCE_GCC && (__GNUC__ >= 7)
++   #pragma GCC diagnostic pop
+   #endif
+  #else
+   #include JUCE_ZLIB_INCLUDE_PATH
+@@ -136,7 +141,7 @@ public:
+             {
+             case Z_STREAM_END:
+                 finished = true;
+-                // deliberate fall-through
++                // fall-through
+             case Z_OK:
+                 data += dataSize - stream.avail_in;
+                 dataSize = (z_uInt) stream.avail_in;

@@ -1,0 +1,8 @@
+@prefix lv2:    <http://lv2plug.in/ns/lv2core#> .
+@prefix modgui: <http://moddevices.com/ns/modgui#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://gareus.org/oss/lv2/@LV2NAME@>
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@>  ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .

@@ -28,29 +28,8 @@ HAVE_QT5=@HAVE_QT5@
 PROFILING=@PROFILING@
 DEBUG=@DEBUG@
 WITH_DOCS=@WITH_DOCS@
-
-# -----------------------
-#  dirs/names/files
-#  ----------------------
-BUILD_DIR = build
-OBJ_DIR = $(BUILD_DIR)/obj
-DEP_DIR = $(BUILD_DIR)/dep
-BIN = zrythm
-SRC_DIR = src
-INC_DIR = inc
-DATA_DIR = data
-FONTS_DIR = resources/fonts
-ICONS_DIR = resources/icons
-# lib file here
-CYAML_BUILD_DIR = ext/libcyaml/build/release
-# execute make here
-CYAML_SRC_DIR = ext/libcyaml
-CYAML_INC_DIR = ext/libcyaml/include
-#lib file here
-LIBSMF_BUILD_DIR = ext/libsmf/src/.libs
-LIBSMF_INC_DIR = ext/libsmf/src
-# execute make here
-LIBSMF_SRC_DIR = ext/libsmf
+WITH_X42_PLUGINS=@WITH_X42_PLUGINS@
+WITH_DISTRHO_PORTS=@WITH_DISTRHO_PORTS@
 
 CC = @CC@
 CXX = @CXX@
@@ -102,6 +81,7 @@ LIBYAML_CFLAGS = @LIBYAML_CFLAGS@
 FFMPEG_CFLAGS = @FFMPEG_CFLAGS@
 GTK3_CFLAGS = @GTK3_CFLAGS@
 JACK_CFLAGS = @JACK_CFLAGS@
+FFTW3F_CFLAGS = @FFTW3F_CFLAGS@
 GTOP_CFLAGS = @GTOP_CFLAGS@
 LILV_CFLAGS = @LILV_CFLAGS@
 LV2_CFLAGS = @LV2_CFLAGS@
@@ -117,6 +97,7 @@ GTK3_LIBS = @GTK3_LIBS@
 FFMPEG_LIBS = @FFMPEG_LIBS@
 JACK_LIBS = @JACK_LIBS@
 GTOP_LIBS = @GTOP_LIBS@
+FFTW3F_LIBS = @FFTW3F_LIBS@
 LILV_LIBS = @LILV_LIBS@
 LV2_LIBS = @LV2_LIBS@
 PORT_AUDIO_LIBS = @PORT_AUDIO_LIBS@
@@ -124,6 +105,31 @@ QT5_LIBS = @QT5_LIBS@
 SAMPLERATE_LIBS = @SAMPLERATE_LIBS@
 SNDFILE_LIBS = @SNDFILE_LIBS@
 X11_LIBS = @X11_LIBS@
+
+# -----------------------
+#  dirs/names/files
+#  ----------------------
+BUILD_DIR = build
+OBJ_DIR = $(BUILD_DIR)/obj
+DEP_DIR = $(BUILD_DIR)/dep
+BIN = zrythm
+SRC_DIR = src
+INC_DIR = inc
+DATA_DIR = data
+FONTS_DIR = resources/fonts
+ICONS_DIR = resources/icons
+# lib file here
+CYAML_BUILD_DIR = ext/libcyaml/build/release
+# execute make here
+CYAML_SRC_DIR = ext/libcyaml
+CYAML_INC_DIR = ext/libcyaml/include
+#lib file here
+LIBSMF_BUILD_DIR = ext/libsmf/src/.libs
+LIBSMF_INC_DIR = ext/libsmf/src
+# execute make here
+LIBSMF_SRC_DIR = ext/libsmf
+PLUGINS_SRC_DIR= plugins
+PLUGINS_INSTALL_DIR = $(libdir)/zrythm/lv2
 
 DEFAULT_INCLUDES = -I. -I./$(INC_DIR) -I./$(SRC_DIR) -I./ext -I./$(LIBSMF_INC_DIR) -I./$(CYAML_INC_DIR)
 
@@ -184,6 +190,7 @@ CFLAGS += -Wall \
 	$(GTK3_CFLAGS) \
 	$(JACK_CFLAGS) \
 	$(LIBYAML_CFLAGS) \
+	$(FFTW3F_CFLAGS) \
 	$(GTOP_CFLAGS) \
 	$(LILV_CFLAGS) \
 	$(LV2_CFLAGS) \
@@ -192,6 +199,7 @@ CFLAGS += -Wall \
 	$(SNDFILE_CFLAGS) \
 	$(X11_CFLAGS) \
 	-DCONFIGURE_DATADIR=\"$(datadir)\" \
+	-DCONFIGURE_LIBDIR=\"$(libdir)\" \
 	$(FPIC) \
 	$(MWINDOWS)
 
@@ -218,6 +226,7 @@ LDFLAGS +=	\
   $(GTK3_LIBS) \
 	$(JACK_LIBS) \
 	$(LIBYAML_LIBS) \
+	$(FFTW3F_LIBS) \
 	$(GTOP_LIBS) \
 	$(LILV_LIBS) \
 	$(LV2_LIBS) \
@@ -291,6 +300,77 @@ else
 	LIBSMF_CONFIGURE=./configure
 endif
 
+# x42 plugins
+ifeq ($(WITH_X42_PLUGINS),1)
+	X42_PLUGINS_SRC_DIRS = \
+		$(PLUGINS_SRC_DIR)/midifilter.lv2-0.5.3 \
+		$(PLUGINS_SRC_DIR)/fat1.lv2-0.5.2 \
+		$(PLUGINS_SRC_DIR)/meters.lv2-0.9.11 \
+		$(PLUGINS_SRC_DIR)/midigen.lv2-0.2.5 \
+		$(PLUGINS_SRC_DIR)/sisco.lv2-0.8.1 \
+		$(PLUGINS_SRC_DIR)/testsignal.lv2-0.5.2 \
+		$(PLUGINS_SRC_DIR)/tuna.lv2-0.4.12
+	X42_PLUGINS_BINS = \
+		$(PLUGINS_SRC_DIR)/midifilter.lv2-0.5.3/build/midifilter.so \
+		$(PLUGINS_SRC_DIR)/fat1.lv2-0.5.2/build/fat1.so \
+		$(PLUGINS_SRC_DIR)/meters.lv2-0.9.11/build/meters.so \
+		$(PLUGINS_SRC_DIR)/midigen.lv2-0.2.5/build/midigen.so \
+		$(PLUGINS_SRC_DIR)/sisco.lv2-0.8.1/build/sisco.so \
+		$(PLUGINS_SRC_DIR)/testsignal.lv2-0.5.2/build/testsignal.so \
+		$(PLUGINS_SRC_DIR)/tuna.lv2-0.4.12/build/tuna.so
+	INSTALL_X42_PLUGINS=install-x42-plugins
+ifeq ($(WINDOWS),1)
+	X42_PLUGINS_XWIN=1
+endif
+endif
+
+# DISTRHO ports
+ifeq ($(WITH_DISTRHO_PORTS),1)
+ifeq ($(WINDOWS),1)
+	DISTRHO_OS=mingw
+endif
+ifeq ($(OSX),1)
+	DISTRHO_OS=mac
+endif
+ifeq ($(LINUX),1)
+	DISTRHO_OS=linux
+endif
+	DISTRHO_PORTS_SRC_DIR = $(PLUGINS_SRC_DIR)/DISTRHO-Ports-master
+	DISTRHO_PORTS_BIN_DIR = $(DISTRHO_PORTS_SRC_DIR)/bin/lv2
+	DISTRHO_PORTS_BINS = \
+		$(DISTRHO_PORTS_BIN_DIR)/Dexed.lv2/Dexed.so \
+		$(DISTRHO_PORTS_BIN_DIR)/LUFSMeter.lv2/LUFSMeter.so \
+		$(DISTRHO_PORTS_BIN_DIR)/eqinox.lv2/eqinox.so \
+		$(DISTRHO_PORTS_BIN_DIR)/ThePilgrim.lv2/ThePilgrim.so \
+		$(DISTRHO_PORTS_BIN_DIR)/LUFSMeterMulti.lv2/LUFSMeterMulti.so \
+		$(DISTRHO_PORTS_BIN_DIR)/TAL-Filter-2.lv2/TAL-Filter-2.so \
+		$(DISTRHO_PORTS_BIN_DIR)/TAL-Vocoder-2.lv2/TAL-Vocoder-2.so \
+		$(DISTRHO_PORTS_BIN_DIR)/drowaudio-reverb.lv2/drowaudio-reverb.so \
+		$(DISTRHO_PORTS_BIN_DIR)/TheFunction.lv2/TheFunction.so \
+		$(DISTRHO_PORTS_BIN_DIR)/drowaudio-distortionshaper.lv2/drowaudio-distortionshaper.so \
+		$(DISTRHO_PORTS_BIN_DIR)/StereoSourceSeparation.lv2/StereoSourceSeparation.so \
+		$(DISTRHO_PORTS_BIN_DIR)/TAL-Dub-3.lv2/TAL-Dub-3.so \
+		$(DISTRHO_PORTS_BIN_DIR)/drumsynth.lv2/drumsynth.so \
+		$(DISTRHO_PORTS_BIN_DIR)/Obxd.lv2/Obxd.so \
+		$(DISTRHO_PORTS_BIN_DIR)/HiReSam.lv2/HiReSam.so \
+		$(DISTRHO_PORTS_BIN_DIR)/TAL-Reverb.lv2/TAL-Reverb.so \
+		$(DISTRHO_PORTS_BIN_DIR)/TAL-Reverb-3.lv2/TAL-Reverb-3.so \
+		$(DISTRHO_PORTS_BIN_DIR)/EasySSP.lv2/EasySSP.so \
+		$(DISTRHO_PORTS_BIN_DIR)/drowaudio-tremolo.lv2/drowaudio-tremolo.so \
+		$(DISTRHO_PORTS_BIN_DIR)/PitchedDelay.lv2/PitchedDelay.so \
+		$(DISTRHO_PORTS_BIN_DIR)/drowaudio-flanger.lv2/drowaudio-flanger.so \
+		$(DISTRHO_PORTS_BIN_DIR)/TAL-Filter.lv2/TAL-Filter.so \
+		$(DISTRHO_PORTS_BIN_DIR)/TAL-NoiseMaker.lv2/TAL-NoiseMaker.so \
+		$(DISTRHO_PORTS_BIN_DIR)/drowaudio-distortion.lv2/drowaudio-distortion.so \
+		$(DISTRHO_PORTS_BIN_DIR)/JuceOPL.lv2/JuceOPL.so \
+		$(DISTRHO_PORTS_BIN_DIR)/Luftikus.lv2/Luftikus.so \
+		$(DISTRHO_PORTS_BIN_DIR)/TAL-Reverb-2.lv2/TAL-Reverb-2.so \
+		$(DISTRHO_PORTS_BIN_DIR)/ReFine.lv2/ReFine.so \
+		$(DISTRHO_PORTS_BIN_DIR)/KlangFalter.lv2/KlangFalter.so \
+		$(DISTRHO_PORTS_BIN_DIR)/Wolpertinger.lv2/Wolpertinger.so
+	INSTALL_DISTRHO_PORTS=install-distrho-ports
+endif
+
 # static libs
 STATIC_LIBS=$(CYAML_BUILD_DIR)/libcyaml.a $(LIBSMF_BUILD_DIR)/libsmf.a $(DLFCN_LIB)
 
@@ -300,9 +380,9 @@ STATIC_LIBS=$(CYAML_BUILD_DIR)/libcyaml.a $(LIBSMF_BUILD_DIR)/libsmf.a $(DLFCN_L
 
 # Default target
 ifeq ($(WINDOWS),1)
-all: $(BUILD_DIR)/data/icon.o $(BUILD_DIR)/$(BIN)$(EXT) messages package-win test
+all: $(BUILD_DIR)/data/icon.o $(BUILD_DIR)/$(BIN)$(EXT) messages plugins package-win test
 else
-all: $(BUILD_DIR)/$(BIN)$(EXT) messages test
+all: $(BUILD_DIR)/$(BIN)$(EXT) messages plugins test
 endif
 
 messages: po/fr/$(BIN).mo po/de/$(BIN).mo po/es/$(BIN).mo po/it/$(BIN).mo po/ja/$(BIN).mo
@@ -368,14 +448,14 @@ package-win: $(BUILD_DIR)/$(BIN)$(EXT)
 # build libcyaml
 $(CYAML_BUILD_DIR)/libcyaml.a:
 	cd $(CYAML_SRC_DIR) && \
-		make build/release/libcyaml.a VARIANT=release \
+		$(MAKE) build/release/libcyaml.a VARIANT=release \
 		PREFIX=$(prefix) CC=$(CC) AR=$(CYAML_AR) \
 		LDFLAGS+="$(shell $(PKG_CONFIG) --libs yaml-0.1)"
 
 # build libsmf
 $(LIBSMF_BUILD_DIR)/libsmf.a:
 	cd $(LIBSMF_SRC_DIR) && autoreconf -fi && \
-		LDFLAGS+=$(LIBSMF_LDFLAGS) ac_cv_func_malloc_0_nonnull=yes ac_cv_func_realloc_0_nonnull=yes $(LIBSMF_CONFIGURE) && make
+		LDFLAGS+=$(LIBSMF_LDFLAGS) ac_cv_func_malloc_0_nonnull=yes ac_cv_func_realloc_0_nonnull=yes $(LIBSMF_CONFIGURE) && $(MAKE)
 
 $(BUILD_DIR)/zrythm.gresource.xml: resources/gen-gtk-gresources-xml.py \
 	resources/icons/breeze-icons/gen-hicolor.py \
@@ -413,6 +493,23 @@ $(BUILD_DIR)/%.m.$(OBJEXT): %.m
 	$(MKDIR_P) $(dir $@)
 	$(CC) $(CFLAGS) $(OSX_LIBS) -c $< -o $@
 
+$(X42_PLUGINS_BINS):
+	for dir in $(X42_PLUGINS_SRC_DIRS); \
+	do \
+		pushd $${dir}; \
+		XWIN=$(X42_PLUGINS_XWIN) $(MAKE); \
+		${MAKE} install PREFIX=./build; \
+		popd; \
+	done
+
+$(DISTRHO_PORTS_BINS):
+	cd $(DISTRHO_PORTS_SRC_DIR) && \
+	./scripts/premake-update.sh $(DISTRHO_OS) && \
+	${MAKE} lv2
+
+.PHONY: plugins
+plugins: $(X42_PLUGINS_BINS) $(DISTRHO_PORTS_BINS)
+
 .PHONY: doc
 doc:
 	doxygen Doxyfile.cfg
@@ -430,13 +527,21 @@ clean:
 	-rm po/it/*.mo
 	-rm po/es/*.mo
 	-rm po/ja/*.mo
-	cd $(CYAML_SRC_DIR) && make clean
-	-rm -rf $(CYAML_BUILD_DIR)
+	cd $(CYAML_SRC_DIR) && $(MAKE) clean
+	#-rm -rf $(CYAML_BUILD_DIR)
 	cd $(LIBSMF_SRC_DIR) && autoreconf -i && \
-		$(LIBSMF_CONFIGURE) && make clean
+		$(LIBSMF_CONFIGURE) && $(MAKE) clean
+	#-rm -rf $(LIBSMF_BUILD_DIR)
+	for dir in $(X42_PLUGINS_SRC_DIRS); \
+	do \
+		pushd $${dir}; \
+		rm -rf build; \
+		popd; \
+	done
+	-rm -rf $(DISTRHO_PORTS_BIN_DIR)
 
 .PHONY: install
-install: $(BUILD_DIR)/$(BIN)$(EXT) install-appicon-data install-desktop-data install-gschemas install-fonts install-messages
+install: $(BUILD_DIR)/$(BIN)$(EXT) install-appicon-data install-desktop-data install-gschemas install-fonts install-messages install-plugins
 	$(MKDIR_P) $(DESTDIR)$(bindir)
 	$(INSTALL) $< $(DESTDIR)$(bindir)/$(BIN)$(EXT)
 
@@ -457,6 +562,26 @@ install-messages:
 	$(MKDIR_P) "$(DESTDIR)$(localedir)/ja/LC_MESSAGES"
 	$(INSTALL_DATA) po/ja/$(BIN).mo "$(DESTDIR)$(localedir)/ja/LC_MESSAGES/"
 
+.PHONY: install-x42-plugins
+install-x42-plugins: $(X42_PLUGINS_BINS)
+	if [ -z "$(X42_PLUGINS_SRC_DIRS)" ]; then \
+		exit 0; \
+	fi
+	mkdir -p $(PLUGINS_INSTALL_DIR)
+	for dir in $(X42_PLUGINS_SRC_DIRS); do \
+		pushd $${dir}; \
+		cp -R build/lib/lv2/* "$(DESTDIR)$(PLUGINS_INSTALL_DIR)/"; \
+		popd; \
+	done
+
+.PHONY: install-distrho-ports
+install-distrho-ports: $(DISTRHO_PORTS_BINS)
+	cd $(DISTRHO_PORTS_SRC_DIR) && \
+	cp -R $(DISTRHO_PORTS_BIN_DIR)/*.lv2 "$(DESTDIR)$(PLUGINS_INSTALL_DIR)/"
+
+.PHONY: install-plugins
+install-plugins: $(INSTALL_X42_PLUGINS) $(INSTALL_DISTRHO_PORTS)
+
 .PHONY: install-appicon-data
 install-appicon-data: $(appicon_DATA_srcdir)/$(appicon_DATA)
 	$(MKDIR_P) "$(DESTDIR)$(appicondir)"
@@ -467,6 +592,10 @@ install-appicon-data: $(appicon_DATA_srcdir)/$(appicon_DATA)
 .PHONY: uninstall-appicon-data
 uninstall-appicon-data:
 	rm -f $< "$(DESTDIR)$(appicondir)/$(appicon_DATA)"
+
+.PHONY: uninstall-plugins
+uninstall-plugins:
+	-rm -rf "$(DESTDIR)$(PLUGINS_INSTALL_DIR)"
 
 .PHONY: install-gschemas
 install-gschemas: $(DATA_DIR)/$(gsettings_SCHEMAS)
@@ -493,10 +622,6 @@ uninstall-messages:
 install-fonts: $(FONTS_DIR)/Segment7Standard/*
 	$(MKDIR_P) "$(DESTDIR)$(fontdir)/$(BIN)/Segment7Standard"
 	$(INSTALL_FONT) $< "$(DESTDIR)$(fontdir)/$(BIN)/Segment7Standard/"
-
-.PHONY: install-plugins
-install-plugins:
-	# TODO
 
 .PHONY: install-desktop-data
 install-desktop-data: $(DATA_DIR)/$(desktop_DATA)

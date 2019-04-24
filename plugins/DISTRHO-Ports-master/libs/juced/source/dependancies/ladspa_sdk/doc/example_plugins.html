@@ -1,0 +1,90 @@
+<H1>Example Plugins</H1>
+
+<P>Ten example plugins are provided. These provide a rudimentary basis
+for a computer-music synthesis kit. They are written simply and may be
+used as the basis for your creations. Note that the programming is not
+of a massively high quality: in particular, memory management is
+rather crude and failures during <CODE>malloc()</CODE> will produce
+unpleasant behaviour.</P>
+
+<P>Note that these plugins are examples. More polished versions of
+them all are included within the <A
+HREF="http://www.ladspa.org/cmt">CMT plugin
+set</A>.</P>
+
+<P>The following plugins are provided:</P>
+
+<TABLE BORDER=1>
+
+<TR>
+<TH>File Name</TH>
+<TH>Plugin Label</TH>
+<TH>Description</TH>
+</TR>
+
+<TR>
+<TD><CODE>amp.so</CODE></TD>
+<TD>amp_mono</TD>
+<TD>Mono Amplifier.</TD>
+</TR>
+
+<TR>
+<TD><CODE>amp.so</CODE></TD>
+<TD>amp_stereo</TD>
+<TD>Stereo Amplifier.</TD>
+</TR>
+
+<TR>
+<TD><CODE>filter.so</CODE></TD>
+<TD>lpf</TD>
+<TD>Simple Low Pass Filter.</TD>
+</TR>
+
+<TR>
+<TD><CODE>filter.so</CODE></TD>
+<TD>hpf</TD>
+<TD>Simple High Pass Filter</TD>
+</TR>
+
+<TR>
+<TD><CODE>delay.so</CODE></TD>
+<TD>delay_5s</TD>
+<TD>Simple Delay Line. The delay time may be varied up to 5
+seconds. No feedback is provided.</TD>
+</TR>
+
+<TR>
+<TD><CODE>sine.so</CODE></TD>
+<TD>sine_faaa</TD>
+<TD>Sine Oscillator. Frequency input is audio, Amplitude input is
+audio.</TD>
+</TR>
+
+<TR>
+<TD><CODE>sine.so</CODE></TD>
+<TD>sine_faac</TD>
+<TD>Simple Oscillator. Frequency input is audio, Amplitude input is
+control.</TD>
+</TR>
+
+<TR>
+<TD><CODE>sine.so</CODE></TD>
+<TD>sine_fcaa</TD>
+<TD>Simple Oscillator. Frequency input is control, Amplitude input is
+audio.</TD>
+</TR>
+
+<TR>
+<TD><CODE>sine.so</CODE></TD>
+<TD>sine_fcac</TD>
+<TD>Simple Oscillator. Frequency input is control, Amplitude input is
+control.</TD>
+</TR>
+
+<TR>
+<TD><CODE>noise.so</CODE></TD>
+<TD>noise_white</TD>
+<TD>White noise source.</TD>
+</TR>
+
+</TABLE>

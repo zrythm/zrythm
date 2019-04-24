@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<config resourceName="Resources" outputName="DrumSynthResources">
+  <file filename="bank-tr909.bds" name="banktr909" extension="bds"/>
+</config>

@@ -1,0 +1,8 @@
+
+Stuff remaining to do for the proof of concept:
+
+In the example host:
+ * support for log/samplerate ports
+ * generic GUI support? nah
+ * maybe NRPNs?
+ 

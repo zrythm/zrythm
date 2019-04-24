@@ -1,0 +1,14 @@
+diff --git a/modules/juce_audio_processors/format_types/juce_VST3PluginFormat.cpp b/modules/juce_audio_processors/format_types/juce_VST3PluginFormat.cpp
+index 88d8f49..7a5d661 100644
+--- a/modules/juce_audio_processors/format_types/juce_VST3PluginFormat.cpp
++++ b/modules/juce_audio_processors/format_types/juce_VST3PluginFormat.cpp
+@@ -1356,7 +1356,8 @@ private:
+ 
+             auto result = finder.findDescriptionsAndPerform (f);
+ 
+-            if (result.getErrorMessage() == MatchingDescriptionFinder::getSuccessString())
++            if (result.getErrorMessage() == MatchingDescriptionFinder::getSuccessString() ||
++                result.getErrorMessage().isEmpty())
+             {
+                 name = description.name;
+                 return true;

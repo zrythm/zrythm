@@ -1,0 +1,158 @@
+
+DSSI
+----
+
+This is the DSSI Soft Synth Interface specification & example
+code repository.
+
+You'll find here:
+
+  doc/RFC.txt -- proposed DSSI specification -- read this first
+
+  dssi/dssi.h -- DSSI header file -- the comments define those parts
+  of the spec dealing with host/plugin interaction (not covered in RFC)
+
+  jack-dssi-host/jack-dssi-host.c -- a simple JACK/ALSA-sequencer plugin host
+
+  examples/dssi_osc_send.c
+  examples/dssi_osc_update.c -- simple DSSI OSC test programs
+
+  examples/trivial_synth.c -- a quite useless but fairly clear
+  illustrative synth plugin
+
+  examples/less_trivial_synth.c -- a synth that actually does some
+  basic synthesis
+
+  examples/less_trivial_synth_qt_gui.cpp -- a very simple Qt GUI
+  for the above
+
+  examples/karplong.cpp -- a simple Karplus+Strong plucked string synth
+
+  examples/trivial_sampler.c -- a simple one-sample polyphonic
+  mono sampler (that doesn't do proper pitch scaling)
+
+  examples/trivial_sampler_qt_gui.cpp -- a very simple Qt GUI for
+  the above
+
+
+Requirements
+------------
+
+In order to install the development files (dssi.h and dssi.pc)
+needed to compile DSSI applications, you only need the following:
+
+  pkgconfig with PKG_CONFIG_PATH set appropriately
+  ALSA 0.9/1.0.x (or libdssialsacompat: see
+      http://smbolton.com/linux.html)
+  LADSPA SDK 1.x
+
+To build the included host and plugins, you will also need:
+
+  JACK
+  liblo-0.12 or above: http://liblo.sourceforge.net/
+  libsndfile: http://www.mega-nerd.com/libsndfile/
+  libsamplerate: http://www.mega-nerd.com/SRC/
+
+To build the less_trivial_synth and trivial_sampler Qt GUIs, you
+will need:
+
+  Qt 3
+
+Note that because DSSI itself is just an API, it is possible to use
+DSSI applications (say, Rosegarden with Xsynth-DSSI) without any of
+the hosts or plugins contained in this DSSI distribution.
+Furthermore, to compile DSSI applications, only the DSSI development
+files (dssi.h and dssi.pc) are needed. OS distribution maintainers
+are urged to keep these dependencies in mind when packaging DSSI,
+and not make their `dssi-devel' package dependent on JACK or Qt, for
+example.
+
+Build
+-----
+
+DSSI can be installed using the usual autoconf/automake `./configure
+&& make && make install' procedure.  See the included file INSTALL
+for generic installation instructions.
+
+You will need to ensure PKG_CONFIG_PATH is set correctly to locate
+the pkgconfig files for ALSA or libdssialsacompat, liblo, JACK,
+sndfile, and samplerate.  You may also need to set the QTDIR and/or
+QTINCDIR variables to point to your Qt installation.  If you do not
+have any of these, any DSSI programs or plugins dependent on them
+will not be built.
+
+For example, to build on Debian I use:
+
+  $ QTDIR=/usr
+  $ QTINCDIR=/usr/include/qt3
+  $ PKG_CONFIG_PATH=/usr/lib/pkgconfig
+  $ export QTDIR QTINCDIR PKG_CONFIG_PATH
+  $ ./configure
+  $ make && make check
+
+After compiling, optionally test the host and example plugins (see
+below) and then run `make install' from the top-level directory to
+install the dssi header, dssi.pc pkgconfig file, and the host and
+examples.  The default install prefix is /usr/local.
+
+Test
+----
+
+The quickest test (provided your system has all the required
+software, you've done `make install', and JACK is running) is just
+to run `less_trivial_synth' or `trivial_sampler', which should have
+been installed in your $PREFIX/bin.  These should simply start up a
+standalone sampler/synth with a GUI window.  If these both work,
+pretty much everything else should.
+
+Here's a more descriptive test:
+
+Assuming you've built the host and plugins, installed them to
+/usr/local, and JACK is running, you may run:
+
+  $ export DSSI_PATH=/usr/local/lib/dssi
+  $ /usr/local/bin/jack-dssi-host less_trivial_synth.so
+
+A synth GUI should pop up, with an ALSA sequencer input and JACK
+output (connected by default to the first alsa_pcm out).  If you
+connect a MIDI keyboard (or vkeybd) to its ALSA MIDI input, you should
+be able to play it and use MIDI controllers to adjust its parameters:
+MIDI CC1 (the modulation wheel) controls timbre, and controllers 72,
+73, 75 and 79 control release, attack, decay and sustain respectively
+(some keyboards already have controls set up for these values).
+
+What has actually happened (if it worked) is that the host has
+been started, has loaded the first synth plugin (labelled LTS) found
+in the given .so file, has located the GUI executable that the make
+procedure installed into examples/less_trivial_synth/LTS_qt,
+instantiated the plugin, started the GUI and is now managing the MIDI
+input from ALSA, control changes from the GUI and audio out to JACK.
+
+You may also run multiple synth instances simultaneously with this
+host:
+
+  $ export DSSI_PATH=/usr/local/lib/dssi
+  $ export PATH=$PATH:/usr/local/bin     # if it's not there already
+  $ jack-dssi-host -2 less_trivial_synth.so -3 trivial_sampler.so
+
+This will create two less_trivial_synth instances and three
+trivial_sampler instances.  Note that the instances are assigned
+consecutive MIDI channels, and their outputs are spread across all
+of the available JACK physical outputs.
+
+
+Licensing
+---------
+
+The DSSI API itself (dssi.h) is licensed under the GNU Lesser General
+Public License.  See COPYING for details.
+
+The jack-dssi-host is provided under a BSD-style license.  This means
+you can do anything you want with it so long as you retain the
+copyright attribution and license information.  See the source files
+for details.
+
+Licensing for the files in the examples directory may vary: please
+check the individual files for details.  Most of them are in the
+public domain, which means you can use them for anything you want.
+

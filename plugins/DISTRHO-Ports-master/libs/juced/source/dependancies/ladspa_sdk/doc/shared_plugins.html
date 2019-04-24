@@ -1,0 +1,22 @@
+<H1>Shared Plugins</H1>
+
+<P>Plugins may be used by a range of different hosts. However, the
+host needs to be able to find the plugins. Hosts vary, however the
+recommended method uses the environment variable
+<CODE>LADSPA_PATH</CODE>. If present, this should contain a
+colon-separated path indicating directories that should be searched
+(in order) when loading plugin types.</P>
+
+<P>It is recommended for standard Linux distributions such as RedHat,
+that this plugin path should be
+<CODE>/home/&lt;user&gt;/.ladspa:/usr/local/lib/ladspa:/usr/lib/ladspa</CODE>.
+Plugins can then be installed into <CODE>/usr/local/lib/ladspa/</CODE>
+or <CODE>/usr/lib/ladspa/</CODE>.</P>
+
+<P>You may wish to add a line such as the following to your
+.bash_profile login file (if you use Bash): <CODE>export
+LADSPA_PATH=$LADSPA_PATH:/home/&lt;user&gt;/.ladspa:/usr/local/lib/ladspa:/usr/lib/ladspa</CODE></P>
+
+<P>To list the plugins that can be found on your
+<CODE>LADSPA_PATH</CODE>, run the <CODE>listplugins</CODE>
+program.</P>

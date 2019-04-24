@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: dssi
+Version: @VERSION@
+Description: A plugin API for software instruments
+Libs: 
+Cflags: -I${includedir}
+

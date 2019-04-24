@@ -1,0 +1,14 @@
+diff --git a/modules/juce_audio_processors/format_types/juce_VSTPluginFormat.cpp b/modules/juce_audio_processors/format_types/juce_VSTPluginFormat.cpp
+index 172e348..2a33c4f 100644
+--- a/modules/juce_audio_processors/format_types/juce_VSTPluginFormat.cpp
++++ b/modules/juce_audio_processors/format_types/juce_VSTPluginFormat.cpp
+@@ -56,9 +56,6 @@ using namespace Vst2;
+  #ifndef WM_APPCOMMAND
+   #define WM_APPCOMMAND 0x0319
+  #endif
+-
+- extern "C" void _fpreset();
+- extern "C" void _clearfp();
+ #elif ! JUCE_WINDOWS
+  static void _fpreset() {}
+  static void _clearfp() {}

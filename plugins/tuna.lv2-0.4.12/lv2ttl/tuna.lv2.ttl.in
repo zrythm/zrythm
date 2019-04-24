@@ -1,0 +1,229 @@
+
+
+@LV2NAME@:@INSTANCE@
+  a lv2:Plugin, doap:Project, lv2:AnalyserPlugin;
+  doap:license <http://usefulinc.com/doap/licenses/gpl> ;
+  doap:maintainer <http://gareus.org/rgareus#me> ;
+  doap:name "Instrument Tuner@NAME_SUFFIX@";
+  @VERSION@
+  @UITTL@
+  @MODBRAND@
+  @MODLABEL@
+  lv2:optionalFeature lv2:hardRTCapable, idpy:queue_draw ;
+	lv2:extensionData idpy:interface ;
+  lv2:requiredFeature urid:map ;
+  @SIGNATURE@
+  lv2:port
+  [
+    a atom:AtomPort ,
+      lv2:InputPort ;
+    atom:bufferType atom:Sequence ;
+    lv2:designation lv2:control ;
+    lv2:index 0 ;
+    lv2:symbol "control" ;
+    lv2:name "Control" ;
+    rdfs:comment "GUI to plugin communication" ;
+  ] , [
+    a atom:AtomPort ,
+      lv2:OutputPort ;
+    atom:bufferType atom:Sequence ;
+    lv2:designation lv2:control ;
+    lv2:index 1 ;
+    lv2:symbol "notify" ;
+    lv2:name "Notify" ;
+    # 2 * 512 * sizeof(float) + LV2-Atoms
+    rsz:minimumSize 4352;
+    rdfs:comment "Plugin to GUI communication" ;
+  ] , [
+    a lv2:AudioPort ,
+      lv2:InputPort ;
+    lv2:index 2 ;
+    lv2:symbol "in" ;
+    lv2:name "Audio Input" ;
+  ] , [
+    a lv2:AudioPort ,
+      lv2:OutputPort ;
+    lv2:index 3 ;
+    lv2:symbol "out" ;
+    lv2:name "Audio output" ;
+  ] , [
+    a lv2:ControlPort ,
+      lv2:InputPort ;
+    lv2:index 4 ;
+    lv2:symbol "mode" ;
+    lv2:name "Mode" ;
+    lv2:default 0 ;
+    lv2:minimum 0 ;
+    lv2:maximum 8000 ;
+    lv2:portProperty lv2:integer;
+    lv2:scalePoint [ rdfs:label "auto"; rdf:value 0 ; ] ;
+    lv2:scalePoint [ rdfs:label "A2"; rdf:value 220 ; ] ;
+    lv2:scalePoint [ rdfs:label "A4"; rdf:value 440 ; ] ;
+    lv2:scalePoint [ rdfs:label "A5"; rdf:value 880 ; ] ;
+    lv2:scalePoint [ rdfs:label "8KHz"; rdf:value 8000 ; ] ;
+  ] , [
+    a lv2:ControlPort ,
+      lv2:InputPort ;
+    lv2:index 5 ;
+    lv2:symbol "tuning" ;
+    lv2:name "Tuning A440" ;
+    lv2:default 440.0 ;
+    lv2:minimum 220.0 ;
+    lv2:maximum 880.0;
+    units:unit units:hz;
+    lv2:scalePoint [ rdfs:label "standard"; rdf:value 440.0 ; ] ;
+  ] , [
+    a lv2:ControlPort ,
+      lv2:OutputPort ;
+    lv2:index 6 ;
+    lv2:symbol "rms" ;
+    lv2:name "Signal Level (RMS)" ;
+    lv2:minimum -100.0;
+    lv2:maximum -0.0;
+    units:unit units:db;
+    #lv2:portProperty pprop:logarithmic;
+    lv2:scalePoint [ rdfs:label "detection threshold"; rdf:value -65.0 ; ] ;
+  ] , [
+    a lv2:ControlPort ,
+      lv2:OutputPort ;
+    lv2:index 7 ;
+    lv2:symbol "freq_out" ;
+    lv2:name "Detected Frequency" ;
+    lv2:minimum 0.0;
+    lv2:maximum 10000.0;
+    units:unit units:hz;
+    lv2:scalePoint [ rdfs:label "no signal"; rdf:value 0.0 ; ] ;
+  ] , [
+    a lv2:ControlPort ,
+      lv2:OutputPort ;
+    lv2:index 8 ;
+    lv2:symbol "octave" ;
+    lv2:name "Detected Octave" ;
+    lv2:minimum -1 ;
+    lv2:maximum 10 ;
+    lv2:portProperty lv2:integer;
+    units:unit units:oct;
+  ] , [
+    a lv2:ControlPort ,
+      lv2:OutputPort ;
+    lv2:index 9 ;
+    lv2:symbol "note" ;
+    lv2:name "Detected Note" ;
+    lv2:minimum 0;
+    lv2:maximum 12;
+    units:unit units:semitone12TET;
+    lv2:portProperty lv2:enumeration, lv2:integer;
+    lv2:scalePoint [ rdfs:label "C";  rdf:value  0 ; ] ;
+    lv2:scalePoint [ rdfs:label "C#"; rdf:value  1 ; ] ;
+    lv2:scalePoint [ rdfs:label "D";  rdf:value  2 ; ] ;
+    lv2:scalePoint [ rdfs:label "D#"; rdf:value  3 ; ] ;
+    lv2:scalePoint [ rdfs:label "E";  rdf:value  4 ; ] ;
+    lv2:scalePoint [ rdfs:label "F";  rdf:value  5 ; ] ;
+    lv2:scalePoint [ rdfs:label "F#"; rdf:value  6 ; ] ;
+    lv2:scalePoint [ rdfs:label "G";  rdf:value  7 ; ] ;
+    lv2:scalePoint [ rdfs:label "G#"; rdf:value  8 ; ] ;
+    lv2:scalePoint [ rdfs:label "A";  rdf:value  9 ; ] ;
+    lv2:scalePoint [ rdfs:label "A#"; rdf:value 10 ; ] ;
+    lv2:scalePoint [ rdfs:label "B";  rdf:value 11 ; ] ;
+  ] , [
+    a lv2:ControlPort ,
+      lv2:OutputPort ;
+    lv2:index 10 ;
+    lv2:symbol "cent" ;
+    lv2:name "Cent" ;
+    lv2:minimum -50.0;
+    lv2:maximum 50.0;
+    lv2:scalePoint [ rdfs:label "+-0"; rdf:value 0.0 ; ] ;
+    lv2:scalePoint [ rdfs:label "-1/4 semitone"; rdf:value -25.0 ; ] ;
+    lv2:scalePoint [ rdfs:label "+1/4 semitone"; rdf:value 25.0 ; ] ;
+  ] , [
+    a lv2:ControlPort ,
+      lv2:OutputPort ;
+    lv2:index 11 ;
+    lv2:symbol "accuracy" ;
+    lv2:name "Note Stability" ;
+    lv2:minimum -100.0;
+    lv2:maximum 100.0;
+    lv2:scalePoint [ rdfs:label "accurate"; rdf:value 0.0 ; ] ;
+  ] , [
+    a lv2:ControlPort ,
+      lv2:OutputPort ;
+    lv2:index 12 ;
+    lv2:symbol "strobetoui" ;
+    lv2:name "StrobeToUi" ;
+    lv2:minimum 0.0;
+    lv2:maximum 100.0;
+    lv2:portProperty pprop:notOnGUI ;
+  ] , [
+    a lv2:ControlPort ,
+      lv2:InputPort ;
+    lv2:index 13 ;
+    lv2:symbol "thresholdRMS" ;
+    lv2:name "thresholdRMS" ;
+    lv2:minimum -100.0;
+    lv2:maximum 0.0;
+    lv2:default -75.0 ;
+    lv2:portProperty pprop:notOnGUI ;
+  ] , [
+    a lv2:ControlPort ,
+      lv2:InputPort ;
+    lv2:index 14 ;
+    lv2:symbol "thresholdPostFilter" ;
+    lv2:name "thresholdPostFilter" ;
+    lv2:minimum -50.0;
+    lv2:maximum 0.0;
+    lv2:default -45.0 ;
+    lv2:portProperty pprop:notOnGUI ;
+  ] , [
+    a lv2:ControlPort ,
+      lv2:InputPort ;
+    lv2:index 15 ;
+    lv2:symbol "thresholdFFT" ;
+    lv2:name "thresholdFFT" ;
+    lv2:minimum -50.0;
+    lv2:maximum 10.0;
+    lv2:default -40.0 ;
+    lv2:portProperty pprop:notOnGUI ;
+  ] , [
+    a lv2:ControlPort ,
+      lv2:InputPort ;
+    lv2:index 16 ;
+    lv2:symbol "thresholdOverride" ;
+    lv2:name "thresholdOverride" ;
+    lv2:minimum 0.0;
+    lv2:maximum 40.0;
+    lv2:default 20.0 ;
+    lv2:portProperty pprop:notOnGUI ;
+  ] , [
+    a lv2:ControlPort ,
+      lv2:InputPort ;
+    lv2:index 17 ;
+    lv2:symbol "thresholdFundamental" ;
+    lv2:name "thresholdFundamental" ;
+    lv2:minimum 0.0;
+    lv2:maximum 60.0;
+    lv2:default 5.0 ;
+    lv2:portProperty pprop:notOnGUI ;
+  ] , [
+    a lv2:ControlPort ,
+      lv2:InputPort ;
+    lv2:index 18 ;
+    lv2:symbol "thresholdOctave" ;
+    lv2:name "thresholdOctave" ;
+    lv2:minimum -100.0;
+    lv2:maximum 0.0;
+    lv2:default -30.0 ;
+    lv2:portProperty pprop:notOnGUI ;
+  ] , [
+    a lv2:ControlPort ,
+      lv2:InputPort ;
+    lv2:index 19 ;
+    lv2:symbol "thresholdOvertones" ;
+    lv2:name "thresholdvertones" ;
+    lv2:minimum -100.0;
+    lv2:maximum 0.0;
+    lv2:default -15.0 ;
+    lv2:portProperty pprop:notOnGUI ;
+  ] ;
+  rdfs:comment "Musical instrument tuner with strobe characteristics" ;
+  .

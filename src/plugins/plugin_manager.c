@@ -24,13 +24,16 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#include "zrythm.h"
+#include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2_plugin.h"
 #include "utils/string.h"
+#include "utils/ui.h"
+#include "zrythm.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 /**
  * If category not already set in the categories, add it.
@@ -157,7 +160,50 @@ plugin_manager_init (PluginManager * self)
   g_message ("Creating Lilv World...");
   LilvWorld * world = lilv_world_new ();
   self->lv2_settings.lilv_world = world;
+
+  /* load all installed plugins on system */
   lilv_world_load_all (world);
+
+  /*load bundled plugins */
+  GError * err;
+  const char * path =
+    CONFIGURE_LIBDIR "/zrythm/lv2";
+  GDir * bundle_lv2_dir =
+    g_dir_open (path, 0, &err);
+  if (bundle_lv2_dir)
+    {
+      char * dir;
+      while (dir = g_dir_read_name (bundle_lv2_dir))
+        {
+          dir =
+            g_strdup_printf (
+              "file://%s%s%s%smanifest.ttl",
+              path,
+              G_DIR_SEPARATOR_S,
+              dir,
+              G_DIR_SEPARATOR_S);
+          LilvNode * uri =
+            lilv_new_uri (world, dir);
+          lilv_world_load_bundle (
+            world, uri);
+          g_message ("Loaded bundled plugin at %s",
+                     dir);
+          g_free (dir);
+          lilv_node_free (uri);
+        }
+    }
+  else
+    {
+      char * msg =
+        g_strdup_printf ("%s%s",
+        _("Error loading LV2 bundle dir: "),
+        err->message);
+      ui_show_error_message (
+        MAIN_WINDOW ? MAIN_WINDOW : NULL,
+        msg);
+      g_free (msg);
+    }
+
 
   g_message ("Initializing LV2 settings...");
   LV2_Defaults * opts = &self->lv2_settings.opts;

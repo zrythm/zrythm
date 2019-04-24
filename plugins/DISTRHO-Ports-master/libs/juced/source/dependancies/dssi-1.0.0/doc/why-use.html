@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>doc/why-use</title></head><body>
+<!-- Do not edit! Automatically generated from doc/why-use.txt by ./scripts/txt2html.pl -->
+
+<h2>Why use DSSI?</h2>
+<div class="toc3">1. &nbsp;<a href="#toc1">Synth authors</a></div>
+<div class="toc3">2. &nbsp;<a href="#toc2">Effects plugin authors</a></div>
+<div class="toc3">3. &nbsp;<a href="#toc3">Host authors</a></div>
+
+
+
+<p>DSSI is an API for writing audio plugins with custom user interfaces.
+ Although designed for synthesis plugins, it can also be used for
+ effects.  This document suggests a few reasons why you might want to
+ consider using DSSI when writing synths or other plugins, or to
+ consider adding DSSI support to a host application.
+</p>
+<div class="oddcontent"><a name="toc1"></a><h3>1. &nbsp;Synth authors</h3>
+
+<p>If you're thinking of writing a synth, here are some reasons you might
+ want to make it a DSSI plugin.
+</p><ul>
+<li>Flexibility
+
+<br/><br/>   DSSI plugins can accept MIDI and audio input, can have any number
+    of controls and audio outputs, can support unlimited string-based
+    configuration values as well as the numeric control ports, and can
+    provide their own user interface using any GUI toolkit.
+
+<br/><br/>   Using DSSI does not limit your synth to being used as a plugin in
+    sequencers that support DSSI, because the DSSI distribution also
+    includes a complete, efficient JACK and ALSA-sequencer based host
+    application.  This host will run a particular plugin automatically
+    if invoked through a symbolic link -- so you can install your
+    plugin in such a way as to be immediately operable as a standalone
+    program as well, outwardly indistinguishable from any other
+    JACK-based synth.
+
+<br/><br/></li><li>Structure
+
+<br/><br/>   DSSI separates the plugin and user interface, using standard Open
+    Sound Control (OSC) messages to communicate between them.  This
+    ensures that the plugin's controls are consistently externally
+    available, provides a guarantee of automatability, and encourages
+    clean plugin structure.
+
+<br/><br/>   DSSI uses a parsed MIDI event structure to pass MIDI events to the
+    plugin.  This removes the responsibility of parsing MIDI in the
+    plugin, a common source of problems in VST instruments.
+
+<br/><br/></li><li>Accessibility and control
+
+<br/><br/>   A DSSI plugin can have any number of different user interfaces,
+    which can be added at any time.  It's also possible to use the same
+    user interface code for more than one different plugin.  DSSI user
+    interfaces don't have to be graphical -- every DSSI plugin is
+    naturally controllable, so can be used directly from external OSC
+    control surfaces and other non-graphical interfaces.
+
+<br/><br/>   DSSI also gives you a simple framework for basic requirements like
+    mapping control ports onto MIDI controllers, so as to support MIDI
+    controllers and MIDI automation as well as OSC and plugin port
+    controls.
+
+<br/><br/></li><li>Simplicity
+
+<br/><br/>   Writing the plugin is easy -- the only hard part is that
+    troublesome synthesis...
+
+<br/><br/>   Plugins can very easily be written incrementally, creating and
+    testing the synthesis engine first before adding any advanced
+    features or user interface.  (Indeed there's absolutely no
+    requirement to write a user interface at all.)  DSSI is based on
+    LADSPA, and the simplest DSSI synth plugins are just like LADSPA
+    plugins with a single extra function to accept incoming note
+    events.
+
+<br/><br/>   Source code to a number of plugins is available to serve as
+    examples or bases for new efforts. The DSSI distribution itself
+    contains several plugins, including the simplest-possible
+    monophonic synth, a straightforward polyphonic synth, and
+    monotimbral samplers. Also available are several softsynths
+    (Xsynth-DSSI, hexter, Sineshaper, WhySynth), a FluidSynth wrapper
+    (FluidSynth-DSSI), a DSSI-to-VST bridge (dssi-vst), an X-Y
+    controller GUI (xy-controller-dssi), a libconvolve wrapper
+    (dssi_convolve), and an oscilloscope (ll-scope) which
+    demonstrates shared memory use between plugin and UI. Most of
+    these plugins include GUIs, with Qt and GTK examples available.
+
+<br/><br/></li><li>Clear host-neutral specification
+
+<br/><br/>   DSSI has a written specification and an open, complete reference
+    host.  It was designed and tested independently of implementation
+    in any existing host.
+
+<br/><br/>   One of DSSI's designers is an author of a sequencer that is also a
+    DSSI host, but none of the other people behind DSSI even use that
+    host, and DSSI was largely designed and tested in its own test
+    framework before being implemented in it.  We're confident there
+    are no hidden dependencies on any particular host.
+
+<br/><br/>   The DSSI specifications also aim to reduce the amount of possible
+    host dependency by specifying things like multithreading
+    requirements, that usually go assumed in other APIs and end up
+    causing portability problems.
+</ul>
+</div><div class="evencontent"><a name="toc2"></a><h3>2. &nbsp;Effects plugin authors</h3>
+
+<p>DSSI plugins do not have to be synths.  DSSI is based on LADSPA 1.1,
+ and is compatible with it.  This makes for some interesting
+ possibilities.
+</p><ul>
+<li>Dual LADSPA and DSSI plugins
+
+<br/><br/>   A single loadable object file can provide both LADSPA and DSSI
+    plugins through the separate LADSPA and DSSI discovery mechanisms.
+    You can exploit this to make the same or related plugin code
+    available via both APIs, for example to provide an effects plugin
+    that supports true presets when queried via DSSI but uses an
+    additional control input to mimic presets if queried via LADSPA
+    (which does not support presets explicitly).
+
+<br/><br/></li><li>Custom GUIs for LADSPA plugins
+
+<br/><br/>   The DSSI user interface standard consists of a set of guidelines
+    for OSC message passing and user interface invocation.  Nothing
+    about it is necessarily specific to DSSI plugins, although the
+    standard does assume that the plugin has at least the structure of
+    a LADSPA plugin.  You can take advantage of this to provide custom
+    GUIs for standard LADSPA plugins.  This is actually very easy to
+    do, and the resulting GUIs will work already in any host that
+    supports both DSSI and LADSPA.
+</ul>
+</div><div class="oddcontent"><a name="toc3"></a><h3>3. &nbsp;Host authors</h3>
+
+<p>Here are some good reasons to consider adding DSSI support to your
+ sequencer or other plugin host application.
+</p><ul>
+<li>Appropriateness for plugin authors
+
+<br/><br/>   Any plugin API needs to have more plugins than hosts.  The most
+    important criterion for a host author is whether or not the API is
+    a good one for writing plugins.  DSSI is, for all the reasons given
+    above.
+
+<br/><br/></li><li>Documented API and specification
+
+<br/><br/>   DSSI is certainly more complex to implement for hosts than for
+    plugins, and it's also more complex than some other synth APIs, but
+    it's easier to get it right because almost everything is
+    documented.  Contrast this with something like VST: a VST host can
+    be a simpler thing than a DSSI host, but writing a VST host
+    involves so much guesswork that it's hard to be sure whether any
+    given plugin will actually run in it.
+
+<br/><br/></li><li>Standard technology
+
+<br/><br/>   DSSI's plugin interface is based on LADSPA and ALSA sequencer
+    events, so any host that supports LADSPA, ALSA, and any form of
+    synthesis will have most of the basics in place already.  The GUI
+    part is more unusual, but all it really consists of is an external
+    control interface for plugins using the industry standard OSC --
+    which is a pretty good thing to have anyway.
+
+<br/><br/></li><li>Best chance as a workable standard
+
+<br/><br/>   The options for plugin synth support in a Free Software MIDI
+    application are limited, and DSSI is the only one we know of that
+    even has a written specification.  While there aren't very many
+    DSSI plugins available at the time of writing -- hardly surprising,
+    as it's still a new API -- DSSI is now supported by more hosts
+    than any of the alternatives.
+
+<br/><br/></li><li>Free VST support
+
+<br/><br/>   The dssi-vst bridge plugin gives any DSSI host free support for
+    Windows VST instruments and effects.
+
+<br/><br/></li><li>Free LADSPA GUI support
+
+<br/><br/>   Because DSSI is compatible with LADSPA, any DSSI implementation in
+    an existing LADSPA host will get free support for custom LADSPA
+    GUIs written to the DSSI GUI specification.  (See the "Effects
+    plugin authors" section above.)
+</ul>
+<p></p>
+
+</div>
+</body>
+</html>

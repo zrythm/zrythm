@@ -1,0 +1,8 @@
+@prefix kx:   <http://kxstudio.sf.net/ns/lv2ext/external-ui#> .
+@prefix lv2:  <http://lv2plug.in/ns/lv2core#> .
+@prefix modgui: <http://moddevices.com/ns/modgui#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ui:   <http://lv2plug.in/ns/extensions/ui#> .
+
+@prefix @LV2NAME@: <http://gareus.org/oss/lv2/@LV2NAME@#> .
+

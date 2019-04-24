@@ -1,0 +1,61 @@
+diff --git a/modules/juce_core/native/juce_posix_SharedCode.h b/modules/juce_core/native/juce_posix_SharedCode.h
+index ea007b1..f6faa5b 100644
+--- a/modules/juce_core/native/juce_posix_SharedCode.h
++++ b/modules/juce_core/native/juce_posix_SharedCode.h
+@@ -1234,6 +1234,11 @@ public:
+         return 0;
+     }
+ 
++    int getPID() const noexcept
++    {
++        return childPID;
++    }
++
+     int childPID;
+ 
+ private:
+diff --git a/modules/juce_core/native/juce_win32_Threads.cpp b/modules/juce_core/native/juce_win32_Threads.cpp
+index 68d891f..d38b733 100644
+--- a/modules/juce_core/native/juce_win32_Threads.cpp
++++ b/modules/juce_core/native/juce_win32_Threads.cpp
+@@ -488,6 +488,11 @@ public:
+         return (uint32) exitCode;
+     }
+ 
++    int getPID() const noexcept
++    {
++        return 0;
++    }
++
+     bool ok;
+ 
+ private:
+diff --git a/modules/juce_core/threads/juce_ChildProcess.cpp b/modules/juce_core/threads/juce_ChildProcess.cpp
+index 5648c5d..262882b 100644
+--- a/modules/juce_core/threads/juce_ChildProcess.cpp
++++ b/modules/juce_core/threads/juce_ChildProcess.cpp
+@@ -75,6 +75,11 @@ String ChildProcess::readAllProcessOutput()
+     return result.toString();
+ }
+ 
++uint32 ChildProcess::getPID() const noexcept
++{
++    return activeProcess != nullptr ? activeProcess->getPID() : 0;
++}
++
+ //==============================================================================
+ #if JUCE_UNIT_TESTS
+ 
+diff --git a/modules/juce_core/threads/juce_ChildProcess.h b/modules/juce_core/threads/juce_ChildProcess.h
+index b2bd0e1..cbc380d 100644
+--- a/modules/juce_core/threads/juce_ChildProcess.h
++++ b/modules/juce_core/threads/juce_ChildProcess.h
+@@ -99,6 +99,8 @@ public:
+     */
+     bool kill();
+ 
++    uint32 getPID() const noexcept;
++
+ private:
+     //==============================================================================
+     class ActiveProcess;

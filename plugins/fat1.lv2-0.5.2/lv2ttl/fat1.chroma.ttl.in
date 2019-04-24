@@ -1,0 +1,3 @@
+	];
+	rdfs:comment "AT1 is an 'autotuner', normally used to correct the pitch of a voice singing (slightly) out of tune. The 'expected' pitch can be controlled by MIDI, or be a fixed set of notes. AT1 can probably be used on some instruments as well, but is primarily designed to cover the vocal range.";
+	.
