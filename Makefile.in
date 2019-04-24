@@ -308,16 +308,14 @@ ifeq ($(WITH_X42_PLUGINS),1)
 		$(PLUGINS_SRC_DIR)/meters.lv2-0.9.11 \
 		$(PLUGINS_SRC_DIR)/midigen.lv2-0.2.5 \
 		$(PLUGINS_SRC_DIR)/sisco.lv2-0.8.1 \
-		$(PLUGINS_SRC_DIR)/testsignal.lv2-0.5.2 \
-		$(PLUGINS_SRC_DIR)/tuna.lv2-0.4.12
+		$(PLUGINS_SRC_DIR)/testsignal.lv2-0.5.2
 	X42_PLUGINS_BINS = \
 		$(PLUGINS_SRC_DIR)/midifilter.lv2-0.5.3/build/midifilter.so \
 		$(PLUGINS_SRC_DIR)/fat1.lv2-0.5.2/build/fat1.so \
 		$(PLUGINS_SRC_DIR)/meters.lv2-0.9.11/build/meters.so \
 		$(PLUGINS_SRC_DIR)/midigen.lv2-0.2.5/build/midigen.so \
 		$(PLUGINS_SRC_DIR)/sisco.lv2-0.8.1/build/sisco.so \
-		$(PLUGINS_SRC_DIR)/testsignal.lv2-0.5.2/build/testsignal.so \
-		$(PLUGINS_SRC_DIR)/tuna.lv2-0.4.12/build/tuna.so
+		$(PLUGINS_SRC_DIR)/testsignal.lv2-0.5.2/build/testsignal.so
 	INSTALL_X42_PLUGINS=install-x42-plugins
 ifeq ($(WINDOWS),1)
 	X42_PLUGINS_XWIN=1
@@ -369,6 +367,7 @@ endif
 		$(DISTRHO_PORTS_BIN_DIR)/KlangFalter.lv2/KlangFalter.so \
 		$(DISTRHO_PORTS_BIN_DIR)/Wolpertinger.lv2/Wolpertinger.so
 	INSTALL_DISTRHO_PORTS=install-distrho-ports
+	BUILD_DISTRHO_PORTS=build-distrho-ports
 endif
 
 # static libs
@@ -494,18 +493,17 @@ $(BUILD_DIR)/%.m.$(OBJEXT): %.m
 	$(CC) $(CFLAGS) $(OSX_LIBS) -c $< -o $@
 
 $(X42_PLUGINS_BINS):
-	for dir in $(X42_PLUGINS_SRC_DIRS); \
-	do \
-		pushd $${dir}; \
-		XWIN=$(X42_PLUGINS_XWIN) $(MAKE); \
-		${MAKE} install PREFIX=./build; \
-		popd; \
-	done
+	cd $$(dirname $$(dirname $@)); \
+	LDFLAGS+=`pkg-config --libs gobject-2.0` XWIN=$(X42_PLUGINS_XWIN) $(MAKE); \
+	${MAKE} install PREFIX=./build
 
-$(DISTRHO_PORTS_BINS):
-	cd $(DISTRHO_PORTS_SRC_DIR) && \
-	./scripts/premake-update.sh $(DISTRHO_OS) && \
-	${MAKE} lv2
+$(DISTRHO_PORTS_BINS): build-distrho-ports
+
+.INTERMEDIATE: build-distrho-ports
+build-distrho-ports:
+	cd $(DISTRHO_PORTS_SRC_DIR); \
+	./scripts/premake-update.sh $(DISTRHO_OS); \
+	BUILD_LV2=true $(MAKE) -s
 
 .PHONY: plugins
 plugins: $(X42_PLUGINS_BINS) $(DISTRHO_PORTS_BINS)
@@ -576,8 +574,8 @@ install-x42-plugins: $(X42_PLUGINS_BINS)
 
 .PHONY: install-distrho-ports
 install-distrho-ports: $(DISTRHO_PORTS_BINS)
-	cd $(DISTRHO_PORTS_SRC_DIR) && \
-	cp -R $(DISTRHO_PORTS_BIN_DIR)/*.lv2 "$(DESTDIR)$(PLUGINS_INSTALL_DIR)/"
+	mkdir -p $(PLUGINS_INSTALL_DIR)
+	cp -R $(DISTRHO_PORTS_BIN_DIR)/*.lv2 $(DESTDIR)$(PLUGINS_INSTALL_DIR)/
 
 .PHONY: install-plugins
 install-plugins: $(INSTALL_X42_PLUGINS) $(INSTALL_DISTRHO_PORTS)

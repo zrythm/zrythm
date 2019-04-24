@@ -9,3 +9,4 @@ src/smfsh
 config.log
 config.status
 api
+config.h

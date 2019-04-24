@@ -249,6 +249,15 @@ AM_COND_IF(
 # unistd.h
 AC_CHECK_HEADERS([unistd.h])
 
+# distrho ports headers
+AS_IF(
+  [test "x$with_distrho_ports" == "xyes"],
+  [AC_CHECK_HEADERS([ladspa.h],
+     [found_ladspa_header=yes; break;])
+   AS_IF([test "x$found_ladspa_header" != "xyes"],
+         [AC_MSG_ERROR(
+           [DISTRHO ports require ladspa.h])])])
+
 # =========== Check for library functions ========
 
 # mlock
