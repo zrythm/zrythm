@@ -40,7 +40,7 @@ INSTALL_PROGRAM = ${INSTALL}
 INSTALL_FONT = ${INSTALL} -m 644
 LDFLAGS = @LDFLAGS@
 MKDIR_P = mkdir -p
-GLIB_COMPILE_SCHEMAS = @GLIB_COMPILE_SCHEMAS@
+GLIB_COMPILE_SCHEMAS = glib-compile-schemas
 
 # doesn't work in prefixes like /opt/...
 #gsettingsschemadir = @gsettingsschemadir@
@@ -182,6 +182,7 @@ CFLAGS:=$(filter-out -fstack-protector-strong,$(CFLAGS))
 CFLAGS:=$(filter-out -fstack-clash-protection,$(CFLAGS))
 CFLAGS:=$(filter-out -D_FORTIFY_SOURCE=2,$(CFLAGS))
 CFLAGS += -Wall \
+	-Wextra \
 	-Werror=implicit-function-declaration \
 	-Werror=return-type \
 	-Werror=int-conversion \

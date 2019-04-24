@@ -512,7 +512,7 @@ jack_setup (AudioEngine * self,
   if (jack_activate (self->client))
     {
       g_error ("cannot activate client");
-      return;
+      return -1;
     }
   g_message ("Jack activated");
 
