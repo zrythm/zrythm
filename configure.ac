@@ -18,7 +18,7 @@
 
 # ================ Initialization ==============
 # Initialize autoconf: package name, version, bug report address
-AC_INIT([zrythm], [0.4.040], [https://git.zrythm.org/zrythm/zrythm/issues])
+AC_INIT([zrythm], [0.4.043], [https://git.zrythm.org/zrythm/zrythm/issues])
 
 # needed for localization
 AC_DEFINE([GETTEXT_PACKAGE],["zrythm"],
@@ -229,7 +229,9 @@ AM_COND_IF(
 
 # x42 plugin dependencies
 AS_IF([test "x$with_x42_plugins" == "xyes"],
-      [PKG_CHECK_MODULES([FFTW3F], [fftw3f])],
+      [PKG_CHECK_MODULES([FFTW3F], [fftw3f])
+       PKG_CHECK_MODULES([GLU], [glu])
+       PKG_CHECK_MODULES([_GL], [gl])],
       [have_deps=no])
 
 # ============ Check for header files ==========
