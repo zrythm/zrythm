@@ -7,11 +7,20 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
 stages:
-  - build
+  - build_gnu_linux
+  - build_other
   - package
 
-test_build:
-  stage: build
+#basic_build:
+#  stage: build_gnu_linux
+#  script:
+#    - ./autogen.sh
+#    - ./configure
+#    - sudo make -j14
+#    - sudo make install
+
+test_bundled_plugins:
+  stage: build_gnu_linux
   script:
     - ./autogen.sh
     - ./configure --with-distrho-ports --with-x42-plugins
@@ -19,7 +28,7 @@ test_build:
     - sudo make install
 
 build_win_64:
-  stage: build
+  stage: build_other
   image: "alextee12/arch-yaourt"
   script:
     - ./autogen.sh
