@@ -1,0 +1,37 @@
+.TH X42-SCOPE "1" "Dec 2013" "x42-scope version v0.5" "User Commands"
+.SH NAME
+x42-scope \- JACK/LV2 Oscilloscope
+.SH SYNOPSIS
+.B x42-scope
+.SH DESCRIPTION
+x42-scope is a four channel oscilloscope for use with the JACK Audio Connection Kit.
+.PP
+It is equivalent to using the 'http://gareus.org/oss/lv2/sisco#4chan' LV2 plugin
+except that it is a standalone version, not depending on any LV2-host.
+.PP
+x42-scope/SiSco implements a classic oscilloscope display with time on the X-axis and signal level on the Y-axis.
+The minimum time-scale is 50 micro-seconds per grid, yielding a maximum resolution of 960kHz at 48SPS.
+.PP
+.SH USAGE
+.PP
+x42-scope takes no options. It can be closed by sending a SIGTERM (CTRL+C) on the command-line of by closing the window.
+All control elements are operated in using the mouse:
+.PP
+.TP
+.BR Click+Drag
+left/down: decrease, right/up: increase value. Hold the Ctrl key to increase sensitivity.
+.TP
+.BR Shift+Click
+reset to default value
+.TP
+.BR Scroll-wheel
+up/down by 1 step (smallest possible adjustment for given setting). Rapid continuous scrolling increases the step-size.
+.PP
+Detailed documentation of operational can be found at http://x42.github.io/sisco.lv2/
+.PP
+.SH "REPORTING BUGS"
+Report bugs to Robin Gareus <robin@gareus.org>
+.br
+Issue Tracker: https://github.com/x42/sisco.lv2/issues
+.SH COPYRIGHT
+Copyright \(co GPL 2013 Robin Gareus <robin@gareus.org>

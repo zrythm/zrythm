@@ -1,0 +1,181 @@
+
+
+mtr:VUmono@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:VUstereo@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:BBCmono@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:BBCstereo@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:BBCM6@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:EBUmono@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:EBUstereo@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:DINmono@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:DINstereo@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:NORmono@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:NORstereo@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:COR@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:EBUr128@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:goniometer@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:spectr30mono@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:spectr30stereo@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:dBTPmono@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:dBTPstereo@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:K12mono@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:K12stereo@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:K14mono@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:K14stereo@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:K20mono@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:K20stereo@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:phasewheel@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:stereoscope@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:dr14mono@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:dr14stereo@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:TPnRMSmono@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:TPnRMSstereo@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:SigDistHist@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:bitmeter@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:surround8@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:surround5@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:surround4@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .
+
+mtr:surround3@URI_SUFFIX@
+	a lv2:Plugin ;
+	lv2:binary <@LV2NAME@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .

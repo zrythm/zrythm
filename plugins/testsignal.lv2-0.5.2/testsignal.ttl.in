@@ -1,0 +1,94 @@
+@prefix doap: <http://usefulinc.com/ns/doap#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix lv2: <http://lv2plug.in/ns/lv2core#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix units: <http://lv2plug.in/ns/extensions/units#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://gareus.org/rgareus#me>
+	a foaf:Person ;
+	foaf:name "Robin Gareus" ;
+	foaf:mbox <mailto:robin@gareus.org> ;
+	foaf:homepage <http://gareus.org/> .
+
+<http://gareus.org/oss/lv2/testsignal>
+	a lv2:Plugin, lv2:UtilityPlugin, doap:Project;
+	doap:license <http://usefulinc.com/doap/licenses/gpl> ;
+	doap:maintainer <http://gareus.org/rgareus#me> ;
+	doap:name "Test Signal Generator";
+	@VERSION@
+	lv2:optionalFeature lv2:hardRTCapable ;
+	lv2:port [
+		a lv2:InputPort ,
+			lv2:ControlPort ;
+		lv2:index 0 ;
+		lv2:symbol "mode" ;
+		lv2:name "Mode";
+		lv2:default 0 ;
+		lv2:minimum 0 ;
+		lv2:maximum 10 ;
+		lv2:portProperty lv2:integer,  lv2:enumeration;
+		lv2:scalePoint [
+			rdfs:label "1KHz Sine Wave" ;
+			rdf:value 0;
+		] , [
+			rdfs:label "1KHz Square Wave" ;
+			rdf:value 1;
+		] , [
+			rdfs:label "Uniform White Noise" ;
+			rdf:value 2;
+		] , [
+			rdfs:label "Gaussian White Noise" ;
+			rdf:value 3;
+		] , [
+			rdfs:label "Pink Noise" ;
+			rdf:value 4;
+		] , [
+			rdfs:label "Impulses 0dBFS, 100Hz" ;
+			rdf:value 5;
+		] , [
+			rdfs:label "Sine Sweep, 20Hz to 20kHz in 10sec" ;
+			rdf:value 6;
+		] , [
+			rdfs:label "Impulses 0dBFS, 1Hz" ;
+			rdf:value 7;
+		] , [
+			rdfs:label "Impulses 0dBFS, 5s (0.2Hz)" ;
+			rdf:value 8;
+		] , [
+			rdfs:label "Sawtooth 0dBFS, 100Hz" ;
+			rdf:value 9;
+		] , [
+			rdfs:label "Triangle 0dBFS, 100Hz" ;
+			rdf:value 10;
+		];
+	] , [
+		a lv2:InputPort ,
+			lv2:ControlPort ;
+		lv2:index 1 ;
+		lv2:symbol "reference" ;
+		lv2:name "Signal Level";
+		units:unit units:db;
+		lv2:default -18 ;
+		lv2:minimum -24 ;
+		lv2:maximum  -9 ;
+		lv2:scalePoint [
+			rdfs:label "-18dBFS (EBU)" ;
+			rdf:value -18;
+		] , [
+			rdfs:label "-20dBFS (US, AU)" ;
+			rdf:value -20;
+		];
+		rdfs:comment "absolute-peak signal-level for sine and square wave and uniform white-noise; RMS in case of Gaussian shaped white-noise and pink-noise";
+	] , [
+		a lv2:AudioPort ,
+			lv2:OutputPort ;
+		lv2:index 2 ;
+		lv2:symbol "out" ;
+		lv2:name "Out"
+	] ;
+	rdfs:comment """Test Signal Generator.
+Note: For samplerates less than 40KHz, sine sweep goes to to samplerate / 2 only.
+
+The Signal Level defines the peak-signal for sine-wave, square-wave and uniform white-noise modes; RMS in case of Gaussian shaped white-noise and pink-noise.""";
+	.

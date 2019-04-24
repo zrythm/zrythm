@@ -1,0 +1,4 @@
+sisco:ui_gtk
+	a ui:GtkUI ;
+	ui:binary <@LV2GTK@@LIB_EXT@> ;
+	rdfs:seeAlso <@LV2NAME@.ttl> .

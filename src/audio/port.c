@@ -207,23 +207,6 @@ port_connect (Port * src, Port * dest)
   return 0;
 }
 
-/*static void*/
-/*array_delete (Port ** array, int * size, Port * element)*/
-/*{*/
-  /*for (int i = 0; i < (* size); i++)*/
-    /*{*/
-      /*if (array[i] == element)*/
-        /*{*/
-          /*--(* size);*/
-          /*for (int j = i; j < (* size); j++)*/
-            /*{*/
-              /*array[j] = array[j + 1];*/
-            /*}*/
-          /*break;*/
-        /*}*/
-    /*}*/
-/*}*/
-
 /**
  * Disconnects src from dest.
  */
@@ -277,27 +260,6 @@ port_disconnect_all (Port * port)
 
   return 0;
 }
-
-/**
- * if port buffer size changed, reallocate port buffer, otherwise memset to 0.
- */
-/*void*/
-/*port_init_buf (Port *port, nframes_t nframes)*/
-/*{*/
-    /*[> if port buf size changed, reallocate <]*/
-    /*if (port->nframes != nframes ||*/
-        /*port->nframes == 0)*/
-      /*{*/
-        /*if (port->nframes > 0)*/
-          /*free (port->buf);*/
-        /*port->buf = calloc (nframes, sizeof (sample_t));*/
-        /*port->nframes = nframes;*/
-      /*}*/
-    /*else [> otherwise memset to 0 <]*/
-      /*{*/
-        /*memset (port->buf, '\0', nframes);*/
-      /*}*/
-/*}*/
 
 /**
  * Apply given fader value to port.

@@ -1,0 +1,30 @@
+@prefix atom:  <http://lv2plug.in/ns/ext/atom#> .
+@prefix doap:  <http://usefulinc.com/ns/doap#> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix idpy:  <http://harrisonconsoles.com/lv2/inlinedisplay#> .
+@prefix lv2:   <http://lv2plug.in/ns/lv2core#> .
+@prefix units: <http://lv2plug.in/ns/extensions/units#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ui:    <http://lv2plug.in/ns/extensions/ui#> .
+@prefix urid:  <http://lv2plug.in/ns/ext/urid#> .
+@prefix pg:    <http://lv2plug.in/ns/ext/port-groups#> .
+@prefix rsz:   <http://lv2plug.in/ns/ext/resize-port#> .
+@prefix time:  <http://lv2plug.in/ns/ext/time#> .
+@prefix state: <http://lv2plug.in/ns/ext/state#> .
+@prefix pprop: <http://lv2plug.in/ns/ext/port-props#> .
+@prefix mtr:   <http://gareus.org/oss/lv2/@LV2NAME@#> .
+@prefix kx:    <http://kxstudio.sf.net/ns/lv2ext/external-ui#> .
+
+<http://gareus.org/rgareus#me>
+	a foaf:Person ;
+	foaf:name "Robin Gareus" ;
+	foaf:mbox <mailto:robin@gareus.org> ;
+	foaf:homepage <http://gareus.org/> .
+
+<http://gareus.org/oss/lv2/meters>
+	a doap:Project ;
+	doap:maintainer <http://gareus.org/rgareus#me> ;
+	doap:name "LV2 meters" .
+
+

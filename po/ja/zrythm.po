@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-23 01:05+0100\n"
+"POT-Creation-Date: 2019-04-23 23:32+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrytm dot org>\n"
 "Language-Team: Japanese\n"
@@ -82,7 +82,7 @@ msgstr ""
 msgid "BPM - Click and drag up/down to set"
 msgstr "BPM"
 
-#: src/audio/engine_jack.c:595
+#: src/audio/engine_jack.c:596
 #, fuzzy
 msgid "Backend error"
 msgstr "バックエンド"
@@ -161,11 +161,11 @@ msgstr "コード"
 msgid "Click to enable MIDI controllers to be connected automatically"
 msgstr ""
 
-#: src/audio/engine_jack.c:598
+#: src/audio/engine_jack.c:599
 msgid "Client zombie"
 msgstr ""
 
-#: src/audio/engine_jack.c:592
+#: src/audio/engine_jack.c:593
 msgid "Client's protocol version does not match"
 msgstr ""
 
@@ -183,7 +183,7 @@ msgstr "コレクション"
 msgid "Color"
 msgstr "色"
 
-#: src/audio/engine_jack.c:577
+#: src/audio/engine_jack.c:578
 msgid "Communication error with the JACK server"
 msgstr ""
 
@@ -270,6 +270,10 @@ msgstr "リージョン名を入力してください"
 #: resources/ui/shortcuts.ui:202
 msgid "Eraser tool"
 msgstr "エレーザツール"
+
+#: src/plugins/plugin_manager.c:199
+msgid "Error loading LV2 bundle dir: "
+msgstr ""
 
 #: resources/ui/export_dialog.ui:59
 msgid "Export"
@@ -552,7 +556,7 @@ msgid "Output Files"
 msgstr "出力ファイル"
 
 #. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:564
+#: src/audio/engine_jack.c:565
 msgid "Overall operation failed"
 msgstr ""
 
@@ -710,7 +714,7 @@ msgstr "選択したプロジェクトをリストから削除する"
 msgid "Report a Bug"
 msgstr "不具合を報告する"
 
-#: src/audio/engine_jack.c:580
+#: src/audio/engine_jack.c:581
 msgid "Requested client does not exist"
 msgstr ""
 
@@ -872,7 +876,7 @@ msgstr ""
 msgid "Tests the backends"
 msgstr ""
 
-#: src/audio/engine_jack.c:571
+#: src/audio/engine_jack.c:572
 msgid "The desired client name was not unique"
 msgstr ""
 
@@ -887,7 +891,7 @@ msgid ""
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 msgstr ""
 
-#: src/audio/engine_jack.c:567
+#: src/audio/engine_jack.c:568
 msgid "The operation contained an invalid or unsupported option"
 msgstr ""
 
@@ -962,19 +966,19 @@ msgstr "種類"
 msgid "URI (Optional):"
 msgstr ""
 
-#: src/audio/engine_jack.c:589
+#: src/audio/engine_jack.c:590
 msgid "Unable to access shared memory"
 msgstr ""
 
-#: src/audio/engine_jack.c:574
+#: src/audio/engine_jack.c:575
 msgid "Unable to connect to the JACK server"
 msgstr ""
 
-#: src/audio/engine_jack.c:586
+#: src/audio/engine_jack.c:587
 msgid "Unable to initialize client"
 msgstr ""
 
-#: src/audio/engine_jack.c:583
+#: src/audio/engine_jack.c:584
 msgid "Unable to load internal client"
 msgstr ""
 

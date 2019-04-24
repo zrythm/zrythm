@@ -97,6 +97,22 @@ AC_ARG_WITH(
   [AC_SUBST([WITH_DOCS],[1])],
   [AC_SUBST([WITH_DOCS],[0])])
 
+AC_ARG_WITH(
+  x42-plugins,
+  AS_HELP_STRING(
+    [--with-x42-plugins],
+    [Bundle x42 plugins]),
+  [AC_SUBST([WITH_X42_PLUGINS],[1])],
+  [AC_SUBST([WITH_X42_PLUGINS],[0])])
+
+AC_ARG_WITH(
+  distrho-ports,
+  AS_HELP_STRING(
+    [--with-distrho-ports],
+    [Bundle DISTRHO ports plugins]),
+  [AC_SUBST([WITH_DISTRHO_PORTS],[1])],
+  [AC_SUBST([WITH_DISTRHO_PORTS],[0])])
+
 # ============= Check for programs ===========
 
 # Check for C/C++ compilers
@@ -211,6 +227,11 @@ AM_COND_IF(
      [AC_DEFINE([HAVE_X11],[1],[Have x11])
         AC_SUBST([HAVE_X11],[1])])])
 
+# x42 plugin dependencies
+AS_IF([test "x$with_x42_plugins" == "xyes"],
+      [PKG_CHECK_MODULES([FFTW3F], [fftw3f])],
+      [have_deps=no])
+
 # ============ Check for header files ==========
 
 # windows.h - mandatory on windows
@@ -234,6 +255,12 @@ AC_CHECK_HEADERS([unistd.h])
 AC_CHECK_FUNC([mlock],
               [AC_DEFINE([HAVE_MLOCK], [1],
               [Define if mlock exists.])])
+
+# mlock
+AC_CHECK_FUNC(
+  [jack_set_property],
+  [AC_DEFINE([HAVE_JACK_METADATA], [1],
+  [Define if jack_set_property exists.])])
 
 # =============== Declare files =============
 
