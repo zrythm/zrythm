@@ -149,9 +149,11 @@ ifeq ($(WINDOWS),1)
 										-l ws2_32 -static \
 										-static-libgcc \
 										-static-libstdc++
+	LIBEXT = .dll
 else
 #EXTRA_LD_FLAGS += -DGDK_DISABLE_DEPRECATED \
 #									 -DGTK_DISABLE_DEPRECATED
+	LIBEXT = .so
 ifeq ($(LINUX),1)
   EXTRA_LD_FLAGS += -lrt
 endif
@@ -310,12 +312,12 @@ ifeq ($(WITH_X42_PLUGINS),1)
 		$(PLUGINS_SRC_DIR)/sisco.lv2-0.8.1 \
 		$(PLUGINS_SRC_DIR)/testsignal.lv2-0.5.2
 	X42_PLUGINS_BINS = \
-		$(PLUGINS_SRC_DIR)/midifilter.lv2-0.5.3/build/midifilter.so \
-		$(PLUGINS_SRC_DIR)/fat1.lv2-0.5.2/build/fat1.so \
-		$(PLUGINS_SRC_DIR)/meters.lv2-0.9.11/build/meters.so \
-		$(PLUGINS_SRC_DIR)/midigen.lv2-0.2.5/build/midigen.so \
-		$(PLUGINS_SRC_DIR)/sisco.lv2-0.8.1/build/sisco.so \
-		$(PLUGINS_SRC_DIR)/testsignal.lv2-0.5.2/build/testsignal.so
+		$(PLUGINS_SRC_DIR)/midifilter.lv2-0.5.3/build/midifilter$(LIBEXT) \
+		$(PLUGINS_SRC_DIR)/fat1.lv2-0.5.2/build/fat1$(LIBEXT) \
+		$(PLUGINS_SRC_DIR)/meters.lv2-0.9.11/build/meters$(LIBEXT) \
+		$(PLUGINS_SRC_DIR)/midigen.lv2-0.2.5/build/midigen$(LIBEXT) \
+		$(PLUGINS_SRC_DIR)/sisco.lv2-0.8.1/build/sisco$(LIBEXT) \
+		$(PLUGINS_SRC_DIR)/testsignal.lv2-0.5.2/build/testsignal$(LIBEXT)
 	INSTALL_X42_PLUGINS=install-x42-plugins
 ifeq ($(WINDOWS),1)
 	X42_PLUGINS_XWIN=1
@@ -336,36 +338,36 @@ endif
 	DISTRHO_PORTS_SRC_DIR = $(PLUGINS_SRC_DIR)/DISTRHO-Ports-master
 	DISTRHO_PORTS_BIN_DIR = $(DISTRHO_PORTS_SRC_DIR)/bin/lv2
 	DISTRHO_PORTS_BINS = \
-		$(DISTRHO_PORTS_BIN_DIR)/Dexed.lv2/Dexed.so \
-		$(DISTRHO_PORTS_BIN_DIR)/LUFSMeter.lv2/LUFSMeter.so \
-		$(DISTRHO_PORTS_BIN_DIR)/eqinox.lv2/eqinox.so \
-		$(DISTRHO_PORTS_BIN_DIR)/ThePilgrim.lv2/ThePilgrim.so \
-		$(DISTRHO_PORTS_BIN_DIR)/LUFSMeterMulti.lv2/LUFSMeterMulti.so \
-		$(DISTRHO_PORTS_BIN_DIR)/TAL-Filter-2.lv2/TAL-Filter-2.so \
-		$(DISTRHO_PORTS_BIN_DIR)/TAL-Vocoder-2.lv2/TAL-Vocoder-2.so \
-		$(DISTRHO_PORTS_BIN_DIR)/drowaudio-reverb.lv2/drowaudio-reverb.so \
-		$(DISTRHO_PORTS_BIN_DIR)/TheFunction.lv2/TheFunction.so \
-		$(DISTRHO_PORTS_BIN_DIR)/drowaudio-distortionshaper.lv2/drowaudio-distortionshaper.so \
-		$(DISTRHO_PORTS_BIN_DIR)/StereoSourceSeparation.lv2/StereoSourceSeparation.so \
-		$(DISTRHO_PORTS_BIN_DIR)/TAL-Dub-3.lv2/TAL-Dub-3.so \
-		$(DISTRHO_PORTS_BIN_DIR)/drumsynth.lv2/drumsynth.so \
-		$(DISTRHO_PORTS_BIN_DIR)/Obxd.lv2/Obxd.so \
-		$(DISTRHO_PORTS_BIN_DIR)/HiReSam.lv2/HiReSam.so \
-		$(DISTRHO_PORTS_BIN_DIR)/TAL-Reverb.lv2/TAL-Reverb.so \
-		$(DISTRHO_PORTS_BIN_DIR)/TAL-Reverb-3.lv2/TAL-Reverb-3.so \
-		$(DISTRHO_PORTS_BIN_DIR)/EasySSP.lv2/EasySSP.so \
-		$(DISTRHO_PORTS_BIN_DIR)/drowaudio-tremolo.lv2/drowaudio-tremolo.so \
-		$(DISTRHO_PORTS_BIN_DIR)/PitchedDelay.lv2/PitchedDelay.so \
-		$(DISTRHO_PORTS_BIN_DIR)/drowaudio-flanger.lv2/drowaudio-flanger.so \
-		$(DISTRHO_PORTS_BIN_DIR)/TAL-Filter.lv2/TAL-Filter.so \
-		$(DISTRHO_PORTS_BIN_DIR)/TAL-NoiseMaker.lv2/TAL-NoiseMaker.so \
-		$(DISTRHO_PORTS_BIN_DIR)/drowaudio-distortion.lv2/drowaudio-distortion.so \
-		$(DISTRHO_PORTS_BIN_DIR)/JuceOPL.lv2/JuceOPL.so \
-		$(DISTRHO_PORTS_BIN_DIR)/Luftikus.lv2/Luftikus.so \
-		$(DISTRHO_PORTS_BIN_DIR)/TAL-Reverb-2.lv2/TAL-Reverb-2.so \
-		$(DISTRHO_PORTS_BIN_DIR)/ReFine.lv2/ReFine.so \
-		$(DISTRHO_PORTS_BIN_DIR)/KlangFalter.lv2/KlangFalter.so \
-		$(DISTRHO_PORTS_BIN_DIR)/Wolpertinger.lv2/Wolpertinger.so
+		$(DISTRHO_PORTS_BIN_DIR)/Dexed.lv2/Dexed$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/LUFSMeter.lv2/LUFSMeter$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/eqinox.lv2/eqinox$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/ThePilgrim.lv2/ThePilgrim$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/LUFSMeterMulti.lv2/LUFSMeterMulti$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/TAL-Filter-2.lv2/TAL-Filter-2$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/TAL-Vocoder-2.lv2/TAL-Vocoder-2$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/drowaudio-reverb.lv2/drowaudio-reverb$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/TheFunction.lv2/TheFunction$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/drowaudio-distortionshaper.lv2/drowaudio-distortionshaper$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/StereoSourceSeparation.lv2/StereoSourceSeparation$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/TAL-Dub-3.lv2/TAL-Dub-3$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/drumsynth.lv2/drumsynth$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/Obxd.lv2/Obxd$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/HiReSam.lv2/HiReSam$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/TAL-Reverb.lv2/TAL-Reverb$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/TAL-Reverb-3.lv2/TAL-Reverb-3$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/EasySSP.lv2/EasySSP$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/drowaudio-tremolo.lv2/drowaudio-tremolo$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/PitchedDelay.lv2/PitchedDelay$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/drowaudio-flanger.lv2/drowaudio-flanger$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/TAL-Filter.lv2/TAL-Filter$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/TAL-NoiseMaker.lv2/TAL-NoiseMaker$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/drowaudio-distortion.lv2/drowaudio-distortion$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/JuceOPL.lv2/JuceOPL$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/Luftikus.lv2/Luftikus$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/TAL-Reverb-2.lv2/TAL-Reverb-2$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/ReFine.lv2/ReFine$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/KlangFalter.lv2/KlangFalter$(LIBEXT) \
+		$(DISTRHO_PORTS_BIN_DIR)/Wolpertinger.lv2/Wolpertinger$(LIBEXT)
 	INSTALL_DISTRHO_PORTS=install-distrho-ports
 	BUILD_DISTRHO_PORTS=build-distrho-ports
 endif
