@@ -23,7 +23,7 @@ test_bundled_plugins:
   stage: build_gnu_linux
   script:
     - ./autogen.sh
-    - ./configure --with-distrho-ports --with-x42-plugins
+    - ./configure --with-distrho-ports
     - sudo make -j14
     - sudo make install
 
@@ -32,7 +32,7 @@ build_win_64:
   image: "alextee12/arch-yaourt"
   script:
     - ./autogen.sh
-    - x86_64-w64-mingw32-configure --with-distrho-ports --with-x42-plugins .
+    - x86_64-w64-mingw32-configure --with-distrho-ports .
     - make -j14
   artifacts:
     paths:
@@ -44,7 +44,7 @@ package_win_64:
   image: "alextee12/arch-yaourt"
   script:
     - ./autogen.sh
-    - x86_64-w64-mingw32-configure --with-distrho-ports --with-x42-plugins .
+    - x86_64-w64-mingw32-configure --with-distrho-ports .
     - make -j14
   artifacts:
     paths:
