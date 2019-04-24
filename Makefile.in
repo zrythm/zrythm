@@ -494,7 +494,7 @@ $(BUILD_DIR)/%.m.$(OBJEXT): %.m
 
 $(X42_PLUGINS_BINS):
 	cd $$(dirname $$(dirname $@)); \
-	LDFLAGS+=`pkg-config --libs gobject-2.0` XWIN=$(X42_PLUGINS_XWIN) $(MAKE); \
+	LDFLAGS+=`$(PKG_CONFIG) --libs gobject-2.0` XWIN=$(X42_PLUGINS_XWIN) $(MAKE); \
 	${MAKE} install PREFIX=./build
 
 $(DISTRHO_PORTS_BINS): build-distrho-ports
