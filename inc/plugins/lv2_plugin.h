@@ -323,50 +323,6 @@ static const cyaml_schema_value_t
 void
 lv2_plugin_init_loaded (Lv2Plugin * lv2_plgn);
 
-int
-lv2_printf(LV2_Log_Handle handle,
-            LV2_URID       type,
-            const char*    fmt, ...);
-
-int
-lv2_vprintf(LV2_Log_Handle handle,
-             LV2_URID       type,
-             const char*    fmt,
-             va_list        ap);
-
-static inline bool
-lv2_ansi_start(FILE* stream, int color)
-{
-#ifdef HAVE_ISATTY
-	if (isatty(fileno(stream))) {
-		return fprintf(stream, "\033[0;%dm", color);
-	}
-#endif
-	return 0;
-}
-
-static inline void
-lv2_ansi_reset(FILE* stream)
-{
-#ifdef HAVE_ISATTY
-	if (isatty(fileno(stream))) {
-		fprintf(stream, "\033[0m");
-		fflush(stream);
-	}
-#endif
-
-int
-lv2_printf(LV2_Log_Handle handle,
-            LV2_URID       type,
-            const char*    fmt, ...);
-
-int
-lv2_vprintf(LV2_Log_Handle handle,
-             LV2_URID       type,
-             const char*    fmt,
-             va_list        ap);
-}
-
 char*
 lv2_make_path(LV2_State_Make_Path_Handle handle,
                const char*                path);

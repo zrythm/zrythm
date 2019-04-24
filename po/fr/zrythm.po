@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-23 23:32+0100\n"
+"POT-Creation-Date: 2019-04-25 00:27+0100\n"
 "PO-Revision-Date: 2019-03-22 22:30+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -278,7 +278,7 @@ msgstr "Saisir le nom de la région..."
 msgid "Eraser tool"
 msgstr "Outil gomme"
 
-#: src/plugins/plugin_manager.c:199
+#: src/plugins/plugin_manager.c:203
 msgid "Error loading LV2 bundle dir: "
 msgstr ""
 
