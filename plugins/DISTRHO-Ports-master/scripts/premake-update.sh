@@ -6,6 +6,13 @@ LINUX=0
 MAC=0
 MINGW=0
 
+if [ -x "$(command -v premake3)" ]; then
+  PREMAKEVER=3
+elif [ -x "$(command -v premake4)" ]; then
+  PREMAKEVER=4
+fi
+PREMAKE=premake$PREMAKEVER
+
 if [ "$1" = "" ]; then
   echo "usage: $0 linux|mac|mingw"
   exit
@@ -28,7 +35,12 @@ fi
 
 run_premake()
 {
-  premake --os $1 --target gnu --cc gcc
+  if ! [ "x${PREMAKEVER}" = "x" ] ; then
+    for file in $(find . -name premake.lua) ; do
+        cp $file $(dirname $file)/premake$PREMAKEVER.lua
+    done
+  fi
+  $PREMAKE --os $1 --target gnu --cc gcc
 
   if [ $MAC == 1 ]; then
     sed -i -e "s|BLDCMD = ar -rcs \$(OUTDIR)/\$(TARGET) \$(OBJECTS) \$(TARGET_ARCH)|BLDCMD = ar -rcs \$(OUTDIR)/\$(TARGET) \$(OBJECTS)|" `find . -name \*.make`
