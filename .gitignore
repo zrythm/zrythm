@@ -2,7 +2,7 @@
 build
 /Makefile
 /Doxyfile.cfg
-config.h
+/config.h
 configure
 
 # -- C++
