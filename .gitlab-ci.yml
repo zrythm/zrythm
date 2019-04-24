@@ -11,44 +11,22 @@ stages:
   - build_other
   - package
 
-#basic_build:
-#  stage: build_gnu_linux
-#  script:
-#    - ./autogen.sh
-#    - ./configure
-#    - sudo make -j14
-#    - sudo make install
-
-test_bundled_plugins:
+basic_build:
   stage: build_gnu_linux
   script:
     - ./autogen.sh
-    - ./configure --with-distrho-ports
+    - ./configure
     - sudo make -j14
     - sudo make install
-
-build_win_64:
-  stage: build_other
-  image: "alextee12/arch-yaourt"
-  script:
-    - ./autogen.sh
-    - x86_64-w64-mingw32-configure --with-distrho-ports .
-    - make -j14
-  artifacts:
-    paths:
-      - build/win/Install_*.exe
-    expire_in: 2 days
 
 package_win_64:
   stage: package
   image: "alextee12/arch-yaourt"
   script:
     - ./autogen.sh
-    - x86_64-w64-mingw32-configure --with-distrho-ports .
+    - x86_64-w64-mingw32-configure .
     - make -j14
   artifacts:
     paths:
       - build/win/Install_$CI_COMMIT_TAG.exe
     expire_in: 1 week
-  only:
-    - tags
