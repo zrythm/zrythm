@@ -40,11 +40,7 @@ INSTALL_PROGRAM = ${INSTALL}
 INSTALL_FONT = ${INSTALL} -m 644
 LDFLAGS = @LDFLAGS@
 MKDIR_P = mkdir -p
-ifeq ($(WINDOWS),1)
-	GLIB_COMPILE_SCHEMAS = glib-compile-schemas.exe
-else
-	GLIB_COMPILE_SCHEMAS = glib-compile-schemas
-endif
+GLIB_COMPILE_SCHEMAS = @GLIB_COMPILE_SCHEMAS@
 
 # doesn't work in prefixes like /opt/...
 #gsettingsschemadir = @gsettingsschemadir@
