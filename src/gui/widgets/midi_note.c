@@ -167,8 +167,6 @@ on_motion (GtkWidget *      widget,
            GdkEventMotion * event,
            MidiNoteWidget * self)
 {
-  ARRANGER_WIDGET_GET_PRIVATE (MIDI_ARRANGER);
-
   if (event->type == GDK_MOTION_NOTIFY)
     {
       self->resize_l =

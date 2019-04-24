@@ -70,6 +70,7 @@
 #include "plugins/lv2_gtk.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/control.h"
+#include "plugins/lv2/log.h"
 #include "plugins/lv2/suil.h"
 #include "plugins/lv2/symap.h"
 #include "plugins/plugin.h"
@@ -763,20 +764,29 @@ lv2_ui_write(SuilController controller,
 
   if (port_index >= plugin->num_ports)
     {
-      g_warning ("UI write to out of range port index %d",
-              port_index);
+      g_warning (
+        "UI write to out of range port index %d",
+        port_index);
       return;
     }
 
-  if (dump && protocol == plugin->urids.atom_eventTransfer)
+  if (dump &&
+      protocol == plugin->urids.atom_eventTransfer)
     {
-      const LV2_Atom* atom = (const LV2_Atom*)buffer;
-      char*           str  = sratom_to_turtle(
-              plugin->sratom, &plugin->unmap, "plugin:", NULL, NULL,
-              atom->type, atom->size, LV2_ATOM_BODY_CONST(atom));
-      lv2_ansi_start(stdout, 36);
-      g_message ("## UI => Plugin (%u bytes) ##\n%s", atom->size, str);
-      lv2_ansi_reset(stdout);
+      const LV2_Atom* atom =
+        (const LV2_Atom*)buffer;
+      char * str  =
+        sratom_to_turtle (
+          plugin->sratom,
+          &plugin->unmap,
+          "plugin:",
+          NULL, NULL,
+          atom->type,
+          atom->size,
+          LV2_ATOM_BODY_CONST(atom));
+      g_message (
+        "## UI => Plugin (%u bytes) ##\n%s",
+        atom->size, str);
       free(str);
     }
 
@@ -983,17 +993,21 @@ lv2_plugin_update (Lv2Plugin* plugin)
           if (dump && ev.protocol ==
               plugin->urids.atom_eventTransfer)
             {
-              /* Dump event in Turtle to the console */
-              LV2_Atom* atom = (LV2_Atom*)buf;
-              char*     str  = sratom_to_turtle(
-                      plugin->ui_sratom, &plugin->unmap, "plugin:", NULL, NULL,
-                      atom->type, atom->size, LV2_ATOM_BODY(atom));
-              lv2_ansi_start(stdout, 35);
-              printf("\n## Plugin => UI (%u bytes) ##\n%s\n", atom->size, str);
-              lv2_ansi_reset(stdout);
+              /* Dump event in Turtle to the
+               * console */
+              LV2_Atom * atom = (LV2_Atom *) buf;
+              char * str =
+                sratom_to_turtle (
+                  plugin->ui_sratom,
+                  &plugin->unmap,
+                  "plugin:", NULL, NULL,
+                  atom->type, atom->size,
+                  LV2_ATOM_BODY(atom));
+              g_message (
+                "## Plugin => UI (%u bytes) ##"
+                "\n%s\n", atom->size, str);
               free(str);
             }
-
 
           /*if (ev.index == 2)*/
             /*g_message ("lv2_gtk_ui_port_event from "*/

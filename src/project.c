@@ -128,7 +128,7 @@ update_paths (const char * dir)
 void
 project_sanity_check (Project * self)
 {
-  int i, j;
+  int i;
 
   RegionWidgetPrivate * rw_prv;
   Region * region;
