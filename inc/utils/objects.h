@@ -17,54 +17,35 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
+/**
+ * @addtogroup utils
+ *
+ * @{
  */
-#ifndef __UTILS_STACK_H__
-#define __UTILS_STACK_H__
 
-#include <stdlib.h>
-
-#include <gtk/gtk.h>
-
-#define STACK_PUSH(s, element) \
-  stack_push (s, (void *) element)
-
-typedef struct Stack
-{
-  void **           elements;
-  int               max_length;
-  volatile gint     top;
-} Stack;
-
-Stack *
-stack_new (int length);
-
-int
-stack_size (Stack * s);
-
-int
-stack_is_empty (Stack * s);
-
-int
-stack_is_full (Stack * s);
-
-void *
-stack_peek (Stack * s);
-
-void *
-stack_peek_last (Stack * s);
-
-void
-stack_push (Stack *    s,
-            void *     element);
-
-void *
-stack_pop (Stack * s);
+/** Calls _free_later after doing the casting so the
+ * caller doesn't have to. */
+#define free_later(obj,func) \
+  _free_later((void *)obj, (void (*) (void *)) func)
 
 /**
- * Pops the last element and moves everything back.
+ * Frees the object after a while.
+ *
+ * This is useful when the object will be in use for a
+ * while, for example in the current processing cycle.
  */
-void *
-stack_pop_last (Stack * s);
+void
+_free_later (
+  void * object,
+  void (*dfunc) (void *));
 
-#endif
+/**
+ * Inits the subsystems for the object utils in this
+ * file.
+ */
+void
+object_utils_init ();
+
+/**
+ * @}
+ */

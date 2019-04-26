@@ -40,6 +40,7 @@
 #include "gui/widgets/track.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/objects.h"
 
 void
 track_init_loaded (Track * track)
@@ -500,7 +501,7 @@ track_remove_region (Track * track,
   if (delete)
     {
       project_remove_region (region);
-      region_free (region);
+      free_later (region, region_free);
     }
 
   EVENTS_PUSH (ET_REGION_REMOVED, track);

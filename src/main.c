@@ -28,9 +28,14 @@
 
 #include "ext/audio_decoder/ad.h"
 #include "plugins/lv2/suil.h"
+#include "utils/objects.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
+
+#ifdef HAVE_LIBGTOP
+#include <glibtop.h>
+#endif
 
 /** SIGSEGV handler. */
 static void
@@ -75,7 +80,10 @@ main (int    argc,
   ad_init ();
 
   /* init glibtop */
-  /*glibtop_init ();*/
+#ifdef HAVE_LIBGTOP
+  g_message ("Initing libgtop...");
+  glibtop_init ();
+#endif
 
   /* init random */
   g_message ("Initing random...");
@@ -84,6 +92,10 @@ main (int    argc,
 #else
   srandom (time (NULL));
 #endif
+
+  /* init object utils */
+  g_message ("Initing object utils...");
+  object_utils_init ();
 
   // sends activate signal
   g_message ("Initing Zrythm app...");
