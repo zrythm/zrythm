@@ -376,9 +376,12 @@ region_widget_delete (RegionWidget *self)
     GTK_CONTAINER (self),
     GTK_WIDGET (rw_prv->drawing_area));
 
-  gtk_container_remove (
-    GTK_CONTAINER (MW_TIMELINE),
-    GTK_WIDGET (self));
+  if (gtk_widget_is_ancestor (
+        GTK_WIDGET (self),
+        GTK_WIDGET (MW_TIMELINE)))
+    gtk_container_remove (
+      GTK_CONTAINER (MW_TIMELINE),
+      GTK_WIDGET (self));
 
   g_object_unref (self);
 }

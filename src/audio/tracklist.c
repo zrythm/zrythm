@@ -31,6 +31,7 @@
 #include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/objects.h"
 
 /**
  * Initializes the tracklist.
@@ -303,7 +304,7 @@ tracklist_remove_track (Track *     track)
   tracklist_selections_remove_track (
     TRACKLIST_SELECTIONS, track);
   project_remove_track (track);
-  track_free (track);
+  free_later (track, track_free);
 
   EVENTS_PUSH (ET_TRACK_REMOVED,
                NULL);

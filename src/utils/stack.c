@@ -28,7 +28,7 @@
 int
 stack_size (Stack * s)
 {
-  return s->top + 1;
+  return g_atomic_int_get (&s->top) + 1;
 }
 
 int
@@ -50,6 +50,7 @@ stack_new (int length)
 
   self->elements = calloc (length, sizeof (void *));
   self->max_length = length;
+  self->top = -1;
 
   return self;
 }
@@ -58,7 +59,17 @@ void *
 stack_peek (Stack * s)
 {
   if (!stack_is_empty (s))
-    return s->elements[s->top];
+    return s->elements[g_atomic_int_get (&s->top)];
+
+  g_warning ("Stack is empty");
+  return NULL;
+}
+
+void *
+stack_peek_last (Stack * s)
+{
+  if (!stack_is_empty (s))
+    return s->elements[0];
 
   g_warning ("Stack is empty");
   return NULL;
@@ -72,7 +83,9 @@ stack_push (Stack *    s,
     g_warning ("stack is full, cannot push");
   else
     {
-      s->elements[++s->top] = element;
+      gint top = g_atomic_int_get (&s->top);
+      g_atomic_int_inc (&s->top);
+      s->elements[top + 1] = element;
     }
 }
 
@@ -85,7 +98,9 @@ stack_pop (Stack * s)
     }
   else
     {
-      return s->elements[s->top--];
+      gint top = g_atomic_int_get (&s->top);
+      g_atomic_int_dec_and_test (&s->top);
+      return s->elements[top];
     }
 }
 
@@ -101,7 +116,7 @@ stack_pop_last (Stack * s)
     {
       s->elements[i] = s->elements[i + 1];
     }
-  s->top--;
+  g_atomic_int_dec_and_test (&s->top);
 
   return element;
 }
