@@ -168,6 +168,36 @@ jack_buffer_size_cb (uint32_t nframes,
 }
 
 /**
+ * Zero's out the output buffers.
+ */
+void
+engine_jack_clear_output_buffers (
+  AudioEngine * self)
+{
+  int nframes = AUDIO_ENGINE->nframes;
+  float * out_l =
+    (float *)
+    jack_port_get_buffer (
+      JACK_PORT_T (AUDIO_ENGINE->stereo_out->l->data),
+      nframes);
+  float * out_r =
+    (float *)
+    jack_port_get_buffer (
+      JACK_PORT_T (AUDIO_ENGINE->stereo_out->r->data),
+      nframes);
+
+  for (int i = 0; i < nframes; i++)
+    {
+      out_l[i] = 0;
+      out_r[i] = 0;
+    }
+
+  /* avoid unused warnings */
+  (void) out_l;
+  (void) out_r;
+}
+
+/**
  * Receives MIDI events from JACK MIDI and puts them
  * in the JACK MIDI in port.
  */

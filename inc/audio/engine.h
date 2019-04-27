@@ -28,6 +28,7 @@
 
 #include "config.h"
 #include "audio/mixer.h"
+#include "audio/pan.h"
 #include "audio/transport.h"
 #include "utils/sem.h"
 
@@ -249,7 +250,9 @@ engine_update_frames_per_tick (int beats_per_bar,
  * Clears buffers, marks all as unprocessed, etc.
  */
 void
-engine_process_prepare (uint32_t      nframes);
+engine_process_prepare (
+  AudioEngine * self,
+  uint32_t      nframes);
 
 /**
  * Processes current cycle.

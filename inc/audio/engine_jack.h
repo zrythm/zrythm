@@ -82,6 +82,13 @@ engine_jack_test (
   GtkWindow * win);
 
 /**
+ * Zero's out the output buffers.
+ */
+void
+engine_jack_clear_output_buffers (
+  AudioEngine * self);
+
+/**
  * Sets up the MIDI engine to use jack.
  */
 int
