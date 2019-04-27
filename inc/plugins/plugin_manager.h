@@ -20,6 +20,9 @@
 #ifndef __PLUGINS_PLUGIN_MANAGER_H__
 #define __PLUGINS_PLUGIN_MANAGER_H__
 
+#include "plugins/lv2/urid.h"
+#include "plugins/lv2/symap.h"
+
 #include <lilv/lilv.h>
 
 #define PLUGIN_MANAGER (&ZRYTHM->plugin_manager)
@@ -32,6 +35,9 @@
 #define IS_LV2_PLUGIN_CATEGORY(p, c) \
   (g_strcmp0 (((Plugin *)p)->descr->category, c) == 0)
 #define PM_LILV_NODES (PLUGIN_MANAGER->lv2_nodes)
+#define PM_URIDS (PLUGIN_MANAGER->urids)
+#define PM_SYMAP (PLUGIN_MANAGER->symap)
+#define PM_SYMAP_LOCK (PLUGIN_MANAGER->symap_lock)
 
 
 typedef struct
@@ -94,6 +100,7 @@ typedef struct Lv2Nodes
 	LilvNode *          core_toggled;
 	LilvNode *          ev_EventPort;
 	LilvNode *          patch_Message;
+	LilvNode *          patch_readable;
 	LilvNode *          patch_writable;
 	LilvNode *          midi_MidiEvent;
 	LilvNode *          pg_element;
@@ -143,6 +150,14 @@ typedef struct PluginManager
   int                    num_plugin_categories;
   int                    num_plugins;
   Lv2Nodes               lv2_nodes;
+
+  /** URI map for URID feature. */
+	Symap*                 symap;
+  /** Lock for URI map. */
+	ZixSem                 symap_lock;
+
+  /** URIDs. */
+  Lv2URIDs               urids;
 
 } PluginManager;
 

@@ -387,7 +387,10 @@ load (char * filename)
   /* mimic behavior when starting the app */
   if (loading_while_running)
     {
-      events_init (&ZRYTHM->events);
+      if (ZRYTHM->event_queue)
+        g_async_queue_unref (ZRYTHM->event_queue);
+      ZRYTHM->event_queue =
+        events_init ();
       main_window_widget_refresh (MAIN_WINDOW);
 
       g_atomic_int_set (&AUDIO_ENGINE->run, 1);

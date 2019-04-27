@@ -300,7 +300,8 @@ timeline_arranger_widget_get_cursor (
             }
         }
     }
-  return -1;
+
+  return ARRANGER_CURSOR_SELECT;
 }
 
 
@@ -1501,8 +1502,8 @@ timeline_arranger_widget_set_size ()
 static int
 update_last_timeline_object ()
 {
-  if (!GTK_IS_WIDGET (ZRYTHM))
-    return FALSE;
+  if (!MAIN_WINDOW || !GTK_IS_WIDGET (MAIN_WINDOW))
+    return G_SOURCE_CONTINUE;
 
   TimelineArrangerWidget * self = MW_TIMELINE;
 

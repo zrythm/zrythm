@@ -71,7 +71,6 @@
 #include "plugins/lv2/control.h"
 #include "plugins/lv2/log.h"
 #include "plugins/lv2/suil.h"
-#include "plugins/lv2/symap.h"
 #include "plugins/lv2/lv2_evbuf.h"
 #include "plugins/lv2/worker.h"
 #include "plugins/plugin.h"
@@ -82,11 +81,13 @@
 
 #include <gtk/gtk.h>
 
+#include <lv2/lv2plug.in/ns/ext/buf-size/buf-size.h>
+#include <lv2/lv2plug.in/ns/ext/patch/patch.h>
+#include <lv2/lv2plug.in/ns/ext/time/time.h>
 /*#include <lv2/lv2plug.in/ns/ext/atom/atom.h>*/
 /*#include <lv2/lv2plug.in/ns/ext/buf-size/buf-size.h>*/
 /*#include <lv2/lv2plug.in/ns/ext/data-access/data-access.h>*/
 /*#include <lv2/lv2plug.in/ns/ext/event/event.h>*/
-#include <lv2/lv2plug.in/ns/ext/parameters/parameters.h>
 /*#include <lv2/lv2plug.in/ns/ext/patch/patch.h>*/
 /*#include <lv2/lv2plug.in/ns/ext/port-groups/port-groups.h>*/
 /*#include <lv2/lv2plug.in/ns/ext/port-props/port-props.h>*/
@@ -473,7 +474,7 @@ lv2_get_port_value (const char * port_sym,
   if (port)
     {
       *size = sizeof (float);
-      *type = lv2_plugin->urids.atom_Float;
+      *type = PM_URIDS.atom_Float;
       return (const void *) &port->control;
     }
 
@@ -559,9 +560,9 @@ lv2_create_controls (
     lv2_plugin->lilv_plugin;
   LilvWorld* world = LILV_WORLD;
   LilvNode* patch_writable =
-    lilv_new_uri (world, LV2_PATCH__writable);
+    PM_LILV_NODES.patch_writable;
   LilvNode* patch_readable =
-    lilv_new_uri (world, LV2_PATCH__readable);
+    PM_LILV_NODES.patch_readable;
 
   LilvNodes* properties =
     lilv_world_find_nodes (
@@ -625,9 +626,6 @@ lv2_create_controls (
         }
     }
   lilv_nodes_free(properties);
-
-  lilv_node_free(patch_readable);
-  lilv_node_free(patch_writable);
 }
 
 /**
@@ -788,7 +786,7 @@ lv2_ui_write(SuilController controller,
   Lv2Plugin* const plugin =
     (Lv2Plugin*)controller;
 
-  if (protocol != 0 && protocol != plugin->urids.atom_eventTransfer)
+  if (protocol != 0 && protocol != PM_URIDS.atom_eventTransfer)
     {
       g_warning (
         "UI write with unsupported protocol %d (%s)",
@@ -806,7 +804,7 @@ lv2_ui_write(SuilController controller,
     }
 
   if (dump &&
-      protocol == plugin->urids.atom_eventTransfer)
+      protocol == PM_URIDS.atom_eventTransfer)
     {
       const LV2_Atom* atom =
         (const LV2_Atom*)buffer;
@@ -872,7 +870,7 @@ lv2_apply_ui_events(Lv2Plugin* plugin, uint32_t nframes)
                      /*port->control);*/
         }
       else if (ev.protocol ==
-               plugin->urids.atom_eventTransfer)
+               PM_URIDS.atom_eventTransfer)
         {
           LV2_Evbuf_Iterator e =
             lv2_evbuf_end (port->evbuf);
@@ -926,7 +924,7 @@ lv2_init_ui(Lv2Plugin* plugin)
       lv2_atom_forge_set_buffer (
         &forge, buf, sizeof(buf));
       lv2_atom_forge_object (
-        &forge, &frame, 0, plugin->urids.patch_Get);
+        &forge, &frame, 0, PM_URIDS.patch_Get);
 
       const LV2_Atom* atom =
         lv2_atom_forge_deref(&forge, frame.ref);
@@ -934,7 +932,7 @@ lv2_init_ui(Lv2Plugin* plugin)
         plugin,
         plugin->control_in,
         lv2_atom_total_size (atom),
-        plugin->urids.atom_eventTransfer,
+        PM_URIDS.atom_eventTransfer,
         atom);
       lv2_atom_forge_pop(&forge, &frame);
     }
@@ -952,7 +950,7 @@ lv2_send_to_ui (
   char evbuf[sizeof(Lv2ControlChange) + sizeof(LV2_Atom)];
   Lv2ControlChange* ev = (Lv2ControlChange*)evbuf;
   ev->index    = port_index;
-  ev->protocol = plugin->urids.atom_eventTransfer;
+  ev->protocol = PM_URIDS.atom_eventTransfer;
   ev->size     = sizeof(LV2_Atom) + size;
 
   LV2_Atom* atom = (LV2_Atom*)ev->body;
@@ -1037,7 +1035,7 @@ lv2_plugin_update (gpointer data)
           zix_ring_read(plugin->plugin_events, (char*)buf, ev.size);
 
           if (dump && ev.protocol ==
-              plugin->urids.atom_eventTransfer)
+              PM_URIDS.atom_eventTransfer)
             {
               /* Dump event in Turtle to the
                * console */
@@ -1101,7 +1099,7 @@ _apply_control_arg(Lv2Plugin* plugin, const char* s)
 
   lv2_control_set_control (
     control, sizeof(float),
-    plugin->urids.atom_Float, &val);
+    PM_URIDS.atom_Float, &val);
   g_message ("%s = %f",
              sym, val);
 
@@ -1276,7 +1274,7 @@ lv2_create_descriptor_from_lilv (const LilvPlugin * lp)
         PM_LILV_NODES.bufz_fixedBlockLength)
      )
     {
-      g_warning (
+      g_message (
         "Ignoring LV2 Plugin %s because "
         "its buffer-size requirements "
         "cannot be satisfied.",
@@ -1498,8 +1496,6 @@ lv2_instantiate (Lv2Plugin      * self,   ///< plugin to instantiate
 
   /* Cache URIs for concepts we'll use */
 
-  self->symap = symap_new();
-  zix_sem_init(&self->symap_lock, 1);
   zix_sem_init(&self->work_lock, 1);
 
   self->map.handle = self;
@@ -1516,8 +1512,10 @@ lv2_instantiate (Lv2Plugin      * self,   ///< plugin to instantiate
   lv2_atom_forge_init (&self->forge, &self->map);
 
   self->env = serd_env_new(NULL);
-  serd_env_set_prefix_from_strings(
-          self->env, (const uint8_t*)"patch", (const uint8_t*)LV2_PATCH_PREFIX);
+  serd_env_set_prefix_from_strings (
+    self->env,
+    (const uint8_t*)"patch",
+    (const uint8_t*)LV2_PATCH_PREFIX);
   serd_env_set_prefix_from_strings(
           self->env, (const uint8_t*)"time", (const uint8_t*)LV2_TIME_PREFIX);
   serd_env_set_prefix_from_strings(
@@ -1527,70 +1525,6 @@ lv2_instantiate (Lv2Plugin      * self,   ///< plugin to instantiate
   self->ui_sratom = sratom_new(&self->map);
   sratom_set_env(self->sratom, self->env);
   sratom_set_env(self->ui_sratom, self->env);
-
-  /* symap URIDs */
-#define SYMAP_MAP(target,uri) \
-  self->urids.target = \
-    symap_map (self->symap, uri);
-
-  SYMAP_MAP (atom_Float,
-             LV2_ATOM__Float);
-  SYMAP_MAP (atom_Int,
-             LV2_ATOM__Int);
-  SYMAP_MAP (atom_Object,
-             LV2_ATOM__Object);
-  SYMAP_MAP (atom_Path,
-             LV2_ATOM__Path);
-  SYMAP_MAP (atom_String,
-             LV2_ATOM__String);
-  SYMAP_MAP (atom_eventTransfer,
-             LV2_ATOM__eventTransfer);
-  SYMAP_MAP (bufsz_maxBlockLength,
-             LV2_BUF_SIZE__maxBlockLength);
-  SYMAP_MAP (bufsz_minBlockLength,
-             LV2_BUF_SIZE__minBlockLength);
-  SYMAP_MAP (bufsz_sequenceSize,
-             LV2_BUF_SIZE__sequenceSize);
-  SYMAP_MAP (log_Error,
-             LV2_LOG__Error);
-  SYMAP_MAP (log_Trace,
-             LV2_LOG__Trace);
-  SYMAP_MAP (log_Warning,
-             LV2_LOG__Warning);
-  SYMAP_MAP (midi_MidiEvent,
-             LV2_MIDI__MidiEvent);
-  SYMAP_MAP (param_sampleRate,
-             LV2_PARAMETERS__sampleRate);
-  SYMAP_MAP (patch_Get,
-             LV2_PATCH__Get);
-  SYMAP_MAP (patch_Put,
-             LV2_PATCH__Put);
-  SYMAP_MAP (patch_Set,
-             LV2_PATCH__Set);
-  SYMAP_MAP (patch_body,
-             LV2_PATCH__body);
-  SYMAP_MAP (patch_property,
-             LV2_PATCH__property);
-  SYMAP_MAP (patch_value,
-             LV2_PATCH__value);
-  SYMAP_MAP (time_Position,
-             LV2_TIME__Position);
-  SYMAP_MAP (time_barBeat,
-             LV2_TIME__barBeat);
-  SYMAP_MAP (time_beatUnit,
-             LV2_TIME__beatUnit);
-  SYMAP_MAP (time_beatsPerBar,
-             LV2_TIME__beatsPerBar);
-  SYMAP_MAP (time_beatsPerMinute,
-             LV2_TIME__beatsPerMinute);
-  SYMAP_MAP (time_frame,
-             LV2_TIME__frame);
-  SYMAP_MAP (time_speed,
-             LV2_TIME__speed);
-  SYMAP_MAP (ui_updateRate,
-             LV2_UI__updateRate);
-#undef SYMAP_MAP
-
 
 #ifdef _WIN32
   self->temp_dir = lv2_strdup("self->XXXXX");
@@ -1892,29 +1826,29 @@ lv2_instantiate (Lv2Plugin      * self,   ///< plugin to instantiate
   const LV2_Options_Option options[] =
     {
       { LV2_OPTIONS_INSTANCE, 0,
-        self->urids.param_sampleRate,
+        PM_URIDS.param_sampleRate,
         sizeof(float),
-        self->urids.atom_Float,
+        PM_URIDS.atom_Float,
         &f_samplerate },
       { LV2_OPTIONS_INSTANCE, 0,
-        self->urids.bufsz_minBlockLength,
+        PM_URIDS.bufsz_minBlockLength,
         sizeof(int32_t),
-        self->urids.atom_Int,
+        PM_URIDS.atom_Int,
         &AUDIO_ENGINE->block_length },
       { LV2_OPTIONS_INSTANCE, 0,
-        self->urids.bufsz_maxBlockLength,
+        PM_URIDS.bufsz_maxBlockLength,
         sizeof(int32_t),
-        self->urids.atom_Int,
+        PM_URIDS.atom_Int,
         &AUDIO_ENGINE->block_length },
       { LV2_OPTIONS_INSTANCE, 0,
-        self->urids.bufsz_sequenceSize,
+        PM_URIDS.bufsz_sequenceSize,
         sizeof(int32_t),
-        self->urids.atom_Int,
+        PM_URIDS.atom_Int,
         &AUDIO_ENGINE->midi_buf_size },
       { LV2_OPTIONS_INSTANCE, 0,
-        self->urids.ui_updateRate,
+        PM_URIDS.ui_updateRate,
         sizeof(float),
-        self->urids.atom_Float,
+        PM_URIDS.atom_Float,
         &self->ui_update_hz },
       { LV2_OPTIONS_INSTANCE, 0, 0, 0, 0, NULL }
     };
@@ -2052,23 +1986,23 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
         forge,
         &frame,
         0,
-        lv2_plugin->urids.time_Position);
+        PM_URIDS.time_Position);
       lv2_atom_forge_key (
         forge,
-        lv2_plugin->urids.time_frame);
+        PM_URIDS.time_frame);
       lv2_atom_forge_long (
         forge,
         PLAYHEAD.frames);
       lv2_atom_forge_key (
         forge,
-        lv2_plugin->urids.time_speed);
+        PM_URIDS.time_speed);
       lv2_atom_forge_float (
         forge,
         TRANSPORT->play_state == PLAYSTATE_ROLLING ?
           1.0 : 0.0);
       lv2_atom_forge_key (
         forge,
-        lv2_plugin->urids.time_barBeat);
+        PM_URIDS.time_barBeat);
       lv2_atom_forge_float (
         forge,
         (float) PLAYHEAD.beats - 1 +
@@ -2076,25 +2010,25 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
           (float) TICKS_PER_BEAT));
       lv2_atom_forge_key (
         forge,
-        lv2_plugin->urids.time_bar);
+        PM_URIDS.time_bar);
       lv2_atom_forge_long (
         forge,
         PLAYHEAD.bars - 1);
       lv2_atom_forge_key (
         forge,
-        lv2_plugin->urids.time_beatUnit);
+        PM_URIDS.time_beatUnit);
       lv2_atom_forge_int (
         forge,
         transport_get_beat_unit (TRANSPORT));
       lv2_atom_forge_key (
         forge,
-        lv2_plugin->urids.time_beatsPerBar);
+        PM_URIDS.time_beatsPerBar);
       lv2_atom_forge_float (
         forge,
         TRANSPORT->beats_per_bar);
       lv2_atom_forge_key (
         forge,
-        lv2_plugin->urids.time_beatsPerMinute);
+        PM_URIDS.time_beatsPerMinute);
       lv2_atom_forge_float (forge, TRANSPORT->bpm);
     }
 
@@ -2174,8 +2108,8 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
                * update */
               const LV2_Atom_Object get = {
                       { sizeof(LV2_Atom_Object_Body),
-                        lv2_plugin->urids.atom_Object },
-                      { 0, lv2_plugin->urids.patch_Get } };
+                        PM_URIDS.atom_Object },
+                      { 0, PM_URIDS.patch_Get } };
               lv2_evbuf_write (
                 &iter, 0, 0,
                 get.atom.type, get.atom.size,
@@ -2195,7 +2129,7 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
                   lv2_evbuf_write (
                     &iter,
                     ev->time, 0,
-                    lv2_plugin->urids.midi_MidiEvent,
+                    PM_URIDS.midi_MidiEvent,
                     ev->size, ev->buffer);
 #endif
                 }
@@ -2257,7 +2191,7 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
                   &type, &size, &body);
 
                 if (buf && type ==
-                    lv2_plugin->urids.
+                    PM_URIDS.
                       midi_MidiEvent)
                   {
 #ifdef HAVE_JACK
@@ -2342,8 +2276,6 @@ lv2_cleanup (Lv2Plugin *lv2_plugin)
        *n; ++n) {
           lilv_node_free(*n);
   }
-  symap_free (lv2_plugin->symap);
-  zix_sem_destroy (&lv2_plugin->symap_lock);
   suil_host_free(lv2_plugin->ui_host);
   sratom_free(lv2_plugin->sratom);
   sratom_free(lv2_plugin->ui_sratom);
