@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-27 16:59+0100\n"
+"POT-Creation-Date: 2019-04-27 18:37+0100\n"
 "PO-Revision-Date: 2019-03-22 22:30+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -85,7 +85,7 @@ msgstr "Unité Audio"
 msgid "Audition tool"
 msgstr "Outil d'écoute"
 
-#: src/gui/widgets/digital_meter.c:638
+#: src/gui/widgets/digital_meter.c:643
 msgid "BPM - Click and drag up/down to set"
 msgstr "BPM - Cliquez et faites glisser vers le haut/bas pour définir"
 
@@ -602,7 +602,7 @@ msgstr "Lecture"
 msgid "Playhead"
 msgstr "Lecture"
 
-#: src/gui/widgets/digital_meter.c:648
+#: src/gui/widgets/digital_meter.c:653
 msgid "Playhead Position - Click and drag up/down to change"
 msgstr ""
 "Position de la tête de lecture - Cliquez et faites glisser vers le haut/le "
@@ -936,7 +936,7 @@ msgstr ""
 msgid "Time Range"
 msgstr "intervalle de temps"
 
-#: src/gui/widgets/digital_meter.c:676
+#: src/gui/widgets/digital_meter.c:681
 msgid "Time Signature - Click and drag up/down to change"
 msgstr ""
 "Signature rythmique - Cliquez et faites glisser vers le haut/le bas pour la "

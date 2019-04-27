@@ -203,7 +203,7 @@ midi_ruler_widget_refresh ()
   rw_prv->px_per_sixteenth =
     rw_prv->px_per_tick * TICKS_PER_SIXTEENTH_NOTE;
   rw_prv->px_per_beat =
-    rw_prv->px_per_tick * TICKS_PER_BEAT;
+    rw_prv->px_per_tick * TRANSPORT->ticks_per_beat;
   rw_prv->px_per_bar =
     rw_prv->px_per_beat * TRANSPORT->beats_per_bar;
 

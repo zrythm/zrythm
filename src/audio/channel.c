@@ -302,6 +302,10 @@ _create_channel (char * name)
      port_new_with_type (TYPE_AUDIO,
                          FLOW_OUTPUT,
                          plr));
+  channel->stereo_out->l->flags |=
+    PORT_FLAG_STEREO_L;
+  channel->stereo_out->r->flags |=
+    PORT_FLAG_STEREO_R;
   g_message ("Created stereo out ports");
   g_free (pll);
   g_free (plr);

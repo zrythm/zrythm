@@ -62,12 +62,12 @@ position_to_frames (Position * position)
     AUDIO_ENGINE->frames_per_tick *
     (position->bars - 1) *
     TRANSPORT->beats_per_bar *
-    TICKS_PER_BEAT;
+    TRANSPORT->ticks_per_beat;
   if (position->beats)
     frames +=
       AUDIO_ENGINE->frames_per_tick *
       (position->beats - 1) *
-      TICKS_PER_BEAT;
+      TRANSPORT->ticks_per_beat;
   if (position->sixteenths)
     frames +=
       AUDIO_ENGINE->frames_per_tick *
@@ -147,7 +147,8 @@ void
 position_set_sixteenth (Position * position,
                         int        sixteenth)
 {
-  while (sixteenth < 1 || sixteenth > SIXTEENTHS_PER_BEAT)
+  while (sixteenth < 1 ||
+         sixteenth > TRANSPORT->sixteenths_per_beat)
     {
       if (sixteenth < 1)
         {
@@ -156,13 +157,13 @@ position_set_sixteenth (Position * position,
               sixteenth = 1;
               break;
             }
-          sixteenth += SIXTEENTHS_PER_BEAT;
+          sixteenth += TRANSPORT->sixteenths_per_beat;
           position_set_beat (position,
                              position->beats - 1);
         }
-      else if (sixteenth > SIXTEENTHS_PER_BEAT)
+      else if (sixteenth > TRANSPORT->sixteenths_per_beat)
         {
-          sixteenth -= SIXTEENTHS_PER_BEAT;
+          sixteenth -= TRANSPORT->sixteenths_per_beat;
           position_set_beat (position,
                              position->beats + 1);
         }
@@ -406,10 +407,11 @@ position_from_seconds (Position * position, double secs)
 inline int
 position_to_ticks (Position * pos)
 {
-  int ticks = (pos->bars - 1) * TICKS_PER_BAR;
+  int ticks = (pos->bars - 1) *
+    TRANSPORT->ticks_per_bar;
   if (pos->beats)
     ticks += (pos->beats - 1) *
-      TICKS_PER_BEAT;
+      TRANSPORT->ticks_per_beat;
   if (pos->sixteenths)
     ticks += (pos->sixteenths - 1) *
       TICKS_PER_SIXTEENTH_NOTE;
@@ -425,10 +427,10 @@ inline void
 position_from_ticks (Position * pos,
                      long       ticks)
 {
-  pos->bars = ticks / TICKS_PER_BAR + 1;
-  ticks = ticks % TICKS_PER_BAR;
-  pos->beats = ticks / TICKS_PER_BEAT + 1;
-  ticks = ticks % TICKS_PER_BEAT;
+  pos->bars = ticks / TRANSPORT->lticks_per_bar + 1;
+  ticks = ticks % TRANSPORT->lticks_per_bar;
+  pos->beats = ticks / TRANSPORT->lticks_per_beat + 1;
+  ticks = ticks % TRANSPORT->lticks_per_beat;
   pos->sixteenths = ticks / TICKS_PER_SIXTEENTH_NOTE + 1;
   ticks = ticks % TICKS_PER_SIXTEENTH_NOTE;
   pos->ticks = ticks;

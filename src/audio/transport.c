@@ -72,7 +72,7 @@ transport_init (Transport * self,
 
       /* set BPM related defaults */
       self->beats_per_bar = DEFAULT_BEATS_PER_BAR;
-      self->beat_unit = DEFAULT_BEAT_UNIT;
+      transport_set_beat_unit (self, 4);
 
       // set positions of playhead, start/end markers
       position_set_to_bar (&self->playhead_pos, 1);
@@ -91,6 +91,85 @@ transport_init (Transport * self,
   self->play_state = PLAYSTATE_PAUSED;
 
   zix_sem_init(&self->paused, 0);
+}
+
+/**
+ * Gets beat unit as int.
+ */
+static inline BeatUnit
+get_ebeat_unit (
+  int beat_unit)
+{
+  switch (beat_unit)
+    {
+    case 2:
+      return BEAT_UNIT_2;
+    case 4:
+      return BEAT_UNIT_4;
+    case 8:
+      return BEAT_UNIT_8;
+    case 16:
+      return BEAT_UNIT_16;;
+    default:
+      g_warn_if_reached ();
+      return 0;
+    }
+}
+
+/**
+ * Updates beat unit and anything depending on it.
+ */
+void
+transport_set_beat_unit (
+  Transport * self,
+  int beat_unit)
+{
+  self->beat_unit = beat_unit;
+  self->ebeat_unit = get_ebeat_unit (beat_unit);
+
+/**
+ * Regarding calculation:
+ * 3840 = TICKS_PER_QUARTER_NOTE * 4 to get the ticks
+ * per full note.
+ * Divide by beat unit (e.g. if beat unit is 2,
+ * it means it is a 1/2th note, so multiply 1/2
+ * with the ticks per note
+ */
+  self->lticks_per_beat =
+    3840.0 / (double) TRANSPORT->beat_unit;
+  self->ticks_per_beat =
+    self->lticks_per_beat;
+  self->lticks_per_bar =
+    self->lticks_per_beat * self->beats_per_bar;
+  self->ticks_per_bar =
+    self->lticks_per_bar;
+  self->sixteenths_per_beat =
+    16.0 / (double) self->beat_unit;
+}
+
+void
+transport_set_ebeat_unit (
+  Transport * self,
+  BeatUnit bu)
+{
+  switch (bu)
+    {
+    case BEAT_UNIT_2:
+      transport_set_beat_unit (self, 2);
+      break;
+    case BEAT_UNIT_4:
+      transport_set_beat_unit (self, 4);
+      break;
+    case BEAT_UNIT_8:
+      transport_set_beat_unit (self, 8);
+      break;
+    case BEAT_UNIT_16:
+      transport_set_beat_unit (self, 16);
+      break;
+    default:
+      g_warn_if_reached ();
+      break;
+    }
 }
 
 void
@@ -220,23 +299,3 @@ transport_update_position_frames ()
     &TRANSPORT->loop_end_pos);
 }
 
-/**
- * Gets beat unit as int.
- */
-int
-transport_get_beat_unit ()
-{
-  switch (TRANSPORT->beat_unit)
-    {
-    case BEAT_UNIT_2:
-      return 2;
-    case BEAT_UNIT_4:
-      return 4;
-    case BEAT_UNIT_8:
-      return 8;
-    case BEAT_UNIT_16:
-      return 16;
-    }
-  g_warn_if_reached ();
-  return -1;
-}

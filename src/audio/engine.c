@@ -57,7 +57,7 @@ engine_update_frames_per_tick (int beats_per_bar,
 {
   AUDIO_ENGINE->frames_per_tick =
     (sample_rate * 60.f * beats_per_bar) /
-    (bpm * TICKS_PER_BAR);
+    (bpm * TRANSPORT->ticks_per_bar);
 
   /* update positions */
   transport_update_position_frames (&AUDIO_ENGINE->transport);

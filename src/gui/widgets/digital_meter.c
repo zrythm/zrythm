@@ -290,20 +290,23 @@ draw_cb (DigitalMeterWidget * self, cairo_t *cr, gpointer data)
       self->height_start_pos = (height / 2 - te1.height / 2);
       self->height_end_pos = self->height_start_pos + te1.height;
 
-      char * beat_unit;
+      char * beat_unit = NULL;
       switch (TRANSPORT->beat_unit)
         {
-        case BEAT_UNIT_2:
+        case 2:
           beat_unit = " 2";
           break;
-        case BEAT_UNIT_4:
+        case 4:
           beat_unit = " 4";
           break;
-        case BEAT_UNIT_8:
+        case 8:
           beat_unit = " 8";
           break;
-        case BEAT_UNIT_16:
+        case 16:
           beat_unit = "16";
+          break;
+        default:
+          g_warn_if_reached ();
           break;
         }
       char * beats_per_bar;
@@ -354,7 +357,7 @@ drag_start (GtkGestureDrag * gesture,
       self->start_timesig_top =
         TRANSPORT->beats_per_bar;
       self->start_timesig_bot =
-        TRANSPORT->beat_unit;
+        TRANSPORT->ebeat_unit;
     }
 }
 
@@ -488,13 +491,15 @@ drag_update (GtkGestureDrag * gesture,
           num = self->start_timesig_bot + (int) offset_y / 24;
           if (num < 0)
             {
-              TRANSPORT->beat_unit = BEAT_UNIT_2;
+              transport_set_ebeat_unit (
+                TRANSPORT, BEAT_UNIT_2);
             }
           else
             {
-              TRANSPORT->beat_unit =
+              transport_set_ebeat_unit (
+                TRANSPORT,
                 num > BEAT_UNIT_16 ?
-                BEAT_UNIT_16 : num;
+                BEAT_UNIT_16 : num);
             }
         }
       if (self->update_timesig_top ||

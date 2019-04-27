@@ -24,19 +24,6 @@
 
 #define TICKS_PER_QUARTER_NOTE 960
 #define TICKS_PER_SIXTEENTH_NOTE 240
-/**
- * Regarding calculation:
- * TICKS_PER_QUARTER_NOTE * 4 to get the ticks per full note.
- * Divide by beat unit (e.g. if beat unit is 2, it means it
- * is a 1/2th note, so multiply 1/2 with the ticks per note
- */
-#define TICKS_PER_BEAT \
-  ((TICKS_PER_QUARTER_NOTE * 4) / \
-   transport_get_beat_unit (TRANSPORT))
-#define TICKS_PER_BAR \
-  (TICKS_PER_BEAT * TRANSPORT->beats_per_bar)
-#define SIXTEENTHS_PER_BEAT \
-  (16 / transport_get_beat_unit (TRANSPORT))
 #define position_add_ticks(position, _ticks) \
   position_set_tick (position, \
                      (position)->ticks + _ticks)
