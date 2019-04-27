@@ -32,14 +32,22 @@
 #include "inc/utils/sem.h"
 #include "inc/utils/stack.h"
 
-#define EVENTS_PUSH(et, arg) \
-  if (EVENTS->et_stack && EVENTS->arg_stack && \
+/**
+ * @addtogroup events
+ *
+ * @{
+ */
+
+#define EVENTS_PUSH(et,_arg) \
+  if (EVENTS && \
       !AUDIO_ENGINE->exporting) \
     { \
-      STACK_PUSH (EVENTS->et_stack, et); \
-      STACK_PUSH (EVENTS->arg_stack, arg); \
+      ZEvent * ev = calloc (1, sizeof (ZEvent)); \
+      ev->type = et; \
+      ev->arg = _arg; \
+      g_async_queue_push (EVENTS, ev); \
     }
-#define EVENTS (&ZRYTHM->events)
+#define EVENTS (ZRYTHM->event_queue)
 
 typedef enum EventType
 {
@@ -115,18 +123,14 @@ typedef enum EventType
   ET_CHANNEL_REMOVED,
 } EventType;
 
-typedef struct Events
+/**
+ * A Zrythm event.
+ */
+typedef struct ZEvent
 {
-  /** Event types stack.
-   *
-   * Contains EventTypes. */
-  Stack *       et_stack;
-
-  /** Arguments stack.
-   *
-   * This contains the arguments passed to the event */
-  Stack *       arg_stack;
-} Events;
+  EventType     type;
+  void *        arg;
+} ZEvent;
 
 /**
  * GSourceFunc to be added using idle add.
@@ -139,7 +143,11 @@ events_process ();
 /**
  * Must be called from a GTK thread.
  */
-void
-events_init (Events * events);
+GAsyncQueue *
+events_init ();
+
+/**
+ * @}
+ */
 
 #endif

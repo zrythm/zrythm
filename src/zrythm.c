@@ -301,7 +301,8 @@ static void on_setup_main_window (GSimpleAction  *action,
 {
   g_message ("setup main window");
 
-  events_init (&ZRYTHM->events);
+  ZRYTHM->event_queue =
+    events_init ();
   main_window_widget_refresh (MAIN_WINDOW);
 
   mixer_recalculate_graph (MIXER, 1);

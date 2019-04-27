@@ -60,6 +60,7 @@
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
+#include "utils/arrays.h"
 #include "utils/gtk.h"
 #include "utils/stack.h"
 #include "zrythm.h"
@@ -468,12 +469,16 @@ on_plugin_visibility_changed (Plugin * pl)
     plugin_close_ui (pl);
 
   if (pl->channel->track->type ==
-      TRACK_TYPE_INSTRUMENT)
+      TRACK_TYPE_INSTRUMENT &&
+      pl->channel->track->widget &&
+      Z_IS_INSTRUMENT_TRACK_WIDGET (
+        pl->channel->track->widget))
     instrument_track_widget_refresh_buttons (
       Z_INSTRUMENT_TRACK_WIDGET (
         pl->channel->track->widget));
 
-  if (pl->channel->widget)
+  if (pl->channel->widget &&
+      Z_IS_CHANNEL_WIDGET (pl->channel->widget))
     gtk_widget_queue_draw (
       GTK_WIDGET (
         pl->channel->widget->slots[
@@ -497,33 +502,31 @@ on_plugin_visibility_changed (Plugin * pl)
   /*return FALSE;*/
 /*}*/
 
-static void
-clean_duplicates ()
+static inline void
+clean_duplicates_and_copy (
+  GAsyncQueue * q,
+  ZEvent **     events,
+  int *         num_events)
 {
-  EventType et, et2;
-  void * arg, * arg2;
-  int j;
-  for (int i = 0;
-       i <= EVENTS->et_stack->top; i++)
+  ZEvent * event;
+  *num_events = 0;
+  int i, already_exists = 0;;
+
+  /* only add events once to new array while popping */
+  while ((event =
+            g_async_queue_try_pop_unlocked (q)))
     {
-      et =
-        (EventType) EVENTS->et_stack->elements[i];
-      arg = EVENTS->arg_stack->elements[i];
+      already_exists = 0;
 
-      for (j = i + 1;
-           j < EVENTS->et_stack->top; j++)
-        {
-          et2 =
-            (EventType) EVENTS->et_stack->elements[j];
-          arg2 = EVENTS->arg_stack->elements[j];
+      for (i = 0; i < *num_events; i++)
+        if (event->type == events[i]->type &&
+            event->arg == events[i]->arg)
+          already_exists = 1;
 
-          if (et == et2 && arg == arg2)
-            {
-              EVENTS->et_stack->elements[j] =
-                (void *) -1;
-              /*g_message ("removed 1 duplicate");*/
-            }
-        }
+      if (already_exists)
+        free (event);
+      else
+        array_append (events, (*num_events), event);
     }
 }
 
@@ -533,26 +536,30 @@ clean_duplicates ()
  * This will loop indefinintely.
  */
 int
-events_process ()
+events_process (void * data)
 {
+  GAsyncQueue * q = (GAsyncQueue *) data;
   /*gint64 curr_time = g_get_monotonic_time ();*/
 
-  EventType et;
-  void * arg;
+  g_async_queue_lock (q);
+  ZEvent * events[60];
+  ZEvent * ev;
+  int num_events = 0, i;
+  clean_duplicates_and_copy (
+    q, events, &num_events);
+  g_async_queue_unlock (q);
 
-  clean_duplicates ();
-
-  /*int i = 0;*/
   /*g_message ("starting processing");*/
-  while (!stack_is_empty (EVENTS->et_stack))
+  for (i = 0; i < num_events; i++)
     {
-      /*i++;*/
-      et = ET_POP (EVENTS);
-      arg = ARG_POP (EVENTS);
-      if (et < 0)
-        continue;
+      ev = events[i];
+      if (ev->type < 0)
+        {
+          g_warn_if_reached ();
+          continue;
+        }
 
-      switch (et)
+      switch (ev->type)
         {
         case ET_TRACK_REMOVED:
           tracklist_widget_hard_refresh (
@@ -574,12 +581,12 @@ events_process ()
           break;
         case ET_RULER_SIZE_CHANGED:
           gtk_widget_queue_allocate (
-            GTK_WIDGET (arg)); // ruler widget
-          if (arg == MW_RULER)
+            GTK_WIDGET (ev->arg)); // ruler widget
+          if (ev->arg == MW_RULER)
             arranger_widget_refresh (
               Z_ARRANGER_WIDGET (
                 MW_TIMELINE));
-          else if (arg == MIDI_RULER)
+          else if (ev->arg == MIDI_RULER)
             {
               arranger_widget_refresh (
                 Z_ARRANGER_WIDGET (
@@ -588,7 +595,7 @@ events_process ()
                 Z_ARRANGER_WIDGET (
                   MIDI_MODIFIER_ARRANGER));
             }
-          else if (arg == AUDIO_RULER)
+          else if (ev->arg == AUDIO_RULER)
             {
               arranger_widget_refresh (
                 Z_ARRANGER_WIDGET (
@@ -597,7 +604,7 @@ events_process ()
           break;
         case ET_CLIP_MARKER_POS_CHANGED:
           gtk_widget_queue_allocate (
-            GTK_WIDGET (arg)); // ruler widget
+            GTK_WIDGET (ev->arg)); // ruler widget
           gtk_widget_queue_draw (
             GTK_WIDGET (
               CLIP_EDITOR->region->widget));
@@ -612,7 +619,7 @@ events_process ()
           break;
         case ET_PLUGIN_VISIBILITY_CHANGED:
           on_plugin_visibility_changed (
-            (Plugin *) arg);
+            (Plugin *) ev->arg);
           break;
         case ET_LAST_TIMELINE_OBJECT_CHANGED:
           TRANSPORT->total_bars =
@@ -628,7 +635,7 @@ events_process ()
           break;
         case ET_AUTOMATION_VALUE_CHANGED:
           on_automation_value_changed (
-            (Automatable *) arg);
+            (Automatable *) ev->arg);
           break;
         case ET_RANGE_SELECTION_CHANGED:
           on_range_selection_changed ();
@@ -669,27 +676,27 @@ events_process ()
             MW_TRACKLIST);
           break;
         case ET_TRACK_ADDED:
-          on_track_added ((Track *) arg);
+          on_track_added ((Track *) ev->arg);
           break;
         case ET_MIDI_ARRANGER_SELECTIONS_CHANGED:
            on_midi_note_selection_changed();
             break;
         case ET_MIDI_NOTE_CHANGED:
           /*g_message ("mn changed %p",*/
-                     /*((MidiNote *)arg)->widget);*/
-          on_midi_note_changed ((MidiNote *) arg);
+                     /*((MidiNote *)ev->arg)->widget);*/
+          on_midi_note_changed ((MidiNote *) ev->arg);
           break;
         case ET_REGION_CHANGED:
-          on_region_changed ((Region *) arg);
+          on_region_changed ((Region *) ev->arg);
           break;
         case ET_TRACK_CHANGED:
-          on_track_changed ((Track *) arg);
+          on_track_changed ((Track *) ev->arg);
           break;
         case ET_TRACK_COLOR_CHANGED:
-          on_track_color_changed ((Track *) arg);
+          on_track_color_changed ((Track *) ev->arg);
           break;
         case ET_TRACK_NAME_CHANGED:
-          on_track_name_changed ((Track *) arg);
+          on_track_name_changed ((Track *) ev->arg);
           break;
         case ET_TIMELINE_VIEWPORT_CHANGED:
           timeline_minimap_widget_refresh (
@@ -701,7 +708,7 @@ events_process ()
           break;
         case ET_TRACK_STATE_CHANGED:
           on_track_state_changed (
-            (Track *) arg);
+            (Track *) ev->arg);
           break;
         case ET_UNDO_REDO_ACTION_DONE:
           header_bar_widget_refresh_undo_redo_buttons (
@@ -710,10 +717,10 @@ events_process ()
         case ET_MIDI_NOTE_CREATED:
           /*z_gtk_overlay_add_if_not_exists (*/
             /*GTK_OVERLAY (MIDI_ARRANGER),*/
-            /*GTK_WIDGET (((MidiNote *) arg)->widget));*/
+            /*GTK_WIDGET (((MidiNote *) ev->arg)->widget));*/
           /*z_gtk_overlay_add_if_not_exists (*/
             /*GTK_OVERLAY (MIDI_MODIFIER_ARRANGER),*/
-            /*GTK_WIDGET (((MidiNote *) arg)->vel->widget));*/
+            /*GTK_WIDGET (((MidiNote *) ev->arg)->vel->widget));*/
           /*gtk_widget_queue_allocate (*/
             /*GTK_WIDGET (MIDI_ARRANGER));*/
           /*arranger_widget_refresh (*/
@@ -722,10 +729,10 @@ events_process ()
             MIDI_ARRANGER);
           break;
         case ET_MIDI_NOTE_REMOVED:
-          /*g_object_ref (((MidiNote *) arg)->widget);*/
+          /*g_object_ref (((MidiNote *) ev->arg)->widget);*/
           /*gtk_container_remove (*/
             /*GTK_CONTAINER (MIDI_ARRANGER),*/
-            /*GTK_WIDGET (((MidiNote *) arg)->widget));*/
+            /*GTK_WIDGET (((MidiNote *) ev->arg)->widget));*/
           /*arranger_widget_refresh (*/
             /*Z_ARRANGER_WIDGET (MIDI_ARRANGER));*/
           midi_arranger_widget_refresh_children (
@@ -742,19 +749,25 @@ events_process ()
           break;
         case ET_AUTOMATION_LANE_ADDED:
           on_automation_lane_added (
-            (AutomationLane *) arg);
+            (AutomationLane *) ev->arg);
           break;
         case ET_PLUGIN_ADDED:
           on_plugin_added (
-            (Plugin *) arg);
+            (Plugin *) ev->arg);
           break;
         default:
           g_warn_if_reached ();
           /* unimplemented */
           break;
         }
+
+      free (ev);
     }
   /*g_message ("processed %d events", i);*/
+
+  if (num_events > 5)
+    g_warning ("More than 5 events processed. "
+               "Optimization needed.");
 
   /*g_usleep (8000);*/
   project_sanity_check (PROJECT);
@@ -765,18 +778,13 @@ events_process ()
 /**
  * Must be called from a GTK thread.
  */
-void
-events_init (Events * self)
+GAsyncQueue *
+events_init ()
 {
-  self->et_stack = stack_new (64);
-  self->arg_stack = stack_new (64);
+  GAsyncQueue * queue =
+    g_async_queue_new ();
 
-  /*g_idle_add_full (*/
-    /*G_PRIORITY_HIGH_IDLE + 30,*/
-    /*(GSourceFunc) events_process,*/
-    /*NULL, NULL);*/
-  /*g_idle_add ((GSourceFunc) events_process, NULL);*/
-  g_timeout_add (32,
-                 events_process,
-                 NULL);
+  g_timeout_add (32, events_process, queue);
+
+  return queue;
 }

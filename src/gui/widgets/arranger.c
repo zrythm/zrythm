@@ -2049,9 +2049,9 @@ arranger_widget_refresh_cursor (
   /*g_message ("over action %d",*/
              /*ar_prv->action);*/
 
-  if (ar_prv->action ==
-        UI_OVERLAY_ACTION_NONE)
+  switch (ar_prv->action)
     {
+    case UI_OVERLAY_ACTION_NONE:
       if (P_TOOL == TOOL_SELECT_NORMAL ||
            P_TOOL == TOOL_SELECT_STRETCH)
         {
@@ -2086,52 +2086,39 @@ arranger_widget_refresh_cursor (
         ac = ARRANGER_CURSOR_RAMP;
       else if (P_TOOL == TOOL_AUDITION)
         ac = ARRANGER_CURSOR_AUDITION;
-    }
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION ||
-          ar_prv->action ==
-            UI_OVERLAY_ACTION_DELETE_SELECTING ||
-          ar_prv->action ==
-            UI_OVERLAY_ACTION_ERASING)
-    {
+      break;
+    case UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION:
+    case UI_OVERLAY_ACTION_DELETE_SELECTING:
+    case UI_OVERLAY_ACTION_ERASING:
       ac = ARRANGER_CURSOR_ERASER;
-    }
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_STARTING_MOVING_COPY ||
-           ar_prv->action ==
-             UI_OVERLAY_ACTION_MOVING_COPY)
-    {
+      break;
+    case UI_OVERLAY_ACTION_STARTING_MOVING_COPY:
+    case UI_OVERLAY_ACTION_MOVING_COPY:
       ac = ARRANGER_CURSOR_GRABBING_COPY;
-    }
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_STARTING_MOVING ||
-           ar_prv->action ==
-             UI_OVERLAY_ACTION_MOVING)
-    {
+      break;
+    case UI_OVERLAY_ACTION_STARTING_MOVING:
+    case UI_OVERLAY_ACTION_MOVING:
       ac = ARRANGER_CURSOR_GRABBING;
-    }
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_STARTING_MOVING_LINK ||
-           ar_prv->action ==
-             UI_OVERLAY_ACTION_MOVING_LINK)
-    {
+      break;
+    case UI_OVERLAY_ACTION_STARTING_MOVING_LINK:
+    case UI_OVERLAY_ACTION_MOVING_LINK:
       ac = ARRANGER_CURSOR_GRABBING_LINK;
-    }
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_RESIZING_L)
-    {
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_L:
       if (timeline && timeline->resizing_range)
         ac = ARRANGER_CURSOR_RANGE;
       else
         ac = ARRANGER_CURSOR_RESIZING_L;
-    }
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_RESIZING_R)
-    {
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_R:
       if (timeline && timeline->resizing_range)
         ac = ARRANGER_CURSOR_RANGE;
       else
         ac = ARRANGER_CURSOR_RESIZING_R;
+      break;
+    default:
+      ac = ARRANGER_CURSOR_SELECT;
+      break;
     }
 
   /*g_message ("ac %d", ac);*/

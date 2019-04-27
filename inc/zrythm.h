@@ -102,9 +102,9 @@ typedef struct Zrythm
   char *                  open_filename;
 
   /**
-   * GUI events.
+   * Event queue, mainly for GUI events.
    */
-  Events                  events;
+  GAsyncQueue *           event_queue;
 } Zrythm;
 
 /**

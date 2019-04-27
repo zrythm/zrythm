@@ -20,6 +20,8 @@
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/log.h"
 #include "plugins/plugin.h"
+#include "plugins/plugin_manager.h"
+#include "zrythm.h"
 
 int
 lv2_vprintf(LV2_Log_Handle handle,
@@ -29,11 +31,11 @@ lv2_vprintf(LV2_Log_Handle handle,
 {
   Lv2Plugin* plugin  = (Lv2Plugin*) handle;
   GLogLevelFlags level;
-  if (type == plugin->urids.log_Trace)
+  if (type == PM_URIDS.log_Trace)
     level = G_LOG_LEVEL_DEBUG;
-  else if (type == plugin->urids.log_Error)
+  else if (type == PM_URIDS.log_Error)
     level = G_LOG_LEVEL_ERROR;
-  else if (type == plugin->urids.log_Warning)
+  else if (type == PM_URIDS.log_Warning)
     level = G_LOG_LEVEL_WARNING;
   else
     level = G_LOG_LEVEL_MESSAGE;

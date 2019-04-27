@@ -279,10 +279,10 @@ lv2_control_set_control(const Lv2Control* control,
       uint8_t              buf[1024];
       lv2_atom_forge_set_buffer(&forge, buf, sizeof(buf));
 
-      lv2_atom_forge_object(&forge, &frame, 0, plugin->urids.patch_Set);
-      lv2_atom_forge_key(&forge, plugin->urids.patch_property);
+      lv2_atom_forge_object(&forge, &frame, 0, PM_URIDS.patch_Set);
+      lv2_atom_forge_key(&forge, PM_URIDS.patch_property);
       lv2_atom_forge_urid(&forge, control->property);
-      lv2_atom_forge_key(&forge, plugin->urids.patch_value);
+      lv2_atom_forge_key(&forge, PM_URIDS.patch_value);
       lv2_atom_forge_atom(&forge, size, type);
       lv2_atom_forge_write(&forge, body, size);
 
@@ -290,7 +290,7 @@ lv2_control_set_control(const Lv2Control* control,
       lv2_ui_write(plugin,
                     plugin->control_in,
                     lv2_atom_total_size(atom),
-                    plugin->urids.atom_eventTransfer,
+                    PM_URIDS.atom_eventTransfer,
                     atom);
     }
 }

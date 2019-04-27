@@ -49,9 +49,7 @@
 #include "audio/position.h"
 #include "plugins/lv2/control.h"
 #include "plugins/lv2/lv2_evbuf.h"
-#include "plugins/lv2/symap.h"
 #include "plugins/lv2/worker.h"
-#include "plugins/lv2/urid.h"
 #include "plugins/lv2/zix/ring.h"
 #include "plugins/lv2/suil.h"
 #include "utils/sem.h"
@@ -61,26 +59,17 @@
 #include <lilv/lilv.h>
 #include <serd/serd.h>
 
-#include <lv2/lv2plug.in/ns/ext/atom/atom.h>
-#include <lv2/lv2plug.in/ns/ext/atom/forge.h>
+//#include <lv2/lv2plug.in/ns/ext/atom/atom.h>
+//#include <lv2/lv2plug.in/ns/ext/atom/forge.h>
 #include <lv2/lv2plug.in/ns/ext/data-access/data-access.h>
 #include <lv2/lv2plug.in/ns/ext/log/log.h>
-#include <lv2/lv2plug.in/ns/ext/midi/midi.h>
-#include <lv2/lv2plug.in/ns/ext/resize-port/resize-port.h>
+#include <lv2/lv2plug.in/ns/ext/options/options.h>
 #include <lv2/lv2plug.in/ns/ext/state/state.h>
-#include <lv2/lv2plug.in/ns/ext/urid/urid.h>
-#include <lv2/lv2plug.in/ns/ext/uri-map/uri-map.h>
-#include <lv2/lv2plug.in/ns/ext/worker/worker.h>
+//#include <lv2/lv2plug.in/ns/ext/urid/urid.h>
+//#include <lv2/lv2plug.in/ns/ext/uri-map/uri-map.h>
+//#include <lv2/lv2plug.in/ns/ext/worker/worker.h>
 
-#include "lv2/lv2plug.in/ns/ext/port-props/port-props.h"
-#include "lv2/lv2plug.in/ns/ext/presets/presets.h"
-#include "lv2/lv2plug.in/ns/ext/time/time.h"
-#include "lv2/lv2plug.in/ns/extensions/ui/ui.h"
-#include "lv2/lv2plug.in/ns/extensions/units/units.h"
-#include "lv2/lv2plug.in/ns/ext/patch/patch.h"
-#include "lv2/lv2plug.in/ns/ext/port-groups/port-groups.h"
-#include "lv2/lv2plug.in/ns/ext/buf-size/buf-size.h"
-#include "lv2/lv2plug.in/ns/ext/options/options.h"
+//#include "lv2/lv2plug.in/ns/extensions/ui/ui.h"
 
 #include <sratom/sratom.h>
 
@@ -179,14 +168,6 @@ typedef struct Lv2Plugin
   LV2_External_UI_Widget* extuiptr;  ///< data structure used for external-ui
   GtkCheckMenuItem* active_preset_item;
   bool              updating;
-
-  /** URI map for URID feature. */
-	Symap*                 symap;
-  /** Lock for URI map. */
-	ZixSem                 symap_lock;
-
-  /** URIDs. */
-  Lv2URIDs               urids;
 	LV2_URID_Map       map;            ///< URI => Int map
 	LV2_URID_Unmap     unmap;          ///< Int => URI map
 	SerdEnv*           env;            ///< Environment for RDF printing

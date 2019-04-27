@@ -36,6 +36,17 @@
 #include <glib/gi18n.h>
 
 #include <lv2/lv2plug.in/ns/ext/event/event.h>
+#include <lv2/lv2plug.in/ns/ext/options/options.h>
+#include <lv2/lv2plug.in/ns/ext/parameters/parameters.h>
+#include <lv2/lv2plug.in/ns/ext/buf-size/buf-size.h>
+#include <lv2/lv2plug.in/ns/ext/patch/patch.h>
+#include <lv2/lv2plug.in/ns/ext/port-groups/port-groups.h>
+#include <lv2/lv2plug.in/ns/ext/midi/midi.h>
+#include <lv2/lv2plug.in/ns/ext/port-props/port-props.h>
+#include <lv2/lv2plug.in/ns/ext/presets/presets.h>
+#include <lv2/lv2plug.in/ns/ext/resize-port/resize-port.h>
+#include <lv2/lv2plug.in/ns/ext/time/time.h>
+#include <lv2/lv2plug.in/ns/extensions/units/units.h>
 
 /**
  * If category not already set in the categories, add it.
@@ -157,6 +168,9 @@ plugin_manager_init (PluginManager * self)
   g_message ("Initializing plugin manager...");
   self->num_plugins = 0;
   self->num_plugin_categories = 0;
+
+  self->symap = symap_new();
+  zix_sem_init(&self->symap_lock, 1);
 
   /* init lv2 settings */
   g_message ("Creating Lilv World...");
@@ -344,6 +358,9 @@ plugin_manager_init (PluginManager * self)
     patch_Message,
     LV2_PATCH__Message);
   ADD_LV2_NODE (
+    patch_readable,
+    LV2_PATCH__readable);
+  ADD_LV2_NODE (
     patch_writable,
     LV2_PATCH__writable);
   ADD_LV2_NODE (
@@ -440,6 +457,68 @@ plugin_manager_init (PluginManager * self)
   nodes->end = NULL;
 #undef ADD_LV2_NODE
 
+  /* symap URIDs */
+#define SYMAP_MAP(target,uri) \
+  self->urids.target = \
+    symap_map (self->symap, uri);
+
+  SYMAP_MAP (atom_Float,
+             LV2_ATOM__Float);
+  SYMAP_MAP (atom_Int,
+             LV2_ATOM__Int);
+  SYMAP_MAP (atom_Object,
+             LV2_ATOM__Object);
+  SYMAP_MAP (atom_Path,
+             LV2_ATOM__Path);
+  SYMAP_MAP (atom_String,
+             LV2_ATOM__String);
+  SYMAP_MAP (atom_eventTransfer,
+             LV2_ATOM__eventTransfer);
+  SYMAP_MAP (bufsz_maxBlockLength,
+             LV2_BUF_SIZE__maxBlockLength);
+  SYMAP_MAP (bufsz_minBlockLength,
+             LV2_BUF_SIZE__minBlockLength);
+  SYMAP_MAP (bufsz_sequenceSize,
+             LV2_BUF_SIZE__sequenceSize);
+  SYMAP_MAP (log_Error,
+             LV2_LOG__Error);
+  SYMAP_MAP (log_Trace,
+             LV2_LOG__Trace);
+  SYMAP_MAP (log_Warning,
+             LV2_LOG__Warning);
+  SYMAP_MAP (midi_MidiEvent,
+             LV2_MIDI__MidiEvent);
+  SYMAP_MAP (param_sampleRate,
+             LV2_PARAMETERS__sampleRate);
+  SYMAP_MAP (patch_Get,
+             LV2_PATCH__Get);
+  SYMAP_MAP (patch_Put,
+             LV2_PATCH__Put);
+  SYMAP_MAP (patch_Set,
+             LV2_PATCH__Set);
+  SYMAP_MAP (patch_body,
+             LV2_PATCH__body);
+  SYMAP_MAP (patch_property,
+             LV2_PATCH__property);
+  SYMAP_MAP (patch_value,
+             LV2_PATCH__value);
+  SYMAP_MAP (time_Position,
+             LV2_TIME__Position);
+  SYMAP_MAP (time_barBeat,
+             LV2_TIME__barBeat);
+  SYMAP_MAP (time_beatUnit,
+             LV2_TIME__beatUnit);
+  SYMAP_MAP (time_beatsPerBar,
+             LV2_TIME__beatsPerBar);
+  SYMAP_MAP (time_beatsPerMinute,
+             LV2_TIME__beatsPerMinute);
+  SYMAP_MAP (time_frame,
+             LV2_TIME__frame);
+  SYMAP_MAP (time_speed,
+             LV2_TIME__speed);
+  SYMAP_MAP (ui_updateRate,
+             LV2_UI__updateRate);
+#undef SYMAP_MAP
 }
 
 void
@@ -452,4 +531,6 @@ void
 plugin_manager_free (
   PluginManager * self)
 {
+  symap_free (self->symap);
+  zix_sem_destroy (&self->symap_lock);
 }

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-27 13:39+0100\n"
+"POT-Creation-Date: 2019-04-27 16:59+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrytm dot org>\n"
 "Language-Team: Japanese\n"
@@ -271,7 +271,7 @@ msgstr "リージョン名を入力してください"
 msgid "Eraser tool"
 msgstr "エレーザツール"
 
-#: src/plugins/plugin_manager.c:206
+#: src/plugins/plugin_manager.c:220
 msgid "Error loading LV2 bundle dir: "
 msgstr ""
 
@@ -646,7 +646,7 @@ msgid ""
 "(note: this text is hard coded at the moment)"
 msgstr ""
 
-#: src/project.c:537
+#: src/project.c:540
 #, fuzzy
 msgid "Project saved."
 msgstr "プロジェクト名"

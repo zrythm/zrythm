@@ -790,13 +790,13 @@ control_changed (
         }
     }
   else if (GTK_IS_ENTRY(widget) &&
-           type == plugin->urids.atom_String)
+           type == PM_URIDS.atom_String)
     {
       gtk_entry_set_text (
         GTK_ENTRY(widget), (const char*)body);
     }
   else if (GTK_IS_FILE_CHOOSER (widget) &&
-           type == plugin->urids.atom_Path)
+           type == PM_URIDS.atom_Path)
     {
       gtk_file_chooser_set_filename (
         GTK_FILE_CHOOSER(widget),
@@ -816,9 +816,9 @@ patch_set_get (
 {
 	lv2_atom_object_get (
     obj,
-	  plugin->urids.patch_property,
+	  PM_URIDS.patch_property,
     (const LV2_Atom*)property,
-	  plugin->urids.patch_value,
+	  PM_URIDS.patch_value,
     value, 0);
 	if (!*property)
     {
@@ -845,7 +845,7 @@ patch_put_get(
 {
 	lv2_atom_object_get (
     obj,
-	  plugin->urids.patch_body,
+	  PM_URIDS.patch_body,
     (const LV2_Atom*)body,
 	  0);
 	if (!*body)
@@ -920,7 +920,7 @@ lv2_gtk_ui_port_event(Lv2Plugin*       plugin,
   else if (protocol == 0)
 		return;  // No widget (probably notOnGUI)
 	else if (protocol !=
-           plugin->urids.atom_eventTransfer)
+           PM_URIDS.atom_eventTransfer)
     {
       g_warning (
         "Unknown port event protocol");
@@ -935,7 +935,7 @@ lv2_gtk_ui_port_event(Lv2Plugin*       plugin,
       const LV2_Atom_Object* obj =
         (const LV2_Atom_Object*)buffer;
       if (obj->body.otype ==
-          plugin->urids.patch_Set)
+          PM_URIDS.patch_Set)
         {
           const LV2_Atom_URID* property = NULL;
           const LV2_Atom*      value    = NULL;
@@ -945,7 +945,7 @@ lv2_gtk_ui_port_event(Lv2Plugin*       plugin,
               plugin, property->body, value);
         }
       else if (obj->body.otype ==
-               plugin->urids.patch_Put)
+               PM_URIDS.patch_Put)
         {
           const LV2_Atom_Object* body = NULL;
           if (!patch_put_get(plugin, obj, &body))
