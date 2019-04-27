@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-27 18:37+0100\n"
+"POT-Creation-Date: 2019-04-27 20:46+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrythm dot org>\n"
 "Language-Team: Spanish\n"
@@ -21,8 +21,21 @@ msgstr ""
 msgid "-2"
 msgstr ""
 
+#: src/utils/ui.c:618
+msgid "-3dB"
+msgstr ""
+
+#: src/utils/ui.c:619
+msgid "-6dB"
+msgstr ""
+
 #: resources/ui/automation_lane.ui:137
 msgid "0.0"
+msgstr ""
+
+#. TRANSLATORS: Pan algorithm
+#: src/utils/ui.c:617
+msgid "0dB"
 msgstr ""
 
 #: resources/ui/channel.ui:253
@@ -52,7 +65,7 @@ msgstr ""
 msgid "Add Region"
 msgstr ""
 
-#: resources/ui/preferences.ui:215
+#: resources/ui/preferences.ui:259
 msgid "Always open plugin UIs"
 msgstr ""
 
@@ -225,11 +238,11 @@ msgid "Donate"
 msgstr ""
 
 #. TRANSLATORS: Dummy audio backend
-#: src/utils/ui.c:566 src/utils/ui.c:608
+#: src/utils/ui.c:563 src/utils/ui.c:580
 msgid "Dummy"
 msgstr ""
 
-#: resources/ui/preferences.ui:287
+#: resources/ui/preferences.ui:331
 msgid "Editing"
 msgstr ""
 
@@ -249,7 +262,7 @@ msgstr ""
 msgid "Engine"
 msgstr ""
 
-#: src/utils/ui.c:520
+#: src/utils/ui.c:541
 msgid "English [en]"
 msgstr ""
 
@@ -325,15 +338,15 @@ msgstr ""
 msgid "Freeze"
 msgstr ""
 
-#: src/utils/ui.c:522
+#: src/utils/ui.c:543
 msgid "French [fr]"
 msgstr ""
 
-#: resources/ui/preferences.ui:343
+#: resources/ui/preferences.ui:387
 msgid "GUI"
 msgstr ""
 
-#: resources/ui/shortcuts.ui:16 resources/ui/preferences.ui:191
+#: resources/ui/shortcuts.ui:16 resources/ui/preferences.ui:235
 msgid "General"
 msgstr ""
 
@@ -341,7 +354,7 @@ msgstr ""
 msgid "Genre"
 msgstr ""
 
-#: src/utils/ui.c:521
+#: src/utils/ui.c:542
 msgid "German [de]"
 msgstr ""
 
@@ -373,11 +386,11 @@ msgstr ""
 msgid "Instrument Track"
 msgstr ""
 
-#: resources/ui/preferences.ui:302
+#: resources/ui/preferences.ui:346
 msgid "Interface"
 msgstr ""
 
-#: src/utils/ui.c:523
+#: src/utils/ui.c:544
 msgid "Italian [it]"
 msgstr ""
 
@@ -391,7 +404,7 @@ msgstr ""
 msgid "JACK functionality is disabled"
 msgstr ""
 
-#: src/utils/ui.c:525
+#: src/utils/ui.c:546
 msgid "Japanese [ja]"
 msgstr ""
 
@@ -403,7 +416,7 @@ msgstr ""
 msgid "LFO 1"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:88 resources/ui/preferences.ui:316
+#: resources/ui/first_run_assistant.ui:88 resources/ui/preferences.ui:360
 msgid "Language"
 msgstr ""
 
@@ -420,6 +433,11 @@ msgstr ""
 #: resources/ui/inspector_ap.ui:101 resources/ui/inspector_midi.ui:101
 #: resources/ui/snap_grid_popover.ui:88
 msgid "Length"
+msgstr ""
+
+#. TRANSLATORS: Pan algorithm
+#: src/utils/ui.c:598
+msgid "Linear"
 msgstr ""
 
 #: src/zrythm.c:259
@@ -462,7 +480,7 @@ msgstr ""
 msgid "MIDI Devices"
 msgstr ""
 
-#: resources/ui/preferences.ui:254
+#: resources/ui/preferences.ui:298
 msgid "Main Window"
 msgstr ""
 
@@ -545,6 +563,14 @@ msgstr ""
 msgid "Overall operation failed"
 msgstr ""
 
+#: resources/ui/preferences.ui:189
+msgid "Pan Algorithm"
+msgstr ""
+
+#: resources/ui/preferences.ui:200
+msgid "Pan Law"
+msgstr ""
+
 #: resources/ui/shortcuts.ui:51
 msgid "Panels"
 msgstr ""
@@ -585,7 +611,7 @@ msgstr ""
 msgid "Plugin 1"
 msgstr ""
 
-#: resources/ui/preferences.ui:205 resources/ui/preferences.ui:239
+#: resources/ui/preferences.ui:249 resources/ui/preferences.ui:283
 msgid "Plugins"
 msgstr ""
 
@@ -800,8 +826,12 @@ msgstr ""
 msgid "Show UI"
 msgstr ""
 
-#: resources/ui/preferences.ui:264
+#: resources/ui/preferences.ui:308
 msgid "Show native decoration"
+msgstr ""
+
+#: src/utils/ui.c:600
+msgid "Sine (Equal Power)"
 msgstr ""
 
 #: resources/ui/quantize_mb_popover.ui:66 resources/ui/snap_grid_popover.ui:66
@@ -832,8 +862,12 @@ msgstr ""
 msgid "Source Audio Unit"
 msgstr ""
 
-#: src/utils/ui.c:524
+#: src/utils/ui.c:545
 msgid "Spanish [es]"
+msgstr ""
+
+#: src/utils/ui.c:599
+msgid "Square Root"
 msgstr ""
 
 #: src/gui/widgets/header_bar.c:258
@@ -1000,7 +1034,7 @@ msgid ""
 "language."
 msgstr ""
 
-#: resources/ui/preferences.ui:219
+#: resources/ui/preferences.ui:263
 msgid "When instantiating a plugin always show its UI"
 msgstr ""
 

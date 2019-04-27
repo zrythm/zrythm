@@ -387,6 +387,20 @@ ui_setup_midi_backends_combo_box (
   GtkComboBox * cb);
 
 /**
+ * Sets up a pan algorithm combo box.
+ */
+void
+ui_setup_pan_algo_combo_box (
+  GtkComboBox * cb);
+
+/**
+ * Sets up a pan law combo box.
+ */
+void
+ui_setup_pan_law_combo_box (
+  GtkComboBox * cb);
+
+/**
  * @}
  */
 

@@ -64,12 +64,12 @@
     <value nick="notes" value="0"/>
     <value nick="numbers" value="1"/>
   </enum>
-  <enum id="org.zrythm.preferences.pan-law">
+  <enum id="org.zrythm.preferences.pan-law-enum">
     <value nick="zero-db" value="0"/>
     <value nick="minus-three-db" value="1"/>
     <value nick="minus-six-db" value="2"/>
   </enum>
-  <enum id="org.zrythm.preferences.pan-algorithm">
+  <enum id="org.zrythm.preferences.pan-algo-enum">
     <value nick="linear" value="0"/>
     <value nick="sqrt" value="1"/>
     <value nick="sine" value="2"/>
@@ -122,8 +122,8 @@
     </key>
 
     <!-- KEY: pan-algorithm -->
-    <key name="pan-algorithm"
-      enum="org.zrythm.preferences.pan-algorithm-enum">
+    <key name="pan-algo"
+      enum="org.zrythm.preferences.pan-algo-enum">
       <default>"sine"</default>
       <summary>The panning algorithm</summary>
       <description>
@@ -135,7 +135,7 @@
     <!-- KEY: pan-law -->
     <key name="pan-law"
       enum="org.zrythm.preferences.pan-law-enum">
-      <default>"minus-3-db"</default>
+      <default>"minus-three-db"</default>
       <summary>The Pan Law</summary>
       <description>
         The Pan Law to use when

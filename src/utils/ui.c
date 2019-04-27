@@ -20,6 +20,7 @@
 #include <math.h>
 
 #include "audio/engine.h"
+#include "audio/pan.h"
 #include "gui/widgets/audio_clip_editor.h"
 #include "gui/widgets/audio_ruler.h"
 #include "gui/widgets/bot_bar.h"
@@ -495,6 +496,32 @@ ui_get_modifier_type_from_gesture (
   gdk_event_get_state (event, state_mask);
 }
 
+#define CREATE_SIMPLE_MODEL_BOILERPLATE \
+  enum \
+  { \
+    VALUE_COL, \
+    TEXT_COL \
+  }; \
+  GtkTreeIter iter; \
+  GtkListStore *store; \
+  gint i; \
+ \
+  store = gtk_list_store_new (2, \
+                              G_TYPE_INT, \
+                              G_TYPE_STRING); \
+ \
+  int num_elements = G_N_ELEMENTS (values); \
+  for (i = 0; i < num_elements; i++) \
+    { \
+      gtk_list_store_append (store, &iter); \
+      gtk_list_store_set (store, &iter, \
+                          VALUE_COL, values[i], \
+                          TEXT_COL, labels[i], \
+                          -1); \
+    } \
+ \
+  return GTK_TREE_MODEL (store);
+
 /**
  * Creates and returns a language model for combo
  * boxes.
@@ -502,12 +529,6 @@ ui_get_modifier_type_from_gesture (
 static GtkTreeModel *
 ui_create_language_model ()
 {
-  enum
-  {
-    VALUE_COL,
-    TEXT_COL
-  };
-
   const int values[NUM_UI_LANGUAGES] = {
     UI_ENGLISH,
     UI_GERMAN,
@@ -525,36 +546,12 @@ ui_create_language_model ()
     _("Japanese [ja]"),
   };
 
-  GtkTreeIter iter;
-  GtkListStore *store;
-  gint i;
-
-  store = gtk_list_store_new (2,
-                              G_TYPE_INT,
-                              G_TYPE_STRING);
-
-  int num_elements = G_N_ELEMENTS (values);
-  for (i = 0; i < num_elements; i++)
-    {
-      gtk_list_store_append (store, &iter);
-      gtk_list_store_set (store, &iter,
-                          VALUE_COL, values[i],
-                          TEXT_COL, labels[i],
-                          -1);
-    }
-
-  return GTK_TREE_MODEL (store);
+  CREATE_SIMPLE_MODEL_BOILERPLATE;
 }
 
 static GtkTreeModel *
 ui_create_audio_backends_model (void)
 {
-  enum
-  {
-    VALUE_COL,
-    TEXT_COL
-  };
-
   const int values[NUM_AUDIO_BACKENDS] = {
     AUDIO_BACKEND_DUMMY,
     AUDIO_BACKEND_JACK,
@@ -569,36 +566,11 @@ ui_create_audio_backends_model (void)
     "PortAudio",
   };
 
-  GtkTreeIter iter;
-  GtkListStore *store;
-  gint i;
-
-  store = gtk_list_store_new (2,
-                              G_TYPE_INT,
-                              G_TYPE_STRING);
-
-  int num_elements = G_N_ELEMENTS (values);
-  for (i = 0; i < num_elements; i++)
-    {
-      gtk_list_store_append (store, &iter);
-      gtk_list_store_set (store, &iter,
-                          VALUE_COL, values[i],
-                          TEXT_COL, labels[i],
-                          -1);
-    }
-
-  return GTK_TREE_MODEL (store);
+  CREATE_SIMPLE_MODEL_BOILERPLATE;
 }
-
 static GtkTreeModel *
 ui_create_midi_backends_model (void)
 {
-  enum
-  {
-    VALUE_COL,
-    TEXT_COL
-  };
-
   const int values[NUM_MIDI_BACKENDS] = {
     MIDI_BACKEND_DUMMY,
     MIDI_BACKEND_JACK,
@@ -609,25 +581,45 @@ ui_create_midi_backends_model (void)
     "Jack MIDI",
   };
 
-  GtkTreeIter iter;
-  GtkListStore *store;
-  gint i;
+  CREATE_SIMPLE_MODEL_BOILERPLATE;
+}
 
-  store = gtk_list_store_new (2,
-                              G_TYPE_INT,
-                              G_TYPE_STRING);
+static GtkTreeModel *
+ui_create_pan_algo_model (void)
+{
 
-  int num_elements = G_N_ELEMENTS (values);
-  for (i = 0; i < num_elements; i++)
-    {
-      gtk_list_store_append (store, &iter);
-      gtk_list_store_set (store, &iter,
-                          VALUE_COL, values[i],
-                          TEXT_COL, labels[i],
-                          -1);
-    }
+  const int values[3] = {
+    PAN_ALGORITHM_LINEAR,
+    PAN_ALGORITHM_SQUARE_ROOT,
+    PAN_ALGORITHM_SINE_LAW,
+  };
+  const gchar *labels[3] = {
+    /* TRANSLATORS: Pan algorithm */
+    _("Linear"),
+    _("Square Root"),
+    _("Sine (Equal Power)"),
+  };
 
-  return GTK_TREE_MODEL (store);
+  CREATE_SIMPLE_MODEL_BOILERPLATE;
+}
+
+static GtkTreeModel *
+ui_create_pan_law_model (void)
+{
+
+  const int values[3] = {
+    PAN_LAW_0DB,
+    PAN_LAW_MINUS_3DB,
+    PAN_LAW_MINUS_6DB,
+  };
+  const gchar *labels[3] = {
+    /* TRANSLATORS: Pan algorithm */
+    _("0dB"),
+    _("-3dB"),
+    _("-6dB"),
+  };
+
+  CREATE_SIMPLE_MODEL_BOILERPLATE;
 }
 
 /**
@@ -680,4 +672,38 @@ ui_setup_midi_backends_combo_box (
     g_settings_get_enum (
       S_PREFERENCES,
       "midi-backend"));
+}
+
+/**
+ * Sets up a pan algorithm combo box.
+ */
+void
+ui_setup_pan_algo_combo_box (
+  GtkComboBox * cb)
+{
+  z_gtk_configure_simple_combo_box (
+    cb, ui_create_pan_algo_model ());
+
+  gtk_combo_box_set_active (
+    GTK_COMBO_BOX (cb),
+    g_settings_get_enum (
+      S_PREFERENCES,
+      "pan-algo"));
+}
+
+/**
+ * Sets up a pan law combo box.
+ */
+void
+ui_setup_pan_law_combo_box (
+  GtkComboBox * cb)
+{
+  z_gtk_configure_simple_combo_box (
+    cb, ui_create_pan_law_model ());
+
+  gtk_combo_box_set_active (
+    GTK_COMBO_BOX (cb),
+    g_settings_get_enum (
+      S_PREFERENCES,
+      "pan-law"));
 }
