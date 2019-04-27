@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-27 20:46+0100\n"
+"POT-Creation-Date: 2019-04-27 21:18+0100\n"
 "PO-Revision-Date: 2019-03-22 22:30+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -102,7 +102,7 @@ msgstr "Outil d'écoute"
 msgid "BPM - Click and drag up/down to set"
 msgstr "BPM - Cliquez et faites glisser vers le haut/bas pour définir"
 
-#: src/audio/engine_jack.c:595
+#: src/audio/engine_jack.c:625
 #, fuzzy
 msgid "Backend error"
 msgstr "Système Audio"
@@ -181,11 +181,11 @@ msgid "Click to enable MIDI controllers to be connected automatically"
 msgstr ""
 "Cliquez pour permettre aux contrôleurs MIDI de se connecter automatiquement"
 
-#: src/audio/engine_jack.c:598
+#: src/audio/engine_jack.c:628
 msgid "Client zombie"
 msgstr ""
 
-#: src/audio/engine_jack.c:592
+#: src/audio/engine_jack.c:622
 msgid "Client's protocol version does not match"
 msgstr ""
 
@@ -203,7 +203,7 @@ msgstr "Collection"
 msgid "Color"
 msgstr "Couleur"
 
-#: src/audio/engine_jack.c:577
+#: src/audio/engine_jack.c:607
 msgid "Communication error with the JACK server"
 msgstr ""
 
@@ -412,7 +412,7 @@ msgstr ""
 msgid "Italian [it]"
 msgstr "Italien [it]"
 
-#: src/audio/engine_jack.c:351
+#: src/audio/engine_jack.c:381
 #, c-format
 msgid "JACK Error: %s"
 msgstr ""
@@ -583,7 +583,7 @@ msgid "Output Files"
 msgstr "Fichiers de sortie"
 
 #. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:564
+#: src/audio/engine_jack.c:594
 msgid "Overall operation failed"
 msgstr ""
 
@@ -765,7 +765,7 @@ msgstr "Supprimer les projets sélectionnés de la liste"
 msgid "Report a Bug"
 msgstr "Rapporter un bogue"
 
-#: src/audio/engine_jack.c:580
+#: src/audio/engine_jack.c:610
 msgid "Requested client does not exist"
 msgstr ""
 
@@ -935,7 +935,7 @@ msgstr ""
 msgid "Tests the backends"
 msgstr "Configuration du moteur"
 
-#: src/audio/engine_jack.c:571
+#: src/audio/engine_jack.c:601
 msgid "The desired client name was not unique"
 msgstr ""
 
@@ -957,7 +957,7 @@ msgstr ""
 "\n"
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 
-#: src/audio/engine_jack.c:567
+#: src/audio/engine_jack.c:597
 msgid "The operation contained an invalid or unsupported option"
 msgstr ""
 
@@ -1038,19 +1038,19 @@ msgstr "Type"
 msgid "URI (Optional):"
 msgstr "Identifiant Uniforme de Ressource (Optional):"
 
-#: src/audio/engine_jack.c:589
+#: src/audio/engine_jack.c:619
 msgid "Unable to access shared memory"
 msgstr ""
 
-#: src/audio/engine_jack.c:574
+#: src/audio/engine_jack.c:604
 msgid "Unable to connect to the JACK server"
 msgstr ""
 
-#: src/audio/engine_jack.c:586
+#: src/audio/engine_jack.c:616
 msgid "Unable to initialize client"
 msgstr ""
 
-#: src/audio/engine_jack.c:583
+#: src/audio/engine_jack.c:613
 msgid "Unable to load internal client"
 msgstr ""
 

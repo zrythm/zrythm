@@ -223,6 +223,7 @@ exporter_export (ExportSettings * info)
         {
           /* run process code */
           engine_process_prepare (
+            AUDIO_ENGINE,
             AUDIO_ENGINE->nframes);
           router_start_cycle (MIXER->graph);
           engine_post_process (AUDIO_ENGINE);

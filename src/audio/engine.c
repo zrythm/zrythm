@@ -261,41 +261,66 @@ audio_engine_close (AudioEngine * self)
 }
 
 /**
+ * Clears the underlying backend's output buffers.
+ */
+static void
+clear_output_buffers (
+  AudioEngine * self)
+{
+  switch (self->audio_backend)
+    {
+    case AUDIO_BACKEND_JACK:
+#ifdef HAVE_JACK
+      engine_jack_clear_output_buffers (self);
+#endif
+      break;
+    default:
+      break;
+    }
+}
+
+/**
  * To be called by each implementation to prepare the
  * structures before processing.
  *
  * Clears buffers, marks all as unprocessed, etc.
  */
 void
-engine_process_prepare (uint32_t nframes)
+engine_process_prepare (
+  AudioEngine * self,
+  uint32_t nframes)
 {
   int i, j;
-  AUDIO_ENGINE->last_time_taken =
-    g_get_monotonic_time ();
-  AUDIO_ENGINE->nframes = nframes;
 
-  if (TRANSPORT->play_state == PLAYSTATE_PAUSE_REQUESTED)
+  self->last_time_taken =
+    g_get_monotonic_time ();
+  self->nframes = nframes;
+
+  if (TRANSPORT->play_state ==
+      PLAYSTATE_PAUSE_REQUESTED)
     {
       g_message ("pause requested handled");
       /*TRANSPORT->play_state = PLAYSTATE_PAUSED;*/
       /*zix_sem_post (&TRANSPORT->paused);*/
     }
-  else if (TRANSPORT->play_state == PLAYSTATE_ROLL_REQUESTED)
+  else if (TRANSPORT->play_state ==
+           PLAYSTATE_ROLL_REQUESTED)
     {
       TRANSPORT->play_state = PLAYSTATE_ROLLING;
     }
 
   int ret =
     zix_sem_try_wait (
-      &AUDIO_ENGINE->port_operation_lock);
-  if (!ret && !AUDIO_ENGINE->exporting)
+      &self->port_operation_lock);
+
+  if (!ret && !self->exporting)
     {
-      AUDIO_ENGINE->skip_cycle = 1;
+      self->skip_cycle = 1;
       return;
     }
 
   /* reset all buffers */
-  port_clear_buffer (AUDIO_ENGINE->midi_in);
+  port_clear_buffer (self->midi_in);
 
   /* prepare channels for this cycle */
   for (i = -1; i < MIXER->num_channels; i++)
@@ -350,7 +375,7 @@ engine_process_prepare (uint32_t nframes)
         }
     }
 
-  AUDIO_ENGINE->filled_stereo_out_bufs = 0;
+  self->filled_stereo_out_bufs = 0;
 }
 
 static void
@@ -385,6 +410,10 @@ engine_process (
   AudioEngine * self,
   uint32_t      nframes)
 {
+  /* Clear output buffers just in case we have to
+   * return early */
+  clear_output_buffers (self);
+
   if (!g_atomic_int_get (&self->run))
     return 0;
 
@@ -392,7 +421,7 @@ engine_process (
   self->cycle = count;
 
   /* run pre-process code */
-  engine_process_prepare (nframes);
+  engine_process_prepare (self, nframes);
 
   if (AUDIO_ENGINE->skip_cycle)
     {
