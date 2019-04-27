@@ -200,7 +200,6 @@ button_press_cb (GtkWidget * widget,
 	{
 	  if (plugin->descr->protocol == PROT_LV2)
 	    {
-	      Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
 	      plugin->visible = !plugin->visible;
 	      EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED,
 	                   plugin);

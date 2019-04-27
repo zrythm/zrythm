@@ -359,18 +359,18 @@ track_get_last_automation_point (
   if (!atl)
     return NULL;
 
-  int i;
+  int i, j;
   AutomationPoint * last_ap = NULL, * ap;
   AutomationTrack * at;
   Position tmp;
   position_init (&tmp);
 
-  for (int i = 0; i < atl->num_automation_tracks;
+  for (i = 0; i < atl->num_automation_tracks;
        i++)
     {
       at = atl->automation_tracks[i];
 
-      for (int j = 0; j < at->num_automation_points;
+      for (j = 0; j < at->num_automation_points;
            j++)
         {
           ap = at->automation_points[j];
@@ -467,28 +467,16 @@ track_add_region (Track * track,
 }
 
 /**
- * Wrapper.
+ * Only removes the region from the track.
+ *
+ * Does not free the Region.
  */
 void
-track_remove_region (Track * track,
-                     Region * region,
-                     int       delete)
+track_remove_region (
+  Track * track,
+  Region * region)
 {
-  if (CLIP_EDITOR->region == region)
-    {
-      CLIP_EDITOR->region = NULL;
-      EVENTS_PUSH (ET_CLIP_EDITOR_REGION_CHANGED,
-                   NULL);
-    }
-  if (TL_SELECTIONS)
-    {
-      array_delete (
-        TL_SELECTIONS->regions,
-        TL_SELECTIONS->num_regions,
-        region);
-    }
-  if (MW_TIMELINE->start_region == region)
-    MW_TIMELINE->start_region = NULL;
+  region_disconnect (region);
 
   array_delete (track->regions,
                 track->num_regions,
@@ -498,13 +486,25 @@ track_remove_region (Track * track,
                 size,
                 region->id);
 
-  if (delete)
-    {
-      project_remove_region (region);
-      free_later (region, region_free);
-    }
-
   EVENTS_PUSH (ET_REGION_REMOVED, track);
+}
+
+void
+track_disconnect (Track * track)
+{
+  int i;
+
+  /* remove regions */
+  for (i = 0; i < track->num_regions; i++)
+    track_remove_region (
+      track, track->regions[i]);
+
+  /* remove chords */
+  for (i = 0; i < track->num_chords; i++)
+    chord_track_remove_chord (
+      track, track->chords[i]);
+
+  channel_disconnect (track->channel);
 }
 
 /**
@@ -515,20 +515,18 @@ track_free (Track * track)
 {
   int i;
 
+  /* remove regions */
+  for (i = 0; i < track->num_regions; i++)
+    free_later (track->regions[i], region_free);
+
+  /* remove chords */
+  for (i = 0; i < track->num_chords; i++)
+    free_later (track->chords[i], chord_free);
+
   /* remove automation points, curves, tracks,
    * lanes*/
   automation_tracklist_free_members (
     &track->automation_tracklist);
-
-  /* remove regions */
-  for (i = 0; i < track->num_regions; i++)
-    track_remove_region (
-      track, track->regions[i], 1);
-
-  /* remove chords */
-  for (i = 0; i < track->num_chords; i++)
-    chord_track_remove_chord (
-      track, track->chords[i]);
 
   switch (track->type)
     {
@@ -554,19 +552,7 @@ track_free (Track * track)
       break;
     }
 
-  if (track->channel)
-    {
-      Plugin * pl;
-      for (int i = 0; i < STRIP_SIZE; i++)
-        {
-          pl = track->channel->plugins[i];
-          if (!pl)
-            continue;
-
-          channel_remove_plugin (track->channel,
-                                 i, 0);
-        }
-    }
+  free_later (track->channel, channel_free);
 
   if (track->widget && GTK_IS_WIDGET (track->widget))
     gtk_widget_destroy (

@@ -98,9 +98,8 @@ midi_region_draw_cb (
     region_get_loop_length_in_ticks (r);
   long clip_start_ticks =
     position_to_ticks (&r->clip_start_pos);
-  int px =
-    ui_pos_to_px_timeline (&r->loop_start_pos, 0);
-  Position tmp;
+  /*int px =*/
+    /*ui_pos_to_px_timeline (&r->loop_start_pos, 0);*/
   for (int i = 0; i < mr->num_midi_notes; i++)
     {
       MidiNote * mn = mr->midi_notes[i];
@@ -190,26 +189,6 @@ midi_region_draw_cb (
  return FALSE;
 }
 
-/**
- * Sets the appropriate cursor.
- * FIXME move these to arranger's hover.
- */
-static int
-on_motion (GtkWidget * widget,
-           GdkEventMotion *event,
-           MidiRegionWidget * self)
-{
-  GtkAllocation allocation;
-  gtk_widget_get_allocation (widget,
-                             &allocation);
-  ArrangerWidgetPrivate * prv =
-    arranger_widget_get_private (
-      Z_ARRANGER_WIDGET (MW_TIMELINE));
-  REGION_WIDGET_GET_PRIVATE (self);
-
-  return FALSE;
-}
-
 MidiRegionWidget *
 midi_region_widget_new (MidiRegion * midi_region)
 {
@@ -225,18 +204,6 @@ midi_region_widget_new (MidiRegion * midi_region)
   g_signal_connect (
     G_OBJECT (rw_prv->drawing_area), "draw",
     G_CALLBACK (midi_region_draw_cb), self);
-  g_signal_connect (
-    G_OBJECT (rw_prv->drawing_area),
-    "enter-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT(rw_prv->drawing_area),
-    "leave-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT(rw_prv->drawing_area),
-    "motion-notify-event",
-    G_CALLBACK (on_motion),  self);
 
   return self;
 }

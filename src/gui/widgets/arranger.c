@@ -401,6 +401,9 @@ arranger_widget_set_cursor (
         }
       g_list_free (children);
       break;
+    default:
+      g_warn_if_reached ();
+      break;
     }
 }
 
@@ -594,6 +597,14 @@ arranger_widget_select (
           num = &MIDI_ARRANGER_SELECTIONS->num_midi_notes;
         }
     }
+  if (audio_arranger)
+    {
+      /* TODO */
+
+    }
+  if (midi_modifier_arranger)
+    {
+    }
 
   if (select && !append)
     {
@@ -769,8 +780,6 @@ on_right_click (GtkGestureMultiPress *gesture,
   if (n_press != 1)
     return;
 
-  GET_ARRANGER_ALIASES (self);
-
   show_context_menu (self, x, y);
 }
 
@@ -793,6 +802,18 @@ auto_scroll (ArrangerWidget * self)
       ar_prv->action ==
         UI_OVERLAY_ACTION_MOVING_LINK);
 	};
+  if (timeline)
+    {
+
+    }
+  if (midi_modifier_arranger)
+    {
+
+    }
+  if (audio_arranger)
+    {
+
+    }
 }
 
 static gboolean
@@ -806,7 +827,7 @@ on_key_release_action (
   GET_ARRANGER_ALIASES (self);
   ar_prv->key_is_pressed = 0;
 
-  if (event->keyval = GDK_KEY_Control_L ||
+  if (event->keyval == GDK_KEY_Control_L ||
       event->keyval == GDK_KEY_Control_R)
     {
       ar_prv->ctrl_held = 0;
@@ -836,9 +857,17 @@ on_key_release_action (
   if (midi_arranger)
     midi_arranger_widget_update_visibility (
       midi_arranger);
-  else if (timeline)
+  if (timeline)
     timeline_arranger_widget_update_visibility (
       timeline);
+  if (midi_modifier_arranger)
+    {
+
+    }
+  if (audio_arranger)
+    {
+
+    }
 
   arranger_widget_refresh_cursor (
     self);
@@ -920,9 +949,17 @@ on_key_action (
           /*UNDO_MANAGER, shift_right_action);*/
         }
     }
-  else if (timeline)
+  if (timeline)
     {
       /* TODO */
+
+    }
+  if (midi_modifier_arranger)
+    {
+
+    }
+  if (audio_arranger)
+    {
 
     }
 
@@ -1057,7 +1094,7 @@ create_item (ArrangerWidget * self,
             }
         }
     }
-  else if (midi_arranger)
+  if (midi_arranger)
     {
       /* find the note and region at x,y */
       note =
@@ -1076,9 +1113,17 @@ create_item (ArrangerWidget * self,
             (MidiRegion *) region);
         }
     }
+  if (midi_modifier_arranger)
+    {
 
-    /* something is (likely) added so reallocate */
-    gtk_widget_queue_allocate (GTK_WIDGET (self));
+    }
+  if (audio_arranger)
+    {
+
+    }
+
+  /* something is (likely) added so reallocate */
+  gtk_widget_queue_allocate (GTK_WIDGET (self));
 }
 
 static void
@@ -1485,7 +1530,7 @@ drag_update (GtkGestureDrag * gesture,
       Position diff_pos;
       int is_negative = offset_x < 0;
       arranger_widget_px_to_pos (
-        self, abs (offset_x), &diff_pos, 0);
+        self, abs ((int) offset_x), &diff_pos, 0);
       long ticks_diff =
         position_to_ticks (&diff_pos);
       if (is_negative)
@@ -1546,7 +1591,7 @@ drag_update (GtkGestureDrag * gesture,
       Position diff_pos;
       int is_negative = offset_x < 0;
       arranger_widget_px_to_pos (
-        self, abs (offset_x), &diff_pos, 0);
+        self, abs ((int) offset_x), &diff_pos, 0);
       long ticks_diff =
         position_to_ticks (&diff_pos);
       if (is_negative)
@@ -1772,15 +1817,15 @@ on_scroll (GtkWidget *widget,
     return FALSE;
 
   double x = event->x,
-         y = event->y,
+         /*y = event->y,*/
          adj_val,
          diff;
-  Position cursor_pos, adj_pos;
+  Position cursor_pos;
    GtkScrolledWindow * scroll =
     arranger_widget_get_scrolled_window (self);
   GtkAdjustment * adj;
   int new_x;
-  RulerWidget * ruler;
+  RulerWidget * ruler = NULL;
   RulerWidgetPrivate * rw_prv;
 
   if (timeline)
@@ -1999,7 +2044,7 @@ arranger_widget_refresh_cursor (
         GTK_WIDGET (self)))
     return;
 
-  ArrangerCursor ac;
+  ArrangerCursor ac = ARRANGER_CURSOR_NONE;
 
   /*g_message ("over action %d",*/
              /*ar_prv->action);*/
@@ -2017,12 +2062,20 @@ arranger_widget_refresh_cursor (
                   ar_prv->action,
                   P_TOOL);
             }
-          else if (midi_arranger)
+          if (midi_arranger)
             {
               ac =
                 midi_arranger_widget_get_cursor (
                   ar_prv->action,
                   P_TOOL);
+            }
+          if (audio_arranger)
+            {
+
+            }
+          if (midi_modifier_arranger)
+            {
+
             }
         }
       else if (P_TOOL == TOOL_EDIT)

@@ -93,7 +93,7 @@ draw_cb (PianoRollLabelsWidget * self, cairo_t *cr, gpointer data)
       cairo_line_to (cr, width, bot_line_px);
       cairo_stroke (cr);
 
-      char * text;
+      char * text = NULL;
       if (note_notation == NOTE_NOTATION_NOTES)
         text =
           g_strdup_printf (

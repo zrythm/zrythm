@@ -31,6 +31,8 @@
 #include "actions/move_timeline_selections_action.h"
 #include "actions/undoable_action.h"
 
+#include <glib.h>
+
 /**
  * Performs the action.
  *
@@ -159,6 +161,10 @@ undoable_action_free (UndoableAction * self)
     case UNDOABLE_ACTION_TYPE_DELETE_CHANNEL:
       break;
     case UNDOABLE_ACTION_TYPE_MOVE_CHANNEL:
+      break;
+    case UNDOABLE_ACTION_TYPE_EDIT_TRACK:
+      /* TODO */
+      g_warn_if_reached ();
       break;
     case UNDOABLE_ACTION_TYPE_CREATE_TL_SELECTIONS:
       create_timeline_selections_action_free (

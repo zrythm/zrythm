@@ -79,6 +79,29 @@
         } \
     }
 
+/**
+ * Deletes from two arrays concurrently.
+ *
+ * Assumes that the element should be deleted at the
+ * same index in both arrays.
+ */
+#define array_double_delete( \
+  array1,array2,size,element1,element2) \
+  for (int ii = 0; ii < size; ii++) \
+    { \
+      if (array1[ii] == element1) \
+        { \
+          --size; \
+          for (int jj = ii; jj < size; jj++) \
+            { \
+              array1[jj] = array1[jj + 1]; \
+              array2[jj] = array2[jj + 1]; \
+            } \
+          break; \
+        } \
+    }
+
+
 
 /**
  * Macro so that no casting to void ** and void * is

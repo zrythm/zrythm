@@ -51,13 +51,15 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 
   gtk_render_background (context, cr, 0, 0, width, height);
 
-  double meter_val;
+  double meter_val = -1.0;
   switch (self->type)
     {
     case METER_TYPE_DB:
       meter_val = meter_val_from_real (self);
       break;
     case METER_TYPE_MIDI:
+      /* TODO */
+      g_warn_if_reached ();
       break;
     }
   double value_px = height * meter_val;

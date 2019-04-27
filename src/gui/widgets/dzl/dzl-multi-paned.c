@@ -473,7 +473,8 @@ dzl_multi_paned_set_child_index (DzlMultiPaned *self,
   if (index < 0)
     index = priv->children->len - 1;
 
-  index = CLAMP (index, 0, priv->children->len - 1);
+  index =
+    CLAMP (index, 0, (int) priv->children->len - 1);
 
   for (guint i = 0; i < priv->children->len; i++)
     {

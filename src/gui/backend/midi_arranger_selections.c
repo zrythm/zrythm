@@ -69,12 +69,12 @@ void
 midi_arranger_selections_clear (
   MidiArrangerSelections * mas)
 {
-  int i, num_midi_notes;
+  int i, num_midi_notes = mas->num_midi_notes;;
   MidiNote * mn;
 
   /* use caches because mas->* will be operated on */
   static MidiNote * midi_notes[600];
-  for (i = 0; i < mas->num_midi_notes; i++)
+  for (i = 0; i < num_midi_notes; i++)
     {
       midi_notes[i] = mas->midi_notes[i];
     }
@@ -403,8 +403,9 @@ midi_arranger_selections_paste_to_pos (
 
       /* clone and add to track */
       MidiNote * cp =
-        midi_note_clone (midi_note,
-                      MIDI_NOTE_CLONE_COPY);
+        midi_note_clone (
+          midi_note,
+          midi_note->region);
       /*midi_note_print (cp);*/
       midi_region_add_midi_note (
         cp->region,

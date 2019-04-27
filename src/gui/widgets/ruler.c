@@ -250,6 +250,12 @@ multipress_pressed (
           position_set_to_pos (&TRANSPORT->cue_pos,
                                &pos);
         }
+      if (midi_ruler)
+        {
+        }
+      if (audio_ruler)
+        {
+        }
     }
 
   return FALSE;
@@ -514,7 +520,7 @@ drag_end (GtkGestureDrag *gesture,
 
   rw_prv->action = UI_OVERLAY_ACTION_NONE;
 
-  if (self == MW_RULER)
+  if (self == (RulerWidget *) MW_RULER)
     timeline_ruler_on_drag_end ();
 }
 
@@ -526,7 +532,7 @@ on_motion (GtkDrawingArea * da,
   /* change statusbar */
   if (event->type == GDK_MOTION_NOTIFY)
     {
-      if (self == MW_RULER)
+      if (self == (RulerWidget *) MW_RULER)
         bot_bar_change_status (
           "Timeline Ruler - Click and drag on a "
           "marker to change its position - Click "
@@ -535,12 +541,12 @@ on_motion (GtkDrawingArea * da,
           "the top half to create a range "
           "selection (Use Shift to bypass "
           "snapping)");
-      else if (self == MIDI_RULER)
+      else if (self == (RulerWidget *) MIDI_RULER)
         bot_bar_change_status (
           "Clip Editor Ruler - Click and drag on "
           "a marker to change its position (Use "
           "Shift to bypass snapping)");
-      else if (self == AUDIO_RULER)
+      else if (self == (RulerWidget *) AUDIO_RULER)
         bot_bar_change_status (
           "Clip Editor Ruler - Click and drag on "
           "a marker to change its position (Use "
@@ -550,7 +556,7 @@ on_motion (GtkDrawingArea * da,
     bot_bar_change_status ("");
 
 
-  if (self != MW_RULER)
+  if (self != (RulerWidget *) MW_RULER)
     return;
 
   int height = gtk_widget_get_allocated_height (

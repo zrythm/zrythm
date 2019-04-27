@@ -240,11 +240,7 @@ int
 midi_note_hit (MidiNote * midi_note,
                Position *  pos)
 {
-  Position end_pos;
   Position local_pos;
-  Position loop_start_adjusted,
-           loop_end_adjusted,
-           region_end_adjusted;
   Region * region = midi_note->region;
 
   /* get local positions */

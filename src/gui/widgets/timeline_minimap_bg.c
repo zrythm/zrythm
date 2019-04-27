@@ -49,7 +49,7 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
       &TRANSPORT->end_marker_pos, 1) -
     ui_pos_to_px_timeline (
       &TRANSPORT->start_marker_pos, 1);
-  int region_px;
+  /*int region_px;*/
 
   int total_track_height = 0;
   Track * track;

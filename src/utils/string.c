@@ -28,7 +28,7 @@
 int
 string_is_ascii (const char * string)
 {
-  int i;
+  unsigned long i;
   if (!string || strlen (string) == 0)
     return 0;
   for (i = 0; i < strlen (string); i++)

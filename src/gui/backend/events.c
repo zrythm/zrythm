@@ -481,21 +481,21 @@ on_plugin_visibility_changed (Plugin * pl)
             pl->channel, pl)]));
 }
 
-static int
-update_adj ()
-{
-  GtkAdjustment * adj =
-    gtk_scrolled_window_get_hadjustment (
-      MW_CENTER_DOCK->timeline_scroll);
-  gtk_adjustment_set_value (
-    adj,
-    gtk_adjustment_get_value (adj) + gtk_adjustment_get_step_increment (adj));
-  gtk_scrolled_window_set_hadjustment(
-    MW_CENTER_DOCK->timeline_scroll,
-    adj);
+/*static int*/
+/*update_adj ()*/
+/*{*/
+  /*GtkAdjustment * adj =*/
+    /*gtk_scrolled_window_get_hadjustment (*/
+      /*MW_CENTER_DOCK->timeline_scroll);*/
+  /*gtk_adjustment_set_value (*/
+    /*adj,*/
+    /*gtk_adjustment_get_value (adj) + gtk_adjustment_get_step_increment (adj));*/
+  /*gtk_scrolled_window_set_hadjustment(*/
+    /*MW_CENTER_DOCK->timeline_scroll,*/
+    /*adj);*/
 
-  return FALSE;
-}
+  /*return FALSE;*/
+/*}*/
 
 static void
 clean_duplicates ()
@@ -535,7 +535,7 @@ clean_duplicates ()
 int
 events_process ()
 {
-  gint64 curr_time = g_get_monotonic_time ();
+  /*gint64 curr_time = g_get_monotonic_time ();*/
 
   EventType et;
   void * arg;
@@ -747,6 +747,10 @@ events_process ()
         case ET_PLUGIN_ADDED:
           on_plugin_added (
             (Plugin *) arg);
+          break;
+        default:
+          g_warn_if_reached ();
+          /* unimplemented */
           break;
         }
     }

@@ -292,7 +292,7 @@ create_model_for_files (FileBrowserWidget * self)
       FileDescriptor * descr =
         FILE_MANAGER->files[i];
 
-      gchar * icon_name;
+      gchar * icon_name = NULL;
       switch (descr->type)
         {
         case FILE_TYPE_MIDI:

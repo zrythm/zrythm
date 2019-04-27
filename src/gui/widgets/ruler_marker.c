@@ -30,6 +30,7 @@
 #include "project.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 /**
  * @addtogroup widgets
@@ -307,11 +308,11 @@ ruler_marker_widget_new (RulerWidget * ruler,
   self->ruler = ruler;
 
   /* set tooltip text */
-  char * tooltip;
+  /*char * tooltip;*/
   if (type == RULER_MARKER_TYPE_PLAYHEAD)
     {
       gtk_widget_set_tooltip_text (
-        GTK_WIDGET (self), "Playhead");
+        GTK_WIDGET (self), _("Playhead"));
     }
 
   gtk_widget_add_events (

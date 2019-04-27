@@ -97,12 +97,12 @@ channel_widget_update_meter_reading (
   return G_SOURCE_CONTINUE;
 }
 
-static void
-phase_invert_button_clicked (ChannelWidget * self,
-                             GtkButton     * button)
-{
+/*static void*/
+/*phase_invert_button_clicked (ChannelWidget * self,*/
+                             /*GtkButton     * button)*/
+/*{*/
 
-}
+/*}*/
 
 
 static void
@@ -134,19 +134,19 @@ on_mute_toggled (GtkToggleButton * btn,
     1);
 }
 
-static void
-on_listen_toggled (GtkToggleButton * btn,
-                   ChannelWidget *   self)
-{
+/*static void*/
+/*on_listen_toggled (GtkToggleButton * btn,*/
+                   /*ChannelWidget *   self)*/
+/*{*/
 
-}
+/*}*/
 
-static void
-on_e_activate (GtkButton *     btn,
-               ChannelWidget * self)
-{
+/*static void*/
+/*on_e_activate (GtkButton *     btn,*/
+               /*ChannelWidget * self)*/
+/*{*/
 
-}
+/*}*/
 
 static void
 refresh_color (ChannelWidget * self)
@@ -242,6 +242,7 @@ setup_channel_icon (ChannelWidget * self)
       resources_set_image_icon (self->icon,
                                 ICON_TYPE_ZRYTHM,
                                 "audio.svg");
+      break;
     case CT_BUS:
     case CT_MASTER:
       resources_set_image_icon (self->icon,

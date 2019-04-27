@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-25 00:27+0100\n"
+"POT-Creation-Date: 2019-04-27 13:39+0100\n"
 "PO-Revision-Date: 2019-03-22 22:30+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -89,7 +89,7 @@ msgstr "Outil d'écoute"
 msgid "BPM - Click and drag up/down to set"
 msgstr "BPM - Cliquez et faites glisser vers le haut/bas pour définir"
 
-#: src/audio/engine_jack.c:596
+#: src/audio/engine_jack.c:595
 #, fuzzy
 msgid "Backend error"
 msgstr "Système Audio"
@@ -140,7 +140,7 @@ msgstr "Impossible de localiser la propriété %s dans la classe %s"
 msgid "Category"
 msgstr "Catégorie"
 
-#: src/gui/widgets/channel_slot.c:242
+#: src/gui/widgets/channel_slot.c:241
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -168,15 +168,15 @@ msgid "Click to enable MIDI controllers to be connected automatically"
 msgstr ""
 "Cliquez pour permettre aux contrôleurs MIDI de se connecter automatiquement"
 
-#: src/audio/engine_jack.c:599
+#: src/audio/engine_jack.c:598
 msgid "Client zombie"
 msgstr ""
 
-#: src/audio/engine_jack.c:593
+#: src/audio/engine_jack.c:592
 msgid "Client's protocol version does not match"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:1433
+#: src/plugins/lv2_gtk.c:1436
 msgid "Close"
 msgstr "Fermer"
 
@@ -190,7 +190,7 @@ msgstr "Collection"
 msgid "Color"
 msgstr "Couleur"
 
-#: src/audio/engine_jack.c:578
+#: src/audio/engine_jack.c:577
 msgid "Communication error with the JACK server"
 msgstr ""
 
@@ -223,7 +223,7 @@ msgstr "Personnalisé"
 msgid "Cut selection to clipboard"
 msgstr "Couper la sélection dans le presse-papier"
 
-#: src/plugins/lv2_gtk.c:561
+#: src/plugins/lv2_gtk.c:562
 msgid "Delete Preset?"
 msgstr "Supprimer le préréglage ?"
 
@@ -240,7 +240,7 @@ msgid "Donate"
 msgstr "Faire un don"
 
 #. TRANSLATORS: Dummy audio backend
-#: src/utils/ui.c:565 src/utils/ui.c:606
+#: src/utils/ui.c:566 src/utils/ui.c:608
 msgid "Dummy"
 msgstr ""
 
@@ -278,7 +278,7 @@ msgstr "Saisir le nom de la région..."
 msgid "Eraser tool"
 msgstr "Outil gomme"
 
-#: src/plugins/plugin_manager.c:203
+#: src/plugins/plugin_manager.c:206
 msgid "Error loading LV2 bundle dir: "
 msgstr ""
 
@@ -491,8 +491,8 @@ msgstr "Fenêtre principal"
 msgid "Manual"
 msgstr "Manuel"
 
-#: src/project.c:160 src/gui/widgets/channel.c:261
-#: src/gui/widgets/channel.c:270 resources/ui/channel.ui:341
+#: src/project.c:160 src/gui/widgets/channel.c:262
+#: src/gui/widgets/channel.c:271 resources/ui/channel.ui:341
 msgid "Master"
 msgstr "Master"
 
@@ -565,7 +565,7 @@ msgid "Output Files"
 msgstr "Fichiers de sortie"
 
 #. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:565
+#: src/audio/engine_jack.c:564
 msgid "Overall operation failed"
 msgstr ""
 
@@ -595,6 +595,11 @@ msgstr "Panneau du Piano Roll"
 
 #: resources/ui/transport_controls.ui:54
 msgid "Play"
+msgstr "Lecture"
+
+#: src/gui/widgets/ruler_marker.c:315
+#, fuzzy
+msgid "Playhead"
 msgstr "Lecture"
 
 #: src/gui/widgets/digital_meter.c:648
@@ -734,7 +739,7 @@ msgstr "Supprimer les projets sélectionnés de la liste"
 msgid "Report a Bug"
 msgstr "Rapporter un bogue"
 
-#: src/audio/engine_jack.c:581
+#: src/audio/engine_jack.c:580
 msgid "Requested client does not exist"
 msgstr ""
 
@@ -763,7 +768,7 @@ msgstr "Panneau droit"
 msgid "Save Project"
 msgstr "Sauvegarder le projet"
 
-#: src/plugins/lv2_gtk.c:148
+#: src/plugins/lv2_gtk.c:149
 msgid "Save State"
 msgstr "Sauvegarder l'état"
 
@@ -875,7 +880,7 @@ msgstr "Espagnol [es]"
 msgid "Status Bar"
 msgstr "Barre d'état"
 
-#: src/gui/widgets/channel.c:265
+#: src/gui/widgets/channel.c:266
 msgid "Stereo out"
 msgstr "Sortie Stéréo"
 
@@ -896,7 +901,7 @@ msgstr ""
 msgid "Tests the backends"
 msgstr "Configuration du moteur"
 
-#: src/audio/engine_jack.c:572
+#: src/audio/engine_jack.c:571
 msgid "The desired client name was not unique"
 msgstr ""
 
@@ -918,7 +923,7 @@ msgstr ""
 "\n"
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 
-#: src/audio/engine_jack.c:568
+#: src/audio/engine_jack.c:567
 msgid "The operation contained an invalid or unsupported option"
 msgstr ""
 
@@ -995,23 +1000,23 @@ msgstr "Pistes (%d)"
 msgid "Type"
 msgstr "Type"
 
-#: src/plugins/lv2_gtk.c:466
+#: src/plugins/lv2_gtk.c:467
 msgid "URI (Optional):"
 msgstr "Identifiant Uniforme de Ressource (Optional):"
 
-#: src/audio/engine_jack.c:590
+#: src/audio/engine_jack.c:589
 msgid "Unable to access shared memory"
 msgstr ""
 
-#: src/audio/engine_jack.c:575
+#: src/audio/engine_jack.c:574
 msgid "Unable to connect to the JACK server"
 msgstr ""
 
-#: src/audio/engine_jack.c:587
+#: src/audio/engine_jack.c:586
 msgid "Unable to initialize client"
 msgstr ""
 
-#: src/audio/engine_jack.c:584
+#: src/audio/engine_jack.c:583
 msgid "Unable to load internal client"
 msgstr ""
 
@@ -1023,11 +1028,11 @@ msgstr "Annuler et refaire"
 msgid "Undo previous command"
 msgstr "Annuler la commande précédente"
 
-#: src/plugins/lv2_gtk.c:780
+#: src/plugins/lv2_gtk.c:781
 msgid "Unknown widget type for value"
 msgstr "Type de widget inconnu pour la valeur"
 
-#: src/plugins/lv2_gtk.c:806
+#: src/plugins/lv2_gtk.c:807
 msgid "Unknown widget type for value\n"
 msgstr "Type de widget inconnu pour value\n"
 
@@ -1081,7 +1086,7 @@ msgstr "Zoomer"
 msgid "Zrythm"
 msgstr "Zrythm"
 
-#: src/plugins/lv2_gtk.c:151 src/plugins/lv2_gtk.c:566
+#: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567
 #: src/actions/actions.c:521
 msgid "_Cancel"
 msgstr "_Annuler"
@@ -1128,7 +1133,7 @@ msgstr "_Aide"
 msgid "_New"
 msgstr "_Nouveau"
 
-#: src/plugins/lv2_gtk.c:567
+#: src/plugins/lv2_gtk.c:568
 msgid "_OK"
 msgstr "_OK"
 
@@ -1140,7 +1145,7 @@ msgstr "_Ouvrir"
 msgid "_Preferences"
 msgstr "_Préférences"
 
-#: src/plugins/lv2_gtk.c:470
+#: src/plugins/lv2_gtk.c:471
 msgid "_Prefix plugin name"
 msgstr "_Préfixe du nom du greffon"
 
@@ -1152,7 +1157,7 @@ msgstr "_Quitter"
 msgid "_Redo"
 msgstr "_Refaire"
 
-#: src/plugins/lv2_gtk.c:152 src/gui/widgets/header_bar.c:130
+#: src/plugins/lv2_gtk.c:153 src/gui/widgets/header_bar.c:130
 #: src/actions/actions.c:523
 msgid "_Save"
 msgstr "_Sauvegarder"

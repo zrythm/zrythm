@@ -1,7 +1,5 @@
 /*
- * audio/scale.c - Scale
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -340,6 +338,9 @@ musical_scale_new (MusicalScaleType      type,
                             CHORD_TYPE_DIM, // type
                             0); // inversion
 
+      break;
+    default:
+      g_warning ("scale unimplemented");
       break;
     }
 

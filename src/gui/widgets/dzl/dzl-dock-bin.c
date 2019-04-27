@@ -307,7 +307,8 @@ set_visible (DzlDockBin          *self,
 
 static gint
 dzl_dock_bin_child_compare (gconstpointer a,
-                            gconstpointer b)
+                            gconstpointer b,
+                            void * ptr)
 {
   const DzlDockBinChild *child_a = a;
   const DzlDockBinChild *child_b = b;
@@ -336,11 +337,12 @@ dzl_dock_bin_resort_children (DzlDockBin *self)
    * always be at the last position.
    */
 
-  g_qsort_with_data (&priv->children[0],
-                     DZL_DOCK_BIN_CHILD_CENTER,
-                     sizeof (DzlDockBinChild),
-                     (GCompareDataFunc)dzl_dock_bin_child_compare,
-                     NULL);
+  g_qsort_with_data (
+    &priv->children[0],
+    DZL_DOCK_BIN_CHILD_CENTER,
+    sizeof (DzlDockBinChild),
+    (GCompareDataFunc)dzl_dock_bin_child_compare,
+    NULL);
 
   gtk_widget_queue_allocate (GTK_WIDGET (self));
 }

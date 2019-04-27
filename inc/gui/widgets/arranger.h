@@ -166,6 +166,8 @@ typedef struct _ArrangerBgWidget ArrangerBgWidget;
 
 typedef enum ArrangerCursor
 {
+  /** Invalid cursor. */
+  ARRANGER_CURSOR_NONE,
   ARRANGER_CURSOR_SELECT,
   ARRANGER_CURSOR_EDIT,
   ARRANGER_CURSOR_ERASER,

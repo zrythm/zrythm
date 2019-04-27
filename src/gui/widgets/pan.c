@@ -108,7 +108,9 @@ drag_update (GtkGestureDrag * gesture,
 {
   PanWidget * self = (PanWidget *) user_data;
   offset_y = - offset_y;
-  int use_y = abs(offset_y - self->last_y) > abs(offset_x - self->last_x);
+  int use_y =
+    fabs (offset_y - self->last_y) >
+    fabs (offset_x - self->last_x);
   SET_VAL (clamp (GET_VAL + 0.005 * (use_y ? offset_y - self->last_y : offset_x - self->last_x),
                1.0f, 0.0f));
   self->last_x = offset_x;

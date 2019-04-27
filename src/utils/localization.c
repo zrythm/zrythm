@@ -72,6 +72,9 @@ localization_get_string_code (
       str[0] = 'j';
       str[1] = 'a';
       break;
+    default:
+      g_warn_if_reached ();
+      break;
     }
   str[2] = '\0';
 }
@@ -159,6 +162,9 @@ localization_init ()
             installed_locales,
             num_installed_locales,
             "ja_");
+      break;
+    default:
+      g_warn_if_reached ();
       break;
     }
 

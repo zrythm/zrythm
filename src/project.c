@@ -400,7 +400,7 @@ load (char * filename)
   RETURN_OK;
 }
 
-#undef INIT_LOADED(sl)
+#undef INIT_LOADED
 
 static void
 generate_aggregated_arrays (Project * self)

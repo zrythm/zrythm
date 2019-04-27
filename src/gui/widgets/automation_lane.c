@@ -286,35 +286,6 @@ on_add_lane_clicked (
   /*return GTK_TREE_MODEL (store);*/
 /*}*/
 
-static void
-setup_combo_box (AutomationLaneWidget * self)
-{
-  /*self->selector_model =*/
-    /*create_automatables_store (self->al->at->track);*/
-  /*gtk_combo_box_set_model (self->selector,*/
-                           /*self->selector_model);*/
-  /*gtk_cell_layout_clear (*/
-    /*GTK_CELL_LAYOUT (self->selector));*/
-  /*GtkCellRenderer* renderer =*/
-    /*gtk_cell_renderer_text_new ();*/
-  /*g_object_set (G_OBJECT (renderer),*/
-                /*"ellipsize",*/
-                /*PANGO_ELLIPSIZE_END,*/
-                /*NULL);*/
-  /*gtk_cell_layout_pack_start (*/
-    /*GTK_CELL_LAYOUT (self->selector),*/
-    /*renderer,*/
-    /*TRUE);*/
-  /*gtk_cell_layout_set_attributes (*/
-    /*GTK_CELL_LAYOUT (self->selector),*/
-    /*renderer,*/
-    /*"text", COLUMN_LABEL,*/
-    /*NULL);*/
-
-  /*set_active_al (self,*/
-                 /*self->selector_model,*/
-                 /*self->al);*/
-}
 
 /**
  * Returns the y pixels from the value based on the
@@ -354,7 +325,6 @@ automation_lane_widget_refresh (
   /*g_signal_handler_block (*/
     /*self->selector,*/
     /*self->selector_changed_cb_id);*/
-  /*setup_combo_box (self);*/
   automatable_selector_button_widget_setup (
     self->selector, self);
   /*g_signal_handler_unblock (*/
@@ -406,7 +376,6 @@ automation_lane_widget_new (
   self->al = al;
   al->widget = self;
 
-  /*setup_combo_box (self);*/
   automatable_selector_button_widget_setup (
     self->selector, self);
 

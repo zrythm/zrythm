@@ -98,7 +98,7 @@ audio_arranger_widget_setup (
   AudioArrangerWidget * self)
 {
   // set the size
-  int ww, hh;
+  /*int ww, hh;*/
   RULER_WIDGET_GET_PRIVATE (AUDIO_RULER);
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
@@ -140,8 +140,8 @@ audio_arranger_widget_refresh_children (
   if (CLIP_EDITOR->region &&
       CLIP_EDITOR->region->type == REGION_TYPE_AUDIO)
     {
-      AudioRegion * mr =
-        (AudioRegion *) CLIP_EDITOR->region;
+      /*AudioRegion * mr =*/
+        /*(AudioRegion *) CLIP_EDITOR->region;*/
     }
 }
 

@@ -243,8 +243,7 @@ ports_connected (Port * src, Port * dest)
 int
 port_disconnect_all (Port * port)
 {
-  if (!port)
-    g_warning ("port_disconnect_all: port is NULL");
+  g_warn_if_fail (port != NULL);
 
   FOREACH_SRCS (port)
     {
@@ -262,12 +261,42 @@ port_disconnect_all (Port * port)
 }
 
 /**
+ * Removes all the given ports from the project,
+ * optionally freeing them.
+ */
+int
+ports_remove (
+  Port ** ports,
+  int *   num_ports)
+{
+  int i;
+  Port * port;
+
+  /* go through each port */
+  for (i = 0; i < *num_ports; i++)
+    {
+      port = ports[i];
+
+      /* assert no connections */
+      g_warn_if_fail (port->num_srcs == 0);
+      g_warn_if_fail (port->num_dests == 0);
+
+      project_remove_port (port);
+      port_free (port);
+    }
+  * num_ports = 0;
+
+  return i;
+}
+
+/**
  * Apply given fader value to port.
  */
-void inline
+void
 port_apply_fader (Port * port, float amp)
 {
-  for (int i = 0; i < AUDIO_ENGINE->block_length;
+  for (uint32_t i = 0;
+       i < AUDIO_ENGINE->block_length;
        i++)
     {
       if (port->buf[i] != 0.f)
@@ -283,6 +312,7 @@ void
 port_sum_signal_from_inputs (Port * port)
 {
   Port * src_port;
+  int block_length = AUDIO_ENGINE->block_length;
 
   /* for any output port pointing to it */
   for (int k = 0; k < port->num_srcs; k++)
@@ -293,7 +323,7 @@ port_sum_signal_from_inputs (Port * port)
       if (port->type == TYPE_AUDIO)
         {
           for (int l = 0;
-               l < AUDIO_ENGINE->block_length; l++)
+               l < block_length; l++)
             {
               port->buf[l] += src_port->buf[l];
             }
@@ -398,17 +428,18 @@ port_apply_pan_stereo (Port *       l,
 /**
  * Applies the pan to the given L/R ports.
  */
-inline void
+void
 port_apply_pan (
   Port *       port,
   float        pan,
   PanLaw       pan_law,
   PanAlgorithm pan_algo)
 {
+  int block_length = AUDIO_ENGINE->block_length;
+
   if (pan_algo == PAN_ALGORITHM_SINE_LAW)
     {
-      for (int i = 0; i < AUDIO_ENGINE->block_length;
-           i++)
+      for (int i = 0; i < block_length; i++)
         {
           if (port->buf[i] == 0.f)
             continue;
@@ -432,7 +463,9 @@ port_apply_pan (
 void
 port_free (Port * port)
 {
-  port_disconnect_all (port);
+  /* assert no connections */
+  g_warn_if_fail (port->num_srcs == 0);
+  g_warn_if_fail (port->num_dests == 0);
 
   if (port->label)
     g_free (port->label);
@@ -440,8 +473,4 @@ port_free (Port * port)
     free (port->buf);
 
   free (port);
-
-  for (int i = 0; i < MIXER->master->stereo_in->l->num_srcs; i++)
-    if (MIXER->master->stereo_in->l->srcs[i] == NULL)
-      g_warning ("is null");
 }

@@ -163,7 +163,7 @@ plugin_generate_automatables (Plugin * plugin)
       Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
       for (int j = 0; j < lv2_plugin->controls.n_controls; j++)
         {
-          Lv2ControlID * control =
+          Lv2Control * control =
             lv2_plugin->controls.controls[j];
           array_append (
             plugin->automatables,
@@ -246,39 +246,6 @@ plugin_process (Plugin * plugin)
 }
 
 /**
- * Disconnects all connected ports from each port in the given array and
- * frees them.
- */
-static void
-clean_ports (Port ** array, int * size)
-{
-  /* go through each port */
-  for (int i = 0; i < (* size); i++)
-    {
-      Port * port = array[i];
-
-      if (port->flow == FLOW_INPUT) /* disconnect incoming ports */
-        {
-          for (int j = 0; j < port->num_srcs; j++)
-            {
-              port_disconnect (port->srcs[j], port);
-            }
-        }
-        else if (port->flow == FLOW_OUTPUT) /* disconnect outgoing ports */
-          {
-            for (int j = 0; j < port->num_dests; j++)
-              {
-                /* disconnect outgoing ports */
-                port_disconnect (port, port->dests[j]);
-              }
-          }
-      project_remove_port (port);
-      port_free (port);
-    }
-  (* size) = 0;
-}
-
-/**
  * shows plugin ui and sets window close callback
  */
 void
@@ -331,15 +298,40 @@ plugin_close_ui (Plugin *plugin)
 }
 
 /**
- * Frees given plugin, breaks all its port connections, and frees its ports
+ * To be called immediately when a channel or plugin
+ * is deleted.
+ *
+ * A call to plugin_free can be made at any point
+ * later just to free the resources.
+ */
+void
+plugin_disconnect (Plugin * plugin)
+{
+  /* disconnect all ports */
+  ports_disconnect (
+    plugin->in_ports,
+    plugin->num_in_ports);
+  ports_disconnect (
+    plugin->out_ports,
+    plugin->num_out_ports);
+}
+
+/**
+ * Frees given plugin, frees its ports
  * and other internal pointers
  */
 void
 plugin_free (Plugin *plugin)
 {
-  /* disconnect all ports and free them */
-  clean_ports (plugin->in_ports, &plugin->num_in_ports);
-  clean_ports (plugin->out_ports, &plugin->num_out_ports);
+  g_warn_if_fail (plugin);
+  project_remove_plugin (plugin);
+
+  ports_remove (
+    plugin->in_ports,
+    &plugin->num_in_ports);
+  ports_remove (
+    plugin->out_ports,
+    &plugin->num_out_ports);
 
   /* delete automatables */
   for (int i = 0; i < plugin->num_automatables; i++)

@@ -29,6 +29,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
+#include "utils/objects.h"
 #include "utils/yaml.h"
 
 #include <gtk/gtk.h>
@@ -157,7 +158,7 @@ timeline_selections_get_start_pos (
     {
       ZChord * chord =
         transient ?
-        ts->transient_chords :
+        ts->transient_chords[i] :
         ts->chords[i];
       if (position_compare (&chord->pos,
                             pos) < 0)
@@ -267,7 +268,7 @@ timeline_selections_get_first_object (
     {
       ZChord * chord =
         transient ?
-        ts->transient_chords :
+        ts->transient_chords[i] :
         ts->chords[i];
       if (position_compare (&chord->pos,
                             &pos) < 0)
@@ -459,8 +460,8 @@ remove_transient_region (
   ts->transient_regions[index] = NULL;
   track_remove_region (
     transient->track,
-    transient,
-    F_FREE);
+    transient);
+  free_later (transient, region_free);
 }
 
 static void

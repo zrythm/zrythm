@@ -50,9 +50,7 @@ create_model_for_automatables (
   AutomatableSelectorType            type)
 {
   GtkListStore *list_store;
-  /*GtkTreePath *path;*/
   GtkTreeIter iter;
-  gint i;
 
   /* file name, index */
   list_store =
@@ -142,7 +140,6 @@ create_model_for_types (
 {
   GtkListStore *list_store;
   GtkTreeIter iter;
-  gint i;
 
   /* icon, type name, type enum */
   list_store = gtk_list_store_new (3,
@@ -371,7 +368,8 @@ automatable_selector_popover_widget_new (
     GTK_CONTAINER (self->type_treeview_box),
     GTK_WIDGET (self->type_treeview));
 
-  AutomatableSelectorType type;
+  AutomatableSelectorType type =
+    AS_TYPE_CHANNEL;
   Automatable * a =
     self->owner->owner->al->at->automatable;
   if (a->type >= AUTOMATABLE_TYPE_CHANNEL_FADER)

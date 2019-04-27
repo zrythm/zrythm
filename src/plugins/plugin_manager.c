@@ -35,6 +35,8 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
+#include <lv2/lv2plug.in/ns/ext/event/event.h>
+
 /**
  * If category not already set in the categories, add it.
  */
@@ -81,7 +83,7 @@ int sort_plugin_func (const void *a, const void *b) {
     return -strcmp(pa->name, pb->name); /* aka: return strcmp(b, a); */
 }
 
-static void
+void
 print_plugins ()
 {
   for (int i = 0; i < PLUGIN_MANAGER->num_plugins; i++)
@@ -111,7 +113,7 @@ scan_plugins (PluginManager * self)
     lilv_world_get_all_plugins (world);
   /*const LilvPluginClasses * plugin_classes =*/
                               /*lilv_world_get_plugin_classes (world);*/
-  LV2_SETTINGS.lilv_plugins = plugins;
+  LV2_NODES.lilv_plugins = plugins;
 
 
   /* iterate plugins */
@@ -159,7 +161,7 @@ plugin_manager_init (PluginManager * self)
   /* init lv2 settings */
   g_message ("Creating Lilv World...");
   LilvWorld * world = lilv_world_new ();
-  self->lv2_settings.lilv_world = world;
+  self->lv2_nodes.lilv_world = world;
 
   /* load all installed plugins on system */
   lilv_world_load_all (world);
@@ -176,10 +178,11 @@ plugin_manager_init (PluginManager * self)
         g_dir_open (path, 0, &err);
       if (bundle_lv2_dir)
         {
-          char * dir;
-          while (dir = g_dir_read_name (bundle_lv2_dir))
+          const char * dir;
+          char * str;
+          while ((dir = g_dir_read_name (bundle_lv2_dir)))
             {
-              dir =
+              str =
                 g_strdup_printf (
                   "file://%s%s%s%smanifest.ttl",
                   path,
@@ -187,12 +190,12 @@ plugin_manager_init (PluginManager * self)
                   dir,
                   G_DIR_SEPARATOR_S);
               LilvNode * uri =
-                lilv_new_uri (world, dir);
+                lilv_new_uri (world, str);
               lilv_world_load_bundle (
                 world, uri);
               g_message ("Loaded bundled plugin at %s",
-                         dir);
-              g_free (dir);
+                         str);
+              g_free (str);
               lilv_node_free (uri);
             }
         }
@@ -210,7 +213,7 @@ plugin_manager_init (PluginManager * self)
     }
 
   g_message ("Initializing LV2 settings...");
-  LV2_Defaults * opts = &self->lv2_settings.opts;
+  LV2_Defaults * opts = &self->lv2_nodes.opts;
   opts->uuid = NULL;
   opts->buffer_size = 0;
   opts->controls = NULL;
@@ -226,101 +229,227 @@ plugin_manager_init (PluginManager * self)
   /* TODO add option in preferences */
   /*opts->update_rate = 40.f;*/
 
-  LV2_Settings * settings = &self->lv2_settings;
-  settings->atom_AtomPort =
-    lilv_new_uri(world, LV2_ATOM__AtomPort);
-  settings->atom_Chunk =
-    lilv_new_uri(world,LV2_ATOM__Chunk);
-  settings->atom_Sequence =
-    lilv_new_uri(world,LV2_ATOM__Sequence);
-  settings->atom_bufferType =
-    lilv_new_uri(world,LV2_ATOM__bufferType);
-  settings->atom_supports =
-    lilv_new_uri(world,LV2_ATOM__supports);
-  settings->atom_eventTransfer =
-    lilv_new_uri(world,LV2_ATOM__eventTransfer);
-  settings->ev_EventPort =
-    lilv_new_uri(world,LILV_URI_EVENT_PORT);
-  settings->ext_logarithmic =
-    lilv_new_uri(world,LV2_PORT_PROPS__logarithmic);
-  settings->ext_notOnGUI =
-    lilv_new_uri(world,LV2_PORT_PROPS__notOnGUI);
-  settings->ext_expensive =
-    lilv_new_uri(world,LV2_PORT_PROPS__expensive);
-  settings->ext_causesArtifacts =
-    lilv_new_uri(world,LV2_PORT_PROPS__causesArtifacts);
-  settings->ext_notAutomatic =
-    lilv_new_uri(world,LV2_PORT_PROPS__notAutomatic);
-  settings->ext_rangeSteps =
-    lilv_new_uri(world,LV2_PORT_PROPS__rangeSteps);
-  settings->groups_group =
-    lilv_new_uri(world,LV2_PORT_GROUPS__group);
-  settings->groups_element =
-    lilv_new_uri(world,LV2_PORT_GROUPS__element);
-  settings->lv2_AudioPort =
-    lilv_new_uri(world,LILV_URI_AUDIO_PORT);
-  settings->lv2_ControlPort =
-    lilv_new_uri(world,LILV_URI_CONTROL_PORT);
-  settings->lv2_InputPort =
-    lilv_new_uri(world,LILV_URI_INPUT_PORT);
-  settings->lv2_OutputPort =
-    lilv_new_uri(world,LILV_URI_OUTPUT_PORT);
-  settings->lv2_inPlaceBroken =
-    lilv_new_uri(world,LV2_CORE__inPlaceBroken);
-  settings->lv2_isSideChain =
-    lilv_new_uri(world, LV2_CORE_PREFIX"isSideChain");
-  settings->lv2_index =
-    lilv_new_uri(world,LV2_CORE__index);
-  settings->lv2_integer =
-    lilv_new_uri(world,LV2_CORE__integer);
-  settings->lv2_default =
-    lilv_new_uri(world,LV2_CORE__default);
-  settings->lv2_minimum =
-    lilv_new_uri(world,LV2_CORE__minimum);
-  settings->lv2_maximum =
-    lilv_new_uri(world,LV2_CORE__maximum);
-  settings->lv2_reportsLatency =
-    lilv_new_uri(world,LV2_CORE__reportsLatency);
-  settings->lv2_sampleRate =
-    lilv_new_uri(world,LV2_CORE__sampleRate);
-  settings->lv2_toggled        = lilv_new_uri(world,LV2_CORE__toggled);
-  settings->lv2_designation    = lilv_new_uri(world,LV2_CORE__designation);
-  settings->lv2_enumeration    = lilv_new_uri(world,LV2_CORE__enumeration);
-  settings->lv2_freewheeling   = lilv_new_uri(world,LV2_CORE__freeWheeling);
-  settings->midi_MidiEvent     = lilv_new_uri(world,LILV_URI_MIDI_EVENT);
-  settings->rdfs_comment       = lilv_new_uri(world, LILV_NS_RDFS"comment");
-  settings->rdfs_label         = lilv_new_uri(world, LILV_NS_RDFS"label");
-  settings->rdfs_range         = lilv_new_uri(world, LILV_NS_RDFS"range");
-  settings->rsz_minimumSize    = lilv_new_uri(world,LV2_RESIZE_PORT__minimumSize);
-  settings->time_Position      = lilv_new_uri(world,LV2_TIME__Position);
-  settings->ui_GtkUI           = lilv_new_uri(world,LV2_UI__GtkUI);
-  settings->ui_external        = lilv_new_uri(world,"http://lv2plug.in/ns/extensions/ui#external");
-  settings->ui_externalkx      = lilv_new_uri(world,"http://kxstudio.sf.net/ns/lv2ext/external-ui#Widget");
-  settings->units_unit         = lilv_new_uri(world,LV2_UNITS__unit);
-  settings->units_render       = lilv_new_uri(world,LV2_UNITS__render);
-  settings->units_hz           = lilv_new_uri(world,LV2_UNITS__hz);
-  settings->units_midiNote     = lilv_new_uri(world,LV2_UNITS__midiNote);
-  settings->units_db           = lilv_new_uri(world,LV2_UNITS__db);
-  settings->patch_writable     = lilv_new_uri(world,LV2_PATCH__writable);
-  settings->patch_Message      = lilv_new_uri(world,LV2_PATCH__Message);
+  /* Cache URIs */
+  Lv2Nodes * nodes = &self->lv2_nodes;
+#define ADD_LV2_NODE(key,val) \
+  nodes->key = lilv_new_uri (world, val);
+
+  /* in alphabetical order */
+  ADD_LV2_NODE (
+    atom_AtomPort,
+    LV2_ATOM__AtomPort);
+  ADD_LV2_NODE (
+    atom_bufferType,
+    LV2_ATOM__bufferType);
+  ADD_LV2_NODE (
+    atom_Chunk,
+    LV2_ATOM__Chunk);
+  ADD_LV2_NODE (
+    atom_eventTransfer,
+    LV2_ATOM__eventTransfer);
+  ADD_LV2_NODE (
+    atom_Float,
+    LV2_ATOM__Float);
+  ADD_LV2_NODE (
+    atom_Path,
+    LV2_ATOM__Path);
+  ADD_LV2_NODE (
+    atom_Sequence,
+    LV2_ATOM__Sequence);
+  ADD_LV2_NODE (
+    atom_supports,
+    LV2_ATOM__supports);
+  ADD_LV2_NODE (
+    bufz_coarseBlockLength,
+    "http://lv2plug.in/ns/ext/buf-size#coarseBlockLength");
+  ADD_LV2_NODE (
+    bufz_fixedBlockLength,
+    LV2_BUF_SIZE__fixedBlockLength);
+  ADD_LV2_NODE (
+    bufz_powerOf2BlockLength,
+    LV2_BUF_SIZE__powerOf2BlockLength);
+  ADD_LV2_NODE (
+    bufz_nominalBlockLength,
+    "http://lv2plug.in/ns/ext/buf-size#nominalBlockLength");
+  ADD_LV2_NODE (
+    core_AudioPort,
+    LV2_CORE__AudioPort);
+  ADD_LV2_NODE (
+    core_connectionOptional,
+    LV2_CORE__connectionOptional);
+  ADD_LV2_NODE (
+    core_control,
+    LV2_CORE__control);
+  ADD_LV2_NODE (
+    core_ControlPort,
+    LV2_CORE__ControlPort);
+  ADD_LV2_NODE (
+    core_CVPort,
+    LV2_CORE__CVPort);
+  ADD_LV2_NODE (
+    core_default,
+    LV2_CORE__default);
+  ADD_LV2_NODE (
+    core_designation,
+    LV2_CORE__designation);
+  ADD_LV2_NODE (
+    core_enumeration,
+    LV2_CORE__enumeration);
+  ADD_LV2_NODE (
+    core_freeWheeling,
+    LV2_CORE__freeWheeling);
+  ADD_LV2_NODE (
+    core_index,
+    LV2_CORE__index);
+  ADD_LV2_NODE (
+    core_inPlaceBroken,
+    LV2_CORE__inPlaceBroken);
+  ADD_LV2_NODE (
+    core_InputPort,
+    LV2_CORE__InputPort);
+  ADD_LV2_NODE (
+    core_integer,
+    LV2_CORE__integer);
+  ADD_LV2_NODE (
+    core_isSideChain,
+    LV2_CORE_PREFIX "isSideChain");
+  ADD_LV2_NODE (
+    core_maximum,
+    LV2_CORE__maximum);
+  ADD_LV2_NODE (
+    core_minimum,
+    LV2_CORE__minimum);
+  ADD_LV2_NODE (
+    core_name,
+    LV2_CORE__name);
+  ADD_LV2_NODE (
+    core_OutputPort,
+    LV2_CORE__OutputPort);
+  ADD_LV2_NODE (
+    core_reportsLatency,
+    LV2_CORE__reportsLatency);
+  ADD_LV2_NODE (
+    core_sampleRate,
+    LV2_CORE__sampleRate);
+  ADD_LV2_NODE (
+    core_symbol,
+    LV2_CORE__symbol);
+  ADD_LV2_NODE (
+    core_toggled,
+    LV2_CORE__toggled);
+  ADD_LV2_NODE (
+    ev_EventPort,
+    LV2_EVENT__EventPort);
+  ADD_LV2_NODE (
+    patch_Message,
+    LV2_PATCH__Message);
+  ADD_LV2_NODE (
+    patch_writable,
+    LV2_PATCH__writable);
+  ADD_LV2_NODE (
+    midi_MidiEvent,
+    LV2_MIDI__MidiEvent);
+  ADD_LV2_NODE (
+    pg_element,
+    LV2_PORT_GROUPS__element);
+  ADD_LV2_NODE (
+    pg_group,
+    LV2_PORT_GROUPS__group);
+  ADD_LV2_NODE (
+    pprops_causesArtifacts,
+    LV2_PORT_PROPS__causesArtifacts);
+  ADD_LV2_NODE (
+    pprops_expensive,
+    LV2_PORT_PROPS__expensive);
+  ADD_LV2_NODE (
+    pprops_logarithmic,
+    LV2_PORT_PROPS__logarithmic);
+  ADD_LV2_NODE (
+    pprops_notAutomatic,
+    LV2_PORT_PROPS__notAutomatic);
+  ADD_LV2_NODE (
+    pprops_notOnGUI,
+    LV2_PORT_PROPS__notOnGUI);
+  ADD_LV2_NODE (
+    pprops_rangeSteps,
+    LV2_PORT_PROPS__rangeSteps);
+  ADD_LV2_NODE (
+    pset_bank,
+    LV2_PRESETS__bank);
+  ADD_LV2_NODE (
+    pset_Preset,
+    LV2_PRESETS__Preset);
+  ADD_LV2_NODE (
+    rdfs_comment,
+    LILV_NS_RDFS "comment");
+  ADD_LV2_NODE (
+    rdfs_label,
+    LILV_NS_RDFS "label");
+  ADD_LV2_NODE (
+    rdfs_range,
+    LILV_NS_RDFS "range");
+  ADD_LV2_NODE (
+    rsz_minimumSize,
+    LV2_RESIZE_PORT__minimumSize);
+  ADD_LV2_NODE (
+    state_threadSafeRestore,
+    LV2_STATE__threadSafeRestore);
+  ADD_LV2_NODE (
+    time_position,
+    LV2_TIME__Position);
+  ADD_LV2_NODE (
+    ui_external,
+    "http://lv2plug.in/ns/extensions/ui#external");
+  ADD_LV2_NODE (
+    ui_externalkx,
+    "http://kxstudio.sf.net/ns/lv2ext/external-ui#Widget");
+  ADD_LV2_NODE (
+    ui_Gtk3UI,
+    LV2_UI__Gtk3UI);
+  ADD_LV2_NODE (
+    ui_GtkUI,
+    LV2_UI__GtkUI);
+  ADD_LV2_NODE (
+    units_db,
+    LV2_UNITS__db);
+  ADD_LV2_NODE (
+    units_hz,
+    LV2_UNITS__hz);
+  ADD_LV2_NODE (
+    units_midiNote,
+    LV2_UNITS__midiNote);
+  ADD_LV2_NODE (
+    units_render,
+    LV2_UNITS__render);
+  ADD_LV2_NODE (
+    units_unit,
+    LV2_UNITS__unit);
+  ADD_LV2_NODE (
+    work_interface,
+    LV2_WORKER__interface);
+  ADD_LV2_NODE (
+    work_schedule,
+    LV2_WORKER__schedule);
 #ifdef LV2_EXTENDED
-  settings->lv2_noSampleAccurateCtrl    = lilv_new_uri(world, "http://ardour.org/lv2/ext#noSampleAccurateControls"); // deprecated2016-09-18
-  settings->auto_can_write_automatation = lilv_new_uri(world,LV2_AUTOMATE_URI__can_write);
-  settings->auto_automation_control     = lilv_new_uri(world,LV2_AUTOMATE_URI__control);
-  settings->auto_automation_controlled  = lilv_new_uri(world,LV2_AUTOMATE_URI__controlled);
-  settings->auto_automation_controller  = lilv_new_uri(world,LV2_AUTOMATE_URI__controller);
-  settings->inline_display_in_gui       = lilv_new_uri(world,LV2_INLINEDISPLAY__in_gui);
+  /*nodes->auto_can_write_automatation = lilv_new_uri(world,LV2_AUTOMATE_URI__can_write);*/
+  /*nodes->auto_automation_control     = lilv_new_uri(world,LV2_AUTOMATE_URI__control);*/
+  /*nodes->auto_automation_controlled  = lilv_new_uri(world,LV2_AUTOMATE_URI__controlled);*/
+  /*nodes->auto_automation_controller  = lilv_new_uri(world,LV2_AUTOMATE_URI__controller);*/
+  /*nodes->inline_display_in_gui       = lilv_new_uri(world,LV2_INLINEDISPLAY__in_gui);*/
 #endif
-#ifdef HAVE_LV2_1_2_0
-  settings->bufz_powerOf2BlockLength = lilv_new_uri(world,LV2_BUF_SIZE__powerOf2BlockLength);
-  settings->bufz_fixedBlockLength    = lilv_new_uri(world,LV2_BUF_SIZE__fixedBlockLength);
-  settings->bufz_nominalBlockLength  = lilv_new_uri(world,"http://lv2plug.in/ns/ext/buf-size#nominalBlockLength");
-  settings->bufz_coarseBlockLength   = lilv_new_uri(world,"http://lv2plug.in/ns/ext/buf-size#coarseBlockLength");
-#endif
+  nodes->end = NULL;
+#undef ADD_LV2_NODE
+
 }
 
 void
 plugin_manager_scan_plugins (PluginManager * self)
 {
   scan_plugins (self);
+}
+
+void
+plugin_manager_free (
+  PluginManager * self)
+{
 }

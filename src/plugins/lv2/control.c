@@ -35,16 +35,16 @@ scale_point_cmp(const Lv2ScalePoint* a, const Lv2ScalePoint* b)
   return 1;
 }
 
-Lv2ControlID*
+Lv2Control*
 lv2_new_port_control(Lv2Plugin* plugin, uint32_t index)
 {
   LV2_Port * port  = &plugin->ports[index];
   const LilvPort * lport = port->lilv_port;
   const LilvPlugin * plug  = plugin->lilv_plugin;
-  const LV2_Nodes * nodes = &plugin->nodes;
+  const Lv2Nodes * nodes = &PM_LILV_NODES;
 
-  Lv2ControlID * id =
-    calloc(1, sizeof (Lv2ControlID));
+  Lv2Control * id =
+    calloc(1, sizeof (Lv2Control));
   id->plugin = plugin;
   id->type = PORT;
   id->node =
@@ -58,23 +58,23 @@ lv2_new_port_control(Lv2Plugin* plugin, uint32_t index)
   id->port = port;
   id->group =
     lilv_port_get (
-      plug, lport, plugin->nodes.pg_group);
+      plug, lport, nodes->pg_group);
   id->value_type = plugin->forge.Float;
   id->is_writable =
     lilv_port_is_a (
-      plug, lport, nodes->lv2_InputPort);
+      plug, lport, nodes->core_InputPort);
   id->is_readable =
     lilv_port_is_a (
-      plug, lport, nodes->lv2_OutputPort);
+      plug, lport, nodes->core_OutputPort);
   id->is_toggle =
     lilv_port_has_property (
-      plug, lport, nodes->lv2_toggled);
+      plug, lport, nodes->core_toggled);
   id->is_integer =
     lilv_port_has_property (
-      plug, lport, nodes->lv2_integer);
+      plug, lport, nodes->core_integer);
   id->is_enumeration =
     lilv_port_has_property (
-      plug, lport, nodes->lv2_enumeration);
+      plug, lport, nodes->core_enumeration);
   id->is_logarithmic =
     lilv_port_has_property (
       plug, lport, nodes->pprops_logarithmic);
@@ -82,7 +82,7 @@ lv2_new_port_control(Lv2Plugin* plugin, uint32_t index)
   lilv_port_get_range (
     plug, lport, &id->def, &id->min, &id->max);
   if (lilv_port_has_property (
-        plug, lport, plugin->nodes.lv2_sampleRate))
+        plug, lport, nodes->core_sampleRate))
     {
       /* Adjust range for lv2:sampleRate
        * controls */
@@ -156,31 +156,56 @@ lv2_new_port_control(Lv2Plugin* plugin, uint32_t index)
 static bool
 has_range(Lv2Plugin* plugin, const LilvNode* subject, const char* range_uri)
 {
-  LilvNode*  range  = lilv_new_uri(LILV_WORLD, range_uri);
-  const bool result = lilv_world_ask(
-          LILV_WORLD, subject, plugin->nodes.rdfs_range, range);
+  LilvNode * range =
+    lilv_new_uri(LILV_WORLD, range_uri);
+  const bool result =
+    lilv_world_ask (
+      LILV_WORLD, subject,
+      PM_LILV_NODES.rdfs_range, range);
   lilv_node_free(range);
   return result;
 }
 
-Lv2ControlID*
+Lv2Control*
 lv2_new_property_control(Lv2Plugin* plugin, const LilvNode* property)
 {
-	Lv2ControlID* id = (Lv2ControlID*)calloc(1, sizeof(Lv2ControlID));
-	id->plugin     = plugin;
-	id->type     = PROPERTY;
-	id->node     = lilv_node_duplicate(property);
-	id->symbol   = lilv_world_get_symbol(LILV_WORLD, property);
-	id->label    = lilv_world_get(LILV_WORLD, property, plugin->nodes.rdfs_label, NULL);
-	id->property = plugin->map.map(plugin, lilv_node_as_uri(property));
+	Lv2Control* id =
+    (Lv2Control*) calloc (1, sizeof(Lv2Control));
+	id->plugin = plugin;
+	id->type = PROPERTY;
+	id->node = lilv_node_duplicate (property);
+	id->symbol =
+    lilv_world_get_symbol (LILV_WORLD, property);
+	id->label =
+    lilv_world_get (LILV_WORLD,
+                    property,
+                    PM_LILV_NODES.rdfs_label, NULL);
+	id->property =
+    plugin->map.map (
+      plugin, lilv_node_as_uri(property));
 
-	id->min = lilv_world_get(LILV_WORLD, property, plugin->nodes.lv2_minimum, NULL);
-	id->max = lilv_world_get(LILV_WORLD, property, plugin->nodes.lv2_maximum, NULL);
-	id->def = lilv_world_get(LILV_WORLD, property, plugin->nodes.lv2_default, NULL);
+	id->min =
+    lilv_world_get (
+      LILV_WORLD, property,
+      PM_LILV_NODES.core_minimum, NULL);
+	id->max =
+    lilv_world_get (
+      LILV_WORLD, property,
+      PM_LILV_NODES.core_maximum, NULL);
+	id->def =
+    lilv_world_get (
+      LILV_WORLD, property,
+      PM_LILV_NODES.core_default, NULL);
 
 	const char* const types[] = {
-		LV2_ATOM__Int, LV2_ATOM__Long, LV2_ATOM__Float, LV2_ATOM__Double,
-		LV2_ATOM__Bool, LV2_ATOM__String, LV2_ATOM__Path, NULL
+		LV2_ATOM__Int,
+    LV2_ATOM__Long,
+    LV2_ATOM__Float,
+    LV2_ATOM__Double,
+		LV2_ATOM__Bool,
+    LV2_ATOM__String,
+    LV2_ATOM__Path,
+    NULL
 	};
 
 	for (const char*const* t = types; *t; ++t) {
@@ -194,35 +219,30 @@ lv2_new_property_control(Lv2Plugin* plugin, const LilvNode* property)
 	id->is_integer = (id->value_type == plugin->forge.Int ||
 	                  id->value_type == plugin->forge.Long);
 
-	const size_t sym_len = strlen(lilv_node_as_string(id->symbol));
-	if (sym_len > plugin->longest_sym) {
-		plugin->longest_sym = sym_len;
-	}
-
-	if (!id->value_type) {
-		fprintf(stderr, "Unknown value type for property <%s>\n",
-		        lilv_node_as_string(property));
-	}
+	if (!id->value_type)
+    g_warning (
+      "Unknown value type for property <%s>\n",
+      lilv_node_as_string(property));
 
 	return id;
 }
 
 void
-lv2_add_control(Lv2Controls* controls, Lv2ControlID* control)
+lv2_add_control(Lv2Controls* controls, Lv2Control* control)
 {
   controls->controls =
-    (Lv2ControlID**) realloc (
+    (Lv2Control**) realloc (
       controls->controls,
       (controls->n_controls + 1) *
-        sizeof(Lv2ControlID*));
+        sizeof(Lv2Control*));
   controls->controls[controls->n_controls++] =
     control;
 }
 
-Lv2ControlID*
+Lv2Control*
 lv2_get_property_control(const Lv2Controls* controls, LV2_URID property)
 {
-	for (size_t i = 0; i < controls->n_controls; ++i) {
+	for (int i = 0; i < controls->n_controls; ++i) {
 		if (controls->controls[i]->property == property) {
 			return controls->controls[i];
 		}
@@ -235,7 +255,7 @@ lv2_get_property_control(const Lv2Controls* controls, LV2_URID property)
  * Called when a generic UI control changes.
  */
 void
-lv2_control_set_control(const Lv2ControlID* control,
+lv2_control_set_control(const Lv2Control* control,
                  uint32_t         size,
                  LV2_URID         type,
                  const void*      body)
@@ -279,16 +299,16 @@ lv2_control_set_control(const Lv2ControlID* control,
  * Returns the human readable control label.
  */
 const char *
-lv2_control_get_label (const Lv2ControlID * control)
+lv2_control_get_label (const Lv2Control * control)
 {
   return lilv_node_as_string (
     control->label);
 }
 
 /**
- * Returns the Lv2ControlID from the port index.
+ * Returns the Lv2Control from the port index.
  */
-Lv2ControlID *
+Lv2Control *
 lv2_control_get_from_port (
   LV2_Port * port)
 {

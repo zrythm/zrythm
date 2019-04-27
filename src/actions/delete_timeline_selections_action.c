@@ -17,12 +17,13 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "actions/delete_timeline_selections_action.h"
 #include "audio/track.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "project.h"
-#include "actions/delete_timeline_selections_action.h"
+#include "utils/objects.h"
 
 /**
  * Note: chord addresses are to be copied.
@@ -58,8 +59,8 @@ delete_timeline_selections_action_do (
       /* remove it */
       track_remove_region (
         project_get_track (r->track_id),
-        r,
-        1);
+        r);
+      free_later (r, region_free);
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
