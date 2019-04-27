@@ -32,8 +32,6 @@
 #include "audio/region.h"
 #include "utils/sem.h"
 
-#include <gtk/gtk.h>
-
 #define TRANSPORT (&AUDIO_ENGINE->transport)
 #define DEFAULT_TOTAL_BARS 128
 #define MAX_BPM 420.f
@@ -78,7 +76,18 @@ typedef struct Transport
    * 2/8 = 2 (top) 1/8th (bot) notes per bar.
    */
   int                beats_per_bar; ///< top part of time signature
-  BeatUnit           beat_unit;   ///< bottom part of time signature, power of 2
+  int                beat_unit;   ///< bottom part of time signature, power of 2
+  BeatUnit           ebeat_unit;
+
+  /* ---------- CACHE -------------- */
+  long               lticks_per_beat;
+  long               lticks_per_bar;
+  int                ticks_per_beat;
+  int                ticks_per_bar;
+  int                sixteenths_per_beat;
+
+  /* ------------------------------- */
+
   uint32_t           position;       ///< Transport position in frames
 	float              bpm;            ///< Transport tempo in beats per minute
 	int               rolling;        ///< Transport speed (0=stop, 1=play)
@@ -141,8 +150,8 @@ transport_fields_schema[] =
     "beats_per_bar", CYAML_FLAG_DEFAULT,
     Transport, beats_per_bar),
   CYAML_FIELD_ENUM (
-    "beat_unit", CYAML_FLAG_DEFAULT,
-    Transport, beat_unit, beat_unit_strings,
+    "ebeat_unit", CYAML_FLAG_DEFAULT,
+    Transport, ebeat_unit, beat_unit_strings,
     CYAML_ARRAY_LEN (beat_unit_strings)),
   CYAML_FIELD_INT (
     "position", CYAML_FLAG_DEFAULT,
@@ -183,6 +192,14 @@ void
 transport_set_bpm (float bpm);
 
 /**
+ * Updates beat unit and anything depending on it.
+ */
+void
+transport_set_beat_unit (
+  Transport * self,
+  int beat_unit);
+
+/**
  * Moves the playhead by the time corresponding to given samples.
  */
 void
@@ -207,10 +224,9 @@ transport_move_playhead (Position * target, ///< position to set to
 void
 transport_update_position_frames ();
 
-/**
- * Gets beat unit as int.
- */
-int
-transport_get_beat_unit ();
+void
+transport_set_ebeat_unit (
+  Transport * self,
+  BeatUnit bu);
 
 #endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -411,18 +411,33 @@ port_apply_pan_stereo (Port *       l,
                        PanLaw       pan_law,
                        PanAlgorithm pan_algo)
 {
-  int nframes = AUDIO_ENGINE->block_length;
-  if (pan_algo == PAN_ALGORITHM_SINE_LAW)
-    {
-      for (int i = 0; i < nframes; i++)
-        {
-          if (r->buf[i] != 0.f)
-            r->buf[i] *= sinf (pan * (M_PIF / 2.f));
-          if (l->buf[i] != 0.f)
-            l->buf[i] *= sinf ((1.f - pan) * (M_PIF / 2.f));
-        }
-
-    }
+  /* FIXME not used */
+  g_warn_if_reached ();
+  /*int nframes = AUDIO_ENGINE->block_length;*/
+  /*int i;*/
+  /*switch (pan_algo)*/
+    /*{*/
+    /*case PAN_ALGORITHM_SINE_LAW:*/
+      /*for (i = 0; i < nframes; i++)*/
+        /*{*/
+          /*if (r->buf[i] != 0.f)*/
+            /*r->buf[i] *= sinf (pan * (M_PIF / 2.f));*/
+          /*if (l->buf[i] != 0.f)*/
+            /*l->buf[i] *= sinf ((1.f - pan) * (M_PIF / 2.f));*/
+        /*}*/
+      /*break;*/
+    /*case PAN_ALGORITHM_SQUARE_ROOT:*/
+      /*break;*/
+    /*case PAN_ALGORITHM_LINEAR:*/
+      /*for (i = 0; i < nframes; i++)*/
+        /*{*/
+          /*if (r->buf[i] != 0.f)*/
+            /*r->buf[i] *= pan;*/
+          /*if (l->buf[i] != 0.f)*/
+            /*l->buf[i] *= (1.f - pan);*/
+        /*}*/
+      /*break;*/
+    /*}*/
 }
 
 /**
@@ -436,24 +451,39 @@ port_apply_pan (
   PanAlgorithm pan_algo)
 {
   int block_length = AUDIO_ENGINE->block_length;
+  int i;
+  float calc_r, calc_l;
+  int is_stereo_r =
+    port->flags & PORT_FLAG_STEREO_R;
 
-  if (pan_algo == PAN_ALGORITHM_SINE_LAW)
+  switch (pan_algo)
     {
-      for (int i = 0; i < block_length; i++)
+    case PAN_ALGORITHM_SINE_LAW:
+      calc_l = sinf ((1.f - pan) * (M_PIF / 2.f));
+      calc_r = sinf (pan * (M_PIF / 2.f));
+      break;
+    case PAN_ALGORITHM_SQUARE_ROOT:
+      calc_l = sqrtf (1.f - pan);
+      calc_r = sqrtf (pan);
+      break;
+    case PAN_ALGORITHM_LINEAR:
+      calc_l = 1.f - pan;
+      calc_r = pan;
+      break;
+    }
+
+  for (i = 0; i < block_length; i++)
+    {
+      if (port->buf[i] == 0.f)
+        continue;
+
+      if (is_stereo_r)
         {
-          if (port->buf[i] == 0.f)
-            continue;
-
-          if (port->flags & PORT_FLAG_STEREO_R)
-            {
-              port->buf[i] *=
-                sinf (pan * (M_PIF / 2.f));
-              continue;
-            }
-
-          port->buf[i] *=
-            sinf ((1.f - pan) * (M_PIF / 2.f));
+          port->buf[i] *= calc_r;
+          continue;
         }
+
+      port->buf[i] *= calc_l;
     }
 }
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-27 16:59+0100\n"
+"POT-Creation-Date: 2019-04-27 18:37+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrythm dot org>\n"
 "Language-Team: Spanish\n"
@@ -76,7 +76,7 @@ msgstr ""
 msgid "Audition tool"
 msgstr ""
 
-#: src/gui/widgets/digital_meter.c:638
+#: src/gui/widgets/digital_meter.c:643
 msgid "BPM - Click and drag up/down to set"
 msgstr ""
 
@@ -577,7 +577,7 @@ msgstr ""
 msgid "Playhead"
 msgstr ""
 
-#: src/gui/widgets/digital_meter.c:648
+#: src/gui/widgets/digital_meter.c:653
 msgid "Playhead Position - Click and drag up/down to change"
 msgstr ""
 
@@ -887,7 +887,7 @@ msgstr ""
 msgid "Time Range"
 msgstr ""
 
-#: src/gui/widgets/digital_meter.c:676
+#: src/gui/widgets/digital_meter.c:681
 msgid "Time Signature - Click and drag up/down to change"
 msgstr ""
 

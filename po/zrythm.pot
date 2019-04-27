@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-27 17:27+0100\n"
+"POT-Creation-Date: 2019-04-27 20:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -76,7 +76,7 @@ msgstr ""
 msgid "Audition tool"
 msgstr ""
 
-#: src/gui/widgets/digital_meter.c:638
+#: src/gui/widgets/digital_meter.c:643
 msgid "BPM - Click and drag up/down to set"
 msgstr ""
 
@@ -577,7 +577,7 @@ msgstr ""
 msgid "Playhead"
 msgstr ""
 
-#: src/gui/widgets/digital_meter.c:648
+#: src/gui/widgets/digital_meter.c:653
 msgid "Playhead Position - Click and drag up/down to change"
 msgstr ""
 
@@ -887,7 +887,7 @@ msgstr ""
 msgid "Time Range"
 msgstr ""
 
-#: src/gui/widgets/digital_meter.c:676
+#: src/gui/widgets/digital_meter.c:681
 msgid "Time Signature - Click and drag up/down to change"
 msgstr ""
 

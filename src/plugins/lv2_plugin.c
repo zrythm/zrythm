@@ -2007,7 +2007,7 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
         forge,
         (float) PLAYHEAD.beats - 1 +
         ((float) PLAYHEAD.ticks /
-          (float) TICKS_PER_BEAT));
+          (float) TRANSPORT->ticks_per_beat));
       lv2_atom_forge_key (
         forge,
         PM_URIDS.time_bar);
@@ -2019,7 +2019,7 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
         PM_URIDS.time_beatUnit);
       lv2_atom_forge_int (
         forge,
-        transport_get_beat_unit (TRANSPORT));
+        TRANSPORT->beat_unit);
       lv2_atom_forge_key (
         forge,
         PM_URIDS.time_beatsPerBar);

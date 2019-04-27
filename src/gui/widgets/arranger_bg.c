@@ -69,21 +69,17 @@ arranger_bg_draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
                          rect.width, rect.height);
 
   /* in order they appear */
-  Position range_first_pos, range_second_pos;
+  Position * range_first_pos, * range_second_pos;
   if (position_compare (&PROJECT->range_1,
                         &PROJECT->range_2) <= 0)
     {
-      position_set_to_pos (&range_first_pos,
-                           &PROJECT->range_1);
-      position_set_to_pos (&range_second_pos,
-                           &PROJECT->range_2);
+      range_first_pos = &PROJECT->range_1;
+      range_second_pos = &PROJECT->range_2;
     }
   else
     {
-      position_set_to_pos (&range_first_pos,
-                           &PROJECT->range_2);
-      position_set_to_pos (&range_second_pos,
-                           &PROJECT->range_1);
+      range_first_pos = &PROJECT->range_2;
+      range_second_pos = &PROJECT->range_1;
     }
 
   /* handle vertical drawing */
@@ -131,9 +127,9 @@ arranger_bg_draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
     {
       int range_first_px, range_second_px;
       range_first_px =
-        ui_pos_to_px_timeline (&range_first_pos, 1);
+        ui_pos_to_px_timeline (range_first_pos, 1);
       range_second_px =
-        ui_pos_to_px_timeline (&range_second_pos, 1);
+        ui_pos_to_px_timeline (range_second_pos, 1);
       cairo_set_source_rgba (
         cr, 0.3, 0.3, 0.3, 0.3);
       cairo_rectangle (

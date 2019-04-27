@@ -64,6 +64,16 @@
     <value nick="notes" value="0"/>
     <value nick="numbers" value="1"/>
   </enum>
+  <enum id="org.zrythm.preferences.pan-law">
+    <value nick="zero-db" value="0"/>
+    <value nick="minus-three-db" value="1"/>
+    <value nick="minus-six-db" value="2"/>
+  </enum>
+  <enum id="org.zrythm.preferences.pan-algorithm">
+    <value nick="linear" value="0"/>
+    <value nick="sqrt" value="1"/>
+    <value nick="sine" value="2"/>
+  </enum>
 
   <!-- GENERAL schema -->
   <schema id="org.zrythm.general"
@@ -108,6 +118,28 @@
       <summary>Audio Backend</summary>
       <description>
         The audio back end to use
+      </description>
+    </key>
+
+    <!-- KEY: pan-algorithm -->
+    <key name="pan-algorithm"
+      enum="org.zrythm.preferences.pan-algorithm-enum">
+      <default>"sine"</default>
+      <summary>The panning algorithm</summary>
+      <description>
+        The panning algorithm to use when
+        applying pan on channels.
+      </description>
+    </key>
+
+    <!-- KEY: pan-law -->
+    <key name="pan-law"
+      enum="org.zrythm.preferences.pan-law-enum">
+      <default>"minus-3-db"</default>
+      <summary>The Pan Law</summary>
+      <description>
+        The Pan Law to use when
+        applying pan on channels.
       </description>
     </key>
 
