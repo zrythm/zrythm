@@ -69,7 +69,7 @@ typedef struct Automatable
    * When loading, this can be fetched using the
    * port.
    */
-  Lv2ControlID *       control; ///< cache
+  Lv2Control *       control; ///< cache
 
   /** Associated track. */
   int                  track_id;
@@ -158,7 +158,7 @@ automatable_create_pan (Channel * channel);
 Automatable *
 automatable_create_lv2_control (
   Plugin *       plugin,
-  Lv2ControlID * control);
+  Lv2Control * control);
 
 Automatable *
 automatable_create_plugin_enabled (Plugin * plugin);
@@ -168,18 +168,6 @@ automatable_is_bool (Automatable * automatable);
 
 int
 automatable_is_float (Automatable * automatable);
-
-//const float
-//automatable_get_minf (Automatable * automatable);
-
-//const float
-//automatable_get_maxf (Automatable * automatable);
-
-/**
- * Returns max - min for the float automatable
- */
-const float
-automatable_get_sizef (Automatable * automatable);
 
 /**
  * Returns the type of its value (float, bool, etc.)

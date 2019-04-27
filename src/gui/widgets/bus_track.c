@@ -138,8 +138,8 @@ bus_track_widget_refresh (BusTrackWidget * self)
 {
   TRACK_WIDGET_GET_PRIVATE (self);
   Track * track = tw_prv->track;
-  ChannelTrack * ct = (ChannelTrack *) track;
-  Channel * chan = ct->channel;
+  /*ChannelTrack * ct = (ChannelTrack *) track;*/
+  /*Channel * chan = ct->channel;*/
 
   gtk_label_set_text (
     tw_prv->name,

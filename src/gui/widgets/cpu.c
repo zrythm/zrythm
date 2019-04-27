@@ -141,7 +141,10 @@ cpu_draw_cb (
 	return 0;
 }
 
+#if defined(HAVE_LIBGTOP)
 unsigned long prev_total, prev_idle;
+#endif
+
 
 /**
  * Refreshes DSP load percentage.
@@ -186,7 +189,9 @@ refresh_dsp_load (GtkWidget * widget,
   return G_SOURCE_CONTINUE;
 }
 
+#if defined(__linux__) && !defined(HAVE_LIBGTOP)
 static long double a[4], b[4] = {0,0,0,0}, loadavg;
+#endif
 
 #ifdef _WIN32
 static unsigned long long

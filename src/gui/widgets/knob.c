@@ -298,7 +298,9 @@ drag_update (GtkGestureDrag * gesture,
 {
   KnobWidget * self = (KnobWidget *) user_data;
   offset_y = - offset_y;
-  int use_y = abs(offset_y - self->last_y) > abs(offset_x - self->last_x);
+  int use_y =
+    fabs (offset_y - self->last_y) >
+    fabs (offset_x - self->last_x);
   SET_REAL_VAL (REAL_VAL_FROM_KNOB (clamp (KNOB_VAL_FROM_REAL (GET_REAL_VAL) + 0.004 * (use_y ? offset_y - self->last_y : offset_x - self->last_x),
                1.0f, 0.0f)));
   self->last_x = offset_x;

@@ -23,14 +23,15 @@
 #include <lilv/lilv.h>
 
 #define PLUGIN_MANAGER (&ZRYTHM->plugin_manager)
-#define LV2_SETTINGS PLUGIN_MANAGER->lv2_settings
-#define LILV_WORLD LV2_SETTINGS.lilv_world
+#define LV2_NODES PLUGIN_MANAGER->lv2_nodes
+#define LILV_WORLD LV2_NODES.lilv_world
 #define LV2_GENERATOR_PLUGIN "Generator"
 #define LV2_CONSTANT_PLUGIN "Constant"
 #define LV2_INSTRUMENT_PLUGIN "Instrument"
 #define LV2_OSCILLATOR_PLUGIN "Oscillator"
 #define IS_LV2_PLUGIN_CATEGORY(p, c) \
   (g_strcmp0 (((Plugin *)p)->descr->category, c) == 0)
+#define PM_LILV_NODES (PLUGIN_MANAGER->lv2_nodes)
 
 
 typedef struct
@@ -51,85 +52,98 @@ typedef struct
 	int      non_interactive;   ///< Do not listen for commands on stdin
 } LV2_Defaults;
 
-typedef struct LV2_Settings
+typedef struct Lv2Nodes
 {
-  LilvWorld             * lilv_world;
-  const LilvPlugins           * lilv_plugins;
-  LV2_Defaults           opts;         ///< general opts
-	LilvNode * atom_AtomPort;
-	LilvNode * atom_Chunk;
-	LilvNode * atom_Sequence;
-	LilvNode * atom_bufferType;
-	LilvNode * atom_supports;
-	LilvNode * atom_eventTransfer;
-	LilvNode * ev_EventPort;
-	LilvNode * ext_logarithmic;
-	LilvNode * ext_notOnGUI;
-	LilvNode * ext_expensive;
-	LilvNode * ext_causesArtifacts;
-	LilvNode * ext_notAutomatic;
-	LilvNode * ext_rangeSteps;
-	LilvNode * groups_group;
-	LilvNode * groups_element;
-	LilvNode * lv2_AudioPort;
-	LilvNode * lv2_ControlPort;
-	LilvNode * lv2_InputPort;
-	LilvNode * lv2_OutputPort;
-	LilvNode * lv2_inPlaceBroken;
-	LilvNode * lv2_isSideChain;
-	LilvNode * lv2_index;
-	LilvNode * lv2_integer;
-	LilvNode * lv2_default;
-	LilvNode * lv2_minimum;
-	LilvNode * lv2_maximum;
-	LilvNode * lv2_reportsLatency;
-	LilvNode * lv2_sampleRate;
-	LilvNode * lv2_toggled;
-	LilvNode * lv2_designation;
-	LilvNode * lv2_enumeration;
-	LilvNode * lv2_freewheeling;
-	LilvNode * midi_MidiEvent;
-	LilvNode * rdfs_comment;
-	LilvNode * rdfs_label;
-	LilvNode * rdfs_range;
-	LilvNode * rsz_minimumSize;
-	LilvNode * time_Position;
-	LilvNode * ui_GtkUI;
-	LilvNode * ui_external;
-	LilvNode * ui_externalkx;
-	LilvNode * units_unit;
-	LilvNode * units_render;
-	LilvNode * units_hz;
-	LilvNode * units_midiNote;
-	LilvNode * units_db;
-	LilvNode * patch_writable;
-	LilvNode * patch_Message;
+  LilvWorld *         lilv_world;
+  const LilvPlugins * lilv_plugins;
+  /** General opts. */
+  LV2_Defaults        opts;
+	LilvNode *          atom_AtomPort;
+	LilvNode *          atom_bufferType;
+	LilvNode *          atom_Chunk;
+	LilvNode *          atom_eventTransfer;
+	LilvNode *          atom_Float;
+	LilvNode *          atom_Path;
+	LilvNode *          atom_Sequence;
+	LilvNode *          atom_supports;
+	LilvNode *          bufz_coarseBlockLength;
+	LilvNode *          bufz_fixedBlockLength;
+	LilvNode *          bufz_powerOf2BlockLength;
+	LilvNode *          bufz_nominalBlockLength;
+	LilvNode *          core_AudioPort;
+	LilvNode *          core_connectionOptional;
+	LilvNode *          core_control;
+	LilvNode *          core_ControlPort;
+	LilvNode *          core_CVPort;
+	LilvNode *          core_default;
+	LilvNode *          core_designation;
+	LilvNode *          core_enumeration;
+	LilvNode *          core_freeWheeling;
+	LilvNode *          core_index;
+	LilvNode *          core_inPlaceBroken;
+	LilvNode *          core_InputPort;
+	LilvNode *          core_integer;
+	LilvNode *          core_isSideChain;
+	LilvNode *          core_minimum;
+	LilvNode *          core_maximum;
+	LilvNode *          core_name;
+	LilvNode *          core_OutputPort;
+	LilvNode *          core_reportsLatency;
+	LilvNode *          core_sampleRate;
+	LilvNode *          core_symbol;
+	LilvNode *          core_toggled;
+	LilvNode *          ev_EventPort;
+	LilvNode *          patch_Message;
+	LilvNode *          patch_writable;
+	LilvNode *          midi_MidiEvent;
+	LilvNode *          pg_element;
+	LilvNode *          pg_group;
+	LilvNode *          pprops_causesArtifacts;
+	LilvNode *          pprops_expensive;
+	LilvNode *          pprops_logarithmic;
+	LilvNode *          pprops_notAutomatic;
+	LilvNode *          pprops_notOnGUI;
+	LilvNode *          pprops_rangeSteps;
+	LilvNode *          pset_bank;
+	LilvNode *          pset_Preset;
+	LilvNode *          rdfs_comment;
+	LilvNode *          rdfs_label;
+	LilvNode *          rdfs_range;
+	LilvNode *          rsz_minimumSize;
+  LilvNode *          state_threadSafeRestore;
+	LilvNode *          time_position;
+	LilvNode *          ui_external;
+	LilvNode *          ui_externalkx;
+	LilvNode *          ui_Gtk3UI;
+	LilvNode *          ui_GtkUI;
+	LilvNode *          units_db;
+	LilvNode *          units_hz;
+	LilvNode *          units_midiNote;
+	LilvNode *          units_render;
+	LilvNode *          units_unit;
+	LilvNode *          work_interface;
+	LilvNode *          work_schedule;
 #ifdef LV2_EXTENDED
-	LilvNode * lv2_noSampleAccurateCtrl; // deprecated 2016-09-18
-	LilvNode * auto_can_write_automatation;
-	LilvNode * auto_automation_control;
-	LilvNode * auto_automation_controlled;
-	LilvNode * auto_automation_controller;
-	LilvNode * inline_display_in_gui;
+	LilvNode *          auto_can_write_automatation;
+	LilvNode *          auto_automation_control;
+	LilvNode *          auto_automation_controlled;
+	LilvNode *          auto_automation_controller;
+	LilvNode *          inline_display_in_gui;
 #endif
-//#ifdef HAVE_LV2_1_2_0
-	LilvNode * bufz_powerOf2BlockLength;
-	LilvNode * bufz_fixedBlockLength;
-	LilvNode * bufz_nominalBlockLength;
-	LilvNode * bufz_coarseBlockLength;
-//#endif
-} LV2_Settings;
+	LilvNode* end;  ///< NULL terminator for easy freeing of entire structure
+} Lv2Nodes;
 
 typedef struct PluginDescriptor PluginDescriptor;
 
 typedef struct PluginManager
 {
-  PluginDescriptor      * plugin_descriptors[10000];
+  PluginDescriptor *     plugin_descriptors[10000];
   char *                 plugin_categories[50];
   char *                 collections[50]; ///< TODO
   int                    num_plugin_categories;
   int                    num_plugins;
-  LV2_Settings           lv2_settings;
+  Lv2Nodes               lv2_nodes;
+
 } PluginManager;
 
 /**

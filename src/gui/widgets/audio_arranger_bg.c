@@ -117,9 +117,6 @@ static gboolean
 audio_arranger_bg_draw_cb (
   GtkWidget *widget, cairo_t *cr, gpointer data)
 {
-  AudioArrangerBgWidget * self =
-    Z_AUDIO_ARRANGER_BG_WIDGET (widget);
-
   GdkRectangle rect;
   gdk_cairo_get_clip_rectangle (cr,
                                 &rect);

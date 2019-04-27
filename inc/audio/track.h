@@ -269,15 +269,14 @@ track_add_region (Track * track,
                   Region * region);
 
 /**
- * Wrapper to remove region, optionally freeing it.
+ * Only removes the region from the track.
  *
- * Free should be set to 1 when deleting and 0 when just
- * moving regions from one track to another.
+ * Does not free the Region.
  */
 void
-track_remove_region (Track * track,
-                     Region * region,
-                     int      free);
+track_remove_region (
+  Track * track,
+  Region * region);
 
 /**
  * Returns the region at the given position, or NULL.

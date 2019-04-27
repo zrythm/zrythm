@@ -411,6 +411,18 @@ channel_remove_plugin (
   int deleting_channel);
 
 /**
+ * Disconnects the channel from the processing
+ * chain.
+ *
+ * This should be called immediately when the
+ * channel is getting deleted, and channel_free
+ * should be designed to be called later after
+ * an arbitrary delay.
+ */
+void
+channel_disconnect (Channel * channel);
+
+/**
  * Frees the channel.
  */
 void

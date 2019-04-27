@@ -22,10 +22,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#ifdef HAVE_LV2_STATE
-#    include "lv2/lv2plug.in/ns/ext/state/state.h"
-#endif
-
 #include "lilv/lilv.h"
 
 #include "audio/transport.h"
@@ -34,6 +30,10 @@
 #include "project.h"
 
 #include <gtk/gtk.h>
+
+#ifdef HAVE_LV2_STATE
+#    include "lv2/lv2plug.in/ns/ext/state/state.h"
+#endif
 
 #define NS_ZRYTHM "https://lv2.zrythm.org/ns/zrythm#"
 #define NS_RDF  "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -92,8 +92,10 @@ lv2_save(Lv2Plugin* plugin, const char* dir)
 int
 lv2_load_presets(Lv2Plugin* plugin, PresetSink sink, void* data)
 {
-	LilvNodes* presets = lilv_plugin_get_related(plugin->lilv_plugin,
-	                                             plugin->nodes.pset_Preset);
+	LilvNodes* presets =
+    lilv_plugin_get_related (
+      plugin->lilv_plugin,
+	    PM_LILV_NODES.pset_Preset);
 	LILV_FOREACH(nodes, i, presets) {
 		const LilvNode* preset = lilv_nodes_get(presets, i);
 		lilv_world_load_resource(LILV_WORLD, preset);
@@ -101,8 +103,10 @@ lv2_load_presets(Lv2Plugin* plugin, PresetSink sink, void* data)
 			continue;
 		}
 
-		LilvNodes* labels = lilv_world_find_nodes(
-			LILV_WORLD, preset, plugin->nodes.rdfs_label, NULL);
+		LilvNodes* labels =
+      lilv_world_find_nodes (
+        LILV_WORLD, preset,
+        PM_LILV_NODES.rdfs_label, NULL);
 		if (labels) {
 			const LilvNode* label = lilv_nodes_get_first(labels);
 			sink(plugin, preset, label, data);
@@ -120,8 +124,10 @@ lv2_load_presets(Lv2Plugin* plugin, PresetSink sink, void* data)
 int
 lv2_unload_presets(Lv2Plugin* plugin)
 {
-	LilvNodes* presets = lilv_plugin_get_related(plugin->lilv_plugin,
-	                                             plugin->nodes.pset_Preset);
+	LilvNodes* presets =
+    lilv_plugin_get_related (
+      plugin->lilv_plugin,
+	    PM_LILV_NODES.pset_Preset);
 	LILV_FOREACH(nodes, i, presets) {
 		const LilvNode* preset = lilv_nodes_get(presets, i);
 		lilv_world_unload_resource(LILV_WORLD, preset);

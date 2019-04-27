@@ -382,6 +382,51 @@ int
 ports_connected (Port * src, Port * dest);
 
 /**
+ * Disconnects all the given ports.
+ */
+static inline void
+ports_disconnect (
+  Port ** ports,
+  int     num_ports)
+{
+  int i, j;
+  Port * port;
+
+  /* go through each port */
+  for (i = 0; i < num_ports; i++)
+    {
+      port = ports[i];
+
+      /* disconnect incoming ports */
+      if (port->flow == FLOW_INPUT)
+        {
+          for (j = 0; j < port->num_srcs; j++)
+            {
+              port_disconnect (port->srcs[j], port);
+            }
+        }
+        /* disconnect outgoing ports */
+        else if (port->flow == FLOW_OUTPUT)
+          {
+            for (j = 0; j < port->num_dests; j++)
+              {
+                port_disconnect (
+                  port, port->dests[j]);
+              }
+          }
+    }
+}
+
+/**
+ * Removes all the given ports from the project,
+ * optionally freeing them.
+ */
+int
+ports_remove (
+  Port ** ports,
+  int *   num_ports);
+
+/**
  * Prints all connections.
  */
 void

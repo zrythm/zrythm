@@ -49,42 +49,6 @@
 #include <gtk/gtk.h>
 
 /**
- * process callback
- */
-void
-mixer_process () ///< number of frames to fill in
-{
-  /*g_message ("procesing mixer");*/
-  int i;
-
-  /* wait for channels to finish processing */
-  /*while (loop)*/
-    /*{*/
-      /*loop = 0;*/
-      /*for (int i = 0; i < MIXER->num_channels; i++)*/
-        /*{*/
-          /*if (!MIXER->channels[i]->processed)*/
-            /*{*/
-              /*loop = 1;*/
-              /*break;*/
-            /*}*/
-        /*}*/
-      /*g_usleep (1000);*/
-    /*}*/
-  /*for (i = 0; i < MIXER->num_channels; i++)*/
-    /*{*/
-      /*zix_sem_wait (&MIXER->channel_process_sem);*/
-    /*}*/
-
-  /* process master channel */
-  /*g_message ("procesing master");*/
-  /*g_message ("posting for master");*/
-  /*zix_sem_post (&MIXER->master->*/
-                  /*start_processing_sem);*/
-  /*g_message ("procesing finished");*/
-}
-
-/**
  * Recalculates the process acyclic directed graph.
  */
 void
@@ -105,7 +69,7 @@ mixer_recalculate_graph (
   g_usleep (1000);
 
   Router * router;
-  if (router = mixer->graph)
+  if ((router = mixer->graph))
     {
       mixer->graph = NULL;
       router_destroy (router);

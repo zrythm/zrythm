@@ -36,7 +36,7 @@
 #define __PLUGINS_LV2_GTK_H__
 
 typedef struct Lv2Plugin Lv2Plugin;
-typedef struct Lv2ControlID;
+typedef struct Lv2Control Lv2Control;
 void
 lv2_gtk_ui_port_event(Lv2Plugin*       plugin,
                    uint32_t    port_index,
@@ -45,6 +45,6 @@ lv2_gtk_ui_port_event(Lv2Plugin*       plugin,
                    const void* buffer);
 
 void
-lv2_gtk_set_float_control(const Lv2ControlID* control, float value);
+lv2_gtk_set_float_control(const Lv2Control* control, float value);
 
 #endif

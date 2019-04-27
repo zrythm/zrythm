@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <math.h>
+
 #include "audio/engine.h"
 #include "audio/position.h"
 #include "audio/transport.h"
@@ -152,6 +154,9 @@ timeline_ruler_widget_set_ruler_marker_position (
       allocation->width = PLAYHEAD_TRIANGLE_WIDTH;
       allocation->height =
         PLAYHEAD_TRIANGLE_HEIGHT;
+      break;
+    default:
+      g_warn_if_reached ();
       break;
     }
 
@@ -380,7 +385,7 @@ timeline_ruler_on_drag_update (
         {
           Position diff_pos;
           ui_px_to_pos_timeline (
-            abs (offset_x),
+            fabs (offset_x),
             &diff_pos,
             0);
           int ticks_diff =

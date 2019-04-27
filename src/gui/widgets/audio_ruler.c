@@ -162,6 +162,9 @@ audio_ruler_widget_set_ruler_marker_position (
       allocation->height =
         PLAYHEAD_TRIANGLE_HEIGHT;
       break;
+    default:
+      g_warn_if_reached ();
+      break;
     }
 }
 

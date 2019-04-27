@@ -447,6 +447,8 @@ midi_arranger_widget_on_drag_begin_note_hit (
         ar_prv->action =
           UI_OVERLAY_ACTION_STARTING_MOVING;
       break;
+    case TOOL_RAMP:
+      break;
     }
 
   int selected = midi_note_is_selected (mn);
@@ -1043,8 +1045,8 @@ midi_arranger_widget_auto_scroll (
         0,
         &note_x,
         &note_y);
-      int note_height = gtk_widget_get_allocated_height (
-        GTK_WIDGET (focused));
+      /*int note_height = gtk_widget_get_allocated_height (*/
+        /*GTK_WIDGET (focused));*/
       if (note_y - border_distance <= 1)
       {
         v_delta = scroll_speed * -1;
@@ -1062,8 +1064,8 @@ midi_arranger_widget_auto_scroll (
         0,
         &note_x,
         &note_y);
-      int note_width = gtk_widget_get_allocated_width (
-        GTK_WIDGET (focused));
+      /*int note_width = gtk_widget_get_allocated_width (*/
+        /*GTK_WIDGET (focused));*/
       if (note_x - border_distance <= 10)
       {
         h_delta = scroll_speed * -1;

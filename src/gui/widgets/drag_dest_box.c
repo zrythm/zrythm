@@ -114,9 +114,6 @@ on_drag_data_received (GtkWidget        *widget,
                guint             time,
                gpointer          user_data)
 {
-  DragDestBoxWidget * self =
-    Z_DRAG_DEST_BOX_WIDGET (widget);
-
   GdkAtom target =
     gtk_drag_dest_find_target (
       widget, context, NULL);
@@ -136,7 +133,7 @@ on_drag_data_received (GtkWidget        *widget,
 
       mixer_add_channel_from_file_descr (fd);
     }
-  else if (target = GET_ATOM ("PLUGIN_DESCR"))
+  else if ((target = GET_ATOM ("PLUGIN_DESCR")))
     {
       PluginDescriptor * pd =
         * (gpointer *)

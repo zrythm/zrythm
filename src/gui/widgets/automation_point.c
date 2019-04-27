@@ -95,7 +95,7 @@ on_motion (GtkWidget * widget,
 
       bot_bar_change_status ("");
     }
-  g_idle_add ((GSourceFunc) gtk_widget_queue_draw, GTK_WIDGET (self));
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 /**

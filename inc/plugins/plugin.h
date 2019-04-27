@@ -324,6 +324,16 @@ void
 plugin_update_automatables (Plugin * plugin);
 
 /**
+ * To be called immediately when a channel or plugin
+ * is deleted.
+ *
+ * A call to plugin_free can be made at any point
+ * later just to free the resources.
+ */
+void
+plugin_disconnect (Plugin * plugin);
+
+/**
  * Frees given plugin, breaks all its port connections, and frees its ports
  * and other internal pointers
  */

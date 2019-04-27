@@ -44,7 +44,7 @@ _create_blank ()
   return self;
 }
 
-static const float
+static float
 get_minf (Automatable * a)
 {
   switch (a->type)
@@ -62,7 +62,7 @@ get_minf (Automatable * a)
   return -1;
 }
 
-static const float
+static float
 get_maxf (Automatable * a)
 {
   switch (a->type)
@@ -81,7 +81,7 @@ get_maxf (Automatable * a)
   return -1;
 }
 
-Lv2ControlID *
+Lv2Control *
 get_lv2_control (Automatable * self)
 {
   /* Note: plugin must be instantiated by now. */
@@ -101,8 +101,8 @@ automatable_init_loaded (Automatable * self)
   if (self->type ==
         AUTOMATABLE_TYPE_PLUGIN_CONTROL)
     {
-      Lv2Plugin * lv2_plgn =
-        self->port->owner_pl->original_plugin;
+      /*Lv2Plugin * lv2_plgn =*/
+        /*self->port->owner_pl->original_plugin;*/
 
       self->control = get_lv2_control (self);
     }
@@ -167,7 +167,7 @@ automatable_create_mute (Channel * channel)
 Automatable *
 automatable_create_lv2_control (
   Plugin *       plugin,
-  Lv2ControlID * control)
+  Lv2Control * control)
 {
   Automatable * a = _create_blank ();
 
@@ -284,15 +284,6 @@ automatable_is_float (Automatable * a)
 }
 
 /**
- * Returns max - min for the float automatable
- */
-/*static const float*/
-/*get_sizef (Automatable * a)*/
-/*{*/
-  /*return a->maxf - a->minf;*/
-/*}*/
-
-/**
  * Gets the current value of the parameter the
  * automatable is for.
  *
@@ -311,7 +302,7 @@ automatable_get_val (Automatable * a)
       plugin = a->port->owner_pl;
       if (plugin->descr->protocol == PROT_LV2)
         {
-          Lv2ControlID * control = a->control;
+          Lv2Control * control = a->control;
           LV2_Port* port = &control->plugin->ports[control->index];
           return port->control;
         }
@@ -348,7 +339,7 @@ automatable_normalized_val_to_real (
       plugin = a->port->owner_pl;
       if (plugin->descr->protocol == PROT_LV2)
         {
-          Lv2ControlID * ctrl = a->control;
+          Lv2Control * ctrl = a->control;
           float real_val;
           if (ctrl->is_logarithmic)
             {
@@ -368,6 +359,8 @@ automatable_normalized_val_to_real (
             }
           return real_val;
         }
+      g_warn_if_reached ();
+      break;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
       plugin = a->port->owner_pl;
       return val > 0.5f;
@@ -397,7 +390,7 @@ automatable_real_val_to_normalized (
       plugin = a->port->owner_pl;
       if (plugin->descr->protocol == PROT_LV2)
         {
-          Lv2ControlID * ctrl = a->control;
+          Lv2Control * ctrl = a->control;
           float normalized_val;
           if (ctrl->is_logarithmic)
             {
@@ -418,6 +411,8 @@ automatable_real_val_to_normalized (
             }
           return normalized_val;
         }
+      g_warn_if_reached ();
+      break;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
       return real_val;
     case AUTOMATABLE_TYPE_CHANNEL_FADER:
@@ -451,7 +446,7 @@ automatable_set_val_from_normalized (
       plugin = a->port->owner_pl;
       if (plugin->descr->protocol == PROT_LV2)
         {
-          Lv2ControlID * ctrl = a->control;
+          Lv2Control * ctrl = a->control;
           float real_val;
           if (ctrl->is_logarithmic)
             {

@@ -119,16 +119,17 @@ on_window_destroy(
   g_message ("destroying");
 
   /* reinit widget in plugin ports and controls */
-  for (int i = 0; i < plugin->controls.n_controls;
-       i++)
+  int num_ctrls = plugin->controls.n_controls;
+  int i;
+  for (i = 0; i < num_ctrls; i++)
     {
-      Lv2ControlID * control =
+      Lv2Control * control =
         plugin->controls.controls[i];
 
       control->widget = NULL;
     }
 
-  for (int i = 0; i < plugin->num_ports; i++)
+  for (i = 0; i < plugin->num_ports; i++)
     {
       LV2_Port * port =
         &plugin->ports[i];
@@ -315,7 +316,7 @@ get_bank_menu (
 	LilvNode* label =
     lilv_world_get (
       LILV_WORLD, bank,
-      plugin->nodes.rdfs_label, NULL);
+      PM_LILV_NODES.rdfs_label, NULL);
 
 	const char* uri = lilv_node_as_string(bank);
 	const char* str =
@@ -363,7 +364,7 @@ add_preset_to_menu (
 	LilvNode* bank =
     lilv_world_get (
       LILV_WORLD, node,
-      plugin->nodes.pset_bank, NULL);
+      PM_LILV_NODES.pset_bank, NULL);
 
 	if (bank)
     {
@@ -606,7 +607,7 @@ on_delete_preset_activate (
  */
 static void
 set_control (
-  const Lv2ControlID* control,
+  const Lv2Control* control,
   uint32_t         size,
   LV2_URID         type,
   const void*      body)
@@ -631,7 +632,7 @@ differ_enough (float a, float b)
  */
 void
 lv2_gtk_set_float_control (
-  const Lv2ControlID* control,
+  const Lv2Control* control,
   float value)
 {
   /*g_message ("lv2_gtk_set_float_control");*/
@@ -872,7 +873,7 @@ property_changed (
   const LV2_Atom* value)
 {
   g_message ("property changed");
-  Lv2ControlID* control =
+  Lv2Control* control =
     lv2_get_property_control (
       &plugin->controls, key);
   if (control)
@@ -968,7 +969,7 @@ scale_changed (
 {
   /*g_message ("scale changed");*/
 	lv2_gtk_set_float_control (
-    (const Lv2ControlID*)data,
+    (const Lv2Control*)data,
     gtk_range_get_value(range));
 	return FALSE;
 }
@@ -977,8 +978,8 @@ static gboolean
 spin_changed (
   GtkSpinButton* spin, gpointer data)
 {
-	const Lv2ControlID* control =
-    (const Lv2ControlID*)data;
+	const Lv2Control* control =
+    (const Lv2Control*)data;
 	Controller* controller =
     (Controller*)control->widget;
 	GtkRange* range =
@@ -997,7 +998,7 @@ log_scale_changed (GtkRange* range, gpointer data)
 {
   /*g_message ("log scale changed");*/
 	lv2_gtk_set_float_control (
-    (const Lv2ControlID*)data,
+    (const Lv2Control*)data,
     expf (gtk_range_get_value (range)));
 
 	return FALSE;
@@ -1007,8 +1008,8 @@ static gboolean
 log_spin_changed (
   GtkSpinButton* spin, gpointer data)
 {
-	const Lv2ControlID* control =
-    (const Lv2ControlID*)data;
+	const Lv2Control* control =
+    (const Lv2Control*)data;
 	Controller* controller =
     (Controller*)control->widget;
 	GtkRange* range =
@@ -1026,8 +1027,8 @@ log_spin_changed (
 static void
 combo_changed (GtkComboBox* box, gpointer data)
 {
-	const Lv2ControlID* control =
-    (const Lv2ControlID*)data;
+	const Lv2Control* control =
+    (const Lv2Control*)data;
 
 	GtkTreeIter iter;
 	if (gtk_combo_box_get_active_iter (box, &iter))
@@ -1051,7 +1052,7 @@ toggle_changed (
 {
   /*g_message ("toggle_changed");*/
 	lv2_gtk_set_float_control (
-    (const Lv2ControlID*)data,
+    (const Lv2Control*)data,
 	  gtk_toggle_button_get_active (
       button) ? 1.0f : 0.0f);
 	return FALSE;
@@ -1061,7 +1062,7 @@ static void
 string_changed (
   GtkEntry* widget, gpointer data)
 {
-	Lv2ControlID* control = (Lv2ControlID*)data;
+	Lv2Control* control = (Lv2Control*)data;
 	const char* string =
     gtk_entry_get_text(widget);
 
@@ -1076,7 +1077,7 @@ file_changed (
   GtkFileChooserButton* widget,
   gpointer              data)
 {
-	Lv2ControlID* control = (Lv2ControlID*)data;
+	Lv2Control* control = (Lv2Control*)data;
 	Lv2Plugin*       plugin     = control->plugin;
 	const char* filename = gtk_file_chooser_get_filename(
 		GTK_FILE_CHOOSER(widget));
@@ -1094,7 +1095,7 @@ new_controller(GtkSpinButton* spin, GtkWidget* control)
 }
 
 static Controller*
-make_combo(Lv2ControlID* record, float value)
+make_combo(Lv2Control* record, float value)
 {
 	GtkListStore* list_store = gtk_list_store_new(
 		2, G_TYPE_FLOAT, G_TYPE_STRING);
@@ -1131,7 +1132,7 @@ make_combo(Lv2ControlID* record, float value)
 }
 
 static Controller*
-make_log_slider(Lv2ControlID* record, float value)
+make_log_slider(Lv2Control* record, float value)
 {
 	const float min   = get_float(record->min, 0.0f);
 	const float max   = get_float(record->max, 1.0f);
@@ -1159,7 +1160,7 @@ make_log_slider(Lv2ControlID* record, float value)
 }
 
 static Controller*
-make_slider(Lv2ControlID* record, float value)
+make_slider(Lv2Control* record, float value)
 {
   const float  min   = get_float(record->min, 0.0f);
   const float  max   = get_float(record->max, 1.0f);
@@ -1201,7 +1202,7 @@ make_slider(Lv2ControlID* record, float value)
 }
 
 static Controller*
-make_toggle(Lv2ControlID* record, float value)
+make_toggle(Lv2Control* record, float value)
 {
 	GtkWidget* check = gtk_check_button_new();
 
@@ -1220,7 +1221,7 @@ make_toggle(Lv2ControlID* record, float value)
 }
 
 static Controller*
-make_entry(Lv2ControlID* control)
+make_entry(Lv2Control* control)
 {
 	GtkWidget* entry = gtk_entry_new();
 
@@ -1234,7 +1235,7 @@ make_entry(Lv2ControlID* control)
 }
 
 static Controller*
-make_file_chooser(Lv2ControlID* record)
+make_file_chooser(Lv2Control* record)
 {
 	GtkWidget* button = gtk_file_chooser_button_new(
 		"Open File", GTK_FILE_CHOOSER_ACTION_OPEN);
@@ -1250,7 +1251,7 @@ make_file_chooser(Lv2ControlID* record)
 }
 
 static Controller*
-make_controller(Lv2ControlID* control, float value)
+make_controller(Lv2Control* control, float value)
 {
 	Controller* controller = NULL;
 
@@ -1305,8 +1306,8 @@ add_control_row(GtkWidget*  table,
 static int
 control_group_cmp(const void* p1, const void* p2, void* data)
 {
-	const Lv2ControlID* control1 = *(const Lv2ControlID**)p1;
-	const Lv2ControlID* control2 = *(const Lv2ControlID**)p2;
+	const Lv2Control* control1 = *(const Lv2Control**)p1;
+	const Lv2Control* control2 = *(const Lv2Control**)p2;
 
 	const int cmp = (control1->group && control2->group)
 		? strcmp(lilv_node_as_string(control1->group),
@@ -1326,8 +1327,9 @@ build_control_widget (
 
 	/* Make an array of controls sorted by group */
 	GArray* controls =
-    g_array_new (FALSE, TRUE, sizeof(Lv2ControlID*));
-	for (unsigned i = 0;
+    g_array_new (FALSE, TRUE, sizeof(Lv2Control*));
+  int i;
+	for (i = 0;
        i < plugin->controls.n_controls; ++i)
     {
       g_array_append_vals (
@@ -1339,10 +1341,11 @@ build_control_widget (
 	/* Add controls in group order */
 	LilvNode* last_group = NULL;
 	int n_rows = 0;
-	for (size_t i = 0; i < controls->len; ++i)
+  int num_ctrls = controls->len;
+	for (i = 0; i < num_ctrls; ++i)
     {
-      Lv2ControlID* record =
-        g_array_index(controls, Lv2ControlID*, i);
+      Lv2Control* record =
+        g_array_index(controls, Lv2Control*, i);
       Controller* controller = NULL;
       LilvNode*   group      = record->group;
 
@@ -1353,7 +1356,7 @@ build_control_widget (
           LilvNode* group_name =
             lilv_world_get (
               LILV_WORLD, group,
-              plugin->nodes.lv2_name, NULL);
+              PM_LILV_NODES.core_name, NULL);
           GtkWidget* group_label =
             new_label (
               lilv_node_as_string (group_name),
@@ -1398,7 +1401,7 @@ build_control_widget (
           LilvNode* comment =
             lilv_world_get (
               LILV_WORLD, record->node,
-              plugin->nodes.rdfs_comment, NULL);
+              PM_LILV_NODES.rdfs_comment, NULL);
           if (comment)
             {
               gtk_widget_set_tooltip_text (
@@ -1562,7 +1565,7 @@ lv2_open_ui(Lv2Plugin* plugin)
   gtk_widget_show(alignment);
 
   /* Attempt to instantiate custom UI if necessary */
-  if (plugin->ui && !LV2_SETTINGS.opts.generic_ui)
+  if (plugin->ui && !LV2_NODES.opts.generic_ui)
     {
       if (plugin->externalui)
         {
@@ -1573,10 +1576,10 @@ lv2_open_ui(Lv2Plugin* plugin)
         }
       else
         {
-          g_message ("Instantiating native UI...");
+          g_message ("Instantiating UI...");
           lv2_ui_instantiate (
             plugin,
-            LV2_PLUGIN_NATIVE_UI_TYPE,
+            LV2_UI__Gtk3UI,
             alignment);
         }
     }
@@ -1623,7 +1626,9 @@ lv2_open_ui(Lv2Plugin* plugin)
 
   lv2_init_ui(plugin);
 
-  g_timeout_add(1000 / plugin->ui_update_hz, (GSourceFunc)lv2_plugin_update, plugin);
+  g_timeout_add (
+    1000 / plugin->ui_update_hz,
+    (GSourceFunc) lv2_plugin_update, plugin);
 
   return 0;
 }

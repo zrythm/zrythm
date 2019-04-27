@@ -71,6 +71,7 @@
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
+#include "utils/objects.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 
@@ -573,18 +574,18 @@ timeline_arranger_widget_show_context_menu (
 {
   GtkWidget *menu, *menuitem;
 
-  RegionWidget * clicked_region =
-    timeline_arranger_widget_get_hit_region (
-      self, x, y);
-  ChordWidget * clicked_chord =
-    timeline_arranger_widget_get_hit_chord (
-      self, x, y);
-  AutomationPointWidget * clicked_ap =
-    timeline_arranger_widget_get_hit_ap (
-      self, x, y);
-  AutomationCurveWidget * ac =
-    timeline_arranger_widget_get_hit_curve (
-      self, x, y);
+  /*RegionWidget * clicked_region =*/
+    /*timeline_arranger_widget_get_hit_region (*/
+      /*self, x, y);*/
+  /*ChordWidget * clicked_chord =*/
+    /*timeline_arranger_widget_get_hit_chord (*/
+      /*self, x, y);*/
+  /*AutomationPointWidget * clicked_ap =*/
+    /*timeline_arranger_widget_get_hit_ap (*/
+      /*self, x, y);*/
+  /*AutomationCurveWidget * ac =*/
+    /*timeline_arranger_widget_get_hit_curve (*/
+      /*self, x, y);*/
 
   menu = gtk_menu_new();
 
@@ -643,7 +644,7 @@ timeline_arranger_widget_on_drag_begin_region_hit (
   REGION_WIDGET_GET_PRIVATE (rw);
 
   /* open piano roll */
-  Track * track = rw_prv->region->track;
+  /*Track * track = rw_prv->region->track;*/
   clip_editor_set_region (rw_prv->region);
 
   /* if double click bring up piano roll */
@@ -710,6 +711,9 @@ timeline_arranger_widget_on_drag_begin_region_hit (
       else
         ar_prv->action =
           UI_OVERLAY_ACTION_STARTING_MOVING;
+      break;
+    case TOOL_RAMP:
+      /* TODO */
       break;
     }
 
@@ -959,7 +963,7 @@ timeline_arranger_widget_create_region (
                      NULL,
                      ar_prv->snap_grid);
     }
-  Region * region;
+  Region * region = NULL;
   if (track->type == TRACK_TYPE_INSTRUMENT)
     {
       region = (Region *) midi_region_new (track,
@@ -1021,7 +1025,7 @@ timeline_arranger_widget_create_chord (
                             0);
  position_set_to_pos (&chord->pos,
                       pos);
- ZChord * chords[1] = { chord };
+ /*ZChord * chords[1] = { chord };*/
  /*UndoableAction * action =*/
    /*create_chords_action_new (chords, 1);*/
  /*undo_manager_perform (UNDO_MANAGER,*/
@@ -1093,7 +1097,7 @@ timeline_arranger_widget_select (
   double                   offset_y,
   int                      delete)
 {
-  int i, j;
+  int i;
   Region * region;
   RegionWidget * rw;
   ZChord * chord;
@@ -1133,7 +1137,8 @@ timeline_arranger_widget_select (
           region = rw_prv->region;
 
           track_remove_region (
-            region->track, region, F_FREE);
+            region->track, region);
+          free_later (region, region_free);
       }
     }
   else
@@ -1370,7 +1375,7 @@ timeline_arranger_widget_move_items_x (
   long length_ticks;
 
   /* update region positions */
-  Region * r;
+  /*Region * r;*/
   for (int i = 0; i <
        TL_SELECTIONS->num_regions; i++)
     {
@@ -1607,7 +1612,7 @@ timeline_arranger_widget_move_items_y (
                             {
                               track_remove_region (
                                 old_track,
-                                region, 0);
+                                region);
                               track_add_region (
                                 nt, region);
                             }
@@ -1642,7 +1647,7 @@ timeline_arranger_widget_move_items_y (
                             {
                               track_remove_region (
                                 old_track,
-                                region, 0);
+                                region);
                               track_add_region (
                                 pt, region);
                             }
@@ -1674,13 +1679,13 @@ timeline_arranger_widget_move_items_y (
             /*position_to_frames (&self->tl_start_region->start_pos);*/
           /*position_add_frames (&region_pos, diff);*/
 
-          int this_y =
-            automation_point_get_y_in_px (
-              ap);
-          int start_ap_y =
-            automation_point_get_y_in_px (
-              self->start_ap);
-          int diff = this_y - start_ap_y;
+          /*int this_y =*/
+            /*automation_point_get_y_in_px (*/
+              /*ap);*/
+          /*int start_ap_y =*/
+            /*automation_point_get_y_in_px (*/
+              /*self->start_ap);*/
+          /*int diff = this_y - start_ap_y;*/
 
           float fval =
             automation_lane_widget_get_fvalue_at_y (
@@ -1703,8 +1708,8 @@ timeline_arranger_widget_on_drag_end (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  Region * region;
-  ZChord * chord;
+  /*Region * region;*/
+  /*ZChord * chord;*/
   AutomationPoint * ap;
   for (int i = 0;
        i < TL_SELECTIONS->

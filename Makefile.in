@@ -181,15 +181,29 @@ endif
 CFLAGS:=$(filter-out -fstack-protector-strong,$(CFLAGS))
 CFLAGS:=$(filter-out -fstack-clash-protection,$(CFLAGS))
 CFLAGS:=$(filter-out -D_FORTIFY_SOURCE=2,$(CFLAGS))
+# others to consider
+#-Werror=sometimes-uninitialized
+#-Werror=header-guard
+#-Werror=non-literal-null-conversion
+#-Werror=pointer-type-mismatch
+#-Werror=pointer-integer-compare
+#-Werror=cast-function-type
+#-Werror=unused-but-set-variable
 CFLAGS += -Wall \
 	-Wextra \
+	-Wno-missing-field-initializers \
+	-Wno-unused-parameter \
+	-Wno-sequence-point \
 	-Wignored-qualifiers \
 	-Werror=implicit-function-declaration \
+	-Werror=uninitialized \
 	-Werror=return-type \
+	-Werror=parentheses \
 	-Werror=int-conversion \
 	-Werror=format-security \
 	-Werror=incompatible-pointer-types \
 	-Werror=implicit-int \
+	-Werror=sign-compare \
 	$(DEFAULT_INCLUDES) \
 	$(FFMPEG_CFLAGS) \
 	$(GTK3_CFLAGS) \

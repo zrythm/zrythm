@@ -25,6 +25,7 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "utils/objects.h"
 
 /**
  * Note: chord addresses are to be copied.
@@ -95,8 +96,8 @@ duplicate_timeline_selections_action_undo (
       /* remove it */
       track_remove_region (
         project_get_track (_r->track_id),
-        _r,
-        F_FREE);
+        _r);
+      free_later (_r, region_free);
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);

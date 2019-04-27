@@ -308,7 +308,7 @@ region_at_position (Track    * track, ///< the track to look in
     }
   for (int i = 0; i < num_regions; i++)
     {
-      Region * region;
+      Region * region = NULL;
       if (track->type == TRACK_TYPE_AUDIO)
         {
 
@@ -317,6 +317,8 @@ region_at_position (Track    * track, ///< the track to look in
         {
           region = (Region *)midi_regions[i];
         }
+
+      g_warn_if_fail (region);
 
       if (position_compare (pos,
                             &region->start_pos) >= 0 &&
@@ -569,6 +571,33 @@ region_generate_filename (Region * region)
                           region->id,
                           region->track->name,
                           region->name);
+}
+
+/**
+ * Disconnects the region and anything using it.
+ *
+ * Does not free the Region or its children's
+ * resources.
+ */
+void
+region_disconnect (
+  Region * self)
+{
+  if (CLIP_EDITOR->region == self)
+    {
+      CLIP_EDITOR->region = NULL;
+      EVENTS_PUSH (ET_CLIP_EDITOR_REGION_CHANGED,
+                   NULL);
+    }
+  if (TL_SELECTIONS)
+    {
+      array_delete (
+        TL_SELECTIONS->regions,
+        TL_SELECTIONS->num_regions,
+        self);
+    }
+  if (MW_TIMELINE->start_region == self)
+    MW_TIMELINE->start_region = NULL;
 }
 
 void

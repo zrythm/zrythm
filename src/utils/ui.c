@@ -533,7 +533,8 @@ ui_create_language_model ()
                               G_TYPE_INT,
                               G_TYPE_STRING);
 
-  for (i = 0; i < G_N_ELEMENTS (values); i++)
+  int num_elements = G_N_ELEMENTS (values);
+  for (i = 0; i < num_elements; i++)
     {
       gtk_list_store_append (store, &iter);
       gtk_list_store_set (store, &iter,
@@ -576,7 +577,8 @@ ui_create_audio_backends_model (void)
                               G_TYPE_INT,
                               G_TYPE_STRING);
 
-  for (i = 0; i < G_N_ELEMENTS (values); i++)
+  int num_elements = G_N_ELEMENTS (values);
+  for (i = 0; i < num_elements; i++)
     {
       gtk_list_store_append (store, &iter);
       gtk_list_store_set (store, &iter,
@@ -615,7 +617,8 @@ ui_create_midi_backends_model (void)
                               G_TYPE_INT,
                               G_TYPE_STRING);
 
-  for (i = 0; i < G_N_ELEMENTS (values); i++)
+  int num_elements = G_N_ELEMENTS (values);
+  for (i = 0; i < num_elements; i++)
     {
       gtk_list_store_append (store, &iter);
       gtk_list_store_set (store, &iter,

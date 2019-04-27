@@ -121,7 +121,7 @@ node_finish (
 static void
 print_node (GraphNode * node)
 {
-  GraphNode * src, * dest;
+  GraphNode * dest;
   if (!node)
     {
       g_message ("(null) node");
@@ -169,15 +169,15 @@ node_process (
   Channel * chan;
 
   /*g_message ("num trigger nodes %d, max_trigger nodes %d", node->graph->n_trigger_queue, node->graph->trigger_queue_size);*/
-  for (i = 0; i < node->graph->n_trigger_queue; i++)
-    {
-      GraphNode * n = node->graph->trigger_queue[i];
+  /*for (i = 0; i < node->graph->n_trigger_queue; i++)*/
+    /*{*/
+      /*GraphNode * n = node->graph->trigger_queue[i];*/
       /*g_message ("trigger node %d: %s",*/
                  /*i,*/
                  /*n->type == ROUTE_NODE_TYPE_PORT ?*/
                  /*n->port->label :*/
                  /*n->pl->descr->name);*/
-    }
+    /*}*/
 
   if (node->type == ROUTE_NODE_TYPE_PLUGIN)
     {
@@ -321,12 +321,11 @@ node_process (
         {
           if (!AUDIO_ENGINE->exporting)
             {
-              int ret;
               float * out;
               switch (AUDIO_ENGINE->audio_backend)
                 {
-#ifdef HAVE_JACK
                 case AUDIO_BACKEND_JACK:
+#ifdef HAVE_JACK
                   out =
                     (float *)
                     jack_port_get_buffer (
@@ -336,8 +335,9 @@ node_process (
                   /* by this time, the Master channel should have its
                    * Stereo Out ports filled. pass their buffers to JACK's
                    * buffers */
+                  int nframes = AUDIO_ENGINE->nframes;
                   for (i = 0;
-                       i < AUDIO_ENGINE->nframes;
+                       i < nframes;
                        i++)
                     {
                       out[i] = port->srcs[0]->buf[i];
@@ -345,16 +345,16 @@ node_process (
 
                   /* avoid unused warnings */
                   (void) out;
+#endif
 
                   break;
-#endif
-#ifdef HAVE_PORT_AUDIO
                 case AUDIO_BACKEND_PORT_AUDIO:
+#ifdef HAVE_PORT_AUDIO
                   if (g_atomic_int_get (
                     &AUDIO_ENGINE->
                       filled_stereo_out_bufs))
                     break;
-                  ret =
+                  int ret =
                     g_atomic_int_compare_and_exchange (
                       &AUDIO_ENGINE->
                         filled_stereo_out_bufs,
@@ -362,8 +362,13 @@ node_process (
                   if (ret)
                     engine_pa_fill_stereo_out_buffs (
                       AUDIO_ENGINE);
-                  break;
 #endif
+                  break;
+                case AUDIO_BACKEND_ALSA:
+                case AUDIO_BACKEND_DUMMY:
+                  break;
+                default:
+                  break;
                 }
             }
         }
@@ -419,7 +424,7 @@ graph_init (
   pthread_mutex_init (&self->trigger_mutex, NULL);
 }
 
-static int cnt = 0;
+/*static int cnt = 0;*/
 
 static void *
 graph_worker_thread (void * g)
@@ -502,7 +507,7 @@ static void *
 graph_main_thread (void * arg)
 {
   g_message ("THREAD CREATED");
-  GraphNode * node;
+  /*GraphNode * node;*/
   Graph * self = (Graph *) arg;
 
   /* wait for initial process callback */
@@ -567,7 +572,7 @@ graph_init_threads (
             graph_worker_thread,
             graph);
 
-          if (graph->jthreads[i] == -1)
+          if ((int) graph->jthreads[i] == -1)
             {
               g_warning (
                 "%lu: Failed creating thread %d",
@@ -601,7 +606,7 @@ graph_init_threads (
         graph_main_thread,
         graph);
 
-      if (graph->jmain_thread == -1)
+      if ((int) graph->jmain_thread == -1)
         {
           g_warning (
             "%lu: Failed creating main thread",
@@ -749,31 +754,31 @@ graph_add_initial_node (
   return node;
 }
 
-static inline GraphNode *
-graph_add_terminal_and_initial_node (
-  Graph * self,
-  GraphNodeType type,
-  void * data)
-{
-  /* terminal */
-  self->terminal_refcnt =
-    ++self->terminal_node_count;
-  GraphNode * node =
-    graph_add_node (self, type, data);
-  node->terminal = 1;
+/*static inline GraphNode **/
+/*graph_add_terminal_and_initial_node (*/
+  /*Graph * self,*/
+  /*GraphNodeType type,*/
+  /*void * data)*/
+/*{*/
+  /*[> terminal <]*/
+  /*self->terminal_refcnt =*/
+    /*++self->terminal_node_count;*/
+  /*GraphNode * node =*/
+    /*graph_add_node (self, type, data);*/
+  /*node->terminal = 1;*/
 
-  /* initial */
-  self->init_trigger_list =
-    (GraphNode**)realloc (
-      self->init_trigger_list,
-      (1 + self->n_init_triggers) *
-        sizeof (GraphNode*));
+  /*[> initial <]*/
+  /*self->init_trigger_list =*/
+    /*(GraphNode**)realloc (*/
+      /*self->init_trigger_list,*/
+      /*(1 + self->n_init_triggers) **/
+        /*sizeof (GraphNode*));*/
 
-  self->n_init_triggers++;
-  node->initial = 1;
+  /*self->n_init_triggers++;*/
+  /*node->initial = 1;*/
 
-  return node;
-}
+  /*return node;*/
+/*}*/
 
 static inline void
 node_free (
@@ -882,6 +887,9 @@ graph_reached_terminal_node (Graph * self)
 
       /* and start the initial nodes */
       /*g_message ("locking trigger mutex to start initial nodes");*/
+      /* FIXME use double buffering instead of
+       * blocking (have another spare array and then
+       * just switch the pointer) */
       pthread_mutex_lock (&self->trigger_mutex);
       for (int i = 0;
            i < self->n_init_triggers; ++i)
@@ -929,7 +937,7 @@ graph_print (
   Graph * graph)
 {
   g_message ("==printing graph");
-  GraphNode * node;
+  /*GraphNode * node;*/
   for (int i = 0; i < graph->n_graph_nodes; i++)
     {
       print_node (graph->graph_nodes[i]);

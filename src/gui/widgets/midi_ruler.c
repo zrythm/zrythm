@@ -55,10 +55,10 @@ midi_ruler_draw_cb (GtkWidget * widget,
   gdk_cairo_get_clip_rectangle (cr,
                                 &rect);
 
-  GtkStyleContext *context;
-  context =
-    gtk_widget_get_style_context (
-      GTK_WIDGET (self));
+  /*GtkStyleContext *context;*/
+  /*context =*/
+    /*gtk_widget_get_style_context (*/
+      /*GTK_WIDGET (self));*/
 
   /*width = gtk_widget_get_allocated_width (widget);*/
   guint height =
@@ -161,6 +161,8 @@ midi_ruler_widget_set_ruler_marker_position (
       allocation->width = PLAYHEAD_TRIANGLE_WIDTH;
       allocation->height =
         PLAYHEAD_TRIANGLE_HEIGHT;
+      break;
+    default:
       break;
     }
 

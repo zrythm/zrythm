@@ -307,37 +307,33 @@ automation_tracklist_get_first_invisible_at (
   return NULL;
 }
 
-static void
-remove_automation_track (
-  AutomationTracklist * self,
-  AutomationTrack *     at)
-{
-  array_delete (self->automation_tracks,
-                self->num_automation_tracks,
-                at);
-  int size = self->num_automation_tracks + 1;
-  array_delete (self->automation_tracks,
-                size,
-                at->id);
-  project_remove_automation_track (at);
-  automation_track_free (at);
-}
+/*static void*/
+/*remove_automation_track (*/
+  /*AutomationTracklist * self,*/
+  /*AutomationTrack *     at)*/
+/*{*/
+  /*array_double_delete (*/
+    /*self->automation_tracks,*/
+    /*self->at_ids,*/
+    /*self->num_automation_tracks,*/
+    /*at, at->id);*/
+  /*project_remove_automation_track (at);*/
+  /*automation_track_free (at);*/
+/*}*/
 
-static void
-remove_automation_lane (
-  AutomationTracklist * self,
-  AutomationLane *     al)
-{
-  array_delete (self->automation_lanes,
-                self->num_automation_lanes,
-                al);
-  int size = self->num_automation_lanes + 1;
-  array_delete (self->automation_lanes,
-                size,
-                al->id);
-  project_remove_automation_lane (al);
-  automation_lane_free (al);
-}
+/*static void*/
+/*remove_automation_lane (*/
+  /*AutomationTracklist * self,*/
+  /*AutomationLane *     al)*/
+/*{*/
+  /*array_double_delete (*/
+    /*self->automation_lanes,*/
+    /*self->al_ids,*/
+    /*self->num_automation_lanes,*/
+    /*al, al->id);*/
+  /*project_remove_automation_lane (al);*/
+  /*automation_lane_free (al);*/
+/*}*/
 
 void
 automation_tracklist_free_members (

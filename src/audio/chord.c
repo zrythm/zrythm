@@ -99,6 +99,9 @@ chord_new (MusicalNote            root,
       self->notes[12 + root + 5] = 1;
       self->notes[12 + root + 5 + 2] = 1;
       break;
+    default:
+      g_warning ("chord unimplemented");
+      break;
     }
 
   /* TODO invert */
@@ -118,7 +121,7 @@ chord_new (MusicalNote            root,
 const char *
 chord_note_to_string (MusicalNote note)
 {
-  (void *) note_labels;
+  (void) note_labels;
   return note_labels[note];
 }
 

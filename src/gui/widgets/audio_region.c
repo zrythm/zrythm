@@ -67,28 +67,28 @@ audio_region_draw_cb (AudioRegionWidget * self,
                          0.9);
   cairo_set_line_width (cr, 1);
 
-  int num_loops =
-    region_get_num_loops (r, 1);
-  long ticks_in_region =
-    region_get_full_length_in_ticks (r);
-  float x_start, y_start, x_end;
+  /*int num_loops =*/
+    /*region_get_num_loops (r, 1);*/
+  /*long ticks_in_region =*/
+    /*region_get_full_length_in_ticks (r);*/
+  /*float x_start, y_start, x_end;*/
 
   long prev_frames = 0;
   long loop_end_frames =
     position_to_frames (&r->loop_end_pos) *
     ar->channels;
-  long loop_start_frames =
-    position_to_frames (&r->loop_end_pos) *
-    ar->channels;
+  /*long loop_start_frames =*/
+    /*position_to_frames (&r->loop_end_pos) **/
+    /*ar->channels;*/
   long loop_frames =
     region_get_loop_length_in_frames (r) *
     ar->channels;
   long clip_start_frames =
     position_to_frames (&r->clip_start_pos) *
     ar->channels;
-  int px =
-    ui_pos_to_px_timeline (&r->loop_start_pos, 0);
-  Position tmp;
+  /*int px =*/
+    /*ui_pos_to_px_timeline (&r->loop_start_pos, 0);*/
+  /*Position tmp;*/
   long frame_interval =
     ui_px_to_frames_timeline (ar->channels, 0);
   for (double i = 0.0; i < (double) width; i += 0.6)
@@ -129,12 +129,12 @@ audio_region_draw_cb (AudioRegionWidget * self,
 static void
 on_motion (GtkWidget * widget, GdkEventMotion *event)
 {
-  AudioRegionWidget * self = Z_AUDIO_REGION_WIDGET (widget);
+  /*AudioRegionWidget * self = Z_AUDIO_REGION_WIDGET (widget);*/
   GtkAllocation allocation;
   gtk_widget_get_allocation (widget,
                              &allocation);
-  ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);
-  REGION_WIDGET_GET_PRIVATE (self);
+  /*ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);*/
+  /*REGION_WIDGET_GET_PRIVATE (self);*/
 }
 
 AudioRegionWidget *

@@ -18,7 +18,7 @@
  */
 
 #ifndef __UNDO_MOVE_TIMELINE_SELECTIONS_ACTION_H__
-#define __UNDO_MOVE_TIMELINE_SELECTIONS_POS_ACTION_H__
+#define __UNDO_MOVE_TIMELINE_SELECTIONS_ACTION_H__
 
 #include "actions/undoable_action.h"
 

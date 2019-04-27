@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-25 00:27+0100\n"
+"POT-Creation-Date: 2019-04-27 13:39+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrytm dot org>\n"
 "Language-Team: Japanese\n"
@@ -82,7 +82,7 @@ msgstr ""
 msgid "BPM - Click and drag up/down to set"
 msgstr "BPM"
 
-#: src/audio/engine_jack.c:596
+#: src/audio/engine_jack.c:595
 #, fuzzy
 msgid "Backend error"
 msgstr "バックエンド"
@@ -134,7 +134,7 @@ msgstr ""
 msgid "Category"
 msgstr "カテゴリー"
 
-#: src/gui/widgets/channel_slot.c:242
+#: src/gui/widgets/channel_slot.c:241
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -161,15 +161,15 @@ msgstr "コード"
 msgid "Click to enable MIDI controllers to be connected automatically"
 msgstr ""
 
-#: src/audio/engine_jack.c:599
+#: src/audio/engine_jack.c:598
 msgid "Client zombie"
 msgstr ""
 
-#: src/audio/engine_jack.c:593
+#: src/audio/engine_jack.c:592
 msgid "Client's protocol version does not match"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:1433
+#: src/plugins/lv2_gtk.c:1436
 msgid "Close"
 msgstr "閉じる"
 
@@ -183,7 +183,7 @@ msgstr "コレクション"
 msgid "Color"
 msgstr "色"
 
-#: src/audio/engine_jack.c:578
+#: src/audio/engine_jack.c:577
 msgid "Communication error with the JACK server"
 msgstr ""
 
@@ -216,7 +216,7 @@ msgstr "カスタム"
 msgid "Cut selection to clipboard"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:561
+#: src/plugins/lv2_gtk.c:562
 msgid "Delete Preset?"
 msgstr "プリセットを削除する？"
 
@@ -233,7 +233,7 @@ msgid "Donate"
 msgstr "寄付する"
 
 #. TRANSLATORS: Dummy audio backend
-#: src/utils/ui.c:565 src/utils/ui.c:606
+#: src/utils/ui.c:566 src/utils/ui.c:608
 msgid "Dummy"
 msgstr ""
 
@@ -271,7 +271,7 @@ msgstr "リージョン名を入力してください"
 msgid "Eraser tool"
 msgstr "エレーザツール"
 
-#: src/plugins/plugin_manager.c:203
+#: src/plugins/plugin_manager.c:206
 msgid "Error loading LV2 bundle dir: "
 msgstr ""
 
@@ -482,8 +482,8 @@ msgstr "メイン画面"
 msgid "Manual"
 msgstr "マニュアル"
 
-#: src/project.c:160 src/gui/widgets/channel.c:261
-#: src/gui/widgets/channel.c:270 resources/ui/channel.ui:341
+#: src/project.c:160 src/gui/widgets/channel.c:262
+#: src/gui/widgets/channel.c:271 resources/ui/channel.ui:341
 msgid "Master"
 msgstr "マスター"
 
@@ -556,7 +556,7 @@ msgid "Output Files"
 msgstr "出力ファイル"
 
 #. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:565
+#: src/audio/engine_jack.c:564
 msgid "Overall operation failed"
 msgstr ""
 
@@ -586,6 +586,11 @@ msgstr "ピアノロール・パネル"
 
 #: resources/ui/transport_controls.ui:54
 msgid "Play"
+msgstr "プレー"
+
+#: src/gui/widgets/ruler_marker.c:315
+#, fuzzy
+msgid "Playhead"
 msgstr "プレー"
 
 #: src/gui/widgets/digital_meter.c:648
@@ -714,7 +719,7 @@ msgstr "選択したプロジェクトをリストから削除する"
 msgid "Report a Bug"
 msgstr "不具合を報告する"
 
-#: src/audio/engine_jack.c:581
+#: src/audio/engine_jack.c:580
 msgid "Requested client does not exist"
 msgstr ""
 
@@ -743,7 +748,7 @@ msgstr "右パネル"
 msgid "Save Project"
 msgstr "プロジェクトを保存"
 
-#: src/plugins/lv2_gtk.c:148
+#: src/plugins/lv2_gtk.c:149
 msgid "Save State"
 msgstr ""
 
@@ -856,7 +861,7 @@ msgstr "スペイン語[es]"
 msgid "Status Bar"
 msgstr "ステータス・バー"
 
-#: src/gui/widgets/channel.c:265
+#: src/gui/widgets/channel.c:266
 msgid "Stereo out"
 msgstr ""
 
@@ -876,7 +881,7 @@ msgstr ""
 msgid "Tests the backends"
 msgstr ""
 
-#: src/audio/engine_jack.c:572
+#: src/audio/engine_jack.c:571
 msgid "The desired client name was not unique"
 msgstr ""
 
@@ -891,7 +896,7 @@ msgid ""
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 msgstr ""
 
-#: src/audio/engine_jack.c:568
+#: src/audio/engine_jack.c:567
 msgid "The operation contained an invalid or unsupported option"
 msgstr ""
 
@@ -962,23 +967,23 @@ msgstr "トラック(%d)"
 msgid "Type"
 msgstr "種類"
 
-#: src/plugins/lv2_gtk.c:466
+#: src/plugins/lv2_gtk.c:467
 msgid "URI (Optional):"
 msgstr ""
 
-#: src/audio/engine_jack.c:590
+#: src/audio/engine_jack.c:589
 msgid "Unable to access shared memory"
 msgstr ""
 
-#: src/audio/engine_jack.c:575
+#: src/audio/engine_jack.c:574
 msgid "Unable to connect to the JACK server"
 msgstr ""
 
-#: src/audio/engine_jack.c:587
+#: src/audio/engine_jack.c:586
 msgid "Unable to initialize client"
 msgstr ""
 
-#: src/audio/engine_jack.c:584
+#: src/audio/engine_jack.c:583
 msgid "Unable to load internal client"
 msgstr ""
 
@@ -990,11 +995,11 @@ msgstr ""
 msgid "Undo previous command"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:780
+#: src/plugins/lv2_gtk.c:781
 msgid "Unknown widget type for value"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:806
+#: src/plugins/lv2_gtk.c:807
 msgid "Unknown widget type for value\n"
 msgstr ""
 
@@ -1047,7 +1052,7 @@ msgstr "ズーム"
 msgid "Zrythm"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:151 src/plugins/lv2_gtk.c:566
+#: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567
 #: src/actions/actions.c:521
 msgid "_Cancel"
 msgstr "キャンセル(_C)"
@@ -1095,7 +1100,7 @@ msgstr "ヘルプ(_H)"
 msgid "_New"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:567
+#: src/plugins/lv2_gtk.c:568
 msgid "_OK"
 msgstr ""
 
@@ -1107,7 +1112,7 @@ msgstr "開く(_O)"
 msgid "_Preferences"
 msgstr "設定(_P)"
 
-#: src/plugins/lv2_gtk.c:470
+#: src/plugins/lv2_gtk.c:471
 msgid "_Prefix plugin name"
 msgstr ""
 
@@ -1119,7 +1124,7 @@ msgstr ""
 msgid "_Redo"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:152 src/gui/widgets/header_bar.c:130
+#: src/plugins/lv2_gtk.c:153 src/gui/widgets/header_bar.c:130
 #: src/actions/actions.c:523
 msgid "_Save"
 msgstr ""

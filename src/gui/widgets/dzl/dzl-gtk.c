@@ -546,7 +546,10 @@ dzl_gtk_list_store_insert_sorted (GtkListStore     *store,
   g_return_if_fail (GTK_IS_LIST_STORE (store));
   g_return_if_fail (GTK_IS_LIST_STORE (model));
   g_return_if_fail (iter != NULL);
-  g_return_if_fail (compare_column < gtk_tree_model_get_n_columns (GTK_TREE_MODEL (store)));
+  g_return_if_fail (
+    (int) compare_column <
+    gtk_tree_model_get_n_columns (
+      GTK_TREE_MODEL (store)));
   g_return_if_fail (compare_func != NULL);
 
   type = gtk_tree_model_get_column_type (GTK_TREE_MODEL (store), compare_column);

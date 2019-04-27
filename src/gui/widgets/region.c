@@ -170,7 +170,7 @@ region_draw_cb (RegionWidget * self,
 
       px = ui_pos_to_px_timeline (&tmp, 0);
 
-      if (px <= width - 1)
+      if (px <= (int) width - 1)
         {
           cairo_set_source_rgba (
             cr, 0, 0, 0, 1.0);

@@ -22,6 +22,7 @@
 #include "gui/widgets/dzl/dzl-tab.h"
 #include "gui/widgets/dzl/dzl-tab-strip.h"
 #include "gui/widgets/dzl/dzl-macros.h"
+#include "utils/gtk.h"
 
 typedef struct
 {
@@ -568,7 +569,9 @@ dzl_tab_strip_set_stack (DzlTabStrip *self,
                                                 G_CALLBACK (dzl_tab_strip_stack_remove),
                                                 self);
 
-          gtk_container_foreach (GTK_CONTAINER (self), (GtkCallback)gtk_widget_destroy, NULL);
+          z_gtk_container_destroy_all_children (
+            GTK_CONTAINER (self));
+          /*gtk_container_foreach (GTK_CONTAINER (self), (GtkCallback)gtk_widget_destroy, NULL);*/
 
           g_clear_object (&priv->stack);
         }

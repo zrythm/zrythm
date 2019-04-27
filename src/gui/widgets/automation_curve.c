@@ -19,6 +19,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <math.h>
+
 #include "audio/automation_track.h"
 #include "audio/bus_track.h"
 #include "audio/channel.h"
@@ -60,7 +62,8 @@ drag_update (GtkGestureDrag * gesture,
 {
   AutomationCurveWidget * self = (AutomationCurveWidget *) user_data;
   offset_y = - offset_y;
-  int use_y = abs(offset_y - self->last_y) > abs(offset_x - self->last_x);
+  int use_y = fabs (offset_y - self->last_y) >
+    fabs (offset_x - self->last_x);
   /*double multiplier = 0.005;*/
   double diff = use_y ? offset_y - self->last_y : offset_x - self->last_x;
   double height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
@@ -256,7 +259,7 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
       bot_bar_change_status ("");
       self->cache = 0;
     }
-  g_idle_add ((GSourceFunc) gtk_widget_queue_draw, GTK_WIDGET (self));
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 AutomationCurveWidget *

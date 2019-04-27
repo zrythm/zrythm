@@ -51,6 +51,7 @@
 #include "plugins/lv2/lv2_evbuf.h"
 #include "plugins/lv2/symap.h"
 #include "plugins/lv2/worker.h"
+#include "plugins/lv2/urid.h"
 #include "plugins/lv2/zix/ring.h"
 #include "plugins/lv2/suil.h"
 #include "utils/sem.h"
@@ -89,9 +90,6 @@
 #    define REALTIME
 #endif
 
-#define LV2_PLUGIN_NATIVE_UI_TYPE \
-  "http://lv2plug.in/ns/extensions/ui#Gtk3UI"
-
 typedef struct Lv2Plugin Lv2Plugin;
 typedef struct _GtkWidget GtkWidget;
 typedef struct _GtkCheckMenuItem GtkCheckMenuItem;
@@ -99,80 +97,7 @@ typedef struct Port Port;
 typedef struct Plugin Plugin;
 typedef struct PluginDescriptor PluginDescriptor;
 
-typedef struct {
-	LilvNode* atom_AtomPort;
-	LilvNode* atom_Chunk;
-	LilvNode* atom_Float;
-	LilvNode* atom_Path;
-	LilvNode* atom_Sequence;
-	LilvNode* ev_EventPort;
-	LilvNode* lv2_AudioPort;
-	LilvNode* lv2_CVPort;
-	LilvNode* lv2_ControlPort;
-	LilvNode* lv2_InputPort;
-	LilvNode* lv2_OutputPort;
-	LilvNode* lv2_connectionOptional;
-	LilvNode* lv2_control;
-	LilvNode* lv2_default;
-	LilvNode* lv2_enumeration;
-	LilvNode* lv2_integer;
-	LilvNode* lv2_maximum;
-	LilvNode* lv2_minimum;
-	LilvNode* lv2_name;
-	LilvNode* lv2_reportsLatency;
-	LilvNode* lv2_sampleRate;
-	LilvNode* lv2_symbol;
-	LilvNode* lv2_toggled;
-	LilvNode* midi_MidiEvent;
-	LilvNode* pg_group;
-	LilvNode* pprops_logarithmic;
-	LilvNode* pprops_notOnGUI;
-	LilvNode* pprops_rangeSteps;
-	LilvNode* pset_Preset;
-	LilvNode* pset_bank;
-	LilvNode* rdfs_comment;
-	LilvNode* rdfs_label;
-	LilvNode* rdfs_range;
-	LilvNode* rsz_minimumSize;
-	LilvNode* work_interface;
-	LilvNode* work_schedule;
-	LilvNode* ui_externallv;
-	LilvNode* ui_externalkx;
-	LilvNode* end;  ///< NULL terminator for easy freeing of entire structure
-} LV2_Nodes;
-
 /* FIXME these should go to manager */
-typedef struct {
-	LV2_URID atom_Float;
-	LV2_URID atom_Int;
-	LV2_URID atom_Object;
-	LV2_URID atom_Path;
-	LV2_URID atom_String;
-	LV2_URID atom_eventTransfer;
-	LV2_URID bufsz_maxBlockLength;
-	LV2_URID bufsz_minBlockLength;
-	LV2_URID bufsz_sequenceSize;
-	LV2_URID log_Error;
-	LV2_URID log_Trace;
-	LV2_URID log_Warning;
-	LV2_URID midi_MidiEvent;
-	LV2_URID param_sampleRate;
-	LV2_URID patch_Get;
-	LV2_URID patch_Put;
-	LV2_URID patch_Set;
-	LV2_URID patch_body;
-	LV2_URID patch_property;
-	LV2_URID patch_value;
-	LV2_URID time_Position;
-	LV2_URID time_bar;
-	LV2_URID time_barBeat;
-	LV2_URID time_beatUnit;
-	LV2_URID time_beatsPerBar;
-	LV2_URID time_beatsPerMinute;
-	LV2_URID time_frame;
-	LV2_URID time_speed;
-	LV2_URID ui_updateRate;
-} LV2_URIDs;
 
 typedef struct LV2_Port
 {
@@ -212,19 +137,16 @@ typedef struct Lv2Plugin
 
   LV2_Options_Option options[6];
 
-  LV2_Nodes          nodes;          ///< nodes
 	LV2_Atom_Forge     forge;          ///< Atom forge
 	Sratom*            sratom;         ///< Atom serialiser
 	Sratom*            ui_sratom;      ///< Atom serialiser for UI thread
-	Symap*             symap;          ///< URI map
-	ZixSem             symap_lock;     ///< Lock for URI map
 	ZixRing*           ui_events;      ///< Port events from UI
 	ZixRing*           plugin_events;  ///< Port events from plugin
 	void*              ui_event_buf;   ///< Buffer for reading UI port events
 	LV2_Worker  worker;         ///< Worker thread implementation
 	LV2_Worker  state_worker;   ///< Synchronous worker for state restore
 	ZixSem             work_lock;      ///< Lock for plugin work() method
-	ZixSem*            done;           ///< Exit semaphore
+  ZixSem*            done;           ///< Exit semaphore
 	char*              temp_dir;       ///< Temporary plugin state directory
 	char*              save_dir;       ///< Plugin save directory
 	const LilvPlugin*  lilv_plugin;         ///< Plugin class (RDF data)
@@ -242,8 +164,7 @@ typedef struct Lv2Plugin
   gulong             delete_event_id;
 	LV2_Port*          ports;          ///< Port array of size num_ports
 	Lv2Controls        controls;       ///< Available plugin controls
-	uint32_t           num_ports;      ///< Size of the two following arrays:
-	uint32_t           longest_sym;    ///< Longest port symbol (used for aligned console printing)
+	int                num_ports;      ///< Size of the two following arrays:
 	uint32_t           plugin_latency; ///< Latency reported by plugin (if any)
 	float              ui_update_hz;   ///< Frequency of UI updates
 	uint32_t           event_delta_t;  ///< Frames since last update sent to UI
@@ -252,14 +173,20 @@ typedef struct Lv2Plugin
 	bool               has_ui;         ///< True iff a control UI is present
 	bool               request_update; ///< True iff a plugin update is needed
 	bool               safe_restore;   ///< Plugin restore() is thread-safe
-	uint32_t           control_in;     ///< Index of control input port
+	int                control_in;     ///< Index of control input port
   ZixSem exit_sem;  /**< Exit semaphore */
 	bool               externalui;     ///< True iff plugin has an external-ui
   LV2_External_UI_Widget* extuiptr;  ///< data structure used for external-ui
   GtkCheckMenuItem* active_preset_item;
   bool              updating;
 
-  LV2_URIDs          urids;        ///< URIDs
+  /** URI map for URID feature. */
+	Symap*                 symap;
+  /** Lock for URI map. */
+	ZixSem                 symap_lock;
+
+  /** URIDs. */
+  Lv2URIDs               urids;
 	LV2_URID_Map       map;            ///< URI => Int map
 	LV2_URID_Unmap     unmap;          ///< Int => URI map
 	SerdEnv*           env;            ///< Environment for RDF printing
@@ -366,6 +293,12 @@ lv2_strdup(const char* str)
 	return copy;
 }
 
+/**
+ * Joins two strings.
+ *
+ * Used in the state when creating paths. Can
+ * probably get rid of this and use glib.
+ */
 static inline char*
 lv2_strjoin(const char* a, const char* b)
 {
@@ -384,9 +317,9 @@ LV2_Port*
 lv2_port_by_symbol(Lv2Plugin* plugin, const char* sym);
 
 void
-lv2_ui_write(SuilController controller,
-              uint32_t       port_index,
-              uint32_t       buffer_size,
+lv2_ui_write(SuilController  controller,
+              uint32_t      port_index,
+              uint32_t      buffer_size,
               uint32_t       protocol,
               const void*    buffer);
 
@@ -414,13 +347,6 @@ bool
 lv2_ui_is_resizable(Lv2Plugin* plugin);
 
 void
-lv2_ui_write(SuilController controller,
-              uint32_t       port_index,
-              uint32_t       buffer_size,
-              uint32_t       protocol,
-              const void*    buffer);
-
-void
 lv2_apply_ui_events(Lv2Plugin* plugin, uint32_t nframes);
 
 uint32_t
@@ -436,8 +362,8 @@ lv2_send_to_ui(Lv2Plugin*       plugin,
 bool
 lv2_plugin_run(Lv2Plugin* plugin, uint32_t nframes);
 
-bool
-lv2_plugin_update(Lv2Plugin* plugin);
+int
+lv2_plugin_update (gpointer data);
 
 int
 lv2_ui_resize(Lv2Plugin* plugin, int width, int height);

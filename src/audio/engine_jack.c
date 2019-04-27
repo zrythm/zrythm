@@ -66,7 +66,7 @@ engine_jack_autoconnect_midi_controllers (
   int j;
   char * pname;
   char * device;
-  jack_port_t * port;
+  /*jack_port_t * port;*/
   while ((pname = (char *) ports[i]) != NULL)
     {
       /* if port matches one of the selected
@@ -349,7 +349,6 @@ engine_jack_test (
       msg =
         g_strdup_printf (
           _("JACK Error: %s"),
-          msg,
           engine_jack_get_error_message (
             status));
       ui_show_error_message (

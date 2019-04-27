@@ -51,20 +51,10 @@ lv2_printf(LV2_Log_Handle handle,
             LV2_URID       type,
             const char*    fmt, ...)
 {
-  Lv2Plugin* plugin  = (Lv2Plugin*) handle;
-  GLogLevelFlags level;
-  if (type == plugin->urids.log_Trace)
-    level = G_LOG_LEVEL_DEBUG;
-  else if (type == plugin->urids.log_Error)
-    level = G_LOG_LEVEL_ERROR;
-  else if (type == plugin->urids.log_Warning)
-    level = G_LOG_LEVEL_WARNING;
-  else
-    level = G_LOG_LEVEL_MESSAGE;
-
 	va_list args;
 	va_start(args, fmt);
-	const int ret = lv2_vprintf(handle, type, fmt, args);
+	const int ret =
+    lv2_vprintf(handle, type, fmt, args);
 	va_end(args);
 
   return ret;

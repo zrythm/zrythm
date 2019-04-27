@@ -52,10 +52,8 @@ G_DEFINE_TYPE (InstrumentTrackWidget,
 instument_track_ui_toggle (GtkWidget * self, InstrumentTrackWidget * data)
 {
   Channel * channel = GET_CHANNEL(data);
-  TRACK_WIDGET_GET_PRIVATE(data);
   Plugin * plugin = channel->plugins[0];
-  InstrumentTrack * it =
-    (InstrumentTrack *) plugin->channel->track;
+  g_warn_if_fail (plugin);
   plugin->visible = !plugin->visible;
 
   EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED,
@@ -172,8 +170,8 @@ instrument_track_widget_refresh (
 {
   TRACK_WIDGET_GET_PRIVATE (self);
   Track * track = tw_prv->track;
-  ChannelTrack * ct = (ChannelTrack *) track;
-  Channel * chan = ct->channel;
+  /*ChannelTrack * ct = (ChannelTrack *) track;*/
+  /*Channel * chan = ct->channel;*/
 
   instrument_track_widget_refresh_buttons (self);
 

@@ -463,6 +463,16 @@ Region *
 region_clone (Region *        region,
               RegionCloneFlag flag);
 
+/**
+ * Disconnects the region and anything using it.
+ *
+ * Does not free the Region or its children's
+ * resources.
+ */
+void
+region_disconnect (
+  Region * self);
+
 void
 region_free (Region * region);
 

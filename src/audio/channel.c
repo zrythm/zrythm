@@ -51,6 +51,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 
 #include <gtk/gtk.h>
 
@@ -546,24 +547,24 @@ channel_get_phase (void * _channel)
   /*return channel->volume;*/
 /*}*/
 
-static int
-redraw_fader_asnyc (Channel * channel)
-{
-  gtk_widget_queue_draw (
-    GTK_WIDGET (channel->widget->fader));
+/*static int*/
+/*redraw_fader_asnyc (Channel * channel)*/
+/*{*/
+  /*gtk_widget_queue_draw (*/
+    /*GTK_WIDGET (channel->widget->fader));*/
 
-  return FALSE;
-}
+  /*return FALSE;*/
+/*}*/
 
 
-static int
-redraw_pan_async (Channel * channel)
-{
-  gtk_widget_queue_draw (
-    GTK_WIDGET (channel->widget->pan));
+/*static int*/
+/*redraw_pan_async (Channel * channel)*/
+/*{*/
+  /*gtk_widget_queue_draw (*/
+    /*GTK_WIDGET (channel->widget->pan));*/
 
-  return FALSE;
-}
+  /*return FALSE;*/
+/*}*/
 
 void
 channel_set_pan (void * _channel, float pan)
@@ -638,8 +639,8 @@ channel_remove_plugin (
               lv2_plugin->delete_event_id);
           lv2_close_ui (lv2_plugin);
         }
-      project_remove_plugin (plugin);
-      plugin_free (plugin);
+      plugin_disconnect (plugin);
+      free_later (plugin, plugin_free);
     }
 
   if (!deleting_channel)
@@ -979,13 +980,17 @@ channel_get_automatable (Channel *       channel,
 /*}*/
 
 /**
- * Frees the channel.
+ * Disconnects the channel from the processing
+ * chain.
+ *
+ * This should be called immediately when the
+ * channel is getting deleted, and channel_free
+ * should be designed to be called later after
+ * an arbitrary delay.
  */
 void
-channel_free (Channel * channel)
+channel_disconnect (Channel * channel)
 {
-  g_warn_if_fail (channel);
-
   FOREACH_STRIP
     {
       if (channel->plugins[i])
@@ -993,6 +998,22 @@ channel_free (Channel * channel)
           channel_remove_plugin (channel, i, 1);
         }
     }
+  port_disconnect_all (channel->stereo_in->l);
+  port_disconnect_all (channel->stereo_in->r);
+  port_disconnect_all (channel->midi_in);
+  port_disconnect_all (channel->piano_roll);
+  port_disconnect_all (channel->stereo_out->l);
+  port_disconnect_all (channel->stereo_out->r);
+}
+
+/**
+ * Frees the channel.
+ */
+void
+channel_free (Channel * channel)
+{
+  g_warn_if_fail (channel);
+  project_remove_channel (channel);
 
   project_remove_port (channel->stereo_in->l);
   port_free (channel->stereo_in->l);

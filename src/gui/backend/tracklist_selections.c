@@ -121,15 +121,12 @@ tracklist_selections_remove_track (
       return;
     }
 
-  int idx;
-  array_delete_return_pos (ts->tracks,
-                ts->num_tracks,
-                r,
-                idx);
-  int size = ts->num_tracks + 1;
-  array_delete (ts->track_ids,
-                size,
-                r->id);
+  array_double_delete (
+    ts->tracks,
+    ts->track_ids,
+    ts->num_tracks,
+    r,
+    r->id);
 }
 
 int

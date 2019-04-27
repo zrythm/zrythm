@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -16,9 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-/* original license follows */
-
 /*
   Copyright 2007-2016 David Robillard <http://drobilla.net>
 
@@ -72,7 +69,8 @@ typedef enum {
 } Lv2ControlType;
 
 /** Plugin control. */
-typedef struct {
+typedef struct Lv2Control
+{
 	Lv2Plugin*       plugin;
 	Lv2ControlType type;
 	LilvNode*   node;
@@ -95,23 +93,24 @@ typedef struct {
 	bool        is_logarithmic;  ///< Logarithmic scale
 	bool        is_writable;     ///< Writable (input)
 	bool        is_readable;     ///< Readable (output)
-} Lv2ControlID;
+} Lv2Control;
 
-typedef struct {
-	size_t      n_controls;
-	Lv2ControlID** controls;
+typedef struct Lv2Controls
+{
+	int          n_controls;
+	Lv2Control** controls;
 } Lv2Controls;
 
-Lv2ControlID*
+Lv2Control*
 lv2_new_port_control(Lv2Plugin* plugin, uint32_t index);
 
-Lv2ControlID*
+Lv2Control*
 lv2_new_property_control(Lv2Plugin* plugin, const LilvNode* property);
 
 void
-lv2_add_control(Lv2Controls* controls, Lv2ControlID* control);
+lv2_add_control(Lv2Controls* controls, Lv2Control* control);
 
-Lv2ControlID*
+Lv2Control*
 lv2_get_property_control(const Lv2Controls* controls, LV2_URID property);
 
 /** Order scale points by value. */
@@ -121,7 +120,7 @@ lv2_scale_point_cmp (
 
 void
 lv2_control_set_control (
-  const Lv2ControlID * control,
+  const Lv2Control * control,
   uint32_t             size,
   LV2_URID             type,
   const void*          body);
@@ -130,12 +129,12 @@ lv2_control_set_control (
  * Returns the human readable control label.
  */
 const char *
-lv2_control_get_label (const Lv2ControlID * control);
+lv2_control_get_label (const Lv2Control * control);
 
 /**
- * Returns the Lv2ControlID from the port index.
+ * Returns the Lv2Control from the port index.
  */
-Lv2ControlID *
+Lv2Control *
 lv2_control_get_from_port (
   LV2_Port * port);
 

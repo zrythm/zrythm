@@ -48,13 +48,14 @@ create_icon_store (void)
 
   GtkTreeIter iter;
   GtkListStore *store;
-  gint i;
+  int i, num_elems;
 
   store = gtk_list_store_new (2,
                               G_TYPE_INT,
                               G_TYPE_STRING);
 
-  for (i = 0; i < G_N_ELEMENTS (values); i++)
+  num_elems = G_N_ELEMENTS (values);
+  for (i = 0; i < num_elems; i++)
     {
       gtk_list_store_append (store, &iter);
       gtk_list_store_set (store, &iter,

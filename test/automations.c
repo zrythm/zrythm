@@ -117,7 +117,7 @@ test_at_get_x_relevant_to_pos (
             fixture->at->num_automation_points - 1]);
 
   /* test when there are no APs */
-  int tmp = fixture->at->num_automation_points;
+  /*int tmp = fixture->at->num_automation_points;*/
   fixture->at->num_automation_points = 0;
   ap =
     automation_track_get_ap_before_pos (

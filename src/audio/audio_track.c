@@ -90,11 +90,13 @@ audio_track_fill_stereo_in_buffers (
             local_frames_start -= loop_frames;
 
           buff_index = 0;
+          int block_length =
+            AUDIO_ENGINE->block_length;
           if (ar->channels == 1)
             {
               /*g_message ("1 channel");*/
               for (j = 0;
-                   j < AUDIO_ENGINE->block_length;
+                   j < block_length;
                    j++)
                 {
                   buff_index = local_frames_start + j;
@@ -111,7 +113,7 @@ audio_track_fill_stereo_in_buffers (
             {
               /*g_message ("2 channels");*/
               for (j = 0;
-                   j < AUDIO_ENGINE->block_length;
+                   j < block_length;
                    j += 2)
                 {
                   buff_index = local_frames_start +

@@ -52,7 +52,7 @@
 char *
 exporter_stringize_audio_format (AudioFormat format)
 {
-  char * str;
+  char * str = NULL;
 
   switch (format)
     {
@@ -216,6 +216,9 @@ exporter_export (ExportSettings * info)
       zix_sem_wait (
         &AUDIO_ENGINE->port_operation_lock);
 
+      int count = 0;
+      int nframes = AUDIO_ENGINE->nframes;
+      int out_ptr[nframes * 2];
       do
         {
           /* run process code */
@@ -226,9 +229,8 @@ exporter_export (ExportSettings * info)
 
           /* by this time, the Master channel should have its Stereo Out ports filled.
            * pass its buffers to the output */
-          int count= 0;
-          int out_ptr[AUDIO_ENGINE->nframes * 2];
-          for (int i = 0; i < AUDIO_ENGINE->nframes; i++)
+          count= 0;
+          for (int i = 0; i < nframes; i++)
             {
               out_ptr[count++] = AMPLITUDE *
                 MIXER->master->stereo_out->l->buf[i];

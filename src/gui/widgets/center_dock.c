@@ -63,8 +63,8 @@ void
 on_hadj_value_changed (GtkAdjustment *adjustment,
                        gpointer       user_data)
 {
-  CenterDockWidget * self =
-    Z_CENTER_DOCK_WIDGET (user_data);
+  /*CenterDockWidget * self =*/
+    /*Z_CENTER_DOCK_WIDGET (user_data);*/
 
   EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED, NULL);
 }
