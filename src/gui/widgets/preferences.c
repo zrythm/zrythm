@@ -92,6 +92,14 @@ on_ok_clicked (GtkWidget * widget,
     S_PREFERENCES,
     "language",
     gtk_combo_box_get_active (self->language));
+  g_settings_set_enum (
+    S_PREFERENCES,
+    "pan-algo",
+    gtk_combo_box_get_active (self->pan_algo));
+  g_settings_set_enum (
+    S_PREFERENCES,
+    "pan-law",
+    gtk_combo_box_get_active (self->pan_law));
   g_settings_set_int (
     S_PREFERENCES,
     "open-plugin-uis-on-instantiate",
@@ -117,6 +125,10 @@ preferences_widget_new ()
   ui_setup_midi_backends_combo_box (
     self->midi_backend);
   ui_setup_language_combo_box (self->language);
+  ui_setup_pan_algo_combo_box (
+    self->pan_algo);
+  ui_setup_pan_law_combo_box (
+    self->pan_law);
   setup_plugins (self);
   midi_controller_mb_widget_setup (
     self->midi_controllers);
@@ -156,6 +168,14 @@ preferences_widget_class_init (
     klass,
     PreferencesWidget,
     language);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PreferencesWidget,
+    pan_algo);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PreferencesWidget,
+    pan_law);
   gtk_widget_class_bind_template_child (
     klass,
     PreferencesWidget,

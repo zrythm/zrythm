@@ -171,6 +171,10 @@ typedef struct AudioEngine
    */
   Transport         transport;
 
+  PanLaw            pan_law;
+
+  PanAlgorithm      pan_algo;
+
   gint64            last_time_taken;
 
   gint64            max_time_taken;

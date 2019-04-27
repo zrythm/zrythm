@@ -110,7 +110,6 @@ init_audio (
     {
       stereo_ports_init_loaded (self->stereo_in);
       stereo_ports_init_loaded (self->stereo_out);
-
     }
   else
     {
@@ -169,6 +168,15 @@ engine_init (AudioEngine * self,
     default:
       break;
     }
+
+  self->pan_law =
+    g_settings_get_enum (
+      S_PREFERENCES,
+      "pan-law");
+  self->pan_algo =
+    g_settings_get_enum (
+      S_PREFERENCES,
+      "pan-algo");
 
   /* init semaphores */
   zix_sem_init (&self->port_operation_lock, 1);
