@@ -68,8 +68,13 @@ on_drag_data_received (
       pl = project_get_plugin (pl->id);
       g_warn_if_fail (pl);
 
-      mixer_move_plugin (
-        MIXER, pl, self->channel, self->slot_index);
+      /* if plugin not at original position */
+      if (self->channel != pl->channel ||
+          self->slot_index !=
+            channel_get_plugin_index (pl->channel,
+                                      pl))
+        mixer_move_plugin (
+          MIXER, pl, self->channel, self->slot_index);
     }
   else if (atom == plugin_descr_atom)
     {
@@ -258,6 +263,25 @@ on_drag_data_get (
     sizeof (Plugin));
 }
 
+static void
+on_drag_motion (GtkWidget *widget,
+             GdkDragContext *context,
+             gint x,
+             gint y,
+             guint time,
+             ChannelSlotWidget * self)
+{
+  GdkModifierType mask;
+
+  gdk_window_get_pointer (
+    gtk_widget_get_window (widget),
+    NULL, NULL, &mask);
+  if (mask & GDK_CONTROL_MASK)
+    gdk_drag_status (context, GDK_ACTION_COPY, time);
+  else
+    gdk_drag_status (context, GDK_ACTION_MOVE, time);
+}
+
 static gboolean
 on_motion (
   GtkWidget * widget,
@@ -310,10 +334,10 @@ channel_slot_widget_new (int slot_index,
   /* set as drag source for plugin */
   gtk_drag_source_set (
     GTK_WIDGET (self),
-    GDK_MODIFIER_MASK,
+    GDK_BUTTON1_MASK,
     entries,
     1,
-    GDK_ACTION_COPY);
+    GDK_ACTION_MOVE | GDK_ACTION_COPY);
   /* set as drag dest for both plugins and
    * plugin descriptors */
   gtk_drag_dest_set (
@@ -321,7 +345,7 @@ channel_slot_widget_new (int slot_index,
     GTK_DEST_DEFAULT_ALL,
     entries,
     2,
-    GDK_ACTION_COPY);
+    GDK_ACTION_MOVE | GDK_ACTION_COPY);
 
   return self;
 }
@@ -352,6 +376,9 @@ channel_slot_widget_init (ChannelSlotWidget * self)
   g_signal_connect (
     GTK_WIDGET (self), "drag-data-get",
     G_CALLBACK (on_drag_data_get), self);
+  g_signal_connect (
+    GTK_WIDGET (self), "drag-motion",
+    G_CALLBACK (on_drag_motion), self);
   g_signal_connect (
     G_OBJECT (self), "enter-notify-event",
     G_CALLBACK (on_motion),  self);
