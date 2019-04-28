@@ -225,7 +225,7 @@ exporter_export (ExportSettings * info)
           engine_process_prepare (
             AUDIO_ENGINE,
             AUDIO_ENGINE->nframes);
-          router_start_cycle (MIXER->graph);
+          router_start_cycle (&MIXER->router);
           engine_post_process (AUDIO_ENGINE);
 
           /* by this time, the Master channel should have its Stereo Out ports filled.

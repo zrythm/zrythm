@@ -415,7 +415,10 @@ engine_process (
   clear_output_buffers (self);
 
   if (!g_atomic_int_get (&self->run))
-    return 0;
+    {
+      g_message ("ENGINE NOT RUNNING");
+      return 0;
+    }
 
   count++;
   self->cycle = count;
@@ -436,7 +439,7 @@ engine_process (
    * processed in this cycle */
   /*mixer_process (nframes);*/
   /*g_message ("==========================================================================");*/
-  router_start_cycle (MIXER->graph);
+  router_start_cycle (&MIXER->router);
   /*g_message ("end==========================================================================");*/
 
   /* run post-process code */

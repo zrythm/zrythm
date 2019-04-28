@@ -184,37 +184,34 @@ plugin_generate_automatables (Plugin * plugin)
 
 
 /**
- * Instantiates the plugin (e.g. when adding to a channel).
+ * Instantiates the plugin (e.g. when adding to a
+ * channel).
  */
 int
-plugin_instantiate (Plugin * plugin ///< the plugin
-                   )
+plugin_instantiate (
+  Plugin * plugin)
 {
-  g_message ("Instantiating %s...", plugin->descr->name);
+  g_message ("Instantiating %s...",
+             plugin->descr->name);
 
-  /* stop engine and give it some time to stop
-   * running */
-  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
-  g_usleep (1000);
-
-  /* TODO */
-  if (plugin->descr->protocol == PROT_LV2)
+  switch (plugin->descr->protocol)
     {
-      Lv2Plugin *lv2 = (Lv2Plugin *) plugin->original_plugin;
-      if (lv2_instantiate (lv2, NULL) < 0)
-        {
-          g_warning ("lv2 instantiate failed");
-          g_atomic_int_set (&AUDIO_ENGINE->run, 1);
-          return -1;
-        }
+    case PROT_LV2:
+      {
+        Lv2Plugin *lv2 =
+          (Lv2Plugin *) plugin->original_plugin;
+        if (lv2_instantiate (lv2, NULL) < 0)
+          {
+            g_warning ("lv2 instantiate failed");
+            return -1;
+          }
+      }
+      break;
+    default:
+      g_warn_if_reached ();
+      break;
     }
   plugin->enabled = 1;
-
-  if (PROJECT->loaded)
-    g_atomic_int_set (&AUDIO_ENGINE->run, 1);
-
-  /* init sem */
-  /*zix_sem_init (&plugin->processed_sem, 1);*/
 
   return 0;
 }
@@ -251,11 +248,6 @@ plugin_process (Plugin * plugin)
 void
 plugin_open_ui (Plugin *plugin)
 {
-  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
-
-  /* give it some time to stop running */
-  g_usleep (1000);
-
   if (plugin->descr->protocol == PROT_LV2)
     {
       Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
@@ -269,7 +261,6 @@ plugin_open_ui (Plugin *plugin)
           lv2_open_ui (lv2_plugin);
         }
     }
-  g_atomic_int_set (&AUDIO_ENGINE->run, 1);
 }
 
 
@@ -279,11 +270,6 @@ plugin_open_ui (Plugin *plugin)
 void
 plugin_close_ui (Plugin *plugin)
 {
-  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
-
-  /* give it some time to stop running */
-  g_usleep (1000);
-
   if (plugin->descr->protocol == PROT_LV2)
     {
       Lv2Plugin * lv2_plugin =
@@ -294,7 +280,6 @@ plugin_close_ui (Plugin *plugin)
       else
         lv2_close_ui (lv2_plugin);
     }
-  g_atomic_int_set (&AUDIO_ENGINE->run, 1);
 }
 
 /**

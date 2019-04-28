@@ -26,8 +26,6 @@
 #include <pthread.h>
 #include "utils/sem.h"
 
-typedef struct Graph Router;
-
 typedef enum GraphNodeType
 {
   ROUTE_NODE_TYPE_PORT,
@@ -70,17 +68,27 @@ typedef struct GraphNode
   GraphNodeType type;
 } GraphNode;
 
+typedef struct Router Router;
+
 /**
  * Graph.
  */
 typedef struct Graph
 {
+  /** Pointer back to router for convenience. */
+  Router *     router;
+
+  /** Flag to indicate if graph is currently getting
+   * destroyed. */
+  int          destroying;
+
   /** List of all graph nodes (only used for memory management) */
   GraphNode **  graph_nodes;
   int           n_graph_nodes;
 
 	/** Nodes without incoming edges.
-	 * These run concurrently at the start of each cycle to kick off processing */
+	 * These run concurrently at the start of each
+   * cycle to kick off processing */
   GraphNode ** init_trigger_list;
   int         n_init_triggers;
 
@@ -93,6 +101,18 @@ typedef struct Graph
    * cycle. */
   volatile gint terminal_refcnt;
 
+  /** Working trigger nodes to be updated while
+   * processing. */
+  GraphNode ** trigger_queue;
+  int  n_trigger_queue;
+  /** Max size - preallocated array. */
+  int  trigger_queue_size;
+
+  /** Hash tables for quick finding of nodes based on
+   * the ID of the plugin/port. */
+  GHashTable * port_nodes;
+  GHashTable * plugin_nodes;
+
   /** Synchronization with main process callback. */
   ZixSem          callback_start;
   ZixSem          callback_done;
@@ -100,22 +120,15 @@ typedef struct Graph
   /** Wake up graph node process threads. */
   ZixSem          trigger;
 
-  /** flag to exit, terminate all process-threads */
-  volatile gint     terminate;
-
   /* these following are protected by
    * _trigger_mutex */
   pthread_mutex_t trigger_mutex;
 
+  /** flag to exit, terminate all process-threads */
+  volatile gint     terminate;
+
   /** Number of threads waiting for work. */
   volatile int      idle_thread_cnt;
-
-  /** Working trigger nodes to be updated while
-   * processing. */
-  GraphNode ** trigger_queue;
-  int  n_trigger_queue;
-  /** Max size - preallocated array. */
-  int  trigger_queue_size;
 
   /* ------------------------------------ */
 
@@ -132,12 +145,14 @@ typedef struct Graph
   pthread_t            threads[16];
   gint                 num_threads;
 
-  /** Hash tables for quick finding of nodes based on
-   * the ID of the plugin/port. */
-  GHashTable * port_nodes;
-  GHashTable * plugin_nodes;
-
 } Graph;
+
+typedef struct Router
+{
+  Graph * graph1;
+  Graph * graph2;
+
+} Router;
 
 /**
  * Creates a graph.
@@ -145,29 +160,26 @@ typedef struct Graph
  * Should be used every time the graph is changed.
  */
 Graph *
-router_new ();
+graph_new (
+  Router * router);
 
-/**
- * Initializes as many RT threads as there are cores,
- * -1.
- */
 void
-graph_init_threads (
-  Graph * graph);
+router_init (
+  Router * router);
 
 /**
  * Starts a new cycle.
  */
 void
 router_start_cycle (
-  Graph * cache);
+  Router * router);
 
 void
 graph_print (
   Graph * graph);
 
 void
-router_destroy (
+graph_destroy (
   Graph * graph);
 
 #endif

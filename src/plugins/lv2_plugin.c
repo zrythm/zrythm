@@ -1483,18 +1483,19 @@ lv2_free (Lv2Plugin * plugin)
  * If this is a new plugin, preset_uri should be
  * empty. If the project is being loaded, preset
  * uri should be the state file path.
+ *
+ * @param self Plugin to instantiate.
+ * @param preset_uri URI of preset to load.
  */
 int
-lv2_instantiate (Lv2Plugin      * self,   ///< plugin to instantiate
-                 char            * preset_uri   ///< uri of preset to load
-                )
+lv2_instantiate (
+  Lv2Plugin * self,
+  char *      preset_uri)
 {
   Plugin * plugin = self->plugin;
   int i;
 
   lv2_set_feature_data (self);
-
-  /* Cache URIs for concepts we'll use */
 
   zix_sem_init(&self->work_lock, 1);
 
@@ -1564,49 +1565,63 @@ lv2_instantiate (Lv2Plugin      * self,   ///< plugin to instantiate
                                       preset_uri);
 
       lv2_load_presets(self, NULL, NULL);
-      self->state = lilv_state_new_from_world (LILV_WORLD,
-                                         &self->map,
-                                         preset);
+      self->state =
+        lilv_state_new_from_world (
+          LILV_WORLD,
+          &self->map,
+          preset);
       self->preset = self->state;
       lilv_node_free(preset);
       if (!self->state)
         {
-          g_warning ("Failed to find preset <%s>\n",
-                  preset_uri);
+          g_warning (
+            "Failed to find preset <%s>\n",
+            preset_uri);
           return -1;
         }
   }
   else if (self->state_file)
     {
       char * state_file_path =
-        g_build_filename (PROJECT->states_dir,
-                          self->state_file,
-                          NULL);
-      self->state = lilv_state_new_from_file (LILV_WORLD,
-                                                    &self->map,
-                                                    NULL,
-                                                    state_file_path);
+        g_build_filename (
+          PROJECT->states_dir,
+          self->state_file,
+          NULL);
+      self->state =
+        lilv_state_new_from_file (
+          LILV_WORLD,
+          &self->map,
+          NULL,
+          state_file_path);
       if (!self->state)
         {
-          g_error ("Failed to load state from %s\n", state_file_path);
+          g_warning (
+            "Failed to load state from %s\n",
+            state_file_path);
         }
 
       LilvNode * lv2_uri =
-        lilv_node_duplicate(lilv_state_get_plugin_uri(self->state));
+        lilv_node_duplicate (
+          lilv_state_get_plugin_uri (
+            self->state));
 
       if (!lv2_uri)
         {
-          g_error ("Missing plugin URI, try lv2ls to list plugins\n");
+          g_warning ("Missing plugin URI, try lv2ls"
+                     " to list plugins");
         }
 
       /* Find plugin */
-      g_message ("Plugin:       %s\n", lilv_node_as_string(lv2_uri));
-      self->lilv_plugin = lilv_plugins_get_by_uri(PM_LILV_NODES.lilv_plugins,
-                                               lv2_uri);
-      lilv_node_free(lv2_uri);
+      g_message ("Plugin: %s",
+                 lilv_node_as_string (lv2_uri));
+      self->lilv_plugin =
+        lilv_plugins_get_by_uri (
+          PM_LILV_NODES.lilv_plugins,
+          lv2_uri);
+      lilv_node_free (lv2_uri);
       if (!self->lilv_plugin)
         {
-          g_error("Failed to find plugin\n");
+          g_warning ("Failed to find plugin");
         }
 
       /* Set default values for all ports */
@@ -1652,7 +1667,9 @@ lv2_instantiate (Lv2Plugin      * self,   ///< plugin to instantiate
     }
 
   /* Check that any required features are supported */
-  LilvNodes* req_feats = lilv_plugin_get_required_features(self->lilv_plugin);
+  LilvNodes* req_feats =
+    lilv_plugin_get_required_features (
+      self->lilv_plugin);
   LILV_FOREACH(nodes, f, req_feats)
     {
       const char* uri =
@@ -1870,22 +1887,23 @@ lv2_instantiate (Lv2Plugin      * self,   ///< plugin to instantiate
   zix_ring_mlock(self->plugin_events);
 
   /* Instantiate the self->*/
-  self->instance = lilv_plugin_instantiate(
-          self->lilv_plugin, AUDIO_ENGINE->sample_rate,
-          self->features);
+  self->instance =
+    lilv_plugin_instantiate (
+      self->lilv_plugin,
+      AUDIO_ENGINE->sample_rate,
+      self->features);
   if (!self->instance)
     {
-      g_warning("Failed to instantiate self->\n");
+      g_warning ("Failed to instantiate self->");
       return -1;
     }
   g_message ("Lilv plugin instantiated");
 
   self->ext_data.data_access =
-    lilv_instance_get_descriptor(self->instance)->extension_data;
+    lilv_instance_get_descriptor (
+      self->instance)->extension_data;
 
-  /*if (!AUDIO_ENGINE->buf_size_set) {*/
-          lv2_allocate_port_buffers(self);
-  /*}*/
+  lv2_allocate_port_buffers(self);
 
   /* Create workers if necessary */
   if (lilv_plugin_has_extension_data (
@@ -1905,7 +1923,8 @@ lv2_instantiate (Lv2Plugin      * self,   ///< plugin to instantiate
           iface, false);
     }
 
-  /* Apply loaded state to self->instance if necessary */
+  /* Apply loaded state to self->instance if
+   * necessary */
   if (self->state)
     {
       lv2_apply_state(self, self->state);
@@ -1918,10 +1937,8 @@ lv2_instantiate (Lv2Plugin      * self,   ///< plugin to instantiate
         _apply_control_arg(self, *c);
     }
 
-  /* Set Jack callbacks */
-  /*lv2_backend_init(self);*/
-
-  /* Create Jack ports and connect self->ports to buffers */
+  /* Create Jack ports and connect self->ports
+   * to buffers */
   for (i = 0; i < self->num_ports; ++i) {
       lv2_backend_activate_port(self, i);
   }
@@ -1933,9 +1950,11 @@ lv2_instantiate (Lv2Plugin      * self,   ///< plugin to instantiate
         Lv2Control* control =
           self->controls.controls[i];
         if (control->type == PORT)
-          {// && control->value_type == self->>forge.Float) {
-                LV2_Port* port = &self->ports[control->index];
-                _print_control_value(self, port, port->control);
+          {
+            LV2_Port* port =
+              &self->ports[control->index];
+            _print_control_value (
+              self, port, port->control);
           }
       }
 

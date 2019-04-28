@@ -286,21 +286,13 @@ tracklist_get_next_visible_track (Track * track)
 void
 tracklist_remove_track (Track *     track)
 {
-  /* stop engine and give it some time to stop
-   * running */
-  int prev = g_atomic_int_get (&AUDIO_ENGINE->run);
-  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
-  if (prev)
-    g_usleep (1000);
-
   mixer_remove_channel (track->channel);
-  array_delete (TRACKLIST->tracks,
-                TRACKLIST->num_tracks,
-                track);
-  int size = TRACKLIST->num_tracks + 1;
-  array_delete (TRACKLIST->track_ids,
-                size,
-                track->id);
+  array_double_delete (
+    TRACKLIST->tracks,
+    TRACKLIST->track_ids,
+    TRACKLIST->num_tracks,
+    track,
+    track->id);
   tracklist_selections_remove_track (
     TRACKLIST_SELECTIONS, track);
   project_remove_track (track);
@@ -309,7 +301,5 @@ tracklist_remove_track (Track *     track)
   EVENTS_PUSH (ET_TRACK_REMOVED,
                NULL);
 
-  mixer_recalculate_graph (MIXER, 1);
-
-  g_atomic_int_set (&AUDIO_ENGINE->run, prev);
+  mixer_recalculate_graph (MIXER);
 }

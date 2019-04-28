@@ -50,12 +50,6 @@ on_drag_data_received (GtkWidget        *widget,
 
   PluginDescriptor * descr = *(gpointer *) gtk_selection_data_get_data (data);
 
-  /* stop engine */
-  int prev_run =
-    g_atomic_int_get (&AUDIO_ENGINE->run);
-  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
-  g_usleep (5000);
-
   Plugin * plugin = plugin_create_from_descr (descr);
 
   if (plugin_instantiate (plugin) < 0)
@@ -80,8 +74,6 @@ on_drag_data_received (GtkWidget        *widget,
   channel_add_plugin (
     channel, channel_slot->slot_index, plugin);
   zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
-
-  g_atomic_int_set (&AUDIO_ENGINE->run, prev_run);
 
   if (g_settings_get_int (
         S_PREFERENCES,

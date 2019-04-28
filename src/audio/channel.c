@@ -839,7 +839,7 @@ channel_add_plugin (Channel * channel,    ///< the channel
   EVENTS_PUSH (ET_PLUGIN_ADDED,
                plugin);
 
-  mixer_recalculate_graph (MIXER, 1);
+  mixer_recalculate_graph (MIXER);
 }
 
 /**

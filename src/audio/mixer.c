@@ -44,6 +44,7 @@
 #include "project.h"
 #include "utils/audio.h"
 #include "utils/arrays.h"
+#include "utils/objects.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
@@ -53,32 +54,17 @@
  */
 void
 mixer_recalculate_graph (
-  Mixer * mixer,
-  int     force)
+  Mixer * mixer)
 {
-  if (!g_atomic_int_get (
-        &AUDIO_ENGINE->run) &&
-      !force)
-    return;
+  if (mixer->router.graph2)
+    free_later (mixer->router.graph2, graph_destroy);
+  else
+    router_init (&mixer->router);
 
-  int prev_run =
-    g_atomic_int_get (
-      &AUDIO_ENGINE->run);
-  g_atomic_int_set (
-    &AUDIO_ENGINE->run, 0);
-  g_usleep (1000);
-
-  Router * router;
-  if ((router = mixer->graph))
-    {
-      mixer->graph = NULL;
-      router_destroy (router);
-    }
-  mixer->graph =
-    router_new ();
-
-  g_atomic_int_set (
-    &AUDIO_ENGINE->run, prev_run);
+  /* create the spare graph. this will be copied to
+   * graph1 and used in processing */
+  mixer->router.graph2 =
+    graph_new (&mixer->router);
 }
 
 void
@@ -167,13 +153,6 @@ mixer_add_channel (Channel * channel)
   g_warn_if_fail (channel);
   g_warn_if_fail (channel->track);
 
-  /* stop engine and give it some time to stop
-   * running */
-  int prev =
-    g_atomic_int_get (&AUDIO_ENGINE->run);
-  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
-  g_usleep (1000);
-
   if (channel->type == CT_MASTER)
     {
       MIXER->master = channel;
@@ -190,9 +169,7 @@ mixer_add_channel (Channel * channel)
 
   track_setup (channel->track);
 
-  mixer_recalculate_graph (MIXER, 0);
-
-  g_atomic_int_set (&AUDIO_ENGINE->run, prev);
+  mixer_recalculate_graph (MIXER);
 }
 
 /**
@@ -270,12 +247,6 @@ mixer_add_channel_from_plugin_descr (
 {
   Plugin * plugin = plugin_create_from_descr (descr);
 
-  /* stop engine */
-  int prev_run =
-    g_atomic_int_get (&AUDIO_ENGINE->run);
-  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
-  g_usleep (4000);
-
   if (plugin_instantiate (plugin) < 0)
     {
       char * message =
@@ -306,8 +277,6 @@ mixer_add_channel_from_plugin_descr (
   channel_add_plugin (new_channel,
                       0,
                       plugin);
-
-  g_atomic_int_set (&AUDIO_ENGINE->run, prev_run);
 
   if (g_settings_get_int (
         S_PREFERENCES,

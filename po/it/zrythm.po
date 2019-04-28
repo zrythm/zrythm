@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-27 21:18+0100\n"
+"POT-Creation-Date: 2019-04-28 10:13+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrythm dot org>\n"
 "Language-Team: Italian\n"
@@ -142,7 +142,7 @@ msgstr ""
 msgid "Category"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:241
+#: src/gui/widgets/channel_slot.c:233
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""

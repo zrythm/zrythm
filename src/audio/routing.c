@@ -49,20 +49,22 @@ graph_reached_terminal_node (Graph* self);
  * completed processing and the node can run.
  * It is added to the "work queue" */
 static inline void
-graph_trigger (Graph* self, GraphNode* n)
+graph_trigger (
+  Graph* graph,
+  GraphNode* n)
 {
   /*g_message ("locking trigger mutex in graph trigger");*/
-	pthread_mutex_lock (&self->trigger_mutex);
+	pthread_mutex_lock (&graph->trigger_mutex);
 	g_warn_if_fail (
-    self->n_trigger_queue <
-    self->trigger_queue_size);
+    graph->n_trigger_queue <
+    graph->trigger_queue_size);
   /*g_message ("appending %s to trigger nodes",*/
              /*n->type == ROUTE_NODE_TYPE_PORT ?*/
              /*n->port->label :*/
              /*n->pl->descr->name);*/
-	self->trigger_queue[
-    self->n_trigger_queue++] = n;
-  pthread_mutex_unlock (&self->trigger_mutex);
+	graph->trigger_queue[
+    graph->n_trigger_queue++] = n;
+  pthread_mutex_unlock (&graph->trigger_mutex);
 }
 
 /**
@@ -302,8 +304,8 @@ node_process (
               port_apply_pan (
                 port,
                 port->owner_ch->fader.pan,
-                PAN_LAW_MINUS_3DB,
-                PAN_ALGORITHM_SINE_LAW);
+                AUDIO_ENGINE->pan_law,
+                AUDIO_ENGINE->pan_algo);
 
               /* apply fader */
               port_apply_fader (
@@ -413,23 +415,12 @@ add_depends (
   self->refcount = self->init_refcount;
 }
 
-static inline void
-graph_init (
-  Graph * self)
-{
-  zix_sem_init (&self->callback_start, 0);
-  zix_sem_init (&self->callback_done, 0);
-  zix_sem_init (&self->trigger, 0);
-
-  pthread_mutex_init (&self->trigger_mutex, NULL);
-}
-
 /*static int cnt = 0;*/
 
 static void *
 graph_worker_thread (void * g)
 {
-	Graph* self = (Graph*)g;
+	Graph * graph = (Graph*) g;
   GraphNode* to_run = NULL;
   int wakeup, i;
 	do
@@ -440,65 +431,72 @@ graph_worker_thread (void * g)
       to_run = NULL;
 
       /*g_message ("locking trigger mutex in worker thread");*/
-      pthread_mutex_lock (&self->trigger_mutex);
+      pthread_mutex_lock (&graph->trigger_mutex);
 
-      if (self->terminate)
+      if (graph->terminate)
         {
-          pthread_mutex_unlock (&self->trigger_mutex);
+          pthread_mutex_unlock (
+            &graph->trigger_mutex);
           return 0;
         }
 
-      if (self->n_trigger_queue > 0)
+      if (graph->n_trigger_queue > 0)
         to_run =
-          self->trigger_queue[
-            --self->n_trigger_queue];
+          graph->trigger_queue[
+            --graph->n_trigger_queue];
       /*g_message ("acquired trig node, num_trig_nodes now: %d", self->n_trigger_queue);*/
 
       /*g_message ("idle threads: %d, trigger nodes: %d",*/
-                 /*self->idle_thread_cnt,*/
-                 /*self->n_trigger_queue);*/
+                 /*graph->idle_thread_cnt,*/
+                 /*graph->n_trigger_queue);*/
       wakeup =
-        MIN (self->idle_thread_cnt,
-             self->n_trigger_queue);
+        MIN (graph->idle_thread_cnt,
+             graph->n_trigger_queue);
 
       /* wake up threads */
-      self->idle_thread_cnt -= wakeup;
+      graph->idle_thread_cnt -= wakeup;
       /*g_message ("wake up %d", wakeup);*/
       for (i = 0; i < wakeup; i++)
         {
           /*g_message ("posting trigger for wakeup %d",*/
                      /*i);*/
-          zix_sem_post (&self->trigger);
+          zix_sem_post (&graph->trigger);
         }
 
       while (!to_run)
         {
           /* wait for work, fall asleep */
-          /*g_message ("incrementing idle thread count");*/
-          self->idle_thread_cnt++;
-          g_warn_if_fail (self->idle_thread_cnt <= self->num_threads);
-          pthread_mutex_unlock (&self->trigger_mutex);
+          /*g_message ("waiting for work, incrementing idle thread count");*/
+          graph->idle_thread_cnt++;
+          /*g_message ("idle thread cnt %d",*/
+                     /*graph->idle_thread_cnt);*/
+          g_warn_if_fail (
+            graph->idle_thread_cnt <=
+            graph->num_threads);
+          pthread_mutex_unlock (
+            &graph->trigger_mutex);
           /*g_message ("waiting trigger");*/
-          zix_sem_wait (&self->trigger);
+          zix_sem_wait (&graph->trigger);
           /*g_message ("waited");*/
 
-          if (self->terminate)
+          if (graph->terminate)
             return 0;
 
           /* try to find some work to do */
           /*g_message ("locking to find some work");*/
-          pthread_mutex_lock (&self->trigger_mutex);
-          if (self->n_trigger_queue > 0)
+          pthread_mutex_lock (
+            &graph->trigger_mutex);
+          if (graph->n_trigger_queue > 0)
             to_run =
-              self->trigger_queue[
-                --self->n_trigger_queue];
+              graph->trigger_queue[
+                --graph->n_trigger_queue];
         }
-      pthread_mutex_unlock (&self->trigger_mutex);
+      pthread_mutex_unlock (&graph->trigger_mutex);
 
       /* process graph-node */
       node_run (to_run);
 
-    } while (!self->terminate);
+    } while (!graph->terminate);
 	return 0;
 }
 
@@ -507,42 +505,49 @@ static void *
 graph_main_thread (void * arg)
 {
   g_message ("THREAD CREATED");
-  /*GraphNode * node;*/
-  Graph * self = (Graph *) arg;
+  Graph * graph = (Graph *) arg;
 
   /* wait for initial process callback */
-          g_message ("waiting callback start");
-  zix_sem_wait (&self->callback_start);
+  /*g_message ("waiting callback start");*/
+  zix_sem_wait (&graph->callback_start);
 
-  g_message ("locking in main thread");
-  pthread_mutex_lock (&self->trigger_mutex);
+  g_message ("received message callback start in main thread of graph %p", graph);
 
-	/* Can't run without a graph */
-	g_warn_if_fail (self->n_graph_nodes > 0);
-	g_warn_if_fail (self->n_init_triggers > 0);
-	g_warn_if_fail (self->terminal_node_count > 0);
+  /*g_message ("locking in main thread");*/
+  pthread_mutex_lock (&graph->trigger_mutex);
+
+  if (!graph->destroying)
+    {
+      /* Can't run without a graph */
+      g_warn_if_fail (graph->n_graph_nodes > 0);
+      g_warn_if_fail (graph->n_init_triggers > 0);
+      g_warn_if_fail (graph->terminal_node_count > 0);
+    }
 
 	/* bootstrap trigger-list.
 	 * (later this is done by
    * Graph_reached_terminal_node)*/
 	for (int i = 0;
-       i < self->n_init_triggers; ++i)
+       i < graph->n_init_triggers; ++i)
     {
       g_warn_if_fail (
-        self->n_trigger_queue <
-        self->trigger_queue_size);
+        graph->n_trigger_queue <
+        graph->trigger_queue_size);
       /*g_message ("init trigger node %d, num trigger nodes %d, max_trigger nodes %d", i, self->n_trigger_queue, self->trigger_queue_size);*/
-      self->trigger_queue[
-        self->n_trigger_queue++] =
-          self->init_trigger_list[i];
+      graph->trigger_queue[
+        graph->n_trigger_queue++] =
+          graph->init_trigger_list[i];
     }
-	pthread_mutex_unlock (&self->trigger_mutex);
+	pthread_mutex_unlock (&graph->trigger_mutex);
 
 	/* after setup, the main-thread just becomes
    * a normal worker */
-  return graph_worker_thread (self);
+  return graph_worker_thread (graph);
 }
 
+/**
+ * Initializes as many threads as there are cores.
+ */
 void
 graph_init_threads (
   Graph * graph)
@@ -754,32 +759,6 @@ graph_add_initial_node (
   return node;
 }
 
-/*static inline GraphNode **/
-/*graph_add_terminal_and_initial_node (*/
-  /*Graph * self,*/
-  /*GraphNodeType type,*/
-  /*void * data)*/
-/*{*/
-  /*[> terminal <]*/
-  /*self->terminal_refcnt =*/
-    /*++self->terminal_node_count;*/
-  /*GraphNode * node =*/
-    /*graph_add_node (self, type, data);*/
-  /*node->terminal = 1;*/
-
-  /*[> initial <]*/
-  /*self->init_trigger_list =*/
-    /*(GraphNode**)realloc (*/
-      /*self->init_trigger_list,*/
-      /*(1 + self->n_init_triggers) **/
-        /*sizeof (GraphNode*));*/
-
-  /*self->n_init_triggers++;*/
-  /*node->initial = 1;*/
-
-  /*return node;*/
-/*}*/
-
 static inline void
 node_free (
   GraphNode * node)
@@ -793,20 +772,21 @@ graph_free (
   Graph * self)
 {
   int i;
+
   for (i = 0; i < self->n_graph_nodes; ++i)
     {
 		node_free (self->graph_nodes[i]);
     }
 	free (self->graph_nodes);
 
-	pthread_mutex_destroy (&self->trigger_mutex);
+  pthread_mutex_destroy (&self->trigger_mutex);
 
-	zix_sem_destroy (&self->callback_start);
-	zix_sem_destroy (&self->callback_done);
+  zix_sem_destroy (&self->callback_start);
+  zix_sem_destroy (&self->callback_done);
   zix_sem_destroy (&self->trigger);
 }
 
-void
+static void
 graph_terminate (
   Graph * self)
 {
@@ -817,8 +797,8 @@ graph_terminate (
 	self->n_init_triggers   = 0;
 	self->trigger_queue     = NULL;
 	self->n_trigger_queue   = 0;
-	free (self->init_trigger_list);
-	free (self->trigger_queue);
+  free (self->init_trigger_list);
+  free (self->trigger_queue);
 
 	int tc = self->idle_thread_cnt;
   g_warn_if_fail (tc == self->num_threads);
@@ -836,22 +816,39 @@ graph_terminate (
 }
 
 void
-router_destroy (
+graph_destroy (
   Graph * self)
 {
+  g_message ("destroying graph %p (router g1 %p g2 %p",
+             self,
+             self->router->graph1,
+             self->router->graph2);
   int i;
+  self->destroying = 1;
 
   graph_terminate (self);
 
   /* wait for threads to finish */
-  g_usleep (5000);
+  g_usleep (1000);
 
   for (i = 0; i < self->num_threads; ++i) {
 		/*pthread_join (workers[i], NULL);*/
   }
 
   graph_free (self);
+  free (self);
 }
+
+void
+router_cleanup (
+  Router * self)
+{
+  int i;
+
+  graph_destroy (self->graph1);
+  graph_destroy (self->graph2);
+}
+
 
 /* called from a terminal node (from the Graph worked-thread)
  * to indicate it has completed processing.
@@ -860,48 +857,49 @@ router_destroy (
  * will inform the main-thread, wait, and kick off the next process cycle.
  */
 static inline void
-graph_reached_terminal_node (Graph * self)
+graph_reached_terminal_node (
+  Graph *  graph)
 {
   /*g_message ("reached terminal node");*/
 	if (g_atomic_int_dec_and_test (
-        &self->terminal_refcnt))
+        &graph->terminal_refcnt))
     {
       /*g_message ("all terminal nodes completed");*/
       /* all terminal nodes have completed,
        * we're done with this cycle.
        */
-      zix_sem_post (&self->callback_done);
+      zix_sem_post (&graph->callback_done);
 
       /* now wait for the next cycle to begin */
       /*g_message ("waiting callback start");*/
-      zix_sem_wait (&self->callback_start);
+      zix_sem_wait (&graph->callback_start);
 
-      if (self->terminate) {
+      if (graph->terminate)
         return;
-      }
 
       /* reset terminal reference count */
       g_atomic_int_set (
-        &self->terminal_refcnt,
-        self->terminal_node_count);
+        &graph->terminal_refcnt,
+        graph->terminal_node_count);
 
       /* and start the initial nodes */
       /*g_message ("locking trigger mutex to start initial nodes");*/
       /* FIXME use double buffering instead of
        * blocking (have another spare array and then
        * just switch the pointer) */
-      pthread_mutex_lock (&self->trigger_mutex);
+      pthread_mutex_lock (
+        &graph->trigger_mutex);
       for (int i = 0;
-           i < self->n_init_triggers; ++i)
+           i < graph->n_init_triggers; ++i)
         {
           g_warn_if_fail (
-            self->n_trigger_queue <
-            self->trigger_queue_size);
-          self->trigger_queue[
-            self->n_trigger_queue++] =
-              self->init_trigger_list[i];
+            graph->n_trigger_queue <
+            graph->trigger_queue_size);
+          graph->trigger_queue[
+            graph->n_trigger_queue++] =
+              graph->init_trigger_list[i];
         }
-      pthread_mutex_unlock (&self->trigger_mutex);
+      pthread_mutex_unlock (&graph->trigger_mutex);
       /* continue in worker-thread */
     }
   /*g_message ("terminal refcount: %d",*/
@@ -914,7 +912,7 @@ graph_reached_terminal_node (Graph * self)
  */
 void
 router_start_cycle (
-  Graph * self)
+  Router * self)
 {
   /*self->n_trigger_queue = 0;*/
   /*g_message ("num trigger nodes at start: %d, num init trigger nodes at start: %d, num_max trigger nodes at start: %d",*/
@@ -922,10 +920,14 @@ router_start_cycle (
              /*self->n_init_triggers,*/
              /*self->trigger_queue_size);*/
   /*for (int i = 0; i < self->num_threads; i++)*/
-    zix_sem_post (&self->callback_start);
+  if (!self->graph2)
+    return;
+
+  self->graph1 = self->graph2;
+  zix_sem_post (&self->graph1->callback_start);
   /*g_message ("waiting callback done");*/
   /*for (int i = 0; i < self->num_threads; i++)*/
-    zix_sem_wait (&self->callback_done);
+  zix_sem_wait (&self->graph1->callback_done);
   /*g_message ("num trigger nodes at end: %d, num init trigger nodes at end %d, num_max trigger nodes at end: %d",*/
              /*self->n_trigger_queue,*/
              /*self->n_init_triggers,*/
@@ -946,13 +948,14 @@ graph_print (
 }
 
 Graph *
-router_new ()
+graph_new (
+  Router * router)
 {
   int i, j;
   GraphNode * node, * node2;
   Graph * self = calloc (1, sizeof (Graph));
-
-  graph_init (self);
+  g_warn_if_fail (router);
+  self->router = router;
 
   self->port_nodes =
     g_hash_table_new (
@@ -1090,11 +1093,25 @@ router_new ()
   g_message ("num terminal nodes %d",
              self->terminal_node_count);
   graph_print (self);
-  /*if (self->terminal_node_count > 3)*/
-    /*exit (0);*/
+
+  zix_sem_init (&self->callback_start, 0);
+  zix_sem_init (&self->callback_done, 0);
+  zix_sem_init (&self->trigger, 0);
+
+  pthread_mutex_init (&self->trigger_mutex, NULL);
 
   /* create worker threads */
   graph_init_threads (self);
 
   return self;
+}
+
+void
+router_init (
+  Router * self)
+{
+  /* create the initial graph */
+  self->graph1 = graph_new (self);
+
+  self->graph2 = NULL;
 }
