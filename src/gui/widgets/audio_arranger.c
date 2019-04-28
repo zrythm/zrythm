@@ -70,6 +70,94 @@ audio_arranger_widget_set_allocation (
 }
 
 /**
+ * Returns the appropriate cursor based on the
+ * current hover_x and y.
+ */
+ArrangerCursor
+audio_arranger_widget_get_cursor (
+  AudioArrangerWidget * self,
+  UiOverlayAction action,
+  Tool            tool)
+{
+  ArrangerCursor ac = ARRANGER_CURSOR_SELECT;
+
+  switch (action)
+    {
+    case UI_OVERLAY_ACTION_NONE:
+      if (P_TOOL == TOOL_SELECT_NORMAL)
+        {
+          RegionWidget * rw = NULL;
+
+          int is_hit =
+            rw != NULL;
+          int is_resize_l = 0;
+          int is_resize_r = 0;
+
+          if (is_hit && is_resize_l)
+            {
+              return ARRANGER_CURSOR_RESIZING_L;
+            }
+          else if (is_hit && is_resize_r)
+            {
+              return ARRANGER_CURSOR_RESIZING_R;
+            }
+          else if (is_hit)
+            {
+              return ARRANGER_CURSOR_GRAB;
+            }
+          else
+            {
+              /* set cursor to normal */
+              return ARRANGER_CURSOR_SELECT;
+            }
+        }
+      else if (P_TOOL == TOOL_SELECT_STRETCH)
+        {
+          /* set cursor to normal */
+          return ARRANGER_CURSOR_SELECT;
+        }
+      else if (P_TOOL == TOOL_EDIT)
+        ac = ARRANGER_CURSOR_EDIT;
+      else if (P_TOOL == TOOL_ERASER)
+        ac = ARRANGER_CURSOR_ERASER;
+      else if (P_TOOL == TOOL_RAMP)
+        ac = ARRANGER_CURSOR_RAMP;
+      else if (P_TOOL == TOOL_AUDITION)
+        ac = ARRANGER_CURSOR_AUDITION;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION:
+    case UI_OVERLAY_ACTION_DELETE_SELECTING:
+    case UI_OVERLAY_ACTION_ERASING:
+      ac = ARRANGER_CURSOR_ERASER;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_MOVING_COPY:
+    case UI_OVERLAY_ACTION_MOVING_COPY:
+      ac = ARRANGER_CURSOR_GRABBING_COPY;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_MOVING:
+    case UI_OVERLAY_ACTION_MOVING:
+      ac = ARRANGER_CURSOR_GRABBING;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_MOVING_LINK:
+    case UI_OVERLAY_ACTION_MOVING_LINK:
+      ac = ARRANGER_CURSOR_GRABBING_LINK;
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_L:
+      ac = ARRANGER_CURSOR_RESIZING_L;
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_R:
+      ac = ARRANGER_CURSOR_RESIZING_R;
+      break;
+    default:
+      ac = ARRANGER_CURSOR_SELECT;
+      break;
+    }
+
+  return ac;
+
+}
+
+/**
  * Shows context menu.
  *
  * To be called from parent on right click.

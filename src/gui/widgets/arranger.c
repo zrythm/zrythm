@@ -2044,84 +2044,40 @@ arranger_widget_refresh_cursor (
         GTK_WIDGET (self)))
     return;
 
-  ArrangerCursor ac = ARRANGER_CURSOR_NONE;
+  ArrangerCursor ac = ARRANGER_CURSOR_SELECT;
 
-  /*g_message ("over action %d",*/
-             /*ar_prv->action);*/
-
-  switch (ar_prv->action)
+  if (timeline)
     {
-    case UI_OVERLAY_ACTION_NONE:
-      if (P_TOOL == TOOL_SELECT_NORMAL ||
-           P_TOOL == TOOL_SELECT_STRETCH)
-        {
-          if (timeline)
-            {
-              ac =
-                timeline_arranger_widget_get_cursor (
-                  ar_prv->action,
-                  P_TOOL);
-            }
-          if (midi_arranger)
-            {
-              ac =
-                midi_arranger_widget_get_cursor (
-                  ar_prv->action,
-                  P_TOOL);
-            }
-          if (audio_arranger)
-            {
-
-            }
-          if (midi_modifier_arranger)
-            {
-
-            }
-        }
-      else if (P_TOOL == TOOL_EDIT)
-        ac = ARRANGER_CURSOR_EDIT;
-      else if (P_TOOL == TOOL_ERASER)
-        ac = ARRANGER_CURSOR_ERASER;
-      else if (P_TOOL == TOOL_RAMP)
-        ac = ARRANGER_CURSOR_RAMP;
-      else if (P_TOOL == TOOL_AUDITION)
-        ac = ARRANGER_CURSOR_AUDITION;
-      break;
-    case UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION:
-    case UI_OVERLAY_ACTION_DELETE_SELECTING:
-    case UI_OVERLAY_ACTION_ERASING:
-      ac = ARRANGER_CURSOR_ERASER;
-      break;
-    case UI_OVERLAY_ACTION_STARTING_MOVING_COPY:
-    case UI_OVERLAY_ACTION_MOVING_COPY:
-      ac = ARRANGER_CURSOR_GRABBING_COPY;
-      break;
-    case UI_OVERLAY_ACTION_STARTING_MOVING:
-    case UI_OVERLAY_ACTION_MOVING:
-      ac = ARRANGER_CURSOR_GRABBING;
-      break;
-    case UI_OVERLAY_ACTION_STARTING_MOVING_LINK:
-    case UI_OVERLAY_ACTION_MOVING_LINK:
-      ac = ARRANGER_CURSOR_GRABBING_LINK;
-      break;
-    case UI_OVERLAY_ACTION_RESIZING_L:
-      if (timeline && timeline->resizing_range)
-        ac = ARRANGER_CURSOR_RANGE;
-      else
-        ac = ARRANGER_CURSOR_RESIZING_L;
-      break;
-    case UI_OVERLAY_ACTION_RESIZING_R:
-      if (timeline && timeline->resizing_range)
-        ac = ARRANGER_CURSOR_RANGE;
-      else
-        ac = ARRANGER_CURSOR_RESIZING_R;
-      break;
-    default:
-      ac = ARRANGER_CURSOR_SELECT;
-      break;
+      ac =
+        timeline_arranger_widget_get_cursor (
+          timeline,
+          ar_prv->action,
+          P_TOOL);
     }
-
-  /*g_message ("ac %d", ac);*/
+  if (midi_arranger)
+    {
+      ac =
+        midi_arranger_widget_get_cursor (
+          midi_arranger,
+          ar_prv->action,
+          P_TOOL);
+    }
+  if (audio_arranger)
+    {
+      ac =
+        audio_arranger_widget_get_cursor (
+          audio_arranger,
+          ar_prv->action,
+          P_TOOL);
+    }
+  if (midi_modifier_arranger)
+    {
+      ac =
+        midi_modifier_arranger_widget_get_cursor (
+          midi_modifier_arranger,
+          ar_prv->action,
+          P_TOOL);
+    }
 
   arranger_widget_set_cursor (
     self, ac);

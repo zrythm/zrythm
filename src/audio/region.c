@@ -603,6 +603,8 @@ region_disconnect (
 void
 region_free (Region * self)
 {
+  project_remove_region (self);
+
   if (self->name)
     g_free (self->name);
   if (GTK_IS_WIDGET (self->widget))

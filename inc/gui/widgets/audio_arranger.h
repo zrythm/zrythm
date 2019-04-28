@@ -20,6 +20,7 @@
 #ifndef __GUI_WIDGETS_AUDIO_ARRANGER_H__
 #define __GUI_WIDGETS_AUDIO_ARRANGER_H__
 
+#include "gui/backend/tool.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
 #include "audio/position.h"
@@ -66,6 +67,16 @@ audio_arranger_widget_show_context_menu (AudioArrangerWidget * self);
 void
 audio_arranger_widget_refresh_children (
   AudioArrangerWidget * self);
+
+/**
+ * Returns the appropriate cursor based on the
+ * current hover_x and y.
+ */
+ArrangerCursor
+audio_arranger_widget_get_cursor (
+  AudioArrangerWidget * self,
+  UiOverlayAction action,
+  Tool            tool);
 
 /**
  * Sets up the widget.
