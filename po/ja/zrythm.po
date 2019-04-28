@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-28 15:48+0100\n"
+"POT-Creation-Date: 2019-04-28 23:26+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrytm dot org>\n"
 "Language-Team: Japanese\n"
@@ -42,7 +42,7 @@ msgstr ""
 msgid "90"
 msgstr ""
 
-#: src/gui/widgets/first_run_assistant.c:206
+#: src/gui/widgets/first_run_assistant.c:201
 #, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
@@ -151,7 +151,7 @@ msgstr ""
 msgid "Category"
 msgstr "カテゴリー"
 
-#: src/gui/widgets/channel_slot.c:267
+#: src/gui/widgets/channel_slot.c:274
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -412,8 +412,8 @@ msgstr ""
 msgid "JACK Error: %s"
 msgstr ""
 
-#: src/gui/widgets/first_run_assistant.c:85
-#: src/gui/widgets/first_run_assistant.c:119
+#: src/gui/widgets/first_run_assistant.c:84
+#: src/gui/widgets/first_run_assistant.c:116
 msgid "JACK functionality is disabled"
 msgstr ""
 
@@ -650,7 +650,7 @@ msgstr "プラグイン"
 msgid "PortAudio Error: %s"
 msgstr ""
 
-#: src/gui/widgets/first_run_assistant.c:104
+#: src/gui/widgets/first_run_assistant.c:102
 msgid "PortAudio functionality is disabled"
 msgstr ""
 

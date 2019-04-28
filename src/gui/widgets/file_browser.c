@@ -207,7 +207,8 @@ on_drag_data_get (GtkWidget        *widget,
 
   gtk_selection_data_set (
     data,
-    gdk_atom_intern_static_string ("FILE_DESCR"),
+    gdk_atom_intern_static_string (
+      TARGET_ENTRY_FILE_DESCR),
     32,
     (const guchar *)&descr,
     sizeof (FileDescriptor));

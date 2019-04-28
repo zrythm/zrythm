@@ -72,8 +72,6 @@ audio_midi_backend_selection_validate (
   MidiBackend mb =
     gtk_combo_box_get_active (self->midi_backend);
 
-  char * msg;
-
   /* test audio backends */
   if (ab == AUDIO_BACKEND_JACK)
     {
@@ -81,10 +79,9 @@ audio_midi_backend_selection_validate (
       if (engine_jack_test (GTK_WINDOW (self)))
         return 1;
 #else
-      msg =
-        _("JACK functionality is disabled");
       ui_show_error_message (
-        self, msg);
+        self,
+        _("JACK functionality is disabled"));
       return 1;
 #endif
     }
@@ -100,10 +97,9 @@ audio_midi_backend_selection_validate (
       if (engine_pa_test (GTK_WINDOW (self)))
         return 1;
 #else
-      msg =
-        _("PortAudio functionality is disabled");
       ui_show_error_message (
-        self, msg);
+        self,
+        _("PortAudio functionality is disabled"));
       return 1;
 #endif
     }
@@ -115,10 +111,9 @@ audio_midi_backend_selection_validate (
       if (engine_jack_test (GTK_WINDOW (self)))
         return 1;
 #else
-      msg =
-        _("JACK functionality is disabled");
       ui_show_error_message (
-        self, msg);
+        self,
+        _("JACK functionality is disabled"));
       return 1;
 #endif
     }

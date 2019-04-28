@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-28 15:48+0100\n"
+"POT-Creation-Date: 2019-04-28 23:26+0100\n"
 "PO-Revision-Date: 2019-03-22 22:30+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -43,7 +43,7 @@ msgstr ""
 msgid "90"
 msgstr "90"
 
-#: src/gui/widgets/first_run_assistant.c:206
+#: src/gui/widgets/first_run_assistant.c:201
 #, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
@@ -157,7 +157,7 @@ msgstr "Impossible de localiser la propriété %s dans la classe %s"
 msgid "Category"
 msgstr "Catégorie"
 
-#: src/gui/widgets/channel_slot.c:267
+#: src/gui/widgets/channel_slot.c:274
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -421,8 +421,8 @@ msgstr "Italien [it]"
 msgid "JACK Error: %s"
 msgstr ""
 
-#: src/gui/widgets/first_run_assistant.c:85
-#: src/gui/widgets/first_run_assistant.c:119
+#: src/gui/widgets/first_run_assistant.c:84
+#: src/gui/widgets/first_run_assistant.c:116
 msgid "JACK functionality is disabled"
 msgstr ""
 
@@ -661,7 +661,7 @@ msgstr "Greffons"
 msgid "PortAudio Error: %s"
 msgstr ""
 
-#: src/gui/widgets/first_run_assistant.c:104
+#: src/gui/widgets/first_run_assistant.c:102
 msgid "PortAudio functionality is disabled"
 msgstr ""
 

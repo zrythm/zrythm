@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-28 21:17+0100\n"
+"POT-Creation-Date: 2019-04-28 23:34+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,7 +42,7 @@ msgstr ""
 msgid "90"
 msgstr ""
 
-#: src/gui/widgets/first_run_assistant.c:206
+#: src/gui/widgets/first_run_assistant.c:201
 #, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
@@ -146,7 +146,7 @@ msgstr ""
 msgid "Category"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:267
+#: src/gui/widgets/channel_slot.c:274
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -403,8 +403,8 @@ msgstr ""
 msgid "JACK Error: %s"
 msgstr ""
 
-#: src/gui/widgets/first_run_assistant.c:85
-#: src/gui/widgets/first_run_assistant.c:119
+#: src/gui/widgets/first_run_assistant.c:84
+#: src/gui/widgets/first_run_assistant.c:116
 msgid "JACK functionality is disabled"
 msgstr ""
 
@@ -633,7 +633,7 @@ msgstr ""
 msgid "PortAudio Error: %s"
 msgstr ""
 
-#: src/gui/widgets/first_run_assistant.c:104
+#: src/gui/widgets/first_run_assistant.c:102
 msgid "PortAudio functionality is disabled"
 msgstr ""
 

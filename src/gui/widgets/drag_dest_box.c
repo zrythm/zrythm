@@ -122,7 +122,7 @@ on_drag_data_received (GtkWidget        *widget,
   if (target == GDK_NONE)
     return;
 
-  if (target == GET_ATOM ("FILE_DESCR"))
+  if (target == GET_ATOM (TARGET_ENTRY_FILE_DESCR))
     {
       FileDescriptor * fd =
         * (gpointer *)
@@ -134,7 +134,8 @@ on_drag_data_received (GtkWidget        *widget,
 
       mixer_add_channel_from_file_descr (fd);
     }
-  else if ((target = GET_ATOM ("PLUGIN_DESCR")))
+  else if ((target =
+            GET_ATOM (TARGET_ENTRY_PLUGIN_DESCR)))
     {
       PluginDescriptor * pd =
         * (gpointer *)

@@ -106,6 +106,7 @@ typedef enum EventType
    */
   ET_TIMELINE_VIEWPORT_CHANGED,
   ET_PLUGIN_ADDED,
+  ET_PLUGIN_DELETED,
   ET_PLAYHEAD_POS_CHANGED,
 
   /** MidiNote changed. */

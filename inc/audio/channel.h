@@ -361,6 +361,8 @@ channel_process (Channel * channel);
  * @param pos The position in the strip starting
  *   from 0.
  * @param plugin The plugin to add.
+ * @param confirm Confirm if an existing plugin
+ *   will be overwritten.
  *
  * @return 1 if plugin added, 0 if not.
  */
@@ -368,7 +370,8 @@ int
 channel_add_plugin (
   Channel * channel,
   int       pos,
-  Plugin *  plugin);
+  Plugin *  plugin,
+  int       confirm);
 
 /**
  * Returns the index of the last active slot.
