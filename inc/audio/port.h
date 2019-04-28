@@ -167,6 +167,9 @@ typedef struct Port
 
   /** used when loading projects */
   int                 initialized;
+
+  /** Port undergoing deletion. */
+  int                 deleting;
 } Port;
 
 static const cyaml_strval_t
@@ -346,6 +349,21 @@ int
 port_disconnect (Port * src, Port * dest);
 
 /**
+ * Disconnects dests of port.
+ */
+static inline int
+port_disconnect_dests (Port * src)
+{
+  g_warn_if_fail (src);
+
+  for (int i = 0; i < src->num_dests; i++)
+    {
+      port_disconnect (src, src->dests[i]);
+    }
+  return 0;
+}
+
+/**
  * Apply given fader value to port.
  */
 void
@@ -387,7 +405,8 @@ ports_connected (Port * src, Port * dest);
 static inline void
 ports_disconnect (
   Port ** ports,
-  int     num_ports)
+  int     num_ports,
+  int     deleting)
 {
   int i, j;
   Port * port;
@@ -396,6 +415,7 @@ ports_disconnect (
   for (i = 0; i < num_ports; i++)
     {
       port = ports[i];
+      port->deleting = deleting;
 
       /* disconnect incoming ports */
       if (port->flow == FLOW_INPUT)

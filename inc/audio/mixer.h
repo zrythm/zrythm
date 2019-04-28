@@ -143,6 +143,20 @@ Channel *
 mixer_get_channel_by_name (char *  name);
 
 /**
+ * Moves the given plugin to the given slot in
+ * the given channel.
+ *
+ * If a plugin already exists, it deletes it and
+ * replaces it.
+ */
+void
+mixer_move_plugin (
+  Mixer *   self,
+  Plugin *  pl,
+  Channel * ch,
+  int       slot);
+
+/**
  * Gets next unique channel ID.
  *
  * Gets the max ID of all channels and increments it.

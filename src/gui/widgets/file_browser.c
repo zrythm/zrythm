@@ -501,7 +501,8 @@ tree_view_create (FileBrowserWidget * self,
       GtkTargetEntry entries[1];
       entries[0].target = TARGET_ENTRY_FILE_DESCR;
       entries[0].flags = GTK_TARGET_SAME_APP;
-      entries[0].info = TARGET_ENTRY_ID_FILE_DESCR;
+      entries[0].info =
+        symap_map (ZSYMAP, TARGET_ENTRY_FILE_DESCR);
       gtk_tree_view_enable_model_drag_source (
         GTK_TREE_VIEW (tree_view),
         GDK_BUTTON1_MASK,

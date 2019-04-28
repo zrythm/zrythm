@@ -973,7 +973,7 @@ graph_new (
   for (i = 0; i < PROJECT->num_plugins; i++)
     {
       plugin = project_get_plugin (i);
-      if (!plugin) continue;
+      if (!plugin || plugin->deleting) continue;
 
       if (plugin->num_in_ports == 0 &&
           plugin->num_out_ports > 0)
@@ -999,7 +999,10 @@ graph_new (
       /* FIXME project arrays should be hashtables
        */
       port = project_get_port (i);
-      if (!port) continue;
+      if (!port || port->deleting ||
+          (port->owner_pl &&
+           port->owner_pl->deleting))
+        continue;
 
       /*g_message ("adding port node %s",*/
                  /*port->label);*/
@@ -1042,7 +1045,7 @@ graph_new (
   for (i = 0; i < PROJECT->num_plugins; i++)
     {
       plugin = project_get_plugin (i);
-      if (!plugin)
+      if (!plugin || plugin->deleting)
         continue;
 
       node = find_node_from_plugin (self, plugin);
@@ -1066,7 +1069,9 @@ graph_new (
   for (i = 0; i < PROJECT->num_ports; i++)
     {
       port = project_get_port (i);
-      if (!port)
+      if (!port || port->deleting ||
+          (port->owner_pl &&
+           port->owner_pl->deleting))
         continue;
 
       node = find_node_from_port (self, port);

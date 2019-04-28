@@ -48,17 +48,13 @@ typedef struct Position Position;
 /* Gtk target entries */
 /* Plugin descriptor, used to instantiate plugins */
 #define TARGET_ENTRY_PLUGIN_DESCR "PLUGIN_DESCR"
-#define TARGET_ENTRY_ID_PLUGIN_DESCR 0
 /* Plugin ID, used to move/copy plugins */
 #define TARGET_ENTRY_PLUGIN "PLUGIN"
-#define TARGET_ENTRY_ID_PLUGIN 1
 /* File descriptor */
 #define TARGET_ENTRY_FILE_DESCR "FILE_DESCR"
-#define TARGET_ENTRY_ID_FILE_DESCR 2
 /* */
 #define TARGET_ENTRY_TL_SELECTIONS \
   "TL_SELECTIONS"
-#define TARGET_ENTRY_ID_TL_SELECTIONS 3
 
 #define GET_ATOM(x) \
   gdk_atom_intern (x, 1)

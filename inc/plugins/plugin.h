@@ -142,6 +142,9 @@ typedef struct Plugin
 
   /** Whether plugin UI is opened or not. */
   int                  visible;
+
+  /** Plugin is in deletion. */
+  int                  deleting;
 } Plugin;
 
 static const cyaml_strval_t

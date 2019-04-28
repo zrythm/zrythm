@@ -36,6 +36,7 @@
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
+#include "plugins/lv2/symap.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/flags.h"
@@ -323,10 +324,13 @@ drag_dest_box_widget_new (GtkOrientation  orientation,
   GtkTargetEntry entries[2];
   entries[0].target = TARGET_ENTRY_PLUGIN_DESCR;
   entries[0].flags = GTK_TARGET_SAME_APP;
-  entries[0].info = TARGET_ENTRY_ID_PLUGIN_DESCR;
+  entries[0].info =
+    symap_map (
+      ZSYMAP, TARGET_ENTRY_PLUGIN_DESCR);
   entries[1].target = TARGET_ENTRY_FILE_DESCR;
   entries[1].flags = GTK_TARGET_SAME_APP;
-  entries[1].info = TARGET_ENTRY_ID_FILE_DESCR;
+  entries[1].info =
+    symap_map (ZSYMAP, TARGET_ENTRY_FILE_DESCR);
   gtk_drag_dest_set (GTK_WIDGET (self),
                      GTK_DEST_DEFAULT_ALL,
                      entries,

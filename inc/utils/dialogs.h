@@ -29,4 +29,10 @@
  */
 GtkDialog * dialogs_get_open_project_dialog (GtkWindow * parent);
 
+/**
+ * Creates and returns the overwrite plugin dialog.
+ */
+GtkDialog * dialogs_get_overwrite_plugin_dialog (
+  GtkWindow * parent);
+
 #endif

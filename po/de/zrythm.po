@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-28 11:49+0100\n"
+"POT-Creation-Date: 2019-04-28 15:48+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: alex <alex at zrythm dot org>\n"
 "Language-Team: German\n"
@@ -51,6 +51,10 @@ msgid ""
 "locale.gen</b> (needs root privileges)\n"
 "2. Run <b>locale-gen</b> as root\n"
 "3. Restart Zrythm"
+msgstr ""
+
+#: src/utils/dialogs.c:83
+msgid "A plugin already exists at the selected slot. Overwrite it?"
 msgstr ""
 
 #: src/gui/widgets/header_bar.c:377
@@ -142,7 +146,7 @@ msgstr ""
 msgid "Category"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:233
+#: src/gui/widgets/channel_slot.c:267
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -366,15 +370,15 @@ msgstr ""
 msgid "Grid"
 msgstr ""
 
-#: src/zrythm.c:240
+#: src/zrythm.c:242
 msgid "Initializing audio engine"
 msgstr ""
 
-#: src/zrythm.c:245
+#: src/zrythm.c:247
 msgid "Initializing plugin manager"
 msgstr ""
 
-#: src/zrythm.c:234
+#: src/zrythm.c:235
 msgid "Initializing settings"
 msgstr ""
 
@@ -440,7 +444,7 @@ msgstr ""
 msgid "Linear"
 msgstr ""
 
-#: src/zrythm.c:259
+#: src/zrythm.c:261
 msgid "Loading project"
 msgstr ""
 
@@ -542,6 +546,10 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
+#: src/utils/dialogs.c:41
+msgid "Open Project"
+msgstr ""
+
 #: resources/ui/shortcuts.ui:91
 msgid "Open a project"
 msgstr ""
@@ -561,6 +569,10 @@ msgstr ""
 #. TRANSLATORS: JACK failure messages
 #: src/audio/engine_jack.c:594
 msgid "Overall operation failed"
+msgstr ""
+
+#: src/utils/dialogs.c:69
+msgid "Overwrite Plugin"
 msgstr ""
 
 #: resources/ui/preferences.ui:189
@@ -810,7 +822,7 @@ msgstr ""
 msgid "Selections"
 msgstr ""
 
-#: src/zrythm.c:252
+#: src/zrythm.c:254
 msgid "Setting up backend"
 msgstr ""
 
@@ -1062,8 +1074,8 @@ msgstr ""
 msgid "Zrythm"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567
-#: src/actions/actions.c:521
+#: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
+#: src/utils/dialogs.c:74 src/actions/actions.c:521
 msgid "_Cancel"
 msgstr ""
 
@@ -1109,11 +1121,11 @@ msgstr ""
 msgid "_New"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:568
+#: src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:72
 msgid "_OK"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:121
+#: src/gui/widgets/header_bar.c:121 src/utils/dialogs.c:46
 msgid "_Open"
 msgstr ""
 

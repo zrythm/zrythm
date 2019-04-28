@@ -90,9 +90,11 @@ port_new (char * label)
   port->flow = FLOW_UNKNOWN;
   port->label = g_strdup (label);
 
-  g_message ("[port_new] Creating port %s", port->label);
   project_add_port (port);
 
+  g_message ("[port_new: %d] Creating port %s",
+             port->id,
+             port->label);
   return port;
 }
 
@@ -214,16 +216,26 @@ int
 port_disconnect (Port * src, Port * dest)
 {
   if (!src || !dest)
-    g_warning ("port_disconnect: src or dest is NULL");
+    g_warn_if_reached ();
 
   /* disconnect dest from src */
-  int size;
-  array_delete (src->dests, src->num_dests, dest);
-  size = src->num_dests;
-  array_delete (src->dest_ids, size, dest->id);
-  size = src->num_srcs;
-  array_delete (dest->srcs, dest->num_srcs, src);
-  array_delete (src->src_ids, size, src->id);
+  array_double_delete (
+    src->dests,
+    src->dest_ids,
+    src->num_dests,
+    dest,
+    dest->id);
+  array_double_delete (
+    dest->srcs,
+    dest->src_ids,
+    dest->num_srcs,
+    src,
+    src->id);
+  g_message ("Disconnected port %d(%s) from %d(%s)",
+             src->id,
+             src->label,
+             dest->id,
+             dest->label);
   return 0;
 }
 
