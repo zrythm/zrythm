@@ -60,9 +60,13 @@ on_drag_data_received (
   Plugin * pl;
   if (atom == plugin_atom)
     {
+      /* NOTE this is a cloned pointer, don't use
+       * it */
       pl =
-        *(gpointer *)
+        (Plugin *)
         gtk_selection_data_get_data (data);
+      pl = project_get_plugin (pl->id);
+      g_warn_if_fail (pl);
 
       mixer_move_plugin (
         MIXER, pl, self->channel, self->slot_index);
@@ -95,7 +99,7 @@ on_drag_data_received (
 
       /* add to specific channel */
       channel_add_plugin (
-        channel, self->slot_index, pl);
+        channel, self->slot_index, pl, 1);
 
       if (g_settings_get_int (
             S_PREFERENCES,
@@ -241,6 +245,9 @@ on_drag_data_get (
 {
   Plugin* pl =
     self->channel->plugins[self->slot_index];
+
+  if (!pl)
+    return;
 
   gtk_selection_data_set (
     data,

@@ -36,6 +36,7 @@
 #include "audio/tracklist.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/channel.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/track.h"
@@ -274,6 +275,18 @@ mixer_move_plugin (
     }
 
   /* remove plugin from its channel */
+  int prev_slot =
+    channel_get_plugin_index (pl->channel, pl);
+  Channel * prev_ch = pl->channel;
+  channel_remove_plugin (
+    pl->channel, prev_slot, 0, 0);
+
+  /* add plugin to its new channel */
+  channel_add_plugin (
+    ch, slot, pl, 0);
+
+  gtk_widget_queue_draw (
+    GTK_WIDGET (prev_ch->widget->slots[prev_slot]));
 }
 
 void
@@ -309,9 +322,7 @@ mixer_add_channel_from_plugin_descr (
                     descr->name);
   mixer_add_channel (new_channel);
   tracklist_append_track (new_channel->track);
-  channel_add_plugin (new_channel,
-                      0,
-                      plugin);
+  channel_add_plugin (new_channel, 0, plugin, 1);
 
   if (g_settings_get_int (
         S_PREFERENCES,
