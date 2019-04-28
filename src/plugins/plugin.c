@@ -292,13 +292,18 @@ plugin_close_ui (Plugin *plugin)
 void
 plugin_disconnect (Plugin * plugin)
 {
+  plugin->deleting = 1;
+
   /* disconnect all ports */
   ports_disconnect (
     plugin->in_ports,
-    plugin->num_in_ports);
+    plugin->num_in_ports, 1);
   ports_disconnect (
     plugin->out_ports,
-    plugin->num_out_ports);
+    plugin->num_out_ports, 1);
+  g_message ("DISCONNECTED ALL PORTS OF PLUGIN %d %d",
+             plugin->num_in_ports,
+             plugin->num_out_ports);
 }
 
 /**
@@ -308,6 +313,8 @@ plugin_disconnect (Plugin * plugin)
 void
 plugin_free (Plugin *plugin)
 {
+  g_message ("FREEING PLUGIN %s",
+             plugin->descr->name);
   g_warn_if_fail (plugin);
   project_remove_plugin (plugin);
 

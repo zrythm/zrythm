@@ -35,54 +35,78 @@
 G_DEFINE_TYPE (ChannelSlotWidget, channel_slot_widget, GTK_TYPE_DRAWING_AREA)
 
 static void
-on_drag_data_received (GtkWidget        *widget,
-               GdkDragContext   *context,
-               gint              x,
-               gint              y,
-               GtkSelectionData *data,
-               guint             info,
-               guint             time,
-               gpointer          user_data)
+on_drag_data_received (
+  GtkWidget        *widget,
+  GdkDragContext   *context,
+  gint              x,
+  gint              y,
+  GtkSelectionData *data,
+  guint             info,
+  guint             time,
+  ChannelSlotWidget * self)
 {
-  ChannelSlotWidget * channel_slot =
-    Z_CHANNEL_SLOT_WIDGET (widget);
-  Channel * channel = channel_slot->channel;
+  g_message ("drag data received");
+  Channel * channel = self->channel;
 
-  PluginDescriptor * descr = *(gpointer *) gtk_selection_data_get_data (data);
+  GdkAtom atom =
+    gtk_selection_data_get_target (data);
+  GdkAtom plugin_atom =
+    gdk_atom_intern_static_string (
+      TARGET_ENTRY_PLUGIN);
+  GdkAtom plugin_descr_atom =
+    gdk_atom_intern_static_string (
+      TARGET_ENTRY_PLUGIN_DESCR);
 
-  Plugin * plugin = plugin_create_from_descr (descr);
-
-  if (plugin_instantiate (plugin) < 0)
+  Plugin * pl;
+  if (atom == plugin_atom)
     {
-      GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
-      GtkWidget * dialog =
-        gtk_message_dialog_new (
-          GTK_WINDOW (MAIN_WINDOW),
-          flags,
-          GTK_MESSAGE_ERROR,
-          GTK_BUTTONS_CLOSE,
-          "Error instantiating plugin “%s”. Please see log for details.",
-          plugin->descr->name);
-      gtk_dialog_run (GTK_DIALOG (dialog));
-      gtk_widget_destroy (dialog);
-      plugin_free (plugin);
-      return;
+      pl =
+        *(gpointer *)
+        gtk_selection_data_get_data (data);
+
+      mixer_move_plugin (
+        MIXER, pl, self->channel, self->slot_index);
+    }
+  else if (atom == plugin_descr_atom)
+    {
+      PluginDescriptor * descr =
+        *(gpointer *)
+        gtk_selection_data_get_data (data);
+
+      pl =
+        plugin_create_from_descr (descr);
+
+      if (plugin_instantiate (pl) < 0)
+        {
+          GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
+          GtkWidget * dialog =
+            gtk_message_dialog_new (
+              GTK_WINDOW (MAIN_WINDOW),
+              flags,
+              GTK_MESSAGE_ERROR,
+              GTK_BUTTONS_CLOSE,
+              "Error instantiating plugin “%s”. Please see log for details.",
+              pl->descr->name);
+          gtk_dialog_run (GTK_DIALOG (dialog));
+          gtk_widget_destroy (dialog);
+          plugin_free (pl);
+          return;
+        }
+
+      /* add to specific channel */
+      channel_add_plugin (
+        channel, self->slot_index, pl);
+
+      if (g_settings_get_int (
+            S_PREFERENCES,
+            "open-plugin-uis-on-instantiate"))
+        {
+          pl->visible = 1;
+          EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED,
+                       pl);
+        }
     }
 
-  /* add to specific channel */
-  zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
-  channel_add_plugin (
-    channel, channel_slot->slot_index, plugin);
-  zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
-
-  if (g_settings_get_int (
-        S_PREFERENCES,
-        "open-plugin-uis-on-instantiate"))
-    {
-      plugin->visible = 1;
-      EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED,
-                   plugin);
-    }
   gtk_widget_queue_draw (widget);
 }
 
@@ -207,14 +231,24 @@ button_press_cb (GtkWidget * widget,
 }
 
 static void
-on_drag_data_get (GtkWidget        *widget,
-               GdkDragContext   *context,
-               GtkSelectionData *data,
-               guint             info,
-               guint             time,
-               gpointer          user_data)
+on_drag_data_get (
+  GtkWidget        *widget,
+  GdkDragContext   *context,
+  GtkSelectionData *data,
+  guint             info,
+  guint             time,
+  ChannelSlotWidget * self)
 {
-  g_message ("aaaaaaaaa");
+  Plugin* pl =
+    self->channel->plugins[self->slot_index];
+
+  gtk_selection_data_set (
+    data,
+    gdk_atom_intern_static_string (
+      TARGET_ENTRY_PLUGIN),
+    32,
+    (const guchar *) pl,
+    sizeof (Plugin));
 }
 
 static gboolean
@@ -256,34 +290,25 @@ channel_slot_widget_new (int slot_index,
   self->slot_index = slot_index;
   self->channel = cw->channel;
 
-  gtk_widget_set_size_request (GTK_WIDGET (self), -1, 24);
-
-  /* connect signals */
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), self);
-  g_signal_connect (GTK_WIDGET (self),
-                    "drag-data-received",
-                    G_CALLBACK(on_drag_data_received), NULL);
-  g_signal_connect (G_OBJECT(self), "button_press_event",
-                    G_CALLBACK (button_press_cb),  self);
-  g_signal_connect (GTK_WIDGET (cw->slot_boxes[slot_index]),
-                    "drag-data-get",
-                    G_CALLBACK (on_drag_data_get),
-                    self);
-
   GtkTargetEntry entries[2];
   entries[0].target = TARGET_ENTRY_PLUGIN;
   entries[0].flags = GTK_TARGET_SAME_APP;
-  entries[0].info = TARGET_ENTRY_ID_PLUGIN;
+  entries[0].info =
+    symap_map (ZSYMAP, TARGET_ENTRY_PLUGIN);
   entries[1].target = TARGET_ENTRY_PLUGIN_DESCR;
   entries[1].flags = GTK_TARGET_SAME_APP;
-  entries[1].info = TARGET_ENTRY_ID_PLUGIN_DESCR;
+  entries[1].info =
+    symap_map (ZSYMAP, TARGET_ENTRY_PLUGIN_DESCR);
+
+  /* set as drag source for plugin */
   gtk_drag_source_set (
-    GTK_WIDGET (cw->slot_boxes[slot_index]),
+    GTK_WIDGET (self),
     GDK_MODIFIER_MASK,
     entries,
     1,
     GDK_ACTION_COPY);
+  /* set as drag dest for both plugins and
+   * plugin descriptors */
   gtk_drag_dest_set (
     GTK_WIDGET (self),
     GTK_DEST_DEFAULT_ALL,
@@ -304,6 +329,22 @@ channel_slot_widget_init (ChannelSlotWidget * self)
     GDK_ENTER_NOTIFY_MASK |
     GDK_LEAVE_NOTIFY_MASK);
 
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self), -1, 24);
+
+  /* connect signals */
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (draw_cb), self);
+  g_signal_connect (
+    GTK_WIDGET (self), "drag-data-received",
+    G_CALLBACK(on_drag_data_received), self);
+  g_signal_connect (
+    G_OBJECT(self), "button_press_event",
+    G_CALLBACK (button_press_cb),  self);
+  g_signal_connect (
+    GTK_WIDGET (self), "drag-data-get",
+    G_CALLBACK (on_drag_data_get), self);
   g_signal_connect (
     G_OBJECT (self), "enter-notify-event",
     G_CALLBACK (on_motion),  self);

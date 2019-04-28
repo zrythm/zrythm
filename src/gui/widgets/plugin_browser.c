@@ -27,8 +27,9 @@
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
-#include "utils/ui.h"
+#include "utils/gtk.h"
 #include "utils/resources.h"
+#include "utils/ui.h"
 
 #include <gtk/gtk.h>
 
@@ -187,29 +188,17 @@ on_drag_data_get (GtkWidget        *widget,
                guint             time,
                gpointer          user_data)
 {
-  GtkTreeSelection * ts = GTK_TREE_SELECTION (user_data);
-  GList * selected_rows =
-    gtk_tree_selection_get_selected_rows (ts,
-                                                                NULL);
-  GtkTreePath * tp = (GtkTreePath *)g_list_first (selected_rows)->data;
-  GtkTreeIter iter;
-  gtk_tree_model_get_iter (
-    GTK_TREE_MODEL (MW_PLUGIN_BROWSER->plugins_tree_model),
-    &iter,
-    tp);
-  GValue value = G_VALUE_INIT;
-  gtk_tree_model_get_value (
-    GTK_TREE_MODEL (MW_PLUGIN_BROWSER->plugins_tree_model),
-    &iter,
-    PL_COLUMN_DESCR,
-    &value);
-  PluginDescriptor * descr = g_value_get_pointer (&value);
+  GtkTreeView * tv = GTK_TREE_VIEW (user_data);
+  PluginDescriptor * descr =
+    z_gtk_get_single_selection_pointer (
+      tv, PL_COLUMN_DESCR);
 
   gtk_selection_data_set (data,
-        gdk_atom_intern_static_string ("PLUGIN_DESCR"),
-        32,
-        (const guchar *)&descr,
-        sizeof (PluginDescriptor));
+    gdk_atom_intern_static_string (
+      TARGET_ENTRY_PLUGIN_DESCR),
+    32,
+    (const guchar *)&descr,
+    sizeof (PluginDescriptor));
 }
 
 static GtkTreeModel *
@@ -344,7 +333,8 @@ tree_view_create (PluginBrowserWidget * self,
                   int          dnd)
 {
   /* instantiate tree view using model */
-  GtkWidget * tree_view = gtk_tree_view_new_with_model (
+  GtkWidget * tree_view =
+    gtk_tree_view_new_with_model (
       GTK_TREE_MODEL (model));
 
   /* init tree view */
@@ -411,7 +401,9 @@ tree_view_create (PluginBrowserWidget * self,
       GtkTargetEntry entries[1];
       entries[0].target = TARGET_ENTRY_PLUGIN_DESCR;
       entries[0].flags = GTK_TARGET_SAME_APP;
-      entries[0].info = TARGET_ENTRY_ID_PLUGIN_DESCR;
+      entries[0].info =
+        symap_map (
+          ZSYMAP, TARGET_ENTRY_PLUGIN_DESCR);
       gtk_tree_view_enable_model_drag_source (
         GTK_TREE_VIEW (tree_view),
         GDK_BUTTON1_MASK,
@@ -419,11 +411,8 @@ tree_view_create (PluginBrowserWidget * self,
         1,
         GDK_ACTION_COPY);
       g_signal_connect (
-        GTK_WIDGET (tree_view),
-        "drag-data-get",
-        G_CALLBACK (on_drag_data_get),
-        gtk_tree_view_get_selection (
-          GTK_TREE_VIEW (tree_view)));
+        GTK_WIDGET (tree_view), "drag-data-get",
+        G_CALLBACK (on_drag_data_get), tree_view);
     }
 
   g_signal_connect (

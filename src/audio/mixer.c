@@ -44,10 +44,13 @@
 #include "project.h"
 #include "utils/audio.h"
 #include "utils/arrays.h"
+#include "utils/dialogs.h"
 #include "utils/objects.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
+
+#include <glib/gi18n.h>
 
 /**
  * Recalculates the process acyclic directed graph.
@@ -239,6 +242,38 @@ mixer_add_channel_from_file_descr (
 
   EVENTS_PUSH (ET_TRACK_ADDED,
                chan->track);
+}
+
+/**
+ * Moves the given plugin to the given slot in
+ * the given channel.
+ *
+ * If a plugin already exists, it deletes it and
+ * replaces it.
+ */
+void
+mixer_move_plugin (
+  Mixer *   self,
+  Plugin *  pl,
+  Channel * ch,
+  int       slot)
+{
+  /* confirm if another plugin exists */
+  if (ch->plugins[slot])
+    {
+      GtkDialog * dialog =
+        dialogs_get_overwrite_plugin_dialog (
+          GTK_WINDOW (MAIN_WINDOW));
+      int result =
+        gtk_dialog_run (dialog);
+      gtk_widget_destroy (GTK_WIDGET (dialog));
+
+      /* do nothing if not accepted */
+      if (result != GTK_RESPONSE_ACCEPT)
+        return;
+    }
+
+  /* remove plugin from its channel */
 }
 
 void

@@ -316,7 +316,13 @@ midi_arranger_widget_get_cursor (
       ac = ARRANGER_CURSOR_RESIZING_L;
       break;
     case UI_OVERLAY_ACTION_RESIZING_R:
+    case UI_OVERLAY_ACTION_CREATING_RESIZING_R:
       ac = ARRANGER_CURSOR_RESIZING_R;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_SELECTION:
+    case UI_OVERLAY_ACTION_SELECTING:
+      ac = ARRANGER_CURSOR_SELECT;
+      /* TODO depends on tool */
       break;
     default:
       g_warn_if_reached ();

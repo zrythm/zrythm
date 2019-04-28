@@ -39,6 +39,12 @@
 #include <jack/jack.h>
 #endif
 
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
+
 #define MASTER_POS -1 /* master channel special position */
 #define FOREACH_STRIP for (int i = 0; i < STRIP_SIZE; i++)
 #define FOREACH_AUTOMATABLE(ch) for (int i = 0; i < ch->num_automatables; i++)
@@ -348,14 +354,21 @@ channel_process (Channel * channel);
 /**
  * Adds given plugin to given position in the strip.
  *
- * The plugin must be already instantiated at this point.
+ * The plugin must be already instantiated at this
+ * point.
+ *
+ * @param channel The Channel.
+ * @param pos The position in the strip starting
+ *   from 0.
+ * @param plugin The plugin to add.
+ *
+ * @return 1 if plugin added, 0 if not.
  */
-void
-channel_add_plugin (Channel * channel,    ///< the channel
-                    int         pos,     ///< the position in the strip
-                                        ///< (starting from 0)
-                    Plugin      * plugin  ///< the plugin to add
-                    );
+int
+channel_add_plugin (
+  Channel * channel,
+  int       pos,
+  Plugin *  plugin);
 
 /**
  * Returns the index of the last active slot.
@@ -408,6 +421,7 @@ void
 channel_remove_plugin (
   Channel * channel,
   int pos,
+  int deleting_plugin,
   int deleting_channel);
 
 /**
@@ -427,5 +441,9 @@ channel_disconnect (Channel * channel);
  */
 void
 channel_free (Channel * channel);
+
+/**
+ * @}
+ */
 
 #endif

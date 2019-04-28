@@ -28,6 +28,8 @@
 
 #include <stdint.h>
 
+#define ZSYMAP (ZRYTHM->symap)
+
 typedef struct Symap {
 	/**
 	   Unsorted array of strings, such that the symbol for ID i is found

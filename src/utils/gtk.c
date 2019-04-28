@@ -281,3 +281,30 @@ z_gtk_create_menu_item (gchar *     label_name,
 
   return GTK_MENU_ITEM (menu_item);
 }
+
+/**
+ * Returns a pointer stored at the given selection.
+ */
+void *
+z_gtk_get_single_selection_pointer (
+  GtkTreeView * tv,
+  int           column)
+{
+  GtkTreeSelection * ts =
+    gtk_tree_view_get_selection (tv);
+  GtkTreeModel * model =
+    gtk_tree_view_get_model (tv);
+  GList * selected_rows =
+    gtk_tree_selection_get_selected_rows (
+      ts, NULL);
+  GtkTreePath * tp =
+    (GtkTreePath *)
+    g_list_first (selected_rows)->data;
+  GtkTreeIter iter;
+  gtk_tree_model_get_iter (
+    model, &iter, tp);
+  GValue value = G_VALUE_INIT;
+  gtk_tree_model_get_value (
+    model, &iter, column, &value);
+  return g_value_get_pointer (&value);
+}

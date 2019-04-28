@@ -210,4 +210,12 @@ z_gtk_create_menu_item (gchar *     label_name,
                   int             is_toggle,
                   const char *    action_name);
 
+/**
+ * Returns a pointer stored at the given selection.
+ */
+void *
+z_gtk_get_single_selection_pointer (
+  GtkTreeView * tv,
+  int           column);
+
 #endif

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-28 11:49+0100\n"
+"POT-Creation-Date: 2019-04-28 15:48+0100\n"
 "PO-Revision-Date: 2019-03-22 22:30+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -60,6 +60,10 @@ msgstr ""
 "dans <b>/etclocale.gen</b> (nécessite les droits 'root')\n"
 "2. Lancez <b>locale-gen</b> en root\n"
 "3. Redémarrez Zrythm"
+
+#: src/utils/dialogs.c:83
+msgid "A plugin already exists at the selected slot. Overwrite it?"
+msgstr ""
 
 #: src/gui/widgets/header_bar.c:377
 msgid "About"
@@ -153,7 +157,7 @@ msgstr "Impossible de localiser la propriété %s dans la classe %s"
 msgid "Category"
 msgstr "Catégorie"
 
-#: src/gui/widgets/channel_slot.c:233
+#: src/gui/widgets/channel_slot.c:267
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -384,15 +388,15 @@ msgstr "Raccourcis globaux"
 msgid "Grid"
 msgstr "Grille"
 
-#: src/zrythm.c:240
+#: src/zrythm.c:242
 msgid "Initializing audio engine"
 msgstr "Initialisation du moteur audio"
 
-#: src/zrythm.c:245
+#: src/zrythm.c:247
 msgid "Initializing plugin manager"
 msgstr "Initialisation du gestionnaire  de greffon"
 
-#: src/zrythm.c:234
+#: src/zrythm.c:235
 msgid "Initializing settings"
 msgstr "Initialisation des paramètres"
 
@@ -458,7 +462,7 @@ msgstr "Longueur"
 msgid "Linear"
 msgstr ""
 
-#: src/zrythm.c:259
+#: src/zrythm.c:261
 #, fuzzy
 msgid "Loading project"
 msgstr "Chargement du projet"
@@ -565,6 +569,11 @@ msgstr "Type de note"
 msgid "OK"
 msgstr "OK"
 
+#: src/utils/dialogs.c:41
+#, fuzzy
+msgid "Open Project"
+msgstr "Ouvrir un projet"
+
 #: resources/ui/shortcuts.ui:91
 #, fuzzy
 msgid "Open a project"
@@ -585,6 +594,10 @@ msgstr "Fichiers de sortie"
 #. TRANSLATORS: JACK failure messages
 #: src/audio/engine_jack.c:594
 msgid "Overall operation failed"
+msgstr ""
+
+#: src/utils/dialogs.c:69
+msgid "Overwrite Plugin"
 msgstr ""
 
 #: resources/ui/preferences.ui:189
@@ -850,7 +863,7 @@ msgstr "Sélection"
 msgid "Selections"
 msgstr "Sélections"
 
-#: src/zrythm.c:252
+#: src/zrythm.c:254
 msgid "Setting up backend"
 msgstr "Configuration du moteur"
 
@@ -1120,8 +1133,8 @@ msgstr "Zoomer"
 msgid "Zrythm"
 msgstr "Zrythm"
 
-#: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567
-#: src/actions/actions.c:521
+#: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
+#: src/utils/dialogs.c:74 src/actions/actions.c:521
 msgid "_Cancel"
 msgstr "_Annuler"
 
@@ -1167,11 +1180,11 @@ msgstr "_Aide"
 msgid "_New"
 msgstr "_Nouveau"
 
-#: src/plugins/lv2_gtk.c:568
+#: src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:72
 msgid "_OK"
 msgstr "_OK"
 
-#: src/gui/widgets/header_bar.c:121
+#: src/gui/widgets/header_bar.c:121 src/utils/dialogs.c:46
 msgid "_Open"
 msgstr "_Ouvrir"
 

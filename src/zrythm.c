@@ -33,6 +33,7 @@
 #include "gui/widgets/project_assistant.h"
 #include "gui/widgets/splash.h"
 #include "plugins/plugin_manager.h"
+#include "plugins/lv2/symap.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
@@ -235,6 +236,7 @@ task_func (
       data->progress = 0.3;
       break;
     case TASK_INIT_SETTINGS:
+      ZRYTHM->symap = symap_new ();
       settings_init (&ZRYTHM->settings);
       data->message =
         _("Initializing audio engine");

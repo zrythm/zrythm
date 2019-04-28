@@ -47,6 +47,7 @@ G_DECLARE_FINAL_TYPE (ZrythmApp,
 
 typedef struct _MainWindowWidget MainWindowWidget;
 typedef struct Project Project;
+typedef struct Symap Symap;
 
 /**
  * To be used throughout the program.
@@ -105,6 +106,11 @@ typedef struct Zrythm
    * Event queue, mainly for GUI events.
    */
   GAsyncQueue *           event_queue;
+
+  /**
+   * String interner for internal things.
+   */
+  Symap *                 symap;
 } Zrythm;
 
 /**
