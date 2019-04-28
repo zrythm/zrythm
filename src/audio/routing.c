@@ -843,8 +843,6 @@ void
 router_cleanup (
   Router * self)
 {
-  int i;
-
   graph_destroy (self->graph1);
   graph_destroy (self->graph2);
 }

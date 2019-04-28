@@ -126,8 +126,9 @@ void
 engine_pa_fill_stereo_out_buffs (
   AudioEngine * engine)
 {
+  int nframes = engine->nframes;
   for (int i = 0;
-       i < AUDIO_ENGINE->nframes;
+       i < nframes;
        i++)
     {
       *engine->pa_out_buf++ =
@@ -269,7 +270,7 @@ engine_pa_test (
       g_free (msg);
       return 1;
     }
-  else if (err = Pa_Terminate () != paNoError)
+  else if ((err = Pa_Terminate ()) != paNoError)
     {
       msg =
         g_strdup_printf (
