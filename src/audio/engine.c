@@ -476,7 +476,7 @@ engine_post_process (AudioEngine * self)
       IS_TRANSPORT_ROLLING && /* if rolling */
       (TRANSPORT->playhead_pos.frames <=  /* if current pos is inside loop */
           TRANSPORT->loop_end_pos.frames) &&
-      ((TRANSPORT->playhead_pos.frames + self->nframes) > /* if next pos will be outside loop */
+      ((long int)(TRANSPORT->playhead_pos.frames + self->nframes) > /* if next pos will be outside loop */
           TRANSPORT->loop_end_pos.frames))
     {
       transport_move_playhead (

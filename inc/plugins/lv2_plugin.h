@@ -50,10 +50,10 @@
 #include "plugins/lv2/control.h"
 #include "plugins/lv2/lv2_evbuf.h"
 #include "plugins/lv2/worker.h"
-#include "plugins/lv2/zix/ring.h"
+#include "zix/ring.h"
 #include "plugins/lv2/suil.h"
-#include "utils/sem.h"
-#include "plugins/lv2/zix/thread.h"
+#include "zix/sem.h"
+#include "zix/thread.h"
 #include "plugins/lv2/lv2_external_ui.h"
 
 #include <lilv/lilv.h>

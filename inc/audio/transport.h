@@ -30,7 +30,7 @@
 #include <stdint.h>
 
 #include "audio/region.h"
-#include "utils/sem.h"
+#include "zix/sem.h"
 
 #define TRANSPORT (&AUDIO_ENGINE->transport)
 #define DEFAULT_TOTAL_BARS 128

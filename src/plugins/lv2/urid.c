@@ -20,7 +20,7 @@
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/urid.h"
 #include "plugins/plugin_manager.h"
-#include "utils/sem.h"
+#include "zix/sem.h"
 #include "zrythm.h"
 
 LV2_URID

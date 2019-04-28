@@ -17,9 +17,9 @@
 #ifndef __PLUGINS_LV2_WORKER_H__
 #define __PLUGINS_LV2_WORKER_H__
 
-#include "plugins/lv2/zix/ring.h"
-#include "utils/sem.h"
-#include "plugins/lv2/zix/thread.h"
+#include "zix/ring.h"
+#include "zix/sem.h"
+#include "zix/thread.h"
 
 #include <lilv/lilv.h>
 

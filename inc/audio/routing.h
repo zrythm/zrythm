@@ -24,7 +24,7 @@
 #define __AUDIO_ROUTING_H__
 
 #include <pthread.h>
-#include "utils/sem.h"
+#include "zix/sem.h"
 
 typedef enum GraphNodeType
 {
