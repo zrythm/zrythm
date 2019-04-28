@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-28 10:13+0100\n"
+"POT-Creation-Date: 2019-04-28 10:31+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrythm dot org>\n"
 "Language-Team: Italian\n"
@@ -615,8 +615,8 @@ msgstr ""
 msgid "Plugins"
 msgstr ""
 
-#: src/audio/engine_pa.c:245 src/audio/engine_pa.c:265
-#: src/audio/engine_pa.c:276
+#: src/audio/engine_pa.c:246 src/audio/engine_pa.c:266
+#: src/audio/engine_pa.c:277
 #, c-format
 msgid "PortAudio Error: %s"
 msgstr ""
