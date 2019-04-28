@@ -39,7 +39,7 @@
 #define MIDI_ALL_SOUND_OFF 0x78
 #define MAX_MIDI_EVENTS 128
 
-#include "utils/sem.h"
+#include "zix/sem.h"
 
 #ifdef HAVE_JACK
 #include <jack/midiport.h>

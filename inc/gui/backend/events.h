@@ -29,8 +29,8 @@
 #ifndef __GUI_BACKEND_EVENTS_H__
 #define __GUI_BACKEND_EVENTS_H__
 
-#include "inc/utils/sem.h"
-#include "inc/utils/stack.h"
+#include "zix/sem.h"
+#include "utils/stack.h"
 
 /**
  * @addtogroup events

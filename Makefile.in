@@ -129,10 +129,14 @@ LIBSMF_BUILD_DIR = ext/libsmf/src/.libs
 LIBSMF_INC_DIR = ext/libsmf/src
 # execute make here
 LIBSMF_SRC_DIR = ext/libsmf
+ZIX_INC_DIR = ext/zix
 PLUGINS_SRC_DIR= plugins
 PLUGINS_INSTALL_DIR = $(libdir)/zrythm/lv2
 
-DEFAULT_INCLUDES = -I. -I./$(INC_DIR) -I./$(SRC_DIR) -I./ext -I./$(LIBSMF_INC_DIR) -I./$(CYAML_INC_DIR)
+DEFAULT_INCLUDES = \
+	-I. -I./$(INC_DIR) -I./$(SRC_DIR) -I./ext \
+	-I./$(LIBSMF_INC_DIR) -I./$(CYAML_INC_DIR) \
+	-I./$(ZIX_INC_DIR)
 
 # -rdynamic gcc flag
 ifeq ($(patsubst gcc%,gcc,$(CC)),gcc)
@@ -193,6 +197,7 @@ CFLAGS += -Wall \
 	-Wextra \
 	-Wno-missing-field-initializers \
 	-Wno-unused-parameter \
+	-Wno-cast-function-type \
 	-Wno-sequence-point \
 	-Wignored-qualifiers \
 	-Werror=implicit-function-declaration \
@@ -267,7 +272,9 @@ built_dep = $(built_obj:%.o=%.d))
 
 #Find all the C++ files in the src/ directory
 SRCS = $(shell find src -name "*.c") \
-			 $(shell find ext/audio_decoder -name "*.c")
+			 $(shell find ext/audio_decoder -name "*.c") \
+			 $(shell find ext/zix/zix -type f \
+			     \( -iname "*.c" ! -iname "*test.c" \))
 SRCS_CPP = $(shell find src -name "*.cpp")
 ifeq ($(OSX),1)
 SRCS_OBJC = $(shell find src -name "*.m")

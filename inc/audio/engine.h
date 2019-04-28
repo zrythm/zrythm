@@ -30,7 +30,7 @@
 #include "audio/mixer.h"
 #include "audio/pan.h"
 #include "audio/transport.h"
-#include "utils/sem.h"
+#include "zix/sem.h"
 
 #ifdef HAVE_JACK
 #include <jack/jack.h>
