@@ -237,60 +237,94 @@ midi_arranger_widget_find_start_poses (
  */
 ArrangerCursor
 midi_arranger_widget_get_cursor (
+  MidiArrangerWidget * self,
   UiOverlayAction action,
   Tool            tool)
 {
-  MidiArrangerWidget * self =
-    MIDI_ARRANGER;
+  ArrangerCursor ac = ARRANGER_CURSOR_SELECT;
+
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  if (tool == TOOL_SELECT_NORMAL ||
-      tool == TOOL_SELECT_STRETCH ||
-      tool == TOOL_EDIT)
+  switch (action)
     {
-      MidiNoteWidget * mnw =
-        midi_arranger_widget_get_hit_midi_note (
-          self,
-          ar_prv->hover_x,
-          ar_prv->hover_y);
+    case UI_OVERLAY_ACTION_NONE:
+      if (P_TOOL == TOOL_SELECT_NORMAL ||
+           P_TOOL == TOOL_SELECT_STRETCH ||
+           P_TOOL == TOOL_EDIT)
+        {
+          MidiNoteWidget * mnw =
+            midi_arranger_widget_get_hit_midi_note (
+              self,
+              ar_prv->hover_x,
+              ar_prv->hover_y);
 
-      int is_hit =
-        mnw != NULL;
-      int is_resize_l =
-        mnw && mnw->resize_l;
-      int is_resize_r =
-        mnw && mnw->resize_r;
+          int is_hit =
+            mnw != NULL;
+          int is_resize_l =
+            mnw && mnw->resize_l;
+          int is_resize_r =
+            mnw && mnw->resize_r;
 
-      if (is_hit && is_resize_l)
-        {
-          return ARRANGER_CURSOR_RESIZING_L;
-        }
-      else if (is_hit && is_resize_r)
-        {
-          return ARRANGER_CURSOR_RESIZING_R;
-        }
-      else if (is_hit)
-        {
-          return ARRANGER_CURSOR_GRAB;
-        }
-      else
-        {
-          /* set cursor to whatever it is */
-          if (tool == TOOL_EDIT)
-            return ARRANGER_CURSOR_EDIT;
+          if (is_hit && is_resize_l)
+            {
+              return ARRANGER_CURSOR_RESIZING_L;
+            }
+          else if (is_hit && is_resize_r)
+            {
+              return ARRANGER_CURSOR_RESIZING_R;
+            }
+          else if (is_hit)
+            {
+              return ARRANGER_CURSOR_GRAB;
+            }
           else
-            return ARRANGER_CURSOR_SELECT;
+            {
+              /* set cursor to whatever it is */
+              if (tool == TOOL_EDIT)
+                return ARRANGER_CURSOR_EDIT;
+              else
+                return ARRANGER_CURSOR_SELECT;
+            }
         }
+      else if (P_TOOL == TOOL_EDIT)
+        ac = ARRANGER_CURSOR_EDIT;
+      else if (P_TOOL == TOOL_ERASER)
+        ac = ARRANGER_CURSOR_ERASER;
+      else if (P_TOOL == TOOL_RAMP)
+        ac = ARRANGER_CURSOR_RAMP;
+      else if (P_TOOL == TOOL_AUDITION)
+        ac = ARRANGER_CURSOR_AUDITION;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION:
+    case UI_OVERLAY_ACTION_DELETE_SELECTING:
+    case UI_OVERLAY_ACTION_ERASING:
+      ac = ARRANGER_CURSOR_ERASER;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_MOVING_COPY:
+    case UI_OVERLAY_ACTION_MOVING_COPY:
+      ac = ARRANGER_CURSOR_GRABBING_COPY;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_MOVING:
+    case UI_OVERLAY_ACTION_MOVING:
+      ac = ARRANGER_CURSOR_GRABBING;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_MOVING_LINK:
+    case UI_OVERLAY_ACTION_MOVING_LINK:
+      ac = ARRANGER_CURSOR_GRABBING_LINK;
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_L:
+      ac = ARRANGER_CURSOR_RESIZING_L;
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_R:
+      ac = ARRANGER_CURSOR_RESIZING_R;
+      break;
+    default:
+      g_warn_if_reached ();
+      ac = ARRANGER_CURSOR_SELECT;
+      break;
     }
-  else if (tool == TOOL_ERASER)
-    return ARRANGER_CURSOR_ERASER;
-  else if (tool == TOOL_RAMP)
-    return ARRANGER_CURSOR_RAMP;
-  else if (tool == TOOL_AUDITION)
-    return ARRANGER_CURSOR_AUDITION;
 
-  g_warn_if_reached ();
-  return -1;
+  return ac;
 }
 
 /**

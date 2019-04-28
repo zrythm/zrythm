@@ -87,6 +87,7 @@ midi_arranger_widget_set_allocation (
  */
 ArrangerCursor
 midi_arranger_widget_get_cursor (
+  MidiArrangerWidget * self,
   UiOverlayAction action,
   Tool            tool);
 

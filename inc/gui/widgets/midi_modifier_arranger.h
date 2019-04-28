@@ -1,8 +1,5 @@
 /*
- * gui/widgets/midi_modifier_arranger.h - arranger for box
- *   below midi arranger for velocity, etc.
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,6 +20,7 @@
 #ifndef __GUI_WIDGETS_MIDI_MODIFIER_ARRANGER_H__
 #define __GUI_WIDGETS_MIDI_MODIFIER_ARRANGER_H__
 
+#include "gui/backend/tool.h"
 #include "gui/widgets/arranger.h"
 
 #include <gtk/gtk.h>
@@ -75,6 +73,16 @@ midi_modifier_arranger_widget_get_hit_velocity (
   MidiModifierArrangerWidget *  self,
   double                        x,
   double                        y);
+
+/**
+ * Returns the appropriate cursor based on the
+ * current hover_x and y.
+ */
+ArrangerCursor
+midi_modifier_arranger_widget_get_cursor (
+  MidiModifierArrangerWidget * self,
+  UiOverlayAction action,
+  Tool            tool);
 
 /**
  * Called when in selection mode.

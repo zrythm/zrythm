@@ -51,11 +51,18 @@ typedef pthread_t ZixThread;
    The thread will immediately be launched, calling `function` with `arg`
    as the only parameter.
 */
+#ifdef _WIN32
+zix_thread_create(ZixThread* thread,
+                  size_t     stack_size,
+                  DWORD      (*function)(void*),
+                  void*      arg);
+#else
 static inline ZixStatus
 zix_thread_create(ZixThread* thread,
                   size_t     stack_size,
                   void*      (*function)(void*),
                   void*      arg);
+#endif
 
 /**
    Join `thread` (block until `thread` exits).
@@ -68,12 +75,14 @@ zix_thread_join(ZixThread thread, void** retval);
 static inline ZixStatus
 zix_thread_create(ZixThread* thread,
                   size_t     stack_size,
-                  void*      (*function)(void*),
+                  DWORD      (*function)(void*),
                   void*      arg)
 {
-	*thread = CreateThread(NULL, stack_size,
-	                       (LPTHREAD_START_ROUTINE)function, arg,
-	                       0, NULL);
+	*thread =
+    CreateThread (
+      NULL, stack_size,
+	    (LPTHREAD_START_ROUTINE)function, arg,
+	    0, NULL);
 	return *thread ? ZIX_STATUS_SUCCESS : ZIX_STATUS_ERROR;
 }
 

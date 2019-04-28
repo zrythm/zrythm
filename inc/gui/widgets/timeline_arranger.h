@@ -123,6 +123,7 @@ timeline_arranger_widget_update_visibility (
  */
 ArrangerCursor
 timeline_arranger_widget_get_cursor (
+  TimelineArrangerWidget * self,
   UiOverlayAction action,
   Tool            tool);
 

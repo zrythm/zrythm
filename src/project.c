@@ -132,7 +132,9 @@ project_sanity_check (Project * self)
 
   RegionWidgetPrivate * rw_prv;
   Region * region;
-  for (i = 0; i < self->num_regions; i++)
+  int num_regions =
+    g_atomic_int_get (&self->num_regions);
+  for (i = 0; i < num_regions; i++)
     {
       region = self->regions[i];
       if (!region)

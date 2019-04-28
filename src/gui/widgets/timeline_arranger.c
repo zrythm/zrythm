@@ -234,74 +234,122 @@ timeline_arranger_widget_set_allocation (
  */
 ArrangerCursor
 timeline_arranger_widget_get_cursor (
+  TimelineArrangerWidget * self,
   UiOverlayAction action,
   Tool            tool)
 {
-  TimelineArrangerWidget * self =
-    MW_TIMELINE;
+  ArrangerCursor ac = ARRANGER_CURSOR_SELECT;
+
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  if (tool == TOOL_SELECT_NORMAL &&
-      action == UI_OVERLAY_ACTION_NONE)
+  switch (action)
     {
-      RegionWidget * rw =
-        timeline_arranger_widget_get_hit_region (
-          self,
-          ar_prv->hover_x,
-          ar_prv->hover_y);
-
-      REGION_WIDGET_GET_PRIVATE (rw);
-      /* TODO chords, aps */
-
-      int is_hit =
-        rw != NULL;
-      int is_resize_l =
-        rw && rw_prv->resize_l;
-      int is_resize_r =
-        rw && rw_prv->resize_r;
-
-      if (is_hit && is_resize_l)
+    case UI_OVERLAY_ACTION_NONE:
+      if (P_TOOL == TOOL_SELECT_NORMAL)
         {
-          return ARRANGER_CURSOR_RESIZING_L;
-        }
-      else if (is_hit && is_resize_r)
-        {
-          return ARRANGER_CURSOR_RESIZING_R;
-        }
-      else if (is_hit)
-        {
-          return ARRANGER_CURSOR_GRAB;
-        }
-      else
-        {
-          Track * track =
-            timeline_arranger_widget_get_track_at_y (
+          RegionWidget * rw =
+            timeline_arranger_widget_get_hit_region (
+              self,
+              ar_prv->hover_x,
               ar_prv->hover_y);
 
-          if (track)
+          REGION_WIDGET_GET_PRIVATE (rw);
+          /* TODO chords, aps */
+
+          int is_hit =
+            rw != NULL;
+          int is_resize_l =
+            rw && rw_prv->resize_l;
+          int is_resize_r =
+            rw && rw_prv->resize_r;
+
+          if (is_hit && is_resize_l)
             {
-              if (track_widget_is_cursor_in_top_half (
-                    track->widget,
-                    ar_prv->hover_y))
+              return ARRANGER_CURSOR_RESIZING_L;
+            }
+          else if (is_hit && is_resize_r)
+            {
+              return ARRANGER_CURSOR_RESIZING_R;
+            }
+          else if (is_hit)
+            {
+              return ARRANGER_CURSOR_GRAB;
+            }
+          else
+            {
+              Track * track =
+                timeline_arranger_widget_get_track_at_y (
+                  ar_prv->hover_y);
+
+              if (track)
+                {
+                  if (track_widget_is_cursor_in_top_half (
+                        track->widget,
+                        ar_prv->hover_y))
+                    {
+                      /* set cursor to normal */
+                      return ARRANGER_CURSOR_SELECT;
+                    }
+                  else
+                    {
+                      /* set cursor to range selection */
+                      return ARRANGER_CURSOR_RANGE;
+                    }
+                }
+              else
                 {
                   /* set cursor to normal */
                   return ARRANGER_CURSOR_SELECT;
                 }
-              else
-                {
-                  /* set cursor to range selection */
-                  return ARRANGER_CURSOR_RANGE;
-                }
-            }
-          else
-            {
-              /* set cursor to normal */
-              return ARRANGER_CURSOR_SELECT;
             }
         }
+      else if (P_TOOL == TOOL_SELECT_STRETCH)
+        {
+        }
+      else if (P_TOOL == TOOL_EDIT)
+        ac = ARRANGER_CURSOR_EDIT;
+      else if (P_TOOL == TOOL_ERASER)
+        ac = ARRANGER_CURSOR_ERASER;
+      else if (P_TOOL == TOOL_RAMP)
+        ac = ARRANGER_CURSOR_RAMP;
+      else if (P_TOOL == TOOL_AUDITION)
+        ac = ARRANGER_CURSOR_AUDITION;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION:
+    case UI_OVERLAY_ACTION_DELETE_SELECTING:
+    case UI_OVERLAY_ACTION_ERASING:
+      ac = ARRANGER_CURSOR_ERASER;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_MOVING_COPY:
+    case UI_OVERLAY_ACTION_MOVING_COPY:
+      ac = ARRANGER_CURSOR_GRABBING_COPY;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_MOVING:
+    case UI_OVERLAY_ACTION_MOVING:
+      ac = ARRANGER_CURSOR_GRABBING;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_MOVING_LINK:
+    case UI_OVERLAY_ACTION_MOVING_LINK:
+      ac = ARRANGER_CURSOR_GRABBING_LINK;
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_L:
+      if (self->resizing_range)
+        ac = ARRANGER_CURSOR_RANGE;
+      else
+        ac = ARRANGER_CURSOR_RESIZING_L;
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_R:
+      if (self->resizing_range)
+        ac = ARRANGER_CURSOR_RANGE;
+      else
+        ac = ARRANGER_CURSOR_RESIZING_R;
+      break;
+    default:
+      ac = ARRANGER_CURSOR_SELECT;
+      break;
     }
 
-  return ARRANGER_CURSOR_SELECT;
+  return ac;
 }
 
 

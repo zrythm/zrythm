@@ -478,13 +478,12 @@ track_remove_region (
 {
   region_disconnect (region);
 
-  array_delete (track->regions,
-                track->num_regions,
-                region);
-  int size = track->num_regions + 1;
-  array_delete (track->region_ids,
-                size,
-                region->id);
+  array_double_delete (
+    track->regions,
+    track->region_ids,
+    track->num_regions,
+    region,
+    region->id);
 
   EVENTS_PUSH (ET_REGION_REMOVED, track);
 }
@@ -492,9 +491,8 @@ track_remove_region (
 void
 track_disconnect (Track * track)
 {
-  int i;
-
   /* remove regions */
+  int i;
   for (i = 0; i < track->num_regions; i++)
     track_remove_region (
       track, track->regions[i]);
@@ -513,15 +511,16 @@ track_disconnect (Track * track)
 void
 track_free (Track * track)
 {
-  int i;
+  project_remove_track (track);
 
   /* remove regions */
+  int i;
   for (i = 0; i < track->num_regions; i++)
-    free_later (track->regions[i], region_free);
+    region_free (track->regions[i]);
 
   /* remove chords */
   for (i = 0; i < track->num_chords; i++)
-    free_later (track->chords[i], chord_free);
+    chord_free (track->chords[i]);
 
   /* remove automation points, curves, tracks,
    * lanes*/
@@ -552,7 +551,7 @@ track_free (Track * track)
       break;
     }
 
-  free_later (track->channel, channel_free);
+  channel_free (track->channel);
 
   if (track->widget && GTK_IS_WIDGET (track->widget))
     gtk_widget_destroy (
