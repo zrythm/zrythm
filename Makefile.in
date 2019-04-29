@@ -203,6 +203,7 @@ CFLAGS += -Wall \
 	-Wignored-qualifiers \
 	-Werror=implicit-function-declaration \
 	-Werror=uninitialized \
+	-Werror=maybe-uninitialized \
 	-Werror=return-type \
 	-Werror=int-conversion \
 	-Werror=format-security \

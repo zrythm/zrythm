@@ -570,7 +570,7 @@ track_widget_new (Track * track)
 {
   g_warn_if_fail (track);
 
-  TrackWidget * self;
+  TrackWidget * self = NULL;
 
   switch (track->type)
     {
