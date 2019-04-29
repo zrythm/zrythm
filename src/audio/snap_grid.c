@@ -214,8 +214,8 @@ char *
 snap_grid_stringize (NoteLength note_length,
                      NoteType   note_type)
 {
-  char * c;
-  char * first_part;
+  char * c = NULL;
+  char * first_part = NULL;
   switch (note_type)
     {
       case NOTE_TYPE_NORMAL:
