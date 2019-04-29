@@ -464,7 +464,7 @@ port_apply_pan (
 {
   int block_length = AUDIO_ENGINE->block_length;
   int i;
-  float calc_r, calc_l;
+  float calc_r = 0.f, calc_l = 0.f;
   int is_stereo_r =
     port->flags & PORT_FLAG_STEREO_R;
 
