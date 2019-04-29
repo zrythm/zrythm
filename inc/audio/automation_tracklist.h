@@ -51,32 +51,35 @@ typedef struct AutomationLane AutomationLane;
 typedef struct AutomationTracklist
 {
   /**
-   * Automation tracks to be generated/used at run time.
+   * Automation tracks to be generated/used at run
+   * time.
    *
-   * These should be updated with ALL of the automatables
-   * available in the channel and its plugins every time there
-   * is an update.
+   * These should be updated with ALL of the
+   * automatables available in the channel and its
+   * plugins every time there is an update.
    *
-   * When loading projects, these should be first generated
-   * and then updated with automation points/curves.
+   * When loading projects, these should be first
+   * generated and then updated with automation
+   * points/curves.
    */
-  int                          at_ids[4000];
-  AutomationTrack *            automation_tracks[4000];
-  int                          num_automation_tracks;
+  int               at_ids[4000];
+  AutomationTrack * automation_tracks[4000];
+  int               num_automation_tracks;
 
   /**
    * These are the active automation lanes that are
    * shown in the UI, including hidden ones.
    *
    * Automation tracks become active automation
-   * lanes when they have automation or are selected.
+   * lanes when they have automation or are
+   * selected.
    *
    * They must be associated with an automation
    * track.
    */
-  int                          al_ids[400];
-  AutomationLane *             automation_lanes[400];
-  int                          num_automation_lanes;
+  int               al_ids[400];
+  AutomationLane *  automation_lanes[400];
+  int               num_automation_lanes;
 
   /**
    * Pointer back to owner track.
@@ -128,9 +131,26 @@ automation_tracklist_init_loaded (
   AutomationTracklist * self);
 
 void
+automation_tracklist_add_automation_track (
+  AutomationTracklist * self,
+  AutomationTrack *     at);
+
+void
 automation_tracklist_add_automation_lane (
   AutomationTracklist * self,
   AutomationLane *      al);
+
+void
+automation_tracklist_delete_automation_track (
+  AutomationTracklist * self,
+  AutomationTrack *     at,
+  int                   free);
+
+void
+automation_tracklist_delete_automation_lane (
+  AutomationTracklist * self,
+  AutomationLane *      al,
+  int                   free);
 
 /**
  * Finds visible tracks and puts them in given array.

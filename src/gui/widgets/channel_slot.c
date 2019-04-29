@@ -20,6 +20,9 @@
 /** \file
  */
 
+#include "actions/move_plugin_action.h"
+#include "actions/undoable_action.h"
+#include "actions/undo_manager.h"
 #include "audio/channel.h"
 #include "audio/engine.h"
 #include "plugins/lv2_plugin.h"
@@ -73,8 +76,14 @@ on_drag_data_received (
           self->slot_index !=
             channel_get_plugin_index (pl->channel,
                                       pl))
-        mixer_move_plugin (
-          MIXER, pl, self->channel, self->slot_index);
+        {
+          UndoableAction * ua =
+            move_plugin_action_new (
+              pl, self->channel, self->slot_index);
+
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
     }
   else if (atom == plugin_descr_atom)
     {
@@ -104,7 +113,7 @@ on_drag_data_received (
 
       /* add to specific channel */
       channel_add_plugin (
-        channel, self->slot_index, pl, 1);
+        channel, self->slot_index, pl, 1, 1);
 
       if (g_settings_get_int (
             S_PREFERENCES,

@@ -30,6 +30,8 @@
 #include "plugins/plugin.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
+#include "utils/objects.h"
 
 void
 automation_tracklist_init_loaded (
@@ -53,17 +55,17 @@ automation_tracklist_init_loaded (
              self->track->name);
 }
 
-static void
-add_automation_track (AutomationTracklist * self,
-                      AutomationTrack *     at)
+void
+automation_tracklist_add_automation_track (
+  AutomationTracklist * self,
+  AutomationTrack *     at)
 {
-  array_append (self->automation_tracks,
-                self->num_automation_tracks,
-                at);
-  int size = self->num_automation_tracks - 1;
-  array_append (self->at_ids,
-                size,
-                at->id);
+  array_double_append (
+    self->automation_tracks,
+    self->at_ids,
+    self->num_automation_tracks,
+    at,
+    at->id);
 }
 
 void
@@ -71,23 +73,46 @@ automation_tracklist_add_automation_lane (
   AutomationTracklist * self,
   AutomationLane *      al)
 {
-  array_append (self->automation_lanes,
-                self->num_automation_lanes,
-                al);
-  int size = self->num_automation_lanes - 1;
-  array_append (self->al_ids,
-                size,
-                al->id);
+  array_double_append (
+    self->automation_lanes,
+    self->al_ids,
+    self->num_automation_lanes,
+    al,
+    al->id);
 }
 
-static void
-delete_automation_track (AutomationTracklist * self,
-                         AutomationTrack *     at)
+void
+automation_tracklist_delete_automation_track (
+  AutomationTracklist * self,
+  AutomationTrack *     at,
+  int                   free)
 {
-  array_delete (self->automation_tracks,
-                self->num_automation_tracks,
-                at);
-  automation_track_free (at);
+  array_double_delete (
+    self->automation_tracks,
+    self->at_ids,
+    self->num_automation_tracks,
+    at,
+    at->id);
+
+  if (free)
+    free_later (at, automation_track_free);
+}
+
+void
+automation_tracklist_delete_automation_lane (
+  AutomationTracklist * self,
+  AutomationLane *      al,
+  int                   free)
+{
+  array_double_delete (
+    self->automation_lanes,
+    self->al_ids,
+    self->num_automation_lanes,
+    al,
+    al->id);
+
+  if (free)
+    free_later (al, automation_lane_free);
 }
 
 /**
@@ -173,8 +198,8 @@ automation_tracklist_update (
       else /* this automation track doesn't belong anymore.
               delete it */
         {
-          delete_automation_track (self,
-                                   at);
+          automation_tracklist_delete_automation_track (
+            self, at, F_FREE);
           i--;
         }
     }
@@ -189,7 +214,8 @@ automation_tracklist_update (
       if (!at)
         {
           at = automation_track_new (a);
-          add_automation_track (self, at);
+          automation_tracklist_add_automation_track (
+            self, at);
         }
     }
 
@@ -209,7 +235,8 @@ automation_tracklist_update (
               if (!at)
                 {
                   at = automation_track_new (a);
-                  add_automation_track (self, at);
+                  automation_tracklist_add_automation_track (
+                    self, at);
                 }
             }
         }

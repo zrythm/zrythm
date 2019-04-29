@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "audio/automation_tracklist.h"
 #include "audio/channel.h"
 #include "audio/engine.h"
 #include "audio/track.h"
@@ -36,6 +37,7 @@
 #include "plugins/lv2/control.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 
 #include <gtk/gtk.h>
 
@@ -134,6 +136,60 @@ plugin_create_from_descr (PluginDescriptor * descr)
   /*return plugin;*/
 
 /*}*/
+
+/**
+ * Moves the Plugin's automation from one Channel
+ * to another.
+ */
+void
+plugin_move_automation (
+  Plugin *  pl,
+  Channel * prev_ch,
+  Channel * ch)
+{
+  AutomationTracklist * prev_atl =
+    &prev_ch->track->automation_tracklist;
+  AutomationTracklist * atl =
+    &ch->track->automation_tracklist;
+
+  int i;
+  AutomationTrack * at;
+  AutomationLane * al;
+  for (i = 0; i < prev_atl->num_automation_tracks;
+       i++)
+    {
+      at = prev_atl->automation_tracks[i];
+
+      if (!at->automatable->port ||
+          at->automatable->port->owner_pl != pl)
+        continue;
+
+      /* delete from prev channel */
+      automation_tracklist_delete_automation_track (
+        prev_atl, at, F_NO_FREE);
+
+      /* add to new channel */
+      automation_tracklist_add_automation_track (
+        atl, at);
+    }
+  for (i = 0; i < prev_atl->num_automation_lanes;
+       i++)
+    {
+      al = prev_atl->automation_lanes[i];
+
+      if (!al->at->automatable->port ||
+          al->at->automatable->port->owner_pl != pl)
+        continue;
+
+      /* delete from prev channel */
+      automation_tracklist_delete_automation_lane (
+        prev_atl, al, F_NO_FREE);
+
+      /* add to new channel */
+      automation_tracklist_add_automation_lane (
+        atl, al);
+    }
+}
 
 /**
  * Generates automatables for the plugin.
@@ -301,9 +357,10 @@ plugin_disconnect (Plugin * plugin)
   ports_disconnect (
     plugin->out_ports,
     plugin->num_out_ports, 1);
-  g_message ("DISCONNECTED ALL PORTS OF PLUGIN %d %d",
-             plugin->num_in_ports,
-             plugin->num_out_ports);
+  g_message (
+    "DISCONNECTED ALL PORTS OF PLUGIN %d %d",
+    plugin->num_in_ports,
+    plugin->num_out_ports);
 }
 
 /**

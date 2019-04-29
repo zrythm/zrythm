@@ -276,6 +276,16 @@ void
 plugin_init_loaded (Plugin * plgn);
 
 /**
+ * Moves the Plugin's automation from one Channel
+ * to another.
+ */
+void
+plugin_move_automation (
+  Plugin *  pl,
+  Channel * prev_ch,
+  Channel * ch);
+
+/**
  * Generates automatables for the plugin.
  *
  *
