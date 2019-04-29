@@ -24,11 +24,11 @@ G_DEFINE_INTERFACE (DzlDock, dzl_dock, GTK_TYPE_CONTAINER)
 static void
 dzl_dock_default_init (DzlDockInterface *iface)
 {
-  GdkScreen *screen;
+  /*GdkScreen *screen;*/
 
   /*g_resources_register (dzl_get_resource ());*/
 
-  screen = gdk_screen_get_default ();
+  /*screen = gdk_screen_get_default ();*/
 
   /*if (screen != NULL)*/
     /*gtk_icon_theme_add_resource_path (gtk_icon_theme_get_default (),*/

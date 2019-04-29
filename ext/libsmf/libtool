@@ -285,7 +285,7 @@ finish_eval=""
 hardcode_into_libs=yes
 
 # Compile-time system search path for libraries.
-sys_lib_search_path_spec="/usr/lib/gcc/x86_64-pc-linux-gnu/8.2.1 /usr/lib /lib "
+sys_lib_search_path_spec="/usr/lib/gcc/x86_64-pc-linux-gnu/8.3.0 /usr/lib /lib "
 
 # Detected run-time system search path for libraries.
 sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/lib/libfakeroot "
