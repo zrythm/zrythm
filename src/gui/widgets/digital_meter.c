@@ -75,7 +75,7 @@ draw_cb (DigitalMeterWidget * self, cairo_t *cr, gpointer data)
 
   cairo_text_extents_t te10, te5, te1, te3, te2;
   /*char * test_text = "8";*/
-  char * text;
+  char * text = NULL;
   int num_part, dec_part, bars, beats, sixteenths, ticks;
   switch (self->type)
     {

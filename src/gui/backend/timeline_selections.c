@@ -613,7 +613,7 @@ timeline_selections_remove_region (
       return;
     }
 
-  int idx;
+  int idx = -1;
   array_delete_return_pos (ts->regions,
                 ts->num_regions,
                 r,
@@ -637,7 +637,7 @@ timeline_selections_remove_chord (
                        c))
     return;
 
-  int idx;
+  int idx = -1;
   array_delete_return_pos (ts->chords,
                 ts->num_chords,
                 c,
@@ -664,7 +664,7 @@ timeline_selections_remove_ap (
                        ap))
     return;
 
-  int idx;
+  int idx = -1;
   array_delete_return_pos (ts->automation_points,
                 ts->num_automation_points,
                 ap,

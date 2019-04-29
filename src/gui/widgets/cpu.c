@@ -232,7 +232,6 @@ refresh_cpu_load (GtkWidget * widget,
 #elif defined(__linux__)
   /* ======= non libgtop ====== */
   FILE *fp;
-  char dump[50];
 
   fp = fopen("/proc/stat","r");
   fscanf(fp,"%*s %Lf %Lf %Lf %Lf",&a[0],&a[1],&a[2],&a[3]);
