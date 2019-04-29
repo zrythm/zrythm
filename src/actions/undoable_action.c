@@ -103,7 +103,7 @@ undoable_action_do (UndoableAction * self)
                MoveMidiArrangerSelections);
     default:
       g_warn_if_reached ();
-      return;
+      return -1;
     }
 
 #undef DO_ACTION
