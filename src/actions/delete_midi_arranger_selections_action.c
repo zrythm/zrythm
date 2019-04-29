@@ -43,7 +43,7 @@ delete_midi_arranger_selections_action_new ()
   return ua;
 }
 
-void
+int
 delete_midi_arranger_selections_action_do (
   DeleteMidiArrangerSelectionsAction * self)
 {
@@ -64,9 +64,11 @@ delete_midi_arranger_selections_action_do (
     }
   EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
                NULL);
+
+  return 0;
 }
 
-void
+int
 delete_midi_arranger_selections_action_undo (
   DeleteMidiArrangerSelectionsAction * self)
 {
@@ -92,6 +94,8 @@ delete_midi_arranger_selections_action_undo (
     }
   EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
                NULL);
+
+  return 0;
 }
 
 void

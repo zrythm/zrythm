@@ -121,6 +121,30 @@ plugin_create_from_descr (PluginDescriptor * descr)
 }
 
 /**
+ * Clones the plugin descriptor.
+ */
+void
+plugin_clone_descr (
+  PluginDescriptor * src,
+  PluginDescriptor * dest)
+{
+  dest->author = g_strdup (src->author);
+  dest->name = g_strdup (src->name);
+  dest->website = g_strdup (src->website);
+  dest->category = g_strdup (src->category);
+  dest->num_audio_ins = src->num_audio_ins;
+  dest->num_midi_ins = src->num_midi_ins;
+  dest->num_audio_outs = src->num_audio_outs;
+  dest->num_midi_outs = src->num_midi_outs;
+  dest->num_ctrl_ins = src->num_ctrl_ins;
+  dest->num_ctrl_outs = src->num_ctrl_outs;
+  dest->arch = src->arch;
+  dest->protocol = src->protocol;
+  dest->path = g_strdup (src->path);
+  dest->uri = g_strdup (src->uri);
+}
+
+/**
  * Loads the plugin from its state file.
  */
 /*void*/

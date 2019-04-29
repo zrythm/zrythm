@@ -45,11 +45,11 @@ typedef struct CreateTimelineSelectionsAction
 UndoableAction *
 create_timeline_selections_action_new ();
 
-void
+int
 create_timeline_selections_action_do (
   CreateTimelineSelectionsAction * self);
 
-void
+int
 create_timeline_selections_action_undo (
   CreateTimelineSelectionsAction * self);
 

@@ -17,12 +17,13 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "project.h"
+#include "actions/undo_manager.h"
+#include "actions/undoable_action.h"
 #include "gui/accel.h"
 #include "gui/widgets/export_dialog.h"
 #include "gui/widgets/header_bar.h"
 #include "gui/widgets/main_window.h"
-#include "actions/undo_manager.h"
+#include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
@@ -35,7 +36,8 @@ G_DEFINE_TYPE (HeaderBarWidget,
 /* TODO rename to refresh buttons and refresh
 * everything */
 void
-header_bar_widget_refresh_undo_redo_buttons (HeaderBarWidget * self)
+header_bar_widget_refresh_undo_redo_buttons (
+  HeaderBarWidget * self)
 {
   g_warn_if_fail (UNDO_MANAGER);
 
@@ -45,6 +47,47 @@ header_bar_widget_refresh_undo_redo_buttons (HeaderBarWidget * self)
   gtk_widget_set_sensitive (
     GTK_WIDGET (self->edit_redo),
     !stack_is_empty (UNDO_MANAGER->redo_stack));
+
+  char * undo = _("_Undo");
+  char * redo = _("_Redo");
+  if (stack_is_empty (UNDO_MANAGER->undo_stack))
+    {
+      gtk_label_set_markup_with_mnemonic (
+        self->edit_undo_label, undo);
+    }
+  else
+    {
+      UndoableAction * ua =
+        (UndoableAction *)
+        stack_peek (UNDO_MANAGER->undo_stack);
+      char * undo2 =
+        undoable_action_stringize (ua->type);
+      undo =
+        g_strdup_printf ("%s %s", undo, undo2);
+      gtk_label_set_markup_with_mnemonic (
+        self->edit_undo_label, undo);
+      g_free (undo2);
+      g_free (undo);
+    }
+  if (stack_is_empty (UNDO_MANAGER->redo_stack))
+    {
+      gtk_label_set_markup_with_mnemonic (
+        self->edit_redo_label, redo);
+    }
+  else
+    {
+      UndoableAction * ua =
+        (UndoableAction *)
+        stack_peek (UNDO_MANAGER->redo_stack);
+      char * redo2 =
+        undoable_action_stringize (ua->type);
+      redo =
+        g_strdup_printf ("%s %s", redo, redo2);
+      gtk_label_set_markup_with_mnemonic (
+        self->edit_redo_label, redo);
+      g_free (redo2);
+      g_free (redo);
+    }
 }
 
 static GtkMenuItem *
@@ -186,6 +229,11 @@ header_bar_widget_setup (HeaderBarWidget * self,
       "win.undo");
   APPEND_TO_EDIT_MENU;
   self->edit_undo = menu_item;
+  self->edit_undo_label =
+    z_gtk_get_label_from_menu_item (
+      self->edit_undo);
+  g_warn_if_fail (
+    GTK_IS_LABEL (self->edit_undo_label));
   menu_item =
     z_gtk_create_menu_item (
       _("_Redo"),
@@ -196,6 +244,11 @@ header_bar_widget_setup (HeaderBarWidget * self,
       "win.redo");
   APPEND_TO_EDIT_MENU;
   self->edit_redo = menu_item;
+  self->edit_redo_label =
+    z_gtk_get_label_from_menu_item (
+      self->edit_redo);
+  g_warn_if_fail (
+    GTK_IS_LABEL (self->edit_redo_label));
   CREATE_SEPARATOR;
   APPEND_TO_EDIT_MENU;
   menu_item = CREATE_CUT_MENU_ITEM;

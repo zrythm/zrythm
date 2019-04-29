@@ -308,3 +308,54 @@ z_gtk_get_single_selection_pointer (
     model, &iter, column, &value);
   return g_value_get_pointer (&value);
 }
+
+/**
+ * Returns the label from a given GtkMenuItem.
+ *
+ * The menu item must have a box with an optional
+ * icon and a label inside.
+ */
+GtkLabel *
+z_gtk_get_label_from_menu_item (
+  GtkMenuItem * mi)
+{
+  GList *children, *iter;
+
+  /* get box */
+  GtkWidget * box = NULL;
+  children =
+    gtk_container_get_children (
+      GTK_CONTAINER (mi));
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      if (GTK_IS_BOX (iter->data))
+        {
+          box = iter->data;
+          g_list_free (children);
+          break;
+        }
+    }
+  g_warn_if_fail (box);
+
+  children =
+    gtk_container_get_children (
+      GTK_CONTAINER (box));
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      if (GTK_IS_LABEL (iter->data))
+        {
+          GtkLabel * label = GTK_LABEL (iter->data);
+          g_list_free (children);
+          return label;
+        }
+    }
+
+  g_warn_if_reached ();
+  g_list_free (children);
+
+  return NULL;
+}

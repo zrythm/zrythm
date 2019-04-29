@@ -37,11 +37,11 @@ typedef struct DeleteTimelineSelectionsAction
 UndoableAction *
 delete_timeline_selections_action_new ();
 
-void
+int
 delete_timeline_selections_action_do (
   DeleteTimelineSelectionsAction * self);
 
-void
+int
 delete_timeline_selections_action_undo (
   DeleteTimelineSelectionsAction * self);
 
