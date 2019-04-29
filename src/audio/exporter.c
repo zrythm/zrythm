@@ -269,7 +269,7 @@ exporter_export (ExportSettings * info)
   else
     {
       int error = sf_error (NULL);
-      char * error_str;
+      char * error_str = NULL;
       switch (error)
         {
         case 1:
@@ -288,6 +288,9 @@ exporter_export (ExportSettings * info)
           error_str =
             g_strdup ("Unsupported encoding");
           break;
+        default:
+          g_warn_if_reached ();
+          return;
         }
 
       g_warning ("Couldn't open SNDFILE %s:\n%s",
