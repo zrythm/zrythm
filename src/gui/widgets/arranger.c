@@ -562,8 +562,8 @@ arranger_widget_select (
 {
   GET_ARRANGER_ALIASES (self);
 
-  void ** array;
-  int * num;
+  void ** array = NULL;
+  int * num = NULL;
 
   if (timeline)
     {
