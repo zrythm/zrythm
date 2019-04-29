@@ -194,6 +194,7 @@ CFLAGS:=$(filter-out -D_FORTIFY_SOURCE=2,$(CFLAGS))
 #-Werror=cast-function-type
 #-Werror=unused-but-set-variable
 #-Werror=parentheses
+#-Werror=sign-compare
 CFLAGS += -Wall \
 	-Wextra \
 	-Wno-missing-field-initializers \
@@ -209,7 +210,6 @@ CFLAGS += -Wall \
 	-Werror=format-security \
 	-Werror=incompatible-pointer-types \
 	-Werror=implicit-int \
-	-Werror=sign-compare \
 	$(DEFAULT_INCLUDES) \
 	$(FFMPEG_CFLAGS) \
 	$(GTK3_CFLAGS) \

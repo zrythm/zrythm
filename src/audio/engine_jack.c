@@ -129,7 +129,7 @@ jack_buffer_size_cb (uint32_t nframes,
       AUDIO_ENGINE->client, JACK_DEFAULT_MIDI_TYPE);
 #endif
   g_message (
-    "JACK: Block length changed to %d, midi buf size to %lu",
+    "JACK: Block length changed to %d, midi buf size to %u",
     AUDIO_ENGINE->block_length,
     AUDIO_ENGINE->midi_buf_size);
 
