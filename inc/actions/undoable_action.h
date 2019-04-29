@@ -1,7 +1,5 @@
 /*
- * actions/undoable_action.h - UndoableAction
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,6 +27,7 @@ typedef enum UndoableActionType
   UNDOABLE_ACTION_TYPE_DELETE_CHANNEL,
   UNDOABLE_ACTION_TYPE_MOVE_CHANNEL,
   UNDOABLE_ACTION_TYPE_EDIT_TRACK,
+  UNDOABLE_ACTION_TYPE_CREATE_PLUGIN,
   UNDOABLE_ACTION_TYPE_MOVE_PLUGIN,
   UNDOABLE_ACTION_TYPE_COPY_PLUGIN,
   UNDOABLE_ACTION_TYPE_DELETE_PLUGIN,
@@ -60,17 +59,31 @@ typedef struct UndoableAction
 
 /**
  * Performs the action.
+ *
+ * @return Non-zero if errors occurred.
  */
-void
+int
 undoable_action_do (UndoableAction * self);
 
 /**
  * Undoes the action.
+ *
+ * @return Non-zero if errors occurred.
  */
-void
+int
 undoable_action_undo (UndoableAction * self);
 
 void
 undoable_action_free (UndoableAction * self);
+
+/**
+ * Stringizes the action to be used in Undo/Redo
+ * buttons.
+ *
+ * The string MUST be free'd using g_free().
+ */
+char *
+undoable_action_stringize (
+  UndoableActionType type);
 
 #endif

@@ -44,11 +44,11 @@ move_midi_arranger_selections_action_new (
   long ticks,
   int  delta);
 
-void
+int
 move_midi_arranger_selections_action_do (
 	MoveMidiArrangerSelectionsAction * self);
 
-void
+int
 move_midi_arranger_selections_action_undo (
 	MoveMidiArrangerSelectionsAction * self);
 

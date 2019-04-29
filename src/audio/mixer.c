@@ -279,7 +279,7 @@ mixer_move_plugin (
     channel_get_plugin_index (pl->channel, pl);
   Channel * prev_ch = pl->channel;
   channel_remove_plugin (
-    pl->channel, prev_slot, 0, 0);
+    pl->channel, prev_slot, 0, 0, 0);
 
   /* move plugin's automation from src to dest */
   plugin_move_automation (
@@ -287,7 +287,7 @@ mixer_move_plugin (
 
   /* add plugin to its new channel */
   channel_add_plugin (
-    ch, slot, pl, 0, 0);
+    ch, slot, pl, 0, 0, 1);
 
   gtk_widget_queue_draw (
     GTK_WIDGET (prev_ch->widget->slots[prev_slot]));
@@ -328,7 +328,8 @@ mixer_add_channel_from_plugin_descr (
                     descr->name);
   mixer_add_channel (new_channel);
   tracklist_append_track (new_channel->track);
-  channel_add_plugin (new_channel, 0, plugin, 1, 1);
+  channel_add_plugin (
+    new_channel, 0, plugin, 1, 1, 1);
 
   if (g_settings_get_int (
         S_PREFERENCES,

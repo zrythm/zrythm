@@ -79,17 +79,30 @@ typedef struct PluginDescriptor
   char                 * author;
   char                 * name;
   char                 * website;
-  char                 * category;           ///< one of the above
-  int              num_audio_ins;             ///< # of input ports
-  int              num_midi_ins;             ///< # of input ports
-  int              num_audio_outs;            ///< # of output ports
-  int              num_midi_outs;            ///< # of output ports
-  int              num_ctrl_ins;            ///< # of input ctrls
-  int              num_ctrl_outs;            ///< # of output ctrls
-  PluginArchitecture   arch;               ///< architecture 32/64bit
-  PluginProtocol       protocol;           ///< VST/LV2/DSSI/LADSPA...
+  /** Lv2 plugin subcategory. */
+  char                 * category;
+  /** Number of audio input ports. */
+  int              num_audio_ins;
+  /** Number of MIDI input ports. */
+  int              num_midi_ins;
+  /** Number of audio output ports. */
+  int              num_audio_outs;
+  /** Number of MIDI output ports. */
+  int              num_midi_outs;
+  /** Number of input control (plugin param)
+   * ports. */
+  int              num_ctrl_ins;
+  /** Number of output control (plugin param)
+   * ports. */
+  int              num_ctrl_outs;
+  /** Architecture (32/64bit). */
+  PluginArchitecture   arch;
+  /** Plugin protocol (Lv2/DSSI/LADSPA/VST...). */
+  PluginProtocol       protocol;
+  /** Path, if not an Lv2Plugin which uses URIs. */
   char                 * path;
-  char                 * uri;            ///< for LV2 plugins
+  /** Lv2Plugin URI. */
+  char                 * uri;
 } PluginDescriptor;
 
 /**
@@ -274,6 +287,14 @@ plugin_schema =
 
 void
 plugin_init_loaded (Plugin * plgn);
+
+/**
+ * Clones the plugin descriptor.
+ */
+void
+plugin_clone_descr (
+  PluginDescriptor * src,
+  PluginDescriptor * dest);
 
 /**
  * Moves the Plugin's automation from one Channel

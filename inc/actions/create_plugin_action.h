@@ -17,43 +17,55 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __UNDO_MOVE_TIMELINE_SELECTIONS_ACTION_H__
-#define __UNDO_MOVE_TIMELINE_SELECTIONS_ACTION_H__
+#ifndef __UNDO_CREATE_PLUGIN_ACTION_H__
+#define __UNDO_CREATE_PLUGIN_ACTION_H__
 
 #include "actions/undoable_action.h"
+#include "plugins/plugin.h"
 
-typedef struct TimelineSelections
-  TimelineSelections;
+/**
+ * @addtogroup actions
+ *
+ * @{
+ */
 
-typedef struct MoveTimelineSelectionsAction
+typedef struct Plugin Plugin;
+typedef struct Channel Channel;
+
+typedef struct CreatePluginAction
 {
-  UndoableAction              parent_instance;
+  UndoableAction  parent_instance;
 
-  /** Ticks moved. */
-  long        ticks;
+  /** Slot. */
+  int              slot;
 
-  /** Tracks moved. */
-  int         delta;
+  /** Channel ID. */
+  int              ch_id;
 
-  /** Timeline selections clone. */
-  TimelineSelections * ts;
-} MoveTimelineSelectionsAction;
+  /** PluginDescriptor, used when doing. */
+  PluginDescriptor descr;
+} CreatePluginAction;
 
 UndoableAction *
-move_timeline_selections_action_new (
-  long ticks,
-  int  delta);
+create_plugin_action_new (
+  PluginDescriptor * descr,
+  Channel * to_ch,
+  int       to_slot);
 
 int
-move_timeline_selections_action_do (
-	MoveTimelineSelectionsAction * self);
+create_plugin_action_do (
+	CreatePluginAction * self);
 
 int
-move_timeline_selections_action_undo (
-	MoveTimelineSelectionsAction * self);
+create_plugin_action_undo (
+	CreatePluginAction * self);
 
 void
-move_timeline_selections_action_free (
-	MoveTimelineSelectionsAction * self);
+create_plugin_action_free (
+	CreatePluginAction * self);
+
+/**
+ * @}
+ */
 
 #endif

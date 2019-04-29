@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "actions/create_plugin_action.h"
 #include "actions/create_midi_arranger_selections_action.h"
 #include "actions/create_timeline_selections_action.h"
 #include "actions/delete_midi_arranger_selections_action.h"
@@ -31,19 +32,20 @@
 #include "actions/undoable_action.h"
 
 #include <glib.h>
+#include <glib/gi18n.h>
 
 /**
  * Performs the action.
  *
  * Note: only to be called by undo manager.
  */
-void
+int
 undoable_action_do (UndoableAction * self)
 {
   /* uppercase, camel case, snake case */
 #define DO_ACTION(uc,sc,cc) \
   case UNDOABLE_ACTION_TYPE_##uc: \
-    sc##_action_do ((cc##Action *) self); \
+    return sc##_action_do ((cc##Action *) self); \
     break;
 
   switch (self->type)
@@ -63,6 +65,9 @@ undoable_action_do (UndoableAction * self)
     /*DO_ACTION (EDIT_TRACK,*/
                /*edit_track,*/
                /*EditTrack);*/
+    DO_ACTION (CREATE_PLUGIN,
+               create_plugin,
+               CreatePlugin);
     DO_ACTION (MOVE_PLUGIN,
                move_plugin,
                MovePlugin);
@@ -98,7 +103,7 @@ undoable_action_do (UndoableAction * self)
                MoveMidiArrangerSelections);
     default:
       g_warn_if_reached ();
-      break;
+      return;
     }
 
 #undef DO_ACTION
@@ -109,13 +114,13 @@ undoable_action_do (UndoableAction * self)
  *
  * Note: only to be called by undo manager.
  */
-void
+int
 undoable_action_undo (UndoableAction * self)
 {
 /* uppercase, camel case, snake case */
 #define UNDO_ACTION(uc,sc,cc) \
   case UNDOABLE_ACTION_TYPE_##uc: \
-    sc##_action_undo ((cc##Action *) self); \
+    return sc##_action_undo ((cc##Action *) self); \
     break;
 
   switch (self->type)
@@ -135,6 +140,9 @@ undoable_action_undo (UndoableAction * self)
     /*UNDO_ACTION (EDIT_TRACK,*/
                /*edit_track,*/
                /*EditTrack);*/
+    UNDO_ACTION (CREATE_PLUGIN,
+               create_plugin,
+               CreatePlugin);
     UNDO_ACTION (MOVE_PLUGIN,
                move_plugin,
                MovePlugin);
@@ -170,7 +178,7 @@ undoable_action_undo (UndoableAction * self)
                MoveMidiArrangerSelections);
     default:
       g_warn_if_reached ();
-      break;
+      return -1;
     }
 
 #undef UNDO_ACTION
@@ -202,6 +210,9 @@ undoable_action_free (UndoableAction * self)
     /*FREE_ACTION (EDIT_TRACK,*/
                /*edit_track,*/
                /*EditTrack);*/
+    FREE_ACTION (CREATE_PLUGIN,
+               create_plugin,
+               CreatePlugin);
     FREE_ACTION (MOVE_PLUGIN,
                move_plugin,
                MovePlugin);
@@ -241,4 +252,75 @@ undoable_action_free (UndoableAction * self)
     }
 
 #undef FREE_ACTION
+}
+
+/**
+ * Stringizes the action to be used in Undo/Redo
+ * buttons.
+ *
+ * The string MUST be free'd using g_free().
+ */
+char *
+undoable_action_stringize (
+  UndoableActionType type)
+{
+  switch (type)
+    {
+    case UNDOABLE_ACTION_TYPE_CREATE_CHANNEL:
+      return g_strdup (
+        /* TRANSLATORS: these are used in Undo/Redo.
+         * for example "Undo create channel" */
+        _("Create Channel"));
+    case UNDOABLE_ACTION_TYPE_EDIT_CHANNEL:
+      return g_strdup (
+        _("Edit Channel"));
+    case UNDOABLE_ACTION_TYPE_DELETE_CHANNEL:
+      return g_strdup (
+        _("Delete Channel"));
+    case UNDOABLE_ACTION_TYPE_MOVE_CHANNEL:
+      return g_strdup (
+        _("Move Channel"));
+    case UNDOABLE_ACTION_TYPE_EDIT_TRACK:
+      return g_strdup (
+        _("Edit Track"));
+    case UNDOABLE_ACTION_TYPE_CREATE_PLUGIN:
+      return g_strdup (
+        _("Create Plugin"));
+    case UNDOABLE_ACTION_TYPE_MOVE_PLUGIN:
+      return g_strdup (
+        _("Move Plugin"));
+    case UNDOABLE_ACTION_TYPE_COPY_PLUGIN:
+      return g_strdup (
+        _("Copy Plugin"));
+    case UNDOABLE_ACTION_TYPE_DELETE_PLUGIN:
+      return g_strdup (
+        _("Delete Plugin"));
+    case UNDOABLE_ACTION_TYPE_DELETE_TL_SELECTIONS:
+      return g_strdup (
+        _("Delete Object(s)"));
+    case UNDOABLE_ACTION_TYPE_CREATE_TL_SELECTIONS:
+      return g_strdup (
+        _("Create Object(s)"));
+    case UNDOABLE_ACTION_TYPE_MOVE_TL_SELECTIONS:
+      return g_strdup (
+        _("Move Object(s)"));
+    case UNDOABLE_ACTION_TYPE_DUPLICATE_TL_SELECTIONS:
+      return g_strdup (
+        _("Duplicate Object(s)"));
+    case UNDOABLE_ACTION_TYPE_DELETE_MA_SELECTIONS:
+      return g_strdup (
+        _("Delete Object(s)"));
+    case UNDOABLE_ACTION_TYPE_CREATE_MA_SELECTIONS:
+      return g_strdup (
+        _("Create Object(s)"));
+    case UNDOABLE_ACTION_TYPE_MOVE_MA_SELECTIONS:
+      return g_strdup (
+        _("Move Object(s)"));
+    case UNDOABLE_ACTION_TYPE_DUPLICATE_MA_SELECTIONS:
+      return g_strdup (
+        _("Duplicate Object(s)"));
+    default:
+      g_warn_if_reached ();
+      return g_strdup ("");
+    }
 }

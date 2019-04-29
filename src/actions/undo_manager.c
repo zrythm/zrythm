@@ -59,7 +59,13 @@ undo_manager_undo (UndoManager * self)
   /* pop the action from the undo stack and undo it */
   UndoableAction * action =
     (UndoableAction *) stack_pop (self->undo_stack);
-  undoable_action_undo (action);
+  /* if error return. this should never happen and
+   * anything that happens afterwards is undefined */
+  if (undoable_action_undo (action))
+    {
+      g_warn_if_reached ();
+      return;
+    }
 
   /* if the redo stack is full, delete the last element */
   if (stack_is_full (self->redo_stack))
@@ -81,12 +87,20 @@ undo_manager_undo (UndoManager * self)
 void
 undo_manager_redo (UndoManager * self)
 {
-  g_warn_if_fail (!stack_is_empty (self->redo_stack));
+  g_warn_if_fail (
+    !stack_is_empty (self->redo_stack));
 
   /* pop the action from the redo stack and execute it */
   UndoableAction * action =
     (UndoableAction *) stack_pop (self->redo_stack);
-  undoable_action_do (action);
+
+  /* if error return. this should never happen and
+   * anything that happens afterwards is undefined */
+  if (undoable_action_do (action))
+    {
+      g_warn_if_reached ();
+      return;
+    }
 
   /* if the undo stack is full, delete the last element */
   if (stack_is_full (self->undo_stack))
@@ -109,7 +123,10 @@ void
 undo_manager_perform (UndoManager *    self,
                       UndoableAction * action)
 {
-  undoable_action_do (action);
+  /* if error return */
+  if (undoable_action_do (action))
+    return;
+
   STACK_PUSH (self->undo_stack,
               action);
   self->redo_stack->top = -1;

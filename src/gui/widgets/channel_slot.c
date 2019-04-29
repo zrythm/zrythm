@@ -20,6 +20,7 @@
 /** \file
  */
 
+#include "actions/create_plugin_action.h"
 #include "actions/move_plugin_action.h"
 #include "actions/undoable_action.h"
 #include "actions/undo_manager.h"
@@ -49,7 +50,6 @@ on_drag_data_received (
   ChannelSlotWidget * self)
 {
   g_message ("drag data received");
-  Channel * channel = self->channel;
 
   GdkAtom atom =
     gtk_selection_data_get_target (data);
@@ -90,39 +90,14 @@ on_drag_data_received (
       PluginDescriptor * descr =
         *(gpointer *)
         gtk_selection_data_get_data (data);
+      g_warn_if_fail (descr);
 
-      pl =
-        plugin_create_from_descr (descr);
+      UndoableAction * ua =
+        create_plugin_action_new (
+          descr, self->channel, self->slot_index);
 
-      if (plugin_instantiate (pl) < 0)
-        {
-          GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
-          GtkWidget * dialog =
-            gtk_message_dialog_new (
-              GTK_WINDOW (MAIN_WINDOW),
-              flags,
-              GTK_MESSAGE_ERROR,
-              GTK_BUTTONS_CLOSE,
-              "Error instantiating plugin “%s”. Please see log for details.",
-              pl->descr->name);
-          gtk_dialog_run (GTK_DIALOG (dialog));
-          gtk_widget_destroy (dialog);
-          plugin_free (pl);
-          return;
-        }
-
-      /* add to specific channel */
-      channel_add_plugin (
-        channel, self->slot_index, pl, 1, 1);
-
-      if (g_settings_get_int (
-            S_PREFERENCES,
-            "open-plugin-uis-on-instantiate"))
-        {
-          pl->visible = 1;
-          EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED,
-                       pl);
-        }
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
     }
 
   gtk_widget_queue_draw (widget);
