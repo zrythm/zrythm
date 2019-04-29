@@ -543,7 +543,7 @@ region_get_start_region (Region ** regions,
                          int       num_regions)
 {
   Position pos;
-  Region * start_region;
+  Region * start_region = NULL;
   position_set_bar (&pos, TRANSPORT->total_bars + 1);
   for (int i = 0; i < num_regions; i++)
     {

@@ -213,7 +213,7 @@ midi_arranger_selections_remove_note (
                        note))
     return;
 
-  int idx;
+  int idx = -1;
   array_delete_return_pos (mas->midi_notes,
                 mas->num_midi_notes,
                 note,
