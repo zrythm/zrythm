@@ -193,6 +193,7 @@ CFLAGS:=$(filter-out -D_FORTIFY_SOURCE=2,$(CFLAGS))
 #-Werror=pointer-integer-compare
 #-Werror=cast-function-type
 #-Werror=unused-but-set-variable
+#-Werror=parentheses
 CFLAGS += -Wall \
 	-Wextra \
 	-Wno-missing-field-initializers \
@@ -203,7 +204,6 @@ CFLAGS += -Wall \
 	-Werror=implicit-function-declaration \
 	-Werror=uninitialized \
 	-Werror=return-type \
-	-Werror=parentheses \
 	-Werror=int-conversion \
 	-Werror=format-security \
 	-Werror=incompatible-pointer-types \
