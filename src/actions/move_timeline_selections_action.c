@@ -44,7 +44,7 @@ move_timeline_selections_action_new (
   return ua;
 }
 
-void
+int
 move_timeline_selections_action_do (
 	MoveTimelineSelectionsAction * self)
 {
@@ -66,9 +66,11 @@ move_timeline_selections_action_do (
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
+
+  return 0;
 }
 
-void
+int
 move_timeline_selections_action_undo (
 	MoveTimelineSelectionsAction * self)
 {
@@ -90,6 +92,8 @@ move_timeline_selections_action_undo (
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
+
+  return 0;
 }
 
 void

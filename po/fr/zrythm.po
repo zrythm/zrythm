@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-29 07:27+0100\n"
+"POT-Creation-Date: 2019-04-29 12:04+0100\n"
 "PO-Revision-Date: 2019-03-22 22:30+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -65,7 +65,7 @@ msgstr ""
 msgid "A plugin already exists at the selected slot. Overwrite it?"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:377
+#: src/gui/widgets/header_bar.c:430
 msgid "About"
 msgstr "À propos"
 
@@ -120,7 +120,7 @@ msgstr "Système Audio"
 msgid "Backward"
 msgstr "Reculer"
 
-#: src/gui/widgets/header_bar.c:299
+#: src/gui/widgets/header_bar.c:352
 msgid "Best Fit"
 msgstr "Meilleur ajustement"
 
@@ -136,7 +136,7 @@ msgstr "Profondeur de Bit"
 msgid "Bot"
 msgstr "Bouteille"
 
-#: src/gui/widgets/header_bar.c:246
+#: src/gui/widgets/header_bar.c:299
 msgid "Bottom Panel"
 msgstr "Panneau du bas"
 
@@ -157,14 +157,14 @@ msgstr "Impossible de localiser la propriété %s dans la classe %s"
 msgid "Category"
 msgstr "Catégorie"
 
-#: src/gui/widgets/channel_slot.c:307
+#: src/gui/widgets/channel_slot.c:282
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
 "Emplacement du canal - Double-clic pour ouvrir le greffon - Cliquer et faire "
 "glisser pour déplacer le greffon"
 
-#: src/gui/widgets/header_bar.c:321
+#: src/gui/widgets/header_bar.c:374
 msgid "Chat"
 msgstr "Discussion"
 
@@ -220,6 +220,11 @@ msgstr "Connexions"
 msgid "Controllers found"
 msgstr "Contrôleurs trouvés"
 
+#: src/actions/undoable_action.c:294
+#, fuzzy
+msgid "Copy Plugin"
+msgstr "Greffons"
+
 #: resources/ui/shortcuts.ui:107
 msgid "Copy and Paste"
 msgstr "Copier et Coller"
@@ -227,6 +232,22 @@ msgstr "Copier et Coller"
 #: resources/ui/shortcuts.ui:112
 msgid "Copy selection to clipboard"
 msgstr "Copier la sélection dans le presse-papier"
+
+#. TRANSLATORS: these are used in Undo/Redo.
+#. * for example "Undo create channel"
+#: src/actions/undoable_action.c:273
+msgid "Create Channel"
+msgstr ""
+
+#: src/actions/undoable_action.c:303 src/actions/undoable_action.c:315
+#, fuzzy
+msgid "Create Object(s)"
+msgstr "Créer un nouveau projet"
+
+#: src/actions/undoable_action.c:288
+#, fuzzy
+msgid "Create Plugin"
+msgstr "Greffons"
 
 #: resources/ui/project_assistant.ui:62 resources/ui/shortcuts.ui:84
 msgid "Create new project"
@@ -240,6 +261,20 @@ msgstr "Personnalisé"
 msgid "Cut selection to clipboard"
 msgstr "Couper la sélection dans le presse-papier"
 
+#: src/actions/undoable_action.c:279
+msgid "Delete Channel"
+msgstr ""
+
+#: src/actions/undoable_action.c:300 src/actions/undoable_action.c:312
+#, fuzzy
+msgid "Delete Object(s)"
+msgstr "Créer un nouveau projet"
+
+#: src/actions/undoable_action.c:297
+#, fuzzy
+msgid "Delete Plugin"
+msgstr "Greffons"
+
 #: src/plugins/lv2_gtk.c:562
 msgid "Delete Preset?"
 msgstr "Supprimer le préréglage ?"
@@ -252,7 +287,7 @@ msgstr "Destination de l'unité Audio"
 msgid "Dither"
 msgstr "Bruit de dispersion"
 
-#: src/gui/widgets/header_bar.c:368 resources/ui/donate_dialog.ui:7
+#: src/gui/widgets/header_bar.c:421 resources/ui/donate_dialog.ui:7
 msgid "Donate"
 msgstr "Faire un don"
 
@@ -260,6 +295,20 @@ msgstr "Faire un don"
 #: src/utils/ui.c:563 src/utils/ui.c:580
 msgid "Dummy"
 msgstr ""
+
+#: src/actions/undoable_action.c:309 src/actions/undoable_action.c:321
+#, fuzzy
+msgid "Duplicate Object(s)"
+msgstr "_Copier la Piste"
+
+#: src/actions/undoable_action.c:276
+msgid "Edit Channel"
+msgstr ""
+
+#: src/actions/undoable_action.c:285
+#, fuzzy
+msgid "Edit Track"
+msgstr "Piste Audio"
 
 #: resources/ui/preferences.ui:331
 msgid "Editing"
@@ -294,6 +343,11 @@ msgstr "Saisir le nom de la région..."
 #: resources/ui/shortcuts.ui:202
 msgid "Eraser tool"
 msgstr "Outil gomme"
+
+#: src/actions/create_plugin_action.c:65
+#, c-format
+msgid "Error instantiating plugin %s. Please see log for details."
+msgstr ""
 
 #: src/plugins/plugin_manager.c:220
 msgid "Error loading LV2 bundle dir: "
@@ -348,7 +402,7 @@ msgstr ""
 msgid "Format"
 msgstr "Format"
 
-#: src/gui/widgets/header_bar.c:339
+#: src/gui/widgets/header_bar.c:392
 msgid "Forums"
 msgstr "Forums"
 
@@ -430,7 +484,7 @@ msgstr ""
 msgid "Japanese [ja]"
 msgstr "Japonais [ja]"
 
-#: src/gui/widgets/header_bar.c:348 resources/ui/shortcuts.ui:27
+#: src/gui/widgets/header_bar.c:401 resources/ui/shortcuts.ui:27
 msgid "Keyboard Shortcuts"
 msgstr "Raccourcis clavier"
 
@@ -446,7 +500,7 @@ msgstr "Langue"
 msgid "Left"
 msgstr "Gauche"
 
-#: src/gui/widgets/header_bar.c:222
+#: src/gui/widgets/header_bar.c:275
 msgid "Left Panel"
 msgstr "Panneau de gauche"
 
@@ -479,7 +533,7 @@ msgstr "Verrouillage"
 msgid "Loop"
 msgstr "Boucle"
 
-#: src/gui/widgets/header_bar.c:70
+#: src/gui/widgets/header_bar.c:113
 msgid "Loop Selection"
 msgstr "Sélection de la boucle"
 
@@ -509,7 +563,7 @@ msgstr "Périphériques MIDI"
 msgid "Main Window"
 msgstr "Fenêtre principal"
 
-#: src/gui/widgets/header_bar.c:330
+#: src/gui/widgets/header_bar.c:383
 msgid "Manual"
 msgstr "Manuel"
 
@@ -525,6 +579,19 @@ msgstr "Mixeur"
 #: resources/ui/bot_dock_edge.ui:74
 msgid "Mixer panel"
 msgstr "Panneau du mixeur"
+
+#: src/actions/undoable_action.c:282
+msgid "Move Channel"
+msgstr ""
+
+#: src/actions/undoable_action.c:306 src/actions/undoable_action.c:318
+msgid "Move Object(s)"
+msgstr ""
+
+#: src/actions/undoable_action.c:291
+#, fuzzy
+msgid "Move Plugin"
+msgstr "Greffons"
 
 #: src/gui/widgets/track.c:138
 msgid "Mute"
@@ -579,7 +646,7 @@ msgstr "Ouvrir un projet"
 msgid "Open a project"
 msgstr "Ouvrir un projet"
 
-#: src/gui/widgets/header_bar.c:290
+#: src/gui/widgets/header_bar.c:343
 msgid "Original Size"
 msgstr "Taille originale"
 
@@ -774,7 +841,7 @@ msgstr "Supprimer"
 msgid "Removes selected project from the list"
 msgstr "Supprimer les projets sélectionnés de la liste"
 
-#: src/gui/widgets/header_bar.c:357
+#: src/gui/widgets/header_bar.c:410
 msgid "Report a Bug"
 msgstr "Rapporter un bogue"
 
@@ -798,7 +865,7 @@ msgstr "Réinitialiser l'emplacement par défaut"
 msgid "Right"
 msgstr "Droite"
 
-#: src/gui/widgets/header_bar.c:234
+#: src/gui/widgets/header_bar.c:287
 msgid "Right Panel"
 msgstr "Panneau droit"
 
@@ -811,7 +878,7 @@ msgstr "Sauvegarder le projet"
 msgid "Save State"
 msgstr "Sauvegarder l'état"
 
-#: src/gui/widgets/header_bar.c:139
+#: src/gui/widgets/header_bar.c:182
 msgid "Save _As"
 msgstr "Sauvegarder sous"
 
@@ -854,7 +921,7 @@ msgstr "Sélectionner..."
 msgid "Select/Stretch tool"
 msgstr "Sélectionner l'outil Étirement"
 
-#: src/gui/widgets/header_bar.c:57
+#: src/gui/widgets/header_bar.c:100
 #, fuzzy
 msgid "Selection"
 msgstr "Sélection"
@@ -923,7 +990,7 @@ msgstr "Espagnol [es]"
 msgid "Square Root"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:258
+#: src/gui/widgets/header_bar.c:311
 msgid "Status Bar"
 msgstr "Barre d'état"
 
@@ -1113,7 +1180,7 @@ msgstr ""
 msgid "Write automation"
 msgstr "Écrire une automation"
 
-#: src/gui/widgets/header_bar.c:281
+#: src/gui/widgets/header_bar.c:334
 msgid "Zoom _Out"
 msgstr "Zoom _Arrière"
 
@@ -1160,7 +1227,7 @@ msgstr "_Copier la Piste"
 msgid "_Edit"
 msgstr "_Éditer"
 
-#: src/gui/widgets/header_bar.c:150
+#: src/gui/widgets/header_bar.c:193
 msgid "_Export As"
 msgstr "_Exporter sous"
 
@@ -1168,7 +1235,7 @@ msgstr "_Exporter sous"
 msgid "_File"
 msgstr "_Fichier"
 
-#: src/gui/widgets/header_bar.c:310
+#: src/gui/widgets/header_bar.c:363
 msgid "_Fullscreen"
 msgstr "_ Plein écran"
 
@@ -1176,7 +1243,7 @@ msgstr "_ Plein écran"
 msgid "_Help"
 msgstr "_Aide"
 
-#: src/gui/widgets/header_bar.c:112
+#: src/gui/widgets/header_bar.c:155
 msgid "_New"
 msgstr "_Nouveau"
 
@@ -1184,11 +1251,11 @@ msgstr "_Nouveau"
 msgid "_OK"
 msgstr "_OK"
 
-#: src/gui/widgets/header_bar.c:121 src/utils/dialogs.c:46
+#: src/gui/widgets/header_bar.c:164 src/utils/dialogs.c:46
 msgid "_Open"
 msgstr "_Ouvrir"
 
-#: src/gui/widgets/header_bar.c:161
+#: src/gui/widgets/header_bar.c:204
 msgid "_Preferences"
 msgstr "_Préférences"
 
@@ -1196,20 +1263,20 @@ msgstr "_Préférences"
 msgid "_Prefix plugin name"
 msgstr "_Préfixe du nom du greffon"
 
-#: src/gui/widgets/header_bar.c:170
+#: src/gui/widgets/header_bar.c:213
 msgid "_Quit"
 msgstr "_Quitter"
 
-#: src/gui/widgets/header_bar.c:191
+#: src/gui/widgets/header_bar.c:52 src/gui/widgets/header_bar.c:239
 msgid "_Redo"
 msgstr "_Refaire"
 
-#: src/plugins/lv2_gtk.c:153 src/gui/widgets/header_bar.c:130
+#: src/plugins/lv2_gtk.c:153 src/gui/widgets/header_bar.c:173
 #: src/actions/actions.c:523
 msgid "_Save"
 msgstr "_Sauvegarder"
 
-#: src/gui/widgets/header_bar.c:181
+#: src/gui/widgets/header_bar.c:51 src/gui/widgets/header_bar.c:224
 msgid "_Undo"
 msgstr "_Annuler"
 
@@ -1217,7 +1284,7 @@ msgstr "_Annuler"
 msgid "_View"
 msgstr "_Vue"
 
-#: src/gui/widgets/header_bar.c:272
+#: src/gui/widgets/header_bar.c:325
 msgid "_Zoom In"
 msgstr "_Zoom Avant"
 
@@ -1246,6 +1313,10 @@ msgstr "nom_de_région"
 #: resources/ui/audio_clip_editor.ui:56 resources/ui/audio_clip_editor.ui:68
 msgid "stuff"
 msgstr "substance"
+
+#, fuzzy
+#~ msgid "create piano roll object(s)"
+#~ msgstr "Créer un nouveau projet"
 
 #~ msgid "Timeline"
 #~ msgstr "ligne du temps"

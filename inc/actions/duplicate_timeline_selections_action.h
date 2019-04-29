@@ -46,11 +46,11 @@ duplicate_timeline_selections_action_new (
   long ticks,
   int  delta);
 
-void
+int
 duplicate_timeline_selections_action_do (
   DuplicateTimelineSelectionsAction * self);
 
-void
+int
 duplicate_timeline_selections_action_undo (
   DuplicateTimelineSelectionsAction * self);
 

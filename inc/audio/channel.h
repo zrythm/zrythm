@@ -366,6 +366,7 @@ channel_process (Channel * channel);
  * @param gen_automatables Generatate plugin
  *   automatables.
  *   To be used when creating a new plugin only.
+ * @param recalc_graph Recalculate mixer graph.
  *
  * @return 1 if plugin added, 0 if not.
  */
@@ -375,7 +376,8 @@ channel_add_plugin (
   int       pos,
   Plugin *  plugin,
   int       confirm,
-  int       gen_automatables);
+  int       gen_automatables,
+  int       recalc_graph);
 
 /**
  * Returns the index of the last active slot.
@@ -423,13 +425,16 @@ channel_get_automatable (Channel *       channel,
  * If deleting_channel is 1, the automation tracks
  * associated with he plugin are not deleted at
  * this time.
+ *
+ * @param recalc_graph Recalculate mixer graph.
  */
 void
 channel_remove_plugin (
   Channel * channel,
   int pos,
   int deleting_plugin,
-  int deleting_channel);
+  int deleting_channel,
+  int recalc_graph);
 
 /**
  * Disconnects the channel from the processing
