@@ -2602,6 +2602,9 @@ channel_remove_plugin (
  * @param plugin The plugin to add.
  * @param confirm Confirm if an existing plugin
  *   will be overwritten.
+ * @param gen_automatables Generatate plugin
+ *   automatables.
+ *   To be used when creating a new plugin only.
  *
  * @return 1 if plugin added, 0 if not.
  */
@@ -2610,7 +2613,8 @@ channel_add_plugin (
   Channel * channel,
   int       pos,
   Plugin *  plugin,
-  int       confirm)
+  int       confirm,
+  int       gen_automatables)
 {
   int i;
   int prev_enabled = channel->enabled;
@@ -2689,7 +2693,8 @@ channel_add_plugin (
 
   channel->enabled = prev_enabled;
 
-  plugin_generate_automatables (plugin);
+  if (gen_automatables)
+    plugin_generate_automatables (plugin);
 
   EVENTS_PUSH (ET_PLUGIN_ADDED,
                plugin);

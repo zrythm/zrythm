@@ -1,6 +1,4 @@
 /*
- * actions/undoable_action.c - UndoableAction
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -27,6 +25,7 @@
 #include "actions/duplicate_timeline_selections_action.h"
 #include "actions/edit_channel_action.h"
 #include "actions/edit_track_action.h"
+#include "actions/move_plugin_action.h"
 #include "actions/move_midi_arranger_selections_action.h"
 #include "actions/move_timeline_selections_action.h"
 #include "actions/undoable_action.h"
@@ -41,54 +40,68 @@
 void
 undoable_action_do (UndoableAction * self)
 {
+  /* uppercase, camel case, snake case */
+#define DO_ACTION(uc,sc,cc) \
+  case UNDOABLE_ACTION_TYPE_##uc: \
+    sc##_action_do ((cc##Action *) self); \
+    break;
+
   switch (self->type)
     {
-    case UNDOABLE_ACTION_TYPE_CREATE_CHANNEL:
-      break;
-    case UNDOABLE_ACTION_TYPE_EDIT_CHANNEL:
-      edit_channel_action_do ((EditChannelAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_DELETE_CHANNEL:
-      break;
-    case UNDOABLE_ACTION_TYPE_MOVE_CHANNEL:
-      break;
-    case UNDOABLE_ACTION_TYPE_EDIT_TRACK:
-      edit_track_action_do ((EditTrackAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_CREATE_TL_SELECTIONS:
-      create_timeline_selections_action_do (
-        (CreateTimelineSelectionsAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_DELETE_TL_SELECTIONS:
-      delete_timeline_selections_action_do (
-        (DeleteTimelineSelectionsAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_MOVE_TL_SELECTIONS:
-      move_timeline_selections_action_do (
-        (MoveTimelineSelectionsAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_DUPLICATE_TL_SELECTIONS:
-      duplicate_timeline_selections_action_do (
-        (DuplicateTimelineSelectionsAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_CREATE_MA_SELECTIONS:
-      create_midi_arranger_selections_action_do (
-        (CreateMidiArrangerSelectionsAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_DUPLICATE_MA_SELECTIONS:
-      duplicate_midi_arranger_selections_action_do (
-        (DuplicateMidiArrangerSelectionsAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_DELETE_MA_SELECTIONS:
-      delete_midi_arranger_selections_action_do (
-        (DeleteMidiArrangerSelectionsAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_MOVE_MA_SELECTIONS:
-      move_midi_arranger_selections_action_do(
-        (MoveMidiArrangerSelectionsAction *) self);
-      break;
+    /*DO_ACTION (CREATE_CHANNEL,*/
+               /*create_channel,*/
+               /*CreateChannel);*/
+    /*DO_ACTION (EDIT_CHANNEL,*/
+               /*edit_channel,*/
+               /*EditChannel);*/
+    /*DO_ACTION (DELETE_CHANNEL,*/
+               /*delete_channel,*/
+               /*DeleteChannel);*/
+    /*DO_ACTION (MOVE_CHANNEL,*/
+               /*move_channel,*/
+               /*MoveChannel);*/
+    /*DO_ACTION (EDIT_TRACK,*/
+               /*edit_track,*/
+               /*EditTrack);*/
+    DO_ACTION (MOVE_PLUGIN,
+               move_plugin,
+               MovePlugin);
+    /*DO_ACTION (COPY_PLUGIN,*/
+               /*copy_plugin,*/
+               /*CopyPlugin);*/
+    /*DO_ACTION (DELETE_PLUGIN,*/
+               /*delete_plugin,*/
+               /*DeletePlugin);*/
+    DO_ACTION (CREATE_TL_SELECTIONS,
+               create_timeline_selections,
+               CreateTimelineSelections);
+    DO_ACTION (DELETE_TL_SELECTIONS,
+               delete_timeline_selections,
+               DeleteTimelineSelections);
+    DO_ACTION (MOVE_TL_SELECTIONS,
+               move_timeline_selections,
+               MoveTimelineSelections);
+    DO_ACTION (DUPLICATE_TL_SELECTIONS,
+               duplicate_timeline_selections,
+               DuplicateTimelineSelections);
+    DO_ACTION (CREATE_MA_SELECTIONS,
+               create_midi_arranger_selections,
+               CreateMidiArrangerSelections);
+    DO_ACTION (DUPLICATE_MA_SELECTIONS,
+               duplicate_midi_arranger_selections,
+               DuplicateMidiArrangerSelections);
+    DO_ACTION (DELETE_MA_SELECTIONS,
+               delete_midi_arranger_selections,
+               DeleteMidiArrangerSelections);
+    DO_ACTION (MOVE_MA_SELECTIONS,
+               move_midi_arranger_selections,
+               MoveMidiArrangerSelections);
+    default:
+      g_warn_if_reached ();
       break;
     }
+
+#undef DO_ACTION
 }
 
 /**
@@ -99,104 +112,133 @@ undoable_action_do (UndoableAction * self)
 void
 undoable_action_undo (UndoableAction * self)
 {
+/* uppercase, camel case, snake case */
+#define UNDO_ACTION(uc,sc,cc) \
+  case UNDOABLE_ACTION_TYPE_##uc: \
+    sc##_action_undo ((cc##Action *) self); \
+    break;
+
   switch (self->type)
     {
-    case UNDOABLE_ACTION_TYPE_CREATE_CHANNEL:
-      break;
-    case UNDOABLE_ACTION_TYPE_EDIT_CHANNEL:
-      edit_channel_action_undo ((EditChannelAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_DELETE_CHANNEL:
-      break;
-    case UNDOABLE_ACTION_TYPE_MOVE_CHANNEL:
-      break;
-    case UNDOABLE_ACTION_TYPE_EDIT_TRACK:
-      edit_track_action_undo ((EditTrackAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_CREATE_TL_SELECTIONS:
-      create_timeline_selections_action_undo (
-        (CreateTimelineSelectionsAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_DELETE_TL_SELECTIONS:
-      delete_timeline_selections_action_undo (
-        (DeleteTimelineSelectionsAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_MOVE_TL_SELECTIONS:
-      move_timeline_selections_action_undo (
-        (MoveTimelineSelectionsAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_DUPLICATE_TL_SELECTIONS:
-      duplicate_timeline_selections_action_undo (
-        (DuplicateTimelineSelectionsAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_CREATE_MA_SELECTIONS:
-      create_midi_arranger_selections_action_undo (
-        (CreateMidiArrangerSelectionsAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_DUPLICATE_MA_SELECTIONS:
-      duplicate_midi_arranger_selections_action_undo (
-        (DuplicateMidiArrangerSelectionsAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_MOVE_MA_SELECTIONS:
-     move_midi_arranger_selections_action_undo (
-       (MoveMidiArrangerSelectionsAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_DELETE_MA_SELECTIONS:
-      delete_midi_arranger_selections_action_undo (
-        (DeleteMidiArrangerSelectionsAction *) self);
+    /*UNDO_ACTION (CREATE_CHANNEL,*/
+               /*create_channel,*/
+               /*CreateChannel);*/
+    /*UNDO_ACTION (EDIT_CHANNEL,*/
+               /*edit_channel,*/
+               /*EditChannel);*/
+    /*UNDO_ACTION (DELETE_CHANNEL,*/
+               /*delete_channel,*/
+               /*DeleteChannel);*/
+    /*UNDO_ACTION (MOVE_CHANNEL,*/
+               /*move_channel,*/
+               /*MoveChannel);*/
+    /*UNDO_ACTION (EDIT_TRACK,*/
+               /*edit_track,*/
+               /*EditTrack);*/
+    UNDO_ACTION (MOVE_PLUGIN,
+               move_plugin,
+               MovePlugin);
+    /*UNDO_ACTION (COPY_PLUGIN,*/
+               /*copy_plugin,*/
+               /*CopyPlugin);*/
+    /*UNDO_ACTION (DELETE_PLUGIN,*/
+               /*delete_plugin,*/
+               /*DeletePlugin);*/
+    UNDO_ACTION (CREATE_TL_SELECTIONS,
+               create_timeline_selections,
+               CreateTimelineSelections);
+    UNDO_ACTION (DELETE_TL_SELECTIONS,
+               delete_timeline_selections,
+               DeleteTimelineSelections);
+    UNDO_ACTION (MOVE_TL_SELECTIONS,
+               move_timeline_selections,
+               MoveTimelineSelections);
+    UNDO_ACTION (DUPLICATE_TL_SELECTIONS,
+               duplicate_timeline_selections,
+               DuplicateTimelineSelections);
+    UNDO_ACTION (CREATE_MA_SELECTIONS,
+               create_midi_arranger_selections,
+               CreateMidiArrangerSelections);
+    UNDO_ACTION (DUPLICATE_MA_SELECTIONS,
+               duplicate_midi_arranger_selections,
+               DuplicateMidiArrangerSelections);
+    UNDO_ACTION (DELETE_MA_SELECTIONS,
+               delete_midi_arranger_selections,
+               DeleteMidiArrangerSelections);
+    UNDO_ACTION (MOVE_MA_SELECTIONS,
+               move_midi_arranger_selections,
+               MoveMidiArrangerSelections);
+    default:
+      g_warn_if_reached ();
       break;
     }
+
+#undef UNDO_ACTION
 }
 
 void
 undoable_action_free (UndoableAction * self)
 {
+/* uppercase, camel case, snake case */
+#define FREE_ACTION(uc,sc,cc) \
+  case UNDOABLE_ACTION_TYPE_##uc: \
+    sc##_action_free ((cc##Action *) self); \
+    break;
+
   switch (self->type)
     {
-    case UNDOABLE_ACTION_TYPE_CREATE_CHANNEL:
-      break;
-    case UNDOABLE_ACTION_TYPE_EDIT_CHANNEL:
-      edit_channel_action_free ((EditChannelAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_DELETE_CHANNEL:
-      break;
-    case UNDOABLE_ACTION_TYPE_MOVE_CHANNEL:
-      break;
-    case UNDOABLE_ACTION_TYPE_EDIT_TRACK:
-      /* TODO */
+    /*FREE_ACTION (CREATE_CHANNEL,*/
+               /*create_channel,*/
+               /*CreateChannel);*/
+    /*FREE_ACTION (EDIT_CHANNEL,*/
+               /*edit_channel,*/
+               /*EditChannel);*/
+    /*FREE_ACTION (DELETE_CHANNEL,*/
+               /*delete_channel,*/
+               /*DeleteChannel);*/
+    /*FREE_ACTION (MOVE_CHANNEL,*/
+               /*move_channel,*/
+               /*MoveChannel);*/
+    /*FREE_ACTION (EDIT_TRACK,*/
+               /*edit_track,*/
+               /*EditTrack);*/
+    FREE_ACTION (MOVE_PLUGIN,
+               move_plugin,
+               MovePlugin);
+    /*FREE_ACTION (COPY_PLUGIN,*/
+               /*copy_plugin,*/
+               /*CopyPlugin);*/
+    /*FREE_ACTION (DELETE_PLUGIN,*/
+               /*delete_plugin,*/
+               /*DeletePlugin);*/
+    FREE_ACTION (CREATE_TL_SELECTIONS,
+               create_timeline_selections,
+               CreateTimelineSelections);
+    FREE_ACTION (DELETE_TL_SELECTIONS,
+               delete_timeline_selections,
+               DeleteTimelineSelections);
+    FREE_ACTION (MOVE_TL_SELECTIONS,
+               move_timeline_selections,
+               MoveTimelineSelections);
+    FREE_ACTION (DUPLICATE_TL_SELECTIONS,
+               duplicate_timeline_selections,
+               DuplicateTimelineSelections);
+    FREE_ACTION (CREATE_MA_SELECTIONS,
+               create_midi_arranger_selections,
+               CreateMidiArrangerSelections);
+    FREE_ACTION (DUPLICATE_MA_SELECTIONS,
+               duplicate_midi_arranger_selections,
+               DuplicateMidiArrangerSelections);
+    FREE_ACTION (DELETE_MA_SELECTIONS,
+               delete_midi_arranger_selections,
+               DeleteMidiArrangerSelections);
+    FREE_ACTION (MOVE_MA_SELECTIONS,
+               move_midi_arranger_selections,
+               MoveMidiArrangerSelections);
+    default:
       g_warn_if_reached ();
       break;
-    case UNDOABLE_ACTION_TYPE_CREATE_TL_SELECTIONS:
-      create_timeline_selections_action_free (
-        (CreateTimelineSelectionsAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_DELETE_TL_SELECTIONS:
-      delete_timeline_selections_action_free (
-        (DeleteTimelineSelectionsAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_MOVE_TL_SELECTIONS:
-      move_timeline_selections_action_free (
-        (MoveTimelineSelectionsAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_DUPLICATE_TL_SELECTIONS:
-      duplicate_timeline_selections_action_free (
-        (DuplicateTimelineSelectionsAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_CREATE_MA_SELECTIONS:
-      create_midi_arranger_selections_action_free (
-        (CreateMidiArrangerSelectionsAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_DUPLICATE_MA_SELECTIONS:
-      duplicate_midi_arranger_selections_action_free (
-        (DuplicateMidiArrangerSelectionsAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_MOVE_MA_SELECTIONS:
-      move_midi_arranger_selections_action_free (
-        (MoveMidiArrangerSelectionsAction *) self);
-      break;
-    case UNDOABLE_ACTION_TYPE_DELETE_MA_SELECTIONS:
-      delete_midi_arranger_selections_action_free (
-        (DeleteMidiArrangerSelectionsAction *) self);
-      break;
     }
+
+#undef FREE_ACTION
 }

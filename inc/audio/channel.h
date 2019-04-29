@@ -363,6 +363,9 @@ channel_process (Channel * channel);
  * @param plugin The plugin to add.
  * @param confirm Confirm if an existing plugin
  *   will be overwritten.
+ * @param gen_automatables Generatate plugin
+ *   automatables.
+ *   To be used when creating a new plugin only.
  *
  * @return 1 if plugin added, 0 if not.
  */
@@ -371,7 +374,8 @@ channel_add_plugin (
   Channel * channel,
   int       pos,
   Plugin *  plugin,
-  int       confirm);
+  int       confirm,
+  int       gen_automatables);
 
 /**
  * Returns the index of the last active slot.

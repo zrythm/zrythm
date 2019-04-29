@@ -31,6 +31,11 @@
 #define array_append(array, size, element) \
   array[size++] = element;
 
+#define array_double_append(arr1,arr2,size,el1,el2) \
+  arr1[size] = el1; \
+  arr2[size] = el2; \
+  size++;
+
 /**
  * Inserts element in array at pos and increases the size.
  */

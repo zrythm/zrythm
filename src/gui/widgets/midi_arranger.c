@@ -872,7 +872,6 @@ midi_arranger_widget_on_drag_end (
              UI_OVERLAY_ACTION_MOVING)
     {
       UndoableAction * ua =
-        (UndoableAction *)
         move_midi_arranger_selections_action_new (
           position_to_ticks (
             &MIDI_ARRANGER_SELECTIONS->
