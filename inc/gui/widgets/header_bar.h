@@ -43,7 +43,9 @@ typedef struct _HeaderBarWidget
   GtkMenu *                file_menu;
   GtkMenu *                edit_menu;
   GtkMenuItem *            edit_undo;
+  GtkLabel *               edit_undo_label;
   GtkMenuItem *            edit_redo;
+  GtkLabel *               edit_redo_label;
   GtkMenu *                view_menu;
   GtkMenu *                help_menu;
   GtkBox *                 window_buttons;

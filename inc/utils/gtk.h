@@ -218,4 +218,14 @@ z_gtk_get_single_selection_pointer (
   GtkTreeView * tv,
   int           column);
 
+/**
+ * Returns the label from a given GtkMenuItem.
+ *
+ * The menu item must have a box with an optional
+ * icon and a label inside.
+ */
+GtkLabel *
+z_gtk_get_label_from_menu_item (
+  GtkMenuItem * mi);
+
 #endif

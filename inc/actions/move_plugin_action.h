@@ -51,11 +51,11 @@ move_plugin_action_new (
   Channel * to_ch,
   int       to_slot);
 
-void
+int
 move_plugin_action_do (
 	MovePluginAction * self);
 
-void
+int
 move_plugin_action_undo (
 	MovePluginAction * self);
 

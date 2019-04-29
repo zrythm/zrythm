@@ -37,11 +37,11 @@ typedef struct DeleteMidiArrangerSelectionsAction
 UndoableAction *
 delete_midi_arranger_selections_action_new ();
 
-void
+int
 delete_midi_arranger_selections_action_do (
   DeleteMidiArrangerSelectionsAction * self);
 
-void
+int
 delete_midi_arranger_selections_action_undo (
   DeleteMidiArrangerSelectionsAction * self);
 

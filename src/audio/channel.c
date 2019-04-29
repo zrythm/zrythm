@@ -2539,13 +2539,16 @@ channel_disconnect_plugin_from_strip (
  * If deleting_channel is 1, the automation tracks
  * associated with he plugin are not deleted at
  * this time.
+ *
+ * @param recalc_graph Recalculate mixer graph.
  */
 void
 channel_remove_plugin (
   Channel * channel,
   int pos,
   int deleting_plugin,
-  int deleting_channel)
+  int deleting_channel,
+  int recalc_graph)
 {
   Plugin * plugin = channel->plugins[pos];
   if (plugin)
@@ -2555,6 +2558,9 @@ channel_remove_plugin (
                  channel->track->name, pos);
       channel->plugins[pos] = NULL;
       channel->plugin_ids[pos] = -1;
+
+      channel_disconnect_plugin_from_strip (
+        channel, pos, plugin);
 
       /* if deleting plugin disconnect the plugin
        * entirely */
@@ -2578,16 +2584,19 @@ channel_remove_plugin (
       /* if not deleting plugin (moving, etc.) just
        * disconnect its connections to the prev/
        * next slot or the channel if first/last */
-      else
-        {
-          channel_disconnect_plugin_from_strip (
-            channel, pos, plugin);
-        }
+      /*else*/
+        /*{*/
+          /*channel_disconnect_plugin_from_strip (*/
+            /*channel, pos, plugin);*/
+        /*}*/
     }
 
   if (!deleting_channel)
     automation_tracklist_update (
       &channel->track->automation_tracklist);
+
+  if (recalc_graph)
+    mixer_recalculate_graph (MIXER);
 }
 
 /**
@@ -2605,6 +2614,7 @@ channel_remove_plugin (
  * @param gen_automatables Generatate plugin
  *   automatables.
  *   To be used when creating a new plugin only.
+ * @param recalc_graph Recalculate mixer graph.
  *
  * @return 1 if plugin added, 0 if not.
  */
@@ -2614,7 +2624,8 @@ channel_add_plugin (
   int       pos,
   Plugin *  plugin,
   int       confirm,
-  int       gen_automatables)
+  int       gen_automatables,
+  int       recalc_graph)
 {
   int i;
   int prev_enabled = channel->enabled;
@@ -2636,7 +2647,7 @@ channel_add_plugin (
     }
 
   /* free current plugin */
-  channel_remove_plugin (channel, pos, 1, 0);
+  channel_remove_plugin (channel, pos, 1, 0, 0);
 
   g_message ("Inserting %s at %s:%d", plugin->descr->name,
              channel->track->name, pos);
@@ -2699,7 +2710,8 @@ channel_add_plugin (
   EVENTS_PUSH (ET_PLUGIN_ADDED,
                plugin);
 
-  mixer_recalculate_graph (MIXER);
+  if (recalc_graph)
+    mixer_recalculate_graph (MIXER);
 
   return 1;
 }
@@ -2861,7 +2873,7 @@ channel_disconnect (Channel * channel)
     {
       if (channel->plugins[i])
         {
-          channel_remove_plugin (channel, i, 1, 1);
+          channel_remove_plugin (channel, i, 1, 1, 0);
         }
     }
   port_disconnect_all (channel->stereo_in->l);

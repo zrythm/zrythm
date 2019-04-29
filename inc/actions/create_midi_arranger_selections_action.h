@@ -38,11 +38,11 @@ typedef struct CreateMidiArrangerSelectionsAction
 UndoableAction *
 create_midi_arranger_selections_action_new ();
 
-void
+int
 create_midi_arranger_selections_action_do (
   CreateMidiArrangerSelectionsAction * self);
 
-void
+int
 create_midi_arranger_selections_action_undo (
   CreateMidiArrangerSelectionsAction * self);
 

@@ -43,7 +43,7 @@ delete_timeline_selections_action_new ()
   return ua;
 }
 
-void
+int
 delete_timeline_selections_action_do (
   DeleteTimelineSelectionsAction * self)
 {
@@ -64,9 +64,11 @@ delete_timeline_selections_action_do (
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
+
+  return 0;
 }
 
-void
+int
 delete_timeline_selections_action_undo (
   DeleteTimelineSelectionsAction * self)
 {
@@ -90,6 +92,8 @@ delete_timeline_selections_action_undo (
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
+
+  return 0;
 }
 
 void

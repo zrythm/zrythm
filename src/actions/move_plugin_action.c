@@ -23,9 +23,6 @@
 #include "plugins/plugin.h"
 #include "project.h"
 
-/**
- * Note: this action will add delta beats
- * to start and end pos of all selected midi_notes */
 UndoableAction *
 move_plugin_action_new (
   Plugin *  pl,
@@ -47,7 +44,7 @@ move_plugin_action_new (
   return ua;
 }
 
-void
+int
 move_plugin_action_do (
 	MovePluginAction * self)
 {
@@ -59,9 +56,11 @@ move_plugin_action_do (
 
   mixer_move_plugin (
     MIXER, pl, ch, self->to_slot);
+
+  return 0;
 }
 
-void
+int
 move_plugin_action_undo (
 	MovePluginAction * self)
 {
@@ -73,6 +72,8 @@ move_plugin_action_undo (
 
   mixer_move_plugin (
     MIXER, pl, ch, self->from_slot);
+
+  return 0;
 }
 
 void

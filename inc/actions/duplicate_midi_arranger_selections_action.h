@@ -46,11 +46,11 @@ duplicate_midi_arranger_selections_action_new (
   long ticks,
   int  delta);
 
-void
+int
 duplicate_midi_arranger_selections_action_do (
   DuplicateMidiArrangerSelectionsAction * self);
 
-void
+int
 duplicate_midi_arranger_selections_action_undo (
   DuplicateMidiArrangerSelectionsAction * self);
 

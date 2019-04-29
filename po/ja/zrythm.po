@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-29 07:27+0100\n"
+"POT-Creation-Date: 2019-04-29 12:04+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrytm dot org>\n"
 "Language-Team: Japanese\n"
@@ -57,7 +57,7 @@ msgstr ""
 msgid "A plugin already exists at the selected slot. Overwrite it?"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:377
+#: src/gui/widgets/header_bar.c:430
 msgid "About"
 msgstr "Zrythmについて"
 
@@ -113,7 +113,7 @@ msgstr "バックエンド"
 msgid "Backward"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:299
+#: src/gui/widgets/header_bar.c:352
 msgid "Best Fit"
 msgstr ""
 
@@ -129,7 +129,7 @@ msgstr ""
 msgid "Bot"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:246
+#: src/gui/widgets/header_bar.c:299
 msgid "Bottom Panel"
 msgstr ""
 
@@ -151,14 +151,14 @@ msgstr ""
 msgid "Category"
 msgstr "カテゴリー"
 
-#: src/gui/widgets/channel_slot.c:307
+#: src/gui/widgets/channel_slot.c:282
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
 "チャンネルスロット - ダブルクリックでプラグイン画面を開く - クリック＆ドラッ"
 "グでプラグインを移動"
 
-#: src/gui/widgets/header_bar.c:321
+#: src/gui/widgets/header_bar.c:374
 msgid "Chat"
 msgstr "チャット"
 
@@ -213,6 +213,11 @@ msgstr "コレクション"
 msgid "Controllers found"
 msgstr "見つかったコントローラ"
 
+#: src/actions/undoable_action.c:294
+#, fuzzy
+msgid "Copy Plugin"
+msgstr "プラグイン"
+
 #: resources/ui/shortcuts.ui:107
 msgid "Copy and Paste"
 msgstr "コピー＆ペースト"
@@ -220,6 +225,22 @@ msgstr "コピー＆ペースト"
 #: resources/ui/shortcuts.ui:112
 msgid "Copy selection to clipboard"
 msgstr "選択したものをコピーする"
+
+#. TRANSLATORS: these are used in Undo/Redo.
+#. * for example "Undo create channel"
+#: src/actions/undoable_action.c:273
+msgid "Create Channel"
+msgstr ""
+
+#: src/actions/undoable_action.c:303 src/actions/undoable_action.c:315
+#, fuzzy
+msgid "Create Object(s)"
+msgstr "新プロジェクト"
+
+#: src/actions/undoable_action.c:288
+#, fuzzy
+msgid "Create Plugin"
+msgstr "プラグイン"
 
 #: resources/ui/project_assistant.ui:62 resources/ui/shortcuts.ui:84
 msgid "Create new project"
@@ -233,6 +254,20 @@ msgstr "カスタム"
 msgid "Cut selection to clipboard"
 msgstr ""
 
+#: src/actions/undoable_action.c:279
+msgid "Delete Channel"
+msgstr ""
+
+#: src/actions/undoable_action.c:300 src/actions/undoable_action.c:312
+#, fuzzy
+msgid "Delete Object(s)"
+msgstr "新プロジェクト"
+
+#: src/actions/undoable_action.c:297
+#, fuzzy
+msgid "Delete Plugin"
+msgstr "プラグイン"
+
 #: src/plugins/lv2_gtk.c:562
 msgid "Delete Preset?"
 msgstr "プリセットを削除する？"
@@ -245,7 +280,7 @@ msgstr ""
 msgid "Dither"
 msgstr "ディザ"
 
-#: src/gui/widgets/header_bar.c:368 resources/ui/donate_dialog.ui:7
+#: src/gui/widgets/header_bar.c:421 resources/ui/donate_dialog.ui:7
 msgid "Donate"
 msgstr "寄付する"
 
@@ -253,6 +288,20 @@ msgstr "寄付する"
 #: src/utils/ui.c:563 src/utils/ui.c:580
 msgid "Dummy"
 msgstr ""
+
+#: src/actions/undoable_action.c:309 src/actions/undoable_action.c:321
+#, fuzzy
+msgid "Duplicate Object(s)"
+msgstr "トラックを複製する(_D)"
+
+#: src/actions/undoable_action.c:276
+msgid "Edit Channel"
+msgstr ""
+
+#: src/actions/undoable_action.c:285
+#, fuzzy
+msgid "Edit Track"
+msgstr "オーディオトラック"
 
 #: resources/ui/preferences.ui:331
 msgid "Editing"
@@ -287,6 +336,11 @@ msgstr "リージョン名を入力してください"
 #: resources/ui/shortcuts.ui:202
 msgid "Eraser tool"
 msgstr "エレーザツール"
+
+#: src/actions/create_plugin_action.c:65
+#, c-format
+msgid "Error instantiating plugin %s. Please see log for details."
+msgstr ""
 
 #: src/plugins/plugin_manager.c:220
 msgid "Error loading LV2 bundle dir: "
@@ -339,7 +393,7 @@ msgstr ""
 msgid "Format"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:339
+#: src/gui/widgets/header_bar.c:392
 msgid "Forums"
 msgstr "フォーラム"
 
@@ -421,7 +475,7 @@ msgstr ""
 msgid "Japanese [ja]"
 msgstr "日本語[ja]"
 
-#: src/gui/widgets/header_bar.c:348 resources/ui/shortcuts.ui:27
+#: src/gui/widgets/header_bar.c:401 resources/ui/shortcuts.ui:27
 msgid "Keyboard Shortcuts"
 msgstr "キーボードのショートカット"
 
@@ -437,7 +491,7 @@ msgstr "言語"
 msgid "Left"
 msgstr "左"
 
-#: src/gui/widgets/header_bar.c:222
+#: src/gui/widgets/header_bar.c:275
 msgid "Left Panel"
 msgstr "左パネル"
 
@@ -470,7 +524,7 @@ msgstr "ロック"
 msgid "Loop"
 msgstr "ループ"
 
-#: src/gui/widgets/header_bar.c:70
+#: src/gui/widgets/header_bar.c:113
 msgid "Loop Selection"
 msgstr "選択したものをループする"
 
@@ -500,7 +554,7 @@ msgstr "MIDIデバイス"
 msgid "Main Window"
 msgstr "メイン画面"
 
-#: src/gui/widgets/header_bar.c:330
+#: src/gui/widgets/header_bar.c:383
 msgid "Manual"
 msgstr "マニュアル"
 
@@ -516,6 +570,19 @@ msgstr ""
 #: resources/ui/bot_dock_edge.ui:74
 msgid "Mixer panel"
 msgstr ""
+
+#: src/actions/undoable_action.c:282
+msgid "Move Channel"
+msgstr ""
+
+#: src/actions/undoable_action.c:306 src/actions/undoable_action.c:318
+msgid "Move Object(s)"
+msgstr ""
+
+#: src/actions/undoable_action.c:291
+#, fuzzy
+msgid "Move Plugin"
+msgstr "プラグイン"
 
 #: src/gui/widgets/track.c:138
 msgid "Mute"
@@ -570,7 +637,7 @@ msgstr "プロジェクトを開く"
 msgid "Open a project"
 msgstr "プロジェクトを開く"
 
-#: src/gui/widgets/header_bar.c:290
+#: src/gui/widgets/header_bar.c:343
 msgid "Original Size"
 msgstr ""
 
@@ -754,7 +821,7 @@ msgstr "削除"
 msgid "Removes selected project from the list"
 msgstr "選択したプロジェクトをリストから削除する"
 
-#: src/gui/widgets/header_bar.c:357
+#: src/gui/widgets/header_bar.c:410
 msgid "Report a Bug"
 msgstr "不具合を報告する"
 
@@ -778,7 +845,7 @@ msgstr "パスをデフォールトにリセットする"
 msgid "Right"
 msgstr "右"
 
-#: src/gui/widgets/header_bar.c:234
+#: src/gui/widgets/header_bar.c:287
 msgid "Right Panel"
 msgstr "右パネル"
 
@@ -791,7 +858,7 @@ msgstr "プロジェクトを保存"
 msgid "Save State"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:139
+#: src/gui/widgets/header_bar.c:182
 msgid "Save _As"
 msgstr "プロジェクトを別名で保存"
 
@@ -835,7 +902,7 @@ msgstr "選択…"
 msgid "Select/Stretch tool"
 msgstr "選択・ストレッチツール"
 
-#: src/gui/widgets/header_bar.c:57
+#: src/gui/widgets/header_bar.c:100
 #, fuzzy
 msgid "Selection"
 msgstr "選択"
@@ -904,7 +971,7 @@ msgstr "スペイン語[es]"
 msgid "Square Root"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:258
+#: src/gui/widgets/header_bar.c:311
 msgid "Status Bar"
 msgstr "ステータス・バー"
 
@@ -1079,7 +1146,7 @@ msgstr ""
 msgid "Write automation"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:281
+#: src/gui/widgets/header_bar.c:334
 msgid "Zoom _Out"
 msgstr "ズーム・アウト"
 
@@ -1126,7 +1193,7 @@ msgstr "トラックを複製する(_D)"
 msgid "_Edit"
 msgstr "エディット(_E)"
 
-#: src/gui/widgets/header_bar.c:150
+#: src/gui/widgets/header_bar.c:193
 #, fuzzy
 msgid "_Export As"
 msgstr "エクスポート(_E)"
@@ -1135,7 +1202,7 @@ msgstr "エクスポート(_E)"
 msgid "_File"
 msgstr "ファイル(_F)"
 
-#: src/gui/widgets/header_bar.c:310
+#: src/gui/widgets/header_bar.c:363
 msgid "_Fullscreen"
 msgstr ""
 
@@ -1143,7 +1210,7 @@ msgstr ""
 msgid "_Help"
 msgstr "ヘルプ(_H)"
 
-#: src/gui/widgets/header_bar.c:112
+#: src/gui/widgets/header_bar.c:155
 msgid "_New"
 msgstr ""
 
@@ -1151,11 +1218,11 @@ msgstr ""
 msgid "_OK"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:121 src/utils/dialogs.c:46
+#: src/gui/widgets/header_bar.c:164 src/utils/dialogs.c:46
 msgid "_Open"
 msgstr "開く(_O)"
 
-#: src/gui/widgets/header_bar.c:161
+#: src/gui/widgets/header_bar.c:204
 msgid "_Preferences"
 msgstr "設定(_P)"
 
@@ -1163,20 +1230,20 @@ msgstr "設定(_P)"
 msgid "_Prefix plugin name"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:170
+#: src/gui/widgets/header_bar.c:213
 msgid "_Quit"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:191
+#: src/gui/widgets/header_bar.c:52 src/gui/widgets/header_bar.c:239
 msgid "_Redo"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:153 src/gui/widgets/header_bar.c:130
+#: src/plugins/lv2_gtk.c:153 src/gui/widgets/header_bar.c:173
 #: src/actions/actions.c:523
 msgid "_Save"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:181
+#: src/gui/widgets/header_bar.c:51 src/gui/widgets/header_bar.c:224
 msgid "_Undo"
 msgstr ""
 
@@ -1184,7 +1251,7 @@ msgstr ""
 msgid "_View"
 msgstr "ビュー(_V)"
 
-#: src/gui/widgets/header_bar.c:272
+#: src/gui/widgets/header_bar.c:325
 msgid "_Zoom In"
 msgstr ""
 
@@ -1213,6 +1280,10 @@ msgstr ""
 #: resources/ui/audio_clip_editor.ui:56 resources/ui/audio_clip_editor.ui:68
 msgid "stuff"
 msgstr ""
+
+#, fuzzy
+#~ msgid "create piano roll object(s)"
+#~ msgstr "新プロジェクト"
 
 #~ msgid "Timeline"
 #~ msgstr "タイムライン"
