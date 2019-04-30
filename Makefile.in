@@ -182,6 +182,14 @@ ifeq ($(OSX),1)
 	OSX_LIBS += -lobjc -framework Foundation -framework Cocoa -framework AppKit
 endif
 
+ifeq ($(OSX),1)
+	WARNING_FLAGS = -Wno-bad-function-cast \
+		-Werror=uninitialized
+else
+	WARNING_FLAGS = -Wno-cast-function-type \
+		-Werror=maybe-uninitialized
+endif
+
 CFLAGS:=$(filter-out -fstack-protector-strong,$(CFLAGS))
 CFLAGS:=$(filter-out -fstack-clash-protection,$(CFLAGS))
 CFLAGS:=$(filter-out -D_FORTIFY_SOURCE=2,$(CFLAGS))
@@ -199,17 +207,16 @@ CFLAGS += -Wall \
 	-Wextra \
 	-Wno-missing-field-initializers \
 	-Wno-unused-parameter \
-	-Wno-cast-function-type \
 	-Wno-sequence-point \
 	-Wignored-qualifiers \
 	-Werror=implicit-function-declaration \
 	-Werror=uninitialized \
-	-Werror=maybe-uninitialized \
 	-Werror=return-type \
 	-Werror=int-conversion \
 	-Werror=format-security \
 	-Werror=incompatible-pointer-types \
 	-Werror=implicit-int \
+	$(WARNING_FLAGS) \
 	$(DEFAULT_INCLUDES) \
 	$(FFMPEG_CFLAGS) \
 	$(GTK3_CFLAGS) \

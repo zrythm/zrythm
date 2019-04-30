@@ -142,7 +142,9 @@ engine_init (AudioEngine * self,
     case 0: // no backend
       break;
     case 1:
+#ifdef HAVE_JACK
       self->audio_backend = AUDIO_BACKEND_JACK;
+#endif
       break;
     case 3:
       self->audio_backend = AUDIO_BACKEND_PORT_AUDIO;
@@ -163,7 +165,9 @@ engine_init (AudioEngine * self,
     case 0: // no backend
       break;
     case 1:
+#ifdef HAVE_JACK
       self->midi_backend = MIDI_BACKEND_JACK;
+#endif
       break;
     default:
       break;

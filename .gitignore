@@ -128,3 +128,6 @@ scripts/package_osx.sh
 # MacOS stuff
 .DS_Store
 data/osx/Info.plist
+
+# GLib schemas
+gschemas.compiled
