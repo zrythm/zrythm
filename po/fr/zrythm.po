@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-02 21:50+0100\n"
+"POT-Creation-Date: 2019-05-02 22:53+0100\n"
 "PO-Revision-Date: 2019-03-22 22:30+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -85,7 +85,7 @@ msgstr "Toujours ouvrir la fenêtre des greffons"
 msgid "Artist"
 msgstr "Artiste"
 
-#: src/audio/track.c:704
+#: src/audio/track.c:728
 #, fuzzy
 msgid "Audio"
 msgstr "Unité Audio"
@@ -95,7 +95,7 @@ msgstr "Unité Audio"
 msgid "Audio Backend"
 msgstr "Piste Audio"
 
-#: src/actions/actions.c:870 src/actions/create_tracks_action.c:146
+#: src/actions/actions.c:870 src/actions/create_tracks_action.c:152
 msgid "Audio Track"
 msgstr "Piste Audio"
 
@@ -145,11 +145,11 @@ msgstr "Bouteille"
 msgid "Bottom Panel"
 msgstr "Panneau du bas"
 
-#: src/audio/track.c:707
+#: src/audio/track.c:731
 msgid "Bus"
 msgstr ""
 
-#: src/actions/actions.c:898 src/actions/create_tracks_action.c:198
+#: src/actions/actions.c:898 src/actions/create_tracks_action.c:204
 msgid "Bus Track"
 msgstr "Piste de Bus"
 
@@ -189,7 +189,7 @@ msgstr "Discussion"
 msgid "Choose a method to donate"
 msgstr "Choisir une méthode pour faire un don"
 
-#: src/audio/track.c:713
+#: src/audio/track.c:737
 #, fuzzy
 msgid "Chord"
 msgstr "Accords"
@@ -242,12 +242,12 @@ msgstr "Connexions"
 msgid "Controllers found"
 msgstr "Contrôleurs trouvés"
 
-#: src/actions/copy_plugins_action.c:194
+#: src/actions/copy_plugins_action.c:192
 #, fuzzy, c-format
 msgid "Copy %d Plugins"
 msgstr "Greffons"
 
-#: src/actions/copy_plugins_action.c:190
+#: src/actions/copy_plugins_action.c:188
 #, c-format
 msgid "Copy %s"
 msgstr ""
@@ -260,7 +260,7 @@ msgstr "Copier et Coller"
 msgid "Copy selection to clipboard"
 msgstr "Copier la sélection dans le presse-papier"
 
-#: src/actions/create_tracks_action.c:334
+#: src/actions/create_tracks_action.c:340
 #, fuzzy, c-format
 msgid "Create %d %s Tracks"
 msgstr "_Supprimer %d Pistes"
@@ -275,7 +275,7 @@ msgstr ""
 msgid "Create %s"
 msgstr "Créer un nouveau projet"
 
-#: src/actions/create_tracks_action.c:329
+#: src/actions/create_tracks_action.c:335
 #, fuzzy, c-format
 msgid "Create %s Track"
 msgstr "_Supprimer %d Pistes"
@@ -391,7 +391,7 @@ msgstr "Saisir le nom de la région..."
 msgid "Eraser tool"
 msgstr "Outil gomme"
 
-#: src/actions/create_tracks_action.c:92 src/actions/create_tracks_action.c:218
+#: src/actions/create_tracks_action.c:98 src/actions/create_tracks_action.c:224
 #, c-format
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr ""
@@ -509,12 +509,12 @@ msgstr "Initialisation des paramètres"
 msgid "Initializing..."
 msgstr "Initialisation..."
 
-#: src/audio/track.c:701
+#: src/audio/track.c:725
 #, fuzzy
 msgid "Instrument"
 msgstr "Piste Instrument"
 
-#: src/actions/actions.c:884 src/actions/create_tracks_action.c:72
+#: src/actions/actions.c:884 src/actions/create_tracks_action.c:73
 msgid "Instrument Track"
 msgstr "Piste Instrument"
 
@@ -623,8 +623,8 @@ msgstr "Fenêtre principal"
 msgid "Manual"
 msgstr "Manuel"
 
-#: src/project.c:164 src/project.c:166 src/gui/widgets/channel.c:262
-#: src/gui/widgets/channel.c:271 src/audio/track.c:710
+#: src/project.c:163 src/gui/widgets/channel.c:262
+#: src/gui/widgets/channel.c:271 src/audio/track.c:734
 #: resources/ui/channel.ui:341
 msgid "Master"
 msgstr "Master"
@@ -844,7 +844,7 @@ msgstr ""
 "Fréquence d'échantillonnage: 44100\n"
 "(note: ce texte est codé en dur pour le moment)"
 
-#: src/project.c:546
+#: src/project.c:549
 msgid "Project saved."
 msgstr "Projet sauvegardé"
 
@@ -1243,7 +1243,7 @@ msgstr "Désélectionner tout"
 msgid "Unsolo Track"
 msgstr "Piste de Bus"
 
-#: src/project.c:173
+#: src/project.c:177
 msgid "Untitled Project"
 msgstr "Projet sans titre"
 

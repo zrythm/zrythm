@@ -34,36 +34,18 @@
 #include "utils/objects.h"
 
 /**
- * Initializes the tracklist.
- *
- * Note: mixer and master channel/track, chord track and
- * each channel must be initialized at this point.
+ * Initializes the tracklist when loading a project.
  */
 void
-tracklist_init (
-  Tracklist * self,
-  int loading)
+tracklist_init_loaded (
+  Tracklist * self)
 {
-  g_warn_if_fail (MIXER);
-  g_warn_if_fail (MIXER->master);
-  g_warn_if_fail (MIXER->master->track);
+  for (int i = 0; i < self->num_tracks; i++)
+    self->tracks[i] =
+      project_get_track (
+        self->track_ids[i]);
 
-  if (loading)
-    {
-      for (int i = 0; i < self->num_tracks; i++)
-        self->tracks[i] =
-          project_get_track (
-            self->track_ids[i]);
-
-      return;
-    }
-
-  /* add master track */
-  tracklist_append_track ((Track *) MIXER->master->track);
-
-  /* add chord track */
-  g_warn_if_fail (P_CHORD_TRACK);
-  tracklist_append_track (P_CHORD_TRACK);
+  return;
 
   /* add each channel */
   for (int i = 0; i < MIXER->num_channels; i++)

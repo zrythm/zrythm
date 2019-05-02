@@ -91,14 +91,11 @@ tracklist_schema = {
 };
 
 /**
- * Initializes the tracklist.
- *
- * Note: mixer and master channel/track, chord track and
- * each channel must be initialized at this point.
+ * Initializes the tracklist when loading a project.
  */
 void
-tracklist_init (Tracklist * self,
-                int loading);
+tracklist_init_loaded (
+  Tracklist * self);
 
 /**
  * Finds visible tracks and puts them in given array.

@@ -65,33 +65,29 @@ copy_plugins_action_do (
       /* get the clone */
       orig_pl = self->ms->plugins[0];
 
-      /* add the plugin to a new channel */
-      ChannelType ct;
-      if (plugin_is_instrument (orig_pl))
-        ct = CT_MIDI;
-      else
-        ct = CT_BUS;
-
+      /* add the plugin to a new track */
       char * str =
         g_strdup_printf (
           "%s (Copy)",
           orig_pl->descr->name);
-      ch =
-        channel_new (
-          ct, str, 1);
-      g_warn_if_fail (ch);
-
-      /* also create a track and add it to
-       * tracklist */
-      track = track_new (ch, str);
+      track =
+        track_new (
+          plugin_is_instrument (orig_pl) ?
+          TRACK_TYPE_INSTRUMENT :
+          TRACK_TYPE_BUS, str);
       g_free (str);
+      g_return_val_if_fail (track, -1);
+
+      /* create a track and add it to
+       * tracklist */
       tracklist_insert_track (
         TRACKLIST,
         track,
         TRACKLIST->num_tracks,
         F_NO_PUBLISH_EVENTS);
 
-      channel_connect (ch);
+      mixer_add_channel (
+        MIXER, track->channel, F_NO_RECALC_GRAPH);
     }
   else
     {
@@ -129,6 +125,8 @@ copy_plugins_action_do (
       /* remember the ID for when undoing */
       orig_pl->id = pl->id;
     }
+
+  mixer_recalc_graph (MIXER);
 
   return 0;
 }

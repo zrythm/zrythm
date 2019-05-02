@@ -158,16 +158,20 @@ create_default (Project * self)
 
   self->title = g_strdup (DEFAULT_PROJECT_NAME);
 
-  /* add master channel to mixer */
+  /* add master channel to mixer and tracklist */
+  Track * track =
+    track_new (TRACK_TYPE_MASTER, _("Master"));
+  MIXER->master = track->channel;
+  MIXER->master_id = track->channel->id;
   mixer_add_channel (
-    MIXER,
-    channel_new (CT_MASTER, _("Master"), 1),
-    F_NO_RECALC_GRAPH);
-  track_new (MIXER->master, _("Master"));
+    MIXER, MIXER->master, F_NO_RECALC_GRAPH);
+  tracklist_append_track (
+    track);
 
   /* create chord track */
   self->chord_track = chord_track_default ();
   self->chord_track_id = self->chord_track->id;
+  tracklist_append_track (self->chord_track);
 
   /* create untitled project */
   char * untitled_project = _("Untitled Project");
@@ -210,7 +214,6 @@ create_default (Project * self)
   snap_grid_update_snap_points (&PROJECT->snap_grid_midi);
   quantize_update_snap_points (&PROJECT->quantize_timeline);
   quantize_update_snap_points (&PROJECT->quantize_midi);
-  tracklist_init (&PROJECT->tracklist, 0);
 
   header_bar_widget_set_subtitle (
     MW_HEADER_BAR,
@@ -373,7 +376,7 @@ load (char * filename)
 
   g_free (dir);
 
-  tracklist_init (&PROJECT->tracklist, 1);
+  tracklist_init_loaded (&PROJECT->tracklist);
 
   snap_grid_update_snap_points (
     &PROJECT->snap_grid_timeline);

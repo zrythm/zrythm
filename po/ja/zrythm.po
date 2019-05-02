@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-02 21:50+0100\n"
+"POT-Creation-Date: 2019-05-02 22:53+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrytm dot org>\n"
 "Language-Team: Japanese\n"
@@ -77,7 +77,7 @@ msgstr "毎回プラグイン画面を開く"
 msgid "Artist"
 msgstr "作者"
 
-#: src/audio/track.c:704
+#: src/audio/track.c:728
 #, fuzzy
 msgid "Audio"
 msgstr "オーディオトラック"
@@ -87,7 +87,7 @@ msgstr "オーディオトラック"
 msgid "Audio Backend"
 msgstr "オーディオトラック"
 
-#: src/actions/actions.c:870 src/actions/create_tracks_action.c:146
+#: src/actions/actions.c:870 src/actions/create_tracks_action.c:152
 #, fuzzy
 msgid "Audio Track"
 msgstr "オーディオトラック"
@@ -138,11 +138,11 @@ msgstr ""
 msgid "Bottom Panel"
 msgstr ""
 
-#: src/audio/track.c:707
+#: src/audio/track.c:731
 msgid "Bus"
 msgstr ""
 
-#: src/actions/actions.c:898 src/actions/create_tracks_action.c:198
+#: src/actions/actions.c:898 src/actions/create_tracks_action.c:204
 #, fuzzy
 msgid "Bus Track"
 msgstr "バストラック"
@@ -183,7 +183,7 @@ msgstr "チャット"
 msgid "Choose a method to donate"
 msgstr "寄付する方法を選択してください"
 
-#: src/audio/track.c:713
+#: src/audio/track.c:737
 #, fuzzy
 msgid "Chord"
 msgstr "コード"
@@ -235,12 +235,12 @@ msgstr "コレクション"
 msgid "Controllers found"
 msgstr "見つかったコントローラ"
 
-#: src/actions/copy_plugins_action.c:194
+#: src/actions/copy_plugins_action.c:192
 #, fuzzy, c-format
 msgid "Copy %d Plugins"
 msgstr "プラグイン"
 
-#: src/actions/copy_plugins_action.c:190
+#: src/actions/copy_plugins_action.c:188
 #, c-format
 msgid "Copy %s"
 msgstr ""
@@ -253,7 +253,7 @@ msgstr "コピー＆ペースト"
 msgid "Copy selection to clipboard"
 msgstr "選択したものをコピーする"
 
-#: src/actions/create_tracks_action.c:334
+#: src/actions/create_tracks_action.c:340
 #, fuzzy, c-format
 msgid "Create %d %s Tracks"
 msgstr "%dトラックを削除する(_D)"
@@ -268,7 +268,7 @@ msgstr ""
 msgid "Create %s"
 msgstr "新プロジェクト"
 
-#: src/actions/create_tracks_action.c:329
+#: src/actions/create_tracks_action.c:335
 #, fuzzy, c-format
 msgid "Create %s Track"
 msgstr "%dトラックを削除する(_D)"
@@ -384,7 +384,7 @@ msgstr "リージョン名を入力してください"
 msgid "Eraser tool"
 msgstr "エレーザツール"
 
-#: src/actions/create_tracks_action.c:92 src/actions/create_tracks_action.c:218
+#: src/actions/create_tracks_action.c:98 src/actions/create_tracks_action.c:224
 #, c-format
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr ""
@@ -500,11 +500,11 @@ msgstr ""
 msgid "Initializing..."
 msgstr ""
 
-#: src/audio/track.c:701
+#: src/audio/track.c:725
 msgid "Instrument"
 msgstr ""
 
-#: src/actions/actions.c:884 src/actions/create_tracks_action.c:72
+#: src/actions/actions.c:884 src/actions/create_tracks_action.c:73
 msgid "Instrument Track"
 msgstr ""
 
@@ -613,8 +613,8 @@ msgstr "メイン画面"
 msgid "Manual"
 msgstr "マニュアル"
 
-#: src/project.c:164 src/project.c:166 src/gui/widgets/channel.c:262
-#: src/gui/widgets/channel.c:271 src/audio/track.c:710
+#: src/project.c:163 src/gui/widgets/channel.c:262
+#: src/gui/widgets/channel.c:271 src/audio/track.c:734
 #: resources/ui/channel.ui:341
 msgid "Master"
 msgstr "マスター"
@@ -825,7 +825,7 @@ msgid ""
 "(note: this text is hard coded at the moment)"
 msgstr ""
 
-#: src/project.c:546
+#: src/project.c:549
 #, fuzzy
 msgid "Project saved."
 msgstr "プロジェクト名"
@@ -1209,7 +1209,7 @@ msgstr ""
 msgid "Unsolo Track"
 msgstr "バストラック"
 
-#: src/project.c:173
+#: src/project.c:177
 msgid "Untitled Project"
 msgstr "新プロジェクト"
 

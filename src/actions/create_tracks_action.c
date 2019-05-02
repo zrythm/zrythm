@@ -64,17 +64,23 @@ create_instrument (
   CreateTracksAction * self,
   int                  idx)
 {
-  Channel * ch;
+  Track * track;
+
   if (self->is_empty)
     {
-      ch =
-        channel_new (
-          CT_MIDI, _("Instrument Track"),
-          F_ADD_TO_PROJ);
-      mixer_add_channel (MIXER, ch, 1);
+      track =
+        track_new (TRACK_TYPE_INSTRUMENT,
+                   _("Instrument Track"));
       tracklist_insert_track (
         TRACKLIST,
-        ch->track,
+        track,
+        self->pos,
+        F_NO_PUBLISH_EVENTS);
+      mixer_add_channel (
+        MIXER, track->channel, F_NO_RECALC_GRAPH);
+      tracklist_insert_track (
+        TRACKLIST,
+        track,
         self->pos,
         F_NO_PUBLISH_EVENTS);
     }
@@ -102,19 +108,17 @@ create_instrument (
           return -1;
         }
 
-      ChannelType ct = CT_MIDI;
-      ch =
-        channel_new (
-          ct, self->pl_descr.name, F_ADD_TO_PROJ);
-      mixer_add_channel (MIXER, ch, 1);
-      track_new (ch, "label");
+      track =
+        track_new (TRACK_TYPE_INSTRUMENT, "label");
       tracklist_insert_track (
         TRACKLIST,
-        ch->track,
+        track,
         self->pos,
         F_NO_PUBLISH_EVENTS);
       channel_add_plugin (
-        ch, 0, pl, 1, 1, 1);
+        track->channel, 0, pl, 1, 1, 1);
+      mixer_add_channel (
+        MIXER, track->channel, F_NO_RECALC_GRAPH);
 
       if (g_settings_get_int (
             S_PREFERENCES,
@@ -126,9 +130,11 @@ create_instrument (
         }
     }
 
-  self->track_ids[idx] = ch->track->id;
+  mixer_recalc_graph (MIXER);
 
-  EVENTS_PUSH (ET_TRACKS_CREATED, ch->track);
+  self->track_ids[idx] = track->id;
+
+  EVENTS_PUSH (ET_TRACKS_CREATED, track);
 
   return 0;
 }

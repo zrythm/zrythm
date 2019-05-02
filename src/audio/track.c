@@ -40,6 +40,7 @@
 #include "gui/widgets/track.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 #include "utils/objects.h"
 
 #include <glib/gi18n.h>
@@ -75,11 +76,16 @@ track_init (Track * track)
 }
 
 /**
- * Returns a new track for the given channel with
- * the given label.
+ * Creates a track with the given label and returns
+ * it.
+ *
+ * If the TrackType is one that needs a Channel,
+ * then a Channel is also created for the track.
  */
 Track *
-track_new (Channel * channel, char * label)
+track_new (
+  TrackType type,
+  char * label)
 {
   Track * track =
     calloc (1, sizeof (Track));
@@ -87,29 +93,42 @@ track_new (Channel * channel, char * label)
   track_init (track);
   project_add_track (track);
 
-  track->name = label;
-  track->channel = channel;
-  track->channel_id = channel->id;
-  channel->track = track;
-  channel->track_id = track->id;
+  track->name = g_strdup (label);
 
-  switch (channel->type)
+  ChannelType ct;
+  switch (type)
     {
-    case CT_MIDI:
+    case TRACK_TYPE_INSTRUMENT:
       instrument_track_init (track);
+      ct = CT_MIDI;
       break;
-    case CT_AUDIO:
+    case TRACK_TYPE_AUDIO:
       audio_track_init (track);
+      ct = CT_AUDIO;
       break;
-    case CT_BUS:
-      bus_track_init (track);
-      break;
-    case CT_MASTER:
+    case TRACK_TYPE_MASTER:
       master_track_init (track);
+      ct = CT_MASTER;
       break;
+    case TRACK_TYPE_BUS:
+      bus_track_init (track);
+      ct = CT_BUS;
+      break;
+    case TRACK_TYPE_CHORD:
+      break;
+    default:
+      g_return_val_if_reached (NULL);
     }
 
-  channel_generate_automatables (channel);
+  Channel * ch =
+    channel_new (ct, label, F_ADD_TO_PROJ);
+  track->channel = ch;
+
+  track->channel_id = ch->id;
+  ch->track = track;
+  ch->track_id = track->id;
+
+  channel_generate_automatables (ch);
 
   automation_tracklist_init (
     &track->automation_tracklist,
@@ -127,10 +146,9 @@ Track *
 track_clone (Track * track)
 {
   int i;
-  Channel * ch = channel_clone (track->channel);
   Track * new_track =
     track_new (
-      ch,
+      track->type,
       track->name);
 
 #define COPY_MEMBER(a) \
@@ -147,6 +165,12 @@ track_clone (Track * track)
   COPY_MEMBER (color.green);
   COPY_MEMBER (color.blue);
   COPY_MEMBER (color.alpha);
+
+  Channel * ch = channel_clone (track->channel);
+  track->channel = ch;
+  track->channel_id = ch->id;
+  ch->track = track;
+  ch->track_id = track->id;
 
   Region * region, * new_region;
   for (i = 0; i < track->num_regions; i++)

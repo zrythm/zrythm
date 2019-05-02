@@ -226,11 +226,16 @@ void
 track_init (Track * track);
 
 /**
- * Returns a new track for the given channel with
- * the given label.
+ * Creates a track with the given label and returns
+ * it.
+ *
+ * If the TrackType is one that needs a Channel,
+ * then a Channel is also created for the track.
  */
 Track *
-track_new (Channel * channel, char * label);
+track_new (
+  TrackType type,
+  char * label);
 
 /**
  * Clones the track and returns the clone.
