@@ -19,7 +19,7 @@
 
 #include <stdlib.h>
 
-#include "actions/edit_track_action.h"
+#include "actions/edit_tracks_action.h"
 #include "actions/undo_manager.h"
 #include "audio/audio_track.h"
 #include "audio/automation_point.h"
@@ -41,6 +41,8 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/objects.h"
+
+#include <glib/gi18n.h>
 
 void
 track_init_loaded (Track * track)
@@ -83,9 +85,13 @@ track_new (Channel * channel, char * label)
     calloc (1, sizeof (Track));
 
   track_init (track);
+  project_add_track (track);
+
   track->name = label;
   track->channel = channel;
   track->channel_id = channel->id;
+  channel->track = track;
+  channel->track_id = track->id;
 
   switch (channel->type)
     {
@@ -103,7 +109,13 @@ track_new (Channel * channel, char * label)
       break;
     }
 
-  project_add_track (track);
+  channel_generate_automatables (channel);
+
+  automation_tracklist_init (
+    &track->automation_tracklist,
+    track);
+
+  track->widget = track_widget_new (track);
 
   return track;
 }
@@ -115,9 +127,10 @@ Track *
 track_clone (Track * track)
 {
   int i;
+  Channel * ch = channel_clone (track->channel);
   Track * new_track =
     track_new (
-      project_get_channel (track->channel_id),
+      ch,
       track->name);
 
 #define COPY_MEMBER(a) \
@@ -143,14 +156,14 @@ track_clone (Track * track)
         project_get_region (track->region_ids[i]);
       new_region =
         region_clone (region, REGION_CLONE_COPY);
-      new_region->actual_id = region->id;
 
       /* add to new track */
-      new_track->region_ids[new_track->num_regions] =
-        new_region->id;
-      array_append (new_track->regions,
-                    new_track->num_regions,
-                    new_region);
+      array_double_append (
+        new_track->regions,
+        new_track->region_ids,
+        new_track->num_regions,
+        new_region,
+        new_region->id);
     }
 
   automation_tracklist_clone (
@@ -246,8 +259,11 @@ track_set_muted (Track * track,
                  int     trigger_undo)
 {
   UndoableAction * action =
-    edit_track_action_new_mute (track,
-                                mute);
+    edit_tracks_action_new (
+      EDIT_TRACK_ACTION_TYPE_MUTE,
+      track,
+      TRACKLIST_SELECTIONS,
+      0.f, 0.f, 0, mute);
   g_message ("setting mute to %d",
              mute);
   if (trigger_undo)
@@ -257,8 +273,8 @@ track_set_muted (Track * track,
     }
   else
     {
-      edit_track_action_do (
-        (EditTrackAction *) action);
+      edit_tracks_action_do (
+        (EditTracksAction *) action);
     }
 }
 
@@ -272,8 +288,11 @@ track_set_soloed (Track * track,
                   int     trigger_undo)
 {
   UndoableAction * action =
-    edit_track_action_new_solo (track,
-                                solo);
+    edit_tracks_action_new (
+      EDIT_TRACK_ACTION_TYPE_SOLO,
+      track,
+      TRACKLIST_SELECTIONS,
+      0.f, 0.f, solo, 0);
   if (trigger_undo)
     {
       undo_manager_perform (UNDO_MANAGER,
@@ -281,8 +300,8 @@ track_set_soloed (Track * track,
     }
   else
     {
-      edit_track_action_do (
-        (EditTrackAction *) action);
+      edit_tracks_action_do (
+        (EditTracksAction *) action);
     }
 }
 
@@ -669,6 +688,33 @@ track_get_region_at_pos (
         }
     }
   return NULL;
+}
+
+const char *
+track_stringize_type (
+  TrackType type)
+{
+  switch (type)
+    {
+    case TRACK_TYPE_INSTRUMENT:
+      return g_strdup (
+        _("Instrument"));
+    case TRACK_TYPE_AUDIO:
+      return g_strdup (
+        _("Audio"));
+    case TRACK_TYPE_BUS:
+      return g_strdup (
+        _("Bus"));
+    case TRACK_TYPE_MASTER:
+      return g_strdup (
+        _("Master"));
+    case TRACK_TYPE_CHORD:
+      return g_strdup (
+        _("Chord"));
+    default:
+      g_warn_if_reached ();
+      return NULL;
+    }
 }
 
 /**

@@ -40,8 +40,9 @@
  * each channel must be initialized at this point.
  */
 void
-tracklist_init (Tracklist * self,
-                int loading)
+tracklist_init (
+  Tracklist * self,
+  int loading)
 {
   g_warn_if_fail (MIXER);
   g_warn_if_fail (MIXER->master);
@@ -150,26 +151,30 @@ set_track_name (Tracklist * self, Track * track)
 
 /**
  * Adds given track to given spot in tracklist.
+ *
+ * @param publish_events Publish UI events.
  */
 void
-tracklist_add_track (Track *     track,
-                     int         pos)
+tracklist_insert_track (
+  Tracklist * self,
+  Track *     track,
+  int         pos,
+  int         publish_events)
 {
   g_warn_if_fail (track->id > -1);
 
   set_track_name (TRACKLIST, track);
 
-  array_insert (TRACKLIST->tracks,
-                TRACKLIST->num_tracks,
-                pos,
-                track);
-  int size = TRACKLIST->num_tracks - 1;
-  array_insert (TRACKLIST->track_ids,
-                size,
-                pos,
-                track->id);
+  array_double_insert (
+    self->tracks,
+    self->track_ids,
+    self->num_tracks,
+    pos,
+    track,
+    track->id);
 
-  EVENTS_PUSH (ET_TRACK_ADDED, track);
+  if (publish_events)
+    EVENTS_PUSH (ET_TRACK_ADDED, track);
 }
 
 ChordTrack *
@@ -283,10 +288,22 @@ tracklist_get_next_visible_track (Track * track)
   return NULL;
 }
 
+/**
+ * Removes a track from the Tracklist and the
+ * TracklistSelections.
+ *
+ * @param free Free the track or not (free later).
+ * @param publish_events Push a track deleted event
+ *   to the UI.
+ * @param recalc_graph Recalculate the mixer graph.
+ */
 void
-tracklist_remove_track (Track *     track)
+tracklist_remove_track (
+  Tracklist * self,
+  Track *     track,
+  int         free,
+  int         publish_events)
 {
-  mixer_remove_channel (track->channel);
   array_double_delete (
     TRACKLIST->tracks,
     TRACKLIST->track_ids,
@@ -295,11 +312,40 @@ tracklist_remove_track (Track *     track)
     track->id);
   tracklist_selections_remove_track (
     TRACKLIST_SELECTIONS, track);
-  project_remove_track (track);
-  free_later (track, track_free);
 
-  EVENTS_PUSH (ET_TRACK_REMOVED,
-               NULL);
+  if (free)
+    {
+      project_remove_track (track);
+      free_later (track, track_free);
+    }
 
-  mixer_recalculate_graph (MIXER);
+  if (publish_events)
+    EVENTS_PUSH (ET_TRACKS_REMOVED,
+                 NULL);
+}
+
+/**
+ * Moves a track from its current position to the
+ * position given by \p pos.
+ *
+ * @param publish_events Push UI update events or
+ *   not.
+ */
+void
+tracklist_move_track (
+  Tracklist * self,
+  Track *     track,
+  int         pos,
+  int         publish_events)
+{
+  array_double_insert (
+    self->tracks,
+    self->track_ids,
+    self->num_tracks,
+    pos,
+    track,
+    track->id);
+
+  if (publish_events)
+    EVENTS_PUSH (ET_TRACKS_MOVED, NULL);
 }

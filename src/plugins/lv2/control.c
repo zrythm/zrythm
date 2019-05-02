@@ -313,7 +313,7 @@ lv2_control_get_from_port (
   LV2_Port * port)
 {
   Lv2Plugin * plgn =
-    port->port->owner_pl->original_plugin;
+    port->port->owner_pl->lv2;
   Lv2Controls * ctrls =
     &plgn->controls;
   for (int i = 0; i < ctrls->n_controls; i++)

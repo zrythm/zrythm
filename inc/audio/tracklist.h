@@ -28,6 +28,12 @@
 
 #include "audio/engine.h"
 
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
+
 typedef struct Track Track;
 typedef struct _TracklistWidget TracklistWidget;
 
@@ -37,20 +43,27 @@ typedef struct _TracklistWidget TracklistWidget;
 typedef struct Track ChordTrack;
 
 /**
- * Internal Tracklist.
+ * The Tracklist contains all the tracks in the
+ * Project.
+ *
+ * There should be a clear separation between the
+ * Tracklist and the Mixer. The Tracklist should be
+ * concerned with Tracks in the arranger, and the
+ * Mixer should be concerned with Channels, routing
+ * and Port connections.
  */
 typedef struct Tracklist
 {
   /**
    * All tracks that exist.
    *
-   * These should always be sorted in the same way they
-   * are visible in the GUI.
+   * These should always be sorted in the same way
+   * they should appear in the GUI.
    */
   Track *             tracks[MAX_TRACKS];
 
   /**
-   * The track IDs used to identify tracks.
+   * Track IDs corresponding to the above \p tracks.
    */
   int                 track_ids[MAX_TRACKS];
   int                 num_tracks;
@@ -105,11 +118,40 @@ tracklist_contains_chord_track ();
  * Adds given track to given spot in tracklist.
  */
 void
-tracklist_insert_track (Track *     track,
-                        int         pos);
+tracklist_insert_track (
+  Tracklist * self,
+  Track *     track,
+  int         pos,
+  int         publish_events);
 
+/**
+ * Removes a track from the Tracklist and the
+ * TracklistSelections.
+ *
+ * @param free Free the track or not (free later).
+ * @param publish_events Push a track deleted event
+ *   to the UI.
+ */
 void
-tracklist_remove_track (Track *     track);
+tracklist_remove_track (
+  Tracklist * self,
+  Track *     track,
+  int         free,
+  int         publish_events);
+
+/**
+ * Moves a track from its current position to the
+ * position given by \p pos.
+ *
+ * @param publish_events Push UI update events or
+ *   not.
+ */
+void
+tracklist_move_track (
+  Tracklist * self,
+  Track *     track,
+  int         pos,
+  int         publish_events);
 
 void
 tracklist_append_track (Track *     track);
@@ -134,5 +176,9 @@ tracklist_get_prev_visible_track (Track * track);
 
 Track *
 tracklist_get_next_visible_track (Track * track);
+
+/**
+ * @}
+ */
 
 #endif

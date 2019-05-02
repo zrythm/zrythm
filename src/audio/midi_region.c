@@ -36,7 +36,8 @@
 MidiRegion *
 midi_region_new (Track *    track,
                  Position * start_pos,
-                 Position * end_pos)
+                 Position * end_pos,
+                 int        add_to_project)
 {
   MidiRegion * midi_region =
     calloc (1, sizeof (MidiRegion));
@@ -45,7 +46,8 @@ midi_region_new (Track *    track,
                REGION_TYPE_MIDI,
                track,
                start_pos,
-               end_pos);
+               end_pos,
+               add_to_project);
 
   return midi_region;
 }

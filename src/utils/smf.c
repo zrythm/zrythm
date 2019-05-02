@@ -30,6 +30,7 @@
 #include "audio/velocity.h"
 #include "gui/widgets/velocity.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/smf.h"
 
@@ -265,11 +266,14 @@ smf_load_region (const char *   file,   ///< file to load
 
   for (int i = 0; i < num_notes; i++)
     {
-      MidiNote * midi_note = midi_note_new (midi_region,
-                                            &notes[i].start_pos,
-                                            &notes[i].end_pos,
-                                            notes[i].val,
-                                            notes[i].vel);
+      MidiNote * midi_note =
+        midi_note_new (
+          midi_region,
+          &notes[i].start_pos,
+          &notes[i].end_pos,
+          notes[i].val,
+          notes[i].vel,
+          F_ADD_TO_PROJ);
       midi_region_add_midi_note (midi_region,
                                  midi_note);
     }

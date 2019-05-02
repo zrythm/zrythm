@@ -1015,9 +1015,9 @@ timeline_arranger_widget_create_region (
   Region * region = NULL;
   if (track->type == TRACK_TYPE_INSTRUMENT)
     {
-      region = (Region *) midi_region_new (track,
-                               pos,
-                               pos);
+      region =
+        midi_region_new (
+          track, pos, pos, 1);
     }
   position_set_min_size (&region->start_pos,
                          &region->end_pos,
@@ -1794,6 +1794,7 @@ timeline_arranger_widget_on_drag_end (
       UndoableAction * ua =
         (UndoableAction *)
         move_timeline_selections_action_new (
+          TL_SELECTIONS,
           position_to_ticks (
             &TL_SELECTIONS->
               transient_regions[0]->start_pos) -
@@ -1816,6 +1817,7 @@ timeline_arranger_widget_on_drag_end (
       UndoableAction * ua =
         (UndoableAction *)
         duplicate_timeline_selections_action_new (
+          TL_SELECTIONS,
           position_to_ticks (
             &TL_SELECTIONS->
               transient_regions[0]->start_pos) -
@@ -1847,7 +1849,8 @@ timeline_arranger_widget_on_drag_end (
     {
       UndoableAction * ua =
         (UndoableAction *)
-        create_timeline_selections_action_new ();
+        create_timeline_selections_action_new (
+          TL_SELECTIONS);
       undo_manager_perform (
         UNDO_MANAGER, ua);
     }

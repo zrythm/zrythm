@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "actions/create_tracks_action.h"
 #include "audio/engine.h"
 #include "audio/mixer.h"
 #include "gui/widgets/plugin_browser.h"
@@ -74,7 +75,23 @@ on_row_activated (GtkTreeView       *tree_view,
     &value);
   PluginDescriptor * descr =
     g_value_get_pointer (&value);
-  mixer_add_channel_from_plugin_descr (descr);
+
+  TrackType tt;
+  if (g_strcmp0 (descr->category,
+                 "Instrument"))
+    tt = TRACK_TYPE_INSTRUMENT;
+  else
+    tt = TRACK_TYPE_BUS;
+
+  UndoableAction * ua =
+    create_tracks_action_new (
+      tt,
+      descr,
+      NULL,
+      TRACKLIST->num_tracks,
+      1);
+
+  undo_manager_perform (UNDO_MANAGER, ua);
 }
 
 /**

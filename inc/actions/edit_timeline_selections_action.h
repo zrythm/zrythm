@@ -17,50 +17,42 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __UNDO_EDIT_TRACK_ACTION_H__
-#define __UNDO_EDIT_TRACK_ACTION_H__
+#ifndef __UNDO_EDIT_TIMELINE_SELECTIONS_ACTION_H__
+#define __UNDO_EDIT_TIMELINE_SELECTIONS_ACTION_H__
 
 #include "actions/undoable_action.h"
 
-typedef enum EditTrackActionType
-{
-  EDIT_TRACK_ACTION_TYPE_SOLO,
-  EDIT_TRACK_ACTION_TYPE_MUTE,
-  EDIT_TRACK_ACTION_TYPE_RECORD,
-} EditTrackActionType;
+typedef struct TimelineSelections
+  TimelineSelections;
 
-typedef struct Track Track;
-
-typedef struct EditTrackAction
+typedef struct EditTimelineSelectionsAction
 {
   UndoableAction              parent_instance;
-  EditTrackActionType         type;
 
-  int                         track_id;
-
-  /**
-   * Params to be changed.
-   */
-  int                         solo_new;
-  int                         mute_new;
-} EditTrackAction;
+  /** Timeline selections clone. */
+  TimelineSelections * ts;
+} EditTimelineSelectionsAction;
 
 UndoableAction *
-edit_track_action_new_solo (Track * track,
-                            int       solo);
+edit_timeline_selections_action_new (
+  TimelineSelections * ts,
+  long                 ticks,
+  int                  delta);
 
-UndoableAction *
-edit_track_action_new_mute (Track * track,
-                            int       mute);
+int
+edit_timeline_selections_action_do (
+	EditTimelineSelectionsAction * self);
+
+int
+edit_timeline_selections_action_undo (
+	EditTimelineSelectionsAction * self);
+
+char *
+edit_timeline_selections_action_stringize (
+	EditTimelineSelectionsAction * self);
 
 void
-edit_track_action_do (EditTrackAction * self);
-
-void
-edit_track_action_undo (EditTrackAction * self);
-
-void
-edit_track_action_free (EditTrackAction * self);
+edit_timeline_selections_action_free (
+	EditTimelineSelectionsAction * self);
 
 #endif
-

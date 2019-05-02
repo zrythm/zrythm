@@ -27,13 +27,16 @@
 #include "utils/flags.h"
 #include "utils/objects.h"
 
+#include <glib/gi18n.h>
+
 /**
  * Note: chord addresses are to be copied.
  */
 UndoableAction *
 duplicate_timeline_selections_action_new (
-  long ticks,
-  int  delta)
+  TimelineSelections * ts,
+  long                 ticks,
+  int                  delta)
 {
   DuplicateTimelineSelectionsAction * self =
     calloc (1, sizeof (
@@ -41,9 +44,11 @@ duplicate_timeline_selections_action_new (
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
     UNDOABLE_ACTION_TYPE_DUPLICATE_TL_SELECTIONS;
-  self->ts = timeline_selections_clone ();
+
+  self->ts = timeline_selections_clone (ts);
   self->ticks = ticks;
   self->delta = delta;
+
   return ua;
 }
 
@@ -51,30 +56,31 @@ int
 duplicate_timeline_selections_action_do (
   DuplicateTimelineSelectionsAction * self)
 {
-  Region * r, * _r;
+  Region * orig_region, * region;
 	for (int i = 0; i < self->ts->num_regions; i++)
     {
-      /* this is a clone, must not be used */
-      r = self->ts->regions[i];
+      /* get the clone */
+      orig_region = self->ts->regions[i];
 
       /* clone the clone */
-      _r = region_clone (r, REGION_CLONE_COPY);
-      _r->actual_id = _r->id;
+      region =
+        region_clone (
+          orig_region, REGION_CLONE_COPY);
 
-      /* add and shift the new clone */
+      /* add and shift it */
       track_add_region (
-        project_get_track (_r->track_id),
-        _r);
+        project_get_track (region->track_id),
+        region);
       region_shift (
-        _r, self->ticks, self->delta);
+        region, self->ticks, self->delta);
 
-      /* select the new clone */
-      region_widget_select (_r->widget,
+      /* select it */
+      region_widget_select (region->widget,
                             F_SELECT,
                             F_NO_TRANSIENTS);
 
-      /* remember the new clone's id */
-      r->actual_id = _r->id;
+      /* remember the ID */
+      orig_region->id = region->id;
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
@@ -86,25 +92,32 @@ int
 duplicate_timeline_selections_action_undo (
   DuplicateTimelineSelectionsAction * self)
 {
-  Region * r, * _r;
+  Region * region;
   for (int i = 0; i < self->ts->num_regions; i++)
     {
-      /* this is a clone */
-      r = self->ts->regions[i];
-
-      /* find the region with the actual id */
-      _r = project_get_region (r->actual_id);
+      /* find the actual region */
+      region =
+        project_get_region (
+          self->ts->regions[i]->id);
 
       /* remove it */
       track_remove_region (
-        project_get_track (_r->track_id),
-        _r);
-      free_later (_r, region_free);
+        project_get_track (region->track_id),
+        region);
+      free_later (region, region_free);
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
 
   return 0;
+}
+
+char *
+duplicate_timeline_selections_action_stringize (
+  DuplicateTimelineSelectionsAction * self)
+{
+  return g_strdup (
+    _("Duplicate Object(s)"));
 }
 
 void

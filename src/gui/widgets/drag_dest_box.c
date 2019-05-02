@@ -20,6 +20,7 @@
 /** \file
  */
 
+#include "actions/create_tracks_action.h"
 #include "audio/channel.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
@@ -132,7 +133,15 @@ on_drag_data_received (GtkWidget        *widget,
       if (fd->type >= FILE_TYPE_DIR)
         return;
 
-      mixer_add_channel_from_file_descr (fd);
+      UndoableAction * ua =
+        create_tracks_action_new (
+          TRACK_TYPE_AUDIO,
+          NULL,
+          fd,
+          TRACKLIST->num_tracks,
+          1);
+
+      undo_manager_perform (UNDO_MANAGER, ua);
     }
   else if ((target =
             GET_ATOM (TARGET_ENTRY_PLUGIN_DESCR)))
@@ -141,7 +150,22 @@ on_drag_data_received (GtkWidget        *widget,
         * (gpointer *)
           gtk_selection_data_get_data (data);
 
-      mixer_add_channel_from_plugin_descr (pd);
+      TrackType tt;
+      if (g_strcmp0 (pd->category,
+                     "Instrument"))
+        tt = TRACK_TYPE_INSTRUMENT;
+      else
+        tt = TRACK_TYPE_BUS;
+
+      UndoableAction * ua =
+        create_tracks_action_new (
+          tt,
+          pd,
+          NULL,
+          TRACKLIST->num_tracks,
+          1);
+
+      undo_manager_perform (UNDO_MANAGER, ua);
     }
 }
 

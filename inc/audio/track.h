@@ -67,6 +67,15 @@ typedef struct Track
    */
   int                 id;
 
+  /**
+   * Position in the Tracklist.
+   *
+   * This is also used in the Mixer for the Channels.
+   * If a track doesn't have a Channel, the Mixer
+   * can just skip it in its numbering.
+   */
+  int                 pos;
+
   /** The type of track this is. */
   TrackType           type;
 
@@ -334,6 +343,10 @@ track_get_fader_automatable (Track * track);
  */
 char *
 track_get_name (Track * track);
+
+const char *
+track_stringize_type (
+  TrackType type);
 
 /**
  * Wrapper for each track type.

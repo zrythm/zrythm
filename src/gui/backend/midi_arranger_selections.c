@@ -232,13 +232,12 @@ midi_arranger_selections_remove_note (
  * Clone the struct for copying, undoing, etc.
  */
 MidiArrangerSelections *
-midi_arranger_selections_clone ()
+midi_arranger_selections_clone (
+  MidiArrangerSelections * src)
 {
   MidiArrangerSelections * new_ts =
     calloc (1, sizeof (MidiArrangerSelections));
 
-  MidiArrangerSelections * src =
-    MIDI_ARRANGER_SELECTIONS;
   for (int i = 0; i < src->num_midi_notes; i++)
     {
       MidiNote * r = src->midi_notes[i];

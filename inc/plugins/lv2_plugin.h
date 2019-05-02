@@ -428,7 +428,18 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin);
  * Used when saving the project.
  */
 int
-lv2_save_state (Lv2Plugin * lv2_plugin, const char * dir);
+lv2_plugin_save_state_to_file (
+  Lv2Plugin * lv2_plugin,
+  const char * dir);
+
+/**
+ * Saves the current state to a string (returned).
+ *
+ * MUST be free'd by caller.
+ */
+int
+lv2_plugin_save_state_to_str (
+  Lv2Plugin * lv2_plugin);
 
 /**
  * Frees memory

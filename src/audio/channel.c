@@ -51,6 +51,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/dialogs.h"
+#include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/objects.h"
 
@@ -1968,9 +1969,10 @@ channel_handle_recording (Channel * self)
       else /* if not already in a region */
         {
           /* create region */
-          mr = midi_region_new (self->track,
-                                &PLAYHEAD,
-                                &tmp);
+          mr =
+            midi_region_new (
+              self->track, &PLAYHEAD, &tmp,
+              F_ADD_TO_PROJ);
           region = (Region *) mr;
           track_add_region (self->track,
                             region);
@@ -1993,20 +1995,21 @@ channel_handle_recording (Channel * self)
                 {
                   case MIDI_CH1_NOTE_ON:
                     vel =
-                      velocity_new (event->buffer[2]);
+                      velocity_new (
+                        event->buffer[2]);
                     mn =
                       midi_note_new (
-                        mr,
-                        &PLAYHEAD,
-                        &tmp,
-                        event->buffer[1],
-                        vel);
-                    midi_region_add_midi_note (mr, mn);
+                        mr, &PLAYHEAD, &tmp,
+                        event->buffer[1], vel,
+                        F_ADD_TO_PROJ);
+                    midi_region_add_midi_note (
+                      mr, mn);
 
                     /* add to unended notes */
-                    array_append (mr->unended_notes,
-                                  mr->num_unended_notes,
-                                  mn);
+                    array_append (
+                      mr->unended_notes,
+                      mr->num_unended_notes,
+                      mn);
                     break;
                   case MIDI_CH1_NOTE_OFF:
                     mn =
@@ -2136,10 +2139,15 @@ channel_init_loaded (Channel * ch)
 }
 
 /**
- * Creates, inits, and returns a new channel with given info.
+ * Creates, inits, and returns a new channel with
+ * given info.
+ *
+ * @param add_to_project Add to project or not.
  */
-static Channel *
-_create_channel (char * name)
+static inline Channel *
+_create_channel (
+  char * name,
+  int    add_to_project)
 {
   Channel * channel = calloc (1, sizeof (Channel));
 
@@ -2213,14 +2221,6 @@ _create_channel (char * name)
 
   fader_init (&channel->fader, channel);
 
-  /* connect MIDI in port from engine's jack port */
-  if (AUDIO_ENGINE->midi_backend !=
-        MIDI_BACKEND_DUMMY)
-    {
-      port_connect (AUDIO_ENGINE->midi_in,
-                    channel->midi_in);
-    }
-
   /* init semaphores */
   /*zix_sem_init (&channel->processed_sem, 1);*/
   /*zix_sem_init (&channel->start_processing_sem, 0);*/
@@ -2245,10 +2245,24 @@ _create_channel (char * name)
 
   channel->visible = 1;
 
-  project_add_channel (channel);
+  if (add_to_project)
+    project_add_channel (channel);
 
   return channel;
 }
+
+/**
+ * Adds to (or subtracts from) the pan.
+ */
+void
+channel_add_pan (void * _channel, float pan)
+{
+  Channel * channel = (Channel *) _channel;
+
+  channel->fader.pan =
+    CLAMP (channel->fader.pan + pan, 0.f, 1.f);
+}
+
 
 /**
  * Sets fader to 0.0.
@@ -2262,13 +2276,15 @@ channel_reset_fader (Channel * self)
 /**
  * Generates automatables for the channel.
  *
- * Should be called as soon as it is created
+ * Should be called as soon as the track is
+ * created.
  */
-static void
-generate_automatables (Channel * channel)
+void
+channel_generate_automatables (Channel * channel)
 {
-  g_message ("Generating automatables for channel %s",
-             channel->track->name);
+  g_message (
+    "Generating automatables for channel %s",
+    channel->track->name);
 
   /* generate channel automatables if necessary */
   if (!channel_get_automatable (
@@ -2337,62 +2353,88 @@ channel_get_or_create_blank (int id)
 }
 
 /**
- * Creates a channel of the given type with the given label
+ * Connects the channel's ports.
  */
-Channel *
-channel_create (ChannelType type,
-                char *      label)
+void
+channel_connect (
+  Channel * ch)
 {
-  g_warn_if_fail (label);
-
-  Channel * channel = _create_channel (label);
-
-  channel->type = type;
+  /* connect MIDI in port from engine's jack
+   * port */
+  if (AUDIO_ENGINE->midi_backend !=
+        MIDI_BACKEND_DUMMY)
+    {
+      port_connect (AUDIO_ENGINE->midi_in,
+                    ch->midi_in);
+    }
 
   /* set default output */
-  if (type == CT_MASTER)
+  if (ch->type == CT_MASTER)
     {
-      channel->output = NULL;
-      channel->output_id = -1;
-      channel->id = 0;
+      ch->output = NULL;
+      ch->output_id = -1;
       port_connect (
-        channel->stereo_out->l,
+        ch->stereo_out->l,
         AUDIO_ENGINE->stereo_out->l);
       port_connect (
-        channel->stereo_out->r,
+        ch->stereo_out->r,
         AUDIO_ENGINE->stereo_out->r);
     }
   else
     {
-      channel->id = mixer_get_next_channel_id ();
-      channel->output = MIXER->master;
-      channel->output_id = MIXER->master->id;
+      ch->output = MIXER->master;
+      ch->output_id = MIXER->master->id;
     }
 
-  if (type == CT_BUS ||
-      type == CT_AUDIO ||
-      type == CT_MASTER)
+  if (ch->type == CT_BUS ||
+      ch->type == CT_AUDIO ||
+      ch->type == CT_MASTER)
     {
       /* connect stereo in to stereo out */
-      port_connect (channel->stereo_in->l,
-                    channel->stereo_out->l);
-      port_connect (channel->stereo_in->r,
-                    channel->stereo_out->r);
+      port_connect (ch->stereo_in->l,
+                    ch->stereo_out->l);
+      port_connect (ch->stereo_in->r,
+                    ch->stereo_out->r);
     }
 
-  if (type != CT_MASTER)
+  if (ch->type != CT_MASTER)
     {
       /* connect channel out ports to master */
-      port_connect (channel->stereo_out->l,
+      port_connect (ch->stereo_out->l,
                     MIXER->master->stereo_in->l);
-      port_connect (channel->stereo_out->r,
+      port_connect (ch->stereo_out->r,
                     MIXER->master->stereo_in->r);
     }
+}
 
-  channel->track = track_new (channel, label);
-  generate_automatables (channel);
+/**
+ * Creates a channel of the given type with the
+ * given label.
+ *
+ * This should not be creating a track. A track
+ * should be created from an existing channel.
+ *
+ * @param add_to_project Whether the channel should
+ *   be added to the project or not. This should be
+ *   true unless the channel will be transient (e.g.
+ *   in an undo action).
+ */
+Channel *
+channel_new (
+  ChannelType type,
+  char *      label,
+  int         add_to_project)
+{
+  g_warn_if_fail (label);
 
-  g_message ("Created channel %s of type %i", label, type);
+  Channel * channel =
+    _create_channel (label,
+                     add_to_project);
+
+  channel->type = type;
+
+  g_message ("Created channel %s of type %i",
+             label, type);
 
   return channel;
 }
@@ -2540,15 +2582,16 @@ channel_disconnect_plugin_from_strip (
  * associated with he plugin are not deleted at
  * this time.
  *
- * @param recalc_graph Recalculate mixer graph.
+ * This function will always recalculate the graph
+ * in order to avoid situations where the plugin
+ * might be used during processing.
  */
 void
 channel_remove_plugin (
   Channel * channel,
   int pos,
   int deleting_plugin,
-  int deleting_channel,
-  int recalc_graph)
+  int deleting_channel)
 {
   Plugin * plugin = channel->plugins[pos];
   if (plugin)
@@ -2570,7 +2613,7 @@ channel_remove_plugin (
             {
               Lv2Plugin * lv2_plugin =
                 (Lv2Plugin *)
-                plugin->original_plugin;
+                plugin->lv2;
               if (GTK_IS_WIDGET (
                     lv2_plugin->window))
                 g_signal_handler_disconnect (
@@ -2595,8 +2638,7 @@ channel_remove_plugin (
     automation_tracklist_update (
       &channel->track->automation_tracklist);
 
-  if (recalc_graph)
-    mixer_recalculate_graph (MIXER);
+  mixer_recalc_graph (MIXER);
 }
 
 /**
@@ -2647,7 +2689,8 @@ channel_add_plugin (
     }
 
   /* free current plugin */
-  channel_remove_plugin (channel, pos, 1, 0, 0);
+  channel_remove_plugin (
+    channel, pos, 1, 0);
 
   g_message ("Inserting %s at %s:%d", plugin->descr->name,
              channel->track->name, pos);
@@ -2655,6 +2698,7 @@ channel_add_plugin (
   channel->plugin_ids[pos] = plugin->id;
   plugin->channel = channel;
   plugin->channel_id = channel->id;
+  plugin->slot = pos;
 
   Plugin * next_plugin = NULL;
   for (i = pos + 1; i < STRIP_SIZE; i++)
@@ -2711,7 +2755,7 @@ channel_add_plugin (
                plugin);
 
   if (recalc_graph)
-    mixer_recalculate_graph (MIXER);
+    mixer_recalc_graph (MIXER);
 
   return 1;
 }
@@ -2858,6 +2902,45 @@ channel_get_automatable (Channel *       channel,
 /*}*/
 
 /**
+ * Clones the channel recursively.
+ */
+Channel *
+channel_clone (
+  Channel * ch)
+{
+  g_return_val_if_fail (ch->track, NULL);
+
+  Channel * clone =
+    channel_new (ch->type, ch->track->name,
+                 F_NO_ADD_TO_PROJ);
+
+  /* copy plugins */
+  for (int i = 0; i < STRIP_SIZE; i++)
+    {
+      clone->plugins[i] =
+        plugin_clone (ch->plugins[i]);
+      clone->plugin_ids[i] =
+        clone->plugins[i]->id;
+    }
+
+#define COPY_MEMBER(mem) \
+  clone->mem = ch->mem
+
+  COPY_MEMBER (type);
+  clone->fader.channel = clone;
+  fader_copy (&ch->fader, &clone->fader);
+  COPY_MEMBER (enabled);
+  COPY_MEMBER (visible);
+
+#undef COPY_MEMBER
+
+  /* TODO clone port connections, same for
+   * plugins */
+
+  return clone;
+}
+
+/**
  * Disconnects the channel from the processing
  * chain.
  *
@@ -2873,7 +2956,7 @@ channel_disconnect (Channel * channel)
     {
       if (channel->plugins[i])
         {
-          channel_remove_plugin (channel, i, 1, 1, 0);
+          channel_remove_plugin (channel, i, 1, 0);
         }
     }
   port_disconnect_all (channel->stereo_in->l);
@@ -2882,6 +2965,8 @@ channel_disconnect (Channel * channel)
   port_disconnect_all (channel->piano_roll);
   port_disconnect_all (channel->stereo_out->l);
   port_disconnect_all (channel->stereo_out->r);
+
+  mixer_recalc_graph (MIXER);
 }
 
 /**

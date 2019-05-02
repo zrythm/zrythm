@@ -914,7 +914,8 @@ on_key_action (
           num > 0)
         {
           UndoableAction * shift_up_action =
-            move_midi_arranger_selections_action_new (0, 1);
+            move_midi_arranger_selections_action_new (
+              MIDI_ARRANGER_SELECTIONS, 0, 1);
           undo_manager_perform (
           UNDO_MANAGER, shift_up_action);
           return TRUE;
@@ -924,7 +925,8 @@ on_key_action (
           num > 0)
         {
           UndoableAction * shift_down_action =
-            move_midi_arranger_selections_action_new (0, -1);
+            move_midi_arranger_selections_action_new (
+              MIDI_ARRANGER_SELECTIONS, 0, -1);
           undo_manager_perform (
           UNDO_MANAGER, shift_down_action);
           return TRUE;

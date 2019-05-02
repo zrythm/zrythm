@@ -100,11 +100,28 @@ fader_set_amp (
   float   amp);
 
 /**
+ * Adds (or subtracts if negative) to the amplitude
+ * of the fader (clamped at 0.0 to 2.0).
+ */
+void
+fader_add_amp (
+  void * self,
+  float   amp);
+
+/**
  * Gets the fader amplitude (not db)
  */
 float
 fader_get_amp (
   void * self);
+
+/**
+ * Copy the struct members from source to dest.
+ */
+void
+fader_copy (
+  Fader * src,
+  Fader * dest);
 
 /**
  * @}

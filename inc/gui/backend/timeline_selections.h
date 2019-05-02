@@ -17,8 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __ACTIONS_TL_SELECTIONS_H__
-#define __ACTIONS_TL_SELECTIONS_H__
+#ifndef __GUI_BACKEND_TL_SELECTIONS_H__
+#define __GUI_BACKEND_TL_SELECTIONS_H__
 
 #include "audio/automation_point.h"
 #include "audio/chord.h"

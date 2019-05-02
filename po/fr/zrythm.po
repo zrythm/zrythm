@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-29 12:04+0100\n"
+"POT-Creation-Date: 2019-05-02 21:50+0100\n"
 "PO-Revision-Date: 2019-03-22 22:30+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -85,12 +85,17 @@ msgstr "Toujours ouvrir la fenêtre des greffons"
 msgid "Artist"
 msgstr "Artiste"
 
+#: src/audio/track.c:704
+#, fuzzy
+msgid "Audio"
+msgstr "Unité Audio"
+
 #: resources/ui/first_run_assistant.ui:191 resources/ui/preferences.ui:122
 #, fuzzy
 msgid "Audio Backend"
 msgstr "Piste Audio"
 
-#: src/actions/actions.c:867
+#: src/actions/actions.c:870 src/actions/create_tracks_action.c:146
 msgid "Audio Track"
 msgstr "Piste Audio"
 
@@ -140,7 +145,11 @@ msgstr "Bouteille"
 msgid "Bottom Panel"
 msgstr "Panneau du bas"
 
-#: src/actions/actions.c:893
+#: src/audio/track.c:707
+msgid "Bus"
+msgstr ""
+
+#: src/actions/actions.c:898 src/actions/create_tracks_action.c:198
 msgid "Bus Track"
 msgstr "Piste de Bus"
 
@@ -157,7 +166,15 @@ msgstr "Impossible de localiser la propriété %s dans la classe %s"
 msgid "Category"
 msgstr "Catégorie"
 
-#: src/gui/widgets/channel_slot.c:282
+#: src/actions/edit_tracks_action.c:173
+msgid "Change Fader"
+msgstr ""
+
+#: src/actions/edit_tracks_action.c:176
+msgid "Change Pan"
+msgstr ""
+
+#: src/gui/widgets/channel_slot.c:301
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -171,6 +188,11 @@ msgstr "Discussion"
 #: resources/ui/donate_dialog.ui:49
 msgid "Choose a method to donate"
 msgstr "Choisir une méthode pour faire un don"
+
+#: src/audio/track.c:713
+#, fuzzy
+msgid "Chord"
+msgstr "Accords"
 
 #: src/audio/chord_track.c:51
 msgid "Chord Track"
@@ -220,10 +242,15 @@ msgstr "Connexions"
 msgid "Controllers found"
 msgstr "Contrôleurs trouvés"
 
-#: src/actions/undoable_action.c:294
-#, fuzzy
-msgid "Copy Plugin"
+#: src/actions/copy_plugins_action.c:194
+#, fuzzy, c-format
+msgid "Copy %d Plugins"
 msgstr "Greffons"
+
+#: src/actions/copy_plugins_action.c:190
+#, c-format
+msgid "Copy %s"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:107
 msgid "Copy and Paste"
@@ -233,21 +260,30 @@ msgstr "Copier et Coller"
 msgid "Copy selection to clipboard"
 msgstr "Copier la sélection dans le presse-papier"
 
-#. TRANSLATORS: these are used in Undo/Redo.
-#. * for example "Undo create channel"
-#: src/actions/undoable_action.c:273
-msgid "Create Channel"
+#: src/actions/create_tracks_action.c:334
+#, fuzzy, c-format
+msgid "Create %d %s Tracks"
+msgstr "_Supprimer %d Pistes"
+
+#: src/actions/create_plugins_action.c:127
+#, c-format
+msgid "Create %d %ss"
 msgstr ""
 
-#: src/actions/undoable_action.c:303 src/actions/undoable_action.c:315
+#: src/actions/create_plugins_action.c:123
+#, fuzzy, c-format
+msgid "Create %s"
+msgstr "Créer un nouveau projet"
+
+#: src/actions/create_tracks_action.c:329
+#, fuzzy, c-format
+msgid "Create %s Track"
+msgstr "_Supprimer %d Pistes"
+
+#: src/actions/create_midi_arranger_selections_action.c:115
 #, fuzzy
 msgid "Create Object(s)"
 msgstr "Créer un nouveau projet"
-
-#: src/actions/undoable_action.c:288
-#, fuzzy
-msgid "Create Plugin"
-msgstr "Greffons"
 
 #: resources/ui/project_assistant.ui:62 resources/ui/shortcuts.ui:84
 msgid "Create new project"
@@ -261,16 +297,24 @@ msgstr "Personnalisé"
 msgid "Cut selection to clipboard"
 msgstr "Couper la sélection dans le presse-papier"
 
-#: src/actions/undoable_action.c:279
-msgid "Delete Channel"
-msgstr ""
+#: src/actions/delete_plugins_action.c:126
+#, fuzzy, c-format
+msgid "Delete %d Plugins"
+msgstr "Greffons"
 
-#: src/actions/undoable_action.c:300 src/actions/undoable_action.c:312
+#: src/actions/delete_tracks_action.c:121
+#, fuzzy, c-format
+msgid "Delete %d Tracks"
+msgstr "_Supprimer %d Pistes"
+
+#: src/actions/delete_timeline_selections_action.c:112
+#: src/actions/delete_midi_arranger_selections_action.c:112
+#: src/actions/create_timeline_selections_action.c:121
 #, fuzzy
 msgid "Delete Object(s)"
 msgstr "Créer un nouveau projet"
 
-#: src/actions/undoable_action.c:297
+#: src/actions/delete_plugins_action.c:123
 #, fuzzy
 msgid "Delete Plugin"
 msgstr "Greffons"
@@ -278,6 +322,11 @@ msgstr "Greffons"
 #: src/plugins/lv2_gtk.c:562
 msgid "Delete Preset?"
 msgstr "Supprimer le préréglage ?"
+
+#: src/actions/delete_tracks_action.c:118
+#, fuzzy
+msgid "Delete Track"
+msgstr "_Supprimer la piste"
 
 #: resources/ui/connections.ui:98
 msgid "Dest. Audio Unit"
@@ -296,19 +345,17 @@ msgstr "Faire un don"
 msgid "Dummy"
 msgstr ""
 
-#: src/actions/undoable_action.c:309 src/actions/undoable_action.c:321
+#: src/actions/duplicate_timeline_selections_action.c:120
+#: src/actions/duplicate_midi_arranger_selections_action.c:115
 #, fuzzy
 msgid "Duplicate Object(s)"
 msgstr "_Copier la Piste"
 
-#: src/actions/undoable_action.c:276
-msgid "Edit Channel"
-msgstr ""
-
-#: src/actions/undoable_action.c:285
+#: src/actions/edit_midi_arranger_selections_action.c:64
+#: src/actions/edit_timeline_selections_action.c:66
 #, fuzzy
-msgid "Edit Track"
-msgstr "Piste Audio"
+msgid "Edit Object(s)"
+msgstr "Créer un nouveau projet"
 
 #: resources/ui/preferences.ui:331
 msgid "Editing"
@@ -344,9 +391,13 @@ msgstr "Saisir le nom de la région..."
 msgid "Eraser tool"
 msgstr "Outil gomme"
 
-#: src/actions/create_plugin_action.c:65
+#: src/actions/create_tracks_action.c:92 src/actions/create_tracks_action.c:218
 #, c-format
 msgid "Error instantiating plugin %s. Please see log for details."
+msgstr ""
+
+#: src/utils/dialogs.c:107
+msgid "Error instantiating plugin. Please see log for details."
 msgstr ""
 
 #: src/plugins/plugin_manager.c:220
@@ -458,7 +509,12 @@ msgstr "Initialisation des paramètres"
 msgid "Initializing..."
 msgstr "Initialisation..."
 
-#: src/actions/actions.c:880
+#: src/audio/track.c:701
+#, fuzzy
+msgid "Instrument"
+msgstr "Piste Instrument"
+
+#: src/actions/actions.c:884 src/actions/create_tracks_action.c:72
 msgid "Instrument Track"
 msgstr "Piste Instrument"
 
@@ -567,8 +623,9 @@ msgstr "Fenêtre principal"
 msgid "Manual"
 msgstr "Manuel"
 
-#: src/project.c:162 src/gui/widgets/channel.c:262
-#: src/gui/widgets/channel.c:271 resources/ui/channel.ui:341
+#: src/project.c:164 src/project.c:166 src/gui/widgets/channel.c:262
+#: src/gui/widgets/channel.c:271 src/audio/track.c:710
+#: resources/ui/channel.ui:341
 msgid "Master"
 msgstr "Master"
 
@@ -580,22 +637,39 @@ msgstr "Mixeur"
 msgid "Mixer panel"
 msgstr "Panneau du mixeur"
 
-#: src/actions/undoable_action.c:282
-msgid "Move Channel"
+#: src/actions/move_plugins_action.c:117
+#, fuzzy, c-format
+msgid "Move %d Plugins"
+msgstr "Greffons"
+
+#: src/actions/move_tracks_action.c:108
+#, fuzzy, c-format
+msgid "Move %d Tracks"
+msgstr "_Supprimer %d Pistes"
+
+#: src/actions/move_plugins_action.c:113
+#, c-format
+msgid "Move %s"
 msgstr ""
 
-#: src/actions/undoable_action.c:306 src/actions/undoable_action.c:318
+#: src/actions/move_midi_arranger_selections_action.c:107
+#: src/actions/move_timeline_selections_action.c:105
 msgid "Move Object(s)"
 msgstr ""
 
-#: src/actions/undoable_action.c:291
+#: src/actions/move_tracks_action.c:105
 #, fuzzy
-msgid "Move Plugin"
-msgstr "Greffons"
+msgid "Move Track"
+msgstr "Piste Audio"
 
 #: src/gui/widgets/track.c:138
 msgid "Mute"
 msgstr "Muet"
+
+#: src/actions/edit_tracks_action.c:167
+#, fuzzy
+msgid "Mute Track"
+msgstr "Piste de Bus"
 
 #: resources/ui/inspector_region.ui:115 resources/ui/inspector_master.ui:113
 #: resources/ui/inspector_track.ui:128 resources/ui/inspector_ap.ui:113
@@ -770,7 +844,7 @@ msgstr ""
 "Fréquence d'échantillonnage: 44100\n"
 "(note: ce texte est codé en dur pour le moment)"
 
-#: src/project.c:542
+#: src/project.c:546
 msgid "Project saved."
 msgstr "Projet sauvegardé"
 
@@ -824,7 +898,7 @@ msgstr "Refaire la commande précédente"
 msgid "Region"
 msgstr "Région"
 
-#: src/gui/widgets/region.c:227
+#: src/gui/widgets/region.c:226
 msgid ""
 "Region - Click and drag to move around (hold Shift to disable snapping) - "
 "Double click to bring up the clip editor"
@@ -973,6 +1047,11 @@ msgstr "Accrocher à la grille et garder le décalage"
 #: src/gui/widgets/track.c:137
 msgid "Solo"
 msgstr "Solo"
+
+#: src/actions/edit_tracks_action.c:160
+#, fuzzy
+msgid "Solo Track"
+msgstr "Piste Audio"
 
 #: resources/ui/export_dialog.ui:238
 msgid "Song"
@@ -1150,11 +1229,21 @@ msgstr "Type de widget inconnu pour la valeur"
 msgid "Unknown widget type for value\n"
 msgstr "Type de widget inconnu pour value\n"
 
+#: src/actions/edit_tracks_action.c:170
+#, fuzzy
+msgid "Unmute Track"
+msgstr "Piste de Bus"
+
 #: resources/ui/shortcuts.ui:168
 msgid "Unselect all"
 msgstr "Désélectionner tout"
 
-#: src/project.c:169
+#: src/actions/edit_tracks_action.c:163
+#, fuzzy
+msgid "Unsolo Track"
+msgstr "Piste de Bus"
+
+#: src/project.c:173
 msgid "Untitled Project"
 msgstr "Projet sans titre"
 
@@ -1313,6 +1402,14 @@ msgstr "nom_de_région"
 #: resources/ui/audio_clip_editor.ui:56 resources/ui/audio_clip_editor.ui:68
 msgid "stuff"
 msgstr "substance"
+
+#, fuzzy
+#~ msgid "Create Plugin"
+#~ msgstr "Greffons"
+
+#, fuzzy
+#~ msgid "Edit Track"
+#~ msgstr "Piste Audio"
 
 #, fuzzy
 #~ msgid "create piano roll object(s)"

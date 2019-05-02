@@ -224,7 +224,7 @@ activate_about (GSimpleAction *action,
                           "z-splash.svg"));
   gtk_show_about_dialog (
     GTK_WINDOW (MAIN_WINDOW),
-    "copyright", "Copyright (C) 2019 Alexandros Theodotou",
+    "copyright", "Copyright (C) 2018-2019 Alexandros Theodotou",
     /*"logo-icon-name", "z",*/
     "logo", gtk_image_get_pixbuf (img),
     "program-name", "Zrythm",
@@ -691,7 +691,8 @@ activate_delete (GSimpleAction *action,
         GTK_WIDGET (MW_TIMELINE))
     {
       UndoableAction * action =
-        delete_timeline_selections_action_new ();
+        delete_timeline_selections_action_new (
+          TL_SELECTIONS);
       undo_manager_perform (UNDO_MANAGER,
                             action);
     }
@@ -699,7 +700,8 @@ activate_delete (GSimpleAction *action,
              GTK_WIDGET (MIDI_ARRANGER))
     {
       UndoableAction * action =
-        delete_midi_arranger_selections_action_new ();
+        delete_midi_arranger_selections_action_new (
+          MIDI_ARRANGER_SELECTIONS);
       undo_manager_perform (
         UNDO_MANAGER, action);
     }
@@ -863,9 +865,11 @@ activate_create_audio_track (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
+  /* FIXME use action */
   Channel * chan =
-    channel_create (CT_AUDIO, _("Audio Track"));
-  mixer_add_channel (chan);
+    channel_new (CT_AUDIO, _("Audio Track"),
+                    F_ADD_TO_PROJ);
+  mixer_add_channel (MIXER, chan, 1);
   tracklist_append_track (chan->track);
 
   EVENTS_PUSH (ET_TRACK_ADDED, chan->track);
@@ -877,8 +881,9 @@ activate_create_ins_track (GSimpleAction *action,
                   gpointer       user_data)
 {
   Channel * chan =
-    channel_create (CT_MIDI, _("Instrument Track"));
-  mixer_add_channel (chan);
+    channel_new (CT_MIDI, _("Instrument Track"),
+                 F_ADD_TO_PROJ);
+  mixer_add_channel (MIXER, chan, 1);
   tracklist_append_track (chan->track);
 
   EVENTS_PUSH (ET_TRACK_ADDED, chan->track);
@@ -890,8 +895,9 @@ activate_create_bus_track (GSimpleAction *action,
                   gpointer       user_data)
 {
   Channel * chan =
-    channel_create (CT_BUS, _("Bus Track"));
-  mixer_add_channel (chan);
+    channel_new (CT_BUS, _("Bus Track"),
+                 F_ADD_TO_PROJ);
+  mixer_add_channel (MIXER, chan, 1);
   tracklist_append_track (chan->track);
 
   EVENTS_PUSH (ET_TRACK_ADDED, chan->track);
@@ -929,7 +935,11 @@ activate_delete_selected_tracks (
         case TRACK_TYPE_BUS:
         case TRACK_TYPE_AUDIO:
             {
-              tracklist_remove_track (track);
+              tracklist_remove_track (
+                TRACKLIST,
+                track,
+                F_FREE,
+                F_PUBLISH_EVENTS);
               break;
             }
         }

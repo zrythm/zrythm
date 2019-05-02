@@ -84,7 +84,7 @@ mixer_init_loaded ();
  * Recalculates the process acyclic directed graph.
  */
 void
-mixer_recalculate_graph (
+mixer_recalc_graph (
   Mixer * mixer);
 
 /**
@@ -120,24 +120,36 @@ Channel *
 mixer_get_channel_at_pos (int pos);
 
 /**
- * Adds channel to mixer and initializes track.
+ * Adds channel to the mixer and connects its ports.
+ *
+ * This acts like the "connection" function of
+ * the channel.
+ *
+ * Note that this should have nothing to do with
+ * the track, but only with the mixer and routing
+ * in general.
+ *
+ * @param recalc_graph Recalculate routing graph.
  */
 void
-mixer_add_channel (Channel * channel);
+mixer_add_channel (
+  Mixer *   self,
+  Channel * channel,
+  int       recalc_graph);
 
 /**
- * Removes the given channel.
+ * Removes the given channel from the mixer and
+ * disconnects it.
+ *
+ * @param free Also free the channel (later).
+ * @param publish_events Publish GUI events.
  */
 void
-mixer_remove_channel (Channel * channel);
-
-void
-mixer_add_channel_from_file_descr (
-  FileDescriptor * fd);
-
-void
-mixer_add_channel_from_plugin_descr (
-  PluginDescriptor * descr);
+mixer_remove_channel (
+  Mixer *   self,
+  Channel * channel,
+  int       free,
+  int       publish_events);
 
 Channel *
 mixer_get_channel_by_name (char *  name);

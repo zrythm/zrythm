@@ -17,50 +17,46 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __UNDO_MOVE_PLUGIN_ACTION_H__
-#define __UNDO_MOVE_PLUGIN_ACTION_H__
+#ifndef __UNDO_COPY_TRACKS_ACTION_H__
+#define __UNDO_COPY_TRACKS_ACTION_H__
 
 #include "actions/undoable_action.h"
 
-typedef struct Plugin Plugin;
-typedef struct Channel Channel;
+typedef struct TracklistSelections
+  TracklistSelections;
 
-typedef struct MovePluginAction
+typedef struct CopyTracksAction
 {
-  UndoableAction  parent_instance;
+  UndoableAction        parent_instance;
 
-  /** From slot. */
-  int             from_slot;
+  /**
+   * A clone of the timeline selections at the time.
+   */
+  TracklistSelections * tls;
 
-  /** To slot. */
-  int             to_slot;
-
-  /** From channel ID. */
-  int             from_ch_id;
-
-  /** To channel ID. */
-  int             to_ch_id;
-
-  /** The plugin to move. */
-  int             pl_id;
-} MovePluginAction;
+  /** Position to copy to. */
+  int                   pos;
+} CopyTracksAction;
 
 UndoableAction *
-move_plugin_action_new (
-  Plugin *  pl,
-  Channel * to_ch,
-  int       to_slot);
+copy_tracks_action_new (
+  TracklistSelections * tls,
+  int                   pos);
 
 int
-move_plugin_action_do (
-	MovePluginAction * self);
+copy_tracks_action_do (
+  CopyTracksAction * self);
 
 int
-move_plugin_action_undo (
-	MovePluginAction * self);
+copy_tracks_action_undo (
+  CopyTracksAction * self);
+
+char *
+copy_tracks_action_stringize (
+  CopyTracksAction * self);
 
 void
-move_plugin_action_free (
-	MovePluginAction * self);
+copy_tracks_action_free (
+  CopyTracksAction * self);
 
 #endif

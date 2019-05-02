@@ -37,6 +37,7 @@
 #include "plugins/lv2/control.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/io.h"
 #include "utils/flags.h"
 
 #include <gtk/gtk.h>
@@ -55,8 +56,8 @@
 void
 plugin_init_loaded (Plugin * plgn)
 {
-  lv2_plugin_init_loaded (plgn->original_plugin);
-  plgn->original_plugin->plugin = plgn;
+  lv2_plugin_init_loaded (plgn->lv2);
+  plgn->lv2->plugin = plgn;
 
   for (int i = 0; i < plgn->num_in_ports; i++)
     plgn->in_ports[i] =
@@ -83,36 +84,25 @@ plugin_init_loaded (Plugin * plgn)
 }
 
 /**
- * Creates an empty plugin.
+ * Creates/initializes a plugin and its internal
+ * plugin (LV2, etc.)
+ * using the given descriptor.
  *
- * To be filled in by the caller.
+ * @param add_to_project Should be false when
+ *   cloning.
  */
-static Plugin *
-_plugin_new ()
+Plugin *
+plugin_new_from_descr (
+  PluginDescriptor * descr,
+  int                add_to_project)
 {
   Plugin * plugin = calloc (1, sizeof (Plugin));
 
-  /*g_atomic_int_set (&plugin->processed, 1);*/
+  if (add_to_project)
+    project_add_plugin (plugin);
 
-  project_add_plugin (plugin);
-
-  return plugin;
-}
-
-/**
- * Creates/initializes a plugin and its internal plugin (LV2, etc.)
- * using the given descriptor.
- */
-Plugin *
-plugin_create_from_descr (PluginDescriptor * descr)
-{
-  Plugin * plugin = _plugin_new ();
   plugin->descr = descr;
-  /*struct sigaction action;*/
-  /*memset(&action, 0, sizeof(struct sigaction));*/
-  /*action.sa_flags = SA_SIGINFO;*/
-  /*action.sa_sigaction = handler;*/
-  /*sigaction(SIGSEGV, &action, NULL);*/
+
   if (plugin->descr->protocol == PROT_LV2)
     {
       lv2_create_from_uri (plugin, descr->uri);
@@ -240,7 +230,7 @@ plugin_generate_automatables (Plugin * plugin)
   /* add plugin control automatables */
   if (plugin->descr->protocol == PROT_LV2)
     {
-      Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
+      Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->lv2;
       for (int j = 0; j < lv2_plugin->controls.n_controls; j++)
         {
           Lv2Control * control =
@@ -262,6 +252,24 @@ plugin_generate_automatables (Plugin * plugin)
     }
 }
 
+/**
+ * Returns if the Plugin is an instrument or not.
+ */
+int
+plugin_is_instrument (
+  Plugin * pl)
+{
+  switch (pl->descr->protocol)
+    {
+    case PROT_LV2:
+      return IS_LV2_PLUGIN_CATEGORY (
+        pl->lv2,
+        LV2_INSTRUMENT_PLUGIN);
+    default:
+      g_warn_if_reached ();
+      return 0;
+    }
+}
 
 /**
  * Instantiates the plugin (e.g. when adding to a
@@ -269,18 +277,17 @@ plugin_generate_automatables (Plugin * plugin)
  */
 int
 plugin_instantiate (
-  Plugin * plugin)
+  Plugin * pl)
 {
   g_message ("Instantiating %s...",
-             plugin->descr->name);
+             pl->descr->name);
 
-  switch (plugin->descr->protocol)
+  switch (pl->descr->protocol)
     {
     case PROT_LV2:
       {
-        Lv2Plugin *lv2 =
-          (Lv2Plugin *) plugin->original_plugin;
-        if (lv2_instantiate (lv2, NULL) < 0)
+        if (lv2_instantiate (pl->lv2,
+                             pl->lv2->state_file))
           {
             g_warning ("lv2 instantiate failed");
             return -1;
@@ -289,9 +296,10 @@ plugin_instantiate (
       break;
     default:
       g_warn_if_reached ();
+      return -1;
       break;
     }
-  plugin->enabled = 1;
+  pl->enabled = 1;
 
   return 0;
 }
@@ -315,7 +323,7 @@ plugin_process (Plugin * plugin)
   if (plugin->descr->protocol == PROT_LV2)
     {
       lv2_plugin_process (
-        (Lv2Plugin *) plugin->original_plugin);
+        (Lv2Plugin *) plugin->lv2);
     }
 
   /*g_atomic_int_set (&plugin->processed, 1);*/
@@ -330,7 +338,7 @@ plugin_open_ui (Plugin *plugin)
 {
   if (plugin->descr->protocol == PROT_LV2)
     {
-      Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
+      Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->lv2;
       if (GTK_IS_WINDOW (lv2_plugin->window))
         {
           gtk_window_present (
@@ -343,6 +351,86 @@ plugin_open_ui (Plugin *plugin)
     }
 }
 
+/**
+ * Returns if Plugin exists in MixerSelections.
+ */
+int
+plugin_is_selected (
+  Plugin * pl)
+{
+  return mixer_selections_contains_plugin (
+    MIXER_SELECTIONS,
+    pl);
+}
+
+/**
+ * Clones the given plugin.
+ */
+Plugin *
+plugin_clone (
+  Plugin * pl)
+{
+  Plugin * clone;
+  if (pl->descr->protocol == PROT_LV2)
+    {
+      /* NOTE from rgareus:
+       * I think you can use   lilv_state_restore (lilv_state_new_from_instance (..), ...)
+       * and skip  lilv_state_new_from_file() ; lilv_state_save ()
+       * lilv_state_new_from_instance() handles files and externals, too */
+      /* save state to file */
+      char * tmp =
+        g_strdup_printf (
+          "%s_%d",
+          pl->channel->track->name,
+          channel_get_plugin_index (
+            pl->channel, pl));
+      char * state_dir_plugin =
+        g_build_filename (PROJECT->states_dir,
+                          "tmp",
+                          tmp,
+                          NULL);
+      io_mkdir (state_dir_plugin);
+      g_free (tmp);
+      lv2_plugin_save_state_to_file (
+        pl->lv2,
+        state_dir_plugin);
+      g_free (state_dir_plugin);
+      if (!pl->lv2->state_file)
+        {
+          g_warn_if_reached ();
+          return NULL;
+        }
+
+      /* create a new plugin with same descriptor */
+      PluginDescriptor * descr =
+        calloc (1, sizeof (PluginDescriptor));
+      plugin_clone_descr (
+        pl->descr,
+        descr);
+      clone = plugin_new_from_descr (descr, 0);
+      g_return_val_if_fail (clone, NULL);
+      clone->id = pl->id;
+
+      /* set the state file on the new Lv2Plugin
+       * as the state filed saved on the original
+       * so that it can be used when
+       * instantiating */
+      clone->lv2->state_file =
+        g_strdup (pl->lv2->state_file);
+
+      /* instantiate */
+      int ret = plugin_instantiate (clone);
+      g_return_val_if_fail (!ret, NULL);
+
+      /* delete the state file */
+      io_remove (pl->lv2->state_file);
+
+      return clone;
+    }
+
+  g_warn_if_reached ();
+  return NULL;
+}
 
 /**
  * hides plugin ui
@@ -353,7 +441,7 @@ plugin_close_ui (Plugin *plugin)
   if (plugin->descr->protocol == PROT_LV2)
     {
       Lv2Plugin * lv2_plugin =
-        (Lv2Plugin *) plugin->original_plugin;
+        (Lv2Plugin *) plugin->lv2;
       if (GTK_IS_WINDOW (lv2_plugin->window))
         gtk_window_close (
           GTK_WINDOW (lv2_plugin->window));

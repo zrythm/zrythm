@@ -139,6 +139,11 @@ file_manager_init (FileManager * self);
 void
 file_manager_load_files (FileManager * self);
 
+void
+file_manager_clone_descr (
+  FileDescriptor * src,
+  FileDescriptor * dest);
+
 FileType *
 file_manager_get_file_type_from_enum (
   FileTypeEnum fte);

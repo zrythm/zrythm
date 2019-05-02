@@ -142,57 +142,16 @@ typedef struct Channel
    * */
   StereoPorts *        stereo_out;
 
-  /**
-   * These should be serialized instead of
-   * stereo_out.
-   */
-  //int                  stereo_out_l_id;
-  //int                  stereo_out_r_id;
-
-  /**
-   * Flag to indicate if channel has been processed in
-   * this cycle or not.
-   */
-  //int                  processed;
-
-  /** Processed semaphore. */
-  //ZixSem               processed_sem;
-
-  /** Start processing semaphore. */
-  //ZixSem               start_processing_sem;
-
-  //pthread_t         thread;     ///< the channel processing thread.
-                          ///< each channel does processing on a separate thread
-
-#ifdef HAVE_JACK
-  /**
-   * Jack special thread for the channel.
-   *
-   * TODO at the moment, each channel gets 1 thread. If
-   * this causes performance issues, try pre-allocating
-   * NUM_CORES - 1 threads and using those.
-   */
-  jack_native_thread_t thread;
-#endif
-
-  /**
-   * Output channel to route signal to.
-   */
+  /** Output channel to route signal to. */
   int                  output_id;
 
-  /**
-   * Cache.
-   */
-  struct Channel *     output;
+  /** Cache. */
+  Channel *            output;
 
-  /**
-   * Track associated with this channel.
-   */
+  /** Track associated with this channel. */
   int                  track_id;
 
-  /**
-   * Cache.
-   */
+  /** Cache. */
   Track *              track;
 
   int                  enabled; ///< enabled or not
@@ -293,6 +252,13 @@ channel_init_loaded (Channel * channel);
 void
 channel_handle_recording (Channel * self);
 
+/**
+ * Connects the channel's ports.
+ */
+void
+channel_connect (
+  Channel * ch);
+
 void
 channel_set_phase (void * channel, float phase);
 
@@ -302,6 +268,12 @@ channel_get_phase (void * channel);
 
 void
 channel_set_pan (void * _channel, float pan);
+
+/**
+ * Adds to (or subtracts from) the pan.
+ */
+void
+channel_add_pan (void * _channel, float pan);
 
 float
 channel_get_pan (void * _channel);
@@ -334,11 +306,22 @@ Channel *
 channel_get_or_create_blank (int id);
 
 /**
- * Creates a channel of the given type with the given label
+ * Creates a channel of the given type with the
+ * given label.
+ *
+ * This should not be creating a track. A track
+ * should be created from an existing channel.
+ *
+ * @param add_to_project Whether the channel should
+ *   be added to the project or not. This should be
+ *   true unless the channel will be transient (e.g.
+ *   in an undo action).
  */
 Channel *
-channel_create (ChannelType type,
-                char *      label);
+channel_new (
+  ChannelType type,
+  char *      label,
+  int         add_to_project);
 
 /**
  * The process function prototype.
@@ -420,21 +403,38 @@ channel_get_automatable (Channel *       channel,
                          AutomatableType type);
 
 /**
+ * Generates automatables for the channel.
+ *
+ * Should be called as soon as the track is
+ * created.
+ */
+void
+channel_generate_automatables (Channel * channel);
+
+/**
  * Removes a plugin at pos from the channel.
  *
  * If deleting_channel is 1, the automation tracks
  * associated with he plugin are not deleted at
  * this time.
  *
- * @param recalc_graph Recalculate mixer graph.
+ * This function will always recalculate the graph
+ * in order to avoid situations where the plugin
+ * might be used during processing.
+ *
+ * @param deleting_plugin
+ * @param deleting_channel
  */
 void
 channel_remove_plugin (
   Channel * channel,
   int pos,
   int deleting_plugin,
-  int deleting_channel,
-  int recalc_graph);
+  int deleting_channel);
+
+Channel *
+channel_clone (
+  Channel * ch);
 
 /**
  * Disconnects the channel from the processing

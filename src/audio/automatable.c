@@ -102,7 +102,7 @@ automatable_init_loaded (Automatable * self)
         AUTOMATABLE_TYPE_PLUGIN_CONTROL)
     {
       /*Lv2Plugin * lv2_plgn =*/
-        /*self->port->owner_pl->original_plugin;*/
+        /*self->port->owner_pl->lv2;*/
 
       self->control = get_lv2_control (self);
     }

@@ -394,7 +394,34 @@ on_midi_note_changed (MidiNote * midi_note)
       GTK_WIDGET (midi_note->region->widget));
 }
 
-static void
+static inline void
+on_plugin_selection_changed (
+  Plugin * pl)
+{
+  ChannelSlotWidget * csw =
+    pl->channel->widget->slots[
+      channel_get_plugin_index (pl->channel, pl)];
+  if (GTK_IS_WIDGET (csw))
+    {
+      if (plugin_is_selected (pl))
+        {
+          gtk_widget_set_state_flags (
+            GTK_WIDGET (csw),
+            GTK_STATE_FLAG_SELECTED,
+            0);
+        }
+      else
+        {
+          gtk_widget_unset_state_flags (
+            GTK_WIDGET (csw),
+            GTK_STATE_FLAG_SELECTED);
+        }
+      gtk_widget_queue_draw (
+        GTK_WIDGET (csw));
+    }
+}
+
+static inline void
 on_region_changed (Region * region)
 {
   if (GTK_IS_WIDGET (region->widget))
@@ -561,7 +588,7 @@ events_process (void * data)
 
       switch (ev->type)
         {
-        case ET_TRACK_REMOVED:
+        case ET_TRACKS_REMOVED:
           tracklist_widget_hard_refresh (
             MW_TRACKLIST);
           break;
@@ -689,6 +716,10 @@ events_process (void * data)
         case ET_REGION_CHANGED:
           on_region_changed ((Region *) ev->arg);
           break;
+        case ET_PLUGIN_SELECTION_CHANGED:
+          on_plugin_selection_changed (
+            (Plugin *) ev->arg);
+          break;
         case ET_TRACK_CHANGED:
           on_track_changed ((Track *) ev->arg);
           break;
@@ -756,7 +787,7 @@ events_process (void * data)
             (Plugin *) ev->arg);
           break;
         default:
-          g_warn_if_reached ();
+          g_message ("event not implemented yet");
           /* unimplemented */
           break;
         }

@@ -129,7 +129,7 @@ jack_buffer_size_cb (uint32_t nframes,
       AUDIO_ENGINE->client, JACK_DEFAULT_MIDI_TYPE);
 #endif
   g_message (
-    "JACK: Block length changed to %d, midi buf size to %u",
+    "JACK: Block length changed to %d, midi buf size to %zu",
     AUDIO_ENGINE->block_length,
     AUDIO_ENGINE->midi_buf_size);
 
@@ -157,7 +157,7 @@ jack_buffer_size_cb (uint32_t nframes,
               if (plugin->descr->protocol == PROT_LV2)
                 {
                   lv2_allocate_port_buffers (
-                                (Lv2Plugin *)plugin->original_plugin);
+                                (Lv2Plugin *)plugin->lv2);
                 }
             }
         }

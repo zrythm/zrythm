@@ -44,6 +44,7 @@
 #include "audio/tracklist.h"
 #include "gui/backend/clip_editor.h"
 #include "gui/backend/midi_arranger_selections.h"
+#include "gui/backend/mixer_selections.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/backend/tracklist_selections.h"
 #include "gui/backend/tool.h"
@@ -102,6 +103,11 @@ typedef struct Project
   TimelineSelections       timeline_selections;
   MidiArrangerSelections   midi_arranger_selections;
   TracklistSelections   tracklist_selections;
+
+  /**
+   * Plugin selections in the Mixer.
+   */
+  MixerSelections    mixer_selections;
 
   /** Zoom levels. TODO & move to clip_editor */
   double             timeline_zoom;
@@ -240,6 +246,10 @@ static const cyaml_schema_field_t
   CYAML_FIELD_MAPPING (
     "quantize_midi", CYAML_FLAG_DEFAULT,
     Project, quantize_midi, quantize_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "mixer_selections", CYAML_FLAG_DEFAULT,
+    Project, mixer_selections,
+    mixer_selections_fields_schema),
   CYAML_FIELD_MAPPING (
     "timeline_selections", CYAML_FLAG_DEFAULT,
     Project, timeline_selections,

@@ -243,6 +243,19 @@ file_manager_load_files (FileManager * self)
     }
 }
 
+void
+file_manager_clone_descr (
+  FileDescriptor * src,
+  FileDescriptor * dest)
+{
+  dest->absolute_path =
+    g_strdup (src->absolute_path);
+  dest->label =
+    g_strdup (src->label);
+  dest->type = src->type;
+  dest->hidden = src->hidden;
+}
+
 /**
  * Returns the FileType struct from the enum.
  */

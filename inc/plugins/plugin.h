@@ -116,7 +116,7 @@ typedef struct Plugin
   /**
    * Pointer back to plugin in its original format.
    */
-  Lv2Plugin *          original_plugin;
+  Lv2Plugin *          lv2;
 
   /** Descriptor. */
   PluginDescriptor    * descr;
@@ -132,8 +132,19 @@ typedef struct Plugin
   int                  unknown_port_ids[MAX_UNKNOWN_PORTS];
   Port                 * unknown_ports[MAX_UNKNOWN_PORTS];           ///< ports with unknown direction
   int                  num_unknown_ports;    ///< counter
+
+  /** The Channel this plugin belongs to. */
   int                  channel_id;
-  Channel              * channel;        ///< pointer to channel it belongs to
+
+  /** Cache. */
+  Channel              * channel;
+
+  /**
+   * The slot this plugin is at in its channel.
+   *
+   * For convenience.
+   */
+  int                  slot;
 
   /** Processed or not.
    *
@@ -245,8 +256,8 @@ plugin_fields_schema[] =
     Plugin, descr,
     descriptor_fields_schema),
   CYAML_FIELD_MAPPING_PTR (
-    "original_plugin", CYAML_FLAG_POINTER,
-    Plugin, original_plugin,
+    "lv2", CYAML_FLAG_POINTER,
+    Plugin, lv2,
     lv2_plugin_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
     "in_port_ids", CYAML_FLAG_DEFAULT,
@@ -289,12 +300,39 @@ void
 plugin_init_loaded (Plugin * plgn);
 
 /**
+ * Creates/initializes a plugin and its internal
+ * plugin (LV2, etc.)
+ * using the given descriptor.
+ *
+ * @param add_to_project Should be false when
+ *   cloning.
+ */
+Plugin *
+plugin_new_from_descr (
+  PluginDescriptor * descr,
+  int                add_to_project);
+
+/**
  * Clones the plugin descriptor.
  */
 void
 plugin_clone_descr (
   PluginDescriptor * src,
   PluginDescriptor * dest);
+
+/**
+ * Clones the given plugin.
+ */
+Plugin *
+plugin_clone (
+  Plugin * pl);
+
+/**
+ * Returns if the Plugin is an instrument or not.
+ */
+int
+plugin_is_instrument (
+  Plugin * pl);
 
 /**
  * Moves the Plugin's automation from one Channel
@@ -316,20 +354,14 @@ void
 plugin_generate_automatables (Plugin * plugin);
 
 /**
- * Creates/initializes a plugin and its internal plugin (LV2, etc.)
- * using the given descriptor.
- */
-Plugin *
-plugin_create_from_descr (PluginDescriptor * descr);
-
-/**
  * Loads the plugin from its state file.
  */
 //void
 //plugin_load (Plugin * plugin);
 
 /**
- * Instantiates the plugin (e.g. when adding to a channel)
+ * Instantiates the plugin (e.g. when adding to a
+ * channel)
  */
 int
 plugin_instantiate (Plugin * plugin);
@@ -345,6 +377,13 @@ plugin_process (Plugin * plugin);
  */
 void
 plugin_open_ui (Plugin *plugin);
+
+/**
+ * Returns if Plugin exists in MixerSelections.
+ */
+int
+plugin_is_selected (
+  Plugin * pl);
 
 /**
  * Process hide ui

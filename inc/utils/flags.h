@@ -43,4 +43,19 @@
 #define F_DELETE 1
 #define F_NO_DELETE 0
 
+#define F_PUBLISH_EVENTS 1
+#define F_NO_PUBLISH_EVENTS 0
+
+#define F_RECALC_GRAPH 1
+#define F_NO_RECALC_GRAPH 0
+
+#define F_CONFIRM 1
+#define F_NO_CONFIRM 0
+
+#define F_GEN_AUTOMATABLES 1
+#define F_NO_GEN_AUTOMATABLES 0
+
+#define F_ADD_TO_PROJ 1
+#define F_NO_ADD_TO_PROJ 0
+
 #endif

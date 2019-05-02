@@ -57,9 +57,38 @@ fader_set_amp (void * _fader, float amp)
               /*channel);*/
 }
 
+/**
+ * Adds (or subtracts if negative) to the amplitude
+ * of the fader (clamped at 0.0 to 2.0).
+ */
+void
+fader_add_amp (
+  void * _self,
+  float   amp)
+{
+  Fader * self = (Fader *) _self;
+
+  self->amp =
+    CLAMP (self->amp + amp, 0.0, 2.0);
+}
+
 float
 fader_get_amp (void * _self)
 {
   Fader * self = (Fader *) _self;
   return self->amp;
+}
+
+/**
+ * Copy the struct members from source to dest.
+ */
+void
+fader_copy (
+  Fader * src,
+  Fader * dest)
+{
+  dest->volume = src->volume;
+  dest->amp = src->amp;
+  dest->phase = src->phase;
+  dest->pan = src->pan;
 }

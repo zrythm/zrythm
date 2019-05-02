@@ -26,10 +26,17 @@ typedef struct MidiNote MidiNote;
 typedef struct Region Region;
 typedef Region MidiRegion;
 
+/**
+ * Creates a new Region for MIDI notes.
+ *
+ * @param add_to_project Add the Region to the
+ *   project registry.
+ */
 MidiRegion *
 midi_region_new (Track *    track,
                  Position * start_pos,
-                 Position * end_pos);
+                 Position * end_pos,
+                 int        add_to_project);
 
 /**
  * Deep clones the midi region.

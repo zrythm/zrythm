@@ -41,8 +41,9 @@ typedef struct MoveTimelineSelectionsAction
 
 UndoableAction *
 move_timeline_selections_action_new (
-  long ticks,
-  int  delta);
+  TimelineSelections * ts,
+  long                 ticks,
+  int                  delta);
 
 int
 move_timeline_selections_action_do (
@@ -50,6 +51,10 @@ move_timeline_selections_action_do (
 
 int
 move_timeline_selections_action_undo (
+	MoveTimelineSelectionsAction * self);
+
+char *
+move_timeline_selections_action_stringize (
 	MoveTimelineSelectionsAction * self);
 
 void

@@ -24,13 +24,16 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "project.h"
 
+#include <glib/gi18n.h>
+
 /**
  * Note: this action will add delta beats
  * to start and end pos of all selected midi_notes */
 UndoableAction *
 move_timeline_selections_action_new (
-  long ticks,
-  int  delta)
+  TimelineSelections * ts,
+  long                 ticks,
+  int                  delta)
 {
 	MoveTimelineSelectionsAction * self =
     calloc (1, sizeof (
@@ -38,9 +41,11 @@ move_timeline_selections_action_new (
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
 	  UNDOABLE_ACTION_TYPE_MOVE_TL_SELECTIONS;
-  self->ts = timeline_selections_clone ();
+
+  self->ts = timeline_selections_clone (ts);
   self->delta = delta;
   self->ticks = ticks;
+
   return ua;
 }
 
@@ -48,19 +53,17 @@ int
 move_timeline_selections_action_do (
 	MoveTimelineSelectionsAction * self)
 {
-  Region * _r, * r;
+  Region * region;
   for (int i = 0; i < self->ts->num_regions; i++)
     {
-      /* this is a clone */
-      _r = self->ts->regions[i];
-
-      /* find actual region */
-      r =
-        project_get_region (_r->actual_id);
+      /* get the actual region */
+      region =
+        project_get_region (
+          self->ts->regions[i]->id);
 
       /* shift it */
       region_shift (
-        r,
+        region,
         self->ticks,
         self->delta);
     }
@@ -74,19 +77,17 @@ int
 move_timeline_selections_action_undo (
 	MoveTimelineSelectionsAction * self)
 {
-  Region * _r, * r;
+  Region * region;
   for (int i = 0; i < self->ts->num_regions; i++)
     {
-      /* this is a clone */
-      _r = self->ts->regions[i];
-
-      /* find actual region */
-      r =
-        project_get_region (_r->actual_id);
+      /* get the actual region */
+      region =
+        project_get_region (
+          self->ts->regions[i]->id);
 
       /* shift it */
       region_shift (
-        r,
+        region,
         - self->ticks,
         - self->delta);
     }
@@ -94,6 +95,14 @@ move_timeline_selections_action_undo (
                NULL);
 
   return 0;
+}
+
+char *
+move_timeline_selections_action_stringize (
+	MoveTimelineSelectionsAction * self)
+{
+  return g_strdup (
+    _("Move Object(s)"));
 }
 
 void

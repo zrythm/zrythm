@@ -26,11 +26,14 @@
 #include "utils/flags.h"
 #include "utils/objects.h"
 
+#include <glib/gi18n.h>
+
 /**
  * Note: chord addresses are to be copied.
  */
 UndoableAction *
-create_timeline_selections_action_new ()
+create_timeline_selections_action_new (
+  TimelineSelections * ts)
 {
   CreateTimelineSelectionsAction * self =
     calloc (1, sizeof (
@@ -38,7 +41,9 @@ create_timeline_selections_action_new ()
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
     UNDOABLE_ACTION_TYPE_CREATE_TL_SELECTIONS;
-  self->ts = timeline_selections_clone ();
+
+  self->ts = timeline_selections_clone (ts);
+
   return ua;
 }
 
@@ -46,30 +51,35 @@ int
 create_timeline_selections_action_do (
   CreateTimelineSelectionsAction * self)
 {
-  Region * r, * rc;
+  Region * region, * orig_region;
 	for (int i = 0; i < self->ts->num_regions; i++)
     {
-      /* this is a clone, must not be used */
-      r = self->ts->regions[i];
+      /* get the clone */
+      orig_region = self->ts->regions[i];
 
       /* check if the region already exists. due to
        * how the arranger creates regions, the region
        * should already exist the first time so no
        * need to do anything. when redoing we will
        * need to create a clone instead */
-      if (project_get_region (r->actual_id))
+      if (project_get_region (orig_region->id))
         continue;
 
       /* clone the clone */
-      rc = region_clone (r, REGION_CLONE_COPY);
+      region =
+        region_clone (
+          orig_region, REGION_CLONE_COPY);
 
-      /* move it to the original id */
-      project_move_region (rc, r->actual_id);
+      /* add to project to get unique ID */
+      project_add_region (region);
 
-      /* add the new clone */
+      /* add it to track */
       track_add_region (
-        project_get_track (rc->track_id),
-        rc);
+        project_get_track (region->track_id),
+        region);
+
+      /* remember the ID */
+      orig_region->id = region->id;
     }
   /* TODO chords */
 
@@ -83,25 +93,32 @@ int
 create_timeline_selections_action_undo (
   CreateTimelineSelectionsAction * self)
 {
-  Region * r, * _r;
+  Region * region;
   for (int i = 0; i < self->ts->num_regions; i++)
     {
-      /* this is a clone */
-      r = self->ts->regions[i];
-
-      /* find the region with the actual id */
-      _r = project_get_region (r->actual_id);
+      /* get the actual region */
+      region =
+        project_get_region (
+          self->ts->regions[i]->id);
 
       /* remove it */
       track_remove_region (
-        project_get_track (_r->track_id),
-        _r);
-      free_later (_r, region_free);
+        project_get_track (region->track_id),
+        region);
+      free_later (region, region_free);
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
 
   return 0;
+}
+
+char *
+create_timeline_selections_action_stringize (
+  CreateTimelineSelectionsAction * self)
+{
+  return g_strdup (
+    _("Delete Object(s)"));
 }
 
 void
@@ -112,4 +129,3 @@ create_timeline_selections_action_free (
 
   free (self);
 }
-

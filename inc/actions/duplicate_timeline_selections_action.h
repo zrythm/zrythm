@@ -43,8 +43,9 @@ typedef struct DuplicateTimelineSelectionsAction
 
 UndoableAction *
 duplicate_timeline_selections_action_new (
-  long ticks,
-  int  delta);
+  TimelineSelections * ts,
+  long                 ticks,
+  int                  delta);
 
 int
 duplicate_timeline_selections_action_do (
@@ -52,6 +53,10 @@ duplicate_timeline_selections_action_do (
 
 int
 duplicate_timeline_selections_action_undo (
+  DuplicateTimelineSelectionsAction * self);
+
+char *
+duplicate_timeline_selections_action_stringize (
   DuplicateTimelineSelectionsAction * self);
 
 void

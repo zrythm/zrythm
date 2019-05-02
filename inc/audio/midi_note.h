@@ -67,13 +67,6 @@ typedef struct MidiNote
    * Transient notes are notes that are cloned
    * and used during moving, then discarded.  */
   int             transient;
-
-  /**
-   * ID of note in use.
-   *
-   * Used when doing/undoing.
-   */
-  int             actual_id;
 } MidiNote;
 
 static const cyaml_schema_field_t
@@ -91,8 +84,8 @@ static const cyaml_schema_field_t
     "end_pos", CYAML_FLAG_DEFAULT,
     MidiNote, end_pos, position_fields_schema),
   CYAML_FIELD_MAPPING_PTR (
-  "vel", CYAML_FLAG_POINTER,
-  MidiNote, vel, velocity_fields_schema),
+    "vel", CYAML_FLAG_POINTER,
+    MidiNote, vel, velocity_fields_schema),
 	CYAML_FIELD_INT (
     "region_id", CYAML_FLAG_DEFAULT,
     MidiNote, region_id),
@@ -102,9 +95,6 @@ static const cyaml_schema_field_t
 	CYAML_FIELD_INT (
     "muted", CYAML_FLAG_DEFAULT,
     MidiNote, muted),
-	CYAML_FIELD_INT (
-    "actual_id", CYAML_FLAG_DEFAULT,
-    MidiNote, actual_id),
 
 	CYAML_FIELD_END
 };
@@ -120,12 +110,17 @@ void
 midi_note_init_loaded (
   MidiNote * self);
 
+/**
+ * @param add_to_project Probably not needed but
+ *   keep for now.
+ */
 MidiNote *
 midi_note_new (MidiRegion * region,
                Position *   start_pos,
                Position *   end_pos,
                int          val,
-               Velocity *   vel);
+               Velocity *   vel,
+               int          add_to_project);
 
 /**
  * Deep clones the midi note.

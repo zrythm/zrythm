@@ -47,6 +47,7 @@
 #include "plugins/lv2_plugin.h"
 #include "utils/arrays.h"
 #include "utils/general.h"
+#include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/smf.h"
 #include "utils/ui.h"
@@ -159,7 +160,10 @@ create_default (Project * self)
 
   /* add master channel to mixer */
   mixer_add_channel (
-    channel_create (CT_MASTER, _("Master")));
+    MIXER,
+    channel_new (CT_MASTER, _("Master"), 1),
+    F_NO_RECALC_GRAPH);
+  track_new (MIXER->master, _("Master"));
 
   /* create chord track */
   self->chord_track = chord_track_default ();
@@ -488,30 +492,30 @@ project_save (const char * dir)
         {
           Plugin * plugin = channel->plugins[j];
 
-          if (plugin)
-            {
-              if (plugin->descr->protocol == PROT_LV2)
-                {
-                  char * tmp =
-                    g_strdup_printf (
-                      "%s_%d",
-                      channel->track->name,
-                      j);
-                  char * state_dir_plugin =
-                    g_build_filename (PROJECT->states_dir,
-                                      tmp,
-                                      NULL);
-                  g_free (tmp);
+          if (!plugin)
+            continue;
 
-                  Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->original_plugin;
-                  lv2_save_state (lv2_plugin,
-                                  state_dir_plugin);
-                  g_free (state_dir_plugin);
-                }
-              else
-                {
-                  //
-                }
+          if (plugin->descr->protocol == PROT_LV2)
+            {
+              char * tmp =
+                g_strdup_printf (
+                  "%s_%d",
+                  channel->track->name,
+                  j);
+              char * state_dir_plugin =
+                g_build_filename (
+                  PROJECT->states_dir,
+                  tmp,
+                  NULL);
+              g_free (tmp);
+
+              Lv2Plugin * lv2_plugin =
+                (Lv2Plugin *)
+                plugin->lv2;
+              lv2_plugin_save_state_to_file (
+                lv2_plugin,
+                state_dir_plugin);
+              g_free (state_dir_plugin);
             }
         }
     }

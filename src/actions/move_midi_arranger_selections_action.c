@@ -24,13 +24,16 @@
 #include "gui/widgets/midi_arranger.h"
 #include "project.h"
 
+#include <glib/gi18n.h>
+
 /**
  * Note: this action will add delta beats
  * to start and end pos of all selected midi_notes */
 UndoableAction *
 move_midi_arranger_selections_action_new (
-  long ticks,
-  int  delta)
+  MidiArrangerSelections * mas,
+  long                     ticks,
+  int                      delta)
 {
 	MoveMidiArrangerSelectionsAction * self =
     calloc (1, sizeof (
@@ -38,9 +41,11 @@ move_midi_arranger_selections_action_new (
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
 	  UNDOABLE_ACTION_TYPE_MOVE_MA_SELECTIONS;
-  self->mas = midi_arranger_selections_clone ();
+
+  self->mas = midi_arranger_selections_clone (mas);
   self->delta = delta;
   self->ticks = ticks;
+
   return ua;
 }
 
@@ -48,15 +53,14 @@ int
 move_midi_arranger_selections_action_do (
 	MoveMidiArrangerSelectionsAction * self)
 {
-  MidiNote * _mn, *mn;
+  MidiNote * mn;
   for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
-      /* this is a clone */
-      _mn = self->mas->midi_notes[i];
-
       /* find actual midi note */
       mn =
-        project_get_midi_note (_mn->actual_id);
+        project_get_midi_note (
+          self->mas->midi_notes[i]->id);
+      g_return_val_if_fail (mn, -1);
 
       /* shift it */
       midi_note_shift (
@@ -74,15 +78,14 @@ int
 move_midi_arranger_selections_action_undo (
 	MoveMidiArrangerSelectionsAction * self)
 {
-  MidiNote * _mn, *mn;
+  MidiNote * mn;
   for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
-      /* this is a clone */
-      _mn = self->mas->midi_notes[i];
-
       /* find actual midi note */
       mn =
-        project_get_midi_note (_mn->actual_id);
+        project_get_midi_note (
+          self->mas->midi_notes[i]->id);
+      g_return_val_if_fail (mn, -1);
 
       /* shift it */
       midi_note_shift (
@@ -94,6 +97,14 @@ move_midi_arranger_selections_action_undo (
                NULL);
 
   return 0;
+}
+
+char *
+move_midi_arranger_selections_action_stringize (
+	MoveMidiArrangerSelectionsAction * self)
+{
+  return g_strdup (
+    _("Move Object(s)"));
 }
 
 void

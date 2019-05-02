@@ -30,10 +30,18 @@ typedef struct Channel Channel;
 typedef struct Track Track;
 typedef struct Region AudioRegion;
 
+
+/**
+ * Creates a Region for audio data.
+ *
+ * @param add_to_project Add Region to project
+ *   registry. This should be false when cloning.
+ */
 AudioRegion *
 audio_region_new (Track *    track,
                   char *     filename,
-                  Position * start_pos);
+                  Position * start_pos,
+                  int        add_to_project);
 
 /**
  * Frees members only but not the audio region itself.

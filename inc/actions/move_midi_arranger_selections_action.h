@@ -41,8 +41,9 @@ typedef struct MoveMidiArrangerSelectionsAction
 
 UndoableAction *
 move_midi_arranger_selections_action_new (
-  long ticks,
-  int  delta);
+  MidiArrangerSelections * mas,
+  long                     ticks,
+  int                      delta);
 
 int
 move_midi_arranger_selections_action_do (
@@ -50,6 +51,10 @@ move_midi_arranger_selections_action_do (
 
 int
 move_midi_arranger_selections_action_undo (
+	MoveMidiArrangerSelectionsAction * self);
+
+char *
+move_midi_arranger_selections_action_stringize (
 	MoveMidiArrangerSelectionsAction * self);
 
 void

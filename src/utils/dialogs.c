@@ -93,4 +93,20 @@ GtkDialog * dialogs_get_overwrite_plugin_dialog (
   return dialog;
 }
 
+GtkDialog * dialogs_get_error_instantiating_plugin_dialog (
+  GtkWindow * parent)
+{
+  GtkDialogFlags flags =
+    GTK_DIALOG_DESTROY_WITH_PARENT;
+  GtkWidget * dialog =
+    gtk_message_dialog_new (
+      GTK_WINDOW (MAIN_WINDOW),
+      flags,
+      GTK_MESSAGE_ERROR,
+      GTK_BUTTONS_CLOSE,
+      _("Error instantiating plugin. "
+        "Please see log for details."));
+  return GTK_DIALOG (dialog);
+}
+
 #endif

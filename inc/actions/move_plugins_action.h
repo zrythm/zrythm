@@ -17,55 +17,57 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __UNDO_CREATE_PLUGIN_ACTION_H__
-#define __UNDO_CREATE_PLUGIN_ACTION_H__
+#ifndef __UNDO_MOVE_PLUGINS_ACTION_H__
+#define __UNDO_MOVE_PLUGINS_ACTION_H__
 
 #include "actions/undoable_action.h"
-#include "plugins/plugin.h"
-
-/**
- * @addtogroup actions
- *
- * @{
- */
 
 typedef struct Plugin Plugin;
 typedef struct Channel Channel;
+typedef struct MixerSelections MixerSelections;
 
-typedef struct CreatePluginAction
+/**
+ * Restrict selections to a channel.
+ */
+typedef struct MovePluginsAction
 {
   UndoableAction  parent_instance;
 
-  /** Slot. */
-  int              slot;
+  /** To slot.
+   *
+   * The rest of the slots will start from this so
+   * they can be calculated when doing/undoing. */
+  int             to_slot;
 
-  /** Channel ID. */
-  int              ch_id;
+  /** To channel ID. */
+  int             to_ch_id;
 
-  /** PluginDescriptor, used when doing. */
-  PluginDescriptor descr;
-} CreatePluginAction;
+  /** MixerSelections clone containing all the
+   * necessary information.
+   */
+  MixerSelections * ms;
+} MovePluginsAction;
 
 UndoableAction *
-create_plugin_action_new (
-  PluginDescriptor * descr,
-  Channel * to_ch,
-  int       to_slot);
+move_plugins_action_new (
+  MixerSelections * ms,
+  Channel *  to_ch,
+  int        to_slot);
 
 int
-create_plugin_action_do (
-	CreatePluginAction * self);
+move_plugins_action_do (
+	MovePluginsAction * self);
 
 int
-create_plugin_action_undo (
-	CreatePluginAction * self);
+move_plugins_action_undo (
+	MovePluginsAction * self);
+
+char *
+move_plugins_action_stringize (
+	MovePluginsAction * self);
 
 void
-create_plugin_action_free (
-	CreatePluginAction * self);
-
-/**
- * @}
- */
+move_plugins_action_free (
+	MovePluginsAction * self);
 
 #endif

@@ -29,8 +29,9 @@ typedef struct TimelineSelections
  * It currently "creates" the current selection so
  * that it's undoable.
  *
- * It does nothing on perform due to how the arrangers
- * currently work. This might change in the future.
+ * It does nothing on perform due to how the
+ * arrangers currently work. This might change in
+ * the future.
  */
 typedef struct CreateTimelineSelectionsAction
 {
@@ -42,8 +43,13 @@ typedef struct CreateTimelineSelectionsAction
   TimelineSelections *        ts;
 } CreateTimelineSelectionsAction;
 
+/**
+ * The given TimelineSelections must already
+ * contain the created selections.
+ */
 UndoableAction *
-create_timeline_selections_action_new ();
+create_timeline_selections_action_new (
+  TimelineSelections * ts);
 
 int
 create_timeline_selections_action_do (
@@ -51,6 +57,10 @@ create_timeline_selections_action_do (
 
 int
 create_timeline_selections_action_undo (
+  CreateTimelineSelectionsAction * self);
+
+char *
+create_timeline_selections_action_stringize (
   CreateTimelineSelectionsAction * self);
 
 void

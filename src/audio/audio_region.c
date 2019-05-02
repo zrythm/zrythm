@@ -29,10 +29,17 @@
 
 #include "ext/audio_decoder/ad.h"
 
+/**
+ * Creates a Region for audio data.
+ *
+ * @param add_to_project Add Region to project
+ *   registry. This should be false when cloning.
+ */
 AudioRegion *
 audio_region_new (Track *    track,
                   char *     filename,
-                  Position * start_pos)
+                  Position * start_pos,
+                  int        add_to_project)
 {
   AudioRegion * self =
     calloc (1, sizeof (AudioRegion));
@@ -60,7 +67,8 @@ audio_region_new (Track *    track,
                REGION_TYPE_AUDIO,
                track,
                start_pos,
-               &self->end_pos);
+               &self->end_pos,
+               add_to_project);
 
   /* generate a copy of the given filename in the
    * project dir */

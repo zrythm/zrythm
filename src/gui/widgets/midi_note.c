@@ -136,18 +136,15 @@ midi_note_draw_cb (
 
   char * str =
     g_strdup_printf (
-      "[%d - actual %d]",
-      self->midi_note->id,
-      self->midi_note->actual_id);
+      "[%d]", self->midi_note->id);
   if (S_IS_DEBUG)
     str =
       g_strdup_printf (
-        "%s%d [%d - actual %d]",
+        "%s%d [%d]",
         chord_note_to_string (
           self->midi_note->val % 12),
         self->midi_note->val / 12 - 2,
-        self->midi_note->id,
-        self->midi_note->actual_id);
+        self->midi_note->id);
   else
     str =
       g_strdup_printf (

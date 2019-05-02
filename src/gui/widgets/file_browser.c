@@ -23,6 +23,7 @@
  * File browser.
  */
 
+#include "actions/create_tracks_action.h"
 #include "gui/backend/file_manager.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -398,7 +399,15 @@ on_row_activated (GtkTreeView       *tree_view,
            descr->type == FILE_TYPE_FLAC ||
            descr->type == FILE_TYPE_MP3)
     {
-      mixer_add_channel_from_file_descr (descr);
+      UndoableAction * ua =
+        create_tracks_action_new (
+          TRACK_TYPE_AUDIO,
+          NULL,
+          descr,
+          TRACKLIST->num_tracks,
+          1);
+
+      undo_manager_perform (UNDO_MANAGER, ua);
     }
 }
 

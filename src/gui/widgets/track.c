@@ -568,7 +568,7 @@ multipress_pressed (GtkGestureMultiPress *gesture,
 TrackWidget *
 track_widget_new (Track * track)
 {
-  g_warn_if_fail (track);
+  g_return_val_if_fail (track, NULL);
 
   TrackWidget * self = NULL;
 

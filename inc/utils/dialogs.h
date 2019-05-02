@@ -35,4 +35,7 @@ GtkDialog * dialogs_get_open_project_dialog (GtkWindow * parent);
 GtkDialog * dialogs_get_overwrite_plugin_dialog (
   GtkWindow * parent);
 
+GtkDialog * dialogs_get_error_instantiating_plugin_dialog (
+  GtkWindow * parent);
+
 #endif

@@ -1369,24 +1369,34 @@ lv2_create_descriptor_from_lilv (const LilvPlugin * lp)
 /**
  * Creates an LV2 plugin from given uri.
  *
- * Used when populating the plugin browser.
+ * Note that this does not instantiate the plugin.
+ * For instantiating the plugin using a preset or
+ * state file, see lv2_plugin_instantiate.
+ *
+ * @param pl A newly created Plugin with its
+ *   descriptor filled in.
+ * @param uri The URI.
  */
 Lv2Plugin *
-lv2_create_from_uri (Plugin    * plugin,  ///< a newly created plugin, with its descriptor filled in
-                     const char * uri ///< the uri
-                     )
+lv2_create_from_uri (
+  Plugin    * pl,
+  const char * uri)
 {
-  LilvNode * lv2_uri = lilv_new_uri (LILV_WORLD, uri);
-  const LilvPlugin * lilv_plugin = lilv_plugins_get_by_uri (
-                                    PM_LILV_NODES.lilv_plugins,
-                                    lv2_uri);
+  LilvNode * lv2_uri =
+    lilv_new_uri (LILV_WORLD, uri);
+  const LilvPlugin * lilv_plugin =
+    lilv_plugins_get_by_uri (
+      PM_LILV_NODES.lilv_plugins,
+      lv2_uri);
 
   if (!lilv_plugin)
     {
-      g_error ("Failed to get LV2 Plugin from URI %s", uri);
+      g_error (
+        "Failed to get LV2 Plugin from URI %s",
+        uri);
       return NULL;
     }
-  Lv2Plugin * lv2_plugin = lv2_new (plugin);
+  Lv2Plugin * lv2_plugin = lv2_new (pl);
 
   lv2_plugin->lilv_plugin = lilv_plugin;
 
@@ -1394,78 +1404,21 @@ lv2_create_from_uri (Plugin    * plugin,  ///< a newly created plugin, with its 
 }
 
 /**
- * Creates an LV2 plugin from state.
+ * Creates a new LV2 plugin using the given
+ * Plugin instance.
  *
- * Used when loading project files.
+ * The given Plugin instance must be a newly
+ * allocated one.
  */
 Lv2Plugin *
-lv2_create_from_state (Plugin    * plugin,  ///< a newly created plugin
-                       const char * _path    ///< path for state to load
-                             )
+lv2_new (Plugin *plugin)
 {
-  /*Lv2Plugin * lv2_plugin = lv2_new (plugin);*/
-
-  /*lv2_set_feature_data (lv2_plugin);*/
-
-  /*[> Get plugin URI <]*/
-  /*lv2_plugin->state    = NULL;*/
-  /*LilvNode*  lv2_uri = NULL;*/
-
-  /*struct stat info;*/
-  /*stat (_path, &info);*/
-  /*if (S_ISDIR(info.st_mode))*/
-    /*{*/
-      /*char* path = lv2_strjoin (_path, "/state.ttl");*/
-      /*lv2_plugin->state = lilv_state_new_from_file(LILV_WORLD, &lv2_plugin->map, NULL, path);*/
-      /*free(path);*/
-    /*}*/
-  /*else*/
-    /*{*/
-      /*lv2_plugin->state = lilv_state_new_from_file(LILV_WORLD,*/
-                                       /*&lv2_plugin->map, NULL,*/
-                                       /*_path);*/
-    /*}*/
-  /*if (!lv2_plugin->state)*/
-    /*{*/
-      /*g_error ("Failed to load state from %s\n", _path);*/
-    /*}*/
-
-  /*lv2_uri = lilv_node_duplicate(lilv_state_get_plugin_uri(lv2_plugin->state));*/
-
-  /*if (!lv2_uri)*/
-    /*{*/
-          /*g_error ("Missing plugin URI, try lv2ls to list plugins\n");*/
-    /*}*/
-
-  /*[> Find plugin <]*/
-  /*g_message ("Plugin:       %s\n", lilv_node_as_string(lv2_uri));*/
-  /*lv2_plugin->lilv_plugin = lilv_plugins_get_by_uri(PM_LILV_NODES.lilv_plugins,*/
-                                           /*lv2_uri);*/
-  /*lilv_node_free(lv2_uri);*/
-  /*if (!lv2_plugin->lilv_plugin) {*/
-          /*g_error("Failed to find plugin\n");*/
-  /*}*/
-
-  /*[> set plugin descriptor <]*/
-  /*set_descriptor (lv2_plugin);*/
-
-  return NULL;
-}
-
-/**
- * Creates a new LV2 plugin using the given Plugin instance.
- *
- * The given plugin instance must be a newly allocated one.
- */
-Lv2Plugin *
-lv2_new (Plugin *plugin ///< a newly allocated plugin instance
-         )
-{
-  Lv2Plugin * lv2_plugin = (Lv2Plugin *) calloc (1, sizeof (Lv2Plugin));
+  Lv2Plugin * lv2_plugin =
+    (Lv2Plugin *) calloc (1, sizeof (Lv2Plugin));
 
   /* set pointers to each other */
   lv2_plugin->plugin = plugin;
-  plugin->original_plugin = lv2_plugin;
+  plugin->lv2 = lv2_plugin;
 
   return lv2_plugin;
 }
@@ -2308,7 +2261,9 @@ lv2_cleanup (Lv2Plugin *lv2_plugin)
 }
 
 int
-lv2_save_state (Lv2Plugin * lv2_plugin, const char * dir)
+lv2_plugin_save_state_to_file (
+  Lv2Plugin * lv2_plugin,
+  const char * dir)
 {
   LilvState * state = lilv_state_new_from_instance (
     lv2_plugin->lilv_plugin,
@@ -2324,37 +2279,65 @@ lv2_save_state (Lv2Plugin * lv2_plugin, const char * dir)
     LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE,
     lv2_plugin->state_features);
 
-  if (state)
+  if (!state)
     {
-      char * label = g_strdup_printf ("%s.ttl",
-                                      lv2_plugin->plugin->descr->name);
-      /* FIXME check for return value */
-      int rc = lilv_state_save (LILV_WORLD,
-                                &lv2_plugin->map,
-                                &lv2_plugin->unmap,
-                                state,
-                                NULL,
-                                dir,
-                                label);
-      if (rc)
-        {
-          g_warning ("Lilv save state failed");
-        }
-      char * tmp = g_path_get_basename (dir);
-      lv2_plugin->state_file =
-        g_build_filename (tmp,
-                          label,
-                          NULL);
-      g_free (label);
-      g_free (tmp);
-      lilv_state_free (state);
+      g_warn_if_reached ();
+      return -1;
+    }
 
-      return rc;
-    }
-  else
+  char * label =
+    g_strdup_printf (
+      "%s.ttl",
+      lv2_plugin->plugin->descr->name);
+  /* FIXME check for return value */
+  int rc = lilv_state_save (LILV_WORLD,
+                            &lv2_plugin->map,
+                            &lv2_plugin->unmap,
+                            state,
+                            NULL,
+                            dir,
+                            label);
+  if (rc)
     {
-      g_warning ("Could create state");
+      g_warning ("Lilv save state failed");
+      return -1;
     }
+  char * tmp = g_path_get_basename (dir);
+  lv2_plugin->state_file =
+    g_build_filename (tmp,
+                      label,
+                      NULL);
+  g_free (label);
+  g_free (tmp);
+  lilv_state_free (state);
+
+  return 0;
+}
+
+/**
+ * Saves the current state to a string (returned).
+ *
+ * MUST be free'd by caller.
+ */
+int
+lv2_plugin_save_state_to_str (
+  Lv2Plugin * lv2_plugin)
+{
+  g_warn_if_reached ();
+
+  /* TODO */
+  /*LilvState * state =*/
+    /*lilv_state_new_from_instance (*/
+      /*lv2_plugin->lilv_plugin,*/
+      /*lv2_plugin->instance,*/
+      /*&lv2_plugin->map,*/
+      /*NULL,*/
+      /*NULL,*/
+      /*NULL,*/
+      /*lv2_get_port_value,*/
+      /*(void *) lv2_plugin,*/
+      /*LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE,*/
+      /*lv2_plugin->state_features);*/
 
   return -1;
 }

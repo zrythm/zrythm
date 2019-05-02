@@ -17,68 +17,63 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "actions/move_plugin_action.h"
+#include "actions/edit_plugins_action.h"
 #include "audio/channel.h"
 #include "audio/mixer.h"
+#include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
 #include "project.h"
 
+#include <glib/gi18n.h>
+
 UndoableAction *
-move_plugin_action_new (
-  Plugin *  pl,
-  Channel * to_ch,
-  int       to_slot)
+edit_plugins_action_new (
+  MixerSelections *     ms,
+  EditPluginsActionType type)
 {
-	MovePluginAction * self =
+	EditPluginsAction * self =
     calloc (1, sizeof (
-    	MovePluginAction));
+    	EditPluginsAction));
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-	  UNDOABLE_ACTION_TYPE_MOVE_PLUGIN;
-  self->from_slot =
-    channel_get_plugin_index (pl->channel, pl);
-  self->from_ch_id = pl->channel_id;
-  self->to_slot = to_slot;
-  self->to_ch_id = to_ch->id;
-  self->pl_id = pl->id;
+	  UNDOABLE_ACTION_TYPE_EDIT_PLUGINS;
+
+  self->ms = mixer_selections_clone (ms);
+  self->type = type;
+
   return ua;
 }
 
 int
-move_plugin_action_do (
-	MovePluginAction * self)
+edit_plugins_action_do (
+	EditPluginsAction * self)
 {
-  Plugin * pl = project_get_plugin (self->pl_id);
-  Channel * ch =
-    project_get_channel (self->to_ch_id);
-  g_warn_if_fail (pl);
-  g_warn_if_fail (ch);
-
-  mixer_move_plugin (
-    MIXER, pl, ch, self->to_slot);
-
+  /* TODO */
   return 0;
 }
 
+/**
+ * Edits the plugin.
+ */
 int
-move_plugin_action_undo (
-	MovePluginAction * self)
+edit_plugins_action_undo (
+	EditPluginsAction * self)
 {
-  Plugin * pl = project_get_plugin (self->pl_id);
-  Channel * ch =
-    project_get_channel (self->from_ch_id);
-  g_warn_if_fail (pl);
-  g_warn_if_fail (ch);
-
-  mixer_move_plugin (
-    MIXER, pl, ch, self->from_slot);
-
+  /* TODO */
   return 0;
+}
+
+char *
+edit_plugins_action_stringize (
+	EditPluginsAction * self)
+{
+  g_return_val_if_reached (
+    g_strdup (""));
 }
 
 void
-move_plugin_action_free (
-	MovePluginAction * self)
+edit_plugins_action_free (
+	EditPluginsAction * self)
 {
   free (self);
 }

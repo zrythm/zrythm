@@ -199,3 +199,28 @@ io_file_get_last_modified_datetime (const char * filename)
              filename);
   return NULL;
 }
+
+/**
+ * Removes the given file.
+ */
+int
+io_remove (
+  const char * path)
+{
+
+  return 0;
+}
+
+/**
+ * Removes a dir, optionally forcing deletion.
+ */
+int
+io_rmdir (
+  const char * path,
+  int          force)
+{
+  /* TODO */
+  g_message ("Removing %s", path);
+
+  return 0;
+}

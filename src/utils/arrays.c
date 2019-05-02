@@ -30,8 +30,6 @@
 
 /**
  * Returns 1 if element exists in array, 0 if not.
- *
- * TODO rename arrays to array
  */
 int
 _array_contains (void ** array,

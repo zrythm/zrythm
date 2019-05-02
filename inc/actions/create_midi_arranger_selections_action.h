@@ -25,18 +25,32 @@
 typedef struct MidiArrangerSelections
   MidiArrangerSelections;
 
+/**
+ * It currently "creates" the current selection so
+ * that it's undoable.
+ *
+ * It does nothing on perform due to how the
+ * arrangers currently work. This might change in
+ * the future.
+ */
 typedef struct CreateMidiArrangerSelectionsAction
 {
   UndoableAction              parent_instance;
 
   /**
-   * A clone of the midi_arranger selections at the time.
+   * A clone of the midi_arranger selections at the
+   * time.
    */
   MidiArrangerSelections *        mas;
 } CreateMidiArrangerSelectionsAction;
 
+/**
+ * The given MidiArrangerSelections must already
+ * contain the created selections.
+ */
 UndoableAction *
-create_midi_arranger_selections_action_new ();
+create_midi_arranger_selections_action_new (
+  MidiArrangerSelections * mas);
 
 int
 create_midi_arranger_selections_action_do (
@@ -44,6 +58,10 @@ create_midi_arranger_selections_action_do (
 
 int
 create_midi_arranger_selections_action_undo (
+  CreateMidiArrangerSelectionsAction * self);
+
+char *
+create_midi_arranger_selections_action_stringize (
   CreateMidiArrangerSelectionsAction * self);
 
 void

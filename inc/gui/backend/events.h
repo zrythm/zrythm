@@ -106,6 +106,7 @@ typedef enum EventType
    */
   ET_TIMELINE_VIEWPORT_CHANGED,
   ET_PLUGIN_ADDED,
+  ET_PLUGINS_ADDED,
   ET_PLUGIN_DELETED,
   ET_PLAYHEAD_POS_CHANGED,
 
@@ -119,8 +120,11 @@ typedef enum EventType
   /** Plugin visibility changed, should close/open
    * UI. */
   ET_PLUGIN_VISIBILITY_CHANGED,
+  ET_PLUGIN_SELECTION_CHANGED,
 
-  ET_TRACK_REMOVED,
+  ET_TRACKS_CREATED,
+  ET_TRACKS_REMOVED,
+  ET_TRACKS_MOVED,
   ET_CHANNEL_REMOVED,
 } EventType;
 

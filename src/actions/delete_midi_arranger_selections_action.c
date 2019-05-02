@@ -24,21 +24,26 @@
 #include "project.h"
 #include "actions/delete_midi_arranger_selections_action.h"
 
+#include <glib/gi18n.h>
+
 /**
  * Note: chord addresses are to be copied.
  */
 UndoableAction *
-delete_midi_arranger_selections_action_new ()
+delete_midi_arranger_selections_action_new (
+  MidiArrangerSelections * mas)
 {
   DeleteMidiArrangerSelectionsAction * self =
-    calloc (1, sizeof (
-                 DeleteMidiArrangerSelectionsAction));
+    calloc (
+      1,
+      sizeof (
+        DeleteMidiArrangerSelectionsAction));
 
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
     UNDOABLE_ACTION_TYPE_DELETE_MA_SELECTIONS;
 
-  self->mas = midi_arranger_selections_clone ();
+  self->mas = midi_arranger_selections_clone (mas);
 
   return ua;
 }
@@ -47,15 +52,13 @@ int
 delete_midi_arranger_selections_action_do (
   DeleteMidiArrangerSelectionsAction * self)
 {
-  MidiNote * _mn, *mn;
+  MidiNote * mn;
   for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
-      /* this is a clone */
-      _mn = self->mas->midi_notes[i];
-
       /* find actual midi note */
       mn =
-        project_get_midi_note (_mn->actual_id);
+        project_get_midi_note (
+          self->mas->midi_notes[i]->id);
 
       /* remove it */
       midi_region_remove_midi_note (
@@ -72,30 +75,41 @@ int
 delete_midi_arranger_selections_action_undo (
   DeleteMidiArrangerSelectionsAction * self)
 {
-  MidiNote * mn_clone, * mn;
+  MidiNote * orig_mn, * mn;
   for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
-      /* this is a clone */
-      mn = self->mas->midi_notes[i];
+      /* get the clone */
+      orig_mn = self->mas->midi_notes[i];
 
       /* clone the clone */
-      mn_clone =
+      mn =
         midi_note_clone (
-          mn, project_get_region (mn->region_id));
+          orig_mn,
+          project_get_region (orig_mn->region_id));
 
-      /* move the new clone to the original id */
-      project_move_midi_note (
-        mn_clone, mn->actual_id);
+      /* add to project to get unique ID */
+      project_add_midi_note (mn);
 
-      /* add the new clone to the region */
+      /* add it to the region */
       midi_region_add_midi_note (
         project_get_region (mn->region_id),
-        mn_clone);
+        mn);
+
+      /* remember the ID */
+      orig_mn->id = mn->id;
     }
   EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
                NULL);
 
   return 0;
+}
+
+char *
+delete_midi_arranger_selections_action_stringize (
+  DeleteMidiArrangerSelectionsAction * self)
+{
+  return g_strdup (
+    _("Delete Object(s)"));
 }
 
 void

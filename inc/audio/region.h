@@ -187,13 +187,6 @@ typedef struct Region
   /* ==== AUDIO REGION END ==== */
 
   /**
-   * ID of region in use.
-   *
-   * Used when doing/undoing.
-   */
-  int             actual_id;
-
-  /**
    * Transient or not.
    *
    * Transient regions are regions that are cloned
@@ -264,9 +257,6 @@ static const cyaml_schema_field_t
     "midi_note_ids", CYAML_FLAG_DEFAULT,
     Region, midi_note_ids, num_midi_notes,
     &int_schema, 0, CYAML_UNLIMITED),
-	CYAML_FIELD_INT (
-    "actual_id", CYAML_FLAG_DEFAULT,
-    Region, actual_id),
 
 	CYAML_FIELD_END
 };
@@ -347,13 +337,17 @@ region_shift (
 
 /**
  * Only to be used by implementing structs.
+ *
+ * @param add_to_project This should be false when
+ *   cloning, otherwise true.
  */
 void
 region_init (Region *   region,
              RegionType type,
              Track *    track,
              Position * start_pos,
-             Position * end_pos);
+             Position * end_pos,
+             int        add_to_project);
 
 /**
  * Clamps position then sets it.

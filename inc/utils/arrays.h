@@ -48,6 +48,22 @@
   size++;
 
 /**
+ * Inserts elements in 2 arrays at the same time.
+ *
+ * Assumes the arrays are the same size.
+ */
+#define array_double_insert( \
+  arr1,arr2,size,pos,el1,el2) \
+  for (int ii = pos; ii < size; ii++) \
+    { \
+      arr1[ii + 1] = arr1[ii]; \
+      arr2[ii + 1] = arr2[ii]; \
+    } \
+  arr1[pos] = el1; \
+  arr2[pos] = el2; \
+  size++;
+
+/**
  * Deletes element from array and rearranges other elements
  * accordingly.
  */
@@ -116,6 +132,20 @@
   _array_contains ((void **) array, \
                    size, \
                    (void *) element)
+
+static inline int
+array_contains_int (
+  int * array,
+  int   size,
+  int   element)
+{
+  for (int i = 0; i < size; i++)
+    {
+      if (array[i] == element)
+        return 1;
+    }
+  return 0;
+}
 
 /**
  * Returns 1 if element exists in array, 0 if not.

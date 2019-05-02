@@ -77,7 +77,8 @@ midi_arranger_selections_create_missing_transients (
  * Clone the struct for copying, undoing, etc.
  */
 MidiArrangerSelections *
-midi_arranger_selections_clone ();
+midi_arranger_selections_clone (
+  MidiArrangerSelections * mas);
 
 /**
  * Returns the position of the leftmost object.

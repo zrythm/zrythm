@@ -24,13 +24,16 @@
 #include "project.h"
 #include "actions/duplicate_midi_arranger_selections_action.h"
 
+#include <glib/gi18n.h>
+
 /**
  * Note: chord addresses are to be copied.
  */
 UndoableAction *
 duplicate_midi_arranger_selections_action_new (
-  long ticks,
-  int  delta)
+  MidiArrangerSelections * mas,
+  long                     ticks,
+  int                      delta)
 {
   DuplicateMidiArrangerSelectionsAction * self =
     calloc (1, sizeof (
@@ -38,9 +41,11 @@ duplicate_midi_arranger_selections_action_new (
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
     UNDOABLE_ACTION_TYPE_DUPLICATE_MA_SELECTIONS;
-  self->mas = midi_arranger_selections_clone ();
+
+  self->mas = midi_arranger_selections_clone (mas);
   self->ticks = ticks;
   self->delta = delta;
+
   return ua;
 }
 
@@ -48,27 +53,30 @@ int
 duplicate_midi_arranger_selections_action_do (
   DuplicateMidiArrangerSelectionsAction * self)
 {
-  MidiNote * mn, * _mn;
+  MidiNote * mn, * orig_mn;
 	for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
-      /* this is a clone, must not be used */
-      mn = self->mas->midi_notes[i];
+      /* get the clone */
+      orig_mn = self->mas->midi_notes[i];
 
       /* clone the clone */
-      _mn =
+      mn =
         midi_note_clone (
-          mn, project_get_region (mn->region_id));
-      _mn->actual_id = _mn->id;
+          orig_mn,
+          project_get_region (orig_mn->region_id));
 
-      /* add and shift the new clone */
+      /* add to project to get a unique ID */
+      project_add_midi_note (mn);
+
+      /* add and shift it */
       midi_region_add_midi_note (
-        project_get_region (_mn->region_id),
-        _mn);
+        project_get_region (mn->region_id),
+        mn);
       midi_note_shift (
-        _mn, self->ticks, self->delta);
+        mn, self->ticks, self->delta);
 
-      /* remember the new clone id */
-      mn->actual_id = _mn->id;
+      /* remember ID */
+      orig_mn->id = mn->id;
     }
   EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
                NULL);
@@ -80,24 +88,31 @@ int
 duplicate_midi_arranger_selections_action_undo (
   DuplicateMidiArrangerSelectionsAction * self)
 {
-  MidiNote * mn, * _mn;
+  MidiNote * mn;
   for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
-      /* this is a clone, must not be used */
-      mn = self->mas->midi_notes[i];
-
-      /* find the MidiNote with the actual id */
-      _mn = project_get_midi_note (mn->actual_id);
+      /* find the actual MidiNote */
+      mn =
+        project_get_midi_note (
+          self->mas->midi_notes[i]->id);
 
       /* remove it */
       midi_region_remove_midi_note (
-        project_get_region (_mn->region_id),
-        _mn);
+        project_get_region (mn->region_id),
+        mn);
     }
   EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
                NULL);
 
   return 0;
+}
+
+char *
+duplicate_midi_arranger_selections_action_stringize (
+  DuplicateMidiArrangerSelectionsAction * self)
+{
+  return g_strdup (
+    _("Duplicate Object(s)"));
 }
 
 void

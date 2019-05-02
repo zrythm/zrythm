@@ -297,7 +297,8 @@ region:selected,
 chord:selected,
 midi-note:selected
 velocity:selected,
-automation-point:selected
+automation-point:selected,
+channel-slot:selected
 {
   background-color: @selection_color;
 }

@@ -57,7 +57,7 @@
  * Recalculates the process acyclic directed graph.
  */
 void
-mixer_recalculate_graph (
+mixer_recalc_graph (
   Mixer * mixer)
 {
   if (mixer->router.graph2)
@@ -146,34 +146,43 @@ mixer_get_next_channel_id ()
 }
 
 /**
- * Adds channel to mixer.
+ * Adds channel to the mixer and connects its ports.
  *
- * The channel track is created in channel_create but it is
- * setup here.
+ * This acts like the "connection" function of
+ * the channel.
+ *
+ * Note that this should have nothing to do with
+ * the track, but only with the mixer and routing
+ * in general.
+ *
+ * @param recalc_graph Recalculate routing graph.
  */
 void
-mixer_add_channel (Channel * channel)
+mixer_add_channel (
+  Mixer *   self,
+  Channel * channel,
+  int       recalc_graph)
 {
   g_warn_if_fail (channel);
-  g_warn_if_fail (channel->track);
 
   if (channel->type == CT_MASTER)
     {
-      MIXER->master = channel;
-      MIXER->master_id = channel->id;
+      self->master = channel;
+      self->master_id = channel->id;
     }
   else
     {
-      MIXER->channel_ids[MIXER->num_channels] =
+      self->channel_ids[self->num_channels] =
         channel->id;
-      array_append (MIXER->channels,
-                    MIXER->num_channels,
+      array_append (self->channels,
+                    self->num_channels,
                     channel);
     }
 
-  track_setup (channel->track);
+  channel_connect (channel);
 
-  mixer_recalculate_graph (MIXER);
+  if (recalc_graph)
+    mixer_recalc_graph (self);
 }
 
 /**
@@ -193,56 +202,36 @@ mixer_get_channel_at_pos (int pos)
 }
 
 /**
- * Removes the given channel.
+ * Removes the given channel from the mixer and
+ * disconnects it.
+ *
+ * @param free Also free the channel (later).
+ * @param publish_events Publish GUI events.
  */
 void
-mixer_remove_channel (Channel * channel)
+mixer_remove_channel (
+  Mixer *   self,
+  Channel * ch,
+  int       free,
+  int       publish_events)
 {
   g_message ("removing channel %s",
-             channel->track->name);
-  channel->enabled = 0;
+             ch->track->name);
+  ch->enabled = 0;
 
-  g_message ("mixer num channels before %d",
-             MIXER->num_channels);
-  array_delete (MIXER->channels,
-                MIXER->num_channels,
-                channel);
-  int size = MIXER->num_channels + 1;
-  array_delete (MIXER->channel_ids,
-                size,
-                channel->id);
-  project_remove_channel (channel);
-  channel_free (channel);
-  g_message ("mixer num channels after %d",
-             MIXER->num_channels);
+  array_double_delete (
+    self->channels,
+    self->channel_ids,
+    self->num_channels,
+    ch,
+    ch->id);
 
-  EVENTS_PUSH (ET_CHANNEL_REMOVED,
-               NULL);
-}
+  channel_disconnect (ch);
+  if (free)
+    free_later (ch, channel_free);
 
-void
-mixer_add_channel_from_file_descr (
-  FileDescriptor * descr)
-{
-  /* create a channel/track */
-  Channel * chan =
-    channel_create (CT_AUDIO, "Audio Track");
-  mixer_add_channel (chan);
-  tracklist_append_track (chan->track);
-
-  /* create an audio region & add to track */
-  Position start_pos;
-  position_set_to_pos (&start_pos,
-                       &PLAYHEAD);
-  AudioRegion * ar =
-    audio_region_new (chan->track,
-                      descr->absolute_path,
-                      &start_pos);
-  track_add_region (
-    chan->track, ar);
-
-  EVENTS_PUSH (ET_TRACK_ADDED,
-               chan->track);
+  if (publish_events)
+    EVENTS_PUSH (ET_CHANNEL_REMOVED, NULL);
 }
 
 /**
@@ -279,7 +268,7 @@ mixer_move_plugin (
     channel_get_plugin_index (pl->channel, pl);
   Channel * prev_ch = pl->channel;
   channel_remove_plugin (
-    pl->channel, prev_slot, 0, 0, 0);
+    pl->channel, prev_slot, 0, 0);
 
   /* move plugin's automation from src to dest */
   plugin_move_automation (
@@ -293,54 +282,6 @@ mixer_move_plugin (
     GTK_WIDGET (prev_ch->widget->slots[prev_slot]));
   gtk_widget_queue_draw (
     GTK_WIDGET (ch->widget->slots[slot]));
-}
-
-void
-mixer_add_channel_from_plugin_descr (
-  PluginDescriptor * descr)
-{
-  Plugin * plugin = plugin_create_from_descr (descr);
-
-  if (plugin_instantiate (plugin) < 0)
-    {
-      char * message =
-        g_strdup_printf (
-          "Error instantiating plugin “%s”. Please see log for details.",
-          plugin->descr->name);
-
-      if (MAIN_WINDOW)
-        ui_show_error_message (
-          GTK_WINDOW (MAIN_WINDOW),
-          message);
-      g_free (message);
-      plugin_free (plugin);
-      return;
-    }
-
-  ChannelType ct;
-  if (IS_LV2_PLUGIN_CATEGORY (plugin,
-                              LV2_INSTRUMENT_PLUGIN))
-    ct = CT_MIDI;
-  else
-    ct = CT_BUS;
-  Channel * new_channel =
-    channel_create (ct,
-                    descr->name);
-  mixer_add_channel (new_channel);
-  tracklist_append_track (new_channel->track);
-  channel_add_plugin (
-    new_channel, 0, plugin, 1, 1, 1);
-
-  if (g_settings_get_int (
-        S_PREFERENCES,
-        "open-plugin-uis-on-instantiate"))
-    {
-      plugin->visible = 1;
-      EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED,
-                   plugin);
-    }
-  EVENTS_PUSH (ET_TRACK_ADDED,
-               new_channel->track);
 }
 
 Channel *

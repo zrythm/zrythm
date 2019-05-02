@@ -1,7 +1,5 @@
 /*
- * utils/io.h - IO utils
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -92,6 +90,21 @@ io_file_get_creation_datetime (
 char *
 io_file_get_last_modified_datetime (
   const char * filename);
+
+/**
+ * Removes the given file.
+ */
+int
+io_remove (
+  const char * path);
+
+/**
+ * Removes a dir, optionally forcing deletion.
+ */
+int
+io_rmdir (
+  const char * path,
+  int          force);
 
 /**
  * @}

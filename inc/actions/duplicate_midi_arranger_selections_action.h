@@ -43,8 +43,9 @@ typedef struct DuplicateMidiArrangerSelectionsAction
 
 UndoableAction *
 duplicate_midi_arranger_selections_action_new (
-  long ticks,
-  int  delta);
+  MidiArrangerSelections * mas,
+  long                     ticks,
+  int                      delta);
 
 int
 duplicate_midi_arranger_selections_action_do (
@@ -52,6 +53,10 @@ duplicate_midi_arranger_selections_action_do (
 
 int
 duplicate_midi_arranger_selections_action_undo (
+  DuplicateMidiArrangerSelectionsAction * self);
+
+char *
+duplicate_midi_arranger_selections_action_stringize (
   DuplicateMidiArrangerSelectionsAction * self);
 
 void

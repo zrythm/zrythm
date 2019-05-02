@@ -20,8 +20,8 @@
 /** \file
  */
 
-#include "actions/create_plugin_action.h"
-#include "actions/move_plugin_action.h"
+#include "actions/create_plugins_action.h"
+#include "actions/move_plugins_action.h"
 #include "actions/undoable_action.h"
 #include "actions/undo_manager.h"
 #include "audio/channel.h"
@@ -78,8 +78,9 @@ on_drag_data_received (
                                       pl))
         {
           UndoableAction * ua =
-            move_plugin_action_new (
-              pl, self->channel, self->slot_index);
+            move_plugins_action_new (
+              MIXER_SELECTIONS,
+              self->channel, self->slot_index);
 
           undo_manager_perform (
             UNDO_MANAGER, ua);
@@ -93,8 +94,8 @@ on_drag_data_received (
       g_warn_if_fail (descr);
 
       UndoableAction * ua =
-        create_plugin_action_new (
-          descr, self->channel, self->slot_index);
+        create_plugins_action_new (
+          descr, self->channel, self->slot_index, 1);
 
       undo_manager_perform (
         UNDO_MANAGER, ua);
@@ -197,28 +198,46 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 }
 
 static gboolean
-button_press_cb (GtkWidget * widget,
-		 GdkEventButton * event,
-		 gpointer data)
+button_press_cb (
+  GtkWidget * widget,
+	GdkEventButton * event,
+  ChannelSlotWidget * self)
 {
-  if (event->type == GDK_2BUTTON_PRESS)
+  if (event->type == GDK_BUTTON_PRESS)
     {
-      ChannelSlotWidget * self = (ChannelSlotWidget *) data;
-      Plugin * plugin = self->channel->plugins[self->slot_index];
-      if (plugin)
-	{
-	  if (plugin->descr->protocol == PROT_LV2)
-	    {
-	      plugin->visible = !plugin->visible;
-	      EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED,
-	                   plugin);
-	    }
-	  else
-	    {
-	      plugin_open_ui (plugin);
+      /* if not control click, clear the selections
+       * first */
+      if (!(event->state & GDK_CONTROL_MASK))
+        {
+          mixer_selections_clear (
+            MIXER_SELECTIONS);
+        }
 
-	    }
-	}
+      /* add to selections */
+      mixer_selections_add_slot (
+        MIXER_SELECTIONS,
+        self->channel,
+        self->slot_index);
+    }
+  else if (event->type == GDK_2BUTTON_PRESS)
+    {
+      Plugin * pl =
+        self->channel->plugins[self->slot_index];
+      if (pl)
+        {
+          if (pl->descr->protocol == PROT_LV2)
+            {
+              pl->visible =
+                !pl->visible;
+              EVENTS_PUSH (
+                ET_PLUGIN_VISIBILITY_CHANGED,
+                pl);
+            }
+          else
+            {
+              plugin_open_ui (pl);
+            }
+        }
     }
   return FALSE;
 }

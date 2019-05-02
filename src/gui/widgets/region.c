@@ -185,10 +185,9 @@ region_draw_cb (RegionWidget * self,
   if (S_IS_DEBUG)
     str =
       g_strdup_printf (
-        "%s [%d - actual %d]",
+        "%s [%d]",
         rw_prv->region->name,
-        rw_prv->region->id,
-        rw_prv->region->actual_id);
+        rw_prv->region->id);
   else
     str =
       g_strdup (rw_prv->region->name);
@@ -328,15 +327,10 @@ region_widget_select (
 {
   RegionWidgetPrivate * prv =
     region_widget_get_instance_private (self);
-  /*prv->region->selected = select;*/
   g_message ("region widget select %d",
              select);
   if (select)
     {
-      /*gtk_widget_set_state_flags (*/
-        /*GTK_WIDGET (self),*/
-        /*GTK_STATE_FLAG_SELECTED,*/
-        /*0);*/
       timeline_selections_add_region (
         TL_SELECTIONS,
         prv->region,
@@ -344,14 +338,11 @@ region_widget_select (
     }
   else
     {
-      /*gtk_widget_unset_state_flags (*/
-        /*GTK_WIDGET (self),*/
-        /*GTK_STATE_FLAG_SELECTED);*/
       timeline_selections_remove_region (
         TL_SELECTIONS,
         prv->region);
     }
-  /*gtk_widget_queue_draw (GTK_WIDGET (self));*/
+
   EVENTS_PUSH (ET_REGION_CHANGED,
                prv->region);
 }

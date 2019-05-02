@@ -559,11 +559,9 @@ midi_arranger_widget_create_note (
                      ar_prv->snap_grid);
     }
   Velocity * vel = velocity_default ();
-  MidiNote * midi_note = midi_note_new (region,
-                                   pos,
-                                   pos,
-                                   note,
-                                   vel);
+  MidiNote * midi_note =
+    midi_note_new (
+      region, pos, pos, note, vel, 1);
   position_set_min_size (&midi_note->start_pos,
                          &midi_note->end_pos,
                          ar_prv->snap_grid);
@@ -873,6 +871,7 @@ midi_arranger_widget_on_drag_end (
     {
       UndoableAction * ua =
         move_midi_arranger_selections_action_new (
+          MIDI_ARRANGER_SELECTIONS,
           position_to_ticks (
             &MIDI_ARRANGER_SELECTIONS->
               transient_notes[0]->start_pos) -
@@ -895,6 +894,7 @@ midi_arranger_widget_on_drag_end (
       UndoableAction * ua =
         (UndoableAction *)
         duplicate_midi_arranger_selections_action_new (
+          MIDI_ARRANGER_SELECTIONS,
           position_to_ticks (
             &MIDI_ARRANGER_SELECTIONS->
               transient_notes[0]->start_pos) -
@@ -922,7 +922,8 @@ midi_arranger_widget_on_drag_end (
     {
       UndoableAction * ua =
         (UndoableAction *)
-        create_midi_arranger_selections_action_new ();
+        create_midi_arranger_selections_action_new (
+          MIDI_ARRANGER_SELECTIONS);
       undo_manager_perform (
         UNDO_MANAGER, ua);
     }

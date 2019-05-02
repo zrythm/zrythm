@@ -61,7 +61,7 @@ header_bar_widget_refresh_undo_redo_buttons (
         (UndoableAction *)
         stack_peek (UNDO_MANAGER->undo_stack);
       char * undo2 =
-        undoable_action_stringize (ua->type);
+        undoable_action_stringize (ua);
       undo =
         g_strdup_printf ("%s %s", undo, undo2);
       gtk_label_set_markup_with_mnemonic (
@@ -80,7 +80,7 @@ header_bar_widget_refresh_undo_redo_buttons (
         (UndoableAction *)
         stack_peek (UNDO_MANAGER->redo_stack);
       char * redo2 =
-        undoable_action_stringize (ua->type);
+        undoable_action_stringize (ua);
       redo =
         g_strdup_printf ("%s %s", redo, redo2);
       gtk_label_set_markup_with_mnemonic (

@@ -39,6 +39,7 @@
 #include "gui/widgets/velocity.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 
 void
 midi_note_init_loaded (
@@ -56,9 +57,11 @@ midi_note_new (MidiRegion * region,
                Position *   start_pos,
                Position *   end_pos,
                int          val,
-               Velocity *   vel)
+               Velocity *   vel,
+               int          add_to_project)
 {
-  MidiNote * midi_note = calloc (1, sizeof (MidiNote));
+  MidiNote * midi_note =
+    calloc (1, sizeof (MidiNote));
 
   position_set_to_pos (&midi_note->start_pos,
                        start_pos);
@@ -73,9 +76,8 @@ midi_note_new (MidiRegion * region,
   midi_note->widget = midi_note_widget_new (midi_note);
   g_object_ref (midi_note->widget);
 
-  project_add_midi_note (midi_note);
-
-  midi_note->actual_id = midi_note->id;
+  if (add_to_project)
+    project_add_midi_note (midi_note);
 
   return midi_note;
 }
@@ -90,13 +92,12 @@ midi_note_clone (MidiNote *  src,
 {
   Velocity * vel = velocity_clone (src->vel);
 
-  MidiNote * mn = midi_note_new (mr,
-                        &src->start_pos,
-                        &src->end_pos,
-                        src->val,
-                        vel);
+  MidiNote * mn =
+    midi_note_new (
+      mr, &src->start_pos, &src->end_pos,
+      src->val, vel, F_NO_ADD_TO_PROJ);
 
-  mn->actual_id = src->id;
+  mn->id = src->id;
 
   return mn;
 }

@@ -73,6 +73,8 @@ automation_tracklist_widget_refresh (
 {
   GET_TRACK (self);
 
+  g_return_if_fail (track);
+
   if (!track->bot_paned_visible)
     {
       gtk_widget_set_visible (GTK_WIDGET (self),

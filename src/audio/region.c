@@ -36,6 +36,7 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 #include "utils/audio.h"
 #include "utils/yaml.h"
 
@@ -44,13 +45,17 @@
 
 /**
  * Only to be used by implementing structs.
+ *
+ * @param add_to_project This should be false when
+ *   cloning, otherwise true.
  */
 void
 region_init (Region *   region,
              RegionType type,
              Track *    track,
              Position * start_pos,
-             Position * end_pos)
+             Position * end_pos,
+             int        add_to_project)
 {
   g_message ("creating region");
   position_set_to_pos (&region->start_pos,
@@ -91,8 +96,9 @@ region_init (Region *   region,
       region->widget = Z_REGION_WIDGET (
         midi_region_widget_new (region));
     }
-  project_add_region (region);
-  region->actual_id = region->id;
+
+  if (add_to_project)
+    project_add_region (region);
 }
 
 /**
@@ -423,18 +429,19 @@ region_clone (Region *        region,
       MidiRegion * mr =
         midi_region_new (track,
                          &region->start_pos,
-                         &region->end_pos);
+                         &region->end_pos,
+                         F_NO_ADD_TO_PROJ);
       MidiRegion * mr_orig = region;
       if (flag == REGION_CLONE_COPY)
         {
-          for (int i = 0; i < mr_orig->num_midi_notes; i++)
+          for (int i = 0;
+               i < mr_orig->num_midi_notes; i++)
             {
               MidiNote * mn =
-                midi_note_clone (mr_orig->midi_notes[i],
-                                 mr);
+                midi_note_clone (
+                  mr_orig->midi_notes[i], mr);
 
-              midi_region_add_midi_note (mr,
-                                         mn);
+              midi_region_add_midi_note (mr, mn);
             }
         }
 
@@ -444,9 +451,8 @@ region_clone (Region *        region,
     {
       Region * ar =
         audio_region_new (
-          region->track,
-          region->filename,
-          &region->start_pos);
+          region->track, region->filename,
+          &region->start_pos, F_NO_ADD_TO_PROJ);
 
       new_region = ar;
     }
@@ -462,7 +468,7 @@ region_clone (Region *        region,
     &new_region->loop_end_pos,
     &region->loop_end_pos);
 
-  new_region->actual_id = region->id;
+  new_region->id = region->id;
 
   return new_region;
 }

@@ -31,7 +31,7 @@
 #include "gui/widgets/fader.h"
 #include "gui/widgets/knob.h"
 #include "gui/widgets/pan.h"
-#include "actions/edit_channel_action.h"
+#include "actions/edit_tracks_action.h"
 #include "actions/undo_manager.h"
 #include "actions/undoable_action.h"
 #include "project.h"
