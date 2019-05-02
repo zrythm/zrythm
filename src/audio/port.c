@@ -255,7 +255,7 @@ ports_connected (Port * src, Port * dest)
 int
 port_disconnect_all (Port * port)
 {
-  g_warn_if_fail (port != NULL);
+  g_warn_if_fail (port);
 
   FOREACH_SRCS (port)
     {

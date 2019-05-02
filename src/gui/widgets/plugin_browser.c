@@ -77,8 +77,7 @@ on_row_activated (GtkTreeView       *tree_view,
     g_value_get_pointer (&value);
 
   TrackType tt;
-  if (g_strcmp0 (descr->category,
-                 "Instrument"))
+  if (plugin_is_instrument (descr))
     tt = TRACK_TYPE_INSTRUMENT;
   else
     tt = TRACK_TYPE_BUS;

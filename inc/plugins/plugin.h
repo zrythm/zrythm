@@ -40,6 +40,11 @@
 
 #define DUMMY_PLUGIN "Dummy Plugin"
 
+#define IS_PLUGIN_CATEGORY(p, c) \
+  (g_strcmp0 (((Plugin *)p)->descr->category, c) == 0)
+#define IS_PLUGIN_DESCR_CATEGORY(d,c) \
+  (g_strcmp0 (d->category,c) == 0)
+
 typedef struct Channel Channel;
 
 enum PluginCategory
@@ -332,7 +337,7 @@ plugin_clone (
  */
 int
 plugin_is_instrument (
-  Plugin * pl);
+  PluginDescriptor * descr);
 
 /**
  * Moves the Plugin's automation from one Channel

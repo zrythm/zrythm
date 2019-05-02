@@ -212,10 +212,7 @@ on_track_added (Track * track)
 
   /* needs to be called later because tracks need
    * time to get allocated */
-  if (MW_TIMELINE)
-    g_idle_add (
-      (GSourceFunc) arranger_widget_refresh,
-      Z_ARRANGER_WIDGET (MW_TIMELINE));
+  EVENTS_PUSH (ET_REFRESH_ARRANGER, NULL);
 }
 
 /**
@@ -589,8 +586,11 @@ events_process (void * data)
       switch (ev->type)
         {
         case ET_TRACKS_REMOVED:
-          tracklist_widget_hard_refresh (
-            MW_TRACKLIST);
+          if (MW_MIXER)
+            mixer_widget_refresh (MW_MIXER);
+          if (MW_TRACKLIST)
+            tracklist_widget_hard_refresh (
+              MW_TRACKLIST);
           break;
         case ET_CHANNEL_REMOVED:
           mixer_widget_refresh (
@@ -723,11 +723,23 @@ events_process (void * data)
         case ET_TRACK_CHANGED:
           on_track_changed ((Track *) ev->arg);
           break;
+        case ET_TRACKS_ADDED:
+          if (MW_MIXER)
+            mixer_widget_refresh (MW_MIXER);
+          if (MW_TRACKLIST)
+            tracklist_widget_hard_refresh (
+              MW_TRACKLIST);
+          break;
         case ET_TRACK_COLOR_CHANGED:
           on_track_color_changed ((Track *) ev->arg);
           break;
         case ET_TRACK_NAME_CHANGED:
           on_track_name_changed ((Track *) ev->arg);
+          break;
+        case ET_REFRESH_ARRANGER:
+          if (MW_TIMELINE)
+            arranger_widget_refresh (
+              Z_ARRANGER_WIDGET (MW_TIMELINE));
           break;
         case ET_TIMELINE_VIEWPORT_CHANGED:
           timeline_minimap_widget_refresh (

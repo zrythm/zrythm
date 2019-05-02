@@ -213,11 +213,12 @@ button_press_cb (
             MIXER_SELECTIONS);
         }
 
-      /* add to selections */
-      mixer_selections_add_slot (
-        MIXER_SELECTIONS,
-        self->channel,
-        self->slot_index);
+      /* if plugin exists here, add to selections */
+      if (self->channel->plugins[self->slot_index])
+        mixer_selections_add_slot (
+          MIXER_SELECTIONS,
+          self->channel,
+          self->slot_index);
     }
   else if (event->type == GDK_2BUTTON_PRESS)
     {

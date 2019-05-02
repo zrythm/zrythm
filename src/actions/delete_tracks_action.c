@@ -105,7 +105,7 @@ delete_tracks_action_undo (
   /* recalculate graph */
   mixer_recalc_graph (MIXER);
 
-  EVENTS_PUSH (ET_TRACKS_CREATED, NULL);
+  EVENTS_PUSH (ET_TRACKS_ADDED, NULL);
 
   return 0;
 }

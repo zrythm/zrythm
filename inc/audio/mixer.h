@@ -141,14 +141,12 @@ mixer_add_channel (
  * Removes the given channel from the mixer and
  * disconnects it.
  *
- * @param free Also free the channel (later).
  * @param publish_events Publish GUI events.
  */
 void
 mixer_remove_channel (
   Mixer *   self,
   Channel * channel,
-  int       free,
   int       publish_events);
 
 Channel *

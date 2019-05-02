@@ -120,15 +120,19 @@ track_new (
       g_return_val_if_reached (NULL);
     }
 
-  Channel * ch =
-    channel_new (ct, label, F_ADD_TO_PROJ);
-  track->channel = ch;
+  /* if should have channel */
+  if (type != TRACK_TYPE_CHORD)
+    {
+      Channel * ch =
+        channel_new (ct, label, F_ADD_TO_PROJ);
+      track->channel = ch;
 
-  track->channel_id = ch->id;
-  ch->track = track;
-  ch->track_id = track->id;
+      track->channel_id = ch->id;
+      ch->track = track;
+      ch->track_id = track->id;
 
-  channel_generate_automatables (ch);
+      channel_generate_automatables (ch);
+    }
 
   automation_tracklist_init (
     &track->automation_tracklist,
@@ -714,7 +718,7 @@ track_get_region_at_pos (
   return NULL;
 }
 
-const char *
+char *
 track_stringize_type (
   TrackType type)
 {

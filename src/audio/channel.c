@@ -2971,11 +2971,15 @@ channel_disconnect (Channel * channel)
 
 /**
  * Frees the channel.
+ *
+ * Channels should never be free'd by themselves
+ * in normal circumstances. Use track_free to
+ * free them.
  */
 void
 channel_free (Channel * channel)
 {
-  g_warn_if_fail (channel);
+  g_return_if_fail (channel);
   project_remove_channel (channel);
 
   project_remove_port (channel->stereo_in->l);

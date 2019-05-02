@@ -188,22 +188,18 @@ void
 mixer_selections_clear (
   MixerSelections * ms)
 {
-  int i, num_slots;
+  int i;
+  Plugin * pl;
 
-  /* use caches because ms->* will be operated on. */
-  static int slots[60];
   for (i = 0; i < ms->num_slots; i++)
     {
-      slots[i] = ms->slots[i];
-    }
-  num_slots = ms->num_slots;
+      pl = ms->ch->plugins[ms->slots[i]];
 
-  for (i = 0; i < num_slots; i++)
-    {
       mixer_selections_remove_slot (
-        ms, slots[i]);
+        ms, ms->slots[i]);
+
       EVENTS_PUSH (ET_PLUGIN_SELECTION_CHANGED,
-                   ms->ch->plugins[slots[i]]);
+                   pl);
     }
 
   g_message ("cleared mixer selections");

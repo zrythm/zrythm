@@ -349,7 +349,7 @@ track_get_fader_automatable (Track * track);
 char *
 track_get_name (Track * track);
 
-const char *
+char *
 track_stringize_type (
   TrackType type);
 

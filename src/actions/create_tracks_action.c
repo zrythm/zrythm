@@ -60,28 +60,35 @@ create_tracks_action_new (
 }
 
 static int
-create_instrument (
+create (
   CreateTracksAction * self,
+  TrackType            type,
   int                  idx)
 {
   Track * track;
 
   if (self->is_empty)
     {
+      char * tmp = track_stringize_type (type);
+      char * label =
+        g_strdup_printf (_("%s Track"), tmp);
+      g_free (tmp);
+
       track =
-        track_new (TRACK_TYPE_INSTRUMENT,
-                   _("Instrument Track"));
+        track_new (type,
+                   label);
       tracklist_insert_track (
         TRACKLIST,
         track,
         self->pos,
         F_NO_PUBLISH_EVENTS);
-      mixer_add_channel (
-        MIXER, track->channel, F_NO_RECALC_GRAPH);
+      if (track->channel)
+        mixer_add_channel (
+          MIXER, track->channel, F_NO_RECALC_GRAPH);
       tracklist_insert_track (
         TRACKLIST,
         track,
-        self->pos,
+        self->pos + idx,
         F_NO_PUBLISH_EVENTS);
     }
   else
@@ -89,7 +96,7 @@ create_instrument (
       Plugin * pl=
         plugin_new_from_descr (
           &self->pl_descr,
-          F_NO_ADD_TO_PROJ);
+          F_ADD_TO_PROJ);
 
       if (plugin_instantiate (pl) < 0)
         {
@@ -109,16 +116,33 @@ create_instrument (
         }
 
       track =
-        track_new (TRACK_TYPE_INSTRUMENT, "label");
+        track_new (type, self->pl_descr.name);
       tracklist_insert_track (
         TRACKLIST,
         track,
         self->pos,
         F_NO_PUBLISH_EVENTS);
+      if (track->channel)
       channel_add_plugin (
         track->channel, 0, pl, 1, 1, 1);
       mixer_add_channel (
         MIXER, track->channel, F_NO_RECALC_GRAPH);
+
+      if (type == TRACK_TYPE_AUDIO)
+        {
+          /* create an audio region & add to track */
+          Position start_pos;
+          position_set_to_pos (&start_pos,
+                               &PLAYHEAD);
+          AudioRegion * ar =
+            audio_region_new (
+              track,
+              self->file_descr.absolute_path,
+              &start_pos,
+              F_ADD_TO_PROJ);
+          track_add_region (
+            track, ar);
+        }
 
       if (g_settings_get_int (
             S_PREFERENCES,
@@ -134,133 +158,6 @@ create_instrument (
 
   self->track_ids[idx] = track->id;
 
-  EVENTS_PUSH (ET_TRACKS_CREATED, track);
-
-  return 0;
-}
-
-static int
-create_audio (
-  CreateTracksAction * self,
-  int                  idx)
-{
-  Channel * ch;
-  if (self->is_empty)
-    {
-      ch =
-        channel_new (
-          CT_AUDIO, _("Audio Track"),
-          F_ADD_TO_PROJ);
-      mixer_add_channel (MIXER, ch, 1);
-      tracklist_insert_track (
-        TRACKLIST,
-        ch->track,
-        self->pos,
-        F_NO_PUBLISH_EVENTS);
-    }
-  else
-    {
-      /* create a channel/track */
-      ch =
-        channel_new (CT_AUDIO, "Audio Track",
-                     F_ADD_TO_PROJ);
-      mixer_add_channel (MIXER, ch, 1);
-      tracklist_insert_track (
-        TRACKLIST,
-        ch->track,
-        self->pos,
-        F_NO_PUBLISH_EVENTS);
-
-      /* create an audio region & add to track */
-      Position start_pos;
-      position_set_to_pos (&start_pos,
-                           &PLAYHEAD);
-      AudioRegion * ar =
-        audio_region_new (
-          ch->track,
-          self->file_descr.absolute_path,
-          &start_pos,
-          F_ADD_TO_PROJ);
-      track_add_region (
-        ch->track, ar);
-    }
-
-  self->track_ids[idx] = ch->track->id;
-
-  EVENTS_PUSH (ET_TRACKS_CREATED, ch->track);
-
-  return 0;
-}
-
-static int
-create_bus (
-  CreateTracksAction * self,
-  int                  idx)
-{
-  Channel * ch;
-  if (self->is_empty)
-    {
-      ch =
-        channel_new (CT_BUS, _("Bus Track"),
-                        F_ADD_TO_PROJ);
-      mixer_add_channel (MIXER, ch, 1);
-      tracklist_insert_track (
-        TRACKLIST,
-        ch->track,
-        self->pos,
-        F_NO_PUBLISH_EVENTS);
-    }
-  else
-    {
-      Plugin * pl=
-        plugin_new_from_descr (
-          &self->pl_descr,
-          F_NO_ADD_TO_PROJ);
-
-      if (plugin_instantiate (pl) < 0)
-        {
-          char * message =
-            g_strdup_printf (
-              _("Error instantiating plugin %s. "
-                "Please see log for details."),
-              pl->descr->name);
-
-          if (MAIN_WINDOW)
-            ui_show_error_message (
-              GTK_WINDOW (MAIN_WINDOW),
-              message);
-          g_free (message);
-          plugin_free (pl);
-          return -1;
-        }
-
-      ChannelType ct = CT_BUS;
-      ch =
-        channel_new (
-          ct, self->pl_descr.name, F_ADD_TO_PROJ);
-      mixer_add_channel (MIXER, ch, 1);
-      tracklist_insert_track (
-        TRACKLIST,
-        ch->track,
-        self->pos,
-        F_NO_PUBLISH_EVENTS);
-      channel_add_plugin (
-        ch, 0, pl, 1, 1, 1);
-
-      if (g_settings_get_int (
-            S_PREFERENCES,
-            "open-plugin-uis-on-instantiate"))
-        {
-          pl->visible = 1;
-          EVENTS_PUSH (
-            ET_PLUGIN_VISIBILITY_CHANGED, pl);
-        }
-    }
-
-  self->track_ids[idx] = ch->track->id;
-
-  EVENTS_PUSH (ET_TRACKS_CREATED, ch->track);
-
   return 0;
 }
 
@@ -271,27 +168,11 @@ create_tracks_action_do (
   int ret;
   for (int i = 0; i < self->num_tracks; i++)
     {
-      switch (self->type)
-        {
-        case TRACK_TYPE_AUDIO:
-          ret = create_audio (self, i);
-          break;
-        case TRACK_TYPE_INSTRUMENT:
-          ret = create_instrument (self, i);
-          break;
-        case TRACK_TYPE_BUS:
-          ret = create_bus (self, i);
-          break;
-        default:
-          g_warn_if_reached ();
-          return -1;
-        }
-      if (ret)
-        {
-          g_warn_if_reached ();
-          return -1;
-        }
+      ret = create (self, self->type, i);
+      g_return_val_if_fail (!ret, -1);
     }
+
+  EVENTS_PUSH (ET_TRACKS_ADDED, NULL);
 
   return 0;
 }
@@ -308,11 +189,12 @@ create_tracks_action_undo (
     {
       track =
         project_get_track (self->track_ids[i]);
-      if (!track)
-        {
-          g_warn_if_reached ();
-          return -1;
-        }
+      g_return_val_if_fail (track, -1);
+
+      mixer_remove_channel (
+        MIXER,
+        track->channel,
+        F_NO_PUBLISH_EVENTS);
 
       tracklist_remove_track (
         TRACKLIST,

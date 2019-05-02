@@ -72,7 +72,7 @@ copy_plugins_action_do (
           orig_pl->descr->name);
       track =
         track_new (
-          plugin_is_instrument (orig_pl) ?
+          plugin_is_instrument (orig_pl->descr) ?
           TRACK_TYPE_INSTRUMENT :
           TRACK_TYPE_BUS, str);
       g_free (str);
@@ -149,12 +149,9 @@ copy_plugins_action_undo (
           self->ms->plugins[0]->id);
       g_return_val_if_fail (pl, -1);
 
-      channel_disconnect (
-        pl->channel);
       mixer_remove_channel (
         MIXER,
         pl->channel,
-        F_FREE,
         F_PUBLISH_EVENTS);
       tracklist_remove_track (
         TRACKLIST,

@@ -257,18 +257,11 @@ plugin_generate_automatables (Plugin * plugin)
  */
 int
 plugin_is_instrument (
-  Plugin * pl)
+  PluginDescriptor * descr)
 {
-  switch (pl->descr->protocol)
-    {
-    case PROT_LV2:
-      return IS_LV2_PLUGIN_CATEGORY (
-        pl->lv2,
-        LV2_INSTRUMENT_PLUGIN);
-    default:
-      g_warn_if_reached ();
-      return 0;
-    }
+  return IS_PLUGIN_DESCR_CATEGORY (
+    descr,
+    LV2_INSTRUMENT_PLUGIN);
 }
 
 /**

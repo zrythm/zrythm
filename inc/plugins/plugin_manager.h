@@ -32,8 +32,6 @@
 #define LV2_CONSTANT_PLUGIN "Constant"
 #define LV2_INSTRUMENT_PLUGIN "Instrument"
 #define LV2_OSCILLATOR_PLUGIN "Oscillator"
-#define IS_LV2_PLUGIN_CATEGORY(p, c) \
-  (g_strcmp0 (((Plugin *)p)->descr->category, c) == 0)
 #define PM_LILV_NODES (PLUGIN_MANAGER->lv2_nodes)
 #define PM_URIDS (PLUGIN_MANAGER->urids)
 #define PM_SYMAP (PLUGIN_MANAGER->symap)

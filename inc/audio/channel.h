@@ -450,6 +450,10 @@ channel_disconnect (Channel * channel);
 
 /**
  * Frees the channel.
+ *
+ * Channels should never be free'd by themselves
+ * in normal circumstances. Use track_free to
+ * free them.
  */
 void
 channel_free (Channel * channel);

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-02 22:53+0100\n"
+"POT-Creation-Date: 2019-05-03 00:25+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrythm dot org>\n"
 "Language-Team: Italian\n"
@@ -16,6 +16,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/actions/create_tracks_action.c:74
+#, c-format
+msgid "%s Track"
+msgstr ""
 
 #: resources/ui/channel.ui:197
 msgid "-2"
@@ -77,7 +82,7 @@ msgstr ""
 msgid "Artist"
 msgstr ""
 
-#: src/audio/track.c:728
+#: src/audio/track.c:732
 msgid "Audio"
 msgstr ""
 
@@ -85,7 +90,7 @@ msgstr ""
 msgid "Audio Backend"
 msgstr ""
 
-#: src/actions/actions.c:870 src/actions/create_tracks_action.c:152
+#: src/actions/actions.c:870
 msgid "Audio Track"
 msgstr ""
 
@@ -133,11 +138,11 @@ msgstr ""
 msgid "Bottom Panel"
 msgstr ""
 
-#: src/audio/track.c:731
+#: src/audio/track.c:735
 msgid "Bus"
 msgstr ""
 
-#: src/actions/actions.c:898 src/actions/create_tracks_action.c:204
+#: src/actions/actions.c:898
 msgid "Bus Track"
 msgstr ""
 
@@ -162,7 +167,7 @@ msgstr ""
 msgid "Change Pan"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:301
+#: src/gui/widgets/channel_slot.c:302
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -175,7 +180,7 @@ msgstr ""
 msgid "Choose a method to donate"
 msgstr ""
 
-#: src/audio/track.c:737
+#: src/audio/track.c:741
 msgid "Chord"
 msgstr ""
 
@@ -225,12 +230,12 @@ msgstr ""
 msgid "Controllers found"
 msgstr ""
 
-#: src/actions/copy_plugins_action.c:192
+#: src/actions/copy_plugins_action.c:189
 #, c-format
 msgid "Copy %d Plugins"
 msgstr ""
 
-#: src/actions/copy_plugins_action.c:188
+#: src/actions/copy_plugins_action.c:185
 #, c-format
 msgid "Copy %s"
 msgstr ""
@@ -243,7 +248,7 @@ msgstr ""
 msgid "Copy selection to clipboard"
 msgstr ""
 
-#: src/actions/create_tracks_action.c:340
+#: src/actions/create_tracks_action.c:222
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr ""
@@ -258,7 +263,7 @@ msgstr ""
 msgid "Create %s"
 msgstr ""
 
-#: src/actions/create_tracks_action.c:335
+#: src/actions/create_tracks_action.c:217
 #, c-format
 msgid "Create %s Track"
 msgstr ""
@@ -368,7 +373,7 @@ msgstr ""
 msgid "Eraser tool"
 msgstr ""
 
-#: src/actions/create_tracks_action.c:98 src/actions/create_tracks_action.c:224
+#: src/actions/create_tracks_action.c:105
 #, c-format
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr ""
@@ -483,11 +488,11 @@ msgstr ""
 msgid "Initializing..."
 msgstr ""
 
-#: src/audio/track.c:725
+#: src/audio/track.c:729
 msgid "Instrument"
 msgstr ""
 
-#: src/actions/actions.c:884 src/actions/create_tracks_action.c:73
+#: src/actions/actions.c:884
 msgid "Instrument Track"
 msgstr ""
 
@@ -594,7 +599,7 @@ msgid "Manual"
 msgstr ""
 
 #: src/project.c:163 src/gui/widgets/channel.c:262
-#: src/gui/widgets/channel.c:271 src/audio/track.c:734
+#: src/gui/widgets/channel.c:271 src/audio/track.c:738
 #: resources/ui/channel.ui:341
 msgid "Master"
 msgstr ""

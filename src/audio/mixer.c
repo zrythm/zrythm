@@ -205,14 +205,12 @@ mixer_get_channel_at_pos (int pos)
  * Removes the given channel from the mixer and
  * disconnects it.
  *
- * @param free Also free the channel (later).
  * @param publish_events Publish GUI events.
  */
 void
 mixer_remove_channel (
   Mixer *   self,
   Channel * ch,
-  int       free,
   int       publish_events)
 {
   g_message ("removing channel %s",
@@ -227,8 +225,6 @@ mixer_remove_channel (
     ch->id);
 
   channel_disconnect (ch);
-  if (free)
-    free_later (ch, channel_free);
 
   if (publish_events)
     EVENTS_PUSH (ET_CHANNEL_REMOVED, NULL);
