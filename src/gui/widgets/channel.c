@@ -333,6 +333,22 @@ channel_widget_refresh (ChannelWidget * self)
   channel_widget_update_meter_reading (self, NULL, NULL);
   channel_widget_refresh_buttons (self);
   refresh_color (self);
+
+  if (track_is_selected (
+        self->channel->track))
+    {
+      /* set selected or not */
+      gtk_widget_set_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_SELECTED,
+        0);
+    }
+  else
+    {
+      gtk_widget_unset_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_SELECTED);
+    }
 }
 
 /**

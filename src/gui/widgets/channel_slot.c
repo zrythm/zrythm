@@ -33,6 +33,7 @@
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/gtk.h"
+#include "utils/flags.h"
 #include "utils/ui.h"
 #include "utils/resources.h"
 
@@ -200,6 +201,131 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   return FALSE;
 }
 
+/**
+ * Control not pressed, no plugin exists,
+ * not same channel */
+static inline void
+select_no_ctrl_no_pl_no_ch (
+  ChannelSlotWidget * self)
+{
+  mixer_selections_clear (
+    MIXER_SELECTIONS);
+}
+
+/**
+ * Control not pressed, no plugin exists,
+ * same channel */
+static inline void
+select_no_ctrl_no_pl_ch (
+  ChannelSlotWidget * self)
+{
+  mixer_selections_clear (
+    MIXER_SELECTIONS);
+}
+
+/**
+ * Control not pressed, plugin exists,
+ * not same channel */
+static inline void
+select_no_ctrl_pl_no_ch (
+  ChannelSlotWidget * self)
+{
+  mixer_selections_clear (
+    MIXER_SELECTIONS);
+
+  mixer_selections_add_slot (
+    MIXER_SELECTIONS,
+    self->channel,
+    self->slot_index);
+}
+
+/**
+ * Control not pressed, plugin exists,
+ * same channel */
+static inline void
+select_no_ctrl_pl_ch (
+  ChannelSlotWidget * self)
+{
+  /* if plugin is not selected, make it hte only
+   * selection otherwise do nothing */
+  if (!mixer_selections_contains_slot (
+        MIXER_SELECTIONS,
+        self->slot_index))
+    {
+      mixer_selections_clear (
+        MIXER_SELECTIONS);
+
+      mixer_selections_add_slot (
+        MIXER_SELECTIONS,
+        self->channel,
+        self->slot_index);
+    }
+}
+
+/**
+ * Control pressed, no plugin exists, not
+ * same channel */
+static inline void
+select_ctrl_no_pl_no_ch (
+  ChannelSlotWidget * self)
+{
+  mixer_selections_clear (
+    MIXER_SELECTIONS);
+}
+
+/**
+ * Control pressed, no plugin exists,
+ * same channel */
+static inline void
+select_ctrl_no_pl_ch (
+  ChannelSlotWidget * self)
+{
+  mixer_selections_clear (
+    MIXER_SELECTIONS);
+}
+
+/**
+ * Control pressed, plugin exists,
+ * not same channel */
+static inline void
+select_ctrl_pl_no_ch (
+  ChannelSlotWidget * self)
+{
+  /* make it the only selection */
+  mixer_selections_clear (
+    MIXER_SELECTIONS);
+  mixer_selections_add_slot (
+    MIXER_SELECTIONS,
+    self->channel,
+    self->slot_index);
+}
+
+/**
+ * Control pressed, plugin exists, same channel */
+static inline void
+select_ctrl_pl_ch (
+  ChannelSlotWidget * self)
+{
+  /* if already selected, deselect it, otherwise
+   * add it to selections */
+  if (mixer_selections_contains_slot (
+        MIXER_SELECTIONS,
+        self->slot_index))
+    {
+      mixer_selections_remove_slot (
+        MIXER_SELECTIONS,
+        self->slot_index,
+        F_PUBLISH_EVENTS);
+    }
+  else
+    {
+      mixer_selections_add_slot (
+        MIXER_SELECTIONS,
+        self->channel,
+        self->slot_index);
+    }
+}
+
 static gboolean
 button_press_cb (
   GtkWidget * widget,
@@ -208,20 +334,43 @@ button_press_cb (
 {
   if (event->type == GDK_BUTTON_PRESS)
     {
-      /* if not control click, clear the selections
-       * first */
-      if (!(event->state & GDK_CONTROL_MASK))
-        {
-          mixer_selections_clear (
-            MIXER_SELECTIONS);
-        }
+      int ctrl = 0, pl = 0, ch = 0;
+      /* if control click */
+      if (event->state & GDK_CONTROL_MASK)
+        ctrl = 1;
 
-      /* if plugin exists here, add to selections */
-      if (self->channel->plugins[self->slot_index])
-        mixer_selections_add_slot (
-          MIXER_SELECTIONS,
-          self->channel,
-          self->slot_index);
+      /* if plugin exists */
+      if (self->channel->plugins[
+            self->slot_index])
+        pl = 1;
+
+      /* if same channel as selections */
+      if (self->channel == MIXER_SELECTIONS->ch)
+        ch = 1;
+
+      if (!ctrl && !pl && !ch)
+        select_no_ctrl_no_pl_no_ch (self);
+      else if (!ctrl && !pl && ch)
+        select_no_ctrl_no_pl_ch (self);
+      else if (!ctrl && pl && !ch)
+        select_no_ctrl_pl_no_ch (self);
+      else if (!ctrl && pl && ch)
+        select_no_ctrl_pl_ch (self);
+      else if (ctrl && !pl && !ch)
+        select_ctrl_no_pl_no_ch (self);
+      else if (ctrl && !pl && ch)
+        select_ctrl_no_pl_ch (self);
+      else if (ctrl && pl && !ch)
+        select_ctrl_pl_no_ch (self);
+      else if (ctrl && pl && ch)
+        select_ctrl_pl_ch (self);
+
+      /* select channel */
+      tracklist_selections_clear (
+        TRACKLIST_SELECTIONS);
+      tracklist_selections_add_track (
+        TRACKLIST_SELECTIONS,
+        self->channel->track);
     }
   else if (event->type == GDK_2BUTTON_PRESS)
     {

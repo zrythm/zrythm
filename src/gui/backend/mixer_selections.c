@@ -133,8 +133,10 @@ mixer_selections_add_slot (
 void
 mixer_selections_remove_slot (
   MixerSelections * ms,
-  int               slot)
+  int               slot,
+  int               publish_events)
 {
+  g_message ("removing slot %d", slot);
   array_delete (
     ms->slots,
     ms->num_slots,
@@ -145,6 +147,10 @@ mixer_selections_remove_slot (
       ms->ch = NULL;
       ms->ch_id = -1;
     }
+
+  if (publish_events)
+    EVENTS_PUSH (ET_MIXER_SELECTIONS_CHANGED,
+                 NULL);
 }
 
 
@@ -189,17 +195,15 @@ mixer_selections_clear (
   MixerSelections * ms)
 {
   int i;
-  Plugin * pl;
 
-  for (i = 0; i < ms->num_slots; i++)
+  for (i = ms->num_slots - 1; i >= 0; i--)
     {
-      pl = ms->ch->plugins[ms->slots[i]];
-
       mixer_selections_remove_slot (
-        ms, ms->slots[i]);
+        ms, ms->slots[i], 0);
     }
 
-  EVENTS_PUSH (ET_MIXER_SELECTIONS_CLEARED, NULL);
+  EVENTS_PUSH (ET_MIXER_SELECTIONS_CHANGED,
+               NULL);
 
   g_message ("cleared mixer selections");
 }
@@ -221,6 +225,9 @@ mixer_selections_clone (
       ms->plugins[i] =
         plugin_clone (src->plugins[i]);
       ms->slots[i] = src->slots[i];
+      g_return_val_if_fail (
+        ms->plugins[i]->slot ==
+          src->plugins[i]->slot, NULL);
     }
 
   ms->num_slots = src->num_slots;

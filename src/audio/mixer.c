@@ -244,6 +244,9 @@ mixer_move_plugin (
   Channel * ch,
   int       slot)
 {
+  g_return_if_fail (pl);
+  g_return_if_fail (ch);
+
   /* confirm if another plugin exists */
   if (ch->plugins[slot])
     {

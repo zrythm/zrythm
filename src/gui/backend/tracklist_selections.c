@@ -147,7 +147,7 @@ tracklist_selections_clear (
   TracklistSelections * ts)
 {
   Track * track;
-  for (int i = 0; i < ts->num_tracks; i++)
+  for (int i = ts->num_tracks - 1; i >= 0; i--)
     {
       track = ts->tracks[i];
       tracklist_selections_remove_track (

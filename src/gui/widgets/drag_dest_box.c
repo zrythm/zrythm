@@ -300,12 +300,10 @@ multipress_pressed (GtkGestureMultiPress *gesture,
   DragDestBoxWidget * self =
     Z_DRAG_DEST_BOX_WIDGET (user_data);
 
-  GdkEventSequence *sequence =
-    gtk_gesture_single_get_current_sequence (GTK_GESTURE_SINGLE (gesture));
-  const GdkEvent * event =
-    gtk_gesture_get_last_event (GTK_GESTURE (gesture), sequence);
   GdkModifierType state_mask;
-  gdk_event_get_state (event, &state_mask);
+  ui_get_modifier_type_from_gesture (
+    GTK_GESTURE_SINGLE (gesture),
+    &state_mask);
 
   if (self == TRACKLIST_DRAG_DEST_BOX)
     {
@@ -314,6 +312,11 @@ multipress_pressed (GtkGestureMultiPress *gesture,
         tracklist_widget_select_all_tracks (
           MW_TRACKLIST, F_NO_SELECT);
     }
+
+  mixer_selections_clear (
+    MIXER_SELECTIONS);
+  tracklist_selections_clear (
+    TRACKLIST_SELECTIONS);
 }
 
 /**

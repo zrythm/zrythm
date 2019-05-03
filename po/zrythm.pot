@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-03 11:51+0100\n"
+"POT-Creation-Date: 2019-05-03 13:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -159,7 +159,7 @@ msgstr ""
 msgid "Change Pan"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:379
+#: src/gui/widgets/channel_slot.c:528
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -600,7 +600,7 @@ msgstr ""
 msgid "Mixer panel"
 msgstr ""
 
-#: src/actions/move_plugins_action.c:137
+#: src/actions/move_plugins_action.c:140
 #, c-format
 msgid "Move %d Plugins"
 msgstr ""
@@ -610,7 +610,7 @@ msgstr ""
 msgid "Move %d Tracks"
 msgstr ""
 
-#: src/actions/move_plugins_action.c:133
+#: src/actions/move_plugins_action.c:136
 #, c-format
 msgid "Move %s"
 msgstr ""

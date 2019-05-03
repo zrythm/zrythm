@@ -2107,10 +2107,12 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
                 }
             }
           midi_events_clear (port->midi_events);
-      } else if (port->type == TYPE_EVENT) {
-              /* Clear event output for plugin to write to */
-              lv2_evbuf_reset(lv2_port->evbuf, false);
       }
+      else if (port->type == TYPE_EVENT)
+        {
+          /* Clear event output for plugin to write to */
+          lv2_evbuf_reset(lv2_port->evbuf, false);
+        }
     }
   lv2_plugin->request_update = false;
 

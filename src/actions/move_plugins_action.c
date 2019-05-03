@@ -58,9 +58,12 @@ move_plugins_action_do (
 	MovePluginsAction * self)
 {
   Plugin * pl;
-  Channel * ch =
+  Channel * from_ch =
+    TRACKLIST->tracks[self->from_track_pos]->channel;
+  Channel * to_ch =
     TRACKLIST->tracks[self->to_track_pos]->channel;
-  g_return_val_if_fail (ch, -1);
+  g_return_val_if_fail (from_ch, -1);
+  g_return_val_if_fail (to_ch, -1);
 
   int highest_slot =
     mixer_selections_get_highest_slot (self->ms);
@@ -74,19 +77,19 @@ move_plugins_action_do (
     {
       /* get the plugin */
       pl =
-        ch->plugins[self->ms->plugins[i]->slot + i];
+        from_ch->plugins[self->ms->plugins[i]->slot];
 
       /* get difference in slots */
-      diff = self->ms->slots[i] - highest_slot;
-      g_return_val_if_fail (diff > -1, -1);
+      /*diff = self->ms->slots[i] - highest_slot;*/
+      /*g_return_val_if_fail (diff > -1, -1);*/
 
       /* move and select plugin to to_slot + diff */
-      to_slot = self->to_slot + diff;
+      to_slot = self->to_slot + i;
       mixer_move_plugin (
-        MIXER, pl, ch, to_slot);
+        MIXER, pl, to_ch, to_slot);
 
       mixer_selections_add_slot (
-        MIXER_SELECTIONS, ch, to_slot);
+        MIXER_SELECTIONS, to_ch, to_slot);
     }
 
   return 0;

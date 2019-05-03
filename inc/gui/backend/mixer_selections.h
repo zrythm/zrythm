@@ -154,7 +154,8 @@ mixer_selections_add_slot (
 void
 mixer_selections_remove_slot (
   MixerSelections * ms,
-  int               slot);
+  int               slot,
+  int               publish_events);
 
 /**
  * Clears selections.

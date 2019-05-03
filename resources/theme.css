@@ -294,6 +294,7 @@ timeline-minimap-bg
 }
 
 track:selected,
+channel:selected,
 region:selected,
 chord:selected,
 midi-note:selected
