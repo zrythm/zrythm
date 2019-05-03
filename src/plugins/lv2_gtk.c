@@ -1626,6 +1626,8 @@ lv2_open_ui(Lv2Plugin* plugin)
 
   lv2_init_ui(plugin);
 
+  plugin->plugin->ui_instantiated = 1;
+
   g_timeout_add (
     1000 / plugin->ui_update_hz,
     (GSourceFunc) lv2_plugin_update, plugin);

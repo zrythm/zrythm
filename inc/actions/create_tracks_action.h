@@ -31,7 +31,6 @@
  * @{
  */
 
-
 typedef struct CreateTracksAction
 {
   UndoableAction  parent_instance;

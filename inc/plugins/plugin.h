@@ -172,6 +172,20 @@ typedef struct Plugin
   /** Whether plugin UI is opened or not. */
   int                  visible;
 
+  /**
+   * UI has been instantiated or not.
+   *
+   * When instantiating a plugin UI, if it takes
+   * too long there is a UI buffer overflow because
+   * UI updates are sent in lv2_plugin_process.
+   *
+   * This should be set to 0 until the plugin UI
+   * has finished instantiating, and if this is 0
+   * then no UI updates should be sent to the
+   * plugin.
+   */
+  int                  ui_instantiated;
+
   /** Plugin is in deletion. */
   int                  deleting;
 } Plugin;

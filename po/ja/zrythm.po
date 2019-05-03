@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-03 11:19+0100\n"
+"POT-Creation-Date: 2019-05-03 11:27+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrytm dot org>\n"
 "Language-Team: Japanese\n"
@@ -92,11 +92,6 @@ msgstr "オーディオトラック"
 msgid "Audio Backend"
 msgstr "オーディオトラック"
 
-#: src/actions/actions.c:870
-#, fuzzy
-msgid "Audio Track"
-msgstr "オーディオトラック"
-
 #: resources/ui/audio_unit.ui:32
 msgid "Audio Unit"
 msgstr ""
@@ -146,11 +141,6 @@ msgstr ""
 #: src/audio/track.c:735
 msgid "Bus"
 msgstr ""
-
-#: src/actions/actions.c:898
-#, fuzzy
-msgid "Bus Track"
-msgstr "バストラック"
 
 #: resources/ui/export_dialog.ui:45 resources/ui/preferences.ui:58
 msgid "Cancel"
@@ -509,10 +499,6 @@ msgstr ""
 msgid "Instrument"
 msgstr ""
 
-#: src/actions/actions.c:884
-msgid "Instrument Track"
-msgstr ""
-
 #: resources/ui/preferences.ui:346
 msgid "Interface"
 msgstr ""
@@ -812,7 +798,7 @@ msgstr "設定"
 msgid "Project"
 msgstr "プロジェクト"
 
-#: src/actions/actions.c:583
+#: src/actions/actions.c:584
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
@@ -927,7 +913,7 @@ msgstr "右"
 msgid "Right Panel"
 msgstr "右パネル"
 
-#: src/actions/actions.c:518
+#: src/actions/actions.c:519
 #, fuzzy
 msgid "Save Project"
 msgstr "プロジェクトを保存"
@@ -1260,7 +1246,7 @@ msgid "Zrythm"
 msgstr ""
 
 #: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
-#: src/utils/dialogs.c:74 src/actions/actions.c:521
+#: src/utils/dialogs.c:74 src/actions/actions.c:522
 msgid "_Cancel"
 msgstr "キャンセル(_C)"
 
@@ -1332,7 +1318,7 @@ msgid "_Redo"
 msgstr ""
 
 #: src/plugins/lv2_gtk.c:153 src/gui/widgets/header_bar.c:173
-#: src/actions/actions.c:523
+#: src/actions/actions.c:524
 msgid "_Save"
 msgstr ""
 
@@ -1373,6 +1359,14 @@ msgstr ""
 #: resources/ui/audio_clip_editor.ui:56 resources/ui/audio_clip_editor.ui:68
 msgid "stuff"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Audio Track"
+#~ msgstr "オーディオトラック"
+
+#, fuzzy
+#~ msgid "Bus Track"
+#~ msgstr "バストラック"
 
 #, fuzzy
 #~ msgid "Create Plugin"

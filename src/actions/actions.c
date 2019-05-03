@@ -30,6 +30,7 @@
 #include "audio/transport.h"
 #include "actions/actions.h"
 #include "actions/undo_manager.h"
+#include "actions/create_tracks_action.h"
 #include "actions/duplicate_midi_arranger_selections_action.h"
 #include "actions/delete_midi_arranger_selections_action.h"
 #include "actions/delete_timeline_selections_action.h"
@@ -865,14 +866,15 @@ activate_create_audio_track (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  /* FIXME use action */
-  Channel * chan =
-    channel_new (CT_AUDIO, _("Audio Track"),
-                    F_ADD_TO_PROJ);
-  mixer_add_channel (MIXER, chan, 1);
-  tracklist_append_track (chan->track);
+  UndoableAction * ua =
+    create_tracks_action_new (
+      TRACK_TYPE_AUDIO,
+      NULL,
+      NULL,
+      TRACKLIST->num_tracks,
+      1);
 
-  EVENTS_PUSH (ET_TRACK_ADDED, chan->track);
+  undo_manager_perform (UNDO_MANAGER, ua);
 }
 
 void
@@ -880,13 +882,15 @@ activate_create_ins_track (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  Channel * chan =
-    channel_new (CT_MIDI, _("Instrument Track"),
-                 F_ADD_TO_PROJ);
-  mixer_add_channel (MIXER, chan, 1);
-  tracklist_append_track (chan->track);
+  UndoableAction * ua =
+    create_tracks_action_new (
+      TRACK_TYPE_INSTRUMENT,
+      NULL,
+      NULL,
+      TRACKLIST->num_tracks,
+      1);
 
-  EVENTS_PUSH (ET_TRACK_ADDED, chan->track);
+  undo_manager_perform (UNDO_MANAGER, ua);
 }
 
 void
@@ -894,13 +898,15 @@ activate_create_bus_track (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  Channel * chan =
-    channel_new (CT_BUS, _("Bus Track"),
-                 F_ADD_TO_PROJ);
-  mixer_add_channel (MIXER, chan, 1);
-  tracklist_append_track (chan->track);
+  UndoableAction * ua =
+    create_tracks_action_new (
+      TRACK_TYPE_BUS,
+      NULL,
+      NULL,
+      TRACKLIST->num_tracks,
+      1);
 
-  EVENTS_PUSH (ET_TRACK_ADDED, chan->track);
+  undo_manager_perform (UNDO_MANAGER, ua);
 }
 
 void
