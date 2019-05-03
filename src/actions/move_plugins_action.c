@@ -71,7 +71,7 @@ move_plugins_action_do (
   /* clear selections to readd each plugin moved */
   mixer_selections_clear (MIXER_SELECTIONS);
 
-  int diff;
+  /*int diff;*/
   int to_slot;
   for (int i = 0; i < self->ms->num_slots; i++)
     {

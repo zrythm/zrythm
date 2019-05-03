@@ -1061,7 +1061,7 @@ disconnect_no_prev_no_next (
             ch->stereo_out->r))
         port_disconnect (
           out_port,
-          ch->stereo_in->r);
+          ch->stereo_out->r);
     }
 
   /* -----------------------------------------
