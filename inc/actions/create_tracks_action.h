@@ -36,7 +36,9 @@ typedef struct CreateTracksAction
 {
   UndoableAction  parent_instance;
 
-  /** Position to make the tracks at. */
+  /** Position to make the tracks at.
+   *
+   * Used when undoing too. */
   int              pos;
 
   /** Number of tracks to make. */
@@ -44,9 +46,6 @@ typedef struct CreateTracksAction
 
   /** Track type. */
   TrackType        type;
-
-  /** ID of the Tracks added (for easy undoing). */
-  int              track_ids[60];
 
   /** Flag to know if we are making an empty track. */
   int              is_empty;

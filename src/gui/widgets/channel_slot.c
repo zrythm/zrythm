@@ -97,7 +97,8 @@ on_drag_data_received (
 
       UndoableAction * ua =
         create_plugins_action_new (
-          descr, self->channel, self->slot_index, 1);
+          descr, self->channel->track->pos,
+          self->slot_index, 1);
 
       undo_manager_perform (
         UNDO_MANAGER, ua);

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-03 01:16+0100\n"
+"POT-Creation-Date: 2019-05-03 10:32+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -167,7 +167,7 @@ msgstr ""
 msgid "Change Pan"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:378
+#: src/gui/widgets/channel_slot.c:379
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -248,22 +248,22 @@ msgstr ""
 msgid "Copy selection to clipboard"
 msgstr ""
 
-#: src/actions/create_tracks_action.c:222
+#: src/actions/create_tracks_action.c:217
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr ""
 
-#: src/actions/create_plugins_action.c:127
+#: src/actions/create_plugins_action.c:125
 #, c-format
 msgid "Create %d %ss"
 msgstr ""
 
-#: src/actions/create_plugins_action.c:123
+#: src/actions/create_plugins_action.c:121
 #, c-format
 msgid "Create %s"
 msgstr ""
 
-#: src/actions/create_tracks_action.c:217
+#: src/actions/create_tracks_action.c:212
 #, c-format
 msgid "Create %s Track"
 msgstr ""
@@ -373,7 +373,7 @@ msgstr ""
 msgid "Eraser tool"
 msgstr ""
 
-#: src/actions/create_tracks_action.c:105
+#: src/actions/create_tracks_action.c:100
 #, c-format
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr ""

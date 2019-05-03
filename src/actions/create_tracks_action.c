@@ -80,16 +80,11 @@ create (
       tracklist_insert_track (
         TRACKLIST,
         track,
-        self->pos,
+        self->pos + idx,
         F_NO_PUBLISH_EVENTS);
       if (track->channel)
         mixer_add_channel (
           MIXER, track->channel, F_NO_RECALC_GRAPH);
-      tracklist_insert_track (
-        TRACKLIST,
-        track,
-        self->pos + idx,
-        F_NO_PUBLISH_EVENTS);
     }
   else
     {
@@ -120,7 +115,7 @@ create (
       tracklist_insert_track (
         TRACKLIST,
         track,
-        self->pos,
+        self->pos + idx,
         F_NO_PUBLISH_EVENTS);
       if (track->channel)
       channel_add_plugin (
@@ -156,7 +151,7 @@ create (
 
   mixer_recalc_graph (MIXER);
 
-  self->track_ids[idx] = track->id;
+  /*self->track_poses[idx] = track->pos;*/
 
   return 0;
 }
@@ -188,7 +183,7 @@ create_tracks_action_undo (
   for (int i = 0; i < self->num_tracks; i++)
     {
       track =
-        project_get_track (self->track_ids[i]);
+        TRACKLIST->tracks[self->pos + i];
       g_return_val_if_fail (track, -1);
 
       mixer_remove_channel (

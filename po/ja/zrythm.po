@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-03 00:52+0100\n"
+"POT-Creation-Date: 2019-05-03 10:32+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrytm dot org>\n"
 "Language-Team: Japanese\n"
@@ -173,7 +173,7 @@ msgstr ""
 msgid "Change Pan"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:378
+#: src/gui/widgets/channel_slot.c:379
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -258,22 +258,22 @@ msgstr "コピー＆ペースト"
 msgid "Copy selection to clipboard"
 msgstr "選択したものをコピーする"
 
-#: src/actions/create_tracks_action.c:222
+#: src/actions/create_tracks_action.c:217
 #, fuzzy, c-format
 msgid "Create %d %s Tracks"
 msgstr "%dトラックを削除する(_D)"
 
-#: src/actions/create_plugins_action.c:127
+#: src/actions/create_plugins_action.c:125
 #, c-format
 msgid "Create %d %ss"
 msgstr ""
 
-#: src/actions/create_plugins_action.c:123
+#: src/actions/create_plugins_action.c:121
 #, fuzzy, c-format
 msgid "Create %s"
 msgstr "新プロジェクト"
 
-#: src/actions/create_tracks_action.c:217
+#: src/actions/create_tracks_action.c:212
 #, fuzzy, c-format
 msgid "Create %s Track"
 msgstr "%dトラックを削除する(_D)"
@@ -389,7 +389,7 @@ msgstr "リージョン名を入力してください"
 msgid "Eraser tool"
 msgstr "エレーザツール"
 
-#: src/actions/create_tracks_action.c:105
+#: src/actions/create_tracks_action.c:100
 #, c-format
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr ""

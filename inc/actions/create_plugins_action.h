@@ -36,21 +36,18 @@ typedef struct CreatePluginsAction
 {
   UndoableAction  parent_instance;
 
-  /** Slot to create to. */
+  /** Slot to create to.
+   *
+   * Also used for undoing. */
   int              slot;
 
-  /** Channel ID to create to. */
-  int              ch_id;
+  /** Position of track to create to. */
+  int              track_pos;
 
   /**
-   * Plugin clones to use.
-   *
-   * Instead of saving the plugin descriptor and
-   * creating from the descriptor each time, the
-   * given descriptor is used to create clones,
-   * and then the clones can be used.
+   * PluginDescriptor to use when creating.
    */
-  Plugin *         plugins[60];
+  PluginDescriptor descr;
 
   int              num_plugins;
 } CreatePluginsAction;
@@ -58,7 +55,7 @@ typedef struct CreatePluginsAction
 UndoableAction *
 create_plugins_action_new (
   PluginDescriptor * descr,
-  Channel * ch,
+  int       track_pos,
   int       slot,
   int       num_plugins);
 

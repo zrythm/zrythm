@@ -373,10 +373,8 @@ plugin_clone (
       /* save state to file */
       char * tmp =
         g_strdup_printf (
-          "%s_%d",
-          pl->channel->track->name,
-          channel_get_plugin_index (
-            pl->channel, pl));
+          "%s_XXXXXX",
+          pl->descr->name);
       char * state_dir_plugin =
         g_build_filename (PROJECT->states_dir,
                           "tmp",

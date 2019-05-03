@@ -155,6 +155,8 @@ tracklist_insert_track (
     track,
     track->id);
 
+  track->pos = pos;
+
   if (publish_events)
     EVENTS_PUSH (ET_TRACK_ADDED, track);
 }

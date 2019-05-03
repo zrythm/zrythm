@@ -131,7 +131,7 @@ show_context_menu (
   PluginDescriptor *    descr)
 {
   GtkWidget *menu;
-  GtkMenuItem *menuitem;
+  /*GtkMenuItem *menuitem;*/
   menu = gtk_menu_new();
 
 #define APPEND(mi) \

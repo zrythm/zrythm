@@ -30,7 +30,7 @@
 UndoableAction *
 create_plugins_action_new (
   PluginDescriptor * descr,
-  Channel * ch,
+  int       track_pos,
   int       slot,
   int       num_plugins)
 {
@@ -42,14 +42,8 @@ create_plugins_action_new (
 	  UNDOABLE_ACTION_TYPE_CREATE_PLUGINS;
 
   self->slot = slot;
-  self->ch_id = ch->id;
-
-  for (int i = 0; i < num_plugins; i++)
-    {
-      self->plugins[i] =
-        plugin_new_from_descr (
-          descr, F_NO_ADD_TO_PROJ);
-    }
+  self->track_pos = track_pos;
+  plugin_clone_descr (descr, &self->descr);
   self->num_plugins = num_plugins;
 
   return ua;
@@ -61,17 +55,21 @@ create_plugins_action_do (
 {
   Plugin * pl;
   Channel * ch =
-    project_get_channel (self->ch_id);
+    TRACKLIST->tracks[self->track_pos]->channel;
   g_return_val_if_fail (ch, -1);
 
   for (int i = 0; i < self->num_plugins; i++)
     {
-      /* clone the clone */
-      pl = plugin_clone (self->plugins[i]);
+      /* create new plugin and add to project
+       * to get a unique ID */
+      pl =
+        plugin_new_from_descr (
+          &self->descr, F_ADD_TO_PROJ);
       g_return_val_if_fail (pl, -1);
 
-      /* add to project to get unique ID */
-      project_add_plugin (pl);
+      /* instantiate */
+      int ret = plugin_instantiate (pl);
+      g_return_val_if_fail (!ret, -1);
 
       /* add to channel */
       channel_add_plugin (
@@ -85,9 +83,6 @@ create_plugins_action_do (
           EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED,
                        pl);
         }
-
-      /* remember the ID */
-      self->plugins[i]->id = pl->id;
     }
 
   return 0;
@@ -101,7 +96,7 @@ create_plugins_action_undo (
 	CreatePluginsAction * self)
 {
   Channel * ch =
-    project_get_channel (self->ch_id);
+    TRACKLIST->tracks[self->track_pos]->channel;
   g_return_val_if_fail (ch, -1);
 
   for (int i = 0; i < self->num_plugins; i++)
@@ -109,6 +104,9 @@ create_plugins_action_undo (
       /* remove the plugin */
       channel_remove_plugin (
         ch, self->slot + i, 1, 0);
+
+      EVENTS_PUSH (ET_PLUGINS_REMOVED,
+                   ch);
     }
 
   return 0;
@@ -121,12 +119,12 @@ create_plugins_action_stringize (
   if (self->num_plugins == 1)
     return g_strdup_printf (
       _("Create %s"),
-      self->plugins[0]->descr->name);
+      self->descr.name);
   else
     return g_strdup_printf (
       _("Create %d %ss"),
       self->num_plugins,
-      self->plugins[0]->descr->name);
+      self->descr.name);
 }
 
 void

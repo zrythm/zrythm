@@ -356,6 +356,22 @@ on_plugin_added (Plugin * plugin)
 }
 
 static void
+on_plugins_removed (Channel * ch)
+{
+  ChannelSlotWidget * csw;
+  for (int i = 0; i < STRIP_SIZE; i++)
+    {
+      csw =
+        ch->widget->slots[i];
+      gtk_widget_unset_state_flags (
+        GTK_WIDGET (csw),
+        GTK_STATE_FLAG_SELECTED);
+      gtk_widget_queue_draw (
+        GTK_WIDGET (csw));
+    }
+}
+
+static void
 on_midi_note_selection_changed ()
 {
  Region * region = CLIP_EDITOR->region;
@@ -797,6 +813,9 @@ events_process (void * data)
         case ET_PLUGIN_ADDED:
           on_plugin_added (
             (Plugin *) ev->arg);
+          break;
+        case ET_PLUGINS_REMOVED:
+          on_plugins_removed ((Channel *)ev->arg);
           break;
         default:
           g_message ("event not implemented yet");
