@@ -279,8 +279,10 @@ plugin_instantiate (
     {
     case PROT_LV2:
       {
+        g_message ("state file: %s",
+                   pl->lv2->state_file);
         if (lv2_instantiate (pl->lv2,
-                             pl->lv2->state_file))
+                             NULL))
           {
             g_warning ("lv2 instantiate failed");
             return -1;
@@ -373,11 +375,10 @@ plugin_clone (
       /* save state to file */
       char * tmp =
         g_strdup_printf (
-          "%s_XXXXXX",
+          "tmp_%s_XXXXXX",
           pl->descr->name);
       char * state_dir_plugin =
         g_build_filename (PROJECT->states_dir,
-                          "tmp",
                           tmp,
                           NULL);
       io_mkdir (state_dir_plugin);
@@ -415,12 +416,11 @@ plugin_clone (
 
       /* delete the state file */
       io_remove (pl->lv2->state_file);
-
-      return clone;
     }
 
-  g_warn_if_reached ();
-  return NULL;
+  clone->slot = pl->slot;
+
+  return clone;
 }
 
 /**

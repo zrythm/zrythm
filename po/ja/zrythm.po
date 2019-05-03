@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-03 10:32+0100\n"
+"POT-Creation-Date: 2019-05-03 11:19+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrytm dot org>\n"
 "Language-Team: Japanese\n"
@@ -632,7 +632,7 @@ msgstr ""
 msgid "Mixer panel"
 msgstr ""
 
-#: src/actions/move_plugins_action.c:117
+#: src/actions/move_plugins_action.c:137
 #, fuzzy, c-format
 msgid "Move %d Plugins"
 msgstr "プラグイン"
@@ -642,7 +642,7 @@ msgstr "プラグイン"
 msgid "Move %d Tracks"
 msgstr "%dトラックを削除する(_D)"
 
-#: src/actions/move_plugins_action.c:113
+#: src/actions/move_plugins_action.c:133
 #, c-format
 msgid "Move %s"
 msgstr ""

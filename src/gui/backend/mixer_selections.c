@@ -197,10 +197,9 @@ mixer_selections_clear (
 
       mixer_selections_remove_slot (
         ms, ms->slots[i]);
-
-      EVENTS_PUSH (ET_PLUGIN_SELECTION_CHANGED,
-                   pl);
     }
+
+  EVENTS_PUSH (ET_MIXER_SELECTIONS_CLEARED, NULL);
 
   g_message ("cleared mixer selections");
 }

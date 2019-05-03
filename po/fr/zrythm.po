@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-03 10:32+0100\n"
+"POT-Creation-Date: 2019-05-03 11:19+0100\n"
 "PO-Revision-Date: 2019-03-22 22:30+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -642,7 +642,7 @@ msgstr "Mixeur"
 msgid "Mixer panel"
 msgstr "Panneau du mixeur"
 
-#: src/actions/move_plugins_action.c:117
+#: src/actions/move_plugins_action.c:137
 #, fuzzy, c-format
 msgid "Move %d Plugins"
 msgstr "Greffons"
@@ -652,7 +652,7 @@ msgstr "Greffons"
 msgid "Move %d Tracks"
 msgstr "_Supprimer %d Pistes"
 
-#: src/actions/move_plugins_action.c:113
+#: src/actions/move_plugins_action.c:133
 #, c-format
 msgid "Move %s"
 msgstr ""

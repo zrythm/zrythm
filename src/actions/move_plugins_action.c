@@ -20,6 +20,7 @@
 #include "actions/move_plugins_action.h"
 #include "audio/channel.h"
 #include "audio/mixer.h"
+#include "gui/backend/mixer_selections.h"
 #include "plugins/plugin.h"
 #include "project.h"
 
@@ -39,7 +40,14 @@ move_plugins_action_new (
 	  UNDOABLE_ACTION_TYPE_MOVE_PLUGINS;
 
   self->to_slot = to_slot;
-  self->to_ch_id = to_ch->id;
+  self->from_track_pos =
+    ms->plugins[0]->channel->track->pos;
+  if (to_ch)
+    self->to_track_pos = to_ch->track->pos;
+  else
+    {
+      /* TODO create new channel */
+    }
   self->ms = mixer_selections_clone (ms);
 
   return ua;
@@ -51,24 +59,34 @@ move_plugins_action_do (
 {
   Plugin * pl;
   Channel * ch =
-    project_get_channel (self->to_ch_id);
+    TRACKLIST->tracks[self->to_track_pos]->channel;
   g_return_val_if_fail (ch, -1);
 
   int highest_slot =
     mixer_selections_get_highest_slot (self->ms);
+
+  /* clear selections to readd each plugin moved */
+  mixer_selections_clear (MIXER_SELECTIONS);
+
   int diff;
+  int to_slot;
   for (int i = 0; i < self->ms->num_slots; i++)
     {
+      /* get the plugin */
       pl =
-        project_get_plugin (
-          self->ms->plugins[i]->id);
+        ch->plugins[self->ms->plugins[i]->slot + i];
 
       /* get difference in slots */
       diff = self->ms->slots[i] - highest_slot;
       g_return_val_if_fail (diff > -1, -1);
 
+      /* move and select plugin to to_slot + diff */
+      to_slot = self->to_slot + diff;
       mixer_move_plugin (
-        MIXER, pl, ch, self->to_slot + diff);
+        MIXER, pl, ch, to_slot);
+
+      mixer_selections_add_slot (
+        MIXER_SELECTIONS, ch, to_slot);
     }
 
   return 0;
@@ -82,23 +100,25 @@ move_plugins_action_undo (
 
   /* get original channel */
   Channel * ch =
-    project_get_channel (
-      self->ms->plugins[0]->channel_id);
+    TRACKLIST->tracks[
+      self->from_track_pos]->channel;
   g_return_val_if_fail (ch, -1);
+
+  /* clear selections to readd each plugin moved */
+  mixer_selections_clear (MIXER_SELECTIONS);
 
   for (int i = 0; i < self->ms->num_slots; i++)
     {
-      /* get the actual plugin from the project
-       * matching the clone's ID
-       * Remember that the clone should not be in
-       * the project */
-      pl =
-        project_get_plugin (
-          self->ms->plugins[i]->id);
+      /* get the actual plugin */
+      pl = ch->plugins[self->to_slot + i];
 
       /* move plugin to its original slot */
       mixer_move_plugin (
-        MIXER, pl, ch, pl->slot);
+        MIXER, pl, ch, self->ms->plugins[i]->slot);
+
+      /* add to mixer selections */
+      mixer_selections_add_slot (
+        MIXER_SELECTIONS, ch, pl->slot);
     }
 
   return 0;

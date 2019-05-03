@@ -2917,10 +2917,13 @@ channel_clone (
   /* copy plugins */
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      clone->plugins[i] =
-        plugin_clone (ch->plugins[i]);
-      clone->plugin_ids[i] =
-        clone->plugins[i]->id;
+      if (ch->plugins[i])
+        {
+          clone->plugins[i] =
+            plugin_clone (ch->plugins[i]);
+          clone->plugin_ids[i] =
+            clone->plugins[i]->id;
+        }
     }
 
 #define COPY_MEMBER(mem) \

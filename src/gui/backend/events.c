@@ -356,6 +356,31 @@ on_plugin_added (Plugin * plugin)
 }
 
 static void
+clear_plugin_selections ()
+{
+  Channel * ch;
+  ChannelSlotWidget * csw;
+  for (int i = -1; i < MIXER->num_channels; i++)
+    {
+      ch =
+        (i == -1) ?
+        MIXER->master : MIXER->channels[i];
+
+      csw;
+      for (int j = 0; j < STRIP_SIZE; j++)
+        {
+          csw =
+            ch->widget->slots[j];
+          gtk_widget_unset_state_flags (
+            GTK_WIDGET (csw),
+            GTK_STATE_FLAG_SELECTED);
+          gtk_widget_queue_draw (
+            GTK_WIDGET (csw));
+        }
+    }
+}
+
+static void
 on_plugins_removed (Channel * ch)
 {
   ChannelSlotWidget * csw;
@@ -817,6 +842,8 @@ events_process (void * data)
         case ET_PLUGINS_REMOVED:
           on_plugins_removed ((Channel *)ev->arg);
           break;
+        case ET_MIXER_SELECTIONS_CLEARED:
+          clear_plugin_selections ();
         default:
           g_message ("event not implemented yet");
           /* unimplemented */

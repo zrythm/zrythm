@@ -39,8 +39,11 @@ typedef struct MovePluginsAction
    * they can be calculated when doing/undoing. */
   int             to_slot;
 
-  /** To channel ID. */
-  int             to_ch_id;
+  /** To track position. */
+  int             to_track_pos;
+
+  /** From track position. */
+  int             from_track_pos;
 
   /** MixerSelections clone containing all the
    * necessary information.
