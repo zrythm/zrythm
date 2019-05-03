@@ -332,7 +332,28 @@ button_press_cb (
 	GdkEventButton * event,
   ChannelSlotWidget * self)
 {
-  if (event->type == GDK_BUTTON_PRESS)
+  if (event->type == GDK_2BUTTON_PRESS)
+    {
+      Plugin * pl =
+        self->channel->plugins[self->slot_index];
+      g_message ("opening plugin ");
+      if (pl)
+        {
+          if (pl->descr->protocol == PROT_LV2)
+            {
+              pl->visible =
+                !pl->visible;
+              EVENTS_PUSH (
+                ET_PLUGIN_VISIBILITY_CHANGED,
+                pl);
+            }
+          else
+            {
+              plugin_open_ui (pl);
+            }
+        }
+    }
+  else if (event->type == GDK_BUTTON_PRESS)
     {
       int ctrl = 0, pl = 0, ch = 0;
       /* if control click */
@@ -371,26 +392,6 @@ button_press_cb (
       tracklist_selections_add_track (
         TRACKLIST_SELECTIONS,
         self->channel->track);
-    }
-  else if (event->type == GDK_2BUTTON_PRESS)
-    {
-      Plugin * pl =
-        self->channel->plugins[self->slot_index];
-      if (pl)
-        {
-          if (pl->descr->protocol == PROT_LV2)
-            {
-              pl->visible =
-                !pl->visible;
-              EVENTS_PUSH (
-                ET_PLUGIN_VISIBILITY_CHANGED,
-                pl);
-            }
-          else
-            {
-              plugin_open_ui (pl);
-            }
-        }
     }
   return FALSE;
 }

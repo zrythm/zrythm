@@ -41,7 +41,21 @@ G_DEFINE_TYPE (MixerWidget,
                GTK_TYPE_BOX)
 
 void
-mixer_widget_refresh (MixerWidget * self)
+mixer_widget_soft_refresh (MixerWidget * self)
+{
+  for (int i = -1; i < MIXER->num_channels; i++)
+    {
+      Channel * ch =
+        i == -1 ?
+        MIXER->master : MIXER->channels[i];
+
+      if (GTK_IS_WIDGET (ch->widget))
+        channel_widget_refresh (ch->widget);
+    }
+}
+
+void
+mixer_widget_hard_refresh (MixerWidget * self)
 {
   g_object_ref (self->ddbox);
   g_object_ref (self->channels_add);
@@ -111,7 +125,7 @@ mixer_widget_setup (MixerWidget * self,
     GTK_CONTAINER (self->master_box),
     GTK_WIDGET (master->widget));
 
-  mixer_widget_refresh (self);
+  mixer_widget_hard_refresh (self);
 }
 
 static void

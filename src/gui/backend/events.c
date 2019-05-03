@@ -206,7 +206,7 @@ on_track_added (Track * track)
     return;
 
   if (MW_MIXER)
-    mixer_widget_refresh (MW_MIXER);
+    mixer_widget_hard_refresh (MW_MIXER);
   if (MW_TRACKLIST)
     tracklist_widget_hard_refresh (MW_TRACKLIST);
 
@@ -646,13 +646,13 @@ events_process (void * data)
         {
         case ET_TRACKS_REMOVED:
           if (MW_MIXER)
-            mixer_widget_refresh (MW_MIXER);
+            mixer_widget_hard_refresh (MW_MIXER);
           if (MW_TRACKLIST)
             tracklist_widget_hard_refresh (
               MW_TRACKLIST);
           break;
         case ET_CHANNEL_REMOVED:
-          mixer_widget_refresh (
+          mixer_widget_hard_refresh (
             MW_MIXER);
           break;
         case ET_REGION_REMOVED:
@@ -664,7 +664,7 @@ events_process (void * data)
           break;
         case ET_TRACKLIST_SELECTIONS_CHANGED:
           inspector_widget_refresh ();
-          mixer_widget_refresh (MW_MIXER);
+          mixer_widget_soft_refresh (MW_MIXER);
           break;
         case ET_RULER_SIZE_CHANGED:
           gtk_widget_queue_allocate (
@@ -784,7 +784,7 @@ events_process (void * data)
           break;
         case ET_TRACKS_ADDED:
           if (MW_MIXER)
-            mixer_widget_refresh (MW_MIXER);
+            mixer_widget_hard_refresh (MW_MIXER);
           if (MW_TRACKLIST)
             tracklist_widget_hard_refresh (
               MW_TRACKLIST);

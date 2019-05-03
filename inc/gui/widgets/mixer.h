@@ -61,11 +61,17 @@ mixer_widget_setup (MixerWidget * self,
                     Channel *     master);
 
 /**
- * Refreshes the content.
+ * Deletes and readds all channels.
  *
- * To be called repeatedly.
+ * To be used sparingly.
  */
 void
-mixer_widget_refresh (MixerWidget * self);
+mixer_widget_hard_refresh (MixerWidget * self);
+
+/**
+ * Calls refresh on each channel.
+ */
+void
+mixer_widget_soft_refresh (MixerWidget * self);
 
 #endif

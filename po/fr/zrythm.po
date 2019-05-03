@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-03 13:23+0100\n"
+"POT-Creation-Date: 2019-05-03 13:54+0100\n"
 "PO-Revision-Date: 2019-03-22 22:30+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -171,7 +171,7 @@ msgstr ""
 msgid "Change Pan"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:528
+#: src/gui/widgets/channel_slot.c:529
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
