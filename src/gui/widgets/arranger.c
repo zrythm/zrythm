@@ -1010,13 +1010,13 @@ on_key_action (
  * before drag_begin, so the logic is done in drag_begin.
  */
 static void
-multipress_pressed (GtkGestureMultiPress *gesture,
-               gint                  n_press,
-               gdouble               x,
-               gdouble               y,
-               gpointer              user_data)
+multipress_pressed (
+  GtkGestureMultiPress *gesture,
+  gint                  n_press,
+  gdouble               x,
+  gdouble               y,
+  ArrangerWidget *      self)
 {
-  ArrangerWidget * self = (ArrangerWidget *) user_data;
   GET_PRIVATE;
 
   /* set number of presses */

@@ -52,7 +52,8 @@ typedef enum TrackType
   TRACK_TYPE_AUDIO,
   TRACK_TYPE_MASTER,
   TRACK_TYPE_CHORD,
-  TRACK_TYPE_BUS
+  TRACK_TYPE_BUS,
+  TRACK_TYPE_GROUP,
 } TrackType;
 
 /**

@@ -88,6 +88,10 @@ copy_plugins_action_do (
 
       mixer_add_channel (
         MIXER, track->channel, F_NO_RECALC_GRAPH);
+
+      EVENTS_PUSH (ET_TRACKS_ADDED, NULL);
+
+      ch = track->channel;
     }
   else
     {

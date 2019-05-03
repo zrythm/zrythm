@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-03 13:54+0100\n"
+"POT-Creation-Date: 2019-05-03 16:12+0100\n"
 "PO-Revision-Date: 2019-03-22 22:30+0000\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -171,7 +171,7 @@ msgstr ""
 msgid "Change Pan"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:529
+#: src/gui/widgets/channel_slot.c:593
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -239,12 +239,12 @@ msgstr "Connexions"
 msgid "Controllers found"
 msgstr "Contrôleurs trouvés"
 
-#: src/actions/copy_plugins_action.c:189
+#: src/actions/copy_plugins_action.c:193
 #, fuzzy, c-format
 msgid "Copy %d Plugins"
 msgstr "Greffons"
 
-#: src/actions/copy_plugins_action.c:185
+#: src/actions/copy_plugins_action.c:189
 #, c-format
 msgid "Copy %s"
 msgstr ""
@@ -630,7 +630,7 @@ msgstr "Mixeur"
 msgid "Mixer panel"
 msgstr "Panneau du mixeur"
 
-#: src/actions/move_plugins_action.c:140
+#: src/actions/move_plugins_action.c:139
 #, fuzzy, c-format
 msgid "Move %d Plugins"
 msgstr "Greffons"
@@ -640,7 +640,7 @@ msgstr "Greffons"
 msgid "Move %d Tracks"
 msgstr "_Supprimer %d Pistes"
 
-#: src/actions/move_plugins_action.c:136
+#: src/actions/move_plugins_action.c:135
 #, c-format
 msgid "Move %s"
 msgstr ""

@@ -20,7 +20,9 @@
 /** \file
  */
 
+#include "actions/copy_plugins_action.h"
 #include "actions/create_tracks_action.h"
+#include "actions/move_plugins_action.h"
 #include "audio/channel.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
@@ -72,7 +74,7 @@ on_drag_motion (GtkWidget        *widget,
 
   /* if target atom matches FILE DESCR (see
    * file_browser.c gtk_selection_data_set) */
-  if (target == GET_ATOM ("FILE_DESCR"))
+  if (target == GET_ATOM (TARGET_ENTRY_FILE_DESCR))
     {
       FileDescriptor * fd =
         MW_FILE_BROWSER->selected_file_descr;
@@ -94,12 +96,29 @@ on_drag_motion (GtkWidget        *widget,
           return TRUE;
         }
     }
-  else if (target == GET_ATOM ("PLUGIN_DESCR"))
+  else if (target ==
+           GET_ATOM (TARGET_ENTRY_PLUGIN_DESCR))
     {
       gtk_drag_highlight (widget);
       gdk_drag_status (context,
                        GDK_ACTION_COPY,
                        time);
+      return TRUE;
+    }
+  else if (target ==
+           GET_ATOM (TARGET_ENTRY_PLUGIN))
+    {
+      GdkModifierType mask;
+      gtk_drag_highlight (widget);
+      gdk_window_get_pointer (
+        gtk_widget_get_window (widget),
+        NULL, NULL, &mask);
+      if (mask & GDK_CONTROL_MASK)
+        gdk_drag_status (
+          context, GDK_ACTION_COPY, time);
+      else
+        gdk_drag_status (
+          context, GDK_ACTION_MOVE, time);
       return TRUE;
     }
 
@@ -117,8 +136,7 @@ on_drag_data_received (GtkWidget        *widget,
                gpointer          user_data)
 {
   GdkAtom target =
-    gtk_drag_dest_find_target (
-      widget, context, NULL);
+    gtk_selection_data_get_target (data);
 
   if (target == GDK_NONE)
     return;
@@ -143,7 +161,7 @@ on_drag_data_received (GtkWidget        *widget,
 
       undo_manager_perform (UNDO_MANAGER, ua);
     }
-  else if ((target =
+  else if ((target ==
             GET_ATOM (TARGET_ENTRY_PLUGIN_DESCR)))
     {
       PluginDescriptor * pd =
@@ -166,6 +184,42 @@ on_drag_data_received (GtkWidget        *widget,
           1);
 
       undo_manager_perform (UNDO_MANAGER, ua);
+    }
+  else if ((target =
+            GET_ATOM (TARGET_ENTRY_PLUGIN)))
+    {
+      /* NOTE this is a cloned pointer, don't use
+       * it */
+      Plugin * pl =
+        (Plugin *)
+        gtk_selection_data_get_data (data);
+      pl = project_get_plugin (pl->id);
+      g_warn_if_fail (pl);
+
+      /* determine if moving or copying */
+      GdkDragAction action =
+        gdk_drag_context_get_selected_action (
+          context);
+
+      UndoableAction * ua = NULL;
+      if (action == GDK_ACTION_COPY)
+        {
+          ua =
+            copy_plugins_action_new (
+              MIXER_SELECTIONS,
+              NULL, 0);
+        }
+      else if (action == GDK_ACTION_MOVE)
+        {
+          ua =
+            move_plugins_action_new (
+              MIXER_SELECTIONS,
+              NULL, 0);
+        }
+      g_warn_if_fail (ua);
+
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
     }
 }
 
@@ -349,7 +403,7 @@ drag_dest_box_widget_new (GtkOrientation  orientation,
                           1);
 
   /* set as drag dest */
-  GtkTargetEntry entries[2];
+  GtkTargetEntry entries[3];
   entries[0].target = TARGET_ENTRY_PLUGIN_DESCR;
   entries[0].flags = GTK_TARGET_SAME_APP;
   entries[0].info =
@@ -359,10 +413,14 @@ drag_dest_box_widget_new (GtkOrientation  orientation,
   entries[1].flags = GTK_TARGET_SAME_APP;
   entries[1].info =
     symap_map (ZSYMAP, TARGET_ENTRY_FILE_DESCR);
+  entries[2].target = TARGET_ENTRY_PLUGIN;
+  entries[2].flags = GTK_TARGET_SAME_APP;
+  entries[2].info =
+    symap_map (ZSYMAP, TARGET_ENTRY_PLUGIN);
   gtk_drag_dest_set (GTK_WIDGET (self),
                      GTK_DEST_DEFAULT_ALL,
                      entries,
-                     2,
+                     3,
                      GDK_ACTION_COPY);
 
   /* connect signal */

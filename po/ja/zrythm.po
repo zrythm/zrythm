@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-03 13:54+0100\n"
+"POT-Creation-Date: 2019-05-03 16:12+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrytm dot org>\n"
 "Language-Team: Japanese\n"
@@ -163,7 +163,7 @@ msgstr ""
 msgid "Change Pan"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:529
+#: src/gui/widgets/channel_slot.c:593
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -230,12 +230,12 @@ msgstr "コレクション"
 msgid "Controllers found"
 msgstr "見つかったコントローラ"
 
-#: src/actions/copy_plugins_action.c:189
+#: src/actions/copy_plugins_action.c:193
 #, fuzzy, c-format
 msgid "Copy %d Plugins"
 msgstr "プラグイン"
 
-#: src/actions/copy_plugins_action.c:185
+#: src/actions/copy_plugins_action.c:189
 #, c-format
 msgid "Copy %s"
 msgstr ""
@@ -618,7 +618,7 @@ msgstr ""
 msgid "Mixer panel"
 msgstr ""
 
-#: src/actions/move_plugins_action.c:140
+#: src/actions/move_plugins_action.c:139
 #, fuzzy, c-format
 msgid "Move %d Plugins"
 msgstr "プラグイン"
@@ -628,7 +628,7 @@ msgstr "プラグイン"
 msgid "Move %d Tracks"
 msgstr "%dトラックを削除する(_D)"
 
-#: src/actions/move_plugins_action.c:136
+#: src/actions/move_plugins_action.c:135
 #, c-format
 msgid "Move %s"
 msgstr ""

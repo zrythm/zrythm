@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-03 14:02+0100\n"
+"POT-Creation-Date: 2019-05-03 16:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -159,7 +159,7 @@ msgstr ""
 msgid "Change Pan"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:529
+#: src/gui/widgets/channel_slot.c:593
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -222,12 +222,12 @@ msgstr ""
 msgid "Controllers found"
 msgstr ""
 
-#: src/actions/copy_plugins_action.c:189
+#: src/actions/copy_plugins_action.c:193
 #, c-format
 msgid "Copy %d Plugins"
 msgstr ""
 
-#: src/actions/copy_plugins_action.c:185
+#: src/actions/copy_plugins_action.c:189
 #, c-format
 msgid "Copy %s"
 msgstr ""
@@ -600,7 +600,7 @@ msgstr ""
 msgid "Mixer panel"
 msgstr ""
 
-#: src/actions/move_plugins_action.c:140
+#: src/actions/move_plugins_action.c:139
 #, c-format
 msgid "Move %d Plugins"
 msgstr ""
@@ -610,7 +610,7 @@ msgstr ""
 msgid "Move %d Tracks"
 msgstr ""
 
-#: src/actions/move_plugins_action.c:136
+#: src/actions/move_plugins_action.c:135
 #, c-format
 msgid "Move %s"
 msgstr ""

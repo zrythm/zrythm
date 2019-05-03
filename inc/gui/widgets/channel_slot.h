@@ -43,6 +43,14 @@ typedef struct _ChannelSlotWidget
   GtkDrawingArea         parent_instance;
   Channel                * channel; ///< the channel this belongs to
   int                    slot_index; ///< the channel slot index
+  GtkGestureMultiPress *   multipress;
+  GtkGestureDrag *         drag;
+  int                      reselected;
+
+  /** Plugin deselected. */
+  int                     deselected;
+  /** For multipress. */
+  int                      n_press;
   GtkGestureMultiPress *   right_mouse_mp;
 } ChannelSlotWidget;
 

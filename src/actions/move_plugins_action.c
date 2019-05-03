@@ -45,9 +45,8 @@ move_plugins_action_new (
   if (to_ch)
     self->to_track_pos = to_ch->track->pos;
   else
-    {
-      /* TODO create new channel */
-    }
+    self->is_new_channel = 1;
+
   self->ms = mixer_selections_clone (ms);
 
   return ua;

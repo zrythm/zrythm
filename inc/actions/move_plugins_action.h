@@ -45,6 +45,8 @@ typedef struct MovePluginsAction
   /** From track position. */
   int             from_track_pos;
 
+  int             is_new_channel;
+
   /** MixerSelections clone containing all the
    * necessary information.
    */

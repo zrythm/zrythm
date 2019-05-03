@@ -20,6 +20,7 @@
 /** \file
  */
 
+#include "actions/copy_plugins_action.h"
 #include "actions/create_plugins_action.h"
 #include "actions/move_plugins_action.h"
 #include "actions/undoable_action.h"
@@ -39,7 +40,9 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (ChannelSlotWidget, channel_slot_widget, GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (ChannelSlotWidget,
+               channel_slot_widget,
+               GTK_TYPE_DRAWING_AREA)
 
 static void
 on_drag_data_received (
@@ -80,10 +83,27 @@ on_drag_data_received (
             channel_get_plugin_index (pl->channel,
                                       pl))
         {
-          UndoableAction * ua =
-            move_plugins_action_new (
-              MIXER_SELECTIONS,
-              self->channel, self->slot_index);
+          /* determine if moving or copying */
+          GdkDragAction action =
+            gdk_drag_context_get_selected_action (
+              context);
+
+          UndoableAction * ua = NULL;
+          if (action == GDK_ACTION_COPY)
+            {
+              ua =
+                copy_plugins_action_new (
+                  MIXER_SELECTIONS,
+                  self->channel, self->slot_index);
+            }
+          else if (action == GDK_ACTION_MOVE)
+            {
+              ua =
+                move_plugins_action_new (
+                  MIXER_SELECTIONS,
+                  self->channel, self->slot_index);
+            }
+          g_warn_if_fail (ua);
 
           undo_manager_perform (
             UNDO_MANAGER, ua);
@@ -316,6 +336,7 @@ select_ctrl_pl_ch (
         MIXER_SELECTIONS,
         self->slot_index,
         F_PUBLISH_EVENTS);
+      self->deselected = 1;
     }
   else
     {
@@ -326,13 +347,57 @@ select_ctrl_pl_ch (
     }
 }
 
-static gboolean
-button_press_cb (
-  GtkWidget * widget,
-	GdkEventButton * event,
-  ChannelSlotWidget * self)
+static void
+drag_update (GtkGestureDrag * gesture,
+               gdouble         offset_x,
+               gdouble         offset_y,
+               ChannelSlotWidget * self)
 {
-  if (event->type == GDK_2BUTTON_PRESS)
+  g_message ("drag update");
+
+  UI_GET_STATE_MASK (gesture);
+
+  if (self->reselected)
+    return;
+
+  /* reselect plugin if dragging and was deselected
+   * before */
+  if (self->deselected)
+    {
+      g_message ("reselecting");
+      mixer_selections_add_slot (
+        MIXER_SELECTIONS,
+        self->channel,
+        self->slot_index);
+      self->reselected = 1;
+    }
+}
+
+static void
+drag_end (GtkGestureDrag *gesture,
+               gdouble         offset_x,
+               gdouble         offset_y,
+               ChannelSlotWidget * self)
+{
+  g_message ("drag end");
+  self->deselected = 0;
+  self->reselected = 0;
+}
+
+static void
+multipress_pressed (
+  GtkGestureMultiPress *gesture,
+  gint                  n_press,
+  gdouble               x,
+  gdouble               y,
+  ChannelSlotWidget *   self)
+{
+  self->n_press = n_press;
+  g_message ("multipress n pres %d", self->n_press);
+
+  UI_GET_STATE_MASK (gesture);
+
+  if (self->n_press == 2)
     {
       Plugin * pl =
         self->channel->plugins[self->slot_index];
@@ -341,8 +406,7 @@ button_press_cb (
         {
           if (pl->descr->protocol == PROT_LV2)
             {
-              pl->visible =
-                !pl->visible;
+              pl->visible = !pl->visible;
               EVENTS_PUSH (
                 ET_PLUGIN_VISIBILITY_CHANGED,
                 pl);
@@ -353,11 +417,11 @@ button_press_cb (
             }
         }
     }
-  else if (event->type == GDK_BUTTON_PRESS)
+  else if (self->n_press == 1)
     {
       int ctrl = 0, pl = 0, ch = 0;
       /* if control click */
-      if (event->state & GDK_CONTROL_MASK)
+      if (state_mask & GDK_CONTROL_MASK)
         ctrl = 1;
 
       /* if plugin exists */
@@ -594,6 +658,13 @@ channel_slot_widget_init (ChannelSlotWidget * self)
   gtk_widget_set_size_request (
     GTK_WIDGET (self), -1, 24);
 
+  self->multipress =
+    GTK_GESTURE_MULTI_PRESS (
+      gtk_gesture_multi_press_new (
+        GTK_WIDGET (self)));
+  gtk_event_controller_set_propagation_phase (
+    GTK_EVENT_CONTROLLER (self->multipress),
+    GTK_PHASE_CAPTURE);
   self->right_mouse_mp =
     GTK_GESTURE_MULTI_PRESS (
       gtk_gesture_multi_press_new (
@@ -601,6 +672,12 @@ channel_slot_widget_init (ChannelSlotWidget * self)
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (self->right_mouse_mp),
                         GDK_BUTTON_SECONDARY);
+  self->drag =
+    GTK_GESTURE_DRAG (
+      gtk_gesture_drag_new (GTK_WIDGET (self)));
+  gtk_event_controller_set_propagation_phase (
+    GTK_EVENT_CONTROLLER (self->drag),
+    GTK_PHASE_CAPTURE);
 
   /* connect signals */
   g_signal_connect (
@@ -610,20 +687,26 @@ channel_slot_widget_init (ChannelSlotWidget * self)
     GTK_WIDGET (self), "drag-data-received",
     G_CALLBACK(on_drag_data_received), self);
   g_signal_connect (
-    G_OBJECT(self), "button_press_event",
-    G_CALLBACK (button_press_cb),  self);
-  g_signal_connect (
     GTK_WIDGET (self), "drag-data-get",
     G_CALLBACK (on_drag_data_get), self);
   g_signal_connect (
     GTK_WIDGET (self), "drag-motion",
     G_CALLBACK (on_drag_motion), self);
   g_signal_connect (
+    G_OBJECT (self->drag), "drag-update",
+    G_CALLBACK (drag_update),  self);
+  g_signal_connect (
+    G_OBJECT (self->drag), "drag-end",
+    G_CALLBACK (drag_end),  self);
+  g_signal_connect (
     G_OBJECT (self), "enter-notify-event",
     G_CALLBACK (on_motion),  self);
   g_signal_connect (
     G_OBJECT(self), "leave-notify-event",
     G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT (self->multipress), "pressed",
+    G_CALLBACK (multipress_pressed), self);
   g_signal_connect (
     G_OBJECT (self->right_mouse_mp), "pressed",
     G_CALLBACK (on_right_click), self);
