@@ -32,7 +32,9 @@
 #include "gui/widgets/channel_slot.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
+#include "utils/gtk.h"
 #include "utils/ui.h"
+#include "utils/resources.h"
 
 #include <glib/gi18n.h>
 
@@ -244,6 +246,80 @@ button_press_cb (
 }
 
 static void
+show_context_menu (
+  ChannelSlotWidget * self)
+{
+  GtkWidget *menu;
+  GtkMenuItem * menuitem;
+
+  menu = gtk_menu_new();
+
+  /*int num_selections =*/
+    /*MIXER_SELECTIONS->num_slots;*/
+
+  /* TODO split below */
+  /*if (num_selections == 0)*/
+    /*{*/
+
+    /*}*/
+  /*else if (num_selections = 1)*/
+    /*{*/
+
+
+    /*}*/
+  /*else*/
+    /*{*/
+
+    /*}*/
+
+#define CREATE_SEPARATOR \
+  menuitem = \
+    GTK_MENU_ITEM (gtk_separator_menu_item_new ()); \
+  gtk_widget_show_all (GTK_WIDGET (menuitem))
+
+#define ADD_TO_SHELL \
+  gtk_menu_shell_append ( \
+    GTK_MENU_SHELL(menu), GTK_WIDGET (menuitem))
+
+  menuitem = CREATE_CUT_MENU_ITEM;
+  ADD_TO_SHELL;
+  menuitem = CREATE_COPY_MENU_ITEM;
+  ADD_TO_SHELL;
+  menuitem = CREATE_PASTE_MENU_ITEM;
+  ADD_TO_SHELL;
+  menuitem = CREATE_DELETE_MENU_ITEM;
+  ADD_TO_SHELL;
+  CREATE_SEPARATOR;
+  ADD_TO_SHELL;
+  menuitem = CREATE_CLEAR_SELECTION_MENU_ITEM;
+  ADD_TO_SHELL;
+  menuitem = CREATE_SELECT_ALL_MENU_ITEM;
+  ADD_TO_SHELL;
+
+#undef ADD_TO_SHELL
+
+  gtk_widget_show_all(menu);
+  gtk_menu_attach_to_widget (
+    GTK_MENU (menu),
+    GTK_WIDGET (self), NULL);
+
+  gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
+}
+
+static void
+on_right_click (GtkGestureMultiPress *gesture,
+               gint                  n_press,
+               gdouble               x,
+               gdouble               y,
+               ChannelSlotWidget *   self)
+{
+  if (n_press != 1)
+    return;
+
+  show_context_menu (self);
+}
+
+static void
 on_drag_data_get (
   GtkWidget        *widget,
   GdkDragContext   *context,
@@ -367,6 +443,14 @@ channel_slot_widget_init (ChannelSlotWidget * self)
   gtk_widget_set_size_request (
     GTK_WIDGET (self), -1, 24);
 
+  self->right_mouse_mp =
+    GTK_GESTURE_MULTI_PRESS (
+      gtk_gesture_multi_press_new (
+        GTK_WIDGET (self)));
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (self->right_mouse_mp),
+                        GDK_BUTTON_SECONDARY);
+
   /* connect signals */
   g_signal_connect (
     G_OBJECT (self), "draw",
@@ -389,6 +473,9 @@ channel_slot_widget_init (ChannelSlotWidget * self)
   g_signal_connect (
     G_OBJECT(self), "leave-notify-event",
     G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT (self->right_mouse_mp), "pressed",
+    G_CALLBACK (on_right_click), self);
 }
 
 static void

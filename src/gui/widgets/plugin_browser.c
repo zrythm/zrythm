@@ -125,6 +125,76 @@ visible_func (GtkTreeModel *model,
   return visible;
 }
 
+static void
+show_context_menu (
+  PluginBrowserWidget * self,
+  PluginDescriptor *    descr)
+{
+  GtkWidget *menu;
+  GtkMenuItem *menuitem;
+  menu = gtk_menu_new();
+
+#define APPEND(mi) \
+  gtk_menu_shell_append ( \
+    GTK_MENU_SHELL (menu), \
+    GTK_WIDGET (menuitem));
+
+
+#undef APPEND
+
+  gtk_menu_attach_to_widget (
+    GTK_MENU (menu),
+    GTK_WIDGET (self), NULL);
+  gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
+}
+
+static void
+on_plugins_right_click (
+  GtkGestureMultiPress *gesture,
+  gint                  n_press,
+  gdouble               x,
+  gdouble               y,
+  PluginBrowserWidget * self)
+{
+  if (n_press != 1)
+    return;
+
+  GtkTreePath *path;
+  GtkTreeViewColumn *column;
+
+  GtkTreeSelection * selection =
+    gtk_tree_view_get_selection (
+      (self->plugins_tree_view));
+  if (!gtk_tree_view_get_path_at_pos
+      (GTK_TREE_VIEW(self->plugins_tree_view),
+       x, y,
+       &path, &column, NULL, NULL))
+
+      // if we can't find path at pos, we surely don't
+      // want to pop up the menu
+      return;
+
+  gtk_tree_selection_unselect_all(selection);
+  gtk_tree_selection_select_path(selection, path);
+  GtkTreeIter iter;
+  gtk_tree_model_get_iter (
+    GTK_TREE_MODEL (self->plugins_tree_model),
+    &iter, path);
+  GValue value = G_VALUE_INIT;
+  gtk_tree_model_get_value (
+    GTK_TREE_MODEL (self->plugins_tree_model),
+    &iter,
+    PL_COLUMN_DESCR,
+    &value);
+  gtk_tree_path_free(path);
+
+  PluginDescriptor * descr =
+    g_value_get_pointer (&value);
+
+  show_context_menu (self, descr);
+}
+
+
 static int
 update_plugin_info_label (PluginBrowserWidget * self,
                           gpointer user_data)
@@ -356,7 +426,8 @@ tree_view_create (PluginBrowserWidget * self,
   /* init tree view */
   GtkCellRenderer * renderer;
   GtkTreeViewColumn * column;
-  if (GTK_TREE_MODEL (self->plugins_tree_model) == model)
+  if (GTK_TREE_MODEL (self->plugins_tree_model) ==
+      model)
     {
       /* column for icon */
       renderer =
@@ -386,6 +457,18 @@ tree_view_create (PluginBrowserWidget * self,
       gtk_tree_view_set_search_column (
         GTK_TREE_VIEW (tree_view),
         PL_COLUMN_NAME);
+
+      /* connect right click handler */
+      GtkGestureMultiPress * mp =
+        GTK_GESTURE_MULTI_PRESS (
+          gtk_gesture_multi_press_new (
+            GTK_WIDGET (tree_view)));
+      gtk_gesture_single_set_button (
+        GTK_GESTURE_SINGLE (mp),
+        GDK_BUTTON_SECONDARY);
+      g_signal_connect (
+        G_OBJECT (mp), "pressed",
+        G_CALLBACK (on_plugins_right_click), self);
     }
   else
     {
