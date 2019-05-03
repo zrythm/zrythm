@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,52 +17,59 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_MASTER_TRACK_H__
-#define __GUI_WIDGETS_MASTER_TRACK_H__
+/**
+ * \file
+ *
+ * Bus track for effects.
+ */
+
+#ifndef __GUI_WIDGETS_GROUP_TRACK_H__
+#define __GUI_WIDGETS_GROUP_TRACK_H__
 
 #include "audio/channel.h"
 #include "gui/widgets/track.h"
 
 #include <gtk/gtk.h>
 
-#define MASTER_TRACK_WIDGET_TYPE \
-  (master_track_widget_get_type ())
-G_DECLARE_FINAL_TYPE (MasterTrackWidget,
-                      master_track_widget,
+#define GROUP_TRACK_WIDGET_TYPE \
+  (group_track_widget_get_type ())
+G_DECLARE_FINAL_TYPE (GroupTrackWidget,
+                      group_track_widget,
                       Z,
-                      MASTER_TRACK_WIDGET,
+                      GROUP_TRACK_WIDGET,
                       TrackWidget)
 
-typedef struct _AutomationTracklistWidget AutomationTracklistWidget;
-typedef struct Track MasterTrack;
+typedef struct _AutomationTracklistWidget
+  AutomationTracklistWidget;
+typedef struct Track GroupTrack;
 
 /**
  * Top is the track part and bot is the automation part
  */
-typedef struct _MasterTrackWidget
+typedef struct _GroupTrackWidget
 {
-  TrackWidget                   parent_instance;
-  GtkToggleButton *             record;
-  GtkToggleButton *             solo;
-  GtkToggleButton *             mute;
-  GtkToggleButton *             show_automation;
-} MasterTrackWidget;
+  TrackWidget                parent_instance;
+  GtkToggleButton *          record;
+  GtkToggleButton *          solo;
+  GtkToggleButton *          mute;
+  GtkToggleButton *          show_automation;
+} GroupTrackWidget;
 
 /**
  * Creates a new track widget from the given track.
  */
-MasterTrackWidget *
-master_track_widget_new (Track * track);
+GroupTrackWidget *
+group_track_widget_new (Track * track);
 
 /**
  * Updates changes in the backend to the ui
  */
 void
-master_track_widget_refresh (
-  MasterTrackWidget * self);
+group_track_widget_refresh (GroupTrackWidget * self);
 
 void
-master_track_widget_refresh_buttons (
-  MasterTrackWidget * self);
+group_track_widget_refresh_buttons (
+  GroupTrackWidget * self);
 
 #endif
+

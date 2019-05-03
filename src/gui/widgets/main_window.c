@@ -251,6 +251,7 @@ static GActionEntry actions[] = {
   { "create-audio-track", activate_create_audio_track },
   { "create-ins-track", activate_create_ins_track },
   { "create-bus-track", activate_create_bus_track },
+  { "create-group-track", activate_create_group_track },
   { "delete-selected-tracks", activate_delete_selected_tracks },
 
   /* modes */

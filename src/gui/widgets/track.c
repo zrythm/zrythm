@@ -21,8 +21,9 @@
  */
 
 #include "audio/automatable.h"
-#include "audio/bus_track.h"
 #include "audio/automation_track.h"
+#include "audio/bus_track.h"
+#include "audio/group_track.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
@@ -37,6 +38,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/chord_track.h"
+#include "gui/widgets/group_track.h"
 #include "gui/widgets/instrument_track.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/master_track.h"
@@ -93,6 +95,7 @@ track_widget_select (
     case TRACK_TYPE_AUDIO:
     case TRACK_TYPE_MASTER:
     case TRACK_TYPE_BUS:
+    case TRACK_TYPE_GROUP:
       chan = track->channel;
       g_message (
         "%sselecting track %s, recording %d sa %d",
@@ -192,6 +195,10 @@ track_widget_refresh (TrackWidget * self)
       bus_track_widget_refresh (
         Z_BUS_TRACK_WIDGET (self));
       break;
+    case TRACK_TYPE_GROUP:
+      group_track_widget_refresh (
+        Z_GROUP_TRACK_WIDGET (self));
+      break;
     }
 }
 
@@ -225,6 +232,10 @@ track_widget_refresh_buttons (
     case TRACK_TYPE_BUS:
       bus_track_widget_refresh_buttons (
         Z_BUS_TRACK_WIDGET (self));
+      break;
+    case TRACK_TYPE_GROUP:
+      group_track_widget_refresh_buttons (
+        Z_GROUP_TRACK_WIDGET (self));
       break;
     }
 
@@ -581,6 +592,10 @@ track_widget_new (Track * track)
     case TRACK_TYPE_BUS:
       self = Z_TRACK_WIDGET (
         bus_track_widget_new (track));
+      break;
+    case TRACK_TYPE_GROUP:
+      self = Z_TRACK_WIDGET (
+        group_track_widget_new (track));
       break;
     case TRACK_TYPE_INSTRUMENT:
       self = Z_TRACK_WIDGET (

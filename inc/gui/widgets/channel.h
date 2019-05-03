@@ -39,12 +39,14 @@ typedef struct _FaderWidget FaderWidget;
 typedef struct _ChannelMeterWidget ChannelMeterWidget;
 typedef struct Channel Channel;
 typedef struct _ChannelSlotWidget ChannelSlotWidget;
+typedef struct _RouteTargetSelectorWidget
+  RouteTargetSelectorWidget;
 typedef struct _PanWidget PanWidget;
 
 typedef struct _ChannelWidget
 {
   GtkGrid            parent_instance;
-  GtkLabel            * output;
+  RouteTargetSelectorWidget * output;
   ColorAreaWidget     * color;
   GtkLabel            * name;
   GtkBox              * phase_controls;
@@ -74,7 +76,6 @@ typedef struct _ChannelWidget
   MeterWidget         * meter_r;
   GtkLabel            * meter_reading;
   GtkImage            * icon;
-  GtkImage *          output_img;
   double                meter_reading_val; ///< cache
   Channel             * channel;    ///< pointer to data
 

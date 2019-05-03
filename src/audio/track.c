@@ -27,6 +27,7 @@
 #include "audio/bus_track.h"
 #include "audio/channel.h"
 #include "audio/chord_track.h"
+#include "audio/group_track.h"
 #include "audio/instrument_track.h"
 #include "audio/master_track.h"
 #include "audio/instrument_track.h"
@@ -112,6 +113,10 @@ track_new (
       break;
     case TRACK_TYPE_BUS:
       bus_track_init (track);
+      ct = CT_BUS;
+      break;
+    case TRACK_TYPE_GROUP:
+      group_track_init (track);
       ct = CT_BUS;
       break;
     case TRACK_TYPE_CHORD:
@@ -442,27 +447,23 @@ track_get_last_automation_point (
 void
 track_setup (Track * track)
 {
+#define SETUP_TRACK(uc,sc) \
+  case TRACK_TYPE_##uc: \
+    sc##_track_setup (track); \
+    break;
+
   switch (track->type)
     {
-    case TRACK_TYPE_INSTRUMENT:
-      instrument_track_setup (
-        (InstrumentTrack *) track);
-      break;
-    case TRACK_TYPE_MASTER:
-      master_track_setup (
-        (MasterTrack *) track);
-      break;
-    case TRACK_TYPE_AUDIO:
-      audio_track_setup (
-        (AudioTrack *) track);
-      break;
+    SETUP_TRACK (INSTRUMENT, instrument);
+    SETUP_TRACK (MASTER, master);
+    SETUP_TRACK (AUDIO, audio);
+    SETUP_TRACK (BUS, bus);
+    SETUP_TRACK (GROUP, group);
     case TRACK_TYPE_CHORD:
       break;
-    case TRACK_TYPE_BUS:
-      bus_track_setup (
-        (BusTrack *) track);
-      break;
     }
+
+#undef SETUP_TRACK
 }
 
 static Region *
@@ -596,6 +597,9 @@ track_free (Track * track)
       bus_track_free (
         (BusTrack *) track);
       break;
+    case TRACK_TYPE_GROUP:
+      group_track_free (track);
+      break;
     }
 
   channel_free (track->channel);
@@ -619,6 +623,7 @@ track_get_automation_tracklist (Track * track)
     case TRACK_TYPE_CHORD:
       break;
     case TRACK_TYPE_BUS:
+    case TRACK_TYPE_GROUP:
     case TRACK_TYPE_INSTRUMENT:
     case TRACK_TYPE_AUDIO:
     case TRACK_TYPE_MASTER:
@@ -644,6 +649,7 @@ track_get_fader_automatable (Track * track)
     case TRACK_TYPE_CHORD:
       break;
     case TRACK_TYPE_BUS:
+    case TRACK_TYPE_GROUP:
     case TRACK_TYPE_AUDIO:
     case TRACK_TYPE_MASTER:
     case TRACK_TYPE_INSTRUMENT:
@@ -672,10 +678,8 @@ track_get_channel (Track * track)
     case TRACK_TYPE_INSTRUMENT:
     case TRACK_TYPE_AUDIO:
     case TRACK_TYPE_BUS:
-        {
-          ChannelTrack * bt = (ChannelTrack *) track;
-          return bt->channel;
-        }
+    case TRACK_TYPE_GROUP:
+      return track->channel;
     }
 
   return NULL;
@@ -739,6 +743,9 @@ track_stringize_type (
     case TRACK_TYPE_CHORD:
       return g_strdup (
         _("Chord"));
+    case TRACK_TYPE_GROUP:
+      return g_strdup (
+        _("Group"));
     default:
       g_warn_if_reached ();
       return NULL;

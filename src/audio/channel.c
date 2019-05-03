@@ -93,33 +93,125 @@ connect_midi_ins (
 }
 
 /**
- * Connect ports in the case of !prev && !next.
+ * Disconnects a plugin that has at least one MIDI
+ * input port.
  */
-static void
-connect_no_prev_no_next (
+static inline void
+disconnect_midi_ins (
   Channel * ch,
+  int       pos,
   Plugin *  pl)
 {
-  int i, last_index, num_ports_to_connect;
-  Port * in_port, * out_port;
+  int i;
+  Port * in_port;
 
-  /* -----------------------------------------
-   * disconnect ports
-   * ----------------------------------------- */
-  /* channel stereo in is connected to channel
-   * stereo out. disconnect it */
+  /* Disconnect MIDI port and piano roll to the
+   * plugin */
+  for (i = 0; i < pl->num_in_ports; i++)
+    {
+      in_port = pl->in_ports[i];
+      if (in_port->type == TYPE_EVENT &&
+          in_port->flow == FLOW_INPUT)
+        {
+          if (ports_connected (
+                ch->midi_in, in_port))
+            port_disconnect (
+              ch->midi_in,
+              in_port);
+          if (ch->type == CT_MIDI &&
+              pos == 0)
+            {
+              if (ports_connected (
+                    ch->midi_in, in_port))
+                port_disconnect (
+                  ch->piano_roll,
+                  in_port);
+            }
+        }
+    }
+}
+
+/**
+ * Disconnect stereo in ports from stereo out.
+ *
+ * Used when there is no plugin in the channel.
+ */
+static inline void
+disconnect_stereo_in_from_stereo_out (
+  Channel * ch)
+{
   port_disconnect (
     ch->stereo_in->l,
     ch->stereo_out->l);
   port_disconnect (
     ch->stereo_in->r,
     ch->stereo_out->r);
+}
 
-  /* -------------------------------------------
-   * connect input ports
-   * ------------------------------------------- */
+/**
+ * Connects the Channel's stereo in ports to its
+ * stereo out ports.
+ *
+ * Used when deleting the only plugin left.
+ */
+static inline void
+connect_stereo_in_to_stereo_out (
+  Channel * ch)
+{
+  port_connect (
+    ch->stereo_in->l,
+    ch->stereo_out->l);
+  port_connect (
+    ch->stereo_in->r,
+    ch->stereo_out->r);
+}
 
-  /* connect channel stereo in to plugin */
+/**
+ * Disconnects the Channel's stereo in from the
+ * Plugin's input ports.
+ */
+static inline void
+disconnect_ch_stereo_in_from_pl (
+  Channel * ch,
+  Plugin * pl)
+{
+  int i;
+  Port * in_port;
+
+  for (i = 0; i < pl->num_in_ports; i++)
+    {
+      in_port = pl->in_ports[i];
+
+      if (in_port->type != TYPE_AUDIO)
+        continue;
+
+      if (ports_connected (
+            ch->stereo_in->l,
+            in_port))
+        port_disconnect (
+          ch->stereo_in->l,
+          in_port);
+      if (ports_connected (
+            ch->stereo_in->r,
+            in_port))
+        port_disconnect (
+          ch->stereo_in->r,
+          in_port);
+    }
+}
+
+/**
+ * Connects the stereo in of the channel to the
+ * inputs of the Plugin.
+ */
+static inline void
+connect_ch_stereo_in_to_plugin (
+  Channel * ch,
+  Plugin * pl)
+{
+  int last_index, num_ports_to_connect, i;
+  Port * in_port;
+
   num_ports_to_connect = 0;
   if (pl->descr->num_audio_ins == 1)
     {
@@ -155,60 +247,6 @@ connect_no_prev_no_next (
                   port_connect (
                     ch->stereo_in->r,
                     in_port);
-                  last_index++;
-                  break;
-                }
-            }
-        }
-    }
-
-  /* --------------------------------------
-   * connect output ports
-   * ------------------------------------*/
-
-  num_ports_to_connect = 0;
-  if (pl->descr->num_audio_outs > 0)
-    {
-      num_ports_to_connect = 2;
-    }
-
-  last_index = 0;
-  for (i = 0; i < num_ports_to_connect; i++)
-    {
-      for (;
-           last_index < pl->num_out_ports;
-           last_index++)
-        {
-          out_port =
-            pl->out_ports[last_index];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              if (i == 0)
-                {
-                  port_connect (
-                    out_port,
-                    ch->stereo_out->l);
-
-                  /* if mono, also connect right
-                   * and bump i */
-                  if (pl->descr->
-                        num_audio_outs == 1)
-                    {
-                      port_connect (
-                        out_port,
-                        ch->stereo_out->r);
-                      i++;
-                    }
-
-                  last_index++;
-                  break;
-                }
-              else if (i == 1)
-                {
-                  port_connect (
-                    out_port,
-                    ch->stereo_out->r);
                   last_index++;
                   break;
                 }
@@ -218,107 +256,30 @@ connect_no_prev_no_next (
 }
 
 /**
- * Connect ports in the case of !prev && next.
+ * Connect outputs of src to inputs of dests.
  */
-static void
-connect_no_prev_next (
-  Channel * ch,
-  Plugin *  pl,
-  Plugin *  next_pl)
+static inline void
+connect_from_pl_to_pl (
+  Plugin * src,
+  Plugin * dest)
 {
   int i, j, last_index, num_ports_to_connect;
   Port * in_port, * out_port;
 
-  /* -----------------------------------------
-   * disconnect ports
-   * ----------------------------------------- */
-  /* channel stereo in is connected to next plugin.
-   * disconnect it */
-  for (i = 0; i < next_pl->num_in_ports; i++)
-    {
-      in_port = next_pl->in_ports[i];
-      if (in_port->type == TYPE_AUDIO)
-        {
-          if (ports_connected (
-                ch->stereo_in->l, in_port))
-            port_disconnect (
-              ch->stereo_in->l,
-              in_port);
-          if (ports_connected (
-                ch->stereo_in->r, in_port))
-            port_disconnect (
-              ch->stereo_in->r,
-              in_port);
-        }
-    }
-
-  /* -------------------------------------------
-   * connect input ports
-   * ------------------------------------------- */
-
-  /* connect channel stereo in to plugin */
-  num_ports_to_connect = 0;
-  if (pl->descr->num_audio_ins == 1)
-    {
-      num_ports_to_connect = 1;
-    }
-  else if (pl->descr->num_audio_ins > 1)
-    {
-      num_ports_to_connect = 2;
-    }
-
-  last_index = 0;
-  for (i = 0; i < num_ports_to_connect; i++)
-    {
-      for (;
-           last_index < pl->num_in_ports;
-           last_index++)
-        {
-          in_port =
-            pl->in_ports[
-              last_index];
-          if (in_port->type == TYPE_AUDIO)
-            {
-              if (i == 0)
-                {
-                  port_connect (
-                    ch->stereo_in->l,
-                    in_port);
-                  last_index++;
-                  break;
-                }
-              else if (i == 1)
-                {
-                  port_connect (
-                    ch->stereo_in->r,
-                    in_port);
-                  last_index++;
-                  break;
-                }
-            }
-        }
-    }
-
-  /* --------------------------------------
-   * connect output ports
-   * ------------------------------------*/
-
-  /* connect plugin's audio outs to next
-   * plugin */
-  if (pl->descr->num_audio_outs == 1 &&
-      next_pl->descr->num_audio_ins == 1)
+  if (src->descr->num_audio_outs == 1 &&
+      dest->descr->num_audio_ins == 1)
     {
       last_index = 0;
-      for (i = 0; i < pl->num_out_ports; i++)
+      for (i = 0; i < src->num_out_ports; i++)
         {
-          out_port = pl->out_ports[i];
+          out_port = src->out_ports[i];
 
           if (out_port->type == TYPE_AUDIO)
             {
               for (j = 0;
-                   j < next_pl->num_in_ports; j++)
+                   j < dest->num_in_ports; j++)
                 {
-                  in_port = next_pl->in_ports[j];
+                  in_port = dest->in_ports[j];
 
                   if (in_port->type == TYPE_AUDIO)
                     {
@@ -333,23 +294,23 @@ connect_no_prev_next (
 done1:
       ;
     }
-  else if (pl->descr->num_audio_outs == 1 &&
-           next_pl->descr->num_audio_ins > 1)
+  else if (src->descr->num_audio_outs == 1 &&
+           dest->descr->num_audio_ins > 1)
     {
       /* plugin is mono and next plugin is
        * not mono, so connect the mono out to
        * each input */
-      for (i = 0; i < pl->num_out_ports; i++)
+      for (i = 0; i < src->num_out_ports; i++)
         {
-          out_port = pl->out_ports[i];
+          out_port = src->out_ports[i];
 
           if (out_port->type == TYPE_AUDIO)
             {
               for (j = 0;
-                   j < next_pl->num_in_ports;
+                   j < dest->num_in_ports;
                    j++)
                 {
-                  in_port = next_pl->in_ports[j];
+                  in_port = dest->in_ports[j];
 
                   if (in_port->type == TYPE_AUDIO)
                     {
@@ -362,22 +323,22 @@ done1:
             }
         }
     }
-  else if (pl->descr->num_audio_outs > 1 &&
-           next_pl->descr->num_audio_ins == 1)
+  else if (src->descr->num_audio_outs > 1 &&
+           dest->descr->num_audio_ins == 1)
     {
       /* connect multi-output channel into mono by
        * only connecting to the first input channel
        * found */
-      for (i = 0; i < next_pl->num_in_ports; i++)
+      for (i = 0; i < dest->num_in_ports; i++)
         {
-          in_port = next_pl->in_ports[i];
+          in_port = dest->in_ports[i];
 
           if (in_port->type == TYPE_AUDIO)
             {
               for (j = 0;
-                   j < pl->num_out_ports; j++)
+                   j < src->num_out_ports; j++)
                 {
-                  out_port = pl->out_ports[j];
+                  out_port = src->out_ports[j];
 
                   if (out_port->type == TYPE_AUDIO)
                     {
@@ -393,30 +354,30 @@ done1:
 done2:
       ;
     }
-  else if (pl->descr->num_audio_outs > 1 &&
-           next_pl->descr->num_audio_ins > 1)
+  else if (src->descr->num_audio_outs > 1 &&
+           dest->descr->num_audio_ins > 1)
     {
       /* connect to as many audio outs this
        * plugin has, or until we can't connect
        * anymore */
       num_ports_to_connect =
-        MIN (pl->descr->num_audio_outs,
-             next_pl->descr->num_audio_ins);
+        MIN (src->descr->num_audio_outs,
+             dest->descr->num_audio_ins);
       last_index = 0;
       int ports_connected = 0;
-      for (i = 0; i < pl->num_out_ports; i++)
+      for (i = 0; i < src->num_out_ports; i++)
         {
-          out_port = pl->out_ports[i];
+          out_port = src->out_ports[i];
 
           if (out_port->type == TYPE_AUDIO)
             {
               for (;
                    last_index <
-                     next_pl->num_in_ports;
+                     dest->num_in_ports;
                    last_index++)
                 {
                   in_port =
-                    next_pl->in_ports[last_index];
+                    dest->in_ports[last_index];
                   if (in_port->type == TYPE_AUDIO)
                     {
                       port_connect (
@@ -436,176 +397,16 @@ done2:
 }
 
 /**
- * Connect ports in the case of prev && !next.
+ * Connect Plugin's outputs to the Channel's
+ * stereo out ports.
  */
-static void
-connect_prev_no_next (
-  Channel * ch,
-  Plugin *  prev_pl,
-  Plugin *  pl)
+static inline void
+connect_pl_to_stereo_out (
+  Plugin * pl,
+  Channel * ch)
 {
-  int i, j, last_index, num_ports_to_connect;
-  Port * in_port, * out_port;
-
-  /* -----------------------------------------
-   * disconnect ports
-   * ----------------------------------------- */
-  /* prev plugin is connected to channel stereo out.
-   * disconnect it */
-  for (i = 0; i < prev_pl->num_out_ports; i++)
-    {
-      out_port = prev_pl->out_ports[i];
-      if (out_port->type == TYPE_AUDIO)
-        {
-          if (ports_connected (
-                out_port, ch->stereo_out->l))
-            port_disconnect (
-              out_port, ch->stereo_out->l);
-          if (ports_connected (
-                out_port, ch->stereo_out->r))
-            port_disconnect (
-              out_port, ch->stereo_out->r);
-        }
-    }
-
-  /* -------------------------------------------
-   * connect input ports
-   * ------------------------------------------- */
-
-  /* connect previous plugin's audio outs to
-   * plugin */
-  if (prev_pl->descr->num_audio_outs == 1 &&
-      pl->descr->num_audio_ins == 1)
-    {
-      last_index = 0;
-      for (i = 0; i < prev_pl->num_out_ports; i++)
-        {
-          out_port = prev_pl->out_ports[i];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              for (j = 0; j < pl->num_in_ports; j++)
-                {
-                  in_port = pl->in_ports[j];
-
-                  if (in_port->type == TYPE_AUDIO)
-                    {
-                      port_connect (
-                        out_port,
-                        in_port);
-                      goto done1;
-                    }
-                }
-            }
-        }
-done1:
-      ;
-    }
-  else if (prev_pl->descr->num_audio_outs == 1 &&
-           pl->descr->num_audio_ins > 1)
-    {
-      /* prev plugin is mono and this plugin is
-       * not mono, so connect the mono out to
-       * each input */
-      for (i = 0; i < prev_pl->num_out_ports; i++)
-        {
-          out_port = prev_pl->out_ports[i];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              for (j = 0; j < pl->num_in_ports;
-                   j++)
-                {
-                  in_port = pl->in_ports[j];
-
-                  if (in_port->type == TYPE_AUDIO)
-                    {
-                      port_connect (
-                        out_port,
-                        in_port);
-                    }
-                }
-              break;
-            }
-        }
-    }
-  else if (prev_pl->descr->num_audio_outs > 1 &&
-           pl->descr->num_audio_ins == 1)
-    {
-      /* connect multi-output channel into mono by
-       * only connecting to the first input channel
-       * found */
-      for (i = 0; i < pl->num_in_ports; i++)
-        {
-          in_port = pl->in_ports[i];
-
-          if (in_port->type == TYPE_AUDIO)
-            {
-              for (j = 0;
-                   j < prev_pl->num_out_ports; j++)
-                {
-                  out_port = prev_pl->out_ports[j];
-
-                  if (out_port->type == TYPE_AUDIO)
-                    {
-                      port_connect (
-                        out_port,
-                        in_port);
-                      goto done2;
-                    }
-                }
-              break;
-            }
-        }
-done2:
-      ;
-    }
-  else if (prev_pl->descr->num_audio_outs > 1 &&
-           pl->descr->num_audio_ins > 1)
-    {
-      /* connect to as many audio outs the prev
-       * plugin has, or until we can't connect
-       * anymore */
-      num_ports_to_connect =
-        MIN (prev_pl->descr->num_audio_outs,
-             pl->descr->num_audio_ins);
-      last_index = 0;
-      int ports_connected = 0;
-      for (i = 0; i < prev_pl->num_out_ports; i++)
-        {
-          out_port = prev_pl->out_ports[i];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              for (;
-                   last_index < pl->num_in_ports;
-                   last_index++)
-                {
-                  in_port =
-                    pl->in_ports[last_index];
-                  if (in_port->type == TYPE_AUDIO)
-                    {
-                      port_connect (
-                        out_port,
-                        in_port);
-                      last_index++;
-                      ports_connected++;
-                      break;
-                    }
-                }
-              if (ports_connected ==
-                  num_ports_to_connect)
-                break;
-            }
-        }
-    }
-
-
-  /* --------------------------------------
-   * connect output ports
-   * ------------------------------------*/
-
-  /* connect plugin output ports to stereo_out */
+  int i, last_index;
+  Port * out_port;
   if (pl->descr->num_audio_outs == 1)
     {
       /* if mono find the audio out and connect to
@@ -653,488 +454,36 @@ done2:
             }
         }
     }
+
 }
 
 /**
- * Connect ports in the case of prev && next.
- */
-static void
-connect_prev_next (
-  Channel * ch,
-  Plugin *  prev_pl,
-  Plugin *  pl,
-  Plugin *  next_pl)
-{
-  int i, j, last_index, num_ports_to_connect;
-  Port * in_port, * out_port;
-
-  /* -----------------------------------------
-   * disconnect ports
-   * ----------------------------------------- */
-  /* prev plugin is connected to the next pl.
-   * disconnect them */
-  for (i = 0; i < prev_pl->num_out_ports; i++)
-    {
-      out_port = prev_pl->out_ports[i];
-
-      if (out_port->type != TYPE_AUDIO)
-        continue;
-
-      for (j = 0; j < next_pl->num_in_ports; j++)
-        {
-          in_port = next_pl->in_ports[j];
-
-          if (in_port->type != TYPE_AUDIO)
-            continue;
-
-          if (ports_connected (
-                out_port, in_port))
-            port_disconnect (
-              out_port, in_port);
-        }
-    }
-
-  /* -------------------------------------------
-   * connect input ports
-   * ------------------------------------------- */
-
-  /* connect previous plugin's audio outs to
-   * plugin */
-  if (prev_pl->descr->num_audio_outs == 1 &&
-      pl->descr->num_audio_ins == 1)
-    {
-      last_index = 0;
-      for (i = 0; i < prev_pl->num_out_ports; i++)
-        {
-          out_port = prev_pl->out_ports[i];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              for (j = 0; j < pl->num_in_ports; j++)
-                {
-                  in_port = pl->in_ports[j];
-
-                  if (in_port->type == TYPE_AUDIO)
-                    {
-                      port_connect (
-                        out_port,
-                        in_port);
-                      goto done1;
-                    }
-                }
-            }
-        }
-done1:
-      ;
-    }
-  else if (prev_pl->descr->num_audio_outs == 1 &&
-           pl->descr->num_audio_ins > 1)
-    {
-      /* prev plugin is mono and this plugin is
-       * not mono, so connect the mono out to
-       * each input */
-      for (i = 0; i < prev_pl->num_out_ports; i++)
-        {
-          out_port = prev_pl->out_ports[i];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              for (j = 0; j < pl->num_in_ports;
-                   j++)
-                {
-                  in_port = pl->in_ports[j];
-
-                  if (in_port->type == TYPE_AUDIO)
-                    {
-                      port_connect (
-                        out_port,
-                        in_port);
-                    }
-                }
-              break;
-            }
-        }
-    }
-  else if (prev_pl->descr->num_audio_outs > 1 &&
-           pl->descr->num_audio_ins == 1)
-    {
-      /* connect multi-output channel into mono by
-       * only connecting to the first input channel
-       * found */
-      for (i = 0; i < pl->num_in_ports; i++)
-        {
-          in_port = pl->in_ports[i];
-
-          if (in_port->type == TYPE_AUDIO)
-            {
-              for (j = 0;
-                   j < prev_pl->num_out_ports; j++)
-                {
-                  out_port = prev_pl->out_ports[j];
-
-                  if (out_port->type == TYPE_AUDIO)
-                    {
-                      port_connect (
-                        out_port,
-                        in_port);
-                      goto done2;
-                    }
-                }
-              break;
-            }
-        }
-done2:
-      ;
-    }
-  else if (prev_pl->descr->num_audio_outs > 1 &&
-           pl->descr->num_audio_ins > 1)
-    {
-      /* connect to as many audio outs the prev
-       * plugin has, or until we can't connect
-       * anymore */
-      num_ports_to_connect =
-        MIN (prev_pl->descr->num_audio_outs,
-             pl->descr->num_audio_ins);
-      last_index = 0;
-      int ports_connected = 0;
-      for (i = 0; i < prev_pl->num_out_ports; i++)
-        {
-          out_port = prev_pl->out_ports[i];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              for (;
-                   last_index < pl->num_in_ports;
-                   last_index++)
-                {
-                  in_port =
-                    pl->in_ports[last_index];
-                  if (in_port->type == TYPE_AUDIO)
-                    {
-                      port_connect (
-                        out_port,
-                        in_port);
-                      last_index++;
-                      ports_connected++;
-                      break;
-                    }
-                }
-              if (ports_connected ==
-                  num_ports_to_connect)
-                break;
-            }
-        }
-    }
-
-  /* ------------------------------------------
-   * Connect output ports
-   * ------------------------------------------ */
-
-  /* connect plugin's audio outs to next
-   * plugin */
-  if (pl->descr->num_audio_outs == 1 &&
-      next_pl->descr->num_audio_ins == 1)
-    {
-      last_index = 0;
-      for (i = 0; i < pl->num_out_ports; i++)
-        {
-          out_port = pl->out_ports[i];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              for (j = 0;
-                   j < next_pl->num_in_ports; j++)
-                {
-                  in_port = next_pl->in_ports[j];
-
-                  if (in_port->type == TYPE_AUDIO)
-                    {
-                      port_connect (
-                        out_port,
-                        in_port);
-                      goto done3;
-                    }
-                }
-            }
-        }
-done3:
-      ;
-    }
-  else if (pl->descr->num_audio_outs == 1 &&
-           next_pl->descr->num_audio_ins > 1)
-    {
-      /* plugin is mono and next plugin is
-       * not mono, so connect the mono out to
-       * each input */
-      for (i = 0; i < pl->num_out_ports; i++)
-        {
-          out_port = pl->out_ports[i];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              for (j = 0;
-                   j < next_pl->num_in_ports;
-                   j++)
-                {
-                  in_port = next_pl->in_ports[j];
-
-                  if (in_port->type == TYPE_AUDIO)
-                    {
-                      port_connect (
-                        out_port,
-                        in_port);
-                    }
-                }
-              break;
-            }
-        }
-    }
-  else if (pl->descr->num_audio_outs > 1 &&
-           next_pl->descr->num_audio_ins == 1)
-    {
-      /* connect multi-output channel into mono by
-       * only connecting to the first input channel
-       * found */
-      for (i = 0; i < next_pl->num_in_ports; i++)
-        {
-          in_port = next_pl->in_ports[i];
-
-          if (in_port->type == TYPE_AUDIO)
-            {
-              for (j = 0;
-                   j < pl->num_out_ports; j++)
-                {
-                  out_port = pl->out_ports[j];
-
-                  if (out_port->type == TYPE_AUDIO)
-                    {
-                      port_connect (
-                        out_port,
-                        in_port);
-                      goto done4;
-                    }
-                }
-              break;
-            }
-        }
-done4:
-      ;
-    }
-  else if (pl->descr->num_audio_outs > 1 &&
-           next_pl->descr->num_audio_ins > 1)
-    {
-      /* connect to as many audio outs this
-       * plugin has, or until we can't connect
-       * anymore */
-      num_ports_to_connect =
-        MIN (pl->descr->num_audio_outs,
-             next_pl->descr->num_audio_ins);
-      last_index = 0;
-      int ports_connected = 0;
-      for (i = 0; i < pl->num_out_ports; i++)
-        {
-          out_port = pl->out_ports[i];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              for (;
-                   last_index <
-                     next_pl->num_in_ports;
-                   last_index++)
-                {
-                  in_port =
-                    next_pl->in_ports[last_index];
-                  if (in_port->type == TYPE_AUDIO)
-                    {
-                      port_connect (
-                        out_port,
-                        in_port);
-                      last_index++;
-                      ports_connected++;
-                      break;
-                    }
-                }
-              if (ports_connected ==
-                  num_ports_to_connect)
-                break;
-            }
-        }
-    }
-}
-
-/**
- * Disconnects a plugin that has at least one MIDI
- * input port.
+ * Disconnect src from dest.
+ *
+ * Used when about to insert a plugin in-between.
  */
 static inline void
-disconnect_midi_ins (
-  Channel * ch,
-  int       pos,
-  Plugin *  pl)
-{
-  int i;
-  Port * in_port;
-
-  /* Disconnect MIDI port and piano roll to the
-   * plugin */
-  for (i = 0; i < pl->num_in_ports; i++)
-    {
-      in_port = pl->in_ports[i];
-      if (in_port->type == TYPE_EVENT &&
-          in_port->flow == FLOW_INPUT)
-        {
-          if (ports_connected (
-                ch->midi_in, in_port))
-            port_disconnect (
-              ch->midi_in,
-              in_port);
-          if (ch->type == CT_MIDI &&
-              pos == 0)
-            {
-              if (ports_connected (
-                    ch->midi_in, in_port))
-                port_disconnect (
-                  ch->piano_roll,
-                  in_port);
-            }
-        }
-    }
-}
-
-/**
- * Disconnect ports in the case of !prev && !next.
- */
-static void
-disconnect_no_prev_no_next (
-  Channel * ch,
-  Plugin *  pl)
-{
-  int i;
-  Port * in_port, * out_port;
-
-  /* -------------------------------------------
-   * disconnect input ports
-   * ------------------------------------------- */
-
-  /* disconnect channel stereo in from plugin */
-  for (i = 0; i < pl->num_in_ports; i++)
-    {
-      in_port = pl->in_ports[i];
-
-      if (in_port->type != TYPE_AUDIO)
-        continue;
-
-      if (ports_connected (
-            ch->stereo_in->l,
-            in_port))
-        port_disconnect (
-          ch->stereo_in->l,
-          in_port);
-      if (ports_connected (
-            ch->stereo_in->r,
-            in_port))
-        port_disconnect (
-          ch->stereo_in->r,
-          in_port);
-    }
-
-  /* --------------------------------------
-   * disconnect output ports
-   * ------------------------------------*/
-
-  /* disconnect plugin from stereo out */
-  for (i = 0; i < pl->num_out_ports; i++)
-    {
-      out_port = pl->out_ports[i];
-
-      if (out_port->type != TYPE_AUDIO)
-        continue;
-
-      if (ports_connected (
-            out_port,
-            ch->stereo_out->l))
-        port_disconnect (
-          out_port,
-          ch->stereo_out->l);
-      if (ports_connected (
-            out_port,
-            ch->stereo_out->r))
-        port_disconnect (
-          out_port,
-          ch->stereo_out->r);
-    }
-
-  /* -----------------------------------------
-   * connect ports
-   * ----------------------------------------- */
-  /* channel stereo in should be connected to
-   * channel stereo out. connect it */
-  port_connect (
-    ch->stereo_in->l,
-    ch->stereo_out->l);
-  port_connect (
-    ch->stereo_in->r,
-    ch->stereo_out->r);
-}
-
-/**
- * Disconnect ports in the case of !prev && next.
- */
-static void
-disconnect_no_prev_next (
-  Channel * ch,
-  Plugin *  pl,
-  Plugin *  next_pl)
+disconnect_pl_from_pl (
+  Plugin * src,
+  Plugin * dest)
 {
   int i, j, last_index, num_ports_to_connect;
   Port * in_port, * out_port;
 
-  /* -------------------------------------------
-   * Disconnect input ports
-   * ------------------------------------------- */
-
-  /* disconnect channel stereo in from plugin */
-  for (i = 0; i < pl->num_in_ports; i++)
-    {
-      in_port = pl->in_ports[i];
-
-      if (in_port->type != TYPE_AUDIO)
-        continue;
-
-      if (ports_connected (
-            ch->stereo_in->l,
-            in_port))
-        port_disconnect (
-          ch->stereo_in->l,
-          in_port);
-      if (ports_connected (
-            ch->stereo_in->r,
-            in_port))
-        port_disconnect (
-          ch->stereo_in->r,
-          in_port);
-    }
-
-  /* --------------------------------------
-   * Disconnect output ports
-   * ------------------------------------*/
-
-  /* disconnect plugin's audio outs from next
-   * plugin */
-  if (pl->descr->num_audio_outs == 1 &&
-      next_pl->descr->num_audio_ins == 1)
+  if (src->descr->num_audio_outs == 1 &&
+      dest->descr->num_audio_ins == 1)
     {
       last_index = 0;
-      for (i = 0; i < pl->num_out_ports; i++)
+      for (i = 0; i < src->num_out_ports; i++)
         {
-          out_port = pl->out_ports[i];
+          out_port = src->out_ports[i];
 
           if (out_port->type == TYPE_AUDIO)
             {
               for (j = 0;
-                   j < next_pl->num_in_ports; j++)
+                   j < dest->num_in_ports; j++)
                 {
-                  in_port = next_pl->in_ports[j];
+                  in_port = dest->in_ports[j];
 
                   if (in_port->type == TYPE_AUDIO)
                     {
@@ -1149,23 +498,23 @@ disconnect_no_prev_next (
 done1:
       ;
     }
-  else if (pl->descr->num_audio_outs == 1 &&
-           next_pl->descr->num_audio_ins > 1)
+  else if (src->descr->num_audio_outs == 1 &&
+           dest->descr->num_audio_ins > 1)
     {
       /* plugin is mono and next plugin is
        * not mono, so disconnect the mono out from
        * each input */
-      for (i = 0; i < pl->num_out_ports; i++)
+      for (i = 0; i < src->num_out_ports; i++)
         {
-          out_port = pl->out_ports[i];
+          out_port = src->out_ports[i];
 
           if (out_port->type == TYPE_AUDIO)
             {
               for (j = 0;
-                   j < next_pl->num_in_ports;
+                   j < dest->num_in_ports;
                    j++)
                 {
-                  in_port = next_pl->in_ports[j];
+                  in_port = dest->in_ports[j];
 
                   if (in_port->type == TYPE_AUDIO)
                     {
@@ -1178,22 +527,22 @@ done1:
             }
         }
     }
-  else if (pl->descr->num_audio_outs > 1 &&
-           next_pl->descr->num_audio_ins == 1)
+  else if (src->descr->num_audio_outs > 1 &&
+           dest->descr->num_audio_ins == 1)
     {
       /* disconnect multi-output channel from mono
        * by disconnecting to the first input channel
        * found */
-      for (i = 0; i < next_pl->num_in_ports; i++)
+      for (i = 0; i < dest->num_in_ports; i++)
         {
-          in_port = next_pl->in_ports[i];
+          in_port = dest->in_ports[i];
 
           if (in_port->type == TYPE_AUDIO)
             {
               for (j = 0;
-                   j < pl->num_out_ports; j++)
+                   j < src->num_out_ports; j++)
                 {
-                  out_port = pl->out_ports[j];
+                  out_port = src->out_ports[j];
 
                   if (out_port->type == TYPE_AUDIO)
                     {
@@ -1209,30 +558,30 @@ done1:
 done2:
       ;
     }
-  else if (pl->descr->num_audio_outs > 1 &&
-           next_pl->descr->num_audio_ins > 1)
+  else if (src->descr->num_audio_outs > 1 &&
+           dest->descr->num_audio_ins > 1)
     {
       /* connect to as many audio outs this
        * plugin has, or until we can't connect
        * anymore */
       num_ports_to_connect =
-        MIN (pl->descr->num_audio_outs,
-             next_pl->descr->num_audio_ins);
+        MIN (src->descr->num_audio_outs,
+             dest->descr->num_audio_ins);
       last_index = 0;
       int ports_disconnected = 0;
-      for (i = 0; i < pl->num_out_ports; i++)
+      for (i = 0; i < src->num_out_ports; i++)
         {
-          out_port = pl->out_ports[i];
+          out_port = src->out_ports[i];
 
           if (out_port->type == TYPE_AUDIO)
             {
               for (;
                    last_index <
-                     next_pl->num_in_ports;
+                     dest->num_in_ports;
                    last_index++)
                 {
                   in_port =
-                    next_pl->in_ports[last_index];
+                    dest->in_ports[last_index];
                   if (in_port->type == TYPE_AUDIO)
                     {
                       port_disconnect (
@@ -1249,53 +598,226 @@ done2:
             }
         }
     }
+}
+
+/**
+ * Disconnects the Plugin's output ports from
+ * the Channel's stereo out.
+ */
+static inline void
+disconnect_pl_from_stereo_out (
+  Plugin * pl,
+  Channel * ch)
+{
+  int i;
+  Port * out_port;
+
+  for (i = 0; i < pl->num_out_ports; i++)
+    {
+      out_port = pl->out_ports[i];
+      if (out_port->type == TYPE_AUDIO)
+        {
+          if (ports_connected (
+                out_port, ch->stereo_out->l))
+            port_disconnect (
+              out_port, ch->stereo_out->l);
+          if (ports_connected (
+                out_port, ch->stereo_out->r))
+            port_disconnect (
+              out_port, ch->stereo_out->r);
+        }
+    }
+}
+
+/**
+ * Connect ports in the case of !prev && !next.
+ */
+static void
+connect_no_prev_no_next (
+  Channel * ch,
+  Plugin *  pl)
+{
+  /* -----------------------------------------
+   * disconnect ports
+   * ----------------------------------------- */
+  /* channel stereo in is connected to channel
+   * stereo out. disconnect it */
+  disconnect_stereo_in_from_stereo_out (ch);
+
+  /* -------------------------------------------
+   * connect input ports
+   * ------------------------------------------- */
+
+  /* connect channel stereo in to plugin */
+  connect_ch_stereo_in_to_plugin (ch, pl);
+
+  /* --------------------------------------
+   * connect output ports
+   * ------------------------------------*/
+
+  /* connect plugin to stereo out */
+  connect_pl_to_stereo_out (pl, ch);
+}
+
+/**
+ * Connect ports in the case of !prev && next.
+ */
+static void
+connect_no_prev_next (
+  Channel * ch,
+  Plugin *  pl,
+  Plugin *  next_pl)
+{
+  /* -----------------------------------------
+   * disconnect ports
+   * ----------------------------------------- */
+  /* channel stereo in is connected to next plugin.
+   * disconnect it */
+  disconnect_ch_stereo_in_from_pl (ch, next_pl);
+
+  /* -------------------------------------------
+   * connect input ports
+   * ------------------------------------------- */
+
+  /* connect channel stereo in to plugin */
+  connect_ch_stereo_in_to_plugin (ch, pl);
+
+  /* --------------------------------------
+   * connect output ports
+   * ------------------------------------*/
+
+  /* connect plugin's audio outs to next
+   * plugin */
+  connect_from_pl_to_pl (pl, next_pl);
+}
+
+/**
+ * Connect ports in the case of prev && !next.
+ */
+static void
+connect_prev_no_next (
+  Channel * ch,
+  Plugin *  prev_pl,
+  Plugin *  pl)
+{
+  /* -----------------------------------------
+   * disconnect ports
+   * ----------------------------------------- */
+  /* prev plugin is connected to channel stereo out.
+   * disconnect it */
+  disconnect_pl_from_stereo_out (prev_pl, ch);
+
+  /* -------------------------------------------
+   * connect input ports
+   * ------------------------------------------- */
+
+  /* connect previous plugin's audio outs to
+   * plugin */
+  connect_from_pl_to_pl (prev_pl, pl);
+
+  /* --------------------------------------
+   * connect output ports
+   * ------------------------------------*/
+
+  /* connect plugin output ports to stereo_out */
+  connect_pl_to_stereo_out (pl, ch);
+}
+
+/**
+ * Connect ports in the case of prev && next.
+ */
+static void
+connect_prev_next (
+  Channel * ch,
+  Plugin *  prev_pl,
+  Plugin *  pl,
+  Plugin *  next_pl)
+{
+  /* -----------------------------------------
+   * disconnect ports
+   * ----------------------------------------- */
+  /* prev plugin is connected to the next pl.
+   * disconnect them */
+  disconnect_pl_from_pl (prev_pl, next_pl);
+
+  /* -------------------------------------------
+   * connect input ports
+   * ------------------------------------------- */
+
+  /* connect previous plugin's audio outs to
+   * plugin */
+  connect_from_pl_to_pl (prev_pl, pl);
+
+  /* ------------------------------------------
+   * Connect output ports
+   * ------------------------------------------ */
+
+  /* connect plugin's audio outs to next
+   * plugin */
+  connect_from_pl_to_pl (pl, next_pl);
+}
+
+/**
+ * Disconnect ports in the case of !prev && !next.
+ */
+static void
+disconnect_no_prev_no_next (
+  Channel * ch,
+  Plugin *  pl)
+{
+  /* -------------------------------------------
+   * disconnect input ports
+   * ------------------------------------------- */
+
+  /* disconnect channel stereo in from plugin */
+  disconnect_ch_stereo_in_from_pl (ch, pl);
+
+  /* --------------------------------------
+   * disconnect output ports
+   * ------------------------------------*/
+
+  /* disconnect plugin from stereo out */
+  disconnect_pl_from_stereo_out (pl, ch);
+
+  /* -----------------------------------------
+   * connect ports
+   * ----------------------------------------- */
+  /* channel stereo in should be connected to
+   * channel stereo out. connect it */
+  connect_stereo_in_to_stereo_out (ch);
+}
+
+/**
+ * Disconnect ports in the case of !prev && next.
+ */
+static void
+disconnect_no_prev_next (
+  Channel * ch,
+  Plugin *  pl,
+  Plugin *  next_pl)
+{
+  /* -------------------------------------------
+   * Disconnect input ports
+   * ------------------------------------------- */
+
+  /* disconnect channel stereo in from plugin */
+  disconnect_ch_stereo_in_from_pl (ch, pl);
+
+  /* --------------------------------------
+   * Disconnect output ports
+   * ------------------------------------*/
+
+  /* disconnect plugin's audio outs from next
+   * plugin */
+  disconnect_pl_from_pl (pl, next_pl);
 
   /* -----------------------------------------
    * connect ports
    * ----------------------------------------- */
   /* channel stereo in should be connected to next
    * plugin. connect it */
-  num_ports_to_connect = 0;
-  if (next_pl->descr->num_audio_ins == 1)
-    {
-      num_ports_to_connect = 1;
-    }
-  else if (next_pl->descr->num_audio_ins > 1)
-    {
-      num_ports_to_connect = 2;
-    }
-
-  last_index = 0;
-  for (i = 0; i < num_ports_to_connect; i++)
-    {
-      for (;
-           last_index < next_pl->num_in_ports;
-           last_index++)
-        {
-          in_port =
-            next_pl->in_ports[
-              last_index];
-          if (in_port->type == TYPE_AUDIO)
-            {
-              if (i == 0)
-                {
-                  port_connect (
-                    ch->stereo_in->l,
-                    in_port);
-                  last_index++;
-                  break;
-                }
-              else if (i == 1)
-                {
-                  port_connect (
-                    ch->stereo_in->r,
-                    in_port);
-                  last_index++;
-                  break;
-                }
-            }
-        }
-    }
+  connect_ch_stereo_in_to_plugin (
+    ch, next_pl);
 }
 
 /**
@@ -1307,142 +829,13 @@ disconnect_prev_no_next (
   Plugin *  prev_pl,
   Plugin *  pl)
 {
-  int i, j, last_index, num_ports_to_connect;
-  Port * in_port, * out_port;
-
-
   /* -------------------------------------------
    * disconnect input ports
    * ------------------------------------------- */
 
   /* disconnect previous plugin's audio outs from
    * plugin */
-  if (prev_pl->descr->num_audio_outs == 1 &&
-      pl->descr->num_audio_ins == 1)
-    {
-      last_index = 0;
-      for (i = 0; i < prev_pl->num_out_ports; i++)
-        {
-          out_port = prev_pl->out_ports[i];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              for (j = 0; j < pl->num_in_ports; j++)
-                {
-                  in_port = pl->in_ports[j];
-
-                  if (in_port->type == TYPE_AUDIO)
-                    {
-                      port_disconnect (
-                        out_port,
-                        in_port);
-                      goto done1;
-                    }
-                }
-            }
-        }
-done1:
-      ;
-    }
-  else if (prev_pl->descr->num_audio_outs == 1 &&
-           pl->descr->num_audio_ins > 1)
-    {
-      /* prev plugin is mono and this plugin is
-       * not mono, so disconnect the mono out from
-       * each input */
-      for (i = 0; i < prev_pl->num_out_ports; i++)
-        {
-          out_port = prev_pl->out_ports[i];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              for (j = 0; j < pl->num_in_ports;
-                   j++)
-                {
-                  in_port = pl->in_ports[j];
-
-                  if (in_port->type == TYPE_AUDIO)
-                    {
-                      port_disconnect (
-                        out_port,
-                        in_port);
-                    }
-                }
-              break;
-            }
-        }
-    }
-  else if (prev_pl->descr->num_audio_outs > 1 &&
-           pl->descr->num_audio_ins == 1)
-    {
-      /* disconnect multi-output channel into mono
-       * by disconnecting from the first input
-       * channel found */
-      for (i = 0; i < pl->num_in_ports; i++)
-        {
-          in_port = pl->in_ports[i];
-
-          if (in_port->type == TYPE_AUDIO)
-            {
-              for (j = 0;
-                   j < prev_pl->num_out_ports; j++)
-                {
-                  out_port = prev_pl->out_ports[j];
-
-                  if (out_port->type == TYPE_AUDIO)
-                    {
-                      port_disconnect (
-                        out_port,
-                        in_port);
-                      goto done2;
-                    }
-                }
-              break;
-            }
-        }
-done2:
-      ;
-    }
-  else if (prev_pl->descr->num_audio_outs > 1 &&
-           pl->descr->num_audio_ins > 1)
-    {
-      /* disconnect to as many audio outs the prev
-       * plugin has, or until we can't disconnect
-       * anymore */
-      num_ports_to_connect =
-        MIN (prev_pl->descr->num_audio_outs,
-             pl->descr->num_audio_ins);
-      last_index = 0;
-      int ports_connected = 0;
-      for (i = 0; i < prev_pl->num_out_ports; i++)
-        {
-          out_port = prev_pl->out_ports[i];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              for (;
-                   last_index < pl->num_in_ports;
-                   last_index++)
-                {
-                  in_port =
-                    pl->in_ports[last_index];
-                  if (in_port->type == TYPE_AUDIO)
-                    {
-                      port_disconnect (
-                        out_port,
-                        in_port);
-                      last_index++;
-                      ports_connected++;
-                      break;
-                    }
-                }
-              if (ports_connected ==
-                  num_ports_to_connect)
-                break;
-            }
-        }
-    }
-
+  disconnect_pl_from_pl (prev_pl, pl);
 
   /* --------------------------------------
    * Disconnect output ports
@@ -1450,79 +843,14 @@ done2:
 
   /* disconnect plugin output ports from stereo
    * out */
-  for (i = 0; i < pl->num_out_ports; i++)
-    {
-      out_port = pl->out_ports[i];
-
-      if (out_port->type == TYPE_AUDIO)
-        {
-          if (ports_connected (
-            out_port,
-            ch->stereo_out->l))
-            port_disconnect (
-              out_port,
-              ch->stereo_out->l);
-          if (ports_connected (
-            out_port,
-            ch->stereo_out->r))
-            port_disconnect (
-              out_port,
-              ch->stereo_out->r);
-        }
-    }
+  disconnect_pl_from_stereo_out (pl, ch);
 
   /* -----------------------------------------
    * connect ports
    * ----------------------------------------- */
   /* prev plugin should be connected to channel
    * stereo out. connect it */
-  if (prev_pl->descr->num_audio_outs == 1)
-    {
-      /* if mono find the audio out and connect to
-       * both stereo out L and R */
-      for (i = 0; i < prev_pl->num_out_ports; i++)
-        {
-          out_port = prev_pl->out_ports[i];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              port_connect (
-                out_port,
-                ch->stereo_out->l);
-              port_connect (
-                out_port,
-                ch->stereo_out->r);
-              break;
-            }
-        }
-    }
-  else if (prev_pl->descr->num_audio_outs > 1)
-    {
-      last_index = 0;
-
-      for (i = 0; i < prev_pl->num_out_ports; i++)
-        {
-          out_port = prev_pl->out_ports[i];
-
-          if (out_port->type != TYPE_AUDIO)
-            continue;
-
-          if (last_index == 0)
-            {
-              port_connect (
-                out_port,
-                ch->stereo_out->l);
-              last_index++;
-            }
-          else if (last_index == 1)
-            {
-              port_connect (
-                out_port,
-                ch->stereo_out->r);
-              break;
-            }
-        }
-    }
+  connect_pl_to_stereo_out (prev_pl, ch);
 }
 
 /**
@@ -1535,140 +863,13 @@ disconnect_prev_next (
   Plugin *  pl,
   Plugin *  next_pl)
 {
-  int i, j, last_index, num_ports_to_connect;
-  Port * in_port, * out_port;
-
   /* -------------------------------------------
    * disconnect input ports
    * ------------------------------------------- */
 
   /* disconnect previous plugin's audio outs from
    * plugin */
-  if (prev_pl->descr->num_audio_outs == 1 &&
-      pl->descr->num_audio_ins == 1)
-    {
-      last_index = 0;
-      for (i = 0; i < prev_pl->num_out_ports; i++)
-        {
-          out_port = prev_pl->out_ports[i];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              for (j = 0; j < pl->num_in_ports; j++)
-                {
-                  in_port = pl->in_ports[j];
-
-                  if (in_port->type == TYPE_AUDIO)
-                    {
-                      port_disconnect (
-                        out_port,
-                        in_port);
-                      goto done1;
-                    }
-                }
-            }
-        }
-done1:
-      ;
-    }
-  else if (prev_pl->descr->num_audio_outs == 1 &&
-           pl->descr->num_audio_ins > 1)
-    {
-      /* prev plugin is mono and this plugin is
-       * not mono, so connect the mono out to
-       * each input */
-      for (i = 0; i < prev_pl->num_out_ports; i++)
-        {
-          out_port = prev_pl->out_ports[i];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              for (j = 0; j < pl->num_in_ports;
-                   j++)
-                {
-                  in_port = pl->in_ports[j];
-
-                  if (in_port->type == TYPE_AUDIO)
-                    {
-                      port_disconnect (
-                        out_port,
-                        in_port);
-                    }
-                }
-              break;
-            }
-        }
-    }
-  else if (prev_pl->descr->num_audio_outs > 1 &&
-           pl->descr->num_audio_ins == 1)
-    {
-      /* connect multi-output channel into mono by
-       * only connecting to the first input channel
-       * found */
-      for (i = 0; i < pl->num_in_ports; i++)
-        {
-          in_port = pl->in_ports[i];
-
-          if (in_port->type == TYPE_AUDIO)
-            {
-              for (j = 0;
-                   j < prev_pl->num_out_ports; j++)
-                {
-                  out_port = prev_pl->out_ports[j];
-
-                  if (out_port->type == TYPE_AUDIO)
-                    {
-                      port_disconnect (
-                        out_port,
-                        in_port);
-                      goto done2;
-                    }
-                }
-              break;
-            }
-        }
-done2:
-      ;
-    }
-  else if (prev_pl->descr->num_audio_outs > 1 &&
-           pl->descr->num_audio_ins > 1)
-    {
-      /* connect to as many audio outs the prev
-       * plugin has, or until we can't connect
-       * anymore */
-      num_ports_to_connect =
-        MIN (prev_pl->descr->num_audio_outs,
-             pl->descr->num_audio_ins);
-      last_index = 0;
-      int ports_connected = 0;
-      for (i = 0; i < prev_pl->num_out_ports; i++)
-        {
-          out_port = prev_pl->out_ports[i];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              for (;
-                   last_index < pl->num_in_ports;
-                   last_index++)
-                {
-                  in_port =
-                    pl->in_ports[last_index];
-                  if (in_port->type == TYPE_AUDIO)
-                    {
-                      port_disconnect (
-                        out_port,
-                        in_port);
-                      last_index++;
-                      ports_connected++;
-                      break;
-                    }
-                }
-              if (ports_connected ==
-                  num_ports_to_connect)
-                break;
-            }
-        }
-    }
+  disconnect_pl_from_pl (prev_pl, pl);
 
   /* ------------------------------------------
    * Disconnect output ports
@@ -1676,268 +877,14 @@ done2:
 
   /* disconnect plugin's audio outs from next
    * plugin */
-  if (pl->descr->num_audio_outs == 1 &&
-      next_pl->descr->num_audio_ins == 1)
-    {
-      last_index = 0;
-      for (i = 0; i < pl->num_out_ports; i++)
-        {
-          out_port = pl->out_ports[i];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              for (j = 0;
-                   j < next_pl->num_in_ports; j++)
-                {
-                  in_port = next_pl->in_ports[j];
-
-                  if (in_port->type == TYPE_AUDIO)
-                    {
-                      port_disconnect (
-                        out_port,
-                        in_port);
-                      goto done3;
-                    }
-                }
-            }
-        }
-done3:
-      ;
-    }
-  else if (pl->descr->num_audio_outs == 1 &&
-           next_pl->descr->num_audio_ins > 1)
-    {
-      /* plugin is mono and next plugin is
-       * not mono, so connect the mono out to
-       * each input */
-      for (i = 0; i < pl->num_out_ports; i++)
-        {
-          out_port = pl->out_ports[i];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              for (j = 0;
-                   j < next_pl->num_in_ports;
-                   j++)
-                {
-                  in_port = next_pl->in_ports[j];
-
-                  if (in_port->type == TYPE_AUDIO)
-                    {
-                      port_disconnect (
-                        out_port,
-                        in_port);
-                    }
-                }
-              break;
-            }
-        }
-    }
-  else if (pl->descr->num_audio_outs > 1 &&
-           next_pl->descr->num_audio_ins == 1)
-    {
-      /* connect multi-output channel into mono by
-       * only connecting to the first input channel
-       * found */
-      for (i = 0; i < next_pl->num_in_ports; i++)
-        {
-          in_port = next_pl->in_ports[i];
-
-          if (in_port->type == TYPE_AUDIO)
-            {
-              for (j = 0;
-                   j < pl->num_out_ports; j++)
-                {
-                  out_port = pl->out_ports[j];
-
-                  if (out_port->type == TYPE_AUDIO)
-                    {
-                      port_disconnect (
-                        out_port,
-                        in_port);
-                      goto done4;
-                    }
-                }
-              break;
-            }
-        }
-done4:
-      ;
-    }
-  else if (pl->descr->num_audio_outs > 1 &&
-           next_pl->descr->num_audio_ins > 1)
-    {
-      /* connect to as many audio outs this
-       * plugin has, or until we can't connect
-       * anymore */
-      num_ports_to_connect =
-        MIN (pl->descr->num_audio_outs,
-             next_pl->descr->num_audio_ins);
-      last_index = 0;
-      int ports_connected = 0;
-      for (i = 0; i < pl->num_out_ports; i++)
-        {
-          out_port = pl->out_ports[i];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              for (;
-                   last_index <
-                     next_pl->num_in_ports;
-                   last_index++)
-                {
-                  in_port =
-                    next_pl->in_ports[last_index];
-                  if (in_port->type == TYPE_AUDIO)
-                    {
-                      port_disconnect (
-                        out_port,
-                        in_port);
-                      last_index++;
-                      ports_connected++;
-                      break;
-                    }
-                }
-              if (ports_connected ==
-                  num_ports_to_connect)
-                break;
-            }
-        }
-    }
+  disconnect_pl_from_pl (pl, next_pl);
 
   /* -----------------------------------------
    * connect ports
    * ----------------------------------------- */
   /* prev plugin should be connected to the next pl.
    * connect them */
-  if (pl->descr->num_audio_outs == 1 &&
-      next_pl->descr->num_audio_ins == 1)
-    {
-      last_index = 0;
-      for (i = 0; i < pl->num_out_ports; i++)
-        {
-          out_port = pl->out_ports[i];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              for (j = 0;
-                   j < next_pl->num_in_ports; j++)
-                {
-                  in_port = next_pl->in_ports[j];
-
-                  if (in_port->type == TYPE_AUDIO)
-                    {
-                      port_connect (
-                        out_port,
-                        in_port);
-                      goto done5;
-                    }
-                }
-            }
-        }
-done5:
-      ;
-    }
-  else if (pl->descr->num_audio_outs == 1 &&
-           next_pl->descr->num_audio_ins > 1)
-    {
-      /* plugin is mono and next plugin is
-       * not mono, so connect the mono out to
-       * each input */
-      for (i = 0; i < pl->num_out_ports; i++)
-        {
-          out_port = pl->out_ports[i];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              for (j = 0;
-                   j < next_pl->num_in_ports;
-                   j++)
-                {
-                  in_port = next_pl->in_ports[j];
-
-                  if (in_port->type == TYPE_AUDIO)
-                    {
-                      port_connect (
-                        out_port,
-                        in_port);
-                    }
-                }
-              break;
-            }
-        }
-    }
-  else if (pl->descr->num_audio_outs > 1 &&
-           next_pl->descr->num_audio_ins == 1)
-    {
-      /* connect multi-output channel into mono by
-       * only connecting to the first input channel
-       * found */
-      for (i = 0; i < next_pl->num_in_ports; i++)
-        {
-          in_port = next_pl->in_ports[i];
-
-          if (in_port->type == TYPE_AUDIO)
-            {
-              for (j = 0;
-                   j < pl->num_out_ports; j++)
-                {
-                  out_port = pl->out_ports[j];
-
-                  if (out_port->type == TYPE_AUDIO)
-                    {
-                      port_connect (
-                        out_port,
-                        in_port);
-                      goto done6;
-                    }
-                }
-              break;
-            }
-        }
-done6:
-      ;
-    }
-  else if (pl->descr->num_audio_outs > 1 &&
-           next_pl->descr->num_audio_ins > 1)
-    {
-      /* connect to as many audio outs this
-       * plugin has, or until we can't connect
-       * anymore */
-      num_ports_to_connect =
-        MIN (pl->descr->num_audio_outs,
-             next_pl->descr->num_audio_ins);
-      last_index = 0;
-      int ports_connected = 0;
-      for (i = 0; i < pl->num_out_ports; i++)
-        {
-          out_port = pl->out_ports[i];
-
-          if (out_port->type == TYPE_AUDIO)
-            {
-              for (;
-                   last_index <
-                     next_pl->num_in_ports;
-                   last_index++)
-                {
-                  in_port =
-                    next_pl->in_ports[last_index];
-                  if (in_port->type == TYPE_AUDIO)
-                    {
-                      port_connect (
-                        out_port,
-                        in_port);
-                      last_index++;
-                      ports_connected++;
-                      break;
-                    }
-                }
-              if (ports_connected ==
-                  num_ports_to_connect)
-                break;
-            }
-        }
-    }
+  connect_from_pl_to_pl (prev_pl, next_pl);
 }
 
 /**
@@ -2405,6 +1352,39 @@ channel_connect (
       port_connect (ch->stereo_out->r,
                     MIXER->master->stereo_in->r);
     }
+}
+
+/**
+ * Updates the output of the Channel (where the
+ * Channel routes to.
+ */
+void
+channel_update_output (
+  Channel * ch,
+  Channel * output)
+{
+  /* disconnect Channel's output from the current
+   * output channel */
+  port_disconnect (ch->stereo_out->l,
+                   ch->output->stereo_in->l);
+  port_disconnect (ch->stereo_out->r,
+                   ch->output->stereo_in->r);
+
+  /* connect Channel's output to the given output
+   */
+  port_connect (ch->stereo_out->l,
+                output->stereo_in->l);
+  port_connect (ch->stereo_out->r,
+                output->stereo_in->r);
+
+  ch->output = output;
+  g_message ("setting output %s",
+             output->track->name);
+
+  mixer_recalc_graph (MIXER);
+
+  EVENTS_PUSH (ET_CHANNEL_OUTPUT_CHANGED,
+               ch);
 }
 
 /**

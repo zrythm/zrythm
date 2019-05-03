@@ -278,6 +278,12 @@ activate_create_bus_track (GSimpleAction *action,
                   gpointer       user_data);
 
 void
+activate_create_group_track (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data);
+
+void
 activate_duplicate_selected_tracks (
   GSimpleAction *action,
   GVariant      *variant,

@@ -457,7 +457,6 @@ multipress_pressed (
         TRACKLIST_SELECTIONS,
         self->channel->track);
     }
-  return FALSE;
 }
 
 static void

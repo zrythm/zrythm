@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-03 16:12+0100\n"
+"POT-Creation-Date: 2019-05-03 19:10+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrytm dot org>\n"
 "Language-Team: Japanese\n"
@@ -70,7 +70,7 @@ msgstr "Zrythmについて"
 msgid "Adaptive Grid"
 msgstr ""
 
-#: src/gui/widgets/track.c:480
+#: src/gui/widgets/track.c:491
 msgid "Add Region"
 msgstr "リージョン追加"
 
@@ -82,7 +82,7 @@ msgstr "毎回プラグイン画面を開く"
 msgid "Artist"
 msgstr "作者"
 
-#: src/audio/track.c:732
+#: src/audio/track.c:736
 #, fuzzy
 msgid "Audio"
 msgstr "オーディオトラック"
@@ -138,7 +138,7 @@ msgstr ""
 msgid "Bottom Panel"
 msgstr ""
 
-#: src/audio/track.c:735
+#: src/audio/track.c:739
 msgid "Bus"
 msgstr ""
 
@@ -163,7 +163,7 @@ msgstr ""
 msgid "Change Pan"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:593
+#: src/gui/widgets/channel_slot.c:592
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -178,7 +178,7 @@ msgstr "チャット"
 msgid "Choose a method to donate"
 msgstr "寄付する方法を選択してください"
 
-#: src/audio/track.c:741
+#: src/audio/track.c:745
 #, fuzzy
 msgid "Chord"
 msgstr "コード"
@@ -447,7 +447,7 @@ msgstr "フォーラム"
 msgid "Forward"
 msgstr ""
 
-#: src/gui/widgets/track.c:139 src/gui/widgets/track.c:143
+#: src/gui/widgets/track.c:142 src/gui/widgets/track.c:146
 msgid "Freeze"
 msgstr "フリーズ"
 
@@ -479,6 +479,10 @@ msgstr "一般なショートカット"
 msgid "Grid"
 msgstr "グリッド"
 
+#: src/audio/track.c:748
+msgid "Group"
+msgstr ""
+
 #: src/zrythm.c:242
 msgid "Initializing audio engine"
 msgstr ""
@@ -495,7 +499,7 @@ msgstr ""
 msgid "Initializing..."
 msgstr ""
 
-#: src/audio/track.c:729
+#: src/audio/track.c:733
 msgid "Instrument"
 msgstr ""
 
@@ -562,7 +566,7 @@ msgstr "プロジェクトをロード中"
 msgid "Location"
 msgstr "パス"
 
-#: src/gui/widgets/track.c:140
+#: src/gui/widgets/track.c:143
 msgid "Lock"
 msgstr "ロック"
 
@@ -604,9 +608,7 @@ msgstr "メイン画面"
 msgid "Manual"
 msgstr "マニュアル"
 
-#: src/project.c:163 src/gui/widgets/channel.c:262
-#: src/gui/widgets/channel.c:271 src/audio/track.c:738
-#: resources/ui/channel.ui:341
+#: src/project.c:163 src/audio/track.c:742
 msgid "Master"
 msgstr "マスター"
 
@@ -643,7 +645,7 @@ msgstr ""
 msgid "Move Track"
 msgstr "オーディオトラック"
 
-#: src/gui/widgets/track.c:138
+#: src/gui/widgets/track.c:141
 msgid "Mute"
 msgstr "ミュート"
 
@@ -672,6 +674,11 @@ msgstr ""
 
 #: resources/ui/inspector.ui:72
 msgid "No item selected"
+msgstr "オブジェクトが選択されていません"
+
+#: src/gui/widgets/route_target_selector_popover.c:195
+#, fuzzy
+msgid "No output selected"
 msgstr "オブジェクトが選択されていません"
 
 #: resources/ui/quantize_mb_popover.ui:87
@@ -857,7 +864,7 @@ msgstr "ランプツール"
 msgid "Read automation"
 msgstr ""
 
-#: src/gui/widgets/track.c:136 resources/ui/transport_controls.ui:36
+#: src/gui/widgets/track.c:139 resources/ui/transport_controls.ui:36
 msgid "Record"
 msgstr "りコード"
 
@@ -953,6 +960,10 @@ msgstr "フォルダーを選択してください"
 msgid "Select all"
 msgstr "全部選択"
 
+#: src/gui/widgets/route_target_selector.c:105
+msgid "Select channel to route signal to"
+msgstr ""
+
 #: resources/ui/first_run_assistant.ui:160
 msgid "Select the audio and MIDI engine backends to use"
 msgstr ""
@@ -983,11 +994,11 @@ msgstr ""
 msgid "Setup Zrythm"
 msgstr "Zrythmを設定しています"
 
-#: src/gui/widgets/track.c:142
+#: src/gui/widgets/track.c:145
 msgid "Show Automation Lanes"
 msgstr ""
 
-#: src/gui/widgets/track.c:141
+#: src/gui/widgets/track.c:144
 msgid "Show UI"
 msgstr "画面を開く"
 
@@ -1015,7 +1026,7 @@ msgstr ""
 msgid "Snaps to grid and keeps offset"
 msgstr ""
 
-#: src/gui/widgets/track.c:137
+#: src/gui/widgets/track.c:140
 msgid "Solo"
 msgstr "ソロ"
 
@@ -1043,10 +1054,6 @@ msgstr ""
 #: src/gui/widgets/header_bar.c:311
 msgid "Status Bar"
 msgstr "ステータス・バー"
-
-#: src/gui/widgets/channel.c:266
-msgid "Stereo out"
-msgstr ""
 
 #: resources/ui/transport_controls.ui:69
 msgid "Stop"
@@ -1124,7 +1131,7 @@ msgstr "ツール"
 msgid "Track"
 msgstr "トラック"
 
-#: src/gui/widgets/track.c:149
+#: src/gui/widgets/track.c:152
 msgid ""
 "Track - Change track parameters like Solo/Mute... - Click the icon on the "
 "bottom right to bring up the automation lanes - Double click to show "
@@ -1250,21 +1257,21 @@ msgstr ""
 msgid "_Cancel"
 msgstr "キャンセル(_C)"
 
-#: src/gui/widgets/track.c:441
+#: src/gui/widgets/track.c:452
 #, c-format
 msgid "_Delete %d Tracks"
 msgstr "%dトラックを削除する(_D)"
 
-#: src/gui/widgets/track.c:438
+#: src/gui/widgets/track.c:449
 msgid "_Delete Track"
 msgstr "トラックを削除する(_D)"
 
-#: src/gui/widgets/track.c:461
+#: src/gui/widgets/track.c:472
 #, c-format
 msgid "_Duplicate %d Tracks"
 msgstr "%dトラックを複製する(_D)"
 
-#: src/gui/widgets/track.c:457
+#: src/gui/widgets/track.c:468
 msgid "_Duplicate Track"
 msgstr "トラックを複製する(_D)"
 
@@ -1343,6 +1350,7 @@ msgid "in"
 msgstr ""
 
 #: resources/ui/track.ui:59 resources/ui/automatable_selector.ui:84
+#: resources/ui/route_target_selector.ui:85
 msgid "label"
 msgstr ""
 

@@ -1,7 +1,5 @@
 /*
- * audio/master_track.h - master track
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,10 +17,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __AUDIO_MASTER_TRACK_H__
-#define __AUDIO_MASTER_TRACK_H__
+#ifndef __AUDIO_GROUP_TRACK_H__
+#define __AUDIO_GROUP_TRACK_H__
 
-#include "audio/bus_track.h"
+#include "audio/channel_track.h"
 #include "audio/track.h"
 
 typedef struct Position Position;
@@ -31,13 +29,11 @@ typedef struct Channel Channel;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct Automatable Automatable;
 
-typedef struct Track MasterTrack;
+void
+group_track_init (Track * track);
 
 void
-master_track_init (Track * track);
-
-void
-master_track_setup (Track * self);
+group_track_setup (Track * self);
 
 /**
  * Frees the track.
@@ -45,6 +41,6 @@ master_track_setup (Track * self);
  * TODO
  */
 void
-master_track_free (Track * track);
+group_track_free (Track * track);
 
-#endif // __AUDIO_MASTER_TRACK_H__
+#endif // __AUDIO_BUS_TRACK_H__

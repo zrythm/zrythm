@@ -50,6 +50,7 @@
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/mixer.h"
+#include "gui/widgets/route_target_selector.h"
 #include "gui/widgets/ruler_marker.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_minimap.h"
@@ -146,6 +147,17 @@ on_playhead_changed ()
     }
   /*aa = 1;*/
   return FALSE;
+}
+
+static void
+on_channel_output_changed (
+  Channel * ch)
+{
+  if (ch->widget)
+    {
+      route_target_selector_widget_refresh (
+        ch->widget->output);
+    }
 }
 
 static void
@@ -862,6 +874,10 @@ events_process (void * data)
           break;
         case ET_MIXER_SELECTIONS_CHANGED:
           on_mixer_selections_changed ();
+          break;
+        case ET_CHANNEL_OUTPUT_CHANGED:
+          on_channel_output_changed (
+            (Channel *)ev->arg);
           break;
         default:
           g_message ("event not implemented yet");

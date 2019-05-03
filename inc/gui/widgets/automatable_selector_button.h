@@ -30,6 +30,12 @@ G_DECLARE_FINAL_TYPE (
   Z, AUTOMATABLE_SELECTOR_BUTTON_WIDGET,
   GtkMenuButton)
 
+/**
+ * @addtogroup Widgets
+ *
+ * @{
+ */
+
 typedef struct _AutomatableSelectorPopoverWidget AutomatableSelectorPopoverWidget;
 typedef struct Automatable Automatable;
 typedef struct _AutomationLaneWidget
@@ -54,5 +60,9 @@ automatable_selector_button_widget_setup (
 void
 automatable_selector_button_widget_refresh (
   AutomatableSelectorButtonWidget * self);
+
+/**
+ * @}
+ */
 
 #endif

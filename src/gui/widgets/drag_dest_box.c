@@ -318,6 +318,17 @@ show_context_menu (DragDestBoxWidget * self)
   gtk_menu_shell_append (GTK_MENU_SHELL(menu),
                          GTK_WIDGET (menu_item));
 
+  menu_item =
+    z_gtk_create_menu_item (
+      "Add _Group Track",
+      NULL,
+      ICON_TYPE_GNOME_BUILDER,
+      NULL,
+      0,
+      "win.create-group-track");
+  gtk_menu_shell_append (GTK_MENU_SHELL(menu),
+                         GTK_WIDGET (menu_item));
+
   gtk_widget_show_all(menu);
   gtk_menu_attach_to_widget (GTK_MENU (menu),
                              GTK_WIDGET (self),

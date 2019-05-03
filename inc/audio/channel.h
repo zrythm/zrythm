@@ -363,6 +363,15 @@ channel_add_plugin (
   int       recalc_graph);
 
 /**
+ * Updates the output of the Channel (where the
+ * Channel routes to.
+ */
+void
+channel_update_output (
+  Channel * ch,
+  Channel * output);
+
+/**
  * Returns the index of the last active slot.
  */
 int

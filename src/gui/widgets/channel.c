@@ -31,6 +31,7 @@
 #include "gui/widgets/fader.h"
 #include "gui/widgets/knob.h"
 #include "gui/widgets/pan.h"
+#include "gui/widgets/route_target_selector.h"
 #include "actions/edit_tracks_action.h"
 #include "actions/undo_manager.h"
 #include "actions/undoable_action.h"
@@ -255,28 +256,8 @@ setup_channel_icon (ChannelWidget * self)
 static void
 refresh_output (ChannelWidget * self)
 {
-  switch (self->channel->type)
-    {
-    case CT_MIDI:
-      gtk_label_set_text (self->output,
-                          _("Master"));
-      break;
-    case CT_MASTER:
-      gtk_label_set_text (self->output,
-                          _("Stereo out"));
-      break;
-    case CT_AUDIO:
-    case CT_BUS:
-      gtk_label_set_text (self->output,
-                          _("Master"));
-      break;
-    }
-  if (self->channel->output)
-    {
-      gtk_label_set_text (
-        self->output,
-        self->channel->output->track->name);
-    }
+  route_target_selector_widget_refresh (
+    self->output);
 }
 
 static void
@@ -409,6 +390,8 @@ channel_widget_new (Channel * channel)
   setup_meter (self);
   setup_pan (self);
   setup_channel_icon (self);
+  route_target_selector_widget_setup (
+    self->output, self);
   channel_widget_refresh (self);
 
   gtk_widget_add_tick_callback (
@@ -512,10 +495,6 @@ channel_widget_class_init (ChannelWidgetClass * _klass)
     klass,
     ChannelWidget,
     pan_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ChannelWidget,
-    output_img);
 }
 
 static void
