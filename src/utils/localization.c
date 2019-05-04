@@ -72,6 +72,18 @@ localization_get_string_code (
       str[0] = 'j';
       str[1] = 'a';
       break;
+    case UI_PORTUGUESE:
+      str[0] = 'p';
+      str[1] = 't';
+      break;
+    case UI_RUSSIAN:
+      str[0] = 'r';
+      str[1] = 'u';
+      break;
+    case UI_CHINESE:
+      str[0] = 'z';
+      str[1] = 'h';
+      break;
     default:
       g_warn_if_reached ();
       break;
@@ -124,49 +136,33 @@ localization_init ()
       "language");
   g_object_unref (G_OBJECT (prefs));
 
+#define IS_MATCH(caps,code) \
+  case UI_##caps: \
+    match = string_array_contains_substr ( \
+          installed_locales, \
+          num_installed_locales, \
+          "code##_"); \
+    break;
+
+
   char * match = NULL;
   switch (lang)
     {
-    case UI_ENGLISH:
-      match = string_array_contains_substr (
-            installed_locales,
-            num_installed_locales,
-            "en_");
-      break;
-    case UI_GERMAN:
-      match = string_array_contains_substr (
-            installed_locales,
-            num_installed_locales,
-            "de_");
-      break;
-    case UI_FRENCH:
-      match = string_array_contains_substr (
-            installed_locales,
-            num_installed_locales,
-            "fr_");
-      break;
-    case UI_ITALIAN:
-      match = string_array_contains_substr (
-            installed_locales,
-            num_installed_locales,
-            "it_");
-      break;
-    case UI_SPANISH:
-      match = string_array_contains_substr (
-            installed_locales,
-            num_installed_locales,
-            "es_");
-      break;
-    case UI_JAPANESE:
-      match = string_array_contains_substr (
-            installed_locales,
-            num_installed_locales,
-            "ja_");
-      break;
+    IS_MATCH(ENGLISH,en);
+    IS_MATCH(GERMAN,de);
+    IS_MATCH(FRENCH,fr);
+    IS_MATCH(ITALIAN,it);
+    IS_MATCH(SPANISH,es);
+    IS_MATCH(JAPANESE,ja);
+    IS_MATCH(PORTUGUESE,pt);
+    IS_MATCH(RUSSIAN,ru);
+    IS_MATCH(CHINESE,zh);
     default:
       g_warn_if_reached ();
       break;
     }
+
+#undef IS_MATCH
 
   if (match)
     {

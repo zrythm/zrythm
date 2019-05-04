@@ -536,6 +536,9 @@ ui_create_language_model ()
     UI_ITALIAN,
     UI_SPANISH,
     UI_JAPANESE,
+    UI_PORTUGUESE,
+    UI_RUSSIAN,
+    UI_CHINESE,
   };
   const gchar *labels[NUM_UI_LANGUAGES] = {
     _("English [en]"),
@@ -544,6 +547,9 @@ ui_create_language_model ()
     _("Italian [it]"),
     _("Spanish [es]"),
     _("Japanese [ja]"),
+    _("Portuguese [pt]"),
+    _("Russian [ru]"),
+    _("Chinese [zh]"),
   };
 
   CREATE_SIMPLE_MODEL_BOILERPLATE;

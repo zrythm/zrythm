@@ -41,6 +41,9 @@ typedef enum UiLanguage
   UI_ITALIAN,
   UI_SPANISH,
   UI_JAPANESE,
+  UI_PORTUGUESE,
+  UI_RUSSIAN,
+  UI_CHINESE,
   NUM_UI_LANGUAGES,
 } UiLanguage;
 

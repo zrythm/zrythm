@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-03 19:10+0100\n"
+"POT-Creation-Date: 2019-05-04 11:13+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrythm dot org>\n"
 "Language-Team: Italian\n"
@@ -26,11 +26,11 @@ msgstr ""
 msgid "-2"
 msgstr ""
 
-#: src/utils/ui.c:618
+#: src/utils/ui.c:624
 msgid "-3dB"
 msgstr ""
 
-#: src/utils/ui.c:619
+#: src/utils/ui.c:625
 msgid "-6dB"
 msgstr ""
 
@@ -39,7 +39,7 @@ msgid "0.0"
 msgstr ""
 
 #. TRANSLATORS: Pan algorithm
-#: src/utils/ui.c:617
+#: src/utils/ui.c:623
 msgid "0dB"
 msgstr ""
 
@@ -166,6 +166,10 @@ msgstr ""
 
 #: src/gui/widgets/header_bar.c:374
 msgid "Chat"
+msgstr ""
+
+#: src/utils/ui.c:552
+msgid "Chinese [zh]"
 msgstr ""
 
 #: resources/ui/donate_dialog.ui:49
@@ -317,7 +321,7 @@ msgid "Donate"
 msgstr ""
 
 #. TRANSLATORS: Dummy audio backend
-#: src/utils/ui.c:563 src/utils/ui.c:580
+#: src/utils/ui.c:569 src/utils/ui.c:586
 msgid "Dummy"
 msgstr ""
 
@@ -351,7 +355,7 @@ msgstr ""
 msgid "Engine"
 msgstr ""
 
-#: src/utils/ui.c:541
+#: src/utils/ui.c:544
 msgid "English [en]"
 msgstr ""
 
@@ -436,7 +440,7 @@ msgstr ""
 msgid "Freeze"
 msgstr ""
 
-#: src/utils/ui.c:543
+#: src/utils/ui.c:546
 msgid "French [fr]"
 msgstr ""
 
@@ -452,7 +456,7 @@ msgstr ""
 msgid "Genre"
 msgstr ""
 
-#: src/utils/ui.c:542
+#: src/utils/ui.c:545
 msgid "German [de]"
 msgstr ""
 
@@ -492,7 +496,7 @@ msgstr ""
 msgid "Interface"
 msgstr ""
 
-#: src/utils/ui.c:544
+#: src/utils/ui.c:547
 msgid "Italian [it]"
 msgstr ""
 
@@ -506,7 +510,7 @@ msgstr ""
 msgid "JACK functionality is disabled"
 msgstr ""
 
-#: src/utils/ui.c:546
+#: src/utils/ui.c:549
 msgid "Japanese [ja]"
 msgstr ""
 
@@ -538,7 +542,7 @@ msgid "Length"
 msgstr ""
 
 #. TRANSLATORS: Pan algorithm
-#: src/utils/ui.c:598
+#: src/utils/ui.c:604
 msgid "Linear"
 msgstr ""
 
@@ -766,6 +770,10 @@ msgstr ""
 msgid "PortAudio functionality is disabled"
 msgstr ""
 
+#: src/utils/ui.c:550
+msgid "Portuguese [pt]"
+msgstr ""
+
 #: resources/ui/inspector_region.ui:80 resources/ui/inspector_master.ui:79
 #: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
 msgid "Position"
@@ -893,6 +901,10 @@ msgstr ""
 msgid "Right Panel"
 msgstr ""
 
+#: src/utils/ui.c:551
+msgid "Russian [ru]"
+msgstr ""
+
 #: src/actions/actions.c:519
 msgid "Save Project"
 msgstr ""
@@ -975,7 +987,7 @@ msgstr ""
 msgid "Show native decoration"
 msgstr ""
 
-#: src/utils/ui.c:600
+#: src/utils/ui.c:606
 msgid "Sine (Equal Power)"
 msgstr ""
 
@@ -1011,11 +1023,11 @@ msgstr ""
 msgid "Source Audio Unit"
 msgstr ""
 
-#: src/utils/ui.c:545
+#: src/utils/ui.c:548
 msgid "Spanish [es]"
 msgstr ""
 
-#: src/utils/ui.c:599
+#: src/utils/ui.c:605
 msgid "Square Root"
 msgstr ""
 

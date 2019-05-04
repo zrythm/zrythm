@@ -43,6 +43,9 @@
     <value nick="italian" value="3"/>
     <value nick="spanish" value="4"/>
     <value nick="japanese" value="5"/>
+    <value nick="portuguese" value="6"/>
+    <value nick="russian" value="7"/>
+    <value nick="chinese" value="8"/>
   </enum>
   <enum id="org.zrythm.preferences.export-time-range-enum">
     <value nick="song" value="0"/>

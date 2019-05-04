@@ -110,6 +110,9 @@ X11_LIBS = @X11_LIBS@
 # -----------------------
 #  dirs/names/files
 #  ----------------------
+LANGUAGES = de es fr it ja pt ru zh
+LANG_PO_FILES = $(shell find po -name "*.po")
+LANG_MO_FILES = $(LANG_PO_FILES:%.po=%.mo)
 BUILD_DIR = build
 OBJ_DIR = $(BUILD_DIR)/obj
 DEP_DIR = $(BUILD_DIR)/dep
@@ -418,27 +421,12 @@ else
 all: $(BUILD_DIR)/$(BIN)$(EXT) messages plugins test
 endif
 
-messages: po/fr/$(BIN).mo po/de/$(BIN).mo po/es/$(BIN).mo po/it/$(BIN).mo po/ja/$(BIN).mo
+messages: $(LANG_MO_FILES)
 
-po/fr/$(BIN).mo: po/fr/$(BIN).po
+po/%/$(BIN).mo: po/%/$(BIN).po
 	msgfmt --output-file=$@ $<
-po/fr/$(BIN).po: po/$(BIN).pot
-	msgmerge --update $@ $<
-po/de/$(BIN).mo: po/de/$(BIN).po
-	msgfmt --output-file=$@ $<
-po/de/$(BIN).po: po/$(BIN).pot
-	msgmerge --update $@ $<
-po/es/$(BIN).mo: po/es/$(BIN).po
-	msgfmt --output-file=$@ $<
-po/es/$(BIN).po: po/$(BIN).pot
-	msgmerge --update $@ $<
-po/it/$(BIN).mo: po/it/$(BIN).po
-	msgfmt --output-file=$@ $<
-po/it/$(BIN).po: po/$(BIN).pot
-	msgmerge --update $@ $<
-po/ja/$(BIN).mo: po/ja/$(BIN).po
-	msgfmt --output-file=$@ $<
-po/ja/$(BIN).po: po/$(BIN).pot
+
+$(LANG_PO_FILES): po/$(BIN).pot
 	msgmerge --update $@ $<
 
 po/$(BIN).pot: $(SRCS) $(SRCS_CPP) $(SRCS_UI)
@@ -554,11 +542,7 @@ clean:
 	#-rm $(BUILD_DIR)/zrythm.gresource.xml
 	-rm -rf $(BUILD_DIR)
 	-rm -rf doc/html
-	-rm po/fr/*.mo
-	-rm po/de/*.mo
-	-rm po/it/*.mo
-	-rm po/es/*.mo
-	-rm po/ja/*.mo
+	-rm $(LANG_MO_FILES)
 	cd $(CYAML_SRC_DIR) && $(MAKE) clean
 	#-rm -rf $(CYAML_BUILD_DIR)
 	cd $(LIBSMF_SRC_DIR) && autoreconf -i && \
@@ -583,16 +567,10 @@ uninstall: uninstall-appicon-data uninstall-gschemas uninstall-desktop uninstall
 
 .PHONY: install-messages
 install-messages:
-	$(MKDIR_P) "$(DESTDIR)$(localedir)/fr/LC_MESSAGES"
-	$(INSTALL_DATA) po/fr/$(BIN).mo "$(DESTDIR)$(localedir)/fr/LC_MESSAGES/"
-	$(MKDIR_P) "$(DESTDIR)$(localedir)/de/LC_MESSAGES"
-	$(INSTALL_DATA) po/de/$(BIN).mo "$(DESTDIR)$(localedir)/de/LC_MESSAGES/"
-	$(MKDIR_P) "$(DESTDIR)$(localedir)/it/LC_MESSAGES"
-	$(INSTALL_DATA) po/it/$(BIN).mo "$(DESTDIR)$(localedir)/it/LC_MESSAGES/"
-	$(MKDIR_P) "$(DESTDIR)$(localedir)/es/LC_MESSAGES"
-	$(INSTALL_DATA) po/es/$(BIN).mo "$(DESTDIR)$(localedir)/es/LC_MESSAGES/"
-	$(MKDIR_P) "$(DESTDIR)$(localedir)/ja/LC_MESSAGES"
-	$(INSTALL_DATA) po/ja/$(BIN).mo "$(DESTDIR)$(localedir)/ja/LC_MESSAGES/"
+	for lang in $(LANGUAGES); do \
+		$(MKDIR_P) "$(DESTDIR)$(localedir)/$$lang/LC_MESSAGES" ; \
+		$(INSTALL_DATA) po/$$lang/$(BIN).mo "$(DESTDIR)$(localedir)/$$lang/LC_MESSAGES/" ; \
+	done
 
 .PHONY: install-x42-plugins
 install-x42-plugins: $(X42_PLUGINS_BINS)
@@ -644,11 +622,9 @@ uninstall-gschemas:
 
 .PHONY: uninstall-messages
 uninstall-messages:
-	rm -f "$(DESTDIR)$(localedir)/fr/LC_MESSAGES/$(BIN).mo"
-	rm -f "$(DESTDIR)$(localedir)/de/LC_MESSAGES/$(BIN).mo"
-	rm -f "$(DESTDIR)$(localedir)/it/LC_MESSAGES/$(BIN).mo"
-	rm -f "$(DESTDIR)$(localedir)/es/LC_MESSAGES/$(BIN).mo"
-	rm -f "$(DESTDIR)$(localedir)/ja/LC_MESSAGES/$(BIN).mo"
+	for lang in $(LANGUAGES); do \
+		rm -f "$(DESTDIR)$(localedir)/$$lang/LC_MESSAGES/$(BIN).mo" ; \
+	done
 
 .PHONY: install-fonts
 install-fonts: $(FONTS_DIR)/Segment7Standard/*
