@@ -2,20 +2,22 @@
 # Copyright (C) 2019 THE zrythm'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
 # Alexandros Theodotou <alex at zrytm dot org>, 2019.
-#
+# Weblate Admin <weblate.admin@zrythm.org>, 2019.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: alex@zrythm.org\n"
 "POT-Creation-Date: 2019-05-04 11:13+0100\n"
-"PO-Revision-Date: 2019-03-23 13:18+0000\n"
-"Last-Translator: Alexandros Theodotou <alex at zrytm dot org>\n"
-"Language-Team: Japanese\n"
+"PO-Revision-Date: 2019-05-04 23:38+0000\n"
+"Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
+"Language-Team: Japanese <https://translate.zrythm.org/projects/zrythm/zrythm/"
+"ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 3.6.1\n"
 
 #: src/actions/create_tracks_action.c:74
 #, fuzzy, c-format
@@ -1262,7 +1264,7 @@ msgstr "ズーム"
 
 #: resources/ui/header_bar.ui:28 resources/ui/export_dialog.ui:120
 msgid "Zrythm"
-msgstr ""
+msgstr "Zrythm"
 
 #: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
 #: src/utils/dialogs.c:74 src/actions/actions.c:522
