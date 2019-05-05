@@ -34,6 +34,10 @@
 #include <sndfile.h>
 #include <samplerate.h>
 
+#if defined(__FreeBSD__)
+#include <sys/sysctl.h>
+#endif
+
 static int num_cores = 0;
 
 /**
@@ -166,11 +170,11 @@ audio_get_num_cores ()
 
 #ifdef __FreeBSD__
   int mib[4];
-  std::size_t len = sizeof(num_cores);
+  size_t len = sizeof(num_cores);
 
   /* set the mib for hw.ncpu */
   mib[0] = CTL_HW;
-  mib[1] = HW_AVAILCPU;  // alternatively, try HW_NCPU;
+  mib[1] = HW_NCPU;
 
   /* get the number of CPUs from the system */
   sysctl(mib, 2, &num_cores, &len, NULL, 0);
