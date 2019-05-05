@@ -620,9 +620,9 @@ ui_create_pan_law_model (void)
   };
   const gchar *labels[3] = {
     /* TRANSLATORS: Pan algorithm */
-    _("0dB"),
-    _("-3dB"),
-    _("-6dB"),
+    "0dB",
+    "-3dB",
+    "-6dB",
   };
 
   CREATE_SIMPLE_MODEL_BOILERPLATE;

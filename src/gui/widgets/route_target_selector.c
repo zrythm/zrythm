@@ -36,8 +36,9 @@ static void
 on_clicked (GtkButton * button,
             RouteTargetSelectorWidget * self)
 {
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->popover), 1);
+  if (self->owner->channel->type == CT_MASTER)
+    gtk_widget_set_visible (
+      GTK_WIDGET (self->popover), 0);
 }
 
 static void
@@ -72,8 +73,22 @@ route_target_selector_widget_setup (
   ChannelWidget *            owner)
 {
   self->owner = owner;
+  if (self->owner->channel->type == CT_MASTER)
+    {
+      gtk_widget_set_tooltip_text (
+        GTK_WIDGET (self->box),
+        _("Routed to Stereo Out"));
+    }
+  else
+    {
+      gtk_widget_set_tooltip_text (
+        GTK_WIDGET (self->box),
+        _("Select channel to route signal to"));
+    }
+
   self->popover =
-    route_target_selector_popover_widget_new (self);
+    route_target_selector_popover_widget_new (
+      self);
   gtk_menu_button_set_popover (
     GTK_MENU_BUTTON (self),
     GTK_WIDGET (self->popover));
@@ -99,10 +114,8 @@ route_target_selector_widget_init (
       ICON_TYPE_GNOME_BUILDER,
       "debug-step-out-symbolic-light.svg"));
   self->label =
-    GTK_LABEL (gtk_label_new ("Output"));
-  gtk_widget_set_tooltip_text (
-    GTK_WIDGET (self->box),
-    _("Select channel to route signal to"));
+    GTK_LABEL (
+      gtk_label_new (_("Stereo Out")));
   gtk_box_pack_start (self->box,
                       GTK_WIDGET (self->img),
                       Z_GTK_NO_EXPAND,

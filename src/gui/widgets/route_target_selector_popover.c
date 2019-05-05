@@ -80,24 +80,18 @@ create_model_for_routes (
       else if (type == ROUTE_TARGET_TYPE_GROUP &&
                track->type == TRACK_TYPE_GROUP)
         {
-          // Add a new row to the model
-          gtk_list_store_append (list_store, &iter);
-          gtk_list_store_set (
-            list_store, &iter,
-            0, track->name,
-            1, track,
-            -1);
-        }
-      else if (type == ROUTE_TARGET_TYPE_BUS &&
-               track->type == TRACK_TYPE_BUS)
-        {
-          // Add a new row to the model
-          gtk_list_store_append (list_store, &iter);
-          gtk_list_store_set (
-            list_store, &iter,
-            0, track->name,
-            1, track,
-            -1);
+          if (track !=
+              self->owner->owner->channel->track)
+            {
+              // Add a new row to the model
+              gtk_list_store_append (
+                list_store, &iter);
+              gtk_list_store_set (
+                list_store, &iter,
+                0, track->name,
+                1, track,
+                -1);
+            }
         }
     }
 
@@ -129,13 +123,6 @@ create_model_for_types (
     list_store, &iter,
     0, "Group",
     1, ROUTE_TARGET_TYPE_GROUP,
-    -1);
-
-  gtk_list_store_append (list_store, &iter);
-  gtk_list_store_set (
-    list_store, &iter,
-    0, "Bus",
-    1, ROUTE_TARGET_TYPE_BUS,
     -1);
 
   return GTK_TREE_MODEL (list_store);
@@ -206,7 +193,7 @@ on_selection_changed (
 
           char * label =
             g_strdup_printf (
-            "%s",
+            _("Routing to %s"),
             track->name);
 
           update_info_label (self,

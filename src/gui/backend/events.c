@@ -518,15 +518,19 @@ on_region_changed (Region * region)
 static void
 on_track_color_changed (Track * track)
 {
-
-  /* TODO */
+  channel_widget_refresh (track->channel->widget);
+  track_widget_refresh (track->widget);
+  inspector_widget_refresh ();
 }
 
 static void
 on_track_name_changed (Track * track)
 {
-
-  /* TODO */
+  /* refresh all because tracks routed to/from are
+   * also affected */
+  mixer_widget_soft_refresh (MW_MIXER);
+  track_widget_refresh (track->widget);
+  inspector_widget_refresh ();
 }
 
 static void

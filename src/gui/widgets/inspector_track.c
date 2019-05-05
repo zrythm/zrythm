@@ -1,7 +1,5 @@
 /*
- * gui/widgets/inspector_track.c - A inspector_track widget
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *

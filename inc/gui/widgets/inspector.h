@@ -99,4 +99,3 @@ inspector_widget_show_selections (
   int                      num_selections);
 
 #endif
-

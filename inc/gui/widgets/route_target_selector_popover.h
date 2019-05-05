@@ -35,7 +35,6 @@ typedef enum RouteTargetSelectorType
 {
   ROUTE_TARGET_TYPE_MASTER,
   ROUTE_TARGET_TYPE_GROUP,
-  ROUTE_TARGET_TYPE_BUS,
 } RouteTargetSelectorType;
 
 typedef struct _RouteTargetSelectorWidget

@@ -52,6 +52,15 @@ typedef struct Position Position;
 #define TARGET_ENTRY_PLUGIN "PLUGIN"
 /* File descriptor */
 #define TARGET_ENTRY_FILE_DESCR "FILE_DESCR"
+
+/**
+ * Track target entry.
+ *
+ * This is just the identifier. The
+ * TracklistSelections will be used.
+ */
+#define TARGET_ENTRY_TRACK "TRACK"
+
 /* */
 #define TARGET_ENTRY_TL_SELECTIONS \
   "TL_SELECTIONS"

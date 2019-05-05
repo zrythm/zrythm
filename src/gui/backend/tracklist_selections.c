@@ -127,6 +127,9 @@ tracklist_selections_remove_track (
     ts->num_tracks,
     r,
     r->id);
+
+  EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
+               NULL);
 }
 
 int

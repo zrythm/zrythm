@@ -31,7 +31,7 @@ G_DECLARE_FINAL_TYPE (ChannelWidget,
                       channel_widget,
                       Z,
                       CHANNEL_WIDGET,
-                      GtkGrid)
+                      GtkEventBox)
 
 typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct _KnobWidget KnobWidget;
@@ -42,13 +42,17 @@ typedef struct _ChannelSlotWidget ChannelSlotWidget;
 typedef struct _RouteTargetSelectorWidget
   RouteTargetSelectorWidget;
 typedef struct _PanWidget PanWidget;
+typedef struct _EditableLabelWidget
+  EditableLabelWidget;
 
 typedef struct _ChannelWidget
 {
-  GtkGrid            parent_instance;
+  GtkEventBox         parent_instance;
+  GtkGrid *          grid;
   RouteTargetSelectorWidget * output;
   ColorAreaWidget     * color;
-  GtkLabel            * name;
+  GtkEventBox *       icon_and_name_event_box;
+  EditableLabelWidget * name;
   GtkBox              * phase_controls;
   GtkButton           * phase_invert;
   GtkLabel            * phase_reading;
@@ -77,7 +81,13 @@ typedef struct _ChannelWidget
   GtkLabel            * meter_reading;
   GtkImage            * icon;
   double                meter_reading_val; ///< cache
-  Channel             * channel;    ///< pointer to data
+
+  /** Used for highlighting. */
+  GtkBox *            highlight_left_box;
+  GtkBox *            highlight_right_box;
+
+  /** Pointer to owner Channel. */
+  Channel             * channel;
 
   /**
    * Signal handler IDs.
@@ -85,6 +95,12 @@ typedef struct _ChannelWidget
   gulong              record_toggled_handler_id;
   gulong              solo_toggled_handler_id;
   gulong              mute_toggled_handler_id;
+
+  /** Whole channel press. */
+  GtkGestureMultiPress * mp;
+
+  /** Drag on the icon and name event box. */
+  //GtkGestureDrag       * icon_and_name_drag;
 } ChannelWidget;
 
 /**
