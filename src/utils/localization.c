@@ -141,22 +141,22 @@ localization_init ()
     match = string_array_contains_substr ( \
           installed_locales, \
           num_installed_locales, \
-          "code##_"); \
+          code); \
     break;
 
 
   char * match = NULL;
   switch (lang)
     {
-    IS_MATCH(ENGLISH,en);
-    IS_MATCH(GERMAN,de);
-    IS_MATCH(FRENCH,fr);
-    IS_MATCH(ITALIAN,it);
-    IS_MATCH(SPANISH,es);
-    IS_MATCH(JAPANESE,ja);
-    IS_MATCH(PORTUGUESE,pt);
-    IS_MATCH(RUSSIAN,ru);
-    IS_MATCH(CHINESE,zh);
+    IS_MATCH(ENGLISH,"en_");
+    IS_MATCH(GERMAN,"de_");
+    IS_MATCH(FRENCH,"fr_");
+    IS_MATCH(ITALIAN,"it_");
+    IS_MATCH(SPANISH,"es_");
+    IS_MATCH(JAPANESE,"ja_");
+    IS_MATCH(PORTUGUESE,"pt_");
+    IS_MATCH(RUSSIAN,"ru_");
+    IS_MATCH(CHINESE,"zh_");
     default:
       g_warn_if_reached ();
       break;
