@@ -63,9 +63,21 @@ Track *
 tracklist_selections_get_highest_track (
   TracklistSelections * ts)
 {
-  /* TODO */
-  g_warn_if_reached ();
-  return NULL;
+  Track * track;
+  int min_pos = 1000;
+  Track * min_track = NULL;
+  for (int i = 0; i < ts->num_tracks; i++)
+    {
+      track = ts->tracks[i];
+
+      if (track->pos < min_pos)
+        {
+          min_pos = track->pos;
+          min_track = track;
+        }
+    }
+
+  return min_track;
 }
 
 /**
@@ -75,9 +87,21 @@ Track *
 tracklist_selections_get_lowest_track (
   TracklistSelections * ts)
 {
-  /* TODO */
-  g_warn_if_reached ();
-  return NULL;
+  Track * track;
+  int max_pos = -1;
+  Track * max_track = NULL;
+  for (int i = 0; i < ts->num_tracks; i++)
+    {
+      track = ts->tracks[i];
+
+      if (track->pos > max_pos)
+        {
+          max_pos = track->pos;
+          max_track = track;
+        }
+    }
+
+  return max_track;
 }
 
 /**
@@ -143,6 +167,29 @@ tracklist_selections_contains_track (
 }
 
 /**
+ * For debugging.
+ */
+void
+tracklist_selections_gprint (
+  TracklistSelections * self)
+{
+  g_message ("------ tracklist selections ------");
+
+  Track * track;
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      track = self->tracks[i];
+      g_message ("[idx %d] %s (id %d) (pos %d)",
+                 i, self->tracks[i]->name,
+                 track->id,
+                 self->tracks[i]->pos);
+      g_message (">>>> track id %d <<<<<",
+                 self->track_ids[i]);
+    }
+  g_message ("-------- end --------");
+}
+
+/**
  * Clears selections.
  */
 void
@@ -167,6 +214,33 @@ tracklist_selections_clear (
   g_message ("cleared tracklist selections");
 }
 
+static int
+sort_tracks_func (const void *a, const void *b)
+{
+  Track * aa = * (Track * const *) a;
+  Track * bb = * (Track * const *) b;
+  g_message ("aa pos %d bb pos %d",
+             aa->pos, bb->pos);
+  return aa->pos > bb->pos;
+}
+
+/**
+ * Sorts the tracks by position.
+ */
+void
+tracklist_selections_sort (
+  TracklistSelections * self)
+{
+  qsort (self->tracks,
+         self->num_tracks,
+         sizeof (Track *),
+         sort_tracks_func);
+
+  /* also sort the IDs */
+  for (int i = 0; i < self->num_tracks; i++)
+    self->track_ids[i] = self->tracks[i]->id;
+}
+
 /**
  * Clone the struct for copying, undoing, etc.
  */
@@ -183,9 +257,12 @@ tracklist_selections_clone ()
       Track * r = src->tracks[i];
       Track * new_r =
         track_clone (r);
-      array_append (new_ts->tracks,
-                    new_ts->num_tracks,
-                    new_r);
+      array_double_append (
+        new_ts->tracks,
+        new_ts->track_ids,
+        new_ts->num_tracks,
+        new_r,
+        new_r->id);
     }
 
   return new_ts;

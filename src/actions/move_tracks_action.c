@@ -53,20 +53,52 @@ move_tracks_action_do (
 	MoveTracksAction * self)
 {
   Track * track;
+
+  /*tracklist_selections_gprint (*/
+    /*self->tls);*/
+
+  tracklist_selections_clear (
+    TRACKLIST_SELECTIONS);
+
+  /* sort the tracks first */
+  tracklist_selections_sort (
+    self->tls);
+
+  /*tracklist_selections_gprint (*/
+    /*self->tls);*/
   for (int i = 0; i < self->tls->num_tracks; i++)
     {
       track =
         project_get_track (self->tls->track_ids[i]);
       g_return_val_if_fail (track, -1);
 
-      /* TODO sort the tracks first */
+      /*g_message ("===================");*/
+      /*tracklist_print_tracks (TRACKLIST);*/
+
+      /*g_message ("action: move track %s from pos %d "*/
+                 /*"to pos %d",*/
+                 /*track->name,*/
+                 /*track->pos,*/
+                 /*self->pos + i);*/
+      /*g_message ("===================");*/
 
       tracklist_move_track (
         TRACKLIST,
         track,
         self->pos + i,
-        F_NO_PUBLISH_EVENTS);
+        F_NO_PUBLISH_EVENTS,
+        F_NO_RECALC_GRAPH);
+
+      tracklist_selections_add_track (
+        TRACKLIST_SELECTIONS, track);
+
+      /*g_message ("action: new track pos: %d",*/
+                 /*track->pos);*/
+
+      /*tracklist_print_tracks (TRACKLIST);*/
     }
+
+  mixer_recalc_graph (MIXER);
 
   EVENTS_PUSH (ET_TRACKS_MOVED, NULL);
 
@@ -88,8 +120,11 @@ move_tracks_action_undo (
         TRACKLIST,
         track,
         self->tls->tracks[i]->pos,
-        F_NO_PUBLISH_EVENTS);
+        F_NO_PUBLISH_EVENTS,
+        F_NO_RECALC_GRAPH);
     }
+
+  mixer_recalc_graph (MIXER);
 
   EVENTS_PUSH (ET_TRACKS_MOVED, NULL);
 

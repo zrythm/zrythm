@@ -327,24 +327,13 @@ engine_process_prepare (
   port_clear_buffer (self->midi_in);
 
   /* prepare channels for this cycle */
-  for (i = -1; i < MIXER->num_channels; i++)
+  Channel * ch;
+  for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      Channel * channel;
-      if (i == -1)
-        channel = MIXER->master;
-      else
-        channel = MIXER->channels[i];
-      /*for (int j = 0; j < STRIP_SIZE; j++)*/
-        /*{*/
-          /*if (channel->plugins[j])*/
-            /*{*/
-              /*g_atomic_int_set (*/
-                /*&channel->plugins[j]->processed, 0);*/
-            /*}*/
-        /*}*/
-      /*g_atomic_int_set (*/
-        /*&channel->processed, 0);*/
-      channel_prepare_process (channel);
+      ch = TRACKLIST->tracks[i]->channel;
+
+      if (ch)
+        channel_prepare_process (ch);
     }
 
   /* for each automation track, update the val */

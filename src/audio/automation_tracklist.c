@@ -252,8 +252,42 @@ automation_tracklist_clone (
   AutomationTracklist * src,
   AutomationTracklist * dest)
 {
-  /* TODO */
-  g_warn_if_reached ();
+  AutomationTrack * src_at, * dest_at;
+  AutomationPoint * src_ap, * dest_ap;
+  AutomationCurve * src_ac, * dest_ac;
+  for (int i = 0; i < src->num_automation_tracks; i++)
+    {
+      src_at = src->automation_tracks[i];
+      dest_at = dest->automation_tracks[i];
+
+      /* add automation points */
+      for (int j = 0;
+           j < src_at->num_automation_points; j++)
+        {
+          src_ap = src_at->automation_points[j];
+          dest_ap =
+            automation_point_new_float (
+              dest_at,
+              src_ap->fvalue,
+              &src_ap->pos);
+          automation_track_add_automation_point (
+            dest_at, dest_ap, 0);
+        }
+
+      /* add automation curves */
+      for (int j = 0;
+           j < src_at->num_automation_curves; j++)
+        {
+          src_ac = src_at->automation_curves[j];
+          dest_ac =
+            automation_curve_new (
+              dest_at, &src_ac->pos);
+          automation_track_add_automation_curve (
+            dest_at, dest_ac);
+        }
+    }
+
+  /* TODO create same automation lanes */
 }
 
 void

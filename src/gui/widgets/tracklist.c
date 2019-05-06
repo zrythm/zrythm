@@ -211,7 +211,8 @@ tracklist_widget_hard_refresh (TracklistWidget * self)
     GTK_CONTAINER (self));
 
   /* add tracks */
-  for (int i = 0; i < self->tracklist->num_tracks; i++)
+  for (int i = 0;
+       i < self->tracklist->num_tracks; i++)
     {
       Track * track = self->tracklist->tracks[i];
       if (track->visible)
@@ -275,18 +276,17 @@ tracklist_widget_setup (TracklistWidget * self,
 }
 
 /**
- * Makes sure all the tracks for channels marked as visible are visible.
+ * Makes sure all the tracks for channels marked as
+ * visible are visible.
  */
 void
 tracklist_widget_soft_refresh (TracklistWidget *self)
 {
   gtk_widget_show (GTK_WIDGET (self));
-  track_widget_refresh (
-    MIXER->master->track->widget);
-  for (int i = 0; i < MIXER->num_channels; i++)
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track_widget_refresh (
-        MIXER->channels[i]->track->widget);
+        TRACKLIST->tracks[i]->widget);
     }
   if (self->ddbox)
     gtk_widget_show (GTK_WIDGET (self->ddbox));

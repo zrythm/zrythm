@@ -156,8 +156,9 @@ automation_track_add_automation_point (
  * Adds automation curve.
  */
 void
-automation_track_add_automation_curve (AutomationTrack * at,
-                                       AutomationCurve * ac);
+automation_track_add_automation_curve (
+  AutomationTrack * at,
+  AutomationCurve * ac);
 
 /**
  * Returns the automation point before the position.

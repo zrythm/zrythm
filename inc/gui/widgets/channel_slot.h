@@ -1,6 +1,4 @@
 /*
- * gui/widgets/channel_slot.h - Channel slot
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -45,12 +43,10 @@ typedef struct _ChannelSlotWidget
   int                    slot_index; ///< the channel slot index
   GtkGestureMultiPress *   multipress;
   GtkGestureDrag *         drag;
-  int                      reselected;
 
-  /** Plugin deselected. */
-  int                     deselected;
   /** For multipress. */
   int                      n_press;
+
   GtkGestureMultiPress *   right_mouse_mp;
 } ChannelSlotWidget;
 

@@ -31,6 +31,7 @@
 #include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 #include "utils/objects.h"
 
 /**
@@ -40,20 +41,13 @@ void
 tracklist_init_loaded (
   Tracklist * self)
 {
-  for (int i = 0; i < self->num_tracks; i++)
-    self->tracks[i] =
-      project_get_track (
-        self->track_ids[i]);
+  int i;
 
-  return;
-
-  /* add each channel */
-  for (int i = 0; i < MIXER->num_channels; i++)
+  for (i = 0; i < self->num_tracks; i++)
     {
-      Channel * channel = MIXER->channels[i];
-      g_warn_if_fail (channel);
-      g_warn_if_fail (channel->track);
-      tracklist_append_track (channel->track);
+      self->tracks[i] =
+        project_get_track (
+          self->track_ids[i]);
     }
 }
 
@@ -61,13 +55,15 @@ tracklist_init_loaded (
  * Finds visible tracks and puts them in given array.
  */
 void
-tracklist_get_visible_tracks (Track **    visible_tracks,
-                              int *       num_visible)
+tracklist_get_visible_tracks (
+  Tracklist * self,
+  Track **    visible_tracks,
+  int *       num_visible)
 {
   *num_visible = 0;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (int i = 0; i < self->num_tracks; i++)
     {
-      Track * track = TRACKLIST->tracks[i];
+      Track * track = self->tracks[i];
       if (track->visible)
         {
           visible_tracks[*num_visible++] = track;
@@ -76,11 +72,12 @@ tracklist_get_visible_tracks (Track **    visible_tracks,
 }
 
 int
-tracklist_contains_master_track ()
+tracklist_contains_master_track (
+  Tracklist * self)
 {
-  for (int i = 0; TRACKLIST->num_tracks; i++)
+  for (int i = 0; self->num_tracks; i++)
     {
-      Track * track = TRACKLIST->tracks[i];
+      Track * track = self->tracks[i];
       if (track->type == TRACK_TYPE_MASTER)
         return 1;
     }
@@ -88,18 +85,19 @@ tracklist_contains_master_track ()
 }
 
 int
-tracklist_contains_chord_track ()
+tracklist_contains_chord_track (
+  Tracklist * self)
 {
-  for (int i = 0; TRACKLIST->num_tracks; i++)
+  for (int i = 0; self->num_tracks; i++)
     {
-      Track * track = TRACKLIST->tracks[i];
+      Track * track = self->tracks[i];
       if (track->type == TRACK_TYPE_CHORD)
         return 1;
     }
   return 0;
 }
 
-Track *
+static Track *
 get_track_by_name (
   Tracklist * self,
   const char * name)
@@ -116,7 +114,25 @@ get_track_by_name (
 }
 
 void
-set_track_name (Tracklist * self, Track * track)
+tracklist_print_tracks (
+  Tracklist * self)
+{
+  g_message ("----- tracklist tracks ------");
+  Track * track;
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      track = self->tracks[i];
+      g_message ("[idx %d] %s (id %d) (pos %d)",
+                 i, track->name,
+                 track->id, track->pos);
+    }
+  g_message ("------ end ------");
+}
+
+static void
+set_track_name (
+  Tracklist * self,
+  Track * track)
 {
   int count = 1;
   char * new_label = g_strdup (track->name);
@@ -135,17 +151,20 @@ set_track_name (Tracklist * self, Track * track)
  * Adds given track to given spot in tracklist.
  *
  * @param publish_events Publish UI events.
+ * @param recalc_graph Recalculate routing graph.
  */
 void
 tracklist_insert_track (
   Tracklist * self,
   Track *     track,
   int         pos,
-  int         publish_events)
+  int         publish_events,
+  int         recalc_graph)
 {
   g_warn_if_fail (track->id > -1);
 
-  set_track_name (TRACKLIST, track);
+  /* FIXME do it externally */
+  set_track_name (self, track);
 
   array_double_insert (
     self->tracks,
@@ -157,17 +176,29 @@ tracklist_insert_track (
 
   track->pos = pos;
 
+  /* move other tracks */
+  for (int i = track->pos + 1;
+       i < self->num_tracks; i++)
+    self->tracks[i]->pos = i;
+
+  if (track->channel)
+    channel_connect (track->channel);
+
+  if (recalc_graph)
+    mixer_recalc_graph (MIXER);
+
   if (publish_events)
     EVENTS_PUSH (ET_TRACK_ADDED, track);
 }
 
 ChordTrack *
-tracklist_get_chord_track ()
+tracklist_get_chord_track (
+  Tracklist * self)
 {
   Track * track;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (int i = 0; i < self->num_tracks; i++)
     {
-      track = TRACKLIST->tracks[i];
+      track = self->tracks[i];
       if (track->type == TRACK_TYPE_CHORD)
         {
           return (ChordTrack *) track;
@@ -178,34 +209,37 @@ tracklist_get_chord_track ()
 }
 
 void
-tracklist_append_track (Track *     track)
+tracklist_append_track (
+  Tracklist * self,
+  Track *     track,
+  int         publish_events,
+  int         recalc_graph)
 {
-  set_track_name (TRACKLIST, track);
-
-  TRACKLIST->track_ids[TRACKLIST->num_tracks] =
-    track->id;
-  array_append (TRACKLIST->tracks,
-                TRACKLIST->num_tracks,
-                track);
-
-  g_message ("track id %d", track->id);
-  g_warn_if_fail (track->id > -1);
+  tracklist_insert_track (
+    self,
+    track,
+    self->num_tracks,
+    publish_events,
+    recalc_graph);
 }
 
 int
-tracklist_get_track_pos (Track *     track)
+tracklist_get_track_pos (
+  Tracklist * self,
+  Track *     track)
 {
-  return array_index_of ((void **) TRACKLIST->tracks,
-                         TRACKLIST->num_tracks,
+  return array_index_of ((void **) self->tracks,
+                         self->num_tracks,
                          (void *) track);
 }
 
 int
-tracklist_get_last_visible_pos ()
+tracklist_get_last_visible_pos (
+  Tracklist * self)
 {
-  for (int i = TRACKLIST->num_tracks - 1; i >= 0; i--)
+  for (int i = self->num_tracks - 1; i >= 0; i--)
     {
-      if (TRACKLIST->tracks[i]->visible)
+      if (self->tracks[i]->visible)
         {
           return i;
         }
@@ -215,13 +249,14 @@ tracklist_get_last_visible_pos ()
 }
 
 Track*
-tracklist_get_last_visible_track ()
+tracklist_get_last_visible_track (
+  Tracklist * self)
 {
-  for (int i = TRACKLIST->num_tracks - 1; i >= 0; i--)
+  for (int i = self->num_tracks - 1; i >= 0; i--)
     {
-      if (TRACKLIST->tracks[i]->visible)
+      if (self->tracks[i]->visible)
         {
-          return TRACKLIST->tracks[i];
+          return self->tracks[i];
         }
     }
   g_warn_if_reached ();
@@ -229,13 +264,14 @@ tracklist_get_last_visible_track ()
 }
 
 Track *
-tracklist_get_first_visible_track ()
+tracklist_get_first_visible_track (
+  Tracklist * self)
 {
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (int i = 0; i < self->num_tracks; i++)
     {
-      if (TRACKLIST->tracks[i]->visible)
+      if (self->tracks[i]->visible)
         {
-          return TRACKLIST->tracks[i];
+          return self->tracks[i];
         }
     }
   g_warn_if_reached ();
@@ -243,14 +279,18 @@ tracklist_get_first_visible_track ()
 }
 
 Track *
-tracklist_get_prev_visible_track (Track * track)
+tracklist_get_prev_visible_track (
+  Tracklist * self,
+  Track * track)
 {
-  for (int i = tracklist_get_track_pos (track);
+  for (int i =
+       tracklist_get_track_pos (self, track) - 1;
        i >= 0; i--)
     {
-      if (TRACKLIST->tracks[i]->visible)
+      if (self->tracks[i]->visible)
         {
-          return TRACKLIST->tracks[i];
+          g_warn_if_fail (self->tracks[i] != track);
+          return self->tracks[i];
         }
     }
   g_warn_if_reached ();
@@ -258,14 +298,18 @@ tracklist_get_prev_visible_track (Track * track)
 }
 
 Track *
-tracklist_get_next_visible_track (Track * track)
+tracklist_get_next_visible_track (
+  Tracklist * self,
+  Track * track)
 {
-  for (int i = tracklist_get_track_pos (track);
-       i < TRACKLIST->num_tracks; i++)
+  for (int i =
+       tracklist_get_track_pos (self, track) + 1;
+       i < self->num_tracks; i++)
     {
-      if (TRACKLIST->tracks[i]->visible)
+      if (self->tracks[i]->visible)
         {
-          return TRACKLIST->tracks[i];
+          g_warn_if_fail (self->tracks[i] != track);
+          return self->tracks[i];
         }
     }
   g_warn_if_reached ();
@@ -275,6 +319,8 @@ tracklist_get_next_visible_track (Track * track)
 /**
  * Removes a track from the Tracklist and the
  * TracklistSelections.
+ *
+ * Also disconnects the channel.
  *
  * @param free Free the track or not (free later).
  * @param publish_events Push a track deleted event
@@ -286,22 +332,43 @@ tracklist_remove_track (
   Tracklist * self,
   Track *     track,
   int         free,
-  int         publish_events)
+  int         publish_events,
+  int         recalc_graph)
 {
+  g_message ("removing %s",
+             track->name);
+  int idx =
+    array_index_of (
+      self->tracks,
+      self->num_tracks,
+      track);
+  g_warn_if_fail (
+    track->pos == idx);
+
   array_double_delete (
-    TRACKLIST->tracks,
-    TRACKLIST->track_ids,
-    TRACKLIST->num_tracks,
+    self->tracks,
+    self->track_ids,
+    self->num_tracks,
     track,
     track->id);
   tracklist_selections_remove_track (
     TRACKLIST_SELECTIONS, track);
+
+  /* move all other tracks */
+  for (int i = track->pos;
+       i < self->num_tracks; i++)
+    self->tracks[i]->pos = i;
+
+  channel_disconnect (track->channel);
 
   if (free)
     {
       project_remove_track (track);
       free_later (track, track_free);
     }
+
+  if (recalc_graph)
+    mixer_recalc_graph (MIXER);
 
   if (publish_events)
     EVENTS_PUSH (ET_TRACKS_REMOVED,
@@ -314,21 +381,29 @@ tracklist_remove_track (
  *
  * @param publish_events Push UI update events or
  *   not.
+ * @param recalc_graph Recalculate routing graph.
  */
 void
 tracklist_move_track (
   Tracklist * self,
   Track *     track,
   int         pos,
-  int         publish_events)
+  int         publish_events,
+  int         recalc_graph)
 {
-  array_double_insert (
-    self->tracks,
-    self->track_ids,
-    self->num_tracks,
-    pos,
+  tracklist_remove_track (
+    self,
     track,
-    track->id);
+    F_NO_FREE,
+    F_NO_PUBLISH_EVENTS,
+    F_NO_RECALC_GRAPH);
+
+  tracklist_insert_track (
+    self,
+    track,
+    pos,
+    F_NO_PUBLISH_EVENTS,
+    recalc_graph);
 
   if (publish_events)
     EVENTS_PUSH (ET_TRACKS_MOVED, NULL);

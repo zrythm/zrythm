@@ -86,6 +86,21 @@ typedef struct _ChannelWidget
   GtkBox *            highlight_left_box;
   GtkBox *            highlight_right_box;
 
+  /** Number of clicks, used when selecting/moving/
+   * dragging channels. */
+  int                 n_press;
+
+  /** Control held down on drag begin. */
+  int                 ctrl_held_at_start;
+
+  /** If drag update was called at least once. */
+  int                 dragged;
+
+  /** The track selection processing was done in
+   * the dnd callbacks, so no need to do it in
+   * drag_end. */
+  int                 selected_in_dnd;
+
   /** Pointer to owner Channel. */
   Channel             * channel;
 
@@ -100,7 +115,7 @@ typedef struct _ChannelWidget
   GtkGestureMultiPress * mp;
 
   /** Drag on the icon and name event box. */
-  //GtkGestureDrag       * icon_and_name_drag;
+  GtkGestureDrag       * drag;
 } ChannelWidget;
 
 /**

@@ -20,10 +20,14 @@
 #include <time.h>
 #include <sys/time.h>
 
-#include "zrythm.h"
+#include "actions/copy_tracks_action.h"
+#include "actions/move_tracks_action.h"
+#include "actions/undoable_action.h"
+#include "actions/undo_manager.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
-#include "plugins/lv2_plugin.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/editable_label.h"
@@ -31,16 +35,19 @@
 #include "gui/widgets/channel_slot.h"
 #include "gui/widgets/fader.h"
 #include "gui/widgets/knob.h"
+#include "gui/widgets/mixer.h"
 #include "gui/widgets/pan.h"
 #include "gui/widgets/route_target_selector.h"
 #include "actions/edit_tracks_action.h"
 #include "actions/undo_manager.h"
 #include "actions/undoable_action.h"
+#include "plugins/lv2_plugin.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
+#include "zrythm.h"
 
 #include <gtk/gtk.h>
 
@@ -114,6 +121,68 @@ on_drag_data_received (
   ChannelWidget * self)
 {
   g_message ("drag data received");
+  Track * this = self->channel->track;
+
+  /* determine if moving or copying */
+  GdkDragAction action =
+    gdk_drag_context_get_selected_action (
+      context);
+
+  tracklist_selections_gprint (
+    TRACKLIST_SELECTIONS);
+
+  int w =
+    gtk_widget_get_allocated_width (widget);
+
+  /* determine position to move to */
+  int pos;
+  if (x < w / 2)
+    {
+      if (this->pos <=
+          MW_MIXER->start_drag_track->pos)
+        pos = this->pos;
+      else
+        {
+          Track * prev =
+            tracklist_get_prev_visible_track (
+              TRACKLIST, this);
+          pos =
+            prev ? prev->pos : this->pos;
+        }
+    }
+  else
+    {
+      if (this->pos >=
+          MW_MIXER->start_drag_track->pos)
+        pos = this->pos;
+      else
+        {
+          Track * next =
+            tracklist_get_next_visible_track (
+              TRACKLIST, this);
+          pos =
+            next ? next->pos : this->pos;
+        }
+    }
+
+  UndoableAction * ua = NULL;
+  if (action == GDK_ACTION_COPY)
+    {
+      ua =
+        copy_tracks_action_new (
+          TRACKLIST_SELECTIONS, pos);
+    }
+  else if (action == GDK_ACTION_MOVE)
+    {
+      ua =
+        move_tracks_action_new (
+          TRACKLIST_SELECTIONS, pos);
+    }
+
+  g_warn_if_fail (ua);
+
+  undo_manager_perform (
+    UNDO_MANAGER, ua);
 }
 
 static void
@@ -126,19 +195,119 @@ on_drag_data_get (
   ChannelWidget * self)
 {
   g_message ("drag data get");
-  /*Plugin* pl =*/
-    /*self->channel->plugins[self->slot_index];*/
 
-  /*if (!pl)*/
-    /*return;*/
+  /* Not really needed since the selections are
+   * used. just send master */
+  gtk_selection_data_set (
+    data,
+    gdk_atom_intern_static_string (
+      TARGET_ENTRY_TRACK),
+    32,
+    (const guchar *) MIXER->master->track,
+    sizeof (Track));
+}
 
-  /*gtk_selection_data_set (*/
-    /*data,*/
-    /*gdk_atom_intern_static_string (*/
-      /*TARGET_ENTRY_PLUGIN),*/
-    /*32,*/
-    /*(const guchar *) pl,*/
-    /*sizeof (Plugin));*/
+/**
+ * For drag n drop.
+ */
+static void
+on_dnd_drag_begin (
+  GtkWidget      *widget,
+  GdkDragContext *context,
+  ChannelWidget * self)
+{
+  g_message ("dnd drag begin");
+
+  Track * track = self->channel->track;
+  self->selected_in_dnd = 1;
+  MW_MIXER->start_drag_track = track;
+
+  if (self->n_press == 1)
+    {
+      int ctrl = 0, selected = 0;
+
+      ctrl = self->ctrl_held_at_start;
+
+      if (tracklist_selections_contains_track (
+            TRACKLIST_SELECTIONS,
+            track))
+        selected = 1;
+
+      /* no control & not selected */
+      if (!ctrl && !selected)
+        {
+          tracklist_selections_clear (
+            TRACKLIST_SELECTIONS);
+          tracklist_selections_add_track (
+            TRACKLIST_SELECTIONS,
+            track);
+        }
+      else if (!ctrl && selected)
+        { }
+      else if (ctrl && !selected)
+        tracklist_selections_add_track (
+          TRACKLIST_SELECTIONS,
+          track);
+    }
+}
+
+/**
+ * Highlights/unhighlights the channels
+ * appropriately.
+ */
+static void
+do_highlight (
+  ChannelWidget * self,
+  gint x,
+  gint y)
+{
+  Track * this = self->channel->track;
+
+  /* if we are closer to the start of selection than
+   * the end */
+  int w =
+    gtk_widget_get_allocated_width (
+      GTK_WIDGET (self));
+  if (x < w / 2)
+    {
+      /* highlight left */
+      gtk_drag_highlight (
+        GTK_WIDGET (
+          self->highlight_left_box));
+      gtk_widget_set_size_request (
+        GTK_WIDGET (
+          self->highlight_left_box),
+        2, -1);
+
+      /* unhilight right */
+      gtk_drag_unhighlight (
+        GTK_WIDGET (
+          self->highlight_right_box));
+      gtk_widget_set_size_request (
+        GTK_WIDGET (
+          self->highlight_right_box),
+        -1, -1);
+    }
+  else
+    {
+      /* highlight right */
+      gtk_drag_highlight (
+        GTK_WIDGET (
+          self->highlight_right_box));
+      gtk_widget_set_size_request (
+        GTK_WIDGET (
+          self->highlight_right_box),
+        2, -1);
+
+      /* unhilight left */
+      gtk_drag_unhighlight (
+        GTK_WIDGET (
+          self->highlight_left_box));
+      gtk_widget_set_size_request (
+        GTK_WIDGET (
+          self->highlight_left_box),
+        -1, -1);
+    }
 }
 
 static void
@@ -152,9 +321,6 @@ on_drag_motion (
 {
   GdkModifierType mask;
 
-  int w =
-    gtk_widget_get_allocated_width (widget);
-
   gdk_window_get_pointer (
     gtk_widget_get_window (widget),
     NULL, NULL, &mask);
@@ -163,33 +329,7 @@ on_drag_motion (
   else
     gdk_drag_status (context, GDK_ACTION_MOVE, time);
 
-  gtk_drag_unhighlight (widget);
-  gtk_drag_unhighlight (
-    GTK_WIDGET (self->highlight_left_box));
-  gtk_drag_unhighlight (
-    GTK_WIDGET (self->highlight_right_box));
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self->highlight_left_box),
-    -1, -1);
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self->highlight_right_box),
-    -1, -1);
-  if (x < (w / 2))
-    {
-      gtk_drag_highlight (
-        GTK_WIDGET (self->highlight_left_box));
-      gtk_widget_set_size_request (
-        GTK_WIDGET (self->highlight_left_box),
-        2, -1);
-    }
-  else
-    {
-      gtk_drag_highlight (
-        GTK_WIDGET (self->highlight_right_box));
-      gtk_widget_set_size_request (
-        GTK_WIDGET (self->highlight_right_box),
-        2, -1);
-    }
+  do_highlight (self, x, y);
 }
 
 void
@@ -198,6 +338,9 @@ on_drag_leave (GtkWidget      *widget,
                guint           time,
                ChannelWidget * self)
 {
+  g_message ("on_drag_leave");
+
+  /*do_highlight (self);*/
   gtk_drag_unhighlight (
     GTK_WIDGET (self->highlight_left_box));
   gtk_widget_set_size_request (
@@ -208,9 +351,7 @@ on_drag_leave (GtkWidget      *widget,
   gtk_widget_set_size_request (
     GTK_WIDGET (self->highlight_right_box),
     -1, -1);
-
 }
-
 /*static void*/
 /*phase_invert_button_clicked (ChannelWidget * self,*/
                              /*GtkButton     * button)*/
@@ -233,30 +374,60 @@ on_whole_channel_press (
   gdouble               y,
   ChannelWidget * self)
 {
-  g_message ("PRESED");
+  self->n_press = n_press;
+
   UI_GET_STATE_MASK (gesture);
+  self->ctrl_held_at_start =
+    state_mask & GDK_CONTROL_MASK;
+}
+
+static void
+on_drag_begin (GtkGestureDrag *gesture,
+               gdouble         start_x,
+               gdouble         start_y,
+               ChannelWidget * self)
+{
+  g_message ("drag begin ch");
+
+  self->selected_in_dnd = 0;
+  self->dragged = 0;
+}
+
+static void
+on_drag_update (GtkGestureDrag * gesture,
+               gdouble         offset_x,
+               gdouble         offset_y,
+               ChannelWidget * self)
+{
+  g_message ("drag_update");
+  self->dragged = 1;
+}
+
+static gboolean
+on_btn_release (GtkWidget *widget,
+               GdkEventButton  *event,
+               ChannelWidget * self)
+{
+  g_message ("btn release");
+
+  if (self->dragged || self->selected_in_dnd)
+    return FALSE;
 
   Track * track = self->channel->track;
-  if (n_press == 1)
+  if (self->n_press == 1)
     {
-      if (state_mask & GDK_CONTROL_MASK)
-        {
-          if (tracklist_selections_contains_track (
-                TRACKLIST_SELECTIONS,
-                track))
-            {
-              tracklist_selections_remove_track (
-                TRACKLIST_SELECTIONS,
-                track);
-            }
-          else
-            {
-              tracklist_selections_add_track (
-                TRACKLIST_SELECTIONS,
-                track);
-            }
-        }
-      else
+      int ctrl = 0, selected = 0;
+
+      if (event->state & GDK_CONTROL_MASK)
+        ctrl = 1;
+
+      if (tracklist_selections_contains_track (
+            TRACKLIST_SELECTIONS,
+            track))
+        selected = 1;
+
+      /* no control & not selected */
+      if (!ctrl && !selected)
         {
           tracklist_selections_clear (
             TRACKLIST_SELECTIONS);
@@ -264,9 +435,23 @@ on_whole_channel_press (
             TRACKLIST_SELECTIONS,
             track);
         }
-    }
-}
+      else if (!ctrl && selected)
+        { }
+      else if (ctrl && !selected)
+        tracklist_selections_add_track (
+          TRACKLIST_SELECTIONS,
+          track);
+      else if (ctrl && selected && !self->dragged)
+        {
+          tracklist_selections_remove_track (
+            TRACKLIST_SELECTIONS,
+            track);
 
+        }
+    }
+
+  return FALSE;
+}
 
 static void
 on_record_toggled (GtkToggleButton * btn,
@@ -723,7 +908,8 @@ channel_widget_init (ChannelWidget * self)
    * left or right) */
   gtk_drag_dest_set (
     GTK_WIDGET (self),
-    GTK_DEST_DEFAULT_ALL,
+    GTK_DEST_DEFAULT_MOTION |
+      GTK_DEST_DEFAULT_DROP,
     entries,
     1,
     GDK_ACTION_MOVE | GDK_ACTION_COPY);
@@ -732,11 +918,11 @@ channel_widget_init (ChannelWidget * self)
     GTK_GESTURE_MULTI_PRESS (
       gtk_gesture_multi_press_new (
         GTK_WIDGET (self)));
-  /*self->icon_and_name_drag =*/
-    /*GTK_GESTURE_DRAG (*/
-      /*gtk_gesture_drag_new (*/
-        /*GTK_WIDGET (*/
-          /*self->icon_and_name_event_box)));*/
+  self->drag =
+    GTK_GESTURE_DRAG (
+      gtk_gesture_drag_new (
+        GTK_WIDGET (
+          self)));
 
   GtkStyleContext * context;
   z_gtk_container_destroy_all_children (
@@ -770,19 +956,29 @@ channel_widget_init (ChannelWidget * self)
   g_signal_connect (
     G_OBJECT (self->mp), "pressed",
     G_CALLBACK (on_whole_channel_press), self);
+  g_signal_connect (
+    G_OBJECT (self->drag), "drag-begin",
+    G_CALLBACK (on_drag_begin), self);
+  g_signal_connect (
+    G_OBJECT (self->drag), "drag-update",
+    G_CALLBACK (on_drag_update), self);
   /*g_signal_connect (*/
-    /*G_OBJECT (self->icon_and_name_drag),*/
-    /*"drag-begin",*/
-    /*G_CALLBACK (on_ian_drag_begin), self);*/
+    /*G_OBJECT (self->drag), "drag-end",*/
+    /*G_CALLBACK (on_drag_end), self);*/
+  g_signal_connect_after (
+    GTK_WIDGET (self->icon_and_name_event_box),
+    "drag-begin",
+    G_CALLBACK(on_dnd_drag_begin), self);
   /*g_signal_connect (*/
-    /*G_OBJECT (self->icon_and_name_drag),*/
-    /*"drag-update",*/
-    /*G_CALLBACK (on_ian_drag_), self);*/
+    /*GTK_WIDGET (self->icon_and_name_event_box),*/
+    /*"drag-end",*/
+    /*G_CALLBACK(on_dnd_drag_end), self);*/
   g_signal_connect (
     GTK_WIDGET (self), "drag-data-received",
     G_CALLBACK(on_drag_data_received), self);
   g_signal_connect (
-    GTK_WIDGET (self), "drag-data-get",
+    GTK_WIDGET (self->icon_and_name_event_box),
+    "drag-data-get",
     G_CALLBACK (on_drag_data_get), self);
   g_signal_connect (
     GTK_WIDGET (self), "drag-motion",
@@ -790,4 +986,10 @@ channel_widget_init (ChannelWidget * self)
   g_signal_connect (
     GTK_WIDGET (self), "drag-leave",
     G_CALLBACK (on_drag_leave), self);
+  /*g_signal_connect (*/
+    /*GTK_WIDGET (self), "drag-failed",*/
+    /*G_CALLBACK (on_drag_failed), self);*/
+  g_signal_connect (
+    GTK_WIDGET (self), "button-release-event",
+    G_CALLBACK (on_btn_release), self);
 }

@@ -1,7 +1,7 @@
 /*
  * plugins/plugin_manager.c - Manages plugins
  *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  * Copyright (C) 2008-2012 Paul Davis
  * Copyright (C) David Robillard
  *
@@ -82,16 +82,21 @@ int sort_category_func (const void *a, const void *b) {
     return -strcmp(pa, pb); /* aka: return strcmp(b, a); */
 }
 
-int sort_plugin_func (const void *a, const void *b) {
-    PluginDescriptor * pa = *(PluginDescriptor * const *) a,
-                      * pb = *(PluginDescriptor * const *) b;
-    int r = strcasecmp(pa->name, pb->name);
-    if (r)
-      return r;
+static int sort_plugin_func (
+  const void *a, const void *b)
+{
+  PluginDescriptor * pa =
+    *(PluginDescriptor * const *) a;
+  PluginDescriptor * pb =
+    *(PluginDescriptor * const *) b;
+  int r = strcasecmp(pa->name, pb->name);
+  if (r)
+    return r;
 
-    /* if equal ignoring case, use opposite of strcmp() result to get
-     * lower before upper */
-    return -strcmp(pa->name, pb->name); /* aka: return strcmp(b, a); */
+  /* if equal ignoring case, use opposite of strcmp()
+   * result to get lower before upper */
+  /* aka: return strcmp(b, a); */
+  return -strcmp(pa->name, pb->name);
 }
 
 void

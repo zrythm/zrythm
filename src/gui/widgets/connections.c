@@ -203,10 +203,18 @@ create_audio_units_store ()
                       2, NULL,
                       -1);
 
-  FOREACH_CH
+  Track * track;
+  Channel * ch;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      Channel * channel = MIXER->channels[i];
-      char * label = g_strdup_printf ("%d:%s", i, channel->track->name);
+      track = TRACKLIST->tracks[i];
+      if (track->type == TRACK_TYPE_CHORD ||
+          track->type == TRACK_TYPE_MASTER)
+        continue;
+
+      ch = track->channel;
+      char * label =
+        g_strdup_printf ("%d:%s", i, track->name);
       gtk_tree_store_append (store, &iter2, &iter);
       gtk_tree_store_set (store, &iter2,
                           0, label,
@@ -214,24 +222,28 @@ create_audio_units_store ()
                           2, NULL,
                           -1);
       g_free (label);
-      label = g_strdup_printf ("%s Channel", channel->track->name);
+      label =
+        g_strdup_printf ("%s Channel", track->name);
       gtk_tree_store_append (store, &iter3, &iter2);
       gtk_tree_store_set (store, &iter3,
                           0, label,
                           1, AUWT_CHANNEL,
-                          2, channel,
+                          2, ch,
                           -1);
       g_free (label);
       for (int j = 0; j < STRIP_SIZE; j++)
         {
-          Plugin * plugin = channel->plugins[j];
+          Plugin * plugin = ch->plugins[j];
           if (plugin)
             {
-              char * label = g_strdup_printf ("%s:%d:%s",
-                                              channel->track->name,
-                                              j,
-                                              plugin->descr->name);
-              gtk_tree_store_append (store, &iter3, &iter2);
+              char * label =
+                g_strdup_printf (
+                  "%s:%d:%s",
+                  track->name,
+                  j,
+                  plugin->descr->name);
+              gtk_tree_store_append (
+                store, &iter3, &iter2);
               gtk_tree_store_set (store, &iter3,
                                   0, label,
                                   1, AUWT_PLUGIN,

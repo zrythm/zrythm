@@ -59,12 +59,10 @@ create_model_for_routes (
                         G_TYPE_STRING,
                         G_TYPE_POINTER);
 
-  for (int i = -1; i < MIXER->num_channels; i++)
+  Track * track;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      Track * track =
-        i == -1 ?
-        MIXER->master->track :
-        MIXER->channels[i]->track;
+      track = TRACKLIST->tracks[i];
 
       if (type == ROUTE_TARGET_TYPE_MASTER &&
           track->type == TRACK_TYPE_MASTER)

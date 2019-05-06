@@ -37,12 +37,13 @@
   size++;
 
 /**
- * Inserts element in array at pos and increases the size.
+ * Inserts element in array at pos and increases the
+ * size.
  */
 #define array_insert(array,size,pos,element) \
-  for (int ii = pos; ii < size; ii++) \
+  for (int ii = size; ii > pos; ii--) \
     { \
-      array[ii + 1] = array[ii]; \
+      array[ii] = array[ii - 1]; \
     } \
   array[pos] = element; \
   size++;
@@ -54,11 +55,13 @@
  */
 #define array_double_insert( \
   arr1,arr2,size,pos,el1,el2) \
-  for (int ii = pos; ii < size; ii++) \
+  for (int ii = size; ii > pos; ii--) \
     { \
-      arr1[ii + 1] = arr1[ii]; \
-      arr2[ii + 1] = arr2[ii]; \
+      g_message ("setting %d = %d", ii, ii - 1); \
+      arr1[ii] = arr1[ii - 1]; \
+      arr2[ii] = arr2[ii - 1]; \
     } \
+    g_message ("setting %d = the element", pos); \
   arr1[pos] = el1; \
   arr2[pos] = el2; \
   size++;

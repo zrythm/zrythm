@@ -207,10 +207,13 @@ midi_panic_all ()
     AUDIO_ENGINE->midi_editor_manual_press->
       midi_events);
 
-  for (int i = 0; i < MIXER->num_channels; i++)
+  Channel * ch;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      Channel * channel = MIXER->channels[i];
-      midi_panic (
-        channel->piano_roll->midi_events);
+      ch = TRACKLIST->tracks[i]->channel;
+
+      if (ch)
+        midi_panic (
+          ch->piano_roll->midi_events);
     }
 }

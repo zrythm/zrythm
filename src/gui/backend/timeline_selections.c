@@ -365,7 +365,7 @@ timeline_selections_get_highest_track (
   tmp_track = _track; \
   tmp_pos = \
     tracklist_get_track_pos ( \
-      tmp_track); \
+      TRACKLIST, tmp_track); \
   if (tmp_pos > track_pos) \
     { \
       track_pos = tmp_pos; \
@@ -414,7 +414,7 @@ timeline_selections_get_lowest_track (
   tmp_track = _track; \
   tmp_pos = \
     tracklist_get_track_pos ( \
-      tmp_track); \
+      TRACKLIST, tmp_track); \
   if (tmp_pos < track_pos) \
     { \
       track_pos = tmp_pos; \

@@ -47,13 +47,13 @@ set_label (RouteTargetSelectorWidget * self)
   ChannelWidget * cw = self->owner;
   if (!(cw && cw->channel->output &&
           cw->channel->output->track))
-    return;
+    {
+      g_message ("NONE");
+      return;
+    }
 
   Track * track = cw->channel->output->track;
   g_return_if_fail (track->name);
-
-  g_message ("track %s",
-             track->name);
 
   gtk_label_set_text (
     self->label,

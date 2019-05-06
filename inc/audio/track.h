@@ -95,7 +95,16 @@ typedef struct Track
   int                 handle_pos; ///< position of multipane handle
   int                 mute; ///< muted or not
   int                 solo; ///< solo or not
-  int                 recording; ///< recording or not
+
+  /** Recording or not. */
+  int                 recording;
+
+  /**
+   * Active (enabled) or not.
+   *
+   * Disabled tracks should be ignored in routing.
+   */
+  int                 active;
 
   /**
    * Track color.
@@ -135,6 +144,8 @@ typedef struct Track
 
   /**
    * Used when undoing/redoing.
+   *
+   * FIXME possibly not needed
    */
   int                   actual_id;
 

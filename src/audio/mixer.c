@@ -74,24 +74,33 @@ mixer_recalc_graph (
 void
 mixer_init_loaded ()
 {
-  MIXER->master =
-    project_get_channel (MIXER->master_id);
-
-  for (int i = 0; i < MIXER->num_channels; i++)
-    MIXER->channels[i] =
-      project_get_channel (
-        MIXER->channel_ids[i]);
+  Channel * ch;
+  for (int i = 0; i < PROJECT->num_channels; i++)
+    {
+      ch = project_get_channel (i);
+      if (ch->type == CT_MASTER)
+        {
+          MIXER->master = ch;
+          return;
+        }
+    }
+  g_warn_if_reached ();
 }
 
 /**
  * Returns if mixer has soloed channels.
+ *
+ * This must ignore non-mixer tracks.
  */
 int
 mixer_has_soloed_channels ()
 {
-  for (int i = 0; i < MIXER->num_channels; i++)
+  Track * track;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      if (MIXER->channels[i]->track->solo)
+      track = TRACKLIST->tracks[i];
+
+      if (track->solo && track->channel)
         return 1;
     }
   return 0;
@@ -103,46 +112,25 @@ mixer_has_soloed_channels ()
 void
 mixer_load_plugins ()
 {
-  for (int i = 0; i < MIXER->num_channels; i++)
+  Track * track;
+  Channel * ch;
+  Plugin * pl;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      Channel * channel = MIXER->channels[i];
+      track = TRACKLIST->tracks[i];
+      ch = track->channel;
+      if (!ch)
+        continue;
+
       for (int j = 0; j < STRIP_SIZE; j++)
         {
-          Plugin * plugin = channel->plugins[j];
-          if (plugin)
-            {
-              plugin_instantiate (plugin);
-            }
+          pl = ch->plugins[j];
+          if (!pl)
+            continue;
+
+          plugin_instantiate (pl);
         }
     }
-
-  /* do master too  */
-  for (int j = 0; j < STRIP_SIZE; j++)
-    {
-      Plugin * plugin = MIXER->master->plugins[j];
-      if (plugin)
-        {
-          plugin_instantiate (plugin);
-        }
-    }
-}
-
-/**
- * Gets next unique channel ID.
- *
- * Gets the max ID of all channels and increments it.
- */
-int
-mixer_get_next_channel_id ()
-{
-  int count = 1;
-  for (int i = 0; i < MIXER->num_channels; i++)
-    {
-      Channel * channel = MIXER->channels[i];
-      if (channel->id >= count)
-        count = channel->id + 1;
-    }
-  return count;
 }
 
 /**
@@ -157,49 +145,25 @@ mixer_get_next_channel_id ()
  *
  * @param recalc_graph Recalculate routing graph.
  */
-void
-mixer_add_channel (
-  Mixer *   self,
-  Channel * channel,
-  int       recalc_graph)
-{
-  g_warn_if_fail (channel);
+/*void*/
+/*mixer_add_channel (*/
+  /*Mixer *   self,*/
+  /*Channel * channel,*/
+  /*int       recalc_graph)*/
+/*{*/
+  /*g_warn_if_fail (channel);*/
 
-  if (channel->type == CT_MASTER)
-    {
-      self->master = channel;
-      self->master_id = channel->id;
-    }
-  else
-    {
-      self->channel_ids[self->num_channels] =
-        channel->id;
-      array_append (self->channels,
-                    self->num_channels,
-                    channel);
-    }
+  /*if (channel->type == CT_MASTER)*/
+    /*{*/
+      /*self->master = channel;*/
+      /*self->master_id = channel->id;*/
+    /*}*/
 
-  channel_connect (channel);
+  /*channel_connect (channel);*/
 
-  if (recalc_graph)
-    mixer_recalc_graph (self);
-}
-
-/**
- * Returns channel at given position (order)
- *
- * Channel order in the mixer is reflected in the track list
- */
-Channel *
-mixer_get_channel_at_pos (int pos)
-{
-  if (pos < MIXER->num_channels)
-    {
-      return MIXER->channels[pos];
-    }
-  g_warning ("No channel found at pos %d", pos);
-  return NULL;
-}
+  /*if (recalc_graph)*/
+    /*mixer_recalc_graph (self);*/
+/*}*/
 
 /**
  * Removes the given channel from the mixer and
@@ -207,28 +171,20 @@ mixer_get_channel_at_pos (int pos)
  *
  * @param publish_events Publish GUI events.
  */
-void
-mixer_remove_channel (
-  Mixer *   self,
-  Channel * ch,
-  int       publish_events)
-{
-  g_message ("removing channel %s",
-             ch->track->name);
-  ch->enabled = 0;
+/*void*/
+/*mixer_remove_channel (*/
+  /*Mixer *   self,*/
+  /*Channel * ch,*/
+  /*int       publish_events)*/
+/*{*/
+  /*g_message ("removing channel %s",*/
+             /*ch->track->name);*/
 
-  array_double_delete (
-    self->channels,
-    self->channel_ids,
-    self->num_channels,
-    ch,
-    ch->id);
+  /*channel_disconnect (ch);*/
 
-  channel_disconnect (ch);
-
-  if (publish_events)
-    EVENTS_PUSH (ET_CHANNEL_REMOVED, NULL);
-}
+  /*if (publish_events)*/
+    /*EVENTS_PUSH (ET_CHANNEL_REMOVED, NULL);*/
+/*}*/
 
 /**
  * Moves the given plugin to the given slot in
@@ -281,17 +237,4 @@ mixer_move_plugin (
     GTK_WIDGET (prev_ch->widget->slots[prev_slot]));
   gtk_widget_queue_draw (
     GTK_WIDGET (ch->widget->slots[slot]));
-}
-
-Channel *
-mixer_get_channel_by_name (char *  name)
-{
-  Channel * chan;
-  for (int i = 0; i < MIXER->num_channels; i++)
-    {
-      chan = MIXER->channels[i];
-      if (g_strcmp0 (chan->track->name, name) == 0)
-        return chan;
-    }
-  return NULL;
 }

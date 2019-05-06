@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-05 19:11+0100\n"
+"POT-Creation-Date: 2019-05-06 20:13+0100\n"
 "PO-Revision-Date: 2019-05-04 23:37+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Chinese (Simplified) <https://translate.zrythm.org/projects/"
@@ -63,7 +63,7 @@ msgstr ""
 msgid "Artist"
 msgstr ""
 
-#: src/audio/track.c:736
+#: src/audio/track.c:739
 msgid "Audio"
 msgstr ""
 
@@ -83,7 +83,7 @@ msgstr ""
 msgid "BPM - Click and drag up/down to set"
 msgstr ""
 
-#: src/audio/engine_jack.c:625
+#: src/audio/engine_jack.c:630
 msgid "Backend error"
 msgstr ""
 
@@ -115,7 +115,7 @@ msgstr ""
 msgid "Bottom Panel"
 msgstr ""
 
-#: src/audio/track.c:739
+#: src/audio/track.c:742
 msgid "Bus"
 msgstr ""
 
@@ -140,7 +140,7 @@ msgstr ""
 msgid "Change Pan"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:592
+#: src/gui/widgets/channel_slot.c:581
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -157,7 +157,7 @@ msgstr ""
 msgid "Choose a method to donate"
 msgstr ""
 
-#: src/audio/track.c:745
+#: src/audio/track.c:748
 msgid "Chord"
 msgstr ""
 
@@ -173,11 +173,11 @@ msgstr ""
 msgid "Click to enable MIDI controllers to be connected automatically"
 msgstr ""
 
-#: src/audio/engine_jack.c:628
+#: src/audio/engine_jack.c:633
 msgid "Client zombie"
 msgstr ""
 
-#: src/audio/engine_jack.c:622
+#: src/audio/engine_jack.c:627
 msgid "Client's protocol version does not match"
 msgstr ""
 
@@ -195,7 +195,7 @@ msgstr ""
 msgid "Color"
 msgstr ""
 
-#: src/audio/engine_jack.c:607
+#: src/audio/engine_jack.c:612
 msgid "Communication error with the JACK server"
 msgstr ""
 
@@ -207,12 +207,12 @@ msgstr ""
 msgid "Controllers found"
 msgstr ""
 
-#: src/actions/copy_plugins_action.c:193
+#: src/actions/copy_plugins_action.c:188
 #, c-format
 msgid "Copy %d Plugins"
 msgstr ""
 
-#: src/actions/copy_plugins_action.c:189
+#: src/actions/copy_plugins_action.c:184
 #, c-format
 msgid "Copy %s"
 msgstr ""
@@ -225,7 +225,7 @@ msgstr ""
 msgid "Copy selection to clipboard"
 msgstr ""
 
-#: src/actions/create_tracks_action.c:217
+#: src/actions/create_tracks_action.c:210
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr ""
@@ -240,7 +240,7 @@ msgstr ""
 msgid "Create %s"
 msgstr ""
 
-#: src/actions/create_tracks_action.c:212
+#: src/actions/create_tracks_action.c:205
 #, c-format
 msgid "Create %s Track"
 msgstr ""
@@ -266,7 +266,7 @@ msgstr ""
 msgid "Delete %d Plugins"
 msgstr ""
 
-#: src/actions/delete_tracks_action.c:121
+#: src/actions/delete_tracks_action.c:117
 #, c-format
 msgid "Delete %d Tracks"
 msgstr ""
@@ -285,7 +285,7 @@ msgstr ""
 msgid "Delete Preset?"
 msgstr ""
 
-#: src/actions/delete_tracks_action.c:118
+#: src/actions/delete_tracks_action.c:114
 msgid "Delete Track"
 msgstr ""
 
@@ -350,7 +350,7 @@ msgstr ""
 msgid "Eraser tool"
 msgstr ""
 
-#: src/actions/create_tracks_action.c:100
+#: src/actions/create_tracks_action.c:98
 #, c-format
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr ""
@@ -359,7 +359,7 @@ msgstr ""
 msgid "Error instantiating plugin. Please see log for details."
 msgstr ""
 
-#: src/plugins/plugin_manager.c:220
+#: src/plugins/plugin_manager.c:225
 msgid "Error loading LV2 bundle dir: "
 msgstr ""
 
@@ -449,7 +449,7 @@ msgstr ""
 msgid "Grid"
 msgstr ""
 
-#: src/audio/track.c:748
+#: src/audio/track.c:751
 msgid "Group"
 msgstr ""
 
@@ -469,7 +469,7 @@ msgstr ""
 msgid "Initializing..."
 msgstr ""
 
-#: src/audio/track.c:733
+#: src/audio/track.c:736
 msgid "Instrument"
 msgstr ""
 
@@ -481,7 +481,7 @@ msgstr ""
 msgid "Italian [it]"
 msgstr ""
 
-#: src/audio/engine_jack.c:381
+#: src/audio/engine_jack.c:386
 #, c-format
 msgid "JACK Error: %s"
 msgstr ""
@@ -575,7 +575,7 @@ msgstr ""
 msgid "Manual"
 msgstr ""
 
-#: src/project.c:163 src/audio/track.c:742
+#: src/project.c:163 src/audio/track.c:745
 msgid "Master"
 msgstr ""
 
@@ -592,7 +592,7 @@ msgstr ""
 msgid "Move %d Plugins"
 msgstr ""
 
-#: src/actions/move_tracks_action.c:108
+#: src/actions/move_tracks_action.c:143
 #, c-format
 msgid "Move %d Tracks"
 msgstr ""
@@ -607,7 +607,7 @@ msgstr ""
 msgid "Move Object(s)"
 msgstr ""
 
-#: src/actions/move_tracks_action.c:105
+#: src/actions/move_tracks_action.c:140
 msgid "Move Track"
 msgstr ""
 
@@ -639,7 +639,7 @@ msgstr ""
 msgid "No item selected"
 msgstr ""
 
-#: src/gui/widgets/route_target_selector_popover.c:182
+#: src/gui/widgets/route_target_selector_popover.c:180
 msgid "No output selected"
 msgstr ""
 
@@ -681,7 +681,7 @@ msgid "Output Files"
 msgstr ""
 
 #. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:594
+#: src/audio/engine_jack.c:599
 msgid "Overall operation failed"
 msgstr ""
 
@@ -786,7 +786,7 @@ msgid ""
 "(note: this text is hard coded at the moment)"
 msgstr ""
 
-#: src/project.c:549
+#: src/project.c:558
 msgid "Project saved."
 msgstr ""
 
@@ -858,7 +858,7 @@ msgstr ""
 msgid "Report a Bug"
 msgstr ""
 
-#: src/audio/engine_jack.c:610
+#: src/audio/engine_jack.c:615
 msgid "Requested client does not exist"
 msgstr ""
 
@@ -886,7 +886,7 @@ msgstr ""
 msgid "Routed to Stereo Out"
 msgstr ""
 
-#: src/gui/widgets/route_target_selector_popover.c:196
+#: src/gui/widgets/route_target_selector_popover.c:194
 #, c-format
 msgid "Routing to %s"
 msgstr ""
@@ -1041,7 +1041,7 @@ msgstr ""
 msgid "Tests the backends"
 msgstr ""
 
-#: src/audio/engine_jack.c:601
+#: src/audio/engine_jack.c:606
 msgid "The desired client name was not unique"
 msgstr ""
 
@@ -1056,7 +1056,7 @@ msgid ""
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 msgstr ""
 
-#: src/audio/engine_jack.c:597
+#: src/audio/engine_jack.c:602
 msgid "The operation contained an invalid or unsupported option"
 msgstr ""
 
@@ -1130,19 +1130,19 @@ msgstr ""
 msgid "URI (Optional):"
 msgstr ""
 
-#: src/audio/engine_jack.c:619
+#: src/audio/engine_jack.c:624
 msgid "Unable to access shared memory"
 msgstr ""
 
-#: src/audio/engine_jack.c:604
+#: src/audio/engine_jack.c:609
 msgid "Unable to connect to the JACK server"
 msgstr ""
 
-#: src/audio/engine_jack.c:616
+#: src/audio/engine_jack.c:621
 msgid "Unable to initialize client"
 msgstr ""
 
-#: src/audio/engine_jack.c:613
+#: src/audio/engine_jack.c:618
 msgid "Unable to load internal client"
 msgstr ""
 
@@ -1174,7 +1174,7 @@ msgstr ""
 msgid "Unsolo Track"
 msgstr ""
 
-#: src/project.c:177
+#: src/project.c:178
 msgid "Untitled Project"
 msgstr ""
 

@@ -427,11 +427,14 @@ on_mixer_selections_changed ()
   Channel * ch;
   ChannelSlotWidget * csw;
 
-  for (int i = -1; i < MIXER->num_channels; i++)
+  Track * track;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      ch =
-        (i == -1) ?
-        MIXER->master : MIXER->channels[i];
+      track = TRACKLIST->tracks[i];
+      if (track->type == TRACK_TYPE_CHORD)
+        continue;
+
+      ch = track->channel;
 
       for (int j = 0; j < STRIP_SIZE; j++)
         {
@@ -883,6 +886,17 @@ events_process (void * data)
           on_channel_output_changed (
             (Channel *)ev->arg);
           break;
+        case ET_TRACKS_MOVED:
+          if (MW_MIXER)
+            mixer_widget_hard_refresh (MW_MIXER);
+          if (MW_TRACKLIST)
+            tracklist_widget_hard_refresh (
+              MW_TRACKLIST);
+
+          /* needs to be called later because tracks
+           * need time to get allocated */
+          EVENTS_PUSH (ET_REFRESH_ARRANGER, NULL);
+          break;
         default:
           g_message ("event not implemented yet");
           /* unimplemented */
@@ -893,8 +907,8 @@ events_process (void * data)
     }
   /*g_message ("processed %d events", i);*/
 
-  if (num_events > 5)
-    g_warning ("More than 5 events processed. "
+  if (num_events > 8)
+    g_warning ("More than 8 events processed. "
                "Optimization needed.");
 
   /*g_usleep (8000);*/

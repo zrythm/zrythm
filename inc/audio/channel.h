@@ -154,7 +154,7 @@ typedef struct Channel
   /** Cache. */
   Track *              track;
 
-  int                  enabled; ///< enabled or not
+  //int                  enabled; ///< enabled or not
 
   /**
    * Automatables for this channel to be generated
@@ -164,7 +164,7 @@ typedef struct Channel
   Automatable *        automatables[40]; ///< cache
   int                  num_automatables;
 
-  int                  visible; ///< whether visible or not
+  //int                  visible; ///< whether visible or not
   ChannelWidget *      widget; ///< the channel widget
 
   /**
@@ -298,12 +298,6 @@ channel_reset_fader (Channel * channel);
 
 void
 channel_prepare_process (Channel * channel);
-
-/**
- * Used when loading projects.
- */
-Channel *
-channel_get_or_create_blank (int id);
 
 /**
  * Creates a channel of the given type with the

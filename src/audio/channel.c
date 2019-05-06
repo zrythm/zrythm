@@ -1190,8 +1190,6 @@ _create_channel (
   channel->piano_roll->midi_events =
     midi_events_new (1);
 
-  channel->visible = 1;
-
   if (add_to_project)
     project_add_channel (channel);
 
@@ -1271,32 +1269,6 @@ channel_generate_automatables (Channel * channel)
           channel->automatables[
             channel->num_automatables - 1]->id;
     }
-}
-
-/**
- * Used when loading projects.
- */
-Channel *
-channel_get_or_create_blank (int id)
-{
-  if (MIXER->channels[id])
-    {
-      return MIXER->channels[id];
-    }
-
-  Channel * channel = calloc (1, sizeof (Channel));
-
-  channel->id = id;
-
-  /* thread related */
-  /*setup_thread (channel);*/
-
-  MIXER->channels[id] = channel;
-  MIXER->num_channels++;
-
-  g_message ("[channel_new] Creating blank channel %d", id);
-
-  return channel;
 }
 
 /**
@@ -1650,8 +1622,8 @@ channel_add_plugin (
   int       recalc_graph)
 {
   int i;
-  int prev_enabled = channel->enabled;
-  channel->enabled = 0;
+  int prev_active = channel->track->active;
+  channel->track->active = 0;
 
   /* confirm if another plugin exists */
   if (confirm && channel->plugins[pos])
@@ -1726,7 +1698,7 @@ channel_add_plugin (
       plugin,
       next_plugin);
 
-  channel->enabled = prev_enabled;
+  channel->track->active= prev_active;
 
   if (gen_automatables)
     plugin_generate_automatables (plugin);
@@ -1757,16 +1729,28 @@ channel_get_last_active_slot_index (Channel * channel)
 
 /**
  * Returns the index on the mixer.
+ *
+ * where is this used?
  */
 int
 channel_get_index (Channel * channel)
 {
-  for (int i = 0; i < MIXER->num_channels; i++)
+  Track * track;
+  int index = 0;
+  for (int i = 0;
+       i < TRACKLIST->num_tracks; i++)
     {
-      if (MIXER->channels[i] == channel)
-        return i;
+      track = TRACKLIST->tracks[i];
+
+      if (track->type == TRACK_TYPE_MASTER ||
+          track->type == TRACK_TYPE_CHORD)
+        continue;
+
+      index++;
+      if (track->channel == channel)
+        return index;
     }
-  g_error ("Channel index for %s not found", channel->track->name);
+  g_return_val_if_reached (-1);
 }
 
 /**
@@ -1912,8 +1896,6 @@ channel_clone (
   COPY_MEMBER (type);
   clone->fader.channel = clone;
   fader_copy (&ch->fader, &clone->fader);
-  COPY_MEMBER (enabled);
-  COPY_MEMBER (visible);
 
 #undef COPY_MEMBER
 

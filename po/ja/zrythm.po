@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-05 19:11+0100\n"
+"POT-Creation-Date: 2019-05-06 20:13+0100\n"
 "PO-Revision-Date: 2019-05-05 00:34+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Japanese <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -69,7 +69,7 @@ msgstr "常にプラグインUIを開く"
 msgid "Artist"
 msgstr "アーティスト"
 
-#: src/audio/track.c:736
+#: src/audio/track.c:739
 #, fuzzy
 msgid "Audio"
 msgstr "オーディオ"
@@ -91,7 +91,7 @@ msgstr "試聴ツール"
 msgid "BPM - Click and drag up/down to set"
 msgstr "BPM  - クリックして上下にドラッグして設定"
 
-#: src/audio/engine_jack.c:625
+#: src/audio/engine_jack.c:630
 #, fuzzy
 msgid "Backend error"
 msgstr "バックエンドエラー"
@@ -125,7 +125,7 @@ msgstr "ボット"
 msgid "Bottom Panel"
 msgstr "下パネル"
 
-#: src/audio/track.c:739
+#: src/audio/track.c:742
 msgid "Bus"
 msgstr "バス"
 
@@ -150,7 +150,7 @@ msgstr "フェーダーを変更"
 msgid "Change Pan"
 msgstr "パンを変更"
 
-#: src/gui/widgets/channel_slot.c:592
+#: src/gui/widgets/channel_slot.c:581
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -169,7 +169,7 @@ msgstr "中国語[zh]"
 msgid "Choose a method to donate"
 msgstr "使用する支払い方法を選択する"
 
-#: src/audio/track.c:745
+#: src/audio/track.c:748
 #, fuzzy
 msgid "Chord"
 msgstr "コード"
@@ -186,11 +186,11 @@ msgstr "コード"
 msgid "Click to enable MIDI controllers to be connected automatically"
 msgstr "クリックするとMIDIコントローラーが自動的に接続されます"
 
-#: src/audio/engine_jack.c:628
+#: src/audio/engine_jack.c:633
 msgid "Client zombie"
 msgstr "クライアントゾンビ"
 
-#: src/audio/engine_jack.c:622
+#: src/audio/engine_jack.c:627
 msgid "Client's protocol version does not match"
 msgstr "クライアントのプロトコルバージョンが一致しません"
 
@@ -208,7 +208,7 @@ msgstr "コレクション"
 msgid "Color"
 msgstr "色"
 
-#: src/audio/engine_jack.c:607
+#: src/audio/engine_jack.c:612
 msgid "Communication error with the JACK server"
 msgstr "JACKサーバーとの通信エラー"
 
@@ -221,12 +221,12 @@ msgstr "接続"
 msgid "Controllers found"
 msgstr "コントローラが見つかりました"
 
-#: src/actions/copy_plugins_action.c:193
+#: src/actions/copy_plugins_action.c:188
 #, c-format
 msgid "Copy %d Plugins"
 msgstr "%dプラグインをコピー"
 
-#: src/actions/copy_plugins_action.c:189
+#: src/actions/copy_plugins_action.c:184
 #, c-format
 msgid "Copy %s"
 msgstr "%sをコピー"
@@ -239,7 +239,7 @@ msgstr "コピー・アンド・ペースト"
 msgid "Copy selection to clipboard"
 msgstr "選択範囲をクリップボードにコピー"
 
-#: src/actions/create_tracks_action.c:217
+#: src/actions/create_tracks_action.c:210
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr "%d個の%sトラックを作成"
@@ -254,7 +254,7 @@ msgstr "%d個の%sを作成"
 msgid "Create %s"
 msgstr "%sを作成"
 
-#: src/actions/create_tracks_action.c:212
+#: src/actions/create_tracks_action.c:205
 #, c-format
 msgid "Create %s Track"
 msgstr "%sトラックを作成"
@@ -281,7 +281,7 @@ msgstr "選択範囲をクリップボードに切り取る"
 msgid "Delete %d Plugins"
 msgstr "%d個のプラグインを削除"
 
-#: src/actions/delete_tracks_action.c:121
+#: src/actions/delete_tracks_action.c:117
 #, c-format
 msgid "Delete %d Tracks"
 msgstr "%d個のトラックを削除"
@@ -302,7 +302,7 @@ msgstr "プラグインを削除"
 msgid "Delete Preset?"
 msgstr "プリセットを削除しますか？"
 
-#: src/actions/delete_tracks_action.c:118
+#: src/actions/delete_tracks_action.c:114
 #, fuzzy
 msgid "Delete Track"
 msgstr "トラックを削除"
@@ -369,7 +369,7 @@ msgstr "リージョン名を入力してください"
 msgid "Eraser tool"
 msgstr "消しゴムツール"
 
-#: src/actions/create_tracks_action.c:100
+#: src/actions/create_tracks_action.c:98
 #, c-format
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr "プラグイン%sのインスタンス化エラー。詳細はログを参照してください。"
@@ -378,7 +378,7 @@ msgstr "プラグイン%sのインスタンス化エラー。詳細はログを�
 msgid "Error instantiating plugin. Please see log for details."
 msgstr "プラグイン%sのインスタンス化エラー。詳細はログを参照してください。"
 
-#: src/plugins/plugin_manager.c:220
+#: src/plugins/plugin_manager.c:225
 msgid "Error loading LV2 bundle dir: "
 msgstr "LV2バンドルディレクトリの読み込みエラー： "
 
@@ -470,7 +470,7 @@ msgstr "グローバル・ショートカット"
 msgid "Grid"
 msgstr "グリッド"
 
-#: src/audio/track.c:748
+#: src/audio/track.c:751
 msgid "Group"
 msgstr "グループ"
 
@@ -490,7 +490,7 @@ msgstr "設定を初期化"
 msgid "Initializing..."
 msgstr "初期化中…"
 
-#: src/audio/track.c:733
+#: src/audio/track.c:736
 msgid "Instrument"
 msgstr "インストゥルメント"
 
@@ -502,7 +502,7 @@ msgstr "インターフェイス"
 msgid "Italian [it]"
 msgstr "イタリア語[it]"
 
-#: src/audio/engine_jack.c:381
+#: src/audio/engine_jack.c:386
 #, c-format
 msgid "JACK Error: %s"
 msgstr "JACKエラー：%s"
@@ -598,7 +598,7 @@ msgstr "メインウィンドウ"
 msgid "Manual"
 msgstr "マニュアル"
 
-#: src/project.c:163 src/audio/track.c:742
+#: src/project.c:163 src/audio/track.c:745
 msgid "Master"
 msgstr "マスター"
 
@@ -615,7 +615,7 @@ msgstr "ミキサーパネル"
 msgid "Move %d Plugins"
 msgstr "%dプラグインを移動"
 
-#: src/actions/move_tracks_action.c:108
+#: src/actions/move_tracks_action.c:143
 #, c-format
 msgid "Move %d Tracks"
 msgstr "%d個のプラグインを移動"
@@ -630,7 +630,7 @@ msgstr "%sを移動"
 msgid "Move Object(s)"
 msgstr "オブジェクトを移動"
 
-#: src/actions/move_tracks_action.c:105
+#: src/actions/move_tracks_action.c:140
 #, fuzzy
 msgid "Move Track"
 msgstr "トラックを移動"
@@ -665,7 +665,7 @@ msgstr ""
 msgid "No item selected"
 msgstr "アイテムが選択されていません"
 
-#: src/gui/widgets/route_target_selector_popover.c:182
+#: src/gui/widgets/route_target_selector_popover.c:180
 #, fuzzy
 msgid "No output selected"
 msgstr "出力が選択されていません"
@@ -710,7 +710,7 @@ msgid "Output Files"
 msgstr "出力ファイル"
 
 #. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:594
+#: src/audio/engine_jack.c:599
 msgid "Overall operation failed"
 msgstr "全体的な操作は失敗しました"
 
@@ -818,7 +818,7 @@ msgid ""
 "(note: this text is hard coded at the moment)"
 msgstr ""
 
-#: src/project.c:549
+#: src/project.c:558
 msgid "Project saved."
 msgstr "プロジェクトが保存されました。"
 
@@ -892,7 +892,7 @@ msgstr "選択したプロジェクトをリストから削除します"
 msgid "Report a Bug"
 msgstr "バグを報告"
 
-#: src/audio/engine_jack.c:610
+#: src/audio/engine_jack.c:615
 msgid "Requested client does not exist"
 msgstr "要求されたクライアントは存在しません"
 
@@ -920,7 +920,7 @@ msgstr "右パネル"
 msgid "Routed to Stereo Out"
 msgstr ""
 
-#: src/gui/widgets/route_target_selector_popover.c:196
+#: src/gui/widgets/route_target_selector_popover.c:194
 #, c-format
 msgid "Routing to %s"
 msgstr ""
@@ -1078,7 +1078,7 @@ msgstr "テスト"
 msgid "Tests the backends"
 msgstr "バックエンドをテストします"
 
-#: src/audio/engine_jack.c:601
+#: src/audio/engine_jack.c:606
 msgid "The desired client name was not unique"
 msgstr "目的のクライアント名が一意ではありません"
 
@@ -1095,7 +1095,7 @@ msgstr ""
 "次のファイルが作成されます：ディレクトリのMaster.wav：/ home / alex / "
 "Zrythm / Projects / project1 / exports / 20181023"
 
-#: src/audio/engine_jack.c:597
+#: src/audio/engine_jack.c:602
 msgid "The operation contained an invalid or unsupported option"
 msgstr "操作に無効またはサポートされていないオプションが含まれていました"
 
@@ -1173,19 +1173,19 @@ msgstr "種類"
 msgid "URI (Optional):"
 msgstr "URI（任意）："
 
-#: src/audio/engine_jack.c:619
+#: src/audio/engine_jack.c:624
 msgid "Unable to access shared memory"
 msgstr "共有メモリにアクセスできません"
 
-#: src/audio/engine_jack.c:604
+#: src/audio/engine_jack.c:609
 msgid "Unable to connect to the JACK server"
 msgstr "サーバーと接続できません"
 
-#: src/audio/engine_jack.c:616
+#: src/audio/engine_jack.c:621
 msgid "Unable to initialize client"
 msgstr "クライアントを初期化できませんでした"
 
-#: src/audio/engine_jack.c:613
+#: src/audio/engine_jack.c:618
 msgid "Unable to load internal client"
 msgstr "内部クライアントをロードできませんでした"
 
@@ -1218,7 +1218,7 @@ msgstr "すべての選択を解除"
 msgid "Unsolo Track"
 msgstr "トラックのソロを解除"
 
-#: src/project.c:177
+#: src/project.c:178
 msgid "Untitled Project"
 msgstr "プロジェクト名未設定"
 

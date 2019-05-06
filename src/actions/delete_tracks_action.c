@@ -60,7 +60,8 @@ delete_tracks_action_do (
         TRACKLIST,
         track,
         F_FREE,
-        F_NO_PUBLISH_EVENTS);
+        F_NO_PUBLISH_EVENTS,
+        F_RECALC_GRAPH);
     }
 
   return 0;
@@ -85,18 +86,13 @@ delete_tracks_action_undo (
       /* add to project to get a new ID */
       project_add_track (track);
 
-      /* connect the channel */
-      mixer_add_channel (
-        MIXER,
-        track->channel,
-        F_NO_RECALC_GRAPH);
-
       /* connect the track */
       tracklist_insert_track (
         TRACKLIST,
         track,
         track->pos,
-        F_NO_PUBLISH_EVENTS);
+        F_NO_PUBLISH_EVENTS,
+        F_NO_RECALC_GRAPH);
 
       /* update the ID */
       orig_track->id = track->id;

@@ -64,8 +64,8 @@ move_plugins_action_do (
   g_return_val_if_fail (from_ch, -1);
   g_return_val_if_fail (to_ch, -1);
 
-  int highest_slot =
-    mixer_selections_get_highest_slot (self->ms);
+  /*int highest_slot =*/
+    /*mixer_selections_get_highest_slot (self->ms);*/
 
   /* clear selections to readd each plugin moved */
   mixer_selections_clear (MIXER_SELECTIONS);

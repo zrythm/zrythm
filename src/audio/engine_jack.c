@@ -136,7 +136,8 @@ jack_buffer_size_cb (uint32_t nframes,
   /** reallocate port buffers to new size */
   g_message ("Reallocating port buffers to %d", nframes);
   Port * port;
-  Channel * channel;
+  Channel * ch;
+  Plugin * pl;
   for (i = 0; i < PROJECT->num_ports; i++)
     {
       port = project_get_port (i);
@@ -146,18 +147,22 @@ jack_buffer_size_cb (uint32_t nframes,
                    nframes * sizeof (float));
       /* TODO memset */
     }
-  for (i = 0; i < MIXER->num_channels; i++)
+  for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      channel = MIXER->channels[i];
+      ch= TRACKLIST->tracks[i]->channel;
+
+      if (!ch)
+        continue;
+
       for (j = 0; j < STRIP_SIZE; j++)
         {
-          if (channel->plugins[j])
+          if (ch->plugins[j])
             {
-              Plugin * plugin = channel->plugins[j];
-              if (plugin->descr->protocol == PROT_LV2)
+              pl = ch->plugins[j];
+              if (pl->descr->protocol == PROT_LV2)
                 {
                   lv2_allocate_port_buffers (
-                                (Lv2Plugin *)plugin->lv2);
+                    (Lv2Plugin *)pl->lv2);
                 }
             }
         }

@@ -163,6 +163,7 @@ track_clone (Track * track)
 #define COPY_MEMBER(a) \
   new_track->a = track->a
 
+  COPY_MEMBER (id);
   COPY_MEMBER (type);
   COPY_MEMBER (bot_paned_visible);
   COPY_MEMBER (visible);
@@ -170,10 +171,12 @@ track_clone (Track * track)
   COPY_MEMBER (mute);
   COPY_MEMBER (solo);
   COPY_MEMBER (recording);
+  COPY_MEMBER (active);
   COPY_MEMBER (color.red);
   COPY_MEMBER (color.green);
   COPY_MEMBER (color.blue);
   COPY_MEMBER (color.alpha);
+  COPY_MEMBER (pos);
 
   Channel * ch = channel_clone (track->channel);
   track->channel = ch;

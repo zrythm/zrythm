@@ -66,7 +66,8 @@ copy_tracks_action_do (
         TRACKLIST,
         track,
         self->pos + i,
-        F_NO_PUBLISH_EVENTS);
+        F_NO_PUBLISH_EVENTS,
+        F_NO_RECALC_GRAPH);
 
       /* select the new clone */
       /* TODO */
@@ -74,6 +75,8 @@ copy_tracks_action_do (
       /* remember the new clone's id */
       orig_track->id = track->id;
     }
+
+  mixer_recalc_graph (MIXER);
 
   EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
                NULL);
@@ -99,8 +102,12 @@ copy_tracks_action_undo (
         TRACKLIST,
         track,
         F_FREE,
-        F_NO_PUBLISH_EVENTS);
+        F_NO_PUBLISH_EVENTS,
+        F_NO_RECALC_GRAPH);
     }
+
+  mixer_recalc_graph (MIXER);
+
   EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
                NULL);
 

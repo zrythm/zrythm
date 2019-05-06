@@ -270,6 +270,7 @@ node_process (
               break;
             case TRACK_TYPE_MASTER:
             case TRACK_TYPE_BUS:
+            case TRACK_TYPE_GROUP:
               port_sum_signal_from_inputs (
                 port);
               break;

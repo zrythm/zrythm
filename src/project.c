@@ -162,16 +162,17 @@ create_default (Project * self)
   Track * track =
     track_new (TRACK_TYPE_MASTER, _("Master"));
   MIXER->master = track->channel;
-  MIXER->master_id = track->channel->id;
-  mixer_add_channel (
-    MIXER, MIXER->master, F_NO_RECALC_GRAPH);
+  /*MIXER->master_id = track->channel->id;*/
   tracklist_append_track (
-    track);
+    TRACKLIST, track, F_NO_PUBLISH_EVENTS,
+    F_NO_RECALC_GRAPH);
 
   /* create chord track */
   self->chord_track = chord_track_default ();
   self->chord_track_id = self->chord_track->id;
-  tracklist_append_track (self->chord_track);
+  tracklist_append_track (
+    TRACKLIST, self->chord_track,
+    F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
 
   /* create untitled project */
   char * untitled_project = _("Untitled Project");
@@ -488,22 +489,30 @@ project_save (const char * dir)
   /*smf_save_regions ();*/
 
   /* write plugin states */
-  for (int i = 0; i < MIXER->num_channels; i++)
+  Track * track;
+  Channel * ch;
+  Plugin * pl;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      Channel * channel = MIXER->channels[i];
+      track = TRACKLIST->tracks[i];
+      if (track->type == TRACK_TYPE_CHORD)
+        continue;
+
+      ch = track->channel;
+
       for (int j = 0; j < STRIP_SIZE; j++)
         {
-          Plugin * plugin = channel->plugins[j];
+          pl = ch->plugins[j];
 
-          if (!plugin)
+          if (!pl)
             continue;
 
-          if (plugin->descr->protocol == PROT_LV2)
+          if (pl->descr->protocol == PROT_LV2)
             {
               char * tmp =
                 g_strdup_printf (
                   "%s_%d",
-                  channel->track->name,
+                  ch->track->name,
                   j);
               char * state_dir_plugin =
                 g_build_filename (
@@ -514,7 +523,7 @@ project_save (const char * dir)
 
               Lv2Plugin * lv2_plugin =
                 (Lv2Plugin *)
-                plugin->lv2;
+                pl->lv2;
               lv2_plugin_save_state_to_file (
                 lv2_plugin,
                 state_dir_plugin);

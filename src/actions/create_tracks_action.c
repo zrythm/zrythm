@@ -81,10 +81,8 @@ create (
         TRACKLIST,
         track,
         self->pos + idx,
-        F_NO_PUBLISH_EVENTS);
-      if (track->channel)
-        mixer_add_channel (
-          MIXER, track->channel, F_NO_RECALC_GRAPH);
+        F_NO_PUBLISH_EVENTS,
+        F_NO_RECALC_GRAPH);
     }
   else
     {
@@ -116,12 +114,11 @@ create (
         TRACKLIST,
         track,
         self->pos + idx,
-        F_NO_PUBLISH_EVENTS);
+        F_NO_PUBLISH_EVENTS,
+        F_NO_RECALC_GRAPH);
       if (track->channel)
       channel_add_plugin (
         track->channel, 0, pl, 1, 1, 1);
-      mixer_add_channel (
-        MIXER, track->channel, F_NO_RECALC_GRAPH);
 
       if (type == TRACK_TYPE_AUDIO)
         {
@@ -186,16 +183,12 @@ create_tracks_action_undo (
         TRACKLIST->tracks[self->pos + i];
       g_return_val_if_fail (track, -1);
 
-      mixer_remove_channel (
-        MIXER,
-        track->channel,
-        F_NO_PUBLISH_EVENTS);
-
       tracklist_remove_track (
         TRACKLIST,
         track,
         F_FREE,
-        F_NO_PUBLISH_EVENTS);
+        F_NO_PUBLISH_EVENTS,
+        F_RECALC_GRAPH);
     }
 
   EVENTS_PUSH (ET_TRACKS_REMOVED, NULL);

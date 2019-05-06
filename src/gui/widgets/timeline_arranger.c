@@ -533,7 +533,9 @@ timeline_arranger_widget_select_all (
   TL_SELECTIONS->num_automation_points = 0;
 
   /* select chords */
-  ChordTrack * ct = tracklist_get_chord_track ();
+  ChordTrack * ct =
+    tracklist_get_chord_track (
+      TRACKLIST);
   for (int i = 0; i < ct->num_chords; i++)
     {
       ZChord * chord = ct->chords[i];
@@ -547,17 +549,15 @@ timeline_arranger_widget_select_all (
   /* select everything else */
   Region * r;
   Track * track;
-  Channel * chan;
   AutomationPoint * ap;
   AutomationLane * al;
-  for (int i = 0; i < MIXER->num_channels; i++)
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      chan = MIXER->channels[i];
+      track = TRACKLIST->tracks[i];
 
-      if (!chan->visible)
+      if (!track->visible)
         continue;
 
-      track = chan->track;
       AutomationTracklist *
         automation_tracklist =
           track_get_automation_tracklist (
@@ -1619,14 +1619,16 @@ timeline_arranger_widget_move_items_y (
         {
           Track * pt =
             tracklist_get_prev_visible_track (
-              old_track);
+              TRACKLIST, old_track);
           Track * nt =
             tracklist_get_next_visible_track (
-              old_track);
+              TRACKLIST, old_track);
           Track * tt =
-            tracklist_get_first_visible_track ();
+            tracklist_get_first_visible_track (
+              TRACKLIST);
           Track * bt =
-            tracklist_get_last_visible_track ();
+            tracklist_get_last_visible_track (
+              TRACKLIST);
           /* highest selected track */
           Track * hst =
             timeline_selections_get_highest_track (
@@ -1652,6 +1654,7 @@ timeline_arranger_widget_move_items_y (
                       Region * region = TL_SELECTIONS->transient_regions[i];
                       nt =
                         tracklist_get_next_visible_track (
+                          TRACKLIST,
                           region->track);
                       old_track = region->track;
                       if (old_track->type == nt->type)
@@ -1687,6 +1690,7 @@ timeline_arranger_widget_move_items_y (
                       Region * region = TL_SELECTIONS->regions[i];
                       pt =
                         tracklist_get_prev_visible_track (
+                          TRACKLIST,
                           region->track);
                       old_track = region->track;
                       if (old_track->type == pt->type)
@@ -2050,6 +2054,9 @@ timeline_arranger_widget_refresh_children (
               add_children_from_bus_track (
                 self,
                 (BusTrack *) track);
+              break;
+            case TRACK_TYPE_GROUP:
+              /* TODO */
               break;
             }
         }

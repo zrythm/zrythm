@@ -118,6 +118,20 @@ tracklist_selections_remove_track (
   Track *               track);
 
 /**
+ * For debugging.
+ */
+void
+tracklist_selections_gprint (
+  TracklistSelections * self);
+
+/**
+ * Sorts the tracks by position.
+ */
+void
+tracklist_selections_sort (
+  TracklistSelections * self);
+
+/**
  * Clears selections.
  */
 void

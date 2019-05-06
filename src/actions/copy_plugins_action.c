@@ -84,10 +84,8 @@ copy_plugins_action_do (
         TRACKLIST,
         track,
         TRACKLIST->num_tracks,
-        F_NO_PUBLISH_EVENTS);
-
-      mixer_add_channel (
-        MIXER, track->channel, F_NO_RECALC_GRAPH);
+        F_NO_PUBLISH_EVENTS,
+        F_NO_RECALC_GRAPH);
 
       EVENTS_PUSH (ET_TRACKS_ADDED, NULL);
 
@@ -153,15 +151,12 @@ copy_plugins_action_undo (
           self->ms->plugins[0]->id);
       g_return_val_if_fail (pl, -1);
 
-      mixer_remove_channel (
-        MIXER,
-        pl->channel,
-        F_PUBLISH_EVENTS);
       tracklist_remove_track (
         TRACKLIST,
         pl->channel->track,
         F_FREE,
-        F_PUBLISH_EVENTS);
+        F_PUBLISH_EVENTS,
+        F_RECALC_GRAPH);
 
       return 0;
     }

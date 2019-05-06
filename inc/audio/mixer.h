@@ -25,8 +25,6 @@
 #include "utils/audio.h"
 
 #define MIXER (&AUDIO_ENGINE->mixer)
-#define FOREACH_CH for (int i = 0; i < MIXER->num_channels; i++)
-#define MAX_CHANNELS 3000
 
 typedef struct Channel Channel;
 typedef struct PluginDescriptor PluginDescriptor;
@@ -42,29 +40,38 @@ typedef struct Mixer
 {
   /**
    * Array of channels besides master.
+   *
+   * Note: Use tracklist.
    */
-  Channel        * channels[MAX_CHANNELS];
-  int            channel_ids[MAX_CHANNELS];
-  int            num_channels; ///< # of channels
+  //Channel        * channels[MAX_CHANNELS];
+  //int            channel_ids[MAX_CHANNELS];
+  //int            num_channels; ///< # of channels
 
-  Channel        * master; ///< master channel
+  /**
+   * Master channel, added here for easy access.
+   *
+   * The correct way to obtain it is from the
+   * Tracklist.
+   */
+  Channel        * master;
 
   /** Router. */
   Router         router;
 
-  int            master_id;
+  /** FIXME not needed. use master as cache. */
+  //int            master_id;
 } Mixer;
 
 static const cyaml_schema_field_t
 mixer_fields_schema[] =
 {
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "channel_ids", CYAML_FLAG_DEFAULT,
-    Mixer, channel_ids, num_channels,
-    &int_schema, 0, CYAML_UNLIMITED),
-	CYAML_FIELD_INT (
-    "master_id", CYAML_FLAG_DEFAULT,
-    Mixer, master_id),
+  //CYAML_FIELD_SEQUENCE_COUNT (
+    //"channel_ids", CYAML_FLAG_DEFAULT,
+    //Mixer, channel_ids, num_channels,
+    //&int_schema, 0, CYAML_UNLIMITED),
+	//CYAML_FIELD_INT (
+    //"master_id", CYAML_FLAG_DEFAULT,
+    //Mixer, master_id),
 
 	CYAML_FIELD_END
 };
@@ -112,14 +119,6 @@ void
 mixer_load_plugins ();
 
 /**
- * Returns channel at given position (order)
- *
- * Channel order in the mixer is reflected in the track list
- */
-Channel *
-mixer_get_channel_at_pos (int pos);
-
-/**
  * Adds channel to the mixer and connects its ports.
  *
  * This acts like the "connection" function of
@@ -131,11 +130,11 @@ mixer_get_channel_at_pos (int pos);
  *
  * @param recalc_graph Recalculate routing graph.
  */
-void
-mixer_add_channel (
-  Mixer *   self,
-  Channel * channel,
-  int       recalc_graph);
+//void
+//mixer_add_channel (
+  //Mixer *   self,
+  //Channel * channel,
+  //int       recalc_graph);
 
 /**
  * Removes the given channel from the mixer and
@@ -143,14 +142,11 @@ mixer_add_channel (
  *
  * @param publish_events Publish GUI events.
  */
-void
-mixer_remove_channel (
-  Mixer *   self,
-  Channel * channel,
-  int       publish_events);
-
-Channel *
-mixer_get_channel_by_name (char *  name);
+//void
+//mixer_remove_channel (
+  //Mixer *   self,
+  //Channel * channel,
+  //int       publish_events);
 
 /**
  * Moves the given plugin to the given slot in
@@ -165,13 +161,5 @@ mixer_move_plugin (
   Plugin *  pl,
   Channel * ch,
   int       slot);
-
-/**
- * Gets next unique channel ID.
- *
- * Gets the max ID of all channels and increments it.
- */
-int
-mixer_get_next_channel_id ();
 
 #endif

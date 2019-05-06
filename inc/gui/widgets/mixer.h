@@ -1,7 +1,5 @@
 /*
- * gui/widgets/mixer.h - Mixer widget
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -48,6 +46,21 @@ typedef struct _MixerWidget
    * Box containing all channels except master.
    */
   GtkBox *                 channels_box;
+
+  /** The track to drop before, used in
+   * drag-data-get.
+   *
+   * If this is null it means the last position
+   * (after invisible tracks). */
+  //Track *             drop_before;
+
+  /**
+   * The track where dnd originated from.
+   *
+   * Used to decide if left/right highlight means
+   * the track should be dropped before or after.
+   */
+  Track *             start_drag_track;
 
   GtkButton *              channels_add;
   GtkBox *                 master_box;

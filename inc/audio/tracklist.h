@@ -102,39 +102,57 @@ tracklist_init_loaded (
  */
 void
 tracklist_get_visible_tracks (
+  Tracklist * self,
   Track **    visible_tracks,
   int *       num_visible);
 
 int
-tracklist_contains_master_track ();
+tracklist_contains_master_track (
+  Tracklist * self);
 
 int
-tracklist_contains_chord_track ();
+tracklist_contains_chord_track (
+  Tracklist * self);
+
+/**
+ * Prints the tracks (for debugging).
+ */
+void
+tracklist_print_tracks (
+  Tracklist * self);
 
 /**
  * Adds given track to given spot in tracklist.
+ *
+ * @param publish_events Publish UI events.
+ * @param recalc_graph Recalculate routing graph.
  */
 void
 tracklist_insert_track (
   Tracklist * self,
   Track *     track,
   int         pos,
-  int         publish_events);
+  int         publish_events,
+  int         recalc_graph);
 
 /**
  * Removes a track from the Tracklist and the
  * TracklistSelections.
  *
+ * Also disconnects the channel.
+ *
  * @param free Free the track or not (free later).
  * @param publish_events Push a track deleted event
  *   to the UI.
+ * @param recalc_graph Recalculate the mixer graph.
  */
 void
 tracklist_remove_track (
   Tracklist * self,
   Track *     track,
   int         free,
-  int         publish_events);
+  int         publish_events,
+  int         recalc_graph);
 
 /**
  * Moves a track from its current position to the
@@ -142,37 +160,57 @@ tracklist_remove_track (
  *
  * @param publish_events Push UI update events or
  *   not.
+ * @param recalc_graph Recalculate routing graph.
  */
 void
 tracklist_move_track (
   Tracklist * self,
   Track *     track,
   int         pos,
-  int         publish_events);
+  int         publish_events,
+  int         recalc_graph);
 
+/**
+ * Calls tracklist_insert_track with the given
+ * options.
+ */
 void
-tracklist_append_track (Track *     track);
+tracklist_append_track (
+  Tracklist * self,
+  Track *     track,
+  int         publish_events,
+  int         recalc_graph);
 
 int
-tracklist_get_track_pos (Track *     track);
+tracklist_get_track_pos (
+  Tracklist * self,
+  Track *     track);
 
 ChordTrack *
-tracklist_get_chord_track ();
+tracklist_get_chord_track (
+  Tracklist * self);
 
 int
-tracklist_get_last_visible_pos ();
+tracklist_get_last_visible_pos (
+  Tracklist * self);
 
 Track*
-tracklist_get_last_visible_track ();
+tracklist_get_last_visible_track (
+  Tracklist * self);
 
 Track *
-tracklist_get_first_visible_track ();
+tracklist_get_first_visible_track (
+  Tracklist * self);
 
 Track *
-tracklist_get_prev_visible_track (Track * track);
+tracklist_get_prev_visible_track (
+  Tracklist * self,
+  Track * track);
 
 Track *
-tracklist_get_next_visible_track (Track * track);
+tracklist_get_next_visible_track (
+  Tracklist * self,
+  Track * track);
 
 /**
  * @}

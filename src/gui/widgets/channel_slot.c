@@ -336,7 +336,7 @@ select_ctrl_pl_ch (
         MIXER_SELECTIONS,
         self->slot_index,
         F_PUBLISH_EVENTS);
-      self->deselected = 1;
+      /*self->deselected = 1;*/
     }
   else
     {
@@ -347,31 +347,16 @@ select_ctrl_pl_ch (
     }
 }
 
-static void
-drag_update (GtkGestureDrag * gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-               ChannelSlotWidget * self)
-{
-  g_message ("drag update");
+/*static void*/
+/*drag_update (GtkGestureDrag * gesture,*/
+               /*gdouble         offset_x,*/
+               /*gdouble         offset_y,*/
+               /*ChannelSlotWidget * self)*/
+/*{*/
+  /*g_message ("drag update");*/
 
-  UI_GET_STATE_MASK (gesture);
-
-  if (self->reselected)
-    return;
-
-  /* reselect plugin if dragging and was deselected
-   * before */
-  if (self->deselected)
-    {
-      g_message ("reselecting");
-      mixer_selections_add_slot (
-        MIXER_SELECTIONS,
-        self->channel,
-        self->slot_index);
-      self->reselected = 1;
-    }
-}
+  /*UI_GET_STATE_MASK (gesture);*/
+/*}*/
 
 static void
 drag_end (GtkGestureDrag *gesture,
@@ -380,20 +365,6 @@ drag_end (GtkGestureDrag *gesture,
                ChannelSlotWidget * self)
 {
   g_message ("drag end");
-  self->deselected = 0;
-  self->reselected = 0;
-}
-
-static void
-multipress_pressed (
-  GtkGestureMultiPress *gesture,
-  gint                  n_press,
-  gdouble               x,
-  gdouble               y,
-  ChannelSlotWidget *   self)
-{
-  self->n_press = n_press;
-  g_message ("multipress n pres %d", self->n_press);
 
   UI_GET_STATE_MASK (gesture);
 
@@ -419,6 +390,8 @@ multipress_pressed (
     }
   else if (self->n_press == 1)
     {
+      UI_GET_STATE_MASK (gesture);
+
       int ctrl = 0, pl = 0, ch = 0;
       /* if control click */
       if (state_mask & GDK_CONTROL_MASK)
@@ -456,7 +429,23 @@ multipress_pressed (
       tracklist_selections_add_track (
         TRACKLIST_SELECTIONS,
         self->channel->track);
+
+      /*self->deselected = 0;*/
+      /*self->reselected = 0;*/
     }
+}
+
+static void
+multipress_pressed (
+  GtkGestureMultiPress *gesture,
+  gint                  n_press,
+  gdouble               x,
+  gdouble               y,
+  ChannelSlotWidget *   self)
+{
+  self->n_press = n_press;
+  g_message ("multipress n pres %d", self->n_press);
+
 }
 
 static void
@@ -691,9 +680,9 @@ channel_slot_widget_init (ChannelSlotWidget * self)
   g_signal_connect (
     GTK_WIDGET (self), "drag-motion",
     G_CALLBACK (on_drag_motion), self);
-  g_signal_connect (
-    G_OBJECT (self->drag), "drag-update",
-    G_CALLBACK (drag_update),  self);
+  /*g_signal_connect (*/
+    /*G_OBJECT (self->drag), "drag-update",*/
+    /*G_CALLBACK (drag_update),  self);*/
   g_signal_connect (
     G_OBJECT (self->drag), "drag-end",
     G_CALLBACK (drag_end),  self);

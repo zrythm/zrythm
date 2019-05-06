@@ -43,11 +43,15 @@ G_DEFINE_TYPE (MixerWidget,
 void
 mixer_widget_soft_refresh (MixerWidget * self)
 {
-  for (int i = -1; i < MIXER->num_channels; i++)
+  Track * track;
+  Channel * ch;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      Channel * ch =
-        i == -1 ?
-        MIXER->master : MIXER->channels[i];
+      track = TRACKLIST->tracks[i];
+      if (track->type == TRACK_TYPE_CHORD)
+        continue;
+
+      ch = track->channel;
 
       if (GTK_IS_WIDGET (ch->widget))
         channel_widget_refresh (ch->widget);
@@ -65,27 +69,33 @@ mixer_widget_hard_refresh (MixerWidget * self)
     GTK_CONTAINER (self->channels_box));
 
   /* add all channels */
-  for (int i = -1; i < MIXER->num_channels; i++)
+  Track * track;
+  Channel * ch;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      Channel * channel;
-      if (i == -1)
-        channel = MIXER->master;
-      else
-        channel = MIXER->channels[i];
+      track = TRACKLIST->tracks[i];
+
+      if (track->type == TRACK_TYPE_CHORD)
+        continue;
+
+      ch = track->channel;
+      g_return_if_fail (ch);
 
       /* create chan widget if necessary */
-      if (!channel->widget)
-        channel->widget = channel_widget_new (channel);
+      if (!ch->widget)
+        ch->widget = channel_widget_new (ch);
 
-      channel_widget_refresh (channel->widget);
+      channel_widget_refresh (ch->widget);
 
-      if (i != -1 &&
+      if (track->type != TRACK_TYPE_MASTER &&
           !gtk_widget_get_parent (
-            GTK_WIDGET (channel->widget))) /* not master */
+            GTK_WIDGET (ch->widget))) /* not master */
         {
+          g_message ("hard refresh mixer %d",
+                     i);
           gtk_box_pack_start (
             self->channels_box,
-            GTK_WIDGET (channel->widget),
+            GTK_WIDGET (ch->widget),
             Z_GTK_NO_EXPAND,
             Z_GTK_NO_FILL,
             0);
