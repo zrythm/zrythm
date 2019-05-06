@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-06 20:13+0100\n"
+"POT-Creation-Date: 2019-05-06 23:46+0100\n"
 "PO-Revision-Date: 2019-05-05 00:34+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Japanese <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 3.6.1\n"
 
-#: src/actions/create_tracks_action.c:74
+#: src/actions/create_tracks_action.c:52
 #, fuzzy, c-format
 msgid "%s Track"
 msgstr "％sトラック"
@@ -69,7 +69,7 @@ msgstr "常にプラグインUIを開く"
 msgid "Artist"
 msgstr "アーティスト"
 
-#: src/audio/track.c:739
+#: src/audio/track.c:740
 #, fuzzy
 msgid "Audio"
 msgstr "オーディオ"
@@ -125,7 +125,7 @@ msgstr "ボット"
 msgid "Bottom Panel"
 msgstr "下パネル"
 
-#: src/audio/track.c:742
+#: src/audio/track.c:743
 msgid "Bus"
 msgstr "バス"
 
@@ -150,7 +150,7 @@ msgstr "フェーダーを変更"
 msgid "Change Pan"
 msgstr "パンを変更"
 
-#: src/gui/widgets/channel_slot.c:581
+#: src/gui/widgets/channel_slot.c:595
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -169,7 +169,7 @@ msgstr "中国語[zh]"
 msgid "Choose a method to donate"
 msgstr "使用する支払い方法を選択する"
 
-#: src/audio/track.c:748
+#: src/audio/track.c:749
 #, fuzzy
 msgid "Chord"
 msgstr "コード"
@@ -221,12 +221,12 @@ msgstr "接続"
 msgid "Controllers found"
 msgstr "コントローラが見つかりました"
 
-#: src/actions/copy_plugins_action.c:188
+#: src/actions/copy_plugins_action.c:190
 #, c-format
 msgid "Copy %d Plugins"
 msgstr "%dプラグインをコピー"
 
-#: src/actions/copy_plugins_action.c:184
+#: src/actions/copy_plugins_action.c:186
 #, c-format
 msgid "Copy %s"
 msgstr "%sをコピー"
@@ -239,7 +239,7 @@ msgstr "コピー・アンド・ペースト"
 msgid "Copy selection to clipboard"
 msgstr "選択範囲をクリップボードにコピー"
 
-#: src/actions/create_tracks_action.c:210
+#: src/actions/create_tracks_action.c:298
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr "%d個の%sトラックを作成"
@@ -254,7 +254,7 @@ msgstr "%d個の%sを作成"
 msgid "Create %s"
 msgstr "%sを作成"
 
-#: src/actions/create_tracks_action.c:205
+#: src/actions/create_tracks_action.c:293
 #, c-format
 msgid "Create %s Track"
 msgstr "%sトラックを作成"
@@ -369,7 +369,7 @@ msgstr "リージョン名を入力してください"
 msgid "Eraser tool"
 msgstr "消しゴムツール"
 
-#: src/actions/create_tracks_action.c:98
+#: src/actions/create_tracks_action.c:79
 #, c-format
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr "プラグイン%sのインスタンス化エラー。詳細はログを参照してください。"
@@ -470,15 +470,15 @@ msgstr "グローバル・ショートカット"
 msgid "Grid"
 msgstr "グリッド"
 
-#: src/audio/track.c:751
+#: src/audio/track.c:752
 msgid "Group"
 msgstr "グループ"
 
-#: src/zrythm.c:242
+#: src/zrythm.c:246
 msgid "Initializing audio engine"
 msgstr "オーディオエンジンの初期化"
 
-#: src/zrythm.c:247
+#: src/zrythm.c:251
 msgid "Initializing plugin manager"
 msgstr "プラグインマネージャの初期化"
 
@@ -490,7 +490,7 @@ msgstr "設定を初期化"
 msgid "Initializing..."
 msgstr "初期化中…"
 
-#: src/audio/track.c:736
+#: src/audio/track.c:737
 msgid "Instrument"
 msgstr "インストゥルメント"
 
@@ -548,7 +548,7 @@ msgstr "長さ"
 msgid "Linear"
 msgstr "直線"
 
-#: src/zrythm.c:261
+#: src/zrythm.c:265
 #, fuzzy
 msgid "Loading project"
 msgstr "プロジェクトをロード中"
@@ -598,7 +598,7 @@ msgstr "メインウィンドウ"
 msgid "Manual"
 msgstr "マニュアル"
 
-#: src/project.c:163 src/audio/track.c:745
+#: src/project.c:160 src/audio/track.c:746
 msgid "Master"
 msgstr "マスター"
 
@@ -818,7 +818,7 @@ msgid ""
 "(note: this text is hard coded at the moment)"
 msgstr ""
 
-#: src/project.c:558
+#: src/project.c:553
 msgid "Project saved."
 msgstr "プロジェクトが保存されました。"
 
@@ -994,7 +994,7 @@ msgstr "選択範囲"
 msgid "Selections"
 msgstr "選択範囲"
 
-#: src/zrythm.c:254
+#: src/zrythm.c:258
 msgid "Setting up backend"
 msgstr "バックエンドをセットアップ中"
 
@@ -1218,7 +1218,7 @@ msgstr "すべての選択を解除"
 msgid "Unsolo Track"
 msgstr "トラックのソロを解除"
 
-#: src/project.c:178
+#: src/project.c:176
 msgid "Untitled Project"
 msgstr "プロジェクト名未設定"
 

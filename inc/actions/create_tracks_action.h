@@ -40,6 +40,10 @@ typedef struct CreateTracksAction
    * Used when undoing too. */
   int              pos;
 
+  /** Track to move back to their IDs after
+   * redoing. */
+  Track *          tracks[60];
+
   /** Number of tracks to make. */
   int              num_tracks;
 

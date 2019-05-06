@@ -34,7 +34,6 @@
 #include "audio/automation_lane.h"
 #include "audio/automation_point.h"
 #include "audio/automation_track.h"
-#include "audio/channel.h"
 #include "audio/engine.h"
 #include "audio/midi_note.h"
 #include "audio/port.h"
@@ -187,10 +186,6 @@ typedef struct Project
   int               num_aggregated_chords;
   ZChord *           chords[60000];
   int               num_chords;
-  Channel *         aggregated_channels[3000];
-  int               num_aggregated_channels;
-  Channel *         channels[8000];
-  int               num_channels;
   Track *           aggregated_tracks[3000];
   int               num_aggregated_tracks;
   Track *           tracks[50000];
@@ -292,10 +287,6 @@ static const cyaml_schema_field_t
     Project, aggregated_midi_notes, num_aggregated_midi_notes,
     &midi_note_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "aggregated_channels", CYAML_FLAG_DEFAULT,
-    Project, aggregated_channels, num_aggregated_channels,
-    &channel_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_SEQUENCE_COUNT (
     "aggregated_tracks", CYAML_FLAG_DEFAULT,
     Project, aggregated_tracks, num_aggregated_tracks,
     &track_schema, 0, CYAML_UNLIMITED),
@@ -385,7 +376,6 @@ project_set_has_range (int has_range);
 
 P_DEFINE_FUNCS_X (Region, region);
 P_DEFINE_FUNCS_X (Track, track);
-P_DEFINE_FUNCS_X (Channel, channel);
 P_DEFINE_FUNCS_X (Plugin, plugin);
 P_DEFINE_FUNCS_X (AutomationPoint, automation_point);
 P_DEFINE_FUNCS_X (AutomationCurve, automation_curve);

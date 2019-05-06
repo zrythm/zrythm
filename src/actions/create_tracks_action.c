@@ -30,6 +30,181 @@
 
 #include <glib/gi18n.h>
 
+/**
+ * @param add_to_project Used when the track to
+ *   create is meant to be used in the project (ie
+ *   not one of the tracks in CreateTracksAction.
+ */
+static int
+create (
+  CreateTracksAction * self,
+  int                  idx,
+  int                  add_to_project)
+{
+  Track * track;
+
+  if (self->is_empty)
+    {
+      char * tmp =
+        track_stringize_type (self->type);
+      char * label;
+      label =
+        g_strdup_printf (_("%s Track"), tmp);
+      g_free (tmp);
+
+      track =
+        track_new (
+          self->type, label, add_to_project);
+      if (add_to_project)
+        tracklist_insert_track (
+          TRACKLIST,
+          track,
+          self->pos + idx,
+          F_NO_PUBLISH_EVENTS,
+          F_NO_RECALC_GRAPH);
+      else
+        self->tracks[idx] = track;
+    }
+  else
+    {
+      Plugin * pl=
+        plugin_new_from_descr (
+          &self->pl_descr,
+          add_to_project);
+
+      if (plugin_instantiate (pl) < 0)
+        {
+          char * message =
+            g_strdup_printf (
+              _("Error instantiating plugin %s. "
+                "Please see log for details."),
+              pl->descr->name);
+
+          if (MAIN_WINDOW)
+            ui_show_error_message (
+              GTK_WINDOW (MAIN_WINDOW),
+              message);
+          g_free (message);
+          plugin_free (pl);
+          return -1;
+        }
+
+      track =
+        track_new (self->type, self->pl_descr.name,
+                   add_to_project);
+      if (add_to_project)
+        tracklist_insert_track (
+          TRACKLIST,
+          track,
+          self->pos + idx,
+          F_NO_PUBLISH_EVENTS,
+          F_NO_RECALC_GRAPH);
+      else
+        self->tracks[idx] = track;
+
+      if (track->channel)
+      channel_add_plugin (
+        track->channel, 0, pl, 1, 1, 1);
+
+      if (self->type == TRACK_TYPE_AUDIO)
+        {
+          /* create an audio region & add to track */
+          Position start_pos;
+          position_set_to_pos (&start_pos,
+                               &PLAYHEAD);
+          AudioRegion * ar =
+            audio_region_new (
+              track,
+              self->file_descr.absolute_path,
+              &start_pos,
+              add_to_project);
+          track_add_region (
+            track, ar);
+        }
+
+      if (g_settings_get_int (
+            S_PREFERENCES,
+            "open-plugin-uis-on-instantiate") &&
+          add_to_project)
+        {
+          pl->visible = 1;
+          EVENTS_PUSH (
+            ET_PLUGIN_VISIBILITY_CHANGED, pl);
+        }
+    }
+
+  Track * orig_track = self->tracks[idx];
+  if (add_to_project)
+    {
+      /* if there is an ID stored move track and its
+       * children to their original IDs */
+      if (orig_track->id > -1)
+        {
+          project_move_track (
+            track, orig_track->id);
+
+          if (track->channel)
+            {
+              /* move plugins */
+              Plugin * pl;
+              for (int i = 0; i < STRIP_SIZE; i++)
+                {
+                  pl = track->channel->plugins[i];
+                  if (pl)
+                    project_move_plugin (
+                      pl,
+                      orig_track->channel->
+                        plugins[i]->id);
+                }
+            }
+
+          /* move regions */
+          Region * r;
+          for (int i = 0; i < track->num_regions;
+               i++)
+            {
+              r = track->regions[i];
+              project_move_region (
+                r, orig_track->regions[i]->id);
+            }
+        }
+      /* otherwise set the IDs */
+      else
+        {
+          orig_track->id = track->id;
+
+          /* move channel */
+          if (track->channel)
+            {
+              /* move plugins */
+              Plugin * pl;
+              for (int i = 0; i < STRIP_SIZE; i++)
+                {
+                  pl = track->channel->plugins[i];
+                  if (pl)
+                    orig_track->channel->
+                      plugins[i]->id = pl->id;
+                }
+            }
+
+          /* move regions */
+          Region * r;
+          for (int i = 0; i < track->num_regions;
+               i++)
+            {
+              r = track->regions[i];
+              orig_track->regions[i]->id = r->id;
+            }
+        }
+
+      mixer_recalc_graph (MIXER);
+    }
+  else
+    orig_track->id = -1;
+
+  return 0;
+}
+
 UndoableAction *
 create_tracks_action_new (
   TrackType          type,
@@ -55,102 +230,15 @@ create_tracks_action_new (
   self->pos = pos;
   self->type = type;
   self->num_tracks = num_tracks;
+  for (int i = 0; i < num_tracks; i++)
+    {
+      create (self, i, 0);
+      g_message ("-----------------------"
+                 "create track id %d",
+                 self->tracks[i]->id);
+    }
 
   return ua;
-}
-
-static int
-create (
-  CreateTracksAction * self,
-  TrackType            type,
-  int                  idx)
-{
-  Track * track;
-
-  if (self->is_empty)
-    {
-      char * tmp = track_stringize_type (type);
-      char * label =
-        g_strdup_printf (_("%s Track"), tmp);
-      g_free (tmp);
-
-      track =
-        track_new (type,
-                   label);
-      tracklist_insert_track (
-        TRACKLIST,
-        track,
-        self->pos + idx,
-        F_NO_PUBLISH_EVENTS,
-        F_NO_RECALC_GRAPH);
-    }
-  else
-    {
-      Plugin * pl=
-        plugin_new_from_descr (
-          &self->pl_descr,
-          F_ADD_TO_PROJ);
-
-      if (plugin_instantiate (pl) < 0)
-        {
-          char * message =
-            g_strdup_printf (
-              _("Error instantiating plugin %s. "
-                "Please see log for details."),
-              pl->descr->name);
-
-          if (MAIN_WINDOW)
-            ui_show_error_message (
-              GTK_WINDOW (MAIN_WINDOW),
-              message);
-          g_free (message);
-          plugin_free (pl);
-          return -1;
-        }
-
-      track =
-        track_new (type, self->pl_descr.name);
-      tracklist_insert_track (
-        TRACKLIST,
-        track,
-        self->pos + idx,
-        F_NO_PUBLISH_EVENTS,
-        F_NO_RECALC_GRAPH);
-      if (track->channel)
-      channel_add_plugin (
-        track->channel, 0, pl, 1, 1, 1);
-
-      if (type == TRACK_TYPE_AUDIO)
-        {
-          /* create an audio region & add to track */
-          Position start_pos;
-          position_set_to_pos (&start_pos,
-                               &PLAYHEAD);
-          AudioRegion * ar =
-            audio_region_new (
-              track,
-              self->file_descr.absolute_path,
-              &start_pos,
-              F_ADD_TO_PROJ);
-          track_add_region (
-            track, ar);
-        }
-
-      if (g_settings_get_int (
-            S_PREFERENCES,
-            "open-plugin-uis-on-instantiate"))
-        {
-          pl->visible = 1;
-          EVENTS_PUSH (
-            ET_PLUGIN_VISIBILITY_CHANGED, pl);
-        }
-    }
-
-  mixer_recalc_graph (MIXER);
-
-  /*self->track_poses[idx] = track->pos;*/
-
-  return 0;
 }
 
 int
@@ -160,7 +248,7 @@ create_tracks_action_do (
   int ret;
   for (int i = 0; i < self->num_tracks; i++)
     {
-      ret = create (self, self->type, i);
+      ret = create (self, i, 1);
       g_return_val_if_fail (!ret, -1);
     }
 

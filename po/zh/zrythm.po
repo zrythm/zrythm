@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-06 20:13+0100\n"
+"POT-Creation-Date: 2019-05-06 23:46+0100\n"
 "PO-Revision-Date: 2019-05-04 23:37+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Chinese (Simplified) <https://translate.zrythm.org/projects/"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 3.6.1\n"
 
-#: src/actions/create_tracks_action.c:74
+#: src/actions/create_tracks_action.c:52
 #, c-format
 msgid "%s Track"
 msgstr ""
@@ -63,7 +63,7 @@ msgstr ""
 msgid "Artist"
 msgstr ""
 
-#: src/audio/track.c:739
+#: src/audio/track.c:740
 msgid "Audio"
 msgstr ""
 
@@ -115,7 +115,7 @@ msgstr ""
 msgid "Bottom Panel"
 msgstr ""
 
-#: src/audio/track.c:742
+#: src/audio/track.c:743
 msgid "Bus"
 msgstr ""
 
@@ -140,7 +140,7 @@ msgstr ""
 msgid "Change Pan"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:581
+#: src/gui/widgets/channel_slot.c:595
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -157,7 +157,7 @@ msgstr ""
 msgid "Choose a method to donate"
 msgstr ""
 
-#: src/audio/track.c:748
+#: src/audio/track.c:749
 msgid "Chord"
 msgstr ""
 
@@ -207,12 +207,12 @@ msgstr ""
 msgid "Controllers found"
 msgstr ""
 
-#: src/actions/copy_plugins_action.c:188
+#: src/actions/copy_plugins_action.c:190
 #, c-format
 msgid "Copy %d Plugins"
 msgstr ""
 
-#: src/actions/copy_plugins_action.c:184
+#: src/actions/copy_plugins_action.c:186
 #, c-format
 msgid "Copy %s"
 msgstr ""
@@ -225,7 +225,7 @@ msgstr ""
 msgid "Copy selection to clipboard"
 msgstr ""
 
-#: src/actions/create_tracks_action.c:210
+#: src/actions/create_tracks_action.c:298
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr ""
@@ -240,7 +240,7 @@ msgstr ""
 msgid "Create %s"
 msgstr ""
 
-#: src/actions/create_tracks_action.c:205
+#: src/actions/create_tracks_action.c:293
 #, c-format
 msgid "Create %s Track"
 msgstr ""
@@ -350,7 +350,7 @@ msgstr ""
 msgid "Eraser tool"
 msgstr ""
 
-#: src/actions/create_tracks_action.c:98
+#: src/actions/create_tracks_action.c:79
 #, c-format
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr ""
@@ -449,15 +449,15 @@ msgstr ""
 msgid "Grid"
 msgstr ""
 
-#: src/audio/track.c:751
+#: src/audio/track.c:752
 msgid "Group"
 msgstr ""
 
-#: src/zrythm.c:242
+#: src/zrythm.c:246
 msgid "Initializing audio engine"
 msgstr ""
 
-#: src/zrythm.c:247
+#: src/zrythm.c:251
 msgid "Initializing plugin manager"
 msgstr ""
 
@@ -469,7 +469,7 @@ msgstr ""
 msgid "Initializing..."
 msgstr ""
 
-#: src/audio/track.c:736
+#: src/audio/track.c:737
 msgid "Instrument"
 msgstr ""
 
@@ -527,7 +527,7 @@ msgstr ""
 msgid "Linear"
 msgstr ""
 
-#: src/zrythm.c:261
+#: src/zrythm.c:265
 msgid "Loading project"
 msgstr ""
 
@@ -575,7 +575,7 @@ msgstr ""
 msgid "Manual"
 msgstr ""
 
-#: src/project.c:163 src/audio/track.c:745
+#: src/project.c:160 src/audio/track.c:746
 msgid "Master"
 msgstr ""
 
@@ -786,7 +786,7 @@ msgid ""
 "(note: this text is hard coded at the moment)"
 msgstr ""
 
-#: src/project.c:558
+#: src/project.c:553
 msgid "Project saved."
 msgstr ""
 
@@ -957,7 +957,7 @@ msgstr ""
 msgid "Selections"
 msgstr ""
 
-#: src/zrythm.c:254
+#: src/zrythm.c:258
 msgid "Setting up backend"
 msgstr ""
 
@@ -1174,7 +1174,7 @@ msgstr ""
 msgid "Unsolo Track"
 msgstr ""
 
-#: src/project.c:178
+#: src/project.c:176
 msgid "Untitled Project"
 msgstr ""
 

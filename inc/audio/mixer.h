@@ -53,13 +53,12 @@ typedef struct Mixer
    * The correct way to obtain it is from the
    * Tracklist.
    */
-  Channel        * master;
+  Track         * master;
 
   /** Router. */
   Router         router;
 
-  /** FIXME not needed. use master as cache. */
-  //int            master_id;
+  int            master_id;
 } Mixer;
 
 static const cyaml_schema_field_t
@@ -69,9 +68,9 @@ mixer_fields_schema[] =
     //"channel_ids", CYAML_FLAG_DEFAULT,
     //Mixer, channel_ids, num_channels,
     //&int_schema, 0, CYAML_UNLIMITED),
-	//CYAML_FIELD_INT (
-    //"master_id", CYAML_FLAG_DEFAULT,
-    //Mixer, master_id),
+  CYAML_FIELD_INT (
+    "master_id", CYAML_FLAG_DEFAULT,
+    Mixer, master_id),
 
 	CYAML_FIELD_END
 };

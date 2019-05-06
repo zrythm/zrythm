@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-06 20:13+0100\n"
+"POT-Creation-Date: 2019-05-06 23:46+0100\n"
 "PO-Revision-Date: 2019-05-04 23:38+0000\n"
 "Last-Translator: Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -21,7 +21,7 @@ msgstr ""
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
-#: src/actions/create_tracks_action.c:74
+#: src/actions/create_tracks_action.c:52
 #, c-format
 msgid "%s Track"
 msgstr "%s Piste"
@@ -72,7 +72,7 @@ msgstr "Toujours ouvrir la fenêtre des greffons"
 msgid "Artist"
 msgstr "Artiste"
 
-#: src/audio/track.c:739
+#: src/audio/track.c:740
 msgid "Audio"
 msgstr "Audio"
 
@@ -124,7 +124,7 @@ msgstr "Bouteille"
 msgid "Bottom Panel"
 msgstr "Panneau du bas"
 
-#: src/audio/track.c:742
+#: src/audio/track.c:743
 msgid "Bus"
 msgstr "Bus"
 
@@ -149,7 +149,7 @@ msgstr "Changer le Fader"
 msgid "Change Pan"
 msgstr "Changer la panoramique"
 
-#: src/gui/widgets/channel_slot.c:581
+#: src/gui/widgets/channel_slot.c:595
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -168,7 +168,7 @@ msgstr "Chinois  [zh]"
 msgid "Choose a method to donate"
 msgstr "Choisir une méthode pour faire un don"
 
-#: src/audio/track.c:748
+#: src/audio/track.c:749
 msgid "Chord"
 msgstr "Accord"
 
@@ -220,12 +220,12 @@ msgstr "Connexions"
 msgid "Controllers found"
 msgstr "Contrôleurs trouvés"
 
-#: src/actions/copy_plugins_action.c:188
+#: src/actions/copy_plugins_action.c:190
 #, c-format
 msgid "Copy %d Plugins"
 msgstr "Copier %d Greffons"
 
-#: src/actions/copy_plugins_action.c:184
+#: src/actions/copy_plugins_action.c:186
 #, c-format
 msgid "Copy %s"
 msgstr "Copier %s"
@@ -238,7 +238,7 @@ msgstr "Copier et Coller"
 msgid "Copy selection to clipboard"
 msgstr "Copier la sélection dans le presse-papier"
 
-#: src/actions/create_tracks_action.c:210
+#: src/actions/create_tracks_action.c:298
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr "Créer %d %s Pistes"
@@ -253,7 +253,7 @@ msgstr "Créer %d %s"
 msgid "Create %s"
 msgstr "Créer %s"
 
-#: src/actions/create_tracks_action.c:205
+#: src/actions/create_tracks_action.c:293
 #, c-format
 msgid "Create %s Track"
 msgstr "Créer %s Piste"
@@ -364,7 +364,7 @@ msgstr "Saisir le nom de la région..."
 msgid "Eraser tool"
 msgstr "Outil gomme"
 
-#: src/actions/create_tracks_action.c:98
+#: src/actions/create_tracks_action.c:79
 #, c-format
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr ""
@@ -470,15 +470,15 @@ msgstr "Raccourcis globaux"
 msgid "Grid"
 msgstr "Grille"
 
-#: src/audio/track.c:751
+#: src/audio/track.c:752
 msgid "Group"
 msgstr "Groupe"
 
-#: src/zrythm.c:242
+#: src/zrythm.c:246
 msgid "Initializing audio engine"
 msgstr "Initialisation du moteur audio"
 
-#: src/zrythm.c:247
+#: src/zrythm.c:251
 msgid "Initializing plugin manager"
 msgstr "Initialisation du gestionnaire  de greffon"
 
@@ -490,7 +490,7 @@ msgstr "Initialisation des paramètres"
 msgid "Initializing..."
 msgstr "Initialisation..."
 
-#: src/audio/track.c:736
+#: src/audio/track.c:737
 msgid "Instrument"
 msgstr "Instrument"
 
@@ -548,7 +548,7 @@ msgstr "Longueur"
 msgid "Linear"
 msgstr "Linéaire"
 
-#: src/zrythm.c:261
+#: src/zrythm.c:265
 #, fuzzy
 msgid "Loading project"
 msgstr "Chargement du projet"
@@ -598,7 +598,7 @@ msgstr "Fenêtre principal"
 msgid "Manual"
 msgstr "Manuel"
 
-#: src/project.c:163 src/audio/track.c:745
+#: src/project.c:160 src/audio/track.c:746
 msgid "Master"
 msgstr "Master"
 
@@ -824,7 +824,7 @@ msgstr ""
 "Fréquence d'échantillonnage: 44100\n"
 "(note: ce texte est codé en dur pour le moment)"
 
-#: src/project.c:558
+#: src/project.c:553
 msgid "Project saved."
 msgstr "Projet sauvegardé"
 
@@ -1001,7 +1001,7 @@ msgstr "Sélection"
 msgid "Selections"
 msgstr "Sélections"
 
-#: src/zrythm.c:254
+#: src/zrythm.c:258
 msgid "Setting up backend"
 msgstr "Configuration du moteur"
 
@@ -1234,7 +1234,7 @@ msgstr "Désélectionner tout"
 msgid "Unsolo Track"
 msgstr "Enlever le Solo de la piste"
 
-#: src/project.c:178
+#: src/project.c:176
 msgid "Untitled Project"
 msgstr "Projet sans titre"
 

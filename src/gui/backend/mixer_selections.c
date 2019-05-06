@@ -31,8 +31,8 @@ void
 mixer_selections_init_loaded (
   MixerSelections * ms)
 {
-  ms->ch = project_get_channel (ms->ch_id);
-  g_warn_if_fail (ms->ch);
+  ms->track = project_get_track (ms->track_id);
+  g_warn_if_fail (ms->track);
 }
 
 /**
@@ -100,11 +100,12 @@ mixer_selections_add_slot (
   Channel *         ch,
   int               slot)
 {
-  if (ch != ms->ch)
+  if (!ms->track ||
+      ch != ms->track->channel)
     {
       mixer_selections_clear (ms);
-      ms->ch_id = ch->id;
-      ms->ch = ch;
+      ms->track_id = ch->track->id;
+      ms->track = ch->track;
     }
 
   if (array_contains_int (
@@ -144,8 +145,8 @@ mixer_selections_remove_slot (
 
   if (ms->num_slots == 0)
     {
-      ms->ch = NULL;
-      ms->ch_id = -1;
+      ms->track = NULL;
+      ms->track_id = -1;
     }
 
   if (publish_events)
@@ -177,11 +178,12 @@ mixer_selections_contains_plugin (
   MixerSelections * ms,
   Plugin *          pl)
 {
-  if (ms->ch != pl->channel)
+  if (ms->track != pl->track)
     return 0;
 
   for (int i = 0; i < ms->num_slots; i++)
-    if (ms->ch->plugins[ms->slots[i]] == pl)
+    if (ms->track->channel->plugins[
+          ms->slots[i]] == pl)
       return 1;
 
   return 0;
@@ -231,8 +233,8 @@ mixer_selections_clone (
     }
 
   ms->num_slots = src->num_slots;
-  ms->ch_id = src->ch_id;
-  ms->ch = channel_clone (src->ch);
+  ms->track_id = src->track_id;
+  ms->track = track_clone (src->track);
 
   return ms;
 }

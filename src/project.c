@@ -71,9 +71,6 @@ tear_down (Project * self)
 
   engine_tear_down ();
 
-  for (int i = 0; i < PROJECT->num_channels; i++)
-    channel_free (project_get_channel (i));
-
   track_free (PROJECT->chord_track);
 
   free (self);
@@ -160,8 +157,9 @@ create_default (Project * self)
 
   /* add master channel to mixer and tracklist */
   Track * track =
-    track_new (TRACK_TYPE_MASTER, _("Master"));
-  MIXER->master = track->channel;
+    track_new (TRACK_TYPE_MASTER, _("Master"),
+               F_ADD_TO_PROJ);
+  MIXER->master = track;
   /*MIXER->master_id = track->channel->id;*/
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
@@ -238,7 +236,6 @@ create_default (Project * self)
 
 INIT_LOADED (Port, port)
 INIT_LOADED (Region, region)
-INIT_LOADED (Channel, channel)
 INIT_LOADED (Plugin, plugin)
 INIT_LOADED (Track, track)
 INIT_LOADED (AutomationPoint, automation_point)
@@ -273,7 +270,6 @@ populate_arrays_from_aggregated (Project * self)
 
   POP_FROM_AGG (Region, region)
   POP_FROM_AGG (Track, track)
-  POP_FROM_AGG (Channel, channel)
   POP_FROM_AGG (Plugin, plugin)
   POP_FROM_AGG (AutomationPoint, automation_point)
   POP_FROM_AGG (AutomationCurve, automation_curve)
@@ -354,7 +350,6 @@ load (char * filename)
   init_loaded_ports ();
   engine_init (AUDIO_ENGINE, 1);
   init_loaded_regions ();
-  init_loaded_channels ();
   init_loaded_plugins ();
   init_loaded_tracks ();
   init_loaded_midi_notes ();
@@ -438,7 +433,6 @@ generate_aggregated_arrays (Project * self)
 
   GEN_AGGREGATED (Region, region)
   GEN_AGGREGATED (Track, track)
-  GEN_AGGREGATED (Channel, channel)
   GEN_AGGREGATED (Plugin, plugin)
   GEN_AGGREGATED (AutomationPoint, automation_point)
   GEN_AGGREGATED (AutomationCurve, automation_curve)
@@ -453,8 +447,8 @@ generate_aggregated_arrays (Project * self)
 }
 
 /**
- * If project has a filename set, it loads that. Otherwise
- * it loads the default project.
+ * If project has a filename set, it loads that.
+ * Otherwise it loads the default project.
  *
  * Returns 0 if successful, non-zero otherwise.
  */
@@ -465,6 +459,7 @@ project_load (char * filename)
     return load (filename);
   else
     create_default (PROJECT);
+
   return 0;
 }
 
@@ -629,7 +624,6 @@ get_next_available_id (void ** array,
 
 P_DECLARE_FUNCS_X (Region, region)
 P_DECLARE_FUNCS_X (Track, track)
-P_DECLARE_FUNCS_X (Channel, channel)
 P_DECLARE_FUNCS_X (Plugin, plugin)
 P_DECLARE_FUNCS_X (AutomationPoint, automation_point)
 P_DECLARE_FUNCS_X (AutomationCurve, automation_curve)

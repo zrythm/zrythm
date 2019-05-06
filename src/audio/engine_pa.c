@@ -132,9 +132,9 @@ engine_pa_fill_stereo_out_buffs (
        i++)
     {
       *engine->pa_out_buf++ =
-        MIXER->master->stereo_out->l->buf[i];
+        MIXER->master->channel->stereo_out->l->buf[i];
       *engine->pa_out_buf++ =
-        MIXER->master->stereo_out->r->buf[i];
+        MIXER->master->channel->stereo_out->r->buf[i];
     }
 }
 

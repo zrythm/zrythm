@@ -238,6 +238,10 @@ task_func (
     case TASK_INIT_SETTINGS:
       ZRYTHM->symap = symap_new ();
       settings_init (&ZRYTHM->settings);
+      ZRYTHM->debug =
+        g_settings_get_int (
+          S_GENERAL,
+          "debug");
       data->message =
         _("Initializing audio engine");
       data->progress = 0.4;

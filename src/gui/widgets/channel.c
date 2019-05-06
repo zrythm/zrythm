@@ -203,7 +203,7 @@ on_drag_data_get (
     gdk_atom_intern_static_string (
       TARGET_ENTRY_TRACK),
     32,
-    (const guchar *) MIXER->master->track,
+    (const guchar *) MIXER->master,
     sizeof (Track));
 }
 
@@ -612,9 +612,22 @@ static void
 refresh_name (ChannelWidget * self)
 {
   g_warn_if_fail (self->channel->track->name);
+  char * label;
+  if (DEBUGGING)
+    label =
+      g_strdup_printf (
+        "[%d] %s",
+        self->channel->track->id,
+        self->channel->track->name);
+  else
+    label = self->channel->track->name;
+
   gtk_label_set_text (
     GTK_LABEL (self->name->label),
-    self->channel->track->name);
+    label);
+
+  if (DEBUGGING)
+    g_free (label);
 }
 
 /**

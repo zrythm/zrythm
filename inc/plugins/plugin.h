@@ -139,10 +139,10 @@ typedef struct Plugin
   int                  num_unknown_ports;    ///< counter
 
   /** The Channel this plugin belongs to. */
-  int                  channel_id;
+  int                  track_id;
 
   /** Cache. */
-  Channel              * channel;
+  Track              * track;
 
   /**
    * The slot this plugin is at in its channel.
@@ -291,8 +291,8 @@ plugin_fields_schema[] =
     Plugin, unknown_port_ids, num_unknown_ports,
     &int_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_INT (
-    "channel_id", CYAML_FLAG_DEFAULT,
-    Plugin, channel_id),
+    "track_id", CYAML_FLAG_DEFAULT,
+    Plugin, track_id),
   CYAML_FIELD_INT (
     "enabled", CYAML_FLAG_DEFAULT,
     Plugin, enabled),

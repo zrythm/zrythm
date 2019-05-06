@@ -27,6 +27,7 @@
 #define __AUDIO_TRACK_H__
 
 #include "audio/automation_tracklist.h"
+#include "audio/channel.h"
 #include "audio/scale.h"
 #include "utils/yaml.h"
 
@@ -136,8 +137,7 @@ typedef struct Track
    *
    * 1 channel has 1 track.
    */
-  int                   channel_id;
-  Channel *             channel; ///< cache
+  Channel *             channel;
   /* ==== CHANNEL TRACK END ==== */
 
   AutomationTracklist   automation_tracklist;
@@ -208,9 +208,11 @@ track_fields_schema[] =
     "chord_ids", CYAML_FLAG_DEFAULT,
     Track, chord_ids, num_chords,
     &int_schema, 0, CYAML_UNLIMITED),
-	CYAML_FIELD_INT (
-    "channel_id", CYAML_FLAG_DEFAULT,
-    Track, channel_id),
+  CYAML_FIELD_MAPPING_PTR (
+    "channel",
+    CYAML_FLAG_DEFAULT | CYAML_FLAG_OPTIONAL,
+    Track, channel,
+    channel_fields_schema),
   CYAML_FIELD_MAPPING (
     "automation_tracklist", CYAML_FLAG_DEFAULT,
     Track, automation_tracklist,
@@ -243,11 +245,14 @@ track_init (Track * track);
  *
  * If the TrackType is one that needs a Channel,
  * then a Channel is also created for the track.
+ *
+ * @param add_to_project Add to project registry.
  */
 Track *
 track_new (
   TrackType type,
-  char * label);
+  char * label,
+  int    add_to_project);
 
 /**
  * Clones the track and returns the clone.

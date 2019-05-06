@@ -68,14 +68,6 @@ typedef enum ChannelType
 typedef struct Channel
 {
   /**
-   * Unique IDs useful in serialization.
-   *
-   * Master must always be 0.
-   */
-  int                  id;
-
-
-  /**
    * The channel strip.
    *
    * Note: the first plugin is special in MIDI channels.
@@ -146,7 +138,7 @@ typedef struct Channel
   int                  output_id;
 
   /** Cache. */
-  Channel *            output;
+  Track *              output;
 
   /** Track associated with this channel. */
   int                  track_id;
@@ -190,9 +182,6 @@ channel_type_strings[] =
 static const cyaml_schema_field_t
 channel_fields_schema[] =
 {
-	CYAML_FIELD_INT (
-    "id", CYAML_FLAG_DEFAULT,
-    Channel, id),
   CYAML_FIELD_SEQUENCE_FIXED (
     "plugin_ids", CYAML_FLAG_DEFAULT,
     Channel, plugin_ids,
@@ -302,20 +291,11 @@ channel_prepare_process (Channel * channel);
 /**
  * Creates a channel of the given type with the
  * given label.
- *
- * This should not be creating a track. A track
- * should be created from an existing channel.
- *
- * @param add_to_project Whether the channel should
- *   be added to the project or not. This should be
- *   true unless the channel will be transient (e.g.
- *   in an undo action).
  */
 Channel *
 channel_new (
   ChannelType type,
-  char *      label,
-  int         add_to_project);
+  Track * track);
 
 /**
  * The process function prototype.
@@ -363,7 +343,7 @@ channel_add_plugin (
 void
 channel_update_output (
   Channel * ch,
-  Channel * output);
+  Track * output);
 
 /**
  * Returns the index of the last active slot.

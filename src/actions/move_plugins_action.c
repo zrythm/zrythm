@@ -29,7 +29,7 @@
 UndoableAction *
 move_plugins_action_new (
   MixerSelections * ms,
-  Channel *  to_ch,
+  Track *    to_tr,
   int        to_slot)
 {
 	MovePluginsAction * self =
@@ -41,9 +41,9 @@ move_plugins_action_new (
 
   self->to_slot = to_slot;
   self->from_track_pos =
-    ms->plugins[0]->channel->track->pos;
-  if (to_ch)
-    self->to_track_pos = to_ch->track->pos;
+    ms->plugins[0]->track->pos;
+  if (to_tr)
+    self->to_track_pos = to_tr->pos;
   else
     self->is_new_channel = 1;
 

@@ -79,6 +79,7 @@ typedef enum PortInternalType
 
 typedef struct LV2_Port LV2_Port;
 typedef struct Channel Channel;
+typedef struct Track Track;
 typedef enum PanAlgorithm PanAlgorithm;
 typedef enum PanLaw PanLaw;
 
@@ -159,11 +160,11 @@ typedef struct Port
    * If the port is not owned by a channel this will be
    * PORT_NOT_OWNED.
    */
-  int                 owner_ch_id;
+  int                 owner_tr_id;
 
   /* ====== cache ====== */
   Plugin              * owner_pl;
-  Channel             * owner_ch;
+  Track             * owner_tr;
 
   /** used when loading projects */
   int                 initialized;
@@ -241,8 +242,8 @@ port_fields_schema[] =
     "owner_pl_id", CYAML_FLAG_DEFAULT,
     Port, owner_pl_id),
   CYAML_FIELD_INT (
-    "owner_ch_id", CYAML_FLAG_DEFAULT,
-    Port, owner_ch_id),
+    "owner_tr_id", CYAML_FLAG_DEFAULT,
+    Port, owner_tr_id),
 
 	CYAML_FIELD_END
 };
@@ -379,8 +380,8 @@ port_sum_signal_from_inputs (Port * port);
  * Sets the owner channel & its ID.
  */
 void
-port_set_owner_channel (Port *    port,
-                        Channel * chan);
+port_set_owner_track (Port *    port,
+                      Track *   track);
 
 /**
  * Sets the owner plugin & its ID.

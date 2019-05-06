@@ -72,8 +72,8 @@ plugin_init_loaded (Plugin * plgn)
     plgn->unknown_ports[i] =
       project_get_port (plgn->unknown_port_ids[i]);
 
-  plgn->channel =
-    project_get_channel (plgn->channel_id);
+  plgn->track =
+    project_get_track (plgn->track_id);
 
   plugin_instantiate (plgn);
 
@@ -99,7 +99,9 @@ plugin_new_from_descr (
   Plugin * plugin = calloc (1, sizeof (Plugin));
 
   if (add_to_project)
-    project_add_plugin (plugin);
+    {
+      project_add_plugin (plugin);
+    }
 
   plugin->descr = descr;
 

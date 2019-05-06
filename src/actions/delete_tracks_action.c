@@ -94,8 +94,8 @@ delete_tracks_action_undo (
         F_NO_PUBLISH_EVENTS,
         F_NO_RECALC_GRAPH);
 
-      /* update the ID */
-      orig_track->id = track->id;
+      /* move to original ID */
+      project_move_track (track, orig_track->id);
     }
 
   /* recalculate graph */

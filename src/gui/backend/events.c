@@ -355,7 +355,7 @@ on_automation_value_changed (
 static void
 on_plugin_added (Plugin * plugin)
 {
-  Channel * channel = plugin->channel;
+  Channel * channel = plugin->track->channel;
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (channel->track);
   automation_tracklist_update (
@@ -570,22 +570,22 @@ on_plugin_visibility_changed (Plugin * pl)
   else if (!pl->visible)
     plugin_close_ui (pl);
 
-  if (pl->channel->track->type ==
+  if (pl->track->type ==
       TRACK_TYPE_INSTRUMENT &&
-      pl->channel->track->widget &&
+      pl->track->widget &&
       Z_IS_INSTRUMENT_TRACK_WIDGET (
-        pl->channel->track->widget))
+        pl->track->widget))
     instrument_track_widget_refresh_buttons (
       Z_INSTRUMENT_TRACK_WIDGET (
-        pl->channel->track->widget));
+        pl->track->widget));
 
-  if (pl->channel->widget &&
-      Z_IS_CHANNEL_WIDGET (pl->channel->widget))
+  if (pl->track->channel->widget &&
+      Z_IS_CHANNEL_WIDGET (pl->track->channel->widget))
     gtk_widget_queue_draw (
       GTK_WIDGET (
-        pl->channel->widget->slots[
+        pl->track->channel->widget->slots[
           channel_get_plugin_index (
-            pl->channel, pl)]));
+            pl->track->channel, pl)]));
 }
 
 /*static int*/

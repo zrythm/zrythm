@@ -23,7 +23,7 @@
 #include "actions/undoable_action.h"
 
 typedef struct Plugin Plugin;
-typedef struct Channel Channel;
+typedef struct Track Track;
 typedef struct MixerSelections MixerSelections;
 
 /**
@@ -56,7 +56,7 @@ typedef struct MovePluginsAction
 UndoableAction *
 move_plugins_action_new (
   MixerSelections * ms,
-  Channel *  to_ch,
+  Track *  to_tr,
   int        to_slot);
 
 int

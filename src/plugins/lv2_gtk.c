@@ -200,7 +200,7 @@ static void
 set_window_title (Lv2Plugin* plugin)
 {
   const char* name_str =
-    plugin->plugin->channel->track->name;
+    plugin->plugin->track->name;
 
   if (plugin->preset)
     {

@@ -177,12 +177,12 @@ automatable_create_lv2_control (
   a->port_id = port->port->id;
   /*a->index = control->index;*/
   a->type = AUTOMATABLE_TYPE_PLUGIN_CONTROL;
-  a->track = plugin->channel->track;
+  a->track = plugin->track;
   a->track_id =
-    plugin->channel->track->id;
+    plugin->track->id;
   a->slot_index =
-    channel_get_plugin_index (plugin->channel,
-                              plugin);
+    channel_get_plugin_index (
+      plugin->track->channel, plugin);
   a->label =
     g_strdup (lv2_control_get_label (control));
   a->minf = get_minf (a);
@@ -199,12 +199,12 @@ automatable_create_plugin_enabled (
   Automatable * a = _create_blank ();
 
   a->type = AUTOMATABLE_TYPE_PLUGIN_ENABLED;
-  a->track = plugin->channel->track;
+  a->track = plugin->track;
   a->track_id =
-    plugin->channel->track->id;
+    plugin->track->id;
   a->slot_index =
-    channel_get_plugin_index (plugin->channel,
-                              plugin);
+    channel_get_plugin_index (
+      plugin->track->channel, plugin);
   a->label = g_strdup ("Enable/disable");
   a->minf = get_minf (a);
   a->maxf = get_maxf (a);

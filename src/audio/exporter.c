@@ -234,9 +234,11 @@ exporter_export (ExportSettings * info)
           for (int i = 0; i < nframes; i++)
             {
               out_ptr[count++] = AMPLITUDE *
-                MIXER->master->stereo_out->l->buf[i];
+                MIXER->master->channel->
+                  stereo_out->l->buf[i];
               out_ptr[count++] = AMPLITUDE *
-                MIXER->master->stereo_out->r->buf[i];
+                MIXER->master->channel->
+                  stereo_out->r->buf[i];
               /*if (out_ptr [count - 1] > 0)*/
                 /*g_message ("val l%d r%d", out_ptr [count - 2],*/
                            /*out_ptr [count - 1]);*/

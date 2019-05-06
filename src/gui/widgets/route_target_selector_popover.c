@@ -199,7 +199,7 @@ on_selection_changed (
 
           channel_update_output (
             self->owner->owner->channel,
-            track->channel);
+            track);
         }
     }
 }

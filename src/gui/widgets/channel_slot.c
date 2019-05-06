@@ -78,10 +78,10 @@ on_drag_data_received (
       g_warn_if_fail (pl);
 
       /* if plugin not at original position */
-      if (self->channel != pl->channel ||
+      if (self->channel != pl->track->channel ||
           self->slot_index !=
-            channel_get_plugin_index (pl->channel,
-                                      pl))
+            channel_get_plugin_index (
+              pl->track->channel, pl))
         {
           /* determine if moving or copying */
           GdkDragAction action =
@@ -94,14 +94,16 @@ on_drag_data_received (
               ua =
                 copy_plugins_action_new (
                   MIXER_SELECTIONS,
-                  self->channel, self->slot_index);
+                  self->channel->track,
+                  self->slot_index);
             }
           else if (action == GDK_ACTION_MOVE)
             {
               ua =
                 move_plugins_action_new (
                   MIXER_SELECTIONS,
-                  self->channel, self->slot_index);
+                  self->channel->track,
+                  self->slot_index);
             }
           g_warn_if_fail (ua);
 
@@ -180,7 +182,17 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
       cairo_text_extents (cr, plugin->descr->name, &te);
       cairo_move_to (cr, 20,
                      te.height / 2 - te.y_bearing);
-      cairo_show_text (cr, plugin->descr->name);
+      char * text;
+      if (DEBUGGING)
+        text =
+          g_strdup_printf ("[%d] %s",
+                           plugin->id,
+                           plugin->descr->name);
+      else
+        text = plugin->descr->name;
+      cairo_show_text (cr, text);
+      if (DEBUGGING)
+        g_free (text);
     }
   else
     {
@@ -403,7 +415,9 @@ drag_end (GtkGestureDrag *gesture,
         pl = 1;
 
       /* if same channel as selections */
-      if (self->channel == MIXER_SELECTIONS->ch)
+      if (MIXER_SELECTIONS->track &&
+          self->channel ==
+            MIXER_SELECTIONS->track->channel)
         ch = 1;
 
       if (!ctrl && !pl && !ch)

@@ -74,17 +74,8 @@ mixer_recalc_graph (
 void
 mixer_init_loaded ()
 {
-  Channel * ch;
-  for (int i = 0; i < PROJECT->num_channels; i++)
-    {
-      ch = project_get_channel (i);
-      if (ch->type == CT_MASTER)
-        {
-          MIXER->master = ch;
-          return;
-        }
-    }
-  g_warn_if_reached ();
+  MIXER->master =
+    project_get_track (MIXER->master_id);
 }
 
 /**
@@ -220,10 +211,11 @@ mixer_move_plugin (
 
   /* remove plugin from its channel */
   int prev_slot =
-    channel_get_plugin_index (pl->channel, pl);
-  Channel * prev_ch = pl->channel;
+    channel_get_plugin_index (
+      pl->track->channel, pl);
+  Channel * prev_ch = pl->track->channel;
   channel_remove_plugin (
-    pl->channel, prev_slot, 0, 0);
+    pl->track->channel, prev_slot, 0, 0);
 
   /* move plugin's automation from src to dest */
   plugin_move_automation (

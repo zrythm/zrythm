@@ -1067,7 +1067,7 @@ channel_init_loaded (Channel * ch)
   /* routing */
   if (ch->output_id > -1)
     ch->output =
-      project_get_channel (ch->output_id);
+      project_get_track (ch->output_id);
 
   /* automatables */
   for (int i = 0; i < ch->num_automatables; i++)
@@ -1088,23 +1088,22 @@ channel_init_loaded (Channel * ch)
 /**
  * Creates, inits, and returns a new channel with
  * given info.
- *
- * @param add_to_project Add to project or not.
  */
 static inline Channel *
 _create_channel (
-  char * name,
-  int    add_to_project)
+  Track * track)
 {
   Channel * channel = calloc (1, sizeof (Channel));
+
+  channel->track = track;
 
   /* create ports */
   char * pll =
     g_strdup_printf ("%s stereo in L",
-                     name);
+                     track->name);
   char * plr =
     g_strdup_printf ("%s stereo in R",
-                     name);
+                     track->name);
   channel->stereo_in =
     stereo_ports_new (
       port_new_with_type (TYPE_AUDIO,
@@ -1117,7 +1116,7 @@ _create_channel (
   g_free (plr);
   pll =
     g_strdup_printf ("%s MIDI in",
-                     name);
+                     track->name);
   channel->midi_in =
     port_new_with_type (
       TYPE_EVENT,
@@ -1129,10 +1128,10 @@ _create_channel (
   g_free (pll);
   pll =
     g_strdup_printf ("%s Stereo out L",
-                     name);
+                     track->name);
   plr =
     g_strdup_printf ("%s Stereo out R",
-                     name);
+                     track->name);
   channel->stereo_out =
     stereo_ports_new (
      port_new_with_type (TYPE_AUDIO,
@@ -1148,16 +1147,21 @@ _create_channel (
   g_message ("Created stereo out ports");
   g_free (pll);
   g_free (plr);
-  port_set_owner_channel (channel->stereo_in->l,
-                          channel);
-  port_set_owner_channel (channel->stereo_in->r,
-                          channel);
-  port_set_owner_channel (channel->stereo_out->l,
-                          channel);
-  port_set_owner_channel (channel->stereo_out->r,
-                          channel);
-  port_set_owner_channel (channel->midi_in,
-                          channel);
+  port_set_owner_track (
+    channel->stereo_in->l,
+    track);
+  port_set_owner_track (
+    channel->stereo_in->r,
+    track);
+  port_set_owner_track (
+    channel->stereo_out->l,
+    track);
+  port_set_owner_track (
+    channel->stereo_out->r,
+    track);
+  port_set_owner_track (
+    channel->midi_in,
+    track);
 
   /* init plugins */
   for (int i = 0; i < STRIP_SIZE; i++)
@@ -1175,7 +1179,7 @@ _create_channel (
   /* set up piano roll port */
   char * tmp =
     g_strdup_printf ("%s Piano Roll",
-                     name);
+                     track->name);
   channel->piano_roll =
     port_new_with_type (
       TYPE_EVENT,
@@ -1186,12 +1190,9 @@ _create_channel (
     channel->piano_roll->id;
   channel->piano_roll->is_piano_roll = 1;
   channel->piano_roll->owner_backend = 0;
-  channel->piano_roll->owner_ch = channel;
+  channel->piano_roll->owner_tr = channel->track;
   channel->piano_roll->midi_events =
     midi_events_new (1);
-
-  if (add_to_project)
-    project_add_channel (channel);
 
   return channel;
 }
@@ -1319,10 +1320,12 @@ channel_connect (
   if (ch->type != CT_MASTER)
     {
       /* connect channel out ports to master */
-      port_connect (ch->stereo_out->l,
-                    MIXER->master->stereo_in->l);
-      port_connect (ch->stereo_out->r,
-                    MIXER->master->stereo_in->r);
+      port_connect (
+        ch->stereo_out->l,
+        MIXER->master->channel->stereo_in->l);
+      port_connect (
+        ch->stereo_out->r,
+        MIXER->master->channel->stereo_in->r);
     }
 }
 
@@ -1333,25 +1336,29 @@ channel_connect (
 void
 channel_update_output (
   Channel * ch,
-  Channel * output)
+  Track * output)
 {
   /* disconnect Channel's output from the current
    * output channel */
-  port_disconnect (ch->stereo_out->l,
-                   ch->output->stereo_in->l);
-  port_disconnect (ch->stereo_out->r,
-                   ch->output->stereo_in->r);
+  port_disconnect (
+    ch->stereo_out->l,
+    ch->output->channel->stereo_in->l);
+  port_disconnect (
+    ch->stereo_out->r,
+    ch->output->channel->stereo_in->r);
 
   /* connect Channel's output to the given output
    */
-  port_connect (ch->stereo_out->l,
-                output->stereo_in->l);
-  port_connect (ch->stereo_out->r,
-                output->stereo_in->r);
+  port_connect (
+    ch->stereo_out->l,
+    output->channel->stereo_in->l);
+  port_connect (
+    ch->stereo_out->r,
+    output->channel->stereo_in->r);
 
   ch->output = output;
   g_message ("setting output %s",
-             output->track->name);
+             output->name);
 
   mixer_recalc_graph (MIXER);
 
@@ -1362,31 +1369,18 @@ channel_update_output (
 /**
  * Creates a channel of the given type with the
  * given label.
- *
- * This should not be creating a track. A track
- * should be created from an existing channel.
- *
- * @param add_to_project Whether the channel should
- *   be added to the project or not. This should be
- *   true unless the channel will be transient (e.g.
- *   in an undo action).
  */
 Channel *
 channel_new (
   ChannelType type,
-  char *      label,
-  int         add_to_project)
+  Track *     track)
 {
-  g_warn_if_fail (label);
+  g_return_val_if_fail (track, NULL);
 
   Channel * channel =
-    _create_channel (label,
-                     add_to_project);
+    _create_channel (track);
 
   channel->type = type;
-
-  g_message ("Created channel %s of type %i",
-             label, type);
 
   return channel;
 }
@@ -1648,8 +1642,8 @@ channel_add_plugin (
              channel->track->name, pos);
   channel->plugins[pos] = plugin;
   channel->plugin_ids[pos] = plugin->id;
-  plugin->channel = channel;
-  plugin->channel_id = channel->id;
+  plugin->track = channel->track;
+  plugin->track_id = channel->track->id;
   plugin->slot = pos;
 
   Plugin * next_plugin = NULL;
@@ -1867,6 +1861,9 @@ channel_get_automatable (Channel *       channel,
 
 /**
  * Clones the channel recursively.
+ *
+ * Note: the track is not cloned, the pointer is
+ * used as is.
  */
 Channel *
 channel_clone (
@@ -1875,8 +1872,7 @@ channel_clone (
   g_return_val_if_fail (ch->track, NULL);
 
   Channel * clone =
-    channel_new (ch->type, ch->track->name,
-                 F_NO_ADD_TO_PROJ);
+    channel_new (ch->type, ch->track);
 
   /* copy plugins */
   for (int i = 0; i < STRIP_SIZE; i++)
@@ -1945,7 +1941,6 @@ void
 channel_free (Channel * channel)
 {
   g_return_if_fail (channel);
-  project_remove_channel (channel);
 
   project_remove_port (channel->stereo_in->l);
   port_free (channel->stereo_in->l);

@@ -55,8 +55,8 @@ port_init_loaded (Port * port)
       project_get_port (port->dest_ids[j]);
   port->owner_pl =
     project_get_plugin (port->owner_pl_id);
-  port->owner_ch =
-    project_get_channel (port->owner_ch_id);
+  port->owner_tr =
+    project_get_track (port->owner_tr_id);
 }
 
 void
@@ -81,7 +81,7 @@ port_new (char * label)
   Port * port = calloc (1, sizeof (Port));
 
   port->owner_pl_id = -1;
-  port->owner_ch_id = -1;
+  port->owner_tr_id = -1;
 
   port->num_dests = 0;
   port->buf =
@@ -156,11 +156,12 @@ port_new_with_data (PortInternalType internal_type, ///< the internal data forma
  * Sets the owner channel & its ID.
  */
 void
-port_set_owner_channel (Port *    port,
-                        Channel * chan)
+port_set_owner_track (
+  Port *    port,
+  Track * tr)
 {
-  port->owner_ch = chan;
-  port->owner_ch_id = chan->id;
+  port->owner_tr = tr;
+  port->owner_tr_id = tr->id;
 }
 
 /**
@@ -373,7 +374,7 @@ port_print_connections_all ()
     {
       src = project_get_port (i);
       if (!src->owner_pl &&
-          !src->owner_ch &&
+          !src->owner_tr &&
           !src->owner_backend)
         {
           g_warning ("Port %s has no owner",

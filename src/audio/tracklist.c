@@ -139,10 +139,17 @@ set_track_name (
   while (get_track_by_name (self, new_label))
     {
       g_free (new_label);
-      new_label =
-        g_strdup_printf ("%s %d",
-                         track->name,
-                         count++);
+      /*if (DEBUGGING)*/
+        /*new_label =*/
+          /*g_strdup_printf ("[%d] %s %d",*/
+                           /*track->id,*/
+                           /*track->name,*/
+                           /*count++);*/
+      /*else*/
+        new_label =
+          g_strdup_printf ("%s %d",
+                           track->name,
+                           count++);
     }
   track->name = new_label;
 }

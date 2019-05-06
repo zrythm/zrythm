@@ -44,6 +44,7 @@ G_DECLARE_FINAL_TYPE (ZrythmApp,
                       GtkApplication)
 
 #define MAX_RECENT_PROJECTS 20
+#define DEBUGGING (ZRYTHM->debug)
 
 typedef struct _MainWindowWidget MainWindowWidget;
 typedef struct Project Project;
@@ -111,6 +112,11 @@ typedef struct Zrythm
    * String interner for internal things.
    */
   Symap *                 symap;
+
+  /**
+   * In debug mode or not (determined by GSetting).
+   */
+  int                     debug;
 } Zrythm;
 
 /**

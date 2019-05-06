@@ -49,9 +49,6 @@
 void
 track_init_loaded (Track * track)
 {
-  track->channel =
-    project_get_channel (track->channel_id);
-
   int i;
   for (i = 0; i < track->num_regions; i++)
     track->regions[i] =
@@ -82,17 +79,22 @@ track_init (Track * track)
  *
  * If the TrackType is one that needs a Channel,
  * then a Channel is also created for the track.
+ *
+ * @param add_to_project Add to project registry.
  */
 Track *
 track_new (
   TrackType type,
-  char * label)
+  char * label,
+  int    add_to_project)
 {
   Track * track =
     calloc (1, sizeof (Track));
 
   track_init (track);
-  project_add_track (track);
+
+  if (add_to_project)
+    project_add_track (track);
 
   track->name = g_strdup (label);
 
@@ -129,10 +131,9 @@ track_new (
   if (type != TRACK_TYPE_CHORD)
     {
       Channel * ch =
-        channel_new (ct, label, F_ADD_TO_PROJ);
+        channel_new (ct, track);
       track->channel = ch;
 
-      track->channel_id = ch->id;
       ch->track = track;
       ch->track_id = track->id;
 
@@ -158,7 +159,8 @@ track_clone (Track * track)
   Track * new_track =
     track_new (
       track->type,
-      track->name);
+      track->name,
+      F_NO_ADD_TO_PROJ);
 
 #define COPY_MEMBER(a) \
   new_track->a = track->a
@@ -180,7 +182,6 @@ track_clone (Track * track)
 
   Channel * ch = channel_clone (track->channel);
   track->channel = ch;
-  track->channel_id = ch->id;
   ch->track = track;
   ch->track_id = track->id;
 

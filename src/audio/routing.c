@@ -197,7 +197,7 @@ node_process (
       /* if piano roll */
       if (port->flags & PORT_FLAG_PIANO_ROLL)
         {
-          chan = port->owner_ch;
+          chan = port->owner_tr->channel;
 
           if (chan->track->type ==
                 TRACK_TYPE_INSTRUMENT)
@@ -246,9 +246,9 @@ node_process (
       /* if channel stereo in */
       else if (port->type == TYPE_AUDIO &&
           port->flow == FLOW_INPUT &&
-          port->owner_ch)
+          port->owner_tr)
         {
-          chan = port->owner_ch;
+          chan = port->owner_tr->channel;
 
           /* fill stereo in buffers with info from
            * the current clip */
@@ -282,15 +282,15 @@ node_process (
         }
 
       /* if channel stereo out port */
-      else if (port->owner_ch &&
+      else if (port->owner_tr &&
           port->type == TYPE_AUDIO &&
           port->flow == FLOW_OUTPUT)
         {
           /* if muted clear it */
-          if (port->owner_ch->track->mute ||
+          if (port->owner_tr->mute ||
                 (mixer_has_soloed_channels () &&
-                   !port->owner_ch->track->solo &&
-                   port->owner_ch != MIXER->master))
+                   !port->owner_tr->solo &&
+                   port->owner_tr != MIXER->master))
             {
               /* (already cleared) */
               /*port_clear_buffer (port);*/
@@ -304,14 +304,14 @@ node_process (
               /* apply pan */
               port_apply_pan (
                 port,
-                port->owner_ch->fader.pan,
+                port->owner_tr->channel->fader.pan,
                 AUDIO_ENGINE->pan_law,
                 AUDIO_ENGINE->pan_algo);
 
               /* apply fader */
               port_apply_fader (
                 port,
-                port->owner_ch->fader.amp);
+                port->owner_tr->channel->fader.amp);
             }
           /*g_atomic_int_set (*/
             /*&port->owner_ch->processed, 1);*/

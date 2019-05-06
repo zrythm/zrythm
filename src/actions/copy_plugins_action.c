@@ -30,7 +30,7 @@
 UndoableAction *
 copy_plugins_action_new (
   MixerSelections * ms,
-  Channel *         ch,
+  Track *           tr,
   int               slot)
 {
 	CopyPluginsAction * self =
@@ -43,8 +43,8 @@ copy_plugins_action_new (
   self->ms = mixer_selections_clone (ms);
   self->slot = slot;
 
-  if (ch)
-    self->ch_id = ch->id;
+  if (tr)
+    self->tr_id = tr->id;
   else
     self->is_new_channel = 1;
 
@@ -74,7 +74,8 @@ copy_plugins_action_do (
         track_new (
           plugin_is_instrument (orig_pl->descr) ?
           TRACK_TYPE_INSTRUMENT :
-          TRACK_TYPE_BUS, str);
+          TRACK_TYPE_BUS, str,
+          F_ADD_TO_PROJ);
       g_free (str);
       g_return_val_if_fail (track, -1);
 
@@ -95,8 +96,9 @@ copy_plugins_action_do (
     {
       /* else add the plugin to the given
        * channel */
-      ch =
-        project_get_channel (self->ch_id);
+      track =
+        project_get_track (self->tr_id);
+      ch = track->channel;
     }
   g_return_val_if_fail (ch, -1);
 
@@ -153,7 +155,7 @@ copy_plugins_action_undo (
 
       tracklist_remove_track (
         TRACKLIST,
-        pl->channel->track,
+        pl->track,
         F_FREE,
         F_PUBLISH_EVENTS,
         F_RECALC_GRAPH);
@@ -163,7 +165,7 @@ copy_plugins_action_undo (
 
   /* no new channel, delete each plugin */
   Channel * ch =
-    project_get_channel (self->ch_id);
+    project_get_track (self->tr_id)->channel;
   g_warn_if_fail (ch);
 
   for (int i = 0; i < self->ms->num_slots; i++)

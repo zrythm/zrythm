@@ -257,7 +257,7 @@ create_audio_units_store ()
   g_message ("master %p",
              MIXER->master);
   gtk_tree_store_set (store, &iter2,
-                      0, MIXER->master->track->name,
+                      0, MIXER->master->name,
                       1, AUWT_NONE,
                       2, NULL,
                       -1);
@@ -269,7 +269,8 @@ create_audio_units_store ()
                       -1);
   for (int j = 0; j < STRIP_SIZE; j++)
     {
-      Plugin * plugin = MIXER->master->plugins[j];
+      Plugin * plugin =
+        MIXER->master->channel->plugins[j];
       if (plugin)
         {
           char * label = g_strdup_printf ("%d:%s", j, plugin->descr->name);

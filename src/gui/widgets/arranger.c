@@ -1093,6 +1093,8 @@ create_item (ArrangerWidget * self,
                 &pos);
             case TRACK_TYPE_BUS:
               break;
+            case TRACK_TYPE_GROUP:
+              break;
             }
         }
     }

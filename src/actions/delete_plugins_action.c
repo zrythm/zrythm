@@ -30,7 +30,7 @@
 UndoableAction *
 delete_plugins_action_new (
   MixerSelections * ms,
-  Channel *         ch,
+  Track *           tr,
   int               slot)
 {
 	DeletePluginsAction * self =
@@ -40,7 +40,7 @@ delete_plugins_action_new (
   ua->type =
 	  UNDOABLE_ACTION_TYPE_DELETE_PLUGINS;
 
-  self->ch_id = ch->id;
+  self->tr_id = tr->id;
   self->slot = slot;
   self->ms = mixer_selections_clone (ms);
 
@@ -53,7 +53,7 @@ delete_plugins_action_do (
 {
   Plugin * pl;
   Channel * ch =
-    project_get_channel (self->ch_id);
+    project_get_track (self->tr_id)->channel;
   g_return_val_if_fail (ch, -1);
 
   for (int i = 0; i < self->ms->num_slots; i++)
@@ -80,7 +80,7 @@ delete_plugins_action_undo (
 {
   Plugin * pl, * orig_pl;
   Channel * ch =
-    project_get_channel (self->ch_id);
+    project_get_track (self->tr_id)->channel;
   g_return_val_if_fail (ch, -1);
 
   for (int i = 0; i < self->ms->num_slots; i++)

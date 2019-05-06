@@ -40,8 +40,8 @@ typedef struct DeletePluginsAction
   /** Slot to start deleting from. */
   int              slot;
 
-  /** Channel to delete from. */
-  int              ch_id;
+  /** Track to delete from. */
+  int              tr_id;
 
   /** Plugin clones.
    *
@@ -53,7 +53,7 @@ typedef struct DeletePluginsAction
 UndoableAction *
 delete_plugins_action_new (
   MixerSelections * ms,
-  Channel *         ch,
+  Track *           tr,
   int               slot);
 
 int
