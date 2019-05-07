@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-07 22:59+0100\n"
+"POT-Creation-Date: 2019-05-07 23:34+0100\n"
 "PO-Revision-Date: 2019-05-04 23:37+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Chinese (Simplified) <https://translate.zrythm.org/projects/"
@@ -140,7 +140,7 @@ msgstr ""
 msgid "Change Pan"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:594
+#: src/gui/widgets/channel_slot.c:596
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -230,12 +230,12 @@ msgstr ""
 msgid "Create %d %s Tracks"
 msgstr ""
 
-#: src/actions/create_plugins_action.c:125
+#: src/actions/create_plugins_action.c:146
 #, c-format
 msgid "Create %d %ss"
 msgstr ""
 
-#: src/actions/create_plugins_action.c:121
+#: src/actions/create_plugins_action.c:142
 #, c-format
 msgid "Create %s"
 msgstr ""

@@ -46,6 +46,14 @@ create_plugins_action_new (
   plugin_clone_descr (descr, &self->descr);
   self->num_plugins = num_plugins;
 
+  for (int i = 0; i < num_plugins; i++)
+    {
+      self->plugins[i] =
+        plugin_new_from_descr (
+          &self->descr, F_NO_ADD_TO_PROJ);
+      self->plugins[i]->id = -1;
+    }
+
   return ua;
 }
 
@@ -67,6 +75,12 @@ create_plugins_action_do (
           &self->descr, F_ADD_TO_PROJ);
       g_return_val_if_fail (pl, -1);
 
+      /* if ID exists (if undo was called once),
+       * move to the previous ID */
+      if (self->plugins[i]->id >= 0)
+        project_move_plugin (
+          pl, self->plugins[i]->id);
+
       /* instantiate */
       int ret = plugin_instantiate (pl);
       g_return_val_if_fail (!ret, -1);
@@ -85,6 +99,9 @@ create_plugins_action_do (
         }
     }
 
+  EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED,
+               ch);
+
   return 0;
 }
 
@@ -101,6 +118,10 @@ create_plugins_action_undo (
 
   for (int i = 0; i < self->num_plugins; i++)
     {
+      /* remember the ID to re-set it again */
+      self->plugins[i]->id =
+        ch->plugins[self->slot + i]->id;
+
       /* remove the plugin */
       channel_remove_plugin (
         ch, self->slot + i, 1, 0);

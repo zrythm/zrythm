@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-07 22:59+0100\n"
+"POT-Creation-Date: 2019-05-07 23:34+0100\n"
 "PO-Revision-Date: 2019-05-04 23:38+0000\n"
 "Last-Translator: Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -149,7 +149,7 @@ msgstr "Changer le Fader"
 msgid "Change Pan"
 msgstr "Changer la panoramique"
 
-#: src/gui/widgets/channel_slot.c:594
+#: src/gui/widgets/channel_slot.c:596
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -243,12 +243,12 @@ msgstr "Copier la sélection dans le presse-papier"
 msgid "Create %d %s Tracks"
 msgstr "Créer %d %s Pistes"
 
-#: src/actions/create_plugins_action.c:125
+#: src/actions/create_plugins_action.c:146
 #, c-format
 msgid "Create %d %ss"
 msgstr "Créer %d %s"
 
-#: src/actions/create_plugins_action.c:121
+#: src/actions/create_plugins_action.c:142
 #, fuzzy, c-format
 msgid "Create %s"
 msgstr "Créer %s"

@@ -911,8 +911,8 @@ events_process (void * data)
     }
   /*g_message ("processed %d events", i);*/
 
-  if (num_events > 8)
-    g_warning ("More than 8 events processed. "
+  if (num_events > 6)
+    g_message ("More than 6 events processed. "
                "Optimization needed.");
 
   /*g_usleep (8000);*/

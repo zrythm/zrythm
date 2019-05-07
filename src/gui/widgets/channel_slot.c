@@ -112,6 +112,8 @@ on_drag_data_received (
     }
   else if (atom == plugin_descr_atom)
     {
+      gdk_drag_status (
+        context, GDK_ACTION_COPY, time);
       PluginDescriptor * descr =
         *(gpointer *)
         gtk_selection_data_get_data (data);

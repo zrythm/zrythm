@@ -44,6 +44,12 @@ typedef struct CreatePluginsAction
   /** Position of track to create to. */
   int              track_pos;
 
+  /** Plugins for ID remembering.
+   *
+   * Do not necessarily have to be Plugin (can be int)
+   * but let's go with it for now. */
+  Plugin *         plugins[60];
+
   /**
    * PluginDescriptor to use when creating.
    */
