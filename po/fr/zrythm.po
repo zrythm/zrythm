@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-06 23:46+0100\n"
+"POT-Creation-Date: 2019-05-07 02:13+0100\n"
 "PO-Revision-Date: 2019-05-04 23:38+0000\n"
 "Last-Translator: Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -878,7 +878,7 @@ msgstr "Refaire la commande précédente"
 msgid "Region"
 msgstr "Région"
 
-#: src/gui/widgets/region.c:226
+#: src/gui/widgets/region.c:184
 msgid ""
 "Region - Click and drag to move around (hold Shift to disable snapping) - "
 "Double click to bring up the clip editor"

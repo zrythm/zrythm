@@ -31,6 +31,7 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/cairo.h"
 #include "utils/ui.h"
 
 #include <glib/gi18n-lib.h>
@@ -38,37 +39,6 @@
 G_DEFINE_TYPE_WITH_PRIVATE (RegionWidget,
                             region_widget,
                             GTK_TYPE_BOX)
-
-static void
-draw_text (cairo_t *cr, char * name)
-{
-#define FONT "Sans Bold 9"
-
-  PangoLayout *layout;
-  PangoFontDescription *desc;
-
-  cairo_translate (cr, 2, 2);
-
-  /* Create a PangoLayout, set the font and text */
-  layout = pango_cairo_create_layout (cr);
-
-  pango_layout_set_text (layout, name, -1);
-  desc = pango_font_description_from_string (FONT);
-  pango_layout_set_font_description (layout, desc);
-  pango_font_description_free (desc);
-
-  cairo_set_source_rgb (cr, 0, 0, 0);
-
-  /* Inform Pango to re-layout the text with the new transformation */
-  /*pango_cairo_update_layout (cr, layout);*/
-
-  /*pango_layout_get_size (layout, &width, &height);*/
-  /*cairo_move_to (cr, - ((double)width / PANGO_SCALA) / 2, - RADIUS);*/
-  pango_cairo_show_layout (cr, layout);
-
-  /* free the layout object */
-  g_object_unref (layout);
-}
 
 static gboolean
 region_draw_cb (RegionWidget * self,
@@ -97,10 +67,10 @@ region_draw_cb (RegionWidget * self,
   GdkRGBA * color = &rw_prv->region->track->color;
   cairo_set_source_rgba (
     cr,
-    color->red - 0.06,
-    color->green - 0.06,
-    color->blue - 0.06,
-    0.7);
+    color->red,
+    color->green,
+    color->blue,
+    1.0);
   if (r->transient)
     cairo_set_source_rgba (
       cr, 0, 1, 0,
@@ -110,20 +80,22 @@ region_draw_cb (RegionWidget * self,
       cairo_set_source_rgba (
         cr,
         1,
-        color->green + 0.1,
-        color->blue + 0.1,
-        0.7);
+        color->green + 0.2,
+        color->blue + 0.2,
+        1.0);
     }
-  cairo_rectangle(cr, 0, 0, width, height);
+
+  z_cairo_rounded_rectangle (
+    cr, 0, 0, width, height, 1.0, 4.0);
   cairo_fill(cr);
-  cairo_set_source_rgba (cr,
-                         color->red,
-                         color->green,
-                         color->blue,
-                         1.0);
-  cairo_rectangle(cr, 0, 0, width, height);
-  cairo_set_line_width (cr, 3.5);
-  cairo_stroke (cr);
+  /*cairo_set_source_rgba (cr,*/
+                         /*color->red,*/
+                         /*color->green,*/
+                         /*color->blue,*/
+                         /*1.0);*/
+  /*cairo_rectangle(cr, 0, 0, width, height);*/
+  /*cairo_set_line_width (cr, 3.5);*/
+  /*cairo_stroke (cr);*/
 
   /* draw loop points */
   double dashes[] = { 5 };
@@ -180,20 +152,6 @@ region_draw_cb (RegionWidget * self,
         }
     }
 
-  char * str;
-
-  if (S_IS_DEBUG)
-    str =
-      g_strdup_printf (
-        "%s [%d]",
-        rw_prv->region->name,
-        rw_prv->region->id);
-  else
-    str =
-      g_strdup (rw_prv->region->name);
-
-  draw_text (cr, str);
-  g_free (str);
 
  return FALSE;
 }

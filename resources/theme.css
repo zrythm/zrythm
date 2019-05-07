@@ -128,6 +128,11 @@ velocity
   box-shadow: 2px 2px 6px alpha (black, 0.1);
 }
 
+region
+{
+  border-width: 0px;
+}
+
 region:selected,
 chord:selected,
 midi-note:selected,
@@ -135,9 +140,9 @@ velocity:selected,
 automation-point:selected
 {
   box-shadow: 2px 2px 10px @selection_color;
-  border-color: gray;
-  border-width: 1px;
-  border-style: solid;
+  /*border-color: gray;*/
+  /*border-width: 1px;*/
+  /*border-style: solid;*/
 }
 
 region:hover,

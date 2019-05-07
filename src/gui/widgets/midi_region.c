@@ -30,6 +30,7 @@
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
+#include "utils/cairo.h"
 
 G_DEFINE_TYPE (MidiRegionWidget,
                midi_region_widget,
@@ -61,11 +62,13 @@ midi_region_draw_cb (
 
   GdkRGBA * color = &rw_prv->region->track->color;
 
-  cairo_set_source_rgba (cr,
-                         color->red - 0.3,
-                         color->green - 0.3,
-                         color->blue - 0.3,
-                         0.9);
+  /*cairo_set_source_rgba (cr,*/
+                         /*color->red - 0.3,*/
+                         /*color->green - 0.3,*/
+                         /*color->blue - 0.3,*/
+                         /*0.9);*/
+  cairo_set_source_rgba (
+    cr, 1, 1, 1, 1);
 
   MidiRegion * mr =
     (MidiRegion *) rw_prv->region;
@@ -185,6 +188,24 @@ midi_region_draw_cb (
         }
     }
 
+  char * str;
+
+  if (DEBUGGING)
+    str =
+      g_strdup_printf (
+        "%s [%d]",
+        rw_prv->region->name,
+        rw_prv->region->id);
+  else
+    str =
+      g_strdup (rw_prv->region->name);
+
+  GdkRGBA c2;
+  gdk_rgba_parse (&c2, "#323232");
+  cairo_set_source_rgba (
+    cr, c2.red, c2.green, c2.blue, 1.0);
+  z_cairo_draw_text (cr, str);
+  g_free (str);
 
  return FALSE;
 }

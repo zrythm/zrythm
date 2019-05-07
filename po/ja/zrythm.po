@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-06 23:46+0100\n"
+"POT-Creation-Date: 2019-05-07 02:13+0100\n"
 "PO-Revision-Date: 2019-05-05 00:34+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Japanese <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -872,7 +872,7 @@ msgstr "前のコマンドをやり直す"
 msgid "Region"
 msgstr "リージョン"
 
-#: src/gui/widgets/region.c:226
+#: src/gui/widgets/region.c:184
 msgid ""
 "Region - Click and drag to move around (hold Shift to disable snapping) - "
 "Double click to bring up the clip editor"

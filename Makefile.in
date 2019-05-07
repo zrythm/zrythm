@@ -532,7 +532,7 @@ plugins: $(X42_PLUGINS_BINS) $(DISTRHO_PORTS_BINS)
 
 .PHONY: doc
 doc:
-	doxygen Doxyfile.cfg
+	doc/doxygen Doxyfile.cfg
 
 .PHONY: clean
 clean:
