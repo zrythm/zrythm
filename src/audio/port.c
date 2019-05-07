@@ -35,6 +35,7 @@
 #include "audio/port.h"
 #include "plugins/plugin.h"
 #include "utils/arrays.h"
+#include "utils/objects.h"
 
 #include <gtk/gtk.h>
 
@@ -295,7 +296,7 @@ ports_remove (
       g_warn_if_fail (port->num_dests == 0);
 
       project_remove_port (port);
-      port_free (port);
+      free_later (port, port_free);
     }
   * num_ports = 0;
 

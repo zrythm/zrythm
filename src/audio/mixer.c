@@ -225,8 +225,8 @@ mixer_move_plugin (
   channel_add_plugin (
     ch, slot, pl, 0, 0, 1);
 
-  gtk_widget_queue_draw (
-    GTK_WIDGET (prev_ch->widget->slots[prev_slot]));
-  gtk_widget_queue_draw (
-    GTK_WIDGET (ch->widget->slots[slot]));
+  EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED,
+               prev_ch);
+  EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED,
+               ch);
 }

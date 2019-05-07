@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-07 02:13+0100\n"
+"POT-Creation-Date: 2019-05-07 22:59+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrythm dot org>\n"
 "Language-Team: Spanish\n"
@@ -61,7 +61,7 @@ msgstr ""
 msgid "Artist"
 msgstr ""
 
-#: src/audio/track.c:740
+#: src/audio/track.c:741
 msgid "Audio"
 msgstr ""
 
@@ -113,7 +113,7 @@ msgstr ""
 msgid "Bottom Panel"
 msgstr ""
 
-#: src/audio/track.c:743
+#: src/audio/track.c:744
 msgid "Bus"
 msgstr ""
 
@@ -138,7 +138,7 @@ msgstr ""
 msgid "Change Pan"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:595
+#: src/gui/widgets/channel_slot.c:594
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -155,7 +155,7 @@ msgstr ""
 msgid "Choose a method to donate"
 msgstr ""
 
-#: src/audio/track.c:749
+#: src/audio/track.c:750
 msgid "Chord"
 msgstr ""
 
@@ -223,7 +223,7 @@ msgstr ""
 msgid "Copy selection to clipboard"
 msgstr ""
 
-#: src/actions/create_tracks_action.c:298
+#: src/actions/create_tracks_action.c:302
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr ""
@@ -238,7 +238,7 @@ msgstr ""
 msgid "Create %s"
 msgstr ""
 
-#: src/actions/create_tracks_action.c:293
+#: src/actions/create_tracks_action.c:297
 #, c-format
 msgid "Create %s Track"
 msgstr ""
@@ -447,7 +447,7 @@ msgstr ""
 msgid "Grid"
 msgstr ""
 
-#: src/audio/track.c:752
+#: src/audio/track.c:753
 msgid "Group"
 msgstr ""
 
@@ -467,7 +467,7 @@ msgstr ""
 msgid "Initializing..."
 msgstr ""
 
-#: src/audio/track.c:737
+#: src/audio/track.c:738
 msgid "Instrument"
 msgstr ""
 
@@ -573,7 +573,7 @@ msgstr ""
 msgid "Manual"
 msgstr ""
 
-#: src/project.c:160 src/audio/track.c:746
+#: src/project.c:160 src/audio/track.c:747
 msgid "Master"
 msgstr ""
 
@@ -585,7 +585,7 @@ msgstr ""
 msgid "Mixer panel"
 msgstr ""
 
-#: src/actions/move_plugins_action.c:139
+#: src/actions/move_plugins_action.c:151
 #, c-format
 msgid "Move %d Plugins"
 msgstr ""
@@ -595,7 +595,7 @@ msgstr ""
 msgid "Move %d Tracks"
 msgstr ""
 
-#: src/actions/move_plugins_action.c:135
+#: src/actions/move_plugins_action.c:147
 #, c-format
 msgid "Move %s"
 msgstr ""

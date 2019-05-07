@@ -1,6 +1,7 @@
 [![translated](https://translate.zrythm.org/widgets/zrythm/-/zrythm/svg-badge.svg "Translated")](https://translate.zrythm.org/projects/zrythm/zrythm/)
 [![pipeline](https://git.zrythm.org/zrythm/zrythm/badges/master/pipeline.svg "Pipeline")](https://git.zrythm.org/zrythm/zrythm/pipelines)
 [![coverage](https://git.zrythm.org/zrythm/zrythm/badges/master/coverage.svg "Test Coverage")](https://git.zrythm.org/zrythm/zrythm)
+[![chat](data/chat-matrix.svg "Chat on Matrix")](https://riot.im/app/#/room/#freenode_#zrythm:matrix.org?action=chat)
 [![patrons](http://img.shields.io/liberapay/patrons/Zrythm.svg?logo=liberapay "LiberaPay Patrons")](https://liberapay.com/Zrythm)
 
 Zrythm is a highly automated Digital Audio Workstation (DAW) designed to be featureful and intuitive to use. Zrythm sets itself apart from other DAWs by allowing extensive automation via built-in LFOs and envelopes and intuitive MIDI or audio editing and arranging via clips.

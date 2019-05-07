@@ -40,6 +40,7 @@ move_plugins_action_new (
 	  UNDOABLE_ACTION_TYPE_MOVE_PLUGINS;
 
   self->to_slot = to_slot;
+  g_warn_if_fail (ms->plugins[0]->track);
   self->from_track_pos =
     ms->plugins[0]->track->pos;
   if (to_tr)
@@ -48,6 +49,8 @@ move_plugins_action_new (
     self->is_new_channel = 1;
 
   self->ms = mixer_selections_clone (ms);
+  g_warn_if_fail (ms->plugins[0]->slot ==
+                  self->ms->plugins[0]->slot);
 
   return ua;
 }
@@ -77,6 +80,8 @@ move_plugins_action_do (
       /* get the plugin */
       pl =
         from_ch->plugins[self->ms->plugins[i]->slot];
+      g_warn_if_fail (
+        pl && pl->track == from_ch->track);
 
       /* get difference in slots */
       /*diff = self->ms->slots[i] - highest_slot;*/
@@ -106,13 +111,20 @@ move_plugins_action_undo (
       self->from_track_pos]->channel;
   g_return_val_if_fail (ch, -1);
 
+  /* get the channel the plugins were moved to */
+  Channel * current_ch =
+    TRACKLIST->tracks[
+      self->to_track_pos]->channel;
+  g_return_val_if_fail (current_ch, -1);
+
   /* clear selections to readd each plugin moved */
   mixer_selections_clear (MIXER_SELECTIONS);
 
   for (int i = 0; i < self->ms->num_slots; i++)
     {
       /* get the actual plugin */
-      pl = ch->plugins[self->to_slot + i];
+      pl = current_ch->plugins[self->to_slot + i];
+      g_return_val_if_fail (pl, -1);
 
       /* move plugin to its original slot */
       mixer_move_plugin (

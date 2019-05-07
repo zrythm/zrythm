@@ -541,9 +541,11 @@ setup_meter (ChannelWidget * self)
  * Updates the slots.
  */
 void
-channel_update_slots (ChannelWidget * self)
+channel_widget_update_slots (ChannelWidget * self)
 {
-  gtk_widget_queue_draw (GTK_WIDGET (self));
+  for (int i = 0; i < STRIP_SIZE; i++)
+    gtk_widget_queue_draw (
+      GTK_WIDGET (self->slots[i]));
 }
 
 

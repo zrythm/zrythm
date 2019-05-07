@@ -466,6 +466,11 @@ plugin_disconnect (Plugin * plugin)
     "DISCONNECTED ALL PORTS OF PLUGIN %d %d",
     plugin->num_in_ports,
     plugin->num_out_ports);
+
+  /* TODO figure out where to do the project_remove
+   * calls. can't do them in _free because of
+   * fast undo-redos */
+  project_remove_plugin (plugin);
 }
 
 /**
@@ -478,7 +483,6 @@ plugin_free (Plugin *plugin)
   g_message ("FREEING PLUGIN %s",
              plugin->descr->name);
   g_warn_if_fail (plugin);
-  project_remove_plugin (plugin);
 
   ports_remove (
     plugin->in_ports,

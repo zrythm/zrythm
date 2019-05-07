@@ -103,8 +103,11 @@ create (
         self->tracks[idx] = track;
 
       if (track->channel)
-      channel_add_plugin (
-        track->channel, 0, pl, 1, 1, 1);
+        {
+          channel_add_plugin (
+            track->channel, 0, pl, 1, 1, 1);
+          g_warn_if_fail (pl->track == track);
+        }
 
       if (self->type == TRACK_TYPE_AUDIO)
         {
@@ -232,6 +235,7 @@ create_tracks_action_new (
   self->num_tracks = num_tracks;
   for (int i = 0; i < num_tracks; i++)
     {
+      /* create clones for reference */
       create (self, i, 0);
       g_message ("-----------------------"
                  "create track id %d",

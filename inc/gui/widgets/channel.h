@@ -122,7 +122,8 @@ typedef struct _ChannelWidget
  * Updates the slots.
  */
 void
-channel_update_slots (ChannelWidget * self);
+channel_widget_update_slots (
+  ChannelWidget * self);
 
 /**
  * Blocks all signal handlers.

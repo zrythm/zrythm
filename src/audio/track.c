@@ -181,7 +181,7 @@ track_clone (Track * track)
   COPY_MEMBER (pos);
 
   Channel * ch = channel_clone (track->channel);
-  track->channel = ch;
+  new_track->channel = ch;
   ch->track = track;
   ch->track_id = track->id;
 
@@ -555,6 +555,8 @@ track_disconnect (Track * track)
       track, track->chords[i]);
 
   channel_disconnect (track->channel);
+
+  project_remove_track (track);
 }
 
 /**
@@ -563,7 +565,6 @@ track_disconnect (Track * track)
 void
 track_free (Track * track)
 {
-  project_remove_track (track);
 
   /* remove regions */
   int i;

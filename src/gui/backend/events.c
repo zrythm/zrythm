@@ -897,6 +897,10 @@ events_process (void * data)
            * need time to get allocated */
           EVENTS_PUSH (ET_REFRESH_ARRANGER, NULL);
           break;
+        case ET_CHANNEL_SLOTS_CHANGED:
+          channel_widget_update_slots (
+            ((Channel *)ev->arg)->widget);
+          break;
         default:
           g_message ("event not implemented yet");
           /* unimplemented */

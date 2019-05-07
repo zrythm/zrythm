@@ -1545,8 +1545,6 @@ channel_remove_plugin (
       g_message ("Removing %s from %s:%d",
                  plugin->descr->name,
                  channel->track->name, pos);
-      channel->plugins[pos] = NULL;
-      channel->plugin_ids[pos] = -1;
 
       channel_disconnect_plugin_from_strip (
         channel, pos, plugin);
@@ -1570,6 +1568,10 @@ channel_remove_plugin (
           plugin_disconnect (plugin);
           free_later (plugin, plugin_free);
         }
+
+      channel->plugins[pos] = NULL;
+      channel->plugin_ids[pos] = -1;
+
       /* if not deleting plugin (moving, etc.) just
        * disconnect its connections to the prev/
        * next slot or the channel if first/last */
@@ -1638,7 +1640,8 @@ channel_add_plugin (
   channel_remove_plugin (
     channel, pos, 1, 0);
 
-  g_message ("Inserting %s at %s:%d", plugin->descr->name,
+  g_message ("Inserting %s at %s:%d",
+             plugin->descr->name,
              channel->track->name, pos);
   channel->plugins[pos] = plugin;
   channel->plugin_ids[pos] = plugin->id;
@@ -1954,6 +1957,21 @@ channel_free (Channel * channel)
   port_free (channel->stereo_out->l);
   project_remove_port (channel->stereo_out->r);
   port_free (channel->stereo_out->r);
+
+  /* remove plugins */
+  /*Plugin * pl;*/
+  /*for (int i = 0; i < STRIP_SIZE; i++)*/
+    /*{*/
+      /*pl = channel->plugins[i];*/
+      /*g_message ("------attempting to free pl %d",*/
+                 /*i);*/
+      /*if (!pl)*/
+        /*continue;*/
+      /*g_message ("freeing");*/
+
+      /*plugin_free (pl);*/
+    /*}*/
+
 
   Automatable * a;
   FOREACH_AUTOMATABLE (channel)

@@ -69,13 +69,12 @@ on_drag_data_received (
   Plugin * pl;
   if (atom == plugin_atom)
     {
-      /* NOTE this is a cloned pointer, don't use
-       * it */
       pl =
         (Plugin *)
         gtk_selection_data_get_data (data);
       pl = project_get_plugin (pl->id);
       g_warn_if_fail (pl);
+      g_warn_if_fail (pl->track);
 
       /* if plugin not at original position */
       if (self->channel != pl->track->channel ||
