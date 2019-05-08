@@ -58,13 +58,15 @@ get_port_value(const char* port_symbol,
                uint32_t*   type)
 {
 	Lv2Plugin*        plugin = (Lv2Plugin*)user_data;
-	LV2_Port* port = lv2_port_by_symbol(plugin, port_symbol);
-	if (port && port->port->flow == FLOW_INPUT &&
-            port->port->type == TYPE_CONTROL) {
-		*size = sizeof(float);
-		*type = plugin->forge.Float;
-		return &port->control;
-	}
+	Lv2Port* port = lv2_port_by_symbol(plugin, port_symbol);
+	if (port &&
+      port->port->identifier.flow == FLOW_INPUT &&
+      port->port->identifier.type == TYPE_CONTROL)
+    {
+      *size = sizeof(float);
+      *type = plugin->forge.Float;
+      return &port->control;
+    }
 	*size = *type = 0;
 	return NULL;
 }
@@ -145,7 +147,7 @@ set_port_value(const char* port_symbol,
                uint32_t    type)
 {
   Lv2Plugin*        plugin = (Lv2Plugin*)user_data;
-  LV2_Port* port = lv2_port_by_symbol(plugin, port_symbol);
+  Lv2Port* port = lv2_port_by_symbol(plugin, port_symbol);
   if (!port) {
           fprintf(stderr, "error: Preset port `%s' is missing\n", port_symbol);
           return;

@@ -44,7 +44,7 @@ copy_plugins_action_new (
   self->slot = slot;
 
   if (tr)
-    self->tr_id = tr->id;
+    self->track_pos = tr->pos;
   else
     self->is_new_channel = 1;
 
@@ -74,8 +74,7 @@ copy_plugins_action_do (
         track_new (
           plugin_is_instrument (orig_pl->descr) ?
           TRACK_TYPE_INSTRUMENT :
-          TRACK_TYPE_BUS, str,
-          F_ADD_TO_PROJ);
+          TRACK_TYPE_BUS, str);
       g_free (str);
       g_return_val_if_fail (track, -1);
 
@@ -96,8 +95,7 @@ copy_plugins_action_do (
     {
       /* else add the plugin to the given
        * channel */
-      track =
-        project_get_track (self->tr_id);
+      track = TRACKLIST->tracks[self->track_pos];
       ch = track->channel;
     }
   g_return_val_if_fail (ch, -1);
@@ -105,18 +103,14 @@ copy_plugins_action_do (
 
   for (int i = 0; i < self->ms->num_slots; i++)
     {
-      /* get the clone */
-      orig_pl = self->ms->plugins[i];
-
       /* clone the clone */
-      pl = plugin_clone (orig_pl);
+      pl = plugin_clone (self->ms->plugins[i]);
 
-      /* add to project to get unique ID */
-      project_add_plugin (pl);
-
+      /* add it to the channel */
       channel_add_plugin (
         ch, self->slot + i, pl, 1, 1, 1);
 
+      /* show it if necessary */
       if (g_settings_get_int (
             S_PREFERENCES,
             "open-plugin-uis-on-instantiate"))
@@ -125,9 +119,6 @@ copy_plugins_action_do (
           EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED,
                        pl);
         }
-
-      /* remember the ID for when undoing */
-      orig_pl->id = pl->id;
     }
 
   mixer_recalc_graph (MIXER);
@@ -142,20 +133,18 @@ int
 copy_plugins_action_undo (
 	CopyPluginsAction * self)
 {
-  Plugin * pl;
+  Track * tr =
+    TRACKLIST->tracks[self->track_pos];
+  g_warn_if_fail (tr);
 
   /* if a new channel was created just delete the
    * channel */
   if (self->is_new_channel)
     {
-      pl =
-        project_get_plugin (
-          self->ms->plugins[0]->id);
-      g_return_val_if_fail (pl, -1);
 
       tracklist_remove_track (
         TRACKLIST,
-        pl->track,
+        tr,
         F_FREE,
         F_PUBLISH_EVENTS,
         F_RECALC_GRAPH);
@@ -164,8 +153,7 @@ copy_plugins_action_undo (
     }
 
   /* no new channel, delete each plugin */
-  Channel * ch =
-    project_get_track (self->tr_id)->channel;
+  Channel * ch = tr->channel;
   g_warn_if_fail (ch);
 
   for (int i = 0; i < self->ms->num_slots; i++)

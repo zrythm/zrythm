@@ -110,9 +110,26 @@ chord_new (MusicalNote            root,
 
   self->visible = 1;
 
-  project_add_chord (self);
-
   return self;
+}
+
+/**
+ * Finds the chord in the project corresponding to the
+ * given one.
+ */
+ZChord *
+chord_find (
+  ZChord * clone)
+{
+  for (int i = 0;
+       i < PROJECT->chord_track->num_chords; i++)
+    {
+      if (chord_is_equal (
+            PROJECT->chord_track->chords[i],
+            clone))
+        return PROJECT->chord_track->chords[i];
+    }
+  return NULL;
 }
 
 /**

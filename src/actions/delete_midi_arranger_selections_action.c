@@ -56,13 +56,11 @@ delete_midi_arranger_selections_action_do (
   for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
       /* find actual midi note */
-      mn =
-        project_get_midi_note (
-          self->mas->midi_notes[i]->id);
+      mn = midi_note_find (self->mas->midi_notes[i]);
 
       /* remove it */
       midi_region_remove_midi_note (
-        project_get_region (mn->region_id),
+        mn->region,
         mn);
     }
   EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
@@ -75,28 +73,18 @@ int
 delete_midi_arranger_selections_action_undo (
   DeleteMidiArrangerSelectionsAction * self)
 {
-  MidiNote * orig_mn, * mn;
+  MidiNote * mn;
   for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
-      /* get the clone */
-      orig_mn = self->mas->midi_notes[i];
-
       /* clone the clone */
       mn =
         midi_note_clone (
-          orig_mn,
-          project_get_region (orig_mn->region_id));
-
-      /* add to project to get unique ID */
-      project_add_midi_note (mn);
+          self->mas->midi_notes[i]);
 
       /* add it to the region */
       midi_region_add_midi_note (
-        project_get_region (mn->region_id),
+        region_find_by_name (mn->region_name),
         mn);
-
-      /* remember the ID */
-      orig_mn->id = mn->id;
     }
   EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
                NULL);

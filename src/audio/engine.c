@@ -70,28 +70,13 @@ init_midi (
 {
   g_message ("initializing MIDI...");
 
-  if (loading)
+  if (!loading)
     {
-
-      self->midi_in =
-        project_get_port (
-          self->midi_in_id);
       self->midi_editor_manual_press =
-        project_get_port (
-          self->midi_editor_manual_press_id);
-    }
-  else
-    {
-      Port * midi_editor_manual_press =
         port_new_with_type (
           TYPE_EVENT,
           FLOW_INPUT,
           "MIDI Editor Manual Press");
-      self->midi_editor_manual_press =
-        midi_editor_manual_press;
-      self->midi_editor_manual_press_id =
-        midi_editor_manual_press->id;
-
     }
 
   /* init MIDI queues for manual press */
@@ -348,11 +333,9 @@ engine_process_prepare (
           TRACKLIST->tracks[i]);
       if (!atl)
         continue;
-      for (j = 0;
-           j < atl->num_automation_tracks;
-           j++)
+      for (j = 0; j < atl->num_ats; j++)
         {
-          at = atl->automation_tracks[j];
+          at = atl->ats[j];
           val =
             automation_track_get_normalized_val_at_pos (
               at, &PLAYHEAD);

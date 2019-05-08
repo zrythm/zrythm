@@ -37,8 +37,7 @@ midi_arranger_selections_init_loaded (
   int i;
   for (i = 0; i < self->num_midi_notes; i++)
     self->midi_notes[i] =
-      project_get_midi_note (
-        self->midi_note_ids[i]);
+      midi_note_find (self->midi_notes[i]);
 }
 
 /**
@@ -142,8 +141,6 @@ midi_arranger_selections_add_note (
                       mas->num_midi_notes,
                       note))
     {
-      mas->midi_note_ids[mas->num_midi_notes] =
-        note->id;
       array_append (mas->midi_notes,
                     mas->num_midi_notes,
                     note);
@@ -178,7 +175,7 @@ midi_arranger_selections_create_missing_transients (
           /* create the transient */
           transient =
             midi_note_clone (
-              note, note->region);
+              note);
           /*transient->visible = 0;*/
           transient->transient = 1;
           transient->widget =
@@ -218,13 +215,8 @@ midi_arranger_selections_remove_note (
                 mas->num_midi_notes,
                 note,
                 idx);
-  int size = mas->num_midi_notes + 1;
-  array_delete (mas->midi_note_ids,
-                size,
-                note->id);
 
   /* remove the transient */
-  /*g_message ("idx %d", idx);*/
   remove_transient (mas, idx);
 }
 
@@ -242,7 +234,7 @@ midi_arranger_selections_clone (
     {
       MidiNote * r = src->midi_notes[i];
       MidiNote * new_r =
-        midi_note_clone (r, r->region);
+        midi_note_clone (r);
      array_append (new_ts->midi_notes,
                     new_ts->num_midi_notes,
                     new_r);
@@ -402,10 +394,7 @@ midi_arranger_selections_paste_to_pos (
 
       /* clone and add to track */
       MidiNote * cp =
-        midi_note_clone (
-          midi_note,
-          midi_note->region);
-      /*midi_note_print (cp);*/
+        midi_note_clone (midi_note);
       midi_region_add_midi_note (
         cp->region,
         cp);

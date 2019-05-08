@@ -108,22 +108,10 @@ midi_note_draw_cb (
 
   char * str =
     g_strdup_printf (
-      "[%d]", self->midi_note->id);
-  if (S_IS_DEBUG)
-    str =
-      g_strdup_printf (
-        "%s%d [%d]",
-        chord_note_to_string (
-          self->midi_note->val % 12),
-        self->midi_note->val / 12 - 2,
-        self->midi_note->id);
-  else
-    str =
-      g_strdup_printf (
-        "%s%d",
-        chord_note_to_string (
-          self->midi_note->val % 12),
-        self->midi_note->val / 12 - 2);
+      "%s%d",
+      chord_note_to_string (
+        self->midi_note->val % 12),
+      self->midi_note->val / 12 - 2);
 
   GdkRGBA c2;
   gdk_rgba_parse (&c2, "#323232");

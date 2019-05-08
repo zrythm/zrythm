@@ -173,20 +173,6 @@ automation_point_widget_new (
 
   self->ap = ap;
 
-  /* set tooltip text */
-  if (!ap->at->automatable)
-    ap->at->automatable =
-      project_get_automatable (
-        ap->at->automatable_id);
-  char * tooltip =
-    g_strdup_printf (
-      "%s %f",
-      ap->at->automatable->label,
-      ap->fvalue);
-  gtk_widget_set_tooltip_text (
-    GTK_WIDGET (self), tooltip);
-  g_free (tooltip);
-
   gtk_widget_add_events (
     GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
 

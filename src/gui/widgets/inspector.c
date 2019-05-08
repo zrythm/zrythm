@@ -123,12 +123,12 @@ inspector_widget_refresh ()
     gtk_widget_set_visible (
       GTK_WIDGET (self->region), 0);
 
-  if (TL_SELECTIONS->num_automation_points > 0)
+  if (TL_SELECTIONS->num_aps > 0)
     {
       inspector_ap_widget_show_aps (
         self->ap,
-        (AutomationPoint **) TL_SELECTIONS->automation_points,
-        TL_SELECTIONS->num_automation_points);
+        (AutomationPoint **) TL_SELECTIONS->aps,
+        TL_SELECTIONS->num_aps);
       gtk_widget_set_visible (
         GTK_WIDGET (self->ap), 1);
     }

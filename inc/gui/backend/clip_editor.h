@@ -36,23 +36,24 @@ typedef struct Region Region;
 typedef struct ClipEditor
 {
   /** Region currently attached to the clip editor. */
-  int                      region_id;
-  Region *                 region; ///< cache
+  char *           region_name;
+  Region *         region;
 
-  PianoRoll                piano_roll;
-  AudioClipEditor          audio_clip_editor;
+  PianoRoll        piano_roll;
+  AudioClipEditor  audio_clip_editor;
 
   /** Flag used by rulers when region first
    * changes. */
-  int                      region_changed;
+  int              region_changed;
 } ClipEditor;
 
 static const cyaml_schema_field_t
 clip_editor_fields_schema[] =
 {
-	CYAML_FIELD_INT (
-			"region_id", CYAML_FLAG_DEFAULT,
-			ClipEditor, region_id),
+  CYAML_FIELD_STRING_PTR (
+    "region_name", CYAML_FLAG_POINTER,
+    ClipEditor, region_name,
+   	0, CYAML_UNLIMITED),
 
 	CYAML_FIELD_END
 };

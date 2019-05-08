@@ -28,6 +28,7 @@
 
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
+#include "audio/region.h"
 #include "audio/scale.h"
 #include "utils/yaml.h"
 
@@ -58,23 +59,22 @@ typedef enum TrackType
 } TrackType;
 
 /**
- * Base track struct.
+ * Track to be inserted into the Project's
+ * Tracklist.
+ *
+ * Each Track contains a Channel with Plugins.
+ *
+ * Tracks shall be identified by ther position
+ * (index) in the Tracklist.
  */
 typedef struct Track
 {
-  /**
-   * Useful for de/serializing.
-   *
-   * All IDs are stored in the tracklist.
-   */
-  int                 id;
-
   /**
    * Position in the Tracklist.
    *
    * This is also used in the Mixer for the Channels.
    * If a track doesn't have a Channel, the Mixer
-   * can just skip it in its numbering.
+   * can just skip.
    */
   int                 pos;
 
@@ -118,7 +118,6 @@ typedef struct Track
   /**
    * Regions in this track.
    */
-  int                   region_ids[MAX_REGIONS];
   Region *              regions[MAX_REGIONS];
   int                   num_regions;  ///< counter
 
@@ -126,7 +125,6 @@ typedef struct Track
 
   /* ==== CHORD TRACK ==== */
   MusicalScale *          scale;
-  int                     chord_ids[600];
   ZChord *                 chords[600];
   int                     num_chords;
   /* ==== CHORD TRACK END ==== */
@@ -141,13 +139,6 @@ typedef struct Track
   /* ==== CHANNEL TRACK END ==== */
 
   AutomationTracklist   automation_tracklist;
-
-  /**
-   * Used when undoing/redoing.
-   *
-   * FIXME possibly not needed
-   */
-  int                   actual_id;
 
 } Track;
 
@@ -164,9 +155,6 @@ track_type_strings[] =
 static const cyaml_schema_field_t
 track_fields_schema[] =
 {
-	CYAML_FIELD_INT (
-    "id", CYAML_FLAG_DEFAULT,
-    Track, id),
   CYAML_FIELD_STRING_PTR (
     "name", CYAML_FLAG_POINTER,
     Track, name,
@@ -197,17 +185,17 @@ track_fields_schema[] =
     "color", CYAML_FLAG_DEFAULT,
     Track, color, gdk_rgba_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "region_ids", CYAML_FLAG_DEFAULT,
-    Track, region_ids, num_regions,
-    &int_schema, 0, CYAML_UNLIMITED),
+    "regions", CYAML_FLAG_DEFAULT,
+    Track, regions, num_regions,
+    &region_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_MAPPING_PTR (
     "scale", CYAML_FLAG_DEFAULT | CYAML_FLAG_OPTIONAL,
     Track, scale,
     musical_scale_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "chord_ids", CYAML_FLAG_DEFAULT,
-    Track, chord_ids, num_chords,
-    &int_schema, 0, CYAML_UNLIMITED),
+    "chords", CYAML_FLAG_DEFAULT,
+    Track, chords, num_chords,
+    &chord_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_MAPPING_PTR (
     "channel",
     CYAML_FLAG_DEFAULT | CYAML_FLAG_OPTIONAL,
@@ -245,14 +233,11 @@ track_init (Track * track);
  *
  * If the TrackType is one that needs a Channel,
  * then a Channel is also created for the track.
- *
- * @param add_to_project Add to project registry.
  */
 Track *
 track_new (
   TrackType type,
-  char * label,
-  int    add_to_project);
+  char * label);
 
 /**
  * Clones the track and returns the clone.

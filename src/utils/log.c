@@ -66,7 +66,7 @@ log_init ()
       "%F_%H-%M-%S");
   char * str =
     g_strdup_printf (
-      "%s%slog_%s.txt",
+      "%s%slog_%s",
       ZRYTHM->log_dir,
       G_DIR_SEPARATOR_S,
       str_datetime);

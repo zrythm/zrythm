@@ -40,24 +40,22 @@ typedef struct CreateTracksAction
    * Used when undoing too. */
   int              pos;
 
-  /** Track to move back to their IDs after
-   * redoing. */
-  Track *          tracks[60];
-
   /** Number of tracks to make. */
   int              num_tracks;
 
   /** Track type. */
   TrackType        type;
 
-  /** Flag to know if we are making an empty track. */
+  /** Flag to know if we are making an empty
+   * track. */
   int              is_empty;
 
   /** PluginDescriptor, if making an instrument or
    * bus track from a plugin.
    *
-   * If this is empty and the track type is instrument,
-   * it is assumed that it's an empty track. */
+   * If this is empty and the track type is
+   * instrument, it is assumed that it's an empty
+   * track. */
   PluginDescriptor pl_descr;
 
   /** Filename, if we are making an audio track from

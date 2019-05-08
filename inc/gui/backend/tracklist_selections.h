@@ -34,7 +34,6 @@ typedef struct TracklistSelections
 {
   /** Tracks doing action upon */
   Track *              tracks[600];
-  int                  track_ids[600];
   int                  num_tracks;
 } TracklistSelections;
 
@@ -42,10 +41,9 @@ static const cyaml_schema_field_t
   tracklist_selections_fields_schema[] =
 {
   CYAML_FIELD_SEQUENCE_COUNT (
-    "track_ids", CYAML_FLAG_DEFAULT,
-    TracklistSelections, track_ids,
-    num_tracks,
-    &int_schema, 0, CYAML_UNLIMITED),
+    "tracks", CYAML_FLAG_DEFAULT,
+    TracklistSelections, tracks, num_tracks,
+    &track_schema, 0, CYAML_UNLIMITED),
 
 	CYAML_FIELD_END
 };

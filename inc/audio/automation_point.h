@@ -34,30 +34,15 @@ typedef struct AutomationPoint
 
   /**
    * Pointer back to parent.
-   *
-   * For convenience only.
    */
-  int                      at_id;
-  AutomationTrack *        at;
+  int                track_pos;
+  int                at_index;
+  AutomationTrack *  at;
 
   /**
    * GUI Widget.
    */
   AutomationPointWidget *  widget;
-
-  /* ======== Useful only for de/serialization ====== */
-  /**
-   * Unique ID.
-   *
-   * All IDs are stored in the Project struct.
-   */
-  int                      id;
-  /**
-   * Port ID of the automatable so we know where to place
-   * this automation point.
-   * FIXME ???
-   */
-  //int                      port_id;
 
   /** Index in the automation track, for faster
    * performance when getting ap before/after
@@ -68,9 +53,6 @@ typedef struct AutomationPoint
 static const cyaml_schema_field_t
 automation_point_fields_schema[] =
 {
-	CYAML_FIELD_INT (
-    "id", CYAML_FLAG_DEFAULT,
-    AutomationPoint, id),
   CYAML_FIELD_MAPPING (
     "pos", CYAML_FLAG_DEFAULT,
     AutomationPoint, pos, position_fields_schema),
@@ -84,11 +66,14 @@ automation_point_fields_schema[] =
     "fvalue", CYAML_FLAG_DEFAULT,
     AutomationPoint, fvalue),
   CYAML_FIELD_INT (
-    "at_id", CYAML_FLAG_DEFAULT,
-    AutomationPoint, at_id),
-  CYAML_FIELD_INT (
     "index", CYAML_FLAG_DEFAULT,
-    AutomationPoint, at_id),
+    AutomationPoint, index),
+  CYAML_FIELD_INT (
+    "track_pos", CYAML_FLAG_DEFAULT,
+    AutomationPoint, track_pos),
+  CYAML_FIELD_INT (
+    "at_index", CYAML_FLAG_DEFAULT,
+    AutomationPoint, at_index),
 
 	CYAML_FIELD_END
 };
@@ -103,6 +88,14 @@ automation_point_schema = {
 void
 automation_point_init_loaded (
   AutomationPoint * ap);
+
+/**
+ * Finds the automation point in the project matching
+ * the params of the given one.
+ */
+AutomationPoint *
+automation_point_find (
+  AutomationPoint * src);
 
 /**
  * Creates automation point in given track at given Position

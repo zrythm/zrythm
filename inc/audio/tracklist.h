@@ -58,14 +58,11 @@ typedef struct Tracklist
    * All tracks that exist.
    *
    * These should always be sorted in the same way
-   * they should appear in the GUI.
+   * they should appear in the GUI and include
+   * hidden tracks.
    */
   Track *             tracks[MAX_TRACKS];
 
-  /**
-   * Track IDs corresponding to the above \p tracks.
-   */
-  int                 track_ids[MAX_TRACKS];
   int                 num_tracks;
 
   TracklistWidget *   widget;
@@ -75,11 +72,9 @@ static const cyaml_schema_field_t
   tracklist_fields_schema[] =
 {
   CYAML_FIELD_SEQUENCE_COUNT (
-    /* default because it is an array of pointers, not a
-     * pointer to an array */
-    "track_ids", CYAML_FLAG_DEFAULT,
-      Tracklist, track_ids, num_tracks,
-      &int_schema, 0, CYAML_UNLIMITED),
+    "tracks", CYAML_FLAG_DEFAULT,
+    Tracklist, tracks, num_tracks,
+    &track_schema, 0, CYAML_UNLIMITED),
 
 	CYAML_FIELD_END
 };

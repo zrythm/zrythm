@@ -40,7 +40,7 @@ delete_plugins_action_new (
   ua->type =
 	  UNDOABLE_ACTION_TYPE_DELETE_PLUGINS;
 
-  self->tr_id = tr->id;
+  self->tr_pos = tr->pos;
   self->slot = slot;
   self->ms = mixer_selections_clone (ms);
 
@@ -51,21 +51,15 @@ int
 delete_plugins_action_do (
 	DeletePluginsAction * self)
 {
-  Plugin * pl;
   Channel * ch =
-    project_get_track (self->tr_id)->channel;
+    TRACKLIST->tracks[self->tr_pos]->channel;
   g_return_val_if_fail (ch, -1);
 
   for (int i = 0; i < self->ms->num_slots; i++)
     {
-      /* get actual plugin */
-      pl =
-        project_get_plugin (
-          self->ms->plugins[i]->id);
-
-      /* remove it */
+      /* remove the plugin at given slot */
       channel_remove_plugin (
-        ch, pl->slot, 1, 0);
+        ch, self->slot + i, 1, 0);
     }
 
   return 0;
@@ -78,33 +72,24 @@ int
 delete_plugins_action_undo (
 	DeletePluginsAction * self)
 {
-  Plugin * pl, * orig_pl;
+  Plugin * pl;
   Channel * ch =
-    project_get_track (self->tr_id)->channel;
+    TRACKLIST->tracks[self->tr_pos]->channel;
   g_return_val_if_fail (ch, -1);
 
   for (int i = 0; i < self->ms->num_slots; i++)
     {
-      /* get clone */
-      orig_pl = self->ms->plugins[i];
-
       /* clone the clone */
-      pl = plugin_clone (orig_pl);
+      pl = plugin_clone (self->ms->plugins[i]);
 
-      /* add to project to get unique ID */
-      project_add_plugin (pl);
-
-      /* add plugin to channel */
+      /* add plugin to channel at original slot */
       /* FIXME automation track info is completely
        * lost*/
       channel_add_plugin (
-        ch, orig_pl->slot, pl,
+        ch, self->ms->plugins[i]->slot, pl,
         F_NO_CONFIRM,
         F_GEN_AUTOMATABLES,
         F_NO_RECALC_GRAPH);
-
-      /* remember the ID */
-      orig_pl->id = pl->id;
     }
 
   mixer_recalc_graph (MIXER);

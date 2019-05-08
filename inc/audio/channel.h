@@ -70,10 +70,10 @@ typedef struct Channel
   /**
    * The channel strip.
    *
-   * Note: the first plugin is special in MIDI channels.
+   * Note: the first plugin is special in MIDI
+   * channels.
    */
-  int                  plugin_ids[STRIP_SIZE];
-  Plugin *             plugins[STRIP_SIZE]; ///< cache
+  Plugin *             plugins[STRIP_SIZE];
 
   /**
    * Type of channel this is.
@@ -92,19 +92,12 @@ typedef struct Channel
   StereoPorts *        stereo_in;  ///< l & r input ports, cache
 
   /**
-   * These should be serialized instead of
-   * stereo_in.
-   */
-  //int                  stereo_in_l_id;
-  //int                  stereo_in_r_id;
-
-  /**
    * MIDI in port ID.
    *
    * This port is for receiving MIDI signals from
    * an external MIDI source.
    */
-  int                  midi_in_id;
+  Port *               piano_roll;
 
   /**
    * MIDI piano roll input port ID.
@@ -113,13 +106,7 @@ typedef struct Channel
    * the piano roll (i.e., MIDI notes inside
    * regions).
    */
-  int                  piano_roll_id;
-
-  /**
-   * Cache.
-   */
   Port *               midi_in;
-  Port *               piano_roll;
 
   /** Flag used while processing. */
   int                   filled_stereo_in_bufs;
@@ -135,24 +122,17 @@ typedef struct Channel
   StereoPorts *        stereo_out;
 
   /** Output channel to route signal to. */
-  int                  output_id;
-
-  /** Cache. */
   Track *              output;
+  /** For serializing. */
+  int                  output_pos;
 
   /** Track associated with this channel. */
-  int                  track_id;
-
-  /** Cache. */
   Track *              track;
-
-  //int                  enabled; ///< enabled or not
 
   /**
    * Automatables for this channel to be generated
    * at run time (amp, pan, mute, etc.).
    */
-  int                  automatable_ids[40];
   Automatable *        automatables[40]; ///< cache
   int                  num_automatables;
 
@@ -183,9 +163,9 @@ static const cyaml_schema_field_t
 channel_fields_schema[] =
 {
   CYAML_FIELD_SEQUENCE_FIXED (
-    "plugin_ids", CYAML_FLAG_DEFAULT,
-    Channel, plugin_ids,
-    &int_schema, STRIP_SIZE),
+    "plugins", CYAML_FLAG_DEFAULT,
+    Channel, plugins,
+    &plugin_schema, STRIP_SIZE),
   CYAML_FIELD_ENUM (
     "type", CYAML_FLAG_DEFAULT,
     Channel, type, channel_type_strings,
@@ -197,29 +177,21 @@ channel_fields_schema[] =
     "stereo_in", CYAML_FLAG_POINTER,
     Channel, stereo_in,
     stereo_ports_fields_schema),
-	CYAML_FIELD_INT (
-    "midi_in_id", CYAML_FLAG_DEFAULT,
-    Channel, midi_in_id),
-	CYAML_FIELD_INT (
-    "piano_roll_id", CYAML_FLAG_DEFAULT,
-    Channel, piano_roll_id),
+	CYAML_FIELD_MAPPING_PTR (
+    "midi_in", CYAML_FLAG_POINTER,
+    Channel, midi_in,
+    port_fields_schema),
+	CYAML_FIELD_MAPPING_PTR (
+    "piano_roll", CYAML_FLAG_POINTER,
+    Channel, piano_roll,
+    port_fields_schema),
 	CYAML_FIELD_MAPPING_PTR (
     "stereo_out", CYAML_FLAG_POINTER,
     Channel, stereo_out,
     stereo_ports_fields_schema),
 	CYAML_FIELD_INT (
-    "output_id", CYAML_FLAG_DEFAULT,
-    Channel, output_id),
-	CYAML_FIELD_INT (
-    "track_id", CYAML_FLAG_DEFAULT,
-    Channel, track_id),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "automatable_ids", CYAML_FLAG_DEFAULT,
-    Channel, automatable_ids, num_automatables,
-    &int_schema, 0, CYAML_UNLIMITED),
-	CYAML_FIELD_INT (
-    "visible", CYAML_FLAG_DEFAULT,
-    Channel, track_id),
+    "output_pos", CYAML_FLAG_DEFAULT,
+    Channel, output_pos),
 
 	CYAML_FIELD_END
 };

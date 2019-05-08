@@ -45,17 +45,13 @@
 
 /**
  * Only to be used by implementing structs.
- *
- * @param add_to_project This should be false when
- *   cloning, otherwise true.
  */
 void
 region_init (Region *   region,
              RegionType type,
              Track *    track,
              Position * start_pos,
-             Position * end_pos,
-             int        add_to_project)
+             Position * end_pos)
 {
   g_message ("creating region");
   position_set_to_pos (&region->start_pos,
@@ -78,13 +74,13 @@ region_init (Region *   region,
   /*position_print (&region->start_pos);*/
   /*g_message ("end pos");*/
   /*position_print (&region->end_pos);*/
-  region->track_id = track->id;
   region->track = track;
+  region->track_pos = track->pos;
   /*region->name = g_strdup_printf ("%s (%d)",*/
                                   /*track->name,*/
                                   /*region->id);*/
   /*region->name = g_strdup (track->name);*/
-  region->linked_region_id = -1;
+  region->linked_region_name = NULL;
   region->type = type;
   if (type == REGION_TYPE_AUDIO)
     {
@@ -96,9 +92,6 @@ region_init (Region *   region,
       region->widget = Z_REGION_WIDGET (
         midi_region_widget_new (region));
     }
-
-  if (add_to_project)
-    project_add_region (region);
 }
 
 /**
@@ -107,10 +100,9 @@ region_init (Region *   region,
 void
 region_init_loaded (Region * region)
 {
-  region->track =
-    project_get_track (region->track_id);
   region->linked_region =
-    project_get_region (region->linked_region_id);
+    region_find_by_name (
+      region->linked_region_name);
 
   if (region->type == REGION_TYPE_AUDIO)
     {
@@ -133,15 +125,75 @@ region_init_loaded (Region * region)
     }
   else if (region->type == REGION_TYPE_MIDI)
     {
-      for (int i = 0; i < region->num_midi_notes;
-           i++)
-        region->midi_notes[i] =
-          project_get_midi_note (
-            region->midi_note_ids[i]);
-
       region->widget = Z_REGION_WIDGET (
         midi_region_widget_new (region));
     }
+
+}
+
+/**
+ * Finds the region corresponding to the given one.
+ *
+ * This should be called when we have a copy or a
+ * clone, to get the actual region in the project.
+ */
+Region *
+region_find (
+  Region * clone)
+{
+  return region_find_by_name (clone->name);
+}
+
+/**
+ * Looks for the Region under the given name.
+ *
+ * Warning: very expensive function.
+ */
+Region *
+region_find_by_name (
+  const char * name)
+{
+  Track * track;
+  Region * r;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      track = TRACKLIST->tracks[i];
+      g_warn_if_fail (track);
+
+      for (int j = 0; j < track->num_regions; j++)
+        {
+          r = track->regions[j];
+          if (!g_strcmp0 (r->name, name))
+            return r;
+        }
+    }
+  g_warn_if_reached ();
+  return NULL;
+}
+
+/**
+ * Returns the MidiNote matching the properties of
+ * the given MidiNote.
+ *
+ * Used to find the actual MidiNote in the region
+ * from a cloned MidiNote (e.g. when doing/undoing).
+ */
+MidiNote *
+region_find_midi_note (
+  Region * r,
+  MidiNote * clone)
+{
+  MidiNote * mn;
+  for (int i = 0; i < r->num_midi_notes; i++)
+    {
+      mn = r->midi_notes[i];
+
+      if (midi_note_is_equal (
+            clone, mn))
+        return mn;
+    }
+
+  return NULL;
 }
 
 /**
@@ -421,7 +473,7 @@ region_clone (Region *        region,
               RegionCloneFlag flag)
 {
   Track * track =
-    project_get_track (region->track_id);
+    region->track;
 
   Region * new_region = NULL;
   if (region->type == REGION_TYPE_MIDI)
@@ -429,8 +481,7 @@ region_clone (Region *        region,
       MidiRegion * mr =
         midi_region_new (track,
                          &region->start_pos,
-                         &region->end_pos,
-                         F_NO_ADD_TO_PROJ);
+                         &region->end_pos);
       MidiRegion * mr_orig = region;
       if (flag == REGION_CLONE_COPY)
         {
@@ -439,7 +490,7 @@ region_clone (Region *        region,
             {
               MidiNote * mn =
                 midi_note_clone (
-                  mr_orig->midi_notes[i], mr);
+                  mr_orig->midi_notes[i]);
 
               midi_region_add_midi_note (mr, mn);
             }
@@ -452,7 +503,7 @@ region_clone (Region *        region,
       Region * ar =
         audio_region_new (
           region->track, region->filename,
-          &region->start_pos, F_NO_ADD_TO_PROJ);
+          &region->start_pos);
 
       new_region = ar;
     }
@@ -467,8 +518,6 @@ region_clone (Region *        region,
   position_set_to_pos (
     &new_region->loop_end_pos,
     &region->loop_end_pos);
-
-  new_region->id = region->id;
 
   return new_region;
 }
@@ -574,7 +623,6 @@ char *
 region_generate_filename (Region * region)
 {
   return g_strdup_printf (REGION_PRINTF_FILENAME,
-                          region->id,
                           region->track->name,
                           region->name);
 }
@@ -609,8 +657,6 @@ region_disconnect (
 void
 region_free (Region * self)
 {
-  project_remove_region (self);
-
   if (self->name)
     g_free (self->name);
   if (GTK_IS_WIDGET (self->widget))

@@ -32,33 +32,23 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/objects.h"
 
 void
 automation_track_init_loaded (
   AutomationTrack * self)
 {
   self->automatable =
-    project_get_automatable (
-      self->automatable_id);
+    automatable_find (self->automatable);
 
-  self->track =
-    project_get_track (
-      self->track_id);
+  /* TODO track */
+  /*self->track =*/
+    /*project_get_track (*/
+      /*self->track_id);*/
 
-  for (int i = 0; i < self->num_automation_points;
-       i++)
-    self->automation_points[i] =
-      project_get_automation_point (
-        self->ap_ids[i]);
-
-  for (int i = 0; i < self->num_automation_curves;
-       i++)
-    self->automation_curves[i] =
-      project_get_automation_curve (
-        self->ac_ids[i]);
-
-  self->al =
-    project_get_automation_lane (self->al_id);
+  /* TODO al */
+  /*self->al =*/
+    /*project_get_automation_lane (self->al_id);*/
 }
 
 AutomationTrack *
@@ -67,12 +57,8 @@ automation_track_new (Automatable *   a)
   AutomationTrack * at =
     calloc (1, sizeof (AutomationTrack));
 
-  at->track_id = a->track->id;
   at->track = a->track;
-  at->automatable_id = a->id;
   at->automatable = a;
-
-  project_add_automation_track (at);
 
   return at;
 }
@@ -121,7 +107,7 @@ add_and_show_curve_point (AutomationTrack * at,
   /* create curve point at mid pos */
   AutomationCurve * curve =
     automation_curve_new (at, pos);
-  automation_track_add_automation_curve (at, curve);
+  automation_track_add_ac (at, curve);
 
   /* FIXME these should be in gui code */
   gtk_overlay_add_overlay (GTK_OVERLAY (MW_TIMELINE),
@@ -166,9 +152,9 @@ create_curve_point_after (AutomationTrack * at,
 void
 automation_track_print_automation_points (AutomationTrack * at)
 {
-  for (int i = 0; i < at->num_automation_points; i++)
+  for (int i = 0; i < at->num_aps; i++)
     {
-      AutomationPoint * ap = at->automation_points[i];
+      AutomationPoint * ap = at->aps[i];
       g_message ("%d", i);
       position_print (&ap->pos);
     }
@@ -178,79 +164,71 @@ void
 automation_track_force_sort (AutomationTrack * at)
 {
   /* sort by position */
-  qsort (at->automation_points,
-         at->num_automation_points,
+  qsort (at->aps,
+         at->num_aps,
          sizeof (AutomationPoint *),
          cmpfunc);
-  qsort (at->automation_curves,
-         at->num_automation_curves,
+  qsort (at->acs,
+         at->num_acs,
          sizeof (AutomationCurve *),
          cmpfunc_curve);
 
   /* refresh indices */
   for (int i = 0;
-       i < at->num_automation_curves;
+       i < at->num_acs;
        i++)
-    at->automation_curves[i]->index = i;
+    at->acs[i]->index = i;
 
   /* refresh indices */
   for (int i = 0;
-       i < at->num_automation_points;
+       i < at->num_aps;
        i++)
-    at->automation_points[i]->index = i;
+    at->aps[i]->index = i;
 }
 
 /**
  * Adds automation curve.
  */
 void
-automation_track_add_automation_curve (
+automation_track_add_ac (
   AutomationTrack * at,
   AutomationCurve * ac)
 {
   /* add point */
-  array_append (at->automation_curves,
-                at->num_automation_curves,
+  array_append (at->acs,
+                at->num_acs,
                 ac);
-  int size = at->num_automation_curves - 1;
-  array_append (at->ac_ids,
-                size,
-                ac->id);
 
   /* sort by position */
-  qsort (at->automation_curves,
-         at->num_automation_curves,
+  qsort (at->acs,
+         at->num_acs,
          sizeof (AutomationCurve *),
          cmpfunc_curve);
 
   /* refresh indices */
   for (int i = 0;
-       i < at->num_automation_curves;
+       i < at->num_acs;
        i++)
-    at->automation_curves[i]->index = i;
+    at->acs[i]->index = i;
 }
 
 /**
  * Adds automation point and optionally generates curve points accordingly.
  */
 void
-automation_track_add_automation_point (
+automation_track_add_ap (
   AutomationTrack * at,
   AutomationPoint * ap,
   int               generate_curve_points)
 {
   /* add point */
-  array_append (at->automation_points,
-                at->num_automation_points,
+  array_append (at->aps,
+                at->num_aps,
                 ap);
-  int size = at->num_automation_points - 1;
-  array_append (at->ap_ids,
-                size,
-                ap->id);
 
   /* sort by position */
-  qsort (at->automation_points,
-         at->num_automation_points,
+  qsort (at->aps,
+         at->num_aps,
          sizeof (AutomationPoint *),
          cmpfunc);
 
@@ -299,9 +277,9 @@ automation_track_add_automation_point (
 
   /* refresh indices */
   for (int i = 0;
-       i < at->num_automation_points;
+       i < at->num_aps;
        i++)
-    at->automation_points[i]->index = i;
+    at->aps[i]->index = i;
 }
 
 AutomationPoint *
@@ -309,8 +287,8 @@ automation_track_get_ap_before_curve (
   AutomationTrack * at,
   AutomationCurve * ac)
 {
-  if (ac && ac->index < at->num_automation_points)
-    return at->automation_points[ac->index];
+  if (ac && ac->index < at->num_aps)
+    return at->aps[ac->index];
 
   return NULL;
 
@@ -330,12 +308,13 @@ automation_track_get_ap_before_curve (
  * Returns the ap after the curve point.
  */
 AutomationPoint *
-automation_track_get_ap_after_curve (AutomationTrack * at,
-                                     AutomationCurve * ac)
+automation_track_get_ap_after_curve (
+  AutomationTrack * at,
+  AutomationCurve * ac)
 {
   if (ac &&
-      ac->index < at->num_automation_points - 1)
-    return at->automation_points[ac->index + 1];
+      ac->index < at->num_aps - 1)
+    return at->aps[ac->index + 1];
 
   return NULL;
 
@@ -371,7 +350,7 @@ automation_track_get_prev_ap (AutomationTrack * at,
     /*}*/
 
   if (_ap->index > 0)
-    return at->automation_points[_ap->index - 1];
+    return at->aps[_ap->index - 1];
 
   return NULL;
 }
@@ -380,8 +359,9 @@ automation_track_get_prev_ap (AutomationTrack * at,
  * Returns the automation point after the position.
  */
 AutomationPoint *
-automation_track_get_next_ap (AutomationTrack * at,
-                              AutomationPoint * _ap)
+automation_track_get_next_ap (
+  AutomationTrack * at,
+  AutomationPoint * _ap)
 {
   /*int index = automation_track_get_ap_index (at, _ap);*/
   /*g_warn_if_fail (index > -1);*/
@@ -395,8 +375,8 @@ automation_track_get_next_ap (AutomationTrack * at,
         /*}*/
     /*}*/
   if (_ap &&
-      _ap->index < at->num_automation_points - 1)
-    return at->automation_points[_ap->index + 1];
+      _ap->index < at->num_aps - 1)
+    return at->aps[_ap->index + 1];
 
   return NULL;
 }
@@ -412,8 +392,8 @@ automation_track_get_next_curve_ac (
   /*int index = automation_track_get_ap_index (at, ap);*/
 
   /* if not last or only AP */
-  if (ap->index != at->num_automation_points - 1)
-    return at->automation_curves[ap->index];
+  if (ap->index != at->num_aps - 1)
+    return at->acs[ap->index];
 
   return NULL;
 }
@@ -425,15 +405,10 @@ void
 automation_track_remove_ap (AutomationTrack * at,
                             AutomationPoint * ap)
 {
-  array_delete (at->automation_points,
-                at->num_automation_points,
+  array_delete (at->aps,
+                at->num_aps,
                 ap);
-  int size = at->num_automation_points + 1;
-  array_delete (at->ap_ids,
-                size,
-                ap->id);
-  project_remove_automation_point (ap);
-  automation_point_free (ap);
+  free_later (ap, automation_point_free);
 }
 
 /**
@@ -443,15 +418,10 @@ void
 automation_track_remove_ac (AutomationTrack * at,
                             AutomationCurve * ac)
 {
-  array_delete (at->automation_curves,
-                at->num_automation_curves,
+  array_delete (at->acs,
+                at->num_acs,
                 ac);
-  int size = at->num_automation_curves + 1;
-  array_delete (at->ac_ids,
-                size,
-                ac->id);
-  project_remove_automation_curve (ac);
-  automation_curve_free (ac);
+  free_later (ac, automation_curve_free);
 }
 
 /*int*/
@@ -516,7 +486,7 @@ automation_track_get_ap_before_pos (
   int first = 0;
   /*g_message ("num autom %d",*/
              /*self->num_automation_points);*/
-  int last = self->num_automation_points - 1;
+  int last = self->num_aps - 1;
   if (first == last)
     return NULL;
   int middle = (first+last)/2;
@@ -525,13 +495,13 @@ automation_track_get_ap_before_pos (
 
   while (first <= last)
     {
-      ap = self->automation_points[middle];
+      ap = self->aps[middle];
       next_ap = NULL;
       next_ap_is_before = 0;
       if (middle < last)
         {
           next_ap =
-            self->automation_points[middle + 1];
+            self->aps[middle + 1];
           next_ap_is_before =
             position_compare (
               &next_ap->pos, pos) <= 0;
@@ -603,8 +573,10 @@ automation_track_get_normalized_val_at_pos (
 
   /* ratio of how far in we are in the curve */
   int pos_ticks = position_to_ticks (pos);
-  int prev_ap_ticks = position_to_ticks (&prev_ap->pos);
-  int next_ap_ticks = position_to_ticks (&next_ap->pos);
+  int prev_ap_ticks =
+    position_to_ticks (&prev_ap->pos);
+  int next_ap_ticks =
+    position_to_ticks (&next_ap->pos);
   double ratio =
     (double) (pos_ticks - prev_ap_ticks) /
     (next_ap_ticks - prev_ap_ticks);
@@ -647,13 +619,13 @@ void
 automation_track_free (AutomationTrack * self)
 {
   int i;
-  for (i = 0; i < self->num_automation_points; i++)
+  for (i = 0; i < self->num_aps; i++)
     automation_track_remove_ap (
-      self, self->automation_points[i]);
+      self, self->aps[i]);
 
-  for (i = 0; i < self->num_automation_curves; i++)
+  for (i = 0; i < self->num_acs; i++)
     automation_track_remove_ac (
-      self, self->automation_curves[i]);
+      self, self->acs[i]);
 
   free (self);
 }

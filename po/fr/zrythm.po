@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-08 02:17+0100\n"
+"POT-Creation-Date: 2019-05-09 00:50+0100\n"
 "PO-Revision-Date: 2019-05-04 23:38+0000\n"
 "Last-Translator: Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -72,7 +72,7 @@ msgstr "Toujours ouvrir la fenêtre des greffons"
 msgid "Artist"
 msgstr "Artiste"
 
-#: src/audio/track.c:741
+#: src/audio/track.c:721
 msgid "Audio"
 msgstr "Audio"
 
@@ -92,7 +92,7 @@ msgstr "Outil d'écoute"
 msgid "BPM - Click and drag up/down to set"
 msgstr "BPM - Cliquez et faites glisser vers le haut/bas pour définir"
 
-#: src/audio/engine_jack.c:630
+#: src/audio/engine_jack.c:641
 msgid "Backend error"
 msgstr "Erreur du Système Audio"
 
@@ -124,7 +124,7 @@ msgstr "Bouteille"
 msgid "Bottom Panel"
 msgstr "Panneau du bas"
 
-#: src/audio/track.c:744
+#: src/audio/track.c:724
 msgid "Bus"
 msgstr "Bus"
 
@@ -149,7 +149,7 @@ msgstr "Changer le Fader"
 msgid "Change Pan"
 msgstr "Changer la panoramique"
 
-#: src/gui/widgets/channel_slot.c:596
+#: src/gui/widgets/channel_slot.c:589
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -168,11 +168,11 @@ msgstr "Chinois  [zh]"
 msgid "Choose a method to donate"
 msgstr "Choisir une méthode pour faire un don"
 
-#: src/audio/track.c:750
+#: src/audio/track.c:730
 msgid "Chord"
 msgstr "Accord"
 
-#: src/audio/chord_track.c:51
+#: src/audio/chord_track.c:50
 msgid "Chord Track"
 msgstr "Piste Accord"
 
@@ -185,11 +185,11 @@ msgid "Click to enable MIDI controllers to be connected automatically"
 msgstr ""
 "Cliquez pour permettre aux contrôleurs MIDI de se connecter automatiquement"
 
-#: src/audio/engine_jack.c:633
+#: src/audio/engine_jack.c:644
 msgid "Client zombie"
 msgstr "Client zombie"
 
-#: src/audio/engine_jack.c:627
+#: src/audio/engine_jack.c:638
 msgid "Client's protocol version does not match"
 msgstr "La version du protocole du client ne correspond pas"
 
@@ -207,7 +207,7 @@ msgstr "Collection"
 msgid "Color"
 msgstr "Couleur"
 
-#: src/audio/engine_jack.c:612
+#: src/audio/engine_jack.c:623
 msgid "Communication error with the JACK server"
 msgstr "Erreur de communication avec le serveur JACK"
 
@@ -220,12 +220,12 @@ msgstr "Connexions"
 msgid "Controllers found"
 msgstr "Contrôleurs trouvés"
 
-#: src/actions/copy_plugins_action.c:190
+#: src/actions/copy_plugins_action.c:178
 #, c-format
 msgid "Copy %d Plugins"
 msgstr "Copier %d Greffons"
 
-#: src/actions/copy_plugins_action.c:186
+#: src/actions/copy_plugins_action.c:174
 #, c-format
 msgid "Copy %s"
 msgstr "Copier %s"
@@ -238,27 +238,27 @@ msgstr "Copier et Coller"
 msgid "Copy selection to clipboard"
 msgstr "Copier la sélection dans le presse-papier"
 
-#: src/actions/create_tracks_action.c:302
+#: src/actions/create_tracks_action.c:228
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr "Créer %d %s Pistes"
 
-#: src/actions/create_plugins_action.c:146
+#: src/actions/create_plugins_action.c:133
 #, c-format
 msgid "Create %d %ss"
 msgstr "Créer %d %s"
 
-#: src/actions/create_plugins_action.c:142
+#: src/actions/create_plugins_action.c:129
 #, fuzzy, c-format
 msgid "Create %s"
 msgstr "Créer %s"
 
-#: src/actions/create_tracks_action.c:297
+#: src/actions/create_tracks_action.c:223
 #, c-format
 msgid "Create %s Track"
 msgstr "Créer %s Piste"
 
-#: src/actions/create_midi_arranger_selections_action.c:115
+#: src/actions/create_midi_arranger_selections_action.c:102
 msgid "Create Object(s)"
 msgstr "Créer un ou plusieurs objet(s)"
 
@@ -274,24 +274,24 @@ msgstr "Personnalisé"
 msgid "Cut selection to clipboard"
 msgstr "Couper la sélection dans le presse-papier"
 
-#: src/actions/delete_plugins_action.c:126
+#: src/actions/delete_plugins_action.c:111
 #, c-format
 msgid "Delete %d Plugins"
 msgstr "Effacer %d Greffons"
 
-#: src/actions/delete_tracks_action.c:117
+#: src/actions/delete_tracks_action.c:110
 #, c-format
 msgid "Delete %d Tracks"
 msgstr "Supprimer %d Pistes"
 
-#: src/actions/delete_timeline_selections_action.c:112
-#: src/actions/delete_midi_arranger_selections_action.c:112
-#: src/actions/create_timeline_selections_action.c:121
+#: src/actions/delete_timeline_selections_action.c:102
+#: src/actions/delete_midi_arranger_selections_action.c:100
+#: src/actions/create_timeline_selections_action.c:109
 #, fuzzy
 msgid "Delete Object(s)"
 msgstr "Supprimer l'objet"
 
-#: src/actions/delete_plugins_action.c:123
+#: src/actions/delete_plugins_action.c:108
 msgid "Delete Plugin"
 msgstr "Supprimer le greffon"
 
@@ -299,7 +299,7 @@ msgstr "Supprimer le greffon"
 msgid "Delete Preset?"
 msgstr "Supprimer le préréglage ?"
 
-#: src/actions/delete_tracks_action.c:114
+#: src/actions/delete_tracks_action.c:107
 msgid "Delete Track"
 msgstr "Supprimer la piste"
 
@@ -320,8 +320,8 @@ msgstr "Faire un don"
 msgid "Dummy"
 msgstr "Factice"
 
-#: src/actions/duplicate_timeline_selections_action.c:120
-#: src/actions/duplicate_midi_arranger_selections_action.c:115
+#: src/actions/duplicate_timeline_selections_action.c:125
+#: src/actions/duplicate_midi_arranger_selections_action.c:112
 msgid "Duplicate Object(s)"
 msgstr "Copier l'objet"
 
@@ -364,7 +364,7 @@ msgstr "Saisir le nom de la région..."
 msgid "Eraser tool"
 msgstr "Outil gomme"
 
-#: src/actions/create_tracks_action.c:79
+#: src/actions/create_tracks_action.c:76
 #, c-format
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr ""
@@ -470,7 +470,7 @@ msgstr "Raccourcis globaux"
 msgid "Grid"
 msgstr "Grille"
 
-#: src/audio/track.c:753
+#: src/audio/track.c:733
 msgid "Group"
 msgstr "Groupe"
 
@@ -490,7 +490,7 @@ msgstr "Initialisation des paramètres"
 msgid "Initializing..."
 msgstr "Initialisation..."
 
-#: src/audio/track.c:738
+#: src/audio/track.c:718
 msgid "Instrument"
 msgstr "Instrument"
 
@@ -502,7 +502,7 @@ msgstr "Interface"
 msgid "Italian [it]"
 msgstr "Italien [it]"
 
-#: src/audio/engine_jack.c:386
+#: src/audio/engine_jack.c:393
 #, c-format
 msgid "JACK Error: %s"
 msgstr "Erreur JACK: %s"
@@ -598,7 +598,7 @@ msgstr "Fenêtre principal"
 msgid "Manual"
 msgstr "Manuel"
 
-#: src/project.c:160 src/audio/track.c:747
+#: src/project.c:142 src/audio/track.c:727
 msgid "Master"
 msgstr "Master"
 
@@ -615,7 +615,7 @@ msgstr "Panneau du mixeur"
 msgid "Move %d Plugins"
 msgstr "Déplacer %d Greffons"
 
-#: src/actions/move_tracks_action.c:143
+#: src/actions/move_tracks_action.c:123
 #, c-format
 msgid "Move %d Tracks"
 msgstr "Déplacer %d Pistes"
@@ -625,12 +625,12 @@ msgstr "Déplacer %d Pistes"
 msgid "Move %s"
 msgstr "Déplacer %s"
 
-#: src/actions/move_midi_arranger_selections_action.c:107
-#: src/actions/move_timeline_selections_action.c:105
+#: src/actions/move_midi_arranger_selections_action.c:103
+#: src/actions/move_timeline_selections_action.c:101
 msgid "Move Object(s)"
 msgstr "Déplacer le ou les objets"
 
-#: src/actions/move_tracks_action.c:140
+#: src/actions/move_tracks_action.c:120
 msgid "Move Track"
 msgstr "Déplacer la piste"
 
@@ -709,7 +709,7 @@ msgid "Output Files"
 msgstr "Fichiers de sortie"
 
 #. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:599
+#: src/audio/engine_jack.c:610
 msgid "Overall operation failed"
 msgstr "Échec général de l'opération"
 
@@ -824,7 +824,7 @@ msgstr ""
 "Fréquence d'échantillonnage: 44100\n"
 "(note: ce texte est codé en dur pour le moment)"
 
-#: src/project.c:553
+#: src/project.c:427
 msgid "Project saved."
 msgstr "Projet sauvegardé"
 
@@ -899,7 +899,7 @@ msgstr "Supprimer les projets sélectionnés de la liste"
 msgid "Report a Bug"
 msgstr "Rapporter un bogue"
 
-#: src/audio/engine_jack.c:615
+#: src/audio/engine_jack.c:626
 msgid "Requested client does not exist"
 msgstr "Le client demandé n'existe pas"
 
@@ -1086,7 +1086,7 @@ msgstr "Test"
 msgid "Tests the backends"
 msgstr "Tester les systèmes"
 
-#: src/audio/engine_jack.c:606
+#: src/audio/engine_jack.c:617
 msgid "The desired client name was not unique"
 msgstr "Le nom du client souhaité n'était pas unique"
 
@@ -1108,7 +1108,7 @@ msgstr ""
 "\n"
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 
-#: src/audio/engine_jack.c:602
+#: src/audio/engine_jack.c:613
 msgid "The operation contained an invalid or unsupported option"
 msgstr "L'opération contenait une option non valide ou non prise en charge"
 
@@ -1189,19 +1189,19 @@ msgstr "Type"
 msgid "URI (Optional):"
 msgstr "Identifiant Uniforme de Ressource (Optional):"
 
-#: src/audio/engine_jack.c:624
+#: src/audio/engine_jack.c:635
 msgid "Unable to access shared memory"
 msgstr "Impossible d'accéder à la mémoire partagée"
 
-#: src/audio/engine_jack.c:609
+#: src/audio/engine_jack.c:620
 msgid "Unable to connect to the JACK server"
 msgstr "Impossible de se connecter au serveur JACK"
 
-#: src/audio/engine_jack.c:621
+#: src/audio/engine_jack.c:632
 msgid "Unable to initialize client"
 msgstr "Impossible d'initialiser le client"
 
-#: src/audio/engine_jack.c:618
+#: src/audio/engine_jack.c:629
 msgid "Unable to load internal client"
 msgstr "Impossible de charger le client interne"
 
@@ -1234,7 +1234,7 @@ msgstr "Désélectionner tout"
 msgid "Unsolo Track"
 msgstr "Enlever le Solo de la piste"
 
-#: src/project.c:176
+#: src/project.c:156
 msgid "Untitled Project"
 msgstr "Projet sans titre"
 

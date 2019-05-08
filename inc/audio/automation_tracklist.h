@@ -27,6 +27,8 @@
 #ifndef __AUDIO_AUTOMATION_TRACKLIST_H__
 #define __AUDIO_AUTOMATION_TRACKLIST_H__
 
+#include "audio/automation_lane.h"
+#include "audio/automation_track.h"
 #include "utils/yaml.h"
 
 #define GET_SELECTED_AUTOMATION_TRACKS \
@@ -62,9 +64,9 @@ typedef struct AutomationTracklist
    * generated and then updated with automation
    * points/curves.
    */
-  int               at_ids[4000];
-  AutomationTrack * automation_tracks[4000];
-  int               num_automation_tracks;
+  //int               at_ids[4000];
+  AutomationTrack * ats[4000];
+  int               num_ats;
 
   /**
    * These are the active automation lanes that are
@@ -77,16 +79,16 @@ typedef struct AutomationTracklist
    * They must be associated with an automation
    * track.
    */
-  int               al_ids[400];
-  AutomationLane *  automation_lanes[400];
-  int               num_automation_lanes;
+  //int               al_ids[400];
+  AutomationLane *  als[400];
+  int               num_als;
 
   /**
    * Pointer back to owner track.
    *
    * For convenience only. Not to be serialized.
    */
-  int                          track_id;
+  //int                          track_id;
   Track *                      track; ///< cache
 
   AutomationTracklistWidget *  widget;
@@ -96,18 +98,13 @@ static const cyaml_schema_field_t
   automation_tracklist_fields_schema[] =
 {
   CYAML_FIELD_SEQUENCE_COUNT (
-    "at_ids", CYAML_FLAG_DEFAULT,
-    AutomationTracklist, at_ids,
-    num_automation_tracks,
-    &int_schema, 0, CYAML_UNLIMITED),
+    "ats", CYAML_FLAG_DEFAULT,
+    AutomationTracklist, ats, num_ats,
+    &automation_track_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "al_ids", CYAML_FLAG_DEFAULT,
-    AutomationTracklist, al_ids,
-    num_automation_lanes,
-    &int_schema, 0, CYAML_UNLIMITED),
-	CYAML_FIELD_INT (
-    "track_id", CYAML_FLAG_DEFAULT,
-    AutomationTracklist, track_id),
+    "als", CYAML_FLAG_DEFAULT,
+    AutomationTracklist, als, num_als,
+    &automation_lane_schema, 0, CYAML_UNLIMITED),
 
 	CYAML_FIELD_END
 };
@@ -131,23 +128,23 @@ automation_tracklist_init_loaded (
   AutomationTracklist * self);
 
 void
-automation_tracklist_add_automation_track (
+automation_tracklist_add_at (
   AutomationTracklist * self,
   AutomationTrack *     at);
 
 void
-automation_tracklist_add_automation_lane (
+automation_tracklist_add_al (
   AutomationTracklist * self,
   AutomationLane *      al);
 
 void
-automation_tracklist_delete_automation_track (
+automation_tracklist_delete_at (
   AutomationTracklist * self,
   AutomationTrack *     at,
   int                   free);
 
 void
-automation_tracklist_delete_automation_lane (
+automation_tracklist_delete_al (
   AutomationTracklist * self,
   AutomationLane *      al,
   int                   free);

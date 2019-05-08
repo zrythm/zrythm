@@ -31,7 +31,8 @@ void
 mixer_selections_init_loaded (
   MixerSelections * ms)
 {
-  ms->track = project_get_track (ms->track_id);
+  ms->track =
+    TRACKLIST->tracks[ms->track_pos];
   g_warn_if_fail (ms->track);
 }
 
@@ -104,7 +105,7 @@ mixer_selections_add_slot (
       ch != ms->track->channel)
     {
       mixer_selections_clear (ms);
-      ms->track_id = ch->track->id;
+      ms->track_pos = ch->track->pos;
       ms->track = ch->track;
     }
 
@@ -146,7 +147,7 @@ mixer_selections_remove_slot (
   if (ms->num_slots == 0)
     {
       ms->track = NULL;
-      ms->track_id = -1;
+      ms->track_pos = -1;
     }
 
   if (publish_events)
@@ -233,7 +234,7 @@ mixer_selections_clone (
     }
 
   ms->num_slots = src->num_slots;
-  ms->track_id = src->track_id;
+  ms->track_pos = src->track_pos;
   ms->track = track_clone (src->track);
 
   return ms;

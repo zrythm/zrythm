@@ -22,44 +22,44 @@ at_fixture_set_up (
   ap =
     calloc (1, sizeof (AutomationPoint));
   ap->pos.bars = 2;
-  array_append (fixture->at->automation_points,
-                fixture->at->num_automation_points,
+  array_append (fixture->at->aps,
+                fixture->at->num_aps,
                 ap);
   ac =
     calloc (1, sizeof (AutomationCurve));
   ac->pos.bars = 3;
-  array_append (fixture->at->automation_curves,
-                fixture->at->num_automation_curves,
+  array_append (fixture->at->acs,
+                fixture->at->num_acs,
                 ac);
   ap =
     calloc (1, sizeof (AutomationPoint));
   ap->pos.bars = 4;
-  array_append (fixture->at->automation_points,
-                fixture->at->num_automation_points,
+  array_append (fixture->at->aps,
+                fixture->at->num_aps,
                 ap);
   ac =
     calloc (1, sizeof (AutomationCurve));
   ac->pos.bars = 5;
-  array_append (fixture->at->automation_curves,
-                fixture->at->num_automation_curves,
+  array_append (fixture->at->acs,
+                fixture->at->num_acs,
                 ac);
   ap =
     calloc (1, sizeof (AutomationPoint));
   ap->pos.bars = 6;
-  array_append (fixture->at->automation_points,
-                fixture->at->num_automation_points,
+  array_append (fixture->at->aps,
+                fixture->at->num_aps,
                 ap);
   ac =
     calloc (1, sizeof (AutomationCurve));
   ac->pos.bars = 7;
-  array_append (fixture->at->automation_curves,
-                fixture->at->num_automation_curves,
+  array_append (fixture->at->acs,
+                fixture->at->num_acs,
                 ac);
   ap =
     calloc (1, sizeof (AutomationPoint));
   ap->pos.bars = 8;
-  array_append (fixture->at->automation_points,
-                fixture->at->num_automation_points,
+  array_append (fixture->at->aps,
+                fixture->at->num_acs,
                 ap);
 }
 
@@ -93,19 +93,19 @@ test_at_get_x_relevant_to_pos (
 
   /* test when pos is before 3rd ap */
   position_set_to_pos (
-    &pos, &fixture->at->automation_points[1]->pos);
+    &pos, &fixture->at->aps[1]->pos);
   position_add_ticks (
     &pos, 1);
   ap =
     automation_track_get_ap_before_pos (
       fixture->at, &pos);
   g_assert (
-    ap == fixture->at->automation_points[1]);
+    ap == fixture->at->aps[1]);
 
   /* test when pos is after all aps */
   position_set_to_pos (
-    &pos, &fixture->at->automation_points[
-            fixture->at->num_automation_points - 1]->
+    &pos, &fixture->at->aps[
+            fixture->at->num_aps - 1]->
               pos);
   position_add_ticks (
     &pos, 1);
@@ -113,12 +113,12 @@ test_at_get_x_relevant_to_pos (
     automation_track_get_ap_before_pos (
       fixture->at, &pos);
   g_assert (
-    ap == fixture->at->automation_points[
-            fixture->at->num_automation_points - 1]);
+    ap == fixture->at->aps[
+            fixture->at->num_aps - 1]);
 
   /* test when there are no APs */
-  /*int tmp = fixture->at->num_automation_points;*/
-  fixture->at->num_automation_points = 0;
+  /*int tmp = fixture->at->num_aps;*/
+  fixture->at->num_aps = 0;
   ap =
     automation_track_get_ap_before_pos (
       fixture->at, &pos);

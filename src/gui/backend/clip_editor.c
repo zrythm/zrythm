@@ -52,7 +52,13 @@ clip_editor_set_region (Region * region)
       track_get_channel (region->track),
       1);
   self->region = region;
-  self->region_id = region->id;
+
+  if (self->region_name)
+    {
+      g_free (self->region_name);
+      self->region_name = NULL;
+    }
+  self->region_name = g_strdup (region->name);
 
   self->region_changed = 1;
 
@@ -63,7 +69,7 @@ clip_editor_set_region (Region * region)
 void
 clip_editor_init (ClipEditor * self)
 {
-  self->region_id = -1;
+  self->region_name = NULL;
   piano_roll_init (&self->piano_roll);
   audio_clip_editor_init (&self->audio_clip_editor);
 }

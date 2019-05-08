@@ -51,17 +51,12 @@ typedef struct AutomationTrack AutomationTrack;
  */
 typedef struct Automatable
 {
-  int                  id;
-
+  /** Index in its parent. */
+  int            index;
   /**
    * Port, if plugin port.
    */
   Port *               port; ///< cache
-
-  /**
-   * This should be serialized instead of port.
-   */
-  int                  port_id;
 
   /**
    * Control, if LV2 plugin.
@@ -69,16 +64,23 @@ typedef struct Automatable
    * When loading, this can be fetched using the
    * port.
    */
-  Lv2Control *       control; ///< cache
+  Lv2Control *       control;
 
   /** Associated track. */
-  int                  track_id;
-  Track *              track; ///< cache
+  Track *              track;
+  int                  track_pos;
 
-  int                  slot_index; ///< slot index in channel, if plugin automation
-                                    ///< eg. automating enabled/disabled
-  char *               label; ///< human friendly label
-  AutomatableType      type; ///< volume/pan/plugin control/etc.
+  /** Slot, if plugin automation. */
+  int                  slot;
+  /** Plugin, for convenience, if plugin
+   * automation. */
+  Plugin *             plugin;
+
+  /** Human friendly label. */
+  char *               label;
+
+  /** Volume/pan/plugin control/etc. */
+  AutomatableType      type;
 
   float                minf;
   float                maxf;
@@ -88,15 +90,15 @@ typedef struct Automatable
 static const cyaml_strval_t
 automatable_type_strings[] =
 {
-	{ "Plugin Control",
+  { "Plugin Control",
     AUTOMATABLE_TYPE_PLUGIN_CONTROL },
-	{ "Plugin Enabled",
+  { "Plugin Enabled",
     AUTOMATABLE_TYPE_PLUGIN_ENABLED },
-	{ "Channel Fader",
+  { "Channel Fader",
     AUTOMATABLE_TYPE_CHANNEL_FADER },
-	{ "Channel Mute",
+  { "Channel Mute",
     AUTOMATABLE_TYPE_CHANNEL_MUTE },
-	{ "Channel Pan",
+  { "Channel Pan",
     AUTOMATABLE_TYPE_CHANNEL_PAN },
 };
 
@@ -104,47 +106,43 @@ static const cyaml_schema_field_t
 automatable_fields_schema[] =
 {
   CYAML_FIELD_INT (
-    "id", CYAML_FLAG_DEFAULT,
-    Automatable, id),
+    "index", CYAML_FLAG_DEFAULT,
+    Automatable, index),
   CYAML_FIELD_INT (
-    "port_id", CYAML_FLAG_DEFAULT,
-    Automatable, port_id),
+    "track_pos", CYAML_FLAG_DEFAULT,
+    Automatable, track_pos),
   CYAML_FIELD_INT (
-    "track_id", CYAML_FLAG_DEFAULT,
-    Automatable, track_id),
-  CYAML_FIELD_INT (
-    "slot_index", CYAML_FLAG_DEFAULT,
-    Automatable, slot_index),
-  CYAML_FIELD_FLOAT (
-    "minf", CYAML_FLAG_DEFAULT,
-    Automatable, minf),
-  CYAML_FIELD_FLOAT (
-    "maxf", CYAML_FLAG_DEFAULT,
-    Automatable, maxf),
-  CYAML_FIELD_FLOAT (
-    "sizef", CYAML_FLAG_DEFAULT,
-    Automatable, sizef),
+    "slot", CYAML_FLAG_DEFAULT,
+    Automatable, slot),
   CYAML_FIELD_STRING_PTR (
     "label", CYAML_FLAG_POINTER,
     Automatable, label,
-   	0, CYAML_UNLIMITED),
+     0, CYAML_UNLIMITED),
   CYAML_FIELD_ENUM (
     "type", CYAML_FLAG_DEFAULT,
     Automatable, type, automatable_type_strings,
     CYAML_ARRAY_LEN (automatable_type_strings)),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 automatable_schema = {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
-		Automatable, automatable_fields_schema),
+    Automatable, automatable_fields_schema),
 };
 
-void
-automatable_init_loaded (Automatable * self);
+//void
+//automatable_init_loaded (Automatable * self);
+
+/**
+ * Finds the Automatable in the project from the
+ * given clone.
+ */
+Automatable *
+automatable_find (
+  Automatable * clone);
 
 Automatable *
 automatable_create_fader (Channel * channel);

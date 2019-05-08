@@ -131,7 +131,7 @@ on_window_destroy(
 
   for (i = 0; i < plugin->num_ports; i++)
     {
-      LV2_Port * port =
+      Lv2Port * port =
         &plugin->ports[i];
 
       port->widget = NULL;

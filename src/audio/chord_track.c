@@ -46,7 +46,6 @@ chord_track_new (MusicalScale * scale)
   Track * track = (Track *) self;
   track->type = TRACK_TYPE_CHORD;
   track_init (track);
-  project_add_track (track);
 
   self->name = g_strdup (_("Chord Track"));
 
@@ -64,10 +63,6 @@ chord_track_add_chord (ChordTrack * self,
   array_append (self->chords,
                 self->num_chords,
                 chord);
-  self->chord_ids[
-    self->num_chords - 1] =
-      self->chords [
-        self->num_chords - 1]->id;
 }
 
 void
@@ -77,9 +72,6 @@ chord_track_remove_chord (ChordTrack * self,
   array_delete (self->chords,
                 self->num_chords,
                 chord);
-  for (int i = chord->id; i < self->num_chords;
-       i++)
-    self->chord_ids[i] = self->chord_ids[i+1];
 }
 
 /**
@@ -93,7 +85,6 @@ chord_track_default ()
                        NOTE_A);
 
   Track * self = chord_track_new (scale);
-  project_add_track (self);
 
   return self;
 }

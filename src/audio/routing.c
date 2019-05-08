@@ -29,6 +29,7 @@
 #include "audio/engine_pa.h"
 #endif
 #include "audio/instrument_track.h"
+#include "audio/midi.h"
 #include "audio/pan.h"
 #include "audio/port.h"
 #include "audio/routing.h"
@@ -136,7 +137,7 @@ print_node (GraphNode * node)
       node->id,
       node->type == ROUTE_NODE_TYPE_PLUGIN ?
         node->pl->descr->name :
-        node->port->label,
+        node->port->identifier.label,
       node->refcount,
       node->terminal ? "yes" : "no",
       node->initial ? "yes" : "no");
@@ -151,7 +152,7 @@ print_node (GraphNode * node)
           dest->type ==
             ROUTE_NODE_TYPE_PLUGIN ?
               dest->pl->descr->name :
-              dest->port->label);
+              dest->port->identifier.label);
       g_free (str1);
       str1 = str2;
     }
@@ -195,9 +196,9 @@ node_process (
                  /*node->port->label);*/
 
       /* if piano roll */
-      if (port->flags & PORT_FLAG_PIANO_ROLL)
+      if (port->identifier.flags & PORT_FLAG_PIANO_ROLL)
         {
-          chan = port->owner_tr->channel;
+          chan = port->track->channel;
 
           if (chan->track->type ==
                 TRACK_TYPE_INSTRUMENT)
@@ -244,11 +245,11 @@ node_process (
         }
 
       /* if channel stereo in */
-      else if (port->type == TYPE_AUDIO &&
-          port->flow == FLOW_INPUT &&
-          port->owner_tr)
+      else if (port->identifier.type == TYPE_AUDIO &&
+          port->identifier.flow == FLOW_INPUT &&
+          port->track)
         {
-          chan = port->owner_tr->channel;
+          chan = port->track->channel;
 
           /* fill stereo in buffers with info from
            * the current clip */
@@ -282,15 +283,15 @@ node_process (
         }
 
       /* if channel stereo out port */
-      else if (port->owner_tr &&
-          port->type == TYPE_AUDIO &&
-          port->flow == FLOW_OUTPUT)
+      else if (port->track &&
+          port->identifier.type == TYPE_AUDIO &&
+          port->identifier.flow == FLOW_OUTPUT)
         {
           /* if muted clear it */
-          if (port->owner_tr->mute ||
+          if (port->track->mute ||
                 (mixer_has_soloed_channels () &&
-                   !port->owner_tr->solo &&
-                   port->owner_tr != MIXER->master))
+                   !port->track->solo &&
+                   port->track != MIXER->master))
             {
               /* (already cleared) */
               /*port_clear_buffer (port);*/
@@ -304,23 +305,24 @@ node_process (
               /* apply pan */
               port_apply_pan (
                 port,
-                port->owner_tr->channel->fader.pan,
+                port->track->channel->fader.pan,
                 AUDIO_ENGINE->pan_law,
                 AUDIO_ENGINE->pan_algo);
 
               /* apply fader */
               port_apply_fader (
                 port,
-                port->owner_tr->channel->fader.amp);
+                port->track->channel->fader.amp);
             }
           /*g_atomic_int_set (*/
             /*&port->owner_ch->processed, 1);*/
         }
 
       /* if JACK stereo out */
-      else if (port->owner_backend &&
-          port->type == TYPE_AUDIO &&
-          port->flow == FLOW_OUTPUT)
+      else if (port->identifier.owner_type ==
+               PORT_OWNER_TYPE_BACKEND &&
+          port->identifier.type == TYPE_AUDIO &&
+          port->identifier.flow == FLOW_OUTPUT)
         {
           if (!AUDIO_ENGINE->exporting)
             {
@@ -659,7 +661,7 @@ find_node_from_port (
     {
       node = graph->graph_nodes[i];
       if (node->type == ROUTE_NODE_TYPE_PORT &&
-          node->port->id == port->id)
+          node->port == port)
         return node;
     }
   return NULL;
@@ -675,7 +677,7 @@ find_node_from_plugin (
     {
       node = graph->graph_nodes[i];
       if (node->type == ROUTE_NODE_TYPE_PLUGIN &&
-          node->pl->id == pl->id)
+          node->pl == pl)
         return node;
     }
   return NULL;
@@ -946,11 +948,78 @@ graph_print (
   g_message ("==finish printing graph");
 }
 
+/**
+ * Add the port to the nodes.
+ */
+static inline void
+add_port (
+  Graph * self,
+  Port *   port)
+{
+  /*add_port_node (self, port);*/
+  if (port->num_dests == 0 &&
+      port->num_srcs == 0 &&
+      port->plugin)
+    {
+      if (port->identifier.flow == FLOW_INPUT)
+        graph_add_initial_node (
+          self, ROUTE_NODE_TYPE_PORT, port);
+      else if (port->identifier.flow == FLOW_OUTPUT)
+        graph_add_terminal_node (
+          self, ROUTE_NODE_TYPE_PORT, port);
+    }
+  else if (port->num_dests == 0 &&
+           port->num_srcs == 0 &&
+           !port->plugin)
+    {
+    }
+  else if (port->num_srcs == 0 &&
+      !(port->plugin &&
+        port->identifier.flow == FLOW_OUTPUT))
+    graph_add_initial_node (
+      self, ROUTE_NODE_TYPE_PORT, port);
+  else if (port->num_dests == 0 &&
+           port->num_srcs > 0 &&
+           !(port->plugin &&
+             port->identifier.flow == FLOW_INPUT))
+    graph_add_terminal_node (
+      self, ROUTE_NODE_TYPE_PORT, port);
+  else
+    graph_add_node (
+      self, ROUTE_NODE_TYPE_PORT, port);
+}
+
+/**
+ * Connect the port as a node.
+ */
+static inline void
+connect_port (
+  Graph * self,
+  Port * port)
+{
+  GraphNode * node =
+    find_node_from_port (self, port);
+  GraphNode * node2;
+  Port * src, * dest;
+  for (int j = 0; j < port->num_srcs; j++)
+    {
+      src = port->srcs[j];
+      node2 = find_node_from_port (self, src);
+      node_connect (node2, node);
+    }
+  for (int j = 0; j < port->num_dests; j++)
+    {
+      dest = port->dests[j];
+      node2 = find_node_from_port (self, dest);
+      node_connect (node, node2);
+    }
+}
+
 Graph *
 graph_new (
   Router * router)
 {
-  int i, j;
+  int i, j, k;
   GraphNode * node, * node2;
   Graph * self = calloc (1, sizeof (Graph));
   g_warn_if_fail (router);
@@ -970,124 +1039,93 @@ graph_new (
    * ======================== */
 
   /* add plugins */
-  Plugin * plugin;
-  for (i = 0; i < PROJECT->num_plugins; i++)
+  Track * tr;
+  Plugin * pl;
+  for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      plugin = project_get_plugin (i);
-      if (!plugin || plugin->deleting) continue;
+      tr = TRACKLIST->tracks[i];
+      if (!tr->channel)
+        continue;
 
-      if (plugin->num_in_ports == 0 &&
-          plugin->num_out_ports > 0)
-        graph_add_initial_node (
-          self, ROUTE_NODE_TYPE_PLUGIN, plugin);
-      else if (plugin->num_out_ports == 0 &&
-               plugin->num_in_ports > 0)
-        graph_add_terminal_node (
-          self, ROUTE_NODE_TYPE_PLUGIN, plugin);
-      else if (plugin->num_out_ports == 0 &&
-               plugin->num_in_ports == 0)
+      for (j = 0; j < STRIP_SIZE; j++)
         {
+          pl = tr->channel->plugins[j];
+
+          if (!pl)
+            continue;
+
+          if (pl->num_in_ports == 0 &&
+              pl->num_out_ports > 0)
+            graph_add_initial_node (
+              self, ROUTE_NODE_TYPE_PLUGIN, pl);
+          else if (pl->num_out_ports == 0 &&
+                   pl->num_in_ports > 0)
+            graph_add_terminal_node (
+              self, ROUTE_NODE_TYPE_PLUGIN, pl);
+          else if (pl->num_out_ports == 0 &&
+                   pl->num_in_ports == 0)
+            {
+            }
+          else
+            graph_add_node (
+              self, ROUTE_NODE_TYPE_PLUGIN, pl);
         }
-      else
-        graph_add_node (
-          self, ROUTE_NODE_TYPE_PLUGIN, plugin);
     }
 
   /* add ports */
-  Port * port;
-  for (i = 0; i < PROJECT->num_ports; i++)
+  Port * ports[10000];
+  int num_ports;
+  port_get_all (ports, &num_ports);
+  for (i = 0; i < num_ports; i++)
     {
-      /* FIXME project arrays should be hashtables
-       */
-      port = project_get_port (i);
-      if (!port || port->deleting ||
-          (port->owner_pl &&
-           port->owner_pl->deleting))
-        continue;
-
-      /*g_message ("adding port node %s",*/
-                 /*port->label);*/
-      /*add_port_node (self, port);*/
-      if (port->num_dests == 0 &&
-          port->num_srcs == 0 &&
-          port->owner_pl)
-        {
-          if (port->flow == FLOW_INPUT)
-            graph_add_initial_node (
-              self, ROUTE_NODE_TYPE_PORT, port);
-          else if (port->flow == FLOW_OUTPUT)
-            graph_add_terminal_node (
-              self, ROUTE_NODE_TYPE_PORT, port);
-        }
-      else if (port->num_dests == 0 &&
-               port->num_srcs == 0 &&
-               !port->owner_pl)
-        {
-        }
-      else if (port->num_srcs == 0 &&
-          !(port->owner_pl &&
-            port->flow == FLOW_OUTPUT))
-        graph_add_initial_node (
-          self, ROUTE_NODE_TYPE_PORT, port);
-      else if (port->num_dests == 0 &&
-               port->num_srcs > 0 &&
-               !(port->owner_pl &&
-                 port->flow == FLOW_INPUT))
-        graph_add_terminal_node (
-          self, ROUTE_NODE_TYPE_PORT, port);
-      else
-        graph_add_node (
-          self, ROUTE_NODE_TYPE_PORT, port);
+      add_port (
+        self, ports[i]);
     }
 
   /* ========================
    * now connect them
    * ======================== */
-  for (i = 0; i < PROJECT->num_plugins; i++)
+  Port * port;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      plugin = project_get_plugin (i);
-      if (!plugin || plugin->deleting)
+      tr = TRACKLIST->tracks[i];
+      if (!tr->channel)
         continue;
 
-      node = find_node_from_plugin (self, plugin);
-      for (j = 0; j < plugin->num_in_ports; j++)
+      for (j = 0; j < STRIP_SIZE; j++)
         {
-          port = plugin->in_ports[j];
-          g_warn_if_fail (port->owner_pl != NULL);
-          node2 = find_node_from_port (self, port);
-          node_connect (node2, node);
-        }
-      for (j = 0; j < plugin->num_out_ports; j++)
-        {
-          port = plugin->out_ports[j];
-          g_warn_if_fail (port->owner_pl != NULL);
-          node2 = find_node_from_port (self, port);
-          node_connect (node, node2);
+          pl = tr->channel->plugins[j];
+
+          if (!pl)
+            continue;
+
+          node =
+            find_node_from_plugin (self, pl);
+          for (j = 0; j < pl->num_in_ports; j++)
+            {
+              port = pl->in_ports[j];
+              g_warn_if_fail (
+                port->plugin != NULL);
+              node2 =
+                find_node_from_port (self, port);
+              node_connect (node2, node);
+            }
+          for (j = 0; j < pl->num_out_ports; j++)
+            {
+              port = pl->out_ports[j];
+              g_warn_if_fail (
+                port->plugin != NULL);
+              node2 =
+                find_node_from_port (self, port);
+              node_connect (node, node2);
+            }
         }
     }
 
-  Port * src, * dest;
-  for (i = 0; i < PROJECT->num_ports; i++)
+  for (i = 0; i < num_ports; i++)
     {
-      port = project_get_port (i);
-      if (!port || port->deleting ||
-          (port->owner_pl &&
-           port->owner_pl->deleting))
-        continue;
-
-      node = find_node_from_port (self, port);
-      for (j = 0; j < port->num_srcs; j++)
-        {
-          src = port->srcs[j];
-          node2 = find_node_from_port (self, src);
-          node_connect (node2, node);
-        }
-      for (j = 0; j < port->num_dests; j++)
-        {
-          dest = port->dests[j];
-          node2 = find_node_from_port (self, dest);
-          node_connect (node, node2);
-        }
+      connect_port (
+        self, ports[i]);
     }
 
   g_message ("num trigger nodes %d",

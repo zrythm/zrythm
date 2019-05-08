@@ -49,21 +49,23 @@
 void
 track_init_loaded (Track * track)
 {
-  int i;
-  for (i = 0; i < track->num_regions; i++)
-    track->regions[i] =
-      project_get_region (
-        track->region_ids[i]);
-  for (i = 0; i < track->num_chords; i++)
-    track->chords[i] =
-      project_get_chord (
-        track->chord_ids[i]);
+  /* TODO */
+
+  /*int i;*/
+  /*for (i = 0; i < track->num_regions; i++)*/
+    /*track->regions[i] =*/
+      /*project_get_region (*/
+        /*track->region_ids[i]);*/
+  /*for (i = 0; i < track->num_chords; i++)*/
+    /*track->chords[i] =*/
+      /*project_get_chord (*/
+        /*track->chord_ids[i]);*/
 
   track->widget = track_widget_new (track);
 
-  if (track->type != TRACK_TYPE_CHORD)
-    automation_tracklist_init_loaded (
-      &track->automation_tracklist);
+  /*if (track->type != TRACK_TYPE_CHORD)*/
+    /*automation_tracklist_init_loaded (*/
+      /*&track->automation_tracklist);*/
 }
 
 void
@@ -79,22 +81,16 @@ track_init (Track * track)
  *
  * If the TrackType is one that needs a Channel,
  * then a Channel is also created for the track.
- *
- * @param add_to_project Add to project registry.
  */
 Track *
 track_new (
   TrackType type,
-  char * label,
-  int    add_to_project)
+  char * label)
 {
   Track * track =
     calloc (1, sizeof (Track));
 
   track_init (track);
-
-  if (add_to_project)
-    project_add_track (track);
 
   track->name = g_strdup (label);
 
@@ -135,7 +131,6 @@ track_new (
       track->channel = ch;
 
       ch->track = track;
-      ch->track_id = track->id;
 
       channel_generate_automatables (ch);
     }
@@ -159,13 +154,11 @@ track_clone (Track * track)
   Track * new_track =
     track_new (
       track->type,
-      track->name,
-      F_NO_ADD_TO_PROJ);
+      track->name);
 
 #define COPY_MEMBER(a) \
   new_track->a = track->a
 
-  COPY_MEMBER (id);
   COPY_MEMBER (type);
   COPY_MEMBER (bot_paned_visible);
   COPY_MEMBER (visible);
@@ -183,24 +176,20 @@ track_clone (Track * track)
   Channel * ch = channel_clone (track->channel);
   new_track->channel = ch;
   ch->track = track;
-  ch->track_id = track->id;
 
   Region * region, * new_region;
   for (i = 0; i < track->num_regions; i++)
     {
       /* clone region */
-      region =
-        project_get_region (track->region_ids[i]);
+      region = track->regions[i];
       new_region =
         region_clone (region, REGION_CLONE_COPY);
 
       /* add to new track */
-      array_double_append (
+      array_append (
         new_track->regions,
-        new_track->region_ids,
         new_track->num_regions,
-        new_region,
-        new_region->id);
+        new_region);
     }
 
   automation_tracklist_clone (
@@ -208,8 +197,6 @@ track_clone (Track * track)
     &new_track->automation_tracklist);
 
 #undef COPY_MEMBER
-
-  new_track->actual_id = track->id;
 
   return new_track;
 }
@@ -264,11 +251,11 @@ track_set_recording (Track *   track,
           for (int i = 0; i < plugin->num_in_ports; i++)
             {
               Port * port = plugin->in_ports[i];
-              if (port->type == TYPE_EVENT &&
-                  port->flow == FLOW_INPUT)
+              if (port->identifier.type == TYPE_EVENT &&
+                  port->identifier.flow == FLOW_INPUT)
                 {
                   g_message ("%d MIDI In port: %s",
-                             i, port->label);
+                             i, port->identifier.label);
                   if (recording)
                     port_connect (
                       AUDIO_ENGINE->midi_in, port);
@@ -421,15 +408,14 @@ track_get_last_automation_point (
   Position tmp;
   position_init (&tmp);
 
-  for (i = 0; i < atl->num_automation_tracks;
-       i++)
+  for (i = 0; i < atl->num_ats; i++)
     {
-      at = atl->automation_tracks[i];
+      at = atl->ats[i];
 
-      for (j = 0; j < at->num_automation_points;
+      for (j = 0; j < at->num_aps;
            j++)
         {
-          ap = at->automation_points[j];
+          ap = at->aps[j];
 
           if (position_compare (
                 &ap->pos,
@@ -493,7 +479,7 @@ track_add_region (Track * track,
   g_warn_if_fail (
     (track->type == TRACK_TYPE_INSTRUMENT ||
     track->type == TRACK_TYPE_AUDIO) &&
-    region->id >= 0);
+    region);
 
   int count = 1;
   region->name = g_strdup (track->name);
@@ -508,8 +494,6 @@ track_add_region (Track * track,
     }
 
   region_set_track (region, track);
-  track->region_ids[track->num_regions] =
-    region->id;
   array_append (track->regions,
                 track->num_regions,
                 region);
@@ -530,12 +514,10 @@ track_remove_region (
 {
   region_disconnect (region);
 
-  array_double_delete (
+  array_delete (
     track->regions,
-    track->region_ids,
     track->num_regions,
-    region,
-    region->id);
+    region);
 
   EVENTS_PUSH (ET_REGION_REMOVED, track);
 }
@@ -555,8 +537,6 @@ track_disconnect (Track * track)
       track, track->chords[i]);
 
   channel_disconnect (track->channel);
-
-  project_remove_track (track);
 }
 
 /**

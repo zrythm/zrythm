@@ -129,7 +129,7 @@ engine_dummy_midi_setup (
           TYPE_EVENT,
           FLOW_INPUT,
           "Dummy MIDI In");
-      self->midi_in->owner_backend = 1;
-      self->midi_in_id = self->midi_in->id;
+      self->midi_in->identifier.owner_type =
+        PORT_OWNER_TYPE_BACKEND;
     }
 }

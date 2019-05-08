@@ -118,7 +118,7 @@ on_add_lane_clicked (
   if (!at->al)
     {
       at->al = automation_lane_new (at);
-      automation_tracklist_add_automation_lane (
+      automation_tracklist_add_al (
         atl, at->al);
     }
   else

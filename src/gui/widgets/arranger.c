@@ -577,9 +577,9 @@ arranger_widget_select (
         {
           array =
             (void **)
-              TL_SELECTIONS->automation_points;
+              TL_SELECTIONS->aps;
           num = &TL_SELECTIONS->
-                  num_automation_points;
+                  num_aps;
         }
       else if (type == CHORD_WIDGET_TYPE)
         {

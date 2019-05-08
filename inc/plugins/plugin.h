@@ -30,7 +30,6 @@
 
 #include "audio/automatable.h"
 #include "audio/port.h"
-#include "gui/widgets/instrument_track.h"
 #include "plugins/lv2_plugin.h"
 
 /* FIXME allocate dynamically */
@@ -116,8 +115,6 @@ typedef struct PluginDescriptor
  */
 typedef struct Plugin
 {
-  int                  id;
-
   /**
    * Pointer back to plugin in its original format.
    */
@@ -127,22 +124,20 @@ typedef struct Plugin
   PluginDescriptor    * descr;
 
   /** Ports coming in as input. */
-  int                  in_port_ids[MAX_IN_PORTS];
+  PortIdentifier      in_port_ids[MAX_IN_PORTS];
   Port                 * in_ports[MAX_IN_PORTS]; ///< cache
   int                  num_in_ports;    ///< counter
 
-  int                  out_port_ids[MAX_OUT_PORTS];
+  PortIdentifier        out_port_ids[MAX_OUT_PORTS];
   Port                 * out_ports[MAX_OUT_PORTS];           ///< ports going out as output
   int                  num_out_ports;    ///< counter
-  int                  unknown_port_ids[MAX_UNKNOWN_PORTS];
+  PortIdentifier    unknown_port_ids[MAX_UNKNOWN_PORTS];
   Port                 * unknown_ports[MAX_UNKNOWN_PORTS];           ///< ports with unknown direction
   int                  num_unknown_ports;    ///< counter
 
   /** The Channel this plugin belongs to. */
-  int                  track_id;
-
-  /** Cache. */
   Track              * track;
+  int                  track_pos;
 
   /**
    * The slot this plugin is at in its channel.
@@ -151,22 +146,11 @@ typedef struct Plugin
    */
   int                  slot;
 
-  /** Processed or not.
-   *
-   * NOTE: should only be read/written to using
-   * g_atomic_int_*.
-   */
-  //int                  processed;
-
   /** Enabled or not. */
   int                  enabled;
 
-  /** Processed semaphore. */
-  //ZixSem               processed_sem;
-
   /** Plugin automatables. */
-  int                  automatable_ids[900];
-  Automatable *        automatables[900]; ///< cache
+  Automatable *        automatables[900];
   int                  num_automatables;
 
   /** Whether plugin UI is opened or not. */
@@ -267,9 +251,6 @@ descriptor_fields_schema[] =
 static const cyaml_schema_field_t
 plugin_fields_schema[] =
 {
-  CYAML_FIELD_INT (
-    "id", CYAML_FLAG_DEFAULT,
-    Plugin, id),
   CYAML_FIELD_MAPPING_PTR (
     "descr", CYAML_FLAG_POINTER,
     Plugin, descr,
@@ -281,25 +262,18 @@ plugin_fields_schema[] =
   CYAML_FIELD_SEQUENCE_COUNT (
     "in_port_ids", CYAML_FLAG_DEFAULT,
     Plugin, in_port_ids, num_in_ports,
-    &int_schema, 0, CYAML_UNLIMITED),
+    &port_identifier_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
     "out_port_ids", CYAML_FLAG_DEFAULT,
     Plugin, out_port_ids, num_out_ports,
-    &int_schema, 0, CYAML_UNLIMITED),
+    &port_identifier_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
     "unknown_port_ids", CYAML_FLAG_DEFAULT,
     Plugin, unknown_port_ids, num_unknown_ports,
-    &int_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_INT (
-    "track_id", CYAML_FLAG_DEFAULT,
-    Plugin, track_id),
+    &port_identifier_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_INT (
     "enabled", CYAML_FLAG_DEFAULT,
     Plugin, enabled),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "automatable_ids", CYAML_FLAG_DEFAULT,
-    Plugin, automatable_ids, num_automatables,
-    &int_schema, 0, CYAML_UNLIMITED),
 	CYAML_FIELD_INT (
     "visible", CYAML_FLAG_DEFAULT,
     Plugin, visible),
@@ -322,14 +296,10 @@ plugin_init_loaded (Plugin * plgn);
  * Creates/initializes a plugin and its internal
  * plugin (LV2, etc.)
  * using the given descriptor.
- *
- * @param add_to_project Should be false when
- *   cloning.
  */
 Plugin *
 plugin_new_from_descr (
-  PluginDescriptor * descr,
-  int                add_to_project);
+  PluginDescriptor * descr);
 
 /**
  * Clones the plugin descriptor.

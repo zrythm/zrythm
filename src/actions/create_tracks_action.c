@@ -54,7 +54,7 @@ create (
 
       track =
         track_new (
-          self->type, label, add_to_project);
+          self->type, label);
       if (add_to_project)
         tracklist_insert_track (
           TRACKLIST,
@@ -62,15 +62,12 @@ create (
           self->pos + idx,
           F_NO_PUBLISH_EVENTS,
           F_NO_RECALC_GRAPH);
-      else
-        self->tracks[idx] = track;
     }
   else
     {
       Plugin * pl=
         plugin_new_from_descr (
-          &self->pl_descr,
-          add_to_project);
+          &self->pl_descr);
 
       if (plugin_instantiate (pl) < 0)
         {
@@ -90,8 +87,7 @@ create (
         }
 
       track =
-        track_new (self->type, self->pl_descr.name,
-                   add_to_project);
+        track_new (self->type, self->pl_descr.name);
       if (add_to_project)
         tracklist_insert_track (
           TRACKLIST,
@@ -99,8 +95,6 @@ create (
           self->pos + idx,
           F_NO_PUBLISH_EVENTS,
           F_NO_RECALC_GRAPH);
-      else
-        self->tracks[idx] = track;
 
       if (track->channel)
         {
@@ -119,8 +113,7 @@ create (
             audio_region_new (
               track,
               self->file_descr.absolute_path,
-              &start_pos,
-              add_to_project);
+              &start_pos);
           track_add_region (
             track, ar);
         }
@@ -136,74 +129,10 @@ create (
         }
     }
 
-  Track * orig_track = self->tracks[idx];
   if (add_to_project)
     {
-      /* if there is an ID stored move track and its
-       * children to their original IDs */
-      if (orig_track->id > -1)
-        {
-          project_move_track (
-            track, orig_track->id);
-
-          if (track->channel)
-            {
-              /* move plugins */
-              Plugin * pl;
-              for (int i = 0; i < STRIP_SIZE; i++)
-                {
-                  pl = track->channel->plugins[i];
-                  if (pl)
-                    project_move_plugin (
-                      pl,
-                      orig_track->channel->
-                        plugins[i]->id);
-                }
-            }
-
-          /* move regions */
-          Region * r;
-          for (int i = 0; i < track->num_regions;
-               i++)
-            {
-              r = track->regions[i];
-              project_move_region (
-                r, orig_track->regions[i]->id);
-            }
-        }
-      /* otherwise set the IDs */
-      else
-        {
-          orig_track->id = track->id;
-
-          /* move channel */
-          if (track->channel)
-            {
-              /* move plugins */
-              Plugin * pl;
-              for (int i = 0; i < STRIP_SIZE; i++)
-                {
-                  pl = track->channel->plugins[i];
-                  if (pl)
-                    orig_track->channel->
-                      plugins[i]->id = pl->id;
-                }
-            }
-
-          /* move regions */
-          Region * r;
-          for (int i = 0; i < track->num_regions;
-               i++)
-            {
-              r = track->regions[i];
-              orig_track->regions[i]->id = r->id;
-            }
-        }
-
       mixer_recalc_graph (MIXER);
     }
-  else
-    orig_track->id = -1;
 
   return 0;
 }
@@ -237,9 +166,6 @@ create_tracks_action_new (
     {
       /* create clones for reference */
       create (self, i, 0);
-      g_message ("-----------------------"
-                 "create track id %d",
-                 self->tracks[i]->id);
     }
 
   return ua;

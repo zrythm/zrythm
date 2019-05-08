@@ -41,7 +41,7 @@ typedef struct DeletePluginsAction
   int              slot;
 
   /** Track to delete from. */
-  int              tr_id;
+  int              tr_pos;
 
   /** Plugin clones.
    *

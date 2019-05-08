@@ -57,9 +57,7 @@ move_timeline_selections_action_do (
   for (int i = 0; i < self->ts->num_regions; i++)
     {
       /* get the actual region */
-      region =
-        project_get_region (
-          self->ts->regions[i]->id);
+      region = region_find (self->ts->regions[i]);
 
       /* shift it */
       region_shift (
@@ -81,9 +79,7 @@ move_timeline_selections_action_undo (
   for (int i = 0; i < self->ts->num_regions; i++)
     {
       /* get the actual region */
-      region =
-        project_get_region (
-          self->ts->regions[i]->id);
+      region = region_find (self->ts->regions[i]);
 
       /* shift it */
       region_shift (

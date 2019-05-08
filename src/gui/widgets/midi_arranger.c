@@ -441,7 +441,7 @@ midi_arranger_widget_on_drag_begin_note_hit (
   MidiNote * mn = mnw->midi_note;
   self->start_midi_note = mn;
   self->start_midi_note_clone =
-    midi_note_clone (mn, mn->region);
+    midi_note_clone (mn);
 
   /* update arranger action */
   switch (P_TOOL)
@@ -561,7 +561,7 @@ midi_arranger_widget_create_note (
   Velocity * vel = velocity_default ();
   MidiNote * midi_note =
     midi_note_new (
-      region, pos, pos, note, vel, 1);
+      region, pos, pos, note, vel);
   position_set_min_size (&midi_note->start_pos,
                          &midi_note->end_pos,
                          ar_prv->snap_grid);

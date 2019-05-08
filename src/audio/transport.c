@@ -20,6 +20,7 @@
 #include "config.h"
 
 #include "audio/engine.h"
+#include "audio/midi.h"
 #include "audio/transport.h"
 #include "project.h"
 #include "gui/widgets/arranger.h"

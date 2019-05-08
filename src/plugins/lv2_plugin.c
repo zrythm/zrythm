@@ -64,6 +64,7 @@
 #endif
 
 #include "audio/engine.h"
+#include "audio/midi.h"
 #include "audio/transport.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/lv2_gtk.h"
@@ -156,17 +157,23 @@ init_feature(LV2_Feature* const dest, const char* const URI, void* data)
 }
 
 /**
-   Create a port structure from data description.  This is called before plugin
-   and Jack instantiation.  The remaining instance-specific setup
-   (e.g. buffers) is done later in activate_port().
+ * Create a port structure from data description.
+ *
+ * This is called before plugin and Jack
+ * instantiation. The remaining instance-specific
+ * setup (e.g. buffers) is done later in
+ * activate_port().
+ *
+ * @param port_exists If zrythm port exists (when
+ *   loading)
 */
 static int
 _create_port(Lv2Plugin*   lv2_plugin,
             uint32_t lv2_port_index,
             float    default_value,
-            int            port_exists) ///< if zrythm port exists (when loading)
+            int            port_exists)
 {
-  LV2_Port* const lv2_port =
+  Lv2Port* const lv2_port =
     &lv2_plugin->ports[lv2_port_index];
 
   lv2_port->lilv_port =
@@ -180,7 +187,8 @@ _create_port(Lv2Plugin*   lv2_plugin,
   if (port_exists)
     {
       lv2_port->port =
-        project_get_port (lv2_port->port_id);
+        port_find_from_identifier (
+          &lv2_port->port_id);
       lv2_port->port->buf =
         calloc (AUDIO_ENGINE->block_length,
                 sizeof (float));
@@ -188,15 +196,19 @@ _create_port(Lv2Plugin*   lv2_plugin,
   else
     {
       char * port_name =
-        g_strdup_printf ("LV2: %s",
-                         lilv_node_as_string (sym));
+        g_strdup (lilv_node_as_string (sym));
       lv2_port->port = port_new (port_name);
-      lv2_port->port_id = lv2_port->port->id;
       g_free (port_name);
+      lv2_port->port->plugin = lv2_plugin->plugin;
+      g_warn_if_fail (lv2_plugin->plugin->track);
+      lv2_port->port->track =
+        lv2_plugin->plugin->track;
+
+      PortIdentifier * pi = &lv2_port->port_id;
+      pi->plugin_slot = lv2_plugin->plugin->slot;
+      pi->track_pos =
+        lv2_plugin->plugin->track->pos;
     }
-  lv2_port->port->owner_pl = lv2_plugin->plugin;
-  lv2_port->port->owner_pl_id =
-    lv2_plugin->plugin->id;
   lv2_port->port->lv2_port = lv2_port;
   lv2_port->evbuf     = NULL;
   lv2_port->buf_size  = 0;
@@ -215,20 +227,23 @@ _create_port(Lv2Plugin*   lv2_plugin,
         lv2_port->lilv_port,
         PM_LILV_NODES.core_InputPort))
     {
-      lv2_port->port->flow = FLOW_INPUT;
+      lv2_port->port->identifier.flow = FLOW_INPUT;
+      lv2_port->port_id.flow = FLOW_INPUT;
     }
   else if (lilv_port_is_a (
              lv2_plugin->lilv_plugin,
              lv2_port->lilv_port,
              PM_LILV_NODES.core_OutputPort))
     {
-      lv2_port->port->flow = FLOW_OUTPUT;
+      lv2_port->port->identifier.flow = FLOW_OUTPUT;
+      lv2_port->port_id.flow = FLOW_OUTPUT;
     }
   else if (!optional)
     {
-      /* FIXME why g_error doesnt work */
-      g_warning ("Mandatory lv2_port at %d has unknown type (neither input nor output)",
-               lv2_port_index);
+      g_warning (
+        "Mandatory lv2_port at %d has unknown type"
+        " (neither input nor output)",
+        lv2_port_index);
       return -1;
     }
 
@@ -238,7 +253,9 @@ _create_port(Lv2Plugin*   lv2_plugin,
         lv2_port->lilv_port,
         PM_LILV_NODES.core_ControlPort))
     {
-      lv2_port->port->type = TYPE_CONTROL;
+      lv2_port->port->identifier.type =
+        TYPE_CONTROL;
+      lv2_port->port_id.type = TYPE_CONTROL;
       lv2_port->control =
         isnan(default_value) ?
         0.0f :
@@ -261,21 +278,24 @@ _create_port(Lv2Plugin*   lv2_plugin,
              lv2_port->lilv_port,
              PM_LILV_NODES.core_AudioPort))
     {
-      lv2_port->port->type = TYPE_AUDIO;
+      lv2_port->port->identifier.type = TYPE_AUDIO;
+      lv2_port->port_id.type = TYPE_AUDIO;
     }
   else if (lilv_port_is_a (
              lv2_plugin->lilv_plugin,
              lv2_port->lilv_port,
              PM_LILV_NODES.core_CVPort))
     {
-      lv2_port->port->type = TYPE_CV;
+      lv2_port->port->identifier.type = TYPE_CV;
+      lv2_port->port_id.type = TYPE_CV;
     }
   else if (lilv_port_is_a (
             lv2_plugin->lilv_plugin,
             lv2_port->lilv_port,
             PM_LILV_NODES.ev_EventPort))
     {
-      lv2_port->port->type = TYPE_EVENT;
+      lv2_port->port->identifier.type = TYPE_EVENT;
+      lv2_port->port_id.type = TYPE_EVENT;
       lv2_port->port->midi_events =
         midi_events_new (1);
       lv2_port->old_api = true;
@@ -285,7 +305,8 @@ _create_port(Lv2Plugin*   lv2_plugin,
             lv2_port->lilv_port,
             PM_LILV_NODES.atom_AtomPort))
     {
-      lv2_port->port->type = TYPE_EVENT;
+      lv2_port->port->identifier.type = TYPE_EVENT;
+      lv2_port->port_id.type = TYPE_EVENT;
       lv2_port->port->midi_events =
         midi_events_new (1);
       lv2_port->old_api = false;
@@ -318,8 +339,8 @@ lv2_plugin_init_loaded (Lv2Plugin * lv2_plgn)
 {
   for (int i = 0; i < lv2_plgn->num_ports; i++)
     lv2_plgn->ports[i].port =
-      project_get_port (
-        lv2_plgn->ports[i].port_id);
+      port_find_from_identifier (
+        &lv2_plgn->ports[i].port_id);
 }
 
 /**
@@ -374,8 +395,8 @@ int
 lv2_create_ports(Lv2Plugin* lv2_plugin)
 {
   lv2_plugin->num_ports = lilv_plugin_get_num_ports(lv2_plugin->lilv_plugin);
-  lv2_plugin->ports     = (LV2_Port*) calloc (lv2_plugin->num_ports,
-                                           sizeof (LV2_Port));
+  lv2_plugin->ports     = (Lv2Port*) calloc (lv2_plugin->num_ports,
+                                           sizeof (Lv2Port));
   float* default_values = (float*)calloc(
                     lilv_plugin_get_num_ports(lv2_plugin->lilv_plugin),
                     sizeof(float));
@@ -417,10 +438,10 @@ lv2_allocate_port_buffers(Lv2Plugin* plugin)
 {
   for (int i = 0; i < plugin->num_ports; ++i)
     {
-      LV2_Port* const lv2_port =
+      Lv2Port* const lv2_port =
         &plugin->ports[i];
       Port* port     = lv2_port->port;
-      switch (port->type)
+      switch (port->identifier.type)
         {
         case TYPE_EVENT:
           {
@@ -466,7 +487,7 @@ lv2_get_port_value (const char * port_sym,
 {
   Lv2Plugin * lv2_plugin = (Lv2Plugin *) user_data;
 
-  LV2_Port * port = lv2_port_by_symbol (lv2_plugin,
+  Lv2Port * port = lv2_port_by_symbol (lv2_plugin,
                                         port_sym);
   *size = 0;
   *type = 0;
@@ -503,14 +524,14 @@ lv2_get_port_value (const char * port_sym,
    TODO: Build an index to make this faster, currently O(n) which may be
    a problem when restoring the state of plugins with many ports.
 */
-LV2_Port*
+Lv2Port*
 lv2_port_by_symbol (
   Lv2Plugin* plugin,
   const char* sym)
 {
 	for (int i = 0; i < plugin->num_ports; ++i)
     {
-      LV2_Port* const port =
+      Lv2Port* const port =
         &plugin->ports[i];
       const LilvNode * port_sym =
         lilv_port_get_symbol (
@@ -542,7 +563,7 @@ lv2_control_by_symbol (
 }
 
 static void
-_print_control_value(Lv2Plugin* plugin, const LV2_Port* port, float value)
+_print_control_value(Lv2Plugin* plugin, const Lv2Port* port, float value)
 {
   const LilvNode* sym =
     lilv_port_get_symbol (
@@ -860,7 +881,7 @@ lv2_apply_ui_events(Lv2Plugin* plugin, uint32_t nframes)
         }
       g_warn_if_fail (
         (int) ev.index < plugin->num_ports);
-      LV2_Port* const port =
+      Lv2Port* const port =
         &plugin->ports[ev.index];
       if (ev.protocol == 0)
         {
@@ -894,7 +915,7 @@ uint32_t
 lv2_ui_port_index(SuilController controller, const char* symbol)
 {
 	Lv2Plugin* const  plugin = (Lv2Plugin*)controller;
-	LV2_Port* port = lv2_port_by_symbol(plugin, symbol);
+	Lv2Port* port = lv2_port_by_symbol(plugin, symbol);
 
 	return port ? port->index : LV2UI_INVALID_PORT_INDEX;
 }
@@ -905,7 +926,7 @@ lv2_init_ui(Lv2Plugin* plugin)
   // Set initial control port values
   for (int i = 0; i < plugin->num_ports; ++i)
     {
-      if (plugin->ports[i].port->type ==
+      if (plugin->ports[i].port->identifier.type ==
           TYPE_CONTROL)
         {
           lv2_gtk_ui_port_event (
@@ -1109,13 +1130,13 @@ _apply_control_arg(Lv2Plugin* plugin, const char* s)
 void
 lv2_backend_activate_port(Lv2Plugin * lv2_plugin, uint32_t port_index)
 {
-  LV2_Port* const lv2_port =
+  Lv2Port* const lv2_port =
     &lv2_plugin->ports[port_index];
   Port * port = lv2_port->port;
 
   /* Connect unsupported ports to NULL (known to be optional by this point) */
-  if (port->flow == FLOW_UNKNOWN ||
-      port->type == TYPE_UNKNOWN)
+  if (port->identifier.flow == FLOW_UNKNOWN ||
+      port->identifier.type == TYPE_UNKNOWN)
     {
       lilv_instance_connect_port(
         lv2_plugin->instance,
@@ -1124,24 +1145,25 @@ lv2_backend_activate_port(Lv2Plugin * lv2_plugin, uint32_t port_index)
     }
 
   /* Connect the port based on its type */
-  switch (port->type) {
-  case TYPE_CONTROL:
-    lilv_instance_connect_port (
-      lv2_plugin->instance,
-      port_index, &lv2_port->control);
-    break;
-  case TYPE_AUDIO:
-    /* already connected to Port */
-    break;
-  case TYPE_CV:
-    /* already connected to port */
-    break;
-  case TYPE_EVENT:
-    /* already connected to port */
-    break;
-  default:
-    break;
-  }
+  switch (port->identifier.type)
+    {
+    case TYPE_CONTROL:
+      lilv_instance_connect_port (
+        lv2_plugin->instance,
+        port_index, &lv2_port->control);
+      break;
+    case TYPE_AUDIO:
+      /* already connected to Port */
+      break;
+    case TYPE_CV:
+      /* already connected to port */
+      break;
+    case TYPE_EVENT:
+      /* already connected to port */
+      break;
+    default:
+      break;
+    }
 }
 
 void
@@ -1596,23 +1618,35 @@ lv2_instantiate (
       /* Set the zrythm plugin ports */
       for (i = 0; i < self->num_ports; ++i)
         {
-          LV2_Port * lv2_port = &self->ports[i];
+          Lv2Port * lv2_port = &self->ports[i];
           Port * port = lv2_port->port;
-          port->owner_pl = plugin;
-          port->owner_pl_id = plugin->id;
-          if (port->flow == FLOW_INPUT)
+          port->plugin = plugin;
+          port->identifier.plugin_slot =
+            plugin->slot;
+          if (port->identifier.flow == FLOW_INPUT)
             {
+              port->identifier.port_index =
+                plugin->num_in_ports;
               plugin->in_ports[
                 plugin->num_in_ports] = port;
-              plugin->in_port_ids[
-                plugin->num_in_ports++] = port->id;
+              port_identifier_copy (
+                &port->identifier,
+                &plugin->in_port_ids[
+                  plugin->num_in_ports]);
+              plugin->num_in_ports++;
             }
-          else if (port->flow == FLOW_OUTPUT)
+          else if (port->identifier.flow ==
+                   FLOW_OUTPUT)
             {
+              port->identifier.port_index =
+                plugin->num_out_ports;
               plugin->out_ports[
                 plugin->num_out_ports] = port;
-              plugin->out_port_ids[
-                plugin->num_out_ports++] = port->id;
+              port_identifier_copy (
+                &port->identifier,
+                &plugin->out_port_ids[
+                  plugin->num_out_ports]);
+              plugin->num_out_ports++;
             }
         }
 
@@ -1904,7 +1938,7 @@ lv2_instantiate (
           self->controls.controls[i];
         if (control->type == PORT)
           {
-            LV2_Port* port =
+            Lv2Port* port =
               &self->ports[control->index];
             _print_control_value (
               self, port, port->control);
@@ -2039,16 +2073,16 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
   /* Prepare port buffers */
   for (p = 0; p < lv2_plugin->num_ports; ++p)
     {
-      LV2_Port * lv2_port = &lv2_plugin->ports[p];
+      Lv2Port * lv2_port = &lv2_plugin->ports[p];
       Port * port = lv2_port->port;
-      if (port->type == TYPE_AUDIO)
+      if (port->identifier.type == TYPE_AUDIO)
         {
           /* Connect lv2 ports  to plugin port buffers */
           /*port->nframes = nframes;*/
           lilv_instance_connect_port (
             lv2_plugin->instance, p, port->buf);
         }
-      else if (port->type == TYPE_CV)
+      else if (port->identifier.type == TYPE_CV)
         {
           /* Connect plugin port directly to a
            * CV buffer in the port.  according to
@@ -2058,8 +2092,8 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
             lv2_plugin->instance,
             p, port->buf);
         }
-      else if (port->type == TYPE_EVENT &&
-               port->flow == FLOW_INPUT)
+      else if (port->identifier.type == TYPE_EVENT &&
+               port->identifier.flow == FLOW_INPUT)
         {
           lv2_evbuf_reset(lv2_port->evbuf, true);
 
@@ -2108,7 +2142,7 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
             }
           midi_events_clear (port->midi_events);
       }
-      else if (port->type == TYPE_EVENT)
+      else if (port->identifier.type == TYPE_EVENT)
         {
           /* Clear event output for plugin to write to */
           lv2_evbuf_reset(lv2_port->evbuf, false);
@@ -2126,11 +2160,11 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
   for (p = 0; p < lv2_plugin->num_ports;
        ++p)
     {
-      LV2_Port* const lv2_port =
+      Lv2Port* const lv2_port =
         &lv2_plugin->ports[p];
       Port * port = lv2_port->port;
-      if (port->flow == FLOW_OUTPUT &&
-          port->type == TYPE_CONTROL &&
+      if (port->identifier.flow == FLOW_OUTPUT &&
+          port->identifier.type == TYPE_CONTROL &&
           lilv_port_has_property(
             lv2_plugin->lilv_plugin,
             lv2_port->lilv_port,
@@ -2147,8 +2181,8 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
 #endif
             }
         }
-      else if (port->flow == FLOW_OUTPUT &&
-               port->type == TYPE_EVENT)
+      else if (port->identifier.flow == FLOW_OUTPUT &&
+               port->identifier.type == TYPE_EVENT)
           {
             void* buf = NULL;
 
@@ -2190,7 +2224,7 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
               }
           }
         else if (send_ui_updates &&
-                 port->type == TYPE_CONTROL)
+                 port->identifier.type == TYPE_CONTROL)
           {
             char buf[sizeof(Lv2ControlChange) +
               sizeof(float)];

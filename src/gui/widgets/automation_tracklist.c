@@ -91,14 +91,13 @@ automation_tracklist_widget_refresh (
     GTK_CONTAINER (self));
 
   /* add automation lanes */
+  AutomationLane * al;
   for (int i = 0;
-       i < self->automation_tracklist->
-         num_automation_lanes;
+       i < self->automation_tracklist->num_als;
        i++)
     {
-      AutomationLane * al =
-        self->automation_tracklist->
-          automation_lanes[i];
+      al =
+        self->automation_tracklist->als[i];
 
       /* show automation track */
       if (al->visible)

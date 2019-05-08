@@ -193,7 +193,8 @@ on_drag_data_received (GtkWidget        *widget,
       Plugin * pl =
         (Plugin *)
         gtk_selection_data_get_data (data);
-      pl = project_get_plugin (pl->id);
+      pl = TRACKLIST->tracks[pl->track_pos]->
+        channel->plugins[pl->slot];
       g_warn_if_fail (pl);
 
       /* determine if moving or copying */

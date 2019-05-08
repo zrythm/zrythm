@@ -60,8 +60,6 @@ midi_region_draw_cb (
 
   gtk_render_background (context, cr, 0, 0, width, height);
 
-  GdkRGBA * color = &rw_prv->region->track->color;
-
   /*cairo_set_source_rgba (cr,*/
                          /*color->red - 0.3,*/
                          /*color->green - 0.3,*/
@@ -188,17 +186,8 @@ midi_region_draw_cb (
         }
     }
 
-  char * str;
-
-  if (DEBUGGING)
-    str =
-      g_strdup_printf (
-        "%s [%d]",
-        rw_prv->region->name,
-        rw_prv->region->id);
-  else
-    str =
-      g_strdup (rw_prv->region->name);
+  char * str =
+    rw_prv->region->name;
 
   GdkRGBA c2;
   gdk_rgba_parse (&c2, "#323232");

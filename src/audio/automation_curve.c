@@ -39,8 +39,9 @@ void
 automation_curve_init_loaded (
   AutomationCurve * ac)
 {
-  ac->at =
-    project_get_automation_track (ac->at_id);
+  /*ac->at =*/
+  /*TODO */
+    /*project_get_automation_track (ac->at_id);*/
 
   ac->widget =
     automation_curve_widget_new (ac);
@@ -53,11 +54,8 @@ _create_new (AutomationTrack * at,
   AutomationCurve * ac = calloc (1, sizeof (AutomationCurve));
 
   ac->at = at;
-  ac->at_id = at->id;
   position_set_to_pos (&ac->pos,
                        pos);
-
-  project_add_automation_curve (ac);
 
   return ac;
 }

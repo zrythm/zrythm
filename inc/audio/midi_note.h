@@ -42,7 +42,6 @@ typedef enum MidiNoteCloneFlag
 
 typedef struct MidiNote
 {
-  int             id;
   Position        start_pos;
   Position        end_pos;
   MidiNoteWidget  * widget;
@@ -52,8 +51,8 @@ typedef struct MidiNote
    *
    * For convenience only (cache).
    */
-  int             region_id;
   Region *        region; ///< cache
+  char *          region_name;
 
   Velocity *      vel;  ///< velocity
   int             val; ///< note
@@ -72,9 +71,6 @@ typedef struct MidiNote
 static const cyaml_schema_field_t
   midi_note_fields_schema[] =
 {
-	CYAML_FIELD_INT (
-    "id", CYAML_FLAG_DEFAULT,
-    MidiNote, id),
   CYAML_FIELD_MAPPING (
     "start_pos",
     /* direct struct inside struct -> default */
@@ -87,14 +83,15 @@ static const cyaml_schema_field_t
     "vel", CYAML_FLAG_POINTER,
     MidiNote, vel, velocity_fields_schema),
 	CYAML_FIELD_INT (
-    "region_id", CYAML_FLAG_DEFAULT,
-    MidiNote, region_id),
-	CYAML_FIELD_INT (
     "val", CYAML_FLAG_DEFAULT,
     MidiNote, val),
 	CYAML_FIELD_INT (
     "muted", CYAML_FLAG_DEFAULT,
     MidiNote, muted),
+  CYAML_FIELD_STRING_PTR (
+    "region_name", CYAML_FLAG_POINTER,
+    MidiNote, region_name,
+   	0, CYAML_UNLIMITED),
 
 	CYAML_FIELD_END
 };
@@ -111,24 +108,35 @@ midi_note_init_loaded (
   MidiNote * self);
 
 /**
- * @param add_to_project Probably not needed but
- *   keep for now.
  */
 MidiNote *
 midi_note_new (MidiRegion * region,
                Position *   start_pos,
                Position *   end_pos,
                int          val,
-               Velocity *   vel,
-               int          add_to_project);
+               Velocity *   vel);
+
+/**
+ * Finds the actual MidiNote in the project from the
+ * given clone.
+ */
+MidiNote *
+midi_note_find (
+  MidiNote * clone);
 
 /**
  * Deep clones the midi note.
- * FIXME is owner region necessary?
  */
 MidiNote *
-midi_note_clone (MidiNote *  src,
-                 MidiRegion * mr); ///< owner region
+midi_note_clone (MidiNote *  src);
+
+/**
+ * Returns 1 if the MidiNotes match, 0 if not.
+ */
+int
+midi_note_is_equal (
+  MidiNote * src,
+  MidiNote * dest);
 
 void
 midi_note_delete (MidiNote * midi_note);

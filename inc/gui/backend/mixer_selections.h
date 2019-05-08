@@ -46,7 +46,7 @@ typedef struct MixerSelections
   int       num_slots;
 
   /** Channel selected. */
-  int       track_id;
+  int       track_pos;
 
   /** Cache. */
   Track * track;
@@ -61,8 +61,8 @@ static const cyaml_schema_field_t
     num_slots,
     &int_schema, 0, CYAML_UNLIMITED),
 	CYAML_FIELD_INT (
-    "track_id", CYAML_FLAG_DEFAULT,
-    MixerSelections, track_id),
+    "track_pos", CYAML_FLAG_DEFAULT,
+    MixerSelections, track_pos),
 
 	CYAML_FIELD_END
 };

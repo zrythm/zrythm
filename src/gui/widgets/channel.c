@@ -261,8 +261,6 @@ do_highlight (
   gint x,
   gint y)
 {
-  Track * this = self->channel->track;
-
   /* if we are closer to the start of selection than
    * the end */
   int w =
@@ -614,22 +612,12 @@ static void
 refresh_name (ChannelWidget * self)
 {
   g_warn_if_fail (self->channel->track->name);
-  char * label;
-  if (DEBUGGING)
-    label =
-      g_strdup_printf (
-        "[%d] %s",
-        self->channel->track->id,
-        self->channel->track->name);
-  else
-    label = self->channel->track->name;
+  char * label =
+    self->channel->track->name;
 
   gtk_label_set_text (
     GTK_LABEL (self->name->label),
     label);
-
-  if (DEBUGGING)
-    g_free (label);
 }
 
 /**

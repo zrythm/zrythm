@@ -38,7 +38,6 @@ typedef struct TimelineSelections
   /** Regions doing action upon */
   Region *                 regions[600];
   Region *                 transient_regions[600];
-  int                      region_ids[600];
   int                      num_regions;
 
   /** Highest selected region */
@@ -50,15 +49,13 @@ typedef struct TimelineSelections
   //int                      bot_region_id;
 
   /** Automation points acting upon */
-  AutomationPoint *        automation_points[600];
+  AutomationPoint *        aps[600];
   AutomationPoint *        transient_aps[600];
-  int                      ap_ids[600];
-  int                      num_automation_points;
+  int                      num_aps;
 
   /** Chords acting upon */
   ZChord *                  chords[800];
   ZChord *                  transient_chords[800];
-  int                      chord_ids[800];
   int                      num_chords;
 } TimelineSelections;
 
@@ -66,26 +63,17 @@ static const cyaml_schema_field_t
   timeline_selections_fields_schema[] =
 {
   CYAML_FIELD_SEQUENCE_COUNT (
-    "region_ids", CYAML_FLAG_DEFAULT,
-    TimelineSelections, region_ids,
-    num_regions,
-    &int_schema, 0, CYAML_UNLIMITED),
-	//CYAML_FIELD_INT (
-    //"top_region_id", CYAML_FLAG_DEFAULT,
-    //TimelineSelections, top_region_id),
-	//CYAML_FIELD_INT (
-    //"bot_region_id", CYAML_FLAG_DEFAULT,
-    //TimelineSelections, bot_region_id),
+    "regions", CYAML_FLAG_DEFAULT,
+    TimelineSelections, regions, num_regions,
+    &region_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "ap_ids", CYAML_FLAG_DEFAULT,
-    TimelineSelections, ap_ids,
-    num_automation_points,
-    &int_schema, 0, CYAML_UNLIMITED),
+    "aps", CYAML_FLAG_DEFAULT,
+    TimelineSelections, aps, num_aps,
+    &automation_point_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "chord_ids", CYAML_FLAG_DEFAULT,
-    TimelineSelections, chord_ids,
-    num_chords,
-    &int_schema, 0, CYAML_UNLIMITED),
+    "chords", CYAML_FLAG_DEFAULT,
+    TimelineSelections, chords, num_chords,
+    &chord_schema, 0, CYAML_UNLIMITED),
 
 	CYAML_FIELD_END
 };

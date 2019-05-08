@@ -35,12 +35,13 @@
  */
 typedef struct AutomationLane
 {
-  int                     id;
-
+  /**
+   * Index in automation tracklist array.
+   */
+  int                   index;
   /**
    * The automation track this automation lane is for.
    */
-  int                     at_id;
   AutomationTrack *       at; ///< cache
 
   /** Whether visible or not. */
@@ -59,11 +60,8 @@ static const cyaml_schema_field_t
   automation_lane_fields_schema[] =
 {
 	CYAML_FIELD_INT (
-    "id", CYAML_FLAG_DEFAULT,
-    AutomationLane, id),
-	CYAML_FIELD_INT (
-    "at_id", CYAML_FLAG_DEFAULT,
-    AutomationLane, at_id),
+    "index", CYAML_FLAG_DEFAULT,
+    AutomationLane, index),
 	CYAML_FIELD_INT (
     "visible", CYAML_FLAG_DEFAULT,
     AutomationLane, visible),

@@ -51,35 +51,26 @@ int
 create_timeline_selections_action_do (
   CreateTimelineSelectionsAction * self)
 {
-  Region * region, * orig_region;
+  Region * region;
 	for (int i = 0; i < self->ts->num_regions; i++)
     {
-      /* get the clone */
-      orig_region = self->ts->regions[i];
-
       /* check if the region already exists. due to
        * how the arranger creates regions, the region
        * should already exist the first time so no
        * need to do anything. when redoing we will
        * need to create a clone instead */
-      if (project_get_region (orig_region->id))
+      if (region_find (self->ts->regions[i]))
         continue;
 
       /* clone the clone */
       region =
         region_clone (
-          orig_region, REGION_CLONE_COPY);
-
-      /* add to project to get unique ID */
-      project_add_region (region);
+          self->ts->regions[i], REGION_CLONE_COPY);
 
       /* add it to track */
       track_add_region (
-        project_get_track (region->track_id),
+        region->track,
         region);
-
-      /* remember the ID */
-      orig_region->id = region->id;
     }
   /* TODO chords */
 
@@ -97,14 +88,11 @@ create_timeline_selections_action_undo (
   for (int i = 0; i < self->ts->num_regions; i++)
     {
       /* get the actual region */
-      region =
-        project_get_region (
-          self->ts->regions[i]->id);
+      region = region_find (self->ts->regions[i]);
 
       /* remove it */
       track_remove_region (
-        project_get_track (region->track_id),
-        region);
+        region->track, region);
       free_later (region, region_free);
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,

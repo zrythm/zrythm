@@ -42,66 +42,43 @@
 
 #include <gtk/gtk.h>
 
-/**
- * Handler for plugin crashes.
- */
-/*void handler(int nSignum, siginfo_t* si, void* vcontext)*/
-/*{*/
-  /*g_message ("handler");*/
-
-  /*ucontext_t* context = (ucontext_t*)vcontext;*/
-  /*context->uc_mcontext.gregs[REG_RIP]++;*/
-/*}*/
-
 void
-plugin_init_loaded (Plugin * plgn)
+plugin_init_loaded (Plugin * pl)
 {
-  lv2_plugin_init_loaded (plgn->lv2);
-  plgn->lv2->plugin = plgn;
+  lv2_plugin_init_loaded (pl->lv2);
+  pl->lv2->plugin = pl;
 
-  for (int i = 0; i < plgn->num_in_ports; i++)
-    plgn->in_ports[i] =
-      project_get_port (plgn->in_port_ids[i]);
+  for (int i = 0; i < pl->num_in_ports; i++)
+    {
+      port_init_loaded (pl->in_ports[i]);
+    }
 
-  for (int i = 0; i < plgn->num_out_ports; i++)
-    plgn->out_ports[i] =
-      project_get_port (plgn->out_port_ids[i]);
+  for (int i = 0; i < pl->num_out_ports; i++)
+    {
+      port_init_loaded (pl->out_ports[i]);
+    }
 
   for (int i = 0;
-       i < plgn->num_unknown_ports; i++)
-    plgn->unknown_ports[i] =
-      project_get_port (plgn->unknown_port_ids[i]);
+       i < pl->num_unknown_ports; i++)
+    {
+      port_init_loaded (pl->unknown_ports[i]);
+    }
 
-  plgn->track =
-    project_get_track (plgn->track_id);
+  plugin_instantiate (pl);
 
-  plugin_instantiate (plgn);
-
-  for (int i = 0; i < plgn->num_automatables; i++)
-    plgn->automatables[i] =
-      project_get_automatable (
-        plgn->automatable_ids[i]);
+  plugin_generate_automatables (pl);
 }
 
 /**
  * Creates/initializes a plugin and its internal
  * plugin (LV2, etc.)
  * using the given descriptor.
- *
- * @param add_to_project Should be false when
- *   cloning.
  */
 Plugin *
 plugin_new_from_descr (
-  PluginDescriptor * descr,
-  int                add_to_project)
+  PluginDescriptor * descr)
 {
   Plugin * plugin = calloc (1, sizeof (Plugin));
-
-  if (add_to_project)
-    {
-      project_add_plugin (plugin);
-    }
 
   plugin->descr = descr;
 
@@ -171,38 +148,37 @@ plugin_move_automation (
   int i;
   AutomationTrack * at;
   AutomationLane * al;
-  for (i = 0; i < prev_atl->num_automation_tracks;
-       i++)
+  for (i = 0; i < prev_atl->num_ats; i++)
     {
-      at = prev_atl->automation_tracks[i];
+      at = prev_atl->ats[i];
 
       if (!at->automatable->port ||
-          at->automatable->port->owner_pl != pl)
+          at->automatable->port->plugin != pl)
         continue;
 
       /* delete from prev channel */
-      automation_tracklist_delete_automation_track (
+      automation_tracklist_delete_at (
         prev_atl, at, F_NO_FREE);
 
       /* add to new channel */
-      automation_tracklist_add_automation_track (
+      automation_tracklist_add_at (
         atl, at);
     }
-  for (i = 0; i < prev_atl->num_automation_lanes;
+  for (i = 0; i < prev_atl->num_als;
        i++)
     {
-      al = prev_atl->automation_lanes[i];
+      al = prev_atl->als[i];
 
       if (!al->at->automatable->port ||
-          al->at->automatable->port->owner_pl != pl)
+          al->at->automatable->port->plugin != pl)
         continue;
 
       /* delete from prev channel */
-      automation_tracklist_delete_automation_lane (
+      automation_tracklist_delete_al (
         prev_atl, al, F_NO_FREE);
 
       /* add to new channel */
-      automation_tracklist_add_automation_lane (
+      automation_tracklist_add_al (
         atl, al);
     }
 }
@@ -224,10 +200,6 @@ plugin_generate_automatables (Plugin * plugin)
     plugin->automatables,
     plugin->num_automatables,
     automatable_create_plugin_enabled (plugin));
-  plugin->automatable_ids[
-    plugin->num_automatables - 1] =
-    plugin->automatables[
-      plugin->num_automatables - 1]->id;
 
   /* add plugin control automatables */
   if (plugin->descr->protocol == PROT_LV2)
@@ -242,10 +214,6 @@ plugin_generate_automatables (Plugin * plugin)
             plugin->num_automatables,
             automatable_create_lv2_control (
               plugin, control));
-          plugin->automatable_ids[
-            plugin->num_automatables - 1] =
-            plugin->automatables[
-              plugin->num_automatables - 1]->id;
         }
     }
   else
@@ -401,9 +369,8 @@ plugin_clone (
       plugin_clone_descr (
         pl->descr,
         descr);
-      clone = plugin_new_from_descr (descr, 0);
+      clone = plugin_new_from_descr (descr);
       g_return_val_if_fail (clone, NULL);
-      clone->id = pl->id;
 
       /* set the state file on the new Lv2Plugin
        * as the state filed saved on the original
@@ -421,6 +388,7 @@ plugin_clone (
     }
 
   clone->slot = pl->slot;
+  clone->track_pos = pl->track_pos;
 
   return clone;
 }
@@ -466,11 +434,6 @@ plugin_disconnect (Plugin * plugin)
     "DISCONNECTED ALL PORTS OF PLUGIN %d %d",
     plugin->num_in_ports,
     plugin->num_out_ports);
-
-  /* TODO figure out where to do the project_remove
-   * calls. can't do them in _free because of
-   * fast undo-redos */
-  project_remove_plugin (plugin);
 }
 
 /**
@@ -496,7 +459,6 @@ plugin_free (Plugin *plugin)
     {
       Automatable * automatable =
         plugin->automatables[i];
-      project_remove_automatable (automatable);
       automatable_free (automatable);
     }
 

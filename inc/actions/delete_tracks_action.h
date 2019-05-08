@@ -37,6 +37,7 @@ typedef struct DeleteTracksAction
 {
   UndoableAction  parent_instance;
 
+  /** Clone of the TracklistSelections to delete. */
   TracklistSelections * tls;
 } DeleteTracksAction;
 

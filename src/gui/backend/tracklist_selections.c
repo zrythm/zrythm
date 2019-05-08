@@ -40,7 +40,7 @@ tracklist_selections_init_loaded (
   int i;
   for (i = 0; i < ts->num_tracks; i++)
     ts->tracks[i] =
-      project_get_track (ts->track_ids[i]);
+      TRACKLIST->tracks[ts->tracks[i]->pos];
 }
 
 /**
@@ -116,8 +116,6 @@ tracklist_selections_add_track (
                       self->num_tracks,
                       track))
     {
-      self->track_ids[self->num_tracks] =
-        track->id;
       array_append (self->tracks,
                     self->num_tracks,
                     track);
@@ -145,12 +143,10 @@ tracklist_selections_remove_track (
       return;
     }
 
-  array_double_delete (
+  array_delete (
     ts->tracks,
-    ts->track_ids,
     ts->num_tracks,
-    r,
-    r->id);
+    r);
 
   EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
                NULL);
@@ -179,12 +175,9 @@ tracklist_selections_gprint (
   for (int i = 0; i < self->num_tracks; i++)
     {
       track = self->tracks[i];
-      g_message ("[idx %d] %s (id %d) (pos %d)",
+      g_message ("[idx %d] %s (pos %d)",
                  i, self->tracks[i]->name,
-                 track->id,
                  self->tracks[i]->pos);
-      g_message (">>>> track id %d <<<<<",
-                 self->track_ids[i]);
     }
   g_message ("-------- end --------");
 }
@@ -235,10 +228,6 @@ tracklist_selections_sort (
          self->num_tracks,
          sizeof (Track *),
          sort_tracks_func);
-
-  /* also sort the IDs */
-  for (int i = 0; i < self->num_tracks; i++)
-    self->track_ids[i] = self->tracks[i]->id;
 }
 
 /**
@@ -257,12 +246,10 @@ tracklist_selections_clone ()
       Track * r = src->tracks[i];
       Track * new_r =
         track_clone (r);
-      array_double_append (
+      array_append (
         new_ts->tracks,
-        new_ts->track_ids,
         new_ts->num_tracks,
-        new_r,
-        new_r->id);
+        new_r);
     }
 
   return new_ts;

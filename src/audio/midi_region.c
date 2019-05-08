@@ -36,8 +36,7 @@
 MidiRegion *
 midi_region_new (Track *    track,
                  Position * start_pos,
-                 Position * end_pos,
-                 int        add_to_project)
+                 Position * end_pos)
 {
   MidiRegion * midi_region =
     calloc (1, sizeof (MidiRegion));
@@ -46,8 +45,7 @@ midi_region_new (Track *    track,
                REGION_TYPE_MIDI,
                track,
                start_pos,
-               end_pos,
-               add_to_project);
+               end_pos);
 
   return midi_region;
 }
@@ -62,10 +60,6 @@ midi_region_add_midi_note (MidiRegion * region,
   array_append (region->midi_notes,
                 region->num_midi_notes,
                 midi_note);
-  region->midi_note_ids[
-    region->num_midi_notes - 1] =
-      region->midi_notes[
-        region->num_midi_notes - 1]->id;
   midi_note->region = region;
 
   EVENTS_PUSH (ET_MIDI_NOTE_CREATED,
@@ -90,29 +84,6 @@ midi_region_find_unended_note (MidiRegion * self,
     }
   g_warn_if_reached ();
   return NULL;
-}
-
-/**
- * this method takes a midi_note clone as parameter to
- * change the value  * of it's origin midi_note
- * on the given midi_region to the clone value. the
- * midi_note is matched by id.
- */
-void
-midi_region_update_midi_note_val (
-	MidiRegion * region,
-	MidiNote * midi_note)
-{
-	for (int i = 0;
-		i < region->num_midi_notes;
-		i++)
-	{
-		if (region->midi_notes[i]->id == midi_note->id)
-		{
-			region->midi_notes[i]->val =
-				midi_note->val;
-		}
-	}
 }
 
 /**
@@ -196,24 +167,6 @@ midi_region_get_lowest_midi_note (MidiRegion * region)
 
 	return result;
 }
-/**
- * Removes the MIDI note and its component
- * completely.
- */
-void
-midi_region_add_midi_note_if_not_present (
-  MidiRegion * region,
-  MidiNote * midi_note)
-{
-  for (int i = 0; i < region->num_midi_notes; i++)
-  {
-    if (region->midi_notes[i]->id == midi_note->id)
-    {
-      return;
-    }
-  }
-  midi_region_add_midi_note (region, midi_note);
-}
 
 /**
  * Removes the MIDI note and its components
@@ -234,15 +187,10 @@ midi_region_remove_midi_note (
         midi_note)
     MIDI_ARRANGER->start_midi_note = NULL;
 
-  array_delete (region->midi_note_ids,
-                region->num_midi_notes,
-                midi_note->id);
-  int size = region->num_midi_notes + 1;
   array_delete (region->midi_notes,
-                size,
+                region->num_midi_notes,
                 midi_note);
 
-  project_remove_midi_note (midi_note);
   midi_note_free (midi_note);
 }
 

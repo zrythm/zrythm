@@ -55,7 +55,4 @@
 #define F_GEN_AUTOMATABLES 1
 #define F_NO_GEN_AUTOMATABLES 0
 
-#define F_ADD_TO_PROJ 1
-#define F_NO_ADD_TO_PROJ 0
-
 #endif

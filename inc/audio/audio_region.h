@@ -38,10 +38,10 @@ typedef struct Region AudioRegion;
  *   registry. This should be false when cloning.
  */
 AudioRegion *
-audio_region_new (Track *    track,
-                  char *     filename,
-                  Position * start_pos,
-                  int        add_to_project);
+audio_region_new (
+  Track *    track,
+  char *     filename,
+  Position * start_pos);
 
 /**
  * Frees members only but not the audio region itself.

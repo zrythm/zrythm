@@ -45,29 +45,14 @@ typedef struct AutomationCurve
    * Midway position between previous ap and next ap.
    */
   Position                 pos;
-  float                    curviness; ///< curviness, default 1
+
+  /** Curviness. */
+  float                    curviness;
   AutomationCurveType      type;
-  int                      at_id;
-  AutomationTrack *        at; ///< pointer back to parent
+
+  /** Pointer back to parent. */
+  AutomationTrack *        at;
   AutomationCurveWidget *  widget;
-
-  /* ======== Useful only for de/serialization ====== */
-  /**
-   * Unique ID.
-   *
-   * All IDs are stored in the Project struct.
-   */
-  int                      id;
-  /**
-   * The ID of the track the automation point is in.
-   */
-  //int                      track_id;
-
-  /**
-   * The label of the automatable so we know how to find
-   * the corresponding automation track.
-   */
-  /* char *                   automatable_label; */
 
   /** Index in the automation track, for faster
    * performance when getting ap before/after
@@ -86,9 +71,6 @@ automation_curve_type_strings[] =
 static const cyaml_schema_field_t
   automation_curve_fields_schema[] =
 {
-	CYAML_FIELD_INT (
-    "id", CYAML_FLAG_DEFAULT,
-    AutomationCurve, id),
   CYAML_FIELD_MAPPING (
     "pos", CYAML_FLAG_DEFAULT,
     AutomationCurve, pos, position_fields_schema),
@@ -100,9 +82,6 @@ static const cyaml_schema_field_t
     AutomationCurve, type,
     automation_curve_type_strings,
     CYAML_ARRAY_LEN (automation_curve_type_strings)),
-  CYAML_FIELD_INT (
-    "at_id", CYAML_FLAG_DEFAULT,
-    AutomationCurve, at_id),
   CYAML_FIELD_INT (
     "index", CYAML_FLAG_DEFAULT,
     AutomationCurve, index),

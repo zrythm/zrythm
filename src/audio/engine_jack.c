@@ -84,9 +84,10 @@ engine_jack_autoconnect_midi_controllers (
                     jack_port_name (
                       JACK_PORT_T (
                         self->midi_in->data))))
-                g_warning ("Failed connecting \"%s\" to \"%s\"",
-                           pname,
-                           self->midi_in->label);
+                g_warning (
+                  "Failed connecting %s to %s",
+                  pname,
+                  self->midi_in->identifier.label);
 
 
               break;
@@ -129,27 +130,33 @@ jack_buffer_size_cb (uint32_t nframes,
       AUDIO_ENGINE->client, JACK_DEFAULT_MIDI_TYPE);
 #endif
   g_message (
-    "JACK: Block length changed to %d, midi buf size to %zu",
+    "JACK: Block length changed to %d, "
+    "midi buf size to %zu",
     AUDIO_ENGINE->block_length,
     AUDIO_ENGINE->midi_buf_size);
 
   /** reallocate port buffers to new size */
-  g_message ("Reallocating port buffers to %d", nframes);
+  g_message ("Reallocating port buffers to %d",
+             nframes);
   Port * port;
   Channel * ch;
   Plugin * pl;
-  for (i = 0; i < PROJECT->num_ports; i++)
+  Port * ports[60000];
+  int num_ports;
+  port_get_all (ports, &num_ports);
+  for (i = 0; i < num_ports; i++)
     {
-      port = project_get_port (i);
-      if (port)
-        port->buf =
-          realloc (port->buf,
-                   nframes * sizeof (float));
+      port = ports[i];
+      g_warn_if_fail (port);
+
+      port->buf =
+        realloc (port->buf,
+                 nframes * sizeof (float));
       /* TODO memset */
     }
   for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      ch= TRACKLIST->tracks[i]->channel;
+      ch = TRACKLIST->tracks[i]->channel;
 
       if (!ch)
         continue;
@@ -329,8 +336,8 @@ jack_midi_setup (
             self->client, "MIDI_in",
             JACK_DEFAULT_MIDI_TYPE,
             JackPortIsInput, 0));
-      self->midi_in->owner_backend = 1;
-      self->midi_in_id = self->midi_in->id;
+      self->midi_in->identifier.owner_type =
+        PORT_OWNER_TYPE_BACKEND;
     }
 
   /* init queue */
@@ -520,10 +527,14 @@ jack_setup (AudioEngine * self,
           JACK_DEFAULT_AUDIO_TYPE,
           JackPortIsInput, 0));
 
-      stereo_in_l->owner_backend = 1;
-      stereo_in_r->owner_backend = 1;
-      stereo_out_l->owner_backend = 1;
-      stereo_out_r->owner_backend = 1;
+      stereo_in_l->identifier.owner_type =
+        PORT_OWNER_TYPE_BACKEND;
+      stereo_in_r->identifier.owner_type =
+        PORT_OWNER_TYPE_BACKEND;
+      stereo_out_l->identifier.owner_type =
+        PORT_OWNER_TYPE_BACKEND;
+      stereo_out_r->identifier.owner_type =
+        PORT_OWNER_TYPE_BACKEND;
 
       self->stereo_in =
         stereo_ports_new (stereo_in_l,

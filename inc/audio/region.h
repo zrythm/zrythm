@@ -32,10 +32,9 @@
 
 #include <gtk/gtk.h>
 
-#define REGION_PRINTF_FILENAME "%d_%s_%s.mid"
+#define REGION_PRINTF_FILENAME "%s_%s.mid"
 #define region_set_track(region,track) \
-  ((Region *)region)->track = (Track *) track; \
-  ((Region *)region)->track_id = ((Track *) track)->id
+  ((Region *)region)->track = (Track *) track;
 
 typedef struct _RegionWidget RegionWidget;
 typedef struct Channel Channel;
@@ -61,12 +60,8 @@ typedef enum RegionCloneFlag
 typedef struct Region
 {
   /**
-   * ID for saving/loading projects
-   */
-  int          id;
-
-  /**
-   * Region name to be shown on the region.
+   * Unique Region name to be shown on the
+   * RegionWidget.
    */
   char         * name;
 
@@ -118,8 +113,8 @@ typedef struct Region
   /**
    * Owner track.
    */
-  int            track_id;
-  Track *        track; ///< cache
+  int            track_pos;
+  Track *        track;
 
   /**
    * Linked parent region.
@@ -127,7 +122,7 @@ typedef struct Region
    * Either the midi notes from this region, or the midi
    * notes from the linked region are used
    */
-  int             linked_region_id;
+  char *          linked_region_name;
   struct Region * linked_region; ///< cache
 
   /** Muted or not */
@@ -142,15 +137,8 @@ typedef struct Region
 
   /* ==== MIDI REGION ==== */
 
-  /**
-   * MIDI notes.
-   */
-  int             midi_note_ids[200];
-  MidiNote *      midi_notes[200];
-
-  /**
-   * MIDI note count.
-   */
+  /** MIDI notes. */
+  MidiNote *      midi_notes[800];
   int             num_midi_notes;
 
   /**
@@ -204,9 +192,6 @@ region_type_strings[] =
 static const cyaml_schema_field_t
   region_fields_schema[] =
 {
-	CYAML_FIELD_INT (
-    "id", CYAML_FLAG_DEFAULT,
-	  Region, id),
   CYAML_FIELD_STRING_PTR (
     "name", CYAML_FLAG_POINTER,
     Region, name,
@@ -244,19 +229,20 @@ static const cyaml_schema_field_t
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Region, filename,
    	0, CYAML_UNLIMITED),
-	CYAML_FIELD_INT (
-    "track_id", CYAML_FLAG_DEFAULT,
-    Region, track_id),
-	CYAML_FIELD_INT (
-    "linked_region_id", CYAML_FLAG_DEFAULT,
-    Region, linked_region_id),
+	CYAML_FIELD_STRING_PTR (
+    "linked_region_name", CYAML_FLAG_POINTER,
+    Region, linked_region_name,
+    0, CYAML_UNLIMITED),
 	CYAML_FIELD_INT (
     "muted", CYAML_FLAG_DEFAULT,
     Region, muted),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "midi_note_ids", CYAML_FLAG_DEFAULT,
-    Region, midi_note_ids, num_midi_notes,
-    &int_schema, 0, CYAML_UNLIMITED),
+    "midi_notes", CYAML_FLAG_DEFAULT,
+    Region, midi_notes, num_midi_notes,
+    &midi_note_schema, 0, CYAML_UNLIMITED),
+	CYAML_FIELD_INT (
+    "track_pos", CYAML_FLAG_DEFAULT,
+    Region, track_pos),
 
 	CYAML_FIELD_END
 };
@@ -272,6 +258,37 @@ region_schema = {
  */
 void
 region_init_loaded (Region * region);
+
+/**
+ * Finds the region corresponding to the given one.
+ *
+ * This should be called when we have a copy or a
+ * clone, to get the actual region in the project.
+ */
+Region *
+region_find (
+  Region * r);
+
+/**
+ * Looks for the Region under the given name.
+ *
+ * Warning: very expensive function.
+ */
+Region *
+region_find_by_name (
+  const char * name);
+
+/**
+ * Returns the MidiNote matching the properties of
+ * the given MidiNote.
+ *
+ * Used to find the actual MidiNote in the region
+ * from a cloned MidiNote (e.g. when doing/undoing).
+ */
+MidiNote *
+region_find_midi_note (
+  Region * r,
+  MidiNote * _mn);
 
 /**
  * Returns the full length as it appears on the
@@ -337,17 +354,13 @@ region_shift (
 
 /**
  * Only to be used by implementing structs.
- *
- * @param add_to_project This should be false when
- *   cloning, otherwise true.
  */
 void
 region_init (Region *   region,
              RegionType type,
              Track *    track,
              Position * start_pos,
-             Position * end_pos,
-             int        add_to_project);
+             Position * end_pos);
 
 /**
  * Clamps position then sets it.

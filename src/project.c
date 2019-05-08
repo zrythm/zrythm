@@ -126,25 +126,7 @@ update_paths (const char * dir)
 void
 project_sanity_check (Project * self)
 {
-  int i;
-
-  RegionWidgetPrivate * rw_prv;
-  Region * region;
-  int num_regions =
-    g_atomic_int_get (&self->num_regions);
-  for (i = 0; i < num_regions; i++)
-    {
-      region = self->regions[i];
-      if (!region)
-        continue;
-
-      rw_prv =
-        region_widget_get_private (
-          region->widget);
-      g_warn_if_fail (
-        rw_prv->region == region &&
-        rw_prv->region->id < self->num_regions);
-    }
+  /* TODO */
 }
 
 void
@@ -157,8 +139,7 @@ create_default (Project * self)
 
   /* add master channel to mixer and tracklist */
   Track * track =
-    track_new (TRACK_TYPE_MASTER, _("Master"),
-               F_ADD_TO_PROJ);
+    track_new (TRACK_TYPE_MASTER, _("Master"));
   MIXER->master = track;
   /*MIXER->master_id = track->channel->id;*/
   tracklist_append_track (
@@ -167,7 +148,6 @@ create_default (Project * self)
 
   /* create chord track */
   self->chord_track = chord_track_default ();
-  self->chord_track_id = self->chord_track->id;
   tracklist_append_track (
     TRACKLIST, self->chord_track,
     F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
@@ -217,70 +197,6 @@ create_default (Project * self)
   header_bar_widget_set_subtitle (
     MW_HEADER_BAR,
     PROJECT->title);
-}
-
-/** sl = singular lowercase,
- * cc = camel case */
-#define INIT_LOADED(cc, sl) \
-  static void \
-  init_loaded_##sl##s () \
-  { \
-    cc * sl; \
-    for (int i = 0; i < PROJECT->num_##sl##s; i++) \
-      { \
-        sl = project_get_##sl (i); \
-        if (sl) \
-          sl##_init_loaded (project_get_##sl (i)); \
-      } \
-  }
-
-INIT_LOADED (Port, port)
-INIT_LOADED (Region, region)
-INIT_LOADED (Plugin, plugin)
-INIT_LOADED (Track, track)
-INIT_LOADED (AutomationPoint, automation_point)
-INIT_LOADED (AutomationCurve, automation_curve)
-INIT_LOADED (MidiNote, midi_note)
-INIT_LOADED (ZChord, chord)
-INIT_LOADED (Automatable, automatable)
-INIT_LOADED (AutomationTrack, automation_track)
-INIT_LOADED (AutomationLane, automation_lane)
-
-static void
-populate_arrays_from_aggregated (Project * self)
-{
-  int i;
-
-  /* populate from aggregated */
-#define POP_FROM_AGG(camelcase, lowercase) \
-  camelcase * lowercase; \
-  for (i = 0; \
-       i < self->num_aggregated_##lowercase##s; \
-       i++) \
-    { \
-      lowercase = \
-        self->aggregated_##lowercase##s[i]; \
-      self->lowercase##s[lowercase->id] = \
-        lowercase; \
-      if (lowercase->id >=  \
-            self->num_##lowercase##s) \
-        self->num_##lowercase##s = \
-          lowercase->id + 1; \
-    }
-
-  POP_FROM_AGG (Region, region)
-  POP_FROM_AGG (Track, track)
-  POP_FROM_AGG (Plugin, plugin)
-  POP_FROM_AGG (AutomationPoint, automation_point)
-  POP_FROM_AGG (AutomationCurve, automation_curve)
-  POP_FROM_AGG (MidiNote, midi_note)
-  POP_FROM_AGG (Port, port)
-  POP_FROM_AGG (ZChord, chord)
-  POP_FROM_AGG (Automatable, automatable)
-  POP_FROM_AGG (AutomationTrack, automation_track)
-  POP_FROM_AGG (AutomationLane, automation_lane)
-
-#undef POP_FROM_AGG
 }
 
 static int
@@ -341,24 +257,22 @@ load (char * filename)
       gtk_widget_destroy (GTK_WIDGET (mww));
     }
 
-  populate_arrays_from_aggregated (prj);
-
   g_message ("initing loaded structures");
   PROJECT = prj;
   update_paths (dir);
   undo_manager_init (&PROJECT->undo_manager);
-  init_loaded_ports ();
+  /*init_loaded_ports ();*/
   engine_init (AUDIO_ENGINE, 1);
-  init_loaded_regions ();
-  init_loaded_plugins ();
-  init_loaded_tracks ();
-  init_loaded_midi_notes ();
-  init_loaded_automation_points ();
-  init_loaded_automation_curves ();
-  init_loaded_chords ();
-  init_loaded_automatables ();
-  init_loaded_automation_tracks ();
-  init_loaded_automation_lanes ();
+  /*init_loaded_regions ();*/
+  /*init_loaded_plugins ();*/
+  /*init_loaded_tracks ();*/
+  /*init_loaded_midi_notes ();*/
+  /*init_loaded_automation_points ();*/
+  /*init_loaded_automation_curves ();*/
+  /*init_loaded_chords ();*/
+  /*init_loaded_automatables ();*/
+  /*init_loaded_automation_tracks ();*/
+  /*init_loaded_automation_lanes ();*/
   timeline_selections_init_loaded (
     &PROJECT->timeline_selections);
   midi_arranger_selections_init_loaded (
@@ -406,44 +320,6 @@ load (char * filename)
     PROJECT->title);
 
   RETURN_OK;
-}
-
-#undef INIT_LOADED
-
-static void
-generate_aggregated_arrays (Project * self)
-{
-  int i;
-
-#define GEN_AGGREGATED(camelcase, lowercase) \
-  camelcase * lowercase; \
-  self->num_aggregated_##lowercase##s = 0; \
-  for (i = 0; i < self->num_##lowercase##s; i++) \
-    { \
-      lowercase = self->lowercase##s[i]; \
-      if (lowercase) \
-        { \
-          g_warn_if_fail (lowercase->id > -1); \
-          array_append ( \
-            self->aggregated_##lowercase##s, \
-            self->num_aggregated_##lowercase##s, \
-            lowercase); \
-        } \
-    }
-
-  GEN_AGGREGATED (Region, region)
-  GEN_AGGREGATED (Track, track)
-  GEN_AGGREGATED (Plugin, plugin)
-  GEN_AGGREGATED (AutomationPoint, automation_point)
-  GEN_AGGREGATED (AutomationCurve, automation_curve)
-  GEN_AGGREGATED (MidiNote, midi_note)
-  GEN_AGGREGATED (Port, port)
-  GEN_AGGREGATED (ZChord, chord)
-  GEN_AGGREGATED (Automatable, automatable)
-  GEN_AGGREGATED (AutomationTrack, automation_track)
-  GEN_AGGREGATED (AutomationLane, automation_lane)
-
-#undef GEN_AGGREGATED
 }
 
 /**
@@ -527,8 +403,6 @@ project_save (const char * dir)
         }
     }
 
-  generate_aggregated_arrays (PROJECT);
-
   char * yaml = project_serialize (PROJECT);
   GError *err = NULL;
   g_file_set_contents (
@@ -558,87 +432,6 @@ project_save (const char * dir)
 
   RETURN_OK;
 }
-
-static int
-get_next_available_id (void ** array,
-                       int     size)
-{
-  /*for (int i = 0; i < size; i++)*/
-    /*{*/
-      /* if item doesn't exist at this index,
-       * use it */
-      /*if (!array[i])*/
-        /*return i;*/
-    /*}*/
-  return size;
-}
-
-#define PROJECT_ADD_X(camelcase, lowercase) \
-  void \
-  project_add_##lowercase (camelcase * x) \
-  { \
-    x->id = \
-      get_next_available_id ( \
-        (void **) PROJECT->lowercase##s, \
-        PROJECT->num_##lowercase##s); \
-    PROJECT->lowercase##s[x->id] = x; \
-    PROJECT->num_##lowercase##s++; \
-  }
-#define PROJECT_GET_X(camelcase, lowercase) \
-  camelcase * \
-  project_get_##lowercase (int id) \
-  { \
-    if (id < 0) \
-      return NULL; \
-    \
-    return PROJECT->lowercase##s[id]; \
-  }
-#define PROJECT_REMOVE_X(camelcase, lowercase) \
-  void \
-  project_remove_##lowercase (camelcase * x) \
-  { \
-    g_message ("setting %d to NULL", \
-               x->id); \
-    PROJECT->lowercase##s[x->id] = NULL; \
-  }
-/** Moves the object to the given index. */
-#define PROJECT_MOVE_X_TO(camelcase, lowercase) \
-  void \
-  project_move_##lowercase (camelcase * x, int id) \
-  { \
-    g_warn_if_fail ( \
-      PROJECT->lowercase##s[id] == NULL); \
-    g_message ("moving %d to %d", \
-               x->id, id); \
-    PROJECT->lowercase##s[x->id] = NULL; \
-    PROJECT->lowercase##s[id] = x; \
-    x->id = id; \
-  }
-
-
-#define P_DECLARE_FUNCS_X(camelcase, lowercase) \
-  PROJECT_ADD_X (camelcase, lowercase) \
-  PROJECT_GET_X (camelcase, lowercase) \
-  PROJECT_REMOVE_X (camelcase, lowercase) \
-  PROJECT_MOVE_X_TO (camelcase, lowercase);
-
-P_DECLARE_FUNCS_X (Region, region)
-P_DECLARE_FUNCS_X (Track, track)
-P_DECLARE_FUNCS_X (Plugin, plugin)
-P_DECLARE_FUNCS_X (AutomationPoint, automation_point)
-P_DECLARE_FUNCS_X (AutomationCurve, automation_curve)
-P_DECLARE_FUNCS_X (MidiNote, midi_note)
-P_DECLARE_FUNCS_X (Port, port)
-P_DECLARE_FUNCS_X (ZChord, chord)
-P_DECLARE_FUNCS_X (Automatable, automatable)
-P_DECLARE_FUNCS_X (AutomationTrack, automation_track)
-P_DECLARE_FUNCS_X (AutomationLane, automation_lane)
-
-#undef PROJECT_ADD_X
-#undef PROJECT_GET_X
-#undef PROJECT_REMOVE_X
-#undef PROJECT_MOVE_X_TO
-#undef P_DECLARE_FUNCS_X
 
 SERIALIZE_SRC (Project, project)
 DESERIALIZE_SRC (Project, project)

@@ -50,33 +50,23 @@ int
 create_midi_arranger_selections_action_do (
   CreateMidiArrangerSelectionsAction * self)
 {
-  MidiNote * mn, * orig_mn;
+  MidiNote * mn;
 	for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
-      /* get the clone */
-      orig_mn = self->mas->midi_notes[i];
-
       /* if already created (this should be the case
        * the first time) then move on */
-      if (project_get_midi_note (orig_mn->id))
+      if (midi_note_find (self->mas->midi_notes[i]))
         continue;
 
       /* clone the clone */
       mn =
         midi_note_clone (
-          orig_mn,
-          project_get_region (orig_mn->region_id));
-
-      /* add it to the project to get unique ID */
-      project_add_midi_note (mn);
+          self->mas->midi_notes[i]);
 
       /* add it to the region */
       midi_region_add_midi_note (
-        project_get_region (mn->region_id),
+        mn->region,
         mn);
-
-      /* remember the ID */
-      orig_mn->id = mn->id;
     }
   EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
                NULL);
@@ -92,14 +82,11 @@ create_midi_arranger_selections_action_undo (
   for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
       /* find the actual MidiNote */
-      mn =
-        project_get_midi_note (
-          self->mas->midi_notes[i]->id);
+      mn = midi_note_find (self->mas->midi_notes[i]);
 
       /* remove it */
       midi_region_remove_midi_note (
-        project_get_region (mn->region_id),
-        mn);
+        mn->region, mn);
     }
   EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
                NULL);

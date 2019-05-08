@@ -49,7 +49,7 @@ edit_tracks_action_new (
   ua->type = UNDOABLE_ACTION_TYPE_EDIT_TRACKS;
 
   self->type = type;
-  self->main_track_id = main_track->id;
+  self->main_track_pos = main_track->pos;
   self->vol_delta = vol_delta;
   self->pan_delta = pan_delta;
   self->solo_new = solo_new;
@@ -69,9 +69,9 @@ edit_tracks_action_do (EditTracksAction * self)
   for (i = 0; i < self->tls->num_tracks; i++)
     {
       track =
-        project_get_track (self->tls->track_ids[i]);
+        TRACKLIST->tracks[self->tls->tracks[i]->pos];
       g_return_val_if_fail (track, -1);
-      ch = track_get_channel (track);
+      ch = track->channel;
 
       switch (self->type)
         {
@@ -113,7 +113,7 @@ edit_tracks_action_undo (
   for (i = 0; i < self->tls->num_tracks; i++)
     {
       track =
-        project_get_track (self->tls->track_ids[i]);
+        TRACKLIST->tracks[self->tls->tracks[i]->pos];
       g_return_val_if_fail (track, -1);
       ch = track_get_channel (track);
 

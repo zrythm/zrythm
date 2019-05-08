@@ -25,7 +25,6 @@
  * one another.
  */
 
-#include "audio/midi.h"
 #include "utils/yaml.h"
 
 #define MAX_DESTINATIONS 600
@@ -41,6 +40,7 @@
 #define PORT_NOT_OWNED -1
 
 typedef struct Plugin Plugin;
+typedef struct MidiEvents MidiEvents;
 
 typedef enum PortFlow {
 	FLOW_UNKNOWN,
@@ -56,48 +56,86 @@ typedef enum PortType {
 	TYPE_CV
 } PortType;
 
+/**
+ * Type of owner.
+ */
+typedef enum PortOwnerType
+{
+  PORT_OWNER_TYPE_BACKEND,
+  PORT_OWNER_TYPE_PLUGIN,
+  PORT_OWNER_TYPE_TRACK,
+} PortOwnerType;
+
 typedef enum PortFlags
 {
   PORT_FLAG_STEREO_L = 0x01,
   PORT_FLAG_STEREO_R = 0x02,
   PORT_FLAG_PIANO_ROLL = 0x04,
-  OPT_D = 0x08,
-  OPT_E = 0x10,
+  /** See http://lv2plug.in/ns/ext/port-groups/port-groups.html#sideChainOf. */
+  PORT_FLAG_SIDECHAIN = 0x08,
+  /** See http://lv2plug.in/ns/ext/port-groups/port-groups.html#mainInput
+   * and http://lv2plug.in/ns/ext/port-groups/port-groups.html#mainOutput. */
+  PORT_FLAG_MAIN_PORT = 0x10,
   OPT_F = 0x20,
 } PortFlags;
 
 /**
- * What the internal data is
+ * What the internal data is.
  */
 typedef enum PortInternalType
 {
   INTERNAL_NONE,
-  INTERNAL_LV2_PORT, ///< LV2_Port
+  INTERNAL_LV2_PORT, ///< Lv2Port
   INTERNAL_JACK_PORT, ///< jack_port_t
   INTERNAL_PA_PORT, ///< port audio
 } PortInternalType;
 
-typedef struct LV2_Port LV2_Port;
+typedef struct Lv2Port Lv2Port;
 typedef struct Channel Channel;
 typedef struct Track Track;
 typedef enum PanAlgorithm PanAlgorithm;
 typedef enum PanLaw PanLaw;
 
 /**
+ * Struct used to identify Ports in the project.
+ *
+ * This should include some members of the original
+ * struct enough to identify the port. To be used
+ * for sources and dests.
+ *
+ * This must be filled in before saving and read from
+ * while loading to fill in the srcs/dests.
+ */
+typedef struct PortIdentifier
+{
+  /**
+   * Human readable label.
+   */
+  char *              label;
+  /** Owner type. */
+  PortOwnerType       owner_type;
+  /** Data type (e.g. AUDIO). */
+	PortType            type;
+  /** Flow (IN/OUT). */
+	PortFlow            flow;
+  /** Flags (e.g. is side chain). */
+  PortFlags           flags;
+  int                 plugin_slot;
+  int                 track_pos;
+  /** Index (e.g. in plugin's output ports). */
+  int                 port_index;
+} PortIdentifier;
+
+/**
  * Must ONLY be created via port_new()
  */
 typedef struct Port
 {
-  /**
-   * Unique ID.
-   */
-  int                 id;
-
-  char *              label; ///< human readable label
+  PortIdentifier      identifier;
 
   /**
-   * Buffer to be reallocated every time the buffer size
-   * changes.
+   * Buffer to be reallocated every time the buffer
+   * size changes.
    *
    * The buffer size is AUDIO_ENGINE->block_length.
    */
@@ -108,29 +146,27 @@ typedef struct Port
    */
   MidiEvents *        midi_events;
 
-	PortType            type; ///< Data type
-	PortFlow            flow; ///< Data flow direction
-  PortFlags           flags;
-
   /**
    * Inputs and Outputs.
+   *
+   * These should be serialized, and when loading
+   * they shall be used to find the original ports
+   * and replace the pointer (also freeing the
+   * current one).
    */
-  int                 src_ids[MAX_DESTINATIONS];
-  int                 dest_ids[MAX_DESTINATIONS];
+  struct Port *       srcs[MAX_DESTINATIONS];
+  struct Port *       dests[MAX_DESTINATIONS];
+  PortIdentifier      src_ids[MAX_DESTINATIONS];
+  PortIdentifier      dest_ids[MAX_DESTINATIONS];
   int                 num_srcs;
   int                 num_dests;
 
   /**
-   * Cache.
-   */
-  struct Port *       srcs[MAX_DESTINATIONS];
-  struct Port *       dests[MAX_DESTINATIONS];
-
-  /**
-   * Indicates whether data or lv2_port should be used.
+   * Indicates whether data or lv2_port should be
+   * used.
    */
   PortInternalType    internal_type;
-  LV2_Port *          lv2_port; ///< used for LV2
+  Lv2Port *          lv2_port; ///< used for LV2
 
   /**
    * Pointer to arbitrary data.
@@ -141,32 +177,10 @@ typedef struct Port
 
   /* ====== flags to indicate port owner ====== */
 
-  /** Owner is the backend (JACK/PortAudio/ALSA). */
-  int                 owner_backend;
+  Plugin              * plugin;
+  Track             * track;
 
-  int                 is_piano_roll; ///< 1 if piano roll
-
-  /**
-   * ID of owner plugin, if any.
-   *
-   * If the port is not owned by a plugin this will be
-   * PORT_NOT_OWNED.
-   */
-  int                 owner_pl_id;
-
-  /**
-   * ID of owner channel, if any.
-   *
-   * If the port is not owned by a channel this will be
-   * PORT_NOT_OWNED.
-   */
-  int                 owner_tr_id;
-
-  /* ====== cache ====== */
-  Plugin              * owner_pl;
-  Track             * owner_tr;
-
-  /** used when loading projects */
+  /** used when loading projects FIXME needed? */
   int                 initialized;
 
   /** Port undergoing deletion. */
@@ -179,6 +193,14 @@ port_flow_strings[] =
 	{ "Unknown",       FLOW_UNKNOWN    },
 	{ "Input",         FLOW_INPUT   },
 	{ "Output",        FLOW_OUTPUT   },
+};
+
+static const cyaml_strval_t
+port_owner_type_strings[] =
+{
+	{ "Backend",   PORT_OWNER_TYPE_BACKEND    },
+	{ "Plugin",    PORT_OWNER_TYPE_PLUGIN   },
+	{ "Track",     PORT_OWNER_TYPE_TRACK   },
 };
 
 static const cyaml_strval_t
@@ -199,51 +221,55 @@ port_internal_type_strings[] =
 };
 
 static const cyaml_schema_field_t
-port_fields_schema[] =
+port_identifier_fields_schema[] =
 {
-  CYAML_FIELD_INT (
-    "id", CYAML_FLAG_DEFAULT,
-    Port, id),
   CYAML_FIELD_STRING_PTR (
     "label", CYAML_FLAG_POINTER,
-    Port, label,
+    PortIdentifier, label,
    	0, CYAML_UNLIMITED),
   CYAML_FIELD_ENUM (
+    "owner_type", CYAML_FLAG_DEFAULT,
+    PortIdentifier, owner_type, port_owner_type_strings,
+    CYAML_ARRAY_LEN (port_type_strings)),
+  CYAML_FIELD_ENUM (
     "type", CYAML_FLAG_DEFAULT,
-    Port, type, port_type_strings,
+    PortIdentifier, type, port_type_strings,
     CYAML_ARRAY_LEN (port_type_strings)),
   CYAML_FIELD_ENUM (
     "flow", CYAML_FLAG_DEFAULT,
-    Port, flow, port_flow_strings,
+    PortIdentifier, flow, port_flow_strings,
     CYAML_ARRAY_LEN (port_flow_strings)),
+
+	CYAML_FIELD_END,
+};
+
+static const cyaml_schema_value_t
+port_identifier_schema = {
+	CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    PortIdentifier, port_identifier_fields_schema),
+};
+
+static const cyaml_schema_field_t
+port_fields_schema[] =
+{
+  CYAML_FIELD_MAPPING (
+    "identifier",
+    /* direct struct inside struct -> default */
+    CYAML_FLAG_DEFAULT,
+    Port, identifier, port_identifier_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
     "src_ids", CYAML_FLAG_DEFAULT,
     Port, src_ids, num_srcs,
-    &int_schema, 0, CYAML_UNLIMITED),
+    &port_identifier_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
     "dest_ids", CYAML_FLAG_DEFAULT,
     Port, dest_ids, num_dests,
-    &int_schema, 0, CYAML_UNLIMITED),
+    &port_identifier_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_ENUM (
     "internal_type", CYAML_FLAG_DEFAULT,
     Port, internal_type, port_internal_type_strings,
     CYAML_ARRAY_LEN (port_internal_type_strings)),
-  //CYAML_FIELD_MAPPING (
-    //"midi_events",
-    //CYAML_FLAG_DEFAULT | CYAML_FLAG_POINTER,
-    //Port, midi_events, midi_events_fields_schema),
-  CYAML_FIELD_INT (
-    "owner_backend", CYAML_FLAG_DEFAULT,
-    Port, owner_backend),
-  CYAML_FIELD_INT (
-    "is_piano_roll", CYAML_FLAG_DEFAULT,
-    Port, is_piano_roll),
-  CYAML_FIELD_INT (
-    "owner_pl_id", CYAML_FLAG_DEFAULT,
-    Port, owner_pl_id),
-  CYAML_FIELD_INT (
-    "owner_tr_id", CYAML_FLAG_DEFAULT,
-    Port, owner_tr_id),
 
 	CYAML_FIELD_END
 };
@@ -262,12 +288,6 @@ port_schema = {
  */
 typedef struct StereoPorts
 {
-  int        l_id;
-  int        r_id;
-
-  /**
-   * Cache.
-   */
   Port       * l;
   Port       * r;
 } StereoPorts;
@@ -275,12 +295,14 @@ typedef struct StereoPorts
 static const cyaml_schema_field_t
   stereo_ports_fields_schema[] =
 {
-  CYAML_FIELD_INT (
-    "l_id", CYAML_FLAG_DEFAULT,
-    StereoPorts, l_id),
-  CYAML_FIELD_INT (
-    "r_id", CYAML_FLAG_DEFAULT,
-    StereoPorts, r_id),
+  CYAML_FIELD_MAPPING_PTR (
+    "l", CYAML_FLAG_POINTER,
+    StereoPorts, l,
+    port_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "r", CYAML_FLAG_POINTER,
+    StereoPorts, r,
+    port_fields_schema),
 
 	CYAML_FIELD_END
 };
@@ -293,10 +315,33 @@ static const cyaml_schema_value_t
 };
 
 /**
- * Inits ports just loaded from yml.
+ * This function finds the Ports corresponding to
+ * the PortIdentifiers for srcs and dests.
+ *
+ * Should be called after the ports are loaded from
+ * yml.
  */
 void
 port_init_loaded (Port * port);
+
+Port *
+port_find_from_identifier (
+  PortIdentifier * id);
+
+static inline void
+port_identifier_copy (
+  PortIdentifier * src,
+  PortIdentifier * dest)
+{
+  dest->label = g_strdup (src->label);
+  dest->owner_type = src->owner_type;
+  dest->type = src->type;
+  dest->flow = src->flow;
+  dest->flags = src->flags;
+  dest->plugin_slot = src->plugin_slot;
+  dest->track_pos = src->track_pos;
+  dest->port_index = src->port_index;
+}
 
 void
 stereo_ports_init_loaded (StereoPorts * sp);
@@ -311,25 +356,39 @@ port_new (char * label);
  * Creates port.
  */
 Port *
-port_new_with_type (PortType     type,
-                    PortFlow     flow,
-                    char         * label);
+port_new_with_type (
+  PortType     type,
+  PortFlow     flow,
+  char         * label);
 
 /**
- * Creates port and adds given data to it
+ * Creates port and adds given data to it.
+ *
+ * @param internal_type The internal data format.
+ * @param data The data.
  */
 Port *
-port_new_with_data (PortInternalType internal_type, ///< the internal data format
-                    PortType     type,
-                    PortFlow     flow,
-                    char         * label,
-                    void         * data);   ///< the data
+port_new_with_data (
+  PortInternalType internal_type,
+  PortType     type,
+  PortFlow     flow,
+  char         * label,
+  void         * data);
 
 /**
  * Creates stereo ports.
  */
 StereoPorts *
 stereo_ports_new (Port * l, Port * r);
+
+/**
+ * Gathers all ports in the project and puts them
+ * in the given array and size.
+ */
+void
+port_get_all (
+  Port ** ports,
+  int *   size);
 
 /**
  * Deletes port, doing required cleanup and updating counters.
@@ -379,23 +438,25 @@ port_sum_signal_from_inputs (Port * port);
 /**
  * Sets the owner channel & its ID.
  */
-void
-port_set_owner_track (Port *    port,
-                      Track *   track);
+static inline void
+port_set_owner_track (
+  Port *    port,
+  Track *   track)
+{
+  g_warn_if_fail (port && track);
+
+  port->track = track;
+  port->identifier.owner_type =
+    PORT_OWNER_TYPE_TRACK;
+}
 
 /**
  * Sets the owner plugin & its ID.
  */
 void
-port_set_owner_plugin (Port *   port,
-                       Plugin * chan);
-
-/**
- * if port buffer size changed, reallocate port buffer, otherwise memset to 0.
- */
-//void
-//port_init_buf (Port *port, nframes_t nframes);
-//
+port_set_owner_plugin (
+  Port *   port,
+  Plugin * pl);
 
 int
 ports_connected (Port * src, Port * dest);
@@ -419,7 +480,7 @@ ports_disconnect (
       port->deleting = deleting;
 
       /* disconnect incoming ports */
-      if (port->flow == FLOW_INPUT)
+      if (port->identifier.flow == FLOW_INPUT)
         {
           for (j = 0; j < port->num_srcs; j++)
             {
@@ -427,7 +488,7 @@ ports_disconnect (
             }
         }
         /* disconnect outgoing ports */
-        else if (port->flow == FLOW_OUTPUT)
+        else if (port->identifier.flow == FLOW_OUTPUT)
           {
             for (j = 0; j < port->num_dests; j++)
               {

@@ -374,8 +374,8 @@ automatable_selector_popover_widget_new (
     self->owner->owner->al->at->automatable;
   if (a->type >= AUTOMATABLE_TYPE_CHANNEL_FADER)
     type = AS_TYPE_CHANNEL;
-  else if (a->slot_index > -1)
-    type = AS_TYPE_PLUGIN_0 + a->slot_index;
+  else if (a->slot > -1)
+    type = AS_TYPE_PLUGIN_0 + a->slot;
 
   self->automatable_model =
     create_model_for_automatables (self, type);

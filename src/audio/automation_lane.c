@@ -30,10 +30,6 @@ void
 automation_lane_init_loaded (
   AutomationLane * self)
 {
-  self->at =
-    project_get_automation_track (
-      self->at_id);
-
   self->widget =
     automation_lane_widget_new (self);
 }
@@ -50,7 +46,6 @@ automation_lane_new (
     calloc (1, sizeof (AutomationLane));
 
   self->at = at;
-  self->at_id = at->id;
   at->al = self;
 
   /* visible by default */
@@ -59,8 +54,6 @@ automation_lane_new (
   self->widget =
     automation_lane_widget_new (self);
 
-  project_add_automation_lane (self);
-  at->al_id = self->id;
 
   return self;
 }

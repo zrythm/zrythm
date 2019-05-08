@@ -37,9 +37,8 @@ _create_blank ()
   Automatable * self =
     calloc (1, sizeof (Automatable));
 
-  self->port_id = -1;
-
-  project_add_automatable (self);
+  self->track_pos = -1;
+  self->slot = -1;
 
   return self;
 }
@@ -92,28 +91,41 @@ get_lv2_control (Automatable * self)
   return NULL;
 }
 
-void
-automatable_init_loaded (Automatable * self)
+/*void*/
+/*automatable_init_loaded (Automatable * self)*/
+/*{*/
+  /*self->port =*/
+    /*project_get_port (self->port_id);*/
+
+  /*if (self->type ==*/
+        /*AUTOMATABLE_TYPE_PLUGIN_CONTROL)*/
+    /*{*/
+      /*[>Lv2Plugin * lv2_plgn =<]*/
+        /*[>self->port->owner_pl->lv2;<]*/
+
+      /*self->control = get_lv2_control (self);*/
+    /*}*/
+  /*else if (self->type ==*/
+             /*AUTOMATABLE_TYPE_PLUGIN_ENABLED)*/
+    /*{*/
+      /*[> TODO use slot index to get lv2_plgn <]*/
+    /*}*/
+
+  /*self->track =*/
+    /*project_get_track (self->track_id);*/
+/*}*/
+
+/**
+ * Finds the Automatable in the project from the
+ * given clone.
+ */
+Automatable *
+automatable_find (
+  Automatable * clone)
 {
-  self->port =
-    project_get_port (self->port_id);
+  /* TODO */
 
-  if (self->type ==
-        AUTOMATABLE_TYPE_PLUGIN_CONTROL)
-    {
-      /*Lv2Plugin * lv2_plgn =*/
-        /*self->port->owner_pl->lv2;*/
-
-      self->control = get_lv2_control (self);
-    }
-  else if (self->type ==
-             AUTOMATABLE_TYPE_PLUGIN_ENABLED)
-    {
-      /* TODO use slot index to get lv2_plgn */
-    }
-
-  self->track =
-    project_get_track (self->track_id);
+  return NULL;
 }
 
 Automatable *
@@ -122,7 +134,7 @@ automatable_create_fader (Channel * channel)
   Automatable * a = _create_blank ();
 
   a->track = channel->track;
-  a->track_id = channel->track->id;
+  a->track_pos = channel->track->pos;
   a->label = g_strdup ("Volume");
   a->type = AUTOMATABLE_TYPE_CHANNEL_FADER;
   a->minf = get_minf (a);
@@ -138,7 +150,7 @@ automatable_create_pan (Channel * channel)
   Automatable * a = _create_blank ();
 
   a->track = channel->track;
-  a->track_id = channel->track->id;
+  a->track_pos = channel->track->pos;
   a->label = g_strdup ("Pan");
   a->type = AUTOMATABLE_TYPE_CHANNEL_PAN;
   a->minf = get_minf (a);
@@ -154,7 +166,7 @@ automatable_create_mute (Channel * channel)
   Automatable * a = _create_blank ();
 
   a->track = channel->track;
-  a->track_id = channel->track->id;
+  a->track_pos = channel->track->pos;
   a->label = g_strdup ("Mute");
   a->type = AUTOMATABLE_TYPE_CHANNEL_MUTE;
   a->minf = get_minf (a);
@@ -172,17 +184,14 @@ automatable_create_lv2_control (
   Automatable * a = _create_blank ();
 
   a->control = control;
-  LV2_Port * port = &control->plugin->ports[control->index];
+  Lv2Port * port = &control->plugin->ports[control->index];
   a->port = port->port;
-  a->port_id = port->port->id;
   /*a->index = control->index;*/
   a->type = AUTOMATABLE_TYPE_PLUGIN_CONTROL;
   a->track = plugin->track;
-  a->track_id =
-    plugin->track->id;
-  a->slot_index =
-    channel_get_plugin_index (
-      plugin->track->channel, plugin);
+  a->track_pos =
+    plugin->track->pos;
+  a->slot = plugin->slot;
   a->label =
     g_strdup (lv2_control_get_label (control));
   a->minf = get_minf (a);
@@ -200,11 +209,8 @@ automatable_create_plugin_enabled (
 
   a->type = AUTOMATABLE_TYPE_PLUGIN_ENABLED;
   a->track = plugin->track;
-  a->track_id =
-    plugin->track->id;
-  a->slot_index =
-    channel_get_plugin_index (
-      plugin->track->channel, plugin);
+  a->track_pos = plugin->track->pos;
+  a->slot = plugin->slot;
   a->label = g_strdup ("Enable/disable");
   a->minf = get_minf (a);
   a->maxf = get_maxf (a);
@@ -299,16 +305,16 @@ automatable_get_val (Automatable * a)
   switch (a->type)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
-      plugin = a->port->owner_pl;
+      plugin = a->port->plugin;
       if (plugin->descr->protocol == PROT_LV2)
         {
           Lv2Control * control = a->control;
-          LV2_Port* port = &control->plugin->ports[control->index];
+          Lv2Port* port = &control->plugin->ports[control->index];
           return port->control;
         }
       break;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
-      plugin = a->port->owner_pl;
+      plugin = a->port->plugin;
       return plugin->enabled;
     case AUTOMATABLE_TYPE_CHANNEL_FADER:
       ch = track_get_channel (a->track);
@@ -336,7 +342,7 @@ automatable_normalized_val_to_real (
   switch (a->type)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
-      plugin = a->port->owner_pl;
+      plugin = a->port->plugin;
       if (plugin->descr->protocol == PROT_LV2)
         {
           Lv2Control * ctrl = a->control;
@@ -362,7 +368,7 @@ automatable_normalized_val_to_real (
       g_warn_if_reached ();
       break;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
-      plugin = a->port->owner_pl;
+      plugin = a->port->plugin;
       return val > 0.5f;
     case AUTOMATABLE_TYPE_CHANNEL_FADER:
       return math_get_amp_val_from_fader (val);
@@ -387,7 +393,7 @@ automatable_real_val_to_normalized (
   switch (a->type)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
-      plugin = a->port->owner_pl;
+      plugin = a->port->plugin;
       if (plugin->descr->protocol == PROT_LV2)
         {
           Lv2Control * ctrl = a->control;
@@ -443,7 +449,7 @@ automatable_set_val_from_normalized (
   switch (a->type)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
-      plugin = a->port->owner_pl;
+      plugin = a->port->plugin;
       if (plugin->descr->protocol == PROT_LV2)
         {
           Lv2Control * ctrl = a->control;
@@ -469,7 +475,7 @@ automatable_set_val_from_normalized (
         }
       break;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
-      plugin = a->port->owner_pl;
+      plugin = a->port->plugin;
       plugin->enabled = val > 0.5f;
       break;
     case AUTOMATABLE_TYPE_CHANNEL_FADER:
@@ -499,19 +505,15 @@ AutomationTrack *
 automatable_get_automation_track (Automatable * automatable)
 {
   Track * track = automatable->track;
-  AutomationTracklist * automation_tracklist =
+  AutomationTracklist * atl =
     track_get_automation_tracklist (track);
 
-  for (int i = 0;
-       i < automation_tracklist->num_automation_tracks;
-       i++)
+  AutomationTrack * at;
+  for (int i = 0; i < atl->num_ats; i++)
     {
-      AutomationTrack * at =
-        automation_tracklist->automation_tracks[i];
+      at = atl->ats[i];
       if (at->automatable == automatable)
-        {
-          return at;
-        }
+        return at;
     }
   return NULL;
 }

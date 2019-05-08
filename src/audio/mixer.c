@@ -75,7 +75,7 @@ void
 mixer_init_loaded ()
 {
   MIXER->master =
-    project_get_track (MIXER->master_id);
+    TRACKLIST->tracks[0];
 }
 
 /**

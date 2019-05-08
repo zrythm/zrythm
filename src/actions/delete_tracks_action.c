@@ -51,11 +51,12 @@ delete_tracks_action_do (
 
   for (int i = 0; i < self->tls->num_tracks; i++)
     {
+      /* get track from pos */
       track =
-        project_get_track (
-          self->tls->track_ids[i]);
+        TRACKLIST->tracks[self->tls->tracks[i]->pos];
       g_return_val_if_fail (track, -1);
 
+      /* remove it */
       tracklist_remove_track (
         TRACKLIST,
         track,
@@ -77,25 +78,17 @@ delete_tracks_action_undo (
   Track * track, * orig_track;
   for (int i = 0; i < self->tls->num_tracks; i++)
     {
-      /* get the clone */
-      orig_track = self->tls->tracks[i];
-
       /* clone the clone */
-      track = track_clone (orig_track);
+      track = track_clone (self->tls->tracks[i]);
 
-      /* add to project to get a new ID */
-      project_add_track (track);
-
-      /* connect the track */
+      /* insert it to the tracklist at its original
+       * pos */
       tracklist_insert_track (
         TRACKLIST,
         track,
         track->pos,
         F_NO_PUBLISH_EVENTS,
         F_NO_RECALC_GRAPH);
-
-      /* move to original ID */
-      project_move_track (track, orig_track->id);
     }
 
   /* recalculate graph */

@@ -57,12 +57,11 @@ delete_timeline_selections_action_do (
     {
       /* find actual region */
       region =
-        project_get_region (
-          self->ts->regions[i]->id);
+        region_find (self->ts->regions[i]);
 
       /* remove it */
       track_remove_region (
-        project_get_track (region->track_id),
+        region->track,
         region);
       free_later (region, region_free);
     }
@@ -79,24 +78,15 @@ delete_timeline_selections_action_undo (
   Region * region, * orig_region;
   for (int i = 0; i < self->ts->num_regions; i++)
     {
-      /* get the clone */
-      orig_region = self->ts->regions[i];
-
       /* clone the clone */
       region =
         region_clone (
-          orig_region, REGION_CLONE_COPY);
-
-      /* add to project to get unique ID */
-      project_add_region (region);
+          self->ts->regions[i], REGION_CLONE_COPY);
 
       /* add it to track */
       track_add_region (
-        project_get_track (region->track_id),
+        TRACKLIST->tracks[region->track_pos],
         region);
-
-      /* remember the ID */
-      orig_region->id = region->id;
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);

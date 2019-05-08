@@ -48,18 +48,13 @@ int
 copy_tracks_action_do (
   CopyTracksAction * self)
 {
-  Track * track, * orig_track;
+  Track * track;
 
 	for (int i = 0; i < self->tls->num_tracks; i++)
     {
-      /* get the clone */
-      orig_track = self->tls->tracks[i];
-
-      /* clone the clone */
-      track = track_clone (orig_track);
-
-      /* add to project to get a unique ID */
-      project_add_track (track);
+      /* create a new clone to use in the project */
+      track =
+        track_clone (self->tls->tracks[i]);
 
       /* add to tracklist at given pos */
       tracklist_insert_track (
@@ -69,11 +64,8 @@ copy_tracks_action_do (
         F_NO_PUBLISH_EVENTS,
         F_NO_RECALC_GRAPH);
 
-      /* select the new clone */
+      /* select it */
       /* TODO */
-
-      /* remember the new clone's id */
-      orig_track->id = track->id;
     }
 
   mixer_recalc_graph (MIXER);
@@ -92,10 +84,10 @@ copy_tracks_action_undo (
 
   for (int i = 0; i < self->tls->num_tracks; i++)
     {
-      /* get the track from the clone ID */
+      /* get the track from the inserted pos */
       track =
-        project_get_track (
-          self->tls->tracks[i]->id);
+        TRACKLIST->tracks[self->pos + i];
+      g_return_val_if_fail (track, -1);
 
       /* remove it */
       tracklist_remove_track (

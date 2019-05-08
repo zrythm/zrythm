@@ -30,6 +30,7 @@
 
 #include "project.h"
 #include "audio/channel.h"
+#include "audio/midi.h"
 #include "audio/mixer.h"
 #include "audio/pan.h"
 #include "audio/port.h"
@@ -41,34 +42,110 @@
 
 #define SLEEPTIME_USEC 60
 
+#define FIND_PORT_FROM_ID(id,port) \
+  switch (id->owner_type) \
+    { \
+    case PORT_OWNER_TYPE_BACKEND: \
+      /* TODO match label with ENGINE ports */ \
+      break; \
+    case PORT_OWNER_TYPE_PLUGIN: \
+      tr = \
+        TRACKLIST->tracks[id->track_pos]; \
+      g_warn_if_fail (tr); \
+      pl = \
+        TRACKLIST->tracks[id->track_pos]-> \
+          channel->plugins[id->plugin_slot]; \
+      g_warn_if_fail (pl); \
+      switch (id->flow) \
+        { \
+        case FLOW_INPUT: \
+          port = \
+            pl->in_ports[id->port_index]; \
+          break; \
+        case FLOW_OUTPUT: \
+          port = \
+            pl->out_ports[id->port_index]; \
+          break; \
+        case FLOW_UNKNOWN: \
+          port = \
+            pl->unknown_ports[id->port_index]; \
+          break; \
+        } \
+      break; \
+    case PORT_OWNER_TYPE_TRACK: \
+      tr = TRACKLIST->tracks[id->track_pos]; \
+      g_warn_if_fail (tr); \
+      /* TODO match labels */ \
+      break; \
+    }
+
 /**
- * Inits ports just loaded from yml.
+ * This function finds the Ports corresponding to
+ * the PortIdentifiers for srcs and dests.
+ *
+ * Should be called after the ports are loaded from
+ * yml.
  */
 void
-port_init_loaded (Port * port)
+port_init_loaded (Port * this)
 {
-  /* set caches */
-  for (int j = 0; j < port->num_srcs; j++)
-    port->srcs[j] =
-      project_get_port (port->src_ids[j]);
-  for (int j = 0; j < port->num_dests; j++)
-    port->dests[j] =
-      project_get_port (port->dest_ids[j]);
-  port->owner_pl =
-    project_get_plugin (port->owner_pl_id);
-  port->owner_tr =
-    project_get_track (port->owner_tr_id);
+#define SET_FIELDS_FROM_ID(id,port) \
+  switch (id->owner_type) \
+    { \
+    case PORT_OWNER_TYPE_PLUGIN: \
+      port->track = \
+        TRACKLIST->tracks[id->track_pos]; \
+      g_warn_if_fail (port->track); \
+      port->plugin = \
+        port->track->channel->plugins[ \
+          id->plugin_slot]; \
+      g_warn_if_fail (port->plugin); \
+      break; \
+    case PORT_OWNER_TYPE_TRACK: \
+      port->track = \
+        TRACKLIST->tracks[id->track_pos]; \
+      g_warn_if_fail (port->track); \
+      break; \
+    default: \
+      break; \
+    }
+
+  /* find plugin and track */
+  SET_FIELDS_FROM_ID ((&this->identifier),this);
+
+
+  PortIdentifier * id;
+  Plugin * pl;
+  Track * tr;
+  for (int i = 0; i < this->num_srcs; i++)
+    {
+      id = &this->src_ids[i];
+      FIND_PORT_FROM_ID (id, this->srcs[i]);
+    }
+  for (int i = 0; i < this->num_dests; i++)
+    {
+      id = &this->dest_ids[i];
+      FIND_PORT_FROM_ID (id, this->dests[i]);
+    }
+}
+
+Port *
+port_find_from_identifier (
+  PortIdentifier * id)
+{
+  Port * port;
+  Track * tr;
+  Plugin * pl;
+  FIND_PORT_FROM_ID (id, port);
+  g_warn_if_fail (port);
+  return port;
 }
 
 void
 stereo_ports_init_loaded (StereoPorts * sp)
 {
-  sp->l =
-    project_get_port (sp->l_id);
   port_init_loaded (sp->l);
-  sp->r =
-    project_get_port (sp->r_id);
-  port_init_loaded (sp->l);
+  port_init_loaded (sp->r);
 }
 
 /**
@@ -81,21 +158,18 @@ port_new (char * label)
 {
   Port * port = calloc (1, sizeof (Port));
 
-  port->owner_pl_id = -1;
-  port->owner_tr_id = -1;
+  port->identifier.plugin_slot = -1;
+  port->identifier.track_pos = -1;
 
   port->num_dests = 0;
   port->buf =
     calloc (AUDIO_ENGINE->block_length,
             sizeof (float));
-  port->flow = FLOW_UNKNOWN;
-  port->label = g_strdup (label);
+  port->identifier.flow = FLOW_UNKNOWN;
+  port->identifier.label = g_strdup (label);
 
-  project_add_port (port);
-
-  g_message ("[port_new: %d] Creating port %s",
-             port->id,
-             port->label);
+  g_message ("[port_new] Creating port %s",
+             port->identifier.label);
   return port;
 }
 
@@ -109,10 +183,10 @@ port_new_with_type (PortType     type,
 {
   Port * port = port_new (label);
 
-  port->type = type;
-  if (port->type == TYPE_EVENT)
+  port->identifier.type = type;
+  if (port->identifier.type == TYPE_EVENT)
     port->midi_events = midi_events_new (1);
-  port->flow = flow;
+  port->identifier.flow = flow;
 
   return port;
 }
@@ -123,13 +197,69 @@ port_new_with_type (PortType     type,
 StereoPorts *
 stereo_ports_new (Port * l, Port * r)
 {
-  StereoPorts * sp = calloc (1, sizeof (StereoPorts));
+  StereoPorts * sp =
+    calloc (1, sizeof (StereoPorts));
   sp->l = l;
-  sp->l_id = l->id;
   sp->r = r;
-  sp->r_id = r->id;
 
   return sp;
+}
+
+/**
+ * Gathers all ports in the project and puts them
+ * in the given array and size.
+ */
+void
+port_get_all (
+  Port ** ports,
+  int *   size)
+{
+  *size = 0;
+
+#define _ADD(port) \
+  array_append ( \
+    ports, (*size), \
+    port)
+
+  _ADD (AUDIO_ENGINE->stereo_in->l);
+  _ADD (AUDIO_ENGINE->stereo_in->r);
+  _ADD (AUDIO_ENGINE->stereo_out->l);
+  _ADD (AUDIO_ENGINE->stereo_out->r);
+  _ADD (AUDIO_ENGINE->midi_in);
+  _ADD (AUDIO_ENGINE->midi_editor_manual_press);
+
+  Plugin * pl;
+  Channel * ch;
+  Track * tr;
+  int i, j, k;
+  for (i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      tr = TRACKLIST->tracks[i];
+      if (!tr->channel)
+        continue;
+      ch = tr->channel;
+
+      /* add channel ports */
+      _ADD (ch->stereo_in->l);
+      _ADD (ch->stereo_in->r);
+      _ADD (ch->stereo_out->l);
+      _ADD (ch->stereo_out->r);
+      _ADD (ch->piano_roll);
+      _ADD (ch->midi_in);
+
+      for (j = 0; j < STRIP_SIZE; j++)
+        {
+          /* add plugin ports */
+          pl = tr->channel->plugins[j];
+          if (!pl)
+            continue;
+
+          for (k = 0; k < pl->num_in_ports; k++)
+            _ADD (pl->in_ports[k]);
+          for (k = 0; k < pl->num_out_ports; k++)
+            _ADD (pl->out_ports[k]);
+        }
+    }
 }
 
 /**
@@ -154,26 +284,21 @@ port_new_with_data (PortInternalType internal_type, ///< the internal data forma
 }
 
 /**
- * Sets the owner channel & its ID.
+ * Sets the owner plugin & its slot.
  */
 void
-port_set_owner_track (
-  Port *    port,
-  Track * tr)
+port_set_owner_plugin (
+  Port *   port,
+  Plugin * pl)
 {
-  port->owner_tr = tr;
-  port->owner_tr_id = tr->id;
-}
+  g_warn_if_fail (port && pl);
 
-/**
- * Sets the owner plugin & its ID.
- */
-void
-port_set_owner_plugin (Port *   port,
-                       Plugin * pl)
-{
-  port->owner_pl = pl;
-  port->owner_pl_id = pl->id;
+  port->plugin = pl;
+  port->track = pl->track;
+  port->identifier.track_pos = pl->track->pos;
+  port->identifier.plugin_slot = pl->slot;
+  port->identifier.owner_type =
+    PORT_OWNER_TYPE_PLUGIN;
 }
 
 /**
@@ -194,20 +319,24 @@ port_connect (Port * src, Port * dest)
   g_warn_if_fail (src != NULL);
   g_warn_if_fail (dest != NULL);
   port_disconnect (src, dest);
-  if (src->type != dest->type)
+  if (src->identifier.type != dest->identifier.type)
     {
       g_warning ("Cannot connect ports, incompatible types");
       return -1;
     }
   src->dests[src->num_dests] = dest;
-  src->dest_ids[src->num_dests++] = dest->id;
+  port_identifier_copy (
+    &dest->identifier,
+    &src->dest_ids[src->num_dests]);
+  src->num_dests++;
   dest->srcs[dest->num_srcs] = src;
-  dest->src_ids[dest->num_srcs++] = src->id;
-  g_message ("Connected port %d(%s) to %d(%s)",
-             src->id,
-             src->label,
-             dest->id,
-             dest->label);
+  port_identifier_copy (
+    &src->identifier,
+    &dest->src_ids[dest->num_srcs]);
+  dest->num_srcs++;
+  g_message ("Connected port (%s) to (%s)",
+             src->identifier.label,
+             dest->identifier.label);
   return 0;
 }
 
@@ -220,24 +349,39 @@ port_disconnect (Port * src, Port * dest)
   if (!src || !dest)
     g_warn_if_reached ();
 
+  int pos;
   /* disconnect dest from src */
-  array_double_delete (
+  array_delete_return_pos (
     src->dests,
-    src->dest_ids,
     src->num_dests,
     dest,
-    dest->id);
-  array_double_delete (
+    pos);
+  for (int i = pos;
+       i < src->num_dests;
+       i++)
+    {
+      port_identifier_copy (
+        &src->dest_ids[i + 1],
+        &src->dest_ids[i]);
+    }
+
+  array_delete_return_pos (
     dest->srcs,
-    dest->src_ids,
     dest->num_srcs,
     src,
-    src->id);
-  g_message ("Disconnected port %d(%s) from %d(%s)",
-             src->id,
-             src->label,
-             dest->id,
-             dest->label);
+    pos);
+  for (int i = pos;
+       i < dest->num_srcs;
+       i++)
+    {
+      port_identifier_copy (
+        &dest->src_ids[i + 1],
+        &dest->src_ids[i]);
+    }
+
+  g_message ("Disconnected port (%s) from (%s)",
+             src->identifier.label,
+             dest->identifier.label);
   return 0;
 }
 
@@ -295,7 +439,6 @@ ports_remove (
       g_warn_if_fail (port->num_srcs == 0);
       g_warn_if_fail (port->num_dests == 0);
 
-      project_remove_port (port);
       free_later (port, port_free);
     }
   * num_ports = 0;
@@ -334,7 +477,7 @@ port_sum_signal_from_inputs (Port * port)
       src_port = port->srcs[k];
 
       /* sum the signals */
-      if (port->type == TYPE_AUDIO)
+      if (port->identifier.type == TYPE_AUDIO)
         {
           for (int l = 0;
                l < block_length; l++)
@@ -342,7 +485,7 @@ port_sum_signal_from_inputs (Port * port)
               port->buf[l] += src_port->buf[l];
             }
         }
-      else if (port->type == TYPE_EVENT)
+      else if (port->identifier.type == TYPE_EVENT)
         {
           /*if (src_port == AUDIO_ENGINE->*/
               /*midi_editor_manual_press &&*/
@@ -368,26 +511,26 @@ port_sum_signal_from_inputs (Port * port)
 void
 port_print_connections_all ()
 {
-  Port * src, * dest;
-  int i, j;
+  /*Port * src, * dest;*/
+  /*int i, j;*/
 
-  for (i = 0; i < PROJECT->num_ports; i++)
-    {
-      src = project_get_port (i);
-      if (!src->owner_pl &&
-          !src->owner_tr &&
-          !src->owner_backend)
-        {
-          g_warning ("Port %s has no owner",
-                     src->label);
-        }
-      for (j = 0; j < src->num_dests; j++)
-        {
-          dest = src->dests[j];
-          g_warn_if_fail (dest);
-          g_message ("%s connected to %s", src->label, dest->label);
-        }
-    }
+  /*for (i = 0; i < PROJECT->num_ports; i++)*/
+    /*{*/
+      /*src = project_get_port (i);*/
+      /*if (!src->owner_pl &&*/
+          /*!src->owner_tr &&*/
+          /*!src->owner_backend)*/
+        /*{*/
+          /*g_warning ("Port %s has no owner",*/
+                     /*src->identifier.label);*/
+        /*}*/
+      /*for (j = 0; j < src->num_dests; j++)*/
+        /*{*/
+          /*dest = src->dests[j];*/
+          /*g_warn_if_fail (dest);*/
+          /*g_message ("%s connected to %s", src->identifier.label, dest->identifier.label);*/
+        /*}*/
+    /*}*/
 }
 
 /**
@@ -396,7 +539,7 @@ port_print_connections_all ()
 void
 port_clear_buffer (Port * port)
 {
-  if (port->type == TYPE_AUDIO && port->buf)
+  if (port->identifier.type == TYPE_AUDIO && port->buf)
     {
       memset (
         port->buf, 0,
@@ -404,7 +547,7 @@ port_clear_buffer (Port * port)
           sizeof (float));
       return;
     }
-  if (port->type == TYPE_EVENT)
+  if (port->identifier.type == TYPE_EVENT)
     {
       if (port->midi_events)
         {
@@ -468,7 +611,7 @@ port_apply_pan (
   int i;
   float calc_r = 0.f, calc_l = 0.f;
   int is_stereo_r =
-    port->flags & PORT_FLAG_STEREO_R;
+    port->identifier.flags & PORT_FLAG_STEREO_R;
 
   switch (pan_algo)
     {
@@ -511,8 +654,8 @@ port_free (Port * port)
   g_warn_if_fail (port->num_srcs == 0);
   g_warn_if_fail (port->num_dests == 0);
 
-  if (port->label)
-    g_free (port->label);
+  if (port->identifier.label)
+    g_free (port->identifier.label);
   if (port->buf)
     free (port->buf);
 

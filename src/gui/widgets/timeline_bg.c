@@ -103,18 +103,15 @@ timeline_bg_draw_cb (
     {
       Track * track = TRACKLIST->tracks[i];
 
-      AutomationTracklist * automation_tracklist =
+      AutomationTracklist * atl =
         track_get_automation_tracklist (track);
-      if (automation_tracklist)
+      if (atl)
         {
           for (int j = 0;
-               j < automation_tracklist->
-                 num_automation_lanes;
+               j < atl->num_als;
                j++)
             {
-              AutomationLane * al =
-                automation_tracklist->
-                  automation_lanes[j];
+              AutomationLane * al = atl->als[j];
 
               if (al->widget &&
                   track->bot_paned_visible &&

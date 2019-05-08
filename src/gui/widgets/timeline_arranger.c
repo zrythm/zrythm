@@ -388,19 +388,16 @@ timeline_arranger_widget_get_automation_track_at_y (double y)
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       Track * track = TRACKLIST->tracks[i];
-      AutomationTracklist * automation_tracklist =
+      AutomationTracklist * atl =
         track_get_automation_tracklist (track);
-      if (!automation_tracklist ||
+      if (!atl ||
           !track->bot_paned_visible)
         continue;
 
-      for (int j = 0;
-           j < automation_tracklist->
-             num_automation_lanes;
-           j++)
+      AutomationLane * al;
+      for (int j = 0; j < atl->num_als; j++)
         {
-          AutomationLane * al =
-            automation_tracklist->automation_lanes[j];
+          al = atl->als[j];
 
           /* TODO check the rest */
           if (al->visible && al->widget)
@@ -516,8 +513,8 @@ timeline_arranger_widget_update_inspector (
     TL_SELECTIONS->num_regions);
   inspector_widget_show_selections (
     INSPECTOR_CHILD_AP,
-    (void **) TL_SELECTIONS->automation_points,
-    TL_SELECTIONS->num_automation_points);
+    (void **) TL_SELECTIONS->aps,
+    TL_SELECTIONS->num_aps);
   inspector_widget_show_selections (
     INSPECTOR_CHILD_CHORD,
     (void **) TL_SELECTIONS->chords,
@@ -530,7 +527,7 @@ timeline_arranger_widget_select_all (
   int                       select)
 {
   TL_SELECTIONS->num_regions = 0;
-  TL_SELECTIONS->num_automation_points = 0;
+  TL_SELECTIONS->num_aps = 0;
 
   /* select chords */
   ChordTrack * ct =
@@ -558,10 +555,9 @@ timeline_arranger_widget_select_all (
       if (!track->visible)
         continue;
 
-      AutomationTracklist *
-        automation_tracklist =
-          track_get_automation_tracklist (
-            track);
+      AutomationTracklist * atl =
+        track_get_automation_tracklist (
+          track);
 
       for (int j = 0;
            j < track->num_regions; j++)
@@ -576,22 +572,18 @@ timeline_arranger_widget_select_all (
         continue;
 
       for (int j = 0;
-           j < automation_tracklist->
-             num_automation_lanes;
+           j < atl->num_als;
            j++)
         {
-          al =
-            automation_tracklist->
-              automation_lanes[j];
+          al = atl->als[j];
           if (al->visible)
             {
               for (int k = 0;
-                   k < al->at->
-                     num_automation_points;
+                   k < al->at->num_aps;
                    k++)
                 {
                   ap =
-                    al->at->automation_points[k];
+                    al->at->aps[k];
 
                   automation_point_widget_select (
                     ap->widget, select,
@@ -676,9 +668,9 @@ timeline_arranger_widget_update_visibility (
     c,
     c_transient);
   ARRANGER_SET_SELECTION_VISIBILITY (
-    TL_SELECTIONS->automation_points,
+    TL_SELECTIONS->aps,
     TL_SELECTIONS->transient_aps,
-    TL_SELECTIONS->num_automation_points,
+    TL_SELECTIONS->num_aps,
     ap,
     ap_transient);
 }
@@ -865,13 +857,13 @@ timeline_arranger_widget_on_drag_begin_ap_hit (
   ar_prv->start_pos_px = start_x;
   self->start_ap = ap;
   if (!array_contains (
-        TL_SELECTIONS->automation_points,
-        TL_SELECTIONS->num_automation_points,
+        TL_SELECTIONS->aps,
+        TL_SELECTIONS->num_aps,
         ap))
     {
-      TL_SELECTIONS->automation_points[0] =
+      TL_SELECTIONS->aps[0] =
         ap;
-      TL_SELECTIONS->num_automation_points =
+      TL_SELECTIONS->num_aps =
         1;
     }
 
@@ -929,9 +921,9 @@ timeline_arranger_widget_find_start_poses (
       position_set_to_pos (&self->chord_start_poses[i],
                            &r->pos);
     }
-  for (int i = 0; i < TL_SELECTIONS->num_automation_points; i++)
+  for (int i = 0; i < TL_SELECTIONS->num_aps; i++)
     {
-      AutomationPoint * ap = TL_SELECTIONS->automation_points[i];
+      AutomationPoint * ap = TL_SELECTIONS->aps[i];
       if (position_compare (&ap->pos,
                             &ar_prv->start_pos) <= 0)
         {
@@ -974,13 +966,9 @@ timeline_arranger_widget_create_ap (
 
   AutomationPoint * ap =
     automation_point_new_float (
-      at,
-      value,
-      pos);
-  automation_track_add_automation_point (
-    at,
-    ap,
-    GENERATE_CURVE_POINTS);
+      at, value, pos);
+  automation_track_add_ap (
+    at, ap, GENERATE_CURVE_POINTS);
   gtk_overlay_add_overlay (
     GTK_OVERLAY (self),
     GTK_WIDGET (ap->widget));
@@ -1017,7 +1005,7 @@ timeline_arranger_widget_create_region (
     {
       region =
         midi_region_new (
-          track, pos, pos, 1);
+          track, pos, pos);
     }
   position_set_min_size (&region->start_pos,
                          &region->end_pos,
@@ -1452,7 +1440,7 @@ timeline_arranger_widget_move_items_x (
   /* update ap positions */
   AutomationPoint * ap;
   for (int i = 0;
-       i < TL_SELECTIONS->num_automation_points;
+       i < TL_SELECTIONS->num_aps;
        i++)
     {
       ap =
@@ -1718,11 +1706,11 @@ timeline_arranger_widget_move_items_y (
     }
   else if (self->start_ap)
     {
-      for (int i = 0; i < TL_SELECTIONS->num_automation_points; i++)
+      for (int i = 0; i < TL_SELECTIONS->num_aps; i++)
         {
           AutomationPoint * ap =
             TL_SELECTIONS->
-              automation_points[i];
+              aps[i];
 
           /* get adjusted y for this ap */
           /*Position region_pos;*/
@@ -1766,10 +1754,10 @@ timeline_arranger_widget_on_drag_end (
   AutomationPoint * ap;
   for (int i = 0;
        i < TL_SELECTIONS->
-             num_automation_points; i++)
+             num_aps; i++)
     {
       ap =
-        TL_SELECTIONS->automation_points[i];
+        TL_SELECTIONS->aps[i];
       automation_point_widget_update_tooltip (
         ap->widget, 0);
     }
@@ -1884,19 +1872,19 @@ add_children_from_channel_track (
 
   AutomationTracklist * atl =
     &ct->automation_tracklist;
+  AutomationLane * al;
   for (int i = 0;
-       i < atl->num_automation_lanes; i++)
+       i < atl->num_als; i++)
     {
-      AutomationLane * al =
-        atl->automation_lanes[i];
+      al = atl->als[i];
       if (al->visible)
         {
           for (int j = 0;
-               j < al->at->num_automation_points;
+               j < al->at->num_aps;
                j++)
             {
               AutomationPoint * ap =
-                al->at->automation_points[j];
+                al->at->aps[j];
               if (ap->widget)
                 {
                   gtk_overlay_add_overlay (
@@ -1905,11 +1893,11 @@ add_children_from_channel_track (
                 }
             }
           for (int j = 0;
-               j < al->at->num_automation_curves;
+               j < al->at->num_acs;
                j++)
             {
               AutomationCurve * ac =
-                al->at->automation_curves[j];
+                al->at->acs[j];
               if (ac->widget)
                 {
                   gtk_overlay_add_overlay (

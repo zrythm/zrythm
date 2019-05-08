@@ -20,9 +20,10 @@
 #ifndef __AUDIO_AUTOMATION_TRACK_H__
 #define __AUDIO_AUTOMATION_TRACK_H__
 
-#include "audio/position.h"
+#include "audio/automatable.h"
 #include "audio/automation_curve.h"
 #include "audio/automation_point.h"
+#include "audio/position.h"
 
 #define MAX_AUTOMATION_POINTS 1200
 
@@ -41,12 +42,12 @@ typedef struct AutomationLane AutomationLane;
 
 typedef struct AutomationTrack
 {
-  int                       id;
+  /** Index in parent AutomationTracklist. */
+  int                       index;
 
   /**
    * The automatable this automation track is for.
    */
-  int                       automatable_id;
   Automatable *             automatable; ///< cache
 
   /**
@@ -54,7 +55,6 @@ typedef struct AutomationTrack
    *
    * For convenience only.
    */
-  int                       track_id;
   Track *                   track;
 
   /**
@@ -62,43 +62,40 @@ typedef struct AutomationTrack
    *
    * Must always stay sorted by position.
    */
-  int                       ap_ids[MAX_AUTOMATION_POINTS];
-  AutomationPoint *         automation_points[MAX_AUTOMATION_POINTS];
-  int                       num_automation_points;
-  int                       ac_ids[MAX_AUTOMATION_POINTS];
-  AutomationCurve *         automation_curves[MAX_AUTOMATION_POINTS];
-  int                       num_automation_curves;
+  AutomationPoint *   aps[MAX_AUTOMATION_POINTS];
+  int                 num_aps;
+  AutomationCurve *   acs[MAX_AUTOMATION_POINTS];
+  int                 num_acs;
 
   /**
    * Associated lane.
    */
-  int                       al_id;
-  AutomationLane *          al; ///< cache
+  AutomationLane *          al;
+  int                       al_index;
 } AutomationTrack;
 
 static const cyaml_schema_field_t
   automation_track_fields_schema[] =
 {
 	CYAML_FIELD_INT (
-    "id", CYAML_FLAG_DEFAULT,
-    AutomationTrack, id),
-	CYAML_FIELD_INT (
-    "automatable_id", CYAML_FLAG_DEFAULT,
-    AutomationTrack, automatable_id),
-	CYAML_FIELD_INT (
-    "track_id", CYAML_FLAG_DEFAULT,
-    AutomationTrack, track_id),
+    "index", CYAML_FLAG_DEFAULT,
+    AutomationTrack, index),
+  CYAML_FIELD_MAPPING_PTR (
+    "automatable",
+    CYAML_FLAG_DEFAULT | CYAML_FLAG_OPTIONAL,
+    AutomationTrack, automatable,
+    automatable_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "ap_ids", CYAML_FLAG_DEFAULT,
-    AutomationTrack, ap_ids, num_automation_points,
-    &int_schema, 0, CYAML_UNLIMITED),
+    "aps", CYAML_FLAG_DEFAULT,
+    AutomationTrack, aps, num_aps,
+    &automation_point_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "ac_ids", CYAML_FLAG_DEFAULT,
-    AutomationTrack, ac_ids, num_automation_curves,
-    &int_schema, 0, CYAML_UNLIMITED),
+    "acs", CYAML_FLAG_DEFAULT,
+    AutomationTrack, acs, num_acs,
+    &automation_curve_schema, 0, CYAML_UNLIMITED),
 	CYAML_FIELD_INT (
-    "al_id", CYAML_FLAG_DEFAULT,
-    AutomationTrack, al_id),
+    "al_index", CYAML_FLAG_DEFAULT,
+    AutomationTrack, al_index),
 
 	CYAML_FIELD_END
 };
@@ -147,7 +144,7 @@ automation_track_force_sort (AutomationTrack * at);
  * Adds automation point and optionally generates curve points accordingly.
  */
 void
-automation_track_add_automation_point (
+automation_track_add_ap (
   AutomationTrack * at,
   AutomationPoint * ap,
   int               generate_curve_points);
@@ -156,7 +153,7 @@ automation_track_add_automation_point (
  * Adds automation curve.
  */
 void
-automation_track_add_automation_curve (
+automation_track_add_ac (
   AutomationTrack * at,
   AutomationCurve * ac);
 

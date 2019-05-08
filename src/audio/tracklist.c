@@ -41,14 +41,6 @@ void
 tracklist_init_loaded (
   Tracklist * self)
 {
-  int i;
-
-  for (i = 0; i < self->num_tracks; i++)
-    {
-      self->tracks[i] =
-        project_get_track (
-          self->track_ids[i]);
-    }
 }
 
 /**
@@ -122,9 +114,9 @@ tracklist_print_tracks (
   for (int i = 0; i < self->num_tracks; i++)
     {
       track = self->tracks[i];
-      g_message ("[idx %d] %s (id %d) (pos %d)",
+      g_message ("[idx %d] %s (pos %d)",
                  i, track->name,
-                 track->id, track->pos);
+                 track->pos);
     }
   g_message ("------ end ------");
 }
@@ -168,18 +160,14 @@ tracklist_insert_track (
   int         publish_events,
   int         recalc_graph)
 {
-  g_warn_if_fail (track->id > -1);
-
   /* FIXME do it externally */
   set_track_name (self, track);
 
-  array_double_insert (
+  array_insert (
     self->tracks,
-    self->track_ids,
     self->num_tracks,
     pos,
-    track,
-    track->id);
+    track);
 
   track->pos = pos;
 
@@ -352,12 +340,10 @@ tracklist_remove_track (
   g_warn_if_fail (
     track->pos == idx);
 
-  array_double_delete (
+  array_delete (
     self->tracks,
-    self->track_ids,
     self->num_tracks,
-    track,
-    track->id);
+    track);
   tracklist_selections_remove_track (
     TRACKLIST_SELECTIONS, track);
 
@@ -370,7 +356,6 @@ tracklist_remove_track (
 
   if (free)
     {
-      project_remove_track (track);
       free_later (track, track_free);
     }
 

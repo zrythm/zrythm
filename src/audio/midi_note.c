@@ -45,9 +45,6 @@ void
 midi_note_init_loaded (
   MidiNote * self)
 {
-  self->region =
-    project_get_region (self->region_id);
-
   self->widget =
     midi_note_widget_new (self);
 }
@@ -57,8 +54,7 @@ midi_note_new (MidiRegion * region,
                Position *   start_pos,
                Position *   end_pos,
                int          val,
-               Velocity *   vel,
-               int          add_to_project)
+               Velocity *   vel)
 {
   MidiNote * midi_note =
     calloc (1, sizeof (MidiNote));
@@ -68,7 +64,8 @@ midi_note_new (MidiRegion * region,
   position_set_to_pos (&midi_note->end_pos,
                        end_pos);
   midi_note->region = region;
-  midi_note->region_id = region->id;
+  midi_note->region_name =
+    g_strdup (region->name);
   midi_note->val = val;
   midi_note->vel = vel;
   vel->midi_note = midi_note;
@@ -76,28 +73,45 @@ midi_note_new (MidiRegion * region,
   midi_note->widget = midi_note_widget_new (midi_note);
   g_object_ref (midi_note->widget);
 
-  if (add_to_project)
-    project_add_midi_note (midi_note);
-
   return midi_note;
 }
 
 /**
- * Deep clones the midi note.
- * FIXME ??? clone like region
+ * Finds the actual MidiNote in the project from the
+ * given clone.
  */
 MidiNote *
-midi_note_clone (MidiNote *  src,
-                 MidiRegion * mr) ///< owner region
+midi_note_find (
+  MidiNote * clone)
+{
+  Region * r =
+    region_find_by_name (clone->region_name);
+  g_warn_if_fail (r);
+
+  for (int i = 0; i < r->num_midi_notes; i++)
+    {
+      if (midi_note_is_equal (
+            r->midi_notes[i],
+            clone))
+        return r->midi_notes[i];
+    }
+  g_warn_if_reached ();
+  return NULL;
+}
+
+/**
+ * Deep clones the midi note.
+ */
+MidiNote *
+midi_note_clone (
+  MidiNote *  src)
 {
   Velocity * vel = velocity_clone (src->vel);
 
   MidiNote * mn =
     midi_note_new (
-      mr, &src->start_pos, &src->end_pos,
-      src->val, vel, F_NO_ADD_TO_PROJ);
-
-  mn->id = src->id;
+      src->region, &src->start_pos, &src->end_pos,
+      src->val, vel);
 
   return mn;
 }
@@ -138,6 +152,26 @@ midi_note_is_visible (MidiNote * self)
     return 0;
 
   return 1;
+}
+
+/**
+ * Returns 1 if the MidiNotes match, 0 if not.
+ */
+int
+midi_note_is_equal (
+  MidiNote * src,
+  MidiNote * dest)
+{
+  return
+    !position_compare (&src->start_pos,
+                       &dest->start_pos) &&
+    !position_compare (&src->end_pos,
+                       &dest->end_pos) &&
+    src->val == dest->val &&
+    src->muted == dest->muted &&
+    src->transient == dest->transient &&
+    !g_strcmp0 (src->region->name,
+                dest->region->name);
 }
 
 /**

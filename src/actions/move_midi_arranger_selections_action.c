@@ -57,9 +57,7 @@ move_midi_arranger_selections_action_do (
   for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
       /* find actual midi note */
-      mn =
-        project_get_midi_note (
-          self->mas->midi_notes[i]->id);
+      mn = midi_note_find (self->mas->midi_notes[i]);
       g_return_val_if_fail (mn, -1);
 
       /* shift it */
@@ -82,9 +80,7 @@ move_midi_arranger_selections_action_undo (
   for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
       /* find actual midi note */
-      mn =
-        project_get_midi_note (
-          self->mas->midi_notes[i]->id);
+      mn = midi_note_find (self->mas->midi_notes[i]);
       g_return_val_if_fail (mn, -1);
 
       /* shift it */

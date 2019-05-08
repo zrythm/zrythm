@@ -44,8 +44,9 @@ typedef struct CopyPluginsAction
    * Channel or not. */
   int              is_new_channel;
 
-  /** Track ID to copy to, if existing. */
-  int              tr_id;
+  /** Track position to copy to, if existing, or track
+   * position copied to, when undoing. */
+  int              track_pos;
 
   /** Clones of the original Plugins.
    *

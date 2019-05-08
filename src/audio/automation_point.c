@@ -46,11 +46,8 @@ _create_new (AutomationTrack * at,
     calloc (1, sizeof (AutomationPoint));
 
   ap->at = at;
-  ap->at_id = at->id;
   position_set_to_pos (&ap->pos,
                        pos);
-
-  project_add_automation_point (ap);
 
   return ap;
 }
@@ -59,11 +56,28 @@ void
 automation_point_init_loaded (
   AutomationPoint * ap)
 {
-  ap->at =
-    project_get_automation_track (ap->at_id);
+  /* TODO */
+  /*ap->at =*/
+    /*project_get_automation_track (ap->at_id);*/
 
   ap->widget =
     automation_point_widget_new (ap);
+}
+
+/**
+ * Finds the automation point in the project matching
+ * the params of the given one.
+ */
+AutomationPoint *
+automation_point_find (
+  AutomationPoint * src)
+{
+  Track * track =
+    TRACKLIST->tracks[src->track_pos];
+  g_warn_if_fail (track);
+
+  return track->automation_tracklist.
+    ats[src->at_index]->aps[src->index];
 }
 
 /**
@@ -131,7 +145,7 @@ automation_point_update_fvalue (
     automatable_real_val_to_normalized (a,
                                         real_val));
   AutomationCurve * ac =
-    self->at->automation_curves[self->index];
+    self->at->acs[self->index];
   if (ac && ac->widget)
     ac->widget->cache = 0;
 }

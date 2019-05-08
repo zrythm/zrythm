@@ -38,7 +38,7 @@ scale_point_cmp(const Lv2ScalePoint* a, const Lv2ScalePoint* b)
 Lv2Control*
 lv2_new_port_control(Lv2Plugin* plugin, uint32_t index)
 {
-  LV2_Port * port  = &plugin->ports[index];
+  Lv2Port * port  = &plugin->ports[index];
   const LilvPort * lport = port->lilv_port;
   const LilvPlugin * plug  = plugin->lilv_plugin;
   const Lv2Nodes * nodes = &PM_LILV_NODES;
@@ -265,7 +265,7 @@ lv2_control_set_control(const Lv2Control* control,
   if (control->type == PORT &&
       type == plugin->forge.Float)
     {
-      LV2_Port* port =
+      Lv2Port* port =
         &control->plugin->ports[control->index];
       port->control = *(float*)body;
       /*g_message ("set to %f",*/
@@ -310,10 +310,10 @@ lv2_control_get_label (const Lv2Control * control)
  */
 Lv2Control *
 lv2_control_get_from_port (
-  LV2_Port * port)
+  Lv2Port * port)
 {
   Lv2Plugin * plgn =
-    port->port->owner_pl->lv2;
+    port->port->plugin->lv2;
   Lv2Controls * ctrls =
     &plgn->controls;
   for (int i = 0; i < ctrls->n_controls; i++)

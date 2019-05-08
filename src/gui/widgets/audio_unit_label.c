@@ -25,40 +25,10 @@
 #include "audio/port.h"
 #include "gui/widgets/audio_unit.h"
 #include "gui/widgets/audio_unit_label.h"
+#include "utils/cairo.h"
 #include "utils/gtk.h"
 
 G_DEFINE_TYPE (AudioUnitLabelWidget, audio_unit_label_widget, GTK_TYPE_BOX)
-
-static void
-draw_text (cairo_t *cr, char * name)
-{
-#define FONT "Sans Bold 9"
-
-  PangoLayout *layout;
-  PangoFontDescription *desc;
-
-  cairo_translate (cr, 2, 2);
-
-  /* Create a PangoLayout, set the font and text */
-  layout = pango_cairo_create_layout (cr);
-
-  pango_layout_set_text (layout, name, -1);
-  desc = pango_font_description_from_string (FONT);
-  pango_layout_set_font_description (layout, desc);
-  pango_font_description_free (desc);
-
-  /* Inform Pango to re-layout the text with the new transformation */
-  /*pango_cairo_update_layout (cr, layout);*/
-
-  /*pango_layout_get_size (layout, &width, &height);*/
-  /*cairo_move_to (cr, - ((double)width / PANGO_SCALE) / 2, - RADIUS);*/
-  pango_cairo_show_layout (cr, layout);
-
-
-  /* free the layout object */
-  g_object_unref (layout);
-#undef FONT
-}
 
 static int
 draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
@@ -79,15 +49,15 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
     {
       cairo_set_source_rgba (cr, 0, 0, 0, 1);
     }
-  else if (port->type == TYPE_AUDIO)
+  else if (port->identifier.type == TYPE_AUDIO)
     {
       cairo_set_source_rgba (cr, 1, 0, 0, 1);
     }
-  else if (port->type == TYPE_EVENT)
+  else if (port->identifier.type == TYPE_EVENT)
     {
       cairo_set_source_rgba (cr, 0, 0, 1, 1);
     }
-  else if (port->type == TYPE_CONTROL)
+  else if (port->identifier.type == TYPE_CONTROL)
     {
       cairo_set_source_rgba (cr, 0, 1, 0, 1);
     }
@@ -95,7 +65,8 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
     {
       cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 1);
     }
-  draw_text (cr, self->port->label);
+  z_cairo_draw_text (cr,
+                     self->port->identifier.label);
 
   return FALSE;
 }

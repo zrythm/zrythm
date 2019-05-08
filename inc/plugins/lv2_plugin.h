@@ -47,6 +47,7 @@
 #endif
 
 #include "audio/position.h"
+#include "audio/port.h"
 #include "plugins/lv2/control.h"
 #include "plugins/lv2/lv2_evbuf.h"
 #include "plugins/lv2/worker.h"
@@ -88,10 +89,10 @@ typedef struct PluginDescriptor PluginDescriptor;
 
 /* FIXME these should go to manager */
 
-typedef struct LV2_Port
+typedef struct Lv2Port
 {
   /** Pointer back to parent port. */
-  int             port_id;
+  PortIdentifier  port_id;
   Port *          port;     ///< cache
 	const LilvPort* lilv_port;  ///< LV2 port
   void*           sys_port;   ///< For audio/MIDI ports, otherwise NULL
@@ -101,7 +102,7 @@ typedef struct LV2_Port
 	uint32_t        index;      ///< Port index
 	float           control;    ///< For control ports, otherwise 0.0f
 	bool            old_api;    ///< True for event, false for atom
-} LV2_Port;
+} Lv2Port;
 
 typedef struct Lv2Plugin
 {
@@ -151,7 +152,7 @@ typedef struct Lv2Plugin
   /** ID of the delete-event signal so that we can
    * deactivate before freeing the plugin. */
   gulong             delete_event_id;
-	LV2_Port*          ports;          ///< Port array of size num_ports
+	Lv2Port*          ports;          ///< Port array of size num_ports
 	Lv2Controls        controls;       ///< Available plugin controls
 	int                num_ports;      ///< Size of the two following arrays:
 	uint32_t           plugin_latency; ///< Latency reported by plugin (if any)
@@ -192,9 +193,9 @@ typedef struct Lv2Plugin
 static const cyaml_schema_field_t
   lv2_port_fields_schema[] =
 {
-	CYAML_FIELD_INT (
+  CYAML_FIELD_MAPPING (
     "port_id", CYAML_FLAG_DEFAULT,
-    LV2_Port, port_id),
+    Lv2Port, port_id, port_identifier_fields_schema),
 
 	CYAML_FIELD_END
 };
@@ -203,7 +204,7 @@ static const cyaml_schema_value_t
   lv2_port_schema =
 {
 	CYAML_VALUE_MAPPING (CYAML_FLAG_DEFAULT,
-  LV2_Port, lv2_port_fields_schema),
+  Lv2Port, lv2_port_fields_schema),
 };
 
 static const cyaml_schema_field_t
@@ -294,7 +295,7 @@ lv2_strjoin(const char* a, const char* b)
 	return out;
 }
 
-LV2_Port*
+Lv2Port*
 lv2_port_by_symbol(Lv2Plugin* plugin, const char* sym);
 
 void

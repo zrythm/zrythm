@@ -44,7 +44,7 @@ typedef struct EditTracksAction
   /**
    * The track that originated the action.
    */
-  int                   main_track_id;
+  int                   main_track_pos;
 
   /* --------------- DELTAS ---------------- */
 

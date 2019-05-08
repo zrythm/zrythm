@@ -72,7 +72,8 @@ on_drag_data_received (
       pl =
         (Plugin *)
         gtk_selection_data_get_data (data);
-      pl = project_get_plugin (pl->id);
+      pl = TRACKLIST->tracks[pl->track_pos]->
+        channel->plugins[pl->slot];
       g_warn_if_fail (pl);
       g_warn_if_fail (pl->track);
 
@@ -184,16 +185,8 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
       cairo_move_to (cr, 20,
                      te.height / 2 - te.y_bearing);
       char * text;
-      if (DEBUGGING)
-        text =
-          g_strdup_printf ("[%d] %s",
-                           plugin->id,
-                           plugin->descr->name);
-      else
-        text = plugin->descr->name;
+      text = plugin->descr->name;
       cairo_show_text (cr, text);
-      if (DEBUGGING)
-        g_free (text);
     }
   else
     {

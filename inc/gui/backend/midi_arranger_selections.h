@@ -34,7 +34,6 @@ typedef struct MidiArrangerSelections
 {
   /** Original selected notes. */
   MidiNote *               midi_notes[600];
-  int                      midi_note_ids[600];
   int                      num_midi_notes;
 
   /** MIDI notes acting on.
@@ -48,9 +47,9 @@ static const cyaml_schema_field_t
   midi_arranger_selections_fields_schema[] =
 {
   CYAML_FIELD_SEQUENCE_COUNT (
-    "midi_note_ids", CYAML_FLAG_OPTIONAL,
-      MidiArrangerSelections, midi_note_ids, num_midi_notes,
-      &int_schema, 0, CYAML_UNLIMITED),
+    "midi_notes", CYAML_FLAG_DEFAULT,
+    MidiArrangerSelections, midi_notes, num_midi_notes,
+    &midi_note_schema, 0, CYAML_UNLIMITED),
 
 	CYAML_FIELD_END
 };

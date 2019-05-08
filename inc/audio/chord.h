@@ -101,7 +101,6 @@ typedef struct _ChordWidget ChordWidget;
  */
 typedef struct ZChord
 {
-  int                   id;
   Position              pos; ///< chord object position (if used in chord track)
   int               has_bass; ///< has base note or not
   MusicalNote           root_note; ///< root note
@@ -136,9 +135,6 @@ static const cyaml_strval_t musical_note_strings[] = {
 static const cyaml_schema_field_t
   chord_fields_schema[] =
 {
-	CYAML_FIELD_INT (
-    "id", CYAML_FLAG_DEFAULT,
-    ZChord, id),
   CYAML_FIELD_MAPPING (
     "pos", CYAML_FLAG_DEFAULT,
     ZChord, pos, position_fields_schema),
@@ -181,6 +177,43 @@ chord_new (MusicalNote            root,
            MusicalNote            bass,
            ChordType              type,
            int                    inversion);
+
+static inline int
+_notes_equal (
+  int * notes_a,
+  int * notes_b)
+{
+  /* 36 notes in Chord */
+  for (int i = 0; i < 36; i++)
+    {
+      if (notes_a[i] != notes_b[i])
+        return 0;
+    }
+  return 1;
+}
+
+static inline int
+chord_is_equal (
+  ZChord * a,
+  ZChord * b)
+{
+  return !position_compare(&a->pos, &b->pos) &&
+    a->has_bass == b->has_bass &&
+    a->root_note == b->root_note &&
+    a->bass_note == b->bass_note &&
+    a->type == b->type &&
+    _notes_equal (a->notes, b->notes) &&
+    a->inversion == b->inversion &&
+    a->visible == b->visible;
+}
+
+/**
+ * Finds the chord in the project corresponding to the
+ * given one.
+ */
+ZChord *
+chord_find (
+  ZChord * clone);
 
 /**
  * Returns the musical note as a string (eg. "C3").

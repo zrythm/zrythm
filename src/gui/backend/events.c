@@ -44,6 +44,7 @@
 #include "gui/widgets/connections.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/header_bar.h"
+#include "gui/widgets/instrument_track.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"

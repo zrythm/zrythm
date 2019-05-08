@@ -37,79 +37,74 @@ void
 automation_tracklist_init_loaded (
   AutomationTracklist * self)
 {
-  for (int i = 0; i < self->num_automation_tracks;
-       i++)
-    self->automation_tracks[i] =
-      project_get_automation_track (
-        self->at_ids[i]);
+  /* TODO */
+  /*for (int i = 0; i < self->num_automation_tracks;*/
+       /*i++)*/
+    /*self->automation_tracks[i] =*/
+      /*project_get_automation_track (*/
+        /*self->at_ids[i]);*/
 
-  for (int i = 0; i < self->num_automation_lanes;
-       i++)
-    self->automation_lanes[i] =
-      project_get_automation_lane (
-        self->al_ids[i]);
+  /*for (int i = 0; i < self->num_automation_lanes;*/
+       /*i++)*/
+    /*self->automation_lanes[i] =*/
+      /*project_get_automation_lane (*/
+        /*self->al_ids[i]);*/
 
-  self->track =
-    project_get_track (self->track_id);
-  g_message ("inited %s",
-             self->track->name);
+  /*self->track =*/
+    /*project_get_track (self->track_id);*/
+  /*g_message ("inited %s",*/
+             /*self->track->name);*/
 }
 
 void
-automation_tracklist_add_automation_track (
+automation_tracklist_add_at (
   AutomationTracklist * self,
   AutomationTrack *     at)
 {
-  array_double_append (
-    self->automation_tracks,
-    self->at_ids,
-    self->num_automation_tracks,
-    at,
-    at->id);
+  array_append (
+    self->ats,
+    self->num_ats,
+    at);
+
+  at->track = self->track;
 }
 
 void
-automation_tracklist_add_automation_lane (
+automation_tracklist_add_al (
   AutomationTracklist * self,
   AutomationLane *      al)
 {
-  array_double_append (
-    self->automation_lanes,
-    self->al_ids,
-    self->num_automation_lanes,
-    al,
-    al->id);
+  array_append (
+    self->als,
+    self->num_als,
+    al);
 }
 
 void
-automation_tracklist_delete_automation_track (
+automation_tracklist_delete_at (
   AutomationTracklist * self,
   AutomationTrack *     at,
   int                   free)
 {
-  array_double_delete (
-    self->automation_tracks,
-    self->at_ids,
-    self->num_automation_tracks,
-    at,
-    at->id);
+  array_delete (
+    self->ats,
+    self->num_ats,
+    at);
 
   if (free)
     free_later (at, automation_track_free);
 }
 
 void
-automation_tracklist_delete_automation_lane (
+automation_tracklist_delete_al (
   AutomationTracklist * self,
   AutomationLane *      al,
   int                   free)
 {
-  array_double_delete (
-    self->automation_lanes,
-    self->al_ids,
-    self->num_automation_lanes,
-    al,
-    al->id);
+  array_delete (
+    self->als,
+    self->num_als,
+    al);
 
   if (free)
     free_later (al, automation_lane_free);
@@ -125,7 +120,6 @@ automation_tracklist_init (
   Track *               track)
 {
   self->track = track;
-  self->track_id = track->id;
 
   /* add all automation tracks */
   automation_tracklist_update (self);
@@ -137,7 +131,7 @@ automation_tracklist_init (
     automatable_get_automation_track (fader);
   AutomationLane * fader_al =
     automation_lane_new (fader_at);
-  automation_tracklist_add_automation_lane (
+  automation_tracklist_add_al (
     self, fader_al);
 }
 
@@ -149,14 +143,17 @@ automation_tracklist_update (
     track_get_channel (self->track);
 
   /* remove unneeded automation tracks */
-  for (int i = 0; i < self->num_automation_tracks; i++)
+  AutomationTrack * at, * _at;
+  Automatable * _a;
+  int match, i, j;
+  for (i = 0; i < self->num_ats; i++)
     {
-      AutomationTrack * at = self->automation_tracks[i];
-      int match = 0;
-      for (int j = 0; j < channel->num_automatables; j++)
+      at = self->ats[i];
+      match = 0;
+      for (j = 0;  j < channel->num_automatables; j++)
         {
-          Automatable * _a = channel->automatables[j];
-          AutomationTrack * _at =
+          _a = channel->automatables[j];
+          _at =
             automatable_get_automation_track (_a);
           if (_at == at)
             {
@@ -168,7 +165,7 @@ automation_tracklist_update (
       if (match)
         continue;
 
-      for (int j = 0; j < STRIP_SIZE; j++)
+      for (j = 0; j < STRIP_SIZE; j++)
         {
           Channel * channel =
             track_get_channel (self->track);
@@ -198,7 +195,7 @@ automation_tracklist_update (
       else /* this automation track doesn't belong anymore.
               delete it */
         {
-          automation_tracklist_delete_automation_track (
+          automation_tracklist_delete_at (
             self, at, F_FREE);
           i--;
         }
@@ -214,7 +211,7 @@ automation_tracklist_update (
       if (!at)
         {
           at = automation_track_new (a);
-          automation_tracklist_add_automation_track (
+          automation_tracklist_add_at (
             self, at);
         }
     }
@@ -235,7 +232,7 @@ automation_tracklist_update (
               if (!at)
                 {
                   at = automation_track_new (a);
-                  automation_tracklist_add_automation_track (
+                  automation_tracklist_add_at (
                     self, at);
                 }
             }
@@ -255,34 +252,33 @@ automation_tracklist_clone (
   AutomationTrack * src_at, * dest_at;
   AutomationPoint * src_ap, * dest_ap;
   AutomationCurve * src_ac, * dest_ac;
-  for (int i = 0; i < src->num_automation_tracks; i++)
+  int i, j;
+  for (i = 0; i < src->num_ats; i++)
     {
-      src_at = src->automation_tracks[i];
-      dest_at = dest->automation_tracks[i];
+      src_at = src->ats[i];
+      dest_at = dest->ats[i];
 
       /* add automation points */
-      for (int j = 0;
-           j < src_at->num_automation_points; j++)
+      for (j = 0; j < src_at->num_aps; j++)
         {
-          src_ap = src_at->automation_points[j];
+          src_ap = src_at->aps[j];
           dest_ap =
             automation_point_new_float (
               dest_at,
               src_ap->fvalue,
               &src_ap->pos);
-          automation_track_add_automation_point (
+          automation_track_add_ap (
             dest_at, dest_ap, 0);
         }
 
       /* add automation curves */
-      for (int j = 0;
-           j < src_at->num_automation_curves; j++)
+      for (j = 0; j < src_at->num_acs; j++)
         {
-          src_ac = src_at->automation_curves[j];
+          src_ac = src_at->acs[j];
           dest_ac =
             automation_curve_new (
               dest_at, &src_ac->pos);
-          automation_track_add_automation_curve (
+          automation_track_add_ac (
             dest_at, dest_ac);
         }
     }
@@ -297,11 +293,11 @@ automation_tracklist_get_visible_tracks (
   int *                 num_visible)
 {
   *num_visible = 0;
+  AutomationLane * al;
   for (int i = 0;
-       i < self->num_automation_lanes; i++)
+       i < self->num_als; i++)
     {
-      AutomationLane * al =
-        self->automation_lanes[i];
+      al = self->als[i];
       if (al->visible)
         {
           array_append (visible_tracks,
@@ -316,11 +312,10 @@ automation_tracklist_get_at_from_automatable (
   AutomationTracklist * self,
   Automatable *         a)
 {
-  for (int i = 0; i < self->num_automation_tracks;
-       i++)
+  AutomationTrack * at;
+  for (int i = 0; i < self->num_ats; i++)
     {
-      AutomationTrack * at =
-        self->automation_tracks[i];
+      at = self->ats[i];
       if (at->automatable == a)
         {
           return at;
@@ -343,21 +338,20 @@ automation_tracklist_get_first_invisible_at (
 {
   /* prioritize automation tracks with existing
    * lanes */
-  for (int i = 0;
-       i < self->num_automation_tracks; i++)
+  AutomationTrack * at;
+  int i;
+  for (i = 0; i < self->num_ats; i++)
     {
-      AutomationTrack * at =
-        self->automation_tracks[i];
+      at = self->ats[i];
       if (at->al && !at->al->visible)
         {
           return at;
         }
     }
 
-  for (int i = 0;
-       i < self->num_automation_tracks; i++)
+  for (i = 0; i < self->num_ats; i++)
     {
-      AutomationTrack * at = self->automation_tracks[i];
+      at = self->ats[i];
       if (!at->al)
         {
           return at;
@@ -401,30 +395,26 @@ automation_tracklist_free_members (
   AutomationTracklist * self)
 {
   int i, size;
-  size = self->num_automation_tracks;
-  self->num_automation_tracks = 0;
+  size = self->num_ats;
+  self->num_ats = 0;
   AutomationTrack * at;
   for (i = 0; i < size; i++)
     {
-      at = self->automation_tracks[i];
+      at = self->ats[i];
       /*g_message ("removing %d %s",*/
                  /*at->id,*/
                  /*at->automatable->label);*/
       /*g_message ("actual automation track index %d",*/
         /*PROJECT->automation_tracks[at->id]);*/
-      project_remove_automation_track (
-        at);
       automation_track_free (
         at);
     }
 
-  size = self->num_automation_lanes;
-  self->num_automation_lanes = 0;
+  size = self->num_als;
+  self->num_als = 0;
   for (i = 0; i < size; i++)
     {
-      project_remove_automation_lane (
-        self->automation_lanes[i]);
       automation_lane_free (
-        self->automation_lanes[i]);
+        self->als[i]);
     }
 }

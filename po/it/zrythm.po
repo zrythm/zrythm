@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-08 02:17+0100\n"
+"POT-Creation-Date: 2019-05-09 00:50+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrythm dot org>\n"
 "Language-Team: Italian\n"
@@ -61,7 +61,7 @@ msgstr ""
 msgid "Artist"
 msgstr ""
 
-#: src/audio/track.c:741
+#: src/audio/track.c:721
 msgid "Audio"
 msgstr ""
 
@@ -81,7 +81,7 @@ msgstr ""
 msgid "BPM - Click and drag up/down to set"
 msgstr ""
 
-#: src/audio/engine_jack.c:630
+#: src/audio/engine_jack.c:641
 msgid "Backend error"
 msgstr ""
 
@@ -113,7 +113,7 @@ msgstr ""
 msgid "Bottom Panel"
 msgstr ""
 
-#: src/audio/track.c:744
+#: src/audio/track.c:724
 msgid "Bus"
 msgstr ""
 
@@ -138,7 +138,7 @@ msgstr ""
 msgid "Change Pan"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:596
+#: src/gui/widgets/channel_slot.c:589
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -155,11 +155,11 @@ msgstr ""
 msgid "Choose a method to donate"
 msgstr ""
 
-#: src/audio/track.c:750
+#: src/audio/track.c:730
 msgid "Chord"
 msgstr ""
 
-#: src/audio/chord_track.c:51
+#: src/audio/chord_track.c:50
 msgid "Chord Track"
 msgstr ""
 
@@ -171,11 +171,11 @@ msgstr ""
 msgid "Click to enable MIDI controllers to be connected automatically"
 msgstr ""
 
-#: src/audio/engine_jack.c:633
+#: src/audio/engine_jack.c:644
 msgid "Client zombie"
 msgstr ""
 
-#: src/audio/engine_jack.c:627
+#: src/audio/engine_jack.c:638
 msgid "Client's protocol version does not match"
 msgstr ""
 
@@ -193,7 +193,7 @@ msgstr ""
 msgid "Color"
 msgstr ""
 
-#: src/audio/engine_jack.c:612
+#: src/audio/engine_jack.c:623
 msgid "Communication error with the JACK server"
 msgstr ""
 
@@ -205,12 +205,12 @@ msgstr ""
 msgid "Controllers found"
 msgstr ""
 
-#: src/actions/copy_plugins_action.c:190
+#: src/actions/copy_plugins_action.c:178
 #, c-format
 msgid "Copy %d Plugins"
 msgstr ""
 
-#: src/actions/copy_plugins_action.c:186
+#: src/actions/copy_plugins_action.c:174
 #, c-format
 msgid "Copy %s"
 msgstr ""
@@ -223,27 +223,27 @@ msgstr ""
 msgid "Copy selection to clipboard"
 msgstr ""
 
-#: src/actions/create_tracks_action.c:302
+#: src/actions/create_tracks_action.c:228
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr ""
 
-#: src/actions/create_plugins_action.c:146
+#: src/actions/create_plugins_action.c:133
 #, c-format
 msgid "Create %d %ss"
 msgstr ""
 
-#: src/actions/create_plugins_action.c:142
+#: src/actions/create_plugins_action.c:129
 #, c-format
 msgid "Create %s"
 msgstr ""
 
-#: src/actions/create_tracks_action.c:297
+#: src/actions/create_tracks_action.c:223
 #, c-format
 msgid "Create %s Track"
 msgstr ""
 
-#: src/actions/create_midi_arranger_selections_action.c:115
+#: src/actions/create_midi_arranger_selections_action.c:102
 msgid "Create Object(s)"
 msgstr ""
 
@@ -259,23 +259,23 @@ msgstr ""
 msgid "Cut selection to clipboard"
 msgstr ""
 
-#: src/actions/delete_plugins_action.c:126
+#: src/actions/delete_plugins_action.c:111
 #, c-format
 msgid "Delete %d Plugins"
 msgstr ""
 
-#: src/actions/delete_tracks_action.c:117
+#: src/actions/delete_tracks_action.c:110
 #, c-format
 msgid "Delete %d Tracks"
 msgstr ""
 
-#: src/actions/delete_timeline_selections_action.c:112
-#: src/actions/delete_midi_arranger_selections_action.c:112
-#: src/actions/create_timeline_selections_action.c:121
+#: src/actions/delete_timeline_selections_action.c:102
+#: src/actions/delete_midi_arranger_selections_action.c:100
+#: src/actions/create_timeline_selections_action.c:109
 msgid "Delete Object(s)"
 msgstr ""
 
-#: src/actions/delete_plugins_action.c:123
+#: src/actions/delete_plugins_action.c:108
 msgid "Delete Plugin"
 msgstr ""
 
@@ -283,7 +283,7 @@ msgstr ""
 msgid "Delete Preset?"
 msgstr ""
 
-#: src/actions/delete_tracks_action.c:114
+#: src/actions/delete_tracks_action.c:107
 msgid "Delete Track"
 msgstr ""
 
@@ -304,8 +304,8 @@ msgstr ""
 msgid "Dummy"
 msgstr ""
 
-#: src/actions/duplicate_timeline_selections_action.c:120
-#: src/actions/duplicate_midi_arranger_selections_action.c:115
+#: src/actions/duplicate_timeline_selections_action.c:125
+#: src/actions/duplicate_midi_arranger_selections_action.c:112
 msgid "Duplicate Object(s)"
 msgstr ""
 
@@ -348,7 +348,7 @@ msgstr ""
 msgid "Eraser tool"
 msgstr ""
 
-#: src/actions/create_tracks_action.c:79
+#: src/actions/create_tracks_action.c:76
 #, c-format
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr ""
@@ -447,7 +447,7 @@ msgstr ""
 msgid "Grid"
 msgstr ""
 
-#: src/audio/track.c:753
+#: src/audio/track.c:733
 msgid "Group"
 msgstr ""
 
@@ -467,7 +467,7 @@ msgstr ""
 msgid "Initializing..."
 msgstr ""
 
-#: src/audio/track.c:738
+#: src/audio/track.c:718
 msgid "Instrument"
 msgstr ""
 
@@ -479,7 +479,7 @@ msgstr ""
 msgid "Italian [it]"
 msgstr ""
 
-#: src/audio/engine_jack.c:386
+#: src/audio/engine_jack.c:393
 #, c-format
 msgid "JACK Error: %s"
 msgstr ""
@@ -573,7 +573,7 @@ msgstr ""
 msgid "Manual"
 msgstr ""
 
-#: src/project.c:160 src/audio/track.c:747
+#: src/project.c:142 src/audio/track.c:727
 msgid "Master"
 msgstr ""
 
@@ -590,7 +590,7 @@ msgstr ""
 msgid "Move %d Plugins"
 msgstr ""
 
-#: src/actions/move_tracks_action.c:143
+#: src/actions/move_tracks_action.c:123
 #, c-format
 msgid "Move %d Tracks"
 msgstr ""
@@ -600,12 +600,12 @@ msgstr ""
 msgid "Move %s"
 msgstr ""
 
-#: src/actions/move_midi_arranger_selections_action.c:107
-#: src/actions/move_timeline_selections_action.c:105
+#: src/actions/move_midi_arranger_selections_action.c:103
+#: src/actions/move_timeline_selections_action.c:101
 msgid "Move Object(s)"
 msgstr ""
 
-#: src/actions/move_tracks_action.c:140
+#: src/actions/move_tracks_action.c:120
 msgid "Move Track"
 msgstr ""
 
@@ -679,7 +679,7 @@ msgid "Output Files"
 msgstr ""
 
 #. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:599
+#: src/audio/engine_jack.c:610
 msgid "Overall operation failed"
 msgstr ""
 
@@ -784,7 +784,7 @@ msgid ""
 "(note: this text is hard coded at the moment)"
 msgstr ""
 
-#: src/project.c:553
+#: src/project.c:427
 msgid "Project saved."
 msgstr ""
 
@@ -856,7 +856,7 @@ msgstr ""
 msgid "Report a Bug"
 msgstr ""
 
-#: src/audio/engine_jack.c:615
+#: src/audio/engine_jack.c:626
 msgid "Requested client does not exist"
 msgstr ""
 
@@ -1039,7 +1039,7 @@ msgstr ""
 msgid "Tests the backends"
 msgstr ""
 
-#: src/audio/engine_jack.c:606
+#: src/audio/engine_jack.c:617
 msgid "The desired client name was not unique"
 msgstr ""
 
@@ -1054,7 +1054,7 @@ msgid ""
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 msgstr ""
 
-#: src/audio/engine_jack.c:602
+#: src/audio/engine_jack.c:613
 msgid "The operation contained an invalid or unsupported option"
 msgstr ""
 
@@ -1128,19 +1128,19 @@ msgstr ""
 msgid "URI (Optional):"
 msgstr ""
 
-#: src/audio/engine_jack.c:624
+#: src/audio/engine_jack.c:635
 msgid "Unable to access shared memory"
 msgstr ""
 
-#: src/audio/engine_jack.c:609
+#: src/audio/engine_jack.c:620
 msgid "Unable to connect to the JACK server"
 msgstr ""
 
-#: src/audio/engine_jack.c:621
+#: src/audio/engine_jack.c:632
 msgid "Unable to initialize client"
 msgstr ""
 
-#: src/audio/engine_jack.c:618
+#: src/audio/engine_jack.c:629
 msgid "Unable to load internal client"
 msgstr ""
 
@@ -1172,7 +1172,7 @@ msgstr ""
 msgid "Unsolo Track"
 msgstr ""
 
-#: src/project.c:176
+#: src/project.c:156
 msgid "Untitled Project"
 msgstr ""
 
