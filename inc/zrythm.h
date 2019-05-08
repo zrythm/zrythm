@@ -89,6 +89,8 @@ typedef struct Zrythm
   char *                  projects_dir;
   /** <zrythm_dir>/Templates */
   char *                  templates_dir;
+  /** <zrythm_dir>/log */
+  char *                  log_dir;
 
   /** +1 to ensure last element is NULL in case
    * full. */

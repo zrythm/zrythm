@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-07 23:34+0100\n"
+"POT-Creation-Date: 2019-05-08 02:17+0100\n"
 "PO-Revision-Date: 2019-05-05 00:34+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Japanese <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -474,15 +474,15 @@ msgstr "グリッド"
 msgid "Group"
 msgstr "グループ"
 
-#: src/zrythm.c:246
+#: src/zrythm.c:253
 msgid "Initializing audio engine"
 msgstr "オーディオエンジンの初期化"
 
-#: src/zrythm.c:251
+#: src/zrythm.c:258
 msgid "Initializing plugin manager"
 msgstr "プラグインマネージャの初期化"
 
-#: src/zrythm.c:235
+#: src/zrythm.c:242
 msgid "Initializing settings"
 msgstr "設定を初期化"
 
@@ -548,7 +548,7 @@ msgstr "長さ"
 msgid "Linear"
 msgstr "直線"
 
-#: src/zrythm.c:265
+#: src/zrythm.c:272
 #, fuzzy
 msgid "Loading project"
 msgstr "プロジェクトをロード中"
@@ -994,7 +994,7 @@ msgstr "選択範囲"
 msgid "Selections"
 msgstr "選択範囲"
 
-#: src/zrythm.c:258
+#: src/zrythm.c:265
 msgid "Setting up backend"
 msgstr "バックエンドをセットアップ中"
 

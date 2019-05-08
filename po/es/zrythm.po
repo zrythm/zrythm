@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-07 23:34+0100\n"
+"POT-Creation-Date: 2019-05-08 02:17+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrythm dot org>\n"
 "Language-Team: Spanish\n"
@@ -451,15 +451,15 @@ msgstr ""
 msgid "Group"
 msgstr ""
 
-#: src/zrythm.c:246
+#: src/zrythm.c:253
 msgid "Initializing audio engine"
 msgstr ""
 
-#: src/zrythm.c:251
+#: src/zrythm.c:258
 msgid "Initializing plugin manager"
 msgstr ""
 
-#: src/zrythm.c:235
+#: src/zrythm.c:242
 msgid "Initializing settings"
 msgstr ""
 
@@ -525,7 +525,7 @@ msgstr ""
 msgid "Linear"
 msgstr ""
 
-#: src/zrythm.c:265
+#: src/zrythm.c:272
 msgid "Loading project"
 msgstr ""
 
@@ -955,7 +955,7 @@ msgstr ""
 msgid "Selections"
 msgstr ""
 
-#: src/zrythm.c:258
+#: src/zrythm.c:265
 msgid "Setting up backend"
 msgstr ""
 

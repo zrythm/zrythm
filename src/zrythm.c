@@ -39,6 +39,7 @@
 #include "utils/arrays.h"
 #include "utils/gtk.h"
 #include "utils/localization.h"
+#include "utils/log.h"
 #include "utils/io.h"
 
 #include "Wrapper.h"
@@ -129,6 +130,12 @@ init_dirs_and_files ()
                       "Templates",
                       NULL);
   io_mkdir (ZRYTHM->templates_dir);
+
+  ZRYTHM->log_dir =
+    g_build_filename (ZRYTHM->zrythm_dir,
+                      "log",
+                      NULL);
+  io_mkdir (ZRYTHM->log_dir);
 }
 
 /**
@@ -463,6 +470,10 @@ static void on_prompt_for_project (GSimpleAction  *action,
       /* init zrythm folders ~/Zrythm */
       init_dirs_and_files ();
       init_recent_projects ();
+
+      /* init log */
+      g_message ("Initing log...");
+      log_init ();
 
       /* show the assistant */
       assistant =
