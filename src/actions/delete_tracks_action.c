@@ -60,6 +60,7 @@ delete_tracks_action_do (
       tracklist_remove_track (
         TRACKLIST,
         track,
+        F_REMOVE_PL,
         F_FREE,
         F_NO_PUBLISH_EVENTS,
         F_RECALC_GRAPH);
@@ -75,7 +76,7 @@ int
 delete_tracks_action_undo (
 	DeleteTracksAction * self)
 {
-  Track * track, * orig_track;
+  Track * track;
   for (int i = 0; i < self->tls->num_tracks; i++)
     {
       /* clone the clone */

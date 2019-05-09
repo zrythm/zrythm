@@ -49,7 +49,6 @@
 void
 region_init (Region *   region,
              RegionType type,
-             Track *    track,
              Position * start_pos,
              Position * end_pos)
 {
@@ -74,8 +73,6 @@ region_init (Region *   region,
   /*position_print (&region->start_pos);*/
   /*g_message ("end pos");*/
   /*position_print (&region->end_pos);*/
-  region->track = track;
-  region->track_pos = track->pos;
   /*region->name = g_strdup_printf ("%s (%d)",*/
                                   /*track->name,*/
                                   /*region->id);*/
@@ -92,6 +89,21 @@ region_init (Region *   region,
       region->widget = Z_REGION_WIDGET (
         midi_region_widget_new (region));
     }
+}
+
+/**
+ * Sets the track.
+ */
+void
+region_set_track (
+  Region * region,
+  Track * track)
+{
+  region->track = track;
+  if (track)
+    region->track_pos = track->pos;
+  else
+    region->track_pos = -1;
 }
 
 /**
@@ -167,7 +179,6 @@ region_find_by_name (
             return r;
         }
     }
-  g_warn_if_reached ();
   return NULL;
 }
 
@@ -472,15 +483,11 @@ Region *
 region_clone (Region *        region,
               RegionCloneFlag flag)
 {
-  Track * track =
-    region->track;
-
   Region * new_region = NULL;
   if (region->type == REGION_TYPE_MIDI)
     {
       MidiRegion * mr =
-        midi_region_new (track,
-                         &region->start_pos,
+        midi_region_new (&region->start_pos,
                          &region->end_pos);
       MidiRegion * mr_orig = region;
       if (flag == REGION_CLONE_COPY)
@@ -502,7 +509,7 @@ region_clone (Region *        region,
     {
       Region * ar =
         audio_region_new (
-          region->track, region->filename,
+          region->filename,
           &region->start_pos);
 
       new_region = ar;
@@ -518,6 +525,16 @@ region_clone (Region *        region,
   position_set_to_pos (
     &new_region->loop_end_pos,
     &region->loop_end_pos);
+
+  /* clone name */
+  new_region->name = g_strdup (region->name);
+
+  /* set track to NULL and remember track pos */
+  new_region->track = NULL;
+  if (region->track)
+    new_region->track_pos = region->track->pos;
+  else
+    new_region->track_pos = region->track_pos;
 
   return new_region;
 }

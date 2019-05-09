@@ -110,5 +110,9 @@ engine_jack_get_error_message (
 void
 jack_tear_down ();
 
+int
+engine_jack_activate (
+  AudioEngine * self);
+
 #endif
 #endif /* HAVE_JACK */

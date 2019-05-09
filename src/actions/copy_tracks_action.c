@@ -93,6 +93,7 @@ copy_tracks_action_undo (
       tracklist_remove_track (
         TRACKLIST,
         track,
+        F_REMOVE_PL,
         F_FREE,
         F_NO_PUBLISH_EVENTS,
         F_NO_RECALC_GRAPH);

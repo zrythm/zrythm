@@ -30,8 +30,7 @@ typedef Region MidiRegion;
  * Creates a new Region for MIDI notes.
  */
 MidiRegion *
-midi_region_new (Track *    track,
-                 Position * start_pos,
+midi_region_new (Position * start_pos,
                  Position * end_pos);
 
 /**

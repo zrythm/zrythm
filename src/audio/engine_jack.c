@@ -411,7 +411,6 @@ jack_setup (AudioEngine * self,
 {
   g_message ("Setting up JACK...");
 
-  const char **ports;
   const char *client_name = "Zrythm";
   const char *server_name = NULL;
   jack_options_t options = JackNoStartServer;
@@ -552,48 +551,6 @@ jack_setup (AudioEngine * self,
       g_error ("no more JACK ports available");
     }
 
-  /* Tell the JACK server that we are ready to roll.  Our
-   * process() callback will start running now. */
-  if (jack_activate (self->client))
-    {
-      g_error ("cannot activate client");
-      return -1;
-    }
-  g_message ("Jack activated");
-
-  /* Connect the ports.  You can't do this before the client is
-   * activated, because we can't make connections to clients
-   * that aren't running.  Note the confusing (but necessary)
-   * orientation of the driver backend ports: playback ports are
-   * "input" to the backend, and capture ports are "output" from
-   * it.
-   */
-
-  ports =
-    jack_get_ports (
-      self->client, NULL, NULL,
-      JackPortIsPhysical|JackPortIsInput);
-  if (ports == NULL) {
-          g_error ("no physical playback ports\n");
-          exit (1);
-  }
-
-  if (jack_connect (
-        self->client,
-        jack_port_name (
-          JACK_PORT_T (
-            self->stereo_out->l->data)),
-        ports[0]))
-    g_error ("cannot connect output ports\n");
-
-  if (jack_connect (
-        self->client,
-        jack_port_name (
-          JACK_PORT_T (self->stereo_out->r->data)),
-        ports[1]))
-    g_error ("cannot connect output ports\n");
-
-  jack_free (ports);
 
   g_message ("JACK set up");
   return 0;
@@ -678,6 +635,56 @@ jack_tear_down ()
   /* init semaphore */
   zix_sem_init (&AUDIO_ENGINE->port_operation_lock,
                 1);
+}
+
+int
+engine_jack_activate (
+  AudioEngine * self)
+{
+  /* Tell the JACK server that we are ready to roll.  Our
+   * process() callback will start running now. */
+  if (jack_activate (self->client))
+    {
+      g_error ("cannot activate client");
+      return -1;
+    }
+  g_message ("Jack activated");
+
+  /* Connect the ports.  You can't do this before the client is
+   * activated, because we can't make connections to clients
+   * that aren't running.  Note the confusing (but necessary)
+   * orientation of the driver backend ports: playback ports are
+   * "input" to the backend, and capture ports are "output" from
+   * it.
+   */
+
+  const char **ports =
+    jack_get_ports (
+      self->client, NULL, NULL,
+      JackPortIsPhysical|JackPortIsInput);
+  if (ports == NULL) {
+          g_error ("no physical playback ports\n");
+          exit (1);
+  }
+
+  if (jack_connect (
+        self->client,
+        jack_port_name (
+          JACK_PORT_T (
+            self->stereo_out->l->data)),
+        ports[0]))
+    g_error ("cannot connect output ports\n");
+
+  if (jack_connect (
+        self->client,
+        jack_port_name (
+          JACK_PORT_T (self->stereo_out->r->data)),
+        ports[1]))
+    g_error ("cannot connect output ports\n");
+
+  jack_free (ports);
+
+  return 0;
 }
 
 #endif /* HAVE_JACK */

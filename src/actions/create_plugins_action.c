@@ -78,7 +78,8 @@ create_plugins_action_do (
 
       /* add to channel */
       channel_add_plugin (
-        ch, self->slot + i, pl, 1, 1, 1);
+        ch, self->slot + i, pl, 1, 1,
+        F_NO_RECALC_GRAPH);
 
       if (g_settings_get_int (
             S_PREFERENCES,
@@ -89,6 +90,8 @@ create_plugins_action_do (
                        pl);
         }
     }
+
+  mixer_recalc_graph (MIXER);
 
   EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED,
                ch);
@@ -111,11 +114,14 @@ create_plugins_action_undo (
     {
       /* remove the plugin */
       channel_remove_plugin (
-        ch, self->slot + i, 1, 0);
+        ch, self->slot + i, 1, 0,
+        F_NO_RECALC_GRAPH);
 
       EVENTS_PUSH (ET_PLUGINS_REMOVED,
                    ch);
     }
+
+  mixer_recalc_graph (MIXER);
 
   return 0;
 }

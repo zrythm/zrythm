@@ -33,8 +33,6 @@
 #include <gtk/gtk.h>
 
 #define REGION_PRINTF_FILENAME "%s_%s.mid"
-#define region_set_track(region,track) \
-  ((Region *)region)->track = (Track *) track;
 
 typedef struct _RegionWidget RegionWidget;
 typedef struct Channel Channel;
@@ -358,7 +356,6 @@ region_shift (
 void
 region_init (Region *   region,
              RegionType type,
-             Track *    track,
              Position * start_pos,
              Position * end_pos);
 
@@ -369,6 +366,14 @@ void
 region_set_start_pos (
   Region * region,
   Position * pos);
+
+/**
+ * Sets the track.
+ */
+void
+region_set_track (
+  Region * region,
+  Track * track);
 
 /**
  * Checks if position is valid then sets it.

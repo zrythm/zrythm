@@ -95,7 +95,6 @@ midi_note_find (
             clone))
         return r->midi_notes[i];
     }
-  g_warn_if_reached ();
   return NULL;
 }
 

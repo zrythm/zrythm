@@ -536,7 +536,8 @@ track_disconnect (Track * track)
     chord_track_remove_chord (
       track, track->chords[i]);
 
-  channel_disconnect (track->channel);
+  channel_disconnect (track->channel, F_REMOVE_PL,
+                      F_RECALC_GRAPH);
 }
 
 /**

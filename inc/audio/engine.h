@@ -121,8 +121,6 @@ typedef struct AudioEngine
   /**
    * To be serialized instead of StereoPorts.
    */
-  int               midi_in_id;
-  int               midi_editor_manual_press_id;;
 
   /** stereo in ports from the backend. */
   StereoPorts       * stereo_in;
@@ -203,12 +201,14 @@ engine_fields_schema[] =
     "stereo_out", CYAML_FLAG_POINTER,
     AudioEngine, stereo_out,
     stereo_ports_fields_schema),
-  CYAML_FIELD_INT (
-    "midi_in_id", CYAML_FLAG_DEFAULT,
-    AudioEngine, midi_in_id),
-  CYAML_FIELD_INT (
-    "midi_editor_manual_press_id", CYAML_FLAG_DEFAULT,
-    AudioEngine, midi_editor_manual_press_id),
+	CYAML_FIELD_MAPPING_PTR (
+    "midi_in", CYAML_FLAG_POINTER,
+    AudioEngine, midi_in,
+    port_fields_schema),
+	CYAML_FIELD_MAPPING_PTR (
+    "midi_editor_manual_press", CYAML_FLAG_POINTER,
+    AudioEngine, midi_editor_manual_press,
+    port_fields_schema),
   CYAML_FIELD_MAPPING (
     "transport", CYAML_FLAG_DEFAULT,
     AudioEngine, transport,

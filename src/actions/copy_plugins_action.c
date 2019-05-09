@@ -108,7 +108,8 @@ copy_plugins_action_do (
 
       /* add it to the channel */
       channel_add_plugin (
-        ch, self->slot + i, pl, 1, 1, 1);
+        ch, self->slot + i, pl, 1, 1,
+        F_NO_RECALC_GRAPH);
 
       /* show it if necessary */
       if (g_settings_get_int (
@@ -122,6 +123,9 @@ copy_plugins_action_do (
     }
 
   mixer_recalc_graph (MIXER);
+
+  EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED,
+               ch);
 
   return 0;
 }
@@ -145,6 +149,7 @@ copy_plugins_action_undo (
       tracklist_remove_track (
         TRACKLIST,
         tr,
+        F_REMOVE_PL,
         F_FREE,
         F_PUBLISH_EVENTS,
         F_RECALC_GRAPH);
@@ -159,8 +164,14 @@ copy_plugins_action_undo (
   for (int i = 0; i < self->ms->num_slots; i++)
     {
       channel_remove_plugin (
-        ch, self->slot + i, 1, 0);
+        ch, self->slot + i, 1, 0,
+        F_NO_RECALC_GRAPH);
     }
+
+  EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED,
+               ch);
+
+  mixer_recalc_graph (MIXER);
 
   return 0;
 }

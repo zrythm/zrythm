@@ -33,8 +33,7 @@
  * Creates a Region for audio data.
  */
 AudioRegion *
-audio_region_new (Track *    track,
-                  char *     filename,
+audio_region_new (char *     filename,
                   Position * start_pos)
 {
   AudioRegion * self =
@@ -61,7 +60,6 @@ audio_region_new (Track *    track,
   /* init */
   region_init ((Region *) self,
                REGION_TYPE_AUDIO,
-               track,
                start_pos,
                &self->end_pos);
 

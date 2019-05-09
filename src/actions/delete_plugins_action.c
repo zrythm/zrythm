@@ -59,8 +59,11 @@ delete_plugins_action_do (
     {
       /* remove the plugin at given slot */
       channel_remove_plugin (
-        ch, self->slot + i, 1, 0);
+        ch, self->slot + i, 1, 0,
+        F_NO_RECALC_GRAPH);
     }
+
+  mixer_recalc_graph (MIXER);
 
   return 0;
 }

@@ -919,10 +919,9 @@ channel_handle_recording (Channel * self)
           /* create region */
           mr =
             midi_region_new (
-              self->track, &PLAYHEAD, &tmp);
-          region = (Region *) mr;
+              &PLAYHEAD, &tmp);
           track_add_region (
-            self->track, region);
+            self->track, mr);
         }
 
       /* convert MIDI data to midi notes */
@@ -1484,13 +1483,18 @@ channel_disconnect_plugin_from_strip (
  * This function will always recalculate the graph
  * in order to avoid situations where the plugin
  * might be used during processing.
+ *
+ * @param deleting_plugin
+ * @param deleting_channel
+ * @param recalc_graph Recalculate mixer graph.
  */
 void
 channel_remove_plugin (
   Channel * channel,
   int pos,
   int deleting_plugin,
-  int deleting_channel)
+  int deleting_channel,
+  int recalc_graph)
 {
   Plugin * plugin = channel->plugins[pos];
   if (plugin)
@@ -1538,7 +1542,8 @@ channel_remove_plugin (
     automation_tracklist_update (
       &channel->track->automation_tracklist);
 
-  mixer_recalc_graph (MIXER);
+  if (recalc_graph)
+    mixer_recalc_graph (MIXER);
 }
 
 /**
@@ -1590,7 +1595,7 @@ channel_add_plugin (
 
   /* free current plugin */
   channel_remove_plugin (
-    channel, pos, 1, 0);
+    channel, pos, 1, 0, F_NO_RECALC_GRAPH);
 
   g_message ("Inserting %s at %s:%d",
              plugin->descr->name,
@@ -1862,15 +1867,24 @@ channel_clone (
  * channel is getting deleted, and channel_free
  * should be designed to be called later after
  * an arbitrary delay.
+ *
+ * @param remove_pl Remove the Plugin from the
+ *   Channel. Useful when deleting the channel.
+ * @param recalc_graph Recalculate mixer graph.
  */
 void
-channel_disconnect (Channel * channel)
+channel_disconnect (
+  Channel * channel,
+  int       remove_pl,
+  int       recalc_graph)
 {
   FOREACH_STRIP
     {
       if (channel->plugins[i])
         {
-          channel_remove_plugin (channel, i, 1, 0);
+          channel_remove_plugin (
+            channel, i, remove_pl, 0,
+            F_NO_RECALC_GRAPH);
         }
     }
   port_disconnect_all (channel->stereo_in->l);
@@ -1880,7 +1894,8 @@ channel_disconnect (Channel * channel)
   port_disconnect_all (channel->stereo_out->l);
   port_disconnect_all (channel->stereo_out->r);
 
-  mixer_recalc_graph (MIXER);
+  if (recalc_graph)
+    mixer_recalc_graph (MIXER);
 }
 
 /**

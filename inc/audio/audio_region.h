@@ -39,7 +39,6 @@ typedef struct Region AudioRegion;
  */
 AudioRegion *
 audio_region_new (
-  Track *    track,
   char *     filename,
   Position * start_pos);
 

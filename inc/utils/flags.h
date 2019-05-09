@@ -55,4 +55,7 @@
 #define F_GEN_AUTOMATABLES 1
 #define F_NO_GEN_AUTOMATABLES 0
 
+#define F_REMOVE_PL 1
+#define F_NO_REMOVE_PL 0
+
 #endif

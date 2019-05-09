@@ -235,6 +235,19 @@ plugin_is_instrument (
 }
 
 /**
+ * Sets the track and track_pos on the plugin.
+ */
+void
+plugin_set_track (
+  Plugin * pl,
+  Track * tr)
+{
+  g_return_if_fail (tr);
+  pl->track = tr;
+  pl->track_pos = tr->pos;
+}
+
+/**
  * Instantiates the plugin (e.g. when adding to a
  * channel).
  */
@@ -431,7 +444,8 @@ plugin_disconnect (Plugin * plugin)
     plugin->out_ports,
     plugin->num_out_ports, 1);
   g_message (
-    "DISCONNECTED ALL PORTS OF PLUGIN %d %d",
+    "DISCONNECTED ALL PORTS OF %p PLUGIN %d %d",
+    plugin,
     plugin->num_in_ports,
     plugin->num_out_ports);
 }

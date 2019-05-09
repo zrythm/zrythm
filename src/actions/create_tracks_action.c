@@ -65,9 +65,14 @@ create (
     }
   else
     {
+      track =
+        track_new (self->type, self->pl_descr.name);
+
       Plugin * pl=
         plugin_new_from_descr (
           &self->pl_descr);
+      pl->track = track;
+      pl->track_pos = self->pos + idx;
 
       if (plugin_instantiate (pl) < 0)
         {
@@ -86,8 +91,6 @@ create (
           return -1;
         }
 
-      track =
-        track_new (self->type, self->pl_descr.name);
       if (add_to_project)
         tracklist_insert_track (
           TRACKLIST,
@@ -99,7 +102,8 @@ create (
       if (track->channel)
         {
           channel_add_plugin (
-            track->channel, 0, pl, 1, 1, 1);
+            track->channel, 0, pl,
+            1, 1, F_NO_RECALC_GRAPH);
           g_warn_if_fail (pl->track == track);
         }
 
@@ -111,7 +115,6 @@ create (
                                &PLAYHEAD);
           AudioRegion * ar =
             audio_region_new (
-              track,
               self->file_descr.absolute_path,
               &start_pos);
           track_add_region (
@@ -127,11 +130,6 @@ create (
           EVENTS_PUSH (
             ET_PLUGIN_VISIBILITY_CHANGED, pl);
         }
-    }
-
-  if (add_to_project)
-    {
-      mixer_recalc_graph (MIXER);
     }
 
   return 0;
@@ -184,6 +182,8 @@ create_tracks_action_do (
 
   EVENTS_PUSH (ET_TRACKS_ADDED, NULL);
 
+  mixer_recalc_graph (MIXER);
+
   return 0;
 }
 
@@ -204,12 +204,15 @@ create_tracks_action_undo (
       tracklist_remove_track (
         TRACKLIST,
         track,
+        F_REMOVE_PL,
         F_FREE,
         F_NO_PUBLISH_EVENTS,
-        F_RECALC_GRAPH);
+        F_NO_RECALC_GRAPH);
     }
 
   EVENTS_PUSH (ET_TRACKS_REMOVED, NULL);
+
+  mixer_recalc_graph (MIXER);
 
   return 0;
 }

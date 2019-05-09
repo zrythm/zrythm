@@ -356,6 +356,14 @@ int
 plugin_instantiate (Plugin * plugin);
 
 /**
+ * Sets the track and track_pos on the plugin.
+ */
+void
+plugin_set_track (
+  Plugin * pl,
+  Track * tr);
+
+/**
  * Process plugin
  */
 void

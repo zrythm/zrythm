@@ -46,6 +46,7 @@
 #include "utils/audio.h"
 #include "utils/arrays.h"
 #include "utils/dialogs.h"
+#include "utils/flags.h"
 #include "utils/objects.h"
 #include "utils/ui.h"
 
@@ -215,7 +216,8 @@ mixer_move_plugin (
       pl->track->channel, pl);
   Channel * prev_ch = pl->track->channel;
   channel_remove_plugin (
-    pl->track->channel, prev_slot, 0, 0);
+    pl->track->channel,
+    prev_slot, 0, 0, F_NO_RECALC_GRAPH);
 
   /* move plugin's automation from src to dest */
   plugin_move_automation (
@@ -223,7 +225,7 @@ mixer_move_plugin (
 
   /* add plugin to its new channel */
   channel_add_plugin (
-    ch, slot, pl, 0, 0, 1);
+    ch, slot, pl, 0, 0, F_RECALC_GRAPH);
 
   EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED,
                prev_ch);

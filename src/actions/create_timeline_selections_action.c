@@ -66,10 +66,12 @@ create_timeline_selections_action_do (
       region =
         region_clone (
           self->ts->regions[i], REGION_CLONE_COPY);
+      g_return_val_if_fail (region->track_pos >= 0,
+                            -1);
 
       /* add it to track */
       track_add_region (
-        region->track,
+        TRACKLIST->tracks[region->track_pos],
         region);
     }
   /* TODO chords */

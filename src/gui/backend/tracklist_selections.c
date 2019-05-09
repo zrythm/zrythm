@@ -176,8 +176,8 @@ tracklist_selections_gprint (
     {
       track = self->tracks[i];
       g_message ("[idx %d] %s (pos %d)",
-                 i, self->tracks[i]->name,
-                 self->tracks[i]->pos);
+                 i, track->name,
+                 track->pos);
     }
   g_message ("-------- end --------");
 }

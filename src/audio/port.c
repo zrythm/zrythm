@@ -349,34 +349,42 @@ port_disconnect (Port * src, Port * dest)
   if (!src || !dest)
     g_warn_if_reached ();
 
-  int pos;
+  int pos = -1;
   /* disconnect dest from src */
   array_delete_return_pos (
     src->dests,
     src->num_dests,
     dest,
     pos);
-  for (int i = pos;
-       i < src->num_dests;
-       i++)
+  if (pos >= 0)
     {
-      port_identifier_copy (
-        &src->dest_ids[i + 1],
-        &src->dest_ids[i]);
+      for (int i = pos;
+           i < src->num_dests;
+           i++)
+        {
+          port_identifier_copy (
+            &src->dest_ids[i + 1],
+            &src->dest_ids[i]);
+        }
     }
 
+  /* disconnect src from dest */
+  pos = -1;
   array_delete_return_pos (
     dest->srcs,
     dest->num_srcs,
     src,
     pos);
-  for (int i = pos;
-       i < dest->num_srcs;
-       i++)
+  if (pos >= 0)
     {
-      port_identifier_copy (
-        &dest->src_ids[i + 1],
-        &dest->src_ids[i]);
+      for (int i = pos;
+           i < dest->num_srcs;
+           i++)
+        {
+          port_identifier_copy (
+            &dest->src_ids[i + 1],
+            &dest->src_ids[i]);
+        }
     }
 
   g_message ("Disconnected port (%s) from (%s)",

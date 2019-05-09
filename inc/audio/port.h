@@ -477,25 +477,27 @@ ports_disconnect (
   for (i = 0; i < num_ports; i++)
     {
       port = ports[i];
+      g_message ("Attempting to disconnect %s ("
+                 "current srcs %d)",
+                 port->identifier.label,
+                 port->num_srcs);
       port->deleting = deleting;
 
       /* disconnect incoming ports */
-      if (port->identifier.flow == FLOW_INPUT)
+      for (j = port->num_srcs - 1; j >= 0; j--)
         {
-          for (j = 0; j < port->num_srcs; j++)
-            {
-              port_disconnect (port->srcs[j], port);
-            }
+          port_disconnect (port->srcs[j], port);
         }
-        /* disconnect outgoing ports */
-        else if (port->identifier.flow == FLOW_OUTPUT)
-          {
-            for (j = 0; j < port->num_dests; j++)
-              {
-                port_disconnect (
-                  port, port->dests[j]);
-              }
-          }
+      /* disconnect outgoing ports */
+      for (j = port->num_dests - 1; j >= 0; j--)
+        {
+          port_disconnect (
+            port, port->dests[j]);
+        }
+      g_message ("%s num srcs %d dests %d",
+                 port->identifier.label,
+                 port->num_srcs,
+                 port->num_dests);
     }
 }
 

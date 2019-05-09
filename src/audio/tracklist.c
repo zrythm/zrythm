@@ -288,7 +288,6 @@ tracklist_get_prev_visible_track (
           return self->tracks[i];
         }
     }
-  g_warn_if_reached ();
   return NULL;
 }
 
@@ -307,7 +306,6 @@ tracklist_get_next_visible_track (
           return self->tracks[i];
         }
     }
-  g_warn_if_reached ();
   return NULL;
 }
 
@@ -317,6 +315,7 @@ tracklist_get_next_visible_track (
  *
  * Also disconnects the channel.
  *
+ * @param rm_pl Remove plugins or not.
  * @param free Free the track or not (free later).
  * @param publish_events Push a track deleted event
  *   to the UI.
@@ -326,6 +325,7 @@ void
 tracklist_remove_track (
   Tracklist * self,
   Track *     track,
+  int         rm_pl,
   int         free,
   int         publish_events,
   int         recalc_graph)
@@ -352,7 +352,9 @@ tracklist_remove_track (
        i < self->num_tracks; i++)
     self->tracks[i]->pos = i;
 
-  channel_disconnect (track->channel);
+  channel_disconnect (
+    track->channel,
+    rm_pl, F_NO_RECALC_GRAPH);
 
   if (free)
     {
@@ -386,6 +388,7 @@ tracklist_move_track (
   tracklist_remove_track (
     self,
     track,
+    F_NO_REMOVE_PL,
     F_NO_FREE,
     F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);

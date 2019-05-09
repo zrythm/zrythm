@@ -61,6 +61,7 @@ timeline_selections_create_missing_transients (
   TimelineSelections * ts)
 {
   Region * r = NULL, * transient = NULL;
+  Track * tr;
   for (int i = 0; i < ts->num_regions; i++)
     {
       r = ts->regions[i];
@@ -90,8 +91,12 @@ timeline_selections_create_missing_transients (
           /* add it to selections and to track */
           ts->transient_regions[i] =
             transient;
+          g_return_if_fail (
+            transient->track_pos >= 0);
+          tr =
+            TRACKLIST->tracks[transient->track_pos];
           track_add_region (
-            transient->track, transient);
+            tr, transient);
         }
       EVENTS_PUSH (ET_REGION_CHANGED,
                    r);

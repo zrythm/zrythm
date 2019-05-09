@@ -1005,7 +1005,7 @@ timeline_arranger_widget_create_region (
     {
       region =
         midi_region_new (
-          track, pos, pos);
+          pos, pos);
     }
   position_set_min_size (&region->start_pos,
                          &region->end_pos,

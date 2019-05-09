@@ -1051,7 +1051,7 @@ graph_new (
         {
           pl = tr->channel->plugins[j];
 
-          if (!pl)
+          if (!pl || pl->deleting)
             continue;
 
           if (pl->num_in_ports == 0 &&
@@ -1078,6 +1078,12 @@ graph_new (
   port_get_all (ports, &num_ports);
   for (i = 0; i < num_ports; i++)
     {
+      g_warn_if_fail (ports[i]);
+      if (ports[i]->deleting ||
+          (ports[i]->plugin &&
+           ports[i]->plugin->deleting))
+        continue;
+
       add_port (
         self, ports[i]);
     }
@@ -1096,23 +1102,23 @@ graph_new (
         {
           pl = tr->channel->plugins[j];
 
-          if (!pl)
+          if (!pl || pl->deleting)
             continue;
 
           node =
             find_node_from_plugin (self, pl);
-          for (j = 0; j < pl->num_in_ports; j++)
+          for (k = 0; k < pl->num_in_ports; k++)
             {
-              port = pl->in_ports[j];
+              port = pl->in_ports[k];
               g_warn_if_fail (
                 port->plugin != NULL);
               node2 =
                 find_node_from_port (self, port);
               node_connect (node2, node);
             }
-          for (j = 0; j < pl->num_out_ports; j++)
+          for (k = 0; k < pl->num_out_ports; k++)
             {
-              port = pl->out_ports[j];
+              port = pl->out_ports[k];
               g_warn_if_fail (
                 port->plugin != NULL);
               node2 =
@@ -1124,6 +1130,12 @@ graph_new (
 
   for (i = 0; i < num_ports; i++)
     {
+      g_warn_if_fail (ports[i]);
+      if (ports[i]->deleting ||
+          (ports[i]->plugin &&
+           ports[i]->plugin->deleting))
+        continue;
+
       connect_port (
         self, ports[i]);
     }

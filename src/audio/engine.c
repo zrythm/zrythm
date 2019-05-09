@@ -220,6 +220,9 @@ engine_init (AudioEngine * self,
       break;
     }
 
+  if (self->audio_backend == AUDIO_BACKEND_JACK)
+    engine_jack_activate (self);
+
   self->buf_size_set = false;
 }
 

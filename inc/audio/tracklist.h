@@ -136,6 +136,7 @@ tracklist_insert_track (
  *
  * Also disconnects the channel.
  *
+ * @param rm_pl Remove plugins or not.
  * @param free Free the track or not (free later).
  * @param publish_events Push a track deleted event
  *   to the UI.
@@ -145,6 +146,7 @@ void
 tracklist_remove_track (
   Tracklist * self,
   Track *     track,
+  int         rm_pl,
   int         free,
   int         publish_events,
   int         recalc_graph);

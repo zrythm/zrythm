@@ -341,8 +341,9 @@ channel_get_plugin_index (Channel * channel,
  * first plugin
  */
 void
-channel_reattach_midi_editor_manual_press_port (Channel * channel,
-                                                int     connect);
+channel_reattach_midi_editor_manual_press_port (
+  Channel * channel,
+  int     connect);
 
 /**
  * Convenience method to get the first active plugin in the channel
@@ -379,13 +380,15 @@ channel_generate_automatables (Channel * channel);
  *
  * @param deleting_plugin
  * @param deleting_channel
+ * @param recalc_graph Recalculate mixer graph.
  */
 void
 channel_remove_plugin (
   Channel * channel,
   int pos,
   int deleting_plugin,
-  int deleting_channel);
+  int deleting_channel,
+  int recalc_graph);
 
 Channel *
 channel_clone (
@@ -399,9 +402,16 @@ channel_clone (
  * channel is getting deleted, and channel_free
  * should be designed to be called later after
  * an arbitrary delay.
+ *
+ * @param remove_pl Remove the Plugin from the
+ *   Channel. Useful when deleting the channel.
+ * @param recalc_graph Recalculate mixer graph.
  */
 void
-channel_disconnect (Channel * channel);
+channel_disconnect (
+  Channel * channel,
+  int       remove_pl,
+  int       recalc_graph);
 
 /**
  * Frees the channel.

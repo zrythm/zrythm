@@ -75,7 +75,7 @@ int
 delete_timeline_selections_action_undo (
   DeleteTimelineSelectionsAction * self)
 {
-  Region * region, * orig_region;
+  Region * region;
   for (int i = 0; i < self->ts->num_regions; i++)
     {
       /* clone the clone */

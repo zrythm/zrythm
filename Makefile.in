@@ -110,7 +110,7 @@ X11_LIBS = @X11_LIBS@
 # -----------------------
 #  dirs/names/files
 #  ----------------------
-LANGUAGES = de es fr it ja pt ru zh
+LANGUAGES = de es fr it ja pt ru zh hi ar ko
 LANG_PO_FILES = $(shell find po -name "*.po")
 LANG_MO_FILES = $(LANG_PO_FILES:%.po=%.mo)
 BUILD_DIR = build

@@ -34,16 +34,15 @@
 #include "utils/yaml.h"
 
 MidiRegion *
-midi_region_new (Track *    track,
-                 Position * start_pos,
-                 Position * end_pos)
+midi_region_new (
+  Position * start_pos,
+  Position * end_pos)
 {
   MidiRegion * midi_region =
     calloc (1, sizeof (MidiRegion));
 
   region_init ((Region *) midi_region,
                REGION_TYPE_MIDI,
-               track,
                start_pos,
                end_pos);
 
