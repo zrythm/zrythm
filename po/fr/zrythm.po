@@ -6,9 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: alex@zrythm.org\n"
 "POT-Creation-Date: 2019-05-05 01:37+0100\n"
-"PO-Revision-Date: 2019-05-04 23:38+0000\n"
+"PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French <https://translate.zrythm.org/projects/zrythm/zrythm/"
 "fr/>\n"
@@ -233,7 +233,6 @@ msgid "Communication error with the JACK server"
 msgstr "Erreur de communication avec le serveur JACK"
 
 #: resources/ui/bot_dock_edge.ui:153
-#, fuzzy
 msgid "Connections"
 msgstr "Connexions"
 
@@ -270,7 +269,7 @@ msgid "Create %d %ss"
 msgstr "Créer %d %s"
 
 #: src/actions/create_plugins_action.c:121
-#, fuzzy, c-format
+#, c-format
 msgid "Create %s"
 msgstr "Créer %s"
 
@@ -308,7 +307,6 @@ msgstr "Supprimer %d Pistes"
 #: src/actions/delete_timeline_selections_action.c:112
 #: src/actions/delete_midi_arranger_selections_action.c:112
 #: src/actions/create_timeline_selections_action.c:121
-#, fuzzy
 msgid "Delete Object(s)"
 msgstr "Supprimer l'objet"
 
@@ -570,7 +568,6 @@ msgid "Linear"
 msgstr "Linéaire"
 
 #: src/zrythm.c:261
-#, fuzzy
 msgid "Loading project"
 msgstr "Chargement du projet"
 
@@ -607,7 +604,6 @@ msgid "MIDI Controllers"
 msgstr "Contrôleurs MIDI"
 
 #: resources/ui/first_run_assistant.ui:287
-#, fuzzy
 msgid "MIDI Devices"
 msgstr "Périphériques MIDI"
 
@@ -686,7 +682,6 @@ msgid "No item selected"
 msgstr "Aucun item sélectionné"
 
 #: src/gui/widgets/route_target_selector_popover.c:195
-#, fuzzy
 msgid "No output selected"
 msgstr "Aucune sortie sélectionnée"
 
@@ -708,12 +703,10 @@ msgid "OK"
 msgstr "OK"
 
 #: src/utils/dialogs.c:41
-#, fuzzy
 msgid "Open Project"
 msgstr "Ouvrir un projet"
 
 #: resources/ui/shortcuts.ui:91
-#, fuzzy
 msgid "Open a project"
 msgstr "Ouvrir un projet"
 
@@ -775,7 +768,6 @@ msgid "Play"
 msgstr "Lecture"
 
 #: src/gui/widgets/ruler_marker.c:315
-#, fuzzy
 msgid "Playhead"
 msgstr "Tête de lecture"
 
@@ -847,7 +839,7 @@ msgstr ""
 
 #: src/project.c:549
 msgid "Project saved."
-msgstr "Projet sauvegardé"
+msgstr "Projet sauvegardé."
 
 #: resources/ui/shortcuts.ui:273
 msgid "Quantize"
@@ -949,7 +941,6 @@ msgid "Russian [ru]"
 msgstr "Russe [ru]"
 
 #: src/actions/actions.c:519
-#, fuzzy
 msgid "Save Project"
 msgstr "Sauvegarder le projet"
 
@@ -1004,7 +995,6 @@ msgid "Select/Stretch tool"
 msgstr "Sélectionner l'outil Étirement"
 
 #: src/gui/widgets/header_bar.c:100
-#, fuzzy
 msgid "Selection"
 msgstr "Sélection"
 
@@ -1086,7 +1076,7 @@ msgstr "Arrêter"
 
 #: resources/ui/channel.ui:290
 msgid "Synth1 long name name"
-msgstr " nom du long nom du Synthétiseur 1 "
+msgstr "nom du long nom du Synthétiseur 1"
 
 #: resources/ui/first_run_assistant.ui:228
 msgid "Test"
@@ -1197,7 +1187,7 @@ msgstr "Type"
 
 #: src/plugins/lv2_gtk.c:467
 msgid "URI (Optional):"
-msgstr "Identifiant Uniforme de Ressource (Optional):"
+msgstr "Identifiant Uniforme de Ressource (Optionnel):"
 
 #: src/audio/engine_jack.c:619
 msgid "Unable to access shared memory"
@@ -1232,7 +1222,6 @@ msgid "Unknown widget type for value\n"
 msgstr "Type de widget inconnu pour value\n"
 
 #: src/actions/edit_tracks_action.c:170
-#, fuzzy
 msgid "Unmute Track"
 msgstr "Activer la piste muette"
 
