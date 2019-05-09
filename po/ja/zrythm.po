@@ -6,9 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: alex@zrythm.org\n"
 "POT-Creation-Date: 2019-05-05 01:37+0100\n"
-"PO-Revision-Date: 2019-05-05 00:34+0000\n"
+"PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Japanese <https://translate.zrythm.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -1148,7 +1148,6 @@ msgid "Tool"
 msgstr "ツール"
 
 #: src/gui/widgets/inspector_track.c:87
-#, fuzzy
 msgid "Track"
 msgstr "トラック"
 
