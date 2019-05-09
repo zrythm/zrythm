@@ -2,18 +2,22 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # Weblate <noreply@weblate.org>, 2019.
+# Weblate Admin <weblate.admin@zrythm.org>, 2019.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: alex@zrythm.org\n"
 "POT-Creation-Date: 2019-05-05 01:37+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2019-05-09 12:18+0000\n"
+"Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
+"Language-Team: Korean <https://translate.zrythm.org/projects/zrythm/zrythm/"
+"ko/>\n"
 "Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 3.6.1\n"
 
 #: src/actions/create_tracks_action.c:74
 #, c-format
@@ -589,8 +593,9 @@ msgid "Main Window"
 msgstr ""
 
 #: src/gui/widgets/header_bar.c:383
+#, fuzzy
 msgid "Manual"
-msgstr ""
+msgstr "사용매뉴얼"
 
 #: src/project.c:163 src/audio/track.c:742
 msgid "Master"
@@ -1223,7 +1228,7 @@ msgstr ""
 
 #: resources/ui/header_bar.ui:28 resources/ui/export_dialog.ui:120
 msgid "Zrythm"
-msgstr ""
+msgstr "Zrythm"
 
 #: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
 #: src/utils/dialogs.c:74 src/actions/actions.c:522
