@@ -26,6 +26,7 @@
 
 #include "actions/undoable_action.h"
 #include "actions/create_timeline_selections_action.h"
+#include "actions/edit_timeline_selections_action.h"
 #include "actions/undo_manager.h"
 #include "actions/duplicate_timeline_selections_action.h"
 #include "actions/move_timeline_selections_action.h"
@@ -1763,6 +1764,23 @@ timeline_arranger_widget_on_drag_end (
     }
 
   if (ar_prv->action ==
+        UI_OVERLAY_ACTION_RESIZING_L)
+    {
+      UndoableAction * ua =
+        (UndoableAction *)
+        edit_timeline_selections_action_new (
+          TL_SELECTIONS,
+          ETS_TYPE_RESIZE_L,
+          position_to_ticks (
+            &TL_SELECTIONS->
+              transient_regions[0]->start_pos) -
+          position_to_ticks (
+            &TL_SELECTIONS->
+              regions[0]->start_pos));
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
+    }
+  else if (ar_prv->action ==
         UI_OVERLAY_ACTION_STARTING_MOVING)
     {
       /* if something was clicked with ctrl without

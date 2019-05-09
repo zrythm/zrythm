@@ -25,19 +25,32 @@
 typedef struct TimelineSelections
   TimelineSelections;
 
+typedef enum EditTimelineSelectionsType
+{
+  ETS_TYPE_RESIZE_L,
+  ETS_TYPE_RESIZE_R,
+} EditTimelineSelectionsType;
+
 typedef struct EditTimelineSelectionsAction
 {
   UndoableAction              parent_instance;
 
   /** Timeline selections clone. */
   TimelineSelections * ts;
+
+  /** Type of action. */
+  EditTimelineSelectionsType type;
+
+  /** Amount to resize in ticks (negative for
+   * backwards). */
+  long                 ticks;
 } EditTimelineSelectionsAction;
 
 UndoableAction *
 edit_timeline_selections_action_new (
   TimelineSelections * ts,
-  long                 ticks,
-  int                  delta);
+  EditTimelineSelectionsType type,
+  long                 ticks);
 
 int
 edit_timeline_selections_action_do (

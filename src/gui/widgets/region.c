@@ -70,12 +70,8 @@ region_draw_cb (RegionWidget * self,
     color->red,
     color->green,
     color->blue,
-    1.0);
-  if (r->transient)
-    cairo_set_source_rgba (
-      cr, 0, 1, 0,
-      0.7);
-  else if (region_is_selected (r))
+    r->transient ? 0.7 : 1.0);
+  if (region_is_selected (r))
     {
       cairo_set_source_rgba (
         cr,

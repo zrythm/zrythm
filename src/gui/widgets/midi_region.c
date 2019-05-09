@@ -186,8 +186,14 @@ midi_region_draw_cb (
         }
     }
 
-  char * str =
-    g_strdup (rw_prv->region->name);
+  char * str;
+  if (DEBUGGING && rw_prv->region->transient)
+    str =
+      g_strdup_printf (
+        "%s [t]", rw_prv->region->name);
+  else
+    str =
+      g_strdup (rw_prv->region->name);
 
   GdkRGBA c2;
   gdk_rgba_parse (&c2, "#323232");

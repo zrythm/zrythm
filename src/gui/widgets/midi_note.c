@@ -86,12 +86,8 @@ midi_note_draw_cb (
     color->red,
     color->green,
     color->blue,
-    1);
-  if (self->midi_note->transient)
-    cairo_set_source_rgba (
-      cr, 0, 1, 0,
-      0.7);
-  else if (midi_note_is_selected (self->midi_note))
+    self->midi_note->transient ? 0.7 : 1);
+  if (midi_note_is_selected (self->midi_note))
     {
       cairo_set_source_rgba (
         cr,
@@ -112,6 +108,14 @@ midi_note_draw_cb (
       chord_note_to_string (
         self->midi_note->val % 12),
       self->midi_note->val / 12 - 2);
+  if (DEBUGGING && self->midi_note->transient)
+    {
+      char * tmp =
+        g_strdup_printf (
+          "%s [t]", str);
+      g_free (str);
+      str = tmp;
+    }
 
   GdkRGBA c2;
   gdk_rgba_parse (&c2, "#323232");

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-09 15:26+0100\n"
+"POT-Creation-Date: 2019-05-09 18:30+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Japanese <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -330,7 +330,7 @@ msgid "Duplicate Object(s)"
 msgstr "オブジェクトを複製"
 
 #: src/actions/edit_midi_arranger_selections_action.c:64
-#: src/actions/edit_timeline_selections_action.c:66
+#: src/actions/edit_timeline_selections_action.c:128
 #, fuzzy
 msgid "Edit Object(s)"
 msgstr "オブジェクトを編集"
@@ -872,7 +872,7 @@ msgstr "前のコマンドをやり直す"
 msgid "Region"
 msgstr "リージョン"
 
-#: src/gui/widgets/region.c:184
+#: src/gui/widgets/region.c:180
 msgid ""
 "Region - Click and drag to move around (hold Shift to disable snapping) - "
 "Double click to bring up the clip editor"

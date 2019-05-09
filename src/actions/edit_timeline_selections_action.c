@@ -29,8 +29,8 @@
 UndoableAction *
 edit_timeline_selections_action_new (
   TimelineSelections * ts,
-  long                 ticks,
-  int                  delta)
+  EditTimelineSelectionsType type,
+  long                 ticks)
 {
 	EditTimelineSelectionsAction * self =
     calloc (1, sizeof (
@@ -40,6 +40,8 @@ edit_timeline_selections_action_new (
 	  UNDOABLE_ACTION_TYPE_EDIT_TL_SELECTIONS;
 
   self->ts = timeline_selections_clone (ts);
+  self->type = type;
+  self->ticks = ticks;
 
   return ua;
 }
@@ -48,6 +50,36 @@ int
 edit_timeline_selections_action_do (
 	EditTimelineSelectionsAction * self)
 {
+  Region * region;
+  for (int i = 0; i < self->ts->num_regions; i++)
+    {
+      /* get the actual region */
+      region = region_find (self->ts->regions[i]);
+
+      switch (self->type)
+        {
+        case ETS_TYPE_RESIZE_L:
+          /* resize */
+          region_resize (
+            region,
+            1,
+            - self->ticks);
+          break;
+        case ETS_TYPE_RESIZE_R:
+          /* resize */
+          region_resize (
+            region,
+            0,
+            - self->ticks);
+          break;
+        default:
+          g_warn_if_reached ();
+          break;
+        }
+    }
+  EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
+               NULL);
+
   return 0;
 }
 
@@ -55,6 +87,36 @@ int
 edit_timeline_selections_action_undo (
 	EditTimelineSelectionsAction * self)
 {
+  Region * region;
+  for (int i = 0; i < self->ts->num_regions; i++)
+    {
+      /* get the actual region */
+      region = region_find (self->ts->regions[i]);
+
+      switch (self->type)
+        {
+        case ETS_TYPE_RESIZE_L:
+          /* resize */
+          region_resize (
+            region,
+            1,
+            self->ticks);
+          break;
+        case ETS_TYPE_RESIZE_R:
+          /* resize */
+          region_resize (
+            region,
+            0,
+            self->ticks);
+          break;
+        default:
+          g_warn_if_reached ();
+          break;
+        }
+    }
+  EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
+               NULL);
+
   return 0;
 }
 

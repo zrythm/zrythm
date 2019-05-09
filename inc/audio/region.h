@@ -327,12 +327,15 @@ region_get_loop_length_in_ticks (
  * from 0.0.0.0 to loop_end (it will traverse the
  * loops to find the appropriate position),
  * otherwise it may exceed loop_end.
+ *
+ * @param timeline_pos Timeline position.
+ * @param local_pos Position to fill.
  */
 void
 region_timeline_pos_to_local (
-  Region *   region, ///< the region
-  Position * timeline_pos, ///< timeline position
-  Position * local_pos, ///< position to fill
+  Region *   region,
+  Position * timeline_pos,
+  Position * local_pos,
   int        normalize);
 
 /**
@@ -344,9 +347,13 @@ region_get_num_loops (
   Region * region,
   int      count_incomplete_loops);
 
+/**
+ * Shifts the Region by given number of ticks on x,
+ * and delta number of visible tracks on y.
+ */
 void
 region_shift (
-  Region * region,
+  Region * self,
   long ticks,
   int  delta);
 
@@ -358,6 +365,20 @@ region_init (Region *   region,
              RegionType type,
              Position * start_pos,
              Position * end_pos);
+
+/**
+ * Resizes the region on the left side or right side
+ * by given amount of ticks.
+ *
+ * @param left 1 to resize left side, 0 to resize right
+ *   side.
+ * @param ticks Number of ticks to resize.
+ */
+void
+region_resize (
+  Region * r,
+  int      left,
+  long     ticks);
 
 /**
  * Clamps position then sets it.

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-09 15:26+0100\n"
+"POT-Creation-Date: 2019-05-09 18:30+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrythm dot org>\n"
 "Language-Team: Italian\n"
@@ -310,7 +310,7 @@ msgid "Duplicate Object(s)"
 msgstr ""
 
 #: src/actions/edit_midi_arranger_selections_action.c:64
-#: src/actions/edit_timeline_selections_action.c:66
+#: src/actions/edit_timeline_selections_action.c:128
 msgid "Edit Object(s)"
 msgstr ""
 
@@ -838,7 +838,7 @@ msgstr ""
 msgid "Region"
 msgstr ""
 
-#: src/gui/widgets/region.c:184
+#: src/gui/widgets/region.c:180
 msgid ""
 "Region - Click and drag to move around (hold Shift to disable snapping) - "
 "Double click to bring up the clip editor"
