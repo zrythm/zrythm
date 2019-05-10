@@ -17,12 +17,13 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "actions/create_midi_arranger_selections_action.h"
 #include "audio/track.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/midi_arranger.h"
 #include "project.h"
-#include "actions/create_midi_arranger_selections_action.h"
+#include "utils/flags.h"
 
 #include <glib/gi18n.h>
 
@@ -50,9 +51,11 @@ int
 create_midi_arranger_selections_action_do (
   CreateMidiArrangerSelectionsAction * self)
 {
+  g_message ("CALLING");
   MidiNote * mn;
 	for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
+  g_message ("CALLING %d", i);
       /* if already created (this should be the case
        * the first time) then move on */
       if (midi_note_find (self->mas->midi_notes[i]))
@@ -63,12 +66,19 @@ create_midi_arranger_selections_action_do (
         midi_note_clone (
           self->mas->midi_notes[i]);
 
+      /* find the region */
+      mn->region =
+        region_find_by_name (mn->region_name);
+      g_message ("region %p", mn->region);
+      g_return_val_if_fail (mn->region, -1);
+
       /* add it to the region */
       midi_region_add_midi_note (
         mn->region,
         mn);
+      g_message ("CREATED");
     }
-  EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
+  EVENTS_PUSH (ET_MA_SELECTIONS_CHANGED,
                NULL);
 
   return 0;
@@ -86,9 +96,11 @@ create_midi_arranger_selections_action_undo (
 
       /* remove it */
       midi_region_remove_midi_note (
-        mn->region, mn);
+        mn->region, mn, F_FREE, F_NO_PUBLISH_EVENTS);
     }
-  EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
+
+  EVENTS_PUSH (ET_MIDI_NOTE_REMOVED, NULL);
+  EVENTS_PUSH (ET_MA_SELECTIONS_CHANGED,
                NULL);
 
   return 0;

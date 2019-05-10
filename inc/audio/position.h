@@ -215,6 +215,13 @@ position_get_midway_pos (Position * start_pos,
 char *
 position_stringize (Position * pos);
 
+/**
+ * Prints the Position in the "0.0.0.0" form.
+ */
+void
+position_print_simple (
+  Position * pos);
+
 SERIALIZE_INC (Position, position)
 DESERIALIZE_INC (Position, position)
 PRINT_YAML_INC (Position, position)

@@ -66,7 +66,7 @@ move_midi_arranger_selections_action_do (
         self->ticks,
         self->delta);
     }
-  EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
+  EVENTS_PUSH (ET_MA_SELECTIONS_CHANGED,
                NULL);
 
   return 0;
@@ -89,7 +89,7 @@ move_midi_arranger_selections_action_undo (
         - self->ticks,
         - self->delta);
     }
-  EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
+  EVENTS_PUSH (ET_MA_SELECTIONS_CHANGED,
                NULL);
 
   return 0;

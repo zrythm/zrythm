@@ -116,18 +116,39 @@ midi_note_clone (
 }
 
 /**
+ * For debugging.
+ */
+void
+midi_note_print (
+  MidiNote * mn)
+{
+  g_message (
+    "MidiNote: start pos %d.%d.%d.%d "
+    "end pos %d.%d.%d.%d (transient? %d)",
+    mn->start_pos.bars,
+    mn->start_pos.beats,
+    mn->start_pos.sixteenths,
+    mn->start_pos.ticks,
+    mn->end_pos.bars,
+    mn->end_pos.beats,
+    mn->end_pos.sixteenths,
+    mn->end_pos.ticks,
+    mn->transient);
+}
+
+/**
  * Returns if MidiNote is in MidiArrangerSelections.
  */
 int
 midi_note_is_selected (MidiNote * self)
 {
   if (array_contains (
-        MIDI_ARRANGER_SELECTIONS->midi_notes,
-        MIDI_ARRANGER_SELECTIONS->num_midi_notes,
+        MA_SELECTIONS->midi_notes,
+        MA_SELECTIONS->num_midi_notes,
         self) ||
       array_contains (
-        MIDI_ARRANGER_SELECTIONS->transient_notes,
-        MIDI_ARRANGER_SELECTIONS->num_midi_notes,
+        MA_SELECTIONS->transient_notes,
+        MA_SELECTIONS->num_midi_notes,
         self))
     return 1;
 
@@ -145,8 +166,8 @@ midi_note_is_visible (MidiNote * self)
   if (ar_prv->action ==
         UI_OVERLAY_ACTION_MOVING &&
       array_contains (
-        MIDI_ARRANGER_SELECTIONS->midi_notes,
-        MIDI_ARRANGER_SELECTIONS->num_midi_notes,
+        MA_SELECTIONS->midi_notes,
+        MA_SELECTIONS->num_midi_notes,
         self))
     return 0;
 
@@ -171,6 +192,26 @@ midi_note_is_equal (
     src->transient == dest->transient &&
     !g_strcmp0 (src->region->name,
                 dest->region->name);
+}
+
+/**
+ * Resizes the MidiNote on the left side or right side
+ * by given amount of ticks.
+ *
+ * @param left 1 to resize left side, 0 to resize right
+ *   side.
+ * @param ticks Number of ticks to resize.
+ */
+void
+midi_note_resize (
+  MidiNote * r,
+  int      left,
+  long     ticks)
+{
+  if (left)
+    position_add_ticks (&r->start_pos, ticks);
+  else
+    position_add_ticks (&r->end_pos, ticks);
 }
 
 /**
@@ -204,25 +245,31 @@ midi_note_delete (MidiNote * midi_note)
 
 /**
  * Clamps position then sets it.
- * TODO
  */
 void
 midi_note_set_start_pos (MidiNote * midi_note,
                       Position * pos)
 {
-  position_set_to_pos (&midi_note->start_pos,
-                       pos);
+  if (position_to_ticks (&midi_note->end_pos) -
+      position_to_ticks (pos) >= 2)
+    position_set_to_pos (&midi_note->start_pos,
+                         pos);
 }
 
 /**
  * Clamps position then sets it.
  */
 void
-midi_note_set_end_pos (MidiNote * midi_note,
-                    Position * pos)
+midi_note_set_end_pos (
+  MidiNote * midi_note,
+  Position * pos)
 {
-  position_set_to_pos (&midi_note->end_pos,
-                       pos);
+  /* FIXME using 16 minimum ticks for now */
+  if (position_to_ticks (pos) -
+      position_to_ticks (&midi_note->start_pos) >=
+      2)
+    position_set_to_pos (&midi_note->end_pos,
+                         pos);
 }
 
 /**

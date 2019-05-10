@@ -17,8 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __UNDO_DUPLICATE_MIDI_ARRANGER_SELECTIONS_ACTION_H__
-#define __UNDO_DUPLICATE_MIDI_ARRANGER_SELECTIONS_ACTION_H__
+#ifndef __UNDO_DUPLICATE_MA_SELECTIONS_ACTION_H__
+#define __UNDO_DUPLICATE_MA_SELECTIONS_ACTION_H__
 
 #include "actions/undoable_action.h"
 

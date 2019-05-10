@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-10 12:50+0100\n"
+"POT-Creation-Date: 2019-05-10 20:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -242,7 +242,7 @@ msgid "Create %s Track"
 msgstr ""
 
 #: src/actions/create_timeline_selections_action.c:116
-#: src/actions/create_midi_arranger_selections_action.c:102
+#: src/actions/create_midi_arranger_selections_action.c:114
 msgid "Create Object(s)"
 msgstr ""
 
@@ -269,7 +269,7 @@ msgid "Delete %d Tracks"
 msgstr ""
 
 #: src/actions/delete_timeline_selections_action.c:102
-#: src/actions/delete_midi_arranger_selections_action.c:100
+#: src/actions/delete_midi_arranger_selections_action.c:103
 msgid "Delete Object(s)"
 msgstr ""
 
@@ -303,12 +303,8 @@ msgid "Dummy"
 msgstr ""
 
 #: src/actions/duplicate_timeline_selections_action.c:125
-#: src/actions/duplicate_midi_arranger_selections_action.c:112
+#: src/actions/duplicate_midi_arranger_selections_action.c:116
 msgid "Duplicate Object(s)"
-msgstr ""
-
-#: src/actions/edit_midi_arranger_selections_action.c:64
-msgid "Edit Object(s)"
 msgstr ""
 
 #: resources/ui/preferences.ui:331
@@ -867,6 +863,10 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:133
 msgid "Resets the path to the default"
+msgstr ""
+
+#: src/actions/edit_midi_arranger_selections_action.c:144
+msgid "Resize Midi Note(s)"
 msgstr ""
 
 #: src/actions/edit_timeline_selections_action.c:131

@@ -775,7 +775,11 @@ timeline_arranger_widget_on_drag_begin_region_hit (
     {
       int transients =
         arranger_widget_is_in_moving_operation (
-          Z_ARRANGER_WIDGET (self));
+          Z_ARRANGER_WIDGET (self)) ||
+        ar_prv->action ==
+          UI_OVERLAY_ACTION_RESIZING_R ||
+        ar_prv->action ==
+          UI_OVERLAY_ACTION_RESIZING_L;
 
       /* if ctrl held & not selected, add to
        * selections */
@@ -1053,10 +1057,12 @@ timeline_arranger_widget_create_region (
                region);
   ar_prv->action =
     UI_OVERLAY_ACTION_CREATING_RESIZING_R;
+  position_set_to_pos (
+    &self->region_end_poses[0],
+    &region->end_pos);
   ARRANGER_WIDGET_SELECT_REGION (
     self, region, F_SELECT,
     F_NO_APPEND, F_TRANSIENTS);
-  g_message  ("CREATING RESIZING R");
 }
 
 void
@@ -1340,13 +1346,12 @@ timeline_arranger_widget_snap_regions_l (
 
   /* get delta with first clicked region's start
    * pos */
-  Position delta;
+  long delta;
   g_warn_if_fail (self->start_region_clone);
-  position_from_ticks (
-    &delta,
+  delta =
     position_to_ticks (pos) -
     position_to_ticks (
-      &self->start_region_clone->start_pos));
+      &self->start_region_clone->start_pos);
 
   /* new start pos for each region, calculated by
    * adding delta to the region's original start
@@ -1358,8 +1363,7 @@ timeline_arranger_widget_snap_regions_l (
     &new_start_pos, \
     &self->region_start_poses[i]); \
   position_add_ticks ( \
-    &new_start_pos, \
-    position_to_ticks (&delta));
+    &new_start_pos, delta);
 
   /* transient regions */
   for (i = 0;
@@ -1442,24 +1446,22 @@ timeline_arranger_widget_snap_regions_r (
 
   /* get delta with first clicked region's end
    * pos */
-  Position delta;
+  long delta;
   if (ar_prv->action ==
         UI_OVERLAY_ACTION_CREATING_RESIZING_R)
     {
-      position_from_ticks (
-        &delta,
+      delta =
         position_to_ticks (pos) -
         position_to_ticks (
-          &self->region_end_poses[0]));
+          &self->region_end_poses[0]);
     }
   else
     {
       g_warn_if_fail (self->start_region_clone);
-      position_from_ticks (
-        &delta,
+      delta =
         position_to_ticks (pos) -
         position_to_ticks (
-          &self->start_region_clone->end_pos));
+          &self->start_region_clone->end_pos);
     }
 
   /* new end pos for each region, calculated by
@@ -1472,8 +1474,7 @@ timeline_arranger_widget_snap_regions_r (
     &new_end_pos, \
     &self->region_end_poses[i]); \
   position_add_ticks ( \
-    &new_end_pos, \
-    position_to_ticks (&delta));
+    &new_end_pos, delta);
 
   /* actual regions */
   if (ar_prv->action ==
@@ -1903,10 +1904,6 @@ timeline_arranger_widget_on_drag_end (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  g_message ("N CLICKS %d", ar_prv->n_press);
-
-  /*Region * region;*/
-  /*ZChord * chord;*/
   AutomationPoint * ap;
   for (int i = 0;
        i < TL_SELECTIONS->
@@ -2062,6 +2059,9 @@ timeline_arranger_widget_on_drag_end (
       region_free (self->start_region_clone);
       self->start_region_clone = NULL;
     }
+
+  EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
+               NULL);
 }
 
 static void

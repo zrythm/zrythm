@@ -593,8 +593,8 @@ arranger_widget_select (
       if (type == MIDI_NOTE_WIDGET_TYPE)
         {
           array =
-            (void **) MIDI_ARRANGER_SELECTIONS->midi_notes;
-          num = &MIDI_ARRANGER_SELECTIONS->num_midi_notes;
+            (void **) MA_SELECTIONS->midi_notes;
+          num = &MA_SELECTIONS->num_midi_notes;
         }
     }
   if (audio_arranger)
@@ -897,7 +897,7 @@ on_key_action (
   if (midi_arranger)
     {
       num =
-        MIDI_ARRANGER_SELECTIONS->num_midi_notes;
+        MA_SELECTIONS->num_midi_notes;
       if (event->state & GDK_CONTROL_MASK &&
           event->type == GDK_KEY_PRESS &&
           event->keyval == GDK_KEY_d &&
@@ -915,7 +915,7 @@ on_key_action (
         {
           UndoableAction * shift_up_action =
             move_midi_arranger_selections_action_new (
-              MIDI_ARRANGER_SELECTIONS, 0, 1);
+              MA_SELECTIONS, 0, 1);
           undo_manager_perform (
           UNDO_MANAGER, shift_up_action);
           return TRUE;
@@ -926,7 +926,7 @@ on_key_action (
         {
           UndoableAction * shift_down_action =
             move_midi_arranger_selections_action_new (
-              MIDI_ARRANGER_SELECTIONS, 0, -1);
+              MA_SELECTIONS, 0, -1);
           undo_manager_perform (
           UNDO_MANAGER, shift_down_action);
           return TRUE;
@@ -1242,7 +1242,7 @@ drag_begin (GtkGestureDrag *   gesture,
         }
       else if (midi_arranger)
         {
-          midi_arranger_widget_find_start_poses (
+          midi_arranger_widget_set_init_poses (
             midi_arranger);
         }
       else if (vel_widget)
@@ -1323,7 +1323,7 @@ drag_begin (GtkGestureDrag *   gesture,
                NULL);
 
   /*g_message ("drag begin %d",*/
-             /*MIDI_ARRANGER_SELECTIONS->num_midi_notes);*/
+             /*MA_SELECTIONS->num_midi_notes);*/
   arranger_widget_refresh_cursor (self);
 }
 
@@ -1475,6 +1475,8 @@ drag_update (GtkGestureDrag * gesture,
         }
       else if (midi_arranger)
         {
+          midi_arranger_widget_update_visibility (
+            midi_arranger);
           midi_arranger_widget_snap_midi_notes_l (
             midi_arranger,
             &pos);
@@ -1512,6 +1514,8 @@ drag_update (GtkGestureDrag * gesture,
         }
       else if (ARRANGER_IS_MIDI (self))
         {
+          midi_arranger_widget_update_visibility (
+            midi_arranger);
           midi_arranger_widget_snap_midi_notes_r (
             Z_MIDI_ARRANGER_WIDGET (self),
             &pos);
@@ -1590,7 +1594,7 @@ drag_update (GtkGestureDrag * gesture,
             offset_y);
           auto_scroll (self);
 
-          EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
+          EVENTS_PUSH (ET_MA_SELECTIONS_CHANGED,
                        NULL);
 //arranger_widget_refresh(self);
         }
@@ -1698,7 +1702,8 @@ drag_end (GtkGestureDrag *gesture,
                gpointer        user_data)
 {
   g_message ("drag end");
-  ArrangerWidget * self = (ArrangerWidget *) user_data;
+  ArrangerWidget * self =
+    (ArrangerWidget *) user_data;
   GET_PRIVATE;
 
   /* reset start coordinates and offsets */
@@ -1745,10 +1750,6 @@ drag_end (GtkGestureDrag *gesture,
 
   /* queue redraw to hide the selection */
   gtk_widget_queue_draw (GTK_WIDGET (ar_prv->bg));
-
-  /* FIXME only call when selections changed. */
-  EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
-               NULL);
 
   arranger_widget_refresh_cursor (self);
 }

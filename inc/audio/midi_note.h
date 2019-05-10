@@ -142,6 +142,27 @@ void
 midi_note_delete (MidiNote * midi_note);
 
 /**
+ * Resizes the MidiNote on the left side or right side
+ * by given amount of ticks.
+ *
+ * @param left 1 to resize left side, 0 to resize right
+ *   side.
+ * @param ticks Number of ticks to resize.
+ */
+void
+midi_note_resize (
+  MidiNote * r,
+  int      left,
+  long     ticks);
+
+/**
+ * For debugging.
+ */
+void
+midi_note_print (
+  MidiNote * mn);
+
+/**
  * Returns if MidiNote is in MidiArrangerSelections.
  */
 int

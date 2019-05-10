@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-10 12:50+0100\n"
+"POT-Creation-Date: 2019-05-10 20:20+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -258,7 +258,7 @@ msgid "Create %s Track"
 msgstr "Créer %s Piste"
 
 #: src/actions/create_timeline_selections_action.c:116
-#: src/actions/create_midi_arranger_selections_action.c:102
+#: src/actions/create_midi_arranger_selections_action.c:114
 msgid "Create Object(s)"
 msgstr "Créer un ou plusieurs objet(s)"
 
@@ -285,7 +285,7 @@ msgid "Delete %d Tracks"
 msgstr "Supprimer %d Pistes"
 
 #: src/actions/delete_timeline_selections_action.c:102
-#: src/actions/delete_midi_arranger_selections_action.c:100
+#: src/actions/delete_midi_arranger_selections_action.c:103
 #, fuzzy
 msgid "Delete Object(s)"
 msgstr "Supprimer l'objet"
@@ -320,13 +320,9 @@ msgid "Dummy"
 msgstr "Factice"
 
 #: src/actions/duplicate_timeline_selections_action.c:125
-#: src/actions/duplicate_midi_arranger_selections_action.c:112
+#: src/actions/duplicate_midi_arranger_selections_action.c:116
 msgid "Duplicate Object(s)"
 msgstr "Copier l'objet"
-
-#: src/actions/edit_midi_arranger_selections_action.c:64
-msgid "Edit Object(s)"
-msgstr "Éditer l'objet"
 
 #: resources/ui/preferences.ui:331
 msgid "Editing"
@@ -909,6 +905,11 @@ msgstr "Réinitialiser"
 msgid "Resets the path to the default"
 msgstr "Réinitialiser l'emplacement par défaut"
 
+#: src/actions/edit_midi_arranger_selections_action.c:144
+#, fuzzy
+msgid "Resize Midi Note(s)"
+msgstr "Créer un ou plusieurs objet(s)"
+
 #: src/actions/edit_timeline_selections_action.c:131
 #, fuzzy
 msgid "Resize Object(s)"
@@ -1392,6 +1393,9 @@ msgstr "nom_de_région"
 #: resources/ui/audio_clip_editor.ui:56 resources/ui/audio_clip_editor.ui:68
 msgid "stuff"
 msgstr "substance"
+
+#~ msgid "Edit Object(s)"
+#~ msgstr "Éditer l'objet"
 
 #~ msgid "Synth1 long name name"
 #~ msgstr " nom du long nom du Synthétiseur 1 "

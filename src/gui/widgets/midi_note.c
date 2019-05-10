@@ -271,7 +271,7 @@ midi_note_widget_select (
         /*GTK_STATE_FLAG_SELECTED,*/
         /*0);*/
       midi_arranger_selections_add_note (
-        MIDI_ARRANGER_SELECTIONS,
+        MA_SELECTIONS,
         self->midi_note,
         with_transients);
     }
@@ -281,7 +281,7 @@ midi_note_widget_select (
         /*GTK_WIDGET (self),*/
         /*GTK_STATE_FLAG_SELECTED);*/
       midi_arranger_selections_remove_note (
-        MIDI_ARRANGER_SELECTIONS,
+        MA_SELECTIONS,
         self->midi_note);
     }
   /*gtk_widget_queue_draw (GTK_WIDGET (self));*/

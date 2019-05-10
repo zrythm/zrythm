@@ -17,13 +17,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __ACTIONS_MIDI_ARRANGER_SELECTIONS_H__
-#define __ACTIONS_MIDI_ARRANGER_SELECTIONS_H__
+#ifndef __ACTIONS_MA_SELECTIONS_H__
+#define __ACTIONS_MA_SELECTIONS_H__
 
 #include "audio/midi_note.h"
 #include "utils/yaml.h"
 
-#define MIDI_ARRANGER_SELECTIONS \
+#define MA_SELECTIONS \
   (&PROJECT->midi_arranger_selections)
 
 /**

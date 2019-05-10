@@ -469,6 +469,21 @@ position_stringize (Position * pos)
     pos->ticks);
 }
 
+/**
+ * Prints the Position in the "0.0.0.0" form.
+ */
+void
+position_print_simple (
+  Position * pos)
+{
+  g_message (
+    "%d.%d.%d.%d",
+    pos->bars,
+    pos->beats,
+    pos->sixteenths,
+    pos->ticks);
+}
+
 SERIALIZE_SRC (Position, position)
 DESERIALIZE_SRC (Position, position)
 PRINT_YAML_SRC (Position, position)

@@ -88,9 +88,7 @@ G_DECLARE_DERIVABLE_TYPE (ArrangerWidget,
  */
 #define ARRANGER_SET_SELECTION_VISIBILITY(array, \
   transient_array,size,obj,transient_obj) \
-  for (int i = 0; \
-       i < size; \
-       i++) \
+  for (int i = 0; i < size; i++) \
     { \
       obj = array[i]; \
       transient_obj = transient_array[i]; \

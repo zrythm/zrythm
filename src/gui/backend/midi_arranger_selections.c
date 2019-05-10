@@ -108,7 +108,9 @@ remove_transient (
   mas->transient_notes[index] = NULL;
   midi_region_remove_midi_note (
     transient->region,
-    transient);
+    transient,
+    F_FREE,
+    F_NO_PUBLISH_EVENTS);
 }
 
 /**
@@ -123,6 +125,8 @@ midi_arranger_selections_remove_transients (
     {
       remove_transient (mas, i);
     }
+
+  EVENTS_PUSH (ET_MIDI_NOTE_REMOVED, NULL);
 }
 
 /**

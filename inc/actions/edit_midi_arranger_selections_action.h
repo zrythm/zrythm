@@ -17,13 +17,19 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __UNDO_EDIT_MIDI_ARRANGER_SELECTIONS_ACTION_H__
-#define __UNDO_EDIT_MIDI_ARRANGER_SELECTIONS_ACTION_H__
+#ifndef __UNDO_EDIT_MA_SELECTIONS_ACTION_H__
+#define __UNDO_EDIT_MA_SELECTIONS_ACTION_H__
 
 #include "actions/undoable_action.h"
 
 typedef struct MidiArrangerSelections
   MidiArrangerSelections;
+
+typedef enum EditMidiArrangerSelectionsType
+{
+  EMAS_TYPE_RESIZE_L,
+  EMAS_TYPE_RESIZE_R,
+} EditMidiArrangerSelectionsType;
 
 typedef struct EditMidiArrangerSelectionsAction
 {
@@ -31,11 +37,20 @@ typedef struct EditMidiArrangerSelectionsAction
 
   /** Clone of selections. */
   MidiArrangerSelections * mas;
+
+  /** Type of action. */
+  EditMidiArrangerSelectionsType   type;
+
+  /** Ticks when resizing. */
+  long                   ticks;
+
 } EditMidiArrangerSelectionsAction;
 
 UndoableAction *
 edit_midi_arranger_selections_action_new (
-  MidiArrangerSelections * mas);
+  MidiArrangerSelections * mas,
+  EditMidiArrangerSelectionsType type,
+  long                     ticks);
 
 int
 edit_midi_arranger_selections_action_do (

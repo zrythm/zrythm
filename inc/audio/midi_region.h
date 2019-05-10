@@ -63,6 +63,15 @@ midi_region_find_unended_note (MidiRegion * self,
                                int          pitch);
 
 /**
+ * Prints the MidiNotes in the Region.
+ *
+ * Used for debugging.
+ */
+void
+midi_region_print_midi_notes (
+  Region * self);
+
+/**
  * Gets first midi note
  */
 MidiNote *
@@ -91,13 +100,17 @@ midi_region_get_lowest_midi_note (
 	MidiRegion * region);
 
 /**
- * Removes the MIDI note and its components
- * completely.
+ * Removes the MIDI note from the Region.
+ *
+ * @param free Also free the MidiNote.
+ * @param pub_event Publish an event.
  */
 void
 midi_region_remove_midi_note (
   Region *   region,
-  MidiNote * midi_note);
+  MidiNote * midi_note,
+  int        free,
+  int        pub_event);
 
 /**
  * Removes all MIDI ntoes and their components
