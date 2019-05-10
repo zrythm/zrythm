@@ -72,6 +72,10 @@ create_plugins_action_do (
         plugin_new_from_descr (&self->descr);
       g_return_val_if_fail (pl, -1);
 
+      /* set track */
+      plugin_set_track (
+        pl, TRACKLIST->tracks[self->track_pos]);
+
       /* instantiate */
       int ret = plugin_instantiate (pl);
       g_return_val_if_fail (!ret, -1);

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-10 20:20+0100\n"
+"POT-Creation-Date: 2019-05-11 00:24+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Arabic <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -231,12 +231,12 @@ msgstr ""
 msgid "Create %d %s Tracks"
 msgstr ""
 
-#: src/actions/create_plugins_action.c:139
+#: src/actions/create_plugins_action.c:143
 #, c-format
 msgid "Create %d %ss"
 msgstr ""
 
-#: src/actions/create_plugins_action.c:135
+#: src/actions/create_plugins_action.c:139
 #, c-format
 msgid "Create %s"
 msgstr ""

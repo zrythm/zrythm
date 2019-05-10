@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-10 20:20+0100\n"
+"POT-Creation-Date: 2019-05-11 00:24+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -242,12 +242,12 @@ msgstr "Copier la sélection dans le presse-papier"
 msgid "Create %d %s Tracks"
 msgstr "Créer %d %s Pistes"
 
-#: src/actions/create_plugins_action.c:139
+#: src/actions/create_plugins_action.c:143
 #, c-format
 msgid "Create %d %ss"
 msgstr "Créer %d %s"
 
-#: src/actions/create_plugins_action.c:135
+#: src/actions/create_plugins_action.c:139
 #, fuzzy, c-format
 msgid "Create %s"
 msgstr "Créer %s"
