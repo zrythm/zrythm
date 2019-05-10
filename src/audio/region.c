@@ -501,7 +501,6 @@ region_resize (
     position_add_ticks (&r->start_pos, ticks);
   else
     position_add_ticks (&r->end_pos, ticks);
-
 }
 
 /**

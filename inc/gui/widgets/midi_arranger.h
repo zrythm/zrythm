@@ -66,6 +66,8 @@ typedef struct _MidiArrangerWidget
    */
   Position                 midi_note_start_poses[600];
 
+  Position                 midi_note_end_poses[600];
+
   /** The note currently hovering over */
   int                      hovered_note;
 } MidiArrangerWidget;
@@ -115,8 +117,12 @@ midi_arranger_widget_select_all (
   MidiArrangerWidget *  self,
   int               select);
 
+/**
+ * Fills in the positions that the MidiArranger
+ * remembers at the start of each drag.
+ */
 void
-midi_arranger_widget_find_start_poses (
+midi_arranger_widget_set_init_poses (
   MidiArrangerWidget * self);
 
 /**

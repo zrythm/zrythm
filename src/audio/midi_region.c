@@ -31,6 +31,7 @@
 #include "gui/widgets/region.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/objects.h"
 #include "utils/yaml.h"
 
 MidiRegion *
@@ -47,6 +48,26 @@ midi_region_new (
                end_pos);
 
   return midi_region;
+}
+
+/**
+ * Prints the MidiNotes in the Region.
+ *
+ * Used for debugging.
+ */
+void
+midi_region_print_midi_notes (
+  Region * self)
+{
+  MidiNote * mn;
+  for (int i = 0; i < self->num_midi_notes; i++)
+    {
+      mn = self->midi_notes[i];
+
+      g_message ("Note at %d",
+                 i);
+      midi_note_print (mn);
+    }
 }
 
 /**
@@ -168,18 +189,22 @@ midi_region_get_lowest_midi_note (MidiRegion * region)
 }
 
 /**
- * Removes the MIDI note and its components
- * completely.
+ * Removes the MIDI note from the Region.
+ *
+ * @param free Also free the MidiNote.
+ * @param pub_event Publish an event.
  */
 void
 midi_region_remove_midi_note (
   Region *   region,
-  MidiNote * midi_note)
+  MidiNote * midi_note,
+  int        free,
+  int        pub_event)
 {
-  if (MIDI_ARRANGER_SELECTIONS)
+  if (MA_SELECTIONS)
     {
       midi_arranger_selections_remove_note (
-        MIDI_ARRANGER_SELECTIONS,
+        MA_SELECTIONS,
         midi_note);
     }
   if (MIDI_ARRANGER->start_midi_note ==
@@ -189,8 +214,11 @@ midi_region_remove_midi_note (
   array_delete (region->midi_notes,
                 region->num_midi_notes,
                 midi_note);
+  if (free)
+    free_later (midi_note, midi_note_free);
 
-  midi_note_free (midi_note);
+  if (pub_event)
+    EVENTS_PUSH (ET_MIDI_NOTE_REMOVED, NULL);
 }
 
 /**

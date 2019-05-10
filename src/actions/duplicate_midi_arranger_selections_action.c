@@ -17,12 +17,13 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "actions/duplicate_midi_arranger_selections_action.h"
 #include "audio/track.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/midi_arranger.h"
 #include "project.h"
-#include "actions/duplicate_midi_arranger_selections_action.h"
+#include "utils/flags.h"
 
 #include <glib/gi18n.h>
 
@@ -67,7 +68,8 @@ duplicate_midi_arranger_selections_action_do (
       midi_note_shift (
         mn, self->ticks, self->delta);
     }
-  EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
+
+  EVENTS_PUSH (ET_MA_SELECTIONS_CHANGED,
                NULL);
 
   return 0;
@@ -96,9 +98,11 @@ duplicate_midi_arranger_selections_action_undo (
 
       /* remove it */
       midi_region_remove_midi_note (
-        mn->region, mn);
+        mn->region, mn, F_FREE, F_NO_PUBLISH_EVENTS);
     }
-  EVENTS_PUSH (ET_MIDI_ARRANGER_SELECTIONS_CHANGED,
+
+  EVENTS_PUSH (ET_MIDI_NOTE_REMOVED, NULL);
+  EVENTS_PUSH (ET_MA_SELECTIONS_CHANGED,
                NULL);
 
   return 0;

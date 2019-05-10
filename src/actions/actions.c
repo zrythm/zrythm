@@ -702,7 +702,7 @@ activate_delete (GSimpleAction *action,
     {
       UndoableAction * action =
         delete_midi_arranger_selections_action_new (
-          MIDI_ARRANGER_SELECTIONS);
+          MA_SELECTIONS);
       undo_manager_perform (
         UNDO_MANAGER, action);
     }

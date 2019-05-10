@@ -164,7 +164,7 @@ velocity_widget_select (
   int              select)
 {
   midi_arranger_selections_add_note (
-    MIDI_ARRANGER_SELECTIONS,
+    MA_SELECTIONS,
     self->velocity->midi_note,
     F_NO_TRANSIENTS);
   if (select)

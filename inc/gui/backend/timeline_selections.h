@@ -40,14 +40,6 @@ typedef struct TimelineSelections
   Region *                 transient_regions[600];
   int                      num_regions;
 
-  /** Highest selected region */
-  //Region *                 top_region;
-  //int                      top_region_id;
-
-  /** Lowest selected region */
-  //Region *                 bot_region;
-  //int                      bot_region_id;
-
   /** Automation points acting upon */
   AutomationPoint *        aps[600];
   AutomationPoint *        transient_aps[600];

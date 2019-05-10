@@ -785,7 +785,7 @@ events_process (void * data)
         case ET_TRACK_ADDED:
           on_track_added ((Track *) ev->arg);
           break;
-        case ET_MIDI_ARRANGER_SELECTIONS_CHANGED:
+        case ET_MA_SELECTIONS_CHANGED:
            on_midi_note_selection_changed();
             break;
         case ET_MIDI_NOTE_CHANGED:

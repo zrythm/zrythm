@@ -136,14 +136,14 @@ inspector_widget_refresh ()
     gtk_widget_set_visible (
       GTK_WIDGET (self->ap), 0);
 
-  if (MIDI_ARRANGER_SELECTIONS->num_midi_notes > 0)
+  if (MA_SELECTIONS->num_midi_notes > 0)
     {
       g_message ("showing %d",
-                 MIDI_ARRANGER_SELECTIONS->num_midi_notes);
+                 MA_SELECTIONS->num_midi_notes);
       inspector_midi_widget_show_midi (
         self->midi,
-        (MidiNote **) MIDI_ARRANGER_SELECTIONS->midi_notes,
-        MIDI_ARRANGER_SELECTIONS->num_midi_notes);
+        (MidiNote **) MA_SELECTIONS->midi_notes,
+        MA_SELECTIONS->num_midi_notes);
       gtk_widget_set_visible (
         GTK_WIDGET (self->midi), 1);
     }
