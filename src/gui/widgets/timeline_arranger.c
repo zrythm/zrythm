@@ -643,6 +643,13 @@ timeline_arranger_widget_show_context_menu (
   gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
 }
 
+/**
+ * Sets the visibility of the transient and non-
+ * transient objects.
+ *
+ * E.g. when moving regions, it hides the original
+ * ones.
+ */
 void
 timeline_arranger_widget_update_visibility (
   TimelineArrangerWidget * self)
@@ -888,8 +895,12 @@ timeline_arranger_widget_on_drag_begin_ap_hit (
     }
 }
 
+/**
+ * Fills in the positions that the TimelineArranger
+ * remembers at the start of each drag.
+ */
 void
-timeline_arranger_widget_find_start_poses (
+timeline_arranger_widget_set_init_poses (
   TimelineArrangerWidget * self)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
@@ -905,8 +916,14 @@ timeline_arranger_widget_find_start_poses (
         }
 
       /* set start poses for regions */
-      position_set_to_pos (&self->region_start_poses[i],
-                           &r->start_pos);
+      position_set_to_pos (
+        &self->region_start_poses[i],
+        &r->start_pos);
+
+      /* set end poses for regions */
+      position_set_to_pos (
+        &self->region_end_poses[i],
+        &r->end_pos);
     }
   for (int i = 0; i < TL_SELECTIONS->num_chords; i++)
     {
@@ -1038,7 +1055,8 @@ timeline_arranger_widget_create_region (
     UI_OVERLAY_ACTION_CREATING_RESIZING_R;
   ARRANGER_WIDGET_SELECT_REGION (
     self, region, F_SELECT,
-    F_NO_APPEND, F_NO_TRANSIENTS);
+    F_NO_APPEND, F_TRANSIENTS);
+  g_message  ("CREATING RESIZING R");
 }
 
 void
@@ -1289,30 +1307,132 @@ timeline_arranger_widget_select (
     }
 }
 
+/**
+ * Snaps the region's start point.
+ *
+ * @param new_start_pos Position to snap to.
+ */
+static inline void
+snap_region_l (
+  TimelineArrangerWidget * self,
+  Region *                 region,
+  Position *               new_start_pos)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
+        !ar_prv->shift_held)
+    position_snap (NULL,
+                   new_start_pos,
+                   region->track,
+                   NULL,
+                   ar_prv->snap_grid);
+  region_set_start_pos (region, new_start_pos);
+}
+
 void
 timeline_arranger_widget_snap_regions_l (
   TimelineArrangerWidget * self,
   Position *               pos)
 {
-  ARRANGER_WIDGET_GET_PRIVATE (self);
+  int i;
+  Region * region;
 
-  for (int i = 0;
+  /* get delta with first clicked region's start
+   * pos */
+  Position delta;
+  g_warn_if_fail (self->start_region_clone);
+  position_from_ticks (
+    &delta,
+    position_to_ticks (pos) -
+    position_to_ticks (
+      &self->start_region_clone->start_pos));
+
+  /* new start pos for each region, calculated by
+   * adding delta to the region's original start
+   * pos */
+  Position new_start_pos;
+
+#define CALC_NEW_START_POS \
+  position_set_to_pos ( \
+    &new_start_pos, \
+    &self->region_start_poses[i]); \
+  position_add_ticks ( \
+    &new_start_pos, \
+    position_to_ticks (&delta));
+
+  /* transient regions */
+  for (i = 0;
        i < TL_SELECTIONS->num_regions;
        i++)
     {
-      Region * region =
-        TL_SELECTIONS->regions[i];
-      if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
-            !ar_prv->shift_held)
-        position_snap (NULL,
-                       pos,
-                       region->track,
-                       NULL,
-                       ar_prv->snap_grid);
-      region_set_start_pos (region, pos);
+      region =
+        TL_SELECTIONS->transient_regions[i];
+      if (region)
+        {
+          CALC_NEW_START_POS;
+
+          snap_region_l (self, region,
+                         &new_start_pos);
+        }
+    }
+
+#undef CALC_NEW_START_POS
+}
+
+/**
+ * Snaps the region's end point.
+ *
+ * @param new_end_pos Position to snap to.
+ */
+static inline void
+snap_region_r (
+  TimelineArrangerWidget * self,
+  Region * region,
+  Position * new_end_pos)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
+        !ar_prv->shift_held)
+    position_snap (NULL,
+                   new_end_pos,
+                   region->track,
+                   NULL,
+                   ar_prv->snap_grid);
+  if (position_compare (
+        new_end_pos, &region->start_pos) > 0)
+    {
+      region_set_end_pos (region,
+                          new_end_pos);
+
+      /* if creating also set the loop points
+       * appropriately */
+      if (ar_prv->action ==
+            UI_OVERLAY_ACTION_CREATING_RESIZING_R)
+        {
+          long full_size =
+            region_get_full_length_in_ticks (
+              region);
+          position_set_to_pos (
+            &region->true_end_pos,
+            &region->loop_start_pos);
+          position_add_ticks (
+            &region->true_end_pos,
+            full_size);
+          position_set_to_pos (
+            &region->loop_end_pos,
+            &region->true_end_pos);
+        }
     }
 }
 
+/**
+ * Snaps both the transients (to show in the GUI)
+ * and the actual regions.
+ *
+ * @param pos Absolute position in the timeline.
+ */
 void
 timeline_arranger_widget_snap_regions_r (
   TimelineArrangerWidget * self,
@@ -1320,45 +1440,78 @@ timeline_arranger_widget_snap_regions_r (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
+  /* get delta with first clicked region's end
+   * pos */
+  Position delta;
+  if (ar_prv->action ==
+        UI_OVERLAY_ACTION_CREATING_RESIZING_R)
+    {
+      position_from_ticks (
+        &delta,
+        position_to_ticks (pos) -
+        position_to_ticks (
+          &self->region_end_poses[0]));
+    }
+  else
+    {
+      g_warn_if_fail (self->start_region_clone);
+      position_from_ticks (
+        &delta,
+        position_to_ticks (pos) -
+        position_to_ticks (
+          &self->start_region_clone->end_pos));
+    }
+
+  /* new end pos for each region, calculated by
+   * adding delta to the region's original end
+   * pos */
+  Position new_end_pos;
+
+#define CALC_NEW_END_POS \
+  position_set_to_pos ( \
+    &new_end_pos, \
+    &self->region_end_poses[i]); \
+  position_add_ticks ( \
+    &new_end_pos, \
+    position_to_ticks (&delta));
+
+  /* actual regions */
+  if (ar_prv->action ==
+        UI_OVERLAY_ACTION_CREATING_RESIZING_R)
+    {
+      for (int i = 0;
+           i < TL_SELECTIONS->num_regions;
+           i++)
+        {
+          Region * region =
+            TL_SELECTIONS->regions[i];
+
+          CALC_NEW_END_POS;
+
+          /* snap to it */
+          snap_region_r (
+            self, region, &new_end_pos);
+        }
+    }
+
+  /* transients */
   for (int i = 0;
        i < TL_SELECTIONS->num_regions;
        i++)
     {
       Region * region =
-        TL_SELECTIONS->regions[i];
-      if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
-            !ar_prv->shift_held)
-        position_snap (NULL,
-                       pos,
-                       region->track,
-                       NULL,
-                       ar_prv->snap_grid);
-      if (position_compare (
-            pos, &region->start_pos) > 0)
+        TL_SELECTIONS->transient_regions[i];
+      if (region)
         {
-          region_set_end_pos (region,
-                              pos);
+          CALC_NEW_END_POS;
 
-          /* if creating also set the loop points
-           * appropriately */
-          if (ar_prv->action ==
-                UI_OVERLAY_ACTION_CREATING_RESIZING_R)
-            {
-              long full_size =
-                region_get_full_length_in_ticks (
-                  region);
-              position_set_to_pos (
-                &region->true_end_pos,
-                &region->loop_start_pos);
-              position_add_ticks (
-                &region->true_end_pos,
-                full_size);
-              position_set_to_pos (
-                &region->loop_end_pos,
-                &region->true_end_pos);
-            }
+          /* snap to it */
+          snap_region_r (
+            self, region, &new_end_pos);
         }
     }
+
+#undef CALC_NEW_END_POS
 }
 
 void
@@ -1750,6 +1903,8 @@ timeline_arranger_widget_on_drag_end (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
+  g_message ("N CLICKS %d", ar_prv->n_press);
+
   /*Region * region;*/
   /*ZChord * chord;*/
   AutomationPoint * ap;
@@ -1766,19 +1921,42 @@ timeline_arranger_widget_on_drag_end (
   if (ar_prv->action ==
         UI_OVERLAY_ACTION_RESIZING_L)
     {
-      UndoableAction * ua =
-        (UndoableAction *)
-        edit_timeline_selections_action_new (
-          TL_SELECTIONS,
-          ETS_TYPE_RESIZE_L,
-          position_to_ticks (
-            &TL_SELECTIONS->
-              transient_regions[0]->start_pos) -
-          position_to_ticks (
-            &TL_SELECTIONS->
-              regions[0]->start_pos));
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
+      if (!self->resizing_range)
+        {
+          UndoableAction * ua =
+            (UndoableAction *)
+            edit_timeline_selections_action_new (
+              TL_SELECTIONS,
+              ETS_TYPE_RESIZE_L,
+              position_to_ticks (
+                &TL_SELECTIONS->
+                  transient_regions[0]->start_pos) -
+              position_to_ticks (
+                &TL_SELECTIONS->
+                  regions[0]->start_pos));
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
+    }
+  else if (ar_prv->action ==
+        UI_OVERLAY_ACTION_RESIZING_R)
+    {
+      if (!self->resizing_range)
+        {
+          UndoableAction * ua =
+            (UndoableAction *)
+            edit_timeline_selections_action_new (
+              TL_SELECTIONS,
+              ETS_TYPE_RESIZE_R,
+              position_to_ticks (
+                &TL_SELECTIONS->
+                  transient_regions[0]->end_pos) -
+              position_to_ticks (
+                &TL_SELECTIONS->
+                  regions[0]->end_pos));
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
     }
   else if (ar_prv->action ==
         UI_OVERLAY_ACTION_STARTING_MOVING)
@@ -1868,7 +2046,6 @@ timeline_arranger_widget_on_drag_end (
   else
     {
       self->start_region = NULL;
-      self->start_region_clone = NULL;
       self->start_ap = NULL;
     }
   timeline_selections_remove_transients (
@@ -1879,6 +2056,12 @@ timeline_arranger_widget_on_drag_end (
 
   self->resizing_range = 0;
   self->resizing_range_start = 0;
+
+  if (self->start_region_clone)
+    {
+      region_free (self->start_region_clone);
+      self->start_region_clone = NULL;
+    }
 }
 
 static void

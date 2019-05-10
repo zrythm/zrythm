@@ -29,6 +29,10 @@
 #include <glib/gi18n.h>
 
 /**
+ * The given TimelineSelections must already
+ * contain the created selections in the transient
+ * arrays.
+ *
  * Note: chord addresses are to be copied.
  */
 UndoableAction *
@@ -62,10 +66,11 @@ create_timeline_selections_action_do (
       if (region_find (self->ts->regions[i]))
         continue;
 
-      /* clone the clone */
+      /* clone the transient clone */
       region =
         region_clone (
-          self->ts->regions[i], REGION_CLONE_COPY);
+          self->ts->regions[i],
+          REGION_CLONE_COPY);
       g_return_val_if_fail (region->track_pos >= 0,
                             -1);
 
@@ -108,7 +113,7 @@ create_timeline_selections_action_stringize (
   CreateTimelineSelectionsAction * self)
 {
   return g_strdup (
-    _("Delete Object(s)"));
+    _("Create Object(s)"));
 }
 
 void

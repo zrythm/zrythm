@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-09 18:30+0100\n"
+"POT-Creation-Date: 2019-05-10 12:50+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Japanese <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -259,6 +259,7 @@ msgstr "%sを作成"
 msgid "Create %s Track"
 msgstr "%sトラックを作成"
 
+#: src/actions/create_timeline_selections_action.c:116
 #: src/actions/create_midi_arranger_selections_action.c:102
 #, fuzzy
 msgid "Create Object(s)"
@@ -288,7 +289,6 @@ msgstr "%d個のトラックを削除"
 
 #: src/actions/delete_timeline_selections_action.c:102
 #: src/actions/delete_midi_arranger_selections_action.c:100
-#: src/actions/create_timeline_selections_action.c:111
 #, fuzzy
 msgid "Delete Object(s)"
 msgstr "オブジェクトを削除"
@@ -330,7 +330,6 @@ msgid "Duplicate Object(s)"
 msgstr "オブジェクトを複製"
 
 #: src/actions/edit_midi_arranger_selections_action.c:64
-#: src/actions/edit_timeline_selections_action.c:128
 #, fuzzy
 msgid "Edit Object(s)"
 msgstr "オブジェクトを編集"
@@ -907,6 +906,11 @@ msgstr "リセット"
 #: resources/ui/first_run_assistant.ui:133
 msgid "Resets the path to the default"
 msgstr "パスをデフォルトにリセットします"
+
+#: src/actions/edit_timeline_selections_action.c:131
+#, fuzzy
+msgid "Resize Object(s)"
+msgstr "オブジェクトを作成"
 
 #: resources/ui/center_dock_bot_box.ui:82
 msgid "Right"

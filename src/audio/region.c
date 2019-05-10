@@ -215,11 +215,14 @@ region_set_start_pos (
   Region * region,
   Position * pos)
 {
-  Position prev;
-  position_set_to_pos (&prev, &region->start_pos);
+  /*Position prev;*/
+  /*position_set_to_pos (&prev, &region->start_pos);*/
 
-  position_set_to_pos (&region->start_pos,
-                       pos);
+  if (position_to_ticks (&region->end_pos) -
+      position_to_ticks (pos) >=
+      TRANSPORT->lticks_per_beat)
+    position_set_to_pos (&region->start_pos,
+                         pos);
 }
 
 /**
@@ -277,8 +280,11 @@ void
 region_set_end_pos (Region * region,
                     Position * pos)
 {
-  position_set_to_pos (&region->end_pos,
-                       pos);
+  if (position_to_ticks (pos) -
+      position_to_ticks (&region->start_pos) >=
+      TRANSPORT->lticks_per_beat)
+    position_set_to_pos (&region->end_pos,
+                         pos);
 }
 
 /**

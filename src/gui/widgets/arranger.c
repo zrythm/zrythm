@@ -1022,6 +1022,8 @@ multipress_pressed (
   /* set number of presses */
   ar_prv->n_press = n_press;
 
+  g_message ("MULTIPRESS N PRESS %d", n_press);
+
   /* set modifier button states */
   UI_GET_STATE_MASK (gesture);
   if (state_mask & GDK_SHIFT_MASK)
@@ -1136,6 +1138,7 @@ drag_begin (GtkGestureDrag *   gesture,
             gdouble            start_y,
             ArrangerWidget *   self)
 {
+  g_message ("ARRANGER DRAG BEGIN");
   GET_PRIVATE;
 
   ar_prv->start_x = start_x;
@@ -1234,7 +1237,7 @@ drag_begin (GtkGestureDrag *   gesture,
       position_set_bar (&ar_prv->start_pos, 2000);
       if (timeline)
         {
-          timeline_arranger_widget_find_start_poses (
+          timeline_arranger_widget_set_init_poses (
             timeline);
         }
       else if (midi_arranger)
@@ -1464,6 +1467,8 @@ drag_update (GtkGestureDrag * gesture,
       /* snap selections based on new pos */
       if (timeline)
         {
+          timeline_arranger_widget_update_visibility (
+            timeline);
           timeline_arranger_widget_snap_regions_l (
             timeline,
             &pos);
@@ -1486,7 +1491,7 @@ drag_update (GtkGestureDrag * gesture,
            ar_prv->action ==
              UI_OVERLAY_ACTION_CREATING_RESIZING_R)
     {
-      /* get position */
+      /* get absolute position the cursor is at */
       Position pos;
       arranger_widget_px_to_pos (
         self, ar_prv->start_x + offset_x, &pos, 1);
@@ -1497,9 +1502,13 @@ drag_update (GtkGestureDrag * gesture,
             timeline_arranger_widget_snap_range_r (
               &pos);
           else
-            timeline_arranger_widget_snap_regions_r (
-              Z_TIMELINE_ARRANGER_WIDGET (self),
-              &pos);
+            {
+              timeline_arranger_widget_update_visibility (
+                timeline);
+              timeline_arranger_widget_snap_regions_r (
+                Z_TIMELINE_ARRANGER_WIDGET (self),
+                &pos);
+            }
         }
       else if (ARRANGER_IS_MIDI (self))
         {
@@ -1905,6 +1914,16 @@ on_motion (GtkEventControllerMotion * event,
   return FALSE;
 }
 
+gboolean
+on_focus_out (GtkWidget *widget,
+               GdkEvent  *event,
+               gpointer   user_data)
+{
+  /*g_message ("ARRANGER FOCUS OUT");*/
+
+  return FALSE;
+}
+
 void
 arranger_widget_setup (ArrangerWidget *   self,
                        SnapGrid *         snap_grid)
@@ -2004,6 +2023,9 @@ arranger_widget_setup (ArrangerWidget *   self,
   g_signal_connect (
     G_OBJECT (ar_prv->motion_controller), "motion",
     G_CALLBACK (on_motion), self);
+  g_signal_connect (
+    G_OBJECT (self), "focus-out-event",
+    G_CALLBACK (on_focus_out), self);
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self), tick_cb,

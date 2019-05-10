@@ -67,14 +67,25 @@ typedef struct _TimelineArrangerWidget
   AutomationCurve *        start_ac;
   ZChord *                  start_chord;
 
-  /* temporary start positions, set on drag_begin, and used in drag_update
-   * to move the objects accordingly */
-  Position                 region_start_poses[600]; ///< region initial start positions, for moving regions
-  Position                 chord_start_poses[600]; ///< region initial start positions, for moving regions
-  Position                 ap_poses[600]; ///< for moving regions
+  /* These are created from the TimelineSelections so
+   * the indexes match. They are set after the
+   * selections are made, on drag_begin, and used in
+   * drag_update to get positions relative to the
+   * initial ones. */
+
+  /** Initial start positions. */
+  Position                 region_start_poses[600];
+
+  /** Initial end positions. */
+  Position                 region_end_poses[600];
+
+  /** Initial start positions. */
+  Position                 chord_start_poses[600];
+
+  /** Initial start positions. */
+  Position                 ap_poses[600];
 
   int                      last_timeline_obj_bars;
-
 
   /**
    * 1 if resizing range.
@@ -198,8 +209,12 @@ timeline_arranger_widget_on_drag_begin_ap_hit (
   double                   start_x,
   AutomationPointWidget *  ap_widget);
 
+/**
+ * Fills in the positions that the TimelineArranger
+ * remembers at the start of each drag.
+ */
 void
-timeline_arranger_widget_find_start_poses (
+timeline_arranger_widget_set_init_poses (
   TimelineArrangerWidget * self);
 
 void

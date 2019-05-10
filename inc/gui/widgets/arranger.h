@@ -78,6 +78,14 @@ G_DECLARE_DERIVABLE_TYPE (ArrangerWidget,
 #define ARRANGER_IS_MIDI_MODIFIER(self) \
   (Z_IS_MIDI_MODIFIER_ARRANGER_WIDGET (self))
 
+/**
+ * Updates the visibility of the transient/non-
+ * transient objects based on the current action.
+ *
+ * E.g. when moving or resizing, it hides the original
+ * objects and only shows the transients. When copy-
+ * moving, it shows both.
+ */
 #define ARRANGER_SET_SELECTION_VISIBILITY(array, \
   transient_array,size,obj,transient_obj) \
   for (int i = 0; \
@@ -108,6 +116,21 @@ G_DECLARE_DERIVABLE_TYPE (ArrangerWidget,
           gtk_widget_set_visible ( \
             GTK_WIDGET (obj->widget), \
             F_VISIBLE); \
+          gtk_widget_set_visible ( \
+            GTK_WIDGET (transient_obj->widget), \
+            F_VISIBLE); \
+        } \
+      else if (ar_prv->action == \
+                UI_OVERLAY_ACTION_RESIZING_L || \
+              ar_prv->action == \
+                UI_OVERLAY_ACTION_RESIZING_R || \
+              ar_prv->action == \
+                UI_OVERLAY_ACTION_CREATING_RESIZING_R) \
+        { \
+          /* only show transients */ \
+          gtk_widget_set_visible ( \
+            GTK_WIDGET (obj->widget), \
+            F_NOT_VISIBLE); \
           gtk_widget_set_visible ( \
             GTK_WIDGET (transient_obj->widget), \
             F_VISIBLE); \

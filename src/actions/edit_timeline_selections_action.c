@@ -63,14 +63,14 @@ edit_timeline_selections_action_do (
           region_resize (
             region,
             1,
-            - self->ticks);
+            self->ticks);
           break;
         case ETS_TYPE_RESIZE_R:
           /* resize */
           region_resize (
             region,
             0,
-            - self->ticks);
+            self->ticks);
           break;
         default:
           g_warn_if_reached ();
@@ -100,14 +100,14 @@ edit_timeline_selections_action_undo (
           region_resize (
             region,
             1,
-            self->ticks);
+            - self->ticks);
           break;
         case ETS_TYPE_RESIZE_R:
           /* resize */
           region_resize (
             region,
             0,
-            self->ticks);
+            - self->ticks);
           break;
         default:
           g_warn_if_reached ();
@@ -124,8 +124,15 @@ char *
 edit_timeline_selections_action_stringize (
 	EditTimelineSelectionsAction * self)
 {
-  return g_strdup (
-    _("Edit Object(s)"));
+  switch (self->type)
+    {
+      case ETS_TYPE_RESIZE_L:
+      case ETS_TYPE_RESIZE_R:
+        return g_strdup (_("Resize Object(s)"));
+      default:
+        g_return_val_if_reached (
+          g_strdup (""));
+    }
 }
 
 void

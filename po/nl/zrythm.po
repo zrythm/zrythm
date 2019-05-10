@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-09 18:30+0100\n"
+"POT-Creation-Date: 2019-05-10 12:50+0100\n"
 "PO-Revision-Date: 2019-05-04 17:39+0100\n"
 "Last-Translator: alex <alex@zrythm.org>\n"
 "Language-Team: Dutch\n"
@@ -243,6 +243,7 @@ msgstr ""
 msgid "Create %s Track"
 msgstr ""
 
+#: src/actions/create_timeline_selections_action.c:116
 #: src/actions/create_midi_arranger_selections_action.c:102
 msgid "Create Object(s)"
 msgstr ""
@@ -271,7 +272,6 @@ msgstr ""
 
 #: src/actions/delete_timeline_selections_action.c:102
 #: src/actions/delete_midi_arranger_selections_action.c:100
-#: src/actions/create_timeline_selections_action.c:111
 msgid "Delete Object(s)"
 msgstr ""
 
@@ -310,7 +310,6 @@ msgid "Duplicate Object(s)"
 msgstr ""
 
 #: src/actions/edit_midi_arranger_selections_action.c:64
-#: src/actions/edit_timeline_selections_action.c:128
 msgid "Edit Object(s)"
 msgstr ""
 
@@ -870,6 +869,10 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:133
 msgid "Resets the path to the default"
+msgstr ""
+
+#: src/actions/edit_timeline_selections_action.c:131
+msgid "Resize Object(s)"
 msgstr ""
 
 #: resources/ui/center_dock_bot_box.ui:82

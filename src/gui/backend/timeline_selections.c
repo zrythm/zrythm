@@ -768,14 +768,24 @@ timeline_selections_clone ()
   TimelineSelections * src = TL_SELECTIONS;
 
   /* FIXME only does regions */
+  Region *r, * new_r;
   for (int i = 0; i < src->num_regions; i++)
     {
-      Region * r = src->regions[i];
-      Region * new_r =
+      r = src->regions[i];
+      new_r =
         region_clone (r, REGION_CLONE_COPY);
       array_append (new_ts->regions,
                     new_ts->num_regions,
                     new_r);
+
+      /* transients */
+      r = src->transient_regions[i];
+      if (r)
+        {
+          new_r =
+            region_clone (r, REGION_CLONE_COPY);
+          new_ts->transient_regions[i] = new_r;
+        }
     }
 
   return new_ts;

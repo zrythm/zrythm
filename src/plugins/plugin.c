@@ -348,7 +348,7 @@ Plugin *
 plugin_clone (
   Plugin * pl)
 {
-  Plugin * clone;
+  Plugin * clone = NULL;
   if (pl->descr->protocol == PROT_LV2)
     {
       /* NOTE from rgareus:
@@ -400,6 +400,7 @@ plugin_clone (
       io_remove (pl->lv2->state_file);
     }
 
+  g_return_val_if_fail (clone, NULL);
   clone->slot = pl->slot;
   clone->track_pos = pl->track_pos;
 

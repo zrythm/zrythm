@@ -45,7 +45,8 @@ typedef struct CreateTimelineSelectionsAction
 
 /**
  * The given TimelineSelections must already
- * contain the created selections.
+ * contain the created selections in the transient
+ * arrays.
  */
 UndoableAction *
 create_timeline_selections_action_new (
