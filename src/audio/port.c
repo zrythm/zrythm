@@ -133,7 +133,7 @@ Port *
 port_find_from_identifier (
   PortIdentifier * id)
 {
-  Port * port;
+  Port * port = NULL;
   Track * tr;
   Plugin * pl;
   FIND_PORT_FROM_ID (id, port);
