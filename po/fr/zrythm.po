@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-11 10:34+0100\n"
+"POT-Creation-Date: 2019-05-11 13:20+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -653,7 +653,7 @@ msgstr ""
 "Ensuite, choisissez l'emplacement à utiliser pour enregistrer les fichiers "
 "temporaires et les projets (ou accepter l'emplacement par défaut)"
 
-#: resources/ui/inspector.ui:72
+#: resources/ui/inspector.ui:81
 msgid "No item selected"
 msgstr "Aucun item sélectionné"
 
@@ -1367,6 +1367,10 @@ msgstr "_Vue"
 msgid "_Zoom In"
 msgstr "_Zoom Avant"
 
+#: resources/ui/expander_box.ui:67
+msgid "checkbutton"
+msgstr ""
+
 #: resources/ui/rack_row.ui:60
 msgid "expander"
 msgstr "expander"
@@ -1375,7 +1379,8 @@ msgstr "expander"
 msgid "in"
 msgstr "entrée"
 
-#: resources/ui/track.ui:59 resources/ui/automatable_selector.ui:84
+#: resources/ui/track.ui:59 resources/ui/expander_box.ui:45
+#: resources/ui/expander_box.ui:57 resources/ui/automatable_selector.ui:84
 #: resources/ui/route_target_selector.ui:85
 msgid "label"
 msgstr "label"

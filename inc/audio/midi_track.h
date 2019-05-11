@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,26 +17,37 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __AUDIO_CHANNEL_TRACK_H__
-#define __AUDIO_CHANNEL_TRACK_H__
+#ifndef __AUDIO_MIDI_TRACK_H__
+#define __AUDIO_MIDI_TRACK_H__
 
-#include "audio/automation_tracklist.h"
+#include "audio/channel_track.h"
 #include "audio/track.h"
 
 typedef struct Position Position;
 typedef struct _TrackWidget TrackWidget;
 typedef struct Channel Channel;
+typedef struct MidiEvents MidiEvents;
+typedef struct AutomationTrack AutomationTrack;
 typedef struct Automatable Automatable;
+typedef struct Region MidiRegion;
 
 /**
- * This track is for convenience. It contains common
- * variables for tracks that correspond to a channel in
- * the mixer. Should never be instantiated.
+ * Initializes an midi track.
  */
-typedef struct Track ChannelTrack;
+void
+midi_track_init (Track * track);
 
 void
-channel_track_setup (ChannelTrack * self);
+midi_track_setup (Track * self);
+
+/**
+ * NOTE: real time func
+ */
+void
+midi_track_fill_midi_events (Track      * track,
+                        Position   * pos, ///< start position to check
+                        uint32_t  nframes, ///< n of frames from start pos
+                        MidiEvents * midi_events); ///< midi events to fill
 
 /**
  * Frees the track.
@@ -44,6 +55,7 @@ channel_track_setup (ChannelTrack * self);
  * TODO
  */
 void
-channel_track_free (ChannelTrack * track);
+midi_track_free (Track * track);
 
-#endif // __AUDIO_CHANNEL_TRACK_H__
+#endif // __AUDIO_MIDI_TRACK_H__
+
