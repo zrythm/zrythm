@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: ISC
  *
- * Copyright (C) 2017-2018 Michael Drake <tlsa@netsurf-browser.org>
+ * Copyright (C) 2017-2019 Michael Drake <tlsa@netsurf-browser.org>
  */
 
 /**
@@ -642,6 +642,31 @@ static cyaml_err_t cyaml__read_int(
 }
 
 /**
+ * Helper to read a number into a uint64_t.
+ *
+ * \param[in]  value  String containing scaler value.
+ * \param[in]  out    The place to write the value in the output data.
+ * \return \ref CYAML_OK on success, or appropriate error code otherwise.
+ */
+static inline cyaml_err_t cyaml__read_uint64_t(
+		const char *value,
+		uint64_t *out)
+{
+	long long temp;
+	char *end = NULL;
+
+	errno = 0;
+	temp = strtoll(value, &end, 0);
+
+	if (end == value || errno == ERANGE || temp < 0) {
+		return CYAML_ERR_INVALID_VALUE;
+	}
+
+	*out = temp;
+	return CYAML_OK;
+}
+
+/**
  * Read a value of type \ref CYAML_UINT.
  *
  * \param[in]  ctx     The CYAML loading context.
@@ -656,8 +681,8 @@ static cyaml_err_t cyaml__read_uint(
 		const char *value,
 		uint8_t *data)
 {
-	long long temp;
-	char *end = NULL;
+	cyaml_err_t err;
+	uint64_t temp;
 	uint64_t max;
 
 	CYAML_UNUSED(ctx);
@@ -666,13 +691,13 @@ static cyaml_err_t cyaml__read_uint(
 		return CYAML_ERR_INVALID_DATA_SIZE;
 	}
 
+	err = cyaml__read_uint64_t(value, &temp);
+	if (err != CYAML_OK) {
+		return err;
+	}
+
 	max = (~(uint64_t)0) >> ((8 - schema->data_size) * 8);
-
-	errno = 0;
-	temp = strtoll(value, &end, 0);
-
-	if (end == value || errno == ERANGE ||
-	    temp < 0 || (uint64_t)temp > max) {
+	if (temp > max) {
 		return CYAML_ERR_INVALID_VALUE;
 	}
 
@@ -1001,7 +1026,6 @@ static cyaml_err_t cyaml__read_flags_value(
 	uint64_t value = 0;
 	yaml_event_t event;
 	cyaml_err_t err = CYAML_OK;
-	uint8_t entry_size = schema->data_size;
 
 	while (!exit) {
 		cyaml_event_t cyaml_event;
@@ -1032,13 +1056,144 @@ static cyaml_err_t cyaml__read_flags_value(
 		yaml_event_delete(&event);
 	}
 
-	err = cyaml_data_write(value, entry_size, data);
+	err = cyaml_data_write(value, schema->data_size, data);
 	if (err != CYAML_OK) {
 		return err;
 	}
 
 	cyaml__log(ctx->config, CYAML_LOG_INFO,
 			"  <Flags: 0x%"PRIx64">\n", value);
+
+	return err;
+}
+
+/**
+ * Set some bits in a \ref CYAML_BITFIELD value.
+ *
+ * If the fiven bit value name is one expected by the schema, then this
+ * function consumes an event from the YAML input stream.
+ *
+ * \param[in]      ctx        The CYAML loading context.
+ * \param[in]      schema     The schema for the value to be read.
+ * \param[in]      name       String containing scaler bit value name.
+ * \param[in,out]  bits_out   Current bits, updated on success.
+ * \return \ref CYAML_OK on success, or appropriate error code otherwise.
+ */
+static cyaml_err_t cyaml__set_bitval(
+		const cyaml_ctx_t *ctx,
+		const cyaml_schema_value_t *schema,
+		const char *name,
+		uint64_t *bits_out)
+{
+	const cyaml_bitdef_t *bitdef = schema->bitfield.bitdefs;
+	yaml_event_t event;
+	cyaml_err_t err;
+	uint64_t value;
+	uint64_t mask;
+	uint32_t i;
+
+	for (i = 0; i < schema->bitfield.count; i++) {
+		if (bitdef[i].bits + bitdef[i].offset > schema->data_size * 8) {
+			return CYAML_ERR_BAD_BITVAL_IN_SCHEMA;
+		}
+		if (cyaml__strcmp(ctx->config, schema,
+				name, bitdef[i].name) == 0) {
+			break;
+		}
+	}
+
+	if (i == schema->bitfield.count) {
+		cyaml__log(ctx->config, CYAML_LOG_ERROR,
+				"Unknown bit value: %s\n", name);
+		return CYAML_ERR_INVALID_VALUE;
+	}
+
+	err = cyaml_get_next_event(ctx, &event);
+	if (err != CYAML_OK) {
+		return err;
+	}
+
+	switch (cyaml__get_event_type(&event)) {
+	case CYAML_EVT_SCALAR:
+		err = cyaml__read_uint64_t(
+				(const char *)event.data.scalar.value, &value);
+		yaml_event_delete(&event);
+		if (err != CYAML_OK) {
+			return err;
+		}
+		break;
+	default:
+		yaml_event_delete(&event);
+		return CYAML_ERR_UNEXPECTED_EVENT;
+	}
+
+	mask = (~(uint64_t)0) >> ((8 * sizeof(uint64_t)) - bitdef[i].bits);
+	if (value > mask) {
+		cyaml__log(ctx->config, CYAML_LOG_ERROR,
+				"Value too big for bits: %s\n", name);
+		return CYAML_ERR_INVALID_VALUE;
+	}
+
+	*bits_out |= value << bitdef[i].offset;
+	return CYAML_OK;
+}
+
+/**
+ * Read a value of type \ref CYAML_BITFIELD.
+ *
+ * Since \ref CYAML_FLAGS is a composite value (a mapping), rather
+ * than a simple scaler, this consumes events from the YAML input stream.
+ *
+ * \param[in]  ctx     The CYAML loading context.
+ * \param[in]  schema  The schema for the value to be read.
+ * \param[in]  data    The place to write the value in the output data.
+ * \return \ref CYAML_OK on success, or appropriate error code otherwise.
+ */
+static cyaml_err_t cyaml__read_bitfield_value(
+		cyaml_ctx_t *ctx,
+		const cyaml_schema_value_t *schema,
+		cyaml_data_t *data)
+{
+	bool exit = false;
+	uint64_t value = 0;
+	yaml_event_t event;
+	cyaml_err_t err = CYAML_OK;
+
+	while (!exit) {
+		cyaml_event_t cyaml_event;
+		err = cyaml_get_next_event(ctx, &event);
+		if (err != CYAML_OK) {
+			return err;
+		}
+		cyaml_event = cyaml__get_event_type(&event);
+		switch (cyaml_event) {
+		case CYAML_EVT_SCALAR:
+			err = cyaml__set_bitval(ctx, schema,
+					(const char *)event.data.scalar.value,
+					&value);
+			if (err != CYAML_OK) {
+				yaml_event_delete(&event);
+				return err;
+			}
+			break;
+		case CYAML_EVT_MAP_END:
+			exit = true;
+			break;
+		default:
+			yaml_event_delete(&event);
+			return CYAML_ERR_UNEXPECTED_EVENT;
+		}
+
+		yaml_event_delete(&event);
+	}
+
+	err = cyaml_data_write(value, schema->data_size, data);
+	if (err != CYAML_OK) {
+		return err;
+	}
+
+	cyaml__log(ctx->config, CYAML_LOG_INFO,
+			"  <Bits: 0x%"PRIx64">\n", value);
 
 	return err;
 }
@@ -1157,6 +1312,12 @@ static cyaml_err_t cyaml__read_value(
 		}
 		err = cyaml__stack_push(ctx, CYAML_STATE_IN_MAP_KEY,
 				schema, data);
+		break;
+	case CYAML_BITFIELD:
+		if (cyaml_event != CYAML_EVT_MAP_START) {
+			return CYAML_ERR_INVALID_VALUE;
+		}
+		err = cyaml__read_bitfield_value(ctx, schema, data);
 		break;
 	case CYAML_SEQUENCE: /* Fall through. */
 	case CYAML_SEQUENCE_FIXED:

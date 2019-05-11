@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: ISC
  *
- * Copyright (C) 2017 Michael Drake <tlsa@netsurf-browser.org>
+ * Copyright (C) 2017-2019 Michael Drake <tlsa@netsurf-browser.org>
  */
 
 /**
@@ -83,6 +83,7 @@ static inline const char * cyaml__type_to_str(cyaml_type_e type)
 		[CYAML_FLOAT]          = "FLOAT",
 		[CYAML_STRING]         = "STRING",
 		[CYAML_MAPPING]        = "MAPPING",
+		[CYAML_BITFIELD]       = "BITFIELD",
 		[CYAML_SEQUENCE]       = "SEQUENCE",
 		[CYAML_SEQUENCE_FIXED] = "SEQUENCE_FIXED",
 		[CYAML_IGNORE]         = "IGNORE",

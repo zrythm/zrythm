@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: ISC
  *
- * Copyright (C) 2017 Michael Drake <tlsa@netsurf-browser.org>
+ * Copyright (C) 2017-2019 Michael Drake <tlsa@netsurf-browser.org>
  */
 
 /**
@@ -93,6 +93,7 @@ const char * cyaml_strerror(
 		[CYAML_ERR_BAD_MIN_MAX_SCHEMA]    = "Bad schema: min exceeds max",
 		[CYAML_ERR_BAD_PARAM_SEQ_COUNT]   = "Bad parameter: seq_count",
 		[CYAML_ERR_BAD_PARAM_NULL_DATA]   = "Bad parameter: NULL data",
+		[CYAML_ERR_BAD_BITVAL_IN_SCHEMA]  = "Bit value beyond bitfield size",
 		[CYAML_ERR_SEQUENCE_ENTRIES_MIN]  = "Sequence with too few entries",
 		[CYAML_ERR_SEQUENCE_ENTRIES_MAX]  = "Sequence with too many entries",
 		[CYAML_ERR_SEQUENCE_FIXED_COUNT]  = "Sequence fixed has unequal min max",

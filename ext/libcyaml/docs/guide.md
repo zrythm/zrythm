@@ -151,5 +151,5 @@ if (err != CYAML_OK) {
 
 And that's it, the YAML is loaded into the custom C data structure.
 
-You can find the code for this in the project's [examples](../examples)
-directory.
+You can find the code for this in the "numerical" example in the
+[examples](../examples) directory.

@@ -523,14 +523,19 @@ static const char * cyaml__get_int(
  * Convert unsigned integer to string.
  *
  * \param[in]  value  The integer to convert.
+ * \param[in]  hex    Whether to render the number as hexadecimal.
  * \return String conversion of the value.
  */
 static const char * cyaml__get_uint(
-		uint64_t value)
+		uint64_t value, bool hex)
 {
 	static char string[32];
 
-	sprintf(string, "%"PRIu64, value);
+	if (hex) {
+		sprintf(string, "0x%"PRIx64, value);
+	} else {
+		sprintf(string, "%"PRIu64, value);
+	}
 
 	return string;
 }
@@ -574,10 +579,10 @@ static int64_t cyaml_sign_pad(uint64_t raw, size_t size)
 }
 
 /**
- * Read a value of type \ref CYAML_INT.
+ * Write a value of type \ref CYAML_INT.
  *
  * \param[in]  ctx     The CYAML saving context.
- * \param[in]  schema  The schema for the value to be read.
+ * \param[in]  schema  The schema for the value to be written.
  * \param[in]  data    The place to read the value from in the client data.
  * \return \ref CYAML_OK on success, or appropriate error code otherwise.
  */
@@ -601,10 +606,10 @@ static cyaml_err_t cyaml__write_int(
 }
 
 /**
- * Read a value of type \ref CYAML_UINT.
+ * Write a value of type \ref CYAML_UINT.
  *
  * \param[in]  ctx     The CYAML saving context.
- * \param[in]  schema  The schema for the value to be read.
+ * \param[in]  schema  The schema for the value to be written.
  * \param[in]  data    The place to read the value from in the client data.
  * \return \ref CYAML_OK on success, or appropriate error code otherwise.
  */
@@ -618,7 +623,7 @@ static cyaml_err_t cyaml__write_uint(
 
 	number = cyaml_data_read(schema->data_size, data, &err);
 	if (err == CYAML_OK) {
-		const char *string = cyaml__get_uint(number);
+		const char *string = cyaml__get_uint(number, false);
 		err = cyaml__emit_scalar(ctx, schema, string, YAML_INT_TAG);
 	}
 
@@ -626,10 +631,10 @@ static cyaml_err_t cyaml__write_uint(
 }
 
 /**
- * Read a value of type \ref CYAML_BOOL.
+ * Write a value of type \ref CYAML_BOOL.
  *
  * \param[in]  ctx     The CYAML saving context.
- * \param[in]  schema  The schema for the value to be read.
+ * \param[in]  schema  The schema for the value to be written.
  * \param[in]  data    The place to read the value from in the client data.
  * \return \ref CYAML_OK on success, or appropriate error code otherwise.
  */
@@ -651,10 +656,10 @@ static cyaml_err_t cyaml__write_bool(
 }
 
 /**
- * Read a value of type \ref CYAML_ENUM.
+ * Write a value of type \ref CYAML_ENUM.
  *
  * \param[in]  ctx     The CYAML saving context.
- * \param[in]  schema  The schema for the value to be read.
+ * \param[in]  schema  The schema for the value to be written.
  * \param[in]  data    The place to read the value from in the client data.
  * \return \ref CYAML_OK on success, or appropriate error code otherwise.
  */
@@ -690,7 +695,7 @@ static cyaml_err_t cyaml__write_enum(
 }
 
 /**
- * Read a value of type \ref CYAML_FLOAT.
+ * Write a value of type \ref CYAML_FLOAT.
  *
  * The `data_size` of the schema entry must be the size of a known
  * floating point C type.
@@ -699,7 +704,7 @@ static cyaml_err_t cyaml__write_enum(
  *       supported.
  *
  * \param[in]  ctx     The CYAML saving context.
- * \param[in]  schema  The schema for the value to be read.
+ * \param[in]  schema  The schema for the value to be written.
  * \param[in]  data    The place to read the value from in the client data.
  * \return \ref CYAML_OK on success, or appropriate error code otherwise.
  */
@@ -727,10 +732,10 @@ static cyaml_err_t cyaml__write_float(
 }
 
 /**
- * Read a value of type \ref CYAML_STRING.
+ * Write a value of type \ref CYAML_STRING.
  *
  * \param[in]  ctx     The CYAML saving context.
- * \param[in]  schema  The schema for the value to be read.
+ * \param[in]  schema  The schema for the value to be written.
  * \param[in]  data    The place to read the value from in the client data.
  * \return \ref CYAML_OK on success, or appropriate error code otherwise.
  */
@@ -744,10 +749,10 @@ static cyaml_err_t cyaml__write_string(
 }
 
 /**
- * Read a scalar value.
+ * Write a scalar value.
  *
  * \param[in]  ctx     The CYAML saving context.
- * \param[in]  schema  The schema for the value to be read.
+ * \param[in]  schema  The schema for the value to be written.
  * \param[in]  data    The place to read the value from in the client data.
  * \return \ref CYAML_OK on success, or appropriate error code otherwise.
  */
@@ -778,7 +783,7 @@ static cyaml_err_t cyaml__write_scalar_value(
  * Emit a sequence of flag values.
  *
  * \param[in]  ctx     The CYAML saving context.
- * \param[in]  schema  The schema for the value to be read.
+ * \param[in]  schema  The schema for the value to be written.
  * \param[in]  number  The value of the flag data.
  * \return \ref CYAML_OK on success, or appropriate error code otherwise.
  */
@@ -787,7 +792,6 @@ static cyaml_err_t cyaml__emit_flags_sequence(
 		const cyaml_schema_value_t *schema,
 		uint64_t number)
 {
-	const cyaml_strval_t *strings = schema->enumeration.strings;
 	yaml_event_t event;
 	cyaml_err_t err;
 	int ret;
@@ -802,23 +806,22 @@ static cyaml_err_t cyaml__emit_flags_sequence(
 	}
 
 	for (uint32_t i = 0; i < schema->enumeration.count; i++) {
-		cyaml_err_t err;
-		uint64_t flag = strings->val;
+		const cyaml_strval_t *strval = &schema->enumeration.strings[i];
+		uint64_t flag = strval->val;
 		if (number & flag) {
-			err = cyaml__emit_scalar(ctx, schema, strings->str,
+			err = cyaml__emit_scalar(ctx, schema, strval->str,
 					YAML_STR_TAG);
 			if (err != CYAML_OK) {
 				return err;
 			}
 			number &= ~flag;
 		}
-		strings++;
 	}
 	if (number != 0) {
 		if (schema->flags & CYAML_FLAG_STRICT) {
 			return CYAML_ERR_INVALID_VALUE;
 		} else {
-			const char *string = cyaml__get_uint(number);
+			const char *string = cyaml__get_uint(number, false);
 			err = cyaml__emit_scalar(ctx, schema, string,
 					YAML_STR_TAG);
 			if (err != CYAML_OK) {
@@ -833,13 +836,10 @@ static cyaml_err_t cyaml__emit_flags_sequence(
 }
 
 /**
- * Read a value of type \ref CYAML_FLAGS.
- *
- * Since \ref CYAML_FLAGS is a composite value (a sequence of scalars), rather
- * than a simple scaler, this consumes events from the YAML input stream.
+ * Write a value of type \ref CYAML_FLAGS.
  *
  * \param[in]  ctx     The CYAML saving context.
- * \param[in]  schema  The schema for the value to be read.
+ * \param[in]  schema  The schema for the value to be written.
  * \param[in]  data    The place to read the value from in the client data.
  * \return \ref CYAML_OK on success, or appropriate error code otherwise.
  */
@@ -860,11 +860,101 @@ static cyaml_err_t cyaml__write_flags_value(
 }
 
 /**
- * Handle a YAML event corresponding to a YAML data value.
+ * Emit a mapping of bitfield values.
+ *
+ * \param[in]  ctx     The CYAML saving context.
+ * \param[in]  schema  The schema for the value to be written.
+ * \param[in]  number  The value of the bitfield data.
+ * \return \ref CYAML_OK on success, or appropriate error code otherwise.
+ */
+static cyaml_err_t cyaml__emit_bitfield_mapping(
+		const cyaml_ctx_t *ctx,
+		const cyaml_schema_value_t *schema,
+		uint64_t number)
+{
+	const cyaml_bitdef_t *bitdef = schema->bitfield.bitdefs;
+	yaml_event_t event;
+	cyaml_err_t err;
+	int ret;
+
+	ret = yaml_mapping_start_event_initialize(&event, NULL,
+			(yaml_char_t *)YAML_MAP_TAG, 1,
+			cyaml__get_emit_style_map(ctx, schema));
+
+	err = cyaml__emit_event_helper(ctx, ret, &event);
+	if (err != CYAML_OK) {
+		return err;
+	}
+
+	for (uint32_t i = 0; i < schema->bitfield.count; i++) {
+		const char *value_str;
+		uint64_t value;
+		uint64_t mask;
+
+		if (bitdef[i].bits + bitdef[i].offset > schema->data_size * 8) {
+			return CYAML_ERR_BAD_BITVAL_IN_SCHEMA;
+		}
+
+		mask = ((~(uint64_t)0) >>
+		        ((8 * sizeof(uint64_t)) - bitdef[i].bits)
+		       ) << bitdef[i].offset;
+
+		if ((number & mask) == 0) {
+			continue;
+		}
+
+		value = (number & mask) >> bitdef[i].offset;
+
+		/* Emit bitfield value's name */
+		err = cyaml__emit_scalar(ctx, schema, bitdef[i].name,
+				YAML_STR_TAG);
+		if (err != CYAML_OK) {
+			return err;
+		}
+
+		/* Emit bitfield value's value */
+		value_str = cyaml__get_uint(value, true);
+		err = cyaml__emit_scalar(ctx, schema, value_str, YAML_INT_TAG);
+		if (err != CYAML_OK) {
+			return err;
+		}
+	}
+
+	ret = yaml_mapping_end_event_initialize(&event);
+
+	return cyaml__emit_event_helper(ctx, ret, &event);
+}
+
+/**
+ * Write a value of type \ref CYAML_BITFIELD.
+ *
+ * \param[in]  ctx     The CYAML saving context.
+ * \param[in]  schema  The schema for the value to be written.
+ * \param[in]  data    The place to read the value from in the client data.
+ * \return \ref CYAML_OK on success, or appropriate error code otherwise.
+ */
+static cyaml_err_t cyaml__write_bitfield_value(
+		const cyaml_ctx_t *ctx,
+		const cyaml_schema_value_t *schema,
+		const cyaml_data_t *data)
+{
+	uint64_t number;
+	cyaml_err_t err;
+
+	number = cyaml_data_read(schema->data_size, data, &err);
+	if (err == CYAML_OK) {
+		err = cyaml__emit_bitfield_mapping(ctx, schema, number);
+	}
+
+	return err;
+}
+
+/**
+ * Emit the YAML events required for a CYAML value.
  *
  * \param[in]  ctx        The CYAML saving context.
  * \param[in]  schema     CYAML schema for the expected value.
- * \param[in]  data    The place to read the value from in the client data.
+ * \param[in]  data       The place to read the value from in the client data.
  * \param[in]  seq_count  Entry count for sequence values.  Unused for
  *                        non-sequence values.
  * \return \ref CYAML_OK on success, or appropriate error code otherwise.
@@ -899,6 +989,9 @@ static cyaml_err_t cyaml__write_value(
 	case CYAML_MAPPING:
 		err = cyaml__stack_push(ctx, CYAML_STATE_IN_MAP_KEY,
 				schema, data);
+		break;
+	case CYAML_BITFIELD:
+		err = cyaml__write_bitfield_value(ctx, schema, data);
 		break;
 	case CYAML_SEQUENCE_FIXED:
 		if (schema->sequence.min != schema->sequence.max) {

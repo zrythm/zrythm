@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: ISC
  *
- * Copyright (C) 2018 Michael Drake <tlsa@netsurf-browser.org>
+ * Copyright (C) 2018-2019 Michael Drake <tlsa@netsurf-browser.org>
  */
 
 #include <stdbool.h>
@@ -1231,6 +1231,76 @@ static bool test_err_load_schema_bad_data_size_7(
 }
 
 /**
+ * Test loading with schema with data size (9) for bitfield.
+ *
+ * \param[in]  report  The test report context.
+ * \param[in]  config  The CYAML config to use for the test.
+ * \return true if test passes, false otherwise.
+ */
+static bool test_err_load_schema_bad_data_size_8(
+		ttest_report_ctx_t *report,
+		const cyaml_config_t *config)
+{
+	static const cyaml_bitdef_t bitvals[] = {
+		{ .name = "a", .offset =  0, .bits =  3 },
+		{ .name = "b", .offset =  3, .bits =  7 },
+		{ .name = "c", .offset = 10, .bits = 32 },
+		{ .name = "d", .offset = 42, .bits =  8 },
+		{ .name = "e", .offset = 50, .bits = 14 },
+	};
+	static const unsigned char yaml[] =
+		"test_bitfield:\n"
+		"    a: 0x7\n"
+		"    b: 0x7f\n"
+		"    c: 0xffffffff\n"
+		"    d: 0xff\n"
+		"    e: 0x3fff\n";
+	struct target_struct {
+		uint64_t value;
+	} *data_tgt = NULL;
+	static const struct cyaml_schema_field mapping_schema[] = {
+		{
+			.key = "test_bitfield",
+			.value = {
+				.type = CYAML_BITFIELD,
+				.flags = CYAML_FLAG_DEFAULT,
+				.data_size = 9,
+				.bitfield = {
+					.bitdefs = bitvals,
+					.count = CYAML_ARRAY_LEN(bitvals),
+				},
+			},
+			.data_offset = offsetof(struct target_struct, value),
+		},
+		CYAML_FIELD_END
+	};
+	static const struct cyaml_schema_value top_schema = {
+		CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+				struct target_struct, mapping_schema),
+	};
+	test_data_t td = {
+		.data = (cyaml_data_t **) &data_tgt,
+		.config = config,
+		.schema = &top_schema,
+	};
+	cyaml_err_t err;
+
+	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
+
+	err = cyaml_load_data(yaml, YAML_LEN(yaml), config, &top_schema,
+			(cyaml_data_t **) &data_tgt, NULL);
+	if (err != CYAML_ERR_INVALID_DATA_SIZE) {
+		return ttest_fail(&tc, cyaml_strerror(err));
+	}
+
+	if (data_tgt != NULL) {
+		return ttest_fail(&tc, "Data non-NULL on error.");
+	}
+
+	return ttest_pass(&tc);
+}
+
+/**
  * Test saving with schema with data size (0).
  *
  * \param[in]  report  The test report context.
@@ -1639,6 +1709,73 @@ static bool test_err_save_schema_bad_data_size_7(
 	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
 
 	err = cyaml_save_data(&buffer, &len, config, &top_schema, &data, 0);
+	if (err != CYAML_ERR_INVALID_DATA_SIZE) {
+		return ttest_fail(&tc, cyaml_strerror(err));
+	}
+
+	if (buffer != NULL || len != 0) {
+		return ttest_fail(&tc, "Buffer/len not untouched.");
+	}
+
+	return ttest_pass(&tc);
+}
+
+/**
+ * Test saving with schema with data size (0).
+ *
+ * \param[in]  report  The test report context.
+ * \param[in]  config  The CYAML config to use for the test.
+ * \return true if test passes, false otherwise.
+ */
+static bool test_err_save_schema_bad_data_size_8(
+		ttest_report_ctx_t *report,
+		const cyaml_config_t *config)
+{
+	static const cyaml_bitdef_t bitvals[] = {
+		{ .name = "a", .offset =  0, .bits =  3 },
+		{ .name = "b", .offset =  3, .bits =  7 },
+		{ .name = "c", .offset = 10, .bits = 32 },
+		{ .name = "d", .offset = 42, .bits =  8 },
+		{ .name = "e", .offset = 50, .bits = 14 },
+	};
+	static const struct target_struct {
+		uint64_t test_bitfield;
+	} data = {
+		.test_bitfield = 0xFFFFFFFFFFFFFFFFu,
+	};
+	static const struct cyaml_schema_field mapping_schema[] = {
+		{
+			.key = "test_bitfield",
+			.value = {
+				.type = CYAML_BITFIELD,
+				.flags = CYAML_FLAG_DEFAULT,
+				.data_size = 0,
+				.bitfield = {
+					.bitdefs = bitvals,
+					.count = CYAML_ARRAY_LEN(bitvals),
+				},
+			},
+			.data_offset = offsetof(struct target_struct,
+					test_bitfield),
+		},
+		CYAML_FIELD_END
+	};
+	static const struct cyaml_schema_value top_schema = {
+		CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+				struct target_struct, mapping_schema),
+	};
+	char *buffer = NULL;
+	size_t len = 0;
+	test_data_t td = {
+		.buffer = &buffer,
+		.config = config,
+	};
+	cyaml_err_t err;
+
+	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
+
+	err = cyaml_save_data(&buffer, &len, config, &top_schema,
+				&data, 0);
 	if (err != CYAML_ERR_INVALID_DATA_SIZE) {
 		return ttest_fail(&tc, cyaml_strerror(err));
 	}
@@ -2172,6 +2309,422 @@ static bool test_err_load_schema_invalid_value_flags_3(
 
 	if (data_tgt != NULL) {
 		return ttest_fail(&tc, "Data non-NULL on error.");
+	}
+
+	return ttest_pass(&tc);
+}
+
+/**
+ * Test loading when schema expects bitfield, but numerical value is invalid.
+ *
+ * \param[in]  report  The test report context.
+ * \param[in]  config  The CYAML config to use for the test.
+ * \return true if test passes, false otherwise.
+ */
+static bool test_err_load_schema_invalid_value_bitfield_1(
+		ttest_report_ctx_t *report,
+		const cyaml_config_t *config)
+{
+	static const cyaml_bitdef_t bitvals[] = {
+		{ .name = "a", .offset =  0, .bits =  3 },
+	};
+	static const unsigned char yaml[] =
+		"test_bitfield:\n"
+		"    a: invalid\n";
+	struct target_struct {
+		uint64_t test_value_bitfield;
+	} *data_tgt = NULL;
+	static const struct cyaml_schema_field mapping_schema[] = {
+		CYAML_FIELD_BITFIELD("test_bitfield", CYAML_FLAG_DEFAULT,
+				struct target_struct, test_value_bitfield,
+				bitvals, CYAML_ARRAY_LEN(bitvals)),
+		CYAML_FIELD_END
+	};
+	static const struct cyaml_schema_value top_schema = {
+		CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+				struct target_struct, mapping_schema),
+	};
+	test_data_t td = {
+		.data = (cyaml_data_t **) &data_tgt,
+		.config = config,
+		.schema = &top_schema,
+	};
+	cyaml_err_t err;
+
+	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
+
+	err = cyaml_load_data(yaml, YAML_LEN(yaml), config, &top_schema,
+			(cyaml_data_t **) &data_tgt, NULL);
+	if (err != CYAML_ERR_INVALID_VALUE) {
+		return ttest_fail(&tc, cyaml_strerror(err));
+	}
+
+	if (data_tgt != NULL) {
+		return ttest_fail(&tc, "Data non-NULL on error.");
+	}
+
+	return ttest_pass(&tc);
+}
+
+/**
+ * Test loading when schema expects bitfield, but value is non-scalar.
+ *
+ * \param[in]  report  The test report context.
+ * \param[in]  config  The CYAML config to use for the test.
+ * \return true if test passes, false otherwise.
+ */
+static bool test_err_load_schema_invalid_value_bitfield_2(
+		ttest_report_ctx_t *report,
+		const cyaml_config_t *config)
+{
+	static const cyaml_bitdef_t bitvals[] = {
+		{ .name = "a", .offset =  0, .bits =  3 },
+	};
+	static const unsigned char yaml[] =
+		"test_bitfield:\n"
+		"    a: {}\n";
+	struct target_struct {
+		uint64_t test_value_bitfield;
+	} *data_tgt = NULL;
+	static const struct cyaml_schema_field mapping_schema[] = {
+		CYAML_FIELD_BITFIELD("test_bitfield", CYAML_FLAG_DEFAULT,
+				struct target_struct, test_value_bitfield,
+				bitvals, CYAML_ARRAY_LEN(bitvals)),
+		CYAML_FIELD_END
+	};
+	static const struct cyaml_schema_value top_schema = {
+		CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+				struct target_struct, mapping_schema),
+	};
+	test_data_t td = {
+		.data = (cyaml_data_t **) &data_tgt,
+		.config = config,
+		.schema = &top_schema,
+	};
+	cyaml_err_t err;
+
+	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
+
+	err = cyaml_load_data(yaml, YAML_LEN(yaml), config, &top_schema,
+			(cyaml_data_t **) &data_tgt, NULL);
+	if (err != CYAML_ERR_UNEXPECTED_EVENT) {
+		return ttest_fail(&tc, cyaml_strerror(err));
+	}
+
+	if (data_tgt != NULL) {
+		return ttest_fail(&tc, "Data non-NULL on error.");
+	}
+
+	return ttest_pass(&tc);
+}
+
+/**
+ * Test loading when schema expects bitfield, but value is not in schema.
+ *
+ * \param[in]  report  The test report context.
+ * \param[in]  config  The CYAML config to use for the test.
+ * \return true if test passes, false otherwise.
+ */
+static bool test_err_load_schema_invalid_value_bitfield_3(
+		ttest_report_ctx_t *report,
+		const cyaml_config_t *config)
+{
+	static const cyaml_bitdef_t bitvals[] = {
+		{ .name = "a", .offset =  0, .bits =  3 },
+	};
+	static const unsigned char yaml[] =
+		"test_bitfield:\n"
+		"    b: {}\n";
+	struct target_struct {
+		uint64_t test_value_bitfield;
+	} *data_tgt = NULL;
+	static const struct cyaml_schema_field mapping_schema[] = {
+		CYAML_FIELD_BITFIELD("test_bitfield", CYAML_FLAG_DEFAULT,
+				struct target_struct, test_value_bitfield,
+				bitvals, CYAML_ARRAY_LEN(bitvals)),
+		CYAML_FIELD_END
+	};
+	static const struct cyaml_schema_value top_schema = {
+		CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+				struct target_struct, mapping_schema),
+	};
+	test_data_t td = {
+		.data = (cyaml_data_t **) &data_tgt,
+		.config = config,
+		.schema = &top_schema,
+	};
+	cyaml_err_t err;
+
+	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
+
+	err = cyaml_load_data(yaml, YAML_LEN(yaml), config, &top_schema,
+			(cyaml_data_t **) &data_tgt, NULL);
+	if (err != CYAML_ERR_INVALID_VALUE) {
+		return ttest_fail(&tc, cyaml_strerror(err));
+	}
+
+	if (data_tgt != NULL) {
+		return ttest_fail(&tc, "Data non-NULL on error.");
+	}
+
+	return ttest_pass(&tc);
+}
+
+/**
+ * Test loading when schema expects bitfield, but value too big.
+ *
+ * \param[in]  report  The test report context.
+ * \param[in]  config  The CYAML config to use for the test.
+ * \return true if test passes, false otherwise.
+ */
+static bool test_err_load_schema_invalid_value_bitfield_4(
+		ttest_report_ctx_t *report,
+		const cyaml_config_t *config)
+{
+	static const cyaml_bitdef_t bitvals[] = {
+		{ .name = "a", .offset =  0, .bits =  3 },
+	};
+	static const unsigned char yaml[] =
+		"test_bitfield:\n"
+		"    a: 0xf\n";
+	struct target_struct {
+		uint64_t test_value_bitfield;
+	} *data_tgt = NULL;
+	static const struct cyaml_schema_field mapping_schema[] = {
+		CYAML_FIELD_BITFIELD("test_bitfield", CYAML_FLAG_DEFAULT,
+				struct target_struct, test_value_bitfield,
+				bitvals, CYAML_ARRAY_LEN(bitvals)),
+		CYAML_FIELD_END
+	};
+	static const struct cyaml_schema_value top_schema = {
+		CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+				struct target_struct, mapping_schema),
+	};
+	test_data_t td = {
+		.data = (cyaml_data_t **) &data_tgt,
+		.config = config,
+		.schema = &top_schema,
+	};
+	cyaml_err_t err;
+
+	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
+
+	err = cyaml_load_data(yaml, YAML_LEN(yaml), config, &top_schema,
+			(cyaml_data_t **) &data_tgt, NULL);
+	if (err != CYAML_ERR_INVALID_VALUE) {
+		return ttest_fail(&tc, cyaml_strerror(err));
+	}
+
+	if (data_tgt != NULL) {
+		return ttest_fail(&tc, "Data non-NULL on error.");
+	}
+
+	return ttest_pass(&tc);
+}
+
+/**
+ * Test loading when schema expects bitfield, but value is of wrong type.
+ *
+ * \param[in]  report  The test report context.
+ * \param[in]  config  The CYAML config to use for the test.
+ * \return true if test passes, false otherwise.
+ */
+static bool test_err_load_schema_invalid_value_bitfield_5(
+		ttest_report_ctx_t *report,
+		const cyaml_config_t *config)
+{
+	static const cyaml_bitdef_t bitvals[] = {
+		{ .name = "a", .offset =  0, .bits =  3 },
+	};
+	static const unsigned char yaml[] =
+		"test_bitfield:\n"
+		"    {}: {}\n";
+	struct target_struct {
+		uint64_t test_value_bitfield;
+	} *data_tgt = NULL;
+	static const struct cyaml_schema_field mapping_schema[] = {
+		CYAML_FIELD_BITFIELD("test_bitfield", CYAML_FLAG_DEFAULT,
+				struct target_struct, test_value_bitfield,
+				bitvals, CYAML_ARRAY_LEN(bitvals)),
+		CYAML_FIELD_END
+	};
+	static const struct cyaml_schema_value top_schema = {
+		CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+				struct target_struct, mapping_schema),
+	};
+	test_data_t td = {
+		.data = (cyaml_data_t **) &data_tgt,
+		.config = config,
+		.schema = &top_schema,
+	};
+	cyaml_err_t err;
+
+	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
+
+	err = cyaml_load_data(yaml, YAML_LEN(yaml), config, &top_schema,
+			(cyaml_data_t **) &data_tgt, NULL);
+	if (err != CYAML_ERR_UNEXPECTED_EVENT) {
+		return ttest_fail(&tc, cyaml_strerror(err));
+	}
+
+	if (data_tgt != NULL) {
+		return ttest_fail(&tc, "Data non-NULL on error.");
+	}
+
+	return ttest_pass(&tc);
+}
+
+/**
+ * Test loading when schema expects bitfield, but value is of wrong type.
+ *
+ * \param[in]  report  The test report context.
+ * \param[in]  config  The CYAML config to use for the test.
+ * \return true if test passes, false otherwise.
+ */
+static bool test_err_load_schema_invalid_value_bitfield_6(
+		ttest_report_ctx_t *report,
+		const cyaml_config_t *config)
+{
+	static const cyaml_bitdef_t bitvals[] = {
+		{ .name = "a", .offset =  0, .bits =  3 },
+	};
+	static const unsigned char yaml[] =
+		"test_bitfield:\n"
+		"    []\n";
+	struct target_struct {
+		uint64_t test_value_bitfield;
+	} *data_tgt = NULL;
+	static const struct cyaml_schema_field mapping_schema[] = {
+		CYAML_FIELD_BITFIELD("test_bitfield", CYAML_FLAG_DEFAULT,
+				struct target_struct, test_value_bitfield,
+				bitvals, CYAML_ARRAY_LEN(bitvals)),
+		CYAML_FIELD_END
+	};
+	static const struct cyaml_schema_value top_schema = {
+		CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+				struct target_struct, mapping_schema),
+	};
+	test_data_t td = {
+		.data = (cyaml_data_t **) &data_tgt,
+		.config = config,
+		.schema = &top_schema,
+	};
+	cyaml_err_t err;
+
+	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
+
+	err = cyaml_load_data(yaml, YAML_LEN(yaml), config, &top_schema,
+			(cyaml_data_t **) &data_tgt, NULL);
+	if (err != CYAML_ERR_INVALID_VALUE) {
+		return ttest_fail(&tc, cyaml_strerror(err));
+	}
+
+	if (data_tgt != NULL) {
+		return ttest_fail(&tc, "Data non-NULL on error.");
+	}
+
+	return ttest_pass(&tc);
+}
+
+/**
+ * Test loading when schema expects bitfield, but value outside data.
+ *
+ * \param[in]  report  The test report context.
+ * \param[in]  config  The CYAML config to use for the test.
+ * \return true if test passes, false otherwise.
+ */
+static bool test_err_load_schema_bad_bitfield(
+		ttest_report_ctx_t *report,
+		const cyaml_config_t *config)
+{
+	static const cyaml_bitdef_t bitvals[] = {
+		{ .name = "a", .offset =  62, .bits =  4 },
+	};
+	static const unsigned char yaml[] =
+		"test_bitfield:\n"
+		"    a: 1\n";
+	struct target_struct {
+		uint64_t test_value_bitfield;
+	} *data_tgt = NULL;
+	static const struct cyaml_schema_field mapping_schema[] = {
+		CYAML_FIELD_BITFIELD("test_bitfield", CYAML_FLAG_DEFAULT,
+				struct target_struct, test_value_bitfield,
+				bitvals, CYAML_ARRAY_LEN(bitvals)),
+		CYAML_FIELD_END
+	};
+	static const struct cyaml_schema_value top_schema = {
+		CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+				struct target_struct, mapping_schema),
+	};
+	test_data_t td = {
+		.data = (cyaml_data_t **) &data_tgt,
+		.config = config,
+		.schema = &top_schema,
+	};
+	cyaml_err_t err;
+
+	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
+
+	err = cyaml_load_data(yaml, YAML_LEN(yaml), config, &top_schema,
+			(cyaml_data_t **) &data_tgt, NULL);
+	if (err != CYAML_ERR_BAD_BITVAL_IN_SCHEMA) {
+		return ttest_fail(&tc, cyaml_strerror(err));
+	}
+
+	if (data_tgt != NULL) {
+		return ttest_fail(&tc, "Data non-NULL on error.");
+	}
+
+	return ttest_pass(&tc);
+}
+
+/**
+ * Test saving when schema has bitfield defined outside value data.
+ *
+ * \param[in]  report  The test report context.
+ * \param[in]  config  The CYAML config to use for the test.
+ * \return true if test passes, false otherwise.
+ */
+static bool test_err_save_schema_bad_bitfield(
+		ttest_report_ctx_t *report,
+		const cyaml_config_t *config)
+{
+	static const cyaml_bitdef_t bitvals[] = {
+		{ .name = "a", .offset =  30, .bits =  4 },
+	};
+	static const struct target_struct {
+		uint32_t test_bitfield;
+	} data = {
+		.test_bitfield = 0xFFFFFFFFu,
+	};
+	static const struct cyaml_schema_field mapping_schema[] = {
+		CYAML_FIELD_BITFIELD("test_bitfield", CYAML_FLAG_DEFAULT,
+				struct target_struct, test_bitfield,
+				bitvals, CYAML_ARRAY_LEN(bitvals)),
+		CYAML_FIELD_END
+	};
+	static const struct cyaml_schema_value top_schema = {
+		CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+				struct target_struct, mapping_schema),
+	};
+	char *buffer = NULL;
+	size_t len = 0;
+	test_data_t td = {
+		.buffer = &buffer,
+		.config = config,
+	};
+	cyaml_err_t err;
+
+	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
+
+	err = cyaml_save_data(&buffer, &len, config, &top_schema,
+				&data, 0);
+	if (err != CYAML_ERR_BAD_BITVAL_IN_SCHEMA) {
+		return ttest_fail(&tc, cyaml_strerror(err));
+	}
+
+	if (buffer != NULL || len != 0) {
+		return ttest_fail(&tc, "Buffer/len not untouched.");
 	}
 
 	return ttest_pass(&tc);
@@ -4504,7 +5057,7 @@ static bool test_err_save_alloc_oom_2(
 }
 
 /**
- * Test loading a mapping with an aliased value.
+ * Test loading a flag with an aliased value.
  *
  * \param[in]  report  The test report context.
  * \param[in]  config  The CYAML config to use for the test.
@@ -4538,6 +5091,140 @@ static bool test_err_load_flag_value_alias(
 				struct target_struct, a, str, 5),
 		CYAML_FIELD_FLAGS("b", CYAML_FLAG_DEFAULT,
 				struct target_struct, b, str, 5),
+		CYAML_FIELD_END
+	};
+	static const struct cyaml_schema_value top_schema = {
+		CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+				struct target_struct, mapping_schema),
+	};
+	test_data_t td = {
+		.data = (cyaml_data_t **) &data_tgt,
+		.config = config,
+		.schema = &top_schema,
+	};
+	cyaml_err_t err;
+
+	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
+
+	err = cyaml_load_data(yaml, YAML_LEN(yaml), config, &top_schema,
+			(cyaml_data_t **) &data_tgt, NULL);
+	if (err != CYAML_ERR_ALIAS) {
+		return ttest_fail(&tc, cyaml_strerror(err));
+	}
+
+	return ttest_pass(&tc);
+}
+
+/**
+ * Test loading a bitfield with an aliased value.
+ *
+ * \param[in]  report  The test report context.
+ * \param[in]  config  The CYAML config to use for the test.
+ * \return true if test passes, false otherwise.
+ */
+static bool test_err_load_bitfield_value_alias_1(
+		ttest_report_ctx_t *report,
+		const cyaml_config_t *config)
+{
+	static const cyaml_bitdef_t bitvals[] = {
+		{ .name = "7", .offset =  0, .bits =  1 },
+		{ .name = "a", .offset =  1, .bits =  2 },
+		{ .name = "b", .offset =  3, .bits =  7 },
+		{ .name = "c", .offset = 10, .bits = 32 },
+		{ .name = "d", .offset = 42, .bits =  8 },
+		{ .name = "e", .offset = 50, .bits = 14 },
+	};
+	static const unsigned char yaml[] =
+		"test_bitfield:\n"
+		"    a: &foo 2\n"
+		"    b: 0x7f\n"
+		"    c: 0xffffffff\n"
+		"    d: 0xff\n"
+		"    e: 0x3fff\n"
+		"test_bitfield2:\n"
+		"    *foo: 1\n"
+		"    b: 0x7f\n"
+		"    c: 0xffffffff\n"
+		"    d: 0xff\n"
+		"    e: 0x3fff\n";
+	struct target_struct {
+		uint64_t test_value_bitfield;
+		uint64_t test_value_bitfield2;
+	} *data_tgt = NULL;
+	static const struct cyaml_schema_field mapping_schema[] = {
+		CYAML_FIELD_BITFIELD("test_bitfield", CYAML_FLAG_DEFAULT,
+				struct target_struct, test_value_bitfield,
+				bitvals, CYAML_ARRAY_LEN(bitvals)),
+		CYAML_FIELD_BITFIELD("test_bitfield2", CYAML_FLAG_DEFAULT,
+				struct target_struct, test_value_bitfield2,
+				bitvals, CYAML_ARRAY_LEN(bitvals)),
+		CYAML_FIELD_END
+	};
+	static const struct cyaml_schema_value top_schema = {
+		CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+				struct target_struct, mapping_schema),
+	};
+	test_data_t td = {
+		.data = (cyaml_data_t **) &data_tgt,
+		.config = config,
+		.schema = &top_schema,
+	};
+	cyaml_err_t err;
+
+	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
+
+	err = cyaml_load_data(yaml, YAML_LEN(yaml), config, &top_schema,
+			(cyaml_data_t **) &data_tgt, NULL);
+	if (err != CYAML_ERR_ALIAS) {
+		return ttest_fail(&tc, cyaml_strerror(err));
+	}
+
+	return ttest_pass(&tc);
+}
+
+/**
+ * Test loading a bitfield with an aliased value.
+ *
+ * \param[in]  report  The test report context.
+ * \param[in]  config  The CYAML config to use for the test.
+ * \return true if test passes, false otherwise.
+ */
+static bool test_err_load_bitfield_value_alias_2(
+		ttest_report_ctx_t *report,
+		const cyaml_config_t *config)
+{
+	static const cyaml_bitdef_t bitvals[] = {
+		{ .name = "7", .offset =  0, .bits =  1 },
+		{ .name = "a", .offset =  1, .bits =  2 },
+		{ .name = "b", .offset =  3, .bits =  7 },
+		{ .name = "c", .offset = 10, .bits = 32 },
+		{ .name = "d", .offset = 42, .bits =  8 },
+		{ .name = "e", .offset = 50, .bits = 14 },
+	};
+	static const unsigned char yaml[] =
+		"test_bitfield:\n"
+		"    a: &foo 2\n"
+		"    b: 0x7f\n"
+		"    c: 0xffffffff\n"
+		"    d: 0xff\n"
+		"    e: 0x3fff\n"
+		"test_bitfield2:\n"
+		"    a: *foo\n"
+		"    b: 0x7f\n"
+		"    c: 0xffffffff\n"
+		"    d: 0xff\n"
+		"    e: 0x3fff\n";
+	struct target_struct {
+		uint64_t test_value_bitfield;
+		uint64_t test_value_bitfield2;
+	} *data_tgt = NULL;
+	static const struct cyaml_schema_field mapping_schema[] = {
+		CYAML_FIELD_BITFIELD("test_bitfield", CYAML_FLAG_DEFAULT,
+				struct target_struct, test_value_bitfield,
+				bitvals, CYAML_ARRAY_LEN(bitvals)),
+		CYAML_FIELD_BITFIELD("test_bitfield2", CYAML_FLAG_DEFAULT,
+				struct target_struct, test_value_bitfield2,
+				bitvals, CYAML_ARRAY_LEN(bitvals)),
 		CYAML_FIELD_END
 	};
 	static const struct cyaml_schema_value top_schema = {
@@ -4667,6 +5354,8 @@ bool errs_tests(
 
 	pass &= test_err_load_schema_bad_type(rc, &config);
 	pass &= test_err_save_schema_bad_type(rc, &config);
+	pass &= test_err_load_schema_bad_bitfield(rc, &config);
+	pass &= test_err_save_schema_bad_bitfield(rc, &config);
 	pass &= test_err_load_schema_string_min_max(rc, &config);
 	pass &= test_err_load_schema_bad_data_size_1(rc, &config);
 	pass &= test_err_load_schema_bad_data_size_2(rc, &config);
@@ -4675,6 +5364,7 @@ bool errs_tests(
 	pass &= test_err_load_schema_bad_data_size_5(rc, &config);
 	pass &= test_err_load_schema_bad_data_size_6(rc, &config);
 	pass &= test_err_load_schema_bad_data_size_7(rc, &config);
+	pass &= test_err_load_schema_bad_data_size_8(rc, &config);
 	pass &= test_err_save_schema_bad_data_size_1(rc, &config);
 	pass &= test_err_save_schema_bad_data_size_2(rc, &config);
 	pass &= test_err_save_schema_bad_data_size_3(rc, &config);
@@ -4682,6 +5372,7 @@ bool errs_tests(
 	pass &= test_err_save_schema_bad_data_size_5(rc, &config);
 	pass &= test_err_save_schema_bad_data_size_6(rc, &config);
 	pass &= test_err_save_schema_bad_data_size_7(rc, &config);
+	pass &= test_err_save_schema_bad_data_size_8(rc, &config);
 	pass &= test_err_load_schema_sequence_min_max(rc, &config);
 	pass &= test_err_save_schema_sequence_min_max(rc, &config);
 	pass &= test_err_load_schema_bad_data_size_float(rc, &config);
@@ -4695,6 +5386,12 @@ bool errs_tests(
 	pass &= test_err_load_schema_invalid_value_flags_1(rc, &config);
 	pass &= test_err_load_schema_invalid_value_flags_2(rc, &config);
 	pass &= test_err_load_schema_invalid_value_flags_3(rc, &config);
+	pass &= test_err_load_schema_invalid_value_bitfield_1(rc, &config);
+	pass &= test_err_load_schema_invalid_value_bitfield_2(rc, &config);
+	pass &= test_err_load_schema_invalid_value_bitfield_3(rc, &config);
+	pass &= test_err_load_schema_invalid_value_bitfield_4(rc, &config);
+	pass &= test_err_load_schema_invalid_value_bitfield_5(rc, &config);
+	pass &= test_err_load_schema_invalid_value_bitfield_6(rc, &config);
 	pass &= test_err_load_schema_invalid_value_int_range_1(rc, &config);
 	pass &= test_err_load_schema_invalid_value_int_range_2(rc, &config);
 	pass &= test_err_load_schema_invalid_value_int_range_3(rc, &config);
@@ -4756,6 +5453,8 @@ bool errs_tests(
 
 	pass &= test_err_load_flag_value_alias(rc, &config);
 	pass &= test_err_load_mapping_value_alias(rc, &config);
+	pass &= test_err_load_bitfield_value_alias_1(rc, &config);
+	pass &= test_err_load_bitfield_value_alias_2(rc, &config);
 
 	return pass;
 }

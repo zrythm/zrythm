@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: ISC
  *
- * Copyright (C) 2018 Michael Drake <tlsa@netsurf-browser.org>
+ * Copyright (C) 2018-2019 Michael Drake <tlsa@netsurf-browser.org>
  */
 
 #include <stdbool.h>
@@ -1129,6 +1129,144 @@ static bool test_save_mapping_entry_flags_sparse(
 		CYAML_FIELD_FLAGS("test_flags", CYAML_FLAG_DEFAULT,
 				struct target_struct, test_flags,
 				strings, CYAML_ARRAY_LEN(strings)),
+		CYAML_FIELD_END
+	};
+	static const struct cyaml_schema_value top_schema = {
+		CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+				struct target_struct, mapping_schema),
+	};
+	char *buffer;
+	size_t len;
+	test_data_t td = {
+		.buffer = &buffer,
+		.config = config,
+	};
+	cyaml_err_t err;
+
+	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
+
+	err = cyaml_save_data(&buffer, &len, config, &top_schema,
+				&data, 0);
+	if (err != CYAML_OK) {
+		return ttest_fail(&tc, cyaml_strerror(err));
+	}
+
+	if (len != YAML_LEN(ref) || memcmp(ref, buffer, len) != 0) {
+		return ttest_fail(&tc, "Bad data:\n"
+				"EXPECTED (%zu):\n\n%.*s\n\n"
+				"GOT (%zu):\n\n%.*s\n",
+				YAML_LEN(ref), YAML_LEN(ref), ref,
+				len, len, buffer);
+	}
+
+	return ttest_pass(&tc);
+}
+
+/**
+ * Test saving a bitfield value.
+ *
+ * \param[in]  report  The test report context.
+ * \param[in]  config  The CYAML config to use for the test.
+ * \return true if test passes, false otherwise.
+ */
+static bool test_save_mapping_entry_bitfield(
+		ttest_report_ctx_t *report,
+		const cyaml_config_t *config)
+{
+	static const cyaml_bitdef_t bitvals[] = {
+		{ .name = "a", .offset =  0, .bits =  3 },
+		{ .name = "b", .offset =  3, .bits =  7 },
+		{ .name = "c", .offset = 10, .bits = 32 },
+		{ .name = "d", .offset = 42, .bits =  8 },
+		{ .name = "e", .offset = 50, .bits = 14 },
+	};
+	static const unsigned char ref[] =
+		"---\n"
+		"test_bitfield:\n"
+		"  a: 0x7\n"
+		"  b: 0x7f\n"
+		"  c: 0xffffffff\n"
+		"  d: 0xff\n"
+		"  e: 0x3fff\n"
+		"...\n";
+	static const struct target_struct {
+		uint64_t test_bitfield;
+	} data = {
+		.test_bitfield = 0xFFFFFFFFFFFFFFFFu,
+	};
+	static const struct cyaml_schema_field mapping_schema[] = {
+		CYAML_FIELD_BITFIELD("test_bitfield", CYAML_FLAG_DEFAULT,
+				struct target_struct, test_bitfield,
+				bitvals, CYAML_ARRAY_LEN(bitvals)),
+		CYAML_FIELD_END
+	};
+	static const struct cyaml_schema_value top_schema = {
+		CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+				struct target_struct, mapping_schema),
+	};
+	char *buffer;
+	size_t len;
+	test_data_t td = {
+		.buffer = &buffer,
+		.config = config,
+	};
+	cyaml_err_t err;
+
+	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
+
+	err = cyaml_save_data(&buffer, &len, config, &top_schema,
+				&data, 0);
+	if (err != CYAML_OK) {
+		return ttest_fail(&tc, cyaml_strerror(err));
+	}
+
+	if (len != YAML_LEN(ref) || memcmp(ref, buffer, len) != 0) {
+		return ttest_fail(&tc, "Bad data:\n"
+				"EXPECTED (%zu):\n\n%.*s\n\n"
+				"GOT (%zu):\n\n%.*s\n",
+				YAML_LEN(ref), YAML_LEN(ref), ref,
+				len, len, buffer);
+	}
+
+	return ttest_pass(&tc);
+}
+
+/**
+ * Test saving a sparse bitfield value.
+ *
+ * \param[in]  report  The test report context.
+ * \param[in]  config  The CYAML config to use for the test.
+ * \return true if test passes, false otherwise.
+ */
+static bool test_save_mapping_entry_bitfield_sparse(
+		ttest_report_ctx_t *report,
+		const cyaml_config_t *config)
+{
+	static const cyaml_bitdef_t bitvals[] = {
+		{ .name = "a", .offset =  0, .bits =  3 },
+		{ .name = "b", .offset =  3, .bits =  7 },
+		{ .name = "c", .offset = 10, .bits = 32 },
+		{ .name = "d", .offset = 42, .bits =  8 },
+		{ .name = "e", .offset = 50, .bits = 14 },
+	};
+	static const unsigned char ref[] =
+		"---\n"
+		"test_bitfield:\n"
+		"  a: 0x7\n"
+		"  b: 0x7f\n"
+		"  e: 0x3fff\n"
+		"...\n";
+	static const struct target_struct {
+		uint64_t test_bitfield;
+	} data = {
+		.test_bitfield = (   0x7llu <<  0) |
+		                 (  0x7Fllu <<  3) |
+		                 (0x3FFFllu << 50),
+	};
+	static const struct cyaml_schema_field mapping_schema[] = {
+		CYAML_FIELD_BITFIELD("test_bitfield", CYAML_FLAG_DEFAULT,
+				struct target_struct, test_bitfield,
+				bitvals, CYAML_ARRAY_LEN(bitvals)),
 		CYAML_FIELD_END
 	};
 	static const struct cyaml_schema_value top_schema = {
@@ -3706,10 +3844,12 @@ bool save_tests(
 	ttest_heading(rc, "Save single entry mapping tests: complex types");
 
 	pass &= test_save_mapping_entry_mapping(rc, &config);
+	pass &= test_save_mapping_entry_bitfield(rc, &config);
 	pass &= test_save_mapping_entry_mapping_ptr(rc, &config);
 	pass &= test_save_mapping_entry_flags_strict(rc, &config);
 	pass &= test_save_mapping_entry_flags_number(rc, &config);
 	pass &= test_save_mapping_entry_flags_sparse(rc, &config);
+	pass &= test_save_mapping_entry_bitfield_sparse(rc, &config);
 
 	ttest_heading(rc, "Save single entry mapping tests: sequences");
 
