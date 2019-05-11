@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+typedef struct _ExpanderBoxWidget ExpanderBoxWidget;
+
 #define CHANNEL_WIDGET_TYPE \
   (channel_widget_get_type ())
 G_DECLARE_FINAL_TYPE (ChannelWidget,
@@ -57,16 +59,19 @@ typedef struct _ChannelWidget
   GtkButton           * phase_invert;
   GtkLabel            * phase_reading;
   KnobWidget          * phase_knob;
-  GtkBox              * slots_box;
-  GtkBox              * slot_boxes[STRIP_SIZE];      ///< array of slot boxes (1 per plugin)
-  ChannelSlotWidget   * slots[STRIP_SIZE];
-  GtkToggleButton     * toggles[STRIP_SIZE];   ///< toggle buttons (per slot)
-  GtkLabel            * labels[STRIP_SIZE];     ///< labels (per slot)
-  //int                 num_slots;        ///< counter
-  //GtkBox              * dummy_slot_box;    ///< for dnd
+
+  /* ----- Inserts ------ */
+  ExpanderBoxWidget * inserts_expander;
+  GtkBox              * inserts_box;
+  GtkBox              * insert_boxes[STRIP_SIZE];      ///< array of slot boxes (1 per plugin)
+  ChannelSlotWidget   * inserts[STRIP_SIZE];
+  GtkToggleButton     * insert_toggles[STRIP_SIZE];   ///< toggle buttons (per slot)
+  GtkLabel            * insert_labels[STRIP_SIZE];     ///< labels (per slot)
   GtkToggleButton     * slot1b;
   GtkToggleButton     * slot2b;
-  //GtkButton           * add_slot;
+
+  /* -------- end --------- */
+
   GtkButton           * e;
   GtkToggleButton *      solo;
   GtkToggleButton           * listen;
@@ -119,10 +124,10 @@ typedef struct _ChannelWidget
 } ChannelWidget;
 
 /**
- * Updates the slots.
+ * Updates the inserts.
  */
 void
-channel_widget_update_slots (
+channel_widget_update_inserts (
   ChannelWidget * self);
 
 /**

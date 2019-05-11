@@ -134,6 +134,8 @@ mixer_widget_setup (MixerWidget * self,
   gtk_container_add (
     GTK_CONTAINER (self->master_box),
     GTK_WIDGET (master->widget));
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (self->master_box), 0);
 
   mixer_widget_hard_refresh (self);
 }

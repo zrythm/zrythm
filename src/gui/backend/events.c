@@ -376,7 +376,7 @@ on_plugins_removed (Channel * ch)
   for (int i = 0; i < STRIP_SIZE; i++)
     {
       csw =
-        ch->widget->slots[i];
+        ch->widget->inserts[i];
       gtk_widget_unset_state_flags (
         GTK_WIDGET (csw),
         GTK_STATE_FLAG_SELECTED);
@@ -441,7 +441,7 @@ on_mixer_selections_changed ()
         {
           pl = ch->plugins[j];
           csw =
-            ch->widget->slots[j];
+            ch->widget->inserts[j];
           /*GtkStateFlags state_flags =*/
             /*gtk_widget_get_state_flags (*/
               /*GTK_WIDGET (csw));*/
@@ -584,7 +584,7 @@ on_plugin_visibility_changed (Plugin * pl)
       Z_IS_CHANNEL_WIDGET (pl->track->channel->widget))
     gtk_widget_queue_draw (
       GTK_WIDGET (
-        pl->track->channel->widget->slots[
+        pl->track->channel->widget->inserts[
           channel_get_plugin_index (
             pl->track->channel, pl)]));
 }
@@ -899,7 +899,7 @@ events_process (void * data)
           EVENTS_PUSH (ET_REFRESH_ARRANGER, NULL);
           break;
         case ET_CHANNEL_SLOTS_CHANGED:
-          channel_widget_update_slots (
+          channel_widget_update_inserts (
             ((Channel *)ev->arg)->widget);
           break;
         default:

@@ -31,6 +31,7 @@
 #include "gui/widgets/channel.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/editable_label.h"
+#include "gui/widgets/expander_box.h"
 #include "gui/widgets/meter.h"
 #include "gui/widgets/channel_slot.h"
 #include "gui/widgets/fader.h"
@@ -536,44 +537,47 @@ setup_meter (ChannelWidget * self)
 }
 
 /**
- * Updates the slots.
+ * Updates the inserts.
  */
 void
-channel_widget_update_slots (ChannelWidget * self)
+channel_widget_update_inserts (ChannelWidget * self)
 {
   for (int i = 0; i < STRIP_SIZE; i++)
     gtk_widget_queue_draw (
-      GTK_WIDGET (self->slots[i]));
+      GTK_WIDGET (self->inserts[i]));
 }
 
 
 /**
- * Sets up the slots.
+ * Sets up the inserts.
  *
  * First removes the add button, then creates each slot.
  */
 static void
-setup_slots (ChannelWidget * self)
+setup_inserts (ChannelWidget * self)
 {
-  /*gtk_container_remove (GTK_CONTAINER (self->slots_box),*/
+  /*gtk_container_remove (GTK_CONTAINER (self->inserts_box),*/
                         /*GTK_WIDGET (self->add_slot));*/
   /*Channel * channel = self->channel;*/
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      self->slot_boxes[i] =
+      self->insert_boxes[i] =
         GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
 
-      self->slots[i] = channel_slot_widget_new (i, self);
+      self->inserts[i] = channel_slot_widget_new (i, self);
       /* FIXME set to channel widget width */
-      /*gtk_widget_set_size_request (GTK_WIDGET (self->slot_boxes[i]),*/
+      /*gtk_widget_set_size_request (GTK_WIDGET (self->insert_boxes[i]),*/
                                    /*20, 20);*/
-      gtk_box_pack_start (self->slot_boxes[i],
-                          GTK_WIDGET (self->slots[i]),
-                          1, 1, 0);
-      gtk_box_pack_start (self->slots_box,
-                          GTK_WIDGET (self->slot_boxes[i]),
-                          0, 1, 0);
-      gtk_widget_show_all (GTK_WIDGET (self->slot_boxes[i]));
+      gtk_box_pack_start (
+        self->insert_boxes[i],
+        GTK_WIDGET (self->inserts[i]),
+        1, 1, 0);
+      gtk_box_pack_start (
+        self->inserts_box,
+        GTK_WIDGET (self->insert_boxes[i]),
+        0, 1, 0);
+      gtk_widget_show_all (
+        GTK_WIDGET (self->insert_boxes[i]));
     }
 }
 
@@ -742,7 +746,7 @@ channel_widget_new (Channel * channel)
 
   setup_phase_panel (self);
   /*setup_pan (self);*/
-  setup_slots (self);
+  setup_inserts (self);
   fader_widget_setup (self->fader,
                       fader_get_amp,
                       fader_set_amp,
@@ -819,7 +823,7 @@ channel_widget_class_init (ChannelWidgetClass * _klass)
   gtk_widget_class_bind_template_child (
     klass,
     ChannelWidget,
-    slots_box);
+    inserts_expander);
   gtk_widget_class_bind_template_child (
     klass,
     ChannelWidget,
@@ -893,6 +897,40 @@ channel_widget_init (ChannelWidget * self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
+  /* setup inserts */
+  GtkWidget * inserts_scroll =
+    gtk_scrolled_window_new (
+      NULL, NULL);
+  gtk_widget_set_vexpand (inserts_scroll, 1);
+  gtk_widget_set_visible (inserts_scroll, 1);
+  gtk_scrolled_window_set_shadow_type (
+    GTK_SCROLLED_WINDOW (inserts_scroll),
+    GTK_SHADOW_ETCHED_IN);
+  gtk_widget_set_size_request (
+    inserts_scroll, -1, 124);
+
+  GtkWidget * viewport =
+    gtk_viewport_new (NULL, NULL);
+  gtk_widget_set_visible (viewport, 1);
+  gtk_container_add (
+    GTK_CONTAINER (inserts_scroll),
+    GTK_WIDGET (viewport));
+
+  self->inserts_box =
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->inserts_box), 1);
+  gtk_container_add (
+    GTK_CONTAINER (viewport),
+    GTK_WIDGET (self->inserts_box));
+
+  gtk_container_add (
+    GTK_CONTAINER (self->inserts_expander->content),
+    inserts_scroll);
+  expander_box_widget_set_label (
+    self->inserts_expander, _("Inserts"));
+
   GtkTargetEntry entries[1];
   entries[0].target = TARGET_ENTRY_TRACK;
   entries[0].flags = GTK_TARGET_SAME_APP;
@@ -926,6 +964,9 @@ channel_widget_init (ChannelWidget * self)
       gtk_gesture_drag_new (
         GTK_WIDGET (
           self)));
+
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (self), 0);
 
   GtkStyleContext * context;
   z_gtk_container_destroy_all_children (

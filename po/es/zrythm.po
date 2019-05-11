@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-11 13:20+0100\n"
+"POT-Creation-Date: 2019-05-11 14:15+0100\n"
 "PO-Revision-Date: 2019-05-08 06:33+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Spanish <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -464,6 +464,10 @@ msgstr ""
 msgid "Initializing..."
 msgstr ""
 
+#: src/gui/widgets/channel.c:932
+msgid "Inserts"
+msgstr ""
+
 #: src/audio/track.c:728
 msgid "Instrument"
 msgstr ""
@@ -630,7 +634,7 @@ msgid ""
 "(or accept the default)"
 msgstr ""
 
-#: resources/ui/inspector.ui:81
+#: resources/ui/inspector.ui:72
 msgid "No item selected"
 msgstr ""
 
@@ -1308,10 +1312,6 @@ msgstr ""
 msgid "_Zoom In"
 msgstr ""
 
-#: resources/ui/expander_box.ui:67
-msgid "checkbutton"
-msgstr ""
-
 #: resources/ui/rack_row.ui:60
 msgid "expander"
 msgstr ""
@@ -1320,8 +1320,7 @@ msgstr ""
 msgid "in"
 msgstr ""
 
-#: resources/ui/track.ui:59 resources/ui/expander_box.ui:45
-#: resources/ui/expander_box.ui:57 resources/ui/automatable_selector.ui:84
+#: resources/ui/track.ui:59 resources/ui/automatable_selector.ui:84
 #: resources/ui/route_target_selector.ui:85
 msgid "label"
 msgstr ""

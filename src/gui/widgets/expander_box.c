@@ -35,6 +35,32 @@ on_clicked (GtkButton *button,
     !gtk_revealer_get_reveal_child (self->revealer));
 }
 
+/**
+ * Sets the label to show.
+ */
+void
+expander_box_widget_set_label (
+  ExpanderBoxWidget * self,
+  const char *        label)
+{
+  gtk_label_set_text (
+    self->btn_label, label);
+}
+
+/**
+ * Sets the icon name to show.
+ */
+void
+expander_box_widget_set_icon_name (
+  ExpanderBoxWidget * self,
+  const char *        icon_name)
+{
+  gtk_image_set_from_icon_name (
+    self->btn_img,
+    icon_name,
+    GTK_ICON_SIZE_BUTTON);
+}
+
 static void
 expander_box_widget_class_init (
   ExpanderBoxWidgetClass * _klass)
@@ -66,6 +92,11 @@ expander_box_widget_init (ExpanderBoxWidget * self)
 
   self->btn_label =
     GTK_LABEL (gtk_label_new ("Label"));
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (self->btn_label), 1);
+  gtk_widget_set_halign (
+    GTK_WIDGET (self->btn_label),
+    GTK_ALIGN_START);
   self->btn_img =
     GTK_IMAGE (
       gtk_image_new_from_icon_name (

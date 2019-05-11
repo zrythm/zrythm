@@ -48,15 +48,6 @@
           </packing>
         </child>
         <child>
-          <object class="ExpanderBoxWidget" id="test_box">
-            <property name="visible">1</property>
-            <property name="orientation">vertical</property>
-          </object>
-          <packing>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkBox" id="chord_box">
             <property name="visible">1</property>
             <property name="orientation">vertical</property>

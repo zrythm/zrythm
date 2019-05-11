@@ -333,18 +333,18 @@ automation-point:hover
   background-color: @hover_color;
 }
 
-expander-box
+inspector expander-box
 {
   margin: 5px;
   border-style: solid;
   border-width: 2px;
-  border-radius: 6;
+  border-radius: 6px;
   /* FIXME use predefined colors */
   border-color: #555555;
 }
 
-expander-box button
+inspector expander-box button
 {
-  border-top-left-radius: 6;
-  border-top-right-radius: 6;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
 }
