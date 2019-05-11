@@ -121,6 +121,7 @@ void
 midi_arranger_selections_remove_transients (
   MidiArrangerSelections * mas)
 {
+  g_message ("num midi notes %d", mas->num_midi_notes);
   for (int i = 0; i < mas->num_midi_notes; i++)
     {
       remove_transient (mas, i);

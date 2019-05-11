@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-11 10:13+0100\n"
+"POT-Creation-Date: 2019-05-11 10:21+0100\n"
 "PO-Revision-Date: 2019-05-04 23:37+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Chinese (Simplified) <https://translate.zrythm.org/projects/"
@@ -307,7 +307,7 @@ msgid "Dummy"
 msgstr ""
 
 #: src/actions/duplicate_timeline_selections_action.c:120
-#: src/actions/duplicate_midi_arranger_selections_action.c:116
+#: src/actions/duplicate_midi_arranger_selections_action.c:121
 msgid "Duplicate Object(s)"
 msgstr ""
 

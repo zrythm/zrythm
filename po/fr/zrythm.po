@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-11 10:13+0100\n"
+"POT-Creation-Date: 2019-05-11 10:21+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -320,7 +320,7 @@ msgid "Dummy"
 msgstr "Factice"
 
 #: src/actions/duplicate_timeline_selections_action.c:120
-#: src/actions/duplicate_midi_arranger_selections_action.c:116
+#: src/actions/duplicate_midi_arranger_selections_action.c:121
 msgid "Duplicate Object(s)"
 msgstr "Copier l'objet"
 

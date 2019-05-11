@@ -22,6 +22,7 @@
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_note.h"
 #include "project.h"
 #include "utils/flags.h"
 
@@ -67,6 +68,10 @@ duplicate_midi_arranger_selections_action_do (
         mn->region, mn);
       midi_note_shift (
         mn, self->ticks, self->delta);
+
+      /* select it */
+      midi_note_widget_select (
+        mn->widget, F_SELECT, F_NO_TRANSIENTS);
     }
 
   EVENTS_PUSH (ET_MA_SELECTIONS_CHANGED,
