@@ -1727,21 +1727,26 @@ channel_get_first_plugin (Channel * channel)
 
 
 /**
- * Connects or disconnects the MIDI editor key press port to the channel's
- * first plugin
+ * Connects or disconnects the MIDI editor key press
+ * port to the channel's first plugin
+ *
+ * @param connect Connect or not.
  */
 void
-channel_reattach_midi_editor_manual_press_port (Channel * channel,
-                                                int     connect)
+channel_reattach_midi_editor_manual_press_port (
+  Channel * channel,
+  int     connect)
 {
   /* find first plugin */
-  Plugin * plugin = channel_get_first_plugin (channel);
+  Plugin * plugin =
+    channel_get_first_plugin (channel);
 
   if (plugin)
     {
       if (channel->type == CT_MIDI)
         {
-          /* Connect/Disconnect MIDI editor manual press port to the plugin */
+          /* Connect/Disconnect MIDI editor manual
+           * press port to the plugin */
           for (int i = 0; i < plugin->num_in_ports; i++)
             {
               Port * port = plugin->in_ports[i];
@@ -1760,6 +1765,8 @@ channel_reattach_midi_editor_manual_press_port (Channel * channel,
             }
         }
     }
+
+  mixer_recalc_graph (MIXER);
 }
 
 /**

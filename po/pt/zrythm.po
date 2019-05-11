@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-11 10:21+0100\n"
+"POT-Creation-Date: 2019-05-11 10:34+0100\n"
 "PO-Revision-Date: 2019-05-04 11:00+0100\n"
 "Last-Translator: alex <alex@zrythm.org>\n"
 "Language-Team: Portuguese\n"
@@ -595,7 +595,7 @@ msgstr ""
 msgid "Move %s"
 msgstr ""
 
-#: src/actions/move_midi_arranger_selections_action.c:103
+#: src/actions/move_midi_arranger_selections_action.c:115
 #: src/actions/move_timeline_selections_action.c:101
 msgid "Move Object(s)"
 msgstr ""

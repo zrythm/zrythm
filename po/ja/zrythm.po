@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-11 10:21+0100\n"
+"POT-Creation-Date: 2019-05-11 10:34+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Japanese <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -619,7 +619,7 @@ msgstr "%d個のプラグインを移動"
 msgid "Move %s"
 msgstr "%sを移動"
 
-#: src/actions/move_midi_arranger_selections_action.c:103
+#: src/actions/move_midi_arranger_selections_action.c:115
 #: src/actions/move_timeline_selections_action.c:101
 msgid "Move Object(s)"
 msgstr "オブジェクトを移動"

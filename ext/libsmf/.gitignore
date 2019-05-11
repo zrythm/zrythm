@@ -10,3 +10,4 @@ config.log
 config.status
 api
 config.h
+libtool

@@ -65,6 +65,12 @@ move_midi_arranger_selections_action_do (
         mn,
         self->ticks,
         self->delta);
+
+      /* shift the clone too so they can match */
+      midi_note_shift (
+        self->mas->midi_notes[i],
+        self->ticks,
+        self->delta);
     }
   EVENTS_PUSH (ET_MA_SELECTIONS_CHANGED,
                NULL);
@@ -86,6 +92,12 @@ move_midi_arranger_selections_action_undo (
       /* shift it */
       midi_note_shift (
         mn,
+        - self->ticks,
+        - self->delta);
+
+      /* shift the clone too so they can match */
+      midi_note_shift (
+        self->mas->midi_notes[i],
         - self->ticks,
         - self->delta);
     }
