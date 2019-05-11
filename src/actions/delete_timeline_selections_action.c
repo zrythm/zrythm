@@ -23,6 +23,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/objects.h"
 
 #include <glib/gi18n.h>
@@ -86,7 +87,7 @@ delete_timeline_selections_action_undo (
       /* add it to track */
       track_add_region (
         TRACKLIST->tracks[region->track_pos],
-        region);
+        region, F_NO_GEN_NAME);
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);

@@ -77,7 +77,12 @@ create_timeline_selections_action_do (
       /* add it to track */
       track_add_region (
         TRACKLIST->tracks[region->track_pos],
-        region);
+        region, F_GEN_NAME);
+
+      /* remember its name */
+      g_free (self->ts->regions[i]->name);
+      self->ts->regions[i]->name =
+        g_strdup (region->name);
     }
   /* TODO chords */
 

@@ -118,7 +118,7 @@ create (
               self->file_descr.absolute_path,
               &start_pos);
           track_add_region (
-            track, ar);
+            track, ar, F_GEN_NAME);
         }
 
       if (g_settings_get_int (

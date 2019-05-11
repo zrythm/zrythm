@@ -53,7 +53,7 @@ instument_track_ui_toggle (GtkWidget * self, InstrumentTrackWidget * data)
 {
   Channel * channel = GET_CHANNEL(data);
   Plugin * plugin = channel->plugins[0];
-  g_warn_if_fail (plugin);
+  g_return_if_fail (plugin);
   plugin->visible = !plugin->visible;
 
   EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED,

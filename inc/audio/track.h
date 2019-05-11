@@ -279,10 +279,16 @@ track_is_selected (Track * self);
 
 /**
  * Wrapper.
+ *
+ * @param gen_name Generate a unique region name or
+ *   not. This will be 0 if the caller already
+ *   generated a unique name.
  */
 void
-track_add_region (Track * track,
-                  Region * region);
+track_add_region (
+  Track * track,
+  Region * region,
+  int      gen_name);
 
 /**
  * Only removes the region from the track.

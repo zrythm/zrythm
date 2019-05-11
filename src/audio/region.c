@@ -215,9 +215,6 @@ region_set_start_pos (
   Region * region,
   Position * pos)
 {
-  /*Position prev;*/
-  /*position_set_to_pos (&prev, &region->start_pos);*/
-
   if (position_to_ticks (&region->end_pos) -
       position_to_ticks (pos) >=
       TRANSPORT->lticks_per_beat)

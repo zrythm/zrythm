@@ -57,7 +57,6 @@ duplicate_timeline_selections_action_do (
   DuplicateTimelineSelectionsAction * self)
 {
   Region * region;
-  char * tmp;
 	for (int i = 0; i < self->ts->num_regions; i++)
     {
       /* clone the clone */
@@ -65,16 +64,10 @@ duplicate_timeline_selections_action_do (
         region_clone (
           self->ts->regions[i], REGION_CLONE_COPY);
 
-      /* append "copy" to its name */
-      tmp = region->name;
-      region->name =
-        g_strdup_printf ("%s (Copy)", tmp);
-      g_free (tmp);
-
       /* add and shift it */
       track_add_region (
         TRACKLIST->tracks[region->track_pos],
-        region);
+        region, F_GEN_NAME);
       region_shift (
         region, self->ticks, self->delta);
 
@@ -82,6 +75,12 @@ duplicate_timeline_selections_action_do (
       region_widget_select (region->widget,
                             F_SELECT,
                             F_NO_TRANSIENTS);
+
+      /* remember its name */
+      g_free (self->ts->regions[i]->name);
+      self->ts->regions[i]->name =
+        g_strdup (region->name);
+
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
@@ -94,16 +93,12 @@ duplicate_timeline_selections_action_undo (
   DuplicateTimelineSelectionsAction * self)
 {
   Region * region;
-  char * tmp;
   for (int i = 0; i < self->ts->num_regions; i++)
     {
-      /* get the name of the copy */
-      tmp = self->ts->regions[i]->name;
-      tmp = g_strdup_printf ("%s (Copy)", tmp);
-
       /* find the actual region */
-      region = region_find_by_name (tmp);
-      g_free (tmp);
+      region =
+        region_find_by_name (
+          self->ts->regions[i]->name);
 
       /* remove it */
       track_remove_region (

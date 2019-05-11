@@ -96,7 +96,8 @@ timeline_selections_create_missing_transients (
           tr =
             TRACKLIST->tracks[transient->track_pos];
           track_add_region (
-            tr, transient);
+            tr, transient,
+            F_NO_GEN_NAME);
         }
       EVENTS_PUSH (ET_REGION_CHANGED,
                    r);
@@ -865,7 +866,7 @@ timeline_selections_paste_to_pos (
                       REGION_CLONE_COPY);
       region_print (cp);
       track_add_region (cp->track,
-                        cp);
+                        cp, F_GEN_NAME);
     }
   for (i = 0; i < ts->num_aps; i++)
     {

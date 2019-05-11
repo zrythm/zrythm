@@ -471,26 +471,35 @@ get_region_by_name (Track * track, char * name)
 
 /**
  * Wrapper.
+ *
+ * @param gen_name Generate a unique region name or
+ *   not. This will be 0 if the caller already
+ *   generated a unique name.
  */
 void
-track_add_region (Track * track,
-                  Region * region)
+track_add_region (
+  Track * track,
+  Region * region,
+  int      gen_name)
 {
   g_warn_if_fail (
     (track->type == TRACK_TYPE_INSTRUMENT ||
     track->type == TRACK_TYPE_AUDIO) &&
     region);
 
-  int count = 1;
-  region->name = g_strdup (track->name);
-  while (get_region_by_name (
-          track, region->name))
+  if (gen_name)
     {
-      g_free (region->name);
-      region->name =
-        g_strdup_printf ("%s %d",
-                         track->name,
-                         count++);
+      int count = 1;
+      region->name = g_strdup (track->name);
+      while (get_region_by_name (
+              track, region->name))
+        {
+          g_free (region->name);
+          region->name =
+            g_strdup_printf ("%s %d",
+                             track->name,
+                             count++);
+        }
     }
 
   region_set_track (region, track);

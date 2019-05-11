@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-11 00:24+0100\n"
+"POT-Creation-Date: 2019-05-11 10:13+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Japanese <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -69,7 +69,7 @@ msgstr "常にプラグインUIを開く"
 msgid "Artist"
 msgstr "アーティスト"
 
-#: src/audio/track.c:722
+#: src/audio/track.c:731
 #, fuzzy
 msgid "Audio"
 msgstr "オーディオ"
@@ -125,7 +125,7 @@ msgstr "ボット"
 msgid "Bottom Panel"
 msgstr "下パネル"
 
-#: src/audio/track.c:725
+#: src/audio/track.c:734
 msgid "Bus"
 msgstr "バス"
 
@@ -169,7 +169,7 @@ msgstr "中国語[zh]"
 msgid "Choose a method to donate"
 msgstr "使用する支払い方法を選択する"
 
-#: src/audio/track.c:731
+#: src/audio/track.c:740
 #, fuzzy
 msgid "Chord"
 msgstr "コード"
@@ -259,7 +259,7 @@ msgstr "%sを作成"
 msgid "Create %s Track"
 msgstr "%sトラックを作成"
 
-#: src/actions/create_timeline_selections_action.c:116
+#: src/actions/create_timeline_selections_action.c:121
 #: src/actions/create_midi_arranger_selections_action.c:114
 #, fuzzy
 msgid "Create Object(s)"
@@ -287,7 +287,7 @@ msgstr "%d個のプラグインを削除"
 msgid "Delete %d Tracks"
 msgstr "%d個のトラックを削除"
 
-#: src/actions/delete_timeline_selections_action.c:102
+#: src/actions/delete_timeline_selections_action.c:103
 #: src/actions/delete_midi_arranger_selections_action.c:103
 #, fuzzy
 msgid "Delete Object(s)"
@@ -324,7 +324,7 @@ msgstr "寄付"
 msgid "Dummy"
 msgstr "ダミー"
 
-#: src/actions/duplicate_timeline_selections_action.c:125
+#: src/actions/duplicate_timeline_selections_action.c:120
 #: src/actions/duplicate_midi_arranger_selections_action.c:116
 msgid "Duplicate Object(s)"
 msgstr "オブジェクトを複製"
@@ -464,7 +464,7 @@ msgstr "グローバル・ショートカット"
 msgid "Grid"
 msgstr "グリッド"
 
-#: src/audio/track.c:734
+#: src/audio/track.c:743
 msgid "Group"
 msgstr "グループ"
 
@@ -484,7 +484,7 @@ msgstr "設定を初期化"
 msgid "Initializing..."
 msgstr "初期化中…"
 
-#: src/audio/track.c:719
+#: src/audio/track.c:728
 msgid "Instrument"
 msgstr "インストゥルメント"
 
@@ -592,7 +592,7 @@ msgstr "メインウィンドウ"
 msgid "Manual"
 msgstr "マニュアル"
 
-#: src/project.c:142 src/audio/track.c:728
+#: src/project.c:142 src/audio/track.c:737
 msgid "Master"
 msgstr "マスター"
 

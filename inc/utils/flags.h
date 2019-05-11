@@ -58,4 +58,7 @@
 #define F_REMOVE_PL 1
 #define F_NO_REMOVE_PL 0
 
+#define F_GEN_NAME 1
+#define F_NO_GEN_NAME 0
+
 #endif

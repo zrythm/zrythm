@@ -1050,8 +1050,10 @@ timeline_arranger_widget_create_region (
                            &region->true_end_pos);
   if (track->type == TRACK_TYPE_INSTRUMENT)
     {
-      track_add_region ((InstrumentTrack *)track,
-                        (MidiRegion *) region);
+      track_add_region (
+        (InstrumentTrack *)track,
+        (MidiRegion *) region,
+        F_GEN_NAME);
     }
   EVENTS_PUSH (ET_REGION_CREATED,
                region);
@@ -1809,7 +1811,8 @@ timeline_arranger_widget_move_items_y (
                                 old_track,
                                 region);
                               track_add_region (
-                                nt, region);
+                                nt, region,
+                                F_NO_GEN_NAME);
                             }
                           else if (nt->type ==
                                      TRACK_TYPE_AUDIO)
@@ -1845,7 +1848,8 @@ timeline_arranger_widget_move_items_y (
                                 old_track,
                                 region);
                               track_add_region (
-                                pt, region);
+                                pt, region,
+                                F_NO_GEN_NAME);
                             }
                           else if (pt->type ==
                                      TRACK_TYPE_AUDIO)
