@@ -46,7 +46,7 @@ VERSION_FLAGS = -DVERSION_MAJOR=$(VERSION_MAJOR) \
                 -DVERSION_DEVEL=$(VERSION_DEVEL)
 
 INCLUDE = -I include
-CFLAGS += $(INCLUDE) $(VERSION_FLAGS)
+CFLAGS += $(VERSION_FLAGS)
 CFLAGS += -std=c11 -Wall -Wextra -pedantic
 LDFLAGS += -lyaml
 LDFLAGS_SHARED += -Wl,-soname=$(LIB_SH_MAJ) -shared
@@ -138,11 +138,11 @@ $(BUILDDIR)/$(LIB_SH_MAJ): $(LIB_OBJ_SHARED)
 
 $(LIB_OBJ_STATIC): $(BUILDDIR_STATIC)/%.o : %.c
 	@$(MKDIR) $(BUILDDIR_STATIC)/src
-	$(CC) $(CFLAGS) $(CFLAGS_COV) -c -o $@ $<
+	$(CC) $(INCLUDE) $(CFLAGS) $(CFLAGS_COV) -c -o $@ $<
 
 $(LIB_OBJ_SHARED): $(BUILDDIR_SHARED)/%.o : %.c
 	@$(MKDIR) $(BUILDDIR_SHARED)/src
-	$(CC) $(CFLAGS) -fPIC $(CFLAGS_COV) -c -o $@ $<
+	$(CC) $(INCLUDE) $(CFLAGS) -fPIC $(CFLAGS_COV) -c -o $@ $<
 
 docs:
 	$(MKDIR) build/docs/api
