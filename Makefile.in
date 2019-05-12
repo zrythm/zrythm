@@ -252,6 +252,10 @@ ifneq ($(OSX),1)
 endif
 endif
 
+ifeq ($(FREEBSD),1)
+	EXECINFO=-lexecinfo
+endif
+
 ifeq ($(WINDOWS),1)
 	BDYNAMIC=-Wl,-Bdynamic
 	AS_NEEDED=-Wl,-as-needed
@@ -273,6 +277,7 @@ LDFLAGS +=	\
 	$(SNDFILE_LIBS) \
 	$(X11_LIBS) \
  	$(R_DYNAMIC) \
+	$(EXECINFO) \
 	$(LM) \
 	$(FPIC) \
 	-lpthread \
