@@ -21,6 +21,7 @@
 #include <sys/time.h>
 
 #include "actions/copy_tracks_action.h"
+#include "actions/edit_tracks_action.h"
 #include "actions/move_tracks_action.h"
 #include "actions/undoable_action.h"
 #include "actions/undo_manager.h"
@@ -39,9 +40,6 @@
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/pan.h"
 #include "gui/widgets/route_target_selector.h"
-#include "actions/edit_tracks_action.h"
-#include "actions/undo_manager.h"
-#include "actions/undoable_action.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"
 #include "utils/gtk.h"

@@ -173,7 +173,8 @@ track_clone (Track * track)
   COPY_MEMBER (color.alpha);
   COPY_MEMBER (pos);
 
-  Channel * ch = channel_clone (track->channel);
+  Channel * ch =
+    channel_clone (track->channel, new_track);
   new_track->channel = ch;
   ch->track = track;
 

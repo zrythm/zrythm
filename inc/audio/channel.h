@@ -390,9 +390,15 @@ channel_remove_plugin (
   int deleting_channel,
   int recalc_graph);
 
+/**
+ * Clones the channel recursively.
+ *
+ * @param track The track to use for getting the name.
+ */
 Channel *
 channel_clone (
-  Channel * ch);
+  Channel * ch,
+  Track *   track);
 
 /**
  * Disconnects the channel from the processing

@@ -31,9 +31,10 @@
 #include "actions/actions.h"
 #include "actions/undo_manager.h"
 #include "actions/create_tracks_action.h"
-#include "actions/duplicate_midi_arranger_selections_action.h"
+#include "actions/delete_tracks_action.h"
 #include "actions/delete_midi_arranger_selections_action.h"
 #include "actions/delete_timeline_selections_action.h"
+#include "actions/duplicate_midi_arranger_selections_action.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/backend/tracklist_selections.h"
@@ -945,28 +946,9 @@ activate_delete_selected_tracks (
 {
   g_message ("deleting selected tracks");
 
-  /* FIXME use action */
-  /*for (int i = 0;*/
-       /*i < TRACKLIST_SELECTIONS->num_tracks; i++)*/
-    /*{*/
-      /*Track * track =*/
-        /*TRACKLIST_SELECTIONS->tracks[i];*/
-      /*switch (track->type)*/
-        /*{*/
-        /*case TRACK_TYPE_CHORD:*/
-          /*break;*/
-        /*case TRACK_TYPE_INSTRUMENT:*/
-        /*case TRACK_TYPE_MASTER:*/
-        /*case TRACK_TYPE_BUS:*/
-        /*case TRACK_TYPE_AUDIO:*/
-            /*{*/
-              /*tracklist_remove_track (*/
-                /*TRACKLIST,*/
-                /*track,*/
-                /*F_FREE,*/
-                /*F_PUBLISH_EVENTS);*/
-              /*break;*/
-            /*}*/
-        /*}*/
-    /*}*/
+  UndoableAction * ua =
+    delete_tracks_action_new (
+      TRACKLIST_SELECTIONS);
+  undo_manager_perform (
+    UNDO_MANAGER, ua);
 }

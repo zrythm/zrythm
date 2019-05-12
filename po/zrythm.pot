@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-11 14:37+0100\n"
+"POT-Creation-Date: 2019-05-11 16:29+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -61,7 +61,7 @@ msgstr ""
 msgid "Artist"
 msgstr ""
 
-#: src/audio/track.c:731
+#: src/audio/track.c:732
 msgid "Audio"
 msgstr ""
 
@@ -113,7 +113,7 @@ msgstr ""
 msgid "Bottom Panel"
 msgstr ""
 
-#: src/audio/track.c:734
+#: src/audio/track.c:735
 msgid "Bus"
 msgstr ""
 
@@ -155,7 +155,7 @@ msgstr ""
 msgid "Choose a method to donate"
 msgstr ""
 
-#: src/audio/track.c:740
+#: src/audio/track.c:741
 msgid "Chord"
 msgstr ""
 
@@ -265,7 +265,7 @@ msgstr ""
 msgid "Delete %d Plugins"
 msgstr ""
 
-#: src/actions/delete_tracks_action.c:111
+#: src/actions/delete_tracks_action.c:116
 #, c-format
 msgid "Delete %d Tracks"
 msgstr ""
@@ -283,7 +283,7 @@ msgstr ""
 msgid "Delete Preset?"
 msgstr ""
 
-#: src/actions/delete_tracks_action.c:108
+#: src/actions/delete_tracks_action.c:113
 msgid "Delete Track"
 msgstr ""
 
@@ -442,7 +442,7 @@ msgstr ""
 msgid "Grid"
 msgstr ""
 
-#: src/audio/track.c:743
+#: src/audio/track.c:744
 msgid "Group"
 msgstr ""
 
@@ -462,11 +462,11 @@ msgstr ""
 msgid "Initializing..."
 msgstr ""
 
-#: src/gui/widgets/channel.c:932
+#: src/gui/widgets/channel.c:930
 msgid "Inserts"
 msgstr ""
 
-#: src/audio/track.c:728
+#: src/audio/track.c:729
 msgid "Instrument"
 msgstr ""
 
@@ -572,7 +572,7 @@ msgstr ""
 msgid "Manual"
 msgstr ""
 
-#: src/project.c:142 src/audio/track.c:737
+#: src/project.c:142 src/audio/track.c:738
 msgid "Master"
 msgstr ""
 
@@ -765,7 +765,7 @@ msgstr ""
 msgid "Project"
 msgstr ""
 
-#: src/actions/actions.c:584
+#: src/actions/actions.c:585
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
@@ -900,7 +900,7 @@ msgstr ""
 msgid "Russian [ru]"
 msgstr ""
 
-#: src/actions/actions.c:519
+#: src/actions/actions.c:520
 msgid "Save Project"
 msgstr ""
 
@@ -1223,7 +1223,7 @@ msgid "Zrythm"
 msgstr ""
 
 #: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
-#: src/utils/dialogs.c:74 src/actions/actions.c:522
+#: src/utils/dialogs.c:74 src/actions/actions.c:523
 msgid "_Cancel"
 msgstr ""
 
@@ -1294,7 +1294,7 @@ msgid "_Redo"
 msgstr ""
 
 #: src/plugins/lv2_gtk.c:153 src/gui/widgets/header_bar.c:173
-#: src/actions/actions.c:524
+#: src/actions/actions.c:525
 msgid "_Save"
 msgstr ""
 

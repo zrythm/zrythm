@@ -39,6 +39,7 @@ delete_tracks_action_new (
 	  UNDOABLE_ACTION_TYPE_DELETE_TRACKS;
 
   self->tls = tracklist_selections_clone (tls);
+  tracklist_selections_sort (self->tls);
 
   return ua;
 }
@@ -49,7 +50,7 @@ delete_tracks_action_do (
 {
   Track * track;
 
-  for (int i = 0; i < self->tls->num_tracks; i++)
+  for (int i = self->tls->num_tracks - 1; i >= 0; i--)
     {
       /* get track from pos */
       track =
@@ -63,8 +64,12 @@ delete_tracks_action_do (
         F_REMOVE_PL,
         F_FREE,
         F_NO_PUBLISH_EVENTS,
-        F_RECALC_GRAPH);
+        F_NO_RECALC_GRAPH);
     }
+
+  EVENTS_PUSH (ET_TRACKS_REMOVED, NULL);
+
+  mixer_recalc_graph (MIXER);
 
   return 0;
 }
@@ -92,10 +97,10 @@ delete_tracks_action_undo (
         F_NO_RECALC_GRAPH);
     }
 
+  EVENTS_PUSH (ET_TRACKS_ADDED, NULL);
+
   /* recalculate graph */
   mixer_recalc_graph (MIXER);
-
-  EVENTS_PUSH (ET_TRACKS_ADDED, NULL);
 
   return 0;
 }

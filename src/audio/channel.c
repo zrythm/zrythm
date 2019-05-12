@@ -1829,17 +1829,19 @@ channel_get_automatable (Channel *       channel,
 /**
  * Clones the channel recursively.
  *
- * Note: the track is not cloned, the pointer is
- * used as is.
+ * Note the given track is not cloned.
+ *
+ * @param track The track to use for getting the name.
  */
 Channel *
 channel_clone (
-  Channel * ch)
+  Channel * ch,
+  Track *   track)
 {
   g_return_val_if_fail (ch->track, NULL);
 
   Channel * clone =
-    channel_new (ch->type, ch->track);
+    channel_new (ch->type, track);
 
   /* copy plugins */
   for (int i = 0; i < STRIP_SIZE; i++)
