@@ -1887,15 +1887,19 @@ channel_disconnect (
   int       remove_pl,
   int       recalc_graph)
 {
-  FOREACH_STRIP
+  if (remove_pl)
     {
-      if (channel->plugins[i])
+      FOREACH_STRIP
         {
-          channel_remove_plugin (
-            channel, i, remove_pl, 0,
-            F_NO_RECALC_GRAPH);
+          if (channel->plugins[i])
+            {
+              channel_remove_plugin (
+                channel, i, remove_pl, 0,
+                F_NO_RECALC_GRAPH);
+            }
         }
     }
+
   port_disconnect_all (channel->stereo_in->l);
   port_disconnect_all (channel->stereo_in->r);
   port_disconnect_all (channel->midi_in);
