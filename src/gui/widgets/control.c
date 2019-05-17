@@ -65,13 +65,15 @@ control_widget_new (Port * port)
 
   self->port = port;
 
-  self->knob = knob_widget_new (channel_get_phase,
-                                channel_set_phase,
-                                MIXER->master,
-                                0,
-                                100,
-                                18,
-                                0);
+  self->knob =
+    knob_widget_new_simple (
+      channel_get_phase,
+      channel_set_phase,
+      MIXER->master,
+      0,
+      100,
+      18,
+      0);
   gtk_box_pack_start (self->knob_box,
                       GTK_WIDGET (self->knob),
                       Z_GTK_EXPAND,

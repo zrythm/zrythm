@@ -381,7 +381,7 @@ multipress_pressed (GtkGestureMultiPress *gesture,
 
   mixer_selections_clear (
     MIXER_SELECTIONS);
-  tracklist_selections_clear (
+  tracklist_selections_select_last_visible (
     TRACKLIST_SELECTIONS);
 }
 

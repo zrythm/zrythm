@@ -44,14 +44,6 @@ typedef struct _InspectorMidiWidget
   GtkToggleButton *   mute_toggle;
 } InspectorMidiWidget;
 
-/**
- * Creates the inspector_midi widget.
- *
- * Only once per project.
- */
-InspectorMidiWidget *
-inspector_midi_widget_new ();
-
 void
 inspector_midi_widget_show_midi (
   InspectorMidiWidget * self,

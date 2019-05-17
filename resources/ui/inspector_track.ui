@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.22.1 -->
 <!--
 
-  Copyright (C) 2018-2019 Alexandros Theodotou
+  Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
 
   This file is part of Zrythm
 
@@ -22,180 +22,15 @@
 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <template class="InspectorTrackWidget" parent="GtkGrid">
+  <template class="InspectorTrackWidget"
+    parent="GtkBox">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+    <property name="spacing">2</property>
     <child>
-      <object class="GtkLabel" id="header">
+      <object class="InstrumentTrackInfoExpanderWidget" id="instrument_track_info">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Region</property>
       </object>
-      <packing>
-        <property name="left_attach">0</property>
-        <property name="top_attach">0</property>
-        <property name="width">2</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkEntry" id="name">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="margin_left">4</property>
-        <property name="margin_right">4</property>
-        <property name="hexpand">1</property>
-        <property name="text" translatable="yes">region_name</property>
-        <property name="placeholder_text" translatable="yes">Enter region name...</property>
-        <property name="width-chars">8</property>
-      </object>
-      <packing>
-        <property name="left_attach">1</property>
-        <property name="top_attach">1</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkColorButton" id="color">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="receives_default">True</property>
-        <property name="margin_left">4</property>
-        <property name="margin_right">4</property>
-      </object>
-      <packing>
-        <property name="left_attach">1</property>
-        <property name="top_attach">2</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkLabel">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="margin_left">4</property>
-        <property name="margin_right">4</property>
-        <property name="label" translatable="yes">Color</property>
-        <property name="xalign">1</property>
-      </object>
-      <packing>
-        <property name="left_attach">0</property>
-        <property name="top_attach">2</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkLabel">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="margin_left">4</property>
-        <property name="margin_right">4</property>
-        <property name="label" translatable="yes">Type</property>
-        <property name="xalign">1</property>
-      </object>
-      <packing>
-        <property name="left_attach">0</property>
-        <property name="top_attach">4</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkBox" id="position_box">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="margin_left">4</property>
-        <property name="margin_right">4</property>
-        <property name="orientation">vertical</property>
-      </object>
-      <packing>
-        <property name="left_attach">1</property>
-        <property name="top_attach">4</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkLabel">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="margin_left">4</property>
-        <property name="margin_right">4</property>
-        <property name="label" translatable="yes">Length</property>
-        <property name="xalign">1</property>
-      </object>
-      <packing>
-        <property name="left_attach">0</property>
-        <property name="top_attach">5</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkLabel">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="margin_left">4</property>
-        <property name="margin_right">4</property>
-        <property name="label" translatable="yes">Muted</property>
-        <property name="xalign">1</property>
-      </object>
-      <packing>
-        <property name="left_attach">0</property>
-        <property name="top_attach">7</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-      </object>
-      <packing>
-        <property name="left_attach">0</property>
-        <property name="top_attach">3</property>
-        <property name="width">2</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-      </object>
-      <packing>
-        <property name="left_attach">0</property>
-        <property name="top_attach">6</property>
-        <property name="width">2</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkToggleButton" id="mute_toggle">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="receives_default">True</property>
-        <property name="margin_left">4</property>
-        <property name="margin_right">4</property>
-      </object>
-      <packing>
-        <property name="left_attach">1</property>
-        <property name="top_attach">7</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkBox" id="length_box">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="margin_left">4</property>
-        <property name="margin_right">4</property>
-        <property name="orientation">vertical</property>
-      </object>
-      <packing>
-        <property name="left_attach">1</property>
-        <property name="top_attach">5</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkLabel">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="margin_left">4</property>
-        <property name="margin_right">4</property>
-        <property name="label" translatable="yes">Name</property>
-        <property name="xalign">1</property>
-      </object>
-      <packing>
-        <property name="left_attach">0</property>
-        <property name="top_attach">1</property>
-      </packing>
     </child>
   </template>
 </interface>

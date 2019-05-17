@@ -54,9 +54,6 @@ move_tracks_action_do (
 {
   Track * track;
 
-  tracklist_selections_clear (
-    TRACKLIST_SELECTIONS);
-
   /* sort the tracks first */
   tracklist_selections_sort (
     self->tls);
@@ -74,8 +71,12 @@ move_tracks_action_do (
         F_NO_PUBLISH_EVENTS,
         F_NO_RECALC_GRAPH);
 
-      tracklist_selections_add_track (
-        TRACKLIST_SELECTIONS, track);
+      if (i == 0)
+        tracklist_selections_select_single (
+          TRACKLIST_SELECTIONS, track);
+      else
+        tracklist_selections_add_track (
+          TRACKLIST_SELECTIONS, track);
     }
 
   mixer_recalc_graph (MIXER);
@@ -102,6 +103,13 @@ move_tracks_action_undo (
         self->tls->tracks[i]->pos,
         F_NO_PUBLISH_EVENTS,
         F_NO_RECALC_GRAPH);
+
+      if (i == 0)
+        tracklist_selections_select_single (
+          TRACKLIST_SELECTIONS, track);
+      else
+        tracklist_selections_add_track (
+          TRACKLIST_SELECTIONS, track);
     }
 
   mixer_recalc_graph (MIXER);

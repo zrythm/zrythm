@@ -172,10 +172,6 @@ timeline_arranger_widget_get_hit_curve (
   double y);
 
 void
-timeline_arranger_widget_update_inspector (
-  TimelineArrangerWidget *self);
-
-void
 timeline_arranger_widget_select_all (
   TimelineArrangerWidget *  self,
   int                       select);

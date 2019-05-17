@@ -1,7 +1,5 @@
 /*
- * gui/widgets/midi_region.h - MIDI region
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *

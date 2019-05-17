@@ -486,31 +486,6 @@ arranger_widget_get_hit_widgets_in_range (
     }
 }
 
-static void
-update_inspector (ArrangerWidget *self)
-{
-  GET_ARRANGER_ALIASES (self);
-
-  if (midi_arranger)
-    {
-      midi_arranger_widget_update_inspector (
-        midi_arranger);
-    }
-  else if (timeline)
-    {
-      timeline_arranger_widget_update_inspector (
-        timeline);
-    }
-  else if (audio_arranger)
-    {
-
-    }
-  else if (midi_modifier_arranger)
-    {
-
-    }
-}
-
 /**
  * Returns if the arranger is in a moving-related
  * operation or starting a moving-related operation.
@@ -737,8 +712,6 @@ arranger_widget_select_all (
     {
 
     }
-
-  update_inspector (self);
 }
 
 static void
@@ -2168,7 +2141,7 @@ arranger_widget_refresh (
 		arranger_bg_widget_refresh (ar_prv->bg);
 		arranger_widget_refresh_cursor (self);
 	}
-	update_inspector (self);
+
 	return FALSE;
 }
 

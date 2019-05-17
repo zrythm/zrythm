@@ -94,12 +94,3 @@ inspector_region_widget_init (InspectorRegionWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 }
-
-InspectorRegionWidget *
-inspector_region_widget_new ()
-{
-  InspectorRegionWidget * self = g_object_new (INSPECTOR_REGION_WIDGET_TYPE, NULL);
-  gtk_widget_show_all (GTK_WIDGET (self));
-
-  return self;
-}

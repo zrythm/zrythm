@@ -235,9 +235,7 @@ on_dnd_drag_begin (
       /* no control & not selected */
       if (!ctrl && !selected)
         {
-          tracklist_selections_clear (
-            TRACKLIST_SELECTIONS);
-          tracklist_selections_add_track (
+          tracklist_selections_select_single (
             TRACKLIST_SELECTIONS,
             track);
         }
@@ -426,9 +424,7 @@ on_btn_release (GtkWidget *widget,
       /* no control & not selected */
       if (!ctrl && !selected)
         {
-          tracklist_selections_clear (
-            TRACKLIST_SELECTIONS);
-          tracklist_selections_add_track (
+          tracklist_selections_select_single (
             TRACKLIST_SELECTIONS,
             track);
         }
@@ -505,7 +501,7 @@ static void
 setup_phase_panel (ChannelWidget * self)
 {
   self->phase_knob =
-    knob_widget_new (
+    knob_widget_new_simple (
       channel_get_phase,
       channel_set_phase,
       self->channel,
@@ -755,8 +751,8 @@ channel_widget_new (Channel * channel)
   setup_pan (self);
   setup_channel_icon (self);
   editable_label_widget_setup (
-    self->name, GTK_WIDGET (self),
-    EDITABLE_LABEL_TYPE_CHANNEL);
+    self->name, self->channel->track,
+    track_get_name, track_set_name);
   route_target_selector_widget_setup (
     self->output, self);
   channel_widget_refresh (self);
@@ -923,9 +919,8 @@ channel_widget_init (ChannelWidget * self)
     GTK_CONTAINER (viewport),
     GTK_WIDGET (self->inserts_box));
 
-  gtk_container_add (
-    GTK_CONTAINER (self->inserts_expander->content),
-    inserts_scroll);
+  expander_box_widget_add_content (
+    self->inserts_expander, inserts_scroll);
   expander_box_widget_set_label (
     self->inserts_expander, _("Inserts"));
 

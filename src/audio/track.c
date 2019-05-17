@@ -751,8 +751,34 @@ track_stringize_type (
 /**
  * Wrapper to get the track name.
  */
-char *
+const char *
 track_get_name (Track * track)
 {
   return track->name;
+}
+
+/**
+ * Setter for the track name.
+ *
+ * If the track name is duplicate, it discards the
+ * new name.
+ *
+ * Must only be called from the GTK thread.
+ */
+void
+track_set_name (
+  Track * track,
+  const char *  name)
+{
+  if (tracklist_track_name_is_unique (
+        TRACKLIST, name))
+    {
+      if (track->name)
+        g_free (track->name);
+      track->name =
+        g_strdup (name);
+
+      EVENTS_PUSH (ET_TRACK_NAME_CHANGED,
+                   track);
+    }
 }

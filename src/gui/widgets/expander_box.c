@@ -22,17 +22,36 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (ExpanderBoxWidget,
-               expander_box_widget,
-               GTK_TYPE_BOX)
+G_DEFINE_TYPE_WITH_PRIVATE (
+  ExpanderBoxWidget,
+  expander_box_widget,
+  GTK_TYPE_BOX)
+
+#define GET_PRIVATE(s) \
+  ExpanderBoxWidgetPrivate * prv = \
+     expander_box_widget_get_private (s);
 
 void
-on_clicked (GtkButton *button,
-            ExpanderBoxWidget * self)
+on_clicked (
+  GtkButton *button,
+  ExpanderBoxWidget * self)
 {
+  GET_PRIVATE (self);
+
   gtk_revealer_set_reveal_child (
-    self->revealer,
-    !gtk_revealer_get_reveal_child (self->revealer));
+    prv->revealer,
+    !gtk_revealer_get_reveal_child (prv->revealer));
+}
+
+/**
+ * Gets the private.
+ */
+ExpanderBoxWidgetPrivate *
+expander_box_widget_get_private (
+  ExpanderBoxWidget * self)
+{
+  return expander_box_widget_get_instance_private (
+    self);
 }
 
 /**
@@ -43,8 +62,10 @@ expander_box_widget_set_label (
   ExpanderBoxWidget * self,
   const char *        label)
 {
+  GET_PRIVATE (self);
+
   gtk_label_set_text (
-    self->btn_label, label);
+    prv->btn_label, label);
 }
 
 /**
@@ -55,8 +76,10 @@ expander_box_widget_set_icon_name (
   ExpanderBoxWidget * self,
   const char *        icon_name)
 {
+  GET_PRIVATE (self);
+
   gtk_image_set_from_icon_name (
-    self->btn_img,
+    prv->btn_img,
     icon_name,
     GTK_ICON_SIZE_BUTTON);
 }
@@ -71,15 +94,15 @@ expander_box_widget_class_init (
   gtk_widget_class_set_css_name (
     klass, "expander-box");
 
-  gtk_widget_class_bind_template_child (
+  gtk_widget_class_bind_template_child_private (
     klass,
     ExpanderBoxWidget,
     button);
-  gtk_widget_class_bind_template_child (
+  gtk_widget_class_bind_template_child_private (
     klass,
     ExpanderBoxWidget,
     revealer);
-  gtk_widget_class_bind_template_child (
+  gtk_widget_class_bind_template_child_private (
     klass,
     ExpanderBoxWidget,
     content);
@@ -90,14 +113,16 @@ expander_box_widget_init (ExpanderBoxWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->btn_label =
+  GET_PRIVATE (self);
+
+  prv->btn_label =
     GTK_LABEL (gtk_label_new ("Label"));
   gtk_widget_set_hexpand (
-    GTK_WIDGET (self->btn_label), 1);
+    GTK_WIDGET (prv->btn_label), 1);
   gtk_widget_set_halign (
-    GTK_WIDGET (self->btn_label),
+    GTK_WIDGET (prv->btn_label),
     GTK_ALIGN_START);
-  self->btn_img =
+  prv->btn_img =
     GTK_IMAGE (
       gtk_image_new_from_icon_name (
         "z-plugins", GTK_ICON_SIZE_BUTTON));
@@ -106,21 +131,21 @@ expander_box_widget_init (ExpanderBoxWidget * self)
                  2);
   gtk_container_add (
     GTK_CONTAINER (box),
-    GTK_WIDGET (self->btn_label));
+    GTK_WIDGET (prv->btn_label));
   gtk_container_add (
     GTK_CONTAINER (box),
     GTK_WIDGET (
       gtk_separator_new (GTK_ORIENTATION_VERTICAL)));
   gtk_container_add (
     GTK_CONTAINER (box),
-    GTK_WIDGET (self->btn_img));
+    GTK_WIDGET (prv->btn_img));
   gtk_container_add (
-    GTK_CONTAINER (self->button),
+    GTK_CONTAINER (prv->button),
     GTK_WIDGET (box));
 
   gtk_widget_show_all (GTK_WIDGET (self));
 
   g_signal_connect (
-    G_OBJECT (self->button), "clicked",
+    G_OBJECT (prv->button), "clicked",
     G_CALLBACK (on_clicked), self);
 }

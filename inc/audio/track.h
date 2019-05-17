@@ -397,10 +397,21 @@ Automatable *
 track_get_fader_automatable (Track * track);
 
 /**
- * Wrapper to get the track name.
+ * Getter for the track name.
  */
-char *
+const char *
 track_get_name (Track * track);
+
+/**
+ * Setter for the track name.
+ *
+ * If the track name is duplicate, it discards the
+ * new name.
+ */
+void
+track_set_name (
+  Track * track,
+  const char *  name);
 
 char *
 track_stringize_type (

@@ -27,7 +27,8 @@
 
 #include <gtk/gtk.h>
 
-#define ARRANGER_WIDGET_TYPE                  (arranger_widget_get_type ())
+#define ARRANGER_WIDGET_TYPE ( \
+  arranger_widget_get_type ())
 G_DECLARE_DERIVABLE_TYPE (ArrangerWidget,
                           arranger_widget,
                           Z,

@@ -17,6 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ */
+
 #ifndef __ACTIONS_TRACKLIST_SELECTIONS_H__
 #define __ACTIONS_TRACKLIST_SELECTIONS_H__
 
@@ -29,10 +33,14 @@
 /**
  * Selections to be used for the tracklist's current
  * selections, copying, undoing, etc.
+ *
+ * TracklistSelections are special in that they do
+ * not allow 0 selections. There must always be a
+ * Track selected.
  */
 typedef struct TracklistSelections
 {
-  /** Tracks doing action upon */
+  /** Selected Tracks. */
   Track *              tracks[600];
   int                  num_tracks;
 } TracklistSelections;
@@ -64,13 +72,6 @@ tracklist_selections_init_loaded (
  */
 TracklistSelections *
 tracklist_selections_clone ();
-
-/**
- * Returns if there are any selections.
- */
-int
-tracklist_selections_has_any (
-  TracklistSelections * self);
 
 /**
  * Gets highest track in the selections.
@@ -116,6 +117,23 @@ tracklist_selections_remove_track (
   Track *               track);
 
 /**
+ * Selects a single track after clearing the
+ * selections.
+ */
+void
+tracklist_selections_select_single (
+  TracklistSelections * ts,
+  Track *               track);
+
+/**
+ * Selects the last visible track after clearing the
+ * selections.
+ */
+void
+tracklist_selections_select_last_visible (
+  TracklistSelections * ts);
+
+/**
  * For debugging.
  */
 void
@@ -128,13 +146,6 @@ tracklist_selections_gprint (
 void
 tracklist_selections_sort (
   TracklistSelections * self);
-
-/**
- * Clears selections.
- */
-void
-tracklist_selections_clear (
-  TracklistSelections * ts);
 
 void
 tracklist_selections_free (

@@ -101,9 +101,6 @@ midi_arranger_widget_get_hit_midi_note (MidiArrangerWidget *  self,
                                  double            x,
                                  double            y);
 
-void
-midi_arranger_widget_update_inspector (MidiArrangerWidget *self);
-
 /**
  * Sets transient notes and actual notes
  * visibility based on the current action.

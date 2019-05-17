@@ -44,6 +44,7 @@
 #include "gui/widgets/connections.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/header_bar.h"
+#include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/instrument_track.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
@@ -491,6 +492,7 @@ on_mixer_selections_changed ()
             }
         }
     }
+  inspector_widget_refresh (MW_INSPECTOR);
 }
 
 static inline void
@@ -524,7 +526,7 @@ on_track_color_changed (Track * track)
 {
   channel_widget_refresh (track->channel->widget);
   track_widget_refresh (track->widget);
-  inspector_widget_refresh ();
+  inspector_widget_refresh (MW_INSPECTOR);
 }
 
 static void
@@ -534,7 +536,7 @@ on_track_name_changed (Track * track)
    * also affected */
   mixer_widget_soft_refresh (MW_MIXER);
   track_widget_refresh (track->widget);
-  inspector_widget_refresh ();
+  inspector_widget_refresh (MW_INSPECTOR);
 }
 
 static void
@@ -680,10 +682,10 @@ events_process (void * data)
             Z_ARRANGER_WIDGET (MW_TIMELINE));
           break;
         case ET_TL_SELECTIONS_CHANGED:
-          inspector_widget_refresh ();
+          inspector_widget_refresh (MW_INSPECTOR);
           break;
         case ET_TRACKLIST_SELECTIONS_CHANGED:
-          inspector_widget_refresh ();
+          inspector_widget_refresh (MW_INSPECTOR);
           mixer_widget_soft_refresh (MW_MIXER);
           break;
         case ET_RULER_SIZE_CHANGED:

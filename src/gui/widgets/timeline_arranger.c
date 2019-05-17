@@ -505,24 +505,6 @@ timeline_arranger_widget_get_hit_curve (
 }
 
 void
-timeline_arranger_widget_update_inspector (
-  TimelineArrangerWidget *self)
-{
-  inspector_widget_show_selections (
-    INSPECTOR_CHILD_REGION,
-    (void **) TL_SELECTIONS->regions,
-    TL_SELECTIONS->num_regions);
-  inspector_widget_show_selections (
-    INSPECTOR_CHILD_AP,
-    (void **) TL_SELECTIONS->aps,
-    TL_SELECTIONS->num_aps);
-  inspector_widget_show_selections (
-    INSPECTOR_CHILD_CHORD,
-    (void **) TL_SELECTIONS->chords,
-    TL_SELECTIONS->num_chords);
-}
-
-void
 timeline_arranger_widget_select_all (
   TimelineArrangerWidget *  self,
   int                       select)

@@ -44,14 +44,6 @@ typedef struct _InspectorApWidget
   GtkToggleButton *   mute_toggle;
 } InspectorApWidget;
 
-/**
- * Creates the inspector_ap widget.
- *
- * Only once per project.
- */
-InspectorApWidget *
-inspector_ap_widget_new ();
-
 void
 inspector_ap_widget_show_aps (
   InspectorApWidget * self,

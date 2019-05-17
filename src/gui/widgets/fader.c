@@ -301,13 +301,17 @@ on_right_click (GtkGestureMultiPress *gesture,
 
 /**
  * Creates a new Fader widget and binds it to the given value.
+ *
+ * @param get_val Getter function.
+ * @param set_val Setter function.
+ * @param object Object to call get/set with.
  */
 void
 fader_widget_setup (
   FaderWidget * self,
-  float         (*get_val)(void *),    ///< getter function
-  void          (*set_val)(void *, float),    ///< setter function
-  void *        object,              ///< object to call get/set with
+  float         (*get_val)(void *),
+  void          (*set_val)(void *, float),
+  void *        object,
   FaderType     type,
   int width)
 {

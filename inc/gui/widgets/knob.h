@@ -35,9 +35,20 @@ G_DECLARE_FINAL_TYPE (KnobWidget,
                       KNOB_WIDGET,
                       GtkDrawingArea)
 
+typedef enum KnobType
+{
+  KNOB_TYPE_NORMAL,
+  KNOB_TYPE_PORT_MULTIPLIER,
+} KnobType;
+
+typedef struct Port Port;
+
 typedef struct _KnobWidget
 {
   GtkDrawingArea        parent_instance;
+
+  KnobType              type;
+
   float (*getter)(void*);       ///< getter
   void (*setter)(void*, float);       ///< getter
   void *                object;
@@ -54,20 +65,46 @@ typedef struct _KnobWidget
   GtkGestureDrag        *drag;     ///< used for drag gesture
   double                last_x;    ///< used in gesture drag
   double                last_y;    ///< used in gesture drag
+
+  /* ----- FOR PORTS ONLY ------- */
+  /** Destination index for the destination
+   * multipliers of the port. */
+  int                   dest_index;
 } KnobWidget;
 
 /**
- * Creates a knob widget with the given options and binds it to the given value.
+ * Creates a knob widget with the given options and
+ * binds it to the given value.
+ *
+ * @param get_val Getter function.
+ * @param set_val Setter function.
+ * @param object Object to call get/set with.
+ * @param idx Port destination multiplier index, if
+ *   type is Port, otherwise ignored.
  */
 KnobWidget *
-knob_widget_new (float (*get_val)(void *),    ///< getter function
-                 void (*set_val)(void *, float),    ///< setter function
-                 void * object,              ///< object to call get/set with
-                 float  min,
-                 float  max,
-                 int    size,
-                 float  zero);
+_knob_widget_new (
+  float (*get_val)(void *),
+  void (*set_val)(void *, float),
+  void * object,
+  KnobType type,
+  Port * dest,
+  float  min,
+  float  max,
+  int    size,
+  float  zero);
 
+#define knob_widget_new_simple(getter,setter,obj,min,max,size,zero) \
+  _knob_widget_new ( \
+    (float (*) (void *)) getter, \
+    (void (*) (void *, float)) setter, \
+    (void *) obj, \
+    KNOB_TYPE_NORMAL, NULL, min, max, size, zero)
 
+#define knob_widget_new_port(_port,_dest,size) \
+  _knob_widget_new ( \
+    NULL, NULL, (void *) _port, \
+    KNOB_TYPE_PORT_MULTIPLIER, \
+    _dest, 0.f, 1.f, size, 0.f)
 
 #endif

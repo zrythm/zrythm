@@ -56,15 +56,6 @@ inspector_ap_widget_init (InspectorApWidget * self)
   gtk_widget_init_template (GTK_WIDGET (self));
 }
 
-InspectorApWidget *
-inspector_ap_widget_new ()
-{
-  InspectorApWidget * self = g_object_new (INSPECTOR_AP_WIDGET_TYPE, NULL);
-  gtk_widget_show_all (GTK_WIDGET (self));
-
-  return self;
-}
-
 void
 inspector_ap_widget_show_aps (InspectorApWidget * self,
                                       AutomationPoint **               aps,

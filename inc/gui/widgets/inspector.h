@@ -1,7 +1,5 @@
 /*
- * gui/widgets/inspector.h - A inspector widget
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -24,52 +22,42 @@
 
 #include <gtk/gtk.h>
 
+/**
+ * @addtogroup Widgets
+ *
+ * @{
+ */
+
 #define INSPECTOR_WIDGET_TYPE \
   (inspector_widget_get_type ())
 G_DECLARE_FINAL_TYPE (InspectorWidget,
                       inspector_widget,
                       Z,
                       INSPECTOR_WIDGET,
-                      GtkBox)
+                      GtkStack)
 
 #define MW_INSPECTOR MW_LEFT_DOCK_EDGE->inspector
 
-typedef struct Region Region;
-typedef struct _InspectorRegionWidget InspectorRegionWidget;
-typedef struct _InspectorApWidget InspectorApWidget;
-typedef struct _InspectorTrackWidget InspectorTrackWidget;
-typedef struct _InspectorMidiWidget InspectorMidiWidget;
-typedef struct _InspectorChordWidget InspectorChordWidget;
-
-typedef enum InspectorWidgetChildType
-{
-  INSPECTOR_CHILD_REGION,
-  INSPECTOR_CHILD_MIDI,
-  INSPECTOR_CHILD_TRACK,
-  INSPECTOR_CHILD_AP,
-  INSPECTOR_CHILD_CHORD,
-} InspectorWidgetChildType;
+typedef struct _InspectorTrackWidget
+  InspectorTrackWidget;
+typedef struct _InspectorEditorWidget
+  InspectorEditorWidget;
+typedef struct _InspectorPluginWidget
+  InspectorPluginWidget;
 
 typedef struct _InspectorWidget
 {
-  GtkBox                    parent_instance;
-  GtkSizeGroup *            size_group;
-  GtkBox *                  top_box;
-  // TODO
-  //GtkBox *                  chord_track_box;
-  //InspectorChordTrackWidget * chord_track;
-  GtkBox *                  track_box;
+  GtkStack                  parent_instance;
+
+  /** For TracklistSelections. */
   InspectorTrackWidget *    track;
-  GtkBox *                  region_box;
-  InspectorRegionWidget *   region;
-  GtkBox *                  ap_box;
-  InspectorApWidget *       ap;
-  GtkBox *                  midi_box;
-  InspectorMidiWidget *     midi;
-  GtkBox *                  bot_box;
-  InspectorChordWidget *    chord;
-  GtkBox *                  chord_box;
-  GtkLabel *                no_item_label; ///< no item selected label
+
+  /** For editor (midi/audio/etc.). */
+  InspectorEditorWidget *   editor;
+
+  /** For MixerSelections. */
+  InspectorPluginWidget *   plugin;
+
 } InspectorWidget;
 
 /**
@@ -83,19 +71,16 @@ inspector_widget_new ();
 /**
  * Refreshes the inspector widget (shows current
  * selections.
+ *
+ * Uses Project->last_selection to decide which
+ * stack to show.
  */
 void
-inspector_widget_refresh ();
+inspector_widget_refresh (
+  InspectorWidget * self);
 
 /**
- * Displays info about the regions.
- *
- * If num_regions < 1, it hides the regions box.
+ * @}
  */
-void
-inspector_widget_show_selections (
-  InspectorWidgetChildType type,
-  void **                  selections,
-  int                      num_selections);
 
 #endif

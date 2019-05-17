@@ -424,6 +424,3 @@ automatable_selector_popover_widget_init (
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 }
-
-
-

@@ -203,11 +203,15 @@ _create_port(Lv2Plugin*   lv2_plugin,
       g_warn_if_fail (lv2_plugin->plugin->track);
       lv2_port->port->track =
         lv2_plugin->plugin->track;
+      lv2_port->port->identifier.owner_type =
+        PORT_OWNER_TYPE_PLUGIN;
 
       PortIdentifier * pi = &lv2_port->port_id;
       pi->plugin_slot = lv2_plugin->plugin->slot;
       pi->track_pos =
         lv2_plugin->plugin->track->pos;
+      pi->owner_type =
+        PORT_OWNER_TYPE_PLUGIN;
     }
   lv2_port->port->lv2_port = lv2_port;
   lv2_port->evbuf     = NULL;

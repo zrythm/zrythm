@@ -75,4 +75,3 @@ automatable_selector_popover_widget_new (
   AutomatableSelectorButtonWidget * owner);
 
 #endif
-

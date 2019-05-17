@@ -432,9 +432,7 @@ drag_end (GtkGestureDrag *gesture,
         select_ctrl_pl_ch (self);
 
       /* select channel */
-      tracklist_selections_clear (
-        TRACKLIST_SELECTIONS);
-      tracklist_selections_add_track (
+      tracklist_selections_select_single (
         TRACKLIST_SELECTIONS,
         self->channel->track);
 
@@ -454,6 +452,8 @@ multipress_pressed (
   self->n_press = n_press;
   g_message ("multipress n pres %d", self->n_press);
 
+  PROJECT->last_selection =
+    SELECTION_TYPE_PLUGIN;
 }
 
 static void

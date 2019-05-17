@@ -23,16 +23,10 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (InspectorMidiWidget, inspector_midi_widget, GTK_TYPE_GRID)
-
-InspectorMidiWidget *
-inspector_midi_widget_new ()
-{
-  InspectorMidiWidget * self = g_object_new (INSPECTOR_MIDI_WIDGET_TYPE, NULL);
-  gtk_widget_show_all (GTK_WIDGET (self));
-
-  return self;
-}
+G_DEFINE_TYPE (
+  InspectorMidiWidget,
+  inspector_midi_widget,
+  GTK_TYPE_GRID)
 
 void
 inspector_midi_widget_show_midi (

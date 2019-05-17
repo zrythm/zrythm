@@ -48,14 +48,6 @@ typedef struct _InspectorRegionWidget
   GtkToggleButton *   mute_toggle;
 } InspectorRegionWidget;
 
-/**
- * Creates the inspector_region widget.
- *
- * Only once per project.
- */
-InspectorRegionWidget *
-inspector_region_widget_new ();
-
 void
 inspector_region_widget_show_regions (
   InspectorRegionWidget * self,

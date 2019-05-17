@@ -158,6 +158,13 @@ typedef struct Port
   struct Port *       dests[MAX_DESTINATIONS];
   PortIdentifier      src_ids[MAX_DESTINATIONS];
   PortIdentifier      dest_ids[MAX_DESTINATIONS];
+
+  /** These are the multipliers for port connections.
+   *
+   * They range from 0.f to 1.f and the default is
+   * 1.f. They correspond to each destination.
+   */
+  float               multipliers[MAX_DESTINATIONS];
   int                 num_srcs;
   int                 num_dests;
 
@@ -389,6 +396,48 @@ void
 port_get_all (
   Port ** ports,
   int *   size);
+
+/**
+ * Returns the index of the destination in the dest
+ * array.
+ */
+static inline int
+port_get_dest_index (
+  Port * port,
+  Port * dest)
+{
+  for (int i = 0; i < port->num_dests; i++)
+    {
+      if (port->dests[i] == dest)
+        return i;
+    }
+  g_return_val_if_reached (-1);
+}
+
+/**
+ * Set the multiplier for a destination by its
+ * index in the dest array.
+ */
+static inline void
+port_set_multiplier_by_index (
+  Port * port,
+  int    idx,
+  float  val)
+{
+  port->multipliers[idx] = val;
+}
+
+/**
+ * Get the multiplier for a destination by its
+ * index in the dest array.
+ */
+static inline float
+port_get_multiplier_by_index (
+  Port * port,
+  int    idx)
+{
+  return port->multipliers[idx];
+}
 
 /**
  * Deletes port, doing required cleanup and updating counters.

@@ -333,9 +333,10 @@ automation-point:hover
   background-color: @hover_color;
 }
 
-inspector expander-box
+inspector expander-box,
+inspector two-col-expander-box
 {
-  margin: 5px;
+  margin: 4px;
   border-style: solid;
   border-width: 2px;
   border-radius: 6px;
@@ -343,7 +344,24 @@ inspector expander-box
   border-color: #555555;
 }
 
-inspector expander-box button
+inspector expander-box button,
+inspector two-col-expander-box button
+{
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+channel expander-box
+{
+  /*margin: 5px;*/
+  border-style: solid;
+  border-width: 2px;
+  border-radius: 8px;
+  /* FIXME use predefined colors */
+  border-color: #BBBBBB;
+}
+
+channel expander-box button
 {
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;

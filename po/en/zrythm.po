@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-11 16:29+0100\n"
+"POT-Creation-Date: 2019-05-17 18:49+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -65,6 +65,14 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:191 resources/ui/preferences.ui:122
 msgid "Audio Backend"
+msgstr ""
+
+#: src/gui/widgets/ports_expander.c:129
+msgid "Audio Ins"
+msgstr ""
+
+#: src/gui/widgets/ports_expander.c:132
+msgid "Audio Outs"
 msgstr ""
 
 #: resources/ui/audio_unit.ui:32
@@ -185,9 +193,8 @@ msgstr ""
 msgid "Collection"
 msgstr ""
 
-#: resources/ui/inspector_region.ui:68 resources/ui/inspector_master.ui:67
-#: resources/ui/inspector_track.ui:75 resources/ui/inspector_ap.ui:67
-#: resources/ui/inspector_midi.ui:67
+#: resources/ui/inspector_region.ui:56 resources/ui/inspector_master.ui:67
+#: resources/ui/inspector_ap.ui:67 resources/ui/inspector_midi.ui:67
 msgid "Color"
 msgstr ""
 
@@ -197,6 +204,14 @@ msgstr ""
 
 #: resources/ui/bot_dock_edge.ui:153
 msgid "Connections"
+msgstr ""
+
+#: src/gui/widgets/ports_expander.c:123
+msgid "Control Ins"
+msgstr ""
+
+#: src/gui/widgets/ports_expander.c:126
+msgid "Control Outs"
 msgstr ""
 
 #: resources/ui/midi_controller_popover.ui:37
@@ -331,9 +346,8 @@ msgstr ""
 msgid "English [en]"
 msgstr ""
 
-#: resources/ui/inspector_region.ui:45 resources/ui/inspector_master.ui:44
-#: resources/ui/inspector_track.ui:48 resources/ui/inspector_ap.ui:44
-#: resources/ui/inspector_midi.ui:44
+#: resources/ui/inspector_region.ui:33 resources/ui/inspector_master.ui:44
+#: resources/ui/inspector_ap.ui:44 resources/ui/inspector_midi.ui:44
 msgid "Enter region name..."
 msgstr ""
 
@@ -444,6 +458,10 @@ msgstr ""
 msgid "Group"
 msgstr ""
 
+#: src/gui/widgets/port_connections_popover.c:61
+msgid "INPUTS"
+msgstr ""
+
 #: src/zrythm.c:253
 msgid "Initializing audio engine"
 msgstr ""
@@ -460,7 +478,7 @@ msgstr ""
 msgid "Initializing..."
 msgstr ""
 
-#: src/gui/widgets/channel.c:930
+#: src/gui/widgets/channel.c:925
 msgid "Inserts"
 msgstr ""
 
@@ -510,10 +528,9 @@ msgstr ""
 msgid "Left Panel"
 msgstr ""
 
-#: resources/ui/quantize_mb_popover.ui:88 resources/ui/inspector_region.ui:103
-#: resources/ui/inspector_master.ui:101 resources/ui/inspector_track.ui:116
-#: resources/ui/inspector_ap.ui:101 resources/ui/inspector_midi.ui:101
-#: resources/ui/snap_grid_popover.ui:88
+#: resources/ui/quantize_mb_popover.ui:88 resources/ui/inspector_region.ui:91
+#: resources/ui/inspector_master.ui:101 resources/ui/inspector_ap.ui:101
+#: resources/ui/inspector_midi.ui:101 resources/ui/snap_grid_popover.ui:88
 msgid "Length"
 msgstr ""
 
@@ -562,6 +579,14 @@ msgstr ""
 msgid "MIDI Devices"
 msgstr ""
 
+#: src/gui/widgets/ports_expander.c:135
+msgid "MIDI Ins"
+msgstr ""
+
+#: src/gui/widgets/ports_expander.c:138
+msgid "MIDI Outs"
+msgstr ""
+
 #: resources/ui/preferences.ui:298
 msgid "Main Window"
 msgstr ""
@@ -587,7 +612,7 @@ msgstr ""
 msgid "Move %d Plugins"
 msgstr ""
 
-#: src/actions/move_tracks_action.c:123
+#: src/actions/move_tracks_action.c:131
 #, c-format
 msgid "Move %d Tracks"
 msgstr ""
@@ -602,7 +627,7 @@ msgstr ""
 msgid "Move Object(s)"
 msgstr ""
 
-#: src/actions/move_tracks_action.c:120
+#: src/actions/move_tracks_action.c:128
 msgid "Move Track"
 msgstr ""
 
@@ -614,13 +639,12 @@ msgstr ""
 msgid "Mute Track"
 msgstr ""
 
-#: resources/ui/inspector_region.ui:115 resources/ui/inspector_master.ui:113
-#: resources/ui/inspector_track.ui:130 resources/ui/inspector_ap.ui:113
-#: resources/ui/inspector_midi.ui:113
+#: resources/ui/inspector_region.ui:103 resources/ui/inspector_master.ui:113
+#: resources/ui/inspector_ap.ui:113 resources/ui/inspector_midi.ui:113
 msgid "Muted"
 msgstr ""
 
-#: resources/ui/inspector_track.ui:192 resources/ui/control.ui:45
+#: resources/ui/control.ui:45
 msgid "Name"
 msgstr ""
 
@@ -628,10 +652,6 @@ msgstr ""
 msgid ""
 "Next, choose the  location to use for saving temporary files and projects "
 "(or accept the default)"
-msgstr ""
-
-#: resources/ui/inspector.ui:72
-msgid "No item selected"
 msgstr ""
 
 #: src/gui/widgets/route_target_selector_popover.c:180
@@ -653,6 +673,10 @@ msgstr ""
 
 #: resources/ui/preferences.ui:44
 msgid "OK"
+msgstr ""
+
+#: src/gui/widgets/port_connections_popover.c:80
+msgid "OUTPUTS"
 msgstr ""
 
 #: src/utils/dialogs.c:41
@@ -750,7 +774,7 @@ msgstr ""
 msgid "Portuguese [pt]"
 msgstr ""
 
-#: resources/ui/inspector_region.ui:80 resources/ui/inspector_master.ui:79
+#: resources/ui/inspector_region.ui:68 resources/ui/inspector_master.ui:79
 #: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
 msgid "Position"
 msgstr ""
@@ -829,8 +853,7 @@ msgstr ""
 msgid "Redo previous command"
 msgstr ""
 
-#: resources/ui/inspector_region.ui:32 resources/ui/inspector_master.ui:31
-#: resources/ui/inspector_track.ui:32 resources/ui/inspector_ap.ui:31
+#: resources/ui/inspector_master.ui:31 resources/ui/inspector_ap.ui:31
 #: resources/ui/inspector_midi.ui:31
 msgid "Region"
 msgstr ""
@@ -1099,15 +1122,15 @@ msgstr ""
 msgid "Tool"
 msgstr ""
 
-#: src/gui/widgets/inspector_track.c:85
-msgid "Track"
-msgstr ""
-
 #: src/gui/widgets/track.c:152
 msgid ""
 "Track - Change track parameters like Solo/Mute... - Click the icon on the "
 "bottom right to bring up the automation lanes - Double click to show "
 "corresponding channel in Mixer (if applicable)"
+msgstr ""
+
+#: src/gui/widgets/instrument_track_info_expander.c:82
+msgid "Track Info"
 msgstr ""
 
 #: resources/ui/piano_roll.ui:53 resources/ui/audio_clip_editor.ui:34
@@ -1118,14 +1141,8 @@ msgstr ""
 msgid "Tracks"
 msgstr ""
 
-#: src/gui/widgets/inspector_track.c:90
-#, c-format
-msgid "Tracks (%d)"
-msgstr ""
-
-#: resources/ui/quantize_mb_popover.ui:127 resources/ui/inspector_track.ui:89
-#: resources/ui/file_browser.ui:84 resources/ui/plugin_browser.ui:85
-#: resources/ui/snap_grid_popover.ui:127
+#: resources/ui/quantize_mb_popover.ui:127 resources/ui/file_browser.ui:84
+#: resources/ui/plugin_browser.ui:85 resources/ui/snap_grid_popover.ui:127
 msgid "Type"
 msgstr ""
 
@@ -1325,9 +1342,8 @@ msgstr ""
 msgid "out"
 msgstr ""
 
-#: resources/ui/inspector_region.ui:44 resources/ui/inspector_master.ui:43
-#: resources/ui/inspector_track.ui:47 resources/ui/inspector_ap.ui:43
-#: resources/ui/inspector_midi.ui:43
+#: resources/ui/inspector_region.ui:32 resources/ui/inspector_master.ui:43
+#: resources/ui/inspector_ap.ui:43 resources/ui/inspector_midi.ui:43
 msgid "region_name"
 msgstr ""
 

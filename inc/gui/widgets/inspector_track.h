@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,30 +28,19 @@ G_DECLARE_FINAL_TYPE (InspectorTrackWidget,
                       inspector_track_widget,
                       Z,
                       INSPECTOR_TRACK_WIDGET,
-                      GtkGrid)
+                      GtkBox)
 
-typedef struct Track Track;
 typedef struct TracklistSelections
   TracklistSelections;
+typedef struct _InstrumentTrackInfoExpanderWidget
+  InstrumentTrackInfoExpanderWidget;
 
 typedef struct _InspectorTrackWidget
 {
-  GtkGrid             parent_instance;
-  GtkLabel *          header;
-  GtkEntry *          name;
-  GtkBox *            position_box;
-  GtkBox *            length_box;
-  GtkColorButton *    color;
-  GtkToggleButton *   mute_toggle;
+  GtkBox             parent_instance;
+  InstrumentTrackInfoExpanderWidget *
+    instrument_track_info;
 } InspectorTrackWidget;
-
-/**
- * Creates the inspector_track widget.
- *
- * Only once per project.
- */
-InspectorTrackWidget *
-inspector_track_widget_new ();
 
 void
 inspector_track_widget_show_tracks (

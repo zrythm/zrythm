@@ -32,22 +32,17 @@ G_DEFINE_TYPE (EditableLabelWidget,
 
 static void
 on_mp_press (GtkGestureMultiPress *gesture,
-               gint                  n_press,
-               gdouble               x,
-               gdouble               y,
-               EditableLabelWidget * self)
+             gint                  n_press,
+             gdouble               x,
+             gdouble               y,
+             EditableLabelWidget * self)
 {
-
-  ChannelWidget * cw = NULL;
-
-  cw =
-    (ChannelWidget *) self->owner;
   if (n_press == 2)
     {
       gtk_popover_popup (self->popover);
       gtk_entry_set_text (
         self->entry,
-        cw->channel->track->name);
+        (*self->getter) (self->object));
     }
 }
 
@@ -56,60 +51,75 @@ on_entry_activated (
   GtkEntry *entry,
   EditableLabelWidget * self)
 {
-  ChannelWidget * cw =
-    (ChannelWidget *) self->owner;
-  cw->channel->track->name =
-    g_strdup (
-      gtk_entry_get_text (self->entry));
+  (*self->setter) (
+    self->object,
+    gtk_entry_get_text (self->entry));
   gtk_widget_set_visible (
     GTK_WIDGET (self->popover), 0);
-
-  EVENTS_PUSH (ET_TRACK_NAME_CHANGED,
-               cw->channel->track);
 }
 
 /**
  * Sets up an existing EditableLabelWidget.
+ *
+ * @param get_val Getter function.
+ * @param set_val Setter function.
+ * @param object Object to call get/set with.
  */
 void
-editable_label_widget_setup (
+_editable_label_widget_setup (
   EditableLabelWidget * self,
-  GtkWidget *           owner,
-  EditableLabelType     type)
+  void *                object,
+  const char * (*get_val)(void *),
+  void (*set_val)(void *, const char *))
 {
-  self->owner = owner;
-  self->type = type;
+  self->object = object;
+  self->getter = get_val;
+  self->setter = set_val;
 
-  switch (type)
+  if (object)
     {
-    case EDITABLE_LABEL_TYPE_CHANNEL:
       gtk_entry_set_text (
         self->entry,
-        ((ChannelWidget *)owner)->
-          channel->track->name);
-      break;
-    default:
-      g_return_if_reached ();
+        (*self->getter) (self->object));
+      gtk_label_set_text (
+        self->label,
+        (*self->getter) (self->object));
     }
 }
 
 /**
  * Returns a new instance of EditableLabelWidget.
+ *
+ * @param get_val Getter function.
+ * @param set_val Setter function.
+ * @param object Object to call get/set with.
  */
 EditableLabelWidget *
-editable_label_widget_new (
-  GtkWidget *       owner,
-  EditableLabelType type)
+_editable_label_widget_new (
+  void *                object,
+  const char * (*get_val)(void *),
+  void (*set_val)(void *, const char *))
 {
-  /* TODO */
-  return NULL;
+  EditableLabelWidget * self =
+    g_object_new (EDITABLE_LABEL_WIDGET_TYPE,
+                  NULL);
 
+  editable_label_widget_setup (
+    self, object, get_val, set_val);
+
+  gtk_widget_set_visible (
+    GTK_WIDGET (self), 1);
+
+  return self;
 }
 
 static void
 editable_label_widget_class_init (
-  EditableLabelWidgetClass * klass)
+  EditableLabelWidgetClass * _klass)
 {
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (
+    klass, "editable-label");
 }
 
 static void

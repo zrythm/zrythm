@@ -210,6 +210,22 @@ tracklist_get_next_visible_track (
   Track * track);
 
 /**
+ * Returns 1 if the track name is not taken.
+ */
+static inline int
+tracklist_track_name_is_unique (
+  Tracklist * self,
+  const char * name)
+{
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      if (!g_strcmp0 (name, self->tracks[i]->name))
+        return 0;
+    }
+  return 1;
+}
+
+/**
  * @}
  */
 

@@ -19,8 +19,6 @@
 
 /**
  * \file
- *
- * Timeline ruler derived from base ruler.
  */
 
 #ifndef __GUI_WIDGETS_EDITABLE_LABEL_H__
@@ -37,14 +35,6 @@ G_DECLARE_FINAL_TYPE (EditableLabelWidget,
                       GtkEventBox)
 
 /**
- * Type of editable label.
- */
-typedef enum EditableLabelType
-{
-  EDITABLE_LABEL_TYPE_CHANNEL,
-} EditableLabelType;
-
-/**
  * A label that shows a popover when clicked.
  */
 typedef struct _EditableLabelWidget
@@ -57,11 +47,14 @@ typedef struct _EditableLabelWidget
   GtkPopover *      popover;
   GtkEntry *        entry;
 
-  /** Type of editable label. */
-  EditableLabelType type;
+  /** Getter. */
+  const char * (*getter)(void *);
 
-  /** Owner widget, determined by type. */
-  GtkWidget * owner;
+  /** Setter. */
+  void (*setter)(void *, const char *);
+
+  /** Object to call get/set with. */
+  void *            object;
 
   /** Multipress for the label. */
   GtkGestureMultiPress * mp;
@@ -69,19 +62,45 @@ typedef struct _EditableLabelWidget
 
 /**
  * Sets up an existing EditableLabelWidget.
+ *
+ * @param get_val Getter function.
+ * @param set_val Setter function.
+ * @param object Object to call get/set with.
  */
 void
-editable_label_widget_setup (
+_editable_label_widget_setup (
   EditableLabelWidget * self,
-  GtkWidget *           owner,
-  EditableLabelType     type);
+  void *                object,
+  const char * (*get_val)(void *),
+  void (*set_val)(void *, const char *));
+
+#define \
+editable_label_widget_setup( \
+  self,object,getter,setter) \
+  _editable_label_widget_setup ( \
+    self, \
+    (void *) object, \
+    (const char * (*) (void *)) getter, \
+    (void (*) (void *, const char *)) setter);
 
 /**
  * Returns a new instance of EditableLabelWidget.
+ *
+ * @param get_val Getter function.
+ * @param set_val Setter function.
+ * @param object Object to call get/set with.
  */
 EditableLabelWidget *
-editable_label_widget_new (
-  GtkWidget *       owner,
-  EditableLabelType type);
+_editable_label_widget_new (
+  void *                object,
+  const char * (*get_val)(void *),
+  void (*set_val)(void *, const char *));
+
+#define \
+editable_label_widget_new(object,getter,setter) \
+  _editable_label_widget_new ( \
+    (void *) object, \
+    (const char * (*) (void *)) getter, \
+    (void (*) (void *, const char *)) setter);
 
 #endif

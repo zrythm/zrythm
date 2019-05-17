@@ -75,6 +75,17 @@ typedef struct MidiNote MidiNote;
 typedef struct Track ChordTrack;
 typedef struct Tracklist Tracklist;
 
+/**
+ * Selection type, used for displaying info in the
+ * inspector.
+ */
+typedef enum SelectionType
+{
+  SELECTION_TYPE_TRACK,
+  SELECTION_TYPE_PLUGIN,
+  SELECTION_TYPE_EDITOR,
+} SelectionType;
+
 typedef struct Project
 {
   char              * title; ///< project title
@@ -149,6 +160,13 @@ typedef struct Project
    * another one is loaded.
    */
   int               loaded;
+
+  /**
+   * The last thing selected in the GUI.
+   *
+   * Used in inspector_widget_refresh.
+   */
+  SelectionType   last_selection;
 } Project;
 
 static const cyaml_schema_field_t

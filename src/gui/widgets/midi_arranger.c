@@ -126,17 +126,6 @@ midi_arranger_widget_get_hit_midi_note (
   return NULL;
 }
 
-
-void
-midi_arranger_widget_update_inspector (
-  MidiArrangerWidget *self)
-{
-  inspector_widget_show_selections (
-    INSPECTOR_CHILD_MIDI,
-    (void **) MA_SELECTIONS->midi_notes,
-    MA_SELECTIONS->num_midi_notes);
-}
-
 void
 midi_arranger_widget_select_all (
   MidiArrangerWidget *  self,

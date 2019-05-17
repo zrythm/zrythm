@@ -42,14 +42,6 @@ typedef struct _InspectorChordWidget
   //GtkToggleButton *   mute_toggle;
 } InspectorChordWidget;
 
-/**
- * Creates the inspector_chord widget.
- *
- * Only once per project.
- */
-InspectorChordWidget *
-inspector_chord_widget_new ();
-
 void
 inspector_chord_widget_show_chords (
   InspectorChordWidget * self,

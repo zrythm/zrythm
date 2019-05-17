@@ -20,26 +20,44 @@
 #ifndef __GUI_WIDGETS_EXPANDER_BOX_H__
 #define __GUI_WIDGETS_EXPANDER_BOX_H__
 
+#include "utils/resources.h"
+
 #include <gtk/gtk.h>
 
 #define EXPANDER_BOX_WIDGET_TYPE \
   (expander_box_widget_get_type ())
-G_DECLARE_FINAL_TYPE (ExpanderBoxWidget,
-                      expander_box_widget,
-                      Z,
-                      EXPANDER_BOX_WIDGET,
-                      GtkBox)
+G_DECLARE_DERIVABLE_TYPE (
+  ExpanderBoxWidget,
+  expander_box_widget,
+  Z,
+  EXPANDER_BOX_WIDGET,
+  GtkBox)
 
-typedef struct _ExpanderBoxWidget
+/**
+ * An expander box is a base widget with a button that
+ * when clicked expands the contents.
+ */
+typedef struct
 {
-  GtkBox         parent_instance;
-
   GtkButton *    button;
   GtkLabel *     btn_label;
   GtkImage *     btn_img;
   GtkRevealer *  revealer;
   GtkBox *       content;
-} ExpanderBoxWidget;
+
+} ExpanderBoxWidgetPrivate;
+
+typedef struct _ExpanderBoxWidgetClass
+{
+  GtkBoxClass         parent_class;
+} ExpanderBoxWidgetClass;
+
+/**
+ * Gets the private.
+ */
+ExpanderBoxWidgetPrivate *
+expander_box_widget_get_private (
+  ExpanderBoxWidget * self);
 
 /**
  * Sets the label to show.
@@ -56,5 +74,35 @@ void
 expander_box_widget_set_icon_name (
   ExpanderBoxWidget * self,
   const char *        icon_name);
+
+/**
+ * Sets the icon resource to show.
+ */
+static inline void
+expander_box_widget_set_icon_resource (
+  ExpanderBoxWidget * self,
+  IconType            icon_type,
+  const char *        path)
+{
+  ExpanderBoxWidgetPrivate * prv =
+     expander_box_widget_get_private (self);
+
+  resources_set_image_icon (
+    prv->btn_img,
+    icon_type,
+    path);
+}
+
+static inline void
+expander_box_widget_add_content (
+  ExpanderBoxWidget * self,
+  GtkWidget *         content)
+{
+  ExpanderBoxWidgetPrivate * prv =
+    expander_box_widget_get_private (self);
+  gtk_container_add (
+    GTK_CONTAINER (prv->content),
+    content);
+}
 
 #endif

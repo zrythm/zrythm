@@ -44,19 +44,6 @@ tracklist_selections_init_loaded (
 }
 
 /**
- * Returns if there are any selections.
- */
-int
-tracklist_selections_has_any (
-  TracklistSelections * ts)
-{
-  if (ts->num_tracks > 0)
-    return 1;
-  else
-    return 0;
-}
-
-/**
  * Gets highest track in the selections.
  */
 Track *
@@ -183,28 +170,46 @@ tracklist_selections_gprint (
 }
 
 /**
- * Clears selections.
+ * Selects a single track after clearing the
+ * selections.
  */
 void
-tracklist_selections_clear (
-  TracklistSelections * ts)
+tracklist_selections_select_single (
+  TracklistSelections * ts,
+  Track *               track)
 {
-  Track * track;
+  Track * _track;
   for (int i = ts->num_tracks - 1; i >= 0; i--)
     {
-      track = ts->tracks[i];
+      _track = ts->tracks[i];
       tracklist_selections_remove_track (
-        ts, track);
+        ts, _track);
 
       /* FIXME what if the track is deleted */
       EVENTS_PUSH (ET_TRACK_CHANGED,
-                   track);
+                   _track);
     }
+
+  tracklist_selections_add_track (
+    ts, track);
 
   EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
                NULL);
+}
 
-  g_message ("cleared tracklist selections");
+/**
+ * Selects the last visible track after clearing the
+ * selections.
+ */
+void
+tracklist_selections_select_last_visible (
+  TracklistSelections * ts)
+{
+  Track * track =
+    tracklist_get_last_visible_track (TRACKLIST);;
+  g_warn_if_fail (track);
+  tracklist_selections_select_single (
+    ts, track);
 }
 
 static int

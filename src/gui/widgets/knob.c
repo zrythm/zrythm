@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "audio/port.h"
 #include "gui/widgets/knob.h"
 
 #include <gtk/gtk.h>
@@ -37,7 +38,11 @@ G_DEFINE_TYPE (KnobWidget, knob_widget, GTK_TYPE_DRAWING_AREA)
 /**
  * Macro to get real value.
  */
-#define GET_REAL_VAL ((*self->getter) (self->object))
+#define GET_REAL_VAL \
+  (self->type == KNOB_TYPE_NORMAL ? \
+   ((*self->getter) (self->object)) : \
+   port_get_multiplier_by_index ( \
+     (Port *) self->object, self->dest_index))
 
 /**
  * MAcro to get real value from knob value.
@@ -52,7 +57,11 @@ G_DEFINE_TYPE (KnobWidget, knob_widget, GTK_TYPE_DRAWING_AREA)
 /**
  * Sets real val
  */
-#define SET_REAL_VAL(real) ((*self->setter)(self->object, real))
+#define SET_REAL_VAL(real) \
+  (self->type == KNOB_TYPE_NORMAL ? \
+   ((*self->setter)(self->object, real)) : \
+   port_set_multiplier_by_index ( \
+     (Port *) self->object, self->dest_index, real))
 
 /**
  * Draws the knob.
@@ -321,16 +330,26 @@ drag_end (GtkGestureDrag *gesture,
 
 
 /**
- * Creates a knob widget with the given options and binds it to the given value.
+ * Creates a knob widget with the given options and
+ * binds it to the given value.
+ *
+ * @param get_val Getter function.
+ * @param set_val Setter function.
+ * @param object Object to call get/set with.
+ * @param idx Port destination multiplier index, if
+ *   type is Port, otherwise ignored.
  */
 KnobWidget *
-knob_widget_new (float (*get_val)(void *),    ///< getter function
-                  void (*set_val)(void *, float),    ///< setter function
-                  void * object,              ///< object to call get/set with
-                  float min,       ///< min value
-                  float max,       ///< max value
-                    int         size,
-                    float       zero)
+_knob_widget_new (
+  float (*get_val)(void *),
+  void (*set_val)(void *, float),
+  void * object,
+  KnobType type,
+  Port * dest,
+  float  min,
+  float  max,
+  int    size,
+  float  zero)
 {
   g_warn_if_fail (object);
 
@@ -342,6 +361,14 @@ knob_widget_new (float (*get_val)(void *),    ///< getter function
   self->object = object;
   self->min = min;
   self->max = max;
+  self->type = type;
+  if (type == KNOB_TYPE_PORT_MULTIPLIER)
+    {
+      self->dest_index =
+        port_get_dest_index ((Port *) object, dest);
+    }
+  else
+    self->dest_index = -1;
   /*self->cur = get_knob_val (self)*/
   self->size = size; /* default 30 */
   self->hover = 0;

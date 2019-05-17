@@ -562,9 +562,13 @@ multipress_pressed (GtkGestureMultiPress *gesture,
   TRACK_WIDGET_GET_PRIVATE (self);
   Track * track = tw_prv->track;
 
+  PROJECT->last_selection =
+    SELECTION_TYPE_TRACK;
+
   tracklist_widget_select_track (
     MW_TRACKLIST, track,
-    track_is_selected (track) ?
+    track_is_selected (track) &&
+    state_mask & GDK_CONTROL_MASK ?
       F_NO_SELECT: F_SELECT,
     (state_mask & GDK_SHIFT_MASK ||
       state_mask & GDK_CONTROL_MASK) ?

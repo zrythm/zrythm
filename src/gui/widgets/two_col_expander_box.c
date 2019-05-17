@@ -1,0 +1,164 @@
+/* * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ *
+ * This file is part of Zrythm
+ *
+ * Zrythm is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Zrythm is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#include "gui/widgets/expander_box.h"
+#include "gui/widgets/two_col_expander_box.h"
+#include "utils/gtk.h"
+
+G_DEFINE_TYPE_WITH_PRIVATE (TwoColExpanderBoxWidget,
+               two_col_expander_box_widget,
+               EXPANDER_BOX_WIDGET_TYPE)
+
+/**
+ * Gets the private.
+ */
+TwoColExpanderBoxWidgetPrivate *
+two_col_expander_box_widget_get_private (
+  TwoColExpanderBoxWidget * self)
+{
+  return two_col_expander_box_widget_get_instance_private (self);
+}
+
+/**
+ * Sets the horizontal spacing.
+ */
+void
+two_col_expander_box_widget_set_horizontal_spacing (
+  TwoColExpanderBoxWidget * self,
+  int horizontal_spacing)
+{
+  /* TODO */
+  g_warn_if_reached ();
+}
+
+/**
+ * Adds the two widgets in a horizontal box with the
+ * given spacing.
+ */
+void
+two_col_expander_box_widget_add_pair (
+  TwoColExpanderBoxWidget * self,
+  GtkWidget *         widget1,
+  GtkWidget *         widget2)
+{
+  TwoColExpanderBoxWidgetPrivate * prv =
+    two_col_expander_box_widget_get_private (self);
+
+  GtkWidget * box =
+    gtk_box_new (
+      GTK_ORIENTATION_HORIZONTAL,
+      prv->horizontal_spacing);
+  gtk_widget_set_visible (box, 1);
+
+  /* pack the widgets */
+  gtk_box_pack_start (
+    GTK_BOX (box),
+    widget1,
+    1, // expand
+    1, // fill
+    0); // spacing
+  gtk_box_pack_start (
+    GTK_BOX (box),
+    widget2,
+    1, // expand
+    1, // fill
+    0); // spacing
+
+  /* pack the box to the original box */
+  gtk_box_pack_start (
+    GTK_BOX (prv->content),
+    box,
+    0, // expand
+    0, // fill
+    0); // spacing
+}
+
+/**
+ * Adds a single widget taking up the full horizontal
+ * space.
+ */
+void
+two_col_expander_box_widget_add_single (
+  TwoColExpanderBoxWidget * self,
+  GtkWidget *         widget)
+{
+  TwoColExpanderBoxWidgetPrivate * prv =
+    two_col_expander_box_widget_get_private (self);
+
+  /* pack the widget to the original box */
+  gtk_box_pack_start (
+    GTK_BOX (prv->content),
+    widget,
+    0, // expand
+    0, // fill
+    0); // spacing
+}
+
+/**
+ * Removes and destroys the children widgets.
+ */
+void
+two_col_expander_box_widget_remove_children (
+  TwoColExpanderBoxWidget * self)
+{
+  TwoColExpanderBoxWidgetPrivate * prv =
+    two_col_expander_box_widget_get_private (self);
+
+  z_gtk_container_destroy_all_children (
+    GTK_CONTAINER (prv->content));
+}
+
+static void
+two_col_expander_box_widget_class_init (
+  TwoColExpanderBoxWidgetClass * _klass)
+{
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (
+    klass, "two-col-expander-box");
+}
+
+static void
+two_col_expander_box_widget_init (
+  TwoColExpanderBoxWidget * self)
+{
+  gtk_widget_set_visible (GTK_WIDGET (self), 1);
+
+  TwoColExpanderBoxWidgetPrivate * prv =
+    two_col_expander_box_widget_get_private (self);
+
+  prv->horizontal_spacing =
+    TWO_COL_EXPANDER_BOX_DEFAULT_HORIZONTAL_SPACING;
+  prv->vertical_spacing =
+    TWO_COL_EXPANDER_BOX_DEFAULT_VERTICAL_SPACING;
+
+  /* create content box and add it to the original
+   * box */
+  prv->content =
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_VERTICAL,
+                   prv->vertical_spacing));
+  gtk_widget_set_visible (
+    GTK_WIDGET (prv->content), 1);
+
+  ExpanderBoxWidgetPrivate * prv_exp_box =
+    expander_box_widget_get_private (
+      Z_EXPANDER_BOX_WIDGET (self));
+  gtk_container_add (
+    GTK_CONTAINER (prv_exp_box->content),
+    GTK_WIDGET (prv->content));
+}

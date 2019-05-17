@@ -24,18 +24,9 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (InspectorChordWidget, inspector_chord_widget, GTK_TYPE_GRID)
-
-
-InspectorChordWidget *
-inspector_chord_widget_new ()
-{
-  InspectorChordWidget * self =
-    g_object_new (INSPECTOR_CHORD_WIDGET_TYPE, NULL);
-  gtk_widget_show_all (GTK_WIDGET (self));
-
-  return self;
-}
+G_DEFINE_TYPE (InspectorChordWidget,
+               inspector_chord_widget,
+               GTK_TYPE_GRID)
 
 void
 inspector_chord_widget_show_chords (

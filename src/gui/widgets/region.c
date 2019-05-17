@@ -332,15 +332,17 @@ region_widget_delete (RegionWidget *self)
 }
 
 static void
-region_widget_class_init (RegionWidgetClass * _klass)
+region_widget_class_init (
+  RegionWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (klass,
-                                 "region");
+  gtk_widget_class_set_css_name (
+    klass, "region");
 }
 
 static void
-region_widget_init (RegionWidget * self)
+region_widget_init (
+  RegionWidget * self)
 {
   gtk_widget_set_visible (GTK_WIDGET (self), 1);
   g_object_ref (self);

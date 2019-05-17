@@ -26,7 +26,7 @@ import os, sys
 srcdir = sys.argv[1]
 
 xml = '''<!--
-  Copyright (C) 2018-2019 Alexandros Theodotou
+  Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
 
   This file is part of Zrythm
 
@@ -173,6 +173,7 @@ for cat in ['actions', 'animations', 'applets', 'apps', 'categories', 'devices',
               f.endswith('draw-eraser.svg') or
               f.endswith('draw-line.svg') or
               f.endswith('audio-speakers-symbolic.svg') or
+              f.endswith('step_object_Controller.svg') or
               f.endswith('application-msword.svg') or
               f.endswith('gtk-add.svg') or
               f.endswith('document-duplicate.svg') or
