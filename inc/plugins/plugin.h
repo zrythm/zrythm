@@ -99,6 +99,10 @@ typedef struct PluginDescriptor
   /** Number of output control (plugin param)
    * ports. */
   int              num_ctrl_outs;
+  /** Number of input CV ports. */
+  int              num_cv_ins;
+  /** Number of output CV ports. */
+  int              num_cv_outs;
   /** Architecture (32/64bit). */
   PluginArchitecture   arch;
   /** Plugin protocol (Lv2/DSSI/LADSPA/VST...). */

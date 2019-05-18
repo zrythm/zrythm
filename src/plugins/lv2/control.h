@@ -85,8 +85,11 @@ typedef struct Lv2Control
 	Lv2ScalePoint* points;          ///< Scale points
 	LV2_URID    value_type;      ///< Type of control value
 	LilvNode*   min;             ///< Minimum value
+  float       minf;
 	LilvNode*   max;             ///< Maximum value
+  float       maxf;
 	LilvNode*   def;             ///< Default value
+  float       deff;
 	bool        is_toggle;       ///< Boolean (0 and 1 only)
 	bool        is_integer;      ///< Integer values only
 	bool        is_enumeration;  ///< Point values only

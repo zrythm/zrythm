@@ -43,6 +43,8 @@ typedef struct _InspectorPluginWidget
   PortsExpanderWidget * audio_outs;
   PortsExpanderWidget * midi_ins;
   PortsExpanderWidget * midi_outs;
+  PortsExpanderWidget * cv_ins;
+  PortsExpanderWidget * cv_outs;
 } InspectorPluginWidget;
 
 /**

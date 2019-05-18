@@ -81,6 +81,9 @@ lv2_new_port_control(Lv2Plugin* plugin, uint32_t index)
 
   lilv_port_get_range (
     plug, lport, &id->def, &id->min, &id->max);
+  id->maxf = lilv_node_as_float(id->max);
+  id->minf = lilv_node_as_float(id->min);
+  id->deff = lilv_node_as_float(id->def);
   if (lilv_port_has_property (
         plug, lport, nodes->core_sampleRate))
     {

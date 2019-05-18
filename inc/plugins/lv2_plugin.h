@@ -100,6 +100,9 @@ typedef struct Lv2Port
 	void*           widget;     ///< Control widget, if applicable
 	size_t          buf_size;   ///< Custom buffer size, or 0
 	uint32_t        index;      ///< Port index
+
+  /** Pointer to control, if control. */
+  Lv2Control *    lv2_control;
 	float           control;    ///< For control ports, otherwise 0.0f
 	bool            old_api;    ///< True for event, false for atom
 } Lv2Port;

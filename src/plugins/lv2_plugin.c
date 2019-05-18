@@ -85,19 +85,6 @@
 #include <lv2/lv2plug.in/ns/ext/buf-size/buf-size.h>
 #include <lv2/lv2plug.in/ns/ext/patch/patch.h>
 #include <lv2/lv2plug.in/ns/ext/time/time.h>
-/*#include <lv2/lv2plug.in/ns/ext/atom/atom.h>*/
-/*#include <lv2/lv2plug.in/ns/ext/buf-size/buf-size.h>*/
-/*#include <lv2/lv2plug.in/ns/ext/data-access/data-access.h>*/
-/*#include <lv2/lv2plug.in/ns/ext/event/event.h>*/
-/*#include <lv2/lv2plug.in/ns/ext/patch/patch.h>*/
-/*#include <lv2/lv2plug.in/ns/ext/port-groups/port-groups.h>*/
-/*#include <lv2/lv2plug.in/ns/ext/port-props/port-props.h>*/
-/*#include <lv2/lv2plug.in/ns/ext/presets/presets.h>*/
-/*#include <lv2/lv2plug.in/ns/ext/state/state.h>*/
-/*#include <lv2/lv2plug.in/ns/ext/time/time.h>*/
-/*#include <lv2/lv2plug.in/ns/ext/urid/urid.h>*/
-/*#include <lv2/lv2plug.in/ns/ext/worker/worker.h>*/
-/*#include <lv2/lv2plug.in/ns/extensions/ui/ui.h>*/
 
 #include <lilv/lilv.h>
 #include <sratom/sratom.h>
@@ -270,11 +257,15 @@ _create_port(Lv2Plugin*   lv2_plugin,
             lv2_port->lilv_port,
             PM_LILV_NODES.pprops_notOnGUI))
         {
-          lv2_add_control (
-            &lv2_plugin->controls,
+          Lv2Control * port_control =
             lv2_new_port_control (
               lv2_plugin,
-              lv2_port->index));
+              lv2_port->index);
+          lv2_add_control (
+            &lv2_plugin->controls,
+            port_control);
+          lv2_port->lv2_control =
+            port_control;
         }
     }
   else if (lilv_port_is_a (
@@ -1318,12 +1309,15 @@ lv2_create_descriptor_from_lilv (const LilvPlugin * lp)
   const char * str = lilv_node_as_string (name);
   pd->name = g_strdup (str);
   lilv_node_free (name);
-  LilvNode * author = lilv_plugin_get_author_name (lp);
+  LilvNode * author =
+    lilv_plugin_get_author_name (lp);
   str = lilv_node_as_string (author);
   pd->author = g_strdup (str);
   lilv_node_free (author);
-  const LilvPluginClass* pclass = lilv_plugin_get_class(lp);
-  const LilvNode * label  = lilv_plugin_class_get_label(pclass);
+  const LilvPluginClass* pclass =
+    lilv_plugin_get_class(lp);
+  const LilvNode * label =
+    lilv_plugin_class_get_label(pclass);
   str = lilv_node_as_string (label);
   pd->category = g_strdup (str);
 
@@ -1336,22 +1330,36 @@ lv2_create_descriptor_from_lilv (const LilvPlugin * lp)
        i < lilv_plugin_get_num_ports (lp);
        ++i)
     {
-      const LilvPort* port  = lilv_plugin_get_port_by_index (lp, i);
-      if (lilv_port_is_a(lp, port, PM_LILV_NODES.atom_AtomPort))
+      const LilvPort* port  =
+        lilv_plugin_get_port_by_index (lp, i);
+      if (lilv_port_is_a (
+            lp, port, PM_LILV_NODES.atom_AtomPort))
         {
-          LilvNodes* buffer_types = lilv_port_get_value(
-                  lp, port, PM_LILV_NODES.atom_bufferType);
-          LilvNodes* atom_supports = lilv_port_get_value(
-                  lp, port, PM_LILV_NODES.atom_supports);
+          LilvNodes* buffer_types =
+            lilv_port_get_value (
+              lp, port,
+              PM_LILV_NODES.atom_bufferType);
+          LilvNodes* atom_supports =
+            lilv_port_get_value (
+              lp, port,
+              PM_LILV_NODES.atom_supports);
 
-          if (lilv_nodes_contains (buffer_types, PM_LILV_NODES.atom_Sequence)
-                && lilv_nodes_contains (atom_supports, PM_LILV_NODES.midi_MidiEvent))
+          if (lilv_nodes_contains (
+                buffer_types,
+                PM_LILV_NODES.atom_Sequence) &&
+              lilv_nodes_contains (
+                atom_supports,
+                PM_LILV_NODES.midi_MidiEvent))
             {
-              if (lilv_port_is_a (lp, port, PM_LILV_NODES.core_InputPort))
+              if (lilv_port_is_a (
+                    lp, port,
+                    PM_LILV_NODES.core_InputPort))
                 {
                   count_midi_in++;
                 }
-              if (lilv_port_is_a (lp, port, PM_LILV_NODES.core_OutputPort))
+              if (lilv_port_is_a (
+                    lp, port,
+                    PM_LILV_NODES.core_OutputPort))
                 {
                   count_midi_out++;
                 }
@@ -1362,20 +1370,23 @@ lv2_create_descriptor_from_lilv (const LilvPlugin * lp)
     }
 
   pd->num_audio_ins =
-          lilv_plugin_get_num_ports_of_class(
-                  lp, PM_LILV_NODES.core_InputPort, PM_LILV_NODES.core_AudioPort, NULL);
+    lilv_plugin_get_num_ports_of_class (
+      lp, PM_LILV_NODES.core_InputPort,
+      PM_LILV_NODES.core_AudioPort, NULL);
   pd->num_midi_ins =
-          lilv_plugin_get_num_ports_of_class(
-                  lp, PM_LILV_NODES.core_InputPort, PM_LILV_NODES.ev_EventPort, NULL)
-          + count_midi_in;
-
+    lilv_plugin_get_num_ports_of_class (
+      lp, PM_LILV_NODES.core_InputPort,
+      PM_LILV_NODES.ev_EventPort, NULL)
+    + count_midi_in;
   pd->num_audio_outs =
-          lilv_plugin_get_num_ports_of_class(
-                  lp, PM_LILV_NODES.core_OutputPort, PM_LILV_NODES.core_AudioPort, NULL);
+    lilv_plugin_get_num_ports_of_class (
+      lp, PM_LILV_NODES.core_OutputPort,
+      PM_LILV_NODES.core_AudioPort, NULL);
   pd->num_midi_outs =
-          lilv_plugin_get_num_ports_of_class(
-                  lp, PM_LILV_NODES.core_OutputPort, PM_LILV_NODES.ev_EventPort, NULL)
-          + count_midi_out;
+    lilv_plugin_get_num_ports_of_class(
+      lp, PM_LILV_NODES.core_OutputPort,
+      PM_LILV_NODES.ev_EventPort, NULL)
+    + count_midi_out;
   pd->num_ctrl_ins =
     lilv_plugin_get_num_ports_of_class (
       lp, PM_LILV_NODES.core_InputPort,
@@ -1383,8 +1394,18 @@ lv2_create_descriptor_from_lilv (const LilvPlugin * lp)
       NULL);
   pd->num_ctrl_outs =
     lilv_plugin_get_num_ports_of_class (
-      lp, PM_LILV_NODES.core_InputPort,
+      lp, PM_LILV_NODES.core_OutputPort,
       PM_LILV_NODES.core_ControlPort,
+      NULL);
+  pd->num_cv_ins =
+    lilv_plugin_get_num_ports_of_class (
+      lp, PM_LILV_NODES.core_InputPort,
+      PM_LILV_NODES.core_CVPort,
+      NULL);
+  pd->num_cv_outs =
+    lilv_plugin_get_num_ports_of_class (
+      lp, PM_LILV_NODES.core_OutputPort,
+      PM_LILV_NODES.core_CVPort,
       NULL);
 
   pd->uri = g_strdup (uri_str);

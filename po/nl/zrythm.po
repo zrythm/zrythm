@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-18 13:33+0100\n"
+"POT-Creation-Date: 2019-05-18 15:27+0100\n"
 "PO-Revision-Date: 2019-05-04 17:39+0100\n"
 "Last-Translator: alex <alex@zrythm.org>\n"
 "Language-Team: Dutch\n"
@@ -73,11 +73,11 @@ msgstr ""
 msgid "Audio Backend"
 msgstr ""
 
-#: src/gui/widgets/ports_expander.c:129
+#: src/gui/widgets/ports_expander.c:146
 msgid "Audio Ins"
 msgstr ""
 
-#: src/gui/widgets/ports_expander.c:132
+#: src/gui/widgets/ports_expander.c:149
 msgid "Audio Outs"
 msgstr ""
 
@@ -127,6 +127,14 @@ msgstr ""
 
 #: src/audio/track.c:735
 msgid "Bus"
+msgstr ""
+
+#: src/gui/widgets/ports_expander.c:158
+msgid "CV Ins"
+msgstr ""
+
+#: src/gui/widgets/ports_expander.c:161
+msgid "CV Outs"
 msgstr ""
 
 #: resources/ui/export_dialog.ui:45 resources/ui/preferences.ui:58
@@ -212,11 +220,11 @@ msgstr ""
 msgid "Connections"
 msgstr ""
 
-#: src/gui/widgets/ports_expander.c:123
+#: src/gui/widgets/ports_expander.c:140
 msgid "Control Ins"
 msgstr ""
 
-#: src/gui/widgets/ports_expander.c:126
+#: src/gui/widgets/ports_expander.c:143
 msgid "Control Outs"
 msgstr ""
 
@@ -585,11 +593,11 @@ msgstr ""
 msgid "MIDI Devices"
 msgstr ""
 
-#: src/gui/widgets/ports_expander.c:135
+#: src/gui/widgets/ports_expander.c:152
 msgid "MIDI Ins"
 msgstr ""
 
-#: src/gui/widgets/ports_expander.c:138
+#: src/gui/widgets/ports_expander.c:155
 msgid "MIDI Outs"
 msgstr ""
 
@@ -1155,7 +1163,7 @@ msgstr ""
 msgid "Track Info"
 msgstr ""
 
-#: src/gui/widgets/port_selector_popover.c:202
+#: src/gui/widgets/port_selector_popover.c:209
 msgid "Track Ports"
 msgstr ""
 

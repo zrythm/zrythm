@@ -82,6 +82,20 @@ inspector_plugin_widget_show (
         PORT_OWNER_TYPE_PLUGIN,
         pl,
         NULL);
+      ports_expander_widget_setup (
+        self->cv_ins,
+        FLOW_INPUT,
+        TYPE_CV,
+        PORT_OWNER_TYPE_PLUGIN,
+        pl,
+        NULL);
+      ports_expander_widget_setup (
+        self->cv_outs,
+        FLOW_OUTPUT,
+        TYPE_CV,
+        PORT_OWNER_TYPE_PLUGIN,
+        pl,
+        NULL);
     }
 }
 
@@ -118,6 +132,14 @@ inspector_plugin_widget_class_init (
     GTK_WIDGET_CLASS (klass),
     InspectorPluginWidget,
     midi_outs);
+  gtk_widget_class_bind_template_child (
+    GTK_WIDGET_CLASS (klass),
+    InspectorPluginWidget,
+    cv_ins);
+  gtk_widget_class_bind_template_child (
+    GTK_WIDGET_CLASS (klass),
+    InspectorPluginWidget,
+    cv_outs);
 }
 
 static void

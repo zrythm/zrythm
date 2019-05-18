@@ -94,15 +94,3 @@ port_connections_button_widget_init (
   gtk_widget_set_visible (
     GTK_WIDGET (self), 1);
 }
-
-
-
-
-
-
-
-
-
-
-
-

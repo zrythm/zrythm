@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-18 13:33+0100\n"
+"POT-Creation-Date: 2019-05-18 15:27+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -84,12 +84,12 @@ msgstr "Audio"
 msgid "Audio Backend"
 msgstr "Système Audio"
 
-#: src/gui/widgets/ports_expander.c:129
+#: src/gui/widgets/ports_expander.c:146
 #, fuzzy
 msgid "Audio Ins"
 msgstr "Unité Audio"
 
-#: src/gui/widgets/ports_expander.c:132
+#: src/gui/widgets/ports_expander.c:149
 #, fuzzy
 msgid "Audio Outs"
 msgstr "Unité Audio"
@@ -141,6 +141,15 @@ msgstr "Panneau du bas"
 #: src/audio/track.c:735
 msgid "Bus"
 msgstr "Bus"
+
+#: src/gui/widgets/ports_expander.c:158
+msgid "CV Ins"
+msgstr ""
+
+#: src/gui/widgets/ports_expander.c:161
+#, fuzzy
+msgid "CV Outs"
+msgstr "Sortie Stéréo"
 
 #: resources/ui/export_dialog.ui:45 resources/ui/preferences.ui:58
 msgid "Cancel"
@@ -228,12 +237,12 @@ msgstr "Erreur de communication avec le serveur JACK"
 msgid "Connections"
 msgstr "Connexions"
 
-#: src/gui/widgets/ports_expander.c:123
+#: src/gui/widgets/ports_expander.c:140
 #, fuzzy
 msgid "Control Ins"
 msgstr "Contrôleurs trouvés"
 
-#: src/gui/widgets/ports_expander.c:126
+#: src/gui/widgets/ports_expander.c:143
 #, fuzzy
 msgid "Control Outs"
 msgstr "Sortie Stéréo"
@@ -612,12 +621,12 @@ msgstr "Contrôleurs MIDI"
 msgid "MIDI Devices"
 msgstr "Périphériques MIDI"
 
-#: src/gui/widgets/ports_expander.c:135
+#: src/gui/widgets/ports_expander.c:152
 #, fuzzy
 msgid "MIDI Ins"
 msgstr "Système MIDI"
 
-#: src/gui/widgets/ports_expander.c:138
+#: src/gui/widgets/ports_expander.c:155
 msgid "MIDI Outs"
 msgstr ""
 
@@ -1219,7 +1228,7 @@ msgstr ""
 msgid "Track Info"
 msgstr "Nom de piste"
 
-#: src/gui/widgets/port_selector_popover.c:202
+#: src/gui/widgets/port_selector_popover.c:209
 #, fuzzy
 msgid "Track Ports"
 msgstr "Pistes"

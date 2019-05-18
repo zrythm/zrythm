@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/mixer.h"
 #include "audio/port.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
@@ -49,6 +50,8 @@ on_ok_clicked (
     port_connect (
       self->port, self->selected_port);
 
+  mixer_recalc_graph (MIXER);
+
   port_connections_popover_widget_refresh (
     self->owner);
 }
@@ -58,7 +61,7 @@ on_cancel_clicked (
   GtkButton * btn,
   PortSelectorPopoverWidget * self)
 {
-  gtk_widget_destroy (GTK_WIDGET (self));
+  gtk_widget_set_visible (GTK_WIDGET (self), 0);
 }
 
 /**
@@ -101,7 +104,9 @@ create_model_for_ports (
             {
               port = pl->out_ports[i];
 
-              if (port->identifier.type != type)
+              if ((port->identifier.type != type) &&
+                  !(port->identifier.type == TYPE_CV &&
+                   type == TYPE_CONTROL))
                 continue;
 
               // Add a new row to the model
@@ -122,7 +127,9 @@ create_model_for_ports (
             {
               port = pl->in_ports[i];
 
-              if (port->identifier.type != type)
+              if ((port->identifier.type != type) &&
+                  !(type == TYPE_CV &&
+                   port->identifier.type == TYPE_CONTROL))
                 continue;
 
               // Add a new row to the model

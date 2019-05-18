@@ -319,7 +319,10 @@ port_connect (Port * src, Port * dest)
   g_warn_if_fail (src != NULL);
   g_warn_if_fail (dest != NULL);
   port_disconnect (src, dest);
-  if (src->identifier.type != dest->identifier.type)
+  if ((src->identifier.type !=
+       dest->identifier.type) &&
+      !(src->identifier.type == TYPE_CV &&
+        dest->identifier.type == TYPE_CONTROL))
     {
       g_warning ("Cannot connect ports, incompatible types");
       return -1;
@@ -496,20 +499,22 @@ port_sum_signal_from_inputs (Port * port)
         }
       else if (port->identifier.type == TYPE_EVENT)
         {
-          /*if (src_port == AUDIO_ENGINE->*/
-              /*midi_editor_manual_press &&*/
-              /*AUDIO_ENGINE->midi_editor_manual_press->midi_events->num_events > 0)*/
-            /*g_message ("attempting to add %d events, engine cycle %ld",*/
-                       /*src_port->midi_events->num_events,*/
-                       /*AUDIO_ENGINE->cycle);*/
           midi_events_append (src_port->midi_events,
                               port->midi_events);
-          /*if (port->midi_events->num_events > 0)*/
-          /*g_message ("appended %d events from %s to %s, cycle %ld",*/
-                     /*port->midi_events->num_events,*/
-                     /*src_port->label,*/
-                     /*port->label,*/
-                     /*AUDIO_ENGINE->cycle);*/
+        }
+      else if (port->identifier.type == TYPE_CONTROL
+               && src_port->identifier.type ==
+                 TYPE_CV)
+        {
+          /* TODO normalize CV */
+          float maxf =
+            port->lv2_port->lv2_control->maxf;
+          float minf =
+            port->lv2_port->lv2_control->minf;
+          float deff =
+            port->lv2_port->lv2_control->deff;
+          port->lv2_port->control =
+            deff + (maxf - deff) * src_port->buf[0];
         }
     }
 }

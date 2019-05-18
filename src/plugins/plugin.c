@@ -107,6 +107,8 @@ plugin_clone_descr (
   dest->num_midi_outs = src->num_midi_outs;
   dest->num_ctrl_ins = src->num_ctrl_ins;
   dest->num_ctrl_outs = src->num_ctrl_outs;
+  dest->num_cv_ins = src->num_cv_ins;
+  dest->num_cv_outs = src->num_cv_outs;
   dest->arch = src->arch;
   dest->protocol = src->protocol;
   dest->path = g_strdup (src->path);
