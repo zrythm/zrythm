@@ -59,8 +59,8 @@ port_connection_row_widget_new (
     0, 0, 0);
   self->knob =
     knob_widget_new_port (
-      is_input ? src : dest,
-      is_input ? dest : src,
+      src,
+      dest,
       18);
   gtk_box_pack_end (
     GTK_BOX (box),

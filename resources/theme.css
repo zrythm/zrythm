@@ -344,8 +344,9 @@ inspector two-col-expander-box
   border-color: #555555;
 }
 
-inspector expander-box button,
-inspector two-col-expander-box button
+inspector expander-box >button,
+inspector two-col-expander-box>button,
+channel expander-box>button
 {
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
@@ -359,10 +360,4 @@ channel expander-box
   border-radius: 8px;
   /* FIXME use predefined colors */
   border-color: #BBBBBB;
-}
-
-channel expander-box button
-{
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
 }

@@ -24,6 +24,7 @@
 #include "gui/widgets/port_connection_row.h"
 #include "gui/widgets/port_connections_button.h"
 #include "gui/widgets/port_connections_popover.h"
+#include "gui/widgets/port_selector_popover.h"
 #include "gui/widgets/automation_lane.h"
 #include "plugins/plugin.h"
 #include "utils/gtk.h"
@@ -36,18 +37,15 @@ G_DEFINE_TYPE (PortConnectionsPopoverWidget,
                port_connections_popover_widget,
                GTK_TYPE_POPOVER)
 
-/**
- * Creates a digital meter with the given type (bpm or position).
- */
-PortConnectionsPopoverWidget *
-port_connections_popover_widget_new (
-  PortConnectionsButtonWidget * owner)
+void
+port_connections_popover_widget_refresh (
+  PortConnectionsPopoverWidget * self)
 {
-  PortConnectionsPopoverWidget * self =
-    g_object_new (
-      PORT_CONNECTIONS_POPOVER_WIDGET_TYPE, NULL);
+  PortConnectionsButtonWidget * owner =
+    self->owner;
 
-  self->owner = owner;
+  z_gtk_container_destroy_all_children (
+    GTK_CONTAINER (self->ports_box));
 
   /* set title and add ports */
   Port * port;
@@ -94,6 +92,30 @@ port_connections_popover_widget_new (
         }
     }
 
+  PortSelectorPopoverWidget * psp =
+    port_selector_popover_widget_new (
+      self, self->owner->port);
+  gtk_menu_button_set_popover (
+    self->add,
+    GTK_WIDGET (psp));
+  gtk_widget_set_visible (GTK_WIDGET (psp), 0);
+}
+
+/**
+ * Creates a digital meter with the given type (bpm or position).
+ */
+PortConnectionsPopoverWidget *
+port_connections_popover_widget_new (
+  PortConnectionsButtonWidget * owner)
+{
+  PortConnectionsPopoverWidget * self =
+    g_object_new (
+      PORT_CONNECTIONS_POPOVER_WIDGET_TYPE, NULL);
+
+  self->owner = owner;
+
+  port_connections_popover_widget_refresh (self);
+
   return self;
 }
 
@@ -110,7 +132,7 @@ port_connections_popover_widget_init (
   /* create all */
   self->main_box =
     GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+      gtk_box_new (GTK_ORIENTATION_VERTICAL, 2));
   gtk_widget_set_visible (
     GTK_WIDGET (self->main_box), 1);
   self->title =
@@ -122,10 +144,38 @@ port_connections_popover_widget_init (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_widget_set_visible (
     GTK_WIDGET (self->ports_box), 1);
+
   self->add =
-    GTK_BUTTON (gtk_button_new ());
+    GTK_MENU_BUTTON (gtk_menu_button_new ());
   gtk_widget_set_visible (
     GTK_WIDGET (self->add), 1);
+  GtkWidget * btn_box =
+    gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
+  gtk_widget_set_visible (btn_box, 1);
+  GtkWidget * img =
+    gtk_image_new_from_resource ("");
+  resources_set_image_icon (
+    GTK_IMAGE (img), ICON_TYPE_ZRYTHM, "plus.svg");
+  gtk_widget_set_visible (img, 1);
+  gtk_box_pack_start (
+    GTK_BOX (btn_box), img,
+    0, 0, 0);
+  GtkWidget * lbl =
+    gtk_label_new (_("Add"));
+  gtk_widget_set_visible (lbl, 1);
+  gtk_box_pack_end (
+    GTK_BOX (btn_box), lbl,
+    1, 1, 0);
+  gtk_container_add (
+    GTK_CONTAINER (self->add),
+    btn_box);
+  gtk_menu_button_set_direction (
+    self->add,
+    GTK_ARROW_RIGHT);
+  /*g_signal_connect (*/
+    /*G_OBJECT (self->add), "clicked",*/
+    /*on_add_clicked, self);*/
+
   GtkWidget * separator =
     gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
   gtk_widget_set_visible (separator, 1);

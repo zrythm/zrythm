@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-17 18:49+0100\n"
+"POT-Creation-Date: 2019-05-18 13:33+0100\n"
 "PO-Revision-Date: 2019-05-04 23:37+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Chinese (Simplified) <https://translate.zrythm.org/projects/"
@@ -49,6 +49,10 @@ msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:47
 msgid "Adaptive Grid"
+msgstr ""
+
+#: src/gui/widgets/port_connections_popover.c:164
+msgid "Add"
 msgstr ""
 
 #: src/gui/widgets/track.c:491
@@ -462,7 +466,7 @@ msgstr ""
 msgid "Group"
 msgstr ""
 
-#: src/gui/widgets/port_connections_popover.c:61
+#: src/gui/widgets/port_connections_popover.c:59
 msgid "INPUTS"
 msgstr ""
 
@@ -679,7 +683,7 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: src/gui/widgets/port_connections_popover.c:80
+#: src/gui/widgets/port_connections_popover.c:78
 msgid "OUTPUTS"
 msgstr ""
 
@@ -756,12 +760,20 @@ msgstr ""
 msgid "Playhead Position - Click and drag up/down to change"
 msgstr ""
 
+#: resources/ui/port_selector_popover.ui:94
+msgid "Plugin"
+msgstr ""
+
 #: resources/ui/rack_plugin.ui:31
 msgid "Plugin 1"
 msgstr ""
 
 #: resources/ui/preferences.ui:249 resources/ui/preferences.ui:283
 msgid "Plugins"
+msgstr ""
+
+#: resources/ui/port_selector_popover.ui:147
+msgid "Port"
 msgstr ""
 
 #: src/audio/engine_pa.c:246 src/audio/engine_pa.c:266
@@ -958,6 +970,10 @@ msgstr ""
 msgid "Select a folder"
 msgstr ""
 
+#: resources/ui/port_selector_popover.ui:16
+msgid "Select a port..."
+msgstr ""
+
 #: resources/ui/shortcuts.ui:161
 msgid "Select all"
 msgstr ""
@@ -1126,6 +1142,10 @@ msgstr ""
 msgid "Tool"
 msgstr ""
 
+#: resources/ui/port_selector_popover.ui:41
+msgid "Track"
+msgstr ""
+
 #: src/gui/widgets/track.c:152
 msgid ""
 "Track - Change track parameters like Solo/Mute... - Click the icon on the "
@@ -1135,6 +1155,10 @@ msgstr ""
 
 #: src/gui/widgets/instrument_track_info_expander.c:82
 msgid "Track Info"
+msgstr ""
+
+#: src/gui/widgets/port_selector_popover.c:202
+msgid "Track Ports"
 msgstr ""
 
 #: resources/ui/piano_roll.ui:53 resources/ui/audio_clip_editor.ui:34
@@ -1243,6 +1267,7 @@ msgstr "Zrythm"
 
 #: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
 #: src/utils/dialogs.c:74 src/actions/actions.c:523
+#: resources/ui/port_selector_popover.ui:193
 msgid "_Cancel"
 msgstr ""
 
@@ -1289,6 +1314,7 @@ msgid "_New"
 msgstr ""
 
 #: src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:72
+#: resources/ui/port_selector_popover.ui:207
 msgid "_OK"
 msgstr ""
 

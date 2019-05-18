@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-17 18:49+0100\n"
+"POT-Creation-Date: 2019-05-18 13:33+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -59,6 +59,10 @@ msgstr "À propos"
 #: resources/ui/snap_grid_popover.ui:47
 msgid "Adaptive Grid"
 msgstr "Grille adaptative"
+
+#: src/gui/widgets/port_connections_popover.c:164
+msgid "Add"
+msgstr ""
 
 #: src/gui/widgets/track.c:491
 msgid "Add Region"
@@ -486,7 +490,7 @@ msgstr "Grille"
 msgid "Group"
 msgstr "Groupe"
 
-#: src/gui/widgets/port_connections_popover.c:61
+#: src/gui/widgets/port_connections_popover.c:59
 msgid "INPUTS"
 msgstr ""
 
@@ -708,7 +712,7 @@ msgstr "Type de note"
 msgid "OK"
 msgstr "OK"
 
-#: src/gui/widgets/port_connections_popover.c:80
+#: src/gui/widgets/port_connections_popover.c:78
 msgid "OUTPUTS"
 msgstr ""
 
@@ -787,6 +791,11 @@ msgstr ""
 "Position de la tête de lecture - Cliquez et faites glisser vers le haut/le "
 "bas pour changer"
 
+#: resources/ui/port_selector_popover.ui:94
+#, fuzzy
+msgid "Plugin"
+msgstr "Greffons"
+
 #: resources/ui/rack_plugin.ui:31
 msgid "Plugin 1"
 msgstr "Greffon 1"
@@ -794,6 +803,10 @@ msgstr "Greffon 1"
 #: resources/ui/preferences.ui:249 resources/ui/preferences.ui:283
 msgid "Plugins"
 msgstr "Greffons"
+
+#: resources/ui/port_selector_popover.ui:147
+msgid "Port"
+msgstr ""
 
 #: src/audio/engine_pa.c:246 src/audio/engine_pa.c:266
 #: src/audio/engine_pa.c:277
@@ -1002,6 +1015,11 @@ msgstr "Sélectionner un projet"
 msgid "Select a folder"
 msgstr "Sélectionner un dossier"
 
+#: resources/ui/port_selector_popover.ui:16
+#, fuzzy
+msgid "Select a port..."
+msgstr "Sélectionner..."
+
 #: resources/ui/shortcuts.ui:161
 msgid "Select all"
 msgstr "Sélectionner tout"
@@ -1181,6 +1199,10 @@ msgstr "Basculer sur le panneau de droite"
 msgid "Tool"
 msgstr "Outil"
 
+#: resources/ui/port_selector_popover.ui:41
+msgid "Track"
+msgstr "Piste"
+
 #: src/gui/widgets/track.c:152
 msgid ""
 "Track - Change track parameters like Solo/Mute... - Click the icon on the "
@@ -1196,6 +1218,11 @@ msgstr ""
 #, fuzzy
 msgid "Track Info"
 msgstr "Nom de piste"
+
+#: src/gui/widgets/port_selector_popover.c:202
+#, fuzzy
+msgid "Track Ports"
+msgstr "Pistes"
 
 #: resources/ui/piano_roll.ui:53 resources/ui/audio_clip_editor.ui:34
 msgid "Track name"
@@ -1308,6 +1335,7 @@ msgstr "Zrythm"
 
 #: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
 #: src/utils/dialogs.c:74 src/actions/actions.c:523
+#: resources/ui/port_selector_popover.ui:193
 msgid "_Cancel"
 msgstr "_Annuler"
 
@@ -1354,6 +1382,7 @@ msgid "_New"
 msgstr "_Nouveau"
 
 #: src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:72
+#: resources/ui/port_selector_popover.ui:207
 msgid "_OK"
 msgstr "_OK"
 
@@ -1419,9 +1448,6 @@ msgstr "nom_de_région"
 #: resources/ui/audio_clip_editor.ui:56 resources/ui/audio_clip_editor.ui:68
 msgid "stuff"
 msgstr "substance"
-
-#~ msgid "Track"
-#~ msgstr "Piste"
 
 #~ msgid "Tracks (%d)"
 #~ msgstr "Pistes (%d)"

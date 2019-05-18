@@ -328,6 +328,7 @@ port_connect (Port * src, Port * dest)
   port_identifier_copy (
     &dest->identifier,
     &src->dest_ids[src->num_dests]);
+  src->multipliers[src->num_dests] = 1.f;
   src->num_dests++;
   dest->srcs[dest->num_srcs] = src;
   port_identifier_copy (
