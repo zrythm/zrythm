@@ -11,11 +11,19 @@ stages:
   - build_other
   - package
 
-basic_build:
+basic_build_gcc:
   stage: build_gnu_linux
   script:
     - ./autogen.sh
     - ./configure
+    - sudo make -j14
+    - sudo make install
+
+basic_build_clang:
+  stage: build_gnu_linux
+  script:
+    - ./autogen.sh
+    - ./configure CC=clang
     - sudo make -j14
     - sudo make install
 
