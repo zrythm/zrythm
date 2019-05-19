@@ -133,7 +133,7 @@ ports_expander_widget_setup (
   self->owner_type = owner_type;
 
   /* set name and icon */
-  char * full_str;
+  char * full_str = NULL;
 
   if (type == TYPE_CONTROL &&
       flow == FLOW_INPUT)

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-18 15:27+0100\n"
+"POT-Creation-Date: 2019-05-19 03:58+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Korean <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -71,7 +71,7 @@ msgstr ""
 msgid "Audio"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:191 resources/ui/preferences.ui:122
+#: resources/ui/preferences.ui:122 resources/ui/first_run_assistant.ui:191
 msgid "Audio Backend"
 msgstr ""
 
@@ -205,12 +205,12 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: resources/ui/file_browser.ui:63 resources/ui/plugin_browser.ui:64
+#: resources/ui/plugin_browser.ui:64 resources/ui/file_browser.ui:63
 msgid "Collection"
 msgstr ""
 
-#: resources/ui/inspector_region.ui:56 resources/ui/inspector_master.ui:67
-#: resources/ui/inspector_ap.ui:67 resources/ui/inspector_midi.ui:67
+#: resources/ui/inspector_master.ui:67 resources/ui/inspector_ap.ui:67
+#: resources/ui/inspector_region.ui:56 resources/ui/inspector_midi.ui:67
 msgid "Color"
 msgstr ""
 
@@ -277,7 +277,7 @@ msgstr ""
 msgid "Create Object(s)"
 msgstr ""
 
-#: resources/ui/project_assistant.ui:62 resources/ui/shortcuts.ui:84
+#: resources/ui/shortcuts.ui:84 resources/ui/project_assistant.ui:62
 msgid "Create new project"
 msgstr ""
 
@@ -362,8 +362,8 @@ msgstr ""
 msgid "English [en]"
 msgstr ""
 
-#: resources/ui/inspector_region.ui:33 resources/ui/inspector_master.ui:44
-#: resources/ui/inspector_ap.ui:44 resources/ui/inspector_midi.ui:44
+#: resources/ui/inspector_master.ui:44 resources/ui/inspector_ap.ui:44
+#: resources/ui/inspector_region.ui:33 resources/ui/inspector_midi.ui:44
 msgid "Enter region name..."
 msgstr ""
 
@@ -466,7 +466,7 @@ msgstr ""
 msgid "Global Shortcuts"
 msgstr ""
 
-#: resources/ui/quantize_mb_popover.ui:37 resources/ui/snap_grid_popover.ui:37
+#: resources/ui/snap_grid_popover.ui:37 resources/ui/quantize_mb_popover.ui:37
 msgid "Grid"
 msgstr ""
 
@@ -532,7 +532,7 @@ msgstr ""
 msgid "LFO 1"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:88 resources/ui/preferences.ui:360
+#: resources/ui/preferences.ui:360 resources/ui/first_run_assistant.ui:88
 msgid "Language"
 msgstr ""
 
@@ -544,9 +544,9 @@ msgstr ""
 msgid "Left Panel"
 msgstr ""
 
-#: resources/ui/quantize_mb_popover.ui:88 resources/ui/inspector_region.ui:91
 #: resources/ui/inspector_master.ui:101 resources/ui/inspector_ap.ui:101
-#: resources/ui/inspector_midi.ui:101 resources/ui/snap_grid_popover.ui:88
+#: resources/ui/snap_grid_popover.ui:88 resources/ui/inspector_region.ui:91
+#: resources/ui/quantize_mb_popover.ui:88 resources/ui/inspector_midi.ui:101
 msgid "Length"
 msgstr ""
 
@@ -583,7 +583,7 @@ msgstr ""
 msgid "Looping"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:178 resources/ui/preferences.ui:167
+#: resources/ui/preferences.ui:167 resources/ui/first_run_assistant.ui:178
 msgid "MIDI Backend"
 msgstr ""
 
@@ -639,8 +639,8 @@ msgstr ""
 msgid "Move %s"
 msgstr ""
 
-#: src/actions/move_midi_arranger_selections_action.c:115
 #: src/actions/move_timeline_selections_action.c:101
+#: src/actions/move_midi_arranger_selections_action.c:115
 msgid "Move Object(s)"
 msgstr ""
 
@@ -656,8 +656,8 @@ msgstr ""
 msgid "Mute Track"
 msgstr ""
 
-#: resources/ui/inspector_region.ui:103 resources/ui/inspector_master.ui:113
-#: resources/ui/inspector_ap.ui:113 resources/ui/inspector_midi.ui:113
+#: resources/ui/inspector_master.ui:113 resources/ui/inspector_ap.ui:113
+#: resources/ui/inspector_region.ui:103 resources/ui/inspector_midi.ui:113
 msgid "Muted"
 msgstr ""
 
@@ -683,8 +683,8 @@ msgstr ""
 msgid "Note length to snap to"
 msgstr ""
 
-#: resources/ui/quantize_mb_popover.ui:126
 #: resources/ui/snap_grid_popover.ui:126
+#: resources/ui/quantize_mb_popover.ui:126
 msgid "Note type"
 msgstr ""
 
@@ -799,8 +799,8 @@ msgstr ""
 msgid "Portuguese [pt]"
 msgstr ""
 
-#: resources/ui/inspector_region.ui:68 resources/ui/inspector_master.ui:79
-#: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
+#: resources/ui/inspector_master.ui:79 resources/ui/inspector_ap.ui:79
+#: resources/ui/inspector_region.ui:68 resources/ui/inspector_midi.ui:79
 msgid "Position"
 msgstr ""
 
@@ -1036,7 +1036,7 @@ msgstr ""
 msgid "Sine (Equal Power)"
 msgstr ""
 
-#: resources/ui/quantize_mb_popover.ui:66 resources/ui/snap_grid_popover.ui:66
+#: resources/ui/snap_grid_popover.ui:66 resources/ui/quantize_mb_popover.ui:66
 msgid "Snap"
 msgstr ""
 
@@ -1178,8 +1178,9 @@ msgstr ""
 msgid "Tracks"
 msgstr ""
 
-#: resources/ui/quantize_mb_popover.ui:127 resources/ui/file_browser.ui:84
-#: resources/ui/plugin_browser.ui:85 resources/ui/snap_grid_popover.ui:127
+#: resources/ui/plugin_browser.ui:85 resources/ui/file_browser.ui:84
+#: resources/ui/snap_grid_popover.ui:127
+#: resources/ui/quantize_mb_popover.ui:127
 msgid "Type"
 msgstr ""
 
@@ -1270,7 +1271,7 @@ msgstr ""
 msgid "Zooming"
 msgstr ""
 
-#: resources/ui/header_bar.ui:28 resources/ui/export_dialog.ui:120
+#: resources/ui/export_dialog.ui:120 resources/ui/header_bar.ui:28
 msgid "Zrythm"
 msgstr "Zrythm"
 
@@ -1327,7 +1328,7 @@ msgstr ""
 msgid "_OK"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:164 src/utils/dialogs.c:46
+#: src/utils/dialogs.c:46 src/gui/widgets/header_bar.c:164
 msgid "_Open"
 msgstr ""
 
@@ -1372,8 +1373,8 @@ msgstr ""
 msgid "in"
 msgstr ""
 
-#: resources/ui/track.ui:59 resources/ui/automatable_selector.ui:84
-#: resources/ui/route_target_selector.ui:85
+#: resources/ui/route_target_selector.ui:85 resources/ui/track.ui:59
+#: resources/ui/automatable_selector.ui:84
 msgid "label"
 msgstr ""
 
@@ -1381,8 +1382,8 @@ msgstr ""
 msgid "out"
 msgstr ""
 
-#: resources/ui/inspector_region.ui:32 resources/ui/inspector_master.ui:43
-#: resources/ui/inspector_ap.ui:43 resources/ui/inspector_midi.ui:43
+#: resources/ui/inspector_master.ui:43 resources/ui/inspector_ap.ui:43
+#: resources/ui/inspector_region.ui:32 resources/ui/inspector_midi.ui:43
 msgid "region_name"
 msgstr ""
 

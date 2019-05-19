@@ -195,10 +195,24 @@ midi_region_draw_cb (
     str =
       g_strdup (rw_prv->region->name);
 
+  /* draw darg bg behind text */
   GdkRGBA c2;
   gdk_rgba_parse (&c2, "#323232");
   cairo_set_source_rgba (
-    cr, c2.red, c2.green, c2.blue, 1.0);
+    cr, c2.red, c2.green, c2.blue, 0.7);
+  double radius = 4.0 / 1.0;
+  double degrees = G_PI / 180.0;
+  cairo_new_sub_path (cr);
+  cairo_move_to (cr, width / 2, 0);
+  cairo_arc (cr, width / 2 - radius, 18 - radius, radius, 0 * degrees, 90 * degrees);
+  cairo_line_to (cr, 0, 18);
+  cairo_line_to (cr, 0, 0);
+  cairo_close_path (cr);
+  cairo_fill (cr);
+
+  /* draw text */
+  cairo_set_source_rgba (
+    cr, 1, 1, 1, 1);
   z_cairo_draw_text (cr, str);
   g_free (str);
 
