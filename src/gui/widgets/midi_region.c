@@ -195,25 +195,57 @@ midi_region_draw_cb (
     str =
       g_strdup (rw_prv->region->name);
 
-  /* draw darg bg behind text */
+#define FONT "Sans SemiBold 9"
+#define PADDING_R 5
+#define HEIGHT 19
+#define CURVINESS 4.0
+
+  /* draw dark bg behind text */
+  PangoLayout *layout;
+  PangoFontDescription *desc;
+  /* Create a PangoLayout, set the font and text */
+  layout = pango_cairo_create_layout (cr);
+  pango_layout_set_text (layout, str, -1);
+  desc = pango_font_description_from_string (FONT);
+  pango_layout_set_font_description (layout, desc);
+  pango_font_description_free (desc);
+  pango_layout_set_ellipsize (
+    layout, PANGO_ELLIPSIZE_END);
+  pango_layout_set_width (
+    layout,
+    pango_units_from_double (width - PADDING_R));
+  PangoRectangle pangorect;
+  /* get extents */
+  pango_layout_get_pixel_extents (
+    layout, NULL, &pangorect);
   GdkRGBA c2;
   gdk_rgba_parse (&c2, "#323232");
   cairo_set_source_rgba (
-    cr, c2.red, c2.green, c2.blue, 0.7);
-  double radius = 4.0 / 1.0;
+    cr, c2.red, c2.green, c2.blue, 0.8);
+  double radius = CURVINESS / 1.0;
   double degrees = G_PI / 180.0;
   cairo_new_sub_path (cr);
-  cairo_move_to (cr, width / 2, 0);
-  cairo_arc (cr, width / 2 - radius, 18 - radius, radius, 0 * degrees, 90 * degrees);
-  cairo_line_to (cr, 0, 18);
+  cairo_move_to (cr, pangorect.width + PADDING_R, 0);
+  cairo_arc (
+    cr, (pangorect.width + PADDING_R) - radius,
+    HEIGHT - radius, radius,
+    0 * degrees, 90 * degrees);
+  cairo_line_to (cr, 0, HEIGHT);
   cairo_line_to (cr, 0, 0);
   cairo_close_path (cr);
   cairo_fill (cr);
+#undef PADDING_R
+#undef HEIGHT
+#undef CURVINESS
+#undef FONT
 
   /* draw text */
   cairo_set_source_rgba (
     cr, 1, 1, 1, 1);
-  z_cairo_draw_text (cr, str);
+  cairo_translate (cr, 2, 2);
+  pango_cairo_show_layout (cr, layout);
+  /* free the layout object */
+  g_object_unref (layout);
   g_free (str);
 
  return FALSE;

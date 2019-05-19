@@ -1515,34 +1515,35 @@ drag_update (GtkGestureDrag * gesture,
            ar_prv->action ==
              UI_OVERLAY_ACTION_CREATING_MOVING)
     {
-      /* get the offset pos (so we can add it to the start
-       * positions and then snap it) */
-      Position diff_pos;
-      int is_negative = offset_x < 0;
+      /* get new pos */
+      Position pos;
       arranger_widget_px_to_pos (
-        self, abs ((int) offset_x), &diff_pos, 0);
-      long ticks_diff =
-        position_to_ticks (&diff_pos);
-      if (is_negative)
-        ticks_diff = - ticks_diff;
+        self,
+        ar_prv->start_x + offset_x, &pos, 1);
 
-      /* get new start pos and snap it */
-      Position new_start_pos;
-      position_set_to_pos (&new_start_pos,
-                           &ar_prv->start_pos);
-      position_add_ticks (&new_start_pos, ticks_diff);
+      /* get difference with start pos and snap it */
+      Position start_pos;
+      arranger_widget_px_to_pos (
+        self,
+        ar_prv->start_x, &start_pos, 1);
+      long ticks_diff =
+        pos.total_ticks -
+        start_pos.total_ticks;
+      int is_negative = ticks_diff < 0;
+      Position diff_pos;
+      position_init (&diff_pos);
+      position_add_ticks (
+        &diff_pos, abs (ticks_diff));
       if (SNAP_GRID_ANY_SNAP(ar_prv->snap_grid) &&
           !ar_prv->shift_held)
         position_snap (NULL,
-                       &new_start_pos,
+                       &diff_pos,
                        NULL,
                        NULL,
                        ar_prv->snap_grid);
-
-      /* get frames difference from snapped new position to
-       * start pos */
-      ticks_diff = position_to_ticks (&new_start_pos) -
-        position_to_ticks (&ar_prv->start_pos);
+      ticks_diff = diff_pos.total_ticks;
+      if (is_negative)
+        ticks_diff = - ticks_diff;
 
       if (timeline)
         {

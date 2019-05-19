@@ -17,47 +17,52 @@ at_fixture_set_up (
   AutomationPoint * ap;
   AutomationCurve * ac;
 
+  /* needed to set TRANSPORT */
+  transport_init (TRANSPORT, 0);
+  engine_update_frames_per_tick (
+    4, 140, 44000);
+
   fixture->at =
     calloc (1, sizeof (AutomationTrack));
   ap =
     calloc (1, sizeof (AutomationPoint));
-  ap->pos.bars = 2;
+  position_set_to_bar (&ap->pos, 2);
   array_append (fixture->at->aps,
                 fixture->at->num_aps,
                 ap);
   ac =
     calloc (1, sizeof (AutomationCurve));
-  ac->pos.bars = 3;
+  position_set_to_bar (&ap->pos, 3);
   array_append (fixture->at->acs,
                 fixture->at->num_acs,
                 ac);
   ap =
     calloc (1, sizeof (AutomationPoint));
-  ap->pos.bars = 4;
+  position_set_to_bar (&ap->pos, 4);
   array_append (fixture->at->aps,
                 fixture->at->num_aps,
                 ap);
   ac =
     calloc (1, sizeof (AutomationCurve));
-  ac->pos.bars = 5;
+  position_set_to_bar (&ap->pos, 5);
   array_append (fixture->at->acs,
                 fixture->at->num_acs,
                 ac);
   ap =
     calloc (1, sizeof (AutomationPoint));
-  ap->pos.bars = 6;
+  position_set_to_bar (&ap->pos, 6);
   array_append (fixture->at->aps,
                 fixture->at->num_aps,
                 ap);
   ac =
     calloc (1, sizeof (AutomationCurve));
-  ac->pos.bars = 7;
+  position_set_to_bar (&ap->pos, 7);
   array_append (fixture->at->acs,
                 fixture->at->num_acs,
                 ac);
   ap =
     calloc (1, sizeof (AutomationPoint));
-  ap->pos.bars = 8;
+  position_set_to_bar (&ap->pos, 8);
   array_append (fixture->at->aps,
                 fixture->at->num_acs,
                 ap);

@@ -213,6 +213,8 @@ px_to_pos (
   pos->sixteenths = px / rw_prv->px_per_sixteenth + 1;
   px = fmod (px, rw_prv->px_per_sixteenth);
   pos->ticks = px / rw_prv->px_per_tick;
+  pos->total_ticks = position_to_ticks (pos);
+  pos->frames = position_to_frames (pos);
 }
 
 /**

@@ -100,6 +100,7 @@ z_cairo_draw_text (
 
   /* free the layout object */
   g_object_unref (layout);
+#undef FONT
 }
 
 #endif

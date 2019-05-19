@@ -82,17 +82,32 @@ midi_arranger_widget_set_allocation (
     {
       MidiNoteWidget * midi_note_widget =
         Z_MIDI_NOTE_WIDGET (widget);
+      MidiNote * mn = midi_note_widget->midi_note;
+      long region_start_ticks =
+        mn->region->start_pos.total_ticks;
+      Position tmp;
+
+      /* use absolute position */
+      position_from_ticks (
+        &tmp,
+        region_start_ticks +
+        mn->start_pos.total_ticks);
       allocation->x =
         ui_pos_to_px_piano_roll (
-          &midi_note_widget->midi_note->start_pos,
-          1);
+          &tmp, 1);
       allocation->y =
-        MW_PIANO_ROLL->piano_roll_labels->px_per_note *
-          (127 - midi_note_widget->midi_note->val);
+        MW_PIANO_ROLL->piano_roll_labels->
+          px_per_note *
+        (127 - mn->val);
+
+      /* use absolute position */
+      position_from_ticks (
+        &tmp,
+        region_start_ticks +
+        mn->end_pos.total_ticks);
       allocation->width =
         ui_pos_to_px_piano_roll (
-          &midi_note_widget->midi_note->end_pos,
-          1) - allocation->x;
+          &tmp, 1) - allocation->x;
       allocation->height =
         MW_PIANO_ROLL->piano_roll_labels->px_per_note;
     }
@@ -221,7 +236,6 @@ midi_arranger_widget_set_init_poses (
         &r->start_pos);
 
       /* set end poses for midi_notes */
-      g_message ("SETTING INIT POSES");
       position_set_to_pos (
         &self->midi_note_end_poses[i],
         &r->end_pos);
@@ -541,6 +555,8 @@ midi_arranger_widget_on_drag_begin_note_hit (
 /**
  * Called on drag begin in parent when background is double
  * clicked (i.e., a note is created).
+ * @param pos The absolute position in the piano
+ *   roll.
  */
 void
 midi_arranger_widget_create_note (
@@ -561,9 +577,17 @@ midi_arranger_widget_create_note (
                      ar_prv->snap_grid);
     }
   Velocity * vel = velocity_default ();
+
+  /* get local pos */
+  Position local_pos;
+  position_from_ticks (
+    &local_pos,
+    pos->total_ticks -
+    region->start_pos.total_ticks);
+
   MidiNote * midi_note =
     midi_note_new (
-      region, pos, pos, note, vel);
+      region, &local_pos, &local_pos, note, vel);
   position_set_min_size (&midi_note->start_pos,
                          &midi_note->end_pos,
                          ar_prv->snap_grid);
@@ -655,29 +679,6 @@ midi_arranger_widget_select (
 }
 
 /**
- * Snaps the MidiNote's start point.
- *
- * @param new_start_pos Position to snap to.
- */
-static inline void
-snap_midi_note_l (
-  MidiArrangerWidget * self,
-  MidiNote *           mn,
-  Position *           new_start_pos)
-{
-  ARRANGER_WIDGET_GET_PRIVATE (self);
-
-  if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
-        !ar_prv->shift_held)
-    position_snap (NULL,
-                   new_start_pos,
-                   NULL,
-                   mn->region,
-                   ar_prv->snap_grid);
-  midi_note_set_start_pos (mn, new_start_pos);
-}
-
-/**
  * Called during drag_update in parent when resizing the
  * selection. It sets the start pos of the selected MIDI
  * notes.
@@ -690,14 +691,33 @@ midi_arranger_widget_snap_midi_notes_l (
   int i;
   MidiNote * mn;
 
-  /* get delta with first clicked region's start
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  /* snap */
+  if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
+        !ar_prv->shift_held)
+    position_snap (NULL,
+                   pos,
+                   NULL,
+                   CLIP_EDITOR->region,
+                   ar_prv->snap_grid);
+
+  /* get local pos */
+  Position local_pos;
+  position_from_ticks (
+    &local_pos,
+    pos->total_ticks -
+    self->start_midi_note->
+      region->start_pos.total_ticks);
+
+  /* get delta with first clicked note's start
    * pos */
   long delta;
   g_warn_if_fail (self->start_midi_note_clone);
   delta =
-    position_to_ticks (pos) -
-    position_to_ticks (
-      &self->start_midi_note_clone->start_pos);
+    local_pos.total_ticks -
+    self->start_midi_note_clone->
+      start_pos.total_ticks;
 
   /* new start pos for each midi note, calculated by
    * adding delta to the midi note's original start
@@ -723,37 +743,13 @@ midi_arranger_widget_snap_midi_notes_l (
         {
           CALC_NEW_START_POS;
 
-          snap_midi_note_l (
-            self, mn, &new_start_pos);
+          midi_note_set_start_pos (
+            mn, &new_start_pos);
         }
 
     }
 
 #undef CALC_NEW_START_POS
-}
-
-/**
- * Snaps the MidiNote's end point.
- *
- * @param new_end_pos Position to snap to.
- */
-static inline void
-snap_midi_note_r (
-  MidiArrangerWidget * self,
-  MidiNote * mn,
-  Position * new_end_pos)
-{
-  ARRANGER_WIDGET_GET_PRIVATE (self);
-
-  if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
-        !ar_prv->shift_held)
-    position_snap (NULL,
-                   new_end_pos,
-                   NULL,
-                   mn->region,
-                   ar_prv->snap_grid);
-
-  midi_note_set_end_pos (mn, new_end_pos);
 }
 
 /**
@@ -768,6 +764,22 @@ midi_arranger_widget_snap_midi_notes_r (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
+  if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
+        !ar_prv->shift_held)
+    position_snap (NULL,
+                   pos,
+                   NULL,
+                   CLIP_EDITOR->region,
+                   ar_prv->snap_grid);
+
+
+  /* get local pos */
+  Position local_pos;
+  position_from_ticks (
+    &local_pos,
+    pos->total_ticks -
+    CLIP_EDITOR->region->start_pos.total_ticks);
+
   /* get delta with first clicked region's end
    * pos */
   long delta;
@@ -775,17 +787,16 @@ midi_arranger_widget_snap_midi_notes_r (
         UI_OVERLAY_ACTION_CREATING_RESIZING_R)
     {
       delta =
-        position_to_ticks (pos) -
-        position_to_ticks (
-          &self->midi_note_end_poses[0]);
+        local_pos.total_ticks -
+        self->midi_note_end_poses[0].total_ticks;
     }
   else
     {
       g_warn_if_fail (self->start_midi_note_clone);
       delta =
-        position_to_ticks (pos) -
-        position_to_ticks (
-          &self->start_midi_note_clone->end_pos);
+        local_pos.total_ticks -
+        self->start_midi_note_clone->
+          end_pos.total_ticks;
     }
 
   /* new end pos for each MidiNote, calculated by
@@ -813,9 +824,7 @@ midi_arranger_widget_snap_midi_notes_r (
 
           CALC_NEW_END_POS;
 
-          /* snap to it */
-          snap_midi_note_r (
-            self, mn, &new_end_pos);
+          midi_note_set_end_pos (mn, &new_end_pos);
         }
     }
 
@@ -831,9 +840,7 @@ midi_arranger_widget_snap_midi_notes_r (
         {
           CALC_NEW_END_POS;
 
-          /* snap to it */
-          snap_midi_note_r (
-            self, mn, &new_end_pos);
+          midi_note_set_end_pos (mn, &new_end_pos);
         }
     }
 }
@@ -978,13 +985,11 @@ midi_arranger_widget_on_drag_end (
         edit_midi_arranger_selections_action_new (
           MA_SELECTIONS,
           EMAS_TYPE_RESIZE_L,
-          position_to_ticks (
-            &MA_SELECTIONS->
-              transient_notes[0]->
-                start_pos) -
-          position_to_ticks (
-            &MA_SELECTIONS->
-              midi_notes[0]->start_pos));
+          MA_SELECTIONS->
+            transient_notes[0]->
+              start_pos.total_ticks -
+          MA_SELECTIONS->
+            midi_notes[0]->start_pos.total_ticks);
       undo_manager_perform (
         UNDO_MANAGER, ua);
     }
@@ -996,12 +1001,10 @@ midi_arranger_widget_on_drag_end (
         edit_midi_arranger_selections_action_new (
           MA_SELECTIONS,
           EMAS_TYPE_RESIZE_R,
-          position_to_ticks (
-            &MA_SELECTIONS->
-              transient_notes[0]->end_pos) -
-          position_to_ticks (
-            &MA_SELECTIONS->
-              midi_notes[0]->end_pos));
+          MA_SELECTIONS->
+            transient_notes[0]->end_pos.total_ticks -
+          MA_SELECTIONS->
+            midi_notes[0]->end_pos.total_ticks);
       undo_manager_perform (
         UNDO_MANAGER, ua);
     }
@@ -1028,12 +1031,11 @@ midi_arranger_widget_on_drag_end (
       UndoableAction * ua =
         move_midi_arranger_selections_action_new (
           MA_SELECTIONS,
-          position_to_ticks (
-            &MA_SELECTIONS->
-              transient_notes[0]->start_pos) -
-          position_to_ticks (
-            &MA_SELECTIONS->
-              midi_notes[0]->start_pos),
+          MA_SELECTIONS->
+            transient_notes[0]->start_pos.
+              total_ticks -
+          MA_SELECTIONS->
+            midi_notes[0]->start_pos.total_ticks,
           MA_SELECTIONS->
             transient_notes[0]->val -
           MA_SELECTIONS->
@@ -1051,12 +1053,11 @@ midi_arranger_widget_on_drag_end (
         (UndoableAction *)
         duplicate_midi_arranger_selections_action_new (
           MA_SELECTIONS,
-          position_to_ticks (
-            &MA_SELECTIONS->
-              transient_notes[0]->start_pos) -
-          position_to_ticks (
-            &MA_SELECTIONS->
-              midi_notes[0]->start_pos),
+          MA_SELECTIONS->
+            transient_notes[0]->start_pos.
+            total_ticks -
+          MA_SELECTIONS->
+            midi_notes[0]->start_pos.total_ticks,
           MA_SELECTIONS->
             transient_notes[0]->val -
           MA_SELECTIONS->

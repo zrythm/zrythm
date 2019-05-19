@@ -149,20 +149,29 @@ G_DECLARE_DERIVABLE_TYPE (ArrangerWidget,
 #define ARRANGER_MOVE_OBJ_BY_TICKS_W_LENGTH( \
   obj, obj_name, prev_start_pos, ticks_diff, \
   tmp_pos, tmp_length_ticks) \
+  /*g_message ("1 endpos ticks %ld", obj->end_pos.total_ticks);*/ \
   tmp_length_ticks = \
-    position_to_ticks (&obj->end_pos) - \
-    position_to_ticks (&obj->start_pos); \
+    obj->end_pos.total_ticks - \
+    obj->start_pos.total_ticks; \
   position_set_to_pos ((tmp_pos), \
                        (prev_start_pos)); \
+  /*g_message ("---length ticks %ld, ticks diff %ld", \
+             tmp_length_ticks, ticks_diff);*/ \
   position_add_ticks ( \
     (tmp_pos), \
     ticks_diff + tmp_length_ticks); \
+  /*g_message ("updated pos ticks %ld", (tmp_pos)->total_ticks); \
+  position_print (tmp_pos);*/ \
   obj_name##_set_end_pos (obj, (tmp_pos)); \
+  /*g_message ("endpos ticks after setting %ld", obj->end_pos.total_ticks);*/ \
   position_set_to_pos ((tmp_pos), \
                        (prev_start_pos)); \
   position_add_ticks ((tmp_pos), \
                       ticks_diff); \
-  obj_name##_set_start_pos (obj, (tmp_pos));
+  obj_name##_set_start_pos (obj, (tmp_pos)); \
+  /*g_message ("startpos ticks after setting %ld", obj->start_pos.total_ticks); \
+   g_message ("99 set start pos to "); \
+     position_print (&obj->start_pos) */;
 
 /**
  * Moves an object without length (AutomationPoint,

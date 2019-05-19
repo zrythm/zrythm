@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-19 03:58+0100\n"
+"POT-Creation-Date: 2019-05-19 15:14+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Japanese <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -78,7 +78,7 @@ msgstr "アーティスト"
 msgid "Audio"
 msgstr "オーディオ"
 
-#: resources/ui/preferences.ui:122 resources/ui/first_run_assistant.ui:191
+#: resources/ui/first_run_assistant.ui:191 resources/ui/preferences.ui:122
 #, fuzzy
 msgid "Audio Backend"
 msgstr "オーディオバックエンド"
@@ -184,7 +184,7 @@ msgstr ""
 msgid "Chat"
 msgstr "チャット"
 
-#: src/utils/ui.c:552
+#: src/utils/ui.c:554
 msgid "Chinese [zh]"
 msgstr "中国語[zh]"
 
@@ -221,12 +221,12 @@ msgstr "クライアントのプロトコルバージョンが一致しません
 msgid "Close"
 msgstr "閉じる"
 
-#: resources/ui/plugin_browser.ui:64 resources/ui/file_browser.ui:63
+#: resources/ui/file_browser.ui:63 resources/ui/plugin_browser.ui:64
 msgid "Collection"
 msgstr "コレクション"
 
-#: resources/ui/inspector_master.ui:67 resources/ui/inspector_ap.ui:67
-#: resources/ui/inspector_region.ui:56 resources/ui/inspector_midi.ui:67
+#: resources/ui/inspector_region.ui:56 resources/ui/inspector_master.ui:67
+#: resources/ui/inspector_ap.ui:67 resources/ui/inspector_midi.ui:67
 msgid "Color"
 msgstr "色"
 
@@ -297,7 +297,7 @@ msgstr "%sトラックを作成"
 msgid "Create Object(s)"
 msgstr "オブジェクトを作成"
 
-#: resources/ui/shortcuts.ui:84 resources/ui/project_assistant.ui:62
+#: resources/ui/project_assistant.ui:62 resources/ui/shortcuts.ui:84
 msgid "Create new project"
 msgstr "プロジェクトの新規作成"
 
@@ -352,7 +352,7 @@ msgid "Donate"
 msgstr "寄付"
 
 #. TRANSLATORS: Dummy audio backend
-#: src/utils/ui.c:569 src/utils/ui.c:586
+#: src/utils/ui.c:571 src/utils/ui.c:588
 msgid "Dummy"
 msgstr "ダミー"
 
@@ -381,12 +381,12 @@ msgstr "スケールを強制する"
 msgid "Engine"
 msgstr "エンジン"
 
-#: src/utils/ui.c:544
+#: src/utils/ui.c:546
 msgid "English [en]"
 msgstr "英語[en]"
 
-#: resources/ui/inspector_master.ui:44 resources/ui/inspector_ap.ui:44
-#: resources/ui/inspector_region.ui:33 resources/ui/inspector_midi.ui:44
+#: resources/ui/inspector_region.ui:33 resources/ui/inspector_master.ui:44
+#: resources/ui/inspector_ap.ui:44 resources/ui/inspector_midi.ui:44
 msgid "Enter region name..."
 msgstr "リージョン名を入力してください"
 
@@ -467,7 +467,7 @@ msgstr "前へ"
 msgid "Freeze"
 msgstr "フリーズ"
 
-#: src/utils/ui.c:546
+#: src/utils/ui.c:548
 msgid "French [fr]"
 msgstr "フランス語[fr]"
 
@@ -483,7 +483,7 @@ msgstr "一般"
 msgid "Genre"
 msgstr "ジャンル"
 
-#: src/utils/ui.c:545
+#: src/utils/ui.c:547
 msgid "German [de]"
 msgstr "ドイツ語[de]"
 
@@ -491,7 +491,7 @@ msgstr "ドイツ語[de]"
 msgid "Global Shortcuts"
 msgstr "グローバル・ショートカット"
 
-#: resources/ui/snap_grid_popover.ui:37 resources/ui/quantize_mb_popover.ui:37
+#: resources/ui/quantize_mb_popover.ui:37 resources/ui/snap_grid_popover.ui:37
 msgid "Grid"
 msgstr "グリッド"
 
@@ -531,7 +531,7 @@ msgstr "インストゥルメント"
 msgid "Interface"
 msgstr "インターフェイス"
 
-#: src/utils/ui.c:547
+#: src/utils/ui.c:549
 msgid "Italian [it]"
 msgstr "イタリア語[it]"
 
@@ -545,7 +545,7 @@ msgstr "JACKエラー：%s"
 msgid "JACK functionality is disabled"
 msgstr "JACK機能は無効です"
 
-#: src/utils/ui.c:549
+#: src/utils/ui.c:551
 msgid "Japanese [ja]"
 msgstr "日本語[ja]"
 
@@ -557,7 +557,7 @@ msgstr "ショートカットキー"
 msgid "LFO 1"
 msgstr ""
 
-#: resources/ui/preferences.ui:360 resources/ui/first_run_assistant.ui:88
+#: resources/ui/first_run_assistant.ui:88 resources/ui/preferences.ui:360
 msgid "Language"
 msgstr "言語"
 
@@ -569,14 +569,14 @@ msgstr "左"
 msgid "Left Panel"
 msgstr "左パネル"
 
+#: resources/ui/quantize_mb_popover.ui:88 resources/ui/inspector_region.ui:91
 #: resources/ui/inspector_master.ui:101 resources/ui/inspector_ap.ui:101
-#: resources/ui/snap_grid_popover.ui:88 resources/ui/inspector_region.ui:91
-#: resources/ui/quantize_mb_popover.ui:88 resources/ui/inspector_midi.ui:101
+#: resources/ui/inspector_midi.ui:101 resources/ui/snap_grid_popover.ui:88
 msgid "Length"
 msgstr "長さ"
 
 #. TRANSLATORS: Pan algorithm
-#: src/utils/ui.c:604
+#: src/utils/ui.c:606
 msgid "Linear"
 msgstr "直線"
 
@@ -609,7 +609,7 @@ msgstr "選択範囲のをループする"
 msgid "Looping"
 msgstr "ループ中"
 
-#: resources/ui/preferences.ui:167 resources/ui/first_run_assistant.ui:178
+#: resources/ui/first_run_assistant.ui:178 resources/ui/preferences.ui:167
 #, fuzzy
 msgid "MIDI Backend"
 msgstr "MIDIバックエンド"
@@ -666,8 +666,8 @@ msgstr "%d個のプラグインを移動"
 msgid "Move %s"
 msgstr "%sを移動"
 
-#: src/actions/move_timeline_selections_action.c:101
 #: src/actions/move_midi_arranger_selections_action.c:115
+#: src/actions/move_timeline_selections_action.c:101
 msgid "Move Object(s)"
 msgstr "オブジェクトを移動"
 
@@ -684,8 +684,8 @@ msgstr "ミュート"
 msgid "Mute Track"
 msgstr "トラックをミュートする"
 
-#: resources/ui/inspector_master.ui:113 resources/ui/inspector_ap.ui:113
-#: resources/ui/inspector_region.ui:103 resources/ui/inspector_midi.ui:113
+#: resources/ui/inspector_region.ui:103 resources/ui/inspector_master.ui:113
+#: resources/ui/inspector_ap.ui:113 resources/ui/inspector_midi.ui:113
 msgid "Muted"
 msgstr "ミュート"
 
@@ -714,8 +714,8 @@ msgstr "量子化するノートの長さ"
 msgid "Note length to snap to"
 msgstr "スナップするノートの長さ"
 
-#: resources/ui/snap_grid_popover.ui:126
 #: resources/ui/quantize_mb_popover.ui:126
+#: resources/ui/snap_grid_popover.ui:126
 msgid "Note type"
 msgstr "ノートの種類"
 
@@ -830,12 +830,12 @@ msgstr "PortAudioエラー：%s"
 msgid "PortAudio functionality is disabled"
 msgstr "PortAudio機能が無効になっています"
 
-#: src/utils/ui.c:550
+#: src/utils/ui.c:552
 msgid "Portuguese [pt]"
 msgstr "ポルトガル語[pt]"
 
-#: resources/ui/inspector_master.ui:79 resources/ui/inspector_ap.ui:79
-#: resources/ui/inspector_region.ui:68 resources/ui/inspector_midi.ui:79
+#: resources/ui/inspector_region.ui:68 resources/ui/inspector_master.ui:79
+#: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
 msgid "Position"
 msgstr "位置"
 
@@ -983,7 +983,7 @@ msgstr ""
 msgid "Routing to %s"
 msgstr ""
 
-#: src/utils/ui.c:551
+#: src/utils/ui.c:553
 msgid "Russian [ru]"
 msgstr "ロシア語[ru]"
 
@@ -1077,11 +1077,11 @@ msgstr "UI を表示"
 msgid "Show native decoration"
 msgstr ""
 
-#: src/utils/ui.c:606
+#: src/utils/ui.c:608
 msgid "Sine (Equal Power)"
 msgstr "正弦波（イコールパワー）"
 
-#: resources/ui/snap_grid_popover.ui:66 resources/ui/quantize_mb_popover.ui:66
+#: resources/ui/quantize_mb_popover.ui:66 resources/ui/snap_grid_popover.ui:66
 msgid "Snap"
 msgstr "スナップ"
 
@@ -1113,11 +1113,11 @@ msgstr "曲名"
 msgid "Source Audio Unit"
 msgstr ""
 
-#: src/utils/ui.c:548
+#: src/utils/ui.c:550
 msgid "Spanish [es]"
 msgstr "スペイン語[es]"
 
-#: src/utils/ui.c:605
+#: src/utils/ui.c:607
 msgid "Square Root"
 msgstr "平方根"
 
@@ -1231,9 +1231,8 @@ msgstr "トラック名"
 msgid "Tracks"
 msgstr "トラック"
 
-#: resources/ui/plugin_browser.ui:85 resources/ui/file_browser.ui:84
-#: resources/ui/snap_grid_popover.ui:127
-#: resources/ui/quantize_mb_popover.ui:127
+#: resources/ui/quantize_mb_popover.ui:127 resources/ui/file_browser.ui:84
+#: resources/ui/plugin_browser.ui:85 resources/ui/snap_grid_popover.ui:127
 msgid "Type"
 msgstr "種類"
 
@@ -1327,7 +1326,7 @@ msgstr "ズーム アウト"
 msgid "Zooming"
 msgstr "ズーム"
 
-#: resources/ui/export_dialog.ui:120 resources/ui/header_bar.ui:28
+#: resources/ui/header_bar.ui:28 resources/ui/export_dialog.ui:120
 msgid "Zrythm"
 msgstr "Zrythm"
 
@@ -1384,7 +1383,7 @@ msgstr "新規プロジェクト(_N)"
 msgid "_OK"
 msgstr "_OK"
 
-#: src/utils/dialogs.c:46 src/gui/widgets/header_bar.c:164
+#: src/gui/widgets/header_bar.c:164 src/utils/dialogs.c:46
 msgid "_Open"
 msgstr "開く(_O)"
 
@@ -1429,8 +1428,8 @@ msgstr "エキスパンダー"
 msgid "in"
 msgstr "イン"
 
-#: resources/ui/route_target_selector.ui:85 resources/ui/track.ui:59
-#: resources/ui/automatable_selector.ui:84
+#: resources/ui/track.ui:59 resources/ui/automatable_selector.ui:84
+#: resources/ui/route_target_selector.ui:85
 msgid "label"
 msgstr "ラベル"
 
@@ -1438,8 +1437,8 @@ msgstr "ラベル"
 msgid "out"
 msgstr "アウト"
 
-#: resources/ui/inspector_master.ui:43 resources/ui/inspector_ap.ui:43
-#: resources/ui/inspector_region.ui:32 resources/ui/inspector_midi.ui:43
+#: resources/ui/inspector_region.ui:32 resources/ui/inspector_master.ui:43
+#: resources/ui/inspector_ap.ui:43 resources/ui/inspector_midi.ui:43
 msgid "region_name"
 msgstr "region_name"
 

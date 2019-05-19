@@ -100,6 +100,9 @@ get_child_position (GtkOverlay   *overlay,
                     GdkRectangle *allocation,
                     gpointer      user_data)
 {
+  if (TRANSPORT->lticks_per_bar < 1)
+    return FALSE;
+
   RulerWidget * self =
     Z_RULER_WIDGET (overlay);
   GET_RULER_ALIASES (self);
@@ -428,6 +431,7 @@ drag_update (GtkGestureDrag * gesture,
              UI_OVERLAY_ACTION_MOVING)
     {
       Position tmp;
+      Position local_pos;
       Region * r = CLIP_EDITOR->region;
 
       /* convert px to position */
@@ -445,20 +449,27 @@ drag_update (GtkGestureDrag * gesture,
         position_snap_simple (
           &tmp, SNAP_GRID_MIDI);
 
+      position_from_ticks (
+        &local_pos,
+        position_to_ticks (&tmp) -
+        position_to_ticks (&r->start_pos));
+
       if (rw_prv->target == RW_TARGET_LOOP_START)
         {
+          /* make the position local to the region
+           * for less calculations */
           /* if position is acceptable */
           if (position_compare (
-                &tmp,
+                &local_pos,
                 &r->loop_end_pos) < 0 &&
               position_compare (
-                &tmp,
+                &local_pos,
                 &r->clip_start_pos) >= 0)
             {
               /* set it */
               position_set_to_pos (
                 &r->loop_start_pos,
-                &tmp);
+                &local_pos);
               transport_update_position_frames ();
               EVENTS_PUSH (
                 ET_CLIP_MARKER_POS_CHANGED, self);
@@ -468,16 +479,16 @@ drag_update (GtkGestureDrag * gesture,
         {
           /* if position is acceptable */
           if (position_compare (
-                &tmp,
+                &local_pos,
                 &r->loop_start_pos) > 0 &&
               position_compare (
-                &tmp,
+                &local_pos,
                 &r->clip_start_pos) > 0)
             {
               /* set it */
               position_set_to_pos (
                 &r->loop_end_pos,
-                &tmp);
+                &local_pos);
               transport_update_position_frames ();
               EVENTS_PUSH (
                 ET_CLIP_MARKER_POS_CHANGED, self);
@@ -488,13 +499,13 @@ drag_update (GtkGestureDrag * gesture,
         {
           /* if position is acceptable */
           if (position_compare (
-                &tmp,
+                &local_pos,
                 &r->loop_start_pos) <= 0)
             {
               /* set it */
               position_set_to_pos (
                 &r->clip_start_pos,
-                &tmp);
+                &local_pos);
               transport_update_position_frames ();
               EVENTS_PUSH (
                 ET_CLIP_MARKER_POS_CHANGED, self);

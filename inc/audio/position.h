@@ -25,8 +25,9 @@
 #define TICKS_PER_QUARTER_NOTE 960
 #define TICKS_PER_SIXTEENTH_NOTE 240
 #define position_add_ticks(position, _ticks) \
-  position_set_tick (position, \
-                     (position)->ticks + _ticks)
+  position_from_ticks ( \
+    position, \
+    (position)->total_ticks + _ticks)
 #define position_add_sixteenths(position, _s) \
   position_set_sixteenth (position, \
                      (position)->sixteenths + _s)
@@ -67,6 +68,10 @@ typedef struct Position
   int       sixteenths;
 
   int       ticks; ///< 240 ticks per sixteen
+
+  /** Cache so we don't need to call
+   * position_get_ticks. */
+  long      total_ticks;
 
   long      frames; ///< position in frames (samples)
 } Position;
@@ -123,9 +128,22 @@ void
 position_set_sixteenth (Position * position,
                         int        sixteenth);
 
+/**
+ * Sets the tick of the Position.
+ *
+ * If the tick exceeds the max ticks allowed on
+ * the positive or negative axis, it calls
+ * position_set_sixteenth until it is within range./
+ *
+ * This function can handle both positive and
+ * negative Positions. Negative positions start at
+ * -1.-1.-1.-1 (one tick before zero) and positive
+ * Positions start at zero (1.1.1.0).
+ */
 void
-position_set_tick (Position * position,
-                   int        tick);
+position_set_tick (
+  Position * position,
+  int        tick);
 
 /**
  * Sets position to target position
@@ -162,7 +180,7 @@ int
 position_compare (Position * p1,
                   Position * p2);
 
-int
+long
 position_to_ticks (Position * pos);
 
 /**

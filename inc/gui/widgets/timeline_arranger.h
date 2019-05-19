@@ -73,17 +73,21 @@ typedef struct _TimelineArrangerWidget
    * drag_update to get positions relative to the
    * initial ones. */
 
+  /* FIXME due to size limitations, create a new
+   * struct that will hold this and only save its
+   * pointer here */
+
   /** Initial start positions. */
-  Position                 region_start_poses[600];
+  Position                 region_start_poses[500];
 
   /** Initial end positions. */
-  Position                 region_end_poses[600];
+  Position                 region_end_poses[500];
 
   /** Initial start positions. */
-  Position                 chord_start_poses[600];
+  Position                 chord_start_poses[500];
 
   /** Initial start positions. */
-  Position                 ap_poses[600];
+  Position                 ap_poses[500];
 
   int                      last_timeline_obj_bars;
 

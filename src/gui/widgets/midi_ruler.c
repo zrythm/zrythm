@@ -74,12 +74,10 @@ midi_ruler_draw_cb (GtkWidget * widget,
 
   int px_start, px_end;
 
-  Position pos;
-  position_init (&pos);
   px_start =
-    ui_pos_to_px_piano_roll (&pos, 1);
+    ui_pos_to_px_piano_roll (&region->start_pos, 1);
   px_end =
-    ui_pos_to_px_piano_roll (&region->true_end_pos,
+    ui_pos_to_px_piano_roll (&region->end_pos,
                              1);
 
   cairo_rectangle (cr,
@@ -96,14 +94,23 @@ midi_ruler_widget_set_ruler_marker_position (
   RulerMarkerWidget *    rm,
   GtkAllocation *       allocation)
 {
+  long start_ticks =
+    position_to_ticks (
+      &CLIP_EDITOR->region->start_pos);
+  Position tmp;
   switch (rm->type)
     {
     case RULER_MARKER_TYPE_LOOP_START:
       if (CLIP_EDITOR->region)
         {
+          long loop_start_ticks =
+            position_to_ticks (
+              &CLIP_EDITOR->region->loop_start_pos) +
+            start_ticks;
+          position_from_ticks (&tmp, loop_start_ticks);
           allocation->x =
             ui_pos_to_px_piano_roll (
-              &CLIP_EDITOR->region->loop_start_pos,
+              &tmp,
               1);
         }
       else
@@ -115,9 +122,14 @@ midi_ruler_widget_set_ruler_marker_position (
     case RULER_MARKER_TYPE_LOOP_END:
       if (CLIP_EDITOR->region)
         {
+          long loop_end_ticks =
+            position_to_ticks (
+              &CLIP_EDITOR->region->loop_end_pos) +
+            start_ticks;
+          position_from_ticks (&tmp, loop_end_ticks);
           allocation->x =
             ui_pos_to_px_piano_roll (
-              &CLIP_EDITOR->region->loop_end_pos,
+              &tmp,
               1) - RULER_MARKER_SIZE;
         }
       else
@@ -129,9 +141,14 @@ midi_ruler_widget_set_ruler_marker_position (
     case RULER_MARKER_TYPE_CLIP_START:
       if (CLIP_EDITOR->region)
         {
+          long clip_start_ticks =
+            position_to_ticks (
+              &CLIP_EDITOR->region->clip_start_pos) +
+            start_ticks;
+          position_from_ticks (&tmp, clip_start_ticks);
           allocation->x =
             ui_pos_to_px_piano_roll (
-              &CLIP_EDITOR->region->clip_start_pos,
+              &tmp,
               1);
         }
       else
@@ -173,30 +190,6 @@ midi_ruler_widget_refresh ()
 {
   RULER_WIDGET_GET_PRIVATE (MIDI_RULER);
 
-  Region * r = CLIP_EDITOR->region;
-  long total_ticks;
-  int viewport_width;
-
-  if (r)
-    total_ticks =
-      region_get_true_length_in_ticks (r);
-
-  if (r && CLIP_EDITOR->region_changed)
-    {
-      viewport_width =
-        gtk_widget_get_allocated_width (
-          GTK_WIDGET (
-            MW_PIANO_ROLL->midi_ruler_viewport));
-
-      /* set zoom level so that it matches the length
-       * of the selected region */
-      rw_prv->px_per_tick =
-        (viewport_width - SPACE_BEFORE_START_D) /
-        total_ticks;
-      rw_prv->zoom_level =
-        rw_prv->px_per_tick / DEFAULT_PX_PER_TICK;
-    }
-
   /*adjust for zoom level*/
   rw_prv->px_per_tick =
     DEFAULT_PX_PER_TICK * rw_prv->zoom_level;
@@ -207,24 +200,17 @@ midi_ruler_widget_refresh ()
   rw_prv->px_per_bar =
     rw_prv->px_per_beat * TRANSPORT->beats_per_bar;
 
-  if (r)
-    rw_prv->total_px =
-      rw_prv->px_per_tick * total_ticks + 40;
-  else
-    {
-      Position pos;
-      position_set_to_bar (
-        &pos, TRANSPORT->total_bars + 1);
-      rw_prv->total_px =
-        rw_prv->px_per_tick *
-        position_to_ticks (&pos);
-    }
+  Position pos;
+  position_set_to_bar (&pos,
+                       TRANSPORT->total_bars + 1);
+  rw_prv->total_px =
+    rw_prv->px_per_tick * position_to_ticks (&pos);
 
   // set the size
   gtk_widget_set_size_request (
     GTK_WIDGET (MIDI_RULER),
     rw_prv->total_px,
-    30);
+    -1);
 
   gtk_widget_queue_allocate (
     GTK_WIDGET (MIDI_RULER));
@@ -269,6 +255,4 @@ midi_ruler_widget_init (
   gtk_overlay_add_overlay (
     GTK_OVERLAY (self),
     GTK_WIDGET (self->clip_start));
-
 }
-

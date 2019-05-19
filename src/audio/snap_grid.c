@@ -180,13 +180,15 @@ snap_grid_update_snap_points (SnapGrid * self)
   position_set_to_pos (
     &self->snap_points[self->num_snap_points++],
     &tmp);
+  long ticks =
+    snap_grid_get_note_ticks (self->note_length,
+                              self->note_type);
   while (position_compare (&tmp, &end_pos)
            < 0)
     {
       position_add_ticks (
         &tmp,
-        snap_grid_get_note_ticks (self->note_length,
-                                  self->note_type));
+        ticks);
       /*position_print (&tmp);*/
       position_set_to_pos (
         &self->snap_points[self->num_snap_points++],
