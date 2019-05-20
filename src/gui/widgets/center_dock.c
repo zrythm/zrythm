@@ -166,6 +166,10 @@ center_dock_widget_class_init (CenterDockWidgetClass * _klass)
   gtk_widget_class_bind_template_child (
     klass,
     CenterDockWidget,
+    selection_info);
+  gtk_widget_class_bind_template_child (
+    klass,
+    CenterDockWidget,
     editor_top);
   gtk_widget_class_bind_template_child (
     klass,

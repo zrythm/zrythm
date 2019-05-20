@@ -34,6 +34,7 @@ G_DECLARE_FINAL_TYPE (DigitalMeterWidget,
 
 typedef enum NoteLength NoteLength;
 typedef enum NoteType NoteType;
+typedef struct Position Position;
 
 typedef enum DigitalMeterType
 {
@@ -90,14 +91,49 @@ typedef struct _DigitalMeterWidget
   int                      start_timesig_top;
   int                      update_timesig_bot;
   int                      start_timesig_bot;
+
+  /* ---------- FOR POSITION ---------------- */
+  void *     obj;
+
+  /** Getter for Position. */
+  void       (*getter)(void*, Position*);
+  /** Setter for Position. */
+  void       (*setter)(void*, Position*);
 } DigitalMeterWidget;
 
 /**
- * Creates a digital meter with the given type (bpm or position).
+ * Creates a digital meter with the given type (
+ * bpm or position).
  */
 DigitalMeterWidget *
-digital_meter_widget_new (DigitalMeterType  type,
-                          NoteLength *      note_length,
-                          NoteType *        note_type);
+digital_meter_widget_new (
+  DigitalMeterType  type,
+  NoteLength *      note_length,
+  NoteType *        note_type);
+
+
+#define digital_meter_widget_new_for_position( \
+  obj,getter,setter) \
+  _digital_meter_widget_new_for_position ( \
+    (void *) obj, \
+    (void (*) (void *, Position *)) getter, \
+    (void (*) (void *, Position *)) setter)
+
+/**
+ * Creates a digital meter for an arbitrary position.
+ *
+ * @param obj The object to call the get/setters with.
+ *
+ *   E.g. Region.
+ * @param get_val The getter func to get the position,
+ *   passing the obj and the position to save to.
+ * @param set_val The setter function to set the
+ *   position.
+ */
+DigitalMeterWidget *
+_digital_meter_widget_new_for_position(
+  void * obj,
+  void (*get_val)(void *, Position *),
+  void (*set_val)(void *, Position *));
 
 #endif

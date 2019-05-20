@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-20 20:35+0100\n"
+"POT-Creation-Date: 2019-05-20 23:43+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -94,7 +94,7 @@ msgstr "Unité Audio"
 msgid "Audition tool"
 msgstr "Outil d'écoute"
 
-#: src/gui/widgets/digital_meter.c:643
+#: src/gui/widgets/digital_meter.c:665
 msgid "BPM - Click and drag up/down to set"
 msgstr "BPM - Cliquez et faites glisser vers le haut/bas pour définir"
 
@@ -664,6 +664,11 @@ msgstr ""
 "Ensuite, choisissez l'emplacement à utiliser pour enregistrer les fichiers "
 "temporaires et les projets (ou accepter l'emplacement par défaut)"
 
+#: src/gui/widgets/timeline_selection_info.c:93
+#, fuzzy
+msgid "No object selected"
+msgstr "Aucune sortie sélectionnée"
+
 #: src/gui/widgets/route_target_selector_popover.c:180
 #, fuzzy
 msgid "No output selected"
@@ -755,12 +760,6 @@ msgstr "Lecture"
 msgid "Playhead"
 msgstr "Tête de lecture"
 
-#: src/gui/widgets/digital_meter.c:653
-msgid "Playhead Position - Click and drag up/down to change"
-msgstr ""
-"Position de la tête de lecture - Cliquez et faites glisser vers le haut/le "
-"bas pour changer"
-
 #: resources/ui/port_selector_popover.ui:94
 #, fuzzy
 msgid "Plugin"
@@ -805,14 +804,14 @@ msgstr "Préférences"
 msgid "Project"
 msgstr "Projet"
 
-#: src/actions/actions.c:585
+#: src/actions/actions.c:584
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
 "Le projet n'a pas encore d'emplacement. S'il vous plaît, sauvegardez le "
 "projet avant d'exporter."
 
-#: resources/ui/header_bar.ui:29 resources/ui/header_notebook.ui:149
+#: resources/ui/header_notebook.ui:149
 msgid "Project name"
 msgstr "Nom du projet"
 
@@ -949,7 +948,7 @@ msgstr ""
 msgid "Russian [ru]"
 msgstr "Russe [ru]"
 
-#: src/actions/actions.c:520
+#: src/actions/actions.c:519
 msgid "Save Project"
 msgstr "Sauvegarder le projet"
 
@@ -1068,6 +1067,11 @@ msgstr "Espagnol [es]"
 msgid "Square Root"
 msgstr "Racine carrée"
 
+#: src/gui/widgets/timeline_selection_info.c:62
+#, fuzzy
+msgid "Start Position"
+msgstr "Position"
+
 #: src/gui/widgets/route_target_selector.c:118
 #, fuzzy
 msgid "Stereo Out"
@@ -1120,7 +1124,7 @@ msgstr ""
 msgid "Time Range"
 msgstr "intervalle de temps"
 
-#: src/gui/widgets/digital_meter.c:681
+#: src/gui/widgets/digital_meter.c:703
 msgid "Time Signature - Click and drag up/down to change"
 msgstr ""
 "Signature rythmique - Cliquez et faites glisser vers le haut/le bas pour la "
@@ -1286,12 +1290,12 @@ msgstr "Zoom arrière"
 msgid "Zooming"
 msgstr "Zoomer"
 
-#: resources/ui/header_bar.ui:28 resources/ui/export_dialog.ui:120
+#: resources/ui/export_dialog.ui:120
 msgid "Zrythm"
 msgstr "Zrythm"
 
 #: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
-#: src/utils/dialogs.c:74 src/actions/actions.c:523
+#: src/utils/dialogs.c:74 src/actions/actions.c:522
 #: resources/ui/port_selector_popover.ui:193
 msgid "_Cancel"
 msgstr "_Annuler"
@@ -1314,18 +1318,6 @@ msgstr "_Copier %d pistes"
 msgid "_Duplicate Track"
 msgstr "_Copier la Piste"
 
-#: resources/ui/header_bar.ui:69
-msgid "_Edit"
-msgstr "_Éditer"
-
-#: resources/ui/header_bar.ui:55
-msgid "_File"
-msgstr "_Fichier"
-
-#: resources/ui/header_bar.ui:97
-msgid "_Help"
-msgstr "_Aide"
-
 #: src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:72
 #: resources/ui/port_selector_popover.ui:207
 msgid "_OK"
@@ -1339,13 +1331,9 @@ msgstr "_Ouvrir"
 msgid "_Prefix plugin name"
 msgstr "_Préfixe du nom du greffon"
 
-#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:525
+#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:524
 msgid "_Save"
 msgstr "_Sauvegarder"
-
-#: resources/ui/header_bar.ui:83
-msgid "_View"
-msgstr "_Vue"
 
 #: resources/ui/rack_row.ui:60
 msgid "expander"
@@ -1372,6 +1360,23 @@ msgstr "nom_de_région"
 #: resources/ui/audio_clip_editor.ui:56 resources/ui/audio_clip_editor.ui:68
 msgid "stuff"
 msgstr "substance"
+
+#~ msgid "Playhead Position - Click and drag up/down to change"
+#~ msgstr ""
+#~ "Position de la tête de lecture - Cliquez et faites glisser vers le haut/"
+#~ "le bas pour changer"
+
+#~ msgid "_Edit"
+#~ msgstr "_Éditer"
+
+#~ msgid "_File"
+#~ msgstr "_Fichier"
+
+#~ msgid "_Help"
+#~ msgstr "_Aide"
+
+#~ msgid "_View"
+#~ msgstr "_Vue"
 
 #, fuzzy
 #~ msgid "View options"

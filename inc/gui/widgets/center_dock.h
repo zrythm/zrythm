@@ -23,6 +23,7 @@
 #define __GUI_WIDGETS_CENTER_DOCK_H__
 
 #include "gui/widgets/dzl/dzl-dock-bin.h"
+#include "gui/widgets/timeline_selection_info.h"
 
 #include <gtk/gtk.h>
 
@@ -50,6 +51,7 @@ typedef struct _TracklistHeaderWidget TracklistHeaderWidget;
 typedef struct _CenterDockWidget
 {
   DzlDockBin               parent_instance;
+  TimelineSelectionInfoWidget * selection_info;
   GtkBox                   * editor_top;
   GtkPaned                 * tracklist_timeline;
   GtkBox                   * tracklist_top;

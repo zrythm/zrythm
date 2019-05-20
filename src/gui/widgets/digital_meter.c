@@ -1,8 +1,5 @@
 /*
- * gui/widgets/digital_meter.c - Digital meter for BPM,
- *   position, etc.
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -51,11 +48,22 @@ G_DEFINE_TYPE (DigitalMeterWidget,
                digital_meter_widget,
                GTK_TYPE_DRAWING_AREA)
 
+/**
+* \file
+*
+* Digital Meter for BPM, positions, etc.
+*/
+
 #define FONT "Monospace"
 #define FONT_SIZE 16
 #define SPACE_BETWEEN 6
 #define HALF_SPACE_BETWEEN 3
 #define PADDING 2
+
+#define SET_POS \
+  ((*self->setter) (self->obj, &pos))
+#define GET_POS \
+  ((*self->getter) (self->obj, &pos))
 
 static gboolean
 draw_cb (DigitalMeterWidget * self, cairo_t *cr, gpointer data)
@@ -64,19 +72,26 @@ draw_cb (DigitalMeterWidget * self, cairo_t *cr, gpointer data)
   /*GdkRGBA color;*/
   GtkStyleContext *context;
 
-  context = gtk_widget_get_style_context (GTK_WIDGET (self));
+  context =
+    gtk_widget_get_style_context (GTK_WIDGET (self));
 
-  width = gtk_widget_get_allocated_width (GTK_WIDGET (self));
-  height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  width =
+    gtk_widget_get_allocated_width (GTK_WIDGET (self));
+  height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
 
-  gtk_render_background (context, cr, 0, 0, width, height);
+  gtk_render_background (
+    context, cr, 0, 0, width, height);
 
   /*double bg_txt_alpha = 0.08;*/
 
+  /* FIXME use pangocairo */
   cairo_text_extents_t te10, te5, te1, te3, te2;
   /*char * test_text = "8";*/
   char * text = NULL;
   int num_part, dec_part, bars, beats, sixteenths, ticks;
+  Position pos;
   switch (self->type)
     {
     case DIGITAL_METER_TYPE_BPM:
@@ -132,10 +147,11 @@ draw_cb (DigitalMeterWidget * self, cairo_t *cr, gpointer data)
 
     case DIGITAL_METER_TYPE_POSITION:
 
-      bars = TRANSPORT->playhead_pos.bars;
-      beats = TRANSPORT->playhead_pos.beats;
-      sixteenths = TRANSPORT->playhead_pos.sixteenths;
-      ticks = TRANSPORT->playhead_pos.ticks;
+      GET_POS;
+      bars = pos.bars;
+      beats = pos.beats;
+      sixteenths = pos.sixteenths;
+      ticks = pos.ticks;
 
       /* fill text */
       cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);
@@ -372,6 +388,7 @@ drag_update (GtkGestureDrag * gesture,
   double diff = offset_y - self->last_y;
   int num;
   float dec;
+  Position pos;
   switch (self->type)
     {
     case DIGITAL_METER_TYPE_BPM:
@@ -401,14 +418,15 @@ drag_update (GtkGestureDrag * gesture,
       break;
 
     case DIGITAL_METER_TYPE_POSITION:
+      GET_POS;
       if (self->update_bars)
         {
           num = (int) diff / 4;
           /*g_message ("updating num with %d", num);*/
           if (abs (num) > 0)
             {
-              position_set_bar (&TRANSPORT->playhead_pos,
-                                TRANSPORT->playhead_pos.bars + num);
+              position_set_bar (
+                &pos, pos.bars + num);
               self->last_y = offset_y;
             }
         }
@@ -418,8 +436,9 @@ drag_update (GtkGestureDrag * gesture,
           /*g_message ("updating num with %d", num);*/
           if (abs (num) > 0)
             {
-              position_set_beat (&TRANSPORT->playhead_pos,
-                                TRANSPORT->playhead_pos.beats + num);
+              position_set_beat (
+                &pos,
+                pos.beats + num);
               self->last_y = offset_y;
             }
         }
@@ -429,8 +448,9 @@ drag_update (GtkGestureDrag * gesture,
           /*g_message ("updating num with %d", num);*/
           if (abs (num) > 0)
             {
-              position_set_sixteenth (&TRANSPORT->playhead_pos,
-                                TRANSPORT->playhead_pos.sixteenths + num);
+              position_set_sixteenth (
+                &pos,
+                pos.sixteenths + num);
               self->last_y = offset_y;
             }
         }
@@ -440,11 +460,13 @@ drag_update (GtkGestureDrag * gesture,
           /*g_message ("updating num with %d", num);*/
           if (abs (num) > 0)
             {
-              position_set_tick (&TRANSPORT->playhead_pos,
-                                TRANSPORT->playhead_pos.ticks + num);
+              position_set_tick (
+                &pos,
+                pos.ticks + num);
               self->last_y = offset_y;
             }
         }
+      SET_POS;
 
       break;
     case DIGITAL_METER_TYPE_NOTE_LENGTH:
@@ -648,14 +670,14 @@ digital_meter_widget_new (DigitalMeterType  type,
 
       break;
     case DIGITAL_METER_TYPE_POSITION:
-      gtk_widget_set_tooltip_text (
-        GTK_WIDGET (self),
-        _("Playhead Position - Click and drag up/down \
-to change"));
-      gtk_widget_set_size_request (
-        GTK_WIDGET (self),
-        160,
-        -1);
+      /*gtk_widget_set_tooltip_text (*/
+        /*GTK_WIDGET (self),*/
+        /*_("Playhead Position - Click and drag up/down \*/
+/*to change"));*/
+      /*gtk_widget_set_size_request (*/
+        /*GTK_WIDGET (self),*/
+        /*160,*/
+        /*-1);*/
 
       break;
     case DIGITAL_METER_TYPE_NOTE_LENGTH:
@@ -687,20 +709,43 @@ to change"));
       break;
     }
 
-  /* make it able to notify */
-  gtk_widget_set_has_window (GTK_WIDGET (self), TRUE);
-  self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new (GTK_WIDGET (self)));
+  g_signal_connect (G_OBJECT (self), "draw",
+                    G_CALLBACK (draw_cb), NULL);
+
+  return self;
+}
+
+/**
+ * Creates a digital meter for an arbitrary position.
+ *
+ * @param obj The object to call the get/setters with.
+ *
+ *   E.g. Region.
+ * @param get_val The getter func to get the position,
+ *   passing the obj and the position to save to.
+ * @param set_val The setter function to set the
+ *   position.
+ */
+DigitalMeterWidget *
+_digital_meter_widget_new_for_position(
+  void * obj,
+  void (*get_val)(void *, Position *),
+  void (*set_val)(void *, Position *))
+{
+  DigitalMeterWidget * self =
+    g_object_new (DIGITAL_METER_WIDGET_TYPE, NULL);
+
+  self->obj = obj;
+  self->getter = get_val;
+  self->setter = set_val;
+  self->type = DIGITAL_METER_TYPE_POSITION;
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self),
+    160,
+    -1);
 
   g_signal_connect (G_OBJECT (self), "draw",
                     G_CALLBACK (draw_cb), NULL);
-  g_signal_connect (G_OBJECT(self->drag), "drag-begin",
-                    G_CALLBACK (drag_start),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-update",
-                    G_CALLBACK (drag_update),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-end",
-                    G_CALLBACK (drag_end),  self);
-  g_signal_connect (G_OBJECT(self), "button_press_event",
-                    G_CALLBACK (button_press_cb),  self);
 
   return self;
 }
@@ -713,6 +758,25 @@ digital_meter_widget_class_init (DigitalMeterWidgetClass * klass)
 static void
 digital_meter_widget_init (DigitalMeterWidget * self)
 {
+  /* make it able to notify */
+  gtk_widget_set_has_window (GTK_WIDGET (self), TRUE);
+  self->drag =
+    GTK_GESTURE_DRAG (
+      gtk_gesture_drag_new (GTK_WIDGET (self)));
+
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-begin",
+    G_CALLBACK (drag_start),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-update",
+    G_CALLBACK (drag_update),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-end",
+    G_CALLBACK (drag_end),  self);
+  g_signal_connect (
+    G_OBJECT(self), "button_press_event",
+    G_CALLBACK (button_press_cb),  self);
+
   /* FIXME doesn't work */
   /*FcConfig * font_config;*/
 
@@ -744,4 +808,6 @@ digital_meter_widget_init (DigitalMeterWidget * self)
 
   /*g_object_unref (font_map);*/
 
+  gtk_widget_set_visible (
+    GTK_WIDGET (self), 1);
 }

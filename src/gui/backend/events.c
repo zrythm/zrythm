@@ -57,6 +57,7 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_ruler.h"
+#include "gui/widgets/timeline_selection_info.h"
 #include "gui/widgets/toolbox.h"
 #include "gui/widgets/top_bar.h"
 #include "gui/widgets/top_dock_edge.h"
@@ -682,6 +683,8 @@ events_process (void * data)
           break;
         case ET_TL_SELECTIONS_CHANGED:
           inspector_widget_refresh (MW_INSPECTOR);
+          timeline_selection_info_widget_refresh (
+            MW_TS_INFO, TL_SELECTIONS);
           break;
         case ET_TRACKLIST_SELECTIONS_CHANGED:
           inspector_widget_refresh (MW_INSPECTOR);

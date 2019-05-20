@@ -17,11 +17,13 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/engine.h"
+#include "audio/transport.h"
 #include "gui/widgets/cpu.h"
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/top_bar.h"
 #include "gui/widgets/transport_controls.h"
-
+#include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
@@ -34,6 +36,17 @@ G_DEFINE_TYPE (TopBarWidget,
 void
 top_bar_widget_refresh (TopBarWidget * self)
 {
+  if (self->digital_transport)
+    gtk_widget_destroy (
+      GTK_WIDGET (self->digital_transport));
+  self->digital_transport =
+    digital_meter_widget_new_for_position (
+      TRANSPORT,
+      transport_get_playhead_pos,
+      transport_set_playhead_pos);
+  gtk_container_add (
+    GTK_CONTAINER (self->digital_meters),
+    GTK_WIDGET (self->digital_transport));
 }
 
 static void
@@ -81,11 +94,6 @@ top_bar_widget_init (TopBarWidget * self)
       DIGITAL_METER_TYPE_BPM,
       NULL,
       NULL);
-  self->digital_transport =
-    digital_meter_widget_new (
-      DIGITAL_METER_TYPE_POSITION,
-      NULL,
-      NULL);
   self->digital_timesig =
     digital_meter_widget_new (
       DIGITAL_METER_TYPE_TIMESIG,
@@ -97,9 +105,6 @@ top_bar_widget_init (TopBarWidget * self)
   gtk_container_add (
     GTK_CONTAINER (self->digital_meters),
     GTK_WIDGET (self->digital_timesig));
-  gtk_container_add (
-    GTK_CONTAINER (self->digital_meters),
-    GTK_WIDGET (self->digital_transport));
   gtk_widget_show_all (
     GTK_WIDGET (self->digital_meters));
   gtk_widget_show_all (GTK_WIDGET (self));

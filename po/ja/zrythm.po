@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-20 20:35+0100\n"
+"POT-Creation-Date: 2019-05-20 23:43+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Japanese <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -93,7 +93,7 @@ msgstr "オーディオ"
 msgid "Audition tool"
 msgstr "試聴ツール"
 
-#: src/gui/widgets/digital_meter.c:643
+#: src/gui/widgets/digital_meter.c:665
 msgid "BPM - Click and drag up/down to set"
 msgstr "BPM  - クリックして上下にドラッグして設定"
 
@@ -665,6 +665,11 @@ msgstr ""
 "次に、一時ファイルとプロジェクトの保存に使用する場所を選択します（またはデ"
 "フォルトを受け入れます）"
 
+#: src/gui/widgets/timeline_selection_info.c:93
+#, fuzzy
+msgid "No object selected"
+msgstr "出力が選択されていません"
+
 #: src/gui/widgets/route_target_selector_popover.c:180
 #, fuzzy
 msgid "No output selected"
@@ -759,10 +764,6 @@ msgstr "再生"
 msgid "Playhead"
 msgstr "再生ヘッド"
 
-#: src/gui/widgets/digital_meter.c:653
-msgid "Playhead Position - Click and drag up/down to change"
-msgstr "再生ヘッドの位置 - クリックして上下にドラッグして変更します"
-
 #: resources/ui/port_selector_popover.ui:94
 #, fuzzy
 msgid "Plugin"
@@ -807,14 +808,14 @@ msgstr "設定"
 msgid "Project"
 msgstr "プロジェクト"
 
-#: src/actions/actions.c:585
+#: src/actions/actions.c:584
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
 "プロジェクトにはまだパスがありません。Please save the project before "
 "exporting."
 
-#: resources/ui/header_bar.ui:29 resources/ui/header_notebook.ui:149
+#: resources/ui/header_notebook.ui:149
 msgid "Project name"
 msgstr "プロジェクト名"
 
@@ -944,7 +945,7 @@ msgstr ""
 msgid "Russian [ru]"
 msgstr "ロシア語[ru]"
 
-#: src/actions/actions.c:520
+#: src/actions/actions.c:519
 #, fuzzy
 msgid "Save Project"
 msgstr "プロジェクトを保存"
@@ -1066,6 +1067,11 @@ msgstr "スペイン語[es]"
 msgid "Square Root"
 msgstr "平方根"
 
+#: src/gui/widgets/timeline_selection_info.c:62
+#, fuzzy
+msgid "Start Position"
+msgstr "位置"
+
 #: src/gui/widgets/route_target_selector.c:118
 msgid "Stereo Out"
 msgstr ""
@@ -1111,7 +1117,7 @@ msgstr "これはアプリ通知です. Click the button to dismiss"
 msgid "Time Range"
 msgstr "時間の範囲"
 
-#: src/gui/widgets/digital_meter.c:681
+#: src/gui/widgets/digital_meter.c:703
 msgid "Time Signature - Click and drag up/down to change"
 msgstr "拍子記号 - クリックして上下にドラッグして変更します"
 
@@ -1273,12 +1279,12 @@ msgstr "ズーム アウト"
 msgid "Zooming"
 msgstr "ズーム"
 
-#: resources/ui/header_bar.ui:28 resources/ui/export_dialog.ui:120
+#: resources/ui/export_dialog.ui:120
 msgid "Zrythm"
 msgstr "Zrythm"
 
 #: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
-#: src/utils/dialogs.c:74 src/actions/actions.c:523
+#: src/utils/dialogs.c:74 src/actions/actions.c:522
 #: resources/ui/port_selector_popover.ui:193
 msgid "_Cancel"
 msgstr "キャンセル(_C)"
@@ -1301,18 +1307,6 @@ msgstr "%dトラックを複製(_D)"
 msgid "_Duplicate Track"
 msgstr "トラックを複製(_D)"
 
-#: resources/ui/header_bar.ui:69
-msgid "_Edit"
-msgstr "編集(_E)"
-
-#: resources/ui/header_bar.ui:55
-msgid "_File"
-msgstr "ファイル(_F)"
-
-#: resources/ui/header_bar.ui:97
-msgid "_Help"
-msgstr "ヘルプ(_H)"
-
 #: src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:72
 #: resources/ui/port_selector_popover.ui:207
 msgid "_OK"
@@ -1326,13 +1320,9 @@ msgstr "開く(_O)"
 msgid "_Prefix plugin name"
 msgstr "_プレフィックスプラグイン名"
 
-#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:525
+#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:524
 msgid "_Save"
 msgstr "保存(_S)"
-
-#: resources/ui/header_bar.ui:83
-msgid "_View"
-msgstr "表示(_V)"
 
 #: resources/ui/rack_row.ui:60
 msgid "expander"
@@ -1359,6 +1349,21 @@ msgstr "region_name"
 #: resources/ui/audio_clip_editor.ui:56 resources/ui/audio_clip_editor.ui:68
 msgid "stuff"
 msgstr ""
+
+#~ msgid "Playhead Position - Click and drag up/down to change"
+#~ msgstr "再生ヘッドの位置 - クリックして上下にドラッグして変更します"
+
+#~ msgid "_Edit"
+#~ msgstr "編集(_E)"
+
+#~ msgid "_File"
+#~ msgstr "ファイル(_F)"
+
+#~ msgid "_Help"
+#~ msgstr "ヘルプ(_H)"
+
+#~ msgid "_View"
+#~ msgstr "表示(_V)"
 
 #, fuzzy
 #~ msgid "View options"

@@ -39,11 +39,14 @@ G_DECLARE_DERIVABLE_TYPE (RegionWidget,
   RegionWidgetPrivate * rw_prv = \
     region_widget_get_private (Z_REGION_WIDGET (self));
 
+/**
+* Region widget base private.
+*/
 typedef struct _RegionWidgetPrivate
 {
-  Region                   * region;   ///< the region associated with this
-  //UiCursorState            cursor_state;
-  //
+  /** Region associated with this widget. */
+  Region                   * region;
+
   /** If cursor is at resizing L. */
   int                      resize_l;
 

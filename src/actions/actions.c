@@ -46,7 +46,6 @@
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/donate_dialog.h"
 #include "gui/widgets/export_dialog.h"
-#include "gui/widgets/header_bar.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"

@@ -17,7 +17,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file */
+/**
+ * \file
+ */
 
 #ifndef __GUI_WIDGETS_MIDI_REGION_H__
 #define __GUI_WIDGETS_MIDI_REGION_H__

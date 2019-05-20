@@ -26,10 +26,16 @@
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <child>
+      <!-- FIXME move editor top to new widget -->
       <object class="GtkBox" id="editor_top">
         <property name="visible">1</property>
         <property name="vexpand">1</property>
         <property name="orientation">vertical</property>
+        <child>
+          <object class="TimelineSelectionInfoWidget" id="selection_info">
+            <property name="visible">1</property>
+          </object>
+        </child>
         <child>
           <object class="TopDockEdgeWidget" id="top_dock_edge"/>
         </child>
@@ -150,9 +156,6 @@
           <object class="CenterDockBotBoxWidget" id="bot_box">
             <property name="visible">1</property>
           </object>
-          <packing>
-            <property name="position">2</property>
-          </packing>
         </child>
       </object>
     </child>

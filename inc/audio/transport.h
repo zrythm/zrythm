@@ -212,6 +212,22 @@ void
 transport_request_roll ();
 
 /**
+ * Setter for playhead Position.
+ */
+void
+transport_set_playhead_pos (
+  Transport * self,
+  Position *  pos);
+
+/**
+ * Getter for playhead Position.
+ */
+void
+transport_get_playhead_pos (
+  Transport * self,
+  Position *  pos);
+
+/**
  * Moves playhead to given pos
  */
 void

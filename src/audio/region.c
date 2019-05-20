@@ -223,6 +223,17 @@ region_set_start_pos (
 }
 
 /**
+ * Getter for start pos.
+ */
+void
+region_get_start_pos (
+  Region * region,
+  Position * pos)
+{
+  position_set_to_pos (pos, &region->start_pos);
+}
+
+/**
  * Returns the full length as it appears on the
  * timeline in ticks.
  */

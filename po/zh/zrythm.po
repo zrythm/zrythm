@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-20 20:35+0100\n"
+"POT-Creation-Date: 2019-05-20 23:43+0100\n"
 "PO-Revision-Date: 2019-05-04 23:37+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Chinese (Simplified) <https://translate.zrythm.org/projects/"
@@ -83,7 +83,7 @@ msgstr ""
 msgid "Audition tool"
 msgstr ""
 
-#: src/gui/widgets/digital_meter.c:643
+#: src/gui/widgets/digital_meter.c:665
 msgid "BPM - Click and drag up/down to set"
 msgstr ""
 
@@ -634,6 +634,10 @@ msgid ""
 "(or accept the default)"
 msgstr ""
 
+#: src/gui/widgets/timeline_selection_info.c:93
+msgid "No object selected"
+msgstr ""
+
 #: src/gui/widgets/route_target_selector_popover.c:180
 msgid "No output selected"
 msgstr ""
@@ -724,10 +728,6 @@ msgstr ""
 msgid "Playhead"
 msgstr ""
 
-#: src/gui/widgets/digital_meter.c:653
-msgid "Playhead Position - Click and drag up/down to change"
-msgstr ""
-
 #: resources/ui/port_selector_popover.ui:94
 msgid "Plugin"
 msgstr ""
@@ -771,12 +771,12 @@ msgstr ""
 msgid "Project"
 msgstr ""
 
-#: src/actions/actions.c:585
+#: src/actions/actions.c:584
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
 
-#: resources/ui/header_bar.ui:29 resources/ui/header_notebook.ui:149
+#: resources/ui/header_notebook.ui:149
 msgid "Project name"
 msgstr ""
 
@@ -901,7 +901,7 @@ msgstr ""
 msgid "Russian [ru]"
 msgstr ""
 
-#: src/actions/actions.c:520
+#: src/actions/actions.c:519
 msgid "Save Project"
 msgstr ""
 
@@ -1019,6 +1019,10 @@ msgstr ""
 msgid "Square Root"
 msgstr ""
 
+#: src/gui/widgets/timeline_selection_info.c:62
+msgid "Start Position"
+msgstr ""
+
 #: src/gui/widgets/route_target_selector.c:118
 msgid "Stereo Out"
 msgstr ""
@@ -1062,7 +1066,7 @@ msgstr ""
 msgid "Time Range"
 msgstr ""
 
-#: src/gui/widgets/digital_meter.c:681
+#: src/gui/widgets/digital_meter.c:703
 msgid "Time Signature - Click and drag up/down to change"
 msgstr ""
 
@@ -1213,12 +1217,12 @@ msgstr ""
 msgid "Zooming"
 msgstr ""
 
-#: resources/ui/header_bar.ui:28 resources/ui/export_dialog.ui:120
+#: resources/ui/export_dialog.ui:120
 msgid "Zrythm"
 msgstr "Zrythm"
 
 #: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
-#: src/utils/dialogs.c:74 src/actions/actions.c:523
+#: src/utils/dialogs.c:74 src/actions/actions.c:522
 #: resources/ui/port_selector_popover.ui:193
 msgid "_Cancel"
 msgstr ""
@@ -1241,18 +1245,6 @@ msgstr ""
 msgid "_Duplicate Track"
 msgstr ""
 
-#: resources/ui/header_bar.ui:69
-msgid "_Edit"
-msgstr ""
-
-#: resources/ui/header_bar.ui:55
-msgid "_File"
-msgstr ""
-
-#: resources/ui/header_bar.ui:97
-msgid "_Help"
-msgstr ""
-
 #: src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:72
 #: resources/ui/port_selector_popover.ui:207
 msgid "_OK"
@@ -1266,12 +1258,8 @@ msgstr ""
 msgid "_Prefix plugin name"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:525
+#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:524
 msgid "_Save"
-msgstr ""
-
-#: resources/ui/header_bar.ui:83
-msgid "_View"
 msgstr ""
 
 #: resources/ui/rack_row.ui:60

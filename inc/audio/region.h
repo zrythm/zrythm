@@ -389,6 +389,14 @@ region_set_start_pos (
   Position * pos);
 
 /**
+ * Getter for start pos.
+ */
+void
+region_get_start_pos (
+  Region * region,
+  Position * pos);
+
+/**
  * Sets the track.
  */
 void

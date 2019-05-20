@@ -202,6 +202,30 @@ transport_add_to_playhead (
 }
 
 /**
+ * Setter for playhead Position.
+ */
+void
+transport_set_playhead_pos (
+  Transport * self,
+  Position *  pos)
+{
+  position_set_to_pos (
+    &self->playhead_pos, pos);
+}
+
+/**
+ * Getter for playhead Position.
+ */
+void
+transport_get_playhead_pos (
+  Transport * self,
+  Position *  pos)
+{
+  position_set_to_pos (
+    pos, &self->playhead_pos);
+}
+
+/**
  * Moves playhead to given pos.
  *
  * This is only for moves other than while playing
