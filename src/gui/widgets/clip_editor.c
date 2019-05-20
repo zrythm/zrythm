@@ -84,4 +84,3 @@ clip_editor_widget_class_init (
     ClipEditorWidget,
     no_selection_label);
 }
-

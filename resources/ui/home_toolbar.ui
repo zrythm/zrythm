@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.22.1 -->
+<interface>
+  <requires lib="gtk+" version="3.20"/>
+  <template class="HomeToolbarWidget" parent="GtkToolbar">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkToolButton" id="undo">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action-name">win.undo</property>
+        <property name="icon-name">z-edit-undo</property>
+        <property name="label" translatable="yes">Undo</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="redo">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action-name">win.redo</property>
+        <property name="icon-name">z-edit-redo</property>
+        <property name="label" translatable="yes">Redo</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSeparatorToolItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="cut">
+        <property name="visible">1</property>
+        <property name="icon-name">z-edit-cut</property>
+        <property name="action-name">win.cut</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="copy">
+        <property name="visible">1</property>
+        <property name="icon-name">z-edit-copy</property>
+        <property name="action-name">win.copy</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="paste">
+        <property name="visible">1</property>
+        <property name="icon-name">z-edit-paste</property>
+        <property name="action-name">win.paste</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="duplicate">
+        <property name="visible">1</property>
+        <property name="icon-name">z-document-duplicate</property>
+        <property name="action-name">win.duplicate</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="delete">
+        <property name="visible">1</property>
+        <property name="icon-name">z-edit-delete</property>
+        <property name="action-name">win.delete</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorToolItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="clear_selection">
+        <property name="visible">1</property>
+        <property name="icon-name">z-edit-clear</property>
+        <property name="action-name">win.clear-selection</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="select_all">
+        <property name="visible">1</property>
+        <property name="icon-name">z-edit-select-all</property>
+        <property name="action-name">win.select-all</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="loop_selection">
+        <property name="visible">1</property>
+        <property name="icon-name">z-media-repeat-album-amarok</property>
+        <property name="action-name">win.loop-selection</property>
+      </object>
+    </child>
+  </template>
+</interface>

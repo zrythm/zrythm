@@ -76,6 +76,32 @@ accel_install_primary_action_accelerator (
                                     action_name);
 }
 
+char *
+accel_get_primary_accel_for_action (
+  const char * action_name)
+{
+  g_warn_if_fail (zrythm_app);
+  guint accel_key;
+  GdkModifierType accel_mods;
+  gchar ** accels =
+    gtk_application_get_accels_for_action (
+      GTK_APPLICATION (zrythm_app),
+      action_name);
+  char * ret = NULL;
+  if (accels[0] != NULL)
+    {
+      gtk_accelerator_parse (
+        accels[0],
+        &accel_key,
+        &accel_mods);
+      ret =
+        gtk_accelerator_get_label (
+          accel_key, accel_mods);
+    }
+  g_strfreev (accels);
+  return ret;
+}
+
 void
 accel_set_accel_label_from_action (
   GtkAccelLabel * accel_label,

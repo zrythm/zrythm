@@ -29,6 +29,12 @@
 
 #include <gtk/gtk.h>
 
+/**
+ * @addtogroup utils
+ *
+ * @{
+ */
+
 #define DESTROY_LATER(x) \
   g_idle_add ( \
     (GSourceFunc) z_gtk_widget_destroy_idle, \
@@ -228,4 +234,16 @@ GtkLabel *
 z_gtk_get_label_from_menu_item (
   GtkMenuItem * mi);
 
+/**
+ * Sets the tooltip and finds the accel keys and
+ * appends them to the tooltip in small text.
+ */
+void
+z_gtk_set_tooltip_for_actionable (
+  GtkActionable * actionable,
+  const char *    tooltip);
+
+/**
+ * @}
+ */
 #endif

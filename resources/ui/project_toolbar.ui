@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.22.1 -->
+<interface>
+  <requires lib="gtk+" version="3.20"/>
+  <template class="ProjectToolbarWidget" parent="GtkToolbar">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkToolButton" id="new">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">win.new</property>
+        <property name="icon_name">z-document-new</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="open">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">win.open</property>
+        <property name="icon_name">z-document-open</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSeparatorToolItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="export_as">
+        <property name="visible">1</property>
+        <property name="icon-name">z-document-send</property>
+        <property name="action-name">win.export-as</property>
+      </object>
+    </child>
+  </template>
+</interface>

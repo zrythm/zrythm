@@ -1,7 +1,5 @@
 /*
- * gui/accelerators.h - accel
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,42 +17,33 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_ACCEL_H__
-#define __GUI_ACCEL_H__
+#ifndef __GUI_WIDGETS_HELP_TOOLBAR_H__
+#define __GUI_WIDGETS_HELP_TOOLBAR_H__
 
 #include <gtk/gtk.h>
 
-/**
- * Adds all global accelerators.
- */
-void
-accel_add_all ();
-
-void
-accel_install_action_accelerator (
-  const char *     primary,
-  const char *     secondary,
-  const char *     action_name);
+#define HELP_TOOLBAR_WIDGET_TYPE \
+  (help_toolbar_widget_get_type ())
+G_DECLARE_FINAL_TYPE (HelpToolbarWidget,
+                      help_toolbar_widget,
+                      Z,
+                      HELP_TOOLBAR_WIDGET,
+                      GtkToolbar)
 
 /**
- * Install accelerator for an action.
+ * \file
  */
-void
-accel_install_primary_action_accelerator (
-  const char *     primary,
-  const char *     action_name);
 
-/**
- * Returns the primary accelerator for the given
- * action.
- */
-char *
-accel_get_primary_accel_for_action (
-  const char * action_name);
+#define MW_HELP_TOOLBAR \
+  MW_HEADER_NOTEBOOK->help_toolbar
 
-void
-accel_set_accel_label_from_action (
-  GtkAccelLabel * accel_label,
-  const char *    action_name);
+typedef struct _HelpToolbarWidget
+{
+  GtkToolbar         parent_instance;
+  GtkToolButton *    chat;
+  GtkToolButton *    manual;
+  GtkToolButton *    forums;
+  GtkToolButton *    shortcuts;
+} HelpToolbarWidget;
 
 #endif

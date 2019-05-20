@@ -359,3 +359,31 @@ z_gtk_get_label_from_menu_item (
 
   return NULL;
 }
+
+/**
+ * Sets the tooltip and finds the accel keys and
+ * appends them to the tooltip in small text.
+ */
+void
+z_gtk_set_tooltip_for_actionable (
+  GtkActionable * actionable,
+  const char *    tooltip)
+{
+  char * accel, * tt;
+  accel =
+    accel_get_primary_accel_for_action (
+      gtk_actionable_get_action_name (
+        actionable));
+  if (accel)
+    tt =
+      g_strdup_printf (
+        "%s <span size=\"x-small\" foreground=\"#F79616\">%s</span>",
+        tooltip, accel);
+  else
+    tt = g_strdup (tooltip);
+  gtk_widget_set_tooltip_markup (
+    GTK_WIDGET (actionable),
+    tt);
+  g_free (accel);
+  g_free (tt);
+}

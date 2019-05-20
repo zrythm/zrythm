@@ -43,7 +43,7 @@
           <object class="GtkImage">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="resource">/org/zrythm/icons/zrythm/mute.svg</property>
+            <property name="icon-name">mute</property>
           </object>
         </child>
       </object>

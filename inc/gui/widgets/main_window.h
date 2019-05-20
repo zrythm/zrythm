@@ -44,7 +44,8 @@ G_DECLARE_FINAL_TYPE (MainWindowWidget,
                       MAIN_WINDOW_WIDGET,
                       GtkApplicationWindow)
 
-typedef struct _HeaderBarWidget HeaderBarWidget;
+typedef struct _HeaderNotebookWidget
+  HeaderNotebookWidget;
 typedef struct _CenterDockWidget CenterDockWidget;
 typedef struct _BotBarWidget BotBarWidget;
 typedef struct _TopBarWidget TopBarWidget;
@@ -53,7 +54,7 @@ typedef struct _MainWindowWidget
 {
   GtkApplicationWindow     parent_instance;
   GtkBox *                 main_box;
-  HeaderBarWidget *        header_bar;
+  HeaderNotebookWidget *   header_notebook;
   TopBarWidget *           top_bar;
   GtkBox *                 center_box;
   CenterDockWidget *       center_dock;

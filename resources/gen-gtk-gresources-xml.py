@@ -66,7 +66,7 @@ for f in get_files('theme/Matcha-dark-sea/assets', '.svg'):
 
 xml += '''
   </gresource>
-  <gresource prefix='/org/zrythm'>
+  <gresource prefix='/org/zrythm/app'>
 '''
 
 xml += '\n'
@@ -77,7 +77,7 @@ for f in get_files('ui', '.ui'):
 xml += '\n'
 
 # add icons
-for c in ['zrythm', 'gnome-builder', 'ext']:
+for c in ['zrythm', 'gnome-builder', 'ext', 'fork-awesome']:
   icons_dir = 'icons/{0}'.format(c)
   if os.path.exists(os.path.join(srcdir,icons_dir)):
     for f in get_files(icons_dir, '.svg'):

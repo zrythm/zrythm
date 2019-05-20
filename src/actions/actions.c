@@ -257,7 +257,7 @@ activate_shortcuts (GSimpleAction *action,
 
   builder =
     gtk_builder_new_from_resource (
-      "/org/zrythm/ui/shortcuts.ui");
+      RESOURCE_PATH TEMPLATE_PATH "shortcuts.ui");
   overlay =
     GTK_WIDGET (
       gtk_builder_get_object (builder, "shortcuts-builder"));

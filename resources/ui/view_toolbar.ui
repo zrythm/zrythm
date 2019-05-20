@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.22.1 -->
+<interface>
+  <requires lib="gtk+" version="3.20"/>
+  <template class="ViewToolbarWidget" parent="GtkToolbar">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkToggleToolButton" id="left_panel">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="icon-name">builder-view-left-pane-symbolic-light</property>
+        <property name="action_name">win.toggle-left-panel</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToggleToolButton" id="bot_panel">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="icon-name">builder-view-bottom-pane-symbolic-light</property>
+        <property name="action_name">win.toggle-bot-panel</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToggleToolButton" id="right_panel">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="icon-name">builder-view-right-pane-symbolic-light</property>
+        <property name="action_name">win.toggle-right-panel</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToggleToolButton" id="status_bar">
+        <property name="visible">1</property>
+        <property name="icon-name">z-kt-show-statusbar</property>
+        <property name="action-name">win.toggle-status-bar</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorToolItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="zoom_in">
+        <property name="visible">1</property>
+        <property name="icon-name">z-zoom-in</property>
+        <property name="action-name">win.zoom-in</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="zoom_out">
+        <property name="visible">1</property>
+        <property name="icon-name">z-zoom-out</property>
+        <property name="action-name">win.zoom-out</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="original_size">
+        <property name="visible">1</property>
+        <property name="icon-name">z-zoom-original</property>
+        <property name="action-name">win.original-size</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="best_fit">
+        <property name="visible">1</property>
+        <property name="icon-name">z-zoom-fit-best</property>
+        <property name="action-name">win.best-fit</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorToolItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="fullscreen">
+        <property name="visible">1</property>
+        <property name="icon-name">z-view-fullscreen</property>
+        <property name="action-name">app.fullscreen</property>
+      </object>
+    </child>
+  </template>
+</interface>

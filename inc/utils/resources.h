@@ -22,7 +22,20 @@
 
 #include <gtk/gtk.h>
 
-#define RESOURCE_PATH "/org/zrythm/"
+/**
+ * @addtogroup Utils
+ *
+ * @{
+ */
+
+/**
+ * \file
+ *
+ * Helpers for loading and using resources such as
+ * icons.
+ */
+
+#define RESOURCE_PATH "/org/zrythm/app/"
 #define TEMPLATE_PATH "ui/"
 #define ICON_PATH "icons/"
 
@@ -31,8 +44,15 @@ typedef enum IconType
   ICON_TYPE_ZRYTHM,
   ICON_TYPE_GNOME_BUILDER,
   ICON_TYPE_BREEZE,
+  ICON_TYPE_FORK_AWESOME,
 } IconType;
 
+/**
+ * Creates a GtkImage of from the given information
+ * and returns it as a GtkWidget.
+ *
+ * @return a GtkImage.
+ */
 GtkWidget *
 resources_get_icon (IconType     icon_type,
                     const char * filename);
@@ -55,5 +75,9 @@ void
 resources_add_icon_to_button (GtkButton *  btn,
                               IconType     icon_type,
                               const char * path);
+
+/**
+ * @}
+ */
 
 #endif

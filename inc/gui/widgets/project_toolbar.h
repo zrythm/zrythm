@@ -1,7 +1,5 @@
 /*
- * gui/accelerators.h - accel
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,42 +17,32 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_ACCEL_H__
-#define __GUI_ACCEL_H__
+#ifndef __GUI_WIDGETS_PROJECT_TOOLBAR_H__
+#define __GUI_WIDGETS_PROJECT_TOOLBAR_H__
 
 #include <gtk/gtk.h>
 
-/**
- * Adds all global accelerators.
- */
-void
-accel_add_all ();
-
-void
-accel_install_action_accelerator (
-  const char *     primary,
-  const char *     secondary,
-  const char *     action_name);
+#define PROJECT_TOOLBAR_WIDGET_TYPE \
+  (project_toolbar_widget_get_type ())
+G_DECLARE_FINAL_TYPE (ProjectToolbarWidget,
+                      project_toolbar_widget,
+                      Z,
+                      PROJECT_TOOLBAR_WIDGET,
+                      GtkToolbar)
 
 /**
- * Install accelerator for an action.
+ * \file
  */
-void
-accel_install_primary_action_accelerator (
-  const char *     primary,
-  const char *     action_name);
 
-/**
- * Returns the primary accelerator for the given
- * action.
- */
-char *
-accel_get_primary_accel_for_action (
-  const char * action_name);
+#define MW_PROJECT_TOOLBAR \
+  MW_HEADER_NOTEBOOK->project_toolbar
 
-void
-accel_set_accel_label_from_action (
-  GtkAccelLabel * accel_label,
-  const char *    action_name);
+typedef struct _ProjectToolbarWidget
+{
+  GtkToolbar         parent_instance;
+  GtkToolButton *    new;
+  GtkToolButton *    open;
+  GtkToolButton *    export_as;
+} ProjectToolbarWidget;
 
 #endif

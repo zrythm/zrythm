@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-19 21:01+0100\n"
+"POT-Creation-Date: 2019-05-20 20:35+0100\n"
 "PO-Revision-Date: 2019-05-04 11:00+0100\n"
 "Last-Translator: alex <alex@zrythm.org>\n"
 "Language-Team: Portuguese\n"
@@ -39,10 +39,6 @@ msgstr ""
 
 #: src/utils/dialogs.c:83
 msgid "A plugin already exists at the selected slot. Overwrite it?"
-msgstr ""
-
-#: src/gui/widgets/header_bar.c:430
-msgid "About"
 msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:47
@@ -81,10 +77,6 @@ msgstr ""
 msgid "Audio Outs"
 msgstr ""
 
-#: resources/ui/audio_unit.ui:32
-msgid "Audio Unit"
-msgstr ""
-
 #: resources/ui/shortcuts.ui:216
 msgid "Audition tool"
 msgstr ""
@@ -105,10 +97,6 @@ msgstr ""
 msgid "Backward"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:352
-msgid "Best Fit"
-msgstr ""
-
 #: resources/ui/shortcuts.ui:245
 msgid "Best fit"
 msgstr ""
@@ -119,10 +107,6 @@ msgstr ""
 
 #: resources/ui/center_dock_bot_box.ui:54
 msgid "Bot"
-msgstr ""
-
-#: src/gui/widgets/header_bar.c:299
-msgid "Bottom Panel"
 msgstr ""
 
 #: src/audio/track.c:735
@@ -161,10 +145,6 @@ msgstr ""
 #: src/gui/widgets/channel_slot.c:589
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
-msgstr ""
-
-#: src/gui/widgets/header_bar.c:374
-msgid "Chat"
 msgstr ""
 
 #: src/utils/ui.c:554
@@ -214,10 +194,6 @@ msgstr ""
 
 #: src/audio/engine_jack.c:580
 msgid "Communication error with the JACK server"
-msgstr ""
-
-#: resources/ui/bot_dock_edge.ui:153
-msgid "Connections"
 msgstr ""
 
 #: src/gui/widgets/ports_expander.c:140
@@ -314,15 +290,11 @@ msgstr ""
 msgid "Delete Track"
 msgstr ""
 
-#: resources/ui/connections.ui:98
-msgid "Dest. Audio Unit"
-msgstr ""
-
 #: resources/ui/export_dialog.ui:161
 msgid "Dither"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:421 resources/ui/donate_dialog.ui:7
+#: resources/ui/donate_dialog.ui:7
 msgid "Donate"
 msgstr ""
 
@@ -428,10 +400,6 @@ msgstr ""
 msgid "Format"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:392
-msgid "Forums"
-msgstr ""
-
 #: resources/ui/transport_controls.ui:105
 msgid "Forward"
 msgstr ""
@@ -470,6 +438,14 @@ msgstr ""
 
 #: src/audio/track.c:744
 msgid "Group"
+msgstr ""
+
+#: resources/ui/header_notebook.ui:73
+msgid "Help"
+msgstr ""
+
+#: resources/ui/header_notebook.ui:17
+msgid "Home"
 msgstr ""
 
 #: src/gui/widgets/port_connections_popover.c:59
@@ -522,7 +498,7 @@ msgstr ""
 msgid "Japanese [ja]"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:401 resources/ui/shortcuts.ui:27
+#: resources/ui/shortcuts.ui:27
 msgid "Keyboard Shortcuts"
 msgstr ""
 
@@ -536,10 +512,6 @@ msgstr ""
 
 #: resources/ui/center_dock_bot_box.ui:43
 msgid "Left"
-msgstr ""
-
-#: src/gui/widgets/header_bar.c:275
-msgid "Left Panel"
 msgstr ""
 
 #: resources/ui/quantize_mb_popover.ui:88 resources/ui/inspector_region.ui:91
@@ -567,10 +539,6 @@ msgstr ""
 
 #: resources/ui/transport_controls.ui:122 resources/ui/export_dialog.ui:250
 msgid "Loop"
-msgstr ""
-
-#: src/gui/widgets/header_bar.c:113
-msgid "Loop Selection"
 msgstr ""
 
 #: resources/ui/shortcuts.ui:287
@@ -603,10 +571,6 @@ msgstr ""
 
 #: resources/ui/preferences.ui:298
 msgid "Main Window"
-msgstr ""
-
-#: src/gui/widgets/header_bar.c:383
-msgid "Manual"
 msgstr ""
 
 #: src/project.c:142 src/audio/track.c:738
@@ -699,10 +663,6 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:91
 msgid "Open a project"
-msgstr ""
-
-#: src/gui/widgets/header_bar.c:343
-msgid "Original Size"
 msgstr ""
 
 #: resources/ui/shortcuts.ui:252
@@ -805,7 +765,7 @@ msgstr ""
 msgid "Preferences"
 msgstr ""
 
-#: resources/ui/shortcuts.ui:79
+#: resources/ui/shortcuts.ui:79 resources/ui/header_notebook.ui:35
 msgid "Project"
 msgstr ""
 
@@ -814,7 +774,7 @@ msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
 
-#: resources/ui/header_bar.ui:29
+#: resources/ui/header_bar.ui:29 resources/ui/header_notebook.ui:149
 msgid "Project name"
 msgstr ""
 
@@ -871,6 +831,10 @@ msgstr ""
 msgid "Record"
 msgstr ""
 
+#: src/gui/widgets/home_toolbar.c:56 resources/ui/home_toolbar.ui:27
+msgid "Redo"
+msgstr ""
+
 #: resources/ui/shortcuts.ui:147
 msgid "Redo previous command"
 msgstr ""
@@ -892,10 +856,6 @@ msgstr ""
 
 #: resources/ui/project_assistant.ui:82
 msgid "Removes selected project from the list"
-msgstr ""
-
-#: src/gui/widgets/header_bar.c:410
-msgid "Report a Bug"
 msgstr ""
 
 #: src/audio/engine_jack.c:583
@@ -926,10 +886,6 @@ msgstr ""
 msgid "Right"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:287
-msgid "Right Panel"
-msgstr ""
-
 #: src/gui/widgets/route_target_selector.c:80
 msgid "Routed to Stereo Out"
 msgstr ""
@@ -949,10 +905,6 @@ msgstr ""
 
 #: src/plugins/lv2_gtk.c:149
 msgid "Save State"
-msgstr ""
-
-#: src/gui/widgets/header_bar.c:182
-msgid "Save _As"
 msgstr ""
 
 #: resources/ui/shortcuts.ui:98
@@ -999,10 +951,6 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:188
 msgid "Select/Stretch tool"
-msgstr ""
-
-#: src/gui/widgets/header_bar.c:100
-msgid "Selection"
 msgstr ""
 
 #: resources/ui/shortcuts.ui:156
@@ -1061,20 +1009,12 @@ msgstr ""
 msgid "Song"
 msgstr ""
 
-#: resources/ui/connections.ui:73
-msgid "Source Audio Unit"
-msgstr ""
-
 #: src/utils/ui.c:550
 msgid "Spanish [es]"
 msgstr ""
 
 #: src/utils/ui.c:607
 msgid "Square Root"
-msgstr ""
-
-#: src/gui/widgets/header_bar.c:311
-msgid "Status Bar"
 msgstr ""
 
 #: src/gui/widgets/route_target_selector.c:118
@@ -1200,6 +1140,10 @@ msgstr ""
 msgid "Unable to load internal client"
 msgstr ""
 
+#: src/gui/widgets/home_toolbar.c:55 resources/ui/home_toolbar.ui:14
+msgid "Undo"
+msgstr ""
+
 #: resources/ui/shortcuts.ui:135
 msgid "Undo and Redo"
 msgstr ""
@@ -1236,6 +1180,10 @@ msgstr ""
 msgid "Use grid"
 msgstr ""
 
+#: resources/ui/header_notebook.ui:54
+msgid "View"
+msgstr ""
+
 #: resources/ui/first_run_assistant.ui:50
 msgid ""
 "Welcome to Zrythm.\n"
@@ -1249,10 +1197,6 @@ msgstr ""
 
 #: resources/ui/automation_lane.ui:99
 msgid "Write automation"
-msgstr ""
-
-#: src/gui/widgets/header_bar.c:334
-msgid "Zoom _Out"
 msgstr ""
 
 #: resources/ui/shortcuts.ui:231
@@ -1299,24 +1243,12 @@ msgstr ""
 msgid "_Edit"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:193
-msgid "_Export As"
-msgstr ""
-
 #: resources/ui/header_bar.ui:55
 msgid "_File"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:363
-msgid "_Fullscreen"
-msgstr ""
-
 #: resources/ui/header_bar.ui:97
 msgid "_Help"
-msgstr ""
-
-#: src/gui/widgets/header_bar.c:155
-msgid "_New"
 msgstr ""
 
 #: src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:72
@@ -1324,41 +1256,20 @@ msgstr ""
 msgid "_OK"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:164 src/utils/dialogs.c:46
+#: src/utils/dialogs.c:46
 msgid "_Open"
-msgstr ""
-
-#: src/gui/widgets/header_bar.c:204
-msgid "_Preferences"
 msgstr ""
 
 #: src/plugins/lv2_gtk.c:471
 msgid "_Prefix plugin name"
 msgstr ""
 
-#: src/gui/widgets/header_bar.c:213
-msgid "_Quit"
-msgstr ""
-
-#: src/gui/widgets/header_bar.c:52 src/gui/widgets/header_bar.c:239
-msgid "_Redo"
-msgstr ""
-
-#: src/plugins/lv2_gtk.c:153 src/gui/widgets/header_bar.c:173
-#: src/actions/actions.c:525
+#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:525
 msgid "_Save"
-msgstr ""
-
-#: src/gui/widgets/header_bar.c:51 src/gui/widgets/header_bar.c:224
-msgid "_Undo"
 msgstr ""
 
 #: resources/ui/header_bar.ui:83
 msgid "_View"
-msgstr ""
-
-#: src/gui/widgets/header_bar.c:325
-msgid "_Zoom In"
 msgstr ""
 
 #: resources/ui/rack_row.ui:60

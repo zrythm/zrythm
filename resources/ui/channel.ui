@@ -51,7 +51,7 @@
                       <object class="GtkImage">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="resource">/org/zrythm/icons/zrythm/record.svg</property>
+                        <property name="icon-name">record</property>
                       </object>
                     </child>
                   </object>
@@ -71,7 +71,7 @@
                       <object class="GtkImage">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="resource">/org/zrythm/icons/zrythm/solo.svg</property>
+                        <property name="icon-name">solo</property>
                       </object>
                     </child>
                   </object>
@@ -91,7 +91,7 @@
                       <object class="GtkImage">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="resource">/org/zrythm/icons/zrythm/mute.svg</property>
+                        <property name="icon-name">mute</property>
                       </object>
                     </child>
                   </object>
@@ -111,7 +111,7 @@
                       <object class="GtkImage">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="resource">/org/zrythm/icons/zrythm/listen.svg</property>
+                        <property name="icon-name">listen</property>
                       </object>
                     </child>
                   </object>
@@ -131,7 +131,7 @@
                       <object class="GtkImage">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="resource">/org/zrythm/icons/gnome-builder/lang-enum-value-symbolic-light.svg</property>
+                        <property name="icon-name">lang-enum-value-symbolic-light</property>
                       </object>
                     </child>
                   </object>
@@ -240,7 +240,7 @@
                   <object class="GtkImage">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="resource">/org/zrythm/icons/zrythm/phase-invert.svg</property>
+                    <property name="icon-name">phase-invert</property>
                   </object>
                 </child>
               </object>

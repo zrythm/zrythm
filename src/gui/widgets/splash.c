@@ -50,7 +50,19 @@ splash_window_widget_new (ZrythmApp * app)
 
   gtk_icon_theme_add_resource_path (
     gtk_icon_theme_get_default (),
-    "/org/zrythm/icons/breeze-icons");
+    "/org/zrythm/app/icons/breeze-icons");
+  gtk_icon_theme_add_resource_path (
+    gtk_icon_theme_get_default (),
+    "/org/zrythm/app/icons/fork-awesome");
+  gtk_icon_theme_add_resource_path (
+    gtk_icon_theme_get_default (),
+    "/org/zrythm/app/icons/zrythm");
+  gtk_icon_theme_add_resource_path (
+    gtk_icon_theme_get_default (),
+    "/org/zrythm/app/icons/ext");
+  gtk_icon_theme_add_resource_path (
+    gtk_icon_theme_get_default (),
+    "/org/zrythm/app/icons/gnome-builder");
 
   /*gtk_icon_theme_set_search_path (*/
     /*gtk_icon_theme_get_default (),*/
@@ -60,7 +72,7 @@ splash_window_widget_new (ZrythmApp * app)
   // set default css provider
   GtkCssProvider * css_provider = gtk_css_provider_new();
   gtk_css_provider_load_from_resource (css_provider,
-                                       "/org/zrythm/theme.css");
+                                       "/org/zrythm/app/theme.css");
   gtk_style_context_add_provider_for_screen (
           gdk_screen_get_default (),
           GTK_STYLE_PROVIDER (css_provider),

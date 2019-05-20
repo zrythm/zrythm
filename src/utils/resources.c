@@ -27,12 +27,15 @@ get_icon_type_str (IconType icon_type)
 {
   switch (icon_type)
     {
+      /* FIXME why strdup and not const strings? */
     case ICON_TYPE_ZRYTHM:
       return g_strdup ("zrythm");
     case ICON_TYPE_GNOME_BUILDER:
       return g_strdup_printf ("gnome-builder");
     case ICON_TYPE_BREEZE:
       return g_strdup_printf ("breeze-icons");
+    case ICON_TYPE_FORK_AWESOME:
+      return g_strdup_printf ("fork-awesome");
     }
   g_warn_if_reached ();
   return NULL;

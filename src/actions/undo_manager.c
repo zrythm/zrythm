@@ -19,7 +19,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "gui/widgets/header_bar.h"
+#include "gui/widgets/header_notebook.h"
+#include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/main_window.h"
 #include "actions/undoable_action.h"
 #include "actions/undo_manager.h"
@@ -130,7 +131,8 @@ undo_manager_perform (UndoManager *    self,
   STACK_PUSH (self->undo_stack,
               action);
   self->redo_stack->top = -1;
-  if (MAIN_WINDOW && MW_HEADER_BAR)
-    header_bar_widget_refresh_undo_redo_buttons (
-      MW_HEADER_BAR);
+  if (MAIN_WINDOW && MW_HEADER_NOTEBOOK &&
+      MW_HOME_TOOLBAR)
+    home_toolbar_widget_refresh_undo_redo_buttons (
+      MW_HOME_TOOLBAR);
 }

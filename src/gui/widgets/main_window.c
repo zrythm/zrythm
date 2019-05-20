@@ -32,9 +32,8 @@
 #include "gui/widgets/center_dock_bot_box.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/clip_editor.h"
-#include "gui/widgets/connections.h"
 #include "gui/widgets/file_browser.h"
-#include "gui/widgets/header_bar.h"
+#include "gui/widgets/header_notebook.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/inspector_region.h"
 #include "gui/widgets/main_window.h"
@@ -104,11 +103,9 @@ on_close_notification_clicked (
 void
 main_window_widget_refresh (MainWindowWidget * self)
 {
-  header_bar_widget_setup (MW_HEADER_BAR,
-                           self,
+  header_notebook_widget_setup (MW_HEADER_NOTEBOOK,
                            PROJECT->title);
 
-  connections_widget_refresh (MW_CONNECTIONS);
   tracklist_widget_setup (MW_TRACKLIST,
                           TRACKLIST);
 
@@ -170,7 +167,7 @@ main_window_widget_class_init (MainWindowWidgetClass * _klass)
   gtk_widget_class_bind_template_child (
     klass,
     MainWindowWidget,
-    header_bar);
+    header_notebook);
   gtk_widget_class_bind_template_child (
     klass,
     MainWindowWidget,
@@ -277,7 +274,7 @@ main_window_widget_init (MainWindowWidget * self)
 
   gtk_widget_destroy (
     GTK_WIDGET (g_object_new (
-      HEADER_BAR_WIDGET_TYPE, NULL)));
+      HEADER_NOTEBOOK_WIDGET_TYPE, NULL)));
   gtk_widget_destroy (
     GTK_WIDGET (g_object_new (
       TOP_BAR_WIDGET_TYPE, NULL)));

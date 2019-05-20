@@ -200,8 +200,13 @@ dialog
 background-color: @bg_dark_variant2;
 }
 
-headerbar,
-header-bar,
+.header_notebook tabs,
+.header_notebook header,
+.header_notebook toolbar,
+home-toolbar,
+project-toolbar,
+view-toolbar,
+help-toolbar,
 menubar
 {
   background-color: @bg_darker_variant2;

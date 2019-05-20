@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.22.1 -->
+<interface>
+  <requires lib="gtk+" version="3.20"/>
+  <template class="HelpToolbarWidget" parent="GtkToolbar">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkToolButton" id="chat">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">app.chat</property>
+        <property name="icon_name">z-dialog-messages</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="manual">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">app.manual</property>
+        <property name="icon_name">z-help-contents</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="forums">
+        <property name="visible">1</property>
+        <property name="icon-name">z-applications-internet</property>
+        <property name="action-name">app.forums</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="shortcuts">
+        <property name="visible">1</property>
+        <property name="icon-name">z-configure-shortcuts</property>
+        <property name="action-name">app.shortcuts</property>
+      </object>
+    </child>
+  </template>
+</interface>

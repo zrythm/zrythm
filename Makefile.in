@@ -498,7 +498,8 @@ $(BUILD_DIR)/zrythm.gresource.xml: resources/gen-gtk-gresources-xml.py \
 	resources/theme.css \
 	resources/ui/*.ui \
 	resources/icons/zrythm/*.svg \
-	resources/icons/gnome-builder/*.svg
+	resources/icons/gnome-builder/*.svg \
+	resources/icons/fork-awesome/*.svg
 	resources/icons/breeze-icons/gen-hicolor.py resources/icons/breeze-icons resources/icons/breeze-icons
 	resources/gen-gtk-gresources-xml.py resources $@
 

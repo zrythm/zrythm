@@ -19,7 +19,6 @@
 
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/clip_editor.h"
-#include "gui/widgets/connections.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/piano_roll.h"
 #include "gui/widgets/rack.h"
@@ -36,9 +35,6 @@ bot_dock_edge_widget_init (BotDockEdgeWidget * self)
   gtk_widget_destroy (
     GTK_WIDGET (g_object_new (
       RACK_WIDGET_TYPE, NULL)));
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      CONNECTIONS_WIDGET_TYPE, NULL)));
   gtk_widget_destroy (
     GTK_WIDGET (g_object_new (
       CLIP_EDITOR_WIDGET_TYPE, NULL)));
@@ -81,8 +77,4 @@ bot_dock_edge_widget_class_init (BotDockEdgeWidgetClass * _klass)
     klass,
     BotDockEdgeWidget,
     rack);
-  gtk_widget_class_bind_template_child (
-    klass,
-    BotDockEdgeWidget,
-    connections);
 }

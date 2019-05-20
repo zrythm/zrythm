@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-19 21:01+0100\n"
+"POT-Creation-Date: 2019-05-20 20:35+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Japanese <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -49,10 +49,6 @@ msgstr ""
 msgid "A plugin already exists at the selected slot. Overwrite it?"
 msgstr "選択したスロットにプラグインが既に存在します。上書きしますか？"
 
-#: src/gui/widgets/header_bar.c:430
-msgid "About"
-msgstr "Zrythmについて"
-
 #: resources/ui/snap_grid_popover.ui:47
 msgid "Adaptive Grid"
 msgstr "適応型グリッド"
@@ -93,10 +89,6 @@ msgstr "オーディオ"
 msgid "Audio Outs"
 msgstr "オーディオ"
 
-#: resources/ui/audio_unit.ui:32
-msgid "Audio Unit"
-msgstr ""
-
 #: resources/ui/shortcuts.ui:216
 msgid "Audition tool"
 msgstr "試聴ツール"
@@ -119,10 +111,6 @@ msgstr "バックエンド"
 msgid "Backward"
 msgstr "後戻り"
 
-#: src/gui/widgets/header_bar.c:352
-msgid "Best Fit"
-msgstr "最適表示"
-
 #: resources/ui/shortcuts.ui:245
 msgid "Best fit"
 msgstr "最適表示"
@@ -134,10 +122,6 @@ msgstr "ビット深度"
 #: resources/ui/center_dock_bot_box.ui:54
 msgid "Bot"
 msgstr "ボット"
-
-#: src/gui/widgets/header_bar.c:299
-msgid "Bottom Panel"
-msgstr "下パネル"
 
 #: src/audio/track.c:735
 msgid "Bus"
@@ -179,10 +163,6 @@ msgid ""
 msgstr ""
 "チャンネルスロット - ダブルクリックしてプラグインを開きます - クリックしてド"
 "ラッグしてプラグインを移動します"
-
-#: src/gui/widgets/header_bar.c:374
-msgid "Chat"
-msgstr "チャット"
 
 #: src/utils/ui.c:554
 msgid "Chinese [zh]"
@@ -233,11 +213,6 @@ msgstr "色"
 #: src/audio/engine_jack.c:580
 msgid "Communication error with the JACK server"
 msgstr "JACKサーバーとの通信エラー"
-
-#: resources/ui/bot_dock_edge.ui:153
-#, fuzzy
-msgid "Connections"
-msgstr "接続"
 
 #: src/gui/widgets/ports_expander.c:140
 #, fuzzy
@@ -339,15 +314,11 @@ msgstr "プリセットを削除しますか？"
 msgid "Delete Track"
 msgstr "トラックを削除"
 
-#: resources/ui/connections.ui:98
-msgid "Dest. Audio Unit"
-msgstr ""
-
 #: resources/ui/export_dialog.ui:161
 msgid "Dither"
 msgstr "ディザ"
 
-#: src/gui/widgets/header_bar.c:421 resources/ui/donate_dialog.ui:7
+#: resources/ui/donate_dialog.ui:7
 msgid "Donate"
 msgstr "寄付"
 
@@ -455,10 +426,6 @@ msgstr ""
 msgid "Format"
 msgstr "フォーマット"
 
-#: src/gui/widgets/header_bar.c:392
-msgid "Forums"
-msgstr "フォーラム"
-
 #: resources/ui/transport_controls.ui:105
 msgid "Forward"
 msgstr "前へ"
@@ -498,6 +465,15 @@ msgstr "グリッド"
 #: src/audio/track.c:744
 msgid "Group"
 msgstr "グループ"
+
+#: resources/ui/header_notebook.ui:73
+#, fuzzy
+msgid "Help"
+msgstr "ヘルプ(_H)"
+
+#: resources/ui/header_notebook.ui:17
+msgid "Home"
+msgstr ""
 
 #: src/gui/widgets/port_connections_popover.c:59
 msgid "INPUTS"
@@ -549,7 +525,7 @@ msgstr "JACK機能は無効です"
 msgid "Japanese [ja]"
 msgstr "日本語[ja]"
 
-#: src/gui/widgets/header_bar.c:401 resources/ui/shortcuts.ui:27
+#: resources/ui/shortcuts.ui:27
 msgid "Keyboard Shortcuts"
 msgstr "ショートカットキー"
 
@@ -564,10 +540,6 @@ msgstr "言語"
 #: resources/ui/center_dock_bot_box.ui:43
 msgid "Left"
 msgstr "左"
-
-#: src/gui/widgets/header_bar.c:275
-msgid "Left Panel"
-msgstr "左パネル"
 
 #: resources/ui/quantize_mb_popover.ui:88 resources/ui/inspector_region.ui:91
 #: resources/ui/inspector_master.ui:101 resources/ui/inspector_ap.ui:101
@@ -596,10 +568,6 @@ msgstr "ロック"
 #: resources/ui/transport_controls.ui:122 resources/ui/export_dialog.ui:250
 msgid "Loop"
 msgstr "ループ"
-
-#: src/gui/widgets/header_bar.c:113
-msgid "Loop Selection"
-msgstr "選択範囲のをループする"
 
 #: resources/ui/shortcuts.ui:287
 msgid "Loop selection"
@@ -634,10 +602,6 @@ msgstr ""
 #: resources/ui/preferences.ui:298
 msgid "Main Window"
 msgstr "メインウィンドウ"
-
-#: src/gui/widgets/header_bar.c:383
-msgid "Manual"
-msgstr "マニュアル"
 
 #: src/project.c:142 src/audio/track.c:738
 msgid "Master"
@@ -736,10 +700,6 @@ msgstr "プロジェクトを開く"
 #, fuzzy
 msgid "Open a project"
 msgstr "プロジェクトを開く"
-
-#: src/gui/widgets/header_bar.c:343
-msgid "Original Size"
-msgstr "通常サイズ"
 
 #: resources/ui/shortcuts.ui:252
 msgid "Original size"
@@ -843,7 +803,7 @@ msgstr "位置"
 msgid "Preferences"
 msgstr "設定"
 
-#: resources/ui/shortcuts.ui:79
+#: resources/ui/shortcuts.ui:79 resources/ui/header_notebook.ui:35
 msgid "Project"
 msgstr "プロジェクト"
 
@@ -854,7 +814,7 @@ msgstr ""
 "プロジェクトにはまだパスがありません。Please save the project before "
 "exporting."
 
-#: resources/ui/header_bar.ui:29
+#: resources/ui/header_bar.ui:29 resources/ui/header_notebook.ui:149
 msgid "Project name"
 msgstr "プロジェクト名"
 
@@ -911,6 +871,11 @@ msgstr "オートメーションを読み取る"
 msgid "Record"
 msgstr "レコード"
 
+#: src/gui/widgets/home_toolbar.c:56 resources/ui/home_toolbar.ui:27
+#, fuzzy
+msgid "Redo"
+msgstr "やり直し(_R)"
+
 #: resources/ui/shortcuts.ui:147
 msgid "Redo previous command"
 msgstr "前のコマンドをやり直す"
@@ -935,10 +900,6 @@ msgstr "削除"
 #: resources/ui/project_assistant.ui:82
 msgid "Removes selected project from the list"
 msgstr "選択したプロジェクトをリストから削除します"
-
-#: src/gui/widgets/header_bar.c:410
-msgid "Report a Bug"
-msgstr "バグを報告"
 
 #: src/audio/engine_jack.c:583
 msgid "Requested client does not exist"
@@ -970,10 +931,6 @@ msgstr "オブジェクトを作成"
 msgid "Right"
 msgstr "右"
 
-#: src/gui/widgets/header_bar.c:287
-msgid "Right Panel"
-msgstr "右パネル"
-
 #: src/gui/widgets/route_target_selector.c:80
 msgid "Routed to Stereo Out"
 msgstr ""
@@ -995,10 +952,6 @@ msgstr "プロジェクトを保存"
 #: src/plugins/lv2_gtk.c:149
 msgid "Save State"
 msgstr "状態を保存"
-
-#: src/gui/widgets/header_bar.c:182
-msgid "Save _As"
-msgstr "名前を付けて保存(_A)"
 
 #: resources/ui/shortcuts.ui:98
 #, fuzzy
@@ -1048,10 +1001,6 @@ msgstr "選択…"
 #: resources/ui/shortcuts.ui:188
 msgid "Select/Stretch tool"
 msgstr "選択/ストレッチツール"
-
-#: src/gui/widgets/header_bar.c:100
-msgid "Selection"
-msgstr "選択範囲"
 
 #: resources/ui/shortcuts.ui:156
 msgid "Selections"
@@ -1109,10 +1058,6 @@ msgstr "トラックをソロ"
 msgid "Song"
 msgstr "曲名"
 
-#: resources/ui/connections.ui:73
-msgid "Source Audio Unit"
-msgstr ""
-
 #: src/utils/ui.c:550
 msgid "Spanish [es]"
 msgstr "スペイン語[es]"
@@ -1120,10 +1065,6 @@ msgstr "スペイン語[es]"
 #: src/utils/ui.c:607
 msgid "Square Root"
 msgstr "平方根"
-
-#: src/gui/widgets/header_bar.c:311
-msgid "Status Bar"
-msgstr "ステータスバー"
 
 #: src/gui/widgets/route_target_selector.c:118
 msgid "Stereo Out"
@@ -1256,6 +1197,11 @@ msgstr "クライアントを初期化できませんでした"
 msgid "Unable to load internal client"
 msgstr "内部クライアントをロードできませんでした"
 
+#: src/gui/widgets/home_toolbar.c:55 resources/ui/home_toolbar.ui:14
+#, fuzzy
+msgid "Undo"
+msgstr "元に戻す(_U)"
+
 #: resources/ui/shortcuts.ui:135
 msgid "Undo and Redo"
 msgstr "取り消しとやり直し"
@@ -1293,6 +1239,11 @@ msgstr "プロジェクト名未設定"
 msgid "Use grid"
 msgstr "グリッドを使用"
 
+#: resources/ui/header_notebook.ui:54
+#, fuzzy
+msgid "View"
+msgstr "表示(_V)"
+
 #: resources/ui/first_run_assistant.ui:50
 msgid ""
 "Welcome to Zrythm.\n"
@@ -1309,10 +1260,6 @@ msgstr "プラグインをインスタンス化するときに常にそのUIを�
 #: resources/ui/automation_lane.ui:99
 msgid "Write automation"
 msgstr "オートメーションを書く"
-
-#: src/gui/widgets/header_bar.c:334
-msgid "Zoom _Out"
-msgstr "ズーム アウト(_O)"
 
 #: resources/ui/shortcuts.ui:231
 msgid "Zoom in"
@@ -1358,67 +1305,34 @@ msgstr "トラックを複製(_D)"
 msgid "_Edit"
 msgstr "編集(_E)"
 
-#: src/gui/widgets/header_bar.c:193
-msgid "_Export As"
-msgstr "…としてエクスポート(_E)"
-
 #: resources/ui/header_bar.ui:55
 msgid "_File"
 msgstr "ファイル(_F)"
 
-#: src/gui/widgets/header_bar.c:363
-msgid "_Fullscreen"
-msgstr "全画面表示(_F)"
-
 #: resources/ui/header_bar.ui:97
 msgid "_Help"
 msgstr "ヘルプ(_H)"
-
-#: src/gui/widgets/header_bar.c:155
-msgid "_New"
-msgstr "新規プロジェクト(_N)"
 
 #: src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:72
 #: resources/ui/port_selector_popover.ui:207
 msgid "_OK"
 msgstr "_OK"
 
-#: src/gui/widgets/header_bar.c:164 src/utils/dialogs.c:46
+#: src/utils/dialogs.c:46
 msgid "_Open"
 msgstr "開く(_O)"
-
-#: src/gui/widgets/header_bar.c:204
-msgid "_Preferences"
-msgstr "設定(_P)"
 
 #: src/plugins/lv2_gtk.c:471
 msgid "_Prefix plugin name"
 msgstr "_プレフィックスプラグイン名"
 
-#: src/gui/widgets/header_bar.c:213
-msgid "_Quit"
-msgstr "終了(_Q)"
-
-#: src/gui/widgets/header_bar.c:52 src/gui/widgets/header_bar.c:239
-msgid "_Redo"
-msgstr "やり直し(_R)"
-
-#: src/plugins/lv2_gtk.c:153 src/gui/widgets/header_bar.c:173
-#: src/actions/actions.c:525
+#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:525
 msgid "_Save"
 msgstr "保存(_S)"
-
-#: src/gui/widgets/header_bar.c:51 src/gui/widgets/header_bar.c:224
-msgid "_Undo"
-msgstr "元に戻す(_U)"
 
 #: resources/ui/header_bar.ui:83
 msgid "_View"
 msgstr "表示(_V)"
-
-#: src/gui/widgets/header_bar.c:325
-msgid "_Zoom In"
-msgstr "ズーム イン(_Z)"
 
 #: resources/ui/rack_row.ui:60
 msgid "expander"
@@ -1445,6 +1359,77 @@ msgstr "region_name"
 #: resources/ui/audio_clip_editor.ui:56 resources/ui/audio_clip_editor.ui:68
 msgid "stuff"
 msgstr ""
+
+#, fuzzy
+#~ msgid "View options"
+#~ msgstr "スナップ/グリッドオプション"
+
+#, fuzzy
+#~ msgid "Connections"
+#~ msgstr "接続"
+
+#~ msgid "About"
+#~ msgstr "Zrythmについて"
+
+#~ msgid "Best Fit"
+#~ msgstr "最適表示"
+
+#~ msgid "Bottom Panel"
+#~ msgstr "下パネル"
+
+#~ msgid "Chat"
+#~ msgstr "チャット"
+
+#~ msgid "Forums"
+#~ msgstr "フォーラム"
+
+#~ msgid "Left Panel"
+#~ msgstr "左パネル"
+
+#~ msgid "Loop Selection"
+#~ msgstr "選択範囲のをループする"
+
+#~ msgid "Manual"
+#~ msgstr "マニュアル"
+
+#~ msgid "Original Size"
+#~ msgstr "通常サイズ"
+
+#~ msgid "Report a Bug"
+#~ msgstr "バグを報告"
+
+#~ msgid "Right Panel"
+#~ msgstr "右パネル"
+
+#~ msgid "Save _As"
+#~ msgstr "名前を付けて保存(_A)"
+
+#~ msgid "Selection"
+#~ msgstr "選択範囲"
+
+#~ msgid "Status Bar"
+#~ msgstr "ステータスバー"
+
+#~ msgid "Zoom _Out"
+#~ msgstr "ズーム アウト(_O)"
+
+#~ msgid "_Export As"
+#~ msgstr "…としてエクスポート(_E)"
+
+#~ msgid "_Fullscreen"
+#~ msgstr "全画面表示(_F)"
+
+#~ msgid "_New"
+#~ msgstr "新規プロジェクト(_N)"
+
+#~ msgid "_Preferences"
+#~ msgstr "設定(_P)"
+
+#~ msgid "_Quit"
+#~ msgstr "終了(_Q)"
+
+#~ msgid "_Zoom In"
+#~ msgstr "ズーム イン(_Z)"
 
 #~ msgid "Tracks (%d)"
 #~ msgstr "トラック(%d)"

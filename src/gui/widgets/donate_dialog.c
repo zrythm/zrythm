@@ -109,7 +109,7 @@ donate_dialog_widget_init (DonateDialogWidget * self)
 #define ADD_IMG(basename, obj) \
   pixbuf = \
     gdk_pixbuf_new_from_resource_at_scale ( \
-      "/org/zrythm/icons/ext/" basename, \
+      RESOURCE_PATH ICON_PATH "ext/" basename, \
       200, 200, TRUE, NULL); \
   img = gtk_image_new_from_pixbuf (pixbuf); \
   gtk_widget_set_visible (img, 1); \

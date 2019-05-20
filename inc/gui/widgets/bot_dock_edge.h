@@ -41,7 +41,6 @@ G_DECLARE_FINAL_TYPE (BotDockEdgeWidget,
 
 typedef struct _MixerWidget MixerWidget;
 typedef struct _ClipEditorWidget ClipEditorWidget;
-typedef struct _ConnectionsWidget ConnectionsWidget;
 typedef struct _RackWidget RackWidget;
 
 typedef struct _BotDockEdgeWidget
@@ -49,7 +48,6 @@ typedef struct _BotDockEdgeWidget
   GtkBox                   parent_instance;
   GtkNotebook *            bot_notebook;
   RackWidget *             rack;
-  ConnectionsWidget *      connections;
   ClipEditorWidget *       clip_editor;
   MixerWidget *            mixer;
 } BotDockEdgeWidget;

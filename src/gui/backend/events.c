@@ -41,9 +41,9 @@
 #include "gui/widgets/center_dock_bot_box.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/channel.h"
-#include "gui/widgets/connections.h"
 #include "gui/widgets/color_area.h"
-#include "gui/widgets/header_bar.h"
+#include "gui/widgets/header_notebook.h"
+#include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/instrument_track.h"
 #include "gui/widgets/inspector.h"
@@ -366,7 +366,6 @@ on_plugin_added (Plugin * plugin)
       automation_tracklist->widget)
     automation_tracklist_widget_refresh (
       automation_tracklist->widget);
-  connections_widget_refresh (MW_CONNECTIONS);
 }
 
 static void
@@ -835,8 +834,8 @@ events_process (void * data)
             (Track *) ev->arg);
           break;
         case ET_UNDO_REDO_ACTION_DONE:
-          header_bar_widget_refresh_undo_redo_buttons (
-            MW_HEADER_BAR);
+          home_toolbar_widget_refresh_undo_redo_buttons (
+            MW_HOME_TOOLBAR);
           break;
         case ET_MIDI_NOTE_CREATED:
           /*z_gtk_overlay_add_if_not_exists (*/

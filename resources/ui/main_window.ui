@@ -39,7 +39,7 @@
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="HeaderBarWidget" id="header_bar">
+              <object class="HeaderNotebookWidget" id="header_notebook">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
               </object>

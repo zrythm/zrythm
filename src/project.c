@@ -38,7 +38,7 @@
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "audio/transport.h"
-#include "gui/widgets/header_bar.h"
+#include "gui/widgets/header_notebook.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/splash.h"
@@ -194,8 +194,8 @@ create_default (Project * self)
   quantize_update_snap_points (&PROJECT->quantize_timeline);
   quantize_update_snap_points (&PROJECT->quantize_midi);
 
-  header_bar_widget_set_subtitle (
-    MW_HEADER_BAR,
+  header_notebook_widget_set_subtitle (
+    MW_HEADER_NOTEBOOK,
     PROJECT->title);
 }
 
@@ -315,8 +315,8 @@ load (char * filename)
       g_atomic_int_set (&AUDIO_ENGINE->run, 1);
     }
 
-  header_bar_widget_set_subtitle (
-    MW_HEADER_BAR,
+  header_notebook_widget_set_subtitle (
+    MW_HEADER_NOTEBOOK,
     PROJECT->title);
 
   RETURN_OK;
@@ -426,8 +426,8 @@ project_save (const char * dir)
 
   ui_show_notification (_("Project saved."));
 
-  header_bar_widget_set_subtitle (
-    MW_HEADER_BAR,
+  header_notebook_widget_set_subtitle (
+    MW_HEADER_NOTEBOOK,
     PROJECT->title);
 
   RETURN_OK;
