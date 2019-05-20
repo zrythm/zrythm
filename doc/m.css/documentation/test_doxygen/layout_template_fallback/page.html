@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}HELLO THIS TEMPLATE OVERRIDES THINGS{% endblock %}
+
+{% block main %}
+        <h1>HELLO THIS TEMPLATE OVERRIDES THINGS</h1>
+        {% if compound.brief %}
+        <p>{{ compound.brief }}</p>
+        {% endif %}
+        <p>But not all, the base.html is taken from the fallback.</p>
+        {% if compound.description %}
+{{ compound.description }}
+        {% endif %}
+{% endblock %}

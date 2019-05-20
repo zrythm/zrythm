@@ -1,0 +1,18 @@
+INPUT                   = Directory
+RECURSIVE               = YES
+QUIET                   = YES
+GENERATE_HTML           = NO
+GENERATE_LATEX          = NO
+GENERATE_XML            = YES
+XML_PROGRAMLISTING      = NO
+
+##! M_PAGE_FINE_PRINT   =
+##! M_THEME_COLOR       =
+##! M_FAVICON           =
+
+XML_NS_MEMB_FILE_SCOPE  = YES
+##! M_LINKS_NAVBAR1     = \
+##!     modules \
+##!     namespaces
+##! M_SEARCH_DOWNLOAD_BINARY = YES
+##! M_SHOW_UNDOCUMENTED = YES

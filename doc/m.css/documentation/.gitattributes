@@ -1,0 +1,2 @@
+# Make the GitHub language stats bar prettier
+test/*/*.html linguist-generated

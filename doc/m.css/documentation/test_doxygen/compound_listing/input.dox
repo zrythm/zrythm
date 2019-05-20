@@ -1,0 +1,30 @@
+/** @namespace Root
+ * @brief Root namespace
+ */
+
+/** @dir Directory
+ * @brief Directory
+ */
+/** @namespace Root::Directory
+ * @brief Namespace in directory
+ */
+
+/** @dir Directory/Sub
+ * @brief Subdirectory
+ */
+/** @namespace Root::Directory::Sub
+ * @brief Namespace in subdirectory
+ */
+
+/** @dir Another
+ * @brief Another directory
+ */
+/** @namespace Another
+ * @brief Another namespace
+ */
+
+/** @page page-no-toc Page without TOC
+
+@section section-notoc A section that doesn't go into TOC
+
+*/

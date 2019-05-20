@@ -1,0 +1,91 @@
+{% set page_slug = '[blog]' %}
+{% if not M_BLOG_NAME %}{% set M_BLOG_NAME = SITENAME %}{% endif %}
+{% extends 'base.html' %}
+
+{% block head_links %}
+  {% if M_BLOG_FAVICON %}
+  <link rel="icon" href="{{ M_BLOG_FAVICON[0]|format_siteurl|e }}" type="{{ M_BLOG_FAVICON[1]|e }}" />
+  {% elif M_FAVICON %}
+  <link rel="icon" href="{{ M_FAVICON[0]|format_siteurl|e }}" type="{{ M_FAVICON[1]|e }}" />
+  {% endif %}
+{% endblock %}
+
+{% block social %}
+  <meta property="og:site_name" content="{{ M_BLOG_NAME|e }}" />
+{% endblock %}
+
+{% block main %}
+{% if article and article.cover %}
+{% else %}
+<div class="m-container">
+  <div class="m-row">
+{% endif %}
+{% block content %}
+{% endblock %}
+{% if article and article.cover %}
+  <nav class="m-navpanel m-container">
+    <div class="m-row">
+      <div class="m-col-s-4 m-col-l-2 {% if M_SHOW_AUTHOR_LIST %}m-push-l-1{% elif tags %}m-push-s-2 m-push-l-3{% else %}m-push-s-4 m-push-l-5{% endif %}">
+        <h3>{{ "Categories"|hyphenate(lang='en') }}</h3>
+        <ol class="m-block-bar-s">
+          {% for cat, null in categories %}
+          <li><a href="{{ cat.url|format_siteurl|e }}">{{ cat|e }}</a></li>
+          {% endfor %}
+        </ol>
+      </div>
+      {% if M_SHOW_AUTHOR_LIST %}
+      <div class="m-col-s-4 m-col-l-2 {% if tags %}m-push-l-3{% else %}m-push-s-4 m-push-l-7{% endif %}">
+        <h3>{{ "Authors"|hyphenate(lang='en') }}</h3>
+        <ol class="m-block-bar-s">
+          {% for author, null in authors %}
+          <li><a href="{{ author.url|format_siteurl|e }}">{{ author|e }}</a></li>
+          {% endfor %}
+        </ol>
+      </div>
+      {% endif %}
+      {% if tags %}
+      <div class="m-col-s-4 m-col-l-2 {% if M_SHOW_AUTHOR_LIST %}m-push-l-5{% else %}m-push-s-2 m-push-l-5{% endif %}">
+        <h3>{{ "Tag cloud"|hyphenate(lang='en') }}</h3>
+        <ul class="m-tagcloud">
+          {% set max_articles_per_tag = tags|map(attribute='1')|map('length')|sort|last %}
+          {% for tag, articles in tags|sort(attribute='0') %}
+          <li class="m-tag-{{ (5*(articles|length)/max_articles_per_tag)|round(0, 'ceil')|int }}"><a href="{{ tag.url|format_siteurl|e }}">{{ tag|e }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+  </nav>
+{% else %}
+    <nav class="m-navpanel m-col-m-2">
+      <h3>{{ "Categories"|hyphenate(lang='en') }}</h3>
+      <ol class="m-block-bar-m">
+        {% if not categories %}
+        <li><em class="m-text m-dim">(none yet)</em></li>
+        {% endif %}
+        {% for cat, null in categories %}
+        <li><a href="{{ cat.url|format_siteurl|e }}">{{ cat|e|hyphenate }}</a></li>
+        {% endfor %}
+      </ol>
+      {% if M_SHOW_AUTHOR_LIST and authors %}
+      <h3>{{ "Authors"|hyphenate(lang='en') }}</h3>
+      <ol class="m-block-bar-m">
+        {% for author, null in authors %}
+        <li><a href="{{ author.url|format_siteurl|e }}">{{ author|e }}</a></li>
+        {% endfor %}
+      </ol>
+      {% endif %}
+      {% if tags %}
+      <h3>{{ "Tag cloud"|hyphenate(lang='en') }}</h3>
+      <ul class="m-tagcloud">
+        {% set max_articles_per_tag = tags|map(attribute='1')|map('length')|sort|last %}
+        {% for tag, articles in tags|sort(attribute='0') %}
+        <li class="m-tag-{{ (5*(articles|length)/max_articles_per_tag)|round(0, 'ceil')|int }}"><a href="{{ tag.url|format_siteurl|e }}">{{ tag|e }}</a></li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </nav>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

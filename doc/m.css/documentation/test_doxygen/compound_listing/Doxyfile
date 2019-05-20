@@ -1,0 +1,18 @@
+INPUT                   =
+FILE_PATTERNS           = *.h *.dox
+RECURSIVE               = YES
+AUTOLINK_SUPPORT        = NO
+QUIET                   = YES
+GENERATE_HTML           = NO
+GENERATE_LATEX          = NO
+GENERATE_XML            = YES
+XML_PROGRAMLISTING      = NO
+
+##! M_FILE_TREE_EXPAND_LEVELS = 2
+##! M_CLASS_TREE_EXPAND_LEVELS = 5
+##! M_EXPAND_INNER_TYPES = YES
+##! M_PAGE_FINE_PRINT   =
+##! M_THEME_COLOR       =
+##! M_FAVICON           =
+##! M_SEARCH_DISABLED   = YES
+# Keeping navbar enabled so we can test for highlighted items

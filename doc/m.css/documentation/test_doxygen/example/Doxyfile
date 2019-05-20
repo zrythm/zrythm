@@ -1,0 +1,17 @@
+INPUT                   = input.dox
+QUIET                   = YES
+GENERATE_HTML           = NO
+GENERATE_LATEX          = NO
+GENERATE_XML            = YES
+XML_PROGRAMLISTING      = NO
+EXAMPLE_PATH            = .
+ALIASES                 = \
+    "m_footernavigation=@xmlonly<mcss:footernavigation xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" />@endxmlonly" \
+    "m_examplenavigation{2}=@xmlonly<mcss:examplenavigation xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:page=\"\1\" mcss:prefix=\"\2\" />@endxmlonly"
+
+##! M_PAGE_FINE_PRINT   =
+##! M_THEME_COLOR       =
+##! M_FAVICON           =
+##! M_LINKS_NAVBAR1     =
+##! M_LINKS_NAVBAR2     =
+##! M_SEARCH_DISABLED   = YES

@@ -1,0 +1,6 @@
+/** @mainpage
+@section section_1 A section
+
+The section name has `_1` in it, which is the same as the compound/section
+separator that Doxygen puts in. It shouldn't assert.
+*/

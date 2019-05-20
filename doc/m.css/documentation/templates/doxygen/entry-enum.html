@@ -1,0 +1,5 @@
+            <dt>
+              {% set j = joiner(',\n              ') %}
+              <span class="m-doc-wrap-bumper">enum {% if enum.is_strong %}class {% endif %}<a href="{% if enum.base_url != compound.url %}{{ enum.base_url }}{% endif %}#{{ enum.id }}" {% if enum.has_details or enum.base_url != compound.url %}class="m-doc"{% else %}class="m-doc-self" name="{{ enum.id }}"{% endif %}>{{ enum.name }}</a>{% if enum.type %}: {{ enum.type }}{% endif %} { </span><span class="m-doc-wrap">{% for value in enum.values %}{{ j() }}<a href="#{{ value.id }}" class="m-doc">{{ value.name }}</a>{% if value.initializer %} {{ value.initializer }}{% endif %}{% if value.is_deprecated %} <span class="m-label m-danger">deprecated</span>{% endif %}{% endfor %} }{% if enum.is_deprecated %} <span class="m-label m-danger">deprecated</span>{% endif %}{% if mark_nonpublic and enum.is_protected %} <span class="m-label m-flat m-warning">protected</span>{% endif %}</span>
+            </dt>
+            <dd>{{ enum.brief }}</dd>

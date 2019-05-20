@@ -1,0 +1,6 @@
+            <dt>
+              <a href="" class="m-doc{% if not data.has_details %}-self{% endif %}">{{ data.name }}</a>{% if data.type %}: {{ data.type }}{% endif %}{% if data.value %} = {{ data.value }}{% endif %}
+              {# This has to be here to avoid the newline being eaten #}
+
+            </dt>
+            <dd>{{ data.brief }}</dd>

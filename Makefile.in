@@ -547,7 +547,7 @@ plugins: $(X42_PLUGINS_BINS) $(DISTRHO_PORTS_BINS)
 
 .PHONY: doc
 doc:
-	doc/doxygen Doxyfile.cfg
+	doc/m.css/documentation/doxygen.py Doxyfile-mcss
 
 .PHONY: clean
 clean:

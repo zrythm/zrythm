@@ -1,0 +1,9 @@
+/** @page deprecated-page Deprecated page
+@deprecated This page is deprecated.
+
+@subpage deprecated-subpage
+*/
+
+/** @page deprecated-subpage Deprecated sub-page
+@deprecated This page is *also* deprecated.
+*/

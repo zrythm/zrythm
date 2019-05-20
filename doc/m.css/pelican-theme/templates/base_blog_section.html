@@ -1,0 +1,41 @@
+{% extends "base_blog.html" %}
+
+{% block head_links %}
+  {{- super() -}}
+  {% if articles_page.has_previous() %}
+  <link rel="prev" href="{{ articles_previous_page.url|format_siteurl|e }}" />
+  {% endif %}
+  {% if articles_page.has_next() %}
+  <link rel="next" href="{{ articles_next_page.url|format_siteurl|e }}" />
+  {% endif %}
+{% endblock %}
+
+{% block social %}
+  {{- super() -}}
+  {% block social_title_url_image %}
+  {% endblock social_title_url_image %}
+  <meta name="twitter:card" content="summary" />
+  <meta property="og:type" content="website" />
+{% endblock %}
+
+{% block content %}
+    <div class="m-col-m-10">
+      {% block content_title %}
+      {% endblock content_title %}
+      {% for article in articles_page.object_list %}
+      <article>
+        {% macro header() %}{% include "article_header.html" %}{% endmacro %}
+        {{ header()|indent(8) }}
+        <footer>
+          {% macro footer() %}{% include "article_footer.html" %}{% endmacro %}
+          {{ footer()|indent(10) }}
+        </footer>
+        <div class="m-clearfix-l"></div>
+      </article>
+      {% endfor %}
+      {% if articles_page.has_other_pages() %}
+      {% macro pagination() %}{% include 'pagination.html' %}{% endmacro %}
+      {{ pagination()|indent(6) }}
+      {% endif %}
+    </div>
+{% endblock %}

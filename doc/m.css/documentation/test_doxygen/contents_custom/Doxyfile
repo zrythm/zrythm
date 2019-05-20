@@ -1,0 +1,26 @@
+INPUT                   = input.dox
+IMAGE_PATH              = .
+QUIET                   = YES
+GENERATE_HTML           = NO
+GENERATE_LATEX          = NO
+GENERATE_XML            = YES
+XML_PROGRAMLISTING      = NO
+
+DOTFILE_DIRS            = .
+DOT_FONTNAME            = DejaVu Sans
+DOT_FONTSIZE            = 16
+
+##! M_PAGE_FINE_PRINT   =
+##! M_THEME_COLOR       =
+##! M_FAVICON           =
+##! M_LINKS_NAVBAR1     =
+##! M_LINKS_NAVBAR2     =
+##! M_MATH_CACHE_FILE   =
+##! M_SEARCH_DISABLED   = YES
+
+ALIASES = \
+    "m_div{1}=@xmlonly<mcss:div xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:class=\"\1\">@endxmlonly" \
+    "m_enddiv=@xmlonly</mcss:div>@endxmlonly" \
+    "m_span{1}=@xmlonly<mcss:span xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:class=\"\1\">@endxmlonly" \
+    "m_endspan=@xmlonly</mcss:span>@endxmlonly" \
+    "m_class{1}=@xmlonly<mcss:class xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:class=\"\1\" />@endxmlonly"

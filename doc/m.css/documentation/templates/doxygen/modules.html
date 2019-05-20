@@ -1,0 +1,21 @@
+{% set navbar_current = 'modules' %}
+{% extends 'base-index.html' %}
+
+{% block main %}
+        <h1>Modules</h2>
+        <ul class="m-doc">
+          {% for i in index.modules recursive %}
+          {% if i.has_nestable_children %}
+          <li class="m-doc-collapsible">
+            <a href="#" onclick="return toggle(this)">module</a> <a href="{{ i.url }}" class="m-doc">{{ i.name }}</a>{% if i.is_deprecated %} <span class="m-label m-danger">deprecated</span>{% endif %} <span class="m-doc">{{ i.brief }}</span>
+            <ul class="m-doc">
+{{ loop(i.children)|indent(4, true) }}
+            </ul>
+          </li>
+          {% else %}
+          <li>module <a href="{{ i.url }}" class="m-doc">{{ i.name }}</a>{% if i.is_deprecated %} <span class="m-label m-danger">deprecated</span>{% endif %} <span class="m-doc">{{ i.brief }}</span></li>
+          {% endif %}
+          {% endfor %}
+        </ul>
+{{ super() -}}
+{% endblock %}

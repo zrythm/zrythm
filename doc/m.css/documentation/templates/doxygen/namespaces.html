@@ -1,0 +1,21 @@
+{% set navbar_current = 'namespaces' %}
+{% extends 'base-index.html' %}
+
+{% block main %}
+        <h1>Namespaces</h2>
+        <ul class="m-doc">
+          {% for i in index.symbols|selectattr('kind', 'equalto', 'namespace') recursive %}
+          {% if i.has_nestable_children %}
+          <li class="m-doc-collapsible">
+            <a href="#" onclick="return toggle(this)">{{ i.kind }}</a> <a href="{{ i.url }}" class="m-doc">{{ i.name }}</a>{% if i.is_deprecated %} <span class="m-label m-danger">deprecated</span>{% endif %} <span class="m-doc">{{ i.brief }}</span>
+            <ul class="m-doc">
+{{ loop(i.children|selectattr('kind', 'equalto', 'namespace'))|indent(4, true) }}
+            </ul>
+          </li>
+          {% else %}
+          <li>{{ i.kind }} <a href="{{ i.url }}" class="m-doc">{{ i.name }}</a>{% if i.is_deprecated %} <span class="m-label m-danger">deprecated</span>{% endif %} <span class="m-doc">{{ i.brief }}</span></li>
+          {% endif %}
+          {% endfor %}
+        </ul>
+{{ super() -}}
+{% endblock %}

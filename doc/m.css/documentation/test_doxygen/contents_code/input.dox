@@ -1,0 +1,100 @@
+/** @mainpage
+
+@code{.cpp}
+// A code block.
+// Spanning multiple lines.
+@endcode
+
+@code{.cpp} Inline=code; @endcode at the start of a line. Then a code that
+is inside of @code{.cpp} true || false @endcode a text, should be delimited by
+spaces. But not when it is in (@code{.cpp} std::exit(2); @endcode) parentheses.
+
+@code{.cpp}
+        // a block
+            // that is indented
+        // but has a lot of trailing whitespace which should be removed
+    }
+
+
+
+
+@endcode
+
+@note Code block after a note doesn't start a new paragraph in the XML but
+    should be treated as a block:
+
+@code{.cpp}
+// this is a new block
+@endcode
+
+@todo However, code block after an xrefitem is delimited properly by Doxygen:
+
+@code{.cpp}
+// code?
+@endcode
+
+> And code block after a blockquote as well:
+
+@code{.cpp}
+// another block
+@endcode
+
+@attention Inline code after a note should not be treated as block, though:
+
+The @code{.cpp} constexpr @endcode functions are pure.
+
+@warning Inline code right after a block should be part of a paragraph:
+
+@code{.cpp} inline @endcode variables are a thing?
+
+Code block inside a list (has to be done using HTML):
+
+<ul>
+<li>
+    A paragraph.
+
+    @code{.cpp}
+    #include <os>
+    @endcode
+</li>
+<li>
+    Another paragraph.
+
+    Yet another
+</li>
+<li>A single paragraph, rendered without the wrapping tag</li>
+</ul>
+
+@note
+    Code block inside a note:
+@note
+    @code{.cpp}
+    // code block
+    @endcode
+@note
+    Another paragraph of that note.
+
+*/
+
+/** @page warnings Code that produces warnings
+
+@code
+// Code without language
+// description
+@endcode
+
+A paragraph.
+@code{.cpp}
+multi=line;
+code="that is a part of a paragraph.";
+@endcode
+
+Improper code block inside a list that needs to be extracted out:
+
+-   A paragraph.
+    @code{.cpp}
+    #include <os>
+    // hello again
+    @endcode
+
+*/

@@ -1,0 +1,18 @@
+/** @page page A page
+
+Go here: @subpage example
+*/
+
+/** @page example The Example
+
+See here:
+
+-   @ref path-prefix/CMakeLists.txt
+-   @ref path-prefix/configure.h.cmake
+-   @ref path-prefix/main.cpp
+
+@example path-prefix/CMakeLists.txt @m_examplenavigation{example,path-prefix/} @m_footernavigation
+@example path-prefix/configure.h.cmake @m_examplenavigation{example,path-prefix/} @m_footernavigation
+@example path-prefix/main.cpp @m_examplenavigation{example,path-prefix/} @m_footernavigation
+@example a.txt
+*/

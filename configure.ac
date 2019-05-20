@@ -280,7 +280,7 @@ AC_CONFIG_HEADERS([config.h])
 # Declare output files
 AC_CONFIG_FILES([
   Makefile
-  Doxyfile.cfg
+  doc/Doxyfile.cfg
   scripts/package_win.sh
   scripts/package_osx.sh
 	data/osx/Info.plist

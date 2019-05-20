@@ -1,0 +1,32 @@
+<header>
+  <h1><a href="{{ article.url|format_siteurl|e }}" rel="bookmark" title="Permalink to {{ article.title }}">
+    <time class="m-date" datetime="{{ article.date.isoformat() }}">
+      {% set month = article.date.strftime('%b') %}
+      {% set day = article.date.strftime('%d') %}
+      {% set year = article.date.strftime('%Y') %}
+      {{ month }} <span class="m-date-day">{{ day }}</span> {{ year }}
+    </time>
+    {{ article.title }}
+    {% if article.status == 'draft' %}
+    <span class="m-label m-dim">draft</span>
+    {% endif %}
+  </a></h1>
+  {# Display summary only if:
+    - we're on article listing page (either the articles_page is defined by
+      Pelican the article_list is defined by our archive/index page and the
+      article is not expanded (it's expanded only if it's first on the first
+      page only on the index/archive page and only if it doesn't say it should
+      be collapsed)
+    - the article is expanded but doesn't say the summary should be hidden #}
+  {% if article.summary and
+        (((articles_page or article_list) and
+         (page_name not in ['index', 'archives'] or
+          not loop.first or
+          (articles_page and articles_page.number != 1) or
+          (article.collapse_first is defined and article.collapse_first == 'True') or
+          (article.collapse_first is not defined and M_COLLAPSE_FIRST_ARTICLE))) or
+        (article.hide_summary is defined and article.hide_summary != 'True') or
+        (article.hide_summary is not defined and not M_HIDE_ARTICLE_SUMMARY)) %}
+  {{ article.summary|trim|indent(2) }}
+  {% endif %}
+</header>

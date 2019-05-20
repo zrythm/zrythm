@@ -1,0 +1,7 @@
+/** @page some-long-page-name A page
+
+<a name="anchor"></a>
+
+Here's a HTML anchor for which Doxygen doesn't produce a prefix like for the
+normal `@anchor` because it's buggy. But we have to parse it nevertheless!
+*/

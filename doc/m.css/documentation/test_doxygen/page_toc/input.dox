@@ -1,0 +1,17 @@
+/** @page page-toc Page with TOC
+
+@tableofcontents
+
+@section section A section
+
+Text.
+
+@subsection sub-section Subsection
+
+@subsection sub-section2 Subsection 2
+
+@subsubsection sub-section3 Subsection 3
+
+@section section2 Section 2
+
+*/

@@ -1,0 +1,6 @@
+digraph Colors {
+    a [class="m-success"]
+    b [style=filled shape=circle class="m-dim"]
+    a -> b [class="m-warning" label="yes"]
+    b -> b [class="m-primary" label="no"]
+}

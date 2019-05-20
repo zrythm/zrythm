@@ -1,0 +1,33 @@
+/** @mainpage
+
+Here's a block formula:
+
+@f[
+    \hat q = [\boldsymbol 0, 1] + \epsilon [\frac{\boldsymbol v}{2}, 0]
+@f]
+
+And @f$ \hat q @f$ is how quaternion is denoted.
+
+@f[
+    a^2 + b^2 = c^2
+@f]
+
+@f$c^2@f$ should be part of a new paragraph, not stuck out of it. The following
+formula has a custom environment:
+
+\f{eqnarray*}{
+    g &=& \frac{Gm_2}{r^2} \\
+      &=& 9.82066032\,\mbox{m/s}^2
+\f}
+
+*/
+
+/** @page error Error
+
+This will blow up when rendered and should print a warning to output:
+
+@f[
+    \hat{
+@f]
+
+*/

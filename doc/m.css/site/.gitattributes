@@ -1,0 +1,3 @@
+# Make the GitHub language stats bar prettier
+Makefile linguist-generated
+develop_server.sh linguist-generated

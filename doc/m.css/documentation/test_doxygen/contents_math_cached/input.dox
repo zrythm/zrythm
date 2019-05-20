@@ -1,0 +1,26 @@
+/** @page math Math
+
+In order to actually test use of the cache, I need to cheat a bit. Inline
+formula which is pi in the source but @f$ \pi @f$ here. Then a block
+formula which is a Pythagorean theorem in source but not in the output:
+
+@f[
+    a^2 + b^2 = c^2
+@f]
+
+*/
+
+/* The (uncached) output of below should be the same as the cached output of
+   above. Be sure to preserve the line breaks as well. */
+
+/** @page math-uncached Math
+
+In order to actually test use of the cache, I need to cheat a bit. Inline
+formula which is pi in the source but @f$ \frac{\tau}{2} @f$ here. Then a block
+formula which is a Pythagorean theorem in source but not in the output:
+
+@f[
+    a^3 + b^3 \neq c^3
+@f]
+
+*/

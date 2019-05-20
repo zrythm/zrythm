@@ -1,0 +1,21 @@
+{% set navbar_current = 'classes' %}
+{% extends 'base-index.html' %}
+
+{% block main %}
+        <h1>Classes</h2>
+        <ul class="m-doc">
+          {% for i in index.classes recursive %}
+          {% if i.children %}
+          <li class="m-doc-collapsible{% if loop.depth > CLASS_INDEX_EXPAND_LEVELS or (i.kind != 'module' and not CLASS_INDEX_EXPAND_INNER) %} collapsed{% endif %}">
+            <a href="#" onclick="return toggle(this)">{{ i.kind }}</a> <a href="{{ i.url }}" class="m-doc">{{ i.name }}</a> <span class="m-doc">{{ i.brief }}</span>
+            <ul class="m-doc">
+{{ loop(i.children)|indent(4, true) }}
+            </ul>
+          </li>
+          {% else %}
+          <li>{{ i.kind }} <a href="{{ i.url }}" class="m-doc">{{ i.name }}</a>{% if i.is_final %} <span class="m-label m-flat m-warning">final</span>{% endif %} <span class="m-doc">{{ i.brief }}</span></li>
+          {% endif %}
+          {% endfor %}
+        </ul>
+{{ super() -}}
+{% endblock %}

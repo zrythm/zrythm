@@ -1,0 +1,5 @@
+            <dt>
+              {% set j = joiner(',\n              ') %}
+              <span class="m-doc-wrap-bumper">#define <a href="#{{ define.id }}" {% if define.has_details %}class="m-doc"{% else %}class="m-doc-self" name="{{ define.id }}"{% endif %}>{{ define.name }}</a>{% if define.params != None %}(</span><span class="m-doc-wrap">{% for param in define.params %}{{ j() }}{{ param[0] }}{% endfor %}){% endif %}{% if define.is_deprecated %} <span class="m-label m-danger">deprecated</span>{% endif %}</span>
+            </dt>
+            <dd>{{ define.brief }}</dd>

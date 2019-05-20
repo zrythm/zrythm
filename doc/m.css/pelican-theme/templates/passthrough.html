@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en"{% if page.class %} class="{{ page.class }}"{% endif %}>
+<head>
+  <meta charset="UTF-8" />
+  <title>{{ page.title }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  {% if page.css %}
+  {% set styles = page.css.strip().split('\n') %}
+  {% for style in styles %}
+  <link rel="stylesheet" href="{{ style.strip()|expand_link(page)|e }}" />
+  {% endfor %}
+  {% endif %}
+  {% if page.js %}
+  {% set scripts = page.js.strip().split('\n') %}
+  {% for script in scripts %}
+  <script src="{{ script.strip()|expand_link(page)|e }}"></script>
+  {% endfor %}
+  {% endif %}
+  {% if page.html_header %}
+  {{ page.html_header.strip()|indent(2) }}
+  {% endif %}
+</head>
+<body>
+{{- page.content -}}
+</body>
+</html>
