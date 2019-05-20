@@ -1,0 +1,36 @@
+/** @mainpage
+
+Note: the test uses DejaVu Sans instead of Source Sans Pro in order to have
+predictable rendering on the CIs.
+
+@dot
+digraph Basics {
+    rankdir=LR
+
+    a [style=filled shape=rect]
+    b [peripheries=2 shape=circle]
+    c [shape=ellipse]
+    a -> b
+    b -> c [label="0" fontsize=40]
+    c -> c [label="1"]
+}
+@enddot
+
+@dotfile colors.dot
+
+@dot "A graph" width=5rem
+strict graph "" {
+    a -- b
+    a -- b
+}
+@enddot
+
+@dotfile ab.dot "A graph" height=5rem
+*/
+
+/** @page warnings
+
+This file doesn't exist:
+
+@dotfile nonexistent.dot
+*/

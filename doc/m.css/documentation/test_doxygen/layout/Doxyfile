@@ -1,0 +1,17 @@
+XML_OUTPUT              =
+
+PROJECT_NAME = "A project"
+PROJECT_BRIEF = "is cool"
+
+##! M_THEME_COLOR       = #00ffff
+##! M_FAVICON           = favicon-light.png
+##! M_PAGE_HEADER       = "<p><a href=\"{filename}\">A self link</a>.</p>"
+##! M_PAGE_FINE_PRINT   = "<p><a href=\"http://doxygen.org\">Doxygen</a> version {doxygen_version}.</p>"
+##! M_LINKS_NAVBAR1     = "files pages namespaces" \
+##!                       "annotated namespaces pages"
+##! M_LINKS_NAVBAR2     = "pages pages annotated"
+##! M_SEARCH_EXTERNAL_URL = "https://google.com/search?q=site:mcss.mosra.cz+{}"
+##! M_SEARCH_HELP       = "Some <em>help</em>."
+##! M_HTML_HEADER       = "<!-- this is extra in the header -->" \
+##!                       "  <!-- and more, indented -->" \
+##!                       "<!-- yes. -->"

@@ -1,0 +1,5 @@
+            <dt>
+              {% set j = joiner('\n              ') %}
+              <span class="m-doc-wrap-bumper">class <a href="" class="m-doc{% if not enum.has_details %}-self{% endif %}">{{ enum.name }}</a>{% if enum.base %}({{ enum.base }}){% endif %}: </span><span class="m-doc-wrap">{% for value in enum.values %}{{ j() }}<a href="" class="m-doc{% if not enum.has_details %}-self{% endif %}">{{ value.name }}</a>{% if value.value is not none %} = {{ value.value }}{% endif %}{% endfor %}</span>
+            </dt>
+            <dd>{{ enum.brief }}</dd>

@@ -1,0 +1,4 @@
+            <dt>
+              <a href="" class="m-doc{% if not property.has_details %}-self{% endif %}">{{ property.name }}</a>{% if property.type %}: {{ property.type }}{% endif %} <span class="m-label m-flat {% if property.is_settable %}m-success{% else %}m-warning{% endif %}">get{% if property.is_settable %} set{% endif %}{% if property.is_deletable %} del{% endif %}</span>
+            </dt>
+            <dd>{{ property.brief }}</dd>

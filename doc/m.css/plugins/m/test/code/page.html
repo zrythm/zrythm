@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>m.code | A Pelican Blog</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro:400,400i,600%7CSource+Sans+Pro:400,400i,600,600i" />
+  <link rel="stylesheet" href="static/m-dark.css" />
+  <link rel="canonical" href="page.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+<header><nav id="navigation">
+  <div class="m-container">
+    <div class="m-row">
+      <a href="./" id="m-navbar-brand" class="m-col-t-9 m-col-m-none m-left-m">A Pelican Blog</a>
+    </div>
+  </div>
+</nav></header>
+<main>
+<article>
+  <div class="m-container m-container-inflatable">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <h1>m.code</h1>
+<!-- content -->
+<pre class="m-code"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></pre>
+<pre class="m-inverted m-code"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="hll">    <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class="p">}</span></pre>
+<p>Inline code is here: <code class="cpp m-code"><span class="k">constexpr</span></code>. Code without a language should be
+rendered as plain monospace text: <code>code</code>.</p>
+<pre class="m-console">!<span class="g g-AnsiBlue">[</span><span class="g g-AnsiBrightWhite">mosra@don-perverzo </span><span class="g g-AnsiWhite">m.css</span><span class="g g-AnsiBlue">]</span><span class="g g-AnsiBrightCyan">$ </span>ls
+CONTRIBUTING.rst  CREDITS.rst  <span class="g g-AnsiBrightBlue">doc</span>            <span class="g g-AnsiBrightBlue">plugins</span>        README.rst
+COPYING           <span class="g g-AnsiBrightBlue">css</span>          <span class="g g-AnsiBrightBlue">documentation</span>  <span class="g g-AnsiBrightBlue">pelican-theme</span>  <span class="g g-AnsiBrightBlue">site</span></pre>
+<p>Console colors:</p>
+<pre class="m-console"><span style="color: #dcdcdc; background-color: #dcdcdc">&zwnj;██</span> <span style="color: #a5c9ea; background-color: #a5c9ea">&zwnj;██</span> <span style="color: #3bd267; background-color: #3bd267">&zwnj;██</span> <span style="color: #c7cf2f; background-color: #c7cf2f">&zwnj;██</span> <span style="color: #cd3431; background-color: #cd3431">&zwnj;██</span> <span style="color: #2f83cc; background-color: #2f83cc">&zwnj;▓▓</span> <span style="color: #747474; background-color: #747474">&zwnj;▒▒</span>
+
+Leading zeros: <span style="color: #0f7403; background-color: #0f7403">&zwnj;▒▒</span> <span style="color: #0f7403">&zwnj;▒▒</span>
+
+<span style="color: #3bd267">&zwnj;  </span> <span style="color: #3bd267">&zwnj;  </span> <span style="color: #3bd267">&zwnj;░░</span> <span style="color: #3bd267">&zwnj;▒▒</span> <span style="color: #3bd267">&zwnj;▓▓</span> <span style="color: #3bd267; background-color: #3bd267">&zwnj;██</span></pre>
+<pre class="m-code">// this language is not highlighted</pre>
+<p>Properly preserve backslashes: <code class="m-code"><span class="k">\frac</span><span class="nb">{</span>a<span class="nb">}{</span>b<span class="nb">}</span></code></p>
+<p>Don't trim leading spaces in blocks:</p>
+<pre class="m-code">        <span class="n">nope</span><span class="p">();</span>
+    <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+<span class="p">}</span></pre>
+<!-- /content -->
+      </div>
+    </div>
+  </div>
+</article>
+</main>
+</body>
+</html>

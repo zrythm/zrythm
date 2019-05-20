@@ -1,0 +1,11 @@
+/** @page page-a A page
+@brief Brief docs for a page
+
+Detailed docs for a page.
+*/
+
+/** @page page-b Page B
+@brief Brief with a period.
+
+Detailed docs for page B.
+*/

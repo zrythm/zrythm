@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="{% if page and page.lang %}{{ page.lang }}{% elif article and article.lang %}{{ article.lang }}{% else %}{{ DEFAULT_LANG }}{%endif %}"{% if not M_DISABLE_SOCIAL_META_TAGS %} prefix="og: http://ogp.me/ns#"{% endif %}>
+<head>
+  <meta charset="UTF-8" />
+  <title>{% block title %}{{ SITENAME|e }}{% endblock title %}</title>
+  {% for href in M_CSS_FILES %}
+  <link rel="stylesheet" href="{{ href|format_siteurl|e }}" />
+  {% endfor %}
+  {% block head_links %}
+  {% endblock head_links %}
+  {% if FEED_ALL_ATOM_URL %}
+  <link href="{{ FEED_ALL_ATOM_URL|format_siteurl|e }}" type="application/atom+xml" rel="alternate" title="{{ SITENAME|e }}" />
+  {% elif FEED_ALL_ATOM %}
+  <link href="{{ FEED_ALL_ATOM|format_siteurl|e }}" type="application/atom+xml" rel="alternate" title="{{ SITENAME|e }}" />
+  {% endif %}
+  {% if category %}
+  {% if CATEGORY_FEED_ATOM_URL %}
+  <link href="{{ CATEGORY_FEED_ATOM_URL.format(slug=category.slug)|format_siteurl }}" type="application/atom+xml" rel="alternate" title="{{ SITENAME|e }} | {{ category|e }}" />
+  {% elif CATEGORY_FEED_ATOM %}
+  <link href="{{ CATEGORY_FEED_ATOM.format(slug=category.slug)|format_siteurl }}" type="application/atom+xml" rel="alternate" title="{{ SITENAME|e }} | {{ category|e }}" />
+  {% endif %}
+  {% endif %}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  {% if M_THEME_COLOR %}
+  <meta name="theme-color" content="{{ M_THEME_COLOR }}" />
+  {% endif %}
+  {% block meta %}
+  {% endblock meta %}
+  {% if not M_DISABLE_SOCIAL_META_TAGS %}
+  {% if M_SOCIAL_TWITTER_SITE %}
+  <meta name="twitter:site" content="{{ M_SOCIAL_TWITTER_SITE }}" />
+  {% endif %}
+  {% if M_SOCIAL_TWITTER_SITE_ID %}
+  <meta name="twitter:site:id" content="{{ M_SOCIAL_TWITTER_SITE_ID }}" />
+  {% endif %}
+  {% block social %}
+  {% endblock social %}
+  {% endif %}
+  {% block extra %}
+  {% endblock extra %}
+</head>
+<body>
+<header><nav id="navigation"{% if page and page.landing and page.cover %} class="m-navbar-landing"{% elif (page and page.cover) or (article and article.cover) %} class="m-navbar-cover"{% endif %}>
+  <div class="m-container">
+    <div class="m-row">
+      <a href="{{ SITEURL }}/" id="m-navbar-brand" class="m-col-t-9 m-col-m-none m-left-m{% if page and page.landing and page.cover and page.hide_navbar_brand == 'True' %} m-navbar-brand-hidden{% endif %}">
+        {%- if M_SITE_LOGO %}<img src="{{ M_SITE_LOGO|e }}" />{% endif -%}
+        {{- (M_SITE_LOGO_TEXT or SITENAME)|e -}}
+      </a>
+      {% if M_LINKS_NAVBAR1 or M_LINKS_NAVBAR2 %}
+      <a id="m-navbar-show" href="#navigation" title="Show navigation" class="m-col-t-3 m-hide-m m-text-right"></a>
+      <a id="m-navbar-hide" href="#" title="Hide navigation" class="m-col-t-3 m-hide-m m-text-right"></a>
+      <div id="m-navbar-collapse" class="m-col-t-12 m-show-m m-col-m-none m-right-m">
+        <div class="m-row">
+          <ol class="{% if M_LINKS_NAVBAR2 %}m-col-t-6{% else %}m-col-t-12{% endif %} m-col-m-none">
+            {% for title, link, slug, sub in M_LINKS_NAVBAR1 %}
+            {% if not sub %}
+            <li><a href="{{ link|format_siteurl|e }}"{% if (page and page.highlight == slug) or slug == page_slug %} id="m-navbar-current"{% endif %}>{{ title|e }}</a></li>
+            {% else %}
+            <li>
+              <a href="{{ link|format_siteurl|e }}"{% if (page and page.highlight == slug) or slug == page_slug %} id="m-navbar-current"{% endif %}>{{ title|e }}</a>
+              <ol>
+                {% for title, link, slug in sub %}
+                <li><a href="{{ link|format_siteurl|e }}"{% if (page and page.highlight == slug) or slug == page_slug %} id="m-navbar-current"{% endif %}>{{ title|e }}</a></li>
+                {% endfor %}
+              </ol>
+            </li>
+            {% endif %}
+            {% endfor %}
+          </ol>
+          {% if M_LINKS_NAVBAR2 %}
+          {% set start = M_LINKS_NAVBAR1|length + 1 %}
+          <ol class="m-col-t-6 m-col-m-none" start="{{ start }}">
+            {% for title, link, slug, sub in M_LINKS_NAVBAR2 %}
+            {% if not sub %}
+            <li><a href="{{ link|format_siteurl|e }}"{% if (page and page.highlight == slug) or slug == page_slug %} id="m-navbar-current"{% endif %}>{{ title|e }}</a></li>
+            {% else %}
+            <li>
+              <a href="{{ link|format_siteurl|e }}"{% if (page and page.highlight == slug) or slug == page_slug %} id="m-navbar-current"{% endif %}>{{ title|e }}</a>
+              <ol>
+                {% for title, link, slug in sub %}
+                <li><a href="{{ link|format_siteurl|e }}"{% if (page and page.highlight == slug) or slug == page_slug %} id="m-navbar-current"{% endif %}>{{ title|e }}</a></li>
+                {% endfor %}
+              </ol>
+            </li>
+            {% endif %}
+            {% endfor %}
+          </ol>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</nav></header>
+<main>
+{% block main %}
+{% endblock %}
+</main>
+{% if M_LINKS_FOOTER1 or M_LINKS_FOOTER2 or M_LINKS_FOOTER3 or M_LINKS_FOOTER4 or not M_FINE_PRINT is defined or M_FINE_PRINT %}
+<footer><nav>
+  <div class="m-container">
+    {% if M_LINKS_FOOTER1 or M_LINKS_FOOTER2 or M_LINKS_FOOTER3 or M_LINKS_FOOTER4 %}
+    <div class="m-row">
+      <div class="m-col-s-3 m-col-t-6">
+        {% if M_LINKS_FOOTER1 %}
+        <h3>
+          {%- if M_LINKS_FOOTER1[0][1] %}<a href="{{ M_LINKS_FOOTER1[0][1]|format_siteurl|e }}">{% endif %}
+          {{- M_LINKS_FOOTER1[0][0]|e -}}
+          {% if M_LINKS_FOOTER1[0][1] -%}</a>{% endif -%}
+        </h3>
+        <ul>
+          {% for title, link in M_LINKS_FOOTER1 %}{% if loop.index0 != 0 %}
+          <li>{% if title %}<a href="{{ link|format_siteurl|e }}">{{ title|e }}</a>{% else %}&nbsp;{% endif %}</li>
+          {% endif %}{% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+      <div class="m-col-s-3 m-col-t-6">
+        {% if M_LINKS_FOOTER2 %}
+        <h3>
+          {%- if M_LINKS_FOOTER2[0][1] %}<a href="{{ M_LINKS_FOOTER2[0][1]|format_siteurl|e }}">{% endif %}
+          {{- M_LINKS_FOOTER2[0][0]|e -}}
+          {% if M_LINKS_FOOTER2[0][1] %}</a>{% endif -%}
+        </h3>
+        <ul>
+          {% for title, link in M_LINKS_FOOTER2 %}{% if loop.index0 != 0 %}
+          <li>{% if title %}<a href="{{ link|format_siteurl|e }}">{{ title|e }}</a>{% else %}&nbsp;{% endif %}</li>
+          {% endif %}{% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+      <div class="m-clearfix-t"></div>
+      <div class="m-col-s-3 m-col-t-6">
+        {% if M_LINKS_FOOTER3 %}
+        <h3>
+          {%- if M_LINKS_FOOTER3[0][1] %}<a href="{{ M_LINKS_FOOTER3[0][1]|format_siteurl|e }}">{% endif %}
+          {{- M_LINKS_FOOTER3[0][0]|e -}}
+          {% if M_LINKS_FOOTER3[0][1] %}</a>{% endif -%}
+        </h3>
+        <ul>
+          {% for title, link in M_LINKS_FOOTER3 %}{% if loop.index0 != 0 %}
+          <li>{% if title %}<a href="{{ link|format_siteurl|e }}">{{ title|e }}</a>{% else %}&nbsp;{% endif %}</li>
+          {% endif %}{% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+      <div class="m-col-s-3 m-col-t-6">
+        {% if M_LINKS_FOOTER4 %}
+        <h3>
+          {%- if M_LINKS_FOOTER4[0][1] %}<a href="{{ M_LINKS_FOOTER4[0][1]|format_siteurl|e }}">{% endif %}
+          {{- M_LINKS_FOOTER4[0][0]|e -}}
+          {% if M_LINKS_FOOTER4[0][1] %}</a>{% endif -%}
+        </h3>
+        <ul>
+          {% for title, link in M_LINKS_FOOTER4 %}{% if loop.index0 != 0 %}
+          <li>{% if title %}<a href="{{ link|format_siteurl|e }}">{{ title|e }}</a>{% else %}&nbsp;{% endif %}</li>
+          {% endif %}{% endfor %}
+        </ul>
+        {% elif M_LINKS_FOOTER4 is not defined %}
+        <h3><a href="{{ M_BLOG_URL|format_siteurl|e }}">Blog</a></h3>
+        <ul>
+          {% for cat, null in categories %}
+          <li><a href="{{ cat.url|format_siteurl|e }}">{{ cat|e }}</a></li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+    {% if not M_FINE_PRINT is defined or M_FINE_PRINT %}
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        {{ (M_FINE_PRINT or SITENAME + ". Powered by `Pelican <https://getpelican.com>`_ and `m.css <https://mcss.mosra.cz>`_.")|render_rst|indent(8) }}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</nav></footer>
+{% endif %}
+</body>
+</html>

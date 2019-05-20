@@ -1,0 +1,10 @@
+/** @mainpage
+
+This is a normal text.
+
+@internal
+This is internal docs, which is shown because `INTERNAL_DOCS` are enabled.
+@endinternal
+
+This is public docs again.
+*/

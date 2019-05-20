@@ -1,0 +1,22 @@
+INPUT                   = Dir DeprecatedDir UndocumentedDir input.dox
+QUIET                   = YES
+GENERATE_HTML           = NO
+GENERATE_LATEX          = NO
+GENERATE_XML            = YES
+XML_PROGRAMLISTING      = NO
+
+# Verify that this doesn't cause duplicated items
+XML_NS_MEMB_FILE_SCOPE  = YES
+
+EXAMPLE_PATH            = .
+ALIASES                 = \
+    "m_keywords{1}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keywords=\"\1\" />@endxmlonly" \
+    "m_keyword{3}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keyword=\"\1\" mcss:title=\"\2\" mcss:suffix-length=\"\3\" />@endxmlonly" \
+    "m_enum_values_as_keywords=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:enum-values-as-keywords=\"true\" />@endxmlonly"
+
+##! M_PAGE_FINE_PRINT   =
+##! M_THEME_COLOR       =
+##! M_FAVICON           =
+##! M_LINKS_NAVBAR1     =
+##! M_LINKS_NAVBAR2     =
+##! M_SEARCH_DOWNLOAD_BINARY = YES

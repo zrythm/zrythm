@@ -1,0 +1,148 @@
+/*
+    This file is part of m.css.
+
+    Copyright © 2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+:root {
+  /* Text properties */
+  --font: 'Libre Baskerville', serif;
+  --code-font: 'Source Code Pro', monospace;
+  --font-size: 14px;
+  --code-font-size: 1em; /* *not* rem, so it follows surrounding font size */
+  --paragraph-indent: 1.5rem;
+  --paragraph-align: justify;
+  --link-decoration: underline;
+  --link-decoration-nav: none;
+  --link-decoration-heading: none;
+  --nav-brand-case: lowercase;
+  --nav-menu-case: lowercase;
+  --nav-heading-case: uppercase;
+  --nav-categories-case: lowercase;
+  --landing-header-case: lowercase;
+  --heading-font-weight: normal;
+
+  /* Shapes */
+  --border-radius: 0.2rem;
+
+  /* Basics */
+  --background-color: #ffffff;
+  --color: #000000;
+  --line-color: #f7e3db;
+  --link-color: #ea7944;
+  --link-active-color: #cb4b16;
+  --mark-color: #4c93d3;
+  --mark-background-color: #e6e69c;
+  --code-color: #5b5b5b;
+  --code-inverted-color: rgba(91, 91, 91, 0.33);
+  --code-background-color: #fbf0ec;
+  --code-note-background-color: rgba(251, 240, 236, 0.5);
+  --console-background-color: #000000;
+  --button-background-color: #ffffff;
+
+  /* Header */
+  --header-border-width: 0.25rem 0 0 0;
+  --header-color: #000000;
+  --header-background-color: #ffffff;
+  --header-background-color-landing: rgba(255, 255, 255, 0.75);
+  --header-background-color-jumbo: rgba(255, 255, 255, 0.25);
+  --header-link-color: #000000;
+  --header-link-active-color: #cb4b16;
+  --header-link-current-color: #ea7944;
+  --header-link-active-background-color: #ffffff;
+  --header-link-active-background-color: rgba(255, 255, 255, 0.5);
+
+  /* Footer */
+  --footer-font-size: 0.85rem;
+  --footer-color: #7c7c7c;
+  --footer-background-color: #eeeeee;
+  --footer-link-color: #191919;
+  --footer-link-active-color: #494949;
+
+  /* Cover image */
+  --cover-image-background-color: #666666;
+
+  /* Article */
+  --article-header-color: #7a7a7a;
+  --article-footer-color: #969696;
+  --article-heading-color: #cb4b16;
+  --article-heading-active-color: #802f0e;
+
+  /* Right navigation panel */
+  --navpanel-link-color: #292929;
+  --navpanel-link-active-color: #cb4b16;
+
+  /* Plots */
+  --plot-background-color: #fbf0ec;
+  --plot-error-color: #000000;
+
+  /* Colored components */
+  --default-color: #000000;
+  --default-link-active-color: #cb4b16;
+  --default-filled-color: #000000;
+  --default-filled-background-color: #fbf0ec;
+  --default-filled-link-color: #ea7944;
+  --default-filled-link-active-color: #cb4b16;
+
+  --primary-color: #cb4b16;
+  --primary-link-active-color: #000000;
+  --primary-filled-color: #fbe4d9;
+  --primary-filled-background-color: #ef9069;
+  --primary-filled-link-color: #782f0d;
+  --primary-filled-link-active-color: #2f1205;
+
+  --success-color: #31c25d;
+  --success-link-active-color: #dcf6e3;
+  --success-filled-color: #f4fcf6;
+  --success-filled-background-color: #4dd376;
+  --success-filled-link-color: #c5f2d1;
+  --success-filled-link-active-color: #dcf6e3;
+
+  --warning-color: #c7cf2f;
+  --warning-link-active-color: #f6f6dc;
+  --warning-filled-color: #fcfcf4;
+  --warning-filled-background-color: #d1d34d;
+  --warning-filled-link-color: #f0f1c7;
+  --warning-filled-link-active-color: #f6f6dc;
+
+  --danger-color: #f60000;
+  --danger-link-active-color: #f6dddc;
+  --danger-filled-color: #fdf3f3;
+  --danger-filled-background-color: #e23e3e;
+  --danger-filled-link-color: #f2c7c6;
+  --danger-filled-link-active-color: #f6dddc;
+
+  --info-color: #2e7dc5;
+  --info-link-active-color: #c6ddf2;
+  --info-filled-color: #f4f8fc;
+  --info-filled-background-color: #4c93d3;
+  --info-filled-link-color: #c6ddf2;
+  --info-filled-link-active-color: #dbeaf7;
+
+  --dim-color: #bdbdbd;
+  --dim-link-color: #c0c0c0;
+  --dim-link-active-color: #949494;
+  --dim-filled-color: #7c7c7c;
+  --dim-filled-background-color: #f1f1f1;
+  --dim-filled-link-color: #c0c0c0;
+  --dim-filled-link-active-color: #949494;
+  --dim-button-active-color: #c0c0c0;
+}

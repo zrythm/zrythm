@@ -1,0 +1,4 @@
+# Make the GitHub language stats bar prettier
+doc/* linguist-documentation
+css/*.compiled.css linguist-generated
+*.h linguist-language=C++

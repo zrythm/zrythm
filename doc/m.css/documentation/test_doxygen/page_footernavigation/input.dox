@@ -1,0 +1,16 @@
+/** @page page A page
+- @subpage subpage1 First subpage
+- @subpage subpage2 Second subpage
+
+*/
+
+/** @page subpage1 First subpage
+
+@m_footernavigation
+*/
+
+/** @page subpage2 Second subpage
+
+@m_footernavigation
+*/
+

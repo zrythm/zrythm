@@ -1,0 +1,13 @@
+/**
+@page page A page
+
+- @subpage subpage Subpage
+*/
+
+/**
+@page subpage Subpage
+
+Some content.
+*/
+
+/** @example example.cpp */

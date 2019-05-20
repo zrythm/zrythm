@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>{% block title %}{{ PROJECT_TITLE }}{% if PROJECT_SUBTITLE %} {{ PROJECT_SUBTITLE }}{% endif %}{% endblock %}</title>
+  {% for css in STYLESHEETS %}
+  <link rel="stylesheet" href="{{ css|basename_or_url|e }}" />
+  {% endfor %}
+  {% if FAVICON %}
+  <link rel="icon" href="{{ FAVICON[0]|basename_or_url|e }}" type="{{ FAVICON[1] }}" />
+  {% endif %}
+  {% if not SEARCH_DISABLED and SEARCH_BASE_URL %}
+  <link rel="search" type="application/opensearchdescription+xml" href="opensearch.xml" title="Search {{ PROJECT_TITLE }} documentation" />
+  {% endif %}
+  {% block header_links %}
+  {% endblock %}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  {% if THEME_COLOR %}
+  <meta name="theme-color" content="{{ THEME_COLOR }}" />
+  {% endif %}
+  {% if HTML_HEADER %}
+  {{ HTML_HEADER|indent(2) }}
+  {% endif %}
+</head>
+<body>
+<header><nav id="navigation">
+  <div class="m-container">
+    <div class="m-row">
+      {% if MAIN_PROJECT_URL and PROJECT_TITLE %}
+      <span id="m-navbar-brand" class="m-col-t-8 m-col-m-none m-left-m">
+        <a href="{{ MAIN_PROJECT_URL }}">{{ PROJECT_TITLE }}</a> <span class="m-breadcrumb">|</span> <a href="index.html" class="m-thin">{{ PROJECT_SUBTITLE }}</a>
+      </span>
+      {% else %}
+      <a href="index.html" id="m-navbar-brand" class="m-col-t-8 m-col-m-none m-left-m">{{ PROJECT_TITLE }}{% if PROJECT_SUBTITLE %} <span class="m-thin">{{ PROJECT_SUBTITLE }}</span>{% endif %}</a>
+      {% endif %}
+      {% if LINKS_NAVBAR1 or LINKS_NAVBAR2 or not SEARCH_DISABLED %}
+      <div class="m-col-t-4 m-hide-m m-text-right m-nopadr">
+        {% if not SEARCH_DISABLED %}
+        <a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+          <path d="m6 0c-3.3144 0-6 2.6856-6 6 0 3.3144 2.6856 6 6 6 1.4858 0 2.8463-0.54083 3.8945-1.4355-0.0164 0.33797 0.14734 0.75854 0.5 1.1504l3.2227 3.7891c0.55185 0.6139 1.4517 0.66544 2.002 0.11524 0.55022-0.55022 0.49866-1.4501-0.11524-2.002l-3.7891-3.2246c-0.39184-0.35266-0.81242-0.51469-1.1504-0.5 0.89472-1.0482 1.4355-2.4088 1.4355-3.8945 0-3.3128-2.6856-5.998-6-5.998zm0 1.5625a4.4375 4.4375 0 0 1 4.4375 4.4375 4.4375 4.4375 0 0 1-4.4375 4.4375 4.4375 4.4375 0 0 1-4.4375-4.4375 4.4375 4.4375 0 0 1 4.4375-4.4375z"/>
+        </svg></a>
+        {% endif %}
+        <a id="m-navbar-show" href="#navigation" title="Show navigation"></a>
+        <a id="m-navbar-hide" href="#" title="Hide navigation"></a>
+      </div>
+      <div id="m-navbar-collapse" class="m-col-t-12 m-show-m m-col-m-none m-right-m">
+        <div class="m-row">
+          <ol class="{% if M_LINKS_NAVBAR2 %}m-col-t-6{% else %}m-col-t-12{% endif %} m-col-m-none">
+            {% for title, path, sub in LINKS_NAVBAR1 %}
+            {% if not sub %}
+            <li><a href="{{ path|path_to_url }}"{% if (page and page.path == path) or navbar_current == path %} id="m-navbar-current"{% endif %}>{{ title }}</a></li>
+            {% else %}
+            <li>
+              <a href="{{ path|path_to_url }}"{% if (page and page.path == path) or navbar_current == path %} id="m-navbar-current"{% endif %}>{{ title }}</a>
+              <ol>
+                {% for title, path in sub %}
+                <li><a href="{{ path|path_to_url }}"{% if (page and page.path == path) or navbar_current == path %} id="m-navbar-current"{% endif %}>{{ title }}</a></li>
+                {% endfor %}
+              </ol>
+            </li>
+            {% endif %}
+            {% endfor %}
+          </ol>
+          {% if LINKS_NAVBAR2 or not SEARCH_DISABLED %}
+          {% set start = LINKS_NAVBAR1|length + 1 %}
+          <ol class="m-col-t-6 m-col-m-none" start="{{ start }}">
+            {% for title, path, sub in LINKS_NAVBAR2 %}
+            {% if not sub %}
+            <li><a href="{{ path|path_to_url }}"{% if (page and page.path == path) or navbar_current == path %} id="m-navbar-current"{% endif %}>{{ title }}</a></li>
+            {% else %}
+            <li>
+              <a href="{{ path|path_to_url }}"{% if (page and page.path == path) or navbar_current == path %} id="m-navbar-current"{% endif %}>{{ title }}</a>
+              <ol>
+                {% for title, path in sub %}
+                <li><a href="{{ path|path_to_url }}"{% if (page and page.path == path) or navbar_current == path %} id="m-navbar-current"{% endif %}>{{ title }}</a></li>
+                {% endfor %}
+              </ol>
+            </li>
+            {% endif %}
+            {% endfor %}
+            {% if not SEARCH_DISABLED %}
+            <li class="m-show-m"><a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+              <path d="m6 0c-3.3144 0-6 2.6856-6 6 0 3.3144 2.6856 6 6 6 1.4858 0 2.8463-0.54083 3.8945-1.4355-0.0164 0.33797 0.14734 0.75854 0.5 1.1504l3.2227 3.7891c0.55185 0.6139 1.4517 0.66544 2.002 0.11524 0.55022-0.55022 0.49866-1.4501-0.11524-2.002l-3.7891-3.2246c-0.39184-0.35266-0.81242-0.51469-1.1504-0.5 0.89472-1.0482 1.4355-2.4088 1.4355-3.8945 0-3.3128-2.6856-5.998-6-5.998zm0 1.5625a4.4375 4.4375 0 0 1 4.4375 4.4375 4.4375 4.4375 0 0 1-4.4375 4.4375 4.4375 4.4375 0 0 1-4.4375-4.4375 4.4375 4.4375 0 0 1 4.4375-4.4375z"/>
+            </svg></a></li>
+            {% endif %}
+          </ol>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</nav></header>
+<main><article>
+  <div class="m-container m-container-inflatable">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        {% if PAGE_HEADER %}
+        {{ PAGE_HEADER|render_rst|replace('{filename}', FILENAME) }}
+        {% endif %}
+{% block main %}
+{% endblock %}
+      </div>
+    </div>
+  </div>
+</article></main>
+{% if not SEARCH_DISABLED %}
+<div class="m-doc-search" id="search">
+  <a href="#!" onclick="return hideSearch()"></a>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-m-8 m-push-m-2">
+        <div class="m-doc-search-header m-text m-small">
+          <div><span class="m-label m-default">Tab</span> / <span class="m-label m-default">T</span> to search, <span class="m-label m-default">Esc</span> to close</div>
+          <div id="search-symbolcount">&hellip;</div>
+        </div>
+        <div class="m-doc-search-content">
+          <form{% if SEARCH_BASE_URL %} action="{{ SEARCH_BASE_URL }}#search"{% endif %}>
+            <input type="search" name="q" id="search-input" placeholder="Loading &hellip;" disabled="disabled" autofocus="autofocus" autocomplete="off" spellcheck="false" />
+          </form>
+          <noscript class="m-text m-danger m-text-center">Unlike everything else in the docs, the search functionality <em>requires</em> JavaScript.{% if SEARCH_EXTERNAL_URL %} Enable it or <a href="{{ SEARCH_EXTERNAL_URL|replace('{query}', '') }}">use an external search engine</a>.{% endif %}</noscript>
+          <div id="search-help" class="m-text m-dim m-text-center">
+            {{ SEARCH_HELP|render_rst|indent(12) }}
+          </div>
+          <div id="search-notfound" class="m-text m-warning m-text-center">Sorry, nothing was found.{% if SEARCH_EXTERNAL_URL %}<br />Maybe try a full-text <a href="#" id="search-external" data-search-engine="{{ SEARCH_EXTERNAL_URL }}">search with external engine</a>?{% endif %}</div>
+          <ul id="search-results"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="search.js"></script>
+{% if SEARCH_DOWNLOAD_BINARY %}
+<script>
+  Search.download(window.location.pathname.substr(0, window.location.pathname.lastIndexOf('/') + 1) + "searchdata.bin");
+</script>
+{% else %}
+<script src="searchdata.js" async="async"></script>
+{% endif %}
+{% endif %}
+{% if FINE_PRINT %}
+<footer><nav>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        {% if FINE_PRINT == '[default]' %}
+        <p>{{ PROJECT_TITLE }}{% if PROJECT_SUBTITLE %} {{ PROJECT_SUBTITLE }}{% endif %}. Created by <a href="https://mcss.mosra.cz/documentation/python/">m.css Python doc generator</a>.</p>
+        {% else %}
+        {{ FINE_PRINT|render_rst|indent(8) }}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav></footer>
+{% endif %}
+</body>
+</html>

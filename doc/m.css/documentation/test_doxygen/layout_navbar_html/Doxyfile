@@ -1,0 +1,12 @@
+XML_OUTPUT              =
+
+##! M_LINKS_NAVBAR1 = \
+##!     "<a href=\"javascript:alert('hello!');\">Say hello</a> annotated" \
+##!     "files"
+##! M_LINKS_NAVBAR2 = \
+##!     "pages <a href=\"mailto:mosra@centrum.cz\">This is an e-mail</a> <a href=\"#\">Another link</a> namespaces" \
+##!     "<a href=\"https://github.com/mosra/m.css\">GitHub</a>"
+##! M_PAGE_FINE_PRINT   =
+##! M_THEME_COLOR       =
+##! M_FAVICON           =
+##! M_SEARCH_DISABLED   = YES

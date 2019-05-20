@@ -1,0 +1,21 @@
+# This variable is unknown to Doxygen and so it doesn't survive an upgrade
+UNKNOWN_VARIABLE = 1
+
+# COMMENTED_OUT_VARIABLE is commented-out, so it also doesn't survive
+
+# This one will survive, but is not recognized by m.css
+## HASHED_COMMENTED_VARIABLE = 2
+
+# This one is recognized by m.css and will survive, both lines
+##! HASHED_BANG_COMMENTED_VARIABLE = 3 \
+##!   HASHED_BANG_COMMENTED_VARIABLE_CONT
+
+# This one should also survive
+##!HASHED_BANG_COMMENTED_VARIABLE_NOSPACE = 4
+
+# This is known to Doxygen. It puts heavy spacing there though.
+INPUT = 5
+
+# This is at the end of the file (doesn't precede any known variable), but also
+# should survive
+##! HASHED_BANG_COMMENTED_VARIABLE_END = 6

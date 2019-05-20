@@ -1,0 +1,34 @@
+/** @mainpage
+
+@section section Page section
+
+Text.
+
+@subsection subsection Page subsection
+
+Text!
+
+@subsubsection subsubsection Sub-sub section
+
+Reference to @ref subsection "a page subsection" and @ref subsubsection.
+
+*/
+
+/** @page warnings Content that produces warnings
+
+# Markdown heading 1
+
+## Markdown heading 2
+
+### Markdown heading 3
+
+#### Markdown heading 4
+
+##### Markdown heading 5
+
+###### Markdown heading 6 that's rendered the same as 5
+
+Markdown heading, underlined, is misparsed
+##########################################
+
+*/

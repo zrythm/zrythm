@@ -1,0 +1,114 @@
+/** @mainpage
+
+@m_div{m-note m-dim m-text-center} This paragraph *is* rendered in a dim note,
+centered. @m_enddiv
+
+This paragraph contains a @m_span{m-text m-danger} *red* text @m_endspan in
+a normal text flow and then @m_class{m-text m-em m-small} **small strong italics**,
+@m_class{m-text m-info} *blue italics* and @m_class{m-text m-big} https://mcss.mosra.cz
+(big-ass link).
+
+@m_div{m-button m-primary} <a href="#">@m_div{m-big} A button @m_enddiv @m_div{m-small} @m_span{m-text m-em} with @m_endspan @m_class{m-text m-em} **subtitle** @m_enddiv </a> @m_enddiv
+
+A paragraph that is not affected by the inline classes from above.
+
+@m_class{m-text m-strong m-noindent}
+
+Bold, non-indented paragraph.
+
+@m_class{m-text m-primary}
+
+__Bold text that should not have__ the same class as the paragraph.
+
+A paragraph that doesn't have any class applied. Next, a full-width image:
+
+@m_class{m-fullwidth}
+
+@image html ship-small.jpg
+
+@m_class{m-flat}
+
+@image html ship-small.jpg A flat figure
+
+A fullwidth table:
+
+@m_class{m-fullwidth}
+
+Table header    | Another
+--------------- | -------
+Cell            | Another cell
+Next row        | Last.
+
+An unstyled list:
+
+@m_class{m-unstyled}
+
+-   First item without a dot
+-   Second item without a dot
+
+@m_class{m-block m-info}
+
+@par A info block with some paragraphs inside
+@parblock
+Hello.
+
+This is good, finally.
+@endparblock
+
+@m_class{m-frame}
+
+@note A note styled as a frame.
+
+This has to be here otherwise doxygen puts the next `@m_class` call into the
+above note. WHAT THE HELL!!!
+
+@m_class{m-block m-success}
+
+@xrefitem licenses "Third-party license info" "Third-party license info"
+    This package is licensed under MIT. All is good.
+
+@m_class{m-code-figure}
+
+@parblock
+@code
+// this is the code
+printf("The answer to the universe and everything is %d.", 5*9)
+@endcode
+
+The answer to the universe and everything is 42.
+@endparblock
+
+*/
+
+/** @page math Math
+
+A green formula:
+
+@m_class{m-success}
+
+@f[
+    \pi^2
+@f]
+
+A yellow @m_class{m-warning} @f$ \Sigma @f$ inline formula.
+*/
+
+/** @page dot Dot
+
+A red graph:
+
+@m_class{m-danger}
+
+@dot
+strict graph "" {
+    a -- b
+    a -- b
+}
+@enddot
+
+A blue graph, from a file:
+
+@m_class{m-info}
+
+@dotfile ab.dot
+*/

@@ -1,0 +1,82 @@
+{% extends "base_blog.html" %}
+
+{% block title %}{{ M_BLOG_NAME|e }}{% endblock %}
+
+{% block head_links %}
+  {{- super() -}}
+  {% if articles_page and articles_page.has_previous() %}
+  <link rel="prev" href="{{ articles_previous_page.url|format_siteurl|e }}" />
+  {% endif %}
+  {% if articles_page and articles_page.has_next() %}
+  <link rel="next" href="{{ articles_next_page.url|format_siteurl|e }}" />
+  {% endif %}
+{% endblock %}
+
+{% block meta %}
+  {% if M_BLOG_DESCRIPTION %}
+  <meta name="description" content="{{ M_BLOG_DESCRIPTION|e }}" />
+  {% endif %}
+{% endblock %}
+
+{% block social %}
+  {{- super() -}}
+  {# this has to be here otherwise the spacing is all wrong. fuck. #}
+  <meta property="og:title" content="{{ M_BLOG_NAME|e }}" />
+  <meta name="twitter:title" content="{{ M_BLOG_NAME|e }}" />
+  {% block social_url %}
+  <meta property="og:url" content="{{ M_BLOG_URL|format_siteurl|e }}" />
+  {% endblock %}
+  {% if M_SOCIAL_BLOG_SUMMARY %}
+  <meta property="og:description" content="{{ M_SOCIAL_BLOG_SUMMARY|e }}" />
+  <meta name="twitter:description" content="{{ M_SOCIAL_BLOG_SUMMARY|e }}" />
+  {% endif %}
+  {% if M_SOCIAL_IMAGE %}
+  <meta property="og:image" content="{{ M_SOCIAL_IMAGE|format_siteurl|e }}" />
+  <meta name="twitter:image" content="{{ M_SOCIAL_IMAGE|format_siteurl|e }}" />
+  {% endif %}
+  <meta name="twitter:card" content="summary" />
+  <meta property="og:type" content="website" />
+{% endblock %}
+
+{% block content %}
+    <div class="m-col-m-10">
+      {% if articles_page %}
+      {% set article_list = articles_page.object_list %}
+      {% else %}
+      {% set article_list = articles %}
+      {% endif %}
+      {% if not article_list %}
+      <div class="m-note m-success">
+        <h3>{{ "Congratulations!"|hyphenate(lang='en') }}</h3>
+        {{ "The m.css theme is alive and kicking! Now, feed it some articles so it doesn't feel so empty :)"|hyphenate(lang='en') }}
+      </div>
+      {% endif %}
+      {% for article in article_list %}
+      <article>
+        {% macro header() %}{% include "article_header.html" %}{% endmacro %}
+        {{ header()|indent(8) }}
+        {% set show_content =
+            article.content and loop.first and (not articles_page or articles_page.number == 1) and
+            ((article.collapse_first is defined and article.collapse_first != 'True') or
+             (article.collapse_first is not defined and not M_COLLAPSE_FIRST_ARTICLE)) %}
+        {% if show_content %}
+        <div class="m-clearfix-l"></div>
+<!-- content -->
+{{ article.content|trim }}
+<!-- /content -->
+        {% endif %}
+        <footer>
+          {% macro footer() %}{% include "article_footer.html" %}{% endmacro %}
+          {{ footer()|indent(10) }}
+        </footer>
+        {% if not show_content %}
+        <div class="m-clearfix-l"></div>
+        {% endif %}
+      </article>
+      {% endfor %}
+      {% if articles_page and articles_page.has_other_pages() %}
+      {% macro pagination() %}{% include 'pagination.html' %}{% endmacro %}
+      {{ pagination()|indent(6) }}
+      {% endif %}
+    </div>
+{% endblock %}

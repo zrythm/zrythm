@@ -1,0 +1,17 @@
+INPUT                   = input.dox
+QUIET                   = YES
+GENERATE_HTML           = NO
+GENERATE_LATEX          = NO
+GENERATE_XML            = YES
+XML_PROGRAMLISTING      = NO
+
+DOTFILE_DIRS            = .
+DOT_FONTNAME            = DejaVu Sans
+DOT_FONTSIZE            = 16
+
+##! M_PAGE_FINE_PRINT   =
+##! M_THEME_COLOR       =
+##! M_FAVICON           =
+##! M_LINKS_NAVBAR1     =
+##! M_LINKS_NAVBAR2     =
+##! M_SEARCH_DISABLED   = YES

@@ -1,0 +1,21 @@
+{% set navbar_current = 'pages' %}
+{% extends 'base-index.html' %}
+
+{% block main %}
+        <h1>Pages</h2>
+        <ul class="m-doc">
+          {% for i in index.pages recursive %}
+          {% if i.children %}
+          <li class="m-doc-collapsible">
+            <a href="#" onclick="return toggle(this)"></a><a href="{{ i.url }}" class="m-doc">{{ i.name }}</a> <span class="m-doc">{{ i.brief }}</span>
+            <ul class="m-doc">
+{{ loop(i.children)|indent(4, true) }}
+            </ul>
+          </li>
+          {% else %}
+          <li><a href="{{ i.url }}" class="m-doc">{{ i.name }}</a> <span class="m-doc">{{ i.brief }}</span></li>
+          {% endif %}
+          {% endfor %}
+        </ul>
+{{ super() -}}
+{% endblock %}

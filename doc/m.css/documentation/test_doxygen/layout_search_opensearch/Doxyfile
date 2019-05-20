@@ -1,0 +1,10 @@
+PROJECT_NAME            = "A project"
+PROJECT_BRIEF           = "is cool"
+XML_OUTPUT              =
+
+##! M_PAGE_FINE_PRINT   =
+##! M_THEME_COLOR       =
+##! M_LINKS_NAVBAR1     =
+##! M_LINKS_NAVBAR2     =
+##! M_SEARCH_BASE_URL   = http://localhost:8000
+##! M_SEARCH_HELP       = "Right-click to add a search engine."
