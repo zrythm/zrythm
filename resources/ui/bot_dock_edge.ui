@@ -159,6 +159,9 @@
               </packing>
             </child>
           </object>
+          <packing>
+            <property name="tab-expand">1</property>
+          </packing>
         </child>
       </object>
       <packing>

@@ -81,26 +81,42 @@ midi_note_draw_cb (
   Track * track = region->track;
   /*Channel * channel = track_get_channel (track);*/
   GdkRGBA * color = &track->color;
-  cairo_set_source_rgba (
-    cr,
-    color->red,
-    color->green,
-    color->blue,
-    self->midi_note->transient ? 0.7 : 1);
-  if (midi_note_is_selected (self->midi_note))
+
+  /* draw notes of main region */
+  if (region == CLIP_EDITOR->region)
     {
       cairo_set_source_rgba (
         cr,
-        1,
-        color->green + 0.2,
-        color->blue + 0.2,
-        1);
+        color->red,
+        color->green,
+        color->blue,
+        self->midi_note->transient ? 0.7 : 1);
+      if (midi_note_is_selected (self->midi_note))
+        {
+          cairo_set_source_rgba (
+            cr,
+            1,
+            color->green + 0.2,
+            color->blue + 0.2,
+            1);
+        }
+      /*cairo_rectangle(cr, 0, 0, width, height);*/
+      z_cairo_rounded_rectangle (
+        cr, 0, 0, width, height, 1.0, 4.0);
+      cairo_stroke_preserve(cr);
+      cairo_fill(cr);
     }
-  /*cairo_rectangle(cr, 0, 0, width, height);*/
-  z_cairo_rounded_rectangle (
-    cr, 0, 0, width, height, 1.0, 4.0);
-  cairo_stroke_preserve(cr);
-  cairo_fill(cr);
+  /* draw other notes */
+  else
+    {
+      cairo_set_source_rgba (
+        cr, color->red, color->green,
+        color->blue, 0.5);
+      z_cairo_rounded_rectangle (
+        cr, 0, 0, width, height, 1.0, 4.0);
+      cairo_stroke_preserve(cr);
+      cairo_fill(cr);
+    }
 
   char * str =
     g_strdup_printf (

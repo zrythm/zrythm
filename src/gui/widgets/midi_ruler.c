@@ -66,24 +66,50 @@ midi_ruler_draw_cb (GtkWidget * widget,
 
   Region * region = CLIP_EDITOR->region;
   Track * track = region->track;
-  cairo_set_source_rgba (cr,
-                         track->color.red,
-                         track->color.green,
-                         track->color.blue,
-                         0.8);
 
   int px_start, px_end;
 
+  /* draw the main region */
+  cairo_set_source_rgba (cr,
+                         1,
+                         track->color.green + 0.2,
+                         track->color.blue + 0.2,
+                         1.0);
   px_start =
     ui_pos_to_px_piano_roll (&region->start_pos, 1);
   px_end =
     ui_pos_to_px_piano_roll (&region->end_pos,
                              1);
-
   cairo_rectangle (cr,
                    px_start, 0,
                    px_end - px_start, height / 4.0);
   cairo_fill (cr);
+
+  /* draw the other regions */
+  cairo_set_source_rgba (cr,
+                         track->color.red,
+                         track->color.green,
+                         track->color.blue,
+                         0.5);
+  Region * other_region;
+  for (int i = 0; i < region->track->num_regions; i++)
+    {
+      other_region = region->track->regions[i];
+      if (!g_strcmp0 (region->name,
+                     other_region->name))
+        continue;
+
+      px_start =
+        ui_pos_to_px_piano_roll (
+          &other_region->start_pos, 1);
+      px_end =
+        ui_pos_to_px_piano_roll (
+          &other_region->end_pos, 1);
+      cairo_rectangle (
+        cr, px_start, 0,
+        px_end - px_start, height / 4.0);
+      cairo_fill (cr);
+    }
 
  return FALSE;
 }

@@ -1128,7 +1128,6 @@ midi_arranger_widget_refresh_children (
   MidiArrangerWidget * self)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
-  g_message ("--------- REFRESHING CHILDREN");
 
   /* remove all children except bg */
   GList *children, *iter;
@@ -1155,16 +1154,34 @@ midi_arranger_widget_refresh_children (
   if (CLIP_EDITOR->region &&
       CLIP_EDITOR->region->type == REGION_TYPE_MIDI)
     {
-      MidiRegion * mr =
-        (MidiRegion *) CLIP_EDITOR->region;
+      MidiNote * mn;
+
+      /* add notes of main region */
+      Region * mr = CLIP_EDITOR->region;
       for (int j = 0; j < mr->num_midi_notes; j++)
         {
-          MidiNote * midi_note = mr->midi_notes[j];
-          g_message ("adding overlay for %p wid %p",
-                     midi_note, midi_note->widget);
+          mn = mr->midi_notes[j];
           gtk_overlay_add_overlay (
             GTK_OVERLAY (self),
-            GTK_WIDGET (midi_note->widget));
+            GTK_WIDGET (mn->widget));
+        }
+
+      /* add notes of all other regions */
+      Region * other_r;
+      for (int i = 0; i < mr->track->num_regions; i++)
+        {
+          other_r = mr->track->regions[i];
+          if (!g_strcmp0 (mr->name, other_r->name))
+            continue;
+
+          for (int j = 0;
+               j < other_r->num_midi_notes; j++)
+            {
+              mn = other_r->midi_notes[j];
+              gtk_overlay_add_overlay (
+                GTK_OVERLAY (self),
+                GTK_WIDGET (mn->widget));
+            }
         }
     }
 }
