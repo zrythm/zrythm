@@ -159,7 +159,7 @@ ifeq ($(WINDOWS),1)
 	EXT = .exe
 	#EXTRA_LD_FLAGS += -mwindows
 	EXTRA_LD_FLAGS += -fno-stack-protector \
-										-l ws2_32 -static \
+										-lws2_32 -static \
 										-static-libgcc \
 										-static-libstdc++
 	LIBEXT = .dll
@@ -347,7 +347,7 @@ endif
 # libsmf
 ifeq ($(WINDOWS),1)
 	LIBSMF_CONFIGURE=$(subst gcc,configure,$(CC)) .
-	LIBSMF_LDFLAGS="-lws2_32 "
+	LIBSMF_LDFLAGS=-lws2_32
 else
 	LIBSMF_CONFIGURE=./configure
 endif
