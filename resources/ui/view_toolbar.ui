@@ -30,6 +30,18 @@
       </packing>
     </child>
     <child>
+      <object class="GtkToggleToolButton" id="top_panel">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="icon-name">builder-view-top-pane-symbolic-light</property>
+        <property name="action_name">win.toggle-top-panel</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
       <object class="GtkToggleToolButton" id="right_panel">
         <property name="visible">True</property>
         <property name="can_focus">False</property>

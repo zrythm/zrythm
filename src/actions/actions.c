@@ -59,7 +59,6 @@
 #include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/toolbox.h"
-#include "gui/widgets/top_dock_edge.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "utils/dialogs.h"
@@ -804,6 +803,25 @@ activate_toggle_bot_panel (GSimpleAction *action,
   g_object_set_property (G_OBJECT (self),
                          "bottom-visible",
                          &a);
+  gtk_widget_set_visible (
+    GTK_WIDGET (MW_BOT_DOCK_EDGE),
+    !gtk_widget_get_visible (
+      GTK_WIDGET (MW_BOT_DOCK_EDGE)));
+}
+
+/**
+ * Toggle timeline visibility.
+ */
+void
+activate_toggle_top_panel (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  gtk_widget_set_visible (
+    GTK_WIDGET (MW_CENTER_DOCK->editor_top),
+    !gtk_widget_get_visible (
+      GTK_WIDGET (MW_CENTER_DOCK->editor_top)));
 }
 
 void

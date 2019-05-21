@@ -145,6 +145,11 @@ automation-point:selected
   /*border-style: solid;*/
 }
 
+.header_notebook button.toggle:not(:checked)
+{
+  background-color: @bg_darker_variant1;
+}
+
 region:hover,
 chord:hover,
 midi-note:hover,
@@ -175,7 +180,8 @@ tracklist,
 ruler,
 piano-roll-labels,
 window,
-filechooser #pathbarbox
+filechooser #pathbarbox,
+paned
 {
 background-color: @bg_dark_variant1;
 }
@@ -255,7 +261,8 @@ menuitem:hover
   background-color: @dark_orange;
 }
 
-button:not(.record-button).toggle:active
+button:not(.record-button).toggle:active,
+.header_notebook button.toggle:active
 {
   background-color: @bright_orange;
 }

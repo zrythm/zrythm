@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-20 23:43+0100\n"
+"POT-Creation-Date: 2019-05-21 14:15+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -804,7 +804,7 @@ msgstr "Préférences"
 msgid "Project"
 msgstr "Projet"
 
-#: src/actions/actions.c:584
+#: src/actions/actions.c:583
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
@@ -873,7 +873,7 @@ msgstr "Lire l'automation"
 msgid "Record"
 msgstr "Enregistrer"
 
-#: src/gui/widgets/home_toolbar.c:56 resources/ui/home_toolbar.ui:27
+#: src/gui/widgets/home_toolbar.c:59 resources/ui/home_toolbar.ui:27
 #, fuzzy
 msgid "Redo"
 msgstr "_Refaire"
@@ -948,7 +948,7 @@ msgstr ""
 msgid "Russian [ru]"
 msgstr "Russe [ru]"
 
-#: src/actions/actions.c:519
+#: src/actions/actions.c:518
 msgid "Save Project"
 msgstr "Sauvegarder le projet"
 
@@ -1035,17 +1035,9 @@ msgstr "Sine (puissance égale)"
 msgid "Snap"
 msgstr "Accrocher"
 
-#: resources/ui/top_dock_edge.ui:164
-msgid "Snap to events (regions)"
-msgstr "Accrocher aux évènements (régions)"
-
 #: src/gui/widgets/snap_grid.c:94
 msgid "Snap/Grid options"
 msgstr "Accrocher/Options de la grille"
-
-#: resources/ui/top_dock_edge.ui:151
-msgid "Snaps to grid and keeps offset"
-msgstr "Accrocher à la grille et garder le décalage"
 
 #: src/gui/widgets/track.c:140
 msgid "Solo"
@@ -1212,7 +1204,7 @@ msgstr "Impossible d'initialiser le client"
 msgid "Unable to load internal client"
 msgstr "Impossible de charger le client interne"
 
-#: src/gui/widgets/home_toolbar.c:55 resources/ui/home_toolbar.ui:14
+#: src/gui/widgets/home_toolbar.c:58 resources/ui/home_toolbar.ui:14
 #, fuzzy
 msgid "Undo"
 msgstr "_Annuler"
@@ -1295,7 +1287,7 @@ msgid "Zrythm"
 msgstr "Zrythm"
 
 #: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
-#: src/utils/dialogs.c:74 src/actions/actions.c:522
+#: src/utils/dialogs.c:74 src/actions/actions.c:521
 #: resources/ui/port_selector_popover.ui:193
 msgid "_Cancel"
 msgstr "_Annuler"
@@ -1331,7 +1323,7 @@ msgstr "_Ouvrir"
 msgid "_Prefix plugin name"
 msgstr "_Préfixe du nom du greffon"
 
-#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:524
+#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:523
 msgid "_Save"
 msgstr "_Sauvegarder"
 
@@ -1360,6 +1352,12 @@ msgstr "nom_de_région"
 #: resources/ui/audio_clip_editor.ui:56 resources/ui/audio_clip_editor.ui:68
 msgid "stuff"
 msgstr "substance"
+
+#~ msgid "Snap to events (regions)"
+#~ msgstr "Accrocher aux évènements (régions)"
+
+#~ msgid "Snaps to grid and keeps offset"
+#~ msgstr "Accrocher à la grille et garder le décalage"
 
 #~ msgid "Playhead Position - Click and drag up/down to change"
 #~ msgstr ""

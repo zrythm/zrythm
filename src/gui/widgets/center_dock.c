@@ -33,7 +33,6 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_ruler.h"
-#include "gui/widgets/top_dock_edge.h"
 #include "gui/widgets/tracklist.h"
 #include "gui/widgets/tracklist_header.h"
 #include "project.h"
@@ -121,9 +120,6 @@ center_dock_widget_init (CenterDockWidget * self)
       RIGHT_DOCK_EDGE_WIDGET_TYPE, NULL)));
   gtk_widget_destroy (
     GTK_WIDGET (g_object_new (
-      TOP_DOCK_EDGE_WIDGET_TYPE, NULL)));
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
       BOT_DOCK_EDGE_WIDGET_TYPE, NULL)));
 
   gtk_widget_init_template (GTK_WIDGET (self));
@@ -163,6 +159,10 @@ center_dock_widget_class_init (CenterDockWidgetClass * _klass)
   gtk_widget_class_set_css_name (klass,
                                  "center-dock");
 
+  gtk_widget_class_bind_template_child (
+    klass,
+    CenterDockWidget,
+    main_paned);
   gtk_widget_class_bind_template_child (
     klass,
     CenterDockWidget,
@@ -239,8 +239,4 @@ center_dock_widget_class_init (CenterDockWidgetClass * _klass)
     klass,
     CenterDockWidget,
     right_dock_edge);
-  gtk_widget_class_bind_template_child (
-    klass,
-    CenterDockWidget,
-    top_dock_edge);
 }

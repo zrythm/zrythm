@@ -45,7 +45,6 @@
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
-#include "gui/widgets/top_dock_edge.h"
 #include "gui/widgets/top_bar.h"
 #include "gui/widgets/tracklist.h"
 #include "utils/gtk.h"
@@ -116,8 +115,6 @@ main_window_widget_refresh (MainWindowWidget * self)
       MW_CENTER_DOCK->timeline_scroll));
 
   /* setup center dock */
-  top_dock_edge_widget_refresh (
-    MW_CENTER_DOCK->top_dock_edge);
   center_dock_widget_setup (MW_CENTER_DOCK);
 
   /* setup bot toolbar */
@@ -234,6 +231,7 @@ static GActionEntry actions[] = {
   { "toggle-left-panel", activate_toggle_left_panel },
   { "toggle-right-panel", activate_toggle_right_panel },
   { "toggle-bot-panel", activate_toggle_bot_panel },
+  { "toggle-top-panel", activate_toggle_top_panel },
   { "toggle-status-bar", activate_toggle_status_bar },
   { "zoom-in", activate_zoom_in },
   { "zoom-out", activate_zoom_out },

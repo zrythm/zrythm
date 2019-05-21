@@ -37,6 +37,13 @@ G_DECLARE_FINAL_TYPE (HomeToolbarWidget,
 #define MW_HOME_TOOLBAR \
   MW_HEADER_NOTEBOOK->home_toolbar
 
+typedef struct _ToolboxWidget ToolboxWidget;
+typedef struct _QuantizeMbWidget QuantizeMbWidget;
+typedef struct _SnapBoxWidget SnapBoxWidget;
+
+/**
+ * The Home toolbar in the top.
+ */
 typedef struct _HomeToolbarWidget
 {
   GtkToolbar         parent_instance;
@@ -50,6 +57,9 @@ typedef struct _HomeToolbarWidget
   GtkToolButton *    clear_selection;
   GtkToolButton *    select_all;
   GtkToolButton *    loop_selection;
+  ToolboxWidget *    toolbox;
+  SnapBoxWidget *    snap_box;
+  QuantizeMbWidget * quantize_mb;
 } HomeToolbarWidget;
 
 HomeToolbarWidget *

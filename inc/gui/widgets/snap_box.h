@@ -21,8 +21,8 @@
  * \file
  */
 
-#ifndef __GUI_WIDGETS_TOOLBOX_H__
-#define __GUI_WIDGETS_TOOLBOX_H__
+#ifndef __GUI_WIDGETS_SNAP_BOX_H__
+#define __GUI_WIDGETS_SNAP_BOX_H__
 
 #include <gtk/gtk.h>
 
@@ -32,40 +32,35 @@
  * @{
  */
 
-#define TOOLBOX_WIDGET_TYPE \
-  (toolbox_widget_get_type ())
-G_DECLARE_FINAL_TYPE (ToolboxWidget,
-                      toolbox_widget,
+#define SNAP_BOX_WIDGET_TYPE \
+  (snap_box_widget_get_type ())
+G_DECLARE_FINAL_TYPE (SnapBoxWidget,
+                      snap_box_widget,
                       Z,
-                      TOOLBOX_WIDGET,
+                      SNAP_BOX_WIDGET,
                       GtkButtonBox)
 
-#define MW_TOOLBOX MW_HOME_TOOLBAR->toolbox
+#define MW_SNAP_BOX MW_HOME_TOOLBAR->snap_box
 
-typedef struct _ToolboxWidget
+typedef struct _SnapGridWidget SnapGridWidget;
+
+typedef struct _SnapBoxWidget
 {
   GtkButtonBox          parent_instance;
-  GtkToggleButton *     select_mode;
-  GtkToggleButton *     edit_mode;
-  GtkToggleButton *     erase_mode;
-  GtkToggleButton *     ramp_mode;
-  GtkToggleButton *     audition_mode;
-  GtkImage *            select_img;
-
-  guint                 select_handler_id;
-  guint                 edit_handler_id;
-  guint                 erase_handler_id;
-  guint                 ramp_handler_id;
-  guint                 audition_handler_id;
-} ToolboxWidget;
+  GtkToggleButton *     snap_to_grid;
+  GtkToggleButton *     snap_to_grid_keep_offset;
+  GtkToggleButton *     snap_to_events;
+  SnapGridWidget *      snap_grid;
+} SnapBoxWidget;
 
 /**
- * Sets the toolbox toggled states after deactivating
+ * Sets the snap_box toggled states after deactivating
  * the callbacks.
  */
 void
-toolbox_widget_refresh (
-  ToolboxWidget * self);
+snap_box_widget_refresh (
+  SnapBoxWidget * self,
+  SnapGrid *      sg);
 
 /**
  * @}

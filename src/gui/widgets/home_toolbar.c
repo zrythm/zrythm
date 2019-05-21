@@ -23,6 +23,9 @@
 #include "gui/widgets/export_dialog.h"
 #include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/quantize_mb.h"
+#include "gui/widgets/snap_box.h"
+#include "gui/widgets/toolbox.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
@@ -96,6 +99,16 @@ home_toolbar_widget_setup (HomeToolbarWidget * self)
 {
   /* FIXME activate/deactivate actions instead */
   home_toolbar_widget_refresh_undo_redo_buttons (self);
+
+  toolbox_widget_refresh (self->toolbox);
+  quantize_mb_widget_refresh (
+    self->quantize_mb);
+
+  /* setup top toolbar */
+  quantize_mb_widget_setup (
+    self->quantize_mb,
+    QUANTIZE_TIMELINE);
+
 }
 
 static void
@@ -170,4 +183,16 @@ home_toolbar_widget_class_init (HomeToolbarWidgetClass * _klass)
     klass,
     HomeToolbarWidget,
     loop_selection);
+  gtk_widget_class_bind_template_child (
+    klass,
+    HomeToolbarWidget,
+    toolbox);
+  gtk_widget_class_bind_template_child (
+    klass,
+    HomeToolbarWidget,
+    snap_box);
+  gtk_widget_class_bind_template_child (
+    klass,
+    HomeToolbarWidget,
+    quantize_mb);
 }

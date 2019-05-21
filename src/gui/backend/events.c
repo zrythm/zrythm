@@ -60,7 +60,6 @@
 #include "gui/widgets/timeline_selection_info.h"
 #include "gui/widgets/toolbox.h"
 #include "gui/widgets/top_bar.h"
-#include "gui/widgets/top_dock_edge.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"

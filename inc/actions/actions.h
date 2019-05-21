@@ -202,6 +202,15 @@ activate_toggle_bot_panel (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data);
 
+/**
+ * Toggle timeline visibility.
+ */
+void
+activate_toggle_top_panel (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data);
+
 void
 activate_toggle_status_bar (GSimpleAction *action,
                   GVariant      *variant,

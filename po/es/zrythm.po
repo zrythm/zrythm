@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-20 23:43+0100\n"
+"POT-Creation-Date: 2019-05-21 14:15+0100\n"
 "PO-Revision-Date: 2019-05-08 06:33+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Spanish <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -771,7 +771,7 @@ msgstr ""
 msgid "Project"
 msgstr ""
 
-#: src/actions/actions.c:584
+#: src/actions/actions.c:583
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
@@ -833,7 +833,7 @@ msgstr ""
 msgid "Record"
 msgstr ""
 
-#: src/gui/widgets/home_toolbar.c:56 resources/ui/home_toolbar.ui:27
+#: src/gui/widgets/home_toolbar.c:59 resources/ui/home_toolbar.ui:27
 msgid "Redo"
 msgstr ""
 
@@ -901,7 +901,7 @@ msgstr ""
 msgid "Russian [ru]"
 msgstr ""
 
-#: src/actions/actions.c:519
+#: src/actions/actions.c:518
 msgid "Save Project"
 msgstr ""
 
@@ -987,16 +987,8 @@ msgstr ""
 msgid "Snap"
 msgstr ""
 
-#: resources/ui/top_dock_edge.ui:164
-msgid "Snap to events (regions)"
-msgstr ""
-
 #: src/gui/widgets/snap_grid.c:94
 msgid "Snap/Grid options"
-msgstr ""
-
-#: resources/ui/top_dock_edge.ui:151
-msgid "Snaps to grid and keeps offset"
 msgstr ""
 
 #: src/gui/widgets/track.c:140
@@ -1146,7 +1138,7 @@ msgstr ""
 msgid "Unable to load internal client"
 msgstr ""
 
-#: src/gui/widgets/home_toolbar.c:55 resources/ui/home_toolbar.ui:14
+#: src/gui/widgets/home_toolbar.c:58 resources/ui/home_toolbar.ui:14
 msgid "Undo"
 msgstr ""
 
@@ -1222,7 +1214,7 @@ msgid "Zrythm"
 msgstr ""
 
 #: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
-#: src/utils/dialogs.c:74 src/actions/actions.c:522
+#: src/utils/dialogs.c:74 src/actions/actions.c:521
 #: resources/ui/port_selector_popover.ui:193
 msgid "_Cancel"
 msgstr ""
@@ -1258,7 +1250,7 @@ msgstr ""
 msgid "_Prefix plugin name"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:524
+#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:523
 msgid "_Save"
 msgstr ""
 

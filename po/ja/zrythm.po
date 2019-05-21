@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-20 23:43+0100\n"
+"POT-Creation-Date: 2019-05-21 14:15+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Japanese <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -808,7 +808,7 @@ msgstr "設定"
 msgid "Project"
 msgstr "プロジェクト"
 
-#: src/actions/actions.c:584
+#: src/actions/actions.c:583
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
@@ -872,7 +872,7 @@ msgstr "オートメーションを読み取る"
 msgid "Record"
 msgstr "レコード"
 
-#: src/gui/widgets/home_toolbar.c:56 resources/ui/home_toolbar.ui:27
+#: src/gui/widgets/home_toolbar.c:59 resources/ui/home_toolbar.ui:27
 #, fuzzy
 msgid "Redo"
 msgstr "やり直し(_R)"
@@ -945,7 +945,7 @@ msgstr ""
 msgid "Russian [ru]"
 msgstr "ロシア語[ru]"
 
-#: src/actions/actions.c:519
+#: src/actions/actions.c:518
 #, fuzzy
 msgid "Save Project"
 msgstr "プロジェクトを保存"
@@ -1035,17 +1035,9 @@ msgstr "正弦波（イコールパワー）"
 msgid "Snap"
 msgstr "スナップ"
 
-#: resources/ui/top_dock_edge.ui:164
-msgid "Snap to events (regions)"
-msgstr "イベント（リージョン）にスナップ"
-
 #: src/gui/widgets/snap_grid.c:94
 msgid "Snap/Grid options"
 msgstr "スナップ/グリッドオプション"
-
-#: resources/ui/top_dock_edge.ui:151
-msgid "Snaps to grid and keeps offset"
-msgstr "グリッドにスナップしてオフセットを維持"
 
 #: src/gui/widgets/track.c:140
 msgid "Solo"
@@ -1203,7 +1195,7 @@ msgstr "クライアントを初期化できませんでした"
 msgid "Unable to load internal client"
 msgstr "内部クライアントをロードできませんでした"
 
-#: src/gui/widgets/home_toolbar.c:55 resources/ui/home_toolbar.ui:14
+#: src/gui/widgets/home_toolbar.c:58 resources/ui/home_toolbar.ui:14
 #, fuzzy
 msgid "Undo"
 msgstr "元に戻す(_U)"
@@ -1284,7 +1276,7 @@ msgid "Zrythm"
 msgstr "Zrythm"
 
 #: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
-#: src/utils/dialogs.c:74 src/actions/actions.c:522
+#: src/utils/dialogs.c:74 src/actions/actions.c:521
 #: resources/ui/port_selector_popover.ui:193
 msgid "_Cancel"
 msgstr "キャンセル(_C)"
@@ -1320,7 +1312,7 @@ msgstr "開く(_O)"
 msgid "_Prefix plugin name"
 msgstr "_プレフィックスプラグイン名"
 
-#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:524
+#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:523
 msgid "_Save"
 msgstr "保存(_S)"
 
@@ -1349,6 +1341,12 @@ msgstr "region_name"
 #: resources/ui/audio_clip_editor.ui:56 resources/ui/audio_clip_editor.ui:68
 msgid "stuff"
 msgstr ""
+
+#~ msgid "Snap to events (regions)"
+#~ msgstr "イベント（リージョン）にスナップ"
+
+#~ msgid "Snaps to grid and keeps offset"
+#~ msgstr "グリッドにスナップしてオフセットを維持"
 
 #~ msgid "Playhead Position - Click and drag up/down to change"
 #~ msgstr "再生ヘッドの位置 - クリックして上下にドラッグして変更します"

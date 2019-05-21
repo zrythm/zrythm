@@ -44,7 +44,6 @@ typedef struct _TimelineRulerWidget TimelineRulerWidget;
 typedef struct _LeftDockEdgeWidget LeftDockEdgeWidget;
 typedef struct _RightDockEdgeWidget RightDockEdgeWidget;
 typedef struct _BotDockEdgeWidget BotDockEdgeWidget;
-typedef struct _TopDockEdgeWidget TopDockEdgeWidget;
 typedef struct _CenterDockBotBoxWidget CenterDockBotBoxWidget;
 typedef struct _TracklistHeaderWidget TracklistHeaderWidget;
 
@@ -69,7 +68,7 @@ typedef struct _CenterDockWidget
   LeftDockEdgeWidget *     left_dock_edge;
   RightDockEdgeWidget *    right_dock_edge;
   BotDockEdgeWidget *      bot_dock_edge;
-  TopDockEdgeWidget *      top_dock_edge;
+  GtkPaned *               main_paned;
 } CenterDockWidget;
 
 void
