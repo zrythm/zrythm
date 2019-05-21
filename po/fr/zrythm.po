@@ -6,9 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-21 14:15+0100\n"
-"PO-Revision-Date: 2019-05-09 12:18+0000\n"
+"Report-Msgid-Bugs-To: alex@zrythm.org\n"
+"POT-Creation-Date: 2019-05-18 15:27+0100\n"
+"PO-Revision-Date: 2019-05-20 22:34+0000\n"
 "Last-Translator: Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French <https://translate.zrythm.org/projects/zrythm/zrythm/"
 "fr/>\n"
@@ -58,7 +58,7 @@ msgstr "Grille adaptative"
 
 #: src/gui/widgets/port_connections_popover.c:164
 msgid "Add"
-msgstr ""
+msgstr "Ajouter"
 
 #: src/gui/widgets/track.c:491
 msgid "Add Region"
@@ -81,14 +81,12 @@ msgid "Audio Backend"
 msgstr "Système Audio"
 
 #: src/gui/widgets/ports_expander.c:146
-#, fuzzy
 msgid "Audio Ins"
-msgstr "Unité Audio"
+msgstr "Entrées Audio"
 
 #: src/gui/widgets/ports_expander.c:149
-#, fuzzy
 msgid "Audio Outs"
-msgstr "Unité Audio"
+msgstr "Sorties Audio"
 
 #: resources/ui/shortcuts.ui:216
 msgid "Audition tool"
@@ -128,12 +126,11 @@ msgstr "Bus"
 
 #: src/gui/widgets/ports_expander.c:158
 msgid "CV Ins"
-msgstr ""
+msgstr "Entrées CV"
 
 #: src/gui/widgets/ports_expander.c:161
-#, fuzzy
 msgid "CV Outs"
-msgstr "Sortie Stéréo"
+msgstr "Sorties CV"
 
 #: resources/ui/export_dialog.ui:45 resources/ui/preferences.ui:58
 msgid "Cancel"
@@ -214,14 +211,12 @@ msgid "Communication error with the JACK server"
 msgstr "Erreur de communication avec le serveur JACK"
 
 #: src/gui/widgets/ports_expander.c:140
-#, fuzzy
 msgid "Control Ins"
-msgstr "Contrôleurs trouvés"
+msgstr "Entrée de contrôle"
 
 #: src/gui/widgets/ports_expander.c:143
-#, fuzzy
 msgid "Control Outs"
-msgstr "Sortie Stéréo"
+msgstr "Sortie de contrôle"
 
 #: resources/ui/midi_controller_popover.ui:37
 msgid "Controllers found"
@@ -256,7 +251,7 @@ msgid "Create %d %ss"
 msgstr "Créer %d %s"
 
 #: src/actions/create_plugins_action.c:139
-#, fuzzy, c-format
+#, c-format
 msgid "Create %s"
 msgstr "Créer %s"
 
@@ -294,7 +289,6 @@ msgstr "Supprimer %d Pistes"
 
 #: src/actions/delete_timeline_selections_action.c:103
 #: src/actions/delete_midi_arranger_selections_action.c:103
-#, fuzzy
 msgid "Delete Object(s)"
 msgstr "Supprimer l'objet"
 
@@ -330,7 +324,7 @@ msgstr "Copier l'objet"
 
 #: resources/ui/preferences.ui:331
 msgid "Editing"
-msgstr "Édition"
+msgstr "Modifier"
 
 #: resources/ui/shortcuts.ui:180
 msgid "Editor Shortcuts"
@@ -478,7 +472,7 @@ msgstr ""
 
 #: src/gui/widgets/port_connections_popover.c:59
 msgid "INPUTS"
-msgstr ""
+msgstr "ENTRÉES"
 
 #: src/zrythm.c:253
 msgid "Initializing audio engine"
@@ -498,7 +492,7 @@ msgstr "Initialisation..."
 
 #: src/gui/widgets/channel.c:925
 msgid "Inserts"
-msgstr ""
+msgstr "Inserts"
 
 #: src/audio/track.c:729
 msgid "Instrument"
@@ -554,7 +548,6 @@ msgid "Linear"
 msgstr "Linéaire"
 
 #: src/zrythm.c:272
-#, fuzzy
 msgid "Loading project"
 msgstr "Chargement du projet"
 
@@ -591,13 +584,12 @@ msgid "MIDI Devices"
 msgstr "Périphériques MIDI"
 
 #: src/gui/widgets/ports_expander.c:152
-#, fuzzy
 msgid "MIDI Ins"
-msgstr "Système MIDI"
+msgstr "Entrées MIDI"
 
 #: src/gui/widgets/ports_expander.c:155
 msgid "MIDI Outs"
-msgstr ""
+msgstr "Sorties MIDI"
 
 #: resources/ui/preferences.ui:298
 msgid "Main Window"
@@ -670,7 +662,6 @@ msgid "No object selected"
 msgstr "Aucune sortie sélectionnée"
 
 #: src/gui/widgets/route_target_selector_popover.c:180
-#, fuzzy
 msgid "No output selected"
 msgstr "Aucune sortie sélectionnée"
 
@@ -693,7 +684,7 @@ msgstr "OK"
 
 #: src/gui/widgets/port_connections_popover.c:78
 msgid "OUTPUTS"
-msgstr ""
+msgstr "SORTIES"
 
 #: src/utils/dialogs.c:41
 msgid "Open Project"
@@ -761,9 +752,8 @@ msgid "Playhead"
 msgstr "Tête de lecture"
 
 #: resources/ui/port_selector_popover.ui:94
-#, fuzzy
 msgid "Plugin"
-msgstr "Greffons"
+msgstr "Greffon"
 
 #: resources/ui/rack_plugin.ui:31
 msgid "Plugin 1"
@@ -775,7 +765,7 @@ msgstr "Greffons"
 
 #: resources/ui/port_selector_popover.ui:147
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #: src/audio/engine_pa.c:246 src/audio/engine_pa.c:266
 #: src/audio/engine_pa.c:277
@@ -921,28 +911,25 @@ msgid "Resets the path to the default"
 msgstr "Réinitialiser l'emplacement par défaut"
 
 #: src/actions/edit_midi_arranger_selections_action.c:144
-#, fuzzy
 msgid "Resize Midi Note(s)"
-msgstr "Créer un ou plusieurs objet(s)"
+msgstr "Redimensionner les notes MIDI"
 
 #: src/actions/edit_timeline_selections_action.c:131
-#, fuzzy
 msgid "Resize Object(s)"
-msgstr "Créer un ou plusieurs objet(s)"
+msgstr "Redimensionner un ou plusieurs objet(s)"
 
 #: resources/ui/center_dock_bot_box.ui:82
 msgid "Right"
 msgstr "Droite"
 
 #: src/gui/widgets/route_target_selector.c:80
-#, fuzzy
 msgid "Routed to Stereo Out"
-msgstr "Sortie Stéréo"
+msgstr "Routé vers la Sortie Stéréo"
 
 #: src/gui/widgets/route_target_selector_popover.c:194
 #, c-format
 msgid "Routing to %s"
-msgstr ""
+msgstr "Routage vers %s"
 
 #: src/utils/ui.c:553
 msgid "Russian [ru]"
@@ -978,9 +965,8 @@ msgid "Select a folder"
 msgstr "Sélectionner un dossier"
 
 #: resources/ui/port_selector_popover.ui:16
-#, fuzzy
 msgid "Select a port..."
-msgstr "Sélectionner..."
+msgstr "Sélectionner un port ..."
 
 #: resources/ui/shortcuts.ui:161
 msgid "Select all"
@@ -1065,7 +1051,6 @@ msgid "Start Position"
 msgstr "Position"
 
 #: src/gui/widgets/route_target_selector.c:118
-#, fuzzy
 msgid "Stereo Out"
 msgstr "Sortie Stéréo"
 
@@ -1162,14 +1147,12 @@ msgstr ""
 "échéant)"
 
 #: src/gui/widgets/instrument_track_info_expander.c:82
-#, fuzzy
 msgid "Track Info"
-msgstr "Nom de piste"
+msgstr "Information sur la piste"
 
 #: src/gui/widgets/port_selector_popover.c:209
-#, fuzzy
 msgid "Track Ports"
-msgstr "Pistes"
+msgstr "Ports de la Piste"
 
 #: resources/ui/piano_roll.ui:53 resources/ui/audio_clip_editor.ui:34
 msgid "Track name"
