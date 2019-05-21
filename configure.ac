@@ -18,7 +18,7 @@
 
 # ================ Initialization ==============
 # Initialize autoconf: package name, version, bug report address
-AC_INIT([zrythm], [0.4.151], [https://git.zrythm.org/zrythm/zrythm/issues])
+AC_INIT([zrythm], [0.4.170], [https://git.zrythm.org/zrythm/zrythm/issues])
 
 # needed for localization
 AC_DEFINE([GETTEXT_PACKAGE],["zrythm"],
