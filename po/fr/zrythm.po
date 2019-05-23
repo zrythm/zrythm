@@ -6,9 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-23 10:30+0100\n"
-"PO-Revision-Date: 2019-05-20 22:34+0000\n"
+"Report-Msgid-Bugs-To: alex@zrythm.org\n"
+"POT-Creation-Date: 2019-05-21 14:21+0100\n"
+"PO-Revision-Date: 2019-05-22 22:34+0000\n"
 "Last-Translator: Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French <https://translate.zrythm.org/projects/zrythm/zrythm/"
 "fr/>\n"
@@ -462,13 +462,12 @@ msgid "Group"
 msgstr "Groupe"
 
 #: resources/ui/header_notebook.ui:73
-#, fuzzy
 msgid "Help"
-msgstr "_Aide"
+msgstr "Aide"
 
 #: resources/ui/header_notebook.ui:17
 msgid "Home"
-msgstr ""
+msgstr "Accueil"
 
 #: src/gui/widgets/port_connections_popover.c:59
 msgid "INPUTS"
@@ -657,9 +656,8 @@ msgstr ""
 "temporaires et les projets (ou accepter l'emplacement par défaut)"
 
 #: src/gui/widgets/timeline_selection_info.c:93
-#, fuzzy
 msgid "No object selected"
-msgstr "Aucune sortie sélectionnée"
+msgstr "Aucun objet sélectionné"
 
 #: src/gui/widgets/route_target_selector_popover.c:180
 msgid "No output selected"
@@ -864,9 +862,8 @@ msgid "Record"
 msgstr "Enregistrer"
 
 #: src/gui/widgets/home_toolbar.c:59 resources/ui/home_toolbar.ui:27
-#, fuzzy
 msgid "Redo"
-msgstr "_Refaire"
+msgstr "Refaire"
 
 #: resources/ui/shortcuts.ui:147
 msgid "Redo previous command"
@@ -1051,9 +1048,8 @@ msgid "Square Root"
 msgstr "Racine carrée"
 
 #: src/gui/widgets/timeline_selection_info.c:62
-#, fuzzy
 msgid "Start Position"
-msgstr "Position"
+msgstr "Position de départ"
 
 #: src/gui/widgets/route_target_selector.c:118
 msgid "Stereo Out"
@@ -1189,9 +1185,8 @@ msgid "Unable to load internal client"
 msgstr "Impossible de charger le client interne"
 
 #: src/gui/widgets/home_toolbar.c:58 resources/ui/home_toolbar.ui:14
-#, fuzzy
 msgid "Undo"
-msgstr "_Annuler"
+msgstr "Annuler"
 
 #: resources/ui/shortcuts.ui:135
 msgid "Undo and Redo"
@@ -1230,9 +1225,8 @@ msgid "Use grid"
 msgstr "Utiliser la grille"
 
 #: resources/ui/header_notebook.ui:54
-#, fuzzy
 msgid "View"
-msgstr "_Vue"
+msgstr "Vue"
 
 #: resources/ui/first_run_assistant.ui:50
 msgid ""
