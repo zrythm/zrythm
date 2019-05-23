@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-21 14:15+0100\n"
+"POT-Creation-Date: 2019-05-23 08:41+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Japanese <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -808,7 +808,7 @@ msgstr "設定"
 msgid "Project"
 msgstr "プロジェクト"
 
-#: src/actions/actions.c:583
+#: src/actions/actions.c:584
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
@@ -945,7 +945,7 @@ msgstr ""
 msgid "Russian [ru]"
 msgstr "ロシア語[ru]"
 
-#: src/actions/actions.c:518
+#: src/actions/actions.c:519
 #, fuzzy
 msgid "Save Project"
 msgstr "プロジェクトを保存"
@@ -980,6 +980,11 @@ msgstr "フォルダ選択"
 #: resources/ui/port_selector_popover.ui:16
 #, fuzzy
 msgid "Select a port..."
+msgstr "選択…"
+
+#: src/gui/widgets/piano_roll.c:232
+#, fuzzy
+msgid "Select a region..."
 msgstr "選択…"
 
 #: resources/ui/shortcuts.ui:161
@@ -1124,10 +1129,6 @@ msgstr "下部パネルを切り替える"
 #: resources/ui/shortcuts.ui:55
 msgid "Toggle left panel"
 msgstr "左パネルを切り替える"
-
-#: resources/ui/piano_roll.ui:78
-msgid "Toggle note notation"
-msgstr "音符表記を切り替える"
 
 #: resources/ui/shortcuts.ui:62
 msgid "Toggle right panel"
@@ -1276,7 +1277,7 @@ msgid "Zrythm"
 msgstr "Zrythm"
 
 #: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
-#: src/utils/dialogs.c:74 src/actions/actions.c:521
+#: src/utils/dialogs.c:74 src/actions/actions.c:522
 #: resources/ui/port_selector_popover.ui:193
 msgid "_Cancel"
 msgstr "キャンセル(_C)"
@@ -1312,7 +1313,7 @@ msgstr "開く(_O)"
 msgid "_Prefix plugin name"
 msgstr "_プレフィックスプラグイン名"
 
-#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:523
+#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:524
 msgid "_Save"
 msgstr "保存(_S)"
 
@@ -1341,6 +1342,9 @@ msgstr "region_name"
 #: resources/ui/audio_clip_editor.ui:56 resources/ui/audio_clip_editor.ui:68
 msgid "stuff"
 msgstr ""
+
+#~ msgid "Toggle note notation"
+#~ msgstr "音符表記を切り替える"
 
 #~ msgid "Snap to events (regions)"
 #~ msgstr "イベント（リージョン）にスナップ"

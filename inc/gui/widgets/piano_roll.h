@@ -17,6 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Piano roll widget.
+ */
+
 #ifndef __GUI_WIDGETS_PIANO_ROLL_H__
 #define __GUI_WIDGETS_PIANO_ROLL_H__
 
@@ -30,8 +36,6 @@ G_DECLARE_FINAL_TYPE (PianoRollWidget,
                       PIANO_ROLL_WIDGET,
                       GtkBox)
 
-#define MW_PIANO_ROLL MW_CLIP_EDITOR->piano_roll
-
 typedef struct _PianoRollLabelsWidget PianoRollLabelsWidget;
 typedef struct _PianoRollNotesWidget PianoRollNotesWidget;
 typedef struct _MidiArrangerWidget MidiArrangerWidget;
@@ -41,37 +45,91 @@ typedef struct _MidiModifierArrangerWidget
   MidiModifierArrangerWidget;
 typedef struct PianoRoll PianoRoll;
 
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
+#define MW_PIANO_ROLL MW_CLIP_EDITOR->piano_roll
+
+/**
+ * The piano roll widget is the whole space inside
+ * the clip editor tab when a MIDI region is selected.
+ */
 typedef struct _PianoRollWidget
 {
-  GtkBox                   parent_instance;
-  ColorAreaWidget          * color_bar;
-  GtkToolbar               * midi_bot_toolbar;
-  GtkLabel                 * midi_name_label;
-  GtkBox                   * midi_controls_above_notes_box;
-  GtkScrolledWindow        * midi_ruler_scroll;
-  GtkViewport              * midi_ruler_viewport;
-  MidiRulerWidget *        ruler;
-  GtkScrolledWindow        * piano_roll_labels_scroll;
-  GtkViewport              * piano_roll_labels_viewport;
-  PianoRollLabelsWidget    * piano_roll_labels;
-  GtkPaned *               midi_arranger_velocity_paned;
-  GtkScrolledWindow        * piano_roll_notes_scroll;
-  GtkViewport              * piano_roll_notes_viewport;
-  PianoRollNotesWidget     * piano_roll_notes;
-  GtkBox                   * midi_arranger_box; ///< piano roll
-  GtkScrolledWindow        * arranger_scroll;
-  GtkViewport              * arranger_viewport;
-  MidiArrangerWidget *     arranger;
-  GtkScrolledWindow *      modifier_arranger_scroll;
-  GtkViewport *            modifier_arranger_viewport;
+  GtkBox               parent_instance;
+
+  ColorAreaWidget *    color_bar;
+  GtkToolbar *         midi_bot_toolbar;
+  GtkLabel *           midi_name_label;
+  GtkBox *             midi_controls_above_notes_box;
+  GtkScrolledWindow *  midi_ruler_scroll;
+  GtkViewport *        midi_ruler_viewport;
+  MidiRulerWidget *    ruler;
+  GtkPaned *           midi_arranger_velocity_paned;
+  GtkScrolledWindow *  piano_roll_keys_scroll;
+  GtkViewport *        piano_roll_keys_viewport;
+
+  /**
+   * Box to add piano roll keys.
+   *
+   * It should contain boxes that have
+   * PianoRollKeyLabelWidget on the left and
+   * PianoRollKeyWidget on the right.
+   *
+   * In drum mode, PianoRollKeyWidget will be set to
+   * invisible.
+   */
+  GtkBox *             piano_roll_keys_box;
+
+  /** Piano roll. */
+  GtkBox *             midi_arranger_box;
+  GtkScrolledWindow *  arranger_scroll;
+  GtkViewport *        arranger_viewport;
+  MidiArrangerWidget * arranger;
+  GtkScrolledWindow *  modifier_arranger_scroll;
+  GtkViewport *        modifier_arranger_viewport;
   MidiModifierArrangerWidget * modifier_arranger;
-  GtkButton *              toggle_notation;
-  PianoRoll *              piano_roll; ///< pointer to backend struct
+  GtkButton *          toggle_notation;
+
+  /** Backend. */
+  PianoRoll *          piano_roll;
+
+  /**
+   * Note pressed.
+   *
+   * Used for note presses (see PianoRollKeyWidget).
+   */
+  int                  note_pressed;
+
+  /**
+   * Note released.
+   *
+   * Used for note presses (see PianoRollKeyWidget).
+   */
+  int                  note_released;
+
+  /** Pixel height of each key, determined by the
+   * zoom level. */
+  int                  px_per_key;
+
+  /** Pixel height of all keys combined. */
+  int                  total_key_px;
 } MidiEditorWidget;
 
 void
 piano_roll_widget_setup (
   PianoRollWidget * self,
   PianoRoll *       pr);
+
+void
+piano_roll_widget_refresh (
+  PianoRollWidget * self);
+
+/**
+ * @}
+ */
 
 #endif

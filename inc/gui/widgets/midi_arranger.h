@@ -154,6 +154,10 @@ midi_arranger_widget_create_note (
   int                  note,
   MidiRegion * region);
 
+void
+midi_arranger_widget_refresh_size (
+  MidiArrangerWidget * self);
+
 /**
  * Sets up the widget.
  */

@@ -100,10 +100,15 @@ midi_note_draw_cb (
             color->blue + 0.2,
             1);
         }
-      /*cairo_rectangle(cr, 0, 0, width, height);*/
-      z_cairo_rounded_rectangle (
-        cr, 0, 0, width, height, 1.0, 4.0);
-      cairo_stroke_preserve(cr);
+      if (PIANO_ROLL->drum_mode)
+        {
+          z_cairo_diamond (cr, 0, 0, width, height);
+        }
+      else
+        {
+          z_cairo_rounded_rectangle (
+            cr, 0, 0, width, height, 1.0, 4.0);
+        }
       cairo_fill(cr);
     }
   /* draw other notes */
@@ -112,9 +117,15 @@ midi_note_draw_cb (
       cairo_set_source_rgba (
         cr, color->red, color->green,
         color->blue, 0.5);
-      z_cairo_rounded_rectangle (
-        cr, 0, 0, width, height, 1.0, 4.0);
-      cairo_stroke_preserve(cr);
+      if (PIANO_ROLL->drum_mode)
+        {
+          z_cairo_diamond (cr, 0, 0, width, height);
+        }
+      else
+        {
+          z_cairo_rounded_rectangle (
+            cr, 0, 0, width, height, 1.0, 4.0);
+        }
       cairo_fill(cr);
     }
 
@@ -137,7 +148,8 @@ midi_note_draw_cb (
   gdk_rgba_parse (&c2, "#323232");
   cairo_set_source_rgba (
     cr, c2.red, c2.green, c2.blue, 1.0);
-  z_cairo_draw_text (cr, str);
+  if (DEBUGGING || !PIANO_ROLL->drum_mode)
+    z_cairo_draw_text (cr, str);
   g_free (str);
 
  return FALSE;

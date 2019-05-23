@@ -211,6 +211,15 @@ activate_toggle_top_panel (
   GVariant      *variant,
   gpointer       user_data);
 
+/**
+ * Toggle drum mode in the piano roll.
+ */
+void
+activate_toggle_drum_mode (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data);
+
 void
 activate_toggle_status_bar (GSimpleAction *action,
                   GVariant      *variant,

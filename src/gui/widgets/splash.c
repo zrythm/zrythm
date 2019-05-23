@@ -56,6 +56,9 @@ splash_window_widget_new (ZrythmApp * app)
     "/org/zrythm/app/icons/fork-awesome");
   gtk_icon_theme_add_resource_path (
     gtk_icon_theme_get_default (),
+    "/org/zrythm/app/icons/font-awesome");
+  gtk_icon_theme_add_resource_path (
+    gtk_icon_theme_get_default (),
     "/org/zrythm/app/icons/zrythm");
   gtk_icon_theme_add_resource_path (
     gtk_icon_theme_get_default (),

@@ -24,6 +24,56 @@
 
 #define PIANO_ROLL (&CLIP_EDITOR->piano_roll)
 
+#define DRUM_LABELS \
+static const char * drum_labels[47] = { \
+    "Acoustic Bass Drum", \
+    "Bass Drum 1", \
+    "Side Stick", \
+    "Acoustic Snare", \
+    "Hand Clap", \
+    "Electric Snare", \
+    "Low Floor Tom", \
+    "Closed Hi Hat", \
+    "High Floor Tom", \
+    "Pedal Hi-Hat", \
+    "Low Tom", \
+    "Open Hi-Hat", \
+    "Low-Mid Tom", \
+    "Hi-Mid Tom", \
+    "Crash Cymbal 1", \
+    "High Tom", \
+    "Ride Cymbal 1", \
+    "Chinese Cymbal", \
+    "Ride Bell", \
+    "Tambourine", \
+    "Splash Cymbal", \
+    "Cowbell", \
+    "Crash Cymbal 2", \
+    "Vibraslap", \
+    "Ride Cymbal 2", \
+    "Hi Bongo", \
+    "Low Bongo", \
+    "Mute Hi Conga", \
+    "Open Hi Conga", \
+    "Low Conga", \
+    "High Timbale", \
+    "Low Timbale", \
+    "High Agogo", \
+    "Low Agogo", \
+    "Cabasa", \
+    "Maracas", \
+    "Short Whistle", \
+    "Long Whistle", \
+    "Short Guiro", \
+    "Long Guiro", \
+    "Claves", \
+    "Hi Wood Block", \
+    "Low Wood Block", \
+    "Mute Cuica", \
+    "Open Cuica", \
+    "Mute Triangle", \
+    "Open Triangle" }
+
 typedef enum MidiModifier
 {
   MIDI_MODIFIER_VELOCITY,
@@ -35,14 +85,80 @@ typedef enum MidiModifier
 typedef struct Region Region;
 
 /**
+ * Notes will only be draggable and reorderable in
+ * drum mode.
+ *
+ * In normal mode, only visibility can be changed.
+ */
+typedef struct MidiNoteDescriptor
+{
+  /**
+   * The index to display the note at.
+   */
+  int      index;
+
+  /**
+   * The actual value (0-127).
+   *
+   * Must be unique in the array.
+   */
+  int      value;
+
+  /** Whether the note is visible or not. */
+  int      visible;
+
+  /**
+   * Custom name, from midnam or GM MIDI specs, etc.
+   *
+   * This is only used in drum mode.
+   */
+  char *   custom_name;
+
+  /** Name of the note, from C-2 to B8. */
+  char *   note_name;
+
+  /** Whether the note is highlighted/marked or not.
+   */
+  int      marked;
+} MidiNoteDescriptor;
+
+/**
  * Piano roll serializable backend.
  *
  * The actual widgets should reflect the information here.
  */
 typedef struct PianoRoll
 {
-  int                    notes_zoom; ///< notes zoom level
-  MidiModifier           midi_modifier; ///< selected midi modifier
+  /** Notes zoom level. */
+  int             notes_zoom;
+
+  /** Selected MidiModifier. */
+  MidiModifier    midi_modifier;
+
+  /** Whether we are in drum mode or not. */
+  int             drum_mode;
+
+  /** Currently pressed note (used only at
+   * runtime). */
+  MidiNoteDescriptor * current_note;
+
+  /**
+   * Piano roll mode descriptors.
+   *
+   * For performance purposes, invisible notes must
+   * be sorted at the end of the array.
+   */
+  MidiNoteDescriptor piano_descriptors[128];
+
+  /**
+   * Drum mode descriptors.
+   *
+   * These must be sorted by index at all times.
+   *
+   * For performance purposes, invisible notes must
+   * be sorted at the end of the array.
+   */
+  MidiNoteDescriptor drum_descriptors[128];
 } PianoRoll;
 
 static const cyaml_strval_t
@@ -75,6 +191,68 @@ piano_roll_schema =
     CYAML_FLAG_POINTER,
 		PianoRoll, piano_roll_fields_schema),
 };
+
+//static inline void
+//piano_roll_clone_midi_note_descriptor (
+  //MidiNoteDescriptor * src,
+  //MidiNoteDescriptor * dest)
+//{
+  //dest->index = src->index;
+  //dest->value = src->value;
+  //dest->marked = src->marked;
+  //dest->visible = src->visible;
+
+//}
+//
+/**
+ * Returns the MidiNoteDescriptor matching the value
+ * (0-127).
+ */
+const MidiNoteDescriptor *
+piano_roll_find_midi_note_descriptor_by_val (
+  PianoRoll * self,
+  int         val);
+
+static inline char *
+midi_note_descriptor_get_custom_name (
+  MidiNoteDescriptor * descr)
+{
+  return descr->custom_name;
+}
+
+void
+midi_note_descriptor_set_custom_name (
+  MidiNoteDescriptor * descr,
+  char *               str);
+
+static inline void
+piano_roll_get_visible_notes (
+  PianoRoll * self,
+  MidiNoteDescriptor * arr,
+  int *                num)
+{
+  *num = 0;
+
+  MidiNoteDescriptor * descr;
+  for (int i = 0; i < 128; i++)
+    {
+      if (self->drum_mode)
+        descr = &self->drum_descriptors[i];
+      else
+        descr = &self->piano_descriptors[i];
+
+      if (descr->visible)
+        {
+          arr[*num].index = descr->index;
+          arr[*num].value = descr->value;
+          arr[*num].marked = descr->marked;
+          arr[*num].visible = descr->visible;
+          arr[*num].custom_name = descr->custom_name;
+          arr[*num].note_name = descr->note_name;
+          (*num)++;
+        }
+    }
+}
 
 void
 piano_roll_init (PianoRoll * self);

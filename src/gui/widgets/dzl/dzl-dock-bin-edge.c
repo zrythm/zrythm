@@ -1,5 +1,4 @@
-/* dzl-dock-bin-edge.c
- *
+/*
  * Copyright (C) 2016 Christian Hergert <chergert@redhat.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,6 +21,7 @@
 #include "gui/widgets/dzl/dzl-dock-item.h"
 #include "gui/widgets/dzl/dzl-dock-revealer.h"
 #include "gui/widgets/dzl/dzl-gtk.h"
+#include "utils/gtk.h"
 
 typedef struct
 {
@@ -255,7 +255,8 @@ dzl_dock_bin_edge_init (DzlDockBinEdge *self)
 {
   GtkWidget *child;
 
-  dzl_gtk_widget_add_style_class (GTK_WIDGET (self), "dzldockbinedge");
+  z_gtk_widget_add_style_class (
+    GTK_WIDGET (self), "dzldockbinedge");
 
   child = g_object_new (DZL_TYPE_DOCK_PANED,
                         "visible", TRUE,

@@ -41,8 +41,6 @@ void          dzl_gtk_widget_mux_action_groups       (GtkWidget               *w
                                                       const gchar             *mux_key);
 void          dzl_gtk_widget_hide_with_fade          (GtkWidget               *widget);
 void          dzl_gtk_widget_show_with_fade          (GtkWidget               *widget);
-void          dzl_gtk_widget_add_style_class         (GtkWidget               *widget,
-                                                      const gchar             *class_name);
 void          dzl_gtk_widget_remove_style_class      (GtkWidget               *widget,
                                                       const gchar             *class_name);
 gpointer      dzl_gtk_widget_find_child_typed        (GtkWidget               *widget,

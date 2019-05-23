@@ -1077,10 +1077,9 @@ create_item (ArrangerWidget * self,
     {
       /* find the note and region at x,y */
       note =
-        (MW_PIANO_ROLL->piano_roll_labels->total_px
-          - start_y) /
-        MW_PIANO_ROLL->piano_roll_labels->px_per_note;
-      region = CLIP_EDITOR->region;
+        midi_arranger_widget_get_note_at_y (start_y);
+      region =
+        CLIP_EDITOR->region;
 
       /* create a note */
       if (region)
@@ -2091,7 +2090,6 @@ int
 arranger_widget_refresh (
   ArrangerWidget * self)
 {
-  g_message ("refreshing arranger");
   arranger_widget_set_cursor (
     self, ARRANGER_CURSOR_SELECT);
   ARRANGER_WIDGET_GET_PRIVATE (self);
@@ -2101,11 +2099,11 @@ arranger_widget_refresh (
   if (midi_arranger)
     {
       RULER_WIDGET_GET_PRIVATE (MIDI_RULER);
-      gtk_widget_set_size_request (
-        GTK_WIDGET (self),
-        rw_prv->total_px,
-        gtk_widget_get_allocated_height (
-          GTK_WIDGET (PIANO_ROLL_LABELS)));
+      /*gtk_widget_set_size_request (*/
+        /*GTK_WIDGET (self),*/
+        /*rw_prv->total_px,*/
+        /*gtk_widget_get_allocated_height (*/
+          /*GTK_WIDGET (self)));*/
       midi_arranger_widget_refresh_children (
         midi_arranger);
     }

@@ -93,12 +93,14 @@ _editable_label_widget_setup (
  * @param get_val Getter function.
  * @param set_val Setter function.
  * @param object Object to call get/set with.
+ * @param width Label width in chars.
  */
 EditableLabelWidget *
 _editable_label_widget_new (
   void *                object,
   const char * (*get_val)(void *),
-  void (*set_val)(void *, const char *))
+  void (*set_val)(void *, const char *),
+  int                    width)
 {
   EditableLabelWidget * self =
     g_object_new (EDITABLE_LABEL_WIDGET_TYPE,
@@ -106,6 +108,11 @@ _editable_label_widget_new (
 
   editable_label_widget_setup (
     self, object, get_val, set_val);
+
+  gtk_label_set_width_chars (
+    self->label, 11);
+  gtk_label_set_max_width_chars (
+    self->label, 11);
 
   gtk_widget_set_visible (
     GTK_WIDGET (self), 1);
@@ -134,10 +141,6 @@ editable_label_widget_init (
   self->label = GTK_LABEL (label);
   gtk_label_set_ellipsize (
     self->label, PANGO_ELLIPSIZE_END);
-  gtk_label_set_width_chars (
-    self->label, 11);
-  gtk_label_set_max_width_chars (
-    self->label, 11);
 
   self->popover =
     GTK_POPOVER (

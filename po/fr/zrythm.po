@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
-"Report-Msgid-Bugs-To: alex@zrythm.org\n"
-"POT-Creation-Date: 2019-05-18 15:27+0100\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-05-23 08:41+0100\n"
 "PO-Revision-Date: 2019-05-20 22:34+0000\n"
 "Last-Translator: Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -794,7 +794,7 @@ msgstr "Préférences"
 msgid "Project"
 msgstr "Projet"
 
-#: src/actions/actions.c:583
+#: src/actions/actions.c:584
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
@@ -935,7 +935,7 @@ msgstr "Routage vers %s"
 msgid "Russian [ru]"
 msgstr "Russe [ru]"
 
-#: src/actions/actions.c:518
+#: src/actions/actions.c:519
 msgid "Save Project"
 msgstr "Sauvegarder le projet"
 
@@ -966,6 +966,11 @@ msgstr "Sélectionner un dossier"
 
 #: resources/ui/port_selector_popover.ui:16
 msgid "Select a port..."
+msgstr "Sélectionner un port ..."
+
+#: src/gui/widgets/piano_roll.c:232
+#, fuzzy
+msgid "Select a region..."
 msgstr "Sélectionner un port ..."
 
 #: resources/ui/shortcuts.ui:161
@@ -1119,10 +1124,6 @@ msgstr "Basculer sur le panneau inférieur"
 msgid "Toggle left panel"
 msgstr "Basculer sur le panneau de gauche"
 
-#: resources/ui/piano_roll.ui:78
-msgid "Toggle note notation"
-msgstr "Basculer sur la notation de note"
-
 #: resources/ui/shortcuts.ui:62
 msgid "Toggle right panel"
 msgstr "Basculer sur le panneau de droite"
@@ -1270,7 +1271,7 @@ msgid "Zrythm"
 msgstr "Zrythm"
 
 #: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
-#: src/utils/dialogs.c:74 src/actions/actions.c:521
+#: src/utils/dialogs.c:74 src/actions/actions.c:522
 #: resources/ui/port_selector_popover.ui:193
 msgid "_Cancel"
 msgstr "_Annuler"
@@ -1306,7 +1307,7 @@ msgstr "_Ouvrir"
 msgid "_Prefix plugin name"
 msgstr "_Préfixe du nom du greffon"
 
-#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:523
+#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:524
 msgid "_Save"
 msgstr "_Sauvegarder"
 
@@ -1335,6 +1336,9 @@ msgstr "nom_de_région"
 #: resources/ui/audio_clip_editor.ui:56 resources/ui/audio_clip_editor.ui:68
 msgid "stuff"
 msgstr "substance"
+
+#~ msgid "Toggle note notation"
+#~ msgstr "Basculer sur la notation de note"
 
 #~ msgid "Snap to events (regions)"
 #~ msgstr "Accrocher aux évènements (régions)"

@@ -89,18 +89,21 @@ editable_label_widget_setup( \
  * @param get_val Getter function.
  * @param set_val Setter function.
  * @param object Object to call get/set with.
+ * @param width Label width in chars.
  */
 EditableLabelWidget *
 _editable_label_widget_new (
   void *                object,
   const char * (*get_val)(void *),
-  void (*set_val)(void *, const char *));
+  void (*set_val)(void *, const char *),
+  int                    width);
 
 #define \
-editable_label_widget_new(object,getter,setter) \
+editable_label_widget_new(object,getter,setter,lbl) \
   _editable_label_widget_new ( \
     (void *) object, \
     (const char * (*) (void *)) getter, \
-    (void (*) (void *, const char *)) setter);
+    (void (*) (void *, const char *)) setter, \
+    lbl)
 
 #endif

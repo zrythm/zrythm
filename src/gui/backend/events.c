@@ -52,6 +52,8 @@
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/mixer.h"
+#include "gui/widgets/piano_roll_labels.h"
+#include "gui/widgets/piano_roll_notes.h"
 #include "gui/widgets/route_target_selector.h"
 #include "gui/widgets/ruler_marker.h"
 #include "gui/widgets/timeline_arranger.h"
@@ -904,6 +906,9 @@ events_process (void * data)
         case ET_CHANNEL_SLOTS_CHANGED:
           channel_widget_update_inserts (
             ((Channel *)ev->arg)->widget);
+          break;
+        case ET_DRUM_MODE_CHANGED:
+          piano_roll_widget_refresh (MW_PIANO_ROLL);
           break;
         default:
           g_message ("event not implemented yet");

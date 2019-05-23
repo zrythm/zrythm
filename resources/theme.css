@@ -379,3 +379,10 @@ channel expander-box
   /* FIXME use predefined colors */
   border-color: #BBBBBB;
 }
+
+.piano_roll_key_box
+{
+  border-style: solid;
+  border-bottom-width: 1px;
+  border-color: alpha (grey, 0.3);
+}

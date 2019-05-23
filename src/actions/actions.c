@@ -52,6 +52,7 @@
 #include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/piano_roll.h"
+#include "gui/widgets/piano_roll_notes.h"
 #include "gui/widgets/preferences.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
@@ -833,6 +834,20 @@ activate_toggle_status_bar (GSimpleAction *action,
     GTK_WIDGET (MW_BOT_BAR),
     !gtk_widget_get_visible (
       GTK_WIDGET (MW_BOT_BAR)));
+}
+
+/**
+ * Toggle drum mode in the piano roll.
+ */
+void
+activate_toggle_drum_mode (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  PIANO_ROLL->drum_mode = !PIANO_ROLL->drum_mode;
+
+  EVENTS_PUSH (ET_DRUM_MODE_CHANGED, NULL);
 }
 
 void

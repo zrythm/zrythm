@@ -68,7 +68,8 @@ G_DEFINE_TYPE (MidiArrangerWidget,
                ARRANGER_WIDGET_TYPE)
 
 /**
- * To be called from get_child_position in parent widget.
+ * To be called from get_child_position in parent
+ * widget.
  *
  * Used to allocate the overlay children.
  */
@@ -86,6 +87,8 @@ midi_arranger_widget_set_allocation (
       long region_start_ticks =
         mn->region->start_pos.total_ticks;
       Position tmp;
+      int adj_px_per_key =
+        MW_PIANO_ROLL->px_per_key + 1;
 
       /* use absolute position */
       position_from_ticks (
@@ -96,27 +99,46 @@ midi_arranger_widget_set_allocation (
         ui_pos_to_px_piano_roll (
           &tmp, 1);
       allocation->y =
-        MW_PIANO_ROLL->piano_roll_labels->
-          px_per_note *
-        (127 - mn->val);
+        adj_px_per_key *
+        piano_roll_find_midi_note_descriptor_by_val (
+          PIANO_ROLL, mn->val)->index;
 
-      /* use absolute position */
-      position_from_ticks (
-        &tmp,
-        region_start_ticks +
-        mn->end_pos.total_ticks);
-      allocation->width =
-        ui_pos_to_px_piano_roll (
-          &tmp, 1) - allocation->x;
-      allocation->height =
-        MW_PIANO_ROLL->piano_roll_labels->px_per_note;
+      allocation->height = adj_px_per_key;
+      if (PIANO_ROLL->drum_mode)
+        {
+          allocation->width = allocation->height;
+          allocation->x -= allocation->width / 2;
+        }
+      else
+        {
+          /* use absolute position */
+          position_from_ticks (
+            &tmp,
+            region_start_ticks +
+            mn->end_pos.total_ticks);
+          allocation->width =
+            ui_pos_to_px_piano_roll (
+              &tmp, 1) - allocation->x;
+        }
     }
 }
 
 int
 midi_arranger_widget_get_note_at_y (double y)
 {
-  return 128 - y / PIANO_ROLL_LABELS->px_per_note;
+  double adj_y = y - 1;
+  double adj_px_per_key =
+    MW_PIANO_ROLL->px_per_key + 1;
+  if (PIANO_ROLL->drum_mode)
+    {
+      return
+        PIANO_ROLL->drum_descriptors[
+          (int)(adj_y / adj_px_per_key)].value;
+    }
+  else
+    return
+      PIANO_ROLL->piano_descriptors[
+        (int)(adj_y / adj_px_per_key)].value;
 }
 
 MidiNoteWidget *
@@ -175,7 +197,9 @@ on_motion (GtkWidget *      widget,
   else
     MIDI_ARRANGER->hovered_note =
       midi_arranger_widget_get_note_at_y (
-        event->y - 2); // for line boundaries
+        event->y);
+  g_message ("hovered note: %d",
+             MIDI_ARRANGER->hovered_note);
 
   ARRANGER_WIDGET_GET_PRIVATE (MIDI_ARRANGER);
   gtk_widget_queue_draw (
@@ -185,20 +209,22 @@ on_motion (GtkWidget *      widget,
 }
 
 void
-midi_arranger_widget_setup (
+midi_arranger_widget_refresh_size (
   MidiArrangerWidget * self)
 {
   // set the size
-  int ww, hh;
-  gtk_widget_get_size_request (
-    GTK_WIDGET (PIANO_ROLL_LABELS),
-    &ww,
-    &hh);
   RULER_WIDGET_GET_PRIVATE (MIDI_RULER);
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
     rw_prv->total_px,
-    hh);
+    MW_PIANO_ROLL->total_key_px);
+}
+
+void
+midi_arranger_widget_setup (
+  MidiArrangerWidget * self)
+{
+  midi_arranger_widget_refresh_size (self);
 
   ARRANGER_WIDGET_GET_PRIVATE (self);
   g_signal_connect (
@@ -276,11 +302,13 @@ midi_arranger_widget_get_cursor (
           int is_resize_r =
             mnw && mnw->resize_r;
 
-          if (is_hit && is_resize_l)
+          if (is_hit && is_resize_l &&
+              !PIANO_ROLL->drum_mode)
             {
               return ARRANGER_CURSOR_RESIZING_L;
             }
-          else if (is_hit && is_resize_r)
+          else if (is_hit && is_resize_r &&
+                   !PIANO_ROLL->drum_mode)
             {
               return ARRANGER_CURSOR_RESIZING_R;
             }
@@ -466,10 +494,13 @@ midi_arranger_widget_on_drag_begin_note_hit (
         UI_OVERLAY_ACTION_AUDITIONING;
       break;
     case TOOL_SELECT_NORMAL:
-      if (midi_note_widget_is_resize_l (mnw, wx))
+      if (midi_note_widget_is_resize_l (mnw, wx) &&
+          !PIANO_ROLL->drum_mode)
         ar_prv->action =
           UI_OVERLAY_ACTION_RESIZING_L;
-      else if (midi_note_widget_is_resize_r (mnw, wx))
+      else if (midi_note_widget_is_resize_r (
+                 mnw, wx) &&
+               !PIANO_ROLL->drum_mode)
         ar_prv->action =
           UI_OVERLAY_ACTION_RESIZING_R;
       else
@@ -593,8 +624,12 @@ midi_arranger_widget_create_note (
                          ar_prv->snap_grid);
   midi_region_add_midi_note (region,
                         midi_note);
-  ar_prv->action =
-    UI_OVERLAY_ACTION_CREATING_RESIZING_R;
+  if (PIANO_ROLL->drum_mode)
+    ar_prv->action =
+      UI_OVERLAY_ACTION_MOVING;
+  else
+    ar_prv->action =
+      UI_OVERLAY_ACTION_CREATING_RESIZING_R;
   position_set_to_pos (
     &self->midi_note_end_poses[0],
     &midi_note->end_pos);

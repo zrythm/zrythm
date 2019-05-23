@@ -244,6 +244,14 @@ z_gtk_set_tooltip_for_actionable (
   const char *    tooltip);
 
 /**
+ * Adds the given style class to the GtkWidget
+ */
+void
+z_gtk_widget_add_style_class (
+  GtkWidget   *widget,
+  const gchar *class_name);
+
+/**
  * @}
  */
 #endif

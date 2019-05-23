@@ -46,7 +46,7 @@ draw_borders (MidiArrangerBgWidget * self,
               cairo_t *              cr,
               int                    x_from,
               int                    x_to,
-              int                    y_offset)
+              double                 y_offset)
 {
   cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
   cairo_set_line_width (cr, 0.5);
@@ -68,12 +68,19 @@ midi_arranger_draw_cb (
   gdk_cairo_get_clip_rectangle (cr,
                                 &rect);
 
+
+  /* px per key adjusted for border width */
+  double adj_px_per_key =
+    MW_PIANO_ROLL->px_per_key + 1;
+  double adj_total_key_px =
+    MW_PIANO_ROLL->total_key_px + 126;
+
   /*handle horizontal drawing*/
-  int y_offset;
+  double y_offset;
   for (int i = 0; i < 128; i++)
     {
       y_offset =
-        PIANO_ROLL_LABELS->px_per_note * i;
+        adj_px_per_key * i;
       if (y_offset > rect.y &&
           y_offset < (rect.y + rect.height))
         draw_borders (
@@ -82,18 +89,22 @@ midi_arranger_draw_cb (
           rect.x,
           rect.x + rect.width,
           y_offset);
-      if (i == MIDI_ARRANGER->hovered_note)
+      if ((PIANO_ROLL->drum_mode &&
+          PIANO_ROLL->drum_descriptors[i].value ==
+            MIDI_ARRANGER->hovered_note) ||
+          (!PIANO_ROLL->drum_mode &&
+           PIANO_ROLL->piano_descriptors[i].value ==
+             MIDI_ARRANGER->hovered_note))
         {
-          y_offset +=
-            PIANO_ROLL_LABELS->px_per_note;
           cairo_set_source_rgba (
             cr, 1, 1, 1, 0.06);
-          cairo_rectangle (
-            cr,
-            rect.x,
-            PIANO_ROLL_LABELS->total_px - y_offset,
-            rect.width,
-            PIANO_ROLL_LABELS->px_per_note);
+              cairo_rectangle (
+                cr,
+                rect.x,
+                /* + 1 since the border is bottom */
+                y_offset + 1,
+                rect.width,
+                adj_px_per_key);
           cairo_fill (cr);
         }
     }
@@ -113,20 +124,6 @@ midi_arranger_bg_widget_new (RulerWidget *    ruler,
   ab_prv->ruler = ruler;
   ab_prv->arranger = arranger;
 
-  // set the size FIXME uncomment
-  /*int ww, hh;*/
-  /*PianoRollLabelsWidget * piano_roll_labels =*/
-    /*PIANO_ROLL->piano_roll_labels;*/
-  /*gtk_widget_get_size_request (*/
-    /*GTK_WIDGET (piano_roll_labels),*/
-    /*&ww,*/
-    /*&hh);*/
-  /*gtk_widget_set_size_request (*/
-    /*GTK_WIDGET (self),*/
-    /*MW_RULER->total_px,*/
-    /*hh);*/
-
-
   g_signal_connect (
     G_OBJECT (self), "draw",
     G_CALLBACK (midi_arranger_draw_cb), NULL);
@@ -135,11 +132,13 @@ midi_arranger_bg_widget_new (RulerWidget *    ruler,
 }
 
 static void
-midi_arranger_bg_widget_class_init (MidiArrangerBgWidgetClass * _klass)
+midi_arranger_bg_widget_class_init (
+  MidiArrangerBgWidgetClass * _klass)
 {
 }
 
 static void
-midi_arranger_bg_widget_init (MidiArrangerBgWidget *self )
+midi_arranger_bg_widget_init (
+  MidiArrangerBgWidget *self )
 {
 }

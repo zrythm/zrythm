@@ -103,4 +103,23 @@ z_cairo_draw_text (
 #undef FONT
 }
 
+/**
+ * Draws a diamond shape.
+ */
+static inline void
+z_cairo_diamond (
+  cairo_t * cr,
+  double    x,
+  double    y,
+  double    width,
+  double    height)
+{
+  cairo_move_to (cr, x, height / 2);
+  cairo_line_to (cr, width / 2, y);
+  cairo_line_to (cr, width, height / 2);
+  cairo_line_to (cr, width / 2, height);
+  cairo_line_to (cr, x, height / 2);
+  cairo_close_path (cr);
+}
+
 #endif

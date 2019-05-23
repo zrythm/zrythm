@@ -71,7 +71,7 @@ instrument_track_info_expander_widget_init (
 {
   self->name =
     editable_label_widget_new (
-      NULL, NULL, NULL);
+      NULL, NULL, NULL, 11);
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     GTK_WIDGET (self->name));

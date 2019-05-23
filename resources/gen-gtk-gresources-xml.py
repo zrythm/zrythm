@@ -77,7 +77,7 @@ for f in get_files('ui', '.ui'):
 xml += '\n'
 
 # add icons
-for c in ['zrythm', 'gnome-builder', 'ext', 'fork-awesome']:
+for c in ['zrythm', 'gnome-builder', 'ext', 'fork-awesome', 'font-awesome']:
   icons_dir = 'icons/{0}'.format(c)
   if os.path.exists(os.path.join(srcdir,icons_dir)):
     for f in get_files(icons_dir, '.svg'):

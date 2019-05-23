@@ -328,16 +328,6 @@ dzl_gtk_text_buffer_remove_tag (GtkTextBuffer     *buffer,
 }
 
 void
-dzl_gtk_widget_add_style_class (GtkWidget   *widget,
-                                const gchar *class_name)
-{
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  g_return_if_fail (class_name != NULL);
-
-  gtk_style_context_add_class (gtk_widget_get_style_context (widget), class_name);
-}
-
-void
 dzl_gtk_widget_remove_style_class (GtkWidget   *widget,
                                    const gchar *class_name)
 {

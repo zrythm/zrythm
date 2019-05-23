@@ -259,6 +259,9 @@ static GActionEntry actions[] = {
   /* tracks */
   { "delete-selected-tracks", activate_delete_selected_tracks },
   { "duplicate-selected-tracks", activate_duplicate_selected_tracks },
+
+  /* piano roll */
+  { "toggle-drum-mode", activate_toggle_drum_mode },
 };
 
 static void

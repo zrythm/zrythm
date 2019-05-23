@@ -20,6 +20,7 @@
 #include "audio/channel.h"
 #include "audio/region.h"
 #include "audio/track.h"
+#include "gui/backend/piano_roll.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -33,15 +34,21 @@
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/piano_roll.h"
-#include "gui/widgets/piano_roll_labels.h"
-#include "gui/widgets/piano_roll_notes.h"
+#include "gui/widgets/piano_roll_key.h"
+#include "gui/widgets/piano_roll_key_label.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
+#include "utils/gtk.h"
 #include "utils/resources.h"
+
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (PianoRollWidget,
                piano_roll_widget,
                GTK_TYPE_BOX)
+
+#define DRUM_MODE (self->piano_roll->drum_mode)
+#define DEFAULT_PX_PER_KEY 8
 
 /**
  * Links scroll windows after all widgets have been
@@ -51,21 +58,11 @@ static void
 link_scrolls (
   PianoRollWidget * self)
 {
-  /* link note labels v scroll to arranger v scroll */
-  if (self->piano_roll_labels_scroll)
+  /* link note keys v scroll to arranger v scroll */
+  if (self->piano_roll_keys_scroll)
     {
       gtk_scrolled_window_set_vadjustment (
-        self->piano_roll_labels_scroll,
-        gtk_scrolled_window_get_vadjustment (
-          GTK_SCROLLED_WINDOW (
-            self->arranger_scroll)));
-    }
-
-  /* link notes v scroll to arranger v scroll */
-  if (self->piano_roll_notes_scroll)
-    {
-      gtk_scrolled_window_set_vadjustment (
-        self->piano_roll_notes_scroll,
+        self->piano_roll_keys_scroll,
         gtk_scrolled_window_get_vadjustment (
           GTK_SCROLLED_WINDOW (
             self->arranger_scroll)));
@@ -105,21 +102,77 @@ link_scrolls (
 
 }
 
-static void
-toggle_note_notation_cb (GtkButton *button,
-               gpointer   user_data)
+void
+piano_roll_widget_refresh (
+  PianoRollWidget * self)
 {
-  if (g_settings_get_enum (SETTINGS->ui,
-                           "note-notation") == 0)
-    g_settings_set_enum (SETTINGS->ui,
-                         "note-notation",
-                         1);
-  else
-    g_settings_set_enum (SETTINGS->ui,
-                         "note-notation",
-                         0);
-  gtk_widget_queue_draw (
-    GTK_WIDGET (PIANO_ROLL_LABELS));
+  self->px_per_key =
+    DEFAULT_PX_PER_KEY * self->piano_roll->notes_zoom;
+  self->total_key_px =
+    self->px_per_key * 128;
+
+  /* readd the notes */
+  z_gtk_container_destroy_all_children (
+    GTK_CONTAINER (self->piano_roll_keys_box));
+
+  MidiNoteDescriptor * descr;
+  for (int i = 0; i < 128; i++)
+    {
+      if (DRUM_MODE)
+        descr = &self->piano_roll->
+          drum_descriptors[i];
+      else
+        descr = &self->piano_roll->
+          piano_descriptors[i];
+
+      /* skip invisible notes */
+      if (!descr->visible)
+        continue;
+
+      GtkBox * box =
+        GTK_BOX (
+          gtk_box_new (GTK_ORIENTATION_HORIZONTAL,
+                       0));
+      gtk_widget_set_visible (
+        GTK_WIDGET (box), 1);
+      /* add thin line on the bottom of each note */
+      if (i != 127)
+        z_gtk_widget_add_style_class (
+          GTK_WIDGET (box), "piano_roll_key_box");
+
+      /* add label */
+      PianoRollKeyLabelWidget * lbl =
+        piano_roll_key_label_widget_new (descr);
+      piano_roll_key_label_widget_refresh (
+        lbl);
+      gtk_box_pack_start (
+        box, GTK_WIDGET (lbl),
+        1, 1, 0);
+      gtk_widget_set_size_request (
+        GTK_WIDGET (lbl),
+        -1, self->px_per_key);
+
+      if (!DRUM_MODE)
+        {
+          /* add label */
+          PianoRollKeyWidget * key =
+            piano_roll_key_widget_new (descr);
+          gtk_box_pack_end (
+            box, GTK_WIDGET (key),
+            0, 1, 0);
+        }
+
+      gtk_box_pack_start (
+        self->piano_roll_keys_box,
+        GTK_WIDGET (box),
+        0, 0, 0);
+    }
+
+  midi_arranger_widget_refresh_size (
+    MIDI_ARRANGER);
+
+  /* relink scrolls */
+  link_scrolls (self);
 }
 
 void
@@ -128,6 +181,11 @@ piano_roll_widget_setup (
   PianoRoll *       pr)
 {
   self->piano_roll = pr;
+
+  self->px_per_key =
+    DEFAULT_PX_PER_KEY * pr->notes_zoom;
+  self->total_key_px =
+    self->px_per_key * 128;
 
   if (self->arranger)
     {
@@ -146,20 +204,7 @@ piano_roll_widget_setup (
         GTK_WIDGET (self->modifier_arranger));
     }
 
-  link_scrolls (self);
-
-  GtkAdjustment * adj =
-    gtk_scrolled_window_get_vadjustment (
-      MW_PIANO_ROLL->arranger_scroll);
-  gtk_adjustment_set_value (
-    adj,
-    gtk_adjustment_get_upper (adj) / 2);
-  gtk_scrolled_window_set_vadjustment (
-    MW_PIANO_ROLL->arranger_scroll,
-    adj);
-
-  piano_roll_notes_widget_refresh (
-    self->piano_roll_notes);
+  piano_roll_widget_refresh (self);
 }
 
 static void
@@ -173,12 +218,6 @@ piano_roll_widget_init (PianoRollWidget * self)
       MIDI_RULER_WIDGET_TYPE, NULL)));
   gtk_widget_destroy (
     GTK_WIDGET (g_object_new (
-      PIANO_ROLL_LABELS_WIDGET_TYPE, NULL)));
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      PIANO_ROLL_NOTES_WIDGET_TYPE, NULL)));
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
       MIDI_ARRANGER_WIDGET_TYPE, NULL)));
   gtk_widget_destroy (
     GTK_WIDGET (g_object_new (
@@ -190,16 +229,12 @@ piano_roll_widget_init (PianoRollWidget * self)
   gtk_widget_init_template (GTK_WIDGET (self));
 
   gtk_label_set_text (self->midi_name_label,
-                      "Select a region...");
+                      _("Select a region..."));
 
   GdkRGBA * color = calloc (1, sizeof (GdkRGBA));
   gdk_rgba_parse (color, "gray");
-  color_area_widget_set_color (self->color_bar,
-                               color);
-
-  g_signal_connect (
-    G_OBJECT (self->toggle_notation), "clicked",
-    G_CALLBACK (toggle_note_notation_cb), NULL);
+  color_area_widget_set_color (
+    self->color_bar, color);
 }
 
 static void
@@ -242,27 +277,15 @@ piano_roll_widget_class_init (
   gtk_widget_class_bind_template_child (
     klass,
     PianoRollWidget,
-    piano_roll_labels_scroll);
+    piano_roll_keys_scroll);
   gtk_widget_class_bind_template_child (
     klass,
     PianoRollWidget,
-    piano_roll_labels_viewport);
+    piano_roll_keys_viewport);
   gtk_widget_class_bind_template_child (
     klass,
     PianoRollWidget,
-    piano_roll_labels);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollWidget,
-    piano_roll_notes_scroll);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollWidget,
-    piano_roll_notes_viewport);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollWidget,
-    piano_roll_notes);
+    piano_roll_keys_box);
   gtk_widget_class_bind_template_child (
     klass,
     PianoRollWidget,
