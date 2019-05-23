@@ -166,14 +166,13 @@ then (($IS_AMEND_COMMIT)) && exit 0
        \"tag_name\": \"$VERSION_STRING\",
        \"description\": \"$content\",
        \"assets\": { \"links\": ["
-     echo $CREATE_RELEASE_JSON
      for upload_file in ${UPLOAD_FILES[@]}
      do  filename=$(basename $upload_file)
        file_url=$(cat /tmp/$filename | jq '.url')
        file_url=${file_url:1:-1}
        CREATE_RELEASE_JSON="$CREATE_RELEASE_JSON {
          \"name\": \"$filename\",
-         \"url\": \"$GITLAB_UPLOADS_URL$file_url\" },"
+         \"url\": \"$GITLAB_REPO$file_url\" },"
        TraceStep "$file_url"
      done
      CREATE_RELEASE_JSON="${CREATE_RELEASE_JSON%?} ]
@@ -211,9 +210,9 @@ then (($IS_AMEND_COMMIT)) && exit 0
      TARBALL_MD5SUM="$(   md5sum     $TARBALL_FILE | cut --delimiter=' ' --fields=1)"
      TraceStep "$TARBALL_MD5SUM"
      TraceStep "curl $CURL_FETCH_ARGS \"$_tarball_url\""
-     curl $CURL_FETCH_ARGS "$GITLAB_UPLOADS_URL/$(cat /tmp/$TARBALL_FILENAME.sig | jq '.url' | sed 's/\"//g')" ;
-     curl $CURL_FETCH_ARGS "$GITLAB_UPLOADS_URL/$(cat /tmp/PKGBUILD | jq '.url' | sed 's/\"//g')" ;
-     curl $CURL_FETCH_ARGS "$GITLAB_UPLOADS_URL/$(cat /tmp/PKGBUILD.sig | jq '.url' | sed 's/\"//g')" ;
+     curl $CURL_FETCH_ARGS "$GITLAB_REPO/$(cat /tmp/$TARBALL_FILENAME.sig | jq '.url' | sed 's/\"//g')" ;
+     curl $CURL_FETCH_ARGS "$GITLAB_REPO/$(cat /tmp/PKGBUILD | jq '.url' | sed 's/\"//g')" ;
+     curl $CURL_FETCH_ARGS "$GITLAB_REPO/$(cat /tmp/PKGBUILD.sig | jq '.url' | sed 's/\"//g')" ;
      for remote_file in ${REMOTE_FILENAMES[@]}
      do  if [ -f $remote_file -a "$(stat --printf='%s' $remote_file)" != "9" ] # 'Not Found'
          then TraceStep "downloaded $remote_file"
