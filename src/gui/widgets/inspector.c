@@ -115,9 +115,10 @@ inspector_widget_class_init (
 static void
 inspector_widget_init (InspectorWidget * self)
 {
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      TWO_COL_EXPANDER_BOX_WIDGET_TYPE, NULL)));
+  g_type_ensure (TWO_COL_EXPANDER_BOX_WIDGET_TYPE);
+  g_type_ensure (INSPECTOR_TRACK_WIDGET_TYPE);
+  g_type_ensure (INSPECTOR_EDITOR_WIDGET_TYPE);
+  g_type_ensure (INSPECTOR_PLUGIN_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 

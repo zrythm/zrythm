@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-23 08:41+0100\n"
+"POT-Creation-Date: 2019-05-23 10:30+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Japanese <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -495,7 +495,7 @@ msgstr "設定を初期化"
 msgid "Initializing..."
 msgstr "初期化中…"
 
-#: src/gui/widgets/channel.c:925
+#: src/gui/widgets/channel.c:920
 msgid "Inserts"
 msgstr ""
 
@@ -808,7 +808,7 @@ msgstr "設定"
 msgid "Project"
 msgstr "プロジェクト"
 
-#: src/actions/actions.c:584
+#: src/actions/actions.c:583
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
@@ -945,7 +945,7 @@ msgstr ""
 msgid "Russian [ru]"
 msgstr "ロシア語[ru]"
 
-#: src/actions/actions.c:519
+#: src/actions/actions.c:518
 #, fuzzy
 msgid "Save Project"
 msgstr "プロジェクトを保存"
@@ -1277,7 +1277,7 @@ msgid "Zrythm"
 msgstr "Zrythm"
 
 #: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
-#: src/utils/dialogs.c:74 src/actions/actions.c:522
+#: src/utils/dialogs.c:74 src/actions/actions.c:521
 #: resources/ui/port_selector_popover.ui:193
 msgid "_Cancel"
 msgstr "キャンセル(_C)"
@@ -1313,7 +1313,7 @@ msgstr "開く(_O)"
 msgid "_Prefix plugin name"
 msgstr "_プレフィックスプラグイン名"
 
-#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:524
+#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:523
 msgid "_Save"
 msgstr "保存(_S)"
 

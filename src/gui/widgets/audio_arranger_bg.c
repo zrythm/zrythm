@@ -32,7 +32,6 @@
 #include "gui/widgets/audio_ruler.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/piano_roll.h"
-#include "gui/widgets/piano_roll_labels.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/tracklist.h"
 #include "utils/cairo.h"

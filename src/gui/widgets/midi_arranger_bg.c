@@ -31,7 +31,6 @@
 #include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/piano_roll.h"
-#include "gui/widgets/piano_roll_labels.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/tracklist.h"
 

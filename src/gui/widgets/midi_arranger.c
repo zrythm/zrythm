@@ -45,7 +45,6 @@
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/midi_ruler.h"
-#include "gui/widgets/piano_roll_labels.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_bg.h"

@@ -72,6 +72,8 @@ static void
 inspector_track_widget_init (
   InspectorTrackWidget * self)
 {
+  g_type_ensure (
+    INSTRUMENT_TRACK_INFO_EXPANDER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 }

@@ -104,7 +104,8 @@ piano_roll_init (PianoRoll * self)
       descr->value = i;
       descr->marked = 0;
       descr->visible = 1;
-      descr->custom_name = drum_labels[idx];
+      descr->custom_name =
+        g_strdup (drum_labels[idx]);
 
       descr->note_name =
         g_strdup_printf (

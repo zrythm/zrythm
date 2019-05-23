@@ -19,6 +19,14 @@
 
 #include "gui/accel.h"
 #include "gui/widgets/header_notebook.h"
+#include "gui/widgets/help_toolbar.h"
+#include "gui/widgets/home_toolbar.h"
+#include "gui/widgets/project_toolbar.h"
+#include "gui/widgets/quantize_mb.h"
+#include "gui/widgets/snap_box.h"
+#include "gui/widgets/snap_grid.h"
+#include "gui/widgets/toolbox.h"
+#include "gui/widgets/view_toolbar.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
@@ -47,8 +55,18 @@ header_notebook_widget_set_subtitle (
 }
 
 static void
-header_notebook_widget_init (HeaderNotebookWidget * self)
+header_notebook_widget_init (
+  HeaderNotebookWidget * self)
 {
+  g_type_ensure (HOME_TOOLBAR_WIDGET_TYPE);
+  g_type_ensure (TOOLBOX_WIDGET_TYPE);
+  g_type_ensure (SNAP_BOX_WIDGET_TYPE);
+  g_type_ensure (SNAP_GRID_WIDGET_TYPE);
+  g_type_ensure (QUANTIZE_MB_WIDGET_TYPE);
+  g_type_ensure (HELP_TOOLBAR_WIDGET_TYPE);
+  g_type_ensure (VIEW_TOOLBAR_WIDGET_TYPE);
+  g_type_ensure (PROJECT_TOOLBAR_WIDGET_TYPE);
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
   GtkStyleContext *context;
@@ -76,6 +94,7 @@ static void
 header_notebook_widget_class_init (HeaderNotebookWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+
   resources_set_class_template (
     klass, "header_notebook.ui");
 

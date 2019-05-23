@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-23 08:41+0100\n"
+"POT-Creation-Date: 2019-05-23 10:30+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Hindi <https://translate.zrythm.org/projects/zrythm/zrythm/hi/"
@@ -470,7 +470,7 @@ msgstr ""
 msgid "Initializing..."
 msgstr ""
 
-#: src/gui/widgets/channel.c:925
+#: src/gui/widgets/channel.c:920
 msgid "Inserts"
 msgstr ""
 
@@ -771,7 +771,7 @@ msgstr ""
 msgid "Project"
 msgstr ""
 
-#: src/actions/actions.c:584
+#: src/actions/actions.c:583
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
@@ -901,7 +901,7 @@ msgstr ""
 msgid "Russian [ru]"
 msgstr ""
 
-#: src/actions/actions.c:519
+#: src/actions/actions.c:518
 msgid "Save Project"
 msgstr ""
 
@@ -1214,7 +1214,7 @@ msgid "Zrythm"
 msgstr "Zrythm"
 
 #: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
-#: src/utils/dialogs.c:74 src/actions/actions.c:522
+#: src/utils/dialogs.c:74 src/actions/actions.c:521
 #: resources/ui/port_selector_popover.ui:193
 msgid "_Cancel"
 msgstr ""
@@ -1250,7 +1250,7 @@ msgstr ""
 msgid "_Prefix plugin name"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:524
+#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:523
 msgid "_Save"
 msgstr ""
 

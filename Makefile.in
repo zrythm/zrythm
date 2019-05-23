@@ -39,7 +39,6 @@ INSTALL = install
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_FONT = ${INSTALL} -m 644
-LDFLAGS = @LDFLAGS@
 MKDIR_P = mkdir -p
 GLIB_COMPILE_SCHEMAS = glib-compile-schemas
 
@@ -142,7 +141,7 @@ DEFAULT_INCLUDES = \
 	-I./$(LIBSMF_INC_DIR) -I./$(CYAML_INC_DIR) \
 	-I./$(ZIX_INC_DIR)
 
-BASE_LDFLAGS=$(LDFLAGS)
+BASE_LDFLAGS=@LDFLAGS@
 
 ifeq ($(patsubst clang%,clang,$(patsubst cc,clang,$(CC))),clang)
 	USING_CLANG = 1
@@ -270,8 +269,7 @@ ifeq ($(WINDOWS),1)
 	AS_NEEDED=-Wl,-as-needed
 endif
 
-BASE_LDFLAGS+= \
-	$(BDYNAMIC) \
+BASE_LDFLAGS += \
  	$(R_DYNAMIC) \
 	$(EXECINFO) \
 	$(LM) \
@@ -280,9 +278,10 @@ BASE_LDFLAGS+= \
 	$(AS_NEEDED) \
 	$(MWINDOWS)
 
-LDFLAGS +=	\
-	$(BASE_LD_FLAGS) \
+LDFLAGS =	\
+	$(BASE_LDFLAGS) \
 	$(EXTRA_LD_FLAGS) \
+	$(BDYNAMIC) \
 	$(FFMPEG_LIBS) \
   $(GTK3_LIBS) \
 	$(JACK_LIBS) \

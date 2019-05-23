@@ -33,6 +33,7 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_ruler.h"
+#include "gui/widgets/timeline_selection_info.h"
 #include "gui/widgets/tracklist.h"
 #include "gui/widgets/tracklist_header.h"
 #include "project.h"
@@ -97,30 +98,15 @@ center_dock_widget_setup (CenterDockWidget * self)
 static void
 center_dock_widget_init (CenterDockWidget * self)
 {
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      TRACKLIST_HEADER_WIDGET_TYPE, NULL)));
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      TRACKLIST_WIDGET_TYPE, NULL)));
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      TIMELINE_RULER_WIDGET_TYPE, NULL)));
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      CENTER_DOCK_BOT_BOX_WIDGET_TYPE, NULL)));
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      TIMELINE_ARRANGER_WIDGET_TYPE, NULL)));
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      LEFT_DOCK_EDGE_WIDGET_TYPE, NULL)));
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      RIGHT_DOCK_EDGE_WIDGET_TYPE, NULL)));
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      BOT_DOCK_EDGE_WIDGET_TYPE, NULL)));
+  g_type_ensure (BOT_DOCK_EDGE_WIDGET_TYPE);
+  g_type_ensure (RIGHT_DOCK_EDGE_WIDGET_TYPE);
+  g_type_ensure (LEFT_DOCK_EDGE_WIDGET_TYPE);
+  g_type_ensure (TIMELINE_ARRANGER_WIDGET_TYPE);
+  g_type_ensure (CENTER_DOCK_BOT_BOX_WIDGET_TYPE);
+  g_type_ensure (TIMELINE_RULER_WIDGET_TYPE);
+  g_type_ensure (TRACKLIST_HEADER_WIDGET_TYPE);
+  g_type_ensure (TRACKLIST_WIDGET_TYPE);
+  g_type_ensure (TIMELINE_SELECTION_INFO_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 

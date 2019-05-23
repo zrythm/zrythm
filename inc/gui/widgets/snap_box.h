@@ -43,6 +43,7 @@ G_DECLARE_FINAL_TYPE (SnapBoxWidget,
 #define MW_SNAP_BOX MW_HOME_TOOLBAR->snap_box
 
 typedef struct _SnapGridWidget SnapGridWidget;
+typedef struct SnapGrid SnapGrid;
 
 typedef struct _SnapBoxWidget
 {

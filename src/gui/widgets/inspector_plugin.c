@@ -146,5 +146,7 @@ static void
 inspector_plugin_widget_init (
   InspectorPluginWidget * self)
 {
+  g_type_ensure (PORTS_EXPANDER_WIDGET_TYPE);
+
   gtk_widget_init_template (GTK_WIDGET (self));
 }
