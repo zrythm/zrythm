@@ -142,6 +142,8 @@ DEFAULT_INCLUDES = \
 	-I./$(LIBSMF_INC_DIR) -I./$(CYAML_INC_DIR) \
 	-I./$(ZIX_INC_DIR)
 
+BASE_LDFLAGS=$(LDFLAGS)
+
 ifeq ($(patsubst clang%,clang,$(patsubst cc,clang,$(CC))),clang)
 	USING_CLANG = 1
 endif
@@ -158,7 +160,7 @@ endif
 ifeq ($(WINDOWS),1)
 	EXT = .exe
 	#EXTRA_LD_FLAGS += -mwindows
-	EXTRA_LD_FLAGS += -fno-stack-protector \
+	BASE_LD_FLAGS += -fno-stack-protector \
 										-lws2_32 -static \
 										-static-libgcc \
 										-static-libstdc++
@@ -172,7 +174,7 @@ ifeq ($(LINUX),1)
 endif
 endif
 ifeq ($(PROFILING),1)
-	EXTRA_LD_FLAGS += -pg
+	BASE_LD_FLAGS += -pg
 endif
 
 ifeq ($(LINUX),1)
@@ -268,9 +270,19 @@ ifeq ($(WINDOWS),1)
 	AS_NEEDED=-Wl,-as-needed
 endif
 
-LDFLAGS +=	\
-	$(EXTRA_LD_FLAGS) \
+BASE_LDFLAGS+= \
 	$(BDYNAMIC) \
+ 	$(R_DYNAMIC) \
+	$(EXECINFO) \
+	$(LM) \
+	$(FPIC) \
+	-lpthread \
+	$(AS_NEEDED) \
+	$(MWINDOWS)
+
+LDFLAGS +=	\
+	$(BASE_LD_FLAGS) \
+	$(EXTRA_LD_FLAGS) \
 	$(FFMPEG_LIBS) \
   $(GTK3_LIBS) \
 	$(JACK_LIBS) \
@@ -282,14 +294,7 @@ LDFLAGS +=	\
 	$(PORT_AUDIO_LIBS) \
 	$(SAMPLERATE_LIBS) \
 	$(SNDFILE_LIBS) \
-	$(X11_LIBS) \
- 	$(R_DYNAMIC) \
-	$(EXECINFO) \
-	$(LM) \
-	$(FPIC) \
-	-lpthread \
-	$(AS_NEEDED) \
-	$(MWINDOWS)
+	$(X11_LIBS)
 
 
 built_src = $(BUILD_DIR)/resources.c
@@ -347,7 +352,7 @@ endif
 # libsmf
 ifeq ($(WINDOWS),1)
 	LIBSMF_CONFIGURE=$(subst gcc,configure,$(CC)) .
-	LIBSMF_LDFLAGS=-lws2_32
+	LIBSMF_LDFLAGS="$(BASE_LDFLAGS) -lws2_32"
 else
 	LIBSMF_CONFIGURE=./configure
 endif
@@ -491,7 +496,7 @@ $(CYAML_BUILD_DIR)/libcyaml.a:
 # build libsmf
 $(LIBSMF_BUILD_DIR)/libsmf.a:
 	cd $(LIBSMF_SRC_DIR) && autoreconf -fi && \
-		CC=$(CC) LDFLAGS="$(LDFLAGS) $(LIBSMF_LDFLAGS)" ac_cv_func_malloc_0_nonnull=yes ac_cv_func_realloc_0_nonnull=yes $(LIBSMF_CONFIGURE) && $(MAKE)
+		CC=$(CC) LDFLAGS="$(LIBSMF_LDFLAGS)" ac_cv_func_malloc_0_nonnull=yes ac_cv_func_realloc_0_nonnull=yes $(LIBSMF_CONFIGURE) && $(MAKE)
 
 $(BUILD_DIR)/zrythm.gresource.xml: resources/gen-gtk-gresources-xml.py \
 	resources/icons/breeze-icons/gen-hicolor.py \
