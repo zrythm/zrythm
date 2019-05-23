@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-# ================ Initialization ==============
+# ---------------- Initialization --------------
 # Initialize autoconf: package name, version, bug report address
 AC_INIT([zrythm], [0.4.185], [https://git.zrythm.org/zrythm/zrythm/issues])
 
@@ -24,7 +24,7 @@ AC_INIT([zrythm], [0.4.185], [https://git.zrythm.org/zrythm/zrythm/issues])
 AC_DEFINE([GETTEXT_PACKAGE],["zrythm"],
           [Gettext package name])
 
-# =========== Detect OS ================
+# ----------- Detect OS ----------------
 
 # AC_CANONICAL_HOST is needed to access the
 # 'host_os' variable
@@ -71,14 +71,14 @@ AM_COND_IF([OSX],
 # Add GSettings support
 GLIB_GSETTINGS
 
-# ========== Check for other conditionals ========
+# ---------- Check for other conditionals --------
 
 AM_CONDITIONAL([USE_DEFAULT_PREFIX],
                [test "x$prefix" = xNONE])
 AM_COND_IF([USE_DEFAULT_PREFIX],
            [AC_SUBST([USE_DEFAULT_PREFIX], [1])])
 
-# ============ Configure options =============
+# ------------ Configure options -------------
 
 AC_ARG_ENABLE(profiling,
               AS_HELP_STRING([--enable-profiling], [Enables profiling with gprof]),
@@ -112,7 +112,7 @@ AC_ARG_WITH(
   [AC_SUBST([WITH_DISTRHO_PORTS],[1])],
   [AC_SUBST([WITH_DISTRHO_PORTS],[0])])
 
-# ============= Check for programs ===========
+# ------------- Check for programs -----------
 
 # Check for C/C++ compilers
 AC_PROG_CC([gcc clang])
@@ -150,7 +150,7 @@ AC_MSG_ERROR(
   [Required program 'xgettext' not found.
    Please install gettext]) && exit 1
 
-# ============ Check for libraries ===========
+# ------------ Check for libraries -----------
 
 # FFMPEG - optional
 AC_ARG_WITH(
@@ -233,7 +233,7 @@ AS_IF([test "x$with_x42_plugins" == "xyes"],
        PKG_CHECK_MODULES([_GL], [gl])],
       [have_deps=no])
 
-# ============ Check for header files ==========
+# ------------ Check for header files ----------
 
 # windows.h - mandatory on windows
 AM_COND_IF([WINDOWS],
@@ -259,7 +259,7 @@ AS_IF(
          [AC_MSG_ERROR(
            [DISTRHO ports require ladspa.h])])])
 
-# =========== Check for library functions ========
+# ----------- Check for library functions --------
 
 # mlock
 AC_CHECK_FUNC([mlock],
@@ -272,7 +272,7 @@ AC_CHECK_FUNC(
   [AC_DEFINE([HAVE_JACK_METADATA], [1],
   [Define if jack_set_property exists.])])
 
-# =============== Declare files =============
+# --------------- Declare files -------------
 
 # Declare output headers
 AC_CONFIG_HEADERS([config.h])
@@ -286,7 +286,7 @@ AC_CONFIG_FILES([
 	data/osx/Info.plist
 ])
 
-# ================= Output ================
+# ----------------- Output ----------------
 
 # Actually output all declared files
 AC_OUTPUT
