@@ -1,0 +1,27 @@
+Version 1.5
+
+Packaged the code for release, not my internal working version. (That didn't 
+work!)
+
+
+
+Version 1.4
+
+Folded back utilities from SGX. Namely, muGetChordName, muGuessChord.
+
+Updated contact information.
+
+
+
+Version 1.3
+
+Library changes: The channel parser was fixed for implied messages. Note on 
+messages are automatically translated to note off when volume is 0. 
+
+Armstrong (http://www.bluedust.dontexist.com/armstrong) is supported for the 
+Arduino in m2rtttl. 
+
+Rest support was added in m2rtttl.
+
+
+

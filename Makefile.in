@@ -127,18 +127,15 @@ CYAML_BUILD_DIR = ext/libcyaml/build/release
 # execute make here
 CYAML_SRC_DIR = ext/libcyaml
 CYAML_INC_DIR = ext/libcyaml/include
-#lib file here
-LIBSMF_BUILD_DIR = ext/libsmf/src/.libs
-LIBSMF_INC_DIR = ext/libsmf/src
-# execute make here
-LIBSMF_SRC_DIR = ext/libsmf
+MIDILIB_SRC_DIR = ext/midilib/src
+MIDILIB_DIR = ext/midilib
 ZIX_INC_DIR = ext/zix
 PLUGINS_SRC_DIR= plugins
 PLUGINS_INSTALL_DIR = $(libdir)/zrythm/lv2
 
 DEFAULT_INCLUDES = \
 	-I. -I./$(INC_DIR) -I./$(SRC_DIR) -I./ext \
-	-I./$(LIBSMF_INC_DIR) -I./$(CYAML_INC_DIR) \
+	-I./$(MIDILIB_SRC_DIR) -I./$(CYAML_INC_DIR) \
 	-I./$(ZIX_INC_DIR)
 
 BASE_LDFLAGS=@LDFLAGS@
@@ -159,7 +156,7 @@ endif
 ifeq ($(WINDOWS),1)
 	EXT = .exe
 	#EXTRA_LD_FLAGS += -mwindows
-	BASE_LD_FLAGS += -fno-stack-protector \
+	BASE_LDFLAGS += -fno-stack-protector \
 										-lws2_32 -static \
 										-static-libgcc \
 										-static-libstdc++
@@ -173,7 +170,7 @@ ifeq ($(LINUX),1)
 endif
 endif
 ifeq ($(PROFILING),1)
-	BASE_LD_FLAGS += -pg
+	BASE_LDFLAGS += -pg
 endif
 
 ifeq ($(LINUX),1)
@@ -348,14 +345,6 @@ else
 	CYAML_AR=ar
 endif
 
-# libsmf
-ifeq ($(WINDOWS),1)
-	LIBSMF_CONFIGURE=$(subst gcc,configure,$(CC)) .
-	LIBSMF_LDFLAGS="$(BASE_LDFLAGS) -lws2_32"
-else
-	LIBSMF_CONFIGURE=./configure
-endif
-
 # x42 plugins
 ifeq ($(WITH_X42_PLUGINS),1)
 	X42_PLUGINS_SRC_DIRS = \
@@ -427,7 +416,7 @@ endif
 endif
 
 # static libs
-STATIC_LIBS=$(CYAML_BUILD_DIR)/libcyaml.a $(LIBSMF_BUILD_DIR)/libsmf.a $(DLFCN_LIB)
+STATIC_LIBS=$(CYAML_BUILD_DIR)/libcyaml.a $(DLFCN_LIB)
 
 # -----------------------------
 #  rules
@@ -464,7 +453,7 @@ $(EXEICON): data/zrythm.ico
 endif
 
 # Actual target of the binary - depends on all .o files.
-$(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(OBJ_CPP) $(OBJ_OBJC) $(BUILD_DIR)/resources.o $(EXEICON) $(STATIC_LIBS)
+$(BUILD_DIR)/$(BIN)$(EXT): $(OBJ) $(OBJ_CPP) $(OBJ_OBJC) $(BUILD_DIR)/resources.o $(EXEICON) $(STATIC_LIBS) $(MIDILIB_SRC_DIR)/midifile.o
 	# Create build directories - same structure as sources.
 	$(MKDIR_P) $(@D)
 	# Just link all the object files.
@@ -492,10 +481,10 @@ $(CYAML_BUILD_DIR)/libcyaml.a:
 		PREFIX=$(prefix) CC=$(CC) AR=$(CYAML_AR) \
 		LDFLAGS="$(LDFLAGS) $(shell $(PKG_CONFIG) --libs yaml-0.1)"
 
-# build libsmf
-$(LIBSMF_BUILD_DIR)/libsmf.a:
-	cd $(LIBSMF_SRC_DIR) && autoreconf -fi && \
-		CC=$(CC) LDFLAGS="$(LIBSMF_LDFLAGS)" ac_cv_func_malloc_0_nonnull=yes ac_cv_func_realloc_0_nonnull=yes $(LIBSMF_CONFIGURE) && $(MAKE)
+# build midilib
+$(MIDILIB_SRC_DIR)/midifile.o:
+	cd $(MIDILIB_DIR) && \
+		$(MAKE) minimal CC=$(CC) CFLAGS="-I$(includedir)" LDFLAGS="$(BASE_LDFLAGS)"
 
 $(BUILD_DIR)/zrythm.gresource.xml: resources/gen-gtk-gresources-xml.py \
 	resources/icons/breeze-icons/gen-hicolor.py \
@@ -565,9 +554,7 @@ clean:
 	-rm $(LANG_MO_FILES)
 	cd $(CYAML_SRC_DIR) && $(MAKE) clean
 	#-rm -rf $(CYAML_BUILD_DIR)
-	cd $(LIBSMF_SRC_DIR) && autoreconf -i && \
-		$(LIBSMF_CONFIGURE) && $(MAKE) clean
-	#-rm -rf $(LIBSMF_BUILD_DIR)
+	cd $(MIDILIB_DIR) && $(MAKE) clean
 	for dir in $(X42_PLUGINS_SRC_DIRS); \
 	do \
 		pushd $${dir}; \
