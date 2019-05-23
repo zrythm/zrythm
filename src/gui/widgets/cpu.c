@@ -226,7 +226,6 @@ refresh_cpu_load (GtkWidget * widget,
     (float) (cpu.idle - prev_idle) /
     (float) (cpu.total - prev_total) * 100;
 
-  last_time_updated_cpu = curr_time;
   prev_total = cpu.total;
   prev_idle = cpu.idle;
 #elif defined(__linux__)
@@ -279,6 +278,8 @@ refresh_cpu_load (GtkWidget * widget,
     widget, ttip);
   g_free (ttip);
   gtk_widget_queue_draw (widget);
+
+  last_time_updated_cpu = curr_time;
 
   return G_SOURCE_CONTINUE;
 }

@@ -546,7 +546,6 @@ midi_arranger_widget_on_drag_begin_note_hit (
           UI_OVERLAY_ACTION_RESIZING_R ||
         ar_prv->action ==
           UI_OVERLAY_ACTION_RESIZING_L;
-      g_message ("transients %d", transients);
 
       /* if ctrl held & not selected, add to
        * selections */
@@ -629,6 +628,9 @@ midi_arranger_widget_create_note (
   else
     ar_prv->action =
       UI_OVERLAY_ACTION_CREATING_RESIZING_R;
+  position_set_to_pos (
+    &self->midi_note_start_poses[0],
+    &midi_note->start_pos);
   position_set_to_pos (
     &self->midi_note_end_poses[0],
     &midi_note->end_pos);
