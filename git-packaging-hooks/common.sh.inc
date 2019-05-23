@@ -65,11 +65,11 @@ function init()
   readonly TAGS_FILE=$(git config --local core.hooksPath)/RESTORE_TAGS
   readonly FAUX_DSC_MD5SUM='0123456789abcdef0123456789abcdef                                '
   readonly FAUX_DSC_SIZE='1234567'
-  readonly GITLAB_API_URL="https://git.zrythm.org/api/v4/projects/1/releases"
-  local    tarball_download_url="https://git.zrythm.org/${UPSTREAM_NAME}/${UPSTREAM_NAME}/-/archive"
-  local    assets_download_url="https://git.zrythm.org/${UPSTREAM_NAME}/${UPSTREAM_NAME}/releases"
-  readonly RELEASEID_REGEX='s/^.*\"assets_url\": \"https:\/\/api.github.com\/repos\/'${GITHUB_LOGIN}'\/loopidity\/releases\/\(.*\)\/assets\",.*$/\1/'
-  readonly UPLOADURL_REGEX='s/^.*\"upload_url\": \"\(.*\){?.*\",.*$/\1/'
+  readonly GITLAB_API_URL="${GITLAB_INSTANCE_URL}/api/v4/projects/${GITLAB_PROJECT_ID}/releases"
+  local    tarball_download_url="${GITLAB_REPO}/-/archive"
+  local    assets_download_url="${GITLAB_REPO}/releases"
+  readonly GITHUB_RELEASEID_REGEX='s/^.*\"assets_url\": \"https:\/\/api.github.com\/repos\/'${GITHUB_LOGIN}'\/loopidity\/releases\/\(.*\)\/assets\",.*$/\1/'
+  readonly GITHUB_UPLOADURL_REGEX='s/^.*\"upload_url\": \"\(.*\){?.*\",.*$/\1/'
   readonly CURL_RESP_ARGS='--silent'
   readonly CURL_FETCH_ARGS='--silent --location --remote-name'
   readonly CURL_STATUS_ARGS='--silent --output /dev/null --write-out %{http_code}'
@@ -151,8 +151,7 @@ function init()
   readonly TARBALL_URL=${tarball_download_url}/${TARBALL_FILENAME}
   readonly PKGBUILD_URL=${assets_download_url}/${VERSION_STRING}/PKGBUILD
   readonly PKGBUILD_SIG_URL=${assets_download_url}/${VERSION_STRING}/PKGBUILD.sig
-  readonly GITLAB_UPLOAD_FILE_URL="https://git.zrythm.org/api/v4/projects/1/uploads"
-  readonly GITLAB_UPLOADS_URL="https://git.zrythm.org/zrythm/zrythm"
+  readonly GITLAB_UPLOAD_FILE_URL="${GITLAB_INSTANCE_URL}/api/v4/projects/${GITLAB_PROJECT_ID}/uploads"
 
 # source $(git config --local core.hooksPath)/debug-constants.sh.inc # DEBUG
 # exit 1 # debug

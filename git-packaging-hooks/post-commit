@@ -80,20 +80,6 @@ then (($IS_AMEND_COMMIT)) && exit 0
      git archive --prefix=$TARBALL_INNER_DIR/ --output=$TARBALL_FILE $VERSION_STRING
      TraceStep "$(ls -l)"
 
-     #upload the tarball to get the url
-#     file_basename=$(basename $TARBALL_FILE)
-#     resp_status=$(curl --request POST --form \
-#       "file=@$TARBALL_FILE"       \
-#       --header "PRIVATE-TOKEN: $GITLAB_AUTH_TOKEN" \
-#       --header "Accept: application/json"                \
-#       --silent --output /tmp/$file_basename \
-#       --write-out %{http_code}                                  \
-#                            ${GITLAB_UPLOAD_FILE_URL}                       )
-#      if   [ "$resp_status" == "201" ]
-#      then TraceStep "uploaded '$file_basename'"
-#      else TraceStep "failed to upload '$file_basename'" ; exit 1 ;
-#        fi
-
      # generate tarball metadata
      TraceStep "generating checksums"
      TARBALL_MD5SUM="$(   md5sum     $TARBALL_FILE | cut --delimiter=' ' --fields=1)"
@@ -101,7 +87,6 @@ then (($IS_AMEND_COMMIT)) && exit 0
      TARBALL_SHA1SUM="$(  sha1sum    $TARBALL_FILE | cut --delimiter=' ' --fields=1)                        "
      TARBALL_SHA256SUM="$(sha256sum  $TARBALL_FILE | cut --delimiter=' ' --fields=1)"
      FILE_SIZE=$(         wc --bytes $TARBALL_FILE | cut --delimiter=' ' --fields=1)
-#      PKGBUILD_MD5SUMS="'$TARBALL_MD5SUM' SKIP SKIP"
      PKGBUILD_MD5SUMS="'$TARBALL_MD5SUM'"
      TraceStep "$PKGBUILD_MD5SUMS"
 
@@ -117,10 +102,6 @@ then (($IS_AMEND_COMMIT)) && exit 0
          echo " $FAUX_DSC_MD5SUM $FAUX_DSC_SIZE $DEB_DIFFBALL_FILENAME" >> $dsc_file
      done
      sed --in-place "s/^md5sums=.*$/md5sums=( $PKGBUILD_MD5SUMS )/"        $PKGBUILD_FILE
-#     CUSTOM_TARBALL_URL=$GITLAB_UPLOADS_URL$(cat /tmp/$file_basename | jq '.url' | sed 's/\"//g')
-#     TraceStep "$CUSTOM_TARBALL_URL"
-#     sed --in-place "s/^source=.*$/source=( \"$CUSTOM_TARBALL_URL\" )/"        $PKGBUILD_FILE
-#     TraceStep "test"
 
      # set uniform commit message and ensure signed
      git commit --gpg-sign --amend --allow-empty --message="$GIT_COMMIT_MSG" > /dev/null
@@ -130,13 +111,13 @@ then (($IS_AMEND_COMMIT)) && exit 0
      gpg --detach-sign --yes $PKGBUILD_FILE
 
 
-     ### github steps ###
+     ### gitlab steps ###
 
      # create upstream tarball
      TraceStep "pushing staging branch, packaging branch, and revision tag to github"
      git push --force $REMOTE_NAME $STAGING_BRANCH $PACKAGING_BRANCH $VERSION_STRING 2> /dev/null
 
-     ## destroy any existing github "tag release" with same tag
+     ## destroy any existing gitlab "tag release" with same tag
      TraceStep "querying existing gitlab \"tag release\" '$VERSION_STRING'"
      resp_json=$(curl $CURL_RESP_ARGS --header \"PRIVATE-TOKEN: $GITLAB_AUTH_TOKEN\" $GITLAB_API_URL/$VERSION_STRING)
      tag_name=$(echo $resp_json | jq '.tag_name')
@@ -223,8 +204,8 @@ then (($IS_AMEND_COMMIT)) && exit 0
 
      ## download and verify github "tag release" tarball and PKGBUILD
      TraceStep "downloading remote tarball, PKGBUILD, and signatures"
-     #curl $CURL_FETCH_ARGS "$GITLAB_UPLOADS_URL/$(cat /tmp/$TARBALL_FILENAME | jq '.url' | sed 's/\"//g')" ;
-     _tarball_url="https://git.zrythm.org/zrythm/zrythm/-/archive/$VERSION_STRING/zrythm-$VERSION_STRING"
+
+     _tarball_url="${GITLAB_REPO}/-/archive/$VERSION_STRING/${UPSTREAM_NAME}-$VERSION_STRING"
       TraceStep "$_tarball_url"
      curl $CURL_FETCH_ARGS "$_tarball_url"
      TARBALL_MD5SUM="$(   md5sum     $TARBALL_FILE | cut --delimiter=' ' --fields=1)"
@@ -237,7 +218,6 @@ then (($IS_AMEND_COMMIT)) && exit 0
      do  if [ -f $remote_file -a "$(stat --printf='%s' $remote_file)" != "9" ] # 'Not Found'
          then TraceStep "downloaded $remote_file"
          else TraceStep "failed to download $remote_file"
-#               source $(git config --local core.hooksPath)/debug-remote-files.sh.inc
               exit 1
          fi
      done
@@ -249,7 +229,6 @@ then (($IS_AMEND_COMMIT)) && exit 0
           diff $PKGBUILD_FILE.sig ./PKGBUILD.sig                                > /dev/null
      then TraceStep "verified remote tarball, PKGBUILD, and signatures"
      else TraceStep "failed to verify remote tarball, PKGBUILD, or signatures"
-#           source $(git config --local core.hooksPath)/debug-remote-files.sh.inc
           exit 1
      fi
 
@@ -257,8 +236,6 @@ then (($IS_AMEND_COMMIT)) && exit 0
      ### OBS steps ###
 
      # copy OBS files to local OSC build directory and trigger remote builds
-#     TraceStep "replacing correct tarball url in package files"
-#     sed --in-place "s/^source=.*$/source=( \"$GITLAB_UPLOADS_URL/$(cat /tmp/PKGBUILD.sig | jq '.url' | sed 's/\"//g')\")/"        $PKGBUILD_FILE
 
      TraceStep "populating OSC build directory"
      cd $OSC_DIR/ && rm ./*
@@ -277,49 +254,6 @@ then (($IS_AMEND_COMMIT)) && exit 0
 
 
      ### debian steps ###
-
-     # rename tarball and prepare working tree for debain
-     #rm -rf ../${DEBIAN_NAME}*${VERSION}*
-     #mv $TARBALL_FILE ../$DEB_TARBALL_FILENAME
-     #[ "$DEB_BUILD_TOOL" == 'gbp' -a ! -f debian/gbp.conf ] && cp $HOOKS_PATH/gbp.conf debian/
-
-     ## build/validate debian package
-     #TraceStep "building debian package with '$"$DEB_BUILD_TOOL"'"
-     #case "$DEB_BUILD_TOOL" in
-     #'debuild') debuild --unsigned-changes --unsigned-source
-                #deb_file=$(ls ../${DEBIAN_NAME}_${VERSION}-*_${DEB_BUILD_ARCH}.deb 2> /dev/null)
-                #sudo piuparts --save=$CHROOTBALL --basetgz=$CHROOTBALL              \
-                              #--distribution=$DEB_BUILD_DIST --arch=$DEB_BUILD_ARCH \
-                              #--mirror="$DEBOOTSTRAP_REPO" $deb_file
-                #(($?)) && echo "piuparts failed for '$deb_file'" && exit 1
-     #;;
-     #'sbuild') sudo sbuild-createchroot --make-sbuild-tarball=$CHROOTBALL $DEB_BUILD_DIST \
-                                        #`mktemp --directory` "$DEBOOTSTRAP_REPO"
-               #sbuild --dist=$DEB_BUILD_DIST --arch=$DEB_BUILD_ARCH          \
-                      #--run-piuparts --piuparts-opts="--basetgz=$CHROOTBALL"
-     #;;
-     #'gbp') DIST=$DEB_BUILD_DIST ARCH=$DEB_BUILD_ARCH git-pbuilder create --extrapackages 'eatmydata' &> $LOG_FILE
-            #DIST=$DEB_BUILD_DIST ARCH=$DEB_BUILD_ARCH git-pbuilder update --extrapackages 'eatmydata' &> $LOG_FILE || true
-            #[ ! -d $PIUPARTS_CHROOT ] && echo "could not create chroot '$PIUPARTS_CHROOT'" && exit 1
-
-            #gbp buildpackage --git-dist=$DEB_BUILD_DIST --git-arch=$DEB_BUILD_ARCH              \
-                             #--git-pbuilder --git-tag --git-retag --git-notify=off &> $LOG_FILE
-            #deb_file=$(ls ../${DEBIAN_NAME}_${VERSION}-*_${DEB_BUILD_ARCH}.deb 2> /dev/null)
-            #[ ! -f "$deb_file" ] && echo "package creation failed" && exit 1
-
-            #TraceStep "testing debian package install/uninstall"
-            #sudo piuparts --distribution=$DEB_BUILD_DIST --arch=$DEB_BUILD_ARCH     \
-                          #--existing-chroot=$PIUPARTS_CHROOT $deb_file &> $LOG_FILE
-            #(($?)) && echo "piuparts failed for '$deb_file'" && exit 1
-
-            #debian_version=debian/$(dpkg-parsechangelog --show-field version)
-            #debian_tag=$(git tag --points-at HEAD)
-            #[ "$debian_version" != "$debian_tag" ] && TraceError "improper debian tag" && exit 1
-
-            #TraceStep "pushing debian tag to github"
-            #git push --force $REMOTE_NAME $debian_tag 2> /dev/null
-     #;;
-     #esac
 
      TraceStage "completed packaging-specific post-commit hooks"
 fi
