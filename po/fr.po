@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-05-30 04:45+0100\n"
-"PO-Revision-Date: 2019-05-22 22:34+0000\n"
+"PO-Revision-Date: 2019-05-24 18:34+0000\n"
 "Last-Translator: Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French <https://translate.zrythm.org/projects/zrythm/zrythm/"
 "fr/>\n"
@@ -985,6 +985,10 @@ msgstr "Refaire la commande précédente"
 #: resources/ui/shortcuts.ui:156
 msgid "Selections"
 msgstr "Sélections"
+
+#: src/gui/widgets/piano_roll.c:232
+msgid "Select a region..."
+msgstr "Sélectionner une région..."
 
 #: resources/ui/shortcuts.ui:161
 msgid "Select all"
