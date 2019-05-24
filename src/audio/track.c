@@ -532,6 +532,23 @@ track_remove_region (
   EVENTS_PUSH (ET_REGION_REMOVED, track);
 }
 
+/**
+ * Adds and connects a Modulator to the Track.
+ */
+void
+track_add_modulator (
+  Track * track,
+  Modulator * modulator)
+{
+  array_append (track->modulators,
+                track->num_modulators,
+                modulator);
+
+  mixer_recalc_graph (MIXER);
+
+  EVENTS_PUSH (ET_MODULATOR_ADDED, modulator);
+}
+
 void
 track_disconnect (Track * track)
 {

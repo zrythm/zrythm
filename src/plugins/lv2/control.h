@@ -105,10 +105,12 @@ typedef struct Lv2Controls
 } Lv2Controls;
 
 Lv2Control*
-lv2_new_port_control(Lv2Plugin* plugin, uint32_t index);
+lv2_new_port_control (
+  Lv2Plugin* plugin, uint32_t index);
 
 Lv2Control*
-lv2_new_property_control(Lv2Plugin* plugin, const LilvNode* property);
+lv2_new_property_control (
+  Lv2Plugin* plugin, const LilvNode* property);
 
 void
 lv2_add_control(Lv2Controls* controls, Lv2Control* control);

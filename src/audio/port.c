@@ -32,6 +32,7 @@
 #include "audio/channel.h"
 #include "audio/midi.h"
 #include "audio/mixer.h"
+#include "audio/modulator.h"
 #include "audio/pan.h"
 #include "audio/port.h"
 #include "plugins/plugin.h"
@@ -247,18 +248,29 @@ port_get_all (
       _ADD (ch->piano_roll);
       _ADD (ch->midi_in);
 
+#define ADD_PLUGIN_PORTS \
+          if (!pl) \
+            continue; \
+ \
+          for (k = 0; k < pl->num_in_ports; k++) \
+            _ADD (pl->in_ports[k]); \
+          for (k = 0; k < pl->num_out_ports; k++) \
+            _ADD (pl->out_ports[k])
+
+      /* add plugin ports */
       for (j = 0; j < STRIP_SIZE; j++)
         {
-          /* add plugin ports */
           pl = tr->channel->plugins[j];
-          if (!pl)
-            continue;
 
-          for (k = 0; k < pl->num_in_ports; k++)
-            _ADD (pl->in_ports[k]);
-          for (k = 0; k < pl->num_out_ports; k++)
-            _ADD (pl->out_ports[k]);
+          ADD_PLUGIN_PORTS;
         }
+      for (j = 0; j < tr->num_modulators; j++)
+        {
+          pl = tr->modulators[j]->plugin;
+
+          ADD_PLUGIN_PORTS;
+        }
+#undef ADD_PLUGIN_PORTS
     }
 }
 

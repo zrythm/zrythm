@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
-"Report-Msgid-Bugs-To: alex@zrythm.org\n"
-"POT-Creation-Date: 2019-05-21 14:21+0100\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-05-24 19:01+0100\n"
 "PO-Revision-Date: 2019-05-22 22:34+0000\n"
 "Last-Translator: Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -72,7 +72,7 @@ msgstr "Toujours ouvrir la fenêtre des greffons"
 msgid "Artist"
 msgstr "Artiste"
 
-#: src/audio/track.c:732
+#: src/audio/track.c:749
 msgid "Audio"
 msgstr "Audio"
 
@@ -120,7 +120,7 @@ msgstr "Profondeur de Bit"
 msgid "Bot"
 msgstr "Bouteille"
 
-#: src/audio/track.c:735
+#: src/audio/track.c:752
 msgid "Bus"
 msgstr "Bus"
 
@@ -168,7 +168,7 @@ msgstr "Chinois  [zh]"
 msgid "Choose a method to donate"
 msgstr "Choisir une méthode pour faire un don"
 
-#: src/audio/track.c:741
+#: src/audio/track.c:758
 msgid "Chord"
 msgstr "Accord"
 
@@ -326,6 +326,11 @@ msgstr "Copier l'objet"
 msgid "Editing"
 msgstr "Modifier"
 
+#: resources/ui/bot_dock_edge.ui:56
+#, fuzzy
+msgid "Editor"
+msgstr "_Éditer"
+
 #: resources/ui/shortcuts.ui:180
 msgid "Editor Shortcuts"
 msgstr "Raccourcis de l'éditeur"
@@ -457,7 +462,7 @@ msgstr "Raccourcis globaux"
 msgid "Grid"
 msgstr "Grille"
 
-#: src/audio/track.c:744
+#: src/audio/track.c:761
 msgid "Group"
 msgstr "Groupe"
 
@@ -493,7 +498,7 @@ msgstr "Initialisation..."
 msgid "Inserts"
 msgstr "Inserts"
 
-#: src/audio/track.c:729
+#: src/audio/track.c:746
 msgid "Instrument"
 msgstr "Instrument"
 
@@ -594,7 +599,7 @@ msgstr "Sorties MIDI"
 msgid "Main Window"
 msgstr "Fenêtre principal"
 
-#: src/project.c:142 src/audio/track.c:738
+#: src/project.c:142 src/audio/track.c:755
 msgid "Master"
 msgstr "Master"
 
@@ -605,6 +610,10 @@ msgstr "Mixeur"
 #: resources/ui/bot_dock_edge.ui:74
 msgid "Mixer panel"
 msgstr "Panneau du mixeur"
+
+#: resources/ui/bot_dock_edge.ui:121
+msgid "Modulators"
+msgstr ""
 
 #: src/actions/move_plugins_action.c:151
 #, c-format
@@ -733,10 +742,6 @@ msgstr "Chemin"
 msgid "Pencil tool"
 msgstr "Outil Crayon"
 
-#: resources/ui/bot_dock_edge.ui:56
-msgid "Piano Roll"
-msgstr "Piano Roll"
-
 #: resources/ui/bot_dock_edge.ui:41
 msgid "Piano roll panel"
 msgstr "Panneau du Piano Roll"
@@ -844,10 +849,6 @@ msgstr "R"
 #: resources/ui/automation_lane.ui:95
 msgid "RW"
 msgstr "RW"
-
-#: resources/ui/bot_dock_edge.ui:121
-msgid "Rack"
-msgstr "Rack"
 
 #: resources/ui/shortcuts.ui:209
 msgid "Ramp tool"
@@ -1151,7 +1152,8 @@ msgstr "Information sur la piste"
 msgid "Track Ports"
 msgstr "Ports de la Piste"
 
-#: resources/ui/piano_roll.ui:53 resources/ui/audio_clip_editor.ui:34
+#: resources/ui/piano_roll.ui:53 resources/ui/modulator_view.ui:53
+#: resources/ui/audio_clip_editor.ui:34
 msgid "Track name"
 msgstr "Nom de piste"
 
@@ -1331,6 +1333,12 @@ msgstr "nom_de_région"
 msgid "stuff"
 msgstr "substance"
 
+#~ msgid "Piano Roll"
+#~ msgstr "Piano Roll"
+
+#~ msgid "Rack"
+#~ msgstr "Rack"
+
 #~ msgid "Toggle note notation"
 #~ msgstr "Basculer sur la notation de note"
 
@@ -1344,9 +1352,6 @@ msgstr "substance"
 #~ msgstr ""
 #~ "Position de la tête de lecture - Cliquez et faites glisser vers le haut/"
 #~ "le bas pour changer"
-
-#~ msgid "_Edit"
-#~ msgstr "_Éditer"
 
 #~ msgid "_File"
 #~ msgstr "_Fichier"

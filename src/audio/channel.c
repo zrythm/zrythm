@@ -1650,7 +1650,7 @@ channel_add_plugin (
       plugin,
       next_plugin);
 
-  channel->track->active= prev_active;
+  channel->track->active = prev_active;
 
   if (gen_automatables)
     plugin_generate_automatables (plugin);

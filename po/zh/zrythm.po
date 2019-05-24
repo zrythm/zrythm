@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-23 10:30+0100\n"
+"POT-Creation-Date: 2019-05-24 19:01+0100\n"
 "PO-Revision-Date: 2019-05-04 23:37+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Chinese (Simplified) <https://translate.zrythm.org/projects/"
@@ -63,7 +63,7 @@ msgstr ""
 msgid "Artist"
 msgstr ""
 
-#: src/audio/track.c:732
+#: src/audio/track.c:749
 msgid "Audio"
 msgstr ""
 
@@ -111,7 +111,7 @@ msgstr ""
 msgid "Bot"
 msgstr ""
 
-#: src/audio/track.c:735
+#: src/audio/track.c:752
 msgid "Bus"
 msgstr ""
 
@@ -157,7 +157,7 @@ msgstr ""
 msgid "Choose a method to donate"
 msgstr ""
 
-#: src/audio/track.c:741
+#: src/audio/track.c:758
 msgid "Chord"
 msgstr ""
 
@@ -314,6 +314,10 @@ msgstr ""
 msgid "Editing"
 msgstr ""
 
+#: resources/ui/bot_dock_edge.ui:56
+msgid "Editor"
+msgstr ""
+
 #: resources/ui/shortcuts.ui:180
 msgid "Editor Shortcuts"
 msgstr ""
@@ -438,7 +442,7 @@ msgstr ""
 msgid "Grid"
 msgstr ""
 
-#: src/audio/track.c:744
+#: src/audio/track.c:761
 msgid "Group"
 msgstr ""
 
@@ -474,7 +478,7 @@ msgstr ""
 msgid "Inserts"
 msgstr ""
 
-#: src/audio/track.c:729
+#: src/audio/track.c:746
 msgid "Instrument"
 msgstr ""
 
@@ -575,7 +579,7 @@ msgstr ""
 msgid "Main Window"
 msgstr ""
 
-#: src/project.c:142 src/audio/track.c:738
+#: src/project.c:142 src/audio/track.c:755
 msgid "Master"
 msgstr ""
 
@@ -585,6 +589,10 @@ msgstr ""
 
 #: resources/ui/bot_dock_edge.ui:74
 msgid "Mixer panel"
+msgstr ""
+
+#: resources/ui/bot_dock_edge.ui:121
+msgid "Modulators"
 msgstr ""
 
 #: src/actions/move_plugins_action.c:151
@@ -712,10 +720,6 @@ msgstr ""
 msgid "Pencil tool"
 msgstr ""
 
-#: resources/ui/bot_dock_edge.ui:56
-msgid "Piano Roll"
-msgstr ""
-
 #: resources/ui/bot_dock_edge.ui:41
 msgid "Piano roll panel"
 msgstr ""
@@ -815,10 +819,6 @@ msgstr ""
 
 #: resources/ui/automation_lane.ui:95
 msgid "RW"
-msgstr ""
-
-#: resources/ui/bot_dock_edge.ui:121
-msgid "Rack"
 msgstr ""
 
 #: resources/ui/shortcuts.ui:209
@@ -1105,7 +1105,8 @@ msgstr ""
 msgid "Track Ports"
 msgstr ""
 
-#: resources/ui/piano_roll.ui:53 resources/ui/audio_clip_editor.ui:34
+#: resources/ui/piano_roll.ui:53 resources/ui/modulator_view.ui:53
+#: resources/ui/audio_clip_editor.ui:34
 msgid "Track name"
 msgstr ""
 

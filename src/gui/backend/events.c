@@ -27,6 +27,7 @@
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
+#include "audio/modulator.h"
 #include "audio/track.h"
 #include "gui/backend/events.h"
 #include "gui/backend/clip_editor.h"
@@ -51,6 +52,7 @@
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_ruler.h"
+#include "gui/widgets/modulator_view.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/route_target_selector.h"
 #include "gui/widgets/ruler_marker.h"
@@ -366,6 +368,16 @@ on_plugin_added (Plugin * plugin)
       automation_tracklist->widget)
     automation_tracklist_widget_refresh (
       automation_tracklist->widget);
+}
+
+static void
+on_modulator_added (Modulator * modulator)
+{
+  on_plugin_added (modulator->plugin);
+
+  modulator_view_widget_refresh (
+    MW_MODULATOR_VIEW,
+    modulator->track);
 }
 
 static void
@@ -907,6 +919,9 @@ events_process (void * data)
           break;
         case ET_DRUM_MODE_CHANGED:
           piano_roll_widget_refresh (MW_PIANO_ROLL);
+          break;
+        case ET_MODULATOR_ADDED:
+          on_modulator_added ((Modulator *)ev->arg);
           break;
         default:
           g_message ("event not implemented yet");

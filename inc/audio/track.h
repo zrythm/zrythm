@@ -35,8 +35,10 @@
 #include <gtk/gtk.h>
 
 #define MAX_REGIONS 300
+#define MAX_MODULATORS 14
 
-typedef struct AutomationTracklist AutomationTracklist;
+typedef struct AutomationTracklist
+  AutomationTracklist;
 typedef struct Region Region;
 typedef struct Position Position;
 typedef struct _TrackWidget TrackWidget;
@@ -47,6 +49,7 @@ typedef struct Automatable Automatable;
 typedef struct AutomationPoint AutomationPoint;
 typedef struct ZChord ZChord;
 typedef struct MusicalScale MusicalScale;
+typedef struct Modulator Modulator;
 
 typedef enum TrackType
 {
@@ -184,6 +187,10 @@ typedef struct Track
   /* ==== CHANNEL TRACK END ==== */
 
   AutomationTracklist   automation_tracklist;
+
+  /** Modulators for this Track. */
+  Modulator *           modulators[MAX_MODULATORS];
+  int                   num_modulators;
 
 } Track;
 
@@ -416,6 +423,14 @@ track_set_name (
 char *
 track_stringize_type (
   TrackType type);
+
+/**
+ * Adds and connects a Modulator to the Track.
+ */
+void
+track_add_modulator (
+  Track * track,
+  Modulator * modulator);
 
 /**
  * Wrapper for each track type.

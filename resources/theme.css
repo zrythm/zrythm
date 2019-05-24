@@ -347,7 +347,8 @@ automation-point:hover
 }
 
 inspector expander-box,
-inspector two-col-expander-box
+inspector two-col-expander-box,
+modulator-view two-col-expander-box
 {
   margin: 4px;
   border-style: solid;

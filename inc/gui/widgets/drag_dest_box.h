@@ -42,7 +42,8 @@ typedef struct Channel Channel;
 typedef enum DragDestBoxType
 {
   DRAG_DEST_BOX_TYPE_MIXER,
-  DRAG_DEST_BOX_TYPE_TRACKLIST
+  DRAG_DEST_BOX_TYPE_TRACKLIST,
+  DRAG_DEST_BOX_TYPE_MODULATORS,
 } DragDestBoxType;
 
 typedef struct _DragDestBoxWidget
@@ -58,8 +59,9 @@ typedef struct _DragDestBoxWidget
  * Creates a drag destination box widget.
  */
 DragDestBoxWidget *
-drag_dest_box_widget_new (GtkOrientation  orientation,
-                          int             spacing,
-                          DragDestBoxType type);
+drag_dest_box_widget_new (
+  GtkOrientation  orientation,
+  int             spacing,
+  DragDestBoxType type);
 
 #endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -41,13 +41,14 @@ G_DECLARE_FINAL_TYPE (BotDockEdgeWidget,
 
 typedef struct _MixerWidget MixerWidget;
 typedef struct _ClipEditorWidget ClipEditorWidget;
-typedef struct _RackWidget RackWidget;
+typedef struct _ModulatorViewWidget
+  ModulatorViewWidget;
 
 typedef struct _BotDockEdgeWidget
 {
   GtkBox                   parent_instance;
   GtkNotebook *            bot_notebook;
-  RackWidget *             rack;
+  ModulatorViewWidget *    modulator_view;
   ClipEditorWidget *       clip_editor;
   MixerWidget *            mixer;
 } BotDockEdgeWidget;

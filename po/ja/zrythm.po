@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-23 10:30+0100\n"
+"POT-Creation-Date: 2019-05-24 19:01+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Japanese <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -69,7 +69,7 @@ msgstr "常にプラグインUIを開く"
 msgid "Artist"
 msgstr "アーティスト"
 
-#: src/audio/track.c:732
+#: src/audio/track.c:749
 #, fuzzy
 msgid "Audio"
 msgstr "オーディオ"
@@ -123,7 +123,7 @@ msgstr "ビット深度"
 msgid "Bot"
 msgstr "ボット"
 
-#: src/audio/track.c:735
+#: src/audio/track.c:752
 msgid "Bus"
 msgstr "バス"
 
@@ -172,7 +172,7 @@ msgstr "中国語[zh]"
 msgid "Choose a method to donate"
 msgstr "使用する支払い方法を選択する"
 
-#: src/audio/track.c:741
+#: src/audio/track.c:758
 #, fuzzy
 msgid "Chord"
 msgstr "コード"
@@ -336,6 +336,11 @@ msgstr "オブジェクトを複製"
 msgid "Editing"
 msgstr "編集"
 
+#: resources/ui/bot_dock_edge.ui:56
+#, fuzzy
+msgid "Editor"
+msgstr "編集(_E)"
+
 #: resources/ui/shortcuts.ui:180
 msgid "Editor Shortcuts"
 msgstr "エディタのショートカット"
@@ -462,7 +467,7 @@ msgstr "グローバル・ショートカット"
 msgid "Grid"
 msgstr "グリッド"
 
-#: src/audio/track.c:744
+#: src/audio/track.c:761
 msgid "Group"
 msgstr "グループ"
 
@@ -499,7 +504,7 @@ msgstr "初期化中…"
 msgid "Inserts"
 msgstr ""
 
-#: src/audio/track.c:729
+#: src/audio/track.c:746
 msgid "Instrument"
 msgstr "インストゥルメント"
 
@@ -603,7 +608,7 @@ msgstr ""
 msgid "Main Window"
 msgstr "メインウィンドウ"
 
-#: src/project.c:142 src/audio/track.c:738
+#: src/project.c:142 src/audio/track.c:755
 msgid "Master"
 msgstr "マスター"
 
@@ -614,6 +619,10 @@ msgstr "ミキサー"
 #: resources/ui/bot_dock_edge.ui:74
 msgid "Mixer panel"
 msgstr "ミキサーパネル"
+
+#: resources/ui/bot_dock_edge.ui:121
+msgid "Modulators"
+msgstr ""
 
 #: src/actions/move_plugins_action.c:151
 #, c-format
@@ -747,10 +756,6 @@ msgstr "パス"
 msgid "Pencil tool"
 msgstr "鉛筆ツール"
 
-#: resources/ui/bot_dock_edge.ui:56
-msgid "Piano Roll"
-msgstr "ピアノロール"
-
 #: resources/ui/bot_dock_edge.ui:41
 msgid "Piano roll panel"
 msgstr "ピアノロールパネル"
@@ -855,10 +860,6 @@ msgstr "R"
 #: resources/ui/automation_lane.ui:95
 msgid "RW"
 msgstr "RW"
-
-#: resources/ui/bot_dock_edge.ui:121
-msgid "Rack"
-msgstr "ラック"
 
 #: resources/ui/shortcuts.ui:209
 msgid "Ramp tool"
@@ -1163,7 +1164,8 @@ msgstr "トラック名"
 msgid "Track Ports"
 msgstr "トラック"
 
-#: resources/ui/piano_roll.ui:53 resources/ui/audio_clip_editor.ui:34
+#: resources/ui/piano_roll.ui:53 resources/ui/modulator_view.ui:53
+#: resources/ui/audio_clip_editor.ui:34
 msgid "Track name"
 msgstr "トラック名"
 
@@ -1343,6 +1345,12 @@ msgstr "region_name"
 msgid "stuff"
 msgstr ""
 
+#~ msgid "Piano Roll"
+#~ msgstr "ピアノロール"
+
+#~ msgid "Rack"
+#~ msgstr "ラック"
+
 #~ msgid "Toggle note notation"
 #~ msgstr "音符表記を切り替える"
 
@@ -1354,9 +1362,6 @@ msgstr ""
 
 #~ msgid "Playhead Position - Click and drag up/down to change"
 #~ msgstr "再生ヘッドの位置 - クリックして上下にドラッグして変更します"
-
-#~ msgid "_Edit"
-#~ msgstr "編集(_E)"
 
 #~ msgid "_File"
 #~ msgstr "ファイル(_F)"

@@ -53,7 +53,7 @@
             <child>
               <object class="GtkLabel">
                 <property name="visible">1</property>
-                <property name="label" translatable="yes">Piano Roll</property>
+                <property name="label" translatable="yes">Editor</property>
               </object>
               <packing>
                 <property name="expand">0</property>
@@ -97,7 +97,7 @@
           </object>
         </child>
         <child>
-          <object class="RackWidget" id="rack">
+          <object class="ModulatorViewWidget" id="modulator_view">
             <property name="visible">1</property>
           </object>
         </child>
@@ -107,7 +107,7 @@
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
-                <property name="icon-name">z-audio-card</property>
+                <property name="icon-name">z-mathmode</property>
               </object>
               <packing>
                 <property name="expand">0</property>
@@ -118,7 +118,7 @@
             <child>
               <object class="GtkLabel">
                 <property name="visible">1</property>
-                <property name="label" translatable="yes">Rack</property>
+                <property name="label" translatable="yes">Modulators</property>
               </object>
               <packing>
                 <property name="expand">0</property>

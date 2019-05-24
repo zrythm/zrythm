@@ -30,6 +30,7 @@
 #endif
 #include "audio/instrument_track.h"
 #include "audio/midi.h"
+#include "audio/modulator.h"
 #include "audio/pan.h"
 #include "audio/port.h"
 #include "audio/routing.h"
@@ -1047,30 +1048,40 @@ graph_new (
       if (!tr->channel)
         continue;
 
+#define ADD_PLUGIN \
+          if (!pl || pl->deleting) \
+            continue; \
+ \
+          if (pl->num_in_ports == 0 && \
+              pl->num_out_ports > 0) \
+            graph_add_initial_node ( \
+              self, ROUTE_NODE_TYPE_PLUGIN, pl); \
+          else if (pl->num_out_ports == 0 && \
+                   pl->num_in_ports > 0) \
+            graph_add_terminal_node ( \
+              self, ROUTE_NODE_TYPE_PLUGIN, pl); \
+          else if (pl->num_out_ports == 0 && \
+                   pl->num_in_ports == 0) \
+            { \
+            } \
+          else \
+            graph_add_node ( \
+              self, ROUTE_NODE_TYPE_PLUGIN, pl)
+
       for (j = 0; j < STRIP_SIZE; j++)
         {
           pl = tr->channel->plugins[j];
 
-          if (!pl || pl->deleting)
-            continue;
+          ADD_PLUGIN;
+        }
+      for (j = 0; j < tr->num_modulators; j++)
+        {
+          pl = tr->modulators[j]->plugin;
 
-          if (pl->num_in_ports == 0 &&
-              pl->num_out_ports > 0)
-            graph_add_initial_node (
-              self, ROUTE_NODE_TYPE_PLUGIN, pl);
-          else if (pl->num_out_ports == 0 &&
-                   pl->num_in_ports > 0)
-            graph_add_terminal_node (
-              self, ROUTE_NODE_TYPE_PLUGIN, pl);
-          else if (pl->num_out_ports == 0 &&
-                   pl->num_in_ports == 0)
-            {
-            }
-          else
-            graph_add_node (
-              self, ROUTE_NODE_TYPE_PLUGIN, pl);
+          ADD_PLUGIN;
         }
     }
+#undef ADD_PLUGIN
 
   /* add ports */
   Port * ports[10000];
@@ -1098,35 +1109,46 @@ graph_new (
       if (!tr->channel)
         continue;
 
+#define CONNECT_PLUGIN \
+          if (!pl || pl->deleting) \
+            continue; \
+ \
+          node = \
+            find_node_from_plugin (self, pl); \
+          for (k = 0; k < pl->num_in_ports; k++) \
+            { \
+              port = pl->in_ports[k]; \
+              g_warn_if_fail ( \
+                port->plugin != NULL); \
+              node2 = \
+                find_node_from_port (self, port); \
+              node_connect (node2, node); \
+            } \
+          for (k = 0; k < pl->num_out_ports; k++) \
+            { \
+              port = pl->out_ports[k]; \
+              g_warn_if_fail ( \
+                port->plugin != NULL); \
+              node2 = \
+                find_node_from_port (self, port); \
+              node_connect (node, node2); \
+            }
+
       for (j = 0; j < STRIP_SIZE; j++)
         {
           pl = tr->channel->plugins[j];
 
-          if (!pl || pl->deleting)
-            continue;
+          CONNECT_PLUGIN;
+        }
 
-          node =
-            find_node_from_plugin (self, pl);
-          for (k = 0; k < pl->num_in_ports; k++)
-            {
-              port = pl->in_ports[k];
-              g_warn_if_fail (
-                port->plugin != NULL);
-              node2 =
-                find_node_from_port (self, port);
-              node_connect (node2, node);
-            }
-          for (k = 0; k < pl->num_out_ports; k++)
-            {
-              port = pl->out_ports[k];
-              g_warn_if_fail (
-                port->plugin != NULL);
-              node2 =
-                find_node_from_port (self, port);
-              node_connect (node, node2);
-            }
+      for (j = 0; j < tr->num_modulators; j++)
+        {
+          pl = tr->modulators[j]->plugin;
+
+          CONNECT_PLUGIN;
         }
     }
+#undef CONNECT_PLUGIN
 
   for (i = 0; i < num_ports; i++)
     {

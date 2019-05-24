@@ -130,28 +130,50 @@ typedef struct Lv2Plugin
 
   LV2_Options_Option options[6];
 
-	LV2_Atom_Forge     forge;          ///< Atom forge
-	Sratom*            sratom;         ///< Atom serialiser
-	Sratom*            ui_sratom;      ///< Atom serialiser for UI thread
-	ZixRing*           ui_events;      ///< Port events from UI
-	ZixRing*           plugin_events;  ///< Port events from plugin
-	void*              ui_event_buf;   ///< Buffer for reading UI port events
-	LV2_Worker  worker;         ///< Worker thread implementation
-	LV2_Worker  state_worker;   ///< Synchronous worker for state restore
-	ZixSem             work_lock;      ///< Lock for plugin work() method
-  ZixSem*            done;           ///< Exit semaphore
-	char*              temp_dir;       ///< Temporary plugin state directory
-	char*              save_dir;       ///< Plugin save directory
-	const LilvPlugin*  lilv_plugin;         ///< Plugin class (RDF data)
-  LilvState *        state;         ///< temporary storage
-	LilvState*         preset;         ///< Current preset
-	LilvUIs*           uis;            ///< All plugin UIs (RDF data)
-	const LilvUI*      ui;             ///< Plugin UI (RDF data)
-	const LilvNode*    ui_type;        ///< Plugin UI type (unwrapped)
-	LilvInstance*      instance;       ///< Plugin instance (shared library)
-	SuilHost*          ui_host;        ///< Plugin UI host support
-	SuilInstance*      ui_instance;    ///< Plugin UI instance (shared library)
-	void*              window;         ///< Window (if applicable) (GtkWindow)
+  /** Atom forge. */
+	LV2_Atom_Forge     forge;
+  /** Atom serializer */
+	Sratom*            sratom;
+  /** Atom serializer for UI thread. */
+	Sratom*            ui_sratom;
+  /** Port events from UI. */
+	ZixRing*           ui_events;
+  /** Port events from plugin. */
+	ZixRing*           plugin_events;
+  /** Buffer for readding UI port events. */
+	void*              ui_event_buf;
+  /** Worker thread implementation. */
+	LV2_Worker  worker;
+  /** Synchronous worker for state restore. */
+	LV2_Worker  state_worker;
+  /** Lock for plugin work() method. */
+	ZixSem             work_lock;
+  /** Exit semaphore. */
+  ZixSem*            done;
+  /** Temporary plugin state directory. */
+	char*              temp_dir;
+  /** Plugin save directory. */
+	char*              save_dir;
+  /** Plugin class (RDF data). */
+	const LilvPlugin*  lilv_plugin;
+  /** Temporary storage. */
+  LilvState *        state;
+  /** Current preset. */
+	LilvState*         preset;
+  /** All plugin UIs (RDF data). */
+	LilvUIs*           uis;
+  /** Plugin UI (RDF data). */
+	const LilvUI*      ui;
+  /** Plugin UI type (unwrapped). */
+	const LilvNode*    ui_type;
+  /** Plugin instance (shared library). */
+	LilvInstance*      instance;
+  /** Plugin UI host support. */
+	SuilHost*          ui_host;
+  /** Plugin UI instance (shared library). */
+	SuilInstance*      ui_instance;
+  /** Window (if applicable) (GtkWindow). */
+	void*              window;
   /** ID of the delete-event signal so that we can
    * deactivate before freeing the plugin. */
   gulong             delete_event_id;

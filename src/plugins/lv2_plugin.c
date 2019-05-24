@@ -1792,7 +1792,8 @@ lv2_instantiate (
   if (self->ui)
     {
       g_message ("Selected UI:           %s",
-              lilv_node_as_uri(lilv_ui_get_uri(self->ui)));
+        lilv_node_as_uri (
+          lilv_ui_get_uri(self->ui)));
     }
   else
     {
@@ -1803,19 +1804,22 @@ lv2_instantiate (
   lv2_create_controls(self, true);
   lv2_create_controls(self, false);
 
-  /* FIXME */
-  /*if (!(self->backend = lv2_backend_init(self))) {*/
-          /*g_error("Failed to connect to audio system");*/
-  /*}*/
-
-  if (PM_LILV_NODES.opts.buffer_size == 0) {
-          /* The UI ring is fed by self->output ports (usually one), and the UI
-             updates roughly once per cycle.  The ring size is a few times the
-             size of the MIDI output to give the UI a chance to keep up.  The UI
-             should be able to keep up with 4 cycles, and tests show this works
-             for me, but this value might need increasing to avoid overflows.
-          */
-          PM_LILV_NODES.opts.buffer_size = AUDIO_ENGINE->midi_buf_size * N_BUFFER_CYCLES;
+  if (PM_LILV_NODES.opts.buffer_size == 0)
+    {
+      /* The UI ring is fed by self->output
+       * ports (usually one), and the UI
+       * updates roughly once per cycle.
+       * The ring size is a few times the
+       *  size of the MIDI output to give the UI
+       *  a chance to keep up.  The UI
+       * should be able to keep up with 4 cycles,
+       * and tests show this works
+       * for me, but this value might need
+       * increasing to avoid overflows.
+      */
+      PM_LILV_NODES.opts.buffer_size =
+        AUDIO_ENGINE->midi_buf_size *
+        N_BUFFER_CYCLES;
   }
 
   if (PM_LILV_NODES.opts.update_rate == 0.0)
@@ -1898,7 +1902,7 @@ lv2_instantiate (
   zix_ring_mlock(self->ui_events);
   zix_ring_mlock(self->plugin_events);
 
-  /* Instantiate the self->*/
+  /* Instantiate the plugin */
   self->instance =
     lilv_plugin_instantiate (
       self->lilv_plugin,
