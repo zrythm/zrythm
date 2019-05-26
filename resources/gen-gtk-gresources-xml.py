@@ -138,6 +138,7 @@ for cat in ['actions', 'animations', 'applets', 'apps', 'categories', 'devices',
               f.endswith('inode-directory.svg') or
               f.endswith('none.svg') or
               f.endswith('audio-card.svg') or
+              f.endswith('minuet-chords.svg') or
               f.endswith('emblem-symbolic-link.svg') or
               f.endswith('window-minimize.svg') or
               f.endswith('window-close.svg') or

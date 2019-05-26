@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-24 19:01+0100\n"
+"POT-Creation-Date: 2019-05-26 21:41+0100\n"
 "PO-Revision-Date: 2019-05-22 22:34+0000\n"
 "Last-Translator: Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -60,7 +60,7 @@ msgstr "Grille adaptative"
 msgid "Add"
 msgstr "Ajouter"
 
-#: src/gui/widgets/track.c:491
+#: src/gui/widgets/track.c:488
 msgid "Add Region"
 msgstr "Ajouter une région"
 
@@ -72,7 +72,7 @@ msgstr "Toujours ouvrir la fenêtre des greffons"
 msgid "Artist"
 msgstr "Artiste"
 
-#: src/audio/track.c:749
+#: src/audio/track.c:760
 msgid "Audio"
 msgstr "Audio"
 
@@ -120,7 +120,7 @@ msgstr "Profondeur de Bit"
 msgid "Bot"
 msgstr "Bouteille"
 
-#: src/audio/track.c:752
+#: src/audio/track.c:763
 msgid "Bus"
 msgstr "Bus"
 
@@ -168,11 +168,16 @@ msgstr "Chinois  [zh]"
 msgid "Choose a method to donate"
 msgstr "Choisir une méthode pour faire un don"
 
-#: src/audio/track.c:758
+#: src/audio/track.c:769
 msgid "Chord"
 msgstr "Accord"
 
-#: src/audio/chord_track.c:50
+#: resources/ui/bot_dock_edge.ui:153
+#, fuzzy
+msgid "Chord Pad"
+msgstr "Accord"
+
+#: src/audio/chord_track.c:42
 msgid "Chord Track"
 msgstr "Piste Accord"
 
@@ -201,8 +206,8 @@ msgstr "Fermer"
 msgid "Collection"
 msgstr "Collection"
 
-#: resources/ui/inspector_region.ui:56 resources/ui/inspector_master.ui:67
-#: resources/ui/inspector_ap.ui:67 resources/ui/inspector_midi.ui:67
+#: resources/ui/inspector_master.ui:67 resources/ui/inspector_ap.ui:67
+#: resources/ui/inspector_midi.ui:67
 msgid "Color"
 msgstr "Couleur"
 
@@ -351,8 +356,8 @@ msgstr "Moteur"
 msgid "English [en]"
 msgstr "Anglais [en]"
 
-#: resources/ui/inspector_region.ui:33 resources/ui/inspector_master.ui:44
-#: resources/ui/inspector_ap.ui:44 resources/ui/inspector_midi.ui:44
+#: resources/ui/inspector_master.ui:44 resources/ui/inspector_ap.ui:44
+#: resources/ui/inspector_midi.ui:44
 msgid "Enter region name..."
 msgstr "Saisir le nom de la région..."
 
@@ -373,7 +378,7 @@ msgstr ""
 "Erreur lors de l'instanciation du greffon. Veuillez consulter le journal "
 "pour plus de détails."
 
-#: src/plugins/plugin_manager.c:225
+#: src/plugins/plugin_manager.c:223
 msgid "Error loading LV2 bundle dir: "
 msgstr "Erreur lors du chargement du répertoire bundle LV2: "
 
@@ -430,7 +435,7 @@ msgstr "Format"
 msgid "Forward"
 msgstr "Avancer"
 
-#: src/gui/widgets/track.c:142 src/gui/widgets/track.c:146
+#: src/gui/widgets/track.c:139 src/gui/widgets/track.c:143
 msgid "Freeze"
 msgstr "Geler"
 
@@ -462,7 +467,7 @@ msgstr "Raccourcis globaux"
 msgid "Grid"
 msgstr "Grille"
 
-#: src/audio/track.c:761
+#: src/audio/track.c:772
 msgid "Group"
 msgstr "Groupe"
 
@@ -498,7 +503,7 @@ msgstr "Initialisation..."
 msgid "Inserts"
 msgstr "Inserts"
 
-#: src/audio/track.c:746
+#: src/audio/track.c:757
 msgid "Instrument"
 msgstr "Instrument"
 
@@ -532,6 +537,11 @@ msgstr "Raccourcis clavier"
 msgid "LFO 1"
 msgstr "LFO 1"
 
+#: src/audio/track_lane.c:42
+#, c-format
+msgid "Lane %d"
+msgstr ""
+
 #: resources/ui/first_run_assistant.ui:88 resources/ui/preferences.ui:360
 msgid "Language"
 msgstr "Langue"
@@ -540,9 +550,9 @@ msgstr "Langue"
 msgid "Left"
 msgstr "Gauche"
 
-#: resources/ui/quantize_mb_popover.ui:88 resources/ui/inspector_region.ui:91
-#: resources/ui/inspector_master.ui:101 resources/ui/inspector_ap.ui:101
-#: resources/ui/inspector_midi.ui:101 resources/ui/snap_grid_popover.ui:88
+#: resources/ui/quantize_mb_popover.ui:88 resources/ui/inspector_master.ui:101
+#: resources/ui/inspector_ap.ui:101 resources/ui/inspector_midi.ui:101
+#: resources/ui/snap_grid_popover.ui:88
 msgid "Length"
 msgstr "Longueur"
 
@@ -550,6 +560,10 @@ msgstr "Longueur"
 #: src/utils/ui.c:606
 msgid "Linear"
 msgstr "Linéaire"
+
+#: resources/ui/control_room.ui:65
+msgid "Listen dim"
+msgstr ""
 
 #: src/zrythm.c:272
 msgid "Loading project"
@@ -559,7 +573,7 @@ msgstr "Chargement du projet"
 msgid "Location"
 msgstr "Emplacement"
 
-#: src/gui/widgets/track.c:143
+#: src/gui/widgets/track.c:140
 msgid "Lock"
 msgstr "Verrouillage"
 
@@ -599,7 +613,11 @@ msgstr "Sorties MIDI"
 msgid "Main Window"
 msgstr "Fenêtre principal"
 
-#: src/project.c:142 src/audio/track.c:755
+#: src/audio/marker_track.c:42
+msgid "Markers"
+msgstr ""
+
+#: src/project.c:142 src/audio/track.c:766
 msgid "Master"
 msgstr "Master"
 
@@ -639,7 +657,7 @@ msgstr "Déplacer le ou les objets"
 msgid "Move Track"
 msgstr "Déplacer la piste"
 
-#: src/gui/widgets/track.c:141
+#: src/gui/widgets/track.c:138
 msgid "Mute"
 msgstr "Muet"
 
@@ -647,8 +665,8 @@ msgstr "Muet"
 msgid "Mute Track"
 msgstr "Rendre la piste muette"
 
-#: resources/ui/inspector_region.ui:103 resources/ui/inspector_master.ui:113
-#: resources/ui/inspector_ap.ui:113 resources/ui/inspector_midi.ui:113
+#: resources/ui/inspector_master.ui:113 resources/ui/inspector_ap.ui:113
+#: resources/ui/inspector_midi.ui:113
 msgid "Muted"
 msgstr "Muet"
 
@@ -784,8 +802,8 @@ msgstr "La fonctionnalité PortAudio est désactivée"
 msgid "Portuguese [pt]"
 msgstr "Portugais [pt]"
 
-#: resources/ui/inspector_region.ui:68 resources/ui/inspector_master.ui:79
-#: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
+#: resources/ui/inspector_master.ui:79 resources/ui/inspector_ap.ui:79
+#: resources/ui/inspector_midi.ui:79
 msgid "Position"
 msgstr "Position"
 
@@ -822,7 +840,7 @@ msgstr ""
 "Fréquence d'échantillonnage: 44100\n"
 "(note: ce texte est codé en dur pour le moment)"
 
-#: src/project.c:427
+#: src/project.c:425
 msgid "Project saved."
 msgstr "Projet sauvegardé."
 
@@ -858,7 +876,7 @@ msgstr "Outil Rampe"
 msgid "Read automation"
 msgstr "Lire l'automation"
 
-#: src/gui/widgets/track.c:139 resources/ui/transport_controls.ui:36
+#: src/gui/widgets/track.c:136 resources/ui/transport_controls.ui:36
 msgid "Record"
 msgstr "Enregistrer"
 
@@ -875,7 +893,7 @@ msgstr "Refaire la commande précédente"
 msgid "Region"
 msgstr "Région"
 
-#: src/gui/widgets/region.c:180
+#: src/gui/widgets/region.c:181
 msgid ""
 "Region - Click and drag to move around (hold Shift to disable snapping) - "
 "Double click to bring up the clip editor"
@@ -1004,11 +1022,15 @@ msgstr "Configuration du moteur"
 msgid "Setup Zrythm"
 msgstr "Configurer Zrythm"
 
-#: src/gui/widgets/track.c:145
+#: src/gui/widgets/track.c:142
 msgid "Show Automation Lanes"
 msgstr "Montrer les files d'automations"
 
-#: src/gui/widgets/track.c:144
+#: src/gui/widgets/instrument_track.c:264
+msgid "Show Lanes - Shows the track's lanes"
+msgstr ""
+
+#: src/gui/widgets/track.c:141
 msgid "Show UI"
 msgstr "Afficher l'interface utilisateur"
 
@@ -1028,7 +1050,7 @@ msgstr "Accrocher"
 msgid "Snap/Grid options"
 msgstr "Accrocher/Options de la grille"
 
-#: src/gui/widgets/track.c:140
+#: src/gui/widgets/track.c:137
 msgid "Solo"
 msgstr "Solo"
 
@@ -1090,6 +1112,12 @@ msgstr ""
 "\n"
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 
+#: resources/ui/control_room.ui:64
+msgid ""
+"The level to set other channels to when \"listen\" is enabled on a channel. "
+"If set to minimum value, listen behaves like solo."
+msgstr ""
+
 #: src/audio/engine_jack.c:570
 msgid "The operation contained an invalid or unsupported option"
 msgstr "L'opération contenait une option non valide ou non prise en charge"
@@ -1133,7 +1161,7 @@ msgstr "Outil"
 msgid "Track"
 msgstr "Piste"
 
-#: src/gui/widgets/track.c:152
+#: src/gui/widgets/track.c:149
 msgid ""
 "Track - Change track parameters like Solo/Mute... - Click the icon on the "
 "bottom right to bring up the automation lanes - Double click to show "
@@ -1218,7 +1246,7 @@ msgstr "Désélectionner tout"
 msgid "Unsolo Track"
 msgstr "Enlever le Solo de la piste"
 
-#: src/project.c:156
+#: src/project.c:154
 msgid "Untitled Project"
 msgstr "Projet sans titre"
 
@@ -1272,21 +1300,21 @@ msgstr "Zrythm"
 msgid "_Cancel"
 msgstr "_Annuler"
 
-#: src/gui/widgets/track.c:452
+#: src/gui/widgets/track.c:449
 #, c-format
 msgid "_Delete %d Tracks"
 msgstr "_Supprimer %d Pistes"
 
-#: src/gui/widgets/track.c:449
+#: src/gui/widgets/track.c:446
 msgid "_Delete Track"
 msgstr "_Supprimer la piste"
 
-#: src/gui/widgets/track.c:472
+#: src/gui/widgets/track.c:469
 #, c-format
 msgid "_Duplicate %d Tracks"
 msgstr "_Copier %d pistes"
 
-#: src/gui/widgets/track.c:468
+#: src/gui/widgets/track.c:465
 msgid "_Duplicate Track"
 msgstr "_Copier la Piste"
 
@@ -1315,7 +1343,7 @@ msgstr "expander"
 msgid "in"
 msgstr "entrée"
 
-#: resources/ui/track.ui:59 resources/ui/automatable_selector.ui:84
+#: resources/ui/track_top_grid.ui:34 resources/ui/automatable_selector.ui:84
 #: resources/ui/route_target_selector.ui:85
 msgid "label"
 msgstr "label"
@@ -1324,8 +1352,8 @@ msgstr "label"
 msgid "out"
 msgstr "sortie"
 
-#: resources/ui/inspector_region.ui:32 resources/ui/inspector_master.ui:43
-#: resources/ui/inspector_ap.ui:43 resources/ui/inspector_midi.ui:43
+#: resources/ui/inspector_master.ui:43 resources/ui/inspector_ap.ui:43
+#: resources/ui/inspector_midi.ui:43
 msgid "region_name"
 msgstr "nom_de_région"
 

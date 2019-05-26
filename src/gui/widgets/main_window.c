@@ -35,7 +35,6 @@
 #include "gui/widgets/file_browser.h"
 #include "gui/widgets/header_notebook.h"
 #include "gui/widgets/inspector.h"
-#include "gui/widgets/inspector_region.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/piano_roll.h"

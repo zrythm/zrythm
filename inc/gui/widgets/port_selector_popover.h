@@ -32,7 +32,7 @@ G_DECLARE_FINAL_TYPE (
   GtkPopover)
 
 /**
- * @addtogroup Widgets
+ * @addtogroup widgets
  *
  * @{
  */

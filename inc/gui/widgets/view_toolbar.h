@@ -24,11 +24,11 @@
 
 #define VIEW_TOOLBAR_WIDGET_TYPE \
   (view_toolbar_widget_get_type ())
-G_DECLARE_FINAL_TYPE (ViewToolbarWidget,
-                      view_toolbar_widget,
-                      Z,
-                      VIEW_TOOLBAR_WIDGET,
-                      GtkToolbar)
+G_DECLARE_FINAL_TYPE (
+  ViewToolbarWidget,
+  view_toolbar_widget,
+  Z, VIEW_TOOLBAR_WIDGET,
+  GtkToolbar)
 
 /**
  * \file

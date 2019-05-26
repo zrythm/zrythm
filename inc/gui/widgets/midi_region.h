@@ -19,6 +19,9 @@
 
 /**
  * \file
+ *
+ * Widget for MIDI regions, inheriting from
+ * RegionWidget.
  */
 
 #ifndef __GUI_WIDGETS_MIDI_REGION_H__
@@ -40,6 +43,13 @@ G_DECLARE_FINAL_TYPE (MidiRegionWidget,
 
 typedef struct Region MidiRegion;
 
+/**
+ * A widget that represents a MidiRegion in the
+ * TimelineArrangerWidget.
+ *
+ * It displays the MidiNotes of the Region in
+ * miniature size.
+ */
 typedef struct _MidiRegionWidget
 {
   RegionWidget             parent_instance;

@@ -62,7 +62,7 @@ delete_timeline_selections_action_do (
 
       /* remove it */
       track_remove_region (
-        region->track,
+        region->lane->track,
         region);
       free_later (region, region_free);
     }
@@ -87,7 +87,7 @@ delete_timeline_selections_action_undo (
       /* add it to track */
       track_add_region (
         TRACKLIST->tracks[region->track_pos],
-        region, F_NO_GEN_NAME);
+        region, 0, F_NO_GEN_NAME);
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);

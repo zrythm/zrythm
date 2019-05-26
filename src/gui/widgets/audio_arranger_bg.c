@@ -51,7 +51,7 @@ draw_audio_clip (GtkWidget * self,
   AudioRegion * ar =
     (AudioRegion *) CLIP_EDITOR->region;
   GdkRGBA * color =
-    &CLIP_EDITOR->region->track->color;
+    &CLIP_EDITOR->region->lane->track->color;
   cairo_set_source_rgba (cr,
                          color->red + 0.3,
                          color->green + 0.3,

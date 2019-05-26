@@ -78,9 +78,7 @@ midi_note_draw_cb (
     context, cr, 0, 0, width, height);
 
   Region * region = self->midi_note->region;
-  Track * track = region->track;
-  /*Channel * channel = track_get_channel (track);*/
-  GdkRGBA * color = &track->color;
+  GdkRGBA * color = &region->lane->track->color;
 
   /* draw notes of main region */
   if (region == CLIP_EDITOR->region)

@@ -71,7 +71,7 @@ tear_down (Project * self)
 
   engine_tear_down ();
 
-  track_free (PROJECT->chord_track);
+  track_free (P_CHORD_TRACK);
 
   free (self);
 }
@@ -147,10 +147,8 @@ create_default (Project * self)
     F_NO_RECALC_GRAPH);
 
   /* create chord track */
-  self->chord_track = chord_track_default ();
-  tracklist_append_track (
-    TRACKLIST, self->chord_track,
-    F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+  self->ruler_tracklist.chord_track =
+    chord_track_default ();
 
   /* create untitled project */
   char * untitled_project = _("Untitled Project");

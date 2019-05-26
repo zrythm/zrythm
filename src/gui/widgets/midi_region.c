@@ -271,11 +271,13 @@ midi_region_widget_new (MidiRegion * midi_region)
 }
 
 static void
-midi_region_widget_class_init (MidiRegionWidgetClass * klass)
+midi_region_widget_class_init (
+  MidiRegionWidgetClass * klass)
 {
 }
 
 static void
-midi_region_widget_init (MidiRegionWidget * self)
+midi_region_widget_init (
+  MidiRegionWidget * self)
 {
 }

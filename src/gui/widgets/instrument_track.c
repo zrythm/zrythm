@@ -38,12 +38,14 @@
 #include "gui/widgets/instrument_track.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
+#include "gui/widgets/track_top_grid.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (InstrumentTrackWidget,
                instrument_track_widget,
@@ -85,10 +87,9 @@ instrument_track_widget_new (Track * track)
     track_get_automation_tracklist (track);
   automation_tracklist->widget =
     automation_tracklist_widget_new (automation_tracklist);
-  gtk_paned_pack2 (GTK_PANED (tw_prv->paned),
-                   GTK_WIDGET (automation_tracklist->widget),
-                   Z_GTK_RESIZE,
-                   Z_GTK_NO_SHRINK);
+  gtk_container_add (
+    GTK_CONTAINER (tw_prv->paned),
+    GTK_WIDGET (automation_tracklist->widget));
 
   tw_prv->record_toggle_handler_id =
     g_signal_connect (
@@ -100,7 +101,8 @@ instrument_track_widget_new (Track * track)
       self->mute, "toggled",
       G_CALLBACK (track_widget_on_mute_toggled),
       self);
-  self->gui_toggled_handler_id = g_signal_connect (
+  self->gui_toggled_handler_id =
+    g_signal_connect (
       self->show_ui, "toggled",
       G_CALLBACK (instument_track_ui_toggle),
       self);
@@ -176,7 +178,7 @@ instrument_track_widget_refresh (
   instrument_track_widget_refresh_buttons (self);
 
   gtk_label_set_text (
-    tw_prv->name,
+    tw_prv->top_grid->name,
     track->name);
 
   AutomationTracklist * automation_tracklist =
@@ -186,10 +188,12 @@ instrument_track_widget_refresh (
 }
 
 static void
-instrument_track_widget_init (InstrumentTrackWidget * self)
+instrument_track_widget_init (
+  InstrumentTrackWidget * self)
 {
   GtkStyleContext * context;
   TRACK_WIDGET_GET_PRIVATE (self);
+
   /* create buttons */
   self->record =
     z_gtk_toggle_button_new_with_icon (
@@ -249,6 +253,15 @@ instrument_track_widget_init (InstrumentTrackWidget * self)
     "Show Automation Lanes - Shows the track's "
     "automation lanes"
     "UI");
+  self->show_automation =
+    z_gtk_toggle_button_new_with_icon (
+      "z-format-justify-fill");
+  ui_add_widget_tooltip (
+    self->show_automation,
+    "Show lanes");
+  ui_set_hover_status_bar_signals (
+    self->show_automation,
+    _("Show Lanes - Shows the track's lanes"));
   self->lock =
     GTK_TOGGLE_BUTTON (
       gtk_toggle_button_new_with_label ("Lock"));
@@ -271,25 +284,25 @@ instrument_track_widget_init (InstrumentTrackWidget * self)
 
   /* set buttons to upper controls */
   gtk_box_pack_start (
-    GTK_BOX (tw_prv->upper_controls),
+    GTK_BOX (tw_prv->top_grid->upper_controls),
     GTK_WIDGET (self->record),
     Z_GTK_NO_EXPAND,
     Z_GTK_NO_FILL,
     0);
   gtk_box_pack_start (
-    GTK_BOX (tw_prv->upper_controls),
+    GTK_BOX (tw_prv->top_grid->upper_controls),
     GTK_WIDGET (self->solo),
     Z_GTK_NO_EXPAND,
     Z_GTK_NO_FILL,
     0);
   gtk_box_pack_start (
-    GTK_BOX (tw_prv->upper_controls),
+    GTK_BOX (tw_prv->top_grid->upper_controls),
     GTK_WIDGET (self->mute),
     Z_GTK_NO_EXPAND,
     Z_GTK_NO_FILL,
     0);
   gtk_box_pack_start (
-    GTK_BOX (tw_prv->upper_controls),
+    GTK_BOX (tw_prv->top_grid->upper_controls),
     GTK_WIDGET (self->show_ui),
     Z_GTK_NO_EXPAND,
     Z_GTK_NO_FILL,
@@ -297,19 +310,25 @@ instrument_track_widget_init (InstrumentTrackWidget * self)
 
   /* pack buttons to bot controls */
   gtk_box_pack_start (
-    GTK_BOX (tw_prv->bot_controls),
+    GTK_BOX (tw_prv->top_grid->bot_controls),
     GTK_WIDGET (self->lock),
     Z_GTK_NO_EXPAND,
     Z_GTK_NO_FILL,
     0);
   gtk_box_pack_start (
-    GTK_BOX (tw_prv->bot_controls),
+    GTK_BOX (tw_prv->top_grid->bot_controls),
     GTK_WIDGET (self->freeze),
     Z_GTK_NO_EXPAND,
     Z_GTK_NO_FILL,
     0);
   gtk_box_pack_start (
-    GTK_BOX (tw_prv->bot_controls),
+    GTK_BOX (tw_prv->top_grid->bot_controls),
+    GTK_WIDGET (self->show_lanes),
+    Z_GTK_NO_EXPAND,
+    Z_GTK_NO_FILL,
+    0);
+  gtk_box_pack_start (
+    GTK_BOX (tw_prv->top_grid->bot_controls),
     GTK_WIDGET (self->show_automation),
     Z_GTK_NO_EXPAND,
     Z_GTK_NO_FILL,
@@ -317,7 +336,7 @@ instrument_track_widget_init (InstrumentTrackWidget * self)
 
   /* set icon */
   resources_set_image_icon (
-    tw_prv->icon,
+    tw_prv->top_grid->icon,
     ICON_TYPE_ZRYTHM,
     "instrument.svg");
 

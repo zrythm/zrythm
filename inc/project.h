@@ -39,11 +39,13 @@
 #include "audio/port.h"
 #include "audio/quantize.h"
 #include "audio/region.h"
+#include "audio/ruler_tracklist.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/backend/clip_editor.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/backend/mixer_selections.h"
+#include "gui/backend/ruler_tracklist_selections.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/backend/tracklist_selections.h"
 #include "gui/backend/tool.h"
@@ -73,7 +75,6 @@ typedef struct AutomationPoint AutomationPoint;
 typedef struct AutomationCurve AutomationCurve;
 typedef struct MidiNote MidiNote;
 typedef struct Track ChordTrack;
-typedef struct Tracklist Tracklist;
 
 /**
  * Selection type, used for displaying info in the
@@ -86,6 +87,11 @@ typedef enum SelectionType
   SELECTION_TYPE_EDITOR,
 } SelectionType;
 
+
+/**
+ * Contains all of the info that will be serialized
+ * into a project file.
+ */
 typedef struct Project
 {
   char              * title; ///< project title
@@ -101,6 +107,7 @@ typedef struct Project
   UndoManager         undo_manager;
 
   Tracklist          tracklist;
+  RulerTracklist     ruler_tracklist;
 
   /** Backend for the widget. */
   ClipEditor         clip_editor;
@@ -113,6 +120,8 @@ typedef struct Project
   TimelineSelections       timeline_selections;
   MidiArrangerSelections   midi_arranger_selections;
   TracklistSelections   tracklist_selections;
+
+  RulerTracklistSelections ruler_tracklist_selections;
 
   /**
    * Plugin selections in the Mixer.
@@ -146,11 +155,6 @@ typedef struct Project
    * select - stretch, edit, delete, ramp, audition)
    */
   Tool               tool;
-
-  /**
-   * The chord track.
-   */
-  ChordTrack *      chord_track;
 
   /**
    * If a project is currently loaded or not.

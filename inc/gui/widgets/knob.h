@@ -1,6 +1,4 @@
 /*
- * gui/widgets/knob.h - knob
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -19,7 +17,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
+/**
+ * \file
+ *
+ * Basic knob widget, taken from Ardour.
  */
 
 #ifndef __GUI_WIDGETS_KNOB_H__
@@ -29,11 +30,11 @@
 
 #define KNOB_WIDGET_TYPE \
   (knob_widget_get_type ())
-G_DECLARE_FINAL_TYPE (KnobWidget,
-                      knob_widget,
-                      Z,
-                      KNOB_WIDGET,
-                      GtkDrawingArea)
+G_DECLARE_FINAL_TYPE (
+  KnobWidget,
+  knob_widget,
+  Z, KNOB_WIDGET,
+  GtkDrawingArea)
 
 typedef enum KnobType
 {

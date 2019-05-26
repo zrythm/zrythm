@@ -920,7 +920,7 @@ channel_handle_recording (Channel * self)
             midi_region_new (
               &PLAYHEAD, &tmp);
           track_add_region (
-            self->track, mr, F_GEN_NAME);
+            self->track, mr, 0, F_GEN_NAME);
         }
 
       /* convert MIDI data to midi notes */

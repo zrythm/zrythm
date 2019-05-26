@@ -33,24 +33,23 @@ right_dock_edge_widget_init (RightDockEdgeWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  /* setup browser */
-  self->plugin_browser = plugin_browser_widget_new ();
-  gtk_notebook_prepend_page (
-    self->right_notebook,
-    GTK_WIDGET (self->plugin_browser),
-    /*resources_get_icon (ICON_TYPE_ZRYTHM,*/
-                        /*"plugins.svg"));*/
-    gtk_image_new_from_icon_name (
-      "z-plugins",
-      GTK_ICON_SIZE_SMALL_TOOLBAR));
   self->file_browser = file_browser_widget_new ();
-  gtk_notebook_append_page (
+  gtk_notebook_prepend_page (
     self->right_notebook,
     GTK_WIDGET (self->file_browser),
     gtk_image_new_from_icon_name (
       "z-media-optical-audio",
       GTK_ICON_SIZE_SMALL_TOOLBAR));
-  gtk_widget_show_all (GTK_WIDGET (self->right_notebook));
+  gtk_widget_show_all (
+    GTK_WIDGET (self->right_notebook));
+  /* setup browser */
+  self->plugin_browser = plugin_browser_widget_new ();
+  gtk_notebook_prepend_page (
+    self->right_notebook,
+    GTK_WIDGET (self->plugin_browser),
+    gtk_image_new_from_icon_name (
+      "z-plugins",
+      GTK_ICON_SIZE_SMALL_TOOLBAR));
 }
 
 static void

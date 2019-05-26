@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-24 19:01+0100\n"
+"POT-Creation-Date: 2019-05-26 21:41+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Japanese <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -57,7 +57,7 @@ msgstr "適応型グリッド"
 msgid "Add"
 msgstr ""
 
-#: src/gui/widgets/track.c:491
+#: src/gui/widgets/track.c:488
 msgid "Add Region"
 msgstr "リージョンを追加"
 
@@ -69,7 +69,7 @@ msgstr "常にプラグインUIを開く"
 msgid "Artist"
 msgstr "アーティスト"
 
-#: src/audio/track.c:749
+#: src/audio/track.c:760
 #, fuzzy
 msgid "Audio"
 msgstr "オーディオ"
@@ -123,7 +123,7 @@ msgstr "ビット深度"
 msgid "Bot"
 msgstr "ボット"
 
-#: src/audio/track.c:752
+#: src/audio/track.c:763
 msgid "Bus"
 msgstr "バス"
 
@@ -172,12 +172,17 @@ msgstr "中国語[zh]"
 msgid "Choose a method to donate"
 msgstr "使用する支払い方法を選択する"
 
-#: src/audio/track.c:758
+#: src/audio/track.c:769
 #, fuzzy
 msgid "Chord"
 msgstr "コード"
 
-#: src/audio/chord_track.c:50
+#: resources/ui/bot_dock_edge.ui:153
+#, fuzzy
+msgid "Chord Pad"
+msgstr "コード"
+
+#: src/audio/chord_track.c:42
 msgid "Chord Track"
 msgstr "コードトラック"
 
@@ -205,8 +210,8 @@ msgstr "閉じる"
 msgid "Collection"
 msgstr "コレクション"
 
-#: resources/ui/inspector_region.ui:56 resources/ui/inspector_master.ui:67
-#: resources/ui/inspector_ap.ui:67 resources/ui/inspector_midi.ui:67
+#: resources/ui/inspector_master.ui:67 resources/ui/inspector_ap.ui:67
+#: resources/ui/inspector_midi.ui:67
 msgid "Color"
 msgstr "色"
 
@@ -361,8 +366,8 @@ msgstr "エンジン"
 msgid "English [en]"
 msgstr "英語[en]"
 
-#: resources/ui/inspector_region.ui:33 resources/ui/inspector_master.ui:44
-#: resources/ui/inspector_ap.ui:44 resources/ui/inspector_midi.ui:44
+#: resources/ui/inspector_master.ui:44 resources/ui/inspector_ap.ui:44
+#: resources/ui/inspector_midi.ui:44
 msgid "Enter region name..."
 msgstr "リージョン名を入力してください"
 
@@ -379,7 +384,7 @@ msgstr "プラグイン%sのインスタンス化エラー。詳細はログを�
 msgid "Error instantiating plugin. Please see log for details."
 msgstr "プラグイン%sのインスタンス化エラー。詳細はログを参照してください。"
 
-#: src/plugins/plugin_manager.c:225
+#: src/plugins/plugin_manager.c:223
 msgid "Error loading LV2 bundle dir: "
 msgstr "LV2バンドルディレクトリの読み込みエラー： "
 
@@ -435,7 +440,7 @@ msgstr "フォーマット"
 msgid "Forward"
 msgstr "前へ"
 
-#: src/gui/widgets/track.c:142 src/gui/widgets/track.c:146
+#: src/gui/widgets/track.c:139 src/gui/widgets/track.c:143
 msgid "Freeze"
 msgstr "フリーズ"
 
@@ -467,7 +472,7 @@ msgstr "グローバル・ショートカット"
 msgid "Grid"
 msgstr "グリッド"
 
-#: src/audio/track.c:761
+#: src/audio/track.c:772
 msgid "Group"
 msgstr "グループ"
 
@@ -504,7 +509,7 @@ msgstr "初期化中…"
 msgid "Inserts"
 msgstr ""
 
-#: src/audio/track.c:746
+#: src/audio/track.c:757
 msgid "Instrument"
 msgstr "インストゥルメント"
 
@@ -538,6 +543,11 @@ msgstr "ショートカットキー"
 msgid "LFO 1"
 msgstr ""
 
+#: src/audio/track_lane.c:42
+#, c-format
+msgid "Lane %d"
+msgstr ""
+
 #: resources/ui/first_run_assistant.ui:88 resources/ui/preferences.ui:360
 msgid "Language"
 msgstr "言語"
@@ -546,9 +556,9 @@ msgstr "言語"
 msgid "Left"
 msgstr "左"
 
-#: resources/ui/quantize_mb_popover.ui:88 resources/ui/inspector_region.ui:91
-#: resources/ui/inspector_master.ui:101 resources/ui/inspector_ap.ui:101
-#: resources/ui/inspector_midi.ui:101 resources/ui/snap_grid_popover.ui:88
+#: resources/ui/quantize_mb_popover.ui:88 resources/ui/inspector_master.ui:101
+#: resources/ui/inspector_ap.ui:101 resources/ui/inspector_midi.ui:101
+#: resources/ui/snap_grid_popover.ui:88
 msgid "Length"
 msgstr "長さ"
 
@@ -556,6 +566,10 @@ msgstr "長さ"
 #: src/utils/ui.c:606
 msgid "Linear"
 msgstr "直線"
+
+#: resources/ui/control_room.ui:65
+msgid "Listen dim"
+msgstr ""
 
 #: src/zrythm.c:272
 #, fuzzy
@@ -566,7 +580,7 @@ msgstr "プロジェクトをロード中"
 msgid "Location"
 msgstr "パス"
 
-#: src/gui/widgets/track.c:143
+#: src/gui/widgets/track.c:140
 msgid "Lock"
 msgstr "ロック"
 
@@ -608,7 +622,11 @@ msgstr ""
 msgid "Main Window"
 msgstr "メインウィンドウ"
 
-#: src/project.c:142 src/audio/track.c:755
+#: src/audio/marker_track.c:42
+msgid "Markers"
+msgstr ""
+
+#: src/project.c:142 src/audio/track.c:766
 msgid "Master"
 msgstr "マスター"
 
@@ -649,7 +667,7 @@ msgstr "オブジェクトを移動"
 msgid "Move Track"
 msgstr "トラックを移動"
 
-#: src/gui/widgets/track.c:141
+#: src/gui/widgets/track.c:138
 msgid "Mute"
 msgstr "ミュート"
 
@@ -657,8 +675,8 @@ msgstr "ミュート"
 msgid "Mute Track"
 msgstr "トラックをミュートする"
 
-#: resources/ui/inspector_region.ui:103 resources/ui/inspector_master.ui:113
-#: resources/ui/inspector_ap.ui:113 resources/ui/inspector_midi.ui:113
+#: resources/ui/inspector_master.ui:113 resources/ui/inspector_ap.ui:113
+#: resources/ui/inspector_midi.ui:113
 msgid "Muted"
 msgstr "ミュート"
 
@@ -800,8 +818,8 @@ msgstr "PortAudio機能が無効になっています"
 msgid "Portuguese [pt]"
 msgstr "ポルトガル語[pt]"
 
-#: resources/ui/inspector_region.ui:68 resources/ui/inspector_master.ui:79
-#: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
+#: resources/ui/inspector_master.ui:79 resources/ui/inspector_ap.ui:79
+#: resources/ui/inspector_midi.ui:79
 msgid "Position"
 msgstr "位置"
 
@@ -833,7 +851,7 @@ msgid ""
 "(note: this text is hard coded at the moment)"
 msgstr ""
 
-#: src/project.c:427
+#: src/project.c:425
 msgid "Project saved."
 msgstr "プロジェクトが保存されました。"
 
@@ -869,7 +887,7 @@ msgstr "ランプツール"
 msgid "Read automation"
 msgstr "オートメーションを読み取る"
 
-#: src/gui/widgets/track.c:139 resources/ui/transport_controls.ui:36
+#: src/gui/widgets/track.c:136 resources/ui/transport_controls.ui:36
 msgid "Record"
 msgstr "レコード"
 
@@ -887,7 +905,7 @@ msgstr "前のコマンドをやり直す"
 msgid "Region"
 msgstr "リージョン"
 
-#: src/gui/widgets/region.c:180
+#: src/gui/widgets/region.c:181
 msgid ""
 "Region - Click and drag to move around (hold Shift to disable snapping) - "
 "Double click to bring up the clip editor"
@@ -1021,11 +1039,15 @@ msgstr "バックエンドをセットアップ中"
 msgid "Setup Zrythm"
 msgstr "Zrythmを設定しています"
 
-#: src/gui/widgets/track.c:145
+#: src/gui/widgets/track.c:142
 msgid "Show Automation Lanes"
 msgstr "オートメーションレーンを表示"
 
-#: src/gui/widgets/track.c:144
+#: src/gui/widgets/instrument_track.c:264
+msgid "Show Lanes - Shows the track's lanes"
+msgstr ""
+
+#: src/gui/widgets/track.c:141
 msgid "Show UI"
 msgstr "UI を表示"
 
@@ -1045,7 +1067,7 @@ msgstr "スナップ"
 msgid "Snap/Grid options"
 msgstr "スナップ/グリッドオプション"
 
-#: src/gui/widgets/track.c:140
+#: src/gui/widgets/track.c:137
 msgid "Solo"
 msgstr "ソロ"
 
@@ -1103,6 +1125,12 @@ msgstr ""
 "次のファイルが作成されます：ディレクトリのMaster.wav：/ home / alex / "
 "Zrythm / Projects / project1 / exports / 20181023"
 
+#: resources/ui/control_room.ui:64
+msgid ""
+"The level to set other channels to when \"listen\" is enabled on a channel. "
+"If set to minimum value, listen behaves like solo."
+msgstr ""
+
 #: src/audio/engine_jack.c:570
 msgid "The operation contained an invalid or unsupported option"
 msgstr "操作に無効またはサポートされていないオプションが含まれていました"
@@ -1144,7 +1172,7 @@ msgstr "ツール"
 msgid "Track"
 msgstr "トラック"
 
-#: src/gui/widgets/track.c:152
+#: src/gui/widgets/track.c:149
 msgid ""
 "Track - Change track parameters like Solo/Mute... - Click the icon on the "
 "bottom right to bring up the automation lanes - Double click to show "
@@ -1232,7 +1260,7 @@ msgstr "すべての選択を解除"
 msgid "Unsolo Track"
 msgstr "トラックのソロを解除"
 
-#: src/project.c:156
+#: src/project.c:154
 msgid "Untitled Project"
 msgstr "プロジェクト名未設定"
 
@@ -1284,21 +1312,21 @@ msgstr "Zrythm"
 msgid "_Cancel"
 msgstr "キャンセル(_C)"
 
-#: src/gui/widgets/track.c:452
+#: src/gui/widgets/track.c:449
 #, c-format
 msgid "_Delete %d Tracks"
 msgstr "%dトラックを削除する(_D)"
 
-#: src/gui/widgets/track.c:449
+#: src/gui/widgets/track.c:446
 msgid "_Delete Track"
 msgstr "トラックを削除(_D)"
 
-#: src/gui/widgets/track.c:472
+#: src/gui/widgets/track.c:469
 #, c-format
 msgid "_Duplicate %d Tracks"
 msgstr "%dトラックを複製(_D)"
 
-#: src/gui/widgets/track.c:468
+#: src/gui/widgets/track.c:465
 msgid "_Duplicate Track"
 msgstr "トラックを複製(_D)"
 
@@ -1327,7 +1355,7 @@ msgstr "エキスパンダー"
 msgid "in"
 msgstr "イン"
 
-#: resources/ui/track.ui:59 resources/ui/automatable_selector.ui:84
+#: resources/ui/track_top_grid.ui:34 resources/ui/automatable_selector.ui:84
 #: resources/ui/route_target_selector.ui:85
 msgid "label"
 msgstr "ラベル"
@@ -1336,8 +1364,8 @@ msgstr "ラベル"
 msgid "out"
 msgstr "アウト"
 
-#: resources/ui/inspector_region.ui:32 resources/ui/inspector_master.ui:43
-#: resources/ui/inspector_ap.ui:43 resources/ui/inspector_midi.ui:43
+#: resources/ui/inspector_master.ui:43 resources/ui/inspector_ap.ui:43
+#: resources/ui/inspector_midi.ui:43
 msgid "region_name"
 msgstr "region_name"
 

@@ -17,6 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Modulator view in the bottom panel.
+ */
+
 #ifndef __GUI_WIDGETS_MODULATOR_VIEW_H__
 #define __GUI_WIDGETS_MODULATOR_VIEW_H__
 

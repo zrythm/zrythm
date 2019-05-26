@@ -230,11 +230,16 @@ transport_get_playhead_pos (
  *
  * This is only for moves other than while playing
  * and for looping while playing.
+ *
+ * @param target Position to set to.
+ * @param panic Send MIDI panic or not.
  */
 void
-transport_move_playhead (Position * target, ///< position to set to
-                         int      panic) ///< send MIDI panic or not
+transport_move_playhead (
+  Position * target,
+  int      panic)
 {
+  int i, j, k, l;
   /* send MIDI note off on currently playing timeline
    * objects */
   Track * track;
@@ -242,52 +247,59 @@ transport_move_playhead (Position * target, ///< position to set to
   MidiNote * midi_note;
   Channel * channel;
   MidiEvents * midi_events;
+  TrackLane * lane;
 #ifdef HAVE_JACK
   jack_midi_event_t * ev;
 #endif
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
       channel = track->channel;
 
-      for (int ii = 0; ii < track->num_regions; ii++)
+      for (k = 0; k < track->num_lanes; k++)
         {
-          region = track->regions[ii];
+          lane = track->lanes[k];
 
-          if (!region_is_hit (region, &PLAYHEAD))
-            continue;
-
-          for (int j = 0;
-               j < region->num_midi_notes;
-               j++)
+          for (l = 0;
+               l < lane->num_regions; l++)
             {
-              midi_note = region->midi_notes[j];
+              region = lane->regions[l];
 
-              if (midi_note_hit (
-                    midi_note, &PLAYHEAD))
+              if (!region_is_hit (region, &PLAYHEAD))
+                continue;
+
+              for (j = 0;
+                   j < region->num_midi_notes;
+                   j++)
                 {
-                  midi_events =
-                    channel->piano_roll->midi_events;
+                  midi_note = region->midi_notes[j];
+
+                  if (midi_note_hit (
+                        midi_note, &PLAYHEAD))
+                    {
+                      midi_events =
+                        channel->piano_roll->midi_events;
 #ifdef HAVE_JACK
-                  ev =
-                    &midi_events->queue->
-                      jack_midi_events[
-                        midi_events->queue->
-                          num_events++];
-                  ev->time =
-                    position_to_frames (
-                      &PLAYHEAD);
-                  ev->size = 3;
-                  /* status byte */
-                  ev->buffer[0] =
-                    MIDI_CH1_NOTE_OFF;
-                  /* note number */
-                  ev->buffer[1] =
-                    midi_note->val;
-                  /* velocity */
-                  ev->buffer[2] =
-                    midi_note->vel->vel;
+                      ev =
+                        &midi_events->queue->
+                          jack_midi_events[
+                            midi_events->queue->
+                              num_events++];
+                      ev->time =
+                        position_to_frames (
+                          &PLAYHEAD);
+                      ev->size = 3;
+                      /* status byte */
+                      ev->buffer[0] =
+                        MIDI_CH1_NOTE_OFF;
+                      /* note number */
+                      ev->buffer[1] =
+                        midi_note->val;
+                      /* velocity */
+                      ev->buffer[2] =
+                        midi_note->vel->vel;
 #endif
+                    }
                 }
             }
         }

@@ -73,6 +73,9 @@ track_init (Track * track)
 {
   track->visible = 1;
   track->handle_pos = 1;
+  track->lanes[0] =
+    track_lane_new (track, 0);
+  track->num_lanes = 1;
 }
 
 /**
@@ -150,7 +153,7 @@ track_new (
 Track *
 track_clone (Track * track)
 {
-  int i;
+  int j;
   Track * new_track =
     track_new (
       track->type,
@@ -178,19 +181,19 @@ track_clone (Track * track)
   new_track->channel = ch;
   ch->track = track;
 
-  Region * region, * new_region;
-  for (i = 0; i < track->num_regions; i++)
+  TrackLane * lane, * new_lane;
+  for (j = 0; j < track->num_lanes; j++)
     {
-      /* clone region */
-      region = track->regions[i];
-      new_region =
-        region_clone (region, REGION_CLONE_COPY);
+      /* clone lane */
+       lane = track->lanes[j];
+       new_lane =
+         track_lane_clone (lane);
 
-      /* add to new track */
-      array_append (
-        new_track->regions,
-        new_track->num_regions,
-        new_region);
+       /* add to new track */
+       array_append (
+         new_track->lanes,
+         new_track->num_lanes,
+         new_lane);
     }
 
   automation_tracklist_clone (
@@ -350,44 +353,34 @@ Region *
 track_get_last_region (
   Track * track)
 {
-  int i;
+  int i, j;
   Region * last_region = NULL, * r;
   Position tmp;
   position_init (&tmp);
 
-  if (track->type == TRACK_TYPE_AUDIO)
+  if (track->type == TRACK_TYPE_AUDIO ||
+      track->type == TRACK_TYPE_INSTRUMENT)
     {
-      AudioTrack * at = (AudioTrack *) track;
-      for (i = 0; i < at->num_regions; i++)
+      TrackLane * lane;
+      for (i = 0; i < track->num_lanes; i++)
         {
-          r = (Region *) at->regions[i];
-          if (position_compare (
-                &r->end_pos,
-                &tmp) > 0)
+          lane = track->lanes[i];
+
+          for (j = 0; j < lane->num_regions; j++)
             {
-              last_region = r;
-              position_set_to_pos (
-                &tmp, &r->end_pos);
+              r = lane->regions[j];
+              if (position_compare (
+                    &r->end_pos,
+                    &tmp) > 0)
+                {
+                  last_region = r;
+                  position_set_to_pos (
+                    &tmp, &r->end_pos);
+                }
             }
         }
     }
-  else if (track->type == TRACK_TYPE_INSTRUMENT)
-    {
-      InstrumentTrack * at =
-        (InstrumentTrack *) track;
-      for (i = 0; i < at->num_regions; i++)
-        {
-          r = (Region *) at->regions[i];
-          if (position_compare (
-                &r->end_pos,
-                &tmp) > 0)
-            {
-              last_region = r;
-              position_set_to_pos (
-                &tmp, &r->end_pos);
-            }
-        }
-    }
+
   return last_region;
 }
 
@@ -460,19 +453,28 @@ track_setup (Track * track)
 static Region *
 get_region_by_name (Track * track, char * name)
 {
+  int i, j;
   Region * region;
-  for (int i = 0; i < track->num_regions; i++)
+  TrackLane * lane;
+  for (i = 0; i < track->num_lanes; i++)
     {
-      region = track->regions[i];
-      if (g_strcmp0 (region->name, name) == 0)
-        return region;
+      lane = track->lanes[i];
+
+      for (j = 0; j < lane->num_regions; j++)
+        {
+          region = lane->regions[i];
+          if (g_strcmp0 (region->name, name) == 0)
+            return region;
+        }
     }
   return NULL;
 }
 
 /**
- * Wrapper.
+ * Adds a Region to the given lane of the track.
  *
+ * @param lane_pos The position of the lane to add
+ *   to.
  * @param gen_name Generate a unique region name or
  *   not. This will be 0 if the caller already
  *   generated a unique name.
@@ -481,12 +483,14 @@ void
 track_add_region (
   Track * track,
   Region * region,
+  int      lane_pos,
   int      gen_name)
 {
   g_warn_if_fail (
     (track->type == TRACK_TYPE_INSTRUMENT ||
     track->type == TRACK_TYPE_AUDIO) &&
     region);
+  g_warn_if_fail (lane_pos >= 0);
 
   if (gen_name)
     {
@@ -503,9 +507,9 @@ track_add_region (
         }
     }
 
-  region_set_track (region, track);
-  array_append (track->regions,
-                track->num_regions,
+  region_set_lane (region, track->lanes[lane_pos]);
+  array_append (track->lanes[lane_pos]->regions,
+                track->lanes[lane_pos]->num_regions,
                 region);
 
   EVENTS_PUSH (ET_REGION_CREATED,
@@ -525,8 +529,8 @@ track_remove_region (
   region_disconnect (region);
 
   array_delete (
-    track->regions,
-    track->num_regions,
+    track->lanes[region->lane_pos]->regions,
+    track->lanes[region->lane_pos]->num_regions,
     region);
 
   EVENTS_PUSH (ET_REGION_REMOVED, track);
@@ -553,10 +557,18 @@ void
 track_disconnect (Track * track)
 {
   /* remove regions */
-  int i;
-  for (i = 0; i < track->num_regions; i++)
-    track_remove_region (
-      track, track->regions[i]);
+  int i, j;
+  TrackLane * lane;
+  for (i = 0; i < track->num_lanes; i++)
+    {
+      lane = track->lanes[i];
+
+      for (j = 0; j < lane->num_regions; j++)
+        {
+          track_remove_region (
+            track, lane->regions[j]);
+        }
+    }
 
   /* remove chords */
   for (i = 0; i < track->num_chords; i++)
@@ -576,8 +588,8 @@ track_free (Track * track)
 
   /* remove regions */
   int i;
-  for (i = 0; i < track->num_regions; i++)
-    region_free (track->regions[i]);
+  for (i = 0; i < track->num_lanes; i++)
+    track_lane_free (track->lanes[i]);
 
   /* remove chords */
   for (i = 0; i < track->num_chords; i++)
@@ -706,32 +718,31 @@ track_get_region_at_pos (
   Track *    track,
   Position * pos)
 {
-  if (track->type == TRACK_TYPE_INSTRUMENT)
+  int i, j;
+
+  if (track->type == TRACK_TYPE_INSTRUMENT ||
+      track->type == TRACK_TYPE_AUDIO)
     {
-      InstrumentTrack * it = (InstrumentTrack *) track;
-      for (int i = 0; i < it->num_regions; i++)
+      TrackLane * lane;
+      Region * r;
+      for (i = 0; i < track->num_lanes; i++)
         {
-          Region * r = (Region *) it->regions[i];
-          if (position_compare (pos,
-                                &r->start_pos) >= 0 &&
-              position_compare (pos,
-                                &r->end_pos) <= 0)
-            return r;
+          lane = track->lanes[i];
+
+          for (j = 0; j < lane->num_regions; j++)
+            {
+              r = lane->regions[i];
+              if (position_compare (
+                    pos,
+                    &r->start_pos) >= 0 &&
+                  position_compare (
+                    pos,
+                    &r->end_pos) <= 0)
+                return r;
+            }
         }
     }
-  else if (track->type == TRACK_TYPE_AUDIO)
-    {
-      AudioTrack * at = (AudioTrack *) track;
-      for (int i = 0; i < at->num_regions; i++)
-        {
-          Region * r = (Region *) at->regions[i];
-          if (position_compare (pos,
-                                &r->start_pos) >= 0 &&
-              position_compare (pos,
-                                &r->end_pos) <= 0)
-            return r;
-        }
-    }
+
   return NULL;
 }
 

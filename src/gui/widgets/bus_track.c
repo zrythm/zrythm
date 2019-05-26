@@ -35,6 +35,7 @@
 #include "gui/widgets/bus_track.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
+#include "gui/widgets/track_top_grid.h"
 #include "gui/widgets/tracklist.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
@@ -71,10 +72,9 @@ bus_track_widget_new (Track * track)
     track_get_automation_tracklist (track);
   automation_tracklist->widget =
     automation_tracklist_widget_new (automation_tracklist);
-  gtk_paned_pack2 (GTK_PANED (tw_prv->paned),
-                   GTK_WIDGET (automation_tracklist->widget),
-                   Z_GTK_RESIZE,
-                   Z_GTK_NO_SHRINK);
+  gtk_container_add (
+    GTK_CONTAINER (tw_prv->paned),
+    GTK_WIDGET (automation_tracklist->widget));
 
   tw_prv->record_toggle_handler_id =
     g_signal_connect (
@@ -142,7 +142,7 @@ bus_track_widget_refresh (BusTrackWidget * self)
   /*Channel * chan = ct->channel;*/
 
   gtk_label_set_text (
-    tw_prv->name,
+    tw_prv->top_grid->name,
     track->name);
 
   bus_track_widget_refresh_buttons (self);
@@ -182,33 +182,38 @@ bus_track_widget_init (BusTrackWidget * self)
     z_gtk_toggle_button_new_with_icon ("z-format-justify-fill");
 
   /* set buttons to upper controls */
-  gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),
-                      GTK_WIDGET (self->record),
-                      Z_GTK_NO_EXPAND,
-                      Z_GTK_NO_FILL,
-                      0);
-  gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),
-                      GTK_WIDGET (self->solo),
-                      Z_GTK_NO_EXPAND,
-                      Z_GTK_NO_FILL,
-                      0);
-  gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),
-                      GTK_WIDGET (self->mute),
-                      Z_GTK_NO_EXPAND,
-                      Z_GTK_NO_FILL,
-                      0);
+  gtk_box_pack_start (
+    GTK_BOX (tw_prv->top_grid->upper_controls),
+    GTK_WIDGET (self->record),
+    Z_GTK_NO_EXPAND,
+    Z_GTK_NO_FILL,
+    0);
+  gtk_box_pack_start (
+    GTK_BOX (tw_prv->top_grid->upper_controls),
+    GTK_WIDGET (self->solo),
+    Z_GTK_NO_EXPAND,
+    Z_GTK_NO_FILL,
+    0);
+  gtk_box_pack_start (
+    GTK_BOX (tw_prv->top_grid->upper_controls),
+    GTK_WIDGET (self->mute),
+    Z_GTK_NO_EXPAND,
+    Z_GTK_NO_FILL,
+    0);
 
   /* pack buttons to bot controls */
-  gtk_box_pack_start (GTK_BOX (tw_prv->bot_controls),
-                      GTK_WIDGET (self->show_automation),
-                      Z_GTK_NO_EXPAND,
-                      Z_GTK_NO_FILL,
-                      0);
+  gtk_box_pack_start (
+    GTK_BOX (tw_prv->top_grid->bot_controls),
+    GTK_WIDGET (self->show_automation),
+    Z_GTK_NO_EXPAND,
+    Z_GTK_NO_FILL,
+    0);
 
   /* set icon */
-  resources_set_image_icon (tw_prv->icon,
-                            ICON_TYPE_ZRYTHM,
-                            "bus.svg");
+  resources_set_image_icon (
+    tw_prv->top_grid->icon,
+    ICON_TYPE_ZRYTHM,
+    "bus.svg");
 }
 
 static void

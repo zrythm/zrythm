@@ -30,6 +30,7 @@
 #include "audio/channel.h"
 #include "audio/region.h"
 #include "audio/scale.h"
+#include "audio/track_lane.h"
 #include "utils/yaml.h"
 
 #include <gtk/gtk.h>
@@ -50,6 +51,7 @@ typedef struct AutomationPoint AutomationPoint;
 typedef struct ZChord ZChord;
 typedef struct MusicalScale MusicalScale;
 typedef struct Modulator Modulator;
+typedef struct Marker Marker;
 
 typedef enum TrackType
 {
@@ -79,6 +81,12 @@ typedef enum TrackType
    * the piano roll.
    */
   TRACK_TYPE_CHORD,
+
+  /**
+   * Marker Track's contain named markers at
+   * specific Position's in the song.
+   */
+  TRACK_TYPE_MARKER,
 
   /**
    * Buses are channels that receive audio input
@@ -140,10 +148,21 @@ typedef struct Track
 
   /** Flag to set automations visible or not. */
   int                 bot_paned_visible;
+
+  /** Flag to set track lanes visible or not. */
+  int                 lanes_visible;
+
+  /** Whole Track is visible or not. */
   int                 visible;
-  int                 handle_pos; ///< position of multipane handle
-  int                 mute; ///< muted or not
-  int                 solo; ///< solo or not
+
+  /** Position of multipane handle. */
+  int                 handle_pos;
+
+  /** Muted or not. */
+  int                 mute;
+
+  /** Soloed or not. */
+  int                 solo;
 
   /** Recording or not. */
   int                 recording;
@@ -160,37 +179,37 @@ typedef struct Track
    *
    * This is used in the channels as well.
    */
-  GdkRGBA              color;
+  GdkRGBA             color;
 
   /* ==== INSTRUMENT & AUDIO TRACK ==== */
-  /**
-   * Regions in this track.
-   */
-  Region *              regions[MAX_REGIONS];
-  int                   num_regions;  ///< counter
+
+  /** Lanes in this track containing Regions. */
+  TrackLane *         lanes[14];
+  int                 num_lanes;
 
   /* ==== INSTRUMENT & AUDIO TRACK END ==== */
 
   /* ==== CHORD TRACK ==== */
-  MusicalScale *          scale;
-  ZChord *                 chords[600];
-  int                     num_chords;
+  MusicalScale *      scale;
+  ZChord *            chords[600];
+  int                 num_chords;
   /* ==== CHORD TRACK END ==== */
 
+  /* ---- MARKER TRACK ---- */
+  Marker *            markers[100];
+  int                 num_markers;
+  /* ---- MARKER TRACK END ---- */
+
   /* ==== CHANNEL TRACK ==== */
-  /**
-   * Owner channel.
-   *
-   * 1 channel has 1 track.
-   */
-  Channel *             channel;
+  /** 1 Track has 0 or 1 Channel. */
+  Channel *           channel;
   /* ==== CHANNEL TRACK END ==== */
 
-  AutomationTracklist   automation_tracklist;
+  AutomationTracklist automation_tracklist;
 
   /** Modulators for this Track. */
-  Modulator *           modulators[MAX_MODULATORS];
-  int                   num_modulators;
+  Modulator *         modulators[MAX_MODULATORS];
+  int                 num_modulators;
 
 } Track;
 
@@ -216,6 +235,9 @@ track_fields_schema[] =
     Track, type, track_type_strings,
     CYAML_ARRAY_LEN (track_type_strings)),
 	CYAML_FIELD_INT (
+    "lanes_visible", CYAML_FLAG_DEFAULT,
+    Track, lanes_visible),
+	CYAML_FIELD_INT (
     "bot_paned_visible", CYAML_FLAG_DEFAULT,
     Track, bot_paned_visible),
 	CYAML_FIELD_INT (
@@ -237,11 +259,12 @@ track_fields_schema[] =
     "color", CYAML_FLAG_DEFAULT,
     Track, color, gdk_rgba_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "regions", CYAML_FLAG_DEFAULT,
-    Track, regions, num_regions,
-    &region_schema, 0, CYAML_UNLIMITED),
+    "lanes", CYAML_FLAG_DEFAULT,
+    Track, lanes, num_lanes,
+    &track_lane_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_MAPPING_PTR (
-    "scale", CYAML_FLAG_DEFAULT | CYAML_FLAG_OPTIONAL,
+    "scale",
+    CYAML_FLAG_DEFAULT | CYAML_FLAG_OPTIONAL,
     Track, scale,
     musical_scale_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
@@ -330,8 +353,10 @@ int
 track_is_selected (Track * self);
 
 /**
- * Wrapper.
+ * Adds a Region to the given lane of the track.
  *
+ * @param lane_pos The position of the lane to add
+ *   to.
  * @param gen_name Generate a unique region name or
  *   not. This will be 0 if the caller already
  *   generated a unique name.
@@ -340,6 +365,7 @@ void
 track_add_region (
   Track * track,
   Region * region,
+  int      lane_pos,
   int      gen_name);
 
 /**

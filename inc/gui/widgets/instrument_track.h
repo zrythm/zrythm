@@ -1,7 +1,5 @@
 /*
- * gui/widgets/instrument_track.h - Track view
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,6 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Widget for InstrumentTrack.
+ */
+
 #ifndef __GUI_WIDGETS_INSTRUMENT_TRACK_H__
 #define __GUI_WIDGETS_INSTRUMENT_TRACK_H__
 
@@ -26,10 +30,6 @@
 #include "gui/widgets/track.h"
 
 #include <gtk/gtk.h>
-#define GET_CHANNEL(x) \
- (track_get_channel (track_widget_get_private (Z_TRACK_WIDGET (x))->track));
-
-
 
 #define INSTRUMENT_TRACK_WIDGET_TYPE \
   (instrument_track_widget_get_type ())
@@ -39,12 +39,22 @@ G_DECLARE_FINAL_TYPE (InstrumentTrackWidget,
                       INSTRUMENT_TRACK_WIDGET,
                       TrackWidget);
 
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
+#define GET_CHANNEL(x) \
+ (track_get_channel (track_widget_get_private (Z_TRACK_WIDGET (x))->track));
+
 typedef struct _AutomationTracklistWidget
   AutomationTracklistWidget;
 typedef struct Track InstrumentTrack;
 
 /**
- * Top is the track part and bot is the automation part
+ * Top is the track part and bot is the automation
+ * part
  */
 typedef struct _InstrumentTrackWidget
 {
@@ -53,6 +63,7 @@ typedef struct _InstrumentTrackWidget
   GtkToggleButton *             solo;
   GtkToggleButton *             mute;
   GtkToggleButton *             show_ui;
+  GtkToggleButton *             show_lanes;
   GtkToggleButton *             show_automation;
   GtkToggleButton *             lock;
   GtkToggleButton *             freeze;
@@ -84,5 +95,9 @@ instrument_track_widget_refresh (
 void
 instrument_track_widget_refresh_buttons (
   InstrumentTrackWidget * self);
+
+/**
+ * @}
+ */
 
 #endif

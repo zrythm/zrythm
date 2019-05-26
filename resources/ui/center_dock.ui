@@ -55,10 +55,15 @@
                       </object>
                     </child>
                     <child>
+                      <object class="RulerTracklistWidget" id="ruler_tracklist">
+                        <property name="visible">1</property>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkScrolledWindow" id="tracklist_scroll">
                         <property name="visible">1</property>
                         <property name="can-focus">1</property>
-                        <property name="vexpand">1</property>
+                        <property name="expand">1</property>
                         <property name="hscrollbar-policy">never</property>
                         <property name="vscrollbar-policy">external</property>
                         <property name="shadow-type">in</property>
@@ -81,10 +86,6 @@
                           </object>
                         </child>
                       </object>
-                      <packing>
-                        <property name="expand">1</property>
-                        <property name="position">1</property>
-                      </packing>
                     </child>
                   </object>
                   <packing>
@@ -116,6 +117,11 @@
                             </child>
                           </object>
                         </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="RulerTracklistArrangerWidget">
+                        <property name="visible">1</property>
                       </object>
                     </child>
                     <child>

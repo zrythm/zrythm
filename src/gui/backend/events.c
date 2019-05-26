@@ -305,11 +305,11 @@ on_clip_editor_region_changed ()
           gtk_label_set_text (
             MW_PIANO_ROLL->midi_name_label,
             track_get_name (
-              r->track));
+              r->lane->track));
 
           color_area_widget_set_color (
             MW_PIANO_ROLL->color_bar,
-            &r->track->color);
+            &r->lane->track->color);
 
           g_idle_add (
             refresh_midi_ruler_and_arranger,
@@ -324,11 +324,11 @@ on_clip_editor_region_changed ()
           gtk_label_set_text (
             MW_AUDIO_CLIP_EDITOR->track_name,
             track_get_name (
-              r->track));
+              r->lane->track));
 
           color_area_widget_set_color (
             MW_AUDIO_CLIP_EDITOR->color_bar,
-            &r->track->color);
+            &r->lane->track->color);
 
           g_idle_add (
             refresh_audio_ruler_and_arranger,

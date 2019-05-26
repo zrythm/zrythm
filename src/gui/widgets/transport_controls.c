@@ -1,7 +1,5 @@
 /*
- * gui/widgets/transport_controls.c - transport controls (play/pause/stop...)
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -32,8 +30,9 @@ G_DEFINE_TYPE (TransportControlsWidget,
                GTK_TYPE_BOX)
 
 static void
-play_clicked_cb (GtkButton *button,
-               gpointer       user_data)
+play_clicked_cb (
+  GtkButton * button,
+  gpointer    user_data)
 {
   if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
     {
@@ -89,7 +88,7 @@ loop_toggled_cb (GtkToggleButton * loop,
     }
 }
 
-static void 
+static void
 forward_clicked_cb (GtkButton * forward,
                     gpointer          user_data)
 {
@@ -118,11 +117,11 @@ transport_controls_widget_class_init (
   TransportControlsWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass,
-                                "transport_controls.ui");
+  resources_set_class_template (
+    klass, "transport_controls.ui");
 
-  gtk_widget_class_set_css_name (klass,
-                                 "transport-controls");
+  gtk_widget_class_set_css_name (
+    klass, "transport-controls");
 
   gtk_widget_class_bind_template_child (
     klass,
@@ -151,7 +150,8 @@ transport_controls_widget_class_init (
 }
 
 static void
-transport_controls_widget_init (TransportControlsWidget * self)
+transport_controls_widget_init (
+  TransportControlsWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 

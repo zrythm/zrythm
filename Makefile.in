@@ -424,9 +424,9 @@ STATIC_LIBS=$(CYAML_BUILD_DIR)/libcyaml.a $(DLFCN_LIB)
 
 # Default target
 ifeq ($(WINDOWS),1)
-all: $(BUILD_DIR)/data/icon.o $(BUILD_DIR)/$(BIN)$(EXT) messages plugins package-win test
+all: $(BUILD_DIR)/data/icon.o $(BUILD_DIR)/$(BIN)$(EXT) plugins package-win test messages
 else
-all: $(BUILD_DIR)/$(BIN)$(EXT) messages plugins test
+all: $(BUILD_DIR)/$(BIN)$(EXT) plugins test messages
 endif
 
 messages: $(LANG_MO_FILES)

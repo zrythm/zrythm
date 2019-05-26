@@ -128,6 +128,38 @@
             </child>
           </object>
         </child>
+        <child>
+          <object class="ChordPadWidget" id="chord_pad">
+            <property name="visible">1</property>
+          </object>
+        </child>
+        <child type="tab">
+          <object class="GtkBox">
+            <property name="visible">1</property>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">1</property>
+                <property name="icon-name">z-minuet-chords</property>
+              </object>
+              <packing>
+                <property name="expand">0</property>
+                <property name="fill">0</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">1</property>
+                <property name="label" translatable="yes">Chord Pad</property>
+              </object>
+              <packing>
+                <property name="expand">0</property>
+                <property name="fill">0</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+        </child>
         <child type="action-end">
           <object class="GtkBox">
             <property name="visible">1</property>

@@ -36,43 +36,46 @@ G_DECLARE_DERIVABLE_TYPE (TrackWidget,
 
 typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct Track Track;
+typedef struct _DzlMultiPaned DzlMultiPaned;
+typedef struct _TrackTopGridWidget TrackTopGridWidget;
 
+/**
+ * The TrackWidget is split into 3 parts inside a
+ * DzlMultiPaned.
+ *
+ * - 1. TrackTopGridWidget contains the "main" view.
+ * - 2. TrackLanelistWidget contains the
+ *   TrackLaneWidgets.
+ * - 3. AutomationTracklistWidget contains the
+ *   AutomationLaneWidgets.
+ */
 typedef struct
 {
-  /**
-   * The color on the left.
-   */
-  ColorAreaWidget *             color;
+  /** The color on the left. */
+  ColorAreaWidget *         color;
 
-  GtkGestureDrag *              drag;
-  GtkGestureMultiPress *        multipress;
-  GtkGestureMultiPress *        right_mouse_mp; ///< right mouse multipress
+  GtkGestureDrag *          drag;
+  GtkGestureMultiPress *    multipress;
 
-  /**
-   * The track top / bot paned splitting the main track
-   * content and the bottom content (automation tracklist).
-   */
-  GtkPaned *                    paned;
+  /** Right-click gesture. */
+  GtkGestureMultiPress *    right_mouse_mp;
 
   /**
-   * The top part of the track.
+   * The track multipane splitting the main
+   * track content, the track lanes, and the bottom
+   * content (automation tracklist).
    */
-  GtkBox *                      top_grid;
+  DzlMultiPaned *           paned;
 
-  GtkLabel *                    name; ///< track name
-  GtkImage *                    icon; ///< the icon
+  /** The top part of the TrackWidget. */
+  TrackTopGridWidget *      top_grid;
 
-  /**
-   * These are boxes to be filled by inheriting widgets.
-   */
-  GtkBox *                      upper_controls;
-  GtkBox *                      right_activity_box;
-  GtkBox *                      mid_controls;
-  GtkBox *                      bot_controls;
+  /** Box holding the TrackLanes. */
+  GtkBox *                  lanes_box;
 
-  GtkEventBox *                 event_box;
+  GtkEventBox *             event_box;
 
-  Track *                       track; ///< associated track
+  Track *                   track; ///< associated track
 
   /**
    * Signal handler IDs for tracks that have them.

@@ -33,6 +33,12 @@
 #include "audio/position.h"
 #include "utils/yaml.h"
 
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
+
 typedef enum MusicalNote
 {
   NOTE_C,
@@ -235,5 +241,9 @@ chord_set_pos (ZChord *    self,
 
 void
 chord_free (ZChord * self);
+
+/**
+ * @}
+ */
 
 #endif

@@ -17,14 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * Object to hold information for the chord track.
- *
- * Contains project scale, chord markers, etc.
- */
-
 #include <stdlib.h>
 
 #include "audio/chord_track.h"

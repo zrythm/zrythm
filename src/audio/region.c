@@ -92,18 +92,25 @@ region_init (Region *   region,
 }
 
 /**
- * Sets the track.
+ * Sets the track lane.
  */
 void
-region_set_track (
+region_set_lane (
   Region * region,
-  Track * track)
+  TrackLane * lane)
 {
-  region->track = track;
-  if (track)
-    region->track_pos = track->pos;
+  if (lane)
+    {
+      region->lane = lane;
+      region->lane_pos = lane->pos;
+      region->track_pos = lane->track_pos;
+    }
   else
-    region->track_pos = -1;
+    {
+      region->lane = NULL;
+      region->lane_pos = -1;
+      region->track_pos = -1;
+    }
 }
 
 /**
@@ -165,18 +172,25 @@ Region *
 region_find_by_name (
   const char * name)
 {
+  int i, j, k;
   Track * track;
+  TrackLane * lane;
   Region * r;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
       g_warn_if_fail (track);
 
-      for (int j = 0; j < track->num_regions; j++)
+      for (k = 0; k < track->num_lanes; k++)
         {
-          r = track->regions[j];
-          if (!g_strcmp0 (r->name, name))
-            return r;
+          lane = track->lanes[k];
+
+          for (j = 0; j < lane->num_regions; j++)
+            {
+              r = lane->regions[j];
+              if (!g_strcmp0 (r->name, name))
+                return r;
+            }
         }
     }
   return NULL;
@@ -372,11 +386,16 @@ region_is_visible (Region * self)
 }
 
 /**
- * Returns the region at the given position in the given channel
+ * Returns the region at the given position in the
+ * given Track.
+ *
+ * @param track The track to look in.
+ * @param pos The position.
  */
 Region *
-region_at_position (Track    * track, ///< the track to look in
-                    Position * pos) ///< the position
+region_at_position (
+  Track    * track,
+  Position * pos)
 {
   int num_regions = 0;
   MidiRegion ** midi_regions;
@@ -386,8 +405,9 @@ region_at_position (Track    * track, ///< the track to look in
     }
   else if (track->type == TRACK_TYPE_INSTRUMENT)
     {
-      num_regions = ((InstrumentTrack *)track)->num_regions;
-      midi_regions = ((InstrumentTrack *)track)->regions;
+      /* FIXME using lane 0 */
+      num_regions = track->lanes[0]->num_regions;
+      midi_regions = track->lanes[0]->regions;
     }
   for (int i = 0; i < num_regions; i++)
     {
@@ -398,7 +418,7 @@ region_at_position (Track    * track, ///< the track to look in
         }
       else if (track->type == TRACK_TYPE_INSTRUMENT)
         {
-          region = (Region *)midi_regions[i];
+          region = midi_regions[i];
         }
 
       g_warn_if_fail (region);
@@ -568,11 +588,17 @@ region_clone (Region *        region,
   new_region->name = g_strdup (region->name);
 
   /* set track to NULL and remember track pos */
-  new_region->track = NULL;
-  if (region->track)
-    new_region->track_pos = region->track->pos;
+  new_region->lane = NULL;
+  new_region->track_pos = -1;
+  new_region->lane_pos = region->lane_pos;
+  if (region->lane)
+    {
+      new_region->track_pos = region->lane->track_pos;
+    }
   else
-    new_region->track_pos = region->track_pos;
+    {
+      new_region->track_pos = region->track_pos;
+    }
 
   return new_region;
 }
@@ -676,12 +702,14 @@ region_get_start_region (Region ** regions,
  * Generates the filename for this region.
  *
  * MUST be free'd.
+ *
+ * FIXME logic needs changing
  */
 char *
 region_generate_filename (Region * region)
 {
   return g_strdup_printf (REGION_PRINTF_FILENAME,
-                          region->track->name,
+                          region->lane->track->name,
                           region->name);
 }
 

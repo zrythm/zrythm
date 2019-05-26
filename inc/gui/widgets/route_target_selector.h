@@ -31,7 +31,7 @@ G_DECLARE_FINAL_TYPE (
   GtkMenuButton)
 
 /**
- * @addtogroup Widgets
+ * @addtogroup widgets
  *
  * @{
  */

@@ -1,6 +1,4 @@
 /*
- * plugins/plugin_manager.c - Manages plugins
- *
  * Copyright (C) 2018-2019 Alexandros Theodotou
  * Copyright (C) 2008-2012 Paul Davis
  * Copyright (C) David Robillard

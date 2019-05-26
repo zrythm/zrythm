@@ -64,7 +64,8 @@ region_draw_cb (RegionWidget * self,
   gtk_render_background (
     context, cr, 0, 0, width, height);
 
-  GdkRGBA * color = &rw_prv->region->track->color;
+  GdkRGBA * color =
+    &rw_prv->region->lane->track->color;
   cairo_set_source_rgba (
     cr,
     color->red,

@@ -46,10 +46,6 @@ timeline_selections_init_loaded (
   for (i = 0; i < ts->num_aps; i++)
     ts->aps[i] =
       automation_point_find (ts->aps[i]);
-
-  for (i = 0; i < ts->num_chords; i++)
-    ts->chords[i] =
-      chord_find (ts->chords[i]);
 }
 
 /**
@@ -96,7 +92,7 @@ timeline_selections_create_missing_transients (
           tr =
             TRACKLIST->tracks[transient->track_pos];
           track_add_region (
-            tr, transient,
+            tr, transient, 0,
             F_NO_GEN_NAME);
         }
       EVENTS_PUSH (ET_REGION_CHANGED,
@@ -384,7 +380,7 @@ timeline_selections_get_highest_track (
         transient ?
         ts->transient_regions[i] :
         ts->regions[i];
-      CHECK_POS (region->track);
+      CHECK_POS (region->lane->track);
     }
   for (int i = 0; i < ts->num_aps; i++)
     {
@@ -433,7 +429,7 @@ timeline_selections_get_lowest_track (
         transient ?
         ts->transient_regions[i] :
         ts->regions[i];
-      CHECK_POS (region->track);
+      CHECK_POS (region->lane->track);
     }
   for (int i = 0; i < ts->num_aps; i++)
     {
@@ -465,7 +461,7 @@ remove_transient_region (
 
   ts->transient_regions[index] = NULL;
   track_remove_region (
-    transient->track,
+    transient->lane->track,
     transient);
   free_later (transient, region_free);
 }
@@ -865,8 +861,8 @@ timeline_selections_paste_to_pos (
         region_clone (region,
                       REGION_CLONE_COPY);
       region_print (cp);
-      track_add_region (cp->track,
-                        cp, F_GEN_NAME);
+      track_add_region (
+        cp->lane->track, cp, 0, F_GEN_NAME);
     }
   for (i = 0; i < ts->num_aps; i++)
     {

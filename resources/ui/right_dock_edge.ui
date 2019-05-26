@@ -30,15 +30,16 @@
         <property name="visible">1</property>
         <property name="can-focus">1</property>
         <property name="tab-pos">right</property>
-        <child type="tab">
+        <child>
+          <object class="ControlRoomWidget" id="control_room">
+            <property name="visible">1</property>
+          </object>
         </child>
         <child type="tab">
-        </child>
-        <child type="tab">
-        </child>
-        <child type="tab">
-        </child>
-        <child type="tab">
+          <object class="GtkImage">
+            <property name="visible">1</property>
+            <property name="icon-name">z-gtk-preferences</property>
+          </object>
         </child>
       </object>
       <packing>

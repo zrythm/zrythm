@@ -17,9 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
- */
-
 #include "audio/automatable.h"
 #include "audio/automation_track.h"
 #include "audio/bus_track.h"
@@ -696,7 +693,8 @@ track_widget_get_bottom_paned (TrackWidget * self)
 {
   TRACK_WIDGET_GET_PRIVATE (self);
 
-  return gtk_paned_get_child2 (tw_prv->paned);
+  return dzl_multi_paned_get_nth_child (
+    DZL_MULTI_PANED (tw_prv->paned), 1);
 }
 
 static void
@@ -780,30 +778,6 @@ track_widget_class_init (TrackWidgetClass * _klass)
     klass,
     TrackWidget,
     top_grid);
-  gtk_widget_class_bind_template_child_private (
-    klass,
-    TrackWidget,
-    name);
-  gtk_widget_class_bind_template_child_private (
-    klass,
-    TrackWidget,
-    icon);
-  gtk_widget_class_bind_template_child_private (
-    klass,
-    TrackWidget,
-    upper_controls);
-  gtk_widget_class_bind_template_child_private (
-    klass,
-    TrackWidget,
-    right_activity_box);
-  gtk_widget_class_bind_template_child_private (
-    klass,
-    TrackWidget,
-    mid_controls);
-  gtk_widget_class_bind_template_child_private (
-    klass,
-    TrackWidget,
-    bot_controls);
   gtk_widget_class_bind_template_child_private (
     klass,
     TrackWidget,
