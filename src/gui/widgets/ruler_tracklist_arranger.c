@@ -236,8 +236,7 @@ ruler_tracklist_arranger_widget_select_all (
 {
   /* select chords */
   ChordTrack * ct =
-    tracklist_get_chord_track (
-      TRACKLIST);
+    RULER_TRACKLIST->chord_track;
   for (int i = 0; i < ct->num_chords; i++)
     {
       ZChord * chord = ct->chords[i];
@@ -506,11 +505,9 @@ ruler_tracklist_arranger_widget_set_size (
   RulerTracklistArrangerWidget * self)
 {
   // set the size
-  int ww, hh;
-  gtk_widget_get_size_request (
-    GTK_WIDGET (MW_RULER_TRACKLIST),
-    &ww,
-    &hh);
+  int hh =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (MW_RULER_TRACKLIST));
   RULER_WIDGET_GET_PRIVATE (MW_RULER);
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
@@ -683,8 +680,13 @@ on_focus (GtkWidget       *widget,
 
 static void
 ruler_tracklist_arranger_widget_class_init (
-  RulerTracklistArrangerWidgetClass * klass)
+  RulerTracklistArrangerWidgetClass * _klass)
 {
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
+
+  gtk_widget_class_set_css_name (
+    klass, "ruler-tracklist-arranger");
 }
 
 static void

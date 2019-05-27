@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-27 13:39+0100\n"
+"POT-Creation-Date: 2019-05-27 18:43+0100\n"
 "PO-Revision-Date: 2019-03-23 13:18+0000\n"
 "Last-Translator: Alexandros Theodotou <alex at zrythm dot org>\n"
 "Language-Team: Italian\n"
@@ -49,7 +49,7 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: src/gui/widgets/track.c:488
+#: src/gui/widgets/track.c:489
 msgid "Add Region"
 msgstr ""
 
@@ -61,7 +61,7 @@ msgstr ""
 msgid "Artist"
 msgstr ""
 
-#: src/audio/track.c:760
+#: src/audio/track.c:759
 msgid "Audio"
 msgstr ""
 
@@ -109,7 +109,7 @@ msgstr ""
 msgid "Bot"
 msgstr ""
 
-#: src/audio/track.c:763
+#: src/audio/track.c:762
 msgid "Bus"
 msgstr ""
 
@@ -155,7 +155,7 @@ msgstr ""
 msgid "Choose a method to donate"
 msgstr ""
 
-#: src/audio/track.c:769
+#: src/audio/track.c:768
 msgid "Chord"
 msgstr ""
 
@@ -416,7 +416,7 @@ msgstr ""
 msgid "Forward"
 msgstr ""
 
-#: src/gui/widgets/track.c:139 src/gui/widgets/track.c:143
+#: src/gui/widgets/track.c:140 src/gui/widgets/track.c:144
 msgid "Freeze"
 msgstr ""
 
@@ -448,7 +448,7 @@ msgstr ""
 msgid "Grid"
 msgstr ""
 
-#: src/audio/track.c:772
+#: src/audio/track.c:771
 msgid "Group"
 msgstr ""
 
@@ -484,7 +484,7 @@ msgstr ""
 msgid "Inserts"
 msgstr ""
 
-#: src/audio/track.c:757
+#: src/audio/track.c:756
 msgid "Instrument"
 msgstr ""
 
@@ -518,9 +518,13 @@ msgstr ""
 msgid "LFO 1"
 msgstr ""
 
-#: src/audio/track_lane.c:42
+#: src/gui/widgets/track_lane.c:52 src/audio/track_lane.c:43
 #, c-format
 msgid "Lane %d"
+msgstr ""
+
+#: resources/ui/track_lane.ui:15
+msgid "Lane 1"
 msgstr ""
 
 #: resources/ui/first_run_assistant.ui:88 resources/ui/preferences.ui:360
@@ -554,7 +558,7 @@ msgstr ""
 msgid "Location"
 msgstr ""
 
-#: src/gui/widgets/track.c:140
+#: src/gui/widgets/track.c:141
 msgid "Lock"
 msgstr ""
 
@@ -598,7 +602,7 @@ msgstr ""
 msgid "Markers"
 msgstr ""
 
-#: src/project.c:142 src/audio/track.c:766
+#: src/project.c:142 src/audio/track.c:765
 msgid "Master"
 msgstr ""
 
@@ -638,7 +642,7 @@ msgstr ""
 msgid "Move Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:138
+#: src/gui/widgets/track.c:139
 msgid "Mute"
 msgstr ""
 
@@ -856,7 +860,7 @@ msgstr ""
 msgid "Read automation"
 msgstr ""
 
-#: src/gui/widgets/track.c:136 resources/ui/transport_controls.ui:36
+#: src/gui/widgets/track.c:137 resources/ui/transport_controls.ui:36
 msgid "Record"
 msgstr ""
 
@@ -998,15 +1002,15 @@ msgstr ""
 msgid "Setup Zrythm"
 msgstr ""
 
-#: src/gui/widgets/track.c:142
+#: src/gui/widgets/track.c:143
 msgid "Show Automation Lanes"
 msgstr ""
 
-#: src/gui/widgets/instrument_track.c:264
+#: src/gui/widgets/instrument_track.c:280
 msgid "Show Lanes - Shows the track's lanes"
 msgstr ""
 
-#: src/gui/widgets/track.c:141
+#: src/gui/widgets/track.c:142
 msgid "Show UI"
 msgstr ""
 
@@ -1026,7 +1030,7 @@ msgstr ""
 msgid "Snap/Grid options"
 msgstr ""
 
-#: src/gui/widgets/track.c:137
+#: src/gui/widgets/track.c:138
 msgid "Solo"
 msgstr ""
 
@@ -1125,7 +1129,7 @@ msgstr ""
 msgid "Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:149
+#: src/gui/widgets/track.c:150
 msgid ""
 "Track - Change track parameters like Solo/Mute... - Click the icon on the "
 "bottom right to bring up the automation lanes - Double click to show "
@@ -1255,21 +1259,21 @@ msgstr ""
 msgid "_Cancel"
 msgstr ""
 
-#: src/gui/widgets/track.c:449
+#: src/gui/widgets/track.c:450
 #, c-format
 msgid "_Delete %d Tracks"
 msgstr ""
 
-#: src/gui/widgets/track.c:446
+#: src/gui/widgets/track.c:447
 msgid "_Delete Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:469
+#: src/gui/widgets/track.c:470
 #, c-format
 msgid "_Duplicate %d Tracks"
 msgstr ""
 
-#: src/gui/widgets/track.c:465
+#: src/gui/widgets/track.c:466
 msgid "_Duplicate Track"
 msgstr ""
 

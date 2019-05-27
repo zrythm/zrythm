@@ -80,7 +80,7 @@ typedef struct _KnobWidget
  * @param get_val Getter function.
  * @param set_val Setter function.
  * @param object Object to call get/set with.
- * @param idx Port destination multiplier index, if
+ * @param dest Port destination multiplier index, if
  *   type is Port, otherwise ignored.
  */
 KnobWidget *

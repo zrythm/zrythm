@@ -104,15 +104,6 @@ main_window_widget_refresh (MainWindowWidget * self)
   header_notebook_widget_setup (MW_HEADER_NOTEBOOK,
                            PROJECT->title);
 
-  tracklist_widget_setup (MW_TRACKLIST,
-                          TRACKLIST);
-
-  /* setup ruler */
-  gtk_scrolled_window_set_hadjustment (
-    MW_CENTER_DOCK->ruler_scroll,
-    gtk_scrolled_window_get_hadjustment (
-      MW_CENTER_DOCK->timeline_scroll));
-
   /* setup center dock */
   center_dock_widget_setup (MW_CENTER_DOCK);
 

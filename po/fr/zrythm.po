@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-27 13:39+0100\n"
+"POT-Creation-Date: 2019-05-27 18:43+0100\n"
 "PO-Revision-Date: 2019-05-22 22:34+0000\n"
 "Last-Translator: Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -60,7 +60,7 @@ msgstr "Grille adaptative"
 msgid "Add"
 msgstr "Ajouter"
 
-#: src/gui/widgets/track.c:488
+#: src/gui/widgets/track.c:489
 msgid "Add Region"
 msgstr "Ajouter une région"
 
@@ -72,7 +72,7 @@ msgstr "Toujours ouvrir la fenêtre des greffons"
 msgid "Artist"
 msgstr "Artiste"
 
-#: src/audio/track.c:760
+#: src/audio/track.c:759
 msgid "Audio"
 msgstr "Audio"
 
@@ -120,7 +120,7 @@ msgstr "Profondeur de Bit"
 msgid "Bot"
 msgstr "Bouteille"
 
-#: src/audio/track.c:763
+#: src/audio/track.c:762
 msgid "Bus"
 msgstr "Bus"
 
@@ -168,7 +168,7 @@ msgstr "Chinois  [zh]"
 msgid "Choose a method to donate"
 msgstr "Choisir une méthode pour faire un don"
 
-#: src/audio/track.c:769
+#: src/audio/track.c:768
 msgid "Chord"
 msgstr "Accord"
 
@@ -440,7 +440,7 @@ msgstr "Format"
 msgid "Forward"
 msgstr "Avancer"
 
-#: src/gui/widgets/track.c:139 src/gui/widgets/track.c:143
+#: src/gui/widgets/track.c:140 src/gui/widgets/track.c:144
 msgid "Freeze"
 msgstr "Geler"
 
@@ -472,7 +472,7 @@ msgstr "Raccourcis globaux"
 msgid "Grid"
 msgstr "Grille"
 
-#: src/audio/track.c:772
+#: src/audio/track.c:771
 msgid "Group"
 msgstr "Groupe"
 
@@ -508,7 +508,7 @@ msgstr "Initialisation..."
 msgid "Inserts"
 msgstr "Inserts"
 
-#: src/audio/track.c:757
+#: src/audio/track.c:756
 msgid "Instrument"
 msgstr "Instrument"
 
@@ -542,9 +542,13 @@ msgstr "Raccourcis clavier"
 msgid "LFO 1"
 msgstr "LFO 1"
 
-#: src/audio/track_lane.c:42
+#: src/gui/widgets/track_lane.c:52 src/audio/track_lane.c:43
 #, c-format
 msgid "Lane %d"
+msgstr ""
+
+#: resources/ui/track_lane.ui:15
+msgid "Lane 1"
 msgstr ""
 
 #: resources/ui/first_run_assistant.ui:88 resources/ui/preferences.ui:360
@@ -578,7 +582,7 @@ msgstr "Chargement du projet"
 msgid "Location"
 msgstr "Emplacement"
 
-#: src/gui/widgets/track.c:140
+#: src/gui/widgets/track.c:141
 msgid "Lock"
 msgstr "Verrouillage"
 
@@ -622,7 +626,7 @@ msgstr "Fenêtre principal"
 msgid "Markers"
 msgstr ""
 
-#: src/project.c:142 src/audio/track.c:766
+#: src/project.c:142 src/audio/track.c:765
 msgid "Master"
 msgstr "Master"
 
@@ -662,7 +666,7 @@ msgstr "Déplacer le ou les objets"
 msgid "Move Track"
 msgstr "Déplacer la piste"
 
-#: src/gui/widgets/track.c:138
+#: src/gui/widgets/track.c:139
 msgid "Mute"
 msgstr "Muet"
 
@@ -891,7 +895,7 @@ msgstr "Outil Rampe"
 msgid "Read automation"
 msgstr "Lire l'automation"
 
-#: src/gui/widgets/track.c:136 resources/ui/transport_controls.ui:36
+#: src/gui/widgets/track.c:137 resources/ui/transport_controls.ui:36
 msgid "Record"
 msgstr "Enregistrer"
 
@@ -1037,15 +1041,15 @@ msgstr "Configuration du moteur"
 msgid "Setup Zrythm"
 msgstr "Configurer Zrythm"
 
-#: src/gui/widgets/track.c:142
+#: src/gui/widgets/track.c:143
 msgid "Show Automation Lanes"
 msgstr "Montrer les files d'automations"
 
-#: src/gui/widgets/instrument_track.c:264
+#: src/gui/widgets/instrument_track.c:280
 msgid "Show Lanes - Shows the track's lanes"
 msgstr ""
 
-#: src/gui/widgets/track.c:141
+#: src/gui/widgets/track.c:142
 msgid "Show UI"
 msgstr "Afficher l'interface utilisateur"
 
@@ -1065,7 +1069,7 @@ msgstr "Accrocher"
 msgid "Snap/Grid options"
 msgstr "Accrocher/Options de la grille"
 
-#: src/gui/widgets/track.c:137
+#: src/gui/widgets/track.c:138
 msgid "Solo"
 msgstr "Solo"
 
@@ -1174,7 +1178,7 @@ msgstr "Outil"
 msgid "Track"
 msgstr "Piste"
 
-#: src/gui/widgets/track.c:149
+#: src/gui/widgets/track.c:150
 msgid ""
 "Track - Change track parameters like Solo/Mute... - Click the icon on the "
 "bottom right to bring up the automation lanes - Double click to show "
@@ -1313,21 +1317,21 @@ msgstr "Zrythm"
 msgid "_Cancel"
 msgstr "_Annuler"
 
-#: src/gui/widgets/track.c:449
+#: src/gui/widgets/track.c:450
 #, c-format
 msgid "_Delete %d Tracks"
 msgstr "_Supprimer %d Pistes"
 
-#: src/gui/widgets/track.c:446
+#: src/gui/widgets/track.c:447
 msgid "_Delete Track"
 msgstr "_Supprimer la piste"
 
-#: src/gui/widgets/track.c:469
+#: src/gui/widgets/track.c:470
 #, c-format
 msgid "_Duplicate %d Tracks"
 msgstr "_Copier %d pistes"
 
-#: src/gui/widgets/track.c:465
+#: src/gui/widgets/track.c:466
 msgid "_Duplicate Track"
 msgstr "_Copier la Piste"
 

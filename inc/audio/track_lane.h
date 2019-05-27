@@ -65,9 +65,6 @@ typedef struct TrackLane
   /** Soloed or not. */
   int                 solo;
 
-  /** Visible or not. */
-  int                 visible;
-
   /** Regions in this track. */
   Region *            regions[MAX_REGIONS];
   int                 num_regions;
@@ -129,6 +126,14 @@ TrackLane *
 track_lane_new (
   Track * track,
   int     pos);
+
+/**
+ * Adds a Region to the given TrackLane.
+ */
+void
+track_lane_add_region (
+  TrackLane * self,
+  Region *    region);
 
 /**
  * Clones the TrackLane.

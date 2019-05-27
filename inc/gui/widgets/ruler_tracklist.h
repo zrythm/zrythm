@@ -42,8 +42,17 @@ G_DECLARE_FINAL_TYPE (
   Z, RULER_TRACKLIST_WIDGET,
   GtkBox);
 
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
 #define MW_RULER_TRACKLIST \
   MW_CENTER_DOCK->ruler_tracklist
+
+typedef struct RulerTracklist RulerTracklist;
+typedef struct _TrackWidget TrackWidget;
 
 /**
  * The RulerTracklistWidget contains special tracks
@@ -56,6 +65,38 @@ G_DECLARE_FINAL_TYPE (
 typedef struct _RulerTracklistWidget
 {
   GtkBox     parent_instance;
+
+  /** The backend. */
+  RulerTracklist * tracklist;
+
 } RulerTracklistWidget;
+
+/**
+ * Gets TrackWidget hit at the given coordinates.
+ */
+TrackWidget *
+ruler_tracklist_widget_get_hit_track (
+  RulerTracklistWidget *  self,
+  double            x,
+  double            y);
+
+/**
+ * Removes and readds the tracks.
+ */
+void
+ruler_tracklist_widget_hard_refresh (
+  RulerTracklistWidget * self);
+
+/**
+ * Sets up the RulerTracklistWidget.
+ */
+void
+ruler_tracklist_widget_setup (
+  RulerTracklistWidget * self,
+  RulerTracklist * tracklist);
+
+/**
+ * @}
+ */
 
 #endif

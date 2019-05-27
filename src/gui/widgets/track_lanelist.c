@@ -71,23 +71,20 @@ track_lanelist_widget_refresh (
        i < self->track->num_lanes;
        i++)
     {
+      g_message ("ADDING LANEEEE");
       lane = self->track->lanes[i];
 
-      /* show automation track */
-      if (lane->visible)
-        {
-          if (!GTK_IS_WIDGET (lane->widget))
-            lane->widget =
-              track_lane_widget_new (lane);
+      if (!GTK_IS_WIDGET (lane->widget))
+        lane->widget =
+          track_lane_widget_new (lane);
 
-          track_lane_widget_refresh (
-            lane->widget);
+      track_lane_widget_refresh (
+        lane->widget);
 
-          /* add to automation tracklist widget */
-          gtk_container_add (
-            GTK_CONTAINER (self),
-            GTK_WIDGET (lane->widget));
-        }
+      /* add to automation tracklist widget */
+      gtk_container_add (
+        GTK_CONTAINER (self),
+        GTK_WIDGET (lane->widget));
     }
 
   /* set handle position.

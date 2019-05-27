@@ -387,3 +387,9 @@ channel expander-box
   border-bottom-width: 1px;
   border-color: alpha (grey, 0.3);
 }
+
+.thick-separator
+{
+  min-height: 2px;
+  min-width: 2px;
+}

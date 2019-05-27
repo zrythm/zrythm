@@ -99,18 +99,20 @@ region_set_lane (
   Region * region,
   TrackLane * lane)
 {
-  if (lane)
-    {
+  g_return_if_fail (lane);
+
+  /*if (lane)*/
+    /*{*/
       region->lane = lane;
       region->lane_pos = lane->pos;
       region->track_pos = lane->track_pos;
-    }
-  else
-    {
-      region->lane = NULL;
-      region->lane_pos = -1;
-      region->track_pos = -1;
-    }
+    /*}*/
+  /*else*/
+    /*{*/
+      /*region->lane = NULL;*/
+      /*region->lane_pos = -1;*/
+      /*region->track_pos = -1;*/
+    /*}*/
 }
 
 /**

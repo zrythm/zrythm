@@ -89,10 +89,13 @@ marker_track_widget_init (MarkerTrackWidget * self)
   TRACK_WIDGET_GET_PRIVATE (self);
 
   /* set icon */
-  resources_set_image_icon (
+  gtk_image_set_from_icon_name (
     tw_prv->top_grid->icon,
-    ICON_TYPE_ZRYTHM,
-    "marker.svg");
+    "z-kdenlive-show-markers",
+    GTK_ICON_SIZE_BUTTON);
+  gtk_image_set_pixel_size (
+    tw_prv->top_grid->icon,
+    16);
 
   gtk_widget_set_visible (GTK_WIDGET (self), 1);
 }

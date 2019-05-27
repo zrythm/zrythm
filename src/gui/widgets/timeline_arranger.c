@@ -511,20 +511,6 @@ timeline_arranger_widget_select_all (
   TL_SELECTIONS->num_regions = 0;
   TL_SELECTIONS->num_aps = 0;
 
-  /* select chords */
-  ChordTrack * ct =
-    tracklist_get_chord_track (
-      TRACKLIST);
-  for (int i = 0; i < ct->num_chords; i++)
-    {
-      ZChord * chord = ct->chords[i];
-      if (chord->visible)
-        {
-          chord_widget_select (
-            chord->widget, select);
-        }
-    }
-
   /* select everything else */
   Region * r;
   Track * track;
@@ -661,12 +647,6 @@ timeline_arranger_widget_update_visibility (
     TL_SELECTIONS->num_regions,
     r,
     r_transient);
-  ARRANGER_SET_SELECTION_VISIBILITY (
-    TL_SELECTIONS->chords,
-    TL_SELECTIONS->transient_chords,
-    TL_SELECTIONS->num_chords,
-    c,
-    c_transient);
   ARRANGER_SET_SELECTION_VISIBILITY (
     TL_SELECTIONS->aps,
     TL_SELECTIONS->transient_aps,

@@ -17,6 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Track base widget to be inherited.
+ */
+
 #ifndef __GUI_WIDGETS_TRACK_H__
 #define __GUI_WIDGETS_TRACK_H__
 
@@ -24,11 +30,17 @@
 
 #define TRACK_WIDGET_TYPE \
   (track_widget_get_type ())
-G_DECLARE_DERIVABLE_TYPE (TrackWidget,
-                          track_widget,
-                          Z,
-                          TRACK_WIDGET,
-                          GtkGrid)
+G_DECLARE_DERIVABLE_TYPE (
+  TrackWidget,
+  track_widget,
+  Z, TRACK_WIDGET,
+  GtkGrid)
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 #define TRACK_WIDGET_GET_PRIVATE(self) \
   TrackWidgetPrivate * tw_prv = \
@@ -37,7 +49,10 @@ G_DECLARE_DERIVABLE_TYPE (TrackWidget,
 typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct Track Track;
 typedef struct _DzlMultiPaned DzlMultiPaned;
-typedef struct _TrackTopGridWidget TrackTopGridWidget;
+typedef struct _TrackTopGridWidget
+  TrackTopGridWidget;
+typedef struct _TrackLanelistWidget
+  TrackLanelistWidget;
 
 /**
  * The TrackWidget is split into 3 parts inside a
@@ -72,6 +87,9 @@ typedef struct
 
   /** Box holding the TrackLanes. */
   GtkBox *                  lanes_box;
+
+  /** The track lanes. */
+  TrackLanelistWidget *     lanelist;
 
   GtkEventBox *             event_box;
 
@@ -158,6 +176,14 @@ track_widget_on_show_automation_toggled (
   TrackWidget * self);
 
 /**
+ * Callback when automation button is toggled.
+ */
+void
+track_widget_on_show_lanes_toggled (
+  GtkWidget * widget,
+  TrackWidget * self);
+
+/**
  * Callback when record button is toggled.
  */
 void
@@ -178,5 +204,9 @@ int
 track_widget_is_cursor_in_top_half (
   TrackWidget * self,
   double        y);
+
+/**
+ * @}
+ */
 
 #endif

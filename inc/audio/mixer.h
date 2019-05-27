@@ -118,36 +118,6 @@ void
 mixer_load_plugins ();
 
 /**
- * Adds channel to the mixer and connects its ports.
- *
- * This acts like the "connection" function of
- * the channel.
- *
- * Note that this should have nothing to do with
- * the track, but only with the mixer and routing
- * in general.
- *
- * @param recalc_graph Recalculate routing graph.
- */
-//void
-//mixer_add_channel (
-  //Mixer *   self,
-  //Channel * channel,
-  //int       recalc_graph);
-
-/**
- * Removes the given channel from the mixer and
- * disconnects it.
- *
- * @param publish_events Publish GUI events.
- */
-//void
-//mixer_remove_channel (
-  //Mixer *   self,
-  //Channel * channel,
-  //int       publish_events);
-
-/**
  * Moves the given plugin to the given slot in
  * the given channel.
  *

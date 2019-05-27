@@ -38,6 +38,7 @@
 #include "gui/widgets/instrument_track.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
+#include "gui/widgets/track_lanelist.h"
 #include "gui/widgets/track_top_grid.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
@@ -72,15 +73,25 @@ instument_track_ui_toggle (GtkWidget * self, InstrumentTrackWidget * data)
 InstrumentTrackWidget *
 instrument_track_widget_new (Track * track)
 {
-  InstrumentTrackWidget * self = g_object_new (
-                            INSTRUMENT_TRACK_WIDGET_TYPE,
-                            NULL);
+  InstrumentTrackWidget * self =
+    g_object_new (
+      INSTRUMENT_TRACK_WIDGET_TYPE,
+      NULL);
 
   TRACK_WIDGET_GET_PRIVATE (self);
 
   /* setup color */
   color_area_widget_set_color (tw_prv->color,
                                &track->color);
+
+  /* create lanelist */
+  tw_prv->lanelist =
+    track_lanelist_widget_new (track);
+  gtk_container_add (
+    GTK_CONTAINER (tw_prv->lanes_box),
+    GTK_WIDGET (tw_prv->lanelist));
+  gtk_widget_set_visible (
+    GTK_WIDGET (tw_prv->lanes_box), 1);
 
   /* setup automation tracklist */
   AutomationTracklist * automation_tracklist =
@@ -111,6 +122,11 @@ instrument_track_widget_new (Track * track)
       self->solo, "toggled",
       G_CALLBACK (track_widget_on_solo_toggled),
       self);
+  g_signal_connect (
+    self->show_lanes,
+    "toggled",
+    G_CALLBACK (track_widget_on_show_lanes_toggled),
+    self);
   g_signal_connect (
     self->show_automation,
     "toggled",
@@ -172,8 +188,6 @@ instrument_track_widget_refresh (
 {
   TRACK_WIDGET_GET_PRIVATE (self);
   Track * track = tw_prv->track;
-  /*ChannelTrack * ct = (ChannelTrack *) track;*/
-  /*Channel * chan = ct->channel;*/
 
   instrument_track_widget_refresh_buttons (self);
 
@@ -185,6 +199,8 @@ instrument_track_widget_refresh (
     track_get_automation_tracklist (tw_prv->track);
   automation_tracklist_widget_refresh (
     automation_tracklist->widget);
+
+  track_lanelist_widget_refresh (tw_prv->lanelist);
 }
 
 static void
@@ -253,7 +269,7 @@ instrument_track_widget_init (
     "Show Automation Lanes - Shows the track's "
     "automation lanes"
     "UI");
-  self->show_automation =
+  self->show_lanes =
     z_gtk_toggle_button_new_with_icon (
       "z-format-justify-fill");
   ui_add_widget_tooltip (

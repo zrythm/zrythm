@@ -549,7 +549,6 @@ timeline_selections_add_region (
   if (transient)
     timeline_selections_create_missing_transients (
       ts);
-
 }
 
 void

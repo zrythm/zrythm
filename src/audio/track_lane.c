@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 
+#include "audio/track.h"
 #include "audio/track_lane.h"
 #include "utils/arrays.h"
 
@@ -40,8 +41,25 @@ track_lane_new (
   TrackLane * self = calloc (1, sizeof (TrackLane));
 
   self->name = g_strdup_printf (_("Lane %d"), pos);
+  self->track = track;
+  self->track_pos = track->pos;
 
   return self;
+}
+
+/**
+ * Adds a Region to the given TrackLane.
+ */
+void
+track_lane_add_region (
+  TrackLane * self,
+  Region *    region)
+{
+  region_set_lane (region, self);
+
+  array_append (self->regions,
+                self->num_regions,
+                region);
 }
 
 /**

@@ -41,7 +41,7 @@ marker_track_default ()
 
   self->name = g_strdup (_("Markers"));
 
-  gdk_rgba_parse (&self->color, "#0328fa");
+  gdk_rgba_parse (&self->color, "#A3289a");
 
   return self;
 }

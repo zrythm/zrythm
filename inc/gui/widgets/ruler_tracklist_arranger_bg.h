@@ -21,22 +21,22 @@
  * \file
  *
  * The background (main overlay child) of the
- * timeline.
+ * RulerTracklistArrangerWidget.
  */
 
-#ifndef __GUI_WIDGETS_TIMELINE_BG_H__
-#define __GUI_WIDGETS_TIMELINE_BG_H__
+#ifndef __GUI_WIDGETS_RULER_TRACKLIST_ARRANGER_BG_H__
+#define __GUI_WIDGETS_RULER_TRACKLIST_ARRANGER_BG_H__
 
 #include "gui/widgets/arranger_bg.h"
 
 #include <gtk/gtk.h>
 
-#define TIMELINE_BG_WIDGET_TYPE \
-  (timeline_bg_widget_get_type ())
+#define RULER_TRACKLIST_ARRANGER_BG_WIDGET_TYPE \
+  (ruler_tracklist_arranger_bg_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  TimelineBgWidget,
-  timeline_bg_widget,
-  Z, TIMELINE_BG_WIDGET,
+  RulerTracklistArrangerBgWidget,
+  ruler_tracklist_arranger_bg_widget,
+  Z, RULER_TRACKLIST_ARRANGER_BG_WIDGET,
   ArrangerBgWidget)
 
 /**
@@ -45,20 +45,24 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-#define TIMELINE_BG \
-  Z_TIMELINE_BG_WIDGET (arranger_widget_get_private (Z_ARRANGER_WIDGET (MW_TIMELINE))->bg)
+#define RULER_TRACKLIST_ARRANGER_BG \
+  Z_RULER_TRACKLIST_ARRANGER_BG_WIDGET ( \
+    arranger_widget_get_private ( \
+      Z_ARRANGER_WIDGET ( \
+        MW_RULER_TRACKLIST_ARRANGER))->bg)
 
-typedef struct _TimelineBgWidget
+typedef struct _RulerTracklistArrangerBgWidget
 {
-  ArrangerBgWidget         parent_instance;
-} TimelineBgWidget;
+  ArrangerBgWidget     parent_instance;
+} RulerTracklistArrangerBgWidget;
 
 /**
- * Creates a timeline widget using the given timeline data.
+ * Creates a ruler_tracklist_arranger widget using the given ruler_tracklist_arranger data.
  */
-TimelineBgWidget *
-timeline_bg_widget_new (RulerWidget *    ruler,
-                        ArrangerWidget * arranger);
+RulerTracklistArrangerBgWidget *
+ruler_tracklist_arranger_bg_widget_new (
+  RulerWidget *    ruler,
+  ArrangerWidget * arranger);
 
 /**
  * @}

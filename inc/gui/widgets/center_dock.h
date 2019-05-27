@@ -59,6 +59,7 @@ typedef struct _CenterDockWidget
   GtkScrolledWindow        * tracklist_scroll;
   GtkViewport              * tracklist_viewport;
   RulerTracklistWidget * ruler_tracklist;
+  GtkScrolledWindow *      ruler_tracklist_arranger_scroll;
   RulerTracklistArrangerWidget * ruler_tracklist_arranger;
   TracklistHeaderWidget *  tracklist_header;
   TracklistWidget          * tracklist;

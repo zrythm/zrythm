@@ -69,9 +69,10 @@ on_resize_end (TracklistWidget * self,
 }
 
 TrackWidget *
-tracklist_widget_get_hit_track (TracklistWidget *  self,
-               double            x,
-               double            y)
+tracklist_widget_get_hit_track (
+  TracklistWidget *  self,
+  double            x,
+  double            y)
 {
   /* go through each child */
   for(int i = 0; i < TRACKLIST->num_tracks; i++)
@@ -198,7 +199,8 @@ tracklist_widget_select_track (
 }
 
 void
-tracklist_widget_hard_refresh (TracklistWidget * self)
+tracklist_widget_hard_refresh (
+  TracklistWidget * self)
 {
   /* remove ddbox */
   g_object_ref (self->ddbox);
@@ -221,8 +223,6 @@ tracklist_widget_hard_refresh (TracklistWidget * self)
           if (!GTK_IS_WIDGET (track->widget))
             track->widget = track_widget_new (track);
 
-          g_message ("track widget %p",
-                     track->widget);
           track_widget_refresh (track->widget);
 
           /* add to tracklist widget */

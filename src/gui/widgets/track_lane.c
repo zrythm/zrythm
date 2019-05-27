@@ -20,7 +20,10 @@
 #include "audio/track_lane.h"
 #include "gui/widgets/track_lane.h"
 #include "project.h"
+#include "utils/resources.h"
 #include "utils/ui.h"
+
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (TrackLaneWidget,
                track_lane_widget,
@@ -45,6 +48,13 @@ track_lane_widget_new (
 
   self->lane = lane;
 
+  char * txt =
+    g_strdup_printf (_("Lane %d"), lane->pos);
+  gtk_label_set_text (
+    self->label,
+    txt);
+  g_free (txt);
+
   return self;
 }
 
@@ -53,13 +63,31 @@ track_lane_widget_class_init (
   TrackLaneWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (
+    klass, "track_lane.ui");
+
   gtk_widget_class_set_css_name (
     klass, "track-lane");
+
+  gtk_widget_class_bind_template_child (
+    klass,
+    TrackLaneWidget,
+    label);
+  gtk_widget_class_bind_template_child (
+    klass,
+    TrackLaneWidget,
+    mute);
+  gtk_widget_class_bind_template_child (
+    klass,
+    TrackLaneWidget,
+    solo);
 }
 
 static void
 track_lane_widget_init (TrackLaneWidget * self)
 {
+  gtk_widget_init_template (GTK_WIDGET (self));
+
   gtk_widget_set_visible (GTK_WIDGET (self),
                           1);
 }

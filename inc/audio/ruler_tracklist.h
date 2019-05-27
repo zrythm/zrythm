@@ -27,6 +27,8 @@
 #ifndef __AUDIO_RULER_TRACKLIST_H__
 #define __AUDIO_RULER_TRACKLIST_H__
 
+#include "utils/yaml.h"
+
 /**
  * @addtogroup audio
  *

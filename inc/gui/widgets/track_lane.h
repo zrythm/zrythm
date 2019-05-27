@@ -41,6 +41,7 @@ typedef struct _TrackLaneWidget
 {
   GtkGrid              parent_instance;
 
+  GtkLabel *           label;
   GtkToggleButton *    solo;
   GtkToggleButton *    mute;
 

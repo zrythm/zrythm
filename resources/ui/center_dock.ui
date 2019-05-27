@@ -60,6 +60,14 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkSeparator">
+                        <property name="visible">1</property>
+                        <style>
+                          <class name="thick-separator"/>
+                        </style>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkScrolledWindow" id="tracklist_scroll">
                         <property name="visible">1</property>
                         <property name="can-focus">1</property>
@@ -120,8 +128,34 @@
                       </object>
                     </child>
                     <child>
-                      <object class="RulerTracklistArrangerWidget">
+                      <object class="GtkScrolledWindow" id="ruler_tracklist_arranger_scroll">
                         <property name="visible">1</property>
+                        <property name="can-focus">1</property>
+                        <property name="shadow-type">in</property>
+                        <property name="hscrollbar-policy">external</property>
+                        <property name="vscrollbar-policy">never</property>
+                        <property name="min-content-width">400</property>
+                        <child>
+                          <object class="GtkViewport" id="ruler_tracklist_arranger_viewport">
+                            <property name="visible">1</property>
+                            <property name="hexpand">1</property>
+                            <property name="hscroll-policy">natural</property>
+                            <property name="vscroll-policy">natural</property>
+                            <child>
+                              <object class="RulerTracklistArrangerWidget" id="ruler_tracklist_arranger">
+                                <property name="visible">1</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparator">
+                        <property name="visible">1</property>
+                        <style>
+                          <class name="thick-separator"/>
+                        </style>
                       </object>
                     </child>
                     <child>
@@ -147,7 +181,6 @@
                       </object>
                       <packing>
                         <property name="expand">1</property>
-                        <property name="position">1</property>
                       </packing>
                     </child>
                   </object>

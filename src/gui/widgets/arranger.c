@@ -60,6 +60,8 @@
 #include "gui/widgets/piano_roll.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
+#include "gui/widgets/ruler_tracklist_arranger.h"
+#include "gui/widgets/ruler_tracklist_arranger_bg.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/timeline_ruler.h"
@@ -90,6 +92,7 @@ G_DEFINE_TYPE_WITH_PRIVATE (ArrangerWidget,
   MidiArrangerWidget *         midi_arranger = NULL; \
   MidiModifierArrangerWidget * midi_modifier_arranger = NULL; \
   AudioArrangerWidget * audio_arranger = NULL; \
+  RulerTracklistArrangerWidget * ruler_tracklist_arranger = NULL; \
   if (ARRANGER_IS_MIDI (self)) \
     { \
       midi_arranger = Z_MIDI_ARRANGER_WIDGET (self); \
@@ -101,6 +104,10 @@ G_DEFINE_TYPE_WITH_PRIVATE (ArrangerWidget,
   else if (Z_IS_AUDIO_ARRANGER_WIDGET (self)) \
     { \
       audio_arranger = Z_AUDIO_ARRANGER_WIDGET (self); \
+    } \
+  else if (Z_IS_RULER_TRACKLIST_ARRANGER_WIDGET (self)) \
+    { \
+      ruler_tracklist_arranger = Z_RULER_TRACKLIST_ARRANGER_WIDGET (self); \
     } \
   else if (ARRANGER_IS_MIDI_MODIFIER (self)) \
     { \
@@ -1944,8 +1951,20 @@ arranger_widget_setup (ArrangerWidget *   self,
       audio_arranger_widget_setup (
         audio_arranger);
     }
-  gtk_container_add (GTK_CONTAINER (self),
-                     GTK_WIDGET (ar_prv->bg));
+  /* FIXME rename to special tracks arranger or
+   * something*/
+  else if (ruler_tracklist_arranger)
+    {
+      ar_prv->bg = Z_ARRANGER_BG_WIDGET (
+        ruler_tracklist_arranger_bg_widget_new (
+          Z_RULER_WIDGET (MW_RULER),
+          self));
+      ruler_tracklist_arranger_widget_setup (
+        ruler_tracklist_arranger);
+    }
+  gtk_container_add (
+    GTK_CONTAINER (self),
+    GTK_WIDGET (ar_prv->bg));
   gtk_widget_add_events (
     GTK_WIDGET (ar_prv->bg),
     GDK_ALL_EVENTS_MASK);

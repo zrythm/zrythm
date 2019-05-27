@@ -38,6 +38,7 @@
 #include "gui/widgets/group_track.h"
 #include "gui/widgets/instrument_track.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/marker_track.h"
 #include "gui/widgets/master_track.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
@@ -610,6 +611,9 @@ track_widget_new (Track * track)
       self = Z_TRACK_WIDGET (
         audio_track_widget_new (track));
       break;
+    case TRACK_TYPE_MARKER:
+      self = Z_TRACK_WIDGET (
+        marker_track_widget_new (track));
     }
 
   g_warn_if_fail (Z_IS_TRACK_WIDGET (self));
@@ -618,6 +622,26 @@ track_widget_new (Track * track)
   tw_prv->track = track;
 
   return self;
+}
+
+/**
+ * Callback when lanes button is toggled.
+ */
+void
+track_widget_on_show_lanes_toggled (
+  GtkWidget * widget,
+  TrackWidget * self)
+{
+  TRACK_WIDGET_GET_PRIVATE (self);
+  Track * track = tw_prv->track;
+
+  /* set visibility flag */
+  track->lanes_visible =
+    gtk_toggle_button_get_active (
+      GTK_TOGGLE_BUTTON (widget));
+
+  EVENTS_PUSH (ET_TRACK_LANES_VISIBILITY_CHANGED,
+               track);
 }
 
 void
@@ -782,4 +806,8 @@ track_widget_class_init (TrackWidgetClass * _klass)
     klass,
     TrackWidget,
     event_box);
+  gtk_widget_class_bind_template_child_private (
+    klass,
+    TrackWidget,
+    lanes_box);
 }

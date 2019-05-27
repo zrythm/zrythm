@@ -507,10 +507,9 @@ track_add_region (
         }
     }
 
-  region_set_lane (region, track->lanes[lane_pos]);
-  array_append (track->lanes[lane_pos]->regions,
-                track->lanes[lane_pos]->num_regions,
-                region);
+  track_lane_add_region (
+    track->lanes[lane_pos],
+    region);
 
   EVENTS_PUSH (ET_REGION_CREATED,
                region);

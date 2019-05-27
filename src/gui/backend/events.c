@@ -56,6 +56,7 @@
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/route_target_selector.h"
 #include "gui/widgets/ruler_marker.h"
+#include "gui/widgets/ruler_tracklist_arranger.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_ruler.h"
@@ -797,6 +798,10 @@ events_process (void * data)
           tracklist_widget_soft_refresh (
             MW_TRACKLIST);
           break;
+        case ET_TRACK_LANES_VISIBILITY_CHANGED:
+          tracklist_widget_soft_refresh (
+            MW_TRACKLIST);
+          break;
         case ET_TRACK_ADDED:
           on_track_added ((Track *) ev->arg);
           break;
@@ -922,6 +927,10 @@ events_process (void * data)
           break;
         case ET_MODULATOR_ADDED:
           on_modulator_added ((Modulator *)ev->arg);
+          break;
+        case ET_RULER_TRACKLIST_SIZE_CHANGED:
+          ruler_tracklist_arranger_widget_set_size (
+            MW_RULER_TRACKLIST_ARRANGER);
           break;
         default:
           g_message ("event not implemented yet");
