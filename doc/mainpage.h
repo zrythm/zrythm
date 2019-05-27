@@ -1,6 +1,6 @@
 /**
  *
- * \mainpage Code Documentation
+ * \mainpage Documentation
  *
  * \section introduction Introduction
  *
@@ -11,9 +11,22 @@
  * at each tab above.
  *
  * A good starting point would be to check the
- * Modules.
+ * Modules above
  *
  * The main structs to look at would be Project
  * and Zrythm (inc/project.h and inc/zrythm.h)
  *
+ * \section contributing Contributing
+ * 
+ * If you would like to contribute please review
+ * the \ref md_CONTRIBUTING
+ *
+ * \section pages Pages
+ * \subpage mypage
+ */
+
+/**
+ * \page mypage Custom Page
+ *
+ * Custom page contentx.
  */

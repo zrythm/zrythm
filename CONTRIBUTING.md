@@ -1,24 +1,12 @@
-```
-  Copyright (C) 2018-2019 Alexandros Theodotou
+Contributing Guidelines
+=======================
 
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
-```
+*This file is part of Zrythm and is licensed under the
+GNU General Public License version 3. You should have received a copy of the GNU General Public License
+  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.*
 
 # CODE STRUCTURE
+
 ```
 .
 ├── AUTHORS                      # author information
@@ -31,7 +19,6 @@
 ├── data                         # data files to be installed
 │   ├── org.zrythm.gschema.xml   # GSettings schema
 │   └── zrythm.desktop           # desktop file
-├── debian                       # .deb build configuration
 ├── Doxyfile                     # doxygen configuration
 ├── ext                          # external libs
 │   └── audio_decoder            # audio decoder by rgareus
@@ -92,19 +79,22 @@
   GNU style is preferable
 
 # INCLUDE ORDER
-standard C library headers go first in alphabetic order, then local headers in alphabetic order, then GTK or libdazzle headers, then all other headers in alphabetic order
+standard C library headers go first in alphabetic 
+order, then local headers in alphabetic order, then 
+GTK or glib headers, then all other headers in 
+alphabetic order
 
 # LINE LENGTH
 Please keep lines within 60 characters
 
 # LICENSING
 If you contributed significant (for copyright purposes)
-amounts of code, you may add your copyright notice (name, year and
-optionally email/website) at the top of the file, otherwise
-you agree to assign all copyrights to Alexandros Theodotou,
-the main author. You should only license your code under
-GPLv3+ like the rest of the project to ensure software
-freedom.
+amounts of code, you may add your copyright notice 
+(name, year and optionally email/website) at the top 
+of the file, otherwise you agree to assign all 
+copyrights to Alexandros Theodotou, the main author. 
+You agree that all your changes will be licensed under
+the GPLv3+ like the rest of the project.
 
 # TROUBLESHOOTING
 ## Getting random GUI related errors with no trace in valgrind or GTK warnings

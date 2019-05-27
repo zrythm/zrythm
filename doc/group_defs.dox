@@ -1,0 +1,12 @@
+/**
+ * @defgroup audio Audio
+ * @brief DSP and audio related code.
+ * 
+ * @{
+ */
+
+/** @defgroup subgroup Sub Group */
+
+/**
+ * @}
+ */
