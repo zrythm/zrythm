@@ -422,6 +422,8 @@ tree_view_create (PluginBrowserWidget * self,
   GtkWidget * tree_view =
     gtk_tree_view_new_with_model (
       GTK_TREE_MODEL (model));
+  gtk_widget_set_visible (
+    tree_view, 1);
 
   /* init tree view */
   GtkCellRenderer * renderer;
@@ -530,8 +532,12 @@ add_scroll_window (GtkTreeView * tree_view)
   /* add treeview to scroll window */
   GtkWidget * scrolled_window =
     gtk_scrolled_window_new (NULL, NULL);
-  gtk_container_add (GTK_CONTAINER (scrolled_window),
-                     GTK_WIDGET (tree_view));
+  gtk_container_add (
+    GTK_CONTAINER (scrolled_window),
+    GTK_WIDGET (tree_view));
+  gtk_widget_set_visible (
+    scrolled_window, 1);
+
   return scrolled_window;
 }
 
@@ -544,14 +550,15 @@ add_scroll_window (GtkTreeView * tree_view)
  * TODO FIXME
  */
 static GtkScrolledWindow *
-create_tree_view_add_to_expander (PluginBrowserWidget * self,
-                                  GtkTreeModel * model,
-                  GtkExpander  * expander)
+create_tree_view_add_to_expander (
+  PluginBrowserWidget * self,
+  GtkTreeModel * model,
+  GtkExpander  * expander)
 {
-  GtkWidget * scrolled_window = add_scroll_window
-                  (GTK_TREE_VIEW (tree_view_create (self,
-                                                    model,
-                                                    1,0)));
+  GtkWidget * scrolled_window =
+    add_scroll_window (
+      GTK_TREE_VIEW (
+        tree_view_create (self, model, 1,0)));
 
   /* add scroll window to expander */
   gtk_container_add (
@@ -569,9 +576,11 @@ create_tree_view_add_to_expander (PluginBrowserWidget * self,
 PluginBrowserWidget *
 plugin_browser_widget_new ()
 {
-  PluginBrowserWidget * self = g_object_new (PLUGIN_BROWSER_WIDGET_TYPE, NULL);
+  PluginBrowserWidget * self =
+    g_object_new (PLUGIN_BROWSER_WIDGET_TYPE, NULL);
 
-  g_message ("Instantiating plugin_browser widget...");
+  g_message (
+    "Instantiating plugin_browser widget...");
 
   gtk_label_set_xalign (self->plugin_info, 0);
 
@@ -614,10 +623,11 @@ plugin_browser_widget_new ()
         self->plugins_tree_model),
       0,
       1));
-  g_signal_connect (G_OBJECT (self->plugins_tree_view),
-                    "row-activated",
-                    G_CALLBACK (on_row_activated),
-                    self->plugins_tree_model);
+  g_signal_connect (
+    G_OBJECT (self->plugins_tree_view),
+    "row-activated",
+    G_CALLBACK (on_row_activated),
+    self->plugins_tree_model);
   GtkWidget * plugin_scroll_window =
     add_scroll_window (self->plugins_tree_view);
   gtk_box_pack_start (GTK_BOX (self->browser_bot),
@@ -628,14 +638,16 @@ plugin_browser_widget_new ()
 }
 
 static void
-plugin_browser_widget_class_init (PluginBrowserWidgetClass * _klass)
+plugin_browser_widget_class_init (
+  PluginBrowserWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass,
-                                "plugin_browser.ui");
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (
+    klass, "plugin_browser.ui");
 
-  gtk_widget_class_set_css_name (klass,
-                                 "browser");
+  gtk_widget_class_set_css_name (
+    klass, "browser");
 
   gtk_widget_class_bind_template_child (
     klass,
@@ -668,7 +680,10 @@ plugin_browser_widget_class_init (PluginBrowserWidgetClass * _klass)
 }
 
 static void
-plugin_browser_widget_init (PluginBrowserWidget * self)
+plugin_browser_widget_init (
+  PluginBrowserWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  gtk_widget_set_visible (GTK_WIDGET (self), 1);
 }

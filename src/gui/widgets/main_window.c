@@ -261,6 +261,10 @@ static GActionEntry actions[] = {
 
   /* piano roll */
   { "toggle-drum-mode", activate_toggle_drum_mode },
+
+  /* control room */
+  { "toggle-dim-output", NULL, NULL,
+    "true", change_state_dim_output },
 };
 
 static void

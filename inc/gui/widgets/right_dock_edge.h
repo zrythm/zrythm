@@ -19,6 +19,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Right panel.
+ */
+
 #ifndef __GUI_WIDGETS_RIGHT_DOCK_EDGE_H__
 #define __GUI_WIDGETS_RIGHT_DOCK_EDGE_H__
 
@@ -26,16 +32,25 @@
 
 #define RIGHT_DOCK_EDGE_WIDGET_TYPE \
   (right_dock_edge_widget_get_type ())
-G_DECLARE_FINAL_TYPE (RightDockEdgeWidget,
-                      right_dock_edge_widget,
-                      Z,
-                      RIGHT_DOCK_EDGE_WIDGET,
-                      GtkBox)
+G_DECLARE_FINAL_TYPE (
+  RightDockEdgeWidget,
+  right_dock_edge_widget,
+  Z, RIGHT_DOCK_EDGE_WIDGET,
+  GtkBox)
 
-#define MW_RIGHT_DOCK_EDGE MW_CENTER_DOCK->right_dock_edge
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
-typedef struct _PluginBrowserWidget PluginBrowserWidget;
+#define MW_RIGHT_DOCK_EDGE \
+  MW_CENTER_DOCK->right_dock_edge
+
+typedef struct _PluginBrowserWidget
+  PluginBrowserWidget;
 typedef struct _FileBrowserWidget FileBrowserWidget;
+typedef struct _ControlRoomWidget ControlRoomWidget;
 
 typedef struct _RightDockEdgeWidget
 {
@@ -43,6 +58,11 @@ typedef struct _RightDockEdgeWidget
   GtkNotebook *            right_notebook;
   PluginBrowserWidget *    plugin_browser;
   FileBrowserWidget *      file_browser;
+  ControlRoomWidget *      control_room;
 } RightDockEdgeWidget;
+
+/**
+ * @}
+ */
 
 #endif

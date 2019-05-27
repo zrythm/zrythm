@@ -27,10 +27,10 @@
 #include <glib/gi18n.h>
 
 /**
- * Creates a new Marker track using the given scale.
+ * Creates the default marker track.
  */
 MarkerTrack *
-marker_track_new ()
+marker_track_default ()
 {
   MarkerTrack * self =
     calloc (1, sizeof (MarkerTrack));

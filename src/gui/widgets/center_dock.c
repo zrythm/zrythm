@@ -30,6 +30,7 @@
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/ruler_tracklist.h"
+#include "gui/widgets/ruler_tracklist_arranger.h"
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_minimap.h"
@@ -77,8 +78,12 @@ center_dock_widget_setup (CenterDockWidget * self)
   ruler_widget_refresh (Z_RULER_WIDGET (MIDI_RULER));
 
   /* setup timeline */
-  arranger_widget_setup (Z_ARRANGER_WIDGET (MW_TIMELINE),
-                         SNAP_GRID_TIMELINE);
+  arranger_widget_setup (
+    Z_ARRANGER_WIDGET (MW_TIMELINE),
+    SNAP_GRID_TIMELINE);
+  arranger_widget_setup (
+    Z_ARRANGER_WIDGET (MW_RULER_TRACKLIST_ARRANGER),
+    SNAP_GRID_TIMELINE);
   gtk_scrolled_window_set_vadjustment (
     MW_CENTER_DOCK->timeline_scroll,
     gtk_scrolled_window_get_vadjustment (

@@ -38,7 +38,9 @@
         <child type="tab">
           <object class="GtkImage">
             <property name="visible">1</property>
-            <property name="icon-name">z-gtk-preferences</property>
+            <property name="icon-name">z-audio-headphones</property>
+            <property name="pixel-size">16</property>
+            <property name="tooltip-text" translatable="yes">Control Room</property>
           </object>
         </child>
       </object>

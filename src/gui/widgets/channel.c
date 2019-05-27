@@ -741,12 +741,10 @@ channel_widget_new (Channel * channel)
   setup_phase_panel (self);
   /*setup_pan (self);*/
   setup_inserts (self);
-  fader_widget_setup (self->fader,
-                      fader_get_amp,
-                      fader_set_amp,
-                      &self->channel->fader,
-                      FADER_TYPE_CHANNEL,
-                      40);
+  fader_widget_setup (
+    self->fader,
+    &self->channel->fader,
+    40);
   setup_meter (self);
   setup_pan (self);
   setup_channel_icon (self);

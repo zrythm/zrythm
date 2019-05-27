@@ -1,7 +1,5 @@
 /*
- * gui/widgets/right_dock_edge.c - Main window widget
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,55 +17,80 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/control_room.h"
+#include "gui/widgets/control_room.h"
 #include "gui/widgets/file_browser.h"
 #include "gui/widgets/plugin_browser.h"
 #include "gui/widgets/right_dock_edge.h"
+#include "project.h"
 #include "utils/resources.h"
+
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (RightDockEdgeWidget,
                right_dock_edge_widget,
                GTK_TYPE_BOX)
 
 static void
-right_dock_edge_widget_init (RightDockEdgeWidget * self)
+right_dock_edge_widget_init (
+  RightDockEdgeWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->file_browser = file_browser_widget_new ();
+  GtkWidget * img;
+
+  self->file_browser =
+    file_browser_widget_new ();
+  img =
+    gtk_image_new_from_icon_name (
+      "z-media-optical-audio",
+      GTK_ICON_SIZE_SMALL_TOOLBAR);
+  gtk_widget_set_tooltip_text (
+    img, _("File Browser"));
   gtk_notebook_prepend_page (
     self->right_notebook,
     GTK_WIDGET (self->file_browser),
-    gtk_image_new_from_icon_name (
-      "z-media-optical-audio",
-      GTK_ICON_SIZE_SMALL_TOOLBAR));
+    img);
   gtk_widget_show_all (
     GTK_WIDGET (self->right_notebook));
+
   /* setup browser */
-  self->plugin_browser = plugin_browser_widget_new ();
+  self->plugin_browser =
+    plugin_browser_widget_new ();
+  img =
+    gtk_image_new_from_icon_name (
+      "z-plugins",
+      GTK_ICON_SIZE_SMALL_TOOLBAR);
+  gtk_widget_set_tooltip_text (
+    img, _("Plugin Browser"));
   gtk_notebook_prepend_page (
     self->right_notebook,
     GTK_WIDGET (self->plugin_browser),
-    gtk_image_new_from_icon_name (
-      "z-plugins",
-      GTK_ICON_SIZE_SMALL_TOOLBAR));
+    img);
+
+  control_room_widget_setup (
+    self->control_room,
+    CONTROL_ROOM);
 }
 
 static void
 right_dock_edge_widget_class_init (
   RightDockEdgeWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass,
-                                "right_dock_edge.ui");
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (
+    klass, "right_dock_edge.ui");
 
-  gtk_widget_class_set_css_name (klass,
-                                 "right-dock-edge");
+  gtk_widget_class_set_css_name (
+    klass, "right-dock-edge");
 
   gtk_widget_class_bind_template_child (
     klass,
     RightDockEdgeWidget,
     right_notebook);
+  gtk_widget_class_bind_template_child (
+    klass,
+    RightDockEdgeWidget,
+    control_room);
 }
-
-
-

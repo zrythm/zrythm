@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-26 21:41+0100\n"
+"POT-Creation-Date: 2019-05-27 13:39+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Arabic <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -166,11 +166,7 @@ msgstr ""
 msgid "Chord Pad"
 msgstr ""
 
-#: src/audio/chord_track.c:42
-msgid "Chord Track"
-msgstr ""
-
-#: resources/ui/inspector_chord.ui:31
+#: src/audio/chord_track.c:42 resources/ui/inspector_chord.ui:31
 msgid "Chords"
 msgstr ""
 
@@ -209,6 +205,10 @@ msgstr ""
 
 #: src/gui/widgets/ports_expander.c:143
 msgid "Control Outs"
+msgstr ""
+
+#: resources/ui/right_dock_edge.ui:43
+msgid "Control Room"
 msgstr ""
 
 #: resources/ui/midi_controller_popover.ui:37
@@ -377,7 +377,7 @@ msgstr ""
 msgid "Export Audio"
 msgstr ""
 
-#: src/gui/widgets/fader.c:166
+#: src/gui/widgets/fader.c:155
 msgid "Fader - Click and drag to change value"
 msgstr ""
 
@@ -395,6 +395,10 @@ msgstr ""
 #: src/gui/widgets/dzl/dzl-animation.c:1123
 #, c-format
 msgid "Failed to retrieve va_list value: %s"
+msgstr ""
+
+#: src/gui/widgets/right_dock_edge.c:49
+msgid "File Browser"
 msgstr ""
 
 #: resources/ui/export_dialog.ui:218
@@ -479,7 +483,7 @@ msgstr ""
 msgid "Initializing..."
 msgstr ""
 
-#: src/gui/widgets/channel.c:920
+#: src/gui/widgets/channel.c:918
 msgid "Inserts"
 msgstr ""
 
@@ -541,8 +545,8 @@ msgstr ""
 msgid "Linear"
 msgstr ""
 
-#: resources/ui/control_room.ui:65
-msgid "Listen dim"
+#: src/gui/widgets/control_room.c:64
+msgid "Listen dim level"
 msgstr ""
 
 #: src/zrythm.c:272
@@ -701,6 +705,10 @@ msgstr ""
 msgid "Original size"
 msgstr ""
 
+#: src/gui/widgets/control_room.c:52
+msgid "Output"
+msgstr ""
+
 #: resources/ui/export_dialog.ui:206
 msgid "Output Files"
 msgstr ""
@@ -756,6 +764,10 @@ msgstr ""
 
 #: resources/ui/rack_plugin.ui:31
 msgid "Plugin 1"
+msgstr ""
+
+#: src/gui/widgets/right_dock_edge.c:65
+msgid "Plugin Browser"
 msgstr ""
 
 #: resources/ui/preferences.ui:249 resources/ui/preferences.ui:283
@@ -1072,10 +1084,8 @@ msgid ""
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 msgstr ""
 
-#: resources/ui/control_room.ui:64
-msgid ""
-"The level to set other channels to when \"listen\" is enabled on a channel. "
-"If set to minimum value, listen behaves like solo."
+#: src/gui/widgets/control_room.c:67
+msgid "The level to set other channels to when Listen is enabled on a channel"
 msgstr ""
 
 #: src/audio/engine_jack.c:570

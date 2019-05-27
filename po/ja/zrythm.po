@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-26 21:41+0100\n"
+"POT-Creation-Date: 2019-05-27 13:39+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Japanese <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -182,11 +182,7 @@ msgstr "コード"
 msgid "Chord Pad"
 msgstr "コード"
 
-#: src/audio/chord_track.c:42
-msgid "Chord Track"
-msgstr "コードトラック"
-
-#: resources/ui/inspector_chord.ui:31
+#: src/audio/chord_track.c:42 resources/ui/inspector_chord.ui:31
 msgid "Chords"
 msgstr "コード"
 
@@ -227,6 +223,11 @@ msgstr "コントローラが見つかりました"
 #: src/gui/widgets/ports_expander.c:143
 #, fuzzy
 msgid "Control Outs"
+msgstr "コントローラが見つかりました"
+
+#: resources/ui/right_dock_edge.ui:43
+#, fuzzy
+msgid "Control Room"
 msgstr "コントローラが見つかりました"
 
 #: resources/ui/midi_controller_popover.ui:37
@@ -400,7 +401,7 @@ msgstr "...としてエクスポート"
 msgid "Export Audio"
 msgstr "オーディオをエクスポート"
 
-#: src/gui/widgets/fader.c:166
+#: src/gui/widgets/fader.c:155
 msgid "Fader - Click and drag to change value"
 msgstr "フェーダー - クリック＆ドラッグで値を変更"
 
@@ -419,6 +420,10 @@ msgstr "%sまたは親%sでプロパティ%sが見つかりませんでした"
 #, c-format
 msgid "Failed to retrieve va_list value: %s"
 msgstr "va_list値を取得できませんでした：%s"
+
+#: src/gui/widgets/right_dock_edge.c:49
+msgid "File Browser"
+msgstr ""
 
 #: resources/ui/export_dialog.ui:218
 msgid "Filename Pattern"
@@ -505,7 +510,7 @@ msgstr "設定を初期化"
 msgid "Initializing..."
 msgstr "初期化中…"
 
-#: src/gui/widgets/channel.c:920
+#: src/gui/widgets/channel.c:918
 msgid "Inserts"
 msgstr ""
 
@@ -567,8 +572,8 @@ msgstr "長さ"
 msgid "Linear"
 msgstr "直線"
 
-#: resources/ui/control_room.ui:65
-msgid "Listen dim"
+#: src/gui/widgets/control_room.c:64
+msgid "Listen dim level"
 msgstr ""
 
 #: src/zrythm.c:272
@@ -737,6 +742,11 @@ msgstr "プロジェクトを開く"
 msgid "Original size"
 msgstr "通常サイズ"
 
+#: src/gui/widgets/control_room.c:52
+#, fuzzy
+msgid "Output"
+msgstr "出力ファイル"
+
 #: resources/ui/export_dialog.ui:206
 msgid "Output Files"
 msgstr "出力ファイル"
@@ -795,6 +805,11 @@ msgstr "プラグイン"
 #: resources/ui/rack_plugin.ui:31
 msgid "Plugin 1"
 msgstr "プラグイン1"
+
+#: src/gui/widgets/right_dock_edge.c:65
+#, fuzzy
+msgid "Plugin Browser"
+msgstr "プラグイン"
 
 #: resources/ui/preferences.ui:249 resources/ui/preferences.ui:283
 msgid "Plugins"
@@ -1125,10 +1140,8 @@ msgstr ""
 "次のファイルが作成されます：ディレクトリのMaster.wav：/ home / alex / "
 "Zrythm / Projects / project1 / exports / 20181023"
 
-#: resources/ui/control_room.ui:64
-msgid ""
-"The level to set other channels to when \"listen\" is enabled on a channel. "
-"If set to minimum value, listen behaves like solo."
+#: src/gui/widgets/control_room.c:67
+msgid "The level to set other channels to when Listen is enabled on a channel"
 msgstr ""
 
 #: src/audio/engine_jack.c:570
@@ -1372,6 +1385,9 @@ msgstr "region_name"
 #: resources/ui/audio_clip_editor.ui:56 resources/ui/audio_clip_editor.ui:68
 msgid "stuff"
 msgstr ""
+
+#~ msgid "Chord Track"
+#~ msgstr "コードトラック"
 
 #~ msgid "Piano Roll"
 #~ msgstr "ピアノロール"

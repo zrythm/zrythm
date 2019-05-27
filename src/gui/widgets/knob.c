@@ -1,7 +1,5 @@
 /*
- * gui/widgets/knob.c - knob
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou
  * Copyright (C) 2010 Paul Davis
  *
  * This file is part of Zrythm
@@ -20,8 +18,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
- */
 #include <stdint.h>
 #include <stdlib.h>
 #include <math.h>
@@ -31,7 +27,9 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (KnobWidget, knob_widget, GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (KnobWidget,
+               knob_widget,
+               GTK_TYPE_DRAWING_AREA)
 
 #define ARC_CUT_ANGLE 60
 
@@ -67,18 +65,20 @@ G_DEFINE_TYPE (KnobWidget, knob_widget, GTK_TYPE_DRAWING_AREA)
  * Draws the knob.
  */
 static int
-draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
+draw_cb (
+  GtkWidget * widget,
+  cairo_t * cr,
+  KnobWidget * self)
 {
+  GtkStyleContext * context =
+    gtk_widget_get_style_context (widget);
+
   guint width, height;
-  GtkStyleContext *context;
-  KnobWidget * self = (KnobWidget *) data;
-
-  context = gtk_widget_get_style_context (widget);
-
   width = gtk_widget_get_allocated_width (widget);
   height = gtk_widget_get_allocated_height (widget);
 
-  gtk_render_background (context, cr, 0, 0, width, height);
+  gtk_render_background (
+    context, cr, 0, 0, width, height);
   cairo_pattern_t* shade_pattern;
 
   const float scale = width;
@@ -385,16 +385,21 @@ _knob_widget_new (
   gtk_widget_set_size_request (GTK_WIDGET (self), size, size);
 
   /* connect signals */
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), self);
-  g_signal_connect (G_OBJECT (self), "enter-notify-event",
-                    G_CALLBACK (on_crossing),  self);
-  g_signal_connect (G_OBJECT(self), "leave-notify-event",
-                    G_CALLBACK (on_crossing),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-update",
-                    G_CALLBACK (drag_update),  self);
-  g_signal_connect (G_OBJECT(self->drag), "drag-end",
-                    G_CALLBACK (drag_end),  self);
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (draw_cb), self);
+  g_signal_connect (
+    G_OBJECT (self), "enter-notify-event",
+    G_CALLBACK (on_crossing),  self);
+  g_signal_connect (
+    G_OBJECT(self), "leave-notify-event",
+    G_CALLBACK (on_crossing),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-update",
+    G_CALLBACK (drag_update),  self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-end",
+    G_CALLBACK (drag_end),  self);
   return self;
 }
 
@@ -402,13 +407,18 @@ static void
 knob_widget_init (KnobWidget * self)
 {
   /* make it able to notify */
-  gtk_widget_set_has_window (GTK_WIDGET (self), TRUE);
-  int crossing_mask = GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;
-  gtk_widget_add_events (GTK_WIDGET (self), crossing_mask);
-  self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new (GTK_WIDGET (&self->parent_instance)));
+  gtk_widget_set_has_window (
+    GTK_WIDGET (self), TRUE);
+  int crossing_mask =
+    GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;
+  gtk_widget_add_events (
+    GTK_WIDGET (self), crossing_mask);
+  self->drag =
+    GTK_GESTURE_DRAG (
+      gtk_gesture_drag_new (GTK_WIDGET (self)));
 
-  gtk_widget_set_visible (GTK_WIDGET (self),
-                          1);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self), 1);
 }
 
 static void

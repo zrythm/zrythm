@@ -44,6 +44,12 @@ typedef struct _MarkerTrackWidget MarkerTrackWidget;
 /** MarkerTrack is just a Track. */
 typedef struct Track MarkerTrack;
 
+/**
+ * Creates the default marker track.
+ */
+MarkerTrack *
+marker_track_default ();
+
 void
 marker_track_add_marker (
   MarkerTrack * self,

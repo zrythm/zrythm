@@ -65,6 +65,13 @@ ruler_tracklist_schema = {
 };
 
 /**
+ * Initialize the RulerTracklist.
+ */
+void
+ruler_tracklist_init (
+  RulerTracklist * self);
+
+/**
  * @}
  */
 

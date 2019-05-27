@@ -17,29 +17,35 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/chord_track.h"
-#include "audio/marker_track.h"
-#include "audio/ruler_tracklist.h"
-#include "audio/track.h"
-#include "gui/widgets/arranger.h"
-#include "gui/widgets/timeline_arranger.h"
-#include "gui/widgets/ruler_tracklist.h"
-#include "project.h"
-#include "utils/arrays.h"
-#include "utils/flags.h"
-#include "utils/objects.h"
+#include "audio/control_room.h"
 
 /**
- * Initialize the RulerTracklist.
+ * Inits the ControlRoom.
  */
 void
-ruler_tracklist_init (
-  RulerTracklist * self)
+control_room_init (
+  ControlRoom * self)
 {
-  /* create chord track */
-  self->chord_track =
-    chord_track_default ();
+  /* Init main fader */
+  fader_init (&self->vol_fader,
+              FADER_TYPE_GENERIC,
+              NULL);
 
-  self->marker_track =
-    marker_track_default ();
+  /* init listen vol fader */
+  fader_init (&self->listen_vol_fader,
+              FADER_TYPE_GENERIC,
+              NULL);
+  fader_set_amp (&self->listen_vol_fader, 0.1);
+}
+
+/**
+ * Sets dim_output to on/off and notifies interested
+ * parties.
+ */
+void
+control_room_set_dim_output (
+  ControlRoom * self,
+  int           dim_output)
+{
+  self->dim_output = dim_output;
 }

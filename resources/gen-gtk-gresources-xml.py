@@ -124,6 +124,7 @@ for cat in ['actions', 'animations', 'applets', 'apps', 'categories', 'devices',
               f.endswith('zoom-original.svg') or
               f.endswith('node-type-cusp.svg') or
               f.endswith('text-x-csrc.svg') or
+              f.endswith('audio-headphones.svg') or
               f.endswith('document-properties.svg') or
               f.endswith('visibility.svg') or
               f.endswith('view-fullscreen.svg') or

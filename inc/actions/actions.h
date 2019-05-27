@@ -316,3 +316,9 @@ void
 activate_snap_events (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data);
+
+void
+change_state_dim_output (
+  GSimpleAction * action,
+  GVariant *      value,
+  gpointer        user_data);

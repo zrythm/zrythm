@@ -34,6 +34,7 @@
 #include "audio/automation_lane.h"
 #include "audio/automation_point.h"
 #include "audio/automation_track.h"
+#include "audio/control_room.h"
 #include "audio/engine.h"
 #include "audio/midi_note.h"
 #include "audio/port.h"
@@ -171,6 +172,9 @@ typedef struct Project
    * Used in inspector_widget_refresh.
    */
   SelectionType   last_selection;
+
+  /** The ControlRoom. */
+  ControlRoom       control_room;
 } Project;
 
 static const cyaml_schema_field_t

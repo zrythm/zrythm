@@ -1135,7 +1135,10 @@ _create_channel (
       channel->plugins[i] = NULL;
     }
 
-  fader_init (&channel->fader, channel);
+  fader_init (
+    &channel->fader,
+    FADER_TYPE_CHANNEL,
+    channel);
 
   /* set up piano roll port */
   char * tmp =

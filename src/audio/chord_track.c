@@ -39,7 +39,7 @@ chord_track_new (MusicalScale * scale)
   track->type = TRACK_TYPE_CHORD;
   track_init (track);
 
-  self->name = g_strdup (_("Chord Track"));
+  self->name = g_strdup (_("Chords"));
 
   self->scale = scale;
 

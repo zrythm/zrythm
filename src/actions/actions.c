@@ -983,3 +983,16 @@ activate_delete_selected_tracks (
   undo_manager_perform (
     UNDO_MANAGER, ua);
 }
+
+void
+change_state_dim_output (
+  GSimpleAction * action,
+  GVariant *      value,
+  gpointer        user_data)
+{
+  int dim = g_variant_get_boolean (value);
+
+  g_message ("dim is %d", dim);
+
+  g_simple_action_set_state (action, value);
+}

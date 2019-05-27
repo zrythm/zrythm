@@ -146,9 +146,9 @@ create_default (Project * self)
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
 
-  /* create chord track */
-  self->ruler_tracklist.chord_track =
-    chord_track_default ();
+  /* init ruler tracklist */
+  ruler_tracklist_init (
+    &self->ruler_tracklist);
 
   /* create untitled project */
   char * untitled_project = _("Untitled Project");
