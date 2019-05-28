@@ -189,4 +189,14 @@ char *
 snap_grid_stringize (NoteLength note_length,
                      NoteType   note_type);
 
+/**
+ * Returns the next or previous SnapGrid Point
+ *
+ * @param SnapGrid* snap grid to search in
+ * @param Position* position to search for
+ * @Param int       return next or prev position
+ */
+Position *
+snap_grid_get_nearby_snap_point (SnapGrid *self,Position *pos, int before);
+
 #endif
