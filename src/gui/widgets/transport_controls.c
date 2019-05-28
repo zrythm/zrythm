@@ -89,6 +89,22 @@ loop_toggled_cb (GtkToggleButton * loop,
     }
 }
 
+static void 
+forward_clicked_cb (GtkButton * forward,
+                    gpointer          user_data)
+{
+  Position *pos = snap_grid_get_nearby_snap_point(&PROJECT->snap_grid_timeline, &TRANSPORT->playhead_pos, 0);
+  transport_move_playhead(pos, 1);
+}
+
+static void
+backward_clicked_cb (GtkButton * backward,
+                     gpointer    user_data)
+{
+  Position *pos = snap_grid_get_nearby_snap_point(&PROJECT->snap_grid_timeline, &TRANSPORT->playhead_pos, 1);
+  transport_move_playhead(pos, 1);
+}
+
 /**
  * Initializes the transport controls in the main window.
  */
@@ -154,5 +170,13 @@ transport_controls_widget_init (TransportControlsWidget * self)
   g_signal_connect (GTK_WIDGET (self->loop),
                       "toggled",
                       G_CALLBACK (loop_toggled_cb),
+                      NULL);
+  g_signal_connect (GTK_WIDGET(self->forward),
+                      "clicked",
+                      G_CALLBACK(forward_clicked_cb),
+                      NULL);
+  g_signal_connect (GTK_WIDGET(self->backward),
+                      "clicked",
+                      G_CALLBACK(backward_clicked_cb),
                       NULL);
 }
