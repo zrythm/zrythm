@@ -125,19 +125,22 @@ typedef struct Plugin
   Lv2Plugin *          lv2;
 
   /** Descriptor. */
-  PluginDescriptor    * descr;
+  PluginDescriptor *   descr;
 
   /** Ports coming in as input. */
   PortIdentifier      in_port_ids[MAX_IN_PORTS];
-  Port                 * in_ports[MAX_IN_PORTS]; ///< cache
+  Port *              in_ports[MAX_IN_PORTS]; ///< cache
   int                  num_in_ports;    ///< counter
 
-  PortIdentifier        out_port_ids[MAX_OUT_PORTS];
-  Port                 * out_ports[MAX_OUT_PORTS];           ///< ports going out as output
-  int                  num_out_ports;    ///< counter
-  PortIdentifier    unknown_port_ids[MAX_UNKNOWN_PORTS];
-  Port                 * unknown_ports[MAX_UNKNOWN_PORTS];           ///< ports with unknown direction
-  int                  num_unknown_ports;    ///< counter
+  /** Outgoing ports. */
+  PortIdentifier      out_port_ids[MAX_OUT_PORTS];
+  Port *              out_ports[MAX_OUT_PORTS];
+  int                 num_out_ports;    ///< counter
+
+  /** Ports with unknown direction (not used). */
+  PortIdentifier      unknown_port_ids[MAX_UNKNOWN_PORTS];
+  Port *              unknown_ports[MAX_UNKNOWN_PORTS];
+  int                 num_unknown_ports;
 
   /** The Channel this plugin belongs to. */
   Track              * track;
