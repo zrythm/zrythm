@@ -7,56 +7,54 @@ GNU General Public License version 3. You should have received a copy of the GNU
 
 # CODE STRUCTURE
 
-```
-.
-├── AUTHORS                      # author information
-├── autogen.sh                   # creates configure
-├── config.guess                 # used by configure
-├── config.sub                   # used by configure
-├── configure.ac                 # options to create configure
-├── CONTRIBUTING.md              # contributing guidelines
-├── COPYING                      # license
-├── data                         # data files to be installed
-│   ├── org.zrythm.gschema.xml   # GSettings schema
-│   └── zrythm.desktop           # desktop file
-├── Doxyfile                     # doxygen configuration
-├── ext                          # external libs
-│   └── audio_decoder            # audio decoder by rgareus
-├── inc                          # include dir
-│   ├── actions                  # actions (undo, quit, etc.)
-│   ├── audio                    # audio-related headers
-│   ├── gui                      # gui-related headers
-│   │   ├── backend              # backend for serialization
-│   │   └── widgets              # gui widgets
-│   ├── plugins                  # headers forplugin hundling
-│   ├── settings                 # settings-related headers
-│   ├── utils                    # various utils
-├── INSTALL.md                   # installation instructions
-├── install-sh                   # needed when installing
-├── Makefile.in                  # custom makefile
-├── PKGBUILD.in                  # arch linux package config
-├── README.md                    # main README file
-├── resources                    # non-code resources
-│   ├── fonts                    # fonts
-│   ├── icons                    # icons
-│   ├── theme                    # GTK theme
-│   └── ui                       # GTK ui files for widgets
-├── scripts                      # various scripts
-├── src                          # source (.c) files
-│   ├── actions                  # actions (undo, quit, etc.)
-│   ├── audio                    # audio-related code
-│   ├── gui                      # gui-related code
-│   │   ├── backend              # backend for serialization
-│   │   └── widgets              # gui widgets
-│   ├── main.c                   # main
-│   ├── plugins                  # plugin handling code
-│   │   ├── lv2                  # lv2 plugin handling code
-│   │   │   └── zix              # lv2 utilities
-│   ├── settings                 # settings-related code
-│   ├── utils                    # various utils
-├── THANKS                       # thank you notice
-└── zrythm.spec.in               # .rpm build configuration
-```
+    .
+    ├── AUTHORS                      # author information
+    ├── autogen.sh                   # creates configure
+    ├── config.guess                 # used by configure
+    ├── config.sub                   # used by configure
+    ├── configure.ac                 # options to create configure
+    ├── CONTRIBUTING.md              # contributing guidelines
+    ├── COPYING                      # license
+    ├── data                         # data files to be installed
+    │   ├── org.zrythm.gschema.xml   # GSettings schema
+    │   └── zrythm.desktop           # desktop file
+    ├── Doxyfile                     # doxygen configuration
+    ├── ext                          # external libs
+    │   └── audio_decoder            # audio decoder by rgareus
+    ├── inc                          # include dir
+    │   ├── actions                  # actions (undo, quit, etc.)
+    │   ├── audio                    # audio-related headers
+    │   ├── gui                      # gui-related headers
+    │   │   ├── backend              # backend for serialization
+    │   │   └── widgets              # gui widgets
+    │   ├── plugins                  # headers forplugin hundling
+    │   ├── settings                 # settings-related headers
+    │   ├── utils                    # various utils
+    ├── INSTALL.md                   # installation instructions
+    ├── install-sh                   # needed when installing
+    ├── Makefile.in                  # custom makefile
+    ├── PKGBUILD.in                  # arch linux package config
+    ├── README.md                    # main README file
+    ├── resources                    # non-code resources
+    │   ├── fonts                    # fonts
+    │   ├── icons                    # icons
+    │   ├── theme                    # GTK theme
+    │   └── ui                       # GTK ui files for widgets
+    ├── scripts                      # various scripts
+    ├── src                          # source (.c) files
+    │   ├── actions                  # actions (undo, quit, etc.)
+    │   ├── audio                    # audio-related code
+    │   ├── gui                      # gui-related code
+    │   │   ├── backend              # backend for serialization
+    │   │   └── widgets              # gui widgets
+    │   ├── main.c                   # main
+    │   ├── plugins                  # plugin handling code
+    │   │   ├── lv2                  # lv2 plugin handling code
+    │   │   │   └── zix              # lv2 utilities
+    │   ├── settings                 # settings-related code
+    │   ├── utils                    # various utils
+    ├── THANKS                       # thank you notice
+    └── zrythm.spec.in               # .rpm build configuration
 
 # BUILDING
   The project uses autoconf and a custom Makefile.in, so the steps are
@@ -79,9 +77,9 @@ GNU General Public License version 3. You should have received a copy of the GNU
   GNU style is preferable
 
 # INCLUDE ORDER
-standard C library headers go first in alphabetic 
-order, then local headers in alphabetic order, then 
-GTK or glib headers, then all other headers in 
+standard C library headers go first in alphabetic
+order, then local headers in alphabetic order, then
+GTK or glib headers, then all other headers in
 alphabetic order
 
 # LINE LENGTH
@@ -89,10 +87,10 @@ Please keep lines within 60 characters
 
 # LICENSING
 If you contributed significant (for copyright purposes)
-amounts of code, you may add your copyright notice 
-(name, year and optionally email/website) at the top 
-of the file, otherwise you agree to assign all 
-copyrights to Alexandros Theodotou, the main author. 
+amounts of code, you may add your copyright notice
+(name, year and optionally email/website) at the top
+of the file, otherwise you agree to assign all
+copyrights to Alexandros Theodotou, the main author.
 You agree that all your changes will be licensed under
 the GPLv3+ like the rest of the project.
 
