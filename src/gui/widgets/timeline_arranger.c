@@ -96,37 +96,53 @@ timeline_arranger_widget_set_allocation (
     {
       RegionWidget * rw = Z_REGION_WIDGET (widget);
       REGION_WIDGET_GET_PRIVATE (rw);
-      /* FIXME show both in lane and in track. */
-      Track * track = rw_prv->region->lane->track;
+      TrackLane * lane = rw_prv->region->lane;
+      Track * track =
+        TRACKLIST->tracks[
+          rw_prv->region->track_pos];
 
       if (!track->widget)
         track->widget = track_widget_new (track);
-
-      gint wx, wy;
-      gtk_widget_translate_coordinates(
-        GTK_WIDGET (track->widget),
-        GTK_WIDGET (self),
-        0, 0,
-        &wx, &wy);
 
       allocation->x =
         ui_pos_to_px_timeline (
           &rw_prv->region->start_pos,
           1);
-      allocation->y = wy;
       allocation->width =
         (ui_pos_to_px_timeline (
           &rw_prv->region->end_pos,
           1) - allocation->x) - 1;
 
-      allocation->height =
-        gtk_widget_get_allocated_height (
-          GTK_WIDGET (track->widget));
-      if (track->bot_paned_visible)
+      TRACK_WIDGET_GET_PRIVATE (track->widget);
+
+      gint wx, wy;
+      if (rw_prv->region->is_lane_region)
         {
-          allocation->height -=
+          gtk_widget_translate_coordinates(
+            GTK_WIDGET (lane->widget),
+            GTK_WIDGET (self),
+            0, 0,
+            &wx, &wy);
+
+          allocation->y = wy;
+
+          allocation->height =
             gtk_widget_get_allocated_height (
-              track_widget_get_bottom_paned (track->widget)) + 1;
+              GTK_WIDGET (lane->widget));
+        }
+      else
+        {
+          gtk_widget_translate_coordinates(
+            GTK_WIDGET (track->widget),
+            GTK_WIDGET (self),
+            0, 0,
+            &wx, &wy);
+
+          allocation->y = wy;
+
+          allocation->height =
+            gtk_widget_get_allocated_height (
+              GTK_WIDGET (tw_prv->top_grid));
         }
     }
   else if (Z_IS_AUTOMATION_POINT_WIDGET (widget))
@@ -2122,6 +2138,24 @@ add_children_from_instrument_track (
           gtk_overlay_add_overlay (
             GTK_OVERLAY (self),
             GTK_WIDGET (r->widget));
+
+          /* add the laneless region too (the
+           * region that shows in the track
+           * instead of in the lane. */
+          if (r->is_lane_region)
+            {
+              if (!GTK_IS_WIDGET (
+                    r->laneless_region->widget))
+                r->laneless_region->widget =
+                  Z_REGION_WIDGET (
+                    midi_region_widget_new (
+                      r->laneless_region));
+
+              gtk_overlay_add_overlay (
+                GTK_OVERLAY (self),
+                GTK_WIDGET (
+                  r->laneless_region->widget));
+            }
         }
     }
   add_children_from_channel_track (it);

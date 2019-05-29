@@ -516,6 +516,23 @@ track_add_region (
 }
 
 /**
+ * Updates position in the tracklist and also
+ * updates the information in the lanes.
+ */
+void
+track_set_pos (
+  Track * track,
+  int     pos)
+{
+  track->pos = pos;
+
+  for (int i = 0; i < track->num_lanes; i++)
+    {
+      track->lanes[i]->track_pos = pos;
+    }
+}
+
+/**
  * Only removes the region from the track.
  *
  * Does not free the Region.

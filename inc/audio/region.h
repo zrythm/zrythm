@@ -205,6 +205,16 @@ typedef struct Region
    * showed inside the Track).
    */
   int             is_lane_region;
+
+  /**
+   * If lane region, this is an extra region that
+   * will be shown inside the Track, in addition to
+   * the main one inside the TrackLane.
+   *
+   * It must have the same parameters as the main
+   * Region.
+   */
+  Region *        laneless_region;
 } Region;
 
 static const cyaml_strval_t

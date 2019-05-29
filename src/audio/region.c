@@ -106,6 +106,7 @@ region_set_lane (
       region->lane = lane;
       region->lane_pos = lane->pos;
       region->track_pos = lane->track_pos;
+      region->is_lane_region = 1;
     /*}*/
   /*else*/
     /*{*/

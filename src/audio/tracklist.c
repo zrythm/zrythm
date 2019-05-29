@@ -169,7 +169,7 @@ tracklist_insert_track (
     pos,
     track);
 
-  track->pos = pos;
+  track_set_pos (track, pos);
 
   /* move other tracks */
   for (int i = track->pos + 1;

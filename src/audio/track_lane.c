@@ -57,6 +57,9 @@ track_lane_add_region (
 {
   region_set_lane (region, self);
 
+  region->laneless_region =
+    region_clone (region, REGION_CLONE_COPY);
+
   array_append (self->regions,
                 self->num_regions,
                 region);

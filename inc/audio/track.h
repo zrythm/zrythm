@@ -430,6 +430,15 @@ Automatable *
 track_get_fader_automatable (Track * track);
 
 /**
+ * Updates position in the tracklist and also
+ * updates the information in the lanes.
+ */
+void
+track_set_pos (
+  Track * track,
+  int     pos);
+
+/**
  * Getter for the track name.
  */
 const char *

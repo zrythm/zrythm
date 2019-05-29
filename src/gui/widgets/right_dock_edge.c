@@ -35,6 +35,8 @@ static void
 right_dock_edge_widget_init (
   RightDockEdgeWidget * self)
 {
+  g_type_ensure (CONTROL_ROOM_WIDGET_TYPE);
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
   GtkWidget * img;

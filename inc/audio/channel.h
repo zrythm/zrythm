@@ -266,6 +266,12 @@ channel_set_current_r_db (Channel * channel, float val);
 void
 channel_reset_fader (Channel * channel);
 
+/**
+ * Prepares the channel for processing.
+ *
+ * To be called before the main cycle each time on
+ * all channels.
+ */
 void
 channel_prepare_process (Channel * channel);
 

@@ -30,7 +30,6 @@ GNU General Public License version 3. You should have received a copy of the GNU
     │   ├── plugins                  # headers forplugin hundling
     │   ├── settings                 # settings-related headers
     │   ├── utils                    # various utils
-    ├── INSTALL.md                   # installation instructions
     ├── install-sh                   # needed when installing
     ├── Makefile.in                  # custom makefile
     ├── PKGBUILD.in                  # arch linux package config
@@ -53,20 +52,47 @@ GNU General Public License version 3. You should have received a copy of the GNU
     │   │   │   └── zix              # lv2 utilities
     │   ├── settings                 # settings-related code
     │   ├── utils                    # various utils
-    ├── THANKS                       # thank you notice
-    └── zrythm.spec.in               # .rpm build configuration
+    └── THANKS                       # thank you notice
+
+# DEPENDENCIES
+## Required
+- GTK+3 (library GPLv2+): https://gitlab.gnome.org/GNOME/gtk
+- jack (LGPLv2.1+): http://jackaudio.org/
+- lv2 (ISC): http://lv2plug.in/
+- lilv (ISC): https://drobilla.net/software/lilv
+- libsndfile (LGPLv3): http://www.mega-nerd.com/libsndfile
+- libyaml
+- libsamplerate (2-clause BSD): http://www.mega-nerd.com/libsamplerate
+- portaudio (MIT): www.portaudio.com/
+
+## Optional
+- ffmpeg (LGPL 2.1+, GPL 2+): https://ffmpeg.org/
+- Qt5
+
+Note: optional dependencies are turned on using
+`--with-***`. See `./configure --help`
 
 # BUILDING
-  The project uses autoconf and a custom Makefile.in, so the steps are
-  1. `./autogen.sh`. This will generate the configure script
-  2. `./configure`. This will generate the Makefile. Type `./configure --help` for available options
-  3. `make -jN` (where N is the number of cores you want to use. the higher the number the faster it will build). Once the program is built, it will need to be installed the first time before it can run (to install the GSettings). Alternatively if you don't want to install anything on your system you can run `glib-compile-schemas data/` and then run zrythm using `GSETTINGS_SCHEMA_DIR=data ./build/zrythm`. The built program will be in build/zrythm by default.
-  4. `sudo make install` to optionally install the program
+The project uses autoconf and a custom Makefile.in, so the steps are
+
+    ./autogen.sh
+    ./configure
+    make -j4
+    sudo make install # optional
+
+`make -jN`, where N is the number of cores you want to use. the higher the number the faster it will build
+
+Once the program is built, it will need to be installed the first time before it can run (to install the GSettings)
+
+Alternatively if you don't want to install anything on your system you can run `glib-compile-schemas data/` and then run zrythm using `GSETTINGS_SCHEMA_DIR=data ./build/zrythm`. The built program will be at `build/zrythm` by default
 
 # DEBUGGING
   Use `gdb build/debug/zrythm`
 
   Can also do `G_DEBUG=fatal_warnings,signals,actions G_ENABLE_DIAGNOSTIC=1 gdb build/debug/zrythm`. G_DEBUG will trigger break points at GTK warning messages and  G_ENABLE_DIAGNOSTIC is used to break at deprecation  warnings for GTK+3 (must all be fixed before porting to GTK+4).
+
+# PACKAGING
+  See the [README](git-packaging-hooks/README.md) in git-packaging-hooks and the `packaging` branch
 
 # COMMENTING
   - Document how to use the function in the header file

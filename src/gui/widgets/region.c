@@ -64,8 +64,10 @@ region_draw_cb (RegionWidget * self,
   gtk_render_background (
     context, cr, 0, 0, width, height);
 
-  GdkRGBA * color =
-    &rw_prv->region->lane->track->color;
+  GdkRGBA * color;
+    color =
+      &TRACKLIST->tracks[
+        rw_prv->region->track_pos]->color;
   cairo_set_source_rgba (
     cr,
     color->red,
@@ -282,8 +284,6 @@ region_widget_select (
 {
   RegionWidgetPrivate * prv =
     region_widget_get_instance_private (self);
-  g_message ("region widget select %d",
-             select);
   if (select)
     {
       timeline_selections_add_region (

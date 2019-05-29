@@ -141,6 +141,7 @@ center_dock_widget_init (CenterDockWidget * self)
   g_type_ensure (TRACKLIST_WIDGET_TYPE);
   g_type_ensure (TIMELINE_SELECTION_INFO_WIDGET_TYPE);
   g_type_ensure (RULER_TRACKLIST_WIDGET_TYPE);
+  g_type_ensure (RULER_TRACKLIST_ARRANGER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 

@@ -43,6 +43,7 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/track.h"
+#include "gui/widgets/track_top_grid.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "utils/flags.h"
@@ -737,6 +738,9 @@ on_destroy (
 static void
 track_widget_init (TrackWidget * self)
 {
+  g_type_ensure (COLOR_AREA_WIDGET_TYPE);
+  g_type_ensure (TRACK_TOP_GRID_WIDGET_TYPE);
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
   TRACK_WIDGET_GET_PRIVATE (self);

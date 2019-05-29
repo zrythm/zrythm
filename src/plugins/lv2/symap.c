@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "symap.h"
+#include "plugins/lv2/symap.h"
 
 #include <gtk/gtk.h>
 

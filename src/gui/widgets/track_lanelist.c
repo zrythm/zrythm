@@ -71,7 +71,6 @@ track_lanelist_widget_refresh (
        i < self->track->num_lanes;
        i++)
     {
-      g_message ("ADDING LANEEEE");
       lane = self->track->lanes[i];
 
       if (!GTK_IS_WIDGET (lane->widget))

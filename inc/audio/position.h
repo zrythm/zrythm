@@ -17,10 +17,22 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Position struct and API.
+ */
+
 #ifndef __AUDIO_POSITION_H__
 #define __AUDIO_POSITION_H__
 
 #include "utils/yaml.h"
+
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
 
 #define TICKS_PER_QUARTER_NOTE 960
 #define TICKS_PER_SIXTEENTH_NOTE 240
@@ -48,6 +60,10 @@ typedef struct SnapGrid SnapGrid;
 typedef struct Track Track;
 typedef struct Region Region;
 
+/**
+ * A Position is made up of
+ * bars.beats.sixteenths.ticks.
+ */
 typedef struct Position
 {
   int       bars; ///< this is the size of the number of beats per bar (top part of time sig)
@@ -58,22 +74,26 @@ typedef struct Position
    */
   int       beats;
 
-  /*
-   * This is always the size of a 1/16th note regardless
-   * of time sig (so if bot part is 16, this will always be
-   * 1). This is added for convenience when compared to BBT,
-   * so that the user only has 240 ticks to deal with for
-   * precise operations instead of 960.
+  /**
+   * This is always the size of a 1/16th note
+   * regardless of time sig (so if bot part is 16,
+   * this will always be 1).
+   *
+   * This is added for convenience when compared to
+   * BBT, so that the user only has 240 ticks to
+   * deal with for precise operations instead of 960.
    */
   int       sixteenths;
 
-  int       ticks; ///< 240 ticks per sixteen
+  /** 240 ticks per sixteenth. */
+  int       ticks;
 
   /** Cache so we don't need to call
    * position_get_ticks. */
   long      total_ticks;
 
-  long      frames; ///< position in frames (samples)
+  /** Position in frames (samples). */
+  long      frames;
 } Position;
 
 static const cyaml_schema_field_t
@@ -243,5 +263,9 @@ position_print_simple (
 SERIALIZE_INC (Position, position)
 DESERIALIZE_INC (Position, position)
 PRINT_YAML_INC (Position, position)
+
+/**
+ * @}
+ */
 
 #endif

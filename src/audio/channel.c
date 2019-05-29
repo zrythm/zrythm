@@ -17,12 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * A channel on the mixer.
- */
-
 #include <math.h>
 #include <unistd.h>
 #include <stdlib.h>

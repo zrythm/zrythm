@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-27 18:43+0100\n"
+"POT-Creation-Date: 2019-05-29 19:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -47,7 +47,7 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: src/gui/widgets/track.c:489
+#: src/gui/widgets/track.c:490
 msgid "Add Region"
 msgstr ""
 
@@ -59,7 +59,7 @@ msgstr ""
 msgid "Artist"
 msgstr ""
 
-#: src/audio/track.c:759
+#: src/audio/track.c:776
 msgid "Audio"
 msgstr ""
 
@@ -107,7 +107,7 @@ msgstr ""
 msgid "Bot"
 msgstr ""
 
-#: src/audio/track.c:762
+#: src/audio/track.c:779
 msgid "Bus"
 msgstr ""
 
@@ -153,7 +153,7 @@ msgstr ""
 msgid "Choose a method to donate"
 msgstr ""
 
-#: src/audio/track.c:768
+#: src/audio/track.c:785
 msgid "Chord"
 msgstr ""
 
@@ -392,7 +392,7 @@ msgstr ""
 msgid "Failed to retrieve va_list value: %s"
 msgstr ""
 
-#: src/gui/widgets/right_dock_edge.c:49
+#: src/gui/widgets/right_dock_edge.c:51
 msgid "File Browser"
 msgstr ""
 
@@ -414,7 +414,7 @@ msgstr ""
 msgid "Forward"
 msgstr ""
 
-#: src/gui/widgets/track.c:140 src/gui/widgets/track.c:144
+#: src/gui/widgets/track.c:141 src/gui/widgets/track.c:145
 msgid "Freeze"
 msgstr ""
 
@@ -446,7 +446,7 @@ msgstr ""
 msgid "Grid"
 msgstr ""
 
-#: src/audio/track.c:771
+#: src/audio/track.c:788
 msgid "Group"
 msgstr ""
 
@@ -482,7 +482,7 @@ msgstr ""
 msgid "Inserts"
 msgstr ""
 
-#: src/audio/track.c:756
+#: src/audio/track.c:773
 msgid "Instrument"
 msgstr ""
 
@@ -556,7 +556,7 @@ msgstr ""
 msgid "Location"
 msgstr ""
 
-#: src/gui/widgets/track.c:141
+#: src/gui/widgets/track.c:142
 msgid "Lock"
 msgstr ""
 
@@ -600,7 +600,7 @@ msgstr ""
 msgid "Markers"
 msgstr ""
 
-#: src/project.c:142 src/audio/track.c:765
+#: src/project.c:142 src/audio/track.c:782
 msgid "Master"
 msgstr ""
 
@@ -640,7 +640,7 @@ msgstr ""
 msgid "Move Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:139
+#: src/gui/widgets/track.c:140
 msgid "Mute"
 msgstr ""
 
@@ -765,7 +765,7 @@ msgstr ""
 msgid "Plugin 1"
 msgstr ""
 
-#: src/gui/widgets/right_dock_edge.c:65
+#: src/gui/widgets/right_dock_edge.c:67
 msgid "Plugin Browser"
 msgstr ""
 
@@ -858,7 +858,7 @@ msgstr ""
 msgid "Read automation"
 msgstr ""
 
-#: src/gui/widgets/track.c:137 resources/ui/transport_controls.ui:36
+#: src/gui/widgets/track.c:138 resources/ui/transport_controls.ui:36
 msgid "Record"
 msgstr ""
 
@@ -875,7 +875,7 @@ msgstr ""
 msgid "Region"
 msgstr ""
 
-#: src/gui/widgets/region.c:181
+#: src/gui/widgets/region.c:183
 msgid ""
 "Region - Click and drag to move around (hold Shift to disable snapping) - "
 "Double click to bring up the clip editor"
@@ -1000,7 +1000,7 @@ msgstr ""
 msgid "Setup Zrythm"
 msgstr ""
 
-#: src/gui/widgets/track.c:143
+#: src/gui/widgets/track.c:144
 msgid "Show Automation Lanes"
 msgstr ""
 
@@ -1008,7 +1008,7 @@ msgstr ""
 msgid "Show Lanes - Shows the track's lanes"
 msgstr ""
 
-#: src/gui/widgets/track.c:142
+#: src/gui/widgets/track.c:143
 msgid "Show UI"
 msgstr ""
 
@@ -1028,7 +1028,7 @@ msgstr ""
 msgid "Snap/Grid options"
 msgstr ""
 
-#: src/gui/widgets/track.c:138
+#: src/gui/widgets/track.c:139
 msgid "Solo"
 msgstr ""
 
@@ -1127,7 +1127,7 @@ msgstr ""
 msgid "Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:150
+#: src/gui/widgets/track.c:151
 msgid ""
 "Track - Change track parameters like Solo/Mute... - Click the icon on the "
 "bottom right to bring up the automation lanes - Double click to show "
@@ -1257,21 +1257,21 @@ msgstr ""
 msgid "_Cancel"
 msgstr ""
 
-#: src/gui/widgets/track.c:450
+#: src/gui/widgets/track.c:451
 #, c-format
 msgid "_Delete %d Tracks"
 msgstr ""
 
-#: src/gui/widgets/track.c:447
+#: src/gui/widgets/track.c:448
 msgid "_Delete Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:470
+#: src/gui/widgets/track.c:471
 #, c-format
 msgid "_Duplicate %d Tracks"
 msgstr ""
 
-#: src/gui/widgets/track.c:466
+#: src/gui/widgets/track.c:467
 msgid "_Duplicate Track"
 msgstr ""
 
