@@ -1,6 +1,7 @@
 # Build files
 build
 builddir
+_build
 /Makefile
 /doc/Doxyfile.cfg
 /config.h

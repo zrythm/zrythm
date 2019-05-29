@@ -15,11 +15,11 @@ zrythm_resources = gnome.compile_resources (
   c_name: 'zrythm',
 )
 
-zrythm_srcs = [
-  'main.c',
+zrythm_main = files ('main.c')
+zrythm_srcs = files ([
   'project.c',
   'zrythm.c',
-  ]
+  ])
 
 if os_darwin
   zrythm_srcs += 'Wrapper.m'
@@ -35,8 +35,12 @@ subdir('utils')
 zrythm_args = []
 
 executable (
-  'zrythm',
-  [ zrythm_srcs, ext_srcs, zrythm_resources ],
+  'zrythm', [
+    zrythm_main,
+    zrythm_srcs,
+    ext_srcs,
+    zrythm_resources
+    ],
   c_args: zrythm_args,
   dependencies : zrythm_deps,
   include_directories : all_inc,

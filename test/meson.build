@@ -21,18 +21,23 @@ test_link_args = [
   '-fPIC',
 ]
 
-#test_application = executable (
-  #'test-application', [zrythm_srcs, 'automations.c', 'main.c'],
-  #c_args: test_cflags,
-  #link_args: test_link_args,
-  #link_with: cyaml,
-  #dependencies: zrythm_deps,
-  #include_directories: all_inc,
-#)
+test_application = executable (
+  'automations-test', [
+    zrythm_srcs,
+    'automations.c',
+    'main.c',
+    ext_srcs
+    ],
+  c_args: test_cflags,
+  link_args: test_link_args,
+  link_with: cyaml,
+  dependencies: zrythm_deps,
+  include_directories: all_inc,
+)
 
-#test (
-  #'test-application',
-  #test_application,
-  #env: test_env)
+test (
+  'zrythm:automations / at_test1',
+  test_application,
+  env: test_env)
 
 endif

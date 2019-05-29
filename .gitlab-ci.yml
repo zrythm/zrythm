@@ -11,19 +11,40 @@ stages:
   - build_other
   - package
 
-basic_build_gcc:
+basic_build_gcc_meson:
+  stage: build_gnu_linux
+  script:
+    - meson _build -Denable_tests=true
+    - ninja -C _build
+    - .gitlab-ci/run-tests.sh
+  artifacts:
+    reports:
+      junit: "_build/${CI_JOB_NAME}-report.xml"
+    paths:
+      - "_build/config.h"
+      - "_build/meson-logs"
+      - "_build/${CI_JOB_NAME}-report.xml"
+
+basic_build_clang_meson:
+  stage: build_gnu_linux
+  script:
+    - CC=clang meson _build -Denable_tests=true
+    - ninja -C _build
+    - .gitlab-ci/run-tests.sh
+  artifacts:
+    reports:
+      junit: "_build/${CI_JOB_NAME}-report.xml"
+    paths:
+      - "_build/config.h"
+      - "_build/meson-logs"
+      - "_build/${CI_JOB_NAME}-report.xml"
+
+# keep for a while then delete
+basic_build_gcc_make:
   stage: build_gnu_linux
   script:
     - ./autogen.sh
     - ./configure
-    - sudo make -j14
-    - sudo make install
-
-basic_build_clang:
-  stage: build_gnu_linux
-  script:
-    - ./autogen.sh
-    - ./configure CC=clang
     - sudo make -j14
     - sudo make install
 
