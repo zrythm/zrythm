@@ -576,7 +576,7 @@ uninstall: uninstall-appicon-data uninstall-gschemas uninstall-desktop uninstall
 install-messages:
 	for lang in $(LANGUAGES); do \
 		$(MKDIR_P) "$(DESTDIR)$(localedir)/$$lang/LC_MESSAGES" ; \
-		$(INSTALL_DATA) po/$$lang/$(BIN).mo "$(DESTDIR)$(localedir)/$$lang/LC_MESSAGES/" ; \
+		$(INSTALL_DATA) po/$$lang.mo "$(DESTDIR)$(localedir)/$$lang/LC_MESSAGES/" ; \
 	done
 
 .PHONY: install-x42-plugins
