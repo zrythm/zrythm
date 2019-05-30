@@ -18,27 +18,27 @@
  */
 
 #include "audio/engine.h"
-#include "audio/ruler_tracklist.h"
+#include "audio/pinned_tracklist.h"
 #include "audio/track.h"
 #include "gui/widgets/center_dock.h"
-#include "gui/widgets/ruler_tracklist.h"
-#include "gui/widgets/ruler_tracklist_arranger.h"
+#include "gui/widgets/main_window.h"
+#include "gui/widgets/pinned_tracklist.h"
 #include "gui/widgets/track.h"
 #include "gui/backend/events.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "zrythm.h"
 
-G_DEFINE_TYPE (RulerTracklistWidget,
-               ruler_tracklist_widget,
+G_DEFINE_TYPE (PinnedTracklistWidget,
+               pinned_tracklist_widget,
                GTK_TYPE_BOX)
 
 /**
  * Gets TrackWidget hit at the given coordinates.
  */
 TrackWidget *
-ruler_tracklist_widget_get_hit_track (
-  RulerTracklistWidget *  self,
+pinned_tracklist_widget_get_hit_track (
+  PinnedTracklistWidget *  self,
   double            x,
   double            y)
 {
@@ -82,22 +82,12 @@ ruler_tracklist_widget_get_hit_track (
   return NULL;
 }
 
-void
-on_size_allocate (GtkWidget    *widget,
-               GdkRectangle *allocation,
-               RulerTracklistWidget * self)
-{
-  if (MAIN_WINDOW)
-    ruler_tracklist_arranger_widget_set_size (
-      MW_RULER_TRACKLIST_ARRANGER);
-}
-
 /**
  * Removes and readds the tracks.
  */
 void
-ruler_tracklist_widget_hard_refresh (
-  RulerTracklistWidget * self)
+pinned_tracklist_widget_hard_refresh (
+  PinnedTracklistWidget * self)
 {
   /* remove all tracks */
   z_gtk_container_remove_all_children (
@@ -164,26 +154,26 @@ ruler_tracklist_widget_hard_refresh (
 }
 
 /**
- * Sets up the RulerTracklistWidget.
+ * Sets up the PinnedTracklistWidget.
  */
 void
-ruler_tracklist_widget_setup (
-  RulerTracklistWidget * self,
-  RulerTracklist * tracklist)
+pinned_tracklist_widget_setup (
+  PinnedTracklistWidget * self,
+  PinnedTracklist * tracklist)
 {
   g_warn_if_fail (tracklist);
   self->tracklist = tracklist;
   tracklist->widget = self;
 
-  ruler_tracklist_widget_hard_refresh (self);
+  pinned_tracklist_widget_hard_refresh (self);
 
-  EVENTS_PUSH (ET_RULER_TRACKLIST_SIZE_CHANGED,
+  EVENTS_PUSH (ET_PINNED_TRACKLIST_SIZE_CHANGED,
                NULL);
 }
 
 static void
-ruler_tracklist_widget_class_init (
-  RulerTracklistWidgetClass * _klass)
+pinned_tracklist_widget_class_init (
+  PinnedTracklistWidgetClass * _klass)
 {
   GtkWidgetClass * klass =
     GTK_WIDGET_CLASS (_klass);
@@ -193,16 +183,12 @@ ruler_tracklist_widget_class_init (
 }
 
 static void
-ruler_tracklist_widget_init (
-  RulerTracklistWidget * self)
+pinned_tracklist_widget_init (
+  PinnedTracklistWidget * self)
 {
   gtk_orientable_set_orientation (
     GTK_ORIENTABLE (self),
     GTK_ORIENTATION_VERTICAL);
   gtk_box_set_spacing (
     GTK_BOX (self), 1);
-
-  g_signal_connect (
-    self, "size-allocate",
-    G_CALLBACK (on_size_allocate), self);
 }

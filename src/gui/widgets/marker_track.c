@@ -25,7 +25,7 @@
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/marker_track.h"
-#include "gui/widgets/ruler_tracklist.h"
+#include "gui/widgets/pinned_tracklist.h"
 #include "gui/widgets/track_top_grid.h"
 #include "project.h"
 #include "utils/gtk.h"

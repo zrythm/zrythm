@@ -21,8 +21,6 @@
  * \file
  *
  * Marker related code.
- * See https://www.scales-chords.com
- * https://www.basicmusictheory.com/c-harmonic-minor-triad-chords
  */
 
 #ifndef __AUDIO_MARKER_H__
@@ -61,6 +59,9 @@ typedef struct Marker
 {
   /** Marker position. */
   Position          pos;
+
+  /** Cache, used in runtime operations. */
+  Position          cache_pos;
 
   /** Marker type. */
   MarkerType        type;

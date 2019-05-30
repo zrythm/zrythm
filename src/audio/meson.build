@@ -34,7 +34,7 @@ audio_srcs = [
   'quantize.c',
   'region.c',
   'routing.c',
-  'ruler_tracklist.c',
+  'pinned_tracklist.c',
   'scale.c',
   'snap_grid.c',
   'track.c',

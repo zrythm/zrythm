@@ -46,6 +46,10 @@ timeline_selections_init_loaded (
   for (i = 0; i < ts->num_aps; i++)
     ts->aps[i] =
       automation_point_find (ts->aps[i]);
+
+  for (int i = 0; i < ts->num_chords; i++)
+    ts->chords[i] =
+      chord_find (ts->chords[i]);
 }
 
 /**

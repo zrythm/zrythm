@@ -19,22 +19,22 @@
 
 #include "audio/chord_track.h"
 #include "audio/marker_track.h"
-#include "audio/ruler_tracklist.h"
+#include "audio/pinned_tracklist.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/timeline_arranger.h"
-#include "gui/widgets/ruler_tracklist.h"
+#include "gui/widgets/pinned_tracklist.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
 
 /**
- * Initialize the RulerTracklist.
+ * Initialize the PinnedTracklist.
  */
 void
-ruler_tracklist_init (
-  RulerTracklist * self)
+pinned_tracklist_init (
+  PinnedTracklist * self)
 {
   /* create chord track */
   self->chord_track =

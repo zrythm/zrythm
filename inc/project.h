@@ -40,13 +40,12 @@
 #include "audio/port.h"
 #include "audio/quantize.h"
 #include "audio/region.h"
-#include "audio/ruler_tracklist.h"
+#include "audio/pinned_tracklist.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/backend/clip_editor.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/backend/mixer_selections.h"
-#include "gui/backend/ruler_tracklist_selections.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/backend/tracklist_selections.h"
 #include "gui/backend/tool.h"
@@ -108,7 +107,7 @@ typedef struct Project
   UndoManager         undo_manager;
 
   Tracklist          tracklist;
-  RulerTracklist     ruler_tracklist;
+  PinnedTracklist     pinned_tracklist;
 
   /** Backend for the widget. */
   ClipEditor         clip_editor;
@@ -121,8 +120,6 @@ typedef struct Project
   TimelineSelections       timeline_selections;
   MidiArrangerSelections   midi_arranger_selections;
   TracklistSelections   tracklist_selections;
-
-  RulerTracklistSelections ruler_tracklist_selections;
 
   /**
    * Plugin selections in the Mixer.

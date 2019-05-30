@@ -576,6 +576,14 @@ region_clone (Region *        region,
       new_region = ar;
     }
 
+  /* set caches */
+  position_set_to_pos (
+    &new_region->cache_start_pos,
+    &region->start_pos);
+  position_set_to_pos (
+    &new_region->cache_end_pos,
+    &region->end_pos);
+
   /* set loop points */
   position_set_to_pos (
     &new_region->clip_start_pos,

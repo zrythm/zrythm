@@ -25,8 +25,8 @@
  * tracks, Marker tracks, etc.).
  */
 
-#ifndef __GUI_WIDGETS_RULER_TRACKLIST_H__
-#define __GUI_WIDGETS_RULER_TRACKLIST_H__
+#ifndef __GUI_WIDGETS_PINNED_TRACKLIST_H__
+#define __GUI_WIDGETS_PINNED_TRACKLIST_H__
 
 #include "audio/region.h"
 #include "gui/widgets/region.h"
@@ -34,12 +34,12 @@
 
 #include <gtk/gtk.h>
 
-#define RULER_TRACKLIST_WIDGET_TYPE \
-  (ruler_tracklist_widget_get_type ())
+#define PINNED_TRACKLIST_WIDGET_TYPE \
+  (pinned_tracklist_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  RulerTracklistWidget,
-  ruler_tracklist_widget,
-  Z, RULER_TRACKLIST_WIDGET,
+  PinnedTracklistWidget,
+  pinned_tracklist_widget,
+  Z, PINNED_TRACKLIST_WIDGET,
   GtkBox);
 
 /**
@@ -48,35 +48,35 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-#define MW_RULER_TRACKLIST \
-  MW_CENTER_DOCK->ruler_tracklist
+#define MW_PINNED_TRACKLIST \
+  MW_CENTER_DOCK->pinned_tracklist
 
-typedef struct RulerTracklist RulerTracklist;
+typedef struct PinnedTracklist PinnedTracklist;
 typedef struct _TrackWidget TrackWidget;
 
 /**
- * The RulerTracklistWidget contains special tracks
+ * The PinnedTracklistWidget contains special tracks
  * (chord, marker, etc.) as thin boxes above the
  * normal tracklist.
  *
  * The contents of each track will be shown in the
- * RulerTracklistArrangerWidget.
+ * PinnedTracklistArrangerWidget.
  */
-typedef struct _RulerTracklistWidget
+typedef struct _PinnedTracklistWidget
 {
   GtkBox     parent_instance;
 
   /** The backend. */
-  RulerTracklist * tracklist;
+  PinnedTracklist * tracklist;
 
-} RulerTracklistWidget;
+} PinnedTracklistWidget;
 
 /**
  * Gets TrackWidget hit at the given coordinates.
  */
 TrackWidget *
-ruler_tracklist_widget_get_hit_track (
-  RulerTracklistWidget *  self,
+pinned_tracklist_widget_get_hit_track (
+  PinnedTracklistWidget *  self,
   double            x,
   double            y);
 
@@ -84,16 +84,16 @@ ruler_tracklist_widget_get_hit_track (
  * Removes and readds the tracks.
  */
 void
-ruler_tracklist_widget_hard_refresh (
-  RulerTracklistWidget * self);
+pinned_tracklist_widget_hard_refresh (
+  PinnedTracklistWidget * self);
 
 /**
- * Sets up the RulerTracklistWidget.
+ * Sets up the PinnedTracklistWidget.
  */
 void
-ruler_tracklist_widget_setup (
-  RulerTracklistWidget * self,
-  RulerTracklist * tracklist);
+pinned_tracklist_widget_setup (
+  PinnedTracklistWidget * self,
+  PinnedTracklist * tracklist);
 
 /**
  * @}

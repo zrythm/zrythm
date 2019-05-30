@@ -147,8 +147,8 @@ create_default (Project * self)
     F_NO_RECALC_GRAPH);
 
   /* init ruler tracklist */
-  ruler_tracklist_init (
-    &self->ruler_tracklist);
+  pinned_tracklist_init (
+    &self->pinned_tracklist);
 
   /* create untitled project */
   char * untitled_project = _("Untitled Project");

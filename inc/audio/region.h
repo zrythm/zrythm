@@ -88,8 +88,14 @@ typedef struct Region
   /** Start position in the timeline. */
   Position     start_pos;
 
+  /** Cache, used in runtime operations. */
+  Position     cache_start_pos;
+
   /** End position in the timeline. */
   Position     end_pos;
+
+  /** Cache, used in runtime operations. */
+  Position     cache_end_pos;
 
   /* LOCAL POSITIONS STARTING FROM 0.0.0.0 */
   /* ------------------------------------- */

@@ -27,10 +27,15 @@ typedef struct _AutomationPointWidget AutomationPointWidget;
 
 typedef struct AutomationPoint
 {
-  Position                 pos;
-  float                    fvalue; ///< float value
-  int                      bvalue; ///< boolean value
-  int                      svalue; ///< step value
+  /** Position in the AutomationTrack. */
+  Position           pos;
+
+  /** Cache, used in runtime operations. */
+  Position           cache_pos;
+
+  float              fvalue; ///< float value
+  int                bvalue; ///< boolean value
+  int                svalue; ///< step value
 
   /**
    * Pointer back to parent.
@@ -47,7 +52,7 @@ typedef struct AutomationPoint
   /** Index in the automation track, for faster
    * performance when getting ap before/after
    * curve. */
-  int                       index;
+  int                index;
 } AutomationPoint;
 
 static const cyaml_schema_field_t

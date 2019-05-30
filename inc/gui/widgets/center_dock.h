@@ -44,10 +44,8 @@ typedef struct _RightDockEdgeWidget RightDockEdgeWidget;
 typedef struct _BotDockEdgeWidget BotDockEdgeWidget;
 typedef struct _CenterDockBotBoxWidget CenterDockBotBoxWidget;
 typedef struct _TracklistHeaderWidget TracklistHeaderWidget;
-typedef struct _RulerTracklistWidget
-  RulerTracklistWidget;
-typedef struct _RulerTracklistArrangerWidget
-  RulerTracklistArrangerWidget;
+typedef struct _PinnedTracklistWidget
+  PinnedTracklistWidget;
 
 typedef struct _CenterDockWidget
 {
@@ -58,9 +56,7 @@ typedef struct _CenterDockWidget
   GtkBox                   * tracklist_top;
   GtkScrolledWindow        * tracklist_scroll;
   GtkViewport              * tracklist_viewport;
-  RulerTracklistWidget * ruler_tracklist;
-  GtkScrolledWindow *      ruler_tracklist_arranger_scroll;
-  RulerTracklistArrangerWidget * ruler_tracklist_arranger;
+  PinnedTracklistWidget * pinned_tracklist;
   TracklistHeaderWidget *  tracklist_header;
   TracklistWidget          * tracklist;
   GtkScrolledWindow        * ruler_scroll;

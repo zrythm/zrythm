@@ -38,7 +38,7 @@
  * @{
  */
 
-#define P_CHORD_TRACK (RULER_TRACKLIST->chord_track)
+#define P_CHORD_TRACK (PINNED_TRACKLIST->chord_track)
 
 typedef struct ZChord ZChord;
 typedef struct _ChordTrackWidget ChordTrackWidget;

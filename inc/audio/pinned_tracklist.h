@@ -24,8 +24,8 @@
  * the RulerWidget.
  */
 
-#ifndef __AUDIO_RULER_TRACKLIST_H__
-#define __AUDIO_RULER_TRACKLIST_H__
+#ifndef __AUDIO_PINNED_TRACKLIST_H__
+#define __AUDIO_PINNED_TRACKLIST_H__
 
 #include "utils/yaml.h"
 
@@ -36,42 +36,42 @@
  */
 
 typedef struct Track Track;
-typedef struct _RulerTracklistWidget
-  RulerTracklistWidget;
+typedef struct _PinnedTracklistWidget
+  PinnedTracklistWidget;
 
-#define RULER_TRACKLIST (&PROJECT->ruler_tracklist)
+#define PINNED_TRACKLIST (&PROJECT->pinned_tracklist)
 
 /**
- * The RulerTracklist contains the spacial Track's
+ * The PinnedTracklist contains the spacial Track's
  * that appear below the RulerWidget.
  */
-typedef struct RulerTracklist
+typedef struct PinnedTracklist
 {
   Track *           chord_track;
   Track *           marker_track;
 
-  RulerTracklistWidget * widget;
-} RulerTracklist;
+  PinnedTracklistWidget * widget;
+} PinnedTracklist;
 
 static const cyaml_schema_field_t
-  ruler_tracklist_fields_schema[] =
+  pinned_tracklist_fields_schema[] =
 {
 
 	CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
-ruler_tracklist_schema = {
+pinned_tracklist_schema = {
   CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
-    RulerTracklist, ruler_tracklist_fields_schema),
+    PinnedTracklist, pinned_tracklist_fields_schema),
 };
 
 /**
- * Initialize the RulerTracklist.
+ * Initialize the PinnedTracklist.
  */
 void
-ruler_tracklist_init (
-  RulerTracklist * self);
+pinned_tracklist_init (
+  PinnedTracklist * self);
 
 /**
  * @}
