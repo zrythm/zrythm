@@ -17,15 +17,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * Chord related code.
- */
-
-#include "stdlib.h"
+#include <stdlib.h>
 
 #include "audio/chord.h"
+#include "audio/chord_track.h"
 #include "gui/widgets/chord.h"
 #include "project.h"
 
@@ -122,12 +117,12 @@ chord_find (
   ZChord * clone)
 {
   for (int i = 0;
-       i < PROJECT->chord_track->num_chords; i++)
+       i < P_CHORD_TRACK->num_chords; i++)
     {
       if (chord_is_equal (
-            PROJECT->chord_track->chords[i],
+            P_CHORD_TRACK->chords[i],
             clone))
-        return PROJECT->chord_track->chords[i];
+        return P_CHORD_TRACK->chords[i];
     }
   return NULL;
 }

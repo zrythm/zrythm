@@ -35,7 +35,6 @@
 #include "gui/widgets/file_browser.h"
 #include "gui/widgets/header_notebook.h"
 #include "gui/widgets/inspector.h"
-#include "gui/widgets/inspector_region.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/piano_roll.h"
@@ -104,15 +103,6 @@ main_window_widget_refresh (MainWindowWidget * self)
 {
   header_notebook_widget_setup (MW_HEADER_NOTEBOOK,
                            PROJECT->title);
-
-  tracklist_widget_setup (MW_TRACKLIST,
-                          TRACKLIST);
-
-  /* setup ruler */
-  gtk_scrolled_window_set_hadjustment (
-    MW_CENTER_DOCK->ruler_scroll,
-    gtk_scrolled_window_get_hadjustment (
-      MW_CENTER_DOCK->timeline_scroll));
 
   /* setup center dock */
   center_dock_widget_setup (MW_CENTER_DOCK);
@@ -262,6 +252,10 @@ static GActionEntry actions[] = {
 
   /* piano roll */
   { "toggle-drum-mode", activate_toggle_drum_mode },
+
+  /* control room */
+  { "toggle-dim-output", NULL, NULL,
+    "true", change_state_dim_output },
 };
 
 static void

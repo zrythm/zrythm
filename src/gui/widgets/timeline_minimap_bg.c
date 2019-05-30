@@ -87,30 +87,37 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
                              color->blue,
                              0.2);
 
-      for (int i = 0; i < track->num_regions; i++)
+      TrackLane * lane;
+      Region * r;
+      for (int j = 0; j < track->num_lanes; j++)
         {
-          Region * r = track->regions[i];
+          lane = track->lanes[j];
 
-          int px_start =
-            ui_pos_to_px_timeline (
-              &r->start_pos, 1);
-          int px_end =
-            ui_pos_to_px_timeline (
-              &r->end_pos, 1);
-          int px_length =
-            px_end - px_start;
+          for (int i = 0; i < lane->num_regions; i++)
+            {
+              r = lane->regions[i];
 
-          cairo_rectangle (
-            cr,
-            ((double) px_start /
-             (double) song_px) * width,
-            ((double) wy /
-               (double) total_track_height) * height,
-            ((double) px_length /
-              (double) song_px) * width,
-            ((double) track_height /
-              (double) total_track_height) * height);
-          cairo_fill (cr);
+              int px_start =
+                ui_pos_to_px_timeline (
+                  &r->start_pos, 1);
+              int px_end =
+                ui_pos_to_px_timeline (
+                  &r->end_pos, 1);
+              int px_length =
+                px_end - px_start;
+
+              cairo_rectangle (
+                cr,
+                ((double) px_start /
+                 (double) song_px) * width,
+                ((double) wy /
+                   (double) total_track_height) * height,
+                ((double) px_length /
+                  (double) song_px) * width,
+                ((double) track_height /
+                  (double) total_track_height) * height);
+              cairo_fill (cr);
+            }
         }
     }
 

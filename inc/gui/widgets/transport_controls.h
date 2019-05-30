@@ -27,21 +27,21 @@
 
 #define TRANSPORT_CONTROLS_WIDGET_TYPE \
   (transport_controls_widget_get_type ())
-G_DECLARE_FINAL_TYPE (TransportControlsWidget,
-                      transport_controls_widget,
-                      Z,
-                      TRANSPORT_CONTROLS_WIDGET,
-                      GtkBox)
+G_DECLARE_FINAL_TYPE (
+  TransportControlsWidget,
+  transport_controls_widget,
+  Z, TRANSPORT_CONTROLS_WIDGET,
+  GtkBox)
 
 typedef struct _TransportControlsWidget
 {
-  GtkBox                   parent_instance;
-  GtkButton                * play;
-  GtkButton                * stop;
-  GtkButton                * backward;
-  GtkButton                * forward;
-  GtkToggleButton          * trans_record;
-  GtkToggleButton          * loop;
+  GtkBox             parent_instance;
+  GtkButton *        play;
+  GtkButton *        stop;
+  GtkButton *        backward;
+  GtkButton *        forward;
+  GtkToggleButton *  trans_record;
+  GtkToggleButton *  loop;
 } TransportControlsWidget;
 
 #endif

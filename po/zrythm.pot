@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-23 18:09+0100\n"
+"Project-Id-Version: zrythm\n"
+"Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
+"POT-Creation-Date: 2019-05-30 04:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,13 +17,118 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/actions/create_tracks_action.c:52
-#, c-format
-msgid "%s Track"
+#: src/zrythm.c:242
+msgid "Initializing settings"
 msgstr ""
 
-#: resources/ui/automation_lane.ui:137
-msgid "0.0"
+#: src/zrythm.c:253
+msgid "Initializing audio engine"
+msgstr ""
+
+#: src/zrythm.c:258
+msgid "Initializing plugin manager"
+msgstr ""
+
+#: src/zrythm.c:265
+msgid "Setting up backend"
+msgstr ""
+
+#: src/zrythm.c:272
+msgid "Loading project"
+msgstr ""
+
+#: src/project.c:142 src/audio/track.c:782
+msgid "Master"
+msgstr ""
+
+#. create untitled project
+#: src/project.c:154
+msgid "Untitled Project"
+msgstr ""
+
+#: src/project.c:425
+msgid "Project saved."
+msgstr ""
+
+#: src/plugins/lv2_gtk.c:149
+msgid "Save State"
+msgstr ""
+
+#: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
+#: src/utils/dialogs.c:74 src/actions/actions.c:521
+#: resources/ui/port_selector_popover.ui:193
+msgid "_Cancel"
+msgstr ""
+
+#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:523
+msgid "_Save"
+msgstr ""
+
+#: src/plugins/lv2_gtk.c:467
+msgid "URI (Optional):"
+msgstr ""
+
+#: src/plugins/lv2_gtk.c:471
+msgid "_Prefix plugin name"
+msgstr ""
+
+#: src/plugins/lv2_gtk.c:562
+msgid "Delete Preset?"
+msgstr ""
+
+#: src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:72
+#: resources/ui/port_selector_popover.ui:207
+msgid "_OK"
+msgstr ""
+
+#: src/plugins/lv2_gtk.c:781
+msgid "Unknown widget type for value"
+msgstr ""
+
+#: src/plugins/lv2_gtk.c:807
+msgid "Unknown widget type for value\n"
+msgstr ""
+
+#: src/plugins/lv2_gtk.c:1436
+msgid "Close"
+msgstr ""
+
+#: src/plugins/plugin_manager.c:223
+msgid "Error loading LV2 bundle dir: "
+msgstr ""
+
+#: src/gui/widgets/port_connections_popover.c:59
+msgid "INPUTS"
+msgstr ""
+
+#: src/gui/widgets/port_connections_popover.c:78
+msgid "OUTPUTS"
+msgstr ""
+
+#: src/gui/widgets/port_connections_popover.c:164
+msgid "Add"
+msgstr ""
+
+#: src/gui/widgets/channel.c:918
+msgid "Inserts"
+msgstr ""
+
+#: src/gui/widgets/midi_controller_mb.c:46
+#: src/gui/widgets/midi_controller_mb.c:116
+msgid "Select..."
+msgstr ""
+
+#: src/gui/widgets/midi_controller_mb.c:119
+msgid "Click to enable MIDI controllers to be connected automatically"
+msgstr ""
+
+#: src/gui/widgets/first_run_assistant.c:84
+#: src/gui/widgets/first_run_assistant.c:116
+msgid "JACK functionality is disabled"
+msgstr ""
+
+#: src/gui/widgets/first_run_assistant.c:102
+msgid "PortAudio functionality is disabled"
 msgstr ""
 
 #: src/gui/widgets/first_run_assistant.c:201
@@ -37,109 +142,36 @@ msgid ""
 "3. Restart Zrythm"
 msgstr ""
 
-#: src/utils/dialogs.c:83
-msgid "A plugin already exists at the selected slot. Overwrite it?"
+#: src/gui/widgets/port_selector_popover.c:209
+msgid "Track Ports"
 msgstr ""
 
-#: resources/ui/snap_grid_popover.ui:47
-msgid "Adaptive Grid"
-msgstr ""
-
-#: src/gui/widgets/port_connections_popover.c:164
-msgid "Add"
-msgstr ""
-
-#: src/gui/widgets/track.c:491
-msgid "Add Region"
-msgstr ""
-
-#: resources/ui/preferences.ui:259
-msgid "Always open plugin UIs"
-msgstr ""
-
-#: resources/ui/export_dialog.ui:98
-msgid "Artist"
-msgstr ""
-
-#: src/audio/track.c:732
-msgid "Audio"
-msgstr ""
-
-#: resources/ui/first_run_assistant.ui:191 resources/ui/preferences.ui:122
-msgid "Audio Backend"
-msgstr ""
-
-#: src/gui/widgets/ports_expander.c:146
-msgid "Audio Ins"
-msgstr ""
-
-#: src/gui/widgets/ports_expander.c:149
-msgid "Audio Outs"
-msgstr ""
-
-#: resources/ui/shortcuts.ui:216
-msgid "Audition tool"
+#: src/gui/widgets/instrument_track_info_expander.c:82
+msgid "Track Info"
 msgstr ""
 
 #: src/gui/widgets/digital_meter.c:665
 msgid "BPM - Click and drag up/down to set"
 msgstr ""
 
-#: src/audio/engine_jack.c:598
-msgid "Backend error"
+#: src/gui/widgets/digital_meter.c:703
+msgid "Time Signature - Click and drag up/down to change"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:242
-msgid "Backends"
+#: src/gui/widgets/instrument_track.c:280
+msgid "Show Lanes - Shows the track's lanes"
 msgstr ""
 
-#: resources/ui/transport_controls.ui:87
-msgid "Backward"
+#: src/gui/widgets/control_room.c:52
+msgid "Output"
 msgstr ""
 
-#: resources/ui/shortcuts.ui:245
-msgid "Best fit"
+#: src/gui/widgets/control_room.c:64
+msgid "Listen dim level"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:309
-msgid "Bit depth"
-msgstr ""
-
-#: resources/ui/center_dock_bot_box.ui:54
-msgid "Bot"
-msgstr ""
-
-#: src/audio/track.c:735
-msgid "Bus"
-msgstr ""
-
-#: src/gui/widgets/ports_expander.c:158
-msgid "CV Ins"
-msgstr ""
-
-#: src/gui/widgets/ports_expander.c:161
-msgid "CV Outs"
-msgstr ""
-
-#: resources/ui/export_dialog.ui:45 resources/ui/preferences.ui:58
-msgid "Cancel"
-msgstr ""
-
-#: src/gui/widgets/dzl/dzl-animation.c:752
-#, c-format
-msgid "Cannot locate property %s in class %s"
-msgstr ""
-
-#: resources/ui/plugin_browser.ui:108
-msgid "Category"
-msgstr ""
-
-#: src/actions/edit_tracks_action.c:173
-msgid "Change Fader"
-msgstr ""
-
-#: src/actions/edit_tracks_action.c:176
-msgid "Change Pan"
+#: src/gui/widgets/control_room.c:67
+msgid "The level to set other channels to when Listen is enabled on a channel"
 msgstr ""
 
 #: src/gui/widgets/channel_slot.c:589
@@ -147,53 +179,63 @@ msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
 
-#: src/utils/ui.c:554
-msgid "Chinese [zh]"
+#: src/gui/widgets/timeline_selection_info.c:62
+msgid "Start Position"
 msgstr ""
 
-#: resources/ui/donate_dialog.ui:49
-msgid "Choose a method to donate"
+#: src/gui/widgets/timeline_selection_info.c:93
+msgid "No object selected"
 msgstr ""
 
-#: src/audio/track.c:741
-msgid "Chord"
+#: src/gui/widgets/piano_roll.c:232
+msgid "Select a region..."
 msgstr ""
 
-#: src/audio/chord_track.c:50
-msgid "Chord Track"
+#: src/gui/widgets/region.c:183
+msgid ""
+"Region - Click and drag to move around (hold Shift to disable snapping) - "
+"Double click to bring up the clip editor"
 msgstr ""
 
-#: resources/ui/inspector_chord.ui:31
-msgid "Chords"
+#: src/gui/widgets/track_lane.c:52 src/audio/track_lane.c:43
+#, c-format
+msgid "Lane %d"
 msgstr ""
 
-#: src/gui/widgets/midi_controller_mb.c:119
-msgid "Click to enable MIDI controllers to be connected automatically"
+#: src/gui/widgets/home_toolbar.c:58 resources/ui/home_toolbar.ui:14
+msgid "Undo"
 msgstr ""
 
-#: src/audio/engine_jack.c:601
-msgid "Client zombie"
+#: src/gui/widgets/home_toolbar.c:59 resources/ui/home_toolbar.ui:27
+msgid "Redo"
 msgstr ""
 
-#: src/audio/engine_jack.c:595
-msgid "Client's protocol version does not match"
+#: src/gui/widgets/right_dock_edge.c:51
+msgid "File Browser"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:1436
-msgid "Close"
+#: src/gui/widgets/right_dock_edge.c:67
+msgid "Plugin Browser"
 msgstr ""
 
-#: resources/ui/file_browser.ui:63 resources/ui/plugin_browser.ui:64
-msgid "Collection"
+#: src/gui/widgets/route_target_selector.c:80
+msgid "Routed to Stereo Out"
 msgstr ""
 
-#: resources/ui/inspector_region.ui:56 resources/ui/inspector_master.ui:67
-#: resources/ui/inspector_ap.ui:67 resources/ui/inspector_midi.ui:67
-msgid "Color"
+#: src/gui/widgets/route_target_selector.c:86
+msgid "Select channel to route signal to"
 msgstr ""
 
-#: src/audio/engine_jack.c:580
-msgid "Communication error with the JACK server"
+#: src/gui/widgets/route_target_selector.c:118
+msgid "Stereo Out"
+msgstr ""
+
+#: src/gui/widgets/snap_grid.c:94
+msgid "Snap/Grid options"
+msgstr ""
+
+#: src/gui/widgets/ruler_marker.c:315
+msgid "Playhead"
 msgstr ""
 
 #: src/gui/widgets/ports_expander.c:140
@@ -204,170 +246,105 @@ msgstr ""
 msgid "Control Outs"
 msgstr ""
 
-#: resources/ui/midi_controller_popover.ui:37
-msgid "Controllers found"
+#: src/gui/widgets/ports_expander.c:146
+msgid "Audio Ins"
 msgstr ""
 
-#: src/actions/copy_plugins_action.c:189
+#: src/gui/widgets/ports_expander.c:149
+msgid "Audio Outs"
+msgstr ""
+
+#: src/gui/widgets/ports_expander.c:152
+msgid "MIDI Ins"
+msgstr ""
+
+#: src/gui/widgets/ports_expander.c:155
+msgid "MIDI Outs"
+msgstr ""
+
+#: src/gui/widgets/ports_expander.c:158
+msgid "CV Ins"
+msgstr ""
+
+#: src/gui/widgets/ports_expander.c:161
+msgid "CV Outs"
+msgstr ""
+
+#: src/gui/widgets/route_target_selector_popover.c:180
+msgid "No output selected"
+msgstr ""
+
+#: src/gui/widgets/route_target_selector_popover.c:194
 #, c-format
-msgid "Copy %d Plugins"
+msgid "Routing to %s"
 msgstr ""
 
-#: src/actions/copy_plugins_action.c:185
+#: src/gui/widgets/track.c:138 resources/ui/transport_controls.ui:36
+msgid "Record"
+msgstr ""
+
+#: src/gui/widgets/track.c:139
+msgid "Solo"
+msgstr ""
+
+#: src/gui/widgets/track.c:140
+msgid "Mute"
+msgstr ""
+
+#: src/gui/widgets/track.c:141 src/gui/widgets/track.c:145
+msgid "Freeze"
+msgstr ""
+
+#: src/gui/widgets/track.c:142
+msgid "Lock"
+msgstr ""
+
+#: src/gui/widgets/track.c:143
+msgid "Show UI"
+msgstr ""
+
+#: src/gui/widgets/track.c:144
+msgid "Show Automation Lanes"
+msgstr ""
+
+#: src/gui/widgets/track.c:151
+msgid ""
+"Track - Change track parameters like Solo/Mute... - Click the icon on the "
+"bottom right to bring up the automation lanes - Double click to show "
+"corresponding channel in Mixer (if applicable)"
+msgstr ""
+
+#: src/gui/widgets/track.c:448
 #, c-format
-msgid "Copy %s"
+msgid "_Delete Track"
 msgstr ""
 
-#: resources/ui/shortcuts.ui:107
-msgid "Copy and Paste"
-msgstr ""
-
-#: resources/ui/shortcuts.ui:112
-msgid "Copy selection to clipboard"
-msgstr ""
-
-#: src/actions/create_tracks_action.c:231
+#: src/gui/widgets/track.c:451
 #, c-format
-msgid "Create %d %s Tracks"
+msgid "_Delete %d Tracks"
 msgstr ""
 
-#: src/actions/create_plugins_action.c:143
+#: src/gui/widgets/track.c:467
 #, c-format
-msgid "Create %d %ss"
+msgid "_Duplicate Track"
 msgstr ""
 
-#: src/actions/create_plugins_action.c:139
+#: src/gui/widgets/track.c:471
 #, c-format
-msgid "Create %s"
+msgid "_Duplicate %d Tracks"
 msgstr ""
 
-#: src/actions/create_tracks_action.c:226
-#, c-format
-msgid "Create %s Track"
+#: src/gui/widgets/track.c:490
+msgid "Add Region"
 msgstr ""
 
-#: src/actions/create_timeline_selections_action.c:121
-#: src/actions/create_midi_arranger_selections_action.c:114
-msgid "Create Object(s)"
-msgstr ""
-
-#: resources/ui/project_assistant.ui:62 resources/ui/shortcuts.ui:84
-msgid "Create new project"
-msgstr ""
-
-#: resources/ui/export_dialog.ui:262
-msgid "Custom"
-msgstr ""
-
-#: resources/ui/shortcuts.ui:119
-msgid "Cut selection to clipboard"
-msgstr ""
-
-#: src/actions/delete_plugins_action.c:114
-#, c-format
-msgid "Delete %d Plugins"
-msgstr ""
-
-#: src/actions/delete_tracks_action.c:116
-#, c-format
-msgid "Delete %d Tracks"
-msgstr ""
-
-#: src/actions/delete_timeline_selections_action.c:103
-#: src/actions/delete_midi_arranger_selections_action.c:103
-msgid "Delete Object(s)"
-msgstr ""
-
-#: src/actions/delete_plugins_action.c:111
-msgid "Delete Plugin"
-msgstr ""
-
-#: src/plugins/lv2_gtk.c:562
-msgid "Delete Preset?"
-msgstr ""
-
-#: src/actions/delete_tracks_action.c:113
-msgid "Delete Track"
-msgstr ""
-
-#: resources/ui/export_dialog.ui:161
-msgid "Dither"
-msgstr ""
-
-#: resources/ui/donate_dialog.ui:7
-msgid "Donate"
-msgstr ""
-
-#. TRANSLATORS: Dummy audio backend
-#: src/utils/ui.c:571 src/utils/ui.c:588
-msgid "Dummy"
-msgstr ""
-
-#: src/actions/duplicate_timeline_selections_action.c:120
-#: src/actions/duplicate_midi_arranger_selections_action.c:121
-msgid "Duplicate Object(s)"
-msgstr ""
-
-#: resources/ui/preferences.ui:331
-msgid "Editing"
-msgstr ""
-
-#: resources/ui/shortcuts.ui:180
-msgid "Editor Shortcuts"
-msgstr ""
-
-#: resources/ui/export_dialog.ui:131
-msgid "Electronic"
-msgstr ""
-
-#: resources/ui/inspector_chord.ui:55
-msgid "Enforce scale"
-msgstr ""
-
-#: resources/ui/preferences.ui:108
-msgid "Engine"
-msgstr ""
-
-#: src/utils/ui.c:546
-msgid "English [en]"
-msgstr ""
-
-#: resources/ui/inspector_region.ui:33 resources/ui/inspector_master.ui:44
-#: resources/ui/inspector_ap.ui:44 resources/ui/inspector_midi.ui:44
-msgid "Enter region name..."
-msgstr ""
-
-#: resources/ui/shortcuts.ui:202
-msgid "Eraser tool"
-msgstr ""
-
-#: src/actions/create_tracks_action.c:81
-#, c-format
-msgid "Error instantiating plugin %s. Please see log for details."
-msgstr ""
-
-#: src/utils/dialogs.c:107
-msgid "Error instantiating plugin. Please see log for details."
-msgstr ""
-
-#: src/plugins/plugin_manager.c:225
-msgid "Error loading LV2 bundle dir: "
-msgstr ""
-
-#: resources/ui/export_dialog.ui:59
-msgid "Export"
-msgstr ""
-
-#: resources/ui/export_dialog.ui:30
-msgid "Export As..."
-msgstr ""
-
-#: resources/ui/export_dialog.ui:86
-msgid "Export Audio"
-msgstr ""
-
-#: src/gui/widgets/fader.c:166
+#: src/gui/widgets/fader.c:155
 msgid "Fader - Click and drag to change value"
+msgstr ""
+
+#: src/gui/widgets/dzl/dzl-animation.c:752
+#, c-format
+msgid "Cannot locate property %s in class %s"
 msgstr ""
 
 #: src/gui/widgets/dzl/dzl-animation.c:1099
@@ -386,138 +363,65 @@ msgstr ""
 msgid "Failed to retrieve va_list value: %s"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:218
-msgid "Filename Pattern"
+#: src/utils/dialogs.c:41
+msgid "Open Project"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:260
-msgid ""
-"Finally, select the MIDI devices you wish to auto-connect when Zrythm starts "
-"(You can skip this step and set them up later)"
+#: src/utils/dialogs.c:46
+msgid "_Open"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:142
-msgid "Format"
+#: src/utils/dialogs.c:69
+msgid "Overwrite Plugin"
 msgstr ""
 
-#: resources/ui/transport_controls.ui:105
-msgid "Forward"
+#: src/utils/dialogs.c:83
+msgid "A plugin already exists at the selected slot. Overwrite it?"
 msgstr ""
 
-#: src/gui/widgets/track.c:142 src/gui/widgets/track.c:146
-msgid "Freeze"
+#: src/utils/dialogs.c:107
+msgid "Error instantiating plugin. Please see log for details."
 msgstr ""
 
-#: src/utils/ui.c:548
-msgid "French [fr]"
-msgstr ""
-
-#: resources/ui/preferences.ui:387
-msgid "GUI"
-msgstr ""
-
-#: resources/ui/shortcuts.ui:16 resources/ui/preferences.ui:235
-msgid "General"
-msgstr ""
-
-#: resources/ui/export_dialog.ui:109
-msgid "Genre"
+#: src/utils/ui.c:546
+msgid "English [en]"
 msgstr ""
 
 #: src/utils/ui.c:547
 msgid "German [de]"
 msgstr ""
 
-#: resources/ui/shortcuts.ui:11
-msgid "Global Shortcuts"
-msgstr ""
-
-#: resources/ui/quantize_mb_popover.ui:37 resources/ui/snap_grid_popover.ui:37
-msgid "Grid"
-msgstr ""
-
-#: src/audio/track.c:744
-msgid "Group"
-msgstr ""
-
-#: resources/ui/header_notebook.ui:73
-msgid "Help"
-msgstr ""
-
-#: resources/ui/header_notebook.ui:17
-msgid "Home"
-msgstr ""
-
-#: src/gui/widgets/port_connections_popover.c:59
-msgid "INPUTS"
-msgstr ""
-
-#: src/zrythm.c:253
-msgid "Initializing audio engine"
-msgstr ""
-
-#: src/zrythm.c:258
-msgid "Initializing plugin manager"
-msgstr ""
-
-#: src/zrythm.c:242
-msgid "Initializing settings"
-msgstr ""
-
-#: resources/ui/splash.ui:67
-msgid "Initializing..."
-msgstr ""
-
-#: src/gui/widgets/channel.c:920
-msgid "Inserts"
-msgstr ""
-
-#: src/audio/track.c:729
-msgid "Instrument"
-msgstr ""
-
-#: resources/ui/preferences.ui:346
-msgid "Interface"
+#: src/utils/ui.c:548
+msgid "French [fr]"
 msgstr ""
 
 #: src/utils/ui.c:549
 msgid "Italian [it]"
 msgstr ""
 
-#: src/audio/engine_jack.c:393
-#, c-format
-msgid "JACK Error: %s"
-msgstr ""
-
-#: src/gui/widgets/first_run_assistant.c:84
-#: src/gui/widgets/first_run_assistant.c:116
-msgid "JACK functionality is disabled"
+#: src/utils/ui.c:550
+msgid "Spanish [es]"
 msgstr ""
 
 #: src/utils/ui.c:551
 msgid "Japanese [ja]"
 msgstr ""
 
-#: resources/ui/shortcuts.ui:27
-msgid "Keyboard Shortcuts"
+#: src/utils/ui.c:552
+msgid "Portuguese [pt]"
 msgstr ""
 
-#: resources/ui/automator.ui:32
-msgid "LFO 1"
+#: src/utils/ui.c:553
+msgid "Russian [ru]"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:88 resources/ui/preferences.ui:360
-msgid "Language"
+#: src/utils/ui.c:554
+msgid "Chinese [zh]"
 msgstr ""
 
-#: resources/ui/center_dock_bot_box.ui:43
-msgid "Left"
-msgstr ""
-
-#: resources/ui/quantize_mb_popover.ui:88 resources/ui/inspector_region.ui:91
-#: resources/ui/inspector_master.ui:101 resources/ui/inspector_ap.ui:101
-#: resources/ui/inspector_midi.ui:101 resources/ui/snap_grid_popover.ui:88
-msgid "Length"
+#. TRANSLATORS: Dummy audio backend
+#: src/utils/ui.c:571 src/utils/ui.c:588
+msgid "Dummy"
 msgstr ""
 
 #. TRANSLATORS: Pan algorithm
@@ -525,221 +429,20 @@ msgstr ""
 msgid "Linear"
 msgstr ""
 
-#: src/zrythm.c:272
-msgid "Loading project"
+#: src/utils/ui.c:607
+msgid "Square Root"
 msgstr ""
 
-#: resources/ui/file_browser.ui:107
-msgid "Location"
+#: src/utils/ui.c:608
+msgid "Sine (Equal Power)"
 msgstr ""
 
-#: src/gui/widgets/track.c:143
-msgid "Lock"
+#: src/audio/chord_track.c:42 resources/ui/inspector_chord.ui:31
+msgid "Chords"
 msgstr ""
 
-#: resources/ui/transport_controls.ui:122 resources/ui/export_dialog.ui:250
-msgid "Loop"
-msgstr ""
-
-#: resources/ui/shortcuts.ui:287
-msgid "Loop selection"
-msgstr ""
-
-#: resources/ui/shortcuts.ui:282
-msgid "Looping"
-msgstr ""
-
-#: resources/ui/first_run_assistant.ui:178 resources/ui/preferences.ui:167
-msgid "MIDI Backend"
-msgstr ""
-
-#: resources/ui/preferences.ui:145
-msgid "MIDI Controllers"
-msgstr ""
-
-#: resources/ui/first_run_assistant.ui:287
-msgid "MIDI Devices"
-msgstr ""
-
-#: src/gui/widgets/ports_expander.c:152
-msgid "MIDI Ins"
-msgstr ""
-
-#: src/gui/widgets/ports_expander.c:155
-msgid "MIDI Outs"
-msgstr ""
-
-#: resources/ui/preferences.ui:298
-msgid "Main Window"
-msgstr ""
-
-#: src/project.c:142 src/audio/track.c:738
-msgid "Master"
-msgstr ""
-
-#: resources/ui/bot_dock_edge.ui:89
-msgid "Mixer"
-msgstr ""
-
-#: resources/ui/bot_dock_edge.ui:74
-msgid "Mixer panel"
-msgstr ""
-
-#: src/actions/move_plugins_action.c:151
-#, c-format
-msgid "Move %d Plugins"
-msgstr ""
-
-#: src/actions/move_tracks_action.c:131
-#, c-format
-msgid "Move %d Tracks"
-msgstr ""
-
-#: src/actions/move_plugins_action.c:147
-#, c-format
-msgid "Move %s"
-msgstr ""
-
-#: src/actions/move_midi_arranger_selections_action.c:115
-#: src/actions/move_timeline_selections_action.c:101
-msgid "Move Object(s)"
-msgstr ""
-
-#: src/actions/move_tracks_action.c:128
-msgid "Move Track"
-msgstr ""
-
-#: src/gui/widgets/track.c:141
-msgid "Mute"
-msgstr ""
-
-#: src/actions/edit_tracks_action.c:167
-msgid "Mute Track"
-msgstr ""
-
-#: resources/ui/inspector_region.ui:103 resources/ui/inspector_master.ui:113
-#: resources/ui/inspector_ap.ui:113 resources/ui/inspector_midi.ui:113
-msgid "Muted"
-msgstr ""
-
-#: resources/ui/control.ui:45
-msgid "Name"
-msgstr ""
-
-#: resources/ui/first_run_assistant.ui:106
-msgid ""
-"Next, choose the  location to use for saving temporary files and projects "
-"(or accept the default)"
-msgstr ""
-
-#: src/gui/widgets/timeline_selection_info.c:93
-msgid "No object selected"
-msgstr ""
-
-#: src/gui/widgets/route_target_selector_popover.c:180
-msgid "No output selected"
-msgstr ""
-
-#: resources/ui/quantize_mb_popover.ui:87
-msgid "Note length to quantize to"
-msgstr ""
-
-#: resources/ui/snap_grid_popover.ui:87
-msgid "Note length to snap to"
-msgstr ""
-
-#: resources/ui/quantize_mb_popover.ui:126
-#: resources/ui/snap_grid_popover.ui:126
-msgid "Note type"
-msgstr ""
-
-#: resources/ui/preferences.ui:44
-msgid "OK"
-msgstr ""
-
-#: src/gui/widgets/port_connections_popover.c:78
-msgid "OUTPUTS"
-msgstr ""
-
-#: src/utils/dialogs.c:41
-msgid "Open Project"
-msgstr ""
-
-#: resources/ui/shortcuts.ui:91
-msgid "Open a project"
-msgstr ""
-
-#: resources/ui/shortcuts.ui:252
-msgid "Original size"
-msgstr ""
-
-#: resources/ui/export_dialog.ui:206
-msgid "Output Files"
-msgstr ""
-
-#. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:567
-msgid "Overall operation failed"
-msgstr ""
-
-#: src/utils/dialogs.c:69
-msgid "Overwrite Plugin"
-msgstr ""
-
-#: resources/ui/preferences.ui:189
-msgid "Pan Algorithm"
-msgstr ""
-
-#: resources/ui/preferences.ui:200
-msgid "Pan Law"
-msgstr ""
-
-#: resources/ui/shortcuts.ui:51
-msgid "Panels"
-msgstr ""
-
-#: resources/ui/shortcuts.ui:126
-msgid "Paste from clipboard"
-msgstr ""
-
-#: resources/ui/first_run_assistant.ui:143
-msgid "Path"
-msgstr ""
-
-#: resources/ui/shortcuts.ui:195
-msgid "Pencil tool"
-msgstr ""
-
-#: resources/ui/bot_dock_edge.ui:56
-msgid "Piano Roll"
-msgstr ""
-
-#: resources/ui/bot_dock_edge.ui:41
-msgid "Piano roll panel"
-msgstr ""
-
-#: resources/ui/transport_controls.ui:54
-msgid "Play"
-msgstr ""
-
-#: src/gui/widgets/ruler_marker.c:315
-msgid "Playhead"
-msgstr ""
-
-#: resources/ui/port_selector_popover.ui:94
-msgid "Plugin"
-msgstr ""
-
-#: resources/ui/rack_plugin.ui:31
-msgid "Plugin 1"
-msgstr ""
-
-#: resources/ui/preferences.ui:249 resources/ui/preferences.ui:283
-msgid "Plugins"
-msgstr ""
-
-#: resources/ui/port_selector_popover.ui:147
-msgid "Port"
+#: src/audio/marker_track.c:42
+msgid "Markers"
 msgstr ""
 
 #: src/audio/engine_pa.c:246 src/audio/engine_pa.c:266
@@ -748,25 +451,106 @@ msgstr ""
 msgid "PortAudio Error: %s"
 msgstr ""
 
-#: src/gui/widgets/first_run_assistant.c:102
-msgid "PortAudio functionality is disabled"
+#: src/audio/track.c:773
+msgid "Instrument"
 msgstr ""
 
-#: src/utils/ui.c:552
-msgid "Portuguese [pt]"
+#: src/audio/track.c:776
+msgid "Audio"
 msgstr ""
 
-#: resources/ui/inspector_region.ui:68 resources/ui/inspector_master.ui:79
-#: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
-msgid "Position"
+#: src/audio/track.c:779
+msgid "Bus"
 msgstr ""
 
-#: resources/ui/shortcuts.ui:20 resources/ui/preferences.ui:27
-msgid "Preferences"
+#: src/audio/track.c:785
+msgid "Chord"
 msgstr ""
 
-#: resources/ui/shortcuts.ui:79 resources/ui/header_notebook.ui:35
-msgid "Project"
+#: src/audio/track.c:788
+msgid "Group"
+msgstr ""
+
+#: src/audio/engine_jack.c:393
+#, c-format
+msgid "JACK Error: %s"
+msgstr ""
+
+#. TRANSLATORS: JACK failure messages
+#: src/audio/engine_jack.c:567
+msgid "Overall operation failed"
+msgstr ""
+
+#: src/audio/engine_jack.c:570
+msgid "The operation contained an invalid or unsupported option"
+msgstr ""
+
+#: src/audio/engine_jack.c:574
+msgid "The desired client name was not unique"
+msgstr ""
+
+#: src/audio/engine_jack.c:577
+msgid "Unable to connect to the JACK server"
+msgstr ""
+
+#: src/audio/engine_jack.c:580
+msgid "Communication error with the JACK server"
+msgstr ""
+
+#: src/audio/engine_jack.c:583
+msgid "Requested client does not exist"
+msgstr ""
+
+#: src/audio/engine_jack.c:586
+msgid "Unable to load internal client"
+msgstr ""
+
+#: src/audio/engine_jack.c:589
+msgid "Unable to initialize client"
+msgstr ""
+
+#: src/audio/engine_jack.c:592
+msgid "Unable to access shared memory"
+msgstr ""
+
+#: src/audio/engine_jack.c:595
+msgid "Client's protocol version does not match"
+msgstr ""
+
+#: src/audio/engine_jack.c:598
+msgid "Backend error"
+msgstr ""
+
+#: src/audio/engine_jack.c:601
+msgid "Client zombie"
+msgstr ""
+
+#: src/actions/delete_timeline_selections_action.c:103
+#: src/actions/delete_midi_arranger_selections_action.c:103
+msgid "Delete Object(s)"
+msgstr ""
+
+#: src/actions/create_plugins_action.c:139
+#, c-format
+msgid "Create %s"
+msgstr ""
+
+#: src/actions/create_plugins_action.c:143
+#, c-format
+msgid "Create %d %ss"
+msgstr ""
+
+#: src/actions/delete_tracks_action.c:113
+msgid "Delete Track"
+msgstr ""
+
+#: src/actions/delete_tracks_action.c:116
+#, c-format
+msgid "Delete %d Tracks"
+msgstr ""
+
+#: src/actions/actions.c:518
+msgid "Save Project"
 msgstr ""
 
 #: src/actions/actions.c:583
@@ -774,8 +558,259 @@ msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
 
-#: resources/ui/header_notebook.ui:149
-msgid "Project name"
+#: src/actions/copy_plugins_action.c:185
+#, c-format
+msgid "Copy %s"
+msgstr ""
+
+#: src/actions/copy_plugins_action.c:189
+#, c-format
+msgid "Copy %d Plugins"
+msgstr ""
+
+#: src/actions/move_midi_arranger_selections_action.c:115
+#: src/actions/move_timeline_selections_action.c:101
+msgid "Move Object(s)"
+msgstr ""
+
+#: src/actions/duplicate_timeline_selections_action.c:120
+#: src/actions/duplicate_midi_arranger_selections_action.c:121
+msgid "Duplicate Object(s)"
+msgstr ""
+
+#: src/actions/edit_midi_arranger_selections_action.c:144
+msgid "Resize Midi Note(s)"
+msgstr ""
+
+#: src/actions/create_timeline_selections_action.c:121
+#: src/actions/create_midi_arranger_selections_action.c:114
+msgid "Create Object(s)"
+msgstr ""
+
+#: src/actions/move_plugins_action.c:147
+#, c-format
+msgid "Move %s"
+msgstr ""
+
+#: src/actions/move_plugins_action.c:151
+#, c-format
+msgid "Move %d Plugins"
+msgstr ""
+
+#: src/actions/edit_timeline_selections_action.c:131
+msgid "Resize Object(s)"
+msgstr ""
+
+#: src/actions/edit_tracks_action.c:160
+msgid "Solo Track"
+msgstr ""
+
+#: src/actions/edit_tracks_action.c:163
+msgid "Unsolo Track"
+msgstr ""
+
+#: src/actions/edit_tracks_action.c:167
+msgid "Mute Track"
+msgstr ""
+
+#: src/actions/edit_tracks_action.c:170
+msgid "Unmute Track"
+msgstr ""
+
+#: src/actions/edit_tracks_action.c:173
+msgid "Change Fader"
+msgstr ""
+
+#: src/actions/edit_tracks_action.c:176
+msgid "Change Pan"
+msgstr ""
+
+#: src/actions/move_tracks_action.c:128
+msgid "Move Track"
+msgstr ""
+
+#: src/actions/move_tracks_action.c:131
+#, c-format
+msgid "Move %d Tracks"
+msgstr ""
+
+#: src/actions/create_tracks_action.c:52
+#, c-format
+msgid "%s Track"
+msgstr ""
+
+#: src/actions/create_tracks_action.c:81
+#, c-format
+msgid "Error instantiating plugin %s. Please see log for details."
+msgstr ""
+
+#: src/actions/create_tracks_action.c:226
+#, c-format
+msgid "Create %s Track"
+msgstr ""
+
+#: src/actions/create_tracks_action.c:231
+#, c-format
+msgid "Create %d %s Tracks"
+msgstr ""
+
+#: src/actions/delete_plugins_action.c:111
+#, c-format
+msgid "Delete Plugin"
+msgstr ""
+
+#: src/actions/delete_plugins_action.c:114
+#, c-format
+msgid "Delete %d Plugins"
+msgstr ""
+
+#: resources/ui/rack_plugin.ui:31
+msgid "Plugin 1"
+msgstr ""
+
+#: resources/ui/rack_plugin.ui:53
+msgid "in"
+msgstr ""
+
+#: resources/ui/rack_plugin.ui:63
+msgid "out"
+msgstr ""
+
+#: resources/ui/rack_row.ui:60
+msgid "expander"
+msgstr ""
+
+#: resources/ui/center_dock_bot_box.ui:43
+msgid "Left"
+msgstr ""
+
+#: resources/ui/center_dock_bot_box.ui:54
+msgid "Bot"
+msgstr ""
+
+#: resources/ui/center_dock_bot_box.ui:82
+msgid "Right"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:27
+msgid "Setup Zrythm"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:50
+msgid ""
+"Welcome to Zrythm.\n"
+" This will guide you through the basic setup of Zrythm. First, choose your "
+"language."
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:88 resources/ui/preferences.ui:360
+msgid "Language"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:106
+msgid ""
+"Next, choose the  location to use for saving temporary files and projects "
+"(or accept the default)"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:119
+msgid "Select a folder"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:129
+msgid "Reset"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:133
+msgid "Resets the path to the default"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:143
+msgid "Path"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:160
+msgid "Select the audio and MIDI engine backends to use"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:178 resources/ui/preferences.ui:167
+msgid "MIDI Backend"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:191 resources/ui/preferences.ui:122
+msgid "Audio Backend"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:228
+msgid "Test"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:232
+msgid "Tests the backends"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:242
+msgid "Backends"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:260
+msgid ""
+"Finally, select the MIDI devices you wish to auto-connect when Zrythm starts "
+"(You can skip this step and set them up later)"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:287
+msgid "MIDI Devices"
+msgstr ""
+
+#: resources/ui/right_dock_edge.ui:43
+msgid "Control Room"
+msgstr ""
+
+#: resources/ui/bot_dock_edge.ui:41
+msgid "Piano roll panel"
+msgstr ""
+
+#: resources/ui/bot_dock_edge.ui:56
+msgid "Editor"
+msgstr ""
+
+#: resources/ui/bot_dock_edge.ui:74
+msgid "Mixer panel"
+msgstr ""
+
+#: resources/ui/bot_dock_edge.ui:89
+msgid "Mixer"
+msgstr ""
+
+#: resources/ui/bot_dock_edge.ui:121
+msgid "Modulators"
+msgstr ""
+
+#: resources/ui/bot_dock_edge.ui:153
+msgid "Chord Pad"
+msgstr ""
+
+#: resources/ui/track_top_grid.ui:34 resources/ui/automatable_selector.ui:84
+#: resources/ui/route_target_selector.ui:85
+msgid "label"
+msgstr ""
+
+#. property name="can_focus">False</property
+#: resources/ui/project_assistant.ui:27
+msgid "Select Project"
+msgstr ""
+
+#: resources/ui/project_assistant.ui:62 resources/ui/shortcuts.ui:84
+msgid "Create new project"
+msgstr ""
+
+#: resources/ui/project_assistant.ui:78
+msgid "Remove"
+msgstr ""
+
+#: resources/ui/project_assistant.ui:82
+msgid "Removes selected project from the list"
 msgstr ""
 
 #: resources/ui/project_assistant.ui:114
@@ -787,12 +822,176 @@ msgid ""
 "(note: this text is hard coded at the moment)"
 msgstr ""
 
-#: src/project.c:427
-msgid "Project saved."
+#: resources/ui/quantize_mb_popover.ui:37 resources/ui/snap_grid_popover.ui:37
+msgid "Grid"
 msgstr ""
 
-#: resources/ui/shortcuts.ui:273
-msgid "Quantize"
+#: resources/ui/quantize_mb_popover.ui:47
+msgid "Use grid"
+msgstr ""
+
+#: resources/ui/quantize_mb_popover.ui:66 resources/ui/snap_grid_popover.ui:66
+msgid "Snap"
+msgstr ""
+
+#: resources/ui/quantize_mb_popover.ui:87
+msgid "Note length to quantize to"
+msgstr ""
+
+#: resources/ui/quantize_mb_popover.ui:88 resources/ui/inspector_master.ui:101
+#: resources/ui/inspector_ap.ui:101 resources/ui/inspector_midi.ui:101
+#: resources/ui/snap_grid_popover.ui:88
+msgid "Length"
+msgstr ""
+
+#: resources/ui/quantize_mb_popover.ui:126
+#: resources/ui/snap_grid_popover.ui:126
+msgid "Note type"
+msgstr ""
+
+#: resources/ui/quantize_mb_popover.ui:127 resources/ui/file_browser.ui:84
+#: resources/ui/plugin_browser.ui:85 resources/ui/snap_grid_popover.ui:127
+msgid "Type"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:11
+msgid "Global Shortcuts"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:16 resources/ui/preferences.ui:235
+msgid "General"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:20 resources/ui/preferences.ui:27
+msgid "Preferences"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:27
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:34
+msgid "Toggle Fullscreen"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:41
+msgid "Quit"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:51
+msgid "Panels"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:55
+msgid "Toggle left panel"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:62
+msgid "Toggle right panel"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:69
+msgid "Toggle bottom panel"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:79 resources/ui/header_notebook.ui:35
+msgid "Project"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:91
+msgid "Open a project"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:98
+msgid "Save the project"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:107
+msgid "Copy and Paste"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:112
+msgid "Copy selection to clipboard"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:119
+msgid "Cut selection to clipboard"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:126
+msgid "Paste from clipboard"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:135
+msgid "Undo and Redo"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:140
+msgid "Undo previous command"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:147
+msgid "Redo previous command"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:156
+msgid "Selections"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:161
+msgid "Select all"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:168
+msgid "Unselect all"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:180
+msgid "Editor Shortcuts"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:184
+msgid "Tool"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:188
+msgid "Select/Stretch tool"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:195
+msgid "Pencil tool"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:202
+msgid "Eraser tool"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:209
+msgid "Ramp tool"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:216
+msgid "Audition tool"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:226
+msgid "Zooming"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:231
+msgid "Zoom in"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:238
+msgid "Zoom out"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:245
+msgid "Best fit"
+msgstr ""
+
+#: resources/ui/shortcuts.ui:252
+msgid "Original size"
 msgstr ""
 
 #: resources/ui/shortcuts.ui:261
@@ -803,40 +1002,36 @@ msgstr ""
 msgid "Quick Quantize"
 msgstr ""
 
-#: resources/ui/shortcuts.ui:41
-msgid "Quit"
+#: resources/ui/shortcuts.ui:273
+msgid "Quantize"
 msgstr ""
 
-#: resources/ui/automation_lane.ui:112
-msgid "R"
+#: resources/ui/shortcuts.ui:282
+msgid "Looping"
 msgstr ""
 
-#: resources/ui/automation_lane.ui:95
-msgid "RW"
+#: resources/ui/shortcuts.ui:287
+msgid "Loop selection"
 msgstr ""
 
-#: resources/ui/bot_dock_edge.ui:121
-msgid "Rack"
+#: resources/ui/midi_controller_popover.ui:37
+msgid "Controllers found"
 msgstr ""
 
-#: resources/ui/shortcuts.ui:209
-msgid "Ramp tool"
+#: resources/ui/midi_controller_popover.ui:79
+msgid "Rescan"
 msgstr ""
 
-#: resources/ui/automation_lane.ui:116
-msgid "Read automation"
+#: resources/ui/midi_controller_popover.ui:83
+msgid "Scan again for MIDI controllers"
 msgstr ""
 
-#: src/gui/widgets/track.c:139 resources/ui/transport_controls.ui:36
-msgid "Record"
+#: resources/ui/inspector_chord.ui:43
+msgid "Scale"
 msgstr ""
 
-#: src/gui/widgets/home_toolbar.c:59 resources/ui/home_toolbar.ui:27
-msgid "Redo"
-msgstr ""
-
-#: resources/ui/shortcuts.ui:147
-msgid "Redo previous command"
+#: resources/ui/inspector_chord.ui:55
+msgid "Enforce scale"
 msgstr ""
 
 #: resources/ui/inspector_master.ui:31 resources/ui/inspector_ap.ui:31
@@ -844,197 +1039,178 @@ msgstr ""
 msgid "Region"
 msgstr ""
 
-#: src/gui/widgets/region.c:180
-msgid ""
-"Region - Click and drag to move around (hold Shift to disable snapping) - "
-"Double click to bring up the clip editor"
+#: resources/ui/inspector_master.ui:43 resources/ui/inspector_ap.ui:43
+#: resources/ui/inspector_midi.ui:43
+msgid "region_name"
 msgstr ""
 
-#: resources/ui/project_assistant.ui:78
-msgid "Remove"
+#: resources/ui/inspector_master.ui:44 resources/ui/inspector_ap.ui:44
+#: resources/ui/inspector_midi.ui:44
+msgid "Enter region name..."
 msgstr ""
 
-#: resources/ui/project_assistant.ui:82
-msgid "Removes selected project from the list"
+#: resources/ui/inspector_master.ui:67 resources/ui/inspector_ap.ui:67
+#: resources/ui/inspector_midi.ui:67
+msgid "Color"
 msgstr ""
 
-#: src/audio/engine_jack.c:583
-msgid "Requested client does not exist"
+#: resources/ui/inspector_master.ui:79 resources/ui/inspector_ap.ui:79
+#: resources/ui/inspector_midi.ui:79
+msgid "Position"
 msgstr ""
 
-#: resources/ui/midi_controller_popover.ui:79
-msgid "Rescan"
+#: resources/ui/inspector_master.ui:113 resources/ui/inspector_ap.ui:113
+#: resources/ui/inspector_midi.ui:113
+msgid "Muted"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:129
-msgid "Reset"
+#: resources/ui/piano_roll.ui:53 resources/ui/modulator_view.ui:53
+#: resources/ui/audio_clip_editor.ui:34
+msgid "Track name"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:133
-msgid "Resets the path to the default"
+#: resources/ui/automation_lane.ui:95
+msgid "RW"
 msgstr ""
 
-#: src/actions/edit_midi_arranger_selections_action.c:144
-msgid "Resize Midi Note(s)"
+#: resources/ui/automation_lane.ui:99
+msgid "Write automation"
 msgstr ""
 
-#: src/actions/edit_timeline_selections_action.c:131
-msgid "Resize Object(s)"
+#: resources/ui/automation_lane.ui:112
+msgid "R"
 msgstr ""
 
-#: resources/ui/center_dock_bot_box.ui:82
-msgid "Right"
+#: resources/ui/automation_lane.ui:116
+msgid "Read automation"
 msgstr ""
 
-#: src/gui/widgets/route_target_selector.c:80
-msgid "Routed to Stereo Out"
+#: resources/ui/automation_lane.ui:137
+msgid "0.0"
 msgstr ""
 
-#: src/gui/widgets/route_target_selector_popover.c:194
-#, c-format
-msgid "Routing to %s"
-msgstr ""
-
-#: src/utils/ui.c:553
-msgid "Russian [ru]"
-msgstr ""
-
-#: src/actions/actions.c:518
-msgid "Save Project"
-msgstr ""
-
-#: src/plugins/lv2_gtk.c:149
-msgid "Save State"
-msgstr ""
-
-#: resources/ui/shortcuts.ui:98
-msgid "Save the project"
-msgstr ""
-
-#: resources/ui/inspector_chord.ui:43
-msgid "Scale"
-msgstr ""
-
-#: resources/ui/midi_controller_popover.ui:83
-msgid "Scan again for MIDI controllers"
-msgstr ""
-
-#. property name="can_focus">False</property
-#: resources/ui/project_assistant.ui:27
-msgid "Select Project"
-msgstr ""
-
-#: resources/ui/first_run_assistant.ui:119
-msgid "Select a folder"
+#: resources/ui/track_lane.ui:15
+msgid "Lane 1"
 msgstr ""
 
 #: resources/ui/port_selector_popover.ui:16
 msgid "Select a port..."
 msgstr ""
 
-#: src/gui/widgets/piano_roll.c:232
-msgid "Select a region..."
+#: resources/ui/port_selector_popover.ui:41
+msgid "Track"
 msgstr ""
 
-#: resources/ui/shortcuts.ui:161
-msgid "Select all"
+#: resources/ui/port_selector_popover.ui:94
+msgid "Plugin"
 msgstr ""
 
-#: src/gui/widgets/route_target_selector.c:86
-msgid "Select channel to route signal to"
+#: resources/ui/port_selector_popover.ui:147
+msgid "Port"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:160
-msgid "Select the audio and MIDI engine backends to use"
+#: resources/ui/donate_dialog.ui:7
+msgid "Donate"
 msgstr ""
 
-#: src/gui/widgets/midi_controller_mb.c:46
-#: src/gui/widgets/midi_controller_mb.c:116
-msgid "Select..."
+#: resources/ui/donate_dialog.ui:49
+msgid "Choose a method to donate"
 msgstr ""
 
-#: resources/ui/shortcuts.ui:188
-msgid "Select/Stretch tool"
-msgstr ""
-
-#: resources/ui/shortcuts.ui:156
-msgid "Selections"
-msgstr ""
-
-#: src/zrythm.c:265
-msgid "Setting up backend"
-msgstr ""
-
-#: resources/ui/first_run_assistant.ui:27
-msgid "Setup Zrythm"
-msgstr ""
-
-#: src/gui/widgets/track.c:145
-msgid "Show Automation Lanes"
-msgstr ""
-
-#: src/gui/widgets/track.c:144
-msgid "Show UI"
-msgstr ""
-
-#: resources/ui/preferences.ui:308
-msgid "Show native decoration"
-msgstr ""
-
-#: src/utils/ui.c:608
-msgid "Sine (Equal Power)"
-msgstr ""
-
-#: resources/ui/quantize_mb_popover.ui:66 resources/ui/snap_grid_popover.ui:66
-msgid "Snap"
-msgstr ""
-
-#: src/gui/widgets/snap_grid.c:94
-msgid "Snap/Grid options"
-msgstr ""
-
-#: src/gui/widgets/track.c:140
-msgid "Solo"
-msgstr ""
-
-#: src/actions/edit_tracks_action.c:160
-msgid "Solo Track"
-msgstr ""
-
-#: resources/ui/export_dialog.ui:238
-msgid "Song"
-msgstr ""
-
-#: src/utils/ui.c:550
-msgid "Spanish [es]"
-msgstr ""
-
-#: src/utils/ui.c:607
-msgid "Square Root"
-msgstr ""
-
-#: src/gui/widgets/timeline_selection_info.c:62
-msgid "Start Position"
-msgstr ""
-
-#: src/gui/widgets/route_target_selector.c:118
-msgid "Stereo Out"
+#: resources/ui/transport_controls.ui:54
+msgid "Play"
 msgstr ""
 
 #: resources/ui/transport_controls.ui:69
 msgid "Stop"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:228
-msgid "Test"
+#: resources/ui/transport_controls.ui:87
+msgid "Backward"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:232
-msgid "Tests the backends"
+#: resources/ui/transport_controls.ui:105
+msgid "Forward"
 msgstr ""
 
-#: src/audio/engine_jack.c:574
-msgid "The desired client name was not unique"
+#: resources/ui/transport_controls.ui:122 resources/ui/export_dialog.ui:250
+msgid "Loop"
+msgstr ""
+
+#: resources/ui/splash.ui:67
+msgid "Initializing..."
+msgstr ""
+
+#: resources/ui/automator.ui:32
+msgid "LFO 1"
+msgstr ""
+
+#: resources/ui/file_browser.ui:63 resources/ui/plugin_browser.ui:64
+msgid "Collection"
+msgstr ""
+
+#: resources/ui/file_browser.ui:107
+msgid "Location"
+msgstr ""
+
+#: resources/ui/control.ui:45
+msgid "Name"
+msgstr ""
+
+#: resources/ui/header_notebook.ui:17
+msgid "Home"
+msgstr ""
+
+#: resources/ui/header_notebook.ui:54
+msgid "View"
+msgstr ""
+
+#: resources/ui/header_notebook.ui:73
+msgid "Help"
+msgstr ""
+
+#: resources/ui/header_notebook.ui:149
+msgid "Project name"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:30
+msgid "Export As..."
+msgstr ""
+
+#: resources/ui/export_dialog.ui:45 resources/ui/preferences.ui:58
+msgid "Cancel"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:59
+msgid "Export"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:86
+msgid "Export Audio"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:98
+msgid "Artist"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:109
+msgid "Genre"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:120
+msgid "Zrythm"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:131
+msgid "Electronic"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:142
+msgid "Format"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:161
+msgid "Dither"
 msgstr ""
 
 #: resources/ui/export_dialog.ui:188
@@ -1048,232 +1224,102 @@ msgid ""
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 msgstr ""
 
-#: src/audio/engine_jack.c:570
-msgid "The operation contained an invalid or unsupported option"
+#: resources/ui/export_dialog.ui:206
+msgid "Output Files"
 msgstr ""
 
-#: resources/ui/main_window.ui:119
-msgid "This is an app-notification. Click the button to dismiss"
+#: resources/ui/export_dialog.ui:218
+msgid "Filename Pattern"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:238
+msgid "Song"
+msgstr ""
+
+#: resources/ui/export_dialog.ui:262
+msgid "Custom"
 msgstr ""
 
 #: resources/ui/export_dialog.ui:276
 msgid "Time Range"
 msgstr ""
 
-#: src/gui/widgets/digital_meter.c:703
-msgid "Time Signature - Click and drag up/down to change"
-msgstr ""
-
-#: resources/ui/shortcuts.ui:34
-msgid "Toggle Fullscreen"
-msgstr ""
-
-#: resources/ui/shortcuts.ui:69
-msgid "Toggle bottom panel"
-msgstr ""
-
-#: resources/ui/shortcuts.ui:55
-msgid "Toggle left panel"
-msgstr ""
-
-#: resources/ui/shortcuts.ui:62
-msgid "Toggle right panel"
-msgstr ""
-
-#: resources/ui/shortcuts.ui:184
-msgid "Tool"
-msgstr ""
-
-#: resources/ui/port_selector_popover.ui:41
-msgid "Track"
-msgstr ""
-
-#: src/gui/widgets/track.c:152
-msgid ""
-"Track - Change track parameters like Solo/Mute... - Click the icon on the "
-"bottom right to bring up the automation lanes - Double click to show "
-"corresponding channel in Mixer (if applicable)"
-msgstr ""
-
-#: src/gui/widgets/instrument_track_info_expander.c:82
-msgid "Track Info"
-msgstr ""
-
-#: src/gui/widgets/port_selector_popover.c:209
-msgid "Track Ports"
-msgstr ""
-
-#: resources/ui/piano_roll.ui:53 resources/ui/audio_clip_editor.ui:34
-msgid "Track name"
-msgstr ""
-
 #: resources/ui/export_dialog.ui:288
 msgid "Tracks"
 msgstr ""
 
-#: resources/ui/quantize_mb_popover.ui:127 resources/ui/file_browser.ui:84
-#: resources/ui/plugin_browser.ui:85 resources/ui/snap_grid_popover.ui:127
-msgid "Type"
+#: resources/ui/export_dialog.ui:309
+msgid "Bit depth"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:467
-msgid "URI (Optional):"
+#: resources/ui/plugin_browser.ui:108
+msgid "Category"
 msgstr ""
 
-#: src/audio/engine_jack.c:592
-msgid "Unable to access shared memory"
+#: resources/ui/main_window.ui:119
+msgid "This is an app-notification. Click the button to dismiss"
 msgstr ""
 
-#: src/audio/engine_jack.c:577
-msgid "Unable to connect to the JACK server"
+#: resources/ui/snap_grid_popover.ui:47
+msgid "Adaptive Grid"
 msgstr ""
 
-#: src/audio/engine_jack.c:589
-msgid "Unable to initialize client"
+#: resources/ui/snap_grid_popover.ui:87
+msgid "Note length to snap to"
 msgstr ""
 
-#: src/audio/engine_jack.c:586
-msgid "Unable to load internal client"
+#: resources/ui/audio_clip_editor.ui:56 resources/ui/audio_clip_editor.ui:68
+msgid "stuff"
 msgstr ""
 
-#: src/gui/widgets/home_toolbar.c:58 resources/ui/home_toolbar.ui:14
-msgid "Undo"
+#: resources/ui/preferences.ui:44
+msgid "OK"
 msgstr ""
 
-#: resources/ui/shortcuts.ui:135
-msgid "Undo and Redo"
+#: resources/ui/preferences.ui:108
+msgid "Engine"
 msgstr ""
 
-#: resources/ui/shortcuts.ui:140
-msgid "Undo previous command"
+#: resources/ui/preferences.ui:145
+msgid "MIDI Controllers"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:781
-msgid "Unknown widget type for value"
+#: resources/ui/preferences.ui:189
+msgid "Pan Algorithm"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:807
-msgid "Unknown widget type for value\n"
+#: resources/ui/preferences.ui:200
+msgid "Pan Law"
 msgstr ""
 
-#: src/actions/edit_tracks_action.c:170
-msgid "Unmute Track"
+#: resources/ui/preferences.ui:249 resources/ui/preferences.ui:283
+msgid "Plugins"
 msgstr ""
 
-#: resources/ui/shortcuts.ui:168
-msgid "Unselect all"
-msgstr ""
-
-#: src/actions/edit_tracks_action.c:163
-msgid "Unsolo Track"
-msgstr ""
-
-#: src/project.c:156
-msgid "Untitled Project"
-msgstr ""
-
-#: resources/ui/quantize_mb_popover.ui:47
-msgid "Use grid"
-msgstr ""
-
-#: resources/ui/header_notebook.ui:54
-msgid "View"
-msgstr ""
-
-#: resources/ui/first_run_assistant.ui:50
-msgid ""
-"Welcome to Zrythm.\n"
-" This will guide you through the basic setup of Zrythm. First, choose your "
-"language."
+#: resources/ui/preferences.ui:259
+msgid "Always open plugin UIs"
 msgstr ""
 
 #: resources/ui/preferences.ui:263
 msgid "When instantiating a plugin always show its UI"
 msgstr ""
 
-#: resources/ui/automation_lane.ui:99
-msgid "Write automation"
+#: resources/ui/preferences.ui:298
+msgid "Main Window"
 msgstr ""
 
-#: resources/ui/shortcuts.ui:231
-msgid "Zoom in"
+#: resources/ui/preferences.ui:308
+msgid "Show native decoration"
 msgstr ""
 
-#: resources/ui/shortcuts.ui:238
-msgid "Zoom out"
+#: resources/ui/preferences.ui:331
+msgid "Editing"
 msgstr ""
 
-#: resources/ui/shortcuts.ui:226
-msgid "Zooming"
+#: resources/ui/preferences.ui:346
+msgid "Interface"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:120
-msgid "Zrythm"
-msgstr ""
-
-#: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
-#: src/utils/dialogs.c:74 src/actions/actions.c:521
-#: resources/ui/port_selector_popover.ui:193
-msgid "_Cancel"
-msgstr ""
-
-#: src/gui/widgets/track.c:452
-#, c-format
-msgid "_Delete %d Tracks"
-msgstr ""
-
-#: src/gui/widgets/track.c:449
-msgid "_Delete Track"
-msgstr ""
-
-#: src/gui/widgets/track.c:472
-#, c-format
-msgid "_Duplicate %d Tracks"
-msgstr ""
-
-#: src/gui/widgets/track.c:468
-msgid "_Duplicate Track"
-msgstr ""
-
-#: src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:72
-#: resources/ui/port_selector_popover.ui:207
-msgid "_OK"
-msgstr ""
-
-#: src/utils/dialogs.c:46
-msgid "_Open"
-msgstr ""
-
-#: src/plugins/lv2_gtk.c:471
-msgid "_Prefix plugin name"
-msgstr ""
-
-#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:523
-msgid "_Save"
-msgstr ""
-
-#: resources/ui/rack_row.ui:60
-msgid "expander"
-msgstr ""
-
-#: resources/ui/rack_plugin.ui:53
-msgid "in"
-msgstr ""
-
-#: resources/ui/track.ui:59 resources/ui/automatable_selector.ui:84
-#: resources/ui/route_target_selector.ui:85
-msgid "label"
-msgstr ""
-
-#: resources/ui/rack_plugin.ui:63
-msgid "out"
-msgstr ""
-
-#: resources/ui/inspector_region.ui:32 resources/ui/inspector_master.ui:43
-#: resources/ui/inspector_ap.ui:43 resources/ui/inspector_midi.ui:43
-msgid "region_name"
-msgstr ""
-
-#: resources/ui/audio_clip_editor.ui:56 resources/ui/audio_clip_editor.ui:68
-msgid "stuff"
+#: resources/ui/preferences.ui:387
+msgid "GUI"
 msgstr ""

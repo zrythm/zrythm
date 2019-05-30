@@ -23,6 +23,8 @@
 #include "gui/widgets/left_dock_edge.h"
 #include "utils/resources.h"
 
+#include <glib/gi18n.h>
+
 G_DEFINE_TYPE (LeftDockEdgeWidget,
                left_dock_edge_widget,
                GTK_TYPE_BOX)
@@ -40,6 +42,8 @@ left_dock_edge_widget_init (LeftDockEdgeWidget * self)
     gtk_image_new_from_icon_name (
       "z-document-properties",
       GTK_ICON_SIZE_SMALL_TOOLBAR);
+  gtk_widget_set_tooltip_text (
+    img, _("Inspector"));
   gtk_notebook_prepend_page (
     self->inspector_notebook,
     GTK_WIDGET (self->inspector),
@@ -48,6 +52,8 @@ left_dock_edge_widget_init (LeftDockEdgeWidget * self)
     gtk_image_new_from_icon_name (
       "z-visibility",
       GTK_ICON_SIZE_SMALL_TOOLBAR);
+  gtk_widget_set_tooltip_text (
+    img, _("Visibility"));
   GtkWidget * btn = gtk_button_new ();
   gtk_widget_set_visible (btn, 1);
   gtk_notebook_append_page (

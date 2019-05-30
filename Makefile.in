@@ -424,14 +424,14 @@ STATIC_LIBS=$(CYAML_BUILD_DIR)/libcyaml.a $(DLFCN_LIB)
 
 # Default target
 ifeq ($(WINDOWS),1)
-all: $(BUILD_DIR)/data/icon.o $(BUILD_DIR)/$(BIN)$(EXT) messages plugins package-win test
+all: $(BUILD_DIR)/data/icon.o $(BUILD_DIR)/$(BIN)$(EXT) plugins package-win test messages
 else
-all: $(BUILD_DIR)/$(BIN)$(EXT) messages plugins test
+all: $(BUILD_DIR)/$(BIN)$(EXT) plugins test messages
 endif
 
 messages: $(LANG_MO_FILES)
 
-po/%/$(BIN).mo: po/%/$(BIN).po
+po/%.mo: po/%.po
 	msgfmt --output-file=$@ $<
 
 $(LANG_PO_FILES): po/$(BIN).pot
@@ -576,7 +576,7 @@ uninstall: uninstall-appicon-data uninstall-gschemas uninstall-desktop uninstall
 install-messages:
 	for lang in $(LANGUAGES); do \
 		$(MKDIR_P) "$(DESTDIR)$(localedir)/$$lang/LC_MESSAGES" ; \
-		$(INSTALL_DATA) po/$$lang/$(BIN).mo "$(DESTDIR)$(localedir)/$$lang/LC_MESSAGES/" ; \
+		$(INSTALL_DATA) po/$$lang.mo "$(DESTDIR)$(localedir)/$$lang/LC_MESSAGES/" ; \
 	done
 
 .PHONY: install-x42-plugins

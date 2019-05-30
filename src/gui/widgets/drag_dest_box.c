@@ -25,6 +25,7 @@
 #include "actions/move_plugins_action.h"
 #include "audio/channel.h"
 #include "audio/mixer.h"
+#include "audio/modulator.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/accel.h"
@@ -126,14 +127,15 @@ on_drag_motion (GtkWidget        *widget,
 }
 
 static void
-on_drag_data_received (GtkWidget        *widget,
-               GdkDragContext   *context,
-               gint              x,
-               gint              y,
-               GtkSelectionData *data,
-               guint             info,
-               guint             time,
-               gpointer          user_data)
+on_drag_data_received (
+  GtkWidget        *widget,
+  GdkDragContext   *context,
+  gint              x,
+  gint              y,
+  GtkSelectionData *data,
+  guint             info,
+  guint             time,
+  DragDestBoxWidget * self)
 {
   GdkAtom target =
     gtk_selection_data_get_target (data);
@@ -168,22 +170,39 @@ on_drag_data_received (GtkWidget        *widget,
         * (gpointer *)
           gtk_selection_data_get_data (data);
 
-      TrackType tt;
-      if (g_strcmp0 (pd->category,
-                     "Instrument"))
-        tt = TRACK_TYPE_INSTRUMENT;
+      if (self->type ==
+          DRAG_DEST_BOX_TYPE_MIXER ||
+          self->type ==
+          DRAG_DEST_BOX_TYPE_TRACKLIST)
+        {
+          TrackType tt;
+          if (g_strcmp0 (pd->category,
+                         "Instrument"))
+            tt = TRACK_TYPE_INSTRUMENT;
+          else
+            tt = TRACK_TYPE_BUS;
+
+          UndoableAction * ua =
+            create_tracks_action_new (
+              tt,
+              pd,
+              NULL,
+              TRACKLIST->num_tracks,
+              1);
+
+          undo_manager_perform (UNDO_MANAGER, ua);
+        }
       else
-        tt = TRACK_TYPE_BUS;
-
-      UndoableAction * ua =
-        create_tracks_action_new (
-          tt,
-          pd,
-          NULL,
-          TRACKLIST->num_tracks,
-          1);
-
-      undo_manager_perform (UNDO_MANAGER, ua);
+        {
+          Track * track =
+            TRACKLIST_SELECTIONS->tracks[0];
+          Modulator * modulator =
+            modulator_new (
+              pd,
+              track);
+          track_add_modulator (
+            track, modulator);
+        }
     }
   else if ((target =
             GET_ATOM (TARGET_ENTRY_PLUGIN)))
@@ -441,7 +460,7 @@ drag_dest_box_widget_new (GtkOrientation  orientation,
     G_CALLBACK(on_drag_motion), NULL);
   g_signal_connect (
     GTK_WIDGET (self), "drag-data-received",
-    G_CALLBACK(on_drag_data_received), NULL);
+    G_CALLBACK(on_drag_data_received), self);
 
   /* show */
   gtk_widget_set_visible (GTK_WIDGET (self),

@@ -3551,7 +3551,7 @@ def parse_doxyfile(state: State, doxyfile, config = None):
         'XML_OUTPUT': ['xml'],
         'HTML_OUTPUT': ['html'],
         'HTML_EXTRA_STYLESHEET': [
-            'https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600',
+            #'https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600',
             '../css/m-dark+documentation.compiled.css'],
         'HTML_EXTRA_FILES': [],
         'DOT_FONTNAME': ['Helvetica'],

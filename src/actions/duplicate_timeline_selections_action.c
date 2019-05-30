@@ -67,7 +67,7 @@ duplicate_timeline_selections_action_do (
       /* add and shift it */
       track_add_region (
         TRACKLIST->tracks[region->track_pos],
-        region, F_GEN_NAME);
+        region, 0, F_GEN_NAME);
       region_shift (
         region, self->ticks, self->delta);
 
@@ -102,7 +102,7 @@ duplicate_timeline_selections_action_undo (
 
       /* remove it */
       track_remove_region (
-        region->track,
+        region->lane->track,
         region);
       free_later (region, region_free);
     }

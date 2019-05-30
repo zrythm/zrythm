@@ -29,6 +29,7 @@
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/chord_track.h"
+#include "gui/widgets/track_top_grid.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "utils/gtk.h"
@@ -54,15 +55,15 @@ chord_track_widget_new (Track * track)
                             CHORD_TRACK_WIDGET_TYPE,
                             NULL);
   TRACK_WIDGET_GET_PRIVATE (self);
-  ChordTrack * ct = (ChordTrack *) track;
 
   /* set track name */
-  gtk_label_set_text (tw_prv->name,
-                      ct->name);
+  gtk_label_set_text (
+    tw_prv->top_grid->name,
+    track->name);
 
   /* setup color */
   color_area_widget_set_color (tw_prv->color,
-                               &ct->color);
+                               &track->color);
 
   gtk_widget_set_visible (GTK_WIDGET (self),
                           1);
@@ -114,26 +115,27 @@ chord_track_widget_init (ChordTrackWidget * self)
                                     "mute.svg");
 
   /* set buttons to upper controls */
-  gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),
-                      GTK_WIDGET (self->record),
-                      Z_GTK_NO_EXPAND,
-                      Z_GTK_NO_FILL,
-                      0);
-  gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),
-                      GTK_WIDGET (self->solo),
-                      Z_GTK_NO_EXPAND,
-                      Z_GTK_NO_FILL,
-                      0);
-  gtk_box_pack_start (GTK_BOX (tw_prv->upper_controls),
-                      GTK_WIDGET (self->mute),
-                      Z_GTK_NO_EXPAND,
-                      Z_GTK_NO_FILL,
-                      0);
+  gtk_box_pack_start (
+    GTK_BOX (tw_prv->top_grid->upper_controls),
+    GTK_WIDGET (self->record),
+    Z_GTK_NO_EXPAND,
+    Z_GTK_NO_FILL,
+    0);
+  gtk_box_pack_start (
+    GTK_BOX (tw_prv->top_grid->upper_controls),
+    GTK_WIDGET (self->solo),
+    Z_GTK_NO_EXPAND,
+    Z_GTK_NO_FILL,
+    0);
+  gtk_box_pack_start (
+    GTK_BOX (tw_prv->top_grid->upper_controls),
+    GTK_WIDGET (self->mute),
+    Z_GTK_NO_EXPAND,
+    Z_GTK_NO_FILL,
+    0);
 
   /* set icon */
-  resources_set_image_icon (tw_prv->icon,
-                            ICON_TYPE_ZRYTHM,
-                            "chord.svg");
+  SET_TRACK_ICON ("z-minuet-chords");
 }
 
 static void

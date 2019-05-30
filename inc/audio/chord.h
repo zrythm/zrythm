@@ -33,6 +33,12 @@
 #include "audio/position.h"
 #include "utils/yaml.h"
 
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
+
 typedef enum MusicalNote
 {
   NOTE_C,
@@ -52,16 +58,16 @@ typedef enum MusicalNote
 #define NOTE_LABELS \
 static const char * note_labels[12] = { \
     "C", \
-    "Db", \
+    "D\u266D" \
     "D", \
-    "Eb", \
+    "E\u266D" \
     "E", \
     "F", \
-    "F#", \
+    "F\u266F" \
     "G", \
-    "Ab", \
+    "A\u266D" \
     "A", \
-    "Bb", \
+    "B\u266D" \
     "B" }
 
 /**
@@ -101,18 +107,40 @@ typedef struct _ChordWidget ChordWidget;
  */
 typedef struct ZChord
 {
-  Position              pos; ///< chord object position (if used in chord track)
-  int               has_bass; ///< has base note or not
-  MusicalNote           root_note; ///< root note
-  MusicalNote           bass_note; ///< bass note 1 octave below
-  ChordType             type;
-  int    notes[36]; ///< 3 octaves, 1st octave is for base note
-                                  ///< starts at C always
-  int                   inversion; ///< == 0 no inversion,
-                                   ///< < 0 means highest note(s) drop an octave
-                                   ///< > 0 means lowest note(s) receive an octave
+  /** ZChord object position (if used in chord
+   * Track). */
+  Position       pos;
 
-  int                   selected; ///< selected in timeline
+  /** Cache, used in runtime operations. */
+  Position       cache_pos;
+
+  /** Has bass note or not. */
+  int            has_bass;
+
+  /** Root note. */
+  MusicalNote    root_note;
+
+  /** Bass note 1 octave below. */
+  MusicalNote    bass_note;
+
+  ChordType      type;
+
+  /**
+   * 3 octaves, 1st octave is for bass note.
+   *
+   * Starts at C always.
+   */
+  int            notes[36];
+
+  /**
+   * == 0 no inversion,
+   * < 0 highest note(s) drop an octave,
+   * > 0 lwest note(s) receive an octave.
+   */
+  int                   inversion;
+
+  /** Selected in TimelineArrangerWidget or not. */
+  int                   selected;
   int                   visible;
   ChordWidget *         widget;
 } ZChord;
@@ -235,5 +263,9 @@ chord_set_pos (ZChord *    self,
 
 void
 chord_free (ZChord * self);
+
+/**
+ * @}
+ */
 
 #endif

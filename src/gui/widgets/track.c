@@ -17,9 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
- */
-
 #include "audio/automatable.h"
 #include "audio/automation_track.h"
 #include "audio/bus_track.h"
@@ -41,10 +38,12 @@
 #include "gui/widgets/group_track.h"
 #include "gui/widgets/instrument_track.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/marker_track.h"
 #include "gui/widgets/master_track.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/track.h"
+#include "gui/widgets/track_top_grid.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "utils/flags.h"
@@ -613,14 +612,40 @@ track_widget_new (Track * track)
       self = Z_TRACK_WIDGET (
         audio_track_widget_new (track));
       break;
+    case TRACK_TYPE_MARKER:
+      self = Z_TRACK_WIDGET (
+        marker_track_widget_new (track));
     }
 
   g_warn_if_fail (Z_IS_TRACK_WIDGET (self));
 
   TRACK_WIDGET_GET_PRIVATE (self);
+  color_area_widget_setup_track (
+    tw_prv->color, track);
+
   tw_prv->track = track;
 
   return self;
+}
+
+/**
+ * Callback when lanes button is toggled.
+ */
+void
+track_widget_on_show_lanes_toggled (
+  GtkWidget * widget,
+  TrackWidget * self)
+{
+  TRACK_WIDGET_GET_PRIVATE (self);
+  Track * track = tw_prv->track;
+
+  /* set visibility flag */
+  track->lanes_visible =
+    gtk_toggle_button_get_active (
+      GTK_TOGGLE_BUTTON (widget));
+
+  EVENTS_PUSH (ET_TRACK_LANES_VISIBILITY_CHANGED,
+               track);
 }
 
 void
@@ -696,7 +721,8 @@ track_widget_get_bottom_paned (TrackWidget * self)
 {
   TRACK_WIDGET_GET_PRIVATE (self);
 
-  return gtk_paned_get_child2 (tw_prv->paned);
+  return dzl_multi_paned_get_nth_child (
+    DZL_MULTI_PANED (tw_prv->paned), 1);
 }
 
 static void
@@ -715,6 +741,9 @@ on_destroy (
 static void
 track_widget_init (TrackWidget * self)
 {
+  g_type_ensure (COLOR_AREA_WIDGET_TYPE);
+  g_type_ensure (TRACK_TOP_GRID_WIDGET_TYPE);
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
   TRACK_WIDGET_GET_PRIVATE (self);
@@ -783,29 +812,9 @@ track_widget_class_init (TrackWidgetClass * _klass)
   gtk_widget_class_bind_template_child_private (
     klass,
     TrackWidget,
-    name);
-  gtk_widget_class_bind_template_child_private (
-    klass,
-    TrackWidget,
-    icon);
-  gtk_widget_class_bind_template_child_private (
-    klass,
-    TrackWidget,
-    upper_controls);
-  gtk_widget_class_bind_template_child_private (
-    klass,
-    TrackWidget,
-    right_activity_box);
-  gtk_widget_class_bind_template_child_private (
-    klass,
-    TrackWidget,
-    mid_controls);
-  gtk_widget_class_bind_template_child_private (
-    klass,
-    TrackWidget,
-    bot_controls);
-  gtk_widget_class_bind_template_child_private (
-    klass,
-    TrackWidget,
     event_box);
+  gtk_widget_class_bind_template_child_private (
+    klass,
+    TrackWidget,
+    lanes_box);
 }

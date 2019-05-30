@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,6 +17,13 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * A multi-paned holding multiple
+ * AutomationLaneWidget s.
+ */
+
 #ifndef __GUI_WIDGETS_AUTOMATION_TRACKLIST_H__
 #define __GUI_WIDGETS_AUTOMATION_TRACKLIST_H__
 
@@ -25,16 +32,21 @@
 #include <gtk/gtk.h>
 
 #define AUTOMATION_TRACKLIST_WIDGET_TYPE                  (automation_tracklist_widget_get_type ())
-G_DECLARE_FINAL_TYPE (AutomationTracklistWidget,
-                      automation_tracklist_widget,
-                      Z,
-                      AUTOMATION_TRACKLIST_WIDGET,
-                      DzlMultiPaned)
+G_DECLARE_FINAL_TYPE (
+  AutomationTracklistWidget,
+  automation_tracklist_widget,
+  Z, AUTOMATION_TRACKLIST_WIDGET,
+  DzlMultiPaned)
 
-typedef struct _AutomationTrackWidget AutomationTrackWidget;
+typedef struct _AutomationTrackWidget
+  AutomationTrackWidget;
 typedef struct _TrackWidget TrackWidget;
 typedef struct AutomationTracklist AutomationTracklist;
 
+/**
+ * A DzlMultiPaned holding multiple
+ * AutomationLaneWidgets.
+ */
 typedef struct _AutomationTracklistWidget
 {
   DzlMultiPaned           parent_instance;
@@ -46,7 +58,7 @@ typedef struct _AutomationTracklistWidget
 } AutomationTracklistWidget;
 
 /**
- * Creates a new tracks widget and sets it to main window.
+ * Creates a new AutomationTracklistWidget.
  */
 AutomationTracklistWidget *
 automation_tracklist_widget_new (
@@ -60,4 +72,3 @@ automation_tracklist_widget_refresh (
   AutomationTracklistWidget * self);
 
 #endif
-

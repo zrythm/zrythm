@@ -32,14 +32,24 @@
 
 #include <gtk/gtk.h>
 
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
+
 #define REGION_PRINTF_FILENAME "%s_%s.mid"
 
 typedef struct _RegionWidget RegionWidget;
 typedef struct Channel Channel;
 typedef struct Track Track;
 typedef struct MidiNote MidiNote;
+typedef struct TrackLane TrackLane;
 typedef struct _AudioClipWidget AudioClipWidget;
 
+/**
+ * Type of Region.
+ */
 typedef enum RegionType
 {
   REGION_TYPE_MIDI,
@@ -55,6 +65,13 @@ typedef enum RegionCloneFlag
   REGION_CLONE_LINK
 } RegionCloneFlag;
 
+/**
+ * A region (clip) is an object on the timeline that
+ * contains either MidiNote's or AudioClip's.
+ *
+ * It is uniquely identified using its name, so name
+ * must be unique throughout the Project.
+ */
 typedef struct Region
 {
   /**
@@ -71,8 +88,14 @@ typedef struct Region
   /** Start position in the timeline. */
   Position     start_pos;
 
+  /** Cache, used in runtime operations. */
+  Position     cache_start_pos;
+
   /** End position in the timeline. */
   Position     end_pos;
+
+  /** Cache, used in runtime operations. */
+  Position     cache_end_pos;
 
   /* LOCAL POSITIONS STARTING FROM 0.0.0.0 */
   /* ------------------------------------- */
@@ -108,11 +131,12 @@ typedef struct Region
    */
   RegionWidget * widget;
 
-  /**
-   * Owner track.
-   */
+  /** Owner track. */
   int            track_pos;
-  Track *        track;
+
+  /** Owner lane. */
+  int            lane_pos;
+  TrackLane *    lane;
 
   /**
    * Linked parent region.
@@ -178,6 +202,25 @@ typedef struct Region
    * Transient regions are regions that are cloned
    * and used during moving, then discarded.  */
   int             transient;
+
+  /**
+   * Whether it is a TrackLane region or not.
+   *
+   * TrackLane regions are Region's that are inside
+   * TrackLane's in the timeline (not the Region's
+   * showed inside the Track).
+   */
+  int             is_lane_region;
+
+  /**
+   * If lane region, this is an extra region that
+   * will be shown inside the Track, in addition to
+   * the main one inside the TrackLane.
+   *
+   * It must have the same parameters as the main
+   * Region.
+   */
+  Region *        laneless_region;
 } Region;
 
 static const cyaml_strval_t
@@ -397,12 +440,12 @@ region_get_start_pos (
   Position * pos);
 
 /**
- * Sets the track.
+ * Sets the track lane.
  */
 void
-region_set_track (
+region_set_lane (
   Region * region,
-  Track * track);
+  TrackLane * lane);
 
 /**
  * Checks if position is valid then sets it.
@@ -464,11 +507,18 @@ void
 region_unpack (Region * region);
 
 /**
- * Returns the region at the given position in the given channel
+ * Returns the region at the given position in the
+ * given Track.
+ *
+ * @param track The track to look in.
+ * @param pos The position.
+ *
+ * FIXME with lanes there can be multiple positions.
  */
 Region *
-region_at_position (Track    * track, ///< the track to look in
-                    Position * pos); ///< the position
+region_at_position (
+  Track    * track,
+  Position * pos);
 
 /**
  * Generates the filename for this region.
@@ -520,5 +570,9 @@ region_free (Region * region);
 SERIALIZE_INC (Region, region)
 DESERIALIZE_INC (Region, region)
 PRINT_YAML_INC (Region, region)
+
+/**
+ * @}
+ */
 
 #endif // __AUDIO_REGION_H__

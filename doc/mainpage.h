@@ -1,39 +1,32 @@
 /**
  *
- * \mainpage Code Documentation
+ * \mainpage Documentation
  *
- * \section intro_sec Introduction
+ * \section introduction Introduction
  *
  * This documentation is aimed at developers wishing
  * to study the source code or contribute to Zrythm.
  * This is a general outline of how Zrythm works, and
  * more detailed information can be found by looking
- * at each structure from the tabs above.
+ * at each tab above.
  *
+ * A good starting point would be to check the
+ * Modules above
  *
- * The main modules to look at would be Project
+ * The main structs to look at would be Project
  * and Zrythm (inc/project.h and inc/zrythm.h)
  *
+ * \section contributing Contributing
+ * 
+ * If you would like to contribute please review
+ * the \ref md_CONTRIBUTING
  *
- * \section project Project
+ * \section pages Pages
+ * \subpage mypage
+ */
+
+/**
+ * \page mypage Custom Page
  *
- * The Project data structure contains everything
- * that is unique to each project and should be
- * serialized.
- *
- * The Project contains a registry for each type
- * of object, and keeps track of all objects in use
- * by unique IDs. E.g. the regions array has all the
- * regions in the project, and each Region has an
- * id field used as an index to this array.
- *
- * To save space and due to limitations in cyaml,
- * when saving the project these arrays cannot
- * contain NULLs, so the aggregated arrays (same
- * arrays with NULLs excluded) are used.
- *
- * Transient objects such as transient Regions
- * should not be added to the project and should not
- * have unique IDs.
- *
+ * Custom page contentx.
  */

@@ -1,6 +1,4 @@
 /*
- * gui/widgets/center_dock.h - Main window widget
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -46,6 +44,8 @@ typedef struct _RightDockEdgeWidget RightDockEdgeWidget;
 typedef struct _BotDockEdgeWidget BotDockEdgeWidget;
 typedef struct _CenterDockBotBoxWidget CenterDockBotBoxWidget;
 typedef struct _TracklistHeaderWidget TracklistHeaderWidget;
+typedef struct _PinnedTracklistWidget
+  PinnedTracklistWidget;
 
 typedef struct _CenterDockWidget
 {
@@ -56,6 +56,7 @@ typedef struct _CenterDockWidget
   GtkBox                   * tracklist_top;
   GtkScrolledWindow        * tracklist_scroll;
   GtkViewport              * tracklist_viewport;
+  PinnedTracklistWidget * pinned_tracklist;
   TracklistHeaderWidget *  tracklist_header;
   TracklistWidget          * tracklist;
   GtkScrolledWindow        * ruler_scroll;

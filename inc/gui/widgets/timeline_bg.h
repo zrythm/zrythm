@@ -1,7 +1,5 @@
 /*
- * inc/gui/widgets/timeline_bg.h - Timeline background
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,6 +17,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * The background (main overlay child) of the
+ * timeline.
+ */
+
 #ifndef __GUI_WIDGETS_TIMELINE_BG_H__
 #define __GUI_WIDGETS_TIMELINE_BG_H__
 
@@ -28,11 +33,17 @@
 
 #define TIMELINE_BG_WIDGET_TYPE \
   (timeline_bg_widget_get_type ())
-G_DECLARE_FINAL_TYPE (TimelineBgWidget,
-                      timeline_bg_widget,
-                      Z,
-                      TIMELINE_BG_WIDGET,
-                      ArrangerBgWidget)
+G_DECLARE_FINAL_TYPE (
+  TimelineBgWidget,
+  timeline_bg_widget,
+  Z, TIMELINE_BG_WIDGET,
+  ArrangerBgWidget)
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 #define TIMELINE_BG \
   Z_TIMELINE_BG_WIDGET (arranger_widget_get_private (Z_ARRANGER_WIDGET (MW_TIMELINE))->bg)
@@ -48,5 +59,9 @@ typedef struct _TimelineBgWidget
 TimelineBgWidget *
 timeline_bg_widget_new (RulerWidget *    ruler,
                         ArrangerWidget * arranger);
+
+/**
+ * @}
+ */
 
 #endif

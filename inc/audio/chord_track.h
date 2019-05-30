@@ -1,7 +1,5 @@
 /*
- * audio/chord_track.h - Chord track
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,7 +32,13 @@
 
 #include "audio/track.h"
 
-#define P_CHORD_TRACK (PROJECT->chord_track)
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
+
+#define P_CHORD_TRACK (PINNED_TRACKLIST->chord_track)
 
 typedef struct ZChord ZChord;
 typedef struct _ChordTrackWidget ChordTrackWidget;
@@ -64,5 +68,9 @@ chord_track_remove_chord (ChordTrack * self,
 
 void
 chord_track_free (ChordTrack * self);
+
+/**
+ * @}
+ */
 
 #endif

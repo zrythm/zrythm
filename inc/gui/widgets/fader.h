@@ -41,38 +41,31 @@ G_DECLARE_FINAL_TYPE (FaderWidget,
                       FADER_WIDGET,
                       GtkDrawingArea)
 
-typedef enum FaderType
-{
-  FADER_TYPE_CHANNEL,
-} FaderType;
-
+/**
+ * A FaderWidget reflects a Fader object's state.
+ */
 typedef struct _FaderWidget
 {
-  GtkDrawingArea         parent_instance;
-  GtkGestureDrag *       drag;
-  float (*getter)(void*); ///< getter
-  void (*setter)(void*, float); ///< setter
-  void *                 object;
-  double                 last_x;
-  double                 last_y;
-  int                    hover;
-  GtkWindow *            tooltip_win;
-  GtkLabel *             tooltip_label;
-  GdkRGBA                start_color;
-  GdkRGBA                end_color;
-  FaderType              type;
+  GtkDrawingArea     parent_instance;
+  GtkGestureDrag *   drag;
+  Fader *            fader;
+  double             last_x;
+  double             last_y;
+  int                hover;
+  GtkWindow *        tooltip_win;
+  GtkLabel *         tooltip_label;
+  GdkRGBA            start_color;
+  GdkRGBA            end_color;
 } FaderWidget;
 
 /**
- * Creates a new Fader widget and binds it to the given value.
+ * Creates a new Fader widget and binds it to the
+ * given Fader.
  */
 void
 fader_widget_setup (
   FaderWidget * self,
-  float         (*get_val)(void *),    ///< getter function
-  void          (*set_val)(void *, float),    ///< setter function
-  void *        object,              ///< object to call get/set with
-  FaderType     type,
+  Fader *       fader,
   int width);
 
 /**

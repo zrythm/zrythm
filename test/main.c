@@ -15,7 +15,6 @@ main (int argc, char *argv[])
 
   ZRYTHM = calloc (1, sizeof (Zrythm));
   PROJECT = calloc (1, sizeof (Project));
-  g_message ("test message");
 
   // Define the tests.
   g_test_add (
@@ -28,6 +27,8 @@ main (int argc, char *argv[])
   /*g_test_add ("/my-object/test2", MyObjectFixture, "some-user-data",*/
               /*my_object_fixture_set_up, test_my_object_test2,*/
               /*my_object_fixture_tear_down);*/
+
+  g_message ("running tests...");
 
   return g_test_run ();
 }

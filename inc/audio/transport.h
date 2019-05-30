@@ -32,6 +32,12 @@
 #include "audio/region.h"
 #include "zix/sem.h"
 
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
+
 #define TRANSPORT (&AUDIO_ENGINE->transport)
 #define DEFAULT_TOTAL_BARS 128
 #define MAX_BPM 420.f
@@ -58,15 +64,41 @@ typedef enum {
 	PLAYSTATE_PAUSED
 } Play_State;
 
+/**
+ * The transport.
+ */
 typedef struct Transport
 {
-  int           total_bars;             ///< total bars in the song
-  Position      playhead_pos;           ///< playhead position
-  Position      cue_pos;            ///< position to use when stopped
-  Position      loop_start_pos;         ///< loop marker start position
-  Position      loop_end_pos;           ///< loop marker end position
-  Position      start_marker_pos;       ///< start marker position
-  Position      end_marker_pos;         ///< end marker position
+  /** Total bars in the song. */
+  int           total_bars;
+
+  /** Playhead position. */
+  Position      playhead_pos;
+
+  /** Cue point position. */
+  Position      cue_pos;
+
+  /** Loop start position. */
+  Position      loop_start_pos;
+
+  /** Loop end position. */
+  Position      loop_end_pos;
+
+  /**
+   * Start marker position.
+   *
+   * This is where the song starts. Used when
+   * exporting, etc.
+   */
+  Position      start_marker_pos;
+
+  /**
+   * End marker position.
+   *
+   * This is where the song ends. Used when
+   * exporting, etc.
+   */
+  Position      end_marker_pos;
 
   /**
    * The top part (beats_per_par) is the number of beat units
@@ -91,8 +123,12 @@ typedef struct Transport
   uint32_t           position;       ///< Transport position in frames
 	float              bpm;            ///< Transport tempo in beats per minute
 	int               rolling;        ///< Transport speed (0=stop, 1=play)
-  int               loop;        ///< loop or not
-  int               recording; ///< recording or not
+
+  /** Looping or not. */
+  int               loop;
+
+  /** Recording or not. */
+  int               recording;
 
   /**
    * This is set when record is toggled and is used to check
@@ -228,11 +264,18 @@ transport_get_playhead_pos (
   Position *  pos);
 
 /**
- * Moves playhead to given pos
+ * Moves playhead to given pos.
+ *
+ * This is only for moves other than while playing
+ * and for looping while playing.
+ *
+ * @param target Position to set to.
+ * @param panic Send MIDI panic or not.
  */
 void
-transport_move_playhead (Position * target, ///< position to set to
-                         int      panic); ///< send MIDI panic or not
+transport_move_playhead (
+  Position * target,
+  int        panic);
 
 /**
  * Updates the frames in all transport positions

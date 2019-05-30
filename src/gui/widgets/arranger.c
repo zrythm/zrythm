@@ -1034,7 +1034,8 @@ create_item (ArrangerWidget * self,
         timeline_arranger_widget_get_automation_track_at_y (start_y);
       if (!at)
         track =
-          timeline_arranger_widget_get_track_at_y (start_y);
+          timeline_arranger_widget_get_track_at_y (
+            timeline, start_y);
 
       /* creating automation point */
       if (at)
@@ -1944,8 +1945,9 @@ arranger_widget_setup (ArrangerWidget *   self,
       audio_arranger_widget_setup (
         audio_arranger);
     }
-  gtk_container_add (GTK_CONTAINER (self),
-                     GTK_WIDGET (ar_prv->bg));
+  gtk_container_add (
+    GTK_CONTAINER (self),
+    GTK_WIDGET (ar_prv->bg));
   gtk_widget_add_events (
     GTK_WIDGET (ar_prv->bg),
     GDK_ALL_EVENTS_MASK);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -49,10 +49,17 @@ typedef struct AutomationTrack AutomationTrack;
 typedef struct AutomationCurve AutomationCurve;
 typedef struct _RegionWidget RegionWidget;
 typedef struct ZChord ZChord;
+typedef struct _MarkerWidget MarkerWidget;
 
 typedef struct _TimelineArrangerWidget
 {
   ArrangerWidget           parent_instance;
+
+  /** The widget first clicked on. */
+  GtkWidget *          start_widget;
+
+  /** Type of the widget first clicked on. */
+  GType                start_widget_type;
 
   /**
    * Object first clicked is stored in start_*.
@@ -66,28 +73,6 @@ typedef struct _TimelineArrangerWidget
   AutomationPoint *        start_ap;
   AutomationCurve *        start_ac;
   ZChord *                  start_chord;
-
-  /* These are created from the TimelineSelections so
-   * the indexes match. They are set after the
-   * selections are made, on drag_begin, and used in
-   * drag_update to get positions relative to the
-   * initial ones. */
-
-  /* FIXME due to size limitations, create a new
-   * struct that will hold this and only save its
-   * pointer here */
-
-  /** Initial start positions. */
-  Position                 region_start_poses[500];
-
-  /** Initial end positions. */
-  Position                 region_end_poses[500];
-
-  /** Initial start positions. */
-  Position                 chord_start_poses[500];
-
-  /** Initial start positions. */
-  Position                 ap_poses[500];
 
   int                      last_timeline_obj_bars;
 
@@ -118,8 +103,13 @@ void
 timeline_arranger_widget_snap_range_r (
   Position *               pos);
 
+/**
+ * Gets the Track at y.
+ */
 Track *
-timeline_arranger_widget_get_track_at_y (double y);
+timeline_arranger_widget_get_track_at_y (
+  TimelineArrangerWidget * self,
+  double y);
 
 AutomationTrack *
 timeline_arranger_widget_get_automation_track_at_y (double y);
@@ -159,6 +149,12 @@ timeline_arranger_widget_get_hit_region (
 
 ChordWidget *
 timeline_arranger_widget_get_hit_chord (
+  TimelineArrangerWidget *  self,
+  double                    x,
+  double                    y);
+
+MarkerWidget *
+timeline_arranger_widget_get_hit_marker (
   TimelineArrangerWidget *  self,
   double                    x,
   double                    y);
@@ -204,6 +200,12 @@ timeline_arranger_widget_on_drag_begin_chord_hit (
   ChordWidget *            cw);
 
 void
+timeline_arranger_widget_on_drag_begin_marker_hit (
+  TimelineArrangerWidget * self,
+  double                   start_x,
+  MarkerWidget *           rw);
+
+void
 timeline_arranger_widget_on_drag_begin_ap_hit (
   TimelineArrangerWidget * self,
   double                   start_x,
@@ -233,6 +235,12 @@ timeline_arranger_widget_create_region (
 
 void
 timeline_arranger_widget_create_chord (
+  TimelineArrangerWidget * self,
+  Track *                  track,
+  Position *               pos);
+
+void
+timeline_arranger_widget_create_marker (
   TimelineArrangerWidget * self,
   Track *                  track,
   Position *               pos);

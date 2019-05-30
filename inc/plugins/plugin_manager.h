@@ -37,7 +37,9 @@
 #define PM_SYMAP (PLUGIN_MANAGER->symap)
 #define PM_SYMAP_LOCK (PLUGIN_MANAGER->symap_lock)
 
-
+/**
+ * LV2 default settings.
+ */
 typedef struct
 {
 	char*    name;              ///< Client name
@@ -140,6 +142,10 @@ typedef struct Lv2Nodes
 
 typedef struct PluginDescriptor PluginDescriptor;
 
+/**
+ * The PluginManager is responsible for scanning
+ * and keeping track of available Plugin's.
+ */
 typedef struct PluginManager
 {
   PluginDescriptor *     plugin_descriptors[10000];

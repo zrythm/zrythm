@@ -1,87 +1,98 @@
-```
-  Copyright (C) 2018-2019 Alexandros Theodotou
+Contributing Guidelines
+=======================
 
-  This file is part of Zrythm
-
-  Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Zrythm is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
-
-```
+*This file is part of Zrythm and is licensed under the
+GNU General Public License version 3. You should have received a copy of the GNU General Public License
+  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.*
 
 # CODE STRUCTURE
-```
-.
-├── AUTHORS                      # author information
-├── autogen.sh                   # creates configure
-├── config.guess                 # used by configure
-├── config.sub                   # used by configure
-├── configure.ac                 # options to create configure
-├── CONTRIBUTING.md              # contributing guidelines
-├── COPYING                      # license
-├── data                         # data files to be installed
-│   ├── org.zrythm.gschema.xml   # GSettings schema
-│   └── zrythm.desktop           # desktop file
-├── debian                       # .deb build configuration
-├── Doxyfile                     # doxygen configuration
-├── ext                          # external libs
-│   └── audio_decoder            # audio decoder by rgareus
-├── inc                          # include dir
-│   ├── actions                  # actions (undo, quit, etc.)
-│   ├── audio                    # audio-related headers
-│   ├── gui                      # gui-related headers
-│   │   ├── backend              # backend for serialization
-│   │   └── widgets              # gui widgets
-│   ├── plugins                  # headers forplugin hundling
-│   ├── settings                 # settings-related headers
-│   ├── utils                    # various utils
-├── INSTALL.md                   # installation instructions
-├── install-sh                   # needed when installing
-├── Makefile.in                  # custom makefile
-├── PKGBUILD.in                  # arch linux package config
-├── README.md                    # main README file
-├── resources                    # non-code resources
-│   ├── fonts                    # fonts
-│   ├── icons                    # icons
-│   ├── theme                    # GTK theme
-│   └── ui                       # GTK ui files for widgets
-├── scripts                      # various scripts
-├── src                          # source (.c) files
-│   ├── actions                  # actions (undo, quit, etc.)
-│   ├── audio                    # audio-related code
-│   ├── gui                      # gui-related code
-│   │   ├── backend              # backend for serialization
-│   │   └── widgets              # gui widgets
-│   ├── main.c                   # main
-│   ├── plugins                  # plugin handling code
-│   │   ├── lv2                  # lv2 plugin handling code
-│   │   │   └── zix              # lv2 utilities
-│   ├── settings                 # settings-related code
-│   ├── utils                    # various utils
-├── THANKS                       # thank you notice
-└── zrythm.spec.in               # .rpm build configuration
-```
+
+    .
+    ├── AUTHORS                      # author information
+    ├── autogen.sh                   # creates configure
+    ├── config.guess                 # used by configure
+    ├── config.sub                   # used by configure
+    ├── configure.ac                 # options to create configure
+    ├── CONTRIBUTING.md              # contributing guidelines
+    ├── COPYING                      # license
+    ├── data                         # data files to be installed
+    │   ├── org.zrythm.gschema.xml   # GSettings schema
+    │   └── zrythm.desktop           # desktop file
+    ├── Doxyfile                     # doxygen configuration
+    ├── ext                          # external libs
+    │   └── audio_decoder            # audio decoder by rgareus
+    ├── inc                          # include dir
+    │   ├── actions                  # actions (undo, quit, etc.)
+    │   ├── audio                    # audio-related headers
+    │   ├── gui                      # gui-related headers
+    │   │   ├── backend              # backend for serialization
+    │   │   └── widgets              # gui widgets
+    │   ├── plugins                  # headers forplugin hundling
+    │   ├── settings                 # settings-related headers
+    │   ├── utils                    # various utils
+    ├── install-sh                   # needed when installing
+    ├── Makefile.in                  # custom makefile
+    ├── PKGBUILD.in                  # arch linux package config
+    ├── README.md                    # main README file
+    ├── resources                    # non-code resources
+    │   ├── fonts                    # fonts
+    │   ├── icons                    # icons
+    │   ├── theme                    # GTK theme
+    │   └── ui                       # GTK ui files for widgets
+    ├── scripts                      # various scripts
+    ├── src                          # source (.c) files
+    │   ├── actions                  # actions (undo, quit, etc.)
+    │   ├── audio                    # audio-related code
+    │   ├── gui                      # gui-related code
+    │   │   ├── backend              # backend for serialization
+    │   │   └── widgets              # gui widgets
+    │   ├── main.c                   # main
+    │   ├── plugins                  # plugin handling code
+    │   │   ├── lv2                  # lv2 plugin handling code
+    │   │   │   └── zix              # lv2 utilities
+    │   ├── settings                 # settings-related code
+    │   ├── utils                    # various utils
+    └── THANKS                       # thank you notice
+
+# DEPENDENCIES
+## Required
+- GTK+3 (library GPLv2+): https://gitlab.gnome.org/GNOME/gtk
+- jack (LGPLv2.1+): http://jackaudio.org/
+- lv2 (ISC): http://lv2plug.in/
+- lilv (ISC): https://drobilla.net/software/lilv
+- libsndfile (LGPLv3): http://www.mega-nerd.com/libsndfile
+- libyaml
+- libsamplerate (2-clause BSD): http://www.mega-nerd.com/libsamplerate
+- portaudio (MIT): www.portaudio.com/
+
+## Optional
+- ffmpeg (LGPL 2.1+, GPL 2+): https://ffmpeg.org/
+- Qt5
+
+Note: optional dependencies are turned on using
+`--with-***`. See `./configure --help`
 
 # BUILDING
-  The project uses autoconf and a custom Makefile.in, so the steps are
-  1. `./autogen.sh`. This will generate the configure script
-  2. `./configure`. This will generate the Makefile. Type `./configure --help` for available options
-  3. `make -jN` (where N is the number of cores you want to use. the higher the number the faster it will build). Once the program is built, it will need to be installed the first time before it can run (to install the GSettings). Alternatively if you don't want to install anything on your system you can run `glib-compile-schemas data/` and then run zrythm using `GSETTINGS_SCHEMA_DIR=data ./build/zrythm`. The built program will be in build/zrythm by default.
-  4. `sudo make install` to optionally install the program
+The project uses autoconf and a custom Makefile.in, so the steps are
+
+    ./autogen.sh
+    ./configure
+    make -j4
+    sudo make install # optional
+
+`make -jN`, where N is the number of cores you want to use. the higher the number the faster it will build
+
+Once the program is built, it will need to be installed the first time before it can run (to install the GSettings)
+
+Alternatively if you don't want to install anything on your system you can run `glib-compile-schemas data/` and then run zrythm using `GSETTINGS_SCHEMA_DIR=data ./build/zrythm`. The built program will be at `build/zrythm` by default
 
 # DEBUGGING
   Use `gdb build/debug/zrythm`
 
   Can also do `G_DEBUG=fatal_warnings,signals,actions G_ENABLE_DIAGNOSTIC=1 gdb build/debug/zrythm`. G_DEBUG will trigger break points at GTK warning messages and  G_ENABLE_DIAGNOSTIC is used to break at deprecation  warnings for GTK+3 (must all be fixed before porting to GTK+4).
+
+# PACKAGING
+  See the [README](git-packaging-hooks/README.md) in git-packaging-hooks and the `packaging` branch
 
 # COMMENTING
   - Document how to use the function in the header file
@@ -92,19 +103,22 @@
   GNU style is preferable
 
 # INCLUDE ORDER
-standard C library headers go first in alphabetic order, then local headers in alphabetic order, then GTK or libdazzle headers, then all other headers in alphabetic order
+standard C library headers go first in alphabetic
+order, then local headers in alphabetic order, then
+GTK or glib headers, then all other headers in
+alphabetic order
 
 # LINE LENGTH
 Please keep lines within 60 characters
 
 # LICENSING
 If you contributed significant (for copyright purposes)
-amounts of code, you may add your copyright notice (name, year and
-optionally email/website) at the top of the file, otherwise
-you agree to assign all copyrights to Alexandros Theodotou,
-the main author. You should only license your code under
-GPLv3+ like the rest of the project to ensure software
-freedom.
+amounts of code, you may add your copyright notice
+(name, year and optionally email/website) at the top
+of the file, otherwise you agree to assign all
+copyrights to Alexandros Theodotou, the main author.
+You agree that all your changes will be licensed under
+the GPLv3+ like the rest of the project.
 
 # TROUBLESHOOTING
 ## Getting random GUI related errors with no trace in valgrind or GTK warnings

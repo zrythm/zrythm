@@ -23,6 +23,7 @@
 #include <stdlib.h>
 
 #include "audio/channel.h"
+#include "audio/fader.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/fader.h"
 #include "utils/math.h"
@@ -33,24 +34,11 @@ G_DEFINE_TYPE (FaderWidget,
                fader_widget,
                GTK_TYPE_DRAWING_AREA)
 
-#define GET_VAL ((*self->getter) (self->object))
-#define SET_VAL(real) ((*self->setter)(self->object, real))
-
-static double
-fader_val_from_real (FaderWidget * self)
-{
-  double amp = GET_VAL;
-  return math_get_fader_val_from_amp (amp);
-}
-
-static double
-real_val_from_fader (FaderWidget * self, double fader)
-{
-  return math_get_amp_val_from_fader (fader);
-}
-
 static int
-draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
+draw_cb (
+  GtkWidget * widget,
+  cairo_t * cr,
+  void* data)
 {
   guint width, height;
   GtkStyleContext *context;
@@ -60,7 +48,8 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   width = gtk_widget_get_allocated_width (widget);
   height = gtk_widget_get_allocated_height (widget);
 
-  gtk_render_background (context, cr, 0, 0, width, height);
+  gtk_render_background (
+    context, cr, 0, 0, width, height);
 
   /* a custom shape that could be wrapped in a function */
   double x         = 0,        /* parameters like cairo_rectangle */
@@ -72,7 +61,7 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   double degrees = G_PI / 180.0;
   /* value in pixels = total pixels * val
    * val is percentage */
-  double fader_val = fader_val_from_real (self);
+  double fader_val = self->fader->fader_val;
   double value_px = height * fader_val;
 
   /* draw background bar */
@@ -177,12 +166,6 @@ on_motion (GtkWidget * widget, GdkEvent *event)
   return FALSE;
 }
 
-static double clamp
-(double x, double upper, double lower)
-{
-    return MIN(upper, MAX(x, lower));
-}
-
 static void
 drag_begin (GtkGestureDrag *gesture,
             double           start_x,
@@ -200,13 +183,13 @@ drag_begin (GtkGestureDrag *gesture,
   GdkModifierType state_mask;
   gdk_event_get_state (event, &state_mask);
   if (state_mask & GDK_CONTROL_MASK)
-    SET_VAL (1.0f);
+    fader_set_amp ((void *) self->fader, 1.0);
 
   char * string =
-    g_strdup_printf ("%.1f",
-                     math_amp_to_dbfs (GET_VAL));
-  gtk_label_set_text (self->tooltip_label,
-                      string);
+    g_strdup_printf (
+      "%.1f", self->fader->volume);
+  gtk_label_set_text (
+    self->tooltip_label, string);
   g_free (string);
   gtk_window_present (self->tooltip_win);
 }
@@ -222,22 +205,27 @@ drag_update (GtkGestureDrag * gesture,
   /*int use_y = abs(offset_y - self->last_y) > abs(offset_x - self->last_x);*/
   int use_y = 1;
   /*double multiplier = 0.005;*/
-  double diff = use_y ? offset_y - self->last_y : offset_x - self->last_x;
-  double height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  double diff =
+    use_y ? offset_y - self->last_y :
+    offset_x - self->last_x;
+  double height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
   double adjusted_diff = diff / height;
-  double new_fader_val = clamp (fader_val_from_real (self) + adjusted_diff,
-                                1.0,
-                                0.0);
-  SET_VAL (real_val_from_fader (self, new_fader_val));
+  double new_fader_val =
+    CLAMP (self->fader->fader_val + adjusted_diff,
+           0.0,
+           1.0);
+  fader_set_fader_val (self->fader, new_fader_val);
   self->last_x = offset_x;
   self->last_y = offset_y;
   gtk_widget_queue_draw (GTK_WIDGET (self));
 
   char * string =
-    g_strdup_printf ("%.1f",
-                     math_amp_to_dbfs (GET_VAL));
-  gtk_label_set_text (self->tooltip_label,
-                      string);
+    g_strdup_printf (
+      "%.1f", self->fader->volume);
+  gtk_label_set_text (
+    self->tooltip_label, string);
   g_free (string);
   gtk_window_present (self->tooltip_win);
 }
@@ -258,9 +246,12 @@ void
 on_reset_fader (GtkMenuItem *menuitem,
                FaderWidget * self)
 {
-  if (self->type == FADER_TYPE_CHANNEL)
+  if (self->fader->type == FADER_TYPE_CHANNEL)
     channel_reset_fader (
-      ((Fader *) self->object)->channel);
+      self->fader->channel);
+  else
+    fader_set_amp (
+      self->fader, 1.0);
 }
 
 static void
@@ -300,28 +291,20 @@ on_right_click (GtkGestureMultiPress *gesture,
 }
 
 /**
- * Creates a new Fader widget and binds it to the given value.
- *
- * @param get_val Getter function.
- * @param set_val Setter function.
- * @param object Object to call get/set with.
+ * Creates a new Fader widget and binds it to the
+ * given Fader.
  */
 void
 fader_widget_setup (
   FaderWidget * self,
-  float         (*get_val)(void *),
-  void          (*set_val)(void *, float),
-  void *        object,
-  FaderType     type,
+  Fader *       fader,
   int width)
 {
-  self->getter = get_val;
-  self->setter = set_val;
-  self->object = object;
-  self->type = type;
+  self->fader = fader;
 
   /* set size */
-  gtk_widget_set_size_request (GTK_WIDGET (self), width, -1);
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self), width, -1);
 }
 
 static void
@@ -331,26 +314,29 @@ fader_widget_init (FaderWidget * self)
   gdk_rgba_parse (&self->end_color, "#F9CA1B");
 
   /* make it able to notify */
-  gtk_widget_set_has_window (GTK_WIDGET (self), TRUE);
+  gtk_widget_set_has_window (
+    GTK_WIDGET (self), TRUE);
   int crossing_mask =
     GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;
-  gtk_widget_add_events (GTK_WIDGET (self), crossing_mask);
+  gtk_widget_add_events (
+    GTK_WIDGET (self), crossing_mask);
 
   self->drag = GTK_GESTURE_DRAG (
     gtk_gesture_drag_new (GTK_WIDGET (self)));
 
   self->tooltip_win =
     GTK_WINDOW (gtk_window_new (GTK_WINDOW_POPUP));
-  gtk_window_set_type_hint (self->tooltip_win,
-                            GDK_WINDOW_TYPE_HINT_TOOLTIP);
+  gtk_window_set_type_hint (
+    self->tooltip_win, GDK_WINDOW_TYPE_HINT_TOOLTIP);
   self->tooltip_label =
     GTK_LABEL (gtk_label_new ("label"));
-  gtk_widget_set_visible (GTK_WIDGET (self->tooltip_label),
-                          1);
-  gtk_container_add (GTK_CONTAINER (self->tooltip_win),
-                     GTK_WIDGET (self->tooltip_label));
-  gtk_window_set_position (self->tooltip_win,
-                           GTK_WIN_POS_MOUSE);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->tooltip_label), 1);
+  gtk_container_add (
+    GTK_CONTAINER (self->tooltip_win),
+    GTK_WIDGET (self->tooltip_label));
+  gtk_window_set_position (
+    self->tooltip_win, GTK_WIN_POS_MOUSE);
 
   /* add right mouse multipress */
   GtkGestureMultiPress * right_mouse_mp =
@@ -359,7 +345,7 @@ fader_widget_init (FaderWidget * self)
         GTK_WIDGET (self)));
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (right_mouse_mp),
-                        GDK_BUTTON_SECONDARY);
+    GDK_BUTTON_SECONDARY);
 
   /* connect signals */
   g_signal_connect (

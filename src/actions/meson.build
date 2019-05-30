@@ -1,0 +1,28 @@
+action_srcs = [
+  'delete_timeline_selections_action.c',
+  'create_plugins_action.c',
+  'delete_tracks_action.c',
+  'delete_midi_arranger_selections_action.c',
+  'actions.c',
+  'copy_plugins_action.c',
+  'move_midi_arranger_selections_action.c',
+  'duplicate_timeline_selections_action.c',
+  'edit_midi_arranger_selections_action.c',
+  'move_timeline_selections_action.c',
+  'create_timeline_selections_action.c',
+  'undoable_action.c',
+  'edit_plugins_action.c',
+  'move_plugins_action.c',
+  'copy_tracks_action.c',
+  'create_midi_arranger_selections_action.c',
+  'edit_timeline_selections_action.c',
+  'edit_tracks_action.c',
+  'move_tracks_action.c',
+  'create_chords_action.c',
+  'duplicate_midi_arranger_selections_action.c',
+  'create_tracks_action.c',
+  'undo_manager.c',
+  'delete_plugins_action.c',
+]
+
+zrythm_srcs += files (action_srcs)

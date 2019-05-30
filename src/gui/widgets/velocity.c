@@ -62,7 +62,7 @@ draw_cb (GtkDrawingArea * da,
 
   Region * region =
     self->velocity->midi_note->region;
-  GdkRGBA * color = &region->track->color;
+  GdkRGBA * color = &region->lane->track->color;
 
   cairo_set_source_rgba (cr,
                          color->red - 0.2,

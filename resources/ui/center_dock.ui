@@ -55,42 +55,48 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkScrolledWindow" id="tracklist_scroll">
+                      <object class="GtkPaned" id="tracklist_paned">
                         <property name="visible">1</property>
-                        <property name="can-focus">1</property>
-                        <property name="vexpand">1</property>
-                        <property name="hscrollbar-policy">never</property>
-                        <property name="vscrollbar-policy">external</property>
-                        <property name="shadow-type">in</property>
-                        <property name="max-content-height">66000</property>
-                        <property name="propagate-natural-height">1</property>
+                        <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkViewport" id="tracklist_viewport">
-                            <property name="name">gviewport_instruments</property>
-                            <property name="height-request">6030</property>
+                          <object class="PinnedTracklistWidget" id="pinned_tracklist">
                             <property name="visible">1</property>
-                            <property name="vexpand">1</property>
-                            <property name="vscroll-policy">natural</property>
+                          </object>
+                          <packing>
+                            <property name="shrink">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkScrolledWindow" id="tracklist_scroll">
+                            <property name="visible">1</property>
+                            <property name="can-focus">1</property>
+                            <property name="expand">1</property>
+                            <property name="hscrollbar-policy">never</property>
+                            <property name="vscrollbar-policy">external</property>
+                            <property name="shadow-type">in</property>
+                            <property name="max-content-height">66000</property>
+                            <property name="propagate-natural-height">1</property>
                             <child>
-                              <object class="TracklistWidget" id="tracklist">
-                                <property name="name">tracklist</property>
+                              <object class="GtkViewport" id="tracklist_viewport">
+                                <property name="name">gviewport_instruments</property>
+                                <property name="height-request">6030</property>
                                 <property name="visible">1</property>
-                                <property name="height-request">6000</property>
+                                <property name="vexpand">1</property>
+                                <property name="vscroll-policy">natural</property>
+                                <child>
+                                  <object class="TracklistWidget" id="tracklist">
+                                    <property name="name">tracklist</property>
+                                    <property name="visible">1</property>
+                                    <property name="height-request">6000</property>
+                                  </object>
+                                </child>
                               </object>
                             </child>
                           </object>
                         </child>
                       </object>
-                      <packing>
-                        <property name="expand">1</property>
-                        <property name="position">1</property>
-                      </packing>
                     </child>
                   </object>
-                  <packing>
-                    <property name="resize">0</property>
-                    <property name="shrink">0</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkBox" id="timeline_ruler">
@@ -141,7 +147,6 @@
                       </object>
                       <packing>
                         <property name="expand">1</property>
-                        <property name="position">1</property>
                       </packing>
                     </child>
                   </object>

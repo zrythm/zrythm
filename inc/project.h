@@ -34,11 +34,13 @@
 #include "audio/automation_lane.h"
 #include "audio/automation_point.h"
 #include "audio/automation_track.h"
+#include "audio/control_room.h"
 #include "audio/engine.h"
 #include "audio/midi_note.h"
 #include "audio/port.h"
 #include "audio/quantize.h"
 #include "audio/region.h"
+#include "audio/pinned_tracklist.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/backend/clip_editor.h"
@@ -73,7 +75,6 @@ typedef struct AutomationPoint AutomationPoint;
 typedef struct AutomationCurve AutomationCurve;
 typedef struct MidiNote MidiNote;
 typedef struct Track ChordTrack;
-typedef struct Tracklist Tracklist;
 
 /**
  * Selection type, used for displaying info in the
@@ -86,6 +87,11 @@ typedef enum SelectionType
   SELECTION_TYPE_EDITOR,
 } SelectionType;
 
+
+/**
+ * Contains all of the info that will be serialized
+ * into a project file.
+ */
 typedef struct Project
 {
   char              * title; ///< project title
@@ -101,6 +107,7 @@ typedef struct Project
   UndoManager         undo_manager;
 
   Tracklist          tracklist;
+  PinnedTracklist     pinned_tracklist;
 
   /** Backend for the widget. */
   ClipEditor         clip_editor;
@@ -148,11 +155,6 @@ typedef struct Project
   Tool               tool;
 
   /**
-   * The chord track.
-   */
-  ChordTrack *      chord_track;
-
-  /**
    * If a project is currently loaded or not.
    *
    * This is useful so that we know if we need to
@@ -167,6 +169,9 @@ typedef struct Project
    * Used in inspector_widget_refresh.
    */
   SelectionType   last_selection;
+
+  /** The ControlRoom. */
+  ControlRoom       control_room;
 } Project;
 
 static const cyaml_schema_field_t

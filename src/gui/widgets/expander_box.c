@@ -142,6 +142,7 @@ expander_box_widget_init (ExpanderBoxWidget * self)
   gtk_container_add (
     GTK_CONTAINER (prv->button),
     GTK_WIDGET (box));
+  prv->btn_box = GTK_BOX (box);
 
   gtk_widget_show_all (GTK_WIDGET (self));
 

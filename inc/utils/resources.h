@@ -23,7 +23,7 @@
 #include <gtk/gtk.h>
 
 /**
- * @addtogroup Utils
+ * @addtogroup utils
  *
  * @{
  */

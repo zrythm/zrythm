@@ -347,7 +347,8 @@ automation-point:hover
 }
 
 inspector expander-box,
-inspector two-col-expander-box
+inspector two-col-expander-box,
+modulator-view two-col-expander-box
 {
   margin: 4px;
   border-style: solid;
@@ -385,4 +386,10 @@ channel expander-box
   border-style: solid;
   border-bottom-width: 1px;
   border-color: alpha (grey, 0.3);
+}
+
+.thick-separator
+{
+  min-height: 2px;
+  min-width: 2px;
 }

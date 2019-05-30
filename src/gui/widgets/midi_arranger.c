@@ -1164,6 +1164,7 @@ midi_arranger_widget_refresh_children (
   MidiArrangerWidget * self)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
+  int i, j, k;
 
   /* remove all children except bg */
   GList *children, *iter;
@@ -1194,7 +1195,7 @@ midi_arranger_widget_refresh_children (
 
       /* add notes of main region */
       Region * mr = CLIP_EDITOR->region;
-      for (int j = 0; j < mr->num_midi_notes; j++)
+      for (j = 0; j < mr->num_midi_notes; j++)
         {
           mn = mr->midi_notes[j];
           gtk_overlay_add_overlay (
@@ -1204,19 +1205,27 @@ midi_arranger_widget_refresh_children (
 
       /* add notes of all other regions */
       Region * other_r;
-      for (int i = 0; i < mr->track->num_regions; i++)
+      TrackLane * lane;
+      Track * track = mr->lane->track;
+      for (k = 0; k < track->num_lanes; k++)
         {
-          other_r = mr->track->regions[i];
-          if (!g_strcmp0 (mr->name, other_r->name))
-            continue;
+          lane = track->lanes[k];
 
-          for (int j = 0;
-               j < other_r->num_midi_notes; j++)
+          for (i = 0; i < lane->num_regions; i++)
             {
-              mn = other_r->midi_notes[j];
-              gtk_overlay_add_overlay (
-                GTK_OVERLAY (self),
-                GTK_WIDGET (mn->widget));
+              other_r = lane->regions[i];
+              if (!g_strcmp0 (
+                    mr->name, other_r->name))
+                continue;
+
+              for (j = 0;
+                   j < other_r->num_midi_notes; j++)
+                {
+                  mn = other_r->midi_notes[j];
+                  gtk_overlay_add_overlay (
+                    GTK_OVERLAY (self),
+                    GTK_WIDGET (mn->widget));
+                }
             }
         }
     }

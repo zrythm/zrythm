@@ -50,6 +50,13 @@ typedef struct _CenterDockWidget CenterDockWidget;
 typedef struct _BotBarWidget BotBarWidget;
 typedef struct _TopBarWidget TopBarWidget;
 
+/**
+ * The main window of Zrythm.
+ *
+ * Inherits from GtkApplicationWindow, meaning that
+ * it is the parent of all other sub-windows of
+ * Zrythm.
+ */
 typedef struct _MainWindowWidget
 {
   GtkApplicationWindow     parent_instance;

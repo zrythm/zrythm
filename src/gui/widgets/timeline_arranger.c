@@ -96,37 +96,53 @@ timeline_arranger_widget_set_allocation (
     {
       RegionWidget * rw = Z_REGION_WIDGET (widget);
       REGION_WIDGET_GET_PRIVATE (rw);
-      Track * track = rw_prv->region->track;
-      /*TRACK_WIDGET_GET_PRIVATE (track->widget);*/
+      TrackLane * lane = rw_prv->region->lane;
+      Track * track =
+        TRACKLIST->tracks[
+          rw_prv->region->track_pos];
 
       if (!track->widget)
         track->widget = track_widget_new (track);
-
-      gint wx, wy;
-      gtk_widget_translate_coordinates(
-        GTK_WIDGET (track->widget),
-        GTK_WIDGET (self),
-        0, 0,
-        &wx, &wy);
 
       allocation->x =
         ui_pos_to_px_timeline (
           &rw_prv->region->start_pos,
           1);
-      allocation->y = wy;
       allocation->width =
         (ui_pos_to_px_timeline (
           &rw_prv->region->end_pos,
           1) - allocation->x) - 1;
 
-      allocation->height =
-        gtk_widget_get_allocated_height (
-          GTK_WIDGET (track->widget));
-      if (track->bot_paned_visible)
+      TRACK_WIDGET_GET_PRIVATE (track->widget);
+
+      gint wx, wy;
+      if (rw_prv->region->is_lane_region)
         {
-          allocation->height -=
+          gtk_widget_translate_coordinates(
+            GTK_WIDGET (lane->widget),
+            GTK_WIDGET (self),
+            0, 0,
+            &wx, &wy);
+
+          allocation->y = wy;
+
+          allocation->height =
             gtk_widget_get_allocated_height (
-              track_widget_get_bottom_paned (track->widget)) + 1;
+              GTK_WIDGET (lane->widget));
+        }
+      else
+        {
+          gtk_widget_translate_coordinates(
+            GTK_WIDGET (track->widget),
+            GTK_WIDGET (self),
+            0, 0,
+            &wx, &wy);
+
+          allocation->y = wy;
+
+          allocation->height =
+            gtk_widget_get_allocated_height (
+              GTK_WIDGET (tw_prv->top_grid));
         }
     }
   else if (Z_IS_AUTOMATION_POINT_WIDGET (widget))
@@ -252,6 +268,11 @@ timeline_arranger_widget_get_cursor (
               self,
               ar_prv->hover_x,
               ar_prv->hover_y);
+          ChordWidget * cw =
+            timeline_arranger_widget_get_hit_chord (
+              self,
+              ar_prv->hover_x,
+              ar_prv->hover_y);
 
           REGION_WIDGET_GET_PRIVATE (rw);
           /* TODO chords, aps */
@@ -279,7 +300,7 @@ timeline_arranger_widget_get_cursor (
             {
               Track * track =
                 timeline_arranger_widget_get_track_at_y (
-                  ar_prv->hover_y);
+                self, ar_prv->hover_y);
 
               if (track)
                 {
@@ -354,8 +375,40 @@ timeline_arranger_widget_get_cursor (
 
 
 Track *
-timeline_arranger_widget_get_track_at_y (double y)
+timeline_arranger_widget_get_track_at_y (
+  TimelineArrangerWidget * self,
+  double y)
 {
+  /** check pinned */
+  Track * tracks[3];
+  tracks[0] = PINNED_TRACKLIST->chord_track;
+  tracks[1] = PINNED_TRACKLIST->marker_track;
+  int num_tracks = 2;
+  for (int i = 0; i < num_tracks; i++)
+    {
+      Track * track = tracks[i];
+
+      GtkAllocation allocation;
+      gtk_widget_get_allocation (
+        GTK_WIDGET (track->widget),
+        &allocation);
+
+      gint wx, wy;
+      gtk_widget_translate_coordinates(
+        GTK_WIDGET (self),
+        GTK_WIDGET (track->widget),
+        0,
+        y,
+        &wx,
+        &wy);
+
+      if (wy >= 0 && wy <= allocation.height)
+        {
+          return track;
+        }
+    }
+
+  /** check normal */
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       Track * track = TRACKLIST->tracks[i];
@@ -367,7 +420,7 @@ timeline_arranger_widget_get_track_at_y (double y)
 
       gint wx, wy;
       gtk_widget_translate_coordinates(
-        GTK_WIDGET (MW_TIMELINE),
+        GTK_WIDGET (self),
         GTK_WIDGET (track->widget),
         0,
         y,
@@ -511,20 +564,6 @@ timeline_arranger_widget_select_all (
   TL_SELECTIONS->num_regions = 0;
   TL_SELECTIONS->num_aps = 0;
 
-  /* select chords */
-  ChordTrack * ct =
-    tracklist_get_chord_track (
-      TRACKLIST);
-  for (int i = 0; i < ct->num_chords; i++)
-    {
-      ZChord * chord = ct->chords[i];
-      if (chord->visible)
-        {
-          chord_widget_select (
-            chord->widget, select);
-        }
-    }
-
   /* select everything else */
   Region * r;
   Track * track;
@@ -541,13 +580,24 @@ timeline_arranger_widget_select_all (
         track_get_automation_tracklist (
           track);
 
-      for (int j = 0;
-           j < track->num_regions; j++)
+      if (track->lanes_visible)
         {
-          r = track->regions[j];
+          TrackLane * lane;
+          for (int j = 0;
+               j < track->num_lanes; j++)
+            {
+              lane = track->lanes[j];
 
-          region_widget_select (
-            r->widget, select, F_NO_TRANSIENTS);
+              for (int k = 0;
+                   k < lane->num_regions; k++)
+                {
+                  r = lane->regions[k];
+
+                  region_widget_select (
+                    r->widget, select,
+                    F_NO_TRANSIENTS);
+                }
+            }
         }
 
       if (!track->bot_paned_visible)
@@ -572,6 +622,19 @@ timeline_arranger_widget_select_all (
                     F_NO_TRANSIENTS);
                 }
             }
+        }
+    }
+
+  /* select chords */
+  ChordTrack * ct =
+    PINNED_TRACKLIST->chord_track;
+  for (int i = 0; i < ct->num_chords; i++)
+    {
+      ZChord * chord = ct->chords[i];
+      if (chord->visible)
+        {
+          chord_widget_select (
+            chord->widget, select);
         }
     }
 
@@ -651,17 +714,17 @@ timeline_arranger_widget_update_visibility (
     r,
     r_transient);
   ARRANGER_SET_SELECTION_VISIBILITY (
-    TL_SELECTIONS->chords,
-    TL_SELECTIONS->transient_chords,
-    TL_SELECTIONS->num_chords,
-    c,
-    c_transient);
-  ARRANGER_SET_SELECTION_VISIBILITY (
     TL_SELECTIONS->aps,
     TL_SELECTIONS->transient_aps,
     TL_SELECTIONS->num_aps,
     ap,
     ap_transient);
+  ARRANGER_SET_SELECTION_VISIBILITY (
+    TL_SELECTIONS->chords,
+    TL_SELECTIONS->transient_chords,
+    TL_SELECTIONS->num_chords,
+    c,
+    c_transient);
 }
 
 void
@@ -896,47 +959,47 @@ timeline_arranger_widget_set_init_poses (
       if (position_compare (&r->start_pos,
                             &ar_prv->start_pos) <= 0)
         {
-          position_set_to_pos (&ar_prv->start_pos,
-                               &r->start_pos);
+          position_set_to_pos (
+            &ar_prv->start_pos, &r->start_pos);
         }
 
       /* set start poses for regions */
       position_set_to_pos (
-        &self->region_start_poses[i],
-        &r->start_pos);
+        &r->cache_start_pos, &r->start_pos);
 
       /* set end poses for regions */
       position_set_to_pos (
-        &self->region_end_poses[i],
-        &r->end_pos);
+        &r->cache_end_pos, &r->end_pos);
     }
   for (int i = 0; i < TL_SELECTIONS->num_chords; i++)
     {
       ZChord * r = TL_SELECTIONS->chords[i];
-      if (position_compare (&r->pos,
-                            &ar_prv->start_pos) <= 0)
+      if (position_compare (
+            &r->pos,
+            &ar_prv->start_pos) <= 0)
         {
           position_set_to_pos (&ar_prv->start_pos,
                                &r->pos);
         }
 
       /* set start poses for chords */
-      position_set_to_pos (&self->chord_start_poses[i],
-                           &r->pos);
+      position_set_to_pos (
+        &r->cache_pos, &r->pos);
     }
   for (int i = 0; i < TL_SELECTIONS->num_aps; i++)
     {
       AutomationPoint * ap = TL_SELECTIONS->aps[i];
-      if (position_compare (&ap->pos,
-                            &ar_prv->start_pos) <= 0)
+      if (position_compare (
+            &ap->pos,
+            &ar_prv->start_pos) <= 0)
         {
           position_set_to_pos (&ar_prv->start_pos,
                                &ap->pos);
         }
 
       /* set start poses for APs */
-      position_set_to_pos (&self->ap_poses[i],
-                           &ap->pos);
+      position_set_to_pos (
+        &ap->cache_pos, &ap->pos);
     }
 }
 
@@ -1010,6 +1073,7 @@ timeline_arranger_widget_create_region (
         midi_region_new (
           pos, pos);
     }
+  self->start_region = region;
   position_set_min_size (&region->start_pos,
                          &region->end_pos,
                          ar_prv->snap_grid);
@@ -1032,16 +1096,14 @@ timeline_arranger_widget_create_region (
   if (track->type == TRACK_TYPE_INSTRUMENT)
     {
       track_add_region (
-        (InstrumentTrack *)track,
-        (MidiRegion *) region,
-        F_GEN_NAME);
+        track, region, 0, F_GEN_NAME);
     }
   EVENTS_PUSH (ET_REGION_CREATED,
                region);
   ar_prv->action =
     UI_OVERLAY_ACTION_CREATING_RESIZING_R;
   position_set_to_pos (
-    &self->region_end_poses[0],
+    &region->cache_end_pos,
     &region->end_pos);
   ARRANGER_WIDGET_SELECT_REGION (
     self, region, F_SELECT,
@@ -1058,18 +1120,12 @@ timeline_arranger_widget_create_chord (
 
   if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
       !ar_prv->shift_held)
-    position_snap (NULL,
-                   pos,
-                   track,
-                   NULL,
-                   ar_prv->snap_grid);
- ZChord * chord = chord_new (NOTE_A,
-                            1,
-                            NOTE_A,
-                            CHORD_TYPE_MIN,
-                            0);
- position_set_to_pos (&chord->pos,
-                      pos);
+    position_snap (
+      NULL, pos, track, NULL, ar_prv->snap_grid);
+ ZChord * chord =
+   chord_new (
+     NOTE_A, 1, NOTE_A, CHORD_TYPE_MIN, 0);
+ position_set_to_pos (&chord->pos, pos);
  /*ZChord * chords[1] = { chord };*/
  /*UndoableAction * action =*/
    /*create_chords_action_new (chords, 1);*/
@@ -1094,7 +1150,8 @@ timeline_arranger_widget_set_select_type (
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
   Track * track =
-    timeline_arranger_widget_get_track_at_y (y);
+    timeline_arranger_widget_get_track_at_y (
+      self, y);
 
   if (track)
     {
@@ -1182,7 +1239,7 @@ timeline_arranger_widget_select (
           region = rw_prv->region;
 
           track_remove_region (
-            region->track, region);
+            region->lane->track, region);
           free_later (region, region_free);
       }
     }
@@ -1313,7 +1370,7 @@ snap_region_l (
         !ar_prv->shift_held)
     position_snap (NULL,
                    new_start_pos,
-                   region->track,
+                   region->lane->track,
                    NULL,
                    ar_prv->snap_grid);
   region_set_start_pos (region, new_start_pos);
@@ -1344,7 +1401,7 @@ timeline_arranger_widget_snap_regions_l (
 #define CALC_NEW_START_POS \
   position_set_to_pos ( \
     &new_start_pos, \
-    &self->region_start_poses[i]); \
+    &region->cache_start_pos); \
   position_add_ticks ( \
     &new_start_pos, delta);
 
@@ -1384,7 +1441,7 @@ snap_region_r (
         !ar_prv->shift_held)
     position_snap (NULL,
                    new_end_pos,
-                   region->track,
+                   region->lane->track,
                    NULL,
                    ar_prv->snap_grid);
   if (position_compare (
@@ -1436,7 +1493,7 @@ timeline_arranger_widget_snap_regions_r (
       delta =
         position_to_ticks (pos) -
         position_to_ticks (
-          &self->region_end_poses[0]);
+          &self->start_region->start_pos);
     }
   else
     {
@@ -1455,7 +1512,7 @@ timeline_arranger_widget_snap_regions_r (
 #define CALC_NEW_END_POS \
   position_set_to_pos ( \
     &new_end_pos, \
-    &self->region_end_poses[i]); \
+    &region->cache_end_pos); \
   position_add_ticks ( \
     &new_end_pos, delta);
 
@@ -1559,7 +1616,7 @@ timeline_arranger_widget_move_items_x (
 
       ARRANGER_MOVE_OBJ_BY_TICKS_W_LENGTH (
         r, region,
-        &self->region_start_poses[i],
+        &r->cache_start_pos,
         ticks_diff, &tmp, length_ticks);
     }
 
@@ -1571,7 +1628,7 @@ timeline_arranger_widget_move_items_x (
       c = TL_SELECTIONS->transient_chords[i];
       ARRANGER_MOVE_OBJ_BY_TICKS (
         c, chord,
-        &self->chord_start_poses[i],
+        &c->cache_pos,
         ticks_diff, &tmp);
     }
 
@@ -1592,7 +1649,7 @@ timeline_arranger_widget_move_items_x (
 
       /* get adjusted pos for this automation point */
       Position ap_pos;
-      Position * prev_pos = &self->ap_poses[i];
+      Position * prev_pos = &ap->cache_pos;
       position_set_to_pos (&ap_pos,
                            prev_pos);
       position_add_ticks (&ap_pos, ticks_diff);
@@ -1739,8 +1796,10 @@ timeline_arranger_widget_move_items_y (
   if (self->start_region)
     {
       /* check if should be moved to new track */
-      Track * track = timeline_arranger_widget_get_track_at_y (ar_prv->start_y + offset_y);
-      Track * old_track = self->start_region->track;
+      Track * track = timeline_arranger_widget_get_track_at_y (
+        self, ar_prv->start_y + offset_y);
+      Track * old_track =
+        self->start_region->lane->track;
       if (track)
         {
           Track * pt =
@@ -1768,7 +1827,8 @@ timeline_arranger_widget_move_items_y (
               arranger_widget_is_in_moving_operation (
                 Z_ARRANGER_WIDGET (self)));
 
-          if (self->start_region->track != track)
+          if (self->start_region->lane->track !=
+              track)
             {
               /* if new track is lower and bot region is not at the lowest track */
               if (track == nt &&
@@ -1781,8 +1841,8 @@ timeline_arranger_widget_move_items_y (
                       nt =
                         tracklist_get_next_visible_track (
                           TRACKLIST,
-                          region->track);
-                      old_track = region->track;
+                          region->lane->track);
+                      old_track = region->lane->track;
                       if (old_track->type == nt->type)
                         {
                           if (nt->type ==
@@ -1792,7 +1852,7 @@ timeline_arranger_widget_move_items_y (
                                 old_track,
                                 region);
                               track_add_region (
-                                nt, region,
+                                nt, region, 0,
                                 F_NO_GEN_NAME);
                             }
                           else if (nt->type ==
@@ -1818,8 +1878,8 @@ timeline_arranger_widget_move_items_y (
                       pt =
                         tracklist_get_prev_visible_track (
                           TRACKLIST,
-                          region->track);
-                      old_track = region->track;
+                          region->lane->track);
+                      old_track = region->lane->track;
                       if (old_track->type == pt->type)
                         {
                           if (pt->type ==
@@ -1829,7 +1889,7 @@ timeline_arranger_widget_move_items_y (
                                 old_track,
                                 region);
                               track_add_region (
-                                pt, region,
+                                pt, region, 0,
                                 F_NO_GEN_NAME);
                             }
                           else if (pt->type ==
@@ -2112,40 +2172,69 @@ add_children_from_chord_track (
 static void
 add_children_from_instrument_track (
   TimelineArrangerWidget * self,
-  InstrumentTrack *        it)
+  Track *                  it)
 {
-  for (int i = 0; i < it->num_regions; i++)
+  TrackLane * lane;
+  Region * r;
+  int i, j;
+  for (j = 0; j < it->num_lanes; j++)
     {
-      Region * r = it->regions[i];
-      if (!GTK_IS_WIDGET (r->widget))
-        r->widget =
-          Z_REGION_WIDGET (
-            midi_region_widget_new (r));
-      gtk_overlay_add_overlay (
-        GTK_OVERLAY (self),
-        GTK_WIDGET (r->widget));
+      lane = it->lanes[j];
+
+      for (i = 0; i < lane->num_regions; i++)
+        {
+          r = lane->regions[i];
+          if (!GTK_IS_WIDGET (r->widget))
+            r->widget =
+              Z_REGION_WIDGET (
+                midi_region_widget_new (r));
+          gtk_overlay_add_overlay (
+            GTK_OVERLAY (self),
+            GTK_WIDGET (r->widget));
+
+          /* add the laneless region too (the
+           * region that shows in the track
+           * instead of in the lane. */
+          if (r->is_lane_region)
+            {
+              if (!GTK_IS_WIDGET (
+                    r->laneless_region->widget))
+                r->laneless_region->widget =
+                  Z_REGION_WIDGET (
+                    midi_region_widget_new (
+                      r->laneless_region));
+
+              gtk_overlay_add_overlay (
+                GTK_OVERLAY (self),
+                GTK_WIDGET (
+                  r->laneless_region->widget));
+            }
+        }
     }
-  ChannelTrack * ct = (ChannelTrack *) it;
-  add_children_from_channel_track (ct);
+  add_children_from_channel_track (it);
 }
 
 static void
 add_children_from_audio_track (
   TimelineArrangerWidget * self,
-  AudioTrack *             audio_track)
+  AudioTrack *             at)
 {
-  /*g_message ("adding children");*/
-  for (int i = 0; i < audio_track->num_regions; i++)
+  TrackLane * lane;
+  Region * r;
+  int i, j;
+  for (j = 0; j < at->num_lanes; j++)
     {
-      AudioRegion * mr = audio_track->regions[i];
-      /*g_message ("adding region");*/
-      Region * r = (Region *) mr;
-      gtk_overlay_add_overlay (
-        GTK_OVERLAY (self),
-        GTK_WIDGET (r->widget));
+      lane = at->lanes[j];
+
+      for (i = 0; i < lane->num_regions; i++)
+        {
+          r = lane->regions[i];
+          gtk_overlay_add_overlay (
+            GTK_OVERLAY (self),
+            GTK_WIDGET (r->widget));
+        }
     }
-  ChannelTrack * ct = (ChannelTrack *) audio_track;
-  add_children_from_channel_track (ct);
+  add_children_from_channel_track (at);
 }
 
 static void
@@ -2206,8 +2295,7 @@ timeline_arranger_widget_refresh_children (
             {
             case TRACK_TYPE_CHORD:
               add_children_from_chord_track (
-                self,
-                (ChordTrack *) track);
+                self, track);
               break;
             case TRACK_TYPE_INSTRUMENT:
               add_children_from_instrument_track (

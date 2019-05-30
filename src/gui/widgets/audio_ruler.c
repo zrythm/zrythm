@@ -64,7 +64,7 @@ audio_ruler_draw_cb (GtkWidget * widget,
     gtk_widget_get_allocated_height (widget);
 
   Region * region = CLIP_EDITOR->region;
-  Track * track = region->track;
+  Track * track = region->lane->track;
   cairo_set_source_rgba (cr,
                          track->color.red,
                          track->color.green,

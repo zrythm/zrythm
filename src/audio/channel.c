@@ -17,12 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * A channel on the mixer.
- */
-
 #include <math.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -920,7 +914,7 @@ channel_handle_recording (Channel * self)
             midi_region_new (
               &PLAYHEAD, &tmp);
           track_add_region (
-            self->track, mr, F_GEN_NAME);
+            self->track, mr, 0, F_GEN_NAME);
         }
 
       /* convert MIDI data to midi notes */
@@ -1135,7 +1129,10 @@ _create_channel (
       channel->plugins[i] = NULL;
     }
 
-  fader_init (&channel->fader, channel);
+  fader_init (
+    &channel->fader,
+    FADER_TYPE_CHANNEL,
+    channel);
 
   /* set up piano roll port */
   char * tmp =
@@ -1650,7 +1647,7 @@ channel_add_plugin (
       plugin,
       next_plugin);
 
-  channel->track->active= prev_active;
+  channel->track->active = prev_active;
 
   if (gen_automatables)
     plugin_generate_automatables (plugin);

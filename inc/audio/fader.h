@@ -17,6 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Backend for faders or other volume/gain controls.
+ */
+
 #ifndef __AUDIO_FADER_H__
 #define __AUDIO_FADER_H__
 
@@ -28,32 +34,58 @@
  * @{
  */
 
+typedef enum FaderType
+{
+  /** For Channel's. */
+  FADER_TYPE_CHANNEL,
+
+  /** For generic uses. */
+  FADER_TYPE_GENERIC,
+} FaderType;
+
 typedef struct Channel Channel;
 
+/**
+ * A Fader is a backend that is used for volume
+ * controls.
+ *
+ * It does not necessarily have to correspond to
+ * a FaderWidget. It can be used as a backend to
+ * KnobWidget's.
+ */
 typedef struct Fader
 {
   /**
    * Volume in dBFS. (-inf ~ +6)
    */
-  float                volume;
+  float            volume;
 
   /**
    * Volume in amplitude (0.0 ~ 1.5)
    */
-  float                amp;
-  float                phase;        ///< used by the phase knob (0.0-360.0 value)
-  float                pan; ///< (0~1) 0.5 is center
+  float            amp;
+
+  /** Used by the phase knob (0.0 ~ 360.0). */
+  float            phase;
+
+  /** (0.0 ~ 1.0) 0.5 is center. */
+  float            pan;
+
+  /** 0.0 ~ 1.0 for widgets. */
+  float            fader_val;
 
   /**
    * Current dBFS after procesing each output port.
    *
    * Transient variables only used by the GUI.
    */
-  float                l_port_db;
-  float                r_port_db;
+  float            l_port_db;
+  float            r_port_db;
 
-  /** Owner channel. */
-  Channel *            channel;
+  FaderType        type;
+
+  /** Owner channel, if channel fader. */
+  Channel *        channel;
 } Fader;
 
 static const cyaml_schema_field_t
@@ -85,10 +117,15 @@ fader_schema =
 
 /**
  * Inits fader to default values.
+ *
+ * @param self The Fader to init.
+ * @param type The FaderType.
+ * @param ch Channel, if this is a channel Fader.
  */
 void
 fader_init (
   Fader * self,
+  FaderType type,
   Channel * ch);
 
 /**
@@ -110,10 +147,20 @@ fader_add_amp (
 
 /**
  * Gets the fader amplitude (not db)
+ * FIXME is void * necessary? do it in the caller.
  */
 float
 fader_get_amp (
   void * self);
+
+/**
+ * Sets the fader levels from a normalized value
+ * 0.0-1.0 (such as in widgets).
+ */
+void
+fader_set_fader_val (
+  Fader * self,
+  float   fader_val);
 
 /**
  * Copy the struct members from source to dest.

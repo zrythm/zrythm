@@ -46,9 +46,9 @@
 
 	/* Exported constant, documented in include/cyaml/cyaml.h */
 	const uint32_t cyaml_version =
-			((VERSION_MAJOR << 16) |
-			 (VERSION_MINOR <<  8) |
-			 (VERSION_PATCH <<  0) |
+			((0 << 16) |
+			 (1 <<  8) |
+			 (1 <<  0) |
 			 CYAML_RELEASE_FLAG);
 #endif
 

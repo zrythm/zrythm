@@ -1,7 +1,5 @@
 /*
- * gui/widgets/chord_widget.h - Chord widget on timeline
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,7 +17,11 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file */
+/**
+ * \file
+ *
+ * Chord widget.
+ */
 
 #ifndef __GUI_WIDGETS_CHORD_H__
 #define __GUI_WIDGETS_CHORD_H__
@@ -34,22 +36,37 @@ G_DECLARE_FINAL_TYPE (ChordWidget,
                       CHORD_WIDGET,
                       GtkDrawingArea);
 
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
 typedef struct ZChord ZChord;
 
+/**
+ * Widget for chords inside the ChordTrack.
+ */
 typedef struct _ChordWidget
 {
   GtkDrawingArea           parent_instance;
-  ZChord *                  chord;
+  ZChord *                 chord;
 } ChordWidget;
 
 /**
  * Creates a chord widget.
  */
 ChordWidget *
-chord_widget_new (ZChord * chord);
+chord_widget_new (
+  ZChord * chord);
 
 void
-chord_widget_select (ChordWidget * self,
-                     int            select);
+chord_widget_select (
+  ChordWidget * self,
+  int            select);
+
+/**
+ * @}
+ */
 
 #endif

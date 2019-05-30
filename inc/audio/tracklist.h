@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -81,8 +81,8 @@ static const cyaml_schema_field_t
 
 static const cyaml_schema_value_t
 tracklist_schema = {
-	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
-			Tracklist, tracklist_fields_schema),
+  CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+    Tracklist, tracklist_fields_schema),
 };
 
 /**

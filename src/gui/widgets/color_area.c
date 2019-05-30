@@ -1,7 +1,5 @@
 /*
- * gui/widgets/color_area.c - A channel color widget
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,7 +17,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/track.h"
 #include "gui/widgets/color_area.h"
+#include "gui/widgets/track.h"
+#include "gui/widgets/track_top_grid.h"
 
 #include <gtk/gtk.h>
 
@@ -31,49 +32,102 @@ G_DEFINE_TYPE (ColorAreaWidget,
  * Draws the color picker.
  */
 static int
-draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
+color_area_draw_cb (
+  GtkWidget *       widget,
+  cairo_t *         cr,
+  ColorAreaWidget * self)
 {
-  ColorAreaWidget * color_area = Z_COLOR_AREA_WIDGET (widget);
-  GdkRGBA * color = color_area->color;
-  guint width, height;
-  GtkStyleContext *context;
-  context = gtk_widget_get_style_context (widget);
+  GtkStyleContext * context =
+    gtk_widget_get_style_context (widget);
 
-  width = gtk_widget_get_allocated_width (widget);
-  height = gtk_widget_get_allocated_height (widget);
+  guint width =
+    gtk_widget_get_allocated_width (widget);
+  guint height =
+    gtk_widget_get_allocated_height (widget);
 
-  gtk_render_background (context, cr, 0, 0, width, height);
+  gtk_render_background (
+    context, cr, 0, 0, width, height);
 
-  /* FIXME curved doesn't work right on vertical */
-  /* a custom shape that could be wrapped in a function */
-  /*double x         = 0,        [> parameters like cairo_rectangle <]*/
-         /*y         = 0,*/
-         /*aspect        = 1.0,     [> aspect ratio <]*/
-         /*corner_radius = height / 8.0;   [> and corner curvature radius <]*/
-
-  /*double radius = corner_radius / aspect;*/
-  /*double degrees = G_PI / 180.0;*/
-
-  /*cairo_new_sub_path (cr);*/
-  /*cairo_arc (cr, x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);*/
-  /*cairo_arc (cr, x + width - radius, y + height - radius, radius, 0 * degrees, 90 * degrees);*/
-  /*cairo_arc (cr, x + radius, y + height - radius, radius, 90 * degrees, 180 * degrees);*/
-  /*cairo_arc (cr, x + radius, y + radius, radius, 180 * degrees, 270 * degrees);*/
-  /*cairo_close_path (cr);*/
-
-  /*gdk_cairo_set_source_rgba (cr, color);*/
-  /*cairo_fill_preserve (cr);*/
+  GdkRGBA * color;
+  if (self->type == COLOR_AREA_TYPE_TRACK)
+    color = &self->track->color;
+  else
+    color = self->color;
 
   cairo_rectangle (cr, 0, 0, width, height);
   gdk_cairo_set_source_rgba (cr, color);
   cairo_fill (cr);
 
+  /* show track icon */
+  if (self->type == COLOR_AREA_TYPE_TRACK)
+    {
+      TRACK_WIDGET_GET_PRIVATE (self->track->widget);
+
+      if (tw_prv->icon)
+        {
+          cairo_surface_t * surface =
+            gdk_cairo_surface_create_from_pixbuf (
+              tw_prv->icon,
+              0,
+              NULL);
+
+          /* add shadow in the back */
+          cairo_set_source_rgba (
+            cr, 0, 0, 0, 0.4);
+          cairo_mask_surface(
+            cr, surface, 2, 2);
+          cairo_fill(cr);
+
+          /* add main icon */
+          cairo_set_source_rgba (
+            cr, 0.8, 0.8, 0.8, 1);
+          /*cairo_set_source_surface (*/
+            /*cr, surface, 1, 1);*/
+          cairo_mask_surface(
+            cr, surface, 1, 1);
+          cairo_fill (cr);
+        }
+    }
+
   return FALSE;
 }
 
+/**
+ * Creates a generic color widget using the given
+ * color pointer.
+ */
 void
-color_area_widget_set_color (ColorAreaWidget * widget,
-                             GdkRGBA * color)
+color_area_widget_setup_generic (
+  ColorAreaWidget * self,
+  GdkRGBA * color)
+{
+  /* TODO */
+
+}
+
+/**
+ * Creates a ColorAreaWidget for use inside
+ * TrackWidget implementations.
+ */
+void
+color_area_widget_setup_track (
+  ColorAreaWidget * self,
+  Track *           track)
+{
+  self->track = track;
+  self->type = COLOR_AREA_TYPE_TRACK;
+}
+
+/**
+ * Changes the color.
+ *
+ * Track types don't need to do this since the
+ * color is read directly from the Track.
+ */
+void
+color_area_widget_set_color (
+  ColorAreaWidget * widget,
+  GdkRGBA * color)
 {
   widget->color = color;
 
@@ -83,14 +137,16 @@ color_area_widget_set_color (ColorAreaWidget * widget,
 static void
 color_area_widget_init (ColorAreaWidget * self)
 {
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), NULL);
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (color_area_draw_cb), self);
 }
 
 static void
-color_area_widget_class_init (ColorAreaWidgetClass * _klass)
+color_area_widget_class_init (
+  ColorAreaWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (klass,
-                                 "color-area");
+  gtk_widget_class_set_css_name (
+    klass, "color-area");
 }

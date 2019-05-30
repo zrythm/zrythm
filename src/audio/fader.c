@@ -20,16 +20,27 @@
 #include "audio/fader.h"
 #include "utils/math.h"
 
+/**
+ * Inits fader to default values.
+ *
+ * @param self The Fader to init.
+ * @param type The FaderType.
+ * @param ch Channel, if this is a channel Fader.
+ */
 void
 fader_init (
   Fader * self,
+  FaderType type,
   Channel * ch)
 {
+  self->type = type;
   self->channel = ch;
 
   /* set volume, phase, pan */
   self->volume = 0.0f;
   self->amp = 1.0f;
+  self->fader_val =
+    math_get_fader_val_from_amp (self->amp);
   self->phase = 0.0f;
   self->pan = 0.5f;
   self->l_port_db = 0.f;
@@ -48,13 +59,8 @@ fader_set_amp (void * _fader, float amp)
   /* calculate volume */
   self->volume = math_amp_to_dbfs (amp);
 
-  /* TODO update tooltip */
-  /* FIXME DON'T DO THESE IN THE AUDIO THREAD */
-  /*gtk_label_set_text (*/
-    /*channel->widget->phase_reading,*/
-    /*g_strdup_printf ("%.1f", channel->volume));*/
-  /*g_idle_add ((GSourceFunc) redraw_fader_asnyc,*/
-              /*channel);*/
+  self->fader_val =
+    math_get_fader_val_from_amp (amp);
 }
 
 /**
@@ -70,6 +76,12 @@ fader_add_amp (
 
   self->amp =
     CLAMP (self->amp + amp, 0.0, 2.0);
+
+  self->fader_val =
+    math_get_fader_val_from_amp (self->amp);
+
+  self->volume =
+    math_amp_to_dbfs (self->amp);
 }
 
 float
@@ -77,6 +89,21 @@ fader_get_amp (void * _self)
 {
   Fader * self = (Fader *) _self;
   return self->amp;
+}
+
+/**
+ * Sets the fader levels from a normalized value
+ * 0.0-1.0 (such as in widgets).
+ */
+void
+fader_set_fader_val (
+  Fader * self,
+  float   fader_val)
+{
+  self->fader_val = fader_val;
+  self->amp =
+    math_get_amp_val_from_fader (fader_val);
+  self->volume = math_amp_to_dbfs (self->amp);
 }
 
 /**

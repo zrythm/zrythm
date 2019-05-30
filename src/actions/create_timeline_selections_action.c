@@ -77,7 +77,7 @@ create_timeline_selections_action_do (
       /* add it to track */
       track_add_region (
         TRACKLIST->tracks[region->track_pos],
-        region, F_GEN_NAME);
+        region, 0, F_GEN_NAME);
 
       /* remember its name */
       g_free (self->ts->regions[i]->name);
@@ -104,7 +104,7 @@ create_timeline_selections_action_undo (
 
       /* remove it */
       track_remove_region (
-        region->track, region);
+        region->lane->track, region);
       free_later (region, region_free);
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,

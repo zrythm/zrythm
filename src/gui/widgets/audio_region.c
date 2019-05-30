@@ -59,7 +59,7 @@ audio_region_draw_cb (AudioRegionWidget * self,
   gtk_render_background (context, cr,
                          0, 0, width, height);
 
-  GdkRGBA * color = &r->track->color;
+  GdkRGBA * color = &r->lane->track->color;
   cairo_set_source_rgba (cr,
                          color->red + 0.3,
                          color->green + 0.3,

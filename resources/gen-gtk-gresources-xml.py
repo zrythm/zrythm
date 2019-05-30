@@ -124,6 +124,7 @@ for cat in ['actions', 'animations', 'applets', 'apps', 'categories', 'devices',
               f.endswith('zoom-original.svg') or
               f.endswith('node-type-cusp.svg') or
               f.endswith('text-x-csrc.svg') or
+              f.endswith('audio-headphones.svg') or
               f.endswith('document-properties.svg') or
               f.endswith('visibility.svg') or
               f.endswith('view-fullscreen.svg') or
@@ -138,6 +139,7 @@ for cat in ['actions', 'animations', 'applets', 'apps', 'categories', 'devices',
               f.endswith('inode-directory.svg') or
               f.endswith('none.svg') or
               f.endswith('audio-card.svg') or
+              f.endswith('minuet-chords.svg') or
               f.endswith('emblem-symbolic-link.svg') or
               f.endswith('window-minimize.svg') or
               f.endswith('window-close.svg') or
@@ -176,7 +178,9 @@ for cat in ['actions', 'animations', 'applets', 'apps', 'categories', 'devices',
               f.endswith('step_object_Controller.svg') or
               f.endswith('application-msword.svg') or
               f.endswith('gtk-add.svg') or
+              f.endswith('kdenlive-show-markers.svg') or
               f.endswith('document-duplicate.svg') or
+              f.endswith('mathmode.svg') or
               f.endswith('distortionfx.svg') or
               f.endswith('selection-end-symbolic.svg') or
               f.endswith('edit-select.svg') or

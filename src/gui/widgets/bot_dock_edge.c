@@ -18,8 +18,10 @@
  */
 
 #include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/chord_pad.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/mixer.h"
+#include "gui/widgets/modulator_view.h"
 #include "gui/widgets/piano_roll.h"
 #include "gui/widgets/rack.h"
 #include "utils/gtk.h"
@@ -32,15 +34,11 @@ G_DEFINE_TYPE (BotDockEdgeWidget,
 static void
 bot_dock_edge_widget_init (BotDockEdgeWidget * self)
 {
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      RACK_WIDGET_TYPE, NULL)));
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      CLIP_EDITOR_WIDGET_TYPE, NULL)));
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      MIXER_WIDGET_TYPE, NULL)));
+  g_type_ensure (MIXER_WIDGET_TYPE);
+  g_type_ensure (RACK_WIDGET_TYPE);
+  g_type_ensure (CLIP_EDITOR_WIDGET_TYPE);
+  g_type_ensure (MODULATOR_VIEW_WIDGET_TYPE);
+  g_type_ensure (CHORD_PAD_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -52,14 +50,15 @@ bot_dock_edge_widget_init (BotDockEdgeWidget * self)
 }
 
 static void
-bot_dock_edge_widget_class_init (BotDockEdgeWidgetClass * _klass)
+bot_dock_edge_widget_class_init (
+  BotDockEdgeWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass,
-                                "bot_dock_edge.ui");
+  resources_set_class_template (
+    klass, "bot_dock_edge.ui");
 
-  gtk_widget_class_set_css_name (klass,
-                                 "bot-dock-edge");
+  gtk_widget_class_set_css_name (
+    klass, "bot-dock-edge");
 
   gtk_widget_class_bind_template_child (
     klass,
@@ -76,5 +75,5 @@ bot_dock_edge_widget_class_init (BotDockEdgeWidgetClass * _klass)
   gtk_widget_class_bind_template_child (
     klass,
     BotDockEdgeWidget,
-    rack);
+    modulator_view);
 }

@@ -29,6 +29,7 @@
 #include "gui/widgets/piano_roll.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/ruler.h"
+#include "gui/widgets/pinned_tracklist.h"
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_minimap.h"
@@ -72,16 +73,37 @@ on_hadj_value_changed (GtkAdjustment *adjustment,
 void
 center_dock_widget_setup (CenterDockWidget * self)
 {
-  ruler_widget_refresh (Z_RULER_WIDGET (MW_RULER));
-  ruler_widget_refresh (Z_RULER_WIDGET (MIDI_RULER));
+
+  tracklist_widget_setup (
+    self->tracklist,
+    TRACKLIST);
+  pinned_tracklist_widget_setup (
+    self->pinned_tracklist,
+    PINNED_TRACKLIST);
+
+  /* setup ruler */
+  gtk_scrolled_window_set_hadjustment (
+    self->ruler_scroll,
+    gtk_scrolled_window_get_hadjustment (
+      self->timeline_scroll));
+
+  ruler_widget_refresh (
+    Z_RULER_WIDGET (MW_RULER));
+  ruler_widget_refresh (
+    Z_RULER_WIDGET (MIDI_RULER));
 
   /* setup timeline */
-  arranger_widget_setup (Z_ARRANGER_WIDGET (MW_TIMELINE),
-                         SNAP_GRID_TIMELINE);
+  arranger_widget_setup (
+    Z_ARRANGER_WIDGET (self->timeline),
+    SNAP_GRID_TIMELINE);
+
+  /* link vertical scroll of timeline to
+   * tracklist */
   gtk_scrolled_window_set_vadjustment (
-    MW_CENTER_DOCK->timeline_scroll,
+    self->timeline_scroll,
     gtk_scrolled_window_get_vadjustment (
-      MW_CENTER_DOCK->tracklist_scroll));
+      self->tracklist_scroll));
+
   gtk_widget_show_all (
     GTK_WIDGET (MW_CENTER_DOCK->timeline));
 
@@ -89,10 +111,9 @@ center_dock_widget_setup (CenterDockWidget * self)
     gtk_scrollable_get_hadjustment (
       GTK_SCROLLABLE (self->ruler_viewport));
 
-  g_signal_connect (G_OBJECT (adj),
-                    "value-changed",
-                    G_CALLBACK (on_hadj_value_changed),
-                    self);
+  g_signal_connect (
+    G_OBJECT (adj), "value-changed",
+    G_CALLBACK (on_hadj_value_changed), self);
 }
 
 static void
@@ -107,6 +128,7 @@ center_dock_widget_init (CenterDockWidget * self)
   g_type_ensure (TRACKLIST_HEADER_WIDGET_TYPE);
   g_type_ensure (TRACKLIST_WIDGET_TYPE);
   g_type_ensure (TIMELINE_SELECTION_INFO_WIDGET_TYPE);
+  g_type_ensure (PINNED_TRACKLIST_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -138,12 +160,13 @@ center_dock_widget_init (CenterDockWidget * self)
 static void
 center_dock_widget_class_init (CenterDockWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass,
-                                "center_dock.ui");
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (
+    klass, "center_dock.ui");
 
-  gtk_widget_class_set_css_name (klass,
-                                 "center-dock");
+  gtk_widget_class_set_css_name (
+    klass, "center-dock");
 
   gtk_widget_class_bind_template_child (
     klass,
@@ -209,6 +232,10 @@ center_dock_widget_class_init (CenterDockWidgetClass * _klass)
     klass,
     CenterDockWidget,
     ruler);
+  gtk_widget_class_bind_template_child (
+    klass,
+    CenterDockWidget,
+    pinned_tracklist);
   gtk_widget_class_bind_template_child (
     klass,
     CenterDockWidget,

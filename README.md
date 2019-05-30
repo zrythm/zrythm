@@ -1,7 +1,10 @@
+Zrythm
+======
+
 [![translated](https://translate.zrythm.org/widgets/zrythm/-/zrythm/svg-badge.svg "Translated")](https://translate.zrythm.org/projects/zrythm/zrythm/)
 [![pipeline](https://git.zrythm.org/zrythm/zrythm/badges/master/pipeline.svg "Pipeline")](https://git.zrythm.org/zrythm/zrythm/pipelines)
 [![coverage](https://git.zrythm.org/zrythm/zrythm/badges/master/coverage.svg "Test Coverage")](https://git.zrythm.org/zrythm/zrythm)
-[![chat](data/chat-matrix.svg "Chat on Matrix")](https://riot.im/app/#/room/#freenode_#zrythm:matrix.org?action=chat)
+[![chat](https://git.zrythm.org/zrythm/zrythm/raw/master/data/chat-matrix.svg?inline=false "Chat on Matrix")](https://riot.im/app/#/room/#freenode_#zrythm:matrix.org?action=chat)
 [![patrons](http://img.shields.io/liberapay/patrons/Zrythm.svg?logo=liberapay "LiberaPay Patrons")](https://liberapay.com/Zrythm)
 
 Zrythm is a highly automated Digital Audio Workstation (DAW) designed to be featureful and intuitive to use. Zrythm sets itself apart from other DAWs by allowing extensive automation via built-in LFOs and envelopes and intuitive MIDI or audio editing and arranging via clips.
@@ -13,24 +16,23 @@ It is written in C and uses the GTK+3 toolkit, with bits and pieces taken from o
 More info at https://www.zrythm.org
 
 ## Current state
-![screenshot 1](https://www.zrythm.org/img/Screenshot%20from%202019-02-07%2018-19-51.png)
-![screenshot 2](https://www.zrythm.org/img/Screenshot%20from%202019-02-07%2018-20-47.png)
+![screenshot 1](https://www.zrythm.org/static/images/may_28_2019.png)
+![screenshot 2](https://www.zrythm.org/static/images/may_28_2019_2.png)
 
 ## Currently supported protocols:
 - LV2
 
 ## Installation
-For easy package installation see [Installation](https://manual.zrythm.org/zrythm-configuration/installation/intro.html) in the Manual.
+For easy package installation see [Installation](https://manual.zrythm.org/en/configuration/installation/intro.html) in the Manual.
 
 For manual installation,
-```
-./autogen.sh
-./configure
-make -j8
-sudo make install
-```
 
-For more details see [INSTALL.md](INSTALL.md).
+    ./autogen.sh
+    ./configure
+    make -j8
+    sudo make install
+
+For more details see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Using
 At the moment, Zrythm assumes you have Jack installed and will only run if Jack is running. For Jack setup instructions see https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack
@@ -38,8 +40,6 @@ At the moment, Zrythm assumes you have Jack installed and will only run if Jack 
 Please refer to the [manual](https://manual.zrythm.org) for more information.
 
 ## Contributing
-For detailed installation instructions see [INSTALL.md](INSTALL.md)
-
 For contributing guidelines see [CONTRIBUTING.md](CONTRIBUTING.md)
 
 For any bugs please raise an issue or join a chatroom below

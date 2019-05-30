@@ -1,0 +1,11 @@
+option (
+  'enable_profiling',
+  type: 'boolean',
+  value: false,
+  description: 'Enable profiling')
+
+option (
+  'enable_tests',
+  type: 'boolean',
+  value: false,
+  description: 'Whether to compile unit tests')

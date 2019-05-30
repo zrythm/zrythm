@@ -17,6 +17,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ */
+
 #ifndef __GUI_WIDGETS_CLIP_EDITOR_H__
 #define __GUI_WIDGETS_CLIP_EDITOR_H__
 
@@ -37,6 +41,12 @@ typedef struct _AudioClipEditorWidget
   AudioClipEditorWidget;
 typedef struct ClipEditor ClipEditor;
 
+/**
+ * The ClipEditorWidget shows in the Clip Editor /
+ * Piano Roll tab of the bottom panel, and is a stack
+ * of PianoRollWidget for the piano roll and
+ * AudioClipEditorWidget for audio regions.
+ */
 typedef struct _ClipEditorWidget
 {
   GtkStack                 parent_instance;

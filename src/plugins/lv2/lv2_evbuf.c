@@ -21,7 +21,7 @@
 #include "lv2/lv2plug.in/ns/ext/atom/atom.h"
 #include "lv2/lv2plug.in/ns/ext/event/event.h"
 
-#include "lv2_evbuf.h"
+#include "plugins/lv2/lv2_evbuf.h"
 
 #include <gtk/gtk.h>
 

@@ -28,11 +28,17 @@
 
 #define TRACKLIST_WIDGET_TYPE \
   (tracklist_widget_get_type ())
-G_DECLARE_FINAL_TYPE (TracklistWidget,
-                      tracklist_widget,
-                      Z,
-                      TRACKLIST_WIDGET,
-                      DzlMultiPaned)
+G_DECLARE_FINAL_TYPE (
+  TracklistWidget,
+  tracklist_widget,
+  Z, TRACKLIST_WIDGET,
+  DzlMultiPaned)
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 #define MW_TRACKLIST MW_CENTER_DOCK->tracklist
 
@@ -42,13 +48,17 @@ typedef struct _ChordTrackWidget ChordTrackWidget;
 typedef struct Track InstrumentTrack;
 typedef struct Tracklist Tracklist;
 
+/**
+ * The TracklistWidget is a DzlMultiPaned holding
+ * all the Track's in the Project.
+ */
 typedef struct _TracklistWidget
 {
   DzlMultiPaned                 parent_instance;
 
   /**
-   * Widget for drag and dropping plugins in to create
-   * new tracks.
+   * Widget for drag and dropping plugins in to
+   * create new tracks.
    */
   DragDestBoxWidget *           ddbox;
 
@@ -58,9 +68,13 @@ typedef struct _TracklistWidget
   Tracklist *                   tracklist;
 } TracklistWidget;
 
+/**
+ * Sets up the TracklistWidget.
+ */
 void
-tracklist_widget_setup (TracklistWidget * self,
-                        Tracklist * tracklist);
+tracklist_widget_setup (
+  TracklistWidget * self,
+  Tracklist * tracklist);
 
 /**
  * Selects the track, with the option to either
@@ -83,21 +97,32 @@ tracklist_widget_select_all_tracks (
   int              select);
 
 /**
- * Makes sure all the tracks for channels marked as visible are visible.
+ * Makes sure all the tracks for channels marked as
+ * visible are visible.
  */
 void
-tracklist_widget_soft_refresh (TracklistWidget *self);
+tracklist_widget_soft_refresh (
+  TracklistWidget *self);
 
 
+/**
+ * Gets hit TrackWidget and the given coordinates.
+ */
 TrackWidget *
-tracklist_widget_get_hit_track (TracklistWidget *  self,
-               double            x,
-               double            y);
+tracklist_widget_get_hit_track (
+  TracklistWidget *  self,
+  double            x,
+  double            y);
 
 /**
  * Deletes all tracks and re-adds them.
  */
 void
-tracklist_widget_hard_refresh (TracklistWidget * self);
+tracklist_widget_hard_refresh (
+  TracklistWidget * self);
+
+/**
+ * @}
+ */
 
 #endif
