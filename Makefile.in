@@ -431,7 +431,7 @@ endif
 
 messages: $(LANG_MO_FILES)
 
-po/%/$(BIN).mo: po/%/$(BIN).po
+po/%.mo: po/%.po
 	msgfmt --output-file=$@ $<
 
 $(LANG_PO_FILES): po/$(BIN).pot

@@ -9,22 +9,25 @@ project (
     'c_std=gnu11' ],
   )
 
+prefix = get_option ('prefix')
+bindir = prefix / get_option('bindir')
+libdir = prefix / get_option ('libdir')
+libexecdir = prefix / get_option ('libexecdir')
+includedir = prefix / get_option('includedir')
+datadir = prefix / get_option('datadir')
+sysconfdir = prefix / get_option('sysconfdir')
+schemasdir = datadir / 'glib-2.0/schemas'
+
 cdata = configuration_data ()
-cdata.set (
+cdata.set_quoted (
   'PACKAGE_VERSION',
-  '"' + meson.project_version () + '"')
-cdata.set (
+  meson.project_version ())
+cdata.set_quoted (
   'CONFIGURE_DATADIR',
-  '"' +
-  join_paths (get_option ('prefix'),
-              get_option('datadir')) +
-  '"')
-cdata.set (
+  datadir)
+cdata.set_quoted (
   'CONFIGURE_LIBDIR',
-  '"' +
-  join_paths (get_option ('prefix'),
-              get_option('libdir')) +
-  '"')
+  libdir)
 
 os_darwin = false
 os_win32 = false
@@ -44,9 +47,9 @@ endif
 root_inc = include_directories ('.')
 inc_inc = include_directories ('inc')
 ext_inc = include_directories ('ext')
-midilib_inc = include_directories ('ext/midilib')
-cyaml_inc = include_directories ('ext/libcyaml')
-zix_inc = include_directories ('ext/zix')
+midilib_inc = include_directories ('ext' / 'midilib')
+cyaml_inc = include_directories ('ext' / 'libcyaml')
+zix_inc = include_directories ('ext' / 'zix')
 all_inc = [
   root_inc,
   inc_inc,
@@ -62,6 +65,9 @@ data_dir = join_paths (
   meson.source_root (), 'data')
 
 cc = meson.get_compiler ('c')
+
+# Check for programs
+find_program ('sed', required: true)
 
 check_headers = [
   'unistd.h',
@@ -222,6 +228,9 @@ add_project_arguments (
   language: 'c'
   )
 
+meson.add_install_script (
+  'scripts' / 'meson_post_install.py')
+
 gnome = import('gnome')
 
 ext_srcs = []
@@ -230,3 +239,5 @@ subdir ('po')
 subdir ('ext')
 subdir ('src')
 subdir ('test')
+subdir ('data')
+subdir ('resources')

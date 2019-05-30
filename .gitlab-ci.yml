@@ -17,6 +17,7 @@ basic_build_gcc_meson:
     - meson _build -Denable_tests=true
     - ninja -C _build
     - .gitlab-ci/run-tests.sh
+    - sudo meson install -C _build
   artifacts:
     reports:
       junit: "_build/${CI_JOB_NAME}-report.xml"
@@ -31,6 +32,7 @@ basic_build_clang_meson:
     - CC=clang meson _build -Denable_tests=true
     - ninja -C _build
     - .gitlab-ci/run-tests.sh
+    - sudo meson install -C _build
   artifacts:
     reports:
       junit: "_build/${CI_JOB_NAME}-report.xml"
@@ -45,7 +47,7 @@ basic_build_gcc_make:
   script:
     - ./autogen.sh
     - ./configure
-    - sudo make -j14
+    - make -j14
     - sudo make install
 
 package_win_64:
