@@ -210,10 +210,7 @@ audio_track_widget_init (AudioTrackWidget * self)
     0);
 
   /* set icon */
-  resources_set_image_icon (
-    tw_prv->top_grid->icon,
-    ICON_TYPE_ZRYTHM,
-    "audio.svg");
+  SET_TRACK_ICON ("audio");
 }
 
 static void

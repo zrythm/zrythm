@@ -78,7 +78,8 @@ marker_track_widget_refresh_buttons (
 }
 
 void
-marker_track_widget_refresh (MarkerTrackWidget * self)
+marker_track_widget_refresh (
+  MarkerTrackWidget * self)
 {
 }
 
@@ -89,13 +90,7 @@ marker_track_widget_init (MarkerTrackWidget * self)
   TRACK_WIDGET_GET_PRIVATE (self);
 
   /* set icon */
-  gtk_image_set_from_icon_name (
-    tw_prv->top_grid->icon,
-    "z-kdenlive-show-markers",
-    GTK_ICON_SIZE_BUTTON);
-  gtk_image_set_pixel_size (
-    tw_prv->top_grid->icon,
-    16);
+  SET_TRACK_ICON ("z-kdenlive-show-markers");
 
   gtk_widget_set_visible (GTK_WIDGET (self), 1);
 }

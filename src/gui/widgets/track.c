@@ -620,6 +620,9 @@ track_widget_new (Track * track)
   g_warn_if_fail (Z_IS_TRACK_WIDGET (self));
 
   TRACK_WIDGET_GET_PRIVATE (self);
+  color_area_widget_setup_track (
+    tw_prv->color, track);
+
   tw_prv->track = track;
 
   return self;

@@ -69,8 +69,4 @@ track_top_grid_widget_class_init (
     klass,
     TrackTopGridWidget,
     bot_controls);
-  gtk_widget_class_bind_template_child (
-    klass,
-    TrackTopGridWidget,
-    icon);
 }

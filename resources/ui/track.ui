@@ -29,7 +29,7 @@
     <child>
       <object class="ColorAreaWidget" id="color">
         <property name="visible">True</property>
-        <property name="width-request">5</property>
+        <property name="width-request">18</property>
         <property name="vexpand">1</property>
       </object>
       <packing>

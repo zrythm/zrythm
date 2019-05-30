@@ -1073,6 +1073,7 @@ timeline_arranger_widget_create_region (
         midi_region_new (
           pos, pos);
     }
+  self->start_region = region;
   position_set_min_size (&region->start_pos,
                          &region->end_pos,
                          ar_prv->snap_grid);

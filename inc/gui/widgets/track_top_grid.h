@@ -69,9 +69,6 @@ typedef struct _TrackTopGridWidget
   GtkBox *            mid_controls;
   GtkBox *            bot_controls;
 
-  /** Track icon. */
-  GtkImage *          icon;
-
   /** Owner TrackWidget. */
   TrackWidget *       owner;
 

@@ -38,6 +38,7 @@
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/pinned_tracklist.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
@@ -64,38 +65,78 @@ timeline_bg_draw_cb (
   gdk_cairo_get_clip_rectangle (cr,
                                 &rect);
 
+  int pinned_tracks_end =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (MW_PINNED_TRACKLIST));
+
   /* handle horizontal drawing for tracks */
   GtkWidget * tw_widget;
   gint wx, wy;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  Track * tracks[3];
+  tracks[0] = PINNED_TRACKLIST->chord_track;
+  tracks[1] = PINNED_TRACKLIST->marker_track;
+  int num_tracks = 2;
+  Track * track;
+  TrackWidget * tw;
+  for (int i = 0; i < num_tracks; i++)
     {
-      Track * track = TRACKLIST->tracks[i];
+      track = tracks[i];
       if (!track->visible)
         continue;
 
       /* draw line below widget */
-      TrackWidget * tw = track->widget;
-      tw_widget = GTK_WIDGET (tw);
-      if (!GTK_IS_WIDGET (tw_widget))
+      tw = track->widget;
+      if (!GTK_IS_WIDGET (tw))
         continue;
+      tw_widget = (GtkWidget *) tw;
 
       gtk_widget_translate_coordinates(
                 tw_widget,
-                GTK_WIDGET (MW_TRACKLIST),
+                widget,
                 0,
                 0,
                 &wx,
                 &wy);
       int line_y =
         wy + gtk_widget_get_allocated_height (
-          GTK_WIDGET (tw_widget));
+          tw_widget);
       if (line_y > rect.y &&
           line_y < (rect.y + rect.height))
-        z_cairo_draw_horizontal_line (cr,
-                                      line_y,
-                                      rect.x,
-                                      rect.x + rect.width,
-                                      1.0);
+        z_cairo_draw_horizontal_line (
+          cr, line_y, rect.x,
+          rect.x + rect.width, 1.0);
+    }
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      track = TRACKLIST->tracks[i];
+      if (!track->visible)
+        continue;
+
+      /* draw line below widget */
+      tw = track->widget;
+      if (!GTK_IS_WIDGET (tw))
+        continue;
+      tw_widget = (GtkWidget *) tw;
+
+      gtk_widget_translate_coordinates(
+                tw_widget,
+                widget,
+                0,
+                0,
+                &wx,
+                &wy);
+
+      if (wy < (pinned_tracks_end + rect.y))
+        continue;
+
+      int line_y =
+        wy + gtk_widget_get_allocated_height (
+          tw_widget);
+      if (line_y > rect.y &&
+          line_y < (rect.y + rect.height))
+        z_cairo_draw_horizontal_line (
+          cr, line_y, rect.x,
+          rect.x + rect.width, 1.0);
     }
 
   /* draw automation related stuff */

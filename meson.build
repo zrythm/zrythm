@@ -228,6 +228,22 @@ add_project_arguments (
   language: 'c'
   )
 
+run_target (
+  'docs',
+  command: [
+    'doc/m.css/documentation/doxygen.py',
+    'Doxyfile-mcss',
+    ],
+  )
+run_target (
+  'clean_docs',
+  command: [
+    'rm',
+    '-rf',
+    'doc' / 'html',
+    ],
+  )
+
 meson.add_install_script (
   'scripts' / 'meson_post_install.py')
 

@@ -46,6 +46,16 @@ G_DECLARE_DERIVABLE_TYPE (
   TrackWidgetPrivate * tw_prv = \
     track_widget_get_private (Z_TRACK_WIDGET (self));
 
+#define SET_TRACK_ICON(icon_name) \
+  tw_prv->icon = \
+    gtk_icon_theme_load_icon ( \
+      gtk_icon_theme_get_default (), \
+      icon_name, \
+      16, \
+      GTK_ICON_LOOKUP_FORCE_SVG | \
+        GTK_ICON_LOOKUP_FORCE_SIZE, \
+      NULL)
+
 typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct Track Track;
 typedef struct _DzlMultiPaned DzlMultiPaned;
@@ -68,6 +78,11 @@ typedef struct
 {
   /** The color on the left. */
   ColorAreaWidget *         color;
+
+  /** Track icon, currently not placed anywhere
+   * but used by the ColorAreaWidget to get the
+   * pixbuf. */
+  GdkPixbuf *                icon;
 
   GtkGestureDrag *          drag;
   GtkGestureMultiPress *    multipress;

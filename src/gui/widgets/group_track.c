@@ -211,10 +211,7 @@ group_track_widget_init (GroupTrackWidget * self)
     0);
 
   /* set icon */
-  resources_set_image_icon (
-    tw_prv->top_grid->icon,
-    ICON_TYPE_ZRYTHM,
-    "bus.svg");
+  SET_TRACK_ICON ("bus");
 }
 
 static void

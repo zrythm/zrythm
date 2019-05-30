@@ -351,10 +351,7 @@ instrument_track_widget_init (
     0);
 
   /* set icon */
-  resources_set_image_icon (
-    tw_prv->top_grid->icon,
-    ICON_TYPE_ZRYTHM,
-    "instrument.svg");
+  SET_TRACK_ICON ("instrument");
 
   gtk_widget_show_all (GTK_WIDGET (self));
 }

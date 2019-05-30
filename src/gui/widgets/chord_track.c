@@ -135,10 +135,7 @@ chord_track_widget_init (ChordTrackWidget * self)
     0);
 
   /* set icon */
-  resources_set_image_icon (
-    tw_prv->top_grid->icon,
-    ICON_TYPE_ZRYTHM,
-    "chord.svg");
+  SET_TRACK_ICON ("z-minuet-chords");
 }
 
 static void
