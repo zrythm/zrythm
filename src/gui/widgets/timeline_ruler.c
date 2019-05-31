@@ -269,6 +269,7 @@ timeline_ruler_on_drag_begin_no_marker_hit (
       int range_hit =
         ui_is_child_hit (GTK_CONTAINER (self),
                          GTK_WIDGET (self->range),
+                         1, 1,
                          start_x,
                          start_y) &&
         gtk_widget_get_visible (

@@ -73,23 +73,20 @@ Note: optional dependencies are turned on using
 `--with-***`. See `./configure --help`
 
 # BUILDING
-The project uses autoconf and a custom Makefile.in, so the steps are
+The project uses meson, so the steps are
 
-    ./autogen.sh
-    ./configure
-    make -j4
-    sudo make install # optional
-
-`make -jN`, where N is the number of cores you want to use. the higher the number the faster it will build
+    meson _build
+    ninja -C _build
+    meson install -C _build # optional
 
 Once the program is built, it will need to be installed the first time before it can run (to install the GSettings)
 
-Alternatively if you don't want to install anything on your system you can run `glib-compile-schemas data/` and then run zrythm using `GSETTINGS_SCHEMA_DIR=data ./build/zrythm`. The built program will be at `build/zrythm` by default
+Alternatively if you don't want to install anything on your system you can run `glib-compile-schemas data/` and then run zrythm using `GSETTINGS_SCHEMA_DIR=data ./_build/src/zrythm`. The built program will be at `_build/src/zrythm` by default
 
 # DEBUGGING
-  Use `gdb build/debug/zrythm`
+  Use `gdb _build/src/zrythm`
 
-  Can also do `G_DEBUG=fatal_warnings,signals,actions G_ENABLE_DIAGNOSTIC=1 gdb build/debug/zrythm`. G_DEBUG will trigger break points at GTK warning messages and  G_ENABLE_DIAGNOSTIC is used to break at deprecation  warnings for GTK+3 (must all be fixed before porting to GTK+4).
+  Can also do `G_DEBUG=fatal_warnings,signals,actions G_ENABLE_DIAGNOSTIC=1 gdb _build/src/zrythm`. G_DEBUG will trigger break points at GTK warning messages and  G_ENABLE_DIAGNOSTIC is used to break at deprecation  warnings for GTK+3 (must all be fixed before porting to GTK+4).
 
 # PACKAGING
   See the [README](git-packaging-hooks/README.md) in git-packaging-hooks and the `packaging` branch

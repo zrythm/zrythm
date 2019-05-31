@@ -144,10 +144,7 @@ ui_get_hit_child (
       gtk_widget_translate_coordinates (
         GTK_WIDGET (parent),
         GTK_WIDGET (widget),
-        x,
-        y,
-        &wx,
-        &wy);
+        x, y, &wx, &wy);
 
       /* if hit */
       if (wx >= 0 &&
@@ -165,27 +162,6 @@ ui_get_hit_child (
         }
     }
   return NULL;
-}
-
-/**
- * Returns if the child is hit or not by the coordinates in
- * parent.
- */
-int
-ui_is_child_hit (GtkContainer * parent,
-                 GtkWidget *    child,
-                 double         x, ///< x in parent space
-                 double         y) ///< y in parent space
-{
-  GtkWidget * widget =
-    ui_get_hit_child (parent,
-                      x,
-                      y,
-                      G_OBJECT_TYPE (child));
-  if (widget == child)
-    return 1;
-  else
-    return 0;
 }
 
 static void

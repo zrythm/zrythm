@@ -235,8 +235,17 @@ region_set_start_pos (
   if (position_to_ticks (&region->end_pos) -
       position_to_ticks (pos) >=
       TRANSPORT->lticks_per_beat)
-    position_set_to_pos (&region->start_pos,
-                         pos);
+    {
+      position_set_to_pos (
+        &region->start_pos, pos);
+
+      if (region->laneless_region)
+        {
+          position_set_to_pos (
+            &region->laneless_region->start_pos,
+            pos);
+        }
+    }
 }
 
 /**
@@ -308,30 +317,38 @@ region_set_end_pos (Region * region,
   if (position_to_ticks (pos) -
       position_to_ticks (&region->start_pos) >=
       TRANSPORT->lticks_per_beat)
-    position_set_to_pos (&region->end_pos,
-                         pos);
+    {
+      position_set_to_pos (
+        &region->end_pos, pos);
+      if (region->is_lane_region &&
+          region->laneless_region)
+        position_set_to_pos (
+          &region->laneless_region->end_pos, pos);
+    }
 }
 
-/**
- * Checks if position is valid then sets it.
- */
 void
-region_set_true_end_pos (Region * region,
-                         Position * pos)
+region_set_true_end_pos (
+  Region * region,
+  Position * pos)
 {
-  position_set_to_pos (&region->true_end_pos,
-                       pos);
+  position_set_to_pos (
+    &region->true_end_pos, pos);
+  if (region->laneless_region)
+    position_set_to_pos (
+      &region->laneless_region->true_end_pos, pos);
 }
 
-/**
- * Checks if position is valid then sets it.
- */
 void
-region_set_loop_end_pos (Region * region,
-                         Position * pos)
+region_set_loop_end_pos (
+  Region * region,
+  Position * pos)
 {
-  position_set_to_pos (&region->loop_end_pos,
-                       pos);
+  position_set_to_pos (
+    &region->loop_end_pos, pos);
+  if (region->laneless_region)
+    position_set_to_pos (
+      &region->laneless_region->loop_end_pos, pos);
 }
 
 /**

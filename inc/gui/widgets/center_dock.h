@@ -52,6 +52,12 @@ typedef struct _CenterDockWidget
   DzlDockBin               parent_instance;
   TimelineSelectionInfoWidget * selection_info;
   GtkBox                   * editor_top;
+
+  /** The paned containing the
+   * PinnedTracklistWidget and the
+   * TracklistWidget. */
+  GtkPaned *               tracklist_paned;
+
   GtkPaned                 * tracklist_timeline;
   GtkBox                   * tracklist_top;
   GtkScrolledWindow        * tracklist_scroll;
@@ -59,13 +65,33 @@ typedef struct _CenterDockWidget
   PinnedTracklistWidget * pinned_tracklist;
   TracklistHeaderWidget *  tracklist_header;
   TracklistWidget          * tracklist;
-  GtkScrolledWindow        * ruler_scroll;
-  GtkViewport              * ruler_viewport;
+
+  /** Scroll for ruler holding the viewport. */
+  GtkScrolledWindow *      ruler_scroll;
+
+  /** Viewport for ruler holding the ruler. */
+  GtkViewport *            ruler_viewport;
+
+  /** Ruler. */
   TimelineRulerWidget *    ruler;
-  GtkScrolledWindow        * timeline_scroll;
-  GtkViewport              * timeline_viewport;
-  CenterDockBotBoxWidget * bot_box;
+
+  /** The paned dividing the pinned and unpinned
+   * timelines. */
+  GtkPaned *               timeline_divider_pane;
+
+  GtkScrolledWindow *      timeline_scroll;
+  GtkViewport *            timeline_viewport;
+
+  /** The main timeline. */
   TimelineArrangerWidget * timeline;
+
+  GtkScrolledWindow *      pinned_timeline_scroll;
+  GtkViewport *            pinned_timeline_viewport;
+
+  /** The pinned timeline above the main one. */
+  TimelineArrangerWidget * pinned_timeline;
+
+  CenterDockBotBoxWidget * bot_box;
   LeftDockEdgeWidget *     left_dock_edge;
   RightDockEdgeWidget *    right_dock_edge;
   BotDockEdgeWidget *      bot_dock_edge;

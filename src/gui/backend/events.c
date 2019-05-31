@@ -54,6 +54,7 @@
 #include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/modulator_view.h"
 #include "gui/widgets/mixer.h"
+#include "gui/widgets/pinned_tracklist.h"
 #include "gui/widgets/route_target_selector.h"
 #include "gui/widgets/ruler_marker.h"
 #include "gui/widgets/timeline_arranger.h"
@@ -444,7 +445,7 @@ on_mixer_selections_changed ()
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
-      if (track->type == TRACK_TYPE_CHORD)
+      if (!track_type_has_channel (track->type))
         continue;
 
       ch = track->channel;
@@ -751,7 +752,8 @@ events_process (void * data)
             SNAP_GRID_TIMELINE);
 
           timeline_ruler_widget_refresh ();
-          timeline_arranger_widget_set_size ();
+          timeline_arranger_widget_set_size (
+            MW_TIMELINE);
           timeline_minimap_widget_refresh (
             MW_TIMELINE_MINIMAP);
           break;
@@ -928,6 +930,13 @@ events_process (void * data)
           on_modulator_added ((Modulator *)ev->arg);
           break;
         case ET_PINNED_TRACKLIST_SIZE_CHANGED:
+          /*gtk_widget_set_size_request (*/
+            /*GTK_WIDGET (*/
+              /*MW_CENTER_DOCK->*/
+                /*pinned_timeline_scroll),*/
+            /*-1,*/
+            /*gtk_widget_get_allocated_height (*/
+              /*GTK_WIDGET (MW_PINNED_TRACKLIST)));*/
           break;
         default:
           g_message ("event not implemented yet");

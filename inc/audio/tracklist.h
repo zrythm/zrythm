@@ -36,6 +36,8 @@
 
 typedef struct Track Track;
 typedef struct _TracklistWidget TracklistWidget;
+typedef struct _PinnedTracklistWidget
+  PinnedTracklistWidget;
 
 #define TRACKLIST (&PROJECT->tracklist)
 #define MAX_TRACKS 3000
@@ -65,7 +67,17 @@ typedef struct Tracklist
 
   int                 num_tracks;
 
+  /** For convenience. */
+  Track *             chord_track;
+
+  /** For convenience. */
+  Track *             marker_track;
+
+  /** Non-pinned TracklistWidget. */
   TracklistWidget *   widget;
+
+  /** PinnedTracklistWidget. */
+  PinnedTracklistWidget * pinned_widget;
 } Tracklist;
 
 static const cyaml_schema_field_t

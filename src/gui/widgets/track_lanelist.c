@@ -31,6 +31,26 @@ G_DEFINE_TYPE (TrackLanelistWidget,
 #define GET_TRACK(self) Track * track = \
   self->track_lanelist->track
 
+static void
+on_resize_end (
+  TrackLanelistWidget * self,
+  GtkWidget *       child)
+{
+  if (!Z_IS_TRACK_LANE_WIDGET (child))
+    return;
+
+  TrackLaneWidget * tlw =
+    Z_TRACK_LANE_WIDGET (child);
+  TrackLane * lane = tlw->lane;
+  GValue a = G_VALUE_INIT;
+  g_value_init (&a, G_TYPE_INT);
+  gtk_container_child_get_property (
+    GTK_CONTAINER (self),
+    GTK_WIDGET (tlw),
+    "position",
+    &a);
+  lane->handle_pos = g_value_get_int (&a);
+}
 
 /**
  * Creates and returns the widget.
@@ -72,6 +92,9 @@ track_lanelist_widget_refresh (
        i++)
     {
       lane = self->track->lanes[i];
+
+      g_message ("lane at %d %d %s", i,
+                 lane->pos, lane->name);
 
       if (!GTK_IS_WIDGET (lane->widget))
         lane->widget =
@@ -119,6 +142,9 @@ static void
 track_lanelist_widget_init (
   TrackLanelistWidget * self)
 {
+  g_signal_connect (
+    G_OBJECT (self), "resize-drag-end",
+    G_CALLBACK (on_resize_end), NULL);
 }
 
 static void

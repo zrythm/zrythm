@@ -51,11 +51,19 @@ typedef struct _ArrangerBgWidgetClass
   GtkDrawingAreaClass    parent_class;
 } ArrangerBgWidgetClass;
 
+/**
+ * Gets the ArrangerBgWidgetPrivate.
+ */
 ArrangerBgWidgetPrivate *
-arranger_bg_widget_get_private (ArrangerBgWidget * self);
+arranger_bg_widget_get_private (
+  ArrangerBgWidget * self);
 
+/**
+ * Refreshes the widget.
+ */
 void
-arranger_bg_widget_refresh (ArrangerBgWidget * self);
+arranger_bg_widget_refresh (
+  ArrangerBgWidget * self);
 
 /**
  * Draws the selection in its background.

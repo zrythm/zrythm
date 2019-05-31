@@ -312,6 +312,7 @@ drag_begin (GtkGestureDrag * gesture,
   int is_hit =
     ui_is_child_hit (GTK_CONTAINER (self),
                      GTK_WIDGET (self->selection),
+                     1, 1,
                      start_x,
                      start_y);
   if (is_hit)

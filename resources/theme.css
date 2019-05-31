@@ -393,3 +393,11 @@ channel expander-box
   min-height: 2px;
   min-width: 2px;
 }
+
+track-lane,
+automation-lane
+{
+  border-style: solid;
+  border-top-width: 2px;
+  border-color: alpha (grey, 0.3);
+}

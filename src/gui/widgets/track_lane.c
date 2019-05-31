@@ -36,7 +36,9 @@ void
 track_lane_widget_refresh (
   TrackLaneWidget * self)
 {
-
+  gtk_label_set_text (
+    self->label,
+    self->lane->name);
 }
 
 TrackLaneWidget *
@@ -48,12 +50,9 @@ track_lane_widget_new (
 
   self->lane = lane;
 
-  char * txt =
-    g_strdup_printf (_("Lane %d"), lane->pos);
   gtk_label_set_text (
     self->label,
-    txt);
-  g_free (txt);
+    lane->name);
 
   return self;
 }

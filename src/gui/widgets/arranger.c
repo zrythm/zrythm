@@ -1899,8 +1899,9 @@ on_focus_out (GtkWidget *widget,
 }
 
 void
-arranger_widget_setup (ArrangerWidget *   self,
-                       SnapGrid *         snap_grid)
+arranger_widget_setup (
+  ArrangerWidget *   self,
+  SnapGrid *         snap_grid)
 {
   GET_PRIVATE;
 
@@ -1956,8 +1957,9 @@ arranger_widget_setup (ArrangerWidget *   self,
   /* add the playhead */
   ar_prv->playhead =
     arranger_playhead_widget_new ();
-  gtk_overlay_add_overlay (GTK_OVERLAY (self),
-                           GTK_WIDGET (ar_prv->playhead));
+  gtk_overlay_add_overlay (
+    GTK_OVERLAY (self),
+    GTK_WIDGET (ar_prv->playhead));
 
   /* make the arranger able to notify */
   gtk_widget_add_events (GTK_WIDGET (self),
@@ -2110,7 +2112,8 @@ arranger_widget_refresh (
     }
   else if (timeline)
     {
-      timeline_arranger_widget_set_size ();
+      timeline_arranger_widget_set_size (
+        timeline);
       timeline_arranger_widget_refresh_children (
         timeline);
     }

@@ -108,9 +108,7 @@ typedef enum PanLaw PanLaw;
  */
 typedef struct PortIdentifier
 {
-  /**
-   * Human readable label.
-   */
+  /** Human readable label. */
   char *              label;
   /** Owner type. */
   PortOwnerType       owner_type;
@@ -120,7 +118,11 @@ typedef struct PortIdentifier
 	PortFlow            flow;
   /** Flags (e.g. is side chain). */
   PortFlags           flags;
+
+  /** Index of Plugin in the Channel. */
   int                 plugin_slot;
+
+  /** Index of Track in the Tracklist. */
   int                 track_pos;
   /** Index (e.g. in plugin's output ports). */
   int                 port_index;

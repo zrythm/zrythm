@@ -59,6 +59,7 @@
 #include "gui/widgets/midi_arranger_bg.h"
 #include "gui/widgets/midi_region.h"
 #include "gui/widgets/piano_roll.h"
+#include "gui/widgets/pinned_tracklist.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
@@ -379,55 +380,44 @@ timeline_arranger_widget_get_track_at_y (
   TimelineArrangerWidget * self,
   double y)
 {
+  int pinned_tracks_end_rel =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (MW_PINNED_TRACKLIST));
+  GtkAdjustment * vadj =
+    gtk_scrolled_window_get_vadjustment (
+      MW_CENTER_DOCK->timeline_scroll);
+  int pinned_tracks_start_abs =
+    gtk_adjustment_get_value (
+      vadj);
+  int pinned_tracks_end_abs =
+    pinned_tracks_start_abs +
+    pinned_tracks_end_rel;
+
   /** check pinned */
-  Track * tracks[3];
-  tracks[0] = PINNED_TRACKLIST->chord_track;
-  tracks[1] = PINNED_TRACKLIST->marker_track;
-  int num_tracks = 2;
-  for (int i = 0; i < num_tracks; i++)
-    {
-      Track * track = tracks[i];
-
-      GtkAllocation allocation;
-      gtk_widget_get_allocation (
-        GTK_WIDGET (track->widget),
-        &allocation);
-
-      gint wx, wy;
-      gtk_widget_translate_coordinates(
-        GTK_WIDGET (self),
-        GTK_WIDGET (track->widget),
-        0,
-        y,
-        &wx,
-        &wy);
-
-      if (wy >= 0 && wy <= allocation.height)
-        {
-          return track;
-        }
-    }
-
-  /** check normal */
+  Track * track;
+  int h;
+  gint wx, wy;
+  GtkWidget * tw;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      Track * track = TRACKLIST->tracks[i];
+      track = TRACKLIST->tracks[i];
 
-      GtkAllocation allocation;
-      gtk_widget_get_allocation (
-        GTK_WIDGET (track->widget),
-        &allocation);
+      /* ignore tracks hidden behind the pinned
+       * ones */
+      if (!track->pinned &&
+          y < pinned_tracks_end_abs)
+        continue;
 
-      gint wx, wy;
-      gtk_widget_translate_coordinates(
+      tw = GTK_WIDGET (track->widget);
+      h =
+        gtk_widget_get_allocated_height (tw);
+
+      gtk_widget_translate_coordinates (
         GTK_WIDGET (self),
-        GTK_WIDGET (track->widget),
-        0,
-        y,
-        &wx,
-        &wy);
+        tw,
+        0, y, &wx, &wy);
 
-      if (wy >= 0 && wy <= allocation.height)
+      if (wy >= 0 && wy <= h)
         {
           return track;
         }
@@ -626,8 +616,7 @@ timeline_arranger_widget_select_all (
     }
 
   /* select chords */
-  ChordTrack * ct =
-    PINNED_TRACKLIST->chord_track;
+  ChordTrack * ct = P_CHORD_TRACK;
   for (int i = 0; i < ct->num_chords; i++)
     {
       ZChord * chord = ct->chords[i];
@@ -1464,9 +1453,12 @@ snap_region_r (
           position_add_ticks (
             &region->true_end_pos,
             full_size);
-          position_set_to_pos (
-            &region->loop_end_pos,
-            &region->true_end_pos);
+
+          /* use the setters */
+          region_set_true_end_pos (
+            region, &region->true_end_pos);
+          region_set_loop_end_pos (
+            region, &region->true_end_pos);
         }
     }
 }
@@ -1706,18 +1698,24 @@ timeline_arranger_widget_move_items_x (
  * tracklist height.
  */
 void
-timeline_arranger_widget_set_size ()
+timeline_arranger_widget_set_size (
+  TimelineArrangerWidget * self)
 {
   // set the size
   int ww, hh;
-  TracklistWidget * tracklist = MW_TRACKLIST;
-  gtk_widget_get_size_request (
-    GTK_WIDGET (tracklist),
-    &ww,
-    &hh);
+  if (self->is_pinned)
+    gtk_widget_get_size_request (
+      GTK_WIDGET (MW_PINNED_TRACKLIST),
+      &ww,
+      &hh);
+  else
+    gtk_widget_get_size_request (
+      GTK_WIDGET (MW_TRACKLIST),
+      &ww,
+      &hh);
   RULER_WIDGET_GET_PRIVATE (MW_RULER);
   gtk_widget_set_size_request (
-    GTK_WIDGET (MW_TIMELINE),
+    GTK_WIDGET (self),
     rw_prv->total_px,
     hh);
 }
@@ -1776,9 +1774,11 @@ update_last_timeline_object ()
  * To be called once at init time.
  */
 void
-timeline_arranger_widget_setup ()
+timeline_arranger_widget_setup (
+  TimelineArrangerWidget * self)
 {
-  timeline_arranger_widget_set_size ();
+  timeline_arranger_widget_set_size (
+    self);
 
   g_timeout_add (
     1000,

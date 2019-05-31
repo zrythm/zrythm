@@ -38,6 +38,8 @@ G_DECLARE_FINAL_TYPE (TimelineArrangerWidget,
                       ArrangerWidget)
 
 #define MW_TIMELINE MW_CENTER_DOCK->timeline
+#define MW_PINNED_TIMELINE \
+  MW_CENTER_DOCK->pinned_timeline
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote MidiNote;
@@ -75,6 +77,10 @@ typedef struct _TimelineArrangerWidget
   ZChord *                  start_chord;
 
   int                      last_timeline_obj_bars;
+
+  /** Whether this TimelineArrangerWidget is for
+   * the PinnedTracklist or not. */
+  int                      is_pinned;
 
   /**
    * 1 if resizing range.
@@ -284,15 +290,21 @@ void
 timeline_arranger_widget_on_drag_end (
   TimelineArrangerWidget * self);
 
+
 /**
  * Sets width to ruler width and height to
  * tracklist height.
  */
 void
-timeline_arranger_widget_set_size ();
+timeline_arranger_widget_set_size (
+  TimelineArrangerWidget * self);
 
+/**
+ * To be called once at init time.
+ */
 void
-timeline_arranger_widget_setup ();
+timeline_arranger_widget_setup (
+  TimelineArrangerWidget * self);
 
 /**
  * Readd children.

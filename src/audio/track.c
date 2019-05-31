@@ -68,14 +68,23 @@ track_init_loaded (Track * track)
       /*&track->automation_tracklist);*/
 }
 
+/**
+ * Adds a new TrackLane to the Track.
+ */
+static void
+track_add_lane (
+  Track * track)
+{
+  track->lanes[track->num_lanes++] =
+    track_lane_new (track, track->num_lanes);
+}
+
 void
 track_init (Track * track)
 {
   track->visible = 1;
   track->handle_pos = 1;
-  track->lanes[0] =
-    track_lane_new (track, 0);
-  track->num_lanes = 1;
+  track_add_lane (track);
 }
 
 /**
@@ -510,6 +519,13 @@ track_add_region (
   track_lane_add_region (
     track->lanes[lane_pos],
     region);
+
+  /* enable extra lane if necessary */
+  if (lane_pos == track->num_lanes - 1)
+    {
+      track_add_lane (track);
+    }
+
 
   EVENTS_PUSH (ET_REGION_CREATED,
                region);

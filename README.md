@@ -27,10 +27,8 @@ For easy package installation see [Installation](https://manual.zrythm.org/en/co
 
 For manual installation,
 
-    ./autogen.sh
-    ./configure
-    make -j8
-    sudo make install
+    meson _build
+    meson install -C _build
 
 For more details see [CONTRIBUTING.md](CONTRIBUTING.md).
 

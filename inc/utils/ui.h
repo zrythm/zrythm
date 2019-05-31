@@ -249,14 +249,46 @@ ui_show_error_message_full (
   const char * message);
 
 /**
- * Returns if the child is hit or not by the coordinates in
- * parent.
+ * Returns if the child is hit or not by the
+ * coordinates in parent.
+ *
+ * @param check_x Check x-axis for match.
+ * @param check_y Check y-axis for match.
+ * @param x x in parent space.
+ * @param y y in parent space.
  */
-int
-ui_is_child_hit (GtkContainer * parent,
-                 GtkWidget *    child,
-                 double         x, ///< x in parent space
-                 double         y); ///< y in parent space
+static inline int
+ui_is_child_hit (
+  GtkContainer * parent,
+  GtkWidget *    child,
+  int            check_x,
+  int            check_y,
+  double         x,
+  double         y)
+{
+  GtkAllocation allocation;
+  gtk_widget_get_allocation (
+    child,
+    &allocation);
+
+  gint wx, wy;
+  gtk_widget_translate_coordinates (
+    GTK_WIDGET (parent),
+    child,
+    x, y, &wx, &wy);
+
+  /* if hit */
+  if ((!check_x ||
+        (wx >= 0 &&
+         wx <= allocation.width)) &&
+      (!check_y ||
+        (wy >= 0 &&
+         wy <= allocation.height)))
+    {
+      return 1;
+    }
+  return 0;
+}
 
 /**
  * Returns the matching hit child, or NULL.
