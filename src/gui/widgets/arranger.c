@@ -1045,6 +1045,9 @@ create_item (ArrangerWidget * self,
       /* double click inside a track */
       else if (track)
         {
+          TrackLane * lane =
+            timeline_arranger_widget_get_track_lane_at_y (
+              timeline, start_y);
           switch (track->type)
             {
             case TRACK_TYPE_INSTRUMENT:
@@ -1052,6 +1055,7 @@ create_item (ArrangerWidget * self,
               timeline_arranger_widget_create_region (
                 timeline,
                 track,
+                lane,
                 &pos);
               break;
             case TRACK_TYPE_MASTER:

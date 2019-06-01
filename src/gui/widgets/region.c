@@ -289,7 +289,8 @@ region_widget_select (
 {
   RegionWidgetPrivate * prv =
     region_widget_get_instance_private (self);
-  Region * main_region = prv->region->obj_info.main;
+  Region * main_region =
+    region_get_main_region (prv->region);
   if (select)
     {
       timeline_selections_add_region (

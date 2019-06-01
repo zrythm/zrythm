@@ -450,7 +450,7 @@ midi_arranger_widget_update_visibility (
   int _trans_visible = 0;
   int _non_trans_visible = 0;
   int _lane_visible;
-  ARRANGER_SET_OBJ_VISIBILITY (
+  ARRANGER_SET_OBJ_VISIBILITY_ARRAY (
     MA_SELECTIONS->midi_notes,
     MA_SELECTIONS->num_midi_notes,
     MidiNote,

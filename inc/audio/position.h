@@ -232,23 +232,38 @@ position_from_ticks (Position * pos,
 
 /**
  * Snaps position using given options.
+ *
+ * @param prev_pos Previous Position.
+ * @param pos Position moved to.
+ * @param track Track at new Position (for Region
+ *   moving) FIXME needed?.
+ * @param region Region at new Position (for
+ *   MidiNote moving) FIXME needed?.
+ * @param sg SnapGrid options.
  */
 void
-position_snap (Position * prev_pos, ///< prev pos
-               Position * pos, ///< position moved to
-               Track    * track, ///< track at new pos (for region moving)
-               Region   * region, ///< region at new pos (for midi moving)
-               SnapGrid * sg); ///< options
+position_snap (
+  Position * prev_pos,
+  Position * pos,
+  Track    * track,
+  Region   * region,
+  SnapGrid * sg);
 
 /**
- * Sets the end position to be 1 snap point away from the start pos.
+ * Sets the end position to be 1 snap point away
+ * from the start pos.
  *
  * FIXME rename to something more meaningful.
+ *
+ * @param start_pos Start Position.
+ * @param end_pos End Position.
+ * @param snap SnapGrid.
  */
 void
-position_set_min_size (Position * start_pos,  ///< start position
-                       Position * end_pos, ///< position to set
-                       SnapGrid * snap); ///< the snap grid
+position_set_min_size (
+  Position * start_pos,
+  Position * end_pos,
+  SnapGrid * snap);
 
 /**
  * Updates frames

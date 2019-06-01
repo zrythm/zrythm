@@ -70,6 +70,68 @@ G_DECLARE_DERIVABLE_TYPE (ArrangerWidget,
 #define ARRANGER_IS_MIDI_MODIFIER(self) \
   (Z_IS_MIDI_MODIFIER_ARRANGER_WIDGET (self))
 
+#define ARRANGER_SET_OBJ_VISIBILITY( \
+  cc, lc) \
+  if (ar_prv->action == \
+        UI_OVERLAY_ACTION_MOVING) \
+    { \
+      _trans_visible = 1; \
+      _non_trans_visible = 0; \
+    } \
+  else if (ar_prv->action == \
+             UI_OVERLAY_ACTION_MOVING_COPY || \
+           ar_prv->action == \
+             UI_OVERLAY_ACTION_MOVING_LINK) \
+    { \
+      _trans_visible = 1; \
+      _non_trans_visible = 1; \
+    } \
+  else if (ar_prv->action == \
+            UI_OVERLAY_ACTION_RESIZING_L || \
+          ar_prv->action == \
+            UI_OVERLAY_ACTION_RESIZING_R || \
+          ar_prv->action == \
+            UI_OVERLAY_ACTION_CREATING_RESIZING_R) \
+    { \
+      _trans_visible = 1; \
+      _non_trans_visible = 0; \
+    } \
+  else \
+    { \
+      _trans_visible = 0; \
+      _non_trans_visible = 1; \
+    } \
+  _lane_visible = \
+    lc##_get_track (lc)->lanes_visible; \
+  if (_lane_visible) \
+    { \
+      gtk_widget_set_visible ( \
+        GTK_WIDGET ( \
+          ((cc *) lc->obj_info.lane_trans)->widget), \
+        _trans_visible); \
+      gtk_widget_set_visible ( \
+        GTK_WIDGET ( \
+          ((cc *) lc->obj_info.lane)->widget), \
+        _non_trans_visible); \
+    } \
+  else \
+    { \
+      gtk_widget_set_visible ( \
+        GTK_WIDGET ( \
+          ((cc *) lc->obj_info.lane_trans)->widget), 0); \
+      gtk_widget_set_visible ( \
+        GTK_WIDGET ( \
+          ((cc *) lc->obj_info.lane)->widget), 0); \
+    } \
+  gtk_widget_set_visible ( \
+    GTK_WIDGET ( \
+      ((cc *) lc->obj_info.main_trans)->widget), \
+    _trans_visible); \
+  gtk_widget_set_visible ( \
+    GTK_WIDGET ( \
+      ((cc *) lc->obj_info.main)->widget), \
+    _non_trans_visible)
+
 /**
  * Updates the visibility of the transient/non-
  * transient objects based on the current action.
@@ -81,71 +143,13 @@ G_DECLARE_DERIVABLE_TYPE (ArrangerWidget,
  * @param cc CamelCase.
  * @param lc lower_case.
  */
-#define ARRANGER_SET_OBJ_VISIBILITY( \
+#define ARRANGER_SET_OBJ_VISIBILITY_ARRAY( \
   array, size,cc,lc) \
   cc * lc; \
   for (int i = 0; i < size; i++) \
     { \
       lc = array[i]; \
-      if (ar_prv->action == \
-            UI_OVERLAY_ACTION_MOVING) \
-        { \
-          _trans_visible = 1; \
-          _non_trans_visible = 0; \
-        } \
-      else if (ar_prv->action == \
-                 UI_OVERLAY_ACTION_MOVING_COPY || \
-               ar_prv->action == \
-                 UI_OVERLAY_ACTION_MOVING_LINK) \
-        { \
-          _trans_visible = 1; \
-          _non_trans_visible = 1; \
-        } \
-      else if (ar_prv->action == \
-                UI_OVERLAY_ACTION_RESIZING_L || \
-              ar_prv->action == \
-                UI_OVERLAY_ACTION_RESIZING_R || \
-              ar_prv->action == \
-                UI_OVERLAY_ACTION_CREATING_RESIZING_R) \
-        { \
-          _trans_visible = 1; \
-          _non_trans_visible = 0; \
-        } \
-      else \
-        { \
-          _trans_visible = 0; \
-          _non_trans_visible = 1; \
-        } \
-      _lane_visible = \
-        lc##_get_track (lc)->lanes_visible; \
-      if (_lane_visible) \
-        { \
-          gtk_widget_set_visible ( \
-            GTK_WIDGET ( \
-              ((cc *) lc->obj_info.lane_trans)->widget), \
-            _trans_visible); \
-          gtk_widget_set_visible ( \
-            GTK_WIDGET ( \
-              ((cc *) lc->obj_info.lane)->widget), \
-            _non_trans_visible); \
-        } \
-      else \
-        { \
-          gtk_widget_set_visible ( \
-            GTK_WIDGET ( \
-              ((cc *) lc->obj_info.lane_trans)->widget), 0); \
-          gtk_widget_set_visible ( \
-            GTK_WIDGET ( \
-              ((cc *) lc->obj_info.lane)->widget), 0); \
-        } \
-      gtk_widget_set_visible ( \
-        GTK_WIDGET ( \
-          ((cc *) lc->obj_info.main_trans)->widget), \
-        _trans_visible); \
-      gtk_widget_set_visible ( \
-        GTK_WIDGET ( \
-          ((cc *) lc->obj_info.main)->widget), \
-        _non_trans_visible); \
+      ARRANGER_SET_OBJ_VISIBILITY (cc, lc); \
     }
 
 /**

@@ -110,6 +110,14 @@ timeline_arranger_widget_snap_range_r (
   Position *               pos);
 
 /**
+ * Gets hit TrackLane at y.
+ */
+TrackLane *
+timeline_arranger_widget_get_track_lane_at_y (
+  TimelineArrangerWidget * self,
+  double y);
+
+/**
  * Gets the Track at y.
  */
 Track *
@@ -237,6 +245,7 @@ void
 timeline_arranger_widget_create_region (
   TimelineArrangerWidget * self,
   Track *                  track,
+  TrackLane *              lane,
   Position *               pos);
 
 void
@@ -311,6 +320,13 @@ timeline_arranger_widget_setup (
  */
 void
 timeline_arranger_widget_refresh_children (
+  TimelineArrangerWidget * self);
+
+/**
+ * Refreshes visibility of children.
+ */
+void
+timeline_arranger_widget_refresh_visibility (
   TimelineArrangerWidget * self);
 
 /**

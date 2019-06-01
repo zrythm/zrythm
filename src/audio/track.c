@@ -459,26 +459,6 @@ track_setup (Track * track)
 #undef SETUP_TRACK
 }
 
-static Region *
-get_region_by_name (Track * track, char * name)
-{
-  int i, j;
-  Region * region;
-  TrackLane * lane;
-  for (i = 0; i < track->num_lanes; i++)
-    {
-      lane = track->lanes[i];
-
-      for (j = 0; j < lane->num_regions; j++)
-        {
-          region = lane->regions[i];
-          if (g_strcmp0 (region->name, name) == 0)
-            return region;
-        }
-    }
-  return NULL;
-}
-
 /**
  * Adds a Region to the given lane of the track.
  *
@@ -516,8 +496,7 @@ track_add_region (
     {
       int count = 1;
       char * name = g_strdup (track->name);
-      while (get_region_by_name (
-              track, name))
+      while (region_find_by_name (name))
         {
           g_free (name);
           name =
@@ -527,6 +506,7 @@ track_add_region (
         }
       region_set_name (
         region, name);
+      g_message ("reigon name: %s", name);
       g_free (name);
     }
 

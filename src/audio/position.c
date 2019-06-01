@@ -338,14 +338,18 @@ snap_pos (Position * pos,
           SnapGrid * sg)
 {
   Position prev_snap_point;
-  get_prev_snap_point (pos, sg, &prev_snap_point);
+  get_prev_snap_point (
+    pos, sg, &prev_snap_point);
   Position next_snap_point;
-  get_next_snap_point (pos, sg, &next_snap_point);
-  Position * csp = closest_snap_point (pos,
-                                       &prev_snap_point,
-                                       &next_snap_point);
-  position_set_to_pos (pos,
-                       csp);
+  get_next_snap_point (
+    pos, sg, &next_snap_point);
+  Position * csp =
+    closest_snap_point (
+      pos,
+      &prev_snap_point,
+      &next_snap_point);
+  position_set_to_pos (
+    pos, csp);
 }
 
 /**
@@ -363,14 +367,10 @@ position_set_min_size (
   SnapGrid * snap)
 {
   position_set_to_pos (end_pos, start_pos);
-  g_message ("setting min size for");
-  position_print (end_pos);
   position_add_ticks (
     end_pos,
     snap_grid_get_note_ticks (snap->note_length,
                               snap->note_type));
-  g_message ("after adding ticks");
-  position_print (end_pos);
 }
 
 /**

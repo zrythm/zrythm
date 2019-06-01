@@ -510,26 +510,42 @@ on_mixer_selections_changed ()
 static inline void
 on_region_changed (Region * region)
 {
-  if (GTK_IS_WIDGET (region->widget))
+  for (int i = 0; i < 4; i++)
     {
-      gtk_widget_set_visible (
-        GTK_WIDGET (region->widget),
-        region_is_visible (region));
-      if (region_is_selected (region))
+      if (i == 0)
+        region =
+          region_get_main_region (region);
+      else if (i == 1)
+        region =
+          region_get_main_trans_region (region);
+      else if (i == 2)
+        region =
+          region_get_lane_region (region);
+      else if (i == 3)
+        region =
+          region_get_lane_trans_region (region);
+
+      if (GTK_IS_WIDGET (region->widget))
         {
-          gtk_widget_set_state_flags (
-            GTK_WIDGET (region->widget),
-            GTK_STATE_FLAG_SELECTED,
-            0);
+          /*gtk_widget_set_visible (*/
+            /*GTK_WIDGET (region->widget),*/
+            /*region_is_visible (region));*/
+          if (region_is_selected (region))
+            {
+              gtk_widget_set_state_flags (
+                GTK_WIDGET (region->widget),
+                GTK_STATE_FLAG_SELECTED,
+                0);
+            }
+          else
+            {
+              gtk_widget_unset_state_flags (
+                GTK_WIDGET (region->widget),
+                GTK_STATE_FLAG_SELECTED);
+            }
+          gtk_widget_queue_draw (
+            GTK_WIDGET (region->widget));
         }
-      else
-        {
-          gtk_widget_unset_state_flags (
-            GTK_WIDGET (region->widget),
-            GTK_STATE_FLAG_SELECTED);
-        }
-      gtk_widget_queue_draw (
-        GTK_WIDGET (region->widget));
     }
 }
 
@@ -802,6 +818,8 @@ events_process (void * data)
         case ET_TRACK_LANES_VISIBILITY_CHANGED:
           tracklist_widget_soft_refresh (
             MW_TRACKLIST);
+          timeline_arranger_widget_refresh_visibility (
+            MW_TIMELINE);
           break;
         case ET_TRACK_ADDED:
           on_track_added ((Track *) ev->arg);

@@ -392,7 +392,8 @@ int
 region_is_selected (Region * self)
 {
   if (timeline_selections_contains_region (
-        TL_SELECTIONS, self))
+        TL_SELECTIONS,
+        region_get_main_region (self)))
     return 1;
 
   return 0;
@@ -404,6 +405,7 @@ region_is_selected (Region * self)
 int
 region_is_visible (Region * self)
 {
+  /* FIXME delete */
   ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);
 
   if (ar_prv->action ==

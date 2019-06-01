@@ -377,6 +377,36 @@ timeline_arranger_widget_get_cursor (
   return ac;
 }
 
+TrackLane *
+timeline_arranger_widget_get_track_lane_at_y (
+  TimelineArrangerWidget * self,
+  double y)
+{
+  int i, j;
+  Track * track;
+  TrackLane * lane;
+  for (i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      track = TRACKLIST->tracks[i];
+
+      for (j = 0; j < track->num_lanes; j++)
+        {
+          lane = track->lanes[j];
+
+          if (!lane->widget ||
+              !GTK_IS_WIDGET (lane->widget))
+            continue;
+
+          if (ui_is_child_hit (
+                GTK_CONTAINER (self),
+                GTK_WIDGET (lane->widget),
+                0, 1, 0, y))
+            return lane;
+        }
+    }
+
+  return NULL;
+}
 
 Track *
 timeline_arranger_widget_get_track_at_y (
@@ -384,27 +414,17 @@ timeline_arranger_widget_get_track_at_y (
   double y)
 {
   Track * track;
-  int h;
-  gint wx, wy;
-  GtkWidget * tw;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
 
-      tw = GTK_WIDGET (track->widget);
-      h =
-        gtk_widget_get_allocated_height (tw);
-
-      gtk_widget_translate_coordinates (
-        GTK_WIDGET (self),
-        tw,
-        0, y, &wx, &wy);
-
-      if (wy >= 0 && wy <= h)
-        {
-          return track;
-        }
+      if (ui_is_child_hit (
+            GTK_CONTAINER (self),
+            GTK_WIDGET (track->widget),
+            0, 1, 0, y))
+        return track;
     }
+
   return NULL;
 }
 
@@ -678,17 +698,17 @@ timeline_arranger_widget_update_visibility (
   int _trans_visible = 0;
   int _non_trans_visible = 0;
   int _lane_visible;
-  ARRANGER_SET_OBJ_VISIBILITY (
+  ARRANGER_SET_OBJ_VISIBILITY_ARRAY (
     TL_SELECTIONS->regions,
     TL_SELECTIONS->num_regions,
     Region,
     region);
-  ARRANGER_SET_OBJ_VISIBILITY (
+  ARRANGER_SET_OBJ_VISIBILITY_ARRAY (
     TL_SELECTIONS->aps,
     TL_SELECTIONS->num_aps,
     AutomationPoint,
     automation_point);
-  ARRANGER_SET_OBJ_VISIBILITY (
+  ARRANGER_SET_OBJ_VISIBILITY_ARRAY (
     TL_SELECTIONS->chords,
     TL_SELECTIONS->num_chords,
     ZChord,
@@ -998,6 +1018,7 @@ void
 timeline_arranger_widget_create_region (
   TimelineArrangerWidget * self,
   Track *                  track,
+  TrackLane *              lane,
   Position *               pos)
 {
   if (track->type == TRACK_TYPE_AUDIO)
@@ -1046,21 +1067,21 @@ timeline_arranger_widget_create_region (
         track->lanes_visible);
     }
 
+  Position tmp;
   self->start_region = region;
   position_set_min_size (
     &region->start_pos,
-    &region->end_pos,
+    &tmp,
     ar_prv->snap_grid);
   region_set_end_pos (
     region,
-    &region->end_pos);
+    &tmp);
   long length =
     region_get_full_length_in_ticks (region);
   position_from_ticks (
     &region->true_end_pos, length);
   region_set_true_end_pos (
     region, &region->true_end_pos);
-  Position tmp;
   position_init (&tmp);
   region_set_clip_start_pos (
     region, &tmp);
@@ -1068,10 +1089,14 @@ timeline_arranger_widget_create_region (
     region, &tmp);
   region_set_loop_end_pos (
     region, &region->true_end_pos);
+
+  /** add it to a lane */
   if (track->type == TRACK_TYPE_INSTRUMENT)
     {
       track_add_region (
-        track, region, 0, F_GEN_NAME);
+        track, region,
+        lane ? lane->pos :
+        track->num_lanes - 1, F_GEN_NAME);
     }
   EVENTS_PUSH (ET_REGION_CREATED,
                region);
@@ -1079,6 +1104,9 @@ timeline_arranger_widget_create_region (
     UI_OVERLAY_ACTION_CREATING_RESIZING_R;
   region_set_cache_end_pos (
     region, &region->end_pos);
+  self->start_region_clone =
+    region_clone (region,
+                  REGION_CLONE_COPY);
   ARRANGER_WIDGET_SELECT_REGION (
     self, region, F_SELECT,
     F_NO_APPEND);
@@ -1419,8 +1447,8 @@ snap_region_r (
                    region->lane->track,
                    NULL,
                    ar_prv->snap_grid);
-  if (position_compare (
-        new_end_pos, &region->start_pos) > 0)
+  if (position_is_after (
+        new_end_pos, &region->start_pos))
     {
       region_set_end_pos (region,
                           new_end_pos);
@@ -1472,7 +1500,8 @@ timeline_arranger_widget_snap_regions_r (
       delta =
         position_to_ticks (pos) -
         position_to_ticks (
-          &self->start_region->start_pos);
+          &self->start_region_clone->cache_end_pos);
+      g_message ("delta %ld", delta);
     }
   else
     {
@@ -1516,7 +1545,6 @@ timeline_arranger_widget_snap_regions_r (
           /* lane region */
           region =
             region_get_lane_region (region);
-          CALC_NEW_END_POS;
           snap_region_r (
             self, region, &new_end_pos);
         }
@@ -1524,7 +1552,9 @@ timeline_arranger_widget_snap_regions_r (
       /* main trans region */
       region =
         region_get_main_trans_region (region);
-      CALC_NEW_END_POS;
+      if (ar_prv->action !=
+            UI_OVERLAY_ACTION_CREATING_RESIZING_R)
+        CALC_NEW_END_POS;
       snap_region_r (
         self, region, &new_end_pos);
 
@@ -1532,7 +1562,6 @@ timeline_arranger_widget_snap_regions_r (
       /* lane trans region */
       region =
         region_get_lane_trans_region (region);
-      CALC_NEW_END_POS;
       snap_region_r (
         self, region, &new_end_pos);
     }
@@ -1817,7 +1846,8 @@ timeline_arranger_widget_move_items_y (
   if (self->start_region)
     {
       /* check if should be moved to new track */
-      Track * track = timeline_arranger_widget_get_track_at_y (
+      Track * track =
+        timeline_arranger_widget_get_track_at_y (
         self, ar_prv->start_y + offset_y);
       Track * old_track =
         self->start_region->lane->track;
@@ -2285,6 +2315,44 @@ add_children_from_bus_track (
 }
 
 /**
+ * Refreshes visibility of children.
+ */
+void
+timeline_arranger_widget_refresh_visibility (
+  TimelineArrangerWidget * self)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  GList *children, *iter;
+  children =
+    gtk_container_get_children (
+      GTK_CONTAINER (self));
+  GtkWidget * w;
+  RegionWidget * rw;
+  Region * region;
+  int _trans_visible = 0;
+  int _non_trans_visible = 0;
+  int _lane_visible;
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      w = GTK_WIDGET (iter->data);
+
+      if (Z_IS_REGION_WIDGET (w))
+        {
+          rw = Z_REGION_WIDGET (w);
+          REGION_WIDGET_GET_PRIVATE (rw);
+          region = rw_prv->region;
+
+          ARRANGER_SET_OBJ_VISIBILITY (
+            Region, region);
+        }
+    }
+  g_list_free (children);
+}
+
+/**
  * Readd children.
  */
 void
@@ -2297,7 +2365,8 @@ timeline_arranger_widget_refresh_children (
   GList *children, *iter;
 
   children =
-    gtk_container_get_children (GTK_CONTAINER (self));
+    gtk_container_get_children (
+      GTK_CONTAINER (self));
   for (iter = children;
        iter != NULL;
        iter = g_list_next (iter))
