@@ -58,35 +58,6 @@ track_lane_add_region (
 {
   region_set_lane (region, self);
 
-  /*region->laneless_region =*/
-    /*region_clone (region, REGION_CLONE_COPY);*/
-
-  /* create regions used in the TimelineArranger */
-  Region * main =
-    region_clone (region, REGION_CLONE_COPY);
-  Region * main_trans =
-    region_clone (region, REGION_CLONE_COPY);
-  Region * lane_trans =
-    region_clone (region, REGION_CLONE_COPY);
-
-  /* set each Region's object info */
-  arranger_object_info_init (
-    &main->obj_info,
-    main, main_trans, region, lane_trans,
-    AOI_TYPE_MAIN);
-  arranger_object_info_init (
-    &main_trans->obj_info,
-    main, main_trans, region, lane_trans,
-    AOI_TYPE_MAIN_TRANSIENT);
-  arranger_object_info_init (
-    &region->obj_info,
-    main, main_trans, region, lane_trans,
-    AOI_TYPE_LANE);
-  arranger_object_info_init (
-    &lane_trans->obj_info,
-    main, main_trans, region, lane_trans,
-    AOI_TYPE_LANE_TRANSIENT);
-
   array_append (self->regions,
                 self->num_regions,
                 region);

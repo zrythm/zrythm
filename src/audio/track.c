@@ -482,6 +482,9 @@ get_region_by_name (Track * track, char * name)
 /**
  * Adds a Region to the given lane of the track.
  *
+ * The Region must be the main region (see
+ * ArrangerObjectInfo).
+ *
  * @param lane_pos The position of the lane to add
  *   to.
  * @param gen_name Generate a unique region name or
@@ -500,20 +503,31 @@ track_add_region (
     track->type == TRACK_TYPE_AUDIO) &&
     region);
   g_warn_if_fail (lane_pos >= 0);
+  g_warn_if_fail (
+    region->obj_info.type ==
+    AOI_TYPE_MAIN);
+  g_warn_if_fail (
+    region->obj_info.main &&
+    region->obj_info.main_trans &&
+    region->obj_info.lane &&
+    region->obj_info.lane_trans);
 
   if (gen_name)
     {
       int count = 1;
-      region->name = g_strdup (track->name);
+      char * name = g_strdup (track->name);
       while (get_region_by_name (
-              track, region->name))
+              track, name))
         {
-          g_free (region->name);
-          region->name =
+          g_free (name);
+          name =
             g_strdup_printf ("%s %d",
                              track->name,
                              count++);
         }
+      region_set_name (
+        region, name);
+      g_free (name);
     }
 
   track_lane_add_region (

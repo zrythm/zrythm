@@ -483,6 +483,16 @@ region_set_lane (
   Region * region,
   TrackLane * lane);
 
+void
+region_set_cache_end_pos (
+  Region * region,
+  Position * pos);
+
+void
+region_set_cache_start_pos (
+  Region * region,
+  Position * pos);
+
 /**
  * Checks if position is valid then sets it.
  */
@@ -570,6 +580,15 @@ region_generate_filename (Region * region);
 Region *
 region_get_start_region (Region ** regions,
                          int       num_regions);
+
+/**
+ * Sets Region name (without appending anything to
+ * it) to all associated regions.
+ */
+void
+region_set_name (
+  Region * region,
+  char *   name);
 
 /**
  * Removes the MIDI note and its components

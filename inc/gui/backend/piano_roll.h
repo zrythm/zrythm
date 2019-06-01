@@ -117,6 +117,9 @@ typedef struct MidiNoteDescriptor
   /** Name of the note, from C-2 to B8. */
   char *   note_name;
 
+  /** Note name with extra formatting. */
+  char *   note_name_pango;
+
   /** Whether the note is highlighted/marked or not.
    */
   int      marked;

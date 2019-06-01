@@ -43,14 +43,32 @@
 #include <sndfile.h>
 #include <samplerate.h>
 
+#define SET_POS(r,pos_name,pos) \
+  if (!region_is_transient (r)) \
+    { \
+      position_set_to_pos ( \
+        &region_get_main_trans_region (r)-> \
+        pos_name, pos); \
+      position_set_to_pos ( \
+        &region_get_lane_trans_region (r)-> \
+        pos_name, pos); \
+    } \
+  position_set_to_pos ( \
+    &region_get_lane_region (r)-> \
+    pos_name, pos); \
+  position_set_to_pos ( \
+    &region_get_main_region (r)-> \
+    pos_name, pos);
+
 /**
  * Only to be used by implementing structs.
  */
 void
-region_init (Region *   region,
-             RegionType type,
-             Position * start_pos,
-             Position * end_pos)
+region_init (
+  Region *   region,
+  RegionType type,
+  Position * start_pos,
+  Position * end_pos)
 {
   g_message ("creating region");
   position_set_to_pos (&region->start_pos,
@@ -89,18 +107,22 @@ region_set_lane (
 {
   g_return_if_fail (lane);
 
-  /*if (lane)*/
-    /*{*/
-      region->lane = lane;
-      region->lane_pos = lane->pos;
-      region->track_pos = lane->track_pos;
-    /*}*/
-  /*else*/
-    /*{*/
-      /*region->lane = NULL;*/
-      /*region->lane_pos = -1;*/
-      /*region->track_pos = -1;*/
-    /*}*/
+  Region * r;
+  for (int i = 0; i < 4; i++)
+    {
+      if (i == AOI_TYPE_MAIN)
+        r = region_get_main_region (region);
+      else if (i == AOI_TYPE_MAIN_TRANSIENT)
+        r = region_get_main_trans_region (region);
+      else if (i == AOI_TYPE_LANE)
+        r = region_get_lane_region (region);
+      else if (i == AOI_TYPE_LANE_TRANSIENT)
+        r = region_get_lane_trans_region (region);
+
+      r->lane = lane;
+      r->lane_pos = lane->pos;
+      r->track_pos = lane->track_pos;
+    }
 }
 
 /**
@@ -221,6 +243,22 @@ region_find_midi_note (
   return NULL;
 }
 
+void
+region_set_cache_end_pos (
+  Region * region,
+  Position * pos)
+{
+  SET_POS (region, cache_end_pos, pos);
+}
+
+void
+region_set_cache_start_pos (
+  Region * region,
+  Position * pos)
+{
+  SET_POS (region, cache_start_pos, pos);
+}
+
 /**
  * Clamps position then sets it.
  */
@@ -233,20 +271,7 @@ region_set_start_pos (
       position_to_ticks (pos) >=
       TRANSPORT->lticks_per_beat)
     {
-      position_set_to_pos (
-        &region->start_pos, pos);
-
-      /* update main/lane counterpart */
-      if (region->obj_info.type ==
-          AOI_TYPE_MAIN)
-        position_set_to_pos (
-          &region_get_lane_region (region)->start_pos,
-          pos);
-      else if (region->obj_info.type ==
-               AOI_TYPE_LANE)
-        position_set_to_pos (
-          &region_get_main_region (region)->start_pos,
-          pos);
+      SET_POS (region, start_pos, pos);
     }
 }
 
@@ -320,20 +345,7 @@ region_set_end_pos (Region * region,
       position_to_ticks (&region->start_pos) >=
       TRANSPORT->lticks_per_beat)
     {
-      position_set_to_pos (
-        &region->end_pos, pos);
-
-      /* update main/lane counterpart */
-      if (region->obj_info.type ==
-          AOI_TYPE_MAIN)
-        position_set_to_pos (
-          &region_get_lane_region (region)->end_pos,
-          pos);
-      else if (region->obj_info.type ==
-               AOI_TYPE_LANE)
-        position_set_to_pos (
-          &region_get_main_region (region)->end_pos,
-          pos);
+      SET_POS (region, end_pos, pos);
     }
 }
 
@@ -342,16 +354,7 @@ region_set_true_end_pos (
   Region * region,
   Position * pos)
 {
-  position_set_to_pos (
-    &region->true_end_pos, pos);
-  if (region_is_lane (region))
-    position_set_to_pos (
-      &region_get_main_region (region)->true_end_pos,
-      pos);
-  else if (region_is_main (region))
-    position_set_to_pos (
-      &region_get_lane_region (region)->true_end_pos,
-      pos);
+  SET_POS (region, true_end_pos, pos);
 }
 
 void
@@ -359,16 +362,7 @@ region_set_loop_end_pos (
   Region * region,
   Position * pos)
 {
-  position_set_to_pos (
-    &region->loop_end_pos, pos);
-  if (region_is_lane (region))
-    position_set_to_pos (
-      &region_get_main_region (region)->loop_end_pos,
-      pos);
-  else if (region_is_main (region))
-    position_set_to_pos (
-      &region_get_lane_region (region)->loop_end_pos,
-      pos);
+  SET_POS (region, loop_end_pos, pos);
 }
 
 /**
@@ -378,8 +372,7 @@ void
 region_set_loop_start_pos (Region * region,
                          Position * pos)
 {
-  position_set_to_pos (&region->loop_start_pos,
-                       pos);
+  SET_POS (region, loop_start_pos, pos);
 }
 
 /**
@@ -389,8 +382,7 @@ void
 region_set_clip_start_pos (Region * region,
                          Position * pos)
 {
-  position_set_to_pos (&region->clip_start_pos,
-                       pos);
+  SET_POS (region, clip_start_pos, pos);
 }
 
 /**
@@ -423,6 +415,25 @@ region_is_visible (Region * self)
     return 0;
 
   return 1;
+}
+
+/**
+ * Sets Region name (without appending anything to
+ * it) to all associated regions.
+ */
+void
+region_set_name (
+  Region * region,
+  char *   name)
+{
+  region_get_main_region (region)->name =
+    g_strdup (name);
+  region_get_lane_region (region)->name =
+    g_strdup (name);
+  region_get_main_trans_region (region)->name =
+    g_strdup (name);
+  region_get_lane_trans_region (region)->name =
+    g_strdup (name);
 }
 
 /**

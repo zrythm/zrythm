@@ -76,11 +76,27 @@ typedef struct ArrangerObjectInfo
   _arranger_object_info_init ( \
     _self, (void *) _main, (void *) _main_trans, \
     (void *) _lane, (void *) _lane_trans, type)
+
+/** Initializes each object starting from the
+ * main. */
 #define arranger_object_info_init_main( \
-  _self, _main, _main_trans, _lane, _lane_trans) \
+  _main, _main_trans, _lane, _lane_trans) \
   _arranger_object_info_init ( \
-    _self, _main, _main_trans, _lane, _lane_trans, \
-    AOI_TYPE_MAIN)
+    &_main->obj_info, \
+    _main, _main_trans, _lane, _lane_trans, \
+    AOI_TYPE_MAIN); \
+  _arranger_object_info_init ( \
+    &_main_trans->obj_info, \
+    _main, _main_trans, _lane, _lane_trans, \
+    AOI_TYPE_MAIN_TRANSIENT); \
+  _arranger_object_info_init ( \
+    &_lane->obj_info, \
+    _main, _main_trans, _lane, _lane_trans, \
+    AOI_TYPE_LANE); \
+  _arranger_object_info_init ( \
+    &_lane_trans->obj_info, \
+    _main, _main_trans, _lane, _lane_trans, \
+    AOI_TYPE_LANE_TRANSIENT)
 
 /**
  * Inits the ArrangerObjectInfo with the given

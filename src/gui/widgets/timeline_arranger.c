@@ -915,12 +915,12 @@ timeline_arranger_widget_set_init_poses (
         }
 
       /* set start poses for regions */
-      position_set_to_pos (
-        &r->cache_start_pos, &r->start_pos);
+      region_set_cache_start_pos (
+        r, &r->start_pos);
 
       /* set end poses for regions */
-      position_set_to_pos (
-        &r->cache_end_pos, &r->end_pos);
+      region_set_cache_end_pos (
+        r, &r->end_pos);
     }
   for (int i = 0; i < TL_SELECTIONS->num_chords; i++)
     {
@@ -1012,13 +1012,40 @@ timeline_arranger_widget_create_region (
         NULL, pos, track, NULL,
         ar_prv->snap_grid);
     }
+
+  /* create a new region */
   Region * region = NULL;
   if (track->type == TRACK_TYPE_INSTRUMENT)
     {
       region =
         midi_region_new (
           pos, pos);
+
+      /* set it as main */
+      Region * main_trans =
+        midi_region_new (pos, pos);
+      Region * lane =
+        midi_region_new (pos, pos);
+      Region * lane_trans =
+        midi_region_new (pos, pos);
+      arranger_object_info_init_main (
+        region,
+        main_trans,
+        lane,
+        lane_trans);
+
+      /* set visibility */
+      gtk_widget_set_visible (
+        GTK_WIDGET (region->widget), 0);
+      gtk_widget_set_visible (
+        GTK_WIDGET (lane->widget), 0);
+      gtk_widget_set_visible (
+        GTK_WIDGET (main_trans->widget), 1);
+      gtk_widget_set_visible (
+        GTK_WIDGET (lane_trans->widget),
+        track->lanes_visible);
     }
+
   self->start_region = region;
   position_set_min_size (
     &region->start_pos,
@@ -1029,18 +1056,18 @@ timeline_arranger_widget_create_region (
     &region->end_pos);
   long length =
     region_get_full_length_in_ticks (region);
-  position_from_ticks (&region->true_end_pos,
-                       length);
-  region_set_true_end_pos (region,
-                           &region->true_end_pos);
+  position_from_ticks (
+    &region->true_end_pos, length);
+  region_set_true_end_pos (
+    region, &region->true_end_pos);
   Position tmp;
   position_init (&tmp);
-  region_set_clip_start_pos (region,
-                             &tmp);
-  region_set_loop_start_pos (region,
-                             &tmp);
-  region_set_loop_end_pos (region,
-                           &region->true_end_pos);
+  region_set_clip_start_pos (
+    region, &tmp);
+  region_set_loop_start_pos (
+    region, &tmp);
+  region_set_loop_end_pos (
+    region, &region->true_end_pos);
   if (track->type == TRACK_TYPE_INSTRUMENT)
     {
       track_add_region (
@@ -1050,9 +1077,8 @@ timeline_arranger_widget_create_region (
                region);
   ar_prv->action =
     UI_OVERLAY_ACTION_CREATING_RESIZING_R;
-  position_set_to_pos (
-    &region->cache_end_pos,
-    &region->end_pos);
+  region_set_cache_end_pos (
+    region, &region->end_pos);
   ARRANGER_WIDGET_SELECT_REGION (
     self, region, F_SELECT,
     F_NO_APPEND);
@@ -1407,12 +1433,13 @@ snap_region_r (
           long full_size =
             region_get_full_length_in_ticks (
               region);
+          Position tmp;
           position_set_to_pos (
-            &region->true_end_pos,
-            &region->loop_start_pos);
+            &tmp, &region->loop_start_pos);
           position_add_ticks (
-            &region->true_end_pos,
-            full_size);
+            &tmp, full_size);
+          region_set_true_end_pos (
+            region, &tmp);
 
           /* use the setters */
           region_set_true_end_pos (
@@ -1473,19 +1500,22 @@ timeline_arranger_widget_snap_regions_r (
        i < TL_SELECTIONS->num_regions;
        i++)
     {
+      region =
+        TL_SELECTIONS->regions[i];
+
       if (ar_prv->action ==
             UI_OVERLAY_ACTION_CREATING_RESIZING_R)
         {
           /* main region */
           region =
-            TL_SELECTIONS->regions[i]->obj_info.main;
+            region_get_main_region (region);
           CALC_NEW_END_POS;
           snap_region_r (
             self, region, &new_end_pos);
 
           /* lane region */
           region =
-            region->obj_info.lane;
+            region_get_lane_region (region);
           CALC_NEW_END_POS;
           snap_region_r (
             self, region, &new_end_pos);
@@ -1493,7 +1523,7 @@ timeline_arranger_widget_snap_regions_r (
 
       /* main trans region */
       region =
-        region->obj_info.main_trans;
+        region_get_main_trans_region (region);
       CALC_NEW_END_POS;
       snap_region_r (
         self, region, &new_end_pos);
@@ -1501,7 +1531,7 @@ timeline_arranger_widget_snap_regions_r (
 
       /* lane trans region */
       region =
-        region->obj_info.lane_trans;
+        region_get_lane_trans_region (region);
       CALC_NEW_END_POS;
       snap_region_r (
         self, region, &new_end_pos);

@@ -58,18 +58,18 @@ typedef enum MusicalNote
 
 #define NOTE_LABELS \
 static const char * note_labels[12] = { \
-    "C", \
-    "D\u266D" \
-    "D", \
-    "E\u266D" \
-    "E", \
-    "F", \
-    "F\u266F" \
-    "G", \
-    "A\u266D" \
-    "A", \
-    "B\u266D" \
-    "B" }
+  "C", \
+  "D\u266D", \
+  "D", \
+  "E\u266D", \
+  "E", \
+  "F", \
+  "F\u266F", \
+  "G", \
+  "A\u266D", \
+  "A", \
+  "B\u266D", \
+  "B" }
 
 /**
  * Chord type.

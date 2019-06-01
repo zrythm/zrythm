@@ -188,7 +188,7 @@ midi_region_draw_cb (
 
   char * str =
     g_strdup (rw_prv->region->name);
-  char * new_str = str;;
+  char * new_str = str;
   Region * region = rw_prv->region;
   if (DEBUGGING)
     {
