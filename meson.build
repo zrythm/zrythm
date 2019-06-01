@@ -1,11 +1,11 @@
 project (
-  'zrythm', ['c', 'cpp', 'objc'],
+  'zrythm', ['c', 'cpp'],
   version: '0.4.186',
   license: 'GPLv3+',
   meson_version: '>= 0.43.0',
   default_options: [
     'warning_level=1',
-    'buildtype=debugoptimized',
+    'buildtype=debug',
     'c_std=gnu11' ],
   )
 
@@ -42,6 +42,10 @@ elif host_machine.system() == 'linux'
   os_linux = true
 elif host_machine.system() == 'freebsd'
   os_freebsd = true
+endif
+
+if os_darwin
+  add_languages('objc')
 endif
 
 root_inc = include_directories ('.')
