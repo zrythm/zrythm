@@ -520,10 +520,6 @@ arranger_widget_is_in_moving_operation (
  * appending it to
  * the selected items or making it the only
  * selected item.
- *
- * If create_transients is 1, the selection will
- * create transients (e.g. when moving/copy-moving
- * MidiNotes).
  */
 void
 arranger_widget_select (
@@ -531,8 +527,7 @@ arranger_widget_select (
   GType            type,
   void *           child,
   int              select,
-  int              append,
-  int              create_transients)
+  int              append)
 {
   GET_ARRANGER_ALIASES (self);
 
@@ -589,7 +584,7 @@ arranger_widget_select (
           if (type == REGION_WIDGET_TYPE)
             region_widget_select (
               ((Region *)r)->widget,
-              F_NO_SELECT, create_transients);
+              F_NO_SELECT);
           else if (type == CHORD_WIDGET_TYPE)
             chord_widget_select (
               ((ZChord *)r)->widget,
@@ -598,11 +593,11 @@ arranger_widget_select (
                      AUTOMATION_POINT_WIDGET_TYPE)
             automation_point_widget_select (
               ((AutomationPoint *)r)->widget,
-              F_NO_SELECT, create_transients);
+              F_NO_SELECT);
           else if (type == MIDI_NOTE_WIDGET_TYPE)
             midi_note_widget_select (
               ((MidiNote *)r)->widget,
-              F_NO_SELECT, create_transients);
+              F_NO_SELECT);
         }
     }
 
@@ -616,7 +611,7 @@ arranger_widget_select (
       if (type == REGION_WIDGET_TYPE)
         region_widget_select (
           ((Region *)child)->widget,
-          F_NO_SELECT, create_transients);
+          F_NO_SELECT);
       else if (type == CHORD_WIDGET_TYPE)
         chord_widget_select (
           ((ZChord *)child)->widget,
@@ -624,11 +619,11 @@ arranger_widget_select (
       else if (type == AUTOMATION_POINT_WIDGET_TYPE)
         automation_point_widget_select (
           ((AutomationPoint *)child)->widget,
-          F_NO_SELECT, create_transients);
+          F_NO_SELECT);
       else if (type == MIDI_NOTE_WIDGET_TYPE)
         midi_note_widget_select (
           ((MidiNote *)child)->widget,
-          F_NO_SELECT, create_transients);
+          F_NO_SELECT);
     }
   else if (select && !array_contains (array,
                       *num,
@@ -638,7 +633,7 @@ arranger_widget_select (
       if (type == REGION_WIDGET_TYPE)
         region_widget_select (
           ((Region *)child)->widget,
-          F_SELECT, create_transients);
+          F_SELECT);
       else if (type == CHORD_WIDGET_TYPE)
         chord_widget_select (
           ((ZChord *)child)->widget,
@@ -646,11 +641,11 @@ arranger_widget_select (
       else if (type == AUTOMATION_POINT_WIDGET_TYPE)
         automation_point_widget_select (
           ((AutomationPoint *)child)->widget,
-          F_SELECT, create_transients);
+          F_SELECT);
       else if (type == MIDI_NOTE_WIDGET_TYPE)
         midi_note_widget_select (
           ((MidiNote *)child)->widget,
-          F_SELECT, create_transients);
+          F_SELECT);
     }
 }
 
@@ -1050,6 +1045,9 @@ create_item (ArrangerWidget * self,
       /* double click inside a track */
       else if (track)
         {
+          TrackLane * lane =
+            timeline_arranger_widget_get_track_lane_at_y (
+              timeline, start_y);
           switch (track->type)
             {
             case TRACK_TYPE_INSTRUMENT:
@@ -1057,6 +1055,7 @@ create_item (ArrangerWidget * self,
               timeline_arranger_widget_create_region (
                 timeline,
                 track,
+                lane,
                 &pos);
               break;
             case TRACK_TYPE_MASTER:
@@ -1899,8 +1898,9 @@ on_focus_out (GtkWidget *widget,
 }
 
 void
-arranger_widget_setup (ArrangerWidget *   self,
-                       SnapGrid *         snap_grid)
+arranger_widget_setup (
+  ArrangerWidget *   self,
+  SnapGrid *         snap_grid)
 {
   GET_PRIVATE;
 
@@ -1956,8 +1956,9 @@ arranger_widget_setup (ArrangerWidget *   self,
   /* add the playhead */
   ar_prv->playhead =
     arranger_playhead_widget_new ();
-  gtk_overlay_add_overlay (GTK_OVERLAY (self),
-                           GTK_WIDGET (ar_prv->playhead));
+  gtk_overlay_add_overlay (
+    GTK_OVERLAY (self),
+    GTK_WIDGET (ar_prv->playhead));
 
   /* make the arranger able to notify */
   gtk_widget_add_events (GTK_WIDGET (self),
@@ -2110,7 +2111,8 @@ arranger_widget_refresh (
     }
   else if (timeline)
     {
-      timeline_arranger_widget_set_size ();
+      timeline_arranger_widget_set_size (
+        timeline);
       timeline_arranger_widget_refresh_children (
         timeline);
     }

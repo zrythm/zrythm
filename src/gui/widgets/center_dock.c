@@ -70,6 +70,20 @@ on_hadj_value_changed (GtkAdjustment *adjustment,
   EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED, NULL);
 }
 
+static void
+on_pinned_timeline_scroll_allocate (
+  GtkWidget    *widget,
+  GdkRectangle *allocation,
+  CenterDockWidget * self)
+{
+  if (gtk_paned_get_position (
+        self->tracklist_paned) !=
+      allocation->height)
+    gtk_paned_set_position (
+      self->tracklist_paned,
+      allocation->height);
+}
+
 void
 center_dock_widget_setup (CenterDockWidget * self)
 {
@@ -79,11 +93,22 @@ center_dock_widget_setup (CenterDockWidget * self)
     TRACKLIST);
   pinned_tracklist_widget_setup (
     self->pinned_tracklist,
-    PINNED_TRACKLIST);
+    TRACKLIST);
+
+  gtk_paned_set_position (
+    self->main_paned,
+    2000);
 
   /* setup ruler */
   gtk_scrolled_window_set_hadjustment (
     self->ruler_scroll,
+    gtk_scrolled_window_get_hadjustment (
+      self->timeline_scroll));
+
+  /* set pinned timeline to follow main timeline's
+   * hscroll */
+  gtk_scrolled_window_set_hadjustment (
+    self->pinned_timeline_scroll,
     gtk_scrolled_window_get_hadjustment (
       self->timeline_scroll));
 
@@ -96,6 +121,10 @@ center_dock_widget_setup (CenterDockWidget * self)
   arranger_widget_setup (
     Z_ARRANGER_WIDGET (self->timeline),
     SNAP_GRID_TIMELINE);
+  self->pinned_timeline->is_pinned = 1;
+  arranger_widget_setup (
+    Z_ARRANGER_WIDGET (self->pinned_timeline),
+    SNAP_GRID_TIMELINE);
 
   /* link vertical scroll of timeline to
    * tracklist */
@@ -105,7 +134,9 @@ center_dock_widget_setup (CenterDockWidget * self)
       self->tracklist_scroll));
 
   gtk_widget_show_all (
-    GTK_WIDGET (MW_CENTER_DOCK->timeline));
+    GTK_WIDGET (self->timeline));
+  gtk_widget_show_all (
+    GTK_WIDGET (self->pinned_timeline));
 
   GtkAdjustment * adj =
     gtk_scrollable_get_hadjustment (
@@ -114,6 +145,11 @@ center_dock_widget_setup (CenterDockWidget * self)
   g_signal_connect (
     G_OBJECT (adj), "value-changed",
     G_CALLBACK (on_hadj_value_changed), self);
+  g_signal_connect (
+    G_OBJECT (self->pinned_timeline_scroll),
+    "size-allocate",
+    G_CALLBACK (on_pinned_timeline_scroll_allocate),
+    self);
 }
 
 static void
@@ -127,33 +163,28 @@ center_dock_widget_init (CenterDockWidget * self)
   g_type_ensure (TIMELINE_RULER_WIDGET_TYPE);
   g_type_ensure (TRACKLIST_HEADER_WIDGET_TYPE);
   g_type_ensure (TRACKLIST_WIDGET_TYPE);
-  g_type_ensure (TIMELINE_SELECTION_INFO_WIDGET_TYPE);
+  g_type_ensure (
+    TIMELINE_SELECTION_INFO_WIDGET_TYPE);
   g_type_ensure (PINNED_TRACKLIST_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
   GValue a = G_VALUE_INIT;
   g_value_init (&a, G_TYPE_BOOLEAN);
-  g_value_set_boolean (&a,
-                       1);
-  g_object_set_property (G_OBJECT (self),
-                         "left-visible",
-                         &a);
-  g_object_set_property (G_OBJECT (self),
-                         "right-visible",
-                         &a);
-  g_object_set_property (G_OBJECT (self),
-                         "bottom-visible",
-                         &a);
-  g_object_set_property (G_OBJECT (self),
-                         "top-visible",
-                         &a);
+  g_value_set_boolean (&a, 1);
+  g_object_set_property (
+    G_OBJECT (self), "left-visible", &a);
+  g_object_set_property (
+    G_OBJECT (self), "right-visible", &a);
+  g_object_set_property (
+    G_OBJECT (self), "bottom-visible", &a);
+  g_object_set_property (
+    G_OBJECT (self), "top-visible", &a);
 
   /* set events */
-  g_signal_connect (G_OBJECT (self),
-                    "key_release_event",
-                    G_CALLBACK (key_release_cb),
-                    self);
+  g_signal_connect (
+    G_OBJECT (self), "key_release_event",
+    G_CALLBACK (key_release_cb), self);
 }
 
 
@@ -239,6 +270,22 @@ center_dock_widget_class_init (CenterDockWidgetClass * _klass)
   gtk_widget_class_bind_template_child (
     klass,
     CenterDockWidget,
+    timeline_divider_pane);
+  gtk_widget_class_bind_template_child (
+    klass,
+    CenterDockWidget,
+    pinned_timeline_scroll);
+  gtk_widget_class_bind_template_child (
+    klass,
+    CenterDockWidget,
+    pinned_timeline_viewport);
+  gtk_widget_class_bind_template_child (
+    klass,
+    CenterDockWidget,
+    pinned_timeline);
+  gtk_widget_class_bind_template_child (
+    klass,
+    CenterDockWidget,
     bot_box);
   gtk_widget_class_bind_template_child (
     klass,
@@ -252,4 +299,8 @@ center_dock_widget_class_init (CenterDockWidgetClass * _klass)
     klass,
     CenterDockWidget,
     right_dock_edge);
+  gtk_widget_class_bind_template_child (
+    klass,
+    CenterDockWidget,
+    tracklist_paned);
 }

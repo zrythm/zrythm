@@ -80,7 +80,10 @@ piano_roll_key_label_widget_new (
   gtk_widget_set_margin_left (
     GTK_WIDGET (self->editable_lbl), 4);
   self->lbl =
-    GTK_LABEL (gtk_label_new (descr->note_name));
+    GTK_LABEL (gtk_label_new (NULL));
+  gtk_label_set_markup (
+    self->lbl,
+    descr->note_name_pango);
   gtk_widget_set_halign (
     GTK_WIDGET (self->lbl), GTK_ALIGN_START);
   gtk_label_set_xalign (self->lbl, 0.0);

@@ -28,9 +28,17 @@
 #include "audio/midi_note.h"
 #include "audio/midi_region.h"
 #include "audio/position.h"
+#include "gui/backend/arranger_object_info.h"
 #include "utils/yaml.h"
 
 #include <gtk/gtk.h>
+
+typedef struct _RegionWidget RegionWidget;
+typedef struct Channel Channel;
+typedef struct Track Track;
+typedef struct MidiNote MidiNote;
+typedef struct TrackLane TrackLane;
+typedef struct _AudioClipWidget AudioClipWidget;
 
 /**
  * @addtogroup audio
@@ -40,12 +48,33 @@
 
 #define REGION_PRINTF_FILENAME "%s_%s.mid"
 
-typedef struct _RegionWidget RegionWidget;
-typedef struct Channel Channel;
-typedef struct Track Track;
-typedef struct MidiNote MidiNote;
-typedef struct TrackLane TrackLane;
-typedef struct _AudioClipWidget AudioClipWidget;
+#define region_is_transient(r) \
+  arranger_object_info_is_transient ( \
+    &r->obj_info)
+#define region_is_lane(r) \
+  arranger_object_info_is_lane ( \
+    &r->obj_info)
+#define region_is_main(r) \
+  arranger_object_info_is_main ( \
+    &r->obj_info)
+
+/** Gets the TrackLane counterpart of the Region. */
+#define region_get_lane_region(r) \
+  ((Region *) r->obj_info.lane)
+
+/** Gets the non-TrackLane counterpart of the Region. */
+#define region_get_main_region(r) \
+  ((Region *) r->obj_info.main)
+
+/** Gets the TrackLane counterpart of the Region
+ * (transient). */
+#define region_get_lane_trans_region(r) \
+  ((Region *) r->obj_info.lane_trans)
+
+/** Gets the non-TrackLane counterpart of the Region
+ * (transient). */
+#define region_get_main_trans_region(r) \
+  ((Region *) r->obj_info.main_trans)
 
 /**
  * Type of Region.
@@ -56,12 +85,28 @@ typedef enum RegionType
   REGION_TYPE_AUDIO
 } RegionType;
 
+/**
+ * Flag do indicate how to clone the Region.
+ */
 typedef enum RegionCloneFlag
 {
   /**
-   * Create a completely new region with a new id.
+   * Create a new region to be used inside
+   * ArrangerObjectInfo.
+   *
+   * This should be used e.g., when creating the
+   * transient or lane counterpart of a Region to store
+   * inside its obj_info.
+   *
+   * FIXME needed?
    */
+  REGION_CLONE_COPY_WITH_OBJ_INFO,
+
+  /** Create a new Region without touching the
+   * ArrangerObjectInfo. */
   REGION_CLONE_COPY,
+
+  /** TODO */
   REGION_CLONE_LINK
 } RegionCloneFlag;
 
@@ -69,8 +114,12 @@ typedef enum RegionCloneFlag
  * A region (clip) is an object on the timeline that
  * contains either MidiNote's or AudioClip's.
  *
- * It is uniquely identified using its name, so name
+ * It is uniquely identified using its name (and
+ * ArrangerObjectInfo type), so name
  * must be unique throughout the Project.
+ *
+ * Each main Region must have its obj_info member
+ * filled in with clones.
  */
 typedef struct Region
 {
@@ -197,30 +246,10 @@ typedef struct Region
   /* ==== AUDIO REGION END ==== */
 
   /**
-   * Transient or not.
-   *
-   * Transient regions are regions that are cloned
-   * and used during moving, then discarded.  */
-  int             transient;
-
-  /**
-   * Whether it is a TrackLane region or not.
-   *
-   * TrackLane regions are Region's that are inside
-   * TrackLane's in the timeline (not the Region's
-   * showed inside the Track).
+   * Info on whether this Region is transient/lane
+   * and pointers to transient/lane equivalents.
    */
-  int             is_lane_region;
-
-  /**
-   * If lane region, this is an extra region that
-   * will be shown inside the Track, in addition to
-   * the main one inside the TrackLane.
-   *
-   * It must have the same parameters as the main
-   * Region.
-   */
-  Region *        laneless_region;
+  ArrangerObjectInfo  obj_info;
 } Region;
 
 static const cyaml_strval_t
@@ -382,6 +411,13 @@ region_timeline_pos_to_local (
   int        normalize);
 
 /**
+ * Returns the Track this Region is in.
+ */
+Track *
+region_get_track (
+  Region * region);
+
+/**
  * Returns the number of loops in the region,
  * optionally including incomplete ones.
  */
@@ -446,6 +482,16 @@ void
 region_set_lane (
   Region * region,
   TrackLane * lane);
+
+void
+region_set_cache_end_pos (
+  Region * region,
+  Position * pos);
+
+void
+region_set_cache_start_pos (
+  Region * region,
+  Position * pos);
 
 /**
  * Checks if position is valid then sets it.
@@ -534,6 +580,15 @@ region_generate_filename (Region * region);
 Region *
 region_get_start_region (Region ** regions,
                          int       num_regions);
+
+/**
+ * Sets Region name (without appending anything to
+ * it) to all associated regions.
+ */
+void
+region_set_name (
+  Region * region,
+  char *   name);
 
 /**
  * Removes the MIDI note and its components

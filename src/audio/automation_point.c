@@ -129,6 +129,16 @@ automation_point_get_normalized_value (
 }
 
 /**
+ * Returns the Track this AutomationPoint is in.
+ */
+Track *
+automation_point_get_track (
+  AutomationPoint * ap)
+{
+  return TRACKLIST->tracks[ap->track_pos];
+}
+
+/**
  * Updates the value from given real value and
  * notifies interested parties.
  */

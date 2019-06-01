@@ -40,7 +40,6 @@
 #include "audio/port.h"
 #include "audio/quantize.h"
 #include "audio/region.h"
-#include "audio/pinned_tracklist.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/backend/clip_editor.h"
@@ -107,7 +106,6 @@ typedef struct Project
   UndoManager         undo_manager;
 
   Tracklist          tracklist;
-  PinnedTracklist     pinned_tracklist;
 
   /** Backend for the widget. */
   ClipEditor         clip_editor;

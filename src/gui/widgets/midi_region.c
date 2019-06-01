@@ -186,14 +186,29 @@ midi_region_draw_cb (
         }
     }
 
-  char * str;
-  if (DEBUGGING && rw_prv->region->transient)
-    str =
-      g_strdup_printf (
-        "%s [t]", rw_prv->region->name);
-  else
-    str =
-      g_strdup (rw_prv->region->name);
+  char * str =
+    g_strdup (rw_prv->region->name);
+  char * new_str = str;
+  Region * region = rw_prv->region;
+  if (DEBUGGING)
+    {
+      if (region_is_transient (region))
+        {
+          new_str =
+            g_strdup_printf (
+              "%s [t]", str);
+          g_free (str);
+          str = new_str;
+        }
+      if (region_is_lane (region))
+        {
+          new_str =
+            g_strdup_printf (
+              "%s [l]", str);
+          g_free (str);
+          str = new_str;
+        }
+    }
 
 #define FONT "Sans SemiBold 9"
 #define PADDING_R 5

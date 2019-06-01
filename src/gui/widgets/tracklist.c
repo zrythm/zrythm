@@ -75,35 +75,21 @@ tracklist_widget_get_hit_track (
   double            y)
 {
   /* go through each child */
-  for(int i = 0; i < TRACKLIST->num_tracks; i++)
+  for(int i = 0;
+      i < self->tracklist->num_tracks; i++)
     {
-      Track * track = TRACKLIST->tracks[i];
-      if (!track->visible)
+      Track * track = self->tracklist->tracks[i];
+      if (!track->visible || track->pinned)
         continue;
 
       TrackWidget * tw = track->widget;
 
-      GtkAllocation allocation;
-      gtk_widget_get_allocation (GTK_WIDGET (tw),
-                                 &allocation);
-
-      gint wx, wy;
-      gtk_widget_translate_coordinates(
-                GTK_WIDGET (self),
-                GTK_WIDGET (tw),
-                x,
-                y,
-                &wx,
-                &wy);
-
-      /* if hit */
-      if (wx >= 0 &&
-          wx <= allocation.width &&
-          wy >= 0 &&
-          wy <= allocation.height)
-        {
-          return tw;
-        }
+      /* return it if hit */
+      if (ui_is_child_hit (
+            GTK_CONTAINER (self),
+            GTK_WIDGET (tw),
+            0, 1, x, y))
+        return tw;
     }
   return NULL;
 }
@@ -134,9 +120,10 @@ tracklist_widget_select_all_tracks (
   TracklistWidget *self,
   int              select)
 {
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (int i = 0;
+       i < self->tracklist->num_tracks; i++)
     {
-      Track * track = TRACKLIST->tracks[i];
+      Track * track = self->tracklist->tracks[i];
       if (!track->visible)
         continue;
 
@@ -217,18 +204,21 @@ tracklist_widget_hard_refresh (
        i < self->tracklist->num_tracks; i++)
     {
       Track * track = self->tracklist->tracks[i];
-      if (track->visible)
-        {
-          /* create widget */
-          if (!GTK_IS_WIDGET (track->widget))
-            track->widget = track_widget_new (track);
 
-          track_widget_refresh (track->widget);
+      if (track->pinned ||
+          !track->visible)
+        continue;
 
-          /* add to tracklist widget */
-          gtk_container_add (GTK_CONTAINER (self),
-                             GTK_WIDGET (track->widget));
-        }
+      /* create widget */
+      if (!GTK_IS_WIDGET (track->widget))
+        track->widget = track_widget_new (track);
+
+      track_widget_refresh (track->widget);
+
+      /* add to tracklist widget */
+      gtk_container_add (
+        GTK_CONTAINER (self),
+        GTK_WIDGET (track->widget));
     }
 
   /* re-add ddbox */

@@ -65,51 +65,24 @@ timeline_bg_draw_cb (
   gdk_cairo_get_clip_rectangle (cr,
                                 &rect);
 
-  int pinned_tracks_end =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (MW_PINNED_TRACKLIST));
+  ArrangerBgWidgetPrivate * prv =
+    arranger_bg_widget_get_private (
+      Z_ARRANGER_BG_WIDGET (widget));
 
   /* handle horizontal drawing for tracks */
   GtkWidget * tw_widget;
   gint wx, wy;
-  Track * tracks[3];
-  tracks[0] = PINNED_TRACKLIST->chord_track;
-  tracks[1] = PINNED_TRACKLIST->marker_track;
-  int num_tracks = 2;
   Track * track;
   TrackWidget * tw;
-  for (int i = 0; i < num_tracks; i++)
-    {
-      track = tracks[i];
-      if (!track->visible)
-        continue;
-
-      /* draw line below widget */
-      tw = track->widget;
-      if (!GTK_IS_WIDGET (tw))
-        continue;
-      tw_widget = (GtkWidget *) tw;
-
-      gtk_widget_translate_coordinates(
-                tw_widget,
-                widget,
-                0,
-                0,
-                &wx,
-                &wy);
-      int line_y =
-        wy + gtk_widget_get_allocated_height (
-          tw_widget);
-      if (line_y > rect.y &&
-          line_y < (rect.y + rect.height))
-        z_cairo_draw_horizontal_line (
-          cr, line_y, rect.x,
-          rect.x + rect.width, 1.0);
-    }
+  int line_y;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
-      if (!track->visible)
+      if (!track->visible ||
+          (prv->arranger == MW_TIMELINE &&
+           track->pinned) ||
+          (prv->arranger == MW_PINNED_TIMELINE &&
+           !track->pinned))
         continue;
 
       /* draw line below widget */
@@ -118,25 +91,22 @@ timeline_bg_draw_cb (
         continue;
       tw_widget = (GtkWidget *) tw;
 
-      gtk_widget_translate_coordinates(
-                tw_widget,
-                widget,
-                0,
-                0,
-                &wx,
-                &wy);
-
-      if (wy < (pinned_tracks_end + rect.y))
-        continue;
+      gtk_widget_translate_coordinates (
+        tw_widget,
+        widget,
+        0, 0, &wx, &wy);
 
       int line_y =
-        wy + gtk_widget_get_allocated_height (
-          tw_widget);
+        wy +
+        gtk_widget_get_allocated_height (tw_widget);
+
       if (line_y > rect.y &&
           line_y < (rect.y + rect.height))
-        z_cairo_draw_horizontal_line (
-          cr, line_y, rect.x,
-          rect.x + rect.width, 1.0);
+        {
+          z_cairo_draw_horizontal_line (
+            cr, line_y, rect.x,
+            rect.x + rect.width, 1.0);
+        }
     }
 
   /* draw automation related stuff */
@@ -238,8 +208,9 @@ timeline_bg_draw_cb (
 /*}*/
 
 TimelineBgWidget *
-timeline_bg_widget_new (RulerWidget *    ruler,
-                        ArrangerWidget * arranger)
+timeline_bg_widget_new (
+  RulerWidget *    ruler,
+  ArrangerWidget * arranger)
 {
   TimelineBgWidget * self =
     g_object_new (TIMELINE_BG_WIDGET_TYPE,

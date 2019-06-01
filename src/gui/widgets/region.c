@@ -73,7 +73,7 @@ region_draw_cb (RegionWidget * self,
     color->red,
     color->green,
     color->blue,
-    r->transient ? 0.7 : 1.0);
+    region_is_transient (r) ? 0.7 : 1.0);
   if (region_is_selected (r))
     {
       cairo_set_source_rgba (
@@ -201,9 +201,13 @@ on_motion (GtkWidget *      widget,
   return FALSE;
 }
 
+/**
+ * Sets up the RegionWidget.
+ */
 void
-region_widget_setup (RegionWidget * self,
-                     Region *       region)
+region_widget_setup (
+  RegionWidget * self,
+  Region *       region)
 {
   REGION_WIDGET_GET_PRIVATE (self);
 
@@ -211,15 +215,17 @@ region_widget_setup (RegionWidget * self,
 
   rw_prv->drawing_area =
     GTK_DRAWING_AREA (gtk_drawing_area_new ());
-  gtk_container_add (GTK_CONTAINER (self),
-                     GTK_WIDGET (rw_prv->drawing_area));
-  gtk_widget_set_visible (GTK_WIDGET (rw_prv->drawing_area),
-                          1);
-  gtk_widget_set_hexpand (GTK_WIDGET (rw_prv->drawing_area),
-                          1);
+  gtk_container_add (
+    GTK_CONTAINER (self),
+    GTK_WIDGET (rw_prv->drawing_area));
+  gtk_widget_set_visible (
+    GTK_WIDGET (rw_prv->drawing_area), 1);
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (rw_prv->drawing_area), 1);
 
-  gtk_widget_add_events (GTK_WIDGET (rw_prv->drawing_area),
-                         GDK_ALL_EVENTS_MASK);
+  gtk_widget_add_events (
+    GTK_WIDGET (rw_prv->drawing_area),
+    GDK_ALL_EVENTS_MASK);
 
   /* connect signals */
   g_signal_connect (
@@ -279,27 +285,27 @@ region_widget_is_resize_r (
 void
 region_widget_select (
   RegionWidget * self,
-  int            select,
-  int            with_transients)
+  int            select)
 {
   RegionWidgetPrivate * prv =
     region_widget_get_instance_private (self);
+  Region * main_region =
+    region_get_main_region (prv->region);
   if (select)
     {
       timeline_selections_add_region (
         TL_SELECTIONS,
-        prv->region,
-        with_transients);
+        main_region);
     }
   else
     {
       timeline_selections_remove_region (
         TL_SELECTIONS,
-        prv->region);
+        main_region);
     }
 
   EVENTS_PUSH (ET_REGION_CHANGED,
-               prv->region);
+               main_region);
 }
 
 RegionWidgetPrivate *

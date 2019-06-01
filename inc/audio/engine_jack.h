@@ -90,6 +90,8 @@ engine_jack_clear_output_buffers (
 
 /**
  * Sets up the MIDI engine to use jack.
+ *
+ * @param loading Loading a Project or not.
  */
 int
 jack_midi_setup (
@@ -98,6 +100,8 @@ jack_midi_setup (
 
 /**
  * Sets up the audio engine to use jack.
+ *
+ * @param loading Loading a Project or not.
  */
 int
 jack_setup (AudioEngine * self,

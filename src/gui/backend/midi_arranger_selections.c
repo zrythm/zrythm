@@ -89,58 +89,13 @@ midi_arranger_selections_clear (
   g_message ("cleared midi arranger selections");
 }
 
-static void
-remove_transient (
-  MidiArrangerSelections * mas,
-  int                      index)
-{
-  MidiNote * transient =
-    mas->transient_notes[index];
-
-  if (!transient || !transient->widget)
-    return;
-
-  g_warn_if_fail (
-    GTK_IS_WIDGET (transient->widget));
-
-  g_message ("removing transient %p at %d",
-             transient->widget, index);
-  mas->transient_notes[index] = NULL;
-  midi_region_remove_midi_note (
-    transient->region,
-    transient,
-    F_FREE,
-    F_NO_PUBLISH_EVENTS);
-}
-
-/**
- * Only removes transients from their regions and
- * frees them.
- */
-void
-midi_arranger_selections_remove_transients (
-  MidiArrangerSelections * mas)
-{
-  g_message ("num midi notes %d", mas->num_midi_notes);
-  for (int i = 0; i < mas->num_midi_notes; i++)
-    {
-      remove_transient (mas, i);
-    }
-
-  EVENTS_PUSH (ET_MIDI_NOTE_REMOVED, NULL);
-}
-
 /**
  * Adds a note to the selections.
- *
- * Optionally adds the missing transient notes
- * (if moving / copy-moving).
  */
 void
 midi_arranger_selections_add_note (
   MidiArrangerSelections * mas,
-  MidiNote *               note,
-  int                      transient)
+  MidiNote *               note)
 {
   if (!array_contains (mas->midi_notes,
                       mas->num_midi_notes,
@@ -153,56 +108,6 @@ midi_arranger_selections_add_note (
       EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
                    note);
     }
-
-  if (transient)
-    midi_arranger_selections_create_missing_transients (mas);
-}
-
-/**
- * Creates transient notes for notes added
- * to selections without transients.
- */
-void
-midi_arranger_selections_create_missing_transients (
-  MidiArrangerSelections * mas)
-{
-  g_message ("creating missing transients");
-  MidiNote * note = NULL, * transient = NULL;
-  for (int i = 0; i < mas->num_midi_notes; i++)
-    {
-      note = mas->midi_notes[i];
-      if (mas->transient_notes[i])
-        g_warn_if_fail (
-          GTK_IS_WIDGET (
-            mas->transient_notes[i]->widget));
-      else if (!mas->transient_notes[i])
-        {
-          /* create the transient */
-          transient =
-            midi_note_clone (
-              note);
-          /*transient->visible = 0;*/
-          transient->transient = 1;
-          transient->widget =
-            midi_note_widget_new (transient);
-          gtk_widget_set_visible (
-            GTK_WIDGET (transient->widget),
-            F_NOT_VISIBLE);
-
-          /* add it to selections and to region */
-          mas->transient_notes[i] =
-            transient;
-          midi_region_add_midi_note (
-            transient->region, transient);
-          g_message ("created %p transient",
-                     transient->widget);
-        }
-      EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
-                   note);
-      EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
-                   mas->transient_notes[i]);
-    }
-  g_message ("created missing transients");
 }
 
 void
@@ -215,14 +120,10 @@ midi_arranger_selections_remove_note (
                        note))
     return;
 
-  int idx = -1;
-  array_delete_return_pos (mas->midi_notes,
-                mas->num_midi_notes,
-                note,
-                idx);
-
-  /* remove the transient */
-  remove_transient (mas, idx);
+  array_delete (
+    mas->midi_notes,
+    mas->num_midi_notes,
+    note);
 }
 
 /**
@@ -252,19 +153,20 @@ midi_arranger_selections_get_highest_note (
   MidiArrangerSelections * mas,
   int                      transient)
 {
-  MidiNote * top_mn =
-    transient ?
-    mas->transient_notes[0] :
-    mas->midi_notes[0];
+  MidiNote * top_mn;
+  if (transient)
+    top_mn = mas->midi_notes[0]->obj_info.main_trans;
+  else
+    top_mn = mas->midi_notes[0]->obj_info.main;
   MidiNote * tmp;
   for (int i = 0;
        i < mas->num_midi_notes;
        i++)
     {
-      tmp =
-        transient ?
-        mas->transient_notes[i] :
-        mas->midi_notes[i];
+      if (transient)
+        tmp = mas->midi_notes[i]->obj_info.main_trans;
+      else
+        tmp = mas->midi_notes[i]->obj_info.main;
       if (tmp->val >
             top_mn->val)
         {
@@ -280,19 +182,20 @@ midi_arranger_selections_get_lowest_note (
   int                      transient)
 {
 
-  MidiNote * bot_mn =
-    transient ?
-    mas->transient_notes[0] :
-    mas->midi_notes[0];
+  MidiNote * bot_mn;
+  if (transient)
+    bot_mn = mas->midi_notes[0]->obj_info.main_trans;
+  else
+    bot_mn = mas->midi_notes[0]->obj_info.main;
   MidiNote * tmp;
   for (int i = 0;
        i < mas->num_midi_notes;
        i++)
     {
-      tmp =
-        transient ?
-        mas->transient_notes[i] :
-        mas->midi_notes[i];
+      if (transient)
+        tmp = mas->midi_notes[i]->obj_info.main_trans;
+      else
+        tmp = mas->midi_notes[i]->obj_info.main;
       if (tmp->val <
             bot_mn->val)
         {
@@ -318,16 +221,16 @@ midi_arranger_selections_get_first_midi_note (
 	for (int i = 0;
 		i < mas->num_midi_notes;
 		i++)
-	{
-    tmp =
-      transient ?
-      mas->transient_notes[i] :
-      mas->midi_notes[i];
-		if (!result ||
-			  position_to_ticks(&result->end_pos) >
-          position_to_ticks(&tmp->end_pos))
-			result = tmp;
-	}
+    {
+      if (transient)
+        tmp = mas->midi_notes[i]->obj_info.main_trans;
+      else
+        tmp = mas->midi_notes[i]->obj_info.main;
+      if (!result ||
+          position_to_ticks(&result->end_pos) >
+            position_to_ticks(&tmp->end_pos))
+        result = tmp;
+    }
 	return result;
 }
 
@@ -348,10 +251,10 @@ midi_arranger_selections_get_last_midi_note (
 		i < mas->num_midi_notes;
 		i++)
     {
-      tmp =
-        transient ?
-        mas->transient_notes[i] :
-        mas->midi_notes[i];
+      if (transient)
+        tmp = mas->midi_notes[i]->obj_info.main_trans;
+      else
+        tmp = mas->midi_notes[i]->obj_info.main;
       if (!result ||
           position_to_ticks(&result->end_pos) <
             position_to_ticks(&tmp->end_pos))

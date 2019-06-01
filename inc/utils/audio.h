@@ -33,6 +33,7 @@
  */
 #define STRIP_SIZE 9
 
+
 struct adinfo;
 
 /**

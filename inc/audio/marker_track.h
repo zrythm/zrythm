@@ -36,7 +36,7 @@
  * @{
  */
 
-#define P_MARKER_TRACK (PINNED_TRACKLIST->marker_track)
+#define P_MARKER_TRACK (TRACKLIST->marker_track)
 
 typedef struct Marker Marker;
 typedef struct _MarkerTrackWidget MarkerTrackWidget;

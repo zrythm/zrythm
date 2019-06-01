@@ -128,6 +128,16 @@ chord_find (
 }
 
 /**
+ * Returns the Track this ZChord is in.
+ */
+Track *
+chord_get_track (
+  ZChord * self)
+{
+  return TRACKLIST->tracks[self->track_pos];
+}
+
+/**
  * Returns the musical note as a string (eg. "C3").
  */
 const char *

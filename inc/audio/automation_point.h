@@ -17,14 +17,31 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Automation point API.
+ */
+
 #ifndef __AUDIO_AUTOMATION_POINT_H__
 #define __AUDIO_AUTOMATION_POINT_H__
 
 #include "audio/position.h"
+#include "gui/backend/arranger_object_info.h"
 
 typedef struct AutomationTrack AutomationTrack;
-typedef struct _AutomationPointWidget AutomationPointWidget;
+typedef struct _AutomationPointWidget
+AutomationPointWidget;
 
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
+
+/**
+ * An automation point living inside an AutomationTrack.
+ */
 typedef struct AutomationPoint
 {
   /** Position in the AutomationTrack. */
@@ -44,15 +61,16 @@ typedef struct AutomationPoint
   int                at_index;
   AutomationTrack *  at;
 
-  /**
-   * GUI Widget.
-   */
+  /** GUI Widget. */
   AutomationPointWidget *  widget;
 
   /** Index in the automation track, for faster
    * performance when getting ap before/after
    * curve. */
   int                index;
+
+  /** Object info. */
+  ArrangerObjectInfo  obj_info;
 } AutomationPoint;
 
 static const cyaml_schema_field_t
@@ -130,9 +148,20 @@ automation_point_get_normalized_value (
   AutomationPoint * ap);
 
 /**
+ * Returns the Track this AutomationPoint is in.
+ */
+Track *
+automation_point_get_track (
+  AutomationPoint * ap);
+
+/**
  * Frees the automation point.
  */
 void
 automation_point_free (AutomationPoint * ap);
+
+/**
+ * @}
+ */
 
 #endif // __AUDIO_AUTOMATION_POINT_H__

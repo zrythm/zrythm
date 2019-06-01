@@ -17,12 +17,19 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * API for MIDI notes in the PianoRoll.
+ */
+
 #ifndef __AUDIO_MIDI_NOTE_H__
 #define __AUDIO_MIDI_NOTE_H__
 
 #include "audio/midi_region.h"
 #include "audio/position.h"
 #include "audio/velocity.h"
+#include "gui/backend/arranger_object_info.h"
 
 typedef struct _MidiNoteWidget MidiNoteWidget;
 typedef struct Channel Channel;
@@ -30,6 +37,23 @@ typedef struct Track Track;
 typedef struct MidiEvents MidiEvents;
 typedef struct Position Position;
 typedef struct Velocity Velocity;
+
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
+
+#define midi_note_is_transient(r) \
+  arranger_object_info_is_transient ( \
+    &r->obj_info)
+#define midi_note_is_lane(r) \
+  arranger_object_info_is_lane ( \
+    &r->obj_info)
+
+/** Gets the transient counterpart of the MidiNote. */
+#define midi_note_get_transient_note(r) \
+  ((MidiNote *) r->obj_info.main_trans)
 
 typedef enum MidiNoteCloneFlag
 {
@@ -40,6 +64,10 @@ typedef enum MidiNoteCloneFlag
   MIDI_NOTE_CLONE_LINK
 } MidiNoteCloneFlag;
 
+/**
+ * A MIDI note living inside a Region and shown on the
+ * piano roll.
+ */
 typedef struct MidiNote
 {
   Position        start_pos;
@@ -60,12 +88,7 @@ typedef struct MidiNote
   /** Muted or not */
   int             muted;
 
-  /**
-   * Transient or not.
-   *
-   * Transient notes are notes that are cloned
-   * and used during moving, then discarded.  */
-  int             transient;
+  ArrangerObjectInfo obj_info;
 } MidiNote;
 
 static const cyaml_schema_field_t
@@ -123,6 +146,13 @@ midi_note_new (MidiRegion * region,
 MidiNote *
 midi_note_find (
   MidiNote * clone);
+
+/**
+ * Gets the Track this MidiNote is in.
+ */
+Track *
+midi_note_get_track (
+  MidiNote * self);
 
 /**
  * Deep clones the midi note.
@@ -225,5 +255,9 @@ midi_note_notes_to_events (MidiNote     ** midi_notes, ///< array
 
 void
 midi_note_free (MidiNote * self);
+
+/**
+ * @}
+ */
 
 #endif // __AUDIO_MIDI_NOTE_H__

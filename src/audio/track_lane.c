@@ -41,6 +41,7 @@ track_lane_new (
   TrackLane * self = calloc (1, sizeof (TrackLane));
 
   self->name = g_strdup_printf (_("Lane %d"), pos);
+  self->pos = pos;
   self->track = track;
   self->track_pos = track->pos;
 
@@ -56,9 +57,6 @@ track_lane_add_region (
   Region *    region)
 {
   region_set_lane (region, self);
-
-  region->laneless_region =
-    region_clone (region, REGION_CLONE_COPY);
 
   array_append (self->regions,
                 self->num_regions,

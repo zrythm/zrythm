@@ -80,8 +80,7 @@ automation_point_widget_update_tooltip (
 void
 automation_point_widget_select (
   AutomationPointWidget * self,
-  int            select,
-  int            with_transients);
+  int            select);
 
 /**
  * @}

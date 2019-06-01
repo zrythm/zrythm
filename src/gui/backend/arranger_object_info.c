@@ -17,29 +17,4 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/chord_track.h"
-#include "audio/marker_track.h"
-#include "audio/pinned_tracklist.h"
-#include "audio/track.h"
-#include "gui/widgets/arranger.h"
-#include "gui/widgets/timeline_arranger.h"
-#include "gui/widgets/pinned_tracklist.h"
-#include "project.h"
-#include "utils/arrays.h"
-#include "utils/flags.h"
-#include "utils/objects.h"
-
-/**
- * Initialize the PinnedTracklist.
- */
-void
-pinned_tracklist_init (
-  PinnedTracklist * self)
-{
-  /* create chord track */
-  self->chord_track =
-    chord_track_default ();
-
-  self->marker_track =
-    marker_track_default ();
-}
+#include "gui/backend/arranger_object_info.h"

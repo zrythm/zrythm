@@ -18,8 +18,8 @@
  */
 
 #include "audio/engine.h"
-#include "audio/pinned_tracklist.h"
 #include "audio/track.h"
+#include "audio/tracklist.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/pinned_tracklist.h"
@@ -47,28 +47,22 @@ pinned_tracklist_widget_get_hit_track (
   TrackWidget * tw;
   GtkAllocation allocation;
   gint wx, wy;
-  Track * tracks[3];
-  tracks[0] = self->tracklist->chord_track;
-  tracks[1] = self->tracklist->marker_track;
-  int num_tracks = 2;
-  for(int i = 0; i < num_tracks; i++)
+  for(int i = 0;
+      i < self->tracklist->num_tracks; i++)
     {
-      track = tracks[i];
-      if (!track->visible)
+      track = self->tracklist->tracks[i];
+      if (!track->visible || !track->pinned)
         continue;
 
       tw = track->widget;
 
-      gtk_widget_get_allocation (GTK_WIDGET (tw),
-                                 &allocation);
+      gtk_widget_get_allocation (
+        GTK_WIDGET (tw), &allocation);
 
-      gtk_widget_translate_coordinates(
-                GTK_WIDGET (self),
-                GTK_WIDGET (tw),
-                x,
-                y,
-                &wx,
-                &wy);
+      gtk_widget_translate_coordinates (
+        GTK_WIDGET (self),
+        GTK_WIDGET (tw),
+        x, y, &wx, &wy);
 
       /* if hit */
       if (wx >= 0 &&
@@ -95,26 +89,23 @@ pinned_tracklist_widget_hard_refresh (
 
   /* add tracks */
   Track * track;
-  Track * tracks[3];
-  tracks[0] = self->tracklist->chord_track;
-  tracks[1] = self->tracklist->marker_track;
-  int num_tracks = 2;
-  for(int i = 0; i < num_tracks; i++)
+  for(int i = 0;
+      i < self->tracklist->num_tracks; i++)
     {
-      track = tracks[i];
-      if (track->visible)
-        {
-          /* create widget */
-          if (!GTK_IS_WIDGET (track->widget))
-            track->widget = track_widget_new (track);
+      track = self->tracklist->tracks[i];
+      if (!track->visible || !track->pinned)
+        continue;
 
-          track_widget_refresh (track->widget);
+      /* create widget */
+      if (!GTK_IS_WIDGET (track->widget))
+        track->widget = track_widget_new (track);
 
-          /* add to tracklist widget */
-          gtk_container_add (
-            GTK_CONTAINER (self),
-            GTK_WIDGET (track->widget));
-        }
+      track_widget_refresh (track->widget);
+
+      /* add to tracklist widget */
+      gtk_container_add (
+        GTK_CONTAINER (self),
+        GTK_WIDGET (track->widget));
     }
   /*GtkWidget * sep =*/
     /*gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);*/
@@ -153,22 +144,43 @@ pinned_tracklist_widget_hard_refresh (
   g_list_free(children);
 }
 
+static void
+on_size_allocate (
+  GtkWidget    *widget,
+  GdkRectangle *allocation,
+  PinnedTracklistWidget * self)
+{
+  /*gtk_widget_set_size_request (*/
+    /*GTK_WIDGET (*/
+      /*MW_CENTER_DOCK->pinned_timeline_scroll),*/
+    /*-1, allocation->height);*/
+  if (gtk_paned_get_position (
+        MW_CENTER_DOCK->timeline_divider_pane) !=
+      allocation->height)
+    {
+      gtk_paned_set_position (
+        MW_CENTER_DOCK->timeline_divider_pane,
+        allocation->height);
+    }
+}
+
 /**
  * Sets up the PinnedTracklistWidget.
  */
 void
 pinned_tracklist_widget_setup (
   PinnedTracklistWidget * self,
-  PinnedTracklist * tracklist)
+  Tracklist * tracklist)
 {
   g_warn_if_fail (tracklist);
   self->tracklist = tracklist;
-  tracklist->widget = self;
+  tracklist->pinned_widget = self;
 
   pinned_tracklist_widget_hard_refresh (self);
 
-  EVENTS_PUSH (ET_PINNED_TRACKLIST_SIZE_CHANGED,
-               NULL);
+  g_signal_connect (
+    G_OBJECT (self), "size-allocate",
+    G_CALLBACK (on_size_allocate), self);
 }
 
 static void

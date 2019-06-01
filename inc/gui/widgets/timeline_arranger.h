@@ -38,6 +38,8 @@ G_DECLARE_FINAL_TYPE (TimelineArrangerWidget,
                       ArrangerWidget)
 
 #define MW_TIMELINE MW_CENTER_DOCK->timeline
+#define MW_PINNED_TIMELINE \
+  MW_CENTER_DOCK->pinned_timeline
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote MidiNote;
@@ -76,6 +78,10 @@ typedef struct _TimelineArrangerWidget
 
   int                      last_timeline_obj_bars;
 
+  /** Whether this TimelineArrangerWidget is for
+   * the PinnedTracklist or not. */
+  int                      is_pinned;
+
   /**
    * 1 if resizing range.
    */
@@ -102,6 +108,14 @@ timeline_arranger_widget_set_allocation (
 void
 timeline_arranger_widget_snap_range_r (
   Position *               pos);
+
+/**
+ * Gets hit TrackLane at y.
+ */
+TrackLane *
+timeline_arranger_widget_get_track_lane_at_y (
+  TimelineArrangerWidget * self,
+  double y);
 
 /**
  * Gets the Track at y.
@@ -231,6 +245,7 @@ void
 timeline_arranger_widget_create_region (
   TimelineArrangerWidget * self,
   Track *                  track,
+  TrackLane *              lane,
   Position *               pos);
 
 void
@@ -284,21 +299,34 @@ void
 timeline_arranger_widget_on_drag_end (
   TimelineArrangerWidget * self);
 
+
 /**
  * Sets width to ruler width and height to
  * tracklist height.
  */
 void
-timeline_arranger_widget_set_size ();
+timeline_arranger_widget_set_size (
+  TimelineArrangerWidget * self);
 
+/**
+ * To be called once at init time.
+ */
 void
-timeline_arranger_widget_setup ();
+timeline_arranger_widget_setup (
+  TimelineArrangerWidget * self);
 
 /**
  * Readd children.
  */
 void
 timeline_arranger_widget_refresh_children (
+  TimelineArrangerWidget * self);
+
+/**
+ * Refreshes visibility of children.
+ */
+void
+timeline_arranger_widget_refresh_visibility (
   TimelineArrangerWidget * self);
 
 /**

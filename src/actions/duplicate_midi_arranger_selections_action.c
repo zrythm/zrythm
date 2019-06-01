@@ -71,7 +71,7 @@ duplicate_midi_arranger_selections_action_do (
 
       /* select it */
       midi_note_widget_select (
-        mn->widget, F_SELECT, F_NO_TRANSIENTS);
+        mn->widget, F_SELECT);
     }
 
   EVENTS_PUSH (ET_MA_SELECTIONS_CHANGED,

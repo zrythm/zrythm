@@ -1,4 +1,5 @@
 backend_srcs = [
+  'arranger_object_info.c',
   'audio_clip_editor.c',
   'clip_editor.c',
   'events.c',

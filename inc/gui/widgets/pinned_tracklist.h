@@ -51,7 +51,7 @@ G_DECLARE_FINAL_TYPE (
 #define MW_PINNED_TRACKLIST \
   MW_CENTER_DOCK->pinned_tracklist
 
-typedef struct PinnedTracklist PinnedTracklist;
+typedef struct Tracklist Tracklist;
 typedef struct _TrackWidget TrackWidget;
 
 /**
@@ -67,7 +67,7 @@ typedef struct _PinnedTracklistWidget
   GtkBox     parent_instance;
 
   /** The backend. */
-  PinnedTracklist * tracklist;
+  Tracklist * tracklist;
 
 } PinnedTracklistWidget;
 
@@ -93,7 +93,7 @@ pinned_tracklist_widget_hard_refresh (
 void
 pinned_tracklist_widget_setup (
   PinnedTracklistWidget * self,
-  PinnedTracklist * tracklist);
+  Tracklist *             tracklist);
 
 /**
  * @}

@@ -146,6 +146,16 @@ typedef struct Track
    */
   TrackWidget *       widget;
 
+  /**
+   * Whether pinned or not.
+   *
+   * Pinned tracks should keep their original pos
+   * saved so they can get unpinned. When iterating
+   * through unpinned tracks, can just check this
+   * variable.
+   */
+  int                 pinned;
+
   /** Flag to set automations visible or not. */
   int                 bot_paned_visible;
 
@@ -319,6 +329,21 @@ track_new (
  */
 Track *
 track_clone (Track * track);
+
+/**
+ * Returns if the given TrackType is a type of
+ * Track that has a Channel.
+ */
+static inline int
+track_type_has_channel (
+  TrackType type)
+{
+  if (type == TRACK_TYPE_CHORD ||
+      type == TRACK_TYPE_MARKER)
+    return 0;
+
+  return 1;
+}
 
 /**
  * Sets track muted and optionally adds the action

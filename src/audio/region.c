@@ -43,14 +43,32 @@
 #include <sndfile.h>
 #include <samplerate.h>
 
+#define SET_POS(r,pos_name,pos) \
+  if (!region_is_transient (r)) \
+    { \
+      position_set_to_pos ( \
+        &region_get_main_trans_region (r)-> \
+        pos_name, pos); \
+      position_set_to_pos ( \
+        &region_get_lane_trans_region (r)-> \
+        pos_name, pos); \
+    } \
+  position_set_to_pos ( \
+    &region_get_lane_region (r)-> \
+    pos_name, pos); \
+  position_set_to_pos ( \
+    &region_get_main_region (r)-> \
+    pos_name, pos);
+
 /**
  * Only to be used by implementing structs.
  */
 void
-region_init (Region *   region,
-             RegionType type,
-             Position * start_pos,
-             Position * end_pos)
+region_init (
+  Region *   region,
+  RegionType type,
+  Position * start_pos,
+  Position * end_pos)
 {
   g_message ("creating region");
   position_set_to_pos (&region->start_pos,
@@ -63,20 +81,8 @@ region_init (Region *   region,
   position_from_ticks (&region->true_end_pos,
                        length);
   position_init (&region->loop_start_pos);
-  /*g_message ("loop start");*/
-  /*position_print (&region->loop_start_pos);*/
-  /*g_message ("loop end");*/
   position_set_to_pos (&region->loop_end_pos,
                        &region->true_end_pos);
-  /*position_print (&region->loop_end_pos);*/
-  /*g_message ("start pos");*/
-  /*position_print (&region->start_pos);*/
-  /*g_message ("end pos");*/
-  /*position_print (&region->end_pos);*/
-  /*region->name = g_strdup_printf ("%s (%d)",*/
-                                  /*track->name,*/
-                                  /*region->id);*/
-  /*region->name = g_strdup (track->name);*/
   region->linked_region_name = NULL;
   region->type = type;
   if (type == REGION_TYPE_AUDIO)
@@ -101,19 +107,22 @@ region_set_lane (
 {
   g_return_if_fail (lane);
 
-  /*if (lane)*/
-    /*{*/
-      region->lane = lane;
-      region->lane_pos = lane->pos;
-      region->track_pos = lane->track_pos;
-      region->is_lane_region = 1;
-    /*}*/
-  /*else*/
-    /*{*/
-      /*region->lane = NULL;*/
-      /*region->lane_pos = -1;*/
-      /*region->track_pos = -1;*/
-    /*}*/
+  Region * r;
+  for (int i = 0; i < 4; i++)
+    {
+      if (i == AOI_TYPE_MAIN)
+        r = region_get_main_region (region);
+      else if (i == AOI_TYPE_MAIN_TRANSIENT)
+        r = region_get_main_trans_region (region);
+      else if (i == AOI_TYPE_LANE)
+        r = region_get_lane_region (region);
+      else if (i == AOI_TYPE_LANE_TRANSIENT)
+        r = region_get_lane_trans_region (region);
+
+      r->lane = lane;
+      r->lane_pos = lane->pos;
+      r->track_pos = lane->track_pos;
+    }
 }
 
 /**
@@ -164,6 +173,16 @@ region_find (
   Region * clone)
 {
   return region_find_by_name (clone->name);
+}
+
+/**
+ * Returns the Track this Region is in.
+ */
+Track *
+region_get_track (
+  Region * region)
+{
+  return TRACKLIST->tracks[region->track_pos];
 }
 
 /**
@@ -224,6 +243,22 @@ region_find_midi_note (
   return NULL;
 }
 
+void
+region_set_cache_end_pos (
+  Region * region,
+  Position * pos)
+{
+  SET_POS (region, cache_end_pos, pos);
+}
+
+void
+region_set_cache_start_pos (
+  Region * region,
+  Position * pos)
+{
+  SET_POS (region, cache_start_pos, pos);
+}
+
 /**
  * Clamps position then sets it.
  */
@@ -235,8 +270,9 @@ region_set_start_pos (
   if (position_to_ticks (&region->end_pos) -
       position_to_ticks (pos) >=
       TRANSPORT->lticks_per_beat)
-    position_set_to_pos (&region->start_pos,
-                         pos);
+    {
+      SET_POS (region, start_pos, pos);
+    }
 }
 
 /**
@@ -308,30 +344,25 @@ region_set_end_pos (Region * region,
   if (position_to_ticks (pos) -
       position_to_ticks (&region->start_pos) >=
       TRANSPORT->lticks_per_beat)
-    position_set_to_pos (&region->end_pos,
-                         pos);
+    {
+      SET_POS (region, end_pos, pos);
+    }
 }
 
-/**
- * Checks if position is valid then sets it.
- */
 void
-region_set_true_end_pos (Region * region,
-                         Position * pos)
+region_set_true_end_pos (
+  Region * region,
+  Position * pos)
 {
-  position_set_to_pos (&region->true_end_pos,
-                       pos);
+  SET_POS (region, true_end_pos, pos);
 }
 
-/**
- * Checks if position is valid then sets it.
- */
 void
-region_set_loop_end_pos (Region * region,
-                         Position * pos)
+region_set_loop_end_pos (
+  Region * region,
+  Position * pos)
 {
-  position_set_to_pos (&region->loop_end_pos,
-                       pos);
+  SET_POS (region, loop_end_pos, pos);
 }
 
 /**
@@ -341,8 +372,7 @@ void
 region_set_loop_start_pos (Region * region,
                          Position * pos)
 {
-  position_set_to_pos (&region->loop_start_pos,
-                       pos);
+  SET_POS (region, loop_start_pos, pos);
 }
 
 /**
@@ -352,8 +382,7 @@ void
 region_set_clip_start_pos (Region * region,
                          Position * pos)
 {
-  position_set_to_pos (&region->clip_start_pos,
-                       pos);
+  SET_POS (region, clip_start_pos, pos);
 }
 
 /**
@@ -363,7 +392,8 @@ int
 region_is_selected (Region * self)
 {
   if (timeline_selections_contains_region (
-        TL_SELECTIONS, self, 1))
+        TL_SELECTIONS,
+        region_get_main_region (self)))
     return 1;
 
   return 0;
@@ -375,6 +405,7 @@ region_is_selected (Region * self)
 int
 region_is_visible (Region * self)
 {
+  /* FIXME delete */
   ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);
 
   if (ar_prv->action ==
@@ -386,6 +417,25 @@ region_is_visible (Region * self)
     return 0;
 
   return 1;
+}
+
+/**
+ * Sets Region name (without appending anything to
+ * it) to all associated regions.
+ */
+void
+region_set_name (
+  Region * region,
+  char *   name)
+{
+  region_get_main_region (region)->name =
+    g_strdup (name);
+  region_get_lane_region (region)->name =
+    g_strdup (name);
+  region_get_main_trans_region (region)->name =
+    g_strdup (name);
+  region_get_lane_trans_region (region)->name =
+    g_strdup (name);
 }
 
 /**
@@ -551,7 +601,8 @@ region_clone (Region *        region,
         midi_region_new (&region->start_pos,
                          &region->end_pos);
       MidiRegion * mr_orig = region;
-      if (flag == REGION_CLONE_COPY)
+      if (flag == REGION_CLONE_COPY ||
+          flag == REGION_CLONE_COPY_WITH_OBJ_INFO)
         {
           for (int i = 0;
                i < mr_orig->num_midi_notes; i++)
@@ -597,6 +648,18 @@ region_clone (Region *        region,
 
   /* clone name */
   new_region->name = g_strdup (region->name);
+
+  /*if (flag == REGION_CLONE_COPY_WITH_OBJ_INFO)
+    {
+      g_warn_if_fail (region->track_pos >= 0);
+
+      arranger_object_info_init (
+        &new_region->obj_info,
+        region->obj_info.main,
+        region->obj_info.main_trans,
+        region->obj_info.lane,
+        region->obj_info.lane_trans);
+    }*/
 
   /* set track to NULL and remember track pos */
   new_region->lane = NULL;

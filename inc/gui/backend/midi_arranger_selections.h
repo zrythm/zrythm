@@ -32,15 +32,10 @@
  */
 typedef struct MidiArrangerSelections
 {
-  /** Original selected notes. */
+  /** Selected notes. */
   MidiNote *               midi_notes[600];
   int                      num_midi_notes;
 
-  /** MIDI notes acting on.
-   *
-   * These are newly cloned notes (transient).
-   * Use actual_note to get the original note ID. */
-  MidiNote *               transient_notes[600];
 } MidiArrangerSelections;
 
 static const cyaml_schema_field_t
@@ -63,14 +58,6 @@ midi_arranger_selections_schema = {
 void
 midi_arranger_selections_init_loaded (
   MidiArrangerSelections * self);
-
-/**
- * Creates transient notes for notes added
- * to selections without transients.
- */
-void
-midi_arranger_selections_create_missing_transients (
-  MidiArrangerSelections * mas);
 
 /**
  * Clone the struct for copying, undoing, etc.
@@ -134,15 +121,11 @@ midi_arranger_selections_remove_transients (
 
 /**
  * Adds a note to the selections.
- *
- * Optionally adds a transient note (if moving /
- * copy-moving).
  */
 void
 midi_arranger_selections_add_note (
   MidiArrangerSelections * mas,
-  MidiNote *               note,
-  int                      transient);
+  MidiNote *               note);
 
 void
 midi_arranger_selections_remove_note (

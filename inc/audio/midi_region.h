@@ -17,6 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * API for Region's specific to instrument Track's.
+ */
+
 #ifndef __AUDIO_MIDI_REGION_H__
 #define __AUDIO_MIDI_REGION_H__
 
@@ -27,11 +33,18 @@ typedef struct Region Region;
 typedef Region MidiRegion;
 
 /**
+ * @addtogroup audio
+ *
+ * @{
+ */
+
+/**
  * Creates a new Region for MIDI notes.
  */
 MidiRegion *
-midi_region_new (Position * start_pos,
-                 Position * end_pos);
+midi_region_new (
+  Position * start_pos,
+  Position * end_pos);
 
 /**
  * Deep clones the midi region.
@@ -140,5 +153,9 @@ midi_region_remove_all_midi_notes (
  */
 void
 midi_region_free_members (MidiRegion * self);
+
+/**
+ * @}
+ */
 
 #endif // __AUDIO_MIDI_REGION_H__

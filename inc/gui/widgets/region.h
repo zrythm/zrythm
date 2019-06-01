@@ -17,7 +17,11 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file */
+/**
+ * \file
+ *
+ * Base widget class for Region's.
+ */
 
 #ifndef __GUI_WIDGETS_REGION_H__
 #define __GUI_WIDGETS_REGION_H__
@@ -29,11 +33,17 @@
 
 #define REGION_WIDGET_TYPE \
   (region_widget_get_type ())
-G_DECLARE_DERIVABLE_TYPE (RegionWidget,
-                          region_widget,
-                          Z,
-                          REGION_WIDGET,
-                          GtkBox)
+G_DECLARE_DERIVABLE_TYPE (
+  RegionWidget,
+  region_widget,
+  Z, REGION_WIDGET,
+  GtkBox)
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 #define REGION_WIDGET_GET_PRIVATE(self) \
   RegionWidgetPrivate * rw_prv = \
@@ -45,14 +55,14 @@ G_DECLARE_DERIVABLE_TYPE (RegionWidget,
 typedef struct _RegionWidgetPrivate
 {
   /** Region associated with this widget. */
-  Region                   * region;
+  Region *           region;
 
   /** If cursor is at resizing L. */
-  int                      resize_l;
+  int                resize_l;
 
   /** If cursor is at resizing R. */
-  int                      resize_r;
-  GtkDrawingArea *         drawing_area;
+  int                resize_r;
+  GtkDrawingArea *   drawing_area;
 } RegionWidgetPrivate;
 
 typedef struct _RegionWidgetClass
@@ -60,15 +70,21 @@ typedef struct _RegionWidgetClass
   GtkBoxClass parent_class;
 } RegionWidgetClass;
 
+/**
+ * Sets up the RegionWidget.
+ */
 void
-region_widget_setup (RegionWidget * self,
-                     Region *       region);
+region_widget_setup (
+  RegionWidget * self,
+  Region *       region);
 
+/**
+ * Mark the Region as selected.
+ */
 void
 region_widget_select (
   RegionWidget * self,
-  int            select,
-  int            with_transients);
+  int            select);
 
 /**
  * Returns if the current position is for resizing
@@ -81,7 +97,7 @@ region_widget_is_resize_l (
 
 /**
  * Returns if the current position is for resizing
- * L.
+ * R.
  */
 int
 region_widget_is_resize_r (
@@ -94,7 +110,14 @@ region_widget_is_resize_r (
 void
 region_widget_delete (RegionWidget *self);
 
+/**
+ * Returns the private struct.
+ */
 RegionWidgetPrivate *
 region_widget_get_private (RegionWidget * self);
+
+/**
+ * @}
+ */
 
 #endif

@@ -48,10 +48,11 @@ mixer_widget_soft_refresh (MixerWidget * self)
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
-      if (track->type == TRACK_TYPE_CHORD)
+      if (!track_type_has_channel (track->type))
         continue;
 
       ch = track->channel;
+      g_return_if_fail (ch);
 
       if (GTK_IS_WIDGET (ch->widget))
         channel_widget_refresh (ch->widget);
@@ -75,7 +76,7 @@ mixer_widget_hard_refresh (MixerWidget * self)
     {
       track = TRACKLIST->tracks[i];
 
-      if (track->type == TRACK_TYPE_CHORD)
+      if (!track_type_has_channel (track->type))
         continue;
 
       ch = track->channel;

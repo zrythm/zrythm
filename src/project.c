@@ -33,6 +33,7 @@
 #include "audio/channel.h"
 #include "audio/chord_track.h"
 #include "audio/engine.h"
+#include "audio/marker_track.h"
 #include "audio/midi_note.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
@@ -137,18 +138,29 @@ create_default (Project * self)
 
   self->title = g_strdup (DEFAULT_PROJECT_NAME);
 
-  /* add master channel to mixer and tracklist */
+  /* init pinned tracks */
   Track * track =
-    track_new (TRACK_TYPE_MASTER, _("Master"));
-  MIXER->master = track;
-  /*MIXER->master_id = track->channel->id;*/
+    chord_track_default ();
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
+  track->pinned = 1;
+  TRACKLIST->chord_track = track;
+  track =
+    marker_track_default ();
+  tracklist_append_track (
+    TRACKLIST, track, F_NO_PUBLISH_EVENTS,
+    F_NO_RECALC_GRAPH);
+  track->pinned = 1;
+  TRACKLIST->marker_track = track;
 
-  /* init ruler tracklist */
-  pinned_tracklist_init (
-    &self->pinned_tracklist);
+  /* add master channel to mixer and tracklist */
+  track =
+    track_new (TRACK_TYPE_MASTER, _("Master"));
+  MIXER->master = track;
+  tracklist_append_track (
+    TRACKLIST, track, F_NO_PUBLISH_EVENTS,
+    F_NO_RECALC_GRAPH);
 
   /* create untitled project */
   char * untitled_project = _("Untitled Project");
