@@ -45,14 +45,18 @@ G_DECLARE_DERIVABLE_TYPE (RegionWidget,
 typedef struct _RegionWidgetPrivate
 {
   /** Region associated with this widget. */
-  Region                   * region;
+  Region *           region;
 
   /** If cursor is at resizing L. */
-  int                      resize_l;
+  int                resize_l;
+
+  /** If this widget is a TrackLane Region or main
+   * Track Region. */
+  int                is_lane;
 
   /** If cursor is at resizing R. */
   int                      resize_r;
-  GtkDrawingArea *         drawing_area;
+  GtkDrawingArea *   drawing_area;
 } RegionWidgetPrivate;
 
 typedef struct _RegionWidgetClass
@@ -60,10 +64,24 @@ typedef struct _RegionWidgetClass
   GtkBoxClass parent_class;
 } RegionWidgetClass;
 
+/**
+ * Sets up the RegionWidget.
+ *
+ * @param is_lane Whether this RegionWidget will be
+ *   showin inside a TrackLane or not.
+ */
 void
-region_widget_setup (RegionWidget * self,
-                     Region *       region);
+region_widget_setup (
+  RegionWidget * self,
+  Region *       region,
+  int            is_lane);
 
+/**
+ * Mark the Region as selected.
+ *
+ * @param with_transients Create transient Region's
+ *   for the selection.
+ */
 void
 region_widget_select (
   RegionWidget * self,

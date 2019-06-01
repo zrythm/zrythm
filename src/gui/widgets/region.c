@@ -201,25 +201,36 @@ on_motion (GtkWidget *      widget,
   return FALSE;
 }
 
+/**
+ * Sets up the RegionWidget.
+ *
+ * @param is_lane Whether this RegionWidget will be
+ *   showin inside a TrackLane or not.
+ */
 void
-region_widget_setup (RegionWidget * self,
-                     Region *       region)
+region_widget_setup (
+  RegionWidget * self,
+  Region *       region,
+  int            is_lane)
 {
   REGION_WIDGET_GET_PRIVATE (self);
 
   rw_prv->region = region;
+  rw_prv->is_lane = is_lane;
 
   rw_prv->drawing_area =
     GTK_DRAWING_AREA (gtk_drawing_area_new ());
-  gtk_container_add (GTK_CONTAINER (self),
-                     GTK_WIDGET (rw_prv->drawing_area));
-  gtk_widget_set_visible (GTK_WIDGET (rw_prv->drawing_area),
-                          1);
-  gtk_widget_set_hexpand (GTK_WIDGET (rw_prv->drawing_area),
-                          1);
+  gtk_container_add (
+    GTK_CONTAINER (self),
+    GTK_WIDGET (rw_prv->drawing_area));
+  gtk_widget_set_visible (
+    GTK_WIDGET (rw_prv->drawing_area), 1);
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (rw_prv->drawing_area), 1);
 
-  gtk_widget_add_events (GTK_WIDGET (rw_prv->drawing_area),
-                         GDK_ALL_EVENTS_MASK);
+  gtk_widget_add_events (
+    GTK_WIDGET (rw_prv->drawing_area),
+    GDK_ALL_EVENTS_MASK);
 
   /* connect signals */
   g_signal_connect (

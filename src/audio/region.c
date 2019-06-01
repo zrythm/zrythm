@@ -63,20 +63,8 @@ region_init (Region *   region,
   position_from_ticks (&region->true_end_pos,
                        length);
   position_init (&region->loop_start_pos);
-  /*g_message ("loop start");*/
-  /*position_print (&region->loop_start_pos);*/
-  /*g_message ("loop end");*/
   position_set_to_pos (&region->loop_end_pos,
                        &region->true_end_pos);
-  /*position_print (&region->loop_end_pos);*/
-  /*g_message ("start pos");*/
-  /*position_print (&region->start_pos);*/
-  /*g_message ("end pos");*/
-  /*position_print (&region->end_pos);*/
-  /*region->name = g_strdup_printf ("%s (%d)",*/
-                                  /*track->name,*/
-                                  /*region->id);*/
-  /*region->name = g_strdup (track->name);*/
   region->linked_region_name = NULL;
   region->type = type;
   if (type == REGION_TYPE_AUDIO)
@@ -322,6 +310,9 @@ region_set_end_pos (Region * region,
         &region->end_pos, pos);
       if (region->is_lane_region &&
           region->laneless_region)
+        position_set_to_pos (
+          &region->laneless_region->end_pos, pos);
+      else if (!region->is_lane_region)
         position_set_to_pos (
           &region->laneless_region->end_pos, pos);
     }

@@ -53,60 +53,6 @@ timeline_selections_init_loaded (
 }
 
 /**
- * Creates transient objects for objects added
- * to selections without transients.
- */
-void
-timeline_selections_create_missing_transients (
-  TimelineSelections * ts)
-{
-  Region * r = NULL, * transient = NULL;
-  Track * tr;
-  for (int i = 0; i < ts->num_regions; i++)
-    {
-      r = ts->regions[i];
-      if (ts->transient_regions[i])
-        g_warn_if_fail (
-          GTK_IS_WIDGET (
-            ts->transient_regions[i]->widget));
-      else if (!ts->transient_regions[i])
-        {
-          /* create the transient */
-          transient =
-            region_clone (
-              r, REGION_CLONE_COPY);
-          transient->transient = 1;
-          if (r->type == REGION_TYPE_MIDI)
-            transient->widget =
-              Z_REGION_WIDGET (
-                midi_region_widget_new (transient));
-          else if (r->type == REGION_TYPE_AUDIO)
-            transient->widget =
-              Z_REGION_WIDGET (
-                audio_region_widget_new (transient));
-          gtk_widget_set_visible (
-            GTK_WIDGET (transient->widget),
-            F_NOT_VISIBLE);
-
-          /* add it to selections and to track */
-          ts->transient_regions[i] =
-            transient;
-          g_return_if_fail (
-            transient->track_pos >= 0);
-          tr =
-            TRACKLIST->tracks[transient->track_pos];
-          track_add_region (
-            tr, transient, 0,
-            F_NO_GEN_NAME);
-        }
-      EVENTS_PUSH (ET_REGION_CHANGED,
-                   r);
-      EVENTS_PUSH (ET_REGION_CHANGED,
-                   ts->transient_regions[i]);
-    }
-}
-
-/**
  * Returns if there are any selections.
  */
 int
@@ -531,6 +477,8 @@ timeline_selections_remove_transients (
  *
  * Optionally adds a transient object (if moving/
  * copy-moving).
+ *
+ * @param transient Add a transient Region.
  */
 void
 timeline_selections_add_region (

@@ -69,8 +69,12 @@ typedef enum RegionCloneFlag
  * A region (clip) is an object on the timeline that
  * contains either MidiNote's or AudioClip's.
  *
- * It is uniquely identified using its name, so name
+ * It is uniquely identified using its name (and
+ * ArrangerObjectInfo type), so name
  * must be unique throughout the Project.
+ *
+ * Each main Region must have its obj_info member
+ * filled in with clones.
  */
 typedef struct Region
 {
@@ -197,30 +201,10 @@ typedef struct Region
   /* ==== AUDIO REGION END ==== */
 
   /**
-   * Transient or not.
-   *
-   * Transient regions are regions that are cloned
-   * and used during moving, then discarded.  */
-  int             transient;
-
-  /**
-   * Whether it is a TrackLane region or not.
-   *
-   * TrackLane regions are Region's that are inside
-   * TrackLane's in the timeline (not the Region's
-   * showed inside the Track).
+   * Info on whether this Region is transient/lane
+   * and pointers to transient/lane equivalents.
    */
-  int             is_lane_region;
-
-  /**
-   * If lane region, this is an extra region that
-   * will be shown inside the Track, in addition to
-   * the main one inside the TrackLane.
-   *
-   * It must have the same parameters as the main
-   * Region.
-   */
-  Region *        laneless_region;
+  ArrangerObjectInfo  obj_info;
 } Region;
 
 static const cyaml_strval_t

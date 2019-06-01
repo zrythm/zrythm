@@ -17,6 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Current TimelineArranger selections.
+ */
+
 #ifndef __GUI_BACKEND_TL_SELECTIONS_H__
 #define __GUI_BACKEND_TL_SELECTIONS_H__
 
@@ -35,19 +41,16 @@
  */
 typedef struct TimelineSelections
 {
-  /** Regions doing action upon */
+  /** Selected TrackLane Region's. */
   Region *                 regions[600];
-  Region *                 transient_regions[600];
   int                      num_regions;
 
-  /** Automation points acting upon */
+  /** Selected AutomationPoint's. */
   AutomationPoint *        aps[600];
-  AutomationPoint *        transient_aps[600];
   int                      num_aps;
 
-  /** Chords acting upon */
+  /** Selected ZChords. */
   ZChord *                  chords[800];
-  ZChord *                  transient_chords[800];
   int                      num_chords;
 } TimelineSelections;
 
