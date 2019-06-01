@@ -73,8 +73,7 @@ duplicate_timeline_selections_action_do (
 
       /* select it */
       region_widget_select (region->widget,
-                            F_SELECT,
-                            F_NO_TRANSIENTS);
+                            F_SELECT);
 
       /* remember its name */
       g_free (self->ts->regions[i]->name);

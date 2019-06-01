@@ -104,27 +104,21 @@ on_motion (GtkWidget * widget,
 void
 automation_point_widget_select (
   AutomationPointWidget * self,
-  int            select,
-  int            with_transients)
+  int            select)
 {
+  AutomationPoint * ap = self->ap->obj_info.main;
   if (select)
     {
-      /*gtk_widget_set_state_flags (*/
-        /*GTK_WIDGET (self),*/
-        /*GTK_STATE_FLAG_SELECTED,*/
-        /*0);*/
       timeline_selections_add_ap (
-        TL_SELECTIONS, self->ap, with_transients);
+        TL_SELECTIONS, ap);
     }
   else
     {
-      /*gtk_widget_unset_state_flags (*/
-        /*GTK_WIDGET (self),*/
-        /*GTK_STATE_FLAG_SELECTED);*/
       timeline_selections_remove_ap (
-        TL_SELECTIONS, self->ap);
+        TL_SELECTIONS, ap);
     }
-  /*gtk_widget_queue_draw (GTK_WIDGET (self));*/
+
+  EVENTS_PUSH (ET_AP_CHANGED, ap);
 }
 
 void

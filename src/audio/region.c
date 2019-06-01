@@ -94,7 +94,6 @@ region_set_lane (
       region->lane = lane;
       region->lane_pos = lane->pos;
       region->track_pos = lane->track_pos;
-      region->is_lane_region = 1;
     /*}*/
   /*else*/
     /*{*/
@@ -152,6 +151,16 @@ region_find (
   Region * clone)
 {
   return region_find_by_name (clone->name);
+}
+
+/**
+ * Returns the Track this Region is in.
+ */
+Track *
+region_get_track (
+  Region * region)
+{
+  return TRACKLIST->tracks[region->track_pos];
 }
 
 /**
@@ -227,12 +236,17 @@ region_set_start_pos (
       position_set_to_pos (
         &region->start_pos, pos);
 
-      if (region->laneless_region)
-        {
-          position_set_to_pos (
-            &region->laneless_region->start_pos,
-            pos);
-        }
+      /* update main/lane counterpart */
+      if (region->obj_info.type ==
+          AOI_TYPE_MAIN)
+        position_set_to_pos (
+          &region_get_lane_region (region)->start_pos,
+          pos);
+      else if (region->obj_info.type ==
+               AOI_TYPE_LANE)
+        position_set_to_pos (
+          &region_get_main_region (region)->start_pos,
+          pos);
     }
 }
 
@@ -308,13 +322,18 @@ region_set_end_pos (Region * region,
     {
       position_set_to_pos (
         &region->end_pos, pos);
-      if (region->is_lane_region &&
-          region->laneless_region)
+
+      /* update main/lane counterpart */
+      if (region->obj_info.type ==
+          AOI_TYPE_MAIN)
         position_set_to_pos (
-          &region->laneless_region->end_pos, pos);
-      else if (!region->is_lane_region)
+          &region_get_lane_region (region)->end_pos,
+          pos);
+      else if (region->obj_info.type ==
+               AOI_TYPE_LANE)
         position_set_to_pos (
-          &region->laneless_region->end_pos, pos);
+          &region_get_main_region (region)->end_pos,
+          pos);
     }
 }
 
@@ -325,9 +344,14 @@ region_set_true_end_pos (
 {
   position_set_to_pos (
     &region->true_end_pos, pos);
-  if (region->laneless_region)
+  if (region_is_lane (region))
     position_set_to_pos (
-      &region->laneless_region->true_end_pos, pos);
+      &region_get_main_region (region)->true_end_pos,
+      pos);
+  else if (region_is_main (region))
+    position_set_to_pos (
+      &region_get_lane_region (region)->true_end_pos,
+      pos);
 }
 
 void
@@ -337,9 +361,14 @@ region_set_loop_end_pos (
 {
   position_set_to_pos (
     &region->loop_end_pos, pos);
-  if (region->laneless_region)
+  if (region_is_lane (region))
     position_set_to_pos (
-      &region->laneless_region->loop_end_pos, pos);
+      &region_get_main_region (region)->loop_end_pos,
+      pos);
+  else if (region_is_main (region))
+    position_set_to_pos (
+      &region_get_lane_region (region)->loop_end_pos,
+      pos);
 }
 
 /**
@@ -371,7 +400,7 @@ int
 region_is_selected (Region * self)
 {
   if (timeline_selections_contains_region (
-        TL_SELECTIONS, self, 1))
+        TL_SELECTIONS, self))
     return 1;
 
   return 0;
@@ -559,7 +588,8 @@ region_clone (Region *        region,
         midi_region_new (&region->start_pos,
                          &region->end_pos);
       MidiRegion * mr_orig = region;
-      if (flag == REGION_CLONE_COPY)
+      if (flag == REGION_CLONE_COPY ||
+          flag == REGION_CLONE_COPY_WITH_OBJ_INFO)
         {
           for (int i = 0;
                i < mr_orig->num_midi_notes; i++)
@@ -605,6 +635,18 @@ region_clone (Region *        region,
 
   /* clone name */
   new_region->name = g_strdup (region->name);
+
+  /*if (flag == REGION_CLONE_COPY_WITH_OBJ_INFO)
+    {
+      g_warn_if_fail (region->track_pos >= 0);
+
+      arranger_object_info_init (
+        &new_region->obj_info,
+        region->obj_info.main,
+        region->obj_info.main_trans,
+        region->obj_info.lane,
+        region->obj_info.lane_trans);
+    }*/
 
   /* set track to NULL and remember track pos */
   new_region->lane = NULL;

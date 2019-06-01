@@ -28,9 +28,17 @@
 #include "audio/midi_note.h"
 #include "audio/midi_region.h"
 #include "audio/position.h"
+#include "gui/backend/arranger_object_info.h"
 #include "utils/yaml.h"
 
 #include <gtk/gtk.h>
+
+typedef struct _RegionWidget RegionWidget;
+typedef struct Channel Channel;
+typedef struct Track Track;
+typedef struct MidiNote MidiNote;
+typedef struct TrackLane TrackLane;
+typedef struct _AudioClipWidget AudioClipWidget;
 
 /**
  * @addtogroup audio
@@ -40,12 +48,33 @@
 
 #define REGION_PRINTF_FILENAME "%s_%s.mid"
 
-typedef struct _RegionWidget RegionWidget;
-typedef struct Channel Channel;
-typedef struct Track Track;
-typedef struct MidiNote MidiNote;
-typedef struct TrackLane TrackLane;
-typedef struct _AudioClipWidget AudioClipWidget;
+#define region_is_transient(r) \
+  arranger_object_info_is_transient ( \
+    &r->obj_info)
+#define region_is_lane(r) \
+  arranger_object_info_is_lane ( \
+    &r->obj_info)
+#define region_is_main(r) \
+  arranger_object_info_is_main ( \
+    &r->obj_info)
+
+/** Gets the TrackLane counterpart of the Region. */
+#define region_get_lane_region(r) \
+  ((Region *) r->obj_info.lane)
+
+/** Gets the non-TrackLane counterpart of the Region. */
+#define region_get_main_region(r) \
+  ((Region *) r->obj_info.main)
+
+/** Gets the TrackLane counterpart of the Region
+ * (transient). */
+#define region_get_lane_trans_region(r) \
+  ((Region *) r->obj_info.lane_trans)
+
+/** Gets the non-TrackLane counterpart of the Region
+ * (transient). */
+#define region_get_main_trans_region(r) \
+  ((Region *) r->obj_info.main_trans)
 
 /**
  * Type of Region.
@@ -56,12 +85,28 @@ typedef enum RegionType
   REGION_TYPE_AUDIO
 } RegionType;
 
+/**
+ * Flag do indicate how to clone the Region.
+ */
 typedef enum RegionCloneFlag
 {
   /**
-   * Create a completely new region with a new id.
+   * Create a new region to be used inside
+   * ArrangerObjectInfo.
+   *
+   * This should be used e.g., when creating the
+   * transient or lane counterpart of a Region to store
+   * inside its obj_info.
+   *
+   * FIXME needed?
    */
+  REGION_CLONE_COPY_WITH_OBJ_INFO,
+
+  /** Create a new Region without touching the
+   * ArrangerObjectInfo. */
   REGION_CLONE_COPY,
+
+  /** TODO */
   REGION_CLONE_LINK
 } RegionCloneFlag;
 
@@ -364,6 +409,13 @@ region_timeline_pos_to_local (
   Position * timeline_pos,
   Position * local_pos,
   int        normalize);
+
+/**
+ * Returns the Track this Region is in.
+ */
+Track *
+region_get_track (
+  Region * region);
 
 /**
  * Returns the number of loops in the region,

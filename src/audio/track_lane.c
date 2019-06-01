@@ -85,7 +85,7 @@ track_lane_add_region (
   arranger_object_info_init (
     &lane_trans->obj_info,
     main, main_trans, region, lane_trans,
-    AOI_TYPE_LANE_TRANSIENT
+    AOI_TYPE_LANE_TRANSIENT);
 
   array_append (self->regions,
                 self->num_regions,

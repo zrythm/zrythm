@@ -1,5 +1,5 @@
 project (
-  'zrythm', ['c', 'cpp'],
+  'zrythm', ['c', 'cpp', 'objc'],
   version: '0.4.186',
   license: 'GPLv3+',
   meson_version: '>= 0.43.0',
@@ -48,7 +48,7 @@ root_inc = include_directories ('.')
 inc_inc = include_directories ('inc')
 ext_inc = include_directories ('ext')
 midilib_inc = include_directories ('ext' / 'midilib')
-cyaml_inc = include_directories ('ext' / 'libcyaml')
+cyaml_inc = include_directories ('ext' / 'libcyaml' / 'include')
 zix_inc = include_directories ('ext' / 'zix')
 all_inc = [
   root_inc,
@@ -217,6 +217,16 @@ zrythm_deps = [
   cc.find_library('m', required: false),
   cc.find_library('rt', required: false),
 ]
+
+if (os_darwin)
+  zrythm_deps += dependency (
+    'appleframeworks', 
+    modules: [
+      'foundation',
+      'cocoa',
+      'appkit',
+      ])
+endif
 
 configure_file (
   output: 'config.h',

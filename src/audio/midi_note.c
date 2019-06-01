@@ -116,6 +116,16 @@ midi_note_clone (
 }
 
 /**
+ * Gets the Track this MidiNote is in.
+ */
+Track *
+midi_note_get_track (
+  MidiNote * self)
+{
+  return TRACKLIST->tracks[self->region->track_pos];
+}
+
+/**
  * For debugging.
  */
 void
@@ -124,7 +134,7 @@ midi_note_print (
 {
   g_message (
     "MidiNote: start pos %d.%d.%d.%d "
-    "end pos %d.%d.%d.%d (transient? %d)",
+    "end pos %d.%d.%d.%d",
     mn->start_pos.bars,
     mn->start_pos.beats,
     mn->start_pos.sixteenths,
@@ -132,8 +142,7 @@ midi_note_print (
     mn->end_pos.bars,
     mn->end_pos.beats,
     mn->end_pos.sixteenths,
-    mn->end_pos.ticks,
-    mn->transient);
+    mn->end_pos.ticks);
 }
 
 /**
@@ -144,10 +153,6 @@ midi_note_is_selected (MidiNote * self)
 {
   if (array_contains (
         MA_SELECTIONS->midi_notes,
-        MA_SELECTIONS->num_midi_notes,
-        self) ||
-      array_contains (
-        MA_SELECTIONS->transient_notes,
         MA_SELECTIONS->num_midi_notes,
         self))
     return 1;
@@ -189,7 +194,6 @@ midi_note_is_equal (
                        &dest->end_pos) &&
     src->val == dest->val &&
     src->muted == dest->muted &&
-    src->transient == dest->transient &&
     !g_strcmp0 (src->region->name,
                 dest->region->name);
 }

@@ -28,9 +28,16 @@
 
 #include "audio/automation_point.h"
 #include "audio/chord.h"
+#include "audio/marker.h"
 #include "audio/midi_region.h"
 #include "audio/region.h"
 #include "utils/yaml.h"
+
+/**
+ * @addtogroup gui_backend GUI backend.
+ *
+ * @{
+ */
 
 #define TL_SELECTIONS \
   (&PROJECT->timeline_selections)
@@ -42,16 +49,20 @@
 typedef struct TimelineSelections
 {
   /** Selected TrackLane Region's. */
-  Region *                 regions[600];
-  int                      num_regions;
+  Region *            regions[600];
+  int                 num_regions;
 
   /** Selected AutomationPoint's. */
-  AutomationPoint *        aps[600];
-  int                      num_aps;
+  AutomationPoint *   aps[600];
+  int                 num_aps;
 
-  /** Selected ZChords. */
-  ZChord *                  chords[800];
-  int                      num_chords;
+  /** Selected ZChord's. */
+  ZChord *            chords[800];
+  int                 num_chords;
+
+  /** Selected Marker's. */
+  Marker *            markers[200];
+  int                 num_markers;
 } TimelineSelections;
 
 static const cyaml_schema_field_t
@@ -81,14 +92,6 @@ timeline_selections_schema = {
 
 void
 timeline_selections_init_loaded (
-  TimelineSelections * ts);
-
-/**
- * Creates transient objects for objects added
- * to selections without transients.
- */
-void
-timeline_selections_create_missing_transients (
   TimelineSelections * ts);
 
 /**
@@ -182,53 +185,33 @@ timeline_selections_paste_to_pos (
   Position *           pos);
 
 /**
- * Only removes transients from their tracks and
- * frees them.
- */
-void
-timeline_selections_remove_transients (
-  TimelineSelections * ts);
-
-/**
- * Adds an object to the selections.
- *
- * Optionally adds a transient object (if moving/
- * copy-moving).
- */
-//void
-//timeline_selections_add_object (
-  //TimelineSelections * ts,
-  //GtkWidget *          object,
-  //int                  transient);
-  //
-
-/**
- * Returns if the region is selected or not,
- * optionally checking in the transients as well.
+ * Returns if the region is selected or not.
  */
 int
 timeline_selections_contains_region (
   TimelineSelections * self,
-  Region *             r,
-  int                  check_transients);
+  Region *             r);
 
+/**
+ * Adds a Region to the selections.
+ */
 void
 timeline_selections_add_region (
   TimelineSelections * ts,
-  Region *             r,
-  int                  transient);
+  Region *             r);
 
+/**
+ * Adds a Chord to the selections.
+ */
 void
 timeline_selections_add_chord (
   TimelineSelections * ts,
-  ZChord *              c,
-  int                  transient);
+  ZChord *              c);
 
 void
 timeline_selections_add_ap (
   TimelineSelections * ts,
-  AutomationPoint *    ap,
-  int                  transient);
+  AutomationPoint *    ap);
 
 //void
 //timeline_selections_remove_object (
@@ -263,5 +246,9 @@ timeline_selections_free (TimelineSelections * self);
 SERIALIZE_INC (TimelineSelections, timeline_selections)
 DESERIALIZE_INC (TimelineSelections, timeline_selections)
 PRINT_YAML_INC (TimelineSelections, timeline_selections)
+
+/**
+ * @}
+ */
 
 #endif

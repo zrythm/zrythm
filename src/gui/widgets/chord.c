@@ -105,19 +105,18 @@ void
 chord_widget_select (ChordWidget * self,
                      int            select)
 {
-  self->chord->selected = select;
+  ZChord * chord = self->chord->obj_info.main;
   if (select)
     {
-      gtk_widget_set_state_flags (GTK_WIDGET (self),
-                                  GTK_STATE_FLAG_SELECTED,
-                                  0);
+      timeline_selections_add_chord (
+        TL_SELECTIONS, chord);
     }
   else
     {
-      gtk_widget_unset_state_flags (GTK_WIDGET (self),
-                                    GTK_STATE_FLAG_SELECTED);
+      timeline_selections_remove_chord (
+        TL_SELECTIONS, chord);
     }
-  gtk_widget_queue_draw (GTK_WIDGET (self));
+  EVENTS_PUSH (ET_CHORD_CHANGED, chord);
 }
 
 /**

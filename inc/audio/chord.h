@@ -31,6 +31,7 @@
 #include <stdint.h>
 
 #include "audio/position.h"
+#include "gui/backend/arranger_object_info.h"
 #include "utils/yaml.h"
 
 /**
@@ -125,6 +126,12 @@ typedef struct ZChord
 
   ChordType      type;
 
+  /** Position of Track this ZChord is in. */
+  int            track_pos;
+
+  /** Cache. */
+  Track *        track;
+
   /**
    * 3 octaves, 1st octave is for bass note.
    *
@@ -143,6 +150,8 @@ typedef struct ZChord
   int                   selected;
   int                   visible;
   ChordWidget *         widget;
+
+  ArrangerObjectInfo    obj_info;
 } ZChord;
 
 static const cyaml_strval_t musical_note_strings[] = {
@@ -234,6 +243,13 @@ chord_is_equal (
     a->inversion == b->inversion &&
     a->visible == b->visible;
 }
+
+/**
+ * Returns the Track this ZChord is in.
+ */
+Track *
+chord_get_track (
+  ZChord * self);
 
 /**
  * Finds the chord in the project corresponding to the

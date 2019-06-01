@@ -19,6 +19,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * API for Regions inside audio Track's.
+ */
+
 #ifndef __AUDIO_AUDIO_REGION_H__
 #define __AUDIO_AUDIO_REGION_H__
 
@@ -30,6 +36,11 @@ typedef struct Channel Channel;
 typedef struct Track Track;
 typedef struct Region AudioRegion;
 
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
 
 /**
  * Creates a Region for audio data.
@@ -49,5 +60,9 @@ audio_region_new (
  */
 void
 audio_region_free_members (AudioRegion * self);
+
+/**
+ * @}
+ */
 
 #endif // __AUDIO_AUDIO_REGION_H__

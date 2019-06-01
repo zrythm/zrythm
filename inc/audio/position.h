@@ -56,6 +56,26 @@
                  0, \
                  sg)
 
+/** Checks if _pos is before _cmp. */
+#define position_is_before(_pos,_cmp) \
+  (position_compare (_pos, _cmp) < 0)
+
+/** Checks if _pos is before or equal to _cmp. */
+#define position_is_before_or_equal(_pos,_cmp) \
+  (position_compare (_pos, _cmp) <= 0)
+
+/** Checks if _pos is equal to _cmp. */
+#define position_is_equal(_pos,_cmp) \
+  (position_compare (_pos, _cmp) == 0)
+
+/** Checks if _pos is after _cmp. */
+#define position_is_after(_pos,_cmp) \
+  (position_compare (_pos, _cmp) > 0)
+
+/** Checks if _pos is after or equal to _cmp. */
+#define position_is_after_or_equal(_pos,_cmp) \
+  (position_compare (_pos, _cmp) >= 0)
+
 typedef struct SnapGrid SnapGrid;
 typedef struct Track Track;
 typedef struct Region Region;

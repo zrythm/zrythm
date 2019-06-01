@@ -189,9 +189,10 @@ midi_region_draw_cb (
   char * str =
     g_strdup (rw_prv->region->name);
   char * new_str = str;;
+  Region * region = rw_prv->region;
   if (DEBUGGING)
     {
-      if (rw_prv->region->transient)
+      if (region_is_transient (region))
         {
           new_str =
             g_strdup_printf (
@@ -199,7 +200,7 @@ midi_region_draw_cb (
           g_free (str);
           str = new_str;
         }
-      if (rw_prv->is_lane)
+      if (region_is_lane (region))
         {
           new_str =
             g_strdup_printf (

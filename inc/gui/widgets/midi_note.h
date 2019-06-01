@@ -72,15 +72,11 @@ midi_note_widget_destroy (MidiNoteWidget *self);
 /**
  * Sets the "selected" GTK state flag and adds the
  * note to midi arranger selections.
- *
- * Optionally creates transient notes in the
- * MidiArrangerSelections (if moving/copy-moving).
  */
 void
 midi_note_widget_select (
   MidiNoteWidget * self,
-  int              select,
-  int              with_transients);
+  int              select);
 
 void
 midi_note_widget_update_tooltip (

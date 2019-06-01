@@ -128,4 +128,16 @@ arranger_object_info_is_lane (
           self->type == AOI_TYPE_LANE_TRANSIENT);
 }
 
+/**
+ * Returns whether the object is a main object or not
+ * (only applies to TimelineArrangerWidget objects.
+ */
+static inline int
+arranger_object_info_is_main (
+  ArrangerObjectInfo * self)
+{
+  return (self->type == AOI_TYPE_MAIN ||
+          self->type == AOI_TYPE_MAIN_TRANSIENT);
+}
+
 #endif

@@ -88,7 +88,7 @@ midi_note_draw_cb (
         color->red,
         color->green,
         color->blue,
-        self->midi_note->transient ? 0.7 : 1);
+        midi_note_is_transient (self->midi_note) ? 0.7 : 1);
       if (midi_note_is_selected (self->midi_note))
         {
           cairo_set_source_rgba (
@@ -133,7 +133,8 @@ midi_note_draw_cb (
       chord_note_to_string (
         self->midi_note->val % 12),
       self->midi_note->val / 12 - 2);
-  if (DEBUGGING && self->midi_note->transient)
+  if (DEBUGGING &&
+      midi_note_is_transient (self->midi_note))
     {
       char * tmp =
         g_strdup_printf (
@@ -286,33 +287,20 @@ midi_note_widget_update_tooltip (
 void
 midi_note_widget_select (
   MidiNoteWidget * self,
-  int              select,
-  int              with_transients)
+  int              select)
 {
-  /*self->midi_note->selected = select;*/
   if (select)
     {
-      /*gtk_widget_set_state_flags (*/
-        /*GTK_WIDGET (self),*/
-        /*GTK_STATE_FLAG_SELECTED,*/
-        /*0);*/
       midi_arranger_selections_add_note (
         MA_SELECTIONS,
-        self->midi_note,
-        with_transients);
+        self->midi_note);
     }
   else
     {
-      /*gtk_widget_unset_state_flags (*/
-        /*GTK_WIDGET (self),*/
-        /*GTK_STATE_FLAG_SELECTED);*/
       midi_arranger_selections_remove_note (
         MA_SELECTIONS,
         self->midi_note);
     }
-  /*gtk_widget_queue_draw (GTK_WIDGET (self));*/
-  /*gtk_widget_queue_draw (*/
-    /*GTK_WIDGET (self->midi_note->vel->widget));*/
   EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
                self->midi_note);
 }

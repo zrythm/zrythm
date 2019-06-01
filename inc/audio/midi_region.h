@@ -33,6 +33,12 @@ typedef struct Region Region;
 typedef Region MidiRegion;
 
 /**
+ * @addtogroup audio
+ *
+ * @{
+ */
+
+/**
  * Creates a new Region for MIDI notes.
  */
 MidiRegion *
@@ -147,5 +153,9 @@ midi_region_remove_all_midi_notes (
  */
 void
 midi_region_free_members (MidiRegion * self);
+
+/**
+ * @}
+ */
 
 #endif // __AUDIO_MIDI_REGION_H__

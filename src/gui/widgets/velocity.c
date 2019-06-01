@@ -165,8 +165,7 @@ velocity_widget_select (
 {
   midi_arranger_selections_add_note (
     MA_SELECTIONS,
-    self->velocity->midi_note,
-    F_NO_TRANSIENTS);
+    self->velocity->midi_note);
   if (select)
     {
       gtk_widget_set_state_flags (
