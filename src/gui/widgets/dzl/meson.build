@@ -20,4 +20,9 @@ dzl_srcs = [
   'dzl-util.c',
   ]
 
-zrythm_srcs += files (dzl_srcs)
+dzl_lib = static_library (
+  'dzl-lib',
+  sources: dzl_srcs,
+  dependencies: gtk_dep,
+  include_directories: all_inc,
+  )

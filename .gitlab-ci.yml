@@ -39,7 +39,11 @@ test_gcc_meson:
   script:
     - meson _build -Denable_tests=true -Denable_coverrage=true
     - .gitlab-ci/run-tests.sh
-    - gcovr -r .
+    - gcovr -r . \
+      --exclude-directories='.*dzl-lib.*' \
+      --exclude-directories='.*libcyaml.*' \
+      --exclude-directories='.*midilib.*' \
+      --gcov-exclude='.*dzl-.*'
   artifacts:
     reports:
       junit: "_build/${CI_JOB_NAME}-report.xml"

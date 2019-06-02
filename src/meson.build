@@ -40,7 +40,10 @@ zrythm_lib = static_library (
     ],
   dependencies: zrythm_deps,
   include_directories: all_inc,
-  link_with: cyaml,
+  link_with: [
+    cyaml,
+    dzl_lib,
+    ]
   )
 
 zrythm_exe = executable (

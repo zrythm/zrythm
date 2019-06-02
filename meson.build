@@ -214,13 +214,14 @@ if (port_audio_dep.found ())
 endif
 
 yaml_dep = dependency('yaml-0.1')
+gtk_dep = dependency('gtk+-3.0', version: '>=3.20')
 
 zrythm_deps = [
   jack_dep,
   port_audio_dep,
   yaml_dep,
+  gtk_dep,
   dependency('threads'),
-  dependency('gtk+-3.0', version: '>=3.20'),
   dependency('lilv-0', version: '>=0.24.2'),
   dependency('sndfile', version: '>=1.0.25'),
   dependency('samplerate', version: '>=0.1.8'),
