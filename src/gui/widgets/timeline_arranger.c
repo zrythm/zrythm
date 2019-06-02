@@ -122,6 +122,9 @@ timeline_arranger_widget_set_allocation (
       if (nfo->type == AOI_TYPE_LANE ||
           nfo->type == AOI_TYPE_LANE_TRANSIENT)
         {
+          if (!track->lanes_visible)
+            return;
+
           gtk_widget_translate_coordinates(
             GTK_WIDGET (lane->widget),
             GTK_WIDGET (self),
@@ -1419,7 +1422,6 @@ timeline_arranger_widget_snap_regions_l (
       /* lane trans region */
       region =
         ((Region *) region->obj_info.lane_trans);
-      CALC_NEW_START_POS;
       snap_region_l (
         self, region, &new_start_pos);
     }
@@ -1493,24 +1495,10 @@ timeline_arranger_widget_snap_regions_r (
 
   /* get delta with first clicked region's end
    * pos */
-  long delta;
-  if (ar_prv->action ==
-        UI_OVERLAY_ACTION_CREATING_RESIZING_R)
-    {
-      delta =
-        position_to_ticks (pos) -
-        position_to_ticks (
-          &self->start_region_clone->cache_end_pos);
-      g_message ("delta %ld", delta);
-    }
-  else
-    {
-      g_warn_if_fail (self->start_region_clone);
-      delta =
-        position_to_ticks (pos) -
-        position_to_ticks (
-          &self->start_region_clone->end_pos);
-    }
+  long delta =
+    position_to_ticks (pos) -
+    position_to_ticks (
+      &self->start_region_clone->cache_end_pos);
 
   /* new end pos for each region, calculated by
    * adding delta to the region's original end
@@ -1554,7 +1542,9 @@ timeline_arranger_widget_snap_regions_r (
         region_get_main_trans_region (region);
       if (ar_prv->action !=
             UI_OVERLAY_ACTION_CREATING_RESIZING_R)
-        CALC_NEW_END_POS;
+        {
+          CALC_NEW_END_POS;
+        }
       snap_region_r (
         self, region, &new_end_pos);
 
@@ -1626,22 +1616,13 @@ timeline_arranger_widget_move_items_x (
   for (i = 0; i <
        TL_SELECTIONS->num_regions; i++)
     {
-      for (j = 0; j < 2; j++)
-        {
-          if (j == 0)
-            r =
-              TL_SELECTIONS->regions[i]->
-                obj_info.main_trans;
-          else
-            r =
-              TL_SELECTIONS->regions[i]->
-                obj_info.lane_trans;
+      r =
+        TL_SELECTIONS->regions[i];
 
-          ARRANGER_MOVE_OBJ_BY_TICKS_W_LENGTH (
-            r, region,
-            &r->cache_start_pos,
-            ticks_diff, &tmp, length_ticks);
-        }
+      ARRANGER_MOVE_OBJ_BY_TICKS_W_LENGTH (
+        r, region,
+        &r->cache_start_pos,
+        ticks_diff, &tmp, length_ticks);
     }
 
   /* update chord positions */
@@ -2141,6 +2122,11 @@ timeline_arranger_widget_on_drag_end (
            ar_prv->action ==
              UI_OVERLAY_ACTION_CREATING_RESIZING_R)
     {
+      /*position_print_simple (*/
+        /*&TL_SELECTIONS->regions[0]->end_pos);*/
+      /*position_print_simple (*/
+        /*&region_get_main_trans_region (*/
+           /*TL_SELECTIONS->regions[0])->end_pos);*/
       UndoableAction * ua =
         (UndoableAction *)
         create_timeline_selections_action_new (

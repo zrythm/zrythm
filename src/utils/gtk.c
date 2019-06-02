@@ -40,7 +40,8 @@ z_gtk_container_remove_all_children (
   GList *children, *iter;
 
   children =
-    gtk_container_get_children (GTK_CONTAINER (container));
+    gtk_container_get_children (
+      GTK_CONTAINER (container));
   for (iter = children;
        iter != NULL;
        iter = g_list_next (iter))

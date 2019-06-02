@@ -44,15 +44,12 @@
 #include <samplerate.h>
 
 #define SET_POS(r,pos_name,pos) \
-  if (!region_is_transient (r)) \
-    { \
-      position_set_to_pos ( \
-        &region_get_main_trans_region (r)-> \
-        pos_name, pos); \
-      position_set_to_pos ( \
-        &region_get_lane_trans_region (r)-> \
-        pos_name, pos); \
-    } \
+  position_set_to_pos ( \
+    &region_get_main_trans_region (r)-> \
+    pos_name, pos); \
+  position_set_to_pos ( \
+    &region_get_lane_trans_region (r)-> \
+    pos_name, pos); \
   position_set_to_pos ( \
     &region_get_lane_region (r)-> \
     pos_name, pos); \

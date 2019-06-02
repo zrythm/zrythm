@@ -77,6 +77,9 @@ track_add_lane (
 {
   track->lanes[track->num_lanes++] =
     track_lane_new (track, track->num_lanes);
+
+  EVENTS_PUSH (ET_TRACK_LANE_ADDED,
+               track->lanes[track->num_lanes - 1]);
 }
 
 void

@@ -54,6 +54,8 @@ track_lane_widget_new (
     self->label,
     lane->name);
 
+  g_object_ref (self);
+
   return self;
 }
 

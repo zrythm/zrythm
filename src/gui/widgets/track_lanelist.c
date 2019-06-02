@@ -81,6 +81,9 @@ track_lanelist_widget_refresh (
     GTK_WIDGET (self),
     self->track->lanes_visible);
 
+  if (!self->track->lanes_visible)
+    return;
+
   /* remove all children */
   z_gtk_container_remove_all_children (
     GTK_CONTAINER (self));
@@ -93,8 +96,8 @@ track_lanelist_widget_refresh (
     {
       lane = self->track->lanes[i];
 
-      g_message ("lane at %d %d %s", i,
-                 lane->pos, lane->name);
+      /*g_message ("lane at %d %d %s", i,*/
+                 /*lane->pos, lane->name);*/
 
       if (!GTK_IS_WIDGET (lane->widget))
         lane->widget =
@@ -115,7 +118,8 @@ track_lanelist_widget_refresh (
    * time a child is added or deleted */
   GList *children, *iter;
   children =
-    gtk_container_get_children (GTK_CONTAINER (self));
+    gtk_container_get_children (
+      GTK_CONTAINER (self));
   for (iter = children;
        iter != NULL;
        iter = g_list_next (iter))

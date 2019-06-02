@@ -956,6 +956,11 @@ events_process (void * data)
             /*gtk_widget_get_allocated_height (*/
               /*GTK_WIDGET (MW_PINNED_TRACKLIST)));*/
           break;
+        case ET_TRACK_LANE_ADDED:
+          tracklist_widget_soft_refresh (
+            MW_TRACKLIST);
+          timeline_arranger_widget_refresh_visibility (
+            MW_TIMELINE);
         default:
           g_message ("event not implemented yet");
           /* unimplemented */
