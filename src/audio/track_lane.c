@@ -81,9 +81,10 @@ track_lane_clone (
       /* clone region */
       region = lane->regions[i];
       new_region =
-        region_clone (region, REGION_CLONE_COPY);
+        region_clone (
+          region, REGION_CLONE_COPY_MAIN);
 
-      /* add to new track */
+      /* add to new lane */
       array_append (
         new_lane->regions,
         new_lane->num_regions,
@@ -107,7 +108,7 @@ track_lane_free (
     g_free (self->name);
 
   for (int i = 0; i < self->num_regions; i++)
-    region_free (self->regions[i]);
+    region_free_all (self->regions[i]);
 
   free (self);
 }

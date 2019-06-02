@@ -42,23 +42,24 @@ G_DEFINE_TYPE (MidiRegionWidget,
 
 static gboolean
 midi_region_draw_cb (
-  MidiRegionWidget * self,
+  GtkWidget * widget,
   cairo_t *cr,
-  gpointer data)
+  MidiRegionWidget * self)
 {
-  REGION_WIDGET_GET_PRIVATE (data);
+  REGION_WIDGET_GET_PRIVATE (self);
   guint width, height;
   GtkStyleContext *context;
 
   context =
-    gtk_widget_get_style_context (GTK_WIDGET (self));
+    gtk_widget_get_style_context (widget);
 
   width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (self));
+    gtk_widget_get_allocated_width (widget);
   height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+    gtk_widget_get_allocated_height (widget);
 
-  gtk_render_background (context, cr, 0, 0, width, height);
+  gtk_render_background (
+    context, cr, 0, 0, width, height);
 
   /*cairo_set_source_rgba (cr,*/
                          /*color->red - 0.3,*/

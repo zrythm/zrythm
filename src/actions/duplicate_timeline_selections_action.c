@@ -62,7 +62,8 @@ duplicate_timeline_selections_action_do (
       /* clone the clone */
       region =
         region_clone (
-          self->ts->regions[i], REGION_CLONE_COPY);
+          self->ts->regions[i],
+          REGION_CLONE_COPY_MAIN);
 
       /* add and shift it */
       track_add_region (
@@ -102,8 +103,7 @@ duplicate_timeline_selections_action_undo (
       /* remove it */
       track_remove_region (
         region->lane->track,
-        region);
-      free_later (region, region_free);
+        region, F_FREE);
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);

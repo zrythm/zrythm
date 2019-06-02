@@ -1037,37 +1037,23 @@ timeline_arranger_widget_create_region (
         ar_prv->snap_grid);
     }
 
+  ar_prv->action =
+    UI_OVERLAY_ACTION_CREATING_RESIZING_R;
+
   /* create a new region */
   Region * region = NULL;
   if (track->type == TRACK_TYPE_INSTRUMENT)
     {
       region =
         midi_region_new (
-          pos, pos);
-
-      /* set it as main */
-      Region * main_trans =
-        midi_region_new (pos, pos);
-      Region * lane =
-        midi_region_new (pos, pos);
-      Region * lane_trans =
-        midi_region_new (pos, pos);
-      arranger_object_info_init_main (
-        region,
-        main_trans,
-        lane,
-        lane_trans);
+          pos, pos, 1);
 
       /* set visibility */
-      gtk_widget_set_visible (
-        GTK_WIDGET (region->widget), 0);
-      gtk_widget_set_visible (
-        GTK_WIDGET (lane->widget), 0);
-      gtk_widget_set_visible (
-        GTK_WIDGET (main_trans->widget), 1);
-      gtk_widget_set_visible (
-        GTK_WIDGET (lane_trans->widget),
-        track->lanes_visible);
+      int _trans_visible = 0;
+      int _non_trans_visible = 0;
+      int _lane_visible;
+      ARRANGER_SET_OBJ_VISIBILITY (
+        Region, region);
     }
 
   Position tmp;
@@ -1099,12 +1085,11 @@ timeline_arranger_widget_create_region (
       track_add_region (
         track, region,
         lane ? lane->pos :
-        track->num_lanes - 2, F_GEN_NAME);
+        (track->num_lanes == 1 ?
+         0 : track->num_lanes - 2), F_GEN_NAME);
     }
   EVENTS_PUSH (ET_REGION_CREATED,
                region);
-  ar_prv->action =
-    UI_OVERLAY_ACTION_CREATING_RESIZING_R;
   region_set_cache_end_pos (
     region, &region->end_pos);
   self->start_region_clone =
@@ -1244,8 +1229,8 @@ timeline_arranger_widget_select (
           region = rw_prv->region;
 
           track_remove_region (
-            region->lane->track, region);
-          free_later (region, region_free);
+            region->lane->track, region,
+            F_FREE);
       }
     }
   else
@@ -1884,7 +1869,7 @@ timeline_arranger_widget_move_items_y (
                             {
                               track_remove_region (
                                 old_track,
-                                region);
+                                region, F_NO_FREE);
                               track_add_region (
                                 nt, region, 0,
                                 F_NO_GEN_NAME);
@@ -1921,7 +1906,7 @@ timeline_arranger_widget_move_items_y (
                             {
                               track_remove_region (
                                 old_track,
-                                region);
+                                region, F_NO_FREE);
                               track_add_region (
                                 pt, region, 0,
                                 F_NO_GEN_NAME);
@@ -2122,11 +2107,6 @@ timeline_arranger_widget_on_drag_end (
            ar_prv->action ==
              UI_OVERLAY_ACTION_CREATING_RESIZING_R)
     {
-      /*position_print_simple (*/
-        /*&TL_SELECTIONS->regions[0]->end_pos);*/
-      /*position_print_simple (*/
-        /*&region_get_main_trans_region (*/
-           /*TL_SELECTIONS->regions[0])->end_pos);*/
       UndoableAction * ua =
         (UndoableAction *)
         create_timeline_selections_action_new (

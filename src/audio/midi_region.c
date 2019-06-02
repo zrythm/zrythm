@@ -37,7 +37,8 @@
 MidiRegion *
 midi_region_new (
   Position * start_pos,
-  Position * end_pos)
+  Position * end_pos,
+  int        is_main)
 {
   MidiRegion * midi_region =
     calloc (1, sizeof (MidiRegion));
@@ -45,7 +46,8 @@ midi_region_new (
   region_init ((Region *) midi_region,
                REGION_TYPE_MIDI,
                start_pos,
-               end_pos);
+               end_pos,
+               is_main);
 
   return midi_region;
 }
@@ -222,7 +224,8 @@ midi_region_remove_midi_note (
 }
 
 /**
- * Frees members only but not the midi region itself.
+ * Frees members only but not the MidiRegion
+ * itself.
  *
  * Regions should be free'd using region_free.
  */

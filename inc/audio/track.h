@@ -394,14 +394,15 @@ track_add_region (
   int      gen_name);
 
 /**
- * Only removes the region from the track.
+ * Removes the region from the track.
  *
- * Does not free the Region.
+ * @pararm free Also free the Region.
  */
 void
 track_remove_region (
   Track * track,
-  Region * region);
+  Region * region,
+  int     free);
 
 /**
  * Returns the region at the given position, or NULL.

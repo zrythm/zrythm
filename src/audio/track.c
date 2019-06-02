@@ -548,19 +548,25 @@ track_set_pos (
 /**
  * Only removes the region from the track.
  *
- * Does not free the Region.
+ * @pararm free Also free the Region.
  */
 void
 track_remove_region (
   Track * track,
-  Region * region)
+  Region * region,
+  int     free)
 {
   region_disconnect (region);
+
+  g_warn_if_fail (region->lane_pos >= 0);
 
   array_delete (
     track->lanes[region->lane_pos]->regions,
     track->lanes[region->lane_pos]->num_regions,
     region);
+
+  if (free)
+    free_later (region, region_free_all);
 
   EVENTS_PUSH (ET_REGION_REMOVED, track);
 }
@@ -586,26 +592,26 @@ void
 track_disconnect (Track * track)
 {
   /* remove regions */
-  int i, j;
-  TrackLane * lane;
-  for (i = 0; i < track->num_lanes; i++)
-    {
-      lane = track->lanes[i];
+  /*int i, j;*/
+  /*TrackLane * lane;*/
+  /*for (i = 0; i < track->num_lanes; i++)*/
+    /*{*/
+      /*lane = track->lanes[i];*/
 
-      for (j = 0; j < lane->num_regions; j++)
-        {
-          track_remove_region (
-            track, lane->regions[j]);
-        }
-    }
+      /*for (j = 0; j < lane->num_regions; j++)*/
+        /*{*/
+          /*track_remove_region (*/
+            /*track, lane->regions[j]);*/
+        /*}*/
+    /*}*/
 
-  /* remove chords */
-  for (i = 0; i < track->num_chords; i++)
-    chord_track_remove_chord (
-      track, track->chords[i]);
+  /*[> remove chords <]*/
+  /*for (i = 0; i < track->num_chords; i++)*/
+    /*chord_track_remove_chord (*/
+      /*track, track->chords[i]);*/
 
-  channel_disconnect (track->channel, F_REMOVE_PL,
-                      F_RECALC_GRAPH);
+  /*channel_disconnect (track->channel, F_REMOVE_PL,*/
+                      /*F_RECALC_GRAPH);*/
 }
 
 /**

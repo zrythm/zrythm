@@ -49,10 +49,8 @@
             <child>
               <object class="TrackTopGridWidget" id="top_grid">
                 <property name="visible">1</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox" id="lanes_box">
+                <property name="vexpand">1</property>
+                <property name="valign">fill</property>
               </object>
             </child>
           </object>

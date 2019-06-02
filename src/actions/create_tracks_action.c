@@ -116,7 +116,7 @@ create (
           AudioRegion * ar =
             audio_region_new (
               self->file_descr.absolute_path,
-              &start_pos);
+              &start_pos, 1);
           track_add_region (
             track, ar, 0, F_GEN_NAME);
         }

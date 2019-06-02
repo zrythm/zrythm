@@ -33,8 +33,10 @@
  * Creates a Region for audio data.
  */
 AudioRegion *
-audio_region_new (char *     filename,
-                  Position * start_pos)
+audio_region_new (
+  char *     filename,
+  Position * start_pos,
+  int        is_main)
 {
   AudioRegion * self =
     calloc (1, sizeof (AudioRegion));
@@ -61,7 +63,8 @@ audio_region_new (char *     filename,
   region_init ((Region *) self,
                REGION_TYPE_AUDIO,
                start_pos,
-               &self->end_pos);
+               &self->end_pos,
+               is_main);
 
   /* generate a copy of the given filename in the
    * project dir */

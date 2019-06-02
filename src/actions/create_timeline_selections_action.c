@@ -66,13 +66,13 @@ create_timeline_selections_action_do (
       if (region_find (self->ts->regions[i]))
         continue;
 
-      /* clone the transient clone */
+      /* clone the clone */
       region =
         region_clone (
           self->ts->regions[i],
-          REGION_CLONE_COPY);
-      g_return_val_if_fail (region->track_pos >= 0,
-                            -1);
+          REGION_CLONE_COPY_MAIN);
+      g_return_val_if_fail (
+        region->track_pos >= 0, -1);
 
       /* add it to track */
       track_add_region (
@@ -104,8 +104,7 @@ create_timeline_selections_action_undo (
 
       /* remove it */
       track_remove_region (
-        region->lane->track, region);
-      free_later (region, region_free);
+        region->lane->track, region, F_FREE);
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);

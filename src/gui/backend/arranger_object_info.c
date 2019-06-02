@@ -18,3 +18,31 @@
  */
 
 #include "gui/backend/arranger_object_info.h"
+
+#include <gtk/gtk.h>
+
+/**
+ * Returns whether the object is transient or not.
+ *
+ * Transient objects are objects that are used
+ * during moving operations.
+ */
+int
+arranger_object_info_is_transient (
+  ArrangerObjectInfo * self)
+{
+  return (self->type == AOI_TYPE_MAIN_TRANSIENT ||
+          self->type == AOI_TYPE_LANE_TRANSIENT);
+}
+
+/**
+ * Returns whether the object is a lane object or not
+ * (only applies to TimelineArrangerWidget objects.
+ */
+int
+arranger_object_info_is_lane (
+  ArrangerObjectInfo * self)
+{
+  return (self->type == AOI_TYPE_LANE ||
+          self->type == AOI_TYPE_LANE_TRANSIENT);
+}

@@ -88,10 +88,8 @@ instrument_track_widget_new (Track * track)
   tw_prv->lanelist =
     track_lanelist_widget_new (track);
   gtk_container_add (
-    GTK_CONTAINER (tw_prv->lanes_box),
+    GTK_CONTAINER (tw_prv->paned),
     GTK_WIDGET (tw_prv->lanelist));
-  gtk_widget_set_visible (
-    GTK_WIDGET (tw_prv->lanes_box), 1);
 
   /* setup automation tracklist */
   AutomationTracklist * automation_tracklist =

@@ -59,13 +59,18 @@
 
 /**
  * Only to be used by implementing structs.
+ *
+ * @param is_main Is main Region. If this is 1 then
+ *   arranger_object_info_init_main() is called to
+ *   create 3 additional regions in obj_info.
  */
 void
 region_init (
   Region *   region,
   RegionType type,
   Position * start_pos,
-  Position * end_pos)
+  Position * end_pos,
+  int        is_main)
 {
   g_message ("creating region");
   position_set_to_pos (&region->start_pos,
@@ -91,6 +96,33 @@ region_init (
     {
       region->widget = Z_REGION_WIDGET (
         midi_region_widget_new (region));
+    }
+
+  if (is_main)
+    {
+      if (type == REGION_TYPE_MIDI)
+        {
+          /* set it as main */
+          Region * main_trans =
+            midi_region_new (
+              start_pos, end_pos, 0);
+          Region * lane =
+            midi_region_new (
+              start_pos, end_pos, 0);
+          Region * lane_trans =
+            midi_region_new (
+              start_pos, end_pos, 0);
+          arranger_object_info_init_main (
+            region,
+            main_trans,
+            lane,
+            lane_trans);
+        }
+      else if (type == REGION_TYPE_AUDIO)
+        {
+          /* TODO */
+
+        }
     }
 }
 
@@ -584,22 +616,29 @@ region_resize (
 /**
  * Clone region.
  *
- * Creates a new region and either links to the original or
- * copies every field.
+ * Creates a new region and either links to the
+ * original or copies every field.
  */
 Region *
-region_clone (Region *        region,
-              RegionCloneFlag flag)
+region_clone (
+  Region *        region,
+  RegionCloneFlag flag)
 {
+  int is_main = 0;
+  if (flag == REGION_CLONE_COPY_MAIN)
+    is_main = 1;
+
   Region * new_region = NULL;
   if (region->type == REGION_TYPE_MIDI)
     {
       MidiRegion * mr =
-        midi_region_new (&region->start_pos,
-                         &region->end_pos);
+        midi_region_new (
+          &region->start_pos,
+          &region->end_pos,
+          is_main);
       MidiRegion * mr_orig = region;
       if (flag == REGION_CLONE_COPY ||
-          flag == REGION_CLONE_COPY_WITH_OBJ_INFO)
+          flag == REGION_CLONE_COPY_MAIN)
         {
           for (int i = 0;
                i < mr_orig->num_midi_notes; i++)
@@ -619,7 +658,8 @@ region_clone (Region *        region,
       Region * ar =
         audio_region_new (
           region->filename,
-          &region->start_pos);
+          &region->start_pos,
+          is_main);
 
       new_region = ar;
     }
@@ -646,25 +686,14 @@ region_clone (Region *        region,
   /* clone name */
   new_region->name = g_strdup (region->name);
 
-  /*if (flag == REGION_CLONE_COPY_WITH_OBJ_INFO)
-    {
-      g_warn_if_fail (region->track_pos >= 0);
-
-      arranger_object_info_init (
-        &new_region->obj_info,
-        region->obj_info.main,
-        region->obj_info.main_trans,
-        region->obj_info.lane,
-        region->obj_info.lane_trans);
-    }*/
-
   /* set track to NULL and remember track pos */
   new_region->lane = NULL;
   new_region->track_pos = -1;
   new_region->lane_pos = region->lane_pos;
   if (region->lane)
     {
-      new_region->track_pos = region->lane->track_pos;
+      new_region->track_pos =
+        region->lane->track_pos;
     }
   else
     {
@@ -809,6 +838,18 @@ region_disconnect (
     }
   if (MW_TIMELINE->start_region == self)
     MW_TIMELINE->start_region = NULL;
+}
+
+void
+region_free_all (Region * self)
+{
+  region_free (
+    region_get_main_trans_region (self));
+  region_free (
+    region_get_lane_region (self));
+  region_free (
+    region_get_lane_trans_region (self));
+  region_free (self);
 }
 
 void

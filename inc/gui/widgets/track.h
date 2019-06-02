@@ -101,7 +101,7 @@ typedef struct
   TrackTopGridWidget *      top_grid;
 
   /** Box holding the TrackLanes. */
-  GtkBox *                  lanes_box;
+  //GtkBox *                  lanes_box;
 
   /** The track lanes. */
   TrackLanelistWidget *     lanelist;

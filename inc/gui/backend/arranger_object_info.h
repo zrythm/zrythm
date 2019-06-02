@@ -124,25 +124,17 @@ _arranger_object_info_init (
  * Transient objects are objects that are used
  * during moving operations.
  */
-static inline int
+int
 arranger_object_info_is_transient (
-  ArrangerObjectInfo * self)
-{
-  return (self->type == AOI_TYPE_MAIN_TRANSIENT ||
-          self->type == AOI_TYPE_LANE_TRANSIENT);
-}
+  ArrangerObjectInfo * self);
 
 /**
  * Returns whether the object is a lane object or not
  * (only applies to TimelineArrangerWidget objects.
  */
-static inline int
+int
 arranger_object_info_is_lane (
-  ArrangerObjectInfo * self)
-{
-  return (self->type == AOI_TYPE_LANE ||
-          self->type == AOI_TYPE_LANE_TRANSIENT);
-}
+  ArrangerObjectInfo * self);
 
 /**
  * Returns whether the object is a main object or not

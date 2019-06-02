@@ -813,8 +813,8 @@ track_widget_class_init (TrackWidgetClass * _klass)
     klass,
     TrackWidget,
     event_box);
-  gtk_widget_class_bind_template_child_private (
-    klass,
-    TrackWidget,
-    lanes_box);
+  /*gtk_widget_class_bind_template_child_private (*/
+    /*klass,*/
+    /*TrackWidget,*/
+    /*lanes_box);*/
 }

@@ -601,8 +601,8 @@ timeline_selections_paste_to_pos (
 
       /* clone and add to track */
       Region * cp =
-        region_clone (region,
-                      REGION_CLONE_COPY);
+        region_clone (
+          region, REGION_CLONE_COPY_MAIN);
       region_print (cp);
       track_add_region (
         cp->lane->track, cp, 0, F_GEN_NAME);

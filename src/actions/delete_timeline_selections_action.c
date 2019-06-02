@@ -63,8 +63,7 @@ delete_timeline_selections_action_do (
       /* remove it */
       track_remove_region (
         region->lane->track,
-        region);
-      free_later (region, region_free);
+        region, F_FREE);
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
@@ -82,7 +81,8 @@ delete_timeline_selections_action_undo (
       /* clone the clone */
       region =
         region_clone (
-          self->ts->regions[i], REGION_CLONE_COPY);
+          self->ts->regions[i],
+          REGION_CLONE_COPY_MAIN);
 
       /* add it to track */
       track_add_region (

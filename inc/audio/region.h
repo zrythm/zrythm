@@ -90,20 +90,12 @@ typedef enum RegionType
  */
 typedef enum RegionCloneFlag
 {
-  /**
-   * Create a new region to be used inside
-   * ArrangerObjectInfo.
-   *
-   * This should be used e.g., when creating the
-   * transient or lane counterpart of a Region to store
-   * inside its obj_info.
-   *
-   * FIXME needed?
-   */
-  REGION_CLONE_COPY_WITH_OBJ_INFO,
+  /** Create a new Region to be added to a
+   * Track as a main Region. */
+  REGION_CLONE_COPY_MAIN,
 
-  /** Create a new Region without touching the
-   * ArrangerObjectInfo. */
+  /** Create a new Region that will not be used
+   * as a main Region. */
   REGION_CLONE_COPY,
 
   /** TODO */
@@ -438,12 +430,18 @@ region_shift (
 
 /**
  * Only to be used by implementing structs.
+ *
+ * @param is_main Is main Region. If this is 1 then
+ *   arranger_object_info_init_main() is called to
+ *   create 3 additional regions in obj_info.
  */
 void
-region_init (Region *   region,
-             RegionType type,
-             Position * start_pos,
-             Position * end_pos);
+region_init (
+  Region *   region,
+  RegionType type,
+  Position * start_pos,
+  Position * end_pos,
+  int        is_main);
 
 /**
  * Resizes the region on the left side or right side
@@ -619,6 +617,16 @@ void
 region_disconnect (
   Region * self);
 
+/**
+ * Frees each Region stored in obj_info.
+ */
+void
+region_free_all (
+  Region * region);
+
+/**
+ * Frees a single Region and its components.
+ */
 void
 region_free (Region * region);
 

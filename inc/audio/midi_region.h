@@ -40,11 +40,16 @@ typedef Region MidiRegion;
 
 /**
  * Creates a new Region for MIDI notes.
+ *
+ * @param is_main Is main Region. If this is 1 it
+ *   will create the 3 additional Regions (lane,
+ *   lane_transient & main_transient).
  */
 MidiRegion *
 midi_region_new (
   Position * start_pos,
-  Position * end_pos);
+  Position * end_pos,
+  int        is_main);
 
 /**
  * Deep clones the midi region.
