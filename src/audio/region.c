@@ -645,7 +645,8 @@ region_clone (
             {
               MidiNote * mn =
                 midi_note_clone (
-                  mr_orig->midi_notes[i]);
+                  mr_orig->midi_notes[i],
+                  MIDI_NOTE_CLONE_COPY_MAIN);
 
               midi_region_add_midi_note (mr, mn);
             }

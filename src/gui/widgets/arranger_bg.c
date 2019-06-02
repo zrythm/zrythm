@@ -198,10 +198,12 @@ arranger_bg_widget_draw_selections (
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
   double offset_x, offset_y;
-  offset_x = ar_prv->start_x + ar_prv->last_offset_x > 0 ?
+  offset_x =
+    ar_prv->start_x + ar_prv->last_offset_x > 0 ?
     ar_prv->last_offset_x :
     1 - ar_prv->start_x;
-  offset_y = ar_prv->start_y + ar_prv->last_offset_y > 0 ?
+  offset_y =
+    ar_prv->start_y + ar_prv->last_offset_y > 0 ?
     ar_prv->last_offset_y :
     1 - ar_prv->start_y;
 

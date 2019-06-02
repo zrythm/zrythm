@@ -316,6 +316,21 @@ region_schema = {
 };
 
 /**
+ * Only to be used by implementing structs.
+ *
+ * @param is_main Is main Region. If this is 1 then
+ *   arranger_object_info_init_main() is called to
+ *   create 3 additional regions in obj_info.
+ */
+void
+region_init (
+  Region *   region,
+  RegionType type,
+  Position * start_pos,
+  Position * end_pos,
+  int        is_main);
+
+/**
  * Inits freshly loaded region.
  */
 void
@@ -427,21 +442,6 @@ region_shift (
   Region * self,
   long ticks,
   int  delta);
-
-/**
- * Only to be used by implementing structs.
- *
- * @param is_main Is main Region. If this is 1 then
- *   arranger_object_info_init_main() is called to
- *   create 3 additional regions in obj_info.
- */
-void
-region_init (
-  Region *   region,
-  RegionType type,
-  Position * start_pos,
-  Position * end_pos,
-  int        is_main);
 
 /**
  * Resizes the region on the left side or right side

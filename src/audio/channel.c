@@ -939,7 +939,7 @@ channel_handle_recording (Channel * self)
                     mn =
                       midi_note_new (
                         mr, &PLAYHEAD, &tmp,
-                        event->buffer[1], vel);
+                        event->buffer[1], vel, 1);
                     midi_region_add_midi_note (
                       mr, mn);
 

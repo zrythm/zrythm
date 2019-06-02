@@ -51,10 +51,6 @@ automation_lane_new (
   /* visible by default */
   self->visible = 1;
 
-  self->widget =
-    automation_lane_widget_new (self);
-
-
   return self;
 }
 

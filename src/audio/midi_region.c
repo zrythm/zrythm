@@ -217,7 +217,7 @@ midi_region_remove_midi_note (
                 region->num_midi_notes,
                 midi_note);
   if (free)
-    free_later (midi_note, midi_note_free);
+    free_later (midi_note, midi_note_free_all);
 
   if (pub_event)
     EVENTS_PUSH (ET_MIDI_NOTE_REMOVED, NULL);
@@ -234,10 +234,10 @@ midi_region_free_members (MidiRegion * self)
 {
   for (int i = 0; i < self->num_midi_notes; i++)
     {
-      midi_note_free (self->midi_notes[i]);
+      midi_note_free_all (self->midi_notes[i]);
     }
   for (int i = 0; i < self->num_unended_notes; i++)
     {
-      midi_note_free (self->unended_notes[i]);
+      midi_note_free_all (self->unended_notes[i]);
     }
 }

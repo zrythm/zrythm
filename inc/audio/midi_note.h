@@ -47,9 +47,6 @@ typedef struct Velocity Velocity;
 #define midi_note_is_transient(r) \
   arranger_object_info_is_transient ( \
     &r->obj_info)
-#define midi_note_is_lane(r) \
-  arranger_object_info_is_lane ( \
-    &r->obj_info)
 
 /** Gets the transient counterpart of the
  * MidiNote. */
@@ -63,9 +60,12 @@ typedef struct Velocity Velocity;
 
 typedef enum MidiNoteCloneFlag
 {
-  /**
-   * Create a completely new region with a new id.
-   */
+  /** Create a new MidiNote to be added to a
+   * Region as a main MidiNote. */
+  MIDI_NOTE_CLONE_COPY_MAIN,
+
+  /** Create a new MidiNote that will not be used
+   * as a main MidiNote. */
   MIDI_NOTE_CLONE_COPY,
   MIDI_NOTE_CLONE_LINK
 } MidiNoteCloneFlag;
@@ -94,6 +94,10 @@ typedef struct MidiNote
   /** Muted or not */
   int             muted;
 
+  /**
+   * Info on whether this MidiNote is transient/lane
+   * and pointers to transient/lane equivalents.
+   */
   ArrangerObjectInfo obj_info;
 } MidiNote;
 
@@ -137,13 +141,18 @@ midi_note_init_loaded (
   MidiNote * self);
 
 /**
+ * @param is_main Is main MidiNote. If this is 1 then
+ *   arranger_object_info_init_main() is called to
+ *   create a transient midi note in obj_info.
  */
 MidiNote *
-midi_note_new (MidiRegion * region,
-               Position *   start_pos,
-               Position *   end_pos,
-               int          val,
-               Velocity *   vel);
+midi_note_new (
+  MidiRegion * region,
+  Position *   start_pos,
+  Position *   end_pos,
+  int          val,
+  Velocity *   vel,
+  int          is_main);
 
 /**
  * Finds the actual MidiNote in the project from the
@@ -164,7 +173,9 @@ midi_note_get_track (
  * Deep clones the midi note.
  */
 MidiNote *
-midi_note_clone (MidiNote *  src);
+midi_note_clone (
+  MidiNote *  src,
+  MidiNoteCloneFlag flag);
 
 /**
  * Returns 1 if the MidiNotes match, 0 if not.
@@ -225,15 +236,6 @@ midi_note_set_end_pos (MidiNote * midi_note,
                        Position * end_pos);
 
 /**
- * Sets note's visible flag and makes its widget
- * visible or not.
- */
-//void
-//midi_note_set_visible (
-  //MidiNote * midi_note,
-  //int        visible);
-
-/**
  * Shifts MidiNote's position and/or value.
  */
 void
@@ -252,13 +254,28 @@ midi_note_hit (MidiNote * midi_note,
 
 /**
  * Converts an array of MIDI notes to MidiEvents.
+ *
+ * @param midi_notes Array of MidiNote's.
+ * @param num_notes Number of notes in array.
+ * @param pos Position to offset time from.
+ * @param events Preallocated struct to fill.
  */
 void
-midi_note_notes_to_events (MidiNote     ** midi_notes, ///< array
-                           int          num_notes, ///< number of events in array
-                           Position     * pos, ///< position to offset time from
-                           MidiEvents   * events);  ///< preallocated struct to fill
+midi_note_notes_to_events (
+  MidiNote **  midi_notes,
+  int          num_notes,
+  Position *   pos,
+  MidiEvents * events);
 
+/**
+ * Frees each MidiNote stored in obj_info.
+ */
+void
+midi_note_free_all (MidiNote * self);
+
+/**
+ * Frees a single MidiNote and its components.
+ */
 void
 midi_note_free (MidiNote * self);
 

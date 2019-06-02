@@ -64,7 +64,8 @@ create_midi_arranger_selections_action_do (
       /* clone the clone */
       mn =
         midi_note_clone (
-          self->mas->midi_notes[i]);
+          self->mas->midi_notes[i],
+          MIDI_NOTE_CLONE_COPY_MAIN);
 
       /* find the region */
       mn->region =

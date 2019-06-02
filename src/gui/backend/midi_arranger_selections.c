@@ -140,7 +140,8 @@ midi_arranger_selections_clone (
     {
       MidiNote * r = src->midi_notes[i];
       MidiNote * new_r =
-        midi_note_clone (r);
+        midi_note_clone (
+          r, MIDI_NOTE_CLONE_COPY);
      array_append (new_ts->midi_notes,
                     new_ts->num_midi_notes,
                     new_r);
@@ -302,7 +303,9 @@ midi_arranger_selections_paste_to_pos (
 
       /* clone and add to track */
       MidiNote * cp =
-        midi_note_clone (midi_note);
+        midi_note_clone (
+          midi_note,
+          MIDI_NOTE_CLONE_COPY_MAIN);
       midi_region_add_midi_note (
         cp->region,
         cp);

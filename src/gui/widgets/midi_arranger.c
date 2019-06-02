@@ -475,7 +475,8 @@ midi_arranger_widget_on_drag_begin_note_hit (
   MidiNote * mn = mnw->midi_note;
   self->start_midi_note = mn;
   self->start_midi_note_clone =
-    midi_note_clone (mn);
+    midi_note_clone (
+      mn, MIDI_NOTE_CLONE_COPY);
 
   /* update arranger action */
   switch (P_TOOL)
@@ -594,9 +595,25 @@ midi_arranger_widget_create_note (
     pos->total_ticks -
     region->start_pos.total_ticks);
 
+  /* set action */
+  if (PIANO_ROLL->drum_mode)
+    ar_prv->action =
+      UI_OVERLAY_ACTION_MOVING;
+  else
+    ar_prv->action =
+      UI_OVERLAY_ACTION_CREATING_RESIZING_R;
+
+  /* create midi note and set visibility */
   MidiNote * midi_note =
     midi_note_new (
-      region, &local_pos, &local_pos, note, vel);
+      region, &local_pos, &local_pos, note, vel,
+      1);
+  int _trans_visible = 0;
+  int _non_trans_visible = 0;
+  int _lane_visible;
+  ARRANGER_SET_OBJ_VISIBILITY (
+    MidiNote, midi_note);
+
   Position tmp;
   position_set_min_size (
     &midi_note->start_pos,
@@ -604,20 +621,18 @@ midi_arranger_widget_create_note (
     ar_prv->snap_grid);
   midi_note_set_end_pos (
     midi_note, &tmp);
+
+  /* add it to region */
   midi_region_add_midi_note (
     region, midi_note);
-  if (PIANO_ROLL->drum_mode)
-    ar_prv->action =
-      UI_OVERLAY_ACTION_MOVING;
-  else
-    ar_prv->action =
-      UI_OVERLAY_ACTION_CREATING_RESIZING_R;
+
   position_set_to_pos (
     &self->midi_note_start_poses[0],
     &midi_note->start_pos);
   position_set_to_pos (
     &self->midi_note_end_poses[0],
     &midi_note->end_pos);
+
   ARRANGER_WIDGET_SELECT_MIDI_NOTE (
     self, midi_note, F_SELECT, F_NO_APPEND);
 }
@@ -836,7 +851,8 @@ midi_arranger_widget_snap_midi_notes_r (
            i++)
         {
           mn =
-            MA_SELECTIONS->midi_notes[i];
+            midi_note_get_trans_note (
+              MA_SELECTIONS->midi_notes[i]);
 
           CALC_NEW_END_POS;
 

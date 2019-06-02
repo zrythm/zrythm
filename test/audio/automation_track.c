@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ *
+ * This file is part of Zrythm
+ *
+ * Zrythm is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Zrythm is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include "audio/channel.h"
 #include "audio/automatable.h"
 #include "audio/automation_track.h"
@@ -5,14 +24,19 @@
 #include "utils/arrays.h"
 #include "zrythm.h"
 
-#include "test/automations.h"
-
 #include <glib.h>
+#include <locale.h>
 
-void
+typedef struct
+{
+  Channel *         ch;
+  Automatable *     a;
+  AutomationTrack * at;
+} AutomationTrackFixture;
+
+static void
 at_fixture_set_up (
-  AutomationTrackFixture * fixture,
-  gconstpointer user_data)
+  AutomationTrackFixture * fixture)
 {
   AutomationPoint * ap;
   AutomationCurve * ac;
@@ -68,23 +92,14 @@ at_fixture_set_up (
                 ap);
 }
 
-void
-at_fixture_tear_down (
-  AutomationTrackFixture * fixture,
-  gconstpointer user_data)
+static void
+get_x_relevant_to_pos ()
 {
-}
+  AutomationTrackFixture _fixture;
+  AutomationTrackFixture * fixture =
+    &_fixture;
+  at_fixture_set_up (fixture);
 
-/**
- * Tests automation point and curve position-related
- * functions
- * (automation_track_get_ap_before_pos, etc.).
- */
-void
-test_at_get_x_relevant_to_pos (
-  AutomationTrackFixture * fixture,
-  gconstpointer user_data)
-{
   Position pos;
   AutomationPoint * ap;
 
@@ -93,8 +108,7 @@ test_at_get_x_relevant_to_pos (
   ap =
     automation_track_get_ap_before_pos (
       fixture->at, &pos);
-  g_assert (
-    ap == NULL);
+  g_assert_null (ap);
 
   /* test when pos is before 3rd ap */
   position_set_to_pos (
@@ -104,7 +118,7 @@ test_at_get_x_relevant_to_pos (
   ap =
     automation_track_get_ap_before_pos (
       fixture->at, &pos);
-  g_assert (
+  g_assert_true (
     ap == fixture->at->aps[1]);
 
   /* test when pos is after all aps */
@@ -117,7 +131,7 @@ test_at_get_x_relevant_to_pos (
   ap =
     automation_track_get_ap_before_pos (
       fixture->at, &pos);
-  g_assert (
+  g_assert_true (
     ap == fixture->at->aps[
             fixture->at->num_aps - 1]);
 
@@ -127,7 +141,25 @@ test_at_get_x_relevant_to_pos (
   ap =
     automation_track_get_ap_before_pos (
       fixture->at, &pos);
-  g_assert (
-    ap == NULL);
+  g_assert_null (ap);
+
+
+}
+
+int
+main (int argc, char *argv[])
+{
+  g_test_init (&argc, &argv, NULL);
+
+  ZRYTHM = calloc (1, sizeof (Zrythm));
+  PROJECT = calloc (1, sizeof (Project));
+
+#define TEST_PREFIX "/audio/automation_track/"
+
+  g_test_add_func (
+    TEST_PREFIX "get x relevant to pos",
+    (GTestFunc) get_x_relevant_to_pos);
+
+  return g_test_run ();
 }
 

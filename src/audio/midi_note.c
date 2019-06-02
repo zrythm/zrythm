@@ -57,12 +57,19 @@ midi_note_init_loaded (
     midi_note_widget_new (self);
 }
 
+/**
+ * @param is_main Is main MidiNote. If this is 1 then
+ *   arranger_object_info_init_main() is called to
+ *   create a transient midi note in obj_info.
+ */
 MidiNote *
-midi_note_new (MidiRegion * region,
-               Position *   start_pos,
-               Position *   end_pos,
-               int          val,
-               Velocity *   vel)
+midi_note_new (
+  MidiRegion * region,
+  Position *   start_pos,
+  Position *   end_pos,
+  int          val,
+  Velocity *   vel,
+  int          is_main)
 {
   MidiNote * midi_note =
     calloc (1, sizeof (MidiNote));
@@ -78,8 +85,27 @@ midi_note_new (MidiRegion * region,
   midi_note->vel = vel;
   vel->midi_note = midi_note;
   vel->widget = velocity_widget_new (vel);
-  midi_note->widget = midi_note_widget_new (midi_note);
-  g_object_ref (midi_note->widget);
+  midi_note->widget =
+    midi_note_widget_new (midi_note);
+
+  if (is_main)
+    {
+      /* set it as main */
+      MidiNote * main_trans =
+        midi_note_clone (
+          midi_note, MIDI_NOTE_CLONE_COPY);
+      MidiNote * lane =
+        midi_note_clone (
+          midi_note, MIDI_NOTE_CLONE_COPY);
+      MidiNote * lane_trans =
+        midi_note_clone (
+          midi_note, MIDI_NOTE_CLONE_COPY);
+      arranger_object_info_init_main (
+        midi_note,
+        main_trans,
+        lane,
+        lane_trans);
+    }
 
   return midi_note;
 }
@@ -111,14 +137,19 @@ midi_note_find (
  */
 MidiNote *
 midi_note_clone (
-  MidiNote *  src)
+  MidiNote *  src,
+  MidiNoteCloneFlag flag)
 {
   Velocity * vel = velocity_clone (src->vel);
+
+  int is_main = 0;
+  if (flag == MIDI_NOTE_CLONE_COPY_MAIN)
+    is_main = 1;
 
   MidiNote * mn =
     midi_note_new (
       src->region, &src->start_pos, &src->end_pos,
-      src->val, vel);
+      src->val, vel, is_main);
 
   return mn;
 }
@@ -286,12 +317,18 @@ midi_note_set_end_pos (
 
 /**
  * Converts an array of MIDI notes to MidiEvents.
+ *
+ * @param midi_notes Array of MidiNote's.
+ * @param num_notes Number of notes in array.
+ * @param pos Position to offset time from.
+ * @param events Preallocated struct to fill.
  */
 void
-midi_note_notes_to_events (MidiNote     ** midi_notes, ///< array
-                           int          num_notes, ///< number of events in array
-                           Position     * pos, ///< position to offset time from
-                           MidiEvents   * events)  ///< preallocated struct to fill
+midi_note_notes_to_events (
+  MidiNote **  midi_notes,
+  int          num_notes,
+  Position *   pos,
+  MidiEvents * events)
 {
   for (int i = 0; i < num_notes; i++)
     {
@@ -377,6 +414,21 @@ midi_note_hit (MidiNote * midi_note,
     return 1;
 
   return 0;
+}
+
+/**
+ * Frees each MidiNote stored in obj_info.
+ */
+void
+midi_note_free_all (MidiNote * self)
+{
+  midi_note_free (
+    midi_note_get_trans_note (self));
+  midi_note_free (
+    (MidiNote *) self->obj_info.lane);
+  midi_note_free (
+    (MidiNote *) self->obj_info.lane_trans);
+  midi_note_free (self);
 }
 
 void

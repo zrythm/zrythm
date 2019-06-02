@@ -82,7 +82,8 @@ delete_midi_arranger_selections_action_undo (
       /* clone the clone */
       mn =
         midi_note_clone (
-          self->mas->midi_notes[i]);
+          self->mas->midi_notes[i],
+          MIDI_NOTE_CLONE_COPY_MAIN);
 
       /* add it to the region */
       midi_region_add_midi_note (

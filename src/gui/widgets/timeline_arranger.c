@@ -727,9 +727,12 @@ timeline_arranger_widget_on_drag_begin_region_hit (
   ARRANGER_WIDGET_GET_PRIVATE (self);
   REGION_WIDGET_GET_PRIVATE (rw);
 
+  Region * region =
+    region_get_main_region (rw_prv->region);
+
   /* open piano roll */
   /*Track * track = rw_prv->region->track;*/
-  clip_editor_set_region (rw_prv->region);
+  clip_editor_set_region (region);
 
   /* if double click bring up piano roll */
   if (ar_prv->n_press == 2 &&
@@ -743,10 +746,9 @@ timeline_arranger_widget_on_drag_begin_region_hit (
     GTK_WIDGET (rw),
     start_x, 0, &wx, &wy);
 
-  Region * region = rw_prv->region;
-  self->start_region = rw_prv->region;
+  self->start_region = region;
   self->start_region_clone =
-    region_clone (rw_prv->region,
+    region_clone (region,
                   REGION_CLONE_COPY);
 
   /* update arranger action */

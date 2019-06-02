@@ -154,8 +154,6 @@ track_new (
     &track->automation_tracklist,
     track);
 
-  track->widget = track_widget_new (track);
-
   return track;
 }
 
@@ -586,32 +584,6 @@ track_add_modulator (
   mixer_recalc_graph (MIXER);
 
   EVENTS_PUSH (ET_MODULATOR_ADDED, modulator);
-}
-
-void
-track_disconnect (Track * track)
-{
-  /* remove regions */
-  /*int i, j;*/
-  /*TrackLane * lane;*/
-  /*for (i = 0; i < track->num_lanes; i++)*/
-    /*{*/
-      /*lane = track->lanes[i];*/
-
-      /*for (j = 0; j < lane->num_regions; j++)*/
-        /*{*/
-          /*track_remove_region (*/
-            /*track, lane->regions[j]);*/
-        /*}*/
-    /*}*/
-
-  /*[> remove chords <]*/
-  /*for (i = 0; i < track->num_chords; i++)*/
-    /*chord_track_remove_chord (*/
-      /*track, track->chords[i]);*/
-
-  /*channel_disconnect (track->channel, F_REMOVE_PL,*/
-                      /*F_RECALC_GRAPH);*/
 }
 
 /**

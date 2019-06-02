@@ -13,14 +13,14 @@ test_link_args = [
 ]
 
 tests = {
-  'automations' : {
-    'source': [ 'automations.c', 'main.c' ],
-    },
+  'audio/automation_track': { },
+  'audio/track': { },
   }
 
 
 foreach test_name, extra_args : tests
   source = extra_args.get('source', test_name + '.c')
+  test_name = ' '.join(test_name.split('/'))
 
   exe = executable (
     test_name, source,
@@ -38,7 +38,7 @@ foreach test_name, extra_args : tests
   )
 
   suite = ['zrythm'] + extra_args.get('suite', [])
-  test(test_name, exe, env : test_env, suite : suite)
+  test (test_name, exe, env: test_env, suite: suite)
 endforeach
 
 endif
