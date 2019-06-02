@@ -88,6 +88,14 @@ Alternatively if you don't want to install anything on your system you can run `
 
   Can also do `G_DEBUG=fatal_warnings,signals,actions G_ENABLE_DIAGNOSTIC=1 gdb _build/src/zrythm`. G_DEBUG will trigger break points at GTK warning messages and  G_ENABLE_DIAGNOSTIC is used to break at deprecation  warnings for GTK+3 (must all be fixed before porting to GTK+4).
 
+# TESTS / COVERAGE
+  To run the test suite, use `meson _build -Denable_tests`
+  followed by `meson test -C _build`.
+
+  To get a coverage report use `meson _build -Denable_tests=true -Denable_coverage=true`, followed by
+  the test command above, followed by
+  `gcovr -r .` or `gcovr -r . --html -o coverage.html` for html output.
+
 # PACKAGING
   See the [README](git-packaging-hooks/README.md) in git-packaging-hooks and the `packaging` branch
 

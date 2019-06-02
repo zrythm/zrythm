@@ -581,11 +581,9 @@ midi_arranger_widget_create_note (
   if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
       !ar_prv->shift_held)
     {
-      position_snap (NULL,
-                     pos,
-                     NULL,
-                     NULL,
-                     ar_prv->snap_grid);
+      position_snap (
+        NULL, pos, NULL, NULL,
+        ar_prv->snap_grid);
     }
   Velocity * vel = velocity_default ();
 
@@ -599,11 +597,15 @@ midi_arranger_widget_create_note (
   MidiNote * midi_note =
     midi_note_new (
       region, &local_pos, &local_pos, note, vel);
-  position_set_min_size (&midi_note->start_pos,
-                         &midi_note->end_pos,
-                         ar_prv->snap_grid);
-  midi_region_add_midi_note (region,
-                        midi_note);
+  Position tmp;
+  position_set_min_size (
+    &midi_note->start_pos,
+    &tmp,
+    ar_prv->snap_grid);
+  midi_note_set_end_pos (
+    midi_note, &tmp);
+  midi_region_add_midi_note (
+    region, midi_note);
   if (PIANO_ROLL->drum_mode)
     ar_prv->action =
       UI_OVERLAY_ACTION_MOVING;
@@ -750,7 +752,7 @@ midi_arranger_widget_snap_midi_notes_l (
        i++)
     {
       mn =
-        midi_note_get_transient_note (
+        midi_note_get_trans_note (
           MA_SELECTIONS->midi_notes[i]);
       if (mn)
         {
@@ -848,7 +850,7 @@ midi_arranger_widget_snap_midi_notes_r (
        i++)
     {
       mn =
-        midi_note_get_transient_note (
+        midi_note_get_trans_note (
           MA_SELECTIONS->midi_notes[i]);
 
       if (mn)
@@ -878,7 +880,7 @@ midi_arranger_widget_move_items_x (
        i++)
     {
       mn =
-        midi_note_get_transient_note (
+        midi_note_get_trans_note (
           MA_SELECTIONS->midi_notes[i]);
 
       ARRANGER_MOVE_OBJ_BY_TICKS_W_LENGTH (
@@ -907,7 +909,7 @@ calc_deltamax_for_note_movement (int y_delta)
        i++)
     {
       midi_note =
-        midi_note_get_transient_note (
+        midi_note_get_trans_note (
           MA_SELECTIONS->
             midi_notes[i]);
       /*g_message ("midi note val %d, y delta %d",*/
@@ -938,7 +940,7 @@ midi_arranger_widget_move_items_y (
 
   int y_delta;
   int ar_start_val =
-    midi_note_get_transient_note (
+    midi_note_get_trans_note (
       MA_SELECTIONS->midi_notes[0])->val;
   int ar_end_val =
     midi_arranger_widget_get_note_at_y (
@@ -956,7 +958,7 @@ midi_arranger_widget_move_items_y (
            i++)
         {
           midi_note =
-            midi_note_get_transient_note (
+            midi_note_get_trans_note (
               MA_SELECTIONS->midi_notes[i]);
           midi_note->val = midi_note->val + y_delta;
           if (midi_note->widget)
@@ -1002,7 +1004,7 @@ midi_arranger_widget_on_drag_end (
       MidiNote * main_note =
         MA_SELECTIONS->midi_notes[0];
       MidiNote * trans_note =
-        midi_note_get_transient_note (
+        midi_note_get_trans_note (
           MA_SELECTIONS->midi_notes[0]);
       UndoableAction * ua =
         (UndoableAction *)
@@ -1020,7 +1022,7 @@ midi_arranger_widget_on_drag_end (
       MidiNote * main_note =
         MA_SELECTIONS->midi_notes[0];
       MidiNote * trans_note =
-        midi_note_get_transient_note (
+        midi_note_get_trans_note (
           MA_SELECTIONS->midi_notes[0]);
       UndoableAction * ua =
         (UndoableAction *)
@@ -1054,7 +1056,7 @@ midi_arranger_widget_on_drag_end (
       MidiNote * main_note =
         MA_SELECTIONS->midi_notes[0];
       MidiNote * trans_note =
-        midi_note_get_transient_note (
+        midi_note_get_trans_note (
           MA_SELECTIONS->midi_notes[0]);
       UndoableAction * ua =
         move_midi_arranger_selections_action_new (
@@ -1075,7 +1077,7 @@ midi_arranger_widget_on_drag_end (
       MidiNote * main_note =
         MA_SELECTIONS->midi_notes[0];
       MidiNote * trans_note =
-        midi_note_get_transient_note (
+        midi_note_get_trans_note (
           MA_SELECTIONS->midi_notes[0]);
       UndoableAction * ua =
         (UndoableAction *)

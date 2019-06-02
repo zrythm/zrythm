@@ -51,9 +51,15 @@ typedef struct Velocity Velocity;
   arranger_object_info_is_lane ( \
     &r->obj_info)
 
-/** Gets the transient counterpart of the MidiNote. */
-#define midi_note_get_transient_note(r) \
+/** Gets the transient counterpart of the
+ * MidiNote. */
+#define midi_note_get_trans_note(r) \
   ((MidiNote *) r->obj_info.main_trans)
+
+/** Gets the main counterpart of the
+ * MidiNote. */
+#define midi_note_get_main_note(r) \
+  ((MidiNote *) r->obj_info.main)
 
 typedef enum MidiNoteCloneFlag
 {

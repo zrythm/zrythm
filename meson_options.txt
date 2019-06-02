@@ -5,6 +5,12 @@ option (
   description: 'Enable profiling')
 
 option (
+  'enable_coverage',
+  type: 'boolean',
+  value: false,
+  description: 'Enable coverage report')
+
+option (
   'enable_tests',
   type: 'boolean',
   value: false,

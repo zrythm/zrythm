@@ -32,18 +32,28 @@ subdir('plugins')
 subdir('settings')
 subdir('utils')
 
-zrythm_args = []
-
-executable (
-  'zrythm', [
-    zrythm_main,
+zrythm_lib = static_library (
+  'zrythm-lib',
+  sources: [
     zrythm_srcs,
     ext_srcs,
-    zrythm_resources
     ],
-  c_args: zrythm_args,
-  dependencies : zrythm_deps,
-  include_directories : all_inc,
+  dependencies: zrythm_deps,
+  include_directories: all_inc,
   link_with: cyaml,
+  )
+
+zrythm_exe = executable (
+  'zrythm',
+  sources: [
+    zrythm_main,
+    zrythm_resources,
+    ],
+  dependencies : zrythm_deps,
+  link_with: [
+    zrythm_lib,
+    ],
+  export_dynamic: true,
+  include_directories: all_inc,
   install : true,
   )

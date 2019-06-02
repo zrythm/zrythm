@@ -1099,7 +1099,7 @@ timeline_arranger_widget_create_region (
       track_add_region (
         track, region,
         lane ? lane->pos :
-        track->num_lanes - 1, F_GEN_NAME);
+        track->num_lanes - 2, F_GEN_NAME);
     }
   EVENTS_PUSH (ET_REGION_CREATED,
                region);

@@ -2,7 +2,7 @@ project (
   'zrythm', ['c', 'cpp'],
   version: '0.4.186',
   license: 'GPLv3+',
-  meson_version: '>= 0.43.0',
+  meson_version: '>= 0.47.0',
   default_options: [
     'warning_level=1',
     'buildtype=debug',
@@ -146,22 +146,21 @@ if get_option ('enable_profiling')
   test_cflags += '-pg'
 endif
 
-common_cflags = cc.get_supported_arguments(test_cflags)
-
-common_ldflags = []
-
-if cc.get_id() == 'gcc'
-  common_ldflags += [
-    '-rdynamic',
-    ]
-elif cc.get_id() == 'clang'
-  common_ldflags += [
-    '-Wl,--export-dynamic',
+if get_option ('enable_coverage')
+  test_cflags += [
+    '-fprofile-arcs',
+    '-ftest-coverage',
+    '-g',
+    '-O0',
     ]
 endif
 
+common_cflags = cc.get_supported_arguments(test_cflags)
+
+test_ldflags = []
+
 if os_win32
-  common_ldflags += [
+  test_ldflags += [
     '-fno-stack-protector',
     '-lws2_32',
     '-static',
@@ -173,27 +172,36 @@ if os_win32
 endif
 
 if os_linux
-  common_ldflags += [
+  test_ldflags += [
     '-lrt',
     '-lasound',
     ]
 endif
 
 if not os_win32 and not os_darwin
-  common_ldflags += [
+  test_ldflags += [
     '-lm',
     ]
 endif
 
 if os_freebsd
-  common_ldflags += [
+  test_ldflags += [
     '-lexecinfo'
     ]
 endif
 
 if get_option ('enable_profiling')
-  common_ldflags += '-pg'
+  test_ldflags += '-pg'
 endif
+
+if get_option ('enable_coverage')
+  test_ldflags += [
+    '-lgcov',
+    '--coverage',
+    ]
+endif
+
+common_ldflags = cc.get_supported_link_arguments(test_ldflags)
 
 jack_dep = dependency ('jack', required: false)
 if (jack_dep.found ())
@@ -218,13 +226,13 @@ zrythm_deps = [
   dependency('samplerate', version: '>=0.1.8'),
   dependency('lv2', version: '>=1.14.0'),
   dependency('Qt5Widgets', required: false),
-  cc.find_library('m', required: false),
+  libm,
   cc.find_library('rt', required: false),
 ]
 
 if (os_darwin)
   zrythm_deps += dependency (
-    'appleframeworks', 
+    'appleframeworks',
     modules: [
       'foundation',
       'cocoa',
@@ -240,6 +248,11 @@ configure_file (
 add_project_arguments (
   common_cflags,
   language: 'c'
+  )
+
+add_project_link_arguments (
+  common_ldflags,
+  language: 'c',
   )
 
 run_target (

@@ -41,6 +41,14 @@
 #include "utils/arrays.h"
 #include "utils/flags.h"
 
+#define SET_POS(r,pos_name,pos) \
+  position_set_to_pos ( \
+    &midi_note_get_trans_note (r)-> \
+    pos_name, pos); \
+  position_set_to_pos ( \
+    &midi_note_get_main_note (r)-> \
+    pos_name, pos);
+
 void
 midi_note_init_loaded (
   MidiNote * self)
@@ -256,8 +264,7 @@ midi_note_set_start_pos (MidiNote * midi_note,
 {
   if (midi_note->end_pos.total_ticks -
       pos->total_ticks >= 2)
-    position_set_to_pos (&midi_note->start_pos,
-                         pos);
+    SET_POS (midi_note, start_pos, pos);
 }
 
 /**
@@ -273,10 +280,7 @@ midi_note_set_end_pos (
       midi_note->start_pos.total_ticks >=
       2)
     {
-      position_set_to_pos (
-        &midi_note->end_pos, pos);
-      /*g_message ("set to pos");*/
-      /*position_print (pos);*/
+      SET_POS (midi_note, end_pos, pos);
     }
 }
 

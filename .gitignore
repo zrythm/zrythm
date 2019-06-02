@@ -135,3 +135,6 @@ data/osx/Info.plist
 
 # GLib schemas
 gschemas.compiled
+
+# tests
+coverage.html
