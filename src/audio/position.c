@@ -232,9 +232,10 @@ position_set_tick (
 /**
  * Sets position to target position
  */
-inline void
-position_set_to_pos (Position * pos,
-                Position * target)
+void
+position_set_to_pos (
+  Position * pos,
+  const Position * target)
 {
   pos->bars = target->bars;
   pos->beats = target->beats;
@@ -263,8 +264,9 @@ position_add_frames (Position * position,
  * positive = p1 > p2
  */
 inline int
-position_compare (Position * p1,
-                  Position * p2)
+position_compare (
+  const Position * p1,
+  const Position * p2)
 {
   /*g_warn_if_reached ();*/
   if (p1->total_ticks < p2->total_ticks)
@@ -295,14 +297,23 @@ closest_snap_point (Position * pos, ///< position
     }
 }
 
+/**
+ * Gets the previous snap point.
+ *
+ * @param pos The position to reference.
+ * @param sg SnapGrid options.
+ * @param prev_snap_point The position to set.
+ */
 static inline void
-get_prev_snap_point (Position * pos, ///< the position
-                     SnapGrid * sg, ///< snap grid options
-                     Position * prev_snap_point) ///< position to set
+get_prev_snap_point (
+  const Position * pos,
+  const SnapGrid * sg,
+  Position * prev_snap_point)
 {
+  const Position * snap_point;
   for (int i = sg->num_snap_points - 1; i >= 0; i--)
     {
-      Position * snap_point = &sg->snap_points[i];
+      snap_point = &sg->snap_points[i];
       if (position_compare (snap_point,
                             pos) <= 0)
         {
@@ -314,14 +325,23 @@ get_prev_snap_point (Position * pos, ///< the position
   g_return_if_reached ();
 }
 
+/**
+ * Get next snap point.
+ *
+ * @param pos Position to reference.
+ * @param sg SnapGrid options.
+ * @param next_snap_point Position to set.
+ */
 static inline void
-get_next_snap_point (Position * pos,
-                     SnapGrid *sg,
-                     Position * next_snap_point)
+get_next_snap_point (
+  const Position * pos,
+  const SnapGrid *sg,
+  Position * next_snap_point)
 {
+  const Position * snap_point;
   for (int i = 0; i < sg->num_snap_points; i++)
     {
-      Position * snap_point = &sg->snap_points[i];
+      snap_point = &sg->snap_points[i];
       if (position_compare (snap_point,
                             pos) > 0)
         {
@@ -333,9 +353,14 @@ get_next_snap_point (Position * pos,
   g_return_if_reached ();
 }
 
+/**
+ * Snap the given Position using the options in the
+ * given SnapGrid.
+ */
 static void
-snap_pos (Position * pos,
-          SnapGrid * sg)
+snap_pos (
+  Position * pos,
+  const SnapGrid * sg)
 {
   Position prev_snap_point;
   get_prev_snap_point (
@@ -375,13 +400,22 @@ position_set_min_size (
 
 /**
  * Snaps position using given options.
+ *
+ * @param prev_pos Previous Position.
+ * @param pos Position moved to.
+ * @param track Track at new Position (for Region
+ *   moving) FIXME needed?.
+ * @param region Region at new Position (for
+ *   MidiNote moving) FIXME needed?.
+ * @param sg SnapGrid options.
  */
 void
-position_snap (Position * prev_pos, ///< prev pos
-               Position * pos, ///< position moved to
-               Track    * track, ///< track at new pos (for region moving)
-               Region   * region, ///< region at new pos (for midi moving)
-               SnapGrid * sg) ///< options
+position_snap (
+  const Position * prev_pos,
+  Position * pos,
+  Track    * track,
+  Region   * region,
+  const SnapGrid * sg)
 {
   /* this should only be called if snap is on.
    * the check should be done before calling */
@@ -422,7 +456,8 @@ position_from_seconds (Position * position, double secs)
 }
 
 long
-position_to_ticks (Position * pos)
+position_to_ticks (
+  const Position * pos)
 {
   g_warn_if_fail (TRANSPORT->ticks_per_bar > 0);
   long ticks;
@@ -526,9 +561,9 @@ position_get_midway_pos (
  */
 long
 position_get_ticks_diff (
-  Position * end_pos,
-  Position * start_pos,
-  SnapGrid * sg)
+  const Position * end_pos,
+  const Position * start_pos,
+  const SnapGrid * sg)
 {
   long ticks_diff =
     end_pos->total_ticks -
@@ -555,7 +590,8 @@ position_get_ticks_diff (
  * Must be free'd by caller.
  */
 char *
-position_stringize (Position * pos)
+position_stringize (
+  const Position * pos)
 {
   return g_strdup_printf (
     "%d.%d.%d.%d",

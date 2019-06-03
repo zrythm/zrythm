@@ -1,0 +1,111 @@
+	] , [
+	    a lv2:InputPort ,
+	        lv2:ControlPort ;
+	    lv2:index 27 ;
+	    lv2:symbol "scale00" ;
+	    lv2:name "Note Tuning (C)";
+	    lv2:default 0 ;
+	    lv2:minimum -1 ;
+	    lv2:maximum 1 ;
+	] , [
+	    a lv2:InputPort ,
+	        lv2:ControlPort ;
+	    lv2:index 28 ;
+	    lv2:symbol "scale01" ;
+	    lv2:name "Note Tuning (C#)";
+	    lv2:default 0 ;
+	    lv2:minimum -1 ;
+	    lv2:maximum 1 ;
+	] , [
+	    a lv2:InputPort ,
+	        lv2:ControlPort ;
+	    lv2:index 29 ;
+	    lv2:symbol "scale02" ;
+	    lv2:name "Note Tuning (D)";
+	    lv2:default 0 ;
+	    lv2:minimum -1 ;
+	    lv2:maximum 1 ;
+	] , [
+	    a lv2:InputPort ,
+	        lv2:ControlPort ;
+	    lv2:index 30 ;
+	    lv2:symbol "scale03" ;
+	    lv2:name "Note Tuning (D#)";
+	    lv2:default 0 ;
+	    lv2:minimum -1 ;
+	    lv2:maximum 1 ;
+	] , [
+	    a lv2:InputPort ,
+	        lv2:ControlPort ;
+	    lv2:index 31 ;
+	    lv2:symbol "scale04" ;
+	    lv2:name "Note Tuning (E)";
+	    lv2:default 0 ;
+	    lv2:minimum -1 ;
+	    lv2:maximum 1 ;
+	] , [
+	    a lv2:InputPort ,
+	        lv2:ControlPort ;
+	    lv2:index 32 ;
+	    lv2:symbol "scale05" ;
+	    lv2:name "Note Tuning (F)";
+	    lv2:default 0 ;
+	    lv2:minimum -1 ;
+	    lv2:maximum 1 ;
+	] , [
+	    a lv2:InputPort ,
+	        lv2:ControlPort ;
+	    lv2:index 33 ;
+	    lv2:symbol "scale06" ;
+	    lv2:name "Note Tuning (F#)";
+	    lv2:default 0 ;
+	    lv2:minimum -1 ;
+	    lv2:maximum 1 ;
+	] , [
+	    a lv2:InputPort ,
+	        lv2:ControlPort ;
+	    lv2:index 34 ;
+	    lv2:symbol "scale07" ;
+	    lv2:name "Note Tuning (G)";
+	    lv2:default 0 ;
+	    lv2:minimum -1 ;
+	    lv2:maximum 1 ;
+	] , [
+	    a lv2:InputPort ,
+	        lv2:ControlPort ;
+	    lv2:index 35 ;
+	    lv2:symbol "scale08" ;
+	    lv2:name "Note Tuning (G#)";
+	    lv2:default 0 ;
+	    lv2:minimum -1 ;
+	    lv2:maximum 1 ;
+	] , [
+	    a lv2:InputPort ,
+	        lv2:ControlPort ;
+	    lv2:index 36 ;
+	    lv2:symbol "scale09" ;
+	    lv2:name "Note Tuning (A)";
+	    lv2:default 0 ;
+	    lv2:minimum -1 ;
+	    lv2:maximum 1 ;
+	] , [
+	    a lv2:InputPort ,
+	        lv2:ControlPort ;
+	    lv2:index 37 ;
+	    lv2:symbol "scale10" ;
+	    lv2:name "Note Tuning (A#)";
+	    lv2:default 0 ;
+	    lv2:minimum -1 ;
+	    lv2:maximum 1 ;
+	] , [
+	    a lv2:InputPort ,
+	        lv2:ControlPort ;
+	    lv2:index 38 ;
+	    lv2:symbol "scale11" ;
+	    lv2:name "Note Tuning (B)";
+	    lv2:default 0 ;
+	    lv2:minimum -1 ;
+	    lv2:maximum 1 ;
+	];
+	rdfs:comment "AT1 is an 'autotuner', normally used to correct the pitch of a voice singing (slightly) out of tune. The 'expected' pitch can be controlled by MIDI, or be a fixed set of notes. AT1 can probably be used on some instruments as well, but is primarily designed to cover the vocal range. This variant allows to apply microtonal adjustments per note.";
+	.

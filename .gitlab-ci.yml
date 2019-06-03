@@ -25,15 +25,6 @@ basic_build_clang_meson:
     - ninja -C _build
     - sudo meson install -C _build
 
-# keep for a while then delete
-basic_build_gcc_make:
-  stage: build_gnu_linux
-  script:
-    - ./autogen.sh
-    - ./configure
-    - make -j14
-    - sudo make install
-
 test_gcc_meson:
   stage: test
   script:

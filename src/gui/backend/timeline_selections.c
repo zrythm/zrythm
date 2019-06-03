@@ -592,45 +592,32 @@ timeline_selections_add_ticks (
 
   /* update region positions */
   Region * r;
-  for (i = 0; i <
-       TL_SELECTIONS->num_regions; i++)
+  for (i = 0; i < ts->num_regions; i++)
     {
       r =
-        TL_SELECTIONS->regions[i];
+        ts->regions[i];
       region_move (r, ticks, use_cached_pos);
     }
 
   /* update chord positions */
-  /*ZChord * c;*/
-  /*for (i = 0;*/
-       /*i < TL_SELECTIONS->num_chords; i++)*/
-    /*{*/
-      /*for (j = 0; j < 2; j++)*/
-        /*{*/
-          /*if (j == 0)*/
-            /*c =*/
-              /*TL_SELECTIONS->chords[i]->*/
-                /*obj_info.main_trans;*/
-          /*else*/
-            /*c =*/
-              /*TL_SELECTIONS->chords[i]->*/
-                /*obj_info.lane_trans;*/
-
+  ZChord * c;
+  for (i = 0; i < ts->num_chords; i++)
+    {
+      for (j = 0; j < 2; j++)
+        {
           /*ARRANGER_MOVE_OBJ_BY_TICKS (*/
             /*c, chord,*/
             /*&c->cache_pos,*/
             /*ticks_diff, &tmp);*/
-        /*}*/
-    /*}*/
+        }
+    }
 
   /* update ap positions */
   AutomationPoint * ap;
-  for (i = 0;
-       i < TL_SELECTIONS->num_aps;
-       i++)
+  for (i = 0; i < ts->num_aps; i++)
     {
       ap =
-        TL_SELECTIONS->aps[i]->
+        ts->aps[i]->
           obj_info.main_trans;
 
       /* get prev and next value APs */

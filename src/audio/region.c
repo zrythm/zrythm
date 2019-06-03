@@ -476,7 +476,7 @@ region_move (
     &tmp, ticks);
   if (position_is_before (
         &tmp, START_POS))
-    return;
+    return 0;
 
   SET_POS (region, start_pos, &tmp);
   if (use_cached_pos)
@@ -488,6 +488,8 @@ region_move (
   position_add_ticks (
     &tmp, ticks);
   SET_POS (region, end_pos, &tmp);
+
+  return 1;
 }
 
 /**

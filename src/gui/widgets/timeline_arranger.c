@@ -807,14 +807,6 @@ timeline_arranger_widget_on_drag_begin_region_hit (
       P_TOOL == TOOL_SELECT_STRETCH ||
       P_TOOL == TOOL_EDIT)
     {
-      int transients =
-        arranger_widget_is_in_moving_operation (
-          Z_ARRANGER_WIDGET (self)) ||
-        ar_prv->action ==
-          UI_OVERLAY_ACTION_RESIZING_R ||
-        ar_prv->action ==
-          UI_OVERLAY_ACTION_RESIZING_L;
-
       /* if ctrl held & not selected, add to
        * selections */
       if (ar_prv->ctrl_held &&

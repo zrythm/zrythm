@@ -200,8 +200,9 @@ position_set_tick (
  * Sets position to target position
  */
 void
-position_set_to_pos (Position * position,
-                     Position * target);
+position_set_to_pos (
+  Position * position,
+  const Position * target);
 
 void
 position_add_frames (Position * position,
@@ -228,18 +229,21 @@ position_from_seconds (Position * position,
  * positive = p2 is earlier
  */
 int
-position_compare (Position * p1,
-                  Position * p2);
+position_compare (
+  const Position * p1,
+  const Position * p2);
 
 long
-position_to_ticks (Position * pos);
+position_to_ticks (
+  const Position * pos);
 
 /**
  * Sets position to the given total tick count.
  */
 void
-position_from_ticks (Position * pos,
-                     long       ticks);
+position_from_ticks (
+  Position * pos,
+  long       ticks);
 
 /**
  * Snaps position using given options.
@@ -254,11 +258,11 @@ position_from_ticks (Position * pos,
  */
 void
 position_snap (
-  Position * prev_pos,
+  const Position * prev_pos,
   Position * pos,
   Track    * track,
   Region   * region,
-  SnapGrid * sg);
+  const SnapGrid * sg);
 
 /**
  * Sets the end position to be 1 snap point away
@@ -306,9 +310,9 @@ position_get_midway_pos (
  */
 long
 position_get_ticks_diff (
-  Position * end_pos,
-  Position * start_pos,
-  SnapGrid * sg);
+  const Position * end_pos,
+  const Position * start_pos,
+  const SnapGrid * sg);
 
 /**
  * Creates a string in the form of "0.0.0.0" from
@@ -317,7 +321,8 @@ position_get_ticks_diff (
  * Must be free'd by caller.
  */
 char *
-position_stringize (Position * pos);
+position_stringize (
+  const Position * pos);
 
 /**
  * Prints the Position in the "0.0.0.0" form.
