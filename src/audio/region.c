@@ -43,6 +43,8 @@
 #include <sndfile.h>
 #include <samplerate.h>
 
+DEFINE_START_POS
+
 #define SET_POS(r,pos_name,pos) \
   position_set_to_pos ( \
     &region_get_main_trans_region (r)-> \
@@ -446,6 +448,46 @@ region_is_visible (Region * self)
     return 0;
 
   return 1;
+}
+
+/**
+ * Moves the Region by the given amount of ticks.
+ *
+ * @param use_cached_pos Add the ticks to the cached
+ *   Position instead of its current Position.
+ * @return Whether moved or not.
+ */
+int
+region_move (
+  Region * region,
+  long     ticks,
+  int      use_cached_pos)
+{
+  long length_ticks =
+    region_get_full_length_in_ticks (region);
+  Position tmp;
+  if (use_cached_pos)
+    position_set_to_pos (
+      &tmp, &region->cache_start_pos);
+  else
+    position_set_to_pos (
+      &tmp, &region->start_pos);
+  position_add_ticks (
+    &tmp, ticks);
+  if (position_is_before (
+        &tmp, START_POS))
+    return;
+
+  SET_POS (region, start_pos, &tmp);
+  if (use_cached_pos)
+    position_set_to_pos (
+      &tmp, &region->cache_end_pos);
+  else
+    position_set_to_pos (
+      &tmp, &region->end_pos);
+  position_add_ticks (
+    &tmp, ticks);
+  SET_POS (region, end_pos, &tmp);
 }
 
 /**

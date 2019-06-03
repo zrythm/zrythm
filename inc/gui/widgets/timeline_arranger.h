@@ -225,14 +225,6 @@ timeline_arranger_widget_on_drag_begin_ap_hit (
   double                   start_x,
   AutomationPointWidget *  ap_widget);
 
-/**
- * Fills in the positions that the TimelineArranger
- * remembers at the start of each drag.
- */
-void
-timeline_arranger_widget_set_init_poses (
-  TimelineArrangerWidget * self);
-
 void
 timeline_arranger_widget_create_ap (
   TimelineArrangerWidget * self,

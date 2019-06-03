@@ -919,66 +919,6 @@ timeline_arranger_widget_on_drag_begin_ap_hit (
     }
 }
 
-/**
- * Fills in the positions that the TimelineArranger
- * remembers at the start of each drag.
- */
-void
-timeline_arranger_widget_set_init_poses (
-  TimelineArrangerWidget * self)
-{
-  ARRANGER_WIDGET_GET_PRIVATE (self);
-
-  for (int i = 0; i < TL_SELECTIONS->num_regions; i++)
-    {
-      Region * r = TL_SELECTIONS->regions[i];
-      if (position_compare (&r->start_pos,
-                            &ar_prv->start_pos) <= 0)
-        {
-          position_set_to_pos (
-            &ar_prv->start_pos, &r->start_pos);
-        }
-
-      /* set start poses for regions */
-      region_set_cache_start_pos (
-        r, &r->start_pos);
-
-      /* set end poses for regions */
-      region_set_cache_end_pos (
-        r, &r->end_pos);
-    }
-  for (int i = 0; i < TL_SELECTIONS->num_chords; i++)
-    {
-      ZChord * r = TL_SELECTIONS->chords[i];
-      if (position_compare (
-            &r->pos,
-            &ar_prv->start_pos) <= 0)
-        {
-          position_set_to_pos (&ar_prv->start_pos,
-                               &r->pos);
-        }
-
-      /* set start poses for chords */
-      position_set_to_pos (
-        &r->cache_pos, &r->pos);
-    }
-  for (int i = 0; i < TL_SELECTIONS->num_aps; i++)
-    {
-      AutomationPoint * ap = TL_SELECTIONS->aps[i];
-      if (position_compare (
-            &ap->pos,
-            &ar_prv->start_pos) <= 0)
-        {
-          position_set_to_pos (&ar_prv->start_pos,
-                               &ap->pos);
-        }
-
-      /* set start poses for APs */
-      position_set_to_pos (
-        &ap->cache_pos, &ap->pos);
-    }
-}
-
 void
 timeline_arranger_widget_create_ap (
   TimelineArrangerWidget * self,
@@ -1589,126 +1529,19 @@ timeline_arranger_widget_snap_range_r (
   arranger_widget_refresh_all_backgrounds ();
 }
 
+/**
+ * Moves the TimelineSelections by the given
+ * amount of ticks.
+ *
+ * @param ticks_diff Ticks to move by.
+ */
 void
 timeline_arranger_widget_move_items_x (
   TimelineArrangerWidget * self,
   long                     ticks_diff)
 {
-  Position tmp;
-  long length_ticks;
-  int i, j;
-
-  /* update region positions */
-  Region * r;
-  for (i = 0; i <
-       TL_SELECTIONS->num_regions; i++)
-    {
-      r =
-        TL_SELECTIONS->regions[i];
-
-      ARRANGER_MOVE_OBJ_BY_TICKS_W_LENGTH (
-        r, region,
-        &r->cache_start_pos,
-        ticks_diff, &tmp, length_ticks);
-    }
-
-  /* update chord positions */
-  ZChord * c;
-  for (i = 0;
-       i < TL_SELECTIONS->num_chords; i++)
-    {
-      for (j = 0; j < 2; j++)
-        {
-          if (j == 0)
-            c =
-              TL_SELECTIONS->chords[i]->
-                obj_info.main_trans;
-          else
-            c =
-              TL_SELECTIONS->chords[i]->
-                obj_info.lane_trans;
-
-          ARRANGER_MOVE_OBJ_BY_TICKS (
-            c, chord,
-            &c->cache_pos,
-            ticks_diff, &tmp);
-        }
-    }
-
-  /* update ap positions */
-  AutomationPoint * ap;
-  for (i = 0;
-       i < TL_SELECTIONS->num_aps;
-       i++)
-    {
-      ap =
-        TL_SELECTIONS->aps[i]->
-          obj_info.main_trans;
-
-      /* get prev and next value APs */
-      AutomationPoint * prev_ap =
-        automation_track_get_prev_ap (ap->at, ap);
-      AutomationPoint * next_ap =
-        automation_track_get_next_ap (ap->at, ap);
-
-      /* get adjusted pos for this automation point */
-      Position ap_pos;
-      Position * prev_pos = &ap->cache_pos;
-      position_set_to_pos (&ap_pos,
-                           prev_pos);
-      position_add_ticks (&ap_pos, ticks_diff);
-
-      Position mid_pos;
-      AutomationCurve * ac;
-
-      /* update midway points */
-      if (prev_ap &&
-          position_is_after_or_equal (
-            &ap_pos, &prev_ap->pos))
-        {
-          /* set prev curve point to new midway pos */
-          position_get_midway_pos (
-            &prev_ap->pos, &ap_pos, &mid_pos);
-          ac =
-            automation_track_get_next_curve_ac (
-              ap->at, prev_ap);
-          position_set_to_pos (&ac->pos, &mid_pos);
-
-          /* set pos for ap */
-          if (!next_ap)
-            {
-              position_set_to_pos (&ap->pos, &ap_pos);
-            }
-        }
-      if (next_ap &&
-          position_is_before_or_equal (
-            &ap_pos, &next_ap->pos))
-        {
-          /* set next curve point to new midway pos */
-          position_get_midway_pos (
-            &ap_pos, &next_ap->pos, &mid_pos);
-          ac =
-            automation_track_get_next_curve_ac (
-              ap->at, ap);
-          position_set_to_pos (&ac->pos, &mid_pos);
-
-          /* set pos for ap - if no prev ap exists
-           * or if the position is also after the
-           * prev ap */
-          if ((prev_ap &&
-               position_is_after_or_equal (
-                &ap_pos, &prev_ap->pos)) ||
-              (!prev_ap))
-            {
-              position_set_to_pos (&ap->pos, &ap_pos);
-            }
-        }
-      else if (!prev_ap && !next_ap)
-        {
-          /* set pos for ap */
-          position_set_to_pos (&ap->pos, &ap_pos);
-        }
-    }
+  timeline_selections_add_ticks (
+    TL_SELECTIONS, ticks_diff, 1);
 }
 
 /**

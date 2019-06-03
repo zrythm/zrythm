@@ -1113,6 +1113,8 @@ drag_begin (GtkGestureDrag *   gesture,
   GET_PRIVATE;
 
   ar_prv->start_x = start_x;
+  arranger_widget_px_to_pos (
+    self, start_x, &ar_prv->start_pos, 1);
   ar_prv->start_y = start_y;
 
   if (!gtk_widget_has_focus (GTK_WIDGET (self)))
@@ -1204,15 +1206,20 @@ drag_begin (GtkGestureDrag *   gesture,
         }
 
       /* find start pos */
-      position_init (&ar_prv->start_pos);
-      position_set_bar (&ar_prv->start_pos, 2000);
+      position_set_to_bar (
+        &ar_prv->earliest_obj_start_pos, 2000);
       if (timeline)
         {
-          timeline_arranger_widget_set_init_poses (
-            timeline);
+          timeline_selections_get_start_pos (
+            TL_SELECTIONS,
+            &ar_prv->earliest_obj_start_pos,
+            0);
+          timeline_selections_set_cache_poses (
+            TL_SELECTIONS);
         }
       else if (midi_arranger)
         {
+          /* FIXME */
           midi_arranger_widget_set_init_poses (
             midi_arranger);
         }
@@ -1322,6 +1329,38 @@ drag_update (GtkGestureDrag * gesture,
 
   GET_ARRANGER_ALIASES (self);
 
+  /* get current pos */
+  arranger_widget_px_to_pos (
+    self, ar_prv->start_x + offset_x,
+    &ar_prv->curr_pos, 1);
+
+  /* get difference with drag start pos */
+  ar_prv->curr_ticks_diff_from_start =
+    position_get_ticks_diff (
+      &ar_prv->curr_pos,
+      &ar_prv->start_pos,
+      NULL);
+
+  /* add diff to the earliest object's start pos
+   * and snap it, then get the diff ticks */
+  Position earliest_obj_new_pos;
+  position_set_to_pos (
+    &earliest_obj_new_pos,
+    &ar_prv->earliest_obj_start_pos);
+  position_add_ticks (
+    &earliest_obj_new_pos,
+    ar_prv->curr_ticks_diff_from_start);
+  if (!ar_prv->shift_held &&
+      SNAP_GRID_ANY_SNAP (ar_prv->snap_grid))
+    position_snap (
+      NULL, &earliest_obj_new_pos, NULL, NULL,
+      ar_prv->snap_grid);
+  ar_prv->adj_ticks_diff =
+    position_get_ticks_diff (
+      &earliest_obj_new_pos,
+      &ar_prv->earliest_obj_start_pos,
+      NULL);
+
   /* set action to selecting if starting selection. this
    * is because drag_update never gets called if it's just
    * a click, so we can check at drag_end and see if
@@ -1428,13 +1467,6 @@ drag_update (GtkGestureDrag * gesture,
   else if (ar_prv->action ==
              UI_OVERLAY_ACTION_RESIZING_L)
     {
-
-      /* get new pos */
-      Position pos;
-      arranger_widget_px_to_pos (
-        self,
-        ar_prv->start_x + offset_x, &pos, 1);
-
       /* snap selections based on new pos */
       if (timeline)
         {
@@ -1442,7 +1474,7 @@ drag_update (GtkGestureDrag * gesture,
             timeline);
           timeline_arranger_widget_snap_regions_l (
             timeline,
-            &pos);
+            &ar_prv->curr_pos);
         }
       else if (midi_arranger)
         {
@@ -1450,7 +1482,7 @@ drag_update (GtkGestureDrag * gesture,
             midi_arranger);
           midi_arranger_widget_snap_midi_notes_l (
             midi_arranger,
-            &pos);
+            &ar_prv->curr_pos);
         }
     } /* endif RESIZING_L */
   else if (ar_prv->action ==
@@ -1464,23 +1496,18 @@ drag_update (GtkGestureDrag * gesture,
            ar_prv->action ==
              UI_OVERLAY_ACTION_CREATING_RESIZING_R)
     {
-      /* get absolute position the cursor is at */
-      Position pos;
-      arranger_widget_px_to_pos (
-        self, ar_prv->start_x + offset_x, &pos, 1);
-
       if (timeline)
         {
           if (timeline->resizing_range)
             timeline_arranger_widget_snap_range_r (
-              &pos);
+              &ar_prv->curr_pos);
           else
             {
               timeline_arranger_widget_update_visibility (
                 timeline);
               timeline_arranger_widget_snap_regions_r (
                 Z_TIMELINE_ARRANGER_WIDGET (self),
-                &pos);
+                &ar_prv->curr_pos);
             }
         }
       else if (ARRANGER_IS_MIDI (self))
@@ -1489,7 +1516,7 @@ drag_update (GtkGestureDrag * gesture,
             midi_arranger);
           midi_arranger_widget_snap_midi_notes_r (
             Z_MIDI_ARRANGER_WIDGET (self),
-            &pos);
+            &ar_prv->curr_pos);
         }
     } /*endif RESIZING_R */
   else if (ar_prv->action ==
@@ -1513,43 +1540,13 @@ drag_update (GtkGestureDrag * gesture,
            ar_prv->action ==
              UI_OVERLAY_ACTION_CREATING_MOVING)
     {
-      /* get new pos */
-      Position pos;
-      arranger_widget_px_to_pos (
-        self,
-        ar_prv->start_x + offset_x, &pos, 1);
-
-      /* get difference with start pos and snap it */
-      Position start_pos;
-      arranger_widget_px_to_pos (
-        self,
-        ar_prv->start_x, &start_pos, 1);
-      long ticks_diff =
-        pos.total_ticks -
-        start_pos.total_ticks;
-      int is_negative = ticks_diff < 0;
-      Position diff_pos;
-      position_init (&diff_pos);
-      position_add_ticks (
-        &diff_pos, abs (ticks_diff));
-      if (SNAP_GRID_ANY_SNAP(ar_prv->snap_grid) &&
-          !ar_prv->shift_held)
-        position_snap (NULL,
-                       &diff_pos,
-                       NULL,
-                       NULL,
-                       ar_prv->snap_grid);
-      ticks_diff = diff_pos.total_ticks;
-      if (is_negative)
-        ticks_diff = - ticks_diff;
-
       if (timeline)
         {
           timeline_arranger_widget_update_visibility (
             timeline);
           timeline_arranger_widget_move_items_x (
             timeline,
-            ticks_diff);
+            ar_prv->adj_ticks_diff);
           timeline_arranger_widget_move_items_y (
             timeline,
             offset_y);
@@ -1560,7 +1557,7 @@ drag_update (GtkGestureDrag * gesture,
             midi_arranger);
           midi_arranger_widget_move_items_x (
             midi_arranger,
-            ticks_diff);
+            ar_prv->adj_ticks_diff);
           midi_arranger_widget_move_items_y (
             midi_arranger,
             offset_y);
@@ -1575,42 +1572,13 @@ drag_update (GtkGestureDrag * gesture,
   else if (ar_prv->action ==
              UI_OVERLAY_ACTION_MOVING_COPY)
     {
-      /* get the offset pos (so we can add it to the start
-       * positions and then snap it) */
-      Position diff_pos;
-      int is_negative = offset_x < 0;
-      arranger_widget_px_to_pos (
-        self, abs ((int) offset_x), &diff_pos, 0);
-      long ticks_diff =
-        position_to_ticks (&diff_pos);
-      if (is_negative)
-        ticks_diff = - ticks_diff;
-
-      /* get new start pos and snap it */
-      Position new_start_pos;
-      position_set_to_pos (&new_start_pos,
-                           &ar_prv->start_pos);
-      position_add_ticks (&new_start_pos, ticks_diff);
-      if (SNAP_GRID_ANY_SNAP(ar_prv->snap_grid) &&
-          !ar_prv->shift_held)
-        position_snap (NULL,
-                       &new_start_pos,
-                       NULL,
-                       NULL,
-                       ar_prv->snap_grid);
-
-      /* get frames difference from snapped new position to
-       * start pos */
-      ticks_diff = position_to_ticks (&new_start_pos) -
-        position_to_ticks (&ar_prv->start_pos);
-
       if (timeline)
         {
           timeline_arranger_widget_update_visibility (
             timeline);
           timeline_arranger_widget_move_items_x (
             timeline,
-            ticks_diff);
+            ar_prv->adj_ticks_diff);
           timeline_arranger_widget_move_items_y (
             timeline,
             offset_y);
@@ -1621,7 +1589,7 @@ drag_update (GtkGestureDrag * gesture,
             midi_arranger);
           midi_arranger_widget_move_items_x (
             midi_arranger,
-            ticks_diff);
+            ar_prv->adj_ticks_diff);
           midi_arranger_widget_move_items_y (
             midi_arranger,
             offset_y);

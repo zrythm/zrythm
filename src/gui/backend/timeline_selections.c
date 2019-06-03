@@ -96,6 +96,51 @@ timeline_selections_has_any (
 }
 
 /**
+ * Sets the cache Position's for each object in
+ * the selection.
+ *
+ * Used by the ArrangerWidget's.
+ */
+void
+timeline_selections_set_cache_poses (
+  TimelineSelections * ts)
+{
+  int i;
+
+  Region * r;
+  for (i = 0; i < ts->num_regions; i++)
+    {
+      r = ts->regions[i];
+
+      /* set start poses for regions */
+      region_set_cache_start_pos (
+        r, &r->start_pos);
+
+      /* set end poses for regions */
+      region_set_cache_end_pos (
+        r, &r->end_pos);
+    }
+  ZChord * c;
+  for (i = 0; i < ts->num_chords; i++)
+    {
+      c = ts->chords[i];
+
+      /* set start poses for chords */
+      position_set_to_pos (
+        &c->cache_pos, &c->pos);
+    }
+  AutomationPoint * ap;
+  for (i = 0; i < ts->num_aps; i++)
+    {
+      ap = ts->aps[i];
+
+      /* set start poses for APs */
+      position_set_to_pos (
+        &ap->cache_pos, &ap->pos);
+    }
+}
+
+/**
  * Returns the position of the leftmost object.
  *
  * If transient is 1, the transient objects are
@@ -525,6 +570,134 @@ timeline_selections_clone ()
     }
 
   return new_ts;
+}
+
+/**
+ * Moves the TimelineSelections by the given
+ * amount of ticks.
+ *
+ * @param use_cached_pos Add the ticks to the cached
+ *   Position's instead of the current Position's.
+ * @param ticks Ticks to add.
+ */
+void
+timeline_selections_add_ticks (
+  TimelineSelections * ts,
+  long                 ticks,
+  int                  use_cached_pos)
+{
+  Position tmp;
+  long length_ticks;
+  int i, j;
+
+  /* update region positions */
+  Region * r;
+  for (i = 0; i <
+       TL_SELECTIONS->num_regions; i++)
+    {
+      r =
+        TL_SELECTIONS->regions[i];
+      region_move (r, ticks, use_cached_pos);
+    }
+
+  /* update chord positions */
+  /*ZChord * c;*/
+  /*for (i = 0;*/
+       /*i < TL_SELECTIONS->num_chords; i++)*/
+    /*{*/
+      /*for (j = 0; j < 2; j++)*/
+        /*{*/
+          /*if (j == 0)*/
+            /*c =*/
+              /*TL_SELECTIONS->chords[i]->*/
+                /*obj_info.main_trans;*/
+          /*else*/
+            /*c =*/
+              /*TL_SELECTIONS->chords[i]->*/
+                /*obj_info.lane_trans;*/
+
+          /*ARRANGER_MOVE_OBJ_BY_TICKS (*/
+            /*c, chord,*/
+            /*&c->cache_pos,*/
+            /*ticks_diff, &tmp);*/
+        /*}*/
+    /*}*/
+
+  /* update ap positions */
+  AutomationPoint * ap;
+  for (i = 0;
+       i < TL_SELECTIONS->num_aps;
+       i++)
+    {
+      ap =
+        TL_SELECTIONS->aps[i]->
+          obj_info.main_trans;
+
+      /* get prev and next value APs */
+      AutomationPoint * prev_ap =
+        automation_track_get_prev_ap (ap->at, ap);
+      AutomationPoint * next_ap =
+        automation_track_get_next_ap (ap->at, ap);
+
+      /* get adjusted pos for this automation point */
+      Position ap_pos;
+      Position * prev_pos = &ap->cache_pos;
+      position_set_to_pos (&ap_pos,
+                           prev_pos);
+      position_add_ticks (&ap_pos, ticks);
+
+      Position mid_pos;
+      AutomationCurve * ac;
+
+      /* update midway points */
+      if (prev_ap &&
+          position_is_after_or_equal (
+            &ap_pos, &prev_ap->pos))
+        {
+          /* set prev curve point to new midway pos */
+          position_get_midway_pos (
+            &prev_ap->pos, &ap_pos, &mid_pos);
+          ac =
+            automation_track_get_next_curve_ac (
+              ap->at, prev_ap);
+          position_set_to_pos (&ac->pos, &mid_pos);
+
+          /* set pos for ap */
+          if (!next_ap)
+            {
+              position_set_to_pos (&ap->pos, &ap_pos);
+            }
+        }
+      if (next_ap &&
+          position_is_before_or_equal (
+            &ap_pos, &next_ap->pos))
+        {
+          /* set next curve point to new midway pos */
+          position_get_midway_pos (
+            &ap_pos, &next_ap->pos, &mid_pos);
+          ac =
+            automation_track_get_next_curve_ac (
+              ap->at, ap);
+          position_set_to_pos (&ac->pos, &mid_pos);
+
+          /* set pos for ap - if no prev ap exists
+           * or if the position is also after the
+           * prev ap */
+          if ((prev_ap &&
+               position_is_after_or_equal (
+                &ap_pos, &prev_ap->pos)) ||
+              (!prev_ap))
+            {
+              position_set_to_pos (&ap->pos, &ap_pos);
+            }
+        }
+      else if (!prev_ap && !next_ap)
+        {
+          /* set pos for ap */
+          position_set_to_pos (&ap->pos, &ap_pos);
+        }
+    }
+
 }
 
 void

@@ -273,10 +273,16 @@ void
 tracklist_widget_soft_refresh (TracklistWidget *self)
 {
   gtk_widget_show (GTK_WIDGET (self));
+  Track * track;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
+      track = TRACKLIST->tracks[i];
+
+      if (!GTK_IS_WIDGET (track->widget))
+        track->widget = track_widget_new (track);
+
       track_widget_refresh (
-        TRACKLIST->tracks[i]->widget);
+        track->widget);
     }
   if (self->ddbox)
     gtk_widget_show (GTK_WIDGET (self->ddbox));

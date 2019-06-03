@@ -159,29 +159,20 @@ G_DECLARE_DERIVABLE_TYPE (ArrangerWidget,
 #define ARRANGER_MOVE_OBJ_BY_TICKS_W_LENGTH( \
   obj, obj_name, prev_start_pos, ticks_diff, \
   tmp_pos, tmp_length_ticks) \
-  /*g_message ("1 endpos ticks %ld", obj->end_pos.total_ticks);*/ \
   tmp_length_ticks = \
     obj->end_pos.total_ticks - \
     obj->start_pos.total_ticks; \
   position_set_to_pos ((tmp_pos), \
                        (prev_start_pos)); \
-  /*g_message ("---length ticks %ld, ticks diff %ld", \
-             tmp_length_ticks, ticks_diff);*/ \
   position_add_ticks ( \
     (tmp_pos), \
     ticks_diff + tmp_length_ticks); \
-  /*g_message ("updated pos ticks %ld", (tmp_pos)->total_ticks); \
-  position_print (tmp_pos);*/ \
   obj_name##_set_end_pos (obj, (tmp_pos)); \
-  /*g_message ("endpos ticks after setting %ld", obj->end_pos.total_ticks);*/ \
   position_set_to_pos ((tmp_pos), \
                        (prev_start_pos)); \
   position_add_ticks ((tmp_pos), \
                       ticks_diff); \
-  obj_name##_set_start_pos (obj, (tmp_pos)); \
-  /*g_message ("startpos ticks after setting %ld", obj->start_pos.total_ticks); \
-   g_message ("99 set start pos to "); \
-     position_print (&obj->start_pos) */;
+  obj_name##_set_start_pos (obj, (tmp_pos))
 
 /**
  * Moves an object without length (AutomationPoint,
@@ -231,36 +222,59 @@ typedef struct
   GtkGestureMultiPress *   multipress;
   GtkGestureMultiPress *   right_mouse_mp;
   GtkEventController *     motion_controller;
-  double                   last_offset_x;  ///< for dragging regions, selections
-  double                   last_offset_y;  ///< for selections
-  UiOverlayAction          action;
-  double                   start_x; ///< for dragging
-  double                   start_y; ///< for dragging
+  double               last_offset_x;  ///< for dragging regions, selections
+  double               last_offset_y;  ///< for selections
+  UiOverlayAction      action;
 
-  double                   start_pos_px; ///< for moving regions
+  /** X-axis coordinate at start of drag. */
+  double               start_x;
 
-  Position                 start_pos; ///< useful for moving
-  Position                 end_pos; ///< for moving regions
-   gboolean                 key_is_pressed;
+  /** Y-axis coordinate at start of drag. */
+  double               start_y;
+
+  double               start_pos_px; ///< for moving regions
+
+  /** Start Position of the earliest object
+   * at the start of the drag. */
+  Position             earliest_obj_start_pos;
+
+  /** The absolute (not snapped) Position at the
+   * start of a drag, translated from start_x. */
+  Position             start_pos;
+
+  /** The absolute (not snapped) current diff in
+   * ticks from the curr_pos to the start_pos. */
+  long                 curr_ticks_diff_from_start;
+
+  /** The adjusted diff in ticks to use for moving
+   * objects starting from their cached start
+   * positions. */
+  long                 adj_ticks_diff;
+
+  /** The absolute (not snapped) Position as of the
+   * current action. */
+  Position             curr_pos;
+
+  Position             end_pos; ///< for moving regions
+  gboolean             key_is_pressed;
 
   /** Current hovering positions. */
-  double                   hover_x;
-  double                   hover_y;
-  /* end */
+  double               hover_x;
+  double               hover_y;
 
-  int                      n_press; ///< for multipress
-  SnapGrid *               snap_grid; ///< associated snap grid
-  /**
-   * If shift was held down during the press.
-   */
-  int                      shift_held;
+  /** Number of clicks in current action. */
+  int                  n_press;
 
-  /**
-   * Ctrl button held.
-   */
-  int                      ctrl_held;
+  /** Associated SnapGrid. */
+  SnapGrid *           snap_grid;
 
-  gint64                   last_frame_time;
+  /** Whether shift button is held down. */
+  int                  shift_held;
+
+  /** Whether Ctrl button is held down. */
+  int                  ctrl_held;
+
+  gint64               last_frame_time;
 } ArrangerWidgetPrivate;
 
 typedef struct _ArrangerWidgetClass

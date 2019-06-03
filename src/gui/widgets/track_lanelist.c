@@ -146,6 +146,9 @@ static void
 track_lanelist_widget_init (
   TrackLanelistWidget * self)
 {
+  gtk_widget_set_vexpand (
+    GTK_WIDGET (self), 1);
+
   g_signal_connect (
     G_OBJECT (self), "resize-drag-end",
     G_CALLBACK (on_resize_end), NULL);

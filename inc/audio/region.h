@@ -459,6 +459,9 @@ region_resize (
 
 /**
  * Clamps position then sets it.
+ *
+ * To be used only when resizing. For moving,
+ * use region_move().
  */
 void
 region_set_start_pos (
@@ -493,10 +496,26 @@ region_set_cache_start_pos (
 
 /**
  * Checks if position is valid then sets it.
+ *
+ * To be used only when resizing. For moving,
+ * use region_move().
  */
 void
 region_set_end_pos (Region * region,
                     Position * end_pos);
+
+/**
+ * Moves the Region by the given amount of ticks.
+ *
+ * @param use_cached_pos Add the ticks to the cached
+ *   Position instead of its current Position.
+ * @return Whether moved or not.
+ */
+int
+region_move (
+  Region * region,
+  long     ticks,
+  int      use_cached_pos);
 
 /**
  * Checks if position is valid then sets it.

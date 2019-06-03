@@ -90,6 +90,7 @@ track_lane_widget_init (TrackLaneWidget * self)
   gtk_widget_init_template (GTK_WIDGET (self));
 
   gtk_widget_set_visible (GTK_WIDGET (self), 1);
+  gtk_widget_set_vexpand (GTK_WIDGET (self), 1);
   gtk_widget_set_size_request (
-    GTK_WIDGET (self), -1, 38);
+    GTK_WIDGET (self), -1, 42);
 }

@@ -143,6 +143,17 @@ static const cyaml_schema_value_t
     Position, position_fields_schema),
 };
 
+/** Start Position to be used in calculations. */
+#define DEFINE_START_POS \
+  static const Position __start_pos = { \
+    .bars = 1, \
+    .beats = 1, \
+    .sixteenths = 1, \
+    .ticks = 0, \
+    .total_ticks = 0, \
+    .frames = 0 }; \
+  static const Position * START_POS = &__start_pos;
+
 /**
  * Initializes given position to all 0
  */
@@ -272,12 +283,32 @@ void
 position_update_frames (Position * position);
 
 /**
- * Calculates the midway point between the two positions and sets it on pos.
+ * Calculates the midway point between the two
+ * Positions and sets it on pos.
+ *
+ * @param pos Position to set to.
  */
 void
-position_get_midway_pos (Position * start_pos,
-                         Position * end_pos,
-                         Position * pos); ///< position to set to
+position_get_midway_pos (
+  Position * start_pos,
+  Position * end_pos,
+  Position * pos);
+
+/**
+ * Returns the difference in ticks between the two
+ * Position's, snapped based on the given SnapGrid
+ * (if any).
+ *
+ * @param end_pos End position.
+ * @param start_pos Start Position.
+ * @param sg SnapGrid to snap with, or NULL to not
+ *   snap.
+ */
+long
+position_get_ticks_diff (
+  Position * end_pos,
+  Position * start_pos,
+  SnapGrid * sg);
 
 /**
  * Creates a string in the form of "0.0.0.0" from

@@ -49,7 +49,6 @@
             <child>
               <object class="TrackTopGridWidget" id="top_grid">
                 <property name="visible">1</property>
-                <property name="vexpand">1</property>
                 <property name="valign">fill</property>
               </object>
             </child>

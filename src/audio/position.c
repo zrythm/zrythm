@@ -501,9 +501,10 @@ position_from_ticks (Position * pos,
  * Calculates the midway point between the two positions and sets it on pos.
  */
 inline void
-position_get_midway_pos (Position * start_pos,
-                         Position * end_pos,
-                         Position * pos) ///< position to set to
+position_get_midway_pos (
+  Position * start_pos,
+  Position * end_pos,
+  Position * pos) ///< position to set to
 {
   int end_ticks, start_ticks, ticks_diff;
   start_ticks = position_to_ticks (start_pos);
@@ -511,6 +512,40 @@ position_get_midway_pos (Position * start_pos,
   ticks_diff = end_ticks - start_ticks;
   position_set_to_pos (pos, start_pos);
   position_set_tick (pos, ticks_diff / 2);
+}
+
+/**
+ * Returns the difference in ticks between the two
+ * Position's, snapped based on the given SnapGrid
+ * (if any).
+ *
+ * @param end_pos End position.
+ * @param start_pos Start Position.
+ * @param sg SnapGrid to snap with, or NULL to not
+ *   snap.
+ */
+long
+position_get_ticks_diff (
+  Position * end_pos,
+  Position * start_pos,
+  SnapGrid * sg)
+{
+  long ticks_diff =
+    end_pos->total_ticks -
+    start_pos->total_ticks;
+  int is_negative = ticks_diff < 0;
+  Position diff_pos;
+  position_init (&diff_pos);
+  position_add_ticks (
+    &diff_pos, abs (ticks_diff));
+  if (sg && SNAP_GRID_ANY_SNAP(sg))
+    position_snap (
+      NULL, &diff_pos, NULL, NULL, sg);
+  ticks_diff = diff_pos.total_ticks;
+  if (is_negative)
+    ticks_diff = - ticks_diff;
+
+  return ticks_diff;
 }
 
 /**
