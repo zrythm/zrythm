@@ -1,0 +1,5 @@
+zrythm (0.1.021-1) unstable; urgency=medium
+
+  * removed libdazzle dependency
+
+ -- Alexandros Theodotou <alex@zrythm.org>  Tue, 9 Mar 2019 00:01:37 +0000

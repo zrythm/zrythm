@@ -1,0 +1,38 @@
+Source: zrythm
+Maintainer: Alexandros Theodotou <alex@zrythm.org>
+Section: sound
+Priority: optional
+Build-Depends: debhelper (>=9), 
+               libgtk-3-dev (>= 3.20),
+               libjack-dev,
+               liblilv-dev (>= 0.24.2~),
+               libsndfile1-dev (>= 1.0.25),
+               autoconf,
+               meson,
+               ninja-build,
+               sed,
+               qtbase5-dev,
+               libasound2-dev,
+               libavcodec-dev,
+               libavutil-dev,
+               libavformat-dev,
+               portaudio19-dev,
+               libtool,
+               gettext,
+               ladspa-sdk,
+               libfftw3-dev,
+               lv2-dev (>= 1.14.0~),
+               libsamplerate0-dev,
+               libyaml-dev
+Standards-Version: 3.9.8
+Homepage: https://git.zrythm.org/zrythm/zrythm/
+
+Package: zrythm
+Architecture: any
+Priority: optional
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: An highly automated, intuitive, Digital Audio Workstation (DAW)
+ Zrythm is a native GNU/Linux application built with
+ the GTK+3 toolkit and using the JACK Connection Kit for audio I/O.
+ Zrythm can automate plugin parameters using built in LFOs and envelopes
+ and is designed to be intuitive to use.
