@@ -3,6 +3,8 @@ gen_gtk_gresources = find_program (
     resources_dir, 'gen-gtk-gresources-xml.py'))
 zrythm_gresources_xml = configure_file (
   output: 'zrythm.gresources.xml',
+  input: join_paths (
+    resources_dir, 'gen-gtk-gresources-xml.py'),
   command: [
     gen_gtk_gresources,
     resources_dir,
