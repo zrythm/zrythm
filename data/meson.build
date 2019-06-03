@@ -3,4 +3,4 @@ install_data (
   install_dir: schemasdir)
 install_data (
   'zrythm.desktop',
-  install_dir: datadir / 'applications')
+  install_dir: join_paths (datadir, 'applications'))

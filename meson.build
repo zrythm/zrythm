@@ -1,6 +1,6 @@
 project (
   'zrythm', ['c', 'cpp'],
-  version: '0.5.001',
+  version: '0.5.007',
   license: 'GPLv3+',
   #meson_version: '>= 0.24.0',
   default_options: [
@@ -10,13 +10,13 @@ project (
   )
 
 prefix = get_option ('prefix')
-bindir = prefix / get_option('bindir')
-libdir = prefix / get_option ('libdir')
-libexecdir = prefix / get_option ('libexecdir')
-includedir = prefix / get_option('includedir')
-datadir = prefix / get_option('datadir')
-sysconfdir = prefix / get_option('sysconfdir')
-schemasdir = datadir / 'glib-2.0/schemas'
+bindir = join_paths (prefix, get_option('bindir'))
+libdir = join_paths (prefix, get_option ('libdir'))
+libexecdir = join_paths (prefix, get_option ('libexecdir'))
+includedir = join_paths (prefix, get_option('includedir'))
+datadir = join_paths (prefix, get_option('datadir'))
+sysconfdir = join_paths (prefix, get_option('sysconfdir'))
+schemasdir = join_paths (datadir, 'glib-2.0/schemas')
 
 cdata = configuration_data ()
 cdata.set_quoted (
@@ -51,9 +51,12 @@ endif
 root_inc = include_directories ('.')
 inc_inc = include_directories ('inc')
 ext_inc = include_directories ('ext')
-midilib_inc = include_directories ('ext' / 'midilib')
-cyaml_inc = include_directories ('ext' / 'libcyaml' / 'include')
-zix_inc = include_directories ('ext' / 'zix')
+midilib_inc = include_directories (
+  join_paths ('ext', 'midilib'))
+cyaml_inc = include_directories (
+  join_paths ('ext', 'libcyaml', 'include'))
+zix_inc = include_directories (
+  join_paths ('ext', 'zix'))
 all_inc = [
   root_inc,
   inc_inc,
@@ -278,12 +281,12 @@ run_target (
   command: [
     'rm',
     '-rf',
-    'doc' / 'html',
+    join_paths ('doc', 'html'),
     ],
   )
 
 meson.add_install_script (
-  'scripts' / 'meson_post_install.py')
+  join_paths ('scripts', 'meson_post_install.py'))
 
 gnome = import('gnome')
 
