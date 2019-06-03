@@ -11,5 +11,4 @@ i18n.gettext (
     '--directory=' + meson.source_root(),
     '--msgid-bugs-address=https://git.zrythm.org/zrythm/zrythm/issues',
     ],
-  preset: 'glib',
   )

@@ -49,18 +49,19 @@ then TraceStage "running staging-specific post-commit hooks"
      # re-configure autotools, rebuild, install, and verify
      tmp_builddir="tmp_builddir"
      TraceStep "re-configuring meson"
-     rm -rf $tmp_builddir
-     meson $tmp_builddir -Denable_tests=true
+     rm -rf $tmp_builddir > /dev/null
+     meson $tmp_builddir -Denable_tests=true 2> /dev/null
      TraceStep "verifying re-build/test"
-     ninja -C $tmp_builddir test
-     # ninja -C $tmp_builddir install
-     # ninja -C $tmp_builddir uninstall
-     rm -rf $tmp_builddir
+     ninja -C $tmp_builddir test > /dev/null
+     #ninja -C $tmp_builddir install > /dev/null
+     #ninja -C $tmp_builddir uninstall > /dev/null
+     rm -rf $tmp_builddir > /dev/null
 
      # commit automated changes, and ensure signed
      git add --all
-     git diff --exit-code --cached > /dev/null && is_index_clean=1        || is_index_clean=0
-     git verify-commit --raw HEAD 2> /dev/null && has_trusted_signature=1 || has_trusted_signature=0
+     git diff --exit-code --cached && is_index_clean=1        || is_index_clean=0
+     git verify-commit --raw HEAD > /dev/null && has_trusted_signature=1 || has_trusted_signature=0
+     echo "index clean $is_index_clean has_trusted_sig $has_trusted_signature"
      (($is_index_clean       )) || TraceStep "amending commit with automated changes"
      (($has_trusted_signature)) || TraceStep "amending commit to ensure signature exists"
      (($is_index_clean)) && (($has_trusted_signature))              || \
