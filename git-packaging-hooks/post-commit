@@ -49,13 +49,13 @@ then TraceStage "running staging-specific post-commit hooks"
      # re-configure autotools, rebuild, install, and verify
      tmp_builddir="tmp_builddir"
      TraceStep "re-configuring meson"
-     rm -rf $tmp_builddir         2&> /dev/null
-     meson $tmp_builddir
-     TraceStep "verifying re-build/install"
-     ninja -C $tmp_builddir       2&> /dev/null
-     ninja -C $tmp_builddir install  2&> /dev/null
-     ninja -C $tmp_builddir uninstall          2&> /dev/null
-     rm -rf $tmp_builddir               2&> /dev/null
+     rm -rf $tmp_builddir
+     meson $tmp_builddir -Denable_tests=true
+     TraceStep "verifying re-build/test"
+     ninja -C $tmp_builddir test
+     # ninja -C $tmp_builddir install
+     # ninja -C $tmp_builddir uninstall
+     rm -rf $tmp_builddir
 
      # commit automated changes, and ensure signed
      git add --all
