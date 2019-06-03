@@ -1,8 +1,8 @@
 project (
   'zrythm', ['c', 'cpp'],
-version: '0.5.001',
+  version: '0.5.007',
   license: 'GPLv3+',
-  meson_version: '>= 0.47.0',
+  #meson_version: '>= 0.24.0',
   default_options: [
     'warning_level=1',
     'buildtype=debug',
@@ -155,7 +155,12 @@ if get_option ('enable_coverage')
     ]
 endif
 
-common_cflags = cc.get_supported_arguments(test_cflags)
+common_cflags = []
+foreach f : test_cflags
+  if cc.has_argument (f)
+    common_cflags += f
+  endif
+endforeach
 
 test_ldflags = []
 
@@ -201,7 +206,12 @@ if get_option ('enable_coverage')
     ]
 endif
 
-common_ldflags = cc.get_supported_link_arguments(test_ldflags)
+if (meson.version() >= '0.46.0')
+  common_ldflags = cc.get_supported_link_arguments (
+    test_ldflags)
+else
+  common_ldflags = test_ldflags
+endif
 
 jack_dep = dependency ('jack', required: false)
 if (jack_dep.found ())
