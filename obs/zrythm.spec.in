@@ -88,7 +88,7 @@ DESTDIR="%{buildroot}/" ninja -C build install
 %files
 %defattr(-,root,root)
 %license COPYING
-%doc README.md CONTRIBUTING.md INSTALL.md
+%doc README.md CONTRIBUTING.md CHANGELOG.md
 %{_bindir}/*
 %{_datadir}/*
 
