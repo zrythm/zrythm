@@ -77,7 +77,6 @@ then (($IS_AMEND_COMMIT)) && exit 0
      TraceStep "imploding tarball"
      rm $TARBALL_FILE $TARBALL_FILE.sig $PKGBUILD_FILE.sig 2> /dev/null
      git archive --prefix=$TARBALL_INNER_DIR/ --output=$TARBALL_FILE $VERSION_STRING
-     TraceStep "$(ls -l)"
 
      # generate tarball metadata
      TraceStep "generating checksums"

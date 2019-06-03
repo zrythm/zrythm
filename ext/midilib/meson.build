@@ -1,4 +1,4 @@
 midilib = static_library (
-  'cyaml',
+  'midilib',
   join_paths ('src', 'midifile.c'),
   )
