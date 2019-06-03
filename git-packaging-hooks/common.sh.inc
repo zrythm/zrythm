@@ -42,7 +42,7 @@ function init()
   readonly OBS_DIR=${PROJECT_DIR}/${OBS_DIRNAME}
 
   # files to modify
-  readonly VERSION_FILE=configure.ac
+  readonly VERSION_FILE=meson.build
   readonly SERVICE_FILE=$OBS_DIR/_service
   readonly SPEC_FILE=$OBS_DIR/$OBS_NAME.spec
   readonly DSC_FILE=$OBS_DIR/$OBS_NAME.dsc

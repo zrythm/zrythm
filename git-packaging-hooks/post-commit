@@ -47,17 +47,15 @@ then TraceStage "running staging-specific post-commit hooks"
      fi
 
      # re-configure autotools, rebuild, install, and verify
-     TraceStep "re-configuring autotools"
-     sudo make uninstall          2&> /dev/null
-     make distclean               2&> /dev/null
-     autoreconf --force --install
+     tmp_builddir="tmp_builddir"
+     TraceStep "re-configuring meson"
+     rm -rf $tmp_builddir         2&> /dev/null
+     meson $tmp_builddir
      TraceStep "verifying re-build/install"
-     ./configure                  2&> /dev/null
-     make -j$N_MAKE_JOBS          2&> /dev/null
-     sudo make install            2&> /dev/null
-     make installcheck            2&> /dev/null
-     sudo make uninstall          2&> /dev/null
-     make distclean               2&> /dev/null
+     ninja -C $tmp_builddir       2&> /dev/null
+     ninja -C $tmp_builddir install  2&> /dev/null
+     ninja -C $tmp_builddir uninstall          2&> /dev/null
+     rm -rf $tmp_builddir               2&> /dev/null
 
      # commit automated changes, and ensure signed
      git add --all
@@ -114,7 +112,7 @@ then (($IS_AMEND_COMMIT)) && exit 0
      ### gitlab steps ###
 
      # create upstream tarball
-     TraceStep "pushing staging branch, packaging branch, and revision tag to github"
+     TraceStep "pushing staging branch, packaging branch, and revision tag to gitlab"
      git push --force $REMOTE_NAME $STAGING_BRANCH $PACKAGING_BRANCH $VERSION_STRING 2> /dev/null
 
      ## destroy any existing gitlab "tag release" with same tag
