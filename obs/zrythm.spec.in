@@ -22,14 +22,14 @@ Summary: An highly automated, intuitive, Digital Audio Workstation (DAW)
 License:       GPL-3.0
 URL:           https://www.zrythm.org
 Source0:       https://git.zrythm.org/zrythm/%{name}/-/archive/v%{version}/%{name}-v%{version}.tar.gz
-BuildRequires: gcc-c++ gcc automake pkgconfig autoconf
+BuildRequires: gcc-c++ gcc pkgconfig
 BuildRequires: gtk3-devel python3
 BuildRequires: lilv-devel
 BuildRequires: lv2-devel
 BuildRequires: libsndfile-devel
 BuildRequires: libyaml-devel
 BuildRequires: libsamplerate-devel
-BuildRequires: gettext sed libtool
+BuildRequires: gettext sed
 BuildRequires: alsa-lib-devel
 BuildRequires: ladspa-devel
 BuildRequires: fftw-devel
@@ -45,7 +45,7 @@ Requires: alsa-lib
 Requires: fftw
 Requires: portaudio
 %if 0%{?suse_version}
-BuildRequires: autoconf-archive jack-devel libX11-devel update-desktop-files
+BuildRequires: jack-devel libX11-devel update-desktop-files
 Requires:      jack
 %endif
 %if 0%{?fedora_version}
@@ -53,7 +53,7 @@ BuildRequires: jack-audio-connection-kit-devel libX11-devel qt5-devel
 Requires:      jack-audio-connection-kit qt5
 %endif
 %if 0%{?mageia}
-BuildRequires: autoconf-archive libjack-devel libx11-devel qt5-devel
+BuildRequires: libjack-devel libx11-devel qt5-devel
 Requires:      jack qt5
 %endif
 %description
@@ -101,4 +101,3 @@ DESTDIR="%{buildroot}/" ninja -C build install
 %if ! 0%{?suse_version}
   xdg-desktop-menu forceupdate
 %endif
-

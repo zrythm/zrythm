@@ -10,7 +10,7 @@ depends=('gtk3' 'lv2' 'lilv' 'libx11' 'jack'
   'libsndfile' 'libyaml' 'gettext' 'qt5-base'
   'libsamplerate' 'alsa-lib' 'portaudio'
   'ladspa' 'fftw')
-makedepends=('python' 'gettext' 'sed' 'libtool'
+makedepends=('python' 'gettext' 'sed'
              'meson' 'ninja')
 conflicts=( 'zrythm-git' )
 source=( "https://git.zrythm.org/zrythm/${pkgname}/-/archive/v$pkgver/${pkgname}-v$pkgver.tar.gz" )
