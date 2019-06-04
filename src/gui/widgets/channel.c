@@ -315,10 +315,8 @@ on_drag_motion (
   ChannelWidget * self)
 {
   GdkModifierType mask;
-
-  gdk_window_get_pointer (
-    gtk_widget_get_window (widget),
-    NULL, NULL, &mask);
+  z_gtk_widget_get_mask (
+    widget, &mask);
   if (mask & GDK_CONTROL_MASK)
     gdk_drag_status (context, GDK_ACTION_COPY, time);
   else
@@ -621,12 +619,12 @@ refresh_name (ChannelWidget * self)
 /**
  * Sets up the icon and name box for drag & move.
  */
-static void
-setup_drag_move (
-  ChannelWidget * self)
-{
+/*static void*/
+/*setup_drag_move (*/
+  /*ChannelWidget * self)*/
+/*{*/
 
-}
+/*}*/
 
 static void
 setup_pan (ChannelWidget * self)

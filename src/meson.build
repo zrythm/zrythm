@@ -48,6 +48,11 @@ zrythm_lib = static_library (
     ]
   )
 
+objects = []
+if os_win32
+  objects += join_paths (libdir, 'libdl.dll.a')
+endif
+
 zrythm_exe = executable (
   'zrythm',
   sources: [
@@ -60,5 +65,6 @@ zrythm_exe = executable (
     ],
   export_dynamic: true,
   include_directories: all_inc,
-  install : true,
+  objects: objects,
+  install: true,
   )

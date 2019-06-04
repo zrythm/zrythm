@@ -1069,6 +1069,9 @@ create_item (ArrangerWidget * self,
               break;
             case TRACK_TYPE_GROUP:
               break;
+            default:
+              /* TODO */
+              break;
             }
         }
     }
@@ -2068,7 +2071,7 @@ arranger_widget_refresh (
 
   if (midi_arranger)
     {
-      RULER_WIDGET_GET_PRIVATE (MIDI_RULER);
+      /*RULER_WIDGET_GET_PRIVATE (MIDI_RULER);*/
       /*gtk_widget_set_size_request (*/
         /*GTK_WIDGET (self),*/
         /*rw_prv->total_px,*/

@@ -273,11 +273,11 @@ node_process (
             case TRACK_TYPE_MASTER:
             case TRACK_TYPE_BUS:
             case TRACK_TYPE_GROUP:
-              port_sum_signal_from_inputs (
-                port);
-              break;
             case TRACK_TYPE_INSTRUMENT:
             case TRACK_TYPE_CHORD:
+            case TRACK_TYPE_MARKER:
+            case TRACK_TYPE_MIDI:
+            default:
               port_sum_signal_from_inputs (port);
               break;
             }

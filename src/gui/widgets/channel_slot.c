@@ -563,10 +563,8 @@ on_drag_motion (GtkWidget *widget,
              ChannelSlotWidget * self)
 {
   GdkModifierType mask;
-
-  gdk_window_get_pointer (
-    gtk_widget_get_window (widget),
-    NULL, NULL, &mask);
+  z_gtk_widget_get_mask (
+    widget, &mask);
   if (mask & GDK_CONTROL_MASK)
     gdk_drag_status (context, GDK_ACTION_COPY, time);
   else

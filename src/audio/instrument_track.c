@@ -53,9 +53,7 @@ instrument_track_init (Track * track)
 void
 instrument_track_setup (InstrumentTrack * self)
 {
-  ChannelTrack * track = (ChannelTrack *) self;
-
-  channel_track_setup (track);
+  channel_track_setup (self);
 }
 
 /**
@@ -90,7 +88,7 @@ instrument_track_fill_midi_events (
     {
       lane = track->lanes[j];
 
-      for (int i = 0; i < lane->num_regions; i++)
+      for (i = 0; i < lane->num_regions; i++)
         {
           region = lane->regions[i];
           r = (Region *) region;
@@ -143,7 +141,7 @@ instrument_track_fill_midi_events (
                 &region_end_adjusted,
                 &local_end_pos) <= 0)
             {
-              for (int i = 0;
+              for (i = 0;
                    i < region->num_midi_notes;
                    i++)
                 {
@@ -192,7 +190,7 @@ instrument_track_fill_midi_events (
                     &r->end_pos,
                     &end_pos) <= 0)
             {
-              for (int i = 0;
+              for (i = 0;
                    i < region->num_midi_notes;
                    i++)
                 {
@@ -264,7 +262,7 @@ instrument_track_fill_midi_events (
                 &local_end_pos,
                 &local_pos) <= 0)
             {
-              for (int i = 0;
+              for (i = 0;
                    i < region->num_midi_notes;
                    i++)
                 {
@@ -311,7 +309,7 @@ instrument_track_fill_midi_events (
           position_add_ticks (
             &local_end_pos, - clip_start_ticks);
 
-          for (int i = 0;
+          for (i = 0;
                i < region->num_midi_notes;
                i++)
             {

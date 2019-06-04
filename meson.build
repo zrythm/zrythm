@@ -9,6 +9,8 @@ project (
     'c_std=gnu11' ],
   )
 
+gnome = import('gnome')
+
 prefix = get_option ('prefix')
 bindir = join_paths (prefix, get_option('bindir'))
 libdir = join_paths (prefix, get_option ('libdir'))
@@ -129,6 +131,11 @@ elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
 	'-Werror=format-security',
 	'-Werror=incompatible-pointer-types',
 	'-Werror=implicit-int',
+  '-Werror=multistatement-macros',
+  '-Werror=deprecated-declarations',
+  '-Werror=switch',
+  '-Werror=absolute-value',
+  '-Werror=parentheses-equality',
   ]
 else
   test_cflags = []
@@ -287,8 +294,6 @@ run_target (
 
 meson.add_install_script (
   join_paths ('scripts', 'meson_post_install.py'))
-
-gnome = import('gnome')
 
 ext_srcs = []
 

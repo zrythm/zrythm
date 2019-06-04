@@ -494,17 +494,17 @@ port_sum_signal_from_inputs (Port * port)
 {
   Port * src_port;
   int block_length = AUDIO_ENGINE->block_length;
+  int k, l;
 
   /* for any output port pointing to it */
-  for (int k = 0; k < port->num_srcs; k++)
+  for (k = 0; k < port->num_srcs; k++)
     {
       src_port = port->srcs[k];
 
       /* sum the signals */
       if (port->identifier.type == TYPE_AUDIO)
         {
-          for (int l = 0;
-               l < block_length; l++)
+          for (l = 0; l < block_length; l++)
             {
               port->buf[l] += src_port->buf[l];
             }
@@ -521,8 +521,8 @@ port_sum_signal_from_inputs (Port * port)
           /* TODO normalize CV */
           float maxf =
             port->lv2_port->lv2_control->maxf;
-          float minf =
-            port->lv2_port->lv2_control->minf;
+          /*float minf =*/
+            /*port->lv2_port->lv2_control->minf;*/
           float deff =
             port->lv2_port->lv2_control->deff;
           port->lv2_port->control =

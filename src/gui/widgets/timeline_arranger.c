@@ -275,11 +275,11 @@ timeline_arranger_widget_get_cursor (
               self,
               ar_prv->hover_x,
               ar_prv->hover_y);
-          ChordWidget * cw =
-            timeline_arranger_widget_get_hit_chord (
-              self,
-              ar_prv->hover_x,
-              ar_prv->hover_y);
+          /*ChordWidget * cw =*/
+            /*timeline_arranger_widget_get_hit_chord (*/
+              /*self,*/
+              /*ar_prv->hover_x,*/
+              /*ar_prv->hover_y);*/
 
           REGION_WIDGET_GET_PRIVATE (rw);
           /* TODO chords, aps */
@@ -692,10 +692,6 @@ void
 timeline_arranger_widget_update_visibility (
   TimelineArrangerWidget * self)
 {
-  Region * r;
-  ZChord * c;
-  AutomationPoint * ap;
-
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
   int _trans_visible = 0;
@@ -2209,6 +2205,9 @@ timeline_arranger_widget_refresh_children (
                 (BusTrack *) track);
               break;
             case TRACK_TYPE_GROUP:
+              /* TODO */
+              break;
+            default:
               /* TODO */
               break;
             }

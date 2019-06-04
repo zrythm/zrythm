@@ -4,3 +4,5 @@ install_data (
 install_data (
   'zrythm.desktop',
   install_dir: join_paths (datadir, 'applications'))
+
+#FIXME add the windows .exe icon

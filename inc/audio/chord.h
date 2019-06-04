@@ -40,6 +40,14 @@
  * @{
  */
 
+/** Gets the main counterpart of the ZChord. */
+#define chord_get_main_chord(r) \
+  ((ZChord *) r->obj_info.main)
+
+/** Gets the transient counterpart of the ZChord. */
+#define chord_get_main_trans_chord(r) \
+  ((ZChord *) r->obj_info.main_trans)
+
 typedef enum MusicalNote
 {
   NOTE_C,
@@ -276,6 +284,19 @@ chord_as_string (ZChord * chord);
 void
 chord_set_pos (ZChord *    self,
                Position * pos);
+
+/**
+ * Moves the Region by the given amount of ticks.
+ *
+ * @param use_cached_pos Add the ticks to the cached
+ *   Position instead of its current Position.
+ * @return Whether moved or not.
+ */
+int
+chord_move (
+  ZChord * chord,
+  long     ticks,
+  int      use_cached_pos);
 
 void
 chord_free (ZChord * self);

@@ -454,6 +454,8 @@ track_setup (Track * track)
     SETUP_TRACK (BUS, bus);
     SETUP_TRACK (GROUP, group);
     case TRACK_TYPE_CHORD:
+    /* TODO */
+    default:
       break;
     }
 
@@ -594,45 +596,41 @@ track_free (Track * track)
 {
 
   /* remove regions */
+  /* FIXME move inside *_track_free */
   int i;
   for (i = 0; i < track->num_lanes; i++)
     track_lane_free (track->lanes[i]);
 
   /* remove chords */
+  /* FIXME move inside *_track_free */
   for (i = 0; i < track->num_chords; i++)
     chord_free (track->chords[i]);
 
   /* remove automation points, curves, tracks,
    * lanes*/
+  /* FIXME move inside *_track_free */
   automation_tracklist_free_members (
     &track->automation_tracklist);
 
+#define _FREE_TRACK(type_caps,sc) \
+  case TRACK_TYPE_##type_caps: \
+    sc##_track_free (track); \
+    break
+
   switch (track->type)
     {
-    case TRACK_TYPE_INSTRUMENT:
-      instrument_track_free (
-        (InstrumentTrack *) track);
-      break;
-    case TRACK_TYPE_MASTER:
-      master_track_free (
-        (MasterTrack *) track);
-      break;
-    case TRACK_TYPE_AUDIO:
-      audio_track_free (
-        (AudioTrack *) track);
-      break;
-    case TRACK_TYPE_CHORD:
-      chord_track_free (
-        (ChordTrack *) track);
-      break;
-    case TRACK_TYPE_BUS:
-      bus_track_free (
-        (BusTrack *) track);
-      break;
-    case TRACK_TYPE_GROUP:
-      group_track_free (track);
+      _FREE_TRACK (INSTRUMENT, instrument);
+      _FREE_TRACK (MASTER, master);
+      _FREE_TRACK (AUDIO, audio);
+      _FREE_TRACK (CHORD, chord);
+      _FREE_TRACK (BUS, bus);
+      _FREE_TRACK (GROUP, group);
+    default:
+      /* TODO */
       break;
     }
+
+#undef _FREE_TRACK
 
   channel_free (track->channel);
 
@@ -663,6 +661,9 @@ track_get_automation_tracklist (Track * track)
           ChannelTrack * bt = (ChannelTrack *) track;
           return &bt->automation_tracklist;
         }
+    default:
+      /* TODO */
+      break;
     }
 
   return NULL;
@@ -689,6 +690,8 @@ track_get_fader_automatable (Track * track)
           ChannelTrack * bt = (ChannelTrack *) track;
           return channel_get_fader_automatable (bt->channel);
         }
+    default:
+      break;
     }
 
   return NULL;
@@ -712,6 +715,8 @@ track_get_channel (Track * track)
     case TRACK_TYPE_BUS:
     case TRACK_TYPE_GROUP:
       return track->channel;
+    default:
+      break;
     }
 
   return NULL;

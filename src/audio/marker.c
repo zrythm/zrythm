@@ -22,8 +22,6 @@
 #include "gui/widgets/marker.h"
 #include "project.h"
 
-NOTE_LABELS;
-
 void
 marker_init_loaded (Marker * self)
 {
