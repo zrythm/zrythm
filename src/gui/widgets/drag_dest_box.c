@@ -110,10 +110,8 @@ on_drag_motion (GtkWidget        *widget,
            GET_ATOM (TARGET_ENTRY_PLUGIN))
     {
       GdkModifierType mask;
-      gtk_drag_highlight (widget);
-      gdk_window_get_pointer (
-        gtk_widget_get_window (widget),
-        NULL, NULL, &mask);
+      z_gtk_widget_get_mask (
+        widget, &mask);
       if (mask & GDK_CONTROL_MASK)
         gdk_drag_status (
           context, GDK_ACTION_COPY, time);
@@ -163,8 +161,8 @@ on_drag_data_received (
 
       undo_manager_perform (UNDO_MANAGER, ua);
     }
-  else if ((target ==
-            GET_ATOM (TARGET_ENTRY_PLUGIN_DESCR)))
+  else if (target ==
+            GET_ATOM (TARGET_ENTRY_PLUGIN_DESCR))
     {
       PluginDescriptor * pd =
         * (gpointer *)

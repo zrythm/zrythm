@@ -572,7 +572,7 @@ position_get_ticks_diff (
   Position diff_pos;
   position_init (&diff_pos);
   position_add_ticks (
-    &diff_pos, abs (ticks_diff));
+    &diff_pos, labs (ticks_diff));
   if (sg && SNAP_GRID_ANY_SNAP(sg))
     position_snap (
       NULL, &diff_pos, NULL, NULL, sg);

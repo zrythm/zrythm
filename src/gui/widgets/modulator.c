@@ -60,8 +60,8 @@ modulator_graph_draw (
 
   Plugin * pl =
     self->modulator->plugin;
-  int num_cv_outs =
-    pl->descr->num_cv_outs;
+  /*int num_cv_outs =*/
+    /*pl->descr->num_cv_outs;*/
   Port * port;
   float maxf, minf, sizef, normalized_val;
   int i, j;
@@ -221,8 +221,8 @@ static void
 modulator_widget_class_init (
   ModulatorWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  /*GtkWidgetClass * klass =*/
+    /*GTK_WIDGET_CLASS (_klass);*/
 }
 
 static void

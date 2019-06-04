@@ -46,18 +46,8 @@
 DEFINE_START_POS
 
 #define SET_POS(r,pos_name,pos) \
-  position_set_to_pos ( \
-    &region_get_main_trans_region (r)-> \
-    pos_name, pos); \
-  position_set_to_pos ( \
-    &region_get_lane_trans_region (r)-> \
-    pos_name, pos); \
-  position_set_to_pos ( \
-    &region_get_lane_region (r)-> \
-    pos_name, pos); \
-  position_set_to_pos ( \
-    &region_get_main_region (r)-> \
-    pos_name, pos);
+  POSITION_SET_ARRANGER_OBJ_POS_WITH_LANE ( \
+    region, r, pos_name, pos)
 
 /**
  * Only to be used by implementing structs.
@@ -463,8 +453,6 @@ region_move (
   long     ticks,
   int      use_cached_pos)
 {
-  long length_ticks =
-    region_get_full_length_in_ticks (region);
   Position tmp;
   if (use_cached_pos)
     position_set_to_pos (

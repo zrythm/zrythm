@@ -21,10 +21,17 @@
 
 #include "audio/chord.h"
 #include "audio/chord_track.h"
+#include "audio/position.h"
 #include "gui/widgets/chord.h"
 #include "project.h"
 
 NOTE_LABELS;
+
+DEFINE_START_POS
+
+#define SET_POS(_c,_pos) \
+  POSITION_SET_ARRANGER_OBJ_POS ( \
+    chord, _c, pos, _pos)
 
 void
 chord_init_loaded (ZChord * self)
@@ -125,6 +132,37 @@ chord_find (
         return P_CHORD_TRACK->chords[i];
     }
   return NULL;
+}
+
+/**
+ * Moves the ZChord by the given amount of ticks.
+ *
+ * @param use_cached_pos Add the ticks to the cached
+ *   Position instead of its current Position.
+ * @return Whether moved or not.
+ */
+int
+chord_move (
+  ZChord * chord,
+  long     ticks,
+  int      use_cached_pos)
+{
+  Position tmp;
+  if (use_cached_pos)
+    position_set_to_pos (
+      &tmp, &chord->cache_pos);
+  else
+    position_set_to_pos (
+      &tmp, &chord->pos);
+  position_add_ticks (
+    &tmp, ticks);
+  if (position_is_before (
+        &tmp, START_POS))
+    return 0;
+
+  SET_POS (chord, &tmp);
+
+  return 1;
 }
 
 /**

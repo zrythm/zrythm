@@ -295,7 +295,9 @@ midi_note_set_start_pos (MidiNote * midi_note,
 {
   if (midi_note->end_pos.total_ticks -
       pos->total_ticks >= 2)
-    SET_POS (midi_note, start_pos, pos);
+    {
+      SET_POS (midi_note, start_pos, pos);
+    }
 }
 
 /**

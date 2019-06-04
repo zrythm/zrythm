@@ -86,7 +86,6 @@ marker_track_widget_refresh (
 static void
 marker_track_widget_init (MarkerTrackWidget * self)
 {
-  GtkStyleContext * context;
   TRACK_WIDGET_GET_PRIVATE (self);
 
   /* set icon */

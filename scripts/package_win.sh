@@ -18,14 +18,27 @@
 #  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+# $1 prefix $2 version $3 src dir $4 build dir
+
+PROGRAM_VERSION="$2"
+
 src_dir=`pwd`
-BUILD_DIR=build
+SRC_DIR=$3
+BUILD_DIR=$4
+PREFIX=$1
 WINDIR=$BUILD_DIR/win
 BINDIR=$WINDIR/bin
 LIBDIR=$WINDIR/lib
 SHAREDIR=$WINDIR/share
 ETCDIR=$WINDIR/etc
 INSTALL_DATA="install -m 644"
+
+mkdir -p $BUILD_DIR/schemas
+install -m 644 $SRC_DIR/data/org.zrythm.gschema.xml \
+  $BUILD_DIR/schemas/
+cp $PREFIX/share/glib-2.0/schemas/org.gtk.Settings.* $BUILD_DIR/schemas/
+wine $PREFIX/bin/glib-compile-schemas.exe \
+  $BUILD_DIR/schemas
 
 rm -rf $WINDIR
 mkdir -p $BINDIR
@@ -93,8 +106,8 @@ DLLS=" \
 
 for file in $DLLS; do
   echo "copying $file"
-  cp $1/bin/$file $BINDIR/
-  cp $1/bin/$file $BUILD_DIR/
+  cp $PREFIX/bin/$file $BINDIR/
+  cp $PREFIX/bin/$file $BUILD_DIR/
 done
 
 # pixman doesn't work unless the mSYS one is used
@@ -122,10 +135,10 @@ cp "$BUILD_DIR/schemas/gschemas.compiled" \
 echo "packaging Adwaita icons"
 ICONS_DIR="$SHAREDIR/icons"
 mkdir -p "$ICONS_DIR"
-cp -RL "$1/share/icons/Adwaita" "$ICONS_DIR/"
+cp -RL "$PREFIX/share/icons/Adwaita" "$ICONS_DIR/"
 
 echo "packaging existing hicolor icons"
-cp -RL "$1/share/icons/hicolor" "$ICONS_DIR/"
+cp -RL "$PREFIX/share/icons/hicolor" "$ICONS_DIR/"
 
 echo "packaging app icon"
 APPICON_DIR1=$ICONS_DIR/hicolor/scalable/apps
@@ -148,8 +161,8 @@ for lang in $languages; do
   $(eval "$INSTALL_DATA \
     po/$lang/zrythm.mo \
     \"$CUR_DIR/\"")
-  cp $1/share/locale/$lang/LC_MESSAGES/gtk30.mo \
-    $1/share/locale/$lang/LC_MESSAGES/gtk30-properties.mo \
+  cp $PREFIX/share/locale/$lang/LC_MESSAGES/gtk30.mo \
+    $PREFIX/share/locale/$lang/LC_MESSAGES/gtk30-properties.mo \
     $CUR_DIR/
 done
 # ******************************
@@ -163,9 +176,9 @@ cp -R resources/fonts "$SHAREDIR/"
 echo "packaging gdk pixbuf loaders"
 PIXBUF_DIR="lib/gdk-pixbuf-2.0/2.10.0"
 mkdir -p "$WINDIR/$PIXBUF_DIR/loaders"
-cp "$1/$PIXBUF_DIR/loaders/"*.dll \
+cp "$PREFIX/$PIXBUF_DIR/loaders/"*.dll \
   "$WINDIR/$PIXBUF_DIR/loaders/"
-cp "$1/$PIXBUF_DIR/loaders.cache" \
+cp "$PREFIX/$PIXBUF_DIR/loaders.cache" \
   "$WINDIR/$PIXBUF_DIR/"
 # ******************************
 
@@ -173,7 +186,7 @@ cp "$1/$PIXBUF_DIR/loaders.cache" \
 #echo "packaging immodules"
 #IMMODULES_DIR="lib/gtk-3.0/3.0.0"
 #mkdir -p "$WINDIR/$IMMODULES_DIR/immodules"
-#cp "$1/$IMMODULES_DIR/immodules/"*.dll \
+#cp "$PREFIX/$IMMODULES_DIR/immodules/"*.dll \
   #"$WINDIR/$IMMODULES_DIR/immodules/"
 #cat /usr/x86_64-w64-mingw32/lib/gtk-3.0/3.0.0/immodules.cache | sed 's/\".*\/lib/lib/g' | sed 's/\/usr\/.*\/share/share/g' | sed 's/\//\\\\/g' > "$WINDIR/$IMMODULES_DIR/immodules.cache"
 # ******************************
@@ -202,17 +215,16 @@ cd $WINDIR
 NSISFILE=zrythm.nsis
 PROGRAM_NAME=Zrythm
 PROGRAM_KEY=Zrythm
-PROGRAM_VERSION="@PACKAGE_VERSION@"
 major_version=${PROGRAM_VERSION:0:1}
 PRODUCT_ID=${PROGRAM_NAME}
 PRODUCT_EXE=zrythm.exe
 PRODUCT_ICON=zrythm.ico
-OUTFILE=Install_v@PACKAGE_VERSION@.exe
+OUTFILE="Install_v$PROGRAM_VERSION.exe"
 ZRYTHMDATE=$(date -R)
 STATEFILE_SUFFIX=zpr # project file
 QUICKZIP=1
 
-if [[ $1 == *"x86_64"* ]]; then
+if [[ $PREFIX == *"x86_64"* ]]; then
 	PGF=PROGRAMFILES64
 	SFX=
   WARCH=w64

@@ -252,6 +252,35 @@ z_gtk_widget_add_style_class (
   const gchar *class_name);
 
 /**
+ * Gets the GdkDevice for a GtkWidget.
+ */
+static inline GdkDevice *
+z_gtk_widget_get_device (
+  GtkWidget * widget)
+{
+  return (gdk_seat_get_pointer (
+    gdk_display_get_default_seat (
+      gtk_widget_get_display (widget))));
+}
+
+/**
+ * Sets the GdkModifierType given for the widget.
+ *
+ * Used in eg. drag_motion events to check if
+ * Ctrl is held.
+ */
+static inline void
+z_gtk_widget_get_mask (
+  GtkWidget * widget,
+  GdkModifierType * mask)
+{
+  gdk_window_get_device_position (
+    gtk_widget_get_window (widget),
+    z_gtk_widget_get_device (widget),
+    NULL, NULL, mask);
+}
+
+/**
  * @}
  */
 #endif

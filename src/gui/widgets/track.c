@@ -120,6 +120,8 @@ track_widget_select (
       break;
     case TRACK_TYPE_CHORD:
       break;
+    default:
+      break;
     }
 
   EVENTS_PUSH (ET_TRACK_CHANGED,
@@ -172,33 +174,25 @@ track_widget_refresh (TrackWidget * self)
 {
   TRACK_WIDGET_GET_PRIVATE (self);
 
+#define REFRESH_TW(caps,sc) \
+  case TRACK_TYPE_##caps: \
+    sc##_track_widget_refresh ( \
+      Z_##caps##_TRACK_WIDGET (self)); \
+    break
+
   switch (tw_prv->track->type)
     {
-    case TRACK_TYPE_INSTRUMENT:
-      instrument_track_widget_refresh (
-        Z_INSTRUMENT_TRACK_WIDGET (self));
-      break;
-    case TRACK_TYPE_MASTER:
-      master_track_widget_refresh (
-        Z_MASTER_TRACK_WIDGET (self));
-      break;
-    case TRACK_TYPE_AUDIO:
-      audio_track_widget_refresh (
-        Z_AUDIO_TRACK_WIDGET (self));
-      break;
-    case TRACK_TYPE_CHORD:
-      chord_track_widget_refresh (
-        Z_CHORD_TRACK_WIDGET (self));
-      break;
-    case TRACK_TYPE_BUS:
-      bus_track_widget_refresh (
-        Z_BUS_TRACK_WIDGET (self));
-      break;
-    case TRACK_TYPE_GROUP:
-      group_track_widget_refresh (
-        Z_GROUP_TRACK_WIDGET (self));
+      REFRESH_TW (INSTRUMENT, instrument);
+      REFRESH_TW (MASTER, master);
+      REFRESH_TW (AUDIO, audio);
+      REFRESH_TW (CHORD, chord);
+      REFRESH_TW (BUS, bus);
+      REFRESH_TW (GROUP, group);
+      REFRESH_TW (MARKER, marker);
+    default:
       break;
     }
+#undef REFRESH_TW
 }
 
 /**
@@ -210,34 +204,25 @@ track_widget_refresh_buttons (
 {
   TRACK_WIDGET_GET_PRIVATE (self);
 
+#define REFRESH_TW_BUTTONS(caps,sc) \
+  case TRACK_TYPE_##caps: \
+    sc##_track_widget_refresh_buttons ( \
+      Z_##caps##_TRACK_WIDGET (self)); \
+    break
+
   switch (tw_prv->track->type)
     {
-    case TRACK_TYPE_INSTRUMENT:
-      instrument_track_widget_refresh_buttons (
-        Z_INSTRUMENT_TRACK_WIDGET (self));
-      break;
-    case TRACK_TYPE_MASTER:
-      master_track_widget_refresh_buttons (
-        Z_MASTER_TRACK_WIDGET (self));
-      break;
-    case TRACK_TYPE_AUDIO:
-      audio_track_widget_refresh_buttons (
-        Z_AUDIO_TRACK_WIDGET (self));
-      break;
-    case TRACK_TYPE_CHORD:
-      chord_track_widget_refresh_buttons (
-        Z_CHORD_TRACK_WIDGET (self));
-      break;
-    case TRACK_TYPE_BUS:
-      bus_track_widget_refresh_buttons (
-        Z_BUS_TRACK_WIDGET (self));
-      break;
-    case TRACK_TYPE_GROUP:
-      group_track_widget_refresh_buttons (
-        Z_GROUP_TRACK_WIDGET (self));
+      REFRESH_TW_BUTTONS (INSTRUMENT, instrument);
+      REFRESH_TW_BUTTONS (MASTER, master);
+      REFRESH_TW_BUTTONS (AUDIO, audio);
+      REFRESH_TW_BUTTONS (CHORD, chord);
+      REFRESH_TW_BUTTONS (BUS, bus);
+      REFRESH_TW_BUTTONS (GROUP, group);
+      REFRESH_TW_BUTTONS (MARKER, marker);
+    default:
       break;
     }
-
+#undef REFRESH_TW_BUTTONS
 }
 
 /**
@@ -586,36 +571,26 @@ track_widget_new (Track * track)
 
   TrackWidget * self = NULL;
 
+#define NEW_TW(caps,sc) \
+  case TRACK_TYPE_##caps: \
+    self = Z_TRACK_WIDGET ( \
+      sc##_track_widget_new (track)); \
+    break
+
   switch (track->type)
     {
-    case TRACK_TYPE_CHORD:
-      self = Z_TRACK_WIDGET (
-        chord_track_widget_new (track));
+    NEW_TW (CHORD, chord);
+    NEW_TW (BUS, bus);
+    NEW_TW (GROUP, group);
+    NEW_TW (INSTRUMENT, instrument);
+    NEW_TW (MASTER, master);
+    NEW_TW (AUDIO, audio);
+    NEW_TW (MARKER, marker);
+    default:
       break;
-    case TRACK_TYPE_BUS:
-      self = Z_TRACK_WIDGET (
-        bus_track_widget_new (track));
-      break;
-    case TRACK_TYPE_GROUP:
-      self = Z_TRACK_WIDGET (
-        group_track_widget_new (track));
-      break;
-    case TRACK_TYPE_INSTRUMENT:
-      self = Z_TRACK_WIDGET (
-        instrument_track_widget_new (track));
-      break;
-    case TRACK_TYPE_MASTER:
-      self = Z_TRACK_WIDGET (
-        master_track_widget_new (track));
-      break;
-    case TRACK_TYPE_AUDIO:
-      self = Z_TRACK_WIDGET (
-        audio_track_widget_new (track));
-      break;
-    case TRACK_TYPE_MARKER:
-      self = Z_TRACK_WIDGET (
-        marker_track_widget_new (track));
     }
+
+#undef NEW_TW
 
   g_warn_if_fail (Z_IS_TRACK_WIDGET (self));
 

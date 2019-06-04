@@ -71,8 +71,8 @@ midi_arranger_draw_cb (
   /* px per key adjusted for border width */
   double adj_px_per_key =
     MW_PIANO_ROLL->px_per_key + 1;
-  double adj_total_key_px =
-    MW_PIANO_ROLL->total_key_px + 126;
+  /*double adj_total_key_px =*/
+    /*MW_PIANO_ROLL->total_key_px + 126;*/
 
   /*handle horizontal drawing*/
   double y_offset;

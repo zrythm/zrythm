@@ -23,31 +23,31 @@ G_DEFINE_TYPE (ChordButtonWidget,
                chord_button_widget,
                GTK_TYPE_OVERLAY)
 
-static gboolean
-chord_button_draw_cb (
-  ChordButtonWidget * self,
-  cairo_t *cr,
-  gpointer data)
-{
-  guint width, height;
-  GtkStyleContext *context;
+/*static gboolean*/
+/*chord_button_draw_cb (*/
+  /*ChordButtonWidget * self,*/
+  /*cairo_t *cr,*/
+  /*gpointer data)*/
+/*{*/
+  /*guint width, height;*/
+  /*GtkStyleContext *context;*/
 
-  context =
-    gtk_widget_get_style_context (
-      GTK_WIDGET (self));
+  /*context =*/
+    /*gtk_widget_get_style_context (*/
+      /*GTK_WIDGET (self));*/
 
-  width =
-    gtk_widget_get_allocated_width (
-      GTK_WIDGET (self));
-  height =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self));
+  /*width =*/
+    /*gtk_widget_get_allocated_width (*/
+      /*GTK_WIDGET (self));*/
+  /*height =*/
+    /*gtk_widget_get_allocated_height (*/
+      /*GTK_WIDGET (self));*/
 
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
+  /*gtk_render_background (*/
+    /*context, cr, 0, 0, width, height);*/
 
- return FALSE;
-}
+ /*return FALSE;*/
+/*}*/
 
 ChordButtonWidget *
 chord_button_widget_new ()

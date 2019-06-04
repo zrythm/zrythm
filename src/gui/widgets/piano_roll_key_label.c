@@ -77,7 +77,7 @@ piano_roll_key_label_widget_new (
       -1);
   gtk_label_set_xalign (
     self->editable_lbl->label, 0.0);
-  gtk_widget_set_margin_left (
+  gtk_widget_set_margin_start (
     GTK_WIDGET (self->editable_lbl), 4);
   self->lbl =
     GTK_LABEL (gtk_label_new (NULL));
@@ -87,7 +87,7 @@ piano_roll_key_label_widget_new (
   gtk_widget_set_halign (
     GTK_WIDGET (self->lbl), GTK_ALIGN_START);
   gtk_label_set_xalign (self->lbl, 0.0);
-  gtk_widget_set_margin_left (
+  gtk_widget_set_margin_start (
     GTK_WIDGET (self->lbl), 4);
   gtk_widget_set_visible (
     GTK_WIDGET (self->lbl), 1);

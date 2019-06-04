@@ -74,14 +74,20 @@ timeline_bg_draw_cb (
   gint wx, wy;
   Track * track;
   TrackWidget * tw;
-  int line_y;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  int line_y, i, j;
+  int is_unpinned_timeline =
+    prv->arranger ==
+      Z_ARRANGER_WIDGET (MW_TIMELINE);
+  int is_pinned_timeline =
+    prv->arranger ==
+      Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE);
+  for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
       if (!track->visible ||
-          (prv->arranger == MW_TIMELINE &&
+          (is_unpinned_timeline &&
            track->pinned) ||
-          (prv->arranger == MW_PINNED_TIMELINE &&
+          (is_pinned_timeline &&
            !track->pinned))
         continue;
 
@@ -96,7 +102,7 @@ timeline_bg_draw_cb (
         widget,
         0, 0, &wx, &wy);
 
-      int line_y =
+      line_y =
         wy +
         gtk_widget_get_allocated_height (tw_widget);
 
@@ -110,7 +116,7 @@ timeline_bg_draw_cb (
     }
 
   /* draw automation related stuff */
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       Track * track = TRACKLIST->tracks[i];
 
@@ -118,7 +124,7 @@ timeline_bg_draw_cb (
         track_get_automation_tracklist (track);
       if (atl)
         {
-          for (int j = 0;
+          for (j = 0;
                j < atl->num_als;
                j++)
             {

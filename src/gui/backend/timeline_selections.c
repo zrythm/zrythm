@@ -157,6 +157,7 @@ timeline_selections_get_start_pos (
   position_set_to_bar (pos,
                        TRANSPORT->total_bars);
   GtkWidget * widget = NULL;
+  (void) widget; // avoid unused warnings
 
   int i;
 
@@ -184,6 +185,7 @@ timeline_selections_get_end_pos (
 {
   position_init (pos);
   GtkWidget * widget = NULL;
+  (void) widget; // avoid unused warnings
 
   int i;
 
@@ -586,16 +588,13 @@ timeline_selections_add_ticks (
   long                 ticks,
   int                  use_cached_pos)
 {
-  Position tmp;
-  long length_ticks;
-  int i, j;
+  int i;
 
   /* update region positions */
   Region * r;
   for (i = 0; i < ts->num_regions; i++)
     {
-      r =
-        ts->regions[i];
+      r = ts->regions[i];
       region_move (r, ticks, use_cached_pos);
     }
 
@@ -603,13 +602,8 @@ timeline_selections_add_ticks (
   ZChord * c;
   for (i = 0; i < ts->num_chords; i++)
     {
-      for (j = 0; j < 2; j++)
-        {
-          /*ARRANGER_MOVE_OBJ_BY_TICKS (*/
-            /*c, chord,*/
-            /*&c->cache_pos,*/
-            /*ticks_diff, &tmp);*/
-        }
+      c = ts->chords[i];
+      chord_move (c, ticks, use_cached_pos);
     }
 
   /* update ap positions */

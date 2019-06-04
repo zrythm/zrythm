@@ -38,7 +38,7 @@ testsuites.set('timestamp', datetime.datetime.utcnow().isoformat(timespec='minut
 suites = {}
 for line in args.infile:
     data = json.loads(line)
-    (full_suite, unit_name) = data['name'].split(' / ')
+    (full_suite, unit_name) = data['name'].split(' ', 1)
     (project_name, suite_name) = full_suite.split(':')
 
     duration = data['duration']

@@ -48,6 +48,10 @@ typedef struct _MarkerTrackWidget
 MarkerTrackWidget *
 marker_track_widget_new (Track * track);
 
+void
+marker_track_widget_refresh_buttons (
+  MarkerTrackWidget * self);
+
 /**
  * Updates changes in the backend to the ui
  */
