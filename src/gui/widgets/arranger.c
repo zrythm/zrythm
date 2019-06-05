@@ -1008,6 +1008,7 @@ create_item (ArrangerWidget * self,
              double           start_x,
              double           start_y)
 {
+  ARRANGER_WIDGET_GET_PRIVATE (self);
   GET_ARRANGER_ALIASES (self);
 
   /* something will be created */
@@ -1020,6 +1021,13 @@ create_item (ArrangerWidget * self,
   /* get the position */
   arranger_widget_px_to_pos (
     self, start_x, &pos, 1);
+
+  /* snap it */
+  if (!ar_prv->shift_held &&
+      SNAP_GRID_ANY_SNAP (ar_prv->snap_grid))
+    position_snap (
+      NULL, &pos, NULL, NULL,
+      ar_prv->snap_grid);
 
   if (timeline)
     {
@@ -1104,6 +1112,10 @@ create_item (ArrangerWidget * self,
 
   /* something is (likely) added so reallocate */
   gtk_widget_queue_allocate (GTK_WIDGET (self));
+
+  /* remember the start position */
+  position_set_to_pos (
+    &ar_prv->earliest_obj_start_pos, &pos);
 }
 
 static void

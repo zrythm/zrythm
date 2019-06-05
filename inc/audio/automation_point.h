@@ -121,13 +121,14 @@ automation_point_find (
   AutomationPoint * src);
 
 /**
- * Creates automation point in given track at given Position
+ * Creates an AutomationPoint in the given
+ * AutomationTrack at the given Position.
  */
 AutomationPoint *
 automation_point_new_float (
   AutomationTrack *   at,
-  float               value,
-  Position *          pos);
+  const float         value,
+  const Position *    pos);
 
 int
 automation_point_get_y_in_px (AutomationPoint * ap);

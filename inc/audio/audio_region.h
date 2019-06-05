@@ -50,9 +50,9 @@ typedef struct Region AudioRegion;
  */
 AudioRegion *
 audio_region_new (
-  char *     filename,
-  Position * start_pos,
-  int        is_main);
+  const char *     filename,
+  const Position * start_pos,
+  const int        is_main);
 
 /**
  * Frees members only but not the audio region itself.

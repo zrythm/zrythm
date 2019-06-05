@@ -17,6 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Timeline arranger API.
+ */
+
 #ifndef __GUI_WIDGETS_TIMELINE_ARRANGER_H__
 #define __GUI_WIDGETS_TIMELINE_ARRANGER_H__
 
@@ -36,6 +42,12 @@ G_DECLARE_FINAL_TYPE (TimelineArrangerWidget,
                       Z,
                       TIMELINE_ARRANGER_WIDGET,
                       ArrangerWidget)
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 #define MW_TIMELINE MW_CENTER_DOCK->timeline
 #define MW_PINNED_TIMELINE \
@@ -225,32 +237,56 @@ timeline_arranger_widget_on_drag_begin_ap_hit (
   double                   start_x,
   AutomationPointWidget *  ap_widget);
 
+/**
+ * Create an AutomationPointat the given Position
+ * in the given Track's AutomationTrack.
+ *
+ * @param pos The pre-snapped position.
+ */
 void
 timeline_arranger_widget_create_ap (
   TimelineArrangerWidget * self,
-  AutomationTrack *        at,
-  Track *                  track,
-  Position *               pos,
-  double                   start_y);
+  AutomationTrack *  at,
+  Track *            track,
+  const Position *         pos,
+  const double             start_y);
 
+/**
+ * Create a Region at the given Position in the
+ * given Track's given TrackLane.
+ *
+ * @param pos The pre-snapped position.
+ */
 void
 timeline_arranger_widget_create_region (
   TimelineArrangerWidget * self,
-  Track *                  track,
-  TrackLane *              lane,
-  Position *               pos);
+  Track *            track,
+  TrackLane *        lane,
+  const Position *         pos);
 
+/**
+ * Create a ZChord at the given Position in the
+ * given Track.
+ *
+ * @param pos The pre-snapped position.
+ */
 void
 timeline_arranger_widget_create_chord (
   TimelineArrangerWidget * self,
-  Track *                  track,
-  Position *               pos);
+  Track *            track,
+  const Position *         pos);
 
+/**
+ * Create a Marker at the given Position in the
+ * given Track.
+ *
+ * @param pos The pre-snapped position.
+ */
 void
 timeline_arranger_widget_create_marker (
   TimelineArrangerWidget * self,
-  Track *                  track,
-  Position *               pos);
+  Track *            track,
+  const Position *         pos);
 
 /**
  * First determines the selection type (objects/
@@ -263,9 +299,9 @@ timeline_arranger_widget_create_marker (
 void
 timeline_arranger_widget_select (
   TimelineArrangerWidget * self,
-  double                   offset_x,
-  double                   offset_y,
-  int                  delete);
+  const double             offset_x,
+  const double             offset_y,
+  const int                delete);
 
 void
 timeline_arranger_widget_snap_regions_l (
@@ -328,5 +364,9 @@ void
 timeline_arranger_widget_scroll_to (
   TimelineArrangerWidget * self,
   Position *               pos);
+
+/**
+ * @}
+ */
 
 #endif

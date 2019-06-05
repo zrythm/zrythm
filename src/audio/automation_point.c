@@ -39,15 +39,16 @@
 #include "project.h"
 
 static AutomationPoint *
-_create_new (AutomationTrack * at,
-             Position *        pos)
+_create_new (
+  AutomationTrack * at,
+  const Position *        pos)
 {
   AutomationPoint * ap =
     calloc (1, sizeof (AutomationPoint));
 
   ap->at = at;
-  position_set_to_pos (&ap->pos,
-                       pos);
+  position_set_to_pos (
+    &ap->pos, pos);
 
   return ap;
 }
@@ -81,12 +82,14 @@ automation_point_find (
 }
 
 /**
- * Creates automation point in given track at given Position
+ * Creates an AutomationPoint in the given
+ * AutomationTrack at the given Position.
  */
 AutomationPoint *
-automation_point_new_float (AutomationTrack *   at,
-                            float               value,
-                            Position *          pos)
+automation_point_new_float (
+  AutomationTrack *   at,
+  const float         value,
+  const Position *    pos)
 {
   AutomationPoint * ap = _create_new (at, pos);
 

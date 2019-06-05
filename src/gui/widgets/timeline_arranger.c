@@ -907,21 +907,21 @@ timeline_arranger_widget_on_drag_begin_ap_hit (
     }
 }
 
+/**
+ * Create an AutomationPointat the given Position
+ * in the given Track's AutomationTrack.
+ *
+ * @param pos The pre-snapped position.
+ */
 void
 timeline_arranger_widget_create_ap (
   TimelineArrangerWidget * self,
-  AutomationTrack *        at,
-  Track *                  track,
-  Position *               pos,
-  double                   start_y)
+  AutomationTrack *  at,
+  Track *            track,
+  const Position *         pos,
+  const double             start_y)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
-
-  if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
-      !ar_prv->shift_held)
-    position_snap (
-      NULL, pos, track,
-      NULL, ar_prv->snap_grid);
 
   /*g_message ("at here: %s",*/
              /*at->automatable->label);*/
@@ -947,25 +947,23 @@ timeline_arranger_widget_create_ap (
     F_NO_APPEND);
 }
 
+/**
+ * Create a Region at the given Position in the
+ * given Track's given TrackLane.
+ *
+ * @param pos The pre-snapped position.
+ */
 void
 timeline_arranger_widget_create_region (
   TimelineArrangerWidget * self,
-  Track *                  track,
-  TrackLane *              lane,
-  Position *               pos)
+  Track *            track,
+  TrackLane *        lane,
+  const Position *         pos)
 {
   if (track->type == TRACK_TYPE_AUDIO)
     return;
 
   ARRANGER_WIDGET_GET_PRIVATE (self);
-
-  if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
-      !ar_prv->shift_held)
-    {
-      position_snap (
-        NULL, pos, track, NULL,
-        ar_prv->snap_grid);
-    }
 
   ar_prv->action =
     UI_OVERLAY_ACTION_CREATING_RESIZING_R;
@@ -1030,18 +1028,20 @@ timeline_arranger_widget_create_region (
     F_NO_APPEND);
 }
 
+/**
+ * Create a ZChord at the given Position in the
+ * given Track.
+ *
+ * @param pos The pre-snapped position.
+ */
 void
 timeline_arranger_widget_create_chord (
   TimelineArrangerWidget * self,
-  Track *                  track,
-  Position *               pos)
+  Track *            track,
+  const Position *         pos)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
-      !ar_prv->shift_held)
-    position_snap (
-      NULL, pos, track, NULL, ar_prv->snap_grid);
  ZChord * chord =
    chord_new (
      NOTE_A, 1, NOTE_A, CHORD_TYPE_MIN, 0);
@@ -1056,6 +1056,22 @@ timeline_arranger_widget_create_chord (
   ARRANGER_WIDGET_SELECT_CHORD (
     self, chord, F_SELECT,
     F_NO_APPEND);
+}
+
+/**
+ * Create a Marker at the given Position in the
+ * given Track.
+ *
+ * @param pos The pre-snapped position.
+ */
+void
+timeline_arranger_widget_create_marker (
+  TimelineArrangerWidget * self,
+  Track *            track,
+  const Position *         pos)
+{
+  /* TODO */
+
 }
 
 /**

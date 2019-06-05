@@ -47,8 +47,8 @@ typedef Region MidiRegion;
  */
 MidiRegion *
 midi_region_new (
-  Position * start_pos,
-  Position * end_pos,
+  const Position * start_pos,
+  const Position * end_pos,
   int        is_main);
 
 /**

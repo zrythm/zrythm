@@ -325,10 +325,10 @@ region_schema = {
 void
 region_init (
   Region *   region,
-  RegionType type,
-  Position * start_pos,
-  Position * end_pos,
-  int        is_main);
+  const RegionType type,
+  const Position * start_pos,
+  const Position * end_pos,
+  const int        is_main);
 
 /**
  * Inits freshly loaded region.
