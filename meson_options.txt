@@ -15,3 +15,9 @@ option (
   type: 'boolean',
   value: false,
   description: 'Whether to compile unit tests')
+
+option (
+  'enable_ffmpeg',
+  type: 'boolean',
+  value: false,
+  description: 'Compile with ffmpeg (for MP3 support)')
