@@ -156,7 +156,6 @@ _breeze_icons = [
   'edit-duplicate',
   'applications-internet',
   'draw-eraser',
-  'audio-speakers-symbolic',
   'step_object_Controller',
   'gtk-add',
   'kdenlive-show-markers',
@@ -170,9 +169,13 @@ _breeze_icons = [
   'window-maximize',
   ]
 for cat in ['actions', 'animations', 'applets', 'apps', 'categories', 'devices', 'emblems', 'emotes', 'mimetypes', 'places', 'preferences', 'status']:
-  for size in ['12', '16', '22', '24', '32', '64', 'sybmolic']:
+  for size in ['12', '16', '22', '24', '32', '64', 'symbolic']:
     src_dir = '{0}/{1}'.format(cat,size)
-    alias_dir = '{0}x{0}/{1}'.format(size,cat)
+    alias_dir = ''
+    if (size == 'symbolic'):
+      alias_dir = '16x16/{0}'.format(cat)
+    else:
+      alias_dir = '{0}x{0}/{1}'.format(size,cat)
     full_src_dir = os.path.join(icons_dir,src_dir)
     full_alias_dir = os.path.join(icons_dir,alias_dir)
     if os.path.exists(os.path.join(srcdir,full_src_dir)):
