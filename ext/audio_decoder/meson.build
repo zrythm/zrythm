@@ -4,4 +4,13 @@ audio_decoder_srcs = [
   'ad_plugin.c',
   ]
 
-ext_srcs += files (audio_decoder_srcs)
+audio_decoder_inc = [
+  ext_inc,
+  root_inc,
+  ]
+audio_decoder = static_library (
+  'audio-decoder',
+  sources: audio_decoder_srcs,
+  dependencies: sndfile_dep,
+  include_directories: audio_decoder_inc,
+)

@@ -45,6 +45,7 @@ zrythm_lib = static_library (
   link_with: [
     cyaml,
     dzl_lib,
+    audio_decoder,
     ]
   )
 
