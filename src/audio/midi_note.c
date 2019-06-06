@@ -43,13 +43,9 @@
 
 DEFINE_START_POS
 
-#define SET_POS(r,pos_name,pos) \
-  position_set_to_pos ( \
-    &midi_note_get_trans_note (r)-> \
-    pos_name, pos); \
-  position_set_to_pos ( \
-    &midi_note_get_main_note (r)-> \
-    pos_name, pos);
+#define SET_POS(r,pos_name,pos,trans_only) \
+  POSITION_SET_ARRANGER_OBJ_POS ( \
+    midi_note, r, pos_name, pos, trans_only)
 
 void
 midi_note_init_loaded (
@@ -125,9 +121,9 @@ midi_note_set_region (
   for (int i = 0; i < 2; i++)
     {
       if (i == AOI_COUNTERPART_MAIN)
-        mn = midi_note_get_main_note (midi_note);
+        mn = midi_note_get_main_midi_note (midi_note);
       else if (i == AOI_COUNTERPART_MAIN_TRANSIENT)
-        mn = midi_note_get_trans_note (midi_note);
+        mn = midi_note_get_main_trans_midi_note (midi_note);
 
       mn->region = region;
       mn->region_name = g_strdup (region->name);
@@ -193,18 +189,21 @@ midi_note_get_track (
  *
  * @param use_cached_pos Add the ticks to the cached
  *   Position instead of its current Position.
+ * @param trans_only Only do transients.
  * @return Whether moved or not.
  */
 int
 midi_note_move (
   MidiNote * midi_note,
   long     ticks,
-  int      use_cached_pos)
+  int      use_cached_pos,
+  int      trans_only)
 {
   Position tmp;
   int moved;
   POSITION_MOVE_BY_TICKS_W_LENGTH (
-    tmp, use_cached_pos, midi_note, ticks, moved);
+    tmp, use_cached_pos, midi_note, ticks, moved,
+    trans_only);
 
   return moved;
 }
@@ -237,7 +236,7 @@ midi_note_is_selected (MidiNote * self)
 {
   if (midi_arranger_selections_contains_note (
         MA_SELECTIONS,
-        midi_note_get_main_note (self)))
+        midi_note_get_main_midi_note (self)))
     return 1;
 
   return 0;
@@ -291,7 +290,7 @@ midi_note_set_cache_start_pos (
   MidiNote * midi_note,
   const Position * pos)
 {
-  SET_POS (midi_note, cache_start_pos, pos);
+  SET_POS (midi_note, cache_start_pos, pos, 0);
 }
 
 /**
@@ -303,7 +302,7 @@ midi_note_set_cache_end_pos (
   MidiNote * midi_note,
   const Position * pos)
 {
-  SET_POS (midi_note, cache_end_pos, pos);
+  SET_POS (midi_note, cache_end_pos, pos, 0);
 }
 
 /**
@@ -336,33 +335,40 @@ midi_note_delete (MidiNote * midi_note)
 }
 
 /**
- * Clamps position then sets it.
+ * Checks if position is valid then sets it.
+ *
+ * @param trans_only Only do transients.
  */
 void
-midi_note_set_start_pos (MidiNote * midi_note,
-                      Position * pos)
+midi_note_set_start_pos (
+  MidiNote * midi_note,
+  Position * pos,
+  int        trans_only)
 {
-  if (midi_note->end_pos.total_ticks -
-      pos->total_ticks >= 2)
+  if (position_is_before (
+        pos, &midi_note->end_pos))
     {
-      SET_POS (midi_note, start_pos, pos);
+      SET_POS (midi_note, start_pos, pos,
+               trans_only);
     }
 }
 
 /**
- * Clamps position then sets it.
+ * Checks if position is valid then sets it.
+ *
+ * @param trans_only Only do transients.
  */
 void
 midi_note_set_end_pos (
   MidiNote * midi_note,
-  Position * pos)
+  Position * pos,
+  int        trans_only)
 {
-  /* FIXME using 16 minimum ticks for now */
-  if (pos->total_ticks -
-      midi_note->start_pos.total_ticks >=
-      2)
+  if (position_is_after (
+        pos, &midi_note->start_pos))
     {
-      SET_POS (midi_note, end_pos, pos);
+      SET_POS (midi_note, end_pos, pos,
+               trans_only);
     }
 }
 
@@ -474,7 +480,7 @@ void
 midi_note_free_all (MidiNote * self)
 {
   midi_note_free (
-    midi_note_get_trans_note (self));
+    midi_note_get_main_trans_midi_note (self));
   midi_note_free (
     (MidiNote *) self->obj_info.lane);
   midi_note_free (

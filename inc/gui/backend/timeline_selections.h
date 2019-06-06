@@ -250,12 +250,15 @@ timeline_selections_set_cache_poses (
  * @param use_cached_pos Add the ticks to the cached
  *   Position's instead of the current Position's.
  * @param ticks Ticks to add.
+ * @param transients_only Only update transient
+ *   objects (eg. when copy-moving).
  */
 void
 timeline_selections_add_ticks (
   TimelineSelections * ts,
   long                 ticks,
-  int                  use_cached_pos);
+  int                  use_cached_pos,
+  int                  transients_only);
 
 /**
  * Clears selections.

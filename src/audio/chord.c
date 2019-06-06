@@ -29,9 +29,9 @@ NOTE_LABELS;
 
 DEFINE_START_POS
 
-#define SET_POS(_c,_pos) \
+#define SET_POS(_c,_pos,_trans_only) \
   POSITION_SET_ARRANGER_OBJ_POS ( \
-    chord, _c, pos, _pos)
+    chord, _c, pos, _pos, _trans_only)
 
 void
 chord_init_loaded (ZChord * self)
@@ -135,17 +135,19 @@ chord_find (
 }
 
 /**
- * Moves the ZChord by the given amount of ticks.
+ * Moves the Region by the given amount of ticks.
  *
  * @param use_cached_pos Add the ticks to the cached
  *   Position instead of its current Position.
+ * @param trans_only Only move transients.
  * @return Whether moved or not.
  */
 int
 chord_move (
   ZChord * chord,
   long     ticks,
-  int      use_cached_pos)
+  int      use_cached_pos,
+  int      trans_only)
 {
   Position tmp;
   if (use_cached_pos)
@@ -160,7 +162,7 @@ chord_move (
         &tmp, START_POS))
     return 0;
 
-  SET_POS (chord, &tmp);
+  SET_POS (chord, &tmp, trans_only);
 
   return 1;
 }

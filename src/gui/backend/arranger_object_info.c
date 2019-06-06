@@ -318,9 +318,9 @@ arranger_object_info_get_visible_counterpart (
   if (midi_note)
     {
       RETURN_COUNTERPART_IF_VISIBLE (
-        midi_note, main_note);
+        midi_note, main_midi_note);
       RETURN_COUNTERPART_IF_VISIBLE (
-        midi_note, trans_note);
+        midi_note, main_trans_midi_note);
     }
 
 #undef RETURN_COUNTERPART_IF_VISIBLE

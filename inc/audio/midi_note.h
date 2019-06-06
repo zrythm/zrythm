@@ -50,12 +50,12 @@ typedef struct Velocity Velocity;
 
 /** Gets the transient counterpart of the
  * MidiNote. */
-#define midi_note_get_trans_note(r) \
+#define midi_note_get_main_trans_midi_note(r) \
   ((MidiNote *) r->obj_info.main_trans)
 
 /** Gets the main counterpart of the
  * MidiNote. */
-#define midi_note_get_main_note(r) \
+#define midi_note_get_main_midi_note(r) \
   ((MidiNote *) r->obj_info.main)
 
 typedef enum MidiNoteCloneFlag
@@ -243,17 +243,26 @@ midi_note_is_selected (MidiNote * self);
 
 /**
  * Checks if position is valid then sets it.
+ *
+ * @param trans_only Only do transients.
  */
 void
-midi_note_set_start_pos (MidiNote * midi_note,
-                         Position * start_pos);
+midi_note_set_start_pos (
+  MidiNote * midi_note,
+  Position * start_pos,
+  int        trans_only);
 
 /**
  * Checks if position is valid then sets it.
+ *
+ * @param trans_only Only do transients.
  */
 void
-midi_note_set_end_pos (MidiNote * midi_note,
-                       Position * end_pos);
+midi_note_set_end_pos (
+  MidiNote * midi_note,
+  Position * end_pos,
+  int        trans_only);
+
 /**
  * Sets the cached start Position for use in live
  * operations like moving.
@@ -277,13 +286,15 @@ midi_note_set_cache_end_pos (
  *
  * @param use_cached_pos Add the ticks to the cached
  *   Position instead of its current Position.
+ * @param trans_only Only do transients.
  * @return Whether moved or not.
  */
 int
 midi_note_move (
   MidiNote * midi_note,
   long     ticks,
-  int      use_cached_pos);
+  int      use_cached_pos,
+  int      trans_only);
 
 /**
  * Shifts MidiNote's position and/or value.

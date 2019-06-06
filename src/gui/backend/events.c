@@ -415,10 +415,10 @@ on_midi_note_changed (MidiNote * midi_note)
     {
       if (i == 0)
         midi_note =
-          midi_note_get_main_note (midi_note);
+          midi_note_get_main_midi_note (midi_note);
       else if (i == 1)
         midi_note =
-          midi_note_get_trans_note (midi_note);
+          midi_note_get_main_trans_midi_note (midi_note);
 
       if (GTK_IS_WIDGET (midi_note->widget))
         {

@@ -566,12 +566,15 @@ timeline_selections_clone ()
  * @param use_cached_pos Add the ticks to the cached
  *   Position's instead of the current Position's.
  * @param ticks Ticks to add.
+ * @param transients_only Only update transient
+ *   objects (eg. when copy-moving).
  */
 void
 timeline_selections_add_ticks (
   TimelineSelections * ts,
   long                 ticks,
-  int                  use_cached_pos)
+  int                  use_cached_pos,
+  int                  transients_only)
 {
   int i;
 
@@ -580,7 +583,8 @@ timeline_selections_add_ticks (
   for (i = 0; i < ts->num_regions; i++)
     {
       r = ts->regions[i];
-      region_move (r, ticks, use_cached_pos);
+      region_move (
+        r, ticks, use_cached_pos, transients_only);
     }
 
   /* update chord positions */
@@ -588,7 +592,8 @@ timeline_selections_add_ticks (
   for (i = 0; i < ts->num_chords; i++)
     {
       c = ts->chords[i];
-      chord_move (c, ticks, use_cached_pos);
+      chord_move (
+        c, ticks, use_cached_pos, transients_only);
     }
 
   /* update ap positions */

@@ -458,15 +458,19 @@ region_resize (
   long     ticks);
 
 /**
- * Clamps position then sets it.
+ * Clamps position then sets it to its counterparts.
  *
  * To be used only when resizing. For moving,
  * use region_move().
+ *
+ * @param trans_only Only set the transient
+ *   Position's.
  */
 void
 region_set_start_pos (
   Region * region,
-  Position * pos);
+  Position * pos,
+  int        trans_only);
 
 /**
  * Getter for start pos.
@@ -495,27 +499,34 @@ region_set_cache_start_pos (
   Position * pos);
 
 /**
- * Checks if position is valid then sets it.
+ * Clamps position then sets it.
  *
  * To be used only when resizing. For moving,
  * use region_move().
+ *
+ * @param trans_only Only set the Position to the
+ *   counterparts.
  */
 void
-region_set_end_pos (Region * region,
-                    Position * end_pos);
+region_set_end_pos (
+  Region * region,
+  Position * pos,
+  int        trans_only);
 
 /**
  * Moves the Region by the given amount of ticks.
  *
  * @param use_cached_pos Add the ticks to the cached
  *   Position instead of its current Position.
+ * @param trans_only Only do transients.
  * @return Whether moved or not.
  */
 int
 region_move (
   Region * region,
   long     ticks,
-  int      use_cached_pos);
+  int      use_cached_pos,
+  int      trans_only);
 
 /**
  * Checks if position is valid then sets it.

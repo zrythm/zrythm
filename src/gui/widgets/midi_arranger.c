@@ -66,6 +66,8 @@ G_DEFINE_TYPE (MidiArrangerWidget,
                midi_arranger_widget,
                ARRANGER_WIDGET_TYPE)
 
+DEFINE_START_POS
+
 /**
  * To be called from get_child_position in parent
  * widget.
@@ -433,7 +435,7 @@ midi_arranger_widget_on_drag_begin_note_hit (
     start_x, 0, &wx, &wy);
 
   MidiNote * mn =
-    midi_note_get_main_note (
+    midi_note_get_main_midi_note (
       mnw->midi_note);
   self->start_midi_note = mn;
 
@@ -561,7 +563,7 @@ midi_arranger_widget_create_note (
     &tmp,
     ar_prv->snap_grid);
   midi_note_set_end_pos (
-    midi_note, &tmp);
+    midi_note, &tmp, 0);
 
   /* add it to region */
   midi_region_add_midi_note (
@@ -624,7 +626,7 @@ midi_arranger_widget_select (
             Z_MIDI_NOTE_WIDGET (
               midi_note_widgets[i]);
           midi_note =
-            midi_note_get_main_note (
+            midi_note_get_main_midi_note (
               midi_note_widget->midi_note);
 
           midi_region_remove_midi_note (
@@ -643,7 +645,7 @@ midi_arranger_widget_select (
             Z_MIDI_NOTE_WIDGET (
               midi_note_widgets[i]);
           midi_note =
-            midi_note_get_main_note (
+            midi_note_get_main_midi_note (
               midi_note_widget->midi_note);
           ARRANGER_WIDGET_SELECT_MIDI_NOTE (
             self, midi_note, F_SELECT, F_APPEND);
@@ -665,15 +667,6 @@ midi_arranger_widget_snap_midi_notes_l (
 
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  /* snap */
-  if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
-        !ar_prv->shift_held)
-    position_snap (NULL,
-                   pos,
-                   NULL,
-                   CLIP_EDITOR->region,
-                   ar_prv->snap_grid);
-
   /* get local pos */
   Position local_pos;
   position_from_ticks (
@@ -690,38 +683,45 @@ midi_arranger_widget_snap_midi_notes_l (
     self->start_midi_note->
       cache_start_pos.total_ticks;
 
-  /* new start pos for each midi note, calculated by
-   * adding delta to the midi note's original start
-   * pos */
   Position new_start_pos;
-
-#define CALC_NEW_START_POS \
-  position_set_to_pos ( \
-    &new_start_pos, \
-    &midi_note->cache_start_pos); \
-  position_add_ticks ( \
-    &new_start_pos, delta);
-
-  /* transient midi notes */
   MidiNote * midi_note;
   for (i = 0;
        i < MA_SELECTIONS->num_midi_notes;
        i++)
     {
       midi_note =
-        midi_note_get_trans_note (
+        midi_note_get_main_trans_midi_note (
           MA_SELECTIONS->midi_notes[i]);
       if (midi_note)
         {
-          CALC_NEW_START_POS;
+          /* calculate new start pos by adding
+           * delta to the cached start pos */
+          position_set_to_pos (
+            &new_start_pos,
+            &midi_note->cache_start_pos);
+          position_add_ticks (
+            &new_start_pos, delta);
 
-          midi_note_set_start_pos (
-            midi_note, &new_start_pos);
+          /* snap */
+          if (SNAP_GRID_ANY_SNAP (
+                ar_prv->snap_grid) &&
+              !ar_prv->shift_held)
+            position_snap (
+              NULL, &new_start_pos,
+              NULL, CLIP_EDITOR->region,
+              ar_prv->snap_grid);
+
+          if (position_is_after_or_equal (
+                &new_start_pos,
+                START_POS) &&
+              position_is_before (
+                &new_start_pos,
+                &midi_note->end_pos))
+            midi_note_set_start_pos (
+              midi_note, &new_start_pos, 0);
         }
 
     }
-
-#undef CALC_NEW_START_POS
 }
 
 /**
@@ -745,43 +745,47 @@ midi_arranger_widget_snap_midi_notes_r (
     pos->total_ticks -
     CLIP_EDITOR->region->start_pos.total_ticks);
 
-  /* get delta with first clicked region's end
+  /* get delta with first clicked notes's end
    * pos */
   long delta =
     local_pos.total_ticks -
     self->start_midi_note->
       cache_end_pos.total_ticks;
 
-  /* new end pos for each MidiNote, calculated by
-   * adding delta to the MidiNote's original end
-   * pos */
-  Position new_end_pos;
-
-#define CALC_NEW_END_POS \
-  position_set_to_pos ( \
-    &new_end_pos, \
-    &midi_note->cache_end_pos); \
-  position_add_ticks ( \
-    &new_end_pos, delta);
-
-  /* actual midi notes */
   MidiNote * midi_note;
-  if (ar_prv->action ==
-        UI_OVERLAY_ACTION_CREATING_RESIZING_R)
+  Position new_end_pos;
+  for (int i = 0;
+       i < MA_SELECTIONS->num_midi_notes;
+       i++)
     {
-      for (int i = 0;
-           i < MA_SELECTIONS->num_midi_notes;
-           i++)
-        {
-          midi_note =
-            midi_note_get_main_note (
-              MA_SELECTIONS->midi_notes[i]);
+      midi_note =
+        midi_note_get_main_midi_note (
+          MA_SELECTIONS->midi_notes[i]);
 
-          CALC_NEW_END_POS;
+      /* get new end pos by adding delta
+       * to the cached end pos */
+      position_set_to_pos (
+        &new_end_pos,
+        &midi_note->cache_end_pos);
+      position_add_ticks (
+        &new_end_pos, delta);
 
-          midi_note_set_end_pos (
-            midi_note, &new_end_pos);
-        }
+      /* snap */
+      if (SNAP_GRID_ANY_SNAP (
+            ar_prv->snap_grid) &&
+          !ar_prv->shift_held)
+        position_snap (
+          NULL, &new_end_pos,
+          midi_note->region->lane->track,
+          NULL,
+          ar_prv->snap_grid);
+
+      if (position_is_after (
+            &new_end_pos,
+            &midi_note->start_pos))
+        midi_note_set_end_pos (
+          midi_note, &new_end_pos,
+          F_NO_TRANS_ONLY);
     }
 }
 
@@ -795,7 +799,8 @@ midi_arranger_widget_move_items_x (
   long                 ticks_diff)
 {
   midi_arranger_selections_add_ticks (
-    MA_SELECTIONS, ticks_diff, 1);
+    MA_SELECTIONS, ticks_diff, F_USE_CACHED,
+    F_TRANS_ONLY);
 }
 
 
@@ -813,7 +818,7 @@ calc_deltamax_for_note_movement (int y_delta)
        i++)
     {
       midi_note =
-        midi_note_get_trans_note (
+        midi_note_get_main_trans_midi_note (
           MA_SELECTIONS->
             midi_notes[i]);
       /*g_message ("midi note val %d, y delta %d",*/
@@ -844,7 +849,7 @@ midi_arranger_widget_move_items_y (
 
   int y_delta;
   int ar_start_val =
-    midi_note_get_trans_note (
+    midi_note_get_main_trans_midi_note (
       MA_SELECTIONS->midi_notes[0])->val;
   int ar_end_val =
     midi_arranger_widget_get_note_at_y (
@@ -862,7 +867,7 @@ midi_arranger_widget_move_items_y (
            i++)
         {
           midi_note =
-            midi_note_get_trans_note (
+            midi_note_get_main_trans_midi_note (
               MA_SELECTIONS->midi_notes[i]);
           midi_note->val = midi_note->val + y_delta;
           if (midi_note->widget)
@@ -908,7 +913,7 @@ midi_arranger_widget_on_drag_end (
       MidiNote * main_note =
         MA_SELECTIONS->midi_notes[0];
       MidiNote * trans_note =
-        midi_note_get_trans_note (
+        midi_note_get_main_trans_midi_note (
           MA_SELECTIONS->midi_notes[0]);
       UndoableAction * ua =
         (UndoableAction *)
@@ -926,7 +931,7 @@ midi_arranger_widget_on_drag_end (
       MidiNote * main_note =
         MA_SELECTIONS->midi_notes[0];
       MidiNote * trans_note =
-        midi_note_get_trans_note (
+        midi_note_get_main_trans_midi_note (
           MA_SELECTIONS->midi_notes[0]);
       UndoableAction * ua =
         (UndoableAction *)
@@ -960,7 +965,7 @@ midi_arranger_widget_on_drag_end (
       MidiNote * main_note =
         MA_SELECTIONS->midi_notes[0];
       MidiNote * trans_note =
-        midi_note_get_trans_note (
+        midi_note_get_main_trans_midi_note (
           MA_SELECTIONS->midi_notes[0]);
       UndoableAction * ua =
         move_midi_arranger_selections_action_new (
@@ -981,7 +986,7 @@ midi_arranger_widget_on_drag_end (
       MidiNote * main_note =
         MA_SELECTIONS->midi_notes[0];
       MidiNote * trans_note =
-        midi_note_get_trans_note (
+        midi_note_get_main_trans_midi_note (
           MA_SELECTIONS->midi_notes[0]);
       UndoableAction * ua =
         (UndoableAction *)
@@ -1056,9 +1061,9 @@ add_children_from_region (
       for (j = 0; j < 2; j++)
         {
           if (j == 0)
-            mn = midi_note_get_main_note (mn);
+            mn = midi_note_get_main_midi_note (mn);
           else if (j == 1)
-            mn = midi_note_get_trans_note (mn);
+            mn = midi_note_get_main_trans_midi_note (mn);
 
           if (!mn->widget)
             mn->widget =

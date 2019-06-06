@@ -206,7 +206,7 @@ midi_arranger_selections_set_cache_poses (
  * the given MidiNote.
  *
  * The note must be the main note (see
- * midi_note_get_main_note()).
+ * midi_note_get_main_midi_note()).
  */
 int
 midi_arranger_selections_contains_note (
@@ -220,12 +220,15 @@ midi_arranger_selections_contains_note (
  * @param use_cached_pos Add the ticks to the cached
  *   Position's instead of the current Position's.
  * @param ticks Ticks to add.
+ * @param transients_only Only update transient
+ *   objects (eg. when copy-moving).
  */
 void
 midi_arranger_selections_add_ticks (
   MidiArrangerSelections * mas,
   long                 ticks,
-  int                  use_cached_pos);
+  int                  use_cached_pos,
+  int                  transients_only);
 
 /**
  * Clears selections.

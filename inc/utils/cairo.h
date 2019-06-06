@@ -86,7 +86,7 @@ z_cairo_draw_text (
   /* Create a PangoLayout, set the font and text */
   layout = pango_cairo_create_layout (cr);
 
-  pango_layout_set_text (layout, text, -1);
+  pango_layout_set_markup (layout, text, -1);
   desc = pango_font_description_from_string (FONT);
   pango_layout_set_font_description (layout, desc);
   pango_font_description_free (desc);

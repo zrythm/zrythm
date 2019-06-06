@@ -86,12 +86,16 @@
  *
  * @param sc snake_case of object's name (e.g.
  *   region).
+ * @param _trans_only Only do transients.
  */
 #define POSITION_SET_ARRANGER_OBJ_POS( \
-  sc, obj, pos_name, pos) \
-  position_set_to_pos ( \
-    &sc##_get_main_##sc (obj)-> \
-    pos_name, pos); \
+  sc, obj, pos_name, pos, _trans_only) \
+  if (!_trans_only) \
+    { \
+      position_set_to_pos ( \
+        &sc##_get_main_##sc (obj)-> \
+        pos_name, pos); \
+    } \
   position_set_to_pos ( \
     &sc##_get_main_trans_##sc (obj)-> \
     pos_name, pos)
@@ -106,17 +110,21 @@
  *
  * @param sc snake_case of object's name (e.g.
  *   region).
+ * @param trans_only Only set transient positions.
  */
 #define POSITION_SET_ARRANGER_OBJ_POS_WITH_LANE( \
-  sc, obj, pos_name, pos) \
+  sc, obj, pos_name, pos, _trans_only) \
   POSITION_SET_ARRANGER_OBJ_POS ( \
-    sc, obj, pos_name, pos); \
+    sc, obj, pos_name, pos, _trans_only); \
   position_set_to_pos ( \
     &sc##_get_lane_trans_##sc (obj)-> \
     pos_name, pos); \
-  position_set_to_pos ( \
-    &sc##_get_lane_##sc (obj)-> \
-    pos_name, pos)
+  if (!_trans_only) \
+    { \
+      position_set_to_pos ( \
+        &sc##_get_lane_##sc (obj)-> \
+        pos_name, pos); \
+    }
 
 /** Start Position to be used in calculations. */
 #define DEFINE_START_POS \
@@ -151,9 +159,11 @@
  *   macro.
  * @param _moved An int variable to hold if the
  *   move was made or not.
+ * @param trans_only Move transients only.
  */
 #define POSITION_MOVE_BY_TICKS_W_LENGTH( \
-  _tmp_pos,_use_cached,_obj,_ticks,_moved) \
+  _tmp_pos,_use_cached,_obj,_ticks,_moved, \
+  _trans_only) \
   /* start pos */ \
   if (_use_cached) \
     position_set_to_pos ( \
@@ -167,7 +177,8 @@
   if (position_is_before ( \
         &_tmp_pos, START_POS)) \
     moved = 0; \
-  SET_POS (_obj, start_pos, &_tmp_pos); \
+  SET_POS (_obj, start_pos, &_tmp_pos, \
+           _trans_only); \
   /* end pos */ \
   if (use_cached_pos) \
     position_set_to_pos ( \
@@ -177,7 +188,8 @@
       &_tmp_pos, &_obj->end_pos); \
   position_add_ticks ( \
     &_tmp_pos, _ticks); \
-  SET_POS (_obj, end_pos, &_tmp_pos); \
+  SET_POS (_obj, end_pos, &_tmp_pos, \
+           &_trans_only); \
   moved = 1
 
 

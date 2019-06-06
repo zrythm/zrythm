@@ -129,7 +129,7 @@ midi_note_draw_cb (
 
   char * str =
     g_strdup_printf (
-      "%s%d",
+      "%s<sup>%d</sup>",
       chord_note_to_string (
         self->midi_note->val % 12),
       self->midi_note->val / 12 - 2);
@@ -284,7 +284,7 @@ midi_note_widget_select (
   int              select)
 {
   MidiNote * main_note =
-    midi_note_get_main_note (self->midi_note);
+    midi_note_get_main_midi_note (self->midi_note);
   if (select)
     {
       midi_arranger_selections_add_note (

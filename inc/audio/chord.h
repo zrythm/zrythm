@@ -290,13 +290,15 @@ chord_set_pos (ZChord *    self,
  *
  * @param use_cached_pos Add the ticks to the cached
  *   Position instead of its current Position.
+ * @param trans_only Only move transients.
  * @return Whether moved or not.
  */
 int
 chord_move (
   ZChord * chord,
   long     ticks,
-  int      use_cached_pos);
+  int      use_cached_pos,
+  int      trans_only);
 
 void
 chord_free (ZChord * self);

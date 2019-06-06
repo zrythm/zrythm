@@ -904,8 +904,8 @@ channel_handle_recording (Channel * self)
       if (region) /* if inside a region */
         {
           /* set region end pos */
-          region_set_end_pos (region,
-                              &tmp);
+          region_set_end_pos (
+            region, &tmp, 0);
         }
       else /* if not already in a region */
         {
@@ -954,8 +954,8 @@ channel_handle_recording (Channel * self)
                       midi_region_find_unended_note (
                         mr,
                         event->buffer[1]);
-                    midi_note_set_end_pos (mn,
-                                           &tmp);
+                    midi_note_set_end_pos (
+                      mn, &tmp, 0);
                     break;
                   case MIDI_CH1_CTRL_CHANGE:
                     /* TODO */

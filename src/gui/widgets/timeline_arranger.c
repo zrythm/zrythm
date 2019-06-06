@@ -975,8 +975,7 @@ timeline_arranger_widget_create_region (
     &tmp,
     ar_prv->snap_grid);
   region_set_end_pos (
-    region,
-    &tmp);
+    region, &tmp, F_NO_TRANS_ONLY);
   long length =
     region_get_full_length_in_ticks (region);
   position_from_ticks (
@@ -1294,7 +1293,10 @@ snap_region_l (
                    region->lane->track,
                    NULL,
                    ar_prv->snap_grid);
-  region_set_start_pos (region, new_start_pos);
+
+  region_set_start_pos (
+    region, new_start_pos,
+    F_NO_TRANS_ONLY);
 }
 
 void
@@ -1373,8 +1375,8 @@ snap_region_r (
   if (position_is_after (
         new_end_pos, &region->start_pos))
     {
-      region_set_end_pos (region,
-                          new_end_pos);
+      region_set_end_pos (
+        region, new_end_pos, F_NO_TRANS_ONLY);
 
       /* if creating also set the loop points
        * appropriately */
@@ -1424,13 +1426,6 @@ timeline_arranger_widget_snap_regions_r (
    * pos */
   Position new_end_pos;
 
-#define CALC_NEW_END_POS \
-  position_set_to_pos ( \
-    &new_end_pos, \
-    &region->cache_end_pos); \
-  position_add_ticks ( \
-    &new_end_pos, delta);
-
   Region * region;
   for (int i = 0;
        i < TL_SELECTIONS->num_regions;
@@ -1442,12 +1437,16 @@ timeline_arranger_widget_snap_regions_r (
       /* main region */
       region =
         region_get_main_region (region);
-      CALC_NEW_END_POS;
+
+      position_set_to_pos (
+        &new_end_pos,
+        &region->cache_end_pos);
+      position_add_ticks (
+        &new_end_pos, delta);
+
       snap_region_r (
         self, region, &new_end_pos);
     }
-
-#undef CALC_NEW_END_POS
 
   EVENTS_PUSH (ET_REGION_POSITIONS_CHANGED, NULL);
 }
@@ -1507,7 +1506,8 @@ timeline_arranger_widget_move_items_x (
   long                     ticks_diff)
 {
   timeline_selections_add_ticks (
-    TL_SELECTIONS, ticks_diff, 1);
+    TL_SELECTIONS, ticks_diff, F_USE_CACHED,
+    F_TRANS_ONLY);
 
   EVENTS_PUSH (ET_REGION_POSITIONS_CHANGED,
                NULL);

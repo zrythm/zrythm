@@ -85,6 +85,9 @@ typedef enum MidiModifier
 typedef struct Region Region;
 
 /**
+ * A descriptor for a MidiNote, used by the piano
+ * roll.
+ *
  * Notes will only be draggable and reorderable in
  * drum mode.
  *

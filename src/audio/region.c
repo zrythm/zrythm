@@ -45,9 +45,9 @@
 
 DEFINE_START_POS
 
-#define SET_POS(r,pos_name,pos) \
+#define SET_POS(r,pos_name,pos,trans_only) \
   POSITION_SET_ARRANGER_OBJ_POS_WITH_LANE ( \
-    region, r, pos_name, pos)
+    region, r, pos_name, pos, trans_only)
 
 /**
  * Only to be used by implementing structs.
@@ -270,7 +270,7 @@ region_set_cache_end_pos (
   Region * region,
   const Position * pos)
 {
-  SET_POS (region, cache_end_pos, pos);
+  SET_POS (region, cache_end_pos, pos, 0);
 }
 
 void
@@ -278,22 +278,29 @@ region_set_cache_start_pos (
   Region * region,
   Position * pos)
 {
-  SET_POS (region, cache_start_pos, pos);
+  SET_POS (region, cache_start_pos, pos, 0);
 }
 
 /**
- * Clamps position then sets it.
+ * Clamps position then sets it to its counterparts.
+ *
+ * To be used only when resizing. For moving,
+ * use region_move().
+ *
+ * @param trans_only Only set the transient
+ *   Position's.
  */
 void
 region_set_start_pos (
   Region * region,
-  Position * pos)
+  Position * pos,
+  int        trans_only)
 {
   if (position_to_ticks (&region->end_pos) -
       position_to_ticks (pos) >=
       TRANSPORT->lticks_per_beat)
     {
-      SET_POS (region, start_pos, pos);
+      SET_POS (region, start_pos, pos, trans_only);
     }
 }
 
@@ -358,16 +365,24 @@ region_get_true_length_in_ticks (
 
 /**
  * Clamps position then sets it.
+ *
+ * To be used only when resizing. For moving,
+ * use region_move().
+ *
+ * @param trans_only Only set the Position to the
+ *   counterparts.
  */
 void
-region_set_end_pos (Region * region,
-                    Position * pos)
+region_set_end_pos (
+  Region * region,
+  Position * pos,
+  int        trans_only)
 {
   if (position_to_ticks (pos) -
       position_to_ticks (&region->start_pos) >=
       TRANSPORT->lticks_per_beat)
     {
-      SET_POS (region, end_pos, pos);
+      SET_POS (region, end_pos, pos, trans_only);
     }
 }
 
@@ -376,7 +391,7 @@ region_set_true_end_pos (
   Region * region,
   Position * pos)
 {
-  SET_POS (region, true_end_pos, pos);
+  SET_POS (region, true_end_pos, pos, 0);
 }
 
 void
@@ -384,27 +399,29 @@ region_set_loop_end_pos (
   Region * region,
   Position * pos)
 {
-  SET_POS (region, loop_end_pos, pos);
+  SET_POS (region, loop_end_pos, pos, 0);
 }
 
 /**
  * Checks if position is valid then sets it.
  */
 void
-region_set_loop_start_pos (Region * region,
-                         Position * pos)
+region_set_loop_start_pos (
+  Region * region,
+  Position * pos)
 {
-  SET_POS (region, loop_start_pos, pos);
+  SET_POS (region, loop_start_pos, pos, 0);
 }
 
 /**
  * Checks if position is valid then sets it.
  */
 void
-region_set_clip_start_pos (Region * region,
-                         Position * pos)
+region_set_clip_start_pos (
+  Region * region,
+  Position * pos)
 {
-  SET_POS (region, clip_start_pos, pos);
+  SET_POS (region, clip_start_pos, pos, 0);
 }
 
 /**
@@ -426,18 +443,21 @@ region_is_selected (Region * self)
  *
  * @param use_cached_pos Add the ticks to the cached
  *   Position instead of its current Position.
+ * @param trans_only Only do transients.
  * @return Whether moved or not.
  */
 int
 region_move (
   Region * region,
   long     ticks,
-  int      use_cached_pos)
+  int      use_cached_pos,
+  int      trans_only)
 {
   Position tmp;
   int moved;
   POSITION_MOVE_BY_TICKS_W_LENGTH (
-    tmp, use_cached_pos, region, ticks, moved);
+    tmp, use_cached_pos, region, ticks, moved,
+    trans_only);
 
   return moved;
 }
