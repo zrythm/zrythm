@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the zrythm package.
 # Alexandros Theodotou <alex at zrytm dot org>, 2019.
 # Weblate Admin <weblate.admin@zrythm.org>, 2019.
+# Alexandros Theodotou <alextee@posteo.net>, 2019.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
-"Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
+"Report-Msgid-Bugs-To: alex@zrythm.org\n"
 "POT-Creation-Date: 2019-06-01 22:03+0100\n"
-"PO-Revision-Date: 2019-05-09 12:18+0000\n"
-"Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
+"PO-Revision-Date: 2019-06-06 06:25+0000\n"
+"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://translate.zrythm.org/projects/zrythm/zrythm/"
 "ja/>\n"
 "Language: ja\n"
@@ -36,7 +37,6 @@ msgid "Setting up backend"
 msgstr "バックエンドをセットアップ中"
 
 #: src/zrythm.c:272
-#, fuzzy
 msgid "Loading project"
 msgstr "プロジェクトをロード中"
 
@@ -102,19 +102,19 @@ msgstr "LV2バンドルディレクトリの読み込みエラー： "
 
 #: src/gui/widgets/port_connections_popover.c:59
 msgid "INPUTS"
-msgstr ""
+msgstr "インプット"
 
 #: src/gui/widgets/port_connections_popover.c:78
 msgid "OUTPUTS"
-msgstr ""
+msgstr "アウトプット"
 
 #: src/gui/widgets/port_connections_popover.c:164
 msgid "Add"
-msgstr ""
+msgstr "追加"
 
 #: src/gui/widgets/channel.c:918
 msgid "Inserts"
-msgstr ""
+msgstr "インサート"
 
 #: src/gui/widgets/midi_controller_mb.c:46
 #: src/gui/widgets/midi_controller_mb.c:116
@@ -153,21 +153,20 @@ msgstr ""
 
 #: src/gui/widgets/left_dock_edge.c:46
 msgid "Inspector"
-msgstr ""
+msgstr "インスペクター"
 
 #: src/gui/widgets/left_dock_edge.c:56
 msgid "Visibility"
-msgstr ""
+msgstr "ビジビリティ"
 
 #: src/gui/widgets/port_selector_popover.c:209
 #, fuzzy
 msgid "Track Ports"
-msgstr "トラック"
+msgstr "トラックポート"
 
 #: src/gui/widgets/instrument_track_info_expander.c:82
-#, fuzzy
 msgid "Track Info"
-msgstr "トラック名"
+msgstr "トラック情報"
 
 #: src/gui/widgets/digital_meter.c:665
 msgid "BPM - Click and drag up/down to set"
@@ -179,20 +178,20 @@ msgstr "拍子記号 - クリックして上下にドラッグして変更しま
 
 #: src/gui/widgets/instrument_track.c:280
 msgid "Show Lanes - Shows the track's lanes"
-msgstr ""
+msgstr "レーンを表示 - トラックのレーンを表示します"
 
 #: src/gui/widgets/control_room.c:52
 #, fuzzy
 msgid "Output"
-msgstr "出力ファイル"
+msgstr "出力"
 
 #: src/gui/widgets/control_room.c:64
 msgid "Listen dim level"
-msgstr ""
+msgstr "Listenの薄暗いレベル"
 
 #: src/gui/widgets/control_room.c:67
 msgid "The level to set other channels to when Listen is enabled on a channel"
-msgstr ""
+msgstr "あるチャンネルでListenが有効になっているときに他のチャンネルに設定するレベル"
 
 #: src/gui/widgets/channel_slot.c:589
 msgid ""
@@ -202,19 +201,16 @@ msgstr ""
 "ラッグしてプラグインを移動します"
 
 #: src/gui/widgets/timeline_selection_info.c:62
-#, fuzzy
 msgid "Start Position"
-msgstr "位置"
+msgstr "開始位置"
 
 #: src/gui/widgets/timeline_selection_info.c:93
-#, fuzzy
 msgid "No object selected"
-msgstr "出力が選択されていません"
+msgstr "オブジェクトが選択されていません"
 
 #: src/gui/widgets/piano_roll.c:232
-#, fuzzy
 msgid "Select a region..."
-msgstr "選択…"
+msgstr "リージョンを選択してください…"
 
 #: src/gui/widgets/region.c:183
 msgid ""
@@ -225,27 +221,25 @@ msgstr ""
 "する） - ダブルクリックしてクリップエディタを開く"
 
 #: src/gui/widgets/home_toolbar.c:58 resources/ui/home_toolbar.ui:14
-#, fuzzy
 msgid "Undo"
-msgstr "元に戻す(_U)"
+msgstr "元に戻す"
 
 #: src/gui/widgets/home_toolbar.c:59 resources/ui/home_toolbar.ui:27
-#, fuzzy
 msgid "Redo"
-msgstr "やり直し(_R)"
+msgstr "やり直し"
 
 #: src/gui/widgets/right_dock_edge.c:51
 msgid "File Browser"
-msgstr ""
+msgstr "ファイルブラウザー"
 
 #: src/gui/widgets/right_dock_edge.c:67
-#, fuzzy
 msgid "Plugin Browser"
-msgstr "プラグイン"
+msgstr "プラグインブラウザ"
 
 #: src/gui/widgets/route_target_selector.c:80
+#, fuzzy
 msgid "Routed to Stereo Out"
-msgstr ""
+msgstr "ステレオ出力にルーティング"
 
 #: src/gui/widgets/route_target_selector.c:86
 msgid "Select channel to route signal to"
@@ -253,64 +247,56 @@ msgstr "信号をルーティングするチャンネルを選択"
 
 #: src/gui/widgets/route_target_selector.c:118
 msgid "Stereo Out"
-msgstr ""
+msgstr "ステレオアウト"
 
 #: src/gui/widgets/snap_grid.c:94
 msgid "Snap/Grid options"
 msgstr "スナップ/グリッドオプション"
 
 #: src/gui/widgets/ruler_marker.c:315
-#, fuzzy
 msgid "Playhead"
 msgstr "再生ヘッド"
 
 #: src/gui/widgets/ports_expander.c:140
-#, fuzzy
 msgid "Control Ins"
-msgstr "コントローラが見つかりました"
+msgstr "コントロールイン"
 
 #: src/gui/widgets/ports_expander.c:143
-#, fuzzy
 msgid "Control Outs"
-msgstr "コントローラが見つかりました"
+msgstr "コントロールアウト"
 
 #: src/gui/widgets/ports_expander.c:146
-#, fuzzy
 msgid "Audio Ins"
-msgstr "オーディオ"
+msgstr "オーディオイン"
 
 #: src/gui/widgets/ports_expander.c:149
-#, fuzzy
 msgid "Audio Outs"
-msgstr "オーディオ"
+msgstr "オーディオアウト"
 
 #: src/gui/widgets/ports_expander.c:152
-#, fuzzy
 msgid "MIDI Ins"
-msgstr "MIDIバックエンド"
+msgstr "MIDIイン"
 
 #: src/gui/widgets/ports_expander.c:155
 msgid "MIDI Outs"
-msgstr ""
+msgstr "MIDIアウト"
 
 #: src/gui/widgets/ports_expander.c:158
 msgid "CV Ins"
-msgstr ""
+msgstr "CVイン"
 
 #: src/gui/widgets/ports_expander.c:161
-#, fuzzy
 msgid "CV Outs"
-msgstr "コントローラが見つかりました"
+msgstr "CVアウト"
 
 #: src/gui/widgets/route_target_selector_popover.c:180
-#, fuzzy
 msgid "No output selected"
 msgstr "出力が選択されていません"
 
 #: src/gui/widgets/route_target_selector_popover.c:194
 #, c-format
 msgid "Routing to %s"
-msgstr ""
+msgstr "%sへルーティング中"
 
 #: src/gui/widgets/track.c:138 resources/ui/transport_controls.ui:36
 msgid "Record"
@@ -400,7 +386,6 @@ msgid "Failed to retrieve va_list value: %s"
 msgstr "va_list値を取得できませんでした：%s"
 
 #: src/utils/dialogs.c:41
-#, fuzzy
 msgid "Open Project"
 msgstr "プロジェクトを開く"
 
@@ -480,7 +465,7 @@ msgstr "コード"
 
 #: src/audio/marker_track.c:42
 msgid "Markers"
-msgstr ""
+msgstr "マーカー"
 
 #: src/audio/engine_pa.c:246 src/audio/engine_pa.c:266
 #: src/audio/engine_pa.c:277
@@ -491,14 +476,13 @@ msgstr "PortAudioエラー：%s"
 #: src/audio/track_lane.c:43
 #, c-format
 msgid "Lane %d"
-msgstr ""
+msgstr "レーン%d"
 
 #: src/audio/track.c:783
 msgid "Instrument"
 msgstr "インストゥルメント"
 
 #: src/audio/track.c:786
-#, fuzzy
 msgid "Audio"
 msgstr "オーディオ"
 
@@ -507,7 +491,6 @@ msgid "Bus"
 msgstr "バス"
 
 #: src/audio/track.c:795
-#, fuzzy
 msgid "Chord"
 msgstr "コード"
 
@@ -562,7 +545,6 @@ msgid "Client's protocol version does not match"
 msgstr "クライアントのプロトコルバージョンが一致しません"
 
 #: src/audio/engine_jack.c:598
-#, fuzzy
 msgid "Backend error"
 msgstr "バックエンドエラー"
 
@@ -572,7 +554,6 @@ msgstr "クライアントゾンビ"
 
 #: src/actions/delete_timeline_selections_action.c:103
 #: src/actions/delete_midi_arranger_selections_action.c:103
-#, fuzzy
 msgid "Delete Object(s)"
 msgstr "オブジェクトを削除"
 
@@ -587,7 +568,6 @@ msgid "Create %d %ss"
 msgstr "%d個の%sを作成"
 
 #: src/actions/delete_tracks_action.c:113
-#, fuzzy
 msgid "Delete Track"
 msgstr "トラックを削除"
 
@@ -597,7 +577,6 @@ msgid "Delete %d Tracks"
 msgstr "%d個のトラックを削除"
 
 #: src/actions/actions.c:518
-#, fuzzy
 msgid "Save Project"
 msgstr "プロジェクトを保存"
 
@@ -629,13 +608,11 @@ msgid "Duplicate Object(s)"
 msgstr "オブジェクトを複製"
 
 #: src/actions/edit_midi_arranger_selections_action.c:144
-#, fuzzy
 msgid "Resize Midi Note(s)"
-msgstr "オブジェクトを作成"
+msgstr "MIDIノートのサイズを変更"
 
 #: src/actions/create_timeline_selections_action.c:121
 #: src/actions/create_midi_arranger_selections_action.c:114
-#, fuzzy
 msgid "Create Object(s)"
 msgstr "オブジェクトを作成"
 
@@ -650,9 +627,8 @@ msgid "Move %d Plugins"
 msgstr "%dプラグインを移動"
 
 #: src/actions/edit_timeline_selections_action.c:131
-#, fuzzy
 msgid "Resize Object(s)"
-msgstr "オブジェクトを作成"
+msgstr "オブジェクトのサイズ変更"
 
 #: src/actions/edit_tracks_action.c:160
 msgid "Solo Track"
@@ -667,7 +643,6 @@ msgid "Mute Track"
 msgstr "トラックをミュートする"
 
 #: src/actions/edit_tracks_action.c:170
-#, fuzzy
 msgid "Unmute Track"
 msgstr "トラックのミュートを解除"
 
@@ -680,7 +655,6 @@ msgid "Change Pan"
 msgstr "パンを変更"
 
 #: src/actions/move_tracks_action.c:128
-#, fuzzy
 msgid "Move Track"
 msgstr "トラックを移動"
 
@@ -690,9 +664,9 @@ msgid "Move %d Tracks"
 msgstr "%d個のプラグインを移動"
 
 #: src/actions/create_tracks_action.c:52
-#, fuzzy, c-format
+#, c-format
 msgid "%s Track"
-msgstr "％sトラック"
+msgstr "%sトラック"
 
 #: src/actions/create_tracks_action.c:81
 #, c-format
@@ -710,7 +684,7 @@ msgid "Create %d %s Tracks"
 msgstr "%d個の%sトラックを作成"
 
 #: src/actions/delete_plugins_action.c:111
-#, fuzzy, c-format
+#, c-format
 msgid "Delete Plugin"
 msgstr "プラグインを削除"
 
@@ -793,25 +767,22 @@ msgid "Select the audio and MIDI engine backends to use"
 msgstr "使用するオーディオとMIDIエンジンのバックエンドを選択する"
 
 #: resources/ui/first_run_assistant.ui:178 resources/ui/preferences.ui:167
-#, fuzzy
 msgid "MIDI Backend"
 msgstr "MIDIバックエンド"
 
 #: resources/ui/first_run_assistant.ui:191 resources/ui/preferences.ui:122
-#, fuzzy
 msgid "Audio Backend"
 msgstr "オーディオバックエンド"
 
 #: resources/ui/first_run_assistant.ui:228
 msgid "Test"
-msgstr "テスト"
+msgstr "テストする"
 
 #: resources/ui/first_run_assistant.ui:232
 msgid "Tests the backends"
 msgstr "バックエンドをテストします"
 
 #: resources/ui/first_run_assistant.ui:242
-#, fuzzy
 msgid "Backends"
 msgstr "バックエンド"
 
@@ -828,18 +799,16 @@ msgid "MIDI Devices"
 msgstr "MIDIデバイス"
 
 #: resources/ui/right_dock_edge.ui:43
-#, fuzzy
 msgid "Control Room"
-msgstr "コントローラが見つかりました"
+msgstr "管理室"
 
 #: resources/ui/bot_dock_edge.ui:41
 msgid "Piano roll panel"
 msgstr "ピアノロールパネル"
 
 #: resources/ui/bot_dock_edge.ui:56
-#, fuzzy
 msgid "Editor"
-msgstr "編集(_E)"
+msgstr "エディター"
 
 #: resources/ui/bot_dock_edge.ui:74
 msgid "Mixer panel"
@@ -851,12 +820,11 @@ msgstr "ミキサー"
 
 #: resources/ui/bot_dock_edge.ui:121
 msgid "Modulators"
-msgstr ""
+msgstr "モジュレーター"
 
 #: resources/ui/bot_dock_edge.ui:153
-#, fuzzy
 msgid "Chord Pad"
-msgstr "コード"
+msgstr "コードパッド"
 
 #: resources/ui/track_top_grid.ui:34 resources/ui/automatable_selector.ui:84
 #: resources/ui/route_target_selector.ui:85
@@ -865,9 +833,8 @@ msgstr "ラベル"
 
 #. property name="can_focus">False</property
 #: resources/ui/project_assistant.ui:27
-#, fuzzy
 msgid "Select Project"
-msgstr "プロジェクトの選択"
+msgstr "プロジェクトを選択"
 
 #: resources/ui/project_assistant.ui:62 resources/ui/shortcuts.ui:84
 msgid "Create new project"
@@ -967,12 +934,10 @@ msgid "Project"
 msgstr "プロジェクト"
 
 #: resources/ui/shortcuts.ui:91
-#, fuzzy
 msgid "Open a project"
 msgstr "プロジェクトを開く"
 
 #: resources/ui/shortcuts.ui:98
-#, fuzzy
 msgid "Save the project"
 msgstr "プロジェクトを保存する"
 
@@ -1164,27 +1129,24 @@ msgid "Lane 1"
 msgstr ""
 
 #: resources/ui/port_selector_popover.ui:16
-#, fuzzy
 msgid "Select a port..."
-msgstr "選択…"
+msgstr "ポートを選択してください..."
 
 #: resources/ui/port_selector_popover.ui:41
-#, fuzzy
 msgid "Track"
 msgstr "トラック"
 
 #: resources/ui/port_selector_popover.ui:94
-#, fuzzy
 msgid "Plugin"
 msgstr "プラグイン"
 
 #: resources/ui/port_selector_popover.ui:147
 msgid "Port"
-msgstr ""
+msgstr "ポート"
 
 #: resources/ui/donate_dialog.ui:7
 msgid "Donate"
-msgstr "寄付"
+msgstr "支援する"
 
 #: resources/ui/donate_dialog.ui:49
 msgid "Choose a method to donate"
@@ -1232,17 +1194,15 @@ msgstr "名称"
 
 #: resources/ui/header_notebook.ui:17
 msgid "Home"
-msgstr ""
+msgstr "ホーム"
 
 #: resources/ui/header_notebook.ui:54
-#, fuzzy
 msgid "View"
-msgstr "表示(_V)"
+msgstr "表示"
 
 #: resources/ui/header_notebook.ui:73
-#, fuzzy
 msgid "Help"
-msgstr "ヘルプ(_H)"
+msgstr "ヘルプ"
 
 #: resources/ui/header_notebook.ui:149
 msgid "Project name"

@@ -6,9 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
-"Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
+"Report-Msgid-Bugs-To: alex@zrythm.org\n"
 "POT-Creation-Date: 2019-06-01 22:03+0100\n"
-"PO-Revision-Date: 2019-05-24 18:34+0000\n"
+"PO-Revision-Date: 2019-06-06 06:25+0000\n"
 "Last-Translator: Nicolas Faure <sub26nico@laposte.net>\n"
 "Language-Team: French <https://translate.zrythm.org/projects/zrythm/zrythm/"
 "fr/>\n"
@@ -156,11 +156,11 @@ msgstr ""
 
 #: src/gui/widgets/left_dock_edge.c:46
 msgid "Inspector"
-msgstr ""
+msgstr "Inspecteur"
 
 #: src/gui/widgets/left_dock_edge.c:56
 msgid "Visibility"
-msgstr ""
+msgstr "Visibilité"
 
 #: src/gui/widgets/port_selector_popover.c:209
 msgid "Track Ports"
@@ -182,20 +182,21 @@ msgstr ""
 
 #: src/gui/widgets/instrument_track.c:280
 msgid "Show Lanes - Shows the track's lanes"
-msgstr ""
+msgstr "Montrer les lignes - Affiche les lignes de la piste"
 
 #: src/gui/widgets/control_room.c:52
-#, fuzzy
 msgid "Output"
-msgstr "Fichiers de sortie"
+msgstr "Sortie"
 
 #: src/gui/widgets/control_room.c:64
 msgid "Listen dim level"
-msgstr ""
+msgstr "Écoute à faible niveau"
 
 #: src/gui/widgets/control_room.c:67
 msgid "The level to set other channels to when Listen is enabled on a channel"
 msgstr ""
+"Le niveau pour paramétrer les autres canaux  lorsque Listen est activé sur "
+"un canal"
 
 #: src/gui/widgets/channel_slot.c:589
 msgid ""
@@ -213,9 +214,8 @@ msgid "No object selected"
 msgstr "Aucun objet sélectionné"
 
 #: src/gui/widgets/piano_roll.c:232
-#, fuzzy
 msgid "Select a region..."
-msgstr "Sélectionner un port ..."
+msgstr "Sélectionner une région..."
 
 #: src/gui/widgets/region.c:183
 msgid ""
@@ -236,12 +236,11 @@ msgstr "Refaire"
 
 #: src/gui/widgets/right_dock_edge.c:51
 msgid "File Browser"
-msgstr ""
+msgstr "Navigateur de fichiers"
 
 #: src/gui/widgets/right_dock_edge.c:67
-#, fuzzy
 msgid "Plugin Browser"
-msgstr "Greffons"
+msgstr "Navigateur de greffons"
 
 #: src/gui/widgets/route_target_selector.c:80
 msgid "Routed to Stereo Out"
@@ -474,7 +473,7 @@ msgstr "Accords"
 
 #: src/audio/marker_track.c:42
 msgid "Markers"
-msgstr ""
+msgstr "Marqueurs"
 
 #: src/audio/engine_pa.c:246 src/audio/engine_pa.c:266
 #: src/audio/engine_pa.c:277
@@ -485,7 +484,7 @@ msgstr "Erreur de PortAudio: %s"
 #: src/audio/track_lane.c:43
 #, c-format
 msgid "Lane %d"
-msgstr ""
+msgstr "Voie %d"
 
 #: src/audio/track.c:783
 msgid "Instrument"
@@ -812,18 +811,16 @@ msgid "MIDI Devices"
 msgstr "Périphériques MIDI"
 
 #: resources/ui/right_dock_edge.ui:43
-#, fuzzy
 msgid "Control Room"
-msgstr "Entrée de contrôle"
+msgstr "Salle de contrôle"
 
 #: resources/ui/bot_dock_edge.ui:41
 msgid "Piano roll panel"
 msgstr "Panneau du Piano Roll"
 
 #: resources/ui/bot_dock_edge.ui:56
-#, fuzzy
 msgid "Editor"
-msgstr "_Éditer"
+msgstr "Éditeur"
 
 #: resources/ui/bot_dock_edge.ui:74
 msgid "Mixer panel"
@@ -835,12 +832,11 @@ msgstr "Mixeur"
 
 #: resources/ui/bot_dock_edge.ui:121
 msgid "Modulators"
-msgstr ""
+msgstr "Modulateurs"
 
 #: resources/ui/bot_dock_edge.ui:153
-#, fuzzy
 msgid "Chord Pad"
-msgstr "Accord"
+msgstr "Tablette d'accord"
 
 #: resources/ui/track_top_grid.ui:34 resources/ui/automatable_selector.ui:84
 #: resources/ui/route_target_selector.ui:85
@@ -1147,7 +1143,7 @@ msgstr "0.0"
 
 #: resources/ui/track_lane.ui:15
 msgid "Lane 1"
-msgstr ""
+msgstr "Voie 1"
 
 #: resources/ui/port_selector_popover.ui:16
 msgid "Select a port..."
