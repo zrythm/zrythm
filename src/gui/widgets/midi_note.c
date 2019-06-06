@@ -277,29 +277,28 @@ on_destroy (
 /**
  * Sets the "selected" GTK state flag and adds the
  * note to midi arranger selections.
- *
- * Optionally creates transient notes in the
- * MidiArrangerSelections (if moving/copy-moving).
  */
 void
 midi_note_widget_select (
   MidiNoteWidget * self,
   int              select)
 {
+  MidiNote * main_note =
+    midi_note_get_main_note (self->midi_note);
   if (select)
     {
       midi_arranger_selections_add_note (
         MA_SELECTIONS,
-        self->midi_note);
+        main_note);
     }
   else
     {
       midi_arranger_selections_remove_note (
         MA_SELECTIONS,
-        self->midi_note);
+        main_note);
     }
   EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
-               self->midi_note);
+               main_note);
 }
 
 /**
@@ -344,8 +343,6 @@ midi_note_widget_new (MidiNote * midi_note)
     GTK_WIDGET (self), tooltip);
   g_free (tooltip);
 
-  g_object_ref (self);
-
   return self;
 }
 
@@ -372,11 +369,11 @@ midi_note_widget_init (MidiNoteWidget * self)
     GTK_CONTAINER (self),
     GTK_WIDGET (self->drawing_area));
 
+  /* GDK_ALL_EVENTS_MASK is needed, otherwise the
+   * grab gets broken */
   gtk_widget_add_events (
     GTK_WIDGET (self->drawing_area),
-    GDK_POINTER_MOTION_MASK |
-    GDK_ENTER_NOTIFY_MASK |
-    GDK_LEAVE_NOTIFY_MASK);
+    GDK_ALL_EVENTS_MASK);
 
   /* connect signals */
   g_signal_connect (
@@ -413,4 +410,6 @@ midi_note_widget_init (MidiNoteWidget * self)
     /*GTK_WIDGET (self->tooltip_label));*/
   /*gtk_window_set_position (*/
     /*self->tooltip_win, GTK_WIN_POS_MOUSE);*/
+
+  g_object_ref (self);
 }

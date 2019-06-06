@@ -257,7 +257,9 @@ midi_arranger_selections_remove_note (
   if (!array_contains (mas->midi_notes,
                        mas->num_midi_notes,
                        note))
-    return;
+    {
+      return;
+    }
 
   array_delete (
     mas->midi_notes,

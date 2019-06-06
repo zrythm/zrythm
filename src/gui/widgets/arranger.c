@@ -1314,12 +1314,6 @@ drag_begin (GtkGestureDrag *   gesture,
         }
     }
 
-  /* update inspector */
-  /*update_inspector (self);*/
-  /* FIXME only call when selections changed. */
-  EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
-               NULL);
-
   /*g_message ("drag begin %d",*/
              /*MA_SELECTIONS->num_midi_notes);*/
   arranger_widget_refresh_cursor (self);
@@ -1853,7 +1847,7 @@ on_motion (GtkEventControllerMotion * event,
   return FALSE;
 }
 
-gboolean
+static gboolean
 on_focus_out (GtkWidget *widget,
                GdkEvent  *event,
                gpointer   user_data)

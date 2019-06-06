@@ -223,6 +223,8 @@ region_widget_setup (
   gtk_widget_set_hexpand (
     GTK_WIDGET (rw_prv->drawing_area), 1);
 
+  /* GDK_ALL_EVENTS_MASK is needed, otherwise the
+   * grab gets broken */
   gtk_widget_add_events (
     GTK_WIDGET (rw_prv->drawing_area),
     GDK_ALL_EVENTS_MASK);
