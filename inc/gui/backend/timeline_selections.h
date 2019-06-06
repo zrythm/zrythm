@@ -34,7 +34,7 @@
 #include "utils/yaml.h"
 
 /**
- * @addtogroup gui_backend GUI backend.
+ * @addtogroup gui_backend GUI backend
  *
  * @{
  */

@@ -30,6 +30,12 @@ cdata.set_quoted (
 cdata.set_quoted (
   'CONFIGURE_LIBDIR',
   libdir)
+cdata.set (
+  'MESON_SOURCE_ROOT',
+  meson.source_root ())
+cdata.set (
+  'MESON_BUILD_ROOT',
+  meson.build_root ())
 
 os_darwin = false
 os_win32 = false
@@ -276,22 +282,6 @@ add_project_link_arguments (
   language: 'c',
   )
 
-run_target (
-  'docs',
-  command: [
-    'doc/m.css/documentation/doxygen.py',
-    'Doxyfile-mcss',
-    ],
-  )
-run_target (
-  'clean_docs',
-  command: [
-    'rm',
-    '-rf',
-    join_paths ('doc', 'html'),
-    ],
-  )
-
 meson.add_install_script (
   join_paths ('scripts', 'meson_post_install.py'))
 
@@ -303,3 +293,27 @@ subdir ('src')
 subdir ('test')
 subdir ('data')
 subdir ('resources')
+subdir ('doc')
+
+summary = [
+  '',
+  '------',
+  'Zrythm @0@'.format(meson.project_version()),
+  '',
+  '  Run Profiling: @0@'.format(
+    get_option('enable_profiling')),
+  '  Build Tests: @0@'.format(get_option('enable_tests')),
+  '  Generate Developer Docs: @0@'.format(get_option('gen_dev_docs')),
+  '  Print Coverage (needs tests): @0@'.format(get_option('enable_coverage')),
+  '  Optional libraries:',
+  '    FFMPEG support: @0@'.format(get_option('enable_ffmpeg')),
+  'Directories:',
+  '            prefix: @0@'.format(prefix),
+  '        includedir: @0@'.format(includedir),
+  '            libdir: @0@'.format(libdir),
+  '           datadir: @0@'.format(datadir),
+  '------',
+  ''
+]
+
+message('\n'.join(summary))

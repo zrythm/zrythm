@@ -196,8 +196,8 @@ on_motion (GtkWidget *      widget,
     MIDI_ARRANGER->hovered_note =
       midi_arranger_widget_get_note_at_y (
         event->y);
-  g_message ("hovered note: %d",
-             MIDI_ARRANGER->hovered_note);
+  /*g_message ("hovered note: %d",*/
+             /*MIDI_ARRANGER->hovered_note);*/
 
   ARRANGER_WIDGET_GET_PRIVATE (MIDI_ARRANGER);
   gtk_widget_queue_draw (
@@ -229,41 +229,6 @@ midi_arranger_widget_setup (
     G_OBJECT(ar_prv->bg),
     "motion-notify-event",
     G_CALLBACK (on_motion),  self);
-}
-
-/**
- * Fills in the positions that the MidiArranger
- * remembers at the start of each drag.
- */
-void
-midi_arranger_widget_set_init_poses (
-  MidiArrangerWidget * self)
-{
-  ARRANGER_WIDGET_GET_PRIVATE (self);
-
-  for (int i = 0;
-       i < MA_SELECTIONS->num_midi_notes;
-       i++)
-    {
-      MidiNote * r =
-        MA_SELECTIONS->midi_notes[i];
-      if (position_compare (&r->start_pos,
-                            &ar_prv->start_pos) <= 0)
-        {
-          position_set_to_pos (&ar_prv->start_pos,
-                               &r->start_pos);
-        }
-
-      /* set start poses for midi_notes */
-      position_set_to_pos (
-        &self->midi_note_start_poses[i],
-        &r->start_pos);
-
-      /* set end poses for midi_notes */
-      position_set_to_pos (
-        &self->midi_note_end_poses[i],
-        &r->end_pos);
-    }
 }
 
 /**
@@ -445,11 +410,6 @@ void
 midi_arranger_widget_update_visibility (
   MidiArrangerWidget * self)
 {
-  ARRANGER_WIDGET_GET_PRIVATE (self);
-
-  int _trans_visible = 0;
-  int _non_trans_visible = 0;
-  int _lane_visible;
   ARRANGER_SET_OBJ_VISIBILITY_ARRAY (
     MA_SELECTIONS->midi_notes,
     MA_SELECTIONS->num_midi_notes,
@@ -472,11 +432,10 @@ midi_arranger_widget_on_drag_begin_note_hit (
     GTK_WIDGET (mnw),
     start_x, 0, &wx, &wy);
 
-  MidiNote * mn = mnw->midi_note;
+  MidiNote * mn =
+    midi_note_get_main_note (
+      mnw->midi_note);
   self->start_midi_note = mn;
-  self->start_midi_note_clone =
-    midi_note_clone (
-      mn, MIDI_NOTE_CLONE_COPY);
 
   /* update arranger action */
   switch (P_TOOL)
@@ -571,13 +530,6 @@ midi_arranger_widget_create_note (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
-      !ar_prv->shift_held)
-    {
-      position_snap (
-        NULL, pos, NULL, NULL,
-        ar_prv->snap_grid);
-    }
   Velocity * vel = velocity_default ();
 
   /* get local pos */
@@ -600,11 +552,8 @@ midi_arranger_widget_create_note (
     midi_note_new (
       region, &local_pos, &local_pos, note, vel,
       1);
-  int _trans_visible = 0;
-  int _non_trans_visible = 0;
-  int _lane_visible;
-  ARRANGER_SET_OBJ_VISIBILITY (
-    MidiNote, midi_note);
+  arranger_object_info_set_widget_visibility (
+    &midi_note->obj_info, 1);
 
   Position tmp;
   position_set_min_size (
@@ -618,13 +567,12 @@ midi_arranger_widget_create_note (
   midi_region_add_midi_note (
     region, midi_note);
 
-  position_set_to_pos (
-    &self->midi_note_start_poses[0],
-    &midi_note->start_pos);
-  position_set_to_pos (
-    &self->midi_note_end_poses[0],
-    &midi_note->end_pos);
+  midi_note_set_cache_end_pos (
+    midi_note, &midi_note->end_pos);
+  self->start_midi_note =
+    midi_note;
 
+  EVENTS_PUSH (ET_MIDI_NOTE_CREATED, midi_note);
   ARRANGER_WIDGET_SELECT_MIDI_NOTE (
     self, midi_note, F_SELECT, F_NO_APPEND);
 }
@@ -673,9 +621,11 @@ midi_arranger_widget_select (
       for (int i = 0; i < num_midi_note_widgets; i++)
         {
           midi_note_widget =
-            Z_MIDI_NOTE_WIDGET (midi_note_widgets[i]);
+            Z_MIDI_NOTE_WIDGET (
+              midi_note_widgets[i]);
           midi_note =
-            midi_note_widget->midi_note;
+            midi_note_get_main_note (
+              midi_note_widget->midi_note);
 
           midi_region_remove_midi_note (
             midi_note->region,
@@ -693,7 +643,8 @@ midi_arranger_widget_select (
             Z_MIDI_NOTE_WIDGET (
               midi_note_widgets[i]);
           midi_note =
-            midi_note_widget->midi_note;
+            midi_note_get_main_note (
+              midi_note_widget->midi_note);
           ARRANGER_WIDGET_SELECT_MIDI_NOTE (
             self, midi_note, F_SELECT, F_APPEND);
         }
@@ -711,7 +662,6 @@ midi_arranger_widget_snap_midi_notes_l (
   Position *          pos)
 {
   int i;
-  MidiNote * mn;
 
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
@@ -735,11 +685,10 @@ midi_arranger_widget_snap_midi_notes_l (
   /* get delta with first clicked note's start
    * pos */
   long delta;
-  g_warn_if_fail (self->start_midi_note_clone);
   delta =
     local_pos.total_ticks -
-    self->start_midi_note_clone->
-      start_pos.total_ticks;
+    self->start_midi_note->
+      cache_start_pos.total_ticks;
 
   /* new start pos for each midi note, calculated by
    * adding delta to the midi note's original start
@@ -749,24 +698,25 @@ midi_arranger_widget_snap_midi_notes_l (
 #define CALC_NEW_START_POS \
   position_set_to_pos ( \
     &new_start_pos, \
-    &self->midi_note_start_poses[i]); \
+    &midi_note->cache_start_pos); \
   position_add_ticks ( \
     &new_start_pos, delta);
 
   /* transient midi notes */
+  MidiNote * midi_note;
   for (i = 0;
        i < MA_SELECTIONS->num_midi_notes;
        i++)
     {
-      mn =
+      midi_note =
         midi_note_get_trans_note (
           MA_SELECTIONS->midi_notes[i]);
-      if (mn)
+      if (midi_note)
         {
           CALC_NEW_START_POS;
 
           midi_note_set_start_pos (
-            mn, &new_start_pos);
+            midi_note, &new_start_pos);
         }
 
     }
@@ -778,6 +728,8 @@ midi_arranger_widget_snap_midi_notes_l (
  * Called during drag_update in parent when resizing
  * the selection. It sets the end pos of the
  * selected MIDI notes.
+ *
+ * @param pos Absolute position in the arrranger.
  */
 void
 midi_arranger_widget_snap_midi_notes_r (
@@ -785,15 +737,6 @@ midi_arranger_widget_snap_midi_notes_r (
   Position *          pos)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
-
-  if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
-        !ar_prv->shift_held)
-    position_snap (NULL,
-                   pos,
-                   NULL,
-                   CLIP_EDITOR->region,
-                   ar_prv->snap_grid);
-
 
   /* get local pos */
   Position local_pos;
@@ -804,22 +747,10 @@ midi_arranger_widget_snap_midi_notes_r (
 
   /* get delta with first clicked region's end
    * pos */
-  long delta;
-  if (ar_prv->action ==
-        UI_OVERLAY_ACTION_CREATING_RESIZING_R)
-    {
-      delta =
-        local_pos.total_ticks -
-        self->midi_note_end_poses[0].total_ticks;
-    }
-  else
-    {
-      g_warn_if_fail (self->start_midi_note_clone);
-      delta =
-        local_pos.total_ticks -
-        self->start_midi_note_clone->
-          end_pos.total_ticks;
-    }
+  long delta =
+    local_pos.total_ticks -
+    self->start_midi_note->
+      cache_end_pos.total_ticks;
 
   /* new end pos for each MidiNote, calculated by
    * adding delta to the MidiNote's original end
@@ -829,12 +760,12 @@ midi_arranger_widget_snap_midi_notes_r (
 #define CALC_NEW_END_POS \
   position_set_to_pos ( \
     &new_end_pos, \
-    &self->midi_note_end_poses[i]); \
+    &midi_note->cache_end_pos); \
   position_add_ticks ( \
     &new_end_pos, delta);
 
   /* actual midi notes */
-  MidiNote * mn;
+  MidiNote * midi_note;
   if (ar_prv->action ==
         UI_OVERLAY_ACTION_CREATING_RESIZING_R)
     {
@@ -842,30 +773,14 @@ midi_arranger_widget_snap_midi_notes_r (
            i < MA_SELECTIONS->num_midi_notes;
            i++)
         {
-          mn =
-            midi_note_get_trans_note (
+          midi_note =
+            midi_note_get_main_note (
               MA_SELECTIONS->midi_notes[i]);
 
           CALC_NEW_END_POS;
 
-          midi_note_set_end_pos (mn, &new_end_pos);
-        }
-    }
-
-  /* transients */
-  for (int i = 0;
-       i < MA_SELECTIONS->num_midi_notes;
-       i++)
-    {
-      mn =
-        midi_note_get_trans_note (
-          MA_SELECTIONS->midi_notes[i]);
-
-      if (mn)
-        {
-          CALC_NEW_END_POS;
-
-          midi_note_set_end_pos (mn, &new_end_pos);
+          midi_note_set_end_pos (
+            midi_note, &new_end_pos);
         }
     }
 }
@@ -879,27 +794,8 @@ midi_arranger_widget_move_items_x (
   MidiArrangerWidget * self,
   long                 ticks_diff)
 {
-  /* update region positions */
-  MidiNote * mn;
-  Position tmp;
-  long length_ticks;
-  for (int i = 0;
-       i < MA_SELECTIONS->num_midi_notes;
-       i++)
-    {
-      mn =
-        midi_note_get_trans_note (
-          MA_SELECTIONS->midi_notes[i]);
-
-      ARRANGER_MOVE_OBJ_BY_TICKS_W_LENGTH (
-        mn, midi_note,
-        &self->midi_note_start_poses[i],
-        ticks_diff, &tmp, length_ticks);
-
-      if (mn->widget)
-        midi_note_widget_update_tooltip (
-          mn->widget, 1);
-    }
+  midi_arranger_selections_add_ticks (
+    MA_SELECTIONS, ticks_diff, 1);
 }
 
 
@@ -1048,9 +944,9 @@ midi_arranger_widget_on_drag_end (
       /* if something was clicked with ctrl without
        * moving*/
       if (ar_prv->ctrl_held)
-        if (self->start_midi_note_clone &&
+        if (self->start_midi_note&&
             midi_note_is_selected (
-              self->start_midi_note_clone))
+              self->start_midi_note))
           {
             /* deselect it */
             ARRANGER_WIDGET_SELECT_MIDI_NOTE (
@@ -1121,7 +1017,6 @@ midi_arranger_widget_on_drag_end (
   /* if didn't click on something */
   else
     {
-      self->start_midi_note = NULL;
     }
   ar_prv->action = UI_OVERLAY_ACTION_NONE;
   midi_arranger_widget_update_visibility (
@@ -1141,14 +1036,39 @@ midi_arranger_widget_on_drag_end (
           /*CLIP_EDITOR->region->midi_notes[i]);*/
     /*}*/
 
-  if (self->start_midi_note_clone)
-    {
-      midi_note_free (self->start_midi_note_clone);
-      self->start_midi_note_clone = NULL;
-    }
+  self->start_midi_note = NULL;
 
   EVENTS_PUSH (ET_MA_SELECTIONS_CHANGED,
                NULL);
+}
+
+static inline void
+add_children_from_region (
+  MidiArrangerWidget * self,
+  Region *             region)
+{
+  int i, j;
+  MidiNote * mn;
+  for (i = 0; i < region->num_midi_notes; i++)
+    {
+      mn = region->midi_notes[i];
+
+      for (j = 0; j < 2; j++)
+        {
+          if (j == 0)
+            mn = midi_note_get_main_note (mn);
+          else if (j == 1)
+            mn = midi_note_get_trans_note (mn);
+
+          if (!mn->widget)
+            mn->widget =
+              midi_note_widget_new (mn);
+
+          gtk_overlay_add_overlay (
+            GTK_OVERLAY (self),
+            GTK_WIDGET (mn->widget));
+        }
+    }
 }
 
 /**
@@ -1158,8 +1078,9 @@ void
 midi_arranger_widget_refresh_children (
   MidiArrangerWidget * self)
 {
+  g_message ("REFRESHING MIDI ARR CHILDREN");
   ARRANGER_WIDGET_GET_PRIVATE (self);
-  int i, j, k;
+  int i, k;
 
   /* remove all children except bg */
   GList *children, *iter;
@@ -1186,41 +1107,18 @@ midi_arranger_widget_refresh_children (
   if (CLIP_EDITOR->region &&
       CLIP_EDITOR->region->type == REGION_TYPE_MIDI)
     {
-      MidiNote * mn;
-
-      /* add notes of main region */
-      Region * mr = CLIP_EDITOR->region;
-      for (j = 0; j < mr->num_midi_notes; j++)
-        {
-          mn = mr->midi_notes[j];
-          gtk_overlay_add_overlay (
-            GTK_OVERLAY (self),
-            GTK_WIDGET (mn->widget));
-        }
-
-      /* add notes of all other regions */
-      Region * other_r;
+      /* add notes of all regions in the track */
       TrackLane * lane;
-      Track * track = mr->lane->track;
+      Track * track =
+        CLIP_EDITOR->region->lane->track;
       for (k = 0; k < track->num_lanes; k++)
         {
           lane = track->lanes[k];
 
           for (i = 0; i < lane->num_regions; i++)
             {
-              other_r = lane->regions[i];
-              if (!g_strcmp0 (
-                    mr->name, other_r->name))
-                continue;
-
-              for (j = 0;
-                   j < other_r->num_midi_notes; j++)
-                {
-                  mn = other_r->midi_notes[j];
-                  gtk_overlay_add_overlay (
-                    GTK_OVERLAY (self),
-                    GTK_WIDGET (mn->widget));
-                }
+              add_children_from_region (
+                self, lane->regions[i]);
             }
         }
     }
@@ -1242,6 +1140,7 @@ midi_arranger_widget_auto_scroll (
   GtkScrolledWindow *  scrolled_window,
   int                  transient)
 {
+  return;
   Region * region = CLIP_EDITOR->region;
   int scroll_speed = 20;
   int border_distance = 10;

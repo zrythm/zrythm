@@ -120,6 +120,10 @@ midi_ruler_draw_cb (GtkWidget * widget,
  return FALSE;
 }
 
+/**
+ * Called when allocating the children of the
+ * RulerWidget to allocate the RulerMarkerWidget.
+ */
 void
 midi_ruler_widget_set_ruler_marker_position (
   MidiRulerWidget * self,

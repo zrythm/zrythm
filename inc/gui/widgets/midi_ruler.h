@@ -17,6 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * MIDI ruler.
+ */
+
 #ifndef __GUI_WIDGETS_MIDI_RULER_H__
 #define __GUI_WIDGETS_MIDI_RULER_H__
 
@@ -27,11 +33,17 @@
 
 #define MIDI_RULER_WIDGET_TYPE \
   (midi_ruler_widget_get_type ())
-G_DECLARE_FINAL_TYPE (MidiRulerWidget,
-                      midi_ruler_widget,
-                      Z,
-                      MIDI_RULER_WIDGET,
-                      RulerWidget)
+G_DECLARE_FINAL_TYPE (
+  MidiRulerWidget,
+  midi_ruler_widget,
+  Z, MIDI_RULER_WIDGET,
+  RulerWidget)
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 #define MIDI_RULER MW_PIANO_ROLL->ruler
 
@@ -54,10 +66,18 @@ typedef struct _MidiRulerWidget
 void
 midi_ruler_widget_refresh ();
 
+/**
+ * Called when allocating the children of the
+ * RulerWidget to allocate the RulerMarkerWidget.
+ */
 void
 midi_ruler_widget_set_ruler_marker_position (
-  MidiRulerWidget * self,
-  RulerMarkerWidget *    rm,
-  GtkAllocation *       allocation);
+  MidiRulerWidget *   self,
+  RulerMarkerWidget * rm,
+  GtkAllocation *     allocation);
+
+/**
+ * @}
+ */
 
 #endif

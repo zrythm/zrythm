@@ -487,8 +487,8 @@ track_add_region (
     region);
   g_warn_if_fail (lane_pos >= 0);
   g_warn_if_fail (
-    region->obj_info.type ==
-    AOI_TYPE_MAIN);
+    region->obj_info.counterpart ==
+    AOI_COUNTERPART_MAIN);
   g_warn_if_fail (
     region->obj_info.main &&
     region->obj_info.main_trans &&
@@ -522,7 +522,6 @@ track_add_region (
     {
       track_add_lane (track);
     }
-
 
   EVENTS_PUSH (ET_REGION_CREATED,
                region);

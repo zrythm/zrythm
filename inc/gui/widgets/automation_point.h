@@ -31,19 +31,19 @@
 
 #include <gtk/gtk.h>
 
+#define AUTOMATION_POINT_WIDGET_TYPE \
+  (automation_point_widget_get_type ())
+G_DECLARE_FINAL_TYPE (
+  AutomationPointWidget,
+  automation_point_widget,
+  Z, AUTOMATION_POINT_WIDGET,
+  GtkBox)
+
 /**
  * @addtogroup widgets
  *
  * @{
  */
-
-#define AUTOMATION_POINT_WIDGET_TYPE \
-  (automation_point_widget_get_type ())
-G_DECLARE_FINAL_TYPE (AutomationPointWidget,
-                      automation_point_widget,
-                      Z,
-                      AUTOMATION_POINT_WIDGET,
-                      GtkBox)
 
 #define AP_WIDGET_POINT_SIZE 6
 #define AP_WIDGET_CURVE_H 2

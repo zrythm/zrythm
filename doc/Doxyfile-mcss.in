@@ -1,4 +1,4 @@
-@INCLUDE                = doc/Doxyfile.cfg
+@INCLUDE                = Doxyfile.cfg
 GENERATE_HTML           = NO
 GENERATE_XML            = YES
 XML_PROGRAMLISTING      = NO

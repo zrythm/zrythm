@@ -753,11 +753,12 @@ on_right_click (GtkGestureMultiPress *gesture,
 static void
 auto_scroll (ArrangerWidget * self)
 {
+  return;
+  g_message ("AUTO SCROLL");
   ARRANGER_WIDGET_GET_PRIVATE (self);
 	GET_ARRANGER_ALIASES(self);
 	GtkScrolledWindow *scrolled =
 		arranger_widget_get_scrolled_window (self);
-  g_message ("auto scroll");
 	if (midi_arranger)
 	{
 		midi_arranger_widget_auto_scroll(
@@ -1235,8 +1236,12 @@ drag_begin (GtkGestureDrag *   gesture,
       else if (midi_arranger)
         {
           /* FIXME */
-          midi_arranger_widget_set_init_poses (
-            midi_arranger);
+          midi_arranger_selections_get_start_pos (
+            MA_SELECTIONS,
+            &ar_prv->earliest_obj_start_pos,
+            0, 1);
+          midi_arranger_selections_set_cache_poses (
+            MA_SELECTIONS);
         }
       else if (vel_widget)
         {
@@ -1376,8 +1381,10 @@ drag_update (GtkGestureDrag * gesture,
       &ar_prv->earliest_obj_start_pos,
       NULL);
 
-  /* set action to selecting if starting selection. this
-   * is because drag_update never gets called if it's just
+  /* set action to selecting if starting selection.
+   * this
+   * is because drag_update never gets called if
+   * it's just
    * a click, so we can check at drag_end and see if
    * anything was selected */
   if (ar_prv->action ==
@@ -1521,16 +1528,16 @@ drag_update (GtkGestureDrag * gesture,
               timeline_arranger_widget_update_visibility (
                 timeline);
               timeline_arranger_widget_snap_regions_r (
-                Z_TIMELINE_ARRANGER_WIDGET (self),
+                timeline,
                 &ar_prv->curr_pos);
             }
         }
-      else if (ARRANGER_IS_MIDI (self))
+      else if (midi_arranger)
         {
           midi_arranger_widget_update_visibility (
             midi_arranger);
           midi_arranger_widget_snap_midi_notes_r (
-            Z_MIDI_ARRANGER_WIDGET (self),
+            midi_arranger,
             &ar_prv->curr_pos);
         }
     } /*endif RESIZING_R */
@@ -1577,10 +1584,6 @@ drag_update (GtkGestureDrag * gesture,
             midi_arranger,
             offset_y);
           auto_scroll (self);
-
-          EVENTS_PUSH (ET_MA_SELECTIONS_CHANGED,
-                       NULL);
-//arranger_widget_refresh(self);
         }
     } /* endif MOVING */
   /* if copy-moving the selection */
@@ -1608,7 +1611,7 @@ drag_update (GtkGestureDrag * gesture,
           midi_arranger_widget_move_items_y (
             midi_arranger,
             offset_y);
-          auto_scroll(self);
+          /*auto_scroll(self);*/
         }
     } /* endif MOVING_COPY */
   else if (ar_prv->action ==
@@ -1624,29 +1627,9 @@ drag_update (GtkGestureDrag * gesture,
       g_message ("auditioning");
     }
 
-  /* things have changed, reallocate */
-  gtk_widget_queue_allocate(GTK_WIDGET (self));
-
-  /* redraw midi ruler if region positions were changed */
-  if (timeline &&
-      TL_SELECTIONS->num_regions > 0 &&
-      (ar_prv->action ==
-         UI_OVERLAY_ACTION_MOVING ||
-      ar_prv->action ==
-        UI_OVERLAY_ACTION_RESIZING_L ||
-      ar_prv->action ==
-        UI_OVERLAY_ACTION_RESIZING_R))
-    gtk_widget_queue_draw (GTK_WIDGET (MIDI_RULER));
-
   /* update last offsets */
   ar_prv->last_offset_x = offset_x;
   ar_prv->last_offset_y = offset_y;
-
-  /* update inspector */
-  /*update_inspector (self);*/
-  /* FIXME only call when selections changed. */
-  EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
-               NULL);
 
   arranger_widget_refresh_cursor (self);
 }
@@ -1656,7 +1639,7 @@ drag_end (GtkGestureDrag *gesture,
                gdouble         offset_y,
                gpointer        user_data)
 {
-  g_message ("drag end");
+  g_message ("arranger drag end");
   ArrangerWidget * self =
     (ArrangerWidget *) user_data;
   GET_PRIVATE;

@@ -266,16 +266,13 @@ midi_note_widget_update_tooltip (
       /*GTK_WIDGET (self->tooltip_win));*/
 }
 
-/*static void*/
-/*on_destroy (*/
-  /*GtkWidget * widget,*/
-  /*MidiNoteWidget * self)*/
-/*{*/
-  /*g_message ("on destroy %p", widget);*/
-  /*[>if (GTK_IS_WIDGET (self->tooltip_win))<]*/
-    /*[>gtk_widget_destroy (<]*/
-      /*[>GTK_WIDGET (self->tooltip_win));<]*/
-/*}*/
+static void
+on_destroy (
+  GtkWidget * widget,
+  MidiNoteWidget * self)
+{
+  g_message ("on destroy %p", widget);
+}
 
 /**
  * Sets the "selected" GTK state flag and adds the
@@ -382,6 +379,9 @@ midi_note_widget_init (MidiNoteWidget * self)
     GDK_LEAVE_NOTIFY_MASK);
 
   /* connect signals */
+  g_signal_connect (
+    G_OBJECT (self), "destroy",
+    G_CALLBACK (on_destroy), self);
   g_signal_connect (
     G_OBJECT (self->drawing_area), "draw",
     G_CALLBACK (midi_note_draw_cb), self);

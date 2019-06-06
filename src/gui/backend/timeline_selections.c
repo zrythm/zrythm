@@ -35,33 +35,6 @@
 
 #include <gtk/gtk.h>
 
-/**
- * Sets the Position pos to the earliest or latest
- * object.
- *
- * @param cc Camel case.
- * @param lc Lower case
- * @param pos_name Variable name of position to check
- * @param bef_or_aft Before or after
- * @param widg Widget to set.
- */
-#define SET_POS_TO(cc,lc,pos_name,transient,bef_or_aft,widg) \
-  cc * lc; \
-  for (i = 0; i < ts->num_##lc##s; i++) \
-    { \
-      if (transient) \
-        lc = ts->lc##s[i]->obj_info.main_trans; \
-      else \
-        lc = ts->lc##s[i]->obj_info.main; \
-      if (position_is_##bef_or_aft ( \
-            &lc->pos_name, pos)) \
-        { \
-          position_set_to_pos ( \
-            pos, &lc->pos_name); \
-          widget = GTK_WIDGET (lc->widget); \
-        } \
-    }
-
 void
 timeline_selections_init_loaded (
   TimelineSelections * ts)
@@ -161,12 +134,15 @@ timeline_selections_get_start_pos (
 
   int i;
 
-  SET_POS_TO (Region, region, start_pos,
-              transient, before, widget);
-  SET_POS_TO (AutomationPoint, ap, pos,
-              transient, before, widget);
-  SET_POS_TO (ZChord, chord, pos,
-              transient, before, widget);
+  SET_ARRANGER_OBJ_POS_TO (
+    ts, Region, region, start_pos,
+    transient, before, widget);
+  SET_ARRANGER_OBJ_POS_TO (
+    ts, AutomationPoint, ap, pos,
+    transient, before, widget);
+  SET_ARRANGER_OBJ_POS_TO (
+    ts, ZChord, chord, pos,
+    transient, before, widget);
 }
 
 /**
@@ -189,18 +165,21 @@ timeline_selections_get_end_pos (
 
   int i;
 
-  SET_POS_TO (Region, region, start_pos,
-              transient, after, widget);
-  SET_POS_TO (AutomationPoint, ap, pos,
-              transient, after, widget);
-  SET_POS_TO (ZChord, chord, pos,
-              transient, after, widget);
+  SET_ARRANGER_OBJ_POS_TO (
+    ts, Region, region, start_pos,
+    transient, after, widget);
+  SET_ARRANGER_OBJ_POS_TO (
+    ts, AutomationPoint, ap, pos,
+    transient, after, widget);
+  SET_ARRANGER_OBJ_POS_TO (
+    ts, ZChord, chord, pos,
+    transient, after, widget);
 }
 
 /**
  * Gets first object's widget.
  *
- * If transient is 1, transient objects rae checked
+ * If transient is 1, transient objects are checked
  * instead.
  */
 GtkWidget *
@@ -215,12 +194,15 @@ timeline_selections_get_first_object (
     pos, TRANSPORT->total_bars);
   int i;
 
-  SET_POS_TO (Region, region, start_pos,
-              transient, before, widget);
-  SET_POS_TO (AutomationPoint, ap, pos,
-              transient, before, widget);
-  SET_POS_TO (ZChord, chord, pos,
-              transient, before, widget);
+  SET_ARRANGER_OBJ_POS_TO (
+    ts, Region, region, start_pos,
+    transient, before, widget);
+  SET_ARRANGER_OBJ_POS_TO (
+    ts, AutomationPoint, ap, pos,
+    transient, before, widget);
+  SET_ARRANGER_OBJ_POS_TO (
+    ts, ZChord, chord, pos,
+    transient, before, widget);
 
   return widget;
 }
@@ -242,12 +224,15 @@ timeline_selections_get_last_object (
   position_init (pos);
   int i;
 
-  SET_POS_TO (Region, region, start_pos,
-              transient, after, widget);
-  SET_POS_TO (AutomationPoint, ap, pos,
-              transient, after, widget);
-  SET_POS_TO (ZChord, chord, pos,
-              transient, after, widget);
+  SET_ARRANGER_OBJ_POS_TO (
+    ts, Region, region, start_pos,
+    transient, after, widget);
+  SET_ARRANGER_OBJ_POS_TO (
+    ts, AutomationPoint, ap, pos,
+    transient, after, widget);
+  SET_ARRANGER_OBJ_POS_TO (
+    ts, ZChord, chord, pos,
+    transient, after, widget);
 
   return widget;
 }
@@ -678,7 +663,6 @@ timeline_selections_add_ticks (
           position_set_to_pos (&ap->pos, &ap_pos);
         }
     }
-
 }
 
 void

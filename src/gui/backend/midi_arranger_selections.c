@@ -42,22 +42,143 @@ midi_arranger_selections_init_loaded (
 
 /**
  * Returns the position of the leftmost object.
+ *
+ * If transient is 1, the transient objects are
+ * checked instead.
+ *
+ * The return value will be stored in pos.
+ *
+ * @param global Return global (timeline) Position,
+ *   otherwise returns the local (from the start
+ *   of the Region) Position.
  */
-static void
-get_start_pos (
-  MidiArrangerSelections * ts,
-  Position *           pos) ///< position to fill in
+void
+midi_arranger_selections_get_start_pos (
+  MidiArrangerSelections * mas,
+  Position *           pos,
+  int                  transient,
+  int                  global)
 {
   position_set_to_bar (pos,
                        TRANSPORT->total_bars);
 
-  for (int i = 0; i < ts->num_midi_notes; i++)
+  GtkWidget * widget = NULL;
+  (void) widget; // avoid unused warnings
+
+  int i;
+
+  SET_ARRANGER_OBJ_POS_TO (
+    mas, MidiNote, midi_note, start_pos,
+    transient, before, widget);
+
+  if (global)
+    position_add_ticks (
+      pos,
+      mas->midi_notes[0]->region->
+        start_pos.total_ticks);
+}
+
+/**
+ * Returns the position of the rightmost object.
+ *
+ * If transient is 1, the transient objects are
+ * checked instead.
+ *
+ * The return value will be stored in pos.
+ */
+void
+midi_arranger_selections_get_end_pos (
+  MidiArrangerSelections * mas,
+  Position *           pos,
+  int                  transient)
+{
+  position_set_to_bar (pos,
+                       TRANSPORT->total_bars);
+
+  GtkWidget * widget = NULL;
+  (void) widget; // avoid unused warnings
+
+  int i;
+
+  SET_ARRANGER_OBJ_POS_TO (
+    mas, MidiNote, midi_note, start_pos,
+    transient, after, widget);
+}
+
+/**
+ * Gets first object's widget.
+ *
+ * If transient is 1, transient objects are checked
+ * instead.
+ */
+GtkWidget *
+midi_arranger_selections_get_first_object (
+  MidiArrangerSelections * mas,
+  int                  transient)
+{
+  Position _pos;
+  Position * pos = &_pos;
+  GtkWidget * widget = NULL;
+  position_set_to_bar (
+    pos, TRANSPORT->total_bars);
+  int i;
+
+  SET_ARRANGER_OBJ_POS_TO (
+    mas, MidiNote, midi_note, start_pos,
+    transient, before, widget);
+
+  return widget;
+}
+
+/**
+ * Gets last object's widget.
+ *
+ * If transient is 1, transient objects are checked
+ * instead.
+ */
+GtkWidget *
+midi_arranger_selections_get_last_object (
+  MidiArrangerSelections * mas,
+  int                  transient)
+{
+  Position _pos;
+  Position * pos = &_pos;
+  GtkWidget * widget = NULL;
+  position_set_to_bar (
+    pos, TRANSPORT->total_bars);
+  int i;
+
+  SET_ARRANGER_OBJ_POS_TO (
+    mas, MidiNote, midi_note, start_pos,
+    transient, after, widget);
+
+  return widget;
+}
+
+/**
+ * Sets the cache Position's for each object in
+ * the selection.
+ *
+ * Used by the ArrangerWidget's.
+ */
+void
+midi_arranger_selections_set_cache_poses (
+  MidiArrangerSelections * mas)
+{
+  int i;
+
+  MidiNote * mn;
+  for (i = 0; i < mas->num_midi_notes; i++)
     {
-      MidiNote * midi_note = ts->midi_notes[i];
-      if (position_compare (&midi_note->start_pos,
-                            pos) < 0)
-        position_set_to_pos (pos,
-                             &midi_note->start_pos);
+      mn = mas->midi_notes[i];
+
+      /* set start pos for midi note */
+      midi_note_set_cache_start_pos (
+        mn, &mn->start_pos);
+
+      /* set end pos for midi note */
+      midi_note_set_cache_end_pos (
+        mn, &mn->end_pos);
     }
 }
 
@@ -87,6 +208,24 @@ midi_arranger_selections_clear (
     }
 
   g_message ("cleared midi arranger selections");
+}
+
+/**
+ * Returns if the MidiArrangerSelections contain
+ * the given MidiNote.
+ *
+ * The note must be the main note (see
+ * midi_note_get_main_note()).
+ */
+int
+midi_arranger_selections_contains_note (
+  MidiArrangerSelections * mas,
+  MidiNote *               note)
+{
+  return array_contains (
+    mas->midi_notes,
+    mas->num_midi_notes,
+    midi_note_get_main_note (note));
 }
 
 /**
@@ -264,6 +403,31 @@ midi_arranger_selections_get_last_midi_note (
 	return result;
 }
 
+/**
+ * Moves the MidiArrangerSelections by the given
+ * amount of ticks.
+ *
+ * @param use_cached_pos Add the ticks to the cached
+ *   Position's instead of the current Position's.
+ * @param ticks Ticks to add.
+ */
+void
+midi_arranger_selections_add_ticks (
+  MidiArrangerSelections * mas,
+  long                 ticks,
+  int                  use_cached_pos)
+{
+  int i;
+
+  /* update midi note positions */
+  MidiNote * mn;
+  for (i = 0; i < mas->num_midi_notes; i++)
+    {
+      mn = mas->midi_notes[i];
+      midi_note_move (mn, ticks, use_cached_pos);
+    }
+}
+
 void
 midi_arranger_selections_paste_to_pos (
   MidiArrangerSelections * ts,
@@ -273,8 +437,8 @@ midi_arranger_selections_paste_to_pos (
 
   /* get pos of earliest object */
   Position start_pos;
-  get_start_pos (ts,
-                 &start_pos);
+  midi_arranger_selections_get_start_pos (
+    ts, &start_pos, 0, 1);
   int start_pos_ticks =
     position_to_ticks (&start_pos);
 

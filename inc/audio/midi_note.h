@@ -76,8 +76,19 @@ typedef enum MidiNoteCloneFlag
  */
 typedef struct MidiNote
 {
+  /** Start Position. */
   Position        start_pos;
+
+  /** Cache start Position. */
+  Position        cache_start_pos;
+
+  /** End Position. */
   Position        end_pos;
+
+  /** Cached end Position, for live operations. */
+  Position        cache_end_pos;
+
+  /** GUI widget. */
   MidiNoteWidget  * widget;
 
   /**
@@ -155,6 +166,14 @@ midi_note_new (
   int          is_main);
 
 /**
+ * Sets the Region the MidiNote belongs to.
+ */
+void
+midi_note_set_region (
+  MidiNote * midi_note,
+  Region *   region);
+
+/**
  * Finds the actual MidiNote in the project from the
  * given clone.
  */
@@ -218,8 +237,9 @@ midi_note_is_selected (MidiNote * self);
 /**
  * Returns if MidiNote is (should be) visible.
  */
-int
-midi_note_is_visible (MidiNote * self);
+#define midi_note_should_be_visible(mn) \
+  arranger_object_info_should_be_visible ( \
+    mn->obj_info)
 
 /**
  * Checks if position is valid then sets it.
@@ -234,6 +254,36 @@ midi_note_set_start_pos (MidiNote * midi_note,
 void
 midi_note_set_end_pos (MidiNote * midi_note,
                        Position * end_pos);
+/**
+ * Sets the cached start Position for use in live
+ * operations like moving.
+ */
+void
+midi_note_set_cache_start_pos (
+  MidiNote * mn,
+  const Position * pos);
+
+/**
+ * Sets the cached end Position for use in live
+ * operations like moving.
+ */
+void
+midi_note_set_cache_end_pos (
+  MidiNote * mn,
+  const Position * pos);
+
+/**
+ * Moves the MidiNote by the given amount of ticks.
+ *
+ * @param use_cached_pos Add the ticks to the cached
+ *   Position instead of its current Position.
+ * @return Whether moved or not.
+ */
+int
+midi_note_move (
+  MidiNote * midi_note,
+  long     ticks,
+  int      use_cached_pos);
 
 /**
  * Shifts MidiNote's position and/or value.

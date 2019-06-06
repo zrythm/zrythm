@@ -106,8 +106,10 @@ midi_region_draw_cb (
     {
       MidiNote * mn = mr->midi_notes[i];
 
-      if (!midi_note_is_visible (mn))
-        continue;
+      mn =
+        (MidiNote *)
+        arranger_object_info_get_visible_counterpart (
+          &mn->obj_info);
 
       /* get ratio (0.0 - 1.0) on x where midi note starts
        * & ends */

@@ -80,10 +80,6 @@ typedef struct _TimelineArrangerWidget
    */
   Region *                 start_region;
 
-  /** Used to reference the region information
-   * at the start of the action. */
-  Region *                 start_region_clone;
-
   AutomationPoint *        start_ap;
   AutomationCurve *        start_ac;
   ZChord *                  start_chord;

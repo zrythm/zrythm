@@ -56,18 +56,6 @@ typedef struct _MidiArrangerWidget
    */
   MidiNote *               start_midi_note;
 
-  /** Used to reference the midi note information
-   * at the start of the action. */
-  MidiNote *               start_midi_note_clone;
-
-
-  /** Temporary start positions, set on drag_begin and
-   * used in drag_update to move the objects accordingly
-   */
-  Position                 midi_note_start_poses[600];
-
-  Position                 midi_note_end_poses[600];
-
   /** The note currently hovering over */
   int                      hovered_note;
 } MidiArrangerWidget;
@@ -113,14 +101,6 @@ void
 midi_arranger_widget_select_all (
   MidiArrangerWidget *  self,
   int               select);
-
-/**
- * Fills in the positions that the MidiArranger
- * remembers at the start of each drag.
- */
-void
-midi_arranger_widget_set_init_poses (
-  MidiArrangerWidget * self);
 
 /**
  * Shows context menu.

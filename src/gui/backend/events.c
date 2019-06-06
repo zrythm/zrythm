@@ -411,22 +411,33 @@ on_midi_note_selection_changed ()
 static void
 on_midi_note_changed (MidiNote * midi_note)
 {
-  if (GTK_IS_WIDGET (midi_note->widget))
+  for (int i = 0; i < 2; i++)
     {
-      gtk_widget_set_visible (
-        GTK_WIDGET (midi_note->widget),
-        midi_note_is_visible (midi_note));
-      if (midi_note_is_selected (midi_note))
-        gtk_widget_set_state_flags (
-          GTK_WIDGET (midi_note->widget),
-          GTK_STATE_FLAG_SELECTED,
-          0);
-      else
-        gtk_widget_unset_state_flags (
-          GTK_WIDGET (midi_note->widget),
-          GTK_STATE_FLAG_SELECTED);
-      gtk_widget_queue_draw (
-        GTK_WIDGET (midi_note->widget));
+      if (i == 0)
+        midi_note =
+          midi_note_get_main_note (midi_note);
+      else if (i == 1)
+        midi_note =
+          midi_note_get_trans_note (midi_note);
+
+      if (GTK_IS_WIDGET (midi_note->widget))
+        {
+          if (midi_note_is_selected (midi_note))
+            {
+              gtk_widget_set_state_flags (
+                GTK_WIDGET (midi_note->widget),
+                GTK_STATE_FLAG_SELECTED,
+                0);
+            }
+          else
+            {
+              gtk_widget_unset_state_flags (
+                GTK_WIDGET (midi_note->widget),
+                GTK_STATE_FLAG_SELECTED);
+            }
+          gtk_widget_queue_draw (
+            GTK_WIDGET (midi_note->widget));
+        }
     }
 
   if (midi_note->region->widget)
@@ -875,6 +886,7 @@ events_process (void * data)
           home_toolbar_widget_refresh_undo_redo_buttons (
             MW_HOME_TOOLBAR);
           break;
+        /* FIXME rename to MIDI_NOTE_ADDED_TO_REGION */
         case ET_MIDI_NOTE_CREATED:
           /*z_gtk_overlay_add_if_not_exists (*/
             /*GTK_OVERLAY (MIDI_ARRANGER),*/
@@ -886,8 +898,8 @@ events_process (void * data)
             /*GTK_WIDGET (MIDI_ARRANGER));*/
           /*arranger_widget_refresh (*/
             /*Z_ARRANGER_WIDGET (MIDI_ARRANGER));*/
-          midi_arranger_widget_refresh_children (
-            MIDI_ARRANGER);
+          arranger_widget_refresh (
+            Z_ARRANGER_WIDGET (MIDI_ARRANGER));
           break;
         case ET_MIDI_NOTE_REMOVED:
           /*g_object_ref (((MidiNote *) ev->arg)->widget);*/
@@ -961,6 +973,14 @@ events_process (void * data)
             MW_TRACKLIST);
           timeline_arranger_widget_refresh_visibility (
             MW_TIMELINE);
+        case ET_REGION_POSITIONS_CHANGED:
+          /* redraw midi ruler if region
+           * positions were changed */
+          gtk_widget_queue_allocate (
+            GTK_WIDGET (MIDI_RULER));
+          gtk_widget_queue_draw (
+            GTK_WIDGET (MIDI_RULER));
+          break;
         default:
           g_message ("event not implemented yet");
           /* unimplemented */

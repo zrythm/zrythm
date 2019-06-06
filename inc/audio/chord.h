@@ -148,9 +148,9 @@ typedef struct ZChord
   int            notes[36];
 
   /**
-   * == 0 no inversion,
-   * < 0 highest note(s) drop an octave,
-   * > 0 lwest note(s) receive an octave.
+   * 0 no inversion,
+   * less than 0 highest note(s) drop an octave,
+   * greater than 0 lwest note(s) receive an octave.
    */
   int                   inversion;
 

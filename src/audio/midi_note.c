@@ -41,6 +41,8 @@
 #include "utils/arrays.h"
 #include "utils/flags.h"
 
+DEFINE_START_POS
+
 #define SET_POS(r,pos_name,pos) \
   position_set_to_pos ( \
     &midi_note_get_trans_note (r)-> \
@@ -104,10 +106,32 @@ midi_note_new (
         midi_note,
         main_trans,
         lane,
-        lane_trans);
+        lane_trans,
+        AOI_TYPE_MIDI_NOTE);
     }
 
   return midi_note;
+}
+
+/**
+ * Sets the Region the MidiNote belongs to.
+ */
+void
+midi_note_set_region (
+  MidiNote * midi_note,
+  Region *   region)
+{
+  MidiNote * mn;
+  for (int i = 0; i < 2; i++)
+    {
+      if (i == AOI_COUNTERPART_MAIN)
+        mn = midi_note_get_main_note (midi_note);
+      else if (i == AOI_COUNTERPART_MAIN_TRANSIENT)
+        mn = midi_note_get_trans_note (midi_note);
+
+      mn->region = region;
+      mn->region_name = g_strdup (region->name);
+    }
 }
 
 /**
@@ -165,6 +189,27 @@ midi_note_get_track (
 }
 
 /**
+ * Moves the MidiNote by the given amount of ticks.
+ *
+ * @param use_cached_pos Add the ticks to the cached
+ *   Position instead of its current Position.
+ * @return Whether moved or not.
+ */
+int
+midi_note_move (
+  MidiNote * midi_note,
+  long     ticks,
+  int      use_cached_pos)
+{
+  Position tmp;
+  int moved;
+  POSITION_MOVE_BY_TICKS_W_LENGTH (
+    tmp, use_cached_pos, midi_note, ticks, moved);
+
+  return moved;
+}
+
+/**
  * For debugging.
  */
 void
@@ -190,32 +235,12 @@ midi_note_print (
 int
 midi_note_is_selected (MidiNote * self)
 {
-  if (array_contains (
-        MA_SELECTIONS->midi_notes,
-        MA_SELECTIONS->num_midi_notes,
-        self))
+  if (midi_arranger_selections_contains_note (
+        MA_SELECTIONS,
+        midi_note_get_main_note (self)))
     return 1;
 
   return 0;
-}
-
-/**
- * Returns if MidiNote is (should be) visible.
- */
-int
-midi_note_is_visible (MidiNote * self)
-{
-  ARRANGER_WIDGET_GET_PRIVATE (MIDI_ARRANGER);
-
-  if (ar_prv->action ==
-        UI_OVERLAY_ACTION_MOVING &&
-      array_contains (
-        MA_SELECTIONS->midi_notes,
-        MA_SELECTIONS->num_midi_notes,
-        self))
-    return 0;
-
-  return 1;
 }
 
 /**
@@ -255,6 +280,30 @@ midi_note_resize (
     position_add_ticks (&r->start_pos, ticks);
   else
     position_add_ticks (&r->end_pos, ticks);
+}
+
+/**
+ * Sets the cached start Position for use in live
+ * operations like moving.
+ */
+void
+midi_note_set_cache_start_pos (
+  MidiNote * midi_note,
+  const Position * pos)
+{
+  SET_POS (midi_note, cache_start_pos, pos);
+}
+
+/**
+ * Sets the cached end Position for use in live
+ * operations like moving.
+ */
+void
+midi_note_set_cache_end_pos (
+  MidiNote * midi_note,
+  const Position * pos)
+{
+  SET_POS (midi_note, cache_end_pos, pos);
 }
 
 /**

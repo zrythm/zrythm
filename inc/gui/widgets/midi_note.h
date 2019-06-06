@@ -17,7 +17,11 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file */
+/**
+ * \file
+ *
+ * MidiNote widget API.
+ */
 
 #ifndef __GUI_WIDGETS_MIDI_NOTE_H__
 #define __GUI_WIDGETS_MIDI_NOTE_H__
@@ -27,20 +31,23 @@
 
 #include <gtk/gtk.h>
 
+#define MIDI_NOTE_WIDGET_TYPE \
+  (midi_note_widget_get_type ())
+G_DECLARE_FINAL_TYPE (
+  MidiNoteWidget,
+  midi_note_widget,
+  Z, MIDI_NOTE_WIDGET,
+  GtkBox)
+
 /**
  * @addtogroup widgets
  *
  * @{
  */
 
-#define MIDI_NOTE_WIDGET_TYPE \
-  (midi_note_widget_get_type ())
-G_DECLARE_FINAL_TYPE (MidiNoteWidget,
-                      midi_note_widget,
-                      Z,
-                      MIDI_NOTE_WIDGET,
-                      GtkBox)
-
+/**
+ * GUI widget for a MidiNote.
+ */
 typedef struct _MidiNoteWidget
 {
   GtkBox                   parent_instance;

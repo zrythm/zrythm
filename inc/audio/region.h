@@ -487,7 +487,7 @@ region_set_lane (
 void
 region_set_cache_end_pos (
   Region * region,
-  Position * pos);
+  const Position * pos);
 
 void
 region_set_cache_start_pos (
@@ -554,8 +554,9 @@ region_is_selected (Region * self);
 /**
  * Returns if Region is (should be) visible.
  */
-int
-region_is_visible (Region * self);
+#define region_should_be_visible(mn) \
+  arranger_object_info_should_be_visible ( \
+    mn->obj_info)
 
 /**
  * Returns if the position is inside the region

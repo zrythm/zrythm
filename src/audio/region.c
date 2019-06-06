@@ -108,7 +108,8 @@ region_init (
             region,
             main_trans,
             lane,
-            lane_trans);
+            lane_trans,
+            AOI_TYPE_REGION);
         }
       else if (type == REGION_TYPE_AUDIO)
         {
@@ -131,13 +132,13 @@ region_set_lane (
   Region * r;
   for (int i = 0; i < 4; i++)
     {
-      if (i == AOI_TYPE_MAIN)
+      if (i == AOI_COUNTERPART_MAIN)
         r = region_get_main_region (region);
-      else if (i == AOI_TYPE_MAIN_TRANSIENT)
+      else if (i == AOI_COUNTERPART_MAIN_TRANSIENT)
         r = region_get_main_trans_region (region);
-      else if (i == AOI_TYPE_LANE)
+      else if (i == AOI_COUNTERPART_LANE)
         r = region_get_lane_region (region);
-      else if (i == AOI_TYPE_LANE_TRANSIENT)
+      else if (i == AOI_COUNTERPART_LANE_TRANSIENT)
         r = region_get_lane_trans_region (region);
 
       r->lane = lane;
@@ -267,7 +268,7 @@ region_find_midi_note (
 void
 region_set_cache_end_pos (
   Region * region,
-  Position * pos)
+  const Position * pos)
 {
   SET_POS (region, cache_end_pos, pos);
 }
@@ -421,26 +422,6 @@ region_is_selected (Region * self)
 }
 
 /**
- * Returns if Region is (should be) visible.
- */
-int
-region_is_visible (Region * self)
-{
-  /* FIXME delete */
-  ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);
-
-  if (ar_prv->action ==
-        UI_OVERLAY_ACTION_MOVING &&
-      array_contains (
-        TL_SELECTIONS->regions,
-        TL_SELECTIONS->num_regions,
-        self))
-    return 0;
-
-  return 1;
-}
-
-/**
  * Moves the Region by the given amount of ticks.
  *
  * @param use_cached_pos Add the ticks to the cached
@@ -454,30 +435,11 @@ region_move (
   int      use_cached_pos)
 {
   Position tmp;
-  if (use_cached_pos)
-    position_set_to_pos (
-      &tmp, &region->cache_start_pos);
-  else
-    position_set_to_pos (
-      &tmp, &region->start_pos);
-  position_add_ticks (
-    &tmp, ticks);
-  if (position_is_before (
-        &tmp, START_POS))
-    return 0;
+  int moved;
+  POSITION_MOVE_BY_TICKS_W_LENGTH (
+    tmp, use_cached_pos, region, ticks, moved);
 
-  SET_POS (region, start_pos, &tmp);
-  if (use_cached_pos)
-    position_set_to_pos (
-      &tmp, &region->cache_end_pos);
-  else
-    position_set_to_pos (
-      &tmp, &region->end_pos);
-  position_add_ticks (
-    &tmp, ticks);
-  SET_POS (region, end_pos, &tmp);
-
-  return 1;
+  return moved;
 }
 
 /**

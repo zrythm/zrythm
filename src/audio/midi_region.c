@@ -79,10 +79,20 @@ void
 midi_region_add_midi_note (MidiRegion * region,
                       MidiNote * midi_note)
 {
+  g_warn_if_fail (
+    midi_note->obj_info.counterpart ==
+    AOI_COUNTERPART_MAIN);
+  g_warn_if_fail (
+    midi_note->obj_info.main &&
+    midi_note->obj_info.main_trans &&
+    midi_note->obj_info.lane &&
+    midi_note->obj_info.lane_trans);
+
+  midi_note_set_region (midi_note, region);
+
   array_append (region->midi_notes,
                 region->num_midi_notes,
                 midi_note);
-  midi_note->region = region;
 
   EVENTS_PUSH (ET_MIDI_NOTE_CREATED,
                midi_note);

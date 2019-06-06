@@ -17,11 +17,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * API for selections in the piano roll.
+ */
+
 #ifndef __ACTIONS_MA_SELECTIONS_H__
 #define __ACTIONS_MA_SELECTIONS_H__
 
 #include "audio/midi_note.h"
 #include "utils/yaml.h"
+
+/**
+ * @addtogroup gui_backend
+ *
+ * @{
+ */
 
 #define MA_SELECTIONS \
   (&PROJECT->midi_arranger_selections)
@@ -68,11 +80,58 @@ midi_arranger_selections_clone (
 
 /**
  * Returns the position of the leftmost object.
+ *
+ * If transient is 1, the transient objects are
+ * checked instead.
+ *
+ * The return value will be stored in pos.
+ *
+ * @param global Return global (timeline) Position,
+ *   otherwise returns the local (from the start
+ *   of the Region) Position.
  */
 void
 midi_arranger_selections_get_start_pos (
-  MidiArrangerSelections * ts,
-  Position *                pos); ///< position to fill in
+  MidiArrangerSelections * mas,
+  Position *           pos,
+  int                  transient,
+  int                  global);
+
+/**
+ * Returns the position of the rightmost object.
+ *
+ * If transient is 1, the transient objects are
+ * checked instead.
+ *
+ * The return value will be stored in pos.
+ */
+void
+midi_arranger_selections_get_end_pos (
+  MidiArrangerSelections * mas,
+  Position *           pos,
+  int                  transient);
+
+/**
+ * Gets first object's widget.
+ *
+ * If transient is 1, transient objects are checked
+ * instead.
+ */
+GtkWidget *
+midi_arranger_selections_get_first_object (
+  MidiArrangerSelections * mas,
+  int                  transient);
+
+/**
+ * Gets last object's widget.
+ *
+ * If transient is 1, transient objects are checked
+ * instead.
+ */
+GtkWidget *
+midi_arranger_selections_get_last_object (
+  MidiArrangerSelections * mas,
+  int                  transient);
 
 /**
  * Gets first (position-wise) MidiNote.
@@ -133,6 +192,42 @@ midi_arranger_selections_remove_note (
   MidiNote *               note);
 
 /**
+ * Sets the cache Position's for each object in
+ * the selection.
+ *
+ * Used by the ArrangerWidget's.
+ */
+void
+midi_arranger_selections_set_cache_poses (
+  MidiArrangerSelections * mas);
+
+/**
+ * Returns if the MidiArrangerSelections contain
+ * the given MidiNote.
+ *
+ * The note must be the main note (see
+ * midi_note_get_main_note()).
+ */
+int
+midi_arranger_selections_contains_note (
+  MidiArrangerSelections * mas,
+  MidiNote *               note);
+
+/**
+ * Moves the MidiArrangerSelections by the given
+ * amount of ticks.
+ *
+ * @param use_cached_pos Add the ticks to the cached
+ *   Position's instead of the current Position's.
+ * @param ticks Ticks to add.
+ */
+void
+midi_arranger_selections_add_ticks (
+  MidiArrangerSelections * mas,
+  long                 ticks,
+  int                  use_cached_pos);
+
+/**
  * Clears selections.
  */
 void
@@ -149,5 +244,9 @@ DESERIALIZE_INC (MidiArrangerSelections,
                  midi_arranger_selections)
 PRINT_YAML_INC (MidiArrangerSelections,
                 midi_arranger_selections)
+
+/**
+* @}
+*/
 
 #endif
