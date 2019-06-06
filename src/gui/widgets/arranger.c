@@ -17,13 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * Arranger parent class containing common
- * logic for the timeline and piano roll.
- */
-
 #include "zrythm.h"
 #include "actions/actions.h"
 #include "actions/duplicate_midi_arranger_selections_action.h"
@@ -74,9 +67,12 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE_WITH_PRIVATE (ArrangerWidget,
-                            arranger_widget,
-                            GTK_TYPE_OVERLAY)
+G_DEFINE_TYPE_WITH_PRIVATE (
+  ArrangerWidget,
+  arranger_widget,
+  GTK_TYPE_OVERLAY)
+
+DEFINE_START_POS
 
 #define GET_PRIVATE ARRANGER_WIDGET_GET_PRIVATE (self)
 
@@ -1113,10 +1109,6 @@ create_item (ArrangerWidget * self,
 
   /* something is (likely) added so reallocate */
   gtk_widget_queue_allocate (GTK_WIDGET (self));
-
-  /* remember the start position */
-  position_set_to_pos (
-    &ar_prv->earliest_obj_start_pos, &pos);
 }
 
 static void
@@ -1304,6 +1296,7 @@ drag_begin (GtkGestureDrag *   gesture,
         0);
       timeline_selections_set_cache_poses (
         TL_SELECTIONS);
+      ar_prv->earliest_obj_exists = 1;
     }
   else if (midi_arranger &&
            midi_arranger_selections_has_any (
@@ -1315,6 +1308,11 @@ drag_begin (GtkGestureDrag *   gesture,
         0, 1);
       midi_arranger_selections_set_cache_poses (
         MA_SELECTIONS);
+      ar_prv->earliest_obj_exists = 1;
+    }
+  else
+    {
+      ar_prv->earliest_obj_exists = 0;
     }
 
   arranger_widget_refresh_cursor (self);
@@ -1356,25 +1354,38 @@ drag_update (GtkGestureDrag * gesture,
       &ar_prv->start_pos,
       NULL);
 
-  /* add diff to the earliest object's start pos
-   * and snap it, then get the diff ticks */
-  Position earliest_obj_new_pos;
-  position_set_to_pos (
-    &earliest_obj_new_pos,
-    &ar_prv->earliest_obj_start_pos);
-  position_add_ticks (
-    &earliest_obj_new_pos,
-    ar_prv->curr_ticks_diff_from_start);
-  if (!ar_prv->shift_held &&
-      SNAP_GRID_ANY_SNAP (ar_prv->snap_grid))
-    position_snap (
-      NULL, &earliest_obj_new_pos, NULL, NULL,
-      ar_prv->snap_grid);
-  ar_prv->adj_ticks_diff =
-    position_get_ticks_diff (
-      &earliest_obj_new_pos,
-      &ar_prv->earliest_obj_start_pos,
-      NULL);
+  if (ar_prv->earliest_obj_exists)
+    {
+      /* add diff to the earliest object's start pos
+       * and snap it, then get the diff ticks */
+      Position earliest_obj_new_pos;
+      position_set_to_pos (
+        &earliest_obj_new_pos,
+        &ar_prv->earliest_obj_start_pos);
+      position_add_ticks (
+        &earliest_obj_new_pos,
+        ar_prv->curr_ticks_diff_from_start);
+
+      if (position_is_before (
+            &earliest_obj_new_pos, START_POS))
+        {
+          /* stop at 0.0.0.0 */
+          position_set_to_pos (
+            &earliest_obj_new_pos, START_POS);
+        }
+      else if (!ar_prv->shift_held &&
+          SNAP_GRID_ANY_SNAP (ar_prv->snap_grid))
+        {
+          position_snap (
+            NULL, &earliest_obj_new_pos, NULL,
+            NULL, ar_prv->snap_grid);
+        }
+      ar_prv->adj_ticks_diff =
+        position_get_ticks_diff (
+          &earliest_obj_new_pos,
+          &ar_prv->earliest_obj_start_pos,
+          NULL);
+    }
 
   /* set action to selecting if starting selection.
    * this
@@ -1489,17 +1500,27 @@ drag_update (GtkGestureDrag * gesture,
         {
           timeline_arranger_widget_update_visibility (
             timeline);
-          timeline_arranger_widget_snap_regions_l (
-            timeline,
-            &ar_prv->curr_pos);
+          int ret =
+            timeline_arranger_widget_snap_regions_l (
+              timeline,
+              &ar_prv->curr_pos, 1);
+          if (!ret)
+            timeline_arranger_widget_snap_regions_l (
+              timeline,
+              &ar_prv->curr_pos, 0);
         }
       else if (midi_arranger)
         {
           midi_arranger_widget_update_visibility (
             midi_arranger);
-          midi_arranger_widget_snap_midi_notes_l (
-            midi_arranger,
-            &ar_prv->curr_pos);
+          int ret =
+            midi_arranger_widget_snap_midi_notes_l (
+              midi_arranger,
+              &ar_prv->curr_pos, 1);
+          if (!ret)
+            midi_arranger_widget_snap_midi_notes_l (
+              midi_arranger,
+              &ar_prv->curr_pos, 0);
         }
     } /* endif RESIZING_L */
   else if (ar_prv->action ==
@@ -1522,18 +1543,29 @@ drag_update (GtkGestureDrag * gesture,
             {
               timeline_arranger_widget_update_visibility (
                 timeline);
-              timeline_arranger_widget_snap_regions_r (
-                timeline,
-                &ar_prv->curr_pos);
+              int ret =
+                timeline_arranger_widget_snap_regions_r (
+                  timeline,
+                  &ar_prv->curr_pos, 1);
+              if (!ret)
+                timeline_arranger_widget_snap_regions_r (
+                  timeline,
+                  &ar_prv->curr_pos, 0);
             }
         }
       else if (midi_arranger)
         {
           midi_arranger_widget_update_visibility (
             midi_arranger);
-          midi_arranger_widget_snap_midi_notes_r (
-            midi_arranger,
-            &ar_prv->curr_pos);
+
+          int ret =
+            midi_arranger_widget_snap_midi_notes_r (
+              midi_arranger,
+              &ar_prv->curr_pos, 1);
+          if (!ret)
+            midi_arranger_widget_snap_midi_notes_r (
+              midi_arranger,
+              &ar_prv->curr_pos, 0);
         }
     } /*endif RESIZING_R */
   else if (ar_prv->action ==

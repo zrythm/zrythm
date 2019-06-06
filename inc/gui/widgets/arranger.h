@@ -173,6 +173,10 @@ typedef struct
 
   double               start_pos_px; ///< for moving regions
 
+  /** Whether an object exists, so we can use the
+   * earliest_obj_start_pos. */
+  int                  earliest_obj_exists;
+
   /** Start Position of the earliest object
    * at the start of the drag. */
   Position             earliest_obj_start_pos;

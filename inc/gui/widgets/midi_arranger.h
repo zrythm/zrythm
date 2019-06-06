@@ -162,24 +162,42 @@ midi_arranger_widget_select (
   int                  delete);
 
 /**
- * Called during drag_update in parent when resizing the
- * selection. It sets the start pos of the selected MIDI
- * notes.
+ * Called during drag_update in the parent when
+ * resizing the selection. It sets the start
+ * Position of the selected MidiNote's.
+ *
+ * @param pos Absolute position in the arrranger.
+ * @parram dry_run Don't resize notes; just check
+ *   if the resize is allowed (check if invalid
+ *   resizes will happen)
+ *
+ * @return 0 if the operation was successful,
+ *   nonzero otherwise.
  */
-void
+int
 midi_arranger_widget_snap_midi_notes_l (
   MidiArrangerWidget *self,
-  Position *          pos);
+  Position *          pos,
+  int                 dry_run);
 
 /**
- * Called during drag_update in parent when resizing the
- * selection. It sets the end pos of the selected MIDI
- * notes.
+ * Called during drag_update in the parent when
+ * resizing the selection. It sets the end
+ * Position of the selected MidiNote's.
+ *
+ * @param pos Absolute position in the arrranger.
+ * @parram dry_run Don't resize notes; just check
+ *   if the resize is allowed (check if invalid
+ *   resizes will happen)
+ *
+ * @return 0 if the operation was successful,
+ *   nonzero otherwise.
  */
-void
+int
 midi_arranger_widget_snap_midi_notes_r (
   MidiArrangerWidget *self,
-  Position *          pos);
+  Position *          pos,
+  int                 dry_run);
 
 /**
  * Moves the MidiArrangerSelections by the given

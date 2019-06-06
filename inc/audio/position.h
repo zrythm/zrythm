@@ -350,6 +350,8 @@ position_from_ticks (
 /**
  * Snaps position using given options.
  *
+ * NOTE: Does not do negative Positions.
+ *
  * @param prev_pos Previous Position.
  * @param pos Position moved to.
  * @param track Track at new Position (for Region

@@ -655,88 +655,114 @@ midi_arranger_widget_select (
 }
 
 /**
- * Called during drag_update in parent when resizing the
- * selection. It sets the start pos of the selected MIDI
- * notes.
+ * Called during drag_update in the parent when
+ * resizing the selection. It sets the start
+ * Position of the selected MidiNote's.
+ *
+ * @param pos Absolute position in the arrranger.
+ * @parram dry_run Don't resize notes; just check
+ *   if the resize is allowed (check if invalid
+ *   resizes will happen)
+ *
+ * @return 0 if the operation was successful,
+ *   nonzero otherwise.
  */
-void
+int
 midi_arranger_widget_snap_midi_notes_l (
   MidiArrangerWidget *self,
-  Position *          pos)
+  Position *          pos,
+  int                 dry_run)
 {
-  int i;
-
   ARRANGER_WIDGET_GET_PRIVATE (self);
-
-  /* get local pos */
-  Position local_pos;
-  position_from_ticks (
-    &local_pos,
-    pos->total_ticks -
-    self->start_midi_note->
-      region->start_pos.total_ticks);
 
   /* get delta with first clicked note's start
    * pos */
   long delta;
   delta =
-    local_pos.total_ticks -
-    self->start_midi_note->
-      cache_start_pos.total_ticks;
+    pos->total_ticks -
+    (self->start_midi_note->
+      cache_start_pos.total_ticks +
+    CLIP_EDITOR->region->start_pos.total_ticks);
 
-  Position new_start_pos;
+  Position new_start_pos, new_global_start_pos;
   MidiNote * midi_note;
-  for (i = 0;
+  for (int i = 0;
        i < MA_SELECTIONS->num_midi_notes;
        i++)
     {
       midi_note =
         midi_note_get_main_trans_midi_note (
           MA_SELECTIONS->midi_notes[i]);
-      if (midi_note)
-        {
-          /* calculate new start pos by adding
-           * delta to the cached start pos */
-          position_set_to_pos (
+
+      /* calculate new start pos by adding
+       * delta to the cached start pos */
+      position_set_to_pos (
+        &new_start_pos,
+        &midi_note->cache_start_pos);
+      position_add_ticks (
+        &new_start_pos, delta);
+
+      /* get the global star pos first to
+       * snap it */
+      position_set_to_pos (
+        &new_global_start_pos,
+        &new_start_pos);
+      position_add_ticks (
+        &new_global_start_pos,
+        CLIP_EDITOR->region->
+          start_pos.total_ticks);
+
+      /* snap the global pos */
+      if (SNAP_GRID_ANY_SNAP (
+            ar_prv->snap_grid) &&
+          !ar_prv->shift_held)
+        position_snap (
+          NULL, &new_global_start_pos,
+          NULL, CLIP_EDITOR->region,
+          ar_prv->snap_grid);
+
+      /* convert it back to a local pos */
+      position_set_to_pos (
+        &new_start_pos,
+        &new_global_start_pos);
+      position_add_ticks (
+        &new_start_pos,
+        - CLIP_EDITOR->region->
+          start_pos.total_ticks);
+
+      if (position_is_before (
+            &new_global_start_pos,
+            START_POS) ||
+          position_is_after_or_equal (
             &new_start_pos,
-            &midi_note->cache_start_pos);
-          position_add_ticks (
-            &new_start_pos, delta);
-
-          /* snap */
-          if (SNAP_GRID_ANY_SNAP (
-                ar_prv->snap_grid) &&
-              !ar_prv->shift_held)
-            position_snap (
-              NULL, &new_start_pos,
-              NULL, CLIP_EDITOR->region,
-              ar_prv->snap_grid);
-
-          if (position_is_after_or_equal (
-                &new_start_pos,
-                START_POS) &&
-              position_is_before (
-                &new_start_pos,
-                &midi_note->end_pos))
-            midi_note_set_start_pos (
-              midi_note, &new_start_pos,
-              F_NO_TRANS_ONLY, F_NO_VALIDATE);
-        }
-
+            &midi_note->end_pos))
+        return -1;
+      else if (!dry_run)
+        midi_note_set_start_pos (
+          midi_note, &new_start_pos,
+          F_NO_TRANS_ONLY, F_NO_VALIDATE);
     }
+  return 0;
 }
 
 /**
- * Called during drag_update in parent when resizing
- * the selection. It sets the end pos of the
- * selected MIDI notes.
+ * Called during drag_update in parent when
+ * resizing the selection. It sets the end
+ * Position of the selected MIDI notes.
  *
  * @param pos Absolute position in the arrranger.
+ * @parram dry_run Don't resize notes; just check
+ *   if the resize is allowed (check if invalid
+ *   resizes will happen)
+ *
+ * @return 0 if the operation was successful,
+ *   nonzero otherwise.
  */
-void
+int
 midi_arranger_widget_snap_midi_notes_r (
   MidiArrangerWidget *self,
-  Position *          pos)
+  Position *          pos,
+  int                 dry_run)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
@@ -747,11 +773,9 @@ midi_arranger_widget_snap_midi_notes_r (
     (self->start_midi_note->
       cache_end_pos.total_ticks +
     CLIP_EDITOR->region->start_pos.total_ticks);
-  g_message ("delta %ld", delta);
 
   MidiNote * midi_note;
-  Position new_end_pos,
-           new_global_end_pos;
+  Position new_end_pos, new_global_end_pos;
   for (int i = 0;
        i < MA_SELECTIONS->num_midi_notes;
        i++)
@@ -796,13 +820,16 @@ midi_arranger_widget_snap_midi_notes_r (
         - CLIP_EDITOR->region->
           start_pos.total_ticks);
 
-      if (position_is_after (
+      if (position_is_before_or_equal (
             &new_end_pos,
             &midi_note->start_pos))
+        return -1;
+      else if (!dry_run)
         midi_note_set_end_pos (
           midi_note, &new_end_pos,
           F_NO_TRANS_ONLY, F_NO_VALIDATE);
     }
+  return 0;
 }
 
 /**

@@ -1279,35 +1279,57 @@ timeline_arranger_widget_select (
  * Snaps the region's start point.
  *
  * @param new_start_pos Position to snap to.
+ * @parram dry_run Don't resize notes; just check
+ *   if the resize is allowed (check if invalid
+ *   resizes will happen)
+ *
+ * @return 0 if the operation was successful,
+ *   nonzero otherwise.
  */
-static inline void
+static inline int
 snap_region_l (
   TimelineArrangerWidget * self,
   Region *                 region,
-  Position *               new_start_pos)
+  Position *               new_start_pos,
+  int                      dry_run)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
   if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
         !ar_prv->shift_held)
-    position_snap (NULL,
-                   new_start_pos,
-                   region->lane->track,
-                   NULL,
-                   ar_prv->snap_grid);
+    position_snap (
+      NULL, new_start_pos, region->lane->track,
+      NULL, ar_prv->snap_grid);
 
-  region_set_start_pos (
-    region, new_start_pos,
-    F_NO_TRANS_ONLY, F_VALIDATE);
+  if (position_is_after_or_equal (
+        new_start_pos, &region->end_pos))
+    return -1;
+  else if (!dry_run)
+    region_set_start_pos (
+      region, new_start_pos,
+      F_NO_TRANS_ONLY, F_VALIDATE);
+
+  return 0;
 }
 
-void
+/**
+ * Snaps both the transients (to show in the GUI)
+ * and the actual regions.
+ *
+ * @param pos Absolute position in the timeline.
+ * @parram dry_run Don't resize notes; just check
+ *   if the resize is allowed (check if invalid
+ *   resizes will happen)
+ *
+ * @return 0 if the operation was successful,
+ *   nonzero otherwise.
+ */
+int
 timeline_arranger_widget_snap_regions_l (
   TimelineArrangerWidget * self,
-  Position *               pos)
+  Position *               pos,
+  int                      dry_run)
 {
-  int i;
-  Region * region;
 
   /* get delta with first clicked region's start
    * pos */
@@ -1322,60 +1344,78 @@ timeline_arranger_widget_snap_regions_l (
    * pos */
   Position new_start_pos;
 
-#define CALC_NEW_START_POS \
-  position_set_to_pos ( \
-    &new_start_pos, \
-    &region->cache_start_pos); \
-  position_add_ticks ( \
-    &new_start_pos, delta);
-
-  /* transient regions */
-  for (i = 0;
+  Region * region;
+  int ret;
+  for (int i = 0;
        i < TL_SELECTIONS->num_regions;
        i++)
     {
       /* main trans region */
       region =
-        ((Region *) TL_SELECTIONS->regions[i]->
-           obj_info.main_trans);
-      CALC_NEW_START_POS;
-      snap_region_l (
-        self, region, &new_start_pos);
+        region_get_main_trans_region (
+          TL_SELECTIONS->regions[i]);
+
+      /* caclulate new start position */
+      position_set_to_pos (
+        &new_start_pos,
+        &region->cache_start_pos);
+      position_add_ticks (
+        &new_start_pos, delta);
+
+      ret =
+        snap_region_l (
+          self, region, &new_start_pos, dry_run);
+
+      if (ret)
+        return ret;
 
       /* lane trans region */
       region =
         ((Region *) region->obj_info.lane_trans);
-      snap_region_l (
-        self, region, &new_start_pos);
+
+      ret =
+        snap_region_l (
+          self, region, &new_start_pos, dry_run);
+
+      if (ret)
+        return ret;
     }
 
-#undef CALC_NEW_START_POS
-
   EVENTS_PUSH (ET_REGION_POSITIONS_CHANGED, NULL);
+
+  return 0;
 }
 
 /**
  * Snaps the region's end point.
  *
  * @param new_end_pos Position to snap to.
+ * @parram dry_run Don't resize notes; just check
+ *   if the resize is allowed (check if invalid
+ *   resizes will happen)
+ *
+ * @return 0 if the operation was successful,
+ *   nonzero otherwise.
  */
-static inline void
+static inline int
 snap_region_r (
   TimelineArrangerWidget * self,
   Region * region,
-  Position * new_end_pos)
+  Position * new_end_pos,
+  int        dry_run)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
   if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
         !ar_prv->shift_held)
-    position_snap (NULL,
-                   new_end_pos,
-                   region->lane->track,
-                   NULL,
-                   ar_prv->snap_grid);
-  if (position_is_after (
+    position_snap (
+      NULL, new_end_pos, region->lane->track,
+      NULL, ar_prv->snap_grid);
+
+  if (position_is_before_or_equal (
         new_end_pos, &region->start_pos))
+    return -1;
+  else if (!dry_run)
     {
       region_set_end_pos (
         region, new_end_pos, F_NO_TRANS_ONLY,
@@ -1404,6 +1444,8 @@ snap_region_r (
             region, &region->true_end_pos);
         }
     }
+
+  return 0;
 }
 
 /**
@@ -1411,11 +1453,18 @@ snap_region_r (
  * and the actual regions.
  *
  * @param pos Absolute position in the timeline.
+ * @parram dry_run Don't resize notes; just check
+ *   if the resize is allowed (check if invalid
+ *   resizes will happen)
+ *
+ * @return 0 if the operation was successful,
+ *   nonzero otherwise.
  */
-void
+int
 timeline_arranger_widget_snap_regions_r (
   TimelineArrangerWidget * self,
-  Position *               pos)
+  Position *               pos,
+  int                      dry_run)
 {
   /* get delta with first clicked region's end
    * pos */
@@ -1430,6 +1479,7 @@ timeline_arranger_widget_snap_regions_r (
   Position new_end_pos;
 
   Region * region;
+  int ret;
   for (int i = 0;
        i < TL_SELECTIONS->num_regions;
        i++)
@@ -1447,11 +1497,17 @@ timeline_arranger_widget_snap_regions_r (
       position_add_ticks (
         &new_end_pos, delta);
 
-      snap_region_r (
-        self, region, &new_end_pos);
+      ret =
+        snap_region_r (
+          self, region, &new_end_pos, dry_run);
+
+      if (ret)
+        return ret;
     }
 
   EVENTS_PUSH (ET_REGION_POSITIONS_CHANGED, NULL);
+
+  return 0;
 }
 
 void

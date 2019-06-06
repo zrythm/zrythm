@@ -299,15 +299,42 @@ timeline_arranger_widget_select (
   const double             offset_y,
   const int                delete);
 
-void
+
+/**
+ * Snaps both the transients (to show in the GUI)
+ * and the actual regions.
+ *
+ * @param pos Absolute position in the timeline.
+ * @parram dry_run Don't resize notes; just check
+ *   if the resize is allowed (check if invalid
+ *   resizes will happen)
+ *
+ * @return 0 if the operation was successful,
+ *   nonzero otherwise.
+ */
+int
 timeline_arranger_widget_snap_regions_l (
   TimelineArrangerWidget * self,
-  Position *               pos);
+  Position *               pos,
+  int                      dry_run);
 
-void
+/**
+ * Snaps both the transients (to show in the GUI)
+ * and the actual regions.
+ *
+ * @param pos Absolute position in the timeline.
+ * @parram dry_run Don't resize notes; just check
+ *   if the resize is allowed (check if invalid
+ *   resizes will happen)
+ *
+ * @return 0 if the operation was successful,
+ *   nonzero otherwise.
+ */
+int
 timeline_arranger_widget_snap_regions_r (
   TimelineArrangerWidget * self,
-  Position *               pos);
+  Position *               pos,
+  int                      dry_run);
 
 /**
  * Moves the TimelineSelections by the given
