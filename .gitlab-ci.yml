@@ -1,11 +1,7 @@
-# build from debian by default
-#image: "registry.zrythm.org/zrythm/zrythm/debian/latest:latest"
-#image: "alextee12/debian-9"
 image: "alextee12/arch-yaourt"
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
-  GCOVR_FLAGS: "--exclude-directories='.*dzl-lib.*' --exclude-directories='.*libcyaml.*' --exclude-directories='.*midilib.*' --gcov-exclude='.*dzl-.*'"
 
 stages:
   - build_gnu_linux
@@ -31,8 +27,7 @@ test_gcc_meson:
   script:
     - meson _build -Denable_tests=true -Denable_coverage=true
     - .gitlab-ci/run-tests.sh
-    - gcovr -r . --html -o _build/${CI_JOB_NAME}-coverage.html --exclude-directories='.*dzl-lib.*' --exclude-directories='.*libcyaml.*' --exclude-directories='.*midilib.*' --gcov-exclude='.*dzl-.*'
-    - gcovr -r . --exclude-directories='.*dzl-lib.*' --exclude-directories='.*libcyaml.*' --exclude-directories='.*midilib.*' --gcov-exclude='.*dzl-.*'
+    - gcovr -r . --html -o _build/${CI_JOB_NAME}-coverage.html --print-summary --exclude-directories='.*dzl-lib.*' --exclude-directories='.*libcyaml.*' --exclude-directories='.*midilib.*' --exclude-directories='.*tests.*' --exclude-directories='.*audio-decoder.*' -e '.*zrythm-resources.c' --gcov-exclude='.*dzl-.*'
   artifacts:
     reports:
       junit: "_build/${CI_JOB_NAME}-report.xml"
@@ -42,7 +37,7 @@ test_gcc_meson:
       - "_build/${CI_JOB_NAME}-report.xml"
       - "_build/${CI_JOB_NAME}-report.xml"
       - "_build/${CI_JOB_NAME}-coverage.html"
-  coverage: '/^TOTAL.*\s+(\d+\%)$/'
+  coverage: '/^lines: (\d+(?:\.\d+)?%)/'
 
 package_win_64:
   stage: package

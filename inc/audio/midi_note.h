@@ -245,23 +245,27 @@ midi_note_is_selected (MidiNote * self);
  * Checks if position is valid then sets it.
  *
  * @param trans_only Only do transients.
+ * @param validate Validate the Position.
  */
 void
 midi_note_set_start_pos (
   MidiNote * midi_note,
-  Position * start_pos,
-  int        trans_only);
+  Position * pos,
+  int        trans_only,
+  int        validate);
 
 /**
  * Checks if position is valid then sets it.
  *
  * @param trans_only Only do transients.
+ * @parram validate Validate the Position.
  */
 void
 midi_note_set_end_pos (
   MidiNote * midi_note,
-  Position * end_pos,
-  int        trans_only);
+  Position * pos,
+  int        trans_only,
+  int        validate);
 
 /**
  * Sets the cached start Position for use in live

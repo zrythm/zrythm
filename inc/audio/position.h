@@ -173,10 +173,6 @@
       &_tmp_pos, &_obj->start_pos); \
   position_add_ticks ( \
     &_tmp_pos, _ticks); \
-  /* FIXME this doesn't work */ \
-  if (position_is_before ( \
-        &_tmp_pos, START_POS)) \
-    moved = 0; \
   SET_POS (_obj, start_pos, &_tmp_pos, \
            _trans_only); \
   /* end pos */ \
@@ -189,7 +185,7 @@
   position_add_ticks ( \
     &_tmp_pos, _ticks); \
   SET_POS (_obj, end_pos, &_tmp_pos, \
-           &_trans_only); \
+           _trans_only); \
   moved = 1
 
 
@@ -435,7 +431,7 @@ position_stringize (
  */
 void
 position_print_simple (
-  Position * pos);
+  const Position * pos);
 
 SERIALIZE_INC (Position, position)
 DESERIALIZE_INC (Position, position)

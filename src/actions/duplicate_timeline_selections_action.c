@@ -68,7 +68,7 @@ duplicate_timeline_selections_action_do (
       /* add and shift it */
       track_add_region (
         TRACKLIST->tracks[region->track_pos],
-        region, 0, F_GEN_NAME);
+        region, 0, F_GEN_NAME, F_GEN_WIDGET);
       region_shift (
         region, self->ticks, self->delta);
 

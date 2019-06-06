@@ -380,18 +380,24 @@ track_is_selected (Track * self);
 /**
  * Adds a Region to the given lane of the track.
  *
+ * The Region must be the main region (see
+ * ArrangerObjectInfo).
+ *
  * @param lane_pos The position of the lane to add
  *   to.
  * @param gen_name Generate a unique region name or
  *   not. This will be 0 if the caller already
  *   generated a unique name.
+ * @param gen_widget Generate a RegionWidget for
+ *   the Region.
  */
 void
 track_add_region (
   Track * track,
   Region * region,
   int      lane_pos,
-  int      gen_name);
+  int      gen_name,
+  int      gen_widget);
 
 /**
  * Removes the region from the track.

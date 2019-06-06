@@ -67,4 +67,13 @@
 #define F_USE_CACHED 1
 #define F_NO_USE_CACHED 0
 
+#define F_COPY_MOVING 1
+#define F_NOT_COPY_MOVING 0
+
+#define F_VALIDATE 1
+#define F_NO_VALIDATE 0
+
+#define F_GEN_WIDGET 1
+#define F_NO_GEN_WIDGET 0
+
 #endif

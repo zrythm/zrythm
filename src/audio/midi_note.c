@@ -338,38 +338,48 @@ midi_note_delete (MidiNote * midi_note)
  * Checks if position is valid then sets it.
  *
  * @param trans_only Only do transients.
+ * @param validate Validate the Position.
  */
 void
 midi_note_set_start_pos (
   MidiNote * midi_note,
   Position * pos,
-  int        trans_only)
+  int        trans_only,
+  int        validate)
 {
-  if (position_is_before (
-        pos, &midi_note->end_pos))
+  if (validate)
     {
-      SET_POS (midi_note, start_pos, pos,
-               trans_only);
+      /* TODO check if combined pos is after
+       * START_POS */
+      if (!position_is_before (
+            pos, &midi_note->end_pos))
+        return;
     }
+
+  SET_POS (midi_note, start_pos, pos,
+           trans_only);
 }
 
 /**
  * Checks if position is valid then sets it.
  *
  * @param trans_only Only do transients.
+ * @parram validate Validate the Position.
  */
 void
 midi_note_set_end_pos (
   MidiNote * midi_note,
   Position * pos,
-  int        trans_only)
+  int        trans_only,
+  int        validate)
 {
-  if (position_is_after (
+  if (validate &&
+      !position_is_after (
         pos, &midi_note->start_pos))
-    {
-      SET_POS (midi_note, end_pos, pos,
-               trans_only);
-    }
+    return;
+
+  SET_POS (midi_note, end_pos, pos,
+           trans_only);
 }
 
 /**

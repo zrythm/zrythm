@@ -905,7 +905,8 @@ channel_handle_recording (Channel * self)
         {
           /* set region end pos */
           region_set_end_pos (
-            region, &tmp, 0);
+            region, &tmp, F_NO_TRANS_ONLY,
+            F_NO_VALIDATE);
         }
       else /* if not already in a region */
         {
@@ -914,7 +915,8 @@ channel_handle_recording (Channel * self)
             midi_region_new (
               &PLAYHEAD, &tmp, 1);
           track_add_region (
-            self->track, mr, 0, F_GEN_NAME);
+            self->track, mr, 0, F_GEN_NAME,
+            F_GEN_WIDGET);
         }
 
       /* convert MIDI data to midi notes */
@@ -955,7 +957,8 @@ channel_handle_recording (Channel * self)
                         mr,
                         event->buffer[1]);
                     midi_note_set_end_pos (
-                      mn, &tmp, 0);
+                      mn, &tmp, F_NO_TRANS_ONLY,
+                      F_NO_VALIDATE);
                     break;
                   case MIDI_CH1_CTRL_CHANGE:
                     /* TODO */

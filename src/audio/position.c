@@ -606,7 +606,7 @@ position_stringize (
  */
 void
 position_print_simple (
-  Position * pos)
+  const Position * pos)
 {
   g_message (
     "%d.%d.%d.%d",

@@ -86,8 +86,9 @@ static const cyaml_schema_field_t
 
 static const cyaml_schema_value_t
 timeline_selections_schema = {
-	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
-			TimelineSelections, timeline_selections_fields_schema),
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER, TimelineSelections,
+    timeline_selections_fields_schema),
 };
 
 void
@@ -241,6 +242,14 @@ timeline_selections_remove_ap (
  */
 void
 timeline_selections_set_cache_poses (
+  TimelineSelections * ts);
+
+/**
+ * Set all transient Position's to their main
+ * counterparts.
+ */
+void
+timeline_selections_reset_transient_poses (
   TimelineSelections * ts);
 
 /**

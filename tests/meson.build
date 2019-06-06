@@ -14,6 +14,7 @@ if get_option ('enable_tests')
 
   tests = [
     'audio/automation_track',
+    'audio/region',
     'audio/track',
     ]
 

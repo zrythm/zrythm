@@ -309,10 +309,18 @@ timeline_arranger_widget_snap_regions_r (
   TimelineArrangerWidget * self,
   Position *               pos);
 
+/**
+ * Moves the TimelineSelections by the given
+ * amount of ticks.
+ *
+ * @param ticks_diff Ticks to move by.
+ * @param copy_moving 1 if copy-moving.
+ */
 void
 timeline_arranger_widget_move_items_x (
   TimelineArrangerWidget * self,
-  long                     ticks_diff);
+  long                     ticks_diff,
+  int                      copy_moving);
 
 void
 timeline_arranger_widget_move_items_y (

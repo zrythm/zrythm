@@ -68,12 +68,17 @@ region_draw_cb (RegionWidget * self,
     color =
       &TRACKLIST->tracks[
         rw_prv->region->track_pos]->color;
+  double alpha;
+  if (DEBUGGING)
+    alpha = 0.2;
+  else
+    alpha = region_is_transient (r) ? 0.7 : 1.0;
   cairo_set_source_rgba (
     cr,
     color->red,
     color->green,
     color->blue,
-    region_is_transient (r) ? 0.7 : 1.0);
+    alpha);
   if (region_is_selected (r))
     {
       cairo_set_source_rgba (
@@ -81,7 +86,7 @@ region_draw_cb (RegionWidget * self,
         1,
         color->green + 0.2,
         color->blue + 0.2,
-        1.0);
+        DEBUGGING ? 0.5 : 1.0);
     }
 
   z_cairo_rounded_rectangle (

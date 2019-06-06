@@ -87,7 +87,7 @@ delete_timeline_selections_action_undo (
       /* add it to track */
       track_add_region (
         TRACKLIST->tracks[region->track_pos],
-        region, 0, F_NO_GEN_NAME);
+        region, 0, F_NO_GEN_NAME, F_GEN_WIDGET);
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);

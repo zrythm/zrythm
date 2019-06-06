@@ -975,7 +975,8 @@ timeline_arranger_widget_create_region (
     &tmp,
     ar_prv->snap_grid);
   region_set_end_pos (
-    region, &tmp, F_NO_TRANS_ONLY);
+    region, &tmp, F_NO_TRANS_ONLY,
+    F_NO_VALIDATE);
   long length =
     region_get_full_length_in_ticks (region);
   position_from_ticks (
@@ -997,7 +998,8 @@ timeline_arranger_widget_create_region (
         track, region,
         lane ? lane->pos :
         (track->num_lanes == 1 ?
-         0 : track->num_lanes - 2), F_GEN_NAME);
+         0 : track->num_lanes - 2), F_GEN_NAME,
+        F_GEN_WIDGET);
 
       /* set visibility */
       arranger_object_info_set_widget_visibility (
@@ -1296,7 +1298,7 @@ snap_region_l (
 
   region_set_start_pos (
     region, new_start_pos,
-    F_NO_TRANS_ONLY);
+    F_NO_TRANS_ONLY, F_VALIDATE);
 }
 
 void
@@ -1376,7 +1378,8 @@ snap_region_r (
         new_end_pos, &region->start_pos))
     {
       region_set_end_pos (
-        region, new_end_pos, F_NO_TRANS_ONLY);
+        region, new_end_pos, F_NO_TRANS_ONLY,
+        F_NO_VALIDATE);
 
       /* if creating also set the loop points
        * appropriately */
@@ -1499,15 +1502,17 @@ timeline_arranger_widget_snap_range_r (
  * amount of ticks.
  *
  * @param ticks_diff Ticks to move by.
+ * @param copy_moving 1 if copy-moving.
  */
 void
 timeline_arranger_widget_move_items_x (
   TimelineArrangerWidget * self,
-  long                     ticks_diff)
+  long                     ticks_diff,
+  int                      copy_moving)
 {
   timeline_selections_add_ticks (
     TL_SELECTIONS, ticks_diff, F_USE_CACHED,
-    F_TRANS_ONLY);
+    copy_moving);
 
   EVENTS_PUSH (ET_REGION_POSITIONS_CHANGED,
                NULL);
@@ -1676,7 +1681,8 @@ timeline_arranger_widget_move_items_y (
                                 region, F_NO_FREE);
                               track_add_region (
                                 nt, region, 0,
-                                F_NO_GEN_NAME);
+                                F_NO_GEN_NAME,
+                                F_NO_GEN_WIDGET);
                             }
                           else if (nt->type ==
                                      TRACK_TYPE_AUDIO)
@@ -1713,7 +1719,8 @@ timeline_arranger_widget_move_items_y (
                                 region, F_NO_FREE);
                               track_add_region (
                                 pt, region, 0,
-                                F_NO_GEN_NAME);
+                                F_NO_GEN_NAME,
+                                F_NO_GEN_WIDGET);
                             }
                           else if (pt->type ==
                                      TRACK_TYPE_AUDIO)
@@ -1925,6 +1932,11 @@ timeline_arranger_widget_on_drag_end (
   ar_prv->action = UI_OVERLAY_ACTION_NONE;
   timeline_arranger_widget_update_visibility (
     self);
+
+  /* set all transient poses to their main
+   * counterparts */
+  timeline_selections_reset_transient_poses (
+    TL_SELECTIONS);
 
   self->resizing_range = 0;
   self->resizing_range_start = 0;

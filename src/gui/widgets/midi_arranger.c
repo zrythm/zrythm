@@ -563,7 +563,8 @@ midi_arranger_widget_create_note (
     &tmp,
     ar_prv->snap_grid);
   midi_note_set_end_pos (
-    midi_note, &tmp, 0);
+    midi_note, &tmp, F_NO_TRANS_ONLY,
+    F_NO_VALIDATE);
 
   /* add it to region */
   midi_region_add_midi_note (
@@ -718,7 +719,8 @@ midi_arranger_widget_snap_midi_notes_l (
                 &new_start_pos,
                 &midi_note->end_pos))
             midi_note_set_start_pos (
-              midi_note, &new_start_pos, 0);
+              midi_note, &new_start_pos,
+              F_NO_TRANS_ONLY, F_NO_VALIDATE);
         }
 
     }
@@ -785,22 +787,26 @@ midi_arranger_widget_snap_midi_notes_r (
             &midi_note->start_pos))
         midi_note_set_end_pos (
           midi_note, &new_end_pos,
-          F_NO_TRANS_ONLY);
+          F_NO_TRANS_ONLY, F_NO_VALIDATE);
     }
 }
 
 /**
- * Called when moving midi notes in drag update in arranger
- * widget.
+ * Moves the MidiArrangerSelections by the given
+ * amount of ticks
+ *
+ * @param ticks_diff Ticks to move by.
+ * @param copy_moving 1 if copy-moving.
  */
 void
 midi_arranger_widget_move_items_x (
   MidiArrangerWidget * self,
-  long                 ticks_diff)
+  long                 ticks_diff,
+  int                  copy_moving)
 {
   midi_arranger_selections_add_ticks (
     MA_SELECTIONS, ticks_diff, F_USE_CACHED,
-    F_TRANS_ONLY);
+    copy_moving);
 }
 
 
@@ -1083,7 +1089,6 @@ void
 midi_arranger_widget_refresh_children (
   MidiArrangerWidget * self)
 {
-  g_message ("REFRESHING MIDI ARR CHILDREN");
   ARRANGER_WIDGET_GET_PRIVATE (self);
   int i, k;
 

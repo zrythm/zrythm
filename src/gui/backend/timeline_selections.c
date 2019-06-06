@@ -114,6 +114,33 @@ timeline_selections_set_cache_poses (
 }
 
 /**
+ * Set all transient Position's to their main
+ * counterparts.
+ */
+void
+timeline_selections_reset_transient_poses (
+  TimelineSelections * ts)
+{
+  Region * region;
+  for (int i = 0; i < ts->num_regions; i++)
+    {
+      region = ts->regions[i];
+
+      region_set_start_pos (
+        region, &region->start_pos,
+        F_NO_TRANS_ONLY, F_NO_VALIDATE);
+      region_set_end_pos (
+        region, &region->end_pos,
+        F_NO_TRANS_ONLY, F_NO_VALIDATE);
+    }
+
+  /* TODO chords */
+
+  EVENTS_PUSH (ET_REGION_POSITIONS_CHANGED,
+               NULL);
+}
+
+/**
  * Returns the position of the leftmost object.
  *
  * If transient is 1, the transient objects are
@@ -748,7 +775,8 @@ timeline_selections_paste_to_pos (
           region, REGION_CLONE_COPY_MAIN);
       region_print (cp);
       track_add_region (
-        cp->lane->track, cp, 0, F_GEN_NAME);
+        cp->lane->track, cp, 0, F_GEN_NAME,
+        F_GEN_WIDGET);
     }
   for (i = 0; i < ts->num_aps; i++)
     {

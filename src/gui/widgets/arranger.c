@@ -1562,7 +1562,8 @@ drag_update (GtkGestureDrag * gesture,
             timeline);
           timeline_arranger_widget_move_items_x (
             timeline,
-            ar_prv->adj_ticks_diff);
+            ar_prv->adj_ticks_diff,
+            F_NOT_COPY_MOVING);
           timeline_arranger_widget_move_items_y (
             timeline,
             offset_y);
@@ -1573,7 +1574,8 @@ drag_update (GtkGestureDrag * gesture,
             midi_arranger);
           midi_arranger_widget_move_items_x (
             midi_arranger,
-            ar_prv->adj_ticks_diff);
+            ar_prv->adj_ticks_diff,
+            F_NOT_COPY_MOVING);
           midi_arranger_widget_move_items_y (
             midi_arranger,
             offset_y);
@@ -1590,7 +1592,8 @@ drag_update (GtkGestureDrag * gesture,
             timeline);
           timeline_arranger_widget_move_items_x (
             timeline,
-            ar_prv->adj_ticks_diff);
+            ar_prv->adj_ticks_diff,
+            F_COPY_MOVING);
           timeline_arranger_widget_move_items_y (
             timeline,
             offset_y);
@@ -1601,7 +1604,8 @@ drag_update (GtkGestureDrag * gesture,
             midi_arranger);
           midi_arranger_widget_move_items_x (
             midi_arranger,
-            ar_prv->adj_ticks_diff);
+            ar_prv->adj_ticks_diff,
+            F_COPY_MOVING);
           midi_arranger_widget_move_items_y (
             midi_arranger,
             offset_y);

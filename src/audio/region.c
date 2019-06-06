@@ -79,16 +79,6 @@ region_init (
                        &region->true_end_pos);
   region->linked_region_name = NULL;
   region->type = type;
-  if (type == REGION_TYPE_AUDIO)
-    {
-      region->widget = Z_REGION_WIDGET (
-        audio_region_widget_new (region));
-    }
-  else if (type == REGION_TYPE_MIDI)
-    {
-      region->widget = Z_REGION_WIDGET (
-        midi_region_widget_new (region));
-    }
 
   if (is_main)
     {
@@ -270,7 +260,44 @@ region_set_cache_end_pos (
   Region * region,
   const Position * pos)
 {
-  SET_POS (region, cache_end_pos, pos, 0);
+  SET_POS (region, cache_end_pos, pos,
+           F_NO_TRANS_ONLY);
+}
+
+/**
+ * Generate a RegionWidget for the Region and all
+ * its counterparts.
+ */
+void
+region_gen_widget (
+  Region * region)
+{
+  Region * r = region;
+  for (int i = 0; i < 4; i++)
+    {
+      if (i == 0)
+        r = region_get_main_region (r);
+      else if (i == 1)
+        r = region_get_main_trans_region (r);
+      else if (i == 2)
+        r = region_get_lane_region (r);
+      else if (i == 3)
+        r = region_get_lane_trans_region (r);
+
+      switch (r->type)
+        {
+        case REGION_TYPE_MIDI:
+          r->widget =
+            Z_REGION_WIDGET (
+              midi_region_widget_new (r));
+          break;
+        case REGION_TYPE_AUDIO:
+          r->widget =
+            Z_REGION_WIDGET (
+              audio_region_widget_new (r));
+          break;
+        }
+    }
 }
 
 void
@@ -278,7 +305,8 @@ region_set_cache_start_pos (
   Region * region,
   Position * pos)
 {
-  SET_POS (region, cache_start_pos, pos, 0);
+  SET_POS (region, cache_start_pos, pos,
+           F_NO_TRANS_ONLY);
 }
 
 /**
@@ -289,19 +317,23 @@ region_set_cache_start_pos (
  *
  * @param trans_only Only set the transient
  *   Position's.
+ * @param validate Validate the Position.
  */
 void
 region_set_start_pos (
   Region * region,
   Position * pos,
-  int        trans_only)
+  int        trans_only,
+  int        validate)
 {
-  if (position_to_ticks (&region->end_pos) -
-      position_to_ticks (pos) >=
-      TRANSPORT->lticks_per_beat)
-    {
-      SET_POS (region, start_pos, pos, trans_only);
-    }
+  if (validate &&
+      (!position_is_before (
+        pos, &region->end_pos) ||
+      position_is_before (
+        pos, START_POS)))
+    return;
+
+  SET_POS (region, start_pos, pos, trans_only);
 }
 
 /**
@@ -371,19 +403,21 @@ region_get_true_length_in_ticks (
  *
  * @param trans_only Only set the Position to the
  *   counterparts.
+ * @param validate Validate the Position.
  */
 void
 region_set_end_pos (
   Region * region,
   Position * pos,
-  int        trans_only)
+  int        trans_only,
+  int        validate)
 {
-  if (position_to_ticks (pos) -
-      position_to_ticks (&region->start_pos) >=
-      TRANSPORT->lticks_per_beat)
-    {
-      SET_POS (region, end_pos, pos, trans_only);
-    }
+  if (validate &&
+      !position_is_after (
+          pos, &region->start_pos))
+      return;
+
+  SET_POS (region, end_pos, pos, trans_only);
 }
 
 void

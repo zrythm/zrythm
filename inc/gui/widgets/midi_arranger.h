@@ -182,13 +182,17 @@ midi_arranger_widget_snap_midi_notes_r (
   Position *          pos);
 
 /**
- * Called when moving midi notes in drag update in arranger
- * widget.
+ * Moves the MidiArrangerSelections by the given
+ * amount of ticks
+ *
+ * @param ticks_diff Ticks to move by.
+ * @param copy_moving 1 if copy-moving.
  */
 void
 midi_arranger_widget_move_items_x (
   MidiArrangerWidget * self,
-  long                 ticks_diff);
+  long                 ticks_diff,
+  int                  copy_moving);
 
 /**
  * Called when moving midi notes in drag update in arranger

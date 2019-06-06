@@ -356,6 +356,14 @@ region_find_by_name (
   const char * name);
 
 /**
+ * Generate a RegionWidget for the Region and all
+ * its counterparts.
+ */
+void
+region_gen_widget (
+  Region * region);
+
+/**
  * Returns the MidiNote matching the properties of
  * the given MidiNote.
  *
@@ -465,12 +473,15 @@ region_resize (
  *
  * @param trans_only Only set the transient
  *   Position's.
+ * @param validate Validate the Position before
+ *   setting.
  */
 void
 region_set_start_pos (
   Region * region,
   Position * pos,
-  int        trans_only);
+  int        trans_only,
+  int        validate);
 
 /**
  * Getter for start pos.
@@ -506,12 +517,15 @@ region_set_cache_start_pos (
  *
  * @param trans_only Only set the Position to the
  *   counterparts.
+ * @param validate Validate the Position before
+ *   setting.
  */
 void
 region_set_end_pos (
   Region * region,
   Position * pos,
-  int        trans_only);
+  int        trans_only,
+  int        validate);
 
 /**
  * Moves the Region by the given amount of ticks.

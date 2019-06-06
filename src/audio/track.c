@@ -34,9 +34,11 @@
 #include "audio/track.h"
 #include "gui/backend/events.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/audio_region.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/midi_region.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/track.h"
 #include "project.h"
@@ -473,13 +475,16 @@ track_setup (Track * track)
  * @param gen_name Generate a unique region name or
  *   not. This will be 0 if the caller already
  *   generated a unique name.
+ * @param gen_widget Generate a RegionWidget for
+ *   the Region.
  */
 void
 track_add_region (
   Track * track,
   Region * region,
   int      lane_pos,
-  int      gen_name)
+  int      gen_name,
+  int      gen_widget)
 {
   g_warn_if_fail (
     (track->type == TRACK_TYPE_INSTRUMENT ||
@@ -516,6 +521,11 @@ track_add_region (
   track_lane_add_region (
     track->lanes[lane_pos],
     region);
+
+  if (gen_widget)
+    {
+      region_gen_widget (region);
+    }
 
   /* enable extra lane if necessary */
   if (lane_pos == track->num_lanes - 1)
