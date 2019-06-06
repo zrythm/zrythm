@@ -41,6 +41,16 @@ midi_arranger_selections_init_loaded (
 }
 
 /**
+ * Returns if there are any selections.
+ */
+int
+midi_arranger_selections_has_any (
+  MidiArrangerSelections * mas)
+{
+  return mas->num_midi_notes > 0;
+}
+
+/**
  * Returns the position of the leftmost object.
  *
  * If transient is 1, the transient objects are

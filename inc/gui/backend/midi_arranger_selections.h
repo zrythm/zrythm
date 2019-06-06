@@ -79,6 +79,13 @@ midi_arranger_selections_clone (
   MidiArrangerSelections * mas);
 
 /**
+ * Returns if there are any selections.
+ */
+int
+midi_arranger_selections_has_any (
+  MidiArrangerSelections * mas);
+
+/**
  * Returns the position of the leftmost object.
  *
  * If transient is 1, the transient objects are

@@ -1883,10 +1883,11 @@ timeline_arranger_widget_on_drag_end (
              UI_OVERLAY_ACTION_MOVING_LINK)
     {
       Region * main_region =
-        TL_SELECTIONS->regions[0]->obj_info.main;
+        region_get_main_region (
+          TL_SELECTIONS->regions[0]);
       Region * main_trans_region =
-        TL_SELECTIONS->regions[0]->obj_info.
-          main_trans;
+        region_get_main_trans_region (
+          TL_SELECTIONS->regions[0]);
       UndoableAction * ua =
         (UndoableAction *)
         duplicate_timeline_selections_action_new (
@@ -1899,6 +1900,8 @@ timeline_arranger_widget_on_drag_end (
             TL_SELECTIONS, F_TRANSIENTS) -
           timeline_selections_get_highest_track (
             TL_SELECTIONS, F_NO_TRANSIENTS));
+      timeline_selections_reset_transient_poses (
+        TL_SELECTIONS);
       timeline_selections_clear (
         TL_SELECTIONS);
       undo_manager_perform (
@@ -1932,11 +1935,6 @@ timeline_arranger_widget_on_drag_end (
   ar_prv->action = UI_OVERLAY_ACTION_NONE;
   timeline_arranger_widget_update_visibility (
     self);
-
-  /* set all transient poses to their main
-   * counterparts */
-  timeline_selections_reset_transient_poses (
-    TL_SELECTIONS);
 
   self->resizing_range = 0;
   self->resizing_range_start = 0;

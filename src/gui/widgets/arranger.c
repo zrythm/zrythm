@@ -1220,29 +1220,6 @@ drag_begin (GtkGestureDrag *   gesture,
           timeline->start_ac =
             ac_widget->ac;
         }
-
-      /* find start pos */
-      position_set_to_bar (
-        &ar_prv->earliest_obj_start_pos, 2000);
-      if (timeline)
-        {
-          timeline_selections_get_start_pos (
-            TL_SELECTIONS,
-            &ar_prv->earliest_obj_start_pos,
-            0);
-          timeline_selections_set_cache_poses (
-            TL_SELECTIONS);
-        }
-      else if (midi_arranger)
-        {
-          /* FIXME */
-          midi_arranger_selections_get_start_pos (
-            MA_SELECTIONS,
-            &ar_prv->earliest_obj_start_pos,
-            0, 1);
-          midi_arranger_selections_set_cache_poses (
-            MA_SELECTIONS);
-        }
       else if (vel_widget)
         {
           midi_modifier_arranger_on_drag_begin_vel_hit (
@@ -1314,8 +1291,32 @@ drag_begin (GtkGestureDrag *   gesture,
         }
     }
 
-  /*g_message ("drag begin %d",*/
-             /*MA_SELECTIONS->num_midi_notes);*/
+  /* set start pos */
+  position_set_to_bar (
+    &ar_prv->earliest_obj_start_pos, 2000);
+  if (timeline &&
+      timeline_selections_has_any (
+        TL_SELECTIONS))
+    {
+      timeline_selections_get_start_pos (
+        TL_SELECTIONS,
+        &ar_prv->earliest_obj_start_pos,
+        0);
+      timeline_selections_set_cache_poses (
+        TL_SELECTIONS);
+    }
+  else if (midi_arranger &&
+           midi_arranger_selections_has_any (
+             MA_SELECTIONS))
+    {
+      midi_arranger_selections_get_start_pos (
+        MA_SELECTIONS,
+        &ar_prv->earliest_obj_start_pos,
+        0, 1);
+      midi_arranger_selections_set_cache_poses (
+        MA_SELECTIONS);
+    }
+
   arranger_widget_refresh_cursor (self);
 }
 

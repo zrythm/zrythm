@@ -740,22 +740,18 @@ midi_arranger_widget_snap_midi_notes_r (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  /* get local pos */
-  Position local_pos;
-  position_from_ticks (
-    &local_pos,
-    pos->total_ticks -
-    CLIP_EDITOR->region->start_pos.total_ticks);
-
   /* get delta with first clicked notes's end
    * pos */
   long delta =
-    local_pos.total_ticks -
-    self->start_midi_note->
-      cache_end_pos.total_ticks;
+    pos->total_ticks -
+    (self->start_midi_note->
+      cache_end_pos.total_ticks +
+    CLIP_EDITOR->region->start_pos.total_ticks);
+  g_message ("delta %ld", delta);
 
   MidiNote * midi_note;
-  Position new_end_pos;
+  Position new_end_pos,
+           new_global_end_pos;
   for (int i = 0;
        i < MA_SELECTIONS->num_midi_notes;
        i++)
@@ -772,15 +768,33 @@ midi_arranger_widget_snap_midi_notes_r (
       position_add_ticks (
         &new_end_pos, delta);
 
-      /* snap */
+      /* get the global end pos first to snap it */
+      position_set_to_pos (
+        &new_global_end_pos,
+        &new_end_pos);
+      position_add_ticks (
+        &new_global_end_pos,
+        CLIP_EDITOR->region->
+          start_pos.total_ticks);
+
+      /* snap the global pos */
       if (SNAP_GRID_ANY_SNAP (
             ar_prv->snap_grid) &&
           !ar_prv->shift_held)
         position_snap (
-          NULL, &new_end_pos,
+          NULL, &new_global_end_pos,
           midi_note->region->lane->track,
           NULL,
           ar_prv->snap_grid);
+
+      /* convert it back to a local pos */
+      position_set_to_pos (
+        &new_end_pos,
+        &new_global_end_pos);
+      position_add_ticks (
+        &new_end_pos,
+        - CLIP_EDITOR->region->
+          start_pos.total_ticks);
 
       if (position_is_after (
             &new_end_pos,
