@@ -943,7 +943,7 @@ channel_handle_recording (Channel * self)
                         mr, &PLAYHEAD, &tmp,
                         event->buffer[1], vel, 1);
                     midi_region_add_midi_note (
-                      mr, mn);
+                      mr, mn, F_GEN_WIDGET);
 
                     /* add to unended notes */
                     array_append (

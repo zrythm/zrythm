@@ -76,7 +76,7 @@ create_midi_arranger_selections_action_do (
       /* add it to the region */
       midi_region_add_midi_note (
         mn->region,
-        mn);
+        mn, F_GEN_WIDGET);
       g_message ("CREATED");
     }
   EVENTS_PUSH (ET_MA_SELECTIONS_CHANGED,

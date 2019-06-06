@@ -645,12 +645,13 @@ region_remove_midi_note (
 /**
  * Clone region.
  *
- * Creates a new region and either links to the original or
- * copies every field.
+ * Creates a new region and either links to the
+ * original or copies every field.
  */
 Region *
-region_clone (Region *        region,
-              RegionCloneFlag flag);
+region_clone (
+  Region *        region,
+  RegionCloneFlag flag);
 
 /**
  * Disconnects the region and anything using it.

@@ -549,11 +549,17 @@ midi_arranger_widget_create_note (
     ar_prv->action =
       UI_OVERLAY_ACTION_CREATING_RESIZING_R;
 
-  /* create midi note and set visibility */
+  /* create midi note */
   MidiNote * midi_note =
     midi_note_new (
       region, &local_pos, &local_pos, note, vel,
       1);
+
+  /* add it to region */
+  midi_region_add_midi_note (
+    region, midi_note, F_GEN_WIDGET);
+
+  /* set visibility */
   arranger_object_info_set_widget_visibility (
     &midi_note->obj_info, 1);
 
@@ -565,10 +571,6 @@ midi_arranger_widget_create_note (
   midi_note_set_end_pos (
     midi_note, &tmp, F_NO_TRANS_ONLY,
     F_NO_VALIDATE);
-
-  /* add it to region */
-  midi_region_add_midi_note (
-    region, midi_note);
 
   midi_note_set_cache_end_pos (
     midi_note, &midi_note->end_pos);

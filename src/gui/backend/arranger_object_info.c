@@ -213,25 +213,31 @@ arranger_object_info_set_widget_visibility (
       self));
 
 /** Sets all object counterparts visible or not. */
-#define SET_ALL_VISIBLE(cc,lc) \
+#define SET_ALL_VISIBLE_WITH_LANE(cc,lc) \
   SET_COUNTERPART_VISIBLE (cc, lc, main); \
   SET_COUNTERPART_VISIBLE (cc, lc, main_trans); \
   SET_COUNTERPART_VISIBLE (cc, lc, lane); \
   SET_COUNTERPART_VISIBLE (cc, lc, lane_trans);
 
+/** Sets all object counterparts visible or not. */
+#define SET_ALL_VISIBLE_WITHOUT_LANE(cc,lc) \
+  SET_COUNTERPART_VISIBLE (cc, lc, main); \
+  SET_COUNTERPART_VISIBLE (cc, lc, main_trans); \
+
   if (all)
     {
       if (r)
         {
-          SET_ALL_VISIBLE (Region, r);
+          SET_ALL_VISIBLE_WITH_LANE (Region, r);
         }
       if (c)
         {
-          SET_ALL_VISIBLE (ZChord, c);
+          SET_ALL_VISIBLE_WITH_LANE (ZChord, c);
         }
       if (mn)
         {
-          SET_ALL_VISIBLE (MidiNote, mn);
+          SET_ALL_VISIBLE_WITHOUT_LANE (
+            MidiNote, mn);
         }
     }
   else
