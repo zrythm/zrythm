@@ -24,7 +24,6 @@
 #include "zrythm.h"
 
 #include <glib.h>
-#include <locale.h>
 
 typedef struct
 {

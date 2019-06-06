@@ -487,8 +487,7 @@ midi_arranger_selections_paste_to_pos (
           midi_note,
           MIDI_NOTE_CLONE_COPY_MAIN);
       midi_region_add_midi_note (
-        cp->region,
-        cp);
+        cp->region, cp, F_GEN_WIDGET);
     }
 #undef DIFF
 }

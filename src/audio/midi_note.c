@@ -51,8 +51,6 @@ void
 midi_note_init_loaded (
   MidiNote * self)
 {
-  self->widget =
-    midi_note_widget_new (self);
 }
 
 /**
@@ -82,9 +80,6 @@ midi_note_new (
   midi_note->val = val;
   midi_note->vel = vel;
   vel->midi_note = midi_note;
-  vel->widget = velocity_widget_new (vel);
-  midi_note->widget =
-    midi_note_widget_new (midi_note);
 
   if (is_main)
     {
@@ -282,6 +277,27 @@ midi_note_resize (
 }
 
 /**
+ * Generate a MidiNoteWidget for the MidiNote
+ * and all its counterparts.
+ */
+void
+midi_note_gen_widget (
+  MidiNote * midi_note)
+{
+  MidiNote * mn = midi_note;
+  for (int i = 0; i < 4; i++)
+    {
+      if (i == 0)
+        mn = midi_note_get_main_midi_note (mn);
+      else if (i == 1)
+        mn = midi_note_get_main_trans_midi_note (mn);
+
+      mn->widget =
+        midi_note_widget_new (mn);
+    }
+}
+
+/**
  * Sets the cached start Position for use in live
  * operations like moving.
  */
@@ -330,7 +346,8 @@ midi_note_shift (
 void
 midi_note_delete (MidiNote * midi_note)
 {
-  g_object_unref (midi_note->widget);
+  if (midi_note->widget)
+    g_object_unref (midi_note->widget);
   free (midi_note);
 }
 

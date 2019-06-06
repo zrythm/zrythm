@@ -65,10 +65,14 @@ midi_region_get_or_create_blank (int id);
 
 /**
  * Adds midi note to region
+ *
+ * @param gen_widget Generate a MidiNoteWidget.
  */
 void
-midi_region_add_midi_note (MidiRegion * region,
-                      MidiNote * midi_note);
+midi_region_add_midi_note (
+  MidiRegion * region,
+  MidiNote * midi_note,
+  int        gen_widget);
 
 /**
  * Returns the midi note with the given pitch from the

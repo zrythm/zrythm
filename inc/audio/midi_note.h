@@ -44,6 +44,10 @@ typedef struct Velocity Velocity;
  * @{
  */
 
+#define midi_note_is_main(r) \
+  arranger_object_info_is_main ( \
+    &r->obj_info)
+
 #define midi_note_is_transient(r) \
   arranger_object_info_is_transient ( \
     &r->obj_info)
@@ -284,6 +288,14 @@ void
 midi_note_set_cache_end_pos (
   MidiNote * mn,
   const Position * pos);
+
+/**
+ * Generate a MidiNoteWidget for the MidiNote
+ * and all its counterparts.
+ */
+void
+midi_note_gen_widget (
+  MidiNote * mn);
 
 /**
  * Moves the MidiNote by the given amount of ticks.
