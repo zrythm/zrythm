@@ -161,15 +161,6 @@ if get_option ('enable_profiling')
   test_cflags += '-pg'
 endif
 
-if get_option ('enable_coverage')
-  test_cflags += [
-    '-fprofile-arcs',
-    '-ftest-coverage',
-    '-g',
-    '-O0',
-    ]
-endif
-
 common_cflags = []
 foreach f : test_cflags
   if cc.has_argument (f)
@@ -212,13 +203,6 @@ endif
 
 if get_option ('enable_profiling')
   test_ldflags += '-pg'
-endif
-
-if get_option ('enable_coverage')
-  test_ldflags += [
-    '-lgcov',
-    '--coverage',
-    ]
 endif
 
 if (meson.version() >= '0.46.0')
@@ -304,7 +288,7 @@ summary = [
     get_option('enable_profiling')),
   '  Build Tests: @0@'.format(get_option('enable_tests')),
   '  Generate Developer Docs: @0@'.format(get_option('gen_dev_docs')),
-  '  Print Coverage (needs tests): @0@'.format(get_option('enable_coverage')),
+  '  Coverage Reports: @0@'.format(get_option('b_coverage')),
   '  Optional libraries:',
   '    FFMPEG support: @0@'.format(get_option('enable_ffmpeg')),
   'Directories:',

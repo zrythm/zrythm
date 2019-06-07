@@ -25,9 +25,9 @@ basic_build_clang_meson:
 test_gcc_meson:
   stage: test
   script:
-    - meson _build -Denable_tests=true -Denable_coverage=true
+    - meson _build -Denable_tests=true -Db_coverage=true
     - .gitlab-ci/run-tests.sh
-    - gcovr -r . --html -o _build/${CI_JOB_NAME}-coverage.html --print-summary --exclude-directories='.*dzl-lib.*' --exclude-directories='.*libcyaml.*' --exclude-directories='.*midilib.*' --exclude-directories='.*tests.*' --exclude-directories='.*audio-decoder.*' -e '.*zrythm-resources.c' --gcov-exclude='.*dzl-.*'
+    - ninja -C _build coverage-html
   artifacts:
     reports:
       junit: "_build/${CI_JOB_NAME}-report.xml"
@@ -36,7 +36,7 @@ test_gcc_meson:
       - "_build/meson-logs"
       - "_build/${CI_JOB_NAME}-report.xml"
       - "_build/${CI_JOB_NAME}-report.xml"
-      - "_build/${CI_JOB_NAME}-coverage.html"
+      - "_build/meson-logs/coveragereport/index.html"
   coverage: '/^lines: (\d+(?:\.\d+)?%)/'
 
 package_win_64:
