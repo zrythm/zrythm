@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
-"Report-Msgid-Bugs-To: alex@zrythm.org\n"
+"Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-06-01 22:03+0100\n"
 "PO-Revision-Date: 2019-06-06 06:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
@@ -191,7 +191,8 @@ msgstr "Listenの薄暗いレベル"
 
 #: src/gui/widgets/control_room.c:67
 msgid "The level to set other channels to when Listen is enabled on a channel"
-msgstr "あるチャンネルでListenが有効になっているときに他のチャンネルに設定するレベル"
+msgstr ""
+"あるチャンネルでListenが有効になっているときに他のチャンネルに設定するレベル"
 
 #: src/gui/widgets/channel_slot.c:589
 msgid ""
