@@ -22,6 +22,7 @@
 
 #include "audio/audio_track.h"
 #include "audio/engine.h"
+#include "audio/engine_alsa.h"
 #ifdef HAVE_JACK
 #include "audio/engine_jack.h"
 #endif
@@ -328,6 +329,7 @@ node_process (
           if (!AUDIO_ENGINE->exporting)
             {
               float * out;
+              int ret;
               switch (AUDIO_ENGINE->audio_backend)
                 {
                 case AUDIO_BACKEND_JACK:
@@ -354,13 +356,28 @@ node_process (
 #endif
 
                   break;
+                case AUDIO_BACKEND_ALSA:
+                  /* write interleaved */
+                  if (g_atomic_int_get (
+                    &AUDIO_ENGINE->
+                      filled_stereo_out_bufs))
+                    break;
+                  ret =
+                    g_atomic_int_compare_and_exchange (
+                      &AUDIO_ENGINE->
+                        filled_stereo_out_bufs,
+                      0, 1);
+                  if (ret)
+                    engine_alsa_fill_stereo_out_buffs (
+                      AUDIO_ENGINE);
+                  break;
                 case AUDIO_BACKEND_PORT_AUDIO:
 #ifdef HAVE_PORT_AUDIO
                   if (g_atomic_int_get (
                     &AUDIO_ENGINE->
                       filled_stereo_out_bufs))
                     break;
-                  int ret =
+                  ret =
                     g_atomic_int_compare_and_exchange (
                       &AUDIO_ENGINE->
                         filled_stereo_out_bufs,
@@ -370,7 +387,6 @@ node_process (
                       AUDIO_ENGINE);
 #endif
                   break;
-                case AUDIO_BACKEND_ALSA:
                 case AUDIO_BACKEND_DUMMY:
                   break;
                 default:

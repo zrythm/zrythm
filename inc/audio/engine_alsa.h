@@ -39,6 +39,10 @@ typedef struct AudioEngine AudioEngine;
 //int
 //alsa_buffer_size_cb (uint32_t nframes, void* data);
 
+void
+engine_alsa_fill_stereo_out_buffs (
+  AudioEngine * engine);
+
 /**
  * The process callback for this ALSA application is
  * called in a special realtime thread once for each audio

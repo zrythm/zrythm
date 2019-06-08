@@ -156,7 +156,7 @@ typedef struct AudioEngine
   snd_pcm_hw_params_t * hw_params;
   snd_pcm_sw_params_t * sw_params;
   /** ALSA audio buffer. */
-  short *            buf;
+  float *            alsa_out_buf;
 
   /* ------------------------------- */
 
@@ -173,6 +173,8 @@ typedef struct AudioEngine
    * Port Audio output buffer.
    *
    * Unlike JACK, the audio goes directly here.
+   * FIXME this is not really needed, just
+   * do the calculations in pa_stream_cb.
    */
   float *            pa_out_buf;
 

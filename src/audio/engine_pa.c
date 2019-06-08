@@ -105,6 +105,10 @@ pa_setup (
       self->stereo_out =
         stereo_ports_new (stereo_out_l,
                           stereo_out_r);
+
+      self->pa_out_buf =
+        calloc (self->block_length * 2,
+                sizeof (float));
     }
 
   self->pa_stream =
@@ -127,14 +131,16 @@ engine_pa_fill_stereo_out_buffs (
   AudioEngine * engine)
 {
   int nframes = engine->nframes;
-  for (int i = 0;
-       i < nframes;
-       i++)
+  for (int i = 0; i < nframes; i++)
     {
-      *engine->pa_out_buf++ =
-        MIXER->master->channel->stereo_out->l->buf[i];
-      *engine->pa_out_buf++ =
-        MIXER->master->channel->stereo_out->r->buf[i];
+      engine->pa_out_buf[i * 2] =
+        MIXER->master->channel->
+          stereo_out->l->buf[i];
+      g_message ("%f",
+                 engine->pa_out_buf[i]);
+      engine->pa_out_buf[i * 2 + 1] =
+        MIXER->master->channel->
+          stereo_out->r->buf[i];
     }
 }
 
@@ -153,9 +159,16 @@ pa_stream_cb (
   unsigned long                   nframes,
   const PaStreamCallbackTimeInfo* time_info,
   PaStreamCallbackFlags           status_flags,
-  void *                          user_data)
+  void *                   self)
 {
-  return engine_process (AUDIO_ENGINE, nframes);
+  engine_process (AUDIO_ENGINE, nframes);
+
+  float * outf = (float *) out;
+  for (int i = 0; i < nframes * 2; i++)
+    {
+      outf[i] = AUDIO_ENGINE->pa_out_buf[i];
+    }
+  return paContinue;
 }
 
 /**

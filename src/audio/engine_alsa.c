@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -27,6 +28,22 @@
 
 #include <alsa/asoundlib.h>
 #include <pthread.h>
+
+void
+engine_alsa_fill_stereo_out_buffs (
+  AudioEngine * engine)
+{
+  int nframes = engine->nframes;
+  for (int i = 0; i < nframes; i++)
+    {
+      engine->alsa_out_buf[i * 2] =
+        MIXER->master->channel->
+          stereo_out->l->buf[i];
+      engine->alsa_out_buf[i * 2 + 1] =
+        MIXER->master->channel->
+          stereo_out->r->buf[i];
+    }
+}
 
 static int
 set_sw_params (AudioEngine * self)
@@ -118,7 +135,7 @@ set_hw_params (
   err =
     snd_pcm_hw_params_set_format (
       self->playback_handle, self->hw_params,
-      SND_PCM_FORMAT_S16_LE);
+      SND_PCM_FORMAT_FLOAT_LE);
   if (err < 0)
     g_warning (
       "Cannot set format: %s",
@@ -199,40 +216,21 @@ set_hw_params (
       snd_strerror (err));
 }
 
-static int
+static inline int
 process_cb (
   AudioEngine* self,
   snd_pcm_sframes_t nframes)
 {
-  g_message (
-    "playback callback called with %lu frames",
-    nframes);
+  self->nframes = nframes;
 
-  /*engine_process (self, nframes);*/
+  memset(self->alsa_out_buf, 0, nframes * 2);
+  engine_process (self, nframes);
 
-  g_message ("filled in stereo bufs: %d",
-              self->filled_stereo_out_bufs);
-
-  /*unsigned char data[nframes * 2];*/
-  memset(self->buf, 0, nframes * 2);
-  /*for (int i = 0; i < nframes * 2; i++)*/
-    /*{*/
-      /*data[i] = 0;*/
-    /*}*/
-
-  int err =
+  return
     snd_pcm_writei (
       self->playback_handle,
-      self->buf,
+      self->alsa_out_buf,
       nframes);
-
-  if (err < 0)
-    g_warning ("write failed (%s)",
-                snd_strerror (err));
-
-  g_message ("returning %d", err);
-
-  return err;
 }
 
 static void *
@@ -266,11 +264,8 @@ audio_thread (void * _self)
       "Cannot allocate sw params: %s",
       snd_strerror (err));
   set_sw_params (self);
-  g_warn_if_fail (self->block_length == 512);
-  g_message ("audio thread");
-  g_usleep (500000);
+  g_warn_if_fail (self->block_length > 0);
 
-  /*snd_pcm_sframes_t frames_to_deliver;*/
   struct pollfd *pfds;
   int l1, nfds =
     snd_pcm_poll_descriptors_count (
@@ -304,14 +299,11 @@ audio_thread (void * _self)
 void alsa_setup (
   AudioEngine *self, int loading)
 {
-  snd_pcm_sframes_t frames_to_deliver;
-  int nfds;
-  int err;
   self->block_length = 512;
   self->sample_rate = 44100;
-  self->buf =
-    (short *) malloc (
-      2 * sizeof (short) * self->block_length);
+  self->alsa_out_buf =
+    (float *) malloc (
+      2 * sizeof (float) * self->block_length);
 
   Port *stereo_out_l, *stereo_out_r,
       *stereo_in_l, *stereo_in_r;
@@ -352,6 +344,7 @@ void alsa_setup (
     &thread_id, NULL,
     &audio_thread, self);
 
-  g_message("[ALSA]SETUP RETURN");
+  g_message ("ALSA setup complete");
+
   return;
 }
