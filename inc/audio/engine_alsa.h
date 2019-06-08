@@ -32,12 +32,12 @@
 typedef struct AudioEngine AudioEngine;
 
 /** Alsa sample rate callback. */
-int
-alsa_sample_rate_cb (uint32_t nframes, void * data);
+//int
+//alsa_sample_rate_cb (uint32_t nframes, void * data);
 
 /** Alsa buffer size callback. */
-int
-alsa_buffer_size_cb (uint32_t nframes, void* data);
+//int
+//alsa_buffer_size_cb (uint32_t nframes, void* data);
 
 /**
  * The process callback for this ALSA application is
@@ -45,11 +45,11 @@ alsa_buffer_size_cb (uint32_t nframes, void* data);
  * cycle.
  */
 int
-alsa_process_cb (uint32_t nframes, ///< the number of frames to fill
-                 void *    data); ///< user data
+alsa_process_cb (AudioEngine * self);
 
 /**
- * ALSA calls this shutdown_callback if the server ever
+ * ALSA calls this shutdown_callback if the
+ * server ever
  * shuts down or decides to disconnect the client.
  */
 void
@@ -66,4 +66,3 @@ void
 alsa_tear_down ();
 
 #endif
-

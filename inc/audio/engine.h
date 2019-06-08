@@ -41,6 +41,8 @@
 #include <portaudio.h>
 #endif
 
+#include <alsa/asoundlib.h>
+
 /**
  * @defgroup audio Audio
  *
@@ -145,6 +147,18 @@ typedef struct AudioEngine
 
   /** Send note off MIDI everywhere. */
   gint               panic;
+
+  //ZixSem             alsa_callback_start;
+
+  /* ----------- ALSA --------------- */
+  /** Alsa playback handle. */
+  snd_pcm_t *        playback_handle;
+  snd_pcm_hw_params_t * hw_params;
+  snd_pcm_sw_params_t * sw_params;
+  /** ALSA audio buffer. */
+  short *            buf;
+
+  /* ------------------------------- */
 
   /**
    * Port buffer for raw MIDI data.

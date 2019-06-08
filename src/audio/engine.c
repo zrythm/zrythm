@@ -30,6 +30,7 @@
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
 #include "audio/engine.h"
+#include "audio/engine_alsa.h"
 #include "audio/engine_dummy.h"
 #include "audio/engine_jack.h"
 #include "audio/engine_pa.h"
@@ -131,6 +132,9 @@ engine_init (AudioEngine * self,
       self->audio_backend = AUDIO_BACKEND_JACK;
 #endif
       break;
+    case 2:
+      self->audio_backend = AUDIO_BACKEND_ALSA;
+      break;
     case 3:
       self->audio_backend = AUDIO_BACKEND_PORT_AUDIO;
       break;
@@ -184,6 +188,9 @@ engine_init (AudioEngine * self,
     case AUDIO_BACKEND_DUMMY:
       engine_dummy_setup (self, loading);
       break;
+    case AUDIO_BACKEND_ALSA:
+	    alsa_setup(self, loading);
+	    break;
 #ifdef HAVE_JACK
     case AUDIO_BACKEND_JACK:
       jack_setup (self, loading);

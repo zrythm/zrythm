@@ -14,6 +14,7 @@ audio_srcs = [
   'chord_track.c',
   'control_room.c',
   'engine.c',
+  'engine_alsa.c',
   'engine_dummy.c',
   'engine_jack.c',
   'engine_pa.c',
