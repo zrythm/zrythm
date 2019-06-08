@@ -20,6 +20,7 @@
 #include "gui/accel.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
+#include "utils/ui.h"
 
 int
 z_gtk_widget_destroy_idle (

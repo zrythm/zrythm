@@ -150,6 +150,13 @@ center_dock_widget_setup (CenterDockWidget * self)
     "size-allocate",
     G_CALLBACK (on_pinned_timeline_scroll_allocate),
     self);
+
+  bot_dock_edge_widget_setup (
+    self->bot_dock_edge);
+  left_dock_edge_widget_setup (
+    self->left_dock_edge);
+  right_dock_edge_widget_setup (
+    self->right_dock_edge);
 }
 
 static void

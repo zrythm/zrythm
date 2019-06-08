@@ -40,6 +40,7 @@ widget_srcs = [
   'fader.c',
   'file_browser.c',
   'first_run_assistant.c',
+  'foldable_notebook.c',
   'group_track.c',
   'header_notebook.c',
   'help_toolbar.c',

@@ -1733,16 +1733,16 @@ dzl_multi_paned_draw (GtkWidget *widget,
 }
 
 static void
-dzl_multi_paned_pan_gesture_drag_begin (DzlMultiPaned *self,
-                                        gdouble        x,
-                                        gdouble        y,
-                                        GtkGestureDrag *gesture)
+dzl_multi_paned_pan_gesture_drag_begin (
+  DzlMultiPaned *self,
+  gdouble        x,
+  gdouble        y,
+  GtkGestureDrag *gesture)
 {
   DzlMultiPanedPrivate *priv = dzl_multi_paned_get_instance_private (self);
   GdkEventSequence *sequence;
   const GdkEvent *event;
   guint i;
-  g_message ("drag_begin");
 
   g_warn_if_fail (DZL_IS_MULTI_PANED (self));
   g_warn_if_fail (GTK_IS_GESTURE_DRAG (gesture));

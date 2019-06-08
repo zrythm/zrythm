@@ -32,15 +32,24 @@ G_DECLARE_FINAL_TYPE (LeftDockEdgeWidget,
                       LEFT_DOCK_EDGE_WIDGET,
                       GtkBox)
 
-#define MW_LEFT_DOCK_EDGE MW_CENTER_DOCK->left_dock_edge
+#define MW_LEFT_DOCK_EDGE \
+  MW_CENTER_DOCK->left_dock_edge
 
 typedef struct _InspectorWidget InspectorWidget;
+typedef struct _FoldableNotebookWidget
+  FoldableNotebookWidget;
 
 typedef struct _LeftDockEdgeWidget
 {
-  GtkBox                   parent_instance;
-  GtkNotebook *            inspector_notebook;
-  InspectorWidget          * inspector;
+  GtkBox                 parent_instance;
+  FoldableNotebookWidget * inspector_notebook;
+  InspectorWidget *      inspector;
+  InspectorWidget *      visibility;
+  GtkGestureMultiPress * mp;
 } LeftDockEdgeWidget;
+
+void
+left_dock_edge_widget_setup (
+  LeftDockEdgeWidget * self);
 
 #endif
