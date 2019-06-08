@@ -100,6 +100,7 @@ widget_srcs = [
   'ruler.c',
   'ruler_marker.c',
   'ruler_range.c',
+  'piano_roll_selection_info.c',
   'pinned_tracklist.c',
   'selection_info.c',
   'slider_bar.c',

@@ -36,8 +36,21 @@
       </object>
     </child>
     <child>
-      <object class="PianoRollWidget" id="piano_roll">
+      <object class="GtkBox" id="piano_roll_box">
         <property name="visible">1</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="PianoRollSelectionInfoWidget"
+            id="piano_roll_selections">
+            <property name="visible">1</property>
+            <property name="vexpand">0</property>
+          </object>
+        </child>
+        <child>
+          <object class="PianoRollWidget" id="piano_roll">
+            <property name="visible">1</property>
+          </object>
+        </child>
       </object>
     </child>
   </template>
