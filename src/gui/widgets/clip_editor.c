@@ -22,6 +22,7 @@
 #include "gui/widgets/audio_ruler.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/piano_roll.h"
+#include "gui/widgets/piano_roll_selection_info.h"
 #include "utils/resources.h"
 
 G_DEFINE_TYPE (ClipEditorWidget,
@@ -50,12 +51,9 @@ clip_editor_widget_setup (
 static void
 clip_editor_widget_init (ClipEditorWidget * self)
 {
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      PIANO_ROLL_WIDGET_TYPE, NULL)));
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      AUDIO_CLIP_EDITOR_WIDGET_TYPE, NULL)));
+  g_type_ensure (PIANO_ROLL_WIDGET_TYPE);
+  g_type_ensure (AUDIO_CLIP_EDITOR_WIDGET_TYPE);
+  g_type_ensure (PIANO_ROLL_SELECTION_INFO_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 }
@@ -65,12 +63,20 @@ clip_editor_widget_class_init (
   ClipEditorWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass,
-                                "clip_editor.ui");
+  resources_set_class_template (
+    klass, "clip_editor.ui");
 
-  gtk_widget_class_set_css_name (klass,
-                                 "clip-editor");
+  gtk_widget_class_set_css_name (
+    klass, "clip-editor");
 
+  gtk_widget_class_bind_template_child (
+    klass,
+    ClipEditorWidget,
+    piano_roll_box);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ClipEditorWidget,
+    piano_roll_selections);
   gtk_widget_class_bind_template_child (
     klass,
     ClipEditorWidget,

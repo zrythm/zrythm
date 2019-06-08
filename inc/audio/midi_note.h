@@ -246,6 +246,14 @@ midi_note_is_selected (MidiNote * self);
     mn->obj_info)
 
 /**
+ * Getter for start pos.
+ */
+void
+midi_note_get_start_pos (
+  MidiNote * midi_note,
+  Position * pos);
+
+/**
  * Checks if position is valid then sets it.
  *
  * @param trans_only Only do transients.

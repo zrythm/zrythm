@@ -20,7 +20,8 @@
 /**
  * \file
  *
- * Widget for showing selection info like in Cubase.
+ * Widget for showing info about the current
+ * selection.
  */
 
 #ifndef __GUI_WIDGETS_SELECTION_INFO_H__
@@ -32,16 +33,23 @@
 
 #define SELECTION_INFO_WIDGET_TYPE \
   (selection_info_widget_get_type ())
-G_DECLARE_DERIVABLE_TYPE (SelectionInfoWidget,
-                          selection_info_widget,
-                          Z,
-                          SELECTION_INFO_WIDGET,
-                          GtkGrid)
+G_DECLARE_DERIVABLE_TYPE (
+  SelectionInfoWidget,
+  selection_info_widget,
+  Z, SELECTION_INFO_WIDGET,
+  GtkGrid)
 
 #define SELECTION_INFO_WIDGET_GET_PRIVATE(self) \
   SelectionInfoWidgetPrivate * sel_inf_prv = \
-    selection_info_widget_get_private (Z_SELECTION_INFO_WIDGET (self));
+    selection_info_widget_get_private ( \
+      Z_SELECTION_INFO_WIDGET (self));
 
+/**
+ * A widget to display info about the current
+ * arranger selection, to be used in the
+ * TimelineArrangerWidget and in the
+ * and PianoRoll.
+ */
 typedef struct _SelectionInfoWidgetPrivate
 {
   GtkWidget *   labels[14];
@@ -83,6 +91,9 @@ void
 selection_info_widget_clear (
   SelectionInfoWidget * self);
 
+/**
+ * Returns the private.
+ */
 SelectionInfoWidgetPrivate *
 selection_info_widget_get_private (
   SelectionInfoWidget * self);

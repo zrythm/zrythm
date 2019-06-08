@@ -73,7 +73,7 @@ int
 arranger_object_info_should_be_visible (
   ArrangerObjectInfo * self)
 {
-  ArrangerWidget * arranger;
+  ArrangerWidget * arranger = NULL;
   switch (self->type)
     {
     case AOI_TYPE_REGION:

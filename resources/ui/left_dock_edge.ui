@@ -27,10 +27,11 @@
     <property name="can-focus">False</property>
     <property name="orientation">vertical</property>
     <child>
-      <object class="GtkNotebook" id="inspector_notebook">
+      <object class="FoldableNotebookWidget" id="inspector_notebook">
         <property name="visible">1</property>
         <property name="can-focus">1</property>
         <property name="tab-pos">left</property>
+        <property name="vexpand">1</property>
         <child type="tab">
         </child>
         <child type="tab">

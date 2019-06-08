@@ -18,8 +18,10 @@
  */
 
 #include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/chord_pad.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/modulator_view.h"
 #include "gui/widgets/piano_roll.h"
@@ -30,6 +32,17 @@
 G_DEFINE_TYPE (BotDockEdgeWidget,
                bot_dock_edge_widget,
                GTK_TYPE_BOX)
+
+void
+bot_dock_edge_widget_setup (
+  BotDockEdgeWidget * self)
+{
+  foldable_notebook_widget_setup (
+    self->bot_notebook,
+    MW_CENTER_DOCK->main_paned,
+    NULL,
+    GTK_POS_BOTTOM);
+}
 
 static void
 bot_dock_edge_widget_init (BotDockEdgeWidget * self)

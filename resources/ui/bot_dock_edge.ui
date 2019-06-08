@@ -26,13 +26,18 @@
     <property name="visible">True</property>
     <property name="orientation">vertical</property>
     <child>
-      <object class="GtkNotebook" id="bot_notebook">
+      <object class="FoldableNotebookWidget" id="bot_notebook">
         <property name="visible">1</property>
         <property name="can-focus">1</property>
         <property name="tab-pos">bottom</property>
         <child>
-          <object class="ClipEditorWidget" id="clip_editor">
+          <object class="GtkBox">
             <property name="visible">1</property>
+            <child>
+              <object class="ClipEditorWidget" id="clip_editor">
+                <property name="visible">1</property>
+              </object>
+            </child>
           </object>
         </child>
         <child type="tab">
@@ -64,8 +69,13 @@
           </object>
         </child>
         <child>
-          <object class="MixerWidget" id="mixer">
+          <object class="GtkBox">
             <property name="visible">1</property>
+            <child>
+              <object class="MixerWidget" id="mixer">
+                <property name="visible">1</property>
+              </object>
+            </child>
           </object>
         </child>
         <child type="tab">
@@ -97,8 +107,13 @@
           </object>
         </child>
         <child>
-          <object class="ModulatorViewWidget" id="modulator_view">
+          <object class="GtkBox">
             <property name="visible">1</property>
+            <child>
+              <object class="ModulatorViewWidget" id="modulator_view">
+                <property name="visible">1</property>
+              </object>
+            </child>
           </object>
         </child>
         <child type="tab">
@@ -129,8 +144,13 @@
           </object>
         </child>
         <child>
-          <object class="ChordPadWidget" id="chord_pad">
+          <object class="GtkBox">
             <property name="visible">1</property>
+            <child>
+              <object class="ChordPadWidget" id="chord_pad">
+                <property name="visible">1</property>
+              </object>
+            </child>
           </object>
         </child>
         <child type="tab">

@@ -20,11 +20,11 @@
 /**
  * \file
  *
- * Timeline selection info.
+ * PianoRoll selection info.
  */
 
-#ifndef __GUI_WIDGETS_TIMELINE_SELECTION_INFO_H__
-#define __GUI_WIDGETS_TIMELINE_SELECTION_INFO_H__
+#ifndef __GUI_WIDGETS_PIANO_ROLL_SELECTION_INFO_H__
+#define __GUI_WIDGETS_PIANO_ROLL_SELECTION_INFO_H__
 
 #include "audio/region.h"
 #include "gui/widgets/region.h"
@@ -32,38 +32,40 @@
 
 #include <gtk/gtk.h>
 
-#define TIMELINE_SELECTION_INFO_WIDGET_TYPE \
-  (timeline_selection_info_widget_get_type ())
+#define PIANO_ROLL_SELECTION_INFO_WIDGET_TYPE \
+  (piano_roll_selection_info_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  TimelineSelectionInfoWidget,
-  timeline_selection_info_widget,
-  Z, TIMELINE_SELECTION_INFO_WIDGET,
+  PianoRollSelectionInfoWidget,
+  piano_roll_selection_info_widget,
+  Z, PIANO_ROLL_SELECTION_INFO_WIDGET,
   GtkStack);
 
-#define MW_TS_INFO MW_CENTER_DOCK->selection_info
+#define MW_MAS_INFO \
+  MW_CLIP_EDITOR->piano_roll_selections
 
 typedef struct _SelectionInfoWidget
   SelectionInfoWidget;
-typedef struct TimelineSelections TimelineSelections;
+typedef struct MidiArrangerSelections   \
+  MidiArrangerSelections;
 
 /**
  * A widget for showing info about the current
- * TimelineSelections.
+ * PianoRollSelections.
  */
-typedef struct _TimelineSelectionInfoWidget
+typedef struct _PianoRollSelectionInfoWidget
 {
   GtkStack              parent_instance;
   GtkLabel *            no_selection_label;
   SelectionInfoWidget * selection_info;
-} TimelineSelectionInfoWidget;
+} PianoRollSelectionInfoWidget;
 
 /**
  * Populates the SelectionInfoWidget based on the
  * leftmost object selected.
  */
 void
-timeline_selection_info_widget_refresh (
-  TimelineSelectionInfoWidget * self,
-  TimelineSelections * ts);
+piano_roll_selection_info_widget_refresh (
+  PianoRollSelectionInfoWidget * self,
+  MidiArrangerSelections * mas);
 
 #endif

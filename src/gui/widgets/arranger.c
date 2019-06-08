@@ -2162,16 +2162,19 @@ arranger_widget_init (ArrangerWidget *self)
     GTK_PHASE_CAPTURE);
   ar_prv->multipress =
     GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (GTK_WIDGET (self)));
+      gtk_gesture_multi_press_new (
+        GTK_WIDGET (self)));
   gtk_event_controller_set_propagation_phase (
     GTK_EVENT_CONTROLLER (ar_prv->multipress),
     GTK_PHASE_CAPTURE);
   ar_prv->right_mouse_mp =
     GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (GTK_WIDGET (self)));
+      gtk_gesture_multi_press_new (
+        GTK_WIDGET (self)));
   gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (ar_prv->right_mouse_mp),
-                        GDK_BUTTON_SECONDARY);
+    GTK_GESTURE_SINGLE (
+      ar_prv->right_mouse_mp),
+      GDK_BUTTON_SECONDARY);
   ar_prv->motion_controller =
     gtk_event_controller_motion_new (
       GTK_WIDGET (self));

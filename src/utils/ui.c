@@ -157,10 +157,13 @@ ui_get_hit_child (
                 widget,
                 type))
             {
+              g_list_free (children);
               return widget;
             }
         }
     }
+
+  g_list_free (children);
   return NULL;
 }
 

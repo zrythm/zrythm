@@ -271,7 +271,7 @@ timeline_ruler_on_drag_begin_no_marker_hit (
                          GTK_WIDGET (self->range),
                          1, 1,
                          start_x,
-                         start_y) &&
+                         start_y, 0, 0) &&
         gtk_widget_get_visible (
           GTK_WIDGET (self->range));
 

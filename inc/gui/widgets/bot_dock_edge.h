@@ -17,6 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Bot dock.
+ */
+
 #ifndef __GUI_WIDGETS_BOT_DOCK_EDGE_H__
 #define __GUI_WIDGETS_BOT_DOCK_EDGE_H__
 
@@ -24,11 +30,11 @@
 
 #define BOT_DOCK_EDGE_WIDGET_TYPE \
   (bot_dock_edge_widget_get_type ())
-G_DECLARE_FINAL_TYPE (BotDockEdgeWidget,
-                      bot_dock_edge_widget,
-                      Z,
-                      BOT_DOCK_EDGE_WIDGET,
-                      GtkBox)
+G_DECLARE_FINAL_TYPE (
+  BotDockEdgeWidget,
+  bot_dock_edge_widget,
+  Z, BOT_DOCK_EDGE_WIDGET,
+  GtkBox)
 
 #define MW_BOT_DOCK_EDGE MW_CENTER_DOCK->bot_dock_edge
 
@@ -37,20 +43,39 @@ G_DECLARE_FINAL_TYPE (BotDockEdgeWidget,
  */
 #define SHOW_CLIP_EDITOR \
   gtk_notebook_set_current_page ( \
-    MW_BOT_DOCK_EDGE->bot_notebook, 0)
+    GTK_NOTEBOOK ( \
+      MW_BOT_DOCK_EDGE->bot_notebook), 0)
 
 typedef struct _MixerWidget MixerWidget;
 typedef struct _ClipEditorWidget ClipEditorWidget;
 typedef struct _ModulatorViewWidget
   ModulatorViewWidget;
+typedef struct _FoldableNotebookWidget
+  FoldableNotebookWidget;
 
+/**
+ * Bot dock widget.
+ */
 typedef struct _BotDockEdgeWidget
 {
   GtkBox                   parent_instance;
-  GtkNotebook *            bot_notebook;
+  FoldableNotebookWidget * bot_notebook;
+
+  /** Wrapper. */
+  //GtkBox *                 modulator_view_box;
   ModulatorViewWidget *    modulator_view;
+
+  /** Wrapper. */
+  //GtkBox *                 clip_editor_box;
   ClipEditorWidget *       clip_editor;
+
+  /** Wrapper. */
+  //GtkBox *                 mixer_box;
   MixerWidget *            mixer;
 } BotDockEdgeWidget;
+
+void
+bot_dock_edge_widget_setup (
+  BotDockEdgeWidget * self);
 
 #endif

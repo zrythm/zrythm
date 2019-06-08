@@ -88,7 +88,7 @@ tracklist_widget_get_hit_track (
       if (ui_is_child_hit (
             GTK_CONTAINER (self),
             GTK_WIDGET (tw),
-            0, 1, x, y))
+            0, 1, x, y, 0, 0))
         return tw;
     }
   return NULL;

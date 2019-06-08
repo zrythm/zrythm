@@ -402,7 +402,7 @@ timeline_arranger_widget_get_track_lane_at_y (
           if (ui_is_child_hit (
                 GTK_CONTAINER (self),
                 GTK_WIDGET (lane->widget),
-                0, 1, 0, y))
+                0, 1, 0, y, 0, 0))
             return lane;
         }
     }
@@ -423,7 +423,7 @@ timeline_arranger_widget_get_track_at_y (
       if (ui_is_child_hit (
             GTK_CONTAINER (self),
             GTK_WIDGET (track->widget),
-            0, 1, 0, y))
+            0, 1, 0, y, 0, 0))
         return track;
     }
 
