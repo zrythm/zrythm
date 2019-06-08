@@ -34,7 +34,7 @@ BuildRequires: alsa-lib-devel
 BuildRequires: ladspa-devel
 BuildRequires: fftw-devel
 BuildRequires: portaudio-devel
-BuildRequires: meson ninja-build
+BuildRequires: meson
 Requires: gtk3
 Requires: ladspa
 Requires: lilv libsamplerate
