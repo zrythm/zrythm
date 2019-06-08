@@ -123,21 +123,27 @@ engine_init (AudioEngine * self,
       S_PREFERENCES,
       "audio-backend");
   self->audio_backend = AUDIO_BACKEND_DUMMY;
+  /* use ifdef's so that dummy is used if the
+   * selected backend isn't available */
   switch (ab_code)
     {
-    case 0: // no backend
+    case AUDIO_BACKEND_DUMMY: // no backend
       break;
-    case 1:
 #ifdef HAVE_JACK
+    case AUDIO_BACKEND_JACK:
       self->audio_backend = AUDIO_BACKEND_JACK;
-#endif
       break;
-    case 2:
+#endif
+#ifdef __linux__
+    case AUDIO_BACKEND_ALSA:
       self->audio_backend = AUDIO_BACKEND_ALSA;
       break;
-    case 3:
+#endif
+#ifdef HAVE_PORT_AUDIO
+    case AUDIO_BACKEND_PORT_AUDIO:
       self->audio_backend = AUDIO_BACKEND_PORT_AUDIO;
       break;
+#endif
     default:
       g_warn_if_reached ();
       break;
@@ -151,13 +157,18 @@ engine_init (AudioEngine * self,
   self->midi_backend = MIDI_BACKEND_DUMMY;
   switch (mb_code)
     {
-    case 0: // no backend
+    case MIDI_BACKEND_DUMMY: // no backend
       break;
-    case 1:
-#ifdef HAVE_JACK
-      self->midi_backend = MIDI_BACKEND_JACK;
+#ifdef __linux__
+    case MIDI_BACKEND_ALSA:
+      self->midi_backend = MIDI_BACKEND_ALSA;
+      break;
 #endif
+#ifdef HAVE_JACK
+    case MIDI_BACKEND_JACK:
+      self->midi_backend = MIDI_BACKEND_JACK;
       break;
+#endif
     default:
       break;
     }
@@ -188,9 +199,11 @@ engine_init (AudioEngine * self,
     case AUDIO_BACKEND_DUMMY:
       engine_dummy_setup (self, loading);
       break;
+#ifdef __linux__
     case AUDIO_BACKEND_ALSA:
 	    alsa_setup(self, loading);
 	    break;
+#endif
 #ifdef HAVE_JACK
     case AUDIO_BACKEND_JACK:
       jack_setup (self, loading);
@@ -201,7 +214,6 @@ engine_init (AudioEngine * self,
       pa_setup (self, loading);
       break;
 #endif
-    case NUM_AUDIO_BACKENDS:
     default:
       g_warn_if_reached ();
       break;
@@ -216,12 +228,16 @@ engine_init (AudioEngine * self,
     case MIDI_BACKEND_DUMMY:
       engine_dummy_midi_setup (self, loading);
       break;
+#ifdef __linux__
+    case MIDI_BACKEND_ALSA:
+      jack_midi_setup (self, loading);
+      break;
+#endif
 #ifdef HAVE_JACK
     case MIDI_BACKEND_JACK:
       jack_midi_setup (self, loading);
       break;
 #endif
-    case NUM_MIDI_BACKENDS:
     default:
       g_warn_if_reached ();
       break;

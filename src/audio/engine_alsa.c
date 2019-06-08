@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifdef __linux__
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -348,3 +350,4 @@ void alsa_setup (
 
   return;
 }
+#endif

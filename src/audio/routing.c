@@ -357,6 +357,7 @@ node_process (
 
                   break;
                 case AUDIO_BACKEND_ALSA:
+#ifdef __linux__
                   /* write interleaved */
                   if (g_atomic_int_get (
                     &AUDIO_ENGINE->
@@ -370,6 +371,7 @@ node_process (
                   if (ret)
                     engine_alsa_fill_stereo_out_buffs (
                       AUDIO_ENGINE);
+#endif
                   break;
                 case AUDIO_BACKEND_PORT_AUDIO:
 #ifdef HAVE_PORT_AUDIO

@@ -30,8 +30,6 @@
 #define MIDI_IN_EVENT(i) \
   (AUDIO_ENGINE->midi_in->midi_events-> \
    jack_midi_events[i])
-#define MIDI_IN_NUM_EVENTS \
-  AUDIO_ENGINE->midi_in->midi_events->num_events
 
 typedef struct AudioEngine AudioEngine;
 

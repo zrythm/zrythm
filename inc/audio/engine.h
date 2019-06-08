@@ -55,6 +55,9 @@
 #define BLOCK_LENGTH 4096 // should be set by backend
 #define MIDI_BUF_SIZE 1024 // should be set by backend
 
+#define MIDI_IN_NUM_EVENTS \
+  AUDIO_ENGINE->midi_in->midi_events->num_events
+
 
 #define AUDIO_ENGINE (&PROJECT->audio_engine)
 #define MANUAL_PRESS_QUEUE \
@@ -82,8 +85,8 @@ typedef struct Tracklist Tracklist;
 typedef enum AudioBackend
 {
   AUDIO_BACKEND_DUMMY,
-  AUDIO_BACKEND_JACK,
   AUDIO_BACKEND_ALSA,
+  AUDIO_BACKEND_JACK,
   AUDIO_BACKEND_PORT_AUDIO,
   NUM_AUDIO_BACKENDS,
 } AudioBackend;
@@ -91,6 +94,7 @@ typedef enum AudioBackend
 typedef enum MidiBackend
 {
   MIDI_BACKEND_DUMMY,
+  MIDI_BACKEND_ALSA,
   MIDI_BACKEND_JACK,
   NUM_MIDI_BACKENDS,
 } MidiBackend;
@@ -151,12 +155,14 @@ typedef struct AudioEngine
   //ZixSem             alsa_callback_start;
 
   /* ----------- ALSA --------------- */
+#ifdef __linux__
   /** Alsa playback handle. */
   snd_pcm_t *        playback_handle;
   snd_pcm_hw_params_t * hw_params;
   snd_pcm_sw_params_t * sw_params;
   /** ALSA audio buffer. */
   float *            alsa_out_buf;
+#endif
 
   /* ------------------------------- */
 

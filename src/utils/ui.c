@@ -541,15 +541,15 @@ ui_create_audio_backends_model (void)
 {
   const int values[NUM_AUDIO_BACKENDS] = {
     AUDIO_BACKEND_DUMMY,
-    AUDIO_BACKEND_JACK,
     AUDIO_BACKEND_ALSA,
+    AUDIO_BACKEND_JACK,
     AUDIO_BACKEND_PORT_AUDIO,
   };
   const gchar *labels[NUM_AUDIO_BACKENDS] = {
     /* TRANSLATORS: Dummy audio backend */
     _("Dummy"),
-    "Jack",
     "ALSA",
+    "Jack",
     "PortAudio",
   };
 
@@ -560,11 +560,13 @@ ui_create_midi_backends_model (void)
 {
   const int values[NUM_MIDI_BACKENDS] = {
     MIDI_BACKEND_DUMMY,
+    MIDI_BACKEND_ALSA,
     MIDI_BACKEND_JACK,
   };
   const gchar *labels[NUM_AUDIO_BACKENDS] = {
     /* TRANSLATORS: Dummy audio backend */
     _("Dummy"),
+    _("ALSA Sequencer"),
     "Jack MIDI",
   };
 

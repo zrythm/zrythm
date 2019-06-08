@@ -17,27 +17,14 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifdef __linux__
+
 #ifndef __AUDIO_ENGINE_ALSA_H__
 #define __AUDIO_ENGINE_ALSA_H__
 
 #include <stdlib.h>
 
-#define ALSA_PORT_T(exp) ((alsa_port_t *) exp)
-#define MIDI_IN_EVENT(i) \
-  (AUDIO_ENGINE->midi_in->midi_events-> \
-   alsa_midi_events[i])
-#define MIDI_IN_NUM_EVENTS \
-  AUDIO_ENGINE->midi_in->midi_events->num_events
-
 typedef struct AudioEngine AudioEngine;
-
-/** Alsa sample rate callback. */
-//int
-//alsa_sample_rate_cb (uint32_t nframes, void * data);
-
-/** Alsa buffer size callback. */
-//int
-//alsa_buffer_size_cb (uint32_t nframes, void* data);
 
 void
 engine_alsa_fill_stereo_out_buffs (
@@ -69,4 +56,5 @@ alsa_setup (AudioEngine * self,
 void
 alsa_tear_down ();
 
-#endif
+#endif // header guard
+#endif // __linux__

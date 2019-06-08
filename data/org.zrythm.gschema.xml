@@ -28,13 +28,14 @@
 
   <enum id="org.zrythm.preferences.audio-backend-enum">
     <value nick="none" value="0"/>
-    <value nick="jack" value="1"/>
-    <value nick="alsa" value="2"/>
+    <value nick="alsa" value="1"/>
+    <value nick="jack" value="2"/>
     <value nick="port-audio" value="3"/>
   </enum>
   <enum id="org.zrythm.preferences.midi-backend-enum">
     <value nick="none" value="0"/>
-    <value nick="jack" value="1"/>
+    <value nick="alsa" value="1"/>
+    <value nick="jack" value="2"/>
   </enum>
   <enum id="org.zrythm.preferences.language-enum">
     <value nick="english" value="0"/>

@@ -213,6 +213,7 @@ else
   common_ldflags = test_ldflags
 endif
 
+# set config defines
 jack_dep = dependency ('jack', required: false)
 if (jack_dep.found ())
   cdata.set('HAVE_JACK', 1)
