@@ -145,6 +145,27 @@ enum ZGtkShrink
   Z_GTK_SHRINK
 };
 
+static inline GtkWidget *
+z_gtk_notebook_get_current_page_widget (
+  GtkNotebook * notebook)
+{
+  return
+    gtk_notebook_get_nth_page (
+      notebook,
+      gtk_notebook_get_current_page (notebook));
+}
+
+static inline GtkWidget *
+z_gtk_notebook_get_current_tab_label_widget (
+  GtkNotebook * notebook)
+{
+  return
+    gtk_notebook_get_tab_label (
+      notebook,
+      z_gtk_notebook_get_current_page_widget (
+        notebook));
+}
+
 int
 z_gtk_widget_destroy_idle (
   GtkWidget * widget);
@@ -279,6 +300,39 @@ z_gtk_widget_get_mask (
     z_gtk_widget_get_device (widget),
     NULL, NULL, mask);
 }
+
+/**
+ * Returns the single child of a container.
+ */
+static inline GtkWidget *
+z_gtk_container_get_single_child (
+  GtkContainer * container)
+{
+  GList *children, *iter;
+  GtkWidget * widget;
+  children =
+    gtk_container_get_children (container);
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      widget =
+        GTK_WIDGET (iter->data);
+      g_list_free (children);
+      return widget;
+    }
+  g_return_val_if_reached (NULL);
+}
+
+/**
+ * Makes the given notebook foldable.
+ *
+ * The pages of the notebook must all be wrapped
+ * in GtkBox's.
+ */
+void
+z_gtk_setup_foldable_notebook (
+  GtkNotebook * notebook);
 
 /**
  * @}

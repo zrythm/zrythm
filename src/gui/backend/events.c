@@ -54,6 +54,7 @@
 #include "gui/widgets/midi_ruler.h"
 #include "gui/widgets/modulator_view.h"
 #include "gui/widgets/mixer.h"
+#include "gui/widgets/piano_roll_selection_info.h"
 #include "gui/widgets/pinned_tracklist.h"
 #include "gui/widgets/route_target_selector.h"
 #include "gui/widgets/ruler_marker.h"
@@ -301,7 +302,7 @@ on_clip_editor_region_changed ()
         {
           gtk_stack_set_visible_child (
             GTK_STACK (MW_CLIP_EDITOR),
-            GTK_WIDGET (MW_PIANO_ROLL));
+            GTK_WIDGET (MW_PIANO_ROLL_BOX));
 
           gtk_label_set_text (
             MW_PIANO_ROLL->midi_name_label,
@@ -406,6 +407,9 @@ on_midi_note_selection_changed ()
   if (region && region->widget)
     gtk_widget_queue_draw (
       GTK_WIDGET (region->widget));
+
+  piano_roll_selection_info_widget_refresh (
+    MW_MAS_INFO, MA_SELECTIONS);
 }
 
 static void

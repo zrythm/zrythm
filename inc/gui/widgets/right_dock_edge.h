@@ -1,6 +1,4 @@
 /*
- * gui/widgets/right_dock_edge.h - Main window widget
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -51,15 +49,23 @@ typedef struct _PluginBrowserWidget
   PluginBrowserWidget;
 typedef struct _FileBrowserWidget FileBrowserWidget;
 typedef struct _ControlRoomWidget ControlRoomWidget;
+typedef struct _FoldableNotebookWidget FoldableNotebookWidget;
 
 typedef struct _RightDockEdgeWidget
 {
   GtkBox                   parent_instance;
-  GtkNotebook *            right_notebook;
+  FoldableNotebookWidget * right_notebook;
   PluginBrowserWidget *    plugin_browser;
   FileBrowserWidget *      file_browser;
   ControlRoomWidget *      control_room;
 } RightDockEdgeWidget;
+
+/**
+ * Sets up the widget.
+ */
+void
+right_dock_edge_widget_setup (
+  RightDockEdgeWidget * self);
 
 /**
  * @}

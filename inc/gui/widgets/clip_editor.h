@@ -35,8 +35,12 @@ G_DECLARE_FINAL_TYPE (ClipEditorWidget,
                       GtkStack)
 
 #define MW_CLIP_EDITOR MW_BOT_DOCK_EDGE->clip_editor
+#define MW_PIANO_ROLL_BOX \
+  MW_CLIP_EDITOR->piano_roll_box
 
 typedef struct _PianoRollWidget PianoRollWidget;
+typedef struct _PianoRollSelectionInfoWidget
+  PianoRollSelectionInfoWidget;
 typedef struct _AudioClipEditorWidget
   AudioClipEditorWidget;
 typedef struct ClipEditor ClipEditor;
@@ -50,6 +54,8 @@ typedef struct ClipEditor ClipEditor;
 typedef struct _ClipEditorWidget
 {
   GtkStack                 parent_instance;
+  GtkBox *                 piano_roll_box;
+  PianoRollSelectionInfoWidget * piano_roll_selections;
   PianoRollWidget *        piano_roll;
   AudioClipEditorWidget *  audio_clip_editor;
   GtkLabel *               no_selection_label;

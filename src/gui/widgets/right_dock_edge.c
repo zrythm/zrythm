@@ -19,7 +19,9 @@
 
 #include "audio/control_room.h"
 #include "gui/widgets/control_room.h"
+#include "gui/widgets/dzl/dzl-dock-revealer.h"
 #include "gui/widgets/file_browser.h"
+#include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/plugin_browser.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "project.h"
@@ -31,6 +33,20 @@ G_DEFINE_TYPE (RightDockEdgeWidget,
                right_dock_edge_widget,
                GTK_TYPE_BOX)
 
+void
+right_dock_edge_widget_setup (
+  RightDockEdgeWidget * self)
+{
+  foldable_notebook_widget_setup (
+    self->right_notebook,
+    NULL,
+    DZL_DOCK_REVEALER (
+      gtk_widget_get_parent (
+        gtk_widget_get_parent (
+          GTK_WIDGET (self)))),
+    GTK_POS_RIGHT);
+}
+
 static void
 right_dock_edge_widget_init (
   RightDockEdgeWidget * self)
@@ -40,6 +56,7 @@ right_dock_edge_widget_init (
   gtk_widget_init_template (GTK_WIDGET (self));
 
   GtkWidget * img;
+  GtkBox * box;
 
   self->file_browser =
     file_browser_widget_new ();
@@ -49,9 +66,17 @@ right_dock_edge_widget_init (
       GTK_ICON_SIZE_SMALL_TOOLBAR);
   gtk_widget_set_tooltip_text (
     img, _("File Browser"));
+  box =
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  gtk_container_add (
+    GTK_CONTAINER (box),
+    GTK_WIDGET (self->file_browser));
+  gtk_widget_set_visible (
+    GTK_WIDGET (box), 1);
   gtk_notebook_prepend_page (
-    self->right_notebook,
-    GTK_WIDGET (self->file_browser),
+    GTK_NOTEBOOK (self->right_notebook),
+    GTK_WIDGET (box),
     img);
   gtk_widget_show_all (
     GTK_WIDGET (self->right_notebook));
@@ -65,9 +90,17 @@ right_dock_edge_widget_init (
       GTK_ICON_SIZE_SMALL_TOOLBAR);
   gtk_widget_set_tooltip_text (
     img, _("Plugin Browser"));
+  box =
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  gtk_container_add (
+    GTK_CONTAINER (box),
+    GTK_WIDGET (self->plugin_browser));
+  gtk_widget_set_visible (
+    GTK_WIDGET (box), 1);
   gtk_notebook_prepend_page (
-    self->right_notebook,
-    GTK_WIDGET (self->plugin_browser),
+    GTK_NOTEBOOK (self->right_notebook),
+    GTK_WIDGET (box),
     img);
 
   control_room_widget_setup (

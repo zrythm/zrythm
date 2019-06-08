@@ -51,22 +51,20 @@ static int notes[12] = {
 
 static gboolean
 piano_roll_key_draw_cb (
-  PianoRollKeyWidget * self,
+  GtkWidget * widget,
   cairo_t *cr,
-  gpointer data)
+  PianoRollKeyWidget * self)
 {
   guint width, height;
   GtkStyleContext *context;
 
   context =
-    gtk_widget_get_style_context (GTK_WIDGET (self));
+    gtk_widget_get_style_context (widget);
 
   width =
-    gtk_widget_get_allocated_width (
-      GTK_WIDGET (self));
+    gtk_widget_get_allocated_width (widget);
   height =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self));
+    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -141,6 +139,10 @@ send_note_event (
 #endif
 
   MANUAL_PRESS_QUEUE->num_events++;
+
+  if (on)
+    PIANO_ROLL->current_note =
+      self->descr;
 
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
@@ -245,13 +247,13 @@ piano_roll_key_widget_init (
 
   g_signal_connect (
     G_OBJECT (self), "draw",
-    G_CALLBACK (piano_roll_key_draw_cb), NULL);
+    G_CALLBACK (piano_roll_key_draw_cb), self);
   g_signal_connect (
     G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_enter), NULL);
+    G_CALLBACK (on_enter), self);
   g_signal_connect (
     G_OBJECT (self), "leave-notify-event",
-    G_CALLBACK (on_leave), NULL);
+    G_CALLBACK (on_leave), self);
   g_signal_connect (
     G_OBJECT(self->multipress), "pressed",
     G_CALLBACK (on_pressed),  self);

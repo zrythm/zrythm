@@ -26,13 +26,19 @@
     <property name="visible">True</property>
     <property name="orientation">vertical</property>
     <child>
-      <object class="GtkNotebook" id="right_notebook">
+      <object class="FoldableNotebookWidget" id="right_notebook">
         <property name="visible">1</property>
         <property name="can-focus">1</property>
         <property name="tab-pos">right</property>
+        <property name="vexpand">1</property>
         <child>
-          <object class="ControlRoomWidget" id="control_room">
+          <object class="GtkBox">
             <property name="visible">1</property>
+            <child>
+              <object class="ControlRoomWidget" id="control_room">
+                <property name="visible">1</property>
+              </object>
+            </child>
           </object>
         </child>
         <child type="tab">

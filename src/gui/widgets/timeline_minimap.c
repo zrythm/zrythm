@@ -314,7 +314,7 @@ drag_begin (GtkGestureDrag * gesture,
                      GTK_WIDGET (self->selection),
                      1, 1,
                      start_x,
-                     start_y);
+                     start_y, 0, 0);
   if (is_hit)
     {
       /* update arranger action */

@@ -238,6 +238,17 @@ midi_note_is_selected (MidiNote * self)
 }
 
 /**
+ * Getter for start pos.
+ */
+void
+midi_note_get_start_pos (
+  MidiNote * midi_note,
+  Position * pos)
+{
+  position_set_to_pos (pos, &midi_note->start_pos);
+}
+
+/**
  * Returns 1 if the MidiNotes match, 0 if not.
  */
 int
