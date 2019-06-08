@@ -132,6 +132,7 @@ elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
   '-Werror=maybe-uninitialized',
 	'-Werror=implicit-function-declaration',
 	'-Werror=uninitialized',
+  '-Werror=maybe-uninitialized',
 	'-Werror=return-type',
 	'-Werror=int-conversion',
 	'-Werror=format-security',
