@@ -26,10 +26,6 @@
 
 typedef struct AudioEngine AudioEngine;
 
-void
-engine_alsa_fill_stereo_out_buffs (
-  AudioEngine * engine);
-
 /**
  * Copy the cached MIDI events to the MIDI events
  * in the MIDI in port, used at the start of each

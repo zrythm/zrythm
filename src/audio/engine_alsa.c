@@ -34,22 +34,6 @@
 
 #define POLY 10
 
-void
-engine_alsa_fill_stereo_out_buffs (
-  AudioEngine * engine)
-{
-  int nframes = engine->nframes;
-  for (int i = 0; i < nframes; i++)
-    {
-      engine->alsa_out_buf[i * 2] =
-        MIXER->master->channel->
-          stereo_out->l->buf[i];
-      engine->alsa_out_buf[i * 2 + 1] =
-        MIXER->master->channel->
-          stereo_out->r->buf[i];
-    }
-}
-
 static int
 set_sw_params (AudioEngine * self)
 {
@@ -365,13 +349,11 @@ audio_thread (void * _self)
         {
           for (l1 = 0; l1 < nfds; l1++)
             {
-              if (pfds[l1].revents > 0)
+              while (pfds[l1].revents > 0)
                 {
                   frames_processed =
                     process_cb (
                       self, self->block_length);
-                  g_message ("frames processed %d",
-                             frames_processed);
                   if (frames_processed <
                         self->block_length)
                     {

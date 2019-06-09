@@ -365,18 +365,24 @@ node_process (
                 case AUDIO_BACKEND_ALSA:
 #ifdef __linux__
                   /* write interleaved */
-                  if (g_atomic_int_get (
-                    &AUDIO_ENGINE->
-                      filled_stereo_out_bufs))
-                    break;
-                  ret =
-                    g_atomic_int_compare_and_exchange (
-                      &AUDIO_ENGINE->
-                        filled_stereo_out_bufs,
-                      0, 1);
-                  if (ret)
-                    engine_alsa_fill_stereo_out_buffs (
-                      AUDIO_ENGINE);
+                  if (port ==
+                        AUDIO_ENGINE->stereo_out->l)
+                    for (i = 0;
+                         i < AUDIO_ENGINE->nframes;
+                         i++)
+                      {
+                        AUDIO_ENGINE->alsa_out_buf[i * 2] =
+                          port->srcs[0]->buf[i];
+                      }
+                  else if (port ==
+                        AUDIO_ENGINE->stereo_out->r)
+                    for (i = 0;
+                         i < AUDIO_ENGINE->nframes;
+                         i++)
+                      {
+                        AUDIO_ENGINE->alsa_out_buf[i * 2 + 1] =
+                          port->srcs[0]->buf[i];
+                      }
 #endif
                   break;
                 case AUDIO_BACKEND_PORT_AUDIO:
