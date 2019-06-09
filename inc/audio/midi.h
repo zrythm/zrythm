@@ -27,13 +27,14 @@
 #define __AUDIO_MIDI_H__
 
 #include "config.h"
+
+#include <stdint.h>
+
 #include "zix/sem.h"
 
 #ifdef HAVE_JACK
 #include <jack/midiport.h>
 #endif
-
-#include <gtk/gtk.h>
 
 /**
  * @addtogroup audio

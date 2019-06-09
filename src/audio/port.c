@@ -500,11 +500,6 @@ port_sum_signal_from_inputs (Port * port)
   switch (port->identifier.type)
     {
     case TYPE_EVENT:
-      /* clear the events since the previous ones
-       * were processed in the last cycle. */
-      midi_events_clear (
-        port->midi_events, 0);
-
       for (k = 0; k < port->num_srcs; k++)
         {
           src_port = port->srcs[k];
@@ -515,10 +510,12 @@ port_sum_signal_from_inputs (Port * port)
             src_port->midi_events,
             port->midi_events, 0);
         }
-      if (port->midi_events->num_events > 0)
-        g_message ("port %s has %d events",
-                   port->identifier.label,
-                   port->midi_events->num_events);
+      /* FIXME the master events never get cleared
+       */
+      /*if (port->midi_events->num_events > 0)*/
+        /*g_message ("port %s has %d events",*/
+                   /*port->identifier.label,*/
+                   /*port->midi_events->num_events);*/
       break;
     case TYPE_AUDIO:
       for (k = 0; k < port->num_srcs; k++)

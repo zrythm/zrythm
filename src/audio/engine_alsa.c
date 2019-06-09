@@ -229,9 +229,10 @@ midi_callback (
 {
   snd_seq_event_t *ev;
 
-  g_message ("waiting midi_callback");
   zix_sem_wait (
     &self->midi_in->midi_events->access_sem);
+
+  int time = 0;
 
   do
     {
@@ -246,7 +247,7 @@ midi_callback (
           midi_events_add_pitchbend (
             self->midi_in->midi_events, 1,
             ev->data.control.value,
-            ev->time.tick, 1);
+            time++, 1);
           break;
         case SND_SEQ_EVENT_CONTROLLER:
           g_message ("modulation %d",
@@ -255,17 +256,20 @@ midi_callback (
             self->midi_in->midi_events,
             1, ev->data.control.param,
             ev->data.control.value,
-            ev->time.tick, 1);
+            time++, 1);
           break;
         case SND_SEQ_EVENT_NOTEON:
           g_message ("note on: note %d vel %d",
                      ev->data.note.note,
                      ev->data.note.velocity);
+          /*g_message ("time %u:%u",*/
+                     /*ev->time.time.tv_sec,*/
+                     /*ev->time.time.tv_nsec);*/
           midi_events_add_note_on (
             self->midi_in->midi_events,
             1, ev->data.note.note,
             ev->data.note.velocity,
-            ev->time.tick, 1);
+            time++, 1);
           break;
         case SND_SEQ_EVENT_NOTEOFF:
           g_message ("note off: note %d",
@@ -273,7 +277,7 @@ midi_callback (
           midi_events_add_note_off (
             self->midi_in->midi_events,
             1, ev->data.note.note,
-            ev->time.tick, 1);
+            time++, 1);
           /* FIXME passing ticks, should pass
            * frames */
           break;
@@ -288,7 +292,6 @@ midi_callback (
 
   zix_sem_post (
     &self->midi_in->midi_events->access_sem);
-  g_message ("posted midi_callback");
 
   return 0;
 }
@@ -332,6 +335,8 @@ audio_thread (void * _self)
     TRANSPORT->beats_per_bar,
     TRANSPORT->bpm,
     self->sample_rate);
+
+  g_usleep (8000);
 
   struct pollfd *pfds;
   int l1, nfds =
