@@ -418,44 +418,43 @@ midi_note_set_end_pos (
  * @param pos Position to offset time from.
  * @param events Preallocated struct to fill.
  */
-void
-midi_note_notes_to_events (
-  MidiNote **  midi_notes,
-  int          num_notes,
-  Position *   pos,
-  MidiEvents * events)
-{
-  for (int i = 0; i < num_notes; i++)
-    {
-      MidiNote * note = midi_notes[i];
+/*void*/
+/*midi_note_notes_to_events (*/
+  /*MidiNote **  midi_notes,*/
+  /*int          num_notes,*/
+  /*Position *   pos,*/
+  /*MidiEvents * events)*/
+/*{*/
+  /*for (int i = 0; i < num_notes; i++)*/
+    /*{*/
+      /*MidiNote * note = midi_notes[i];*/
 
-      /* note on */
-#ifdef HAVE_JACK
-      jack_midi_event_t * ev = &events->jack_midi_events[events->num_events];
-      ev->time = position_to_frames (&note->start_pos) -
-        position_to_frames (pos);
-      ev->size = 3;
-      if (!ev->buffer)
-        ev->buffer = calloc (3, sizeof (jack_midi_data_t));
-      ev->buffer[0] = MIDI_CH1_NOTE_ON; /* status byte */
-      ev->buffer[1] = note->val; /* note number 0-127 */
-      ev->buffer[2] = note->vel->vel; /* velocity 0-127 */
-      events->num_events++;
+      /*[> note on <]*/
+      /*jack_midi_event_t * ev = &events->jack_midi_events[events->num_events];*/
+      /*ev->time = position_to_frames (&note->start_pos) -*/
+        /*position_to_frames (pos);*/
+      /*ev->size = 3;*/
+      /*if (!ev->buffer)*/
+        /*ev->buffer = calloc (3, sizeof (jack_midi_data_t));*/
+      /*ev->buffer[0] = MIDI_CH1_NOTE_ON; [> status byte <]*/
+      /*ev->buffer[1] = note->val; [> note number 0-127 <]*/
+      /*ev->buffer[2] = note->vel->vel; [> velocity 0-127 <]*/
+      /*events->num_events++;*/
 
-      /* note off */
-      ev = &events->jack_midi_events[events->num_events];
-      ev->time = position_to_frames (&note->end_pos) -
-        position_to_frames (pos);
-      ev->size = 3;
-      if (!ev->buffer)
-        ev->buffer = calloc (3, sizeof (jack_midi_data_t));
-      ev->buffer[0] = MIDI_CH1_NOTE_OFF; /* status byte */
-      ev->buffer[1] = note->val; /* note number 0-127 */
-      ev->buffer[2] = note->vel->vel; /* velocity 0-127 */
-      events->num_events++;
-#endif
-    }
-}
+      /*[> note off <]*/
+      /*ev = &events->jack_midi_events[events->num_events];*/
+      /*ev->time = position_to_frames (&note->end_pos) -*/
+        /*position_to_frames (pos);*/
+      /*ev->size = 3;*/
+      /*if (!ev->buffer)*/
+        /*ev->buffer = calloc (3, sizeof (jack_midi_data_t));*/
+      /*ev->buffer[0] = MIDI_CH1_NOTE_OFF; [> status byte <]*/
+      /*ev->buffer[1] = note->val; [> note number 0-127 <]*/
+      /*ev->buffer[2] = note->vel->vel; [> velocity 0-127 <]*/
+      /*events->num_events++;*/
+/*#endif*/
+    /*}*/
+/*}*/
 
 /**
  * Returns if the MIDI note is hit at given pos (in the

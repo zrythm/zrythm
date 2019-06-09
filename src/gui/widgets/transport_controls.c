@@ -57,7 +57,7 @@ stop_clicked_cb (GtkButton *button,
   else
     transport_request_pause (TRANSPORT);
 
-  midi_panic_all ();
+  midi_panic_all (1);
 }
 
 static void

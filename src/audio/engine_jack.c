@@ -120,10 +120,8 @@ int
 jack_buffer_size_cb (uint32_t nframes,
                      void *   data)
 {
-  int i, j;
-
-  AUDIO_ENGINE->block_length = nframes;
-  AUDIO_ENGINE->buf_size_set = true;
+  engine_realloc_port_buffers (
+    AUDIO_ENGINE, nframes);
 #ifdef HAVE_JACK_PORT_TYPE_GET_BUFFER_SIZE
   AUDIO_ENGINE->midi_buf_size =
     jack_port_type_get_buffer_size(
@@ -135,47 +133,6 @@ jack_buffer_size_cb (uint32_t nframes,
     AUDIO_ENGINE->block_length,
     AUDIO_ENGINE->midi_buf_size);
 
-  /** reallocate port buffers to new size */
-  g_message ("Reallocating port buffers to %d",
-             nframes);
-  Port * port;
-  Channel * ch;
-  Plugin * pl;
-  Port * ports[60000];
-  int num_ports;
-  port_get_all (ports, &num_ports);
-  for (i = 0; i < num_ports; i++)
-    {
-      port = ports[i];
-      g_warn_if_fail (port);
-
-      port->buf =
-        realloc (port->buf,
-                 nframes * sizeof (float));
-      /* TODO memset */
-    }
-  for (i = 0; i < TRACKLIST->num_tracks; i++)
-    {
-      ch = TRACKLIST->tracks[i]->channel;
-
-      if (!ch)
-        continue;
-
-      for (j = 0; j < STRIP_SIZE; j++)
-        {
-          if (ch->plugins[j])
-            {
-              pl = ch->plugins[j];
-              if (pl->descr->protocol == PROT_LV2)
-                {
-                  lv2_allocate_port_buffers (
-                    (Lv2Plugin *)pl->lv2);
-                }
-            }
-        }
-    }
-  /* FIXME this is the same as block_length */
-  AUDIO_ENGINE->nframes = nframes;
   return 0;
 }
 
@@ -211,7 +168,7 @@ engine_jack_clear_output_buffers (
 
 /**
  * Receives MIDI events from JACK MIDI and puts them
- * in the JACK MIDI in port.
+ * in the MIDI in port.
  */
 void
 engine_jack_receive_midi_events (
@@ -222,44 +179,25 @@ engine_jack_receive_midi_events (
   self->port_buf =
     jack_port_get_buffer (
       JACK_PORT_T (self->midi_in->data), nframes);
-  MIDI_IN_NUM_EVENTS =
+  int num_events =
     jack_midi_get_event_count (self->port_buf);
 
-  if (!print)
-    return;
+  if(num_events > 0 && print)
+    g_message ("JACK MIDI: have %d events",
+               num_events);
 
-  /* print */
-  if(MIDI_IN_NUM_EVENTS > 0)
+  jack_midi_event_t jack_ev;
+  for(int i = 0; i < num_events; i++)
     {
-      g_message ("JACK: have %d events", MIDI_IN_NUM_EVENTS);
-      for(int i=0; i < MIDI_IN_NUM_EVENTS; i++)
-        {
-          jack_midi_event_t * event = &MIDI_IN_EVENT(i);
-          jack_midi_event_get(event, self->port_buf, i);
-          uint8_t type = event->buffer[0] & 0xf0;
-          uint8_t channel = event->buffer[0] & 0xf;
-          switch (type)
-            {
-              case MIDI_CH1_NOTE_ON:
-                assert (event->size == 3);
-                g_message (" note on  (channel %2d): pitch %3d, velocity %3d", channel, event->buffer[1], event->buffer[2]);
-                break;
-              case MIDI_CH1_NOTE_OFF:
-                assert (event->size == 3);
-                g_message (" note off (channel %2d): pitch %3d, velocity %3d", channel, event->buffer[1], event->buffer[2]);
-                break;
-              case MIDI_CH1_CTRL_CHANGE:
-                assert (event->size == 3);
-                g_message (" control change (channel %2d): controller %3d, value %3d", channel, event->buffer[1], event->buffer[2]);
-                break;
-              default:
-                      break;
-            }
-          /*g_message ("    event %d time is %d. 1st byte is 0x%x", i,*/
-                     /*MIDI_IN_EVENT(i).time, *(MIDI_IN_EVENT(i).buffer));*/
-        }
+      jack_midi_event_get (
+        &jack_ev, self->port_buf, i);
+
+      midi_events_add_event_from_buf (
+        self->midi_in->midi_events,
+        jack_ev.time, jack_ev.buffer, jack_ev.size);
     }
 }
+
 /**
  * The process callback for this JACK application is
  * called in a special realtime thread once for each audio

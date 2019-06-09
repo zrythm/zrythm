@@ -31,51 +31,28 @@
 #include "audio/transport.h"
 #include "project.h"
 
-
-/**
- * Returns a MidiEvents instance with pre-allocated
- * buffers for each midi event.
- */
-MidiEvents *
-midi_events_new (int init_queue)
-{
-  MidiEvents * self =
-    calloc (1, sizeof (MidiEvents));
-  for (int i = 0; i < MAX_MIDI_EVENTS; i++)
-    {
-#ifdef HAVE_JACK
-      jack_midi_event_t * ev =
-        &self->jack_midi_events[i];
-      ev->buffer =
-        calloc (3, sizeof (jack_midi_data_t));
-#endif
-    }
-  if (init_queue)
-    self->queue = midi_events_new (0);
-
-  /*zix_sem_init (&self->processed_sem, 1);*/
-
-  return self;
-}
-
 /**
  * Appends the events from src to dest
+ *
+ * @param queued Append queued events instead of
+ *   main events.
  */
 void
-midi_events_append (MidiEvents * src, MidiEvents * dest)
+midi_events_append (
+  MidiEvents * src,
+  MidiEvents * dest,
+  int          queued)
 {
+  /* queued not implemented yet */
+  g_warn_if_fail (!queued);
+
   int dest_index = dest->num_events;
+  MidiEvent * src_ev, * dest_ev;
   for (int i = 0; i < src->num_events; i++)
     {
-#ifdef HAVE_JACK
-      jack_midi_event_t * se =
-        &src->jack_midi_events[i];
-      jack_midi_event_t * de =
-        &dest->jack_midi_events[i + dest_index];
-      de->time = se->time;
-      de->size = se->size;
-      de->buffer = se->buffer;
-#endif
+      src_ev = &src->events[i];
+      dest_ev = &dest->events[i + dest_index];
+      midi_event_copy  (src_ev, dest_ev);
     }
   dest->num_events += src->num_events;
 }
@@ -84,9 +61,18 @@ midi_events_append (MidiEvents * src, MidiEvents * dest)
  * Clears midi events.
  */
 void
-midi_events_clear (MidiEvents * midi_events)
+midi_events_clear (
+  MidiEvents * self,
+  int          queued)
 {
-  midi_events->num_events = 0;
+  if (queued)
+    {
+      self->num_queued_events = 0;
+    }
+  else
+    {
+      self->num_events = 0;
+    }
 }
 
 /**
@@ -95,18 +81,33 @@ midi_events_clear (MidiEvents * midi_events)
  */
 int
 midi_events_check_for_note_on (
-  MidiEvents * midi_events, int note)
+  MidiEvents * self,
+  int          note,
+  int          queued)
 {
-#ifdef HAVE_JACK
-  jack_midi_event_t * ev;
-  for (int i = 0; i < midi_events->num_events; i++)
+  g_message ("waiting check note on");
+  zix_sem_wait (&self->access_sem);
+
+  MidiEvent * ev;
+  for (int i = 0;
+       i < queued ?
+         self->num_queued_events :
+         self->num_events;
+       i++)
     {
-      ev = &midi_events->jack_midi_events[i];
-      if (ev->buffer[0] == MIDI_CH1_NOTE_ON &&
-          ev->buffer[1] == note)
+      if (queued)
+        ev = &self->queued_events[i];
+      else
+        ev = &self->events[i];
+
+      if (ev->type == MIDI_EVENT_TYPE_NOTE_ON &&
+          ev->note_pitch == note)
         return 1;
     }
-#endif
+
+  zix_sem_post (&self->access_sem);
+  g_message ("posted check note on");
+
   return 0;
 }
 
@@ -116,96 +117,204 @@ midi_events_check_for_note_on (
  */
 int
 midi_events_delete_note_on (
-  MidiEvents * midi_events, int note)
+  MidiEvents * self,
+  int note,
+  int queued)
 {
-#ifdef HAVE_JACK
-  jack_midi_event_t * ev;
-  for (int i = 0; i < midi_events->num_events; i++)
+  g_message ("waiting delete note on");
+  zix_sem_wait (&self->access_sem);
+
+  MidiEvent * ev, * ev2, * next_ev;
+  int match = 0;
+  for (int i = queued ?
+         self->num_queued_events - 1 :
+         self->num_events - 1;
+       i >= 0; i--)
     {
-      ev = &midi_events->jack_midi_events[i];
-      if (ev->buffer[0] == MIDI_CH1_NOTE_ON &&
-          ev->buffer[1] == note)
+      ev = queued ?
+        &self->queued_events[i] :
+        &self->events[i];
+      if (ev->type == MIDI_EVENT_TYPE_NOTE_ON &&
+          ev->note_pitch == note)
         {
-          for (int ii = 0;
-               ii < midi_events->num_events; ii++)
+          match = 1;
+
+          if (queued)
+            --self->num_queued_events;
+          else
+            --self->num_events;
+
+          for (int ii = i;
+               ii < queued ?
+                 self->num_queued_events :
+                 self->num_events;
+               ii++)
             {
-              if (&midi_events->jack_midi_events[ii] == ev)
+              if (queued)
                 {
-                  --midi_events->num_events;
-                  for (int jj = ii; jj < midi_events->num_events; jj++)
-                    {
-                      midi_events->jack_midi_events[jj].time = midi_events->jack_midi_events[jj + 1].time;
-                      midi_events->jack_midi_events[jj].size = midi_events->jack_midi_events[jj + 1].size;
-                      midi_events->jack_midi_events[jj].buffer[0] = midi_events->jack_midi_events[jj + 1].buffer[0];
-                      midi_events->jack_midi_events[jj].buffer[1] = midi_events->jack_midi_events[jj + 1].buffer[1];
-                      midi_events->jack_midi_events[jj].buffer[2] = midi_events->jack_midi_events[jj + 1].buffer[2];
-                    }
-                  break;
+                  ev2 = &self->queued_events[ii];
+                  next_ev =
+                    &self->queued_events[ii + 1];
                 }
+              else
+                {
+                  ev2 = &self->events[ii];
+                  next_ev =
+                    &self->events[ii + 1];
+                }
+              midi_event_copy (next_ev, ev2);
             }
-          return 1;
-          break;
         }
     }
-#endif
 
-  return 0;
+  zix_sem_post (&self->access_sem);
+  g_message ("posted delete note on");
+
+  return match;
 }
 
+/**
+ * Inits the MidiEvents struct.
+ */
+void
+midi_events_init (
+  MidiEvents * self)
+{
+  self->num_events = 0;
+  self->num_queued_events = 0;
+
+  zix_sem_init (&self->access_sem, 1);
+}
+
+/**
+ * Allocates and inits a MidiEvents struct.
+ */
+MidiEvents *
+midi_events_new ()
+{
+  MidiEvents * self = calloc (1, sizeof(MidiEvents));
+
+  midi_events_init (self);
+
+  return self;
+}
 
 /**
  * Copies the queue contents to the original struct
  */
 void
-midi_events_dequeue (MidiEvents * midi_events)
+midi_events_dequeue (
+  MidiEvents * self)
 {
-  midi_events->num_events =
-    midi_events->queue->num_events;
-  for (int i = 0; i < midi_events->num_events; i++)
+  /*g_message ("waiting dequeue");*/
+  zix_sem_wait (&self->access_sem);
+
+  MidiEvent * ev, * q_ev;
+  for (int i = 0;
+       i < self->num_queued_events; i++)
     {
-#ifdef HAVE_JACK
-      midi_events->jack_midi_events[i].time =
-        midi_events->queue->jack_midi_events[i].time;
-      midi_events->jack_midi_events[i].size =
-        midi_events->queue->jack_midi_events[i].size;
-      midi_events->jack_midi_events[i].buffer =
-        midi_events->queue->jack_midi_events[i].buffer;
-#endif
+      q_ev = &self->queued_events[i];
+      ev = &self->events[i];
+
+      midi_event_copy (q_ev, ev);
     }
-  g_atomic_int_set (
-    &midi_events->processed, 1);
-  /*zix_sem_post (&midi_events->processed_sem);*/
 
-  midi_events->queue->num_events = 0;
+  self->num_events = self->num_queued_events;
+  self->num_queued_events = 0;
+
+  zix_sem_post (&self->access_sem);
+  /*g_message ("posted dequeue");*/
 }
 
 /**
  * Queues MIDI note off to event queue.
  */
 void
-midi_panic (MidiEvents * events)
+midi_events_panic (
+  MidiEvents * self,
+  int          queued)
 {
-  MidiEvents * queue = events->queue;
-  queue->num_events = 1;
-#ifdef HAVE_JACK
-  jack_midi_event_t * ev = &queue->jack_midi_events[0];
+  g_message ("waiting panic");
+  zix_sem_wait (&self->access_sem);
+
+  MidiEvent * ev;
+  if (queued)
+    ev =
+      &self->queued_events[0];
+  else
+    ev =
+      &self->events[0];
+
+  ev->type = MIDI_EVENT_TYPE_ALL_NOTES_OFF;
   ev->time = 0;
-  ev->size = 3;
-  ev->buffer[0] = MIDI_CH1_CTRL_CHANGE;
-  ev->buffer[1] = MIDI_ALL_NOTES_OFF;
-  ev->buffer[2] = 0x00;
-#endif
+  ev->raw_buffer[0] = MIDI_CH1_CTRL_CHANGE;
+  ev->raw_buffer[1] = MIDI_ALL_NOTES_OFF;
+  ev->raw_buffer[2] = 0x00;
+
+  if (queued)
+    self->num_queued_events = 1;
+  else
+    self->num_events = 1;
+
+  zix_sem_post (&self->access_sem);
+  g_message ("posted panic");
 }
 
 /**
- * Queues MIDI note off to event queue.
+ * Parses a MidiEvent from a raw MIDI buffer.
  */
 void
-midi_panic_all ()
+midi_events_add_event_from_buf (
+  MidiEvents * self,
+  uint32_t     time,
+  uint8_t *    buf,
+  int          buf_size)
 {
-  midi_panic (
+  uint8_t type = buf[0] & 0xf0;
+  uint8_t channel = buf[0] & 0xf;
+  switch (type)
+    {
+    case MIDI_CH1_NOTE_ON:
+      midi_events_add_note_on (
+        self,
+        channel,
+        buf[1],
+        buf[2],
+        time, 0);
+      break;
+    case MIDI_CH1_NOTE_OFF:
+      midi_events_add_note_off (
+        self,
+        channel,
+        buf[1],
+        time, 0);
+      break;
+    case MIDI_CH1_CTRL_CHANGE:
+      midi_events_add_control_change (
+        self,
+        1, buf[1],
+        buf[2],
+        time, 0);
+      break;
+    default:
+      g_warning ("Unknown MIDI event received");
+      break;
+    }
+}
+
+/**
+ * Queues MIDI note off to event queues.
+ *
+ * @param queued Send the event to queues instead
+ *   of main events.
+ */
+void
+midi_panic_all (
+  int queued)
+{
+  midi_events_panic (
     AUDIO_ENGINE->midi_editor_manual_press->
-      midi_events);
+      midi_events, queued);
 
   Channel * ch;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
@@ -213,7 +322,7 @@ midi_panic_all ()
       ch = TRACKLIST->tracks[i]->channel;
 
       if (ch)
-        midi_panic (
-          ch->piano_roll->midi_events);
+        midi_events_panic (
+          ch->piano_roll->midi_events, queued);
     }
 }

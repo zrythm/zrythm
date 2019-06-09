@@ -61,7 +61,8 @@ engine_update_frames_per_tick (int beats_per_bar,
     (bpm * TRANSPORT->ticks_per_bar);
 
   /* update positions */
-  transport_update_position_frames (&AUDIO_ENGINE->transport);
+  transport_update_position_frames (
+    &AUDIO_ENGINE->transport);
 }
 
 static void
@@ -230,7 +231,7 @@ engine_init (AudioEngine * self,
       break;
 #ifdef __linux__
     case MIDI_BACKEND_ALSA:
-      jack_midi_setup (self, loading);
+      alsa_midi_setup (self, loading);
       break;
 #endif
 #ifdef HAVE_JACK
@@ -249,6 +250,59 @@ engine_init (AudioEngine * self,
 #endif
 
   self->buf_size_set = false;
+}
+
+void
+engine_realloc_port_buffers (
+  AudioEngine * self,
+  int           nframes)
+{
+  int i, j;
+
+  AUDIO_ENGINE->block_length = nframes;
+  AUDIO_ENGINE->buf_size_set = true;
+  g_message (
+    "Block length changed to %d",
+    AUDIO_ENGINE->block_length);
+
+  /** reallocate port buffers to new size */
+  Port * port;
+  Channel * ch;
+  Plugin * pl;
+  Port * ports[60000];
+  int num_ports;
+  port_get_all (ports, &num_ports);
+  for (i = 0; i < num_ports; i++)
+    {
+      port = ports[i];
+      g_warn_if_fail (port);
+
+      port->buf =
+        realloc (port->buf,
+                 nframes * sizeof (float));
+      /* TODO memset */
+    }
+  for (i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      ch = TRACKLIST->tracks[i]->channel;
+
+      if (!ch)
+        continue;
+
+      for (j = 0; j < STRIP_SIZE; j++)
+        {
+          if (ch->plugins[j])
+            {
+              pl = ch->plugins[j];
+              if (pl->descr->protocol == PROT_LV2)
+                {
+                  lv2_allocate_port_buffers (
+                    (Lv2Plugin *)pl->lv2);
+                }
+            }
+        }
+    }
+  AUDIO_ENGINE->nframes = nframes;
 }
 
 void
@@ -396,7 +450,12 @@ receive_midi_events (
         self, nframes, print);
       break;
 #endif
-    case NUM_MIDI_BACKENDS:
+#ifdef __linux__
+    case MIDI_BACKEND_ALSA:
+      engine_alsa_receive_midi_events (
+        self, print);
+      break;
+#endif
     default:
       break;
     }
@@ -476,12 +535,15 @@ engine_post_process (AudioEngine * self)
     /*}*/
 
   /* loop position back if about to exit loop */
-  if (TRANSPORT->loop && /* if looping */
-      IS_TRANSPORT_ROLLING && /* if rolling */
-      (TRANSPORT->playhead_pos.frames <=  /* if current pos is inside loop */
-          TRANSPORT->loop_end_pos.frames) &&
-      ((long int)(TRANSPORT->playhead_pos.frames + self->nframes) > /* if next pos will be outside loop */
-          TRANSPORT->loop_end_pos.frames))
+  long int new_frames =
+    TRANSPORT->playhead_pos.frames + self->nframes;
+  if (TRANSPORT->loop &&
+      IS_TRANSPORT_ROLLING &&
+      position_is_before_or_equal (
+         &TRANSPORT->playhead_pos,
+         &TRANSPORT->loop_end_pos) &&
+      new_frames >
+          TRANSPORT->loop_end_pos.frames)
     {
       transport_move_playhead (
         &TRANSPORT->loop_start_pos,

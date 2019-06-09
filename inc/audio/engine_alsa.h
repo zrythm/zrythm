@@ -31,25 +31,23 @@ engine_alsa_fill_stereo_out_buffs (
   AudioEngine * engine);
 
 /**
- * The process callback for this ALSA application is
- * called in a special realtime thread once for each audio
- * cycle.
- */
-int
-alsa_process_cb (AudioEngine * self);
-
-/**
- * ALSA calls this shutdown_callback if the
- * server ever
- * shuts down or decides to disconnect the client.
- */
+ * Copy the cached MIDI events to the MIDI events
+ * in the MIDI in port, used at the start of each
+ * cycle. */
 void
-alsa_shutdown_cb (void *arg);
+engine_alsa_receive_midi_events (
+  AudioEngine * self,
+  int           print);
+
+int
+alsa_midi_setup (
+  AudioEngine * self,
+  int           loading);
 
 /**
  * Sets up the audio engine to use alsa.
  */
-void
+int
 alsa_setup (AudioEngine * self,
             int           loading);
 

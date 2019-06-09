@@ -25,11 +25,14 @@
 
 #include "audio/engine.h"
 #include "audio/engine_alsa.h"
+#include "audio/midi.h"
 #include "audio/port.h"
 #include "project.h"
 
 #include <alsa/asoundlib.h>
 #include <pthread.h>
+
+#define POLY 10
 
 void
 engine_alsa_fill_stereo_out_buffs (
@@ -188,9 +191,10 @@ set_hw_params (
       "Unable to perriod size %lu for playback: %s",
       period_size,
       snd_strerror (err));
+  self->block_length = period_size;
 
   snd_pcm_uframes_t buffer_size =
-    period_size * 2;
+    period_size * 2; /* 2 channels */
   err =
     snd_pcm_hw_params_set_buffer_size_near (
       self->playback_handle, self->hw_params,
@@ -235,6 +239,76 @@ process_cb (
       nframes);
 }
 
+static inline int
+midi_callback (
+  AudioEngine* self)
+{
+  snd_seq_event_t *ev;
+
+  g_message ("waiting midi_callback");
+  zix_sem_wait (
+    &self->midi_in->midi_events->access_sem);
+
+  do
+    {
+      snd_seq_event_input (
+        self->seq_handle, &ev);
+      switch (ev->type)
+        {
+        /* see https://www.alsa-project.org/alsa-doc/alsa-lib/group___seq_events.html for more */
+        case SND_SEQ_EVENT_PITCHBEND:
+          g_message ("pitch %d",
+                     ev->data.control.value);
+          midi_events_add_pitchbend (
+            self->midi_in->midi_events, 1,
+            ev->data.control.value,
+            ev->time.tick, 1);
+          break;
+        case SND_SEQ_EVENT_CONTROLLER:
+          g_message ("modulation %d",
+                     ev->data.control.value);
+          midi_events_add_control_change (
+            self->midi_in->midi_events,
+            1, ev->data.control.param,
+            ev->data.control.value,
+            ev->time.tick, 1);
+          break;
+        case SND_SEQ_EVENT_NOTEON:
+          g_message ("note on: note %d vel %d",
+                     ev->data.note.note,
+                     ev->data.note.velocity);
+          midi_events_add_note_on (
+            self->midi_in->midi_events,
+            1, ev->data.note.note,
+            ev->data.note.velocity,
+            ev->time.tick, 1);
+          break;
+        case SND_SEQ_EVENT_NOTEOFF:
+          g_message ("note off: note %d",
+                     ev->data.note.note);
+          midi_events_add_note_off (
+            self->midi_in->midi_events,
+            1, ev->data.note.note,
+            ev->time.tick, 1);
+          /* FIXME passing ticks, should pass
+           * frames */
+          break;
+        default:
+          g_message ("Unknown MIDI event received");
+          break;
+      }
+      snd_seq_free_event(ev);
+    } while (
+        snd_seq_event_input_pending (
+          self->seq_handle, 0) > 0);
+
+  zix_sem_post (
+    &self->midi_in->midi_events->access_sem);
+  g_message ("posted midi_callback");
+
+  return 0;
+}
+
 static void *
 audio_thread (void * _self)
 {
@@ -268,6 +342,13 @@ audio_thread (void * _self)
   set_sw_params (self);
   g_warn_if_fail (self->block_length > 0);
 
+  engine_realloc_port_buffers (
+    self, self->block_length);
+  engine_update_frames_per_tick (
+    TRANSPORT->beats_per_bar,
+    TRANSPORT->bpm,
+    self->sample_rate);
+
   struct pollfd *pfds;
   int l1, nfds =
     snd_pcm_poll_descriptors_count (
@@ -277,6 +358,7 @@ audio_thread (void * _self)
     alloca(nfds * sizeof(struct pollfd));
   snd_pcm_poll_descriptors (
     self->playback_handle, pfds, nfds);
+  int frames_processed;
   while (1)
     {
       if (poll (pfds, nfds, 1000) > 0)
@@ -285,7 +367,13 @@ audio_thread (void * _self)
             {
               if (pfds[l1].revents > 0)
                 {
-                  if (process_cb (self, self->block_length) < self->block_length)
+                  frames_processed =
+                    process_cb (
+                      self, self->block_length);
+                  g_message ("frames processed %d",
+                             frames_processed);
+                  if (frames_processed <
+                        self->block_length)
                     {
                       g_warning ("XRUN");
                       snd_pcm_prepare (
@@ -298,7 +386,69 @@ audio_thread (void * _self)
   return NULL;
 }
 
-void alsa_setup (
+static void *
+midi_thread (void * _self)
+{
+  AudioEngine * self = (AudioEngine *) _self;
+
+  int err;
+
+  if ((err = snd_seq_open (
+        &self->seq_handle,
+        "default", SND_SEQ_OPEN_DUPLEX, 0)) < 0)
+    g_warning ("Error opening ALSA sequencer: %s",
+               snd_strerror (err));
+
+  snd_seq_set_client_name (
+    self->seq_handle, "Zrythm");
+  if (snd_seq_create_simple_port (
+        self->seq_handle, "Zrythm MIDI",
+      SND_SEQ_PORT_CAP_WRITE |
+        SND_SEQ_PORT_CAP_SUBS_WRITE,
+      SND_SEQ_PORT_TYPE_APPLICATION) < 0)
+    g_warning ("Error creating sequencer port");
+
+  int seq_nfds, l1;
+  struct pollfd *pfds;
+  seq_nfds =
+    snd_seq_poll_descriptors_count (
+      self->seq_handle, POLLIN);
+  pfds =
+    (struct pollfd *)
+    alloca (
+      sizeof (struct pollfd) * seq_nfds);
+  snd_seq_poll_descriptors (
+    self->seq_handle, pfds, seq_nfds, POLLIN);
+  while (1)
+    {
+      if (poll (pfds, seq_nfds, 1000) > 0)
+        {
+          for (l1 = 0; l1 < seq_nfds; l1++)
+            {
+               if (pfds[l1].revents > 0)
+                 midi_callback (self);
+            }
+        }
+    }
+
+  return NULL;
+}
+
+/**
+ * Copy the cached MIDI events to the MIDI events
+ * in the MIDI in port, used at the start of each
+ * cycle. */
+void
+engine_alsa_receive_midi_events (
+  AudioEngine * self,
+  int           print)
+{
+  midi_events_dequeue (
+    self->midi_in->midi_events);
+}
+
+int
+alsa_setup (
   AudioEngine *self, int loading)
 {
   self->block_length = 512;
@@ -348,6 +498,38 @@ void alsa_setup (
 
   g_message ("ALSA setup complete");
 
-  return;
+  return 0;
 }
+
+int
+alsa_midi_setup (
+  AudioEngine * self,
+  int           loading)
+{
+  if (loading)
+    {
+    }
+  else
+    {
+      self->midi_in =
+        port_new_with_type (
+          TYPE_EVENT,
+          FLOW_INPUT,
+          "ALSA MIDI In");
+      self->midi_in->identifier.owner_type =
+        PORT_OWNER_TYPE_BACKEND;
+    }
+
+  /* init queue */
+  self->midi_in->midi_events =
+    midi_events_new (1);
+
+  pthread_t thread_id;
+  pthread_create(
+    &thread_id, NULL,
+    &midi_thread, self);
+
+  return 0;
+}
+
 #endif

@@ -882,8 +882,13 @@ disconnect_prev_next (
 }
 
 /**
- * Handles the recording logic inside the process cycle.
+ * Handles the recording logic inside the process
+ * cycle.
+ *
+ * The MidiEvents are already dequeued at this
+ * point.
  */
+__attribute__((annotate("realtime")))
 void
 channel_handle_recording (Channel * self)
 {
@@ -920,28 +925,27 @@ channel_handle_recording (Channel * self)
         }
 
       /* convert MIDI data to midi notes */
-#ifdef HAVE_JACK
-      if (MIDI_IN_NUM_EVENTS > 0)
+      MidiEvents * midi_events =
+        AUDIO_ENGINE->midi_in->midi_events;
+      if (midi_events->num_events > 0)
         {
           MidiNote * mn;
-          for (int i = 0; i < MIDI_IN_NUM_EVENTS; i++)
+          for (int i = 0;
+               i < midi_events->num_events; i++)
             {
-              jack_midi_event_t * event = &MIDI_IN_EVENT(i);
-              jack_midi_event_get (event,
-                                   AUDIO_ENGINE->port_buf,
-                                   i);
-              uint8_t type = event->buffer[0] & 0xf0;
+              MidiEvent * ev =
+                & midi_events->events[i];
+
               Velocity * vel;
-              switch (type)
+              switch (ev->type)
                 {
-                  case MIDI_CH1_NOTE_ON:
+                  case MIDI_EVENT_TYPE_NOTE_ON:
                     vel =
-                      velocity_new (
-                        event->buffer[2]);
+                      velocity_new (ev->velocity);
                     mn =
                       midi_note_new (
                         mr, &PLAYHEAD, &tmp,
-                        event->buffer[1], vel, 1);
+                        ev->note_pitch, vel, 1);
                     midi_region_add_midi_note (
                       mr, mn, F_GEN_WIDGET);
 
@@ -951,24 +955,20 @@ channel_handle_recording (Channel * self)
                       mr->num_unended_notes,
                       mn);
                     break;
-                  case MIDI_CH1_NOTE_OFF:
+                  case MIDI_EVENT_TYPE_NOTE_OFF:
                     mn =
                       midi_region_find_unended_note (
-                        mr,
-                        event->buffer[1]);
+                        mr, ev->note_pitch);
                     midi_note_set_end_pos (
                       mn, &tmp, F_NO_TRANS_ONLY,
                       F_NO_VALIDATE);
                     break;
-                  case MIDI_CH1_CTRL_CHANGE:
+                  default:
                     /* TODO */
                     break;
-                  default:
-                          break;
                 }
             } /* for loop num events */
         } /* if have midi events */
-#endif
     } /* if channel type MIDI */
 }
 

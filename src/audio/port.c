@@ -186,7 +186,7 @@ port_new_with_type (PortType     type,
 
   port->identifier.type = type;
   if (port->identifier.type == TYPE_EVENT)
-    port->midi_events = midi_events_new (1);
+    port->midi_events = midi_events_new ();
   port->identifier.flow = flow;
 
   return port;
@@ -487,7 +487,8 @@ port_apply_fader (Port * port, float amp)
 
 
 /**
- * First sets port buf to 0, then sums the given port signal from its inputs.
+ * First sets port buf to 0, then sums the given
+ * port signal from its inputs.
  */
 void
 port_sum_signal_from_inputs (Port * port)
@@ -496,38 +497,64 @@ port_sum_signal_from_inputs (Port * port)
   int block_length = AUDIO_ENGINE->block_length;
   int k, l;
 
-  /* for any output port pointing to it */
-  for (k = 0; k < port->num_srcs; k++)
+  switch (port->identifier.type)
     {
-      src_port = port->srcs[k];
+    case TYPE_EVENT:
+      /* clear the events since the previous ones
+       * were processed in the last cycle. */
+      midi_events_clear (
+        port->midi_events, 0);
 
-      /* sum the signals */
-      if (port->identifier.type == TYPE_AUDIO)
+      for (k = 0; k < port->num_srcs; k++)
         {
+          src_port = port->srcs[k];
+          g_warn_if_fail (
+            src_port->identifier.type ==
+              TYPE_EVENT);
+          midi_events_append (
+            src_port->midi_events,
+            port->midi_events, 0);
+        }
+      if (port->midi_events->num_events > 0)
+        g_message ("port %s has %d events",
+                   port->identifier.label,
+                   port->midi_events->num_events);
+      break;
+    case TYPE_AUDIO:
+      for (k = 0; k < port->num_srcs; k++)
+        {
+          src_port = port->srcs[k];
+
+          /* sum the signals */
           for (l = 0; l < block_length; l++)
             {
               port->buf[l] += src_port->buf[l];
             }
         }
-      else if (port->identifier.type == TYPE_EVENT)
+      break;
+    case TYPE_CONTROL:
+      for (k = 0; k < port->num_srcs; k++)
         {
-          midi_events_append (src_port->midi_events,
-                              port->midi_events);
+          src_port = port->srcs[k];
+
+          if (src_port->identifier.type ==
+                TYPE_CV)
+            {
+              /* TODO normalize CV */
+              float maxf =
+                port->lv2_port->lv2_control->maxf;
+              /*float minf =*/
+                /*port->lv2_port->lv2_control->minf;*/
+              float deff =
+                port->lv2_port->lv2_control->deff;
+              port->lv2_port->control =
+                deff + (maxf - deff) *
+                  src_port->buf[0];
+            }
         }
-      else if (port->identifier.type == TYPE_CONTROL
-               && src_port->identifier.type ==
-                 TYPE_CV)
-        {
-          /* TODO normalize CV */
-          float maxf =
-            port->lv2_port->lv2_control->maxf;
-          /*float minf =*/
-            /*port->lv2_port->lv2_control->minf;*/
-          float deff =
-            port->lv2_port->lv2_control->deff;
-          port->lv2_port->control =
-            deff + (maxf - deff) * src_port->buf[0];
-        }
+      break;
+    default:
+      break;
     }
 }
 
@@ -578,8 +605,6 @@ port_clear_buffer (Port * port)
       if (port->midi_events)
         {
           port->midi_events->num_events = 0;
-          g_atomic_int_set (
-            &port->midi_events->processed, 0);
         }
     }
 }

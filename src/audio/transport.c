@@ -182,6 +182,7 @@ transport_request_pause ()
 void
 transport_request_roll ()
 {
+  g_message ("requesting roll");
   TRANSPORT->play_state = PLAYSTATE_ROLL_REQUESTED;
 }
 
@@ -248,9 +249,6 @@ transport_move_playhead (
   Channel * channel;
   MidiEvents * midi_events;
   TrackLane * lane;
-#ifdef HAVE_JACK
-  jack_midi_event_t * ev;
-#endif
   for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
@@ -278,27 +276,14 @@ transport_move_playhead (
                         midi_note, &PLAYHEAD))
                     {
                       midi_events =
-                        channel->piano_roll->midi_events;
-#ifdef HAVE_JACK
-                      ev =
-                        &midi_events->queue->
-                          jack_midi_events[
-                            midi_events->queue->
-                              num_events++];
-                      ev->time =
+                        channel->piano_roll->
+                          midi_events;
+
+                      midi_events_add_note_off (
+                        midi_events, 1,
+                        midi_note->val,
                         position_to_frames (
-                          &PLAYHEAD);
-                      ev->size = 3;
-                      /* status byte */
-                      ev->buffer[0] =
-                        MIDI_CH1_NOTE_OFF;
-                      /* note number */
-                      ev->buffer[1] =
-                        midi_note->val;
-                      /* velocity */
-                      ev->buffer[2] =
-                        midi_note->vel->vel;
-#endif
+                          &PLAYHEAD), 1);
                     }
                 }
             }

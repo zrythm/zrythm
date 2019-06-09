@@ -198,7 +198,8 @@ node_process (
                  /*node->port->label);*/
 
       /* if piano roll */
-      if (port->identifier.flags & PORT_FLAG_PIANO_ROLL)
+      if (port->identifier.flags &
+            PORT_FLAG_PIANO_ROLL)
         {
           chan = port->track->channel;
 
@@ -209,8 +210,8 @@ node_process (
               if (g_atomic_int_get (
                     &AUDIO_ENGINE->panic))
                 {
-                  midi_panic (
-                    port->midi_events);
+                  midi_events_panic (
+                    port->midi_events, 1);
                 }
               /* get events from track if playing */
               else if (TRANSPORT->play_state ==
@@ -222,7 +223,8 @@ node_process (
                       channel_handle_recording (chan);
                     }
 
-                  /* fill midi events to pass to ins plugin */
+                  /* fill midi events to pass to
+                   * ins plugin */
                   instrument_track_fill_midi_events (
                     (InstrumentTrack *)chan->track,
                     &PLAYHEAD,
@@ -231,6 +233,10 @@ node_process (
                 }
               midi_events_dequeue (
                 port->midi_events);
+              if (port->midi_events->num_events > 0)
+                g_message ("piano roll port %s has %d events",
+                           port->identifier.label,
+                           port->midi_events->num_events);
             }
 
         }

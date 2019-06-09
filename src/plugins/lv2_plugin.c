@@ -2153,23 +2153,27 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
 
           if (port->midi_events->num_events > 0)
             {
-              /* Write Jack MIDI input */
+              /* Write MIDI input */
               for (i = 0;
                    i < port->midi_events->num_events;
                    ++i)
                 {
-#ifdef HAVE_JACK
-                  jack_midi_event_t * ev =
-                    &port->midi_events->jack_midi_events[i];
+                  g_message ("plugin event %d", i);
+                  MidiEvent * ev =
+                    &port->midi_events->events[i];
                   lv2_evbuf_write (
                     &iter,
                     ev->time, 0,
                     PM_URIDS.midi_MidiEvent,
-                    ev->size, ev->buffer);
-#endif
+                    3, ev->raw_buffer);
                 }
             }
-          midi_events_clear (port->midi_events);
+          zix_sem_wait (
+            &port->midi_events->access_sem);
+          midi_events_clear (
+            port->midi_events, 0);
+          zix_sem_post (
+            &port->midi_events->access_sem);
       }
       else if (port->identifier.type == TYPE_EVENT)
         {
@@ -2232,23 +2236,20 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
                     PM_URIDS.
                       midi_MidiEvent)
                   {
-#ifdef HAVE_JACK
                     /* Write MIDI event to port */
-                    /*jack_midi_event_write(buf, frames, body, size);*/
-                    jack_midi_event_t * ev =
-                      &lv2_port->port->midi_events->queue->jack_midi_events[lv2_port->port->midi_events->queue->num_events++];
-                    ev->time = frames;
-                    ev->buffer = body;
-                    ev->size = size;
-#endif
+                    midi_events_add_event_from_buf (
+                      lv2_port->port->midi_events,
+                      frames, body, size);
                   }
 
                 if (lv2_plugin->has_ui &&
                     lv2_plugin->window &&
                     !lv2_port->old_api)
                   {
-                    // Forward event to UI
-                    lv2_send_to_ui(lv2_plugin, p, type, size, body);
+                    /* Forward event to UI */
+                    lv2_send_to_ui (
+                      lv2_plugin, p, type,
+                      size, body);
                   }
               }
           }
@@ -2279,7 +2280,6 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
               }
           }
     }
-
 
 }
 

@@ -57,16 +57,26 @@ instrument_track_setup (InstrumentTrack * self)
 }
 
 /**
- * Fills MIDI events from track.
+ * Fills MIDI event queue from track.
  *
- * NOTE: real time func
+ * The events are dequeued right after the call to
+ * this function.
+ *
+ * NOTE: This function is used real-time.
+ *
+ * @param pos Start Position to check.
+ * @param nframes Number of frames at start
+ *   Position.
+ * @param midi_events MidiEvents to fill (from
+ *   Piano Roll Port for example).
  */
+__attribute__((annotate("realtime")))
 void
 instrument_track_fill_midi_events (
-  InstrumentTrack      * track,
-  Position   * pos, ///< start position to check
-  uint32_t  nframes, ///< n of frames from start po
-  MidiEvents * midi_events) ///< midi events to fill
+  InstrumentTrack * track,
+  Position *        pos,
+  uint32_t          nframes,
+  MidiEvents *      midi_events)
 {
   int i, j;
   Position end_pos;
@@ -74,15 +84,14 @@ instrument_track_fill_midi_events (
   Position loop_start_adjusted,
            loop_end_adjusted,
            region_end_adjusted;
-#ifdef HAVE_JACK
-  jack_midi_event_t * ev;
-#endif
   Region * region, * r;
   MidiNote * midi_note;
   position_set_to_pos (&end_pos, pos);
   position_add_frames (&end_pos, nframes);
 
-  midi_events->queue->num_events = 0;
+  zix_sem_wait (&midi_events->access_sem);
+
+  midi_events_clear (midi_events, 1);
   TrackLane * lane;
   for (j = 0; j < track->num_lanes; j++)
     {
@@ -150,45 +159,31 @@ instrument_track_fill_midi_events (
 
                   /* check for note on event on the
                    * boundary */
-                  if (position_compare (
+                  if (position_is_before (
                         &midi_note->start_pos,
-                        &region_end_adjusted) < 0 &&
-                      position_compare (
+                        &region_end_adjusted) &&
+                      position_is_after_or_equal (
                         &midi_note->end_pos,
-                        &region_end_adjusted) >= 0)
+                        &region_end_adjusted))
                     {
-#ifdef HAVE_JACK
-                      ev =
-                        &midi_events->queue->
-                          jack_midi_events[
-                            midi_events->queue->
-                              num_events++];
-                      ev->time =
+                      midi_events_add_note_off (
+                        midi_events,
+                        1, midi_note->val,
                         position_to_frames (
                           &region_end_adjusted) -
-                        position_to_frames (&local_pos);
-                      ev->size = 3;
-                      /* status byte */
-                      ev->buffer[0] =
-                        MIDI_CH1_NOTE_OFF;
-                      /* note number */
-                      ev->buffer[1] =
-                        midi_note->val;
-                      /* velocity */
-                      ev->buffer[2] =
-                        midi_note->vel->vel;
-#endif
+                          position_to_frames (
+                            &local_pos), 1);
                     }
                 }
             }
           /* if region actually ends on the timeline
            * within this cycle */
-          else if (position_compare (
-                    &r->end_pos,
-                    pos) >= 0 &&
-                   position_compare (
-                    &r->end_pos,
-                    &end_pos) <= 0)
+          else if (position_is_after_or_equal (
+                     &r->end_pos,
+                     pos) &&
+                   position_is_before_or_equal (
+                     &r->end_pos,
+                     &end_pos))
             {
               for (i = 0;
                    i < region->num_midi_notes;
@@ -230,27 +225,13 @@ instrument_track_fill_midi_events (
                         &tmp_end,
                         &region_end_adjusted) >= 0)
                     {
-#ifdef HAVE_JACK
-                      ev =
-                        &midi_events->queue->
-                          jack_midi_events[
-                            midi_events->queue->
-                              num_events++];
-                       ev->time =
-                         position_to_frames (
-                           &r->end_pos) -
-                         position_to_frames (pos);
-                      ev->size = 3;
-                      /* status byte */
-                      ev->buffer[0] =
-                        MIDI_CH1_NOTE_OFF;
-                      /* note number */
-                      ev->buffer[1] =
-                        midi_note->val;
-                      /* velocity */
-                      ev->buffer[2] =
-                        midi_note->vel->vel;
-#endif
+                      midi_events_add_note_off (
+                        midi_events, 1,
+                        midi_note->val,
+                        position_to_frames (
+                          &r->end_pos) -
+                          position_to_frames (pos),
+                        1);
                     }
                 }
             }
@@ -278,27 +259,13 @@ instrument_track_fill_midi_events (
                         &midi_note->end_pos,
                         &loop_end_adjusted) >= 0)
                     {
-#ifdef HAVE_JACK
-                      ev =
-                        &midi_events->queue->
-                          jack_midi_events[
-                            midi_events->queue->
-                              num_events++];
-                      ev->time =
+                      midi_events_add_note_off (
+                        midi_events, 1,
+                        midi_note->val,
                         position_to_frames (
                           &loop_end_adjusted) -
-                        position_to_frames (&local_pos);
-                      ev->size = 3;
-                      /* status byte */
-                      ev->buffer[0] =
-                        MIDI_CH1_NOTE_OFF;
-                      /* note number */
-                      ev->buffer[1] =
-                        midi_note->val;
-                      /* velocity */
-                      ev->buffer[2] =
-                        midi_note->vel->vel;
-#endif
+                          position_to_frames (
+                            &local_pos), 1);
                     }
                 }
             }
@@ -324,27 +291,14 @@ instrument_track_fill_midi_events (
                     &midi_note->start_pos,
                     &local_end_pos) <= 0)
                 {
-#ifdef HAVE_JACK
-                  ev =
-                    &midi_events->queue->
-                      jack_midi_events[
-                        midi_events->queue->
-                          num_events++];
-                  ev->time =
+                  midi_events_add_note_on (
+                    midi_events, 1,
+                    midi_note->val,
+                    midi_note->vel->vel,
                     position_to_frames (
                       &midi_note->start_pos) -
-                    position_to_frames (&local_pos);
-                  ev->size = 3;
-                  /* status byte */
-                  ev->buffer[0] =
-                    MIDI_CH1_NOTE_ON;
-                  /* note number */
-                  ev->buffer[1] =
-                    midi_note->val;
-                  /* velocity */
-                  ev->buffer[2] =
-                    midi_note->vel->vel;
-#endif
+                      position_to_frames (
+                        &local_pos), 1);
                 }
 
               /* note off event */
@@ -355,28 +309,19 @@ instrument_track_fill_midi_events (
                     &midi_note->end_pos,
                     &local_end_pos) <= 0)
                 {
-#ifdef HAVE_JACK
-                  ev =
-                    &midi_events->queue->
-                      jack_midi_events[
-                        midi_events->queue->
-                          num_events++];
-                  ev->time =
+                  midi_events_add_note_off (
+                    midi_events, 1,
+                    midi_note->val,
                     position_to_frames (
                       &midi_note->end_pos) -
-                    position_to_frames (&local_pos);
-                  ev->size = 3;
-                  /* status byte */
-                  ev->buffer[0] = MIDI_CH1_NOTE_OFF;
-                  /* note number 0-127 */
-                  ev->buffer[1] = midi_note->val;
-                  /* velocity 0-127 */
-                  ev->buffer[2] = midi_note->vel->vel;
-#endif
+                      position_to_frames (
+                        &local_pos), 1);
                 }
             }
         }
     }
+
+  zix_sem_post (&midi_events->access_sem);
 }
 
 /**
@@ -387,5 +332,4 @@ instrument_track_fill_midi_events (
 void
 instrument_track_free (InstrumentTrack * track)
 {
-
 }

@@ -328,8 +328,6 @@ midi_note_widget_new (MidiNote * midi_note)
                   NULL);
 
   self->midi_note = midi_note;
-  g_message ("new widget: %p midi note %p widget",
-             self->midi_note, self);
 
   /* set tooltip text */
   char * tooltip =

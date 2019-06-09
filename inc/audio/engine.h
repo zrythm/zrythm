@@ -41,7 +41,9 @@
 #include <portaudio.h>
 #endif
 
+#ifdef __linux__
 #include <alsa/asoundlib.h>
+#endif
 
 /**
  * @defgroup audio Audio
@@ -60,9 +62,6 @@
 
 
 #define AUDIO_ENGINE (&PROJECT->audio_engine)
-#define MANUAL_PRESS_QUEUE \
-  (AUDIO_ENGINE->midi_editor_manual_press-> \
-  midi_events->queue)
 #define MANUAL_PRESS_EVENTS \
   (AUDIO_ENGINE->midi_editor_manual_press-> \
   midi_events)
@@ -110,6 +109,11 @@ typedef struct AudioEngine
 
 #ifdef HAVE_JACK
   jack_client_t     * client;     ///< jack client
+
+  /**
+   * Port buffer for raw MIDI data.
+   */
+  void *            port_buf;
 #endif
 
   /** Current audio backend. */
@@ -158,18 +162,29 @@ typedef struct AudioEngine
 #ifdef __linux__
   /** Alsa playback handle. */
   snd_pcm_t *        playback_handle;
+  snd_seq_t *        seq_handle;
   snd_pcm_hw_params_t * hw_params;
   snd_pcm_sw_params_t * sw_params;
   /** ALSA audio buffer. */
   float *            alsa_out_buf;
+
+  /**
+   * Since ALSA MIDI runs in its own thread,
+   * store the events here temporarily and
+   * pop them in the process cycle.
+   *
+   * Needs to be protected by some kind of
+   * mutex.
+   */
+  //MidiEvents         alsa_midi_events;
+
+  /** Semaphore for exclusively writing/reading
+   * ALSA MIDI events from above. */
+  //ZixSem             alsa_midi_events_sem;
 #endif
 
   /* ------------------------------- */
 
-  /**
-   * Port buffer for raw MIDI data.
-   */
-  void *            port_buf;
 
   /** Flag used when processing in some backends. */
   volatile gint     filled_stereo_out_bufs;
@@ -246,6 +261,11 @@ engine_schema =
     CYAML_FLAG_POINTER,
 	  AudioEngine, engine_fields_schema),
 };
+
+void
+engine_realloc_port_buffers (
+  AudioEngine * self,
+  int           buf_size);
 
 /**
  * Init audio engine.

@@ -112,37 +112,23 @@ send_note_event (
   PianoRollKeyWidget * self,
   int                  on)
 {
-#ifdef HAVE_JACK
-  jack_midi_event_t * ev;
-#endif
-
-  /* add note off event */
-#ifdef HAVE_JACK
-  ev =
-    &MANUAL_PRESS_QUEUE->jack_midi_events[
-      MANUAL_PRESS_QUEUE->num_events];
-  ev->time = 600;
-  ev->size = 3;
-  if (!ev->buffer)
-    ev->buffer =
-      calloc (3, sizeof (jack_midi_data_t));
-
-  /* status byte */
-  ev->buffer[0] =
-    on ? MIDI_CH1_NOTE_ON : MIDI_CH1_NOTE_OFF;
-
-  /* note number 0-127 */
-  ev->buffer[1] = self->descr->value;
-
-  /* velocity 0-127 */
-  ev->buffer[2] = 90;
-#endif
-
-  MANUAL_PRESS_QUEUE->num_events++;
-
   if (on)
-    PIANO_ROLL->current_note =
-      self->descr;
+    {
+      /* add note on event */
+      midi_events_add_note_on (
+        MANUAL_PRESS_EVENTS, 1,
+        self->descr->value, 90, 600, 1);
+
+      PIANO_ROLL->current_note =
+        self->descr;
+    }
+  else
+    {
+      /* add note off event */
+      midi_events_add_note_off (
+        MANUAL_PRESS_EVENTS, 1,
+        self->descr->value, 600, 1);
+    }
 
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }

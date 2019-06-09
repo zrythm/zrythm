@@ -323,6 +323,16 @@ void
 position_from_seconds (Position * position,
                        double     secs);
 
+static inline void
+position_from_frames (
+  Position * pos,
+  long       frames)
+{
+  position_init (pos);
+  position_add_frames (
+    pos, frames);
+}
+
 /**
  * Compares 2 positions.
  *

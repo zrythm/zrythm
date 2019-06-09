@@ -142,6 +142,8 @@ elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
   '-Werror=switch',
   '-Werror=absolute-value',
   '-Werror=parentheses-equality',
+  '-Werror=overflow',
+  '-Werror=array-bounds',
   ]
 else
   test_cflags = []
