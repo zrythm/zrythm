@@ -2,9 +2,13 @@
 # (for copyright purposes) significant amounts of code but
 # should be thanked anyway for their contributions and support
 
-Daniel Peterson   minor fixes
-Yustin            minor GSource fixes, helping with
-  optimization
-Adam Kosmin       ideas, financial contributions
-bill-auger        coming up with the Zrythm tagline
-sub26nico         French translations
+* Daniel Peterson
+  * Minor fixes
+* Yustin
+  * GSource fixes
+  * Help with optimization
+* Adam Kosmin
+  * UI ideas
+  * Financial contribution
+* bill-auger
+  * Coming up with the Zrythm tagline

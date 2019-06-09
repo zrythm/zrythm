@@ -66,6 +66,8 @@ zrythm_exe = executable (
     ],
   export_dynamic: true,
   include_directories: all_inc,
+  c_args: common_cflags,
+  link_args: common_ldflags,
   objects: objects,
   install: true,
   )

@@ -512,10 +512,10 @@ port_sum_signal_from_inputs (Port * port)
         }
       /* FIXME the master events never get cleared
        */
-      /*if (port->midi_events->num_events > 0)*/
-        /*g_message ("port %s has %d events",*/
-                   /*port->identifier.label,*/
-                   /*port->midi_events->num_events);*/
+      if (port->midi_events->num_events > 0)
+        g_message ("port %s has %d events",
+                   port->identifier.label,
+                   port->midi_events->num_events);
       break;
     case TYPE_AUDIO:
       for (k = 0; k < port->num_srcs; k++)

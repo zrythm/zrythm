@@ -116,6 +116,25 @@ plugin_clone_descr (
 }
 
 /**
+ * Adds an Automatable to the Plugin.
+ */
+void
+plugin_add_automatable (
+  Plugin * pl,
+  Automatable * a)
+{
+  pl->automatables =
+    realloc (
+      pl->automatables,
+      sizeof (Automatable *) *
+        (pl->num_automatables + 1));
+  array_append (
+    pl->automatables,
+    pl->num_automatables,
+    a);
+}
+
+/**
  * Loads the plugin from its state file.
  */
 /*void*/
@@ -198,9 +217,8 @@ plugin_generate_automatables (Plugin * plugin)
              plugin->descr->name);
 
   /* add plugin enabled automatable */
-  array_append (
-    plugin->automatables,
-    plugin->num_automatables,
+  plugin_add_automatable (
+    plugin,
     automatable_create_plugin_enabled (plugin));
 
   /* add plugin control automatables */
@@ -211,9 +229,8 @@ plugin_generate_automatables (Plugin * plugin)
         {
           Lv2Control * control =
             lv2_plugin->controls.controls[j];
-          array_append (
-            plugin->automatables,
-            plugin->num_automatables,
+          plugin_add_automatable (
+            plugin,
             automatable_create_lv2_control (
               plugin, control));
         }
@@ -478,6 +495,7 @@ plugin_free (Plugin *plugin)
         plugin->automatables[i];
       automatable_free (automatable);
     }
+  free (plugin->automatables);
 
   free (plugin);
 }

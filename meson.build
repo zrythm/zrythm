@@ -118,8 +118,8 @@ if cc.get_id() == 'msvc'
   # Compiler options taken from msvc_recommended_pragmas.h
   # in GLib, based on _Win32_Programming_ by Rector and Newcomer
   test_cflags = []
-  add_project_arguments('-FImsvc_recommended_pragmas.h', language: 'c')
-  add_project_arguments('-D_USE_MATH_DEFINES', language: 'c')
+  add_project_arguments('-FImsvc_recommended_pragmas.h', language: [ 'c', 'cpp' ])
+  add_project_arguments('-D_USE_MATH_DEFINES', language: [ 'c', 'cpp' ])
 elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
   test_cflags = [
   '-Wall',
@@ -127,7 +127,6 @@ elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
 	'-Wno-unused-parameter',
 	'-Wno-sequence-point',
 	'-Wignored-qualifiers',
-  '-Wno-bad-function-cast',
   '-Wno-cast-function-type',
   '-Werror=maybe-uninitialized',
 	'-Werror=implicit-function-declaration',
@@ -140,13 +139,15 @@ elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
 	'-Werror=implicit-int',
   '-Werror=multistatement-macros',
   '-Werror=switch',
-  '-Werror=absolute-value',
-  '-Werror=parentheses-equality',
   '-Werror=overflow',
   '-Werror=array-bounds',
   ]
 else
   test_cflags = []
+endif
+
+if get_option ('enable_profiling')
+  test_cflags += [ '-g', '-pg', 'no-pie' ]
 endif
 
 if (os_win32)
@@ -160,10 +161,6 @@ else
     ]
 endif
 
-if get_option ('enable_profiling')
-  test_cflags += '-pg'
-endif
-
 common_cflags = []
 foreach f : test_cflags
   if cc.has_argument (f)
@@ -172,6 +169,10 @@ foreach f : test_cflags
 endforeach
 
 test_ldflags = []
+
+if get_option ('enable_profiling')
+  test_ldflags += [ '-g', '-pg', 'no-pie' ]
+endif
 
 if os_win32
   test_ldflags += [
@@ -187,7 +188,6 @@ endif
 
 if os_linux
   test_ldflags += [
-    '-lrt',
     '-lasound',
     ]
 endif
@@ -204,10 +204,6 @@ if os_freebsd
     ]
 endif
 
-if get_option ('enable_profiling')
-  test_ldflags += '-pg'
-endif
-
 if (meson.version() >= '0.46.0')
   common_ldflags = cc.get_supported_link_arguments (
     test_ldflags)
@@ -216,6 +212,14 @@ else
 endif
 
 # set config defines
+libgtop_dep = dependency('libgtop-2.0', required: false)
+if (libgtop_dep.found ())
+  cdata.set('HAVE_LIBGTOP', 1)
+endif
+x11_dep = dependency('x11', required: false)
+if (x11_dep.found ())
+  cdata.set('HAVE_X11', 1)
+endif
 jack_dep = dependency ('jack', required: false)
 if (jack_dep.found ())
   cdata.set('HAVE_JACK', 1)
@@ -225,6 +229,7 @@ port_audio_dep = dependency (
 if (port_audio_dep.found ())
   cdata.set('HAVE_PORT_AUDIO', 1)
 endif
+qt5_dep = dependency('Qt5Widgets', required: false)
 
 yaml_dep = dependency('yaml-0.1')
 gtk_dep = dependency('gtk+-3.0', version: '>=3.20')
@@ -236,14 +241,26 @@ zrythm_deps = [
   yaml_dep,
   gtk_dep,
   sndfile_dep,
+  libgtop_dep,
   dependency('threads'),
   dependency('lilv-0', version: '>=0.24.2'),
   dependency('samplerate', version: '>=0.1.8'),
   dependency('lv2', version: '>=1.14.0'),
-  dependency('Qt5Widgets', required: false),
   libm,
-  cc.find_library('rt', required: false),
 ]
+
+if (qt5_dep.found() and get_option('enable_qt5'))
+  cdata.set('HAVE_QT5', 1)
+  zrythm_deps += qt5_dep
+endif
+
+if os_linux
+  zrythm_deps += cc.find_library('rt')
+endif
+
+if os_linux or os_freebsd
+  zrythm_deps += x11_dep
+endif
 
 if (os_darwin)
   zrythm_deps += dependency (
@@ -260,14 +277,30 @@ configure_file (
   configuration: cdata,
   )
 
+test_cflags_c_only = [
+  '-Wno-bad-function-cast',
+  '-Werror=absolute-value',
+  '-Werror=parentheses-equality',
+  ]
+
+common_cflags_c_only = []
+foreach f : test_cflags_c_only
+  if cc.has_argument (f)
+    common_cflags_c_only += f
+  endif
+endforeach
+
+add_project_arguments (
+  common_cflags_c_only,
+  language: [ 'c' ]
+  )
 add_project_arguments (
   common_cflags,
-  language: 'c'
+  language: [ 'c', 'cpp' ],
   )
-
 add_project_link_arguments (
   common_ldflags,
-  language: 'c',
+  language: [ 'c', 'cpp' ],
   )
 
 meson.add_install_script (

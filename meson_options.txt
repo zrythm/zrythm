@@ -11,6 +11,12 @@ option (
   description: 'Whether to compile unit tests')
 
 option (
+  'enable_qt5',
+  type: 'boolean',
+  value: false,
+  description: 'Compile with QT5 support in suil')
+
+option (
   'enable_ffmpeg',
   type: 'boolean',
   value: false,

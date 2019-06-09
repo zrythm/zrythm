@@ -1,2 +1,10 @@
-Alexandros Theodotou <alex at zrythm dot org>
-Sascha Bast <sash@mischkonsum.org>
+Alexandros Theodotou <alex@zrythm.org>
+
+Contributors:
+
+ * Sascha Bast <sash@mischkonsum.org>
+   * Piano roll auto-scroll
+ * Robin Gareus <robin@gareus.org>
+   * Routing algorithm
+ * Georg Krause
+   * Forward and backward button callbacks

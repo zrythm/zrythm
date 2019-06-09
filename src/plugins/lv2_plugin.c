@@ -2173,12 +2173,14 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
                     3, ev->raw_buffer);
                 }
             }
-          zix_sem_wait (
-            &port->midi_events->access_sem);
+          /*g_message ("waiting to clear events");*/
+          /*zix_sem_wait (*/
+            /*&port->midi_events->access_sem);*/
           midi_events_clear (
             port->midi_events, 0);
-          zix_sem_post (
-            &port->midi_events->access_sem);
+          /*zix_sem_post (*/
+            /*&port->midi_events->access_sem);*/
+          /*g_message ("posted clear events");*/
       }
       else if (port->identifier.type == TYPE_EVENT)
         {

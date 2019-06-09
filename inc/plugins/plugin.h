@@ -157,7 +157,7 @@ typedef struct Plugin
   int                  enabled;
 
   /** Plugin automatables. */
-  Automatable *        automatables[900];
+  Automatable **       automatables;
   int                  num_automatables;
 
   /** Whether plugin UI is opened or not. */
@@ -298,6 +298,14 @@ plugin_schema =
 
 void
 plugin_init_loaded (Plugin * plgn);
+
+/**
+ * Adds an Automatable to the Plugin.
+ */
+void
+plugin_add_automatable (
+  Plugin * pl,
+  Automatable * a);
 
 /**
  * Creates/initializes a plugin and its internal
