@@ -2249,6 +2249,10 @@ timeline_arranger_widget_refresh_children (
             }
         }
     }
+
+  gtk_overlay_reorder_overlay (
+    GTK_OVERLAY (self),
+    (GtkWidget *) ar_prv->playhead, -1);
 }
 
 /**

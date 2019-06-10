@@ -135,25 +135,10 @@ get_child_position (GtkOverlay   *self,
                audio_arranger) &&
                CLIP_EDITOR->region)
         {
-          if (region_is_hit (
-                CLIP_EDITOR->region,
-                &PLAYHEAD))
-            {
-              Position pos;
-              region_timeline_pos_to_local (
-                CLIP_EDITOR->region,
-                &TRANSPORT->playhead_pos,
-                &pos, 1);
-              if (audio_arranger)
-                allocation->x =
-                  ui_pos_to_px_audio_clip_editor (
-                    &pos, 1) - 1;
-              else
-                allocation->x =
-                  ui_pos_to_px_piano_roll (
-                    &pos,
-                    1) - 1;
-            }
+          allocation->x =
+            ui_pos_to_px_piano_roll (
+              &TRANSPORT->playhead_pos,
+              1);
         }
       allocation->y = 0;
       allocation->width = 2;
@@ -1864,7 +1849,7 @@ on_scroll (GtkWidget *widget,
   gtk_adjustment_set_value (adj,
                             new_x - diff);
 
-  return FALSE;
+  return TRUE;
 }
 
 static gboolean
