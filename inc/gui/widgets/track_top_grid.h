@@ -48,6 +48,8 @@ G_DECLARE_FINAL_TYPE (
 typedef struct _AutomationTracklistWidget
   AutomationTracklistWidget;
 typedef struct Track TrackTopGrid;
+typedef struct _MidiActivityBarWidget
+  MidiActivityBarWidget;
 
 /**
  * Top is the track part and bot is the automation
@@ -66,6 +68,7 @@ typedef struct _TrackTopGridWidget
    */
   GtkBox *            upper_controls;
   GtkBox *            right_activity_box;
+  MidiActivityBarWidget * midi_activity;
   GtkBox *            mid_controls;
   GtkBox *            bot_controls;
 

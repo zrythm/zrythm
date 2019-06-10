@@ -292,7 +292,7 @@ _create_port(Lv2Plugin*   lv2_plugin,
       lv2_port->port->identifier.type = TYPE_EVENT;
       lv2_port->port_id.type = TYPE_EVENT;
       lv2_port->port->midi_events =
-        midi_events_new (1);
+        midi_events_new (lv2_port->port);
       lv2_port->old_api = true;
     }
   else if (lilv_port_is_a (
@@ -303,7 +303,7 @@ _create_port(Lv2Plugin*   lv2_plugin,
       lv2_port->port->identifier.type = TYPE_EVENT;
       lv2_port->port_id.type = TYPE_EVENT;
       lv2_port->port->midi_events =
-        midi_events_new (1);
+        midi_events_new (lv2_port->port);
       lv2_port->old_api = false;
     }
   else if (!optional)

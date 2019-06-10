@@ -62,6 +62,7 @@ widget_srcs = [
   'marker_track.c',
   'master_track.c',
   'meter.c',
+  'midi_activity_bar.c',
   'midi_arranger_bg.c',
   'midi_arranger.c',
   'midi_controller_mb.c',

@@ -105,6 +105,7 @@ typedef struct MidiEvent
 } MidiEvent;
 
 typedef struct MidiEvents MidiEvents;
+typedef struct Port Port;
 
 /**
  * Container for passing midi events through ports.
@@ -134,6 +135,10 @@ typedef struct MidiEvents
   /** Semaphore for exclusive read/write. */
   ZixSem     access_sem;
 
+  /** Cache, pointer back to owner Port. */
+  /* FIXME not needed */
+  Port *     port;
+
 } MidiEvents;
 
 /**
@@ -145,9 +150,12 @@ midi_events_init (
 
 /**
  * Allocates and inits a MidiEvents struct.
+ *
+ * @param port Owner Port.
  */
 MidiEvents *
-midi_events_new ();
+midi_events_new (
+  Port * port);
 
 /**
  * Copies the members from one MidiEvent to another.
@@ -216,6 +224,19 @@ midi_events_add_note_on (
   else
     self->num_events++;
 }
+
+/**
+ * Returrns if the MidiEvents have any note on
+ * events.
+ *
+ * @param check_main Check the main events.
+ * @param check_queued Check the queued events.
+ */
+int
+midi_events_has_note_on (
+  MidiEvents * self,
+  int          check_main,
+  int          check_queued);
 
 /**
  * Parses a MidiEvent from a raw MIDI buffer.

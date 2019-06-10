@@ -38,6 +38,11 @@
  * @{
  */
 
+/**
+ * Push events.
+ *
+ * Note: not real-time safe.
+ */
 #define EVENTS_PUSH(et,_arg) \
   if (EVENTS && \
       !AUDIO_ENGINE->exporting) \
@@ -47,6 +52,8 @@
       ev->arg = _arg; \
       g_async_queue_push (EVENTS, ev); \
     }
+
+/** The event queue. */
 #define EVENTS (ZRYTHM->event_queue)
 
 typedef enum EventType

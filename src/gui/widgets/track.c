@@ -40,6 +40,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/marker_track.h"
 #include "gui/widgets/master_track.h"
+#include "gui/widgets/midi_activity_bar.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/track.h"
@@ -597,6 +598,9 @@ track_widget_new (Track * track)
   TRACK_WIDGET_GET_PRIVATE (self);
   color_area_widget_setup_track (
     tw_prv->color, track);
+  midi_activity_bar_widget_setup_track (
+    tw_prv->top_grid->midi_activity,
+    track);
 
   tw_prv->track = track;
 

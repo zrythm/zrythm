@@ -186,7 +186,7 @@ port_new_with_type (PortType     type,
 
   port->identifier.type = type;
   if (port->identifier.type == TYPE_EVENT)
-    port->midi_events = midi_events_new ();
+    port->midi_events = midi_events_new (port);
   port->identifier.flow = flow;
 
   return port;
@@ -510,12 +510,23 @@ port_sum_signal_from_inputs (Port * port)
             src_port->midi_events,
             port->midi_events, 0);
         }
-      /* FIXME the master events never get cleared
-       */
+
+      /* send UI notification */
       if (port->midi_events->num_events > 0)
-        g_message ("port %s has %d events",
-                   port->identifier.label,
-                   port->midi_events->num_events);
+        {
+          g_message ("port %s has %d events",
+                     port->identifier.label,
+                     port->midi_events->num_events);
+          if (port == AUDIO_ENGINE->midi_in)
+            {
+              AUDIO_ENGINE->trigger_midi_activity = 1;
+            }
+          else if (port->identifier.owner_type ==
+                     PORT_OWNER_TYPE_TRACK)
+            {
+              port->track->trigger_midi_activity = 1;
+            }
+        }
       break;
     case TYPE_AUDIO:
       for (k = 0; k < port->num_srcs; k++)
@@ -589,7 +600,8 @@ port_print_connections_all ()
 void
 port_clear_buffer (Port * port)
 {
-  if (port->identifier.type == TYPE_AUDIO && port->buf)
+  if (port->identifier.type == TYPE_AUDIO &&
+        port->buf)
     {
       memset (
         port->buf, 0,
@@ -597,12 +609,10 @@ port_clear_buffer (Port * port)
           sizeof (float));
       return;
     }
-  if (port->identifier.type == TYPE_EVENT)
+  if (port->identifier.type == TYPE_EVENT &&
+      port->midi_events)
     {
-      if (port->midi_events)
-        {
-          port->midi_events->num_events = 0;
-        }
+      port->midi_events->num_events = 0;
     }
 }
 

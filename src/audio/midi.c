@@ -188,15 +188,56 @@ midi_events_init (
 
 /**
  * Allocates and inits a MidiEvents struct.
+ *
+ * @param port Owner Port.
  */
 MidiEvents *
-midi_events_new ()
+midi_events_new (
+  Port * port)
 {
-  MidiEvents * self = calloc (1, sizeof(MidiEvents));
+  MidiEvents * self =
+    calloc (1, sizeof(MidiEvents));
 
   midi_events_init (self);
+  self->port = port;
 
   return self;
+}
+
+/**
+ * Returrns if the MidiEvents have any note on
+ * events.
+ *
+ * @param check_main Check the main events.
+ * @param check_queued Check the queued events.
+ */
+int
+midi_events_has_note_on (
+  MidiEvents * self,
+  int          check_main,
+  int          check_queued)
+{
+  if (check_main)
+    {
+      for (int i = 0; i < self->num_events; i++)
+        {
+          if (self->events[i].type ==
+                MIDI_EVENT_TYPE_NOTE_ON)
+            return 1;
+        }
+    }
+  if (check_queued)
+    {
+      for (int i = 0;
+           i < self->num_queued_events; i++)
+        {
+          if (self->queued_events[i].type ==
+                MIDI_EVENT_TYPE_NOTE_ON)
+            return 1;
+        }
+    }
+
+  return 0;
 }
 
 /**

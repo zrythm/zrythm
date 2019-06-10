@@ -83,7 +83,8 @@ init_midi (
 
   /* init MIDI queues for manual press */
   self->midi_editor_manual_press->midi_events =
-    midi_events_new (1);
+    midi_events_new (
+      self->midi_editor_manual_press);
 }
 
 static void

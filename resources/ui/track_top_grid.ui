@@ -70,7 +70,10 @@
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
-          <placeholder/>
+          <object class="MidiActivityBarWidget" id="midi_activity">
+            <property name="visible">1</property>
+            <property name="vexpand">1</property>
+          </object>
         </child>
       </object>
       <packing>

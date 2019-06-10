@@ -280,7 +280,8 @@ jack_midi_setup (
 
   /* init queue */
   self->midi_in->midi_events =
-    midi_events_new (1);
+    midi_events_new (
+      self->midi_in);
 
   if (!self->midi_in->data)
     {

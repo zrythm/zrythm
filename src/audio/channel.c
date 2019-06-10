@@ -999,6 +999,9 @@ channel_prepare_process (Channel * channel)
     }
   port_clear_buffer (channel->stereo_out->l);
   port_clear_buffer (channel->stereo_out->r);
+  port_clear_buffer (channel->midi_in);
+  if (channel->piano_roll)
+    port_clear_buffer (channel->piano_roll);
   for (j = 0; j < STRIP_SIZE; j++)
     {
       plugin = channel->plugins[j];
@@ -1036,10 +1039,16 @@ channel_init_loaded (Channel * ch)
   /* midi in / piano roll ports */
   ch->piano_roll->identifier.flags =
     PORT_FLAG_PIANO_ROLL;
+  ch->piano_roll->identifier.owner_type =
+    PORT_OWNER_TYPE_TRACK;
   ch->midi_in->midi_events =
-    midi_events_new (1);
+    midi_events_new (
+      ch->midi_in);
   ch->piano_roll->midi_events =
-    midi_events_new (1);
+    midi_events_new (
+      ch->piano_roll);
+  ch->midi_in->identifier.owner_type =
+    PORT_OWNER_TYPE_TRACK;
 
   /* routing */
   if (ch->output_pos > -1)
@@ -1086,8 +1095,11 @@ _create_channel (
       TYPE_EVENT,
       FLOW_INPUT,
       pll);
+  channel->midi_in->identifier.owner_type =
+    PORT_OWNER_TYPE_TRACK;
   channel->midi_in->midi_events =
-    midi_events_new (1);
+    midi_events_new (
+      channel->midi_in);
   g_free (pll);
   pll =
     g_strdup_printf ("%s Stereo out L",
@@ -1155,7 +1167,8 @@ _create_channel (
   channel->piano_roll->track =
     channel->track;
   channel->piano_roll->midi_events =
-    midi_events_new (1);
+    midi_events_new (
+      channel->piano_roll);
 
   return channel;
 }

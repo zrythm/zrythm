@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "gui/widgets/midi_activity_bar.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/track_top_grid.h"
 #include "project.h"
@@ -33,8 +34,10 @@ G_DEFINE_TYPE (
   GTK_TYPE_GRID)
 
 static void
-track_top_grid_widget_init (TrackTopGridWidget * self)
+track_top_grid_widget_init (
+  TrackTopGridWidget * self)
 {
+  g_type_ensure (MIDI_ACTIVITY_BAR_WIDGET_TYPE);
   gtk_widget_init_template (GTK_WIDGET (self));
 }
 
@@ -61,6 +64,10 @@ track_top_grid_widget_class_init (
     klass,
     TrackTopGridWidget,
     right_activity_box);
+  gtk_widget_class_bind_template_child (
+    klass,
+    TrackTopGridWidget,
+    midi_activity);
   gtk_widget_class_bind_template_child (
     klass,
     TrackTopGridWidget,

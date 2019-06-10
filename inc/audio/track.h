@@ -221,6 +221,16 @@ typedef struct Track
   Modulator *         modulators[MAX_MODULATORS];
   int                 num_modulators;
 
+  /**
+   * Flag to tell the UI that this channel had
+   * MIDI activity.
+   *
+   * When processing this and setting it to 0,
+   * the UI should create a separate event using
+   * EVENTS_PUSH.
+   */
+  int                  trigger_midi_activity;
+
 } Track;
 
 static const cyaml_strval_t

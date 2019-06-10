@@ -137,12 +137,30 @@ typedef struct AudioEngine
 
   /** stereo out ports to the backend. */
   StereoPorts       * stereo_out;
-  Port              * midi_in;     ///< MIDI in port from JACK
-  Port              * midi_editor_manual_press; ///< manual note press in editor
-  uint32_t          nframes;     ///< nframes for current cycle
-  //MIDI_Controller    * midi_controller; ///< the midi input on JACK
-  //Port_Manager      * port_manager;  ///< manages all ports created for/by plugins
-  ZixSem            port_operation_lock;  ///< semaphore for blocking DSP while plugin and its ports are deleted
+
+  /** MIDI in port from the audio engine. */
+  Port              * midi_in;
+
+  /**
+   * Flag to tell the UI that this channel had
+   * MIDI activity.
+   *
+   * When processing this and setting it to 0,
+   * the UI should create a separate event using
+   * EVENTS_PUSH.
+   */
+  int                  trigger_midi_activity;
+
+  /** Manual note prress in the piano roll. */
+  Port              * midi_editor_manual_press;
+
+  /** Number of frames/samples in the current
+   * cycle. */
+  uint32_t          nframes;
+
+  /** Semaphore for blocking DSP while a plugin and
+   * its ports are deleted. */
+  ZixSem            port_operation_lock;
 
   /** Ok to process or not. */
   gint               run;
