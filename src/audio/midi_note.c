@@ -476,26 +476,8 @@ midi_note_hit (MidiNote * midi_note,
   long clip_start_ticks =
     position_to_ticks (
       &region->clip_start_pos);
-  /*long region_length_ticks =*/
-    /*region_get_full_length_in_ticks (*/
-      /*r);*/
-  /*position_set_to_pos (*/
-    /*&loop_start_adjusted,*/
-    /*&r->loop_start_pos);*/
-  /*position_set_to_pos (*/
-    /*&loop_end_adjusted,*/
-    /*&r->loop_end_pos);*/
-  /*position_init (&region_end_adjusted);*/
   position_add_ticks (
     &local_pos, clip_start_ticks);
-  /*position_add_ticks (*/
-    /*&local_end_pos, clip_start_ticks);*/
-  /*position_add_ticks (*/
-    /*&loop_start_adjusted, - clip_start_ticks);*/
-  /*position_add_ticks (*/
-    /*&loop_end_adjusted, - clip_start_ticks);*/
-  /*position_add_ticks (*/
-    /*&region_end_adjusted, region_length_ticks);*/
 
   /* check for note on event on the
    * boundary */

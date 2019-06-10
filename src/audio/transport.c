@@ -279,11 +279,12 @@ transport_move_playhead (
                         channel->piano_roll->
                           midi_events;
 
+                      zix_sem_wait (&midi_events->access_sem);
                       midi_events_add_note_off (
                         midi_events, 1,
                         midi_note->val,
-                        position_to_frames (
-                          &PLAYHEAD), 1);
+                        0, 1);
+                      zix_sem_post (&midi_events->access_sem);
                     }
                 }
             }

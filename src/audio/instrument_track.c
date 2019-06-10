@@ -91,7 +91,6 @@ instrument_track_fill_midi_events (
 
   zix_sem_wait (&midi_events->access_sem);
 
-  midi_events_clear (midi_events, 1);
   TrackLane * lane;
   for (j = 0; j < track->num_lanes; j++)
     {

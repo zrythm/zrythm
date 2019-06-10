@@ -440,6 +440,7 @@ alsa_setup (
 {
   self->block_length = 512;
   self->sample_rate = 44100;
+  self->midi_buf_size = 4096;
   self->alsa_out_buf =
     (float *) malloc (
       2 * sizeof (float) * self->block_length);

@@ -1245,12 +1245,12 @@ channel_connect (
 {
   /* connect MIDI in port from engine's jack
    * port */
-  if (AUDIO_ENGINE->midi_backend !=
-        MIDI_BACKEND_DUMMY)
-    {
-      port_connect (AUDIO_ENGINE->midi_in,
-                    ch->midi_in);
-    }
+  /*if (AUDIO_ENGINE->midi_backend !=*/
+        /*MIDI_BACKEND_DUMMY)*/
+    /*{*/
+      /*port_connect (AUDIO_ENGINE->midi_in,*/
+                    /*ch->midi_in);*/
+    /*}*/
 
   /* set default output */
   if (ch->type == CT_MASTER)

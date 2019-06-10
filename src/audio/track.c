@@ -234,56 +234,35 @@ track_set_recording (Track *   track,
         "track.");
       return;
     }
-  if (channel->type == CT_AUDIO)
-    {
-      /* TODO connect L and R audio ports for recording */
-      if (recording)
-        {
-          port_connect (
-            AUDIO_ENGINE->stereo_in->l,
-            channel->stereo_in->l);
-          port_connect (
-            AUDIO_ENGINE->stereo_in->r,
-            channel->stereo_in->r);
-        }
-      else
-        {
-          port_disconnect (
-            AUDIO_ENGINE->stereo_in->l,
-            channel->stereo_in->l);
-          port_disconnect (
-            AUDIO_ENGINE->stereo_in->r,
-            channel->stereo_in->r);
-        }
-    }
-  else if (channel->type == CT_MIDI)
-    {
-      /* find first plugin */
-      Plugin * plugin = channel_get_first_plugin (channel);
 
-      if (plugin)
-        {
-          /* Connect/Disconnect MIDI port to the plugin */
-          for (int i = 0; i < plugin->num_in_ports; i++)
-            {
-              Port * port = plugin->in_ports[i];
-              if (port->identifier.type == TYPE_EVENT &&
-                  port->identifier.flow == FLOW_INPUT)
-                {
-                  g_message ("%d MIDI In port: %s",
-                             i, port->identifier.label);
-                  if (recording)
-                    port_connect (
-                      AUDIO_ENGINE->midi_in, port);
-                  else
-                    port_disconnect (
-                      AUDIO_ENGINE->midi_in, port);
-                }
-            }
-        }
+  if (recording)
+    {
+      port_connect (
+        AUDIO_ENGINE->stereo_in->l,
+        channel->stereo_in->l);
+      port_connect (
+        AUDIO_ENGINE->stereo_in->r,
+        channel->stereo_in->r);
+      port_connect (
+        AUDIO_ENGINE->midi_in,
+        channel->midi_in);
+    }
+  else
+    {
+      port_disconnect (
+        AUDIO_ENGINE->stereo_in->l,
+        channel->stereo_in->l);
+      port_disconnect (
+        AUDIO_ENGINE->stereo_in->r,
+        channel->stereo_in->r);
+      port_disconnect (
+        AUDIO_ENGINE->midi_in,
+        channel->midi_in);
     }
 
   track->recording = recording;
+
+  mixer_recalc_graph (MIXER);
 
   EVENTS_PUSH (ET_TRACK_STATE_CHANGED,
                track);
