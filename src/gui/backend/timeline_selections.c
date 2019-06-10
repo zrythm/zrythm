@@ -50,7 +50,7 @@ timeline_selections_init_loaded (
 
   for (int i = 0; i < ts->num_chords; i++)
     ts->chords[i] =
-      chord_find (ts->chords[i]);
+      chord_object_find (ts->chords[i]);
 }
 
 /**
@@ -93,14 +93,14 @@ timeline_selections_set_cache_poses (
       region_set_cache_end_pos (
         r, &r->end_pos);
     }
-  ZChord * c;
+  ChordObject * c;
   for (i = 0; i < ts->num_chords; i++)
     {
       c = ts->chords[i];
 
       /* set start poses for chords */
-      position_set_to_pos (
-        &c->cache_pos, &c->pos);
+      chord_object_set_cache_pos (
+        c, &c->pos);
     }
   AutomationPoint * ap;
   for (i = 0; i < ts->num_aps; i++)
@@ -134,9 +134,19 @@ timeline_selections_reset_transient_poses (
         F_NO_TRANS_ONLY, F_NO_VALIDATE);
     }
 
-  /* TODO chords */
+  ChordObject * chord;
+  for (int i = 0; i < ts->num_chords; i++)
+    {
+      chord = ts->chords[i];
+
+      chord_object_set_pos (
+        chord, &chord->pos,
+        F_NO_TRANS_ONLY);
+    }
 
   EVENTS_PUSH (ET_REGION_POSITIONS_CHANGED,
+               NULL);
+  EVENTS_PUSH (ET_CHORD_POSITIONS_CHANGED,
                NULL);
 }
 
@@ -168,7 +178,7 @@ timeline_selections_get_start_pos (
     ts, AutomationPoint, ap, pos,
     transient, before, widget);
   SET_ARRANGER_OBJ_POS_TO (
-    ts, ZChord, chord, pos,
+    ts, ChordObject, chord, pos,
     transient, before, widget);
 }
 
@@ -199,7 +209,7 @@ timeline_selections_get_end_pos (
     ts, AutomationPoint, ap, pos,
     transient, after, widget);
   SET_ARRANGER_OBJ_POS_TO (
-    ts, ZChord, chord, pos,
+    ts, ChordObject, chord, pos,
     transient, after, widget);
 }
 
@@ -228,7 +238,7 @@ timeline_selections_get_first_object (
     ts, AutomationPoint, ap, pos,
     transient, before, widget);
   SET_ARRANGER_OBJ_POS_TO (
-    ts, ZChord, chord, pos,
+    ts, ChordObject, chord, pos,
     transient, before, widget);
 
   return widget;
@@ -258,7 +268,7 @@ timeline_selections_get_last_object (
     ts, AutomationPoint, ap, pos,
     transient, after, widget);
   SET_ARRANGER_OBJ_POS_TO (
-    ts, ZChord, chord, pos,
+    ts, ChordObject, chord, pos,
     transient, after, widget);
 
   return widget;
@@ -393,7 +403,7 @@ timeline_selections_add_region (
 void
 timeline_selections_add_chord (
   TimelineSelections * ts,
-  ZChord *             r)
+  ChordObject *             r)
 {
   if (!array_contains (ts->chords,
                       ts->num_chords,
@@ -451,7 +461,7 @@ timeline_selections_remove_region (
 void
 timeline_selections_remove_chord (
   TimelineSelections * ts,
-  ZChord *              c)
+  ChordObject *              c)
 {
   if (!array_contains (
         ts->chords,
@@ -510,12 +520,12 @@ timeline_selections_clear (
 {
   int i, num_regions, num_chords, num_aps;
   Region * r;
-  ZChord * c;
+  ChordObject * c;
   AutomationPoint * ap;
 
   /* use caches because ts->* will be operated on. */
   static Region * regions[600];
-  static ZChord * chords[600];
+  static ChordObject * chords[600];
   static AutomationPoint * aps[600];
   for (i = 0; i < ts->num_regions; i++)
     {
@@ -582,6 +592,17 @@ timeline_selections_clone ()
                     new_ts->num_regions,
                     new_r);
     }
+  ChordObject *c, * new_c;
+  for (int i = 0; i < src->num_chords; i++)
+    {
+      c = src->chords[i];
+      new_c =
+        chord_object_clone (
+          c, CHORD_OBJECT_CLONE_COPY);
+      array_append (new_ts->chords,
+                    new_ts->num_chords,
+                    new_c);
+    }
 
   return new_ts;
 }
@@ -615,11 +636,11 @@ timeline_selections_add_ticks (
     }
 
   /* update chord positions */
-  ZChord * c;
+  ChordObject * c;
   for (i = 0; i < ts->num_chords; i++)
     {
       c = ts->chords[i];
-      chord_move (
+      chord_object_move (
         c, ticks, use_cached_pos, transients_only);
     }
 
@@ -789,7 +810,7 @@ timeline_selections_paste_to_pos (
     }
   for (i = 0; i < ts->num_chords; i++)
     {
-      ZChord * chord = ts->chords[i];
+      ChordObject * chord = ts->chords[i];
 
       curr_ticks = position_to_ticks (&chord->pos);
       position_from_ticks (&chord->pos,

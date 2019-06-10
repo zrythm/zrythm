@@ -19,7 +19,7 @@
 
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/automation_point.h"
-#include "gui/widgets/chord.h"
+#include "gui/widgets/chord_object.h"
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/selection_info.h"
@@ -69,7 +69,7 @@ timeline_selection_info_widget_refresh (
     {
 
     }
-  else if (Z_IS_CHORD_WIDGET (fo))
+  else if (Z_IS_CHORD_OBJECT_WIDGET (fo))
     {
 
     }

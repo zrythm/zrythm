@@ -20,18 +20,15 @@
 /**
  * \file
  *
- * Chord related code.
- * See https://www.scales-chords.com
- * https://www.basicmusictheory.com/c-harmonic-minor-triad-chords
+ * Descriptors for chords.
  */
 
-#ifndef __AUDIO_CHORD_H__
-#define __AUDIO_CHORD_H__
+#ifndef __AUDIO_CHORD_DESCRIPTOR_H__
+#define __AUDIO_CHORD_DESCRIPTOR_H__
 
 #include <stdint.h>
 
 #include "audio/position.h"
-#include "gui/backend/arranger_object_info.h"
 #include "utils/yaml.h"
 
 /**
@@ -39,14 +36,6 @@
  *
  * @{
  */
-
-/** Gets the main counterpart of the ZChord. */
-#define chord_get_main_chord(r) \
-  ((ZChord *) r->obj_info.main)
-
-/** Gets the transient counterpart of the ZChord. */
-#define chord_get_main_trans_chord(r) \
-  ((ZChord *) r->obj_info.main_trans)
 
 typedef enum MusicalNote
 {
@@ -109,20 +98,14 @@ typedef enum ChordType
   CHORD_TYPE_AUG
 } ChordType;
 
-typedef struct _ChordWidget ChordWidget;
-
 /**
- * Chords are to be generated on demand.
+ * A ChordDescriptor describes a chord and is not
+ * linked to any specific object by itself.
+ *
+ * Chord objects should include a ChordDescriptor.
  */
-typedef struct ZChord
+typedef struct ChordDescriptor
 {
-  /** ZChord object position (if used in chord
-   * Track). */
-  Position       pos;
-
-  /** Cache, used in runtime operations. */
-  Position       cache_pos;
-
   /** Has bass note or not. */
   int            has_bass;
 
@@ -133,12 +116,6 @@ typedef struct ZChord
   MusicalNote    bass_note;
 
   ChordType      type;
-
-  /** Position of Track this ZChord is in. */
-  int            track_pos;
-
-  /** Cache. */
-  Track *        track;
 
   /**
    * 3 octaves, 1st octave is for bass note.
@@ -153,14 +130,7 @@ typedef struct ZChord
    * greater than 0 lwest note(s) receive an octave.
    */
   int                   inversion;
-
-  /** Selected in TimelineArrangerWidget or not. */
-  int                   selected;
-  int                   visible;
-  ChordWidget *         widget;
-
-  ArrangerObjectInfo    obj_info;
-} ZChord;
+} ChordDescriptor;
 
 static const cyaml_strval_t musical_note_strings[] = {
 	{ "C",          NOTE_C    },
@@ -178,53 +148,49 @@ static const cyaml_strval_t musical_note_strings[] = {
 };
 
 static const cyaml_schema_field_t
-  chord_fields_schema[] =
+  chord_descriptor_fields_schema[] =
 {
-  CYAML_FIELD_MAPPING (
-    "pos", CYAML_FLAG_DEFAULT,
-    ZChord, pos, position_fields_schema),
 	CYAML_FIELD_INT (
     "has_bass", CYAML_FLAG_DEFAULT,
-    ZChord, has_bass),
+    ChordDescriptor, has_bass),
   CYAML_FIELD_ENUM (
     "root_note", CYAML_FLAG_DEFAULT,
-    ZChord, root_note, musical_note_strings,
+    ChordDescriptor, root_note, musical_note_strings,
     CYAML_ARRAY_LEN (musical_note_strings)),
   CYAML_FIELD_ENUM (
     "bass_note", CYAML_FLAG_DEFAULT,
-    ZChord, bass_note, musical_note_strings,
+    ChordDescriptor, bass_note, musical_note_strings,
     CYAML_ARRAY_LEN (musical_note_strings)),
   CYAML_FIELD_SEQUENCE_FIXED (
     "notes", CYAML_FLAG_OPTIONAL,
-    ZChord, notes, &int_schema, 36),
+    ChordDescriptor, notes, &int_schema, 36),
 	CYAML_FIELD_INT (
     "inversion", CYAML_FLAG_DEFAULT,
-    ZChord, inversion),
+    ChordDescriptor, inversion),
 
 	CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
-chord_schema = {
-	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
-			ZChord, chord_fields_schema),
+chord_descriptor_schema = {
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    ChordDescriptor, chord_descriptor_fields_schema),
 };
 
-void
-chord_init_loaded (ZChord * self);
-
 /**
- * Creates a chord.
+ * Creates a ChordDescriptor.
  */
-ZChord *
-chord_new (MusicalNote            root,
-           uint8_t                has_bass,
-           MusicalNote            bass,
-           ChordType              type,
-           int                    inversion);
+ChordDescriptor *
+chord_descriptor_new (
+  MusicalNote            root,
+  uint8_t                has_bass,
+  MusicalNote            bass,
+  ChordType              type,
+  int                    inversion);
 
 static inline int
-_notes_equal (
+chord_descriptor_are_notes_equal (
   int * notes_a,
   int * notes_b)
 {
@@ -238,40 +204,33 @@ _notes_equal (
 }
 
 static inline int
-chord_is_equal (
-  ZChord * a,
-  ZChord * b)
+chord_descriptor_is_equal (
+  ChordDescriptor * a,
+  ChordDescriptor * b)
 {
-  return !position_compare(&a->pos, &b->pos) &&
+  return
     a->has_bass == b->has_bass &&
     a->root_note == b->root_note &&
     a->bass_note == b->bass_note &&
     a->type == b->type &&
-    _notes_equal (a->notes, b->notes) &&
-    a->inversion == b->inversion &&
-    a->visible == b->visible;
+    chord_descriptor_are_notes_equal (
+      a->notes, b->notes) &&
+    a->inversion == b->inversion;
 }
 
 /**
- * Returns the Track this ZChord is in.
+ * Clones the given ChordDescriptor.
  */
-Track *
-chord_get_track (
-  ZChord * self);
-
-/**
- * Finds the chord in the project corresponding to the
- * given one.
- */
-ZChord *
-chord_find (
-  ZChord * clone);
+ChordDescriptor *
+chord_descriptor_clone (
+  ChordDescriptor * src);
 
 /**
  * Returns the musical note as a string (eg. "C3").
  */
 const char *
-chord_note_to_string (MusicalNote note);
+chord_descriptor_note_to_string (
+  MusicalNote note);
 
 /**
  * Returns the chord in human readable string.
@@ -279,29 +238,15 @@ chord_note_to_string (MusicalNote note);
  * MUST be free'd by caller.
  */
 char *
-chord_as_string (ZChord * chord);
-
-void
-chord_set_pos (ZChord *    self,
-               Position * pos);
+chord_descriptor_to_string (
+  ChordDescriptor * chord);
 
 /**
- * Moves the Region by the given amount of ticks.
- *
- * @param use_cached_pos Add the ticks to the cached
- *   Position instead of its current Position.
- * @param trans_only Only move transients.
- * @return Whether moved or not.
+ * Frees the ChordDescriptor.
  */
-int
-chord_move (
-  ZChord * chord,
-  long     ticks,
-  int      use_cached_pos,
-  int      trans_only);
-
 void
-chord_free (ZChord * self);
+chord_descriptor_free (
+  ChordDescriptor * self);
 
 /**
  * @}

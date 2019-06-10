@@ -592,7 +592,7 @@ track_free (Track * track)
   /* remove chords */
   /* FIXME move inside *_track_free */
   for (i = 0; i < track->num_chords; i++)
-    chord_free (track->chords[i]);
+    chord_object_free (track->chords[i]);
 
   /* remove automation points, curves, tracks,
    * lanes*/

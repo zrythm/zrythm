@@ -39,7 +39,7 @@
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
-#include "gui/widgets/chord.h"
+#include "gui/widgets/chord_object.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/inspector.h"
@@ -458,8 +458,8 @@ arranger_widget_get_hit_widgets_in_range (
         {
           array[(*array_size)++] = widget;
         }
-      else if (type == CHORD_WIDGET_TYPE &&
-               Z_IS_CHORD_WIDGET (widget))
+      else if (type == CHORD_OBJECT_WIDGET_TYPE &&
+               Z_IS_CHORD_OBJECT_WIDGET (widget))
         {
           array[(*array_size)++] = widget;
         }
@@ -531,7 +531,7 @@ arranger_widget_select (
           num = &TL_SELECTIONS->
                   num_aps;
         }
-      else if (type == CHORD_WIDGET_TYPE)
+      else if (type == CHORD_OBJECT_WIDGET_TYPE)
         {
           array =
             (void **) TL_SELECTIONS->chords;
@@ -566,9 +566,9 @@ arranger_widget_select (
             region_widget_select (
               ((Region *)r)->widget,
               F_NO_SELECT);
-          else if (type == CHORD_WIDGET_TYPE)
-            chord_widget_select (
-              ((ZChord *)r)->widget,
+          else if (type == CHORD_OBJECT_WIDGET_TYPE)
+            chord_object_widget_select (
+              ((ChordObject *)r)->widget,
               F_NO_SELECT);
           else if (type ==
                      AUTOMATION_POINT_WIDGET_TYPE)
@@ -593,9 +593,9 @@ arranger_widget_select (
         region_widget_select (
           ((Region *)child)->widget,
           F_NO_SELECT);
-      else if (type == CHORD_WIDGET_TYPE)
-        chord_widget_select (
-          ((ZChord *)child)->widget,
+      else if (type == CHORD_OBJECT_WIDGET_TYPE)
+        chord_object_widget_select (
+          ((ChordObject *)child)->widget,
           F_NO_SELECT);
       else if (type == AUTOMATION_POINT_WIDGET_TYPE)
         automation_point_widget_select (
@@ -615,9 +615,9 @@ arranger_widget_select (
         region_widget_select (
           ((Region *)child)->widget,
           F_SELECT);
-      else if (type == CHORD_WIDGET_TYPE)
-        chord_widget_select (
-          ((ZChord *)child)->widget,
+      else if (type == CHORD_OBJECT_WIDGET_TYPE)
+        chord_object_widget_select (
+          ((ChordObject *)child)->widget,
           F_SELECT);
       else if (type == AUTOMATION_POINT_WIDGET_TYPE)
         automation_point_widget_select (
@@ -1124,7 +1124,7 @@ drag_begin (GtkGestureDrag *   gesture,
   RegionWidget *          rw = NULL;
   AutomationCurveWidget * ac_widget = NULL;
   AutomationPointWidget * ap_widget = NULL;
-  ChordWidget *           chord_widget = NULL;
+  ChordObjectWidget *     chord_widget = NULL;
   VelocityWidget *        vel_widget = NULL;
   if (midi_arranger)
     {

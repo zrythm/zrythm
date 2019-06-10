@@ -164,7 +164,7 @@ arranger_object_info_set_widget_visibility (
   int                  all)
 {
   Region * r = NULL;
-  ZChord * c = NULL;
+  ChordObject * c = NULL;
   MidiNote * mn = NULL;
 
   /* get the objects */
@@ -177,7 +177,7 @@ arranger_object_info_set_widget_visibility (
       break;
     case AOI_TYPE_CHORD:
       c =
-        (ZChord *)
+        (ChordObject *)
         arranger_object_info_get_object (self);
       break;
     case AOI_TYPE_MIDI_NOTE:
@@ -232,7 +232,8 @@ arranger_object_info_set_widget_visibility (
         }
       if (c)
         {
-          SET_ALL_VISIBLE_WITH_LANE (ZChord, c);
+          SET_ALL_VISIBLE_WITHOUT_LANE (
+            ChordObject, c);
         }
       if (mn)
         {
@@ -269,7 +270,7 @@ arranger_object_info_get_visible_counterpart (
   ArrangerObjectInfo * self)
 {
   Region * region = NULL;
-  ZChord * chord = NULL;
+  ChordObject * chord = NULL;
   MidiNote * midi_note = NULL;
 
   /* get the objects */
@@ -282,7 +283,7 @@ arranger_object_info_get_visible_counterpart (
       break;
     case AOI_TYPE_CHORD:
       chord =
-        (ZChord *)
+        (ChordObject *)
         arranger_object_info_get_object (self);
       break;
     case AOI_TYPE_MIDI_NOTE:

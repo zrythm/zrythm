@@ -17,7 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/chord.h"
+#include "audio/chord_descriptor.h"
 #include "gui/widgets/chord_pad.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"

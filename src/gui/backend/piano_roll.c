@@ -89,12 +89,12 @@ piano_roll_init (PianoRoll * self)
       descr->note_name =
         g_strdup_printf (
           "%s%d",
-          chord_note_to_string (i % 12),
+          chord_descriptor_note_to_string (i % 12),
           i / 12 - 2);
       descr->note_name_pango =
         g_strdup_printf (
           "%s<sup>%d</sup>",
-          chord_note_to_string (i % 12),
+          chord_descriptor_note_to_string (i % 12),
           i / 12 - 2);
       idx++;
     }
@@ -115,12 +115,12 @@ piano_roll_init (PianoRoll * self)
       descr->note_name =
         g_strdup_printf (
           "%s%d",
-          chord_note_to_string (i % 12),
+          chord_descriptor_note_to_string (i % 12),
           i / 12 - 2);
       descr->note_name_pango =
         g_strdup_printf (
           "%s<sup>%d</sup>",
-          chord_note_to_string (i % 12),
+          chord_descriptor_note_to_string (i % 12),
           i / 12 - 2);
       idx++;
     }
@@ -138,18 +138,18 @@ piano_roll_init (PianoRoll * self)
       descr->custom_name =
         g_strdup_printf (
           "%s%d",
-          chord_note_to_string (i % 12),
+          chord_descriptor_note_to_string (i % 12),
           i / 12 - 2);
 
       descr->note_name =
         g_strdup_printf (
           "%s%d",
-          chord_note_to_string (i % 12),
+          chord_descriptor_note_to_string (i % 12),
           i / 12 - 2);
       descr->note_name_pango =
         g_strdup_printf (
           "%s<sup>%d</sup>",
-          chord_note_to_string (i % 12),
+          chord_descriptor_note_to_string (i % 12),
           i / 12 - 2);
       idx++;
     }

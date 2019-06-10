@@ -17,15 +17,16 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/chord.h"
+#include "audio/chord_object.h"
 #include "audio/chord_track.h"
-#include "gui/widgets/chord.h"
+#include "gui/widgets/bot_bar.h"
+#include "gui/widgets/chord_object.h"
 #include "project.h"
 #include "utils/ui.h"
 
-G_DEFINE_TYPE (ChordWidget,
-               chord_widget,
-               GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (ChordObjectWidget,
+               chord_object_widget,
+               GTK_TYPE_BOX)
 
 static void
 draw_text (cairo_t *cr, char * name)
@@ -62,9 +63,10 @@ draw_text (cairo_t *cr, char * name)
 
 
 static gboolean
-draw_cb (ChordWidget * self,
-         cairo_t *cr,
-         gpointer data)
+chord_draw_cb (
+  GtkWidget * widget,
+  cairo_t *cr,
+  ChordObjectWidget * self)
 {
   guint width, height;
   GtkStyleContext *context;
@@ -101,74 +103,117 @@ draw_cb (ChordWidget * self,
  return FALSE;
 }
 
+/**
+ * Sets the "selected" GTK state flag and adds the
+ * note to TimelineSelections.
+ */
 void
-chord_widget_select (ChordWidget * self,
-                     int            select)
+chord_object_widget_select (
+  ChordObjectWidget * self,
+  int              select)
 {
-  ZChord * chord = self->chord->obj_info.main;
+  ChordObject * main_chord =
+    chord_object_get_main_chord_object (
+      self->chord);
   if (select)
     {
       timeline_selections_add_chord (
-        TL_SELECTIONS, chord);
+        TL_SELECTIONS,
+        main_chord);
     }
   else
     {
       timeline_selections_remove_chord (
-        TL_SELECTIONS, chord);
+        TL_SELECTIONS,
+        main_chord);
     }
-  EVENTS_PUSH (ET_CHORD_CHANGED, chord);
+  EVENTS_PUSH (ET_CHORD_CHANGED,
+               main_chord);
 }
 
-/**
- * Sets hover in CSS.
- */
-static void
-on_motion (GtkWidget * widget, GdkEventMotion *event)
+static gboolean
+on_motion (
+  GtkWidget *      widget,
+  GdkEventMotion * event,
+  ChordObjectWidget * self)
 {
   if (event->type == GDK_ENTER_NOTIFY)
     {
-      gtk_widget_set_state_flags (widget,
-                                  GTK_STATE_FLAG_PRELIGHT,
-                                  0);
+      gtk_widget_set_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_PRELIGHT,
+        0);
+      bot_bar_change_status (
+        "Chord - Click and drag to move around ("
+        "hold Shift to disable snapping)");
     }
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
-      gtk_widget_unset_state_flags (widget,
-                                    GTK_STATE_FLAG_PRELIGHT);
+      gtk_widget_unset_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_PRELIGHT);
+      bot_bar_change_status ("");
     }
+
+  return FALSE;
 }
 
-ChordWidget *
-chord_widget_new (ZChord * chord)
+ChordObjectWidget *
+chord_object_widget_new (ChordObject * chord)
 {
-  ChordWidget * self =
-    g_object_new (CHORD_WIDGET_TYPE, NULL);
+  ChordObjectWidget * self =
+    g_object_new (CHORD_OBJECT_WIDGET_TYPE, NULL);
 
   self->chord = chord;
-
-  /* connect signals */
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), self);
-  g_signal_connect (G_OBJECT (self), "enter-notify-event",
-                    G_CALLBACK (on_motion),  self);
-  g_signal_connect (G_OBJECT(self), "leave-notify-event",
-                    G_CALLBACK (on_motion),  self);
-
-  gtk_widget_set_visible (GTK_WIDGET (self),
-                          1);
 
   return self;
 }
 
 static void
-chord_widget_class_init (ChordWidgetClass * _klass)
+chord_object_widget_class_init (
+  ChordObjectWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (klass,
-                                 "chord");
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (
+    klass, "chord-object");
 }
 
 static void
-chord_widget_init (ChordWidget * self)
+chord_object_widget_init (
+  ChordObjectWidget * self)
 {
+  self->drawing_area =
+    GTK_DRAWING_AREA (gtk_drawing_area_new ());
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->drawing_area), 1);
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (self->drawing_area), 1);
+  gtk_container_add (
+    GTK_CONTAINER (self),
+    GTK_WIDGET (self->drawing_area));
+
+  /* GDK_ALL_EVENTS_MASK is needed, otherwise the
+   * grab gets broken */
+  gtk_widget_add_events (
+    GTK_WIDGET (self->drawing_area),
+    GDK_ALL_EVENTS_MASK);
+
+  g_signal_connect (
+    G_OBJECT (self->drawing_area), "draw",
+    G_CALLBACK (chord_draw_cb), self);
+  g_signal_connect (
+    G_OBJECT (self->drawing_area),
+    "enter-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self->drawing_area),
+    "leave-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self->drawing_area),
+    "motion-notify-event",
+    G_CALLBACK (on_motion),  self);
+
+  g_object_ref (self);
 }

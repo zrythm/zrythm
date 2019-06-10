@@ -48,18 +48,40 @@ chord_track_new (MusicalScale * scale)
   return self;
 }
 
+/**
+ * Adds a chord to the chord track.
+ */
 void
-chord_track_add_chord (ChordTrack * self,
-                       ZChord *      chord)
+chord_track_add_chord (
+  ChordTrack * track,
+  ChordObject *     chord,
+  int          gen_widget)
 {
-  array_append (self->chords,
-                self->num_chords,
+  g_warn_if_fail (
+    track->type == TRACK_TYPE_CHORD && chord);
+  g_warn_if_fail (
+    chord->obj_info.counterpart ==
+      AOI_COUNTERPART_MAIN);
+  g_warn_if_fail (
+    chord->obj_info.main &&
+    chord->obj_info.main_trans &&
+    chord->obj_info.lane &&
+    chord->obj_info.lane_trans);
+
+  chord_object_set_track (chord, track);
+  array_append (track->chords,
+                track->num_chords,
                 chord);
+
+  if (gen_widget)
+    chord_object_gen_widget (chord);
+
+  EVENTS_PUSH (ET_CHORD_CREATED, chord);
 }
 
 void
 chord_track_remove_chord (ChordTrack * self,
-                          ZChord *      chord)
+                          ChordObject *      chord)
 {
   array_delete (self->chords,
                 self->num_chords,

@@ -323,7 +323,7 @@ midi_note_gen_widget (
   MidiNote * midi_note)
 {
   MidiNote * mn = midi_note;
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < 2; i++)
     {
       if (i == 0)
         mn = midi_note_get_main_midi_note (mn);

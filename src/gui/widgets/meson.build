@@ -23,7 +23,7 @@ widget_srcs = [
   'channel.c',
   'channel_slot.c',
   'chord_button.c',
-  'chord.c',
+  'chord_object.c',
   'chord_pad.c',
   'chord_track.c',
   'clip_editor.c',

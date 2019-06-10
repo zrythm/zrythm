@@ -36,7 +36,7 @@
 #include "audio/audio_track.h"
 #include "audio/bus_track.h"
 #include "audio/channel.h"
-#include "audio/chord.h"
+#include "audio/chord_object.h"
 #include "audio/chord_track.h"
 #include "audio/instrument_track.h"
 #include "audio/master_track.h"
@@ -51,7 +51,7 @@
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
-#include "gui/widgets/chord.h"
+#include "gui/widgets/chord_object.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
@@ -218,9 +218,10 @@ timeline_arranger_widget_set_allocation (
          prev_y - next_y :
          next_y - prev_y) + AC_Y_PADDING;
     }
-  else if (Z_IS_CHORD_WIDGET (widget))
+  else if (Z_IS_CHORD_OBJECT_WIDGET (widget))
     {
-      ChordWidget * cw = Z_CHORD_WIDGET (widget);
+      ChordObjectWidget * cw =
+        Z_CHORD_OBJECT_WIDGET (widget);
       Track * track = P_CHORD_TRACK;
 
       gint wx, wy;
@@ -274,17 +275,16 @@ timeline_arranger_widget_get_cursor (
               self,
               ar_prv->hover_x,
               ar_prv->hover_y);
-          /*ChordWidget * cw =*/
-            /*timeline_arranger_widget_get_hit_chord (*/
-              /*self,*/
-              /*ar_prv->hover_x,*/
-              /*ar_prv->hover_y);*/
+          ChordObjectWidget * cw =
+            timeline_arranger_widget_get_hit_chord (
+              self,
+              ar_prv->hover_x,
+              ar_prv->hover_y);
 
           REGION_WIDGET_GET_PRIVATE (rw);
-          /* TODO chords, aps */
+          /* TODO aps */
 
-          int is_hit =
-            rw != NULL;
+          int is_hit = rw || cw;
           int is_resize_l =
             rw && rw_prv->resize_l;
           int is_resize_r =
@@ -476,7 +476,7 @@ timeline_arranger_widget_get_automation_track_at_y (
   return NULL;
 }
 
-ChordWidget *
+ChordObjectWidget *
 timeline_arranger_widget_get_hit_chord (
   TimelineArrangerWidget *  self,
   double                    x,
@@ -487,10 +487,10 @@ timeline_arranger_widget_get_hit_chord (
       GTK_CONTAINER (self),
       x,
       y,
-      CHORD_WIDGET_TYPE);
+      CHORD_OBJECT_WIDGET_TYPE);
   if (widget)
     {
-      return Z_CHORD_WIDGET (widget);
+      return Z_CHORD_OBJECT_WIDGET (widget);
     }
   return NULL;
 }
@@ -623,12 +623,9 @@ timeline_arranger_widget_select_all (
   ChordTrack * ct = P_CHORD_TRACK;
   for (int i = 0; i < ct->num_chords; i++)
     {
-      ZChord * chord = ct->chords[i];
-      if (chord->visible)
-        {
-          chord_widget_select (
-            chord->widget, select);
-        }
+      ChordObject * chord = ct->chords[i];
+      chord_object_widget_select (
+        chord->widget, select);
     }
 
   /**
@@ -704,7 +701,7 @@ timeline_arranger_widget_update_visibility (
   ARRANGER_SET_OBJ_VISIBILITY_ARRAY (
     TL_SELECTIONS->chords,
     TL_SELECTIONS->num_chords,
-    ZChord,
+    ChordObject,
     chord);
 }
 
@@ -818,7 +815,7 @@ void
 timeline_arranger_widget_on_drag_begin_chord_hit (
   TimelineArrangerWidget * self,
   double                   start_x,
-  ChordWidget *            cw)
+  ChordObjectWidget *      cw)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
@@ -828,13 +825,14 @@ timeline_arranger_widget_on_drag_begin_chord_hit (
       /* TODO */
     }
 
-  ZChord * chord = cw->chord;
+  ChordObject * chord = cw->chord;
   self->start_chord = chord;
 
   /* update arranger action */
   ar_prv->action =
     UI_OVERLAY_ACTION_STARTING_MOVING;
-  ui_set_cursor_from_name (GTK_WIDGET (cw), "grabbing");
+  ui_set_cursor_from_name (
+    GTK_WIDGET (cw), "grabbing");
 
   /* select/ deselect chords */
   if (ar_prv->ctrl_held)
@@ -1015,7 +1013,7 @@ timeline_arranger_widget_create_region (
 }
 
 /**
- * Create a ZChord at the given Position in the
+ * Create a ChordObject at the given Position in the
  * given Track.
  *
  * @param pos The pre-snapped position.
@@ -1026,19 +1024,32 @@ timeline_arranger_widget_create_chord (
   Track *            track,
   const Position *         pos)
 {
+  g_warn_if_fail (track->type == TRACK_TYPE_CHORD);
+
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
- ZChord * chord =
-   chord_new (
-     NOTE_A, 1, NOTE_A, CHORD_TYPE_MIN, 0);
- position_set_to_pos (&chord->pos, pos);
- /*ZChord * chords[1] = { chord };*/
- /*UndoableAction * action =*/
-   /*create_chords_action_new (chords, 1);*/
- /*undo_manager_perform (UNDO_MANAGER,*/
-                       /*action);*/
   ar_prv->action =
     UI_OVERLAY_ACTION_CREATING_MOVING;
+
+  /* create a new chord */
+  ChordDescriptor * descr =
+    chord_descriptor_new (
+      NOTE_A, 1, NOTE_A, CHORD_TYPE_MIN, 0);
+  ChordObject * chord =
+    chord_object_new (
+      descr, 1);
+
+  /* add it to chord track */
+  chord_track_add_chord (track, chord, 1);
+
+  /* set visibility */
+  arranger_object_info_set_widget_visibility (
+    &chord->obj_info, 1);
+
+  chord_object_set_pos (
+    chord, pos, F_NO_TRANS_ONLY);
+
+  EVENTS_PUSH (ET_CHORD_CREATED, chord);
   ARRANGER_WIDGET_SELECT_CHORD (
     self, chord, F_SELECT,
     F_NO_APPEND);
@@ -1124,8 +1135,8 @@ timeline_arranger_widget_select (
   int i;
   Region * region;
   RegionWidget * rw;
-  ZChord * chord;
-  ChordWidget * cw;
+  ChordObject * chord;
+  ChordObjectWidget * cw;
   AutomationPoint * ap;
   AutomationPointWidget * apw;
 
@@ -1189,7 +1200,7 @@ timeline_arranger_widget_select (
   int            num_chord_widgets = 0;
   arranger_widget_get_hit_widgets_in_range (
     Z_ARRANGER_WIDGET (self),
-    CHORD_WIDGET_TYPE,
+    CHORD_OBJECT_WIDGET_TYPE,
     ar_prv->start_x,
     ar_prv->start_y,
     offset_x,
@@ -1203,7 +1214,7 @@ timeline_arranger_widget_select (
       for (i = 0; i < num_chord_widgets; i++)
         {
           cw =
-            Z_CHORD_WIDGET (chord_widgets[i]);
+            Z_CHORD_OBJECT_WIDGET (chord_widgets[i]);
 
           chord = cw->chord;
 
@@ -1218,7 +1229,7 @@ timeline_arranger_widget_select (
       for (i = 0; i < num_chord_widgets; i++)
         {
           cw =
-            Z_CHORD_WIDGET (chord_widgets[i]);
+            Z_CHORD_OBJECT_WIDGET (chord_widgets[i]);
 
           chord = cw->chord;
 
@@ -2054,7 +2065,7 @@ add_children_from_chord_track (
 {
   for (int i = 0; i < ct->num_chords; i++)
     {
-      ZChord * chord = ct->chords[i];
+      ChordObject * chord = ct->chords[i];
       gtk_overlay_add_overlay (
         GTK_OVERLAY (self),
         GTK_WIDGET (chord->widget));
@@ -2212,7 +2223,8 @@ timeline_arranger_widget_refresh_children (
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       Track * track = TRACKLIST->tracks[i];
-      if (track->visible)
+      if (track->visible &&
+          track->pinned == self->is_pinned)
         {
           switch (track->type)
             {
@@ -2278,12 +2290,14 @@ on_focus (GtkWidget       *widget,
 }
 
 static void
-timeline_arranger_widget_class_init (TimelineArrangerWidgetClass * klass)
+timeline_arranger_widget_class_init (
+  TimelineArrangerWidgetClass * klass)
 {
 }
 
 static void
-timeline_arranger_widget_init (TimelineArrangerWidget *self )
+timeline_arranger_widget_init (
+  TimelineArrangerWidget *self )
 {
   g_signal_connect (
     self, "grab-focus",

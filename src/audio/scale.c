@@ -27,7 +27,7 @@
 
 #include <stdlib.h>
 
-#include "audio/chord.h"
+#include "audio/chord_descriptor.h"
 #include "audio/scale.h"
 
 /**
@@ -44,7 +44,7 @@ musical_scale_new (MusicalScaleType      type,
 
   /* add basic triads for each scale */
   int * notes = self->notes;
-  ZChord ** chords = self->default_chords;
+  ChordDescriptor ** chords = self->default_chords;
   MusicalNote note;
   switch (self->type)
     {
@@ -66,7 +66,8 @@ musical_scale_new (MusicalScaleType      type,
 
       /* Cm */
       note = root;
-      *chords++ = chord_new (note, // root
+      *chords++ =
+        chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MIN, // type
@@ -74,7 +75,8 @@ musical_scale_new (MusicalScaleType      type,
 
       /* Ddim */
       note += 2;
-      *chords++ = chord_new (note, // root
+      *chords++ =
+        chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_DIM, // type
@@ -82,7 +84,8 @@ musical_scale_new (MusicalScaleType      type,
 
       /* D# */
       note += 1;
-      *chords++ = chord_new (note, // root
+      *chords++ =
+        chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MAJ, // type
@@ -90,7 +93,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* Fm */
       note += 1;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MIN, // type
@@ -98,7 +101,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* Gm */
       note += 2;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MIN, // type
@@ -106,7 +109,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* G# */
       note += 1;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MAJ, // type
@@ -114,7 +117,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* A# */
       note += 2;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MAJ, // type
@@ -139,7 +142,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* C */
       note = root;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MAJ, // type
@@ -147,7 +150,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* Dm */
       note += 2;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MIN, // type
@@ -155,7 +158,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* Em */
       note += 2;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MIN, // type
@@ -163,7 +166,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* F */
       note += 1;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MAJ, // type
@@ -171,7 +174,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* G */
       note += 2;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MAJ, // type
@@ -179,7 +182,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* Am */
       note += 2;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MIN, // type
@@ -187,7 +190,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* Am */
       note += 2;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_DIM, // type
@@ -211,7 +214,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* Cm */
       note = root;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MIN, // type
@@ -219,7 +222,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* Ddim */
       note += 2;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_DIM, // type
@@ -227,7 +230,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* D# aug */
       note += 1;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_AUG, // type
@@ -235,7 +238,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* Fm */
       note += 2;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MIN, // type
@@ -243,7 +246,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* G */
       note += 2;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MAJ, // type
@@ -251,7 +254,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* G# */
       note += 1;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MAJ, // type
@@ -259,7 +262,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* Bdim */
       note += 3;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_DIM, // type
@@ -284,7 +287,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* Cm */
       note = root;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MIN, // type
@@ -292,7 +295,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* Dm */
       note += 2;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MIN, // type
@@ -300,7 +303,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* D# aug */
       note += 1;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_AUG, // type
@@ -308,7 +311,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* F */
       note += 2;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MAJ, // type
@@ -316,7 +319,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* G */
       note += 2;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MAJ, // type
@@ -324,7 +327,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* Adim */
       note += 2;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_DIM, // type
@@ -332,7 +335,7 @@ musical_scale_new (MusicalScaleType      type,
 
       /* Bdim */
       note += 2;
-      *chords++ = chord_new (note, // root
+      *chords++ = chord_descriptor_new (note, // root
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_DIM, // type

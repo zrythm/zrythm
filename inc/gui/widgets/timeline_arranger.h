@@ -62,7 +62,7 @@ typedef struct _AutomationCurveWidget AutomationCurveWidget;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct AutomationCurve AutomationCurve;
 typedef struct _RegionWidget RegionWidget;
-typedef struct ZChord ZChord;
+typedef struct ChordObject ChordObject;
 typedef struct _MarkerWidget MarkerWidget;
 
 typedef struct _TimelineArrangerWidget
@@ -82,7 +82,7 @@ typedef struct _TimelineArrangerWidget
 
   AutomationPoint *        start_ap;
   AutomationCurve *        start_ac;
-  ZChord *                  start_chord;
+  ChordObject *                  start_chord;
 
   int                      last_timeline_obj_bars;
 
@@ -169,7 +169,7 @@ timeline_arranger_widget_get_hit_region (
   double            x,
   double            y);
 
-ChordWidget *
+ChordObjectWidget *
 timeline_arranger_widget_get_hit_chord (
   TimelineArrangerWidget *  self,
   double                    x,
@@ -219,7 +219,7 @@ void
 timeline_arranger_widget_on_drag_begin_chord_hit (
   TimelineArrangerWidget * self,
   double                   start_x,
-  ChordWidget *            cw);
+  ChordObjectWidget *      cw);
 
 void
 timeline_arranger_widget_on_drag_begin_marker_hit (
@@ -261,7 +261,7 @@ timeline_arranger_widget_create_region (
   const Position *         pos);
 
 /**
- * Create a ZChord at the given Position in the
+ * Create a ChordObject at the given Position in the
  * given Track.
  *
  * @param pos The pre-snapped position.

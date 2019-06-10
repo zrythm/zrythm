@@ -28,6 +28,7 @@
 
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
+#include "audio/chord_object.h"
 #include "audio/region.h"
 #include "audio/scale.h"
 #include "audio/track_lane.h"
@@ -48,7 +49,7 @@ typedef struct MidiEvents MidiEvents;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct Automatable Automatable;
 typedef struct AutomationPoint AutomationPoint;
-typedef struct ZChord ZChord;
+typedef struct ChordObject ChordObject;
 typedef struct MusicalScale MusicalScale;
 typedef struct Modulator Modulator;
 typedef struct Marker Marker;
@@ -201,7 +202,7 @@ typedef struct Track
 
   /* ==== CHORD TRACK ==== */
   MusicalScale *      scale;
-  ZChord *            chords[600];
+  ChordObject *            chords[600];
   int                 num_chords;
   /* ==== CHORD TRACK END ==== */
 
@@ -290,7 +291,7 @@ track_fields_schema[] =
   CYAML_FIELD_SEQUENCE_COUNT (
     "chords", CYAML_FLAG_DEFAULT,
     Track, chords, num_chords,
-    &chord_schema, 0, CYAML_UNLIMITED),
+    &chord_object_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_MAPPING_PTR (
     "channel",
     CYAML_FLAG_DEFAULT | CYAML_FLAG_OPTIONAL,

@@ -40,7 +40,7 @@
 
 #define P_CHORD_TRACK (TRACKLIST->chord_track)
 
-typedef struct ZChord ZChord;
+typedef struct ChordObject ChordObject;
 typedef struct _ChordTrackWidget ChordTrackWidget;
 typedef struct MusicalScale MusicalScale;
 
@@ -58,13 +58,20 @@ chord_track_new (MusicalScale * scale);
 ChordTrack *
 chord_track_default ();
 
+/**
+ * Adds a ChordObject to the Track.
+ *
+ * @param gen_widget Create a widget for the chord.
+ */
 void
-chord_track_add_chord (ChordTrack * self,
-                       ZChord *      chord);
+chord_track_add_chord (
+  ChordTrack * track,
+  ChordObject *     chord,
+  int          gen_widget);
 
 void
 chord_track_remove_chord (ChordTrack * self,
-                          ZChord *      chord);
+                          ChordObject *      chord);
 
 void
 chord_track_free (ChordTrack * self);

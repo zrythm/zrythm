@@ -130,7 +130,7 @@ midi_note_draw_cb (
   char * str =
     g_strdup_printf (
       "%s<sup>%d</sup>",
-      chord_note_to_string (
+      chord_descriptor_note_to_string (
         self->midi_note->val % 12),
       self->midi_note->val / 12 - 2);
   if (DEBUGGING &&
@@ -233,7 +233,7 @@ midi_note_widget_update_tooltip (
   int              show)
 {
   const char * note =
-    chord_note_to_string (
+    chord_descriptor_note_to_string (
       self->midi_note->val % 12);
 
   /* set tooltip text */
@@ -333,7 +333,7 @@ midi_note_widget_new (MidiNote * midi_note)
   char * tooltip =
     g_strdup_printf (
       "[%s%d] %d",
-      chord_note_to_string (
+      chord_descriptor_note_to_string (
         self->midi_note->val % 12),
       self->midi_note->val / 12 - 2,
       self->midi_note->vel->vel);

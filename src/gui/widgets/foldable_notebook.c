@@ -70,9 +70,6 @@ on_multipress_pressed (
   GtkWidget * current_tab =
     z_gtk_notebook_get_current_tab_label_widget (
       GTK_NOTEBOOK (self));
-  GtkPositionType pos_type =
-    gtk_notebook_get_tab_pos (
-      GTK_NOTEBOOK (self));
   int hit =
     ui_is_child_hit (
       GTK_CONTAINER (self),

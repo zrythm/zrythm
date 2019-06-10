@@ -27,7 +27,7 @@
 #define __GUI_BACKEND_TL_SELECTIONS_H__
 
 #include "audio/automation_point.h"
-#include "audio/chord.h"
+#include "audio/chord_object.h"
 #include "audio/marker.h"
 #include "audio/midi_region.h"
 #include "audio/region.h"
@@ -56,8 +56,8 @@ typedef struct TimelineSelections
   AutomationPoint *   aps[600];
   int                 num_aps;
 
-  /** Selected ZChord's. */
-  ZChord *            chords[800];
+  /** Selected ChordObject's. */
+  ChordObject *            chords[800];
   int                 num_chords;
 
   /** Selected Marker's. */
@@ -79,7 +79,7 @@ static const cyaml_schema_field_t
   CYAML_FIELD_SEQUENCE_COUNT (
     "chords", CYAML_FLAG_DEFAULT,
     TimelineSelections, chords, num_chords,
-    &chord_schema, 0, CYAML_UNLIMITED),
+    &chord_object_schema, 0, CYAML_UNLIMITED),
 
 	CYAML_FIELD_END
 };
@@ -207,7 +207,7 @@ timeline_selections_add_region (
 void
 timeline_selections_add_chord (
   TimelineSelections * ts,
-  ZChord *              c);
+  ChordObject *              c);
 
 void
 timeline_selections_add_ap (
@@ -227,7 +227,7 @@ timeline_selections_remove_region (
 void
 timeline_selections_remove_chord (
   TimelineSelections * ts,
-  ZChord *              c);
+  ChordObject *              c);
 
 void
 timeline_selections_remove_ap (

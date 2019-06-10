@@ -31,7 +31,7 @@ G_DEFINE_TYPE (InspectorChordWidget,
 void
 inspector_chord_widget_show_chords (
   InspectorChordWidget * self,
-  ZChord **               chords,
+  ChordObject **               chords,
   int                     num_chords)
 {
   if (num_chords == 1)

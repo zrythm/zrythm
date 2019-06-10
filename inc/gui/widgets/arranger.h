@@ -52,7 +52,7 @@ G_DECLARE_DERIVABLE_TYPE (ArrangerWidget,
   self, child, select, append) \
   arranger_widget_select ( \
     Z_ARRANGER_WIDGET (self), \
-    CHORD_WIDGET_TYPE, (void *) child, select, append);
+    CHORD_OBJECT_WIDGET_TYPE, (void *) child, select, append);
 #define ARRANGER_WIDGET_SELECT_AUTOMATION_POINT( \
   self, child, select, append) \
   arranger_widget_select ( \

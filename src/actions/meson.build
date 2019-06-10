@@ -18,7 +18,6 @@ action_srcs = [
   'edit_timeline_selections_action.c',
   'edit_tracks_action.c',
   'move_tracks_action.c',
-  'create_chords_action.c',
   'duplicate_midi_arranger_selections_action.c',
   'create_tracks_action.c',
   'undo_manager.c',

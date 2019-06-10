@@ -920,6 +920,8 @@ events_process (void * data)
         case ET_CHORD_REMOVED:
           arranger_widget_refresh (
             Z_ARRANGER_WIDGET (MW_TIMELINE));
+          arranger_widget_refresh (
+            Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE));
           break;
         case ET_RULER_STATE_CHANGED:
           timeline_ruler_widget_refresh ();

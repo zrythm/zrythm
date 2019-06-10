@@ -1,7 +1,7 @@
 Zrythm
 ======
 
-[![translated](https://translate.zrythm.org/widgets/zrythm/-/zrythm/svg-badge.svg "Translated")](https://translate.zrythm.org/projects/zrythm/zrythm/)
+[![translated](https://hosted.weblate.org/widgets/zrythm/-/svg-badge.svg "Translation Status")](https://hosted.weblate.org/engage/zrythm/?utm_source=widget)
 [![pipeline](https://git.zrythm.org/zrythm/zrythm/badges/master/pipeline.svg "Pipeline")](https://git.zrythm.org/zrythm/zrythm/pipelines)
 [![coverage](https://git.zrythm.org/zrythm/zrythm/badges/master/coverage.svg "Test Coverage")](https://git.zrythm.org/zrythm/zrythm)
 [![chat](https://git.zrythm.org/zrythm/zrythm/raw/master/data/chat-matrix.svg?inline=false "Chat on Matrix")](https://riot.im/app/#/room/#freenode_#zrythm:matrix.org?action=chat)

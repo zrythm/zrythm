@@ -20,21 +20,21 @@
 /**
  * \file
  *
- * Chord widget.
+ * Widget for ChordObject.
  */
 
-#ifndef __GUI_WIDGETS_CHORD_H__
-#define __GUI_WIDGETS_CHORD_H__
+#ifndef __GUI_WIDGETS_CHORD_OBJECT_H__
+#define __GUI_WIDGETS_CHORD_OBJECT_H__
 
 #include <gtk/gtk.h>
 
-#define CHORD_WIDGET_TYPE \
-  (chord_widget_get_type ())
-G_DECLARE_FINAL_TYPE (ChordWidget,
-                      chord_widget,
-                      Z,
-                      CHORD_WIDGET,
-                      GtkDrawingArea);
+#define CHORD_OBJECT_WIDGET_TYPE \
+  (chord_object_widget_get_type ())
+G_DECLARE_FINAL_TYPE (
+  ChordObjectWidget,
+  chord_object_widget,
+  Z, CHORD_OBJECT_WIDGET,
+  GtkBox);
 
 /**
  * @addtogroup widgets
@@ -42,27 +42,28 @@ G_DECLARE_FINAL_TYPE (ChordWidget,
  * @{
  */
 
-typedef struct ZChord ZChord;
+typedef struct ChordObjectObject ChordObjectObject;
 
 /**
- * Widget for chords inside the ChordTrack.
+ * Widget for chords inside the ChordObjectTrack.
  */
-typedef struct _ChordWidget
+typedef struct _ChordObjectWidget
 {
-  GtkDrawingArea           parent_instance;
-  ZChord *                 chord;
-} ChordWidget;
+  GtkBox           parent_instance;
+  GtkDrawingArea * drawing_area;
+  ChordObject *    chord;
+} ChordObjectWidget;
 
 /**
  * Creates a chord widget.
  */
-ChordWidget *
-chord_widget_new (
-  ZChord * chord);
+ChordObjectWidget *
+chord_object_widget_new (
+  ChordObject * chord);
 
 void
-chord_widget_select (
-  ChordWidget * self,
+chord_object_widget_select (
+  ChordObjectWidget * self,
   int            select);
 
 /**

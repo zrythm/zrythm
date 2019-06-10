@@ -21,7 +21,6 @@
 #define __GUI_BACKEND_MIXER_SELECTIONS_H__
 
 #include "audio/automation_point.h"
-#include "audio/chord.h"
 #include "audio/midi_region.h"
 #include "audio/region.h"
 #include "utils/yaml.h"
