@@ -77,11 +77,7 @@ on_multipress_pressed (
     ui_is_child_hit (
       GTK_CONTAINER (self),
       current_tab,
-      pos_type == GTK_POS_TOP ||
-        pos_type == GTK_POS_BOTTOM,
-      pos_type == GTK_POS_LEFT ||
-        pos_type == GTK_POS_RIGHT,
-      x, y,  3, 3);
+      1, 1, x, y,  3, 3);
   if (hit)
     {
       GtkWidget * widget =
