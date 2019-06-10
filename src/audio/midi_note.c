@@ -288,6 +288,33 @@ midi_note_resize (
 }
 
 /**
+ * Sets the pitch of the MidiNote.
+ */
+void
+midi_note_set_val (
+  MidiNote * midi_note,
+  int        val)
+{
+  /* if currently playing set a note off event. */
+  if (midi_note_hit (
+        midi_note, &PLAYHEAD))
+    {
+      MidiEvents * midi_events =
+        region_get_track (midi_note->region)->
+          channel->piano_roll->midi_events;
+
+      zix_sem_wait (&midi_events->access_sem);
+      midi_events_add_note_off (
+        midi_events, 1,
+        midi_note->val,
+        0, 1);
+      zix_sem_post (&midi_events->access_sem);
+    }
+
+  midi_note->val = val;
+}
+
+/**
  * Generate a MidiNoteWidget for the MidiNote
  * and all its counterparts.
  */

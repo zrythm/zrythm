@@ -353,6 +353,14 @@ midi_note_notes_to_events (
   MidiEvents * events);
 
 /**
+ * Sets the pitch of the MidiNote.
+ */
+void
+midi_note_set_val (
+  MidiNote * midi_note,
+  int        val);
+
+/**
  * Frees each MidiNote stored in obj_info.
  */
 void

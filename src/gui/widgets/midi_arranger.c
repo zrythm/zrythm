@@ -918,7 +918,8 @@ midi_arranger_widget_move_items_y (
           midi_note =
             midi_note_get_main_trans_midi_note (
               MA_SELECTIONS->midi_notes[i]);
-          midi_note->val = midi_note->val + y_delta;
+          midi_note_set_val (
+            midi_note, midi_note->val + y_delta);
           if (midi_note->widget)
             midi_note_widget_update_tooltip (
               midi_note->widget, 0);
