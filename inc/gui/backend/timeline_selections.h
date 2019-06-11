@@ -194,6 +194,14 @@ timeline_selections_contains_region (
   Region *             r);
 
 /**
+ * Returns if the ChordObject is selected or not.
+ */
+int
+timeline_selections_contains_chord (
+  TimelineSelections * self,
+  ChordObject *        c);
+
+/**
  * Adds a Region to the selections.
  */
 void

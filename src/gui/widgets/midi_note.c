@@ -54,7 +54,7 @@ G_DEFINE_TYPE (MidiNoteWidget,
 
 static gboolean
 midi_note_draw_cb (
-  GtkDrawingArea * widget,
+  GtkWidget * widget,
   cairo_t *cr,
   MidiNoteWidget * self)
 {
@@ -66,13 +66,12 @@ midi_note_draw_cb (
   GtkStyleContext *context;
 
   context =
-    gtk_widget_get_style_context (GTK_WIDGET (self));
+    gtk_widget_get_style_context (widget);
 
   width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (self));
+    gtk_widget_get_allocated_width (widget);
   height =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self));
+    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -92,11 +91,8 @@ midi_note_draw_cb (
       if (midi_note_is_selected (self->midi_note))
         {
           cairo_set_source_rgba (
-            cr,
-            1,
-            color->green + 0.2,
-            color->blue + 0.2,
-            1);
+            cr, 1, color->green + 0.2,
+            color->blue + 0.2, 1);
         }
       if (PIANO_ROLL->drum_mode)
         {

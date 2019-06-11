@@ -65,6 +65,18 @@ move_timeline_selections_action_do (
         self->ticks,
         self->delta);
     }
+  ChordObject * chord;
+  for (int i = 0; i < self->ts->num_chords; i++)
+    {
+      /* get the actual chord */
+      chord =
+        chord_object_find (self->ts->chords[i]);
+
+      /* shift it */
+      chord_object_shift (
+        chord,
+        self->ticks);
+    }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
 

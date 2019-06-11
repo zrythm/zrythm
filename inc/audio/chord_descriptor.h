@@ -95,8 +95,35 @@ typedef enum ChordType
   CHORD_TYPE_SUS2,
   CHORD_TYPE_SUS4,
   CHORD_TYPE_DIM,
-  CHORD_TYPE_AUG
+  CHORD_TYPE_AUG,
+  NUM_CHORD_TYPES,
 } ChordType;
+
+#define CHORD_TYPES \
+static const char * chord_type_labels[NUM_CHORD_TYPES] = { \
+  "Maj", \
+  "min", \
+  "7", \
+  "min7", \
+  "Maj7", \
+  "CHORD_TYPE_6", \
+  "CHORD_TYPE_MIN_6", \
+  "CHORD_TYPE_6_9", \
+  "CHORD_TYPE_5", \
+  "9", \
+  "CHORD_TYPE_MIN_9", \
+  "CHORD_TYPE_MAJ_9", \
+  "11", \
+  "min11", \
+  "CHORD_TYPE_13", \
+  "CHORD_TYPE_ADD_2", \
+  "CHORD_TYPE_ADD_9", \
+  "CHORD_TYPE_7_MINUS_5", \
+  "CHORD_TYPE_7_PLUS_5", \
+  "sus2", \
+  "sus4", \
+  "dim", \
+  "aug" }
 
 /**
  * A ChordDescriptor describes a chord and is not
@@ -224,6 +251,13 @@ chord_descriptor_is_equal (
 ChordDescriptor *
 chord_descriptor_clone (
   ChordDescriptor * src);
+
+/**
+ * Returns the chord type as a string (eg. "aug").
+ */
+const char *
+chord_descriptor_chord_type_to_string (
+  ChordType type);
 
 /**
  * Returns the musical note as a string (eg. "C3").

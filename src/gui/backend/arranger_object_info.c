@@ -76,10 +76,14 @@ arranger_object_info_should_be_visible (
   ArrangerWidget * arranger = NULL;
   switch (self->type)
     {
+      /* FIXME fixed for now */
     case AOI_TYPE_REGION:
-    case AOI_TYPE_CHORD:
       arranger =
         Z_ARRANGER_WIDGET (MW_TIMELINE);
+      break;
+    case AOI_TYPE_CHORD:
+      arranger =
+        Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE);
       break;
     case AOI_TYPE_MIDI_NOTE:
       arranger =
@@ -95,7 +99,9 @@ arranger_object_info_should_be_visible (
 
   /* check trans/non-trans visiblity */
   if (ar_prv->action ==
-        UI_OVERLAY_ACTION_MOVING)
+        UI_OVERLAY_ACTION_MOVING ||
+      ar_prv->action ==
+        UI_OVERLAY_ACTION_CREATING_MOVING)
     {
       trans_visible = 1;
       non_trans_visible = 0;

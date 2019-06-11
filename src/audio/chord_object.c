@@ -30,9 +30,9 @@ NOTE_LABELS;
 
 DEFINE_START_POS
 
-#define SET_POS(_c,_pos,_trans_only) \
+#define SET_POS(_c,pos_name,_pos,_trans_only) \
   POSITION_SET_ARRANGER_OBJ_POS ( \
-    chord_object, _c, pos, _pos, _trans_only)
+    chord_object, _c, pos_name, _pos, _trans_only)
 
 /**
  * Init the ChordObject after the Project is loaded.
@@ -54,7 +54,7 @@ chord_object_set_pos (
   const Position * _pos,
   int        trans_only)
 {
-  SET_POS (chord, _pos, trans_only);
+  SET_POS (chord, pos, _pos, trans_only);
 }
 
 /**
@@ -136,6 +136,20 @@ chord_object_clone (
 }
 
 /**
+ * Returns if the ChordObject is in the
+ * TimelineSelections.
+ */
+int
+chord_object_is_selected (
+  ChordObject * self)
+{
+  return timeline_selections_contains_chord (
+           TL_SELECTIONS,
+           chord_object_get_main_chord_object (
+              self));
+}
+
+/**
  * Sets the Track of the chord.
  */
 void
@@ -183,21 +197,31 @@ chord_object_move (
   int      trans_only)
 {
   Position tmp;
-  if (use_cached_pos)
-    position_set_to_pos (
-      &tmp, &chord->cache_pos);
-  else
-    position_set_to_pos (
-      &tmp, &chord->pos);
-  position_add_ticks (
-    &tmp, ticks);
-  if (position_is_before (
-        &tmp, START_POS))
-    return 0;
+  int moved;
+  POSITION_MOVE_BY_TICKS (
+    tmp, use_cached_pos, chord, pos, ticks, moved,
+    trans_only);
 
-  SET_POS (chord, &tmp, trans_only);
+  return moved;
+}
 
-  return 1;
+/**
+ * Shifts the ChordObject by given number of ticks
+ * on x.
+ */
+void
+chord_object_shift (
+  ChordObject * self,
+  long ticks)
+{
+  if (ticks)
+    {
+      Position tmp;
+      position_set_to_pos (
+        &tmp, &self->pos);
+      position_add_ticks (&tmp, ticks);
+      SET_POS (self, pos, (&tmp), F_NO_TRANS_ONLY);
+    }
 }
 
 /**
@@ -206,9 +230,9 @@ chord_object_move (
 void
 chord_object_set_cache_pos (
   ChordObject * chord,
-  const Position * pos)
+  const Position * _pos)
 {
-  SET_POS (chord, pos, F_NO_TRANS_ONLY);
+  SET_POS (chord, cache_pos, _pos, F_NO_TRANS_ONLY);
 }
 
 /**

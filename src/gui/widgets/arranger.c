@@ -1305,13 +1305,12 @@ drag_begin (GtkGestureDrag *   gesture,
 
 
 static void
-drag_update (GtkGestureDrag * gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-               gpointer        user_data)
+drag_update (
+  GtkGestureDrag * gesture,
+  gdouble         offset_x,
+  gdouble         offset_y,
+  ArrangerWidget * self)
 {
-  ArrangerWidget * self =
-    Z_ARRANGER_WIDGET (user_data);
   GET_PRIVATE;
 
   /* state mask needs to be updated */

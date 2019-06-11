@@ -82,7 +82,7 @@ typedef struct _TimelineArrangerWidget
 
   AutomationPoint *        start_ap;
   AutomationCurve *        start_ac;
-  ChordObject *                  start_chord;
+  ChordObject *            start_chord;
 
   int                      last_timeline_obj_bars;
 

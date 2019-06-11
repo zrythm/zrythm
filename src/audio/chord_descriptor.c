@@ -21,7 +21,9 @@
 
 #include "audio/chord_descriptor.h"
 
+/* see chord_desriptor.h */
 NOTE_LABELS;
+CHORD_TYPES;
 
 /**
  * Creates a ChordDescriptor.
@@ -117,6 +119,17 @@ MusicalNote note)
 }
 
 /**
+ * Returns the chord type as a string (eg. "aug").
+ */
+const char *
+chord_descriptor_chord_type_to_string (
+  ChordType type)
+{
+  (void) chord_type_labels;
+  return chord_type_labels[type];
+}
+
+/**
  * Returns the chord in human readable string.
  *
  * MUST be free'd by caller.
@@ -125,9 +138,12 @@ char *
 chord_descriptor_to_string (
   ChordDescriptor * chord)
 {
-  /* TODO */
-
-  return NULL;
+  return g_strdup_printf (
+    "%s%s",
+    chord_descriptor_note_to_string (
+      chord->root_note),
+    chord_descriptor_chord_type_to_string (
+      chord->type));
 }
 
 void

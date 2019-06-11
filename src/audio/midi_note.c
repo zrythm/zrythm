@@ -370,12 +370,17 @@ midi_note_shift (
 {
   if (ticks)
     {
-      position_add_ticks (
-        &self->start_pos,
-        ticks);
-      position_add_ticks (
-        &self->end_pos,
-        ticks);
+      Position tmp;
+      position_set_to_pos (
+        &tmp, &self->start_pos);
+      position_add_ticks (&tmp, ticks);
+      SET_POS (self, start_pos, (&tmp),
+               F_NO_TRANS_ONLY);
+      position_set_to_pos (
+        &tmp, &self->end_pos);
+      position_add_ticks (&tmp, ticks);
+      SET_POS (self, end_pos, (&tmp),
+               F_NO_TRANS_ONLY);
     }
   if (delta)
     self->val += delta;

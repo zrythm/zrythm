@@ -138,6 +138,47 @@
   static const Position * START_POS = &__start_pos;
 
 /**
+ * Moves the Position of an object only has a
+ * start position defined by the argument pos_name
+ * and a cache position
+ * named cache_##pos_name by the given amount of
+ * ticks.
+ *
+ * This also assumes that there is a SET_POS
+ * defined. See audio/chord_object.c for an example.
+ *
+ * This doesn't allow the start position to be
+ * less than 1.1.1.0.
+ *
+ * @param _use_cached An int variable set to 1 for
+ *   using the cached positions or 0 for moving the
+ *   normal positions.
+ * @param _obj The object.
+ * @param _pos_name The name of the position.
+ * @param _ticks The number of ticks to move by.
+ * @param _tmp_pos A Position variable to use for
+ *   calculations so we don't create one in the
+ *   macro.
+ * @param _moved An int variable to hold if the
+ *   move was made or not.
+ * @param trans_only Move transients only.
+ */
+#define POSITION_MOVE_BY_TICKS( \
+  _tmp_pos,_use_cached,_obj,_pos_name,_ticks, \
+  _moved,_trans_only) \
+  if (_use_cached) \
+    position_set_to_pos ( \
+      &_tmp_pos, &_obj->cache_##_pos_name); \
+  else \
+    position_set_to_pos ( \
+      &_tmp_pos, &_obj->_pos_name); \
+  position_add_ticks ( \
+    &_tmp_pos, _ticks); \
+  SET_POS (_obj, _pos_name, &_tmp_pos, \
+           _trans_only); \
+  moved = 1
+
+/**
  * Moves the Position of an object that has a start
  * and end position named start_pos and end_pos and
  * cached positions named cache_start_pos and
@@ -165,29 +206,14 @@
   _tmp_pos,_use_cached,_obj,_ticks,_moved, \
   _trans_only) \
   /* start pos */ \
-  if (_use_cached) \
-    position_set_to_pos ( \
-      &_tmp_pos, &_obj->cache_start_pos); \
-  else \
-    position_set_to_pos ( \
-      &_tmp_pos, &_obj->start_pos); \
-  position_add_ticks ( \
-    &_tmp_pos, _ticks); \
-  SET_POS (_obj, start_pos, &_tmp_pos, \
-           _trans_only); \
+  POSITION_MOVE_BY_TICKS ( \
+    _tmp_pos, _use_cached, _obj, start_pos, \
+    _ticks, _moved, _trans_only); \
   /* end pos */ \
-  if (use_cached_pos) \
-    position_set_to_pos ( \
-      &_tmp_pos, &_obj->cache_end_pos); \
-  else \
-    position_set_to_pos ( \
-      &_tmp_pos, &_obj->end_pos); \
-  position_add_ticks ( \
-    &_tmp_pos, _ticks); \
-  SET_POS (_obj, end_pos, &_tmp_pos, \
-           _trans_only); \
+  POSITION_MOVE_BY_TICKS ( \
+    _tmp_pos, _use_cached, _obj, end_pos, \
+    _ticks, _moved, _trans_only); \
   moved = 1
-
 
 typedef struct SnapGrid SnapGrid;
 typedef struct Track Track;

@@ -237,9 +237,9 @@ timeline_arranger_widget_set_allocation (
       Position tmp;
       position_set_to_pos (&tmp,
                            &cw->chord->pos);
-      position_set_beat (
+      position_set_bar (
         &tmp,
-        tmp.beats + 1);
+        tmp.bars + 1);
       allocation->y = wy;
       allocation->width =
         (ui_pos_to_px_timeline (
@@ -718,7 +718,6 @@ timeline_arranger_widget_on_drag_begin_region_hit (
     region_get_main_region (rw_prv->region);
 
   /* open piano roll */
-  /*Track * track = rw_prv->region->track;*/
   clip_editor_set_region (region);
 
   /* if double click bring up piano roll */
@@ -800,8 +799,7 @@ timeline_arranger_widget_on_drag_begin_region_hit (
             self, region, F_SELECT, F_APPEND);
         }
       /* if ctrl not held & not selected, make it
-       * the only
-       * selection */
+       * the only selection */
       else if (!ar_prv->ctrl_held &&
                !selected)
         {
@@ -831,26 +829,32 @@ timeline_arranger_widget_on_drag_begin_chord_hit (
   /* update arranger action */
   ar_prv->action =
     UI_OVERLAY_ACTION_STARTING_MOVING;
+  /* FIXME cursor should be set automatically */
   ui_set_cursor_from_name (
     GTK_WIDGET (cw), "grabbing");
 
-  /* select/ deselect chords */
-  if (ar_prv->ctrl_held)
+  int selected = chord_object_is_selected (chord);
+
+  /* select chord if unselected */
+  if (P_TOOL == TOOL_SELECT_NORMAL ||
+      P_TOOL == TOOL_SELECT_STRETCH ||
+      P_TOOL == TOOL_EDIT)
     {
-      /* if ctrl pressed toggle on/off */
-      ARRANGER_WIDGET_SELECT_CHORD (
-        self, chord, F_SELECT, F_APPEND);
-    }
-  else if (!array_contains (
-             (void **)TL_SELECTIONS->chords,
-             TL_SELECTIONS->num_chords,
-             chord))
-    {
-      /* else if not already selected select only it */
-      timeline_arranger_widget_select_all (
-        self, 0);
-      ARRANGER_WIDGET_SELECT_CHORD (
-        self, chord, F_SELECT, F_NO_APPEND);
+      /* if ctrl held & not selected, add to
+       * selections */
+      if (ar_prv->ctrl_held && !selected)
+        {
+          ARRANGER_WIDGET_SELECT_CHORD (
+            self, chord, F_SELECT, F_APPEND);
+        }
+      /* if ctrl not held & not selected, make it
+       * the only selection */
+      else if (!ar_prv->ctrl_held &&
+               !selected)
+        {
+          ARRANGER_WIDGET_SELECT_CHORD (
+            self, chord, F_SELECT, F_NO_APPEND);
+        }
     }
 }
 
@@ -1578,10 +1582,11 @@ timeline_arranger_widget_move_items_x (
   int                      copy_moving)
 {
   timeline_selections_add_ticks (
-    TL_SELECTIONS, ticks_diff, F_USE_CACHED,
-    copy_moving);
+    TL_SELECTIONS, ticks_diff, F_USE_CACHED, 1);
 
   EVENTS_PUSH (ET_REGION_POSITIONS_CHANGED,
+               NULL);
+  EVENTS_PUSH (ET_CHORD_POSITIONS_CHANGED,
                NULL);
 }
 
@@ -1922,20 +1927,21 @@ timeline_arranger_widget_on_drag_end (
   else if (ar_prv->action ==
              UI_OVERLAY_ACTION_MOVING)
     {
-      Region * main_region =
-        TL_SELECTIONS->regions[0]->obj_info.main;
-      Region * main_trans_region =
-        TL_SELECTIONS->regions[0]->obj_info.
-          main_trans;
-      /* FIXME only checks regions */
+      Position earliest_trans_pos;
+      timeline_selections_get_start_pos (
+        TL_SELECTIONS,
+        &earliest_trans_pos, 1);
+      /*position_print_simple (&earliest_trans_pos);*/
+      /*position_print_simple (*/
+        /*&ar_prv->earliest_obj_start_pos);*/
       UndoableAction * ua =
         (UndoableAction *)
         move_timeline_selections_action_new (
           TL_SELECTIONS,
           position_to_ticks (
-            &main_trans_region->start_pos) -
+            &earliest_trans_pos) -
           position_to_ticks (
-            &main_region->start_pos),
+            &ar_prv->earliest_obj_start_pos),
           timeline_selections_get_highest_track (
             TL_SELECTIONS, F_TRANSIENTS) -
           timeline_selections_get_highest_track (
@@ -2063,12 +2069,25 @@ add_children_from_chord_track (
   TimelineArrangerWidget * self,
   ChordTrack *             ct)
 {
-  for (int i = 0; i < ct->num_chords; i++)
+  int i, k;
+  for (i = 0; i < ct->num_chords; i++)
     {
-      ChordObject * chord = ct->chords[i];
-      gtk_overlay_add_overlay (
-        GTK_OVERLAY (self),
-        GTK_WIDGET (chord->widget));
+      ChordObject * c = ct->chords[i];
+      for (k = 0 ; k < 2; k++)
+        {
+          if (k == 0)
+            c = chord_object_get_main_chord_object (c);
+          else if (k == 1)
+            c = chord_object_get_main_trans_chord_object (c);
+
+          if (!c->widget)
+            c->widget =
+              chord_object_widget_new (c);
+
+          gtk_overlay_add_overlay (
+            GTK_OVERLAY (self),
+            GTK_WIDGET (c->widget));
+        }
     }
 }
 

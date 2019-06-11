@@ -512,6 +512,22 @@ timeline_selections_contains_region (
 }
 
 /**
+ * Returns if the ChordObject is selected or not.
+ */
+int
+timeline_selections_contains_chord (
+  TimelineSelections * self,
+  ChordObject *        c)
+{
+  if (array_contains (self->chords,
+                      self->num_chords,
+                      c))
+    return 1;
+
+  return 0;
+}
+
+/**
  * Clears selections.
  */
 void

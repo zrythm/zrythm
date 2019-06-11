@@ -22,83 +22,68 @@
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/chord_object.h"
 #include "project.h"
+#include "utils/cairo.h"
 #include "utils/ui.h"
 
-G_DEFINE_TYPE (ChordObjectWidget,
-               chord_object_widget,
-               GTK_TYPE_BOX)
-
-static void
-draw_text (cairo_t *cr, char * name)
-{
-#define FONT "Sans Bold 9"
-
-  PangoLayout *layout;
-  PangoFontDescription *desc;
-  /*int i;*/
-
-  cairo_translate (cr, 2, 2);
-
-  /* Create a PangoLayout, set the font and text */
-  layout = pango_cairo_create_layout (cr);
-
-  pango_layout_set_text (layout, name, -1);
-  desc = pango_font_description_from_string (FONT);
-  pango_layout_set_font_description (layout, desc);
-  pango_font_description_free (desc);
-
-  cairo_set_source_rgb (cr, 0, 0, 0);
-
-  /* Inform Pango to re-layout the text with the new transformation */
-  /*pango_cairo_update_layout (cr, layout);*/
-
-  /*pango_layout_get_size (layout, &width, &height);*/
-  /*cairo_move_to (cr, - ((double)width / PANGO_SCALE) / 2, - RADIUS);*/
-  pango_cairo_show_layout (cr, layout);
-
-
-  /* free the layout object */
-  g_object_unref (layout);
-}
-
+G_DEFINE_TYPE (
+  ChordObjectWidget,
+  chord_object_widget,
+  GTK_TYPE_BOX)
 
 static gboolean
 chord_draw_cb (
   GtkWidget * widget,
-  cairo_t *cr,
+  cairo_t *   cr,
   ChordObjectWidget * self)
 {
   guint width, height;
   GtkStyleContext *context;
 
   context =
-    gtk_widget_get_style_context (GTK_WIDGET (self));
+    gtk_widget_get_style_context (widget);
 
   width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (self));
+    gtk_widget_get_allocated_width (widget);
   height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+    gtk_widget_get_allocated_height (widget);
 
-  gtk_render_background (context, cr, 0, 0, width, height);
+  gtk_render_background (
+    context, cr, 0, 0, width, height);
 
   GdkRGBA * color = &P_CHORD_TRACK->color;
-  cairo_set_source_rgba (cr,
-                         color->red - 0.06,
-                         color->green - 0.06,
-                         color->blue - 0.06,
-                         0.7);
-  cairo_rectangle(cr, 0, 0, width, height);
+  cairo_set_source_rgba (
+    cr, color->red, color->green, color->blue,
+    chord_object_is_transient (self->chord) ?
+      0.7 : 1);
+  if (chord_object_is_selected (self->chord))
+    {
+      cairo_set_source_rgba (
+        cr, 1, color->green + 0.2,
+        color->blue + 0.2, 1);
+    }
+  z_cairo_rounded_rectangle (
+    cr, 0, 0, width, height, 1.0, 4.0);
   cairo_fill(cr);
-  cairo_set_source_rgba (cr,
-                         color->red,
-                         color->green,
-                         color->blue,
-                         1.0);
-  cairo_rectangle(cr, 0, 0, width, height);
-  cairo_set_line_width (cr, 3.5);
-  cairo_stroke (cr);
 
-  draw_text (cr, "A min");
+  char * str =
+    chord_descriptor_to_string (
+      self->chord->descr);
+  if (DEBUGGING &&
+      chord_object_is_transient (self->chord))
+    {
+      char * tmp =
+        g_strdup_printf (
+          "%s [t]", str);
+      g_free (str);
+      str = tmp;
+    }
+
+  GdkRGBA c2;
+  gdk_rgba_parse (&c2, "#323232");
+  cairo_set_source_rgba (
+    cr, c2.red, c2.green, c2.blue, 1.0);
+  z_cairo_draw_text (cr, str);
+  g_free (str);
 
  return FALSE;
 }
@@ -176,7 +161,7 @@ chord_object_widget_class_init (
   GtkWidgetClass * klass =
     GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
-    klass, "chord-object");
+    klass, "chord");
 }
 
 static void

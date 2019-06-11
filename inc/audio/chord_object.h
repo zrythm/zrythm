@@ -191,6 +191,23 @@ chord_object_set_pos (
   int        trans_only);
 
 /**
+ * Returns if the ChordObject is in the
+ * TimelineSelections.
+ */
+int
+chord_object_is_selected (
+  ChordObject * self);
+
+/**
+ * Shifts the ChordObject by given number of ticks
+ * on x.
+ */
+void
+chord_object_shift (
+  ChordObject * self,
+  long ticks);
+
+/**
  * Moves the ChordObject by the given amount of
  * ticks.
  *
