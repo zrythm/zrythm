@@ -47,6 +47,13 @@
           </object>
         </child>
         <child>
+          <object class="PianoRollToolbarWidget"
+            id="piano_roll_toolbar">
+            <property name="visible">1</property>
+            <property name="vexpand">0</property>
+          </object>
+        </child>
+        <child>
           <object class="PianoRollWidget" id="piano_roll">
             <property name="visible">1</property>
           </object>

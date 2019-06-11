@@ -915,8 +915,13 @@ events_process (void * data)
           midi_arranger_widget_refresh_children (
             MIDI_ARRANGER);
           break;
+        case ET_PIANO_ROLL_HIGHLIGHTING_CHANGED:
+          piano_roll_widget_refresh (
+            MW_PIANO_ROLL);
+          break;
         case ET_REGION_CREATED:
         case ET_CHORD_CREATED:
+        case ET_SCALE_CREATED:
         case ET_CHORD_REMOVED:
           arranger_widget_refresh (
             Z_ARRANGER_WIDGET (MW_TIMELINE));

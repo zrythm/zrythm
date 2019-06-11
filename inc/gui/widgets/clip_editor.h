@@ -41,6 +41,8 @@ G_DECLARE_FINAL_TYPE (ClipEditorWidget,
 typedef struct _PianoRollWidget PianoRollWidget;
 typedef struct _PianoRollSelectionInfoWidget
   PianoRollSelectionInfoWidget;
+typedef struct _PianoRollToolbarWidget
+  PianoRollToolbarWidget;
 typedef struct _AudioClipEditorWidget
   AudioClipEditorWidget;
 typedef struct ClipEditor ClipEditor;
@@ -56,6 +58,7 @@ typedef struct _ClipEditorWidget
   GtkStack                 parent_instance;
   GtkBox *                 piano_roll_box;
   PianoRollSelectionInfoWidget * piano_roll_selections;
+  PianoRollToolbarWidget * piano_roll_toolbar;
   PianoRollWidget *        piano_roll;
   AudioClipEditorWidget *  audio_clip_editor;
   GtkLabel *               no_selection_label;

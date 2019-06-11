@@ -246,6 +246,17 @@ chord_descriptor_is_equal (
 }
 
 /**
+ * Returns if the given key is in the chord
+ * represented by the given ChordDescriptor.
+ *
+ * @param key A note inside a single octave (0-11).
+ */
+int
+chord_descriptor_is_key_in_chord (
+  ChordDescriptor * chord,
+  MusicalNote       key);
+
+/**
  * Clones the given ChordDescriptor.
  */
 ChordDescriptor *

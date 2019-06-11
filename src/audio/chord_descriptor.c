@@ -130,6 +130,31 @@ chord_descriptor_chord_type_to_string (
 }
 
 /**
+ * Returns if the given key is in the chord
+ * represented by the given ChordDescriptor.
+ *
+ * @param key A note inside a single octave (0-11).
+ */
+int
+chord_descriptor_is_key_in_chord (
+  ChordDescriptor * chord,
+  MusicalNote       key)
+{
+  if ((chord->has_bass &&
+      chord->bass_note == key) ||
+      chord->root_note == key)
+    return 1;
+
+  for (int i = 0; i < 36; i++)
+    {
+      if (chord->notes[i] == 1 &&
+          i % 12 == key)
+        return 1;
+    }
+  return 0;
+}
+
+/**
  * Returns the chord in human readable string.
  *
  * MUST be free'd by caller.

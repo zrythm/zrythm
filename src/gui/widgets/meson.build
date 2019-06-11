@@ -80,6 +80,7 @@ widget_srcs = [
   'piano_roll.c',
   'piano_roll_key.c',
   'piano_roll_key_label.c',
+  'piano_roll_toolbar.c',
   'plugin_browser.c',
   'port_connection_row.c',
   'port_connections_button.c',

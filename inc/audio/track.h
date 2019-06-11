@@ -202,10 +202,23 @@ typedef struct Track
   /* ==== INSTRUMENT & AUDIO TRACK END ==== */
 
   /* ==== CHORD TRACK ==== */
+
+  /**
+   * ChordObject's.
+   *
+   * Note: these must always be sorted by Position.
+   */
   ChordObject *       chords[600];
   int                 num_chords;
+
+  /**
+   * ScaleObject's.
+   *
+   * Note: these must always be sorted by Position.
+   */
   ScaleObject *       scales[600];
   int                 num_scales;
+
   /* ==== CHORD TRACK END ==== */
 
   /* ---- MARKER TRACK ---- */

@@ -67,11 +67,24 @@ midi_note_descriptor_set_custom_name (
 }
 
 void
+piano_roll_set_highlighting (
+  PianoRoll * self,
+  PianoRollHighlighting highlighting)
+{
+  self->highlighting = highlighting;
+
+  EVENTS_PUSH (ET_PIANO_ROLL_HIGHLIGHTING_CHANGED,
+               NULL);
+}
+
+void
 piano_roll_init (PianoRoll * self)
 {
   self->notes_zoom = 3;
 
   self->midi_modifier = MIDI_MODIFIER_VELOCITY;
+
+  self->highlighting = PR_HIGHLIGHT_BOTH;
 
   MidiNoteDescriptor * descr;
   int idx = 0;

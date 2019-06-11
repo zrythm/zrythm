@@ -90,6 +90,39 @@ chord_track_remove_scale (
   ChordTrack *  self,
   ScaleObject * scale);
 
+/**
+ * Returns the current chord.
+ */
+#define chord_track_get_chord_at_playhead(ct) \
+  chord_track_get_chord_at_pos (ct, &PLAYHEAD)
+
+/**
+ * Returns the ChordObject at the given Position
+ * in the TimelineArranger.
+ */
+ChordObject *
+chord_track_get_chord_at_pos (
+  const Track * ct,
+  const Position * pos);
+
+/**
+ * Returns the current scale.
+ */
+#define chord_track_get_scale_at_playhead(ct) \
+  chord_track_get_scale_at_pos (ct, &PLAYHEAD)
+
+/**
+ * Returns the ScaleObject at the given Position
+ * in the TimelineArranger.
+ */
+ScaleObject *
+chord_track_get_scale_at_pos (
+  const Track * ct,
+  const Position * pos);
+
+/**
+ * Frees the chord Track.
+ */
 void
 chord_track_free (ChordTrack * self);
 

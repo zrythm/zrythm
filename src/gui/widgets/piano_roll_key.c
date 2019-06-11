@@ -17,6 +17,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/chord_descriptor.h"
+#include "audio/chord_object.h"
+#include "audio/chord_track.h"
 #include "audio/midi.h"
 #include "gui/backend/clip_editor.h"
 #include "gui/backend/piano_roll.h"
@@ -81,6 +84,25 @@ piano_roll_key_draw_cb (
     cr, 0, 0,
     width, height);
   cairo_fill (cr);
+
+  /* highlight if in chord */
+  ChordObject * co =
+    chord_track_get_chord_at_playhead (
+      P_CHORD_TRACK);
+  if ((PIANO_ROLL->highlighting ==
+        PR_HIGHLIGHT_CHORD ||
+      PIANO_ROLL->highlighting ==
+        PR_HIGHLIGHT_BOTH) && co)
+    {
+      if (chord_descriptor_is_key_in_chord (
+            co->descr, self->descr->value % 12))
+        {
+          cairo_set_source_rgba (cr, 1, 0.3, 0, 0.6);
+          cairo_rectangle (
+            cr, 0, 0, width, height);
+          cairo_fill (cr);
+        }
+    }
 
   /* add shade if currently pressed note */
   if (PIANO_ROLL->current_note &&

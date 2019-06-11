@@ -17,10 +17,22 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Piano roll backend.
+ */
+
 #ifndef __AUDIO_PIANO_ROLL_H__
 #define __AUDIO_PIANO_ROLL_H__
 
 #include <cyaml/cyaml.h>
+
+/**
+ * @addtogroup gui_backend
+ *
+ * @{
+ */
 
 #define PIANO_ROLL (&CLIP_EDITOR->piano_roll)
 
@@ -74,6 +86,9 @@ static const char * drum_labels[47] = { \
     "Mute Triangle", \
     "Open Triangle" }
 
+/**
+ * A MIDI modifier to use to display data for.
+ */
 typedef enum MidiModifier
 {
   MIDI_MODIFIER_VELOCITY,
@@ -81,6 +96,18 @@ typedef enum MidiModifier
   MIDI_MODIFIER_MOD_WHEEL,
   MIDI_MODIFIER_AFTERTOUCH,
 } MidiModifier;
+
+
+/**
+ * Highlighting for the piano roll.
+ */
+typedef enum PianoRollHighlighting
+{
+  PR_HIGHLIGHT_NONE,
+  PR_HIGHLIGHT_CHORD,
+  PR_HIGHLIGHT_SCALE,
+  PR_HIGHLIGHT_BOTH,
+} PianoRollHighlighting;
 
 typedef struct Region Region;
 
@@ -157,6 +184,12 @@ typedef struct PianoRoll
   MidiNoteDescriptor piano_descriptors[128];
 
   /**
+   * Highlighting notes depending on the current
+   * chord or scale.
+   */
+  PianoRollHighlighting highlighting;
+
+  /**
    * Drum mode descriptors.
    *
    * These must be sorted by index at all times.
@@ -231,6 +264,17 @@ midi_note_descriptor_set_custom_name (
   MidiNoteDescriptor * descr,
   char *               str);
 
+/**
+ * Updates the highlighting and notifies the UI.
+ */
+void
+piano_roll_set_highlighting (
+  PianoRoll * self,
+  PianoRollHighlighting highlighting);
+
+/**
+ * Gets the visible notes.
+ */
 static inline void
 piano_roll_get_visible_notes (
   PianoRoll * self,
@@ -260,7 +304,14 @@ piano_roll_get_visible_notes (
     }
 }
 
+/**
+ * Initializes the PianoRoll.
+ */
 void
 piano_roll_init (PianoRoll * self);
+
+/**
+ * @}
+ */
 
 #endif

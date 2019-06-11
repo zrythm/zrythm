@@ -111,6 +111,46 @@ chord_track_add_scale (
 }
 
 /**
+ * Returns the ScaleObject at the given Position
+ * in the TimelineArranger.
+ */
+ScaleObject *
+chord_track_get_scale_at_pos (
+  const Track * ct,
+  const Position * pos)
+{
+  ScaleObject * scale = NULL;
+  for (int i = ct->num_scales - 1; i >= 0; i--)
+    {
+      scale = ct->scales[i];
+      if (position_is_before_or_equal (
+            &scale->pos, pos))
+        return scale;
+    }
+  return NULL;
+}
+
+/**
+ * Returns the ChordObject at the given Position
+ * in the TimelineArranger.
+ */
+ChordObject *
+chord_track_get_chord_at_pos (
+  const Track * ct,
+  const Position * pos)
+{
+  ChordObject * chord = NULL;
+  for (int i = ct->num_chords - 1; i >= 0; i--)
+    {
+      chord = ct->chords[i];
+      if (position_is_before_or_equal (
+            &chord->pos, pos))
+        return chord;
+    }
+  return NULL;
+}
+
+/**
  * Removes a chord from the chord Track.
  */
 void

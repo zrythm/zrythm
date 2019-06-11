@@ -77,6 +77,18 @@ move_timeline_selections_action_do (
         chord,
         self->ticks);
     }
+  ScaleObject * scale;
+  for (int i = 0; i < self->ts->num_scales; i++)
+    {
+      /* get the actual chord */
+      scale =
+        scale_object_find (self->ts->scales[i]);
+
+      /* shift it */
+      scale_object_shift (
+        scale,
+        self->ticks);
+    }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
 

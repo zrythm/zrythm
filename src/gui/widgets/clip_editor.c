@@ -23,6 +23,7 @@
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/piano_roll.h"
 #include "gui/widgets/piano_roll_selection_info.h"
+#include "gui/widgets/piano_roll_toolbar.h"
 #include "utils/resources.h"
 
 G_DEFINE_TYPE (ClipEditorWidget,
@@ -54,6 +55,7 @@ clip_editor_widget_init (ClipEditorWidget * self)
   g_type_ensure (PIANO_ROLL_WIDGET_TYPE);
   g_type_ensure (AUDIO_CLIP_EDITOR_WIDGET_TYPE);
   g_type_ensure (PIANO_ROLL_SELECTION_INFO_WIDGET_TYPE);
+  g_type_ensure (PIANO_ROLL_TOOLBAR_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 }
@@ -77,6 +79,10 @@ clip_editor_widget_class_init (
     klass,
     ClipEditorWidget,
     piano_roll_selections);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ClipEditorWidget,
+    piano_roll_toolbar);
   gtk_widget_class_bind_template_child (
     klass,
     ClipEditorWidget,
