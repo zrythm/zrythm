@@ -32,6 +32,15 @@
 
 #include "audio/chord_descriptor.h"
 
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
+
+/**
+ * Scale type (name) eg Aeolian.
+ */
 typedef enum MusicalScaleType
 {
   SCALE_ACOUSTIC,
@@ -255,21 +264,36 @@ typedef enum MusicalScaleType
  */
 typedef struct MusicalScale
 {
-  MusicalScaleType           type; ///< enum identification of scale
-  MusicalNote                root_key;
+  /** Identification of the scale (e.g. AEOLIAN). */
+  MusicalScaleType   type;
 
-  /* TODO maybe remove this functionality */
-  int                        has_asc_desc; ///< flag if scale has different notes
-                                          ///< when ascending and descending
+  /** Root key of the scale. */
+  MusicalNote        root_key;
 
-  int                    notes[12]; ///< notes in scale, not used if flag above
-                                        ///< is 1
-  int                    notes_asc[12]; ///< notes when ascending
-  int                     notes_desc[12]; ///< notes when descending
-  ChordDescriptor *       default_chords[12]; ///< default chords, as many as
-                                                  ///< the notes in the scale
-                                                  ///< triads with base note
-  int                        num_notes; ///< number of notes (1s)
+  /** Flag if scale has different notes when
+   * ascending and descending. */
+  int                has_asc_desc;
+
+  /** Notes in the scale (if has_asc_desc is 0). */
+  int                notes[12];
+
+  /** Notes when ascending (if has_asc_desc is 1). */
+  int                notes_asc[12];
+
+  /** Notes when descending (if has_asc_desc is
+   * 0). */
+  int                notes_desc[12];
+
+  /**
+   * Default triad chords with base note, as many
+   * as the notes in the scale.
+   *
+   * Triads with base note.
+   */
+  ChordDescriptor *  default_chords[12];
+
+  /** Note count (1s). */
+  int                num_notes;
 } MusicalScale;
 
 static const cyaml_strval_t
@@ -311,8 +335,37 @@ static const cyaml_schema_value_t
  * Creates new scale using type and root note.
  */
 MusicalScale *
-musical_scale_new (MusicalScaleType      type,
-                   MusicalNote           root);
+musical_scale_new (
+  MusicalScaleType type,
+  MusicalNote      root);
+
+/**
+ * Clones the scale.
+ */
+MusicalScale *
+musical_scale_clone (
+  MusicalScale * src);
+
+/**
+ * Prints the MusicalScale to a string.
+ *
+ * MUST be free'd.
+ */
+char *
+musical_scale_to_string (
+  MusicalScale * scale);
+
+/**
+ * Returns 1 if the scales are equal.
+ */
+static int
+musical_scale_is_equal (
+  MusicalScale * a,
+  MusicalScale * b)
+{
+  /* TODO */
+  return a->type == b->type;
+}
 
 /**
  * Returns the scale in human readable string.
@@ -320,6 +373,18 @@ musical_scale_new (MusicalScaleType      type,
  * MUST be free'd by caller.
  */
 char *
-musical_scale_as_string (MusicalScale * scale);
+musical_scale_as_string (
+  MusicalScale * scale);
+
+/**
+ * Frees the MusicalScale.
+ */
+void
+musical_scale_free (
+  MusicalScale * scale);
+
+/**
+ * @}
+ */
 
 #endif

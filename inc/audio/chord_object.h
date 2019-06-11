@@ -20,9 +20,7 @@
 /**
  * \file
  *
- * Chord related code.
- * See https://www.scales-chords.com
- * https://www.basicmusictheory.com/c-harmonic-minor-triad-chords
+ * Chord object in the TimelineArranger.
  */
 
 #ifndef __AUDIO_CHORD_OBJECT_H__

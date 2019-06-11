@@ -140,7 +140,7 @@ create_default (Project * self)
 
   /* init pinned tracks */
   Track * track =
-    chord_track_default ();
+    chord_track_new ();
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);

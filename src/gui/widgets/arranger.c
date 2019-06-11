@@ -53,6 +53,7 @@
 #include "gui/widgets/piano_roll.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
+#include "gui/widgets/scale_object.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/timeline_ruler.h"
@@ -537,6 +538,12 @@ arranger_widget_select (
             (void **) TL_SELECTIONS->chords;
           num = &TL_SELECTIONS->num_chords;
         }
+      else if (type == SCALE_OBJECT_WIDGET_TYPE)
+        {
+          array =
+            (void **) TL_SELECTIONS->scales;
+          num = &TL_SELECTIONS->num_scales;
+        }
     }
   if (midi_arranger)
     {
@@ -570,6 +577,10 @@ arranger_widget_select (
             chord_object_widget_select (
               ((ChordObject *)r)->widget,
               F_NO_SELECT);
+          else if (type == SCALE_OBJECT_WIDGET_TYPE)
+            scale_object_widget_select (
+              ((ScaleObject *)r)->widget,
+              F_NO_SELECT);
           else if (type ==
                      AUTOMATION_POINT_WIDGET_TYPE)
             automation_point_widget_select (
@@ -597,6 +608,10 @@ arranger_widget_select (
         chord_object_widget_select (
           ((ChordObject *)child)->widget,
           F_NO_SELECT);
+      else if (type == SCALE_OBJECT_WIDGET_TYPE)
+        scale_object_widget_select (
+          ((ScaleObject *)child)->widget,
+          F_NO_SELECT);
       else if (type == AUTOMATION_POINT_WIDGET_TYPE)
         automation_point_widget_select (
           ((AutomationPoint *)child)->widget,
@@ -618,6 +633,10 @@ arranger_widget_select (
       else if (type == CHORD_OBJECT_WIDGET_TYPE)
         chord_object_widget_select (
           ((ChordObject *)child)->widget,
+          F_SELECT);
+      else if (type == SCALE_OBJECT_WIDGET_TYPE)
+        scale_object_widget_select (
+          ((ScaleObject *)child)->widget,
           F_SELECT);
       else if (type == AUTOMATION_POINT_WIDGET_TYPE)
         automation_point_widget_select (
@@ -1051,10 +1070,15 @@ create_item (ArrangerWidget * self,
             case TRACK_TYPE_MASTER:
               break;
             case TRACK_TYPE_CHORD:
-              timeline_arranger_widget_create_chord (
+              timeline_arranger_widget_create_chord_or_scale (
                 timeline,
                 track,
+                start_y,
                 &pos);
+              /*timeline_arranger_widget_create_chord (*/
+                /*timeline,*/
+                /*track,*/
+                /*&pos);*/
             case TRACK_TYPE_BUS:
               break;
             case TRACK_TYPE_GROUP:
@@ -1125,6 +1149,7 @@ drag_begin (GtkGestureDrag *   gesture,
   AutomationCurveWidget * ac_widget = NULL;
   AutomationPointWidget * ap_widget = NULL;
   ChordObjectWidget *     chord_widget = NULL;
+  ScaleObjectWidget *     scale_widget = NULL;
   VelocityWidget *        vel_widget = NULL;
   if (midi_arranger)
     {
@@ -1155,12 +1180,16 @@ drag_begin (GtkGestureDrag *   gesture,
       chord_widget =
         timeline_arranger_widget_get_hit_chord (
           timeline, start_x, start_y);
+      scale_widget =
+        timeline_arranger_widget_get_hit_scale (
+          timeline, start_x, start_y);
     }
 
   /* if something is hit */
   int is_hit =
     midi_note_widget || rw || ac_widget ||
-    ap_widget || chord_widget || vel_widget;
+    ap_widget || chord_widget || vel_widget ||
+    scale_widget;
   if (is_hit)
     {
       /* set selections, positions, actions, cursor */
@@ -1184,6 +1213,13 @@ drag_begin (GtkGestureDrag *   gesture,
             timeline,
             start_x,
             chord_widget);
+        }
+      else if (scale_widget)
+        {
+          timeline_arranger_widget_on_drag_begin_scale_hit (
+            timeline,
+            start_x,
+            scale_widget);
         }
       else if (ap_widget)
         {

@@ -42,6 +42,7 @@
 #include "audio/master_track.h"
 #include "audio/midi_region.h"
 #include "audio/mixer.h"
+#include "audio/scale_object.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "audio/transport.h"
@@ -62,6 +63,7 @@
 #include "gui/widgets/pinned_tracklist.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/region.h"
+#include "gui/widgets/scale_object.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
@@ -240,14 +242,52 @@ timeline_arranger_widget_set_allocation (
       position_set_bar (
         &tmp,
         tmp.bars + 1);
-      allocation->y = wy;
       allocation->width =
         (ui_pos_to_px_timeline (
           &tmp,
           1) - allocation->x) - 1;
-      allocation->height =
+
+      int track_height =
         gtk_widget_get_allocated_height (
           GTK_WIDGET (track->widget));
+      allocation->y = wy;
+      allocation->height =
+        track_height / 2.0;
+    }
+  else if (Z_IS_SCALE_OBJECT_WIDGET (widget))
+    {
+      ScaleObjectWidget * cw =
+        Z_SCALE_OBJECT_WIDGET (widget);
+      Track * track = P_CHORD_TRACK;
+
+      gint wx, wy;
+      gtk_widget_translate_coordinates (
+        GTK_WIDGET (track->widget),
+        GTK_WIDGET (self),
+        0, 0, &wx, &wy);
+
+      allocation->x =
+        ui_pos_to_px_timeline (
+          &cw->scale->pos,
+          1);
+      Position tmp;
+      position_set_to_pos (&tmp,
+                           &cw->scale->pos);
+      position_set_bar (
+        &tmp,
+        tmp.bars + 1);
+      allocation->width =
+        (ui_pos_to_px_timeline (
+          &tmp,
+          1) - allocation->x) - 1;
+
+      int track_height =
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (track->widget));
+      allocation->y =
+        track_height / 2.0;
+      allocation->height =
+        track_height / 2.0;
     }
 }
 
@@ -280,11 +320,16 @@ timeline_arranger_widget_get_cursor (
               self,
               ar_prv->hover_x,
               ar_prv->hover_y);
+          ScaleObjectWidget * sw =
+            timeline_arranger_widget_get_hit_scale (
+              self,
+              ar_prv->hover_x,
+              ar_prv->hover_y);
 
           REGION_WIDGET_GET_PRIVATE (rw);
           /* TODO aps */
 
-          int is_hit = rw || cw;
+          int is_hit = rw || cw || sw;
           int is_resize_l =
             rw && rw_prv->resize_l;
           int is_resize_r =
@@ -495,6 +540,25 @@ timeline_arranger_widget_get_hit_chord (
   return NULL;
 }
 
+ScaleObjectWidget *
+timeline_arranger_widget_get_hit_scale (
+  TimelineArrangerWidget *  self,
+  double                    x,
+  double                    y)
+{
+  GtkWidget * widget =
+    ui_get_hit_child (
+      GTK_CONTAINER (self),
+      x,
+      y,
+      SCALE_OBJECT_WIDGET_TYPE);
+  if (widget)
+    {
+      return Z_SCALE_OBJECT_WIDGET (widget);
+    }
+  return NULL;
+}
+
 RegionWidget *
 timeline_arranger_widget_get_hit_region (
   TimelineArrangerWidget *  self,
@@ -620,12 +684,20 @@ timeline_arranger_widget_select_all (
     }
 
   /* select chords */
-  ChordTrack * ct = P_CHORD_TRACK;
+  Track * ct = P_CHORD_TRACK;
   for (int i = 0; i < ct->num_chords; i++)
     {
       ChordObject * chord = ct->chords[i];
       chord_object_widget_select (
         chord->widget, select);
+    }
+
+  /* select scales */
+  for (int i = 0; i < ct->num_scales; i++)
+    {
+      ScaleObject * scale = ct->scales[i];
+      scale_object_widget_select (
+        scale->widget, select);
     }
 
   /**
@@ -703,6 +775,11 @@ timeline_arranger_widget_update_visibility (
     TL_SELECTIONS->num_chords,
     ChordObject,
     chord);
+  ARRANGER_SET_OBJ_VISIBILITY_ARRAY (
+    TL_SELECTIONS->scales,
+    TL_SELECTIONS->num_scales,
+    ScaleObject,
+    scale);
 }
 
 void
@@ -854,6 +931,55 @@ timeline_arranger_widget_on_drag_begin_chord_hit (
         {
           ARRANGER_WIDGET_SELECT_CHORD (
             self, chord, F_SELECT, F_NO_APPEND);
+        }
+    }
+}
+
+void
+timeline_arranger_widget_on_drag_begin_scale_hit (
+  TimelineArrangerWidget * self,
+  double                   start_x,
+  ScaleObjectWidget *      cw)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  /* if double click */
+  if (ar_prv->n_press == 2)
+    {
+      /* TODO */
+    }
+
+  ScaleObject * scale = cw->scale;
+  self->start_scale = scale;
+
+  /* update arranger action */
+  ar_prv->action =
+    UI_OVERLAY_ACTION_STARTING_MOVING;
+  /* FIXME cursor should be set automatically */
+  ui_set_cursor_from_name (
+    GTK_WIDGET (cw), "grabbing");
+
+  int selected = scale_object_is_selected (scale);
+
+  /* select scale if unselected */
+  if (P_TOOL == TOOL_SELECT_NORMAL ||
+      P_TOOL == TOOL_SELECT_STRETCH ||
+      P_TOOL == TOOL_EDIT)
+    {
+      /* if ctrl held & not selected, add to
+       * selections */
+      if (ar_prv->ctrl_held && !selected)
+        {
+          ARRANGER_WIDGET_SELECT_SCALE (
+            self, scale, F_SELECT, F_APPEND);
+        }
+      /* if ctrl not held & not selected, make it
+       * the only selection */
+      else if (!ar_prv->ctrl_held &&
+               !selected)
+        {
+          ARRANGER_WIDGET_SELECT_SCALE (
+            self, scale, F_SELECT, F_NO_APPEND);
         }
     }
 }
@@ -1017,6 +1143,38 @@ timeline_arranger_widget_create_region (
 }
 
 /**
+ * Wrapper for
+ * timeline_arranger_widget_create_chord() or
+ * timeline_arranger_widget_create_scale().
+ *
+ * @param y the y relative to the
+ *   TimelineArrangerWidget.
+ */
+void
+timeline_arranger_widget_create_chord_or_scale (
+  TimelineArrangerWidget * self,
+  Track *                  track,
+  double                   y,
+  const Position *         pos)
+{
+  int track_height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (track->widget));
+  gint wy;
+  gtk_widget_translate_coordinates (
+    GTK_WIDGET (self),
+    GTK_WIDGET (track->widget),
+    0, y, NULL, &wy);
+
+  if (y >= track_height / 2.0)
+    timeline_arranger_widget_create_scale (
+      self, track, pos);
+  else
+    timeline_arranger_widget_create_chord (
+      self, track, pos);
+}
+
+/**
  * Create a ChordObject at the given Position in the
  * given Track.
  *
@@ -1056,6 +1214,49 @@ timeline_arranger_widget_create_chord (
   EVENTS_PUSH (ET_CHORD_CREATED, chord);
   ARRANGER_WIDGET_SELECT_CHORD (
     self, chord, F_SELECT,
+    F_NO_APPEND);
+}
+
+/**
+ * Create a ScaleObject at the given Position in the
+ * given Track.
+ *
+ * @param pos The pre-snapped position.
+ */
+void
+timeline_arranger_widget_create_scale (
+  TimelineArrangerWidget * self,
+  Track *            track,
+  const Position *         pos)
+{
+  g_warn_if_fail (track->type == TRACK_TYPE_CHORD);
+
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  ar_prv->action =
+    UI_OVERLAY_ACTION_CREATING_MOVING;
+
+  /* create a new scale */
+  MusicalScale * descr =
+    musical_scale_new (
+      SCALE_AEOLIAN, NOTE_A);
+  ScaleObject * scale =
+    scale_object_new (
+      descr, 1);
+
+  /* add it to scale track */
+  chord_track_add_scale (track, scale, 1);
+
+  /* set visibility */
+  arranger_object_info_set_widget_visibility (
+    &scale->obj_info, 1);
+
+  scale_object_set_pos (
+    scale, pos, F_NO_TRANS_ONLY);
+
+  EVENTS_PUSH (ET_SCALE_CREATED, scale);
+  ARRANGER_WIDGET_SELECT_SCALE (
+    self, scale, F_SELECT,
     F_NO_APPEND);
 }
 
@@ -1141,6 +1342,8 @@ timeline_arranger_widget_select (
   RegionWidget * rw;
   ChordObject * chord;
   ChordObjectWidget * cw;
+  ScaleObject * scale;
+  ScaleObjectWidget * sw;
   AutomationPoint * ap;
   AutomationPointWidget * apw;
 
@@ -1239,6 +1442,49 @@ timeline_arranger_widget_select (
 
           ARRANGER_WIDGET_SELECT_CHORD (
             self, chord, F_SELECT, F_APPEND);
+        }
+    }
+
+  /* find enclosed scales */
+  GtkWidget *    scale_widgets[800];
+  int            num_scale_widgets = 0;
+  arranger_widget_get_hit_widgets_in_range (
+    Z_ARRANGER_WIDGET (self),
+    SCALE_OBJECT_WIDGET_TYPE,
+    ar_prv->start_x,
+    ar_prv->start_y,
+    offset_x,
+    offset_y,
+    scale_widgets,
+    &num_scale_widgets);
+
+  if (delete)
+    {
+      /* delete the enclosed scales */
+      for (i = 0; i < num_scale_widgets; i++)
+        {
+          sw =
+            Z_SCALE_OBJECT_WIDGET (scale_widgets[i]);
+
+          scale = sw->scale;
+
+          chord_track_remove_scale (
+            P_CHORD_TRACK,
+            scale);
+      }
+    }
+  else
+    {
+      /* select the enclosed scales */
+      for (i = 0; i < num_scale_widgets; i++)
+        {
+          sw =
+            Z_SCALE_OBJECT_WIDGET (scale_widgets[i]);
+
+          scale = sw->scale;
+
+          ARRANGER_WIDGET_SELECT_SCALE (
+            self, scale, F_SELECT, F_APPEND);
         }
     }
 
@@ -2083,6 +2329,26 @@ add_children_from_chord_track (
           if (!c->widget)
             c->widget =
               chord_object_widget_new (c);
+
+          gtk_overlay_add_overlay (
+            GTK_OVERLAY (self),
+            GTK_WIDGET (c->widget));
+        }
+    }
+
+  for (i = 0; i < ct->num_scales; i++)
+    {
+      ScaleObject * c = ct->scales[i];
+      for (k = 0 ; k < 2; k++)
+        {
+          if (k == 0)
+            c = scale_object_get_main_scale_object (c);
+          else if (k == 1)
+            c = scale_object_get_main_trans_scale_object (c);
+
+          if (!c->widget)
+            c->widget =
+              scale_object_widget_new (c);
 
           gtk_overlay_add_overlay (
             GTK_OVERLAY (self),

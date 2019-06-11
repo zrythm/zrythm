@@ -31,6 +31,7 @@
 #include "audio/chord_object.h"
 #include "audio/region.h"
 #include "audio/scale.h"
+#include "audio/scale_object.h"
 #include "audio/track_lane.h"
 #include "utils/yaml.h"
 
@@ -201,9 +202,10 @@ typedef struct Track
   /* ==== INSTRUMENT & AUDIO TRACK END ==== */
 
   /* ==== CHORD TRACK ==== */
-  MusicalScale *      scale;
-  ChordObject *            chords[600];
+  ChordObject *       chords[600];
   int                 num_chords;
+  ScaleObject *       scales[600];
+  int                 num_scales;
   /* ==== CHORD TRACK END ==== */
 
   /* ---- MARKER TRACK ---- */
@@ -283,15 +285,14 @@ track_fields_schema[] =
     "lanes", CYAML_FLAG_DEFAULT,
     Track, lanes, num_lanes,
     &track_lane_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_MAPPING_PTR (
-    "scale",
-    CYAML_FLAG_DEFAULT | CYAML_FLAG_OPTIONAL,
-    Track, scale,
-    musical_scale_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
     "chords", CYAML_FLAG_DEFAULT,
     Track, chords, num_chords,
     &chord_object_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "scales", CYAML_FLAG_DEFAULT,
+    Track, scales, num_scales,
+    &scale_object_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_MAPPING_PTR (
     "channel",
     CYAML_FLAG_DEFAULT | CYAML_FLAG_OPTIONAL,

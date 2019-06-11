@@ -63,6 +63,7 @@ typedef enum EventType
   ET_TRACK_STATE_CHANGED,
   ET_REGION_CREATED,
   ET_CHORD_CREATED,
+  ET_SCALE_CREATED,
   ET_CHORD_REMOVED,
   /** works for all rulers */
   ET_RULER_STATE_CHANGED,
@@ -104,6 +105,7 @@ typedef enum EventType
   ET_AUTOMATION_POINT_CHANGED,
   ET_AUTOMATION_POINT_REMOVED,
   ET_CHORD_CHANGED,
+  ET_SCALE_CHANGED,
 
   /** Selected tool (mode) changed. */
   ET_TOOL_CHANGED,
@@ -147,6 +149,7 @@ typedef enum EventType
   ET_TRACK_LANE_ADDED,
   ET_REGION_POSITIONS_CHANGED,
   ET_CHORD_POSITIONS_CHANGED,
+  ET_SCALE_POSITIONS_CHANGED,
 } EventType;
 
 /**

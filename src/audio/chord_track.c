@@ -28,10 +28,10 @@
 #include <glib/gi18n.h>
 
 /**
- * Creates a new chord track using the given scale.
+ * Creates a new chord track.
  */
 ChordTrack *
-chord_track_new (MusicalScale * scale)
+chord_track_new ()
 {
   ChordTrack * self = calloc (1, sizeof (ChordTrack));
 
@@ -40,8 +40,6 @@ chord_track_new (MusicalScale * scale)
   track_init (track);
 
   self->name = g_strdup (_("Chords"));
-
-  self->scale = scale;
 
   gdk_rgba_parse (&self->color, "#0328fa");
 
@@ -79,9 +77,46 @@ chord_track_add_chord (
   EVENTS_PUSH (ET_CHORD_CREATED, chord);
 }
 
+/**
+ * Adds a ChordObject to the Track.
+ *
+ * @param gen_widget Create a widget for the chord.
+ */
 void
-chord_track_remove_chord (ChordTrack * self,
-                          ChordObject *      chord)
+chord_track_add_scale (
+  ChordTrack *  track,
+  ScaleObject * scale,
+  int           gen_widget)
+{
+  g_warn_if_fail (
+    track->type == TRACK_TYPE_CHORD && scale);
+  g_warn_if_fail (
+    scale->obj_info.counterpart ==
+      AOI_COUNTERPART_MAIN);
+  g_warn_if_fail (
+    scale->obj_info.main &&
+    scale->obj_info.main_trans &&
+    scale->obj_info.lane &&
+    scale->obj_info.lane_trans);
+
+  scale_object_set_track (scale, track);
+  array_append (track->scales,
+                track->num_scales,
+                scale);
+
+  if (gen_widget)
+    scale_object_gen_widget (scale);
+
+  EVENTS_PUSH (ET_SCALE_CREATED, scale);
+}
+
+/**
+ * Removes a chord from the chord Track.
+ */
+void
+chord_track_remove_chord (
+  ChordTrack *  self,
+  ChordObject * chord)
 {
   array_delete (self->chords,
                 self->num_chords,
@@ -89,18 +124,16 @@ chord_track_remove_chord (ChordTrack * self,
 }
 
 /**
- * Creates chord track using default scale.
+ * Removes a scale from the chord Track.
  */
-ChordTrack *
-chord_track_default ()
+void
+chord_track_remove_scale (
+  ChordTrack *  self,
+  ScaleObject * scale)
 {
-  MusicalScale * scale =
-    musical_scale_new (SCALE_AEOLIAN, // natural minor
-                       NOTE_A);
-
-  Track * self = chord_track_new (scale);
-
-  return self;
+  array_delete (self->scales,
+                self->num_scales,
+                scale);
 }
 
 void

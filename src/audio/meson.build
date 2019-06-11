@@ -37,6 +37,7 @@ audio_srcs = [
   'region.c',
   'routing.c',
   'scale.c',
+  'scale_object.c',
   'snap_grid.c',
   'track.c',
   'track_lane.c',

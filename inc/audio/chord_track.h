@@ -47,16 +47,10 @@ typedef struct MusicalScale MusicalScale;
 typedef struct Track ChordTrack;
 
 /**
- * Creates a new chord track using the given scale.
+ * Creates a new chord Track.
  */
 ChordTrack *
-chord_track_new (MusicalScale * scale);
-
-/**
- * Creates chord track using default scale.
- */
-ChordTrack *
-chord_track_default ();
+chord_track_new ();
 
 /**
  * Adds a ChordObject to the Track.
@@ -69,9 +63,32 @@ chord_track_add_chord (
   ChordObject *     chord,
   int          gen_widget);
 
+/**
+ * Adds a ChordObject to the Track.
+ *
+ * @param gen_widget Create a widget for the chord.
+ */
 void
-chord_track_remove_chord (ChordTrack * self,
-                          ChordObject *      chord);
+chord_track_add_scale (
+  ChordTrack *  track,
+  ScaleObject * chord,
+  int           gen_widget);
+
+/**
+ * Removes a chord from the chord Track.
+ */
+void
+chord_track_remove_chord (
+  ChordTrack *  self,
+  ChordObject * chord);
+
+/**
+ * Removes a scale from the chord Track.
+ */
+void
+chord_track_remove_scale (
+  ChordTrack *  self,
+  ScaleObject * scale);
 
 void
 chord_track_free (ChordTrack * self);

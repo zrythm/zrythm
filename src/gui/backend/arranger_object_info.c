@@ -85,6 +85,10 @@ arranger_object_info_should_be_visible (
       arranger =
         Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE);
       break;
+    case AOI_TYPE_SCALE:
+      arranger =
+        Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE);
+      break;
     case AOI_TYPE_MIDI_NOTE:
       arranger =
         Z_ARRANGER_WIDGET (MIDI_ARRANGER);
@@ -171,6 +175,7 @@ arranger_object_info_set_widget_visibility (
 {
   Region * r = NULL;
   ChordObject * c = NULL;
+  ScaleObject * s = NULL;
   MidiNote * mn = NULL;
 
   /* get the objects */
@@ -184,6 +189,11 @@ arranger_object_info_set_widget_visibility (
     case AOI_TYPE_CHORD:
       c =
         (ChordObject *)
+        arranger_object_info_get_object (self);
+      break;
+    case AOI_TYPE_SCALE:
+      s =
+        (ScaleObject *)
         arranger_object_info_get_object (self);
       break;
     case AOI_TYPE_MIDI_NOTE:
@@ -241,6 +251,11 @@ arranger_object_info_set_widget_visibility (
           SET_ALL_VISIBLE_WITHOUT_LANE (
             ChordObject, c);
         }
+      if (s)
+        {
+          SET_ALL_VISIBLE_WITHOUT_LANE (
+            ScaleObject, s);
+        }
       if (mn)
         {
           SET_ALL_VISIBLE_WITHOUT_LANE (
@@ -256,6 +271,10 @@ arranger_object_info_set_widget_visibility (
       if (c)
         {
           SET_THIS_VISIBLE (c);
+        }
+      if (s)
+        {
+          SET_THIS_VISIBLE (s);
         }
       if (mn)
         {
@@ -276,7 +295,8 @@ arranger_object_info_get_visible_counterpart (
   ArrangerObjectInfo * self)
 {
   Region * region = NULL;
-  ChordObject * chord = NULL;
+  ChordObject * chord_object = NULL;
+  ScaleObject * scale_object = NULL;
   MidiNote * midi_note = NULL;
 
   /* get the objects */
@@ -288,8 +308,13 @@ arranger_object_info_get_visible_counterpart (
         arranger_object_info_get_object (self);
       break;
     case AOI_TYPE_CHORD:
-      chord =
+      chord_object =
         (ChordObject *)
+        arranger_object_info_get_object (self);
+      break;
+    case AOI_TYPE_SCALE:
+      scale_object =
+        (ScaleObject *)
         arranger_object_info_get_object (self);
       break;
     case AOI_TYPE_MIDI_NOTE:
@@ -317,16 +342,19 @@ arranger_object_info_get_visible_counterpart (
       RETURN_COUNTERPART_IF_VISIBLE (
         region, lane_trans_region);
     }
-  if (chord)
+  if (chord_object)
     {
       RETURN_COUNTERPART_IF_VISIBLE (
-        region, main_region);
+        chord_object, main_chord_object);
       RETURN_COUNTERPART_IF_VISIBLE (
-        region, main_trans_region);
+        chord_object, main_trans_chord_object);
+    }
+  if (scale_object)
+    {
       RETURN_COUNTERPART_IF_VISIBLE (
-        region, lane_region);
+        scale_object, main_scale_object);
       RETURN_COUNTERPART_IF_VISIBLE (
-        region, lane_trans_region);
+        scale_object, main_trans_scale_object);
     }
   if (midi_note)
     {

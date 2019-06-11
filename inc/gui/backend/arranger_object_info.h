@@ -35,6 +35,8 @@ typedef enum ArrangerObjectInfoType
   AOI_TYPE_REGION,
   AOI_TYPE_MIDI_NOTE,
   AOI_TYPE_CHORD,
+  AOI_TYPE_SCALE,
+  //AOI_TYPE_MARKER,
 } ArrangerObjectInfoType;
 
 

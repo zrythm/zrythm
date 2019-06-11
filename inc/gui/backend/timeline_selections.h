@@ -31,6 +31,7 @@
 #include "audio/marker.h"
 #include "audio/midi_region.h"
 #include "audio/region.h"
+#include "audio/scale_object.h"
 #include "utils/yaml.h"
 
 /**
@@ -57,8 +58,12 @@ typedef struct TimelineSelections
   int                 num_aps;
 
   /** Selected ChordObject's. */
-  ChordObject *            chords[800];
+  ChordObject *       chords[800];
   int                 num_chords;
+
+  /** Selected ScaleObject's. */
+  ScaleObject *       scales[800];
+  int                 num_scales;
 
   /** Selected Marker's. */
   Marker *            markers[200];
@@ -202,6 +207,14 @@ timeline_selections_contains_chord (
   ChordObject *        c);
 
 /**
+ * Returns if the ScaleObject is selected or not.
+ */
+int
+timeline_selections_contains_scale (
+  TimelineSelections * self,
+  ScaleObject *        s);
+
+/**
  * Adds a Region to the selections.
  */
 void
@@ -217,6 +230,14 @@ timeline_selections_add_chord (
   TimelineSelections * ts,
   ChordObject *              c);
 
+/**
+ * Adds a ScaleObject to the selections.
+ */
+void
+timeline_selections_add_scale (
+  TimelineSelections * ts,
+  ScaleObject *        s);
+
 void
 timeline_selections_add_ap (
   TimelineSelections * ts,
@@ -227,16 +248,33 @@ timeline_selections_add_ap (
   //TimelineSelections * ts,
   //GtkWidget *          object);
 
+/**
+ * Remove a Region from the selections.
+ */
 void
 timeline_selections_remove_region (
   TimelineSelections * ts,
   Region *             r);
 
+/**
+ * Remove a ChordObject from the selections.
+ */
 void
 timeline_selections_remove_chord (
   TimelineSelections * ts,
-  ChordObject *              c);
+  ChordObject *        c);
 
+/**
+ * Remove a ScaleObject from the selections.
+ */
+void
+timeline_selections_remove_scale (
+  TimelineSelections * ts,
+  ScaleObject *        s);
+
+/**
+ * Remove an AutomationPoint from the selections.
+ */
 void
 timeline_selections_remove_ap (
   TimelineSelections * ts,

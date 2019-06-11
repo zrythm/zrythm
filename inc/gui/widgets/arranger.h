@@ -53,6 +53,11 @@ G_DECLARE_DERIVABLE_TYPE (ArrangerWidget,
   arranger_widget_select ( \
     Z_ARRANGER_WIDGET (self), \
     CHORD_OBJECT_WIDGET_TYPE, (void *) child, select, append);
+#define ARRANGER_WIDGET_SELECT_SCALE( \
+  self, child, select, append) \
+  arranger_widget_select ( \
+    Z_ARRANGER_WIDGET (self), \
+    SCALE_OBJECT_WIDGET_TYPE, (void *) child, select, append);
 #define ARRANGER_WIDGET_SELECT_AUTOMATION_POINT( \
   self, child, select, append) \
   arranger_widget_select ( \

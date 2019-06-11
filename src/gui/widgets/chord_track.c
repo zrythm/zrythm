@@ -134,6 +134,10 @@ chord_track_widget_init (ChordTrackWidget * self)
     Z_GTK_NO_FILL,
     0);
 
+  /* TODO temporary */
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self), -1, 42);
+
   /* set icon */
   SET_TRACK_ICON ("z-minuet-chords");
 }

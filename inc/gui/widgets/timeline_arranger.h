@@ -63,6 +63,7 @@ typedef struct AutomationTrack AutomationTrack;
 typedef struct AutomationCurve AutomationCurve;
 typedef struct _RegionWidget RegionWidget;
 typedef struct ChordObject ChordObject;
+typedef struct ScaleObject ScaleObject;
 typedef struct _MarkerWidget MarkerWidget;
 
 typedef struct _TimelineArrangerWidget
@@ -83,6 +84,7 @@ typedef struct _TimelineArrangerWidget
   AutomationPoint *        start_ap;
   AutomationCurve *        start_ac;
   ChordObject *            start_chord;
+  ScaleObject *            start_scale;
 
   int                      last_timeline_obj_bars;
 
@@ -175,6 +177,12 @@ timeline_arranger_widget_get_hit_chord (
   double                    x,
   double                    y);
 
+ScaleObjectWidget *
+timeline_arranger_widget_get_hit_scale (
+  TimelineArrangerWidget *  self,
+  double                    x,
+  double                    y);
+
 MarkerWidget *
 timeline_arranger_widget_get_hit_marker (
   TimelineArrangerWidget *  self,
@@ -222,6 +230,12 @@ timeline_arranger_widget_on_drag_begin_chord_hit (
   ChordObjectWidget *      cw);
 
 void
+timeline_arranger_widget_on_drag_begin_scale_hit (
+  TimelineArrangerWidget * self,
+  double                   start_x,
+  ScaleObjectWidget *      cw);
+
+void
 timeline_arranger_widget_on_drag_begin_marker_hit (
   TimelineArrangerWidget * self,
   double                   start_x,
@@ -261,6 +275,21 @@ timeline_arranger_widget_create_region (
   const Position *         pos);
 
 /**
+ * Wrapper for
+ * timeline_arranger_widget_create_chord() or
+ * timeline_arranger_widget_create_scale().
+ *
+ * @param y the y relative to the
+ *   TimelineArrangerWidget.
+ */
+void
+timeline_arranger_widget_create_chord_or_scale (
+  TimelineArrangerWidget * self,
+  Track *                  track,
+  double                   y,
+  const Position *         pos);
+
+/**
  * Create a ChordObject at the given Position in the
  * given Track.
  *
@@ -268,6 +297,18 @@ timeline_arranger_widget_create_region (
  */
 void
 timeline_arranger_widget_create_chord (
+  TimelineArrangerWidget * self,
+  Track *            track,
+  const Position *         pos);
+
+/**
+ * Create a ScaleObject at the given Position in the
+ * given Track.
+ *
+ * @param pos The pre-snapped position.
+ */
+void
+timeline_arranger_widget_create_scale (
   TimelineArrangerWidget * self,
   Track *            track,
   const Position *         pos);

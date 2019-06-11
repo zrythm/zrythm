@@ -349,3 +349,38 @@ musical_scale_new (MusicalScaleType      type,
 
   return self;
 }
+
+/**
+ * Clones the scale.
+ */
+MusicalScale *
+musical_scale_clone (
+  MusicalScale * src)
+{
+  /* TODO */
+  return musical_scale_new (
+    src->type, src->root_key);
+}
+
+/**
+ * Prints the MusicalScale to a string.
+ *
+ * MUST be free'd.
+ */
+char *
+musical_scale_to_string (
+  MusicalScale * scale)
+{
+  /* TODO */
+  return g_strdup ("Aeolian");
+}
+
+/**
+ * Frees the MusicalScale.
+ */
+void
+musical_scale_free (
+  MusicalScale * scale)
+{
+  /* TODO */
+}
