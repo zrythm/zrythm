@@ -696,3 +696,24 @@ ui_setup_pan_law_combo_box (
       S_PREFERENCES,
       "pan-law"));
 }
+
+/**
+ * Returns the contrasting color (variation of
+ * black or white) based on if the given color is
+ * dark enough or not.
+ *
+ * @param src The source color.
+ * @param dest The desination color to write to.
+ */
+void
+ui_get_contrast_text_color (
+  GdkRGBA * src,
+  GdkRGBA * dest)
+{
+  /* if color is too bright use dark text,
+   * otherwise use bright text */
+  if (src->red + src->green + src->blue >= 1.5)
+    gdk_rgba_parse (dest, "#323232");
+  else
+    gdk_rgba_parse (dest, "#CDCDCD");
+}

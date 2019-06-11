@@ -30,11 +30,11 @@
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/pinned_tracklist.h"
-#include "gui/widgets/snap_grid.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/timeline_selection_info.h"
+#include "gui/widgets/timeline_toolbar.h"
 #include "gui/widgets/tracklist.h"
 #include "gui/widgets/tracklist_header.h"
 #include "project.h"
@@ -173,6 +173,7 @@ center_dock_widget_init (CenterDockWidget * self)
   g_type_ensure (
     TIMELINE_SELECTION_INFO_WIDGET_TYPE);
   g_type_ensure (PINNED_TRACKLIST_WIDGET_TYPE);
+  g_type_ensure (TIMELINE_TOOLBAR_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -290,6 +291,10 @@ center_dock_widget_class_init (CenterDockWidgetClass * _klass)
     klass,
     CenterDockWidget,
     pinned_timeline);
+  gtk_widget_class_bind_template_child (
+    klass,
+    CenterDockWidget,
+    timeline_toolbar);
   gtk_widget_class_bind_template_child (
     klass,
     CenterDockWidget,

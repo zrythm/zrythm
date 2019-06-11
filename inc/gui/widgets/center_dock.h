@@ -46,6 +46,8 @@ typedef struct _CenterDockBotBoxWidget CenterDockBotBoxWidget;
 typedef struct _TracklistHeaderWidget TracklistHeaderWidget;
 typedef struct _PinnedTracklistWidget
   PinnedTracklistWidget;
+typedef struct _TimelineToolbarWidget
+  TimelineToolbarWidget;
 
 typedef struct _CenterDockWidget
 {
@@ -84,6 +86,8 @@ typedef struct _CenterDockWidget
 
   /** The main timeline. */
   TimelineArrangerWidget * timeline;
+
+  TimelineToolbarWidget *  timeline_toolbar;
 
   GtkScrolledWindow *      pinned_timeline_scroll;
   GtkViewport *            pinned_timeline_viewport;

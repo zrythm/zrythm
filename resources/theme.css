@@ -122,6 +122,7 @@ filechooser list
 
 region,
 chord,
+scale-object,
 midi-note,
 velocity
 {
@@ -135,6 +136,7 @@ region
 
 region:selected,
 chord:selected,
+scale-object:selected,
 midi-note:selected,
 velocity:selected,
 automation-point:selected
@@ -152,6 +154,7 @@ automation-point:selected
 
 region:hover,
 chord:hover,
+scale-object:hover,
 midi-note:hover,
 velocity:hover,
 automation-point:hover,
@@ -202,6 +205,9 @@ bot-bar toolbar,
 assistant,
 buttonbox,
 timeline-selection-info,
+timeline-toolbar,
+piano-roll-selection-info,
+piano-roll-toolbar,
 dialog
 {
 background-color: @bg_dark_variant2;
@@ -217,6 +223,32 @@ help-toolbar,
 menubar
 {
   background-color: @bg_darker_variant2;
+}
+
+@define-color bright_green #1DDD6A;
+@define-color darkish_green #19664c;
+@define-color dark_orange #D68A0C;
+@define-color z_yellow #F9CA1B;
+@define-color bright_orange #F79616;
+@define-color z_purple #9D3955;
+@define-color matcha_green #2eb398;
+@define-color hover_color alpha (white, 0.1);
+@define-color selection_color alpha (white, 0.07);
+@define-color light_blueish alpha (#1aa3ff, 0.8);
+
+piano-roll-label.highlight_chord
+{
+  background-color: alpha (@darkish_green, 0.2);
+}
+
+piano-roll-label.highlight_scale
+{
+  background-color: alpha (@bright_orange, 0.2);
+}
+
+piano-roll-label.highlight_both
+{
+  background-color: alpha (@matcha_green, 0.2);
 }
 
 /* override button size from theme */
@@ -315,6 +347,7 @@ track:selected,
 channel:selected,
 region:selected,
 chord:selected,
+scale-object:selected,
 midi-note:selected
 velocity:selected,
 automation-point:selected
@@ -336,6 +369,7 @@ filechooser button:active
 track:hover,
 region:hover,
 chord:hover,
+scale-object:hover,
 fader:hover,
 channel-slot:hover:not(:selected),
 pan:hover,

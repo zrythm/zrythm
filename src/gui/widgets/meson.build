@@ -117,6 +117,7 @@ widget_srcs = [
   'timeline_minimap.c',
   'timeline_minimap_selection.c',
   'timeline_ruler.c',
+  'timeline_toolbar.c',
   'timeline_selection_info.c',
   'toolbox.c',
   'top_bar.c',

@@ -65,14 +65,6 @@
       </packing>
     </child>
     <child>
-      <object class="SnapGridWidget" id="snap_grid_midi">
-        <property name="visible">1</property>
-      </object>
-      <packing>
-        <property name="position">1</property>
-      </packing>
-    </child>
-    <child>
       <object class="GtkToolbar" id="right_tb">
         <property name="visible">1</property>
         <property name="halign">GTK_ALIGN_END</property>

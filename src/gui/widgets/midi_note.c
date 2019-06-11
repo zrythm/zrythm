@@ -91,7 +91,8 @@ midi_note_draw_cb (
       if (midi_note_is_selected (self->midi_note))
         {
           cairo_set_source_rgba (
-            cr, 1, color->green + 0.2,
+            cr, color->red + 0.4,
+            color->green + 0.2,
             color->blue + 0.2, 1);
         }
       if (PIANO_ROLL->drum_mode)
@@ -140,7 +141,8 @@ midi_note_draw_cb (
     }
 
   GdkRGBA c2;
-  gdk_rgba_parse (&c2, "#323232");
+  ui_get_contrast_text_color (
+    color, &c2);
   cairo_set_source_rgba (
     cr, c2.red, c2.green, c2.blue, 1.0);
   if (DEBUGGING || !PIANO_ROLL->drum_mode)

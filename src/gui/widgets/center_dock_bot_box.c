@@ -21,7 +21,6 @@
 #include "gui/widgets/center_dock_bot_box.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/left_dock_edge.h"
-#include "gui/widgets/snap_grid.h"
 #include "gui/widgets/timeline_minimap.h"
 #include "utils/resources.h"
 
@@ -33,12 +32,7 @@ static void
 center_dock_bot_box_widget_init (
   CenterDockBotBoxWidget * self)
 {
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      SNAP_GRID_WIDGET_TYPE, NULL)));
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      TIMELINE_MINIMAP_WIDGET_TYPE, NULL)));
+  g_type_ensure (TIMELINE_MINIMAP_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -82,10 +76,6 @@ center_dock_bot_box_widget_class_init (
     klass,
     CenterDockBotBoxWidget,
     right_tb);
-  gtk_widget_class_bind_template_child (
-    klass,
-    CenterDockBotBoxWidget,
-    snap_grid_midi);
   gtk_widget_class_bind_template_child (
     klass,
     CenterDockBotBoxWidget,

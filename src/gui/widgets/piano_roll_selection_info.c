@@ -72,7 +72,7 @@ piano_roll_selection_info_widget_class_init (
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
-    klass, "piano_roll-selection-info");
+    klass, "piano-roll-selection-info");
 }
 
 static void

@@ -38,12 +38,14 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/piano_roll.h"
+#include "gui/widgets/piano_roll_toolbar.h"
 #include "gui/widgets/plugin_browser.h"
 #include "gui/widgets/rack.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
+#include "gui/widgets/timeline_toolbar.h"
 #include "gui/widgets/top_bar.h"
 #include "gui/widgets/tracklist.h"
 #include "utils/gtk.h"
@@ -107,10 +109,10 @@ main_window_widget_refresh (MainWindowWidget * self)
   /* setup center dock */
   center_dock_widget_setup (MW_CENTER_DOCK);
 
-  /* setup bot toolbar */
-  snap_grid_widget_setup (
-    MW_CENTER_DOCK->bot_box->snap_grid_midi,
-    &PROJECT->snap_grid_midi);
+  piano_roll_toolbar_widget_setup (
+    MW_PIANO_ROLL_TOOLBAR);
+  timeline_toolbar_widget_setup (
+    MW_TIMELINE_TOOLBAR);
 
   /* setup piano roll */
   if (MW_BOT_DOCK_EDGE && MW_CLIP_EDITOR)

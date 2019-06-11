@@ -24,11 +24,11 @@
 
 #define CENTER_DOCK_BOT_BOX_WIDGET_TYPE \
   (center_dock_bot_box_widget_get_type ())
-G_DECLARE_FINAL_TYPE (CenterDockBotBoxWidget,
-                      center_dock_bot_box_widget,
-                      Z,
-                      CENTER_DOCK_BOT_BOX_WIDGET,
-                      GtkBox)
+G_DECLARE_FINAL_TYPE (
+  CenterDockBotBoxWidget,
+  center_dock_bot_box_widget,
+  Z, CENTER_DOCK_BOT_BOX_WIDGET,
+  GtkBox)
 
 #define MW_CENTER_DOCK_BOT_BOX \
   MW_CENTER_DOCK->bot_box
@@ -42,7 +42,6 @@ typedef struct _CenterDockBotBoxWidget
   GtkToolButton            * instrument_add;
   GtkToolButton *          toggle_left_dock;
   GtkToolButton *          toggle_bot_dock;
-  SnapGridWidget           * snap_grid_midi;
   GtkToolbar *             right_tb;
   GtkToolButton *          toggle_right_dock;
   TimelineMinimapWidget *  timeline_minimap;

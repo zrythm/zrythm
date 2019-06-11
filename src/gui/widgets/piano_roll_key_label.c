@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/chord_track.h"
 #include "gui/backend/clip_editor.h"
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/editable_label.h"
@@ -52,6 +53,29 @@ piano_roll_key_label_widget_refresh (
         GTK_WIDGET (self->lbl), 1);
       gtk_widget_set_visible (
         GTK_WIDGET (self->editable_lbl), 0);
+
+      /* highlight if in chord */
+      ChordObject * co =
+        chord_track_get_chord_at_playhead (
+          P_CHORD_TRACK);
+      if ((PIANO_ROLL->highlighting ==
+            PR_HIGHLIGHT_CHORD ||
+          PIANO_ROLL->highlighting ==
+            PR_HIGHLIGHT_BOTH) && co)
+        {
+          if (chord_descriptor_is_key_in_chord (
+                co->descr, self->descr->value % 12))
+            {
+              /*cairo_set_source_rgba (cr, 1, 0.3, 0, 0.6);*/
+              /*cairo_rectangle (*/
+                /*cr, 0, 0, width, height);*/
+              /*cairo_fill (cr);*/
+              gtk_style_context_add_class (
+                gtk_widget_get_style_context (
+                  GTK_WIDGET (self)),
+                "highlight_scale");
+            }
+        }
     }
 }
 

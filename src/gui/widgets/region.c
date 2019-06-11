@@ -83,7 +83,7 @@ region_draw_cb (RegionWidget * self,
     {
       cairo_set_source_rgba (
         cr,
-        1,
+        color->red + 0.4,
         color->green + 0.2,
         color->blue + 0.2,
         DEBUGGING ? 0.5 : 1.0);

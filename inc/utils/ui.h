@@ -448,6 +448,19 @@ ui_setup_pan_law_combo_box (
   GtkComboBox * cb);
 
 /**
+ * Returns the contrasting color (variation of
+ * black or white) based on if the given color is
+ * dark enough or not.
+ *
+ * @param src The source color.
+ * @param dest The desination color to write to.
+ */
+void
+ui_get_contrast_text_color (
+  GdkRGBA * src,
+  GdkRGBA * dest);
+
+/**
  * @}
  */
 

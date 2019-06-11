@@ -58,7 +58,7 @@ scale_draw_cb (
   if (scale_object_is_selected (self->scale))
     {
       cairo_set_source_rgba (
-        cr, 1, color->green + 0.2,
+        cr, color->red + 0.4, color->green + 0.2,
         color->blue + 0.2, 1);
     }
   z_cairo_rounded_rectangle (
@@ -79,7 +79,8 @@ scale_draw_cb (
     }
 
   GdkRGBA c2;
-  gdk_rgba_parse (&c2, "#323232");
+  ui_get_contrast_text_color (
+    color, &c2);
   cairo_set_source_rgba (
     cr, c2.red, c2.green, c2.blue, 1.0);
   z_cairo_draw_text (cr, str);
@@ -160,8 +161,9 @@ scale_object_widget_class_init (
 {
   GtkWidgetClass * klass =
     GTK_WIDGET_CLASS (_klass);
+  /* "scale" is taken by gtk */
   gtk_widget_class_set_css_name (
-    klass, "scale");
+    klass, "scale-object");
 }
 
 static void

@@ -20,7 +20,7 @@
 #include "actions/undo_manager.h"
 #include "actions/undoable_action.h"
 #include "gui/accel.h"
-#include "gui/widgets/piano_roll_toolbar.h"
+#include "gui/widgets/timeline_toolbar.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/snap_grid.h"
 #include "project.h"
@@ -29,52 +29,42 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (PianoRollToolbarWidget,
-               piano_roll_toolbar_widget,
+G_DEFINE_TYPE (TimelineToolbarWidget,
+               timeline_toolbar_widget,
                GTK_TYPE_TOOLBAR)
 
 void
-piano_roll_toolbar_widget_setup (
-  PianoRollToolbarWidget * self)
+timeline_toolbar_widget_setup (
+  TimelineToolbarWidget * self)
 {
   /* setup bot toolbar */
   snap_grid_widget_setup (
-    self->snap_grid_midi,
-    &PROJECT->snap_grid_midi);
+    self->snap_grid_timeline,
+    &PROJECT->snap_grid_timeline);
 }
 
 static void
-piano_roll_toolbar_widget_init (
-  PianoRollToolbarWidget * self)
+timeline_toolbar_widget_init (
+  TimelineToolbarWidget * self)
 {
   g_type_ensure (SNAP_GRID_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
-
-#define SET_TOOLTIP(x, tooltip) \
-  z_gtk_set_tooltip_for_actionable ( \
-    GTK_ACTIONABLE (self->x), \
-    _(tooltip))
-  /*SET_TOOLTIP (loop_selection, "Loop Selection");*/
-#undef SET_TOOLTIP
 }
 
 static void
-piano_roll_toolbar_widget_class_init (PianoRollToolbarWidgetClass * _klass)
+timeline_toolbar_widget_class_init (
+  TimelineToolbarWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
-    klass, "piano_roll_toolbar.ui");
+    klass, "timeline_toolbar.ui");
 
   gtk_widget_class_set_css_name (
-    klass, "piano-roll-toolbar");
+    klass, "timeline-toolbar");
 
   gtk_widget_class_bind_template_child (
     klass,
-    PianoRollToolbarWidget,
-    chord_highlighting);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PianoRollToolbarWidget,
-    snap_grid_midi);
+    TimelineToolbarWidget,
+    snap_grid_timeline);
 }

@@ -6,18 +6,41 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <child>
-      <object class="GtkToolItem" id="chord_highlighting">
+      <object class="GtkToolItem">
         <property name="visible">True</property>
         <child>
-          <object class="GtkComboBoxText">
+          <object class="SnapGridWidget" id="snap_grid_midi">
             <property name="visible">1</property>
-            <property name="active-id">highlight_both</property>
-            <items>
-              <item translatable="yes" id="highlight_none">No highlighting</item>
-              <item translatable="yes" id="highlight_chord">Highlight Chord</item>
-              <item translatable="yes" id="highlight_scale">Highlight Scale</item>
-              <item translatable="yes" id="highlight_both">Highlight Both</item>
-            </items>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkToolItem">
+        <property name="visible">True</property>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">1</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">1</property>
+                <property name="label" translatable="yes">Highlight</property>
+                <property name="margin-start">3</property>
+                <property name="margin-end">3</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkComboBoxText" id="chord_highlighting">
+                <property name="visible">1</property>
+                <property name="active-id">highlight_both</property>
+                <items>
+                  <item translatable="yes" id="highlight_none">None</item>
+                  <item translatable="yes" id="highlight_chord">Chord</item>
+                  <item translatable="yes" id="highlight_scale">Scale</item>
+                  <item translatable="yes" id="highlight_both">Both</item>
+                </items>
+              </object>
+            </child>
           </object>
         </child>
       </object>
