@@ -1,0 +1,116 @@
+{
+    "app-id": "org.zrythm.Zrythm",
+    "runtime": "org.freedesktop.Platform",
+    "runtime-version": "18.08",
+    "sdk": "org.freedesktop.Sdk",
+    "command": "zrythm",
+    "rename-desktop-file": "zrythm.desktop",
+    "rename-icon": "zrythm",
+    "finish-args": [
+        "--share=ipc",
+        "--socket=x11",
+        "--socket=wayland",
+        "--socket=pulseaudio",
+        "--device=all",
+        "--filesystem=home",
+        "--env=LD_LIBRARY_PATH=/app/lib:/app/lib/libgig"
+    ],
+    "modules": [
+        {
+            "name": "lv2",
+            "buildsystem": "simple",
+            "build-commands": [
+              "./waf configure --prefix=/app",
+              "./waf install"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "http://lv2plug.in/spec/lv2-1.16.0.tar.bz2",
+                    "sha512": "ead6d590cded5dd7a548d6ffe0f2f9f8efadfa7bb9e8b4fa0aea6664ccdfbb3ca697514bddebe695a9442fba5b62714b5cd45c1bf7d0aaef12ffe50972c2d88c"
+                }
+            ]
+        },
+        {
+            "name": "serd",
+            "buildsystem": "simple",
+            "build-commands": [
+              "./waf configure --prefix=/app",
+              "./waf install"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.drobilla.net/serd-0.30.0.tar.bz2",
+                    "sha512": "23ff30f2d3dd622bdd65deee36cb92ae5f4a0c539cf32a1bd9802f2d7cf4aa3e96f25d2fe579277d1ab943f6d25c0be68d7b4863f83d4733f489462620a4c1bb"
+                }
+            ]
+        },
+        {
+            "name": "sord",
+            "buildsystem": "simple",
+            "build-commands": [
+              "./waf configure --prefix=/app",
+              "./waf install"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.drobilla.net/sord-0.16.2.tar.bz2",
+                    "sha512": "fe143c07ed18c15ffaf2461ca587df76e365a075f5d93f5eaa4c26196e0b1dd59d24d16e176de3664a2658377a2934083af5742c80884e8e7dd201dcaccb9698"
+                }
+            ]
+        },
+        {
+            "name": "sratom",
+            "buildsystem": "simple",
+            "build-commands": [
+              "./waf configure --prefix=/app",
+              "./waf install"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.drobilla.net/sratom-0.6.2.tar.bz2",
+                    "sha512": "356e1dfde07fcc3eff99186ff79501557572f5d73338fd096bf639a82d1d4fe3c0e790627c8eb088053e4a2aeed4e548aca0a5572d1ab26316cfdb13374f10ac"
+                }
+            ]
+        },
+        {
+            "name": "lilv",
+            "buildsystem": "simple",
+            "build-commands": [
+              "./waf configure --prefix=/app",
+              "./waf install"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "http://download.drobilla.net/lilv-0.24.4.tar.bz2",
+                    "sha512": "cb909c83dbac36b51a206fe508aec51e52ddf068f9a159d053888594402def8d140aae0d9e1e1866e722396f7ec8dea4b86d4c1b958f56eb3193b78307918a89"
+                }
+            ]
+        },
+        {
+            "name": "libyaml",
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://pyyaml.org/download/libyaml/yaml-0.2.1.tar.gz",
+                    "md5": "72724b9736923c517e5a8fc6757ef03d"
+                }
+            ]
+        },
+        {
+            "name": "zrythm",
+            "buildsystem": "meson",
+            "builddir": true,
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.zrythm.org/zrythm/zrythm.git"
+                }
+            ]
+        }
+    ]
+}

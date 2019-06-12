@@ -139,3 +139,6 @@ gschemas.compiled
 
 # tests
 coverage.html
+
+# Flatpak
+.flatpak-builder
