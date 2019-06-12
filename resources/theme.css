@@ -236,19 +236,19 @@ menubar
 @define-color selection_color alpha (white, 0.07);
 @define-color light_blueish alpha (#1aa3ff, 0.8);
 
-piano-roll-label.highlight_chord
-{
-  background-color: alpha (@darkish_green, 0.2);
-}
-
 piano-roll-label.highlight_scale
 {
-  background-color: alpha (@bright_orange, 0.2);
+  background-color: alpha (#662266, 0.2);
+}
+
+piano-roll-label.highlight_chord
+{
+  background-color: alpha (#BB22BB, 0.2);
 }
 
 piano-roll-label.highlight_both
 {
-  background-color: alpha (@matcha_green, 0.2);
+  background-color: alpha (#FF22FF, 0.2);
 }
 
 /* override button size from theme */

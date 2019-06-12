@@ -25,6 +25,7 @@
 #include "project.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (PianoRollKeyLabelWidget,
                piano_roll_key_label_widget,
@@ -54,27 +55,80 @@ piano_roll_key_label_widget_refresh (
       gtk_widget_set_visible (
         GTK_WIDGET (self->editable_lbl), 0);
 
-      /* highlight if in chord */
+      /* highlight if in chord/scale */
       ChordObject * co =
         chord_track_get_chord_at_playhead (
           P_CHORD_TRACK);
-      if ((PIANO_ROLL->highlighting ==
+      ScaleObject * so =
+        chord_track_get_scale_at_playhead (
+          P_CHORD_TRACK);
+      int in_scale =
+        so && musical_scale_is_key_in_scale (
+          so->scale, self->descr->value % 12);
+      int in_chord =
+        co && chord_descriptor_is_key_in_chord (
+          co->descr, self->descr->value % 12);
+      if (PIANO_ROLL->highlighting ==
+            PR_HIGHLIGHT_BOTH && in_chord &&
+            in_scale)
+        {
+          gtk_style_context_add_class (
+            gtk_widget_get_style_context (
+              GTK_WIDGET (self)),
+            "highlight_both");
+          char * str =
+            g_strdup_printf (
+              "%s  <span size=\"small\" foreground=\"#F79616\">%s</span>",
+              self->descr->note_name_pango,
+              _("both"));
+          gtk_label_set_markup (
+            self->lbl,
+            str);
+          g_free (str);
+        }
+      else if ((PIANO_ROLL->highlighting ==
+            PR_HIGHLIGHT_SCALE ||
+          PIANO_ROLL->highlighting ==
+            PR_HIGHLIGHT_BOTH) && in_scale)
+        {
+          gtk_style_context_add_class (
+            gtk_widget_get_style_context (
+              GTK_WIDGET (self)),
+            "highlight_scale");
+          char * str =
+            g_strdup_printf (
+              "%s  <span size=\"small\" foreground=\"#F79616\">%s</span>",
+              self->descr->note_name_pango,
+              _("scale"));
+          gtk_label_set_markup (
+            self->lbl,
+            str);
+          g_free (str);
+        }
+      else if ((PIANO_ROLL->highlighting ==
             PR_HIGHLIGHT_CHORD ||
           PIANO_ROLL->highlighting ==
-            PR_HIGHLIGHT_BOTH) && co)
+            PR_HIGHLIGHT_BOTH) && in_chord)
         {
-          if (chord_descriptor_is_key_in_chord (
-                co->descr, self->descr->value % 12))
-            {
-              /*cairo_set_source_rgba (cr, 1, 0.3, 0, 0.6);*/
-              /*cairo_rectangle (*/
-                /*cr, 0, 0, width, height);*/
-              /*cairo_fill (cr);*/
-              gtk_style_context_add_class (
-                gtk_widget_get_style_context (
-                  GTK_WIDGET (self)),
-                "highlight_scale");
-            }
+          gtk_style_context_add_class (
+            gtk_widget_get_style_context (
+              GTK_WIDGET (self)),
+            "highlight_chord");
+          char * str =
+            g_strdup_printf (
+              "%s  <span size=\"small\" foreground=\"#F79616\">%s</span>",
+              self->descr->note_name_pango,
+              _("chord"));
+          gtk_label_set_markup (
+            self->lbl,
+            str);
+          g_free (str);
+        }
+      else
+        {
+          gtk_label_set_markup (
+            self->lbl,
+            self->descr->note_name_pango);
         }
     }
 }

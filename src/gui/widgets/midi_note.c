@@ -24,6 +24,7 @@
 
 #include "audio/bus_track.h"
 #include "audio/channel.h"
+#include "audio/chord_track.h"
 #include "audio/instrument_track.h"
 #include "audio/region.h"
 #include "audio/track.h"
@@ -76,24 +77,66 @@ midi_note_draw_cb (
   gtk_render_background (
     context, cr, 0, 0, width, height);
 
-  Region * region = self->midi_note->region;
-  GdkRGBA * color = &region->lane->track->color;
+  MidiNote * mn = self->midi_note;
+  Region * region = mn->region;
+  GdkRGBA * track_color =
+    &region->lane->track->color;
+  ChordObject * co =
+    chord_track_get_chord_at_pos (
+      P_CHORD_TRACK, &mn->start_pos);
+  ScaleObject * so =
+    chord_track_get_scale_at_pos (
+      P_CHORD_TRACK, &mn->start_pos);
+  GdkRGBA color;
+  int in_scale =
+    so && musical_scale_is_key_in_scale (
+      so->scale, mn->val % 12);
+  int in_chord =
+    co && chord_descriptor_is_key_in_chord (
+      co->descr, mn->val % 12);
+
+  if (PIANO_ROLL->highlighting ==
+        PR_HIGHLIGHT_BOTH &&
+      in_scale && in_chord)
+    {
+      gdk_rgba_parse (&color, "#FF22FF");
+    }
+  else if ((PIANO_ROLL->highlighting ==
+        PR_HIGHLIGHT_SCALE ||
+      PIANO_ROLL->highlighting ==
+        PR_HIGHLIGHT_BOTH) && in_scale)
+    {
+      gdk_rgba_parse (&color, "#662266");
+    }
+  else if ((PIANO_ROLL->highlighting ==
+        PR_HIGHLIGHT_CHORD ||
+      PIANO_ROLL->highlighting ==
+        PR_HIGHLIGHT_BOTH) && in_chord)
+    {
+      gdk_rgba_parse (&color, "#BB22BB");
+    }
+  else
+    {
+      gdk_rgba_parse (
+        &color,
+        gdk_rgba_to_string (track_color));
+    }
 
   /* draw notes of main region */
   if (region == CLIP_EDITOR->region)
     {
       cairo_set_source_rgba (
         cr,
-        color->red,
-        color->green,
-        color->blue,
+        color.red,
+        color.green,
+        color.blue,
         midi_note_is_transient (self->midi_note) ? 0.7 : 1);
       if (midi_note_is_selected (self->midi_note))
         {
           cairo_set_source_rgba (
-            cr, color->red + 0.4,
-            color->green + 0.2,
-            color->blue + 0.2, 1);
+            cr, color.red + 0.4,
+            color.green + 0.2,
+            color.blue + 0.2, 1);
         }
       if (PIANO_ROLL->drum_mode)
         {
@@ -110,8 +153,8 @@ midi_note_draw_cb (
   else
     {
       cairo_set_source_rgba (
-        cr, color->red, color->green,
-        color->blue, 0.5);
+        cr, color.red, color.green,
+        color.blue, 0.5);
       if (PIANO_ROLL->drum_mode)
         {
           z_cairo_diamond (cr, 0, 0, width, height);
@@ -142,7 +185,7 @@ midi_note_draw_cb (
 
   GdkRGBA c2;
   ui_get_contrast_text_color (
-    color, &c2);
+    &color, &c2);
   cairo_set_source_rgba (
     cr, c2.red, c2.green, c2.blue, 1.0);
   if (DEBUGGING || !PIANO_ROLL->drum_mode)

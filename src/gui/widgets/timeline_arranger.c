@@ -1196,7 +1196,7 @@ timeline_arranger_widget_create_chord (
   /* create a new chord */
   ChordDescriptor * descr =
     chord_descriptor_new (
-      NOTE_A, 1, NOTE_A, CHORD_TYPE_MIN, 0);
+      NOTE_B, 1, NOTE_B, CHORD_TYPE_MIN, 0);
   ChordObject * chord =
     chord_object_new (
       descr, 1);

@@ -34,10 +34,12 @@
  * Creates new scale using type and root note.
  */
 MusicalScale *
-musical_scale_new (MusicalScaleType      type,
-                   MusicalNote           root)
+musical_scale_new (
+  MusicalScaleType      type,
+  MusicalNote           root)
 {
-  MusicalScale * self = calloc (1, sizeof (MusicalScale));
+  MusicalScale * self =
+    calloc (1, sizeof (MusicalScale));
 
   self->type = type;
   self->root_key = root;
@@ -360,6 +362,32 @@ musical_scale_clone (
   /* TODO */
   return musical_scale_new (
     src->type, src->root_key);
+}
+
+/**
+ * Returns if the given key is in the given
+ * MusicalScale.
+ *
+ * @param key A note inside a single octave (0-11).
+ */
+int
+musical_scale_is_key_in_scale (
+  MusicalScale * scale,
+  MusicalNote    key)
+{
+  if (scale->root_key  == key)
+    return 1;
+
+  for (int i = 0; i < 12; i++)
+    {
+      /* check given key - scale root key, add
+       * 12 to make sure the value is positive, and
+       * mod 12 to stay in 1 octave */
+      if (scale->notes[i] == 1 &&
+          i == ((key - scale->root_key) + 12) % 12)
+        return 1;
+    }
+  return 0;
 }
 
 /**

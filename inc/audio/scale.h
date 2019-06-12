@@ -368,6 +368,17 @@ musical_scale_is_equal (
 }
 
 /**
+ * Returns if the given key is in the given
+ * MusicalScale.
+ *
+ * @param key A note inside a single octave (0-11).
+ */
+int
+musical_scale_is_key_in_scale (
+  MusicalScale * scale,
+  MusicalNote    key);
+
+/**
  * Returns the scale in human readable string.
  *
  * MUST be free'd by caller.
