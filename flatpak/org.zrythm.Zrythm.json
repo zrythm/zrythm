@@ -7,13 +7,28 @@
     "rename-desktop-file": "zrythm.desktop",
     "rename-icon": "zrythm",
     "finish-args": [
+        "--allow=devel",
         "--share=ipc",
+        "--share=network",
         "--socket=x11",
         "--socket=wayland",
         "--socket=pulseaudio",
+        "--socket=session-bus",
+        "--socket=system-bus",
         "--device=all",
+        "--filesystem=host",
         "--filesystem=home",
-        "--env=LD_LIBRARY_PATH=/app/lib:/app/lib/libgig"
+        "--filesystem=xdg-config/gtk-3.0",
+        "--filesystem=/tmp",
+        "--filesystem=/usr/lib/lv2",
+        "--talk-name=org.gtk.vfs.*",
+        "--system-talk-name=org.freedesktop.PolicyKit1",
+        "--talk-name=org.zrythm.Zrythm",
+        "--talk-name=org.freedesktop.FileManager1",
+        "--talk-name=org.gtk.vfs",
+        "--talk-name=org.gnome.SettingsDaemon.Color",
+        "--talk-name=org.freedesktop.PackageKit",
+        "--talk-name=org.freedesktop.secrets"
     ],
     "modules": [
         {
