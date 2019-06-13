@@ -75,55 +75,61 @@ typedef enum ChordType
 {
   CHORD_TYPE_MAJ,
   CHORD_TYPE_MIN,
-  CHORD_TYPE_7,
-  CHORD_TYPE_MIN_7,
-  CHORD_TYPE_MAJ_7,
-  CHORD_TYPE_6,
-  CHORD_TYPE_MIN_6,
-  CHORD_TYPE_6_9,
-  CHORD_TYPE_5,
-  CHORD_TYPE_9,
-  CHORD_TYPE_MIN_9,
-  CHORD_TYPE_MAJ_9,
-  CHORD_TYPE_11,
-  CHORD_TYPE_MIN_11,
-  CHORD_TYPE_13,
-  CHORD_TYPE_ADD_2,
-  CHORD_TYPE_ADD_9,
-  CHORD_TYPE_7_MINUS_5,
-  CHORD_TYPE_7_PLUS_5,
-  CHORD_TYPE_SUS2,
-  CHORD_TYPE_SUS4,
   CHORD_TYPE_DIM,
+  CHORD_TYPE_SUS4,
+  CHORD_TYPE_SUS2,
   CHORD_TYPE_AUG,
   NUM_CHORD_TYPES,
 } ChordType;
+
+/**
+ * Chord accents.
+ */
+typedef enum ChordAccent
+{
+  CHORD_ACC_NONE,
+  /** b7 is 10 semitones from chord root. */
+  CHORD_ACC_7,
+  /** Maj7 is 11 semitones from the root. */
+  CHORD_ACC_j7,
+  /** 13 semitones. */
+  CHORD_ACC_b9,
+  /** 14 semitones. */
+  CHORD_ACC_9,
+  /** 15 semitones. */
+  CHORD_ACC_S9,
+  /** 17 semitones. */
+  CHORD_ACC_11,
+  /** 6 and 18 semitones. */
+  CHORD_ACC_b5_S11,
+  /** 8 and 16 semitones. */
+  CHORD_ACC_S5_b13,
+  /** 9 and 21 semitones. */
+  CHORD_ACC_6_13,
+  NUM_CHORD_ACCENTS,
+} ChordAccent;
 
 #define CHORD_TYPES \
 static const char * chord_type_labels[NUM_CHORD_TYPES] = { \
   "Maj", \
   "min", \
-  "7", \
-  "min7", \
-  "Maj7", \
-  "CHORD_TYPE_6", \
-  "CHORD_TYPE_MIN_6", \
-  "CHORD_TYPE_6_9", \
-  "CHORD_TYPE_5", \
-  "9", \
-  "CHORD_TYPE_MIN_9", \
-  "CHORD_TYPE_MAJ_9", \
-  "11", \
-  "min11", \
-  "CHORD_TYPE_13", \
-  "CHORD_TYPE_ADD_2", \
-  "CHORD_TYPE_ADD_9", \
-  "CHORD_TYPE_7_MINUS_5", \
-  "CHORD_TYPE_7_PLUS_5", \
-  "sus2", \
-  "sus4", \
   "dim", \
+  "sus4", \
+  "sus2", \
   "aug" }
+
+#define CHORD_ACCENTS \
+static const char * chord_accent_labels[NUM_CHORD_ACCENTS] = { \
+  "None", \
+  "7", \
+  "j7", \
+  "\u266D9", \
+  "9", \
+  "\u266F9", \
+  "11", \
+  "\u266D5/\u266F11", \
+  "\u266F5/\u266D13", \
+  "6/13" }
 
 /**
  * A ChordDescriptor describes a chord and is not
@@ -136,25 +142,37 @@ typedef struct ChordDescriptor
   /** Has bass note or not. */
   int            has_bass;
 
+  /** 1 if custom. */
+  int            is_custom;
+
   /** Root note. */
   MusicalNote    root_note;
 
   /** Bass note 1 octave below. */
   MusicalNote    bass_note;
 
+  /** Chord type. */
   ChordType      type;
 
+  /** Chord accent. */
+  ChordAccent    accent;
+
   /**
-   * 3 octaves, 1st octave is for bass note.
+   * These should always be filled in, regardless
+   * if the chord is custom or not.
+   *
+   * 4 octaves, 1st octave is for bass note.
    *
    * Starts at C always.
    */
-  int            notes[36];
+  int            notes[48];
 
   /**
    * 0 no inversion,
    * less than 0 highest note(s) drop an octave,
    * greater than 0 lwest note(s) receive an octave.
+   *
+   * TODO
    */
   int                   inversion;
 } ChordDescriptor;
@@ -211,9 +229,10 @@ chord_descriptor_schema = {
 ChordDescriptor *
 chord_descriptor_new (
   MusicalNote            root,
-  uint8_t                has_bass,
+  int                    has_bass,
   MusicalNote            bass,
   ChordType              type,
+  ChordAccent            accent,
   int                    inversion);
 
 static inline int
@@ -269,6 +288,13 @@ chord_descriptor_clone (
 const char *
 chord_descriptor_chord_type_to_string (
   ChordType type);
+
+/**
+ * Returns the chord accent as a string (eg. "j7").
+ */
+const char *
+chord_descriptor_chord_accent_to_string (
+  ChordAccent accent);
 
 /**
  * Returns the musical note as a string (eg. "C3").

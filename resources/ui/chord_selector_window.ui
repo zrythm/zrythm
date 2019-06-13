@@ -89,7 +89,7 @@
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">C#</property>
+                        <property name="label" translatable="yes">D♭</property>
                       </object>
                     </child>
                   </object>
@@ -115,7 +115,7 @@
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">D#</property>
+                        <property name="label" translatable="yes">E♭</property>
                       </object>
                     </child>
                   </object>
@@ -154,7 +154,7 @@
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">F#</property>
+                        <property name="label" translatable="yes">F♯</property>
                       </object>
                     </child>
                   </object>
@@ -180,7 +180,7 @@
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">G#</property>
+                        <property name="label" translatable="yes">A♭</property>
                       </object>
                     </child>
                   </object>
@@ -206,7 +206,7 @@
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">A#</property>
+                        <property name="label" translatable="yes">B♭</property>
                       </object>
                     </child>
                   </object>
@@ -364,7 +364,6 @@
                 <property name="homogeneous">True</property>
                 <property name="min_children_per_line">9</property>
                 <property name="max_children_per_line">9</property>
-                <property name="selection_mode">multiple</property>
                 <property name="activate_on_single_click">False</property>
                 <child>
                   <object class="GtkFlowBoxChild" id="creator_accent_7">
@@ -400,7 +399,7 @@
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">b9</property>
+                        <property name="label" translatable="yes">♭9</property>
                       </object>
                     </child>
                   </object>
@@ -426,7 +425,7 @@
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">#9</property>
+                        <property name="label" translatable="yes">♯9</property>
                       </object>
                     </child>
                   </object>
@@ -452,7 +451,7 @@
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">b5/#11</property>
+                        <property name="label" translatable="yes">♭5/♯11</property>
                       </object>
                     </child>
                   </object>
@@ -465,7 +464,7 @@
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">#5/b13</property>
+                        <property name="label" translatable="yes">♯5/♭13</property>
                       </object>
                     </child>
                   </object>
@@ -535,7 +534,7 @@
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">C#</property>
+                        <property name="label" translatable="yes">D♭</property>
                       </object>
                     </child>
                   </object>
@@ -561,7 +560,7 @@
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">D#</property>
+                        <property name="label" translatable="yes">E♭</property>
                       </object>
                     </child>
                   </object>
@@ -600,7 +599,7 @@
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">F#</property>
+                        <property name="label" translatable="yes">F♯</property>
                       </object>
                     </child>
                   </object>
@@ -626,7 +625,7 @@
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">G#</property>
+                        <property name="label" translatable="yes">A♭</property>
                       </object>
                     </child>
                   </object>
@@ -652,7 +651,7 @@
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">A#</property>
+                        <property name="label" translatable="yes">B♭</property>
                       </object>
                     </child>
                   </object>

@@ -69,11 +69,13 @@ musical_scale_new (
       /* Cm */
       note = root;
       *chords++ =
-        chord_descriptor_new (note, // root
-                            1, // has bass
-                            note, // bass note
-                            CHORD_TYPE_MIN, // type
-                            0); // inversion
+        chord_descriptor_new (
+          note, // root
+          1, // has bass
+          note, // bass note
+          CHORD_TYPE_MIN, // type
+          CHORD_ACC_NONE, // accent
+          0); // inversion
 
       /* Ddim */
       note += 2;
@@ -82,6 +84,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_DIM, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* D# */
@@ -91,6 +94,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MAJ, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* Fm */
@@ -99,6 +103,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MIN, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* Gm */
@@ -107,6 +112,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MIN, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* G# */
@@ -115,6 +121,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MAJ, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* A# */
@@ -123,6 +130,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MAJ, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       break;
@@ -148,6 +156,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MAJ, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* Dm */
@@ -156,6 +165,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MIN, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* Em */
@@ -164,6 +174,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MIN, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* F */
@@ -172,6 +183,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MAJ, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* G */
@@ -180,6 +192,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MAJ, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* Am */
@@ -188,6 +201,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MIN, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* Am */
@@ -196,6 +210,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_DIM, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
       break;
     case SCALE_HARMONIC_MINOR:
@@ -220,6 +235,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MIN, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* Ddim */
@@ -228,6 +244,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_DIM, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* D# aug */
@@ -236,6 +253,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_AUG, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* Fm */
@@ -244,6 +262,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MIN, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* G */
@@ -252,6 +271,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MAJ, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* G# */
@@ -260,6 +280,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MAJ, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* Bdim */
@@ -268,6 +289,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_DIM, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       break;
@@ -293,6 +315,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MIN, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* Dm */
@@ -301,6 +324,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MIN, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* D# aug */
@@ -309,6 +333,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_AUG, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* F */
@@ -317,6 +342,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MAJ, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* G */
@@ -325,6 +351,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_MAJ, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* Adim */
@@ -333,6 +360,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_DIM, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       /* Bdim */
@@ -341,6 +369,7 @@ musical_scale_new (
                             1, // has bass
                             note, // bass note
                             CHORD_TYPE_DIM, // type
+          CHORD_ACC_NONE, // accent
                             0); // inversion
 
       break;

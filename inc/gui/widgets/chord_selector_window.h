@@ -43,6 +43,7 @@ G_DECLARE_FINAL_TYPE (
  */
 
 typedef struct ChordObject ChordObject;
+typedef struct ScaleObject ScaleObject;
 
 /**
  * A GtkPopover to create a ChordDescriptor for use
@@ -52,6 +53,7 @@ typedef struct _ChordSelectorWindowWidget
 {
   GtkWindow         parent_instance;
 
+  GtkFlowBox *      diatonic_flowbox;
   GtkFlowBoxChild * diatonic_i;
   GtkFlowBoxChild * diatonic_ii;
   GtkFlowBoxChild * diatonic_iii;
@@ -66,6 +68,7 @@ typedef struct _ChordSelectorWindowWidget
   GtkLabel *        diatonic_v_lbl;
   GtkLabel *        diatonic_vi_lbl;
   GtkLabel *        diatonic_vii_lbl;
+  GtkFlowBox *      creator_root_note_flowbox;
   GtkFlowBoxChild * creator_root_note_c;
   GtkFlowBoxChild * creator_root_note_cs;
   GtkFlowBoxChild * creator_root_note_d;
@@ -78,12 +81,22 @@ typedef struct _ChordSelectorWindowWidget
   GtkFlowBoxChild * creator_root_note_a;
   GtkFlowBoxChild * creator_root_note_as;
   GtkFlowBoxChild * creator_root_note_b;
+
+  /** All of the above in an array. */
+  GtkFlowBoxChild * creator_root_notes[12];
+
+  GtkFlowBox *      creator_type_flowbox;
   GtkFlowBoxChild * creator_type_maj;
   GtkFlowBoxChild * creator_type_min;
   GtkFlowBoxChild * creator_type_dim;
   GtkFlowBoxChild * creator_type_sus4;
   GtkFlowBoxChild * creator_type_sus2;
   GtkFlowBoxChild * creator_type_aug;
+
+  /** All of the above in an array. */
+  GtkFlowBoxChild * creator_types[6];
+
+  GtkFlowBox *      creator_accent_flowbox;
   GtkFlowBoxChild * creator_accent_7;
   GtkFlowBoxChild * creator_accent_j7;
   GtkFlowBoxChild * creator_accent_b9;
@@ -93,6 +106,11 @@ typedef struct _ChordSelectorWindowWidget
   GtkFlowBoxChild * creator_accent_b5_s11;
   GtkFlowBoxChild * creator_accent_s5_b13;
   GtkFlowBoxChild * creator_accent_6_13;
+
+  /** All of the above in an array. */
+  GtkFlowBoxChild * creator_accents[9];
+
+  GtkFlowBox *      creator_bass_note_flowbox;
   GtkFlowBoxChild * creator_bass_note_c;
   GtkFlowBoxChild * creator_bass_note_cs;
   GtkFlowBoxChild * creator_bass_note_d;
@@ -105,11 +123,22 @@ typedef struct _ChordSelectorWindowWidget
   GtkFlowBoxChild * creator_bass_note_a;
   GtkFlowBoxChild * creator_bass_note_as;
   GtkFlowBoxChild * creator_bass_note_b;
+
+  /** All of the above in an array. */
+  GtkFlowBoxChild * creator_bass_notes[12];
+
   GtkRadioButton *  creator_visibility_all;
   GtkRadioButton *  creator_visibility_in_scale;
 
   /** The owner ChordObjectWidget. */
   ChordObjectWidget * chord;
+
+  /** ScaleObject at the chord's position. */
+  ScaleObject *      scale;
+
+  /** The descriptor of the edited chord, so
+   * it can be used to save into the ChordObject. */
+  ChordDescriptor * descr;
 
 } ChordSelectorWindowWidget;
 

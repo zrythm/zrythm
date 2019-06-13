@@ -41,8 +41,6 @@
 #include "utils/arrays.h"
 #include "utils/flags.h"
 
-DEFINE_START_POS
-
 #define SET_POS(r,pos_name,pos,trans_only) \
   POSITION_SET_ARRANGER_OBJ_POS ( \
     midi_note, r, pos_name, pos, trans_only)

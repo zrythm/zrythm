@@ -24,6 +24,7 @@
 /* see chord_desriptor.h */
 NOTE_LABELS;
 CHORD_TYPES;
+CHORD_ACCENTS;
 
 /**
  * Creates a ChordDescriptor.
@@ -31,9 +32,10 @@ CHORD_TYPES;
 ChordDescriptor *
 chord_descriptor_new (
   MusicalNote            root,
-  uint8_t                has_bass,
+  int                    has_bass,
   MusicalNote            bass,
   ChordType              type,
+  ChordAccent            accent,
   int                    inversion)
 {
   ChordDescriptor * self =
@@ -44,6 +46,7 @@ chord_descriptor_new (
   if (has_bass)
     self->bass_note = bass;
   self->type = type;
+  self->accent = accent;
   self->inversion = inversion;
 
   /* add bass note */
@@ -55,7 +58,7 @@ chord_descriptor_new (
   /* add root note */
   self->notes[12 + root] = 1;
 
-  /* add rest of chord notes */
+  /* add 2 more notes for triad */
   switch (type)
     {
     case CHORD_TYPE_MAJ:
@@ -87,6 +90,46 @@ chord_descriptor_new (
       break;
     }
 
+  /* add accents */
+  switch (accent)
+    {
+    case CHORD_ACC_NONE:
+      break;
+    case CHORD_ACC_7:
+      self->notes[12 + root + 10] = 1;
+      break;
+    case CHORD_ACC_j7:
+      self->notes[12 + root + 11] = 1;
+      break;
+    case CHORD_ACC_b9:
+      self->notes[12 + root + 13] = 1;
+      break;
+    case CHORD_ACC_9:
+      self->notes[12 + root + 14] = 1;
+      break;
+    case CHORD_ACC_S9:
+      self->notes[12 + root + 15] = 1;
+      break;
+    case CHORD_ACC_11:
+      self->notes[12 + root + 17] = 1;
+      break;
+    case CHORD_ACC_b5_S11:
+      self->notes[12 + root + 6] = 1;
+      self->notes[12 + root + 18] = 1;
+      break;
+    case CHORD_ACC_S5_b13:
+      self->notes[12 + root + 8] = 1;
+      self->notes[12 + root + 16] = 1;
+      break;
+    case CHORD_ACC_6_13:
+      self->notes[12 + root + 9] = 1;
+      self->notes[12 + root + 21] = 1;
+      break;
+    default:
+      g_warning ("chord unimplemented");
+      break;
+    }
+
   /* TODO invert */
 
   return self;
@@ -102,7 +145,7 @@ chord_descriptor_clone (
   ChordDescriptor * cd =
     chord_descriptor_new (
       src->root_note, src->has_bass, src->bass_note,
-      src->type, src->inversion);
+      src->type, src->accent, src->inversion);
 
   return cd;
 }
@@ -127,6 +170,17 @@ chord_descriptor_chord_type_to_string (
 {
   (void) chord_type_labels;
   return chord_type_labels[type];
+}
+
+/**
+ * Returns the chord accent as a string (eg. "j7").
+ */
+const char *
+chord_descriptor_chord_accent_to_string (
+  ChordAccent accent)
+{
+  (void) chord_accent_labels;
+  return chord_accent_labels[accent];
 }
 
 /**
@@ -163,12 +217,26 @@ char *
 chord_descriptor_to_string (
   ChordDescriptor * chord)
 {
-  return g_strdup_printf (
+  char * str = g_strdup_printf (
     "%s%s",
     chord_descriptor_note_to_string (
       chord->root_note),
     chord_descriptor_chord_type_to_string (
       chord->type));
+
+  if (chord->accent > CHORD_ACC_NONE)
+    {
+      char * str2 =
+        g_strdup_printf (
+          "%s %s",
+          str,
+          chord_descriptor_chord_accent_to_string (
+            chord->accent));
+      g_free (str);
+      str = str2;
+    }
+
+  return str;
 }
 
 void

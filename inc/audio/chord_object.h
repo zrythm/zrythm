@@ -170,6 +170,14 @@ chord_object_find (
   ChordObject * clone);
 
 /**
+ * Finds the ChordObject in the project
+ * corresponding to the given one's position.
+ */
+ChordObject *
+chord_object_find_by_pos (
+  ChordObject * clone);
+
+/**
  * Clones the given chord.
  */
 ChordObject *

@@ -29,6 +29,7 @@
 #include "actions/delete_tracks_action.h"
 #include "actions/duplicate_midi_arranger_selections_action.h"
 #include "actions/duplicate_timeline_selections_action.h"
+#include "actions/edit_chord_action.h"
 #include "actions/edit_midi_arranger_selections_action.h"
 #include "actions/edit_plugins_action.h"
 #include "actions/edit_tracks_action.h"
@@ -103,6 +104,9 @@ undoable_action_do (UndoableAction * self)
     DO_ACTION (DELETE_TL_SELECTIONS,
                delete_timeline_selections,
                DeleteTimelineSelections);
+    DO_ACTION (EDIT_CHORD,
+               edit_chord,
+               EditChord);
     DO_ACTION (CREATE_MA_SELECTIONS,
                create_midi_arranger_selections,
                CreateMidiArrangerSelections);
@@ -187,6 +191,9 @@ undoable_action_undo (UndoableAction * self)
     UNDO_ACTION (DELETE_TL_SELECTIONS,
                delete_timeline_selections,
                DeleteTimelineSelections);
+    UNDO_ACTION (EDIT_CHORD,
+               edit_chord,
+               EditChord);
     UNDO_ACTION (CREATE_MA_SELECTIONS,
                create_midi_arranger_selections,
                CreateMidiArrangerSelections);
@@ -266,6 +273,9 @@ undoable_action_free (UndoableAction * self)
     FREE_ACTION (DELETE_TL_SELECTIONS,
                delete_timeline_selections,
                DeleteTimelineSelections);
+    FREE_ACTION (EDIT_CHORD,
+               edit_chord,
+               EditChord);
     FREE_ACTION (CREATE_MA_SELECTIONS,
                create_midi_arranger_selections,
                CreateMidiArrangerSelections);
@@ -351,6 +361,9 @@ undoable_action_stringize (
     STRINGIZE_UA (DELETE_TL_SELECTIONS,
                   DeleteTimelineSelections,
                   delete_timeline_selections);
+    STRINGIZE_UA (EDIT_CHORD,
+                  EditChord,
+                  edit_chord);
     STRINGIZE_UA (CREATE_MA_SELECTIONS,
                   CreateMidiArrangerSelections,
                   create_midi_arranger_selections);

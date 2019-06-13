@@ -26,10 +26,6 @@
 #include "project.h"
 #include "utils/flags.h"
 
-NOTE_LABELS;
-
-DEFINE_START_POS
-
 #define SET_POS(_c,pos_name,_pos,_trans_only) \
   POSITION_SET_ARRANGER_OBJ_POS ( \
     chord_object, _c, pos_name, _pos, _trans_only)
@@ -107,6 +103,25 @@ chord_object_find (
       if (chord_object_is_equal (
             P_CHORD_TRACK->chords[i],
             clone))
+        return P_CHORD_TRACK->chords[i];
+    }
+  return NULL;
+}
+
+/**
+ * Finds the ChordObject in the project
+ * corresponding to the given one's position.
+ */
+ChordObject *
+chord_object_find_by_pos (
+  ChordObject * clone)
+{
+  for (int i = 0;
+       i < P_CHORD_TRACK->num_chords; i++)
+    {
+      if (position_is_equal (
+            &P_CHORD_TRACK->chords[i]->pos,
+            &clone->pos))
         return P_CHORD_TRACK->chords[i];
     }
   return NULL;

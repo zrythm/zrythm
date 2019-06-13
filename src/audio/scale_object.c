@@ -26,10 +26,6 @@
 #include "project.h"
 #include "utils/flags.h"
 
-NOTE_LABELS;
-
-DEFINE_START_POS
-
 #define SET_POS(_c,pos_name,_pos,_trans_only) \
   POSITION_SET_ARRANGER_OBJ_POS ( \
     scale_object, _c, pos_name, _pos, _trans_only)

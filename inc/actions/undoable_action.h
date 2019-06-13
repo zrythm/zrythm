@@ -54,6 +54,12 @@ typedef enum UndoableActionType
 
   /* ---------------- end ----------------- */
 
+  /* ---------- CHORDS --------------- */
+
+  UNDOABLE_ACTION_TYPE_EDIT_CHORD,
+
+  /* --------------- end ---------------- */
+
   /* -------- MIDI ARRANGER SELECTIONS --------- */
 
   UNDOABLE_ACTION_TYPE_CREATE_MA_SELECTIONS,

@@ -8,6 +8,7 @@ action_srcs = [
   'move_midi_arranger_selections_action.c',
   'duplicate_timeline_selections_action.c',
   'edit_midi_arranger_selections_action.c',
+  'edit_chord_action.c',
   'move_timeline_selections_action.c',
   'create_timeline_selections_action.c',
   'undoable_action.c',
