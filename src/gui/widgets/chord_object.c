@@ -21,6 +21,7 @@
 #include "audio/chord_track.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/chord_object.h"
+#include "gui/widgets/chord_selector_window.h"
 #include "project.h"
 #include "utils/cairo.h"
 #include "utils/ui.h"
@@ -87,6 +88,25 @@ chord_draw_cb (
   g_free (str);
 
  return FALSE;
+}
+
+static void
+on_press (
+  GtkGestureMultiPress *gesture,
+  gint                  n_press,
+  gdouble               x,
+  gdouble               y,
+  ChordObjectWidget *   self)
+{
+  if (n_press == 2)
+    {
+      ChordSelectorWindowWidget * chord_selector =
+        chord_selector_window_widget_new (
+          self);
+
+      gtk_window_present (
+        GTK_WINDOW (chord_selector));
+    }
 }
 
 /**
@@ -185,6 +205,11 @@ chord_object_widget_init (
     GTK_WIDGET (self->drawing_area),
     GDK_ALL_EVENTS_MASK);
 
+  self->mp =
+    GTK_GESTURE_MULTI_PRESS (
+      gtk_gesture_multi_press_new (
+        GTK_WIDGET (self->drawing_area)));
+
   g_signal_connect (
     G_OBJECT (self->drawing_area), "draw",
     G_CALLBACK (chord_draw_cb), self);
@@ -200,6 +225,9 @@ chord_object_widget_init (
     G_OBJECT(self->drawing_area),
     "motion-notify-event",
     G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT (self->mp), "pressed",
+    G_CALLBACK (on_press), self);
 
   g_object_ref (self);
 }

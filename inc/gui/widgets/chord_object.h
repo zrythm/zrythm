@@ -52,6 +52,9 @@ typedef struct _ChordObjectWidget
   GtkBox           parent_instance;
   GtkDrawingArea * drawing_area;
   ChordObject *    chord;
+
+  /** For double click. */
+  GtkGestureMultiPress * mp;
 } ChordObjectWidget;
 
 /**

@@ -1126,7 +1126,6 @@ drag_begin (GtkGestureDrag *   gesture,
             gdouble            start_y,
             ArrangerWidget *   self)
 {
-  g_message ("ARRANGER DRAG BEGIN");
   GET_PRIVATE;
 
   ar_prv->start_x = start_x;

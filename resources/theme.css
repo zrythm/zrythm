@@ -435,3 +435,9 @@ automation-lane
   border-top-width: 2px;
   border-color: alpha (grey, 0.3);
 }
+
+.section_heading
+{
+  font-weight: bold;
+  font-size: small;
+}

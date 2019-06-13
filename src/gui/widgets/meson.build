@@ -25,6 +25,7 @@ widget_srcs = [
   'chord_button.c',
   'chord_object.c',
   'chord_pad.c',
+  'chord_selector_window.c',
   'chord_track.c',
   'clip_editor.c',
   'color_area.c',

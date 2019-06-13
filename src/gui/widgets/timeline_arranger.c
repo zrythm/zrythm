@@ -2160,15 +2160,22 @@ timeline_arranger_widget_on_drag_end (
       /* if something was clicked with ctrl without
        * moving*/
       if (ar_prv->ctrl_held)
-        if (self->start_region &&
-            region_is_selected (
-              self->start_region))
-          {
-            /* deselect it */
-            ARRANGER_WIDGET_SELECT_REGION (
-              self, self->start_region,
-              F_NO_SELECT, F_APPEND);
-          }
+        {
+          if (self->start_region &&
+              region_is_selected (
+                self->start_region))
+            {
+              /* deselect it */
+              ARRANGER_WIDGET_SELECT_REGION (
+                self, self->start_region,
+                F_NO_SELECT, F_APPEND);
+            }
+        }
+      else if (ar_prv->n_press == 2)
+        {
+          /* double click on object */
+          /*g_message ("DOUBLE CLICK");*/
+        }
     }
   else if (ar_prv->action ==
              UI_OVERLAY_ACTION_MOVING)

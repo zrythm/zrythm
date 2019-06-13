@@ -17,9 +17,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Port selector popover.
+ */
+
 #ifndef __GUI_WIDGETS_PORT_SELECTOR_POPOVER_H__
 #define __GUI_WIDGETS_PORT_SELECTOR_POPOVER_H__
-
 
 #include <gtk/gtk.h>
 
@@ -39,6 +44,9 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct Port Port;
 
+/**
+ * A GtkPopover to select Port's.
+ */
 typedef struct _PortSelectorPopoverWidget
 {
   GtkPopover        parent_instance;
