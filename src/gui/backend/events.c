@@ -917,10 +917,6 @@ events_process (void * data)
           midi_arranger_widget_refresh_children (
             MIDI_ARRANGER);
           break;
-        case ET_PIANO_ROLL_HIGHLIGHTING_CHANGED:
-          piano_roll_widget_refresh (
-            MW_PIANO_ROLL);
-          break;
         case ET_REGION_CREATED:
         case ET_CHORD_CREATED:
         case ET_SCALE_CREATED:
@@ -932,6 +928,7 @@ events_process (void * data)
           break;
         case ET_CHORD_CHANGED:
         case ET_SCALE_CHANGED:
+        case ET_PIANO_ROLL_HIGHLIGHTING_CHANGED:
           if (MW_PIANO_ROLL)
             piano_roll_widget_refresh_labels (
               MW_PIANO_ROLL, 0);

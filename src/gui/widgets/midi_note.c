@@ -81,12 +81,15 @@ midi_note_draw_cb (
   Region * region = mn->region;
   GdkRGBA * track_color =
     &region->lane->track->color;
+  Position global_start_pos;
+  midi_note_get_global_start_pos (
+    mn, &global_start_pos);
   ChordObject * co =
     chord_track_get_chord_at_pos (
-      P_CHORD_TRACK, &mn->start_pos);
+      P_CHORD_TRACK, &global_start_pos);
   ScaleObject * so =
     chord_track_get_scale_at_pos (
-      P_CHORD_TRACK, &mn->start_pos);
+      P_CHORD_TRACK, &global_start_pos);
   GdkRGBA color;
   int in_scale =
     so && musical_scale_is_key_in_scale (

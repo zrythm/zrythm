@@ -156,6 +156,17 @@ midi_note_init_loaded (
   MidiNote * self);
 
 /**
+ * Gets the global Position of the MidiNote's
+ * start_pos.
+ *
+ * @param pos Position to fill in.
+ */
+void
+midi_note_get_global_start_pos (
+  MidiNote * self,
+  Position * pos);
+
+/**
  * @param is_main Is main MidiNote. If this is 1 then
  *   arranger_object_info_init_main() is called to
  *   create a transient midi note in obj_info.

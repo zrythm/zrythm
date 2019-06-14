@@ -20,10 +20,12 @@
 #include "actions/undo_manager.h"
 #include "actions/undoable_action.h"
 #include "gui/accel.h"
+#include "gui/backend/events.h"
 #include "gui/widgets/piano_roll_toolbar.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/snap_grid.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
@@ -33,6 +35,16 @@ G_DEFINE_TYPE (PianoRollToolbarWidget,
                piano_roll_toolbar_widget,
                GTK_TYPE_TOOLBAR)
 
+static void
+on_highlighting_changed (
+  GtkComboBox *widget,
+  PianoRollToolbarWidget * self)
+{
+  piano_roll_set_highlighting (
+    PIANO_ROLL,
+    gtk_combo_box_get_active (widget));
+}
+
 void
 piano_roll_toolbar_widget_setup (
   PianoRollToolbarWidget * self)
@@ -41,6 +53,18 @@ piano_roll_toolbar_widget_setup (
   snap_grid_widget_setup (
     self->snap_grid_midi,
     &PROJECT->snap_grid_midi);
+
+  /* setup highlighting */
+  gtk_combo_box_set_active (
+    GTK_COMBO_BOX (
+      self->chord_highlighting),
+    PIANO_ROLL->highlighting);
+
+  /* setup signals */
+  g_signal_connect (
+    G_OBJECT(self->chord_highlighting),
+    "changed",
+    G_CALLBACK (on_highlighting_changed),  self);
 }
 
 static void

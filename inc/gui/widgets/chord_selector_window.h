@@ -53,6 +53,8 @@ typedef struct _ChordSelectorWindowWidget
 {
   GtkWindow         parent_instance;
 
+  GtkNotebook *     notebook;
+
   GtkFlowBox *      diatonic_flowbox;
   GtkFlowBoxChild * diatonic_i;
   GtkFlowBoxChild * diatonic_ii;

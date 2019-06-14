@@ -73,6 +73,10 @@ piano_roll_set_highlighting (
 {
   self->highlighting = highlighting;
 
+  g_settings_set_enum (
+    S_UI, "piano-roll-highlight",
+    highlighting);
+
   EVENTS_PUSH (ET_PIANO_ROLL_HIGHLIGHTING_CHANGED,
                NULL);
 }
@@ -84,7 +88,9 @@ piano_roll_init (PianoRoll * self)
 
   self->midi_modifier = MIDI_MODIFIER_VELOCITY;
 
-  self->highlighting = PR_HIGHLIGHT_BOTH;
+  self->highlighting =
+    g_settings_get_enum (
+      S_UI, "piano-roll-highlight");
 
   MidiNoteDescriptor * descr;
   int idx = 0;

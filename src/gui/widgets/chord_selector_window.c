@@ -366,12 +366,64 @@ setup_diatonic_tab (
 {
   if (self->scale)
     {
-      /* TODO */
+      MusicalScale * scale =
+        self->scale->scale;
+      /* major */
+      if (scale->type == SCALE_IONIAN)
+        {
+          gtk_label_set_text (
+            self->diatonic_i_lbl,
+            "I");
+          gtk_label_set_text (
+            self->diatonic_ii_lbl,
+            "ii");
+          gtk_label_set_text (
+            self->diatonic_iii_lbl,
+            "iii");
+          gtk_label_set_text (
+            self->diatonic_iv_lbl,
+            "IV");
+          gtk_label_set_text (
+            self->diatonic_v_lbl,
+            "V");
+          gtk_label_set_text (
+            self->diatonic_vi_lbl,
+            "vi");
+          gtk_label_set_text (
+            self->diatonic_vii_lbl,
+            "vii\u00B0");
+        }
+      /* minor */
+      else if (scale->type == SCALE_AEOLIAN)
+        {
+          gtk_label_set_text (
+            self->diatonic_i_lbl,
+            "i");
+          gtk_label_set_text (
+            self->diatonic_ii_lbl,
+            "ii\u00B0");
+          gtk_label_set_text (
+            self->diatonic_iii_lbl,
+            "III");
+          gtk_label_set_text (
+            self->diatonic_iv_lbl,
+            "iv");
+          gtk_label_set_text (
+            self->diatonic_v_lbl,
+            "v");
+          gtk_label_set_text (
+            self->diatonic_vi_lbl,
+            "VI");
+          gtk_label_set_text (
+            self->diatonic_vii_lbl,
+            "VII");
+        }
     }
   else
     {
-      gtk_widget_set_sensitive (
-        GTK_WIDGET (self->diatonic_flowbox), 0);
+      /* remove diatonic page */
+      gtk_notebook_remove_page (
+        self->notebook, 1);
     }
 }
 
@@ -521,6 +573,7 @@ chord_selector_window_widget_class_init (
     ChordSelectorWindowWidget, \
     child)
 
+  BIND_CHILD (notebook);
   BIND_CHILD (diatonic_flowbox);
   BIND_CHILD (diatonic_i);
   BIND_CHILD (diatonic_ii);

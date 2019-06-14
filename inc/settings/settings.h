@@ -17,8 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __SETTINGS_H__
-#define __SETTINGS_H__
+#ifndef __SETTINGS_SETTINGS_H__
+#define __SETTINGS_SETTINGS_H__
 
 #include <gtk/gtk.h>
 

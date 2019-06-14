@@ -266,6 +266,25 @@ midi_note_is_equal (
 }
 
 /**
+ * Gets the global Position of the MidiNote's
+ * start_pos.
+ *
+ * @param pos Position to fill in.
+ */
+void
+midi_note_get_global_start_pos (
+  MidiNote * self,
+  Position * pos)
+{
+  position_set_to_pos (
+    pos, &self->start_pos);
+  position_add_ticks (
+    pos,
+    position_to_ticks (
+      &self->region->start_pos));
+}
+
+/**
  * Resizes the MidiNote on the left side or right side
  * by given amount of ticks.
  *
