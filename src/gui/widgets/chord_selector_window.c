@@ -37,6 +37,11 @@ G_DEFINE_TYPE (
   chord_selector_window_widget,
   GTK_TYPE_WINDOW)
 
+#define IN_SCALE_TOGGLED \
+  (gtk_toggle_button_get_active ( \
+     GTK_TOGGLE_BUTTON ( \
+       self->creator_visibility_in_scale)))
+
 static gboolean
 on_delete_event (
   GtkWidget *widget,
@@ -53,19 +58,101 @@ on_delete_event (
   return FALSE;
 }
 
+/**
+ * Returns the MusicalNote corresponding to the
+ * given GtkFlowBoxChild.
+ */
+static MusicalNote
+get_note_from_creator_root_notes (
+  ChordSelectorWindowWidget * self,
+  GtkFlowBoxChild *           child)
+{
+  for (int i = 0; i < 12; i++)
+    {
+      if (self->creator_root_notes[i] == child)
+        return i;
+    }
+  g_return_val_if_reached (0);
+}
+
+static ChordType
+get_type_from_creator_types (
+  ChordSelectorWindowWidget * self,
+  GtkFlowBoxChild *           child)
+{
+  for (int i = 0; i < NUM_CHORD_TYPES; i++)
+    {
+      if (self->creator_types[i] == child)
+        return i;
+    }
+  g_return_val_if_reached (0);
+}
+
+/**
+ * Returns the currently selected root note, or
+ * -1 if no selection.
+ */
+static MusicalNote
+get_selected_root_note (
+  ChordSelectorWindowWidget * self)
+{
+  MusicalNote note = -1;
+  GList * list =
+    gtk_flow_box_get_selected_children (
+      self->creator_root_note_flowbox);
+
+  if (list)
+    {
+      GtkFlowBoxChild * selected_root_note =
+        GTK_FLOW_BOX_CHILD (
+          g_list_first (list)->data);
+      if (selected_root_note)
+        note =
+          get_note_from_creator_root_notes (
+            self, selected_root_note);
+      g_list_free (list);
+    }
+
+  return note;
+}
+
+/**
+ * Returns the currently selected chord type, or
+ * -1 if no selection.
+ */
+static ChordType
+get_selected_chord_type (
+  ChordSelectorWindowWidget * self)
+{
+  ChordType type = -1;
+
+  GList * list =
+    gtk_flow_box_get_selected_children (
+      self->creator_type_flowbox);
+  if (list)
+    {
+      GtkFlowBoxChild * selected_type =
+        GTK_FLOW_BOX_CHILD (
+          g_list_first (list)->data);
+      if (selected_type)
+        type =
+          get_type_from_creator_types (
+            self, selected_type);
+      g_list_free (list);
+    }
+
+  return type;
+}
+
 static void
 creator_select_root_note (
   GtkFlowBox * box,
   GtkFlowBoxChild * child,
   ChordSelectorWindowWidget * self)
 {
-  for (int i = 0; i < 12; i++)
-    {
-      if (self->creator_root_notes[i] != child)
-        continue;
-
-      self->descr->root_note = i;
-    }
+  self->descr->root_note =
+    get_note_from_creator_root_notes (
+      self, child);
 }
 
 static void
@@ -99,6 +186,21 @@ creator_select_accent (
 }
 
 static void
+creator_select_bass_note (
+  GtkFlowBox * box,
+  GtkFlowBoxChild * child,
+  ChordSelectorWindowWidget * self)
+{
+  for (int i = 0; i < 12; i++)
+    {
+      if (self->creator_bass_notes[i] != child)
+        continue;
+
+      self->descr->bass_note = i;
+    }
+}
+
+static void
 on_creator_root_note_selected_children_changed (
   GtkFlowBox * flowbox,
   ChordSelectorWindowWidget * self)
@@ -107,6 +209,21 @@ on_creator_root_note_selected_children_changed (
     flowbox,
     (GtkFlowBoxForeachFunc) creator_select_root_note,
     self);
+  if (IN_SCALE_TOGGLED)
+    {
+      gtk_flow_box_unselect_all (
+        self->creator_type_flowbox);
+      gtk_flow_box_unselect_all (
+        self->creator_accent_flowbox);
+      gtk_flow_box_unselect_all (
+        self->creator_bass_note_flowbox);
+      gtk_flow_box_invalidate_filter (
+        self->creator_type_flowbox);
+      gtk_flow_box_invalidate_filter (
+        self->creator_accent_flowbox);
+      gtk_flow_box_invalidate_filter (
+        self->creator_bass_note_flowbox);
+    }
 }
 
 static void
@@ -118,6 +235,14 @@ on_creator_type_selected_children_changed (
     flowbox,
     (GtkFlowBoxForeachFunc) creator_select_type,
     self);
+
+  if (IN_SCALE_TOGGLED)
+    {
+      gtk_flow_box_unselect_all (
+        self->creator_accent_flowbox);
+      gtk_flow_box_invalidate_filter (
+        self->creator_accent_flowbox);
+    }
 }
 
 static void
@@ -136,7 +261,10 @@ on_creator_bass_note_selected_children_changed (
   GtkFlowBox * flowbox,
   ChordSelectorWindowWidget * self)
 {
-
+  gtk_flow_box_selected_foreach (
+    flowbox,
+    (GtkFlowBoxForeachFunc) creator_select_bass_note,
+    self);
 }
 
 static void
@@ -245,6 +373,104 @@ setup_diatonic_tab (
       gtk_widget_set_sensitive (
         GTK_WIDGET (self->diatonic_flowbox), 0);
     }
+}
+
+static gboolean
+creator_filter (
+  GtkFlowBoxChild * child,
+  ChordSelectorWindowWidget * self)
+{
+  if (IN_SCALE_TOGGLED)
+    {
+      int i;
+
+      /* root notes */
+      for (i = 0; i < 12; i++)
+        {
+          if (child != self->creator_root_notes[i])
+            continue;
+
+          return
+            musical_scale_is_key_in_scale (
+              self->scale->scale, i);
+        }
+
+      /* bass notes */
+      for (i = 0; i < 12; i++)
+        {
+          if (child != self->creator_bass_notes[i])
+            continue;
+
+          return
+            musical_scale_is_key_in_scale (
+              self->scale->scale, i);
+        }
+
+      /* accents */
+      for (i = 0; i < NUM_CHORD_ACCENTS - 1; i++)
+        {
+          if (self->creator_accents[i] != child)
+            continue;
+
+          MusicalNote note =
+            get_selected_root_note (self);
+          ChordType type =
+            get_selected_chord_type (self);
+
+          if (note == -1 || type == -1)
+            return 0;
+
+          return
+            musical_scale_is_accent_in_scale (
+              self->scale->scale, note,
+              type, i + 1);
+        }
+
+      /* type */
+      for (i = 0; i < NUM_CHORD_TYPES; i++)
+        {
+          if (self->creator_types[i] != child)
+            continue;
+
+          MusicalNote note =
+            get_selected_root_note (self);
+          if (note == -1)
+            return 0;
+
+          ChordDescriptor * chord =
+            chord_descriptor_new (
+              note, 0, 0, i, CHORD_ACC_NONE, 0);
+
+          int ret =
+            musical_scale_is_chord_in_scale (
+              self->scale->scale, chord);
+          chord_descriptor_free (chord);
+
+          return ret;
+        }
+
+
+      return 0;
+    }
+  else
+    {
+      return 1;
+    }
+}
+
+static void
+on_group_changed (
+  GtkWidget * widget,
+  ChordSelectorWindowWidget * self)
+{
+  gtk_flow_box_invalidate_filter (
+    self->creator_root_note_flowbox);
+  gtk_flow_box_invalidate_filter (
+    self->creator_type_flowbox);
+  gtk_flow_box_invalidate_filter (
+    self->creator_accent_flowbox);
+  gtk_flow_box_invalidate_filter (
+    self->creator_bass_note_flowbox);
 }
 
 /**
@@ -447,8 +673,30 @@ chord_selector_window_widget_init (
   self->creator_accents[8] =
     self->creator_accent_6_13;
 
+  /* set filter functions */
+  gtk_flow_box_set_filter_func (
+    self->creator_root_note_flowbox,
+    (GtkFlowBoxFilterFunc) creator_filter,
+    self, NULL);
+  gtk_flow_box_set_filter_func (
+    self->creator_type_flowbox,
+    (GtkFlowBoxFilterFunc) creator_filter,
+    self, NULL);
+  gtk_flow_box_set_filter_func (
+    self->creator_accent_flowbox,
+    (GtkFlowBoxFilterFunc) creator_filter,
+    self, NULL);
+  gtk_flow_box_set_filter_func (
+    self->creator_bass_note_flowbox,
+    (GtkFlowBoxFilterFunc) creator_filter,
+    self, NULL);
+
   /* set signals */
   g_signal_connect (
     G_OBJECT (self), "delete-event",
     G_CALLBACK (on_delete_event), self);
+  g_signal_connect (
+    G_OBJECT (self->creator_visibility_all),
+    "toggled",
+    G_CALLBACK (on_group_changed), self);
 }

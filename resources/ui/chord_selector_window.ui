@@ -66,7 +66,6 @@
                 <property name="can_focus">False</property>
                 <property name="homogeneous">True</property>
                 <property name="max_children_per_line">12</property>
-                <property name="selection_mode">browse</property>
                 <property name="activate_on_single_click">False</property>
                 <child>
                   <object class="GtkFlowBoxChild" id="creator_root_note_c">
@@ -253,7 +252,6 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="homogeneous">True</property>
-                <property name="selection_mode">browse</property>
                 <property name="activate_on_single_click">False</property>
                 <child>
                   <object class="GtkFlowBoxChild" id="creator_type_maj">

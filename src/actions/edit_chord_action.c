@@ -67,13 +67,15 @@ int
 edit_chord_action_undo (
 	EditChordAction * self)
 {
-  /* get the actual chord (by position since it's not
-   * equal anymore */
+  /* get the actual chord */
+  ChordDescriptor * prev = self->chord->descr;
+  self->chord->descr = self->descr;
   ChordObject * chord =
-    chord_object_find_by_pos (self->chord);
+    chord_object_find (self->chord);
+  self->chord->descr = prev;
 
   /* set the old descriptor */
-  ChordDescriptor * prev = chord->descr;
+  prev = chord->descr;
   chord->descr =
     chord_descriptor_clone (self->chord->descr);
   chord_descriptor_free (prev);

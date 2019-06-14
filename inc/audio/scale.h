@@ -43,15 +43,19 @@
  */
 typedef enum MusicalScaleType
 {
-  SCALE_ACOUSTIC,
+  SCALE_CHROMATIC, ///< all keys
+  SCALE_IONIAN, ///< major
   SCALE_AEOLIAN, ///< natural minor
+  SCALE_HARMONIC_MINOR,
+
+  /* rest TODO */
+  SCALE_ACOUSTIC,
   SCALE_ALGERIAN,
   SCALE_ALTERED,
   SCALE_AUGMENTED,
   SCALE_BEBOP_DOMINANT,
   SCALE_BLUES,
   SCALE_CHINESE,
-  SCALE_CHROMATIC, ///< all keys
   SCALE_DIMINISHED,
   SCALE_DOMINANT_DIMINISHED,
   SCALE_DORIAN,
@@ -64,14 +68,12 @@ typedef enum MusicalScaleType
   SCALE_GYPSY,
   SCALE_HALF_DIMINISHED,
   SCALE_HARMONIC_MAJOR,
-  SCALE_HARMONIC_MINOR,
   SCALE_HINDU,
   SCALE_HIRAJOSHI,
   SCALE_HUNGARIAN_GYPSY,
   SCALE_HUNGARIAN_MINOR,
   SCALE_IN,
   SCALE_INSEN,
-  SCALE_IONIAN, ///< major
   SCALE_ISTRIAN,
   SCALE_IWATO,
   SCALE_LOCRIAN,
@@ -366,6 +368,25 @@ musical_scale_is_equal (
   /* TODO */
   return a->type == b->type;
 }
+
+/**
+ * Returns if all of the chord's notes are in
+ * the scale.
+ */
+int
+musical_scale_is_chord_in_scale (
+  MusicalScale * scale,
+  ChordDescriptor * chord);
+
+/**
+ * Returns if the accent is in the scale.
+ */
+int
+musical_scale_is_accent_in_scale (
+  MusicalScale * scale,
+  MusicalNote    chord_root,
+  ChordType      type,
+  ChordAccent    chord_accent);
 
 /**
  * Returns if the given key is in the given

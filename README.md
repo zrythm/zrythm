@@ -33,12 +33,13 @@ For manual installation,
 For more details see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Using
-At the moment, Zrythm assumes you have Jack installed and will only run if Jack is running. For Jack setup instructions see https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack
+At the moment, Zrythm works with Jack (recommended) and ALSA. For Jack setup instructions see https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack
 
 Please refer to the [manual](https://manual.zrythm.org) for more information.
 
 ## Contributing
-For contributing guidelines see [CONTRIBUTING.md](CONTRIBUTING.md)
+For contributing guidelines see [CONTRIBUTING.md](CONTRIBUTING.md). Be sure to take a look at the
+[Developer Docs](https://docs.zrythm.org)
 
 For any bugs please raise an issue or join a chatroom below
 
@@ -70,11 +71,7 @@ Zrythm and its up-to-date binaries and packages are provided at no cost.
 
 Our aim is to work on Zrythm full time, so if you like the software we’d appreciate a donation below.
 
-Thank you.
-
 ### Paypal
 https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LZWVK6228PQGE&source=url
 ### LiberaPay
 https://liberapay.com/Zrythm/
-### Bitcoin
-bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j

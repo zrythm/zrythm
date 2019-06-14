@@ -30,6 +30,8 @@
 #include "audio/chord_descriptor.h"
 #include "audio/scale.h"
 
+#include <glib/gi18n.h>
+
 /**
  * Creates new scale using type and root note.
  */
@@ -50,6 +52,22 @@ musical_scale_new (
   MusicalNote note;
   switch (self->type)
     {
+    case SCALE_CHROMATIC:
+      self->has_asc_desc = 0;
+      *notes++ = 1; // C
+      *notes++ = 1; // C#
+      *notes++ = 1; // D
+      *notes++ = 1; // D#
+      *notes++ = 1; // E
+      *notes++ = 1; // F
+      *notes++ = 1; // F#
+      *notes++ = 1; // G
+      *notes++ = 1; // G#
+      *notes++ = 1; // A
+      *notes++ = 1; // A#
+      *notes++ = 1; // B
+      self->num_notes = 12;
+      break;
     case SCALE_AEOLIAN: // natural minor
       self->has_asc_desc = 0;
       *notes++ = 1; // C
@@ -420,6 +438,100 @@ musical_scale_is_key_in_scale (
 }
 
 /**
+ * Returns if all of the chord's notes are in
+ * the scale.
+ */
+int
+musical_scale_is_chord_in_scale (
+  MusicalScale * scale,
+  ChordDescriptor * chord)
+{
+  for (int i = 0; i < 48; i++)
+    {
+      if (chord->notes[i] &&
+          !musical_scale_is_key_in_scale (
+            scale, i % 12))
+        return 0;
+    }
+  return 1;
+}
+
+/**
+ * Returns if the accent is in the scale.
+ */
+int
+musical_scale_is_accent_in_scale (
+  MusicalScale * scale,
+  MusicalNote    chord_root,
+  ChordType      type,
+  ChordAccent    chord_accent)
+{
+  if (!musical_scale_is_key_in_scale (
+        scale, chord_root))
+    return 0;
+
+  int min_seventh_sems =
+    type == CHORD_TYPE_DIM ? 9 : 10;
+
+  /* if 7th not in scale no need to check > 7th */
+  if (chord_accent >= CHORD_ACC_b9 &&
+      !musical_scale_is_key_in_scale (
+        scale, (chord_root + min_seventh_sems) % 12))
+    return 0;
+
+  switch (chord_accent)
+    {
+    case CHORD_ACC_NONE:
+      return 1;
+    case CHORD_ACC_7:
+      return
+        musical_scale_is_key_in_scale (
+          scale,
+          (chord_root + min_seventh_sems) % 12);
+    case CHORD_ACC_j7:
+      return
+        musical_scale_is_key_in_scale (
+          scale, (chord_root + 11) % 12);
+    case CHORD_ACC_b9:
+      return
+        musical_scale_is_key_in_scale (
+          scale, (chord_root + 13) % 12);
+    case CHORD_ACC_9:
+      return
+        musical_scale_is_key_in_scale (
+          scale, (chord_root + 14) % 12);
+    case CHORD_ACC_S9:
+      return
+        musical_scale_is_key_in_scale (
+          scale, (chord_root + 15) % 12);
+    case CHORD_ACC_11:
+      return
+        musical_scale_is_key_in_scale (
+          scale, (chord_root + 17) % 12);
+    case CHORD_ACC_b5_S11:
+      return
+        musical_scale_is_key_in_scale (
+          scale, (chord_root + 6) % 12) &&
+        musical_scale_is_key_in_scale (
+          scale, (chord_root + 18) % 12);
+    case CHORD_ACC_S5_b13:
+      return
+        musical_scale_is_key_in_scale (
+          scale, (chord_root + 8) % 12) &&
+        musical_scale_is_key_in_scale (
+          scale, (chord_root + 16) % 12);
+    case CHORD_ACC_6_13:
+      return
+        musical_scale_is_key_in_scale (
+          scale, (chord_root + 9) % 12) &&
+        musical_scale_is_key_in_scale (
+          scale, (chord_root + 21) % 12);
+    default:
+      return 0;
+    }
+}
+
+/**
  * Prints the MusicalScale to a string.
  *
  * MUST be free'd.
@@ -428,8 +540,28 @@ char *
 musical_scale_to_string (
   MusicalScale * scale)
 {
-  /* TODO */
-  return g_strdup ("Aeolian");
+#define RETURN_SCALE_STR(uppercase,str) \
+  case SCALE_##uppercase: \
+    return g_strdup_printf ( \
+      "%s %s", \
+      chord_descriptor_note_to_string ( \
+        scale->root_key), \
+      _(str))
+
+  switch (scale->type)
+    {
+      RETURN_SCALE_STR (
+        CHROMATIC, "Chromatic");
+      RETURN_SCALE_STR (
+        IONIAN, "Ionian (Major)");
+      RETURN_SCALE_STR (
+        AEOLIAN, "Aeolian (Natural Minor)");
+      RETURN_SCALE_STR (
+        HARMONIC_MINOR, "Harmonic Minor");
+    default:
+      /* TODO */
+      return g_strdup (_("Unimplemented"));
+    }
 }
 
 /**

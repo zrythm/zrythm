@@ -90,13 +90,16 @@ chord_descriptor_new (
       break;
     }
 
+  int min_seventh_sems =
+    type == CHORD_TYPE_DIM ? 9 : 10;
+
   /* add accents */
   switch (accent)
     {
     case CHORD_ACC_NONE:
       break;
     case CHORD_ACC_7:
-      self->notes[12 + root + 10] = 1;
+      self->notes[12 + root + min_seventh_sems] = 1;
       break;
     case CHORD_ACC_j7:
       self->notes[12 + root + 11] = 1;
@@ -129,6 +132,11 @@ chord_descriptor_new (
       g_warning ("chord unimplemented");
       break;
     }
+
+  /* add the 7th to accents > 7 */
+  if (accent >= CHORD_ACC_b9 &&
+      accent <= CHORD_ACC_6_13)
+    self->notes[12 + root + min_seventh_sems] = 1;
 
   /* TODO invert */
 
@@ -232,6 +240,17 @@ chord_descriptor_to_string (
           str,
           chord_descriptor_chord_accent_to_string (
             chord->accent));
+      g_free (str);
+      str = str2;
+    }
+  if (chord->has_bass)
+    {
+      char * str2 =
+        g_strdup_printf (
+          "%s/%s",
+          str,
+          chord_descriptor_note_to_string (
+            chord->bass_note));
       g_free (str);
       str = str2;
     }

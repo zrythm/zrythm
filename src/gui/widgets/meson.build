@@ -106,6 +106,7 @@ widget_srcs = [
   'piano_roll_selection_info.c',
   'pinned_tracklist.c',
   'scale_object.c',
+  'scale_selector_window.c',
   'selection_info.c',
   'slider_bar.c',
   'snap_box.c',

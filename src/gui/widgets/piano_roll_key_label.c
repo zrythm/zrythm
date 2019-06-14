@@ -129,6 +129,18 @@ piano_roll_key_label_widget_refresh (
           gtk_label_set_markup (
             self->lbl,
             self->descr->note_name_pango);
+          gtk_style_context_remove_class (
+            gtk_widget_get_style_context (
+              GTK_WIDGET (self)),
+            "highlight_chord");
+          gtk_style_context_remove_class (
+            gtk_widget_get_style_context (
+              GTK_WIDGET (self)),
+            "highlight_scale");
+          gtk_style_context_remove_class (
+            gtk_widget_get_style_context (
+              GTK_WIDGET (self)),
+            "highlight_both");
         }
     }
 }

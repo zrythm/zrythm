@@ -88,10 +88,12 @@ typedef enum ChordType
 typedef enum ChordAccent
 {
   CHORD_ACC_NONE,
-  /** b7 is 10 semitones from chord root. */
+  /** b7 is 10 semitones from chord root, or 9
+   * if the chord is diminished. */
   CHORD_ACC_7,
   /** Maj7 is 11 semitones from the root. */
   CHORD_ACC_j7,
+  /* NOTE: all accents below assume 7 */
   /** 13 semitones. */
   CHORD_ACC_b9,
   /** 14 semitones. */

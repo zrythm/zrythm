@@ -52,6 +52,9 @@ typedef struct _ScaleObjectWidget
   GtkBox           parent_instance;
   GtkDrawingArea * drawing_area;
   ScaleObject *    scale;
+
+  /** For double click. */
+  GtkGestureMultiPress * mp;
 } ScaleObjectWidget;
 
 /**

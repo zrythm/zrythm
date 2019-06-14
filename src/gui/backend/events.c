@@ -118,6 +118,8 @@ on_playhead_changed ()
               /*gtk_widget_queue_allocate (*/
                 /*GTK_WIDGET (MIDI_MODIFIER_ARRANGER));*/
             }
+          piano_roll_widget_refresh_labels (
+            MW_PIANO_ROLL, 0);
         }
       if (MW_AUDIO_CLIP_EDITOR)
         {
@@ -927,6 +929,12 @@ events_process (void * data)
             Z_ARRANGER_WIDGET (MW_TIMELINE));
           arranger_widget_refresh (
             Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE));
+          break;
+        case ET_CHORD_CHANGED:
+        case ET_SCALE_CHANGED:
+          if (MW_PIANO_ROLL)
+            piano_roll_widget_refresh_labels (
+              MW_PIANO_ROLL, 0);
           break;
         case ET_RULER_STATE_CHANGED:
           timeline_ruler_widget_refresh ();

@@ -102,6 +102,26 @@ link_scrolls (
 
 }
 
+/**
+ * Refresh the labels only (for highlighting).
+ *
+ * @param hard_refresh Removes and radds the labels,
+ *   otherwise just calls refresh on them.
+ */
+void
+piano_roll_widget_refresh_labels (
+  PianoRollWidget * self,
+  int               hard_refresh)
+{
+  for (int i = 0; i < 128; i++)
+    {
+      if (GTK_IS_WIDGET (
+            self->piano_roll_key_labels[i]))
+        piano_roll_key_label_widget_refresh (
+          self->piano_roll_key_labels[i]);
+    }
+}
+
 void
 piano_roll_widget_refresh (
   PianoRollWidget * self)
@@ -151,6 +171,7 @@ piano_roll_widget_refresh (
       gtk_widget_set_size_request (
         GTK_WIDGET (lbl),
         -1, self->px_per_key);
+      self->piano_roll_key_labels[i] = lbl;
 
       if (!DRUM_MODE)
         {
@@ -160,6 +181,7 @@ piano_roll_widget_refresh (
           gtk_box_pack_end (
             box, GTK_WIDGET (key),
             0, 1, 0);
+          self->piano_roll_keys[i] = key;
         }
 
       gtk_box_pack_start (

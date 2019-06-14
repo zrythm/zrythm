@@ -36,8 +36,8 @@ G_DECLARE_FINAL_TYPE (PianoRollWidget,
                       PIANO_ROLL_WIDGET,
                       GtkBox)
 
-typedef struct _PianoRollLabelsWidget PianoRollLabelsWidget;
-typedef struct _PianoRollNotesWidget PianoRollNotesWidget;
+typedef struct _PianoRollKeyLabelWidget PianoRollKeyLabelWidget;
+typedef struct _PianoRollKeyWidget PianoRollKeyWidget;
 typedef struct _MidiArrangerWidget MidiArrangerWidget;
 typedef struct _MidiRulerWidget MidiRulerWidget;
 typedef struct _ColorAreaWidget ColorAreaWidget;
@@ -84,6 +84,9 @@ typedef struct _PianoRollWidget
    */
   GtkBox *             piano_roll_keys_box;
 
+  PianoRollKeyWidget * piano_roll_keys[128];
+  PianoRollKeyLabelWidget * piano_roll_key_labels[128];
+
   /** Piano roll. */
   GtkBox *             midi_arranger_box;
   GtkScrolledWindow *  arranger_scroll;
@@ -123,6 +126,17 @@ void
 piano_roll_widget_setup (
   PianoRollWidget * self,
   PianoRoll *       pr);
+
+/**
+ * Refresh the labels only (for highlighting).
+ *
+ * @param hard_refresh Removes and radds the labels,
+ *   otherwise just calls refresh on them.
+ */
+void
+piano_roll_widget_refresh_labels (
+  PianoRollWidget * self,
+  int               hard_refresh);
 
 void
 piano_roll_widget_refresh (
