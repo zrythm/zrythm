@@ -64,7 +64,11 @@ midi_ruler_draw_cb (GtkWidget * widget,
   guint height =
     gtk_widget_get_allocated_height (widget);
 
+  /* get a visible region */
   Region * region = CLIP_EDITOR->region;
+  region =
+    region_get_main_region (region);
+
   Track * track = region->lane->track;
 
   int px_start, px_end;
@@ -73,30 +77,36 @@ midi_ruler_draw_cb (GtkWidget * widget,
   cairo_set_source_rgba (
     cr, 1, track->color.green + 0.2,
     track->color.blue + 0.2, 1.0);
-  px_start =
-    ui_pos_to_px_piano_roll (
-      &region->start_pos, 1);
-  px_end =
-    ui_pos_to_px_piano_roll (
-      &region->end_pos, 1);
-  cairo_rectangle (
-    cr, px_start, 0,
-    px_end - px_start, height / 4.0);
-  cairo_fill (cr);
+  if (region_should_be_visible (&region))
+    {
+      px_start =
+        ui_pos_to_px_piano_roll (
+          &region->start_pos, 1);
+      px_end =
+        ui_pos_to_px_piano_roll (
+          &region->end_pos, 1);
+      cairo_rectangle (
+        cr, px_start, 0,
+        px_end - px_start, height / 4.0);
+      cairo_fill (cr);
+    }
 
   /* draw its transient if copy-moving */
-  px_start =
-    ui_pos_to_px_piano_roll (
-      &region_get_main_trans_region (region)->
-        start_pos, 1);
-  px_end =
-    ui_pos_to_px_piano_roll (
-      &region_get_main_trans_region (region)->
-        end_pos, 1);
-  cairo_rectangle (
-    cr, px_start, 0,
-    px_end - px_start, height / 4.0);
-  cairo_fill (cr);
+  region =
+    region_get_main_trans_region (region);
+  if (region_should_be_visible (&region))
+    {
+      px_start =
+        ui_pos_to_px_piano_roll (
+          &region->start_pos, 1);
+      px_end =
+        ui_pos_to_px_piano_roll (
+          &region->end_pos, 1);
+      cairo_rectangle (
+        cr, px_start, 0,
+        px_end - px_start, height / 4.0);
+      cairo_fill (cr);
+    }
 
   /* draw the other regions */
   cairo_set_source_rgba (cr,
