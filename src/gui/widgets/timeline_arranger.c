@@ -861,6 +861,7 @@ timeline_arranger_widget_on_drag_begin_region_hit (
     }
 
   int selected = region_is_selected (region);
+  self->start_region_was_selected = selected;
 
   /* select region if unselected */
   if (P_TOOL == TOOL_SELECT_NORMAL ||
@@ -1465,10 +1466,9 @@ timeline_arranger_widget_select (
       for (i = 0; i < num_scale_widgets; i++)
         {
           sw =
-            Z_SCALE_OBJECT_WIDGET (scale_widgets[i]);
-
+            Z_SCALE_OBJECT_WIDGET (
+              scale_widgets[i]);
           scale = sw->scale;
-
           chord_track_remove_scale (
             P_CHORD_TRACK,
             scale);
@@ -1480,10 +1480,9 @@ timeline_arranger_widget_select (
       for (i = 0; i < num_scale_widgets; i++)
         {
           sw =
-            Z_SCALE_OBJECT_WIDGET (scale_widgets[i]);
-
+            Z_SCALE_OBJECT_WIDGET (
+              scale_widgets[i]);
           scale = sw->scale;
-
           ARRANGER_WIDGET_SELECT_SCALE (
             self, scale, F_SELECT, F_APPEND);
         }
@@ -1831,9 +1830,11 @@ timeline_arranger_widget_move_items_x (
   timeline_selections_add_ticks (
     TL_SELECTIONS, ticks_diff, F_USE_CACHED, 1);
 
+  /* for MIDI arranger ruler */
   EVENTS_PUSH (ET_REGION_POSITIONS_CHANGED,
                NULL);
-  EVENTS_PUSH (ET_CHORD_POSITIONS_CHANGED,
+  /* for arranger refresh */
+  EVENTS_PUSH (ET_TIMELINE_OBJECTS_IN_TRANSIT,
                NULL);
 }
 
@@ -2163,8 +2164,7 @@ timeline_arranger_widget_on_drag_end (
       if (ar_prv->ctrl_held)
         {
           if (self->start_region &&
-              region_is_selected (
-                self->start_region))
+              self->start_region_was_selected)
             {
               /* deselect it */
               ARRANGER_WIDGET_SELECT_REGION (
@@ -2266,6 +2266,7 @@ timeline_arranger_widget_on_drag_end (
   self->resizing_range = 0;
   self->resizing_range_start = 0;
   self->start_region = NULL;
+  self->start_region_was_selected = 0;
   self->start_ap = NULL;
 
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,

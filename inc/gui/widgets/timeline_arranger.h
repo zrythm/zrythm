@@ -81,6 +81,10 @@ typedef struct _TimelineArrangerWidget
    */
   Region *                 start_region;
 
+  /** Whether the start_region was selected before
+   * drag_begin. */
+  int                      start_region_was_selected;
+
   AutomationPoint *        start_ap;
   AutomationCurve *        start_ac;
   ChordObject *            start_chord;

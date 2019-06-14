@@ -402,8 +402,11 @@ arranger_widget_get_hit_widgets_in_range (
   GList *children, *iter;
 
   /* go through each overlay child */
-  children = gtk_container_get_children (GTK_CONTAINER (self));
-  for(iter = children; iter != NULL; iter = g_list_next (iter))
+  children =
+    gtk_container_get_children (
+      GTK_CONTAINER (self));
+  for (iter = children;
+       iter != NULL; iter = g_list_next (iter))
     {
       GtkWidget * widget = GTK_WIDGET (iter->data);
 
@@ -461,6 +464,11 @@ arranger_widget_get_hit_widgets_in_range (
         }
       else if (type == CHORD_OBJECT_WIDGET_TYPE &&
                Z_IS_CHORD_OBJECT_WIDGET (widget))
+        {
+          array[(*array_size)++] = widget;
+        }
+      else if (type == SCALE_OBJECT_WIDGET_TYPE &&
+               Z_IS_SCALE_OBJECT_WIDGET (widget))
         {
           array[(*array_size)++] = widget;
         }
@@ -566,38 +574,26 @@ arranger_widget_select (
   if (select && !append)
     {
       /* deselect existing selections */
-      for (int i = 0; i < (*num); i++)
+      if (timeline)
+        timeline_selections_clear (
+          TL_SELECTIONS);
+      else if (midi_arranger)
+        midi_arranger_selections_clear (
+          MA_SELECTIONS);
+      else if (audio_arranger)
         {
-          void * r = array[i];
-          if (type == REGION_WIDGET_TYPE)
-            region_widget_select (
-              ((Region *)r)->widget,
-              F_NO_SELECT);
-          else if (type == CHORD_OBJECT_WIDGET_TYPE)
-            chord_object_widget_select (
-              ((ChordObject *)r)->widget,
-              F_NO_SELECT);
-          else if (type == SCALE_OBJECT_WIDGET_TYPE)
-            scale_object_widget_select (
-              ((ScaleObject *)r)->widget,
-              F_NO_SELECT);
-          else if (type ==
-                     AUTOMATION_POINT_WIDGET_TYPE)
-            automation_point_widget_select (
-              ((AutomationPoint *)r)->widget,
-              F_NO_SELECT);
-          else if (type == MIDI_NOTE_WIDGET_TYPE)
-            midi_note_widget_select (
-              ((MidiNote *)r)->widget,
-              F_NO_SELECT);
+          /* TODO */
+        }
+      else if (midi_modifier_arranger)
+        {
+          /* TODO */
         }
     }
 
   /* if we are deselecting and the item is
    * selected */
-  if (!select && array_contains (array,
-                      *num,
-                      child))
+  if (!select &&
+      array_contains (array, *num, child))
     {
       /* deselect */
       if (type == REGION_WIDGET_TYPE)
@@ -621,15 +617,18 @@ arranger_widget_select (
           ((MidiNote *)child)->widget,
           F_NO_SELECT);
     }
-  else if (select && !array_contains (array,
-                      *num,
-                      child)) /* if selecting */
+  /* if selecting */
+  else if (select &&
+           !array_contains (array, *num, child))
     {
       /* select */
       if (type == REGION_WIDGET_TYPE)
-        region_widget_select (
-          ((Region *)child)->widget,
-          F_SELECT);
+        {
+          g_message ("selecting regionn");
+          region_widget_select (
+            ((Region *)child)->widget,
+            F_SELECT);
+        }
       else if (type == CHORD_OBJECT_WIDGET_TYPE)
         chord_object_widget_select (
           ((ChordObject *)child)->widget,

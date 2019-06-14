@@ -997,6 +997,15 @@ events_process (void * data)
           gtk_widget_queue_draw (
             GTK_WIDGET (MIDI_RULER));
           break;
+        case ET_TIMELINE_OBJECTS_IN_TRANSIT:
+          timeline_arranger_widget_refresh_children (
+            MW_TIMELINE);
+          timeline_arranger_widget_refresh_children (
+            MW_PINNED_TIMELINE);
+          if (TL_SELECTIONS->num_regions > 0)
+            midi_ruler_widget_refresh (
+              MIDI_RULER);
+          break;
         default:
           g_message ("event not implemented yet");
           /* unimplemented */
