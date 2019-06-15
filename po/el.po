@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-06-01 22:03+0100\n"
-"PO-Revision-Date: 2019-06-15 13:46+0000\n"
+"PO-Revision-Date: 2019-06-17 12:51+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/zrythm/el/>"
 "\n"
@@ -40,8 +40,9 @@ msgid "Loading project"
 msgstr "Φόρτωση έργου"
 
 #: src/project.c:159 src/audio/track.c:792
+#, fuzzy
 msgid "Master"
-msgstr ""
+msgstr "Master"
 
 #. create untitled project
 #: src/project.c:166
@@ -282,7 +283,7 @@ msgstr ""
 #: src/gui/widgets/route_target_selector_popover.c:194
 #, c-format
 msgid "Routing to %s"
-msgstr ""
+msgstr "Δρομολόγηση σε %s"
 
 #: src/gui/widgets/track.c:138 resources/ui/transport_controls.ui:36
 msgid "Record"
@@ -290,11 +291,11 @@ msgstr ""
 
 #: src/gui/widgets/track.c:139
 msgid "Solo"
-msgstr ""
+msgstr "Σόλο"
 
 #: src/gui/widgets/track.c:140
 msgid "Mute"
-msgstr ""
+msgstr "Σίγαση"
 
 #: src/gui/widgets/track.c:141 src/gui/widgets/track.c:145
 msgid "Freeze"
@@ -302,15 +303,15 @@ msgstr ""
 
 #: src/gui/widgets/track.c:142
 msgid "Lock"
-msgstr ""
+msgstr "Κλείδωμα"
 
 #: src/gui/widgets/track.c:143
 msgid "Show UI"
-msgstr ""
+msgstr "Εμφάνιση UI"
 
 #: src/gui/widgets/track.c:144
 msgid "Show Automation Lanes"
-msgstr ""
+msgstr "Προβολή Λωρίδων Αυτοματισμού"
 
 #: src/gui/widgets/track.c:151
 msgid ""
@@ -370,15 +371,15 @@ msgstr ""
 
 #: src/utils/dialogs.c:41
 msgid "Open Project"
-msgstr ""
+msgstr "Άνοιγμα Έργου"
 
 #: src/utils/dialogs.c:46
 msgid "_Open"
-msgstr ""
+msgstr "_Άνοιγμα"
 
 #: src/utils/dialogs.c:69
 msgid "Overwrite Plugin"
-msgstr ""
+msgstr "Αντικατάσταση Plugin"
 
 #: src/utils/dialogs.c:83
 msgid "A plugin already exists at the selected slot. Overwrite it?"
@@ -390,15 +391,15 @@ msgstr ""
 
 #: src/utils/ui.c:522
 msgid "English [en]"
-msgstr ""
+msgstr "Αγγλικά [en]"
 
 #: src/utils/ui.c:523
 msgid "German [de]"
-msgstr ""
+msgstr "Γερμανικά [de]"
 
 #: src/utils/ui.c:524
 msgid "French [fr]"
-msgstr ""
+msgstr "Γαλλικά [fr]"
 
 #: src/utils/ui.c:525
 msgid "Italian [it]"
@@ -432,42 +433,43 @@ msgstr ""
 #. TRANSLATORS: Pan algorithm
 #: src/utils/ui.c:582
 msgid "Linear"
-msgstr ""
+msgstr "Γραμμικό"
 
 #: src/utils/ui.c:583
 msgid "Square Root"
-msgstr ""
+msgstr "Τετραγωνική Ρίζα"
 
 #: src/utils/ui.c:584
+#, fuzzy
 msgid "Sine (Equal Power)"
-msgstr ""
+msgstr "Sine (Ίση Ισχύς)"
 
 #: src/audio/chord_track.c:42 resources/ui/inspector_chord.ui:31
 msgid "Chords"
-msgstr ""
+msgstr "Χορδές"
 
 #: src/audio/marker_track.c:42
 msgid "Markers"
-msgstr ""
+msgstr "Δείκτες"
 
 #: src/audio/engine_pa.c:246 src/audio/engine_pa.c:266
 #: src/audio/engine_pa.c:277
 #, c-format
 msgid "PortAudio Error: %s"
-msgstr ""
+msgstr "Σφάλμα PortAudio: %s"
 
 #: src/audio/track_lane.c:43
 #, c-format
 msgid "Lane %d"
-msgstr ""
+msgstr "Λωρίδα %d"
 
 #: src/audio/track.c:783
 msgid "Instrument"
-msgstr ""
+msgstr "Όργανο"
 
 #: src/audio/track.c:786
 msgid "Audio"
-msgstr ""
+msgstr "Ήχος"
 
 #: src/audio/track.c:789
 msgid "Bus"
@@ -475,7 +477,7 @@ msgstr ""
 
 #: src/audio/track.c:795
 msgid "Chord"
-msgstr ""
+msgstr "Χορδή"
 
 #: src/audio/track.c:798
 msgid "Group"
