@@ -38,14 +38,3 @@ test_gcc_meson:
       - "_build/${CI_JOB_NAME}-report.xml"
       - "_build/meson-logs/coveragereport/index.html"
   coverage: '/^lines: (\d+(?:\.\d+)?%)/'
-
-package_win_64:
-  stage: package
-  image: "alextee12/arch-yaourt"
-  script:
-    - x86_64-w64-mingw32-meson _build
-    - ninja -C _build && scripts/package_win.sh /usr/x86_64-w64-mingw32/ $CI_COMMIT_TAG . _win
-  artifacts:
-    paths:
-      - build/win/Install_$CI_COMMIT_TAG.exe
-    expire_in: 1 week

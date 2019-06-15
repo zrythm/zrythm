@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.5.074] - 2019-06-14
+- Add Chord and Scale objects in the arranger
+- Add Chord and Scale selector popups
+- Add highlighting in the Piano Roll based on current Chord/Scale
+- Create flatpak (WIP)
+- Fix minor Timeline bugs
+
 ## [0.5.056] - 2019-06-10
 - Fix some missing icons
 - Update Japanese and French translations (thanks sub26nico and trebmuh)
