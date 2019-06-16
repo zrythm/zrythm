@@ -26,6 +26,7 @@
     <property name="visible">True</property>
     <property name="can_focus">True</property>
     <property name="hexpand">True</property>
+    <property name="margin-top">2</property>
     <child>
       <object class="ColorAreaWidget" id="color">
         <property name="visible">True</property>

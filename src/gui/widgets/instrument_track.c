@@ -349,7 +349,7 @@ instrument_track_widget_init (
     0);
 
   /* set icon */
-  SET_TRACK_ICON ("instrument");
+  SET_TRACK_ICON ("z-audio-midi");
 
   gtk_widget_show_all (GTK_WIDGET (self));
 }

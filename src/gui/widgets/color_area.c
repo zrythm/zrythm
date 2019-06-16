@@ -21,6 +21,7 @@
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/track_top_grid.h"
+#include "utils/ui.h"
 
 #include <gtk/gtk.h>
 
@@ -71,16 +72,22 @@ color_area_draw_cb (
               0,
               NULL);
 
+          GdkRGBA c2, c3;
+          ui_get_contrast_text_color (
+            color, &c2);
+          ui_get_contrast_text_color (
+            &c2, &c3);
+
           /* add shadow in the back */
           cairo_set_source_rgba (
-            cr, 0, 0, 0, 0.4);
+            cr, c3.red, c3.green, c3.blue, 0.4);
           cairo_mask_surface(
             cr, surface, 2, 2);
           cairo_fill(cr);
 
           /* add main icon */
           cairo_set_source_rgba (
-            cr, 0.8, 0.8, 0.8, 1);
+            cr, c2.red, c2.green, c2.blue, 1);
           /*cairo_set_source_surface (*/
             /*cr, surface, 1, 1);*/
           cairo_mask_surface(
