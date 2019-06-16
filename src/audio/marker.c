@@ -21,6 +21,11 @@
 #include "audio/marker_track.h"
 #include "gui/widgets/marker.h"
 #include "project.h"
+#include "utils/flags.h"
+
+#define SET_POS(_c,pos_name,_pos,_trans_only) \
+  POSITION_SET_ARRANGER_OBJ_POS ( \
+    marker, _c, pos_name, _pos, _trans_only)
 
 void
 marker_init_loaded (Marker * self)
@@ -28,29 +33,99 @@ marker_init_loaded (Marker * self)
   self->widget = marker_widget_new (self);
 }
 
-void
-marker_set_pos (Marker *    self,
-               Position * pos)
-{
-  position_set_to_pos (&self->pos, pos);
-}
+DEFINE_ARRANGER_OBJ_SET_POS (
+  Marker, marker);
 
 /**
  * Creates a Marker.
  */
 Marker *
 marker_new (
-  Position * pos)
+  const char * name,
+  int          is_main)
 {
   Marker * self = calloc (1, sizeof (Marker));
 
+  self->name = g_strdup (name);
   self->type = MARKER_TYPE_CUSTOM;
 
-  self->widget = marker_widget_new (self);
-
-  self->visible = 1;
+  if (is_main)
+    {
+      /* set it as main */
+      Marker * main_trans =
+        marker_clone (
+          self, MARKER_CLONE_COPY);
+      Marker * lane =
+        marker_clone (
+          self, MARKER_CLONE_COPY);
+      Marker * lane_trans =
+        marker_clone (
+          self, MARKER_CLONE_COPY);
+      arranger_object_info_init_main (
+        self,
+        main_trans,
+        lane,
+        lane_trans,
+        AOI_TYPE_MARKER);
+    }
 
   return self;
+}
+
+/**
+ * Sets the Track of the Marker.
+ */
+void
+marker_set_track (
+  Marker * marker,
+  Track *  track)
+{
+  marker->track = track;
+  marker->track_pos = track->pos;
+}
+
+DEFINE_ARRANGER_OBJ_MOVE (
+  Marker, marker);
+
+/**
+ * Generates a widget for the Marker.
+ */
+void
+marker_gen_widget (
+  Marker * self)
+{
+  Marker * c = self;
+  for (int i = 0; i < 2; i++)
+    {
+      if (i == 0)
+        c = marker_get_main_marker (c);
+      else if (i == 1)
+        c = marker_get_main_trans_marker (c);
+
+      c->widget = marker_widget_new (c);
+    }
+}
+
+DEFINE_IS_ARRANGER_OBJ_SELECTED (
+  Marker, marker, timeline_selections,
+  TL_SELECTIONS);
+
+Marker *
+marker_clone (
+  Marker * src,
+  MarkerCloneFlag flag)
+{
+  int is_main = 0;
+  if (flag == MARKER_CLONE_COPY_MAIN)
+    is_main = 1;
+
+  Marker * marker =
+    marker_new (src->name, is_main);
+
+  position_set_to_pos (
+    &marker->pos, &src->pos);
+
+  return marker;
 }
 
 /**

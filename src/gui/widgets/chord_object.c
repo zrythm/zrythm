@@ -20,11 +20,14 @@
 #include "audio/chord_object.h"
 #include "audio/chord_track.h"
 #include "gui/widgets/bot_bar.h"
+#include "gui/widgets/arranger_object.h"
 #include "gui/widgets/chord_object.h"
 #include "gui/widgets/chord_selector_window.h"
 #include "project.h"
 #include "utils/cairo.h"
 #include "utils/ui.h"
+
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
   ChordObjectWidget,
@@ -52,11 +55,13 @@ chord_draw_cb (
     context, cr, 0, 0, width, height);
 
   GdkRGBA * color = &P_CHORD_TRACK->color;
+  ChordObject * chord_object =
+    self->chord_object;
   cairo_set_source_rgba (
     cr, color->red, color->green, color->blue,
-    chord_object_is_transient (self->chord) ?
+    chord_object_is_transient (chord_object) ?
       0.7 : 1);
-  if (chord_object_is_selected (self->chord))
+  if (chord_object_is_selected (chord_object))
     {
       cairo_set_source_rgba (
         cr, color->red + 0.4, color->green + 0.2,
@@ -68,9 +73,10 @@ chord_draw_cb (
 
   char * str =
     chord_descriptor_to_string (
-      self->chord->descr);
+      chord_object->descr);
   if (DEBUGGING &&
-      chord_object_is_transient (self->chord))
+      chord_object_is_transient (
+        chord_object))
     {
       char * tmp =
         g_strdup_printf (
@@ -109,33 +115,9 @@ on_press (
     }
 }
 
-/**
- * Sets the "selected" GTK state flag and adds the
- * note to TimelineSelections.
- */
-void
-chord_object_widget_select (
-  ChordObjectWidget * self,
-  int              select)
-{
-  ChordObject * main_chord =
-    chord_object_get_main_chord_object (
-      self->chord);
-  if (select)
-    {
-      timeline_selections_add_chord (
-        TL_SELECTIONS,
-        main_chord);
-    }
-  else
-    {
-      timeline_selections_remove_chord (
-        TL_SELECTIONS,
-        main_chord);
-    }
-  EVENTS_PUSH (ET_CHORD_CHANGED,
-               main_chord);
-}
+DEFINE_ARRANGER_OBJECT_WIDGET_SELECT (
+  CHORD_OBJECT, ChordObject, chord_object,
+  timeline_selections, TL_SELECTIONS);
 
 static gboolean
 on_motion (
@@ -150,8 +132,8 @@ on_motion (
         GTK_STATE_FLAG_PRELIGHT,
         0);
       bot_bar_change_status (
-        "Chord - Click and drag to move around ("
-        "hold Shift to disable snapping)");
+        _("Chord - Click and drag to move around ("
+        "hold Shift to disable snapping)"));
     }
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
@@ -170,7 +152,7 @@ chord_object_widget_new (ChordObject * chord)
   ChordObjectWidget * self =
     g_object_new (CHORD_OBJECT_WIDGET_TYPE, NULL);
 
-  self->chord = chord;
+  self->chord_object = chord;
 
   return self;
 }

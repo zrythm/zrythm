@@ -30,6 +30,7 @@
 
 #include "audio/chord_descriptor.h"
 #include "audio/position.h"
+#include "gui/backend/arranger_object.h"
 #include "gui/backend/arranger_object_info.h"
 #include "utils/yaml.h"
 
@@ -139,14 +140,6 @@ chord_object_get_track (
   ChordObject * self);
 
 /**
- * Sets the cache Position.
- */
-void
-chord_object_set_cache_pos (
-  ChordObject * chord,
-  const Position * pos);
-
-/**
  * Sets the Track of the chord.
  */
 void
@@ -185,24 +178,11 @@ chord_object_clone (
   ChordObject * src,
   ChordObjectCloneFlag flag);
 
-/**
- * Sets the ChordObject position.
- *
- * @param trans_only Only do transients.
- */
-void
-chord_object_set_pos (
-  ChordObject *   self,
-  const Position * pos,
-  int        trans_only);
+DECLARE_ARRANGER_OBJ_SET_POS (
+  ChordObject, chord_object);
 
-/**
- * Returns if the ChordObject is in the
- * TimelineSelections.
- */
-int
-chord_object_is_selected (
-  ChordObject * self);
+DECLARE_IS_ARRANGER_OBJ_SELECTED (
+  ChordObject, chord_object);
 
 /**
  * Shifts the ChordObject by given number of ticks
@@ -213,21 +193,8 @@ chord_object_shift (
   ChordObject * self,
   long ticks);
 
-/**
- * Moves the ChordObject by the given amount of
- * ticks.
- *
- * @param use_cached_pos Add the ticks to the cached
- *   Position instead of its current Position.
- * @param trans_only Only move transients.
- * @return Whether moved or not.
- */
-int
-chord_object_move (
-  ChordObject * chord,
-  long     ticks,
-  int      use_cached_pos,
-  int      trans_only);
+DECLARE_ARRANGER_OBJ_MOVE (
+  ChordObject, chord_object);
 
 /**
  * Frees the ChordObject.

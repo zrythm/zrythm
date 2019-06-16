@@ -44,6 +44,7 @@
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/marker.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_arranger_bg.h"
 #include "gui/widgets/midi_modifier_arranger.h"
@@ -524,43 +525,38 @@ arranger_widget_select (
   void ** array = NULL;
   int * num = NULL;
 
+#define FIND_ARRAY_AND_NUM( \
+  caps,sc,selections) \
+  if (type == caps##_WIDGET_TYPE) \
+    { \
+      array = \
+        (void **) selections->sc##s; \
+      num = &selections->num_##sc##s; \
+    }
+#define SELECT_WIDGET( \
+  caps,cc,sc,select) \
+  if (type == caps##_WIDGET_TYPE) \
+    sc##_widget_select ( \
+      ((cc *)child)->widget, select);
+
   if (timeline)
     {
-      if (type == REGION_WIDGET_TYPE)
-        {
-          array =
-            (void **) TL_SELECTIONS->regions;
-          num = &TL_SELECTIONS->num_regions;
-        }
-      else if (type == AUTOMATION_POINT_WIDGET_TYPE)
-        {
-          array =
-            (void **)
-              TL_SELECTIONS->aps;
-          num = &TL_SELECTIONS->
-                  num_aps;
-        }
-      else if (type == CHORD_OBJECT_WIDGET_TYPE)
-        {
-          array =
-            (void **) TL_SELECTIONS->chords;
-          num = &TL_SELECTIONS->num_chords;
-        }
-      else if (type == SCALE_OBJECT_WIDGET_TYPE)
-        {
-          array =
-            (void **) TL_SELECTIONS->scales;
-          num = &TL_SELECTIONS->num_scales;
-        }
+      FIND_ARRAY_AND_NUM (
+        REGION, region, TL_SELECTIONS);
+      FIND_ARRAY_AND_NUM (
+        CHORD_OBJECT, chord_object, TL_SELECTIONS);
+      FIND_ARRAY_AND_NUM (
+        SCALE_OBJECT, scale_object, TL_SELECTIONS);
+      FIND_ARRAY_AND_NUM (
+        MARKER, marker, TL_SELECTIONS);
+      FIND_ARRAY_AND_NUM (
+        AUTOMATION_POINT, automation_point,
+        TL_SELECTIONS);
     }
   if (midi_arranger)
     {
-      if (type == MIDI_NOTE_WIDGET_TYPE)
-        {
-          array =
-            (void **) MA_SELECTIONS->midi_notes;
-          num = &MA_SELECTIONS->num_midi_notes;
-        }
+      FIND_ARRAY_AND_NUM (
+        MIDI_NOTE, midi_note, MA_SELECTIONS);
     }
   if (audio_arranger)
     {
@@ -596,56 +592,51 @@ arranger_widget_select (
       array_contains (array, *num, child))
     {
       /* deselect */
-      if (type == REGION_WIDGET_TYPE)
-        region_widget_select (
-          ((Region *)child)->widget,
-          F_NO_SELECT);
-      else if (type == CHORD_OBJECT_WIDGET_TYPE)
-        chord_object_widget_select (
-          ((ChordObject *)child)->widget,
-          F_NO_SELECT);
-      else if (type == SCALE_OBJECT_WIDGET_TYPE)
-        scale_object_widget_select (
-          ((ScaleObject *)child)->widget,
-          F_NO_SELECT);
-      else if (type == AUTOMATION_POINT_WIDGET_TYPE)
-        automation_point_widget_select (
-          ((AutomationPoint *)child)->widget,
-          F_NO_SELECT);
-      else if (type == MIDI_NOTE_WIDGET_TYPE)
-        midi_note_widget_select (
-          ((MidiNote *)child)->widget,
-          F_NO_SELECT);
+      SELECT_WIDGET (
+        REGION, Region, region, F_NO_SELECT);
+      SELECT_WIDGET (
+        CHORD_OBJECT, ChordObject, chord_object,
+        F_NO_SELECT);
+      SELECT_WIDGET (
+        SCALE_OBJECT, ScaleObject, scale_object,
+        F_NO_SELECT);
+      SELECT_WIDGET (
+        MARKER, Marker, marker,  F_NO_SELECT);
+      SELECT_WIDGET (
+        AUTOMATION_POINT, AutomationPoint,
+        automation_point,  F_NO_SELECT);
+      SELECT_WIDGET (
+        MIDI_NOTE, MidiNote, midi_note,
+        F_NO_SELECT);
     }
   /* if selecting */
   else if (select &&
            !array_contains (array, *num, child))
     {
       /* select */
-      if (type == REGION_WIDGET_TYPE)
-        {
-          g_message ("selecting regionn");
-          region_widget_select (
-            ((Region *)child)->widget,
-            F_SELECT);
-        }
-      else if (type == CHORD_OBJECT_WIDGET_TYPE)
-        chord_object_widget_select (
-          ((ChordObject *)child)->widget,
-          F_SELECT);
-      else if (type == SCALE_OBJECT_WIDGET_TYPE)
-        scale_object_widget_select (
-          ((ScaleObject *)child)->widget,
-          F_SELECT);
-      else if (type == AUTOMATION_POINT_WIDGET_TYPE)
-        automation_point_widget_select (
-          ((AutomationPoint *)child)->widget,
-          F_SELECT);
-      else if (type == MIDI_NOTE_WIDGET_TYPE)
-        midi_note_widget_select (
-          ((MidiNote *)child)->widget,
-          F_SELECT);
+      SELECT_WIDGET (
+        REGION, Region, region,
+        F_SELECT);
+      SELECT_WIDGET (
+        CHORD_OBJECT, ChordObject, chord_object,
+        F_SELECT);
+      SELECT_WIDGET (
+        SCALE_OBJECT, ScaleObject, scale_object,
+        F_SELECT);
+      SELECT_WIDGET (
+        MARKER, Marker, marker,
+        F_SELECT);
+      SELECT_WIDGET (
+        AUTOMATION_POINT, AutomationPoint,
+        automation_point,
+        F_SELECT);
+      SELECT_WIDGET (
+        MIDI_NOTE, MidiNote, midi_note,
+        F_SELECT);
     }
+
+#undef FIND_ARRAY_AND_NUM
+#undef SELECT_WIDGET
 }
 
 /**
@@ -1074,13 +1065,15 @@ create_item (ArrangerWidget * self,
                 track,
                 start_y,
                 &pos);
-              /*timeline_arranger_widget_create_chord (*/
-                /*timeline,*/
-                /*track,*/
-                /*&pos);*/
             case TRACK_TYPE_BUS:
               break;
             case TRACK_TYPE_GROUP:
+              break;
+            case TRACK_TYPE_MARKER:
+              timeline_arranger_widget_create_marker (
+                timeline,
+                track,
+                &pos);
               break;
             default:
               /* TODO */

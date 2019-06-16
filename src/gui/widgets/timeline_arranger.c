@@ -39,6 +39,7 @@
 #include "audio/chord_object.h"
 #include "audio/chord_track.h"
 #include "audio/instrument_track.h"
+#include "audio/marker_track.h"
 #include "audio/master_track.h"
 #include "audio/midi_region.h"
 #include "audio/mixer.h"
@@ -56,6 +57,7 @@
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/marker.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_arranger_bg.h"
 #include "gui/widgets/midi_region.h"
@@ -157,7 +159,8 @@ timeline_arranger_widget_set_allocation (
     {
       AutomationPointWidget * ap_widget =
         Z_AUTOMATION_POINT_WIDGET (widget);
-      AutomationPoint * ap = ap_widget->ap;
+      AutomationPoint * ap =
+        ap_widget->automation_point;
       /*Automatable * a = ap->at->automatable;*/
 
       gint wx, wy;
@@ -234,11 +237,10 @@ timeline_arranger_widget_set_allocation (
 
       allocation->x =
         ui_pos_to_px_timeline (
-          &cw->chord->pos,
-          1);
+          &cw->chord_object->pos, 1);
       Position tmp;
-      position_set_to_pos (&tmp,
-                           &cw->chord->pos);
+      position_set_to_pos (
+        &tmp, &cw->chord_object->pos);
       position_set_bar (
         &tmp,
         tmp.bars + 1);
@@ -288,6 +290,40 @@ timeline_arranger_widget_set_allocation (
         track_height / 2.0;
       allocation->height =
         track_height / 2.0;
+    }
+  else if (Z_IS_MARKER_WIDGET (widget))
+    {
+      MarkerWidget * mw =
+        Z_MARKER_WIDGET (widget);
+      Track * track = P_MARKER_TRACK;
+
+      gint wx, wy;
+      gtk_widget_translate_coordinates (
+        GTK_WIDGET (track->widget),
+        GTK_WIDGET (self),
+        0, 0, &wx, &wy);
+
+      allocation->x =
+        ui_pos_to_px_timeline (
+          &mw->marker->pos,
+          1);
+      Position tmp;
+      position_set_to_pos (
+        &tmp,
+        &mw->marker->pos);
+      position_set_bar (
+        &tmp,
+        tmp.bars + 1);
+      allocation->width =
+        (ui_pos_to_px_timeline (
+          &tmp,
+          1) - allocation->x) - 1;
+
+      int track_height =
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (track->widget));
+      allocation->y = wy;
+      allocation->height = track_height;
     }
 }
 
@@ -621,8 +657,7 @@ timeline_arranger_widget_select_all (
   TimelineArrangerWidget *  self,
   int                       select)
 {
-  TL_SELECTIONS->num_regions = 0;
-  TL_SELECTIONS->num_aps = 0;
+  timeline_selections_clear (TL_SELECTIONS);
 
   /* select everything else */
   Region * r;
@@ -763,23 +798,23 @@ timeline_arranger_widget_update_visibility (
   ARRANGER_SET_OBJ_VISIBILITY_ARRAY (
     TL_SELECTIONS->regions,
     TL_SELECTIONS->num_regions,
-    Region,
-    region);
+    Region, region);
   ARRANGER_SET_OBJ_VISIBILITY_ARRAY (
-    TL_SELECTIONS->aps,
-    TL_SELECTIONS->num_aps,
-    AutomationPoint,
-    automation_point);
+    TL_SELECTIONS->automation_points,
+    TL_SELECTIONS->num_automation_points,
+    AutomationPoint, automation_point);
   ARRANGER_SET_OBJ_VISIBILITY_ARRAY (
-    TL_SELECTIONS->chords,
-    TL_SELECTIONS->num_chords,
-    ChordObject,
-    chord);
+    TL_SELECTIONS->chord_objects,
+    TL_SELECTIONS->num_chord_objects,
+    ChordObject, chord_object);
   ARRANGER_SET_OBJ_VISIBILITY_ARRAY (
-    TL_SELECTIONS->scales,
-    TL_SELECTIONS->num_scales,
-    ScaleObject,
-    scale);
+    TL_SELECTIONS->scale_objects,
+    TL_SELECTIONS->num_scale_objects,
+    ScaleObject, scale_object);
+  ARRANGER_SET_OBJ_VISIBILITY_ARRAY (
+    TL_SELECTIONS->markers,
+    TL_SELECTIONS->num_markers,
+    Marker, marker);
 }
 
 void
@@ -901,7 +936,7 @@ timeline_arranger_widget_on_drag_begin_chord_hit (
       /* TODO */
     }
 
-  ChordObject * chord = cw->chord;
+  ChordObject * chord = cw->chord_object;
   self->start_chord = chord;
 
   /* update arranger action */
@@ -993,17 +1028,18 @@ timeline_arranger_widget_on_drag_begin_ap_hit (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  AutomationPoint * ap = ap_widget->ap;
+  AutomationPoint * ap =
+    ap_widget->automation_point;
   ar_prv->start_pos_px = start_x;
   self->start_ap = ap;
   if (!array_contains (
-        TL_SELECTIONS->aps,
-        TL_SELECTIONS->num_aps,
+        TL_SELECTIONS->automation_points,
+        TL_SELECTIONS->num_automation_points,
         ap))
     {
-      TL_SELECTIONS->aps[0] =
+      TL_SELECTIONS->automation_points[0] =
         ap;
-      TL_SELECTIONS->num_aps =
+      TL_SELECTIONS->num_automation_points =
         1;
     }
 
@@ -1213,7 +1249,7 @@ timeline_arranger_widget_create_chord (
   chord_object_set_pos (
     chord, pos, F_NO_TRANS_ONLY);
 
-  EVENTS_PUSH (ET_CHORD_CREATED, chord);
+  EVENTS_PUSH (ET_CHORD_OBJECT_CREATED, chord);
   ARRANGER_WIDGET_SELECT_CHORD (
     self, chord, F_SELECT,
     F_NO_APPEND);
@@ -1256,7 +1292,7 @@ timeline_arranger_widget_create_scale (
   scale_object_set_pos (
     scale, pos, F_NO_TRANS_ONLY);
 
-  EVENTS_PUSH (ET_SCALE_CREATED, scale);
+  EVENTS_PUSH (ET_SCALE_OBJECT_CREATED, scale);
   ARRANGER_WIDGET_SELECT_SCALE (
     self, scale, F_SELECT,
     F_NO_APPEND);
@@ -1274,8 +1310,34 @@ timeline_arranger_widget_create_marker (
   Track *            track,
   const Position *         pos)
 {
-  /* TODO */
+  g_warn_if_fail (
+    track->type == TRACK_TYPE_MARKER);
 
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  ar_prv->action =
+    UI_OVERLAY_ACTION_CREATING_MOVING;
+
+  /* create a new marker */
+  Marker * marker =
+    marker_new (
+      "Custom Marker", 1);
+
+  /* add it to marker track */
+  marker_track_add_marker (
+    track, marker, F_GEN_WIDGET);
+
+  /* set visibility */
+  arranger_object_info_set_widget_visibility (
+    &marker->obj_info, 1);
+
+  marker_set_pos (
+    marker, pos, F_NO_TRANS_ONLY);
+
+  EVENTS_PUSH (ET_MARKER_CREATED, marker);
+  ARRANGER_WIDGET_SELECT_MARKER (
+    self, marker, F_SELECT,
+    F_NO_APPEND);
 }
 
 /**
@@ -1425,7 +1487,7 @@ timeline_arranger_widget_select (
           cw =
             Z_CHORD_OBJECT_WIDGET (chord_widgets[i]);
 
-          chord = cw->chord;
+          chord = cw->chord_object;
 
           chord_track_remove_chord (
             P_CHORD_TRACK,
@@ -1440,7 +1502,7 @@ timeline_arranger_widget_select (
           cw =
             Z_CHORD_OBJECT_WIDGET (chord_widgets[i]);
 
-          chord = cw->chord;
+          chord = cw->chord_object;
 
           ARRANGER_WIDGET_SELECT_CHORD (
             self, chord, F_SELECT, F_APPEND);
@@ -1511,7 +1573,7 @@ timeline_arranger_widget_select (
             Z_AUTOMATION_POINT_WIDGET (
               ap_widgets[i]);
 
-          ap = apw->ap;
+          ap = apw->automation_point;
 
           automation_track_remove_ap (
             ap->at,
@@ -1528,7 +1590,7 @@ timeline_arranger_widget_select (
             Z_AUTOMATION_POINT_WIDGET (
               ap_widgets[i]);
 
-          ap = apw->ap;
+          ap = apw->automation_point;
 
           ARRANGER_WIDGET_SELECT_AUTOMATION_POINT (
             self, ap, F_SELECT, F_APPEND);
@@ -2056,11 +2118,12 @@ timeline_arranger_widget_move_items_y (
     }
   else if (self->start_ap)
     {
-      for (int i = 0; i < TL_SELECTIONS->num_aps; i++)
+      for (int i = 0;
+           i < TL_SELECTIONS->num_automation_points; i++)
         {
           AutomationPoint * ap =
             TL_SELECTIONS->
-              aps[i];
+              automation_points[i];
 
           /* get adjusted y for this ap */
           /*Position region_pos;*/
@@ -2102,10 +2165,10 @@ timeline_arranger_widget_on_drag_end (
   AutomationPoint * ap;
   for (int i = 0;
        i < TL_SELECTIONS->
-             num_aps; i++)
+             num_automation_points; i++)
     {
       ap =
-        TL_SELECTIONS->aps[i];
+        TL_SELECTIONS->automation_points[i];
       automation_point_widget_update_tooltip (
         ap->widget, 0);
     }
@@ -2366,6 +2429,33 @@ add_children_from_chord_track (
     }
 }
 
+static void
+add_children_from_marker_track (
+  TimelineArrangerWidget * self,
+  Track *                  track)
+{
+  int i, k;
+  for (i = 0; i < track->num_markers; i++)
+    {
+      Marker * m = track->markers[i];
+      for (k = 0 ; k < 2; k++)
+        {
+          if (k == 0)
+            m = marker_get_main_marker (m);
+          else if (k == 1)
+            m = marker_get_main_trans_marker (m);
+
+          if (!m->widget)
+            m->widget =
+              marker_widget_new (m);
+
+          gtk_overlay_add_overlay (
+            GTK_OVERLAY (self),
+            GTK_WIDGET (m->widget));
+        }
+    }
+}
+
 static inline void
 add_children_from_instrument_track (
   TimelineArrangerWidget * self,
@@ -2545,6 +2635,10 @@ timeline_arranger_widget_refresh_children (
               add_children_from_bus_track (
                 self,
                 (BusTrack *) track);
+              break;
+            case TRACK_TYPE_MARKER:
+              add_children_from_marker_track (
+                self, track);
               break;
             case TRACK_TYPE_GROUP:
               /* TODO */

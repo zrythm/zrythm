@@ -19,114 +19,147 @@
 
 #include "audio/marker.h"
 #include "audio/marker_track.h"
+#include "gui/widgets/arranger_object.h"
+#include "gui/widgets/bot_bar.h"
 #include "gui/widgets/marker.h"
 #include "project.h"
+#include "utils/cairo.h"
 #include "utils/ui.h"
 
-G_DEFINE_TYPE (MarkerWidget,
-               marker_widget,
-               GTK_TYPE_DRAWING_AREA)
+#include <glib/gi18n.h>
+
+G_DEFINE_TYPE (
+  MarkerWidget,
+  marker_widget,
+  GTK_TYPE_BOX)
 
 static gboolean
-draw_cb (MarkerWidget * self,
-         cairo_t *cr,
-         gpointer data)
+marker_draw_cb (
+  GtkWidget * widget,
+  cairo_t *   cr,
+  MarkerWidget * self)
 {
   guint width, height;
   GtkStyleContext *context;
 
   context =
-    gtk_widget_get_style_context (GTK_WIDGET (self));
+    gtk_widget_get_style_context (widget);
 
   width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (self));
+    gtk_widget_get_allocated_width (widget);
   height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+    gtk_widget_get_allocated_height (widget);
 
-  gtk_render_background (context, cr, 0, 0, width, height);
+  gtk_render_background (
+    context, cr, 0, 0, width, height);
 
   GdkRGBA * color = &P_MARKER_TRACK->color;
-  cairo_set_source_rgba (cr,
-                         color->red - 0.06,
-                         color->green - 0.06,
-                         color->blue - 0.06,
-                         0.7);
-  cairo_rectangle(cr, 0, 0, width, height);
+  cairo_set_source_rgba (
+    cr, color->red, color->green, color->blue,
+    marker_is_transient (self->marker) ?
+      0.7 : 1);
+  if (marker_is_selected (self->marker))
+    {
+      cairo_set_source_rgba (
+        cr, color->red + 0.4, color->green + 0.2,
+        color->blue + 0.2, 1);
+    }
+  z_cairo_rounded_rectangle (
+    cr, 0, 0, width, height, 1.0, 4.0);
   cairo_fill(cr);
-  cairo_set_source_rgba (cr,
-                         color->red,
-                         color->green,
-                         color->blue,
-                         1.0);
-  cairo_rectangle(cr, 0, 0, width, height);
-  cairo_set_line_width (cr, 3.5);
-  cairo_stroke (cr);
+
+  char * str = g_strdup (self->marker->name);
+  if (DEBUGGING &&
+      marker_is_transient (self->marker))
+    {
+      char * tmp =
+        g_strdup_printf (
+          "%s [t]", str);
+      g_free (str);
+      str = tmp;
+    }
+
+  GdkRGBA c2;
+  ui_get_contrast_text_color (
+    color, &c2);
+  cairo_set_source_rgba (
+    cr, c2.red, c2.green, c2.blue, 1.0);
+  z_cairo_draw_text (cr, str);
+  g_free (str);
 
  return FALSE;
 }
 
-void
-marker_widget_select (MarkerWidget * self,
-                     int            select)
+static void
+on_press (
+  GtkGestureMultiPress *gesture,
+  gint                  n_press,
+  gdouble               x,
+  gdouble               y,
+  MarkerWidget *   self)
 {
-  self->marker->selected = select;
-  if (select)
+  if (n_press == 2)
     {
-      gtk_widget_set_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_SELECTED,
-        0);
+      /*ChordSelectorWindowWidget * chord_selector =*/
+        /*chord_selector_window_widget_new (*/
+          /*self);*/
+
+      /*gtk_window_present (*/
+        /*GTK_WINDOW (chord_selector));*/
     }
-  else
-    {
-      gtk_widget_unset_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_SELECTED);
-    }
-  gtk_widget_queue_draw (GTK_WIDGET (self));
+}
+
+void
+marker_widget_select (
+  MarkerWidget * self,
+  int            select)
+{
+  Marker * marker = self->marker;
+  ARRANGER_OBJECT_WIDGET_SELECT (
+    MARKER, Marker, marker,
+    timeline_selections, TL_SELECTIONS);
 }
 
 /**
  * Sets hover in CSS.
  */
-static void
-on_motion (GtkWidget * widget, GdkEventMotion *event)
+static int
+on_motion (
+  GtkWidget * widget,
+  GdkEventMotion *event,
+  MarkerWidget * self)
 {
   if (event->type == GDK_ENTER_NOTIFY)
     {
       gtk_widget_set_state_flags (
-        widget,
+        GTK_WIDGET (self),
         GTK_STATE_FLAG_PRELIGHT,
         0);
+      bot_bar_change_status (
+        _("Marker - Click and drag to move - Hold"
+        "Shift to bypass snapping - Double click "
+        "to edit name"));
     }
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
       gtk_widget_unset_state_flags (
-        widget,
+        GTK_WIDGET (self),
         GTK_STATE_FLAG_PRELIGHT);
+      bot_bar_change_status ("");
     }
+
+  return FALSE;
 }
 
 MarkerWidget *
 marker_widget_new (Marker * marker)
 {
   MarkerWidget * self =
-    g_object_new (MARKER_WIDGET_TYPE, NULL);
+    g_object_new (MARKER_WIDGET_TYPE,
+                  "visible", 1,
+                  NULL);
 
   self->marker = marker;
-
-  /* connect signals */
-  g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (draw_cb), self);
-  g_signal_connect (
-    G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT(self), "leave-notify-event",
-    G_CALLBACK (on_motion),  self);
-
-  gtk_widget_set_visible (GTK_WIDGET (self), 1);
 
   return self;
 }
@@ -134,7 +167,8 @@ marker_widget_new (Marker * marker)
 static void
 marker_widget_class_init (MarkerWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "marker");
 }
@@ -142,4 +176,44 @@ marker_widget_class_init (MarkerWidgetClass * _klass)
 static void
 marker_widget_init (MarkerWidget * self)
 {
+  self->drawing_area =
+    GTK_DRAWING_AREA (gtk_drawing_area_new ());
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->drawing_area), 1);
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (self->drawing_area), 1);
+  gtk_container_add (
+    GTK_CONTAINER (self),
+    GTK_WIDGET (self->drawing_area));
+
+  /* GDK_ALL_EVENTS_MASK is needed, otherwise the
+   * grab gets broken */
+  gtk_widget_add_events (
+    GTK_WIDGET (self->drawing_area),
+    GDK_ALL_EVENTS_MASK);
+
+  self->mp =
+    GTK_GESTURE_MULTI_PRESS (
+      gtk_gesture_multi_press_new (
+        GTK_WIDGET (self->drawing_area)));
+
+  /* connect signals */
+  g_signal_connect (
+    G_OBJECT (self->drawing_area), "draw",
+    G_CALLBACK (marker_draw_cb), self);
+  g_signal_connect (
+    G_OBJECT (self), "enter-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self->drawing_area),
+    "motion-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT(self), "leave-notify-event",
+    G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    G_OBJECT (self->mp), "pressed",
+    G_CALLBACK (on_press), self);
+
+  g_object_ref (self);
 }

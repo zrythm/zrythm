@@ -26,6 +26,8 @@
 #ifndef __GUI_WIDGETS_CHORD_OBJECT_H__
 #define __GUI_WIDGETS_CHORD_OBJECT_H__
 
+#include "gui/widgets/arranger_object.h"
+
 #include <gtk/gtk.h>
 
 #define CHORD_OBJECT_WIDGET_TYPE \
@@ -51,7 +53,7 @@ typedef struct _ChordObjectWidget
 {
   GtkBox           parent_instance;
   GtkDrawingArea * drawing_area;
-  ChordObject *    chord;
+  ChordObject *    chord_object;
 
   /** For double click. */
   GtkGestureMultiPress * mp;
@@ -64,10 +66,8 @@ ChordObjectWidget *
 chord_object_widget_new (
   ChordObject * chord);
 
-void
-chord_object_widget_select (
-  ChordObjectWidget * self,
-  int            select);
+DECLARE_ARRANGER_OBJECT_WIDGET_SELECT (
+  ChordObject, chord_object);
 
 /**
  * @}

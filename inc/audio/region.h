@@ -28,6 +28,7 @@
 #include "audio/midi_note.h"
 #include "audio/midi_region.h"
 #include "audio/position.h"
+#include "gui/backend/arranger_object.h"
 #include "gui/backend/arranger_object_info.h"
 #include "utils/yaml.h"
 
@@ -465,23 +466,8 @@ region_resize (
   int      left,
   long     ticks);
 
-/**
- * Clamps position then sets it to its counterparts.
- *
- * To be used only when resizing. For moving,
- * use region_move().
- *
- * @param trans_only Only set the transient
- *   Position's.
- * @param validate Validate the Position before
- *   setting.
- */
-void
-region_set_start_pos (
-  Region * region,
-  Position * pos,
-  int        trans_only,
-  int        validate);
+DECLARE_ARRANGER_OBJ_SET_POSES_W_LENGTH (
+  Region, region);
 
 /**
  * Getter for start pos.
@@ -498,34 +484,6 @@ void
 region_set_lane (
   Region * region,
   TrackLane * lane);
-
-void
-region_set_cache_end_pos (
-  Region * region,
-  const Position * pos);
-
-void
-region_set_cache_start_pos (
-  Region * region,
-  Position * pos);
-
-/**
- * Clamps position then sets it.
- *
- * To be used only when resizing. For moving,
- * use region_move().
- *
- * @param trans_only Only set the Position to the
- *   counterparts.
- * @param validate Validate the Position before
- *   setting.
- */
-void
-region_set_end_pos (
-  Region * region,
-  Position * pos,
-  int        trans_only,
-  int        validate);
 
 /**
  * Moves the Region by the given amount of ticks.

@@ -31,6 +31,7 @@
 
 #include "audio/scale.h"
 #include "audio/position.h"
+#include "gui/backend/arranger_object.h"
 #include "gui/backend/arranger_object_info.h"
 #include "utils/yaml.h"
 
@@ -189,13 +190,8 @@ scale_object_set_pos (
   const Position * pos,
   int        trans_only);
 
-/**
- * Returns if the ScaleObject is in the
- * TimelineSelections.
- */
-int
-scale_object_is_selected (
-  ScaleObject * self);
+DECLARE_IS_ARRANGER_OBJ_SELECTED (
+  ScaleObject, scale_object);
 
 /**
  * Shifts the ScaleObject by given number of ticks

@@ -189,12 +189,12 @@ midi_arranger_selections_remove_transients (
  * Adds a note to the selections.
  */
 void
-midi_arranger_selections_add_note (
+midi_arranger_selections_add_midi_note (
   MidiArrangerSelections * mas,
   MidiNote *               note);
 
 void
-midi_arranger_selections_remove_note (
+midi_arranger_selections_remove_midi_note (
   MidiArrangerSelections * mas,
   MidiNote *               note);
 

@@ -27,6 +27,7 @@
 #define __GUI_WIDGETS_REGION_H__
 
 #include "audio/region.h"
+#include "gui/widgets/arranger_object.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
@@ -78,13 +79,8 @@ region_widget_setup (
   RegionWidget * self,
   Region *       region);
 
-/**
- * Mark the Region as selected.
- */
-void
-region_widget_select (
-  RegionWidget * self,
-  int            select);
+DECLARE_ARRANGER_OBJECT_WIDGET_SELECT (
+  Region, region);
 
 /**
  * Returns if the current position is for resizing

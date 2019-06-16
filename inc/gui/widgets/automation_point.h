@@ -27,6 +27,7 @@
 #define __GUI_WIDGETS_AUTOMATION_POINT_H__
 
 #include "audio/automation_point.h"
+#include "gui/widgets/arranger_object.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
@@ -52,8 +53,12 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _AutomationPointWidget
 {
-  GtkBox                      parent_instance;
-  AutomationPoint *           ap;   ///< the automation_point associated with this
+  GtkBox                 parent_instance;
+
+  /** The AutomationPoint associated with the
+   * widget. */
+  AutomationPoint *      automation_point;
+
   UiCursorState          state;
   GtkWindow *            tooltip_win;
   GtkLabel *             tooltip_label;
@@ -74,13 +79,8 @@ automation_point_widget_update_tooltip (
   AutomationPointWidget * self,
   int              show);
 
-/**
- * Selects or not the automation point.
- */
-void
-automation_point_widget_select (
-  AutomationPointWidget * self,
-  int            select);
+DECLARE_ARRANGER_OBJECT_WIDGET_SELECT (
+  AutomationPoint, automation_point);
 
 /**
  * @}

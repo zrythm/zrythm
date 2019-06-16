@@ -35,26 +35,43 @@
 
 #include <gtk/gtk.h>
 
+#define ADD_OBJECT(caps,sc) \
+  if (!array_contains ( \
+         ts->sc##s, ts->num_##sc##s, sc)) \
+    { \
+      array_append ( \
+        ts->sc##s, ts->num_##sc##s, sc); \
+      EVENTS_PUSH (ET_##caps##_CHANGED, sc); \
+    }
+
+#define REMOVE_OBJECT(caps,sc) \
+  if (!array_contains ( \
+         ts->sc##s, ts->num_##sc##s, sc)) \
+    { \
+      EVENTS_PUSH (ET_##caps##_CHANGED, sc); \
+      return; \
+    } \
+  array_delete ( \
+    ts->sc##s, ts->num_##sc##s, sc)
+
+
 void
 timeline_selections_init_loaded (
   TimelineSelections * ts)
 {
   int i;
-  for (i = 0; i < ts->num_regions; i++)
-    ts->regions[i] =
-      region_find (ts->regions[i]);
 
-  for (i = 0; i < ts->num_aps; i++)
-    ts->aps[i] =
-      automation_point_find (ts->aps[i]);
+#define _SET_OBJ(sc) \
+  for (i = 0; i < ts->num_##sc##s; i++) \
+    ts->sc##s[i] = sc##_find (ts->sc##s[i]);
 
-  for (i = 0; i < ts->num_chords; i++)
-    ts->chords[i] =
-      chord_object_find (ts->chords[i]);
+  _SET_OBJ (region);
+  _SET_OBJ (marker);
+  _SET_OBJ (chord_object);
+  _SET_OBJ (scale_object);
+  _SET_OBJ (automation_point);
 
-  for (i = 0; i < ts->num_scales; i++)
-    ts->scales[i] =
-      scale_object_find (ts->scales[i]);
+#undef _SET_OBJ
 }
 
 /**
@@ -64,13 +81,12 @@ int
 timeline_selections_has_any (
   TimelineSelections * ts)
 {
-  if (ts->num_regions > 0 ||
-      ts->num_aps > 0 ||
-      ts->num_scales > 0 ||
-      ts->num_chords > 0)
-    return 1;
-  else
-    return 0;
+  return (
+    ts->num_regions > 0 ||
+    ts->num_automation_points > 0 ||
+    ts->num_scale_objects > 0 ||
+    ts->num_markers > 0 ||
+    ts->num_chord_objects > 0);
 }
 
 /**
@@ -85,46 +101,34 @@ timeline_selections_set_cache_poses (
 {
   int i;
 
-  Region * r;
-  for (i = 0; i < ts->num_regions; i++)
-    {
-      r = ts->regions[i];
-
-      /* set start poses for regions */
-      region_set_cache_start_pos (
-        r, &r->start_pos);
-
-      /* set end poses for regions */
-      region_set_cache_end_pos (
-        r, &r->end_pos);
+#define SET_CACHE_POS_W_LENGTH(cc,sc) \
+  cc * sc; \
+  for (i = 0; i < ts->num_##sc##s; i++) \
+    { \
+      sc = ts->sc##s[i]; \
+      sc##_set_cache_start_pos ( \
+        sc, &sc->start_pos); \
+      sc##_set_cache_end_pos ( \
+        sc, &sc->end_pos); \
     }
-  ChordObject * c;
-  for (i = 0; i < ts->num_chords; i++)
-    {
-      c = ts->chords[i];
 
-      /* set start poses for chords */
-      chord_object_set_cache_pos (
-        c, &c->pos);
+#define SET_CACHE_POS(cc,sc) \
+  cc * sc; \
+  for (i = 0; i < ts->num_##sc##s; i++) \
+    { \
+      sc = ts->sc##s[i]; \
+      sc##_set_cache_pos ( \
+        sc, &sc->pos); \
     }
-  ScaleObject * s;
-  for (i = 0; i < ts->num_scales; i++)
-    {
-      s = ts->scales[i];
 
-      /* set start poses for chords */
-      scale_object_set_cache_pos (
-        s, &s->pos);
-    }
-  AutomationPoint * ap;
-  for (i = 0; i < ts->num_aps; i++)
-    {
-      ap = ts->aps[i];
+  SET_CACHE_POS_W_LENGTH (Region, region);
+  SET_CACHE_POS (ChordObject, chord_object);
+  SET_CACHE_POS (ScaleObject, scale_object);
+  SET_CACHE_POS (Marker, marker);
+  SET_CACHE_POS (AutomationPoint, automation_point);
 
-      /* set start poses for APs */
-      position_set_to_pos (
-        &ap->cache_pos, &ap->pos);
-    }
+#undef SET_CACHE_POS_W_LENGTH
+#undef SET_CACHE_POS
 }
 
 /**
@@ -135,45 +139,49 @@ void
 timeline_selections_reset_transient_poses (
   TimelineSelections * ts)
 {
-  Region * region;
-  for (int i = 0; i < ts->num_regions; i++)
-    {
-      region = ts->regions[i];
+  int i;
 
-      region_set_start_pos (
-        region, &region->start_pos,
-        F_NO_TRANS_ONLY, F_NO_VALIDATE);
-      region_set_end_pos (
-        region, &region->end_pos,
-        F_NO_TRANS_ONLY, F_NO_VALIDATE);
-    }
+#define RESET_TRANS_POS_W_LENGTH(caps,cc,sc) \
+  cc * sc; \
+  for (i = 0; i < ts->num_##sc##s; i++) \
+    { \
+      sc = ts->sc##s[i]; \
+      sc##_set_start_pos ( \
+        sc, &sc->start_pos, \
+        F_NO_TRANS_ONLY, F_NO_VALIDATE); \
+      sc##_set_end_pos ( \
+        sc, &sc->end_pos, \
+        F_NO_TRANS_ONLY, F_NO_VALIDATE); \
+    } \
+  EVENTS_PUSH (ET_##caps##_POSITIONS_CHANGED, \
+               NULL)
 
-  ChordObject * chord;
-  for (int i = 0; i < ts->num_chords; i++)
-    {
-      chord = ts->chords[i];
+#define RESET_TRANS_POS(caps,cc,sc) \
+  cc * sc; \
+  for (i = 0; i < ts->num_##sc##s; i++) \
+    { \
+      sc = ts->sc##s[i]; \
+      sc##_set_pos ( \
+        sc, &sc->pos, \
+        F_NO_TRANS_ONLY); \
+    } \
+  EVENTS_PUSH (ET_##caps##_POSITIONS_CHANGED, \
+               NULL)
 
-      chord_object_set_pos (
-        chord, &chord->pos,
-        F_NO_TRANS_ONLY);
-    }
+  RESET_TRANS_POS_W_LENGTH (
+    REGION, Region, region);
+  RESET_TRANS_POS (
+    CHORD_OBJECT, ChordObject, chord_object);
+  RESET_TRANS_POS (
+    SCALE_OBJECT, ScaleObject, scale_object);
+  RESET_TRANS_POS (
+    MARKER, Marker, marker);
+  RESET_TRANS_POS (
+    AUTOMATION_POINT, AutomationPoint,
+    automation_point);
 
-  ScaleObject * scale;
-  for (int i = 0; i < ts->num_scales; i++)
-    {
-      scale = ts->scales[i];
-
-      scale_object_set_pos (
-        scale, &scale->pos,
-        F_NO_TRANS_ONLY);
-    }
-
-  EVENTS_PUSH (ET_REGION_POSITIONS_CHANGED,
-               NULL);
-  EVENTS_PUSH (ET_CHORD_POSITIONS_CHANGED,
-               NULL);
-  EVENTS_PUSH (ET_SCALE_POSITIONS_CHANGED,
-               NULL);
+#undef RESET_TRANS_POS_W_LENGTH
+#undef RESET_TRANS_POS
 }
 
 /**
@@ -201,13 +209,16 @@ timeline_selections_get_start_pos (
     ts, Region, region, start_pos,
     transient, before, widget);
   SET_ARRANGER_OBJ_POS_TO (
-    ts, AutomationPoint, ap, pos,
+    ts, AutomationPoint, automation_point, pos,
     transient, before, widget);
   SET_ARRANGER_OBJ_POS_TO (
-    ts, ChordObject, chord, pos,
+    ts, ChordObject, chord_object, pos,
     transient, before, widget);
   SET_ARRANGER_OBJ_POS_TO (
-    ts, ScaleObject, scale, pos,
+    ts, ScaleObject, scale_object, pos,
+    transient, before, widget);
+  SET_ARRANGER_OBJ_POS_TO (
+    ts, Marker, marker, pos,
     transient, before, widget);
 }
 
@@ -235,13 +246,16 @@ timeline_selections_get_end_pos (
     ts, Region, region, start_pos,
     transient, after, widget);
   SET_ARRANGER_OBJ_POS_TO (
-    ts, AutomationPoint, ap, pos,
+    ts, AutomationPoint, automation_point, pos,
     transient, after, widget);
   SET_ARRANGER_OBJ_POS_TO (
-    ts, ChordObject, chord, pos,
+    ts, ChordObject, chord_object, pos,
     transient, after, widget);
   SET_ARRANGER_OBJ_POS_TO (
-    ts, ScaleObject, scale, pos,
+    ts, ScaleObject, scale_object, pos,
+    transient, after, widget);
+  SET_ARRANGER_OBJ_POS_TO (
+    ts, Marker, marker, pos,
     transient, after, widget);
 }
 
@@ -267,13 +281,16 @@ timeline_selections_get_first_object (
     ts, Region, region, start_pos,
     transient, before, widget);
   SET_ARRANGER_OBJ_POS_TO (
-    ts, AutomationPoint, ap, pos,
+    ts, AutomationPoint, automation_point, pos,
     transient, before, widget);
   SET_ARRANGER_OBJ_POS_TO (
-    ts, ChordObject, chord, pos,
+    ts, ChordObject, chord_object, pos,
     transient, before, widget);
   SET_ARRANGER_OBJ_POS_TO (
-    ts, ScaleObject, scale, pos,
+    ts, ScaleObject, scale_object, pos,
+    transient, before, widget);
+  SET_ARRANGER_OBJ_POS_TO (
+    ts, Marker, marker, pos,
     transient, before, widget);
 
   return widget;
@@ -300,13 +317,16 @@ timeline_selections_get_last_object (
     ts, Region, region, start_pos,
     transient, after, widget);
   SET_ARRANGER_OBJ_POS_TO (
-    ts, AutomationPoint, ap, pos,
+    ts, AutomationPoint, automation_point, pos,
     transient, after, widget);
   SET_ARRANGER_OBJ_POS_TO (
-    ts, ChordObject, chord, pos,
+    ts, ChordObject, chord_object, pos,
     transient, after, widget);
   SET_ARRANGER_OBJ_POS_TO (
-    ts, ScaleObject, scale, pos,
+    ts, ScaleObject, scale_object, pos,
+    transient, after, widget);
+  SET_ARRANGER_OBJ_POS_TO (
+    ts, Marker, marker, pos,
     transient, after, widget);
 
   return widget;
@@ -349,12 +369,15 @@ timeline_selections_get_highest_track (
       CHECK_POS (region->lane->track);
     }
   AutomationPoint * ap;
-  for (int i = 0; i < ts->num_aps; i++)
+  for (int i = 0; i < ts->num_automation_points; i++)
     {
       if (transient)
-        ap = ts->aps[i]->obj_info.main_trans;
+        ap =
+          automation_point_get_main_trans_automation_point (
+                                                           ts->automation_points[i]);
       else
-        ap = ts->aps[i]->obj_info.main;
+        ap = automation_point_get_main_automation_point (
+                                                           ts->automation_points[i]);
       CHECK_POS (ap->at->track);
     }
   CHECK_POS (P_CHORD_TRACK);
@@ -400,12 +423,13 @@ timeline_selections_get_lowest_track (
       CHECK_POS (region->lane->track);
     }
   AutomationPoint * ap;
-  for (int i = 0; i < ts->num_aps; i++)
+  for (int i = 0; i < ts->num_automation_points; i++)
     {
       if (transient)
-        ap = ts->aps[i]->obj_info.main_trans;
+        ap =
+          automation_point_get_main_trans_automation_point (ts->automation_points[i]);
       else
-        ap = ts->aps[i]->obj_info.main;
+        ap = automation_point_get_main_automation_point (ts->automation_points[i]);
       CHECK_POS (ap->at->track);
     }
   CHECK_POS (P_CHORD_TRACK);
@@ -416,208 +440,71 @@ timeline_selections_get_lowest_track (
 
 /**
  * Adds an object to the selections.
- *
- * Optionally adds a transient object (if moving/
- * copy-moving).
  */
-void
-timeline_selections_add_region (
-  TimelineSelections * ts,
-  Region *             r)
-{
-  if (!array_contains (ts->regions,
-                      ts->num_regions,
-                      r))
-    {
-      array_append (ts->regions,
-                    ts->num_regions,
-                    r);
+#define DEFINE_ADD_OBJECT(caps,cc,sc) \
+  void \
+  timeline_selections_add_##sc ( \
+    TimelineSelections * ts, \
+    cc *                 sc) \
+  { \
+    ADD_OBJECT (caps, sc); \
+  }
 
-      EVENTS_PUSH (ET_REGION_CHANGED,
-                   r);
-    }
-}
+DEFINE_ADD_OBJECT (REGION, Region, region);
+DEFINE_ADD_OBJECT (
+  CHORD_OBJECT, ChordObject, chord_object);
+DEFINE_ADD_OBJECT (
+  SCALE_OBJECT, ScaleObject, scale_object);
+DEFINE_ADD_OBJECT (MARKER, Marker, marker);
+DEFINE_ADD_OBJECT (
+  AUTOMATION_POINT, AutomationPoint,
+  automation_point);
 
-void
-timeline_selections_add_chord (
-  TimelineSelections * ts,
-  ChordObject *             r)
-{
-  if (!array_contains (ts->chords,
-                      ts->num_chords,
-                      r))
-    {
-      array_append (ts->chords,
-                    ts->num_chords,
-                    r);
+#undef DEFINE_ADD_OBJECT
 
-      EVENTS_PUSH (ET_CHORD_CHANGED,
-                   r);
-    }
-}
+#define DEFINE_REMOVE_OBJ(caps,cc,sc) \
+  void \
+  timeline_selections_remove_##sc ( \
+    TimelineSelections * ts, \
+    cc *                 sc) \
+  { \
+    REMOVE_OBJECT (caps, sc); \
+  }
 
-void
-timeline_selections_add_scale (
-  TimelineSelections * ts,
-  ScaleObject *        r)
-{
-  if (!array_contains (ts->scales,
-                      ts->num_scales,
-                      r))
-    {
-      array_append (ts->scales,
-                    ts->num_scales,
-                    r);
+DEFINE_REMOVE_OBJ (REGION, Region, region);
+DEFINE_REMOVE_OBJ (
+  CHORD_OBJECT, ChordObject, chord_object);
+DEFINE_REMOVE_OBJ (
+  SCALE_OBJECT, ScaleObject, scale_object);
+DEFINE_REMOVE_OBJ (MARKER, Marker, marker);
+DEFINE_REMOVE_OBJ (
+  AUTOMATION_POINT, AutomationPoint,
+  automation_point);
 
-      EVENTS_PUSH (ET_SCALE_CHANGED,
-                   r);
-    }
-}
+#undef DEFINE_REMOVE_OBJ
 
-void
-timeline_selections_add_ap (
-  TimelineSelections * ts,
-  AutomationPoint *    ap)
-{
-  if (!array_contains (
-        ts->aps,
-        ts->num_aps,
-        ap))
-    {
-      array_append (
-        ts->aps,
-        ts->num_aps,
-        ap);
+#define DEFINE_CONTAINS_OBJ(caps,cc,sc) \
+  int \
+  timeline_selections_contains_##sc ( \
+    TimelineSelections * self, \
+    cc *                 sc) \
+  { \
+    return \
+      array_contains ( \
+        self->sc##s, self->num_##sc##s, sc); \
+  }
 
-      EVENTS_PUSH (ET_AUTOMATION_POINT_CHANGED,
-                   ap);
-    }
-}
+DEFINE_CONTAINS_OBJ (REGION, Region, region);
+DEFINE_CONTAINS_OBJ (
+  CHORD_OBJECT, ChordObject, chord_object);
+DEFINE_CONTAINS_OBJ (
+  SCALE_OBJECT, ScaleObject, scale_object);
+DEFINE_CONTAINS_OBJ (MARKER, Marker, marker);
+DEFINE_CONTAINS_OBJ (
+  AUTOMATION_POINT, AutomationPoint,
+  automation_point);
 
-void
-timeline_selections_remove_region (
-  TimelineSelections * ts,
-  Region *             r)
-{
-  if (!array_contains (ts->regions,
-                       ts->num_regions,
-                       r))
-    {
-      EVENTS_PUSH (ET_REGION_CHANGED,
-                   r);
-      return;
-    }
-
-  array_delete (
-    ts->regions,
-    ts->num_regions,
-    r);
-}
-
-void
-timeline_selections_remove_chord (
-  TimelineSelections * ts,
-  ChordObject *              c)
-{
-  if (!array_contains (
-        ts->chords,
-        ts->num_chords,
-        c))
-    return;
-
-  array_delete (
-    ts->chords,
-    ts->num_chords,
-    c);
-
-  EVENTS_PUSH (ET_CHORD_CHANGED,
-               c);
-}
-
-void
-timeline_selections_remove_scale (
-  TimelineSelections * ts,
-  ScaleObject *        c)
-{
-  if (!array_contains (
-        ts->scales,
-        ts->num_scales,
-        c))
-    return;
-
-  array_delete (
-    ts->scales,
-    ts->num_scales,
-    c);
-
-  EVENTS_PUSH (ET_SCALE_CHANGED,
-               c);
-}
-
-void
-timeline_selections_remove_ap (
-  TimelineSelections * ts,
-  AutomationPoint *    ap)
-{
-  if (!array_contains (
-        ts->aps,
-        ts->num_aps,
-        ap))
-    return;
-
-  array_delete (
-    ts->aps,
-    ts->num_aps,
-    ap);
-
-  EVENTS_PUSH (ET_AUTOMATION_POINT_CHANGED,
-               ap);
-}
-
-int
-timeline_selections_contains_region (
-  TimelineSelections * self,
-  Region *             region)
-{
-  if (array_contains (self->regions,
-                      self->num_regions,
-                      region))
-    return 1;
-
-  return 0;
-}
-
-/**
- * Returns if the ChordObject is selected or not.
- */
-int
-timeline_selections_contains_chord (
-  TimelineSelections * self,
-  ChordObject *        c)
-{
-  if (array_contains (self->chords,
-                      self->num_chords,
-                      c))
-    return 1;
-
-  return 0;
-}
-
-/**
- * Returns if the ScaleObject is selected or not.
- */
-int
-timeline_selections_contains_scale (
-  TimelineSelections * self,
-  ScaleObject *        c)
-{
-  if (array_contains (self->scales,
-                      self->num_scales,
-                      c))
-    return 1;
-
-  return 0;
-}
+#undef DEFINE_CONTAINS_OBJ
 
 /**
  * Clears selections.
@@ -626,70 +513,39 @@ void
 timeline_selections_clear (
   TimelineSelections * ts)
 {
-  int i, num_regions, num_chords, num_scales,num_aps;
-  Region * r;
-  ChordObject * c;
-  ScaleObject * s;
-  AutomationPoint * ap;
+  int i;
 
-  /* use caches because ts->* will be operated on. */
-  static Region * regions[600];
-  static ChordObject * chords[600];
-  static ScaleObject * scales[600];
-  static AutomationPoint * aps[600];
-  for (i = 0; i < ts->num_regions; i++)
-    {
-      regions[i] = ts->regions[i];
+/* use caches because ts->* will be operated on. */
+#define TL_REMOVE_OBJS(caps,cc,sc) \
+  int num_##sc##s; \
+  cc * sc; \
+  static cc * sc##s[600]; \
+  for (i = 0; i < ts->num_##sc##s; i++) \
+    { \
+      sc##s[i] = ts->sc##s[i]; \
+    } \
+  num_##sc##s = ts->num_##sc##s; \
+  for (i = 0; i < num_##sc##s; i++) \
+    { \
+      sc = sc##s[i]; \
+      timeline_selections_remove_##sc (ts, sc); \
+      EVENTS_PUSH (ET_##caps##_CHANGED, sc); \
     }
-  num_regions = ts->num_regions;
-  for (i = 0; i < ts->num_chords; i++)
-    {
-      chords[i] = ts->chords[i];
-    }
-  num_chords = ts->num_chords;
-  for (i = 0; i < ts->num_scales; i++)
-    {
-      scales[i] = ts->scales[i];
-    }
-  num_scales = ts->num_scales;
-  for (i = 0; i < ts->num_aps; i++)
-    {
-      aps[i] = ts->aps[i];
-    }
-  num_aps = ts->num_aps;
 
-  for (i = 0; i < num_regions; i++)
-    {
-      r = regions[i];
-      timeline_selections_remove_region (
-        ts, r);
-      EVENTS_PUSH (ET_REGION_CHANGED,
-                   r);
-    }
-  for (i = 0; i < num_chords; i++)
-    {
-      c = chords[i];
-      timeline_selections_remove_chord (
-        ts, c);
-      EVENTS_PUSH (ET_CHORD_CHANGED,
-                   c);
-    }
-  for (i = 0; i < num_scales; i++)
-    {
-      s = scales[i];
-      timeline_selections_remove_scale (
-        ts, s);
-      EVENTS_PUSH (ET_SCALE_CHANGED,
-                   s);
-    }
-  for (i = 0; i < num_aps; i++)
-    {
-      ap = aps[i];
-      timeline_selections_remove_ap (
-        ts, ap);
-      EVENTS_PUSH (ET_AUTOMATION_POINT_CHANGED,
-                   ap);
-    }
+  TL_REMOVE_OBJS (
+    REGION, Region, region);
+  TL_REMOVE_OBJS (
+    AUTOMATION_POINT, AutomationPoint,
+    automation_point);
+  TL_REMOVE_OBJS (
+    CHORD_OBJECT, ChordObject, chord_object);
+  TL_REMOVE_OBJS (
+    SCALE_OBJECT, ScaleObject, scale_object);
+  TL_REMOVE_OBJS (
+    MARKER, Marker, marker);
+
+#undef TL_REMOVE_OBJS
+
   g_message ("cleared timeline selections");
 }
 
@@ -702,41 +558,34 @@ timeline_selections_clone ()
   TimelineSelections * new_ts =
     calloc (1, sizeof (TimelineSelections));
 
+  int i;
   TimelineSelections * src = TL_SELECTIONS;
 
-  /* FIXME only does regions */
-  Region *r, * new_r;
-  for (int i = 0; i < src->num_regions; i++)
-    {
-      r = src->regions[i];
-      new_r =
-        region_clone (r, REGION_CLONE_COPY);
-      array_append (new_ts->regions,
-                    new_ts->num_regions,
-                    new_r);
+#define TL_CLONE_OBJS(caps,cc,sc) \
+  cc * sc, * new_##sc; \
+  for (i = 0; i < src->num_##sc##s; i++) \
+    { \
+      sc = src->sc##s[i]; \
+      new_##sc = \
+        sc##_clone (sc, caps##_CLONE_COPY); \
+      array_append ( \
+        new_ts->sc##s, new_ts->num_##sc##s, \
+        new_##sc); \
     }
-  ChordObject *c, * new_c;
-  for (int i = 0; i < src->num_chords; i++)
-    {
-      c = src->chords[i];
-      new_c =
-        chord_object_clone (
-          c, CHORD_OBJECT_CLONE_COPY);
-      array_append (new_ts->chords,
-                    new_ts->num_chords,
-                    new_c);
-    }
-  ScaleObject *s, * new_s;
-  for (int i = 0; i < src->num_scales; i++)
-    {
-      s = src->scales[i];
-      new_s =
-        scale_object_clone (
-          s, SCALE_OBJECT_CLONE_COPY);
-      array_append (new_ts->scales,
-                    new_ts->num_scales,
-                    new_s);
-    }
+
+  TL_CLONE_OBJS (
+    REGION, Region, region);
+  TL_CLONE_OBJS (
+    AUTOMATION_POINT, AutomationPoint,
+    automation_point);
+  TL_CLONE_OBJS (
+    CHORD_OBJECT, ChordObject, chord_object);
+  TL_CLONE_OBJS (
+    SCALE_OBJECT, ScaleObject, scale_object);
+  TL_CLONE_OBJS (
+    MARKER, Marker, marker);
+
+#undef TL_CLONE_OBJS
 
   return new_ts;
 }
@@ -760,105 +609,28 @@ timeline_selections_add_ticks (
 {
   int i;
 
-  /* update region positions */
-  Region * r;
-  for (i = 0; i < ts->num_regions; i++)
-    {
-      r = ts->regions[i];
-      region_move (
-        r, ticks, use_cached_pos, transients_only);
+#define UPDATE_TL_POSES(cc,sc) \
+  cc * sc; \
+  for (i = 0; i < ts->num_##sc##s; i++) \
+    { \
+      sc = ts->sc##s[i]; \
+      sc##_move ( \
+        sc, ticks, use_cached_pos, \
+        transients_only); \
     }
 
-  /* update chord positions */
-  ChordObject * c;
-  for (i = 0; i < ts->num_chords; i++)
-    {
-      c = ts->chords[i];
-      chord_object_move (
-        c, ticks, use_cached_pos, transients_only);
-    }
+  UPDATE_TL_POSES (
+    Region, region);
+  UPDATE_TL_POSES (
+    AutomationPoint, automation_point);
+  UPDATE_TL_POSES (
+    ChordObject, chord_object);
+  UPDATE_TL_POSES (
+    ScaleObject, scale_object);
+  UPDATE_TL_POSES (
+    Marker, marker);
 
-  /* update scale positions */
-  ScaleObject * s;
-  for (i = 0; i < ts->num_scales; i++)
-    {
-      s = ts->scales[i];
-      scale_object_move (
-        s, ticks, use_cached_pos, transients_only);
-    }
-
-  /* update ap positions */
-  AutomationPoint * ap;
-  for (i = 0; i < ts->num_aps; i++)
-    {
-      ap =
-        ts->aps[i]->
-          obj_info.main_trans;
-
-      /* get prev and next value APs */
-      AutomationPoint * prev_ap =
-        automation_track_get_prev_ap (ap->at, ap);
-      AutomationPoint * next_ap =
-        automation_track_get_next_ap (ap->at, ap);
-
-      /* get adjusted pos for this automation point */
-      Position ap_pos;
-      Position * prev_pos = &ap->cache_pos;
-      position_set_to_pos (&ap_pos,
-                           prev_pos);
-      position_add_ticks (&ap_pos, ticks);
-
-      Position mid_pos;
-      AutomationCurve * ac;
-
-      /* update midway points */
-      if (prev_ap &&
-          position_is_after_or_equal (
-            &ap_pos, &prev_ap->pos))
-        {
-          /* set prev curve point to new midway pos */
-          position_get_midway_pos (
-            &prev_ap->pos, &ap_pos, &mid_pos);
-          ac =
-            automation_track_get_next_curve_ac (
-              ap->at, prev_ap);
-          position_set_to_pos (&ac->pos, &mid_pos);
-
-          /* set pos for ap */
-          if (!next_ap)
-            {
-              position_set_to_pos (&ap->pos, &ap_pos);
-            }
-        }
-      if (next_ap &&
-          position_is_before_or_equal (
-            &ap_pos, &next_ap->pos))
-        {
-          /* set next curve point to new midway pos */
-          position_get_midway_pos (
-            &ap_pos, &next_ap->pos, &mid_pos);
-          ac =
-            automation_track_get_next_curve_ac (
-              ap->at, ap);
-          position_set_to_pos (&ac->pos, &mid_pos);
-
-          /* set pos for ap - if no prev ap exists
-           * or if the position is also after the
-           * prev ap */
-          if ((prev_ap &&
-               position_is_after_or_equal (
-                &ap_pos, &prev_ap->pos)) ||
-              (!prev_ap))
-            {
-              position_set_to_pos (&ap->pos, &ap_pos);
-            }
-        }
-      else if (!prev_ap && !next_ap)
-        {
-          /* set pos for ap */
-          position_set_to_pos (&ap->pos, &ap_pos);
-        }
-    }
+#undef UPDATE_TL_POSES
 }
 
 void
@@ -942,26 +714,26 @@ timeline_selections_paste_to_pos (
         cp->lane->track, cp, 0, F_GEN_NAME,
         F_GEN_WIDGET);
     }
-  for (i = 0; i < ts->num_aps; i++)
+  for (i = 0; i < ts->num_automation_points; i++)
     {
       AutomationPoint * ap =
-        ts->aps[i];
+        ts->automation_points[i];
 
       curr_ticks = position_to_ticks (&ap->pos);
       position_from_ticks (&ap->pos,
                            pos_ticks + DIFF);
     }
-  for (i = 0; i < ts->num_chords; i++)
+  for (i = 0; i < ts->num_chord_objects; i++)
     {
-      ChordObject * chord = ts->chords[i];
+      ChordObject * chord = ts->chord_objects[i];
 
       curr_ticks = position_to_ticks (&chord->pos);
       position_from_ticks (&chord->pos,
                            pos_ticks + DIFF);
     }
-  for (i = 0; i < ts->num_scales; i++)
+  for (i = 0; i < ts->num_scale_objects; i++)
     {
-      ScaleObject * scale = ts->scales[i];
+      ScaleObject * scale = ts->scale_objects[i];
 
       curr_ticks = position_to_ticks (&scale->pos);
       position_from_ticks (&scale->pos,
@@ -971,7 +743,8 @@ timeline_selections_paste_to_pos (
 }
 
 void
-timeline_selections_free (TimelineSelections * self)
+timeline_selections_free (
+  TimelineSelections * self)
 {
   free (self);
 }

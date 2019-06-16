@@ -27,6 +27,7 @@
 #define __AUDIO_AUTOMATION_POINT_H__
 
 #include "audio/position.h"
+#include "gui/backend/arranger_object.h"
 #include "gui/backend/arranger_object_info.h"
 
 typedef struct AutomationTrack AutomationTrack;
@@ -38,6 +39,28 @@ AutomationPointWidget;
  *
  * @{
  */
+
+#define automation_point_is_main(c) \
+  arranger_object_info_is_main ( \
+    &c->obj_info)
+
+#define automation_point_is_transient(r) \
+  arranger_object_info_is_transient ( \
+    &r->obj_info)
+
+/** Gets the main counterpart of the AutomationPoint. */
+#define automation_point_get_main_automation_point(r) \
+  ((AutomationPoint *) r->obj_info.main)
+
+/** Gets the transient counterpart of the AutomationPoint. */
+#define automation_point_get_main_trans_automation_point(r) \
+  ((AutomationPoint *) r->obj_info.main_trans)
+
+typedef enum AutomationPointCloneFlag
+{
+  AUTOMATION_POINT_CLONE_COPY_MAIN,
+  AUTOMATION_POINT_CLONE_COPY,
+} AutomationPointCloneFlag;
 
 /**
  * An automation point living inside an AutomationTrack.
@@ -149,11 +172,38 @@ automation_point_get_normalized_value (
   AutomationPoint * ap);
 
 /**
+ * Clones the atuomation point.
+ */
+AutomationPoint *
+automation_point_clone (
+  AutomationPoint * src,
+  AutomationPointCloneFlag flag);
+
+/**
  * Returns the Track this AutomationPoint is in.
  */
 Track *
 automation_point_get_track (
   AutomationPoint * ap);
+
+/**
+ * Moves the AutomationPoint by the given amount of
+ * ticks.
+ *
+ * @param use_cached_pos Add the ticks to the cached
+ *   Position instead of its current Position.
+ * @param trans_only Only move transients.
+ * @return Whether moved or not.
+ */
+int
+automation_point_move (
+  AutomationPoint * automation_point,
+  long     ticks,
+  int      use_cached_pos,
+  int      trans_only);
+
+DECLARE_ARRANGER_OBJ_SET_POS (
+  AutomationPoint, automation_point);
 
 /**
  * Frees the automation point.

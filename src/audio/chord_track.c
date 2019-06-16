@@ -74,7 +74,7 @@ chord_track_add_chord (
   if (gen_widget)
     chord_object_gen_widget (chord);
 
-  EVENTS_PUSH (ET_CHORD_CREATED, chord);
+  EVENTS_PUSH (ET_CHORD_OBJECT_CREATED, chord);
 }
 
 /**
@@ -107,7 +107,7 @@ chord_track_add_scale (
   if (gen_widget)
     scale_object_gen_widget (scale);
 
-  EVENTS_PUSH (ET_SCALE_CREATED, scale);
+  EVENTS_PUSH (ET_SCALE_OBJECT_CREATED, scale);
 }
 
 /**

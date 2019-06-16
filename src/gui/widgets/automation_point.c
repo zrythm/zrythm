@@ -48,7 +48,8 @@ draw_cb (AutomationPointWidget * self,
 
   gtk_render_background (context, cr, 0, 0, width, height);
 
-  Track * track = self->ap->at->track;
+  Track * track =
+    self->automation_point->at->track;
   GdkRGBA * color = &track->color;
   cairo_set_source_rgba (
     cr, color->red, color->green, color->blue, 0.7);
@@ -98,40 +99,25 @@ on_motion (GtkWidget * widget,
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
-/**
- * FIXME move to backend.
- */
-void
-automation_point_widget_select (
-  AutomationPointWidget * self,
-  int            select)
-{
-  AutomationPoint * ap = self->ap->obj_info.main;
-  if (select)
-    {
-      timeline_selections_add_ap (
-        TL_SELECTIONS, ap);
-    }
-  else
-    {
-      timeline_selections_remove_ap (
-        TL_SELECTIONS, ap);
-    }
-
-  EVENTS_PUSH (ET_AP_CHANGED, ap);
-}
+DEFINE_ARRANGER_OBJECT_WIDGET_SELECT (
+  AUTOMATION_POINT, AutomationPoint,
+  automation_point, timeline_selections,
+  TL_SELECTIONS);
 
 void
 automation_point_widget_update_tooltip (
   AutomationPointWidget * self,
   int              show)
 {
+  AutomationPoint * ap =
+    self->automation_point;
+
   /* set tooltip text */
   char * tooltip =
     g_strdup_printf (
       "%s %f",
-      self->ap->at->automatable->label,
-      self->ap->fvalue);
+      ap->at->automatable->label,
+      ap->fvalue);
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self), tooltip);
   g_free (tooltip);
@@ -142,7 +128,7 @@ automation_point_widget_update_tooltip (
       tooltip =
         g_strdup_printf (
           "%f",
-          self->ap->fvalue);
+          ap->fvalue);
       gtk_label_set_text (self->tooltip_label,
                           tooltip);
       gtk_window_present (self->tooltip_win);
@@ -165,7 +151,7 @@ automation_point_widget_new (
       "visible", 1,
       NULL);
 
-  self->ap = ap;
+  self->automation_point = ap;
 
   gtk_widget_add_events (
     GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);

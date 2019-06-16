@@ -211,7 +211,7 @@ midi_arranger_selections_clear (
   for (i = 0; i < num_midi_notes; i++)
     {
       mn = midi_notes[i];
-      midi_arranger_selections_remove_note (
+      midi_arranger_selections_remove_midi_note (
         mas, mn);
       EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
                    mn);
@@ -242,7 +242,7 @@ midi_arranger_selections_contains_note (
  * Adds a note to the selections.
  */
 void
-midi_arranger_selections_add_note (
+midi_arranger_selections_add_midi_note (
   MidiArrangerSelections * mas,
   MidiNote *               note)
 {
@@ -260,7 +260,7 @@ midi_arranger_selections_add_note (
 }
 
 void
-midi_arranger_selections_remove_note (
+midi_arranger_selections_remove_midi_note (
   MidiArrangerSelections * mas,
   MidiNote *               note)
 {

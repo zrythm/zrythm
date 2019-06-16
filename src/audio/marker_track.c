@@ -46,14 +46,37 @@ marker_track_default ()
   return self;
 }
 
+/**
+ * Adds a Marker to the Track.\
+ *
+ * @gen_widget Generates a widget for the Marker.
+ */
 void
 marker_track_add_marker (
-  MarkerTrack * self,
-  Marker *      marker)
+  MarkerTrack * track,
+  Marker *      marker,
+  int           gen_widget)
 {
-  array_append (self->markers,
-                self->num_markers,
+  g_warn_if_fail (
+    track->type == TRACK_TYPE_MARKER && marker);
+  g_warn_if_fail (
+    marker->obj_info.counterpart ==
+      AOI_COUNTERPART_MAIN);
+  g_warn_if_fail (
+    marker->obj_info.main &&
+    marker->obj_info.main_trans &&
+    marker->obj_info.lane &&
+    marker->obj_info.lane_trans);
+
+  marker_set_track (marker, track);
+  array_append (track->markers,
+                track->num_markers,
                 marker);
+
+  if (gen_widget)
+    marker_gen_widget (marker);
+
+  EVENTS_PUSH (ET_MARKER_CREATED, marker);
 }
 
 void

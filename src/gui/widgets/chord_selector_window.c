@@ -50,7 +50,7 @@ on_delete_event (
 {
   UndoableAction * ua =
     edit_chord_action_new (
-      self->chord->chord,
+      self->chord->chord_object,
       self->descr);
   undo_manager_perform (
     UNDO_MANAGER, ua);
@@ -272,7 +272,7 @@ setup_creator_tab (
   ChordSelectorWindowWidget * self)
 {
   ChordDescriptor * descr =
-    self->chord->chord->descr;
+    self->chord->chord_object->descr;
 
 #define SELECT_CHILD(flowbox, child) \
   gtk_flow_box_select_child ( \
@@ -539,11 +539,11 @@ chord_selector_window_widget_new (
 
   self->chord =
     chord_object_get_main_chord_object (
-      owner->chord)->widget;
+      owner->chord_object)->widget;
   self->scale =
     chord_track_get_scale_at_pos (
       P_CHORD_TRACK,
-      &owner->chord->pos);
+      &owner->chord_object->pos);
 
   gtk_window_set_transient_for (
     GTK_WINDOW (self),
@@ -554,7 +554,7 @@ chord_selector_window_widget_new (
 
   self->descr =
     chord_descriptor_clone (
-      owner->chord->descr);
+      owner->chord_object->descr);
 
   return self;
 }

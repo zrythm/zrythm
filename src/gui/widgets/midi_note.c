@@ -318,32 +318,9 @@ on_destroy (
   g_message ("on destroy %p", widget);
 }
 
-/**
- * Sets the "selected" GTK state flag and adds the
- * note to midi arranger selections.
- */
-void
-midi_note_widget_select (
-  MidiNoteWidget * self,
-  int              select)
-{
-  MidiNote * main_note =
-    midi_note_get_main_midi_note (self->midi_note);
-  if (select)
-    {
-      midi_arranger_selections_add_note (
-        MA_SELECTIONS,
-        main_note);
-    }
-  else
-    {
-      midi_arranger_selections_remove_note (
-        MA_SELECTIONS,
-        main_note);
-    }
-  EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
-               main_note);
-}
+DEFINE_ARRANGER_OBJECT_WIDGET_SELECT (
+  MIDI_NOTE, MidiNote, midi_note,
+  midi_arranger_selections, MA_SELECTIONS);
 
 /**
  * Destroys the widget completely.

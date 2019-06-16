@@ -122,6 +122,7 @@ filechooser list
 
 region,
 chord,
+marker,
 scale-object,
 midi-note,
 velocity
@@ -136,6 +137,7 @@ region
 
 region:selected,
 chord:selected,
+marker:selected,
 scale-object:selected,
 midi-note:selected,
 velocity:selected,
@@ -154,6 +156,7 @@ automation-point:selected
 
 region:hover,
 chord:hover,
+marker:hover,
 scale-object:hover,
 midi-note:hover,
 velocity:hover,
@@ -347,6 +350,7 @@ track:selected,
 channel:selected,
 region:selected,
 chord:selected,
+marker:selected,
 scale-object:selected,
 midi-note:selected
 velocity:selected,
@@ -370,6 +374,7 @@ track:hover,
 region:hover,
 chord:hover,
 scale-object:hover,
+marker:hover,
 fader:hover,
 channel-slot:hover:not(:selected),
 pan:hover,

@@ -50,10 +50,16 @@ typedef struct Track MarkerTrack;
 MarkerTrack *
 marker_track_default ();
 
+/**
+ * Adds a Marker to the Track.\
+ *
+ * @gen_widget Generates a widget for the Marker.
+ */
 void
 marker_track_add_marker (
   MarkerTrack * self,
-  Marker *      marker);
+  Marker *      marker,
+  int           gen_widget);
 
 void
 marker_track_remove_marker (

@@ -918,16 +918,17 @@ events_process (void * data)
             MIDI_ARRANGER);
           break;
         case ET_REGION_CREATED:
-        case ET_CHORD_CREATED:
-        case ET_SCALE_CREATED:
-        case ET_CHORD_REMOVED:
+        case ET_MARKER_CREATED:
+        case ET_CHORD_OBJECT_CREATED:
+        case ET_SCALE_OBJECT_CREATED:
+        case ET_CHORD_OBJECT_REMOVED:
           arranger_widget_refresh (
             Z_ARRANGER_WIDGET (MW_TIMELINE));
           arranger_widget_refresh (
             Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE));
           break;
-        case ET_CHORD_CHANGED:
-        case ET_SCALE_CHANGED:
+        case ET_CHORD_OBJECT_CHANGED:
+        case ET_SCALE_OBJECT_CHANGED:
         case ET_PIANO_ROLL_HIGHLIGHTING_CHANGED:
           if (MW_PIANO_ROLL)
             piano_roll_widget_refresh_labels (
@@ -989,6 +990,11 @@ events_process (void * data)
             MW_TRACKLIST);
           timeline_arranger_widget_refresh_visibility (
             MW_TIMELINE);
+        case ET_MARKER_POSITIONS_CHANGED:
+        case ET_CHORD_OBJECT_POSITIONS_CHANGED:
+        case ET_SCALE_OBJECT_POSITIONS_CHANGED:
+          /* TODO */
+          break;
         case ET_REGION_POSITIONS_CHANGED:
           /* redraw midi ruler if region
            * positions were changed */

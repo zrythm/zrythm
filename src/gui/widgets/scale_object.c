@@ -123,17 +123,17 @@ scale_object_widget_select (
       self->scale);
   if (select)
     {
-      timeline_selections_add_scale (
+      timeline_selections_add_scale_object (
         TL_SELECTIONS,
         main_scale);
     }
   else
     {
-      timeline_selections_remove_scale (
+      timeline_selections_remove_scale_object (
         TL_SELECTIONS,
         main_scale);
     }
-  EVENTS_PUSH (ET_SCALE_CHANGED,
+  EVENTS_PUSH (ET_SCALE_OBJECT_CHANGED,
                main_scale);
 }
 

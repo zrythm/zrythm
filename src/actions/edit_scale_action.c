@@ -58,7 +58,7 @@ edit_scale_action_do (
     musical_scale_clone (self->descr);
   musical_scale_free (old);
 
-  EVENTS_PUSH (ET_SCALE_CHANGED, scale);
+  EVENTS_PUSH (ET_SCALE_OBJECT_CHANGED, scale);
 
   return 0;
 }
@@ -80,7 +80,7 @@ edit_scale_action_undo (
     musical_scale_clone (self->scale->scale);
   musical_scale_free (prev);
 
-  EVENTS_PUSH (ET_SCALE_CHANGED, scale);
+  EVENTS_PUSH (ET_SCALE_OBJECT_CHANGED, scale);
 
   return 0;
 }

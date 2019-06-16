@@ -89,6 +89,10 @@ arranger_object_info_should_be_visible (
       arranger =
         Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE);
       break;
+    case AOI_TYPE_MARKER:
+      arranger =
+        Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE);
+      break;
     case AOI_TYPE_MIDI_NOTE:
       arranger =
         Z_ARRANGER_WIDGET (MIDI_ARRANGER);
@@ -176,6 +180,7 @@ arranger_object_info_set_widget_visibility (
   Region * r = NULL;
   ChordObject * c = NULL;
   ScaleObject * s = NULL;
+  Marker * m = NULL;
   MidiNote * mn = NULL;
 
   /* get the objects */
@@ -194,6 +199,11 @@ arranger_object_info_set_widget_visibility (
     case AOI_TYPE_SCALE:
       s =
         (ScaleObject *)
+        arranger_object_info_get_object (self);
+      break;
+    case AOI_TYPE_MARKER:
+      m =
+        (Marker *)
         arranger_object_info_get_object (self);
       break;
     case AOI_TYPE_MIDI_NOTE:
@@ -256,6 +266,11 @@ arranger_object_info_set_widget_visibility (
           SET_ALL_VISIBLE_WITHOUT_LANE (
             ScaleObject, s);
         }
+      if (m)
+        {
+          SET_ALL_VISIBLE_WITHOUT_LANE (
+            Marker, m);
+        }
       if (mn)
         {
           SET_ALL_VISIBLE_WITHOUT_LANE (
@@ -275,6 +290,10 @@ arranger_object_info_set_widget_visibility (
       if (s)
         {
           SET_THIS_VISIBLE (s);
+        }
+      if (m)
+        {
+          SET_THIS_VISIBLE (m);
         }
       if (mn)
         {
@@ -297,6 +316,7 @@ arranger_object_info_get_visible_counterpart (
   Region * region = NULL;
   ChordObject * chord_object = NULL;
   ScaleObject * scale_object = NULL;
+  Marker * marker = NULL;
   MidiNote * midi_note = NULL;
 
   /* get the objects */
@@ -315,6 +335,11 @@ arranger_object_info_get_visible_counterpart (
     case AOI_TYPE_SCALE:
       scale_object =
         (ScaleObject *)
+        arranger_object_info_get_object (self);
+      break;
+    case AOI_TYPE_MARKER:
+      marker =
+        (Marker *)
         arranger_object_info_get_object (self);
       break;
     case AOI_TYPE_MIDI_NOTE:
@@ -355,6 +380,13 @@ arranger_object_info_get_visible_counterpart (
         scale_object, main_scale_object);
       RETURN_COUNTERPART_IF_VISIBLE (
         scale_object, main_trans_scale_object);
+    }
+  if (marker)
+    {
+      RETURN_COUNTERPART_IF_VISIBLE (
+        marker, main_marker);
+      RETURN_COUNTERPART_IF_VISIBLE (
+        marker, main_trans_marker);
     }
   if (midi_note)
     {

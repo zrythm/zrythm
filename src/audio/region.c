@@ -255,14 +255,8 @@ region_find_midi_note (
   return NULL;
 }
 
-void
-region_set_cache_end_pos (
-  Region * region,
-  const Position * pos)
-{
-  SET_POS (region, cache_end_pos, pos,
-           F_NO_TRANS_ONLY);
-}
+DEFINE_ARRANGER_OBJ_SET_POSES_W_LENGTH (
+  Region, region);
 
 /**
  * Generate a RegionWidget for the Region and all
@@ -300,15 +294,6 @@ region_gen_widget (
     }
 }
 
-void
-region_set_cache_start_pos (
-  Region * region,
-  Position * pos)
-{
-  SET_POS (region, cache_start_pos, pos,
-           F_NO_TRANS_ONLY);
-}
-
 /**
  * Clamps position then sets it to its counterparts.
  *
@@ -322,7 +307,7 @@ region_set_cache_start_pos (
 void
 region_set_start_pos (
   Region * region,
-  Position * pos,
+  const Position * pos,
   int        trans_only,
   int        validate)
 {
@@ -408,7 +393,7 @@ region_get_true_length_in_ticks (
 void
 region_set_end_pos (
   Region * region,
-  Position * pos,
+  const Position * pos,
   int        trans_only,
   int        validate)
 {

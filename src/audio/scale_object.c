@@ -131,19 +131,9 @@ scale_object_clone (
   return scale;
 }
 
-/**
- * Returns if the ScaleObject is in the
- * TimelineSelections.
- */
-int
-scale_object_is_selected (
-  ScaleObject * self)
-{
-  return timeline_selections_contains_scale (
-           TL_SELECTIONS,
-           scale_object_get_main_scale_object (
-              self));
-}
+DEFINE_IS_ARRANGER_OBJ_SELECTED (
+  ScaleObject, scale_object, timeline_selections,
+  TL_SELECTIONS);
 
 /**
  * Sets the Track of the scale.

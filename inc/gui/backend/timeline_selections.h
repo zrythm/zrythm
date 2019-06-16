@@ -54,16 +54,16 @@ typedef struct TimelineSelections
   int                 num_regions;
 
   /** Selected AutomationPoint's. */
-  AutomationPoint *   aps[600];
-  int                 num_aps;
+  AutomationPoint *   automation_points[600];
+  int                 num_automation_points;
 
   /** Selected ChordObject's. */
-  ChordObject *       chords[800];
-  int                 num_chords;
+  ChordObject *       chord_objects[800];
+  int                 num_chord_objects;
 
   /** Selected ScaleObject's. */
-  ScaleObject *       scales[800];
-  int                 num_scales;
+  ScaleObject *       scale_objects[800];
+  int                 num_scale_objects;
 
   /** Selected Marker's. */
   Marker *            markers[200];
@@ -79,11 +79,13 @@ static const cyaml_schema_field_t
     &region_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
     "aps", CYAML_FLAG_DEFAULT,
-    TimelineSelections, aps, num_aps,
+    TimelineSelections, automation_points,
+    num_automation_points,
     &automation_point_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
     "chords", CYAML_FLAG_DEFAULT,
-    TimelineSelections, chords, num_chords,
+    TimelineSelections, chord_objects,
+    num_chord_objects,
     &chord_object_schema, 0, CYAML_UNLIMITED),
 
 	CYAML_FIELD_END
@@ -191,94 +193,59 @@ timeline_selections_paste_to_pos (
   Position *           pos);
 
 /**
- * Returns if the region is selected or not.
+ * Returns if the timeline object is in the
+ * selections or  not.
  */
-int
-timeline_selections_contains_region (
-  TimelineSelections * self,
-  Region *             r);
+#define CONTAINS_FUNC_DECL(cc,sc) \
+  int \
+  timeline_selections_contains_##sc ( \
+    TimelineSelections * self, \
+    cc *                 sc)
+
+CONTAINS_FUNC_DECL (Region, region);
+CONTAINS_FUNC_DECL (ChordObject, chord_object);
+CONTAINS_FUNC_DECL (ScaleObject, scale_object);
+CONTAINS_FUNC_DECL (Marker, marker);
+CONTAINS_FUNC_DECL (
+  AutomationPoint, automation_point);
+
+#undef CONTAINS_FUNC_DECL
 
 /**
- * Returns if the ChordObject is selected or not.
+ * Adds the timeline object to the selections.
  */
-int
-timeline_selections_contains_chord (
-  TimelineSelections * self,
-  ChordObject *        c);
+#define ADD_FUNC_DECL(cc,sc) \
+  void \
+  timeline_selections_add_##sc ( \
+    TimelineSelections * ts, \
+    cc *                 sc)
+
+ADD_FUNC_DECL (Region, region);
+ADD_FUNC_DECL (ChordObject, chord_object);
+ADD_FUNC_DECL (ScaleObject, scale_object);
+ADD_FUNC_DECL (Marker, marker);
+ADD_FUNC_DECL (
+  AutomationPoint, automation_point);
+
+#undef ADD_FUNC_DECL
 
 /**
- * Returns if the ScaleObject is selected or not.
+ * Removes a timeline object from the selections.
  */
-int
-timeline_selections_contains_scale (
-  TimelineSelections * self,
-  ScaleObject *        s);
+#define REMOVE_FUNC_DECL(cc,sc) \
+  void \
+  timeline_selections_remove_##sc ( \
+    TimelineSelections * ts, \
+    cc *                 sc)
 
-/**
- * Adds a Region to the selections.
- */
-void
-timeline_selections_add_region (
-  TimelineSelections * ts,
-  Region *             r);
+REMOVE_FUNC_DECL (Region, region);
+REMOVE_FUNC_DECL (ChordObject, chord_object);
+REMOVE_FUNC_DECL (ScaleObject, scale_object);
+REMOVE_FUNC_DECL (Marker, marker);
+REMOVE_FUNC_DECL (
+  AutomationPoint, automation_point);
 
-/**
- * Adds a Chord to the selections.
- */
-void
-timeline_selections_add_chord (
-  TimelineSelections * ts,
-  ChordObject *              c);
-
-/**
- * Adds a ScaleObject to the selections.
- */
-void
-timeline_selections_add_scale (
-  TimelineSelections * ts,
-  ScaleObject *        s);
-
-void
-timeline_selections_add_ap (
-  TimelineSelections * ts,
-  AutomationPoint *    ap);
-
-//void
-//timeline_selections_remove_object (
-  //TimelineSelections * ts,
-  //GtkWidget *          object);
-
-/**
- * Remove a Region from the selections.
- */
-void
-timeline_selections_remove_region (
-  TimelineSelections * ts,
-  Region *             r);
-
-/**
- * Remove a ChordObject from the selections.
- */
-void
-timeline_selections_remove_chord (
-  TimelineSelections * ts,
-  ChordObject *        c);
-
-/**
- * Remove a ScaleObject from the selections.
- */
-void
-timeline_selections_remove_scale (
-  TimelineSelections * ts,
-  ScaleObject *        s);
-
-/**
- * Remove an AutomationPoint from the selections.
- */
-void
-timeline_selections_remove_ap (
-  TimelineSelections * ts,
-  AutomationPoint *    ap);
+#undef REMOVE_FUNC_DECL
 
 /**
  * Sets the cache Position's for each object in
@@ -325,9 +292,12 @@ timeline_selections_clear (
 void
 timeline_selections_free (TimelineSelections * self);
 
-SERIALIZE_INC (TimelineSelections, timeline_selections)
-DESERIALIZE_INC (TimelineSelections, timeline_selections)
-PRINT_YAML_INC (TimelineSelections, timeline_selections)
+SERIALIZE_INC (
+  TimelineSelections, timeline_selections)
+DESERIALIZE_INC (
+  TimelineSelections, timeline_selections)
+PRINT_YAML_INC (
+  TimelineSelections, timeline_selections)
 
 /**
  * @}

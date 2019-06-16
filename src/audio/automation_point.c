@@ -37,6 +37,12 @@
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin.h"
 #include "project.h"
+#include "utils/flags.h"
+
+#define SET_POS(_c,pos_name,_pos,_trans_only) \
+  POSITION_SET_ARRANGER_OBJ_POS ( \
+    automation_point, _c, pos_name, _pos, \
+    _trans_only)
 
 static AutomationPoint *
 _create_new (
@@ -100,6 +106,29 @@ automation_point_new_float (
 }
 
 /**
+ * Clones the atuomation point.
+ */
+AutomationPoint *
+automation_point_clone (
+  AutomationPoint * src,
+  AutomationPointCloneFlag flag)
+{
+  int is_main = 0;
+  if (flag == AUTOMATION_POINT_CLONE_COPY_MAIN)
+    is_main = 1;
+
+  (void) is_main;
+  AutomationPoint * ap =
+    automation_point_new_float (
+      src->at, src->fvalue, &src->pos);
+
+  position_set_to_pos (
+    &ap->pos, &src->pos);
+
+  return ap;
+}
+
+/**
  * Returns Y in pixels from the value based on the
  * allocation of the automation track.
  */
@@ -142,6 +171,98 @@ automation_point_get_track (
 }
 
 /**
+ * Moves the AutomationPoint by the given amount of
+ * ticks.
+ *
+ * @param use_cached_pos Add the ticks to the cached
+ *   Position instead of its current Position.
+ * @param trans_only Only move transients.
+ * @return Whether moved or not.
+ */
+int
+automation_point_move (
+  AutomationPoint * automation_point,
+  long     ticks,
+  int      use_cached_pos,
+  int      trans_only)
+{
+  Position tmp;
+  int moved;
+  POSITION_MOVE_BY_TICKS (
+    tmp, use_cached_pos, automation_point, pos,
+    ticks, moved, trans_only);
+
+  AutomationPoint * ap = automation_point;
+
+  /* FIXME */
+  /* get prev and next value APs */
+  AutomationPoint * prev_ap =
+    automation_track_get_prev_ap (ap->at, ap);
+  AutomationPoint * next_ap =
+    automation_track_get_next_ap (ap->at, ap);
+
+  /* get adjusted pos for this automation point */
+  Position ap_pos;
+  Position * prev_pos = &ap->cache_pos;
+  position_set_to_pos (&ap_pos,
+                       prev_pos);
+  position_add_ticks (&ap_pos, ticks);
+
+  Position mid_pos;
+  AutomationCurve * ac;
+
+  /* update midway points */
+  if (prev_ap &&
+      position_is_after_or_equal (
+        &ap_pos, &prev_ap->pos))
+    {
+      /* set prev curve point to new midway pos */
+      position_get_midway_pos (
+        &prev_ap->pos, &ap_pos, &mid_pos);
+      ac =
+        automation_track_get_next_curve_ac (
+          ap->at, prev_ap);
+      position_set_to_pos (&ac->pos, &mid_pos);
+
+      /* set pos for ap */
+      if (!next_ap)
+        {
+          position_set_to_pos (&ap->pos, &ap_pos);
+        }
+    }
+  if (next_ap &&
+      position_is_before_or_equal (
+        &ap_pos, &next_ap->pos))
+    {
+      /* set next curve point to new midway pos */
+      position_get_midway_pos (
+        &ap_pos, &next_ap->pos, &mid_pos);
+      ac =
+        automation_track_get_next_curve_ac (
+          ap->at, ap);
+      position_set_to_pos (&ac->pos, &mid_pos);
+
+      /* set pos for ap - if no prev ap exists
+       * or if the position is also after the
+       * prev ap */
+      if ((prev_ap &&
+           position_is_after_or_equal (
+            &ap_pos, &prev_ap->pos)) ||
+          (!prev_ap))
+        {
+          position_set_to_pos (&ap->pos, &ap_pos);
+        }
+    }
+  else if (!prev_ap && !next_ap)
+    {
+      /* set pos for ap */
+      position_set_to_pos (&ap->pos, &ap_pos);
+    }
+
+  return moved;
+}
+
+/**
  * Updates the value from given real value and
  * notifies interested parties.
  */
@@ -162,6 +283,9 @@ automation_point_update_fvalue (
   if (ac && ac->widget)
     ac->widget->cache = 0;
 }
+
+DEFINE_ARRANGER_OBJ_SET_POS (
+  AutomationPoint, automation_point);
 
 /**
  * Destroys the widget and frees memory.

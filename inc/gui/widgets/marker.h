@@ -30,11 +30,11 @@
 
 #define MARKER_WIDGET_TYPE \
   (marker_widget_get_type ())
-G_DECLARE_FINAL_TYPE (MarkerWidget,
-                      marker_widget,
-                      Z,
-                      MARKER_WIDGET,
-                      GtkDrawingArea);
+G_DECLARE_FINAL_TYPE (
+  MarkerWidget,
+  marker_widget,
+  Z, MARKER_WIDGET,
+  GtkBox);
 
 /**
  * @addtogroup widgets
@@ -49,8 +49,12 @@ typedef struct Marker Marker;
  */
 typedef struct _MarkerWidget
 {
-  GtkDrawingArea           parent_instance;
-  Marker *                 marker;
+  GtkBox           parent_instance;
+  GtkDrawingArea * drawing_area;
+  Marker *         marker;
+
+  /** For double click. */
+  GtkGestureMultiPress * mp;
 } MarkerWidget;
 
 /**

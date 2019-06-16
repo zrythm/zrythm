@@ -27,6 +27,7 @@
 #define __GUI_WIDGETS_MIDI_NOTE_H__
 
 #include "audio/midi_note.h"
+#include "gui/widgets/arranger_object.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
@@ -76,14 +77,8 @@ midi_note_widget_new (MidiNote * midi_note);
 void
 midi_note_widget_destroy (MidiNoteWidget *self);
 
-/**
- * Sets the "selected" GTK state flag and adds the
- * note to midi arranger selections.
- */
-void
-midi_note_widget_select (
-  MidiNoteWidget * self,
-  int              select);
+DECLARE_ARRANGER_OBJECT_WIDGET_SELECT (
+  MidiNote, midi_note);
 
 void
 midi_note_widget_update_tooltip (

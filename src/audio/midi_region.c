@@ -223,7 +223,7 @@ midi_region_remove_midi_note (
 {
   if (MA_SELECTIONS)
     {
-      midi_arranger_selections_remove_note (
+      midi_arranger_selections_remove_midi_note (
         MA_SELECTIONS,
         midi_note);
     }

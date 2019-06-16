@@ -39,19 +39,8 @@ chord_object_init_loaded (
 {
 }
 
-/**
- * Sets the ChordObject position.
- *
- * @param trans_only Only do transients.
- */
-void
-chord_object_set_pos (
-  ChordObject *   chord,
-  const Position * _pos,
-  int        trans_only)
-{
-  SET_POS (chord, pos, _pos, trans_only);
-}
+DEFINE_ARRANGER_OBJ_SET_POS (
+  ChordObject, chord_object);
 
 /**
  * Creates a ChordObject.
@@ -150,19 +139,9 @@ chord_object_clone (
   return chord;
 }
 
-/**
- * Returns if the ChordObject is in the
- * TimelineSelections.
- */
-int
-chord_object_is_selected (
-  ChordObject * self)
-{
-  return timeline_selections_contains_chord (
-           TL_SELECTIONS,
-           chord_object_get_main_chord_object (
-              self));
-}
+DEFINE_IS_ARRANGER_OBJ_SELECTED (
+  ChordObject, chord_object, timeline_selections,
+  TL_SELECTIONS);
 
 /**
  * Sets the Track of the chord.
@@ -195,30 +174,8 @@ chord_object_gen_widget (
     }
 }
 
-/**
- * Moves the ChordObject by the given amount of
- * ticks.
- *
- * @param use_cached_pos Add the ticks to the cached
- *   Position instead of its current Position.
- * @param trans_only Only move transients.
- * @return Whether moved or not.
- */
-int
-chord_object_move (
-  ChordObject * chord,
-  long     ticks,
-  int      use_cached_pos,
-  int      trans_only)
-{
-  Position tmp;
-  int moved;
-  POSITION_MOVE_BY_TICKS (
-    tmp, use_cached_pos, chord, pos, ticks, moved,
-    trans_only);
-
-  return moved;
-}
+DEFINE_ARRANGER_OBJ_MOVE (
+  ChordObject, chord_object);
 
 /**
  * Shifts the ChordObject by given number of ticks
@@ -237,17 +194,6 @@ chord_object_shift (
       position_add_ticks (&tmp, ticks);
       SET_POS (self, pos, (&tmp), F_NO_TRANS_ONLY);
     }
-}
-
-/**
- * Sets the cache Position.
- */
-void
-chord_object_set_cache_pos (
-  ChordObject * chord,
-  const Position * _pos)
-{
-  SET_POS (chord, cache_pos, _pos, F_NO_TRANS_ONLY);
 }
 
 /**

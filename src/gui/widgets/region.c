@@ -23,6 +23,7 @@
 #include "audio/track.h"
 #include "config.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/arranger_object.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
@@ -296,23 +297,10 @@ region_widget_select (
 {
   RegionWidgetPrivate * prv =
     region_widget_get_instance_private (self);
-  Region * main_region =
-    region_get_main_region (prv->region);
-  if (select)
-    {
-      timeline_selections_add_region (
-        TL_SELECTIONS,
-        main_region);
-    }
-  else
-    {
-      timeline_selections_remove_region (
-        TL_SELECTIONS,
-        main_region);
-    }
-
-  EVENTS_PUSH (ET_REGION_CHANGED,
-               main_region);
+  Region * region = prv->region;
+  ARRANGER_OBJECT_WIDGET_SELECT (
+    REGION, Region, region, timeline_selections,
+    TL_SELECTIONS);
 }
 
 RegionWidgetPrivate *

@@ -29,6 +29,8 @@
 #include <stdint.h>
 
 #include "audio/position.h"
+#include "gui/backend/arranger_object.h"
+#include "gui/backend/arranger_object_info.h"
 #include "utils/yaml.h"
 
 /**
@@ -36,6 +38,28 @@
  *
  * @{
  */
+
+#define marker_is_main(c) \
+  arranger_object_info_is_main ( \
+    &c->obj_info)
+
+#define marker_is_transient(r) \
+  arranger_object_info_is_transient ( \
+    &r->obj_info)
+
+/** Gets the main counterpart of the Marker. */
+#define marker_get_main_marker(r) \
+  ((Marker *) r->obj_info.main)
+
+/** Gets the transient counterpart of the Marker. */
+#define marker_get_main_trans_marker(r) \
+  ((Marker *) r->obj_info.main_trans)
+
+typedef enum MarkerCloneFlag
+{
+  MARKER_CLONE_COPY_MAIN,
+  MARKER_CLONE_COPY,
+} MarkerCloneFlag;
 
 /**
  * Marker type.
@@ -69,15 +93,17 @@ typedef struct Marker
   /** Name of Marker to be displayed in the UI. */
   char *            name;
 
-  /** Selected or not. */
-  int               selected;
+  /** Position of Track this ChordObject is in. */
+  int            track_pos;
 
-  /** Visible or not. */
-  int               visible;
+  /** Cache. */
+  Track *        track;
 
   /** Widget used to represent the Marker in the
    * UI. */
   MarkerWidget *    widget;
+
+  ArrangerObjectInfo   obj_info;
 } Marker;
 
 static const cyaml_schema_field_t
@@ -86,9 +112,6 @@ static const cyaml_schema_field_t
   CYAML_FIELD_MAPPING (
     "pos", CYAML_FLAG_DEFAULT,
     Marker, pos, position_fields_schema),
-	CYAML_FIELD_INT (
-    "selected", CYAML_FLAG_DEFAULT,
-    Marker, selected),
 
 	CYAML_FIELD_END
 };
@@ -107,17 +130,38 @@ marker_init_loaded (Marker * self);
  */
 Marker *
 marker_new (
-  Position * pos);
+  const char * name,
+  int          is_main);
 
 static inline int
 marker_is_equal (
   Marker * a,
   Marker * b)
 {
-  return !position_compare(&a->pos, &b->pos) &&
-    !g_strcmp0 (a->name, b->name) &&
-    a->visible == b->visible;
+  return position_is_equal (&a->pos, &b->pos) &&
+    !g_strcmp0 (a->name, b->name);
 }
+
+DECLARE_IS_ARRANGER_OBJ_SELECTED (
+  Marker, marker);
+
+DECLARE_ARRANGER_OBJ_MOVE (
+  Marker, marker);
+
+/**
+ * Sets the Track of the Marker.
+ */
+void
+marker_set_track (
+  Marker * marker,
+  Track *  track);
+
+/**
+ * Generates a widget for the Marker.
+ */
+void
+marker_gen_widget (
+  Marker * marker);
 
 /**
  * Finds the marker in the project corresponding to
@@ -127,13 +171,13 @@ Marker *
 marker_find (
   Marker * clone);
 
-/**
- * Sets the Marker Position.
- */
-void
-marker_set_pos (
-  Marker *    self,
-  Position * pos);
+DECLARE_ARRANGER_OBJ_SET_POS (
+  Marker, marker);
+
+Marker *
+marker_clone (
+  Marker * src,
+  MarkerCloneFlag flag);
 
 /**
  * Frees the Marker.

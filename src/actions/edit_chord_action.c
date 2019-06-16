@@ -58,7 +58,7 @@ edit_chord_action_do (
     chord_descriptor_clone (self->descr);
   chord_descriptor_free (old);
 
-  EVENTS_PUSH (ET_CHORD_CHANGED, chord);
+  EVENTS_PUSH (ET_CHORD_OBJECT_CHANGED, chord);
 
   return 0;
 }
@@ -80,7 +80,7 @@ edit_chord_action_undo (
     chord_descriptor_clone (self->chord->descr);
   chord_descriptor_free (prev);
 
-  EVENTS_PUSH (ET_CHORD_CHANGED, chord);
+  EVENTS_PUSH (ET_CHORD_OBJECT_CHANGED, chord);
 
   return 0;
 }

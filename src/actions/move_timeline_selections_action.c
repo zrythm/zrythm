@@ -53,8 +53,10 @@ int
 move_timeline_selections_action_do (
 	MoveTimelineSelectionsAction * self)
 {
+  int i;
+
   Region * region;
-  for (int i = 0; i < self->ts->num_regions; i++)
+  for (i = 0; i < self->ts->num_regions; i++)
     {
       /* get the actual region */
       region = region_find (self->ts->regions[i]);
@@ -66,11 +68,12 @@ move_timeline_selections_action_do (
         self->delta);
     }
   ChordObject * chord;
-  for (int i = 0; i < self->ts->num_chords; i++)
+  for (i = 0;  i < self->ts->num_chord_objects; i++)
     {
       /* get the actual chord */
       chord =
-        chord_object_find (self->ts->chords[i]);
+        chord_object_find (
+          self->ts->chord_objects[i]);
 
       /* shift it */
       chord_object_shift (
@@ -78,11 +81,12 @@ move_timeline_selections_action_do (
         self->ticks);
     }
   ScaleObject * scale;
-  for (int i = 0; i < self->ts->num_scales; i++)
+  for (i = 0; i < self->ts->num_scale_objects; i++)
     {
-      /* get the actual chord */
+      /* get the actual scale */
       scale =
-        scale_object_find (self->ts->scales[i]);
+        scale_object_find (
+          self->ts->scale_objects[i]);
 
       /* shift it */
       scale_object_shift (
@@ -99,8 +103,9 @@ int
 move_timeline_selections_action_undo (
 	MoveTimelineSelectionsAction * self)
 {
+  int i;
   Region * region;
-  for (int i = 0; i < self->ts->num_regions; i++)
+  for (i = 0; i < self->ts->num_regions; i++)
     {
       /* get the actual region */
       region = region_find (self->ts->regions[i]);
@@ -110,6 +115,32 @@ move_timeline_selections_action_undo (
         region,
         - self->ticks,
         - self->delta);
+    }
+  ChordObject * chord;
+  for (i = 0;  i < self->ts->num_chord_objects; i++)
+    {
+      /* get the actual chord */
+      chord =
+        chord_object_find (
+          self->ts->chord_objects[i]);
+
+      /* shift it */
+      chord_object_shift (
+        chord,
+        - self->ticks);
+    }
+  ScaleObject * scale;
+  for (i = 0; i < self->ts->num_scale_objects; i++)
+    {
+      /* get the actual scale */
+      scale =
+        scale_object_find (
+          self->ts->scale_objects[i]);
+
+      /* shift it */
+      scale_object_shift (
+        scale,
+        - self->ticks);
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
