@@ -19,12 +19,33 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file */
+/**
+ * \file
+ *
+ * Cairo utilities.
+ */
 
 #ifndef __UTILS_CAIRO_H__
 #define __UTILS_CAIRO_H__
 
 #include <gtk/gtk.h>
+
+/**
+ * @addtogroup utils
+ *
+ * @{
+ */
+
+/**
+ * Default font for drawing pango text.
+ */
+#define Z_CAIRO_FONT "Sans Bold 9"
+
+/**
+ * Padding to leave from the top/left edges when
+ * drawing text.
+ */
+#define Z_CAIRO_TEXT_PADDING 2
 
 void
 z_cairo_draw_selection (cairo_t * cr,
@@ -71,23 +92,43 @@ z_cairo_rounded_rectangle (
   cairo_close_path (cr);
 }
 
+/**
+ * Gets the width of the given text in pixels
+ * for the given widget when z_cairo_draw_text()
+ * is used.
+ *
+ * @param widget The widget to derive a PangoLayout
+ *   from.
+ * @param text The text to draw.
+ * @param width The width to fill in.
+ * @param height The height to fill in.
+ */
+void
+z_cairo_get_text_extents_for_widget (
+  GtkWidget *  widget,
+  const char * text,
+  int *        width,
+  int *        height);
+
 static inline void
 z_cairo_draw_text (
   cairo_t *    cr,
   const char * text)
 {
-#define FONT "Sans Bold 9"
 
   PangoLayout *layout;
   PangoFontDescription *desc;
 
-  cairo_translate (cr, 2, 2);
+  cairo_translate (
+    cr, Z_CAIRO_TEXT_PADDING, Z_CAIRO_TEXT_PADDING);
 
   /* Create a PangoLayout, set the font and text */
   layout = pango_cairo_create_layout (cr);
 
   pango_layout_set_markup (layout, text, -1);
-  desc = pango_font_description_from_string (FONT);
+  desc =
+    pango_font_description_from_string (
+      Z_CAIRO_FONT);
   pango_layout_set_font_description (layout, desc);
   pango_font_description_free (desc);
 
@@ -100,7 +141,6 @@ z_cairo_draw_text (
 
   /* free the layout object */
   g_object_unref (layout);
-#undef FONT
 }
 
 /**

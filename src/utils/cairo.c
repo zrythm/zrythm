@@ -70,3 +70,41 @@ z_cairo_draw_vertical_line (cairo_t * cr,
   cairo_line_to (cr, x, to_y);
   cairo_stroke (cr);
 }
+
+/**
+ * Gets the width of the given text in pixels
+ * for the given widget when z_cairo_draw_text()
+ * is used.
+ *
+ * @param widget The widget to derive a PangoLayout
+ *   from.
+ * @param text The text to draw.
+ * @param width The width to fill in.
+ * @param height The height to fill in.
+ */
+void
+z_cairo_get_text_extents_for_widget (
+  GtkWidget *  widget,
+  const char * text,
+  int *        width,
+  int *        height)
+{
+  PangoLayout *layout;
+  PangoFontDescription *desc;
+
+  layout =
+    gtk_widget_create_pango_layout (
+      widget, text);
+
+  pango_layout_set_markup (layout, text, -1);
+  desc =
+    pango_font_description_from_string (
+      Z_CAIRO_FONT);
+  pango_layout_set_font_description (layout, desc);
+  pango_font_description_free (desc);
+
+  pango_layout_get_pixel_size (
+    layout, width, height);
+
+  g_object_unref (layout);
+}

@@ -38,13 +38,15 @@ G_DECLARE_FINAL_TYPE (
   Z, CHORD_OBJECT_WIDGET,
   GtkBox);
 
+typedef struct ChordObjectObject ChordObjectObject;
+
 /**
  * @addtogroup widgets
  *
  * @{
  */
 
-typedef struct ChordObjectObject ChordObjectObject;
+#define CHORD_OBJECT_WIDGET_TRIANGLE_W 10
 
 /**
  * Widget for chords inside the ChordObjectTrack.

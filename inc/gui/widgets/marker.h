@@ -36,13 +36,15 @@ G_DECLARE_FINAL_TYPE (
   Z, MARKER_WIDGET,
   GtkBox);
 
+typedef struct Marker Marker;
+
 /**
  * @addtogroup widgets
  *
  * @{
  */
 
-typedef struct Marker Marker;
+#define MARKER_WIDGET_TRIANGLE_W 10
 
 /**
  * Widget for markers inside the MarkerTrack.

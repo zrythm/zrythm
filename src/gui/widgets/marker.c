@@ -64,8 +64,20 @@ marker_draw_cb (
         cr, color->red + 0.4, color->green + 0.2,
         color->blue + 0.2, 1);
     }
-  z_cairo_rounded_rectangle (
-    cr, 0, 0, width, height, 1.0, 4.0);
+  cairo_rectangle (
+    cr, 0, 0,
+    width - MARKER_WIDGET_TRIANGLE_W, height);
+  cairo_fill(cr);
+
+  cairo_move_to (
+    cr, width - MARKER_WIDGET_TRIANGLE_W, 0);
+  cairo_line_to (
+    cr, width, height);
+  cairo_line_to (
+    cr, width - MARKER_WIDGET_TRIANGLE_W, height);
+  cairo_line_to (
+    cr, width - MARKER_WIDGET_TRIANGLE_W, 0);
+  cairo_close_path (cr);
   cairo_fill(cr);
 
   char * str = g_strdup (self->marker->name);
