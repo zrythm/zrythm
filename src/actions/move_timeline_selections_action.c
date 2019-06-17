@@ -90,8 +90,19 @@ move_timeline_selections_action_do (
 
       /* shift it */
       scale_object_shift (
-        scale,
-        self->ticks);
+        scale, self->ticks);
+    }
+  Marker * marker;
+  for (i = 0; i < self->ts->num_markers; i++)
+    {
+      /* get the actual scale */
+      marker =
+        marker_find (
+          self->ts->markers[i]);
+
+      /* shift it */
+      marker_shift (
+        marker, self->ticks);
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
@@ -141,6 +152,18 @@ move_timeline_selections_action_undo (
       scale_object_shift (
         scale,
         - self->ticks);
+    }
+  Marker * marker;
+  for (i = 0; i < self->ts->num_markers; i++)
+    {
+      /* get the actual scale */
+      marker =
+        marker_find (
+          self->ts->markers[i]);
+
+      /* shift it */
+      marker_shift (
+        marker, - self->ticks);
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);

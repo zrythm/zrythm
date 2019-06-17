@@ -1,7 +1,5 @@
 /*
- * utils/string.h - string utils
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,11 +17,27 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * String utilities.
+ */
+
 #ifndef __UTILS_STRING_H__
 #define __UTILS_STRING_H__
 
+/**
+ * @addtogroup utils
+ *
+ * @{
+ */
+
+/**
+ * Returns if the string is ASCII.
+ */
 int
-string_is_ascii (const char * string);
+string_is_ascii (
+  const char * string);
 
 /**
  * Returns the matched string if the string array
@@ -34,5 +48,18 @@ string_array_contains_substr (
   char ** str_array,
   int     num_str,
   char *  substr);
+
+/**
+ * Returns if the two strings are equal.
+ */
+int
+string_is_equal (
+  const char * str1,
+  const char * str2,
+  int          ignore_case);
+
+/**
+ * @}
+ */
 
 #endif

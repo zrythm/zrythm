@@ -184,14 +184,8 @@ DECLARE_ARRANGER_OBJ_SET_POS (
 DECLARE_IS_ARRANGER_OBJ_SELECTED (
   ChordObject, chord_object);
 
-/**
- * Shifts the ChordObject by given number of ticks
- * on x.
- */
-void
-chord_object_shift (
-  ChordObject * self,
-  long ticks);
+DECLARE_ARRANGER_OBJ_SHIFT_SIMPLE (
+  ChordObject, chord_object);
 
 DECLARE_ARRANGER_OBJ_MOVE (
   ChordObject, chord_object);

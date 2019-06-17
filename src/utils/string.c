@@ -63,3 +63,34 @@ string_array_contains_substr (
 
   return NULL;
 }
+
+/**
+ * Returns if the two strings are equal.
+ */
+int
+string_is_equal (
+  const char * str1,
+  const char * str2,
+  int          ignore_case)
+{
+  if (ignore_case)
+    {
+      char * str1_casefolded =
+        g_utf8_casefold (
+          str1, -1);
+      char * str2_casefolded =
+        g_utf8_casefold (
+          str2, -1);
+      int ret =
+        !g_strcmp0 (
+          str1_casefolded,
+          str2_casefolded);
+      g_free (str1_casefolded);
+      g_free (str2_casefolded);
+      return ret;
+    }
+  else
+    {
+      return !g_strcmp0 (str1, str2);
+    }
+}

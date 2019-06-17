@@ -180,5 +180,30 @@
     return moved; \
   }
 
+#define DECLARE_ARRANGER_OBJ_SHIFT_SIMPLE(cc,sc) \
+  void \
+  sc##_shift ( \
+    cc * self, \
+    long ticks)
+
+/**
+ * Shifts an object with a single Position by ticks
+ * only.
+ */
+#define DEFINE_ARRANGER_OBJ_SHIFT_SIMPLE(cc,sc) \
+  void \
+  sc##_shift ( \
+    cc * self, \
+    long ticks) \
+  { \
+    if (ticks) \
+      { \
+        Position tmp; \
+        position_set_to_pos ( \
+          &tmp, &self->pos); \
+        position_add_ticks (&tmp, ticks); \
+        SET_POS (self, pos, (&tmp), F_NO_TRANS_ONLY); \
+      } \
+  }
 
 #endif

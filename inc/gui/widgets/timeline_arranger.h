@@ -68,7 +68,7 @@ typedef struct _MarkerWidget MarkerWidget;
 
 typedef struct _TimelineArrangerWidget
 {
-  ArrangerWidget           parent_instance;
+  ArrangerWidget       parent_instance;
 
   /** The widget first clicked on. */
   GtkWidget *          start_widget;
@@ -79,33 +79,34 @@ typedef struct _TimelineArrangerWidget
   /**
    * Object first clicked is stored in start_*.
    */
-  Region *                 start_region;
+  Region *             start_region;
 
   /** Whether the start_region was selected before
    * drag_begin. */
-  int                      start_region_was_selected;
+  int                  start_region_was_selected;
 
-  AutomationPoint *        start_ap;
-  AutomationCurve *        start_ac;
-  ChordObject *            start_chord;
-  ScaleObject *            start_scale;
+  AutomationPoint *    start_ap;
+  AutomationCurve *    start_ac;
+  ChordObject *        start_chord;
+  ScaleObject *        start_scale;
+  Marker *             start_marker;
 
-  int                      last_timeline_obj_bars;
+  int                  last_timeline_obj_bars;
 
   /** Whether this TimelineArrangerWidget is for
    * the PinnedTracklist or not. */
-  int                      is_pinned;
+  int                  is_pinned;
 
   /**
    * 1 if resizing range.
    */
-  int                      resizing_range;
+  int                  resizing_range;
 
   /**
    * 1 if this is the first call to resize the range,
    * so range1 can be set.
    */
-  int                      resizing_range_start;
+  int                  resizing_range_start;
 } TimelineArrangerWidget;
 
 /**
@@ -169,41 +170,46 @@ timeline_arranger_widget_set_select_type (
   TimelineArrangerWidget * self,
   double                   y);
 
-RegionWidget *
-timeline_arranger_widget_get_hit_region (
-  TimelineArrangerWidget *  self,
-  double            x,
-  double            y);
+/**
+ * Declares the get hit function.
+ */
+#define GET_HIT_WIDGET(cc,sc) \
+  cc##Widget * \
+  timeline_arranger_widget_get_hit_##sc ( \
+    TimelineArrangerWidget *  self, \
+    double            x, \
+    double            y)
 
-ChordObjectWidget *
-timeline_arranger_widget_get_hit_chord (
-  TimelineArrangerWidget *  self,
-  double                    x,
-  double                    y);
+/**
+ * Declares the drag begin hit function.
+ */
+#define ON_DRAG_BEGIN_X_HIT(cc,sc) \
+  void \
+  timeline_arranger_widget_on_drag_begin_##sc##_hit ( \
+    TimelineArrangerWidget * self, \
+    double                   start_x, \
+    cc##Widget *             rw)
 
-ScaleObjectWidget *
-timeline_arranger_widget_get_hit_scale (
-  TimelineArrangerWidget *  self,
-  double                    x,
-  double                    y);
+/**
+ * Sets up a timeline object by declaring the following
+ * functions:
+ *   - get hit
+ *   - on drag begin hit
+ */
+#define SETUP_CHILD_OBJECT_FULL(cc,sc) \
+GET_HIT_WIDGET (cc, sc); \
+ON_DRAG_BEGIN_X_HIT (cc, sc)
 
-MarkerWidget *
-timeline_arranger_widget_get_hit_marker (
-  TimelineArrangerWidget *  self,
-  double                    x,
-  double                    y);
+SETUP_CHILD_OBJECT_FULL (Region, region);
+SETUP_CHILD_OBJECT_FULL (ChordObject, chord);
+SETUP_CHILD_OBJECT_FULL (ScaleObject, scale);
+SETUP_CHILD_OBJECT_FULL (Marker, marker);
+SETUP_CHILD_OBJECT_FULL (AutomationPoint, ap);
+SETUP_CHILD_OBJECT_FULL (AutomationCurve, curve);
 
-AutomationPointWidget *
-timeline_arranger_widget_get_hit_ap (
-  TimelineArrangerWidget *  self,
-  double            x,
-  double            y);
-
-AutomationCurveWidget *
-timeline_arranger_widget_get_hit_curve (
-  TimelineArrangerWidget * self,
-  double x,
-  double y);
+#undef GET_HIT_WIDGET
+#undef ON_DRAG_BEGIN_X_HIT
+#undef SETUP_CHILD_OBJECT_FULL
 
 void
 timeline_arranger_widget_select_all (
@@ -220,36 +226,6 @@ timeline_arranger_widget_show_context_menu (
   TimelineArrangerWidget * self,
   gdouble              x,
   gdouble              y);
-
-void
-timeline_arranger_widget_on_drag_begin_region_hit (
-  TimelineArrangerWidget * self,
-  double                   start_x,
-  RegionWidget *           rw);
-
-void
-timeline_arranger_widget_on_drag_begin_chord_hit (
-  TimelineArrangerWidget * self,
-  double                   start_x,
-  ChordObjectWidget *      cw);
-
-void
-timeline_arranger_widget_on_drag_begin_scale_hit (
-  TimelineArrangerWidget * self,
-  double                   start_x,
-  ScaleObjectWidget *      cw);
-
-void
-timeline_arranger_widget_on_drag_begin_marker_hit (
-  TimelineArrangerWidget * self,
-  double                   start_x,
-  MarkerWidget *           rw);
-
-void
-timeline_arranger_widget_on_drag_begin_ap_hit (
-  TimelineArrangerWidget * self,
-  double                   start_x,
-  AutomationPointWidget *  ap_widget);
 
 /**
  * Create an AutomationPointat the given Position

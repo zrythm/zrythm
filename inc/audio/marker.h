@@ -133,20 +133,21 @@ marker_new (
   const char * name,
   int          is_main);
 
-static inline int
+/**
+ * Returns if the two Marker's are equal.
+ */
+int
 marker_is_equal (
   Marker * a,
-  Marker * b)
-{
-  return position_is_equal (&a->pos, &b->pos) &&
-    !g_strcmp0 (a->name, b->name);
-}
+  Marker * b);
 
 DECLARE_IS_ARRANGER_OBJ_SELECTED (
   Marker, marker);
 
 DECLARE_ARRANGER_OBJ_MOVE (
   Marker, marker);
+
+DECLARE_ARRANGER_OBJ_SHIFT_SIMPLE (Marker, marker);
 
 /**
  * Sets the Track of the Marker.

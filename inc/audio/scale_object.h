@@ -193,14 +193,8 @@ scale_object_set_pos (
 DECLARE_IS_ARRANGER_OBJ_SELECTED (
   ScaleObject, scale_object);
 
-/**
- * Shifts the ScaleObject by given number of ticks
- * on x.
- */
-void
-scale_object_shift (
-  ScaleObject * self,
-  long ticks);
+DECLARE_ARRANGER_OBJ_SHIFT_SIMPLE (
+ ScaleObject, scale_object);
 
 /**
  * Moves the ScaleObject by the given amount of

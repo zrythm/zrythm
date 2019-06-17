@@ -22,6 +22,7 @@
 #include "gui/widgets/marker.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "utils/string.h"
 
 #define SET_POS(_c,pos_name,_pos,_trans_only) \
   POSITION_SET_ARRANGER_OBJ_POS ( \
@@ -106,6 +107,19 @@ marker_gen_widget (
     }
 }
 
+/**
+ * Returns if the two Marker's are equal.
+ */
+int
+marker_is_equal (
+  Marker * a,
+  Marker * b)
+{
+  return
+    position_is_equal (&a->pos, &b->pos) &&
+    string_is_equal (a->name, b->name, 1);
+}
+
 DEFINE_IS_ARRANGER_OBJ_SELECTED (
   Marker, marker, timeline_selections,
   TL_SELECTIONS);
@@ -127,6 +141,8 @@ marker_clone (
 
   return marker;
 }
+
+DEFINE_ARRANGER_OBJ_SHIFT_SIMPLE (Marker, marker);
 
 /**
  * Finds the chord in the project corresponding to the

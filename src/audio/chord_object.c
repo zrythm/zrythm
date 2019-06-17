@@ -177,24 +177,8 @@ chord_object_gen_widget (
 DEFINE_ARRANGER_OBJ_MOVE (
   ChordObject, chord_object);
 
-/**
- * Shifts the ChordObject by given number of ticks
- * on x.
- */
-void
-chord_object_shift (
-  ChordObject * self,
-  long ticks)
-{
-  if (ticks)
-    {
-      Position tmp;
-      position_set_to_pos (
-        &tmp, &self->pos);
-      position_add_ticks (&tmp, ticks);
-      SET_POS (self, pos, (&tmp), F_NO_TRANS_ONLY);
-    }
-}
+DEFINE_ARRANGER_OBJ_SHIFT_SIMPLE (
+  ChordObject, chord_object);
 
 /**
  * Returns the Track this ChordObject is in.

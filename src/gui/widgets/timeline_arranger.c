@@ -559,100 +559,38 @@ timeline_arranger_widget_get_automation_track_at_y (
   return NULL;
 }
 
-ChordObjectWidget *
-timeline_arranger_widget_get_hit_chord (
-  TimelineArrangerWidget *  self,
-  double                    x,
-  double                    y)
-{
-  GtkWidget * widget =
-    ui_get_hit_child (
-      GTK_CONTAINER (self),
-      x,
-      y,
-      CHORD_OBJECT_WIDGET_TYPE);
-  if (widget)
-    {
-      return Z_CHORD_OBJECT_WIDGET (widget);
-    }
-  return NULL;
+#define GET_HIT_WIDGET(caps,cc,sc) \
+cc##Widget * \
+timeline_arranger_widget_get_hit_##sc ( \
+  TimelineArrangerWidget *  self, \
+  double                    x, \
+  double                    y) \
+{ \
+  GtkWidget * widget = \
+    ui_get_hit_child ( \
+      GTK_CONTAINER (self), x, y, \
+      caps##_WIDGET_TYPE); \
+  if (widget) \
+    { \
+      return Z_##caps##_WIDGET (widget); \
+    } \
+  return NULL; \
 }
 
-ScaleObjectWidget *
-timeline_arranger_widget_get_hit_scale (
-  TimelineArrangerWidget *  self,
-  double                    x,
-  double                    y)
-{
-  GtkWidget * widget =
-    ui_get_hit_child (
-      GTK_CONTAINER (self),
-      x,
-      y,
-      SCALE_OBJECT_WIDGET_TYPE);
-  if (widget)
-    {
-      return Z_SCALE_OBJECT_WIDGET (widget);
-    }
-  return NULL;
-}
+GET_HIT_WIDGET (
+  CHORD_OBJECT, ChordObject, chord);
+GET_HIT_WIDGET (
+  SCALE_OBJECT, ScaleObject, scale);
+GET_HIT_WIDGET (
+  MARKER, Marker, marker);
+GET_HIT_WIDGET (
+  REGION, Region, region);
+GET_HIT_WIDGET (
+  AUTOMATION_POINT, AutomationPoint, ap);
+GET_HIT_WIDGET (
+  AUTOMATION_CURVE, AutomationCurve, curve);
 
-RegionWidget *
-timeline_arranger_widget_get_hit_region (
-  TimelineArrangerWidget *  self,
-  double                    x,
-  double                    y)
-{
-  GtkWidget * widget =
-    ui_get_hit_child (
-      GTK_CONTAINER (self),
-      x,
-      y,
-      REGION_WIDGET_TYPE);
-  if (widget)
-    {
-      return Z_REGION_WIDGET (widget);
-    }
-  return NULL;
-}
-
-AutomationPointWidget *
-timeline_arranger_widget_get_hit_ap (
-  TimelineArrangerWidget *  self,
-  double            x,
-  double            y)
-{
-  GtkWidget * widget =
-    ui_get_hit_child (
-      GTK_CONTAINER (self),
-      x,
-      y,
-      AUTOMATION_POINT_WIDGET_TYPE);
-  if (widget)
-    {
-      return Z_AUTOMATION_POINT_WIDGET (widget);
-    }
-  return NULL;
-}
-
-AutomationCurveWidget *
-timeline_arranger_widget_get_hit_curve (
-  TimelineArrangerWidget * self,
-  double x,
-  double y)
-{
-  GtkWidget * widget =
-    ui_get_hit_child (
-      GTK_CONTAINER (self),
-      x,
-      y,
-      AUTOMATION_CURVE_WIDGET_TYPE);
-  if (widget)
-    {
-      return Z_AUTOMATION_CURVE_WIDGET (widget);
-    }
-  return NULL;
-}
+#undef GET_HIT_WIDGET
 
 void
 timeline_arranger_widget_select_all (
@@ -932,12 +870,6 @@ timeline_arranger_widget_on_drag_begin_chord_hit (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  /* if double click */
-  if (ar_prv->n_press == 2)
-    {
-      /* TODO */
-    }
-
   ChordObject * chord = cw->chord_object;
   self->start_chord = chord;
 
@@ -981,12 +913,6 @@ timeline_arranger_widget_on_drag_begin_scale_hit (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  /* if double click */
-  if (ar_prv->n_press == 2)
-    {
-      /* TODO */
-    }
-
   ScaleObject * scale = cw->scale;
   self->start_scale = scale;
 
@@ -1020,6 +946,50 @@ timeline_arranger_widget_on_drag_begin_scale_hit (
             self, scale, F_SELECT, F_NO_APPEND);
         }
     }
+}
+
+void
+timeline_arranger_widget_on_drag_begin_marker_hit (
+  TimelineArrangerWidget * self,
+  double                   start_x,
+  MarkerWidget *           mw)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  Marker * marker = mw->marker;
+  self->start_marker = marker;
+
+  /* update arranger action */
+  ar_prv->action =
+    UI_OVERLAY_ACTION_STARTING_MOVING;
+  /* FIXME cursor should be set automatically */
+  ui_set_cursor_from_name (
+    GTK_WIDGET (mw), "grabbing");
+
+  int selected = marker_is_selected (marker);
+
+  /* select scale if unselected */
+  if (P_TOOL == TOOL_SELECT_NORMAL ||
+      P_TOOL == TOOL_SELECT_STRETCH ||
+      P_TOOL == TOOL_EDIT)
+    {
+      /* if ctrl held & not selected, add to
+       * selections */
+      if (ar_prv->ctrl_held && !selected)
+        {
+          ARRANGER_WIDGET_SELECT_MARKER (
+            self, marker, F_SELECT, F_APPEND);
+        }
+      /* if ctrl not held & not selected, make it
+       * the only selection */
+      else if (!ar_prv->ctrl_held &&
+               !selected)
+        {
+          ARRANGER_WIDGET_SELECT_MARKER (
+            self, marker, F_SELECT, F_NO_APPEND);
+        }
+    }
+
 }
 
 void

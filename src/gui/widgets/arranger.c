@@ -1141,6 +1141,7 @@ drag_begin (GtkGestureDrag *   gesture,
   AutomationPointWidget * ap_widget = NULL;
   ChordObjectWidget *     chord_widget = NULL;
   ScaleObjectWidget *     scale_widget = NULL;
+  MarkerWidget *          mw = NULL;
   VelocityWidget *        vel_widget = NULL;
   if (midi_arranger)
     {
@@ -1174,50 +1175,43 @@ drag_begin (GtkGestureDrag *   gesture,
       scale_widget =
         timeline_arranger_widget_get_hit_scale (
           timeline, start_x, start_y);
+      mw =
+        timeline_arranger_widget_get_hit_marker (
+          timeline, start_x, start_y);
     }
 
   /* if something is hit */
   int is_hit =
     midi_note_widget || rw || ac_widget ||
     ap_widget || chord_widget || vel_widget ||
-    scale_widget;
+    scale_widget || mw;
   if (is_hit)
     {
       /* set selections, positions, actions, cursor */
       if (midi_note_widget)
         {
           midi_arranger_widget_on_drag_begin_note_hit (
-            midi_arranger,
-            start_x,
-            midi_note_widget);
+            midi_arranger, start_x, midi_note_widget);
         }
       else if (rw)
         {
           timeline_arranger_widget_on_drag_begin_region_hit (
-            timeline,
-            start_x,
-            rw);
+            timeline, start_x, rw);
         }
       else if (chord_widget)
         {
           timeline_arranger_widget_on_drag_begin_chord_hit (
-            timeline,
-            start_x,
-            chord_widget);
+            timeline, start_x, chord_widget);
         }
       else if (scale_widget)
         {
           timeline_arranger_widget_on_drag_begin_scale_hit (
-            timeline,
-            start_x,
-            scale_widget);
+            timeline, start_x, scale_widget);
         }
       else if (ap_widget)
         {
           timeline_arranger_widget_on_drag_begin_ap_hit (
-            timeline,
-            start_x,
-            ap_widget);
+            timeline, start_x, ap_widget);
         }
       else if (ac_widget)
         {
@@ -1228,8 +1222,12 @@ drag_begin (GtkGestureDrag *   gesture,
         {
           midi_modifier_arranger_on_drag_begin_vel_hit (
             midi_modifier_arranger,
-            vel_widget,
-            start_y);
+            vel_widget, start_y);
+        }
+      else if (mw)
+        {
+          timeline_arranger_widget_on_drag_begin_marker_hit (
+            timeline, start_x, mw);
         }
     }
   else /* nothing hit */

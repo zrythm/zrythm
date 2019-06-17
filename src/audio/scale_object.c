@@ -191,24 +191,8 @@ scale_object_move (
   return moved;
 }
 
-/**
- * Shifts the ScaleObject by given number of ticks
- * on x.
- */
-void
-scale_object_shift (
-  ScaleObject * self,
-  long ticks)
-{
-  if (ticks)
-    {
-      Position tmp;
-      position_set_to_pos (
-        &tmp, &self->pos);
-      position_add_ticks (&tmp, ticks);
-      SET_POS (self, pos, (&tmp), F_NO_TRANS_ONLY);
-    }
-}
+DEFINE_ARRANGER_OBJ_SHIFT_SIMPLE (
+  ScaleObject, scale_object);
 
 /**
  * Sets the cache Position.
