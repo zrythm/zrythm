@@ -45,13 +45,19 @@ handler (int sig) {
 #else
   void *array[20];
   size_t size;
+  char ** strings;
 
   // get void*'s for all entries on the stack
   size = backtrace(array, 20);
 
   // print out all the frames to stderr
-  fprintf(stderr, "Error: signal %d:\n", sig);
-  backtrace_symbols_fd(array, size, STDERR_FILENO);
+  g_message ("Error: signal %d - Backtrace:", sig);
+  strings = backtrace_symbols (array, size);
+
+  for (int i = 0; i < size; i++)
+    g_message ("%s", strings[i]);
+
+  free (strings);
 #endif
   exit(1);
 }
