@@ -8,64 +8,68 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-06-01 22:03+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2019-06-17 12:51+0000\n"
+"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/zrythm/el/>"
+"\n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.7-dev\n"
 
 #: src/zrythm.c:242
 msgid "Initializing settings"
-msgstr ""
+msgstr "Αρχικοποίηση ρυθμίσεων"
 
 #: src/zrythm.c:253
 msgid "Initializing audio engine"
-msgstr ""
+msgstr "Αρχικοποίηση κινητήρα ήχου"
 
 #: src/zrythm.c:258
 msgid "Initializing plugin manager"
-msgstr ""
+msgstr "Αρχικοποίηση διαχείρισης προσθηκών"
 
 #: src/zrythm.c:265
 msgid "Setting up backend"
-msgstr ""
+msgstr "Ρύθμιση backend"
 
 #: src/zrythm.c:272
 msgid "Loading project"
-msgstr ""
+msgstr "Φόρτωση έργου"
 
 #: src/project.c:159 src/audio/track.c:792
+#, fuzzy
 msgid "Master"
-msgstr ""
+msgstr "Master"
 
 #. create untitled project
 #: src/project.c:166
 msgid "Untitled Project"
-msgstr ""
+msgstr "Άτιτλο Έργο"
 
 #: src/project.c:437
 msgid "Project saved."
-msgstr ""
+msgstr "Το έργο αποθηκεύτηκε."
 
 #: src/plugins/lv2_gtk.c:149
 msgid "Save State"
-msgstr ""
+msgstr "Αποθήκευση Κατάστασης"
 
 #: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
 #: src/utils/dialogs.c:74 src/actions/actions.c:521
 #: resources/ui/port_selector_popover.ui:193
 msgid "_Cancel"
-msgstr ""
+msgstr "_Άκυρο"
 
 #: src/plugins/lv2_gtk.c:153 src/actions/actions.c:523
 msgid "_Save"
-msgstr ""
+msgstr "_Αποθήκευση"
 
 #: src/plugins/lv2_gtk.c:467
 msgid "URI (Optional):"
-msgstr ""
+msgstr "URI (Προαιρετικό):"
 
 #: src/plugins/lv2_gtk.c:471
 msgid "_Prefix plugin name"
@@ -73,24 +77,24 @@ msgstr ""
 
 #: src/plugins/lv2_gtk.c:562
 msgid "Delete Preset?"
-msgstr ""
+msgstr "Διαγραφή Preset;"
 
 #: src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:72
 #: resources/ui/port_selector_popover.ui:207
 msgid "_OK"
-msgstr ""
+msgstr "_OK"
 
 #: src/plugins/lv2_gtk.c:781
 msgid "Unknown widget type for value"
-msgstr ""
+msgstr "Άγνωστος τύπος widget για την τιμή"
 
 #: src/plugins/lv2_gtk.c:807
 msgid "Unknown widget type for value\n"
-msgstr ""
+msgstr "Άγνωστος τύπος widget για την τιμή\n"
 
 #: src/plugins/lv2_gtk.c:1436
 msgid "Close"
-msgstr ""
+msgstr "Κλείσιμο"
 
 #: src/plugins/plugin_manager.c:223
 msgid "Error loading LV2 bundle dir: "
@@ -106,7 +110,7 @@ msgstr ""
 
 #: src/gui/widgets/port_connections_popover.c:164
 msgid "Add"
-msgstr ""
+msgstr "Προσθήκη"
 
 #: src/gui/widgets/channel.c:918
 msgid "Inserts"
@@ -115,7 +119,7 @@ msgstr ""
 #: src/gui/widgets/midi_controller_mb.c:46
 #: src/gui/widgets/midi_controller_mb.c:116
 msgid "Select..."
-msgstr ""
+msgstr "Επιλέξτε..."
 
 #: src/gui/widgets/midi_controller_mb.c:119
 msgid "Click to enable MIDI controllers to be connected automatically"
@@ -124,11 +128,11 @@ msgstr ""
 #: src/gui/widgets/first_run_assistant.c:84
 #: src/gui/widgets/first_run_assistant.c:116
 msgid "JACK functionality is disabled"
-msgstr ""
+msgstr "Η λειτουργικότητα του JACK είναι απενεργοποιημένη"
 
 #: src/gui/widgets/first_run_assistant.c:102
 msgid "PortAudio functionality is disabled"
-msgstr ""
+msgstr "Η λειτουργία PortAudio είναι απενεργοποιημένη"
 
 #: src/gui/widgets/first_run_assistant.c:201
 #, c-format
@@ -143,23 +147,23 @@ msgstr ""
 
 #: src/gui/widgets/left_dock_edge.c:46
 msgid "Inspector"
-msgstr ""
+msgstr "Επιθεώρηση"
 
 #: src/gui/widgets/left_dock_edge.c:56
 msgid "Visibility"
-msgstr ""
+msgstr "Ορατότητα"
 
 #: src/gui/widgets/port_selector_popover.c:209
 msgid "Track Ports"
-msgstr ""
+msgstr "Θύρες του Track"
 
 #: src/gui/widgets/instrument_track_info_expander.c:82
 msgid "Track Info"
-msgstr ""
+msgstr "Πληροφορίες του Track"
 
 #: src/gui/widgets/digital_meter.c:665
 msgid "BPM - Click and drag up/down to set"
-msgstr ""
+msgstr "BPM - κάντε Κλικ και σύρετε πάνω/κάτω για να ρυθμίσετε"
 
 #: src/gui/widgets/digital_meter.c:703
 msgid "Time Signature - Click and drag up/down to change"
@@ -167,7 +171,7 @@ msgstr ""
 
 #: src/gui/widgets/instrument_track.c:280
 msgid "Show Lanes - Shows the track's lanes"
-msgstr ""
+msgstr "Εμφάνιση Λωρίδων - Εμφανίζει τις λωρίδες του track"
 
 #: src/gui/widgets/control_room.c:52
 msgid "Output"
@@ -188,15 +192,15 @@ msgstr ""
 
 #: src/gui/widgets/timeline_selection_info.c:62
 msgid "Start Position"
-msgstr ""
+msgstr "Θέση Έναρξης"
 
 #: src/gui/widgets/timeline_selection_info.c:93
 msgid "No object selected"
-msgstr ""
+msgstr "Δεν έχει επιλεγεί αντικείμενο"
 
 #: src/gui/widgets/piano_roll.c:232
 msgid "Select a region..."
-msgstr ""
+msgstr "Επιλέξτε ένα region..."
 
 #: src/gui/widgets/region.c:183
 msgid ""
@@ -206,31 +210,31 @@ msgstr ""
 
 #: src/gui/widgets/home_toolbar.c:58 resources/ui/home_toolbar.ui:14
 msgid "Undo"
-msgstr ""
+msgstr "Αναίρεση"
 
 #: src/gui/widgets/home_toolbar.c:59 resources/ui/home_toolbar.ui:27
 msgid "Redo"
-msgstr ""
+msgstr "Επανάληψη"
 
 #: src/gui/widgets/right_dock_edge.c:51
 msgid "File Browser"
-msgstr ""
+msgstr "Περιηγητής Αρχείων"
 
 #: src/gui/widgets/right_dock_edge.c:67
 msgid "Plugin Browser"
-msgstr ""
+msgstr "Περιηγητής Πρόσθετων"
 
 #: src/gui/widgets/route_target_selector.c:80
 msgid "Routed to Stereo Out"
-msgstr ""
+msgstr "Δρομολογείται στο Stereo Out"
 
 #: src/gui/widgets/route_target_selector.c:86
 msgid "Select channel to route signal to"
-msgstr ""
+msgstr "Επιλέξτε κανάλι για να δρομολογήσετε το σήμα"
 
 #: src/gui/widgets/route_target_selector.c:118
 msgid "Stereo Out"
-msgstr ""
+msgstr "Stereo Out"
 
 #: src/gui/widgets/snap_grid.c:94
 msgid "Snap/Grid options"
@@ -279,7 +283,7 @@ msgstr ""
 #: src/gui/widgets/route_target_selector_popover.c:194
 #, c-format
 msgid "Routing to %s"
-msgstr ""
+msgstr "Δρομολόγηση σε %s"
 
 #: src/gui/widgets/track.c:138 resources/ui/transport_controls.ui:36
 msgid "Record"
@@ -287,11 +291,11 @@ msgstr ""
 
 #: src/gui/widgets/track.c:139
 msgid "Solo"
-msgstr ""
+msgstr "Σόλο"
 
 #: src/gui/widgets/track.c:140
 msgid "Mute"
-msgstr ""
+msgstr "Σίγαση"
 
 #: src/gui/widgets/track.c:141 src/gui/widgets/track.c:145
 msgid "Freeze"
@@ -299,15 +303,15 @@ msgstr ""
 
 #: src/gui/widgets/track.c:142
 msgid "Lock"
-msgstr ""
+msgstr "Κλείδωμα"
 
 #: src/gui/widgets/track.c:143
 msgid "Show UI"
-msgstr ""
+msgstr "Εμφάνιση UI"
 
 #: src/gui/widgets/track.c:144
 msgid "Show Automation Lanes"
-msgstr ""
+msgstr "Προβολή Λωρίδων Αυτοματισμού"
 
 #: src/gui/widgets/track.c:151
 msgid ""
@@ -367,15 +371,15 @@ msgstr ""
 
 #: src/utils/dialogs.c:41
 msgid "Open Project"
-msgstr ""
+msgstr "Άνοιγμα Έργου"
 
 #: src/utils/dialogs.c:46
 msgid "_Open"
-msgstr ""
+msgstr "_Άνοιγμα"
 
 #: src/utils/dialogs.c:69
 msgid "Overwrite Plugin"
-msgstr ""
+msgstr "Αντικατάσταση Plugin"
 
 #: src/utils/dialogs.c:83
 msgid "A plugin already exists at the selected slot. Overwrite it?"
@@ -387,15 +391,15 @@ msgstr ""
 
 #: src/utils/ui.c:522
 msgid "English [en]"
-msgstr ""
+msgstr "Αγγλικά [en]"
 
 #: src/utils/ui.c:523
 msgid "German [de]"
-msgstr ""
+msgstr "Γερμανικά [de]"
 
 #: src/utils/ui.c:524
 msgid "French [fr]"
-msgstr ""
+msgstr "Γαλλικά [fr]"
 
 #: src/utils/ui.c:525
 msgid "Italian [it]"
@@ -429,42 +433,43 @@ msgstr ""
 #. TRANSLATORS: Pan algorithm
 #: src/utils/ui.c:582
 msgid "Linear"
-msgstr ""
+msgstr "Γραμμικό"
 
 #: src/utils/ui.c:583
 msgid "Square Root"
-msgstr ""
+msgstr "Τετραγωνική Ρίζα"
 
 #: src/utils/ui.c:584
+#, fuzzy
 msgid "Sine (Equal Power)"
-msgstr ""
+msgstr "Sine (Ίση Ισχύς)"
 
 #: src/audio/chord_track.c:42 resources/ui/inspector_chord.ui:31
 msgid "Chords"
-msgstr ""
+msgstr "Χορδές"
 
 #: src/audio/marker_track.c:42
 msgid "Markers"
-msgstr ""
+msgstr "Δείκτες"
 
 #: src/audio/engine_pa.c:246 src/audio/engine_pa.c:266
 #: src/audio/engine_pa.c:277
 #, c-format
 msgid "PortAudio Error: %s"
-msgstr ""
+msgstr "Σφάλμα PortAudio: %s"
 
 #: src/audio/track_lane.c:43
 #, c-format
 msgid "Lane %d"
-msgstr ""
+msgstr "Λωρίδα %d"
 
 #: src/audio/track.c:783
 msgid "Instrument"
-msgstr ""
+msgstr "Όργανο"
 
 #: src/audio/track.c:786
 msgid "Audio"
-msgstr ""
+msgstr "Ήχος"
 
 #: src/audio/track.c:789
 msgid "Bus"
@@ -472,7 +477,7 @@ msgstr ""
 
 #: src/audio/track.c:795
 msgid "Chord"
-msgstr ""
+msgstr "Χορδή"
 
 #: src/audio/track.c:798
 msgid "Group"
