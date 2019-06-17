@@ -143,9 +143,10 @@ ruler_widget_get_private (RulerWidget * self)
 }
 
 static gboolean
-ruler_draw_cb (GtkWidget * widget,
-         cairo_t *cr,
-         RulerWidget * self)
+ruler_draw_cb (
+  GtkWidget *   widget,
+  cairo_t *     cr,
+  RulerWidget * self)
 {
   /* engine is run only set after everything is set up
    * so this is a good way to decide if we should draw
@@ -154,8 +155,8 @@ ruler_draw_cb (GtkWidget * widget,
     return FALSE;
 
   GdkRectangle rect;
-  gdk_cairo_get_clip_rectangle (cr,
-                                &rect);
+  gdk_cairo_get_clip_rectangle (
+    cr, &rect);
 
   GET_PRIVATE;
 
@@ -164,18 +165,77 @@ ruler_draw_cb (GtkWidget * widget,
 
   GtkStyleContext *context;
 
-  context = gtk_widget_get_style_context (GTK_WIDGET (self));
+  context =
+    gtk_widget_get_style_context (
+      GTK_WIDGET (self));
 
   guint height =
-    gtk_widget_get_allocated_height (widget);
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
 
-  gtk_render_background (context, cr,
-                         rect.x, rect.y,
-                         rect.width, rect.height);
+  gtk_render_background (
+    context, cr,
+    rect.x, rect.y,
+    rect.width, rect.height);
+
+  /* if timeline, draw loop background */
+  /* FIXME use rect */
+  if (TRANSPORT->loop)
+    {
+      double start_px =
+        ui_pos_to_px_timeline (
+          &TRANSPORT->loop_start_pos, 1);
+      double end_px =
+        ui_pos_to_px_timeline (
+          &TRANSPORT->loop_end_pos, 1);
+      cairo_set_source_rgba (cr, 0, 0.9, 0.7, 0.25);
+      cairo_set_line_width (cr, 2);
+      if (start_px > rect.x)
+        {
+          cairo_move_to (
+            cr, start_px + 1, rect.y);
+          cairo_line_to (
+            cr, start_px + 1, rect.height);
+          cairo_stroke (cr);
+        }
+      if (end_px < rect.x + rect.width)
+        {
+          cairo_move_to (
+            cr, end_px - 1, rect.y);
+          cairo_line_to (
+            cr, end_px - 1, rect.height);
+          cairo_stroke (cr);
+        }
+      cairo_pattern_t * pat;
+      pat =
+        cairo_pattern_create_linear (
+          0.0, 0.0, 0.0, (height * 3) / 4);
+      cairo_pattern_add_color_stop_rgba (
+        pat, 1, 0, 0.9, 0.7, 0.1);
+      cairo_pattern_add_color_stop_rgba (
+        pat, 0, 0, 0.9, 0.7, 0.2);
+      cairo_rectangle (
+        cr, MAX (rect.x, start_px), rect.y,
+        /* FIXME use rect properly, this exceeds */
+        end_px - MAX (rect.x, start_px),
+        rect.height);
+      cairo_set_source (cr, pat);
+      cairo_fill (cr);
+    }
+
+  PangoLayout * layout =
+    pango_cairo_create_layout (cr);
+  PangoFontDescription *desc =
+    pango_font_description_from_string (
+      "Monospace 11");
+  pango_layout_set_font_description (layout, desc);
+  pango_font_description_free (desc);
 
   /* draw lines */
   int i = 0;
   double curr_px;
+  char * text;
+  int textw, texth;
   while ((curr_px =
           rw_prv->px_per_bar * i++ +
           SPACE_BEFORE_START) <
@@ -190,18 +250,15 @@ ruler_draw_cb (GtkWidget * widget,
       cairo_line_to (cr, curr_px, height / 3);
       cairo_stroke (cr);
       cairo_set_source_rgb (cr, 0.8, 0.8, 0.8);
-      cairo_select_font_face(cr, FONT,
-          CAIRO_FONT_SLANT_NORMAL,
-          CAIRO_FONT_WEIGHT_NORMAL);
-      cairo_set_font_size(cr, FONT_SIZE);
-      gchar * label =
-        g_strdup_printf ("%d", i);
-      static cairo_text_extents_t extents;
-      cairo_text_extents(cr, label, &extents);
-      cairo_move_to (cr,
-                     (curr_px ) - extents.width / 2,
-                     (height / 2) + Y_SPACING);
-      cairo_show_text(cr, label);
+      text = g_strdup_printf ("%d", i);
+      pango_layout_set_markup (layout, text, -1);
+      g_free (text);
+      pango_layout_get_pixel_size (
+        layout, &textw, &texth);
+      cairo_move_to (
+        cr, curr_px - textw / 2, height / 3 + 2);
+      pango_cairo_update_layout (cr, layout);
+      pango_cairo_show_layout (cr, layout);
     }
   i = 0;
   while ((curr_px =

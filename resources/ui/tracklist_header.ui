@@ -23,7 +23,6 @@
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <template class="TracklistHeaderWidget" parent="GtkGrid">
-    <property name="height_request">60</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <child>

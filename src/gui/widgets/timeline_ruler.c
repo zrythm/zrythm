@@ -115,9 +115,8 @@ timeline_ruler_widget_set_ruler_marker_position (
           1);
       if (MAIN_WINDOW && MW_RULER)
         {
-      allocation->y =
-        ((gtk_widget_get_allocated_height (
-          GTK_WIDGET (MW_RULER)) - RULER_MARKER_SIZE) - CUE_MARKER_HEIGHT) - 1;
+          allocation->y =
+            RULER_MARKER_SIZE;
         }
       else
         allocation->y = RULER_MARKER_SIZE *2;

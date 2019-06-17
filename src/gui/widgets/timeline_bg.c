@@ -201,8 +201,6 @@ timeline_bg_draw_cb (
         }
     }
 
-
-
   return 0;
 }
 

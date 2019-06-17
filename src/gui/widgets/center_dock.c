@@ -95,6 +95,15 @@ center_dock_widget_setup (CenterDockWidget * self)
     self->pinned_tracklist,
     TRACKLIST);
 
+  /* set tracklist header size */
+  GtkRequisition req;
+  gtk_widget_get_preferred_size (
+    GTK_WIDGET (self->ruler_scroll),
+    &req, NULL);
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self->tracklist_header), -1,
+    req.height);
+
   gtk_paned_set_position (
     self->main_paned,
     2000);

@@ -311,11 +311,15 @@ ui_get_hit_child (GtkContainer * parent,
 
 /**
  * Converts from pixels to position.
+ *
+ * @param has_padding Whether the given px contain
+ *   padding.
  */
 void
-ui_px_to_pos_timeline (double               px,
-           Position *        pos,
-           int               has_padding); ///< whether the given px contain padding
+ui_px_to_pos_timeline (
+  double     px,
+  Position * pos,
+  int        has_padding);
 
 /**
  * Converts from pixels to frames.
@@ -349,8 +353,9 @@ ui_px_to_frames_audio_clip_editor (double   px,
  * padding.
  */
 int
-ui_pos_to_px_timeline (Position *       pos,
-           int              use_padding);
+ui_pos_to_px_timeline (
+  Position * pos,
+  int        use_padding);
 
 /**
  * Converts position to px, optionally adding the ruler

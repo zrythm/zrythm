@@ -51,7 +51,7 @@ G_DECLARE_FINAL_TYPE (RulerMarkerWidget,
   (ruler_widget_get_private ( \
     Z_RULER_WIDGET (AUDIO_RULER))->playhead)
 
-#define RULER_MARKER_SIZE 10
+#define RULER_MARKER_SIZE 8
 #define CUE_MARKER_HEIGHT 12
 #define CUE_MARKER_WIDTH 7
 #define PLAYHEAD_TRIANGLE_WIDTH 12

@@ -111,7 +111,7 @@
                     <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkScrolledWindow" id="ruler_scroll">
-                        <property name="height-request">60</property>
+                        <property name="height-request">42</property>
                         <property name="visible">1</property>
                         <property name="can-focus">1</property>
                         <property name="hexpand">1</property>
