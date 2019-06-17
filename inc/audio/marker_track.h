@@ -61,10 +61,14 @@ marker_track_add_marker (
   Marker *      marker,
   int           gen_widget);
 
+/**
+ * Removes a marker, optionally freeing it.
+ */
 void
 marker_track_remove_marker (
   MarkerTrack * self,
-  Marker *      marker);
+  Marker *      marker,
+  int           free);
 
 /**
  * Frees the MarkerTrack.

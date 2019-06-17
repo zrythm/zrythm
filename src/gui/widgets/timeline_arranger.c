@@ -1063,7 +1063,7 @@ timeline_arranger_widget_create_ap (
     automation_point_new_float (
       at, value, pos);
   automation_track_add_ap (
-    at, ap, GENERATE_CURVE_POINTS);
+    at, ap, F_GEN_WIDGET, F_GEN_CURVE_POINTS);
   gtk_overlay_add_overlay (
     GTK_OVERLAY (self),
     GTK_WIDGET (ap->widget));
@@ -1463,7 +1463,7 @@ timeline_arranger_widget_select (
 
           chord_track_remove_chord (
             P_CHORD_TRACK,
-            chord);
+            chord, F_FREE);
       }
     }
   else
@@ -1505,7 +1505,7 @@ timeline_arranger_widget_select (
           scale = sw->scale;
           chord_track_remove_scale (
             P_CHORD_TRACK,
-            scale);
+            scale, F_FREE);
       }
     }
   else
@@ -1548,8 +1548,7 @@ timeline_arranger_widget_select (
           ap = apw->automation_point;
 
           automation_track_remove_ap (
-            ap->at,
-            ap);
+            ap->at, ap, F_FREE);
         }
     }
   else
@@ -2283,6 +2282,9 @@ timeline_arranger_widget_on_drag_end (
            ar_prv->action ==
              UI_OVERLAY_ACTION_CREATING_RESIZING_R)
     {
+      timeline_selections_set_to_transient_poses (
+        TL_SELECTIONS);
+
       UndoableAction * ua =
         (UndoableAction *)
         create_timeline_selections_action_new (

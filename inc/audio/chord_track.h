@@ -80,7 +80,8 @@ chord_track_add_scale (
 void
 chord_track_remove_chord (
   ChordTrack *  self,
-  ChordObject * chord);
+  ChordObject * chord,
+  int           free);
 
 /**
  * Removes a scale from the chord Track.
@@ -88,7 +89,8 @@ chord_track_remove_chord (
 void
 chord_track_remove_scale (
   ChordTrack *  self,
-  ScaleObject * scale);
+  ScaleObject * scale,
+  int free);
 
 /**
  * Returns the current chord.

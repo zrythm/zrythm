@@ -507,6 +507,63 @@ DEFINE_CONTAINS_OBJ (
 #undef DEFINE_CONTAINS_OBJ
 
 /**
+ * Set all main Position's to their transient
+ * counterparts.
+ */
+void
+timeline_selections_set_to_transient_poses (
+  TimelineSelections * ts)
+{
+  int i;
+
+#define SET_TO_TRANS_POS_W_LENGTH(caps,cc,sc) \
+  cc * sc, * sc##_trans; \
+  for (i = 0; i < ts->num_##sc##s; i++) \
+    { \
+      sc = ts->sc##s[i]; \
+      sc##_trans =  \
+        sc##_get_main_trans_##sc (sc); \
+      sc##_set_start_pos ( \
+        sc, &sc##_trans->start_pos, \
+        F_NO_TRANS_ONLY, F_NO_VALIDATE); \
+      sc##_set_end_pos ( \
+        sc, &sc##_trans->end_pos, \
+        F_NO_TRANS_ONLY, F_NO_VALIDATE); \
+    } \
+  EVENTS_PUSH (ET_##caps##_POSITIONS_CHANGED, \
+               NULL)
+
+#define SET_TO_TRANS_POS(caps,cc,sc) \
+  cc * sc, * sc##_trans; \
+  for (i = 0; i < ts->num_##sc##s; i++) \
+    { \
+      sc = ts->sc##s[i]; \
+      sc##_trans =  \
+        sc##_get_main_trans_##sc (sc); \
+      sc##_set_pos ( \
+        sc, &sc##_trans->pos, \
+        F_NO_TRANS_ONLY); \
+    } \
+  EVENTS_PUSH (ET_##caps##_POSITIONS_CHANGED, \
+               NULL)
+
+  SET_TO_TRANS_POS_W_LENGTH (
+    REGION, Region, region);
+  SET_TO_TRANS_POS (
+    CHORD_OBJECT, ChordObject, chord_object);
+  SET_TO_TRANS_POS (
+    SCALE_OBJECT, ScaleObject, scale_object);
+  SET_TO_TRANS_POS (
+    MARKER, Marker, marker);
+  SET_TO_TRANS_POS (
+    AUTOMATION_POINT, AutomationPoint,
+    automation_point);
+
+#undef SET_TO_TRANS_POS_W_LENGTH
+#undef SET_TO_TRANS_POS
+}
+
+/**
  * Clears selections.
  */
 void

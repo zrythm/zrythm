@@ -77,60 +77,28 @@ draw_cb (GtkWidget *widget, cairo_t *cr,
       cairo_fill (cr);
 
       break;
-    case RULER_MARKER_TYPE_SONG_START:
-      cairo_set_source_rgb (cr, 1, 0, 0);
-      cairo_set_line_width (cr, 2);
-      cairo_move_to (cr,
-                     0,
-                     0);
-      cairo_line_to (cr,
-                     0,
-                     height);
-      cairo_line_to (cr,
-                     width,
-                     0);
-      cairo_fill (cr);
-      break;
-    case RULER_MARKER_TYPE_SONG_END:
-      cairo_set_source_rgb (cr, 1, 0, 0);
-      cairo_set_line_width (cr, 2);
-      cairo_move_to (cr,
-                     0,
-                     0);
-      cairo_line_to (cr,
-                     width,
-                     0);
-      cairo_line_to (cr,
-                     width,
-                     height);
-      cairo_fill (cr);
-      break;
     case RULER_MARKER_TYPE_LOOP_START:
       cairo_set_source_rgb (cr, 0, 0.9, 0.7);
       cairo_set_line_width (cr, 2);
-      cairo_move_to (
-        cr,
-        0,
-        0);
-      cairo_line_to (
-        cr,
-        width,
-        height / 2);
-      cairo_line_to (
-        cr,
-        0,
-        height);
+      cairo_move_to (cr,
+                     0,
+                     0);
+      cairo_line_to (cr,
+                     0,
+                     height);
+      cairo_line_to (cr,
+                     width,
+                     0);
       cairo_fill (cr);
       break;
     case RULER_MARKER_TYPE_LOOP_END:
       cairo_set_source_rgb (cr, 0, 0.9, 0.7);
       cairo_set_line_width (cr, 2);
       cairo_move_to (cr,
-                     width,
+                     0,
                      0);
       cairo_line_to (cr,
-                     0,
-
+                     width,
                      0);
       cairo_line_to (cr,
                      width,
@@ -176,8 +144,6 @@ on_motion (GtkWidget * widget,
   if (event->type == GDK_MOTION_NOTIFY)
     {
       if (self->type ==
-            RULER_MARKER_TYPE_SONG_START ||
-          self->type ==
             RULER_MARKER_TYPE_LOOP_START ||
           self->type ==
             RULER_MARKER_TYPE_CLIP_START)
@@ -187,8 +153,6 @@ on_motion (GtkWidget * widget,
           ui_set_cursor_from_name (widget, "w-resize");
         }
       else if (self->type ==
-                 RULER_MARKER_TYPE_SONG_END ||
-               self->type ==
                  RULER_MARKER_TYPE_LOOP_END)
         {
           self->cursor_state =
@@ -235,16 +199,6 @@ on_motion (GtkWidget * widget,
         case RULER_MARKER_TYPE_CUE_POINT:
           bot_bar_change_status (
             "Cue Point - Double click to set ("
-            "hold Shift to bypass snapping)");
-          break;
-        case RULER_MARKER_TYPE_SONG_START:
-          bot_bar_change_status (
-            "Song Start - Click and drag to move ("
-            "hold Shift to bypass snapping)");
-          break;
-        case RULER_MARKER_TYPE_SONG_END:
-          bot_bar_change_status (
-            "Song End - Click and drag to move ("
             "hold Shift to bypass snapping)");
           break;
         }

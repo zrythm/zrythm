@@ -72,8 +72,6 @@ typedef enum RWTarget
   RW_TARGET_LOOP_START,
   RW_TARGET_LOOP_END,
   RW_TARGET_CLIP_START,
-  RW_TARGET_SONG_START,
-  RW_TARGET_SONG_END,
   RW_TARGET_RANGE, ///< for timeline only
 } RWTarget;
 

@@ -300,23 +300,7 @@ drag_begin (GtkGestureDrag *      gesture,
       if (timeline_ruler)
         {
           if (hit_marker ==
-              timeline_ruler->song_start)
-            {
-              rw_prv->action =
-                UI_OVERLAY_ACTION_STARTING_MOVING;
-              rw_prv->target =
-                RW_TARGET_SONG_START;
-            }
-          else if (hit_marker ==
-                   timeline_ruler->song_end)
-            {
-              rw_prv->action =
-                UI_OVERLAY_ACTION_STARTING_MOVING;
-              rw_prv->target =
-                RW_TARGET_SONG_END;
-            }
-          else if (hit_marker ==
-                   timeline_ruler->loop_start)
+                timeline_ruler->loop_start)
             {
               rw_prv->action =
                 UI_OVERLAY_ACTION_STARTING_MOVING;

@@ -268,7 +268,7 @@ automation_tracklist_clone (
               src_ap->fvalue,
               &src_ap->pos);
           automation_track_add_ap (
-            dest_at, dest_ap, 0);
+            dest_at, dest_ap, F_GEN_WIDGET, 0);
         }
 
       /* add automation curves */

@@ -18,6 +18,11 @@
  */
 
 #include "actions/create_timeline_selections_action.h"
+#include "audio/chord_object.h"
+#include "audio/chord_track.h"
+#include "audio/marker.h"
+#include "audio/marker_track.h"
+#include "audio/scale_object.h"
 #include "audio/track.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/center_dock.h"
@@ -55,8 +60,10 @@ int
 create_timeline_selections_action_do (
   CreateTimelineSelectionsAction * self)
 {
+  int i;
+
   Region * region;
-	for (int i = 0; i < self->ts->num_regions; i++)
+	for (i = 0; i < self->ts->num_regions; i++)
     {
       /* check if the region already exists. due to
        * how the arranger creates regions, the region
@@ -84,9 +91,104 @@ create_timeline_selections_action_do (
       self->ts->regions[i]->name =
         g_strdup (region->name);
     }
-  /* TODO chords */
+  ChordObject * chord;
+	for (i = 0;
+       i < self->ts->num_chord_objects; i++)
+    {
+      /* check if the region already exists. due to
+       * how the arranger creates regions, the region
+       * should already exist the first time so no
+       * need to do anything. when redoing we will
+       * need to create a clone instead */
+      if (chord_object_find (
+            self->ts->chord_objects[i]))
+        continue;
 
-  EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
+      /* clone the clone */
+      chord =
+        chord_object_clone (
+          self->ts->chord_objects[i],
+          CHORD_OBJECT_CLONE_COPY_MAIN);
+
+      /* add it to track */
+      chord_track_add_chord (
+        P_CHORD_TRACK,
+        chord, F_GEN_WIDGET);
+    }
+  ScaleObject * scale;
+	for (i = 0;
+       i < self->ts->num_scale_objects; i++)
+    {
+      /* check if the region already exists. due to
+       * how the arranger creates regions, the region
+       * should already exist the first time so no
+       * need to do anything. when redoing we will
+       * need to create a clone instead */
+      if (scale_object_find (
+            self->ts->scale_objects[i]))
+        continue;
+
+      /* clone the clone */
+      scale =
+        scale_object_clone (
+          self->ts->scale_objects[i],
+          SCALE_OBJECT_CLONE_COPY_MAIN);
+
+      /* add it to track */
+      chord_track_add_scale (
+        P_CHORD_TRACK,
+        scale, F_GEN_WIDGET);
+    }
+  Marker * marker;
+	for (i = 0;
+       i < self->ts->num_markers; i++)
+    {
+      /* check if the region already exists. due to
+       * how the arranger creates regions, the region
+       * should already exist the first time so no
+       * need to do anything. when redoing we will
+       * need to create a clone instead */
+      if (marker_find (
+            self->ts->markers[i]))
+        continue;
+
+      /* clone the clone */
+      marker =
+        marker_clone (
+          self->ts->markers[i],
+          MARKER_CLONE_COPY_MAIN);
+
+      /* add it to track */
+      marker_track_add_marker (
+        P_MARKER_TRACK,
+        marker, F_GEN_WIDGET);
+    }
+  AutomationPoint * ap;
+	for (i = 0;
+       i < self->ts->num_automation_points; i++)
+    {
+      /* check if the region already exists. due to
+       * how the arranger creates regions, the region
+       * should already exist the first time so no
+       * need to do anything. when redoing we will
+       * need to create a clone instead */
+      if (automation_point_find (
+            self->ts->automation_points[i]))
+        continue;
+
+      /* clone the clone */
+      ap =
+        automation_point_clone (
+          self->ts->automation_points[i],
+          AUTOMATION_POINT_CLONE_COPY_MAIN);
+
+      /* add it to track */
+      automation_track_add_ap (
+        ap->at, ap, F_GEN_WIDGET,
+        F_GEN_CURVE_POINTS);
+    }
+
+  EVENTS_PUSH (ET_TL_SELECTIONS_CREATED,
                NULL);
 
   return 0;
@@ -96,8 +198,9 @@ int
 create_timeline_selections_action_undo (
   CreateTimelineSelectionsAction * self)
 {
+  int i;
   Region * region;
-  for (int i = 0; i < self->ts->num_regions; i++)
+  for (i = 0; i < self->ts->num_regions; i++)
     {
       /* get the actual region */
       region = region_find (self->ts->regions[i]);
@@ -106,7 +209,54 @@ create_timeline_selections_action_undo (
       track_remove_region (
         region->lane->track, region, F_FREE);
     }
-  EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
+  ChordObject * chord_object;
+  for (i = 0; i < self->ts->num_chord_objects; i++)
+    {
+      /* get the actual region */
+      chord_object =
+        chord_object_find (
+          self->ts->chord_objects[i]);
+
+      /* remove it */
+      chord_track_remove_chord (
+        P_CHORD_TRACK, chord_object, F_FREE);
+    }
+  ScaleObject * scale_object;
+  for (i = 0; i < self->ts->num_scale_objects; i++)
+    {
+      /* get the actual region */
+      scale_object =
+        scale_object_find (
+          self->ts->scale_objects[i]);
+
+      /* remove it */
+      chord_track_remove_scale (
+        P_CHORD_TRACK, scale_object, F_FREE);
+    }
+  Marker * marker;
+  for (i = 0; i < self->ts->num_markers; i++)
+    {
+      /* get the actual region */
+      marker = marker_find (self->ts->markers[i]);
+
+      /* remove it */
+      marker_track_remove_marker (
+        P_MARKER_TRACK, marker, F_FREE);
+    }
+  AutomationPoint * ap;
+  for (i = 0;
+       i < self->ts->num_automation_points; i++)
+    {
+      /* get the actual region */
+      ap =
+        automation_point_find (
+          self->ts->automation_points[i]);
+
+      /* remove it */
+      automation_track_remove_ap (
+        ap->at, ap, F_FREE);
+    }
+  EVENTS_PUSH (ET_TL_SELECTIONS_REMOVED,
                NULL);
 
   return 0;

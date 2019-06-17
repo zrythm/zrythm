@@ -266,6 +266,14 @@ timeline_selections_reset_transient_poses (
   TimelineSelections * ts);
 
 /**
+ * Set all main Position's to their transient
+ * counterparts.
+ */
+void
+timeline_selections_set_to_transient_poses (
+  TimelineSelections * ts);
+
+/**
  * Moves the TimelineSelections by the given
  * amount of ticks.
  *

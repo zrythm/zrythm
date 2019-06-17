@@ -24,6 +24,7 @@
 #include "audio/track.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/objects.h"
 
 #include <glib/gi18n.h>
 
@@ -156,11 +157,15 @@ chord_track_get_chord_at_pos (
 void
 chord_track_remove_chord (
   ChordTrack *  self,
-  ChordObject * chord)
+  ChordObject * chord,
+  int           free)
 {
   array_delete (self->chords,
                 self->num_chords,
                 chord);
+
+  if (free)
+    free_later (chord, chord_object_free);
 }
 
 /**
@@ -169,11 +174,14 @@ chord_track_remove_chord (
 void
 chord_track_remove_scale (
   ChordTrack *  self,
-  ScaleObject * scale)
+  ScaleObject * scale,
+  int free)
 {
   array_delete (self->scales,
                 self->num_scales,
                 scale);
+  if (free)
+    free_later (scale, scale_object_free);
 }
 
 void

@@ -23,6 +23,7 @@
 #include "audio/track.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/objects.h"
 
 #include <glib/gi18n.h>
 
@@ -79,14 +80,21 @@ marker_track_add_marker (
   EVENTS_PUSH (ET_MARKER_CREATED, marker);
 }
 
+/**
+ * Removes a marker, optionally freeing it.
+ */
 void
 marker_track_remove_marker (
   MarkerTrack * self,
-  Marker *      marker)
+  Marker *      marker,
+  int           free)
 {
   array_delete (self->markers,
                 self->num_markers,
                 marker);
+
+  if (free)
+    free_later (marker, marker_free);
 }
 
 void

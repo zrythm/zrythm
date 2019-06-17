@@ -187,6 +187,13 @@ automation_point_get_track (
   AutomationPoint * ap);
 
 /**
+ * Generates a widget for the automation point.
+ */
+void
+automation_point_gen_widget (
+  AutomationPoint * ap);
+
+/**
  * Moves the AutomationPoint by the given amount of
  * ticks.
  *

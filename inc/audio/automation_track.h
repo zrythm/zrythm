@@ -27,12 +27,6 @@
 
 #define MAX_AUTOMATION_POINTS 1200
 
-enum GenerateCurvePoints
-{
-  NO_GENERATE_CURVE_POINTS,
-  GENERATE_CURVE_POINTS
-};
-
 typedef struct Port Port;
 typedef struct _AutomationTrackWidget
   AutomationTrackWidget;
@@ -147,6 +141,7 @@ void
 automation_track_add_ap (
   AutomationTrack * at,
   AutomationPoint * ap,
+  int               gen_widget,
   int               generate_curve_points);
 
 /**
@@ -193,15 +188,18 @@ automation_track_get_next_curve_ac (AutomationTrack * at,
  * Removes automation point from automation track.
  */
 void
-automation_track_remove_ap (AutomationTrack * at,
-                            AutomationPoint * ap);
+automation_track_remove_ap (
+  AutomationTrack * at,
+  AutomationPoint * ap,
+  int               free);
 
 /**
  * Removes automation curve from automation track.
  */
 void
-automation_track_remove_ac (AutomationTrack * at,
-                            AutomationCurve * ac);
+automation_track_remove_ac (
+  AutomationTrack * at,
+  AutomationCurve * ac);
 
 //int
 //automation_track_get_ap_index (AutomationTrack * at,

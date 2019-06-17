@@ -731,6 +731,15 @@ events_process (void * data)
           timeline_selection_info_widget_refresh (
             MW_TS_INFO, TL_SELECTIONS);
           break;
+        case ET_TL_SELECTIONS_CREATED:
+        case ET_TL_SELECTIONS_REMOVED:
+          arranger_widget_refresh (
+            Z_ARRANGER_WIDGET (
+              MW_TIMELINE));
+          arranger_widget_refresh (
+            Z_ARRANGER_WIDGET (
+              MW_PINNED_TIMELINE));
+          break;
         case ET_TRACKLIST_SELECTIONS_CHANGED:
           inspector_widget_refresh (MW_INSPECTOR);
           mixer_widget_soft_refresh (MW_MIXER);

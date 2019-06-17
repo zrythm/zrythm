@@ -100,9 +100,18 @@ automation_point_new_float (
   AutomationPoint * ap = _create_new (at, pos);
 
   ap->fvalue = value;
-  ap->widget = automation_point_widget_new (ap);
 
   return ap;
+}
+
+/**
+ * Generates a widget for the automation point.
+ */
+void
+automation_point_gen_widget (
+  AutomationPoint * ap)
+{
+  ap->widget = automation_point_widget_new (ap);
 }
 
 /**

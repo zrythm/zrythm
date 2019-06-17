@@ -76,4 +76,7 @@
 #define F_GEN_WIDGET 1
 #define F_NO_GEN_WIDGET 0
 
+#define F_GEN_CURVE_POINTS 1
+#define F_NO_GEN_CURVE_POINTS 0
+
 #endif

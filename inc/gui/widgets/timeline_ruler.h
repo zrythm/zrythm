@@ -60,8 +60,6 @@ typedef struct _TimelineRulerWidget
   /**
    * Markers.
    */
-  RulerMarkerWidget *      song_start;
-  RulerMarkerWidget *      song_end;
   RulerMarkerWidget *      loop_start;
   RulerMarkerWidget *      loop_end;
   RulerMarkerWidget *      cue_point;

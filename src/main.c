@@ -17,6 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
 #ifdef _WIN32
 #else
 #include <execinfo.h>
@@ -69,6 +71,17 @@ int
 main (int    argc,
       char **argv)
 {
+  fprintf (
+    stderr,
+    "Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou\n\n"
+  "Zrythm comes with ABSOLUTELY NO WARRANTY!\n\n"
+  "This is free software, and you are welcome to redistribute it\n"
+  "under certain conditions. Look at the file `COPYING' within this\n"
+  "distribution for details.\n\n"
+  "Write comments and bugs to https://git.zrythm.org/zrythm/zrythm/issues\n"
+  "Support this project at https://liberapay.com/Zrythm\n\n",
+    PACKAGE_VERSION);
+
   /* unset GTK_THEME */
   g_message ("GTK_THEME=%s", getenv ("GTK_THEME"));
   putenv ("GTK_THEME=");

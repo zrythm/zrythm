@@ -90,30 +90,12 @@ timeline_ruler_widget_set_ruler_marker_position (
 {
   switch (rm->type)
     {
-    case RULER_MARKER_TYPE_SONG_START:
-      allocation->x =
-        ui_pos_to_px_timeline (
-          &TRANSPORT->start_marker_pos,
-          1);
-      allocation->y = 0;
-      allocation->width = RULER_MARKER_SIZE;
-      allocation->height = RULER_MARKER_SIZE;
-      break;
-    case RULER_MARKER_TYPE_SONG_END:
-      allocation->x =
-        ui_pos_to_px_timeline (
-          &TRANSPORT->end_marker_pos,
-          1) - RULER_MARKER_SIZE;
-      allocation->y = 0;
-      allocation->width = RULER_MARKER_SIZE;
-      allocation->height = RULER_MARKER_SIZE;
-      break;
     case RULER_MARKER_TYPE_LOOP_START:
       allocation->x =
         ui_pos_to_px_timeline (
           &TRANSPORT->loop_start_pos,
           1);
-      allocation->y = RULER_MARKER_SIZE + 1;
+      allocation->y = 0;
       allocation->width = RULER_MARKER_SIZE;
       allocation->height = RULER_MARKER_SIZE;
       break;
@@ -122,7 +104,7 @@ timeline_ruler_widget_set_ruler_marker_position (
         ui_pos_to_px_timeline (
           &TRANSPORT->loop_end_pos,
           1) - RULER_MARKER_SIZE;
-      allocation->y = RULER_MARKER_SIZE + 1;
+      allocation->y = 0;
       allocation->width = RULER_MARKER_SIZE;
       allocation->height = RULER_MARKER_SIZE;
       break;
@@ -561,44 +543,6 @@ timeline_ruler_on_drag_update (
                     NULL);
                 }
             }
-          else if (rw_prv->target ==
-                     RW_TARGET_SONG_START)
-            {
-              /* if position is acceptable */
-              if (position_compare (
-                    &tmp, &timeline_start) >= 0 &&
-                  position_compare (
-                    &tmp,
-                    &TRANSPORT->end_marker_pos) < 0)
-                {
-                  position_set_to_pos (
-                    &TRANSPORT->start_marker_pos,
-                    &tmp);
-                  transport_update_position_frames ();
-                  EVENTS_PUSH (
-                    ET_TIMELINE_SONG_MARKER_POS_CHANGED,
-                    NULL);
-                }
-            }
-          else if (rw_prv->target ==
-                     RW_TARGET_SONG_END)
-            {
-              /* if position is acceptable */
-              if (position_compare (
-                    &tmp, &timeline_end) <= 0 &&
-                  position_compare (
-                    &tmp,
-                    &TRANSPORT->start_marker_pos) > 0)
-                {
-                  position_set_to_pos (
-                    &TRANSPORT->end_marker_pos,
-                    &tmp);
-                  transport_update_position_frames ();
-                  EVENTS_PUSH (
-                    ET_TIMELINE_SONG_MARKER_POS_CHANGED,
-                    NULL);
-                }
-            }
         }
     } /* endif MOVING */
 }
@@ -616,24 +560,13 @@ timeline_ruler_widget_init (
   /* add invisible range */
   self->range =
     ruler_range_widget_new ();
-  gtk_overlay_add_overlay (GTK_OVERLAY (self),
-                           GTK_WIDGET (self->range));
+  gtk_overlay_add_overlay (
+    GTK_OVERLAY (self),
+    GTK_WIDGET (self->range));
 
   /* add all the markers */
   RulerWidget * ruler =
     Z_RULER_WIDGET (self);
-  self->song_start =
-    ruler_marker_widget_new (
-      ruler, RULER_MARKER_TYPE_SONG_START);
-  gtk_overlay_add_overlay (
-    GTK_OVERLAY (self),
-    GTK_WIDGET (self->song_start));
-  self->song_end =
-    ruler_marker_widget_new (
-      ruler, RULER_MARKER_TYPE_SONG_END);
-  gtk_overlay_add_overlay (
-    GTK_OVERLAY (self),
-    GTK_WIDGET (self->song_end));
   self->loop_start =
     ruler_marker_widget_new (
       ruler, RULER_MARKER_TYPE_LOOP_START);

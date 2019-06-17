@@ -32,6 +32,7 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 #include "utils/objects.h"
 
 void
@@ -219,6 +220,7 @@ void
 automation_track_add_ap (
   AutomationTrack * at,
   AutomationPoint * ap,
+  int               gen_widget,
   int               generate_curve_points)
 {
   /* add point */
@@ -274,6 +276,9 @@ automation_track_add_ap (
                                     ap);
         }
     }
+
+  if (gen_widget)
+    automation_point_gen_widget (ap);
 
   /* refresh indices */
   for (int i = 0;
@@ -402,13 +407,17 @@ automation_track_get_next_curve_ac (
  * Removes automation point from automation track.
  */
 void
-automation_track_remove_ap (AutomationTrack * at,
-                            AutomationPoint * ap)
+automation_track_remove_ap (
+  AutomationTrack * at,
+  AutomationPoint * ap,
+  int               free)
 {
   array_delete (at->aps,
                 at->num_aps,
                 ap);
-  free_later (ap, automation_point_free);
+
+  if (free)
+    free_later (ap, automation_point_free);
 }
 
 /**
@@ -621,7 +630,7 @@ automation_track_free (AutomationTrack * self)
   int i;
   for (i = 0; i < self->num_aps; i++)
     automation_track_remove_ap (
-      self, self->aps[i]);
+      self, self->aps[i], F_FREE);
 
   for (i = 0; i < self->num_acs; i++)
     automation_track_remove_ac (
