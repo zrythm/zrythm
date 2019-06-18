@@ -158,6 +158,14 @@ marker_set_track (
   Track *  track);
 
 /**
+ * Sets the name to all the Marker's counterparts.
+ */
+void
+marker_set_name (
+  Marker * marker,
+  const char * name);
+
+/**
  * Generates a widget for the Marker.
  */
 void

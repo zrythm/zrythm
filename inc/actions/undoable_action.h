@@ -58,6 +58,7 @@ typedef enum UndoableActionType
 
   UNDOABLE_ACTION_TYPE_EDIT_CHORD,
   UNDOABLE_ACTION_TYPE_EDIT_SCALE,
+  UNDOABLE_ACTION_TYPE_EDIT_MARKER,
 
   /* --------------- end ---------------- */
 

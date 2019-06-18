@@ -76,25 +76,25 @@ arranger_bg_draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
       double end_px =
         ui_pos_to_px_timeline (
           &TRANSPORT->loop_end_pos, 1);
-      cairo_set_source_rgba (cr, 0, 0.9, 0.7, 0.2);
+      cairo_set_source_rgba (cr, 0, 0.9, 0.7, 0.08);
       cairo_set_line_width (cr, 2);
       if (start_px > rect.x)
         {
           cairo_move_to (
-            cr, start_px + 1, rect.y);
+            cr, start_px + 1.0, rect.y);
           cairo_line_to (
-            cr, start_px + 1, rect.height);
+            cr, start_px + 1.0, rect.height);
           cairo_stroke (cr);
         }
       if (end_px < rect.x + rect.width)
         {
           cairo_move_to (
-            cr, end_px - 1, rect.y);
+            cr, end_px - 1.0, rect.y);
           cairo_line_to (
-            cr, end_px - 1, rect.height);
+            cr, end_px - 1.0, rect.height);
           cairo_stroke (cr);
         }
-      cairo_set_source_rgba (cr, 0, 0.9, 0.7, 0.1);
+      cairo_set_source_rgba (cr, 0, 0.9, 0.7, 0.02);
       cairo_rectangle (
         cr, MAX (rect.x, start_px), rect.y,
         /* FIXME use rect properly, this exceeds */

@@ -30,6 +30,7 @@
 #include "actions/duplicate_midi_arranger_selections_action.h"
 #include "actions/duplicate_timeline_selections_action.h"
 #include "actions/edit_chord_action.h"
+#include "actions/edit_marker_action.h"
 #include "actions/edit_scale_action.h"
 #include "actions/edit_midi_arranger_selections_action.h"
 #include "actions/edit_plugins_action.h"
@@ -108,6 +109,9 @@ undoable_action_do (UndoableAction * self)
     DO_ACTION (EDIT_CHORD,
                edit_chord,
                EditChord);
+    DO_ACTION (EDIT_MARKER,
+               edit_marker,
+               EditMarker);
     DO_ACTION (EDIT_SCALE,
                edit_scale,
                EditScale);
@@ -198,6 +202,9 @@ undoable_action_undo (UndoableAction * self)
     UNDO_ACTION (EDIT_CHORD,
                edit_chord,
                EditChord);
+    UNDO_ACTION (EDIT_MARKER,
+               edit_marker,
+               EditMarker);
     UNDO_ACTION (EDIT_SCALE,
                edit_scale,
                EditScale);
@@ -280,6 +287,12 @@ undoable_action_free (UndoableAction * self)
     FREE_ACTION (DELETE_TL_SELECTIONS,
                delete_timeline_selections,
                DeleteTimelineSelections);
+    FREE_ACTION (EDIT_CHORD,
+               edit_chord,
+               EditChord);
+    FREE_ACTION (EDIT_MARKER,
+               edit_marker,
+               EditMarker);
     FREE_ACTION (EDIT_SCALE,
                edit_scale,
                EditScale);
@@ -371,6 +384,9 @@ undoable_action_stringize (
     STRINGIZE_UA (EDIT_CHORD,
                   EditChord,
                   edit_chord);
+    STRINGIZE_UA (EDIT_MARKER,
+                  EditMarker,
+                  edit_marker);
     STRINGIZE_UA (EDIT_SCALE,
                   EditScale,
                   edit_scale);

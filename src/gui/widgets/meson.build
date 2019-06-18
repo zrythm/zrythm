@@ -60,6 +60,7 @@ widget_srcs = [
   'left_dock_edge.c',
   'main_window.c',
   'marker.c',
+  'marker_dialog.c',
   'marker_track.c',
   'master_track.c',
   'meter.c',

@@ -21,7 +21,9 @@
 #include "audio/marker_track.h"
 #include "gui/widgets/arranger_object.h"
 #include "gui/widgets/bot_bar.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/marker.h"
+#include "gui/widgets/marker_dialog.h"
 #include "project.h"
 #include "utils/cairo.h"
 #include "utils/ui.h"
@@ -112,12 +114,9 @@ on_press (
 {
   if (n_press == 2)
     {
-      /*ChordSelectorWindowWidget * chord_selector =*/
-        /*chord_selector_window_widget_new (*/
-          /*self);*/
-
-      /*gtk_window_present (*/
-        /*GTK_WINDOW (chord_selector));*/
+      MarkerDialogWidget * dialog =
+        marker_dialog_widget_new (self);
+      gtk_widget_show_all (GTK_WIDGET (dialog));
     }
 }
 

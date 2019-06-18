@@ -108,6 +108,27 @@ marker_gen_widget (
 }
 
 /**
+ * Sets the name to all the Marker's counterparts.
+ */
+void
+marker_set_name (
+  Marker * marker,
+  const char * name)
+{
+  Marker * c = marker;
+  for (int i = 0; i < 2; i++)
+    {
+      if (i == 0)
+        c = marker_get_main_marker (c);
+      else if (i == 1)
+        c = marker_get_main_trans_marker (c);
+
+      c->name = g_strdup (name);
+    }
+
+}
+
+/**
  * Returns if the two Marker's are equal.
  */
 int
