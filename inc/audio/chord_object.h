@@ -147,12 +147,8 @@ chord_object_set_track (
   ChordObject * self,
   Track *  track);
 
-/**
- * Generates a widget for the chord.
- */
-void
-chord_object_gen_widget (
-  ChordObject * self);
+ARRANGER_OBJ_DECLARE_GEN_WIDGET (
+  ChordObject, chord_object);
 
 /**
  * Finds the ChordObject in the project

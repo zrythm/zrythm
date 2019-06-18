@@ -52,12 +52,6 @@ midi_region_new (
   int        is_main);
 
 /**
- * Deep clones the midi region.
- */
-MidiRegion *
-midi_region_clone (MidiRegion * src);
-
-/**
  * Creates region (used when loading projects).
  */
 MidiRegion *

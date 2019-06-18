@@ -58,48 +58,34 @@ DEFINE_START_POS
  */
 void
 region_init (
-  Region *   region,
+  Region *         self,
   const RegionType type,
   const Position * start_pos,
   const Position * end_pos,
   const int        is_main)
 {
   g_message ("creating region");
-  position_set_to_pos (&region->start_pos,
+  position_set_to_pos (&self->start_pos,
                        start_pos);
-  position_set_to_pos (&region->end_pos,
+  position_set_to_pos (&self->end_pos,
                        end_pos);
-  position_init (&region->clip_start_pos);
+  position_init (&self->clip_start_pos);
   long length =
-    region_get_full_length_in_ticks (region);
-  position_from_ticks (&region->true_end_pos,
+    region_get_full_length_in_ticks (self);
+  position_from_ticks (&self->true_end_pos,
                        length);
-  position_init (&region->loop_start_pos);
-  position_set_to_pos (&region->loop_end_pos,
-                       &region->true_end_pos);
-  region->linked_region_name = NULL;
-  region->type = type;
+  position_init (&self->loop_start_pos);
+  position_set_to_pos (&self->loop_end_pos,
+                       &self->true_end_pos);
+  self->linked_region_name = NULL;
+  self->type = type;
 
   if (is_main)
     {
       if (type == REGION_TYPE_MIDI)
         {
-          /* set it as main */
-          Region * main_trans =
-            midi_region_new (
-              start_pos, end_pos, 0);
-          Region * lane =
-            midi_region_new (
-              start_pos, end_pos, 0);
-          Region * lane_trans =
-            midi_region_new (
-              start_pos, end_pos, 0);
-          arranger_object_info_init_main (
-            region,
-            main_trans,
-            lane,
-            lane_trans,
-            AOI_TYPE_REGION);
+          ARRANGER_OBJECT_SET_AS_MAIN (
+            REGION, Region, region);
         }
       else if (type == REGION_TYPE_AUDIO)
         {

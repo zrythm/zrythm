@@ -165,12 +165,8 @@ marker_set_name (
   Marker * marker,
   const char * name);
 
-/**
- * Generates a widget for the Marker.
- */
-void
-marker_gen_widget (
-  Marker * marker);
+ARRANGER_OBJ_DECLARE_GEN_WIDGET (
+  Marker, marker);
 
 /**
  * Finds the marker in the project corresponding to

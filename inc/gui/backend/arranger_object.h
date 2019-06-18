@@ -206,4 +206,49 @@
       } \
   }
 
+/**
+ * Sets the object 'self' as the main object.
+ */
+#define ARRANGER_OBJECT_SET_AS_MAIN(caps,cc,sc) \
+  cc * main_trans = \
+    sc##_clone ( \
+      self, caps##_CLONE_COPY); \
+  cc * lane = \
+    sc##_clone ( \
+      self, caps##_CLONE_COPY); \
+  cc * lane_trans = \
+    sc##_clone ( \
+      self, caps##_CLONE_COPY); \
+  arranger_object_info_init_main ( \
+    self, main_trans, lane, lane_trans, \
+    AOI_TYPE_##caps)
+
+/** Generates a widget for the object. */
+#define ARRANGER_OBJ_DECLARE_GEN_WIDGET(cc,sc) \
+  void \
+  sc##_gen_widget ( \
+    cc * self)
+
+/**
+ * Generates a widget for the object.
+ *
+ * To be used on objects without lane counterparts.
+ */
+#define ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS( \
+  cc,sc) \
+  void \
+  sc##_gen_widget ( \
+    cc * self) \
+  { \
+    cc * c = self; \
+    for (int i = 0; i < 2; i++) \
+      { \
+        if (i == 0) \
+          c = sc##_get_main_##sc (c); \
+        else if (i == 1) \
+          c = sc##_get_main_trans_##sc (c); \
+        c->widget = sc##_widget_new (c); \
+      } \
+  }
+
 #endif

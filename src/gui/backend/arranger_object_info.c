@@ -81,17 +81,21 @@ arranger_object_info_should_be_visible (
       arranger =
         Z_ARRANGER_WIDGET (MW_TIMELINE);
       break;
-    case AOI_TYPE_CHORD:
+    case AOI_TYPE_CHORD_OBJECT:
       arranger =
         Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE);
       break;
-    case AOI_TYPE_SCALE:
+    case AOI_TYPE_SCALE_OBJECT:
       arranger =
         Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE);
       break;
     case AOI_TYPE_MARKER:
       arranger =
         Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE);
+      break;
+    case AOI_TYPE_AUTOMATION_POINT:
+      arranger =
+        Z_ARRANGER_WIDGET (MW_TIMELINE);
       break;
     case AOI_TYPE_MIDI_NOTE:
       arranger =
@@ -138,6 +142,20 @@ arranger_object_info_should_be_visible (
       non_trans_visible = 1;
     }
 
+  /* check visibility at all */
+  if (self->type == AOI_TYPE_AUTOMATION_POINT)
+    {
+      AutomationPoint * ap =
+        (AutomationPoint *)
+        arranger_object_info_get_object (self);
+      if (!(automation_point_get_track (ap)->
+              bot_paned_visible))
+        {
+          non_trans_visible = 0;
+          trans_visible = 0;
+        }
+    }
+
   /* check lane visibility */
   if (self->type == AOI_TYPE_REGION)
     {
@@ -151,6 +169,7 @@ arranger_object_info_should_be_visible (
     {
       lane_visible = 0;
     }
+
 
   /* return visibility */
   switch (self->counterpart)
@@ -182,6 +201,7 @@ arranger_object_info_set_widget_visibility (
   ScaleObject * s = NULL;
   Marker * m = NULL;
   MidiNote * mn = NULL;
+  AutomationPoint * ap = NULL;
 
   /* get the objects */
   switch (self->type)
@@ -191,12 +211,12 @@ arranger_object_info_set_widget_visibility (
         (Region *)
         arranger_object_info_get_object (self);
       break;
-    case AOI_TYPE_CHORD:
+    case AOI_TYPE_CHORD_OBJECT:
       c =
         (ChordObject *)
         arranger_object_info_get_object (self);
       break;
-    case AOI_TYPE_SCALE:
+    case AOI_TYPE_SCALE_OBJECT:
       s =
         (ScaleObject *)
         arranger_object_info_get_object (self);
@@ -209,6 +229,11 @@ arranger_object_info_set_widget_visibility (
     case AOI_TYPE_MIDI_NOTE:
       mn =
         (MidiNote *)
+        arranger_object_info_get_object (self);
+      break;
+    case AOI_TYPE_AUTOMATION_POINT:
+      ap =
+        (AutomationPoint *)
         arranger_object_info_get_object (self);
       break;
     }
@@ -276,6 +301,11 @@ arranger_object_info_set_widget_visibility (
           SET_ALL_VISIBLE_WITHOUT_LANE (
             MidiNote, mn);
         }
+      if (ap)
+        {
+          SET_ALL_VISIBLE_WITHOUT_LANE (
+            AutomationPoint, ap);
+        }
     }
   else
     {
@@ -299,6 +329,10 @@ arranger_object_info_set_widget_visibility (
         {
           SET_THIS_VISIBLE (mn);
         }
+      if (ap)
+        {
+          SET_THIS_VISIBLE (ap);
+        }
     }
 
 #undef SET_ALL_VISIBLE
@@ -318,6 +352,7 @@ arranger_object_info_get_visible_counterpart (
   ScaleObject * scale_object = NULL;
   Marker * marker = NULL;
   MidiNote * midi_note = NULL;
+  AutomationPoint * automation_point = NULL;
 
   /* get the objects */
   switch (self->type)
@@ -327,12 +362,12 @@ arranger_object_info_get_visible_counterpart (
         (Region *)
         arranger_object_info_get_object (self);
       break;
-    case AOI_TYPE_CHORD:
+    case AOI_TYPE_CHORD_OBJECT:
       chord_object =
         (ChordObject *)
         arranger_object_info_get_object (self);
       break;
-    case AOI_TYPE_SCALE:
+    case AOI_TYPE_SCALE_OBJECT:
       scale_object =
         (ScaleObject *)
         arranger_object_info_get_object (self);
@@ -345,6 +380,11 @@ arranger_object_info_get_visible_counterpart (
     case AOI_TYPE_MIDI_NOTE:
       midi_note =
         (MidiNote *)
+        arranger_object_info_get_object (self);
+      break;
+    case AOI_TYPE_AUTOMATION_POINT:
+      automation_point =
+        (AutomationPoint *)
         arranger_object_info_get_object (self);
       break;
     }
@@ -394,6 +434,14 @@ arranger_object_info_get_visible_counterpart (
         midi_note, main_midi_note);
       RETURN_COUNTERPART_IF_VISIBLE (
         midi_note, main_trans_midi_note);
+    }
+  if (automation_point)
+    {
+      RETURN_COUNTERPART_IF_VISIBLE (
+        automation_point, main_automation_point);
+      RETURN_COUNTERPART_IF_VISIBLE (
+        automation_point,
+        main_trans_automation_point);
     }
 
 #undef RETURN_COUNTERPART_IF_VISIBLE

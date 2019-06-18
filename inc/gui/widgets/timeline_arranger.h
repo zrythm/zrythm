@@ -237,7 +237,6 @@ void
 timeline_arranger_widget_create_ap (
   TimelineArrangerWidget * self,
   AutomationTrack *  at,
-  Track *            track,
   const Position *         pos,
   const double             start_y);
 

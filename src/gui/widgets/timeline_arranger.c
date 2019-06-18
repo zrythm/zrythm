@@ -1045,31 +1045,38 @@ void
 timeline_arranger_widget_create_ap (
   TimelineArrangerWidget * self,
   AutomationTrack *  at,
-  Track *            track,
-  const Position *         pos,
-  const double             start_y)
+  const Position *   pos,
+  const double       start_y)
 {
+  g_warn_if_fail (at);
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  /*g_message ("at here: %s",*/
-             /*at->automatable->label);*/
-
-  /* add automation point to automation track */
   float value =
     automation_lane_widget_get_fvalue_at_y (
       at->al->widget, start_y);
 
-  AutomationPoint * ap =
-    automation_point_new_float (
-      at, value, pos);
-  automation_track_add_ap (
-    at, ap, F_GEN_WIDGET, F_GEN_CURVE_POINTS);
-  gtk_overlay_add_overlay (
-    GTK_OVERLAY (self),
-    GTK_WIDGET (ap->widget));
-  gtk_widget_show (GTK_WIDGET (ap->widget));
   ar_prv->action =
     UI_OVERLAY_ACTION_CREATING_MOVING;
+
+  /* create a new ap */
+  AutomationPoint * ap =
+    automation_point_new_float (
+      at, value, pos, F_MAIN);
+
+  /* add it to automation track */
+  automation_track_add_ap (
+    at, ap, F_GEN_WIDGET, F_GEN_CURVE_POINTS);
+
+  /* set visibility */
+  arranger_object_info_set_widget_visibility (
+    &ap->obj_info, 1);
+
+  /* set position to all counterparts */
+  automation_point_set_pos (
+    ap, pos, F_NO_TRANS_ONLY);
+
+  EVENTS_PUSH (
+    ET_AUTOMATION_POINT_CREATED, ap);
   ARRANGER_WIDGET_SELECT_AUTOMATION_POINT (
     self, ap, F_SELECT,
     F_NO_APPEND);

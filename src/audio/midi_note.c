@@ -65,41 +65,27 @@ midi_note_new (
   Velocity *   vel,
   int          is_main)
 {
-  MidiNote * midi_note =
+  MidiNote * self =
     calloc (1, sizeof (MidiNote));
 
-  position_set_to_pos (&midi_note->start_pos,
+  position_set_to_pos (&self->start_pos,
                        start_pos);
-  position_set_to_pos (&midi_note->end_pos,
+  position_set_to_pos (&self->end_pos,
                        end_pos);
-  midi_note->region = region;
-  midi_note->region_name =
+  self->region = region;
+  self->region_name =
     g_strdup (region->name);
-  midi_note->val = val;
-  midi_note->vel = vel;
-  vel->midi_note = midi_note;
+  self->val = val;
+  self->vel = vel;
+  vel->midi_note = self;
 
   if (is_main)
     {
-      /* set it as main */
-      MidiNote * main_trans =
-        midi_note_clone (
-          midi_note, MIDI_NOTE_CLONE_COPY);
-      MidiNote * lane =
-        midi_note_clone (
-          midi_note, MIDI_NOTE_CLONE_COPY);
-      MidiNote * lane_trans =
-        midi_note_clone (
-          midi_note, MIDI_NOTE_CLONE_COPY);
-      arranger_object_info_init_main (
-        midi_note,
-        main_trans,
-        lane,
-        lane_trans,
-        AOI_TYPE_MIDI_NOTE);
+      ARRANGER_OBJECT_SET_AS_MAIN (
+        MIDI_NOTE, MidiNote, midi_note);
     }
 
-  return midi_note;
+  return self;
 }
 
 /**
@@ -331,26 +317,8 @@ midi_note_set_val (
   midi_note->val = val;
 }
 
-/**
- * Generate a MidiNoteWidget for the MidiNote
- * and all its counterparts.
- */
-void
-midi_note_gen_widget (
-  MidiNote * midi_note)
-{
-  MidiNote * mn = midi_note;
-  for (int i = 0; i < 2; i++)
-    {
-      if (i == 0)
-        mn = midi_note_get_main_midi_note (mn);
-      else if (i == 1)
-        mn = midi_note_get_main_trans_midi_note (mn);
-
-      mn->widget =
-        midi_note_widget_new (mn);
-    }
-}
+ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
+  MidiNote, midi_note);
 
 /**
  * Sets the cached start Position for use in live

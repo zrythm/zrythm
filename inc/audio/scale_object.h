@@ -156,12 +156,8 @@ scale_object_set_track (
   ScaleObject * self,
   Track *  track);
 
-/**
- * Generates a widget for the scale.
- */
-void
-scale_object_gen_widget (
-  ScaleObject * self);
+ARRANGER_OBJ_DECLARE_GEN_WIDGET (
+  ScaleObject, scale_object);
 
 /**
  * Finds the ScaleObject in the project

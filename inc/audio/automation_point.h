@@ -146,12 +146,17 @@ automation_point_find (
 /**
  * Creates an AutomationPoint in the given
  * AutomationTrack at the given Position.
+ *
+ * @param is_main Whether this AutomationPoint will
+ *   be the main counterpart (see
+ *   ArrangerObjectInfo).
  */
 AutomationPoint *
 automation_point_new_float (
   AutomationTrack *   at,
   const float         value,
-  const Position *    pos);
+  const Position *    pos,
+  int                 is_main);
 
 int
 automation_point_get_y_in_px (AutomationPoint * ap);
@@ -186,12 +191,8 @@ Track *
 automation_point_get_track (
   AutomationPoint * ap);
 
-/**
- * Generates a widget for the automation point.
- */
-void
-automation_point_gen_widget (
-  AutomationPoint * ap);
+ARRANGER_OBJ_DECLARE_GEN_WIDGET (
+  AutomationPoint, automation_point);
 
 /**
  * Moves the AutomationPoint by the given amount of

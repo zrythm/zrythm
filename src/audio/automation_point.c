@@ -95,24 +95,26 @@ AutomationPoint *
 automation_point_new_float (
   AutomationTrack *   at,
   const float         value,
-  const Position *    pos)
+  const Position *    pos,
+  int                 is_main)
 {
-  AutomationPoint * ap = _create_new (at, pos);
+  AutomationPoint * self =
+    _create_new (at, pos);
 
-  ap->fvalue = value;
+  self->fvalue = value;
 
-  return ap;
+  if (is_main)
+    {
+      ARRANGER_OBJECT_SET_AS_MAIN (
+        AUTOMATION_POINT, AutomationPoint,
+        automation_point);
+    }
+
+  return self;
 }
 
-/**
- * Generates a widget for the automation point.
- */
-void
-automation_point_gen_widget (
-  AutomationPoint * ap)
-{
-  ap->widget = automation_point_widget_new (ap);
-}
+ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
+  AutomationPoint, automation_point);
 
 /**
  * Clones the atuomation point.
@@ -126,10 +128,9 @@ automation_point_clone (
   if (flag == AUTOMATION_POINT_CLONE_COPY_MAIN)
     is_main = 1;
 
-  (void) is_main;
   AutomationPoint * ap =
     automation_point_new_float (
-      src->at, src->fvalue, &src->pos);
+      src->at, src->fvalue, &src->pos, is_main);
 
   position_set_to_pos (
     &ap->pos, &src->pos);

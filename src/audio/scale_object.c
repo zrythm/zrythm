@@ -68,22 +68,8 @@ scale_object_new (
 
   if (is_main)
     {
-      /* set it as main */
-      ScaleObject * main_trans =
-        scale_object_clone (
-          self, SCALE_OBJECT_CLONE_COPY);
-      ScaleObject * lane =
-        scale_object_clone (
-          self, SCALE_OBJECT_CLONE_COPY);
-      ScaleObject * lane_trans =
-        scale_object_clone (
-          self, SCALE_OBJECT_CLONE_COPY);
-      arranger_object_info_init_main (
-        self,
-        main_trans,
-        lane,
-        lane_trans,
-        AOI_TYPE_SCALE);
+      ARRANGER_OBJECT_SET_AS_MAIN (
+        SCALE_OBJECT, ScaleObject, scale_object);
     }
 
   return self;
@@ -147,24 +133,8 @@ scale_object_set_track (
   self->track_pos = track->pos;
 }
 
-/**
- * Generates a widget for the scale.
- */
-void
-scale_object_gen_widget (
-  ScaleObject * self)
-{
-  ScaleObject * c = self;
-  for (int i = 0; i < 2; i++)
-    {
-      if (i == 0)
-        c = scale_object_get_main_scale_object (c);
-      else if (i == 1)
-        c = scale_object_get_main_trans_scale_object (c);
-
-      c->widget = scale_object_widget_new (c);
-    }
-}
+ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
+  ScaleObject, scale_object);
 
 /**
  * Moves the ScaleObject by the given amount of

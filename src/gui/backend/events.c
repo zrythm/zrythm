@@ -928,6 +928,7 @@ events_process (void * data)
           break;
         case ET_REGION_CREATED:
         case ET_MARKER_CREATED:
+        case ET_AUTOMATION_POINT_CREATED:
         case ET_CHORD_OBJECT_CREATED:
         case ET_SCALE_OBJECT_CREATED:
         case ET_CHORD_OBJECT_REMOVED:

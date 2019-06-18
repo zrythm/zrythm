@@ -29,6 +29,7 @@
 #include "audio/midi_region.h"
 #include "audio/position.h"
 #include "audio/velocity.h"
+#include "gui/backend/arranger_object.h"
 #include "gui/backend/arranger_object_info.h"
 
 typedef struct _MidiNoteWidget MidiNoteWidget;
@@ -308,13 +309,8 @@ midi_note_set_cache_end_pos (
   MidiNote * mn,
   const Position * pos);
 
-/**
- * Generate a MidiNoteWidget for the MidiNote
- * and all its counterparts.
- */
-void
-midi_note_gen_widget (
-  MidiNote * mn);
+ARRANGER_OBJ_DECLARE_GEN_WIDGET (
+  MidiNote, midi_note);
 
 /**
  * Moves the MidiNote by the given amount of ticks.

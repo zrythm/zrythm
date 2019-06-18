@@ -52,22 +52,8 @@ marker_new (
 
   if (is_main)
     {
-      /* set it as main */
-      Marker * main_trans =
-        marker_clone (
-          self, MARKER_CLONE_COPY);
-      Marker * lane =
-        marker_clone (
-          self, MARKER_CLONE_COPY);
-      Marker * lane_trans =
-        marker_clone (
-          self, MARKER_CLONE_COPY);
-      arranger_object_info_init_main (
-        self,
-        main_trans,
-        lane,
-        lane_trans,
-        AOI_TYPE_MARKER);
+      ARRANGER_OBJECT_SET_AS_MAIN (
+        MARKER, Marker, marker);
     }
 
   return self;
@@ -88,24 +74,8 @@ marker_set_track (
 DEFINE_ARRANGER_OBJ_MOVE (
   Marker, marker);
 
-/**
- * Generates a widget for the Marker.
- */
-void
-marker_gen_widget (
-  Marker * self)
-{
-  Marker * c = self;
-  for (int i = 0; i < 2; i++)
-    {
-      if (i == 0)
-        c = marker_get_main_marker (c);
-      else if (i == 1)
-        c = marker_get_main_trans_marker (c);
-
-      c->widget = marker_widget_new (c);
-    }
-}
+ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
+  Marker, marker);
 
 /**
  * Sets the name to all the Marker's counterparts.

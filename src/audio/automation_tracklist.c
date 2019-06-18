@@ -266,7 +266,7 @@ automation_tracklist_clone (
             automation_point_new_float (
               dest_at,
               src_ap->fvalue,
-              &src_ap->pos);
+              &src_ap->pos, F_MAIN);
           automation_track_add_ap (
             dest_at, dest_ap, F_GEN_WIDGET, 0);
         }

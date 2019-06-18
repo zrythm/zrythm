@@ -57,22 +57,8 @@ chord_object_new (
 
   if (is_main)
     {
-      /* set it as main */
-      ChordObject * main_trans =
-        chord_object_clone (
-          self, CHORD_OBJECT_CLONE_COPY);
-      ChordObject * lane =
-        chord_object_clone (
-          self, CHORD_OBJECT_CLONE_COPY);
-      ChordObject * lane_trans =
-        chord_object_clone (
-          self, CHORD_OBJECT_CLONE_COPY);
-      arranger_object_info_init_main (
-        self,
-        main_trans,
-        lane,
-        lane_trans,
-        AOI_TYPE_CHORD);
+      ARRANGER_OBJECT_SET_AS_MAIN (
+        CHORD_OBJECT, ChordObject, chord_object);
     }
 
   return self;
@@ -155,24 +141,9 @@ chord_object_set_track (
   self->track_pos = track->pos;
 }
 
-/**
- * Generates a widget for the chord.
- */
-void
-chord_object_gen_widget (
-  ChordObject * self)
-{
-  ChordObject * c = self;
-  for (int i = 0; i < 2; i++)
-    {
-      if (i == 0)
-        c = chord_object_get_main_chord_object (c);
-      else if (i == 1)
-        c = chord_object_get_main_trans_chord_object (c);
 
-      c->widget = chord_object_widget_new (c);
-    }
-}
+ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
+  ChordObject, chord_object);
 
 DEFINE_ARRANGER_OBJ_MOVE (
   ChordObject, chord_object);

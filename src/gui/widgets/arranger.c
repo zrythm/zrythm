@@ -1037,7 +1037,6 @@ create_item (ArrangerWidget * self,
           timeline_arranger_widget_create_ap (
             timeline,
             at,
-            track,
             &pos,
             start_y);
         }

@@ -356,13 +356,8 @@ Region *
 region_find_by_name (
   const char * name);
 
-/**
- * Generate a RegionWidget for the Region and all
- * its counterparts.
- */
-void
-region_gen_widget (
-  Region * region);
+ARRANGER_OBJ_DECLARE_GEN_WIDGET (
+  Region, region);
 
 /**
  * Returns the MidiNote matching the properties of
