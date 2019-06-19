@@ -55,6 +55,7 @@ _create_new (
   ap->at = at;
   position_set_to_pos (
     &ap->pos, pos);
+  ap->track_pos = at->track_pos;
 
   return ap;
 }
@@ -66,9 +67,6 @@ automation_point_init_loaded (
   /* TODO */
   /*ap->at =*/
     /*project_get_automation_track (ap->at_id);*/
-
-  ap->widget =
-    automation_point_widget_new (ap);
 }
 
 /**
@@ -303,6 +301,7 @@ DEFINE_ARRANGER_OBJ_SET_POS (
 void
 automation_point_free (AutomationPoint * ap)
 {
-  gtk_widget_destroy (GTK_WIDGET (ap->widget));
+  if (ap->widget)
+    gtk_widget_destroy (GTK_WIDGET (ap->widget));
   free (ap);
 }

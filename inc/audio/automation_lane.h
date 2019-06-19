@@ -38,19 +38,26 @@ typedef struct AutomationLane
   /**
    * Index in automation tracklist array.
    */
-  int                   index;
+  int               index;
   /**
    * The automation track this automation lane is for.
    */
-  AutomationTrack *       at; ///< cache
+  AutomationTrack * at; ///< cache
+
+  /**
+   * Index of the associated AutomationTrack
+   * in the AutomationTracklist's
+   * AutomationTrack array.
+   */
+  int               at_index;
 
   /** Whether visible or not. */
-  int                     visible;
+  int               visible;
 
   /**
    * Position of multipane handle.
    */
-  int                     handle_pos;
+  int               handle_pos;
 
   /** Widget. */
   AutomationLaneWidget *  widget;

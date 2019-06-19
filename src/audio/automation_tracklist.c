@@ -121,6 +121,8 @@ automation_tracklist_init (
 {
   self->track = track;
 
+  g_message ("initing automation tracklist...");
+
   /* add all automation tracks */
   automation_tracklist_update (self);
 
@@ -133,6 +135,11 @@ automation_tracklist_init (
     automation_lane_new (fader_at);
   automation_tracklist_add_al (
     self, fader_al);
+
+  g_message ("num automation tracks of %p (track %p) %d",
+             self,
+             track,
+             self->num_ats);
 }
 
 void
@@ -208,6 +215,7 @@ automation_tracklist_update (
       Automatable * a = channel->automatables[i];
       AutomationTrack * at =
         automatable_get_automation_track (a);
+      g_message ("at %p", at);
       if (!at)
         {
           at = automation_track_new (a);
@@ -237,6 +245,28 @@ automation_tracklist_update (
                 }
             }
         }
+    }
+}
+
+/**
+ * Updates the Track position of the Automatable's
+ * and AutomationTrack's.
+ *
+ * @param track The Track to update to.
+ */
+void
+automation_tracklist_update_track_pos (
+  AutomationTracklist * self,
+  Track *               track)
+{
+  int i;
+  for (i = 0; i < self->num_ats; i++)
+    {
+      self->ats[i]->track = track;
+      self->ats[i]->track_pos = track->pos;
+      self->ats[i]->automatable->track = track;
+      self->ats[i]->automatable->track_pos =
+        track->pos;
     }
 }
 

@@ -531,6 +531,8 @@ track_set_pos (
     {
       track->lanes[i]->track_pos = pos;
     }
+  automation_tracklist_update_track_pos (
+    &track->automation_tracklist, track);
 }
 
 /**

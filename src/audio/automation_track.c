@@ -55,10 +55,15 @@ automation_track_init_loaded (
 AutomationTrack *
 automation_track_new (Automatable *   a)
 {
+  g_warn_if_fail (a->track && a->track_pos > -1);
+
   AutomationTrack * at =
     calloc (1, sizeof (AutomationTrack));
 
   at->track = a->track;
+  at->track_pos = a->track_pos;
+  g_message ("new automation track for %s (pos %d)",
+             a->track->name, a->track_pos);
   at->automatable = a;
 
   return at;

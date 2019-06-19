@@ -144,12 +144,13 @@ AutomationPointWidget *
 automation_point_widget_new (
   AutomationPoint * ap)
 {
-  g_message ("Creating automation_point widget...");
   AutomationPointWidget * self =
     g_object_new (
       AUTOMATION_POINT_WIDGET_TYPE,
       "visible", 1,
       NULL);
+  g_message ("Creating automation_point widget... %p",
+             self);
 
   self->automation_point = ap;
 
@@ -202,4 +203,6 @@ automation_point_widget_init (
     GTK_WIDGET (self->tooltip_label));
   gtk_window_set_position (
     self->tooltip_win, GTK_WIN_POS_MOUSE);
+
+  g_object_ref (self);
 }

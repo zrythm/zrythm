@@ -42,14 +42,15 @@ typedef struct AutomationTrack
   /**
    * The automatable this automation track is for.
    */
-  Automatable *             automatable; ///< cache
+  Automatable *       automatable; ///< cache
 
   /**
    * Owner track.
    *
    * For convenience only.
    */
-  Track *                   track;
+  Track *             track;
+  int                 track_pos;
 
   /**
    * The automation points.

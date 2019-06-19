@@ -64,7 +64,6 @@ typedef struct AutomationTracklist
    * generated and then updated with automation
    * points/curves.
    */
-  //int               at_ids[4000];
   AutomationTrack * ats[4000];
   int               num_ats;
 
@@ -79,7 +78,6 @@ typedef struct AutomationTracklist
    * They must be associated with an automation
    * track.
    */
-  //int               al_ids[400];
   AutomationLane *  als[400];
   int               num_als;
 
@@ -158,6 +156,16 @@ automation_tracklist_get_visible_tracks (
   AutomationTrack **    visible_tracks,
   int *                 num_visible);
 
+/**
+ * Updates the Track position of the Automatable's
+ * and AutomationTrack's.
+ *
+ * @param track The Track to update to.
+ */
+void
+automation_tracklist_update_track_pos (
+  AutomationTracklist * self,
+  Track *               track);
 
 /**
  * Updates the automation tracks. (adds missing)

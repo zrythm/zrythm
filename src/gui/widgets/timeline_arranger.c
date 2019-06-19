@@ -2324,40 +2324,53 @@ add_children_from_channel_track (
   if (!((Track *)ct)->bot_paned_visible)
     return;
 
+  int i,j,k;
+
   AutomationTracklist * atl =
     &ct->automation_tracklist;
   AutomationLane * al;
-  for (int i = 0;
-       i < atl->num_als; i++)
+  for (i = 0; i < atl->num_als; i++)
     {
       al = atl->als[i];
       if (al->visible)
         {
-          for (int j = 0;
-               j < al->at->num_aps;
-               j++)
+          for (j = 0; j < al->at->num_aps; j++)
             {
               AutomationPoint * ap =
                 al->at->aps[j];
-              if (ap->widget)
+              g_message ("ap %p", ap);
+
+              for (k = 0; k < 2; k++)
                 {
+                  if (k == 0)
+                    ap = automation_point_get_main_automation_point (ap);
+                  else if (k == 1)
+                    ap = automation_point_get_main_trans_automation_point (ap);
+
+              g_message ("ap inside %p", ap);
+
+                  if (!GTK_IS_WIDGET (ap->widget))
+                    ap->widget =
+                      automation_point_widget_new (ap);
+                  g_message ("addding %p, k = %d",
+                             ap->widget, k);
+
                   gtk_overlay_add_overlay (
                     GTK_OVERLAY (MW_TIMELINE),
                     GTK_WIDGET (ap->widget));
                 }
             }
-          for (int j = 0;
-               j < al->at->num_acs;
-               j++)
+          for (j = 0; j < al->at->num_acs; j++)
             {
               AutomationCurve * ac =
                 al->at->acs[j];
-              if (ac->widget)
-                {
-                  gtk_overlay_add_overlay (
-                    GTK_OVERLAY (MW_TIMELINE),
-                    GTK_WIDGET (ac->widget));
-                }
+              if (!GTK_IS_WIDGET (ac->widget))
+                ac->widget =
+                  automation_curve_widget_new (ac);
+
+              gtk_overlay_add_overlay (
+                GTK_OVERLAY (MW_TIMELINE),
+                GTK_WIDGET (ac->widget));
             }
         }
     }
