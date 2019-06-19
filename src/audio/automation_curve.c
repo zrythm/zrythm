@@ -43,8 +43,6 @@ automation_curve_init_loaded (
   /*TODO */
     /*project_get_automation_track (ac->at_id);*/
 
-  ac->widget =
-    automation_curve_widget_new (ac);
 }
 
 static AutomationCurve *
@@ -69,7 +67,7 @@ automation_curve_new (AutomationTrack *   at,
 {
   AutomationCurve * ac = _create_new (at, pos);
 
-  ac->curviness = 2.f;
+  ac->curviness = 1.f;
   switch (ac->at->automatable->type)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:

@@ -2338,7 +2338,6 @@ add_children_from_channel_track (
             {
               AutomationPoint * ap =
                 al->at->aps[j];
-              g_message ("ap %p", ap);
 
               for (k = 0; k < 2; k++)
                 {
@@ -2347,13 +2346,9 @@ add_children_from_channel_track (
                   else if (k == 1)
                     ap = automation_point_get_main_trans_automation_point (ap);
 
-              g_message ("ap inside %p", ap);
-
                   if (!GTK_IS_WIDGET (ap->widget))
                     ap->widget =
                       automation_point_widget_new (ap);
-                  g_message ("addding %p, k = %d",
-                             ap->widget, k);
 
                   gtk_overlay_add_overlay (
                     GTK_OVERLAY (MW_TIMELINE),

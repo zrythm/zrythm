@@ -149,8 +149,8 @@ automation_point_widget_new (
       AUTOMATION_POINT_WIDGET_TYPE,
       "visible", 1,
       NULL);
-  g_message ("Creating automation_point widget... %p",
-             self);
+  /*g_message ("Creating automation_point widget... %p",*/
+             /*self);*/
 
   self->automation_point = ap;
 

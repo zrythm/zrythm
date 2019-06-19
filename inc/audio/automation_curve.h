@@ -23,8 +23,9 @@
 #include "audio/position.h"
 
 #define AP_MAX_CURVINESS 6.f
-#define AP_MIN_CURVINESS \
-  (1.f / AP_MAX_CURVINESS)
+/*#define AP_MIN_CURVINESS \
+  //(1.f / AP_MAX_CURVINESS)*/
+#define AP_MIN_CURVINESS 0.01f
 #define AP_CURVINESS_RANGE \
   (AP_MAX_CURVINESS - AP_MIN_CURVINESS)
 #define AP_MID_CURVINESS 1.f
