@@ -780,7 +780,6 @@ on_key_release_action (
 	GdkEventKey *event,
 	ArrangerWidget * self)
 {
-  g_message ("release");
   GET_PRIVATE;
   GET_ARRANGER_ALIASES (self);
   ar_prv->key_is_pressed = 0;
@@ -839,7 +838,6 @@ on_key_action (
   GdkEventKey *event,
   ArrangerWidget * self)
 {
-  g_message ("key press");
   GET_PRIVATE;
   GET_ARRANGER_ALIASES(self);
 
@@ -979,8 +977,6 @@ multipress_pressed (
 
   /* set number of presses */
   ar_prv->n_press = n_press;
-
-  g_message ("MULTIPRESS N PRESS %d", n_press);
 
   /* set modifier button states */
   UI_GET_STATE_MASK (gesture);
@@ -1678,7 +1674,6 @@ drag_end (GtkGestureDrag *gesture,
                gdouble         offset_y,
                gpointer        user_data)
 {
-  g_message ("arranger drag end");
   ArrangerWidget * self =
     (ArrangerWidget *) user_data;
   GET_PRIVATE;

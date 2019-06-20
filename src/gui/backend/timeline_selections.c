@@ -602,8 +602,6 @@ timeline_selections_clear (
     MARKER, Marker, marker);
 
 #undef TL_REMOVE_OBJS
-
-  g_message ("cleared timeline selections");
 }
 
 /**

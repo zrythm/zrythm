@@ -472,6 +472,7 @@ automatable_set_val_from_normalized (
             }
           ctrl->plugin->
             ports[ctrl->index].control = real_val;
+          a->port->base_value = real_val;
         }
       break;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:

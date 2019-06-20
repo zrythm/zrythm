@@ -192,6 +192,23 @@ typedef struct Port
   /** used when loading projects FIXME needed? */
   int                 initialized;
 
+  /**
+   * For control ports, when a modulator is
+   * attached to the port the previous value will
+   * be saved here.
+   *
+   * Automation in AutomationTrack's will overwrite
+   * this value.
+   */
+  float               base_value;
+
+  /**
+   * When a modulator is attached to a control port
+   * this will be set to 1, and set back to 0 when
+   * all modulators are disconnected.
+   */
+  //int                 has_modulators;
+
   /** Port undergoing deletion. */
   int                 deleting;
 } Port;

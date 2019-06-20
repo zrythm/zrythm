@@ -350,6 +350,19 @@ port_connect (Port * src, Port * dest)
     &src->identifier,
     &dest->src_ids[dest->num_srcs]);
   dest->num_srcs++;
+
+  /* set base value if cv -> control */
+  if (src->identifier.type == TYPE_CV &&
+      dest->identifier.type == TYPE_CONTROL)
+    {
+      if (dest->internal_type == INTERNAL_LV2_PORT)
+        {
+          dest->base_value =
+            dest->lv2_port->control;
+        }
+      /*dest->has_modulators = 1;*/
+    }
+
   g_message ("Connected port (%s) to (%s)",
              src->identifier.label,
              dest->identifier.label);
@@ -541,25 +554,54 @@ port_sum_signal_from_inputs (Port * port)
         }
       break;
     case TYPE_CONTROL:
-      for (k = 0; k < port->num_srcs; k++)
-        {
-          src_port = port->srcs[k];
+      {
+        float maxf, minf, depth_range, val_to_use;
+        /* whether this is the first CV processed
+         * on this control port */
+        int first_cv = 1;
+        for (k = 0; k < port->num_srcs; k++)
+          {
+            src_port = port->srcs[k];
 
-          if (src_port->identifier.type ==
-                TYPE_CV)
-            {
-              /* TODO normalize CV */
-              float maxf =
-                port->lv2_port->lv2_control->maxf;
-              /*float minf =*/
-                /*port->lv2_port->lv2_control->minf;*/
-              float deff =
-                port->lv2_port->lv2_control->deff;
-              port->lv2_port->control =
-                deff + (maxf - deff) *
-                  src_port->buf[0];
-            }
-        }
+            if (src_port->identifier.type ==
+                  TYPE_CV)
+              {
+                maxf =
+                  port->lv2_port->lv2_control->maxf;
+                minf =
+                  port->lv2_port->lv2_control->minf;
+                /*float deff =*/
+                  /*port->lv2_port->lv2_control->deff;*/
+                /*port->lv2_port->control =*/
+                  /*deff + (maxf - deff) **/
+                    /*src_port->buf[0];*/
+                depth_range =
+                  (maxf - minf) / 2.f;
+
+                /* figure out whether to use base
+                 * value or the current value */
+                if (first_cv)
+                  {
+                    val_to_use = port->base_value;
+                    first_cv = 0;
+                  }
+                else
+                  val_to_use =
+                    port->lv2_port->control;
+
+                /* TODO replace 1.f with modulator
+                 * depth */
+                port->lv2_port->control =
+                  CLAMP (
+                    val_to_use +
+                      depth_range * src_port->buf[0] *
+                      src_port->multipliers[
+                        port_get_dest_index (
+                          src_port, port)],
+                    minf, maxf);
+              }
+          }
+      }
       break;
     default:
       break;
