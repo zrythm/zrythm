@@ -279,6 +279,28 @@ transport_move_playhead (
   int        panic);
 
 /**
+ * Enables or disables loop.
+ */
+void
+transport_set_loop (
+  Transport * self,
+  int         enabled);
+
+/**
+ * Moves the playhead to the prev Marker.
+ */
+void
+transport_goto_prev_marker (
+  Transport * self);
+
+/**
+ * Moves the playhead to the next Marker.
+ */
+void
+transport_goto_next_marker (
+  Transport * self);
+
+/**
  * Updates the frames in all transport positions
  */
 void

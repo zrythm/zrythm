@@ -318,7 +318,25 @@ activate_snap_events (GSimpleAction *action,
                   gpointer       user_data);
 
 void
+activate_goto_prev_marker (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data);
+
+void
+activate_goto_next_marker (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data);
+
+void
 change_state_dim_output (
+  GSimpleAction * action,
+  GVariant *      value,
+  gpointer        user_data);
+
+void
+change_state_loop (
   GSimpleAction * action,
   GVariant *      value,
   gpointer        user_data);
