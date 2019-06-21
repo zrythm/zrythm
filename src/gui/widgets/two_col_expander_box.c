@@ -20,9 +20,10 @@
 #include "gui/widgets/two_col_expander_box.h"
 #include "utils/gtk.h"
 
-G_DEFINE_TYPE_WITH_PRIVATE (TwoColExpanderBoxWidget,
-               two_col_expander_box_widget,
-               EXPANDER_BOX_WIDGET_TYPE)
+G_DEFINE_TYPE_WITH_PRIVATE (
+  TwoColExpanderBoxWidget,
+  two_col_expander_box_widget,
+  EXPANDER_BOX_WIDGET_TYPE)
 
 /**
  * Gets the private.

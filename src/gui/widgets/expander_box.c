@@ -68,6 +68,52 @@ expander_box_widget_set_label (
     prv->btn_label, label);
 }
 
+void
+expander_box_widget_set_orientation (
+  ExpanderBoxWidget * self,
+  GtkOrientation      orientation)
+{
+  ExpanderBoxWidgetPrivate * prv =
+    expander_box_widget_get_private (self);
+
+  /* set the main orientation */
+  prv->orientation = orientation;
+  gtk_orientable_set_orientation (
+    GTK_ORIENTABLE (self),
+    orientation);
+
+  /* set the orientation of the box inside the
+   * expander button */
+  gtk_orientable_set_orientation (
+    GTK_ORIENTABLE (prv->btn_box),
+    orientation == GTK_ORIENTATION_HORIZONTAL ?
+    GTK_ORIENTATION_VERTICAL :
+    GTK_ORIENTATION_HORIZONTAL);
+
+  /* set the label angle */
+  if (orientation == GTK_ORIENTATION_HORIZONTAL)
+    gtk_label_set_angle (
+      prv->btn_label, 90.0);
+  else
+    gtk_label_set_angle (
+      prv->btn_label, 0.0);
+
+  if (orientation == GTK_ORIENTATION_HORIZONTAL)
+    {
+      gtk_widget_set_hexpand (
+        GTK_WIDGET (prv->btn_label), 0);
+      gtk_widget_set_vexpand (
+        GTK_WIDGET (prv->btn_label), 1);
+    }
+  else
+    {
+      gtk_widget_set_hexpand (
+        GTK_WIDGET (prv->btn_label), 1);
+      gtk_widget_set_vexpand (
+        GTK_WIDGET (prv->btn_label), 0);
+    }
+}
+
 /**
  * Sets the icon name to show.
  */
@@ -117,8 +163,6 @@ expander_box_widget_init (ExpanderBoxWidget * self)
 
   prv->btn_label =
     GTK_LABEL (gtk_label_new ("Label"));
-  gtk_widget_set_hexpand (
-    GTK_WIDGET (prv->btn_label), 1);
   gtk_widget_set_halign (
     GTK_WIDGET (prv->btn_label),
     GTK_ALIGN_START);

@@ -84,4 +84,7 @@ instrument_track_info_expander_widget_init (
     Z_EXPANDER_BOX_WIDGET (self),
     ICON_TYPE_ZRYTHM,
     "instrument.svg");
+  expander_box_widget_set_orientation (
+    Z_EXPANDER_BOX_WIDGET (self),
+    GTK_ORIENTATION_VERTICAL);
 }

@@ -109,35 +109,9 @@ expander_box_widget_add_content (
     content);
 }
 
-static inline void
+void
 expander_box_widget_set_orientation (
   ExpanderBoxWidget * self,
-  GtkOrientation      orientation)
-{
-  ExpanderBoxWidgetPrivate * prv =
-    expander_box_widget_get_private (self);
-
-  /* set the main orientation */
-  prv->orientation = orientation;
-  gtk_orientable_set_orientation (
-    GTK_ORIENTABLE (self),
-    orientation);
-
-  /* set the orientation of the box inside the
-   * expander button */
-  gtk_orientable_set_orientation (
-    GTK_ORIENTABLE (prv->btn_box),
-    orientation == GTK_ORIENTATION_HORIZONTAL ?
-    GTK_ORIENTATION_VERTICAL :
-    GTK_ORIENTATION_HORIZONTAL);
-
-  /* set the label angle */
-  if (orientation == GTK_ORIENTATION_HORIZONTAL)
-    gtk_label_set_angle (
-      prv->btn_label, 90.0);
-  else
-    gtk_label_set_angle (
-      prv->btn_label, 0.0);
-}
+  GtkOrientation      orientation);
 
 #endif
