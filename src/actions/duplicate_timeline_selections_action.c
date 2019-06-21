@@ -18,10 +18,18 @@
  */
 
 #include "actions/duplicate_timeline_selections_action.h"
+#include "audio/chord_track.h"
+#include "audio/chord_object.h"
+#include "audio/marker.h"
+#include "audio/marker_track.h"
+#include "audio/scale_object.h"
 #include "audio/track.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/chord_object.h"
+#include "gui/widgets/marker.h"
 #include "gui/widgets/region.h"
+#include "gui/widgets/scale_object.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "project.h"
 #include "utils/flags.h"
@@ -52,36 +60,99 @@ duplicate_timeline_selections_action_new (
   return ua;
 }
 
+#define DO_OBJECT( \
+  caps,cc,sc,add_to_track_code,remember_code) \
+  cc * sc; \
+	for (i = 0; i < self->ts->num_##sc##s; i++) \
+    { \
+      /* clone the clone */ \
+      sc = \
+        sc##_clone ( \
+          self->ts->sc##s[i], \
+          caps##_CLONE_COPY_MAIN); \
+      /* add to track */ \
+      add_to_track_code; \
+      /* shift */ \
+      sc##_shift_by_ticks ( \
+        sc, self->ticks); \
+      /* shift the clone too so we can find it
+       * when undoing */ \
+      sc##_shift_by_ticks ( \
+        self->ts->sc##s[i], self->ticks); \
+      /* select it */ \
+      sc##_widget_select ( \
+        sc->widget, F_SELECT); \
+      remember_code; \
+    }
+
+#define UNDO_OBJECT(cc,sc,remove_code) \
+  cc * sc; \
+	for (i = 0; i < self->ts->num_##sc##s; i++) \
+    { \
+      /* find the actual object */ \
+      sc = \
+        sc##_find ( \
+          self->ts->sc##s[i]); \
+      /* unselect it */ \
+      sc##_widget_select ( \
+        sc->widget, F_NO_SELECT); \
+      /* remove it */ \
+      remove_code; \
+      /* unshift the clone */ \
+      sc##_shift_by_ticks ( \
+        self->ts->sc##s[i], - self->ticks); \
+    }
+
 int
 duplicate_timeline_selections_action_do (
   DuplicateTimelineSelectionsAction * self)
 {
-  Region * region;
-	for (int i = 0; i < self->ts->num_regions; i++)
-    {
-      /* clone the clone */
-      region =
-        region_clone (
-          self->ts->regions[i],
-          REGION_CLONE_COPY_MAIN);
+  int i;
 
-      /* add and shift it */
-      track_add_region (
-        TRACKLIST->tracks[region->track_pos],
-        region, 0, F_GEN_NAME, F_GEN_WIDGET);
-      region_shift (
-        region, self->ticks, self->delta);
+  DO_OBJECT (
+    REGION, Region, region,
+    /* add */
+    track_add_region (
+      TRACKLIST->tracks[region->track_pos],
+      region, 0, F_GEN_NAME, F_GEN_WIDGET),
+    /* remember the new name */
+    g_free (self->ts->regions[i]->name);
+    self->ts->regions[i]->name =
+      g_strdup (region->name));
 
-      /* select it */
-      region_widget_select (region->widget,
-                            F_SELECT);
+  DO_OBJECT (
+    CHORD_OBJECT, ChordObject, chord_object,
+    /* add */
+    chord_track_add_chord (
+      P_CHORD_TRACK,
+      chord_object, F_GEN_WIDGET),);
 
-      /* remember its name */
-      g_free (self->ts->regions[i]->name);
-      self->ts->regions[i]->name =
-        g_strdup (region->name);
+  DO_OBJECT (
+    SCALE_OBJECT, ScaleObject, scale_object,
+    /* add */
+    chord_track_add_scale (
+      P_CHORD_TRACK,
+      scale_object, F_GEN_WIDGET),);
 
-    }
+  DO_OBJECT (
+    MARKER, Marker, marker,
+    /* add */
+    marker_track_add_marker (
+      P_MARKER_TRACK,
+      marker, F_GEN_WIDGET),
+    /* remember the new name */
+    g_free (self->ts->markers[i]->name);
+    self->ts->markers[i]->name =
+      g_strdup (marker->name));
+
+  /*DO_OBJECT (*/
+    /*AUTOMATION_POINT, AutomationPoint,*/
+    /*automation_point,*/
+    /*[> add <]*/
+    /*automation_track_add_automation_point (*/
+      /*TRACKLIST,*/
+      /*scale_object, F_GEN_WIDGET),);*/
+
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
 
@@ -92,19 +163,35 @@ int
 duplicate_timeline_selections_action_undo (
   DuplicateTimelineSelectionsAction * self)
 {
-  Region * region;
-  for (int i = 0; i < self->ts->num_regions; i++)
-    {
-      /* find the actual region */
-      region =
-        region_find_by_name (
-          self->ts->regions[i]->name);
+  int i;
 
-      /* remove it */
-      track_remove_region (
-        region->lane->track,
-        region, F_FREE);
-    }
+  UNDO_OBJECT (
+    Region, region,
+    /* remove */
+    track_remove_region (
+      region->lane->track,
+      region, F_FREE));
+  UNDO_OBJECT (
+    ChordObject, chord_object,
+    /* remove */
+    chord_track_remove_chord (
+      P_CHORD_TRACK,
+      chord_object, F_FREE));
+  UNDO_OBJECT (
+    ScaleObject, scale_object,
+    /* remove */
+    chord_track_remove_scale (
+      P_CHORD_TRACK,
+      scale_object, F_FREE));
+  UNDO_OBJECT (
+    Marker, marker,
+    /* remove */
+      g_message ("removing");
+      position_print_simple (&marker->pos);
+    marker_track_remove_marker (
+      P_MARKER_TRACK,
+      marker, F_FREE));
+
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
 

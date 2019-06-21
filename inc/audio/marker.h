@@ -147,7 +147,7 @@ DECLARE_IS_ARRANGER_OBJ_SELECTED (
 DECLARE_ARRANGER_OBJ_MOVE (
   Marker, marker);
 
-DECLARE_ARRANGER_OBJ_SHIFT_SIMPLE (Marker, marker);
+ARRANGER_OBJ_DECLARE_SHIFT_TICKS (Marker, marker);
 
 /**
  * Sets the Track of the Marker.

@@ -437,15 +437,10 @@ region_get_num_loops (
   Region * region,
   int      count_incomplete_loops);
 
-/**
- * Shifts the Region by given number of ticks on x,
- * and delta number of visible tracks on y.
- */
-void
-region_shift (
-  Region * self,
-  long ticks,
-  int  delta);
+/* TODO shift by delta number of tracks */
+
+ARRANGER_OBJ_DECLARE_SHIFT_TICKS (
+  Region, region);
 
 /**
  * Resizes the region on the left side or right side

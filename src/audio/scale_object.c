@@ -27,7 +27,7 @@
 #include "utils/flags.h"
 
 #define SET_POS(_c,pos_name,_pos,_trans_only) \
-  POSITION_SET_ARRANGER_OBJ_POS ( \
+  ARRANGER_OBJ_SET_POS ( \
     scale_object, _c, pos_name, _pos, _trans_only)
 
 /**
@@ -161,7 +161,7 @@ scale_object_move (
   return moved;
 }
 
-DEFINE_ARRANGER_OBJ_SHIFT_SIMPLE (
+ARRANGER_OBJ_DEFINE_SHIFT_TICKS (
   ScaleObject, scale_object);
 
 /**

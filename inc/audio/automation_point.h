@@ -194,23 +194,16 @@ automation_point_get_track (
 ARRANGER_OBJ_DECLARE_GEN_WIDGET (
   AutomationPoint, automation_point);
 
-/**
- * Moves the AutomationPoint by the given amount of
- * ticks.
- *
- * @param use_cached_pos Add the ticks to the cached
- *   Position instead of its current Position.
- * @param trans_only Only move transients.
- * @return Whether moved or not.
- */
-int
-automation_point_move (
-  AutomationPoint * automation_point,
-  long     ticks,
-  int      use_cached_pos,
-  int      trans_only);
+ARRANGER_OBJ_DECLARE_SHIFT_TICKS (
+  AutomationPoint, automation_point);
+
+DECLARE_ARRANGER_OBJ_MOVE (
+  AutomationPoint, automation_point);
 
 DECLARE_ARRANGER_OBJ_SET_POS (
+  AutomationPoint, automation_point);
+
+DECLARE_IS_ARRANGER_OBJ_SELECTED (
   AutomationPoint, automation_point);
 
 /**

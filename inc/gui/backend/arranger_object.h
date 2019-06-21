@@ -147,6 +147,36 @@
              F_NO_TRANS_ONLY); \
   }
 
+/**
+ * Sets the Position pos to the earliest or latest
+ * object.
+ *
+ * @param _array The array of objects to check.
+ * @param cc Camel case.
+ * @param lc Lower case.
+ * @param pos_name Variable name of position to check
+ * @param bef_or_aft Before or after
+ * @param widg Widget to set.
+ */
+#define ARRANGER_OBJ_SET_GIVEN_POS_TO(_array,cc,lc,pos_name,transient,bef_or_aft,widg) \
+  cc * lc; \
+  for (i = 0; i < _array->num_##lc##s; i++) \
+    { \
+      if (transient) \
+        lc = _array->lc##s[i]->obj_info.main_trans; \
+      else \
+        lc = _array->lc##s[i]->obj_info.main; \
+      g_warn_if_fail (lc); \
+      if (position_is_##bef_or_aft ( \
+            &lc->pos_name, pos)) \
+        { \
+          position_set_to_pos ( \
+            pos, &lc->pos_name); \
+          widget = GTK_WIDGET (lc->widget); \
+        } \
+    }
+
+
 #define DECLARE_ARRANGER_OBJ_MOVE(cc,sc) \
   /**
    * Moves the object by the given amount of
@@ -180,9 +210,9 @@
     return moved; \
   }
 
-#define DECLARE_ARRANGER_OBJ_SHIFT_SIMPLE(cc,sc) \
+#define ARRANGER_OBJ_DECLARE_SHIFT_TICKS(cc,sc) \
   void \
-  sc##_shift ( \
+  sc##_shift_by_ticks ( \
     cc * self, \
     long ticks)
 
@@ -190,9 +220,9 @@
  * Shifts an object with a single Position by ticks
  * only.
  */
-#define DEFINE_ARRANGER_OBJ_SHIFT_SIMPLE(cc,sc) \
+#define ARRANGER_OBJ_DEFINE_SHIFT_TICKS(cc,sc) \
   void \
-  sc##_shift ( \
+  sc##_shift_by_ticks ( \
     cc * self, \
     long ticks) \
   { \
@@ -203,6 +233,33 @@
           &tmp, &self->pos); \
         position_add_ticks (&tmp, ticks); \
         SET_POS (self, pos, (&tmp), F_NO_TRANS_ONLY); \
+      } \
+  }
+
+/**
+ * Shifts an object with a start and end Position
+ * by ticks.
+ */
+#define ARRANGER_OBJ_DEFINE_SHIFT_TICKS_W_END_POS( \
+  cc,sc) \
+  void \
+  sc##_shift_by_ticks ( \
+    cc * self, \
+    long ticks) \
+  { \
+    if (ticks) \
+      { \
+        Position tmp; \
+        position_set_to_pos ( \
+          &tmp, &self->start_pos); \
+        position_add_ticks (&tmp, ticks); \
+        SET_POS (self, start_pos, (&tmp), \
+                 F_NO_TRANS_ONLY); \
+        position_set_to_pos ( \
+          &tmp, &self->end_pos); \
+        position_add_ticks (&tmp, ticks); \
+        SET_POS (self, end_pos, (&tmp), \
+                 F_NO_TRANS_ONLY); \
       } \
   }
 
@@ -250,5 +307,55 @@
         c->widget = sc##_widget_new (c); \
       } \
   }
+
+/**
+ * Sets the Position by the name of pos_name in
+ * all of the object's linked objects (see
+ * ArrangerObjectInfo)
+ *
+ * It assumes that the object has members called
+ * *_get_main_trans_*, etc.
+ *
+ * @param sc snake_case of object's name (e.g.
+ *   region).
+ * @param _trans_only Only do transients.
+ */
+#define ARRANGER_OBJ_SET_POS( \
+  sc, obj, pos_name, pos, _trans_only) \
+  if (!_trans_only) \
+    { \
+      position_set_to_pos ( \
+        &sc##_get_main_##sc (obj)-> \
+        pos_name, pos); \
+    } \
+  position_set_to_pos ( \
+    &sc##_get_main_trans_##sc (obj)-> \
+    pos_name, pos)
+
+/**
+ * Sets the Position by the name of pos_name in
+ * all of the object's linked objects (see
+ * ArrangerObjectInfo)
+ *
+ * It assumes that the object has members called
+ * *_get_main_trans_*, etc.
+ *
+ * @param sc snake_case of object's name (e.g.
+ *   region).
+ * @param trans_only Only set transient positions.
+ */
+#define ARRANGER_OBJ_SET_POS_WITH_LANE( \
+  sc, obj, pos_name, pos, _trans_only) \
+  ARRANGER_OBJ_SET_POS ( \
+    sc, obj, pos_name, pos, _trans_only); \
+  position_set_to_pos ( \
+    &sc##_get_lane_trans_##sc (obj)-> \
+    pos_name, pos); \
+  if (!_trans_only) \
+    { \
+      position_set_to_pos ( \
+        &sc##_get_lane_##sc (obj)-> \
+        pos_name, pos); \
+    }
 
 #endif

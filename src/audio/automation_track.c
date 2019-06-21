@@ -25,6 +25,7 @@
 #include "audio/automation_point.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
+#include "gui/backend/events.h"
 #include "gui/widgets/automation_lane.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/center_dock.h"
@@ -423,6 +424,8 @@ automation_track_remove_ap (
 
   if (free)
     free_later (ap, automation_point_free);
+
+  EVENTS_PUSH (ET_AUTOMATION_POINT_REMOVED, at);
 }
 
 /**

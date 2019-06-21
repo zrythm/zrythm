@@ -27,7 +27,7 @@
 #include "utils/flags.h"
 
 #define SET_POS(_c,pos_name,_pos,_trans_only) \
-  POSITION_SET_ARRANGER_OBJ_POS ( \
+  ARRANGER_OBJ_SET_POS ( \
     chord_object, _c, pos_name, _pos, _trans_only)
 
 /**
@@ -148,7 +148,7 @@ ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
 DEFINE_ARRANGER_OBJ_MOVE (
   ChordObject, chord_object);
 
-DEFINE_ARRANGER_OBJ_SHIFT_SIMPLE (
+ARRANGER_OBJ_DEFINE_SHIFT_TICKS (
   ChordObject, chord_object);
 
 /**

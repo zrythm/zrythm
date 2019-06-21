@@ -47,9 +47,7 @@
       selections_name##_remove_##sc ( \
         selections, \
         main_##sc); \
-    } \
-  EVENTS_PUSH (ET_##caps##_CHANGED, \
-               main_##sc);
+    }
 
 #define DECLARE_ARRANGER_OBJECT_WIDGET_SELECT( \
   cc, sc) \

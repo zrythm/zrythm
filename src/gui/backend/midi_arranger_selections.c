@@ -77,7 +77,7 @@ midi_arranger_selections_get_start_pos (
 
   int i;
 
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     mas, MidiNote, midi_note, start_pos,
     transient, before, widget);
 
@@ -110,7 +110,7 @@ midi_arranger_selections_get_end_pos (
 
   int i;
 
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     mas, MidiNote, midi_note, start_pos,
     transient, after, widget);
 }
@@ -133,7 +133,7 @@ midi_arranger_selections_get_first_object (
     pos, TRANSPORT->total_bars);
   int i;
 
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     mas, MidiNote, midi_note, start_pos,
     transient, before, widget);
 
@@ -158,7 +158,7 @@ midi_arranger_selections_get_last_object (
     pos, TRANSPORT->total_bars);
   int i;
 
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     mas, MidiNote, midi_note, start_pos,
     transient, after, widget);
 

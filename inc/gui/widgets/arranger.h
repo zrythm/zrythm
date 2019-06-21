@@ -98,7 +98,7 @@ G_DECLARE_DERIVABLE_TYPE (ArrangerWidget,
   for (int i = 0; i < size; i++) \
     { \
       lc = array[i]; \
-      arranger_object_info_set_widget_visibility ( \
+      arranger_object_info_set_widget_visibility_and_state ( \
         &lc->obj_info, 1); \
     }
 
@@ -192,9 +192,19 @@ typedef struct
    * at the start of the drag. */
   Position             earliest_obj_start_pos;
 
+  /** Start Position of the earliest object
+   * currently. */
+  //Position             earliest_obj_pos;
+
   /** The absolute (not snapped) Position at the
    * start of a drag, translated from start_x. */
   Position             start_pos;
+
+  /** The widget first clicked on. */
+  //GtkWidget *          start_widget;
+
+  /** Type of the widget first clicked on. */
+  //GType                start_widget_type;
 
   /** The absolute (not snapped) current diff in
    * ticks from the curr_pos to the start_pos. */

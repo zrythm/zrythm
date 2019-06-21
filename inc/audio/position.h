@@ -76,56 +76,6 @@
 #define position_is_after_or_equal(_pos,_cmp) \
   (position_compare (_pos, _cmp) >= 0)
 
-/**
- * Sets the Position by the name of pos_name in
- * all of the object's linked objects (see
- * ArrangerObjectInfo)
- *
- * It assumes that the object has members called
- * *_get_main_trans_*, etc.
- *
- * @param sc snake_case of object's name (e.g.
- *   region).
- * @param _trans_only Only do transients.
- */
-#define POSITION_SET_ARRANGER_OBJ_POS( \
-  sc, obj, pos_name, pos, _trans_only) \
-  if (!_trans_only) \
-    { \
-      position_set_to_pos ( \
-        &sc##_get_main_##sc (obj)-> \
-        pos_name, pos); \
-    } \
-  position_set_to_pos ( \
-    &sc##_get_main_trans_##sc (obj)-> \
-    pos_name, pos)
-
-/**
- * Sets the Position by the name of pos_name in
- * all of the object's linked objects (see
- * ArrangerObjectInfo)
- *
- * It assumes that the object has members called
- * *_get_main_trans_*, etc.
- *
- * @param sc snake_case of object's name (e.g.
- *   region).
- * @param trans_only Only set transient positions.
- */
-#define POSITION_SET_ARRANGER_OBJ_POS_WITH_LANE( \
-  sc, obj, pos_name, pos, _trans_only) \
-  POSITION_SET_ARRANGER_OBJ_POS ( \
-    sc, obj, pos_name, pos, _trans_only); \
-  position_set_to_pos ( \
-    &sc##_get_lane_trans_##sc (obj)-> \
-    pos_name, pos); \
-  if (!_trans_only) \
-    { \
-      position_set_to_pos ( \
-        &sc##_get_lane_##sc (obj)-> \
-        pos_name, pos); \
-    }
-
 /** Start Position to be used in calculations. */
 #define DEFINE_START_POS \
   static const Position __start_pos = { \

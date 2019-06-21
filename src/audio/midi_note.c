@@ -42,7 +42,7 @@
 #include "utils/flags.h"
 
 #define SET_POS(r,pos_name,pos,trans_only) \
-  POSITION_SET_ARRANGER_OBJ_POS ( \
+  ARRANGER_OBJ_SET_POS ( \
     midi_note, r, pos_name, pos, trans_only)
 
 void

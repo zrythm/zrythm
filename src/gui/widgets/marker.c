@@ -120,16 +120,9 @@ on_press (
     }
 }
 
-void
-marker_widget_select (
-  MarkerWidget * self,
-  int            select)
-{
-  Marker * marker = self->marker;
-  ARRANGER_OBJECT_WIDGET_SELECT (
-    MARKER, Marker, marker,
-    timeline_selections, TL_SELECTIONS);
-}
+DEFINE_ARRANGER_OBJECT_WIDGET_SELECT (
+  MARKER, Marker, marker, timeline_selections,
+  TL_SELECTIONS);
 
 /**
  * Sets hover in CSS.

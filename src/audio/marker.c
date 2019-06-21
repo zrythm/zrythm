@@ -25,7 +25,7 @@
 #include "utils/string.h"
 
 #define SET_POS(_c,pos_name,_pos,_trans_only) \
-  POSITION_SET_ARRANGER_OBJ_POS ( \
+  ARRANGER_OBJ_SET_POS ( \
     marker, _c, pos_name, _pos, _trans_only)
 
 void
@@ -133,7 +133,7 @@ marker_clone (
   return marker;
 }
 
-DEFINE_ARRANGER_OBJ_SHIFT_SIMPLE (Marker, marker);
+ARRANGER_OBJ_DEFINE_SHIFT_TICKS (Marker, marker);
 
 /**
  * Finds the chord in the project corresponding to the
@@ -160,5 +160,18 @@ marker_find (
 void
 marker_free (Marker * self)
 {
+  if (self->obj_info.counterpart ==
+        AOI_COUNTERPART_MAIN)
+    {
+      marker_free (
+        self->obj_info.main_trans);
+      marker_free (
+        self->obj_info.lane);
+      marker_free (
+        self->obj_info.lane_trans);
+    }
+
+  g_free (self->name);
+
   free (self);
 }

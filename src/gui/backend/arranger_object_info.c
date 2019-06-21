@@ -102,6 +102,7 @@ arranger_object_info_should_be_visible (
         Z_ARRANGER_WIDGET (MIDI_ARRANGER);
       break;
     }
+  g_warn_if_fail (arranger);
 
   ARRANGER_WIDGET_GET_PRIVATE (arranger);
 
@@ -188,55 +189,72 @@ arranger_object_info_should_be_visible (
 }
 
 /**
- * Sets the widget visibility to this counterparty
- * only, or to all counterparties if all is 1.
+ * Sets the widget visibility and selection state
+ * to this counterpart
+ * only, or to all counterparts if all is 1.
  */
 void
-arranger_object_info_set_widget_visibility (
+arranger_object_info_set_widget_visibility_and_state (
   ArrangerObjectInfo * self,
   int                  all)
 {
-  Region * r = NULL;
-  ChordObject * c = NULL;
-  ScaleObject * s = NULL;
-  Marker * m = NULL;
-  MidiNote * mn = NULL;
-  AutomationPoint * ap = NULL;
+  Region * region = NULL;
+  ChordObject * chord_object = NULL;
+  ScaleObject * scale_object = NULL;
+  Marker * marker = NULL;
+  MidiNote * midi_note = NULL;
+  AutomationPoint * automation_point = NULL;
 
   /* get the objects */
   switch (self->type)
     {
     case AOI_TYPE_REGION:
-      r =
+      region =
         (Region *)
         arranger_object_info_get_object (self);
       break;
     case AOI_TYPE_CHORD_OBJECT:
-      c =
+      chord_object =
         (ChordObject *)
         arranger_object_info_get_object (self);
       break;
     case AOI_TYPE_SCALE_OBJECT:
-      s =
+      scale_object =
         (ScaleObject *)
         arranger_object_info_get_object (self);
       break;
     case AOI_TYPE_MARKER:
-      m =
+      marker =
         (Marker *)
         arranger_object_info_get_object (self);
       break;
     case AOI_TYPE_MIDI_NOTE:
-      mn =
+      midi_note =
         (MidiNote *)
         arranger_object_info_get_object (self);
       break;
     case AOI_TYPE_AUTOMATION_POINT:
-      ap =
+      automation_point =
         (AutomationPoint *)
         arranger_object_info_get_object (self);
       break;
     }
+
+#define SET_SELECTION_STATE_FLAGS(lc) \
+  if (lc##_is_selected (lc)) \
+    { \
+      gtk_widget_set_state_flags ( \
+        GTK_WIDGET (lc->widget), \
+        GTK_STATE_FLAG_SELECTED, 0); \
+    } \
+  else \
+    { \
+      gtk_widget_unset_state_flags ( \
+        GTK_WIDGET (lc->widget), \
+        GTK_STATE_FLAG_SELECTED); \
+    } \
+  gtk_widget_queue_draw ( \
+    GTK_WIDGET (lc->widget))
 
 /**
  * Sets a counterpart of the given object visible
@@ -254,14 +272,16 @@ arranger_object_info_set_widget_visibility (
   gtk_widget_set_visible ( \
     GTK_WIDGET (lc->widget), \
     arranger_object_info_should_be_visible ( \
-      &lc->obj_info))
+      &lc->obj_info)); \
+  SET_SELECTION_STATE_FLAGS (lc)
 
 /** Sets this object counterpart visible or not. */
 #define SET_THIS_VISIBLE(lc) \
   gtk_widget_set_visible ( \
     GTK_WIDGET (lc->widget), \
     arranger_object_info_should_be_visible ( \
-      self));
+      self)); \
+  SET_SELECTION_STATE_FLAGS (lc)
 
 /** Sets all object counterparts visible or not. */
 #define SET_ALL_VISIBLE_WITH_LANE(cc,lc) \
@@ -277,61 +297,62 @@ arranger_object_info_set_widget_visibility (
 
   if (all)
     {
-      if (r)
+      if (region)
         {
-          SET_ALL_VISIBLE_WITH_LANE (Region, r);
+          SET_ALL_VISIBLE_WITH_LANE (
+            Region, region);
         }
-      if (c)
+      if (chord_object)
         {
           SET_ALL_VISIBLE_WITHOUT_LANE (
-            ChordObject, c);
+            ChordObject, chord_object);
         }
-      if (s)
+      if (scale_object)
         {
           SET_ALL_VISIBLE_WITHOUT_LANE (
-            ScaleObject, s);
+            ScaleObject, scale_object);
         }
-      if (m)
+      if (marker)
         {
           SET_ALL_VISIBLE_WITHOUT_LANE (
-            Marker, m);
+            Marker, marker);
         }
-      if (mn)
+      if (midi_note)
         {
           SET_ALL_VISIBLE_WITHOUT_LANE (
-            MidiNote, mn);
+            MidiNote, midi_note);
         }
-      if (ap)
+      if (automation_point)
         {
           SET_ALL_VISIBLE_WITHOUT_LANE (
-            AutomationPoint, ap);
+            AutomationPoint, automation_point);
         }
     }
   else
     {
-      if (r)
+      if (region)
         {
-          SET_THIS_VISIBLE (r);
+          SET_THIS_VISIBLE (region);
         }
-      if (c)
+      if (chord_object)
         {
-          SET_THIS_VISIBLE (c);
+          SET_THIS_VISIBLE (chord_object);
         }
-      if (s)
+      if (scale_object)
         {
-          SET_THIS_VISIBLE (s);
+          SET_THIS_VISIBLE (scale_object);
         }
-      if (m)
+      if (marker)
         {
-          SET_THIS_VISIBLE (m);
+          SET_THIS_VISIBLE (marker);
         }
-      if (mn)
+      if (midi_note)
         {
-          SET_THIS_VISIBLE (mn);
+          SET_THIS_VISIBLE (midi_note);
         }
-      if (ap)
+      if (automation_point)
         {
-          SET_THIS_VISIBLE (ap);
+          SET_THIS_VISIBLE (automation_point);
         }
     }
 

@@ -46,7 +46,7 @@
 DEFINE_START_POS
 
 #define SET_POS(r,pos_name,pos,trans_only) \
-  POSITION_SET_ARRANGER_OBJ_POS_WITH_LANE ( \
+  ARRANGER_OBJ_SET_POS_WITH_LANE ( \
     region, r, pos_name, pos, trans_only)
 
 /**
@@ -587,35 +587,8 @@ region_get_num_loops (
   return i;
 }
 
-/**
- * Shifts the Region by given number of ticks on x,
- * and delta number of visible tracks on y.
- */
-void
-region_shift (
-  Region * self,
-  long ticks,
-  int  delta)
-{
-  if (ticks)
-    {
-      Position tmp;
-      position_set_to_pos (
-        &tmp, &self->start_pos);
-      position_add_ticks (&tmp, ticks);
-      SET_POS (self, start_pos, (&tmp),
-               F_NO_TRANS_ONLY);
-      position_set_to_pos (
-        &tmp, &self->end_pos);
-      position_add_ticks (&tmp, ticks);
-      SET_POS (self, end_pos, (&tmp),
-               F_NO_TRANS_ONLY);
-    }
-  if (delta)
-    {
-      // TODO
-    }
-}
+ARRANGER_OBJ_DEFINE_SHIFT_TICKS_W_END_POS (
+  Region, region);
 
 /**
  * Resizes the region on the left side or right side

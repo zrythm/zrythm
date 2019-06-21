@@ -95,6 +95,8 @@ marker_track_remove_marker (
 
   if (free)
     free_later (marker, marker_free);
+
+  EVENTS_PUSH (ET_MARKER_REMOVED, self);
 }
 
 void

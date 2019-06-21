@@ -59,7 +59,7 @@ static gboolean
 timeline_bg_draw_cb (
   GtkWidget *widget,
   cairo_t *cr,
-  gpointer data)
+  TimelineBgWidget * self)
 {
   GdkRectangle rect;
   gdk_cairo_get_clip_rectangle (cr,
@@ -84,6 +84,9 @@ timeline_bg_draw_cb (
   for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
+
+      /* skip tracks in the other timeline (pinned/
+       * non-pinned) */
       if (!track->visible ||
           (is_unpinned_timeline &&
            track->pinned) ||
@@ -119,6 +122,15 @@ timeline_bg_draw_cb (
   for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       Track * track = TRACKLIST->tracks[i];
+
+      /* skip tracks in the other timeline (pinned/
+       * non-pinned) */
+      if (!track->visible ||
+          (is_unpinned_timeline &&
+           track->pinned) ||
+          (is_pinned_timeline &&
+           !track->pinned))
+        continue;
 
       AutomationTracklist * atl =
         track_get_automation_tracklist (track);

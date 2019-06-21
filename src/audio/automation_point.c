@@ -40,7 +40,7 @@
 #include "utils/flags.h"
 
 #define SET_POS(_c,pos_name,_pos,_trans_only) \
-  POSITION_SET_ARRANGER_OBJ_POS ( \
+  ARRANGER_OBJ_SET_POS ( \
     automation_point, _c, pos_name, _pos, \
     _trans_only)
 
@@ -168,6 +168,11 @@ automation_point_get_normalized_value (
     self->fvalue);
 }
 
+DEFINE_IS_ARRANGER_OBJ_SELECTED (
+  AutomationPoint, automation_point,
+  timeline_selections,
+  TL_SELECTIONS);
+
 /**
  * Returns the Track this AutomationPoint is in.
  */
@@ -269,6 +274,9 @@ automation_point_move (
 
   return moved;
 }
+
+ARRANGER_OBJ_DEFINE_SHIFT_TICKS (
+  AutomationPoint, automation_point);
 
 /**
  * Updates the value from given real value and

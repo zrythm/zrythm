@@ -560,7 +560,7 @@ midi_arranger_widget_create_note (
     region, midi_note, F_GEN_WIDGET);
 
   /* set visibility */
-  arranger_object_info_set_widget_visibility (
+  arranger_object_info_set_widget_visibility_and_state (
     &midi_note->obj_info, 1);
 
   Position tmp;

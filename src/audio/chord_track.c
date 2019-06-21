@@ -22,6 +22,7 @@
 #include "audio/chord_track.h"
 #include "audio/scale.h"
 #include "audio/track.h"
+#include "gui/backend/events.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/objects.h"
@@ -166,6 +167,8 @@ chord_track_remove_chord (
 
   if (free)
     free_later (chord, chord_object_free);
+
+  EVENTS_PUSH (ET_CHORD_OBJECT_REMOVED, self);
 }
 
 /**
@@ -182,6 +185,8 @@ chord_track_remove_scale (
                 scale);
   if (free)
     free_later (scale, scale_object_free);
+
+  EVENTS_PUSH (ET_SCALE_OBJECT_REMOVED, self);
 }
 
 void

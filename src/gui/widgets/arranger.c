@@ -458,7 +458,8 @@ arranger_widget_get_hit_widgets_in_range (
         {
           array[(*array_size)++] = widget;
         }
-      else if (type == AUTOMATION_POINT_WIDGET_TYPE &&
+      else if (type ==
+                 AUTOMATION_POINT_WIDGET_TYPE &&
                Z_IS_AUTOMATION_POINT_WIDGET (widget))
         {
           array[(*array_size)++] = widget;
@@ -470,6 +471,11 @@ arranger_widget_get_hit_widgets_in_range (
         }
       else if (type == SCALE_OBJECT_WIDGET_TYPE &&
                Z_IS_SCALE_OBJECT_WIDGET (widget))
+        {
+          array[(*array_size)++] = widget;
+        }
+      else if (type == MARKER_WIDGET_TYPE &&
+               Z_IS_MARKER_WIDGET (widget))
         {
           array[(*array_size)++] = widget;
         }
@@ -1021,7 +1027,7 @@ create_item (ArrangerWidget * self,
       /* figure out if we are creating a region or
        * automation point */
       at =
-        timeline_arranger_widget_get_automation_track_at_y (start_y);
+        timeline_arranger_widget_get_automation_track_at_y (timeline, start_y);
       if (!at)
         track =
           timeline_arranger_widget_get_track_at_y (

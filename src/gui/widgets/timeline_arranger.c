@@ -513,46 +513,40 @@ timeline_arranger_widget_get_track_at_y (
   return NULL;
 }
 
+/**
+ * Returns the hit AutomationTrack at y.
+ */
 AutomationTrack *
 timeline_arranger_widget_get_automation_track_at_y (
-  double y)
+  TimelineArrangerWidget * self,
+  double                   y)
 {
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  int i, j;
+  for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       Track * track = TRACKLIST->tracks[i];
       AutomationTracklist * atl =
         track_get_automation_tracklist (track);
       if (!atl ||
-          !track->bot_paned_visible)
+          !track->bot_paned_visible ||
+          (track->pinned && (
+             self == MW_TIMELINE)) ||
+          (!track->pinned && (
+             self == MW_PINNED_TIMELINE)))
         continue;
 
       AutomationLane * al;
-      for (int j = 0; j < atl->num_als; j++)
+      for (j = 0; j < atl->num_als; j++)
         {
           al = atl->als[j];
 
           /* TODO check the rest */
-          if (al->visible && al->widget)
-            {
-              GtkAllocation allocation;
-              gtk_widget_get_allocation (
+          if (al->visible && al->widget &&
+              ui_is_child_hit (
+                GTK_CONTAINER (MW_TIMELINE),
                 GTK_WIDGET (al->widget),
-                &allocation);
-
-              gint wx, wy;
-              gtk_widget_translate_coordinates(
-                GTK_WIDGET (MW_TIMELINE),
-                GTK_WIDGET (al->widget),
-                0,
-                y,
-                &wx,
-                &wy);
-
-              if (wy >= 0 && wy <= allocation.height)
-                {
-                  return al->at;
-                }
-            }
+                0, 1, 0, y, 0, 0))
+            return al->at;
         }
     }
 
@@ -1068,7 +1062,7 @@ timeline_arranger_widget_create_ap (
     at, ap, F_GEN_WIDGET, F_GEN_CURVE_POINTS);
 
   /* set visibility */
-  arranger_object_info_set_widget_visibility (
+  arranger_object_info_set_widget_visibility_and_state (
     &ap->obj_info, 1);
 
   /* set position to all counterparts */
@@ -1146,7 +1140,7 @@ timeline_arranger_widget_create_region (
         F_GEN_WIDGET);
 
       /* set visibility */
-      arranger_object_info_set_widget_visibility (
+      arranger_object_info_set_widget_visibility_and_state (
         &region->obj_info, 1);
     }
   EVENTS_PUSH (ET_REGION_CREATED,
@@ -1222,7 +1216,7 @@ timeline_arranger_widget_create_chord (
   chord_track_add_chord (track, chord, 1);
 
   /* set visibility */
-  arranger_object_info_set_widget_visibility (
+  arranger_object_info_set_widget_visibility_and_state (
     &chord->obj_info, 1);
 
   chord_object_set_pos (
@@ -1265,7 +1259,7 @@ timeline_arranger_widget_create_scale (
   chord_track_add_scale (track, scale, 1);
 
   /* set visibility */
-  arranger_object_info_set_widget_visibility (
+  arranger_object_info_set_widget_visibility_and_state (
     &scale->obj_info, 1);
 
   scale_object_set_pos (
@@ -1307,7 +1301,7 @@ timeline_arranger_widget_create_marker (
     track, marker, F_GEN_WIDGET);
 
   /* set visibility */
-  arranger_object_info_set_widget_visibility (
+  arranger_object_info_set_widget_visibility_and_state (
     &marker->obj_info, 1);
 
   marker_set_pos (
@@ -1381,14 +1375,6 @@ timeline_arranger_widget_select (
   int                      delete)
 {
   int i;
-  Region * region;
-  RegionWidget * rw;
-  ChordObject * chord;
-  ChordObjectWidget * cw;
-  ScaleObject * scale;
-  ScaleObjectWidget * sw;
-  AutomationPoint * ap;
-  AutomationPointWidget * apw;
 
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
@@ -1397,183 +1383,136 @@ timeline_arranger_widget_select (
     arranger_widget_select_all (
       Z_ARRANGER_WIDGET (self), 0);
 
-  /* find enclosed regions */
-  GtkWidget *    region_widgets[800];
-  int            num_region_widgets = 0;
-  arranger_widget_get_hit_widgets_in_range (
-    Z_ARRANGER_WIDGET (self),
-    REGION_WIDGET_TYPE,
-    ar_prv->start_x,
-    ar_prv->start_y,
-    offset_x,
-    offset_y,
-    region_widgets,
-    &num_region_widgets);
+#define FIND_ENCLOSED_WIDGETS_OF_TYPE( \
+  caps,cc,sc) \
+  cc * sc; \
+  cc##Widget * sc##_widget; \
+  GtkWidget *  sc##_widgets[800]; \
+  int          num_##sc##_widgets = 0; \
+  arranger_widget_get_hit_widgets_in_range ( \
+    Z_ARRANGER_WIDGET (self), \
+    caps##_WIDGET_TYPE, \
+    ar_prv->start_x, \
+    ar_prv->start_y, \
+    offset_x, \
+    offset_y, \
+    sc##_widgets, \
+    &num_##sc##_widgets)
 
-  if (delete)
+  FIND_ENCLOSED_WIDGETS_OF_TYPE (
+    REGION, Region, region);
+  for (i = 0; i < num_region_widgets; i++)
     {
-      /* delete the enclosed regions */
-      for (i = 0; i < num_region_widgets; i++)
+      region_widget =
+        Z_REGION_WIDGET (region_widgets[i]);
+      REGION_WIDGET_GET_PRIVATE (region_widget);
+
+      region =
+        region_get_main_region (
+          rw_prv->region);
+
+      if (delete)
         {
-          rw =
-            Z_REGION_WIDGET (region_widgets[i]);
-          REGION_WIDGET_GET_PRIVATE (rw);
-
-          region =
-            region_get_main_region (
-              rw_prv->region);
-
+          /* delete the enclosed region */
           track_remove_region (
             region->lane->track, region,
             F_FREE);
-      }
-    }
-  else
-    {
-      /* select the enclosed regions */
-      for (i = 0; i < num_region_widgets; i++)
+        }
+      else
         {
-          rw =
-            Z_REGION_WIDGET (region_widgets[i]);
-          REGION_WIDGET_GET_PRIVATE (rw);
-          region =
-            region_get_main_region (
-              rw_prv->region);
+          /* select the enclosed region */
           ARRANGER_WIDGET_SELECT_REGION (
             self, region,
             F_SELECT, F_APPEND);
         }
     }
 
-  /* find enclosed chords */
-  GtkWidget *    chord_widgets[800];
-  int            num_chord_widgets = 0;
-  arranger_widget_get_hit_widgets_in_range (
-    Z_ARRANGER_WIDGET (self),
-    CHORD_OBJECT_WIDGET_TYPE,
-    ar_prv->start_x,
-    ar_prv->start_y,
-    offset_x,
-    offset_y,
-    chord_widgets,
-    &num_chord_widgets);
-
-  if (delete)
+  FIND_ENCLOSED_WIDGETS_OF_TYPE (
+    CHORD_OBJECT, ChordObject, chord_object);
+  for (i = 0; i < num_chord_object_widgets; i++)
     {
-      /* delete the enclosed chords */
-      for (i = 0; i < num_chord_widgets; i++)
-        {
-          cw =
-            Z_CHORD_OBJECT_WIDGET (chord_widgets[i]);
+      chord_object_widget =
+        Z_CHORD_OBJECT_WIDGET (
+          chord_object_widgets[i]);
 
-          chord = cw->chord_object;
+      chord_object =
+        chord_object_get_main_chord_object (
+          chord_object_widget->chord_object);
 
-          chord_track_remove_chord (
-            P_CHORD_TRACK,
-            chord, F_FREE);
-      }
-    }
-  else
-    {
-      /* select the enclosed chords */
-      for (i = 0; i < num_chord_widgets; i++)
-        {
-          cw =
-            Z_CHORD_OBJECT_WIDGET (chord_widgets[i]);
-
-          chord = cw->chord_object;
-
-          ARRANGER_WIDGET_SELECT_CHORD (
-            self, chord, F_SELECT, F_APPEND);
-        }
+      if (delete)
+        chord_track_remove_chord (
+          P_CHORD_TRACK,
+          chord_object, F_FREE);
+      else
+        ARRANGER_WIDGET_SELECT_CHORD (
+          self, chord_object, F_SELECT, F_APPEND);
     }
 
-  /* find enclosed scales */
-  GtkWidget *    scale_widgets[800];
-  int            num_scale_widgets = 0;
-  arranger_widget_get_hit_widgets_in_range (
-    Z_ARRANGER_WIDGET (self),
-    SCALE_OBJECT_WIDGET_TYPE,
-    ar_prv->start_x,
-    ar_prv->start_y,
-    offset_x,
-    offset_y,
-    scale_widgets,
-    &num_scale_widgets);
+  FIND_ENCLOSED_WIDGETS_OF_TYPE (
+    SCALE_OBJECT, ScaleObject, scale_object);
+  for (i = 0; i < num_scale_object_widgets; i++)
+    {
+      scale_object_widget =
+        Z_SCALE_OBJECT_WIDGET (
+          scale_object_widgets[i]);
 
-  if (delete)
-    {
-      /* delete the enclosed scales */
-      for (i = 0; i < num_scale_widgets; i++)
-        {
-          sw =
-            Z_SCALE_OBJECT_WIDGET (
-              scale_widgets[i]);
-          scale = sw->scale;
-          chord_track_remove_scale (
-            P_CHORD_TRACK,
-            scale, F_FREE);
-      }
+      scale_object =
+        scale_object_get_main_scale_object (
+          scale_object_widget->scale);
+
+      if (delete)
+        chord_track_remove_scale (
+          P_CHORD_TRACK,
+          scale_object, F_FREE);
+      else
+        ARRANGER_WIDGET_SELECT_SCALE (
+          self, scale_object, F_SELECT, F_APPEND);
     }
-  else
+
+  FIND_ENCLOSED_WIDGETS_OF_TYPE (
+    MARKER, Marker, marker);
+  for (i = 0; i < num_marker_widgets; i++)
     {
-      /* select the enclosed scales */
-      for (i = 0; i < num_scale_widgets; i++)
-        {
-          sw =
-            Z_SCALE_OBJECT_WIDGET (
-              scale_widgets[i]);
-          scale = sw->scale;
-          ARRANGER_WIDGET_SELECT_SCALE (
-            self, scale, F_SELECT, F_APPEND);
-        }
+      marker_widget =
+        Z_MARKER_WIDGET (
+          marker_widgets[i]);
+
+      marker =
+        marker_get_main_marker (
+          marker_widget->marker);
+
+      if (delete)
+        marker_track_remove_marker (
+          P_MARKER_TRACK, marker, F_FREE);
+      else
+        ARRANGER_WIDGET_SELECT_MARKER (
+          self, marker, F_SELECT, F_APPEND);
     }
 
   /* find enclosed automation_points */
-  GtkWidget *    ap_widgets[800];
-  int            num_ap_widgets = 0;
-  arranger_widget_get_hit_widgets_in_range (
-    Z_ARRANGER_WIDGET (self),
-    AUTOMATION_POINT_WIDGET_TYPE,
-    ar_prv->start_x,
-    ar_prv->start_y,
-    offset_x,
-    offset_y,
-    ap_widgets,
-    &num_ap_widgets);
-
-  if (delete)
+  FIND_ENCLOSED_WIDGETS_OF_TYPE (
+    AUTOMATION_POINT, AutomationPoint,
+    automation_point);
+  for (i = 0; i < num_automation_point_widgets; i++)
     {
-      /* delete the enclosed automation points */
-      for (i = 0;
-           i < num_ap_widgets; i++)
-        {
-          apw =
-            Z_AUTOMATION_POINT_WIDGET (
-              ap_widgets[i]);
+      automation_point_widget =
+        Z_AUTOMATION_POINT_WIDGET (
+          automation_point_widgets[i]);
 
-          ap = apw->automation_point;
+      automation_point =
+        automation_point_get_main_automation_point (
+          automation_point_widget->automation_point);
 
-          automation_track_remove_ap (
-            ap->at, ap, F_FREE);
-        }
+      if (delete)
+        automation_track_remove_ap (
+          automation_point->at,
+          automation_point, F_FREE);
+      else
+        ARRANGER_WIDGET_SELECT_AUTOMATION_POINT (
+          self, automation_point, F_SELECT, F_APPEND);
     }
-  else
-    {
-      /* select the enclosed automation points */
-      for (i = 0;
-           i < num_ap_widgets; i++)
-        {
-          apw =
-            Z_AUTOMATION_POINT_WIDGET (
-              ap_widgets[i]);
 
-          ap = apw->automation_point;
-
-          ARRANGER_WIDGET_SELECT_AUTOMATION_POINT (
-            self, ap, F_SELECT, F_APPEND);
-        }
-    }
+#undef FIND_ENCLOSED_WIDGETS_OF_TYPE
 }
 
 /**
@@ -2131,6 +2070,39 @@ timeline_arranger_widget_move_items_y (
 }
 
 /**
+ * Returns the ticks objects were moved by since
+ * the start of the drag.
+ *
+ * FIXME not really needed, can use
+ * timeline_selections_get_start_pos and the
+ * arranger's earliest_obj_start_pos.
+ */
+static long
+get_moved_diff (
+  TimelineArrangerWidget * self)
+{
+#define GET_DIFF(sc,pos_name) \
+  if (TL_SELECTIONS->num_##sc##s) \
+    { \
+      return \
+        position_to_ticks ( \
+          &sc##_get_main_trans_##sc ( \
+            TL_SELECTIONS->sc##s[0])->pos_name) - \
+        position_to_ticks ( \
+          &sc##_get_main_##sc ( \
+            TL_SELECTIONS->sc##s[0])->pos_name); \
+    }
+
+  GET_DIFF (region, start_pos);
+  GET_DIFF (marker, pos);
+  GET_DIFF (chord_object, pos);
+  GET_DIFF (scale_object, pos);
+  GET_DIFF (automation_point, pos);
+
+  g_return_val_if_reached (0);
+}
+
+/**
  * Sets the default cursor in all selected regions and
  * intializes start positions.
  */
@@ -2226,9 +2198,6 @@ timeline_arranger_widget_on_drag_end (
       timeline_selections_get_start_pos (
         TL_SELECTIONS,
         &earliest_trans_pos, 1);
-      /*position_print_simple (&earliest_trans_pos);*/
-      /*position_print_simple (*/
-        /*&ar_prv->earliest_obj_start_pos);*/
       UndoableAction * ua =
         (UndoableAction *)
         move_timeline_selections_action_new (
@@ -2250,20 +2219,18 @@ timeline_arranger_widget_on_drag_end (
            ar_prv->action ==
              UI_OVERLAY_ACTION_MOVING_LINK)
     {
-      Region * main_region =
-        region_get_main_region (
-          TL_SELECTIONS->regions[0]);
-      Region * main_trans_region =
-        region_get_main_trans_region (
-          TL_SELECTIONS->regions[0]);
+      Position earliest_trans_pos;
+      timeline_selections_get_start_pos (
+        TL_SELECTIONS,
+        &earliest_trans_pos, 1);
       UndoableAction * ua =
         (UndoableAction *)
         duplicate_timeline_selections_action_new (
           TL_SELECTIONS,
           position_to_ticks (
-            &main_trans_region->start_pos) -
+            &earliest_trans_pos) -
           position_to_ticks (
-            &main_region->start_pos),
+            &ar_prv->earliest_obj_start_pos),
           timeline_selections_get_highest_track (
             TL_SELECTIONS, F_TRANSIENTS) -
           timeline_selections_get_highest_track (
@@ -2554,7 +2521,7 @@ timeline_arranger_widget_refresh_visibility (
           REGION_WIDGET_GET_PRIVATE (rw);
           region = rw_prv->region;
 
-          arranger_object_info_set_widget_visibility (
+          arranger_object_info_set_widget_visibility_and_state (
             &region->obj_info, 1);
         }
     }
@@ -2638,6 +2605,9 @@ timeline_arranger_widget_refresh_children (
             }
         }
     }
+
+  timeline_arranger_widget_refresh_visibility (
+    self);
 
   gtk_overlay_reorder_overlay (
     GTK_OVERLAY (self),

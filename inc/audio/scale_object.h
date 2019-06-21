@@ -189,7 +189,7 @@ scale_object_set_pos (
 DECLARE_IS_ARRANGER_OBJ_SELECTED (
   ScaleObject, scale_object);
 
-DECLARE_ARRANGER_OBJ_SHIFT_SIMPLE (
+ARRANGER_OBJ_DECLARE_SHIFT_TICKS (
  ScaleObject, scale_object);
 
 /**

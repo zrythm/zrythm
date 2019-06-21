@@ -114,34 +114,6 @@ typedef struct ArrangerObjectInfo
     _type, AOI_COUNTERPART_LANE_TRANSIENT)
 
 /**
- * Sets the Position pos to the earliest or latest
- * object.
- *
- * @param _array The array of objects to check.
- * @param cc Camel case.
- * @param lc Lower case.
- * @param pos_name Variable name of position to check
- * @param bef_or_aft Before or after
- * @param widg Widget to set.
- */
-#define SET_ARRANGER_OBJ_POS_TO(_array,cc,lc,pos_name,transient,bef_or_aft,widg) \
-  cc * lc; \
-  for (i = 0; i < _array->num_##lc##s; i++) \
-    { \
-      if (transient) \
-        lc = _array->lc##s[i]->obj_info.main_trans; \
-      else \
-        lc = _array->lc##s[i]->obj_info.main; \
-      if (position_is_##bef_or_aft ( \
-            &lc->pos_name, pos)) \
-        { \
-          position_set_to_pos ( \
-            pos, &lc->pos_name); \
-          widget = GTK_WIDGET (lc->widget); \
-        } \
-    }
-
-/**
  * Inits the ArrangerObjectInfo with the given
  * values.
  */
@@ -233,11 +205,12 @@ arranger_object_info_get_object (
 }
 
 /**
- * Sets the widget visibility to this counterparty
- * only, or to all counterparties if all is 1.
+ * Sets the widget visibility and selection state
+ * to this counterpart
+ * only, or to all counterparts if all is 1.
  */
 void
-arranger_object_info_set_widget_visibility (
+arranger_object_info_set_widget_visibility_and_state (
   ArrangerObjectInfo * self,
   int                  all);
 

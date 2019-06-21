@@ -49,61 +49,41 @@ move_timeline_selections_action_new (
   return ua;
 }
 
+#define SHIFT_OBJ(cc,sc,ticks) \
+  cc * sc; \
+  for (i = 0; i < self->ts->num_##sc##s; i++) \
+    { \
+      /* get the actual object */ \
+      sc = sc##_find (self->ts->sc##s[i]); \
+      g_warn_if_fail (sc); \
+      /* shift the actual object */ \
+      sc##_shift_by_ticks ( \
+        sc, ticks); \
+      /* also shift the copy */ \
+      sc##_shift_by_ticks ( \
+        self->ts->sc##s[i], ticks); \
+    }
+
 int
 move_timeline_selections_action_do (
 	MoveTimelineSelectionsAction * self)
 {
   int i;
 
-  Region * region;
-  for (i = 0; i < self->ts->num_regions; i++)
-    {
-      /* get the actual region */
-      region = region_find (self->ts->regions[i]);
+#define SHIFT_OBJ_POSITIVE(cc,sc) \
+  SHIFT_OBJ (cc, sc, self->ticks)
 
-      /* shift it */
-      region_shift (
-        region,
-        self->ticks,
-        self->delta);
-    }
-  ChordObject * chord;
-  for (i = 0;  i < self->ts->num_chord_objects; i++)
-    {
-      /* get the actual chord */
-      chord =
-        chord_object_find (
-          self->ts->chord_objects[i]);
+  SHIFT_OBJ_POSITIVE (
+    Region, region);
+  SHIFT_OBJ_POSITIVE (
+    ChordObject, chord_object);
+  SHIFT_OBJ_POSITIVE (
+    ScaleObject, scale_object);
+  SHIFT_OBJ_POSITIVE (
+    Marker, marker);
+  SHIFT_OBJ_POSITIVE (
+    AutomationPoint, automation_point);
 
-      /* shift it */
-      chord_object_shift (
-        chord,
-        self->ticks);
-    }
-  ScaleObject * scale;
-  for (i = 0; i < self->ts->num_scale_objects; i++)
-    {
-      /* get the actual scale */
-      scale =
-        scale_object_find (
-          self->ts->scale_objects[i]);
-
-      /* shift it */
-      scale_object_shift (
-        scale, self->ticks);
-    }
-  Marker * marker;
-  for (i = 0; i < self->ts->num_markers; i++)
-    {
-      /* get the actual scale */
-      marker =
-        marker_find (
-          self->ts->markers[i]);
-
-      /* shift it */
-      marker_shift (
-        marker, self->ticks);
-    }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
 
@@ -115,56 +95,21 @@ move_timeline_selections_action_undo (
 	MoveTimelineSelectionsAction * self)
 {
   int i;
-  Region * region;
-  for (i = 0; i < self->ts->num_regions; i++)
-    {
-      /* get the actual region */
-      region = region_find (self->ts->regions[i]);
 
-      /* shift it */
-      region_shift (
-        region,
-        - self->ticks,
-        - self->delta);
-    }
-  ChordObject * chord;
-  for (i = 0;  i < self->ts->num_chord_objects; i++)
-    {
-      /* get the actual chord */
-      chord =
-        chord_object_find (
-          self->ts->chord_objects[i]);
+#define SHIFT_OBJ_NEGATIVE(cc,sc) \
+  SHIFT_OBJ (cc, sc, - self->ticks)
 
-      /* shift it */
-      chord_object_shift (
-        chord,
-        - self->ticks);
-    }
-  ScaleObject * scale;
-  for (i = 0; i < self->ts->num_scale_objects; i++)
-    {
-      /* get the actual scale */
-      scale =
-        scale_object_find (
-          self->ts->scale_objects[i]);
+  SHIFT_OBJ_NEGATIVE (
+    Region, region);
+  SHIFT_OBJ_NEGATIVE (
+    ChordObject, chord_object);
+  SHIFT_OBJ_NEGATIVE (
+    ScaleObject, scale_object);
+  SHIFT_OBJ_NEGATIVE (
+    Marker, marker);
+  SHIFT_OBJ_NEGATIVE (
+    AutomationPoint, automation_point);
 
-      /* shift it */
-      scale_object_shift (
-        scale,
-        - self->ticks);
-    }
-  Marker * marker;
-  for (i = 0; i < self->ts->num_markers; i++)
-    {
-      /* get the actual scale */
-      marker =
-        marker_find (
-          self->ts->markers[i]);
-
-      /* shift it */
-      marker_shift (
-        marker, - self->ticks);
-    }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
 

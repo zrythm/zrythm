@@ -41,14 +41,18 @@
     { \
       array_append ( \
         ts->sc##s, ts->num_##sc##s, sc); \
-      EVENTS_PUSH (ET_##caps##_CHANGED, sc); \
+      EVENTS_PUSH ( \
+        ET_ARRANGER_OBJECT_SELECTION_CHANGED, \
+        &sc->obj_info); \
     }
 
 #define REMOVE_OBJECT(caps,sc) \
   if (!array_contains ( \
          ts->sc##s, ts->num_##sc##s, sc)) \
     { \
-      EVENTS_PUSH (ET_##caps##_CHANGED, sc); \
+      EVENTS_PUSH ( \
+        ET_ARRANGER_OBJECT_SELECTION_CHANGED, \
+        &sc->obj_info); \
       return; \
     } \
   array_delete ( \
@@ -205,19 +209,19 @@ timeline_selections_get_start_pos (
 
   int i;
 
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, Region, region, start_pos,
     transient, before, widget);
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, AutomationPoint, automation_point, pos,
     transient, before, widget);
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, ChordObject, chord_object, pos,
     transient, before, widget);
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, ScaleObject, scale_object, pos,
     transient, before, widget);
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, Marker, marker, pos,
     transient, before, widget);
 }
@@ -242,19 +246,19 @@ timeline_selections_get_end_pos (
 
   int i;
 
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, Region, region, start_pos,
     transient, after, widget);
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, AutomationPoint, automation_point, pos,
     transient, after, widget);
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, ChordObject, chord_object, pos,
     transient, after, widget);
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, ScaleObject, scale_object, pos,
     transient, after, widget);
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, Marker, marker, pos,
     transient, after, widget);
 }
@@ -277,19 +281,19 @@ timeline_selections_get_first_object (
     pos, TRANSPORT->total_bars);
   int i;
 
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, Region, region, start_pos,
     transient, before, widget);
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, AutomationPoint, automation_point, pos,
     transient, before, widget);
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, ChordObject, chord_object, pos,
     transient, before, widget);
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, ScaleObject, scale_object, pos,
     transient, before, widget);
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, Marker, marker, pos,
     transient, before, widget);
 
@@ -313,19 +317,19 @@ timeline_selections_get_last_object (
   position_init (pos);
   int i;
 
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, Region, region, start_pos,
     transient, after, widget);
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, AutomationPoint, automation_point, pos,
     transient, after, widget);
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, ChordObject, chord_object, pos,
     transient, after, widget);
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, ScaleObject, scale_object, pos,
     transient, after, widget);
-  SET_ARRANGER_OBJ_POS_TO (
+  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, Marker, marker, pos,
     transient, after, widget);
 
@@ -586,7 +590,9 @@ timeline_selections_clear (
     { \
       sc = sc##s[i]; \
       timeline_selections_remove_##sc (ts, sc); \
-      EVENTS_PUSH (ET_##caps##_CHANGED, sc); \
+      EVENTS_PUSH ( \
+        ET_ARRANGER_OBJECT_SELECTION_CHANGED, \
+        &sc->obj_info); \
     }
 
   TL_REMOVE_OBJS (
@@ -622,7 +628,7 @@ timeline_selections_clone ()
     { \
       sc = src->sc##s[i]; \
       new_##sc = \
-        sc##_clone (sc, caps##_CLONE_COPY); \
+        sc##_clone (sc, caps##_CLONE_COPY_MAIN); \
       array_append ( \
         new_ts->sc##s, new_ts->num_##sc##s, \
         new_##sc); \

@@ -70,12 +70,6 @@ typedef struct _TimelineArrangerWidget
 {
   ArrangerWidget       parent_instance;
 
-  /** The widget first clicked on. */
-  GtkWidget *          start_widget;
-
-  /** Type of the widget first clicked on. */
-  GType                start_widget_type;
-
   /**
    * Object first clicked is stored in start_*.
    */
@@ -140,8 +134,13 @@ timeline_arranger_widget_get_track_at_y (
   TimelineArrangerWidget * self,
   double y);
 
+/**
+ * Returns the hit AutomationTrack at y.
+ */
 AutomationTrack *
-timeline_arranger_widget_get_automation_track_at_y (double y);
+timeline_arranger_widget_get_automation_track_at_y (
+  TimelineArrangerWidget * self,
+  double                   y);
 
 /**
  * Sets transient object and actual object

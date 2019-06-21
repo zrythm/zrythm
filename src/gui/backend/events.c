@@ -524,48 +524,6 @@ on_mixer_selections_changed ()
   inspector_widget_refresh (MW_INSPECTOR);
 }
 
-static inline void
-on_region_changed (Region * region)
-{
-  for (int i = 0; i < 4; i++)
-    {
-      if (i == 0)
-        region =
-          region_get_main_region (region);
-      else if (i == 1)
-        region =
-          region_get_main_trans_region (region);
-      else if (i == 2)
-        region =
-          region_get_lane_region (region);
-      else if (i == 3)
-        region =
-          region_get_lane_trans_region (region);
-
-      if (GTK_IS_WIDGET (region->widget))
-        {
-          /*gtk_widget_set_visible (*/
-            /*GTK_WIDGET (region->widget),*/
-            /*region_is_visible (region));*/
-          if (region_is_selected (region))
-            {
-              gtk_widget_set_state_flags (
-                GTK_WIDGET (region->widget),
-                GTK_STATE_FLAG_SELECTED,
-                0);
-            }
-          else
-            {
-              gtk_widget_unset_state_flags (
-                GTK_WIDGET (region->widget),
-                GTK_STATE_FLAG_SELECTED);
-            }
-          gtk_widget_queue_draw (
-            GTK_WIDGET (region->widget));
-        }
-    }
-}
-
 static void
 on_track_color_changed (Track * track)
 {
@@ -722,9 +680,31 @@ events_process (void * data)
           mixer_widget_hard_refresh (
             MW_MIXER);
           break;
+        case ET_REGION_CREATED:
+        case ET_MARKER_CREATED:
+        case ET_AUTOMATION_POINT_CREATED:
+        case ET_CHORD_OBJECT_CREATED:
+        case ET_SCALE_OBJECT_CREATED:
+        case ET_CHORD_OBJECT_CHANGED:
+        case ET_SCALE_OBJECT_CHANGED:
         case ET_REGION_REMOVED:
+        case ET_CHORD_OBJECT_REMOVED:
+        case ET_SCALE_OBJECT_REMOVED:
+        case ET_MARKER_REMOVED:
+          /* FIXME track is passed so only
+           * refresh that track */
           arranger_widget_refresh (
             Z_ARRANGER_WIDGET (MW_TIMELINE));
+          arranger_widget_refresh (
+            Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE));
+          break;
+        case ET_AUTOMATION_POINT_REMOVED:
+          /* FIXME automation track is passed so
+           * only refresh the automation lane */
+          arranger_widget_refresh (
+            Z_ARRANGER_WIDGET (MW_TIMELINE));
+          arranger_widget_refresh (
+            Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE));
           break;
         case ET_TL_SELECTIONS_CHANGED:
           inspector_widget_refresh (MW_INSPECTOR);
@@ -859,7 +839,9 @@ events_process (void * data)
           on_midi_note_changed ((MidiNote *) ev->arg);
           break;
         case ET_REGION_CHANGED:
-          on_region_changed ((Region *) ev->arg);
+          break;
+        case ET_ARRANGER_OBJECT_SELECTION_CHANGED:
+          arranger_object_info_set_widget_visibility_and_state ((ArrangerObjectInfo *) ev->arg, 1);
           break;
         case ET_PLUGIN_SELECTION_CHANGED:
           on_mixer_selections_changed ();
@@ -926,19 +908,6 @@ events_process (void * data)
           midi_arranger_widget_refresh_children (
             MIDI_ARRANGER);
           break;
-        case ET_REGION_CREATED:
-        case ET_MARKER_CREATED:
-        case ET_AUTOMATION_POINT_CREATED:
-        case ET_CHORD_OBJECT_CREATED:
-        case ET_SCALE_OBJECT_CREATED:
-        case ET_CHORD_OBJECT_REMOVED:
-          arranger_widget_refresh (
-            Z_ARRANGER_WIDGET (MW_TIMELINE));
-          arranger_widget_refresh (
-            Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE));
-          break;
-        case ET_CHORD_OBJECT_CHANGED:
-        case ET_SCALE_OBJECT_CHANGED:
         case ET_PIANO_ROLL_HIGHLIGHTING_CHANGED:
           if (MW_PIANO_ROLL)
             piano_roll_widget_refresh_labels (
