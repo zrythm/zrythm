@@ -248,6 +248,12 @@ static GActionEntry actions[] = {
   { "ramp-mode", activate_ramp_mode },
   { "audition-mode", activate_audition_mode },
 
+  /* transport */
+  { "toggle-loop", NULL, NULL,
+    "true", change_state_loop },
+  { "goto-prev-marker", activate_goto_prev_marker },
+  { "goto-next-marker", activate_goto_next_marker },
+
   /* tracks */
   { "delete-selected-tracks", activate_delete_selected_tracks },
   { "duplicate-selected-tracks", activate_duplicate_selected_tracks },

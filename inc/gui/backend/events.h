@@ -113,6 +113,8 @@ typedef enum EventType
   ET_MARKER_CHANGED,
   ET_ARRANGER_OBJECT_SELECTION_CHANGED,
 
+  ET_LOOP_TOGGLED,
+
   /** Selected tool (mode) changed. */
   ET_TOOL_CHANGED,
 

@@ -275,6 +275,14 @@ position_set_tick (
   int        tick);
 
 /**
+ * Sorts an array of Position's.
+ */
+void
+position_sort_array (
+  Position * array,
+  const int  size);
+
+/**
  * Sets position to target position
  */
 void

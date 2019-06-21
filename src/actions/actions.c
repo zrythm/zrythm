@@ -970,6 +970,26 @@ activate_duplicate_selected_tracks (
 }
 
 void
+activate_goto_prev_marker (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  transport_goto_prev_marker (
+    TRANSPORT);
+}
+
+void
+activate_goto_next_marker (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  transport_goto_next_marker (
+    TRANSPORT);
+}
+
+void
 activate_delete_selected_tracks (
   GSimpleAction *action,
   GVariant      *variant,
@@ -995,4 +1015,17 @@ change_state_dim_output (
   g_message ("dim is %d", dim);
 
   g_simple_action_set_state (action, value);
+}
+
+void
+change_state_loop (
+  GSimpleAction * action,
+  GVariant *      value,
+  gpointer        user_data)
+{
+  int loop = g_variant_get_boolean (value);
+
+  g_simple_action_set_state (action, value);
+
+  transport_set_loop (TRANSPORT, loop);
 }

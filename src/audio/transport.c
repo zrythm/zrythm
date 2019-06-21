@@ -20,6 +20,8 @@
 #include "config.h"
 
 #include "audio/engine.h"
+#include "audio/marker.h"
+#include "audio/marker_track.h"
 #include "audio/midi.h"
 #include "audio/transport.h"
 #include "project.h"
@@ -37,6 +39,8 @@
 #include "gui/widgets/top_bar.h"
 
 #include <gtk/gtk.h>
+
+DEFINE_START_POS;
 
 /**
  * Sets BPM and does any necessary processing (like
@@ -322,3 +326,82 @@ transport_update_position_frames ()
     &TRANSPORT->loop_end_pos);
 }
 
+#define GATHER_MARKERS \
+  /* gather all markers */ \
+  Position markers[60]; \
+  int num_markers = 0, i; \
+  for (i = 0; \
+       i < P_MARKER_TRACK->num_markers; i++) \
+    { \
+       position_set_to_pos ( \
+          &markers[num_markers++], \
+          &P_MARKER_TRACK->markers[i]->pos); \
+    } \
+  position_set_to_pos ( \
+    &markers[num_markers++], \
+    &self->cue_pos); \
+  position_set_to_pos ( \
+    &markers[num_markers++], \
+    &self->loop_start_pos); \
+  position_set_to_pos ( \
+    &markers[num_markers++], \
+    &self->loop_end_pos); \
+  position_set_to_pos ( \
+    &markers[num_markers++], \
+    START_POS); \
+  position_sort_array (markers, num_markers)
+
+/**
+ * Moves the playhead to the prev Marker.
+ */
+void
+transport_goto_prev_marker (
+  Transport * self)
+{
+  GATHER_MARKERS;
+
+  for (i = num_markers - 1; i >= 0; i--)
+    {
+      if (position_is_before (
+            &markers[i], &self->playhead_pos))
+        {
+          transport_move_playhead (
+            &markers[i], 1);
+          break;
+        }
+    }
+}
+
+/**
+ * Moves the playhead to the next Marker.
+ */
+void
+transport_goto_next_marker (
+  Transport * self)
+{
+  GATHER_MARKERS;
+
+  for (i = 0; i < num_markers; i++)
+    {
+      if (position_is_after (
+            &markers[i], &self->playhead_pos))
+        {
+          transport_move_playhead (
+            &markers[i], 1);
+          break;
+        }
+    }
+}
+
+/**
+ * Enables or disables loop.
+ */
+void
+transport_set_loop (
+  Transport * self,
+  int         enabled)
+{
+  self->loop = enabled;
+
+  EVENTS_PUSH (ET_LOOP_TOGGLED, NULL);
+}

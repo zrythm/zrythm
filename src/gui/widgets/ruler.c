@@ -180,48 +180,61 @@ ruler_draw_cb (
 
   /* if timeline, draw loop background */
   /* FIXME use rect */
+  double start_px =
+    ui_pos_to_px_timeline (
+      &TRANSPORT->loop_start_pos, 1);
+  double end_px =
+    ui_pos_to_px_timeline (
+      &TRANSPORT->loop_end_pos, 1);
+
+  if (TRANSPORT->loop)
+    cairo_set_source_rgba (
+      cr, 0, 0.9, 0.7, 0.25);
+  else
+    cairo_set_source_rgba (
+      cr, 0.5, 0.5, 0.5, 0.25);
+  cairo_set_line_width (cr, 2);
+  if (start_px > rect.x)
+    {
+      cairo_move_to (
+        cr, start_px + 1, rect.y);
+      cairo_line_to (
+        cr, start_px + 1, rect.height);
+      cairo_stroke (cr);
+    }
+  if (end_px < rect.x + rect.width)
+    {
+      cairo_move_to (
+        cr, end_px - 1, rect.y);
+      cairo_line_to (
+        cr, end_px - 1, rect.height);
+      cairo_stroke (cr);
+    }
+  cairo_pattern_t * pat;
+  pat =
+    cairo_pattern_create_linear (
+      0.0, 0.0, 0.0, (height * 3) / 4);
   if (TRANSPORT->loop)
     {
-      double start_px =
-        ui_pos_to_px_timeline (
-          &TRANSPORT->loop_start_pos, 1);
-      double end_px =
-        ui_pos_to_px_timeline (
-          &TRANSPORT->loop_end_pos, 1);
-      cairo_set_source_rgba (cr, 0, 0.9, 0.7, 0.25);
-      cairo_set_line_width (cr, 2);
-      if (start_px > rect.x)
-        {
-          cairo_move_to (
-            cr, start_px + 1, rect.y);
-          cairo_line_to (
-            cr, start_px + 1, rect.height);
-          cairo_stroke (cr);
-        }
-      if (end_px < rect.x + rect.width)
-        {
-          cairo_move_to (
-            cr, end_px - 1, rect.y);
-          cairo_line_to (
-            cr, end_px - 1, rect.height);
-          cairo_stroke (cr);
-        }
-      cairo_pattern_t * pat;
-      pat =
-        cairo_pattern_create_linear (
-          0.0, 0.0, 0.0, (height * 3) / 4);
       cairo_pattern_add_color_stop_rgba (
         pat, 1, 0, 0.9, 0.7, 0.1);
       cairo_pattern_add_color_stop_rgba (
         pat, 0, 0, 0.9, 0.7, 0.2);
-      cairo_rectangle (
-        cr, MAX (rect.x, start_px), rect.y,
-        /* FIXME use rect properly, this exceeds */
-        end_px - MAX (rect.x, start_px),
-        rect.height);
-      cairo_set_source (cr, pat);
-      cairo_fill (cr);
     }
+  else
+    {
+      cairo_pattern_add_color_stop_rgba (
+        pat, 1, 0.5, 0.5, 0.5, 0.1);
+      cairo_pattern_add_color_stop_rgba (
+        pat, 0, 0.5, 0.5, 0.5, 0.2);
+    }
+  cairo_rectangle (
+    cr, MAX (rect.x, start_px), rect.y,
+    /* FIXME use rect properly, this exceeds */
+    end_px - MAX (rect.x, start_px),
+    rect.height);
+  cairo_set_source (cr, pat);
+  cairo_fill (cr);
 
   PangoLayout * layout =
     pango_cairo_create_layout (cr);

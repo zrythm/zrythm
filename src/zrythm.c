@@ -655,6 +655,12 @@ zrythm_app_startup (GApplication* _app)
   accel_install_primary_action_accelerator (
     "5",
     "win.audition-mode");
+  accel_install_primary_action_accelerator (
+    "KP_4",
+    "win.goto-prev-marker");
+  accel_install_primary_action_accelerator (
+    "KP_6",
+    "win.goto-next-marker");
 }
 
 ZrythmApp *

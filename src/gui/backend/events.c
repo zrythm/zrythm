@@ -971,6 +971,14 @@ events_process (void * data)
             MW_TRACKLIST);
           timeline_arranger_widget_refresh_visibility (
             MW_TIMELINE);
+          break;
+        case ET_LOOP_TOGGLED:
+          arranger_widget_refresh_all_backgrounds ();
+          gtk_widget_queue_draw (
+            GTK_WIDGET (MW_RULER));
+          gtk_widget_queue_draw (
+            GTK_WIDGET (MIDI_RULER));
+          break;
         case ET_MARKER_POSITIONS_CHANGED:
         case ET_CHORD_OBJECT_POSITIONS_CHANGED:
         case ET_SCALE_OBJECT_POSITIONS_CHANGED:

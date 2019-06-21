@@ -88,6 +88,25 @@ position_to_frames (Position * position)
   return frames;
 }
 
+static int
+cmpfunc (
+  const void * a,
+  const void * b)
+{
+  Position * posa = (Position *) a;
+  Position * posb = (Position *) b;
+  return position_compare (posa, posb);
+}
+
+void
+position_sort_array (
+  Position * array,
+  const int  size)
+{
+  qsort (array, size, sizeof (Position),
+         cmpfunc);
+}
+
 /**
  * Updates frames
  */
