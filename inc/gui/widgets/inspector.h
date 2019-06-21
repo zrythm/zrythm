@@ -30,11 +30,11 @@
 
 #define INSPECTOR_WIDGET_TYPE \
   (inspector_widget_get_type ())
-G_DECLARE_FINAL_TYPE (InspectorWidget,
-                      inspector_widget,
-                      Z,
-                      INSPECTOR_WIDGET,
-                      GtkStack)
+G_DECLARE_FINAL_TYPE (
+  InspectorWidget,
+  inspector_widget,
+  Z, INSPECTOR_WIDGET,
+  GtkBox)
 
 #define MW_INSPECTOR MW_LEFT_DOCK_EDGE->inspector
 
@@ -47,16 +47,21 @@ typedef struct _InspectorPluginWidget
 
 typedef struct _InspectorWidget
 {
-  GtkStack                  parent_instance;
+  GtkBox                  parent_instance;
+
+  GtkBox *                stack_switcher_box;
+  GtkStackSwitcher *      stack_switcher;
+
+  GtkStack *              stack;
 
   /** For TracklistSelections. */
-  InspectorTrackWidget *    track;
+  InspectorTrackWidget *  track;
 
   /** For editor (midi/audio/etc.). */
-  InspectorEditorWidget *   editor;
+  InspectorEditorWidget * editor;
 
   /** For MixerSelections. */
-  InspectorPluginWidget *   plugin;
+  InspectorPluginWidget * plugin;
 
 } InspectorWidget;
 

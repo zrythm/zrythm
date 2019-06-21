@@ -22,24 +22,36 @@
 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <template class="InspectorWidget" parent="GtkStack">
+  <template class="InspectorWidget" parent="GtkBox">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="vexpand">True</property>
+    <property name="orientation">vertical</property>
     <child>
-      <object class="InspectorTrackWidget" id="track">
-        <property name="visible">True</property>
+      <object class="GtkBox" id="stack_switcher_box">
+        <property name="visible">1</property>
+        <property name="margin-top">4</property>
       </object>
     </child>
     <child>
-      <object class="InspectorEditorWidget" id="editor">
+      <object class="GtkStack" id="stack">
         <property name="visible">True</property>
-      </object>
-    </child>
-    <child>
-      <object class="InspectorPluginWidget"
-        id="plugin">
-        <property name="visible">True</property>
+        <child>
+          <object class="InspectorTrackWidget" id="track">
+            <property name="visible">True</property>
+          </object>
+        </child>
+        <child>
+          <object class="InspectorEditorWidget" id="editor">
+            <property name="visible">True</property>
+          </object>
+        </child>
+        <child>
+          <object class="InspectorPluginWidget"
+            id="plugin">
+            <property name="visible">True</property>
+          </object>
+        </child>
       </object>
     </child>
   </template>

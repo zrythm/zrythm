@@ -120,6 +120,7 @@ _breeze_icons = [
   'application-ogg',
   'dialog-messages',
   'audio-x-wav',
+  'media-album-track',
   'inode-directory',
   'none',
   'audio-card',

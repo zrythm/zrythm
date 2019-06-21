@@ -32,10 +32,11 @@
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (InspectorWidget,
                inspector_widget,
-               GTK_TYPE_STACK)
+               GTK_TYPE_BOX)
 
 /**
  * Refreshes the inspector widget (shows current
@@ -54,7 +55,7 @@ inspector_widget_refresh (
         self->track,
         TRACKLIST_SELECTIONS);
       gtk_stack_set_visible_child (
-        GTK_STACK (self),
+        self->stack,
         GTK_WIDGET (self->track));
     }
   else if (PROJECT->last_selection ==
@@ -64,7 +65,7 @@ inspector_widget_refresh (
         self->plugin,
         MIXER_SELECTIONS);
       gtk_stack_set_visible_child (
-        GTK_STACK (self),
+        self->stack,
         GTK_WIDGET (self->plugin));
     }
 }
@@ -75,13 +76,11 @@ inspector_widget_new ()
   InspectorWidget * self =
     g_object_new (INSPECTOR_WIDGET_TYPE, NULL);
 
-  gtk_widget_set_visible (GTK_WIDGET (self), 1);
-
   inspector_track_widget_show_tracks (
     self->track,
     TRACKLIST_SELECTIONS);
   gtk_stack_set_visible_child (
-    GTK_STACK (self),
+    self->stack,
     GTK_WIDGET (self->track));
 
   return self;
@@ -98,18 +97,19 @@ inspector_widget_class_init (
   gtk_widget_class_set_css_name (
     klass, "inspector");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    InspectorWidget,
-    track);
-  gtk_widget_class_bind_template_child (
-    klass,
-    InspectorWidget,
-    editor);
-  gtk_widget_class_bind_template_child (
-    klass,
-    InspectorWidget,
-    plugin);
+#define BIND_CHILD(child) \
+  gtk_widget_class_bind_template_child ( \
+    klass, \
+    InspectorWidget, \
+    child)
+
+  BIND_CHILD (stack);
+  BIND_CHILD (stack_switcher_box);
+  BIND_CHILD (track);
+  BIND_CHILD (editor);
+  BIND_CHILD (plugin);
+
+#undef BIND_CHILD
 }
 
 static void
@@ -121,6 +121,64 @@ inspector_widget_init (InspectorWidget * self)
   g_type_ensure (INSPECTOR_PLUGIN_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  self->stack_switcher =
+    GTK_STACK_SWITCHER (gtk_stack_switcher_new ());
+  gtk_stack_switcher_set_stack (
+    self->stack_switcher,
+    self->stack);
+  gtk_widget_show_all (
+    GTK_WIDGET (self->stack_switcher));
+  gtk_box_pack_start (
+    self->stack_switcher_box,
+    GTK_WIDGET (self->stack_switcher),
+    TRUE, FALSE, 0);
+
+  /* set stackswitcher icons */
+  GValue iconval1 = G_VALUE_INIT;
+  GValue iconval2 = G_VALUE_INIT;
+  GValue iconval3 = G_VALUE_INIT;
+  g_value_init (&iconval1, G_TYPE_STRING);
+  g_value_init (&iconval2, G_TYPE_STRING);
+  g_value_init (&iconval3, G_TYPE_STRING);
+  g_value_set_string (
+    &iconval1, "z-media-album-track");
+  g_value_set_string(
+    &iconval2, "piano_roll");
+  g_value_set_string(
+    &iconval3, "z-plugins");
+
+  gtk_container_child_set_property (
+    GTK_CONTAINER (self->stack),
+    GTK_WIDGET (self->track),
+    "icon-name", &iconval1);
+  g_value_set_string (
+    &iconval1, _("Track properties"));
+  gtk_container_child_set_property (
+    GTK_CONTAINER (self->stack),
+    GTK_WIDGET (self->track),
+    "title", &iconval1);
+  gtk_container_child_set_property (
+    GTK_CONTAINER (self->stack),
+    GTK_WIDGET (self->editor),
+    "icon-name", &iconval2);
+  g_value_set_string (
+    &iconval2, _("Editor properties"));
+  gtk_container_child_set_property (
+    GTK_CONTAINER (self->stack),
+    GTK_WIDGET (self->editor),
+    "title", &iconval2);
+  gtk_container_child_set_property (
+    GTK_CONTAINER (self->stack),
+    GTK_WIDGET (self->plugin),
+    "icon-name", &iconval3);
+  g_value_set_string (
+    &iconval3, _("Plugin properties"));
+  gtk_container_child_set_property (
+    GTK_CONTAINER (self->stack),
+    GTK_WIDGET (self->plugin),
+    "title", &iconval3);
+
 
   /*self->size_group =*/
     /*gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);*/

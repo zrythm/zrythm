@@ -291,6 +291,7 @@ popover
 }
 
 button:not(.record-button):not(.solo-button).toggle:checked,
+stackswitcher button:checked,
 menuitem:hover
 {
   background-color: @dark_orange;

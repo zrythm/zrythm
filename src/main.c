@@ -116,7 +116,7 @@ main (int    argc,
   g_message ("Initing object utils...");
   object_utils_init ();
 
-  // sends activate signal
+  /* send activate signal */
   g_message ("Initing Zrythm app...");
   zrythm_app = zrythm_app_new ();
   g_message ("running Zrythm...");
